@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE web-app PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN" "http://java.sun.com/dtd/web-app_2_3.dtd">
+
+<web-app>
+  <servlet>
+    <servlet-name>MissionImpossible</servlet-name>
+    <display-name>JWt MissionImpossibleMain example</display-name>
+    <description>JWt MissionImpossibleMain example</description>
+    <servlet-class>eu.webtoolkit.jwt.examples.mission.MissionImpossibleMain</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>MissionImpossible</servlet-name>
+    <url-pattern>/MissionImpossible/*</url-pattern>
+  </servlet-mapping>
+</web-app>
+

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE web-app PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN" "http://java.sun.com/dtd/web-app_2_3.dtd">
+
+<web-app>
+  <servlet>
+    <servlet-name>Paint</servlet-name>
+    <display-name>JWt PaintMain example</display-name>
+    <description>JWt PaintMain example</description>
+    <servlet-class>eu.webtoolkit.jwt.examples.painting.PaintMain</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>Paint</servlet-name>
+    <url-pattern>/Paint/*</url-pattern>
+  </servlet-mapping>
+</web-app>
+

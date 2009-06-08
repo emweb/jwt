@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE web-app PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN" "http://java.sun.com/dtd/web-app_2_3.dtd">
+
+<web-app>
+  <servlet>
+    <servlet-name>TreeView</servlet-name>
+    <display-name>JWt TreeView example</display-name>
+    <description>JWt TreeView example</description>
+    <servlet-class>eu.webtoolkit.jwt.examples.treeview.TreeViewMain</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>TreeView</servlet-name>
+    <url-pattern>/TreeView/*</url-pattern>
+  </servlet-mapping>
+</web-app>
+

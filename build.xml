@@ -1,0 +1,58 @@
+<project name="jwt" default="all" basedir=".">
+  <!-- Name of project and version -->
+  <property name="proj.name" value="jwt"/>
+  <property name="proj.version" value="2.99.1b"/>
+
+  <!-- Global properties for this build -->
+  <property name="src.java.dir" value="src"/>
+  <property name="build.dir" value="build"/>
+  <property name="dist.dir" value="dist"/>
+
+  <!-- Classpath declaration -->
+  <path id="project.classpath">
+    <fileset dir=".">
+      <include name="lib/*.jar"/>
+    </fileset>
+  </path>
+
+  <target name="all" depends="dist">
+  </target>
+	
+  <!-- Clean up -->
+  <target name="clean">
+    <delete dir="${build.dir}"/>
+    <delete dir="${dist.dir}"/>
+  </target>
+
+  <!-- Compile Java source -->
+  <target name="build">
+    <mkdir dir="${build.dir}"/>
+    <javac
+       srcdir="${src.java.dir}"
+       destdir="${build.dir}"
+       debug="on"
+			 source="1.5"
+			 target="1.5">
+      <classpath refid="project.classpath"/>
+    </javac>
+    <copy todir="${build.dir}/eu/webtoolkit/jwt/skeletons">
+      <fileset dir="${src.java.dir}/eu/webtoolkit/jwt/skeletons"/>
+    </copy>
+    <copy todir="${build.dir}/eu/webtoolkit/jwt/wt-resources">
+      <fileset dir="${src.java.dir}/eu/webtoolkit/jwt/wt-resources"/>
+    </copy>
+	<copy todir="${build.dir}">
+	  	<fileset dir="${src.java.dir}"/>
+	</copy>
+  </target>
+
+  <target name="dist" depends="build">
+    <mkdir dir="${dist.dir}"/>
+    <jar destfile="dist/jwt-${proj.version}.jar" basedir="${build.dir}" />
+    <copy todir="${dist.dir}">
+        <fileset dir="lib">
+          <include name="*.jar"/>
+        </fileset>
+    </copy>
+  </target>
+</project>

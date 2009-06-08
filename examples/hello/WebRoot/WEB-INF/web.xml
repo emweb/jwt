@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE web-app PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN" "http://java.sun.com/dtd/web-app_2_3.dtd">
+
+<web-app>
+  <servlet>
+    <servlet-name>Hello</servlet-name>
+    <display-name>JWt Hello World example</display-name>
+    <description>JWt Hello World example</description>
+    <servlet-class>eu.webtoolkit.jwt.examples.hello.HelloMain</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>Hello</servlet-name>
+    <url-pattern>/Hello/*</url-pattern>
+  </servlet-mapping>
+</web-app>
+

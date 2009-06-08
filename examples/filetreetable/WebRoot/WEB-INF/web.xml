@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE web-app PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN" "http://java.sun.com/dtd/web-app_2_3.dtd">
+
+<web-app>
+  <servlet>
+    <servlet-name>FileTreeTable</servlet-name>
+    <display-name>JWt FileTreeTable example</display-name>
+    <description>JWt FileTreeTable example</description>
+    <servlet-class>eu.webtoolkit.jwt.examples.filetreetable.FileTreeExample</servlet-class>
+    <init-param>
+      <param-name>startDir</param-name>
+      <param-value>/home/pieter/</param-value>
+    </init-param>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>FileTreeTable</servlet-name>
+    <url-pattern>/FileTreeTable/*</url-pattern>
+  </servlet-mapping>
+</web-app>
+

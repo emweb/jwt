@@ -1,0 +1,63 @@
+<project name="jwt-bobsmith" default="all" basedir=".">
+  <!-- Name of project and version -->
+  <property name="proj.name" value="jwt-bobsmith"/>
+  <property name="proj.version" value="2.99.1b"/>
+
+  <!-- Global properties for this build -->
+  <property name="src.dir" value="src"/>
+  <property name="build.dir" value="build"/>
+  <property name="dist.dir" value="dist"/>
+  <property name="lib.dir" value="lib"/>
+
+  <!-- Classpath declaration -->
+  <path id="project.classpath">
+    <fileset dir=".">
+    </fileset>
+    <fileset dir="../../dist">
+    </fileset>
+  </path>
+
+  <target name="all" depends="dist">
+    <mkdir dir="${lib.dir}"/>
+    
+    <copy todir="${lib.dir}">
+    	<fileset dir="../../dist" />
+    </copy>
+  </target>
+	
+  <!-- Clean up -->
+  <target name="clean">
+    <delete dir="${build.dir}"/>
+    <delete dir="${dist.dir}"/>
+    <delete dir="${lib.dir}"/>
+  </target>
+
+  <!-- Compile Java source -->
+  <target name="build">
+    <mkdir dir="${build.dir}"/>
+    
+    <javac
+       srcdir="${src.dir}"
+       destdir="${build.dir}"
+       debug="on"
+			 source="1.5"
+			 target="1.5">
+      <classpath refid="project.classpath"/>
+    </javac>
+  </target>
+
+  <target name="dist" depends="build">
+    <mkdir dir="${dist.dir}"/>
+    
+    <copy todir="${build.dir}">
+    	<fileset dir="${src.dir}"
+             includes="**/*.xml,**/*.properties,**/*.csv" />
+    </copy>
+    
+    <war destfile="${dist.dir}/${proj.name}-${proj.version}.war" webxml="WebRoot/WEB-INF/web.xml">
+  		<fileset dir="WebRoot"/>
+  	  	<lib dir="${dist.dir}"/>
+  	  	<classes dir="${build.dir}"/>
+    </war>
+  </target>
+</project>
