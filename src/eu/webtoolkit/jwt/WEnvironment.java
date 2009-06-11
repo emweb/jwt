@@ -1,14 +1,15 @@
 package eu.webtoolkit.jwt;
 
-import java.util.*;
-import java.util.regex.*;
-import java.io.*;
-import java.util.concurrent.locks.ReentrantLock;
-import javax.servlet.http.*;
-import eu.webtoolkit.jwt.*;
-import eu.webtoolkit.jwt.chart.*;
-import eu.webtoolkit.jwt.utils.*;
-import eu.webtoolkit.jwt.servlet.*;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.regex.Pattern;
+import eu.webtoolkit.jwt.servlet.WebRequest;
 
 /**
  * A class that captures information on the application environment
@@ -74,6 +75,14 @@ public class WEnvironment {
 		}
 	}
 
+	/**
+	 * Cookie map.
+	 * 
+	 * A std::map which associates a cookie name with a cookie value.
+	 * <p>
+	 * 
+	 * @see WEnvironment#getCookies()
+	 */
 	public Map<String, String> CookieMap;
 
 	/**

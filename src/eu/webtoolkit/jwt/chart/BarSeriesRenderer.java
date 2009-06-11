@@ -1,14 +1,10 @@
 package eu.webtoolkit.jwt.chart;
 
-import java.util.*;
-import java.util.regex.*;
-import java.io.*;
-import java.util.concurrent.locks.ReentrantLock;
-import javax.servlet.http.*;
-import eu.webtoolkit.jwt.*;
-import eu.webtoolkit.jwt.chart.*;
-import eu.webtoolkit.jwt.utils.*;
-import eu.webtoolkit.jwt.servlet.*;
+import eu.webtoolkit.jwt.PenStyle;
+import eu.webtoolkit.jwt.WPainter;
+import eu.webtoolkit.jwt.WPainterPath;
+import eu.webtoolkit.jwt.WPen;
+import eu.webtoolkit.jwt.WPointF;
 
 class BarSeriesRenderer extends SeriesRenderer {
 	public BarSeriesRenderer(WChart2DRenderer renderer, WDataSeries series,

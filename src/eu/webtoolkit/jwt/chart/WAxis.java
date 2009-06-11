@@ -1,22 +1,24 @@
 package eu.webtoolkit.jwt.chart;
 
-import java.util.*;
-import java.util.regex.*;
-import java.io.*;
-import java.util.concurrent.locks.ReentrantLock;
-import javax.servlet.http.*;
-import eu.webtoolkit.jwt.*;
-import eu.webtoolkit.jwt.chart.*;
-import eu.webtoolkit.jwt.utils.*;
-import eu.webtoolkit.jwt.servlet.*;
+import java.util.ArrayList;
+import java.util.List;
+import eu.webtoolkit.jwt.Orientation;
+import eu.webtoolkit.jwt.WAbstractItemModel;
+import eu.webtoolkit.jwt.WColor;
+import eu.webtoolkit.jwt.WDate;
+import eu.webtoolkit.jwt.WFont;
+import eu.webtoolkit.jwt.WLength;
+import eu.webtoolkit.jwt.WPen;
+import eu.webtoolkit.jwt.WString;
+import eu.webtoolkit.jwt.utils.MathUtils;
+import eu.webtoolkit.jwt.utils.StringUtils;
 
 /**
  * Class which represents an axis of a cartesian chart.
  * 
  * 
- * A cartesian chart has two or three axes: an X axis ({@link Axis#XAxis XAxis}
- * ), a Y axis ({@link Axis#YAxis YAxis}) and optionally a second Y axis (
- * {@link Axis#Y2Axis Y2Axis}). Each of the up to three axes in a cartesian
+ * A cartesian chart has two or three axes: an X axis (), a Y axis () and
+ * optionally a second Y axis (). Each of the up to three axes in a cartesian
  * chart has a unique {@link WAxis#getId()} that identifies which of these three
  * axes it is in the enclosing {@link WAxis#getChart()}.
  * <p>
@@ -57,7 +59,7 @@ public class WAxis {
 	 * Returns the axis id.
 	 * 
 	 * @see WAxis#getChart()
-	 * @see WCartesianChart#axis(Axis axis)
+	 * @see WCartesianChart#getAxis(Axis axis)
 	 */
 	public Axis getId() {
 		return this.axis_;
@@ -132,7 +134,7 @@ public class WAxis {
 	 * LinearScale}, but this may be changed to {@link AxisScale#LogScale
 	 * LogScale} or {@link AxisScale#DateScale DateScale}.
 	 * {@link AxisScale#DateScale DateScale} is only useful for the X axis in a
-	 * ScatterPlot which contains {@link WDate} values.
+	 * ScatterPlot which contains {@link eu.webtoolkit.jwt.WDate} values.
 	 * <p>
 	 * 
 	 * @see WAxis#getScale()
@@ -519,7 +521,7 @@ public class WAxis {
 		return this.titleFont_;
 	}
 
-	public WString label(double u) {
+	public WString getLabel(double u) {
 		String buf = null;
 		WString text = new WString();
 		if (this.scale_ == AxisScale.CategoryScale) {
@@ -554,7 +556,7 @@ public class WAxis {
 	/**
 	 * Returns the chart to which this axis belongs.
 	 * 
-	 * @see WCartesianChart#axis(Axis axis)
+	 * @see WCartesianChart#getAxis(Axis axis)
 	 */
 	public WCartesianChart getChart() {
 		return this.chart_;
@@ -728,7 +730,7 @@ public class WAxis {
 							} else {
 								v = getDateValue(model.getData(i, dataColumn));
 							}
-							if (myisnan(v)) {
+							if (Double.isNaN(v)) {
 								continue;
 							}
 							if (findMaximum) {
@@ -856,13 +858,13 @@ public class WAxis {
 							WAxis.TickLabel.TickLength.Long));
 					ticks.add(new WAxis.TickLabel(i,
 							WAxis.TickLabel.TickLength.Zero, this
-									.label((double) i)));
+									.getLabel((double) i)));
 				}
 			} else {
 				for (int i = 0; i < this.chart_.getModel().getRowCount(); i += renderInterval) {
 					ticks.add(new WAxis.TickLabel(i,
 							WAxis.TickLabel.TickLength.Long, this
-									.label((double) i)));
+									.getLabel((double) i)));
 				}
 			}
 			break;
@@ -876,7 +878,7 @@ public class WAxis {
 				}
 				WString t = new WString();
 				if (i % 2 == 0) {
-					t = this.label(v);
+					t = this.getLabel(v);
 				}
 				ticks.add(new WAxis.TickLabel(v,
 						i % 2 == 0 ? WAxis.TickLabel.TickLength.Long
@@ -898,7 +900,7 @@ public class WAxis {
 				}
 				if (i == 0) {
 					ticks.add(new WAxis.TickLabel(v,
-							WAxis.TickLabel.TickLength.Long, this.label(v)));
+							WAxis.TickLabel.TickLength.Long, this.getLabel(v)));
 				} else {
 					ticks.add(new WAxis.TickLabel(v,
 							WAxis.TickLabel.TickLength.Short));
@@ -1016,7 +1018,7 @@ public class WAxis {
 	}
 
 	double map(double u, AxisLocation otherLocation, int segment) {
-		if (myisnan(u)) {
+		if (Double.isNaN(u)) {
 			return u;
 		}
 		WAxis.Segment s = this.segments_.get(segment);
@@ -1089,10 +1091,6 @@ public class WAxis {
 	static final int AXIS_MARGIN = 4;
 	static final int AUTO_V_LABEL_PIXELS = 25;
 	static final int AUTO_H_LABEL_PIXELS = 60;
-
-	static boolean myisnan(double d) {
-		return !(d == d);
-	}
 
 	static double round125(double v) {
 		double n = Math.pow(10, Math.floor(Math.log10(v)));

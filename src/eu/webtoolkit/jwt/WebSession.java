@@ -1,14 +1,15 @@
 package eu.webtoolkit.jwt;
 
-import java.util.*;
-import java.util.regex.*;
-import java.io.*;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.locks.ReentrantLock;
-import javax.servlet.http.*;
-import eu.webtoolkit.jwt.*;
-import eu.webtoolkit.jwt.chart.*;
-import eu.webtoolkit.jwt.utils.*;
-import eu.webtoolkit.jwt.servlet.*;
+import eu.webtoolkit.jwt.servlet.UploadedFile;
+import eu.webtoolkit.jwt.servlet.WebRequest;
+import eu.webtoolkit.jwt.servlet.WebResponse;
 
 class WebSession {
 	public enum Type {

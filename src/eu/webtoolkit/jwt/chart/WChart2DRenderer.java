@@ -1,14 +1,23 @@
 package eu.webtoolkit.jwt.chart;
 
-import java.util.*;
-import java.util.regex.*;
-import java.io.*;
-import java.util.concurrent.locks.ReentrantLock;
-import javax.servlet.http.*;
-import eu.webtoolkit.jwt.*;
-import eu.webtoolkit.jwt.chart.*;
-import eu.webtoolkit.jwt.utils.*;
-import eu.webtoolkit.jwt.servlet.*;
+import java.util.ArrayList;
+import java.util.EnumSet;
+import java.util.List;
+import eu.webtoolkit.jwt.AlignmentFlag;
+import eu.webtoolkit.jwt.Orientation;
+import eu.webtoolkit.jwt.Side;
+import eu.webtoolkit.jwt.WAbstractItemModel;
+import eu.webtoolkit.jwt.WBrush;
+import eu.webtoolkit.jwt.WBrushStyle;
+import eu.webtoolkit.jwt.WColor;
+import eu.webtoolkit.jwt.WFont;
+import eu.webtoolkit.jwt.WPainter;
+import eu.webtoolkit.jwt.WPainterPath;
+import eu.webtoolkit.jwt.WPen;
+import eu.webtoolkit.jwt.WPointF;
+import eu.webtoolkit.jwt.WRectF;
+import eu.webtoolkit.jwt.utils.EnumUtils;
+import eu.webtoolkit.jwt.utils.StringUtils;
 
 /**
  * Helper class for rendering a cartesian chart.
@@ -556,6 +565,11 @@ public class WChart2DRenderer {
 	private WRectF chartArea_;
 	private WPainterPath tildeStartMarker_;
 	private WPainterPath tildeEndMarker_;
+	/**
+	 * The computed axis locations.
+	 * 
+	 * @see WChart2DRenderer#prepareAxes()
+	 */
 	protected AxisLocation[] location_ = new AxisLocation[3];
 
 	/**

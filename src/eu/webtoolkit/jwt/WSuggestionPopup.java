@@ -1,14 +1,8 @@
 package eu.webtoolkit.jwt;
 
-import java.util.*;
-import java.util.regex.*;
-import java.io.*;
-import java.util.concurrent.locks.ReentrantLock;
-import javax.servlet.http.*;
-import eu.webtoolkit.jwt.*;
-import eu.webtoolkit.jwt.chart.*;
-import eu.webtoolkit.jwt.utils.*;
-import eu.webtoolkit.jwt.servlet.*;
+import java.util.ArrayList;
+import java.util.List;
+import eu.webtoolkit.jwt.utils.StringUtils;
 
 /**
  * A widget which popups to assist in editing a textarea or lineedit.
@@ -44,10 +38,39 @@ import eu.webtoolkit.jwt.servlet.*;
  * <p>
  * The matcherJS function block must have the following JavaScript signature:
  * <p>
+ * <code>
+ function (editElement) { <br> 
+   // fetch the location of cursor and current text in the editElement. <br> 
+ <br> 
+   // return a function that matches a given suggestion with the current value of the editElement. <br> 
+   return function(suggestion) { <br> 
+ <br> 
+     // 1) remove markup from the suggestion <br> 
+     // 2) check suggestion if it matches <br> 
+     // 3) add markup to suggestion <br> 
+ <br> 
+     return { match : ...,      // does the suggestion match ? (boolean) <br> 
+              suggestion : ...  // modified suggestion markup <br> 
+             }; <br> 
+   } <br> 
+ }
+</code>
  * <p>
  * The replacerJS function block that edits the value has the following
  * JavaScript signature.
  * <p>
+ * <code>
+ function (editElement, suggestionText, suggestionValue) { <br> 
+   // editElement is the form element which must be edited. <br> 
+   // suggestionText is the displayed text for the matched suggestion. <br> 
+   // suggestionValue is the stored value for the matched suggestion. <br> 
+ <br> 
+   // computed modifiedEditValue and modifiedPos ... <br> 
+ <br> 
+   editElement.value = modifiedEditValue; <br> 
+   editElement.selectionStart = edit.selectionEnd = modifiedPos; <br> 
+ }
+</code>
  * <p>
  * To style the suggestions, you should style the &lt;span&gt; element inside
  * this widget, and the &lt;span&gt;.&quot;sel&quot; element to style the
@@ -55,8 +78,53 @@ import eu.webtoolkit.jwt.servlet.*;
  * <p>
  * Usage example:
  * <p>
+ * <code>
+ // options for email address suggestions <br> 
+ WSuggestionPopup.Options contactOptions = new WSuggestionPopup.Options();  <br> 
+ contactOptions.highlightBeginTag = &quot;&lt;b&gt;&quot;; <br> 
+ contactOptions.highlightEndTag = &quot;&lt;/b&gt;&quot;; <br> 
+ contactOptions.listSeparator = &apos;,&apos;; //for multiple addresses) <br> 
+ contactOptions.whitespace = &quot; \\n&quot;; <br> 
+ contactOptions.wordSeparators = &quot;-., \&quot;@\\n;&quot;; //within an address <br> 
+ contactOptions.appendReplacedText = &quot;, &quot;; //prepare next email address <br> 
+	 <br> 
+ WSuggestionPopup popup <br> 
+  = new WSuggestionPopup(WSuggestionPopup.generateMatcherJS(contactOptions), <br> 
+ WSuggestionPopup.generateReplacerJS(contactOptions), <br> 
+ this); <br> 
+  <br> 
+ WTextArea textEdit = new WTextArea(this); <br> 
+ popup.forEdit(textEdit); <br> 
+		  <br> 
+ // load popup data <br> 
+ for (int i = 0; i &lt; contacts.size(); ++i) <br> 
+ popup.addSuggestion(contacts.get(i).formatted(), contacts.get(i).formatted()); <br> 
+		  <br> 
+ // set style <br> 
+ popup.setStyleClass(&quot;suggest&quot;);
+</code>
+ * <p>
  * Example CSS:
  * <p>
+ * <code>
+.suggest { <br> 
+  background-color: #e0ecff; <br> 
+  color: #1010cc; <br> 
+  border: 1px solid #666666; <br> 
+  cursor: default; <br> 
+  font-size: smaller; <br> 
+  padding: 2px; <br> 
+} <br> 
+ <br> 
+.suggest span { <br> 
+  padding-left: 0.5em; <br> 
+  padding-right: 0.5em;   <br> 
+} <br> 
+ <br> 
+.suggest .sel { <br> 
+  background-color: #C3D9FF; <br> 
+}
+</code>
  * <p>
  * A screenshot of this example: <div align="center"> <img
  * src="/WSuggestionPopup-1.png" alt="Example of WSuggestionPopup">

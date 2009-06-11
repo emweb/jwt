@@ -1,14 +1,10 @@
 package eu.webtoolkit.jwt;
 
-import java.util.*;
-import java.util.regex.*;
-import java.io.*;
-import java.util.concurrent.locks.ReentrantLock;
-import javax.servlet.http.*;
-import eu.webtoolkit.jwt.*;
-import eu.webtoolkit.jwt.chart.*;
-import eu.webtoolkit.jwt.utils.*;
-import eu.webtoolkit.jwt.servlet.*;
+import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * An abstract widget that shows a viewport to a virtually large image
@@ -30,8 +26,8 @@ import eu.webtoolkit.jwt.servlet.*;
  * <p>
  * To use this class, you must reimplement one of two virtual methods to specify
  * the contents of each grid piece. Either you provide a suitable {@link WImage}
- * for every grid piece, or you provide a {@link WResource} which renders the
- * contents for a {@link WImage} for every grid piece.
+ * for every grid piece, or you provide a which renders the contents for a
+ * {@link WImage} for every grid piece.
  * <p>
  * The total image dimensions are (0, 0) to (imageWidth, imageHeight) for a
  * finite image, and become unbounded (including negative numbers) for each
@@ -356,8 +352,8 @@ public class WVirtualImage extends WCompositeWidget {
 
 	private void mouseUp(WMouseEvent e) {
 		this.internalScrollTo(this.currentX_ - e.getDragDelta().x,
-				this.currentY_ - e.getDragDelta().y, !WApplication.instance()
-						.getEnvironment().hasAjax());
+				this.currentY_ - e.getDragDelta().y, !WApplication
+						.getInstance().getEnvironment().hasAjax());
 	}
 
 	private WVirtualImage.Rect neighbourhood(long x, long y, int marginX,

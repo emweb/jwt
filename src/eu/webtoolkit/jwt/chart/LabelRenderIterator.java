@@ -1,14 +1,10 @@
 package eu.webtoolkit.jwt.chart;
 
-import java.util.*;
-import java.util.regex.*;
-import java.io.*;
-import java.util.concurrent.locks.ReentrantLock;
-import javax.servlet.http.*;
-import eu.webtoolkit.jwt.*;
-import eu.webtoolkit.jwt.chart.*;
-import eu.webtoolkit.jwt.utils.*;
-import eu.webtoolkit.jwt.servlet.*;
+import java.util.EnumSet;
+import eu.webtoolkit.jwt.AlignmentFlag;
+import eu.webtoolkit.jwt.WColor;
+import eu.webtoolkit.jwt.WPointF;
+import eu.webtoolkit.jwt.WString;
 
 class LabelRenderIterator extends SeriesIterator {
 	public LabelRenderIterator(WChart2DRenderer renderer) {

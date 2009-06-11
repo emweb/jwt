@@ -1,14 +1,11 @@
 package eu.webtoolkit.jwt.chart;
 
-import java.util.*;
-import java.util.regex.*;
-import java.io.*;
-import java.util.concurrent.locks.ReentrantLock;
-import javax.servlet.http.*;
-import eu.webtoolkit.jwt.*;
-import eu.webtoolkit.jwt.chart.*;
-import eu.webtoolkit.jwt.utils.*;
-import eu.webtoolkit.jwt.servlet.*;
+import eu.webtoolkit.jwt.PenCapStyle;
+import eu.webtoolkit.jwt.PenJoinStyle;
+import eu.webtoolkit.jwt.WBrush;
+import eu.webtoolkit.jwt.WColor;
+import eu.webtoolkit.jwt.WLength;
+import eu.webtoolkit.jwt.WPen;
 
 /**
  * Standard styling for rendering series in charts.

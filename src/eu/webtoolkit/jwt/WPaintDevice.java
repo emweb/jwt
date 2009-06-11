@@ -1,14 +1,6 @@
 package eu.webtoolkit.jwt;
 
-import java.util.*;
-import java.util.regex.*;
-import java.io.*;
-import java.util.concurrent.locks.ReentrantLock;
-import javax.servlet.http.*;
-import eu.webtoolkit.jwt.*;
-import eu.webtoolkit.jwt.chart.*;
-import eu.webtoolkit.jwt.utils.*;
-import eu.webtoolkit.jwt.servlet.*;
+import java.util.EnumSet;
 
 /**
  * The abstract base class for a paint device.
@@ -91,7 +83,7 @@ public interface WPaintDevice {
 	 * The <i>flags</i> argument is the logical OR of one or more change flags.
 	 * <p>
 	 * 
-	 * @see WPaintDevice#WPaintDevice
+	 * @see WPaintDevice.ChangeFlag
 	 */
 	public void setChanged(EnumSet<WPaintDevice.ChangeFlag> flags);
 

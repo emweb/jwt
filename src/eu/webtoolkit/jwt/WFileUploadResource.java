@@ -1,14 +1,10 @@
 package eu.webtoolkit.jwt;
 
-import java.util.*;
-import java.util.regex.*;
-import java.io.*;
-import java.util.concurrent.locks.ReentrantLock;
-import javax.servlet.http.*;
-import eu.webtoolkit.jwt.*;
-import eu.webtoolkit.jwt.chart.*;
-import eu.webtoolkit.jwt.utils.*;
-import eu.webtoolkit.jwt.servlet.*;
+import java.io.IOException;
+import java.io.Writer;
+import eu.webtoolkit.jwt.servlet.UploadedFile;
+import eu.webtoolkit.jwt.servlet.WebRequest;
+import eu.webtoolkit.jwt.servlet.WebResponse;
 
 class WFileUploadResource extends WResource {
 	public WFileUploadResource(WFileUpload fileUpload) {

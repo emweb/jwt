@@ -1,14 +1,5 @@
 package eu.webtoolkit.jwt;
 
-import java.util.*;
-import java.util.regex.*;
-import java.io.*;
-import java.util.concurrent.locks.ReentrantLock;
-import javax.servlet.http.*;
-import eu.webtoolkit.jwt.*;
-import eu.webtoolkit.jwt.chart.*;
-import eu.webtoolkit.jwt.utils.*;
-import eu.webtoolkit.jwt.servlet.*;
 
 /**
  * An abstract base class for an MVC view that is rendered using a widget
@@ -49,8 +40,6 @@ import eu.webtoolkit.jwt.servlet.*;
  * Thus, currently, event handling code related to the View cannot be
  * implemented at server-side (but we are thinking about a solution for this as
  * well...).
- * <p>
- * Implementation example:
  */
 public abstract class WViewWidget extends WWebWidget {
 	/**
@@ -88,9 +77,9 @@ public abstract class WViewWidget extends WWebWidget {
 		if (this.needContentsUpdate_) {
 			if (this.contents_ != null)
 				this.contents_.remove();
-			WApplication.instance().setExposeSignals(false);
+			WApplication.getInstance().setExposeSignals(false);
 			this.contents_ = this.getRenderView();
-			WApplication.instance().setExposeSignals(true);
+			WApplication.getInstance().setExposeSignals(true);
 			this.addChild(this.contents_);
 			this.setInline(this.contents_.isInline());
 			this.needContentsUpdate_ = false;
@@ -119,7 +108,7 @@ public abstract class WViewWidget extends WWebWidget {
 	 * view. The returned widget will be deleted by WViewWidget.
 	 */
 	protected void updateDom(DomElement element, boolean all) {
-		WApplication app = WApplication.instance();
+		WApplication app = WApplication.getInstance();
 		if (!app.getSession().getRenderer().isPreLearning()) {
 			if (all && !(this.contents_ != null)) {
 				this.needContentsUpdate_ = true;
@@ -128,15 +117,15 @@ public abstract class WViewWidget extends WWebWidget {
 			if (this.contents_ != null) {
 				boolean savedVisibleOnly = app.getSession().getRenderer()
 						.isVisibleOnly();
-				WApplication.instance().getSession().getRenderer()
+				WApplication.getInstance().getSession().getRenderer()
 						.setVisibleOnly(false);
 				DomElement e = this.contents_.createSDomElement(WApplication
-						.instance());
+						.getInstance());
 				if (!all) {
 					element.setWasEmpty(true);
 				}
 				element.addChild(e);
-				WApplication.instance().getSession().getRenderer()
+				WApplication.getInstance().getSession().getRenderer()
 						.setVisibleOnly(savedVisibleOnly);
 				this.needContentsUpdate_ = false;
 			}

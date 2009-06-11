@@ -1,14 +1,7 @@
 package eu.webtoolkit.jwt;
 
-import java.util.*;
-import java.util.regex.*;
-import java.io.*;
-import java.util.concurrent.locks.ReentrantLock;
-import javax.servlet.http.*;
-import eu.webtoolkit.jwt.*;
-import eu.webtoolkit.jwt.chart.*;
-import eu.webtoolkit.jwt.utils.*;
-import eu.webtoolkit.jwt.servlet.*;
+import java.util.EnumSet;
+import java.util.List;
 
 /**
  * An abstract proxy model for Wt&apos;s item models.
@@ -38,8 +31,29 @@ public abstract class WAbstractProxyModel extends WAbstractItemModel {
 		this((WObject) null);
 	}
 
+	/**
+	 * Map a source model index to the proxy model.
+	 * 
+	 * This method returns a model index in the proxy model that corresponds to
+	 * the model index <i>sourceIndex</i> in the source model. This method must
+	 * only be implemented for source model indexes that are mapped and thus are
+	 * the result of
+	 * {@link WAbstractProxyModel#mapToSource(WModelIndex proxyIndex)}.
+	 * <p>
+	 * 
+	 * @see WAbstractProxyModel#mapToSource(WModelIndex proxyIndex)
+	 */
 	public abstract WModelIndex mapFromSource(WModelIndex sourceIndex);
 
+	/**
+	 * Map a proxy model index to the source model.
+	 * 
+	 * This method returns a model index in the source model that corresponds to
+	 * the proxy model index <i>proxyIndex</i>.
+	 * <p>
+	 * 
+	 * @see WAbstractProxyModel#mapFromSource(WModelIndex sourceIndex)
+	 */
 	public abstract WModelIndex mapToSource(WModelIndex proxyIndex);
 
 	/**

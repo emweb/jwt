@@ -1,14 +1,5 @@
 package eu.webtoolkit.jwt;
 
-import java.util.*;
-import java.util.regex.*;
-import java.io.*;
-import java.util.concurrent.locks.ReentrantLock;
-import javax.servlet.http.*;
-import eu.webtoolkit.jwt.*;
-import eu.webtoolkit.jwt.chart.*;
-import eu.webtoolkit.jwt.utils.*;
-import eu.webtoolkit.jwt.servlet.*;
 
 /**
  * A class that specifies a CSS length
@@ -171,5 +162,10 @@ public class WLength {
 		return WLength.multiply(l, 1 / s);
 	}
 
+	/**
+	 * An &apos;auto&apos; length.
+	 * 
+	 * @see WLength#WLength()
+	 */
 	public static WLength Auto = new WLength();
 }

@@ -1,14 +1,12 @@
 package eu.webtoolkit.jwt;
 
-import java.util.*;
-import java.util.regex.*;
-import java.io.*;
-import java.util.concurrent.locks.ReentrantLock;
-import javax.servlet.http.*;
-import eu.webtoolkit.jwt.*;
-import eu.webtoolkit.jwt.chart.*;
-import eu.webtoolkit.jwt.utils.*;
-import eu.webtoolkit.jwt.servlet.*;
+import java.util.ArrayList;
+import java.util.EnumSet;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
+import eu.webtoolkit.jwt.utils.EnumUtils;
 
 /**
  * A widget that represents a navigatable tree
@@ -104,6 +102,9 @@ public class WTree extends WCompositeWidget {
 		return this.selectionMode_;
 	}
 
+	/**
+	 * Typedef for a set of WTreeNode&apos;s.
+	 */
 	public Set<WTreeNode> WTreeNodeSet;
 
 	/**

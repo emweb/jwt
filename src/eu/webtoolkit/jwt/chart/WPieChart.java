@@ -1,14 +1,26 @@
 package eu.webtoolkit.jwt.chart;
 
-import java.util.*;
-import java.util.regex.*;
-import java.io.*;
-import java.util.concurrent.locks.ReentrantLock;
-import javax.servlet.http.*;
-import eu.webtoolkit.jwt.*;
-import eu.webtoolkit.jwt.chart.*;
-import eu.webtoolkit.jwt.utils.*;
-import eu.webtoolkit.jwt.servlet.*;
+import java.util.ArrayList;
+import java.util.EnumSet;
+import java.util.List;
+import eu.webtoolkit.jwt.AlignmentFlag;
+import eu.webtoolkit.jwt.Side;
+import eu.webtoolkit.jwt.WAbstractItemModel;
+import eu.webtoolkit.jwt.WBrush;
+import eu.webtoolkit.jwt.WColor;
+import eu.webtoolkit.jwt.WContainerWidget;
+import eu.webtoolkit.jwt.WFont;
+import eu.webtoolkit.jwt.WModelIndex;
+import eu.webtoolkit.jwt.WPaintDevice;
+import eu.webtoolkit.jwt.WPaintedWidget;
+import eu.webtoolkit.jwt.WPainter;
+import eu.webtoolkit.jwt.WPainterPath;
+import eu.webtoolkit.jwt.WPen;
+import eu.webtoolkit.jwt.WRectF;
+import eu.webtoolkit.jwt.WString;
+import eu.webtoolkit.jwt.WtException;
+import eu.webtoolkit.jwt.utils.EnumUtils;
+import eu.webtoolkit.jwt.utils.StringUtils;
 
 /**
  * A pie chart.

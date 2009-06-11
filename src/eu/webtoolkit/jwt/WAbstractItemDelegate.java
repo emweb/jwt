@@ -1,14 +1,6 @@
 package eu.webtoolkit.jwt;
 
-import java.util.*;
-import java.util.regex.*;
-import java.io.*;
-import java.util.concurrent.locks.ReentrantLock;
-import javax.servlet.http.*;
-import eu.webtoolkit.jwt.*;
-import eu.webtoolkit.jwt.chart.*;
-import eu.webtoolkit.jwt.utils.*;
-import eu.webtoolkit.jwt.servlet.*;
+import java.util.EnumSet;
 
 /**
  * Abstract delegate class for rendering a view item.
@@ -49,6 +41,20 @@ public abstract class WAbstractItemDelegate extends WObject {
 	public void destroy() {
 	}
 
+	/**
+	 * Create or update a widget that renders an item.
+	 * 
+	 * The item is specified by its model <i>index</i>, which also indicates the
+	 * model. If an existing widget already renders the item, but needs to be
+	 * updated, it is passed as the <i>widget</i> parameter. You may decide to
+	 * create a new widget, in which case you are responsible to delete the
+	 * previous <i>widget</i> if it is not reused.
+	 * <p>
+	 * When <i>widget</i> is <code>null</code>, a new widget needs to be
+	 * created.
+	 * <p>
+	 * The <i>flags</i> parameter indicates options for rendering the item.
+	 */
 	public abstract WWidget update(WWidget widget, WModelIndex index,
 			EnumSet<ViewItemRenderFlag> flags);
 

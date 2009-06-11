@@ -1,14 +1,8 @@
 package eu.webtoolkit.jwt;
 
-import java.util.*;
-import java.util.regex.*;
-import java.io.*;
-import java.util.concurrent.locks.ReentrantLock;
-import javax.servlet.http.*;
-import eu.webtoolkit.jwt.*;
-import eu.webtoolkit.jwt.chart.*;
-import eu.webtoolkit.jwt.utils.*;
-import eu.webtoolkit.jwt.servlet.*;
+import java.util.EnumSet;
+import eu.webtoolkit.jwt.servlet.WebRequest;
+import eu.webtoolkit.jwt.utils.EnumUtils;
 
 /**
  * A class providing details for a mouse event.
@@ -55,7 +49,13 @@ public class WMouseEvent implements WAbstractEvent {
 	 * A mouse coordinate
 	 */
 	public static class Coordinates {
+		/**
+		 * X coordinate.
+		 */
 		public int x;
+		/**
+		 * Y coordinate.
+		 */
 		public int y;
 
 		public Coordinates(int x_, int y_) {

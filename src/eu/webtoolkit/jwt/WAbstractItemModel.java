@@ -1,14 +1,16 @@
 package eu.webtoolkit.jwt;
 
-import java.util.*;
-import java.util.regex.*;
-import java.io.*;
-import java.util.concurrent.locks.ReentrantLock;
-import javax.servlet.http.*;
-import eu.webtoolkit.jwt.*;
-import eu.webtoolkit.jwt.chart.*;
-import eu.webtoolkit.jwt.utils.*;
-import eu.webtoolkit.jwt.servlet.*;
+import java.util.ArrayList;
+import java.util.EnumSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.SortedMap;
+import java.util.SortedSet;
+import java.util.TreeMap;
+import eu.webtoolkit.jwt.utils.EnumUtils;
+import eu.webtoolkit.jwt.utils.StringUtils;
 
 /**
  * An abstract model for use with Wt&apos;s view classes.
@@ -31,7 +33,7 @@ import eu.webtoolkit.jwt.servlet.*;
  * <li>Boolean</li>
  * <li>numbers: Short, Integer, Long, Float, Double</li>
  * <li>strings: {@link WString} or String</li>
- * <li>dates: {@link WDate}</li>
+ * <li>dates: {@link eu.webtoolkit.jwt.WDate}</li>
  * </ul>
  * <p>
  * To implement a custom model, you need to reimplement the following methods:
@@ -53,9 +55,9 @@ import eu.webtoolkit.jwt.servlet.*;
  * <p>
  * A crucial point in implementing a hierarchical model is to decide how to
  * reference an index in terms of an internal pointer (
- * {@link WModelIndex#internalPointer()}) Other than the top-level index, which
- * is special since it is referenced using an invalid index), every index with
- * children must be identifiable using this object. For example, in the
+ * {@link WModelIndex#getInternalPointer()}) Other than the top-level index,
+ * which is special since it is referenced using an invalid index), every index
+ * with children must be identifiable using this object. For example, in the
  * {@link WStandardItemModel}, the internal pointer points to the parent
  * {@link WStandardItem}. For table models, the internal pointer plays no role,
  * since only the toplevel index has children.
@@ -176,7 +178,7 @@ public abstract class WAbstractItemModel extends WObject {
 	 * ItemIsSelectable}.
 	 * <p>
 	 * 
-	 * @see ItemFlag#ItemFlag
+	 * @see ItemFlag
 	 */
 	public EnumSet<ItemFlag> getFlags(WModelIndex index) {
 		return EnumSet.of(ItemFlag.ItemIsSelectable);
@@ -300,13 +302,14 @@ public abstract class WAbstractItemModel extends WObject {
 	 * number of hits are returned.
 	 */
 	public List<WModelIndex> match(WModelIndex start, int role, Object value,
-			int hits, EnumSet<MatchFlag> flags) {
+			int hits, MatchOptions flags) {
 		List<WModelIndex> result = new ArrayList<WModelIndex>();
 		final int rc = this.getRowCount(start.getParent());
 		for (int i = 0; i < rc; ++i) {
 			int row = start.getRow() + i;
 			if (row >= rc) {
-				if (!!EnumUtils.mask(flags, MatchFlag.MatchWrap).isEmpty()) {
+				if (!!EnumUtils.mask(flags.getFlags(),
+						MatchOptions.MatchFlag.MatchWrap).isEmpty()) {
 					break;
 				} else {
 					row -= rc;
@@ -322,27 +325,12 @@ public abstract class WAbstractItemModel extends WObject {
 		return result;
 	}
 
-	public final List<WModelIndex> match(WModelIndex start, int role,
-			Object value, int hits, MatchFlag flag, MatchFlag... flags) {
-		return match(start, role, value, hits, EnumSet.of(flag, flags));
-	}
-
-	public final List<WModelIndex> match(WModelIndex start, int role,
-			Object value) {
-		return match(start, role, value, -1, EnumSet.of(
-				MatchFlag.MatchStartsWith, MatchFlag.MatchWrap));
-	}
-
-	public final List<WModelIndex> match(WModelIndex start, int role,
-			Object value, int hits) {
-		return match(start, role, value, hits, EnumSet.of(
-				MatchFlag.MatchStartsWith, MatchFlag.MatchWrap));
-	}
-
 	/**
 	 * Returns the data item at the given column and row.
 	 * 
-	 * This is a convenience method, and is equivalent to:
+	 * This is a convenience method, and is equivalent to: <code>
+   index(row, column, parent).data(role)
+  </code>
 	 * <p>
 	 * 
 	 * @see WAbstractItemModel#getIndex(int row, int column, WModelIndex parent)
@@ -364,7 +352,10 @@ public abstract class WAbstractItemModel extends WObject {
 	 * Returns if an index at the given position is valid (i.e. falls within the
 	 * column-row bounds).
 	 * 
-	 * Equivalent to:
+	 * Equivalent to: <code>
+   return row &gt;= 0 &amp;&amp; column &gt;= 0 <br> 
+          &amp;&amp; row &lt; rowCount(parent) &amp;&amp; column &lt; columnCount(parent);
+  </code>
 	 * <p>
 	 * 
 	 * @see WAbstractItemModel#getRowCount(WModelIndex parent)
@@ -734,7 +725,9 @@ public abstract class WAbstractItemModel extends WObject {
 	 * Insert one column.
 	 * 
 	 * This is a convenience method that adds a single column, and is equivalent
-	 * to:
+	 * to: <code>
+   insertColumns(column, 1, parent);
+  </code>
 	 * <p>
 	 * Returns true if the operation was successful.
 	 * <p>
@@ -754,7 +747,9 @@ public abstract class WAbstractItemModel extends WObject {
 	 * Insert one row.
 	 * 
 	 * This is a convenience method that adds a single row, and is equivalent
-	 * to:
+	 * to: <code>
+   insertRows(row, 1, parent);
+  </code>
 	 * <p>
 	 * Returns true if the operation was successful.
 	 * <p>
@@ -774,7 +769,9 @@ public abstract class WAbstractItemModel extends WObject {
 	 * Remove one column.
 	 * 
 	 * This is a convenience method that removes a single column, and is
-	 * equivalent to:
+	 * equivalent to: <code>
+   removeColumns(column, 1, parent);
+  </code>
 	 * <p>
 	 * Returns true if the operation was successful.
 	 * <p>
@@ -794,7 +791,9 @@ public abstract class WAbstractItemModel extends WObject {
 	 * Remove one row.
 	 * 
 	 * This is a convenience method that removes a single row, and is equivalent
-	 * to:
+	 * to: <code>
+   removeRows(row, 1, parent);
+  </code>
 	 * <p>
 	 * Returns true if the operation was successful.
 	 * <p>
@@ -813,7 +812,9 @@ public abstract class WAbstractItemModel extends WObject {
 	/**
 	 * Set data at the given row and column.
 	 * 
-	 * This is a convience method, and is equivalent to:
+	 * This is a convience method, and is equivalent to: <code>
+   setData(index(row, column, parent), value, role);
+  </code>
 	 * <p>
 	 * Returns true if the operation was successful.
 	 * <p>
@@ -1042,7 +1043,7 @@ public abstract class WAbstractItemModel extends WObject {
 	 * data.
 	 * <p>
 	 * 
-	 * @see WModelIndex#internalPointer()
+	 * @see WModelIndex#getInternalPointer()
 	 */
 	protected WModelIndex createIndex(int row, int column, Object ptr) {
 		return new WModelIndex(row, column, this, ptr);

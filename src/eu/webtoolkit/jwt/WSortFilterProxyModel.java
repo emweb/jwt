@@ -1,14 +1,17 @@
 package eu.webtoolkit.jwt;
 
-import java.util.*;
-import java.util.regex.*;
-import java.io.*;
-import java.util.concurrent.locks.ReentrantLock;
-import javax.servlet.http.*;
-import eu.webtoolkit.jwt.*;
-import eu.webtoolkit.jwt.chart.*;
-import eu.webtoolkit.jwt.utils.*;
-import eu.webtoolkit.jwt.servlet.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.regex.Pattern;
+import eu.webtoolkit.jwt.utils.CollectionUtils;
+import eu.webtoolkit.jwt.utils.ObjectUtils;
+import eu.webtoolkit.jwt.utils.StringUtils;
 
 /**
  * A proxy model for Wt&apos;s item models that provides filtering and/or

@@ -1,14 +1,6 @@
 package eu.webtoolkit.jwt;
 
-import java.util.*;
-import java.util.regex.*;
-import java.io.*;
-import java.util.concurrent.locks.ReentrantLock;
-import javax.servlet.http.*;
-import eu.webtoolkit.jwt.*;
-import eu.webtoolkit.jwt.chart.*;
-import eu.webtoolkit.jwt.utils.*;
-import eu.webtoolkit.jwt.servlet.*;
+import java.util.EnumSet;
 
 /**
  * A horizontal or vertical slider control
@@ -413,8 +405,14 @@ public class WSlider extends WCompositeWidget {
 
 	static final int HANDLE_WIDTH = 17;
 	static final int HANDLE_HEIGHT = 21;
+	/**
+	 * Do not render ticks.
+	 */
 	public static final EnumSet<WSlider.TickPosition> NoTicks = EnumSet
 			.noneOf(WSlider.TickPosition.class);
+	/**
+	 * Render ticks on both sides.
+	 */
 	public static final EnumSet<WSlider.TickPosition> TicksBothSides = EnumSet
 			.of(WSlider.TickPosition.TicksAbove,
 					WSlider.TickPosition.TicksBelow);

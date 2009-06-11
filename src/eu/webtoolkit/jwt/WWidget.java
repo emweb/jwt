@@ -1,14 +1,12 @@
 package eu.webtoolkit.jwt;
 
-import java.util.*;
-import java.util.regex.*;
-import java.io.*;
-import java.util.concurrent.locks.ReentrantLock;
-import javax.servlet.http.*;
-import eu.webtoolkit.jwt.*;
-import eu.webtoolkit.jwt.chart.*;
-import eu.webtoolkit.jwt.utils.*;
-import eu.webtoolkit.jwt.servlet.*;
+import java.io.StringWriter;
+import java.io.Writer;
+import java.util.ArrayList;
+import java.util.EnumSet;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * A WWidget is the abstract base class for any Wt widget
@@ -51,7 +49,8 @@ public abstract class WWidget extends WObject {
 			s.destroy();
 		}
 		if (this.needRerender_) {
-			WApplication.instance().getSession().getRenderer().doneUpdate(this);
+			WApplication.getInstance().getSession().getRenderer().doneUpdate(
+					this);
 		}
 	}
 
@@ -76,7 +75,7 @@ public abstract class WWidget extends WObject {
 	 * This applies to CSS-based layout.
 	 * <p>
 	 * 
-	 * @see PositionScheme#PositionScheme
+	 * @see PositionScheme
 	 * @see WWidget#getPositionScheme()
 	 */
 	public abstract void setPositionScheme(PositionScheme scheme);
@@ -87,7 +86,7 @@ public abstract class WWidget extends WObject {
 	 * This applies to CSS-based layout.
 	 * <p>
 	 * 
-	 * @see PositionScheme#PositionScheme
+	 * @see PositionScheme
 	 * @see WWidget#setPositionScheme(PositionScheme scheme)
 	 */
 	public abstract PositionScheme getPositionScheme();
@@ -384,6 +383,8 @@ public abstract class WWidget extends WObject {
 	 * 
 	 * This applies to CSS-based layout.
 	 * <p>
+	 * 
+	 * @see WWidget#setMargin(WLength margin, EnumSet sides)
 	 */
 	public abstract WLength getMargin(Side side);
 
@@ -573,7 +574,14 @@ public abstract class WWidget extends WObject {
 	public abstract void setAttributeValue(String name, String value);
 
 	/**
-	 * Short hand for {@link WString#tr()}.
+	 * Returns an attribute value.
+	 * 
+	 * @see WWidget#setAttributeValue(String name, String value)
+	 */
+	public abstract String getAttributeValue(String name);
+
+	/**
+	 * Short hand for {@link WString#tr(String)}.
 	 * 
 	 * Create a message with the given key.
 	 */
@@ -663,7 +671,7 @@ public abstract class WWidget extends WObject {
 	 */
 	public void htmlText(Writer out) {
 		DomElement element = this.getWebWidget().createSDomElement(
-				WApplication.instance());
+				WApplication.getInstance());
 		List<DomElement.TimeoutEvent> timeouts = new ArrayList<DomElement.TimeoutEvent>();
 		EscapeOStream sout = new EscapeOStream(out);
 		element.asHTML(sout, timeouts);
@@ -693,7 +701,7 @@ public abstract class WWidget extends WObject {
 
 	public String createJavaScript(StringWriter js, String insertJS) {
 		DomElement de = this.getWebWidget().createSDomElement(
-				WApplication.instance());
+				WApplication.getInstance());
 		String var = de.asJavaScript(js, true);
 		if (insertJS.length() != 0) {
 			js.append(insertJS).append(var).append(");");
@@ -762,7 +770,7 @@ public abstract class WWidget extends WObject {
 	}
 
 	protected void getDrop(String sourceId, String mimeType, WMouseEvent event) {
-		WDropEvent e = new WDropEvent(WApplication.instance().decodeObject(
+		WDropEvent e = new WDropEvent(WApplication.getInstance().decodeObject(
 				sourceId), mimeType, event);
 		this.dropEvent(e);
 	}
@@ -831,15 +839,16 @@ public abstract class WWidget extends WObject {
 	protected void renderOk() {
 		if (this.needRerender_) {
 			this.needRerender_ = false;
-			WApplication.instance().getSession().getRenderer().doneUpdate(this);
+			WApplication.getInstance().getSession().getRenderer().doneUpdate(
+					this);
 		}
 	}
 
 	protected void askRerender(boolean laterOnly) {
 		if (!this.needRerender_) {
 			this.needRerender_ = true;
-			WApplication.instance().getSession().getRenderer().needUpdate(this,
-					laterOnly);
+			WApplication.getInstance().getSession().getRenderer().needUpdate(
+					this, laterOnly);
 		}
 	}
 

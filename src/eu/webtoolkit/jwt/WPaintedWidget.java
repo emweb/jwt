@@ -1,14 +1,9 @@
 package eu.webtoolkit.jwt;
 
-import java.util.*;
-import java.util.regex.*;
-import java.io.*;
-import java.util.concurrent.locks.ReentrantLock;
-import javax.servlet.http.*;
-import eu.webtoolkit.jwt.*;
-import eu.webtoolkit.jwt.chart.*;
-import eu.webtoolkit.jwt.utils.*;
-import eu.webtoolkit.jwt.servlet.*;
+import java.util.ArrayList;
+import java.util.EnumSet;
+import java.util.List;
+import eu.webtoolkit.jwt.utils.EnumUtils;
 
 /**
  * A widget that is painted using vector graphics.
@@ -69,8 +64,6 @@ import eu.webtoolkit.jwt.servlet.*;
  * {@link WPaintDevice}, you will need to use a {@link WPainter}. Repainting is
  * triggered by calling the {@link WPaintedWidget#update(EnumSet flags)} method.
  * <p>
- * Usage example:
- * <p>
  * <p>
  * <i><b>Note:</b>A WPaintedWidget requires that its size is specified in pixel
  * units using {@link WPaintedWidget#resize(WLength width, WLength height)}.</i>
@@ -108,8 +101,8 @@ public abstract class WPaintedWidget extends WInteractWidget {
 		this.sizeChanged_ = false;
 		this.repaintFlags_ = EnumSet.noneOf(PaintFlag.class);
 		this.areaImage_ = null;
-		if (WApplication.instance() != null) {
-			WEnvironment env = WApplication.instance().getEnvironment();
+		if (WApplication.getInstance() != null) {
+			WEnvironment env = WApplication.getInstance().getEnvironment();
 			if (env.getUserAgent().indexOf("Opera") != -1) {
 				this.preferredMethod_ = WPaintedWidget.Method.InlineSvgVml;
 			}
@@ -282,7 +275,7 @@ public abstract class WPaintedWidget extends WInteractWidget {
 	protected void updateDom(DomElement element, boolean all) {
 		if (all && this.areaImage_ != null) {
 			element.addChild(((WWebWidget) this.areaImage_)
-					.createDomElement(WApplication.instance()));
+					.createDomElement(WApplication.getInstance()));
 		}
 		super.updateDom(element, all);
 	}
@@ -356,7 +349,7 @@ public abstract class WPaintedWidget extends WInteractWidget {
 		if (this.painter_ != null) {
 			return false;
 		}
-		WEnvironment env = WApplication.instance().getEnvironment();
+		WEnvironment env = WApplication.getInstance().getEnvironment();
 		if (env.agentIsIE()) {
 			this.painter_ = new WWidgetVectorPainter(this,
 					VectorFormat.VmlFormat);
@@ -399,7 +392,7 @@ public abstract class WPaintedWidget extends WInteractWidget {
 
 	private void createAreaImage() {
 		if (!(this.areaImage_ != null)) {
-			this.areaImage_ = new WImage(WApplication.instance()
+			this.areaImage_ = new WImage(WApplication.getInstance()
 					.getOnePixelGifUrl());
 			this.areaImage_.setParent(this);
 			if (this.getPositionScheme() == PositionScheme.Static) {

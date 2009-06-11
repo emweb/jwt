@@ -1,20 +1,15 @@
 package eu.webtoolkit.jwt;
 
-import java.util.*;
-import java.util.regex.*;
-import java.io.*;
-import java.util.concurrent.locks.ReentrantLock;
-import javax.servlet.http.*;
-import eu.webtoolkit.jwt.*;
-import eu.webtoolkit.jwt.chart.*;
-import eu.webtoolkit.jwt.utils.*;
-import eu.webtoolkit.jwt.servlet.*;
 
 /**
  * A 2D affine transformation matrix.
  * 
  * 
- * The matrix is encoded using 6 parameters:
+ * The matrix is encoded using 6 parameters: <code>
+ m11  m12   0 <br> 
+ m21  m22   0 <br> 
+ dx   dy    1
+</code>
  * <p>
  * In this representation, {@link WTransform#getDx()} (=
  * {@link WTransform#getM31()}) and {@link WTransform#getDy()} (=
@@ -368,7 +363,7 @@ public class WTransform {
 					/ det, adj.getM22() / det, adj.getM31() / det, adj.getM32()
 					/ det);
 		} else {
-			WApplication.instance().log("error").append(
+			WApplication.getInstance().log("error").append(
 					"WTransform::inverted(): determinant == 0");
 			return this;
 		}
