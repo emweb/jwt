@@ -1,7 +1,9 @@
 package eu.webtoolkit.jwt;
 
 import java.io.IOException;
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.List;
 
 import eu.webtoolkit.jwt.Signal.Listener;
 
@@ -23,11 +25,18 @@ public abstract class AbstractEventSignal extends AbstractSignal {
 	 */
 	public static abstract class LearningListener {
 		abstract void trigger();
-		
+
 		abstract void undoTrigger();
 
 		void setJavaScript(String javaScript) {
 			this.javaScript = javaScript;
+
+			if (signals_ != null)
+				for (WeakReference<AbstractEventSignal> a : signals_) {
+					AbstractEventSignal s = a.get();
+					if (s != null)
+						s.ownerRepaint();
+				}
 		}
 
 		final String getJavaScript() {
@@ -41,6 +50,26 @@ public abstract class AbstractEventSignal extends AbstractSignal {
 		private String javaScript = null;
 
 		abstract SlotType getType();
+
+		void addSignal(AbstractEventSignal signal) {
+			if (signals_ == null)
+				signals_ = new ArrayList<WeakReference<AbstractEventSignal>>();
+
+			signals_.add(new WeakReference<AbstractEventSignal>(signal));
+		}
+
+		void removeSignal(AbstractEventSignal signal) {
+			if (signals_ != null) {
+				for (WeakReference<AbstractEventSignal> a : signals_) {
+					if (a.get() == signal) {
+						signals_.remove(a);
+						break;
+					}
+				}
+			}
+		}
+
+		private List<WeakReference<AbstractEventSignal>> signals_;
 	}
 
 	/**
@@ -181,6 +210,7 @@ public abstract class AbstractEventSignal extends AbstractSignal {
 			learningListeners = new ArrayList<LearningListener>();
 
 		learningListeners.add(listener);
+		listener.addSignal(this);
 
 		if (!(listener instanceof JavaScriptListener))
 			listenerAdded();
@@ -192,8 +222,10 @@ public abstract class AbstractEventSignal extends AbstractSignal {
 	 * @param listener a learning listener that was previously added
 	 */
 	public void removeListener(LearningListener listener) {
-		if (learningListeners.remove(listener))
+		if (learningListeners.remove(listener)) {
+			listener.removeSignal(this);
 			listenerRemoved();
+		}
 	}
 	
 	protected void listenerAdded() {

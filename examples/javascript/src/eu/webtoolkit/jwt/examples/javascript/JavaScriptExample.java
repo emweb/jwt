@@ -15,11 +15,11 @@ import eu.webtoolkit.jwt.WText;
 /**
  * An example showing how to interact custom JavaScript with Wt stuff
  */
-public class JavascriptExample extends WApplication {
+public class JavaScriptExample extends WApplication {
 	/**
 	 * Create the example application.
 	 */
-	public JavascriptExample(WEnvironment env) {
+	public JavaScriptExample(WEnvironment env) {
 		super(env);
 		setTitle("Javascript example");
 

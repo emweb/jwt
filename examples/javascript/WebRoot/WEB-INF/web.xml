@@ -3,14 +3,14 @@
 
 <web-app>
   <servlet>
-    <servlet-name>Javascript</servlet-name>
-    <display-name>JWt Javascript example</display-name>
-    <description>JWt Javascript example</description>
-    <servlet-class>eu.webtoolkit.jwt.examples.javascript.JavascriptMain</servlet-class>
+    <servlet-name>JavaScript</servlet-name>
+    <display-name>JWt JavaScript example</display-name>
+    <description>JWt JavaScript example</description>
+    <servlet-class>eu.webtoolkit.jwt.examples.javascript.JavaScriptMain</servlet-class>
   </servlet>
   <servlet-mapping>
-    <servlet-name>Javascript</servlet-name>
-    <url-pattern>/Javascript/*</url-pattern>
+    <servlet-name>JavaScript</servlet-name>
+    <url-pattern>/JavaScript/*</url-pattern>
   </servlet-mapping>
 </web-app>
 

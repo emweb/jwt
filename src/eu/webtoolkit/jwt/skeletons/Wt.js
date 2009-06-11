@@ -1158,8 +1158,7 @@ var emit = function(object, config) {
 
   pendingEvents[ei] = encodeEvent(userEvent, ei);
 
-  if (responsePending == null)
-    scheduleUpdate();
+  scheduleUpdate();
 };
 
 var addTimerEvent = function(timerid, msec, repeat) {
