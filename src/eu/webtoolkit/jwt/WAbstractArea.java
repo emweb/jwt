@@ -102,7 +102,6 @@ public class WAbstractArea extends WObject {
 	 * <p>
 	 * 
 	 * @see WAbstractArea#setRef(String ref)
-	 * @see WResource#generateUrl()
 	 */
 	public String getRef() {
 		if (this.anchor_ != null) {

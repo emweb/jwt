@@ -131,7 +131,20 @@ public class WChart2DRenderer {
 	 * Renders the chart.
 	 * 
 	 * This method renders the chart. The default implementation does the
-	 * following:
+	 * following: <code>
+    calcChartArea();           // sets chartArea_ <br> 
+    prepareAxes();             // provides logical dimensions to the axes <br> 
+   <br> 
+    renderBackground();        // render the background <br> 
+    renderAxes(Grid);          // render the grid <br> 
+    renderSeries();            // render the data series <br> 
+    \if cpp <br> 
+    renderAxes(Line | Labels); // render the axes (lines &amp; labels) <br> 
+    \elseif java <br> 
+    renderAxes(AxisProperty.Line, AxisProperty.Labels); // render the axes (lines &amp; labels) <br> 
+    \endif  <br> 
+    renderLegend();            // render legend and titles
+  </code>
 	 * <p>
 	 * You may want to reimplement this method to change the sequence of steps
 	 * for rendering the chart.
@@ -173,9 +186,9 @@ public class WChart2DRenderer {
 	 */
 	public WPointF map(double xValue, double yValue, Axis axis,
 			int currentXSegment, int currentYSegment) {
-		return new WPointF(this.chart_.axis(Axis.XAxis).map(xValue,
+		return new WPointF(this.chart_.getAxis(Axis.XAxis).map(xValue,
 				this.location_[Axis.YAxis.getValue()], currentXSegment),
-				this.chart_.axis(axis).map(yValue,
+				this.chart_.getAxis(axis).map(yValue,
 						this.location_[Axis.XAxis.getValue()], currentYSegment));
 	}
 
@@ -333,7 +346,7 @@ public class WChart2DRenderer {
 	 * segment.
 	 */
 	public WRectF chartSegmentArea(WAxis yAxis, int xSegment, int ySegment) {
-		WAxis xAxis = this.chart_.axis(Axis.XAxis);
+		WAxis xAxis = this.chart_.getAxis(Axis.XAxis);
 		WAxis.Segment xs = xAxis.segments_.get(xSegment);
 		WAxis.Segment ys = yAxis.segments_.get(ySegment);
 		double x1 = xs.renderStart
@@ -372,11 +385,11 @@ public class WChart2DRenderer {
 	 * to allow for reentrant rendering by multiple renderers ?).
 	 */
 	protected void prepareAxes() {
-		this.chart_.axis(Axis.XAxis).prepareRender(this);
-		this.chart_.axis(Axis.Y1Axis).prepareRender(this);
-		this.chart_.axis(Axis.Y2Axis).prepareRender(this);
-		if (this.chart_.axis(Axis.XAxis).getScale() == AxisScale.CategoryScale) {
-			switch (this.chart_.axis(Axis.XAxis).getLocation()) {
+		this.chart_.getAxis(Axis.XAxis).prepareRender(this);
+		this.chart_.getAxis(Axis.Y1Axis).prepareRender(this);
+		this.chart_.getAxis(Axis.Y2Axis).prepareRender(this);
+		if (this.chart_.getAxis(Axis.XAxis).getScale() == AxisScale.CategoryScale) {
+			switch (this.chart_.getAxis(Axis.XAxis).getLocation()) {
 			case MinimumValue:
 			case ZeroValue:
 				this.location_[Axis.XAxis.getValue()] = AxisLocation.MinimumValue;
@@ -385,14 +398,12 @@ public class WChart2DRenderer {
 				this.location_[Axis.XAxis.getValue()] = AxisLocation.MaximumValue;
 			}
 		}
-		WAxis xAxis = this.chart_.axis(Axis.XAxis);
-		WAxis yAxis = this.chart_.axis(Axis.YAxis);
-		AxisLocation xAxisLocation = this.location_[Axis.XAxis.getValue()];
-		AxisLocation yAxisLocation = this.location_[Axis.YAxis.getValue()];
+		WAxis xAxis = this.chart_.getAxis(Axis.XAxis);
+		WAxis yAxis = this.chart_.getAxis(Axis.YAxis);
 		for (int i = 0; i < 2; ++i) {
-			AxisLocation location = i == 0 ? xAxisLocation : yAxisLocation;
-			location = i == 0 ? xAxis.getLocation() : yAxis.getLocation();
+			WAxis axis = i == 0 ? xAxis : yAxis;
 			WAxis other = i == 0 ? yAxis : xAxis;
+			AxisLocation location = axis.getLocation();
 			if (location == AxisLocation.ZeroValue) {
 				if (other.segments_.get(0).renderMaximum < 0) {
 					location = AxisLocation.MaximumValue;
@@ -412,10 +423,11 @@ public class WChart2DRenderer {
 					}
 				}
 			}
+			this.location_[axis.getId().getValue()] = location;
 		}
-		if (this.chart_.axis(Axis.Y2Axis).isVisible()) {
+		if (this.chart_.getAxis(Axis.Y2Axis).isVisible()) {
 			if (!(this.location_[Axis.Y1Axis.getValue()] == AxisLocation.ZeroValue && this.chart_
-					.axis(Axis.XAxis).segments_.get(0).renderMinimum == 0)) {
+					.getAxis(Axis.XAxis).segments_.get(0).renderMinimum == 0)) {
 				this.location_[Axis.Y1Axis.getValue()] = AxisLocation.MinimumValue;
 			}
 			this.location_[Axis.Y2Axis.getValue()] = AxisLocation.MaximumValue;
@@ -438,11 +450,11 @@ public class WChart2DRenderer {
 	 * Renders one or more properties of the axes.
 	 */
 	protected void renderAxes(EnumSet<WChart2DRenderer.AxisProperty> properties) {
-		this.renderAxis(this.chart_.axis(Axis.XAxis), this.location_[0],
+		this.renderAxis(this.chart_.getAxis(Axis.XAxis), this.location_[0],
 				properties);
-		this.renderAxis(this.chart_.axis(Axis.Y1Axis), this.location_[1],
+		this.renderAxis(this.chart_.getAxis(Axis.Y1Axis), this.location_[1],
 				properties);
-		this.renderAxis(this.chart_.axis(Axis.Y2Axis), this.location_[2],
+		this.renderAxis(this.chart_.getAxis(Axis.Y2Axis), this.location_[2],
 				properties);
 	}
 
@@ -484,7 +496,7 @@ public class WChart2DRenderer {
 			final int lineHeight = 25;
 			int x = (int) (vertical ? this.chartArea_.getRight() : this.height_
 					- this.chartArea_.getTop()) + 20;
-			if (vertical && this.chart_.axis(Axis.Y2Axis).isVisible()) {
+			if (vertical && this.chart_.getAxis(Axis.Y2Axis).isVisible()) {
 				x += 40;
 			}
 			int y = (vertical ? (int) this.chartArea_.getCenter().getY()
@@ -544,11 +556,6 @@ public class WChart2DRenderer {
 	private WRectF chartArea_;
 	private WPainterPath tildeStartMarker_;
 	private WPainterPath tildeEndMarker_;
-	/**
-	 * The computed axis locations.
-	 * 
-	 * @see WChart2DRenderer#prepareAxes()
-	 */
 	protected AxisLocation[] location_ = new AxisLocation[3];
 
 	/**
@@ -883,7 +890,7 @@ public class WChart2DRenderer {
 							for (int row = 0; row < rows; ++row) {
 								double y = StringUtils.asNumber(model.getData(
 										row, series.get(g).getModelColumn()));
-								if (!myisnan(y)) {
+								if (!Double.isNaN(y)) {
 									stackedValuesInit.set(row, y);
 								}
 							}
@@ -923,13 +930,13 @@ public class WChart2DRenderer {
 				List<Double> stackedValues = new ArrayList<Double>();
 				if (doSeries || !scatterPlot && i != endSeries) {
 					for (int currentXSegment = 0; currentXSegment < this.chart_
-							.axis(Axis.XAxis).getSegmentCount(); ++currentXSegment) {
+							.getAxis(Axis.XAxis).getSegmentCount(); ++currentXSegment) {
 						for (int currentYSegment = 0; currentYSegment < this.chart_
-								.axis(series.get(i).getAxis())
+								.getAxis(series.get(i).getAxis())
 								.getSegmentCount(); ++currentYSegment) {
 							stackedValues = stackedValuesInit;
 							WRectF csa = this.chartSegmentArea(this.chart_
-									.axis(series.get(i).getAxis()),
+									.getAxis(series.get(i).getAxis()),
 									currentXSegment, currentYSegment);
 							iterator.setSegment(currentXSegment,
 									currentYSegment, csa);
@@ -959,7 +966,7 @@ public class WChart2DRenderer {
 								} else {
 									prevStack = stackedValues.get(row);
 									double nextStack = stackedValues.get(row);
-									if (!myisnan(y)) {
+									if (!Double.isNaN(y)) {
 										if (reverseStacked) {
 											nextStack -= y;
 										} else {
@@ -1005,8 +1012,4 @@ public class WChart2DRenderer {
 
 	static final int TICK_LENGTH = 5;
 	static final double CATEGORY_WIDTH = 0.8;
-
-	static boolean myisnan(double d) {
-		return !(d == d);
-	}
 }
