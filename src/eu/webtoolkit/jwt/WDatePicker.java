@@ -28,8 +28,6 @@ import eu.webtoolkit.jwt.servlet.*;
  * time, the date set may be read using {@link WDatePicker#getDate()}, or can be
  * changed using {@link WDatePicker#setDate(WDate date)}.
  * <p>
- * Usage example:
- * <p>
  * <div align="center"> <img src="/WDatePicker-1.png"
  * alt="Example of WDatePicker with visible calendar.">
  * <p>
@@ -229,7 +227,7 @@ public class WDatePicker extends WCompositeWidget {
 	private WCalendar calendar_;
 
 	private void createDefault(boolean i18n) {
-		WImage icon = new WImage(WApplication.resourcesUrl()
+		WImage icon = new WImage(WApplication.getResourcesUrl()
 				+ "calendar_edit.png");
 		WLineEdit lineEdit = new WLineEdit();
 		this.create(icon, lineEdit, i18n);
@@ -244,7 +242,7 @@ public class WDatePicker extends WCompositeWidget {
 		this.forEdit_ = forEdit;
 		this.format_ = "dd/MM/yyyy";
 		String CSS_RULES_NAME = "Wt::WDatePicker";
-		WApplication app = WApplication.instance();
+		WApplication app = WApplication.getInstance();
 		if (!app.getStyleSheet().isDefined(CSS_RULES_NAME)) {
 			app
 					.getStyleSheet()

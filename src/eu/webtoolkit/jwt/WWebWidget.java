@@ -50,7 +50,7 @@ public abstract class WWebWidget extends WWidget {
 	public void remove() {
 		this.flags_.set(BIT_BEING_DELETED);
 		if (this.flags_.get(BIT_FORM_OBJECT)) {
-			WApplication.instance().getSession().getRenderer()
+			WApplication.getInstance().getSession().getRenderer()
 					.updateFormObjects(this, false);
 		}
 		this.setParent((WWidget) null);
@@ -286,8 +286,8 @@ public abstract class WWebWidget extends WWidget {
 			this.flags_.clear(BIT_HIDDEN);
 		}
 		this.flags_.set(BIT_HIDDEN_CHANGED);
-		WApplication.instance().getSession().getRenderer().updateFormObjects(
-				this, true);
+		WApplication.getInstance().getSession().getRenderer()
+				.updateFormObjects(this, true);
 		this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyAttribute));
 	}
 
@@ -356,7 +356,7 @@ public abstract class WWebWidget extends WWidget {
 	public void setVerticalAlignment(AlignmentFlag alignment, WLength length) {
 		if (!EnumUtils.mask(AlignmentFlag.AlignHorizontalMask, alignment)
 				.isEmpty()) {
-			WApplication.instance().log("warning").append(
+			WApplication.getInstance().log("warning").append(
 					"WWebWidget::setVerticalAlignment(): alignment (").append(
 					alignment.toString()).append(
 					") is horizontal, expected vertical");
@@ -434,6 +434,16 @@ public abstract class WWebWidget extends WWidget {
 		this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyAttribute));
 	}
 
+	public String getAttributeValue(String name) {
+		if (this.otherImpl_ != null) {
+			String i = this.otherImpl_.attributes_.get(name);
+			if (i != null) {
+				return i;
+			}
+		}
+		return "";
+	}
+
 	public void load() {
 		this.flags_.set(BIT_LOADED);
 		if (this.children_ != null) {
@@ -502,7 +512,7 @@ public abstract class WWebWidget extends WWidget {
 				stub.setProperty(Property.PropertyStyleTop, "-10000px");
 				stub.setProperty(Property.PropertyStyleVisibility, "hidden");
 			}
-			if (WApplication.instance().getEnvironment().hasJavaScript()) {
+			if (WApplication.getInstance().getEnvironment().hasJavaScript()) {
 				stub.setProperty(Property.PropertyInnerHTML, "...");
 			}
 			if (!app.getEnvironment().agentIsSpiderBot()
@@ -617,17 +627,17 @@ public abstract class WWebWidget extends WWidget {
 	}
 
 	public static String fixRelativeUrl(String url) {
-		return WApplication.instance().fixRelativeUrl(url);
+		return WApplication.getInstance().fixRelativeUrl(url);
 	}
 
 	public void setFormObject(boolean how) {
 		this.flags_.set(BIT_FORM_OBJECT, how);
-		WApplication.instance().getSession().getRenderer().updateFormObjects(
-				this, false);
+		WApplication.getInstance().getSession().getRenderer()
+				.updateFormObjects(this, false);
 	}
 
 	public static boolean canOptimizeUpdates() {
-		return !WApplication.instance().getSession().getRenderer()
+		return !WApplication.getInstance().getSession().getRenderer()
 				.isPreLearning();
 	}
 
@@ -738,7 +748,7 @@ public abstract class WWebWidget extends WWidget {
 				if (this.layoutImpl_.zIndex_ > 0) {
 					element.setProperty(Property.PropertyStyleZIndex, String
 							.valueOf(this.layoutImpl_.zIndex_));
-					WApplication app = WApplication.instance();
+					WApplication app = WApplication.getInstance();
 					if (all
 							&& app.getEnvironment().getAgent() == WEnvironment.UserAgent.IE6
 							&& element.getType() == DomElementType.DomElement_DIV) {
@@ -1063,7 +1073,7 @@ public abstract class WWebWidget extends WWidget {
 	protected void addChild(WWidget child) {
 		if (child.getParent() != null) {
 			child.setParent((WWidget) null);
-			WApplication.instance().log("warn").append(
+			WApplication.getInstance().log("warn").append(
 					"WWebWidget::addChild(): reparenting child");
 		}
 		if (!(this.children_ != null)) {
@@ -1078,8 +1088,8 @@ public abstract class WWebWidget extends WWidget {
 		if (this.flags_.get(BIT_LOADED)) {
 			this.doLoad(child);
 		}
-		WApplication.instance().getSession().getRenderer().updateFormObjects(
-				this, false);
+		WApplication.getInstance().getSession().getRenderer()
+				.updateFormObjects(this, false);
 	}
 
 	protected void removeChild(WWidget w) {
@@ -1102,8 +1112,8 @@ public abstract class WWebWidget extends WWidget {
 			w.getWebWidget().quickPropagateRenderOk();
 		}
 		this.children_.remove(0 + i);
-		WApplication.instance().getSession().getRenderer().updateFormObjects(
-				w.getWebWidget(), true);
+		WApplication.getInstance().getSession().getRenderer()
+				.updateFormObjects(w.getWebWidget(), true);
 	}
 
 	protected void setHideWithOffsets(boolean how) {
@@ -1313,7 +1323,7 @@ public abstract class WWebWidget extends WWidget {
 	protected boolean needsToBeRendered() {
 		return this.flags_.get(BIT_DONOT_STUB)
 				|| !this.flags_.get(BIT_HIDDEN)
-				|| !WApplication.instance().getSession().getRenderer()
+				|| !WApplication.getInstance().getSession().getRenderer()
 						.isVisibleOnly();
 	}
 

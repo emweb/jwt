@@ -71,6 +71,15 @@ import eu.webtoolkit.jwt.servlet.*;
  * For example, the following CSS stylesheet styles a tree for which the root
  * has style class &quot;mytree&quot;:
  * <p>
+ * <code>
+mytree * .treenodelabel { <br> 
+  font-size: smaller; <br> 
+} <br> 
+mytree * .treenodechildcount { <br> 
+  font-size: smaller; <br> 
+  color: blue; <br> 
+}
+</code>
  * <p>
  * The tree node uses an image-pack, which is a collection of images to render
  * the expand/collapse icons and lines. Use
@@ -827,7 +836,7 @@ public class WTreeNode extends WCompositeWidget {
 		if (this.labelText_ != null) {
 			this.layout_.getElementAt(0, 1).addWidget(this.labelText_);
 		}
-		if (WApplication.instance().getEnvironment().agentIsIE()) {
+		if (WApplication.getInstance().getEnvironment().agentIsIE()) {
 			this.layout_.getElementAt(0, 0)
 					.resize(new WLength(1), WLength.Auto);
 		}

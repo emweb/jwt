@@ -7,7 +7,7 @@ import eu.webtoolkit.jwt.Signal.Listener;
 
 /**
  * Abstract base class for event signals.
- * 
+ * <p>
  * Event signals are signals that may be triggered from the browser. Listeners that are added
  * to this signal may be implemented in Java only or in JavaScript only or have both Java and
  * JavaScript implementations.
@@ -15,7 +15,7 @@ import eu.webtoolkit.jwt.Signal.Listener;
 public abstract class AbstractEventSignal extends AbstractSignal {
 	/**
 	 * An abstract base class for a listener with (learned) JavaScript behavior.
-	 * 
+	 * <p>
 	 * A learning listener may learn or be explicitly set its JavaScript behavior to avoid
 	 * server round-trips.
 	 * 
@@ -45,13 +45,13 @@ public abstract class AbstractEventSignal extends AbstractSignal {
 
 	/**
 	 * A listener whose JavaScript behavior is learned on its first invocation.
-	 * 
+	 * <p>
 	 * The JavaScript behavior is learned when invoked for the first time. In this way, the
 	 * visual effect of the event listener happens after a round-trip the first time it is
 	 * triggered, but for next invocations its behavior is cached in the browser as client-side
 	 * JavaScript.
 	 * 
-	 * @see AbstractEventSignal#addListener(LearningListener)
+	 * @see AbstractEventSignal#addListener(WObject, LearningListener)
 	 */
 	public static abstract class AutoLearnListener extends LearningListener implements Signal.Listener {
 		public final void undoTrigger() {
@@ -64,21 +64,21 @@ public abstract class AbstractEventSignal extends AbstractSignal {
 
 	/**
 	 * A listener whose JavaScript behavior is learned in advance.
-	 * 
+	 * <p>
 	 * The JavaScript behavior is learned by invoking {@link #trigger()} and monitoring its effect
 	 * on the widget tree. In this way, the visual effect of the event listener
 	 * happens immediately in response to an event, without requiring a server round-trip.
 	 * Yet, the listener is still run on the server as well, whenever the listener is triggered.
-	 * 
+	 * <p>
 	 * The {@link #undoTrigger()} method is called after learning and should undo the effect of
 	 * {@link #trigger()}.
 	 * 
-	 * @see AbstractEventSignal#addListener(LearningListener)
+	 * @see AbstractEventSignal#addListener(WObject, LearningListener)
 	 */
 	public static abstract class PreLearnListener extends LearningListener implements Signal.Listener {
 		/**
 		 * Undoes the signal trigger.
-		 * 
+		 * <p>
 		 * This method undoes the effect of {@link #trigger()}, and is used when the listener
 		 * was triggered for learning the JavaScript behavior.
 		 */
@@ -91,14 +91,14 @@ public abstract class AbstractEventSignal extends AbstractSignal {
 
 	/**
 	 * A JavaScript-only listener.
-	 * 
+	 * <p>
 	 * A listener whose behavior is entirely and solely defined using client-side JavaScript,
 	 * and which will not generate a request to the server.
-	 * 
+	 * <p>
 	 * This class provides functionality similar to {@link JSlot} (in fact, JSlot is implemented
 	 * using this listener).
 	 * 
-	 * @see AbstractEventSignal#addListener(LearningListener)
+	 * @see AbstractEventSignal#addListener(WObject, LearningListener)
 	 */
 	public static class JavaScriptListener extends LearningListener {
 
@@ -108,7 +108,7 @@ public abstract class AbstractEventSignal extends AbstractSignal {
 
 		/**
 		 * Creates a JavaScript listener with given JavaScript code.
-		 * 
+		 * <p>
 		 * @param javaScript JavaScript statements that implement the event listener.
 		 */
 		public JavaScriptListener(String javaScript) {
@@ -155,7 +155,7 @@ public abstract class AbstractEventSignal extends AbstractSignal {
 
 	/**
 	 * Adds a learning listener to this signal.
-	 * 
+	 * <p>
 	 * An owner object may be passed when the listener is implemented using an
 	 * anonymous inner class. In that case the owner object should be the
 	 * enclosing object of the listener object, and this is used to bind the
@@ -175,7 +175,6 @@ public abstract class AbstractEventSignal extends AbstractSignal {
 	 *            anonymous listener
 	 * @param listener
 	 *            the listener
-	 * @return a connection object that may be used to control the connection
 	 */
 	public void addListener(WObject listenerOwner, LearningListener listener) {
 		if (learningListeners == null)
@@ -201,11 +200,11 @@ public abstract class AbstractEventSignal extends AbstractSignal {
 		if ((flags_ & BIT_EXPOSED) != 0)
 			return;
 
-		WApplication.instance().addExposedSignal(this);
+		WApplication.getInstance().addExposedSignal(this);
 
 		flags_ |= BIT_NEEDS_AUTOLEARN;
 
-		if (WApplication.instance().isExposeSignals())
+		if (WApplication.getInstance().isExposeSignals())
 			flags_ |= BIT_EXPOSED;
 
 		ownerRepaint();
@@ -214,7 +213,7 @@ public abstract class AbstractEventSignal extends AbstractSignal {
 	protected void listenerRemoved() {
 		if (getListenerCount() == 0) {
 			if ((flags_ & BIT_NEEDS_AUTOLEARN) != 0) {
-				WApplication app = WApplication.instance();
+				WApplication app = WApplication.getInstance();
 				if (app != null) {
 					app.removeExposedSignal(this);
 					flags_ &= ~BIT_EXPOSED;
@@ -255,7 +254,7 @@ public abstract class AbstractEventSignal extends AbstractSignal {
 		return getListenerCount() > 0;
 	}
 
-	String getEncodeCmd() {
+	String encodeCmd() {
 		return String.format("s%x", id_);
 	}
 
@@ -285,7 +284,7 @@ public abstract class AbstractEventSignal extends AbstractSignal {
 
 	/**
 	 * Triggers the signal.
-	 * 
+	 * <p>
 	 * The {@link Listener#trigger()} method of all listeners added to this signal are triggered.
 	 */
 	public void trigger() {
@@ -369,7 +368,7 @@ public abstract class AbstractEventSignal extends AbstractSignal {
 
 	/**
 	 * Prevents the default action associated with this event.
-	 * 
+	 * <p>
 	 * This prevents both the default browser action associated with this event as well as the
 	 * event bubbling up or cascading its hierarchy.
 	 * 
@@ -401,7 +400,7 @@ public abstract class AbstractEventSignal extends AbstractSignal {
 		out.append(getJavaScript());
 
 		if (isExposedSignal()) {
-			WApplication app = WApplication.instance();
+			WApplication app = WApplication.getInstance();
 
 			out.append(app.getJavaScriptClass()).append(".emit('").append(getSender().getFormName());
 
@@ -437,7 +436,7 @@ public abstract class AbstractEventSignal extends AbstractSignal {
 
 	void destroy() {
 		if (isExposedSignal()) {
-			WApplication app = WApplication.instance();
+			WApplication app = WApplication.getInstance();
 			if (app != null) {
 				app.removeExposedSignal(this);
 			}

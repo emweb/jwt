@@ -187,6 +187,7 @@ public class RoundedWidget extends WCompositeWidget {
 		if (corners_.contains(Corner.TopLeft)) {
 			images_[0] = new CornerImage(backgroundColor_, surroundingColor_, radius_, null, CornerImage.Position.Top, CornerImage.Position.Left);
 			images_[0].setPositionScheme(PositionScheme.Absolute);
+			images_[0].setMargin(0);
 		} else
 			images_[0] = null;
 
@@ -198,6 +199,7 @@ public class RoundedWidget extends WCompositeWidget {
 		if (corners_.contains(Corner.BottomLeft)) {
 			images_[2] = new CornerImage(backgroundColor_, surroundingColor_, radius_, null, CornerImage.Position.Bottom, CornerImage.Position.Left);
 			images_[2].setPositionScheme(PositionScheme.Absolute);
+			images_[2].setMargin(0);
 		} else
 			images_[2] = null;
 

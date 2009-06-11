@@ -48,10 +48,6 @@ import eu.webtoolkit.jwt.servlet.*;
  * {@link WStandardItemModel#indexFromItem(WStandardItem item)} models to
  * translate between model indexes (that are used by the view class) and
  * standard items.
- * <p>
- * Usage example for tabular data:
- * <p>
- * Usage example for tree-like data:
  */
 public class WStandardItemModel extends WAbstractItemModel {
 	/**
@@ -162,7 +158,9 @@ public class WStandardItemModel extends WAbstractItemModel {
 	 * Appends a single column of top level <i>items</i>. If necessary, the row
 	 * count is increased.
 	 * <p>
-	 * Equivalent to:
+	 * Equivalent to: <code>
+   insertColumn(columnCount(), items);
+  </code>
 	 * <p>
 	 * 
 	 * @see WStandardItemModel#insertColumn(int column, List items)
@@ -178,7 +176,9 @@ public class WStandardItemModel extends WAbstractItemModel {
 	 * Inserts a single column of top level <i>items</i> at column
 	 * <i>column</i>. If necessary, the row count is increased.
 	 * <p>
-	 * Equivalent to:
+	 * Equivalent to: <code>
+   invisibleRootItem()-&gt;insertColumn(column, items);
+  </code>
 	 * <p>
 	 * 
 	 * @see WStandardItem#insertColumn(int column, List items)
@@ -193,7 +193,9 @@ public class WStandardItemModel extends WAbstractItemModel {
 	 * Appends a single row of top level <i>items</i>. If necessary, the column
 	 * count is increased.
 	 * <p>
-	 * Equivalent to:
+	 * Equivalent to: <code>
+   insertRow(rowCount(), items);
+  </code>
 	 * <p>
 	 * 
 	 * @see WStandardItemModel#insertRow(int row, List items)
@@ -209,7 +211,9 @@ public class WStandardItemModel extends WAbstractItemModel {
 	 * Inserts a single row of top level <i>items</i> at row <i>row</i>. If
 	 * necessary, the column count is increased.
 	 * <p>
-	 * Equivalent to:
+	 * Equivalent to: <code>
+   invisibleRootItem()-&gt;insertRow(row, items);
+  </code>
 	 * <p>
 	 * 
 	 * @see WStandardItem#insertRow(int row, List items)
@@ -223,7 +227,9 @@ public class WStandardItemModel extends WAbstractItemModel {
 	 * 
 	 * Appends a single toplevel row, with a single item.
 	 * <p>
-	 * Equivalent to:
+	 * Equivalent to: <code>
+   insertRow(rowCount(), item);
+  </code>
 	 * <p>
 	 */
 	public void appendRow(WStandardItem item) {
@@ -235,7 +241,9 @@ public class WStandardItemModel extends WAbstractItemModel {
 	 * 
 	 * Inserts a single toplevel row, with a single item.
 	 * <p>
-	 * Equivalent to:
+	 * Equivalent to: <code>
+   invisibleRootItem()-&gt;insertRow(row, item);
+  </code>
 	 * <p>
 	 * 
 	 * @see WStandardItem#insertRow(int row, WStandardItem item)
@@ -251,7 +259,9 @@ public class WStandardItemModel extends WAbstractItemModel {
 	 * no item was set previously at that position, or if the indicated position
 	 * is out of bounds.
 	 * <p>
-	 * Equivalent to:
+	 * Equivalent to: <code>
+   invisibleRootItem()-&gt;child(row, column);
+  </code>
 	 * <p>
 	 * 
 	 * @see WStandardItem#getChild(int row, int column)
@@ -272,8 +282,12 @@ public class WStandardItemModel extends WAbstractItemModel {
 	 * <p>
 	 * If an item was previously set for that position, it is deleted first.
 	 * <p>
-	 * Equivalent to:
+	 * Equivalent to: <code>
+   invisibleRootItem()-&gt;setChild(row, column, item);
+  </code>
 	 * <p>
+	 * 
+	 * @see WStandardItem#setChild(int row, int column, WStandardItem item)
 	 */
 	public void setItem(int row, int column, WStandardItem item) {
 		this.invisibleRootItem_.setChild(row, column, item);
@@ -315,11 +329,13 @@ public class WStandardItemModel extends WAbstractItemModel {
 	 * Removes a column from the model, and returns the items that it contained.
 	 * Ownership of the items is transferred out of the model.
 	 * <p>
-	 * Equivalent to:
+	 * Equivalent to: <code>
+   invisibleRootItem()-&gt;takeColumn(column);
+  </code>
 	 * <p>
 	 * 
 	 * @see WStandardItem#takeColumn(int column)
-	 * @see WStandardItemModel#takeRow(int row)
+	 * @see WStandardItem#takeRow(int row)
 	 */
 	public List<WStandardItem> takeColumn(int column) {
 		return this.invisibleRootItem_.takeColumn(column);
@@ -331,7 +347,9 @@ public class WStandardItemModel extends WAbstractItemModel {
 	 * Removes a row from the model, and returns the items that it contained.
 	 * Ownership of the items is transferred out of the model.
 	 * <p>
-	 * Equivalent to:
+	 * Equivalent to: <code>
+   invisibleRootItem()-&gt;takeRow(row);
+  </code>
 	 * <p>
 	 * 
 	 * @see WStandardItem#takeRow(int row)
@@ -347,11 +365,14 @@ public class WStandardItemModel extends WAbstractItemModel {
 	 * Removes an item from the model, and returns it. Ownership of the item is
 	 * transferred out of the model.
 	 * <p>
-	 * Equivalent to:
+	 * Equivalent to: <code>
+   invisibleRootItem()-&gt;takeItem(row, column);
+  </code>
 	 * <p>
 	 * 
-	 * @see WStandardItemModel#takeRow(int row)
-	 * @see WStandardItemModel#takeColumn(int column)
+	 * @see WStandardItemModel#takeItem(int row, int column)
+	 * @see WStandardItem#takeRow(int row)
+	 * @see WStandardItem#takeColumn(int column)
 	 */
 	public WStandardItem takeItem(int row, int column) {
 		return this.invisibleRootItem_.takeChild(row, column);

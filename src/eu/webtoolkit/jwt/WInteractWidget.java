@@ -253,7 +253,7 @@ public abstract class WInteractWidget extends WWebWidget {
 		if (isDragWidgetOnly) {
 			dragWidget.hide();
 		}
-		WApplication app = WApplication.instance();
+		WApplication app = WApplication.getInstance();
 		this.setAttributeValue("dmt", mimeType);
 		this.setAttributeValue("dwid", dragWidget.getFormName());
 		this.setAttributeValue("dsid", app.encodeObject(sourceObject));
@@ -300,7 +300,8 @@ public abstract class WInteractWidget extends WWebWidget {
 			if (enterPress != null) {
 				if (enterPress.isConnected()) {
 					String extraJS = "";
-					WEnvironment env = WApplication.instance().getEnvironment();
+					WEnvironment env = WApplication.getInstance()
+							.getEnvironment();
 					if (((this) instanceof WFormWidget ? (WFormWidget) (this)
 							: null) != null
 							&& !env.agentIsOpera() && !env.agentIsIE()) {
@@ -309,7 +310,7 @@ public abstract class WInteractWidget extends WWebWidget {
 					actions.add(new DomElement.EventAction(
 							"(e.keyCode && e.keyCode == 13)", enterPress
 									.getJavaScript()
-									+ extraJS, enterPress.getEncodeCmd(),
+									+ extraJS, enterPress.encodeCmd(),
 							enterPress.isExposedSignal()));
 				}
 				enterPress.updateOk();
@@ -318,16 +319,15 @@ public abstract class WInteractWidget extends WWebWidget {
 				if (escapePress.isConnected()) {
 					actions.add(new DomElement.EventAction(
 							"(e.keyCode && e.keyCode == 27)", escapePress
-									.getJavaScript(), escapePress
-									.getEncodeCmd(), escapePress
-									.isExposedSignal()));
+									.getJavaScript(), escapePress.encodeCmd(),
+							escapePress.isExposedSignal()));
 				}
 				escapePress.updateOk();
 			}
 			if (keyDown != null) {
 				if (keyDown.isConnected()) {
 					actions.add(new DomElement.EventAction("", keyDown
-							.getJavaScript(), keyDown.getEncodeCmd(), keyDown
+							.getJavaScript(), keyDown.encodeCmd(), keyDown
 							.isExposedSignal()));
 				}
 				keyDown.updateOk();

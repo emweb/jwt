@@ -76,7 +76,7 @@ public class WString implements Comparable<WString>, CharSequence {
 		String result = value;
 
 		if (key != null)
-			result = WApplication.instance().getLocalizedStrings().resolveKey(key);
+			result = WApplication.getInstance().getLocalizedStrings().resolveKey(key);
 
 		if (arguments != null) {
 			for (int i = 0; i < arguments.size(); ++i) {
@@ -159,7 +159,7 @@ public class WString implements Comparable<WString>, CharSequence {
 
 	private void makeLiteral() {
 		if (key != null) {
-			value = WApplication.instance().getLocalizedStrings().resolveKey(key);
+			value = WApplication.getInstance().getLocalizedStrings().resolveKey(key);
 			key = null;
 		}
 	}

@@ -55,13 +55,7 @@ public class WMouseEvent implements WAbstractEvent {
 	 * A mouse coordinate
 	 */
 	public static class Coordinates {
-		/**
-		 * X coordinate.
-		 */
 		public int x;
-		/**
-		 * Y coordinate.
-		 */
 		public int y;
 
 		public Coordinates(int x_, int y_) {
@@ -81,8 +75,8 @@ public class WMouseEvent implements WAbstractEvent {
 	/**
 	 * Returns keyboard modifiers.
 	 * 
-	 * The result is a logical OR of {@link KeyboardModifier#KeyboardModifier
-	 * KeyboardModifier} flags.
+	 * The result is a logical OR of {@link KeyboardModifier KeyboardModifier}
+	 * flags.
 	 */
 	public EnumSet<KeyboardModifier> getModifiers() {
 		return this.jsEvent_.modifiers;
@@ -190,7 +184,7 @@ public class WMouseEvent implements WAbstractEvent {
 			try {
 				return Integer.parseInt(p);
 			} catch (NumberFormatException ee) {
-				WApplication.instance().log("error").append(
+				WApplication.getInstance().log("error").append(
 						"Could not cast event property '").append(name).append(
 						": ").append(p).append("' to int");
 				return ifMissing;

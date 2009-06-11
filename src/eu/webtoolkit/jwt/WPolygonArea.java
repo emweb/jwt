@@ -19,7 +19,6 @@ import eu.webtoolkit.jwt.servlet.*;
  * specified in pixel coordinates, and uses an even-odd winding rule (overlaps
  * create holes).
  * <p>
- * <p>
  * The polygon area corresponds to the HTML
  * <code>&lt;area shape=&quot;poly&quot;&gt;</code> tag.
  * <p>

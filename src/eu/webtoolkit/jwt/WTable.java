@@ -36,8 +36,6 @@ import eu.webtoolkit.jwt.servlet.*;
  * <p>
  * WComboBox is a {@link WWidget#setInline(boolean inlined) stacked} widget.
  * <p>
- * Usage example:
- * <p>
  * 
  * @see WTableCell
  * @see WTableRow

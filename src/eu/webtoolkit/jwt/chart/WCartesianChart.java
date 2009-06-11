@@ -44,7 +44,7 @@ import eu.webtoolkit.jwt.servlet.*;
  * numerical scale. The scale for the X axis defaults to a
  * {@link AxisScale#LinearScale LinearScale}, but this may be changed to a
  * {@link AxisScale#DateScale DateScale} when the X series contains dates (of
- * type {@link WDate}) to create a time series chart, or to a
+ * type {@link eu.webtoolkit.jwt.WDate}) to create a time series chart, or to a
  * {@link AxisScale#LogScale LogScale}. A ScatterPlot supports the same types of
  * data series as a CategoryChart, but does not support stacking.
  * <p>
@@ -56,7 +56,6 @@ import eu.webtoolkit.jwt.servlet.*;
  * </div> The cartesian chart has support for dual Y axes. Each data series may
  * be bound to one of the two Y axes. By default, only the first Y axis is
  * displayed. To show the second Y axis you will need to call:
- * <p>
  * <p>
  * By default a chart has a horizontal X axis and a vertical Y axis, which
  * corresponds to a {@link Orientation#Vertical Vertical} orientation. The
@@ -126,7 +125,7 @@ public class WCartesianChart extends WAbstractChart {
 	 * 
 	 * @see WCartesianChart#getType()
 	 * @see WAxis#setScale(AxisScale scale)
-	 * @see WCartesianChart#axis(Axis axis)
+	 * @see WCartesianChart#getAxis(Axis axis)
 	 */
 	public void setType(ChartType type) {
 		if (this.type_ != type) {
@@ -230,7 +229,7 @@ public class WCartesianChart extends WAbstractChart {
 	 * @see WCartesianChart#setSeries(List series)
 	 */
 	public void removeSeries(int modelColumn) {
-		int index = this.seriesIndexOf(modelColumn);
+		int index = this.getSeriesIndexOf(modelColumn);
 		if (index != -1) {
 			this.series_.remove(0 + index);
 			this.update();
@@ -255,7 +254,7 @@ public class WCartesianChart extends WAbstractChart {
 		this.update();
 	}
 
-	public int seriesIndexOf(int modelColumn) {
+	public int getSeriesIndexOf(int modelColumn) {
 		for (int i = 0; i < this.series_.size(); ++i) {
 			if (this.series_.get(i).getModelColumn() == modelColumn) {
 				return i;
@@ -271,7 +270,7 @@ public class WCartesianChart extends WAbstractChart {
 	 * <i>modelColumn</i>.
 	 */
 	public WDataSeries getSeries(int modelColumn) {
-		int index = this.seriesIndexOf(modelColumn);
+		int index = this.getSeriesIndexOf(modelColumn);
 		if (index != -1) {
 			return this.series_.get(index);
 		}
@@ -296,7 +295,7 @@ public class WCartesianChart extends WAbstractChart {
 	 * 
 	 * Returns a reference to the specified <i>axis</i>.
 	 */
-	public WAxis axis(Axis axis) {
+	public WAxis getAxis(Axis axis) {
 		return this.axes_[axis.getValue()];
 	}
 
@@ -370,7 +369,7 @@ public class WCartesianChart extends WAbstractChart {
 					"WCartesianChart::paint(): painter is not active.");
 		}
 		WRectF rect = rectangle;
-		if (rect.isNull()) {
+		if (rect.isEmpty()) {
 			rect = painter.getWindow();
 		}
 		WChart2DRenderer renderer = this.createRenderer(painter, rect);

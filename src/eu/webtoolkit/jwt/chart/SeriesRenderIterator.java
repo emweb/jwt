@@ -20,7 +20,7 @@ class SeriesRenderIterator extends SeriesIterator {
 	public void setSegment(int currentXSegment, int currentYSegment,
 			WRectF currentSegmentArea) {
 		super.setSegment(currentXSegment, currentYSegment, currentSegmentArea);
-		WAxis yAxis = this.renderer_.getChart().axis(this.series_.getAxis());
+		WAxis yAxis = this.renderer_.getChart().getAxis(this.series_.getAxis());
 		if (currentYSegment == 0) {
 			this.maxY_ = Double.MAX_VALUE;
 		} else {
@@ -53,12 +53,13 @@ class SeriesRenderIterator extends SeriesIterator {
 	}
 
 	public void endSeries() {
+		this.seriesRenderer_.paint();
 		/* delete this.seriesRenderer_ */;
 		this.series_ = null;
 	}
 
 	public void newValue(WDataSeries series, double x, double y, double stackY) {
-		if (myisnan(x) || myisnan(y)) {
+		if (Double.isNaN(x) || Double.isNaN(y)) {
 			this.seriesRenderer_.paint();
 		} else {
 			this.seriesRenderer_.addValue(x, y, stackY);

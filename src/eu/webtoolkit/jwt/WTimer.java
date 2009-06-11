@@ -30,8 +30,6 @@ import eu.webtoolkit.jwt.servlet.*;
  * In clients without (enabled) JavaScript support, the minimum resolution of
  * the timer is one second (1000 milli-seconds), and it is probably wise to use
  * timers sparingly.
- * <p>
- * Usage example:
  */
 public class WTimer extends WObject {
 	/**
@@ -111,7 +109,7 @@ public class WTimer extends WObject {
 	 */
 	public void start() {
 		if (!this.active_) {
-			WApplication app = WApplication.instance();
+			WApplication app = WApplication.getInstance();
 			if (app != null && app.getDomRoot() != null) {
 				app.getTimerRoot().addWidget(this.timerWidget_);
 			}
@@ -143,7 +141,7 @@ public class WTimer extends WObject {
 	 */
 	public void stop() {
 		if (this.active_) {
-			WApplication app = WApplication.instance();
+			WApplication app = WApplication.getInstance();
 			if (app != null && app.getDomRoot() != null) {
 				app.getTimerRoot().removeWidget(this.timerWidget_);
 			}

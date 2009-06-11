@@ -58,8 +58,6 @@ import eu.webtoolkit.jwt.servlet.*;
  * <p>
  * You may also react to mouse click events on any item, by connecting to one of
  * the {@link WTreeView#clicked()} or {@link WTreeView#doubleClicked()} signals.
- * <p>
- * Usage example:
  */
 public class WTreeView extends WCompositeWidget {
 	/**
@@ -117,7 +115,7 @@ public class WTreeView extends WCompositeWidget {
 		this.dropsEnabled_ = false;
 		this.setImplementation(this.impl_ = new WContainerWidget());
 		this.renderState_ = WTreeView.RenderState.NeedRerender;
-		WApplication app = WApplication.instance();
+		WApplication app = WApplication.getInstance();
 		this.clickedForSortMapper_ = new WSignalMapper1<Integer>(this);
 		this.clickedForSortMapper_.mapped().addListener(this,
 				new Signal1.Listener<Integer>() {
@@ -146,7 +144,7 @@ public class WTreeView extends WCompositeWidget {
 							}
 						});
 		this.setStyleClass("Wt-treeview");
-		this.imagePack_ = WApplication.resourcesUrl();
+		this.imagePack_ = WApplication.getResourcesUrl();
 		String CSS_RULES_NAME = "Wt::WTreeView";
 		if (!app.getStyleSheet().isDefined(CSS_RULES_NAME)) {
 			app
@@ -599,7 +597,7 @@ public class WTreeView extends WCompositeWidget {
 				.getValue()) {
 			return;
 		}
-		if (!WApplication.instance().getEnvironment().agentIsIE()) {
+		if (!WApplication.getInstance().getEnvironment().agentIsIE()) {
 			for (int i = 1; i < this.getColumnCount(); ++i) {
 				this.headerTextWidget(i).setWordWrap(multiLine);
 			}
@@ -661,7 +659,7 @@ public class WTreeView extends WCompositeWidget {
 	 * Sets the column format string (<b>deprecated</b>).
 	 * 
 	 * The DisplayRole data for that column is converted to a string using
-	 * {@link StringUtils::asString(Object)}, with the given format.
+	 * {@link StringUtils#asString(Object)}, with the given format.
 	 * <p>
 	 * The default value is &quot;&quot;.
 	 * <p>
@@ -728,13 +726,13 @@ public class WTreeView extends WCompositeWidget {
 		} else {
 			if (this.column1Fixed_) {
 				this.c0WidthRule_.getTemplateWidget().resize(
-						new WLength(width.getToPixels()), WLength.Auto);
+						new WLength(width.toPixels()), WLength.Auto);
 			}
 		}
 		if (!this.column1Fixed_ && !this.columnInfo(0).width.isAuto()) {
 			double total = 0;
 			for (int i = 0; i < this.getColumnCount(); ++i) {
-				total += this.columnInfo(i).width.getToPixels() + 7;
+				total += this.columnInfo(i).width.toPixels() + 7;
 			}
 			this.headers_.resize(new WLength(total), this.headers_.getHeight());
 			WContainerWidget wrapRoot = ((this.contents_.getWidget(0)) instanceof WContainerWidget ? (WContainerWidget) (this.contents_
@@ -847,7 +845,8 @@ public class WTreeView extends WCompositeWidget {
 		this.borderColorRule_ = new WCssTextRule(
 				".Wt-treeview .Wt-tv-row .Wt-tv-c, .Wt-treeview .header .Wt-tv-row, .Wt-treeview .Wt-tv-node .Wt-tv-row",
 				"border-color: " + color.getCssText());
-		WApplication.instance().getStyleSheet().addRule(this.borderColorRule_);
+		WApplication.getInstance().getStyleSheet().addRule(
+				this.borderColorRule_);
 	}
 
 	/**
@@ -1220,7 +1219,9 @@ public class WTreeView extends WCompositeWidget {
 	/**
 	 * Returns wheter an item is selected.
 	 * 
-	 * This is a convenience method for:
+	 * This is a convenience method for: <code>
+   selectionModel()-&gt;isSelected(index)
+  </code>
 	 * <p>
 	 * 
 	 * @see WTreeView#getSelectedIndexes()
@@ -1237,7 +1238,9 @@ public class WTreeView extends WCompositeWidget {
 	 * The model indexes are returned as a set, topologically ordered (in the
 	 * order they appear in the view).
 	 * <p>
-	 * This is a convenience method for:
+	 * This is a convenience method for: <code>
+   selectionModel()-&gt;selectedIndexes()
+  </code>
 	 * <p>
 	 * 
 	 * @see WTreeView#setSelectedIndexes(SortedSet indexes)
@@ -1336,7 +1339,7 @@ public class WTreeView extends WCompositeWidget {
 			scrollBarC.scrolled().addListener(this.tieRowsScrollJS_);
 			WContainerWidget scrollBar = new WContainerWidget(scrollBarC);
 			scrollBar.setStyleClass("Wt-tv-rowc");
-			WApplication app = WApplication.instance();
+			WApplication app = WApplication.getInstance();
 			if (app.getEnvironment().agentIsWebKit()
 					|| app.getEnvironment().agentIsOpera()) {
 				scrollBar.setAttributeValue("style", "left: 0px;");
@@ -1347,11 +1350,11 @@ public class WTreeView extends WCompositeWidget {
 
 	public void resize(WLength width, WLength height) {
 		if (!height.isAuto()) {
-			this.viewportHeight_ = (int) Math.ceil(height.getToPixels()
-					/ this.rowHeight_.getToPixels());
+			this.viewportHeight_ = (int) Math.ceil(height.toPixels()
+					/ this.rowHeight_.toPixels());
 			this.scheduleRerender(WTreeView.RenderState.NeedAdjustViewPort);
 		}
-		WLength w = WApplication.instance().getEnvironment().hasAjax() ? WLength.Auto
+		WLength w = WApplication.getInstance().getEnvironment().hasAjax() ? WLength.Auto
 				: width;
 		this.contentsContainer_.resize(w, WLength.Auto);
 		this.headerContainer_.resize(w, WLength.Auto);
@@ -1479,7 +1482,7 @@ public class WTreeView extends WCompositeWidget {
 	}
 
 	public void refresh() {
-		WApplication app = WApplication.instance();
+		WApplication app = WApplication.getInstance();
 		String columnsWidth = ""
 				+ "var WT=Wt2_99_2,t="
 				+ this.contents_.getJsRef()
@@ -1776,7 +1779,7 @@ public class WTreeView extends WCompositeWidget {
 			resizeHandle.mouseWentUp().addListener(this.resizeHandleMUpJS_);
 			resizeHandle.mouseMoved().addListener(this.resizeHandleMMovedJS_);
 		}
-		WApplication app = WApplication.instance();
+		WApplication app = WApplication.getInstance();
 		for (int i = 1; i < this.getColumnCount(); ++i) {
 			WWidget w = this.createHeaderWidget(app, i);
 			row.addWidget(w);
@@ -1828,7 +1831,7 @@ public class WTreeView extends WCompositeWidget {
 		this.rootNode_.resize(new WLength(100, WLength.Unit.Percentage),
 				new WLength(1));
 		this.rootNode_.setSelectable(false);
-		if (WApplication.instance().getEnvironment().hasAjax()) {
+		if (WApplication.getInstance().getEnvironment().hasAjax()) {
 			this.rootNode_.clicked().addListener(this.itemClickedJS_);
 			this.rootNode_.doubleClicked().addListener(
 					this.itemDoubleClickedJS_);
@@ -1857,7 +1860,7 @@ public class WTreeView extends WCompositeWidget {
 	private void modelColumnsInserted(WModelIndex parent, int start, int end) {
 		int count = end - start + 1;
 		if (!(parent != null)) {
-			WApplication app = WApplication.instance();
+			WApplication app = WApplication.getInstance();
 			for (int i = start; i < start + count; ++i) {
 				this.columns_.add(0 + i, new WTreeView.ColumnInfo(this, app,
 						++this.nextColumnId_, i));
@@ -2197,9 +2200,9 @@ public class WTreeView extends WCompositeWidget {
 
 	private void onViewportChange(WScrollEvent e) {
 		this.viewportTop_ = (int) Math.floor(e.getScrollY()
-				/ this.rowHeight_.getToPixels());
+				/ this.rowHeight_.toPixels());
 		this.viewportHeight_ = (int) Math.ceil(e.getViewportHeight()
-				/ this.rowHeight_.getToPixels());
+				/ this.rowHeight_.toPixels());
 		this.scheduleRerender(WTreeView.RenderState.NeedAdjustViewPort);
 	}
 
@@ -2256,8 +2259,9 @@ public class WTreeView extends WCompositeWidget {
 					this.mouseWentDown_.trigger(index, event);
 				} else {
 					if (type.equals("drop")) {
-						WDropEvent e = new WDropEvent(WApplication.instance()
-								.decodeObject(extra1), extra2, event);
+						WDropEvent e = new WDropEvent(WApplication
+								.getInstance().decodeObject(extra1), extra2,
+								event);
 						this.dropEvent(e, index);
 					}
 				}
@@ -2271,10 +2275,9 @@ public class WTreeView extends WCompositeWidget {
 		}
 		if (this.alternatingRowColors_) {
 			this.rootNode_.getDecorationStyle().setBackgroundImage(
-					this.imagePack_
-							+ "stripes/stripe-"
-							+ String.valueOf((int) this.rowHeight_
-									.getToPixels()) + "px.gif");
+					this.imagePack_ + "stripes/stripe-"
+							+ String.valueOf((int) this.rowHeight_.toPixels())
+							+ "px.gif");
 		} else {
 			this.rootNode_.getDecorationStyle().setBackgroundImage("");
 		}
@@ -2305,7 +2308,7 @@ public class WTreeView extends WCompositeWidget {
 	}
 
 	private int getCalcOptimalFirstRenderedRow() {
-		if (WApplication.instance().getEnvironment().hasAjax()) {
+		if (WApplication.getInstance().getEnvironment().hasAjax()) {
 			return Math.max(0, this.viewportTop_ - this.viewportHeight_
 					- this.viewportHeight_ / 2);
 		} else {
@@ -2314,7 +2317,7 @@ public class WTreeView extends WCompositeWidget {
 	}
 
 	private int getCalcOptimalRenderedRowCount() {
-		if (WApplication.instance().getEnvironment().hasAjax()) {
+		if (WApplication.getInstance().getEnvironment().hasAjax()) {
 			return 4 * this.viewportHeight_;
 		} else {
 			return this.rootNode_.getRenderedHeight();
@@ -2423,7 +2426,7 @@ public class WTreeView extends WCompositeWidget {
 		if (pruneFirst || this.nodeLoad_ > 5 * this.viewportHeight_) {
 			this.firstRenderedRow_ = this.getCalcOptimalFirstRenderedRow();
 			this.validRowCount_ = this.getCalcOptimalRenderedRowCount();
-			if (WApplication.instance().getEnvironment().hasAjax()) {
+			if (WApplication.getInstance().getEnvironment().hasAjax()) {
 				this.pruneNodes(this.rootNode_, 0);
 			}
 			if (pruneFirst
@@ -2516,17 +2519,10 @@ public class WTreeView extends WCompositeWidget {
 				.equals(this.rootIndex_)))) {
 			++theNodeRow;
 		}
-		int dummyNodeRow = theNodeRow;
-		Integer nodeRow;
-		if (!this.isExpanded(index)) {
-			if (node.isChildrenLoaded()) {
-				nodeRow = dummyNodeRow;
-			} else {
-				return theNodeRow;
-			}
-		} else {
-			nodeRow = theNodeRow;
+		if (!this.isExpanded(index) && !node.isChildrenLoaded()) {
+			return theNodeRow;
 		}
+		int nodeRow = theNodeRow;
 		if (node.isAllSpacer()) {
 			if (nodeRow + node.getChildrenHeight() > this.firstRenderedRow_
 					&& nodeRow < this.firstRenderedRow_ + this.validRowCount_) {
@@ -2611,7 +2607,7 @@ public class WTreeView extends WCompositeWidget {
 			}
 			nodeRow += nch;
 		}
-		return theNodeRow;
+		return this.isExpanded(index) ? nodeRow : theNodeRow;
 	}
 
 	private WWidget widgetForIndex(WModelIndex index) {
@@ -3041,7 +3037,7 @@ public class WTreeView extends WCompositeWidget {
 		}
 		if (this.dragEnabled_) {
 			this.setAttributeValue("dmt", this.model_.getMimeType());
-			this.setAttributeValue("dsid", WApplication.instance()
+			this.setAttributeValue("dsid", WApplication.getInstance()
 					.encodeObject(this.selectionModel_));
 			this.checkDragSelection();
 		}
@@ -3068,7 +3064,7 @@ public class WTreeView extends WCompositeWidget {
 	private WTreeView.ColumnInfo columnInfo(int column) {
 		while (column >= (int) this.columns_.size()) {
 			this.columns_.add(new WTreeView.ColumnInfo(this, WApplication
-					.instance(), ++this.nextColumnId_, column));
+					.getInstance(), ++this.nextColumnId_, column));
 		}
 		return this.columns_.get(column);
 	}

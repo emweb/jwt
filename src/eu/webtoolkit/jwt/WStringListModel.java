@@ -93,7 +93,7 @@ public class WStringListModel extends WAbstractListModel {
 	 * ItemIsSelectable} | {@link ItemFlag#ItemIsEditable ItemIsEditable}.
 	 * <p>
 	 * 
-	 * @see ItemFlag#ItemFlag
+	 * @see ItemFlag
 	 */
 	public EnumSet<ItemFlag> getFlags(WModelIndex index) {
 		return EnumSet.of(ItemFlag.ItemIsSelectable, ItemFlag.ItemIsEditable);

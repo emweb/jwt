@@ -43,7 +43,7 @@ class WWidgetVectorPainter extends WWidgetPainter {
 							+ "').firstChild", DomElementType.DomElement_DIV);
 			painter.setProperty(Property.PropertyAddedInnerHTML, vectorDevice
 					.getRendered());
-			WApplication app = WApplication.instance();
+			WApplication app = WApplication.getInstance();
 			if (app.getEnvironment().agentIsOpera()) {
 				painter.callMethod("forceRedraw();");
 			}

@@ -80,7 +80,7 @@ abstract class StdLayoutImpl extends StdLayoutItemImpl {
 	void setContainer(WContainerWidget c) {
 		if (c.getCount() != 0) {
 			WApplication
-					.instance()
+					.getInstance()
 					.log("warn")
 					.append(
 							"WContainerWidget: applying Layout manager to non-empty WContainerWidget. Container is cleared.");

@@ -3,14 +3,14 @@
 
 <web-app>
   <servlet>
-    <servlet-name>DragNDrop</servlet-name>
-    <display-name>JWt DragNDrop example</display-name>
-    <description>JWt DragNDrop example</description>
+    <servlet-name>DragDrop</servlet-name>
+    <display-name>JWt DragDrop example</display-name>
+    <description>JWt DragDrop example</description>
     <servlet-class>eu.webtoolkit.jwt.examples.dragdrop.DragMain</servlet-class>
   </servlet>
   <servlet-mapping>
-    <servlet-name>DragNDrop</servlet-name>
-    <url-pattern>/DragNDrop/*</url-pattern>
+    <servlet-name>DragDrop</servlet-name>
+    <url-pattern>/DragDrop/*</url-pattern>
   </servlet-mapping>
 </web-app>
 

@@ -46,7 +46,7 @@ public class FileTreeTable extends WTreeTable {
 
 		setTreeRoot(new FileTreeTableNode(path), "File");
 
-		getTreeRoot().setImagePack("pics/filetreetable/");
+		getTreeRoot().setImagePack("pics/");
 		getTreeRoot().expand();
 	}
 }

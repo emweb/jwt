@@ -352,7 +352,7 @@ private void showPopup(WModelIndex index, WMouseEvent event) {
   private void populateFiles() {
     fileModel_.getInvisibleRootItem().setRowCount(0);
 
-    InputStream is = fileModel_.getClass().getResourceAsStream("/eu/webtoolkit/jwt/examples/treeviewdragdrop/csv/files.csv");
+    InputStream is = fileModel_.getClass().getResourceAsStream("/eu/webtoolkit/jwt/examples/treeviewdragdrop/data/files.csv");
     CsvUtil.readFromCsv(new BufferedReader(new InputStreamReader(is)), fileModel_);
 
     for (int i = 0; i < fileModel_.getRowCount(); ++i) {
@@ -360,7 +360,7 @@ private void showPopup(WModelIndex index, WMouseEvent event) {
       EnumSet<ItemFlag> flags = item.getFlags();
       flags.add(ItemFlag.ItemIsDragEnabled);
       item.setFlags(flags);
-      item.setIcon("pics/treeviewdragdrop/file.gif");
+      item.setIcon("pics/file.gif");
 
       String folderId = item.getText().getValue();
 
@@ -439,7 +439,7 @@ private void showPopup(WModelIndex index, WMouseEvent event) {
       result.setFlags(flags);
     }
 
-    result.setIcon("pics/treeviewdragdrop/folder.gif");
+    result.setIcon("pics/folder.gif");
 
     return result;
   }

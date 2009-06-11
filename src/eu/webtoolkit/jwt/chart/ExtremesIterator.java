@@ -24,7 +24,7 @@ class ExtremesIterator extends SeriesIterator {
 	}
 
 	public void newValue(WDataSeries series, double x, double y, double stackY) {
-		if (!myisnan(y)) {
+		if (!Double.isNaN(y)) {
 			this.maximum_ = Math.max(y, this.maximum_);
 			this.minimum_ = Math.min(y, this.minimum_);
 		}

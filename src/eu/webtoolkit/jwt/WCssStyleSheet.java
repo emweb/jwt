@@ -13,10 +13,6 @@ import eu.webtoolkit.jwt.servlet.*;
 /**
  * A CSS style sheet.
  * 
- * 
- * Usage example:
- * <p>
- * 
  * @see WApplication#getStyleSheet()
  */
 public class WCssStyleSheet {

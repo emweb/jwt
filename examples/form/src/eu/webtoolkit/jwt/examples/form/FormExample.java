@@ -44,7 +44,7 @@ public class FormExample extends WContainerWidget
 		    /*
 		     * Start with the reported locale, if available
 		     */
-		    setLanguage(WApplication.instance().getLocale());
+		    setLanguage(WApplication.getInstance().getLocale());
 
 		    Form form = new Form(this);
 		    form.setMargin(20);
@@ -75,9 +75,9 @@ public class FormExample extends WContainerWidget
 
 		  if (!haveLang) {
 		    languageSelects_.get(0).setStyleClass("langcurrent");
-		    WApplication.instance()
+		    WApplication.getInstance()
 		      .setLocale(languageSelects_.get(0).getText().getValue());
 		  } else
-		    WApplication.instance().setLocale(lang);
+		    WApplication.getInstance().setLocale(lang);
 	}
 }

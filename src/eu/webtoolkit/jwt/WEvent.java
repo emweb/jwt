@@ -10,7 +10,10 @@ import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
 
-class WEvent {
+/**
+ * {@link WEvent}. (dox FIXME)
+ */
+public class WEvent {
 	public enum EventType {
 		EmitSignal, Refresh, Render, HashChange;
 
@@ -19,17 +22,17 @@ class WEvent {
 		}
 	}
 
-	public WebSession.Handler handler;
-	public WEvent.EventType type;
+	WebSession.Handler handler;
+	WEvent.EventType type;
 
-	public WebSession getSession() {
+	WebSession getSession() {
 		return this.handler.getSession();
 	}
 
-	public WebRenderer.ResponseType responseType;
-	public String hash;
+	WebRenderer.ResponseType responseType;
+	String hash;
 
-	public WEvent(WebSession.Handler aHandler, WEvent.EventType aType,
+	WEvent(WebSession.Handler aHandler, WEvent.EventType aType,
 			WebRenderer.ResponseType aResponseType) {
 		this.handler = aHandler;
 		this.type = aType;
@@ -37,12 +40,11 @@ class WEvent {
 		this.hash = "";
 	}
 
-	public WEvent(WebSession.Handler aHandler, WEvent.EventType aType) {
+	WEvent(WebSession.Handler aHandler, WEvent.EventType aType) {
 		this(aHandler, aType, WebRenderer.ResponseType.FullResponse);
 	}
 
-	public WEvent(WebSession.Handler aHandler, WEvent.EventType aType,
-			String aHash) {
+	WEvent(WebSession.Handler aHandler, WEvent.EventType aType, String aHash) {
 		this.handler = aHandler;
 		this.type = aType;
 		this.responseType = WebRenderer.ResponseType.FullResponse;

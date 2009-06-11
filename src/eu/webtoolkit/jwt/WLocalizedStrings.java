@@ -18,7 +18,7 @@ import eu.webtoolkit.jwt.servlet.*;
  * the key to a string using the current application locale.
  * <p>
  * 
- * @see WString#tr()
+ * @see WString#tr(String)
  * @see WApplication#setLocalizedStrings(WLocalizedStrings translator)
  */
 public abstract class WLocalizedStrings {

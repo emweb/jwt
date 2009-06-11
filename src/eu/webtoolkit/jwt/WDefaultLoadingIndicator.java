@@ -26,7 +26,7 @@ public class WDefaultLoadingIndicator extends WText implements
 		super("Loading...");
 		this.setInline(false);
 		this.setStyleClass("Wt-loading");
-		WApplication app = WApplication.instance();
+		WApplication app = WApplication.getInstance();
 		app
 				.getStyleSheet()
 				.addRule(

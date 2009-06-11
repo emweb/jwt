@@ -56,8 +56,6 @@ import eu.webtoolkit.jwt.servlet.*;
  * will be deleted together with the {@link WFileUpload} widget, unless
  * {@link WFileUpload#stealSpooledFile()} is called.
  * <p>
- * Usage example:
- * <p>
  * The file upload itself corresponds to a
  * <code>&lt;input type=&quot;file&quot;&gt;</code> tag, but may be wrapped in a
  * <code>&lt;form&gt;</code> tag.
@@ -77,7 +75,7 @@ public class WFileUpload extends WWebWidget {
 		this.isStolen_ = false;
 		this.doUpload_ = false;
 		this.fileTooLarge_ = new Signal1<Integer>(this);
-		boolean methodIframe = WApplication.instance().getEnvironment()
+		boolean methodIframe = WApplication.getInstance().getEnvironment()
 				.hasAjax();
 		if (methodIframe) {
 			this.fileUploadTarget_ = new WFileUploadResource(this);

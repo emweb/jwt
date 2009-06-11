@@ -67,6 +67,7 @@ class WebRenderer implements SlotLearnerInterface {
 
 	public void updateFormObjectsList(WApplication app) {
 		if (this.formObjectsChanged_) {
+			this.currentFormObjects_.clear();
 			app.domRoot_.getFormObjects(this.currentFormObjects_);
 			if (app.domRoot2_ != null) {
 				app.domRoot2_.getFormObjects(this.currentFormObjects_);
@@ -352,7 +353,7 @@ class WebRenderer implements SlotLearnerInterface {
 		String url = conf.getSessionTracking() == Configuration.SessionTracking.CookiesURL
 				&& this.session_.getEnv().supportsCookies() ? this.session_
 				.getBookmarkUrl(app.newInternalPath_) : this.session_
-				.mostRelativeUrl(app.newInternalPath_);
+				.getMostRelativeUrl(app.newInternalPath_);
 		url = app.fixRelativeUrl(url);
 		url = StringUtils.replace(url, '&', "&amp;");
 		page.setVar("RELATIVE_URL", url);
@@ -740,7 +741,6 @@ class WebRenderer implements SlotLearnerInterface {
 	}
 
 	private String createFormObjectsList(WApplication app) {
-		this.currentFormObjects_.clear();
 		this.updateFormObjectsList(app);
 		String result = "";
 		for (int i = 0; i < this.currentFormObjects_.size(); ++i) {

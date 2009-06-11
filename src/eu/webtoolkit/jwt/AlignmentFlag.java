@@ -49,7 +49,7 @@ public enum AlignmentFlag {
 	 */
 	AlignRight,
 	/**
-	 * Align horizintally in the center.
+	 * Align horizontally in the center.
 	 */
 	AlignCenter,
 	/**

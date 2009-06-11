@@ -33,6 +33,17 @@ import eu.webtoolkit.jwt.servlet.*;
  * {@link JSlot#setJavaScript(String js)} method which takes a string that
  * implements a JavaScript function with the following signature:
  * <p>
+ * <code>
+ function(sender, event) { <br> 
+   // handle the event, and sender is a reference to the DOM element <br> 
+   // which captured the event (and holds the signal). Therefore it <br> 
+   // equivalent to the sender for a normal %Wt slot. <br> 
+ <br> 
+   // You can prevent the default action using: <br> 
+   ${WT_CLASS}.cancelEvent(event); <br> 
+   // (where ${WT_CLASS} should be the value of the WT_CLASS define <br> 
+ }
+</code>
  * <p>
  * In the JavaScript code, you may use {@link WWidget#getJsRef()} to obtain the
  * DOM element corresponding to any {@link WWidget}, or {@link WObject#getId()}
@@ -93,6 +104,11 @@ public class JSlot {
 	 * When the slot is triggered, the corresponding JavaScript is executed.
 	 * <p>
 	 * The JavaScript function takes two parameters and thus should look like:
+	 * <code>
+       function(obj, event) { <br> 
+         // ... <br> 
+       }
+  </code>
 	 * <p>
 	 * The first parameter <i>obj</i> is a reference to the DOM element that
 	 * generates the event. The <i>event</i> refers to the JavaScript event
@@ -103,7 +119,7 @@ public class JSlot {
 	 */
 	public void setJavaScript(String js) {
 		if (this.widget_ != null) {
-			WApplication.instance().declareJavaScriptFunction(
+			WApplication.getInstance().declareJavaScriptFunction(
 					this.getJsFunctionName(), js);
 		} else {
 			this.imp_.setJavaScript("{var f=" + js + "; f(this, e);}");
@@ -118,7 +134,7 @@ public class JSlot {
 	 * the JavaScript code is deferred until after the event handling.
 	 */
 	public void exec() {
-		WApplication.instance().doJavaScript(this.imp_.getJavaScript());
+		WApplication.getInstance().doJavaScript(this.imp_.getJavaScript());
 	}
 
 	private WWidget widget_;
@@ -134,7 +150,7 @@ public class JSlot {
 
 	private void create() {
 		this.imp_ = new AbstractEventSignal.JavaScriptListener(this.widget_,
-				null, this.widget_ != null ? WApplication.instance()
+				null, this.widget_ != null ? WApplication.getInstance()
 						.getJavaScriptClass()
 						+ '.' + this.getJsFunctionName() + "(this, e);" : "");
 	}

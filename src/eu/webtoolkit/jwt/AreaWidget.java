@@ -30,7 +30,7 @@ class AreaWidget extends WInteractWidget {
 		this.facade_.updateDom(element, all);
 		super.updateDom(element, all);
 		if (element.getProperty(Property.PropertyStyleCursor).length() != 0
-				&& !WApplication.instance().getEnvironment().agentIsGecko()
+				&& !WApplication.getInstance().getEnvironment().agentIsGecko()
 				&& element.getAttribute("href").length() == 0) {
 			element.setAttribute("href", "#");
 		}

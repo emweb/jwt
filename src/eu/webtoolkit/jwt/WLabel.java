@@ -20,6 +20,12 @@ import eu.webtoolkit.jwt.servlet.*;
  * <p>
  * Usage example:
  * <p>
+ * <code>
+ WContainerWidget w = new WContainerWidget(); <br> 
+ WLabel label = new WLabel(&quot;Favourite Actress: &quot;, w); <br> 
+ WLineEdit edit = new WLineEdit(&quot;Ren&eacute;e Zellweger&quot;, w); <br> 
+ label.setBuddy(edit);
+</code>
  * <p>
  * The widget corresponds to the HTML <code>&lt;label&gt;</code> tag.
  * <p>
@@ -214,7 +220,7 @@ public class WLabel extends WInteractWidget {
 	private boolean newText_;
 
 	protected void updateDom(DomElement element, boolean all) {
-		WApplication app = WApplication.instance();
+		WApplication app = WApplication.getInstance();
 		if (this.image_ != null && this.text_ != null) {
 			if (this.imageSide_ == Side.Left) {
 				this.updateImage(element, all, app, 0);

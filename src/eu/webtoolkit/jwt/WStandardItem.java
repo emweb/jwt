@@ -35,7 +35,7 @@ import eu.webtoolkit.jwt.servlet.*;
  * {@link WStandardItem#getData(int role)}), or provide custom sorting
  * functionality by reimplementing
  * <p>
- * compare(compare(const WStandardItem&amp; other)).
+ * compare().
  */
 public class WStandardItem {
 	/**
@@ -396,7 +396,7 @@ public class WStandardItem {
 	 * ItemIsSelectable}.
 	 * <p>
 	 * 
-	 * @see ItemFlag#ItemFlag
+	 * @see ItemFlag
 	 * @see WStandardItem#getFlags()
 	 * @see WStandardItem#setCheckable(boolean checkable)
 	 */
@@ -627,7 +627,9 @@ public class WStandardItem {
 	 * Appends a single column of <i>items</i>. If necessary, the row count is
 	 * increased.
 	 * <p>
-	 * Equivalent to:
+	 * Equivalent to: <code>
+   insertColumn(columnCount(), items);
+  </code>
 	 * <p>
 	 * 
 	 * @see WStandardItem#insertColumn(int column, List items)
@@ -680,7 +682,9 @@ public class WStandardItem {
 	 * Appends a single row of <i>items</i>. If necessary, the column count is
 	 * increased.
 	 * <p>
-	 * Equivalent to:
+	 * Equivalent to: <code>
+   insertRow(rowCount(), items);
+  </code>
 	 * <p>
 	 * 
 	 * @see WStandardItem#insertRow(int row, List items)
@@ -799,6 +803,9 @@ public class WStandardItem {
 	 * for tree nodes). This adds a row with a single item, and is equivalent
 	 * to:
 	 * <p>
+	 * <code>
+   insertRow(rowCount(), item);
+  </code>
 	 * <p>
 	 * 
 	 * @see WStandardItem#insertRow(int row, WStandardItem item)
@@ -814,6 +821,11 @@ public class WStandardItem {
 	 * for tree nodes). This inserts a row with a single item, and is equivalent
 	 * to:
 	 * <p>
+	 * <code>
+   List&lt;WStandardItem&gt; r; <br> 
+   r.add(item); <br> 
+   insertRow(row, r);
+  </code>
 	 * <p>
 	 * 
 	 * @see WStandardItem#insertRow(int row, List items)
@@ -831,6 +843,9 @@ public class WStandardItem {
 	 * for tree nodes). This adds a number of rows, each containing a single
 	 * item, and is equivalent to:
 	 * <p>
+	 * <code>
+   insertRows(rowCount(), items);
+  </code>
 	 * <p>
 	 * 
 	 * @see WStandardItem#insertRows(int row, List items)
@@ -846,6 +861,10 @@ public class WStandardItem {
 	 * for tree nodes). This inserts a number of rows at row <i>row</i>, each
 	 * containing a single item, and is equivalent to:
 	 * <p>
+	 * <code>
+   for (unsigned i = 0; i &lt; items.size(); ++i) <br> 
+     insertRow(row + i, items[i]);
+  </code>
 	 * <p>
 	 * 
 	 * @see WStandardItem#insertRow(int row, WStandardItem item)
@@ -887,7 +906,9 @@ public class WStandardItem {
 	 * Set a child item.
 	 * 
 	 * This is a convenience method for nodes with a single column (e.g. tree
-	 * nodes), and is equivalent to:
+	 * nodes), and is equivalent to: <code>
+   setChild(row, 0, item);
+  </code>
 	 * <p>
 	 * 
 	 * @see WStandardItem#setChild(int row, int column, WStandardItem item)
@@ -1007,7 +1028,9 @@ public class WStandardItem {
 	 * Remove a single column.
 	 * 
 	 * Removes the column <i>column</i> from the model (reducing the column
-	 * count by one). Is equivalent to:
+	 * count by one). Is equivalent to: <code>
+   removeColumns(column, 1);
+  </code>
 	 * <p>
 	 * 
 	 * @see WStandardItem#removeColumns(int column, int count)
@@ -1054,7 +1077,9 @@ public class WStandardItem {
 	 * Remove a single row.
 	 * 
 	 * Removes the row <i>row</i> from the model (reducing the row count by
-	 * one). Is equivalent to:
+	 * one). Is equivalent to: <code>
+   removeRows(row, 1);
+  </code>
 	 * <p>
 	 * 
 	 * @see WStandardItem#removeRows(int row, int count)

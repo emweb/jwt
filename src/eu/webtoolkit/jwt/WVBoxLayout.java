@@ -19,8 +19,6 @@ import eu.webtoolkit.jwt.servlet.*;
  * <p>
  * See {@link WBoxLayout} for available member methods and more information.
  * <p>
- * Usage example:
- * <p>
  * <p>
  * <i><b>Note:</b>First consider if you can achieve your layout using CSS !</i>
  * </p>

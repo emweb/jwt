@@ -52,9 +52,6 @@ public class ChartConfig extends WContainerWidget {
 		chart_ = chart;
 		fill_ = FillRangeType.MinimumValueFill;
 
-		if (true)
-			return;
-		
 		PanelList list = new PanelList(this);
 
 		WIntValidator sizeValidator = new WIntValidator(200, 2000, this);
@@ -188,7 +185,7 @@ public class ChartConfig extends WContainerWidget {
 			sc.labelsEdit.setModel(labels);
 			connectSignals(sc.labelsEdit);
 
-			int si = chart.seriesIndexOf(j);
+			int si = chart.getSeriesIndexOf(j);
 
 			if (si != -1) {
 				sc.enabledEdit.setChecked();
@@ -266,7 +263,7 @@ public class ChartConfig extends WContainerWidget {
 				}
 			}
 
-			WAxis axis = chart_.axis(axisType);
+			WAxis axis = chart_.getAxis(axisType);
 
 			final AxisControl sc = new AxisControl();
 
@@ -351,7 +348,7 @@ public class ChartConfig extends WContainerWidget {
 		 * If we do not have JavaScript, then add a button to reflect changes to
 		 * the chart.
 		 */
-		if (!WApplication.instance().getEnvironment().hasJavaScript()) {
+		if (!WApplication.getInstance().getEnvironment().hasJavaScript()) {
 			WPushButton b = new WPushButton(this);
 			b.setText("Update chart");
 			b.setInline(false); // so we can add margin to center horizontally
@@ -519,7 +516,7 @@ public class ChartConfig extends WContainerWidget {
 				if (at.getValue() == i)
 					axisType = at;
 			}
-			WAxis axis = chart_.axis(axisType);
+			WAxis axis = chart_.getAxis(axisType);
 
 			axis.setVisible(sc.visibleEdit.isChecked());
 
@@ -596,9 +593,9 @@ public class ChartConfig extends WContainerWidget {
 	}
 
 	private static boolean validate(WFormWidget w) {
-		boolean valid = w.getValidate() == WValidator.State.Valid;
+		boolean valid = w.validate() == WValidator.State.Valid;
 
-		if (!WApplication.instance().getEnvironment().hasJavaScript()) {
+		if (!WApplication.getInstance().getEnvironment().hasJavaScript()) {
 			w.setStyleClass(valid ? "" : "Wt-invalid");
 			w.setToolTip(valid ? "" : "Invalid value");
 		}

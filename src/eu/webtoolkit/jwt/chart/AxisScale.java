@@ -38,7 +38,8 @@ public enum AxisScale {
 	LogScale(2),
 	/**
 	 * A date scale is a special linear scale, which is useful for the X axis in
-	 * a ScatterPlot, when the X series contain dates (of type {@link WDate}).
+	 * a ScatterPlot, when the X series contain dates (of type
+	 * {@link eu.webtoolkit.jwt.WDate}).
 	 */
 	DateScale(3);
 

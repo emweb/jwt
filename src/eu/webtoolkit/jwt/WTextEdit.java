@@ -36,8 +36,6 @@ import eu.webtoolkit.jwt.servlet.*;
  * tiny_mce folder is located, by configuring the <i>tinyMCEURL</i> property in
  * your Wt configuration file.
  * <p>
- * Usage example:
- * <p>
  * <div align="center"> <img src="/WTextEdit-1.png"
  * alt="Default configuration of a WTextEdit">
  * <p>
@@ -54,6 +52,9 @@ public class WTextEdit extends WTextArea {
 		this.contentChanged_ = false;
 		this.styleSheet_ = "";
 		this.extraPlugins_ = "";
+		for (int i = 0; i < 4; ++i) {
+			this.buttons_[i] = "";
+		}
 		this.setInline(false);
 		initTinyMCE();
 		if (parent != null) {
@@ -201,7 +202,7 @@ public class WTextEdit extends WTextArea {
 
 	public void load() {
 		WApplication
-				.instance()
+				.getInstance()
 				.addAutoJavaScript(
 						"{var e="
 								+ this.getJsRef()
@@ -210,7 +211,7 @@ public class WTextEdit extends WTextArea {
 		super.load();
 	}
 
-	protected DomElement getRenderRemove() {
+	protected DomElement renderRemove() {
 		DomElement e = super.renderRemove();
 		e.callJavaScript(this.getJsRef() + ".ed.remove();", true);
 		return e;
@@ -224,7 +225,7 @@ public class WTextEdit extends WTextArea {
 		if (all && element.getType() == DomElementType.DomElement_TEXTAREA) {
 			StringWriter config = new StringWriter();
 			config.append("{button_tile_map:true,doctype:'"
-					+ WApplication.instance().getDocType()
+					+ WApplication.getInstance().getDocType()
 					+ "',relative_urls:true,plugins:'safari");
 			if (this.extraPlugins_.length() != 0) {
 				config.append(',').append(this.extraPlugins_);
@@ -242,7 +243,7 @@ public class WTextEdit extends WTextArea {
 				config.append(",content_css: '").append(this.styleSheet_)
 						.append('\'');
 			}
-			String init_cb = WApplication.instance().getJavaScriptClass()
+			String init_cb = WApplication.getInstance().getJavaScriptClass()
 					+ ".tmce" + this.getFormName();
 			config.append(",init_instance_callback: '").append(init_cb).append(
 					"'}");
@@ -280,14 +281,14 @@ public class WTextEdit extends WTextArea {
 	private String[] buttons_ = new String[4];
 
 	private static void initTinyMCE() {
-		String tinyMCEBaseURL = WApplication.resourcesUrl() + "tiny_mce/";
+		String tinyMCEBaseURL = WApplication.getResourcesUrl() + "tiny_mce/";
 		tinyMCEBaseURL = WApplication.readConfigurationProperty(
 				"tinyMCEBaseURL", tinyMCEBaseURL);
 		if (tinyMCEBaseURL.length() != 0
 				&& tinyMCEBaseURL.charAt(tinyMCEBaseURL.length() - 1) != '/') {
 			tinyMCEBaseURL += '/';
 		}
-		WApplication app = WApplication.instance();
+		WApplication app = WApplication.getInstance();
 		app.doJavaScript("window.tinyMCE_GZ = { loaded: true };", false);
 		if (app.require(tinyMCEBaseURL + "tiny_mce.js", "window['tinyMCE']")) {
 			app.doJavaScript("tinymce.dom.Event._pageInit();tinyMCE.init();",

@@ -4,7 +4,6 @@ import eu.webtoolkit.jwt.WApplication;
 import eu.webtoolkit.jwt.WEnvironment;
 import eu.webtoolkit.jwt.WString;
 import eu.webtoolkit.jwt.WtServlet;
-import eu.webtoolkit.jwt.utils.StringUtils;
 
 public class PaintMain extends WtServlet {
 	public PaintMain() {
@@ -16,10 +15,7 @@ public class PaintMain extends WtServlet {
 		WApplication app = new WApplication(env);
 		app.setTitle(new WString("Paint example"));
 		
-		//TODO contextPath
-		String contextPath = "context";
-			//WebSession.Handler.instance().request().getContextPath();
-		app.useStyleSheet(StringUtils.terminate(contextPath, '/') + "style/painting/painting.css");
+		app.useStyleSheet("style/painting.css");
 		
 		new PaintExample(app.getRoot());
 

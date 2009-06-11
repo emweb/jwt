@@ -24,8 +24,8 @@ import eu.webtoolkit.jwt.servlet.*;
  * using the style class <code>&quot;Wt-invalid&quot;</code>. All validators
  * provided by Wt implement client-side validation.
  * <p>
- * On the server-side, use {@link WFormWidget#getValidate()} method to validate
- * the content using a validator previously set.
+ * On the server-side, use {@link WFormWidget#validate()} method to validate the
+ * content using a validator previously set.
  */
 public abstract class WFormWidget extends WInteractWidget {
 	/**
@@ -106,7 +106,7 @@ public abstract class WFormWidget extends WInteractWidget {
 	 * The default value is 0.
 	 * <p>
 	 * 
-	 * @see WFormWidget#getValidate()
+	 * @see WFormWidget#validate()
 	 */
 	public void setValidator(WValidator validator) {
 		if (this.validator_ != null) {
@@ -305,7 +305,7 @@ public abstract class WFormWidget extends WInteractWidget {
 	}
 
 	protected void updateDom(DomElement element, boolean all) {
-		WEnvironment env = WApplication.instance().getEnvironment();
+		WEnvironment env = WApplication.getInstance().getEnvironment();
 		if (!env.agentIsIE()
 				|| !(((this) instanceof WAbstractToggleButton ? (WAbstractToggleButton) (this)
 						: null) != null)) {

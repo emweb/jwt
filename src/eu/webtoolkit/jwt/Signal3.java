@@ -11,7 +11,7 @@ import java.util.ArrayList;
 
 /**
  * A signal passing 3 arguments.
- * 
+ * <p>
  * A signal implements the Observable pattern, allowing one or more listeners to listen for
  * events generated on the signal. The event may propagate 3 arguments to the listeners.
  */
@@ -19,7 +19,7 @@ public class Signal3<A1, A2, A3> extends AbstractSignal {
 	
 	/**
 	 * The listener interface.
-	 * 
+	 * <p>
 	 * This listener may be added to a {@link Signal3} or {@link JSignal3}, and
 	 * its {@link #trigger(Object, Object, Object)} method will be invoked whenever the signal
 	 * is triggered.
@@ -47,11 +47,11 @@ public class Signal3<A1, A2, A3> extends AbstractSignal {
 
 	/**
 	 * Adds a listener for this signal.
-	 * 
+	 * <p>
 	 * Each listener will be triggered whenever the signal is triggered.
 	 * 
 	 * @param listenerOwner
-	 *            the enclosing object for a listener implemented using an anonymous inner class
+	 *            the enclosing object for a listener implemented using an (anonymous) inner class
 	 * @param listener
 	 *            the listener
 	 * @return a connection object that may be used to control the connection
@@ -73,7 +73,7 @@ public class Signal3<A1, A2, A3> extends AbstractSignal {
 
 	/**
 	 * Triggers the signal.
-	 * 
+	 * <p>
 	 * The arguments are passed to the listeners.
 	 * 
 	 * @param arg1 Argument 1.

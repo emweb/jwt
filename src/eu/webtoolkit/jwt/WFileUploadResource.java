@@ -35,9 +35,9 @@ class WFileUploadResource extends WResource {
 				.append("<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\"><html lang=\"en\" dir=\"ltr\">\n<head><title></title>\n<script type=\"text/javascript\">\nfunction load() { ");
 		if (triggerUpdate) {
 			o.append("window.parent.").append(
-					WApplication.instance().getJavaScriptClass()).append(
+					WApplication.getInstance().getJavaScriptClass()).append(
 					"._p_.update(null, '").append(
-					this.fileUpload_.uploaded().getEncodeCmd()).append(
+					this.fileUpload_.uploaded().encodeCmd()).append(
 					"', null, true);");
 		}
 		o

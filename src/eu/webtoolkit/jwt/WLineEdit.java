@@ -29,9 +29,7 @@ import eu.webtoolkit.jwt.servlet.*;
  * detailed input validation, you may set a validator using the
  * {@link WFormWidget#setValidator(WValidator validator)} method. Validators
  * provide, in general, both client-side validation (as visual feed-back only)
- * and server-side validation when calling {@link WLineEdit#getValidate()}.
- * <p>
- * Usage example:
+ * and server-side validation when calling {@link WLineEdit#validate()}.
  * <p>
  * The widget corresponds to the HTML
  * <code>&lt;input type=&quot;text&quot;&gt;</code> or
@@ -141,7 +139,7 @@ public class WLineEdit extends WFormWidget {
 			this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyIEMobile));
 			if (this.getValidator() != null) {
 				this
-						.setStyleClass(this.getValidate() == WValidator.State.Valid ? ""
+						.setStyleClass(this.validate() == WValidator.State.Valid ? ""
 								: "Wt-invalid");
 			}
 		}
@@ -202,7 +200,7 @@ public class WLineEdit extends WFormWidget {
 		return this.echoMode_;
 	}
 
-	public WValidator.State getValidate() {
+	public WValidator.State validate() {
 		if (this.getValidator() != null) {
 			return this.getValidator().validate(this.content_);
 		} else {

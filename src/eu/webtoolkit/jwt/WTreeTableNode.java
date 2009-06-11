@@ -124,8 +124,8 @@ public class WTreeTableNode extends WTreeNode {
 			}
 			this.createExtraColumns(table.getColumnCount() - 1);
 			for (int i = 0; i < this.columnWidgets_.size(); ++i) {
-				this.columnWidgets_.get(i).widget.resize(this
-						.columnWidth(i + 1), WLength.Auto);
+				WWidget w = this.columnWidgets_.get(i).widget;
+				w.resize(this.columnWidth(i + 1), w.getHeight());
 			}
 		}
 	}
@@ -157,13 +157,12 @@ public class WTreeTableNode extends WTreeNode {
 					new WLength(100, WLength.Unit.Percentage), WLength.Auto);
 		}
 		while ((int) this.columnWidgets_.size() < numColumns) {
-			WText w = new WText(new WString("&nbsp;"), this.row_);
+			WText w = new WText(new WString(" "), this.row_);
 			w.setInline(false);
 			this.columnWidgets_.add(new WTreeTableNode.ColumnWidget(w, false));
 			w.setFloatSide(Side.Left);
-			w
-					.resize(this.columnWidth(this.columnWidgets_.size()),
-							WLength.Auto);
+			w.resize(this.columnWidth(this.columnWidgets_.size()), new WLength(
+					1));
 		}
 	}
 

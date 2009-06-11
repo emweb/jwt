@@ -29,7 +29,7 @@ import eu.webtoolkit.jwt.servlet.*;
  * <p>
  * <i><b>Note:</b>For this loading indicator to render properly in IE, you need
  * to reset the &quot;body&quot; margin to 0. Using the inline stylesheet, this
- * could be done using: </i>
+ * could be done using:</i>
  * </p>
  * 
  * @see WApplication#setLoadingIndicator(WLoadingIndicator indicator)
@@ -48,20 +48,39 @@ public class WOverlayLoadingIndicator extends WContainerWidget implements
 	 *            the style class for the text that is displayed}
 	 *            <p>
 	 *            <i><b>Note:</b>if styleClass is not set, the central box gets
-	 *            the CSS style elements
+	 *            the CSS style elements <code>
+               background: white; <br> 
+               border: 3px solid #333333; <br> 
+               z-index: 10001; visibility: visible; <br> 
+               position: absolute; left: 50%; top: 50%; <br> 
+               margin-left: -50px; margin-top: -40px; <br> 
+               width: 100px; height: 80px; <br> 
+               font-family: arial,sans-serif; <br> 
+               text-align: center
+  </code>
 	 *            <p>
 	 *            if backgroundStyleClass is not set, the background gets the
-	 *            CSS style elements </i>
+	 *            CSS style elements <code>
+               background: #DDDDDD; <br> 
+               height: 100%; width: 100%; <br> 
+               top: 0px; left: 0px; <br> 
+               z-index: 10000; <br> 
+               -moz-background-clip: -moz-initial; <br> 
+               -moz-background-origin: -moz-initial; <br> 
+               -moz-background-inline-policy: -moz-initial; <br> 
+               opacity: 0.5; filter: alpha(opacity=50); -moz-opacity:0.5; <br> 
+               position: absolute;
+  </code> </i>
 	 *            </p>
 	 */
 	public WOverlayLoadingIndicator(String styleClass,
 			String backgroundStyleClass, String textStyleClass) {
 		super();
 		this.setInline(false);
-		WApplication app = WApplication.instance();
+		WApplication app = WApplication.getInstance();
 		this.cover_ = new WContainerWidget(this);
 		this.center_ = new WContainerWidget(this);
-		WImage img = new WImage(WApplication.resourcesUrl()
+		WImage img = new WImage(WApplication.getResourcesUrl()
 				+ "ajax-loading.gif", this.center_);
 		img.setMargin(new WLength(7), EnumSet.of(Side.Top, Side.Bottom));
 		this.text_ = new WText("Loading...", this.center_);

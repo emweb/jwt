@@ -91,7 +91,7 @@ public class WScrollArea extends WWebWidget {
 	/**
 	 * Remove the widget content.
 	 */
-	public WWidget getTakeWidget() {
+	public WWidget takeWidget() {
 		WWidget result = this.widget_;
 		this.widget_ = null;
 		this.setWidget((WWidget) null);
@@ -176,7 +176,7 @@ public class WScrollArea extends WWebWidget {
 		if (this.widgetChanged_ || all) {
 			if (this.widget_ != null) {
 				element.addChild(this.widget_.getWebWidget().createDomElement(
-						WApplication.instance()));
+						WApplication.getInstance()));
 			}
 			this.widgetChanged_ = false;
 		}

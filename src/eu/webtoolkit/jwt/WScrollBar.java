@@ -101,12 +101,12 @@ public class WScrollBar extends WObject {
 						.get(i).scrollArea_, DomElementType.DomElement_DIV);
 				DomElement scrollElement = DomElement.getForUpdate(
 						this.scrollArea_, DomElementType.DomElement_DIV);
-				jsCode += tieElement.getCreateReference()
+				jsCode += tieElement.createReference()
 						+ ".scroll"
 						+ (this.orientation_ == Orientation.Horizontal ? "Left"
 								: "Top")
 						+ "="
-						+ scrollElement.getCreateReference()
+						+ scrollElement.createReference()
 						+ ".scroll"
 						+ (this.orientation_ == Orientation.Horizontal ? "Left"
 								: "Top") + ";";

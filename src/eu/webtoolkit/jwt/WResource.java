@@ -23,7 +23,7 @@ public abstract class WResource extends WObject {
 	}
 
 	public String generateUrl() {
-		WApplication app = WApplication.instance();
+		WApplication app = WApplication.getInstance();
 
 		return app.addExposedResource(this);
 	}

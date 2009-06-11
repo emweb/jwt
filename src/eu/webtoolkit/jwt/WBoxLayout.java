@@ -38,8 +38,6 @@ import eu.webtoolkit.jwt.servlet.*;
  * space is used. Each item is stretched using the stretch factor to fill the
  * remaining space.
  * <p>
- * Usage example:
- * <p>
  * <p>
  * <i><b>Note:</b>When JavaScript support is not available, only Safari and
  * Firefox properly implement this box layout. For other browsers, only the
@@ -404,9 +402,7 @@ public class WBoxLayout extends WLayout {
 	 * 
 	 * The <i>layout</i> must have previously been added to this layout using
 	 * {@link WBoxLayout#insertLayout(int index, WLayout layout, int stretch, EnumSet alignment)}
-	 * or
-	 * {@link WBoxLayout#addLayout(WLayout layout, int stretch, EnumSet alignment)}
-	 * .
+	 * or addLayout(WLayout *, int).
 	 * <p>
 	 * Returns whether the <i>stretch</i> could be set.
 	 */

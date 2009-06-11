@@ -19,8 +19,6 @@ import eu.webtoolkit.jwt.servlet.*;
  * {@link WCssDecorationStyle} to add a rule to the inline style sheet using
  * {@link WCssStyleSheet#addRule(String selector, WCssDecorationStyle style, String ruleName)}
  * .
- * <p>
- * Usage example:
  */
 public class WCssDecorationStyle {
 	/**
@@ -141,7 +139,7 @@ public class WCssDecorationStyle {
 	 * Set a background image URL.
 	 * 
 	 * The image may be placed in a particular location by specifying sides by
-	 * OR&apos;ing {@link Side#Side} values together, e.g. (Right | Top).
+	 * OR&apos;ing {@link Side} values together, e.g. (Right | Top).
 	 */
 	public void setBackgroundImage(String image,
 			WCssDecorationStyle.Repeat repeat, EnumSet<Side> sides) {
@@ -374,7 +372,7 @@ public class WCssDecorationStyle {
 					|| this.backgroundImageChanged_) {
 				element.setProperty(Property.PropertyStyleBackgroundImage,
 						this.backgroundImage_.length() > 0 ? "url("
-								+ WApplication.instance().fixRelativeUrl(
+								+ WApplication.getInstance().fixRelativeUrl(
 										this.backgroundImage_) + ")" : "none");
 				switch (this.backgroundImageRepeat_) {
 				case RepeatXY:

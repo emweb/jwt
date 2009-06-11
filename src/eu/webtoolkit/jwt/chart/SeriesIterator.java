@@ -96,8 +96,4 @@ public class SeriesIterator {
 	private int currentYSegment_;
 	static final int TICK_LENGTH = 5;
 	static final double CATEGORY_WIDTH = 0.8;
-
-	static boolean myisnan(double d) {
-		return !(d == d);
-	}
 }

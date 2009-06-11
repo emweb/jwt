@@ -26,8 +26,6 @@ import eu.webtoolkit.jwt.servlet.*;
  * identify a particular button. The special value of -1 is reserved to indicate
  * <i>no button</i>.
  * <p>
- * Usage example:
- * <p>
  * 
  * @see WRadioButton
  */
@@ -68,7 +66,7 @@ public class WButtonGroup extends WObject {
 	public void addButton(WRadioButton button, int id) {
 		WButtonGroup.Button b = new WButtonGroup.Button();
 		b.button = button;
-		b.id = id != -1 ? id : this.getGenerateId();
+		b.id = id != -1 ? id : this.generateId();
 		this.buttons_.add(b);
 		button.setGroup(this);
 	}
@@ -237,7 +235,7 @@ public class WButtonGroup extends WObject {
 		}
 	}
 
-	private int getGenerateId() {
+	private int generateId() {
 		int id = 0;
 		for (int i = 0; i < this.buttons_.size(); ++i) {
 			id = Math.max(this.buttons_.get(i).id + 1, id);

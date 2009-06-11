@@ -22,8 +22,6 @@ import eu.webtoolkit.jwt.servlet.*;
  * important since pending AJAX requests are cancelled even if documents are not
  * served within the browser window in certain browsers.
  * <p>
- * Usage example:
- * <p>
  * The widget corresponds to the HTML <code>&lt;a&gt;</code> tag.
  * <p>
  * WAnchor is an {@link WWidget#setInline(boolean inlined) inline} widget.
@@ -239,10 +237,14 @@ public class WAnchor extends WContainerWidget {
 	 * history, and generate URLs that are bookmarkable and search engine
 	 * friendly.
 	 * <p>
-	 * Internally, this method sets the destination URL using:
+	 * Internally, this method sets the destination URL using: <code>
+   setRef(WApplication::instance()-&gt;bookmarkUrl(path)) 
+  </code>
 	 * <p>
 	 * The {@link WInteractWidget#clicked()} signal is connected to a slot that
-	 * changes the internal path by calling
+	 * changes the internal path by calling <code>
+   WApplication::instance()-&gt;setInternalPath(ref(), true);
+  </code>
 	 * <p>
 	 * 
 	 * @see WAnchor#setRef(String ref)
@@ -251,7 +253,7 @@ public class WAnchor extends WContainerWidget {
 	 * @see WApplication#setInternalPath(String path, boolean emitChange)
 	 */
 	public void setRefInternalPath(String path) {
-		WApplication app = WApplication.instance();
+		WApplication app = WApplication.getInstance();
 		String r = app.getBookmarkUrl(path);
 		if (r.equals(this.ref_)) {
 			return;
@@ -282,7 +284,6 @@ public class WAnchor extends WContainerWidget {
 	 * <p>
 	 * 
 	 * @see WAnchor#setRef(String ref)
-	 * @see WResource#generateUrl()
 	 */
 	public String getRef() {
 		return this.ref_;

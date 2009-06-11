@@ -16,8 +16,6 @@ import eu.webtoolkit.jwt.servlet.*;
  * 
  * This validator checks whether user input is an integer number in a
  * pre-defined range.
- * <p>
- * Usage example:
  */
 public class WIntValidator extends WValidator {
 	/**

@@ -24,8 +24,6 @@ import eu.webtoolkit.jwt.servlet.*;
  * At all times, the current content may be accessed with the
  * {@link WTextArea#getText()} method.
  * <p>
- * Usage example:
- * <p>
  * The widget corresponds to an HTML <code>&lt;textarea&gt;</code> tag.
  * <p>
  * WTextArea is an {@link WWidget#setInline(boolean inlined) inline} widget.
@@ -127,13 +125,12 @@ public class WTextArea extends WFormWidget {
 		this.contentChanged_ = true;
 		this.repaint(EnumSet.of(RepaintFlag.RepaintInnerHtml));
 		if (this.getValidator() != null) {
-			this
-					.setStyleClass(this.getValidate() == WValidator.State.Valid ? ""
-							: "Wt-invalid");
+			this.setStyleClass(this.validate() == WValidator.State.Valid ? ""
+					: "Wt-invalid");
 		}
 	}
 
-	public WValidator.State getValidate() {
+	public WValidator.State validate() {
 		if (this.getValidator() != null) {
 			return this.getValidator().validate(this.content_);
 		} else {

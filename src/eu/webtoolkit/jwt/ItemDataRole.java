@@ -18,7 +18,7 @@ import eu.webtoolkit.jwt.servlet.*;
  * different way.
  * <p>
  * 
- * @see WModelIndex#data(ItemDataRole)
+ * @see WModelIndex#getData(int)
  */
 public class ItemDataRole {
 	/**
@@ -40,7 +40,7 @@ public class ItemDataRole {
 	/**
 	 * Role that indicates the check state. Is of type <code>bool</code>, unless
 	 * the {@link ItemFlag#ItemIsTristate} flag is set, then is of type
-	 * {@link CheckState#CheckState}.
+	 * {@link CheckState}.
 	 */
 	public final static int CheckStateRole = 4;
 	/**

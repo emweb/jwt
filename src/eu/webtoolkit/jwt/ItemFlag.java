@@ -13,7 +13,7 @@ import eu.webtoolkit.jwt.servlet.*;
 /**
  * Flags that data item options.
  * 
- * @see WModelIndex#flags()
+ * @see WModelIndex#getFlags()
  */
 public enum ItemFlag {
 	/**
@@ -38,7 +38,7 @@ public enum ItemFlag {
 	ItemIsDropEnabled,
 	/**
 	 * Item has tree states. When set, {@link ItemDataRole#CheckStateRole} data
-	 * is of type {@link CheckState#CheckState}
+	 * is of type {@link CheckState}
 	 */
 	ItemIsTristate,
 	/**

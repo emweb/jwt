@@ -16,8 +16,6 @@ import eu.webtoolkit.jwt.servlet.*;
  * 
  * This validator checks whether user input is a double in the pre-defined
  * range.
- * <p>
- * Usage example:
  */
 public class WDoubleValidator extends WValidator {
 	/**

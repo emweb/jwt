@@ -21,7 +21,7 @@ public class JSignal extends AbstractJSignal {
 
 	/**
 	 * Creates a signal.
-	 * 
+	 *
 	 * @param sender the object that will be identified as the sender for this signal.
 	 * @param name the signal name (must be unique for each sender)
 	 */
@@ -65,7 +65,7 @@ public class JSignal extends AbstractJSignal {
 
 	/**
 	 * Returns a JavaScript statement that triggers this signal.
-	 * 
+	 * <p>
 	 * You can use this to trigger the signal from within generated JavaScript code.
 	 */
 	public String createCall() {

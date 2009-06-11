@@ -14,7 +14,9 @@ import eu.webtoolkit.jwt.servlet.*;
  * Enumeration that indicates a standard button.
  * 
  * Multiple buttons may be specified by logically or&apos;ing these values
- * together, e.g.
+ * together, e.g. <code>
+ Ok | Cancel
+</code>
  * <p>
  * 
  * @see WMessageBox

@@ -16,7 +16,7 @@ import eu.webtoolkit.jwt.servlet.*;
  * 
  * The text is provided through a {@link WString}, which may either hold a
  * literal text, or a key to localized text which is looked up in locale
- * dependent XML files (see {@link WString#tr()}).
+ * dependent XML files (see {@link WString#tr(String)}).
  * <p>
  * Use {@link WText#setTextFormat(TextFormat textFormat)} to configure the
  * textFormat of the text. The default textFormat is Wt::XHMTLText, which allows
@@ -46,8 +46,6 @@ import eu.webtoolkit.jwt.servlet.*;
  * inline, unless the XHTML contents starts with a block-level element such as
  * <code>&lt;div&gt;</code>, <code>&lt;h&gt;</code> or <code>&lt;p&gt;</code>.
  * <p>
- * Usage examples:
- * <p>
  * 
  * @see WApplication#setLocale(String locale)
  */
@@ -72,9 +70,9 @@ public class WText extends WInteractWidget {
 	 * Construct a text widget with given text.
 	 * 
 	 * The textFormat is set to {@link TextFormat#XHTMLText}, unless the
-	 * <i>text</i> is literal (not created using {@link WString#tr()}) and it
-	 * could not be parsed as valid XML. In that case the textFormat is set to
-	 * {@link TextFormat#PlainText}.
+	 * <i>text</i> is literal (not created using {@link WString#tr(String)}) and
+	 * it could not be parsed as valid XML. In that case the textFormat is set
+	 * to {@link TextFormat#PlainText}.
 	 * <p>
 	 * Therefore, if you wish to use {@link TextFormat#XHTMLText}, but cannot be
 	 * sure about <i>text</i> being valid XML, you should verify that the
@@ -102,7 +100,7 @@ public class WText extends WInteractWidget {
 	 * Construct a text widget with given text and format.
 	 * 
 	 * If <i>textFormat</i> is {@link TextFormat#XHTMLText} and <i>text</i> is
-	 * not literal (not created using {@link WString#tr()}), then if the
+	 * not literal (not created using {@link WString#tr(String)}), then if the
 	 * <i>text</i> could not be parsed as valid XML, the textFormat is changed
 	 * to {@link TextFormat#PlainText}.
 	 * <p>
@@ -145,10 +143,10 @@ public class WText extends WInteractWidget {
 	 * Set the text.
 	 * 
 	 * When the current format is {@link TextFormat#XHTMLText}, and <i>text</i>
-	 * is literal (not created using {@link WString#tr()}), it is parsed using
-	 * an XML parser which discards malicious tags and attributes silently. When
-	 * the parser encounters an XML parse error, the textFormat is changed to
-	 * {@link TextFormat#PlainText}.
+	 * is literal (not created using {@link WString#tr(String)}), it is parsed
+	 * using an XML parser which discards malicious tags and attributes
+	 * silently. When the parser encounters an XML parse error, the textFormat
+	 * is changed to {@link TextFormat#PlainText}.
 	 * <p>
 	 * Returns whether the text could be set using the current textFormat. A
 	 * return value of false indicates that the textFormat was changed in order
@@ -180,10 +178,10 @@ public class WText extends WInteractWidget {
 	 * plain text, which is displayed literally, or as XHTML-markup.
 	 * <p>
 	 * When changing the textFormat to {@link TextFormat#XHTMLText}, and the
-	 * current text is literal (not created using {@link WString#tr()}), the
-	 * current text is parsed using an XML parser which discards malicious tags
-	 * and attributes silently. When the parser encounters an XML parse error,
-	 * the textFormat is left unchanged, and this method returns false.
+	 * current text is literal (not created using {@link WString#tr(String)}),
+	 * the current text is parsed using an XML parser which discards malicious
+	 * tags and attributes silently. When the parser encounters an XML parse
+	 * error, the textFormat is left unchanged, and this method returns false.
 	 * <p>
 	 * Returns whether the textFormat could be set for the current text.
 	 * <p>

@@ -19,7 +19,7 @@ public abstract class AbstractJSignal extends AbstractEventSignal {
 	}
 
 	@Override
-	protected String getEncodeCmd() {
+	protected String encodeCmd() {
 		return getSender().getFormName() + "." + name;
 	}
 

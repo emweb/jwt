@@ -70,9 +70,11 @@ public class StyleExample extends WContainerWidget {
 	}
 
 	private void updateStyle() {
-		if ((r_.getValidate() != WValidator.State.Valid) || (g_.getValidate() != WValidator.State.Valid) || (b_.getValidate() != WValidator.State.Valid))
+		if ((r_.validate() != WValidator.State.Valid)
+				|| (g_.validate() != WValidator.State.Valid)
+				|| (b_.validate() != WValidator.State.Valid))
 			error_.setText("Color components must be numbers between 0 and 255.");
-		else if (radius_.getValidate() != WValidator.State.Valid)
+		else if (radius_.validate() != WValidator.State.Valid)
 			error_.setText("Radius must be between 1 and 500.");
 		else {
 			w_.setBackgroundColor(new WColor(Integer.parseInt(r_.getText()), Integer.parseInt(g_.getText()), Integer.parseInt(b_.getText())));

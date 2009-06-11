@@ -22,8 +22,6 @@ import eu.webtoolkit.jwt.servlet.*;
  * <p>
  * Using this class you can completely hide the implementation of your composite
  * widget, and provide access to only the standard {@link WWidget} methods.
- * <p>
- * Usage example:
  */
 public class WCompositeWidget extends WWidget {
 	/**
@@ -180,7 +178,7 @@ public class WCompositeWidget extends WWidget {
 	public void setVerticalAlignment(AlignmentFlag alignment, WLength length) {
 		if (!EnumUtils.mask(AlignmentFlag.AlignHorizontalMask, alignment)
 				.isEmpty()) {
-			WApplication.instance().log("warning").append(
+			WApplication.getInstance().log("warning").append(
 					"WCompositeWidget::setVerticalAlignment: alignment ")
 					.append(alignment.toString()).append(
 							"is horizontal, expected vertical");
@@ -212,8 +210,12 @@ public class WCompositeWidget extends WWidget {
 		this.impl_.refresh();
 	}
 
-	public void setAttributeValue(String attribute, String value) {
-		this.impl_.setAttributeValue(attribute, value);
+	public void setAttributeValue(String name, String value) {
+		this.impl_.setAttributeValue(name, value);
+	}
+
+	public String getAttributeValue(String name) {
+		return this.impl_.getAttributeValue(name);
 	}
 
 	public void load() {

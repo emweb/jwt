@@ -35,7 +35,7 @@ public class WXmlLocalizedStrings extends WLocalizedStrings {
 	}
 
 	public void refresh() {
-		URL url = getClass().getResource(bundleName + "_" + WApplication.instance().getLocale() + ".xml");
+		URL url = getClass().getResource(bundleName + "_" + WApplication.getInstance().getLocale() + ".xml");
 		if(url == null)
 			url = getClass().getResource(bundleName + ".xml");
 

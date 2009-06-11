@@ -47,7 +47,7 @@ public class WebRequest extends HttpServletRequestWrapper {
 	}
 
 	public String getPathInfo() {
-		String result = getPathInfo();
+		String result = super.getPathInfo();
 		return result == null ? "" : result;
 	}
 

@@ -43,8 +43,6 @@ import eu.webtoolkit.jwt.servlet.*;
  * use layout managers, or use
  * {@link WCompositeWidget#resize(WLength width, WLength height)}.
  * <p>
- * Usage example:
- * <p>
  * 
  * @see WTreeTableNode
  * @see WTreeView
@@ -77,7 +75,7 @@ public class WTreeTable extends WCompositeWidget {
 		WContainerWidget content = new WContainerWidget(this.impl_);
 		content.resize(new WLength(100, WLength.Unit.Percentage), new WLength(
 				100, WLength.Unit.Percentage));
-		if (!WApplication.instance().getEnvironment().agentIsIE()) {
+		if (!WApplication.getInstance().getEnvironment().agentIsIE()) {
 			content.setOverflow(WContainerWidget.Overflow.OverflowAuto);
 		} else {
 			content.setAttributeValue("style",
@@ -88,7 +86,7 @@ public class WTreeTable extends WCompositeWidget {
 		this.tree_.resize(new WLength(100, WLength.Unit.Percentage),
 				WLength.Auto);
 		WApplication
-				.instance()
+				.getInstance()
 				.doJavaScript(
 						"function sb"
 								+ this.getFormName()

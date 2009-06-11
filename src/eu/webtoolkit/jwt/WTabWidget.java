@@ -36,6 +36,21 @@ import eu.webtoolkit.jwt.servlet.*;
  * <p>
  * Usage example:
  * <p>
+ * <code>
+ WTabWidget examples = new WTabWidget(this); <br> 
+	  <br> 
+ examples.addTab(helloWorldExample(), &quot;Hello World&quot;); <br> 
+ examples.addTab(chartExample(), &quot;Charts&quot;); <br> 
+ examples.addTab(new WText(&quot;A WText&quot;), &quot;WText&quot;); <br> 
+	  <br> 
+ examples.currentChanged().addListener(this, new Signal.Listener(){ <br> 
+	public void trigger() { <br> 
+		//custom code <br> 
+	} <br> 
+  }); <br> 
+ examples.setInternalPathEnabled(); <br> 
+ examples.setInternalBasePath(&quot;/examples&quot;);		
+</code>
  * <p>
  * <div align="center"> <img src="/WTabWidget-1.png"
  * alt="An example WTabWidget">
@@ -356,9 +371,9 @@ public class WTabWidget extends WCompositeWidget {
 	private void create(EnumSet<AlignmentFlag> layoutAlignment) {
 		this.setImplementation(this.layout_ = new WContainerWidget());
 		String CSS_RULES_NAME = "Wt::WTabWidget";
-		WApplication app = WApplication.instance();
+		WApplication app = WApplication.getInstance();
 		if (!app.getStyleSheet().isDefined(CSS_RULES_NAME)) {
-			String resourcesURL = WApplication.resourcesUrl();
+			String resourcesURL = WApplication.getResourcesUrl();
 			app
 					.getStyleSheet()
 					.addRule(

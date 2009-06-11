@@ -5,8 +5,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.ArrayList;
+import java.util.List;
 
 import eu.webtoolkit.jwt.WAbstractItemModel;
 import eu.webtoolkit.jwt.WContainerWidget;
@@ -17,38 +17,32 @@ import eu.webtoolkit.jwt.WText;
 public class CsvUtil {
 	public static void readFromCsv(BufferedReader reader, WAbstractItemModel model) {
 		try {
-			Pattern pat = Pattern.compile(",(\".+?\")");
 			String line = null;
 			int row = 0;
 			while ((line = reader.readLine()) != null) {
-				Matcher matcher = pat.matcher(line);
-				StringBuffer sb = new StringBuffer();
-				while (matcher.find()) {
-					matcher.appendReplacement(sb, ","
-							+ matcher.group(1).replaceAll(",", "&comm"));
-				}
-				matcher.appendTail(sb);
-				String[] fields = sb.toString().split(",");
-				String text;
-				
+				List<String> fields = splitHandleQuotes(line);
+
 				if (row != 0) {
 					model.insertRow(model.getRowCount());
 				}
-//				if (row != 0) {
-//					model.insertRows(row, 1);
-//				}
-				for (int col = 0; col < fields.length; col++) {
-					text = fields[col] != null ? fields[col].replaceAll(
-							"&comm", ",") : "".replaceAll("\"", "");
+				
+				for (int col = 0; col < fields.size(); col++) {
+				       if (col >= model.getColumnCount())
+				           model.insertColumns(model.getColumnCount(),
+				                                col + 1 - model.getColumnCount());
 
-					if (col >= model.getColumnCount())
-						model.insertColumn(col);
+				         if (row == 0)
+				           model.setHeaderData(col, fields.get(col));
+				         else {
+				           int dataRow = row - 1;
 
-					if (row == 0) {
-						model.setHeaderData(col, text);
-					} else {
-						model.setData(row - 1, col, text);
-					}
+				           if (dataRow >= model.getRowCount())
+				             model.insertRows(model.getRowCount(),
+				                               dataRow + 1 - model.getRowCount());
+
+
+				           model.setData(dataRow, col, fields.get(col));
+				         }
 				}
 				row++;
 			}
@@ -58,11 +52,53 @@ public class CsvUtil {
 			ex.printStackTrace();
 		}
 	}
+	
+	private static List<String> splitHandleQuotes(String s) {
+		ArrayList<String> results = new ArrayList<String>();
+		char delimiter = ',';
+		char quoteChar = '"';
+		char escapeChar = '\\';
+
+		StringBuffer current = new StringBuffer("");
+		boolean inQuotation = false;
+		boolean escaping = false;
+
+		for (int i = 0; i < s.length(); ++i) {
+			if (escaping) {
+				if (s.charAt(i) == quoteChar)
+					current.append(quoteChar);
+				else {
+					current.append(escapeChar);
+					current.append(quoteChar);
+				}
+				escaping = false;
+			} else {
+				if (s.charAt(i) == quoteChar) {
+					inQuotation = !inQuotation;
+				} else
+					if (s.charAt(i) == escapeChar) {
+						escaping = true;
+					} else
+						if (!inQuotation)
+							if (s.charAt(i) == delimiter) {
+								results.add(new String(current));
+								current = new StringBuffer("");
+							} else
+								current.append(s.charAt(i));
+						else
+							current.append(s.charAt(i));
+			}
+		}
+
+		results.add(new String(current));
+
+		return results;
+	}
 
 	public static WAbstractItemModel readCsvFile(String fname, WContainerWidget parent) {
 		WStandardItemModel model = new WStandardItemModel(0, 0, parent);
 
-		InputStream is = model.getClass().getResourceAsStream("/eu/webtoolkit/jwt/examples/charts/csv/"+fname);
+		InputStream is = model.getClass().getResourceAsStream("/eu/webtoolkit/jwt/examples/charts/data/"+fname);
 
 		if (is!=null) {
 			readFromCsv(new BufferedReader(new InputStreamReader(is)), model);

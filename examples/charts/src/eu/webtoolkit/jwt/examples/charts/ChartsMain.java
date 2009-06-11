@@ -26,7 +26,7 @@ public class ChartsMain extends WtServlet {
 
 		new ChartsExample(app.getRoot());
 
-		app.useStyleSheet("style/charts/charts.css");
+		app.useStyleSheet("style/charts.css");
 
 		return app;
 	}

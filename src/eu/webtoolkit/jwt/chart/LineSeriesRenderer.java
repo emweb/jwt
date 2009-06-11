@@ -22,10 +22,6 @@ class LineSeriesRenderer extends SeriesRenderer {
 		this.c_ = new WPointF();
 	}
 
-	public void destroy() {
-		this.paint();
-	}
-
 	public void addValue(double x, double y, double stacky) {
 		WPointF p = this.renderer_.map(x, y, this.series_.getAxis(), this.it_
 				.getCurrentXSegment(), this.it_.getCurrentYSegment());

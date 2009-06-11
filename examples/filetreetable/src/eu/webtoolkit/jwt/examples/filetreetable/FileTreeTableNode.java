@@ -24,10 +24,11 @@ public class FileTreeTableNode extends WTreeTableNode {
 	 * Construct a new node for the given file.
 	 */
 	public FileTreeTableNode(File path) {
-		super(path.getName(), createIcon(path));
+		super("", createIcon(path));
 		path_ = path;
 
 		getLabel().setTextFormat(TextFormat.PlainText);
+		getLabel().setText(path_.getName());
 
 		if (path.exists()) {
 			if (!path.isDirectory()) {
@@ -50,9 +51,7 @@ public class FileTreeTableNode extends WTreeTableNode {
 	 */
 	private File path_;
 
-	/**
-	 * Reimplements WTreeNode::populate to read files within a directory.
-	 */
+	@Override
 	protected void populate() {
 		if (path_.isDirectory()) {
 			File[] files = path_.listFiles();
@@ -61,10 +60,8 @@ public class FileTreeTableNode extends WTreeTableNode {
 		}
 	}
 
-	/**
-	 * Reimplements WTreeNode::expandable
-	 */
-	protected boolean expandable() {
+	@Override
+	protected boolean isExpandable() {
 		if (!isPopulated()) {
 			return path_.isDirectory();
 		} else
@@ -76,10 +73,10 @@ public class FileTreeTableNode extends WTreeTableNode {
 	 */
 	private static WIconPair createIcon(File path) {
 		if (path.exists() && path.isDirectory())
-			return new WIconPair("pics/filetreetable/yellow-folder-closed.png",
-					"pics/filetreetable/yellow-folder-open.png", false);
+			return new WIconPair("pics/yellow-folder-closed.png",
+					"pics/yellow-folder-open.png", false);
 		else
-			return new WIconPair("pics/filetreetable/document.png",
-					"pics/filetreetable/yellow-folder-open.png", false);
+			return new WIconPair("pics/document.png",
+					"pics/yellow-folder-open.png", false);
 	}
 }

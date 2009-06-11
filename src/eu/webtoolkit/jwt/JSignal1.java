@@ -11,16 +11,16 @@ import java.lang.reflect.ParameterizedType;
 
 /**
  * A signal that may be triggered from the browser with a JavaScript call, passing 1 argument.
- * 
+ * <p>
  * The argument type A1 must be a {@link String}, {@link WString}, {@link Integer} or
  * {@link Double}. A value of the corresponding JavaScript type can be passed to the JavaScript
  * call.
- *
+ * <p>
  * Note that this is an abstract class. To create a JSignal, you should specialize this class, but
  * you do not need to reimplement any method. The reason for this is to circumvent limitations in
  * Java to obtain introspection in the types of the arguments, and provide suitable marshalling
  * of data from JavaScript to Java. The easiest way to instantiate an object of this class is:
- * 
+ * <p>
  * <code>
  *   JSignal1<String> pingSignal
  *     = new JSignal1<String>(this, "pingSignal") { };
@@ -47,11 +47,11 @@ public abstract class JSignal1<A1> extends AbstractJSignal {
 
 	/**
 	 * Adds a listener for this signal.
-	 * 
+	 * <p>
 	 * Each listener will be triggered whenever the signal is triggered.
 	 * 
 	 * @param listenerOwner
-	 *            the enclosing object for a listener implemented using an anonymous inner class
+	 *            the enclosing object for a listener implemented using an (anonymous) inner class
 	 * @param listener
 	 *            the listener
 	 * @return a connection object that may be used to control the connection
@@ -86,7 +86,7 @@ public abstract class JSignal1<A1> extends AbstractJSignal {
 
 	/**
 	 * Triggers the signal.
-	 * 
+	 * <p>
 	 * The argument is passed to the listeners.
 	 * 
 	 * @param arg The argument.
@@ -100,7 +100,7 @@ public abstract class JSignal1<A1> extends AbstractJSignal {
 
 	/**
 	 * Returns a JavaScript statement that triggers this signal.
-	 * 
+	 * <p>
 	 * You can use this to trigger the signal from within generated JavaScript code.
 	 * 
 	 * @param arg The JavaScript argument.

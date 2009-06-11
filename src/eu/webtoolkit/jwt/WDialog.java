@@ -87,7 +87,7 @@ public class WDialog extends WCompositeWidget {
 		this.setImplementation(this.impl_ = new WContainerWidget());
 		this.impl_.setStyleClass("Wt-dialog");
 		String CSS_RULES_NAME = "Wt::WDialog";
-		WApplication app = WApplication.instance();
+		WApplication app = WApplication.getInstance();
 		if (!app.getStyleSheet().isDefined(CSS_RULES_NAME)) {
 			if (app.getEnvironment().agentIsIE()) {
 				app.getStyleSheet().addRule("body", "height: 100%;");
@@ -257,7 +257,7 @@ public class WDialog extends WCompositeWidget {
 	public void done(WDialog.DialogCode result) {
 		this.result_ = result;
 		if (this.recursiveEventLoop_) {
-			WebSession session = WApplication.instance().getSession();
+			WebSession session = WApplication.getInstance().getSession();
 			this.recursiveEventLoop_ = false;
 			session.unlockRecursiveEventLoop();
 		} else {
@@ -327,7 +327,7 @@ public class WDialog extends WCompositeWidget {
 	}
 
 	public void setHidden(boolean hidden) {
-		WApplication app = WApplication.instance();
+		WApplication app = WApplication.getInstance();
 		if (this.modal_) {
 			WContainerWidget cover = app.getDialogCover(!hidden);
 			if (cover != null) {

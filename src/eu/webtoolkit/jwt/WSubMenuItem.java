@@ -19,8 +19,6 @@ import eu.webtoolkit.jwt.servlet.*;
  * When the item is shown and hidden when the item is selected respectively
  * deselected.
  * <p>
- * Usage example:
- * <p>
  * 
  * @see WMenuItem
  * @see WMenu
@@ -68,7 +66,7 @@ public class WSubMenuItem extends WMenuItem {
 		return this.subMenu_;
 	}
 
-	protected WWidget getCreateItemWidget() {
+	protected WWidget createItemWidget() {
 		if (this.subMenu_ != null) {
 			WContainerWidget contents = new WContainerWidget();
 			WWidget anchor = super.createItemWidget();

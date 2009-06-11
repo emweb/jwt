@@ -12,9 +12,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.EnumSet;
 
-import eu.webtoolkit.jwt.MatchFlag;
+import eu.webtoolkit.jwt.MatchOptions;
 import eu.webtoolkit.jwt.WDate;
 import eu.webtoolkit.jwt.WString;
 import eu.webtoolkit.jwt.WtException;
@@ -56,22 +55,6 @@ public class StringUtils {
 			return replaceAll(text, "&<>", toReplaceWith_);
 	}
 
-	public static String readStringFromFile(String fileName) {
-		String thisLine;
-		StringBuilder builder = new StringBuilder();
-		try {
-			InputStream is = new FileInputStream(new File(fileName));
-			BufferedReader br = new BufferedReader(new InputStreamReader(is));
-			while ((thisLine = br.readLine()) != null) {
-				builder.append(thisLine + "\n");
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
-		return builder.toString();
-	}
-
 	public static String terminate(String s, char c) {
 		if (s.length() > 0 && s.charAt(s.length() - 1) == c)
 			return s;
@@ -85,23 +68,47 @@ public class StringUtils {
 		return sb.toString();
 	}
 
-	public static void main(String[] args) {
-		String a = "adklasjlkdabjsdkfljsdklfjklabkdlsfksdl;fab";
-		String[] replaceWith = { "||", "**" };
-		String b = replaceAll(a, "ab", replaceWith);
-		System.err.println(a);
-		System.err.println(b);
+	public static boolean matchValue(Object query, Object value,
+			MatchOptions options) {
+		if (options.getType() == MatchOptions.MatchType.MatchExactly) {
+			return (query.getClass().equals(value.getClass()))
+					&& asString(query).equals(asString(value));
+		} else {
+			String query_str = asString(query).getValue();
+			String value_str = asString(value).getValue();
 
-		String c = readStringFromFile("Boot.html");
-		System.err.println(c);
-	}
+			switch (options.getType()) {
+			case MatchStringExactly:
+				if (options.getFlags().contains(
+						MatchOptions.MatchFlag.MatchCaseSensitive))
+					return value_str.equals(query_str);
+				else
+					return value_str.equalsIgnoreCase(query_str);
 
-	public static boolean matchValue(Object v, Object value, EnumSet<MatchFlag> flags) {
-		// TODO: take into account flags
-		if (v == value)
-			return true;
-		else
-			return asString(v).equals(asString(value));
+			case MatchStartsWith:
+				if (options.getFlags().contains(
+						MatchOptions.MatchFlag.MatchCaseSensitive))
+					return value_str.startsWith(query_str);
+				else
+					return value_str.toLowerCase().startsWith(
+							query_str.toLowerCase());
+
+			case MatchEndsWith:
+				if (options.getFlags().contains(
+						MatchOptions.MatchFlag.MatchCaseSensitive))
+					return value_str.endsWith(query_str);
+				else
+					return value_str.toLowerCase().endsWith(
+							query_str.toLowerCase());
+
+			default:
+				throw new WtException(
+						"Not yet implemented: WAbstractItemModel.match with "
+								+ "MatchOptions = " + options.getType() + " "
+								+ options.getFlags().toString());
+			}
+
+		}
 	}
 
 	public static String replace(String s, char c, String r) {
@@ -118,11 +125,6 @@ public class StringUtils {
 		}
 
 		return -1;
-	}
-
-	public static CharSequence asJSLiteral(Object data) {
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 	public static WString asString(Object data) {

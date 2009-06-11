@@ -9,7 +9,7 @@ public class TreeViewDragDropMain extends WtServlet {
 		WApplication app = new TreeViewDragDropApplication(env);
 		app.setTwoPhaseRenderingThreshold(0);
 		app.setTitle("WTreeView Drag & Drop");
-		app.useStyleSheet("style/treeviewdragdrop/styles.css");
+		app.useStyleSheet("style/styles.css");
 		
 		app.refresh();
 

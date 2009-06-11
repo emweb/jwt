@@ -277,7 +277,7 @@ public class WVmlImage implements WVectorImage {
 		double fontSize;
 		switch (this.getPainter().getFont().getSize()) {
 		case FixedSize:
-			fontSize = this.getPainter().getFont().getFixedSize().getToPixels();
+			fontSize = this.getPainter().getFont().getFixedSize().toPixels();
 			break;
 		default:
 			fontSize = 16;
@@ -330,7 +330,7 @@ public class WVmlImage implements WVectorImage {
 		default:
 			break;
 		}
-		WApplication app = WApplication.instance();
+		WApplication app = WApplication.getInstance();
 		WFont textFont = this.getPainter().getFont();
 		textFont.setSize(textFont.getSize(), WLength.multiply(textFont
 				.getFixedSize(), app.getEnvironment().getDpiScale()));
@@ -465,13 +465,13 @@ public class WVmlImage implements WVectorImage {
 								- tly));
 					} else {
 						WApplication
-								.instance()
+								.getInstance()
 								.log("warn")
 								.append(
 										"VML only supports rectangle clipping with rectangles aligned to the window");
 					}
 				} else {
-					WApplication.instance().log("warn").append(
+					WApplication.getInstance().log("warn").append(
 							"VML only supports rectangle clipping");
 				}
 			} else {
@@ -615,7 +615,7 @@ public class WVmlImage implements WVectorImage {
 	static final int Z = 10;
 
 	static int myzround(double a, boolean doScale) {
-		WApplication app = WApplication.instance();
+		WApplication app = WApplication.getInstance();
 		double dpiScale = doScale ? app.getEnvironment().getDpiScale() : 1.0;
 		return (int) (dpiScale * (Z * a - Z / 2 + 0.5));
 	}

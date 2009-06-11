@@ -51,17 +51,7 @@ public class MissionImpossibleMain extends WtServlet {
 		cancelButton.clicked().addListener(appl, new Signal1.Listener<WMouseEvent>() {
 			public void trigger(WMouseEvent a1) {
 				countdown.cancel();
-			}
-		});
-
-		cancelButton.clicked().addListener(appl, new Signal1.Listener<WMouseEvent>() {
-			public void trigger(WMouseEvent a1) {
 				cancelButton.disable();
-			}
-		});
-
-		cancelButton.clicked().addListener(appl, new Signal1.Listener<WMouseEvent>() {
-			public void trigger(WMouseEvent a1) {
 				secret.hide();
 			}
 		});

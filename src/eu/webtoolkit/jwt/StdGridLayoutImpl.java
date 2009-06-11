@@ -16,7 +16,7 @@ class StdGridLayoutImpl extends StdLayoutImpl {
 		this.grid_ = grid;
 		this.useFixedLayout_ = false;
 		String CSS_RULES_NAME = "StdGridLayoutImpl";
-		WApplication app = WApplication.instance();
+		WApplication app = WApplication.getInstance();
 		final boolean jsHeights = useJavaScriptHeights(app);
 		if (!app.getStyleSheet().isDefined(CSS_RULES_NAME)) {
 			app.getStyleSheet().addRule("table.Wt-hcenter",
@@ -371,13 +371,13 @@ class StdGridLayoutImpl extends StdLayoutImpl {
 				if (value.equals("auto")) {
 					this.useFixedLayout_ = false;
 				} else {
-					WApplication.instance().log("error").append(
+					WApplication.getInstance().log("error").append(
 							"WGridLayout: unrecognized hint value '").append(
 							value).append("' for '").append(name).append("'");
 				}
 			}
 		} else {
-			WApplication.instance().log("error").append(
+			WApplication.getInstance().log("error").append(
 					"WGridLayout: unrecognized hint '").append(name)
 					.append("'");
 		}
@@ -385,7 +385,7 @@ class StdGridLayoutImpl extends StdLayoutImpl {
 
 	protected void containerAddWidgets(WContainerWidget container) {
 		super.containerAddWidgets(container);
-		WApplication app = WApplication.instance();
+		WApplication app = WApplication.getInstance();
 		if (this.getParentLayoutImpl() == null) {
 			if (container == app.getRoot()) {
 				app

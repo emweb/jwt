@@ -9,7 +9,7 @@
     <servlet-class>eu.webtoolkit.jwt.examples.filetreetable.FileTreeExample</servlet-class>
     <init-param>
       <param-name>startDir</param-name>
-      <param-value>/home/pieter/</param-value>
+      <param-value>/home/koen/project</param-value>
     </init-param>
   </servlet>
   <servlet-mapping>

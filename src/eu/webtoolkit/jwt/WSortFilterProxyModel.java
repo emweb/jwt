@@ -47,6 +47,23 @@ import eu.webtoolkit.jwt.servlet.*;
  * <p>
  * Usage example:
  * <p>
+ * <code>
+ // model is the source model <br> 
+  WAbstractItemModel model = ... <br> 
+  <br> 
+ // we setup a proxy to filter the source model <br> 
+ WSortFilterProxyModel proxy = new WSortFilterProxyModel(this); <br> 
+ proxy.setSourceModel(model); <br> 
+ proxy.setDynamicSortFilter(true); <br> 
+ proxy.setFilterKeyColumn(0); <br> 
+ proxy.setFilterRole(ItemDataRole.UserRole); <br> 
+ proxy.setFilterRegExp(&quot;.*&quot;); <br> 
+		  <br> 
+ // configure a view to use the proxy model instead of the source model <br> 
+ WTreeView view = new WTreeView(this); <br> 
+ view.setModel(proxy); <br> 
+ ...
+</code>
  * <p>
  * <p>
  * <i><b>Note:</b>The implementation is not yet complete: the proxy model does

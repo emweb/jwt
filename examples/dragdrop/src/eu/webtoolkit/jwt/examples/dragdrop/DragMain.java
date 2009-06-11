@@ -20,7 +20,7 @@ public class DragMain extends WtServlet {
 
 		new DragExample(app.getRoot());
 
-		app.useStyleSheet("style/dragdrop/dragdrop.css");
+		app.useStyleSheet("style/dragdrop.css");
 
 		return app;
 	}

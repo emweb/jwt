@@ -92,7 +92,7 @@ class JavaScriptEvent {
 			try {
 				return Integer.parseInt(p);
 			} catch (NumberFormatException ee) {
-				WApplication.instance().log("error").append(
+				WApplication.getInstance().log("error").append(
 						"Could not cast event property '").append(name).append(
 						": ").append(p).append("' to int");
 				return ifMissing;

@@ -24,6 +24,19 @@ import eu.webtoolkit.jwt.servlet.*;
  * <p>
  * Usage example:
  * <p>
+ * <code>
+ // create the stack where the contents will be located <br> 
+ WStackedWidget contents = new WStackedWidget(contentsParent); <br> 
+		  <br> 
+ // create a menu <br> 
+ WMenu menu = new WMenu(contents, Orientation.Vertical, menuParent); <br> 
+		  <br> 
+ // add four items using the default lazy loading policy. <br> 
+ menu.addItem(&quot;Introduction&quot;, new WText(tr(&quot;intro&quot;)); <br> 
+ menu.addItem(&quot;Download&quot;, new WText(&quot;Not yet available&quot;)); <br> 
+ menu.addItem(&quot;Demo&quot;, new DemoWidget()); <br> 
+ menu.addItem(new WMenuItem(&quot;Demo2&quot;, new DemoWidget()));
+</code>
  * <p>
  * After contruction, the first entry will be selected. At any time, it is
  * possible to select a particular item using
@@ -51,6 +64,19 @@ import eu.webtoolkit.jwt.servlet.*;
  * For example, the (old) Wt homepage used the following CSS rules to style the
  * two menu (which both are assigned the style class .menu):
  * <p>
+ * <code>
+.menu * .item { <br> 
+  cursor: pointer; cursor: hand; <br> 
+  color: blue; <br> 
+  text-decoration: underline; <br> 
+} <br> 
+ <br> 
+.menu * .itemselected { <br> 
+  color: blue; <br> 
+  text-decoration: underline; <br> 
+  font-weight: bold;   <br> 
+}
+</code>
  * <p>
  * You may customize the rendering and behaviour of menu entries by specializing
  * {@link WMenuItem}.
@@ -371,7 +397,7 @@ public class WMenu extends WCompositeWidget {
 	public void setInternalPathEnabled() {
 		if (!this.internalPathEnabled_) {
 			this.internalPathEnabled_ = true;
-			WApplication app = WApplication.instance();
+			WApplication app = WApplication.getInstance();
 			this.basePath_ = StringUtils.terminate(app.getInternalPath(), '/');
 			app.internalPathChanged().addListener(this,
 					new Signal1.Listener<String>() {
@@ -466,13 +492,13 @@ public class WMenu extends WCompositeWidget {
 			this.contentsStack_.setCurrentWidget(contents);
 		}
 		if (this.internalPathEnabled_) {
-			WApplication app = WApplication.instance();
+			WApplication app = WApplication.getInstance();
 			this.previousInternalPath_ = app.getInternalPath();
 			String newPath = this.basePath_
 					+ this.items_.get(this.current_).getPathComponent();
 			if (newPath.equals(this.basePath_)
 					|| !app.isInternalPathMatches(newPath)) {
-				WApplication.instance().setInternalPath(newPath);
+				WApplication.getInstance().setInternalPath(newPath);
 			}
 		}
 		this.itemSelectRendered_.trigger(this.items_.get(this.current_));
@@ -483,15 +509,15 @@ public class WMenu extends WCompositeWidget {
 		int prevStackIndex = this.previousStackIndex_;
 		this.selectVisual(this.previousCurrent_);
 		if (this.internalPathEnabled_) {
-			WApplication.instance().setInternalPath(prevPath);
+			WApplication.getInstance().setInternalPath(prevPath);
 		}
 		this.contentsStack_.setCurrentIndex(prevStackIndex);
 	}
 
 	private void internalPathChanged(String path) {
 		if (path.equals(this.basePath_)) {
-			this.setFromState(WApplication.instance().getInternalPathNextPart(
-					this.basePath_));
+			this.setFromState(WApplication.getInstance()
+					.getInternalPathNextPart(this.basePath_));
 		}
 	}
 
@@ -507,7 +533,7 @@ public class WMenu extends WCompositeWidget {
 			}
 		}
 		if (value.length() != 0) {
-			WApplication.instance().log("error").append(
+			WApplication.getInstance().log("error").append(
 					"WMenu: unknown path: '").append(value).append("'");
 		}
 		this.select(-1);

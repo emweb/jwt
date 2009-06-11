@@ -117,7 +117,8 @@ class DomElement {
 				+ child.javaScript_;
 		child.javaScriptEvenWhenDeleted_ = "";
 		child.javaScript_ = "";
-		if (this.wasEmpty_ && this.canWriteInnerHTML(WApplication.instance())) {
+		if (this.wasEmpty_
+				&& this.canWriteInnerHTML(WApplication.getInstance())) {
 			if (!(this.childrenHtml_ != null)) {
 				this.childrenHtml_ = new StringWriter();
 			}
@@ -180,13 +181,13 @@ class DomElement {
 	}
 
 	public void setEventSignal(String eventName, AbstractEventSignal signal) {
-		this.setEvent(eventName, signal.getJavaScript(), signal.getEncodeCmd(),
+		this.setEvent(eventName, signal.getJavaScript(), signal.encodeCmd(),
 				signal.isExposedSignal());
 	}
 
 	public void setEvent(String eventName, String jsCode, String signalName,
 			boolean isExposed) {
-		WApplication app = WApplication.instance();
+		WApplication app = WApplication.getInstance();
 		boolean anchorClick = this.getType() == DomElementType.DomElement_A
 				&& eventName == WInteractWidget.CLICK_SIGNAL;
 		boolean nonEmpty = isExposed || anchorClick || jsCode.length() != 0;
@@ -246,7 +247,7 @@ class DomElement {
 				code += "if(" + actions.get(i).jsCondition + "){";
 			}
 			if (actions.get(i).exposed) {
-				code += WApplication.instance().getJavaScriptClass()
+				code += WApplication.getInstance().getJavaScriptClass()
 						+ "._p_.update(this,'" + actions.get(i).updateCmd
 						+ "',e,true);";
 			}
@@ -332,7 +333,7 @@ class DomElement {
 		this.discardWithParent_ = discard;
 	}
 
-	public boolean isDiscardWithParent() {
+	public boolean discardWithParent() {
 		return this.discardWithParent_;
 	}
 
@@ -369,7 +370,7 @@ class DomElement {
 		eout.append(this.var_).append(".setAttribute('id', '").append(this.id_)
 				.append("');\n");
 		this.mode_ = DomElement.Mode.ModeCreate;
-		this.setJavaScriptProperties(eout, WApplication.instance());
+		this.setJavaScriptProperties(eout, WApplication.getInstance());
 		this.setJavaScriptAttributes(eout);
 		this.asJavaScript(eout, DomElement.Priority.Update);
 	}
@@ -397,7 +398,7 @@ class DomElement {
 					out.append(this.var_).append(".setAttribute('id', '")
 							.append(this.id_).append("');\n");
 				}
-				this.setJavaScriptProperties(out, WApplication.instance());
+				this.setJavaScriptProperties(out, WApplication.getInstance());
 				this.setJavaScriptAttributes(out);
 			}
 			return this.var_;
@@ -405,7 +406,7 @@ class DomElement {
 			if (this.deleted_) {
 				break;
 			}
-			WApplication app = WApplication.instance();
+			WApplication app = WApplication.getInstance();
 			if (this.mode_ == DomElement.Mode.ModeUpdate
 					&& this.numManipulations_ == 1) {
 				if (this.properties_.get(Property.PropertyStyleDisplay) != null) {
@@ -558,7 +559,7 @@ class DomElement {
 		if (this.mode_ != DomElement.Mode.ModeCreate) {
 			throw new WtException("DomElement::asHTML() called with ModeUpdate");
 		}
-		WApplication app = WApplication.instance();
+		WApplication app = WApplication.getInstance();
 		this.processEvents(app);
 		this.processProperties(app);
 		DomElement.EventHandler clickEvent = this.eventHandlers_
@@ -842,7 +843,7 @@ class DomElement {
 		}
 	}
 
-	public String getCreateReference() {
+	public String createReference() {
 		if (this.mode_ == DomElement.Mode.ModeCreate) {
 			return CREATE + elementNames_[this.type_.getValue()] + "')";
 		} else {
@@ -1243,7 +1244,7 @@ class DomElement {
 	private String javaScriptEvenWhenDeleted_;
 	private String var_;
 
-	private static class EventHandler {
+	static class EventHandler {
 		public String jsCode;
 		public String signalName;
 

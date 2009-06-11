@@ -19,10 +19,8 @@ public class FileModel extends WStandardItemModel {
 		super(parent);
 	}
 
-	/**
-	 * Return the mime type.
-	 */
-	public String mimeType() {
+	@Override
+	public String getMimeType() {
 		return FolderView.FileSelectionMimeType;
 	}
 

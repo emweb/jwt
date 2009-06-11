@@ -165,7 +165,7 @@ public class TreeViewExample extends WContainerWidget {
 
 	private WStandardItem countryItem(String country, String code) {
 		WStandardItem result = new WStandardItem(country);
-		result.setIcon("pics/treeview/flag_" + code + ".png");
+		result.setIcon("pics/flag_" + code + ".png");
 
 		return result;
 	}
@@ -181,7 +181,7 @@ public class TreeViewExample extends WContainerWidget {
 
 		// column 1: weather
 		item = new WStandardItem();
-		item.setIcon("pics/treeview/" + weather.getIcon());
+		item.setIcon("pics/" + weather.getIcon());
 		result.add(item);
 
 		// column 2: drink
@@ -201,7 +201,7 @@ public class TreeViewExample extends WContainerWidget {
 	}
 
 	private void toggleRowHeight() {
-		if (treeView_.getHeight().equals(new WLength(30)))
+		if (treeView_.getRowHeight().equals(new WLength(30)))
 			treeView_.setRowHeight(new WLength(25));
 		else
 			treeView_.setRowHeight(new WLength(30));

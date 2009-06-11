@@ -39,8 +39,6 @@ import eu.webtoolkit.jwt.servlet.*;
  * {@link WStringListModel}, use
  * {@link WComboBox#setModel(WAbstractItemModel model)}.
  * <p>
- * Usage example:
- * <p>
  * The widget corresponds to the HTML <code>&lt;select&gt;</code> tag.
  * <p>
  * WSelectionBox is an {@link WWidget#setInline(boolean inlined) inline} widget.
@@ -210,7 +208,7 @@ public class WSelectionBox extends WComboBox {
 						int i = Integer.parseInt(v);
 						this.selection_.add(i);
 					} catch (NumberFormatException error) {
-						WApplication.instance().log("error").append(
+						WApplication.getInstance().log("error").append(
 								"WSelectionBox received illegal form value: '")
 								.append(v).append("'");
 					}

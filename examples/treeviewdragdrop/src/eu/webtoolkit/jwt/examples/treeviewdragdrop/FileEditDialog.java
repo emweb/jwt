@@ -18,6 +18,7 @@ import eu.webtoolkit.jwt.WLineEdit;
 import eu.webtoolkit.jwt.WModelIndex;
 import eu.webtoolkit.jwt.WMouseEvent;
 import eu.webtoolkit.jwt.WPushButton;
+import eu.webtoolkit.jwt.MatchOptions;
 import eu.webtoolkit.jwt.utils.StringUtils;
 
 /**
@@ -46,7 +47,7 @@ public class FileEditDialog extends WDialog {
 		typeEdit_.addItem("Spreadsheet");
 		typeEdit_.addItem("Presentation");
 		typeEdit_.setCurrentIndex(typeEdit_.findText(StringUtils
-				.asString(model_.getData(modelRow, 2))));
+				.asString(model_.getData(modelRow, 2)), MatchOptions.defaultMatchOptions));
 
 		// size
 		sizeEdit_ = new WLineEdit(StringUtils

@@ -17,8 +17,6 @@ import eu.webtoolkit.jwt.servlet.*;
  * To act on a button click, connect a slot to the
  * {@link WInteractWidget#clicked()} signal.
  * <p>
- * Usage example:
- * <p>
  * The widget corresponds to the HTML <code>&lt;button&gt;</code> tag.
  * <p>
  * WPushButton is an {@link WWidget#setInline(boolean inlined) inline} widget.

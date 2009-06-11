@@ -18,7 +18,6 @@ import eu.webtoolkit.jwt.servlet.*;
  * provide interactivity on a rectangular area of the image. The rectangle is
  * specified in pixel coordinates.
  * <p>
- * <p>
  * 
  * @see WImage#addArea(WAbstractArea area)
  * @see WPaintedWidget#addArea(WAbstractArea area)

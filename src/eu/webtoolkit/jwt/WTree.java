@@ -28,8 +28,6 @@ import eu.webtoolkit.jwt.servlet.*;
  * are {@link WTreeNode#setSelectable(boolean selectable) selectable} may
  * participate in the selection.
  * <p>
- * Usage example:
- * <p>
  * 
  * @see WTreeNode
  * @see WTreeTable
@@ -106,9 +104,6 @@ public class WTree extends WCompositeWidget {
 		return this.selectionMode_;
 	}
 
-	/**
-	 * Typedef for a set of WTreeNode&apos;s.
-	 */
 	public Set<WTreeNode> WTreeNodeSet;
 
 	/**
@@ -168,10 +163,9 @@ public class WTree extends WCompositeWidget {
 	 * Clear the current selection.
 	 */
 	public void clearSelection() {
-		Set<WTreeNode> nodes = this.selection_;
-		for (Iterator<WTreeNode> i_it = nodes.iterator(); i_it.hasNext();) {
-			WTreeNode i = i_it.next();
-			this.select(i, false);
+		while (!this.selection_.isEmpty()) {
+			WTreeNode n = this.selection_.iterator().next();
+			this.select(n, false);
 		}
 	}
 

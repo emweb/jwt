@@ -24,7 +24,6 @@ import eu.webtoolkit.jwt.servlet.*;
  * the buttonClicked signal to a method. This method then interpretes the result
  * and deletes the message box.
  * <p>
- * <p>
  * This will show a message box that looks like this:
  * <p>
  * <div align="center"> <img src="/WMessageBox-1.png"

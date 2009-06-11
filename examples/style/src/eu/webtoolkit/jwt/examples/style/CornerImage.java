@@ -133,10 +133,8 @@ public class CornerImage extends WImage {
 		else 
 			cy = -radius_;
 
-		if (corner_.contains(Position.Left)) {
+		if (corner_.contains(Position.Left)) 
 			cx = 0;
-			cy ++;
-		}
 		else
 			cx = -radius_;
 

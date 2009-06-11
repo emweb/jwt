@@ -37,7 +37,9 @@ public class WItemDelegate extends WAbstractItemDelegate {
 	public WWidget update(WWidget widget, WModelIndex index,
 			EnumSet<ViewItemRenderFlag> flags) {
 		WItemDelegate.WidgetRef widgetRef = new WItemDelegate.WidgetRef(widget);
+		boolean isNew = false;
 		if (!(widgetRef.w != null)) {
+			isNew = true;
 			WText t = new WText();
 			if ((index != null)
 					&& !!EnumUtils.mask(index.getFlags(),
@@ -64,8 +66,10 @@ public class WItemDelegate extends WAbstractItemDelegate {
 							.isEmpty()).setCheckState(state);
 			haveCheckBox = true;
 		} else {
-			if (this.checkBox(widgetRef, index, false) != null)
-				this.checkBox(widgetRef, index, false).remove();
+			if (!isNew) {
+				if (this.checkBox(widgetRef, index, false) != null)
+					this.checkBox(widgetRef, index, false).remove();
+			}
 		}
 		String internalPath = StringUtils.asString(
 				index.getData(ItemDataRole.InternalPathRole)).toString();
@@ -90,14 +94,16 @@ public class WItemDelegate extends WAbstractItemDelegate {
 		if (iconUrl.length() != 0) {
 			this.iconWidget(widgetRef, true).setImageRef(iconUrl);
 		} else {
-			if (iconUrl.length() == 0) {
+			if (!isNew) {
 				if (this.iconWidget(widgetRef, false) != null)
 					this.iconWidget(widgetRef, false).remove();
 			}
 		}
 		WString tooltip = StringUtils.asString(index
 				.getData(ItemDataRole.ToolTipRole));
-		widgetRef.w.setToolTip(tooltip);
+		if (!(tooltip.length() == 0) || !isNew) {
+			widgetRef.w.setToolTip(tooltip);
+		}
 		if (index.getColumn() != 0) {
 			String sc = StringUtils.asString(
 					index.getData(ItemDataRole.StyleClassRole)).toString();
@@ -115,8 +121,10 @@ public class WItemDelegate extends WAbstractItemDelegate {
 			widgetRef.w.setAttributeValue("drop", new WString("true")
 					.toString());
 		} else {
-			widgetRef.w.setAttributeValue("drop", new WString("false")
-					.toString());
+			if (widgetRef.w.getAttributeValue("drop").length() != 0) {
+				widgetRef.w.setAttributeValue("drop", new WString("f")
+						.toString());
+			}
 		}
 		return widgetRef.w;
 	}
@@ -135,8 +143,8 @@ public class WItemDelegate extends WAbstractItemDelegate {
 	/**
 	 * Set the text format string.
 	 * 
-	 * The DisplayRole data is converted to a string using by passing the given
-	 * format.
+	 * The DisplayRole data is converted to a string using
+	 * {@link StringUtils#asString(Object)} by passing the given format.
 	 * <p>
 	 * The default value is &quot;&quot;.
 	 */
@@ -227,8 +235,8 @@ public class WItemDelegate extends WAbstractItemDelegate {
 				WImage image = new WImage();
 				image.setStyleClass("icon");
 				wc.addWidget(image);
-				if (WApplication.instance().getEnvironment().agentIsIE()) {
-					WImage inv = new WImage(WApplication.instance()
+				if (WApplication.getInstance().getEnvironment().agentIsIE()) {
+					WImage inv = new WImage(WApplication.getInstance()
 							.getOnePixelGifUrl());
 					inv.setStyleClass("rh w0 icon");
 					wc.addWidget(inv);
@@ -260,8 +268,8 @@ public class WItemDelegate extends WAbstractItemDelegate {
 			WImage image = new WImage();
 			image.setStyleClass("icon");
 			wc.insertWidget(wc.getCount() - 1, image);
-			if (WApplication.instance().getEnvironment().agentIsIE()) {
-				WImage inv = new WImage(WApplication.instance()
+			if (WApplication.getInstance().getEnvironment().agentIsIE()) {
+				WImage inv = new WImage(WApplication.getInstance()
 						.getOnePixelGifUrl());
 				inv.setStyleClass("rh w0 icon");
 				wc.insertWidget(wc.getCount() - 1, inv);

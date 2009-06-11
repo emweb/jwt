@@ -19,8 +19,6 @@ import eu.webtoolkit.jwt.servlet.*;
  * <p>
  * The format string used for validating user input are the same as those used
  * by {@link WDate#fromString(CharSequence)}.
- * <p>
- * Usage example:
  */
 public class WDateValidator extends WValidator {
 	/**
@@ -207,7 +205,7 @@ public class WDateValidator extends WValidator {
 					return WValidator.State.Valid;
 				}
 			} catch (Exception e) {
-				WApplication.instance().log("warn").append(
+				WApplication.getInstance().log("warn").append(
 						"WDateValidator::validate(): ").append(e.toString());
 			}
 		}

@@ -150,7 +150,7 @@ public class WStackedWidget extends WContainerWidget {
 	protected DomElement createDomElement(WApplication app) {
 		this.setCurrentIndex(this.currentIndex_);
 		WApplication
-				.instance()
+				.getInstance()
 				.doJavaScript(
 						this.getJsRef()
 								+ ".wtSetHeight = function(self, h){var j,jl,c;self.style.height=h+'px';for (j=0, jl=self.childNodes.length; j<jl; ++j){c=self.childNodes[j];c.style.height = self.style.height;}}");

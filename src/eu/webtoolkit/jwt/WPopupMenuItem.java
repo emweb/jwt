@@ -171,7 +171,7 @@ public class WPopupMenuItem extends WCompositeWidget {
 		if (this.subMenu_ != null)
 			this.subMenu_.remove();
 		this.subMenu_ = menu;
-		String resources = WApplication.resourcesUrl();
+		String resources = WApplication.getResourcesUrl();
 		if (this.subMenu_ != null) {
 			this.subMenu_.parentItem_ = this;
 			this.text_.getDecorationStyle().setBackgroundImage(

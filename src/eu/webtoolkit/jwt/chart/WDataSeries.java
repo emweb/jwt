@@ -19,8 +19,8 @@ import eu.webtoolkit.jwt.servlet.*;
  * against the X series configured for the chart.
  * <p>
  * The data column should contain data that can be converted to a number, but
- * should not necessarily be of a number type, see also {@link StringUtils
- * ::asNumber(Object)}.
+ * should not necessarily be of a number type, see also
+ * {@link eu.webtoolkit.jwt.utils.StringUtils#asNumber(Object)}.
  * <p>
  * Multiple series of different types may be combined on a single chart.
  * <p>
@@ -159,7 +159,7 @@ public class WDataSeries {
 	 * The data column should contain data that can be converted to a number
 	 * (but should not necessarily be of a number type).
 	 * <p>
-	 * See also {@link StringUtils::asNumber(Object)}.
+	 * See also {@link StringUtils#asNumber(Object)}.
 	 */
 	public void setModelColumn(int modelColumn) {
 		if (!ChartUtils.equals(this.modelColumn_, modelColumn)) {
@@ -271,7 +271,7 @@ public class WDataSeries {
 	 * The default value is a default WPen().
 	 * <p>
 	 * 
-	 * @see WChartPalette
+	 * @see WChartPalette#strokePen(int index)
 	 * @see WChartPalette#borderPen(int index)
 	 */
 	public void setPen(WPen pen) {
@@ -297,10 +297,10 @@ public class WDataSeries {
 			if (this.chart_ != null) {
 				if (this.type_ == SeriesType.BarSeries) {
 					return this.chart_.getPalette().borderPen(
-							this.chart_.seriesIndexOf(this.modelColumn_));
+							this.chart_.getSeriesIndexOf(this.modelColumn_));
 				} else {
 					return this.chart_.getPalette().strokePen(
-							this.chart_.seriesIndexOf(this.modelColumn_));
+							this.chart_.getSeriesIndexOf(this.modelColumn_));
 				}
 			} else {
 				return new WPen();
@@ -340,7 +340,7 @@ public class WDataSeries {
 		} else {
 			if (this.chart_ != null) {
 				return this.chart_.getPalette().brush(
-						this.chart_.seriesIndexOf(this.modelColumn_));
+						this.chart_.getSeriesIndexOf(this.modelColumn_));
 			} else {
 				return new WBrush();
 			}
@@ -559,7 +559,7 @@ public class WDataSeries {
 		} else {
 			if (this.chart_ != null) {
 				return this.chart_.getPalette().fontColor(
-						this.chart_.seriesIndexOf(this.modelColumn_));
+						this.chart_.getSeriesIndexOf(this.modelColumn_));
 			} else {
 				return WColor.black;
 			}

@@ -21,7 +21,7 @@ public class FileTreeExample extends WtServlet {
 	public WApplication createApplication(WEnvironment env) {
 		WApplication app = new WApplication(env);
 		app.setTitle("File explorer example");
-		app.useStyleSheet("style/filetreetable/filetree.css");
+		app.useStyleSheet("style/filetree.css");
 
 		FileTreeTable treeTable = new FileTreeTable(startDir);
 

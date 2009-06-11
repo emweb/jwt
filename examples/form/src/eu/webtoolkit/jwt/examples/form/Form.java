@@ -102,7 +102,7 @@ public class Form extends WTable
 			    if (remarks.length() > 0)
 			      new WText("<p>You had some remarks. Splendid !</p>", getElementAt(0, 0));
 
-			    WApplication.instance().quit();
+			    WApplication.getInstance().quit();
 			  }
 	}
 
@@ -271,7 +271,7 @@ public class Form extends WTable
     messages on problems.
    */
    private boolean checkValid(WFormWidget edit, WString text) {
-	   if (edit.getValidate() != WValidator.State.Valid) {
+	   if (edit.validate() != WValidator.State.Valid) {
 		    feedbackMessages_.addWidget(new WText(text));
 		    feedbackMessages_.addWidget(new WBreak());
 		    edit.getLabel().getDecorationStyle().setForegroundColor(WColor.red);

@@ -181,10 +181,10 @@ public class WMenuItem extends WObject {
 	 * will be <code>&quot;/examples/charts/&quot;</code>.
 	 * <p>
 	 * By default, the path is automatically derived from
-	 * {@link WMenuItem#getText()}. If a {@link WString#literal() literal text}
-	 * is used, the path is based on the text itself, otherwise on the
-	 * {@link WString#key() key}. It is converted to lower case, and replacing
-	 * white space and special characters with &apos;_&apos;.
+	 * {@link WMenuItem#getText()}. If a {@link WString#isLiteral() literal
+	 * text} is used, the path is based on the text itself, otherwise on the
+	 * {@link WString#getKey() key}. It is converted to lower case, and
+	 * replacing white space and special characters with &apos;_&apos;.
 	 * <p>
 	 * 
 	 * @see WMenuItem#setText(CharSequence text)
@@ -293,7 +293,7 @@ public class WMenuItem extends WObject {
 			a.setText(this.getText());
 			String url = "";
 			if (this.menu_.isInternalPathEnabled()) {
-				url = WApplication.instance().getBookmarkUrl(
+				url = WApplication.getInstance().getBookmarkUrl(
 						this.menu_.getInternalBasePath()
 								+ this.getPathComponent());
 			} else {

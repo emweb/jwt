@@ -20,7 +20,7 @@ class StdWidgetItemImpl extends StdLayoutItemImpl {
 	}
 
 	public int getMinimumHeight() {
-		return (int) this.item_.getWidget().getMinimumHeight().getToPixels();
+		return (int) this.item_.getWidget().getMinimumHeight().toPixels();
 	}
 
 	public void updateAddItem(WLayoutItem anon1) {
@@ -89,7 +89,7 @@ class StdWidgetItemImpl extends StdLayoutItemImpl {
 	}
 
 	public int getAdditionalVerticalPadding(boolean fitWidth, boolean fitHeight) {
-		WApplication app = WApplication.instance();
+		WApplication app = WApplication.getInstance();
 		if (!app.getEnvironment().agentIsIE()
 				&& !app.getEnvironment().agentIsOpera() && fitHeight
 				&& isTextArea(this.item_.getWidget())) {
@@ -100,7 +100,7 @@ class StdWidgetItemImpl extends StdLayoutItemImpl {
 	}
 
 	public void setHint(String name, String value) {
-		WApplication.instance().log("error").append(
+		WApplication.getInstance().log("error").append(
 				"WWidgetItem: unrecognized hint '").append(name).append("'");
 	}
 

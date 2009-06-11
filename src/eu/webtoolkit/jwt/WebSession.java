@@ -66,8 +66,8 @@ class WebSession {
 		this.log("notice").append("Session destroyed");
 	}
 
-	public static WebSession instance() {
-		WebSession.Handler handler = Handler.instance();
+	public static WebSession getInstance() {
+		WebSession.Handler handler = WebSession.Handler.getInstance();
 		return handler != null ? handler.getSession() : null;
 	}
 
@@ -541,12 +541,12 @@ class WebSession {
 		return this.deploymentPath_;
 	}
 
-	public String mostRelativeUrl(String internalPath) {
+	public String getMostRelativeUrl(String internalPath) {
 		return this.appendSessionQuery(this.getBookmarkUrl(internalPath));
 	}
 
-	public final String mostRelativeUrl() {
-		return mostRelativeUrl("");
+	public final String getMostRelativeUrl() {
+		return getMostRelativeUrl("");
 	}
 
 	public String appendInternalPath(String baseUrl, String internalPath) {
@@ -566,7 +566,8 @@ class WebSession {
 	}
 
 	public String appendSessionQuery(String url) {
-		String result = Handler.instance().getResponse().encodeURL(url);
+		String result = WebSession.Handler.getInstance().getResponse()
+				.encodeURL(url);
 		if (this.env_.agentIsSpiderBot()) {
 			return result;
 		}
@@ -593,7 +594,7 @@ class WebSession {
 	public String getBootstrapUrl(WebResponse response,
 			WebSession.BootstrapOption option) {
 		if (response.getPathInfo().length() == 0) {
-			return this.mostRelativeUrl();
+			return this.getMostRelativeUrl();
 		} else {
 			switch (option) {
 			case KeepInternalPath:
@@ -644,9 +645,18 @@ class WebSession {
 	}
 
 	public String getCgiValue(String varName) {
-		WebRequest request = Handler.instance().getRequest();
+		WebRequest request = WebSession.Handler.getInstance().getRequest();
 		if (request != null) {
 			return request.getEnvValue(varName);
+		} else {
+			return "";
+		}
+	}
+
+	public String getCgiHeader(String headerName) {
+		WebRequest request = WebSession.Handler.getInstance().getRequest();
+		if (request != null) {
+			return request.getHeaderValue(headerName);
 		} else {
 			return "";
 		}
@@ -679,7 +689,7 @@ class WebSession {
 			threadHandler_.set((WebSession.Handler) null);
 		}
 
-		public static WebSession.Handler instance() {
+		public static WebSession.Handler getInstance() {
 			return threadHandler_.get();
 		}
 

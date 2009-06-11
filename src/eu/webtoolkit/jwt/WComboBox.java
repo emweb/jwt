@@ -34,8 +34,6 @@ import eu.webtoolkit.jwt.servlet.*;
  * {@link WComboBox#getCurrentIndex()} and the current selection text using
  * {@link WComboBox#getCurrentText()}.
  * <p>
- * Usage example:
- * <p>
  * The widget corresponds to the HTML <code>&lt;select&gt;</code> tag.
  * <p>
  * WComboBox is an {@link WWidget#setInline(boolean inlined) inline} widget.
@@ -257,7 +255,7 @@ public class WComboBox extends WFormWidget {
 	/**
 	 * Returns the index of the first item that matches a text.
 	 */
-	public int findText(CharSequence text, EnumSet<MatchFlag> flags) {
+	public int findText(CharSequence text, MatchOptions flags) {
 		List<WModelIndex> list = this.model_.match(this.model_.getIndex(0,
 				this.modelColumn_), ItemDataRole.DisplayRole, text, 1, flags);
 		if (list.isEmpty()) {
@@ -267,17 +265,7 @@ public class WComboBox extends WFormWidget {
 		}
 	}
 
-	public final int findText(CharSequence text, MatchFlag flag,
-			MatchFlag... flags) {
-		return findText(text, EnumSet.of(flag, flags));
-	}
-
-	public final int findText(CharSequence text) {
-		return findText(text, EnumSet.of(MatchFlag.MatchExactly,
-				MatchFlag.MatchCaseSensitive));
-	}
-
-	public WValidator.State getValidate() {
+	public WValidator.State validate() {
 		if (this.getValidator() != null) {
 			String text = this.getCurrentText().toString();
 			return this.getValidator().validate(text);
@@ -420,7 +408,7 @@ public class WComboBox extends WFormWidget {
 				try {
 					this.currentIndex_ = Integer.parseInt(value);
 				} catch (NumberFormatException e) {
-					WApplication.instance().log("error").append(
+					WApplication.getInstance().log("error").append(
 							"WComboBox received illegal form value: '").append(
 							value).append("'");
 				}

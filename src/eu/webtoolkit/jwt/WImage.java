@@ -15,7 +15,7 @@ import eu.webtoolkit.jwt.servlet.*;
  * 
  * 
  * The image may be specified either as a URL, or may be dynamically generated
- * by a {@link WResource}.
+ * by a .
  * <p>
  * You may listen to events by attaching event listeners to signals such as
  * {@link WInteractWidget#clicked()}. Since mouse events pass the coordinates
@@ -25,14 +25,11 @@ import eu.webtoolkit.jwt.servlet.*;
  * allows to have customized tool tips for certain image areas (using
  * {@link WAbstractArea#setToolTip(CharSequence text)}).
  * <p>
- * Usage example:
- * <p>
  * WImage is an {@link WWidget#setInline(boolean inlined) inline} widget.
  * <p>
  * The widget corresponds to the HTML <code>&lt;img&gt;</code> tag.
  * <p>
  * 
- * @see WResource
  * @see WPaintedWidget
  */
 public class WImage extends WInteractWidget {
@@ -264,7 +261,7 @@ public class WImage extends WInteractWidget {
 	 */
 	public void removeArea(WAbstractArea area) {
 		if (!(this.map_ != null)) {
-			WApplication.instance().log("error").append(
+			WApplication.getInstance().log("error").append(
 					"WImage::removeArea(): no such area");
 			return;
 		}
@@ -336,8 +333,8 @@ public class WImage extends WInteractWidget {
 	protected void updateDom(DomElement element, boolean all) {
 		DomElement img = element;
 		if (all && element.getType() == DomElementType.DomElement_SPAN) {
-			DomElement map = this.map_
-					.createDomElement(WApplication.instance());
+			DomElement map = this.map_.createDomElement(WApplication
+					.getInstance());
 			element.addChild(map);
 			img = DomElement.createNew(DomElementType.DomElement_IMG);
 			img.setId("i" + this.getFormName(), false);

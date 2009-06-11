@@ -11,18 +11,18 @@ import java.util.ArrayList;
 
 /**
  * A signal.
- * 
+ * <p>
  * A signal implements the Observable pattern, allowing one or more listeners to listen for
  * events generated on the signal.
  */
 public class Signal extends AbstractSignal {
 	/**
 	 * The listener interface.
-	 * 
+	 * <p>
 	 * This listener may be added to any signal, and its {@link #trigger()} method will
 	 * be invoked whenever the signal is triggered.
 	 * 
-	 * @see AbstractSignal#addListener(WObject, Listener)
+	 * @see AbstractSignal#addListener(WObject, Signal.Listener)
 	 */
 	public static interface Listener extends SignalImpl.Listener {
 		/**
@@ -53,7 +53,7 @@ public class Signal extends AbstractSignal {
 
 	/**
 	 * Triggers the signal.
-	 * 
+	 * <p>
 	 * The {@link Listener#trigger()} method of all listeners added to this signal is invoked,
 	 * unless the signal is blocked (see {@link #setBlocked(boolean)}.
 	 */

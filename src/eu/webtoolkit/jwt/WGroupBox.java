@@ -18,6 +18,30 @@ import eu.webtoolkit.jwt.servlet.*;
  * <p>
  * Usage example:
  * <p>
+ * <code>
+ enum Vote { Republican , Democrate , NoVote }; <br> 
+  <br> 
+ // use a group box as widget container for 3 radio buttons, with a title <br> 
+ WGroupBox container = new WGroupBox(&quot;USA elections vote&quot;); <br> 
+ 		  <br> 
+ // use a button group to logically group the 3 options <br> 
+ WButtonGroup group = new WButtonGroup(this); <br> 
+		  <br> 
+ WRadioButton button; <br> 
+ button = new WRadioButton(&quot;I voted Republican&quot;, container); <br> 
+ new WBreak(container); <br> 
+ group.addButton(button, Vote.Republican.ordinal()); <br> 
+ <br> 
+ button = new WRadioButton(&quot;I voted Democrat&quot;, container); <br> 
+ new WBreak(container); <br> 
+ group.addButton(button, Vote.Democrate.ordinal()); <br> 
+ <br> 
+ button = new WRadioButton(&quot;I didn&apos;t vote&quot;, container); <br> 
+ new WBreak(container); <br> 
+ group.addButton(button, Vote.NoVote.ordinal()); <br> 
+		  <br> 
+ group.setCheckedButton(group.button(Vote.NoVote.ordinal()));
+</code>
  * <p>
  * The widget corresponds to the HTML <code>&lt;fieldset&gt;</code> tag, and the
  * title in a nested <code>&lt;legend&gt;</code> tag.

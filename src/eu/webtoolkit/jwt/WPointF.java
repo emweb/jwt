@@ -17,10 +17,7 @@ public class WPointF {
 	/**
 	 * Default constructor.
 	 * 
-	 * Constructs a <i>null</i> point.
-	 * <p>
-	 * 
-	 * @see WPointF#isNull()
+	 * Constructs a point (<i>x=0</i>, <i>y=0</i>).
 	 */
 	public WPointF() {
 		this.x_ = 0;
@@ -43,15 +40,6 @@ public class WPointF {
 	public WPointF(WPointF other) {
 		this.x_ = other.getX();
 		this.y_ = other.getY();
-	}
-
-	/**
-	 * Check for a <i>null</i> point.
-	 * 
-	 * @see WPointF#WPointF()
-	 */
-	public boolean isNull() {
-		return this.x_ == 0 && this.y_ == 0;
 	}
 
 	/**

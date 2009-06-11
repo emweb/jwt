@@ -562,11 +562,13 @@ class WTreeViewNode extends WTable {
 		WWidget current = replace ? this.getWidget(column) : null;
 		if (current != null) {
 			newW.setStyleClass(current.getStyleClass());
-			current.setStyleClass("");
+			current.setStyleClass(new WString().toString());
 		} else {
-			newW.setStyleClass("Wt-tv-c rh "
-					+ this.view_.getColumnStyleClass(column) + " "
-					+ newW.getStyleClass());
+			EscapeOStream s = new EscapeOStream();
+			s.append("Wt-tv-c rh ").append(
+					this.view_.getColumnStyleClass(column)).append(' ').append(
+					newW.getStyleClass());
+			newW.setStyleClass(new WString(s.toString()).toString());
 		}
 		if (column == 0) {
 			if (current != null) {
@@ -587,7 +589,7 @@ class WTreeViewNode extends WTable {
 			}
 			row.insertWidget(column - 1, newW);
 		}
-		if (!WApplication.instance().getEnvironment().hasAjax()) {
+		if (!WApplication.getInstance().getEnvironment().hasAjax()) {
 			WInteractWidget wi = ((newW) instanceof WInteractWidget ? (WInteractWidget) (newW)
 					: null);
 			if (wi != null) {

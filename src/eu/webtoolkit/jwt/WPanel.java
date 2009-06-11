@@ -17,8 +17,6 @@ import eu.webtoolkit.jwt.servlet.*;
  * The panel provides a container with an optional title bar, and an optional
  * collapse icon.
  * <p>
- * Usage example:
- * <p>
  * <div align="center"> <img src="/WPanel-1.png"
  * alt="Two panels: the top panel is collapsed, and the bottom panel expanded">
  * <p>
@@ -49,7 +47,7 @@ public class WPanel extends WCompositeWidget {
 		centralArea.setStyleClass("body");
 		this.impl_.addWidget(centralArea);
 		String CSS_RULES_NAME = "Wt::WPanel";
-		WApplication app = WApplication.instance();
+		WApplication app = WApplication.getInstance();
 		if (!app.getStyleSheet().isDefined(CSS_RULES_NAME)) {
 			app
 					.getStyleSheet()
@@ -155,7 +153,7 @@ public class WPanel extends WCompositeWidget {
 	 */
 	public void setCollapsible(boolean on) {
 		if (on && !(this.collapseIcon_ != null)) {
-			String resources = WApplication.resourcesUrl();
+			String resources = WApplication.getResourcesUrl();
 			this.setTitleBar(true);
 			this.collapseIcon_ = new WIconPair(resources + "collapse.gif",
 					resources + "expand.gif");

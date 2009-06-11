@@ -32,14 +32,14 @@ class LabelRenderIterator extends SeriesIterator {
 	public void newValue(WDataSeries series, double x, double y, double stackY) {
 		WString text = new WString();
 		if (series.isLabelsEnabled(Axis.XAxis)) {
-			text = this.renderer_.getChart().axis(Axis.XAxis).label(x);
+			text = this.renderer_.getChart().getAxis(Axis.XAxis).getLabel(x);
 		}
 		if (series.isLabelsEnabled(Axis.YAxis)) {
 			if (!(text.length() == 0)) {
 				text.append(": ");
 			}
-			text.append(this.renderer_.getChart().axis(series.getAxis()).label(
-					y - stackY));
+			text.append(this.renderer_.getChart().getAxis(series.getAxis())
+					.getLabel(y - stackY));
 		}
 		if (!(text.length() == 0)) {
 			WPointF p = this.renderer_.map(x, y, series.getAxis(), this

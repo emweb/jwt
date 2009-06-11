@@ -19,7 +19,7 @@ public class ComposerMain extends WtServlet
 		wsls.use("eu.webtoolkit.jwt.examples.composer.composer");
 		app.setLocalizedStrings(wsls);
 		app.setTitle("Composer example");
-		app.useStyleSheet("style/composer/composer.css");
+		app.useStyleSheet("style/composer.css");
 
 		app.getRoot().addWidget(new ComposeExample());
 

@@ -18,7 +18,13 @@ import eu.webtoolkit.jwt.servlet.*;
  * provide interactivity on a circular area of the image. The circle is
  * specified in pixel coordinates.
  * <p>
- * Usage example:
+ * Usage example: <code>
+ Wt::WImage *image = new Wt::WImage(&quot;images/events.png&quot;, this); <br> 
+ Wt::WCircleArea *area = new Wt::WCircleArea(20, 30, 15); <br> 
+ image-&gt;addArea(area); <br> 
+ <br> 
+ area-&gt;clicked().connect(SLOT(this, MyWidget::areaClicked));
+</code>
  * <p>
  * 
  * @see WImage#addArea(WAbstractArea area)

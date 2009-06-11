@@ -32,6 +32,19 @@ import eu.webtoolkit.jwt.servlet.*;
  * <p>
  * Usage example:
  * <p>
+ * <code>
+ WGroupBox box = new WGroupBox(&quot;In-flight options&quot;); <br> 
+		  <br> 
+ WCheckBox w1 = new WCheckBox(&quot;Vegetarian diet&quot;, box); <br> 
+ box.addWidget(new WBreak()); <br> 
+ WCheckBox w2 = new WCheckBox(&quot;WIFI access&quot;, box); <br> 
+ box.addWidget(new WBreak()); <br> 
+ WCheckBox w3 = new WCheckBox(&quot;AC plug&quot;, box); <br> 
+		  <br> 
+ w1.setChecked(false); <br> 
+ w2.setChecked(true); <br> 
+ w3.setChecked(true);
+</code>
  * <p>
  * The widget corresponds to the HTML
  * <code>&lt;input type=&quot;checkbox&quot;&gt;</code> tag.
@@ -81,7 +94,7 @@ public class WCheckBox extends WAbstractToggleButton {
 	public void setTristate(boolean tristate) {
 		this.triState_ = tristate;
 		if (this.triState_) {
-			if (this.isNeedTristateImageWorkaround()) {
+			if (this.needTristateImageWorkaround()) {
 				EventSignal imgClick = this.voidEventSignal(
 						UNDETERMINATE_CLICK_SIGNAL, false);
 				if (!(imgClick != null)) {
@@ -99,7 +112,7 @@ public class WCheckBox extends WAbstractToggleButton {
 					});
 				}
 			} else {
-				if (WApplication.instance().getEnvironment().agentIsSafari()
+				if (WApplication.getInstance().getEnvironment().agentIsSafari()
 						&& !this.safariWorkaround_) {
 					this.clicked().addListener(safariWorkaroundJS);
 					this.safariWorkaround_ = true;
@@ -157,7 +170,7 @@ public class WCheckBox extends WAbstractToggleButton {
 
 	protected DomElementType getDomElementType() {
 		if (this.triState_) {
-			if (this.isNeedTristateImageWorkaround()) {
+			if (this.needTristateImageWorkaround()) {
 				return DomElementType.DomElement_SPAN;
 			} else {
 				return DomElementType.DomElement_INPUT;
@@ -170,8 +183,8 @@ public class WCheckBox extends WAbstractToggleButton {
 	private boolean triState_;
 	private boolean safariWorkaround_;
 
-	private boolean isNeedTristateImageWorkaround() {
-		WApplication app = WApplication.instance();
+	private boolean needTristateImageWorkaround() {
+		WApplication app = WApplication.getInstance();
 		boolean supportIndeterminate = app.getEnvironment().hasJavaScript()
 				&& (app.getEnvironment().agentIsIE()
 						|| app.getEnvironment().agentIsSafari() || app

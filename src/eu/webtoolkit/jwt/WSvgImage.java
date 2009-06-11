@@ -16,11 +16,6 @@ import eu.webtoolkit.jwt.servlet.*;
  * 
  * The WSvgImage is primarily used by {@link WPaintedWidget} to render to the
  * browser in Support Vector Graphics (SVG) format.
- * <p>
- * You may also use the WSvgImage as an independent resource, for example in
- * conjunction with a {@link WAnchor} or {@link WImage}, or to make a hard copy
- * of an image in SVG format, using
- * {@link WResource#write(OutputStream, Map, Map)}:
  */
 public class WSvgImage extends WResource implements WVectorImage {
 	/**
@@ -32,6 +27,7 @@ public class WSvgImage extends WResource implements WVectorImage {
 		this.height_ = height;
 		this.painter_ = null;
 		this.paintFlags_ = EnumSet.noneOf(PaintFlag.class);
+		this.changeFlags_ = EnumSet.noneOf(WPaintDevice.ChangeFlag.class);
 		this.newGroup_ = true;
 		this.newClipPath_ = false;
 		this.busyWithPath_ = false;
@@ -42,6 +38,9 @@ public class WSvgImage extends WResource implements WVectorImage {
 		this.currentPen_ = new WPen();
 		this.pathTranslation_ = new WPointF();
 		this.shapes_ = "";
+		this.fillStyle_ = "";
+		this.strokeStyle_ = "";
+		this.fontStyle_ = "";
 	}
 
 	public WSvgImage(WLength width, WLength height) {
@@ -62,6 +61,7 @@ public class WSvgImage extends WResource implements WVectorImage {
 		if (!EnumUtils.mask(flags, WPaintDevice.ChangeFlag.Clipping).isEmpty()) {
 			this.newClipPath_ = true;
 		}
+		this.changeFlags_.addAll(flags);
 	}
 
 	public final void setChanged(WPaintDevice.ChangeFlag flag,
@@ -208,7 +208,7 @@ public class WSvgImage extends WResource implements WVectorImage {
 		double fontSize;
 		switch (this.getPainter().getFont().getSize()) {
 		case FixedSize:
-			fontSize = this.getPainter().getFont().getFixedSize().getToPixels();
+			fontSize = this.getPainter().getFont().getFixedSize().toPixels();
 			break;
 		default:
 			fontSize = 16;
@@ -234,6 +234,12 @@ public class WSvgImage extends WResource implements WVectorImage {
 	}
 
 	public void init() {
+		this.currentBrush_ = this.getPainter().getBrush();
+		this.currentPen_ = this.getPainter().getPen();
+		this.currentFont_ = this.getPainter().getFont();
+		this.strokeStyle_ = this.getStrokeStyle();
+		this.fillStyle_ = this.getFillStyle();
+		this.fontStyle_ = this.getFontStyle();
 	}
 
 	public void done() {
@@ -295,6 +301,7 @@ public class WSvgImage extends WResource implements WVectorImage {
 	private WLength height_;
 	private WPainter painter_;
 	private EnumSet<PaintFlag> paintFlags_;
+	private EnumSet<WPaintDevice.ChangeFlag> changeFlags_;
 	private boolean newGroup_;
 	private boolean newClipPath_;
 	private boolean busyWithPath_;
@@ -317,9 +324,19 @@ public class WSvgImage extends WResource implements WVectorImage {
 		if (!this.newGroup_) {
 			return;
 		}
+		boolean brushChanged = !EnumUtils.mask(this.changeFlags_,
+				WPaintDevice.ChangeFlag.Brush).isEmpty()
+				&& !this.currentBrush_.equals(this.getPainter().getBrush());
+		boolean penChanged = !EnumUtils.mask(this.changeFlags_,
+				WPaintDevice.ChangeFlag.Hints).isEmpty()
+				|| !EnumUtils.mask(this.changeFlags_,
+						WPaintDevice.ChangeFlag.Pen).isEmpty()
+				&& !this.currentPen_.equals(this.getPainter().getPen());
+		boolean fontChanged = !EnumUtils.mask(this.changeFlags_,
+				WPaintDevice.ChangeFlag.Font).isEmpty()
+				&& !this.currentFont_.equals(this.getPainter().getFont());
 		if (!this.newClipPath_) {
-			if (this.currentBrush_.equals(this.getPainter().getBrush())
-					&& this.currentPen_.equals(this.getPainter().getPen())) {
+			if (!brushChanged && !penChanged) {
 				WTransform f = this.getPainter().getCombinedTransform();
 				if (this.busyWithPath_) {
 					if (fequal(f.getM11(), this.currentTransform_.getM11())
@@ -347,9 +364,9 @@ public class WSvgImage extends WResource implements WVectorImage {
 						return;
 					}
 				} else {
-					if (this.currentFont_.equals(this.getPainter().getFont())
-							&& this.currentTransform_.equals(f)) {
+					if (!fontChanged && this.currentTransform_.equals(f)) {
 						this.newGroup_ = false;
+						this.changeFlags_.clear();
 						return;
 					}
 				}
@@ -358,7 +375,7 @@ public class WSvgImage extends WResource implements WVectorImage {
 		this.newGroup_ = false;
 		this.finishPath();
 		char[] buf = new char[30];
-		StringWriter tmp = new StringWriter();
+		EscapeOStream tmp = new EscapeOStream();
 		tmp.append("</g>");
 		this.currentTransform_.assign(this.getPainter().getCombinedTransform());
 		if (this.newClipPath_) {
@@ -366,8 +383,12 @@ public class WSvgImage extends WResource implements WVectorImage {
 			if (this.getPainter().hasClipping()) {
 				this.currentClipId_ = nextClipId_++;
 				tmp.append("<defs><clipPath id=\"clip").append(
-						String.valueOf(this.currentClipId_)).append("\">");
-				this.drawPlainPath(tmp, this.getPainter().getClipPath());
+						this.currentClipId_).append("\">");
+				this.shapes_ += tmp.toString();
+				tmp.clear();
+				StringWriter clip = new StringWriter();
+				this.drawPlainPath(clip, this.getPainter().getClipPath());
+				this.shapes_ += clip.toString();
 				tmp.append('"');
 				this.busyWithPath_ = false;
 				WTransform t = this.getPainter().getClipPathTransform();
@@ -390,12 +411,20 @@ public class WSvgImage extends WResource implements WVectorImage {
 			}
 			tmp.append('>');
 		}
-		this.currentPen_ = this.getPainter().getPen();
-		this.currentBrush_ = this.getPainter().getBrush();
-		this.currentFont_ = this.getPainter().getFont();
-		tmp.append("<g style=").append(
-				quote(this.getFillStyle() + this.getStrokeStyle()
-						+ this.getFontStyle()));
+		if (penChanged) {
+			this.currentPen_ = this.getPainter().getPen();
+			this.strokeStyle_ = this.getStrokeStyle();
+		}
+		if (brushChanged) {
+			this.currentBrush_ = this.getPainter().getBrush();
+			this.fillStyle_ = this.getFillStyle();
+		}
+		if (fontChanged) {
+			this.currentFont_ = this.getPainter().getFont();
+			this.fontStyle_ = this.getFontStyle();
+		}
+		tmp.append("<g style=\"").append(this.fillStyle_).append(
+				this.strokeStyle_).append(this.fontStyle_).append('"');
 		this.currentTransform_.assign(this.getPainter().getCombinedTransform());
 		if (!this.currentTransform_.isIdentity()) {
 			tmp.append(" transform=\"matrix(").append(
@@ -414,6 +443,7 @@ public class WSvgImage extends WResource implements WVectorImage {
 		}
 		tmp.append('>');
 		this.shapes_ += tmp.toString();
+		this.changeFlags_.clear();
 	}
 
 	private String getFillStyle() {
@@ -438,41 +468,44 @@ public class WSvgImage extends WResource implements WVectorImage {
 	}
 
 	private String getStrokeStyle() {
-		String result = "";
+		EscapeOStream result = new EscapeOStream();
+		String buf;
 		WPen pen = this.getPainter().getPen();
 		if (!((this.getPainter().getRenderHints() & WPainter.RenderHint.Antialiasing
 				.getValue()) != 0)) {
-			result += "shape-rendering:optimizeSpeed;";
+			result.append("shape-rendering:optimizeSpeed;");
 		}
 		if (pen.getStyle() != PenStyle.NoPen) {
 			WColor color = pen.getColor();
-			result += "stroke:" + color.getCssText() + ";";
+			result.append("stroke:").append(color.getCssText()).append(';');
 			if (color.getAlpha() != 255) {
-				result += "stroke-opacity:"
-						+ String.valueOf(color.getAlpha() / 255.) + ";";
+				result.append("stroke-opacity:").append(
+						MathUtils.round(color.getAlpha() / 255., 2))
+						.append(';');
 			}
 			WLength w = this.getPainter().normalizedPenWidth(pen.getWidth(),
 					true);
 			if (!w.equals(new WLength(1))) {
-				result += "stroke-width:" + w.getCssText() + ";";
+				result.append("stroke-width:").append(w.getCssText()).append(
+						";");
 			}
 			switch (pen.getCapStyle()) {
 			case FlatCap:
 				break;
 			case SquareCap:
-				result += "stroke-linecap:square;";
+				result.append("stroke-linecap:square;");
 				break;
 			case RoundCap:
-				result += "stroke-linecap:round;";
+				result.append("stroke-linecap:round;");
 			}
 			switch (pen.getJoinStyle()) {
 			case MiterJoin:
 				break;
 			case BevelJoin:
-				result += "stroke-linejoin:bevel;";
+				result.append("stroke-linejoin:bevel;");
 				break;
 			case RoundJoin:
-				result += "stroke-linejoin:round;";
+				result.append("stroke-linejoin:round;");
 			}
 			switch (pen.getStyle()) {
 			case NoPen:
@@ -480,24 +513,24 @@ public class WSvgImage extends WResource implements WVectorImage {
 			case SolidLine:
 				break;
 			case DashLine:
-				result += "stroke-dasharray:4,2;";
+				result.append("stroke-dasharray:4,2;");
 				break;
 			case DotLine:
-				result += "stroke-dasharray:1,2;";
+				result.append("stroke-dasharray:1,2;");
 				break;
 			case DashDotLine:
-				result += "stroke-dasharray:4,2,1,2;";
+				result.append("stroke-dasharray:4,2,1,2;");
 				break;
 			case DashDotDotLine:
-				result += "stroke-dasharray:4,2,1,2,1,2;";
+				result.append("stroke-dasharray:4,2,1,2,1,2;");
 				break;
 			}
 		}
-		return result;
+		return result.toString();
 	}
 
 	private String getFontStyle() {
-		return " " + this.getPainter().getFont().getCssText();
+		return this.getPainter().getFont().getCssText();
 	}
 
 	private String getClipPath() {
@@ -508,6 +541,10 @@ public class WSvgImage extends WResource implements WVectorImage {
 			return "";
 		}
 	}
+
+	private String fillStyle_;
+	private String strokeStyle_;
+	private String fontStyle_;
 
 	private static String quote(double d) {
 		char[] buf = new char[30];

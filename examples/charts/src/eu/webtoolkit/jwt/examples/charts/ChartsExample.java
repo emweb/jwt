@@ -86,7 +86,8 @@ public class ChartsExample extends WContainerWidget
 			    chart.setLegendEnabled(true); // enable the legend
 
 			    chart.setType(ChartType.ScatterPlot);            // set type to ScatterPlot
-			    chart.axis(Axis.XAxis).setScale(AxisScale.DateScale); // set scale of X axis to DateScale
+			    chart.getAxis(Axis.XAxis).setScale(AxisScale.DateScale); // set scale of X axis to DateScale
+			    chart.getAxis(Axis.YAxis).setLabelFormat("%.0f");
 
 			    // Provide space for the X and Y axis and title. 
 			    chart.setPlotAreaPadding(100, Side.Left);
@@ -126,18 +127,13 @@ public class ChartsExample extends WContainerWidget
 			  if (model==null)
 			    return;
 
-			  /*
-			   * If we have JavaScript, show an Ext table view that allows editing
-			   * of the model.
-			   */
-			  if (WApplication.instance().getEnvironment().hasJavaScript()) {
-			    WContainerWidget w = new WContainerWidget(this);
-			    WTreeView table = new WTreeView(w);
-			    table.setMargin(new WLength(10), Side.Top , Side.Bottom);
-			    table.setMargin(WLength.Auto, Side.Left ,Side.Right);
-			    table.resize(500, 175);
-			    table.setModel(model);
-			  }
+			  WContainerWidget w = new WContainerWidget(this);
+			  WTreeView table = new WTreeView(w);
+			  table.setRootIsDecorated(false);
+			  table.setMargin(new WLength(10), Side.Top, Side.Bottom);
+			  table.setMargin(WLength.Auto, Side.Left, Side.Right);
+			  table.resize(500, 175);
+			  table.setModel(model);
 
 			  /*
 			   * Create the category chart.
@@ -150,6 +146,7 @@ public class ChartsExample extends WContainerWidget
 			  // Provide space for the X and Y axis and title. 
 			  chart.setPlotAreaPadding(100, Side.Left);
 			  chart.setPlotAreaPadding(50, Side.Top ,Side.Bottom);
+			  chart.getAxis(Axis.YAxis).setLabelFormat("%.0f");
 
 			  //chart.axis(YAxis).setBreak(70, 110);
 
@@ -204,8 +201,10 @@ public class ChartsExample extends WContainerWidget
 
 			    // Typically, for mathematical functions, you want the axes to cross
 			    // at the 0 mark:
-			    chart.axis(Axis.XAxis).setLocation(AxisLocation.ZeroValue);
-			    chart.axis(Axis.YAxis).setLocation(AxisLocation.ZeroValue);
+			    chart.getAxis(Axis.XAxis).setLocation(AxisLocation.ZeroValue);
+			    chart.getAxis(Axis.YAxis).setLocation(AxisLocation.ZeroValue);
+			    chart.getAxis(Axis.XAxis).setLabelFormat("%.1f");
+			    chart.getAxis(Axis.YAxis).setLabelFormat("%.1f");
 
 			    // Provide space for the X and Y axis and title. 
 			    chart.setPlotAreaPadding(100, Side.Left);
@@ -241,18 +240,13 @@ public class ChartsExample extends WContainerWidget
 			    if (model==null)
 			      return;
 
-			    /*
-			     * If we have JavaScript, show an Ext table view that allows editing
-			     * of the model.
-			     */
-			    if (WApplication.instance().getEnvironment().hasJavaScript()) {
-			      WContainerWidget w = new WContainerWidget(this);
-			      WTreeView table = new WTreeView(w);
-			      table.setMargin(10, Side.Top ,Side.Bottom);
-			      table.setMargin(WLength.Auto, Side.Left ,Side.Right);
-			      table.resize(300, 175);
-			      table.setModel(model);
-			    }
+			    WContainerWidget w = new WContainerWidget(this);
+			    WTreeView table = new WTreeView(w);
+			    table.setRootIsDecorated(false);
+			    table.setMargin(10, Side.Top ,Side.Bottom);
+			    table.setMargin(WLength.Auto, Side.Left ,Side.Right);
+			    table.resize(300, 175);
+			    table.setModel(model);
 
 			    /*
 			     * Create the pie chart.

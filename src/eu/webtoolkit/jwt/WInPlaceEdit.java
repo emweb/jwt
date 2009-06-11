@@ -23,7 +23,18 @@ import eu.webtoolkit.jwt.servlet.*;
  * <p>
  * Usage example:
  * <p>
- * CSS stylesheet:
+ * <code>
+ WContainerWidget w = new WContainerWidget(); <br> 
+ new WText(&quot;Name: &quot;, w); <br> 
+ WInPlaceEdit edit = new WInPlaceEdit(&quot;Bob Smith&quot;, w); <br> 
+ edit.setStyleClass(&quot;inplace&quot;);
+</code>
+ * <p>
+ * CSS stylesheet: <code>
+ .inplace span:hover { <br> 
+    background-color: gray; <br> 
+ }
+</code>
  * <p>
  * This code will produce an edit that looks like: <div align="center"> <img
  * src="/WInPlaceEdit-1.png" alt="WInPlaceEdit text mode">

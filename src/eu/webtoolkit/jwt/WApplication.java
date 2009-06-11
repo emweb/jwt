@@ -17,20 +17,20 @@ import eu.webtoolkit.jwt.servlet.*;
  * 
  * Each user session of your application has a corresponding
  * {@link WApplication} instance. This instance must be created, before creating
- * widgets, and is returned by the function {@link WebController
- * ::createApplication()}. The instance is the main entry point into information
- * pertaining to a single session, and holds a reference to the
- * {@link WApplication#getRoot()} of the widget tree.
+ * widgets, and is returned by the function
+ * {@link WtServlet#createApplication(WEnvironment)}. The instance is the main
+ * entry point into information pertaining to a single session, and holds a
+ * reference to the {@link WApplication#getRoot()} of the widget tree.
  * <p>
  * The recipe for a Wt web application, which allocates new {@link WApplication}
  * instances for every user visiting the application is thus:
  * <p>
  * Throughout the application, the instance is available through
- * {@link WApplication#instance()}. The application may be quited either using
- * the method {@link WApplication#quit()}, or because of a timeout (when the
- * user has closed the window, or crashed its computer or was eaten by a virus
- * -- but not because the user does not interact: keep-alive messages in the
- * background will keep the session around as long as the user has the page
+ * {@link WApplication#getInstance()}. The application may be quited either
+ * using the method {@link WApplication#quit()}, or because of a timeout (when
+ * the user has closed the window, or crashed its computer or was eaten by a
+ * virus -- but not because the user does not interact: keep-alive messages in
+ * the background will keep the session around as long as the user has the page
  * opened).
  * <p>
  * The WApplication object provides access to:
@@ -126,6 +126,7 @@ public class WApplication extends WObject {
 		this.newBeforeLoadJavaScript_ = "";
 		this.autoJavaScript_ = "";
 		this.autoJavaScriptChanged_ = false;
+		this.soundManager_ = null;
 		this.session_.setApplication(this);
 		this.locale_ = this.getEnvironment().getLocale();
 		this.newInternalPath_ = this.getEnvironment().getInternalPath();
@@ -256,8 +257,8 @@ public class WApplication extends WObject {
 	 * In a multi-threaded server, it returns the thread-specific application
 	 * instance (using thread-specific storage).
 	 */
-	public static WApplication instance() {
-		WebSession session = WebSession.instance();
+	public static WApplication getInstance() {
+		WebSession session = WebSession.getInstance();
 		return session != null ? session.getApp() : null;
 	}
 
@@ -281,8 +282,9 @@ public class WApplication extends WObject {
 	 * <p>
 	 * <p>
 	 * <i><b>Note:</b>The {@link WApplication#getRoot()} is only defined in
-	 * normal application mode. For mode, there is no
-	 * {@link WApplication#getRoot()} container, and 0 is returned. Instead, use
+	 * normal application mode. For {@link WebSession.Type#WidgetSet WidgetSet}
+	 * mode, there is no {@link WApplication#getRoot()} container, and 0 is
+	 * returned. Instead, use
 	 * {@link WApplication#bindWidget(WWidget widget, String domId)} to bind
 	 * root widgets to existing HTML &lt;div&gt; elements on the page. </i>
 	 * </p>
@@ -473,7 +475,7 @@ public class WApplication extends WObject {
 	 * {@link WApplication#setLocalizedStrings(WLocalizedStrings translator)}.
 	 * <p>
 	 * 
-	 * @see WString#tr()
+	 * @see WString#tr(String)
 	 */
 	public WLocalizedStrings getLocalizedStrings() {
 		return this.localizedStrings_;
@@ -488,7 +490,7 @@ public class WApplication extends WObject {
 	 * <p>
 	 * 
 	 * @see WApplication#getLocalizedStrings()
-	 * @see WString#tr()
+	 * @see WString#tr(String)
 	 */
 	public void setLocalizedStrings(WLocalizedStrings translator) {
 		/* delete this.localizedStrings_ */;
@@ -511,7 +513,7 @@ public class WApplication extends WObject {
 	 * <p>
 	 * 
 	 * @see WApplication#getLocalizedStrings()
-	 * @see WString#tr()
+	 * @see WString#tr(String)
 	 */
 	public void setLocale(String locale) {
 		this.locale_ = locale;
@@ -561,6 +563,7 @@ public class WApplication extends WObject {
 	 * <p>
 	 * 
 	 * @see WApplication#getRoot()
+	 * @see WebSession.Type#WidgetSet
 	 */
 	public void bindWidget(WWidget widget, String domId) {
 		if (this.session_.getType() != WebSession.Type.WidgetSet) {
@@ -578,7 +581,10 @@ public class WApplication extends WObject {
 	 * session ID if necessary). The URL includes the full application path, and
 	 * is expanded by the browser into a full URL.
 	 * <p>
-	 * For example, for an application deployed at this method would return
+	 * For example, for an application deployed at <code>
+   http://www.mydomain.com/stuff/app.wt
+  </code>
+	 * this method would return
 	 * <code>&quot;/stuff/app.wt?wtd=AbCdEf&quot;</code>, when using URL
 	 * rewriting for session-tracking or
 	 * <code>&quot;/stuff/app.wt?a=a&quot;</code> when using cookies for
@@ -628,8 +634,11 @@ public class WApplication extends WObject {
 	 * internal path <i>internalPath</i>, usable across sessions. The URL is
 	 * relative and expanded into a full URL by the browser.
 	 * <p>
-	 * For example, for an application with current URL: when called with
-	 * <code>&quot;/project/external&quot;</code>, this method would return:
+	 * For example, for an application with current URL: <code>
+   http://www.mydomain.com/stuff/app.wt#/project/internal/
+  </code>
+	 * when called with <code>&quot;/project/external&quot;</code>, this method
+	 * would return:
 	 * <ul>
 	 * <li><code>&quot;app.wt/project/external/&quot;</code> when JavaScript is
 	 * available, or the agent is a web spider, or</li>
@@ -670,7 +679,7 @@ public class WApplication extends WObject {
 			if (this.getEnvironment().agentIsSpiderBot()) {
 				return this.session_.getBookmarkUrl(internalPath);
 			} else {
-				return this.session_.mostRelativeUrl(internalPath);
+				return this.session_.getMostRelativeUrl(internalPath);
 			}
 		} else {
 			return this.session_.getBookmarkUrl(internalPath);
@@ -685,25 +694,36 @@ public class WApplication extends WObject {
 	 * directly appended to the application URL or it is appended using a name
 	 * anchor (#).
 	 * <p>
-	 * For example, for an application deployed at: for which an
-	 * <i>internalPath</i> <code>&quot;/project/z3cbc/details/&quot;</code> is
-	 * set, the two forms for the application URL are:
+	 * For example, for an application deployed at: <code>
+   http://www.mydomain.com/stuff/app.wt
+  </code>
+	 * for which an <i>internalPath</i>
+	 * <code>&quot;/project/z3cbc/details/&quot;</code> is set, the two forms
+	 * for the application URL are:
 	 * <ul>
 	 * <li>
-	 * in a browser with AJAX:</li>
+	 * in a browser with AJAX: <code>
+   http://www.mydomain.com/stuff/app.wt#/project/z3cbc/details/
+  </code>
+	 * </li>
 	 * <li>
-	 * or in other situations (no JavaScript): This has as major consequence
-	 * that from the browser stand point, the application now serves many
-	 * different URLs. As a consequence, relative URLs will break. Still, you
-	 * can specify relative URLs within your application (in for example
-	 * {@link WAnchor#setRef(String ref)} or
+	 * or in other situations (no JavaScript): <code>
+   http://www.mydomain.com/stuff/app.wt/project/z3cbc/details/
+  </code>
+	 * This has as major consequence that from the browser stand point, the
+	 * application now serves many different URLs. As a consequence, relative
+	 * URLs will break. Still, you can specify relative URLs within your
+	 * application (in for example {@link WAnchor#setRef(String ref)} or
 	 * {@link WImage#setImageRef(String ref)}) since Wt will transform them to
 	 * absolute URLs when needed. But, this in turn may break deployments behind
 	 * reverse proxies when the context paths differ. For the same reason, you
 	 * will need to use absolute URLs in any XHTML or CSS you write manually. <br>
 	 * This type of URLs are only used when the your application is deployed at
 	 * a location that does not end with a &apos;/&apos;. Otherwise, Wt will
-	 * generate URLS like:</li>
+	 * generate URLS like: <code>
+   http://www.mydomain.com/stuff/?_=/project/z3cbc/details/
+  </code>
+	 * </li>
 	 * </ul>
 	 * <p>
 	 * When the internal path is changed, an entry is added to the browser
@@ -995,14 +1015,15 @@ public class WApplication extends WObject {
 	 * and resumes when all events have been processed.
 	 */
 	public void processEvents() {
-		this.session_.doRecursiveEventLoop("setTimeout(\""
-				+ this.javaScriptClass_ + "._p_.update(null,'"
-				+ this.javaScriptResponse_.getEncodeCmd()
-				+ "',null,false);\",0);");
+		this.session_
+				.doRecursiveEventLoop("setTimeout(\"" + this.javaScriptClass_
+						+ "._p_.update(null,'"
+						+ this.javaScriptResponse_.encodeCmd()
+						+ "',null,false);\",0);");
 	}
 
 	public static String readConfigurationProperty(String name, String value) {
-		String property = instance().session_.getController()
+		String property = WApplication.getInstance().session_.getController()
 				.getConfiguration().getProperty(name);
 		if (property != null) {
 			return property;
@@ -1019,8 +1040,9 @@ public class WApplication extends WObject {
 	 * <p>
 	 * The default method depends on your application deployment type.
 	 * <p>
-	 * For applications, {@link WApplication.AjaxMethod#XMLHttpRequest
-	 * XMLHttpRequest} is used, while for applications,
+	 * For {@link WebSession.Type#Application plain} applications,
+	 * {@link WApplication.AjaxMethod#XMLHttpRequest XMLHttpRequest} is used,
+	 * while for {@link WebSession.Type#WidgetSet widget set} applications,
 	 * {@link WApplication.AjaxMethod#DynamicScriptTag DynamicScriptTag} is
 	 * used. The latter is less efficient, but has the benefit to allow serving
 	 * the application from a different server than the page that hosts the
@@ -1075,8 +1097,8 @@ public class WApplication extends WObject {
 		}
 		if (this.ajaxMethod_ == WApplication.AjaxMethod.XMLHttpRequest) {
 			if (!this.getEnvironment().hasJavaScript()
-					&& WebSession.Handler.instance().getRequest().getPathInfo()
-							.length() != 0) {
+					&& WebSession.Handler.getInstance().getRequest()
+							.getPathInfo().length() != 0) {
 				if (url.length() != 0 && url.charAt(0) == '/') {
 					return url;
 				} else {
@@ -1099,10 +1121,10 @@ public class WApplication extends WObject {
 		}
 	}
 
-	public static String resourcesUrl() {
+	public static String getResourcesUrl() {
 		String path = "/wt-resources/";
 		readConfigurationProperty("resourcesURL", path);
-		return WApplication.instance().getBookmarkUrl(path);
+		return WApplication.getInstance().getBookmarkUrl(path);
 	}
 
 	/**
@@ -1211,14 +1233,6 @@ public class WApplication extends WObject {
 	 * Starts a new log entry of the given <i>type</i> in the Wt application log
 	 * file. This method returns a stream-like object to which the message may
 	 * be streamed.
-	 * <p>
-	 * A typical usage would be:
-	 * <p>
-	 * This would create a log entry that looks like: <div class="fragment"><pre
-	 * class="fragment"> [2008-Jul-13 14:01:17.817348] 16879 [/app.wt
-	 * Z2gCmSxIGjLHD73L] [notice] &quot;User bart logged in successfully.&quot;
-	 * </pre></div>
-	 * <p>
 	 */
 	public WLogEntry log(String type) {
 		return this.session_.log(type);
@@ -1337,16 +1351,6 @@ public class WApplication extends WObject {
 	 * This method is called by the event loop for propagating an event to the
 	 * application. It provides a single point of entry for events to the
 	 * application.
-	 * <p>
-	 * You will rarely want to reimplement this method, unless you wish to have
-	 * a single point for exception handling. In that case, you should call the
-	 * baseclass implementation {@link WApplication#notify(WEvent e)}, and
-	 * surround it in your own try - catch block for those exceptions you wish
-	 * to handle in a central place:
-	 * <p>
-	 * <p>
-	 * Any uncaught exception throw during event handling terminates the
-	 * session.
 	 */
 	protected void notify(WEvent e) throws IOException {
 		WebSession.notify(e);
@@ -1462,12 +1466,12 @@ public class WApplication extends WObject {
 	}
 
 	void addExposedSignal(AbstractEventSignal signal) {
-		String s = signal.getEncodeCmd();
+		String s = signal.encodeCmd();
 		this.exposedSignals_.put(s, signal);
 	}
 
 	void removeExposedSignal(AbstractEventSignal signal) {
-		String s = signal.getEncodeCmd();
+		String s = signal.encodeCmd();
 		if (this.exposedSignals_.remove(s) != null) {
 		} else {
 			System.err.append(
@@ -1508,7 +1512,7 @@ public class WApplication extends WObject {
 		if (fn.length() != 0 && fn.charAt(0) != '/') {
 			fn = '/' + fn;
 		}
-		return this.session_.mostRelativeUrl(fn) + "&resource="
+		return this.session_.getMostRelativeUrl(fn) + "&resource="
 				+ DomElement.urlEncodeS(resource.getFormName()) + "&rand="
 				+ String.valueOf(MathUtils.randomInt());
 	}
@@ -1614,6 +1618,14 @@ public class WApplication extends WObject {
 		}
 	}
 
+	SoundManager getSoundManager() {
+		if (!(this.soundManager_ != null)) {
+			this.soundManager_ = new SoundManager(this);
+		}
+		return this.soundManager_;
+	}
+
+	private SoundManager soundManager_;
 	private static char[] gifData = { 0x47, 0x49, 0x46, 0x38, 0x39, 0x61, 0x01,
 			0x00, 0x01, 0x00, 0x80, 0x00, 0x00, 0xdb, 0xdf, 0xef, 0x00, 0x00,
 			0x00, 0x21, 0xf9, 0x04, 0x01, 0x00, 0x00, 0x00, 0x00, 0x2c, 0x00,

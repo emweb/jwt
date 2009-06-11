@@ -23,13 +23,22 @@ import eu.webtoolkit.jwt.servlet.*;
  * <p>
  * Internationalization may be provided by indicating i18n == true in the
  * constructor, and providing the appropriate messages for months (with keys
- * from {@link WDate#longMonthName(int)}) and days (with keys from
- * {@link WDate#shortDayName(int)}) in your message resource bundle.
+ * from {@link WDate#getLongMonthName(int)}) and days (with keys from
+ * {@link WDate#getShortDayName(int)}) in your message resource bundle.
  * <p>
  * The look can be overridden using the following style class selectors:
  * <p>
- * <p>
- * Usage example:
+ * <code>
+table.Wt-cal-table        : The table <br> 
+ <br> 
+td.Wt-cal-header          : Header cell (week day) <br> 
+td.Wt-cal-header-weekend  : Header cell (weekend day) <br> 
+ <br> 
+table.Wt-cal-table TD     : In-month day cell <br> 
+td.Wt-cal-oom             : Out-of-month day cell <br> 
+td.Wt-cal-sel             : Selected day cell <br> 
+td.Wt-cal-now             : Today day cell
+</code>
  * <p>
  * Here is a snapshot of the default look, taken on 31/08/2007 (shown as today),
  * and 11/08/2007 currently selected. <div align="center"> <img
@@ -283,7 +292,7 @@ public class WCalendar extends WCompositeWidget {
 								}
 							});
 				}
-				app = WApplication.instance();
+				app = WApplication.getInstance();
 			}
 			int m = this.currentMonth_ - 1;
 			if (this.monthEdit_.getCurrentIndex() != m) {
@@ -381,7 +390,7 @@ public class WCalendar extends WCompositeWidget {
 	private void create() {
 		this.setImplementation(this.layout_ = new WContainerWidget());
 		String CSS_RULES_NAME = "Wt::WCalendar";
-		WApplication app = WApplication.instance();
+		WApplication app = WApplication.getInstance();
 		if (!app.getStyleSheet().isDefined(CSS_RULES_NAME)) {
 			app.getStyleSheet().addRule("table.Wt-cal-table ",
 					"border-collapse:separate;border-spacing:0pt;width: 18em;",

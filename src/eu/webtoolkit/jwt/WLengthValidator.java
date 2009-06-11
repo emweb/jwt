@@ -19,8 +19,6 @@ import eu.webtoolkit.jwt.servlet.*;
  * <p>
  * If you only want to limit the length on a line edit, you may also use
  * {@link WLineEdit#setMaxLength(int chars)}.
- * <p>
- * Usage example:
  */
 public class WLengthValidator extends WValidator {
 	/**

@@ -47,6 +47,60 @@ import eu.webtoolkit.jwt.servlet.*;
  * <p>
  * Usage example:
  * <p>
+ * <code>
+ // Create a menu with some items <br> 
+ WPopupMenu popup = new WPopupMenu(); <br> 
+ popup.addItem(&quot;icons/item1.gif&quot;, &quot;Item 1&quot;); <br> 
+ popup.addItem(&quot;Item 2&quot;).setCheckable(true); <br> 
+ popup.addItem(&quot;Item 3&quot;); <br> 
+ popup.addSeparator(); <br> 
+ popup.addItem(&quot;Item 4&quot;); <br> 
+ popup.addSeparator(); <br> 
+ popup.addItem(&quot;Item 5&quot;); <br> 
+ popup.addItem(&quot;Item 6&quot;); <br> 
+ popup.addSeparator(); <br> 
+		  <br> 
+ WPopupMenu subMenu = new WPopupMenu(); <br> 
+ subMenu.addItem(&quot;Sub Item 1&quot;); <br> 
+ subMenu.addItem(&quot;Sub Item 2&quot;); <br> 
+ popup.addMenu(&quot;Item 7&quot;, subMenu); <br> 
+		  <br> 
+ WPopupMenuItem item = popup.exec(event); <br> 
+		  <br> 
+ if (item) { <br> 
+  // ... do associated action. <br> 
+ } <br> 
+ /endcode <br> 
+ /endif <br> 
+ <br> 
+ The menu implementation does not provide any style. You can style the <br> 
+ menu using CSS. <br> 
+ <br> 
+ For example: <br> 
+ \code <br> 
+ div.Wt-popupmenu { <br> 
+     background: white; <br> 
+     color: black; <br> 
+    border: 1px solid #666666; <br> 
+    z-index: 200; <br> 
+    cursor: default; <br> 
+ } <br> 
+ <br> 
+ div.Wt-popupmenu .notselected, div.Wt-popupmenu .selected { <br> 
+     padding: 2px 0px; <br> 
+ } <br> 
+ <br> 
+ div.Wt-popupmenu .selected { <br> 
+     background: blue; <br> 
+     color: white; <br> 
+ } <br> 
+ <br> 
+ div.Wt-popupmenu .separator { <br> 
+     border-top: 1px solid #CCCCCC; <br> 
+    border-bottom: 1px solid #DDDDDD; <br> 
+    margin: 0px 3px; <br> 
+ }
+</code>
  * <p>
  * 
  * @see WPopupMenuItem
@@ -70,7 +124,7 @@ public class WPopupMenu extends WCompositeWidget {
 		this.setPositionScheme(PositionScheme.Absolute);
 		this.setStyleClass("Wt-popupmenu");
 		String CSS_RULES_NAME = "Wt::WPopupMenu";
-		WApplication app = WApplication.instance();
+		WApplication app = WApplication.getInstance();
 		if (!app.getStyleSheet().isDefined(CSS_RULES_NAME)) {
 			app.getStyleSheet().addRule(".notselected .Wt-popupmenu",
 					"visibility: hidden;", CSS_RULES_NAME);
@@ -176,7 +230,7 @@ public class WPopupMenu extends WCompositeWidget {
 	 */
 	public void popup(WPoint p) {
 		this.result_ = null;
-		WApplication app = WApplication.instance();
+		WApplication app = WApplication.getInstance();
 		if (app.getRoot().escapePressed().isConnected()) {
 			app.getRoot().escapePressed().trigger();
 		}
@@ -194,7 +248,7 @@ public class WPopupMenu extends WCompositeWidget {
 				});
 		this.prepareRender(app);
 		this.show();
-		WApplication.instance().doJavaScript(
+		WApplication.getInstance().doJavaScript(
 				"Wt2_99_2.positionXY('" + this.getFormName() + "',"
 						+ String.valueOf(p.getX()) + ","
 						+ String.valueOf(p.getY()) + ");");
@@ -232,7 +286,7 @@ public class WPopupMenu extends WCompositeWidget {
 			throw new WtException(
 					"WPopupMenu::exec(): already in recursive event loop.");
 		}
-		WebSession session = WApplication.instance().getSession();
+		WebSession session = WApplication.getInstance().getSession();
 		this.recursiveEventLoop_ = true;
 		this.popup(p);
 		session.doRecursiveEventLoop("");
@@ -302,22 +356,23 @@ public class WPopupMenu extends WCompositeWidget {
 
 	void done(WPopupMenuItem result) {
 		this.result_ = result;
-		this.aboutToHide_.trigger();
 		this.hide();
 		this.globalClickConnection_.disconnect();
 		this.globalEscapeConnection_.disconnect();
-		WApplication.instance().getRoot().clicked().senderRepaint();
-		WApplication.instance().getRoot().escapePressed().senderRepaint();
-		if (this.recursiveEventLoop_) {
-			WebSession session = WApplication.instance().getSession();
-			this.recursiveEventLoop_ = false;
+		WApplication.getInstance().getRoot().clicked().senderRepaint();
+		WApplication.getInstance().getRoot().escapePressed().senderRepaint();
+		boolean recursive = this.recursiveEventLoop_;
+		this.recursiveEventLoop_ = false;
+		this.aboutToHide_.trigger();
+		if (recursive) {
+			WebSession session = WApplication.getInstance().getSession();
 			session.unlockRecursiveEventLoop();
 		}
 	}
 
 	void popup(WWidget location) {
 		this.show();
-		WApplication.instance().doJavaScript(
+		WApplication.getInstance().doJavaScript(
 				"Wt2_99_2.positionAtWidget('" + this.getFormName() + "','"
 						+ location.getFormName() + "');");
 	}

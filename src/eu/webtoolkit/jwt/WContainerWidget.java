@@ -51,6 +51,27 @@ import eu.webtoolkit.jwt.servlet.*;
  * <p>
  * Usage example:
  * <p>
+ * <code>
+ // Example 1: <br> 
+ // Instantiate a container widget and add some children whose layout  <br> 
+ // is governed based on HTML/CSS rules. <br> 
+ WContainerWidget container1 = new WContainerWidget(); <br> 
+ container1.addWidget(new WText(&quot;Some text&quot;)); <br> 
+ container1.addWidget(new WImage(&quot;images/img.png&quot;)); <br> 
+ WContainerWidget child3 = new WContainerWidget(container1); <br> 
+		  <br> 
+ // Example 2: <br> 
+ // Instantiate a container widget which uses a layout manager <br> 
+ WContainerWidget container2 = new WContainerWidget(); <br> 
+ // give the container a fixed height <br> 
+ container2.resize(WLength.Auto, new WLength(600));  <br> 
+ <br> 
+ WVBoxLayout layout = new WVBoxLayout(); <br> 
+ layout.addWidget(new WText(&quot;Some text&quot;)); <br> 
+ layout.addWidget(new WImage(&quot;images/img.png&quot;)); <br> 
+		  <br> 
+ container2.setLayout(layout);      // set the layout to the container.
+</code>
  * <p>
  * Depending on its configuration and usage, the widget corresponds to the
  * following HTML tags:
@@ -185,7 +206,7 @@ public class WContainerWidget extends WInteractWidget {
 	 */
 	public void setLayout(WLayout layout, EnumSet<AlignmentFlag> alignment) {
 		if (this.layout_ != null && layout != this.layout_) {
-			WApplication.instance().log("error").append(
+			WApplication.getInstance().log("error").append(
 					"WContainerWidget::setLayout: already have a layout.");
 			return;
 		}
@@ -226,7 +247,7 @@ public class WContainerWidget extends WInteractWidget {
 	public void addWidget(WWidget widget) {
 		if (widget.getParent() != null) {
 			if (widget.getParent() != this) {
-				WApplication.instance().log("warn").append(
+				WApplication.getInstance().log("warn").append(
 						"WContainerWidget::addWidget(): reparenting widget");
 				widget.setParent((WWidget) null);
 			} else {
@@ -236,7 +257,7 @@ public class WContainerWidget extends WInteractWidget {
 		if (!(this.transientImpl_ != null)) {
 			this.transientImpl_ = new WWebWidget.TransientImpl();
 			if (this.getDomElementType() != DomElementType.DomElement_TD
-					|| !WApplication.instance().getEnvironment().agentIsIE()) {
+					|| !WApplication.getInstance().getEnvironment().agentIsIE()) {
 				this.setLoadLaterWhenInvisible(true);
 			}
 		}
@@ -258,7 +279,7 @@ public class WContainerWidget extends WInteractWidget {
 	public void insertBefore(WWidget widget, WWidget before) {
 		if (before.getParent() != this) {
 			WApplication
-					.instance()
+					.getInstance()
 					.log("error")
 					.append(
 							"WContainerWidget::insertBefore(): 'before' not in this container");
@@ -266,7 +287,7 @@ public class WContainerWidget extends WInteractWidget {
 		}
 		if (widget.getParent() != null) {
 			if (widget.getParent() != this) {
-				WApplication.instance().log("warn").append(
+				WApplication.getInstance().log("warn").append(
 						"WContainerWidget::insertWidget(): reparenting widget");
 				widget.setParent((WWidget) null);
 			} else {
@@ -288,8 +309,8 @@ public class WContainerWidget extends WInteractWidget {
 		if (this.isLoaded()) {
 			this.doLoad(widget);
 		}
-		WApplication.instance().getSession().getRenderer().updateFormObjects(
-				this, false);
+		WApplication.getInstance().getSession().getRenderer()
+				.updateFormObjects(this, false);
 	}
 
 	/**
@@ -838,11 +859,12 @@ public class WContainerWidget extends WInteractWidget {
 			}
 			this.flags_.clear(BIT_PADDINGS_CHANGED);
 		}
-		if (!WApplication.instance().getSession().getRenderer().isPreLearning()
+		if (!WApplication.getInstance().getSession().getRenderer()
+				.isPreLearning()
 				&& !(this.layout_ != null)) {
 			element.setWasEmpty(all || this.isWasEmpty());
 			if (this.transientImpl_ != null) {
-				WApplication app = WApplication.instance();
+				WApplication app = WApplication.getInstance();
 				List<Integer> orderedInserts = new ArrayList<Integer>();
 				List<WWidget> ac = this.transientImpl_.addedChildren_;
 				for (int i = 0; i < ac.size(); ++i) {

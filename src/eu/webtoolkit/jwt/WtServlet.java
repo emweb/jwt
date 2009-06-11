@@ -1,6 +1,5 @@
 package eu.webtoolkit.jwt;
 
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -15,7 +14,6 @@ import eu.webtoolkit.jwt.servlet.WebRequest;
 import eu.webtoolkit.jwt.servlet.WebResponse;
 import eu.webtoolkit.jwt.utils.JarUtils;
 import eu.webtoolkit.jwt.utils.StreamUtils;
-import eu.webtoolkit.jwt.utils.StringUtils;
 
 public abstract class WtServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;

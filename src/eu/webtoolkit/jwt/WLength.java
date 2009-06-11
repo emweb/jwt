@@ -141,7 +141,7 @@ public class WLength {
 				&& this.value_ == other.value_;
 	}
 
-	public double getToPixels() {
+	public double toPixels() {
 		if (this.auto_) {
 			return 0;
 		} else {
@@ -171,10 +171,5 @@ public class WLength {
 		return WLength.multiply(l, 1 / s);
 	}
 
-	/**
-	 * An &apos;auto&apos; length.
-	 * 
-	 * @see WLength#WLength()
-	 */
 	public static WLength Auto = new WLength();
 }

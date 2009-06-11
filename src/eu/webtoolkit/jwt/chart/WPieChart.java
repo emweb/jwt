@@ -98,7 +98,7 @@ public class WPieChart extends WAbstractChart {
 	 * 
 	 * The data column should contain data that can be converted to a number,
 	 * but should not necessarily be of a number type, see also
-	 * {@link StringUtils::asNumber(Object)}.
+	 * {@link StringUtils#asNumber(Object)}.
 	 * <p>
 	 * The default value is -1 (not defined).
 	 * <p>
@@ -249,6 +249,8 @@ public class WPieChart extends WAbstractChart {
 
 	/**
 	 * Returns options set for displaying labels.
+	 * 
+	 * @see WPieChart#setDisplayLabels(EnumSet options)
 	 */
 	public EnumSet<LabelOption> getDisplayLabels() {
 		return this.labelOptions_;
@@ -260,7 +262,7 @@ public class WPieChart extends WAbstractChart {
 			for (int i = 0; i < this.getModel().getRowCount(); ++i) {
 				double v = StringUtils.asNumber(this.getModel().getData(i,
 						this.dataColumn_));
-				if (!myisnan(v)) {
+				if (!Double.isNaN(v)) {
 					total += v;
 				}
 			}
@@ -269,7 +271,7 @@ public class WPieChart extends WAbstractChart {
 			throw new WtException("WPieChart::paint(): painter is not active.");
 		}
 		WRectF rect = rectangle;
-		if (rect.isNull()) {
+		if (rect.isEmpty()) {
 			rect = painter.getWindow();
 		}
 		rect.setX(rect.getX() + this.getPlotAreaPadding(Side.Left));
@@ -304,7 +306,7 @@ public class WPieChart extends WAbstractChart {
 				for (int i = 0; i < this.getModel().getRowCount(); ++i) {
 					double v = StringUtils.asNumber(this.getModel().getData(i,
 							this.dataColumn_));
-					if (myisnan(v)) {
+					if (Double.isNaN(v)) {
 						continue;
 					}
 					double spanAngle = -v / total * 360;
@@ -535,7 +537,7 @@ public class WPieChart extends WAbstractChart {
 					startAngles.set(i, currentAngle);
 					double v = StringUtils.asNumber(this.getModel().getData(i,
 							this.dataColumn_));
-					if (myisnan(v)) {
+					if (Double.isNaN(v)) {
 						continue;
 					}
 					double spanAngle = -v / total * 360;
@@ -557,7 +559,7 @@ public class WPieChart extends WAbstractChart {
 					int i = (index90 + j) % this.getModel().getRowCount();
 					double v = StringUtils.asNumber(this.getModel().getData(i,
 							this.dataColumn_));
-					if (myisnan(v)) {
+					if (Double.isNaN(v)) {
 						continue;
 					}
 					double midAngle = midAngles.get(i);
@@ -590,7 +592,7 @@ public class WPieChart extends WAbstractChart {
 					int i = (index90 + j) % this.getModel().getRowCount();
 					double v = StringUtils.asNumber(this.getModel().getData(i,
 							this.dataColumn_));
-					if (myisnan(v)) {
+					if (Double.isNaN(v)) {
 						continue;
 					}
 					double startAngle = startAngles.get(i);
@@ -622,7 +624,7 @@ public class WPieChart extends WAbstractChart {
 					int i = (index90 + j) % this.getModel().getRowCount();
 					double v = StringUtils.asNumber(this.getModel().getData(i,
 							this.dataColumn_));
-					if (myisnan(v)) {
+					if (Double.isNaN(v)) {
 						continue;
 					}
 					double startAngle = startAngles.get(i);
@@ -663,7 +665,7 @@ public class WPieChart extends WAbstractChart {
 		for (int i = 0; i < this.getModel().getRowCount(); ++i) {
 			double v = StringUtils.asNumber(this.getModel().getData(i,
 					this.dataColumn_));
-			if (myisnan(v)) {
+			if (Double.isNaN(v)) {
 				continue;
 			}
 			double spanAngle = -v / total * 360;
@@ -717,7 +719,7 @@ public class WPieChart extends WAbstractChart {
 			}
 			double v = StringUtils.asNumber(this.getModel().getData(p,
 					this.dataColumn_));
-			if (!myisnan(v)) {
+			if (!Double.isNaN(v)) {
 				return p;
 			}
 		}
@@ -729,7 +731,7 @@ public class WPieChart extends WAbstractChart {
 		for (int n = (i + 1) % r; n != i; ++n) {
 			double v = StringUtils.asNumber(this.getModel().getData(n,
 					this.dataColumn_));
-			if (!myisnan(v)) {
+			if (!Double.isNaN(v)) {
 				return n;
 			}
 		}
@@ -743,9 +745,5 @@ public class WPieChart extends WAbstractChart {
 				c.getAlpha());
 		result.setColor(c);
 		return result;
-	}
-
-	static boolean myisnan(double d) {
-		return !(d == d);
 	}
 }

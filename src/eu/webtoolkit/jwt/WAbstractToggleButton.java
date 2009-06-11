@@ -175,7 +175,7 @@ public class WAbstractToggleButton extends WFormWidget {
 			img.setId("im" + this.getFormName());
 			input = DomElement.createNew(DomElementType.DomElement_INPUT);
 			input.setId("in" + this.getFormName());
-			String src = WApplication.resourcesUrl();
+			String src = WApplication.getResourcesUrl();
 			WEnvironment env = app.getEnvironment();
 			if (env.getUserAgent().indexOf("Mac OS X") != -1) {
 				src += "indeterminate-macosx.png";
@@ -256,7 +256,7 @@ public class WAbstractToggleButton extends WFormWidget {
 			}
 			this.stateChanged_ = false;
 		}
-		WEnvironment env = WApplication.instance().getEnvironment();
+		WEnvironment env = WApplication.getInstance().getEnvironment();
 		EventSignal check = this.voidEventSignal(CHECKED_SIGNAL, false);
 		EventSignal uncheck = this.voidEventSignal(UNCHECKED_SIGNAL, false);
 		EventSignal change = this.voidEventSignal(CHANGE_SIGNAL, false);
@@ -273,7 +273,7 @@ public class WAbstractToggleButton extends WFormWidget {
 			if (check != null) {
 				if (check.isConnected()) {
 					actions.add(new DomElement.EventAction(dom + ".checked",
-							check.getJavaScript(), check.getEncodeCmd(), check
+							check.getJavaScript(), check.encodeCmd(), check
 									.isExposedSignal()));
 				}
 				check.updateOk();
@@ -282,14 +282,14 @@ public class WAbstractToggleButton extends WFormWidget {
 				if (uncheck.isConnected()) {
 					actions.add(new DomElement.EventAction("!" + dom
 							+ ".checked", uncheck.getJavaScript(), uncheck
-							.getEncodeCmd(), uncheck.isExposedSignal()));
+							.encodeCmd(), uncheck.isExposedSignal()));
 				}
 				uncheck.updateOk();
 			}
 			if (change != null) {
 				if (env.agentIsIE() && change.isConnected()) {
 					actions.add(new DomElement.EventAction("", change
-							.getJavaScript(), change.getEncodeCmd(), change
+							.getJavaScript(), change.encodeCmd(), change
 							.isExposedSignal()));
 				}
 				change.updateOk();
@@ -297,7 +297,7 @@ public class WAbstractToggleButton extends WFormWidget {
 			if (click != null) {
 				if (click.isConnected()) {
 					actions.add(new DomElement.EventAction("", click
-							.getJavaScript(), click.getEncodeCmd(), click
+							.getJavaScript(), click.encodeCmd(), click
 							.isExposedSignal()));
 				}
 				click.updateOk();

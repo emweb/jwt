@@ -21,7 +21,7 @@ class BarSeriesRenderer extends SeriesRenderer {
 
 	public void addValue(double x, double y, double stacky) {
 		WPainterPath bar = new WPainterPath();
-		WAxis yAxis = this.renderer_.getChart().axis(this.series_.getAxis());
+		WAxis yAxis = this.renderer_.getChart().getAxis(this.series_.getAxis());
 		WPointF topMid = this.renderer_.map(x, y, yAxis.getId(), this.it_
 				.getCurrentXSegment(), this.it_.getCurrentYSegment());
 		WPointF bottomMid = this.renderer_.map(x, stacky, yAxis.getId(),

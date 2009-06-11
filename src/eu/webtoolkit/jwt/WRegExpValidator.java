@@ -30,6 +30,13 @@ import eu.webtoolkit.jwt.servlet.*;
  * <p>
  * Usage example:
  * <p>
+ * <code>
+ WLineEdit lineEdit = new WLineEdit(this); <br> 
+ // an email address validator <br> 
+ WRegExpValidator validator = new WRegExpValidator(&quot;[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,4}&quot;); <br> 
+ lineEdit.setValidator(validator); <br> 
+ lineEdit.setText(&quot;pieter@emweb.be&quot;);
+</code>
  * <p>
  * <p>
  * <i><b>Note:</b>This validator does not fully support unicode: it matches on

@@ -5,7 +5,7 @@ import eu.webtoolkit.jwt.WObject;
 
 /**
  * Abstract base class for signals.
- * 
+ * <p>
  * Signals are used to relay events to event listeners, implementing in this way
  * the Observer pattern.
  */
@@ -14,7 +14,7 @@ public abstract class AbstractSignal {
 
 	/**
 	 * A signal connection.
-	 * 
+	 * <p>
 	 * A connection is returned when an event listener is connected to a signal.
 	 * It may be used to disconnect the listener at a later point from the
 	 * signal.
@@ -35,7 +35,7 @@ public abstract class AbstractSignal {
 
 		/**
 		 * Disconnect.
-		 * 
+		 * <p>
 		 * If the connection was not connected, this method does nothing.
 		 */
 		public void disconnect() {
@@ -45,7 +45,7 @@ public abstract class AbstractSignal {
 
 		/**
 		 * Returns whether the connection is connected.
-		 * 
+		 * <p>
 		 * @return whether the connection is connected.
 		 */
 		public boolean isConnected() {
@@ -105,7 +105,7 @@ public abstract class AbstractSignal {
 
 	/**
 	 * Blocks or unblocks this signal.
-	 * 
+	 * <p>
 	 * While a signal is blocked, it will not trigger any of its connected event
 	 * listeners.
 	 * 
@@ -117,17 +117,17 @@ public abstract class AbstractSignal {
 
 	/**
 	 * Adds a listener for this signal.
-	 * 
+	 * <p>
 	 * Each listener will be notified when the signal is triggered.
-	 * 
+	 * <p>
 	 * An owner object may be passed when the listener is implemented using an
-	 * anonymous inner class. In that case the owner object should be the
+	 * (anonymous) inner class. In that case the owner object should be the
 	 * enclosing object of the listener object, and this is used to bind the
 	 * lifetime of the listener. To avoid the owner object from not being
 	 * garbage collected when it is no longer used, only the owner object will
 	 * add a reference to the listener, while the signal will use a weak
 	 * reference.
-	 * 
+	 * <p>
 	 * This avoids the most common reason for memory leaks in Java
 	 * implementations of the Observer pattern: the owner object will not get
 	 * garbage collected because of the (anonymous) listener object having a
@@ -137,8 +137,8 @@ public abstract class AbstractSignal {
 	 * reference in the signal.
 	 * 
 	 * @param listenerOwner
-	 *            if not <code>null</code>, the enclosing object for an
-	 *            anonymous listener
+	 *            if not <code>null</code>, the enclosing object for a
+	 *            listener implemented using an inner class
 	 * @param listener
 	 *            the listener
 	 * @return a connection object that may be used to control the connection
@@ -148,7 +148,7 @@ public abstract class AbstractSignal {
 	
 	/**
 	 * Removes a listener.
-	 * 
+	 * <p>
 	 * @param listener a listener that was previously added.
 	 */
 	public abstract void removeListener(Signal.Listener listener);

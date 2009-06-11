@@ -22,6 +22,17 @@ import eu.webtoolkit.jwt.servlet.*;
  * <p>
  * Usage example:
  * <p>
+ * <code>
+ WContainerWidget w = new WContainerWidget(this); <br> 
+		 <br> 
+ WHBoxLayout layout = new WHBoxLayout(); <br> 
+ layout.addWidget(new WText(&quot;One&quot;)); <br> 
+ layout.addWidget(new WText(&quot;Two&quot;)); <br> 
+ layout.addWidget(new WText(&quot;Three&quot;)); <br> 
+ layout.addWidget(new WText(&quot;Four&quot;)); <br> 
+	  <br> 
+ w.setLayout(layout, AlignmentFlag.AlignTop, AlignmentFlag.AlignJustify);
+</code>
  * <p>
  * <p>
  * <i><b>Note:</b>First consider if you can achieve your layout using CSS !</i>

@@ -342,7 +342,7 @@ class XSSFilter implements IXMLBuilder, IXMLEntityResolver {
 			return;
 
 		if (XSSUtils.isBadAttribute(key) || XSSUtils.isBadAttributeValue(key, value)) {
-			WApplication.instance().log("warn").append("(XSS) discarding invalid attribute: " + key + ": " + value);
+			WApplication.getInstance().log("warn").append("(XSS) discarding invalid attribute: " + key + ": " + value);
 			return;
 		}
 
@@ -383,7 +383,7 @@ class XSSFilter implements IXMLBuilder, IXMLEntityResolver {
 	public void startElement(String name, String nsPrefix, String nsURI, String systemID, int lineNr) throws Exception {
 		if (discarding == 0 && XSSUtils.isBadTag(name)) {
 			discarding = 1;
-			WApplication.instance().log("warn").append("(XSS) discarding invalid tag: " + name);
+			WApplication.getInstance().log("warn").append("(XSS) discarding invalid tag: " + name);
 			return;
 		}
 

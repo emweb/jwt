@@ -56,8 +56,6 @@ import eu.webtoolkit.jwt.servlet.*;
  * Although the painter has support for clipping using an arbitrary path, not
  * all devices support clipping.
  * <p>
- * Usage example:
- * <p>
  * 
  * @see WPaintedWidget#paintEvent(WPaintDevice paintDevice)
  */

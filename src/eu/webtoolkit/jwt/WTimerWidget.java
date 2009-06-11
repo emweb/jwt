@@ -38,8 +38,8 @@ class WTimerWidget extends WInteractWidget {
 
 	protected void updateDom(DomElement element, boolean all) {
 		if (this.timerStarted_
-				|| (!WApplication.instance().getEnvironment().hasJavaScript() || all)
-				&& this.timer_.isActive()) {
+				|| (!WApplication.getInstance().getEnvironment()
+						.hasJavaScript() || all) && this.timer_.isActive()) {
 			element.setTimeout(this.timer_.getRemainingInterval(),
 					this.jsRepeat_);
 			this.timerStarted_ = false;
@@ -51,7 +51,7 @@ class WTimerWidget extends WInteractWidget {
 		return DomElementType.DomElement_SPAN;
 	}
 
-	protected DomElement getRenderRemove() {
+	protected DomElement renderRemove() {
 		DomElement e = DomElement.getForUpdate(this,
 				DomElementType.DomElement_DIV);
 		e.removeFromParent();

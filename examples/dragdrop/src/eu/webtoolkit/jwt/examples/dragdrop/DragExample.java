@@ -19,7 +19,7 @@ public class DragExample extends WContainerWidget {
 				"<p>Help these people with their decision by dragging one of the pills.</p>",
 				this);
 
-		if (!WApplication.instance().getEnvironment().hasJavaScript()) {
+		if (!WApplication.getInstance().getEnvironment().hasJavaScript()) {
 			new WText(
 					"<i>This examples requires that javascript support is enabled.</i>",
 					this);
@@ -28,9 +28,9 @@ public class DragExample extends WContainerWidget {
 		WContainerWidget pills = new WContainerWidget(this);
 		pills.setContentAlignment(AlignmentFlag.AlignCenter);
 
-		createDragImage("pics/dragdrop/blue-pill.jpg",
-				"pics/dragdrop/blue-pill-small.png", "blue-pill", pills);
-		createDragImage("pics/dragdrop/red-pill.jpg", "pics/dragdrop/red-pill-small.png",
+		createDragImage("pics/blue-pill.jpg",
+				"pics/blue-pill-small.png", "blue-pill", pills);
+		createDragImage("pics/red-pill.jpg", "pics/red-pill-small.png",
 				"red-pill", pills);
 
 		WContainerWidget dropSites = new WContainerWidget(this);

@@ -18,7 +18,7 @@ public class WStdLocalizedStrings extends WLocalizedStrings {
 
 	public void refresh() {
 		if (bundleName_ != null) {
-			bundle_ = ResourceBundle.getBundle(bundleName_, new Locale(WApplication.instance().getLocale()));
+			bundle_ = ResourceBundle.getBundle(bundleName_, new Locale(WApplication.getInstance().getLocale()));
 			defaultBundle_ = ResourceBundle.getBundle(bundleName_, new Locale(""));
 		}
 	}

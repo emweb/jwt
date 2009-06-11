@@ -50,8 +50,8 @@ public class WKeyEvent implements WAbstractEvent {
 	/**
 	 * Returns keyboard modifiers.
 	 * 
-	 * The result is a logical OR of {@link KeyboardModifier#KeyboardModifier
-	 * KeyboardModifier} flags.
+	 * The result is a logical OR of {@link KeyboardModifier KeyboardModifier}
+	 * flags.
 	 * <p>
 	 * All three types of key events provide this information.
 	 * <p>
@@ -176,7 +176,7 @@ public class WKeyEvent implements WAbstractEvent {
 			try {
 				return Integer.parseInt(p);
 			} catch (NumberFormatException ee) {
-				WApplication.instance().log("error").append(
+				WApplication.getInstance().log("error").append(
 						"Could not cast event property '").append(name).append(
 						": ").append(p).append("' to int");
 				return ifMissing;

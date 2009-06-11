@@ -29,7 +29,7 @@ public final class EventSignal1<E extends WAbstractEvent> extends AbstractEventS
 	 *            the listener
 	 * @return a connection object that may be used to control the connection
 	 * 
-	 * @see #addListener(WObject, Listener)
+	 * @see #addListener(WObject, Signal.Listener)
 	 */
 	public Connection addListener(WObject listenerOwner, Signal1.Listener<E> listener) {
 		if (dynamic_ == null)

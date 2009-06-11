@@ -140,7 +140,7 @@ public class ComposeExample extends WContainerWidget
 		composer_.remove();
 		details_.remove();
 
-		WApplication.instance().quit();
+		WApplication.getInstance().quit();
 	}
 
 	private void discard()
@@ -154,6 +154,6 @@ public class ComposeExample extends WContainerWidget
 		composer_.remove();
 		details_.remove();
 
-		WApplication.instance().quit();
+		WApplication.getInstance().quit();
 	}
 }

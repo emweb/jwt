@@ -38,6 +38,18 @@ import eu.webtoolkit.jwt.servlet.*;
  * <p>
  * Usage example:
  * <p>
+ * <code>
+ WPainter painter = new WPainter(); <br> 
+	  <br> 
+ WPainterPath path = new WPainterPath(new WPointF(10, 10)); <br> 
+ path.lineTo(10, 20); <br> 
+ path.lineTo(30, 20); <br> 
+ path.closeSubPath(); <br> 
+		  <br> 
+ painter.setPen(new WPen(WColor.red)); <br> 
+ painter.setBrush(new WBrush(WColor.blue)); <br> 
+ painter.drawPath(path);
+</code>
  * <p>
  * 
  * @see WPainter#drawPath(WPainterPath path)
@@ -274,6 +286,9 @@ public class WPainterPath {
 	 * <i>height</i>, and the point is at <i>angle</i> degrees measured
 	 * counter-clockwise starting from the 3 o&apos;clock position.
 	 * <p>
+	 * 
+	 * @see WPainterPath#arcTo(double cx, double cy, double radius, double
+	 *      startAngle, double sweepLength)
 	 */
 	public void arcMoveTo(double x, double y, double width, double height,
 			double angle) {

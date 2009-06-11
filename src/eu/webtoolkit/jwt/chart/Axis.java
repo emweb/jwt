@@ -1,19 +1,10 @@
 package eu.webtoolkit.jwt.chart;
 
-import java.util.*;
-import java.util.regex.*;
-import java.io.*;
-import java.util.concurrent.locks.ReentrantLock;
-import javax.servlet.http.*;
-import eu.webtoolkit.jwt.*;
-import eu.webtoolkit.jwt.chart.*;
-import eu.webtoolkit.jwt.utils.*;
-import eu.webtoolkit.jwt.servlet.*;
 
 /**
  * Enumeration that indicates a chart axis.
  * 
- * @see WCartesianChart#axis(Axis axis)
+ * @see WCartesianChart#getAxis(Axis axis)
  */
 public enum Axis {
 	/**
@@ -25,10 +16,6 @@ public enum Axis {
 	 */
 	YAxis(1),
 	/**
-	 * First Y axis (== YAxis).
-	 */
-	Y1Axis(Axis.YAxis.getValue()),
-	/**
 	 * Second Y Axis.
 	 */
 	Y2Axis(2),
@@ -36,6 +23,8 @@ public enum Axis {
 	 * Ordinate axis (== Y1Axis for a 2D plot).
 	 */
 	OrdinateAxis(Axis.YAxis.getValue());
+
+	static Axis Y1Axis = YAxis;
 
 	private int value;
 

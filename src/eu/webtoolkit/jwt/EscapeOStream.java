@@ -10,6 +10,10 @@ class EscapeOStream {
 		HtmlAttribute, JsStringLiteralSQuote, JsStringLiteralDQuote
 	};
 
+	public EscapeOStream() {
+		this(new StringBuilder());
+	}
+
 	public EscapeOStream(Appendable sink) {
 		sink_ = sink;
 		mixed_ = null;
@@ -158,6 +162,14 @@ class EscapeOStream {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	public void clear() {
+		((StringBuilder)sink_).delete(0, ((StringBuilder)sink_).length());
+	}
+	
+	public String toString() {
+		return sink_.toString();
 	}
 
 	private ArrayList<RuleSet> ruleSets_ = new ArrayList<RuleSet>();

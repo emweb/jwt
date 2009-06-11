@@ -20,10 +20,8 @@ public class WRectF {
 	/**
 	 * Default constructor.
 	 * 
-	 * Constructs a <i>null</i> rectangle.
-	 * <p>
-	 * 
-	 * @see WRectF#isNull()
+	 * Constructs a rectangle from top left point (<i>x=0</i>, <i>y=0</i>) and
+	 * size <i>width=0</i> x <i>height=0</i>.
 	 */
 	public WRectF() {
 		this.x_ = 0;
@@ -63,14 +61,13 @@ public class WRectF {
 				&& this.width_ == rhs.width_ && this.height_ == rhs.height_;
 	}
 
+	// public boolean isNull() ;
 	/**
-	 * Checks for a <i>null</i> rectangle.
-	 * 
-	 * @see WRectF#WRectF()
+	 * Determines whether or not this rectangle is empty. A rectangle is empty
+	 * if its width or its height is less than or equal to zero.
 	 */
-	public boolean isNull() {
-		return this.x_ == 0 && this.y_ == 0 && this.width_ == 0
-				&& this.height_ == 0;
+	public boolean isEmpty() {
+		return this.width_ <= 0 || this.height_ <= 0;
 	}
 
 	/**
@@ -249,7 +246,7 @@ public class WRectF {
 	 * Tests if two rectangles intersect.
 	 */
 	public boolean intersects(WRectF other) {
-		if (this.isNull() || other.isNull()) {
+		if (this.isEmpty() || other.isEmpty()) {
 			return false;
 		} else {
 			WRectF r1 = this.getNormalized();
@@ -270,10 +267,10 @@ public class WRectF {
 	 * Makes the union of to rectangles.
 	 */
 	public WRectF united(WRectF other) {
-		if (this.isNull()) {
+		if (this.isEmpty()) {
 			return other;
 		} else {
-			if (other.isNull()) {
+			if (other.isEmpty()) {
 				return this;
 			} else {
 				WRectF r1 = this.getNormalized();

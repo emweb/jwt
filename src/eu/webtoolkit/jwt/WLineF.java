@@ -17,10 +17,8 @@ public class WLineF {
 	/**
 	 * Default constructor.
 	 * 
-	 * Constructs a <i>null</i> line.
-	 * <p>
-	 * 
-	 * @see WLineF#isNull()
+	 * Constructs a line from (<i>x1=0</i>,<i>y1=0</i>) to
+	 * (<i>x2=0</i>,<i>y2=0</i>).
 	 */
 	public WLineF() {
 		this.x1_ = 0;
@@ -51,15 +49,6 @@ public class WLineF {
 		this.y1_ = y1;
 		this.x2_ = x2;
 		this.y2_ = y2;
-	}
-
-	/**
-	 * Checks for a <i>null</i> line.
-	 * 
-	 * @see WLineF#WLineF()
-	 */
-	public boolean isNull() {
-		return this.x1_ == 0 && this.y1_ == 0 && this.x2_ == 0 && this.y2_ == 0;
 	}
 
 	/**

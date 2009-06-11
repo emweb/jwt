@@ -40,8 +40,6 @@ import eu.webtoolkit.jwt.servlet.*;
  * define any padding for the container widget. Instead, use
  * {@link WLayout#setContentsMargins(int left, int top, int right, int bottom)}.
  * <p>
- * Usage example:
- * <p>
  * <p>
  * <i><b>Note:</b>When used on a {@link WContainerWidget}, this layout manager
  * accepts the following hints (see
@@ -244,7 +242,7 @@ public class WBorderLayout extends WLayout {
 	/**
 	 * Return the position at which the given layout item is set.
 	 */
-	public WBorderLayout.Position position(WLayoutItem item) {
+	public WBorderLayout.Position getPosition(WLayoutItem item) {
 		for (int i = 0; i < 5; ++i) {
 			if (this.itemAtPosition(WBorderLayout.Position.values()[i]).item_ == item) {
 				return WBorderLayout.Position.values()[i];

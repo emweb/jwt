@@ -47,6 +47,18 @@ import eu.webtoolkit.jwt.servlet.*;
  * <p>
  * Usage example:
  * <p>
+ * <code>
+ WContainerWidget w = new WContainerWidget(this); <br> 
+ w.resize(WLength.Auto, new WLength(600)); <br> 
+		  <br> 
+ WGridLayout layout = new WGridLayout(); <br> 
+ layout.addWidget(new WText(&quot;Item 0 0&quot;), 0, 0); <br> 
+ layout.addWidget(new WText(&quot;Item 0 1&quot;), 0, 1); <br> 
+ layout.addWidget(new WText(&quot;Item 1 0&quot;), 1, 0); <br> 
+ layout.addWidget(new WText(&quot;Item 1 1&quot;), 1, 1); <br> 
+		  <br> 
+ w.setLayout(layout);
+</code>
  * <p>
  * <p>
  * <i><b>Note:</b>When JavaScript support is not available, only Safari and
