@@ -3,7 +3,7 @@ package eu.webtoolkit.jwt;
 
 /**
  * A validator for validating floating point user input
- * 
+ * <p>
  * 
  * This validator checks whether user input is a double in the pre-defined
  * range.
@@ -21,6 +21,11 @@ public class WDoubleValidator extends WValidator {
 		this.nanText_ = new WString();
 	}
 
+	/**
+	 * Create a new double validator that accepts any double.
+	 * <p>
+	 * Calls {@link #WDoubleValidator(WObject parent) this((WObject)null)}
+	 */
 	public WDoubleValidator() {
 		this((WObject) null);
 	}
@@ -37,13 +42,19 @@ public class WDoubleValidator extends WValidator {
 		this.nanText_ = new WString();
 	}
 
+	/**
+	 * Create a new double validator that accepts double within the given range.
+	 * <p>
+	 * Calls {@link #WDoubleValidator(double bottom, double top, WObject parent)
+	 * this(bottom, top, (WObject)null)}
+	 */
 	public WDoubleValidator(double bottom, double top) {
 		this(bottom, top, (WObject) null);
 	}
 
 	/**
 	 * Return the bottom of the valid double range.
-	 * 
+	 * <p>
 	 * The default value is -stdnumeric_limits&lt;int&gt;::max().
 	 */
 	public double getBottom() {
@@ -69,7 +80,7 @@ public class WDoubleValidator extends WValidator {
 
 	/**
 	 * Set the top of the valid double range.
-	 * 
+	 * <p>
 	 * The default value is std::numeric_limits&lt;int&gt;::max().
 	 */
 	public void setTop(double top) {
@@ -89,7 +100,7 @@ public class WDoubleValidator extends WValidator {
 
 	/**
 	 * Validate the given input.
-	 * 
+	 * <p>
 	 * The input is considered valid only when it is blank for a non-mandatory
 	 * field, or represents a double within the valid range.
 	 */
@@ -119,7 +130,7 @@ public class WDoubleValidator extends WValidator {
 	// public void createExtConfig(Writer config) throws IOException;
 	/**
 	 * Set the message to display when the input is not a number.
-	 * 
+	 * <p>
 	 * The default value is &quot;Must be a number.&quot;
 	 */
 	public void setInvalidNotANumberText(CharSequence text) {
@@ -129,6 +140,7 @@ public class WDoubleValidator extends WValidator {
 
 	/**
 	 * Returns the message displayed when the input is not a number.
+	 * <p>
 	 * 
 	 * @see WDoubleValidator#setInvalidNotANumberText(CharSequence text)
 	 */
@@ -142,7 +154,7 @@ public class WDoubleValidator extends WValidator {
 
 	/**
 	 * Set message to display when the number is too small.
-	 * 
+	 * <p>
 	 * Depending on whether {@link WDoubleValidator#getBottom()} and
 	 * {@link WDoubleValidator#getTop()} are real bounds, the default message is
 	 * &quot;The number must be between {1} and {2}&quot; or &quot;The number
@@ -155,6 +167,7 @@ public class WDoubleValidator extends WValidator {
 
 	/**
 	 * Returns the message displayed when the number is too small.
+	 * <p>
 	 * 
 	 * @see WDoubleValidator#setInvalidTooSmallText(CharSequence text)
 	 */
@@ -181,7 +194,7 @@ public class WDoubleValidator extends WValidator {
 
 	/**
 	 * Set message to display when the number is too large.
-	 * 
+	 * <p>
 	 * Depending on whether {@link WDoubleValidator#getBottom()} and
 	 * {@link WDoubleValidator#getTop()} are real bounds, the default message is
 	 * &quot;The number must be between {1} and {2}&quot; or &quot;The number
@@ -194,6 +207,7 @@ public class WDoubleValidator extends WValidator {
 
 	/**
 	 * Returns the message displayed when the number is too large.
+	 * <p>
 	 * 
 	 * @see WDoubleValidator#setInvalidTooLargeText(CharSequence text)
 	 */

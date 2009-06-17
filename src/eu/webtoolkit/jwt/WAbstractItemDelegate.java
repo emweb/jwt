@@ -4,7 +4,7 @@ import java.util.EnumSet;
 
 /**
  * Abstract delegate class for rendering a view item.
- * 
+ * <p>
  * 
  * Rendering of an item in a {@link WTreeView} is delegated to an implementation
  * of this delegate class. The default implementation used by {@link WTreeView}
@@ -31,6 +31,11 @@ public abstract class WAbstractItemDelegate extends WObject {
 		super(parent);
 	}
 
+	/**
+	 * Constructor.
+	 * <p>
+	 * Calls {@link #WAbstractItemDelegate(WObject parent) this((WObject)null)}
+	 */
 	public WAbstractItemDelegate() {
 		this((WObject) null);
 	}
@@ -43,7 +48,7 @@ public abstract class WAbstractItemDelegate extends WObject {
 
 	/**
 	 * Create or update a widget that renders an item.
-	 * 
+	 * <p>
 	 * The item is specified by its model <i>index</i>, which also indicates the
 	 * model. If an existing widget already renders the item, but needs to be
 	 * updated, it is passed as the <i>widget</i> parameter. You may decide to
@@ -58,6 +63,12 @@ public abstract class WAbstractItemDelegate extends WObject {
 	public abstract WWidget update(WWidget widget, WModelIndex index,
 			EnumSet<ViewItemRenderFlag> flags);
 
+	/**
+	 * Create or update a widget that renders an item.
+	 * <p>
+	 * Returns {@link #update(WWidget widget, WModelIndex index, EnumSet flags)
+	 * update(widget, index, EnumSet.of(flag, flags))}
+	 */
 	public final WWidget update(WWidget widget, WModelIndex index,
 			ViewItemRenderFlag flag, ViewItemRenderFlag... flags) {
 		return update(widget, index, EnumSet.of(flag, flags));
@@ -65,7 +76,7 @@ public abstract class WAbstractItemDelegate extends WObject {
 
 	/**
 	 * Update the model index of a widget.
-	 * 
+	 * <p>
 	 * This method is invoked by the view when due to row/column insertions or
 	 * removals, an index was modified for a widget.
 	 * <p>

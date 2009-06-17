@@ -3,6 +3,7 @@ package eu.webtoolkit.jwt;
 
 /**
  * Enumeration for keyboard modifiers.
+ * <p>
  * 
  * @see WMouseEvent#getModifiers()
  * @see WKeyEvent#getModifiers()

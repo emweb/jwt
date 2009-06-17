@@ -193,7 +193,7 @@ public class WFont {
 
 	/**
 	 * Set the font family.
-	 * 
+	 * <p>
 	 * The font family is specified using a generic family name, in addition to
 	 * a comma-seperated list of specific font choices.
 	 * <p>
@@ -211,6 +211,13 @@ public class WFont {
 		}
 	}
 
+	/**
+	 * Set the font family.
+	 * <p>
+	 * Calls
+	 * {@link #setFamily(WFont.GenericFamily genericFamily, CharSequence specificFamilies)
+	 * setFamily(genericFamily, new WString())}
+	 */
 	public final void setFamily(WFont.GenericFamily genericFamily) {
 		setFamily(genericFamily, new WString());
 	}
@@ -269,7 +276,7 @@ public class WFont {
 
 	/**
 	 * Set the font weight.
-	 * 
+	 * <p>
 	 * When setting weight == Value, you may specify a value.
 	 * <p>
 	 * Valid values are between 100 and 900, and are rounded to multiples of
@@ -285,6 +292,12 @@ public class WFont {
 		}
 	}
 
+	/**
+	 * Set the font weight.
+	 * <p>
+	 * Calls {@link #setWeight(WFont.Weight weight, int value) setWeight(weight,
+	 * 400)}
+	 */
 	public final void setWeight(WFont.Weight weight) {
 		setWeight(weight, 400);
 	}
@@ -320,6 +333,12 @@ public class WFont {
 		}
 	}
 
+	/**
+	 * Set the font size.
+	 * <p>
+	 * Calls {@link #setSize(WFont.Size size, WLength fixedSize) setSize(size,
+	 * WLength.Auto)}
+	 */
 	public final void setSize(WFont.Size size) {
 		setSize(size, WLength.Auto);
 	}

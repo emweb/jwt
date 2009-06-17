@@ -8,7 +8,7 @@ import java.util.Set;
 
 /**
  * An abstract widget that shows a viewport to a virtually large image
- * 
+ * <p>
  * 
  * WVirtualImage is an abstract class which renders a large image in small
  * pieces. The large image is broken down, and rendered as a grid of smaller
@@ -26,8 +26,8 @@ import java.util.Set;
  * <p>
  * To use this class, you must reimplement one of two virtual methods to specify
  * the contents of each grid piece. Either you provide a suitable {@link WImage}
- * for every grid piece, or you provide a which renders the contents for a
- * {@link WImage} for every grid piece.
+ * for every grid piece, or you provide a {@link WResource} which renders the
+ * contents for a {@link WImage} for every grid piece.
  * <p>
  * The total image dimensions are (0, 0) to (imageWidth, imageHeight) for a
  * finite image, and become unbounded (including negative numbers) for each
@@ -36,7 +36,7 @@ import java.util.Set;
 public class WVirtualImage extends WCompositeWidget {
 	/**
 	 * Construct a viewport for a virtual image.
-	 * 
+	 * <p>
 	 * You must specify the size of the viewport, and the size of the virtual
 	 * image. The latter dimensions may be the special value Infinite,
 	 * indicating that in one or more dimensions, the image size is infinite (in
@@ -76,12 +76,28 @@ public class WVirtualImage extends WCompositeWidget {
 		scrollArea.setWidget(this.contents_);
 	}
 
+	/**
+	 * Construct a viewport for a virtual image.
+	 * <p>
+	 * Calls
+	 * {@link #WVirtualImage(int viewPortWidth, int viewPortHeight, long imageWidth, long imageHeight, int gridImageSize, WContainerWidget parent)
+	 * this(viewPortWidth, viewPortHeight, imageWidth, imageHeight, 256,
+	 * (WContainerWidget)null)}
+	 */
 	public WVirtualImage(int viewPortWidth, int viewPortHeight,
 			long imageWidth, long imageHeight) {
 		this(viewPortWidth, viewPortHeight, imageWidth, imageHeight, 256,
 				(WContainerWidget) null);
 	}
 
+	/**
+	 * Construct a viewport for a virtual image.
+	 * <p>
+	 * Calls
+	 * {@link #WVirtualImage(int viewPortWidth, int viewPortHeight, long imageWidth, long imageHeight, int gridImageSize, WContainerWidget parent)
+	 * this(viewPortWidth, viewPortHeight, imageWidth, imageHeight,
+	 * gridImageSize, (WContainerWidget)null)}
+	 */
 	public WVirtualImage(int viewPortWidth, int viewPortHeight,
 			long imageWidth, long imageHeight, int gridImageSize) {
 		this(viewPortWidth, viewPortHeight, imageWidth, imageHeight,
@@ -104,7 +120,7 @@ public class WVirtualImage extends WCompositeWidget {
 
 	/**
 	 * Regenerate and redraw the image pieces.
-	 * 
+	 * <p>
 	 * This method invalidates all current grid images, and recreates them.
 	 */
 	public void redrawAll() {
@@ -121,7 +137,7 @@ public class WVirtualImage extends WCompositeWidget {
 
 	/**
 	 * Enables mouse dragging to scroll around the image.
-	 * 
+	 * <p>
 	 * The cursor is changed to a &apos;move&apos; symbol to indicate the
 	 * interactivity.
 	 */
@@ -148,6 +164,7 @@ public class WVirtualImage extends WCompositeWidget {
 
 	/**
 	 * Scroll the viewport of the image over a distance.
+	 * <p>
 	 * 
 	 * @see WVirtualImage#scrollTo(long newX, long newY)
 	 */
@@ -157,7 +174,7 @@ public class WVirtualImage extends WCompositeWidget {
 
 	/**
 	 * Scroll the viewport of the image to a specific coordinate.
-	 * 
+	 * <p>
 	 * Scroll the viewport so that its top left coordinate becomes (x, y).
 	 * <p>
 	 * 
@@ -169,6 +186,7 @@ public class WVirtualImage extends WCompositeWidget {
 
 	/**
 	 * Return the virtual image width.
+	 * <p>
 	 * 
 	 * @see WVirtualImage#getImageHeight()
 	 * @see WVirtualImage#resizeImage(long w, long h)
@@ -179,6 +197,7 @@ public class WVirtualImage extends WCompositeWidget {
 
 	/**
 	 * Return the virtual image height.
+	 * <p>
 	 * 
 	 * @see WVirtualImage#getImageWidth()
 	 * @see WVirtualImage#resizeImage(long w, long h)
@@ -189,7 +208,7 @@ public class WVirtualImage extends WCompositeWidget {
 
 	/**
 	 * Resize the virtual image.
-	 * 
+	 * <p>
 	 * This sets a new virtual size for the image. The viewport size sets the
 	 * visible portion of the image.
 	 * <p>
@@ -205,6 +224,7 @@ public class WVirtualImage extends WCompositeWidget {
 
 	/**
 	 * Return the viewport width.
+	 * <p>
 	 * 
 	 * @see WVirtualImage#getViewPortHeight()
 	 */
@@ -214,6 +234,7 @@ public class WVirtualImage extends WCompositeWidget {
 
 	/**
 	 * Return the viewport height.
+	 * <p>
 	 * 
 	 * @see WVirtualImage#getViewPortWidth()
 	 */
@@ -223,7 +244,7 @@ public class WVirtualImage extends WCompositeWidget {
 
 	/**
 	 * Returns the size of a single piece.
-	 * 
+	 * <p>
 	 * This is the size of a side of the square pieces that is used to render
 	 * the visible part of the image.
 	 */
@@ -233,6 +254,7 @@ public class WVirtualImage extends WCompositeWidget {
 
 	/**
 	 * Returns the current top left X coordinate.
+	 * <p>
 	 * 
 	 * @see WVirtualImage#getCurrentTopLeftY()
 	 */
@@ -242,6 +264,7 @@ public class WVirtualImage extends WCompositeWidget {
 
 	/**
 	 * Returns the current top left Y coordinate.
+	 * <p>
 	 * 
 	 * @see WVirtualImage#getCurrentTopLeftX()
 	 */
@@ -251,6 +274,7 @@ public class WVirtualImage extends WCompositeWidget {
 
 	/**
 	 * Returns the current bottom right X coordinate.
+	 * <p>
 	 * 
 	 * @see WVirtualImage#getCurrentBottomRightY()
 	 */
@@ -260,6 +284,7 @@ public class WVirtualImage extends WCompositeWidget {
 
 	/**
 	 * Returns the current bottom right Y coordinate.
+	 * <p>
 	 * 
 	 * @see WVirtualImage#getCurrentBottomRightX()
 	 */
@@ -269,7 +294,7 @@ public class WVirtualImage extends WCompositeWidget {
 
 	/**
 	 * Signal emitted whenever the viewport changes.
-	 * 
+	 * <p>
 	 * The viewport can be changed by the user dragging the image or through the
 	 * API methods {@link WVirtualImage#scrollTo(long newX, long newY)} and
 	 * {@link WVirtualImage#scroll(long dx, long dy)}.
@@ -280,7 +305,7 @@ public class WVirtualImage extends WCompositeWidget {
 
 	/**
 	 * Create a grid image for the given rectangle.
-	 * 
+	 * <p>
 	 * Create the image which spans image coordinates with left upper corner (x,
 	 * y) and given width and height.
 	 * <p>
@@ -294,6 +319,8 @@ public class WVirtualImage extends WCompositeWidget {
 	 * You should override this method if you wish to serve for example static
 	 * image content.
 	 * <p>
+	 * 
+	 * @see WVirtualImage#render(long x, long y, int width, int height)
 	 */
 	protected WImage createImage(long x, long y, int width, int height) {
 		WResource r = this.render(x, y, width, height);
@@ -302,7 +329,7 @@ public class WVirtualImage extends WCompositeWidget {
 
 	/**
 	 * Render a grid image for the given rectangle.
-	 * 
+	 * <p>
 	 * Returns a resource that streams an image which renders the rectangle
 	 * which spans image coordinates with left upper corner (x, y) and given
 	 * width and height.

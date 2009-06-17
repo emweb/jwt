@@ -2,6 +2,8 @@ package eu.webtoolkit.jwt;
 
 
 /**
+ * <p>
+ * 
  * {@link WEvent}. (dox FIXME)
  */
 public class WEvent {

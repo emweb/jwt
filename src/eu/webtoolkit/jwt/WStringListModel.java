@@ -19,6 +19,11 @@ public class WStringListModel extends WAbstractListModel {
 		this.strings_ = new ArrayList<WString>();
 	}
 
+	/**
+	 * Create a new empty string list model.
+	 * <p>
+	 * Calls {@link #WStringListModel(WObject parent) this((WObject)null)}
+	 */
 	public WStringListModel() {
 		this((WObject) null);
 	}
@@ -31,6 +36,12 @@ public class WStringListModel extends WAbstractListModel {
 		this.strings_ = strings;
 	}
 
+	/**
+	 * Create a new string list model.
+	 * <p>
+	 * Calls {@link #WStringListModel(List strings, WObject parent)
+	 * this(strings, (WObject)null)}
+	 */
 	public WStringListModel(List<WString> strings) {
 		this(strings, (WObject) null);
 	}
@@ -43,7 +54,7 @@ public class WStringListModel extends WAbstractListModel {
 
 	/**
 	 * Set a new string list.
-	 * 
+	 * <p>
 	 * Replaces the current string list with a new list.
 	 * <p>
 	 * 
@@ -76,6 +87,7 @@ public class WStringListModel extends WAbstractListModel {
 
 	/**
 	 * Returns the string list.
+	 * <p>
 	 * 
 	 * @see WStringListModel#setStringList(List strings)
 	 */
@@ -85,7 +97,7 @@ public class WStringListModel extends WAbstractListModel {
 
 	/**
 	 * Returns the flags for an item.
-	 * 
+	 * <p>
 	 * This method is reimplemented to return {@link ItemFlag#ItemIsSelectable
 	 * ItemIsSelectable} | {@link ItemFlag#ItemIsEditable ItemIsEditable}.
 	 * <p>

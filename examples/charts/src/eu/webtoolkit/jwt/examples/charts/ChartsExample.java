@@ -5,7 +5,6 @@ import java.text.SimpleDateFormat;
 
 import eu.webtoolkit.jwt.Side;
 import eu.webtoolkit.jwt.WAbstractItemModel;
-import eu.webtoolkit.jwt.WApplication;
 import eu.webtoolkit.jwt.WContainerWidget;
 import eu.webtoolkit.jwt.WDate;
 import eu.webtoolkit.jwt.WLength;

@@ -7,10 +7,10 @@ import java.util.List;
 
 /**
  * A widget that displays an image
- * 
+ * <p>
  * 
  * The image may be specified either as a URL, or may be dynamically generated
- * by a .
+ * by a {@link WResource}.
  * <p>
  * You may listen to events by attaching event listeners to signals such as
  * {@link WInteractWidget#clicked()}. Since mouse events pass the coordinates
@@ -25,6 +25,7 @@ import java.util.List;
  * The widget corresponds to the HTML <code>&lt;img&gt;</code> tag.
  * <p>
  * 
+ * @see WResource
  * @see WPaintedWidget
  */
 public class WImage extends WInteractWidget {
@@ -41,6 +42,12 @@ public class WImage extends WInteractWidget {
 		this.setLoadLaterWhenInvisible(false);
 	}
 
+	/**
+	 * Create an empty image widget.
+	 * <p>
+	 * Calls {@link #WImage(WContainerWidget parent)
+	 * this((WContainerWidget)null)}
+	 */
 	public WImage() {
 		this((WContainerWidget) null);
 	}
@@ -58,6 +65,12 @@ public class WImage extends WInteractWidget {
 		this.setLoadLaterWhenInvisible(false);
 	}
 
+	/**
+	 * Create an image widget with given image URL.
+	 * <p>
+	 * Calls {@link #WImage(String imageRef, WContainerWidget parent)
+	 * this(imageRef, (WContainerWidget)null)}
+	 */
 	public WImage(String imageRef) {
 		this(imageRef, (WContainerWidget) null);
 	}
@@ -75,13 +88,20 @@ public class WImage extends WInteractWidget {
 		this.setLoadLaterWhenInvisible(false);
 	}
 
+	/**
+	 * Create an image widget with given image URL and alternate text.
+	 * <p>
+	 * Calls
+	 * {@link #WImage(String imageRef, CharSequence altText, WContainerWidget parent)
+	 * this(imageRef, altText, (WContainerWidget)null)}
+	 */
 	public WImage(String imageRef, CharSequence altText) {
 		this(imageRef, altText, (WContainerWidget) null);
 	}
 
 	/**
 	 * Create an image widget with given image resource and alternate text.
-	 * 
+	 * <p>
 	 * Use this constructor if you want to present a dynamically generated
 	 * image.
 	 */
@@ -102,6 +122,13 @@ public class WImage extends WInteractWidget {
 		this.setLoadLaterWhenInvisible(false);
 	}
 
+	/**
+	 * Create an image widget with given image resource and alternate text.
+	 * <p>
+	 * Calls
+	 * {@link #WImage(WResource resource, CharSequence altText, WContainerWidget parent)
+	 * this(resource, altText, (WContainerWidget)null)}
+	 */
 	public WImage(WResource resource, CharSequence altText) {
 		this(resource, altText, (WContainerWidget) null);
 	}
@@ -114,7 +141,7 @@ public class WImage extends WInteractWidget {
 
 	/**
 	 * Set an alternate text.
-	 * 
+	 * <p>
 	 * The alternate text should provide a fallback for browsers that do not
 	 * display an image. If no sensible fallback text can be provided, an empty
 	 * text is preferred over nonsense.
@@ -139,6 +166,7 @@ public class WImage extends WInteractWidget {
 
 	/**
 	 * Returns the alternate text.
+	 * <p>
 	 * 
 	 * @see WImage#setAlternateText(CharSequence text)
 	 */
@@ -148,7 +176,7 @@ public class WImage extends WInteractWidget {
 
 	/**
 	 * Set the image URL.
-	 * 
+	 * <p>
 	 * This should not be used when the image is specified as a resource.
 	 * <p>
 	 * 
@@ -165,7 +193,7 @@ public class WImage extends WInteractWidget {
 
 	/**
 	 * Returns the image URL.
-	 * 
+	 * <p>
 	 * When the image is specified as a resource, this returns the current
 	 * resource URL.
 	 */
@@ -175,7 +203,7 @@ public class WImage extends WInteractWidget {
 
 	/**
 	 * Set the image resource.
-	 * 
+	 * <p>
 	 * A resource specifies application-dependent content, which may be used to
 	 * generate an image on demand.
 	 * <p>
@@ -200,7 +228,7 @@ public class WImage extends WInteractWidget {
 
 	/**
 	 * Returns the image resource.
-	 * 
+	 * <p>
 	 * Returns 0 if no image resource was set.
 	 */
 	public WResource getResource() {
@@ -209,7 +237,7 @@ public class WImage extends WInteractWidget {
 
 	/**
 	 * Add an interactive area.
-	 * 
+	 * <p>
 	 * Adds the <i>area</i> which listens to events in a specific region of the
 	 * image. Areas are organized in an indexed list, to which the given
 	 * <i>area</i> is appended. When areas overlap, the area with the lowest
@@ -226,7 +254,7 @@ public class WImage extends WInteractWidget {
 
 	/**
 	 * Insert an interactive area.
-	 * 
+	 * <p>
 	 * Inserts the <i>area</i> which listens to events in the coresponding area
 	 * of the image. Areas are organized in a list, and the <i>area</i> is
 	 * inserted at index <i>index</i>. When areas overlap, the area with the
@@ -248,7 +276,7 @@ public class WImage extends WInteractWidget {
 
 	/**
 	 * Removes an interactive area.
-	 * 
+	 * <p>
 	 * Removes the <i>area</i> from this widget, and also returns the ownership.
 	 * <p>
 	 * 
@@ -265,7 +293,7 @@ public class WImage extends WInteractWidget {
 
 	/**
 	 * Returns the interactive area at the given index.
-	 * 
+	 * <p>
 	 * Returns 0 if <i>index</i> was invalid.
 	 * <p>
 	 * 
@@ -281,6 +309,7 @@ public class WImage extends WInteractWidget {
 
 	/**
 	 * Returns the interactive areas set for this widget.
+	 * <p>
 	 * 
 	 * @see WImage#addArea(WAbstractArea area)
 	 */

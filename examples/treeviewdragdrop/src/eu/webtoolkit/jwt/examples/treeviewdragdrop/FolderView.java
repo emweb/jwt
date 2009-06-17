@@ -1,11 +1,9 @@
 package eu.webtoolkit.jwt.examples.treeviewdragdrop;
 
-import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeSet;
 
 import eu.webtoolkit.jwt.ItemDataRole;
-import eu.webtoolkit.jwt.StandardButton;
 import eu.webtoolkit.jwt.WAbstractItemModel;
 import eu.webtoolkit.jwt.WContainerWidget;
 import eu.webtoolkit.jwt.WDropEvent;

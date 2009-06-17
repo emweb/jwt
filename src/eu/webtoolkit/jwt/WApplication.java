@@ -11,7 +11,7 @@ import eu.webtoolkit.jwt.utils.StringUtils;
 /**
  * A class that represents an instance of a Wt Application, corresponding to a
  * single session.
- * 
+ * <p>
  * 
  * Each user session of your application has a corresponding
  * {@link WApplication} instance. This instance must be created, before creating
@@ -72,6 +72,7 @@ import eu.webtoolkit.jwt.utils.StringUtils;
 public class WApplication extends WObject {
 	/**
 	 * Enumeration that indicates the Ajax communication method.
+	 * <p>
 	 * 
 	 * @see WApplication#setAjaxMethod(WApplication.AjaxMethod method)
 	 */
@@ -227,7 +228,7 @@ public class WApplication extends WObject {
 
 	/**
 	 * Destructor.
-	 * 
+	 * <p>
 	 * The destructor deletes the {@link WApplication#getRoot()} container, and
 	 * as a consequence the entire widget tree.
 	 */
@@ -251,7 +252,7 @@ public class WApplication extends WObject {
 
 	/**
 	 * Returns the current application instance.
-	 * 
+	 * <p>
 	 * In a multi-threaded server, it returns the thread-specific application
 	 * instance (using thread-specific storage).
 	 */
@@ -262,7 +263,7 @@ public class WApplication extends WObject {
 
 	/**
 	 * Returns the application environment.
-	 * 
+	 * <p>
 	 * This is the environment that was used when constructing the application.
 	 * The environment contains all settings that constrain the application from
 	 * outside.
@@ -273,17 +274,16 @@ public class WApplication extends WObject {
 
 	/**
 	 * Returns the root container.
-	 * 
+	 * <p>
 	 * This is the top-level widget container of the application, and
 	 * corresponds to entire browser window. The user interface of your
 	 * application is represented by the content of this container.
 	 * <p>
 	 * <p>
 	 * <i><b>Note:</b>The {@link WApplication#getRoot()} is only defined in
-	 * normal application mode. For {@link WebSession.Type#WidgetSet WidgetSet}
-	 * mode, there is no {@link WApplication#getRoot()} container, and 0 is
-	 * returned. Instead, use
-	 * {@link WApplication#bindWidget(WWidget widget, String domId)} to bind
+	 * normal Application mode. For WidgetSet mode there is no
+	 * {@link WApplication#getRoot()} container, and null is returned. Instead,
+	 * use {@link WApplication#bindWidget(WWidget widget, String domId)} to bind
 	 * root widgets to existing HTML &lt;div&gt; elements on the page. </i>
 	 * </p>
 	 */
@@ -293,7 +293,7 @@ public class WApplication extends WObject {
 
 	/**
 	 * Returns a reference to the inline style sheet.
-	 * 
+	 * <p>
 	 * Widgets may allow configuration of their look and feel through style
 	 * classes. These may be defined in this inline stylesheet, or in external
 	 * style sheets.
@@ -307,7 +307,7 @@ public class WApplication extends WObject {
 
 	/**
 	 * Adds an external style sheet.
-	 * 
+	 * <p>
 	 * Widgets may allow configuration of their look and feel through style
 	 * classes. These may be defined in an inline stylesheet, or in external
 	 * style sheets.
@@ -329,7 +329,7 @@ public class WApplication extends WObject {
 
 	/**
 	 * Adds an external style sheet, conditional for IE.
-	 * 
+	 * <p>
 	 * <i>condition</i> is a string that is used to apply the stylesheet to
 	 * specific versions of IE. Only a limited subset of the IE conditional
 	 * comments syntax is supported. Examples are:
@@ -441,7 +441,7 @@ public class WApplication extends WObject {
 
 	/**
 	 * Set the title.
-	 * 
+	 * <p>
 	 * Set the title that appears as the browser window title.
 	 * <p>
 	 * The default title is &quot;&quot;.
@@ -459,6 +459,7 @@ public class WApplication extends WObject {
 
 	/**
 	 * Returns the title.
+	 * <p>
 	 * 
 	 * @see WApplication#setTitle(CharSequence title)
 	 */
@@ -468,12 +469,12 @@ public class WApplication extends WObject {
 
 	/**
 	 * Returns the object that provides localized strings.
-	 * 
+	 * <p>
 	 * You can set a class implementing {@link WLocalizedStrings} using
 	 * {@link WApplication#setLocalizedStrings(WLocalizedStrings translator)}.
 	 * <p>
 	 * 
-	 * @see WString#tr(String)
+	 * @see WString#tr(String key)
 	 */
 	public WLocalizedStrings getLocalizedStrings() {
 		return this.localizedStrings_;
@@ -481,14 +482,14 @@ public class WApplication extends WObject {
 
 	/**
 	 * Set the string translator.
-	 * 
+	 * <p>
 	 * The string translator resolves localized strings in the current locale.
 	 * The previous string translator is deleted, and ownership is transferred
 	 * to the application.
 	 * <p>
 	 * 
 	 * @see WApplication#getLocalizedStrings()
-	 * @see WString#tr(String)
+	 * @see WString#tr(String key)
 	 */
 	public void setLocalizedStrings(WLocalizedStrings translator) {
 		/* delete this.localizedStrings_ */;
@@ -497,7 +498,7 @@ public class WApplication extends WObject {
 
 	/**
 	 * Changes the locale.
-	 * 
+	 * <p>
 	 * By passing a <i>locale</i> that is an empty string, the default locale is
 	 * chosen. The locale is used by the string translator to resolve
 	 * internationalized strings.
@@ -511,7 +512,7 @@ public class WApplication extends WObject {
 	 * <p>
 	 * 
 	 * @see WApplication#getLocalizedStrings()
-	 * @see WString#tr(String)
+	 * @see WString#tr(String key)
 	 */
 	public void setLocale(String locale) {
 		this.locale_ = locale;
@@ -520,6 +521,7 @@ public class WApplication extends WObject {
 
 	/**
 	 * Returns the currently used locale.
+	 * <p>
 	 * 
 	 * @see WApplication#setLocale(String locale)
 	 */
@@ -529,7 +531,7 @@ public class WApplication extends WObject {
 
 	/**
 	 * Refresh the application.
-	 * 
+	 * <p>
 	 * Causes the application to refresh its data, including messages from
 	 * message-resource bundles. This done by propagating
 	 * {@link WWidget#refresh()} through the widget hierarchy.
@@ -553,7 +555,7 @@ public class WApplication extends WObject {
 
 	/**
 	 * Bind a top-level widget for a WidgetSet deployment.
-	 * 
+	 * <p>
 	 * This method binds a widget to an existing element on the page. The
 	 * element type should correspond with the widget type (e.g. it should be a
 	 * &lt;div&gt; for a {@link WContainerWidget}, or a &lt;table&gt; for a
@@ -561,7 +563,6 @@ public class WApplication extends WObject {
 	 * <p>
 	 * 
 	 * @see WApplication#getRoot()
-	 * @see WebSession.Type#WidgetSet
 	 */
 	public void bindWidget(WWidget widget, String domId) {
 		if (this.session_.getType() != WebSession.Type.WidgetSet) {
@@ -574,7 +575,7 @@ public class WApplication extends WObject {
 
 	/**
 	 * Returns a URL for the current session.
-	 * 
+	 * <p>
 	 * Returns the (relative) URL for this application session (including the
 	 * session ID if necessary). The URL includes the full application path, and
 	 * is expanded by the browser into a full URL.
@@ -609,7 +610,7 @@ public class WApplication extends WObject {
 
 	/**
 	 * Returns a bookmarkable URL, including the internal path.
-	 * 
+	 * <p>
 	 * Is equivalent to
 	 * <code>bookmarkUrl({@link WApplication#getInternalPath()})</code>, see
 	 * {@link WApplication#getBookmarkUrl(String internalPath)}.
@@ -627,7 +628,7 @@ public class WApplication extends WObject {
 
 	/**
 	 * Returns a bookmarkable URL for a given internal path.
-	 * 
+	 * <p>
 	 * Returns the (relative) URL for this application that includes the
 	 * internal path <i>internalPath</i>, usable across sessions. The URL is
 	 * relative and expanded into a full URL by the browser.
@@ -686,7 +687,7 @@ public class WApplication extends WObject {
 
 	/**
 	 * Change the internal path.
-	 * 
+	 * <p>
 	 * A Wt application may manage multiple virtual paths. The virtual path is
 	 * appended to the application URL. Depending on the situation, the path is
 	 * directly appended to the application URL or it is appended using a name
@@ -755,13 +756,19 @@ public class WApplication extends WObject {
 		this.internalPathIsChanged_ = true;
 	}
 
+	/**
+	 * Change the internal path.
+	 * <p>
+	 * Calls {@link #setInternalPath(String path, boolean emitChange)
+	 * setInternalPath(path, false)}
+	 */
 	public final void setInternalPath(String path) {
 		setInternalPath(path, false);
 	}
 
 	/**
 	 * Returns the current internal path.
-	 * 
+	 * <p>
 	 * When the application is just created, this is equal to
 	 * {@link WEnvironment#getInternalPath()}.
 	 * <p>
@@ -776,7 +783,7 @@ public class WApplication extends WObject {
 
 	/**
 	 * Returns part of the current internal path.
-	 * 
+	 * <p>
 	 * This is a convenience method which returns the next folder in the
 	 * internal path, after the given <i>path</i>.
 	 * <p>
@@ -815,7 +822,7 @@ public class WApplication extends WObject {
 
 	/**
 	 * Checks if the internal path matches a given path.
-	 * 
+	 * <p>
 	 * Returns whether the current {@link WApplication#getInternalPath()} starts
 	 * with <i>path</i> (or is equal to <i>path</i>). This may be useful before
 	 * changing <i>path</i> using
@@ -840,7 +847,7 @@ public class WApplication extends WObject {
 
 	/**
 	 * Signal which indicates that the user changes the internal path.
-	 * 
+	 * <p>
 	 * This signal propagates changes to the internal path, which are usually
 	 * triggered by the user using the browser back/forward buttons.
 	 * <p>
@@ -903,7 +910,7 @@ public class WApplication extends WObject {
 
 	/**
 	 * Redirects the application to another location.
-	 * 
+	 * <p>
 	 * The client will be redirected to a new location. Use this in conjunction
 	 * with {@link WApplication#quit()} if you want to the application to be
 	 * terminated as well.
@@ -918,7 +925,7 @@ public class WApplication extends WObject {
 
 	/**
 	 * Returns the unique identifier for the current session.
-	 * 
+	 * <p>
 	 * The session id is a string that uniquely identifies the current session.
 	 * Note that the actual contents has no particular meaning and client
 	 * applications should in no way try to interpret its value.
@@ -933,7 +940,7 @@ public class WApplication extends WObject {
 
 	/**
 	 * Executes some JavaScript code.
-	 * 
+	 * <p>
 	 * This method may be used to call some custom JavaScript code as part of an
 	 * event response.
 	 * <p>
@@ -953,6 +960,12 @@ public class WApplication extends WObject {
 		}
 	}
 
+	/**
+	 * Executes some JavaScript code.
+	 * <p>
+	 * Calls {@link #doJavaScript(String javascript, boolean afterLoaded)
+	 * doJavaScript(javascript, true)}
+	 */
 	public final void doJavaScript(String javascript) {
 		doJavaScript(javascript, true);
 	}
@@ -969,7 +982,7 @@ public class WApplication extends WObject {
 
 	/**
 	 * Load a JavaScript library.
-	 * 
+	 * <p>
 	 * Attempt to load a JavaScript library. When <i>symbol</i> is not empty,
 	 * the library is only inserted in the page if the given symbol is not yet
 	 * defined.
@@ -994,13 +1007,18 @@ public class WApplication extends WObject {
 		}
 	}
 
+	/**
+	 * Load a JavaScript library.
+	 * <p>
+	 * Returns {@link #require(String uri, String symbol) require(uri, "")}
+	 */
 	public final boolean require(String uri) {
 		return require(uri, "");
 	}
 
 	/**
 	 * Process UI events.
-	 * 
+	 * <p>
 	 * You may call this method during a long operation to:
 	 * <ul>
 	 * <li>
@@ -1032,15 +1050,14 @@ public class WApplication extends WObject {
 
 	/**
 	 * Set the Ajax communication method.
-	 * 
+	 * <p>
 	 * You may change the communication method only from within the application
 	 * constructor.
 	 * <p>
 	 * The default method depends on your application deployment type.
 	 * <p>
-	 * For {@link WebSession.Type#Application plain} applications,
-	 * {@link WApplication.AjaxMethod#XMLHttpRequest XMLHttpRequest} is used,
-	 * while for {@link WebSession.Type#WidgetSet widget set} applications,
+	 * For plain applications, {@link WApplication.AjaxMethod#XMLHttpRequest
+	 * XMLHttpRequest} is used, while for WidgetSet applications,
 	 * {@link WApplication.AjaxMethod#DynamicScriptTag DynamicScriptTag} is
 	 * used. The latter is less efficient, but has the benefit to allow serving
 	 * the application from a different server than the page that hosts the
@@ -1052,6 +1069,7 @@ public class WApplication extends WObject {
 
 	/**
 	 * Returns the Ajax communication method.
+	 * <p>
 	 * 
 	 * @see WApplication#setAjaxMethod(WApplication.AjaxMethod method)
 	 */
@@ -1127,7 +1145,7 @@ public class WApplication extends WObject {
 
 	/**
 	 * Initialize the application, post-construction.
-	 * 
+	 * <p>
 	 * This method is invoked by the Wt library after construction of a new
 	 * application. You may reimplement this method to do additional
 	 * initialization that is not possible from the constructor (e.g. which uses
@@ -1138,7 +1156,7 @@ public class WApplication extends WObject {
 
 	/**
 	 * Finalize the application, pre-destruction.
-	 * 
+	 * <p>
 	 * This method is invoked by the Wt library before destruction of a new
 	 * application. You may reimplement this method to do additional
 	 * finalization that is not possible from the destructor (e.g. which uses
@@ -1149,7 +1167,7 @@ public class WApplication extends WObject {
 
 	/**
 	 * Change the threshold for two-phase rendering.
-	 * 
+	 * <p>
 	 * This changes the threshold for the communication size (in bytes) to
 	 * render invisible changes in one go. If the bandwidth for rendering the
 	 * invisible changes exceed the threshold, they will be fetched in a second
@@ -1171,7 +1189,7 @@ public class WApplication extends WObject {
 
 	/**
 	 * Set a new cookie.
-	 * 
+	 * <p>
 	 * Use cookies to transfer information across different sessions (e.g. a
 	 * user name). In a subsequent session you will be able to read this cookie
 	 * using {@link WEnvironment#getCookie(String cookieNname)}. You cannot use
@@ -1201,10 +1219,24 @@ public class WApplication extends WObject {
 				.setCookie(name, value, maxAge, domain, path);
 	}
 
+	/**
+	 * Set a new cookie.
+	 * <p>
+	 * Calls
+	 * {@link #setCookie(String name, String value, int maxAge, String domain, String path)
+	 * setCookie(name, value, maxAge, "", "")}
+	 */
 	public final void setCookie(String name, String value, int maxAge) {
 		setCookie(name, value, maxAge, "", "");
 	}
 
+	/**
+	 * Set a new cookie.
+	 * <p>
+	 * Calls
+	 * {@link #setCookie(String name, String value, int maxAge, String domain, String path)
+	 * setCookie(name, value, maxAge, domain, "")}
+	 */
 	public final void setCookie(String name, String value, int maxAge,
 			String domain) {
 		setCookie(name, value, maxAge, domain, "");
@@ -1212,7 +1244,7 @@ public class WApplication extends WObject {
 
 	/**
 	 * Returns the current maximum size of a request to the application.
-	 * 
+	 * <p>
 	 * The maximum request size is configured in the configuration file, see
 	 * DOCREF<a class="el" href="overview.html#config_general">8.2 General
 	 * application settings (wt_config.xml)</a>.
@@ -1227,7 +1259,7 @@ public class WApplication extends WObject {
 
 	/**
 	 * Add an entry to the application log.
-	 * 
+	 * <p>
 	 * Starts a new log entry of the given <i>type</i> in the Wt application log
 	 * file. This method returns a stream-like object to which the message may
 	 * be streamed.
@@ -1238,7 +1270,7 @@ public class WApplication extends WObject {
 
 	/**
 	 * Set the loading indicator.
-	 * 
+	 * <p>
 	 * The loading indicator is shown to indicate that a response from the
 	 * server is pending or JavaScript is being evaluated.
 	 * <p>
@@ -1266,6 +1298,7 @@ public class WApplication extends WObject {
 
 	/**
 	 * Returns the loading indicator.
+	 * <p>
 	 * 
 	 * @see WApplication#setLoadingIndicator(WLoadingIndicator indicator)
 	 */
@@ -1288,7 +1321,7 @@ public class WApplication extends WObject {
 
 	/**
 	 * Quit the application.
-	 * 
+	 * <p>
 	 * The method returns immediately, but has as effect that the application
 	 * will be terminated after the current event is completed.
 	 * <p>
@@ -1310,6 +1343,7 @@ public class WApplication extends WObject {
 
 	/**
 	 * Returns whether the application is quited.
+	 * <p>
 	 * 
 	 * @see WApplication#quit()
 	 */
@@ -1319,7 +1353,7 @@ public class WApplication extends WObject {
 
 	/**
 	 * Signal which indicates that too a large POST was received.
-	 * 
+	 * <p>
 	 * The integer parameter is the request that was received in bytes.
 	 */
 	public Signal1<Integer> requestTooLarge() {
@@ -1345,7 +1379,7 @@ public class WApplication extends WObject {
 
 	/**
 	 * Notify an event to the application.
-	 * 
+	 * <p>
 	 * This method is called by the event loop for propagating an event to the
 	 * application. It provides a single point of entry for events to the
 	 * application.
@@ -1356,7 +1390,7 @@ public class WApplication extends WObject {
 
 	/**
 	 * Returns whether a widget is exposed in the interface.
-	 * 
+	 * <p>
 	 * The default implementation simply returns true, unless a modal dialog is
 	 * active, in which case it returns true only for widgets that are inside
 	 * the dialog.

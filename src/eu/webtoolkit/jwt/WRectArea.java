@@ -4,7 +4,7 @@ import java.io.StringWriter;
 
 /**
  * A interactive area in a widget, specified by a rectangle
- * 
+ * <p>
  * 
  * The area may be added to a {@link WImage} or {@link WPaintedWidget} to
  * provide interactivity on a rectangular area of the image. The rectangle is
@@ -19,7 +19,7 @@ import java.io.StringWriter;
 public class WRectArea extends WAbstractArea {
 	/**
 	 * Default constructor.
-	 * 
+	 * <p>
 	 * The default constructor creates a rectangular area spans the whole
 	 * widget.
 	 */
@@ -33,7 +33,7 @@ public class WRectArea extends WAbstractArea {
 
 	/**
 	 * Construct a rectangular area with given geometry.
-	 * 
+	 * <p>
 	 * The arguments are in pixel units.
 	 */
 	public WRectArea(int x, int y, int width, int height) {
@@ -46,7 +46,7 @@ public class WRectArea extends WAbstractArea {
 
 	/**
 	 * Construct a rectangular area with given geometry.
-	 * 
+	 * <p>
 	 * The <i>rect</i> argument is in pixel units.
 	 */
 	public WRectArea(WRectF rect) {

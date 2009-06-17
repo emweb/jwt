@@ -7,7 +7,7 @@ package eu.webtoolkit.jwt;
 public class WPointF {
 	/**
 	 * Default constructor.
-	 * 
+	 * <p>
 	 * Constructs a point (<i>x=0</i>, <i>y=0</i>).
 	 */
 	public WPointF() {
@@ -17,7 +17,7 @@ public class WPointF {
 
 	/**
 	 * Construct a point.
-	 * 
+	 * <p>
 	 * Constructs a point (<i>x</i>, <i>y</i>).
 	 */
 	public WPointF(double x, double y) {

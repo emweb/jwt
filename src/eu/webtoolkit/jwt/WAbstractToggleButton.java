@@ -6,7 +6,7 @@ import java.util.List;
 
 /**
  * An abstract base class for radio buttons and check boxes
- * 
+ * <p>
  * 
  * A toggle button provides a button with a boolean state (checked or
  * unchecked), and a text label.
@@ -31,6 +31,12 @@ public class WAbstractToggleButton extends WFormWidget {
 		label.setBuddy(this);
 	}
 
+	/**
+	 * Create an unchecked toggle button with empty label and optional parent.
+	 * <p>
+	 * Calls {@link #WAbstractToggleButton(WContainerWidget parent)
+	 * this((WContainerWidget)null)}
+	 */
 	protected WAbstractToggleButton() {
 		this((WContainerWidget) null);
 	}
@@ -46,6 +52,13 @@ public class WAbstractToggleButton extends WFormWidget {
 		label.setBuddy(this);
 	}
 
+	/**
+	 * Create an unchecked toggle button with given text and optional parent.
+	 * <p>
+	 * Calls
+	 * {@link #WAbstractToggleButton(CharSequence text, WContainerWidget parent)
+	 * this(text, (WContainerWidget)null)}
+	 */
 	protected WAbstractToggleButton(CharSequence text) {
 		this(text, (WContainerWidget) null);
 	}
@@ -89,7 +102,7 @@ public class WAbstractToggleButton extends WFormWidget {
 
 	/**
 	 * Change the state of the button.
-	 * 
+	 * <p>
 	 * Does not emit one of the {@link WAbstractToggleButton#checked()} or
 	 * {@link WAbstractToggleButton#unChecked()} signals.
 	 * <p>
@@ -103,7 +116,7 @@ public class WAbstractToggleButton extends WFormWidget {
 
 	/**
 	 * Set the button checked.
-	 * 
+	 * <p>
 	 * Does not emit the {@link WAbstractToggleButton#checked()} signal.
 	 * <p>
 	 * 
@@ -116,7 +129,7 @@ public class WAbstractToggleButton extends WFormWidget {
 
 	/**
 	 * Set the button unChecked.
-	 * 
+	 * <p>
 	 * Does not emit the {@link WAbstractToggleButton#unChecked()} signal.
 	 * <p>
 	 * 

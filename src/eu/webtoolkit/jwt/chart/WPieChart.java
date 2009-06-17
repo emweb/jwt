@@ -24,7 +24,7 @@ import eu.webtoolkit.jwt.utils.StringUtils;
 
 /**
  * A pie chart.
- * 
+ * <p>
  * 
  * A pie chart renders a single data series as segments of a circle, so that the
  * area of each segment is proportional to the value in the data series.
@@ -71,13 +71,19 @@ public class WPieChart extends WAbstractChart {
 		this.setPlotAreaPadding(5);
 	}
 
+	/**
+	 * Create a new pie chart.
+	 * <p>
+	 * Calls {@link #WPieChart(WContainerWidget parent)
+	 * this((WContainerWidget)null)}
+	 */
 	public WPieChart() {
 		this((WContainerWidget) null);
 	}
 
 	/**
 	 * Change the model column that holds the labels.
-	 * 
+	 * <p>
 	 * The labels are used only when
 	 * {@link WPieChart#setDisplayLabels(EnumSet options)} is called with the
 	 * {@link LabelOption#TextLabel TextLabel} option.
@@ -98,6 +104,7 @@ public class WPieChart extends WAbstractChart {
 
 	/**
 	 * Returns the model column used for the labels.
+	 * <p>
 	 * 
 	 * @see WPieChart#setLabelsColumn(int modelColumn)
 	 */
@@ -107,7 +114,7 @@ public class WPieChart extends WAbstractChart {
 
 	/**
 	 * Change the model column that holds the data.
-	 * 
+	 * <p>
 	 * The data column should contain data that can be converted to a number,
 	 * but should not necessarily be of a number type, see also
 	 * {@link StringUtils#asNumber(Object)}.
@@ -127,6 +134,7 @@ public class WPieChart extends WAbstractChart {
 
 	/**
 	 * Returns the model column used for the data.
+	 * <p>
 	 * 
 	 * @see WPieChart#setDataColumn(int modelColumn)
 	 */
@@ -136,7 +144,7 @@ public class WPieChart extends WAbstractChart {
 
 	/**
 	 * Customizes the brush used for a pie segment.
-	 * 
+	 * <p>
 	 * By default, the brush is taken from the
 	 * {@link WAbstractChart#getPalette()}. You can use this method to override
 	 * the palette&apos;s brush for a particular <i>modelRow</i>.
@@ -151,6 +159,7 @@ public class WPieChart extends WAbstractChart {
 
 	/**
 	 * Returns the brush used for a pie segment.
+	 * <p>
 	 * 
 	 * @see WPieChart#setBrush(int modelRow, WBrush brush)
 	 */
@@ -164,7 +173,7 @@ public class WPieChart extends WAbstractChart {
 
 	/**
 	 * Change the explosion factor for a pie segment.
-	 * 
+	 * <p>
 	 * Separates the segment corresponding to model row <i>modelRow</i> from the
 	 * rest of the pie. The <i>factor</i> is a positive number that represents
 	 * the distance from the center as a fraction of the pie radius. Thus, 0
@@ -180,6 +189,7 @@ public class WPieChart extends WAbstractChart {
 
 	/**
 	 * Returns the explosion factor for a segment.
+	 * <p>
 	 * 
 	 * @see WPieChart#setExplode(int modelRow, double factor)
 	 */
@@ -189,7 +199,7 @@ public class WPieChart extends WAbstractChart {
 
 	/**
 	 * Enables a 3D perspective effect on the pie.
-	 * 
+	 * <p>
 	 * A 3D perspective effect is added, which may be customized by specifying
 	 * the simulated <i>height</i> of the pie. The height is defined as a
 	 * fraction of the pie radius.
@@ -203,12 +213,19 @@ public class WPieChart extends WAbstractChart {
 		}
 	}
 
+	/**
+	 * Enables a 3D perspective effect on the pie.
+	 * <p>
+	 * Calls {@link #setPerspectiveEnabled(boolean enabled, double height)
+	 * setPerspectiveEnabled(enabled, 1.0)}
+	 */
 	public final void setPerspectiveEnabled(boolean enabled) {
 		setPerspectiveEnabled(enabled, 1.0);
 	}
 
 	/**
 	 * Returns whether a 3D effect is enabled.
+	 * <p>
 	 * 
 	 * @see WPieChart#setPerspectiveEnabled(boolean enabled, double height)
 	 */
@@ -218,7 +235,7 @@ public class WPieChart extends WAbstractChart {
 
 	/**
 	 * Change the angle of the first segment.
-	 * 
+	 * <p>
 	 * The default value is 45 degrees.
 	 */
 	public void setStartAngle(double startAngle) {
@@ -230,6 +247,7 @@ public class WPieChart extends WAbstractChart {
 
 	/**
 	 * Returns the angle of the first segment.
+	 * <p>
 	 * 
 	 * @see WPieChart#setStartAngle(double startAngle)
 	 */
@@ -239,7 +257,7 @@ public class WPieChart extends WAbstractChart {
 
 	/**
 	 * Configure if and how labels should be displayed.
-	 * 
+	 * <p>
 	 * The <i>options</i> must be the logical OR of a placement option (
 	 * {@link LabelOption#Inside Inside} or {@link LabelOption#Outside Outside})
 	 * and {@link LabelOption#TextLabel TextLabel} and/or
@@ -254,6 +272,12 @@ public class WPieChart extends WAbstractChart {
 		this.update();
 	}
 
+	/**
+	 * Configure if and how labels should be displayed.
+	 * <p>
+	 * Calls {@link #setDisplayLabels(EnumSet options)
+	 * setDisplayLabels(EnumSet.of(option, options))}
+	 */
 	public final void setDisplayLabels(LabelOption option,
 			LabelOption... options) {
 		setDisplayLabels(EnumSet.of(option, options));
@@ -261,6 +285,7 @@ public class WPieChart extends WAbstractChart {
 
 	/**
 	 * Returns options set for displaying labels.
+	 * <p>
 	 * 
 	 * @see WPieChart#setDisplayLabels(EnumSet options)
 	 */

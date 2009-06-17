@@ -6,18 +6,18 @@ import java.util.List;
 
 /**
  * A validator for date input
- * 
+ * <p>
  * 
  * This validator accepts input in the given date format, and optionally checks
  * if the date is within a given range.
  * <p>
  * The format string used for validating user input are the same as those used
- * by {@link WDate#fromString(CharSequence)}.
+ * by {@link WDate#fromString(String s)}.
  */
 public class WDateValidator extends WValidator {
 	/**
 	 * Construct a date validator.
-	 * 
+	 * <p>
 	 * The validator will accept any date of the format &apos;yyyy-MM-dd&apos;.
 	 */
 	public WDateValidator(WObject parent) {
@@ -31,13 +31,18 @@ public class WDateValidator extends WValidator {
 		this.setFormat("yyyy-MM-dd");
 	}
 
+	/**
+	 * Construct a date validator.
+	 * <p>
+	 * Calls {@link #WDateValidator(WObject parent) this((WObject)null)}
+	 */
 	public WDateValidator() {
 		this((WObject) null);
 	}
 
 	/**
 	 * Construct a date validator.
-	 * 
+	 * <p>
 	 * The validator will accept dates in the indicated range in the format
 	 * &apos;yyyy-MM-dd&apos;.
 	 */
@@ -52,17 +57,22 @@ public class WDateValidator extends WValidator {
 		this.setFormat("yyyy-MM-dd");
 	}
 
+	/**
+	 * Construct a date validator.
+	 * <p>
+	 * Calls {@link #WDateValidator(WDate bottom, WDate top, WObject parent)
+	 * this(bottom, top, (WObject)null)}
+	 */
 	public WDateValidator(WDate bottom, WDate top) {
 		this(bottom, top, (WObject) null);
 	}
 
 	/**
 	 * Construct a date validator.
-	 * 
+	 * <p>
 	 * The validator will accept dates in the date format <i>format</i>.
 	 * <p>
-	 * The syntax for <i>format</i> is as in
-	 * {@link WDate#fromString(CharSequence)}
+	 * The syntax for <i>format</i> is as in {@link WDate#fromString(String s)}
 	 */
 	public WDateValidator(String format, WObject parent) {
 		super(parent);
@@ -75,18 +85,23 @@ public class WDateValidator extends WValidator {
 		this.setFormat(format);
 	}
 
+	/**
+	 * Construct a date validator.
+	 * <p>
+	 * Calls {@link #WDateValidator(String format, WObject parent) this(format,
+	 * (WObject)null)}
+	 */
 	public WDateValidator(String format) {
 		this(format, (WObject) null);
 	}
 
 	/**
 	 * Construct a date validator.
-	 * 
+	 * <p>
 	 * The validator will accept only dates within the indicated range
 	 * <i>bottom</i> to <i>top</i>, in the date format <i>format</i>.
 	 * <p>
-	 * The syntax for <i>format</i> is as in
-	 * {@link WDate#fromString(CharSequence)}
+	 * The syntax for <i>format</i> is as in {@link WDate#fromString(String s)}
 	 */
 	public WDateValidator(String format, WDate bottom, WDate top, WObject parent) {
 		super(parent);
@@ -99,13 +114,20 @@ public class WDateValidator extends WValidator {
 		this.setFormat(format);
 	}
 
+	/**
+	 * Construct a date validator.
+	 * <p>
+	 * Calls
+	 * {@link #WDateValidator(String format, WDate bottom, WDate top, WObject parent)
+	 * this(format, bottom, top, (WObject)null)}
+	 */
 	public WDateValidator(String format, WDate bottom, WDate top) {
 		this(format, bottom, top, (WObject) null);
 	}
 
 	/**
 	 * Set the bottom of the valid date range.
-	 * 
+	 * <p>
 	 * The default is a null date constructed using WDate().
 	 */
 	public void setBottom(WDate bottom) {
@@ -124,7 +146,7 @@ public class WDateValidator extends WValidator {
 
 	/**
 	 * Set the top of the valid date range.
-	 * 
+	 * <p>
 	 * The default is a null date constructed using WDate().
 	 */
 	public void setTop(WDate top) {
@@ -143,8 +165,9 @@ public class WDateValidator extends WValidator {
 
 	/**
 	 * Set the date format used to parse date strings.
+	 * <p>
 	 * 
-	 * @see WDate#fromString(CharSequence)
+	 * @see WDate#fromString(String s)
 	 */
 	public void setFormat(String format) {
 		this.formats_.clear();
@@ -154,6 +177,7 @@ public class WDateValidator extends WValidator {
 
 	/**
 	 * Get the format string used to parse date strings.
+	 * <p>
 	 * 
 	 * @see WDateValidator#setFormat(String format)
 	 */
@@ -172,7 +196,7 @@ public class WDateValidator extends WValidator {
 
 	/**
 	 * Validate the given input.
-	 * 
+	 * <p>
 	 * The input is considered valid only when it is blank for a non-mandatory
 	 * field, or represents a date in the given format, and within the valid
 	 * range.
@@ -209,10 +233,10 @@ public class WDateValidator extends WValidator {
 	// public void createExtConfig(Writer config) throws IOException;
 	/**
 	 * Parse a date from a string (<b>deprecated</b>).
-	 * 
-	 * DOCXREFITEMDeprecatedsee {@link WDate#fromString(CharSequence)} static
-	 * methods.Equivalent to {@link WDate#fromString(CharSequence)}
-	 * (<i>input</i>, &quot;yyyy-MM-dd&quot;);
+	 * <p>
+	 * DOCXREFITEMDeprecatedsee {@link WDate#fromString(String s)} static
+	 * methods.Equivalent to {@link WDate#fromString(String s)}(<i>input</i>,
+	 * &quot;yyyy-MM-dd&quot;);
 	 */
 	public static WDate parse(CharSequence input) {
 		return WDate.fromString(input.toString(), "yyyy-MM-dd");
@@ -220,7 +244,7 @@ public class WDateValidator extends WValidator {
 
 	/**
 	 * Set the message to display when the input is not a date.
-	 * 
+	 * <p>
 	 * The default message is &quot;The date must be of the format {1}&quot;,
 	 * with as first argument the format string.
 	 */
@@ -230,6 +254,7 @@ public class WDateValidator extends WValidator {
 
 	/**
 	 * Returns the message displayed when the input is not a date.
+	 * <p>
 	 * 
 	 * @see WDateValidator#setInvalidNotADateText(CharSequence text)
 	 */
@@ -257,6 +282,7 @@ public class WDateValidator extends WValidator {
 
 	/**
 	 * Returns the message displayed when date is too early.
+	 * <p>
 	 * 
 	 * @see WDateValidator#setInvalidTooEarlyText(CharSequence text)
 	 */
@@ -285,7 +311,7 @@ public class WDateValidator extends WValidator {
 
 	/**
 	 * Set message to display when the date is later than top.
-	 * 
+	 * <p>
 	 * Depending on whether {@link WDateValidator#getBottom()} and
 	 * {@link WDateValidator#getTop()} are defined, the default message is
 	 * &quot;The date must be between {1} and {2}&quot; or &quot;The date must
@@ -298,6 +324,7 @@ public class WDateValidator extends WValidator {
 
 	/**
 	 * Returns the message displayed when the date is too late.
+	 * <p>
 	 * 
 	 * @see WDateValidator#setInvalidTooLateText(CharSequence text)
 	 */

@@ -59,7 +59,7 @@ public class WebRequest extends HttpServletRequestWrapper {
 		return "";
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "deprecation" })
 	private void parse() {
 		Map<String, String[]> parameterMap = super.getParameterMap();
 

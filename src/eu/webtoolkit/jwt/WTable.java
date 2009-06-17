@@ -10,14 +10,14 @@ import java.util.Set;
 
 /**
  * A container widget which provides layout of children in a table grid
- * 
+ * <p>
  * 
  * A WTable arranges its children in a table.
  * <p>
  * To insert or access contents, use
- * {@link WTable#getElementAt(int row, int column)} to access the cell at a
- * particular location in the table. The WTable expands automatically to create
- * the indexed (row, column) as necessary.
+ * {@link WTable#getElementAt(int row, int column)} to access the
+ * {@link WTableCell cell} at a particular location in the table. The WTable
+ * expands automatically to create the indexed (row, column) as necessary.
  * <p>
  * It is possible to insert and delete entire rows or columns from the table
  * using the {@link WTable#insertColumn(int column)},
@@ -56,6 +56,12 @@ public class WTable extends WInteractWidget {
 		this.setIgnoreChildRemoves(true);
 	}
 
+	/**
+	 * Construct an empty table.
+	 * <p>
+	 * Calls {@link #WTable(WContainerWidget parent)
+	 * this((WContainerWidget)null)}
+	 */
 	public WTable() {
 		this((WContainerWidget) null);
 	}
@@ -80,7 +86,7 @@ public class WTable extends WInteractWidget {
 
 	/**
 	 * Access the table element at the given row and column.
-	 * 
+	 * <p>
 	 * If the row/column is beyond the current table dimensions, then the table
 	 * is expanded automatically.
 	 */
@@ -92,7 +98,7 @@ public class WTable extends WInteractWidget {
 
 	/**
 	 * Returns the row object for the given row.
-	 * 
+	 * <p>
 	 * Like with {@link WTable#getElementAt(int row, int column)}, the table
 	 * expands automatically when the row is beyond the current table
 	 * dimensions.
@@ -108,7 +114,7 @@ public class WTable extends WInteractWidget {
 
 	/**
 	 * Returns the column object for the given column.
-	 * 
+	 * <p>
 	 * Like with {@link WTable#getElementAt(int row, int column)}, the table
 	 * expands automatically when the column is beyond the current table
 	 * dimensions.
@@ -132,7 +138,7 @@ public class WTable extends WInteractWidget {
 
 	/**
 	 * Delete the given table cell and its contents.
-	 * 
+	 * <p>
 	 * The table cell at that position is recreated.
 	 */
 	public void removeCell(WTableCell item) {
@@ -141,6 +147,7 @@ public class WTable extends WInteractWidget {
 
 	/**
 	 * Delete the table cell at the given position.
+	 * <p>
 	 * 
 	 * @see WTable#removeCell(WTableCell item)
 	 */
@@ -162,7 +169,7 @@ public class WTable extends WInteractWidget {
 
 	/**
 	 * Delete the given row and all its contents.
-	 * 
+	 * <p>
 	 * Rows below the given row are shifted up.
 	 */
 	public void deleteRow(int row) {
@@ -215,7 +222,7 @@ public class WTable extends WInteractWidget {
 
 	/**
 	 * Clears the entire table.
-	 * 
+	 * <p>
 	 * This method clears the entire table: all cells and their contents are
 	 * deleted.
 	 */
@@ -241,7 +248,7 @@ public class WTable extends WInteractWidget {
 
 	/**
 	 * Set the number of header rows or columns.
-	 * 
+	 * <p>
 	 * The default values are 0.
 	 * <p>
 	 * <p>
@@ -257,12 +264,19 @@ public class WTable extends WInteractWidget {
 		}
 	}
 
+	/**
+	 * Set the number of header rows or columns.
+	 * <p>
+	 * Calls {@link #setHeaderCount(int count, Orientation orientation)
+	 * setHeaderCount(count, Orientation.Horizontal)}
+	 */
 	public final void setHeaderCount(int count) {
 		setHeaderCount(count, Orientation.Horizontal);
 	}
 
 	/**
 	 * Returns the number of header rows or columns.
+	 * <p>
 	 * 
 	 * @see WTable#setHeaderCount(int count, Orientation orientation)
 	 */
@@ -274,6 +288,12 @@ public class WTable extends WInteractWidget {
 		}
 	}
 
+	/**
+	 * Returns the number of header rows or columns.
+	 * <p>
+	 * Returns {@link #getHeaderCount(Orientation orientation)
+	 * getHeaderCount(Orientation.Horizontal)}
+	 */
 	public final int getHeaderCount() {
 		return getHeaderCount(Orientation.Horizontal);
 	}

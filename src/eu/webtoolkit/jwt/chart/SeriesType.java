@@ -3,6 +3,7 @@ package eu.webtoolkit.jwt.chart;
 
 /**
  * Enumeration that specifies the type of a chart series.
+ * <p>
  * 
  * @see WDataSeries#setType(SeriesType type)
  * @see WCartesianChart

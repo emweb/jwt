@@ -74,7 +74,6 @@ hasTag: function(e, s) {
 },
 
 unstub: function(from, to, methodDisplay) {
-  from.parentNode.replaceChild(to,from);
   if (methodDisplay == 1)
     to.style.display = from.style.display;
   else {

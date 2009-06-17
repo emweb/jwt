@@ -3,6 +3,7 @@ package eu.webtoolkit.jwt.chart;
 
 /**
  * Enumeration that specifies options for the labels.
+ * <p>
  * 
  * @see WPieChart#setDisplayLabels(EnumSet options)
  */

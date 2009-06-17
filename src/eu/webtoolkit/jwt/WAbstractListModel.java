@@ -3,7 +3,7 @@ package eu.webtoolkit.jwt;
 
 /**
  * An abstract list model for use with Wt&apos;s view classes.
- * 
+ * <p>
  * 
  * An abstract list model specializes {@link WAbstractItemModel} for
  * one-dimensional lists (i.e. a model with 1 column and no children).
@@ -22,6 +22,11 @@ public abstract class WAbstractListModel extends WAbstractItemModel {
 		super(parent);
 	}
 
+	/**
+	 * Create a new abstract list model.
+	 * <p>
+	 * Calls {@link #WAbstractListModel(WObject parent) this((WObject)null)}
+	 */
 	public WAbstractListModel() {
 		this((WObject) null);
 	}

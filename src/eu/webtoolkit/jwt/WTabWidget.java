@@ -6,7 +6,7 @@ import java.util.List;
 
 /**
  * A widget that organizes contents in tab panes
- * 
+ * <p>
  * 
  * This widget combines a horizontal {@link WMenu} with a {@link WStackedWidget}
  * , and a tab-like look.
@@ -82,13 +82,19 @@ public class WTabWidget extends WCompositeWidget {
 		this.create(EnumSet.of(AlignmentFlag.AlignJustify));
 	}
 
+	/**
+	 * Create a new {@link WTabWidget}.
+	 * <p>
+	 * Calls {@link #WTabWidget(WContainerWidget parent)
+	 * this((WContainerWidget)null)}
+	 */
 	public WTabWidget() {
 		this((WContainerWidget) null);
 	}
 
 	/**
 	 * Create a new {@link WTabWidget} with custom layout alignment.
-	 * 
+	 * <p>
 	 * The default constructor will use a layout manager to fit the tab widget
 	 * within a parent container, and show scrollbars inside a tab if needed.
 	 * <p>
@@ -104,13 +110,19 @@ public class WTabWidget extends WCompositeWidget {
 		this.create(layoutAlignment);
 	}
 
+	/**
+	 * Create a new {@link WTabWidget} with custom layout alignment.
+	 * <p>
+	 * Calls {@link #WTabWidget(EnumSet layoutAlignment, WContainerWidget parent)
+	 * this(layoutAlignment, (WContainerWidget)null)}
+	 */
 	public WTabWidget(EnumSet<AlignmentFlag> layoutAlignment) {
 		this(layoutAlignment, (WContainerWidget) null);
 	}
 
 	/**
 	 * Add a new tab, with <i>child</i> as content, and the given label.
-	 * 
+	 * <p>
 	 * Returns the menu item that implements the tab item.
 	 */
 	public WMenuItem addTab(WWidget child, CharSequence label,
@@ -132,13 +144,20 @@ public class WTabWidget extends WCompositeWidget {
 		return result;
 	}
 
+	/**
+	 * Add a new tab, with <i>child</i> as content, and the given label.
+	 * <p>
+	 * Returns
+	 * {@link #addTab(WWidget child, CharSequence label, WTabWidget.LoadPolicy loadPolicy)
+	 * addTab(child, label, WTabWidget.LoadPolicy.LazyLoading)}
+	 */
 	public final WMenuItem addTab(WWidget child, CharSequence label) {
 		return addTab(child, label, WTabWidget.LoadPolicy.LazyLoading);
 	}
 
 	/**
 	 * Removes a tab item.
-	 * 
+	 * <p>
 	 * The widget itself is not deleted.
 	 * <p>
 	 * 
@@ -167,7 +186,7 @@ public class WTabWidget extends WCompositeWidget {
 
 	/**
 	 * Get the index of the given widget.
-	 * 
+	 * <p>
 	 * If the widget is not in this tab widget, then -1 is returned.
 	 */
 	public int getIndexOf(WWidget widget) {
@@ -204,7 +223,7 @@ public class WTabWidget extends WCompositeWidget {
 
 	/**
 	 * Enable or disable a tab.
-	 * 
+	 * <p>
 	 * Enables or disables the tab at <i>index</i>. A disabled tab cannot be
 	 * activated.
 	 */
@@ -221,7 +240,7 @@ public class WTabWidget extends WCompositeWidget {
 
 	/**
 	 * Hide or show a tab.
-	 * 
+	 * <p>
 	 * Hides are shows the tab at <i>index</i>.
 	 */
 	public void setTabHidden(int index, boolean hidden) {
@@ -257,7 +276,7 @@ public class WTabWidget extends WCompositeWidget {
 
 	/**
 	 * Set the tooltip for a tab.
-	 * 
+	 * <p>
 	 * The tooltip is shown when the user hovers over the label.
 	 */
 	public void setTabToolTip(int index, CharSequence tip) {
@@ -273,7 +292,7 @@ public class WTabWidget extends WCompositeWidget {
 
 	/**
 	 * Enable internal paths for items.
-	 * 
+	 * <p>
 	 * The menu participates in the internal path by changing the internal path
 	 * when an item has been selected, and listening for path changes to react
 	 * to path selections. As a consequence this allows the user to bookmark the
@@ -300,6 +319,7 @@ public class WTabWidget extends WCompositeWidget {
 
 	/**
 	 * Returns whether internal paths are enabled.
+	 * <p>
 	 * 
 	 * @see WMenu#setInternalPathEnabled()
 	 */
@@ -309,7 +329,7 @@ public class WTabWidget extends WCompositeWidget {
 
 	/**
 	 * Set the internal base path.
-	 * 
+	 * <p>
 	 * A &apos;/&apos; is appended to turn it into a folder, if needed.
 	 * <p>
 	 * 
@@ -322,7 +342,7 @@ public class WTabWidget extends WCompositeWidget {
 
 	/**
 	 * Returns the internal base path.
-	 * 
+	 * <p>
 	 * The default value is the application&apos;s internalPath (
 	 * {@link WApplication#getInternalPath()}) that was recorded when
 	 * {@link WMenu#setInternalPathEnabled()} was called, and together with each
@@ -342,7 +362,7 @@ public class WTabWidget extends WCompositeWidget {
 
 	/**
 	 * Signal emitted when the user activates a tab.
-	 * 
+	 * <p>
 	 * The index of the newly activated tab is passed as an argument.
 	 */
 	public Signal1<Integer> currentChanged() {

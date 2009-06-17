@@ -3,7 +3,7 @@ package eu.webtoolkit.jwt;
 
 /**
  * Abstract rule in a CSS style sheet.
- * 
+ * <p>
  * 
  * A rule presents CSS style properties that are applied to a selected set of
  * elements.
@@ -51,14 +51,14 @@ public abstract class WCssRule {
 
 	/**
 	 * Returns the declarations.
-	 * 
+	 * <p>
 	 * This is a semi-colon separated list of CSS declarations.
 	 */
 	public abstract String getDeclarations();
 
 	/**
 	 * Returns the declarations.
-	 * 
+	 * <p>
 	 * This is a semi-colon separated list of CSS declarations.
 	 */
 	public boolean updateDomElement(DomElement cssRuleElement, boolean all) {
@@ -67,7 +67,7 @@ public abstract class WCssRule {
 
 	/**
 	 * Returns the declarations.
-	 * 
+	 * <p>
 	 * This is a semi-colon separated list of CSS declarations.
 	 */
 	protected WCssRule(String selector) {
@@ -77,13 +77,13 @@ public abstract class WCssRule {
 
 	/**
 	 * Returns the declarations.
-	 * 
+	 * <p>
 	 * This is a semi-colon separated list of CSS declarations.
 	 */
 	private String selector_;
 	/**
 	 * Returns the declarations.
-	 * 
+	 * <p>
 	 * This is a semi-colon separated list of CSS declarations.
 	 */
 	WCssStyleSheet sheet_;

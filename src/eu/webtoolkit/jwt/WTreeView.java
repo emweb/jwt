@@ -14,7 +14,7 @@ import eu.webtoolkit.jwt.utils.StringUtils;
 
 /**
  * A view class that displays a model as a tree or tree table.
- * 
+ * <p>
  * 
  * The view displays data from a {@link WAbstractItemModel} in a tree or tree
  * table. It provides incremental rendering, allowing the display of data models
@@ -398,6 +398,12 @@ public class WTreeView extends WCompositeWidget {
 		}
 	}
 
+	/**
+	 * Create a new tree view.
+	 * <p>
+	 * Calls {@link #WTreeView(WContainerWidget parent)
+	 * this((WContainerWidget)null)}
+	 */
 	public WTreeView() {
 		this((WContainerWidget) null);
 	}
@@ -418,7 +424,7 @@ public class WTreeView extends WCompositeWidget {
 
 	/**
 	 * Sets the model.
-	 * 
+	 * <p>
 	 * The view will render the data in the given <i>model</i>. Changes to the
 	 * model are reflected in the view.
 	 * <p>
@@ -534,6 +540,7 @@ public class WTreeView extends WCompositeWidget {
 
 	/**
 	 * Returns the model.
+	 * <p>
 	 * 
 	 * @see WTreeView#setModel(WAbstractItemModel model)
 	 */
@@ -543,7 +550,7 @@ public class WTreeView extends WCompositeWidget {
 
 	/**
 	 * Sets the root index.
-	 * 
+	 * <p>
 	 * The root index is the model index that is considered the root node. This
 	 * node itself is not rendered, but all its children are the top level
 	 * nodes.
@@ -565,6 +572,7 @@ public class WTreeView extends WCompositeWidget {
 
 	/**
 	 * Returns the root index.
+	 * <p>
 	 * 
 	 * @see WTreeView#setRootIndex(WModelIndex rootIndex)
 	 */
@@ -574,7 +582,7 @@ public class WTreeView extends WCompositeWidget {
 
 	/**
 	 * Sets the header height.
-	 * 
+	 * <p>
 	 * Use this method to change the header height. You may also enable the use
 	 * of multi-line headers. By default, the header text is a single line, that
 	 * is centered vertically.
@@ -606,12 +614,19 @@ public class WTreeView extends WCompositeWidget {
 		}
 	}
 
+	/**
+	 * Sets the header height.
+	 * <p>
+	 * Calls {@link #setHeaderHeight(WLength height, boolean multiLine)
+	 * setHeaderHeight(height, false)}
+	 */
 	public final void setHeaderHeight(WLength height) {
 		setHeaderHeight(height, false);
 	}
 
 	/**
 	 * Returns the header height.
+	 * <p>
 	 * 
 	 * @see WTreeView#setHeaderHeight(WLength height, boolean multiLine)
 	 */
@@ -621,7 +636,7 @@ public class WTreeView extends WCompositeWidget {
 
 	/**
 	 * Sets the row height.
-	 * 
+	 * <p>
 	 * The view assumes that all rows are of the same height. Use this method to
 	 * set the height.
 	 * <p>
@@ -659,7 +674,7 @@ public class WTreeView extends WCompositeWidget {
 
 	/**
 	 * Sets the column format string (<b>deprecated</b>).
-	 * 
+	 * <p>
 	 * The DisplayRole data for that column is converted to a string using
 	 * {@link StringUtils#asString(Object)}, with the given format.
 	 * <p>
@@ -686,6 +701,7 @@ public class WTreeView extends WCompositeWidget {
 
 	/**
 	 * Returns the column format string (<b>deprecated</b>).
+	 * <p>
 	 * 
 	 * @see WTreeView#setColumnFormat(int column, String format)
 	 *      DOCXREFITEMDeprecateduse
@@ -707,7 +723,7 @@ public class WTreeView extends WCompositeWidget {
 
 	/**
 	 * Sets the column width.
-	 * 
+	 * <p>
 	 * For a model with
 	 * {@link WAbstractItemModel#getColumnCount(WModelIndex parent)
 	 * columnCount()} == <i>N</i>, the initial width of columns 1..<i>N</i> is
@@ -746,6 +762,7 @@ public class WTreeView extends WCompositeWidget {
 
 	/**
 	 * Returns the column width.
+	 * <p>
 	 * 
 	 * @see WTreeView#setColumnWidth(int column, WLength width)
 	 */
@@ -755,7 +772,7 @@ public class WTreeView extends WCompositeWidget {
 
 	/**
 	 * Sets the content alignment for a column.
-	 * 
+	 * <p>
 	 * The default value is {@link AlignmentFlag#AlignLeft AlignLeft}.
 	 * <p>
 	 * <p>
@@ -795,7 +812,7 @@ public class WTreeView extends WCompositeWidget {
 
 	/**
 	 * Sets the header alignment for a column.
-	 * 
+	 * <p>
 	 * The default value is {@link AlignmentFlag#AlignLeft AlignLeft}.
 	 * <p>
 	 * 
@@ -820,6 +837,7 @@ public class WTreeView extends WCompositeWidget {
 
 	/**
 	 * Returns the content alignment for a column.
+	 * <p>
 	 * 
 	 * @see WTreeView#setColumnAlignment(int column, AlignmentFlag alignment)
 	 */
@@ -829,6 +847,7 @@ public class WTreeView extends WCompositeWidget {
 
 	/**
 	 * Returns the header alignment for a column.
+	 * <p>
 	 * 
 	 * @see WTreeView#setHeaderAlignment(int column, AlignmentFlag alignment)
 	 */
@@ -838,7 +857,7 @@ public class WTreeView extends WCompositeWidget {
 
 	/**
 	 * Setss the column border color.
-	 * 
+	 * <p>
 	 * The default border color is WColor.white.
 	 */
 	public void setColumnBorder(WColor color) {
@@ -853,7 +872,7 @@ public class WTreeView extends WCompositeWidget {
 
 	/**
 	 * Setss the base urls for icons.
-	 * 
+	 * <p>
 	 * This widget relies on several icons that are distributed together with Wt
 	 * for drawing icons, lines, and backgrounds.
 	 * <p>
@@ -869,6 +888,7 @@ public class WTreeView extends WCompositeWidget {
 
 	/**
 	 * Returns the base url for icons.
+	 * <p>
 	 * 
 	 * @see WTreeView#setImagePack(String uri)
 	 */
@@ -878,6 +898,7 @@ public class WTreeView extends WCompositeWidget {
 
 	/**
 	 * Expand or collapse a node.
+	 * <p>
 	 * 
 	 * @see WTreeView#expand(WModelIndex index)
 	 * @see WTreeView#collapse(WModelIndex index)
@@ -917,6 +938,7 @@ public class WTreeView extends WCompositeWidget {
 
 	/**
 	 * Returns whether a node is expanded.
+	 * <p>
 	 * 
 	 * @see WTreeView#setExpanded(WModelIndex index, boolean expanded)
 	 */
@@ -928,6 +950,7 @@ public class WTreeView extends WCompositeWidget {
 
 	/**
 	 * Collapse a node.
+	 * <p>
 	 * 
 	 * @see WTreeView#setExpanded(WModelIndex index, boolean expanded)
 	 * @see WTreeView#expand(WModelIndex index)
@@ -938,6 +961,7 @@ public class WTreeView extends WCompositeWidget {
 
 	/**
 	 * Expand a node.
+	 * <p>
 	 * 
 	 * @see WTreeView#setExpanded(WModelIndex index, boolean expanded)
 	 * @see WTreeView#collapse(WModelIndex index)
@@ -948,7 +972,7 @@ public class WTreeView extends WCompositeWidget {
 
 	/**
 	 * Expand all nodes to a depth.
-	 * 
+	 * <p>
 	 * Expands all nodes to the given <i>depth</i>. A depth of 1 corresponds to
 	 * the top level nodes.
 	 * <p>
@@ -963,7 +987,7 @@ public class WTreeView extends WCompositeWidget {
 
 	/**
 	 * Sets if alternating row colors are to be used.
-	 * 
+	 * <p>
 	 * Configure whether rows get an alternating background color. These are
 	 * implemented by using a background image on the root node, like: <div
 	 * align="center"> <img src="/stripe-30px.gif"
@@ -990,6 +1014,7 @@ public class WTreeView extends WCompositeWidget {
 
 	/**
 	 * Returns whether alternating row colors are used.
+	 * <p>
 	 * 
 	 * @see WTreeView#setAlternatingRowColors(boolean enable)
 	 */
@@ -999,7 +1024,7 @@ public class WTreeView extends WCompositeWidget {
 
 	/**
 	 * Sets whether toplevel items are decorated.
-	 * 
+	 * <p>
 	 * By default, top level nodes have expand/collapse and other lines to
 	 * display their linkage and offspring, like any node.
 	 * <p>
@@ -1012,6 +1037,7 @@ public class WTreeView extends WCompositeWidget {
 
 	/**
 	 * Returns whether toplevel items are decorated.
+	 * <p>
 	 * 
 	 * @see WTreeView#setRootIsDecorated(boolean show)
 	 */
@@ -1021,7 +1047,7 @@ public class WTreeView extends WCompositeWidget {
 
 	/**
 	 * Sort the data according to a column.
-	 * 
+	 * <p>
 	 * Sorts the data according to data in column <i>column</i> and sort order
 	 * <i>order</i>.
 	 * <p>
@@ -1048,7 +1074,7 @@ public class WTreeView extends WCompositeWidget {
 
 	/**
 	 * Enable sorting.
-	 * 
+	 * <p>
 	 * Enable or disable sorting by the user on all columns.
 	 * <p>
 	 * Sorting is enabled by default.
@@ -1066,7 +1092,7 @@ public class WTreeView extends WCompositeWidget {
 
 	/**
 	 * Enable sorting.
-	 * 
+	 * <p>
 	 * Enable or disable sorting by the user for a specific column.
 	 * <p>
 	 * Sorting is enabled by default.
@@ -1081,6 +1107,7 @@ public class WTreeView extends WCompositeWidget {
 
 	/**
 	 * Returns whether sorting is enabled.
+	 * <p>
 	 * 
 	 * @see WTreeView#setSortingEnabled(boolean enabled)
 	 */
@@ -1090,7 +1117,7 @@ public class WTreeView extends WCompositeWidget {
 
 	/**
 	 * Enable interactive column resizing.
-	 * 
+	 * <p>
 	 * Enable or disable column resize handles for interactive resizing of the
 	 * columns.
 	 * <p>
@@ -1106,6 +1133,7 @@ public class WTreeView extends WCompositeWidget {
 
 	/**
 	 * Returns whether column resizing is enabled.
+	 * <p>
 	 * 
 	 * @see WTreeView#setColumnResizeEnabled(boolean enabled)
 	 */
@@ -1115,7 +1143,7 @@ public class WTreeView extends WCompositeWidget {
 
 	/**
 	 * Change the selection behaviour.
-	 * 
+	 * <p>
 	 * The selection behavior indicates whether whole rows or individual items
 	 * can be selected. It is a property of the
 	 * {@link WTreeView#getSelectionModel()}.
@@ -1140,6 +1168,7 @@ public class WTreeView extends WCompositeWidget {
 
 	/**
 	 * Returns the selection behaviour.
+	 * <p>
 	 * 
 	 * @see WTreeView#setSelectionBehavior(SelectionBehavior behavior)
 	 */
@@ -1149,7 +1178,7 @@ public class WTreeView extends WCompositeWidget {
 
 	/**
 	 * Sets the selection mode.
-	 * 
+	 * <p>
 	 * By default selection is disabled ({@link SelectionMode#NoSelection
 	 * NoSelection}).
 	 * <p>
@@ -1165,6 +1194,7 @@ public class WTreeView extends WCompositeWidget {
 
 	/**
 	 * Returns the selection mode.
+	 * <p>
 	 * 
 	 * @see WTreeView#setSelectionMode(SelectionMode mode)
 	 */
@@ -1174,7 +1204,7 @@ public class WTreeView extends WCompositeWidget {
 
 	/**
 	 * Returns the selection model.
-	 * 
+	 * <p>
 	 * The selection model keeps track of the currently selected items.
 	 */
 	public WItemSelectionModel getSelectionModel() {
@@ -1183,7 +1213,7 @@ public class WTreeView extends WCompositeWidget {
 
 	/**
 	 * Sets the selected items.
-	 * 
+	 * <p>
 	 * Replaces the current selection with <i>indexes</i>.
 	 * <p>
 	 * 
@@ -1204,6 +1234,7 @@ public class WTreeView extends WCompositeWidget {
 
 	/**
 	 * Select a single item.
+	 * <p>
 	 * 
 	 * @see WTreeView#setSelectedIndexes(SortedSet indexes)
 	 * @see WTreeView#getSelectionModel()
@@ -1214,13 +1245,19 @@ public class WTreeView extends WCompositeWidget {
 		}
 	}
 
+	/**
+	 * Select a single item.
+	 * <p>
+	 * Calls {@link #select(WModelIndex index, SelectionFlag option)
+	 * select(index, SelectionFlag.Select)}
+	 */
 	public final void select(WModelIndex index) {
 		select(index, SelectionFlag.Select);
 	}
 
 	/**
 	 * Returns wheter an item is selected.
-	 * 
+	 * <p>
 	 * This is a convenience method for: <code>
    selectionModel()-&gt;isSelected(index)
   </code>
@@ -1236,7 +1273,7 @@ public class WTreeView extends WCompositeWidget {
 
 	/**
 	 * Returns the set of selected items.
-	 * 
+	 * <p>
 	 * The model indexes are returned as a set, topologically ordered (in the
 	 * order they appear in the view).
 	 * <p>
@@ -1253,7 +1290,7 @@ public class WTreeView extends WCompositeWidget {
 
 	/**
 	 * Enable the selection to be dragged (drag &amp; drop).
-	 * 
+	 * <p>
 	 * To enable dragging of the selection, you first need to enable selection
 	 * using {@link WTreeView#setSelectionMode(SelectionMode mode)}.
 	 * <p>
@@ -1281,7 +1318,7 @@ public class WTreeView extends WCompositeWidget {
 
 	/**
 	 * Enable drop operations (drag &amp; drop).
-	 * 
+	 * <p>
 	 * When drop is enabled, the tree view will indicate that something may be
 	 * dropped when the mime-type of the dragged object is compatible with one
 	 * of the model&apos;s accepted drop mime-types (see
@@ -1307,7 +1344,7 @@ public class WTreeView extends WCompositeWidget {
 
 	/**
 	 * Configure whether horizontal scrolling includes the first column.
-	 * 
+	 * <p>
 	 * To display a model with many columns, this option allows you to keep the
 	 * first column fixed while scrolling through the other columns of the
 	 * model.
@@ -1369,6 +1406,7 @@ public class WTreeView extends WCompositeWidget {
 
 	/**
 	 * Signal emitted when a node is collapsed.
+	 * <p>
 	 * 
 	 * @see WTreeView#setExpanded(WModelIndex index, boolean expanded)
 	 * @see WTreeView#expanded()
@@ -1379,6 +1417,7 @@ public class WTreeView extends WCompositeWidget {
 
 	/**
 	 * Signal emitted when a node is expanded.
+	 * <p>
 	 * 
 	 * @see WTreeView#setExpanded(WModelIndex index, boolean expanded)
 	 * @see WTreeView#collapsed()
@@ -1389,6 +1428,7 @@ public class WTreeView extends WCompositeWidget {
 
 	/**
 	 * Signal emitted when an item is clicked.
+	 * <p>
 	 * 
 	 * @see WTreeView#doubleClicked()
 	 */
@@ -1398,6 +1438,7 @@ public class WTreeView extends WCompositeWidget {
 
 	/**
 	 * Signal emitted when an item is double clicked.
+	 * <p>
 	 * 
 	 * @see WTreeView#doubleClicked()
 	 */
@@ -1407,6 +1448,7 @@ public class WTreeView extends WCompositeWidget {
 
 	/**
 	 * Signal emitted when an item is double clicked.
+	 * <p>
 	 * 
 	 * @see WTreeView#doubleClicked()
 	 */
@@ -1416,6 +1458,7 @@ public class WTreeView extends WCompositeWidget {
 
 	/**
 	 * Signal emitted when the selection is changed.
+	 * <p>
 	 * 
 	 * @see WTreeView#select(WModelIndex index, SelectionFlag option)
 	 * @see WTreeView#setSelectionMode(SelectionMode mode)
@@ -1429,7 +1472,7 @@ public class WTreeView extends WCompositeWidget {
 	// public void closePersistentEditor(WModelIndex index) ;
 	/**
 	 * Sets the default item delegate.
-	 * 
+	 * <p>
 	 * The previous delegate is removed but not deleted.
 	 * <p>
 	 * The default item delegate is a {@link WItemDelegate}.
@@ -1440,6 +1483,7 @@ public class WTreeView extends WCompositeWidget {
 
 	/**
 	 * Returns the default item delegate.
+	 * <p>
 	 * 
 	 * @see WTreeView#setItemDelegate(WAbstractItemDelegate delegate)
 	 */
@@ -1449,7 +1493,7 @@ public class WTreeView extends WCompositeWidget {
 
 	/**
 	 * Sets the delegate for a column.
-	 * 
+	 * <p>
 	 * The previous delegate is removed but not deleted.
 	 * <p>
 	 * 
@@ -1462,6 +1506,7 @@ public class WTreeView extends WCompositeWidget {
 
 	/**
 	 * Returns the delegate for a column.
+	 * <p>
 	 * 
 	 * @see WTreeView#setItemDelegateForColumn(int column, WAbstractItemDelegate
 	 *      delegate)
@@ -1472,6 +1517,7 @@ public class WTreeView extends WCompositeWidget {
 
 	/**
 	 * Returns the delegate for rendering an item.
+	 * <p>
 	 * 
 	 * @see WTreeView#setItemDelegateForColumn(int column, WAbstractItemDelegate
 	 *      delegate)
@@ -1531,7 +1577,7 @@ public class WTreeView extends WCompositeWidget {
 
 	/**
 	 * Handle a drop event (drag &amp; drop).
-	 * 
+	 * <p>
 	 * The <i>event</i> object contains details about the drop operation,
 	 * identifying the source (which provides the data) and the mime-type of the
 	 * data. The drop was received on the <i>target</i> item.
@@ -1567,7 +1613,7 @@ public class WTreeView extends WCompositeWidget {
 
 	/**
 	 * Create an extra widget in the header.
-	 * 
+	 * <p>
 	 * You may reimplement this method to provide an extra widget to be placed
 	 * below the header label. The extra widget will be visible only if a
 	 * multi-line header is configured using
@@ -1615,7 +1661,7 @@ public class WTreeView extends WCompositeWidget {
 
 	/**
 	 * Returns the extra header widget.
-	 * 
+	 * <p>
 	 * Returns the widget previously created using
 	 * {@link WTreeView#createExtraHeaderWidget(int column)}
 	 * <p>

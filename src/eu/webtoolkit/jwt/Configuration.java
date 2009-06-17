@@ -10,9 +10,6 @@ import java.util.List;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerConfigurationException;
-import javax.xml.transform.TransformerFactory;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -53,16 +50,7 @@ public class Configuration {
 	}
 	
 	public Configuration(File configurationFile) {
-		TransformerFactory tf = TransformerFactory.newInstance();        
-        Transformer t = null;
-		
         final String errorMessage = "Error parsing configuration file: ";
-        
-        try {
-			t = tf.newTransformer();
-		} catch (TransformerConfigurationException e1) {
-			throw new RuntimeException(errorMessage + e1.getMessage());
-		}
 
 		if (configurationFile != null) {
 			DocumentBuilder docBuilder = null;

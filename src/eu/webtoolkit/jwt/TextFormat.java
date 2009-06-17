@@ -3,6 +3,7 @@ package eu.webtoolkit.jwt;
 
 /**
  * Enumeration that indicates the text format.
+ * <p>
  * 
  * @see WText#setTextFormat(TextFormat textFormat)
  */

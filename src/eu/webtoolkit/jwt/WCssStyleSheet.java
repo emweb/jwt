@@ -10,6 +10,7 @@ import java.util.Set;
 
 /**
  * A CSS style sheet.
+ * <p>
  * 
  * @see WApplication#getStyleSheet()
  */
@@ -37,7 +38,7 @@ public class WCssStyleSheet {
 
 	/**
 	 * Add a CSS rule.
-	 * 
+	 * <p>
 	 * Add a rule using the CSS selector <i>selector</i>, with CSS declarations
 	 * in <i>declarations</i>. These declarations must be a list separated by
 	 * semi-colons (;).
@@ -55,13 +56,20 @@ public class WCssStyleSheet {
 		return result;
 	}
 
+	/**
+	 * Add a CSS rule.
+	 * <p>
+	 * Returns
+	 * {@link #addRule(String selector, String declarations, String ruleName)
+	 * addRule(selector, declarations, "")}
+	 */
 	public final WCssTextRule addRule(String selector, String declarations) {
 		return addRule(selector, declarations, "");
 	}
 
 	/**
 	 * Add a CSS rule.
-	 * 
+	 * <p>
 	 * Add a rule using the CSS selector <i>selector</i>, with styles specified
 	 * in <i>style</i>.
 	 * <p>
@@ -79,6 +87,13 @@ public class WCssStyleSheet {
 		return result;
 	}
 
+	/**
+	 * Add a CSS rule.
+	 * <p>
+	 * Returns
+	 * {@link #addRule(String selector, WCssDecorationStyle style, String ruleName)
+	 * addRule(selector, style, "")}
+	 */
 	public final WCssTemplateRule addRule(String selector,
 			WCssDecorationStyle style) {
 		return addRule(selector, style, "");
@@ -86,7 +101,7 @@ public class WCssStyleSheet {
 
 	/**
 	 * Add a CSS rule.
-	 * 
+	 * <p>
 	 * Optionally, you may give a <i>ruleName</i>, which may later be used to
 	 * check if the rule was already defined.
 	 * <p>
@@ -103,13 +118,19 @@ public class WCssStyleSheet {
 		return rule;
 	}
 
+	/**
+	 * Add a CSS rule.
+	 * <p>
+	 * Returns {@link #addRule(WCssRule rule, String ruleName) addRule(rule,
+	 * "")}
+	 */
 	public final WCssRule addRule(WCssRule rule) {
 		return addRule(rule, "");
 	}
 
 	/**
 	 * Returns if a rule was already defined in this style sheet.
-	 * 
+	 * <p>
 	 * Returns whether a rule was added with the given <i>ruleName</i>.
 	 * <p>
 	 * 

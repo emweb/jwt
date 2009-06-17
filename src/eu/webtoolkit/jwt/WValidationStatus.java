@@ -3,7 +3,7 @@ package eu.webtoolkit.jwt;
 
 /**
  * A widget that keeps track of the validation status of a form widget
- * 
+ * <p>
  * 
  * <i>Since Wt 2.1.3, all standard validators provide client-side validation and
  * this is reflected in the form widget using the style class
@@ -28,7 +28,7 @@ package eu.webtoolkit.jwt;
 public class WValidationStatus extends WCompositeWidget {
 	/**
 	 * Construct a {@link WValidationStatus} widget for another widget.
-	 * 
+	 * <p>
 	 * Constructs a validation status widget for the given field.
 	 * <p>
 	 * The validation stateWidgets (if not 0) will be managed by this widget,
@@ -73,22 +73,54 @@ public class WValidationStatus extends WCompositeWidget {
 		});
 	}
 
+	/**
+	 * Construct a {@link WValidationStatus} widget for another widget.
+	 * <p>
+	 * Calls
+	 * {@link #WValidationStatus(WFormWidget field, WWidget validStateWidget, WWidget invalidStateWidget, WWidget invalidEmptyStateWidget, WContainerWidget parent)
+	 * this(field, (WWidget)null, (WWidget)null, (WWidget)null,
+	 * (WContainerWidget)null)}
+	 */
 	public WValidationStatus(WFormWidget field) {
 		this(field, (WWidget) null, (WWidget) null, (WWidget) null,
 				(WContainerWidget) null);
 	}
 
+	/**
+	 * Construct a {@link WValidationStatus} widget for another widget.
+	 * <p>
+	 * Calls
+	 * {@link #WValidationStatus(WFormWidget field, WWidget validStateWidget, WWidget invalidStateWidget, WWidget invalidEmptyStateWidget, WContainerWidget parent)
+	 * this(field, validStateWidget, (WWidget)null, (WWidget)null,
+	 * (WContainerWidget)null)}
+	 */
 	public WValidationStatus(WFormWidget field, WWidget validStateWidget) {
 		this(field, validStateWidget, (WWidget) null, (WWidget) null,
 				(WContainerWidget) null);
 	}
 
+	/**
+	 * Construct a {@link WValidationStatus} widget for another widget.
+	 * <p>
+	 * Calls
+	 * {@link #WValidationStatus(WFormWidget field, WWidget validStateWidget, WWidget invalidStateWidget, WWidget invalidEmptyStateWidget, WContainerWidget parent)
+	 * this(field, validStateWidget, invalidStateWidget, (WWidget)null,
+	 * (WContainerWidget)null)}
+	 */
 	public WValidationStatus(WFormWidget field, WWidget validStateWidget,
 			WWidget invalidStateWidget) {
 		this(field, validStateWidget, invalidStateWidget, (WWidget) null,
 				(WContainerWidget) null);
 	}
 
+	/**
+	 * Construct a {@link WValidationStatus} widget for another widget.
+	 * <p>
+	 * Calls
+	 * {@link #WValidationStatus(WFormWidget field, WWidget validStateWidget, WWidget invalidStateWidget, WWidget invalidEmptyStateWidget, WContainerWidget parent)
+	 * this(field, validStateWidget, invalidStateWidget,
+	 * invalidEmptyStateWidget, (WContainerWidget)null)}
+	 */
 	public WValidationStatus(WFormWidget field, WWidget validStateWidget,
 			WWidget invalidStateWidget, WWidget invalidEmptyStateWidget) {
 		this(field, validStateWidget, invalidStateWidget,
@@ -104,7 +136,7 @@ public class WValidationStatus extends WCompositeWidget {
 
 	/**
 	 * {@link Signal} emitted when the validation state changed.
-	 * 
+	 * <p>
 	 * The new state of the validation (valid or invalid) is given as argument.
 	 * This signal gets emitted when the state changes from
 	 * {@link WValidator.State#Valid} to {@link WValidator.State#Invalid}, or

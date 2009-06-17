@@ -22,7 +22,7 @@ import eu.webtoolkit.jwt.utils.StringUtils;
 
 /**
  * A cartesian chart.
- * 
+ * <p>
  * 
  * A cartesian chart is a chart that uses X and Y axes. It can display one or
  * multiple data series, which each may be rendered using bars, lines, areas, or
@@ -84,7 +84,7 @@ import eu.webtoolkit.jwt.utils.StringUtils;
 public class WCartesianChart extends WAbstractChart {
 	/**
 	 * Create a new cartesian chart.
-	 * 
+	 * <p>
 	 * Creates a cartesian chart of type CategoryChart.
 	 */
 	public WCartesianChart(WContainerWidget parent) {
@@ -98,13 +98,19 @@ public class WCartesianChart extends WAbstractChart {
 		this.init();
 	}
 
+	/**
+	 * Create a new cartesian chart.
+	 * <p>
+	 * Calls {@link #WCartesianChart(WContainerWidget parent)
+	 * this((WContainerWidget)null)}
+	 */
 	public WCartesianChart() {
 		this((WContainerWidget) null);
 	}
 
 	/**
 	 * Create a new cartesian chart.
-	 * 
+	 * <p>
 	 * Creates a cartesian chart of the indicated <i>type</i>.
 	 */
 	public WCartesianChart(ChartType type, WContainerWidget parent) {
@@ -118,13 +124,19 @@ public class WCartesianChart extends WAbstractChart {
 		this.init();
 	}
 
+	/**
+	 * Create a new cartesian chart.
+	 * <p>
+	 * Calls {@link #WCartesianChart(ChartType type, WContainerWidget parent)
+	 * this(type, (WContainerWidget)null)}
+	 */
 	public WCartesianChart(ChartType type) {
 		this(type, (WContainerWidget) null);
 	}
 
 	/**
 	 * Change the chart type.
-	 * 
+	 * <p>
 	 * The chart type determines how (x,y) data are interpreted. In a
 	 * CategoryChart, the X values are categories, and these are plotted
 	 * consecutively, evenly spaced, and in row order. In a ScatterPlot, the X
@@ -147,6 +159,7 @@ public class WCartesianChart extends WAbstractChart {
 
 	/**
 	 * Returns the chart type.
+	 * <p>
 	 * 
 	 * @see WCartesianChart#setType(ChartType type)
 	 */
@@ -156,7 +169,7 @@ public class WCartesianChart extends WAbstractChart {
 
 	/**
 	 * Change the chart orientation.
-	 * 
+	 * <p>
 	 * Sets the chart orientation, which corresponds to the orientation of the Y
 	 * axis: a Vertical orientation corresponds to the conventional way of a
 	 * horizontal X axis and vertical Y axis. A Horizontal orientation is the
@@ -176,6 +189,7 @@ public class WCartesianChart extends WAbstractChart {
 
 	/**
 	 * Returns the chart orientation.
+	 * <p>
 	 * 
 	 * @see WCartesianChart#setOrientation(Orientation orientation)
 	 */
@@ -185,7 +199,7 @@ public class WCartesianChart extends WAbstractChart {
 
 	/**
 	 * Change the the model column for the X series.
-	 * 
+	 * <p>
 	 * Use this method to specify the data for the X series. For a ScatterPlot
 	 * this is mandatory, while for a CategoryChart, if not specified, an
 	 * increasing series of integer numbers will be used (1, 2, ...).
@@ -204,6 +218,7 @@ public class WCartesianChart extends WAbstractChart {
 
 	/**
 	 * Returns the model column for the X series.
+	 * <p>
 	 * 
 	 * @see WCartesianChart#setXSeriesColumn(int modelColumn)
 	 */
@@ -213,7 +228,7 @@ public class WCartesianChart extends WAbstractChart {
 
 	/**
 	 * Add a data series.
-	 * 
+	 * <p>
 	 * A single chart may display one or more data series. Each data series
 	 * displays data from a single model column in the chart. Series are plotted
 	 * in the order that they have been added to the chart.
@@ -230,7 +245,7 @@ public class WCartesianChart extends WAbstractChart {
 
 	/**
 	 * Remove a data series.
-	 * 
+	 * <p>
 	 * This removes the first data series which plots the given
 	 * <i>modelColumn</i>.
 	 * <p>
@@ -248,7 +263,7 @@ public class WCartesianChart extends WAbstractChart {
 
 	/**
 	 * Change all data series.
-	 * 
+	 * <p>
 	 * Replaces the current list of series with the new list.
 	 * <p>
 	 * 
@@ -275,7 +290,7 @@ public class WCartesianChart extends WAbstractChart {
 
 	/**
 	 * Returns a data series corresponding to a data column.
-	 * 
+	 * <p>
 	 * Returns a reference to the first data series that plots data from
 	 * <i>modelColumn</i>.
 	 */
@@ -290,7 +305,7 @@ public class WCartesianChart extends WAbstractChart {
 
 	/**
 	 * Returns a list with the current data series.
-	 * 
+	 * <p>
 	 * Returns the complete list of current data series.
 	 * <p>
 	 * 
@@ -302,7 +317,7 @@ public class WCartesianChart extends WAbstractChart {
 
 	/**
 	 * Access a chart axis.
-	 * 
+	 * <p>
 	 * Returns a reference to the specified <i>axis</i>.
 	 */
 	public WAxis getAxis(Axis axis) {
@@ -311,7 +326,7 @@ public class WCartesianChart extends WAbstractChart {
 
 	/**
 	 * Change the margin between bars of different series.
-	 * 
+	 * <p>
 	 * Use this method to change the margin that is set between bars of
 	 * different series. The margin is specified as a fraction of the width. For
 	 * example, a value of 0.1 adds a 10% margin between bars of each series.
@@ -329,6 +344,7 @@ public class WCartesianChart extends WAbstractChart {
 
 	/**
 	 * Returns the margin between bars of different series.
+	 * <p>
 	 * 
 	 * @see WCartesianChart#setBarMargin(double margin)
 	 */
@@ -338,7 +354,7 @@ public class WCartesianChart extends WAbstractChart {
 
 	/**
 	 * Enable the legend.
-	 * 
+	 * <p>
 	 * If <i>enabled</i> is true, then a default legend is added to the right of
 	 * the chart. You should provide space for the legend using the
 	 * setChartPadding() method. Only series for which the legend is enabled or
@@ -366,6 +382,7 @@ public class WCartesianChart extends WAbstractChart {
 
 	/**
 	 * Returns whether the legend is enabled.
+	 * <p>
 	 * 
 	 * @see WCartesianChart#setLegendEnabled(boolean enabled)
 	 */
@@ -389,7 +406,7 @@ public class WCartesianChart extends WAbstractChart {
 
 	/**
 	 * Draws the marker for a given data series.
-	 * 
+	 * <p>
 	 * Draws the marker for the indicated <i>series</i> in the <i>result</i>.
 	 * This method is called while painting the chart, and you may want to
 	 * reimplement this method if you wish to provide a custom marker for a
@@ -431,7 +448,7 @@ public class WCartesianChart extends WAbstractChart {
 
 	/**
 	 * Renders the legend item for a given data series.
-	 * 
+	 * <p>
 	 * Renders the legend item for the indicated <i>series</i> in the
 	 * <i>paintert</i> at position <i>pos</i>. The default implementation draws
 	 * the marker, and the series description to the right. The series
@@ -498,7 +515,7 @@ public class WCartesianChart extends WAbstractChart {
 
 	/**
 	 * Create a renderer which renders the chart.
-	 * 
+	 * <p>
 	 * The rendering of the chart is delegated to a {@link WChart2DRenderer}
 	 * class, which will render the chart within the <i>rectangle</i> of the
 	 * <i>painter</i>.

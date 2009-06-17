@@ -6,7 +6,7 @@ import java.util.List;
 
 /**
  * An interactive area in a widget, specified by a polygon
- * 
+ * <p>
  * 
  * The area may be added to a {@link WImage} or {@link WPaintedWidget} to
  * provide interactivity on a polygon area of the image. The polygon is
@@ -25,7 +25,7 @@ import java.util.List;
 public class WPolygonArea extends WAbstractArea {
 	/**
 	 * Default constructor.
-	 * 
+	 * <p>
 	 * Defines an empty polygon.
 	 */
 	public WPolygonArea() {
@@ -35,7 +35,7 @@ public class WPolygonArea extends WAbstractArea {
 
 	/**
 	 * Construct a polygon area with given vertices.
-	 * 
+	 * <p>
 	 * The polygon is defined with vertices corresponding to <i>points</i>. The
 	 * polygon is closed by connecting the last point with the first point.
 	 */
@@ -60,7 +60,7 @@ public class WPolygonArea extends WAbstractArea {
 
 	/**
 	 * Set the polygon vertices.
-	 * 
+	 * <p>
 	 * The polygon is defined with vertices corresponding to <i>points</i>. The
 	 * polygon is closed by connecting the last point with the first point.
 	 */
@@ -70,6 +70,7 @@ public class WPolygonArea extends WAbstractArea {
 
 	/**
 	 * Returns the polygon vertices.
+	 * <p>
 	 * 
 	 * @see WPolygonArea#setPoints(List points)
 	 */

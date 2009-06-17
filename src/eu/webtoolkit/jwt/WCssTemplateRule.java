@@ -3,13 +3,13 @@ package eu.webtoolkit.jwt;
 
 /**
  * Returns the declarations.
- * 
+ * <p>
  * This is a semi-colon separated list of CSS declarations.
  */
 public class WCssTemplateRule extends WCssRule {
 	/**
 	 * Returns the declarations.
-	 * 
+	 * <p>
 	 * This is a semi-colon separated list of CSS declarations.
 	 */
 	public WCssTemplateRule(String selector) {
@@ -19,7 +19,7 @@ public class WCssTemplateRule extends WCssRule {
 
 	/**
 	 * Returns the declarations.
-	 * 
+	 * <p>
 	 * This is a semi-colon separated list of CSS declarations.
 	 */
 	public void remove() {
@@ -30,7 +30,7 @@ public class WCssTemplateRule extends WCssRule {
 
 	/**
 	 * Returns the declarations.
-	 * 
+	 * <p>
 	 * This is a semi-colon separated list of CSS declarations.
 	 */
 	public WWidget getTemplateWidget() {
@@ -39,7 +39,7 @@ public class WCssTemplateRule extends WCssRule {
 
 	/**
 	 * Returns the declarations.
-	 * 
+	 * <p>
 	 * This is a semi-colon separated list of CSS declarations.
 	 */
 	public String getDeclarations() {
@@ -51,7 +51,7 @@ public class WCssTemplateRule extends WCssRule {
 
 	/**
 	 * Returns the declarations.
-	 * 
+	 * <p>
 	 * This is a semi-colon separated list of CSS declarations.
 	 */
 	public boolean updateDomElement(DomElement element, boolean all) {
@@ -61,7 +61,7 @@ public class WCssTemplateRule extends WCssRule {
 
 	/**
 	 * Returns the declarations.
-	 * 
+	 * <p>
 	 * This is a semi-colon separated list of CSS declarations.
 	 */
 	private WCssTemplateWidget widget_;

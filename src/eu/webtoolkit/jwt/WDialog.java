@@ -4,7 +4,7 @@ import java.util.EnumSet;
 
 /**
  * A WDialog shows a dialog
- * 
+ * <p>
  * 
  * By default, the dialog is <i>modal</i>. A modal window blocks the user
  * interface, and does not allow the user to interact with any other part of the
@@ -64,7 +64,7 @@ public class WDialog extends WCompositeWidget {
 
 	/**
 	 * Construct a WDialog with a given window title.
-	 * 
+	 * <p>
 	 * Only a single Dialog may be constructed at any time. Unlike other
 	 * widgets, a dialog does not need to be added to a container widget.
 	 */
@@ -158,6 +158,11 @@ public class WDialog extends WCompositeWidget {
 		this.hide();
 	}
 
+	/**
+	 * Construct a WDialog with a given window title.
+	 * <p>
+	 * Calls {@link #WDialog(CharSequence windowTitle) this(new WString())}
+	 */
 	public WDialog() {
 		this(new WString());
 	}
@@ -172,7 +177,7 @@ public class WDialog extends WCompositeWidget {
 
 	/**
 	 * Set the dialog caption.
-	 * 
+	 * <p>
 	 * <i>deprecated: use setWindowTitle instead</i>
 	 */
 	public void setCaption(CharSequence caption) {
@@ -181,7 +186,7 @@ public class WDialog extends WCompositeWidget {
 
 	/**
 	 * Get the dialog caption.
-	 * 
+	 * <p>
 	 * <i>deprecated: use windowTitle instead</i>
 	 */
 	public WString getCaption() {
@@ -190,7 +195,7 @@ public class WDialog extends WCompositeWidget {
 
 	/**
 	 * Set the dialog window title.
-	 * 
+	 * <p>
 	 * The window title is displayed in the title bar.
 	 * <p>
 	 * 
@@ -202,6 +207,7 @@ public class WDialog extends WCompositeWidget {
 
 	/**
 	 * Get the dialog window title.
+	 * <p>
 	 * 
 	 * @see WDialog#setWindowTitle(CharSequence windowTitle)
 	 */
@@ -211,7 +217,7 @@ public class WDialog extends WCompositeWidget {
 
 	/**
 	 * Enable or disable the title bar.
-	 * 
+	 * <p>
 	 * The titlebar is enabled by default.
 	 */
 	public void setTitleBarEnabled(boolean enable) {
@@ -220,6 +226,7 @@ public class WDialog extends WCompositeWidget {
 
 	/**
 	 * Returns whether the title bar is enabled.
+	 * <p>
 	 * 
 	 * @see WDialog#setTitleBarEnabled(boolean enable)
 	 */
@@ -229,7 +236,7 @@ public class WDialog extends WCompositeWidget {
 
 	/**
 	 * Get the dialog contents container.
-	 * 
+	 * <p>
 	 * Content to the dialog window may be added to this container widget.
 	 */
 	public WContainerWidget getContents() {
@@ -239,7 +246,7 @@ public class WDialog extends WCompositeWidget {
 	// public WDialog.DialogCode getExec() ;
 	/**
 	 * Stop the dialog.
-	 * 
+	 * <p>
 	 * Sets the dialog result, and emits the {@link WDialog#finished()} signal.
 	 * <p>
 	 * 
@@ -260,6 +267,7 @@ public class WDialog extends WCompositeWidget {
 
 	/**
 	 * Close the dialog, with result is Accepted.
+	 * <p>
 	 * 
 	 * @see WDialog#done(WDialog.DialogCode result)
 	 * @see WDialog#reject()
@@ -270,6 +278,7 @@ public class WDialog extends WCompositeWidget {
 
 	/**
 	 * Close the dialog, with result is Rejected.
+	 * <p>
 	 * 
 	 * @see WDialog#done(WDialog.DialogCode result)
 	 * @see WDialog#accept()
@@ -280,6 +289,7 @@ public class WDialog extends WCompositeWidget {
 
 	/**
 	 * Signal emitted when the dialog is closed.
+	 * <p>
 	 * 
 	 * @see WDialog#done(WDialog.DialogCode result)
 	 * @see WDialog#accept()
@@ -291,6 +301,7 @@ public class WDialog extends WCompositeWidget {
 
 	/**
 	 * Get the result that was set for this dialog.
+	 * <p>
 	 * 
 	 * @see WDialog#done(WDialog.DialogCode result)
 	 */
@@ -300,7 +311,7 @@ public class WDialog extends WCompositeWidget {
 
 	/**
 	 * Set whether the dialog is modal.
-	 * 
+	 * <p>
 	 * A modal dialog will block the underlying user interface.
 	 * <p>
 	 * By default a dialog is modal.
@@ -311,6 +322,7 @@ public class WDialog extends WCompositeWidget {
 
 	/**
 	 * Returns whether the dialog is modal.
+	 * <p>
 	 * 
 	 * @see WDialog#setModal(boolean modal)
 	 */

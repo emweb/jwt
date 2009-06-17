@@ -16,7 +16,7 @@ import eu.webtoolkit.jwt.utils.StringUtils;
 /**
  * A proxy model for Wt&apos;s item models that provides filtering and/or
  * sorting.
- * 
+ * <p>
  * 
  * Wt/WSortFilterProxyModel This proxy model does not store data itself, but
  * presents data from a source model, after filtering rows. It also allows
@@ -91,6 +91,11 @@ public class WSortFilterProxyModel extends WAbstractProxyModel {
 		this.mappedIndexes_ = new HashMap<WModelIndex, WSortFilterProxyModel.Item>();
 	}
 
+	/**
+	 * Constructor.
+	 * <p>
+	 * Calls {@link #WSortFilterProxyModel(WObject parent) this((WObject)null)}
+	 */
 	public WSortFilterProxyModel() {
 		this((WObject) null);
 	}
@@ -249,7 +254,7 @@ public class WSortFilterProxyModel extends WAbstractProxyModel {
 
 	/**
 	 * Specify the column on which the filtering is applied.
-	 * 
+	 * <p>
 	 * This configures the column on which the
 	 * {@link WSortFilterProxyModel#getFilterRegExp()} is applied.
 	 * <p>
@@ -265,6 +270,7 @@ public class WSortFilterProxyModel extends WAbstractProxyModel {
 
 	/**
 	 * Return the column on which the filtering is applied.
+	 * <p>
 	 * 
 	 * @see WSortFilterProxyModel#setFilterKeyColumn(int column)
 	 */
@@ -274,7 +280,7 @@ public class WSortFilterProxyModel extends WAbstractProxyModel {
 
 	/**
 	 * Specify a regular expression for filtering.
-	 * 
+	 * <p>
 	 * This configures the regular expression used for filtering on
 	 * {@link WSortFilterProxyModel#getFilterKeyColumn()}.
 	 * <p>
@@ -299,6 +305,7 @@ public class WSortFilterProxyModel extends WAbstractProxyModel {
 
 	/**
 	 * Return the regular expression used for filtering.
+	 * <p>
 	 * 
 	 * @see WSortFilterProxyModel#setFilterRegExp(String pattern)
 	 */
@@ -308,7 +315,7 @@ public class WSortFilterProxyModel extends WAbstractProxyModel {
 
 	/**
 	 * Specify the data role used for filtering.
-	 * 
+	 * <p>
 	 * This configures the data role used for filtering on
 	 * {@link WSortFilterProxyModel#getFilterKeyColumn()}.
 	 * <p>
@@ -324,6 +331,7 @@ public class WSortFilterProxyModel extends WAbstractProxyModel {
 
 	/**
 	 * Return the data role used for filtering.
+	 * <p>
 	 * 
 	 * @see WSortFilterProxyModel#setFilterRole(int role)
 	 */
@@ -333,7 +341,7 @@ public class WSortFilterProxyModel extends WAbstractProxyModel {
 
 	/**
 	 * Specify the data role used used for sorting.
-	 * 
+	 * <p>
 	 * This configures the data role used for sorting.
 	 * <p>
 	 * The default value is {@link ItemDataRole#DisplayRole DisplayRole}.
@@ -347,6 +355,7 @@ public class WSortFilterProxyModel extends WAbstractProxyModel {
 
 	/**
 	 * Return the data role used for sorting.
+	 * <p>
 	 * 
 	 * @see WSortFilterProxyModel#setSortRole(int role)
 	 */
@@ -356,7 +365,7 @@ public class WSortFilterProxyModel extends WAbstractProxyModel {
 
 	/**
 	 * Configure the proxy to dynamically track changes in the source model.
-	 * 
+	 * <p>
 	 * When <i>enable</i> is true, the proxy will re-filter and re-sort the
 	 * model when changes happen to the source model.
 	 * <p>
@@ -375,6 +384,7 @@ public class WSortFilterProxyModel extends WAbstractProxyModel {
 
 	/**
 	 * Returns whether this proxy dynmically filters and sorts.
+	 * <p>
 	 * 
 	 * @see WSortFilterProxyModel#setDynamicSortFilter(boolean enable)
 	 */
@@ -418,7 +428,7 @@ public class WSortFilterProxyModel extends WAbstractProxyModel {
 
 	/**
 	 * Returns whether a source row is accepted by the filter.
-	 * 
+	 * <p>
 	 * The default implementation uses
 	 * {@link WSortFilterProxyModel#getFilterKeyColumn()},
 	 * {@link WSortFilterProxyModel#getFilterRole()} and
@@ -440,7 +450,7 @@ public class WSortFilterProxyModel extends WAbstractProxyModel {
 
 	/**
 	 * Compares two indexes.
-	 * 
+	 * <p>
 	 * The default implementation uses
 	 * {@link WSortFilterProxyModel#getSortRole()} and an order operator that
 	 * tries to use the operator&lt; when the data is of the same type, or

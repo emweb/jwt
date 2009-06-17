@@ -5,13 +5,12 @@ import eu.webtoolkit.jwt.utils.EnumUtils;
 
 /**
  * A style class for a single widget or style sheet rule.
- * 
+ * <p>
  * 
  * You can manipulate the decoration style of a single widget using
  * {@link WWidget#getDecorationStyle()} or you can use a
  * {@link WCssDecorationStyle} to add a rule to the inline style sheet using
- * {@link WCssStyleSheet#addRule(String selector, WCssDecorationStyle style, String ruleName)}
- * .
+ * {@link WCssStyleSheet#addRule(String selector, WCssDecorationStyle style, String ruleName)}.
  */
 public class WCssDecorationStyle {
 	/**
@@ -130,7 +129,7 @@ public class WCssDecorationStyle {
 
 	/**
 	 * Set a background image URL.
-	 * 
+	 * <p>
 	 * The image may be placed in a particular location by specifying sides by
 	 * OR&apos;ing {@link Side} values together, e.g. (Right | Top).
 	 */
@@ -148,16 +147,38 @@ public class WCssDecorationStyle {
 		}
 	}
 
+	/**
+	 * Set a background image URL.
+	 * <p>
+	 * Calls
+	 * {@link #setBackgroundImage(String image, WCssDecorationStyle.Repeat repeat, EnumSet sides)
+	 * setBackgroundImage(image, repeat, EnumSet.of(side, sides))}
+	 */
 	public final void setBackgroundImage(String image,
 			WCssDecorationStyle.Repeat repeat, Side side, Side... sides) {
 		setBackgroundImage(image, repeat, EnumSet.of(side, sides));
 	}
 
+	/**
+	 * Set a background image URL.
+	 * <p>
+	 * Calls
+	 * {@link #setBackgroundImage(String image, WCssDecorationStyle.Repeat repeat, EnumSet sides)
+	 * setBackgroundImage(image, WCssDecorationStyle.Repeat.RepeatXY,
+	 * EnumSet.noneOf(Side.class))}
+	 */
 	public final void setBackgroundImage(String image) {
 		setBackgroundImage(image, WCssDecorationStyle.Repeat.RepeatXY, EnumSet
 				.noneOf(Side.class));
 	}
 
+	/**
+	 * Set a background image URL.
+	 * <p>
+	 * Calls
+	 * {@link #setBackgroundImage(String image, WCssDecorationStyle.Repeat repeat, EnumSet sides)
+	 * setBackgroundImage(image, repeat, EnumSet.noneOf(Side.class))}
+	 */
 	public final void setBackgroundImage(String image,
 			WCssDecorationStyle.Repeat repeat) {
 		setBackgroundImage(image, repeat, EnumSet.noneOf(Side.class));
@@ -198,7 +219,7 @@ public class WCssDecorationStyle {
 
 	/**
 	 * Set the border style.
-	 * 
+	 * <p>
 	 * A border may be placed in a particular location by specifying sides by
 	 * OR&apos;ing WWidget::Side values together, e.g. (Right | Top).
 	 */
@@ -212,10 +233,22 @@ public class WCssDecorationStyle {
 		}
 	}
 
+	/**
+	 * Set the border style.
+	 * <p>
+	 * Calls {@link #setBorder(WBorder border, EnumSet sides) setBorder(border,
+	 * EnumSet.of(side, sides))}
+	 */
 	public final void setBorder(WBorder border, Side side, Side... sides) {
 		setBorder(border, EnumSet.of(side, sides));
 	}
 
+	/**
+	 * Set the border style.
+	 * <p>
+	 * Calls {@link #setBorder(WBorder border, EnumSet sides) setBorder(border,
+	 * Side.All)}
+	 */
 	public final void setBorder(WBorder border) {
 		setBorder(border, Side.All);
 	}
@@ -247,7 +280,7 @@ public class WCssDecorationStyle {
 
 	/**
 	 * Set the text decoration options.
-	 * 
+	 * <p>
 	 * You may logically or together any of the options of the TextDecoration
 	 * enumeration.
 	 * <p>
@@ -263,6 +296,12 @@ public class WCssDecorationStyle {
 		}
 	}
 
+	/**
+	 * Set the text decoration options.
+	 * <p>
+	 * Calls {@link #setTextDecoration(EnumSet options)
+	 * setTextDecoration(EnumSet.of(option, options))}
+	 */
 	public final void setTextDecoration(
 			WCssDecorationStyle.TextDecoration option,
 			WCssDecorationStyle.TextDecoration... options) {

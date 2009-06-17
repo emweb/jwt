@@ -7,7 +7,7 @@ import java.util.Set;
 
 /**
  * A calendar
- * 
+ * <p>
  * 
  * The calendar provides navigation by month and year, and indicates the current
  * day.
@@ -18,8 +18,8 @@ import java.util.Set;
  * <p>
  * Internationalization may be provided by indicating i18n == true in the
  * constructor, and providing the appropriate messages for months (with keys
- * from {@link WDate#getLongMonthName(int)}) and days (with keys from
- * {@link WDate#getShortDayName(int)}) in your message resource bundle.
+ * from {@link WDate#getLongMonthName(int month)}) and days (with keys from
+ * {@link WDate#getShortDayName(int weekday)}) in your message resource bundle.
  * <p>
  * The look can be overridden using the following style class selectors:
  * <p>
@@ -46,7 +46,7 @@ td.Wt-cal-now             : Today day cell
 public class WCalendar extends WCompositeWidget {
 	/**
 	 * Create a new calendar.
-	 * 
+	 * <p>
 	 * Constructs a new calendar, with optional support for
 	 * internationalization. The calendar shows the current day, and has an
 	 * empty selection.
@@ -67,17 +67,29 @@ public class WCalendar extends WCompositeWidget {
 		this.create();
 	}
 
+	/**
+	 * Create a new calendar.
+	 * <p>
+	 * Calls {@link #WCalendar(boolean i18n, WContainerWidget parent)
+	 * this(false, (WContainerWidget)null)}
+	 */
 	public WCalendar() {
 		this(false, (WContainerWidget) null);
 	}
 
+	/**
+	 * Create a new calendar.
+	 * <p>
+	 * Calls {@link #WCalendar(boolean i18n, WContainerWidget parent) this(i18n,
+	 * (WContainerWidget)null)}
+	 */
 	public WCalendar(boolean i18n) {
 		this(i18n, (WContainerWidget) null);
 	}
 
 	/**
 	 * Configure single or multiple selection mode.
-	 * 
+	 * <p>
 	 * In single selection mode, only one date may be selected: the
 	 * {@link WCalendar#getSelection()} will be empty or contain exactly one
 	 * item.
@@ -94,7 +106,7 @@ public class WCalendar extends WCompositeWidget {
 
 	/**
 	 * Browse to the same month in the previous year.
-	 * 
+	 * <p>
 	 * Displays the same month in the previous year. This does not change the
 	 * current selection.
 	 */
@@ -105,7 +117,7 @@ public class WCalendar extends WCompositeWidget {
 
 	/**
 	 * Browse to the previous month.
-	 * 
+	 * <p>
 	 * Displays the previous month. This does not change the current selection.
 	 */
 	public void browseToPreviousMonth() {
@@ -118,7 +130,7 @@ public class WCalendar extends WCompositeWidget {
 
 	/**
 	 * Browse to the same month in the next year.
-	 * 
+	 * <p>
 	 * Displays the same month in the next year. This does not change the
 	 * current selection.
 	 */
@@ -129,7 +141,7 @@ public class WCalendar extends WCompositeWidget {
 
 	/**
 	 * Browse to the next month.
-	 * 
+	 * <p>
 	 * Displays the next month. This does not change the current selection.
 	 */
 	public void browseToNextMonth() {
@@ -142,7 +154,7 @@ public class WCalendar extends WCompositeWidget {
 
 	/**
 	 * Browse to a date.
-	 * 
+	 * <p>
 	 * Displays the month which contains the given date. This does not change
 	 * the current selection.
 	 */
@@ -163,7 +175,7 @@ public class WCalendar extends WCompositeWidget {
 
 	/**
 	 * Returns the current month displayed.
-	 * 
+	 * <p>
 	 * Returns the month (1-12) that is currently displayed.
 	 */
 	public int getCurrentMonth() {
@@ -172,7 +184,7 @@ public class WCalendar extends WCompositeWidget {
 
 	/**
 	 * Returns the current year displayed.
-	 * 
+	 * <p>
 	 * Returns the year that is currently displayed.
 	 */
 	public int getCurrentYear() {
@@ -181,7 +193,7 @@ public class WCalendar extends WCompositeWidget {
 
 	/**
 	 * Clear the current selection.
-	 * 
+	 * <p>
 	 * Clears the current selection. Will result in a
 	 * {@link WCalendar#getSelection()} that is empty().
 	 */
@@ -192,7 +204,7 @@ public class WCalendar extends WCompositeWidget {
 
 	/**
 	 * Select a date.
-	 * 
+	 * <p>
 	 * Select one date. Both in single or multiple selection mode, this results
 	 * in a {@link WCalendar#getSelection()} that contains exactly one date.
 	 */
@@ -204,7 +216,7 @@ public class WCalendar extends WCompositeWidget {
 
 	/**
 	 * Select multiple dates.
-	 * 
+	 * <p>
 	 * Select multiple dates. In multiple selection mode, this results in a
 	 * {@link WCalendar#getSelection()} that contains exactly the given dates.
 	 * In single selection mode, at most one date is set (*dates.begin())
@@ -224,7 +236,7 @@ public class WCalendar extends WCompositeWidget {
 
 	/**
 	 * Returns the current selection.
-	 * 
+	 * <p>
 	 * Returns the set of dates currently selected. In single selection mode,
 	 * this set contains 0 or 1 dates.
 	 */
@@ -234,7 +246,7 @@ public class WCalendar extends WCompositeWidget {
 
 	/**
 	 * Signal emitted when the user changes the selection.
-	 * 
+	 * <p>
 	 * Emitted after the user has changed the current selection.
 	 */
 	public Signal selectionChanged() {
@@ -243,7 +255,7 @@ public class WCalendar extends WCompositeWidget {
 
 	/**
 	 * Signal emitted when the user has double clicked on a date.
-	 * 
+	 * <p>
 	 * This signal indicates that he user has selected a new date, which is only
 	 * available when in single selection mode.
 	 */
@@ -253,7 +265,7 @@ public class WCalendar extends WCompositeWidget {
 
 	/**
 	 * Configure the calendar to use single click to select.
-	 * 
+	 * <p>
 	 * This only applies to a single-selection calendar.
 	 * <p>
 	 * 

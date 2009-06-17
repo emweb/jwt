@@ -4,19 +4,11 @@ import java.io.StringWriter;
 
 /**
  * A interactive area in a widget, specified by a circle
- * 
+ * <p>
  * 
  * The area may be added to a {@link WImage} or {@link WPaintedWidget} to
  * provide interactivity on a circular area of the image. The circle is
  * specified in pixel coordinates.
- * <p>
- * Usage example: <code>
- Wt::WImage *image = new Wt::WImage(&quot;images/events.png&quot;, this); <br> 
- Wt::WCircleArea *area = new Wt::WCircleArea(20, 30, 15); <br> 
- image-&gt;addArea(area); <br> 
- <br> 
- area-&gt;clicked().connect(SLOT(this, MyWidget::areaClicked));
-</code>
  * <p>
  * 
  * @see WImage#addArea(WAbstractArea area)
@@ -27,7 +19,7 @@ import java.io.StringWriter;
 public class WCircleArea extends WAbstractArea {
 	/**
 	 * Default constructor.
-	 * 
+	 * <p>
 	 * Specifies a circular area with center (0, 0) and radius 0.
 	 */
 	public WCircleArea() {
@@ -39,7 +31,7 @@ public class WCircleArea extends WAbstractArea {
 
 	/**
 	 * Construct a circular area with given geometry.
-	 * 
+	 * <p>
 	 * The arguments are in pixel units.
 	 */
 	public WCircleArea(int x, int y, int radius) {

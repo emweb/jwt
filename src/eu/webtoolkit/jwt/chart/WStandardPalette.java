@@ -9,7 +9,7 @@ import eu.webtoolkit.jwt.WPen;
 
 /**
  * Standard styling for rendering series in charts.
- * 
+ * <p>
  * 
  * This class provides four standard palettes, each composed of eight different
  * colors (these are recycled at index 8).

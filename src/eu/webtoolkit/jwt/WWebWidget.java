@@ -15,7 +15,7 @@ import eu.webtoolkit.jwt.utils.StringUtils;
 
 /**
  * A base class for widgets with an HTML counterpart
- * 
+ * <p>
  * 
  * All descendants of WWebWidget implement a widget which corresponds almost
  * one-on-one with an HTML element. These widgets provide most capabilities of
@@ -27,6 +27,7 @@ import eu.webtoolkit.jwt.utils.StringUtils;
 public abstract class WWebWidget extends WWidget {
 	/**
 	 * Construct a WebWidget with a given parent.
+	 * <p>
 	 * 
 	 * @see WWidget#WWidget(WContainerWidget parent)
 	 */
@@ -46,6 +47,12 @@ public abstract class WWebWidget extends WWidget {
 		}
 	}
 
+	/**
+	 * Construct a WebWidget with a given parent.
+	 * <p>
+	 * Calls {@link #WWebWidget(WContainerWidget parent)
+	 * this((WContainerWidget)null)}
+	 */
 	public WWebWidget() {
 		this((WContainerWidget) null);
 	}
@@ -535,7 +542,7 @@ public abstract class WWebWidget extends WWidget {
 
 	/**
 	 * Change the way the widget is loaded when invisible.
-	 * 
+	 * <p>
 	 * By default, invisible widgets are loaded only after visible content. For
 	 * tiny widgets this may lead to a performance loss, instead of the expected
 	 * increase, because they require many more DOM manipulation to render,
@@ -563,6 +570,12 @@ public abstract class WWebWidget extends WWidget {
 		return new WString(result);
 	}
 
+	/**
+	 * Escape HTML control characters in the text, to display literally.
+	 * <p>
+	 * Returns {@link #escapeText(CharSequence text, boolean newlinestoo)
+	 * escapeText(text, false)}
+	 */
 	public static final WString escapeText(CharSequence text) {
 		return escapeText(text, false);
 	}
@@ -575,13 +588,19 @@ public abstract class WWebWidget extends WWidget {
 		return text;
 	}
 
+	/**
+	 * Escape HTML control characters in the text, to display literally.
+	 * <p>
+	 * Returns {@link #escapeText(String text, boolean newlinestoo)
+	 * escapeText(text, false)}
+	 */
 	public static final String escapeText(String text) {
 		return escapeText(text, false);
 	}
 
 	/**
 	 * Remove tags/attributes from text that are not passive.
-	 * 
+	 * <p>
 	 * This removes tags and attributes from XHTML-formatted text that do not
 	 * simply display something but may trigger scripting, and could have been
 	 * injected by a malicious user for Cross-Site Scripting (XSS).
@@ -599,7 +618,7 @@ public abstract class WWebWidget extends WWidget {
 
 	/**
 	 * Turn a UTF8 encoded string into a JavaScript string literal.
-	 * 
+	 * <p>
 	 * The <i>delimiter</i> may be a single or double quote.
 	 */
 	public static String jsStringLiteral(String value, char delimiter) {
@@ -608,6 +627,12 @@ public abstract class WWebWidget extends WWidget {
 		return result.toString();
 	}
 
+	/**
+	 * Turn a UTF8 encoded string into a JavaScript string literal.
+	 * <p>
+	 * Returns {@link #jsStringLiteral(String value, char delimiter)
+	 * jsStringLiteral(value, '\'')}
+	 */
 	public static final String jsStringLiteral(String value) {
 		return jsStringLiteral(value, '\'');
 	}
@@ -622,6 +647,7 @@ public abstract class WWebWidget extends WWidget {
 
 	/**
 	 * Returns contained widgets.
+	 * <p>
 	 * 
 	 * @see WContainerWidget#addWidget(WWidget widget)
 	 */
@@ -779,7 +805,8 @@ public abstract class WWebWidget extends WWidget {
 						element.setProperty(Property.PropertyStyleClear,
 								"right");
 					} else {
-						if (this.layoutImpl_.clearSides_.equals(Side.Verticals)) {
+						if (this.layoutImpl_.clearSides_
+								.equals(Side.Horizontals)) {
 							element.setProperty(Property.PropertyStyleClear,
 									"both");
 						}

@@ -9,14 +9,14 @@ import java.util.Set;
 
 /**
  * A widget that renders a Flash object (also known as Flash movie)
- * 
+ * <p>
  * 
  * This class dynamically loads a .swf Flash file in the browser.
  * <p>
  * This widget is a container, which means that you can instantiate additional
- * widgets inside it. These widgets can for example be the content which is
- * shown when a Flash player is not available on the system or when JavaScript
- * is disabled.
+ * widgets inside it. These widgets can for example be the content that is shown
+ * when a Flash player is not available on the system or when JavaScript is
+ * disabled.
  * <p>
  * Usage example: <code>
  WFlash *player = new WFlash(&quot;dummy.swf&quot;, parent); <br> 
@@ -27,11 +27,15 @@ import java.util.Set;
  player-&gt;setFlashVariable(&quot;someVar&quot;, &quot;foo&quot;);
 </code>
  * <p>
- * This class requires swfobject.js in the resources folder.
+ * This class uses <i>resourcesURL</i>&quot;swfobject.js&quot;, a companion
+ * JavaScript library, which is distributed with Wt in the resources folder.
+ * <i>resourcesURL</i> is the configuration property that locates the Wt
+ * resources/ folder inside your docroot.* This class requires swfobject.js in
+ * the resources folder.
  */
 public class WFlashObject extends WContainerWidget {
 	/**
-	 * Construct a Flash widget.
+	 * Constructs a Flash widget.
 	 */
 	public WFlashObject(String url, WContainerWidget parent) {
 		super(parent);
@@ -44,14 +48,24 @@ public class WFlashObject extends WContainerWidget {
 				WApplication.getResourcesUrl() + "swfobject.js");
 	}
 
+	/**
+	 * Constructs a Flash widget.
+	 * <p>
+	 * Calls {@link #WFlashObject(String url, WContainerWidget parent) this(url,
+	 * (WContainerWidget)null)}
+	 */
 	public WFlashObject(String url) {
 		this(url, (WContainerWidget) null);
 	}
 
 	/**
-	 * The destructor removes the Flash object.
+	 * Destructor.
+	 * <p>
+	 * The Flash object is removed.
 	 */
 	public void remove() {
+		WApplication.getInstance().doJavaScript(
+				"swfobject.removeSWF(flash" + this.getFormName() + ");");
 		super.remove();
 	}
 
@@ -64,7 +78,7 @@ public class WFlashObject extends WContainerWidget {
 
 	/**
 	 * Sets a Flash parameter.
-	 * 
+	 * <p>
 	 * The Flash parameters are items such as quality, scale, menu, ...
 	 * Depending on the browser they are passed as attributes or PARAM objects
 	 * to the Flash movie. See the adobe website for more information about
@@ -84,7 +98,7 @@ public class WFlashObject extends WContainerWidget {
 
 	/**
 	 * Sets a Flash variable.
-	 * 
+	 * <p>
 	 * This method is a helper function to set variable values in the flashvars
 	 * parameter.
 	 * <p>
@@ -100,7 +114,7 @@ public class WFlashObject extends WContainerWidget {
 
 	/**
 	 * A JavaScript expression that returns the DOM node of the Flash object.
-	 * 
+	 * <p>
 	 * The Flash object is not stored in {@link WWidget#getJsRef()}, but in
 	 * {@link WFlashObject#getJsFlashRef()}. Use this method in conjuction with
 	 * {@link WApplication#doJavaScript(String javascript, boolean afterLoaded)}

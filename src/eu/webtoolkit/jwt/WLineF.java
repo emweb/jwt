@@ -7,7 +7,7 @@ package eu.webtoolkit.jwt;
 public class WLineF {
 	/**
 	 * Default constructor.
-	 * 
+	 * <p>
 	 * Constructs a line from (<i>x1=0</i>,<i>y1=0</i>) to
 	 * (<i>x2=0</i>,<i>y2=0</i>).
 	 */
@@ -20,7 +20,7 @@ public class WLineF {
 
 	/**
 	 * Construct a line connecting two points.
-	 * 
+	 * <p>
 	 * Constructs a line from <i>p1</i> to <i>p2</i>.
 	 */
 	public WLineF(WPointF p1, WPointF p2) {
@@ -32,7 +32,7 @@ public class WLineF {
 
 	/**
 	 * Construct a line connecting two points.
-	 * 
+	 * <p>
 	 * Constructs a line from (<i>x1</i>,<i>y1</i>) to (<i>x2</i>,<i>y2</i>).
 	 */
 	public WLineF(double x1, double y1, double x2, double y2) {
@@ -44,6 +44,7 @@ public class WLineF {
 
 	/**
 	 * Returns the X coordinate of the first point.
+	 * <p>
 	 * 
 	 * @see WLineF#getY1()
 	 * @see WLineF#getP1()
@@ -54,6 +55,7 @@ public class WLineF {
 
 	/**
 	 * Returns the Y coordinate of the first point.
+	 * <p>
 	 * 
 	 * @see WLineF#getX1()
 	 * @see WLineF#getP1()
@@ -64,6 +66,7 @@ public class WLineF {
 
 	/**
 	 * Returns the X coordinate of the second point.
+	 * <p>
 	 * 
 	 * @see WLineF#getY2()
 	 * @see WLineF#getP2()
@@ -74,6 +77,7 @@ public class WLineF {
 
 	/**
 	 * Returns the Y coordinate of the second point.
+	 * <p>
 	 * 
 	 * @see WLineF#getX2()
 	 * @see WLineF#getP2()
@@ -84,6 +88,7 @@ public class WLineF {
 
 	/**
 	 * Returns the first point.
+	 * <p>
 	 * 
 	 * @see WLineF#getX1()
 	 * @see WLineF#getY1()
@@ -94,6 +99,7 @@ public class WLineF {
 
 	/**
 	 * Returns the second point.
+	 * <p>
 	 * 
 	 * @see WLineF#getX2()
 	 * @see WLineF#getY2()

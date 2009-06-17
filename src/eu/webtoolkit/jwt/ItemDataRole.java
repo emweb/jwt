@@ -3,13 +3,13 @@ package eu.webtoolkit.jwt;
 
 /**
  * Enumeration that indicates a role for a data item.
- * 
+ * <p>
  * A single data item can have data associated with it corresponding to
  * different roles. Each role may be used by the corresponding view class in a
  * different way.
  * <p>
  * 
- * @see WModelIndex#getData(int)
+ * @see WModelIndex#getData(int role)
  */
 public class ItemDataRole {
 	/**
@@ -29,6 +29,7 @@ public class ItemDataRole {
 	 */
 	public final static int StyleClassRole = 3;
 	/**
+	 * <p>
 	 * Role that indicates the check state. Is of type <code>bool</code>, unless
 	 * the {@link ItemFlag#ItemIsTristate} flag is set, then is of type
 	 * {@link CheckState}.

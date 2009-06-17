@@ -3,7 +3,7 @@ package eu.webtoolkit.jwt;
 
 /**
  * A validator that checks the string length of user input
- * 
+ * <p>
  * 
  * This validator checks whether user input is within the specified range of
  * accepted string lengths.
@@ -23,6 +23,11 @@ public class WLengthValidator extends WValidator {
 		this.tooShortText_ = new WString();
 	}
 
+	/**
+	 * Create a length validator that accepts input of any length.
+	 * <p>
+	 * Calls {@link #WLengthValidator(WObject parent) this((WObject)null)}
+	 */
 	public WLengthValidator() {
 		this((WObject) null);
 	}
@@ -38,13 +43,20 @@ public class WLengthValidator extends WValidator {
 		this.tooShortText_ = new WString();
 	}
 
+	/**
+	 * Create a length validator that accepts input within a length range.
+	 * <p>
+	 * Calls
+	 * {@link #WLengthValidator(int minLength, int maxLength, WObject parent)
+	 * this(minLength, maxLength, (WObject)null)}
+	 */
 	public WLengthValidator(int minLength, int maxLength) {
 		this(minLength, maxLength, (WObject) null);
 	}
 
 	/**
 	 * Set the minimum length.
-	 * 
+	 * <p>
 	 * The default value is 0.
 	 */
 	public void setMinimumLength(int minLength) {
@@ -56,6 +68,7 @@ public class WLengthValidator extends WValidator {
 
 	/**
 	 * Return the minimum length.
+	 * <p>
 	 * 
 	 * @see WLengthValidator#setMinimumLength(int minLength)
 	 */
@@ -65,7 +78,7 @@ public class WLengthValidator extends WValidator {
 
 	/**
 	 * Set the maximum length.
-	 * 
+	 * <p>
 	 * The default value is std::numeric_limits&lt;int&gt;::max()
 	 */
 	public void setMaximumLength(int maxLength) {
@@ -77,6 +90,7 @@ public class WLengthValidator extends WValidator {
 
 	/**
 	 * Returns the maximum length.
+	 * <p>
 	 * 
 	 * @see WLengthValidator#setMaximumLength(int maxLength)
 	 */
@@ -86,7 +100,7 @@ public class WLengthValidator extends WValidator {
 
 	/**
 	 * Validate the given input.
-	 * 
+	 * <p>
 	 * The input is considered valid only when it is blank for a non-mandatory
 	 * field, or has a length within the valid range.
 	 */
@@ -112,7 +126,7 @@ public class WLengthValidator extends WValidator {
 	// public void createExtConfig(Writer config) throws IOException;
 	/**
 	 * Set message to display when the input is too short.
-	 * 
+	 * <p>
 	 * Depending on whether {@link WLengthValidator#getMaximumLength()} is a
 	 * real bound, the default message is &quot;The input must have a length
 	 * between {1} and {2} characters&quot; or &quot; &quot;The input must be at
@@ -125,6 +139,7 @@ public class WLengthValidator extends WValidator {
 
 	/**
 	 * Returns the message displayed when the input is too short.
+	 * <p>
 	 * 
 	 * @see WLengthValidator#setInvalidTooShortText(CharSequence text)
 	 */
@@ -151,7 +166,7 @@ public class WLengthValidator extends WValidator {
 
 	/**
 	 * Set message to display when the input is too long.
-	 * 
+	 * <p>
 	 * Depending on whether {@link WLengthValidator#getMinimumLength()} is
 	 * different from zero, the default message is &quot;The input must have a
 	 * length between {1} and {2} characters&quot; or &quot; &quot;The input
@@ -164,6 +179,7 @@ public class WLengthValidator extends WValidator {
 
 	/**
 	 * Returns the message displayed when the input is too long.
+	 * <p>
 	 * 
 	 * @see WLengthValidator#setInvalidTooLongText(CharSequence text)
 	 */

@@ -3,6 +3,7 @@ package eu.webtoolkit.jwt;
 
 /**
  * Enumeration that indicates how to change a selection.
+ * <p>
  * 
  * @see WTreeView#select(WModelIndex index, SelectionFlag option)
  */

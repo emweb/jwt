@@ -6,7 +6,7 @@ import java.util.List;
 /**
  * A specialized tree node which allows additional data to be associated with
  * each node
- * 
+ * <p>
  * 
  * Additional data for each column can be set using
  * {@link WTreeTableNode#setColumnWidget(int column, WWidget widget)}.
@@ -18,6 +18,7 @@ import java.util.List;
 public class WTreeTableNode extends WTreeNode {
 	/**
 	 * Create a new {@link WTreeTableNode}.
+	 * <p>
 	 * 
 	 * @see WTreeNode#WTreeNode(CharSequence labelText, WIconPair labelIcon,
 	 *      WTreeNode parent)
@@ -33,17 +34,31 @@ public class WTreeTableNode extends WTreeNode {
 		}
 	}
 
+	/**
+	 * Create a new {@link WTreeTableNode}.
+	 * <p>
+	 * Calls
+	 * {@link #WTreeTableNode(CharSequence labelText, WIconPair labelIcon, WTreeTableNode parentNode)
+	 * this(labelText, (WIconPair)null, (WTreeTableNode)null)}
+	 */
 	public WTreeTableNode(CharSequence labelText) {
 		this(labelText, (WIconPair) null, (WTreeTableNode) null);
 	}
 
+	/**
+	 * Create a new {@link WTreeTableNode}.
+	 * <p>
+	 * Calls
+	 * {@link #WTreeTableNode(CharSequence labelText, WIconPair labelIcon, WTreeTableNode parentNode)
+	 * this(labelText, labelIcon, (WTreeTableNode)null)}
+	 */
 	public WTreeTableNode(CharSequence labelText, WIconPair labelIcon) {
 		this(labelText, labelIcon, (WTreeTableNode) null);
 	}
 
 	/**
 	 * Set a widget to be displayed in the given column for this node.
-	 * 
+	 * <p>
 	 * Columns are counted starting from 0 for the tree list itself, and 1 for
 	 * the first additional column.
 	 */
@@ -72,7 +87,7 @@ public class WTreeTableNode extends WTreeNode {
 
 	/**
 	 * Returns the widget set for a column.
-	 * 
+	 * <p>
 	 * Returns the widget set previously using
 	 * {@link WTreeTableNode#setColumnWidget(int column, WWidget widget)}, or 0
 	 * if no widget was previously set.
@@ -98,7 +113,7 @@ public class WTreeTableNode extends WTreeNode {
 
 	/**
 	 * Sets the table for this node.
-	 * 
+	 * <p>
 	 * This method is called when the node is inserted, directly, or indirectly
 	 * into a table.
 	 * <p>

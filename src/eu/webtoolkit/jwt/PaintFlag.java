@@ -3,6 +3,7 @@ package eu.webtoolkit.jwt;
 
 /**
  * Enumeration that indicates how to change a selection.
+ * <p>
  * 
  * @see WPaintedWidget#update(EnumSet flags)
  * @see WPaintDevice#getPaintFlags()

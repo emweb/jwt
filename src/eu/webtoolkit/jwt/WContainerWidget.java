@@ -10,7 +10,7 @@ import eu.webtoolkit.jwt.utils.EnumUtils;
 
 /**
  * A widget that holds and manages child widgets
- * 
+ * <p>
  * 
  * A WContainerWidget acts as a container for child widgets. Child widgets may
  * be added directly to the container or using a layout manager.
@@ -128,6 +128,12 @@ public class WContainerWidget extends WInteractWidget {
 		this.children_ = new ArrayList<WWidget>();
 	}
 
+	/**
+	 * Create a container with optional parent.
+	 * <p>
+	 * Calls {@link #WContainerWidget(WContainerWidget parent)
+	 * this((WContainerWidget)null)}
+	 */
 	public WContainerWidget() {
 		this((WContainerWidget) null);
 	}
@@ -144,7 +150,7 @@ public class WContainerWidget extends WInteractWidget {
 
 	/**
 	 * Set a layout manager for the container.
-	 * 
+	 * <p>
 	 * Only a single layout manager may be set. Note that you can nest layout
 	 * managers inside each other, to create a complex layout hierarchy.
 	 * <p>
@@ -163,7 +169,7 @@ public class WContainerWidget extends WInteractWidget {
 
 	/**
 	 * Set a layout manager for the container.
-	 * 
+	 * <p>
 	 * The <i>alignment</i> argument determines how the layout is aligned inside
 	 * the container. By default, the layout manager arranges children over the
 	 * entire width and height of the container, corresponding to a value of
@@ -217,6 +223,12 @@ public class WContainerWidget extends WInteractWidget {
 		}
 	}
 
+	/**
+	 * Set a layout manager for the container.
+	 * <p>
+	 * Calls {@link #setLayout(WLayout layout, EnumSet alignment)
+	 * setLayout(layout, EnumSet.of(alignmen, alignment))}
+	 */
 	public final void setLayout(WLayout layout, AlignmentFlag alignmen,
 			AlignmentFlag... alignment) {
 		setLayout(layout, EnumSet.of(alignmen, alignment));
@@ -224,8 +236,8 @@ public class WContainerWidget extends WInteractWidget {
 
 	/**
 	 * Get the layout manager that was set for the container.
-	 * 
-	 * If no layout manager was previously set using setLayout({@link WLayout} *
+	 * <p>
+	 * If no layout manager was previously set using setLayout({@link WLayout}
 	 * ), 0 is returned.
 	 * <p>
 	 * 
@@ -237,7 +249,7 @@ public class WContainerWidget extends WInteractWidget {
 
 	/**
 	 * Add a child widget to this container.
-	 * 
+	 * <p>
 	 * This is equivalent to passing this container as the parent when
 	 * constructing the child. The widget is appended to the list of children,
 	 * and thus also layed-out at the end.
@@ -267,7 +279,7 @@ public class WContainerWidget extends WInteractWidget {
 
 	/**
 	 * insert a child widget in this container, before another widget.
-	 * 
+	 * <p>
 	 * The <i>widget</i> is inserted at the place of the <i>before</i> widget,
 	 * and subsequent widgets are shifted.
 	 * <p>
@@ -313,7 +325,7 @@ public class WContainerWidget extends WInteractWidget {
 
 	/**
 	 * insert a child widget in this container at given index.
-	 * 
+	 * <p>
 	 * The <i>widget</i> is inserted at the given <i>index</i>, and subsequent
 	 * widgets are shifted.
 	 * <p>
@@ -330,7 +342,7 @@ public class WContainerWidget extends WInteractWidget {
 
 	/**
 	 * Remove a child widget from this container.
-	 * 
+	 * <p>
 	 * This removes the widget from this container, but does not delete the
 	 * widget !
 	 */
@@ -341,7 +353,7 @@ public class WContainerWidget extends WInteractWidget {
 
 	/**
 	 * Remove and delete all child widgets.
-	 * 
+	 * <p>
 	 * This deletes all children that have been added to this container.
 	 * <p>
 	 * If a layout was set, also the layout manager is deleted.
@@ -379,7 +391,7 @@ public class WContainerWidget extends WInteractWidget {
 
 	/**
 	 * Specify how child widgets must be aligned within the container.
-	 * 
+	 * <p>
 	 * For a {@link WContainerWidget}, only specifes the horizontal alignment of
 	 * child widgets. Note that there is no way to specify vertical alignment:
 	 * children are always pushed to the top of the container.
@@ -394,6 +406,12 @@ public class WContainerWidget extends WInteractWidget {
 		this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyAttribute));
 	}
 
+	/**
+	 * Specify how child widgets must be aligned within the container.
+	 * <p>
+	 * Calls {@link #setContentAlignment(EnumSet alignment)
+	 * setContentAlignment(EnumSet.of(alignmen, alignment))}
+	 */
 	public final void setContentAlignment(AlignmentFlag alignmen,
 			AlignmentFlag... alignment) {
 		setContentAlignment(EnumSet.of(alignmen, alignment));
@@ -401,7 +419,7 @@ public class WContainerWidget extends WInteractWidget {
 
 	/**
 	 * Set padding inside the widget.
-	 * 
+	 * <p>
 	 * Setting padding has the effect of adding distance between the widget
 	 * children and the border.
 	 */
@@ -426,16 +444,29 @@ public class WContainerWidget extends WInteractWidget {
 		this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyAttribute));
 	}
 
+	/**
+	 * Set padding inside the widget.
+	 * <p>
+	 * Calls {@link #setPadding(WLength length, EnumSet sides)
+	 * setPadding(length, EnumSet.of(side, sides))}
+	 */
 	public final void setPadding(WLength length, Side side, Side... sides) {
 		setPadding(length, EnumSet.of(side, sides));
 	}
 
+	/**
+	 * Set padding inside the widget.
+	 * <p>
+	 * Calls {@link #setPadding(WLength length, EnumSet sides)
+	 * setPadding(length, Side.All)}
+	 */
 	public final void setPadding(WLength length) {
 		setPadding(length, Side.All);
 	}
 
 	/**
 	 * Get the padding set for the widget.
+	 * <p>
 	 * 
 	 * @see WContainerWidget#setPadding(WLength length, EnumSet sides)
 	 */
@@ -460,6 +491,7 @@ public class WContainerWidget extends WInteractWidget {
 
 	/**
 	 * Return the alignment of children.
+	 * <p>
 	 * 
 	 * @see WContainerWidget#setContentAlignment(EnumSet alignment)
 	 */
@@ -469,7 +501,7 @@ public class WContainerWidget extends WInteractWidget {
 
 	/**
 	 * Set how overflow of contained children must be handled.
-	 * 
+	 * <p>
 	 * This is an alternative (CSS-ish) way to provide scroll bars on a
 	 * container widget, compared to wrapping inside a {@link WScrollArea}.
 	 * <p>
@@ -507,11 +539,26 @@ public class WContainerWidget extends WInteractWidget {
 		this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyAttribute));
 	}
 
+	/**
+	 * Set how overflow of contained children must be handled.
+	 * <p>
+	 * Calls
+	 * {@link #setOverflow(WContainerWidget.Overflow value, EnumSet orientation)
+	 * setOverflow(value, EnumSet.of(orientatio, orientation))}
+	 */
 	public final void setOverflow(WContainerWidget.Overflow value,
 			Orientation orientatio, Orientation... orientation) {
 		setOverflow(value, EnumSet.of(orientatio, orientation));
 	}
 
+	/**
+	 * Set how overflow of contained children must be handled.
+	 * <p>
+	 * Calls
+	 * {@link #setOverflow(WContainerWidget.Overflow value, EnumSet orientation)
+	 * setOverflow(value, EnumSet.of (Orientation.Horizontal,
+	 * Orientation.Vertical))}
+	 */
 	public final void setOverflow(WContainerWidget.Overflow value) {
 		setOverflow(value, EnumSet.of(Orientation.Horizontal,
 				Orientation.Vertical));
@@ -519,7 +566,7 @@ public class WContainerWidget extends WInteractWidget {
 
 	/**
 	 * Render the container as an HTML list.
-	 * 
+	 * <p>
 	 * Setting <i>renderList</i> to true will cause the container to be using an
 	 * HTML <code>&lt;ul&gt;</code> or <code>&lt;ol&gt;</code> type, depending
 	 * on the value of <i>orderedList</i>. This must be set before the initial
@@ -544,12 +591,19 @@ public class WContainerWidget extends WInteractWidget {
 		this.flags_.set(BIT_ORDERED_LIST, ordered);
 	}
 
+	/**
+	 * Render the container as an HTML list.
+	 * <p>
+	 * Calls {@link #setList(boolean list, boolean ordered) setList(list,
+	 * false)}
+	 */
 	public final void setList(boolean list) {
 		setList(list, false);
 	}
 
 	/**
 	 * Return if this container is rendered as a List.
+	 * <p>
 	 * 
 	 * @see WContainerWidget#setList(boolean list, boolean ordered)
 	 * @see WContainerWidget#isOrderedList()
@@ -561,6 +615,7 @@ public class WContainerWidget extends WInteractWidget {
 
 	/**
 	 * Return if this container is rendered as an Unordered List.
+	 * <p>
 	 * 
 	 * @see WContainerWidget#setList(boolean list, boolean ordered)
 	 * @see WContainerWidget#isList()
@@ -572,6 +627,7 @@ public class WContainerWidget extends WInteractWidget {
 
 	/**
 	 * Return if this container is rendered as an Ordered List.
+	 * <p>
 	 * 
 	 * @see WContainerWidget#setList(boolean list, boolean ordered)
 	 * @see WContainerWidget#isList()
@@ -583,7 +639,7 @@ public class WContainerWidget extends WInteractWidget {
 
 	/**
 	 * Event signal emitted when scrolling in the widget.
-	 * 
+	 * <p>
 	 * This event is emitted when the user scrolls in the widget (for setting
 	 * the scroll bar policy, see
 	 * {@link WContainerWidget#setOverflow(WContainerWidget.Overflow value, EnumSet orientation)}

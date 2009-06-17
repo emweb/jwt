@@ -3,7 +3,7 @@ package eu.webtoolkit.jwt;
 
 /**
  * A layout manager which arranges widgets horizontally
- * 
+ * <p>
  * 
  * This convenience class creates a horizontal box layout, laying contained
  * widgets out from left to right.
@@ -34,7 +34,7 @@ package eu.webtoolkit.jwt;
 public class WHBoxLayout extends WBoxLayout {
 	/**
 	 * Create a new horizontal box layout.
-	 * 
+	 * <p>
 	 * Use <i>parent</i>=0 to created a layout manager that can be nested inside
 	 * other layout managers.
 	 */
@@ -42,6 +42,11 @@ public class WHBoxLayout extends WBoxLayout {
 		super(WBoxLayout.Direction.LeftToRight, parent);
 	}
 
+	/**
+	 * Create a new horizontal box layout.
+	 * <p>
+	 * Calls {@link #WHBoxLayout(WWidget parent) this((WWidget)null)}
+	 */
 	public WHBoxLayout() {
 		this((WWidget) null);
 	}

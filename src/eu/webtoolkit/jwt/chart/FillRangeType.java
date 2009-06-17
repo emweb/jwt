@@ -3,7 +3,7 @@ package eu.webtoolkit.jwt.chart;
 
 /**
  * Enumeration that specifies how an area should be filled.
- * 
+ * <p>
  * Data series of type LineSeries or CurveSerie may be filled under or above the
  * line or curve. This enumeration specifies the other limit of this fill.
  * <p>

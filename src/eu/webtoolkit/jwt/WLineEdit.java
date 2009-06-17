@@ -5,7 +5,7 @@ import java.util.EnumSet;
 
 /**
  * A widget that provides a single line edit
- * 
+ * <p>
  * 
  * To act upon text changes, connect a slot to the {@link WFormWidget#changed()}
  * signal. This signal is emitted when the user changed the content, and
@@ -36,6 +36,7 @@ import java.util.EnumSet;
 public class WLineEdit extends WFormWidget {
 	/**
 	 * Enumeration that describes how the contents is displayed.
+	 * <p>
 	 * 
 	 * @see WLineEdit#setEchoMode(WLineEdit.EchoMode echoMode)
 	 */
@@ -68,6 +69,12 @@ public class WLineEdit extends WFormWidget {
 		this.setFormObject(true);
 	}
 
+	/**
+	 * Construct a line edit with empty content and optional parent.
+	 * <p>
+	 * Calls {@link #WLineEdit(WContainerWidget parent)
+	 * this((WContainerWidget)null)}
+	 */
 	public WLineEdit() {
 		this((WContainerWidget) null);
 	}
@@ -86,13 +93,19 @@ public class WLineEdit extends WFormWidget {
 		this.setFormObject(true);
 	}
 
+	/**
+	 * Construct a line edit with given content and optional parent.
+	 * <p>
+	 * Calls {@link #WLineEdit(String text, WContainerWidget parent) this(text,
+	 * (WContainerWidget)null)}
+	 */
 	public WLineEdit(String text) {
 		this(text, (WContainerWidget) null);
 	}
 
 	/**
 	 * Specify the width of the line edit in number of characters.
-	 * 
+	 * <p>
 	 * This specifies the width of the line edit that is roughly equivalent with
 	 * <i>chars</i> characters. This does not limit the maximum length of a
 	 * string that may be entered, which may be set using
@@ -110,6 +123,7 @@ public class WLineEdit extends WFormWidget {
 
 	/**
 	 * Get the current width of the line edit in number of characters.
+	 * <p>
 	 * 
 	 * @see WLineEdit#setTextSize(int chars)
 	 */
@@ -119,7 +133,7 @@ public class WLineEdit extends WFormWidget {
 
 	/**
 	 * Change the content of the line edit.
-	 * 
+	 * <p>
 	 * The default value is &quot;&quot;.
 	 * <p>
 	 * 
@@ -140,6 +154,7 @@ public class WLineEdit extends WFormWidget {
 
 	/**
 	 * Get the current content.
+	 * <p>
 	 * 
 	 * @see WLineEdit#setText(String text)
 	 */
@@ -149,7 +164,7 @@ public class WLineEdit extends WFormWidget {
 
 	/**
 	 * Specify the maximum length of text that can be entered.
-	 * 
+	 * <p>
 	 * A value &lt;= 0 indicates that there is no limit.
 	 * <p>
 	 * The default value is -1.
@@ -164,6 +179,7 @@ public class WLineEdit extends WFormWidget {
 
 	/**
 	 * Returns the maximum length of text that can be entered.
+	 * <p>
 	 * 
 	 * @see WLineEdit#setMaxLength(int chars)
 	 */
@@ -173,7 +189,7 @@ public class WLineEdit extends WFormWidget {
 
 	/**
 	 * Set the echo mode.
-	 * 
+	 * <p>
 	 * The default echo mode is Normal.
 	 */
 	public void setEchoMode(WLineEdit.EchoMode echoMode) {
@@ -186,6 +202,7 @@ public class WLineEdit extends WFormWidget {
 
 	/**
 	 * Get the echo mode.
+	 * <p>
 	 * 
 	 * @see WLineEdit#setEchoMode(WLineEdit.EchoMode echoMode)
 	 */

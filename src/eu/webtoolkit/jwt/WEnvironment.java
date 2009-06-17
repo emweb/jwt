@@ -13,7 +13,7 @@ import eu.webtoolkit.jwt.servlet.WebRequest;
 
 /**
  * A class that captures information on the application environment
- * 
+ * <p>
  * 
  * The environment provides information on the client, and gives access to
  * startup arguments.
@@ -77,7 +77,7 @@ public class WEnvironment {
 
 	/**
 	 * Cookie map.
-	 * 
+	 * <p>
 	 * A std::map which associates a cookie name with a cookie value.
 	 * <p>
 	 * 
@@ -87,7 +87,7 @@ public class WEnvironment {
 
 	/**
 	 * Parameters passed to the application.
-	 * 
+	 * <p>
 	 * Arguments passed to the application, either in the URL for a http GET, or
 	 * in both the URL and data submitted in a http POST.
 	 * <p>
@@ -100,7 +100,7 @@ public class WEnvironment {
 
 	/**
 	 * Returns values for a query parameter.
-	 * 
+	 * <p>
 	 * Returns an empty list if the parameter was not defined.
 	 * <p>
 	 * One or more values may be associated with a single argument.
@@ -126,7 +126,7 @@ public class WEnvironment {
 
 	/**
 	 * Returns a single value for a query parameter.
-	 * 
+	 * <p>
 	 * Returns the first value for a parameter, or 0 if the parameter is not
 	 * found.
 	 * <p>
@@ -144,7 +144,7 @@ public class WEnvironment {
 
 	/**
 	 * Cookies set in the initial call to the application.
-	 * 
+	 * <p>
 	 * Note that cookies set with
 	 * {@link WApplication#setCookie(String name, String value, int maxAge, String domain, String path)}
 	 * are not made available in the environment.
@@ -161,7 +161,7 @@ public class WEnvironment {
 
 	/**
 	 * Checks for existence and returns specified argument.
-	 * 
+	 * <p>
 	 * Throws a <code>std::runtime_error(&quot;Missing cookie: ...&quot;)</code>
 	 * when the cookie is missing, or returns cookie value otherwise.
 	 */
@@ -183,7 +183,7 @@ public class WEnvironment {
 
 	/**
 	 * Returns whether the browser has enabled support for cookies.
-	 * 
+	 * <p>
 	 * When the user disables cookies during the visit of the page, this value
 	 * is not updated.
 	 * <p>
@@ -197,7 +197,7 @@ public class WEnvironment {
 
 	/**
 	 * Returns whether the browser has enabled support for JavaScript.
-	 * 
+	 * <p>
 	 * Without support for JavaScript, Wt will still be able to serve the
 	 * application, but with one considerable limitation: only the
 	 * {@link WTimer#timeout()}, {@link WInteractWidget#clicked()},
@@ -216,7 +216,7 @@ public class WEnvironment {
 
 	/**
 	 * Returns whether the browser has enabled support for AJAX.
-	 * 
+	 * <p>
 	 * Without support for AJAX, Wt will still be able to serve the application,
 	 * but every event will cause the application to retransmit the whole page,
 	 * rendering many events inpractical.
@@ -230,7 +230,7 @@ public class WEnvironment {
 
 	/**
 	 * Returns the browser-side DPI scaling factor.
-	 * 
+	 * <p>
 	 * Internet Explorer scales all graphics, fonts and other elements on
 	 * high-density screens to make them readable. This is controlled by the DPI
 	 * setting of the display. If all goes well, you do not have to worry about
@@ -247,7 +247,7 @@ public class WEnvironment {
 
 	/**
 	 * Returns the preferred language indicated in the request header.
-	 * 
+	 * <p>
 	 * The language is parsed from the HTTP <code>Accept-Language</code> field,
 	 * if present. If not, the locale is empty.
 	 * <p>
@@ -264,7 +264,7 @@ public class WEnvironment {
 
 	/**
 	 * Returns the server host name that is used by the client.
-	 * 
+	 * <p>
 	 * The hostname is the unresolved host name with optional port number, which
 	 * the browser used to connect to the application.
 	 * <p>
@@ -297,7 +297,7 @@ public class WEnvironment {
 
 	/**
 	 * Returns the user agent.
-	 * 
+	 * <p>
 	 * The user agent, as reported in the HTTP <code>User-Agent</code> field.
 	 */
 	public String getUserAgent() {
@@ -306,7 +306,7 @@ public class WEnvironment {
 
 	/**
 	 * Returns the referer.
-	 * 
+	 * <p>
 	 * The referer, as reported in the HTTP <code>Referer</code> field.
 	 */
 	public String getReferer() {
@@ -315,7 +315,7 @@ public class WEnvironment {
 
 	/**
 	 * Returns the accept header.
-	 * 
+	 * <p>
 	 * The accept header, as reported in the HTTP <code>Accept</code> field.
 	 */
 	public String getAccept() {
@@ -324,7 +324,7 @@ public class WEnvironment {
 
 	/**
 	 * Returns if the user agent is a (known) indexing spider bot.
-	 * 
+	 * <p>
 	 * Note: currently the list of know bots is quite small. This method is used
 	 * internally to render the web application for optimal indexing by bots:
 	 * <ul>
@@ -344,7 +344,7 @@ public class WEnvironment {
 
 	/**
 	 * Returns the web server signature.
-	 * 
+	 * <p>
 	 * The value of the CGI variable <code>SERVER_SIGNATURE</code>.
 	 * <p>
 	 * Example:
@@ -356,7 +356,7 @@ public class WEnvironment {
 
 	/**
 	 * Returns the web server software.
-	 * 
+	 * <p>
 	 * The value of the CGI variable <code>SERVER_SOFTWARE</code>.
 	 * <p>
 	 * Example: <code>&quot;Apache&quot;</code>
@@ -367,7 +367,7 @@ public class WEnvironment {
 
 	/**
 	 * Returns the email address of the server admin.
-	 * 
+	 * <p>
 	 * The value of the CGI variable <code>SERVER_ADMIN</code>.
 	 * <p>
 	 * Example: <code>&quot;root@localhost&quot;</code>
@@ -378,7 +378,7 @@ public class WEnvironment {
 
 	/**
 	 * Returns the IP address of the client.
-	 * 
+	 * <p>
 	 * The (most likely) IP address of the client that is connected to this
 	 * session.
 	 * <p>
@@ -393,7 +393,7 @@ public class WEnvironment {
 
 	/**
 	 * Returns the path info of the original request (<b>deprecated</b>).
-	 * 
+	 * <p>
 	 * DOCXREFITEMDeprecatedUse {@link WEnvironment#getInternalPath()} instead,
 	 * which is consistent with the internal paths generated by Wt.This is the
 	 * equivalent of the CGI PATH_INFO environment variable.
@@ -420,7 +420,7 @@ public class WEnvironment {
 
 	/**
 	 * Returns the initial internal path.
-	 * 
+	 * <p>
 	 * This is the internal path with which the application was started.
 	 * <p>
 	 * For an application deployed at <code>&quot;/stuff/app.wt&quot;</code>,
@@ -445,7 +445,7 @@ public class WEnvironment {
 
 	/**
 	 * Returns the deployment path.
-	 * 
+	 * <p>
 	 * This is the path at which the application is deployed.
 	 * <p>
 	 * 
@@ -457,7 +457,7 @@ public class WEnvironment {
 
 	/**
 	 * Returns the version of the Wt library.
-	 * 
+	 * <p>
 	 * Example: <code>&quot;1.99.2&quot;</code>
 	 */
 	public static String getLibraryVersion() {
@@ -468,7 +468,7 @@ public class WEnvironment {
 	// simple ref int major, bad java simple ref int minor) ;
 	/**
 	 * Returns the Wt session id.
-	 * 
+	 * <p>
 	 * Retrieves the session id for this session. This is an auto-generated
 	 * random alpha-numerical id, whose length is determined by settings in the
 	 * configuration file.
@@ -479,7 +479,7 @@ public class WEnvironment {
 
 	/**
 	 * Returns a raw CGI environment variable.
-	 * 
+	 * <p>
 	 * Retrieves the value for the given CGI environment variable (like
 	 * <code>&quot;SSL_CLIENT_S_DN_CN&quot;</code>), if it is defined, otherwise
 	 * an empty string.
@@ -495,7 +495,7 @@ public class WEnvironment {
 
 	/**
 	 * The type of the content provided to the browser.
-	 * 
+	 * <p>
 	 * This is determined by listening to the capabilities of the browser.
 	 * Xhtml1 is chosen only if the browser reports support for it, and it is
 	 * allowed in the configuration file (wt_config.xml).

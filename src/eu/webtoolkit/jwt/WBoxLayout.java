@@ -6,7 +6,7 @@ import java.util.List;
 
 /**
  * A layout manager which arranges widgets horizontally or vertically
- * 
+ * <p>
  * 
  * This layout manager arranges widgets horizontally or vertically inside the
  * parent container. The space is divided so that each widgets is given its
@@ -87,7 +87,7 @@ public class WBoxLayout extends WLayout {
 
 	/**
 	 * Create a new box layout.
-	 * 
+	 * <p>
 	 * This constructor is rarely used. Instead, use the convenient constructors
 	 * of the specialized {@link WHBoxLayout} or {@link WVBoxLayout} classes.
 	 * <p>
@@ -103,6 +103,12 @@ public class WBoxLayout extends WLayout {
 		}
 	}
 
+	/**
+	 * Create a new box layout.
+	 * <p>
+	 * Calls {@link #WBoxLayout(WBoxLayout.Direction dir, WWidget parent)
+	 * this(dir, (WWidget)null)}
+	 */
 	public WBoxLayout(WBoxLayout.Direction dir) {
 		this(dir, (WWidget) null);
 	}
@@ -153,6 +159,7 @@ public class WBoxLayout extends WLayout {
 
 	/**
 	 * Set the layout direction.
+	 * <p>
 	 * 
 	 * @see WBoxLayout#getDirection()
 	 */
@@ -164,6 +171,7 @@ public class WBoxLayout extends WLayout {
 
 	/**
 	 * Returns the layout direction.
+	 * <p>
 	 * 
 	 * @see WBoxLayout#setDirection(WBoxLayout.Direction direction)
 	 */
@@ -173,7 +181,7 @@ public class WBoxLayout extends WLayout {
 
 	/**
 	 * Set spacing between each item.
-	 * 
+	 * <p>
 	 * The default spacing is 6 pixels.
 	 */
 	public void setSpacing(int size) {
@@ -183,6 +191,7 @@ public class WBoxLayout extends WLayout {
 
 	/**
 	 * Returns the spacing between each item.
+	 * <p>
 	 * 
 	 * @see WBoxLayout#setSpacing(int size)
 	 */
@@ -192,7 +201,7 @@ public class WBoxLayout extends WLayout {
 
 	/**
 	 * Adds a widget to the layout.
-	 * 
+	 * <p>
 	 * Adds a widget to the layout, with given <i>stretch</i> factor. The
 	 * <i>alignemnt</i> parameter is a combination of a horizontal and/or a
 	 * vertical AlignmentFlag OR&apos;ed together.
@@ -216,22 +225,40 @@ public class WBoxLayout extends WLayout {
 		this.insertWidget(this.getCount(), widget, stretch, alignment);
 	}
 
+	/**
+	 * Adds a widget to the layout.
+	 * <p>
+	 * Calls {@link #addWidget(WWidget widget, int stretch, EnumSet alignment)
+	 * addWidget(widget, stretch, EnumSet.of(alignmen, alignment))}
+	 */
 	public final void addWidget(WWidget widget, int stretch,
 			AlignmentFlag alignmen, AlignmentFlag... alignment) {
 		addWidget(widget, stretch, EnumSet.of(alignmen, alignment));
 	}
 
+	/**
+	 * Adds a widget to the layout.
+	 * <p>
+	 * Calls {@link #addWidget(WWidget widget, int stretch, EnumSet alignment)
+	 * addWidget(widget, 0, EnumSet.noneOf(AlignmentFlag.class))}
+	 */
 	public final void addWidget(WWidget widget) {
 		addWidget(widget, 0, EnumSet.noneOf(AlignmentFlag.class));
 	}
 
+	/**
+	 * Adds a widget to the layout.
+	 * <p>
+	 * Calls {@link #addWidget(WWidget widget, int stretch, EnumSet alignment)
+	 * addWidget(widget, stretch, EnumSet.noneOf(AlignmentFlag.class))}
+	 */
 	public final void addWidget(WWidget widget, int stretch) {
 		addWidget(widget, stretch, EnumSet.noneOf(AlignmentFlag.class));
 	}
 
 	/**
 	 * Adds a nested layout to the layout.
-	 * 
+	 * <p>
 	 * Adds a nested layout, with given <i>stretch</i> factor.
 	 * <p>
 	 * 
@@ -244,22 +271,40 @@ public class WBoxLayout extends WLayout {
 		this.insertLayout(this.getCount(), layout, stretch, alignment);
 	}
 
+	/**
+	 * Adds a nested layout to the layout.
+	 * <p>
+	 * Calls {@link #addLayout(WLayout layout, int stretch, EnumSet alignment)
+	 * addLayout(layout, stretch, EnumSet.of(alignmen, alignment))}
+	 */
 	public final void addLayout(WLayout layout, int stretch,
 			AlignmentFlag alignmen, AlignmentFlag... alignment) {
 		addLayout(layout, stretch, EnumSet.of(alignmen, alignment));
 	}
 
+	/**
+	 * Adds a nested layout to the layout.
+	 * <p>
+	 * Calls {@link #addLayout(WLayout layout, int stretch, EnumSet alignment)
+	 * addLayout(layout, 0, EnumSet.noneOf(AlignmentFlag.class))}
+	 */
 	public final void addLayout(WLayout layout) {
 		addLayout(layout, 0, EnumSet.noneOf(AlignmentFlag.class));
 	}
 
+	/**
+	 * Adds a nested layout to the layout.
+	 * <p>
+	 * Calls {@link #addLayout(WLayout layout, int stretch, EnumSet alignment)
+	 * addLayout(layout, stretch, EnumSet.noneOf(AlignmentFlag.class))}
+	 */
 	public final void addLayout(WLayout layout, int stretch) {
 		addLayout(layout, stretch, EnumSet.noneOf(AlignmentFlag.class));
 	}
 
 	/**
 	 * Adds extra spacing.
-	 * 
+	 * <p>
 	 * Adds extra spacing to the layout.
 	 * <p>
 	 * 
@@ -272,7 +317,7 @@ public class WBoxLayout extends WLayout {
 
 	/**
 	 * Adds a stretch element.
-	 * 
+	 * <p>
 	 * Adds a stretch element to the layout. This adds an empty space that
 	 * stretches as needed.
 	 * <p>
@@ -284,13 +329,18 @@ public class WBoxLayout extends WLayout {
 		this.insertStretch(this.getCount(), stretch);
 	}
 
+	/**
+	 * Adds a stretch element.
+	 * <p>
+	 * Calls {@link #addStretch(int stretch) addStretch(0)}
+	 */
 	public final void addStretch() {
 		addStretch(0);
 	}
 
 	/**
 	 * Inserts a widget in the layout.
-	 * 
+	 * <p>
 	 * Inserts a widget in the layout at position <i>index</i>, with given
 	 * <i>stretch</i> factor.
 	 * <p>
@@ -313,15 +363,37 @@ public class WBoxLayout extends WLayout {
 		this.insertItem(index, new WWidgetItem(widget), stretch, alignment);
 	}
 
+	/**
+	 * Inserts a widget in the layout.
+	 * <p>
+	 * Calls
+	 * {@link #insertWidget(int index, WWidget widget, int stretch, EnumSet alignment)
+	 * insertWidget(index, widget, stretch, EnumSet.of(alignmen, alignment))}
+	 */
 	public final void insertWidget(int index, WWidget widget, int stretch,
 			AlignmentFlag alignmen, AlignmentFlag... alignment) {
 		insertWidget(index, widget, stretch, EnumSet.of(alignmen, alignment));
 	}
 
+	/**
+	 * Inserts a widget in the layout.
+	 * <p>
+	 * Calls
+	 * {@link #insertWidget(int index, WWidget widget, int stretch, EnumSet alignment)
+	 * insertWidget(index, widget, 0, EnumSet.noneOf(AlignmentFlag.class))}
+	 */
 	public final void insertWidget(int index, WWidget widget) {
 		insertWidget(index, widget, 0, EnumSet.noneOf(AlignmentFlag.class));
 	}
 
+	/**
+	 * Inserts a widget in the layout.
+	 * <p>
+	 * Calls
+	 * {@link #insertWidget(int index, WWidget widget, int stretch, EnumSet alignment)
+	 * insertWidget(index, widget, stretch,
+	 * EnumSet.noneOf(AlignmentFlag.class))}
+	 */
 	public final void insertWidget(int index, WWidget widget, int stretch) {
 		insertWidget(index, widget, stretch, EnumSet
 				.noneOf(AlignmentFlag.class));
@@ -329,28 +401,51 @@ public class WBoxLayout extends WLayout {
 
 	/**
 	 * Inserts a nested layout in the layout.
-	 * 
+	 * <p>
 	 * Inserts a nested layout in the layout at position<i>index</i>, with given
 	 * <i>stretch</i> factor.
 	 * <p>
 	 * 
 	 * @see WBoxLayout#insertWidget(int index, WWidget widget, int stretch,
 	 *      EnumSet alignment)
+	 * @see WBoxLayout#addLayout(WLayout layout, int stretch, EnumSet alignment)
 	 */
 	public void insertLayout(int index, WLayout layout, int stretch,
 			EnumSet<AlignmentFlag> alignment) {
 		this.insertItem(index, layout, stretch, alignment);
 	}
 
+	/**
+	 * Inserts a nested layout in the layout.
+	 * <p>
+	 * Calls
+	 * {@link #insertLayout(int index, WLayout layout, int stretch, EnumSet alignment)
+	 * insertLayout(index, layout, stretch, EnumSet.of(alignmen, alignment))}
+	 */
 	public final void insertLayout(int index, WLayout layout, int stretch,
 			AlignmentFlag alignmen, AlignmentFlag... alignment) {
 		insertLayout(index, layout, stretch, EnumSet.of(alignmen, alignment));
 	}
 
+	/**
+	 * Inserts a nested layout in the layout.
+	 * <p>
+	 * Calls
+	 * {@link #insertLayout(int index, WLayout layout, int stretch, EnumSet alignment)
+	 * insertLayout(index, layout, 0, EnumSet.noneOf(AlignmentFlag.class))}
+	 */
 	public final void insertLayout(int index, WLayout layout) {
 		insertLayout(index, layout, 0, EnumSet.noneOf(AlignmentFlag.class));
 	}
 
+	/**
+	 * Inserts a nested layout in the layout.
+	 * <p>
+	 * Calls
+	 * {@link #insertLayout(int index, WLayout layout, int stretch, EnumSet alignment)
+	 * insertLayout(index, layout, stretch,
+	 * EnumSet.noneOf(AlignmentFlag.class))}
+	 */
 	public final void insertLayout(int index, WLayout layout, int stretch) {
 		insertLayout(index, layout, stretch, EnumSet
 				.noneOf(AlignmentFlag.class));
@@ -358,7 +453,7 @@ public class WBoxLayout extends WLayout {
 
 	/**
 	 * Inserts extra spacing in the layout.
-	 * 
+	 * <p>
 	 * Inserts extra spacing in the layout at position <i>index</i>.
 	 * <p>
 	 * 
@@ -373,7 +468,7 @@ public class WBoxLayout extends WLayout {
 
 	/**
 	 * Inserts a stretch element in the layout.
-	 * 
+	 * <p>
 	 * Inserts a stretch element in the layout at position <i>index</i>. This
 	 * adds an empty space that stretches as needed.
 	 * <p>
@@ -387,16 +482,23 @@ public class WBoxLayout extends WLayout {
 				.noneOf(AlignmentFlag.class));
 	}
 
+	/**
+	 * Inserts a stretch element in the layout.
+	 * <p>
+	 * Calls {@link #insertStretch(int index, int stretch) insertStretch(index,
+	 * 0)}
+	 */
 	public final void insertStretch(int index) {
 		insertStretch(index, 0);
 	}
 
 	/**
 	 * Set the stretch factor for a nested layout.
-	 * 
+	 * <p>
 	 * The <i>layout</i> must have previously been added to this layout using
 	 * {@link WBoxLayout#insertLayout(int index, WLayout layout, int stretch, EnumSet alignment)}
-	 * or addLayout(WLayout *, int).
+	 * or
+	 * {@link WBoxLayout#addLayout(WLayout layout, int stretch, EnumSet alignment)}.
 	 * <p>
 	 * Returns whether the <i>stretch</i> could be set.
 	 */
@@ -413,12 +515,11 @@ public class WBoxLayout extends WLayout {
 
 	/**
 	 * Set the stretch factor for a nested layout.
-	 * 
+	 * <p>
 	 * The <i>widget</i> must have previously been added to this layout using
 	 * {@link WBoxLayout#insertWidget(int index, WWidget widget, int stretch, EnumSet alignment)}
 	 * or
-	 * {@link WBoxLayout#addWidget(WWidget widget, int stretch, EnumSet alignment)}
-	 * .
+	 * {@link WBoxLayout#addWidget(WWidget widget, int stretch, EnumSet alignment)}.
 	 * <p>
 	 * Returns whether the <i>stretch</i> could be set.
 	 */

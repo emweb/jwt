@@ -4,7 +4,7 @@ import java.util.EnumSet;
 
 /**
  * The abstract base class for a paint device.
- * 
+ * <p>
  * 
  * A WPaintDevice is a device on which may be painted using a {@link WPainter}.
  * You should never paint directly on a paint device.
@@ -27,6 +27,7 @@ import java.util.EnumSet;
 public interface WPaintDevice {
 	/**
 	 * Enumeration to communicate painter state changes.
+	 * <p>
 	 * 
 	 * @see WPaintDevice#setChanged(EnumSet flags)
 	 */
@@ -63,7 +64,7 @@ public interface WPaintDevice {
 
 	/**
 	 * Returns the device width.
-	 * 
+	 * <p>
 	 * The device width, in pixels, establishes the width of the device
 	 * coordinate system.
 	 */
@@ -71,7 +72,7 @@ public interface WPaintDevice {
 
 	/**
 	 * Returns the device height.
-	 * 
+	 * <p>
 	 * The device height, in pixels, establishes the height of the device
 	 * coordinate system.
 	 */
@@ -79,7 +80,7 @@ public interface WPaintDevice {
 
 	/**
 	 * Indicate changes in painter state.
-	 * 
+	 * <p>
 	 * The <i>flags</i> argument is the logical OR of one or more change flags.
 	 * <p>
 	 * 
@@ -89,7 +90,7 @@ public interface WPaintDevice {
 
 	/**
 	 * Draw an arc.
-	 * 
+	 * <p>
 	 * The arc is defined as in
 	 * {@link WPainter#drawArc(WRectF rectangle, int startAngle, int spanAngle)}
 	 * (const {@link WRectF}&amp;, startAngle, spanAngle), but the angle is
@@ -102,7 +103,7 @@ public interface WPaintDevice {
 
 	/**
 	 * Draw an image.
-	 * 
+	 * <p>
 	 * Draws <i>sourceRect</i> from the image with URL <i>imageUri</i> and
 	 * original dimensions <i>imgWidth</i> and <i>imgHeight</i> to the location,
 	 * into the rectangle defined by <i>rect</i>.
@@ -114,7 +115,7 @@ public interface WPaintDevice {
 
 	/**
 	 * Draw a line.
-	 * 
+	 * <p>
 	 * The line must be stroked and transformed using the current painter
 	 * settings.
 	 */
@@ -122,7 +123,7 @@ public interface WPaintDevice {
 
 	/**
 	 * Draw a path.
-	 * 
+	 * <p>
 	 * The path must be stroked, filled, and transformed using the current
 	 * painter settings.
 	 */
@@ -130,7 +131,7 @@ public interface WPaintDevice {
 
 	/**
 	 * Draw text.
-	 * 
+	 * <p>
 	 * The text must be rendered, stroked and transformed using the current
 	 * painter settings.
 	 */
@@ -139,7 +140,7 @@ public interface WPaintDevice {
 
 	/**
 	 * Initialize the device for painting.
-	 * 
+	 * <p>
 	 * This method is called when a {@link WPainter} starts painting.
 	 * <p>
 	 * 
@@ -150,7 +151,7 @@ public interface WPaintDevice {
 
 	/**
 	 * Finishes painting on the device.
-	 * 
+	 * <p>
 	 * This method is called when a {@link WPainter} stopped painting.
 	 * <p>
 	 * 
@@ -160,6 +161,7 @@ public interface WPaintDevice {
 
 	/**
 	 * Returns whether painting is active.
+	 * <p>
 	 * 
 	 * @see WPaintDevice#init()
 	 * @see WPaintDevice#getPainter()
@@ -173,6 +175,7 @@ public interface WPaintDevice {
 
 	/**
 	 * Returns the painter that is currently painting on the device.
+	 * <p>
 	 * 
 	 * @see WPaintDevice#init()
 	 */

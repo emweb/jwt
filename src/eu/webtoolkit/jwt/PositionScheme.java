@@ -3,7 +3,7 @@ package eu.webtoolkit.jwt;
 
 /**
  * Enumeration that specifies a layout mechanism for a widget.
- * 
+ * <p>
  * The layout mechanism determines how the widget positions itself relative to
  * the parent or sibling widgets.
  * <p>
@@ -13,7 +13,7 @@ package eu.webtoolkit.jwt;
 public enum PositionScheme {
 	/**
 	 * Static position scheme.
-	 * 
+	 * <p>
 	 * The widget is layed-out with other {@link PositionScheme#Static Static}
 	 * and {@link PositionScheme#Relative Relative} sibling widgets, one after
 	 * another.
@@ -28,7 +28,7 @@ public enum PositionScheme {
 	Static,
 	/**
 	 * Relative position scheme.
-	 * 
+	 * <p>
 	 * The widget is first layed out according to Static layout rules, but after
 	 * layout, the widget may be offset relative to where it would be in a
 	 * static layout, using setOffsets().
@@ -40,7 +40,7 @@ public enum PositionScheme {
 	Relative,
 	/**
 	 * Absolute position scheme.
-	 * 
+	 * <p>
 	 * The widget is positioned at an absolute position with respect to the
 	 * nearest ancestor widget that is either:
 	 * <ul>
@@ -54,7 +54,7 @@ public enum PositionScheme {
 	Absolute,
 	/**
 	 * Fixed position scheme.
-	 * 
+	 * <p>
 	 * The widget is positioned at fixed position with respect to the
 	 * browser&apos;s view-pane.
 	 */

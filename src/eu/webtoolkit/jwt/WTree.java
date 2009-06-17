@@ -10,7 +10,7 @@ import eu.webtoolkit.jwt.utils.EnumUtils;
 
 /**
  * A widget that represents a navigatable tree
- * 
+ * <p>
  * 
  * WTree provides a tree widget, and coordinates selection functionality.
  * <p>
@@ -51,12 +51,19 @@ public class WTree extends WCompositeWidget {
 				});
 	}
 
+	/**
+	 * Create a new tree.
+	 * <p>
+	 * Calls {@link #WTree(WContainerWidget parent)
+	 * this((WContainerWidget)null)}
+	 */
 	public WTree() {
 		this((WContainerWidget) null);
 	}
 
 	/**
 	 * Set the tree root node.
+	 * <p>
 	 * 
 	 * @see WTree#getTreeRoot()
 	 */
@@ -72,6 +79,7 @@ public class WTree extends WCompositeWidget {
 
 	/**
 	 * Get the root node.
+	 * <p>
 	 * 
 	 * @see WTree#setTreeRoot(WTreeNode node)
 	 */
@@ -81,7 +89,7 @@ public class WTree extends WCompositeWidget {
 
 	/**
 	 * Set the selection mode.
-	 * 
+	 * <p>
 	 * The default selection mode is {@link SelectionMode#NoSelection}.
 	 */
 	public void setSelectionMode(SelectionMode mode) {
@@ -148,6 +156,12 @@ public class WTree extends WCompositeWidget {
 		this.itemSelectionChanged_.trigger();
 	}
 
+	/**
+	 * Select or unselect the given <i>node</i>.
+	 * <p>
+	 * Calls {@link #select(WTreeNode node, boolean selected) select(node,
+	 * true)}
+	 */
 	public final void select(WTreeNode node) {
 		select(node, true);
 	}

@@ -6,7 +6,7 @@ import eu.webtoolkit.jwt.utils.EnumUtils;
 
 /**
  * A widget that hides the implementation of composite widgets
- * 
+ * <p>
  * 
  * Composite widgets, built on top of the WebWidgets, should derive from this
  * class, and use {@link WCompositeWidget#setImplementation(WWidget widget)} to
@@ -29,6 +29,12 @@ public class WCompositeWidget extends WWidget {
 		}
 	}
 
+	/**
+	 * Create a {@link WCompositeWidget}.
+	 * <p>
+	 * Calls {@link #WCompositeWidget(WContainerWidget parent)
+	 * this((WContainerWidget)null)}
+	 */
 	public WCompositeWidget() {
 		this((WContainerWidget) null);
 	}
@@ -268,7 +274,7 @@ public class WCompositeWidget extends WWidget {
 
 	/**
 	 * Set the implementation widget.
-	 * 
+	 * <p>
 	 * This sets the widget that implements this compositeWidget. Ownership of
 	 * the widget is completely transferred (including deletion).
 	 */

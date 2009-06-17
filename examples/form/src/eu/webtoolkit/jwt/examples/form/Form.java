@@ -234,19 +234,11 @@ public class Form extends WTable
 
 	private WLineEdit birthDateEdit_;
 	private WLineEdit childCountEdit_;
-	private WLineEdit weightEdit_;
 
 	private WTextArea remarksEdit_;
 
   /**
-   *  a validation feedback for a field
-   */
-   private void addValidationStatus(int row, WFormWidget field) {
-	   
-   }
-
-  /**
-   * Validate the form, and return whether succesfull.
+   * Validate the form, and return whether successful.
    */
   
    private boolean  validate() {

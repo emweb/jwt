@@ -3,7 +3,7 @@ package eu.webtoolkit.jwt;
 
 /**
  * A user control that represents a check box
- * 
+ * <p>
  * 
  * By default, a checkbox can have two states: {@link CheckState#Checked} or
  * {@link CheckState#Unchecked}, which can be inspected using
@@ -56,6 +56,12 @@ public class WCheckBox extends WAbstractToggleButton {
 		this.setFormObject(true);
 	}
 
+	/**
+	 * Create a checkbox with empty label.
+	 * <p>
+	 * Calls {@link #WCheckBox(WContainerWidget parent)
+	 * this((WContainerWidget)null)}
+	 */
 	public WCheckBox() {
 		this((WContainerWidget) null);
 	}
@@ -70,13 +76,19 @@ public class WCheckBox extends WAbstractToggleButton {
 		this.setFormObject(true);
 	}
 
+	/**
+	 * Create a checkbox with given label.
+	 * <p>
+	 * Calls {@link #WCheckBox(CharSequence text, WContainerWidget parent)
+	 * this(text, (WContainerWidget)null)}
+	 */
 	public WCheckBox(CharSequence text) {
 		this(text, (WContainerWidget) null);
 	}
 
 	/**
 	 * Make a tristate checkbox.
-	 * 
+	 * <p>
 	 * <p>
 	 * <i><b>Note:</b>You should enable tristate functionality right after
 	 * construction and this cannot be modified later. </i>
@@ -112,12 +124,18 @@ public class WCheckBox extends WAbstractToggleButton {
 		}
 	}
 
+	/**
+	 * Make a tristate checkbox.
+	 * <p>
+	 * Calls {@link #setTristate(boolean tristate) setTristate(true)}
+	 */
 	public final void setTristate() {
 		setTristate(true);
 	}
 
 	/**
 	 * Returns whether the checkbox is tristate.
+	 * <p>
 	 * 
 	 * @see WCheckBox#setTristate(boolean tristate)
 	 */
@@ -127,7 +145,7 @@ public class WCheckBox extends WAbstractToggleButton {
 
 	/**
 	 * Set the check state.
-	 * 
+	 * <p>
 	 * Unless it is a tri-state checkbox, only {@link CheckState#Checked} and
 	 * {@link CheckState#Unchecked} are valid states.
 	 */
@@ -137,6 +155,7 @@ public class WCheckBox extends WAbstractToggleButton {
 
 	/**
 	 * Returns the check state.
+	 * <p>
 	 * 
 	 * @see WCheckBox#setCheckState(CheckState state)
 	 * @see WAbstractToggleButton#isChecked()

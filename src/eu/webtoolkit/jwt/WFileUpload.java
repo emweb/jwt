@@ -6,7 +6,7 @@ import eu.webtoolkit.jwt.servlet.UploadedFile;
 
 /**
  * A widget that allows a file to be uploaded
- * 
+ * <p>
  * 
  * This widget is displayed as a box in which a filename can be entered and a
  * browse button.
@@ -82,6 +82,12 @@ public class WFileUpload extends WWebWidget {
 		}
 	}
 
+	/**
+	 * Construct a file upload widget.
+	 * <p>
+	 * Calls {@link #WFileUpload(WContainerWidget parent)
+	 * this((WContainerWidget)null)}
+	 */
 	public WFileUpload() {
 		this((WContainerWidget) null);
 	}
@@ -109,7 +115,7 @@ public class WFileUpload extends WWebWidget {
 
 	/**
 	 * Get the spooled location of the uploaded file.
-	 * 
+	 * <p>
 	 * Returns the temporary filename in which the uploaded file was spooled.
 	 * The file is guaranteed to exist as long as the {@link WFileUpload} widget
 	 * is not deleted, or a new file is not uploaded.
@@ -138,7 +144,7 @@ public class WFileUpload extends WWebWidget {
 
 	/**
 	 * Steal the spooled file.
-	 * 
+	 * <p>
 	 * By stealing the file, the spooled file will no longer be deleted together
 	 * with this widget, which means you need to take care of managing that.
 	 */
@@ -148,7 +154,7 @@ public class WFileUpload extends WWebWidget {
 
 	/**
 	 * Check if no filename was given and thus no file uploaded.
-	 * 
+	 * <p>
 	 * Return whether a non-empty filename was given.
 	 */
 	public boolean isEmptyFileName() {
@@ -158,7 +164,7 @@ public class WFileUpload extends WWebWidget {
 	/**
 	 * Returns whether {@link WFileUpload#upload()} will start a new file
 	 * upload.
-	 * 
+	 * <p>
 	 * A call to {@link WFileUpload#upload()} will only start a new file upload
 	 * if there is no JavaScript support. Otherwise, the most recent file will
 	 * already be uploaded.
@@ -169,7 +175,7 @@ public class WFileUpload extends WWebWidget {
 
 	/**
 	 * Signal emitted when a new file was uploaded.
-	 * 
+	 * <p>
 	 * This signal is emitted when a new file has been received. It is good
 	 * practice to hide or delete the {@link WFileUpload} widget when a file has
 	 * been uploaded succesfully.
@@ -184,7 +190,7 @@ public class WFileUpload extends WWebWidget {
 
 	/**
 	 * Signal emitted when the user tried to upload a too large file.
-	 * 
+	 * <p>
 	 * The parameter is the approximate size of the file the user tried to
 	 * upload.
 	 * <p>
@@ -201,7 +207,7 @@ public class WFileUpload extends WWebWidget {
 
 	/**
 	 * Signal emitted when the user selected a new file.
-	 * 
+	 * <p>
 	 * One could react on the user selecting a (new) file, by uploading the file
 	 * immediately.
 	 * <p>
@@ -215,7 +221,7 @@ public class WFileUpload extends WWebWidget {
 
 	/**
 	 * Start the file upload.
-	 * 
+	 * <p>
 	 * The {@link WFileUpload#uploaded()} signal is emitted when a file is
 	 * uploaded, or the {@link WFileUpload#fileTooLarge()} signal is emitted
 	 * when the file size exceeded the maximum request size.

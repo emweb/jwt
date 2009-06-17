@@ -78,7 +78,18 @@ public abstract class WtServlet extends HttpServlet {
 		WebSession wsession = (WebSession) jsession.getAttribute(WT_WEBSESSION_ID);
 
 		if (wsession == null) {
-			wsession = new WebSession(this, jsession.getId(), WebSession.Type.Application, this.configuration.getFavicon(), new WebRequest(request));
+			String applicationTypeS = this.getServletConfig().getInitParameter("ApplicationType");
+			
+			WebSession.Type applicationType;
+			if (applicationTypeS == null || applicationTypeS.equals("") || applicationTypeS.equals("Application")) {
+				applicationType = WebSession.Type.Application; 
+			} else if (applicationTypeS.equals("WidgetSet")) {
+				applicationType = WebSession.Type.WidgetSet; 
+			} else {
+				throw new WtException("Illegal application type: " + applicationTypeS);
+			}
+			
+			wsession = new WebSession(this, jsession.getId(), applicationType, this.configuration.getFavicon(), new WebRequest(request));
 			jsession.setAttribute(WT_WEBSESSION_ID, wsession);
 		}
 

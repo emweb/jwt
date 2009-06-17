@@ -3,14 +3,14 @@ package eu.webtoolkit.jwt;
 
 /**
  * Utility class that defines a rectangle.
- * 
+ * <p>
  * 
  * The rectangle is defined by a top-left point and a width and height.
  */
 public class WRectF {
 	/**
 	 * Default constructor.
-	 * 
+	 * <p>
 	 * Constructs a rectangle from top left point (<i>x=0</i>, <i>y=0</i>) and
 	 * size <i>width=0</i> x <i>height=0</i>.
 	 */
@@ -23,7 +23,7 @@ public class WRectF {
 
 	/**
 	 * Construct a rectangle.
-	 * 
+	 * <p>
 	 * Constructs a rectangle with top left point (<i>x</i>, <i>y</i>) and size
 	 * <i>width</i> x <i>height</i>.
 	 */
@@ -36,7 +36,7 @@ public class WRectF {
 
 	/**
 	 * Construct a rectangle.
-	 * 
+	 * <p>
 	 * Constructs a rectangle from the two points <i>topLeft</i> and
 	 * <i>bottomRight</i>.
 	 */
@@ -63,7 +63,7 @@ public class WRectF {
 
 	/**
 	 * Changes the X-position of the left side.
-	 * 
+	 * <p>
 	 * The right side of the rectangle does not move, and as a result, the
 	 * rectangle may be resized.
 	 */
@@ -74,7 +74,7 @@ public class WRectF {
 
 	/**
 	 * Changes the Y-position of the top side.
-	 * 
+	 * <p>
 	 * The bottom side of the rectangle does not move, and as a result, the
 	 * rectangle may be resized.
 	 */
@@ -85,7 +85,7 @@ public class WRectF {
 
 	/**
 	 * Changes the width.
-	 * 
+	 * <p>
 	 * The right side of the rectangle may move, but does not change the X
 	 * position of the left side.
 	 */
@@ -95,7 +95,7 @@ public class WRectF {
 
 	/**
 	 * Changes the Y-position of the top side.
-	 * 
+	 * <p>
 	 * The bottom side of the rectangle may move, but does not change the Y
 	 * position of the top side.
 	 */
@@ -105,7 +105,7 @@ public class WRectF {
 
 	/**
 	 * Returns the X-position of the left side.
-	 * 
+	 * <p>
 	 * This is equivalent to {@link WRectF#getLeft()}.
 	 * <p>
 	 * 
@@ -118,7 +118,7 @@ public class WRectF {
 
 	/**
 	 * Returns the Y-position of the top side.
-	 * 
+	 * <p>
 	 * This is equivalent to {@link WRectF#getTop()}.
 	 * <p>
 	 * 
@@ -131,6 +131,7 @@ public class WRectF {
 
 	/**
 	 * Returns the width.
+	 * <p>
 	 * 
 	 * @see WRectF#getHeight()
 	 */
@@ -140,6 +141,7 @@ public class WRectF {
 
 	/**
 	 * Returns the height.
+	 * <p>
 	 * 
 	 * @see WRectF#getWidth()
 	 */
@@ -149,6 +151,7 @@ public class WRectF {
 
 	/**
 	 * Returns the X position of the left side.
+	 * <p>
 	 * 
 	 * @see WRectF#getX()
 	 * @see WRectF#getRight()
@@ -159,6 +162,7 @@ public class WRectF {
 
 	/**
 	 * Returns the Y position of the top side.
+	 * <p>
 	 * 
 	 * @see WRectF#getY()
 	 * @see WRectF#getBottom()
@@ -169,6 +173,7 @@ public class WRectF {
 
 	/**
 	 * Returns the X position of the right side.
+	 * <p>
 	 * 
 	 * @see WRectF#getLeft()
 	 */
@@ -178,6 +183,7 @@ public class WRectF {
 
 	/**
 	 * Returns the Y position of the bottom side.
+	 * <p>
 	 * 
 	 * @see WRectF#getTop()
 	 */
@@ -187,6 +193,7 @@ public class WRectF {
 
 	/**
 	 * Returns the top left point.
+	 * <p>
 	 * 
 	 * @see WRectF#getLeft()
 	 * @see WRectF#getTop()
@@ -197,6 +204,7 @@ public class WRectF {
 
 	/**
 	 * Returns the top right point.
+	 * <p>
 	 * 
 	 * @see WRectF#getRight()
 	 * @see WRectF#getTop()
@@ -215,6 +223,7 @@ public class WRectF {
 
 	/**
 	 * Returns the bottom left point.
+	 * <p>
 	 * 
 	 * @see WRectF#getLeft()
 	 * @see WRectF#getBottom()
@@ -225,6 +234,7 @@ public class WRectF {
 
 	/**
 	 * Returns the bottom right point.
+	 * <p>
 	 * 
 	 * @see WRectF#getRight()
 	 * @see WRectF#getBottom()
@@ -277,7 +287,7 @@ public class WRectF {
 
 	/**
 	 * Returns a normalized rectangle.
-	 * 
+	 * <p>
 	 * A normalized rectangle has a positive width and height.
 	 */
 	public WRectF getNormalized() {

@@ -2,20 +2,23 @@ package eu.webtoolkit.jwt;
 
 
 /**
- * Class that plays a sound
- * 
- * 
- * Simple interface to play a sound asynchonously. It is intended as a simple
- * way to play event sounds rather than to build a media center.
+ * Utility class to play a sound
  * <p>
- * This class uses Flash to play sounds in the web browser. Future releases may
- * use the HTML5 tags to play audio in the browser. The appropriate file formats
- * depend on the Flash player or the browser support: mp3 and wav are probably
- * appropriate formats.
+ * 
+ * This class provides a way to play a sound asynchonously (if the browser
+ * supports this). It is intended as a simple way to play event sounds (not
+ * quite for a media center).
  * <p>
- * This class uses WtSoundManager.swf, which must be placed in the resources
- * directory. For laoding the flash object, swfobject.js is required in the
- * resources folder.
+ * The current implementation uses Adobe Flash to play sounds in the web
+ * browser. Future releases may use the HTML5 tags to play audio in the browser.
+ * The appropriate file formats depend on the Flash player or the browser
+ * support, but MP3 or WAV are most widely supported.
+ * <p>
+ * This class uses <i>resourcesURL</i>&quot;WtSoundManager.swf&quot;, a flash
+ * object, and <i>resourcesURL</i>&quot;swfobject.js&quot;, a companion
+ * JavaScript library, which are both distributed with Wt in the resources
+ * folder. <i>resourcesURL</i> is the configuration property that locates the Wt
+ * resources/ folder inside your docroot.
  * <p>
  * Usage example: <code>
  WSound *s = new WSound(&quot;djing.mp3&quot;, parent); <br> 
@@ -25,12 +28,14 @@ package eu.webtoolkit.jwt;
  stopButton-&gt;clicked().connect(SLOT(s, WSound::stop));
 </code>
  * <p>
- * Note: we occasionally encountered problems with playing sound using Flash on
- * Internet Explorer.
+ * <p>
+ * <i><b>Note:</b>The current implementation has occasional problems with
+ * playing sound on Internet Explorer. </i>
+ * </p>
  */
 public class WSound extends WObject {
 	/**
-	 * Construct a sound object that will play the given URL.
+	 * Constructs a sound object that will play the given URL.
 	 */
 	public WSound(String url, WObject parent) {
 		super(parent);
@@ -40,11 +45,19 @@ public class WSound extends WObject {
 		this.sm_.add(this);
 	}
 
+	/**
+	 * Constructs a sound object that will play the given URL.
+	 * <p>
+	 * Calls {@link #WSound(String url, WObject parent) this(url,
+	 * (WObject)null)}
+	 */
 	public WSound(String url) {
 		this(url, (WObject) null);
 	}
 
 	/**
+	 * Destructor.
+	 * <p>
 	 * The destructor calls {@link WSound#stop()} and unloads the sound object.
 	 */
 	public void destroy() {
@@ -61,7 +74,7 @@ public class WSound extends WObject {
 
 	/**
 	 * Returns the configured number of loops for this object.
-	 * 
+	 * <p>
 	 * When {@link WSound#play()} is called, the sound will be played for this
 	 * amount of loops.
 	 */
@@ -72,7 +85,7 @@ public class WSound extends WObject {
 	/**
 	 * Sets the amount of times the sound has to be played for every invocation
 	 * of {@link WSound#play()}.
-	 * 
+	 * <p>
 	 * The behavior is undefined for negative loop numbers.
 	 */
 	public void setLoops(int number) {
@@ -80,8 +93,8 @@ public class WSound extends WObject {
 	}
 
 	/**
-	 * Start asynchonous playback of the sound.
-	 * 
+	 * Start asynchronous playback of the sound.
+	 * <p>
 	 * This method returns immediately. It will cause the song to be played for
 	 * the configured amount of loops.
 	 * <p>
@@ -98,7 +111,7 @@ public class WSound extends WObject {
 
 	/**
 	 * Stops playback of the sound.
-	 * 
+	 * <p>
 	 * This method returns immediately. It causes the playback of this
 	 * {@link WSound} to be terminated.
 	 */

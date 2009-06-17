@@ -3,7 +3,7 @@ package eu.webtoolkit.jwt;
 
 /**
  * A class that specifies a CSS length
- * 
+ * <p>
  * 
  * The class combines a value with a unit. There is a special value <i>auto</i>
  * which has a different meaning depending on the context.
@@ -57,7 +57,7 @@ public class WLength {
 
 	/**
 	 * Creates an &apos;auto&apos; length.
-	 * 
+	 * <p>
 	 * Specifies an &apos;auto&apos; length.
 	 * <p>
 	 * 
@@ -70,7 +70,7 @@ public class WLength {
 
 	/**
 	 * Creates a length with value and unit.
-	 * 
+	 * <p>
 	 * This constructor will also provide the implicit conversion between a
 	 * double and {@link WLength}, using a pixel unit.
 	 */
@@ -80,12 +80,19 @@ public class WLength {
 		this.value_ = value;
 	}
 
+	/**
+	 * Creates a length with value and unit.
+	 * <p>
+	 * Calls {@link #WLength(double value, WLength.Unit unit) this(value,
+	 * WLength.Unit.Pixel)}
+	 */
 	public WLength(double value) {
 		this(value, WLength.Unit.Pixel);
 	}
 
 	/**
 	 * Returns whether the ength is &apos;auto&apos;.
+	 * <p>
 	 * 
 	 * @see WLength#WLength()
 	 * @see WLength#Auto
@@ -96,6 +103,7 @@ public class WLength {
 
 	/**
 	 * Returns the value.
+	 * <p>
 	 * 
 	 * @see WLength#getUnit()
 	 */
@@ -105,6 +113,7 @@ public class WLength {
 
 	/**
 	 * Returns the unit.
+	 * <p>
 	 * 
 	 * @see WLength#getValue()
 	 */
@@ -164,6 +173,7 @@ public class WLength {
 
 	/**
 	 * An &apos;auto&apos; length.
+	 * <p>
 	 * 
 	 * @see WLength#WLength()
 	 */

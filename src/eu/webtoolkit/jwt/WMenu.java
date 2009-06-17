@@ -6,7 +6,7 @@ import eu.webtoolkit.jwt.utils.StringUtils;
 
 /**
  * A widget that shows a menu of options
- * 
+ * <p>
  * 
  * The WMenu widget offers menu navigation in conjunction with a
  * {@link WStackedWidget}, where different &apos;contents&apos; are stacked upon
@@ -81,7 +81,7 @@ import eu.webtoolkit.jwt.utils.StringUtils;
 public class WMenu extends WCompositeWidget {
 	/**
 	 * Construct a new menu.
-	 * 
+	 * <p>
 	 * Construct a menu to manage the widgets in <i>contentsStack</i>, and sets
 	 * the menu <i>orientation</i>.
 	 * <p>
@@ -103,6 +103,13 @@ public class WMenu extends WCompositeWidget {
 		this.setRenderAsList(false);
 	}
 
+	/**
+	 * Construct a new menu.
+	 * <p>
+	 * Calls
+	 * {@link #WMenu(WStackedWidget contentsStack, Orientation orientation, WContainerWidget parent)
+	 * this(contentsStack, orientation, (WContainerWidget)null)}
+	 */
 	public WMenu(WStackedWidget contentsStack, Orientation orientation) {
 		this(contentsStack, orientation, (WContainerWidget) null);
 	}
@@ -120,7 +127,7 @@ public class WMenu extends WCompositeWidget {
 
 	/**
 	 * Add an item.
-	 * 
+	 * <p>
 	 * Adds a menu item with given <i>contents</i>, which is added to the
 	 * menu&apos;s associated contents stack.
 	 * <p>
@@ -137,13 +144,20 @@ public class WMenu extends WCompositeWidget {
 		return this.addItem(new WMenuItem(name, contents, policy));
 	}
 
+	/**
+	 * Add an item.
+	 * <p>
+	 * Returns
+	 * {@link #addItem(CharSequence name, WWidget contents, WMenuItem.LoadPolicy policy)
+	 * addItem(name, contents, WMenuItem.LoadPolicy.LazyLoading)}
+	 */
 	public final WMenuItem addItem(CharSequence name, WWidget contents) {
 		return addItem(name, contents, WMenuItem.LoadPolicy.LazyLoading);
 	}
 
 	/**
 	 * Add an item.
-	 * 
+	 * <p>
 	 * Adds a menu item. Use this form to add specialized {@link WMenuItem}
 	 * implementations.
 	 * <p>
@@ -194,7 +208,7 @@ public class WMenu extends WCompositeWidget {
 
 	/**
 	 * Remove an item.
-	 * 
+	 * <p>
 	 * Removes the given item. The item and its contents is not deleted.
 	 * <p>
 	 * 
@@ -232,7 +246,7 @@ public class WMenu extends WCompositeWidget {
 
 	/**
 	 * Select an item.
-	 * 
+	 * <p>
 	 * Select the menu item <i>item</i>.
 	 * <p>
 	 * 
@@ -245,7 +259,7 @@ public class WMenu extends WCompositeWidget {
 
 	/**
 	 * Select an item.
-	 * 
+	 * <p>
 	 * Menu items in a menu with <i>N</i> items are numbered from 0 to <i>N</i>
 	 * - 1.
 	 * <p>
@@ -263,7 +277,7 @@ public class WMenu extends WCompositeWidget {
 
 	/**
 	 * Signal which indicates that a new item was selected.
-	 * 
+	 * <p>
 	 * This signal is emitted when an item was selected. It is emitted both when
 	 * the user activated an item, or when {@link WMenu#select(WMenuItem item)}
 	 * was invoked.
@@ -277,7 +291,7 @@ public class WMenu extends WCompositeWidget {
 
 	/**
 	 * Signal which indicates that a new selected item is rendered.
-	 * 
+	 * <p>
 	 * This signal is similar to {@link WMenu#itemSelected() itemSelected}, but
 	 * is emitted from within a stateless slot. Therefore, any slot connected to
 	 * this signal will be optimized to client-side JavaScript, and must support
@@ -296,7 +310,7 @@ public class WMenu extends WCompositeWidget {
 
 	/**
 	 * Returns the items.
-	 * 
+	 * <p>
 	 * Returns the list of menu items in this menu.
 	 */
 	public List<WMenuItem> getItems() {
@@ -305,6 +319,7 @@ public class WMenu extends WCompositeWidget {
 
 	/**
 	 * Returns the currently selected item.
+	 * <p>
 	 * 
 	 * @see WMenu#getCurrentIndex()
 	 * @see WMenu#select(WMenuItem item)
@@ -315,6 +330,7 @@ public class WMenu extends WCompositeWidget {
 
 	/**
 	 * Returns the index of the currently selected item.
+	 * <p>
 	 * 
 	 * @see WMenu#getCurrentItem()
 	 * @see WMenu#select(int index)
@@ -325,7 +341,7 @@ public class WMenu extends WCompositeWidget {
 
 	/**
 	 * Returns the orientation.
-	 * 
+	 * <p>
 	 * The orientation is set at time of construction.
 	 */
 	public Orientation getOrientation() {
@@ -334,7 +350,7 @@ public class WMenu extends WCompositeWidget {
 
 	/**
 	 * Render using an HTML list.
-	 * 
+	 * <p>
 	 * By default, the the menu is rendered using an HTML &lt;table&gt; element
 	 * for layout. Setting this option enables rendering using &lt;ul&gt; and
 	 * &lt;il&gt; elements, as is commonly done for CSS-based designs.
@@ -358,6 +374,7 @@ public class WMenu extends WCompositeWidget {
 
 	/**
 	 * Return whether the menu is rendered as an HTML list.
+	 * <p>
 	 * 
 	 * @see WMenu#setRenderAsList(boolean enable)
 	 */
@@ -367,7 +384,7 @@ public class WMenu extends WCompositeWidget {
 
 	/**
 	 * Enable internal paths for items.
-	 * 
+	 * <p>
 	 * The menu participates in the internal path by changing the internal path
 	 * when an item has been selected, and listening for path changes to react
 	 * to path selections. As a consequence this allows the user to bookmark the
@@ -405,6 +422,7 @@ public class WMenu extends WCompositeWidget {
 
 	/**
 	 * Returns whether the menu generates internal paths entries.
+	 * <p>
 	 * 
 	 * @see WMenu#setInternalPathEnabled()
 	 */
@@ -414,7 +432,7 @@ public class WMenu extends WCompositeWidget {
 
 	/**
 	 * Set the internal base path.
-	 * 
+	 * <p>
 	 * A &apos;/&apos; is appended to turn it into a folder, if needed.
 	 * <p>
 	 * 
@@ -431,7 +449,7 @@ public class WMenu extends WCompositeWidget {
 
 	/**
 	 * Returns the internal base path.
-	 * 
+	 * <p>
 	 * The default value is the application&apos;s internalPath (
 	 * {@link WApplication#getInternalPath()}) that was recorded when
 	 * {@link WMenu#setInternalPathEnabled()} was called, and together with each

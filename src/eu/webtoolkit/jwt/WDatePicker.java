@@ -5,7 +5,7 @@ import java.util.Set;
 
 /**
  * A date picker
- * 
+ * <p>
  * 
  * A date picker shows a line edit and an icon which when clicked popups a
  * {@link WCalendar} for editing the date. Any date entered in the line edit is
@@ -31,7 +31,7 @@ import java.util.Set;
 public class WDatePicker extends WCompositeWidget {
 	/**
 	 * Create a new date picker.
-	 * 
+	 * <p>
 	 * This constructor creates a line edit with an icon that leads to a popup
 	 * calendar. A {@link WDateValidator} is configured for the line edit.
 	 */
@@ -41,13 +41,19 @@ public class WDatePicker extends WCompositeWidget {
 		this.createDefault(false);
 	}
 
+	/**
+	 * Create a new date picker.
+	 * <p>
+	 * Calls {@link #WDatePicker(WContainerWidget parent)
+	 * this((WContainerWidget)null)}
+	 */
 	public WDatePicker() {
 		this((WContainerWidget) null);
 	}
 
 	/**
 	 * Create a new date picker.
-	 * 
+	 * <p>
 	 * This constructor creates a line edit with an icon that leads to a popup
 	 * calendar. A {@link WDateValidator} is configured for the line edit.
 	 * <p>
@@ -59,6 +65,12 @@ public class WDatePicker extends WCompositeWidget {
 		this.createDefault(i18n);
 	}
 
+	/**
+	 * Create a new date picker.
+	 * <p>
+	 * Calls {@link #WDatePicker(boolean i18n, WContainerWidget parent)
+	 * this(i18n, (WContainerWidget)null)}
+	 */
 	public WDatePicker(boolean i18n) {
 		this(i18n, (WContainerWidget) null);
 	}
@@ -66,7 +78,7 @@ public class WDatePicker extends WCompositeWidget {
 	/**
 	 * Create a new date picker for existing line edit and with custom display
 	 * widget.
-	 * 
+	 * <p>
 	 * The <i>displayWidget</i> is a button or image which much be clicked to
 	 * open the date picker. This widget will become owned by the picker.
 	 * <p>
@@ -83,10 +95,26 @@ public class WDatePicker extends WCompositeWidget {
 		this.create(displayWidget, forEdit, i18n);
 	}
 
+	/**
+	 * Create a new date picker for existing line edit and with custom display
+	 * widget.
+	 * <p>
+	 * Calls
+	 * {@link #WDatePicker(WInteractWidget displayWidget, WLineEdit forEdit, boolean i18n, WContainerWidget parent)
+	 * this(displayWidget, forEdit, false, (WContainerWidget)null)}
+	 */
 	public WDatePicker(WInteractWidget displayWidget, WLineEdit forEdit) {
 		this(displayWidget, forEdit, false, (WContainerWidget) null);
 	}
 
+	/**
+	 * Create a new date picker for existing line edit and with custom display
+	 * widget.
+	 * <p>
+	 * Calls
+	 * {@link #WDatePicker(WInteractWidget displayWidget, WLineEdit forEdit, boolean i18n, WContainerWidget parent)
+	 * this(displayWidget, forEdit, i18n, (WContainerWidget)null)}
+	 */
 	public WDatePicker(WInteractWidget displayWidget, WLineEdit forEdit,
 			boolean i18n) {
 		this(displayWidget, forEdit, i18n, (WContainerWidget) null);
@@ -94,7 +122,7 @@ public class WDatePicker extends WCompositeWidget {
 
 	/**
 	 * Set the format used for parsing or writing the date in the line edit.
-	 * 
+	 * <p>
 	 * Sets the format used for representing the date in the line edit. If the
 	 * line edit has a {@link WDateValidator} configured for it, then also there
 	 * the format is updated.
@@ -117,6 +145,7 @@ public class WDatePicker extends WCompositeWidget {
 
 	/**
 	 * Returns the format.
+	 * <p>
 	 * 
 	 * @see WDatePicker#setFormat(String format)
 	 */
@@ -126,7 +155,7 @@ public class WDatePicker extends WCompositeWidget {
 
 	/**
 	 * The calendar widget.
-	 * 
+	 * <p>
 	 * Returns the calendar widget.
 	 */
 	public WCalendar getCalendar() {
@@ -135,7 +164,7 @@ public class WDatePicker extends WCompositeWidget {
 
 	/**
 	 * The line edit.
-	 * 
+	 * <p>
 	 * Returns the line edit which works in conjunction with this date picker.
 	 */
 	public WLineEdit getLineEdit() {
@@ -144,7 +173,7 @@ public class WDatePicker extends WCompositeWidget {
 
 	/**
 	 * The display widget.
-	 * 
+	 * <p>
 	 * Returns the widget which is displayed to activate the calendar.
 	 */
 	public WInteractWidget getDisplayWidget() {
@@ -153,7 +182,7 @@ public class WDatePicker extends WCompositeWidget {
 
 	/**
 	 * The current date.
-	 * 
+	 * <p>
 	 * Reads the current date from the {@link WDatePicker#getLineEdit()}.
 	 * <p>
 	 * Returns null if the date could not be parsed using the current
@@ -161,7 +190,7 @@ public class WDatePicker extends WCompositeWidget {
 	 * <p>
 	 * 
 	 * @see WDatePicker#setDate(WDate date)
-	 * @see WDate#fromString(CharSequence)
+	 * @see WDate#fromString(String s)
 	 * @see WLineEdit#getText()
 	 */
 	public WDate getDate() {
@@ -170,7 +199,7 @@ public class WDatePicker extends WCompositeWidget {
 
 	/**
 	 * Set the current date.
-	 * 
+	 * <p>
 	 * Does nothing if the current date is <i>Null</i>.
 	 * <p>
 	 * 
@@ -186,7 +215,7 @@ public class WDatePicker extends WCompositeWidget {
 
 	/**
 	 * Change the enabled state of the widget.
-	 * 
+	 * <p>
 	 * A widget that is disabled cannot receive focus or user interaction.
 	 */
 	public void setEnabled(boolean enabled) {
@@ -196,6 +225,7 @@ public class WDatePicker extends WCompositeWidget {
 
 	/**
 	 * Enable the widget.
+	 * <p>
 	 * 
 	 * @see WDatePicker#setEnabled(boolean enabled)
 	 */
@@ -205,6 +235,7 @@ public class WDatePicker extends WCompositeWidget {
 
 	/**
 	 * Disable the widget.
+	 * <p>
 	 * 
 	 * @see WDatePicker#setEnabled(boolean enabled)
 	 */

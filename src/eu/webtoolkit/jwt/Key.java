@@ -3,7 +3,7 @@ package eu.webtoolkit.jwt;
 
 /**
  * Enumeration for key codes.
- * 
+ * <p>
  * These are key codes that identify a key on a keyboard. All keys listed here
  * can be identified across all browsers and (Western) keyboards. A Key is
  * returned by {@link WKeyEvent#getKey()}. If you want to identify a character,

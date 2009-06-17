@@ -4,7 +4,7 @@ import java.util.EnumSet;
 
 /**
  * A more obvious loading indicator that grays the window
- * 
+ * <p>
  * 
  * This loading indicator uses a gray semi-transparent overlay to darken the
  * window contents, and centers a loading icon (with some text).
@@ -30,6 +30,7 @@ public class WOverlayLoadingIndicator extends WContainerWidget implements
 		WLoadingIndicator {
 	/**
 	 * Construct the loading indicator.
+	 * <p>
 	 * 
 	 * @param styleClass
 	 *            the style class for the central box }
@@ -109,14 +110,35 @@ public class WOverlayLoadingIndicator extends WContainerWidget implements
 		}
 	}
 
+	/**
+	 * Construct the loading indicator.
+	 * <p>
+	 * Calls
+	 * {@link #WOverlayLoadingIndicator(String styleClass, String backgroundStyleClass, String textStyleClass)
+	 * this("", "", "")}
+	 */
 	public WOverlayLoadingIndicator() {
 		this("", "", "");
 	}
 
+	/**
+	 * Construct the loading indicator.
+	 * <p>
+	 * Calls
+	 * {@link #WOverlayLoadingIndicator(String styleClass, String backgroundStyleClass, String textStyleClass)
+	 * this(styleClass, "", "")}
+	 */
 	public WOverlayLoadingIndicator(String styleClass) {
 		this(styleClass, "", "");
 	}
 
+	/**
+	 * Construct the loading indicator.
+	 * <p>
+	 * Calls
+	 * {@link #WOverlayLoadingIndicator(String styleClass, String backgroundStyleClass, String textStyleClass)
+	 * this(styleClass, backgroundStyleClass, "")}
+	 */
 	public WOverlayLoadingIndicator(String styleClass,
 			String backgroundStyleClass) {
 		this(styleClass, backgroundStyleClass, "");

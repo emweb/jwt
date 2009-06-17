@@ -3,7 +3,7 @@ package eu.webtoolkit.jwt;
 
 /**
  * An abstract table model for use with Wt&apos;s view classes.
- * 
+ * <p>
  * 
  * An abstract table model specializes {@link WAbstractItemModel} for
  * two-dimensional tables (but no hierarchical models).
@@ -22,6 +22,11 @@ public abstract class WAbstractTableModel extends WAbstractItemModel {
 		super(parent);
 	}
 
+	/**
+	 * Create a new abstract list model.
+	 * <p>
+	 * Calls {@link #WAbstractTableModel(WObject parent) this((WObject)null)}
+	 */
 	public WAbstractTableModel() {
 		this((WObject) null);
 	}

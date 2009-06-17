@@ -6,10 +6,10 @@ import eu.webtoolkit.jwt.utils.StringUtils;
 
 /**
  * A widget which popups to assist in editing a textarea or lineedit.
+ * <p>
  * 
- * 
- * This widget may be associated with one or more WFormWidgets (typically a
- * {@link WLineEdit} or a {@link WTextArea}).
+ * This widget may be associated with one or more {@link WFormWidget
+ * WFormWidgets} (typically a {@link WLineEdit} or a {@link WTextArea}).
  * <p>
  * When the user starts editing one of the associated widgets, this popup will
  * show just below it, offering a list of suggestions that match in some way
@@ -179,13 +179,20 @@ public class WSuggestionPopup extends WCompositeWidget {
 		this.setModel(new WStringListModel(this));
 	}
 
+	/**
+	 * Construct a {@link WSuggestionPopup} with given matcherJS and replacerJS.
+	 * <p>
+	 * Calls
+	 * {@link #WSuggestionPopup(String matcherJS, String replacerJS, WContainerWidget parent)
+	 * this(matcherJS, replacerJS, (WContainerWidget)null)}
+	 */
 	public WSuggestionPopup(String matcherJS, String replacerJS) {
 		this(matcherJS, replacerJS, (WContainerWidget) null);
 	}
 
 	/**
 	 * Let this suggestion popup assist in editing the given edit field.
-	 * 
+	 * <p>
 	 * A single suggestion popup may assist in several edits by repeated calls
 	 * of this method.
 	 */
@@ -219,7 +226,7 @@ public class WSuggestionPopup extends WCompositeWidget {
 
 	/**
 	 * Set the model to be used for the suggestions.
-	 * 
+	 * <p>
 	 * The <i>model</i> may not be 0, and ownership of the model is not
 	 * transferred.
 	 * <p>
@@ -281,7 +288,7 @@ public class WSuggestionPopup extends WCompositeWidget {
 
 	/**
 	 * Set the column in the model to be used for the items.
-	 * 
+	 * <p>
 	 * The column <i>index</i> in the model will be used to retrieve data.
 	 * <p>
 	 * The default value is 0.
@@ -297,6 +304,7 @@ public class WSuggestionPopup extends WCompositeWidget {
 
 	/**
 	 * Return the data model.
+	 * <p>
 	 * 
 	 * @see WSuggestionPopup#setModel(WAbstractItemModel model)
 	 */
@@ -311,14 +319,14 @@ public class WSuggestionPopup extends WCompositeWidget {
 	public static class Options {
 		/**
 		 * Open tag to highlight a match in a suggestion.
-		 * 
+		 * <p>
 		 * Must be an opening markup tag, such as &lt;B&gt;. The tag name must
 		 * be all uppercase! (really?)
 		 */
 		public String highlightBeginTag;
 		/**
 		 * Close tag to highlight a match in a suggestion.
-		 * 
+		 * <p>
 		 * Must be a closing markup tag, such as &lt;/B&gt;. The tag name must
 		 * be all uppercase!
 		 */
@@ -326,7 +334,7 @@ public class WSuggestionPopup extends WCompositeWidget {
 		/**
 		 * When editing a list of values, the separator used for different
 		 * items.
-		 * 
+		 * <p>
 		 * For example, &apos;,&apos; to separate different values on komma.
 		 * Specify 0 for no list separation.
 		 */
@@ -334,14 +342,14 @@ public class WSuggestionPopup extends WCompositeWidget {
 		/**
 		 * When editing a value, the whitespace characters ignored before the
 		 * current value.
-		 * 
+		 * <p>
 		 * For example, &quot; \\n&quot; to ignore spaces and newlines.
 		 */
 		public String whitespace;
 		/**
 		 * To show suggestions based on matches of the edited value with parts
 		 * of the suggestion.
-		 * 
+		 * <p>
 		 * For example, &quot; .@&quot; will also match with suggestion text
 		 * after a space, a dot (.) or an at-symbol (@).
 		 */

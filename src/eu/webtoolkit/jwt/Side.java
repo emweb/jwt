@@ -4,7 +4,7 @@ import java.util.EnumSet;
 
 /**
  * Enumeration that indicates a relative location.
- * 
+ * <p>
  * Values of CenterX, CenterY, and CenterXY are only valid for
  * {@link WCssDecorationStyle#setBackgroundImage(String image, WCssDecorationStyle.Repeat repeat, EnumSet sides)}
  * <p>
@@ -50,9 +50,9 @@ public enum Side {
 	public static final EnumSet<Side> None = EnumSet.noneOf(Side.class);
 	public static final EnumSet<Side> CenterXY = EnumSet.of(Side.CenterX,
 			Side.CenterY);
-	public static final EnumSet<Side> Verticals = EnumSet.of(Side.Left,
+	public static final EnumSet<Side> Horizontals = EnumSet.of(Side.Left,
 			Side.Right);
-	public static final EnumSet<Side> Horizontals = EnumSet.of(Side.Top,
+	public static final EnumSet<Side> Verticals = EnumSet.of(Side.Top,
 			Side.Bottom);
 	public static final EnumSet<Side> All = EnumSet.of(Side.Top, Side.Bottom,
 			Side.Left, Side.Right);

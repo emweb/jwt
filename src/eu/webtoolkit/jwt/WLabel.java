@@ -5,7 +5,7 @@ import java.util.List;
 
 /**
  * A label for a form field
- * 
+ * <p>
  * 
  * The label may contain an image and/or text. It acts like a proxy for giving
  * focus to a {@link WFormWidget}. When both an image and text are specified,
@@ -38,6 +38,12 @@ public class WLabel extends WInteractWidget {
 		this.newText_ = false;
 	}
 
+	/**
+	 * Construct a {@link WLabel} with empty text and optional parent.
+	 * <p>
+	 * Calls {@link #WLabel(WContainerWidget parent)
+	 * this((WContainerWidget)null)}
+	 */
 	public WLabel() {
 		this((WContainerWidget) null);
 	}
@@ -57,6 +63,12 @@ public class WLabel extends WInteractWidget {
 		this.text_.setParent(this);
 	}
 
+	/**
+	 * Construct a {@link WLabel} with a given text.
+	 * <p>
+	 * Calls {@link #WLabel(CharSequence text, WContainerWidget parent)
+	 * this(text, (WContainerWidget)null)}
+	 */
 	public WLabel(CharSequence text) {
 		this(text, (WContainerWidget) null);
 	}
@@ -75,6 +87,12 @@ public class WLabel extends WInteractWidget {
 		this.image_.setParent(this);
 	}
 
+	/**
+	 * Construct a {@link WLabel} with an image.
+	 * <p>
+	 * Calls {@link #WLabel(WImage image, WContainerWidget parent) this(image,
+	 * (WContainerWidget)null)}
+	 */
 	public WLabel(WImage image) {
 		this(image, (WContainerWidget) null);
 	}
@@ -86,6 +104,7 @@ public class WLabel extends WInteractWidget {
 
 	/**
 	 * Return the buddy of this label.
+	 * <p>
 	 * 
 	 * @see WLabel#setBuddy(WFormWidget buddy)
 	 */
@@ -95,7 +114,7 @@ public class WLabel extends WInteractWidget {
 
 	/**
 	 * Set the buddy of this label.
-	 * 
+	 * <p>
 	 * Sets the buddy FormWidget for which this label acts as a proxy.
 	 * <p>
 	 * 
@@ -114,7 +133,6 @@ public class WLabel extends WInteractWidget {
 		this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyAttribute));
 	}
 
-	// public void setBuddy(FormField buddy) ;
 	/**
 	 * Set the label text.
 	 */
@@ -160,6 +178,12 @@ public class WLabel extends WInteractWidget {
 		this.repaint(EnumSet.of(RepaintFlag.RepaintInnerHtml));
 	}
 
+	/**
+	 * Set the image.
+	 * <p>
+	 * Calls {@link #setImage(WImage image, Side side) setImage(image,
+	 * Side.Left)}
+	 */
 	public final void setImage(WImage image) {
 		setImage(image, Side.Left);
 	}
@@ -173,7 +197,7 @@ public class WLabel extends WInteractWidget {
 
 	/**
 	 * Configure word wrapping.
-	 * 
+	 * <p>
 	 * When <i>on</i> is true, the widget may break lines, creating a multi-line
 	 * text. When <i>on</i> is false, the text will displayed on a single line,
 	 * unless the text contains end-of-lines (for {@link TextFormat#PlainText})
@@ -197,6 +221,7 @@ public class WLabel extends WInteractWidget {
 
 	/**
 	 * Returns whether word wrapping is on.
+	 * <p>
 	 * 
 	 * @see WLabel#setWordWrap(boolean how)
 	 */

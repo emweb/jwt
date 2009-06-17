@@ -5,7 +5,7 @@ import java.util.List;
 
 /**
  * An abstract proxy model for Wt&apos;s item models.
- * 
+ * <p>
  * 
  * A proxy model does not store data, but presents data from a source model in
  * another way. It may provide filtering, sorting, or other computed changes to
@@ -27,13 +27,18 @@ public abstract class WAbstractProxyModel extends WAbstractItemModel {
 		this.sourceModel_ = null;
 	}
 
+	/**
+	 * Constructor.
+	 * <p>
+	 * Calls {@link #WAbstractProxyModel(WObject parent) this((WObject)null)}
+	 */
 	public WAbstractProxyModel() {
 		this((WObject) null);
 	}
 
 	/**
 	 * Map a source model index to the proxy model.
-	 * 
+	 * <p>
 	 * This method returns a model index in the proxy model that corresponds to
 	 * the model index <i>sourceIndex</i> in the source model. This method must
 	 * only be implemented for source model indexes that are mapped and thus are
@@ -47,7 +52,7 @@ public abstract class WAbstractProxyModel extends WAbstractItemModel {
 
 	/**
 	 * Map a proxy model index to the source model.
-	 * 
+	 * <p>
 	 * This method returns a model index in the source model that corresponds to
 	 * the proxy model index <i>proxyIndex</i>.
 	 * <p>
@@ -58,7 +63,7 @@ public abstract class WAbstractProxyModel extends WAbstractItemModel {
 
 	/**
 	 * Set a source model.
-	 * 
+	 * <p>
 	 * The source model provides the actual data for the proxy model.
 	 * <p>
 	 * Ownership of the source model is <i>not</i> transferred.
@@ -69,6 +74,7 @@ public abstract class WAbstractProxyModel extends WAbstractItemModel {
 
 	/**
 	 * Returns the source model.
+	 * <p>
 	 * 
 	 * @see WAbstractProxyModel#setSourceModel(WAbstractItemModel sourceModel)
 	 */

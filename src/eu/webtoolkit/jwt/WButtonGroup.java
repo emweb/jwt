@@ -5,10 +5,10 @@ import java.util.List;
 
 /**
  * A class for grouping radio buttons logically together
+ * <p>
  * 
- * 
- * A button group manages a set of radio buttons, making them exclusive of each
- * other.
+ * A button group manages a set of {@link WRadioButton radio buttons}, making
+ * them exclusive of each other.
  * <p>
  * It is not a widget, but instead provides only a logical grouping. Radio
  * buttons are aware of the group in which they have been added, see
@@ -31,13 +31,18 @@ public class WButtonGroup extends WObject {
 		this.buttons_ = new ArrayList<WButtonGroup.Button>();
 	}
 
+	/**
+	 * Create a new empty button group.
+	 * <p>
+	 * Calls {@link #WButtonGroup(WObject parent) this((WObject)null)}
+	 */
 	public WButtonGroup() {
 		this((WObject) null);
 	}
 
 	/**
 	 * Delete a button group.
-	 * 
+	 * <p>
 	 * This does not delete the radio buttons, but simply removes them from the
 	 * group.
 	 */
@@ -49,7 +54,7 @@ public class WButtonGroup extends WObject {
 
 	/**
 	 * Add a radio button to the group.
-	 * 
+	 * <p>
 	 * You can assign an id to the button. If <i>id</i> is -1, then a unique id
 	 * will be generated.
 	 * <p>
@@ -64,12 +69,19 @@ public class WButtonGroup extends WObject {
 		button.setGroup(this);
 	}
 
+	/**
+	 * Add a radio button to the group.
+	 * <p>
+	 * Calls {@link #addButton(WRadioButton button, int id) addButton(button, -
+	 * 1)}
+	 */
 	public final void addButton(WRadioButton button) {
 		addButton(button, -1);
 	}
 
 	/**
 	 * Remove a radio button from the group.
+	 * <p>
 	 * 
 	 * @see WButtonGroup#addButton(WRadioButton button, int id)
 	 */
@@ -86,6 +98,7 @@ public class WButtonGroup extends WObject {
 	// public void removeButton(RadioButton button) ;
 	/**
 	 * Returns the button for the given id.
+	 * <p>
 	 * 
 	 * @see WButtonGroup#getId(WRadioButton button)
 	 * @see WButtonGroup#addButton(WRadioButton button, int id)
@@ -101,6 +114,7 @@ public class WButtonGroup extends WObject {
 
 	/**
 	 * Returns the id for the given button.
+	 * <p>
 	 * 
 	 * @see WButtonGroup#getButton(int id)
 	 * @see WButtonGroup#addButton(WRadioButton button, int id)
@@ -134,7 +148,7 @@ public class WButtonGroup extends WObject {
 
 	/**
 	 * Returns the id of the checked button.
-	 * 
+	 * <p>
 	 * Returns the id of the currently checked button, or -1 if no button is
 	 * currently checked.
 	 */
@@ -145,7 +159,7 @@ public class WButtonGroup extends WObject {
 
 	/**
 	 * Sets the currently checked radiobutton.
-	 * 
+	 * <p>
 	 * The button <i>button</i> of this group is checked. A value of 0 will
 	 * uncheck all radiobuttons.
 	 * <p>
@@ -169,7 +183,7 @@ public class WButtonGroup extends WObject {
 
 	/**
 	 * Returns the checked radiobutton.
-	 * 
+	 * <p>
 	 * If there is no radiobutton currently checked this function returns 0.
 	 * <p>
 	 * 
@@ -183,7 +197,7 @@ public class WButtonGroup extends WObject {
 
 	/**
 	 * Sets the currently checked radiobutton.
-	 * 
+	 * <p>
 	 * Sets the <i>idx</i>&apos;th radiobutton checked. A value of -1 will
 	 * uncheck all radiobuttons.
 	 * <p>
@@ -195,7 +209,7 @@ public class WButtonGroup extends WObject {
 
 	/**
 	 * Returns the index of the checked radiobutton.
-	 * 
+	 * <p>
 	 * The index reflects the order in which the buttons have been added to the
 	 * button group. Use {@link WButtonGroup#getCheckedId()} if you want to know
 	 * the id of the button that is currently checked. If there is no

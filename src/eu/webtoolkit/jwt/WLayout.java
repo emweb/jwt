@@ -5,7 +5,7 @@ import java.util.List;
 
 /**
  * An abstract base class for layout managers
- * 
+ * <p>
  * 
  * This class is the abstract base class for any layout manager. A layout
  * manager is associated with a container widget, and manages the layout of
@@ -36,7 +36,7 @@ public abstract class WLayout extends WObject implements WLayoutItem {
 
 	/**
 	 * Add a layout <i>item</i>.
-	 * 
+	 * <p>
 	 * The item may be a widget or nested layout.
 	 * <p>
 	 * How the item is layed out with respect to siblings is implementation
@@ -51,7 +51,7 @@ public abstract class WLayout extends WObject implements WLayoutItem {
 
 	/**
 	 * Add the given <i>widget</i> to the layout.
-	 * 
+	 * <p>
 	 * This method wraps the widget in a {@link WWidgetItem} and calls
 	 * {@link WLayout#addItem(WLayoutItem item)}.
 	 * <p>
@@ -69,6 +69,7 @@ public abstract class WLayout extends WObject implements WLayoutItem {
 
 	/**
 	 * Remove a layout <i>item</i> (widget or nested layout).
+	 * <p>
 	 * 
 	 * @see WLayout#addItem(WLayoutItem item)
 	 * @see WLayout#removeWidget(WWidget w)
@@ -77,7 +78,7 @@ public abstract class WLayout extends WObject implements WLayoutItem {
 
 	/**
 	 * Remove the given <i>widget</i> from the layout.
-	 * 
+	 * <p>
 	 * This method finds the corresponding {@link WWidgetItem} and calls
 	 * {@link WLayout#removeItem(WLayoutItem item)}. The widget itself is not
 	 * destroyed.
@@ -96,7 +97,7 @@ public abstract class WLayout extends WObject implements WLayoutItem {
 
 	/**
 	 * Return the number of items in this layout.
-	 * 
+	 * <p>
 	 * This may be a theoretical number, which is greater than the actual number
 	 * of items. It can be used to iterate over the items in the layout, in
 	 * conjunction with {@link WLayout#getItemAt(int index)}.
@@ -105,7 +106,7 @@ public abstract class WLayout extends WObject implements WLayoutItem {
 
 	/**
 	 * Return the layout item at a specific <i>index</i>.
-	 * 
+	 * <p>
 	 * If there is no item at the <i>index</i>, 0 is returned.
 	 * <p>
 	 * 
@@ -116,7 +117,7 @@ public abstract class WLayout extends WObject implements WLayoutItem {
 
 	/**
 	 * Return the index of a given <i>item</i>.
-	 * 
+	 * <p>
 	 * The default implementation loops over all items, and returns the index
 	 * for which itemAt(index) equals <i>item</i>.
 	 * <p>
@@ -152,7 +153,7 @@ public abstract class WLayout extends WObject implements WLayoutItem {
 
 	/**
 	 * Provide a hint to the layout implementation.
-	 * 
+	 * <p>
 	 * In some caes, a layout implementation may require some hints for
 	 * rendering its contents. Possible hints are indicated in the reference
 	 * documentation for each layout manager.
@@ -187,7 +188,7 @@ public abstract class WLayout extends WObject implements WLayoutItem {
 
 	/**
 	 * Set contents margins (in pixels).
-	 * 
+	 * <p>
 	 * The default contents margins are 9 pixels in all directions.
 	 * <p>
 	 * <p>
@@ -207,6 +208,12 @@ public abstract class WLayout extends WObject implements WLayoutItem {
 		this.margins_[3] = bottom;
 	}
 
+	/**
+	 * Returns a contents margin.
+	 * <p>
+	 * 
+	 * @see WLayout#setContentsMargins(int left, int top, int right, int bottom)
+	 */
 	public int getContentsMargin(Side side) {
 		if (!(this.margins_ != null)) {
 			return 9;
@@ -237,7 +244,7 @@ public abstract class WLayout extends WObject implements WLayoutItem {
 
 	/**
 	 * Update the layout.
-	 * 
+	 * <p>
 	 * Must be called whenever some properties of the layout have changed.
 	 */
 	protected void update(WLayoutItem item) {
@@ -246,13 +253,18 @@ public abstract class WLayout extends WObject implements WLayoutItem {
 		}
 	}
 
+	/**
+	 * Update the layout.
+	 * <p>
+	 * Calls {@link #update(WLayoutItem item) update((WLayoutItem)null)}
+	 */
 	protected final void update() {
 		update((WLayoutItem) null);
 	}
 
 	/**
 	 * Update the layout, adding the given layout <i>item</i>.
-	 * 
+	 * <p>
 	 * Must be called from the implementation of
 	 * {@link WLayout#addItem(WLayoutItem item)}
 	 */
@@ -269,7 +281,7 @@ public abstract class WLayout extends WObject implements WLayoutItem {
 
 	/**
 	 * Update the layout, remove the given layout <i>item</i>.
-	 * 
+	 * <p>
 	 * Must be called from the implementation of
 	 * {@link WLayout#removeItem(WLayoutItem item)}
 	 */
@@ -282,7 +294,7 @@ public abstract class WLayout extends WObject implements WLayoutItem {
 
 	/**
 	 * Set the layout in the <i>parent</i>.
-	 * 
+	 * <p>
 	 * Must be called from the constructor after the layout has been fully
 	 * created (since it will call virtual methods {@link WLayout#getCount()}
 	 * and {@link WLayout#getItemAt(int index)}).

@@ -3,6 +3,7 @@ package eu.webtoolkit.jwt;
 
 /**
  * Enumeration for a cursor style.
+ * <p>
  * 
  * @see WCssDecorationStyle#setCursor(Cursor c)
  * @see WAbstractArea#setCursor(Cursor cursor)

@@ -1,6 +1,5 @@
 package eu.webtoolkit.jwt;
 
-import eu.webtoolkit.jwt.Signal.Listener;
 
 /**
  * A signal which relays a browser event that passes event details.

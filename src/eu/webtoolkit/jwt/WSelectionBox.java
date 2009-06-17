@@ -7,7 +7,7 @@ import java.util.Set;
 
 /**
  * A selection box allows selection from a list of options.
- * 
+ * <p>
  * 
  * By default, a selection box may be used to let the user select one item from
  * a list. This may be changed to multiple selection mode using
@@ -53,7 +53,7 @@ public class WSelectionBox extends WComboBox {
 
 	/**
 	 * Set the number of items that are visible.
-	 * 
+	 * <p>
 	 * If more items are available, a scroll-bar is provided.
 	 */
 	public int getVerticalSize() {
@@ -71,7 +71,7 @@ public class WSelectionBox extends WComboBox {
 
 	/**
 	 * Set the selection mode.
-	 * 
+	 * <p>
 	 * The default selection mode is SingleSelection. You can change to
 	 * ExtendedSelection to allow selection of multiple items.
 	 */
@@ -98,6 +98,7 @@ public class WSelectionBox extends WComboBox {
 
 	/**
 	 * Get the selection mode.
+	 * <p>
 	 * 
 	 * @see WSelectionBox#setSelectionMode(SelectionMode mode)
 	 */
@@ -107,7 +108,7 @@ public class WSelectionBox extends WComboBox {
 
 	/**
 	 * Get the current selection (in ExtendedSelection mode).
-	 * 
+	 * <p>
 	 * Get the list of currently selected items. This method is only defined
 	 * when {@link WSelectionBox#getSelectionMode()} is ExtendedSelection.
 	 * Otherwise, you should use {@link WComboBox#getCurrentIndex()} to get item
@@ -122,7 +123,7 @@ public class WSelectionBox extends WComboBox {
 
 	/**
 	 * Set the selection (in ExtendedSelection mode).
-	 * 
+	 * <p>
 	 * For an ExtendedSelection mode, set the list of currently selected items.
 	 * <p>
 	 * 
@@ -140,7 +141,7 @@ public class WSelectionBox extends WComboBox {
 
 	/**
 	 * Clear the current selection.
-	 * 
+	 * <p>
 	 * Clears the current selection.
 	 * <p>
 	 * 

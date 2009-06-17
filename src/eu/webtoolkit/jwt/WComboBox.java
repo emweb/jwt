@@ -7,7 +7,7 @@ import eu.webtoolkit.jwt.utils.StringUtils;
 
 /**
  * A widget that provides a drop-down combo-box control.
- * 
+ * <p>
  * 
  * A combo box provides the user with a set of options, from which one option
  * may be selected.
@@ -53,13 +53,19 @@ public class WComboBox extends WFormWidget {
 		this.setModel(new WStringListModel(this));
 	}
 
+	/**
+	 * Create an empty combo-box with optional <i>parent</i>.
+	 * <p>
+	 * Calls {@link #WComboBox(WContainerWidget parent)
+	 * this((WContainerWidget)null)}
+	 */
 	public WComboBox() {
 		this((WContainerWidget) null);
 	}
 
 	/**
 	 * Add an option item.
-	 * 
+	 * <p>
 	 * Equivalent to {@link WComboBox#insertItem(int index, CharSequence text)
 	 * insertItem} ({@link WComboBox#getCount()}, <i>text</i>).
 	 */
@@ -76,7 +82,7 @@ public class WComboBox extends WFormWidget {
 
 	/**
 	 * Returns the currently selected item.
-	 * 
+	 * <p>
 	 * If no item is currently selected, the method returns -1.
 	 * <p>
 	 * The default value is 0, unless the combo box is empty.
@@ -87,7 +93,7 @@ public class WComboBox extends WFormWidget {
 
 	/**
 	 * Insert an item at the specified position.
-	 * 
+	 * <p>
 	 * The item is inserted in the underlying model at position <i>index</i>.
 	 * This requires that the {@link WComboBox#getModel()} is editable.
 	 * <p>
@@ -103,7 +109,7 @@ public class WComboBox extends WFormWidget {
 
 	/**
 	 * Remove the item at the specified position.
-	 * 
+	 * <p>
 	 * The item is removed from the underlying model. This requires that the
 	 * {@link WComboBox#getModel()} is editable.
 	 * <p>
@@ -118,7 +124,7 @@ public class WComboBox extends WFormWidget {
 
 	/**
 	 * Changes the current selection.
-	 * 
+	 * <p>
 	 * Specify a value of -1 for <i>index</i> to clear the selection.
 	 */
 	public void setCurrentIndex(int index) {
@@ -132,7 +138,7 @@ public class WComboBox extends WFormWidget {
 
 	/**
 	 * Changes the text for a specified option.
-	 * 
+	 * <p>
 	 * The text for the item at position <i>index</i> is changed. This requires
 	 * that the {@link WComboBox#getModel()} is editable.
 	 */
@@ -142,6 +148,7 @@ public class WComboBox extends WFormWidget {
 
 	/**
 	 * Returns the text of the currently selected item.
+	 * <p>
 	 * 
 	 * @see WComboBox#getCurrentIndex()
 	 * @see WComboBox#getItemText(int index)
@@ -157,6 +164,7 @@ public class WComboBox extends WFormWidget {
 
 	/**
 	 * Returns the text of a particular item.
+	 * <p>
 	 * 
 	 * @see WComboBox#setItemText(int index, CharSequence text)
 	 * @see WComboBox#getCurrentText()
@@ -168,7 +176,7 @@ public class WComboBox extends WFormWidget {
 
 	/**
 	 * Sets the model to be used for the items.
-	 * 
+	 * <p>
 	 * The <i>model</i> may not be 0, and ownership of the model is not
 	 * transferred.
 	 * <p>
@@ -226,7 +234,7 @@ public class WComboBox extends WFormWidget {
 
 	/**
 	 * Sets the column in the model to be used for the items.
-	 * 
+	 * <p>
 	 * The column <i>index</i> in the model will be used to retrieve data.
 	 * <p>
 	 * The default value is 0.
@@ -240,6 +248,7 @@ public class WComboBox extends WFormWidget {
 
 	/**
 	 * Returns the data model.
+	 * <p>
 	 * 
 	 * @see WComboBox#setModel(WAbstractItemModel model)
 	 */
@@ -276,7 +285,7 @@ public class WComboBox extends WFormWidget {
 
 	/**
 	 * Clear all items.
-	 * 
+	 * <p>
 	 * Removes all items from the underlying model. This requires that the
 	 * {@link WComboBox#getModel()} is editable.
 	 */
@@ -287,7 +296,7 @@ public class WComboBox extends WFormWidget {
 
 	/**
 	 * Signal emitted when the selection changed.
-	 * 
+	 * <p>
 	 * The newly selected item is passed as an argument.
 	 * <p>
 	 * 
@@ -300,7 +309,7 @@ public class WComboBox extends WFormWidget {
 
 	/**
 	 * Signal emitted when the selection changed.
-	 * 
+	 * <p>
 	 * The newly selected text is passed as an argument.
 	 * <p>
 	 * 

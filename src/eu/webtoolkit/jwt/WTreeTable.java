@@ -6,7 +6,7 @@ import java.util.List;
 
 /**
  * A table with a navigatable tree in the first column
- * 
+ * <p>
  * 
  * A WTreeTable implements a tree table, where additional data associated is
  * associated with tree items, which are organized in columns.
@@ -44,7 +44,7 @@ import java.util.List;
 public class WTreeTable extends WCompositeWidget {
 	/**
 	 * Construct a new {@link WTreeTable}.
-	 * 
+	 * <p>
 	 * The {@link WTreeTable#getTreeRoot()} is 0. The table should first be
 	 * properly dimensioned using
 	 * {@link WTreeTable#addColumn(CharSequence header, WLength width)} calls,
@@ -99,13 +99,19 @@ public class WTreeTable extends WCompositeWidget {
 								+ this.getFormName() + "();");
 	}
 
+	/**
+	 * Construct a new {@link WTreeTable}.
+	 * <p>
+	 * Calls {@link #WTreeTable(WContainerWidget parent)
+	 * this((WContainerWidget)null)}
+	 */
 	public WTreeTable() {
 		this((WContainerWidget) null);
 	}
 
 	/**
 	 * Add an extra column.
-	 * 
+	 * <p>
 	 * Add an extra column, specifying the column header and a column width. The
 	 * extra columns are numbered from 1 as column 0 contains the tree itself.
 	 * The header for column 0 (the tree itself) is specified in
@@ -123,7 +129,7 @@ public class WTreeTable extends WCompositeWidget {
 
 	/**
 	 * The number of columns in this table.
-	 * 
+	 * <p>
 	 * Returns the number of columns in the table, including in the count column
 	 * 0 (which contains the tree).
 	 * <p>
@@ -136,7 +142,7 @@ public class WTreeTable extends WCompositeWidget {
 
 	/**
 	 * Set the tree root.
-	 * 
+	 * <p>
 	 * Sets the data for the tree table, and specify the header for the first
 	 * column.
 	 * <p>
@@ -161,6 +167,7 @@ public class WTreeTable extends WCompositeWidget {
 
 	/**
 	 * Set the tree which provides the data for the tree table.
+	 * <p>
 	 * 
 	 * @see WTreeTable#setTreeRoot(WTreeTableNode root, CharSequence h)
 	 */
@@ -178,6 +185,7 @@ public class WTreeTable extends WCompositeWidget {
 
 	/**
 	 * Returns the tree that provides the data this table.
+	 * <p>
 	 * 
 	 * @see WTreeTable#setTree(WTree root, CharSequence h)
 	 */
@@ -187,7 +195,7 @@ public class WTreeTable extends WCompositeWidget {
 
 	/**
 	 * Returns the column width for the given column.
-	 * 
+	 * <p>
 	 * The width of the first column (with index 0), containing the tree, is
 	 * implied by the width set for the table minus the width of all other
 	 * columns.
@@ -202,6 +210,7 @@ public class WTreeTable extends WCompositeWidget {
 
 	/**
 	 * Returns the header for the given column.
+	 * <p>
 	 * 
 	 * @see WTreeTable#addColumn(CharSequence header, WLength width)
 	 * @see WTreeTable#setTreeRoot(WTreeTableNode root, CharSequence h)
@@ -224,7 +233,7 @@ public class WTreeTable extends WCompositeWidget {
 
 	/**
 	 * Returns the header widget.
-	 * 
+	 * <p>
 	 * This is the widget that contains the column headers.
 	 */
 	public WWidget getHeaderWidget() {

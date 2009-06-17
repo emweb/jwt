@@ -4,7 +4,7 @@ import java.util.EnumSet;
 
 /**
  * A widget that provides a multi-line edit
- * 
+ * <p>
  * 
  * To act upon text changes, connect a slot to the {@link WFormWidget#changed()}
  * signal. This signal is emitted when the user changed the content, and
@@ -38,6 +38,12 @@ public class WTextArea extends WFormWidget {
 		this.setFormObject(true);
 	}
 
+	/**
+	 * Construct a text area with empty content and optional parent.
+	 * <p>
+	 * Calls {@link #WTextArea(WContainerWidget parent)
+	 * this((WContainerWidget)null)}
+	 */
 	public WTextArea() {
 		this((WContainerWidget) null);
 	}
@@ -56,13 +62,19 @@ public class WTextArea extends WFormWidget {
 		this.setFormObject(true);
 	}
 
+	/**
+	 * Construct a text area with given content and optional parent.
+	 * <p>
+	 * Calls {@link #WTextArea(String text, WContainerWidget parent) this(text,
+	 * (WContainerWidget)null)}
+	 */
 	public WTextArea(String text) {
 		this(text, (WContainerWidget) null);
 	}
 
 	/**
 	 * Set the number of columns.
-	 * 
+	 * <p>
 	 * The default value is 20.
 	 */
 	public void setColumns(int columns) {
@@ -73,7 +85,7 @@ public class WTextArea extends WFormWidget {
 
 	/**
 	 * Set the number of rows.
-	 * 
+	 * <p>
 	 * The default value is 5.
 	 */
 	public void setRows(int rows) {
@@ -84,6 +96,7 @@ public class WTextArea extends WFormWidget {
 
 	/**
 	 * Returns the number of columns.
+	 * <p>
 	 * 
 	 * @see WTextArea#setColumns(int columns)
 	 */
@@ -93,6 +106,7 @@ public class WTextArea extends WFormWidget {
 
 	/**
 	 * Returns the number of rows.
+	 * <p>
 	 * 
 	 * @see WTextArea#setRows(int rows)
 	 */
@@ -109,7 +123,7 @@ public class WTextArea extends WFormWidget {
 
 	/**
 	 * Change the content of the text area.
-	 * 
+	 * <p>
 	 * The default text is &quot;&quot;.
 	 */
 	public void setText(String text) {

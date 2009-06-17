@@ -6,7 +6,7 @@ import eu.webtoolkit.jwt.utils.StringUtils;
 
 /**
  * Standard delegate class for rendering a view item.
- * 
+ * <p>
  * 
  * This class provides the standard implementation for rendering an item in a
  * {@link WTreeView}.
@@ -136,7 +136,7 @@ public class WItemDelegate extends WAbstractItemDelegate {
 
 	/**
 	 * Set the text format string.
-	 * 
+	 * <p>
 	 * The DisplayRole data is converted to a string using
 	 * {@link StringUtils#asString(Object)} by passing the given format.
 	 * <p>
@@ -148,6 +148,7 @@ public class WItemDelegate extends WAbstractItemDelegate {
 
 	/**
 	 * Returns the text format string.
+	 * <p>
 	 * 
 	 * @see WItemDelegate#setTextFormat(String format)
 	 */

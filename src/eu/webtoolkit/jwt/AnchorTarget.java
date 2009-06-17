@@ -3,6 +3,7 @@ package eu.webtoolkit.jwt;
 
 /**
  * Enumeration that specifies where the target of an anchor should be displayed.
+ * <p>
  * 
  * @see WAnchor#setTarget(AnchorTarget target)
  */

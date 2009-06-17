@@ -1,6 +1,7 @@
 package eu.webtoolkit.jwt.examples.treeviewdragdrop;
 
 import eu.webtoolkit.jwt.AlignmentFlag;
+import eu.webtoolkit.jwt.MatchOptions;
 import eu.webtoolkit.jwt.Signal;
 import eu.webtoolkit.jwt.Signal1;
 import eu.webtoolkit.jwt.WAbstractItemModel;
@@ -18,7 +19,6 @@ import eu.webtoolkit.jwt.WLineEdit;
 import eu.webtoolkit.jwt.WModelIndex;
 import eu.webtoolkit.jwt.WMouseEvent;
 import eu.webtoolkit.jwt.WPushButton;
-import eu.webtoolkit.jwt.MatchOptions;
 import eu.webtoolkit.jwt.utils.StringUtils;
 
 /**

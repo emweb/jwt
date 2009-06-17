@@ -6,7 +6,7 @@ import eu.webtoolkit.jwt.utils.StringUtils;
 
 /**
  * An abstract widget that corresponds to an HTML form element
- * 
+ * <p>
  * 
  * A WFormWidget may receive focus, can be disabled, and can have a label that
  * acts as proxy for getting focus. It provides signals which reflect changes to
@@ -35,13 +35,19 @@ public abstract class WFormWidget extends WInteractWidget {
 		this.flags_.set(BIT_ENABLED);
 	}
 
+	/**
+	 * Construct a {@link WFormWidget} with an optional parent.
+	 * <p>
+	 * Calls {@link #WFormWidget(WContainerWidget parent)
+	 * this((WContainerWidget)null)}
+	 */
 	public WFormWidget() {
 		this((WContainerWidget) null);
 	}
 
 	/**
 	 * Destroy a {@link WFormWidget}.
-	 * 
+	 * <p>
 	 * If a label was associated with the widget, its buddy is reset to 0.
 	 */
 	public void remove() {
@@ -58,7 +64,7 @@ public abstract class WFormWidget extends WInteractWidget {
 
 	/**
 	 * Returns the label associated with this widget.
-	 * 
+	 * <p>
 	 * Returns the label (if there is one) that acts as a proxy for this widget.
 	 * <p>
 	 * 
@@ -70,7 +76,7 @@ public abstract class WFormWidget extends WInteractWidget {
 
 	/**
 	 * Set the hidden state of this widget.
-	 * 
+	 * <p>
 	 * If the widget has a label, it is hidden and shown together with this
 	 * widget.
 	 */
@@ -90,7 +96,7 @@ public abstract class WFormWidget extends WInteractWidget {
 
 	/**
 	 * Set a validator for this field.
-	 * 
+	 * <p>
 	 * The validator is used to validate the current input.
 	 * <p>
 	 * If the validator has no parent yet, then ownership is transferred to the
@@ -136,7 +142,7 @@ public abstract class WFormWidget extends WInteractWidget {
 
 	/**
 	 * Change the enabled state of the widget.
-	 * 
+	 * <p>
 	 * A widget that is disabled cannot receive focus or user interaction.
 	 */
 	public void setEnabled(boolean enabled) {
@@ -148,6 +154,7 @@ public abstract class WFormWidget extends WInteractWidget {
 
 	/**
 	 * Enable the widget.
+	 * <p>
 	 * 
 	 * @see WFormWidget#setEnabled(boolean enabled)
 	 */
@@ -157,6 +164,7 @@ public abstract class WFormWidget extends WInteractWidget {
 
 	/**
 	 * Disable the widget.
+	 * <p>
 	 * 
 	 * @see WFormWidget#setEnabled(boolean enabled)
 	 */
@@ -166,7 +174,7 @@ public abstract class WFormWidget extends WInteractWidget {
 
 	/**
 	 * Give focus to this widget.
-	 * 
+	 * <p>
 	 * Giving focus to an input element only works when JavaScript is enabled.
 	 */
 	public void setFocus() {
@@ -176,7 +184,7 @@ public abstract class WFormWidget extends WInteractWidget {
 
 	/**
 	 * Set the element read-only.
-	 * 
+	 * <p>
 	 * A read-only form element cannot be edited, but the contents can still be
 	 * selected.
 	 * <p>
@@ -193,6 +201,7 @@ public abstract class WFormWidget extends WInteractWidget {
 
 	/**
 	 * Returns whether the form element is read-only.
+	 * <p>
 	 * 
 	 * @see WFormWidget#setReadOnly(boolean readOnly)
 	 */

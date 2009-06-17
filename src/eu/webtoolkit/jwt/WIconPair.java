@@ -3,7 +3,7 @@ package eu.webtoolkit.jwt;
 
 /**
  * A widget that shows one of two icons depending on its state
- * 
+ * <p>
  * 
  * This is a utility class that simply manages two images, only one of which is
  * shown at a single time, which reflects the current &apos;state&apos;.
@@ -13,7 +13,7 @@ package eu.webtoolkit.jwt;
 public class WIconPair extends WCompositeWidget {
 	/**
 	 * Construct an icon pair from the two icons.
-	 * 
+	 * <p>
 	 * The constructor takes the URL of the two icons. When clickIsSwitch is set
 	 * true, clicking on the icon will switch state.
 	 */
@@ -44,17 +44,31 @@ public class WIconPair extends WCompositeWidget {
 		}
 	}
 
+	/**
+	 * Construct an icon pair from the two icons.
+	 * <p>
+	 * Calls
+	 * {@link #WIconPair(String icon1URI, String icon2URI, boolean clickIsSwitch, WContainerWidget parent)
+	 * this(icon1URI, icon2URI, true, (WContainerWidget)null)}
+	 */
 	public WIconPair(String icon1URI, String icon2URI) {
 		this(icon1URI, icon2URI, true, (WContainerWidget) null);
 	}
 
+	/**
+	 * Construct an icon pair from the two icons.
+	 * <p>
+	 * Calls
+	 * {@link #WIconPair(String icon1URI, String icon2URI, boolean clickIsSwitch, WContainerWidget parent)
+	 * this(icon1URI, icon2URI, clickIsSwitch, (WContainerWidget)null)}
+	 */
 	public WIconPair(String icon1URI, String icon2URI, boolean clickIsSwitch) {
 		this(icon1URI, icon2URI, clickIsSwitch, (WContainerWidget) null);
 	}
 
 	/**
 	 * Set the state, which determines the visible icon.
-	 * 
+	 * <p>
 	 * The first icon has number 0, and the second icon has number 1.
 	 * <p>
 	 * The default state is 0.
@@ -74,6 +88,7 @@ public class WIconPair extends WCompositeWidget {
 
 	/**
 	 * Returns the current state.
+	 * <p>
 	 * 
 	 * @see WIconPair#setState(int num)
 	 */
@@ -97,6 +112,7 @@ public class WIconPair extends WCompositeWidget {
 
 	/**
 	 * Sets the state to 0 (show icon 1).
+	 * <p>
 	 * 
 	 * @see WIconPair#setState(int num)
 	 */
@@ -106,6 +122,7 @@ public class WIconPair extends WCompositeWidget {
 
 	/**
 	 * Sets the state to 1 (show icon 2).
+	 * <p>
 	 * 
 	 * @see WIconPair#setState(int num)
 	 */
@@ -115,7 +132,7 @@ public class WIconPair extends WCompositeWidget {
 
 	/**
 	 * Signal emitted when clicked while in state 0 (icon 1 is shown).
-	 * 
+	 * <p>
 	 * Equivalent to: <code>
    \if cpp <br> 
    icon1()-&gt;clicked() <br> 
@@ -130,7 +147,7 @@ public class WIconPair extends WCompositeWidget {
 
 	/**
 	 * Signal emitted when clicked while in state 1 (icon 2 is shown).
-	 * 
+	 * <p>
 	 * Equivalent to: <code>
    \if cpp <br> 
    icon2()-&gt;clicked() <br> 

@@ -8,7 +8,7 @@ import eu.webtoolkit.jwt.utils.EnumUtils;
 
 /**
  * A single data series in a cartesian chart.
- * 
+ * <p>
  * 
  * This class configures all aspects for rendering a single data series in a
  * cartesian chart. A data series renders Y data from a single model column
@@ -45,7 +45,7 @@ import eu.webtoolkit.jwt.utils.EnumUtils;
 public class WDataSeries {
 	/**
 	 * Enumeration that indicates an aspect of the look.
-	 * 
+	 * <p>
 	 * These flags are used to keep track of which aspects of the look that are
 	 * overridden from the values provided by the chart palette, using one of
 	 * the methods in this class.
@@ -86,7 +86,7 @@ public class WDataSeries {
 
 	/**
 	 * Construct a new data series.
-	 * 
+	 * <p>
 	 * Creates a new data series which plots the Y values from the model column
 	 * <i>modelColumn</i>, with the indicated <i>seriesType</i>. The Y values
 	 * are mapped to the indicated <i>axis</i>, which should correspond to one
@@ -115,17 +115,29 @@ public class WDataSeries {
 		this.yLabel_ = false;
 	}
 
+	/**
+	 * Construct a new data series.
+	 * <p>
+	 * Calls {@link #WDataSeries(int modelColumn, SeriesType type, Axis axis)
+	 * this(modelColumn, SeriesType.PointSeries, Axis.Y1Axis)}
+	 */
 	public WDataSeries(int modelColumn) {
 		this(modelColumn, SeriesType.PointSeries, Axis.Y1Axis);
 	}
 
+	/**
+	 * Construct a new data series.
+	 * <p>
+	 * Calls {@link #WDataSeries(int modelColumn, SeriesType type, Axis axis)
+	 * this(modelColumn, type, Axis.Y1Axis)}
+	 */
 	public WDataSeries(int modelColumn, SeriesType type) {
 		this(modelColumn, type, Axis.Y1Axis);
 	}
 
 	/**
 	 * Change the series type.
-	 * 
+	 * <p>
 	 * The series type specifies how the data is plotted, i.e. using mere point
 	 * markers, lines, curves, or bars.
 	 */
@@ -139,6 +151,7 @@ public class WDataSeries {
 
 	/**
 	 * Returns the series type.
+	 * <p>
 	 * 
 	 * @see WDataSeries#setType(SeriesType type)
 	 */
@@ -148,14 +161,14 @@ public class WDataSeries {
 
 	/**
 	 * Change the model column.
-	 * 
+	 * <p>
 	 * This specifies the model column from which the Y data is retrieved that
 	 * is plotted by this series.
 	 * <p>
 	 * The data column should contain data that can be converted to a number
 	 * (but should not necessarily be of a number type).
 	 * <p>
-	 * See also {@link StringUtils#asNumber(Object)}.
+	 * See also {@link eu.webtoolkit.jwt.utils.StringUtils#asNumber(Object)}.
 	 */
 	public void setModelColumn(int modelColumn) {
 		if (!ChartUtils.equals(this.modelColumn_, modelColumn)) {
@@ -167,6 +180,7 @@ public class WDataSeries {
 
 	/**
 	 * Returns the model column.
+	 * <p>
 	 * 
 	 * @see WDataSeries#setModelColumn(int modelColumn)
 	 */
@@ -176,7 +190,7 @@ public class WDataSeries {
 
 	/**
 	 * Sets whether this series is stacked on top of the preceding series.
-	 * 
+	 * <p>
 	 * For category charts, data from different series may be rendered stacked
 	 * on top of each other. The rendered value is the sum of the value of this
 	 * series plus the rendered value of the preceding series. For line series,
@@ -195,6 +209,7 @@ public class WDataSeries {
 
 	/**
 	 * Returns whether this series is stacked on top of the preceding series.
+	 * <p>
 	 * 
 	 * @see WDataSeries#setStacked(boolean stacked)
 	 */
@@ -204,7 +219,7 @@ public class WDataSeries {
 
 	/**
 	 * Bind this series to a chart axis.
-	 * 
+	 * <p>
 	 * A data series may be bound to either the first or second Y axis. Note
 	 * that the second Y axis is by default not displayed.
 	 * <p>
@@ -223,6 +238,7 @@ public class WDataSeries {
 
 	/**
 	 * Returns the chart axis used for this series.
+	 * <p>
 	 * 
 	 * @see WDataSeries#bindToAxis(Axis axis)
 	 */
@@ -232,7 +248,7 @@ public class WDataSeries {
 
 	/**
 	 * Set which aspects of the look are overriden.
-	 * 
+	 * <p>
 	 * Set which aspects of the look, that are by default based on the chart
 	 * palette, or overridden by custom settings.
 	 * <p>
@@ -246,6 +262,12 @@ public class WDataSeries {
 		;
 	}
 
+	/**
+	 * Set which aspects of the look are overriden.
+	 * <p>
+	 * Calls {@link #setCustomFlags(EnumSet flags)
+	 * setCustomFlags(EnumSet.of(flag, flags))}
+	 */
 	public final void setCustomFlags(WDataSeries.CustomFlag flag,
 			WDataSeries.CustomFlag... flags) {
 		setCustomFlags(EnumSet.of(flag, flags));
@@ -253,6 +275,9 @@ public class WDataSeries {
 
 	/**
 	 * Returns which aspects of the look are overriden.
+	 * <p>
+	 * 
+	 * @see WDataSeries#setCustomFlags(EnumSet flags)
 	 */
 	public EnumSet<WDataSeries.CustomFlag> getCurstomFlags() {
 		return this.customFlags_;
@@ -260,7 +285,7 @@ public class WDataSeries {
 
 	/**
 	 * Override the pen used for drawing lines for this series.
-	 * 
+	 * <p>
 	 * Overrides the pen that is used to draw this series. Calling this method
 	 * automatically adds CustomPen to the custom flags.
 	 * <p>
@@ -281,6 +306,7 @@ public class WDataSeries {
 
 	/**
 	 * Returns the pen used for drawing lines for this series.
+	 * <p>
 	 * 
 	 * @see WDataSeries#setPen(WPen pen)
 	 */
@@ -306,7 +332,7 @@ public class WDataSeries {
 
 	/**
 	 * Override the brush used for filling areas for this series.
-	 * 
+	 * <p>
 	 * Overrides the brush that is used to draw this series. For a bar plot,
 	 * this is the brush used to fill the bars. For a line chart, this is the
 	 * brush used to fill the area under (or above) the line. Calling this
@@ -326,6 +352,7 @@ public class WDataSeries {
 
 	/**
 	 * Returns the brush used for filling areas for this series.
+	 * <p>
 	 * 
 	 * @see WDataSeries#setBrush(WBrush brush)
 	 */
@@ -345,7 +372,7 @@ public class WDataSeries {
 
 	/**
 	 * Sets the fill range for line or curve series.
-	 * 
+	 * <p>
 	 * Line or curve series may be filled under or above the curve, using the
 	 * {@link WDataSeries#getBrush()}. This setting specifies the range that is
 	 * filled.
@@ -360,6 +387,7 @@ public class WDataSeries {
 
 	/**
 	 * Returns the fill range for line or curve series.
+	 * <p>
 	 * 
 	 * @see WDataSeries#setFillRange(FillRangeType fillRange)
 	 */
@@ -369,7 +397,7 @@ public class WDataSeries {
 
 	/**
 	 * Sets the data point marker.
-	 * 
+	 * <p>
 	 * Specifies a marker that is displayed at the (X,Y) coordinate for each
 	 * series data point.
 	 * <p>
@@ -390,6 +418,7 @@ public class WDataSeries {
 
 	/**
 	 * Returns the data point marker.
+	 * <p>
 	 * 
 	 * @see WDataSeries#setMarker(MarkerType marker)
 	 */
@@ -399,7 +428,7 @@ public class WDataSeries {
 
 	/**
 	 * Sets the marker pen.
-	 * 
+	 * <p>
 	 * Overrides the pen used for stroking the marker. By default the marker pen
 	 * is the same as {@link WDataSeries#getPen()}. Calling this method
 	 * automatically adds CustomMarkerPen to the custom flags.
@@ -419,6 +448,7 @@ public class WDataSeries {
 
 	/**
 	 * Returns the marker pen.
+	 * <p>
 	 * 
 	 * @see WDataSeries#setMarkerPen(WPen pen)
 	 */
@@ -433,7 +463,7 @@ public class WDataSeries {
 
 	/**
 	 * Sets the marker brush.
-	 * 
+	 * <p>
 	 * Overrides the brush used for filling the marker. By default the marker
 	 * brush is the same as {@link WDataSeries#getBrush()}. Calling this method
 	 * automatically adds CustomMarkerBrush to the custom flags.
@@ -453,6 +483,7 @@ public class WDataSeries {
 
 	/**
 	 * Returns the marker brush.
+	 * <p>
 	 * 
 	 * @see WDataSeries#setMarkerBrush(WBrush brush)
 	 */
@@ -467,7 +498,7 @@ public class WDataSeries {
 
 	/**
 	 * Enable the entry for this series in the legend.
-	 * 
+	 * <p>
 	 * When <i>enabled</i>, this series is added to the chart legend.
 	 * <p>
 	 * The default value is true.
@@ -485,6 +516,7 @@ public class WDataSeries {
 
 	/**
 	 * Returns whether this series has an entry in the legend.
+	 * <p>
 	 * 
 	 * @see WDataSeries#setLegendEnabled(boolean enabled)
 	 */
@@ -494,7 +526,7 @@ public class WDataSeries {
 
 	/**
 	 * Enable a label that is shown at the series data points.
-	 * 
+	 * <p>
 	 * You may enable labels for the XAxis, YAxis or both axes. The label that
 	 * is displayed is the corresponding value on that axis. If both labels are
 	 * enabled then they are combined in a single text using the format:
@@ -514,12 +546,19 @@ public class WDataSeries {
 		this.update();
 	}
 
+	/**
+	 * Enable a label that is shown at the series data points.
+	 * <p>
+	 * Calls {@link #setLabelsEnabled(Axis axis, boolean enabled)
+	 * setLabelsEnabled(axis, true)}
+	 */
 	public final void setLabelsEnabled(Axis axis) {
 		setLabelsEnabled(axis, true);
 	}
 
 	/**
 	 * Returns whether labels are enabled for the given axis.
+	 * <p>
 	 * 
 	 * @see WDataSeries#setLabelsEnabled(Axis axis, boolean enabled)
 	 */
@@ -529,7 +568,7 @@ public class WDataSeries {
 
 	/**
 	 * Set the label color.
-	 * 
+	 * <p>
 	 * Specify the color used for the rendering labels at the data points.
 	 * <p>
 	 * 
@@ -545,6 +584,7 @@ public class WDataSeries {
 
 	/**
 	 * Returns the label color.
+	 * <p>
 	 * 
 	 * @see WDataSeries#setLabelColor(WColor color)
 	 */

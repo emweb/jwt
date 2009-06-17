@@ -5,7 +5,7 @@ import java.util.List;
 
 /**
  * A path defining a shape.
- * 
+ * <p>
  * 
  * A painter path represents a (complex) path that may be composed of lines,
  * arcs and bezier curve segments, and painted onto a paint device using
@@ -50,7 +50,7 @@ import java.util.List;
 public class WPainterPath {
 	/**
 	 * Default constructor.
-	 * 
+	 * <p>
 	 * Creates an empty path, and sets the current position to (0, 0).
 	 */
 	public WPainterPath() {
@@ -60,7 +60,7 @@ public class WPainterPath {
 
 	/**
 	 * Construct a new path, and set the initial position.
-	 * 
+	 * <p>
 	 * Creates an empty path, and sets the current position to
 	 * <i>startPoint</i>.
 	 */
@@ -89,7 +89,7 @@ public class WPainterPath {
 
 	/**
 	 * Return the current position.
-	 * 
+	 * <p>
 	 * Returns the current position, which is the end point of the last move or
 	 * draw operation, and which well be the start point of the next draw
 	 * operation.
@@ -100,7 +100,7 @@ public class WPainterPath {
 
 	/**
 	 * Returns whether the path is empty.
-	 * 
+	 * <p>
 	 * Returns true if the path contains no drawing operations.
 	 */
 	public boolean isEmpty() {
@@ -109,7 +109,7 @@ public class WPainterPath {
 
 	/**
 	 * Comparison operator.
-	 * 
+	 * <p>
 	 * Returns true if the paths are exactly the same.
 	 */
 	public boolean equals(WPainterPath path) {
@@ -126,7 +126,7 @@ public class WPainterPath {
 
 	/**
 	 * Close the last sub path.
-	 * 
+	 * <p>
 	 * Draws a line from the current position to the start position of the last
 	 * sub path (which is the end point of the last move operation), and sets
 	 * the current position to (0, 0).
@@ -137,7 +137,7 @@ public class WPainterPath {
 
 	/**
 	 * Moves the current position to a new location.
-	 * 
+	 * <p>
 	 * Moves the current position to a new point, implicitly closing the last
 	 * sub path.
 	 * <p>
@@ -151,7 +151,7 @@ public class WPainterPath {
 
 	/**
 	 * Moves the current position to a new location.
-	 * 
+	 * <p>
 	 * Moves the current position to a new point, implicitly closing the last
 	 * sub path.
 	 * <p>
@@ -174,7 +174,7 @@ public class WPainterPath {
 
 	/**
 	 * Draws a straight line.
-	 * 
+	 * <p>
 	 * Draws a straight line from the current position to <i>point</i>, which
 	 * becomes the new current position.
 	 * <p>
@@ -187,7 +187,7 @@ public class WPainterPath {
 
 	/**
 	 * Draws a straight line.
-	 * 
+	 * <p>
 	 * Draws a straight line from the current position to (<i>x</i>, <i>y</i>),
 	 * which becomes the new current position.
 	 * <p>
@@ -201,7 +201,7 @@ public class WPainterPath {
 
 	/**
 	 * Draws a cubic bezier curve.
-	 * 
+	 * <p>
 	 * Draws a cubic bezier curve from the current position to <i>endPoint</i>,
 	 * which becomes the new current position. The bezier curve uses the two
 	 * control points <i>c1</i> and <i>c2</i>.
@@ -217,7 +217,7 @@ public class WPainterPath {
 
 	/**
 	 * Draws a cubic bezier curve.
-	 * 
+	 * <p>
 	 * This is an overloaded method provided for convenience.
 	 * <p>
 	 * 
@@ -235,7 +235,7 @@ public class WPainterPath {
 
 	/**
 	 * Draws an arc.
-	 * 
+	 * <p>
 	 * Draws an arc which is a segment of a circle. The circle is defined with
 	 * center (<i>cx</i>, <i>cy</i>) and <i>radius</i>. The segment starts at
 	 * <i>startAngle</i>, and spans an angle given by <i>spanAngle</i>. These
@@ -257,7 +257,7 @@ public class WPainterPath {
 
 	/**
 	 * Move to a point on an arc.
-	 * 
+	 * <p>
 	 * Moves to a point on a circle. The circle is defined with center
 	 * (<i>cx</i>, <i>cy</i>) and <i>radius</i>, and the point is at
 	 * <i>angle</i> degrees measured counter-clockwise starting from the 3
@@ -273,7 +273,7 @@ public class WPainterPath {
 
 	/**
 	 * Move to a point on an arc.
-	 * 
+	 * <p>
 	 * Moves to a point on an ellipse. The ellipse fits in the rectangle defined
 	 * by top left position (<i>x</i>, <i>y</i>), and size <i>width</i> x
 	 * <i>height</i>, and the point is at <i>angle</i> degrees measured
@@ -291,7 +291,7 @@ public class WPainterPath {
 
 	/**
 	 * Draw a quadratic bezier curve.
-	 * 
+	 * <p>
 	 * Draws a quadratic bezier curve from the current position to
 	 * <i>endPoint</i>, which becomes the new current position. The bezier curve
 	 * uses the single control point <i>c</i>.
@@ -306,7 +306,7 @@ public class WPainterPath {
 
 	/**
 	 * Draw a quadratic bezier curve.
-	 * 
+	 * <p>
 	 * This is an overloaded method provided for convenience.
 	 * <p>
 	 * 
@@ -321,7 +321,7 @@ public class WPainterPath {
 
 	/**
 	 * Draw an ellipse.
-	 * 
+	 * <p>
 	 * This method closes the current sub path, and adds an ellipse that is
 	 * bounded by the rectangle <i>boundingRectangle</i>.
 	 * <p>
@@ -340,7 +340,7 @@ public class WPainterPath {
 
 	/**
 	 * Draw an ellipse.
-	 * 
+	 * <p>
 	 * This method closes the current sub path, and adds an ellipse that is
 	 * bounded by the rectangle defined by top left position (<i>x</i>,
 	 * <i>y</i>), and size <i>width</i> x <i>height</i>.
@@ -359,7 +359,7 @@ public class WPainterPath {
 
 	/**
 	 * Draw a rectangle.
-	 * 
+	 * <p>
 	 * This method closes the current sub path, and adds a rectangle that is
 	 * defined by <i>rectangle</i>.
 	 * <p>
@@ -374,7 +374,7 @@ public class WPainterPath {
 
 	/**
 	 * Draw a rectangle.
-	 * 
+	 * <p>
 	 * This method closes the current sub path, and adds a rectangle that is
 	 * defined by top left position (<i>x</i>, <i>y</i>), and size <i>width</i>
 	 * x <i>height</i>.
@@ -395,7 +395,7 @@ public class WPainterPath {
 
 	/**
 	 * Add a path.
-	 * 
+	 * <p>
 	 * Adds an entire <i>path</i> to the current path. If the path&apos;s begin
 	 * position is different from the current position, the last sub path is
 	 * first closed, otherwise the last sub path is extended with the
@@ -413,7 +413,7 @@ public class WPainterPath {
 
 	/**
 	 * Add a path, connecting.
-	 * 
+	 * <p>
 	 * Adds an entire <i>path</i> to the current path. If the path&apos;s begin
 	 * position is different from the current position, the last sub path is
 	 * first closed, otherwise the last sub path is extended with the
@@ -524,7 +524,7 @@ public class WPainterPath {
 
 	/**
 	 * Returns the bounding box of the control points.
-	 * 
+	 * <p>
 	 * Returns the bounding box of all control points. This is guaranteed to be
 	 * a superset of the actual bounding box.
 	 */

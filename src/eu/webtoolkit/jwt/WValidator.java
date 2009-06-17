@@ -5,7 +5,7 @@ import java.util.List;
 
 /**
  * A validator is used to validate user input according to pre-defined rules
- * 
+ * <p>
  * 
  * A validator may be associated with a form widget using
  * {@link WFormWidget#setValidator(WValidator validator)}.
@@ -66,13 +66,18 @@ public class WValidator extends WObject {
 		this.formWidgets_ = new ArrayList<WFormWidget>();
 	}
 
+	/**
+	 * Create a new validator.
+	 * <p>
+	 * Calls {@link #WValidator(WObject parent) this((WObject)null)}
+	 */
 	public WValidator() {
 		this((WObject) null);
 	}
 
 	/**
 	 * Create a new validator.
-	 * 
+	 * <p>
 	 * Indicate whether input is mandatory.
 	 * <p>
 	 * 
@@ -85,13 +90,19 @@ public class WValidator extends WObject {
 		this.formWidgets_ = new ArrayList<WFormWidget>();
 	}
 
+	/**
+	 * Create a new validator.
+	 * <p>
+	 * Calls {@link #WValidator(boolean mandatory, WObject parent)
+	 * this(mandatory, (WObject)null)}
+	 */
 	public WValidator(boolean mandatory) {
 		this(mandatory, (WObject) null);
 	}
 
 	/**
 	 * Destructor.
-	 * 
+	 * <p>
 	 * The validator automatically removes itself from all formfields to which
 	 * it was associated.
 	 */
@@ -103,7 +114,7 @@ public class WValidator extends WObject {
 
 	/**
 	 * Set if input is mandatory.
-	 * 
+	 * <p>
 	 * When an input is not mandatory, then an empty field is always valid.
 	 */
 	public void setMandatory(boolean mandatory) {
@@ -122,7 +133,7 @@ public class WValidator extends WObject {
 
 	/**
 	 * Set message to display when a mandatory field is left blank.
-	 * 
+	 * <p>
 	 * The default value is &quot;This field cannot be empty&quot;.
 	 */
 	public void setInvalidBlankText(CharSequence text) {
@@ -132,6 +143,7 @@ public class WValidator extends WObject {
 
 	/**
 	 * Returns the message displayed when a mandatory field is left blank.
+	 * <p>
 	 * 
 	 * @see WValidator#setInvalidBlankText(CharSequence text)
 	 */
@@ -146,7 +158,7 @@ public class WValidator extends WObject {
 	/**
 	 * This function attempts to change input to be valid according to the
 	 * validator&apos;s rules.
-	 * 
+	 * <p>
 	 * In general the function needs not to change the input into a valid input.
 	 * The default implementation does nothing. But it may help the user in
 	 * getting its input right.
@@ -156,7 +168,7 @@ public class WValidator extends WObject {
 
 	/**
 	 * Validate the given input.
-	 * 
+	 * <p>
 	 * This function returns the current validation state of the input. The
 	 * default implementation only checks whether a mandatory field is not left
 	 * blank.
@@ -173,7 +185,7 @@ public class WValidator extends WObject {
 	// public void createExtConfig(Writer config) throws IOException;
 	/**
 	 * Creates a Javascript expression that validates the input.
-	 * 
+	 * <p>
 	 * The JavaScript expression should evaluate to an object with two fields: a
 	 * boolean <i>valid</i>, and a <i>message</i> that indicates the problem if
 	 * not valid.
@@ -196,7 +208,7 @@ public class WValidator extends WObject {
 
 	/**
 	 * Returns a regular expression that filters input.
-	 * 
+	 * <p>
 	 * The returned regular expression is used to filter keys presses. The
 	 * regular expression should accept valid single characters.
 	 * <p>

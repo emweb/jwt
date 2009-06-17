@@ -8,7 +8,7 @@ import java.util.Map;
 
 /**
  * A standard data model, which stores its data in memory.
- * 
+ * <p>
  * 
  * The standard item model supports all features of {@link WAbstractItemModel},
  * and can thus be used to represent tables, trees and tree tables.
@@ -58,13 +58,18 @@ public class WStandardItemModel extends WAbstractItemModel {
 		this.init();
 	}
 
+	/**
+	 * Create a new standard item model.
+	 * <p>
+	 * Calls {@link #WStandardItemModel(WObject parent) this((WObject)null)}
+	 */
 	public WStandardItemModel() {
 		this((WObject) null);
 	}
 
 	/**
 	 * Create a new standard item model with an initial toplevel geometry.
-	 * 
+	 * <p>
 	 * Creates a standard item model with a geometry of <i>rows</i> x
 	 * <i>columns</i>. All items are set to 0.
 	 */
@@ -79,6 +84,12 @@ public class WStandardItemModel extends WAbstractItemModel {
 		this.invisibleRootItem_.setRowCount(rows);
 	}
 
+	/**
+	 * Create a new standard item model with an initial toplevel geometry.
+	 * <p>
+	 * Calls {@link #WStandardItemModel(int rows, int columns, WObject parent)
+	 * this(rows, columns, (WObject)null)}
+	 */
 	public WStandardItemModel(int rows, int columns) {
 		this(rows, columns, (WObject) null);
 	}
@@ -93,7 +104,7 @@ public class WStandardItemModel extends WAbstractItemModel {
 
 	/**
 	 * Erase all data in the model.
-	 * 
+	 * <p>
 	 * After clearing the model,
 	 * {@link WAbstractItemModel#getRowCount(WModelIndex parent)} and
 	 * {@link WAbstractItemModel#getColumnCount(WModelIndex parent)} are 0.
@@ -108,7 +119,7 @@ public class WStandardItemModel extends WAbstractItemModel {
 
 	/**
 	 * Returns the invisible root item.
-	 * 
+	 * <p>
 	 * The invisible root item is a special item that is not rendered itself,
 	 * but holds the top level data.
 	 */
@@ -118,7 +129,7 @@ public class WStandardItemModel extends WAbstractItemModel {
 
 	/**
 	 * Returns the model index for a particular item.
-	 * 
+	 * <p>
 	 * If the <i>item</i> is the
 	 * {@link WStandardItemModel#getInvisibleRootItem()}, then an invalid index
 	 * is returned.
@@ -137,7 +148,7 @@ public class WStandardItemModel extends WAbstractItemModel {
 
 	/**
 	 * Returns the standard item that corresponds to a model index.
-	 * 
+	 * <p>
 	 * If the index is an invalid index, then the
 	 * {@link WStandardItemModel#getInvisibleRootItem()} is returned.
 	 * <p>
@@ -150,7 +161,7 @@ public class WStandardItemModel extends WAbstractItemModel {
 
 	/**
 	 * Add a single column of top level items.
-	 * 
+	 * <p>
 	 * Appends a single column of top level <i>items</i>. If necessary, the row
 	 * count is increased.
 	 * <p>
@@ -168,7 +179,7 @@ public class WStandardItemModel extends WAbstractItemModel {
 
 	/**
 	 * Insert a single column of top level items.
-	 * 
+	 * <p>
 	 * Inserts a single column of top level <i>items</i> at column
 	 * <i>column</i>. If necessary, the row count is increased.
 	 * <p>
@@ -185,7 +196,7 @@ public class WStandardItemModel extends WAbstractItemModel {
 
 	/**
 	 * Add a single row of top level items.
-	 * 
+	 * <p>
 	 * Appends a single row of top level <i>items</i>. If necessary, the column
 	 * count is increased.
 	 * <p>
@@ -203,7 +214,7 @@ public class WStandardItemModel extends WAbstractItemModel {
 
 	/**
 	 * Insert a single row of top level items.
-	 * 
+	 * <p>
 	 * Inserts a single row of top level <i>items</i> at row <i>row</i>. If
 	 * necessary, the column count is increased.
 	 * <p>
@@ -220,13 +231,15 @@ public class WStandardItemModel extends WAbstractItemModel {
 
 	/**
 	 * Append a single row containing a single item.
-	 * 
+	 * <p>
 	 * Appends a single toplevel row, with a single item.
 	 * <p>
 	 * Equivalent to: <code>
    insertRow(rowCount(), item);
   </code>
 	 * <p>
+	 * 
+	 * @see WStandardItem#insertRow(int row, WStandardItem item)
 	 */
 	public void appendRow(WStandardItem item) {
 		this.insertRow(this.getRowCount(), item);
@@ -234,7 +247,7 @@ public class WStandardItemModel extends WAbstractItemModel {
 
 	/**
 	 * Insert a single row containing a single item.
-	 * 
+	 * <p>
 	 * Inserts a single toplevel row, with a single item.
 	 * <p>
 	 * Equivalent to: <code>
@@ -250,7 +263,7 @@ public class WStandardItemModel extends WAbstractItemModel {
 
 	/**
 	 * Returns a toplevel item.
-	 * 
+	 * <p>
 	 * Returns the top level at at (<i>row</i>, <i>column</i>). This may be 0 if
 	 * no item was set previously at that position, or if the indicated position
 	 * is out of bounds.
@@ -266,13 +279,18 @@ public class WStandardItemModel extends WAbstractItemModel {
 		return this.invisibleRootItem_.getChild(row, column);
 	}
 
+	/**
+	 * Returns a toplevel item.
+	 * <p>
+	 * Returns {@link #getItem(int row, int column) getItem(row, 0)}
+	 */
 	public final WStandardItem getItem(int row) {
 		return getItem(row, 0);
 	}
 
 	/**
 	 * Sets a toplevel item.
-	 * 
+	 * <p>
 	 * Sets the top level at at (<i>row</i>, <i>column</i>). If necessary, the
 	 * number of rows or columns is increased.
 	 * <p>
@@ -291,6 +309,7 @@ public class WStandardItemModel extends WAbstractItemModel {
 
 	/**
 	 * Returns the item prototype.
+	 * <p>
 	 * 
 	 * @see WStandardItemModel#setItemPrototype(WStandardItem item)
 	 */
@@ -300,7 +319,7 @@ public class WStandardItemModel extends WAbstractItemModel {
 
 	/**
 	 * Returns the item prototype.
-	 * 
+	 * <p>
 	 * Set the item that is cloned when an item needs to be created because the
 	 * model is manipulated through its {@link WAbstractItemModel} API. For
 	 * example, this may be needed when a view sets data at a position for which
@@ -321,7 +340,7 @@ public class WStandardItemModel extends WAbstractItemModel {
 
 	/**
 	 * Take a column out of the model.
-	 * 
+	 * <p>
 	 * Removes a column from the model, and returns the items that it contained.
 	 * Ownership of the items is transferred out of the model.
 	 * <p>
@@ -339,7 +358,7 @@ public class WStandardItemModel extends WAbstractItemModel {
 
 	/**
 	 * Take a row out of the model.
-	 * 
+	 * <p>
 	 * Removes a row from the model, and returns the items that it contained.
 	 * Ownership of the items is transferred out of the model.
 	 * <p>
@@ -357,7 +376,7 @@ public class WStandardItemModel extends WAbstractItemModel {
 
 	/**
 	 * Take an item out of the model.
-	 * 
+	 * <p>
 	 * Removes an item from the model, and returns it. Ownership of the item is
 	 * transferred out of the model.
 	 * <p>
@@ -374,6 +393,11 @@ public class WStandardItemModel extends WAbstractItemModel {
 		return this.invisibleRootItem_.takeChild(row, column);
 	}
 
+	/**
+	 * Take an item out of the model.
+	 * <p>
+	 * Returns {@link #takeItem(int row, int column) takeItem(row, 0)}
+	 */
 	public final WStandardItem takeItem(int row) {
 		return takeItem(row, 0);
 	}
@@ -486,7 +510,7 @@ public class WStandardItemModel extends WAbstractItemModel {
 
 	/**
 	 * Set the role used to sort the model.
-	 * 
+	 * <p>
 	 * The default role is {@link ItemDataRole#DisplayRole DisplayRole}.
 	 * <p>
 	 * 
@@ -498,6 +522,7 @@ public class WStandardItemModel extends WAbstractItemModel {
 
 	/**
 	 * Returns the role used to sort the model.
+	 * <p>
 	 * 
 	 * @see WStandardItemModel#setSortRole(int role)
 	 */
@@ -511,7 +536,7 @@ public class WStandardItemModel extends WAbstractItemModel {
 
 	/**
 	 * Signal emitted when an item is changed.
-	 * 
+	 * <p>
 	 * This signal is emitted whenever date of an item has changed. The item
 	 * that has changed is passed as the first parameter.
 	 * <p>

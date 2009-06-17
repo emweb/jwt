@@ -3,13 +3,14 @@ package eu.webtoolkit.jwt;
 
 /**
  * Utility class that defines a 2D point with integer coordinates
+ * <p>
  * 
  * @see WPolygonArea
  */
 public class WPoint {
 	/**
 	 * Default constructor.
-	 * 
+	 * <p>
 	 * Constructs a point (<i>x=0</i>, <i>y=0</i>).
 	 */
 	public WPoint() {
@@ -19,7 +20,7 @@ public class WPoint {
 
 	/**
 	 * Construct a point.
-	 * 
+	 * <p>
 	 * Constructs a point (<i>x</i>, <i>y</i>).
 	 */
 	public WPoint(int x, int y) {

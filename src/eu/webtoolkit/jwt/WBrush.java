@@ -3,7 +3,7 @@ package eu.webtoolkit.jwt;
 
 /**
  * Class that defines the style for filling areas.
- * 
+ * <p>
  * 
  * A brush defines the properties of how areas (the interior of shapes) are
  * filled. A brush is defined using a color and a fill type (currently only
@@ -16,7 +16,7 @@ package eu.webtoolkit.jwt;
 public class WBrush {
 	/**
 	 * Default constructor.
-	 * 
+	 * <p>
 	 * Constructs a brush with a {@link WBrushStyle#NoBrush NoBrush} fill style.
 	 */
 	public WBrush() {
@@ -26,7 +26,7 @@ public class WBrush {
 
 	/**
 	 * Construct a brush with a particular style.
-	 * 
+	 * <p>
 	 * Constructs a black brush with the indicated <i>style</i>.
 	 */
 	public WBrush(WBrushStyle style) {
@@ -36,7 +36,7 @@ public class WBrush {
 
 	/**
 	 * Construct a solid brush of a particular color.
-	 * 
+	 * <p>
 	 * Constructs a solid brush with the indicated <i>color</i>.
 	 */
 	public WBrush(WColor color) {
@@ -53,7 +53,7 @@ public class WBrush {
 
 	/**
 	 * Comparison operator.
-	 * 
+	 * <p>
 	 * Returns true if the brushes are exactly the same.
 	 */
 	public boolean equals(WBrush other) {
@@ -62,6 +62,7 @@ public class WBrush {
 
 	/**
 	 * Change the brush style.
+	 * <p>
 	 * 
 	 * @see WBrush#getStyle()
 	 */
@@ -71,6 +72,7 @@ public class WBrush {
 
 	/**
 	 * Returns the fill style.
+	 * <p>
 	 * 
 	 * @see WBrush#setStyle(WBrushStyle style)
 	 */
@@ -80,6 +82,7 @@ public class WBrush {
 
 	/**
 	 * Change the brush color.
+	 * <p>
 	 * 
 	 * @see WBrush#getColor()
 	 */
@@ -89,6 +92,7 @@ public class WBrush {
 
 	/**
 	 * Returns the brush color.
+	 * <p>
 	 * 
 	 * @see WBrush#getColor()
 	 */

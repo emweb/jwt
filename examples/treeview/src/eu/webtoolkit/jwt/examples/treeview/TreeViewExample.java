@@ -8,7 +8,6 @@ import eu.webtoolkit.jwt.SelectionMode;
 import eu.webtoolkit.jwt.Signal1;
 import eu.webtoolkit.jwt.WContainerWidget;
 import eu.webtoolkit.jwt.WLength;
-import eu.webtoolkit.jwt.WModelIndex;
 import eu.webtoolkit.jwt.WMouseEvent;
 import eu.webtoolkit.jwt.WPushButton;
 import eu.webtoolkit.jwt.WStandardItem;

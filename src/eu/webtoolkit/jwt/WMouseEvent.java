@@ -6,6 +6,7 @@ import eu.webtoolkit.jwt.utils.EnumUtils;
 
 /**
  * A class providing details for a mouse event.
+ * <p>
  * 
  * @see WInteractWidget#clicked()
  * @see WInteractWidget#doubleClicked()
@@ -74,7 +75,7 @@ public class WMouseEvent implements WAbstractEvent {
 
 	/**
 	 * Returns keyboard modifiers.
-	 * 
+	 * <p>
 	 * The result is a logical OR of {@link KeyboardModifier KeyboardModifier}
 	 * flags.
 	 */
@@ -92,7 +93,7 @@ public class WMouseEvent implements WAbstractEvent {
 
 	/**
 	 * Returns the mouse position relative to the window.
-	 * 
+	 * <p>
 	 * This differs from documentX() only through scrolling through the
 	 * document.
 	 */
@@ -119,7 +120,7 @@ public class WMouseEvent implements WAbstractEvent {
 
 	/**
 	 * Returns the distance over which the mouse has been dragged.
-	 * 
+	 * <p>
 	 * This is only defined for a {@link WInteractWidget#mouseWentUp()} event.
 	 */
 	public WMouseEvent.Coordinates getDragDelta() {
@@ -129,7 +130,7 @@ public class WMouseEvent implements WAbstractEvent {
 
 	/**
 	 * Returns whether the alt key is pressed (<b>deprecated</b>).
-	 * 
+	 * <p>
 	 * DOCXREFITEMDeprecatedUse {@link WMouseEvent#getModifiers()} instead.
 	 */
 	public boolean isAltKey() {
@@ -139,7 +140,7 @@ public class WMouseEvent implements WAbstractEvent {
 
 	/**
 	 * Returns whether the meta key is pressed (<b>deprecated</b>).
-	 * 
+	 * <p>
 	 * DOCXREFITEMDeprecatedUse {@link WMouseEvent#getModifiers()} instead.
 	 */
 	public boolean isMetaKey() {
@@ -149,7 +150,7 @@ public class WMouseEvent implements WAbstractEvent {
 
 	/**
 	 * Returns whether the control key is pressed (<b>deprecated</b>).
-	 * 
+	 * <p>
 	 * DOCXREFITEMDeprecatedUse {@link WMouseEvent#getModifiers()} instead.
 	 */
 	public boolean isCtrlKey() {
@@ -159,7 +160,7 @@ public class WMouseEvent implements WAbstractEvent {
 
 	/**
 	 * Returns whether the shift key is pressed (<b>deprecated</b>).
-	 * 
+	 * <p>
 	 * DOCXREFITEMDeprecatedUse {@link WMouseEvent#getModifiers()} instead.
 	 */
 	public boolean isShiftKey() {

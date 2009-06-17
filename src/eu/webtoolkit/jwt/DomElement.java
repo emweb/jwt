@@ -443,6 +443,9 @@ class DomElement {
 				this.declare(out);
 				String varr = this.replaced_.asJavaScript(out,
 						DomElement.Priority.Create);
+				out.append(this.var_).append(".parentNode.replaceChild(")
+						.append(varr).append(',').append(this.var_).append(
+								");\n");
 				this.replaced_.asJavaScript(out, DomElement.Priority.Update);
 				out.append("Wt2_99_2.unstub(").append(this.var_).append(',')
 						.append(varr).append(',').append(

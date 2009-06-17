@@ -3,7 +3,7 @@ package eu.webtoolkit.jwt;
 
 /**
  * A menu presented in a popup window
- * 
+ * <p>
  * 
  * The menu implements a typical context menu, with support for submenu&apos;s.
  * It is not to be confused with {@link WMenu} which implements an
@@ -60,15 +60,13 @@ package eu.webtoolkit.jwt;
 		  <br> 
  if (item) { <br> 
   // ... do associated action. <br> 
- } <br> 
- /endcode <br> 
- /endif <br> 
- <br> 
- The menu implementation does not provide any style. You can style the <br> 
- menu using CSS. <br> 
- <br> 
- For example: <br> 
- \code <br> 
+ }
+</code>
+ * <p>
+ * The menu implementation does not provide any style. You can style the menu
+ * using CSS.
+ * <p>
+ * For example: <code>
  div.Wt-popupmenu { <br> 
      background: white; <br> 
      color: black; <br> 
@@ -99,7 +97,7 @@ package eu.webtoolkit.jwt;
 public class WPopupMenu extends WCompositeWidget {
 	/**
 	 * Create a new popup menu.
-	 * 
+	 * <p>
 	 * The menu is hidden, by default, and must be shown using
 	 * {@link WPopupMenu#popup(WPoint p)} or {@link WPopupMenu#exec(WPoint p)}.
 	 */
@@ -126,7 +124,7 @@ public class WPopupMenu extends WCompositeWidget {
 
 	/**
 	 * Add an item with given text.
-	 * 
+	 * <p>
 	 * Adds an item to the menu with given text, and returns the corresponding
 	 * item object.
 	 * <p>
@@ -139,7 +137,7 @@ public class WPopupMenu extends WCompositeWidget {
 
 	/**
 	 * Add an item with given icon and text.
-	 * 
+	 * <p>
 	 * Adds an item to the menu with given text and icon, and returns the
 	 * corresponding item object.
 	 * <p>
@@ -163,7 +161,7 @@ public class WPopupMenu extends WCompositeWidget {
 	// dependentsizedarray>) ;
 	/**
 	 * Add a submenu, with given text.
-	 * 
+	 * <p>
 	 * Adds an item with text <i>text</i>, that leads to a submenu <i>menu</i>.
 	 * <p>
 	 * 
@@ -175,7 +173,7 @@ public class WPopupMenu extends WCompositeWidget {
 
 	/**
 	 * Add a submenu, with given icon and text.
-	 * 
+	 * <p>
 	 * Adds an item with given text and icon, that leads to a submenu
 	 * <i>menu</i>.
 	 * <p>
@@ -191,7 +189,7 @@ public class WPopupMenu extends WCompositeWidget {
 
 	/**
 	 * Add a menu item.
-	 * 
+	 * <p>
 	 * Adds an item to the popup menu.
 	 */
 	public void add(WPopupMenuItem item) {
@@ -200,7 +198,7 @@ public class WPopupMenu extends WCompositeWidget {
 
 	/**
 	 * Add a separator to the menu.
-	 * 
+	 * <p>
 	 * Adds a separator the popup menu. The separator is an empty div with
 	 * style-class &quot;separator&quot;.
 	 */
@@ -210,7 +208,7 @@ public class WPopupMenu extends WCompositeWidget {
 
 	/**
 	 * Show the the popup at a position.
-	 * 
+	 * <p>
 	 * Displays the popup at a point with document coordinates <i>point</i>. The
 	 * positions intelligent, and will chose one of the four menu corners to
 	 * correspond to this point so that the popup menu is completely visible
@@ -247,7 +245,7 @@ public class WPopupMenu extends WCompositeWidget {
 
 	/**
 	 * Show the the popup at the location of a mouse event.
-	 * 
+	 * <p>
 	 * This is a convenience method for {@link WPopupMenu#popup(WPoint p)} that
 	 * uses the event&apos;s document coordinates.
 	 * <p>
@@ -261,7 +259,7 @@ public class WPopupMenu extends WCompositeWidget {
 
 	/**
 	 * Execute the the popup at a position.
-	 * 
+	 * <p>
 	 * Displays the popup at a point with document coordinates <i>p</i>, using
 	 * {@link WPopupMenu#popup(WPoint p)}, and the waits until a menu item is
 	 * selected, or the menu is cancelled.
@@ -286,7 +284,7 @@ public class WPopupMenu extends WCompositeWidget {
 
 	/**
 	 * Execute the the popup at the location of a mouse event.
-	 * 
+	 * <p>
 	 * This is a convenience method for {@link WPopupMenu#exec(WPoint p)} that
 	 * uses the event&apos;s document coordinates.
 	 * <p>
@@ -299,7 +297,7 @@ public class WPopupMenu extends WCompositeWidget {
 
 	/**
 	 * Returns the last triggered menu item.
-	 * 
+	 * <p>
 	 * The result is 0 when the user cancelled the popup menu.
 	 */
 	public WPopupMenuItem getResult() {
@@ -318,7 +316,7 @@ public class WPopupMenu extends WCompositeWidget {
 
 	/**
 	 * Signal emitted when the popup is hidden.
-	 * 
+	 * <p>
 	 * This signal is emitted when the popup is hidden, either because an item
 	 * was selected, or when the menu was cancelled.
 	 * <p>

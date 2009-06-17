@@ -9,7 +9,7 @@ import eu.webtoolkit.jwt.utils.MathUtils;
 
 /**
  * A paint device for rendering using the HTML 5 &lt;canvas&gt; element.
- * 
+ * <p>
  * 
  * The WCanvasPaintDevice is used by {@link WPaintedWidget} to render to the
  * browser using the HTML 5 &lt;canvas&gt; element. You usually will not use the
@@ -42,6 +42,13 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 		this.images_ = new ArrayList<String>();
 	}
 
+	/**
+	 * Create a canvas paint device.
+	 * <p>
+	 * Calls
+	 * {@link #WCanvasPaintDevice(WLength width, WLength height, WObject parent)
+	 * this(width, height, (WObject)null)}
+	 */
 	public WCanvasPaintDevice(WLength width, WLength height) {
 		this(width, height, (WObject) null);
 	}

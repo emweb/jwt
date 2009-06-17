@@ -4,7 +4,7 @@ import java.util.List;
 
 /**
  * A user control that represents a radio button
- * 
+ * <p>
  * 
  * Use a {@link WButtonGroup} to group together radio buttons that reflect
  * options that are mutually exclusive.
@@ -54,6 +54,12 @@ public class WRadioButton extends WAbstractToggleButton {
 		this.setFormObject(true);
 	}
 
+	/**
+	 * Create an unchecked radio button with empty label and optional parent.
+	 * <p>
+	 * Calls {@link #WRadioButton(WContainerWidget parent)
+	 * this((WContainerWidget)null)}
+	 */
 	public WRadioButton() {
 		this((WContainerWidget) null);
 	}
@@ -67,6 +73,12 @@ public class WRadioButton extends WAbstractToggleButton {
 		this.setFormObject(true);
 	}
 
+	/**
+	 * Create an unchecked radio button with given text and optional parent.
+	 * <p>
+	 * Calls {@link #WRadioButton(CharSequence text, WContainerWidget parent)
+	 * this(text, (WContainerWidget)null)}
+	 */
 	public WRadioButton(CharSequence text) {
 		this(text, (WContainerWidget) null);
 	}
@@ -89,7 +101,7 @@ public class WRadioButton extends WAbstractToggleButton {
 
 	/**
 	 * Return the button group.
-	 * 
+	 * <p>
 	 * Returns the button group to which this button belongs.
 	 * <p>
 	 * 

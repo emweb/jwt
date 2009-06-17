@@ -3,7 +3,7 @@ package eu.webtoolkit.jwt;
 
 /**
  * A 2D affine transformation matrix.
- * 
+ * <p>
  * 
  * The matrix is encoded using 6 parameters: <code>
  m11  m12   0 <br> 
@@ -42,7 +42,7 @@ package eu.webtoolkit.jwt;
 public class WTransform {
 	/**
 	 * Default constructor.
-	 * 
+	 * <p>
 	 * Creates the identity transformation matrix.
 	 */
 	public WTransform() {
@@ -51,7 +51,7 @@ public class WTransform {
 
 	/**
 	 * Construct a custom matrix by specifying the parameters.
-	 * 
+	 * <p>
 	 * Creates a matrix from the specified parameters.
 	 */
 	public WTransform(double m11, double m12, double m21, double m22,
@@ -66,7 +66,7 @@ public class WTransform {
 
 	/**
 	 * Assignment operator.
-	 * 
+	 * <p>
 	 * Copies the transformation from the <i>rhs</i>.
 	 */
 	public WTransform assign(WTransform rhs) {
@@ -84,7 +84,7 @@ public class WTransform {
 
 	/**
 	 * Comparison operator.
-	 * 
+	 * <p>
 	 * Returns true if the transforms are exactly the same.
 	 */
 	public boolean equals(WTransform rhs) {
@@ -98,7 +98,7 @@ public class WTransform {
 
 	/**
 	 * Identity check.
-	 * 
+	 * <p>
 	 * Returns true if the transform represents an identity transformation.
 	 */
 	public boolean isIdentity() {
@@ -151,7 +151,7 @@ public class WTransform {
 
 	/**
 	 * Returns the horizontal translation factor.
-	 * 
+	 * <p>
 	 * Is equivalent to {@link WTransform#getDx()}
 	 */
 	public double getM31() {
@@ -160,7 +160,7 @@ public class WTransform {
 
 	/**
 	 * Returns the vertical translation factor.
-	 * 
+	 * <p>
 	 * Is equivalent to {@link WTransform#getDy()}
 	 */
 	public double getM32() {
@@ -176,7 +176,7 @@ public class WTransform {
 
 	/**
 	 * Returns the horizontal translation factor.
-	 * 
+	 * <p>
 	 * Is equivalent to {@link WTransform#getM31()}
 	 */
 	public double getDx() {
@@ -185,7 +185,7 @@ public class WTransform {
 
 	/**
 	 * Returns the vertical translation factor.
-	 * 
+	 * <p>
 	 * Is equivalent to {@link WTransform#getM32()}
 	 */
 	public double getDy() {
@@ -194,7 +194,7 @@ public class WTransform {
 
 	/**
 	 * Apply the transformation to a point.
-	 * 
+	 * <p>
 	 * Returns the transformed point.
 	 * <p>
 	 * 
@@ -211,7 +211,7 @@ public class WTransform {
 
 	/**
 	 * Apply the transformation to a point.
-	 * 
+	 * <p>
 	 * Sets the point (<i>tx</i>, <i>ty</i>) to the transformation of the point
 	 * (<i>x</i>, <i>y</i>).
 	 * <p>
@@ -225,6 +225,7 @@ public class WTransform {
 
 	/**
 	 * Resets the transformation to the identity.
+	 * <p>
 	 * 
 	 * @see WTransform#isIdentity()
 	 * @see WTransform#WTransform()
@@ -236,7 +237,7 @@ public class WTransform {
 
 	/**
 	 * Rotate the transformation.
-	 * 
+	 * <p>
 	 * Applies a clock-wise rotation to the current transformation matrix, over
 	 * <i>angle</i> degrees.
 	 * <p>
@@ -250,7 +251,7 @@ public class WTransform {
 
 	/**
 	 * Rotate the transformation.
-	 * 
+	 * <p>
 	 * Applies a clock-wise rotation to the current transformation matrix, over
 	 * <i>angle</i> radians.
 	 * <p>
@@ -267,7 +268,7 @@ public class WTransform {
 
 	/**
 	 * Scale the transformation.
-	 * 
+	 * <p>
 	 * Applies a clock-wise rotation to the current transformation matrix, over
 	 * <i>angle</i> radians.
 	 * <p>
@@ -280,7 +281,7 @@ public class WTransform {
 
 	/**
 	 * Shear the transformation.
-	 * 
+	 * <p>
 	 * Shears the current transformation.
 	 * <p>
 	 * 
@@ -293,7 +294,7 @@ public class WTransform {
 
 	/**
 	 * Translate the transformation.
-	 * 
+	 * <p>
 	 * Translates the current transformation.
 	 */
 	public WTransform translate(double dx, double dy) {
@@ -350,7 +351,7 @@ public class WTransform {
 
 	/**
 	 * Return the inverted transformation.
-	 * 
+	 * <p>
 	 * Returns <i>this</i> if the transformation could not be inverted (
 	 * {@link WTransform#getDeterminant()} == 0), and logs an error instead.
 	 */
@@ -371,6 +372,7 @@ public class WTransform {
 
 	/**
 	 * Result of a TRSS decomposition
+	 * <p>
 	 * 
 	 * @see WTransform#decomposeTranslateRotateScaleSkew(WTransform.TRSSDecomposition
 	 *      result)
@@ -404,7 +406,7 @@ public class WTransform {
 
 	/**
 	 * Decompose the transformation.
-	 * 
+	 * <p>
 	 * Decomposes the transformation into elementary operations: translation
 	 * (<i>dx</i>, <i>dy</i>), followed by rotation (<i>alpha</i>), followed by
 	 * scale (<i>sx</i>, <i>sy</i>) and vertical shearing factor (<i>sh</i>).
@@ -436,6 +438,7 @@ public class WTransform {
 
 	/**
 	 * Result of a TRSR decomposition
+	 * <p>
 	 * 
 	 * @see WTransform#decomposeTranslateRotateScaleRotate(WTransform.TRSRDecomposition
 	 *      result)
@@ -469,7 +472,7 @@ public class WTransform {
 
 	/**
 	 * Decompose the transformation.
-	 * 
+	 * <p>
 	 * Decomposes the transformation into elementary operations: translation
 	 * (<i>dx</i>, <i>dy</i>), followed by rotation (<i>alpha2</i>), followed by
 	 * scale (<i>sx</i>, <i>sy</i>) and again a rotation (<i>alpha2</i>). The

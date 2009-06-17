@@ -6,7 +6,7 @@ import java.util.List;
 
 /**
  * A single node in a tree
- * 
+ * <p>
  * 
  * A tree list is constructed by combining several tree node objects in a tree
  * hierarchy, by passing the parent tree node as the last argument in the child
@@ -158,7 +158,7 @@ public class WTreeNode extends WCompositeWidget {
 
 	/**
 	 * Construct a tree node with the given label.
-	 * 
+	 * <p>
 	 * The labelIcon, if specified, will appear just before the label and its
 	 * state reflect the expand/collapse state of the node.
 	 * <p>
@@ -187,10 +187,24 @@ public class WTreeNode extends WCompositeWidget {
 		}
 	}
 
+	/**
+	 * Construct a tree node with the given label.
+	 * <p>
+	 * Calls
+	 * {@link #WTreeNode(CharSequence labelText, WIconPair labelIcon, WTreeNode parent)
+	 * this(labelText, (WIconPair)null, (WTreeNode)null)}
+	 */
 	public WTreeNode(CharSequence labelText) {
 		this(labelText, (WIconPair) null, (WTreeNode) null);
 	}
 
+	/**
+	 * Construct a tree node with the given label.
+	 * <p>
+	 * Calls
+	 * {@link #WTreeNode(CharSequence labelText, WIconPair labelIcon, WTreeNode parent)
+	 * this(labelText, labelIcon, (WTreeNode)null)}
+	 */
 	public WTreeNode(CharSequence labelText, WIconPair labelIcon) {
 		this(labelText, labelIcon, (WTreeNode) null);
 	}
@@ -290,7 +304,7 @@ public class WTreeNode extends WCompositeWidget {
 
 	/**
 	 * Get the number of children that should be displayed.
-	 * 
+	 * <p>
 	 * This is used to display the count in the count label. The default
 	 * implementation simply returns {@link WTreeNode#getChildNodes()}.size().
 	 */
@@ -300,7 +314,7 @@ public class WTreeNode extends WCompositeWidget {
 
 	/**
 	 * Configure how and when the child count should be displayed.
-	 * 
+	 * <p>
 	 * By default, no child count indication is disabled (this is the behaviour
 	 * since 2.1.1). Use this method to enable child count indications.
 	 * <p>
@@ -333,6 +347,7 @@ public class WTreeNode extends WCompositeWidget {
 
 	/**
 	 * Get the child count policy.
+	 * <p>
 	 * 
 	 * @see WTreeNode#setChildCountPolicy(WTreeNode.ChildCountPolicy policy)
 	 */
@@ -342,7 +357,7 @@ public class WTreeNode extends WCompositeWidget {
 
 	/**
 	 * Set the image pack for this (sub)tree.
-	 * 
+	 * <p>
 	 * You must specify a valid url for the directory that contains the icons.
 	 */
 	public void setImagePack(String url) {
@@ -352,7 +367,7 @@ public class WTreeNode extends WCompositeWidget {
 
 	/**
 	 * Change the load policy for this tree.
-	 * 
+	 * <p>
 	 * This may only be set on the root of a tree, and before adding any
 	 * children.
 	 */
@@ -411,7 +426,7 @@ public class WTreeNode extends WCompositeWidget {
 
 	/**
 	 * Allow this node to be selected.
-	 * 
+	 * <p>
 	 * By default, all nodes may be selected.
 	 * <p>
 	 * 
@@ -424,6 +439,7 @@ public class WTreeNode extends WCompositeWidget {
 
 	/**
 	 * Return if this node may be selected.
+	 * <p>
 	 * 
 	 * @see WTreeNode#setSelectable(boolean selectable)
 	 */
@@ -433,6 +449,7 @@ public class WTreeNode extends WCompositeWidget {
 
 	/**
 	 * Return the parent node.
+	 * <p>
 	 * 
 	 * @see WTreeNode#getChildNodes()
 	 */
@@ -442,7 +459,7 @@ public class WTreeNode extends WCompositeWidget {
 
 	/**
 	 * Set the visibility of the node itself.
-	 * 
+	 * <p>
 	 * If false, then the node itself is not displayed, but only its children.
 	 * This is typically used to hide the root node of a tree.
 	 */
@@ -462,7 +479,7 @@ public class WTreeNode extends WCompositeWidget {
 
 	/**
 	 * Expand this node.
-	 * 
+	 * <p>
 	 * Besides the actual expansion of the node, this may also trigger the
 	 * loading and population of the node children, or of the children&apos;s
 	 * children.
@@ -491,6 +508,7 @@ public class WTreeNode extends WCompositeWidget {
 
 	/**
 	 * Collapse this node.
+	 * <p>
 	 * 
 	 * @see WTreeNode#expand()
 	 * @see WTreeNode#doCollapse()
@@ -503,6 +521,7 @@ public class WTreeNode extends WCompositeWidget {
 
 	/**
 	 * Signal emitted when the node is expanded by the user.
+	 * <p>
 	 * 
 	 * @see WTreeNode#collapsed()
 	 */
@@ -512,6 +531,7 @@ public class WTreeNode extends WCompositeWidget {
 
 	/**
 	 * Signal emitted when the node is collapsed by the user.
+	 * <p>
 	 * 
 	 * @see WTreeNode#expanded()
 	 */
@@ -522,6 +542,7 @@ public class WTreeNode extends WCompositeWidget {
 	/**
 	 * Signal that is emitted when the node is added or removed from the
 	 * selection
+	 * <p>
 	 * 
 	 * @see WTree#itemSelectionChanged()
 	 */
@@ -531,7 +552,7 @@ public class WTreeNode extends WCompositeWidget {
 
 	/**
 	 * Construct a tree node with empty {@link WTreeNode#getLabelArea()}.
-	 * 
+	 * <p>
 	 * This tree node has no label or labelicon, and is therefore ideally suited
 	 * to provide a custom look.
 	 */
@@ -557,13 +578,18 @@ public class WTreeNode extends WCompositeWidget {
 		}
 	}
 
+	/**
+	 * Construct a tree node with empty {@link WTreeNode#getLabelArea()}.
+	 * <p>
+	 * Calls {@link #WTreeNode(WTreeNode parent) this((WTreeNode)null)}
+	 */
 	protected WTreeNode() {
 		this((WTreeNode) null);
 	}
 
 	/**
 	 * Access the container widget that holds the label area.
-	 * 
+	 * <p>
 	 * Use this to customize how the label should look like.
 	 */
 	protected WTableCell getLabelArea() {
@@ -572,7 +598,7 @@ public class WTreeNode extends WCompositeWidget {
 
 	/**
 	 * Populate the node dynamically on loading.
-	 * 
+	 * <p>
 	 * Reimplement this method if you want to populate the widget dynamically,
 	 * as the tree is being browsed and therefore loaded. This is only usefull
 	 * with LazyLoading or NextLevelLoading strategies.
@@ -582,6 +608,7 @@ public class WTreeNode extends WCompositeWidget {
 
 	/**
 	 * Returns whether this node has already been populated.
+	 * <p>
 	 * 
 	 * @see WTreeNode#populate()
 	 */
@@ -591,7 +618,7 @@ public class WTreeNode extends WCompositeWidget {
 
 	/**
 	 * Returns whether this node can be expanded.
-	 * 
+	 * <p>
 	 * The default implementation populates the node if necessary, and then
 	 * checks if there are any child nodes.
 	 * <p>
@@ -614,7 +641,7 @@ public class WTreeNode extends WCompositeWidget {
 
 	/**
 	 * Render the node to be selected.
-	 * 
+	 * <p>
 	 * The default implementation changes the style class of the
 	 * {@link WTreeNode#getLabelArea()} to &quot;selected&quot;.
 	 */
@@ -625,7 +652,7 @@ public class WTreeNode extends WCompositeWidget {
 
 	/**
 	 * The image pack that is used for this tree node.
-	 * 
+	 * <p>
 	 * This is the imagepack that was set, or if not set, the image pack of its
 	 * parent.
 	 */
@@ -643,7 +670,7 @@ public class WTreeNode extends WCompositeWidget {
 
 	/**
 	 * React to the removal of a descendant node.
-	 * 
+	 * <p>
 	 * Reimplement this method if you wish to react on the removal of a
 	 * descendant node. The default implementation simply propagates the event
 	 * to the parent.
@@ -656,7 +683,7 @@ public class WTreeNode extends WCompositeWidget {
 
 	/**
 	 * React to the addition of a descendant node.
-	 * 
+	 * <p>
 	 * Reimplement this method if you wish to react on the addition of a
 	 * descendant node. The default implementation simply propagates the event
 	 * to the parent.
@@ -669,7 +696,7 @@ public class WTreeNode extends WCompositeWidget {
 
 	/**
 	 * The actual expand.
-	 * 
+	 * <p>
 	 * This method, which is implemented as a stateless slot, performs the
 	 * actual expansion of the node.
 	 * <p>
@@ -698,7 +725,7 @@ public class WTreeNode extends WCompositeWidget {
 
 	/**
 	 * The actual collapse.
-	 * 
+	 * <p>
 	 * This method, which is implemented as a stateless slot, performs the
 	 * actual collapse of the node.
 	 * <p>
@@ -722,6 +749,7 @@ public class WTreeNode extends WCompositeWidget {
 
 	/**
 	 * Undo method for {@link WTreeNode#doCollapse()} stateless implementation.
+	 * <p>
 	 * 
 	 * @see WTreeNode#doCollapse()
 	 */
@@ -741,6 +769,7 @@ public class WTreeNode extends WCompositeWidget {
 
 	/**
 	 * Undo method for {@link WTreeNode#doCollapse()} stateless implementation.
+	 * <p>
 	 * 
 	 * @see WTreeNode#doExpand()
 	 */

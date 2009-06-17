@@ -3,7 +3,7 @@ package eu.webtoolkit.jwt;
 
 /**
  * A validator that validates integer user input
- * 
+ * <p>
  * 
  * This validator checks whether user input is an integer number in a
  * pre-defined range.
@@ -21,6 +21,11 @@ public class WIntValidator extends WValidator {
 		this.nanText_ = new WString();
 	}
 
+	/**
+	 * Create a new integer validator that accepts any integer.
+	 * <p>
+	 * Calls {@link #WIntValidator(WObject parent) this((WObject)null)}
+	 */
 	public WIntValidator() {
 		this((WObject) null);
 	}
@@ -38,6 +43,13 @@ public class WIntValidator extends WValidator {
 		this.nanText_ = new WString();
 	}
 
+	/**
+	 * Create a new integer validator that accepts integer input within the
+	 * given range.
+	 * <p>
+	 * Calls {@link #WIntValidator(int bottom, int top, WObject parent)
+	 * this(bottom, top, (WObject)null)}
+	 */
 	public WIntValidator(int bottom, int top) {
 		this(bottom, top, (WObject) null);
 	}
@@ -51,7 +63,7 @@ public class WIntValidator extends WValidator {
 
 	/**
 	 * Set the bottom of the valid integer range.
-	 * 
+	 * <p>
 	 * The default value is std::numeric_limits&lt;int&gt;::min().
 	 */
 	public void setBottom(int bottom) {
@@ -70,7 +82,7 @@ public class WIntValidator extends WValidator {
 
 	/**
 	 * Set the top of the valid integer range.
-	 * 
+	 * <p>
 	 * The default value is std::numeric_limits&lt;int&gt;::max().
 	 */
 	public void setTop(int top) {
@@ -90,7 +102,7 @@ public class WIntValidator extends WValidator {
 
 	/**
 	 * Validate the given input.
-	 * 
+	 * <p>
 	 * The input is considered valid only when it is blank for a non-mandatory
 	 * field, or represents an integer within the valid range.
 	 */
@@ -120,7 +132,7 @@ public class WIntValidator extends WValidator {
 	// public void createExtConfig(Writer config) throws IOException;
 	/**
 	 * Set the message to display when the input is not a number.
-	 * 
+	 * <p>
 	 * The default value is &quot;Must be an integer number.&quot;
 	 */
 	public void setInvalidNotANumberText(CharSequence text) {
@@ -130,6 +142,7 @@ public class WIntValidator extends WValidator {
 
 	/**
 	 * Returns the message displayed when the input is not a number.
+	 * <p>
 	 * 
 	 * @see WIntValidator#setInvalidNotANumberText(CharSequence text)
 	 */
@@ -143,7 +156,7 @@ public class WIntValidator extends WValidator {
 
 	/**
 	 * Set message to display when the number is too small.
-	 * 
+	 * <p>
 	 * Depending on whether {@link WIntValidator#getBottom()} and
 	 * {@link WIntValidator#getTop()} are real bounds, the default message is
 	 * &quot;The number must be between {1} and {2}&quot; or &quot;The number
@@ -156,6 +169,7 @@ public class WIntValidator extends WValidator {
 
 	/**
 	 * Returns the message displayed when the number is too small.
+	 * <p>
 	 * 
 	 * @see WIntValidator#setInvalidTooSmallText(CharSequence text)
 	 */
@@ -182,7 +196,7 @@ public class WIntValidator extends WValidator {
 
 	/**
 	 * Set message to display when the number is too large.
-	 * 
+	 * <p>
 	 * Depending on whether {@link WIntValidator#getBottom()} and
 	 * {@link WIntValidator#getTop()} are real bounds, the default message is
 	 * &quot;The number must be between {1} and {2}&quot; or &quot;The number
@@ -195,6 +209,7 @@ public class WIntValidator extends WValidator {
 
 	/**
 	 * Returns the message displayed when the number is too large.
+	 * <p>
 	 * 
 	 * @see WIntValidator#setInvalidTooLargeText(CharSequence text)
 	 */

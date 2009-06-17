@@ -3,7 +3,7 @@ package eu.webtoolkit.jwt;
 
 /**
  * A menu item that contains a nested sub menu
- * 
+ * <p>
  * 
  * This class specializes menu item to have an optional sub menu.
  * <p>
@@ -17,6 +17,7 @@ package eu.webtoolkit.jwt;
 public class WSubMenuItem extends WMenuItem {
 	/**
 	 * Create a new item.
+	 * <p>
 	 * 
 	 * @see WMenuItem#WMenuItem(CharSequence text, WWidget contents,
 	 *      WMenuItem.LoadPolicy policy)
@@ -26,13 +27,20 @@ public class WSubMenuItem extends WMenuItem {
 		super(text, contents, policy);
 	}
 
+	/**
+	 * Create a new item.
+	 * <p>
+	 * Calls
+	 * {@link #WSubMenuItem(CharSequence text, WWidget contents, WMenuItem.LoadPolicy policy)
+	 * this(text, contents, WMenuItem.LoadPolicy.LazyLoading)}
+	 */
 	public WSubMenuItem(CharSequence text, WWidget contents) {
 		this(text, contents, WMenuItem.LoadPolicy.LazyLoading);
 	}
 
 	/**
 	 * Set a sub menu.
-	 * 
+	 * <p>
 	 * Ownership of the <i>subMenu</i> is transferred to the item. In most
 	 * cases, the sub menu would use the same contents stack as the parent menu.
 	 * <p>
@@ -50,6 +58,7 @@ public class WSubMenuItem extends WMenuItem {
 
 	/**
 	 * Return the sub menu.
+	 * <p>
 	 * 
 	 * @see WSubMenuItem#setSubMenu(WMenu subMenu)
 	 */

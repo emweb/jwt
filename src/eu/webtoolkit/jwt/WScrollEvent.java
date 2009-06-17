@@ -4,6 +4,7 @@ import eu.webtoolkit.jwt.servlet.WebRequest;
 
 /**
  * A class providing details for a scroll event.
+ * <p>
  * 
  * @see WContainerWidget#scrolled()
  */
@@ -18,6 +19,7 @@ public class WScrollEvent implements WAbstractEvent {
 
 	/**
 	 * Returns the current horizontal scroll position.
+	 * <p>
 	 * 
 	 * @see WScrollEvent#getScrollY()
 	 * @see WScrollEvent#getViewportWidth()
@@ -28,6 +30,7 @@ public class WScrollEvent implements WAbstractEvent {
 
 	/**
 	 * Returns the current vertical scroll position.
+	 * <p>
 	 * 
 	 * @see WScrollEvent#getScrollX()
 	 * @see WScrollEvent#getViewportHeight()
@@ -38,7 +41,7 @@ public class WScrollEvent implements WAbstractEvent {
 
 	/**
 	 * Returns the current horizontal viewport width.
-	 * 
+	 * <p>
 	 * Returns the current viewport width.
 	 * <p>
 	 * 
@@ -51,7 +54,7 @@ public class WScrollEvent implements WAbstractEvent {
 
 	/**
 	 * Returns the current horizontal viewport height.
-	 * 
+	 * <p>
 	 * Returns the current viewport height.
 	 * <p>
 	 * 

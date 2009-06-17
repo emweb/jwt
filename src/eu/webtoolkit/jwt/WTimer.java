@@ -3,7 +3,7 @@ package eu.webtoolkit.jwt;
 
 /**
  * A utility class which provides timer signals and single-shot timers
- * 
+ * <p>
  * 
  * To use a timer, create a WTimer instance, set the timer interval using
  * {@link WTimer#setInterval(int msec)} and connect a slot to the timeout
@@ -37,6 +37,11 @@ public class WTimer extends WObject {
 		this.timeout_ = new Time();
 	}
 
+	/**
+	 * Construct a new timer with the given parent.
+	 * <p>
+	 * Calls {@link #WTimer(WObject parent) this((WObject)null)}
+	 */
 	public WTimer() {
 		this((WObject) null);
 	}
@@ -83,7 +88,7 @@ public class WTimer extends WObject {
 
 	/**
 	 * Configure this timer to fire only once.
-	 * 
+	 * <p>
 	 * A Timer is by default not single shot, and will fire continuously, until
 	 * it is stopped.
 	 */
@@ -92,11 +97,16 @@ public class WTimer extends WObject {
 	}
 
 	/**
-	 * Start the timer.
-	 * 
-	 * The timer will be {@link WTimer#isActive()}, until either the interval
-	 * has elapsed, after which the timeout signal is activated, or until
-	 * {@link WTimer#stop()} is called.
+	 * This static function calls a slot after a given time interval.
+	 * <p>
+	 * For example, the following code will call this-&gt;doSome() after 2
+	 * seconds: <code>
+     WTimer::singleShot(2000, SLOT(this, MyClass::doSome));
+  </code>
+	 * <p>
+	 * Start the timer. The timer will be {@link WTimer#isActive()}, until
+	 * either the interval has elapsed, after which the timeout signal is
+	 * activated, or until {@link WTimer#stop()} is called.
 	 */
 	public void start() {
 		if (!this.active_) {
@@ -123,7 +133,7 @@ public class WTimer extends WObject {
 
 	/**
 	 * Stop the timer.
-	 * 
+	 * <p>
 	 * You may stop the timer during its {@link WTimer#timeout()}, or cancel a
 	 * running timer at any other time.
 	 * <p>
@@ -142,7 +152,7 @@ public class WTimer extends WObject {
 
 	/**
 	 * Signal emitted when the timer timeouts.
-	 * 
+	 * <p>
 	 * The WMouseEvent does not provide any meaningful information but is an
 	 * implementation artefact.
 	 */

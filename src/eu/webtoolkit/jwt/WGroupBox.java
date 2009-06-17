@@ -5,7 +5,7 @@ import java.util.List;
 
 /**
  * A widget which group widgets into a frame with a title
- * 
+ * <p>
  * 
  * This is typically used in a form to group certain form elements together.
  * <p>
@@ -41,6 +41,11 @@ import java.util.List;
  * <p>
  * Like {@link WContainerWidget}, WGroupBox is by default a block level widget.
  * <p>
+ * <div align="center"> <img src="/WGroupBox-1.png" alt="WGroupBox example">
+ * <p>
+ * <strong>WGroupBox example</strong>
+ * </p>
+ * </div>
  */
 public class WGroupBox extends WContainerWidget {
 	/**
@@ -52,6 +57,12 @@ public class WGroupBox extends WContainerWidget {
 		this.titleChanged_ = false;
 	}
 
+	/**
+	 * Create a groupbox with empty title.
+	 * <p>
+	 * Calls {@link #WGroupBox(WContainerWidget parent)
+	 * this((WContainerWidget)null)}
+	 */
 	public WGroupBox() {
 		this((WContainerWidget) null);
 	}
@@ -65,6 +76,12 @@ public class WGroupBox extends WContainerWidget {
 		this.titleChanged_ = false;
 	}
 
+	/**
+	 * Create a groupbox with given title message.
+	 * <p>
+	 * Calls {@link #WGroupBox(CharSequence title, WContainerWidget parent)
+	 * this(title, (WContainerWidget)null)}
+	 */
 	public WGroupBox(CharSequence title) {
 		this(title, (WContainerWidget) null);
 	}

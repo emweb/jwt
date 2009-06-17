@@ -15,7 +15,6 @@ import eu.webtoolkit.jwt.WLineEdit;
 import eu.webtoolkit.jwt.WMessageBox;
 import eu.webtoolkit.jwt.WMouseEvent;
 import eu.webtoolkit.jwt.WPushButton;
-import eu.webtoolkit.jwt.WString;
 import eu.webtoolkit.jwt.WText;
 
 /**

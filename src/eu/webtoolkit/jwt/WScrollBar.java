@@ -5,7 +5,7 @@ import java.util.List;
 
 /**
  * A scrollbar attached to a scroll area
- * 
+ * <p>
  * 
  * A {@link WScrollArea} always has two scrollbars (even if they are not
  * visible, for example when the policy is WSCrollArea::ScrollBarAlwaysOff).
@@ -26,7 +26,7 @@ public class WScrollBar extends WObject {
 
 	/**
 	 * Tie two scrollbars together.
-	 * 
+	 * <p>
 	 * The effect of this call is that these scrollbars will keep their
 	 * positions synchronised.
 	 */
@@ -41,7 +41,7 @@ public class WScrollBar extends WObject {
 
 	/**
 	 * Untie two scrollbars, that were previously tied together.
-	 * 
+	 * <p>
 	 * Undo a {@link WScrollBar#tie(WScrollBar one, WScrollBar two)};
 	 */
 	public static void unTie(WScrollBar one, WScrollBar two) {
@@ -55,7 +55,7 @@ public class WScrollBar extends WObject {
 
 	/**
 	 * Set the scrollbar value.
-	 * 
+	 * <p>
 	 * This will move the scrollbar to the given value.
 	 */
 	public void setValue(int value) {

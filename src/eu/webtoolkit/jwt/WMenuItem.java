@@ -4,7 +4,7 @@ import eu.webtoolkit.jwt.utils.StringUtils;
 
 /**
  * A single item in a menu
- * 
+ * <p>
  * 
  * The item determines the look and behaviour of a single item in a
  * {@link WMenu}.
@@ -57,7 +57,7 @@ public class WMenuItem extends WObject {
 
 	/**
 	 * Create a new item.
-	 * 
+	 * <p>
 	 * The text specifies the item text. The contents is the widget that must be
 	 * shown in the {@link WMenu} contents stack when the item is selected.
 	 * <p>
@@ -90,6 +90,13 @@ public class WMenuItem extends WObject {
 		}
 	}
 
+	/**
+	 * Create a new item.
+	 * <p>
+	 * Calls
+	 * {@link #WMenuItem(CharSequence text, WWidget contents, WMenuItem.LoadPolicy policy)
+	 * this(text, contents, WMenuItem.LoadPolicy.LazyLoading)}
+	 */
 	public WMenuItem(CharSequence text, WWidget contents) {
 		this(text, contents, WMenuItem.LoadPolicy.LazyLoading);
 	}
@@ -106,7 +113,7 @@ public class WMenuItem extends WObject {
 
 	/**
 	 * Set the text for this item.
-	 * 
+	 * <p>
 	 * Unless a custom path component was defined, the
 	 * {@link WMenuItem#getPathComponent()} is also updated based on the new
 	 * text.
@@ -147,6 +154,7 @@ public class WMenuItem extends WObject {
 
 	/**
 	 * Return the text for this item.
+	 * <p>
 	 * 
 	 * @see WMenuItem#setText(CharSequence text)
 	 */
@@ -156,7 +164,7 @@ public class WMenuItem extends WObject {
 
 	/**
 	 * Set the path component for this item.
-	 * 
+	 * <p>
 	 * The path component is used by the menu item in the application internal
 	 * path (see
 	 * {@link WApplication#setInternalPath(String path, boolean emitChange)}),
@@ -192,7 +200,7 @@ public class WMenuItem extends WObject {
 
 	/**
 	 * Returns the path component for this item.
-	 * 
+	 * <p>
 	 * You may want to reimplement this to customize the path component set by
 	 * the item in the application internal path.
 	 * <p>
@@ -212,7 +220,7 @@ public class WMenuItem extends WObject {
 
 	/**
 	 * Returs the contents widget for this item.
-	 * 
+	 * <p>
 	 * The contents widget is the widget in the {@link WStackedWidget}
 	 * associated with this item.
 	 */
@@ -232,7 +240,7 @@ public class WMenuItem extends WObject {
 
 	/**
 	 * Returns the widget that represents the item.
-	 * 
+	 * <p>
 	 * This returns the item widget, creating it using
 	 * {@link WMenuItem#createItemWidget()} if necessary.
 	 */
@@ -254,7 +262,7 @@ public class WMenuItem extends WObject {
 
 	/**
 	 * Create the widget that represents the item.
-	 * 
+	 * <p>
 	 * The default implementation will simply return a {@link WAnchor}. A call
 	 * to {@link WMenuItem#createItemWidget()} is immediately followed by
 	 * {@link WMenuItem#updateItemWidget(WWidget itemWidget)}.
@@ -270,7 +278,7 @@ public class WMenuItem extends WObject {
 
 	/**
 	 * Update the widget that represents the item.
-	 * 
+	 * <p>
 	 * The default implementation will cast the <i>itemWidget</i> to a
 	 * {@link WAnchor}, and set the anchor&apos;s text and destination according
 	 * to {@link WMenuItem#getText()} and {@link WMenuItem#getPathComponent()}.
@@ -298,7 +306,7 @@ public class WMenuItem extends WObject {
 
 	/**
 	 * Render the item as selected or unselected.
-	 * 
+	 * <p>
 	 * The default implementation sets the styleclass for
 	 * {@link WMenuItem#getItemWidget()} to &apos;item&apos; for an unselected,
 	 * and &apos;itemselected&apos; for a selected item.
@@ -312,7 +320,7 @@ public class WMenuItem extends WObject {
 
 	/**
 	 * Returns the signal used to activate the item.
-	 * 
+	 * <p>
 	 * The default implementation will tries to cast the
 	 * {@link WMenuItem#getItemWidget()} to a {@link WInteractWidget} and
 	 * returns the {@link WInteractWidget#clicked() clicked signal}.

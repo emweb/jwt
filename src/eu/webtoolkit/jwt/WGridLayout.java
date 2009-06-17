@@ -6,7 +6,7 @@ import java.util.List;
 
 /**
  * A layout manager which arranges widgets in a grid
- * 
+ * <p>
  * 
  * This is a layout class that arranges widgets in a grid, to span the entire
  * area of the parent container. Each grid location (row, column) may contain
@@ -83,7 +83,7 @@ import java.util.List;
 public class WGridLayout extends WLayout {
 	/**
 	 * Create a new grid layout.
-	 * 
+	 * <p>
 	 * The grid will grow dynamically as items are added.
 	 * <p>
 	 * Use <i>parent</i>=0 to created a layout manager that can be nested inside
@@ -97,6 +97,11 @@ public class WGridLayout extends WLayout {
 		}
 	}
 
+	/**
+	 * Create a new grid layout.
+	 * <p>
+	 * Calls {@link #WGridLayout(WWidget parent) this((WWidget)null)}
+	 */
 	public WGridLayout() {
 		this((WWidget) null);
 	}
@@ -127,7 +132,7 @@ public class WGridLayout extends WLayout {
 
 	/**
 	 * Adds a layout item to the grid.
-	 * 
+	 * <p>
 	 * Adds the <i>item</i> at (<i>row</i>, <i>column</i>). If an item was
 	 * already added to that location, it is replaced (but not deleted).
 	 * <p>
@@ -162,6 +167,14 @@ public class WGridLayout extends WLayout {
 		this.updateAddItem(item);
 	}
 
+	/**
+	 * Adds a layout item to the grid.
+	 * <p>
+	 * Calls
+	 * {@link #addItem(WLayoutItem item, int row, int column, int rowSpan, int columnSpan, EnumSet alignment)
+	 * addItem(item, row, column, rowSpan, columnSpan, EnumSet.of(alignmen,
+	 * alignment))}
+	 */
 	public final void addItem(WLayoutItem item, int row, int column,
 			int rowSpan, int columnSpan, AlignmentFlag alignmen,
 			AlignmentFlag... alignment) {
@@ -169,15 +182,38 @@ public class WGridLayout extends WLayout {
 				alignment));
 	}
 
+	/**
+	 * Adds a layout item to the grid.
+	 * <p>
+	 * Calls
+	 * {@link #addItem(WLayoutItem item, int row, int column, int rowSpan, int columnSpan, EnumSet alignment)
+	 * addItem(item, row, column, 1, 1, EnumSet.noneOf(AlignmentFlag.class))}
+	 */
 	public final void addItem(WLayoutItem item, int row, int column) {
 		addItem(item, row, column, 1, 1, EnumSet.noneOf(AlignmentFlag.class));
 	}
 
+	/**
+	 * Adds a layout item to the grid.
+	 * <p>
+	 * Calls
+	 * {@link #addItem(WLayoutItem item, int row, int column, int rowSpan, int columnSpan, EnumSet alignment)
+	 * addItem(item, row, column, rowSpan, 1,
+	 * EnumSet.noneOf(AlignmentFlag.class))}
+	 */
 	public final void addItem(WLayoutItem item, int row, int column, int rowSpan) {
 		addItem(item, row, column, rowSpan, 1, EnumSet
 				.noneOf(AlignmentFlag.class));
 	}
 
+	/**
+	 * Adds a layout item to the grid.
+	 * <p>
+	 * Calls
+	 * {@link #addItem(WLayoutItem item, int row, int column, int rowSpan, int columnSpan, EnumSet alignment)
+	 * addItem(item, row, column, rowSpan, columnSpan,
+	 * EnumSet.noneOf(AlignmentFlag.class))}
+	 */
 	public final void addItem(WLayoutItem item, int row, int column,
 			int rowSpan, int columnSpan) {
 		addItem(item, row, column, rowSpan, columnSpan, EnumSet
@@ -186,7 +222,7 @@ public class WGridLayout extends WLayout {
 
 	/**
 	 * Adds a nested layout item to the grid.
-	 * 
+	 * <p>
 	 * Adds the <i>layout</i> at (<i>row</i>, <i>column</i>). If an item was
 	 * already added to that location, it is replaced (but not deleted).
 	 * <p>
@@ -207,18 +243,32 @@ public class WGridLayout extends WLayout {
 		this.addItem(layout, row, column, 1, 1, alignment);
 	}
 
+	/**
+	 * Adds a nested layout item to the grid.
+	 * <p>
+	 * Calls
+	 * {@link #addLayout(WLayout layout, int row, int column, EnumSet alignment)
+	 * addLayout(layout, row, column, EnumSet.of(alignmen, alignment))}
+	 */
 	public final void addLayout(WLayout layout, int row, int column,
 			AlignmentFlag alignmen, AlignmentFlag... alignment) {
 		addLayout(layout, row, column, EnumSet.of(alignmen, alignment));
 	}
 
+	/**
+	 * Adds a nested layout item to the grid.
+	 * <p>
+	 * Calls
+	 * {@link #addLayout(WLayout layout, int row, int column, EnumSet alignment)
+	 * addLayout(layout, row, column, EnumSet.noneOf(AlignmentFlag.class))}
+	 */
 	public final void addLayout(WLayout layout, int row, int column) {
 		addLayout(layout, row, column, EnumSet.noneOf(AlignmentFlag.class));
 	}
 
 	/**
 	 * Adds a nested layout item to the grid.
-	 * 
+	 * <p>
 	 * Adds the <i>layout</i> at (<i>row</i>, <i>column</i>). If an item was
 	 * already added to that location, it is replaced (but not deleted).
 	 * <p>
@@ -242,6 +292,14 @@ public class WGridLayout extends WLayout {
 		this.addItem(layout, row, column, rowSpan, columnSpan, alignment);
 	}
 
+	/**
+	 * Adds a nested layout item to the grid.
+	 * <p>
+	 * Calls
+	 * {@link #addLayout(WLayout layout, int row, int column, int rowSpan, int columnSpan, EnumSet alignment)
+	 * addLayout(layout, row, column, rowSpan, columnSpan, EnumSet.of(alignmen,
+	 * alignment))}
+	 */
 	public final void addLayout(WLayout layout, int row, int column,
 			int rowSpan, int columnSpan, AlignmentFlag alignmen,
 			AlignmentFlag... alignment) {
@@ -249,6 +307,14 @@ public class WGridLayout extends WLayout {
 				alignmen, alignment));
 	}
 
+	/**
+	 * Adds a nested layout item to the grid.
+	 * <p>
+	 * Calls
+	 * {@link #addLayout(WLayout layout, int row, int column, int rowSpan, int columnSpan, EnumSet alignment)
+	 * addLayout(layout, row, column, rowSpan, columnSpan,
+	 * EnumSet.noneOf(AlignmentFlag.class))}
+	 */
 	public final void addLayout(WLayout layout, int row, int column,
 			int rowSpan, int columnSpan) {
 		addLayout(layout, row, column, rowSpan, columnSpan, EnumSet
@@ -257,7 +323,7 @@ public class WGridLayout extends WLayout {
 
 	/**
 	 * Adds a widget to the grid.
-	 * 
+	 * <p>
 	 * Adds the <i>widget</i> at (<i>row</i>, <i>column</i>). If an item was
 	 * already added to that location, it is replaced (but not deleted).
 	 * <p>
@@ -278,18 +344,32 @@ public class WGridLayout extends WLayout {
 		this.addItem(new WWidgetItem(widget), row, column, 1, 1, alignment);
 	}
 
+	/**
+	 * Adds a widget to the grid.
+	 * <p>
+	 * Calls
+	 * {@link #addWidget(WWidget widget, int row, int column, EnumSet alignment)
+	 * addWidget(widget, row, column, EnumSet.of(alignmen, alignment))}
+	 */
 	public final void addWidget(WWidget widget, int row, int column,
 			AlignmentFlag alignmen, AlignmentFlag... alignment) {
 		addWidget(widget, row, column, EnumSet.of(alignmen, alignment));
 	}
 
+	/**
+	 * Adds a widget to the grid.
+	 * <p>
+	 * Calls
+	 * {@link #addWidget(WWidget widget, int row, int column, EnumSet alignment)
+	 * addWidget(widget, row, column, EnumSet.noneOf(AlignmentFlag.class))}
+	 */
 	public final void addWidget(WWidget widget, int row, int column) {
 		addWidget(widget, row, column, EnumSet.noneOf(AlignmentFlag.class));
 	}
 
 	/**
 	 * Adds a widget to the grid.
-	 * 
+	 * <p>
 	 * Adds the <i>widget</i> at (<i>row</i>, <i>column</i>). If an item was
 	 * already added to that location, it is replaced (but not deleted).
 	 * <p>
@@ -314,6 +394,14 @@ public class WGridLayout extends WLayout {
 				alignment);
 	}
 
+	/**
+	 * Adds a widget to the grid.
+	 * <p>
+	 * Calls
+	 * {@link #addWidget(WWidget widget, int row, int column, int rowSpan, int columnSpan, EnumSet alignment)
+	 * addWidget(widget, row, column, rowSpan, columnSpan, EnumSet.of(alignmen,
+	 * alignment))}
+	 */
 	public final void addWidget(WWidget widget, int row, int column,
 			int rowSpan, int columnSpan, AlignmentFlag alignmen,
 			AlignmentFlag... alignment) {
@@ -321,6 +409,14 @@ public class WGridLayout extends WLayout {
 				alignmen, alignment));
 	}
 
+	/**
+	 * Adds a widget to the grid.
+	 * <p>
+	 * Calls
+	 * {@link #addWidget(WWidget widget, int row, int column, int rowSpan, int columnSpan, EnumSet alignment)
+	 * addWidget(widget, row, column, rowSpan, columnSpan,
+	 * EnumSet.noneOf(AlignmentFlag.class))}
+	 */
 	public final void addWidget(WWidget widget, int row, int column,
 			int rowSpan, int columnSpan) {
 		addWidget(widget, row, column, rowSpan, columnSpan, EnumSet
@@ -329,7 +425,7 @@ public class WGridLayout extends WLayout {
 
 	/**
 	 * Sets the horizontal spacing.
-	 * 
+	 * <p>
 	 * The default horizontal spacing is 9 pixels.
 	 * <p>
 	 * 
@@ -342,6 +438,7 @@ public class WGridLayout extends WLayout {
 
 	/**
 	 * Returns the horizontal spacing.
+	 * <p>
 	 * 
 	 * @see WGridLayout#setHorizontalSpacing(int size)
 	 */
@@ -351,7 +448,7 @@ public class WGridLayout extends WLayout {
 
 	/**
 	 * Sets the vertical spacing.
-	 * 
+	 * <p>
 	 * The default vertical spacing is 9 pixels.
 	 * <p>
 	 * 
@@ -364,6 +461,7 @@ public class WGridLayout extends WLayout {
 
 	/**
 	 * Returns the vertical spacing.
+	 * <p>
 	 * 
 	 * @see WGridLayout#setVerticalSpacing(int size)
 	 */
@@ -373,7 +471,7 @@ public class WGridLayout extends WLayout {
 
 	/**
 	 * Returns the column count.
-	 * 
+	 * <p>
 	 * The grid dimensions change dynamically when adding contents to the grid.
 	 * <p>
 	 * 
@@ -385,7 +483,7 @@ public class WGridLayout extends WLayout {
 
 	/**
 	 * Returns the row count.
-	 * 
+	 * <p>
 	 * The grid dimensions change dynamically when adding contents to the grid.
 	 * <p>
 	 * 
@@ -397,7 +495,7 @@ public class WGridLayout extends WLayout {
 
 	/**
 	 * Sets the column stretch.
-	 * 
+	 * <p>
 	 * Sets the <i>stretch</i> factor for column <i>column</i>.
 	 * <p>
 	 * 
@@ -411,6 +509,7 @@ public class WGridLayout extends WLayout {
 
 	/**
 	 * Returns the column stretch.
+	 * <p>
 	 * 
 	 * @see WGridLayout#setColumnStretch(int column, int stretch)
 	 */
@@ -420,7 +519,7 @@ public class WGridLayout extends WLayout {
 
 	/**
 	 * Sets the row stretch.
-	 * 
+	 * <p>
 	 * Sets the <i>stretch</i> factor for row <i>row</i>. See the description
 	 * for the special value of -1.
 	 * <p>
@@ -435,6 +534,7 @@ public class WGridLayout extends WLayout {
 
 	/**
 	 * Returns the column stretch.
+	 * <p>
 	 * 
 	 * @see WGridLayout#setRowStretch(int row, int stretch)
 	 */

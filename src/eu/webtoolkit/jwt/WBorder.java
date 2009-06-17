@@ -101,10 +101,24 @@ public class WBorder {
 		this.style_ = style;
 	}
 
+	/**
+	 * Create a border with given style, thickness and color.
+	 * <p>
+	 * Calls
+	 * {@link #WBorder(WBorder.Style style, WBorder.Width width, WColor color)
+	 * this(style, WBorder.Width.Medium, new WColor())}
+	 */
 	public WBorder(WBorder.Style style) {
 		this(style, WBorder.Width.Medium, new WColor());
 	}
 
+	/**
+	 * Create a border with given style, thickness and color.
+	 * <p>
+	 * Calls
+	 * {@link #WBorder(WBorder.Style style, WBorder.Width width, WColor color)
+	 * this(style, width, new WColor())}
+	 */
 	public WBorder(WBorder.Style style, WBorder.Width width) {
 		this(style, width, new WColor());
 	}
@@ -119,6 +133,12 @@ public class WBorder {
 		this.style_ = style;
 	}
 
+	/**
+	 * Create a border with an absolute width.
+	 * <p>
+	 * Calls {@link #WBorder(WBorder.Style style, WLength width, WColor color)
+	 * this(style, width, new WColor())}
+	 */
 	public WBorder(WBorder.Style style, WLength width) {
 		this(style, width, new WColor());
 	}
@@ -133,7 +153,7 @@ public class WBorder {
 
 	/**
 	 * Set the border width.
-	 * 
+	 * <p>
 	 * If width == Explicit, then the width specified in <i>explicitWidth</i> is
 	 * used.
 	 */
@@ -142,6 +162,12 @@ public class WBorder {
 		this.explicitWidth_ = explicitWidth;
 	}
 
+	/**
+	 * Set the border width.
+	 * <p>
+	 * Calls {@link #setWidth(WBorder.Width width, WLength explicitWidth)
+	 * setWidth(width, WLength.Auto)}
+	 */
 	public final void setWidth(WBorder.Width width) {
 		setWidth(width, WLength.Auto);
 	}
@@ -162,6 +188,7 @@ public class WBorder {
 
 	/**
 	 * Returns the border width.
+	 * <p>
 	 * 
 	 * @see WBorder#setWidth(WBorder.Width width, WLength explicitWidth)
 	 */
@@ -171,6 +198,7 @@ public class WBorder {
 
 	/**
 	 * Returns the border width when set explicitly.
+	 * <p>
 	 * 
 	 * @see WBorder#setWidth(WBorder.Width width, WLength explicitWidth)
 	 */
@@ -180,6 +208,7 @@ public class WBorder {
 
 	/**
 	 * Returns the border color.
+	 * <p>
 	 * 
 	 * @see WBorder#setColor(WColor color)
 	 */
@@ -189,6 +218,7 @@ public class WBorder {
 
 	/**
 	 * Returns the border style.
+	 * <p>
 	 * 
 	 * @see WBorder#setStyle(WBorder.Style style)
 	 */

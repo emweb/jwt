@@ -4,7 +4,7 @@ import java.util.EnumSet;
 
 /**
  * A horizontal or vertical slider control
- * 
+ * <p>
  * 
  * A slider allows the user to specify an integer value within a particular
  * range using a visual slider.
@@ -42,7 +42,7 @@ public class WSlider extends WCompositeWidget {
 
 	/**
 	 * Create a default horizontal slider.
-	 * 
+	 * <p>
 	 * The slider shows no ticks, has a range from 0 to 99, and has tickInterval
 	 * of 0 (defaulting to three ticks over the whole range).
 	 * <p>
@@ -64,13 +64,19 @@ public class WSlider extends WCompositeWidget {
 		this.create();
 	}
 
+	/**
+	 * Create a default horizontal slider.
+	 * <p>
+	 * Calls {@link #WSlider(WContainerWidget parent)
+	 * this((WContainerWidget)null)}
+	 */
 	public WSlider() {
 		this((WContainerWidget) null);
 	}
 
 	/**
 	 * Create a default slider of the given orientation.
-	 * 
+	 * <p>
 	 * The slider shows no ticks, has a range from 0 to 99, and has tickInterval
 	 * of 0 (defaulting to three ticks over the whole range).
 	 * <p>
@@ -92,6 +98,12 @@ public class WSlider extends WCompositeWidget {
 		this.create();
 	}
 
+	/**
+	 * Create a default slider of the given orientation.
+	 * <p>
+	 * Calls {@link #WSlider(Orientation orientation, WContainerWidget parent)
+	 * this(orientation, (WContainerWidget)null)}
+	 */
 	public WSlider(Orientation orientation) {
 		this(orientation, (WContainerWidget) null);
 	}
@@ -105,6 +117,7 @@ public class WSlider extends WCompositeWidget {
 
 	/**
 	 * Change the slider orientation.
+	 * <p>
 	 * 
 	 * @see WSlider#getOrientation()
 	 */
@@ -115,6 +128,7 @@ public class WSlider extends WCompositeWidget {
 
 	/**
 	 * Returns the slider orientation.
+	 * <p>
 	 * 
 	 * @see WSlider#setOrientation(Orientation orientation)
 	 */
@@ -124,7 +138,7 @@ public class WSlider extends WCompositeWidget {
 
 	/**
 	 * Change the tick interval.
-	 * 
+	 * <p>
 	 * The tick interval specifies the interval for placing ticks along the
 	 * slider. The interval is specified in value units (not pixel units). A
 	 * value of 0 specifies an automatic tick interval, which defaults to 3
@@ -141,6 +155,7 @@ public class WSlider extends WCompositeWidget {
 
 	/**
 	 * Returns the tick interval.
+	 * <p>
 	 * 
 	 * @see WSlider#setTickInterval(int tickInterval)
 	 */
@@ -150,7 +165,7 @@ public class WSlider extends WCompositeWidget {
 
 	/**
 	 * Set the tick position.
-	 * 
+	 * <p>
 	 * The tick position indicates if and where ticks are placed around the
 	 * slider groove.
 	 * <p>
@@ -163,6 +178,12 @@ public class WSlider extends WCompositeWidget {
 		this.background_.update();
 	}
 
+	/**
+	 * Set the tick position.
+	 * <p>
+	 * Calls {@link #setTickPosition(EnumSet tickPosition)
+	 * setTickPosition(EnumSet.of(tickPositio, tickPosition))}
+	 */
 	public final void setTickPosition(WSlider.TickPosition tickPositio,
 			WSlider.TickPosition... tickPosition) {
 		setTickPosition(EnumSet.of(tickPositio, tickPosition));
@@ -170,6 +191,7 @@ public class WSlider extends WCompositeWidget {
 
 	/**
 	 * Return the tick position.
+	 * <p>
 	 * 
 	 * @see WSlider#setTickPosition(EnumSet tickPosition)
 	 * @see WSlider#setTickInterval(int tickInterval)
@@ -180,7 +202,7 @@ public class WSlider extends WCompositeWidget {
 
 	/**
 	 * Change the slider value.
-	 * 
+	 * <p>
 	 * The value is automatically trimmed to the valid range (
 	 * {@link WSlider#getMinimum()} to {@link WSlider#getMaximum()}).
 	 * <p>
@@ -194,6 +216,7 @@ public class WSlider extends WCompositeWidget {
 
 	/**
 	 * Returns the current slider value.
+	 * <p>
 	 * 
 	 * @see WSlider#setValue(int value)
 	 */
@@ -203,7 +226,7 @@ public class WSlider extends WCompositeWidget {
 
 	/**
 	 * Set the maximum value.
-	 * 
+	 * <p>
 	 * The maximum value defines the upper limit of the valid range. The lower
 	 * limit and current value are automatically adjusted to remain valid.
 	 * <p>
@@ -221,6 +244,7 @@ public class WSlider extends WCompositeWidget {
 
 	/**
 	 * Returns the maximum value.
+	 * <p>
 	 * 
 	 * @see WSlider#setMaximum(int maximum)
 	 */
@@ -230,7 +254,7 @@ public class WSlider extends WCompositeWidget {
 
 	/**
 	 * Set the minimum value.
-	 * 
+	 * <p>
 	 * The minimum value defines the lower limit of the valid range. The upper
 	 * limit and current value are automatically adjusted to remain valid.
 	 * <p>
@@ -248,6 +272,7 @@ public class WSlider extends WCompositeWidget {
 
 	/**
 	 * Returns the minimum value.
+	 * <p>
 	 * 
 	 * @see WSlider#setMinimum(int minimum)
 	 */
@@ -257,6 +282,7 @@ public class WSlider extends WCompositeWidget {
 
 	/**
 	 * Set the value range.
+	 * <p>
 	 * 
 	 * @see WSlider#setMinimum(int minimum)
 	 * @see WSlider#setMaximum(int maximum)
@@ -271,7 +297,7 @@ public class WSlider extends WCompositeWidget {
 
 	/**
 	 * Signal emitted when the user has changed the value of the slider.
-	 * 
+	 * <p>
 	 * The new value is passed as the argument.
 	 */
 	public Signal1<Integer> valueChanged() {

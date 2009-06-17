@@ -14,7 +14,7 @@ import eu.webtoolkit.jwt.utils.StringUtils;
 
 /**
  * An abstract model for use with Wt&apos;s view classes.
- * 
+ * <p>
  * 
  * This abstract model is used by several Wt view widgets ({@link WComboBox},
  * {@link WSelectionBox} and {@link WTreeView}) as data models.
@@ -98,6 +98,9 @@ import eu.webtoolkit.jwt.utils.StringUtils;
  * themselves to the new geometry.
  */
 public abstract class WAbstractItemModel extends WObject {
+	/**
+	 * Data map.
+	 */
 	public SortedMap<Integer, Object> DataMap;
 
 	/**
@@ -126,6 +129,11 @@ public abstract class WAbstractItemModel extends WObject {
 		this.modelReset_ = new Signal(this);
 	}
 
+	/**
+	 * Create a new data model.
+	 * <p>
+	 * Calls {@link #WAbstractItemModel(WObject parent) this((WObject)null)}
+	 */
 	public WAbstractItemModel() {
 		this((WObject) null);
 	}
@@ -138,7 +146,7 @@ public abstract class WAbstractItemModel extends WObject {
 
 	/**
 	 * Returns the number of columns.
-	 * 
+	 * <p>
 	 * This returns the number of columns at index <i>parent</i>.
 	 * <p>
 	 * 
@@ -146,13 +154,18 @@ public abstract class WAbstractItemModel extends WObject {
 	 */
 	public abstract int getColumnCount(WModelIndex parent);
 
+	/**
+	 * Returns the number of columns.
+	 * <p>
+	 * Returns {@link #getColumnCount(WModelIndex parent) getColumnCount(null)}
+	 */
 	public final int getColumnCount() {
 		return getColumnCount(null);
 	}
 
 	/**
 	 * Returns the number of rows.
-	 * 
+	 * <p>
 	 * This returns the number of rows at index <i>parent</i>.
 	 * <p>
 	 * 
@@ -160,6 +173,11 @@ public abstract class WAbstractItemModel extends WObject {
 	 */
 	public abstract int getRowCount(WModelIndex parent);
 
+	/**
+	 * Returns the number of rows.
+	 * <p>
+	 * Returns {@link #getRowCount(WModelIndex parent) getRowCount(null)}
+	 */
 	public final int getRowCount() {
 		return getRowCount(null);
 	}
@@ -173,7 +191,7 @@ public abstract class WAbstractItemModel extends WObject {
 
 	/**
 	 * Returns the flags for an item.
-	 * 
+	 * <p>
 	 * The default implementation returns {@link ItemFlag#ItemIsSelectable
 	 * ItemIsSelectable}.
 	 * <p>
@@ -186,7 +204,7 @@ public abstract class WAbstractItemModel extends WObject {
 
 	/**
 	 * Returns if there are children at an index.
-	 * 
+	 * <p>
 	 * Returns true when rowCount(index) &gt; 0 and columnCount(index) &gt; 0.
 	 * <p>
 	 * 
@@ -199,7 +217,7 @@ public abstract class WAbstractItemModel extends WObject {
 
 	/**
 	 * Returns the parent for a model index.
-	 * 
+	 * <p>
 	 * You should use
 	 * {@link WAbstractItemModel#createIndex(int row, int column, Object ptr)}
 	 * to create a model index that corresponds to the parent of a given index.
@@ -211,7 +229,7 @@ public abstract class WAbstractItemModel extends WObject {
 
 	/**
 	 * Returns data at a specific model index.
-	 * 
+	 * <p>
 	 * Return data for a given role at a given index.
 	 * <p>
 	 * 
@@ -223,13 +241,19 @@ public abstract class WAbstractItemModel extends WObject {
 	 */
 	public abstract Object getData(WModelIndex index, int role);
 
+	/**
+	 * Returns data at a specific model index.
+	 * <p>
+	 * Returns {@link #getData(WModelIndex index, int role) getData(index,
+	 * ItemDataRole.DisplayRole)}
+	 */
 	public final Object getData(WModelIndex index) {
 		return getData(index, ItemDataRole.DisplayRole);
 	}
 
 	/**
 	 * Returns all data at a specific index.
-	 * 
+	 * <p>
 	 * This is a convenience function that returns a map with data corresponding
 	 * to all standard roles.
 	 * <p>
@@ -250,7 +274,7 @@ public abstract class WAbstractItemModel extends WObject {
 
 	/**
 	 * Returns the row or column header data.
-	 * 
+	 * <p>
 	 * When <i>orientation</i> is {@link Orientation#Horizontal Horizontal},
 	 * <i>section</i> is a column number, when <i>orientation</i> is
 	 * {@link Orientation#Vertical Vertical}, <i>section</i> is a row number.
@@ -264,18 +288,32 @@ public abstract class WAbstractItemModel extends WObject {
 		return null;
 	}
 
+	/**
+	 * Returns the row or column header data.
+	 * <p>
+	 * Returns
+	 * {@link #getHeaderData(int section, Orientation orientation, int role)
+	 * getHeaderData(section, Orientation.Horizontal, ItemDataRole.DisplayRole)}
+	 */
 	public final Object getHeaderData(int section) {
 		return getHeaderData(section, Orientation.Horizontal,
 				ItemDataRole.DisplayRole);
 	}
 
+	/**
+	 * Returns the row or column header data.
+	 * <p>
+	 * Returns
+	 * {@link #getHeaderData(int section, Orientation orientation, int role)
+	 * getHeaderData(section, orientation, ItemDataRole.DisplayRole)}
+	 */
 	public final Object getHeaderData(int section, Orientation orientation) {
 		return getHeaderData(section, orientation, ItemDataRole.DisplayRole);
 	}
 
 	/**
 	 * Returns the child index for the given row and column.
-	 * 
+	 * <p>
 	 * When implementing this method, you can use
 	 * {@link WAbstractItemModel#createIndex(int row, int column, Object ptr)}
 	 * to create an index that corresponds to the item at <i>row</i> and
@@ -289,13 +327,19 @@ public abstract class WAbstractItemModel extends WObject {
 	 */
 	public abstract WModelIndex getIndex(int row, int column, WModelIndex parent);
 
+	/**
+	 * Returns the child index for the given row and column.
+	 * <p>
+	 * Returns {@link #getIndex(int row, int column, WModelIndex parent)
+	 * getIndex(row, column, null)}
+	 */
 	public final WModelIndex getIndex(int row, int column) {
 		return getIndex(row, column, null);
 	}
 
 	/**
 	 * Returns an index list for data items that match.
-	 * 
+	 * <p>
 	 * Returns an index list of data items that match, starting at start, and
 	 * searching further in that column. If flags specifes MatchWrap then the
 	 * search wraps around from the start. If hits is not -1, then at most that
@@ -327,7 +371,7 @@ public abstract class WAbstractItemModel extends WObject {
 
 	/**
 	 * Returns the data item at the given column and row.
-	 * 
+	 * <p>
 	 * This is a convenience method, and is equivalent to: <code>
    index(row, column, parent).data(role)
   </code>
@@ -340,10 +384,22 @@ public abstract class WAbstractItemModel extends WObject {
 		return this.getData(this.getIndex(row, column, parent), role);
 	}
 
+	/**
+	 * Returns the data item at the given column and row.
+	 * <p>
+	 * Returns {@link #getData(int row, int column, int role, WModelIndex parent)
+	 * getData(row, column, ItemDataRole.DisplayRole, null)}
+	 */
 	public final Object getData(int row, int column) {
 		return getData(row, column, ItemDataRole.DisplayRole, null);
 	}
 
+	/**
+	 * Returns the data item at the given column and row.
+	 * <p>
+	 * Returns {@link #getData(int row, int column, int role, WModelIndex parent)
+	 * getData(row, column, role, null)}
+	 */
 	public final Object getData(int row, int column, int role) {
 		return getData(row, column, role, null);
 	}
@@ -351,7 +407,7 @@ public abstract class WAbstractItemModel extends WObject {
 	/**
 	 * Returns if an index at the given position is valid (i.e. falls within the
 	 * column-row bounds).
-	 * 
+	 * <p>
 	 * Equivalent to: <code>
    return row &gt;= 0 &amp;&amp; column &gt;= 0 <br> 
           &amp;&amp; row &lt; rowCount(parent) &amp;&amp; column &lt; columnCount(parent);
@@ -366,13 +422,20 @@ public abstract class WAbstractItemModel extends WObject {
 				&& column < this.getColumnCount(parent);
 	}
 
+	/**
+	 * Returns if an index at the given position is valid (i.e. falls within the
+	 * column-row bounds).
+	 * <p>
+	 * Returns {@link #hasIndex(int row, int column, WModelIndex parent)
+	 * hasIndex(row, column, null)}
+	 */
 	public final boolean hasIndex(int row, int column) {
 		return hasIndex(row, column, null);
 	}
 
 	/**
 	 * Insert one or more columns.
-	 * 
+	 * <p>
 	 * Returns true if the operation was successful.
 	 * <p>
 	 * The default implementation returns false. If you reimplement this method,
@@ -394,13 +457,19 @@ public abstract class WAbstractItemModel extends WObject {
 		return false;
 	}
 
+	/**
+	 * Insert one or more columns.
+	 * <p>
+	 * Returns {@link #insertColumns(int column, int count, WModelIndex parent)
+	 * insertColumns(column, count, null)}
+	 */
 	public final boolean insertColumns(int column, int count) {
 		return insertColumns(column, count, null);
 	}
 
 	/**
 	 * Insert one or more rows.
-	 * 
+	 * <p>
 	 * Returns true if the operation was successful. If you reimplement this
 	 * method, then you must call
 	 * {@link WAbstractItemModel#beginInsertRows(WModelIndex parent, int first, int last)}
@@ -422,13 +491,19 @@ public abstract class WAbstractItemModel extends WObject {
 		return false;
 	}
 
+	/**
+	 * Insert one or more rows.
+	 * <p>
+	 * Returns {@link #insertRows(int row, int count, WModelIndex parent)
+	 * insertRows(row, count, null)}
+	 */
 	public final boolean insertRows(int row, int count) {
 		return insertRows(row, count, null);
 	}
 
 	/**
 	 * Remove columns.
-	 * 
+	 * <p>
 	 * Returns true if the operation was successful.
 	 * <p>
 	 * The default implementation returns false. If you reimplement this method,
@@ -450,13 +525,19 @@ public abstract class WAbstractItemModel extends WObject {
 		return false;
 	}
 
+	/**
+	 * Remove columns.
+	 * <p>
+	 * Returns {@link #removeColumns(int column, int count, WModelIndex parent)
+	 * removeColumns(column, count, null)}
+	 */
 	public final boolean removeColumns(int column, int count) {
 		return removeColumns(column, count, null);
 	}
 
 	/**
 	 * Remove rows.
-	 * 
+	 * <p>
 	 * Returns true if the operation was successful.
 	 * <p>
 	 * The default implementation returns false. If you reimplement this method,
@@ -478,13 +559,19 @@ public abstract class WAbstractItemModel extends WObject {
 		return false;
 	}
 
+	/**
+	 * Remove rows.
+	 * <p>
+	 * Returns {@link #removeRows(int row, int count, WModelIndex parent)
+	 * removeRows(row, count, null)}
+	 */
 	public final boolean removeRows(int row, int count) {
 		return removeRows(row, count, null);
 	}
 
 	/**
 	 * Set data at the given model index.
-	 * 
+	 * <p>
 	 * Returns true if the operation was successful.
 	 * <p>
 	 * The default implementation returns false. If you reimplement this method,
@@ -498,13 +585,19 @@ public abstract class WAbstractItemModel extends WObject {
 		return false;
 	}
 
+	/**
+	 * Set data at the given model index.
+	 * <p>
+	 * Returns {@link #setData(WModelIndex index, Object value, int role)
+	 * setData(index, value, ItemDataRole.EditRole)}
+	 */
 	public final boolean setData(WModelIndex index, Object value) {
 		return setData(index, value, ItemDataRole.EditRole);
 	}
 
 	/**
 	 * Set data at the given model index.
-	 * 
+	 * <p>
 	 * This is a convenience function that sets data for all roles at once.
 	 * <p>
 	 * 
@@ -532,7 +625,7 @@ public abstract class WAbstractItemModel extends WObject {
 
 	/**
 	 * Set header data for a column or row.
-	 * 
+	 * <p>
 	 * Returns true if the operation was successful.
 	 * <p>
 	 * 
@@ -544,6 +637,13 @@ public abstract class WAbstractItemModel extends WObject {
 		return false;
 	}
 
+	/**
+	 * Set header data for a column or row.
+	 * <p>
+	 * Returns
+	 * {@link #setHeaderData(int section, Orientation orientation, Object value, int role)
+	 * setHeaderData(section, orientation, value, ItemDataRole.EditRole)}
+	 */
 	public final boolean setHeaderData(int section, Orientation orientation,
 			Object value) {
 		return setHeaderData(section, orientation, value, ItemDataRole.EditRole);
@@ -551,7 +651,7 @@ public abstract class WAbstractItemModel extends WObject {
 
 	/**
 	 * Set column header data (<b>deprecated</b>).
-	 * 
+	 * <p>
 	 * Returns true if the operation was successful.
 	 * <p>
 	 * DOCXREFITEMDeprecatedUse
@@ -564,7 +664,7 @@ public abstract class WAbstractItemModel extends WObject {
 
 	/**
 	 * Sort the model according to a particular column.
-	 * 
+	 * <p>
 	 * If the model supports sorting, then it should emit the
 	 * {@link WAbstractItemModel#layoutAboutToBeChanged()} signal, rearrange its
 	 * items, and afterwards emit the {@link WAbstractItemModel#layoutChanged()}
@@ -577,6 +677,12 @@ public abstract class WAbstractItemModel extends WObject {
 	public void sort(int column, SortOrder order) {
 	}
 
+	/**
+	 * Sort the model according to a particular column.
+	 * <p>
+	 * Calls {@link #sort(int column, SortOrder order) sort(column,
+	 * SortOrder.AscendingOrder)}
+	 */
 	public final void sort(int column) {
 		sort(column, SortOrder.AscendingOrder);
 	}
@@ -584,7 +690,7 @@ public abstract class WAbstractItemModel extends WObject {
 	/**
 	 * Convert a model index to a raw pointer that remains valid while the
 	 * model&apos;s layout is changed.
-	 * 
+	 * <p>
 	 * Use this method to temporarily save model indexes while the model&apos;s
 	 * layout is changed by for example a sorting operation.
 	 * <p>
@@ -604,7 +710,7 @@ public abstract class WAbstractItemModel extends WObject {
 
 	/**
 	 * Convert a raw pointer to a model index.
-	 * 
+	 * <p>
 	 * Use this method to create model index from temporary raw pointers. It is
 	 * the reciproce method of
 	 * {@link WAbstractItemModel#toRawIndex(WModelIndex index)}.
@@ -621,12 +727,13 @@ public abstract class WAbstractItemModel extends WObject {
 
 	/**
 	 * Returns a mime-type for dragging a set of indexes.
-	 * 
+	 * <p>
 	 * This method returns a mime-type that describes dragging of a selection of
 	 * items.
 	 * <p>
-	 * The drop event will indicate a selection model for this abstract item
-	 * model as {@link WDropEvent#getSource() source}.
+	 * The drop event will indicate a {@link WItemSelectionModel selection
+	 * model} for this abstract item model as {@link WDropEvent#getSource()
+	 * source}.
 	 * <p>
 	 * The default implementation returns a mime-type for generic drag&amp;drop
 	 * support between abstract item models.
@@ -640,7 +747,7 @@ public abstract class WAbstractItemModel extends WObject {
 
 	/**
 	 * Returns a list of mime-types that could be accepted for a drop event.
-	 * 
+	 * <p>
 	 * The default implementation only accepts drag&amp;drop support between
 	 * abstract item models.
 	 * <p>
@@ -655,7 +762,7 @@ public abstract class WAbstractItemModel extends WObject {
 
 	/**
 	 * Handle a drop event.
-	 * 
+	 * <p>
 	 * The default implementation only handles generic drag&amp;drop between
 	 * abstract item models. Source item data is copied (but not the source
 	 * item&apos;s flags).
@@ -723,7 +830,7 @@ public abstract class WAbstractItemModel extends WObject {
 
 	/**
 	 * Insert one column.
-	 * 
+	 * <p>
 	 * This is a convenience method that adds a single column, and is equivalent
 	 * to: <code>
    insertColumns(column, 1, parent);
@@ -739,13 +846,19 @@ public abstract class WAbstractItemModel extends WObject {
 		return this.insertColumns(column, 1, parent);
 	}
 
+	/**
+	 * Insert one column.
+	 * <p>
+	 * Returns {@link #insertColumn(int column, WModelIndex parent)
+	 * insertColumn(column, null)}
+	 */
 	public final boolean insertColumn(int column) {
 		return insertColumn(column, null);
 	}
 
 	/**
 	 * Insert one row.
-	 * 
+	 * <p>
 	 * This is a convenience method that adds a single row, and is equivalent
 	 * to: <code>
    insertRows(row, 1, parent);
@@ -761,13 +874,19 @@ public abstract class WAbstractItemModel extends WObject {
 		return this.insertRows(row, 1, parent);
 	}
 
+	/**
+	 * Insert one row.
+	 * <p>
+	 * Returns {@link #insertRow(int row, WModelIndex parent) insertRow(row,
+	 * null)}
+	 */
 	public final boolean insertRow(int row) {
 		return insertRow(row, null);
 	}
 
 	/**
 	 * Remove one column.
-	 * 
+	 * <p>
 	 * This is a convenience method that removes a single column, and is
 	 * equivalent to: <code>
    removeColumns(column, 1, parent);
@@ -783,13 +902,19 @@ public abstract class WAbstractItemModel extends WObject {
 		return this.removeColumns(column, 1, parent);
 	}
 
+	/**
+	 * Remove one column.
+	 * <p>
+	 * Returns {@link #removeColumn(int column, WModelIndex parent)
+	 * removeColumn(column, null)}
+	 */
 	public final boolean removeColumn(int column) {
 		return removeColumn(column, null);
 	}
 
 	/**
 	 * Remove one row.
-	 * 
+	 * <p>
 	 * This is a convenience method that removes a single row, and is equivalent
 	 * to: <code>
    removeRows(row, 1, parent);
@@ -805,13 +930,19 @@ public abstract class WAbstractItemModel extends WObject {
 		return this.removeRows(row, 1, parent);
 	}
 
+	/**
+	 * Remove one row.
+	 * <p>
+	 * Returns {@link #removeRow(int row, WModelIndex parent) removeRow(row,
+	 * null)}
+	 */
 	public final boolean removeRow(int row) {
 		return removeRow(row, null);
 	}
 
 	/**
 	 * Set data at the given row and column.
-	 * 
+	 * <p>
 	 * This is a convience method, and is equivalent to: <code>
    setData(index(row, column, parent), value, role);
   </code>
@@ -833,17 +964,31 @@ public abstract class WAbstractItemModel extends WObject {
 		}
 	}
 
+	/**
+	 * Set data at the given row and column.
+	 * <p>
+	 * Returns
+	 * {@link #setData(int row, int column, Object value, int role, WModelIndex parent)
+	 * setData(row, column, value, ItemDataRole.EditRole, null)}
+	 */
 	public final boolean setData(int row, int column, Object value) {
 		return setData(row, column, value, ItemDataRole.EditRole, null);
 	}
 
+	/**
+	 * Set data at the given row and column.
+	 * <p>
+	 * Returns
+	 * {@link #setData(int row, int column, Object value, int role, WModelIndex parent)
+	 * setData(row, column, value, role, null)}
+	 */
 	public final boolean setData(int row, int column, Object value, int role) {
 		return setData(row, column, value, role, null);
 	}
 
 	/**
 	 * Signal emitted before a number of columns will be inserted.
-	 * 
+	 * <p>
 	 * The first argument is the parent index. The two integer arguments are the
 	 * column numbers that the first and last column will have when inserted.
 	 * <p>
@@ -858,7 +1003,7 @@ public abstract class WAbstractItemModel extends WObject {
 
 	/**
 	 * Signal emitted before a number of columns will be removed.
-	 * 
+	 * <p>
 	 * The first argument is the parent index. The two integer arguments are the
 	 * column numbers of the first and last column that will be removed.
 	 * <p>
@@ -873,7 +1018,7 @@ public abstract class WAbstractItemModel extends WObject {
 
 	/**
 	 * Signal emitted after a number of columns were inserted.
-	 * 
+	 * <p>
 	 * The first argument is the parent index. The two integer arguments are the
 	 * column numbers of the first and last column that were inserted.
 	 * <p>
@@ -887,7 +1032,7 @@ public abstract class WAbstractItemModel extends WObject {
 
 	/**
 	 * Signal emitted after a number of columns were removed.
-	 * 
+	 * <p>
 	 * The first argument is the parent index. The two integer arguments are the
 	 * column numbers of the first and last column that were removed.
 	 * <p>
@@ -901,7 +1046,7 @@ public abstract class WAbstractItemModel extends WObject {
 
 	/**
 	 * Signal emitted before a number of rows will be inserted.
-	 * 
+	 * <p>
 	 * The first argument is the parent index. The two integer arguments are the
 	 * row numbers that the first and last row will have when inserted.
 	 * <p>
@@ -916,7 +1061,7 @@ public abstract class WAbstractItemModel extends WObject {
 
 	/**
 	 * Signal emitted before a number of rows will be removed.
-	 * 
+	 * <p>
 	 * The first argument is the parent index. The two integer arguments are the
 	 * row numbers of the first and last row that will be removed.
 	 * <p>
@@ -931,7 +1076,7 @@ public abstract class WAbstractItemModel extends WObject {
 
 	/**
 	 * Signal emitted after a number of rows were inserted.
-	 * 
+	 * <p>
 	 * The first argument is the parent index. The two integer arguments are the
 	 * row numbers of the first and last row that were inserted.
 	 * <p>
@@ -945,7 +1090,7 @@ public abstract class WAbstractItemModel extends WObject {
 
 	/**
 	 * Signal emitted after a number of rows were removed.
-	 * 
+	 * <p>
 	 * The first argument is the parent index. The two integer arguments are the
 	 * row numbers of the first and last row that were removed.
 	 * <p>
@@ -959,7 +1104,7 @@ public abstract class WAbstractItemModel extends WObject {
 
 	/**
 	 * Signal emitted when some data was changed.
-	 * 
+	 * <p>
 	 * The two arguments are the model indexes of the top-left and bottom-right
 	 * data items that span the rectangle of changed data items.
 	 * <p>
@@ -973,7 +1118,7 @@ public abstract class WAbstractItemModel extends WObject {
 
 	/**
 	 * Signal emitted when some header data was changed.
-	 * 
+	 * <p>
 	 * The first argument indicates the orientation of the header, and the two
 	 * integer arguments are the row or column numbers of the first and last
 	 * header item of which the value was changed.
@@ -988,7 +1133,7 @@ public abstract class WAbstractItemModel extends WObject {
 
 	/**
 	 * Signal emitted when the layout is about to be changed.
-	 * 
+	 * <p>
 	 * A layout change reorders the data in the model, but no data is added or
 	 * removed. Model indexes are invalidated by a layout change, but indexes
 	 * may be ported across a layout change by using the
@@ -1006,6 +1151,7 @@ public abstract class WAbstractItemModel extends WObject {
 
 	/**
 	 * Signal emitted when the layout is changed.
+	 * <p>
 	 * 
 	 * @see WAbstractItemModel#layoutAboutToBeChanged()
 	 */
@@ -1015,6 +1161,7 @@ public abstract class WAbstractItemModel extends WObject {
 
 	/**
 	 * Signal emitted when the model was reset.
+	 * <p>
 	 * 
 	 * @see WAbstractItemModel#reset()
 	 */
@@ -1024,7 +1171,7 @@ public abstract class WAbstractItemModel extends WObject {
 
 	/**
 	 * Resets the model and invalidate any data.
-	 * 
+	 * <p>
 	 * Informs any attached view that all data in the model was invalidated, and
 	 * the model&apos;s data should be reread.
 	 * <p>
@@ -1037,7 +1184,7 @@ public abstract class WAbstractItemModel extends WObject {
 
 	/**
 	 * Create a model index for the given row and column.
-	 * 
+	 * <p>
 	 * Use this method to create a model index. <i>ptr</i> is an internal
 	 * pointer that may be used to associate the index with particular model
 	 * data.
@@ -1051,7 +1198,7 @@ public abstract class WAbstractItemModel extends WObject {
 
 	/**
 	 * Method to be called before inserting columns.
-	 * 
+	 * <p>
 	 * If your model supports insertion of columns, then you should call this
 	 * method before inserting one or more columns, and
 	 * {@link WAbstractItemModel#endInsertColumns()} afterwards. These methods
@@ -1072,7 +1219,7 @@ public abstract class WAbstractItemModel extends WObject {
 
 	/**
 	 * Method to be called before inserting rows.
-	 * 
+	 * <p>
 	 * If your model supports insertion of rows, then you should call this
 	 * method before inserting one or more rows, and
 	 * {@link WAbstractItemModel#endInsertRows()} afterwards. These methods emit
@@ -1093,7 +1240,7 @@ public abstract class WAbstractItemModel extends WObject {
 
 	/**
 	 * Method to be called before removing columns.
-	 * 
+	 * <p>
 	 * If your model supports removal of columns, then you should call this
 	 * method before removing one or more columns, and
 	 * {@link WAbstractItemModel#endRemoveColumns()} afterwards. These methods
@@ -1114,7 +1261,7 @@ public abstract class WAbstractItemModel extends WObject {
 
 	/**
 	 * Method to be called before removing rows.
-	 * 
+	 * <p>
 	 * If your model supports removal of rows, then you should call this method
 	 * before removing one or more rows, and
 	 * {@link WAbstractItemModel#endRemoveRows()} afterwards. These methods emit
@@ -1135,6 +1282,7 @@ public abstract class WAbstractItemModel extends WObject {
 
 	/**
 	 * Method to be called after inserting columns.
+	 * <p>
 	 * 
 	 * @see WAbstractItemModel#beginInsertColumns(WModelIndex parent, int first,
 	 *      int last)
@@ -1145,6 +1293,7 @@ public abstract class WAbstractItemModel extends WObject {
 
 	/**
 	 * Method to be called after inserting rows.
+	 * <p>
 	 * 
 	 * @see WAbstractItemModel#beginInsertRows(WModelIndex parent, int first,
 	 *      int last)
@@ -1155,6 +1304,7 @@ public abstract class WAbstractItemModel extends WObject {
 
 	/**
 	 * Method to be called after removing columns.
+	 * <p>
 	 * 
 	 * @see WAbstractItemModel#beginRemoveColumns(WModelIndex parent, int first,
 	 *      int last)
@@ -1165,6 +1315,7 @@ public abstract class WAbstractItemModel extends WObject {
 
 	/**
 	 * Method to be called after removing rows.
+	 * <p>
 	 * 
 	 * @see WAbstractItemModel#beginRemoveRows(WModelIndex parent, int first,
 	 *      int last)

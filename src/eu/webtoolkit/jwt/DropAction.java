@@ -3,6 +3,7 @@ package eu.webtoolkit.jwt;
 
 /**
  * Enumeration that indicates a drop action.
+ * <p>
  * 
  * @see WAbstractItemModel#dropEvent(WDropEvent e, DropAction action, int row,
  *      int column, WModelIndex parent)

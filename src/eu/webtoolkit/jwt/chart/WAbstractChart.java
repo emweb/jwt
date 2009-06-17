@@ -24,7 +24,7 @@ import eu.webtoolkit.jwt.utils.EnumUtils;
 
 /**
  * Abstract base class for MVC-based charts.
- * 
+ * <p>
  * 
  * This is an abstract class and should not be used directly.
  * <p>
@@ -54,7 +54,7 @@ public abstract class WAbstractChart extends WPaintedWidget {
 
 	/**
 	 * Set the model.
-	 * 
+	 * <p>
 	 * The model is used by the chart to get its data. Ownership of the model is
 	 * not transferred, and if a previous model was set it is not deleted.
 	 * <p>
@@ -112,6 +112,7 @@ public abstract class WAbstractChart extends WPaintedWidget {
 
 	/**
 	 * Returns the model.
+	 * <p>
 	 * 
 	 * @see WAbstractChart#setModel(WAbstractItemModel model)
 	 */
@@ -121,7 +122,7 @@ public abstract class WAbstractChart extends WPaintedWidget {
 
 	/**
 	 * Sets a background for the chart.
-	 * 
+	 * <p>
 	 * Set the background color for the main plot area.
 	 * <p>
 	 * The default is a completely transparent background.
@@ -139,6 +140,7 @@ public abstract class WAbstractChart extends WPaintedWidget {
 
 	/**
 	 * Returns the background of the chart.
+	 * <p>
 	 * 
 	 * @see WAbstractChart#setBackground(WBrush background)
 	 */
@@ -148,7 +150,7 @@ public abstract class WAbstractChart extends WPaintedWidget {
 
 	/**
 	 * Set a palette for the chart.
-	 * 
+	 * <p>
 	 * A palette is used to provide the style information to render the chart
 	 * series. Ownership of the palette is transferred to the chart.
 	 * <p>
@@ -165,6 +167,7 @@ public abstract class WAbstractChart extends WPaintedWidget {
 
 	/**
 	 * Returns the palette for the chart.
+	 * <p>
 	 * 
 	 * @see WAbstractChart#setPalette(WChartPalette palette)
 	 */
@@ -174,7 +177,7 @@ public abstract class WAbstractChart extends WPaintedWidget {
 
 	/**
 	 * Set an internal margin for the main plot area.
-	 * 
+	 * <p>
 	 * This configures the area (in pixels) around the plot area that is
 	 * available for axes, labels, and titles. You need to set this
 	 * appropriately so that labels fit inside these margins.
@@ -196,16 +199,29 @@ public abstract class WAbstractChart extends WPaintedWidget {
 		}
 	}
 
+	/**
+	 * Set an internal margin for the main plot area.
+	 * <p>
+	 * Calls {@link #setPlotAreaPadding(int padding, EnumSet sides)
+	 * setPlotAreaPadding(padding, EnumSet.of(side, sides))}
+	 */
 	public final void setPlotAreaPadding(int padding, Side side, Side... sides) {
 		setPlotAreaPadding(padding, EnumSet.of(side, sides));
 	}
 
+	/**
+	 * Set an internal margin for the main plot area.
+	 * <p>
+	 * Calls {@link #setPlotAreaPadding(int padding, EnumSet sides)
+	 * setPlotAreaPadding(padding, Side.All)}
+	 */
 	public final void setPlotAreaPadding(int padding) {
 		setPlotAreaPadding(padding, Side.All);
 	}
 
 	/**
 	 * Returns the internal margin for the main plot area.
+	 * <p>
 	 * 
 	 * @see WAbstractChart#setPlotAreaPadding(int padding, EnumSet sides)
 	 */
@@ -227,7 +243,7 @@ public abstract class WAbstractChart extends WPaintedWidget {
 
 	/**
 	 * Set a chart title.
-	 * 
+	 * <p>
 	 * The title is displayed on top of the chart, using the
 	 * {@link WAbstractChart#getTitleFont()}.
 	 * <p>
@@ -246,6 +262,7 @@ public abstract class WAbstractChart extends WPaintedWidget {
 
 	/**
 	 * Return the chart title.
+	 * <p>
 	 * 
 	 * @see WAbstractChart#getTitle()
 	 */
@@ -255,7 +272,7 @@ public abstract class WAbstractChart extends WPaintedWidget {
 
 	/**
 	 * Set the font for the chart title.
-	 * 
+	 * <p>
 	 * Changes the font for the chart title.
 	 * <p>
 	 * The default title font is a 15 point Sans Serif font.
@@ -274,6 +291,7 @@ public abstract class WAbstractChart extends WPaintedWidget {
 
 	/**
 	 * Returns the font for the chart title.
+	 * <p>
 	 * 
 	 * @see WAbstractChart#setTitleFont(WFont titleFont)
 	 */
@@ -295,13 +313,19 @@ public abstract class WAbstractChart extends WPaintedWidget {
 
 	/**
 	 * Paint the chart in a rectangle of the given painter.
-	 * 
+	 * <p>
 	 * Paints the chart inside the <i>painter</i>, in the area indicated by
 	 * <i>rectangle</i>. When <i>rectangle</i> is a null rectangle, the entire
 	 * painter {@link WPainter#getWindow() window} is used.
 	 */
 	public abstract void paint(WPainter painter, WRectF rectangle);
 
+	/**
+	 * Paint the chart in a rectangle of the given painter.
+	 * <p>
+	 * Calls {@link #paint(WPainter painter, WRectF rectangle) paint(painter,
+	 * new WRectF())}
+	 */
 	public final void paint(WPainter painter) {
 		paint(painter, new WRectF());
 	}
@@ -334,6 +358,7 @@ public abstract class WAbstractChart extends WPaintedWidget {
 
 	/**
 	 * Method called whenever the entire model was changed.
+	 * <p>
 	 * 
 	 * @see WAbstractChart#setModel(WAbstractItemModel model)
 	 */
@@ -342,6 +367,7 @@ public abstract class WAbstractChart extends WPaintedWidget {
 
 	/**
 	 * Method called when colums have been inserted in the model.
+	 * <p>
 	 * 
 	 * @see WAbstractItemModel#columnsInserted()
 	 */
@@ -350,6 +376,7 @@ public abstract class WAbstractChart extends WPaintedWidget {
 
 	/**
 	 * Method called when colums have been removed from the model.
+	 * <p>
 	 * 
 	 * @see WAbstractItemModel#columnsRemoved()
 	 */
@@ -358,6 +385,7 @@ public abstract class WAbstractChart extends WPaintedWidget {
 
 	/**
 	 * Method called when rows have been inserted from the model.
+	 * <p>
 	 * 
 	 * @see WAbstractItemModel#rowsInserted()
 	 */
@@ -366,6 +394,7 @@ public abstract class WAbstractChart extends WPaintedWidget {
 
 	/**
 	 * Method called when rows have been removed from the model.
+	 * <p>
 	 * 
 	 * @see WAbstractItemModel#rowsRemoved()
 	 */
@@ -374,6 +403,7 @@ public abstract class WAbstractChart extends WPaintedWidget {
 
 	/**
 	 * Method called when data has been changed in the model.
+	 * <p>
 	 * 
 	 * @see WAbstractItemModel#dataChanged()
 	 */

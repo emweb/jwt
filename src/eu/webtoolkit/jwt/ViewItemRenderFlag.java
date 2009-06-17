@@ -3,6 +3,7 @@ package eu.webtoolkit.jwt;
 
 /**
  * Enumeration that specifies an option for rendering a view item.
+ * <p>
  * 
  * @see WAbstractItemDelegate#update(WWidget widget, WModelIndex index, EnumSet
  *      flags)

@@ -3,7 +3,7 @@ package eu.webtoolkit.jwt;
 
 /**
  * Enumeration that indicates a standard button.
- * 
+ * <p>
  * Multiple buttons may be specified by logically or&apos;ing these values
  * together, e.g. <code>
  Ok | Cancel

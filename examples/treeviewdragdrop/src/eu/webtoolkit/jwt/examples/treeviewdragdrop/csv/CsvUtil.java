@@ -1,9 +1,7 @@
 package eu.webtoolkit.jwt.examples.treeviewdragdrop.csv;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -15,7 +13,6 @@ import eu.webtoolkit.jwt.WContainerWidget;
 import eu.webtoolkit.jwt.WStandardItemModel;
 import eu.webtoolkit.jwt.WString;
 import eu.webtoolkit.jwt.WText;
-import eu.webtoolkit.jwt.utils.JarUtils;
 
 public class CsvUtil {
 	public static void readFromCsv(BufferedReader reader, WAbstractItemModel model) {

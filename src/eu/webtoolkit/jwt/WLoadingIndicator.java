@@ -3,7 +3,7 @@ package eu.webtoolkit.jwt;
 
 /**
  * An abstract interface for a loading indicator
- * 
+ * <p>
  * 
  * The loading indicator displays a message while a response from the server is
  * pending.
@@ -19,7 +19,7 @@ package eu.webtoolkit.jwt;
 public interface WLoadingIndicator {
 	/**
 	 * Returns the widget that visually represents the indicator.
-	 * 
+	 * <p>
 	 * You should reimplement this method to return a widget that will be shown
 	 * to indicate that a response is pending. The widget should be positioned
 	 * using CSS.
@@ -41,7 +41,7 @@ public interface WLoadingIndicator {
 
 	/**
 	 * Change the message that you want to be displayed.
-	 * 
+	 * <p>
 	 * If the indicator is capable of displaying a text message, then you should
 	 * reimplement this method to allow this message to be modified.
 	 */

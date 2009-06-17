@@ -3,7 +3,7 @@ package eu.webtoolkit.jwt;
 
 /**
  * A slot that is only implemented in client side JavaScript code.
- * 
+ * <p>
  * 
  * This class provides a hook for adding your own JavaScript to respond to
  * events.
@@ -48,7 +48,7 @@ package eu.webtoolkit.jwt;
 public class JSlot {
 	/**
 	 * Construct a JavaScript-only slot within the parent scope.
-	 * 
+	 * <p>
 	 * The JavaScript will reside within the scope of the given widget. By
 	 * picking a long-lived parent, one may reuse a single block of JavasCript
 	 * code for multiple widgets.
@@ -61,12 +61,18 @@ public class JSlot {
 		this.create();
 	}
 
+	/**
+	 * Construct a JavaScript-only slot within the parent scope.
+	 * <p>
+	 * Calls {@link #JSlot(WWidget parent) this((WWidget)null)}
+	 */
 	public JSlot() {
 		this((WWidget) null);
 	}
 
 	/**
 	 * Construct a JavaScript-only slot with given JavaScript.
+	 * <p>
 	 * 
 	 * @see JSlot#JSlot(WWidget parent)
 	 * @see JSlot#setJavaScript(String js)
@@ -78,6 +84,12 @@ public class JSlot {
 		this.setJavaScript(javaScript);
 	}
 
+	/**
+	 * Construct a JavaScript-only slot with given JavaScript.
+	 * <p>
+	 * Calls {@link #JSlot(String javaScript, WWidget parent) this(javaScript,
+	 * (WWidget)null)}
+	 */
 	public JSlot(String javaScript) {
 		this(javaScript, (WWidget) null);
 	}
@@ -91,7 +103,7 @@ public class JSlot {
 
 	/**
 	 * Set or modify the JavaScript code associated with the slot.
-	 * 
+	 * <p>
 	 * When the slot is triggered, the corresponding JavaScript is executed.
 	 * <p>
 	 * The JavaScript function takes two parameters and thus should look like:
@@ -119,7 +131,7 @@ public class JSlot {
 
 	/**
 	 * Execute the JavaScript code.
-	 * 
+	 * <p>
 	 * Execute the JavaScript code, in the same way as when triggered by a
 	 * {@link EventSignal}. This function returns immediately, and execution of
 	 * the JavaScript code is deferred until after the event handling.

@@ -6,7 +6,7 @@ import eu.webtoolkit.jwt.utils.EnumUtils;
 
 /**
  * A standard dialog for confirmation or to get simple user input
- * 
+ * <p>
  * 
  * The message box shows a message in a dialog window, with a number of buttons.
  * These buttons may be standard buttons, or customized.
@@ -30,7 +30,7 @@ import eu.webtoolkit.jwt.utils.EnumUtils;
 public class WMessageBox extends WDialog {
 	/**
 	 * Create an empty message box.
-	 * 
+	 * <p>
 	 * The button labels may be set fixed English (if i18n = false), or fetched
 	 * from a resource bundle if i18n = true. In that case, the key for each
 	 * button is exactly the same as the English text.
@@ -45,13 +45,18 @@ public class WMessageBox extends WDialog {
 		this.create();
 	}
 
+	/**
+	 * Create an empty message box.
+	 * <p>
+	 * Calls {@link #WMessageBox(boolean i18n) this(false)}
+	 */
 	public WMessageBox() {
 		this(false);
 	}
 
 	/**
 	 * Create a message box with given caption, text, icon, and buttons.
-	 * 
+	 * <p>
 	 * The button labels may be set fixed English (if i18n = false), or fetched
 	 * from a resource bundle if i18n = true. In that case, the key for each
 	 * button is exactly the same as the English text.
@@ -69,6 +74,13 @@ public class WMessageBox extends WDialog {
 		this.setButtons(buttons);
 	}
 
+	/**
+	 * Create a message box with given caption, text, icon, and buttons.
+	 * <p>
+	 * Calls
+	 * {@link #WMessageBox(CharSequence caption, CharSequence text, Icon icon, EnumSet buttons, boolean i18n)
+	 * this(caption, text, icon, buttons, false)}
+	 */
 	public WMessageBox(CharSequence caption, CharSequence text, Icon icon,
 			EnumSet<StandardButton> buttons) {
 		this(caption, text, icon, buttons, false);
@@ -90,7 +102,7 @@ public class WMessageBox extends WDialog {
 
 	/**
 	 * Get the text widget.
-	 * 
+	 * <p>
 	 * This may be useful to customize the style or layout of the displayed
 	 * text.
 	 */
@@ -132,7 +144,7 @@ public class WMessageBox extends WDialog {
 
 	/**
 	 * Add a custom button with given text.
-	 * 
+	 * <p>
 	 * When the button is clicked, the associated result will be returned.
 	 */
 	public WPushButton addButton(CharSequence text, StandardButton result) {
@@ -160,6 +172,12 @@ public class WMessageBox extends WDialog {
 		}
 	}
 
+	/**
+	 * Set standard buttons for the message box.
+	 * <p>
+	 * Calls {@link #setButtons(EnumSet buttons) setButtons(EnumSet.of(button,
+	 * buttons))}
+	 */
 	public final void setButtons(StandardButton button,
 			StandardButton... buttons) {
 		setButtons(EnumSet.of(button, buttons));
@@ -174,7 +192,7 @@ public class WMessageBox extends WDialog {
 
 	/**
 	 * Returns the button widget for the given standard button.
-	 * 
+	 * <p>
 	 * This may be useful to customize the style or layout of the button.
 	 */
 	public WPushButton getButton(StandardButton b) {
@@ -194,7 +212,7 @@ public class WMessageBox extends WDialog {
 
 	/**
 	 * Returns the result of this message box.
-	 * 
+	 * <p>
 	 * This value is only defined after a button has been clicked.
 	 */
 	public StandardButton getButtonResult() {

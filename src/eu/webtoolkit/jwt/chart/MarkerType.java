@@ -3,6 +3,7 @@ package eu.webtoolkit.jwt.chart;
 
 /**
  * Enumeration that specifies a type of point marker.
+ * <p>
  * 
  * @see WDataSeries#setMarker(MarkerType marker)
  * @see WCartesianChart

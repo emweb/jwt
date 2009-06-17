@@ -5,7 +5,7 @@ import java.util.TreeSet;
 
 /**
  * A class that represents a selection for a WAbstractItemView.
- * 
+ * <p>
  * 
  * This model is currently only used by {@link WTreeView}, and plays only a role
  * in drag &amp; drop of an item selection.
@@ -34,7 +34,7 @@ public class WItemSelectionModel extends WObject {
 
 	/**
 	 * Returns the set of selected items.
-	 * 
+	 * <p>
 	 * The model indexes are returned as a set, topologically ordered (in the
 	 * order they appear in the view).
 	 */
@@ -44,6 +44,7 @@ public class WItemSelectionModel extends WObject {
 
 	/**
 	 * Returns wheter an item is selected.
+	 * <p>
 	 * 
 	 * @see WItemSelectionModel#getSelectedIndexes()
 	 */
@@ -53,7 +54,7 @@ public class WItemSelectionModel extends WObject {
 
 	/**
 	 * Change the selection behaviour.
-	 * 
+	 * <p>
 	 * By default, the selection contains rows (
 	 * {@link SelectionBehavior#SelectRows SelectRows}), in which case model
 	 * indexes will always be have column 0, but represent the whole row.
@@ -67,6 +68,7 @@ public class WItemSelectionModel extends WObject {
 
 	/**
 	 * Returns the selection behaviour.
+	 * <p>
 	 * 
 	 * @see WItemSelectionModel#setSelectionBehavior(SelectionBehavior behavior)
 	 */

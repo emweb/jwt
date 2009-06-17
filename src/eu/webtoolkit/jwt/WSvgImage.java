@@ -12,7 +12,7 @@ import eu.webtoolkit.jwt.utils.MathUtils;
 
 /**
  * A paint device for rendering using Scalable Vector Graphics (SVG).
- * 
+ * <p>
  * 
  * The WSvgImage is primarily used by {@link WPaintedWidget} to render to the
  * browser in Support Vector Graphics (SVG) format.
@@ -43,6 +43,12 @@ public class WSvgImage extends WResource implements WVectorImage {
 		this.fontStyle_ = "";
 	}
 
+	/**
+	 * Create an SVG paint device.
+	 * <p>
+	 * Calls {@link #WSvgImage(WLength width, WLength height, WObject parent)
+	 * this(width, height, (WObject)null)}
+	 */
 	public WSvgImage(WLength width, WLength height) {
 		this(width, height, (WObject) null);
 	}

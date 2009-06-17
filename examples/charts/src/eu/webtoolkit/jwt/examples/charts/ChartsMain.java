@@ -6,7 +6,6 @@ import eu.webtoolkit.jwt.WLength;
 import eu.webtoolkit.jwt.WXmlLocalizedStrings;
 import eu.webtoolkit.jwt.WtServlet;
 
-
 public class ChartsMain extends WtServlet {
 	public ChartsMain() {
 		super();

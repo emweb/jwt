@@ -5,7 +5,7 @@ import java.util.List;
 
 /**
  * A layout manager which divides the container region in five regions
- * 
+ * <p>
  * 
  * The five regions are composed of:
  * 
@@ -128,6 +128,11 @@ public class WBorderLayout extends WLayout {
 		}
 	}
 
+	/**
+	 * Create a new border layout.
+	 * <p>
+	 * Calls {@link #WBorderLayout(WWidget parent) this((WWidget)null)}
+	 */
 	public WBorderLayout() {
 		this((WWidget) null);
 	}
@@ -182,7 +187,7 @@ public class WBorderLayout extends WLayout {
 
 	/**
 	 * Add a widget to the given position.
-	 * 
+	 * <p>
 	 * Only one widget per position is supported.
 	 * <p>
 	 * 
@@ -194,7 +199,7 @@ public class WBorderLayout extends WLayout {
 
 	/**
 	 * Add a layout item to the given position.
-	 * 
+	 * <p>
 	 * Only one widget per position is supported.
 	 */
 	public void add(WLayoutItem item, WBorderLayout.Position position) {
@@ -208,7 +213,7 @@ public class WBorderLayout extends WLayout {
 
 	/**
 	 * Return the widget at a position.
-	 * 
+	 * <p>
 	 * Returns 0 if no widget was set for that position.
 	 */
 	public WWidget widgetAt(WBorderLayout.Position position) {
@@ -224,7 +229,7 @@ public class WBorderLayout extends WLayout {
 
 	/**
 	 * Return the item at a position.
-	 * 
+	 * <p>
 	 * Returns 0 if no item was set for that position.
 	 */
 	public WLayoutItem getItemAt(WBorderLayout.Position position) {

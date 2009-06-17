@@ -3,7 +3,7 @@ package eu.webtoolkit.jwt;
 
 /**
  * Class that defines the style for pen strokes.
- * 
+ * <p>
  * 
  * A pen defines the properties of how lines (that may surround shapes) are
  * rendered.
@@ -20,7 +20,7 @@ package eu.webtoolkit.jwt;
 public class WPen {
 	/**
 	 * Default constructor.
-	 * 
+	 * <p>
 	 * Constructs a black solid pen of 0 width, with
 	 * {@link PenCapStyle#SquareCap SquareCap} line ends and
 	 * {@link PenJoinStyle#BevelJoin BevelJoin} line join style.
@@ -35,7 +35,7 @@ public class WPen {
 
 	/**
 	 * Construct a black pen with a particular style.
-	 * 
+	 * <p>
 	 * Constructs a black pen of 0 width, with {@link PenCapStyle#SquareCap
 	 * SquareCap} line ends and {@link PenJoinStyle#BevelJoin BevelJoin} line
 	 * join style.
@@ -52,7 +52,7 @@ public class WPen {
 
 	/**
 	 * Construct a solid pen of a particular color.
-	 * 
+	 * <p>
 	 * Constructs a solid pen of 0 width, with {@link PenCapStyle#SquareCap
 	 * SquareCap} line ends and {@link PenJoinStyle#BevelJoin BevelJoin} line
 	 * join style.
@@ -79,7 +79,7 @@ public class WPen {
 
 	/**
 	 * Comparison operator.
-	 * 
+	 * <p>
 	 * Returns true if the pens are exactly the same.
 	 */
 	public boolean equals(WPen other) {
@@ -92,6 +92,7 @@ public class WPen {
 
 	/**
 	 * Change the pen style.
+	 * <p>
 	 * 
 	 * @see WPen#getStyle()
 	 */
@@ -101,6 +102,7 @@ public class WPen {
 
 	/**
 	 * Return the pen style.
+	 * <p>
 	 * 
 	 * @see WPen#setStyle(PenStyle style)
 	 */
@@ -110,6 +112,7 @@ public class WPen {
 
 	/**
 	 * Change the style for rendering line ends.
+	 * <p>
 	 * 
 	 * @see WPen#getCapStyle()
 	 */
@@ -119,6 +122,7 @@ public class WPen {
 
 	/**
 	 * Returns the style for rendering line ends.
+	 * <p>
 	 * 
 	 * @see WPen#setCapStyle(PenCapStyle style)
 	 */
@@ -128,6 +132,7 @@ public class WPen {
 
 	/**
 	 * Change the style for rendering line joins.
+	 * <p>
 	 * 
 	 * @see WPen#getJoinStyle()
 	 */
@@ -137,6 +142,7 @@ public class WPen {
 
 	/**
 	 * Returns the style for rendering line joins.
+	 * <p>
 	 * 
 	 * @see WPen#setJoinStyle(PenJoinStyle style)
 	 */
@@ -146,7 +152,7 @@ public class WPen {
 
 	/**
 	 * Change the pen width.
-	 * 
+	 * <p>
 	 * A pen width <i>must</i> be specified using {@link WLength.Unit#Pixel}
 	 * units.
 	 * <p>
@@ -159,6 +165,7 @@ public class WPen {
 
 	/**
 	 * Returns the pen width.
+	 * <p>
 	 * 
 	 * @see WPen#setWidth(WLength width)
 	 */
@@ -168,6 +175,7 @@ public class WPen {
 
 	/**
 	 * Change the pen color.
+	 * <p>
 	 * 
 	 * @see WPen#getColor()
 	 */
@@ -177,6 +185,7 @@ public class WPen {
 
 	/**
 	 * Returns the pen color.
+	 * <p>
 	 * 
 	 * @see WPen#getColor()
 	 */

@@ -3,7 +3,7 @@ package eu.webtoolkit.jwt;
 
 /**
  * A widget that provides in-place-editable text
- * 
+ * <p>
  * 
  * The WInPlaceEdit provides a text that may be edited in place by the user by
  * clicking on it. When clicked, the text turns into a line edit with a save and
@@ -161,12 +161,19 @@ public class WInPlaceEdit extends WCompositeWidget {
 				});
 	}
 
+	/**
+	 * Create an in-place edit with the given text.
+	 * <p>
+	 * Calls {@link #WInPlaceEdit(CharSequence text, WContainerWidget parent)
+	 * this(text, (WContainerWidget)null)}
+	 */
 	public WInPlaceEdit(CharSequence text) {
 		this(text, (WContainerWidget) null);
 	}
 
 	/**
 	 * Returns the current text value.
+	 * <p>
 	 * 
 	 * @see WInPlaceEdit#setText(CharSequence text)
 	 */
@@ -176,6 +183,7 @@ public class WInPlaceEdit extends WCompositeWidget {
 
 	/**
 	 * Set the current text.
+	 * <p>
 	 * 
 	 * @see WInPlaceEdit#getText()
 	 */
@@ -186,7 +194,7 @@ public class WInPlaceEdit extends WCompositeWidget {
 
 	/**
 	 * Returns the line edit.
-	 * 
+	 * <p>
 	 * You may for example set a validator on the line edit.
 	 */
 	public WLineEdit getLineEdit() {
@@ -195,6 +203,7 @@ public class WInPlaceEdit extends WCompositeWidget {
 
 	/**
 	 * Returns the save button.
+	 * <p>
 	 * 
 	 * @see WInPlaceEdit#getCancelButton()
 	 */
@@ -204,6 +213,7 @@ public class WInPlaceEdit extends WCompositeWidget {
 
 	/**
 	 * Returns the cancel button.
+	 * <p>
 	 * 
 	 * @see WInPlaceEdit#getSaveButton()
 	 */
@@ -213,7 +223,7 @@ public class WInPlaceEdit extends WCompositeWidget {
 
 	/**
 	 * Signal emitted when the value has been changed.
-	 * 
+	 * <p>
 	 * The signal argument provides the new value.
 	 */
 	public Signal1<WString> valueChanged() {

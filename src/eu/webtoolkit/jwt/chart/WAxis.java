@@ -15,10 +15,11 @@ import eu.webtoolkit.jwt.utils.StringUtils;
 
 /**
  * Class which represents an axis of a cartesian chart.
+ * <p>
  * 
- * 
- * A cartesian chart has two or three axes: an X axis (), a Y axis () and
- * optionally a second Y axis (). Each of the up to three axes in a cartesian
+ * A cartesian chart has two or three axes: an X axis ({@link Axis#XAxis XAxis}
+ * ), a Y axis ({@link Axis#YAxis YAxis}) and optionally a second Y axis (
+ * {@link Axis#Y2Axis Y2Axis}). Each of the up to three axes in a cartesian
  * chart has a unique {@link WAxis#getId()} that identifies which of these three
  * axes it is in the enclosing {@link WAxis#getChart()}.
  * <p>
@@ -57,6 +58,7 @@ import eu.webtoolkit.jwt.utils.StringUtils;
 public class WAxis {
 	/**
 	 * Returns the axis id.
+	 * <p>
 	 * 
 	 * @see WAxis#getChart()
 	 * @see WCartesianChart#getAxis(Axis axis)
@@ -67,7 +69,7 @@ public class WAxis {
 
 	/**
 	 * Set whether this axis is visible.
-	 * 
+	 * <p>
 	 * Changes whether the axis is displayed, including ticks and labels. The
 	 * rendering of the grid lines is controlled seperately by
 	 * {@link WAxis#setGridLinesEnabled(boolean enabled)}.
@@ -88,6 +90,7 @@ public class WAxis {
 
 	/**
 	 * Returns whether this axis is visible.
+	 * <p>
 	 * 
 	 * @see WAxis#setVisible(boolean visible)
 	 */
@@ -97,7 +100,7 @@ public class WAxis {
 
 	/**
 	 * Set the axis location.
-	 * 
+	 * <p>
 	 * Configures the location of the axis, relative to values on the other
 	 * values (i.e. Y values for the X axis, and X values for the Y axis).
 	 * <p>
@@ -116,6 +119,7 @@ public class WAxis {
 
 	/**
 	 * Returns the axis location.
+	 * <p>
 	 * 
 	 * @see WAxis#setLocation(AxisLocation location)
 	 */
@@ -125,7 +129,7 @@ public class WAxis {
 
 	/**
 	 * Set the scale of the axis.
-	 * 
+	 * <p>
 	 * For the X scale in a {@link ChartType#CategoryChart CategoryChart}, the
 	 * scale should be left unchanged to {@link AxisScale#CategoryScale
 	 * CategoryScale}.
@@ -149,6 +153,7 @@ public class WAxis {
 
 	/**
 	 * Returns the scale of the axis.
+	 * <p>
 	 * 
 	 * @see WAxis#setScale(AxisScale scale)
 	 */
@@ -158,7 +163,7 @@ public class WAxis {
 
 	/**
 	 * Set the minimum value displayed on the axis.
-	 * 
+	 * <p>
 	 * Specify the minimum value to be displayed on the axis. By default, the
 	 * minimum and maximum values are determined automatically so that all the
 	 * data can be displayed.
@@ -186,6 +191,7 @@ public class WAxis {
 
 	/**
 	 * Returns the minimum value displayed on the axis.
+	 * <p>
 	 * 
 	 * @see WAxis#getMaximum()
 	 * @see WAxis#setMinimum(double minimum)
@@ -196,7 +202,7 @@ public class WAxis {
 
 	/**
 	 * Set the maximum value for the axis displayed on the axis.
-	 * 
+	 * <p>
 	 * Specify the maximum value to be displayed on the axis. By default, the
 	 * minimum and maximum values are determined automatically so that all the
 	 * data can be displayed.
@@ -224,6 +230,7 @@ public class WAxis {
 
 	/**
 	 * Returns the maximum value displayed on the axis.
+	 * <p>
 	 * 
 	 * @see WAxis#getMinimum()
 	 * @see WAxis#setMaximum(double maximum)
@@ -234,7 +241,7 @@ public class WAxis {
 
 	/**
 	 * Set the axis range (minimum and maximum values).
-	 * 
+	 * <p>
 	 * Specify both minimum and maximum value for the axis.
 	 * <p>
 	 * 
@@ -249,7 +256,7 @@ public class WAxis {
 
 	/**
 	 * Specify a range that needs to be omitted from the axis.
-	 * 
+	 * <p>
 	 * This is useful to display data with a few outliers which would otherwise
 	 * swamp the chart. This is not done automatically, but instead you need to
 	 * use {@link WAxis#setBreak(double minimum, double maximum)} to specify the
@@ -268,7 +275,7 @@ public class WAxis {
 
 	/**
 	 * Set the label interval.
-	 * 
+	 * <p>
 	 * Specifies the interval for displaying labels (and ticks) on the axis. The
 	 * default value is 0.0, and indicates that the interval should be computed
 	 * automatically.
@@ -286,6 +293,7 @@ public class WAxis {
 
 	/**
 	 * Returns the label interval.
+	 * <p>
 	 * 
 	 * @see WAxis#setLabelInterval(double labelInterval)
 	 */
@@ -295,7 +303,7 @@ public class WAxis {
 
 	/**
 	 * Set the label format.
-	 * 
+	 * <p>
 	 * Set a format string which is used to format values, both for the axis
 	 * labels as well as data series values (see
 	 * {@link WDataSeries#setLabelsEnabled(Axis axis, boolean enabled)}).
@@ -327,6 +335,7 @@ public class WAxis {
 
 	/**
 	 * Returns the label format string.
+	 * <p>
 	 * 
 	 * @see WAxis#setLabelFormat(CharSequence format)
 	 */
@@ -336,7 +345,7 @@ public class WAxis {
 
 	/**
 	 * Sets the label angle.
-	 * 
+	 * <p>
 	 * Sets the angle used for displaying the labels (in degrees). A 0 angle
 	 * corresponds to horizontal text. Note that this option is only supported
 	 * by the InlineSvgVml renderers, but not by HtmlCanvas.
@@ -356,6 +365,7 @@ public class WAxis {
 
 	/**
 	 * Returns the label angle.
+	 * <p>
 	 * 
 	 * @see WAxis#setLabelAngle(double angle)
 	 */
@@ -365,7 +375,7 @@ public class WAxis {
 
 	/**
 	 * Sets whether gridlines are displayed for this axis.
-	 * 
+	 * <p>
 	 * When <i>enabled</i>, gird lines are drawn for each tick on this axis,
 	 * using the {@link WAxis#getGridLinesPen()}.
 	 * <p>
@@ -386,6 +396,7 @@ public class WAxis {
 
 	/**
 	 * Returns whether gridlines are displayed for this axis.
+	 * <p>
 	 * 
 	 * @see WAxis#setGridLinesEnabled(boolean enabled)
 	 */
@@ -395,7 +406,7 @@ public class WAxis {
 
 	/**
 	 * Changes the pen used for rendering the axis and ticks.
-	 * 
+	 * <p>
 	 * The default value is a black pen of 0 width.
 	 * <p>
 	 * 
@@ -411,6 +422,7 @@ public class WAxis {
 
 	/**
 	 * Returns the pen used for rendering the axis and ticks.
+	 * <p>
 	 * 
 	 * @see WAxis#setPen(WPen pen)
 	 */
@@ -420,7 +432,7 @@ public class WAxis {
 
 	/**
 	 * Changes the pen used for rendering the grid lines.
-	 * 
+	 * <p>
 	 * The default value is a gray pen of 0 width.
 	 * <p>
 	 * 
@@ -437,6 +449,7 @@ public class WAxis {
 
 	/**
 	 * Returns the pen used for rendering the grid lines.
+	 * <p>
 	 * 
 	 * @see WAxis#setGridLinesPen(WPen pen)
 	 */
@@ -446,7 +459,7 @@ public class WAxis {
 
 	/**
 	 * Sets the margin between the axis and the plot area.
-	 * 
+	 * <p>
 	 * The margin is defined in pixels.
 	 * <p>
 	 * The default value is 0.
@@ -464,6 +477,7 @@ public class WAxis {
 
 	/**
 	 * Returns the margin between the axis and the plot area.
+	 * <p>
 	 * 
 	 * @see WAxis#setMargin(int pixels)
 	 */
@@ -473,7 +487,7 @@ public class WAxis {
 
 	/**
 	 * Set the axis title.
-	 * 
+	 * <p>
 	 * The default title is empty.
 	 * <p>
 	 * 
@@ -489,6 +503,7 @@ public class WAxis {
 
 	/**
 	 * Returns the axis title.
+	 * <p>
 	 * 
 	 * @see WAxis#setTitle(CharSequence title)
 	 */
@@ -498,7 +513,7 @@ public class WAxis {
 
 	/**
 	 * Set the axis title font.
-	 * 
+	 * <p>
 	 * The default title font is a 12 point Sans Serif font.
 	 * <p>
 	 * 
@@ -514,6 +529,7 @@ public class WAxis {
 
 	/**
 	 * Returns the axis title font.
+	 * <p>
 	 * 
 	 * @see WAxis#setTitle(CharSequence title)
 	 */
@@ -555,6 +571,7 @@ public class WAxis {
 
 	/**
 	 * Returns the chart to which this axis belongs.
+	 * <p>
 	 * 
 	 * @see WCartesianChart#getAxis(Axis axis)
 	 */
@@ -1120,12 +1137,14 @@ public class WAxis {
 
 	/**
 	 * Constant which indicates automatic minimum calculation.
+	 * <p>
 	 * 
 	 * @see WAxis#setMinimum(double minimum)
 	 */
 	public static final double AUTO_MINIMUM = Double.MAX_VALUE;
 	/**
 	 * Constant which indicates automatic maximum calculation.
+	 * <p>
 	 * 
 	 * @see WAxis#setMaximum(double maximum)
 	 */

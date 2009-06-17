@@ -3,6 +3,7 @@ package eu.webtoolkit.jwt;
 
 /**
  * Enumeration that indicates how items may be selected.
+ * <p>
  * 
  * @see WTreeView#setSelectionMode(SelectionMode mode)
  */

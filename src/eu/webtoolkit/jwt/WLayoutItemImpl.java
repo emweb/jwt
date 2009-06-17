@@ -3,6 +3,7 @@ package eu.webtoolkit.jwt;
 
 /**
  * An abstract base class for implementing layout managers
+ * <p>
  * 
  * @see WLayoutItem
  * @see WLayout
@@ -10,7 +11,7 @@ package eu.webtoolkit.jwt;
 public interface WLayoutItemImpl {
 	/**
 	 * Add a layout <i>item</i>.
-	 * 
+	 * <p>
 	 * The <i>item</i> already has an implementation set.
 	 */
 	public void updateAddItem(WLayoutItem item);

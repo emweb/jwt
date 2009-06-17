@@ -3,7 +3,7 @@ package eu.webtoolkit.jwt;
 
 /**
  * A layout manager which arranges widgets vertically
- * 
+ * <p>
  * 
  * This convenience class creates a vertical box layout, laying contained
  * widgets out from top to bottom.
@@ -19,7 +19,7 @@ package eu.webtoolkit.jwt;
 public class WVBoxLayout extends WBoxLayout {
 	/**
 	 * Create a new vertical box layout.
-	 * 
+	 * <p>
 	 * Use <i>parent</i>=0 to created a layout manager that can be nested inside
 	 * other layout managers.
 	 */
@@ -27,6 +27,11 @@ public class WVBoxLayout extends WBoxLayout {
 		super(WBoxLayout.Direction.TopToBottom, parent);
 	}
 
+	/**
+	 * Create a new vertical box layout.
+	 * <p>
+	 * Calls {@link #WVBoxLayout(WWidget parent) this((WWidget)null)}
+	 */
 	public WVBoxLayout() {
 		this((WWidget) null);
 	}

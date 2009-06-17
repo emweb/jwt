@@ -3,6 +3,7 @@ package eu.webtoolkit.jwt;
 
 /**
  * Enumeration for the check state of a check box.
+ * <p>
  * 
  * @see WCheckBox
  */

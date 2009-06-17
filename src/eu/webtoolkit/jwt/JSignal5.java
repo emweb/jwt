@@ -60,11 +60,11 @@ public abstract class JSignal5<A1, A2, A3, A4, A5> extends AbstractJSignal {
 	 * 
 	 * @see AbstractSignal#addListener(WObject, eu.webtoolkit.jwt.Signal.Listener)
 	 */
-	public Connection addListener(WObject receiver, Signal5.Listener<A1, A2, A3, A4, A5> listener) {
+	public Connection addListener(WObject listenerOwner, Signal5.Listener<A1, A2, A3, A4, A5> listener) {
 		if (dynamic_ == null)
 			dynamic_ = new Signal5<A1, A2, A3, A4, A5>(getSender());
 
-		Connection c = dynamic_.addListener(receiver, listener);
+		Connection c = dynamic_.addListener(listenerOwner, listener);
 
 		super.listenerAdded();
 

@@ -57,7 +57,6 @@ public class CountDownWidget extends WText {
 	private Signal done_;
 	private int start_;
 	private int stop_;
-	private int msec_;
 
 	private int current_;
 

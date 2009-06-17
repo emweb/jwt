@@ -3,7 +3,7 @@ package eu.webtoolkit.jwt;
 
 /**
  * A default loading indicator
- * 
+ * <p>
  * 
  * Wt/WDefaultLoadingIndicator The default loading indicator displays the text
  * message <span>Loading...</span> in the right top corner of the window.

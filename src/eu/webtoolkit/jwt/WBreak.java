@@ -3,7 +3,7 @@ package eu.webtoolkit.jwt;
 
 /**
  * A widget that provides a line break between inline widgets
- * 
+ * <p>
  * 
  * This is an {@link WWidget#setInline(boolean inlined) inline} widget that
  * provides a line break inbetween its sibling widgets (such as {@link WText}).
@@ -18,6 +18,12 @@ public class WBreak extends WWebWidget {
 		super(parent);
 	}
 
+	/**
+	 * Construct a line break.
+	 * <p>
+	 * Calls {@link #WBreak(WContainerWidget parent)
+	 * this((WContainerWidget)null)}
+	 */
 	public WBreak() {
 		this((WContainerWidget) null);
 	}

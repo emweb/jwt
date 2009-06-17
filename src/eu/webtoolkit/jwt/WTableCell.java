@@ -4,7 +4,7 @@ import java.util.EnumSet;
 
 /**
  * A container widget that represents a cell in a table
- * 
+ * <p>
  * 
  * A {@link WTable} provides a table of WTableCell container widgets. A
  * WtableCell may overspan more than one grid location in the table, by
@@ -27,7 +27,7 @@ import java.util.EnumSet;
 public class WTableCell extends WContainerWidget {
 	/**
 	 * Set the row span.
-	 * 
+	 * <p>
 	 * The row span indicates how many table rows this {@link WTableCell}
 	 * overspans. By default, a {@link WTableCell} has a row span of 1, only
 	 * occupying its own grid cell. A row span greater than 1 indicates that
@@ -45,6 +45,7 @@ public class WTableCell extends WContainerWidget {
 
 	/**
 	 * Get the row span.
+	 * <p>
 	 * 
 	 * @see WTableCell#setRowSpan(int rowSpan)
 	 */
@@ -54,7 +55,7 @@ public class WTableCell extends WContainerWidget {
 
 	/**
 	 * Set the column span.
-	 * 
+	 * <p>
 	 * The column span indicates how many table columns this {@link WTableCell}
 	 * overspans. By default, a {@link WTableCell} has a column span of 1, only
 	 * occupying its own grid cell. A column span greater than 1 indicates that
@@ -72,6 +73,7 @@ public class WTableCell extends WContainerWidget {
 
 	/**
 	 * Returns the column span.
+	 * <p>
 	 * 
 	 * @see WTableCell#setColumnSpan(int colSpan)
 	 */

@@ -7,7 +7,7 @@ import java.util.List;
 
 /**
  * An abstract widget that can receive user-interface interaction
- * 
+ * <p>
  * 
  * This abstract widget provides access to event signals that correspond to
  * user-interface interaction through mouse or keyboard.
@@ -24,6 +24,12 @@ public abstract class WInteractWidget extends WWebWidget {
 		this.dragSlot_ = null;
 	}
 
+	/**
+	 * Create an InteractWidget with optional parent.
+	 * <p>
+	 * Calls {@link #WInteractWidget(WContainerWidget parent)
+	 * this((WContainerWidget)null)}
+	 */
 	public WInteractWidget() {
 		this((WContainerWidget) null);
 	}
@@ -35,7 +41,7 @@ public abstract class WInteractWidget extends WWebWidget {
 
 	/**
 	 * Event signal emitted when a keyboard key is pushed down.
-	 * 
+	 * <p>
 	 * The keyWentDown signal is the first signal emitted when a key is pressed
 	 * (before the keyPressed signal). Unlike
 	 * {@link WInteractWidget#keyPressed()} however it is also emitted for
@@ -52,7 +58,7 @@ public abstract class WInteractWidget extends WWebWidget {
 
 	/**
 	 * Event signal emitted when a &quot;character&quot; was entered.
-	 * 
+	 * <p>
 	 * The keyPressed signal is emitted when a key is pressed, and a character
 	 * is entered. Unlike {@link WInteractWidget#keyWentDown()}, it is emitted
 	 * only for key presses that result in a character being entered, and thus
@@ -67,7 +73,7 @@ public abstract class WInteractWidget extends WWebWidget {
 
 	/**
 	 * Event signal emitted when a keyboard key is released.
-	 * 
+	 * <p>
 	 * This is the counter-part of the {@link WInteractWidget#keyWentDown()}
 	 * event. Every key-down has its corresponding key-up.
 	 * <p>
@@ -80,7 +86,7 @@ public abstract class WInteractWidget extends WWebWidget {
 
 	/**
 	 * Event signal emitted when enter was pressed.
-	 * 
+	 * <p>
 	 * This signal is emitted when the Enter or Return key was pressed.
 	 * <p>
 	 * 
@@ -93,7 +99,7 @@ public abstract class WInteractWidget extends WWebWidget {
 
 	/**
 	 * Event signal emitted when escape was pressed.
-	 * 
+	 * <p>
 	 * This signal is emitted when the Escape key was pressed.
 	 * <p>
 	 * 
@@ -106,7 +112,7 @@ public abstract class WInteractWidget extends WWebWidget {
 
 	/**
 	 * Event signal emitted when a mouse key was clicked on this widget.
-	 * 
+	 * <p>
 	 * The event details contains information such as the
 	 * {@link WMouseEvent#getButton() button}, optional
 	 * {@link WMouseEvent#getModifiers() keyboard modifiers}, and mouse
@@ -125,7 +131,7 @@ public abstract class WInteractWidget extends WWebWidget {
 
 	/**
 	 * Event signal emitted when a mouse key was double clicked on this widget.
-	 * 
+	 * <p>
 	 * The event details contains information such as the
 	 * {@link WMouseEvent#getButton() button}, optional
 	 * {@link WMouseEvent#getModifiers() keyboard modifiers}, and mouse
@@ -144,7 +150,7 @@ public abstract class WInteractWidget extends WWebWidget {
 
 	/**
 	 * Event signal emitted when a mouse key was pushed down on this widget.
-	 * 
+	 * <p>
 	 * The event details contains information such as the
 	 * {@link WMouseEvent#getButton() button}, optional
 	 * {@link WMouseEvent#getModifiers() keyboard modifiers}, and mouse
@@ -163,7 +169,7 @@ public abstract class WInteractWidget extends WWebWidget {
 
 	/**
 	 * Event signal emitted when a mouse key was released on this widget.
-	 * 
+	 * <p>
 	 * The event details contains information such as the
 	 * {@link WMouseEvent#getButton() button}, optional
 	 * {@link WMouseEvent#getModifiers() keyboard modifiers}, and mouse
@@ -182,7 +188,7 @@ public abstract class WInteractWidget extends WWebWidget {
 
 	/**
 	 * Event signal emitted when the mouse went out of this widget.
-	 * 
+	 * <p>
 	 * <p>
 	 * <i><b>Note:</b>When JavaScript is disabled, the signal will never fire.
 	 * </i>
@@ -194,7 +200,7 @@ public abstract class WInteractWidget extends WWebWidget {
 
 	/**
 	 * Event signal emitted when the mouse entered this widget.
-	 * 
+	 * <p>
 	 * <p>
 	 * <i><b>Note:</b>When JavaScript is disabled, the signal will never fire.
 	 * </i>
@@ -206,7 +212,7 @@ public abstract class WInteractWidget extends WWebWidget {
 
 	/**
 	 * Event signal emitted when the mouse moved over this widget.
-	 * 
+	 * <p>
 	 * <p>
 	 * <i><b>Note:</b>When JavaScript is disabled, the signal will never fire.
 	 * </i>
@@ -218,7 +224,7 @@ public abstract class WInteractWidget extends WWebWidget {
 
 	/**
 	 * Configure dragging.
-	 * 
+	 * <p>
 	 * Enable drag&amp;drop for this widget. The mimeType is used to find a
 	 * suitable drop target, which must accept dropping of this mimetype.
 	 * <p>
@@ -260,14 +266,35 @@ public abstract class WInteractWidget extends WWebWidget {
 		this.mouseWentDown().addListener(this.dragSlot_);
 	}
 
+	/**
+	 * Configure dragging.
+	 * <p>
+	 * Calls
+	 * {@link #setDraggable(String mimeType, WWidget dragWidget, boolean isDragWidgetOnly, WObject sourceObject)
+	 * setDraggable(mimeType, (WWidget)null, false, (WObject)null)}
+	 */
 	public final void setDraggable(String mimeType) {
 		setDraggable(mimeType, (WWidget) null, false, (WObject) null);
 	}
 
+	/**
+	 * Configure dragging.
+	 * <p>
+	 * Calls
+	 * {@link #setDraggable(String mimeType, WWidget dragWidget, boolean isDragWidgetOnly, WObject sourceObject)
+	 * setDraggable(mimeType, dragWidget, false, (WObject)null)}
+	 */
 	public final void setDraggable(String mimeType, WWidget dragWidget) {
 		setDraggable(mimeType, dragWidget, false, (WObject) null);
 	}
 
+	/**
+	 * Configure dragging.
+	 * <p>
+	 * Calls
+	 * {@link #setDraggable(String mimeType, WWidget dragWidget, boolean isDragWidgetOnly, WObject sourceObject)
+	 * setDraggable(mimeType, dragWidget, isDragWidgetOnly, (WObject)null)}
+	 */
 	public final void setDraggable(String mimeType, WWidget dragWidget,
 			boolean isDragWidgetOnly) {
 		setDraggable(mimeType, dragWidget, isDragWidgetOnly, (WObject) null);

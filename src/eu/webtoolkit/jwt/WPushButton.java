@@ -4,7 +4,7 @@ import java.util.EnumSet;
 
 /**
  * A widget that represents a push button
- * 
+ * <p>
  * 
  * To act on a button click, connect a slot to the
  * {@link WInteractWidget#clicked()} signal.
@@ -23,6 +23,12 @@ public class WPushButton extends WFormWidget {
 		this.textChanged_ = false;
 	}
 
+	/**
+	 * Create a push button with empty label.
+	 * <p>
+	 * Calls {@link #WPushButton(WContainerWidget parent)
+	 * this((WContainerWidget)null)}
+	 */
 	public WPushButton() {
 		this((WContainerWidget) null);
 	}
@@ -36,6 +42,12 @@ public class WPushButton extends WFormWidget {
 		this.textChanged_ = false;
 	}
 
+	/**
+	 * Create a push button with given label.
+	 * <p>
+	 * Calls {@link #WPushButton(CharSequence text, WContainerWidget parent)
+	 * this(text, (WContainerWidget)null)}
+	 */
 	public WPushButton(CharSequence text) {
 		this(text, (WContainerWidget) null);
 	}

@@ -4,6 +4,7 @@ import eu.webtoolkit.jwt.servlet.WebRequest;
 
 /**
  * A class providing details for a drop event.
+ * <p>
  * 
  * @see WWidget#dropEvent(WDropEvent event)
  */
@@ -16,10 +17,9 @@ public class WDropEvent {
 
 	/**
 	 * The source of the drag&amp;drop operation.
-	 * 
+	 * <p>
 	 * The source is the widget that was set draggable using
-	 * {@link WInteractWidget#setDraggable(String mimeType, WWidget dragWidget, boolean isDragWidgetOnly, WObject sourceObject)}
-	 * .
+	 * {@link WInteractWidget#setDraggable(String mimeType, WWidget dragWidget, boolean isDragWidgetOnly, WObject sourceObject)}.
 	 */
 	public WObject getSource() {
 		return this.dropSource_;

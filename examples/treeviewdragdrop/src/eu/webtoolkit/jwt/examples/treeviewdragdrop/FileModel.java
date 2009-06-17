@@ -2,7 +2,6 @@ package eu.webtoolkit.jwt.examples.treeviewdragdrop;
 
 import eu.webtoolkit.jwt.WObject;
 import eu.webtoolkit.jwt.WStandardItemModel;
-import eu.webtoolkit.jwt.WString;
 
 /**
  * A specialized standard item model which report a specific drag and drop mime

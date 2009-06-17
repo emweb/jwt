@@ -5,7 +5,7 @@ import eu.webtoolkit.jwt.utils.StringUtils;
 
 /**
  * A validator that checks user input against a regular expression
- * 
+ * <p>
  * 
  * This validator checks whether user input is matched by the given (perl-like)
  * regular expression.
@@ -46,6 +46,11 @@ public class WRegExpValidator extends WValidator {
 		this.noMatchText_ = new WString();
 	}
 
+	/**
+	 * Create a new regular expression validator.
+	 * <p>
+	 * Calls {@link #WRegExpValidator(WObject parent) this((WObject)null)}
+	 */
 	public WRegExpValidator() {
 		this((WObject) null);
 	}
@@ -53,7 +58,7 @@ public class WRegExpValidator extends WValidator {
 	/**
 	 * Create a new regular expression validator that accepts input that matches
 	 * the given regular expression.
-	 * 
+	 * <p>
 	 * This constructs a validator that matches the perl regular expression
 	 * <i>expr</i>.
 	 */
@@ -63,6 +68,13 @@ public class WRegExpValidator extends WValidator {
 		this.noMatchText_ = new WString();
 	}
 
+	/**
+	 * Create a new regular expression validator that accepts input that matches
+	 * the given regular expression.
+	 * <p>
+	 * Calls {@link #WRegExpValidator(String pattern, WObject parent)
+	 * this(pattern, (WObject)null)}
+	 */
 	public WRegExpValidator(String pattern) {
 		this(pattern, (WObject) null);
 	}
@@ -76,7 +88,7 @@ public class WRegExpValidator extends WValidator {
 
 	/**
 	 * Set the regular expression for valid input.
-	 * 
+	 * <p>
 	 * Sets the perl regular expression <i>expr</i>.
 	 */
 	public void setRegExp(String pattern) {
@@ -94,7 +106,7 @@ public class WRegExpValidator extends WValidator {
 
 	/**
 	 * Validate the given input.
-	 * 
+	 * <p>
 	 * The input is considered valid only when it is blank for a non-mandatory
 	 * field, or matches the regular expression.
 	 */
@@ -122,7 +134,7 @@ public class WRegExpValidator extends WValidator {
 
 	/**
 	 * Set the message to display when the input does not match.
-	 * 
+	 * <p>
 	 * The default value is &quot;Invalid input&quot;.
 	 */
 	public void setInvalidNoMatchText(CharSequence text) {
@@ -132,6 +144,7 @@ public class WRegExpValidator extends WValidator {
 
 	/**
 	 * Returns the message displayed when the input does not match.
+	 * <p>
 	 * 
 	 * @see WRegExpValidator#setInvalidNoMatchText(CharSequence text)
 	 */

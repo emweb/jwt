@@ -5,17 +5,17 @@ import eu.webtoolkit.jwt.utils.StringUtils;
 
 /**
  * A widget that renders (XHTML) text
- * 
+ * <p>
  * 
  * The text is provided through a {@link WString}, which may either hold a
  * literal text, or a key to localized text which is looked up in locale
- * dependent XML files (see {@link WString#tr(String)}).
+ * dependent XML files (see {@link WString#tr(String key)}).
  * <p>
  * Use {@link WText#setTextFormat(TextFormat textFormat)} to configure the
  * textFormat of the text. The default textFormat is Wt::XHMTLText, which allows
- * any XHMTL textFormat to be included in the text. Tags and attributes that
- * indicate &quot;active&quot; content are not allowed and stripped out, to
- * avoid security risks exposed by JavaScript such as the common web-based <a
+ * XHMTL markup to be included in the text. Tags and attributes that indicate
+ * &quot;active&quot; content are not allowed and stripped out, to avoid
+ * security risks exposed by JavaScript such as the common web-based <a
  * href="http://en.wikipedia.org/wiki/Cross_site_scriptingCross-Site">Cross-Site
  * Scripting (XSS)</a> malicious attack. XSS is the situation where one user of
  * your web application is able to execute a script in another user&apos;s
@@ -55,17 +55,23 @@ public class WText extends WInteractWidget {
 		this.wordWrapChanged_ = false;
 	}
 
+	/**
+	 * Construct a text widget with an empty text.
+	 * <p>
+	 * Calls {@link #WText(WContainerWidget parent)
+	 * this((WContainerWidget)null)}
+	 */
 	public WText() {
 		this((WContainerWidget) null);
 	}
 
 	/**
 	 * Construct a text widget with given text.
-	 * 
+	 * <p>
 	 * The textFormat is set to {@link TextFormat#XHTMLText}, unless the
-	 * <i>text</i> is literal (not created using {@link WString#tr(String)}) and
-	 * it could not be parsed as valid XML. In that case the textFormat is set
-	 * to {@link TextFormat#PlainText}.
+	 * <i>text</i> is literal (not created using {@link WString#tr(String key)})
+	 * and it could not be parsed as valid XML. In that case the textFormat is
+	 * set to {@link TextFormat#PlainText}.
 	 * <p>
 	 * Therefore, if you wish to use {@link TextFormat#XHTMLText}, but cannot be
 	 * sure about <i>text</i> being valid XML, you should verify that the
@@ -85,17 +91,23 @@ public class WText extends WInteractWidget {
 		this.setText(text);
 	}
 
+	/**
+	 * Construct a text widget with given text.
+	 * <p>
+	 * Calls {@link #WText(CharSequence text, WContainerWidget parent)
+	 * this(text, (WContainerWidget)null)}
+	 */
 	public WText(CharSequence text) {
 		this(text, (WContainerWidget) null);
 	}
 
 	/**
 	 * Construct a text widget with given text and format.
-	 * 
+	 * <p>
 	 * If <i>textFormat</i> is {@link TextFormat#XHTMLText} and <i>text</i> is
-	 * not literal (not created using {@link WString#tr(String)}), then if the
-	 * <i>text</i> could not be parsed as valid XML, the textFormat is changed
-	 * to {@link TextFormat#PlainText}.
+	 * not literal (not created using {@link WString#tr(String key)}), then if
+	 * the <i>text</i> could not be parsed as valid XML, the textFormat is
+	 * changed to {@link TextFormat#PlainText}.
 	 * <p>
 	 * Therefore, if you wish to use {@link TextFormat#XHTMLText}, but cannot be
 	 * sure about <i>text</i> being valid XML, you should verify that the
@@ -115,13 +127,20 @@ public class WText extends WInteractWidget {
 		this.setText(text);
 	}
 
+	/**
+	 * Construct a text widget with given text and format.
+	 * <p>
+	 * Calls
+	 * {@link #WText(CharSequence text, TextFormat format, WContainerWidget parent)
+	 * this(text, format, (WContainerWidget)null)}
+	 */
 	public WText(CharSequence text, TextFormat format) {
 		this(text, format, (WContainerWidget) null);
 	}
 
 	/**
 	 * Returns the text.
-	 * 
+	 * <p>
 	 * When a literal XHTMLFormatted text was set, this may differ from the text
 	 * that was set since malicious tags/attributes may have been stripped.
 	 * <p>
@@ -134,10 +153,10 @@ public class WText extends WInteractWidget {
 
 	/**
 	 * Set the text.
-	 * 
+	 * <p>
 	 * When the current format is {@link TextFormat#XHTMLText}, and <i>text</i>
-	 * is literal (not created using {@link WString#tr(String)}), it is parsed
-	 * using an XML parser which discards malicious tags and attributes
+	 * is literal (not created using {@link WString#tr(String key)}), it is
+	 * parsed using an XML parser which discards malicious tags and attributes
 	 * silently. When the parser encounters an XML parse error, the textFormat
 	 * is changed to {@link TextFormat#PlainText}.
 	 * <p>
@@ -166,15 +185,16 @@ public class WText extends WInteractWidget {
 
 	/**
 	 * Set the textFormat.
-	 * 
+	 * <p>
 	 * The textFormat controls how the string should be interpreted: either as
 	 * plain text, which is displayed literally, or as XHTML-markup.
 	 * <p>
 	 * When changing the textFormat to {@link TextFormat#XHTMLText}, and the
-	 * current text is literal (not created using {@link WString#tr(String)}),
-	 * the current text is parsed using an XML parser which discards malicious
-	 * tags and attributes silently. When the parser encounters an XML parse
-	 * error, the textFormat is left unchanged, and this method returns false.
+	 * current text is literal (not created using {@link WString#tr(String key)}
+	 * ), the current text is parsed using an XML parser which discards
+	 * malicious tags and attributes silently. When the parser encounters an XML
+	 * parse error, the textFormat is left unchanged, and this method returns
+	 * false.
 	 * <p>
 	 * Returns whether the textFormat could be set for the current text.
 	 * <p>
@@ -196,6 +216,7 @@ public class WText extends WInteractWidget {
 
 	/**
 	 * Returns the textFormat.
+	 * <p>
 	 * 
 	 * @see WText#setTextFormat(TextFormat textFormat)
 	 */
@@ -205,7 +226,7 @@ public class WText extends WInteractWidget {
 
 	/**
 	 * Configure word wrapping.
-	 * 
+	 * <p>
 	 * When <i>on</i> is true, the widget may break lines, creating a multi-line
 	 * text. When <i>on</i> is false, the text will displayed on a single line,
 	 * unless the text contains end-of-lines (for {@link TextFormat#PlainText})
@@ -227,6 +248,7 @@ public class WText extends WInteractWidget {
 
 	/**
 	 * Returns whether the widget may break lines.
+	 * <p>
 	 * 
 	 * @see WText#setWordWrap(boolean wordWrap)
 	 */

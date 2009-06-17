@@ -5,7 +5,7 @@ import java.util.List;
 
 /**
  * A rich-text XHTML editor
- * 
+ * <p>
  * 
  * The editor provides interactive editing of XHTML text. By default it provides
  * basic mark-up (font, formatting, color, links, and lists), but additional
@@ -55,13 +55,19 @@ public class WTextEdit extends WTextArea {
 		}
 	}
 
+	/**
+	 * Create a new text editor.
+	 * <p>
+	 * Calls {@link #WTextEdit(WContainerWidget parent)
+	 * this((WContainerWidget)null)}
+	 */
 	public WTextEdit() {
 		this((WContainerWidget) null);
 	}
 
 	/**
 	 * Create a new text editor and initialize with given text.
-	 * 
+	 * <p>
 	 * The <i>text</i> should be valid XHTML.
 	 */
 	public WTextEdit(String text, WContainerWidget parent) {
@@ -76,6 +82,12 @@ public class WTextEdit extends WTextArea {
 		}
 	}
 
+	/**
+	 * Create a new text editor and initialize with given text.
+	 * <p>
+	 * Calls {@link #WTextEdit(String text, WContainerWidget parent) this(text,
+	 * (WContainerWidget)null)}
+	 */
 	public WTextEdit(String text) {
 		this(text, (WContainerWidget) null);
 	}
@@ -90,7 +102,7 @@ public class WTextEdit extends WTextArea {
 
 	/**
 	 * Set the content.
-	 * 
+	 * <p>
 	 * The <i>text</i> should be valid XHTML.
 	 * <p>
 	 * The default value is &quot;&quot;.
@@ -102,7 +114,7 @@ public class WTextEdit extends WTextArea {
 
 	/**
 	 * Set the stylesheet for displaying the content.
-	 * 
+	 * <p>
 	 * The content is rendered using the rules defined in this stylesheet. The
 	 * stylesheet is also used to derive additional styles that are available in
 	 * the text editor, for example in the &quot;styleselect&quot; button.
@@ -115,6 +127,7 @@ public class WTextEdit extends WTextArea {
 
 	/**
 	 * Returns the content stylesheet.
+	 * <p>
 	 * 
 	 * @see WTextEdit#setStyleSheet(String uri)
 	 */
@@ -124,7 +137,7 @@ public class WTextEdit extends WTextArea {
 
 	/**
 	 * Load additional TinyMCE plugins.
-	 * 
+	 * <p>
 	 * Wt loads by default only the plugin &apos;safari&apos; (which adds
 	 * support for the Safari web browser). Use this method to load additional
 	 * plugins. Multiple plugins may be specified as a comma separated list.
@@ -144,6 +157,7 @@ public class WTextEdit extends WTextArea {
 
 	/**
 	 * Returns the extra plugins.
+	 * <p>
 	 * 
 	 * @see WTextEdit#setExtraPlugins(String plugins)
 	 */
@@ -153,7 +167,7 @@ public class WTextEdit extends WTextArea {
 
 	/**
 	 * Configure a tool bar.
-	 * 
+	 * <p>
 	 * This configures the buttons for the <i>i&apos;th</i> tool bar (with 0
 	 * &lt;= <i>i</i> &lt;= 3).
 	 * <p>
@@ -182,6 +196,7 @@ public class WTextEdit extends WTextArea {
 
 	/**
 	 * Returns a tool bar configuration.
+	 * <p>
 	 * 
 	 * @see WTextEdit#setToolBar(int i, String config)
 	 */

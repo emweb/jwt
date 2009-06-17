@@ -7,7 +7,7 @@ import eu.webtoolkit.jwt.utils.EnumUtils;
 
 /**
  * A widget that is painted using vector graphics.
- * 
+ * <p>
  * 
  * A painted widget is rendered from basic drawing primitives. Rendering is done
  * not on the server but on the browser, using different rendering methods:
@@ -110,6 +110,12 @@ public abstract class WPaintedWidget extends WInteractWidget {
 		this.setInline(false);
 	}
 
+	/**
+	 * Create a new painted widget.
+	 * <p>
+	 * Calls {@link #WPaintedWidget(WContainerWidget parent)
+	 * this((WContainerWidget)null)}
+	 */
 	public WPaintedWidget() {
 		this((WContainerWidget) null);
 	}
@@ -126,7 +132,7 @@ public abstract class WPaintedWidget extends WInteractWidget {
 
 	/**
 	 * Set the preferred rendering method.
-	 * 
+	 * <p>
 	 * When <i>method</i> is supported by the browser, then it is chosen for
 	 * rendering.
 	 */
@@ -140,6 +146,7 @@ public abstract class WPaintedWidget extends WInteractWidget {
 
 	/**
 	 * Get the preferred rendering method.
+	 * <p>
 	 * 
 	 * @see WPaintedWidget#setPreferredMethod(WPaintedWidget.Method method)
 	 */
@@ -149,7 +156,7 @@ public abstract class WPaintedWidget extends WInteractWidget {
 
 	/**
 	 * Let the widget repaint itself.
-	 * 
+	 * <p>
 	 * Repainting is not immediate, but happens after when the event loop is
 	 * exited.
 	 */
@@ -159,10 +166,21 @@ public abstract class WPaintedWidget extends WInteractWidget {
 		super.repaint();
 	}
 
+	/**
+	 * Let the widget repaint itself.
+	 * <p>
+	 * Calls {@link #update(EnumSet flags) update(EnumSet.of(flag, flags))}
+	 */
 	public final void update(PaintFlag flag, PaintFlag... flags) {
 		update(EnumSet.of(flag, flags));
 	}
 
+	/**
+	 * Let the widget repaint itself.
+	 * <p>
+	 * Calls {@link #update(EnumSet flags)
+	 * update(EnumSet.noneOf(PaintFlag.class))}
+	 */
 	public final void update() {
 		update(EnumSet.noneOf(PaintFlag.class));
 	}
@@ -179,7 +197,7 @@ public abstract class WPaintedWidget extends WInteractWidget {
 
 	/**
 	 * Add an interactive area.
-	 * 
+	 * <p>
 	 * Adds the <i>area</i> which listens to events in a specific region of the
 	 * widget. Areas are organized in a list, to which the given <i>area</i> is
 	 * appended. When areas overlap, the area with the lowest index receives the
@@ -203,7 +221,7 @@ public abstract class WPaintedWidget extends WInteractWidget {
 
 	/**
 	 * Insert an interactive area.
-	 * 
+	 * <p>
 	 * Inserts the <i>area</i> which listens to events in the coresponding area
 	 * of the widget. Areas are organized in a list, and the <i>area</i> is
 	 * inserted at index <i>index</i>. When areas overlap, the area with the
@@ -227,7 +245,7 @@ public abstract class WPaintedWidget extends WInteractWidget {
 
 	/**
 	 * Removes an interactive area.
-	 * 
+	 * <p>
 	 * Removes the <i>area</i> from this widget, returning the ownership.
 	 * <p>
 	 * 
@@ -240,7 +258,7 @@ public abstract class WPaintedWidget extends WInteractWidget {
 
 	/**
 	 * Returns the interactive area at the given index.
-	 * 
+	 * <p>
 	 * Returns 0 if <i>index</i> was invalid.
 	 * <p>
 	 * 
@@ -252,6 +270,7 @@ public abstract class WPaintedWidget extends WInteractWidget {
 
 	/**
 	 * Returns the interactive areas set for this widget.
+	 * <p>
 	 * 
 	 * @see WPaintedWidget#addArea(WAbstractArea area)
 	 */
@@ -262,7 +281,7 @@ public abstract class WPaintedWidget extends WInteractWidget {
 
 	/**
 	 * Paint the widget.
-	 * 
+	 * <p>
 	 * You should reimplement this method to paint the contents of the widget,
 	 * using the given paintDevice.
 	 */

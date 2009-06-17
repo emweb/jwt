@@ -9,7 +9,7 @@ import eu.webtoolkit.jwt.utils.MathUtils;
 
 /**
  * A paint device for rendering using the VML pseudo-standard.
- * 
+ * <p>
  * 
  * The WVmlImage is used by {@link WPaintedWidget} to render to the browser
  * using the Vector Markup Language (VML) (to support graphics on Internet

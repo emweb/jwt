@@ -5,7 +5,7 @@ import java.util.List;
 
 /**
  * A container widget that stacks its widgets on top of each other
- * 
+ * <p>
  * 
  * This is a container widgets which at all times has only one item visible. The
  * widget accomplishes this using {@link WWebWidget#setHidden(boolean hidden)}
@@ -30,6 +30,12 @@ public class WStackedWidget extends WContainerWidget {
 		this.currentIndex_ = -1;
 	}
 
+	/**
+	 * Created a new stacked container widget.
+	 * <p>
+	 * Calls {@link #WStackedWidget(WContainerWidget parent)
+	 * this((WContainerWidget)null)}
+	 */
 	public WStackedWidget() {
 		this((WContainerWidget) null);
 	}
@@ -47,6 +53,7 @@ public class WStackedWidget extends WContainerWidget {
 
 	/**
 	 * Returns the index of the widget that is currently shown.
+	 * <p>
 	 * 
 	 * @see WStackedWidget#setCurrentIndex(int index)
 	 * @see WStackedWidget#getCurrentWidget()
@@ -57,6 +64,7 @@ public class WStackedWidget extends WContainerWidget {
 
 	/**
 	 * Returns the widget that is currently shown.
+	 * <p>
 	 * 
 	 * @see WStackedWidget#setCurrentWidget(WWidget widget)
 	 * @see WStackedWidget#getCurrentIndex()
@@ -67,7 +75,7 @@ public class WStackedWidget extends WContainerWidget {
 
 	/**
 	 * Returns the index of the given widget.
-	 * 
+	 * <p>
 	 * Returns -1 if the <i>widget</i> was not added.
 	 * <p>
 	 * 
@@ -97,6 +105,7 @@ public class WStackedWidget extends WContainerWidget {
 
 	/**
 	 * Returns the widget at the specified index.
+	 * <p>
 	 * 
 	 * @see WStackedWidget#getIndexOf(WWidget widget)
 	 */
@@ -106,7 +115,7 @@ public class WStackedWidget extends WContainerWidget {
 
 	/**
 	 * Shows a particular widget.
-	 * 
+	 * <p>
 	 * The widget with index <i>index</i> is made visible, while all other
 	 * widgets are invisible.
 	 * <p>
@@ -123,7 +132,7 @@ public class WStackedWidget extends WContainerWidget {
 
 	/**
 	 * Shows a particular widget.
-	 * 
+	 * <p>
 	 * The widget <i>widget</i>, which must have been added before, is made
 	 * visible, while all other widgets are invisible.
 	 * <p>

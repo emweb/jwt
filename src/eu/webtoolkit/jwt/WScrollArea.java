@@ -4,7 +4,7 @@ import java.util.EnumSet;
 
 /**
  * A widget that adds scrolling capabilities to its content
- * 
+ * <p>
  * 
  * Use a {@link WScrollArea} to add scrolling capabilities to another widget.
  * When the content is bigger than the {@link WScrollArea}, scrollbars are added
@@ -17,6 +17,7 @@ import java.util.EnumSet;
  */
 public class WScrollArea extends WWebWidget {
 	/**
+	 * <p>
 	 * brief Policy for showing a scrollbar.
 	 */
 	public enum ScrollBarPolicy {
@@ -54,6 +55,12 @@ public class WScrollArea extends WWebWidget {
 		this.verticalScrollBar_ = new WScrollBar(this, Orientation.Vertical);
 	}
 
+	/**
+	 * Create a scroll area.
+	 * <p>
+	 * Calls {@link #WScrollArea(WContainerWidget parent)
+	 * this((WContainerWidget)null)}
+	 */
 	public WScrollArea() {
 		this((WContainerWidget) null);
 	}
@@ -66,7 +73,7 @@ public class WScrollArea extends WWebWidget {
 
 	/**
 	 * Set the widget that is the contents of the scroll area.
-	 * 
+	 * <p>
 	 * Setting a new widget will delete the previously set widget.
 	 */
 	public void setWidget(WWidget widget) {
@@ -116,6 +123,7 @@ public class WScrollArea extends WWebWidget {
 
 	/**
 	 * Set the policy for both scrollbars.
+	 * <p>
 	 * 
 	 * @see WScrollArea#setHorizontalScrollBarPolicy(WScrollArea.ScrollBarPolicy
 	 *      policy)
@@ -130,6 +138,7 @@ public class WScrollArea extends WWebWidget {
 
 	/**
 	 * Set the horizontal scroll bar policy.
+	 * <p>
 	 * 
 	 * @see WScrollArea#setScrollBarPolicy(WScrollArea.ScrollBarPolicy policy)
 	 */
@@ -141,6 +150,7 @@ public class WScrollArea extends WWebWidget {
 
 	/**
 	 * Set the vertical scroll bar policy.
+	 * <p>
 	 * 
 	 * @see WScrollArea#setScrollBarPolicy(WScrollArea.ScrollBarPolicy policy)
 	 */

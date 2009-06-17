@@ -5,7 +5,7 @@ import java.util.List;
 
 /**
  * A WPanel provides a container with a title bar
- * 
+ * <p>
  * 
  * The panel provides a container with an optional title bar, and an optional
  * collapse icon.
@@ -57,13 +57,19 @@ public class WPanel extends WCompositeWidget {
 		}
 	}
 
+	/**
+	 * Construct a panel.
+	 * <p>
+	 * Calls {@link #WPanel(WContainerWidget parent)
+	 * this((WContainerWidget)null)}
+	 */
 	public WPanel() {
 		this((WContainerWidget) null);
 	}
 
 	/**
 	 * Set a title.
-	 * 
+	 * <p>
 	 * The panel title is set in the title bar. This method also makes the title
 	 * bar visible by calling setTitleBar(true).
 	 * <p>
@@ -76,13 +82,16 @@ public class WPanel extends WCompositeWidget {
 	public void setTitle(CharSequence title) {
 		this.setTitleBar(true);
 		if (!(this.title_ != null)) {
-			this.title_ = new WText(this.titleBar_);
+			this.title_ = new WText();
+			this.titleBar_.insertWidget(this.titleBar_.getCount() - 1,
+					this.title_);
 		}
 		this.title_.setText(title);
 	}
 
 	/**
 	 * Get the title.
+	 * <p>
 	 * 
 	 * @see WPanel#setTitle(CharSequence title)
 	 */
@@ -96,7 +105,7 @@ public class WPanel extends WCompositeWidget {
 
 	/**
 	 * Show or hide a title bar for the panel.
-	 * 
+	 * <p>
 	 * The title bar appears at the top of the panel.
 	 * <p>
 	 * The default value is false: the title bar is not shown unless a title is
@@ -111,6 +120,9 @@ public class WPanel extends WCompositeWidget {
 			this.titleBar_ = new WContainerWidget();
 			this.impl_.insertWidget(0, this.titleBar_);
 			this.titleBar_.setStyleClass("titlebar");
+			WBreak br;
+			this.titleBar_.addWidget(br = new WBreak());
+			br.setClearSides(Side.Horizontals);
 		} else {
 			if (!enable && this.titleBar_ != null) {
 				if (this.titleBar_ != null)
@@ -124,6 +136,7 @@ public class WPanel extends WCompositeWidget {
 
 	/**
 	 * Returns if a title bar is set.
+	 * <p>
 	 * 
 	 * @see WPanel#setTitleBar(boolean enable)
 	 */
@@ -133,7 +146,7 @@ public class WPanel extends WCompositeWidget {
 
 	/**
 	 * Make the panel collapsible.
-	 * 
+	 * <p>
 	 * When <i>on</i> is true, a collapse/expand icon is added to the title bar.
 	 * This also calls setTitleBar(true) to enable the title bar.
 	 * <p>
@@ -190,6 +203,7 @@ public class WPanel extends WCompositeWidget {
 
 	/**
 	 * Returns if the panel can be collapsed by the user.
+	 * <p>
 	 * 
 	 * @see WPanel#setCollapsible(boolean on)
 	 */
@@ -199,7 +213,7 @@ public class WPanel extends WCompositeWidget {
 
 	/**
 	 * Set the panel expanded or collapsed.
-	 * 
+	 * <p>
 	 * When <i>on</i> is true, equivalent to {@link WPanel#collapse()},
 	 * otherwise to {@link WPanel#expand()}.
 	 * <p>
@@ -218,6 +232,7 @@ public class WPanel extends WCompositeWidget {
 
 	/**
 	 * Returns if the panel is collapsed.
+	 * <p>
 	 * 
 	 * @see WPanel#setCollapsed(boolean on)
 	 * @see WPanel#collapsed()
@@ -229,7 +244,7 @@ public class WPanel extends WCompositeWidget {
 
 	/**
 	 * Collapse the panel.
-	 * 
+	 * <p>
 	 * When {@link WPanel#isCollapsible()} is true, the panel is collapsed to
 	 * minimize screen real-estate.
 	 * <p>
@@ -246,7 +261,7 @@ public class WPanel extends WCompositeWidget {
 
 	/**
 	 * Collapse the panel.
-	 * 
+	 * <p>
 	 * When {@link WPanel#isCollapsible()} is true, the panel is expanded to its
 	 * original state.
 	 * <p>
@@ -263,7 +278,7 @@ public class WPanel extends WCompositeWidget {
 
 	/**
 	 * Set the central widget.
-	 * 
+	 * <p>
 	 * Sets the widget that is the contents of the panel. When a widget was
 	 * previously set, the old widget is deleted first.
 	 * <p>
@@ -280,6 +295,7 @@ public class WPanel extends WCompositeWidget {
 
 	/**
 	 * Return the central widget.
+	 * <p>
 	 * 
 	 * @see WPanel#setCentralWidget(WWidget w)
 	 */
@@ -289,7 +305,7 @@ public class WPanel extends WCompositeWidget {
 
 	/**
 	 * Signal emitted when the panel is collapsed.
-	 * 
+	 * <p>
 	 * Signal emitted when the panel is collapsed. The signal is only emitted
 	 * when the panel is collapsed by the user using the collapse icon in the
 	 * tible bar, not when calling {@link WPanel#setCollapsed(boolean on)}.
@@ -303,7 +319,7 @@ public class WPanel extends WCompositeWidget {
 
 	/**
 	 * Signal emitted when the panel is expanded.
-	 * 
+	 * <p>
 	 * Signal emitted when the panel is expanded. The signal is only emitted
 	 * when the panel is expanded by the user using the expand icon in the title
 	 * bar, not when calling {@link WPanel#setCollapsed(boolean on)}.

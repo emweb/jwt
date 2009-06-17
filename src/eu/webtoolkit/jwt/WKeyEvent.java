@@ -6,7 +6,7 @@ import eu.webtoolkit.jwt.utils.EnumUtils;
 
 /**
  * A class providing details for a keyboard event.
- * 
+ * <p>
  * 
  * A key event is associated with the {@link WInteractWidget#keyWentDown()},
  * {@link WInteractWidget#keyWentUp()} and {@link WInteractWidget#keyPressed()}
@@ -23,7 +23,7 @@ public class WKeyEvent implements WAbstractEvent {
 
 	/**
 	 * Returns the key code key that was pressed or released.
-	 * 
+	 * <p>
 	 * The key code corresponds to the actual key on the keyboard, rather than
 	 * the generated character.
 	 * <p>
@@ -43,7 +43,7 @@ public class WKeyEvent implements WAbstractEvent {
 
 	/**
 	 * Returns keyboard modifiers.
-	 * 
+	 * <p>
 	 * The result is a logical OR of {@link KeyboardModifier KeyboardModifier}
 	 * flags.
 	 * <p>
@@ -59,7 +59,7 @@ public class WKeyEvent implements WAbstractEvent {
 
 	/**
 	 * Returns the unicode character code.
-	 * 
+	 * <p>
 	 * This is only defined for a {@link WInteractWidget#keyPressed()
 	 * keyPressed} event, and returns the unicode character code of a character
 	 * that is entered.
@@ -84,7 +84,7 @@ public class WKeyEvent implements WAbstractEvent {
 
 	/**
 	 * The (unicode) text that this key generated.
-	 * 
+	 * <p>
 	 * This is only defined for a {@link WInteractWidget#keyPressed()
 	 * keyPressed} event, and returns a string that holds exactly one unicode
 	 * character, which corresponds to {@link WKeyEvent#getCharCode()}.
@@ -102,7 +102,7 @@ public class WKeyEvent implements WAbstractEvent {
 
 	/**
 	 * Returns the raw key code (<b>deprecated</b>).
-	 * 
+	 * <p>
 	 * DOCXREFITEMDeprecatedThe value returned is somewhat browser-specific, and
 	 * it is therefore recommended to use the {@link WKeyEvent#getKey()} method
 	 * instead.
@@ -115,7 +115,7 @@ public class WKeyEvent implements WAbstractEvent {
 
 	/**
 	 * Returns whether the alt key is pressed (<b>deprecated</b>).
-	 * 
+	 * <p>
 	 * DOCXREFITEMDeprecatedUse {@link WKeyEvent#getModifiers()} instead.
 	 */
 	public boolean isAltKey() {
@@ -125,7 +125,7 @@ public class WKeyEvent implements WAbstractEvent {
 
 	/**
 	 * Returns whether the meta key is pressed (<b>deprecated</b>).
-	 * 
+	 * <p>
 	 * DOCXREFITEMDeprecatedUse {@link WKeyEvent#getModifiers()} instead.
 	 */
 	public boolean isMetaKey() {
@@ -135,7 +135,7 @@ public class WKeyEvent implements WAbstractEvent {
 
 	/**
 	 * Returns whether the control key is pressed (<b>deprecated</b>).
-	 * 
+	 * <p>
 	 * DOCXREFITEMDeprecatedUse {@link WKeyEvent#getModifiers()} instead.
 	 */
 	public boolean isCtrlKey() {
@@ -145,7 +145,7 @@ public class WKeyEvent implements WAbstractEvent {
 
 	/**
 	 * Returns whether the shift key is pressed (<b>deprecated</b>).
-	 * 
+	 * <p>
 	 * DOCXREFITEMDeprecatedUse {@link WKeyEvent#getModifiers()} instead.
 	 */
 	public boolean isShiftKey() {
