@@ -609,9 +609,9 @@ public class WChart2DRenderer {
 			EnumSet<WChart2DRenderer.AxisProperty> properties) {
 		boolean vertical = axis.getId() != Axis.XAxis;
 		double u = 0;
-		final int Left = 0;
-		final int Right = 1;
-		final int Both = 2;
+		final int Left = 1;
+		final int Right = 2;
+		final int Both = 3;
 		int tickPos = Left;
 		AlignmentFlag labelHFlag = AlignmentFlag.AlignLeft;
 		switch (l) {

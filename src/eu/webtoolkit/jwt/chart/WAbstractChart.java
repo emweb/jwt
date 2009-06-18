@@ -104,7 +104,13 @@ public abstract class WAbstractChart extends WPaintedWidget {
 		this.modelConnections_.add(this.model_.layoutChanged().addListener(
 				this, new Signal.Listener() {
 					public void trigger() {
-						WAbstractChart.this.modelChanged();
+						WAbstractChart.this.modelReset();
+					}
+				}));
+		this.modelConnections_.add(this.model_.modelReset().addListener(this,
+				new Signal.Listener() {
+					public void trigger() {
+						WAbstractChart.this.modelReset();
 					}
 				}));
 		this.modelChanged();
@@ -363,6 +369,15 @@ public abstract class WAbstractChart extends WPaintedWidget {
 	 * @see WAbstractChart#setModel(WAbstractItemModel model)
 	 */
 	protected void modelChanged() {
+	}
+
+	/**
+	 * Method called whenever the entire model was reset.
+	 * <p>
+	 * Bound to the {@link WAbstractItemModel#modelReset()} and
+	 * {@link WAbstractItemModel#layoutChanged()} signals.
+	 */
+	protected void modelReset() {
 	}
 
 	/**

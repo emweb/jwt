@@ -10,7 +10,7 @@ public class ChartsMain extends WtServlet {
 	public ChartsMain() {
 		super();
 		
-		getConfiguration().setSendXHTMLMimeType(false);
+		//getConfiguration().setSendXHTMLMimeType(false);
 	}
 
 	public WApplication createApplication(WEnvironment env) {

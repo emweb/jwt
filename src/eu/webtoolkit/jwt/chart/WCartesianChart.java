@@ -609,4 +609,8 @@ public class WCartesianChart extends WAbstractChart {
 		this.series_.clear();
 		this.update();
 	}
+
+	protected void modelReset() {
+		this.update();
+	}
 }

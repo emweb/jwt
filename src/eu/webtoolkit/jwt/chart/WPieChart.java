@@ -493,6 +493,14 @@ public class WPieChart extends WAbstractChart {
 		this.update();
 	}
 
+	protected void modelReset() {
+		if (this.getModel().getRowCount() != this.pie_.size()) {
+			this.modelChanged();
+		} else {
+			this.update();
+		}
+	}
+
 	protected void modelColumnsInserted(WModelIndex parent, int start, int end) {
 		if (this.labelsColumn_ >= start) {
 			this.labelsColumn_ += end - start + 1;

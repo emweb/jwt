@@ -80,7 +80,7 @@ public class ChartConfig extends WContainerWidget {
 
 		chartConfig.getElementAt(row, 0).addWidget(new WText("Width:"));
 		chartWidthEdit_ = new WLineEdit(chartConfig.getElementAt(row, 1));
-		chartWidthEdit_.setText(chart_.getWidth().getValue() + "");
+		chartWidthEdit_.setText(String.valueOf((int)chart_.getWidth().getValue()));
 		chartWidthEdit_.setValidator(sizeValidator);
 		chartWidthEdit_.setMaxLength(4);
 		connectSignals(chartWidthEdit_);
@@ -88,7 +88,7 @@ public class ChartConfig extends WContainerWidget {
 
 		chartConfig.getElementAt(row, 0).addWidget(new WText("Height:"));
 		chartHeightEdit_ = new WLineEdit(chartConfig.getElementAt(row, 1));
-		chartHeightEdit_.setText(chart_.getHeight().getValue() + "");
+		chartHeightEdit_.setText(String.valueOf((int)chart_.getHeight().getValue()));
 		chartHeightEdit_.setValidator(sizeValidator);
 		chartHeightEdit_.setMaxLength(4);
 		connectSignals(chartHeightEdit_);

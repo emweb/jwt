@@ -8,6 +8,7 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
+import eu.webtoolkit.jwt.Orientation;
 import eu.webtoolkit.jwt.WAbstractItemModel;
 import eu.webtoolkit.jwt.WContainerWidget;
 import eu.webtoolkit.jwt.WStandardItemModel;
@@ -25,24 +26,27 @@ public class CsvUtil {
 				if (row != 0) {
 					model.insertRow(model.getRowCount());
 				}
-				
+
 				for (int col = 0; col < fields.size(); col++) {
-				       if (col >= model.getColumnCount())
-				           model.insertColumns(model.getColumnCount(),
-				                                col + 1 - model.getColumnCount());
+					if (col >= model.getColumnCount())
+						model.insertColumns(model.getColumnCount(), col + 1 - model.getColumnCount());
 
-				         if (row == 0)
-				           model.setHeaderData(col, fields.get(col));
-				         else {
-				           int dataRow = row - 1;
+					String value = fields.get(col);
+					if (row == 0)
+						model.setHeaderData(col, Orientation.Horizontal, value);
+					else {
+						int dataRow = row - 1;
 
-				           if (dataRow >= model.getRowCount())
-				             model.insertRows(model.getRowCount(),
-				                               dataRow + 1 - model.getRowCount());
+						if (dataRow >= model.getRowCount())
+							model.insertRows(model.getRowCount(), dataRow + 1 - model.getRowCount());
 
-
-				           model.setData(dataRow, col, fields.get(col));
-				         }
+						try {
+							Double d = Double.valueOf(value);
+							model.setData(dataRow, col, d);
+						} catch (NumberFormatException e) {
+							model.setData(dataRow, col, value);
+						}						
+					}
 				}
 				row++;
 			}

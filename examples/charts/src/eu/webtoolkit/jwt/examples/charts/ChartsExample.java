@@ -3,6 +3,8 @@ package eu.webtoolkit.jwt.examples.charts;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
+import eu.webtoolkit.jwt.AlignmentFlag;
+import eu.webtoolkit.jwt.Orientation;
 import eu.webtoolkit.jwt.Side;
 import eu.webtoolkit.jwt.WAbstractItemModel;
 import eu.webtoolkit.jwt.WContainerWidget;
@@ -131,8 +133,13 @@ public class ChartsExample extends WContainerWidget
 			  table.setRootIsDecorated(false);
 			  table.setMargin(new WLength(10), Side.Top, Side.Bottom);
 			  table.setMargin(WLength.Auto, Side.Left, Side.Right);
-			  table.resize(500, 175);
+			  table.resize(550, 175);
 			  table.setModel(model);
+			  for (int i = 0; i < model.getColumnCount(); ++i) {
+				  table.setColumnWidth(i, new WLength(i == 0 ? 60 : 110));
+				  if (i != 0)
+					  table.setColumnAlignment(i, AlignmentFlag.AlignRight);
+			  }
 
 			  /*
 			   * Create the category chart.
@@ -178,8 +185,8 @@ public class ChartsExample extends WContainerWidget
 			    new WText(WString.tr("scatter plot 2"), this);
 
 			    WStandardItemModel model = new WStandardItemModel(100, 2, this);
-			    model.setHeaderData(0, new WString("X"));
-			    model.setHeaderData(1, new WString("Y = sin(X)"));
+			    model.setHeaderData(0, Orientation.Horizontal, new WString("X"));
+			    model.setHeaderData(1, Orientation.Horizontal, new WString("Y = sin(X)"));
 
 			    for (int i = 0; i < 40; ++i) {
 			      double x = (i - 20) / 4.0;
