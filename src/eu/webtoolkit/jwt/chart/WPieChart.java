@@ -167,7 +167,7 @@ public class WPieChart extends WAbstractChart {
 		if (this.pie_.get(modelRow).customBrush) {
 			return this.pie_.get(modelRow).brush;
 		} else {
-			return this.getPalette().brush(modelRow);
+			return this.getPalette().getBrush(modelRow);
 		}
 	}
 
@@ -419,7 +419,7 @@ public class WPieChart extends WAbstractChart {
 						alignment = EnumSet.copyOf(EnumSet.of(
 								AlignmentFlag.AlignCenter,
 								AlignmentFlag.AlignMiddle));
-						c = this.getPalette().fontColor(i);
+						c = this.getPalette().getFontColor(i);
 					}
 					WString text = new WString();
 					if (!EnumUtils.mask(this.labelOptions_,

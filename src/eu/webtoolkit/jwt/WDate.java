@@ -370,27 +370,27 @@ public class WDate implements Comparable<WDate> {
 	 * When the date could not be parsed or is not valid, 
 	 * null is returned.
 	 * 
-	 * @see #fromString(CharSequence, String)
+	 * @see #fromString(String, String)
 	 */
-	public static WDate fromString(CharSequence text) {
+	public static WDate fromString(String text) {
 		return fromString(text, getDefaultFormat());
 	}
 
 	/**
-	 * Parse a CharSequence to a date using a specified format.
+	 * Parse a String to a date using a specified format.
 	 * 
 	 * The <i>format</i> follows the same syntax as used by
-	 * {@link #toString(CharSequence format)}.
+	 * {@link #toString(String format)}.
 	 * 
 	 * When the date could not be parsed or is not valid, 
 	 * null is returned.
 	 * 
-	 * @see #toString(CharSequence format)
+	 * @see #toString(String format)
 	 */
-	public static WDate fromString(CharSequence text, String format) {
+	public static WDate fromString(String text, String format) {
 		SimpleDateFormat formatter = new SimpleDateFormat(format);
 		try {
-			return new WDate(formatter.parse(text.toString()));
+			return new WDate(formatter.parse(text));
 		} catch (ParseException e) {
 			return null;
 		}
@@ -440,8 +440,8 @@ public class WDate implements Comparable<WDate> {
 	 * 
 	 * The default <i>format</i> is "ddd MMM d yyyy".
 	 * 
-	 * @see #toString(CharSequence format)
-	 * @see #fromString(CharSequence)
+	 * @see #toString(String format)
+	 * @see #fromString(String)
 	 */
 	@Override
 	public String toString() {
@@ -540,8 +540,8 @@ public class WDate implements Comparable<WDate> {
 	 * </tr>
 	 * </table>
 	 */
-	public String toString(CharSequence format) {
-		SimpleDateFormat formatter = new SimpleDateFormat(format.toString());
+	public String toString(String format) {
+		SimpleDateFormat formatter = new SimpleDateFormat(format);
 		return formatter.format(this.d);
 	}
 

@@ -122,15 +122,15 @@ public class WStandardPalette implements WChartPalette {
 		this.flavour_ = flavour;
 	}
 
-	public WBrush brush(int index) {
+	public WBrush getBrush(int index) {
 		return new WBrush(this.color(index));
 	}
 
-	public WPen borderPen(int index) {
+	public WPen getBorderPen(int index) {
 		return new WPen(new WColor(0x44, 0x44, 0x44));
 	}
 
-	public WPen strokePen(int index) {
+	public WPen getStrokePen(int index) {
 		WPen p = new WPen(this.color(index));
 		p.setWidth(new WLength(2));
 		p.setJoinStyle(PenJoinStyle.BevelJoin);
@@ -138,7 +138,7 @@ public class WStandardPalette implements WChartPalette {
 		return p;
 	}
 
-	public WColor fontColor(int index) {
+	public WColor getFontColor(int index) {
 		WColor c = this.color(index);
 		if (c.getRed() + c.getGreen() + c.getBlue() > 3 * 128) {
 			return WColor.black;

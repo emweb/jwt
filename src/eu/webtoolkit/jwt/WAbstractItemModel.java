@@ -654,9 +654,10 @@ public abstract class WAbstractItemModel extends WObject {
 	 * <p>
 	 * Returns true if the operation was successful.
 	 * <p>
-	 * DOCXREFITEMDeprecatedUse
-	 * {@link WAbstractItemModel#setHeaderData(int section, Orientation orientation, Object value, int role)}
-	 * instead.
+	 * 
+	 * @deprecated Use
+	 *             {@link WAbstractItemModel#setHeaderData(int section, Orientation orientation, Object value, int role)}
+	 *             instead.
 	 */
 	public boolean setHeaderData(int section, Object value) {
 		return this.setHeaderData(section, Orientation.Horizontal, value);

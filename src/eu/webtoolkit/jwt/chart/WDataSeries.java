@@ -292,8 +292,8 @@ public class WDataSeries {
 	 * The default value is a default WPen().
 	 * <p>
 	 * 
-	 * @see WChartPalette#strokePen(int index)
-	 * @see WChartPalette#borderPen(int index)
+	 * @see WChartPalette#getStrokePen(int index)
+	 * @see WChartPalette#getBorderPen(int index)
 	 */
 	public void setPen(WPen pen) {
 		if (!ChartUtils.equals(this.pen_, pen)) {
@@ -318,10 +318,10 @@ public class WDataSeries {
 		} else {
 			if (this.chart_ != null) {
 				if (this.type_ == SeriesType.BarSeries) {
-					return this.chart_.getPalette().borderPen(
+					return this.chart_.getPalette().getBorderPen(
 							this.chart_.getSeriesIndexOf(this.modelColumn_));
 				} else {
-					return this.chart_.getPalette().strokePen(
+					return this.chart_.getPalette().getStrokePen(
 							this.chart_.getSeriesIndexOf(this.modelColumn_));
 				}
 			} else {
@@ -339,7 +339,7 @@ public class WDataSeries {
 	 * method automatically adds CustomBrush to the custom flags.
 	 * <p>
 	 * 
-	 * @see WChartPalette#brush(int index)
+	 * @see WChartPalette#getBrush(int index)
 	 */
 	public void setBrush(WBrush brush) {
 		if (!ChartUtils.equals(this.brush_, brush)) {
@@ -362,7 +362,7 @@ public class WDataSeries {
 			return this.brush_;
 		} else {
 			if (this.chart_ != null) {
-				return this.chart_.getPalette().brush(
+				return this.chart_.getPalette().getBrush(
 						this.chart_.getSeriesIndexOf(this.modelColumn_));
 			} else {
 				return new WBrush();
@@ -594,7 +594,7 @@ public class WDataSeries {
 			return this.labelColor_;
 		} else {
 			if (this.chart_ != null) {
-				return this.chart_.getPalette().fontColor(
+				return this.chart_.getPalette().getFontColor(
 						this.chart_.getSeriesIndexOf(this.modelColumn_));
 			} else {
 				return WColor.black;

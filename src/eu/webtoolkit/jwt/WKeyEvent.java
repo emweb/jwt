@@ -103,10 +103,10 @@ public class WKeyEvent implements WAbstractEvent {
 	/**
 	 * Returns the raw key code (<b>deprecated</b>).
 	 * <p>
-	 * DOCXREFITEMDeprecatedThe value returned is somewhat browser-specific, and
-	 * it is therefore recommended to use the {@link WKeyEvent#getKey()} method
-	 * instead.
 	 * 
+	 * @deprecated The value returned is somewhat browser-specific, and it is
+	 *             therefore recommended to use the {@link WKeyEvent#getKey()}
+	 *             method instead.
 	 * @see WKeyEvent#getKey()
 	 */
 	public int getKeyCode() {
@@ -116,7 +116,8 @@ public class WKeyEvent implements WAbstractEvent {
 	/**
 	 * Returns whether the alt key is pressed (<b>deprecated</b>).
 	 * <p>
-	 * DOCXREFITEMDeprecatedUse {@link WKeyEvent#getModifiers()} instead.
+	 * 
+	 * @deprecated Use {@link WKeyEvent#getModifiers()} instead.
 	 */
 	public boolean isAltKey() {
 		return !EnumUtils.mask(this.jsEvent_.modifiers,
@@ -126,7 +127,8 @@ public class WKeyEvent implements WAbstractEvent {
 	/**
 	 * Returns whether the meta key is pressed (<b>deprecated</b>).
 	 * <p>
-	 * DOCXREFITEMDeprecatedUse {@link WKeyEvent#getModifiers()} instead.
+	 * 
+	 * @deprecated Use {@link WKeyEvent#getModifiers()} instead.
 	 */
 	public boolean isMetaKey() {
 		return !EnumUtils.mask(this.jsEvent_.modifiers,
@@ -136,7 +138,8 @@ public class WKeyEvent implements WAbstractEvent {
 	/**
 	 * Returns whether the control key is pressed (<b>deprecated</b>).
 	 * <p>
-	 * DOCXREFITEMDeprecatedUse {@link WKeyEvent#getModifiers()} instead.
+	 * 
+	 * @deprecated Use {@link WKeyEvent#getModifiers()} instead.
 	 */
 	public boolean isCtrlKey() {
 		return !EnumUtils.mask(this.jsEvent_.modifiers,
@@ -146,7 +149,8 @@ public class WKeyEvent implements WAbstractEvent {
 	/**
 	 * Returns whether the shift key is pressed (<b>deprecated</b>).
 	 * <p>
-	 * DOCXREFITEMDeprecatedUse {@link WKeyEvent#getModifiers()} instead.
+	 * 
+	 * @deprecated Use {@link WKeyEvent#getModifiers()} instead.
 	 */
 	public boolean isShiftKey() {
 		return !EnumUtils.mask(this.jsEvent_.modifiers,

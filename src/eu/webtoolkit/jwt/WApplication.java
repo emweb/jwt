@@ -587,11 +587,10 @@ public class WApplication extends WObject {
 	 * <code>&quot;/stuff/app.wt?wtd=AbCdEf&quot;</code>, when using URL
 	 * rewriting for session-tracking or
 	 * <code>&quot;/stuff/app.wt?a=a&quot;</code> when using cookies for
-	 * session-tracking (see also DOCREF<a class="el"
-	 * href="overview.html#config_session">8.1 Session management
-	 * (wt_config.xml)</a> for configuring the session-tracking method). As in
-	 * each case, a query is appended at the end of the URL, additional query
-	 * parameters can be appended in the form of
+	 * session-tracking
+	 * <p>
+	 * . As in each case, a query is appended at the end of the URL, additional
+	 * query parameters can be appended in the form of
 	 * <code>&quot;&amp;param1=value&amp;param2=value&quot;</code>.
 	 * <p>
 	 * To obtain a URL that is suitable for bookmarking the current application
@@ -642,10 +641,7 @@ public class WApplication extends WObject {
 	 * <li><code>&quot;app.wt/project/external/&quot;</code> when JavaScript is
 	 * available, or the agent is a web spider, or</li>
 	 * <li><code>&quot;app.wt/project/external/?wtd=AbCdEf&quot;</code> when no
-	 * JavaScript is available and URL rewriting is used for session-tracking
-	 * (see also DOCREF<a class="el" href="overview.html#config_session">8.1
-	 * Session management (wt_config.xml)</a> for configuring the
-	 * session-tracking method).</li>
+	 * JavaScript is available and URL rewriting is used for session-tracking</li>
 	 * </ul>
 	 * <p>
 	 * When the application is deployed at a folder (ending with &apos;/&apos;),
@@ -1178,10 +1174,6 @@ public class WApplication extends WObject {
 	 * the visible changes. Setting it too large will increase the latency to
 	 * render the visible changes, since first also all invisible changes need
 	 * to be computed and received in the browser.
-	 * <p>
-	 * The initial value is read from the configuration file, see DOCREF<a
-	 * class="el" href="overview.html#config_general">8.2 General application
-	 * settings (wt_config.xml)</a>.
 	 */
 	public void setTwoPhaseRenderingThreshold(int bytes) {
 		this.session_.getRenderer().setTwoPhaseThreshold(bytes);
@@ -1244,10 +1236,6 @@ public class WApplication extends WObject {
 
 	/**
 	 * Returns the current maximum size of a request to the application.
-	 * <p>
-	 * The maximum request size is configured in the configuration file, see
-	 * DOCREF<a class="el" href="overview.html#config_general">8.2 General
-	 * application settings (wt_config.xml)</a>.
 	 * <p>
 	 * 
 	 * @see WApplication#requestTooLarge()

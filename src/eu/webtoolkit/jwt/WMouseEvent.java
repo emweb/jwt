@@ -131,7 +131,8 @@ public class WMouseEvent implements WAbstractEvent {
 	/**
 	 * Returns whether the alt key is pressed (<b>deprecated</b>).
 	 * <p>
-	 * DOCXREFITEMDeprecatedUse {@link WMouseEvent#getModifiers()} instead.
+	 * 
+	 * @deprecated Use {@link WMouseEvent#getModifiers()} instead.
 	 */
 	public boolean isAltKey() {
 		return !EnumUtils.mask(this.jsEvent_.modifiers,
@@ -141,7 +142,8 @@ public class WMouseEvent implements WAbstractEvent {
 	/**
 	 * Returns whether the meta key is pressed (<b>deprecated</b>).
 	 * <p>
-	 * DOCXREFITEMDeprecatedUse {@link WMouseEvent#getModifiers()} instead.
+	 * 
+	 * @deprecated Use {@link WMouseEvent#getModifiers()} instead.
 	 */
 	public boolean isMetaKey() {
 		return !EnumUtils.mask(this.jsEvent_.modifiers,
@@ -151,7 +153,8 @@ public class WMouseEvent implements WAbstractEvent {
 	/**
 	 * Returns whether the control key is pressed (<b>deprecated</b>).
 	 * <p>
-	 * DOCXREFITEMDeprecatedUse {@link WMouseEvent#getModifiers()} instead.
+	 * 
+	 * @deprecated Use {@link WMouseEvent#getModifiers()} instead.
 	 */
 	public boolean isCtrlKey() {
 		return !EnumUtils.mask(this.jsEvent_.modifiers,
@@ -161,7 +164,8 @@ public class WMouseEvent implements WAbstractEvent {
 	/**
 	 * Returns whether the shift key is pressed (<b>deprecated</b>).
 	 * <p>
-	 * DOCXREFITEMDeprecatedUse {@link WMouseEvent#getModifiers()} instead.
+	 * 
+	 * @deprecated Use {@link WMouseEvent#getModifiers()} instead.
 	 */
 	public boolean isShiftKey() {
 		return !EnumUtils.mask(this.jsEvent_.modifiers,

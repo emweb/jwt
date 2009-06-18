@@ -16,7 +16,7 @@ public class WEvent {
 	}
 
 	WebSession.Handler handler;
-	WEvent.EventType type;
+	public WEvent.EventType type;
 
 	WebSession getSession() {
 		return this.handler.getSession();

@@ -7,6 +7,7 @@
   <property name="src.java.dir" value="src"/>
   <property name="build.dir" value="build"/>
   <property name="dist.dir" value="dist"/>
+  <property name="javadoc.dir" value="doc"/>
 
   <!-- Classpath declaration -->
   <path id="project.classpath">
@@ -17,11 +18,12 @@
 
   <target name="all" depends="dist">
   </target>
-	
+  
   <!-- Clean up -->
   <target name="clean">
     <delete dir="${build.dir}"/>
     <delete dir="${dist.dir}"/>
+    <delete dir="${javadoc.dir}"/>
   </target>
 
   <!-- Compile Java source -->
@@ -31,8 +33,8 @@
        srcdir="${src.java.dir}"
        destdir="${build.dir}"
        debug="on"
-			 source="1.5"
-			 target="1.5">
+       source="1.5"
+       target="1.5">
       <classpath refid="project.classpath"/>
     </javac>
     <copy todir="${build.dir}/eu/webtoolkit/jwt/skeletons">
@@ -41,18 +43,36 @@
     <copy todir="${build.dir}/eu/webtoolkit/jwt/wt-resources">
       <fileset dir="${src.java.dir}/eu/webtoolkit/jwt/wt-resources"/>
     </copy>
-	<copy todir="${build.dir}">
-	  	<fileset dir="${src.java.dir}"/>
-	</copy>
+    <copy todir="${build.dir}">
+      <fileset dir="${src.java.dir}"/>
+    </copy>
+  </target>
+
+  <target name="javadoc">
+    <javadoc
+       excludepackagenames="net.n3.nanoxml"
+       access="protected"
+       destdir="${javadoc.dir}"
+       author="true"
+       version="true"
+       use="true"
+       windowtitle="JWt Javadoc API"
+       classpathref="project.classpath"
+       >
+
+      <fileset dir="${src.java.dir}" defaultexcludes="yes">
+        <include name="**/*.java"/>
+      </fileset>
+    </javadoc>
   </target>
 
   <target name="dist" depends="build">
     <mkdir dir="${dist.dir}"/>
     <jar destfile="dist/jwt-${proj.version}.jar" basedir="${build.dir}" />
     <copy todir="${dist.dir}">
-        <fileset dir="lib">
-          <include name="*.jar"/>
-        </fileset>
+      <fileset dir="lib">
+        <include name="*.jar"/>
+      </fileset>
     </copy>
   </target>
 </project>

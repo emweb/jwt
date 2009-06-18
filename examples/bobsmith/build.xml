@@ -62,10 +62,7 @@
     <war destfile="${dist.dir}/${proj.name}-${proj.version}.war" 
 	 webxml="WebRoot/WEB-INF/web.xml">
       <fileset dir="WebRoot"/>
-      <lib>
-        <fileset dir="${lib.dir}" >
-          <exclude name="**/servlet-api-*.jar"/>
-      </fileset>
+      <lib dir="${lib.dir}" includes="**/*.jar" excludes="servlet-api-*.jar">
       </lib>
       <classes dir="${build.dir}"/>
     </war>

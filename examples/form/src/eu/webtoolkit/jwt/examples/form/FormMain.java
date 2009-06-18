@@ -9,6 +9,15 @@ import eu.webtoolkit.jwt.WFont;
 import eu.webtoolkit.jwt.WXmlLocalizedStrings;
 import eu.webtoolkit.jwt.WtServlet;
 
+/**
+ *A simple Form example.
+ * 
+ * Shows how a simple form can made, with an emphasis on how to handle
+ * validation.
+ * 
+ * When submitting the form, not all fields are filled in in a valid way, a beep
+ * sound will be played.
+ */
 public class FormMain extends WtServlet {
 	public FormMain() {
 		super();

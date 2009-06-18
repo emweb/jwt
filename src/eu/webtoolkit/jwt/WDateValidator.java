@@ -131,7 +131,8 @@ public class WDateValidator extends WValidator {
 	 * The default is a null date constructed using WDate().
 	 */
 	public void setBottom(WDate bottom) {
-		if (!this.bottom_.equals(bottom)) {
+		if (!(this.bottom_ == bottom || (this.bottom_ != null && this.bottom_
+				.equals(bottom)))) {
 			this.bottom_ = bottom;
 			this.repaint();
 		}
@@ -150,7 +151,7 @@ public class WDateValidator extends WValidator {
 	 * The default is a null date constructed using WDate().
 	 */
 	public void setTop(WDate top) {
-		if (!this.top_.equals(top)) {
+		if (!(this.top_ == top || (this.top_ != null && this.top_.equals(top)))) {
 			this.top_ = top;
 			this.repaint();
 		}
@@ -234,9 +235,10 @@ public class WDateValidator extends WValidator {
 	/**
 	 * Parse a date from a string (<b>deprecated</b>).
 	 * <p>
-	 * DOCXREFITEMDeprecatedsee {@link WDate#fromString(String s)} static
-	 * methods.Equivalent to {@link WDate#fromString(String s)}(<i>input</i>,
-	 * &quot;yyyy-MM-dd&quot;);
+	 * 
+	 * @deprecated see {@link WDate#fromString(String s)} static
+	 *             methods.Equivalent to {@link WDate#fromString(String s)}
+	 *             (<i>input</i>, &quot;yyyy-MM-dd&quot;);
 	 */
 	public static WDate parse(CharSequence input) {
 		return WDate.fromString(input.toString(), "yyyy-MM-dd");

@@ -680,10 +680,11 @@ public class WTreeView extends WCompositeWidget {
 	 * <p>
 	 * The default value is &quot;&quot;.
 	 * <p>
-	 * DOCXREFITEMDeprecateduse
-	 * {@link WTreeView#getItemDelegateForColumn(int column)} to customize the
-	 * formatting. This method will create a new {@link WItemDelegate} for the
-	 * column, and configure its format.
+	 * 
+	 * @deprecated use {@link WTreeView#getItemDelegateForColumn(int column)} to
+	 *             customize the formatting. This method will create a new
+	 *             {@link WItemDelegate} for the column, and configure its
+	 *             format.
 	 */
 	public void setColumnFormat(int column, String format) {
 		WTreeView.ColumnInfo info = this.columnInfo(column);
@@ -704,11 +705,10 @@ public class WTreeView extends WCompositeWidget {
 	 * <p>
 	 * 
 	 * @see WTreeView#setColumnFormat(int column, String format)
-	 *      DOCXREFITEMDeprecateduse
-	 *      {@link WTreeView#getItemDelegateForColumn(int column)} to customize
-	 *      the formatting. This method will try to cast the
-	 *      {@link WTreeView#getItemDelegateForColumn(int column)} to a
-	 *      {@link WItemDelegate} and return the format.
+	 * @deprecated use {@link WTreeView#getItemDelegateForColumn(int column)} to
+	 *             customize the formatting. This method will try to cast the
+	 *             {@link WTreeView#getItemDelegateForColumn(int column)} to a
+	 *             {@link WItemDelegate} and return the format.
 	 */
 	public String getColumnFormat(int column) {
 		WTreeView.ColumnInfo info = this.columnInfo(column);

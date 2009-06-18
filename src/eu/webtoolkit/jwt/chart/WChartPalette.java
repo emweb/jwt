@@ -26,7 +26,7 @@ public interface WChartPalette {
 	 * <p>
 	 * Returns the brush for the style with given <i>index</i>.
 	 */
-	public WBrush brush(int index);
+	public WBrush getBrush(int index);
 
 	/**
 	 * Returns a border pen from the palette.
@@ -35,10 +35,10 @@ public interface WChartPalette {
 	 * brush at the same <i>index</i>.
 	 * <p>
 	 * 
-	 * @see WChartPalette#strokePen(int index)
-	 * @see WChartPalette#brush(int index)
+	 * @see WChartPalette#getStrokePen(int index)
+	 * @see WChartPalette#getBrush(int index)
 	 */
-	public WPen borderPen(int index);
+	public WPen getBorderPen(int index);
 
 	/**
 	 * Returns a stroke pen from the palette.
@@ -46,9 +46,9 @@ public interface WChartPalette {
 	 * Returns the pen for stroking lines for the style with given <i>index</i>.
 	 * <p>
 	 * 
-	 * @see WChartPalette#strokePen(int index)
+	 * @see WChartPalette#getStrokePen(int index)
 	 */
-	public WPen strokePen(int index);
+	public WPen getStrokePen(int index);
 
 	/**
 	 * Returns a font color from the palette.
@@ -57,7 +57,7 @@ public interface WChartPalette {
 	 * the brush at the same <i>index</i>.
 	 * <p>
 	 * 
-	 * @see WChartPalette#brush(int index)
+	 * @see WChartPalette#getBrush(int index)
 	 */
-	public WColor fontColor(int index);
+	public WColor getFontColor(int index);
 }

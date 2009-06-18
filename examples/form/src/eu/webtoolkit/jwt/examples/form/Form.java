@@ -22,6 +22,7 @@ import eu.webtoolkit.jwt.WLabel;
 import eu.webtoolkit.jwt.WLength;
 import eu.webtoolkit.jwt.WLineEdit;
 import eu.webtoolkit.jwt.WPushButton;
+import eu.webtoolkit.jwt.WSound;
 import eu.webtoolkit.jwt.WString;
 import eu.webtoolkit.jwt.WTable;
 import eu.webtoolkit.jwt.WText;
@@ -33,6 +34,9 @@ import eu.webtoolkit.jwt.WValidator;
  *
  * Shows how a simple form can made, with an emphasis on how
  * to handle validation.
+ * 
+ * When submitting the form, not all fields are filled in in a valid way,
+ * a beep sound will be played.
  */
 public class Form extends WTable
 {
@@ -104,6 +108,11 @@ public class Form extends WTable
 
 			    WApplication.getInstance().quit();
 			  }
+		  else {
+			  //play a error mp3
+			  WSound beep = new WSound("sounds/beep.mp3", this);
+			  beep.play();
+		  }
 	}
 
 
