@@ -11,7 +11,7 @@ import java.util.EnumSet;
  * <p>
  * Usage example:
  * <p>
- * <div align="center"> <img src="/WOverlayLoadingIndicator.png"
+ * <div align="center"> <img src="doc-files//WOverlayLoadingIndicator.png"
  * alt="The overlay loading indicator">
  * <p>
  * <strong>The overlay loading indicator</strong>

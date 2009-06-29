@@ -10,7 +10,7 @@
   </servlet>
   <servlet-mapping>
     <servlet-name>Charts</servlet-name>
-    <url-pattern>/Charts/*</url-pattern>
+    <url-pattern>/charts/*</url-pattern>
   </servlet-mapping>
 </web-app>
 

@@ -134,7 +134,7 @@ public class WPopupMenuItem extends WCompositeWidget {
 			if (how) {
 				this.text_.setMargin(new WLength(ICON_WIDTH - CHECKBOX_WIDTH),
 						EnumSet.of(Side.Left));
-				this.checkBox_ = new WCheckBox(false, (WContainerWidget) null);
+				this.checkBox_ = new WCheckBox();
 				this.impl_.insertWidget(0, this.checkBox_);
 			} else {
 				if (this.checkBox_ != null)

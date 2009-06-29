@@ -14,7 +14,7 @@ import java.util.EnumSet;
  * 150 x 50 pixels for a horizontal slider, and 50 x 150 pixels for a vertical
  * slider.
  * <p>
- * <div align="center"> <img src="/WSlider-1.png"
+ * <div align="center"> <img src="doc-files//WSlider-1.png"
  * alt="Horizontal slider with ticks on both sides.">
  * <p>
  * <strong>Horizontal slider with ticks on both sides.</strong>

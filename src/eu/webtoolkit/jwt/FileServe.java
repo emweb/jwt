@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.io.Writer;
 import java.util.HashMap;
 
-public class FileServe {
+class FileServe {
 	public FileServe(String contents) {
 		this.template_ = contents;
 		this.currentPos_ = 0;

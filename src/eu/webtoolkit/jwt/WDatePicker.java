@@ -21,7 +21,7 @@ import java.util.Set;
  * time, the date set may be read using {@link WDatePicker#getDate()}, or can be
  * changed using {@link WDatePicker#setDate(WDate date)}.
  * <p>
- * <div align="center"> <img src="/WDatePicker-1.png"
+ * <div align="center"> <img src="doc-files//WDatePicker-1.png"
  * alt="Example of WDatePicker with visible calendar.">
  * <p>
  * <strong>Example of WDatePicker with visible calendar.</strong>

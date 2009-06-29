@@ -2,9 +2,11 @@ package eu.webtoolkit.jwt;
 
 
 /**
+ * An internal session event
  * <p>
  * 
- * {@link WEvent}. (dox FIXME)
+ * The request controller notifies the application to react to browser events,
+ * or to render itself, using {@link WApplication#notify(WEvent e)}.
  */
 public class WEvent {
 	public enum EventType {

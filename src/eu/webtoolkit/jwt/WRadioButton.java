@@ -83,12 +83,6 @@ public class WRadioButton extends WAbstractToggleButton {
 		this(text, (WContainerWidget) null);
 	}
 
-	public WRadioButton(boolean withLabel, WContainerWidget parent) {
-		super(withLabel, parent);
-		this.buttonGroup_ = null;
-		this.setFormObject(true);
-	}
-
 	/**
 	 * Delete a radio button.
 	 */

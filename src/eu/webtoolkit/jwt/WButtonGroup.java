@@ -29,6 +29,8 @@ public class WButtonGroup extends WObject {
 	public WButtonGroup(WObject parent) {
 		super(parent);
 		this.buttons_ = new ArrayList<WButtonGroup.Button>();
+		this.checkedChanged_ = new Signal1<WRadioButton>();
+		this.checkedChangedConnected_ = false;
 	}
 
 	/**
@@ -67,6 +69,13 @@ public class WButtonGroup extends WObject {
 		b.id = id != -1 ? id : this.generateId();
 		this.buttons_.add(b);
 		button.setGroup(this);
+		if (this.checkedChangedConnected_) {
+			button.changed().addListener(this, new Signal.Listener() {
+				public void trigger() {
+					WButtonGroup.this.onButtonChange();
+				}
+			});
+		}
 	}
 
 	/**
@@ -227,12 +236,32 @@ public class WButtonGroup extends WObject {
 		return -1;
 	}
 
+	/**
+	 * {@link Signal} emitted when a button was checked.
+	 * <p>
+	 * The argument passed is the new {@link WButtonGroup#getCheckedButton()}.
+	 */
+	public Signal1<WRadioButton> checkedChanged() {
+		this.checkedChangedConnected_ = true;
+		for (int i = 0; i < this.buttons_.size(); ++i) {
+			this.buttons_.get(i).button.changed().addListener(this,
+					new Signal.Listener() {
+						public void trigger() {
+							WButtonGroup.this.onButtonChange();
+						}
+					});
+		}
+		return this.checkedChanged_;
+	}
+
 	private static class Button {
 		public WRadioButton button;
 		public int id;
 	}
 
 	private List<WButtonGroup.Button> buttons_;
+	private Signal1<WRadioButton> checkedChanged_;
+	private boolean checkedChangedConnected_;
 
 	void uncheckOthers(WRadioButton button) {
 		for (int i = 0; i < this.buttons_.size(); ++i) {
@@ -248,6 +277,10 @@ public class WButtonGroup extends WObject {
 			id = Math.max(this.buttons_.get(i).id + 1, id);
 		}
 		return id;
+	}
+
+	private void onButtonChange() {
+		this.checkedChanged_.trigger(this.getCheckedButton());
 	}
 
 	void setFormData(WObject.FormData formData) {

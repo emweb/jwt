@@ -14,7 +14,7 @@
   </servlet>
   <servlet-mapping>
     <servlet-name>FileTreeTable</servlet-name>
-    <url-pattern>/FileTreeTable/*</url-pattern>
+    <url-pattern>/filetreetable/*</url-pattern>
   </servlet-mapping>
 </web-app>
 

@@ -37,7 +37,7 @@ td.Wt-cal-now             : Today day cell
  * <p>
  * Here is a snapshot of the default look, taken on 31/08/2007 (shown as today),
  * and 11/08/2007 currently selected. <div align="center"> <img
- * src="/WCalendar-1.png" alt="WCalendar with default look">
+ * src="doc-files//WCalendar-1.png" alt="WCalendar with default look">
  * <p>
  * <strong>WCalendar with default look</strong>
  * </p>

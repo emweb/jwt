@@ -28,12 +28,13 @@ package eu.webtoolkit.jwt;
 </code>
  * <p>
  * This code will produce an edit that looks like: <div align="center"> <img
- * src="/WInPlaceEdit-1.png" alt="WInPlaceEdit text mode">
+ * src="doc-files//WInPlaceEdit-1.png" alt="WInPlaceEdit text mode">
  * <p>
  * <strong>WInPlaceEdit text mode</strong>
  * </p>
  * </div> When the text is clicked, the edit will expand to become: <div
- * align="center"> <img src="/WInPlaceEdit-2.png" alt="WInPlaceEdit edit mode">
+ * align="center"> <img src="doc-files//WInPlaceEdit-2.png"
+ * alt="WInPlaceEdit edit mode">
  * <p>
  * <strong>WInPlaceEdit edit mode</strong>
  * </p>

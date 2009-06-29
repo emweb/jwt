@@ -100,63 +100,6 @@ public class WKeyEvent implements WAbstractEvent {
 		return "" + (char) this.getCharCode();
 	}
 
-	/**
-	 * Returns the raw key code (<b>deprecated</b>).
-	 * <p>
-	 * 
-	 * @deprecated The value returned is somewhat browser-specific, and it is
-	 *             therefore recommended to use the {@link WKeyEvent#getKey()}
-	 *             method instead.
-	 * @see WKeyEvent#getKey()
-	 */
-	public int getKeyCode() {
-		return this.jsEvent_.keyCode;
-	}
-
-	/**
-	 * Returns whether the alt key is pressed (<b>deprecated</b>).
-	 * <p>
-	 * 
-	 * @deprecated Use {@link WKeyEvent#getModifiers()} instead.
-	 */
-	public boolean isAltKey() {
-		return !EnumUtils.mask(this.jsEvent_.modifiers,
-				KeyboardModifier.AltModifier).equals(0);
-	}
-
-	/**
-	 * Returns whether the meta key is pressed (<b>deprecated</b>).
-	 * <p>
-	 * 
-	 * @deprecated Use {@link WKeyEvent#getModifiers()} instead.
-	 */
-	public boolean isMetaKey() {
-		return !EnumUtils.mask(this.jsEvent_.modifiers,
-				KeyboardModifier.MetaModifier).equals(0);
-	}
-
-	/**
-	 * Returns whether the control key is pressed (<b>deprecated</b>).
-	 * <p>
-	 * 
-	 * @deprecated Use {@link WKeyEvent#getModifiers()} instead.
-	 */
-	public boolean isCtrlKey() {
-		return !EnumUtils.mask(this.jsEvent_.modifiers,
-				KeyboardModifier.ControlModifier).equals(0);
-	}
-
-	/**
-	 * Returns whether the shift key is pressed (<b>deprecated</b>).
-	 * <p>
-	 * 
-	 * @deprecated Use {@link WKeyEvent#getModifiers()} instead.
-	 */
-	public boolean isShiftKey() {
-		return !EnumUtils.mask(this.jsEvent_.modifiers,
-				KeyboardModifier.ShiftModifier).equals(0);
-	}
-
 	public WAbstractEvent createFromJSEvent(JavaScriptEvent jsEvent) {
 		return new WKeyEvent(jsEvent);
 	}

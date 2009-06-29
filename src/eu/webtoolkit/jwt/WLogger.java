@@ -5,7 +5,7 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 
-public class WLogger {
+class WLogger {
 
 	private Writer writer;
 	private WLogEntry lastEntry;

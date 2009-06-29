@@ -10,7 +10,7 @@
   </servlet>
   <servlet-mapping>
     <servlet-name>TreeView</servlet-name>
-    <url-pattern>/TreeView/*</url-pattern>
+    <url-pattern>/treeview/*</url-pattern>
   </servlet-mapping>
 </web-app>
 

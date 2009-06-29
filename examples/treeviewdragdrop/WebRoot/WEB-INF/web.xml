@@ -10,7 +10,7 @@
   </servlet>
   <servlet-mapping>
     <servlet-name>TreeViewDragDrop</servlet-name>
-    <url-pattern>/TreeViewDragDrop/*</url-pattern>
+    <url-pattern>/treeviewdragdrop/*</url-pattern>
   </servlet-mapping>
 </web-app>
 

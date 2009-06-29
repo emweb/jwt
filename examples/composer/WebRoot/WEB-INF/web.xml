@@ -10,7 +10,7 @@
   </servlet>
   <servlet-mapping>
     <servlet-name>Composer</servlet-name>
-    <url-pattern>/Composer/*</url-pattern>
+    <url-pattern>/composer/*</url-pattern>
   </servlet-mapping>
 </web-app>
 

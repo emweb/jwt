@@ -2,7 +2,6 @@ package eu.webtoolkit.jwt;
 
 import java.util.EnumSet;
 import eu.webtoolkit.jwt.servlet.WebRequest;
-import eu.webtoolkit.jwt.utils.EnumUtils;
 
 /**
  * A class providing details for a mouse event.
@@ -126,50 +125,6 @@ public class WMouseEvent implements WAbstractEvent {
 	public WMouseEvent.Coordinates getDragDelta() {
 		return new WMouseEvent.Coordinates(this.jsEvent_.dragDX,
 				this.jsEvent_.dragDY);
-	}
-
-	/**
-	 * Returns whether the alt key is pressed (<b>deprecated</b>).
-	 * <p>
-	 * 
-	 * @deprecated Use {@link WMouseEvent#getModifiers()} instead.
-	 */
-	public boolean isAltKey() {
-		return !EnumUtils.mask(this.jsEvent_.modifiers,
-				KeyboardModifier.AltModifier).equals(0);
-	}
-
-	/**
-	 * Returns whether the meta key is pressed (<b>deprecated</b>).
-	 * <p>
-	 * 
-	 * @deprecated Use {@link WMouseEvent#getModifiers()} instead.
-	 */
-	public boolean isMetaKey() {
-		return !EnumUtils.mask(this.jsEvent_.modifiers,
-				KeyboardModifier.MetaModifier).equals(0);
-	}
-
-	/**
-	 * Returns whether the control key is pressed (<b>deprecated</b>).
-	 * <p>
-	 * 
-	 * @deprecated Use {@link WMouseEvent#getModifiers()} instead.
-	 */
-	public boolean isCtrlKey() {
-		return !EnumUtils.mask(this.jsEvent_.modifiers,
-				KeyboardModifier.ControlModifier).equals(0);
-	}
-
-	/**
-	 * Returns whether the shift key is pressed (<b>deprecated</b>).
-	 * <p>
-	 * 
-	 * @deprecated Use {@link WMouseEvent#getModifiers()} instead.
-	 */
-	public boolean isShiftKey() {
-		return !EnumUtils.mask(this.jsEvent_.modifiers,
-				KeyboardModifier.ShiftModifier).equals(0);
 	}
 
 	public WAbstractEvent createFromJSEvent(JavaScriptEvent jsEvent) {

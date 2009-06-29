@@ -10,7 +10,7 @@
   </servlet>
   <servlet-mapping>
     <servlet-name>MissionImpossible</servlet-name>
-    <url-pattern>/MissionImpossible/*</url-pattern>
+    <url-pattern>/*</url-pattern>
   </servlet-mapping>
 </web-app>
 

@@ -650,14 +650,13 @@ public abstract class WAbstractItemModel extends WObject {
 	}
 
 	/**
-	 * Set column header data (<b>deprecated</b>).
+	 * Set column header data.
 	 * <p>
 	 * Returns true if the operation was successful.
 	 * <p>
 	 * 
-	 * @deprecated Use
-	 *             {@link WAbstractItemModel#setHeaderData(int section, Orientation orientation, Object value, int role)}
-	 *             instead.
+	 * @see WAbstractItemModel#setHeaderData(int section, Orientation
+	 *      orientation, Object value, int role)
 	 */
 	public boolean setHeaderData(int section, Object value) {
 		return this.setHeaderData(section, Orientation.Horizontal, value);

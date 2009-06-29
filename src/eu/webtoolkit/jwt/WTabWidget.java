@@ -46,7 +46,7 @@ import java.util.List;
  examples.setInternalBasePath(&quot;/examples&quot;);		
 </code>
  * <p>
- * <div align="center"> <img src="/WTabWidget-1.png"
+ * <div align="center"> <img src="doc-files//WTabWidget-1.png"
  * alt="An example WTabWidget">
  * <p>
  * <strong>An example WTabWidget</strong>

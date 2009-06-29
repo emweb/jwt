@@ -1,6 +1,6 @@
 package eu.webtoolkit.jwt;
 
-public class WLogEntry {
+class WLogEntry {
 
 	private StringBuilder buffer;
 

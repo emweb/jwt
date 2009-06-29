@@ -273,7 +273,10 @@ class WebSession {
 							this.env_.doesCookies_ = request.getHeaderValue(
 									"Cookie").length() != 0;
 							if (this.env_.doesAjax_
-									&& request.getPathInfo().length() != 0) {
+									&& (request.getPathInfo().length() != 0 || this.applicationName_
+											.length() == 0
+											&& this.env_.getInternalPath()
+													.length() > 1)) {
 								String url = this.getBaseUrl()
 										+ this.getApplicationName();
 								url += '#' + this.env_.getInternalPath();
@@ -594,26 +597,32 @@ class WebSession {
 
 	public String getBootstrapUrl(WebResponse response,
 			WebSession.BootstrapOption option) {
-		if (response.getPathInfo().length() == 0) {
-			return this.getMostRelativeUrl();
-		} else {
-			switch (option) {
-			case KeepInternalPath:
-				if (this.applicationName_.length() == 0) {
-					String internalPath = this.app_ != null ? this.app_
-							.getInternalPath() : this.env_.getInternalPath();
-					if (internalPath.length() > 1) {
-						return this.appendSessionQuery("?_="
-								+ DomElement.urlEncodeS(internalPath));
-					}
+		switch (option) {
+		case KeepInternalPath: {
+			String internalPath = this.app_ != null ? this.app_
+					.getInternalPath() : this.env_.getInternalPath();
+			if (this.applicationName_.length() == 0) {
+				if (internalPath.length() > 1) {
+					return this.appendSessionQuery("?_="
+							+ DomElement.urlEncodeS(internalPath));
+				} else {
+					return this.appendSessionQuery("");
 				}
-				return this.appendSessionQuery("");
-			case ClearInternalPath:
-				return this.appendSessionQuery(this.baseUrl_
-						+ this.applicationName_);
-			default:
-				assert false;
+			} else {
+				if (internalPath.length() > 1) {
+					String lastPart = internalPath.substring(internalPath
+							.lastIndexOf('/') + 1);
+					return this.appendSessionQuery(lastPart);
+				} else {
+					return this.appendSessionQuery(this.applicationName_);
+				}
 			}
+		}
+		case ClearInternalPath:
+			return this.appendSessionQuery(this.baseUrl_
+					+ this.applicationName_);
+		default:
+			assert false;
 		}
 		return "";
 	}

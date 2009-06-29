@@ -37,7 +37,7 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 		this.painter_ = null;
 		this.changeFlags_ = EnumSet.noneOf(WPaintDevice.ChangeFlag.class);
 		this.paintFlags_ = EnumSet.noneOf(PaintFlag.class);
-		this.js_ = "";
+		this.js_ = new StringWriter();
 		this.textElements_ = new ArrayList<DomElement>();
 		this.images_ = new ArrayList<String>();
 	}
@@ -68,7 +68,6 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 			return;
 		}
 		this.renderStateChanges();
-		StringWriter tmp = new StringWriter();
 		WPointF ra = normalizedDegreesToRadians(startAngle, spanAngle);
 		double sx;
 		double sy;
@@ -95,7 +94,7 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 			lw = 0;
 		}
 		r = Math.max(0.005, r - lw / 2);
-		tmp.append("ctx.save();").append("ctx.translate(").append(
+		this.js_.append("ctx.save();").append("ctx.translate(").append(
 				String.valueOf(rect.getCenter().getX())).append(",").append(
 				String.valueOf(rect.getCenter().getY())).append(");").append(
 				"ctx.scale(").append(String.valueOf(sx)).append(",").append(
@@ -106,13 +105,12 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 						String.valueOf(ra.getX())).append(",").append(
 						String.valueOf(ra.getY())).append(",true);");
 		if (this.getPainter().getBrush().getStyle() != WBrushStyle.NoBrush) {
-			tmp.append("ctx.fill();");
+			this.js_.append("ctx.fill();");
 		}
 		if (this.getPainter().getPen().getStyle() != PenStyle.NoPen) {
-			tmp.append("ctx.stroke();");
+			this.js_.append("ctx.stroke();");
 		}
-		tmp.append("ctx.restore();");
-		this.js_ += tmp.toString();
+		this.js_.append("ctx.restore();");
 	}
 
 	public void drawImage(WRectF rect, String imgUri, int imgWidth,
@@ -120,43 +118,40 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 		this.renderStateChanges();
 		int imageIndex = this.createImage(imgUri);
 		char[] buf = new char[30];
-		StringWriter tmp = new StringWriter();
-		tmp.append("ctx.drawImage(images[").append(String.valueOf(imageIndex))
-				.append("],").append(MathUtils.round(sourceRect.getX(), 3));
-		tmp.append(',').append(MathUtils.round(sourceRect.getY(), 3));
-		tmp.append(',').append(MathUtils.round(sourceRect.getWidth(), 3));
-		tmp.append(',').append(MathUtils.round(sourceRect.getHeight(), 3));
-		tmp.append(',').append(MathUtils.round(rect.getX(), 3));
-		tmp.append(',').append(MathUtils.round(rect.getY(), 3));
-		tmp.append(',').append(MathUtils.round(rect.getWidth(), 3));
-		tmp.append(',').append(MathUtils.round(rect.getHeight(), 3)).append(
-				");");
-		this.js_ += tmp.toString();
+		this.js_.append("ctx.drawImage(images[").append(
+				String.valueOf(imageIndex)).append("],").append(
+				MathUtils.round(sourceRect.getX(), 3));
+		this.js_.append(',').append(MathUtils.round(sourceRect.getY(), 3));
+		this.js_.append(',').append(MathUtils.round(sourceRect.getWidth(), 3));
+		this.js_.append(',').append(MathUtils.round(sourceRect.getHeight(), 3));
+		this.js_.append(',').append(MathUtils.round(rect.getX(), 3));
+		this.js_.append(',').append(MathUtils.round(rect.getY(), 3));
+		this.js_.append(',').append(MathUtils.round(rect.getWidth(), 3));
+		this.js_.append(',').append(MathUtils.round(rect.getHeight(), 3))
+				.append(");");
 	}
 
 	public void drawLine(double x1, double y1, double x2, double y2) {
 		this.renderStateChanges();
 		char[] buf = new char[30];
-		StringWriter tmp = new StringWriter();
-		tmp.append("ctx.beginPath();").append("ctx.moveTo(").append(
+		this.js_.append("ctx.beginPath();").append("ctx.moveTo(").append(
 				MathUtils.round(x1, 3)).append(',');
-		tmp.append(MathUtils.round(y1, 3)).append(");");
-		tmp.append("ctx.lineTo(").append(MathUtils.round(x2, 3)).append(',');
-		tmp.append(MathUtils.round(y2, 3)).append(");ctx.stroke();");
-		this.js_ += tmp.toString();
+		this.js_.append(MathUtils.round(y1, 3)).append(");");
+		this.js_.append("ctx.lineTo(").append(MathUtils.round(x2, 3)).append(
+				',');
+		this.js_.append(MathUtils.round(y2, 3)).append(");ctx.stroke();");
 	}
 
 	public void drawPath(WPainterPath path) {
 		this.renderStateChanges();
-		StringWriter tmp = new StringWriter();
-		this.drawPlainPath(tmp, path);
+		this.drawPlainPath(this.js_, path);
 		if (this.getPainter().getBrush().getStyle() != WBrushStyle.NoBrush) {
-			tmp.append("ctx.fill();");
+			this.js_.append("ctx.fill();");
 		}
 		if (this.getPainter().getPen().getStyle() != PenStyle.NoPen) {
-			tmp.append("ctx.stroke();");
+			this.js_.append("ctx.stroke();");
 		}
-		this.js_ += tmp.toString() + '\n';
+		this.js_.append('\n');
 	}
 
 	public void drawText(WRectF rect, EnumSet<AlignmentFlag> flags,
@@ -245,8 +240,8 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 					.append(String.valueOf(this.getHeight().getValue()))
 					.append(");");
 		}
-		tmp.append("ctx.save();ctx.save();").append(this.js_).append(
-				"ctx.restore();ctx.restore();});}");
+		tmp.append("ctx.save();ctx.save();").append(this.js_.toString())
+				.append("ctx.restore();ctx.restore();});}");
 		text.callJavaScript(tmp.toString());
 		for (int i = 0; i < this.textElements_.size(); ++i) {
 			text.addChild(this.textElements_.get(i));
@@ -287,7 +282,7 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 	private WPainter painter_;
 	private EnumSet<WPaintDevice.ChangeFlag> changeFlags_;
 	private EnumSet<PaintFlag> paintFlags_;
-	private String js_;
+	private StringWriter js_;
 	private List<DomElement> textElements_;
 	private List<String> images_;
 
@@ -350,66 +345,66 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 		if (this.changeFlags_.equals(0)) {
 			return;
 		}
-		StringWriter s = new StringWriter();
 		if (!EnumUtils.mask(
 				this.changeFlags_,
 				EnumSet.of(WPaintDevice.ChangeFlag.Transform,
 						WPaintDevice.ChangeFlag.Clipping)).isEmpty()) {
 			if (!EnumUtils.mask(this.changeFlags_,
 					WPaintDevice.ChangeFlag.Clipping).isEmpty()) {
-				s.append("ctx.restore();ctx.restore();ctx.save();");
+				this.js_.append("ctx.restore();ctx.restore();ctx.save();");
 				WTransform t = this.getPainter().getClipPathTransform();
-				this.renderTransform(s, t);
+				this.renderTransform(this.js_, t);
 				if (this.getPainter().hasClipping()) {
-					this.drawPlainPath(s, this.getPainter().getClipPath());
-					s.append("ctx.clip();");
+					this.drawPlainPath(this.js_, this.getPainter()
+							.getClipPath());
+					this.js_.append("ctx.clip();");
 				}
-				this.renderTransform(s, t, true);
-				s.append("ctx.save();");
+				this.renderTransform(this.js_, t, true);
+				this.js_.append("ctx.save();");
 			} else {
-				s.append("ctx.restore();ctx.save();");
+				this.js_.append("ctx.restore();ctx.save();");
 			}
 			WTransform t = this.getPainter().getCombinedTransform();
-			this.renderTransform(s, t);
+			this.renderTransform(this.js_, t);
 			this.changeFlags_.addAll(EnumSet.of(WPaintDevice.ChangeFlag.Pen,
 					WPaintDevice.ChangeFlag.Brush));
 		}
 		if (!EnumUtils.mask(this.changeFlags_, WPaintDevice.ChangeFlag.Pen)
 				.isEmpty()) {
 			WPen pen = this.getPainter().getPen();
-			s.append("ctx.strokeStyle=\"" + pen.getColor().getCssText(true))
+			this.js_.append(
+					"ctx.strokeStyle=\"" + pen.getColor().getCssText(true))
 					.append("\";ctx.lineWidth=").append(
 							String.valueOf(this.getPainter()
 									.normalizedPenWidth(pen.getWidth(), true)
 									.getValue())).append(';');
 			switch (pen.getCapStyle()) {
 			case FlatCap:
-				s.append("ctx.lineCap='butt';");
+				this.js_.append("ctx.lineCap='butt';");
 				break;
 			case SquareCap:
-				s.append("ctx.lineCap='square';");
+				this.js_.append("ctx.lineCap='square';");
 				break;
 			case RoundCap:
-				s.append("ctx.lineCap='round';");
+				this.js_.append("ctx.lineCap='round';");
 			}
 			switch (pen.getJoinStyle()) {
 			case MiterJoin:
-				s.append("ctx.lineJoin='miter';");
+				this.js_.append("ctx.lineJoin='miter';");
 				break;
 			case BevelJoin:
-				s.append("ctx.lineJoin='bevel';");
+				this.js_.append("ctx.lineJoin='bevel';");
 				break;
 			case RoundJoin:
-				s.append("ctx.lineJoin='round';");
+				this.js_.append("ctx.lineJoin='round';");
 			}
 		}
 		if (!EnumUtils.mask(this.changeFlags_, WPaintDevice.ChangeFlag.Brush)
 				.isEmpty()) {
-			s.append("ctx.fillStyle=\""
-					+ this.getPainter().getBrush().getColor().getCssText(true)
-					+ "\";");
+			this.js_.append("ctx.fillStyle=\"").append(
+					this.getPainter().getBrush().getColor().getCssText(true))
+					.append("\";");
 		}
-		this.js_ += s.toString();
 		this.changeFlags_.clear();
 	}
 

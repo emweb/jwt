@@ -1136,7 +1136,13 @@ public class WApplication extends WObject {
 	public static String getResourcesUrl() {
 		String path = "/wt-resources/";
 		readConfigurationProperty("resourcesURL", path);
-		return WApplication.getInstance().getBookmarkUrl(path);
+		String result = WApplication.getInstance().getEnvironment()
+				.getDeploymentPath();
+		if (result.length() != 0 && result.charAt(result.length() - 1) == '/') {
+			return result + path.substring(1);
+		} else {
+			return result + path;
+		}
 	}
 
 	/**

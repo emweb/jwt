@@ -29,7 +29,8 @@ import java.util.EnumSet;
  * <p>
  * This dialog looks like this (using the standard look):
  * <p>
- * <div align="center"> <img src="/WDialog-1.png" alt="A simple custom dialog">
+ * <div align="center"> <img src="doc-files//WDialog-1.png"
+ * alt="A simple custom dialog">
  * <p>
  * <strong>A simple custom dialog</strong>
  * </p>
@@ -173,24 +174,6 @@ public class WDialog extends WCompositeWidget {
 	public void remove() {
 		this.hide();
 		super.remove();
-	}
-
-	/**
-	 * Set the dialog caption.
-	 * <p>
-	 * <i>deprecated: use setWindowTitle instead</i>
-	 */
-	public void setCaption(CharSequence caption) {
-		this.setWindowTitle(caption);
-	}
-
-	/**
-	 * Get the dialog caption.
-	 * <p>
-	 * <i>deprecated: use windowTitle instead</i>
-	 */
-	public WString getCaption() {
-		return this.getWindowTitle();
 	}
 
 	/**

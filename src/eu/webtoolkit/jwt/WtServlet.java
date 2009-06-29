@@ -15,6 +15,16 @@ import eu.webtoolkit.jwt.servlet.WebResponse;
 import eu.webtoolkit.jwt.utils.JarUtils;
 import eu.webtoolkit.jwt.utils.StreamUtils;
 
+/**
+ * The abstract Wt servlet class.
+ * <p>
+ * This servlet processes all requests for a JWt application. You will need to specialize this class to provide an entry
+ * point to your web application.
+ * <p>
+ * For each new session {@link #createApplication(WEnvironment)} is called to create a new {@link WApplication} object for that session.
+ * The web controller that is implemented by this servlet validates each incoming request, and takes the appropriate action by either
+ * notifying the application of an event, or serving a {@link WResource}.
+ */
 public abstract class WtServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
@@ -46,12 +56,16 @@ public abstract class WtServlet extends HttpServlet {
 		return JarUtils.getInstance().readTextFromJar(fileName);
 	}
 
+	/**
+	 * Constructor.
+	 * <p>
+	 * Instantiates the servlet using the default configuration.
+	 * 
+	 * @see #getConfiguration()
+	 */
 	public WtServlet() {
-		this(new Configuration());
-	}
-	
-	public WtServlet(Configuration configuration) {
-		this.configuration = configuration;
+		this.configuration = new Configuration();
+
 		this.resourcePath = configuration.getProperties().get("ResourcesURL");
 		if (resourcePath == null)
 			resourcePath = "/wt-resources/";
@@ -116,14 +130,38 @@ public abstract class WtServlet extends HttpServlet {
 		handleRequest(req, resp);
 	}
 
+	/**
+	 * Returns the JWt configuration.
+	 * <p>
+	 * You should only modify the configuration from the servlet constructor.
+	 * 
+	 * @return the configuration.
+	 */
 	public Configuration getConfiguration() {
 		return configuration;
 	}
 
+	/**
+	 * Sets the JWt configuration.
+	 * <p>
+	 * You should only set the configuration from the servlet constructor.
+	 * 
+	 * @param configuration
+	 */
+	public void setConfiguration(Configuration configuration) {
+		this.configuration = configuration;
+	}
+	
 	WApplication doCreateApplication(WebSession session) {
 		return createApplication(session.getEnv());
 	}
 
+	/**
+	 * Creates a new application for a new session.
+	 * 
+	 * @param env the environment that describes the new user (agent) and initial parameters
+	 * @return a new application object.
+	 */
 	public abstract WApplication createApplication(WEnvironment env);
 
 	private Configuration configuration;

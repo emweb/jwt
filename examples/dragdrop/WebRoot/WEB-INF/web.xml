@@ -10,7 +10,7 @@
   </servlet>
   <servlet-mapping>
     <servlet-name>DragDrop</servlet-name>
-    <url-pattern>/DragDrop/*</url-pattern>
+    <url-pattern>/dragdrop/*</url-pattern>
   </servlet-mapping>
 </web-app>
 

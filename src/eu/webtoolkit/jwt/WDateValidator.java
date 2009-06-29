@@ -233,18 +233,6 @@ public class WDateValidator extends WValidator {
 
 	// public void createExtConfig(Writer config) throws IOException;
 	/**
-	 * Parse a date from a string (<b>deprecated</b>).
-	 * <p>
-	 * 
-	 * @deprecated see {@link WDate#fromString(String s)} static
-	 *             methods.Equivalent to {@link WDate#fromString(String s)}
-	 *             (<i>input</i>, &quot;yyyy-MM-dd&quot;);
-	 */
-	public static WDate parse(CharSequence input) {
-		return WDate.fromString(input.toString(), "yyyy-MM-dd");
-	}
-
-	/**
 	 * Set the message to display when the input is not a date.
 	 * <p>
 	 * The default message is &quot;The date must be of the format {1}&quot;,

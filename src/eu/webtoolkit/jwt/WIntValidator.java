@@ -259,7 +259,7 @@ public class WIntValidator extends WValidator {
 	}
 
 	protected String getInputFilter() {
-		return "[0-9]";
+		return "[-+0-9]";
 	}
 
 	private int bottom_;

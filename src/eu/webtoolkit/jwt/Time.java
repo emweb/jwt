@@ -1,6 +1,6 @@
 package eu.webtoolkit.jwt;
 
-public class Time {
+class Time {
 	public Time() {
 		time = System.currentTimeMillis();
 	}

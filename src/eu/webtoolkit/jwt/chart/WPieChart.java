@@ -44,7 +44,7 @@ import eu.webtoolkit.jwt.utils.StringUtils;
  * The segments may be labeled in various ways using
  * {@link WPieChart#setDisplayLabels(EnumSet options)}.
  * <p>
- * <div align="center"> <img src="/ChartWPieChart-1.png"
+ * <div align="center"> <img src="doc-files//ChartWPieChart-1.png"
  * alt="Example of a pie chart">
  * <p>
  * <strong>Example of a pie chart</strong>

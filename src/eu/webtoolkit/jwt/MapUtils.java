@@ -2,7 +2,7 @@ package eu.webtoolkit.jwt;
 
 import java.util.Map;
 
-public class MapUtils {
+class MapUtils {
 
 	@SuppressWarnings("unchecked")
 	public static <K, V> V access(Map<K, V> map, K key, Class valueClass) {

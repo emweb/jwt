@@ -164,13 +164,6 @@ public class WCheckBox extends WAbstractToggleButton {
 		return this.state_;
 	}
 
-	public WCheckBox(boolean withLabel, WContainerWidget parent) {
-		super(withLabel, parent);
-		this.triState_ = false;
-		this.safariWorkaround_ = false;
-		this.setFormObject(true);
-	}
-
 	protected void updateDom(DomElement element, boolean all) {
 		if (all) {
 			element.setAttribute("type", "checkbox");

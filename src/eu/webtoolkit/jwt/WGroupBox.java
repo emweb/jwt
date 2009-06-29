@@ -41,7 +41,8 @@ import java.util.List;
  * <p>
  * Like {@link WContainerWidget}, WGroupBox is by default a block level widget.
  * <p>
- * <div align="center"> <img src="/WGroupBox-1.png" alt="WGroupBox example">
+ * <div align="center"> <img src="doc-files//WGroupBox-1.png"
+ * alt="WGroupBox example">
  * <p>
  * <strong>WGroupBox example</strong>
  * </p>

@@ -344,8 +344,9 @@ public abstract class WWidget extends WObject {
 	 * parent widget, at the current line. A typical use is to position images
 	 * within text. Valid values for Side or
 	 * <p>
-	 * {@link Side#None None} , {@link Side#Left Left} or {@link Side#Right
-	 * Right}.
+	 * {@link Side#None None}
+	 * <p>
+	 * , {@link Side#Left Left} or {@link Side#Right Right}.
 	 * <p>
 	 * This applies to CSS-based layout.
 	 */

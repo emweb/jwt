@@ -29,7 +29,7 @@ import java.util.List;
  * tiny_mce folder is located, by configuring the <i>tinyMCEURL</i> property in
  * your Wt configuration file.
  * <p>
- * <div align="center"> <img src="/WTextEdit-1.png"
+ * <div align="center"> <img src="doc-files//WTextEdit-1.png"
  * alt="Default configuration of a WTextEdit">
  * <p>
  * <strong>Default configuration of a WTextEdit</strong>

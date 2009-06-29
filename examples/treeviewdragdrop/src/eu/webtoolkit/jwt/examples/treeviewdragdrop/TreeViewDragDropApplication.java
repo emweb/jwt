@@ -22,6 +22,7 @@ import eu.webtoolkit.jwt.WContainerWidget;
 import eu.webtoolkit.jwt.WDate;
 import eu.webtoolkit.jwt.WEnvironment;
 import eu.webtoolkit.jwt.WGridLayout;
+import eu.webtoolkit.jwt.WItemDelegate;
 import eu.webtoolkit.jwt.WLength;
 import eu.webtoolkit.jwt.WMessageBox;
 import eu.webtoolkit.jwt.WModelIndex;
@@ -211,8 +212,12 @@ public class TreeViewDragDropApplication extends WApplication
     treeView.setColumnWidth(4, new WLength(100));
     treeView.setColumnWidth(5, new WLength(100));
 
-    treeView.setColumnFormat(4, FileModel.dateDisplayFormat);
-    treeView.setColumnFormat(5, FileModel.dateDisplayFormat);
+    WItemDelegate delegate;
+    delegate = (WItemDelegate)treeView.getItemDelegateForColumn(4);
+    delegate.setTextFormat(FileModel.dateDisplayFormat);
+
+    delegate = (WItemDelegate)treeView.getItemDelegateForColumn(5);
+    delegate.setTextFormat(FileModel.dateDisplayFormat);
 
     treeView.setColumnAlignment(3, AlignmentFlag.AlignRight);
     treeView.setColumnAlignment(4, AlignmentFlag.AlignRight);

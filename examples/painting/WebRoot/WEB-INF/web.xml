@@ -10,7 +10,7 @@
   </servlet>
   <servlet-mapping>
     <servlet-name>Paint</servlet-name>
-    <url-pattern>/Paint/*</url-pattern>
+    <url-pattern>/painting/*</url-pattern>
   </servlet-mapping>
 </web-app>
 

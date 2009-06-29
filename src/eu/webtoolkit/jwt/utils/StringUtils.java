@@ -116,9 +116,14 @@ public class StringUtils {
 	}
 
 	public static final int strpbrk(String src, int startPos, String matches) {
-		for (int i = startPos; i < src.length(); i++) {
-			for (int j = 0; j < matches.length(); j++) {
-				if (src.charAt(i) == matches.charAt(j)) {
+		char [] srcArray = src.toCharArray();
+		char [] matchesArray = matches.toCharArray();
+		int matchesL = matchesArray.length;
+		int srcL = srcArray.length;
+		for (int i = startPos; i < srcL; i++) {
+			char c = srcArray[i];
+			for (int j = 0; j < matchesL ; j++) {
+				if (c == matchesArray[j]) {
 					return i;
 				}
 			}

@@ -10,7 +10,7 @@
   </servlet>
   <servlet-mapping>
     <servlet-name>Form</servlet-name>
-    <url-pattern>/Form/*</url-pattern>
+    <url-pattern>/form/*</url-pattern>
   </servlet-mapping>
 </web-app>
 

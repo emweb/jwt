@@ -109,6 +109,8 @@ public class WTableCell extends WContainerWidget {
 		this.rowSpan_ = 1;
 		this.columnSpan_ = 1;
 		this.spanChanged_ = false;
+		this.contentAlignment_ = EnumSet.copyOf(EnumSet.of(
+				AlignmentFlag.AlignLeft, AlignmentFlag.AlignTop));
 		this.setParent(row.getTable());
 	}
 

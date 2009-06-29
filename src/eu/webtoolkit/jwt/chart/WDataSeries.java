@@ -20,7 +20,7 @@ import eu.webtoolkit.jwt.utils.EnumUtils;
  * <p>
  * Multiple series of different types may be combined on a single chart.
  * <p>
- * <div align="center"> <img src="/ChartWDataSeries-1.png"
+ * <div align="center"> <img src="doc-files//ChartWDataSeries-1.png"
  * alt="Different styles of data series">
  * <p>
  * <strong>Different styles of data series</strong>

@@ -104,7 +104,7 @@ public class Popup extends WObject {
 	 * Popup constructor.
 	 */
 	private Popup(Type t, CharSequence message, String defaultValue, WObject parent) {
-		super(parent);
+		super();
 		okPressed_ = new JSignal1<String>(this, "ok") {	};
 		cancelPressed_ = new JSignal(this, "cancel") { };
 		t_ = t;

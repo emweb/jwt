@@ -42,7 +42,7 @@ import eu.webtoolkit.jwt.utils.StringUtils;
  * are listed consecutively in model row order. The X axis scale is set to
  * {@link AxisScale#CategoryScale CategoryScale}.
  * <p>
- * <div align="center"> <img src="/ChartWCartesianChart-1.png"
+ * <div align="center"> <img src="doc-files//ChartWCartesianChart-1.png"
  * alt="A category chart with bar series">
  * <p>
  * <strong>A category chart with bar series</strong>
@@ -58,7 +58,7 @@ import eu.webtoolkit.jwt.utils.StringUtils;
  * {@link AxisScale#LogScale LogScale}. A ScatterPlot supports the same types of
  * data series as a CategoryChart, but does not support stacking.
  * <p>
- * <div align="center"> <img src="/ChartWCartesianChart-2.png"
+ * <div align="center"> <img src="doc-files//ChartWCartesianChart-2.png"
  * alt="A time series scatter plot with line series">
  * <p>
  * <strong>A time series scatter plot with line series</strong>

@@ -10,7 +10,7 @@ import java.util.List;
  * The panel provides a container with an optional title bar, and an optional
  * collapse icon.
  * <p>
- * <div align="center"> <img src="/WPanel-1.png"
+ * <div align="center"> <img src="doc-files//WPanel-1.png"
  * alt="Two panels: the top panel is collapsed, and the bottom panel expanded">
  * <p>
  * <strong>Two panels: the top panel is collapsed, and the bottom panel

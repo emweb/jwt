@@ -20,7 +20,7 @@ import eu.webtoolkit.jwt.utils.EnumUtils;
  * <p>
  * This will show a message box that looks like this:
  * <p>
- * <div align="center"> <img src="/WMessageBox-1.png"
+ * <div align="center"> <img src="doc-files//WMessageBox-1.png"
  * alt="Example of a WMessageBox">
  * <p>
  * <strong>Example of a WMessageBox</strong>

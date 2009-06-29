@@ -402,6 +402,11 @@ public class WContainerWidget extends WInteractWidget {
 	 */
 	public void setContentAlignment(EnumSet<AlignmentFlag> alignment) {
 		this.contentAlignment_ = EnumSet.copyOf(alignment);
+		AlignmentFlag vAlign = EnumUtils.enumFromSet(EnumUtils.mask(
+				this.contentAlignment_, AlignmentFlag.AlignVerticalMask));
+		if (vAlign == null) {
+			this.contentAlignment_.add(AlignmentFlag.AlignTop);
+		}
 		this.flags_.set(BIT_CONTENT_ALIGNMENT_CHANGED);
 		this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyAttribute));
 	}
@@ -662,7 +667,7 @@ public class WContainerWidget extends WInteractWidget {
 	private static final int BIT_ORDERED_LIST = 5;
 	private static final int BIT_LAYOUT_CHANGED = 6;
 	private BitSet flags_;
-	private EnumSet<AlignmentFlag> contentAlignment_;
+	EnumSet<AlignmentFlag> contentAlignment_;
 	private WContainerWidget.Overflow[] overflow_;
 	private WLength[] padding_;
 	private WLayout layout_;
@@ -835,8 +840,9 @@ public class WContainerWidget extends WInteractWidget {
 			element.setProperty(Property.PropertyStyleDisplay, "inline");
 		}
 		if (this.flags_.get(BIT_CONTENT_ALIGNMENT_CHANGED) || all) {
-			switch (EnumUtils.enumFromSet(EnumUtils.mask(
-					this.contentAlignment_, AlignmentFlag.AlignHorizontalMask))) {
+			AlignmentFlag hAlign = EnumUtils.enumFromSet(EnumUtils.mask(
+					this.contentAlignment_, AlignmentFlag.AlignHorizontalMask));
+			switch (hAlign) {
 			case AlignLeft:
 				if (this.flags_.get(BIT_CONTENT_ALIGNMENT_CHANGED)) {
 					element
@@ -858,6 +864,28 @@ public class WContainerWidget extends WInteractWidget {
 				break;
 			default:
 				break;
+			}
+			if (this.getDomElementType() == DomElementType.DomElement_TD) {
+				AlignmentFlag vAlign = EnumUtils.enumFromSet(EnumUtils
+						.mask(this.contentAlignment_,
+								AlignmentFlag.AlignVerticalMask));
+				switch (vAlign) {
+				case AlignTop:
+					if (this.flags_.get(BIT_CONTENT_ALIGNMENT_CHANGED)) {
+						element.setProperty(
+								Property.PropertyStyleVerticalAlign, "top");
+					}
+					break;
+				case AlignMiddle:
+					element.setProperty(Property.PropertyStyleVerticalAlign,
+							"middle");
+					break;
+				case AlignBottom:
+					element.setProperty(Property.PropertyStyleVerticalAlign,
+							"bottom");
+				default:
+					break;
+				}
 			}
 		}
 		if (this.flags_.get(BIT_ADJUST_CHILDREN_ALIGN)

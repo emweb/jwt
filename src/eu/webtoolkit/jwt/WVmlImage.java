@@ -35,7 +35,7 @@ public class WVmlImage implements WVectorImage {
 		this.currentBrush_ = new WBrush();
 		this.currentPen_ = new WPen();
 		this.activePaths_ = new ArrayList<WVmlImage.ActivePath>();
-		this.rendered_ = "";
+		this.rendered_ = new StringWriter();
 		this.currentRect_ = new WRectF();
 	}
 
@@ -72,10 +72,9 @@ public class WVmlImage implements WVectorImage {
 			int imgHeight, WRectF sourceRect) {
 		this.finishPaths();
 		this.processClipping();
-		StringWriter tmp = new StringWriter();
 		WTransform t = this.getPainter().getCombinedTransform();
 		WPointF tl = t.map(rect.getTopLeft());
-		tmp.append("<v:group style=\"width:").append(
+		this.rendered_.append("<v:group style=\"width:").append(
 				String.valueOf(Z * this.getWidth().getValue())).append(
 				"px;height:").append(
 				String.valueOf(Z * this.getHeight().getValue())).append("px;");
@@ -85,7 +84,8 @@ public class WVmlImage implements WVectorImage {
 				|| t.getM21() != 0.0) {
 			cx = this.getWidth().getValue() / rect.getWidth();
 			cy = this.getHeight().getValue() / rect.getHeight();
-			tmp.append("filter:progid:DXImageTransform.Microsoft.Matrix(M11='")
+			this.rendered_.append(
+					"filter:progid:DXImageTransform.Microsoft.Matrix(M11='")
 					.append(String.valueOf(t.getM11() / cx)).append("',M12='")
 					.append(String.valueOf(t.getM21() / cy)).append("',M21='")
 					.append(String.valueOf(t.getM12() / cx)).append("',M22='")
@@ -94,11 +94,11 @@ public class WVmlImage implements WVectorImage {
 							String.valueOf(tl.getY())).append(
 							"',sizingmethod='clip');");
 		} else {
-			tmp.append("top:").append(String.valueOf(Z * tl.getY())).append(
-					"px;left:").append(String.valueOf(Z * tl.getX())).append(
-					"px;");
+			this.rendered_.append("top:").append(String.valueOf(Z * tl.getY()))
+					.append("px;left:").append(String.valueOf(Z * tl.getX()))
+					.append("px;");
 		}
-		tmp.append("\"><v:image src=\"").append(imgUri).append(
+		this.rendered_.append("\"><v:image src=\"").append(imgUri).append(
 				"\" style=\"width:").append(
 				String.valueOf(Z * rect.getWidth() * cx)).append("px;height:")
 				.append(String.valueOf(Z * rect.getHeight() * cy)).append(
@@ -111,7 +111,6 @@ public class WVmlImage implements WVectorImage {
 								/ imgWidth)).append("\" cropbottom=\"").append(
 						String.valueOf((imgHeight - sourceRect.getBottom())
 								/ imgHeight)).append("\"/></v:group>");
-		this.rendered_ += tmp.toString();
 	}
 
 	public void drawLine(double x1, double y1, double x2, double y2) {
@@ -270,7 +269,6 @@ public class WVmlImage implements WVectorImage {
 				AlignmentFlag.AlignHorizontalMask);
 		EnumSet<AlignmentFlag> verticalAlign = EnumUtils.mask(flags,
 				AlignmentFlag.AlignVerticalMask);
-		StringWriter tmp = new StringWriter();
 		double fontSize;
 		switch (this.getPainter().getFont().getSize()) {
 		case FixedSize:
@@ -293,7 +291,7 @@ public class WVmlImage implements WVectorImage {
 		default:
 			break;
 		}
-		tmp.append("<v:shape style=\"width:").append(
+		this.rendered_.append("<v:shape style=\"width:").append(
 				String.valueOf(Z * this.currentRect_.getWidth())).append(
 				"px;height:").append(
 				String.valueOf(Z * this.currentRect_.getHeight())).append(
@@ -309,20 +307,20 @@ public class WVmlImage implements WVectorImage {
 								.getCombinedTransform())).append(
 						"<v:textpath on=\"True\" string=\"");
 		{
-			EscapeOStream attr = new EscapeOStream(tmp);
+			EscapeOStream attr = new EscapeOStream(this.rendered_);
 			attr.pushEscape(EscapeOStream.RuleSet.HtmlAttribute);
 			attr.append(text.toString());
 		}
-		tmp.append("\" style=\"v-text-align:");
+		this.rendered_.append("\" style=\"v-text-align:");
 		switch (EnumUtils.enumFromSet(horizontalAlign)) {
 		case AlignLeft:
-			tmp.append("left");
+			this.rendered_.append("left");
 			break;
 		case AlignCenter:
-			tmp.append("center");
+			this.rendered_.append("center");
 			break;
 		case AlignRight:
-			tmp.append("right");
+			this.rendered_.append("right");
 			break;
 		default:
 			break;
@@ -331,8 +329,8 @@ public class WVmlImage implements WVectorImage {
 		WFont textFont = this.getPainter().getFont();
 		textFont.setSize(textFont.getSize(), WLength.multiply(textFont
 				.getFixedSize(), app.getEnvironment().getDpiScale()));
-		tmp.append(';').append(textFont.getCssText()).append("\"/></v:shape>");
-		this.rendered_ += tmp.toString();
+		this.rendered_.append(';').append(textFont.getCssText()).append(
+				"\"/></v:shape>");
 	}
 
 	public void init() {
@@ -354,14 +352,14 @@ public class WVmlImage implements WVectorImage {
 	public String getRendered() {
 		this.stopClip();
 		if (!EnumUtils.mask(this.paintFlags_, PaintFlag.PaintUpdate).isEmpty()) {
-			return this.rendered_;
+			return this.rendered_.toString();
 		} else {
 			StringWriter s = new StringWriter();
 			s.append("<div style=\"position:relative;width:").append(
 					this.getWidth().getCssText()).append(";height:").append(
 					this.getHeight().getCssText()).append(
-					";overflow:hidden;\">").append(this.rendered_).append(
-					"</div>");
+					";overflow:hidden;\">").append(this.rendered_.toString())
+					.append("</div>");
 			return s.toString();
 		}
 	}
@@ -415,13 +413,14 @@ public class WVmlImage implements WVectorImage {
 	}
 
 	private List<WVmlImage.ActivePath> activePaths_;
-	private String rendered_;
+	private StringWriter rendered_;
 
 	private void finishPaths() {
 		for (int i = 0; i < this.activePaths_.size(); ++i) {
-			this.rendered_ += this.activePaths_.get(i).path + "e\">"
-					+ this.strokeElement(this.currentPen_)
-					+ this.fillElement(this.currentBrush_) + "</v:shape>";
+			this.rendered_.append(this.activePaths_.get(i).path).append("e\">")
+					.append(this.strokeElement(this.currentPen_)).append(
+							this.fillElement(this.currentBrush_)).append(
+							"</v:shape>");
 		}
 		this.activePaths_.clear();
 	}
@@ -583,8 +582,7 @@ public class WVmlImage implements WVectorImage {
 	}
 
 	private void startClip(WRectF rect) {
-		StringWriter s = new StringWriter();
-		s.append("<div style=\"position:absolute;left:").append(
+		this.rendered_.append("<div style=\"position:absolute;left:").append(
 				String.valueOf(rect.getLeft())).append("px;top:").append(
 				String.valueOf(rect.getTop())).append("px;width:").append(
 				String.valueOf(rect.getWidth())).append("px;height:").append(
@@ -600,12 +598,11 @@ public class WVmlImage implements WVectorImage {
 						"\" coordsize=\"").append(
 						String.valueOf(rect.getWidth() * Z)).append(",")
 				.append(String.valueOf(rect.getHeight() * Z)).append("\">");
-		this.rendered_ += s.toString();
 		this.currentRect_ = rect;
 	}
 
 	private void stopClip() {
-		this.rendered_ += "</v:group></div>";
+		this.rendered_.append("</v:group></div>");
 	}
 
 	private WRectF currentRect_;

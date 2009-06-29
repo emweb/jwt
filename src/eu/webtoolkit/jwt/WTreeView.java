@@ -673,55 +673,6 @@ public class WTreeView extends WCompositeWidget {
 	}
 
 	/**
-	 * Sets the column format string (<b>deprecated</b>).
-	 * <p>
-	 * The DisplayRole data for that column is converted to a string using
-	 * {@link StringUtils#asString(Object)}, with the given format.
-	 * <p>
-	 * The default value is &quot;&quot;.
-	 * <p>
-	 * 
-	 * @deprecated use {@link WTreeView#getItemDelegateForColumn(int column)} to
-	 *             customize the formatting. This method will create a new
-	 *             {@link WItemDelegate} for the column, and configure its
-	 *             format.
-	 */
-	public void setColumnFormat(int column, String format) {
-		WTreeView.ColumnInfo info = this.columnInfo(column);
-		WItemDelegate id;
-		if (info.itemDelegate_ != null) {
-			id = ((info.itemDelegate_) instanceof WItemDelegate ? (WItemDelegate) (info.itemDelegate_)
-					: null);
-		} else {
-			info.itemDelegate_ = id = new WItemDelegate(this);
-		}
-		if (id != null) {
-			id.setTextFormat(format);
-		}
-	}
-
-	/**
-	 * Returns the column format string (<b>deprecated</b>).
-	 * <p>
-	 * 
-	 * @see WTreeView#setColumnFormat(int column, String format)
-	 * @deprecated use {@link WTreeView#getItemDelegateForColumn(int column)} to
-	 *             customize the formatting. This method will try to cast the
-	 *             {@link WTreeView#getItemDelegateForColumn(int column)} to a
-	 *             {@link WItemDelegate} and return the format.
-	 */
-	public String getColumnFormat(int column) {
-		WTreeView.ColumnInfo info = this.columnInfo(column);
-		if (info.itemDelegate_ != null) {
-			WItemDelegate id = ((info.itemDelegate_) instanceof WItemDelegate ? (WItemDelegate) (info.itemDelegate_)
-					: null);
-			return id != null ? id.getTextFormat() : "";
-		} else {
-			return "";
-		}
-	}
-
-	/**
 	 * Sets the column width.
 	 * <p>
 	 * For a model with
@@ -990,7 +941,7 @@ public class WTreeView extends WCompositeWidget {
 	 * <p>
 	 * Configure whether rows get an alternating background color. These are
 	 * implemented by using a background image on the root node, like: <div
-	 * align="center"> <img src="/stripe-30px.gif"
+	 * align="center"> <img src="doc-files//stripe-30px.gif"
 	 * alt="Sample image use for alternating row colors">
 	 * <p>
 	 * <strong>Sample image use for alternating row colors</strong>

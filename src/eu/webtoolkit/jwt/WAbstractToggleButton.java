@@ -21,18 +21,16 @@ import java.util.List;
  */
 public class WAbstractToggleButton extends WFormWidget {
 	/**
-	 * Create an unchecked toggle button with empty label and optional parent.
+	 * Create an unchecked toggle button without label.
 	 */
 	protected WAbstractToggleButton(WContainerWidget parent) {
 		super(parent);
 		this.state_ = CheckState.Unchecked;
 		this.stateChanged_ = false;
-		WLabel label = new WLabel(parent);
-		label.setBuddy(this);
 	}
 
 	/**
-	 * Create an unchecked toggle button with empty label and optional parent.
+	 * Create an unchecked toggle button without label.
 	 * <p>
 	 * Calls {@link #WAbstractToggleButton(WContainerWidget parent)
 	 * this((WContainerWidget)null)}
@@ -42,7 +40,7 @@ public class WAbstractToggleButton extends WFormWidget {
 	}
 
 	/**
-	 * Create an unchecked toggle button with given text and optional parent.
+	 * Create an unchecked toggle button with given text label.
 	 */
 	protected WAbstractToggleButton(CharSequence text, WContainerWidget parent) {
 		super(parent);
@@ -53,7 +51,7 @@ public class WAbstractToggleButton extends WFormWidget {
 	}
 
 	/**
-	 * Create an unchecked toggle button with given text and optional parent.
+	 * Create an unchecked toggle button with given text label.
 	 * <p>
 	 * Calls
 	 * {@link #WAbstractToggleButton(CharSequence text, WContainerWidget parent)
@@ -63,23 +61,31 @@ public class WAbstractToggleButton extends WFormWidget {
 		this(text, (WContainerWidget) null);
 	}
 
-	protected WAbstractToggleButton(boolean withLabel, WContainerWidget parent) {
-		super(parent);
-		this.state_ = CheckState.Unchecked;
-		this.stateChanged_ = false;
-		if (withLabel) {
-			WLabel label = new WLabel(parent);
-			label.setBuddy(this);
-		}
+	/**
+	 * Destructor.
+	 */
+	public void remove() {
+		if (this.getLabel() != null)
+			this.getLabel().remove();
+		super.remove();
 	}
 
 	/**
 	 * Change the text of the label.
 	 */
 	public void setText(CharSequence text) {
-		if (this.getLabel() != null) {
-			this.getLabel().setText(text);
+		WLabel l = this.getLabel();
+		if (!(l != null)) {
+			l = new WLabel(text);
+			l.setBuddy(this);
+			WContainerWidget p = ((this.getParent()) instanceof WContainerWidget ? (WContainerWidget) (this
+					.getParent())
+					: null);
+			if (p != null) {
+				p.insertWidget(p.getIndexOf(this) + 1, l);
+			}
 		}
+		l.setText(text);
 	}
 
 	/**

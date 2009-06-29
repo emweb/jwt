@@ -7,7 +7,7 @@
   <property name="src.java.dir" value="src"/>
   <property name="build.dir" value="build"/>
   <property name="dist.dir" value="dist"/>
-  <property name="javadoc.dir" value="doc"/>
+  <property name="javadoc.dir" value="doc/javadoc"/>
 
   <!-- Classpath declaration -->
   <path id="project.classpath">
@@ -23,7 +23,6 @@
   <target name="clean">
     <delete dir="${build.dir}"/>
     <delete dir="${dist.dir}"/>
-    <delete dir="${javadoc.dir}"/>
   </target>
 
   <!-- Compile Java source -->
@@ -47,6 +46,10 @@
       <fileset dir="${src.java.dir}"/>
     </copy>
   </target>
+  
+  <target name="clean-javadoc">
+    <delete dir="${javadoc.dir}"/>
+  </target>
 
   <target name="javadoc">
     <javadoc
@@ -64,6 +67,12 @@
         <include name="**/*.java"/>
       </fileset>
     </javadoc>
+    <copy todir="${javadoc.dir}/eu/webtoolkit/jwt/doc-files">
+      <fileset dir="${src.java.dir}/eu/webtoolkit/jwt/doc-files"/>
+    </copy>
+    <copy todir="${javadoc.dir}/eu/webtoolkit/jwt/chart/doc-files">
+      <fileset dir="${src.java.dir}/eu/webtoolkit/jwt/chart/doc-files"/>
+    </copy>
   </target>
 
   <target name="dist" depends="build">

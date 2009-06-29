@@ -3,7 +3,7 @@ package eu.webtoolkit.jwt;
 
 class ItemCheckBox extends WCheckBox {
 	public ItemCheckBox(WModelIndex index) {
-		super(false, (WContainerWidget) null);
+		super();
 		this.index_ = index;
 	}
 

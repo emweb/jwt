@@ -37,7 +37,7 @@ public class WSvgImage extends WResource implements WVectorImage {
 		this.currentFont_ = new WFont();
 		this.currentPen_ = new WPen();
 		this.pathTranslation_ = new WPointF();
-		this.shapes_ = "";
+		this.shapes_ = new StringWriter();
 		this.fillStyle_ = "";
 		this.strokeStyle_ = "";
 		this.fontStyle_ = "";
@@ -80,16 +80,14 @@ public class WSvgImage extends WResource implements WVectorImage {
 		if (Math.abs(spanAngle - 360.0) < 0.01) {
 			this.finishPath();
 			this.makeNewGroup();
-			StringWriter tmp = new StringWriter();
-			tmp.append("<ellipse ").append(" cx=\"").append(
+			this.shapes_.append("<ellipse ").append(" cx=\"").append(
 					MathUtils.round(rect.getCenter().getX(), 3));
-			tmp.append("\" cy=\"").append(
+			this.shapes_.append("\" cy=\"").append(
 					MathUtils.round(rect.getCenter().getY(), 3));
-			tmp.append("\" rx=\"").append(
+			this.shapes_.append("\" rx=\"").append(
 					MathUtils.round(rect.getWidth() / 2, 3));
-			tmp.append("\" ry=\"").append(
+			this.shapes_.append("\" ry=\"").append(
 					MathUtils.round(rect.getHeight() / 2, 3)).append("\" />");
-			this.shapes_ += tmp.toString();
 		} else {
 			WPainterPath path = new WPainterPath();
 			path.arcMoveTo(rect.getX(), rect.getY(), rect.getWidth(), rect
@@ -106,15 +104,14 @@ public class WSvgImage extends WResource implements WVectorImage {
 		this.makeNewGroup();
 		WRectF drect = rect;
 		char[] buf = new char[30];
-		StringWriter tmp = new StringWriter();
 		boolean transformed = false;
 		if (drect.getWidth() != srect.getWidth()
 				|| drect.getHeight() != srect.getHeight()) {
-			tmp.append("<g transform=\"matrix(").append(
+			this.shapes_.append("<g transform=\"matrix(").append(
 					MathUtils.round(drect.getWidth() / srect.getWidth(), 3));
-			tmp.append(" 0 0 ").append(
+			this.shapes_.append(" 0 0 ").append(
 					MathUtils.round(drect.getHeight() / srect.getHeight(), 3));
-			tmp.append(' ').append(MathUtils.round(drect.getX(), 3))
+			this.shapes_.append(' ').append(MathUtils.round(drect.getX(), 3))
 					.append(' ').append(MathUtils.round(drect.getY(), 3))
 					.append(")\">");
 			drect = new WRectF(0, 0, srect.getWidth(), srect.getHeight());
@@ -129,33 +126,35 @@ public class WSvgImage extends WResource implements WVectorImage {
 		boolean useClipPath = false;
 		int imgClipId = nextClipId_++;
 		if (!new WRectF(x, y, width, height).equals(drect)) {
-			tmp.append("<clipPath id=\"imgClip").append(
+			this.shapes_.append("<clipPath id=\"imgClip").append(
 					String.valueOf(imgClipId)).append("\">");
-			tmp.append("<rect x=\"").append(MathUtils.round(drect.getX(), 3))
-					.append('"');
-			tmp.append(" y=\"").append(MathUtils.round(drect.getY(), 3))
-					.append('"');
-			tmp.append(" width=\"")
-					.append(MathUtils.round(drect.getWidth(), 3)).append('"');
-			tmp.append(" height=\"").append(
+			this.shapes_.append("<rect x=\"").append(
+					MathUtils.round(drect.getX(), 3)).append('"');
+			this.shapes_.append(" y=\"").append(
+					MathUtils.round(drect.getY(), 3)).append('"');
+			this.shapes_.append(" width=\"").append(
+					MathUtils.round(drect.getWidth(), 3)).append('"');
+			this.shapes_.append(" height=\"").append(
 					MathUtils.round(drect.getHeight(), 3)).append('"');
-			tmp.append(" /></clipPath>");
+			this.shapes_.append(" /></clipPath>");
 			useClipPath = true;
 		}
-		tmp.append("<image xlink:href=\"").append(imageUri).append("\"");
-		tmp.append(" x=\"").append(MathUtils.round(x, 3)).append('"');
-		tmp.append(" y=\"").append(MathUtils.round(y, 3)).append('"');
-		tmp.append(" width=\"").append(MathUtils.round(width, 3)).append('"');
-		tmp.append(" height=\"").append(MathUtils.round(height, 3)).append('"');
+		this.shapes_.append("<image xlink:href=\"").append(imageUri).append(
+				"\"");
+		this.shapes_.append(" x=\"").append(MathUtils.round(x, 3)).append('"');
+		this.shapes_.append(" y=\"").append(MathUtils.round(y, 3)).append('"');
+		this.shapes_.append(" width=\"").append(MathUtils.round(width, 3))
+				.append('"');
+		this.shapes_.append(" height=\"").append(MathUtils.round(height, 3))
+				.append('"');
 		if (useClipPath) {
-			tmp.append(" clip-path=\"url(#imgClip").append(
+			this.shapes_.append(" clip-path=\"url(#imgClip").append(
 					String.valueOf(imgClipId)).append(")\"");
 		}
-		tmp.append("/>");
+		this.shapes_.append("/>");
 		if (transformed) {
-			tmp.append("</g>");
+			this.shapes_.append("</g>");
 		}
-		this.shapes_ += tmp.toString();
 	}
 
 	public void drawLine(double x1, double y1, double x2, double y2) {
@@ -167,9 +166,7 @@ public class WSvgImage extends WResource implements WVectorImage {
 
 	public void drawPath(WPainterPath path) {
 		this.makeNewGroup();
-		StringWriter tmp = new StringWriter();
-		this.drawPlainPath(tmp, path);
-		this.shapes_ += tmp.toString();
+		this.drawPlainPath(this.shapes_, path);
 	}
 
 	public void drawText(WRectF rect, EnumSet<AlignmentFlag> flags,
@@ -177,36 +174,35 @@ public class WSvgImage extends WResource implements WVectorImage {
 		this.finishPath();
 		this.makeNewGroup();
 		char[] buf = new char[30];
-		StringWriter tmp = new StringWriter();
-		tmp.append("<text");
-		tmp.append(" style=\"stroke:none;");
+		this.shapes_.append("<text");
+		this.shapes_.append(" style=\"stroke:none;");
 		if (!this.getPainter().getPen().getColor().equals(
 				this.getPainter().getBrush().getColor())
 				|| this.getPainter().getBrush().getStyle() == WBrushStyle.NoBrush) {
 			WColor color = this.getPainter().getPen().getColor();
-			tmp.append("fill:" + color.getCssText()).append(';');
+			this.shapes_.append("fill:" + color.getCssText()).append(';');
 			if (color.getAlpha() != 255) {
-				tmp.append("fill-opacity:").append(
+				this.shapes_.append("fill-opacity:").append(
 						MathUtils.round(color.getAlpha() / 255., 3))
 						.append(';');
 			}
 		}
-		tmp.append('"');
+		this.shapes_.append('"');
 		AlignmentFlag horizontalAlign = EnumUtils.enumFromSet(EnumUtils.mask(
 				flags, AlignmentFlag.AlignHorizontalMask));
 		AlignmentFlag verticalAlign = EnumUtils.enumFromSet(EnumUtils.mask(
 				flags, AlignmentFlag.AlignVerticalMask));
 		switch (horizontalAlign) {
 		case AlignLeft:
-			tmp.append(" x=").append(quote(rect.getLeft()));
+			this.shapes_.append(" x=").append(quote(rect.getLeft()));
 			break;
 		case AlignRight:
-			tmp.append(" x=").append(quote(rect.getRight())).append(
+			this.shapes_.append(" x=").append(quote(rect.getRight())).append(
 					" text-anchor=\"end\"");
 			break;
 		case AlignCenter:
-			tmp.append(" x=").append(quote(rect.getCenter().getX())).append(
-					" text-anchor=\"middle\"");
+			this.shapes_.append(" x=").append(quote(rect.getCenter().getX()))
+					.append(" text-anchor=\"middle\"");
 			break;
 		default:
 			break;
@@ -233,10 +229,10 @@ public class WSvgImage extends WResource implements WVectorImage {
 		default:
 			break;
 		}
-		tmp.append(" y=").append(quote(y));
-		tmp.append(">").append(WWebWidget.escapeText(text, false).toString())
+		this.shapes_.append(" y=").append(quote(y));
+		this.shapes_.append(">").append(
+				WWebWidget.escapeText(text, false).toString())
 				.append("</text>");
-		this.shapes_ += tmp.toString();
 	}
 
 	public void init() {
@@ -317,12 +313,12 @@ public class WSvgImage extends WResource implements WVectorImage {
 	private WFont currentFont_;
 	private WPen currentPen_;
 	private WPointF pathTranslation_;
-	private String shapes_;
+	private StringWriter shapes_;
 
 	private void finishPath() {
 		if (this.busyWithPath_) {
 			this.busyWithPath_ = false;
-			this.shapes_ += "\" />";
+			this.shapes_.append("\" />");
 		}
 	}
 
@@ -390,11 +386,10 @@ public class WSvgImage extends WResource implements WVectorImage {
 				this.currentClipId_ = nextClipId_++;
 				tmp.append("<defs><clipPath id=\"clip").append(
 						this.currentClipId_).append("\">");
-				this.shapes_ += tmp.toString();
+				this.shapes_.append(tmp.toString());
 				tmp.clear();
-				StringWriter clip = new StringWriter();
-				this.drawPlainPath(clip, this.getPainter().getClipPath());
-				this.shapes_ += clip.toString();
+				this.drawPlainPath(this.shapes_, this.getPainter()
+						.getClipPath());
 				tmp.append('"');
 				this.busyWithPath_ = false;
 				WTransform t = this.getPainter().getClipPathTransform();
@@ -448,7 +443,7 @@ public class WSvgImage extends WResource implements WVectorImage {
 					.append(")\"");
 		}
 		tmp.append('>');
-		this.shapes_ += tmp.toString();
+		this.shapes_.append(tmp.toString());
 		this.changeFlags_.clear();
 	}
 
@@ -649,7 +644,7 @@ public class WSvgImage extends WResource implements WVectorImage {
 			stream
 					.append(
 							"<g xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\"><g>")
-					.append(this.shapes_).append("</g></g>");
+					.append(this.shapes_.toString()).append("</g></g>");
 		} else {
 			stream
 					.append(
@@ -657,7 +652,7 @@ public class WSvgImage extends WResource implements WVectorImage {
 					.append(this.getWidth().getCssText())
 					.append("\" height=\"").append(
 							this.getHeight().getCssText()).append("\">")
-					.append("<g><g>").append(this.shapes_).append(
+					.append("<g><g>").append(this.shapes_.toString()).append(
 							"</g></g></svg>");
 		}
 	}

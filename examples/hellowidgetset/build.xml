@@ -59,7 +59,7 @@
                includes="**/*.xml,**/*.properties,**/*.csv" />
     </copy>
     
-    <war destfile="${dist.dir}/${proj.name}-${proj.version}.war" 
+    <war destfile="${dist.dir}/${proj.name}.war" 
 	 webxml="WebRoot/WEB-INF/web.xml">
       <fileset dir="WebRoot"/>
       <lib dir="${lib.dir}" includes="**/*.jar" excludes="servlet-api-*.jar">

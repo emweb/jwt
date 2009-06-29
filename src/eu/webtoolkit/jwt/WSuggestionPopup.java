@@ -127,7 +127,7 @@ import eu.webtoolkit.jwt.utils.StringUtils;
 </code>
  * <p>
  * A screenshot of this example: <div align="center"> <img
- * src="/WSuggestionPopup-1.png" alt="Example of WSuggestionPopup">
+ * src="doc-files//WSuggestionPopup-1.png" alt="Example of WSuggestionPopup">
  * <p>
  * <strong>Example of WSuggestionPopup</strong>
  * </p>
