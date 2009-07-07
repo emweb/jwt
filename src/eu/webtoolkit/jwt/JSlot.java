@@ -137,7 +137,8 @@ public class JSlot {
 	 * the JavaScript code is deferred until after the event handling.
 	 */
 	public void exec() {
-		WApplication.getInstance().doJavaScript(this.imp_.getJavaScript());
+		WApplication.getInstance().doJavaScript(
+				"{var e=null;" + this.imp_.getJavaScript() + "}");
 	}
 
 	private WWidget widget_;

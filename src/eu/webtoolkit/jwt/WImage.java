@@ -80,7 +80,7 @@ public class WImage extends WInteractWidget {
 	 */
 	public WImage(String imageRef, CharSequence altText, WContainerWidget parent) {
 		super(parent);
-		this.altText_ = new WString(altText);
+		this.altText_ = WString.toWString(altText);
 		this.imageRef_ = imageRef;
 		this.resource_ = null;
 		this.map_ = null;
@@ -108,7 +108,7 @@ public class WImage extends WInteractWidget {
 	public WImage(WResource resource, CharSequence altText,
 			WContainerWidget parent) {
 		super(parent);
-		this.altText_ = new WString(altText);
+		this.altText_ = WString.toWString(altText);
 		this.imageRef_ = "";
 		this.resource_ = resource;
 		this.map_ = null;

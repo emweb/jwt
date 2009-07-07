@@ -83,6 +83,10 @@ public abstract class WResource extends WObject {
 	abstract protected void handleRequest(WebRequest request, WebResponse response) throws IOException;
 
 	void handle(WebRequest request, WebResponse response) throws IOException {
+		if (suggestedFileName_.length() != 0)
+			    response.addHeader("Content-Disposition",
+			                       "attachment;filename=" + suggestedFileName_);
+		  
 		handleRequest(request, response);
 		response.flush();
 	}

@@ -73,7 +73,7 @@ public class WGroupBox extends WContainerWidget {
 	 */
 	public WGroupBox(CharSequence title, WContainerWidget parent) {
 		super(parent);
-		this.title_ = new WString(title);
+		this.title_ = WString.toWString(title);
 		this.titleChanged_ = false;
 	}
 

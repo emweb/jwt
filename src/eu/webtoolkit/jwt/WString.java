@@ -46,15 +46,6 @@ public class WString implements Comparable<WString>, CharSequence {
 	}
 
 	/**
-	 * Creates a literal string.
-	 * 
-	 * @param s
-	 */
-	public WString(CharSequence s) {
-		set(s.toString());
-	}
-
-	/**
 	 * Sets a literal string.
 	 * 
 	 * @param s
@@ -338,7 +329,7 @@ public class WString implements Comparable<WString>, CharSequence {
 	 * @return a WString casted or created from the char sequence.
 	 */
 	public static WString toWString(CharSequence charSequence) {
-		return charSequence instanceof WString ? (WString)charSequence : new WString(charSequence);
+		return charSequence instanceof WString ? (WString)charSequence : new WString(charSequence.toString());
 	}
 
 	/**

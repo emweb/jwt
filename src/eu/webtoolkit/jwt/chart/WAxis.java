@@ -326,8 +326,8 @@ public class WAxis {
 	 * @see WAxis#getLabelFormat()
 	 */
 	public void setLabelFormat(CharSequence format) {
-		if (!ChartUtils.equals(this.labelFormat_, new WString(format))) {
-			this.labelFormat_ = new WString(format);
+		if (!ChartUtils.equals(this.labelFormat_, WString.toWString(format))) {
+			this.labelFormat_ = WString.toWString(format);
 			update();
 		}
 		;
@@ -494,8 +494,8 @@ public class WAxis {
 	 * @see WAxis#getTitle()
 	 */
 	public void setTitle(CharSequence title) {
-		if (!ChartUtils.equals(this.title_, new WString(title))) {
-			this.title_ = new WString(title);
+		if (!ChartUtils.equals(this.title_, WString.toWString(title))) {
+			this.title_ = WString.toWString(title);
 			update();
 		}
 		;
@@ -853,7 +853,7 @@ public class WAxis {
 				CharSequence l) {
 			this.u = v;
 			this.tickLength = length;
-			this.label = new WString(l);
+			this.label = WString.toWString(l);
 		}
 
 		public TickLabel(double v, WAxis.TickLabel.TickLength length) {

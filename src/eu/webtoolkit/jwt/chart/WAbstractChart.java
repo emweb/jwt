@@ -259,8 +259,8 @@ public abstract class WAbstractChart extends WPaintedWidget {
 	 * @see WAbstractChart#getTitle()
 	 */
 	public void setTitle(CharSequence title) {
-		if (!ChartUtils.equals(this.title_, new WString(title))) {
-			this.title_ = new WString(title);
+		if (!ChartUtils.equals(this.title_, WString.toWString(title))) {
+			this.title_ = WString.toWString(title);
 			update();
 		}
 		;

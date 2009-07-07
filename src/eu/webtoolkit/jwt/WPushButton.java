@@ -38,7 +38,7 @@ public class WPushButton extends WFormWidget {
 	 */
 	public WPushButton(CharSequence text, WContainerWidget parent) {
 		super(parent);
-		this.text_ = new WString(text);
+		this.text_ = WString.toWString(text);
 		this.textChanged_ = false;
 	}
 

@@ -547,7 +547,11 @@ public class WApplication extends WObject {
 		if (this.localizedStrings_ != null) {
 			this.localizedStrings_.refresh();
 		}
-		this.widgetRoot_.refresh();
+		if (this.domRoot2_ != null) {
+			this.domRoot2_.refresh();
+		} else {
+			this.widgetRoot_.refresh();
+		}
 		if (this.title_.refresh()) {
 			this.titleChanged_ = true;
 		}

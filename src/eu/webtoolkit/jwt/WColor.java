@@ -100,7 +100,7 @@ public class WColor {
 		this.green_ = -1;
 		this.blue_ = -1;
 		this.alpha_ = 255;
-		this.name_ = new WString(name);
+		this.name_ = WString.toWString(name);
 	}
 
 	/**

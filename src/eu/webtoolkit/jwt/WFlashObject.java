@@ -92,7 +92,7 @@ public class WFlashObject extends WContainerWidget {
 	 * shortly after construction before returning to the idle loop.
 	 */
 	public void setFlashParameter(String name, CharSequence value) {
-		WString v = new WString(value);
+		WString v = WString.toWString(value);
 		this.parameters_.put(name, v);
 	}
 
@@ -108,7 +108,7 @@ public class WFlashObject extends WContainerWidget {
 	 * shortly after construction before returning to the idle loop.
 	 */
 	public void setFlashVariable(String name, CharSequence value) {
-		WString v = new WString(value);
+		WString v = WString.toWString(value);
 		this.variables_.put(name, v);
 	}
 
