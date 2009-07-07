@@ -1,3 +1,8 @@
+/*
+ * Copyright (C) 2009 Emweb bvba, Leuven, Belgium.
+ *
+ * See the LICENSE file for terms of use.
+ */
 package eu.webtoolkit.jwt;
 
 import java.util.EnumSet;
@@ -40,7 +45,7 @@ import eu.webtoolkit.jwt.utils.StringUtils;
  * <code>&lt;div&gt;</code>, <code>&lt;h&gt;</code> or <code>&lt;p&gt;</code>.
  * <p>
  * 
- * @see WApplication#setLocale(String locale)
+ * @see WApplication#setLocale(Locale locale)
  */
 public class WText extends WInteractWidget {
 	/**

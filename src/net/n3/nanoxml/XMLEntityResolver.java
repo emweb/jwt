@@ -29,9 +29,9 @@
 package net.n3.nanoxml;
 
 
-import java.util.Hashtable;
 import java.io.Reader;
 import java.io.StringReader;
+import java.util.Hashtable;
 
 
 /**

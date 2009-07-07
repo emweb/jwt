@@ -1,3 +1,8 @@
+/*
+ * Copyright (C) 2009 Emweb bvba, Leuven, Belgium.
+ *
+ * See the LICENSE file for terms of use.
+ */
 package eu.webtoolkit.jwt;
 
 import java.io.StringWriter;
@@ -634,7 +639,7 @@ public abstract class WWidget extends WObject {
 	 * Refresh the widget.
 	 * <p>
 	 * The refresh method is invoked when the locale is changed using
-	 * {@link WApplication#setLocale(String locale)} or when the user hit the
+	 * {@link WApplication#setLocale(Locale locale)} or when the user hit the
 	 * refresh button.
 	 * <p>
 	 * The widget must actualize its contents in response.

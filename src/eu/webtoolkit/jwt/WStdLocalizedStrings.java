@@ -1,3 +1,8 @@
+/*
+ * Copyright (C) 2009 Emweb bvba, Leuven, Belgium.
+ *
+ * See the LICENSE file for terms of use.
+ */
 package eu.webtoolkit.jwt;
 
 import java.util.Locale;
@@ -39,7 +44,7 @@ public class WStdLocalizedStrings extends WLocalizedStrings {
 	@Override
 	public void refresh() {
 		if (bundleName_ != null) {
-			bundle_ = ResourceBundle.getBundle(bundleName_, new Locale(WApplication.getInstance().getLocale()));
+			bundle_ = ResourceBundle.getBundle(bundleName_, WApplication.getInstance().getLocale());
 			defaultBundle_ = ResourceBundle.getBundle(bundleName_, new Locale(""));
 		}
 	}

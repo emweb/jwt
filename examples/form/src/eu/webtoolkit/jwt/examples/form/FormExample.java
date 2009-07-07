@@ -1,7 +1,13 @@
+/*
+ * Copyright (C) 2009 Emweb bvba, Leuven, Belgium.
+ *
+ * See the LICENSE file for terms of use.
+ */
 package eu.webtoolkit.jwt.examples.form;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import eu.webtoolkit.jwt.AlignmentFlag;
 import eu.webtoolkit.jwt.Signal1;
@@ -54,20 +60,20 @@ public class FormExample extends WContainerWidget
   * Change the language.
   */
 	private void changeLanguage(WText t) {
-		  setLanguage(t.getText().getValue());
+		  setLanguage(new Locale(t.getText().getValue()));
 	}
 
 
 	private List<WText> languageSelects_ = new ArrayList<WText>();
 
-	private void setLanguage(String lang) {
+	private void setLanguage(Locale locale) {
 		  boolean haveLang = false;
 
 		  for (int i = 0; i < languageSelects_.size(); ++i) {
 		    WText t = languageSelects_.get(i);
 
 		    // prefix match, e.g. en matches en-us.
-		    boolean isLang = lang.contains(t.getText().getValue());
+		    boolean isLang = locale.toString().contains(t.getText().getValue());
 		    t.setStyleClass(isLang ? "langcurrent" : "lang");
 
 		    haveLang = haveLang || isLang;
@@ -76,8 +82,8 @@ public class FormExample extends WContainerWidget
 		  if (!haveLang) {
 		    languageSelects_.get(0).setStyleClass("langcurrent");
 		    WApplication.getInstance()
-		      .setLocale(languageSelects_.get(0).getText().getValue());
+		      .setLocale(new Locale(languageSelects_.get(0).getText().getValue()));
 		  } else
-		    WApplication.getInstance().setLocale(lang);
+		    WApplication.getInstance().setLocale(locale);
 	}
 }

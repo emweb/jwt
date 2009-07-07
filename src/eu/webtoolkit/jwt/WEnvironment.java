@@ -1,3 +1,8 @@
+/*
+ * Copyright (C) 2009 Emweb bvba, Leuven, Belgium.
+ *
+ * See the LICENSE file for terms of use.
+ */
 package eu.webtoolkit.jwt;
 
 import java.io.UnsupportedEncodingException;
@@ -256,9 +261,9 @@ public class WEnvironment {
 	 * taken.
 	 * <p>
 	 * 
-	 * @see WApplication#setLocale(String locale)
+	 * @see WApplication#setLocale(Locale locale)
 	 */
-	public String getLocale() {
+	public Locale getLocale() {
 		return this.locale_;
 	}
 
@@ -541,7 +546,7 @@ public class WEnvironment {
 	private WEnvironment.ContentType contentType_;
 	private Map<String, List<String>> parameters_;
 	private Map<String, String> cookies_;
-	private String locale_;
+	private Locale locale_;
 	private String host_;
 	private String userAgent_;
 	String urlScheme_;
@@ -669,7 +674,7 @@ public class WEnvironment {
 		if (this.doesCookies_) {
 			this.parseCookies(cookie);
 		}
-		this.locale_ = request.getLocale().toString();
+		this.locale_ = request.getLocale();
 		if (this.session_.getController().getConfiguration()
 				.isSendXHTMLMimeType()
 				&& this.accept_.indexOf("application/xhtml+xml") != -1) {
@@ -690,7 +695,7 @@ public class WEnvironment {
 		this.contentType_ = WEnvironment.ContentType.HTML4;
 		this.parameters_ = new HashMap<String, List<String>>();
 		this.cookies_ = new HashMap<String, String>();
-		this.locale_ = "";
+		this.locale_ = new Locale("");
 		this.host_ = "";
 		this.userAgent_ = "";
 		this.urlScheme_ = "";

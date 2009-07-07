@@ -29,8 +29,6 @@
 package net.n3.nanoxml;
 
 
-import java.io.Reader;
-import java.io.IOException;
 import java.util.Properties;
 
 

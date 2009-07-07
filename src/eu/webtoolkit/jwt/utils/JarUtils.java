@@ -1,10 +1,8 @@
 /*
- * Copyright (C) 2006 Pieter Libin, Leuven, Belgium.
+ * Copyright (C) 2009 Emweb bvba, Leuven, Belgium.
  *
- * Licensed under the terms of the GNU General Public License,
- * see the LICENSE file for more details.
+ * See the LICENSE file for terms of use.
  */
-
 package eu.webtoolkit.jwt.utils;
 
 import java.io.BufferedReader;

@@ -1,9 +1,15 @@
+/*
+ * Copyright (C) 2009 Emweb bvba, Leuven, Belgium.
+ *
+ * See the LICENSE file for terms of use.
+ */
 package eu.webtoolkit.jwt;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import eu.webtoolkit.jwt.utils.MathUtils;
 import eu.webtoolkit.jwt.utils.StringUtils;
@@ -48,7 +54,7 @@ import eu.webtoolkit.jwt.utils.StringUtils;
  * <p></li>
  * <li>
  * localization information and message resources bundles, with
- * {@link WApplication#setLocale(String locale)},
+ * {@link WApplication#setLocale(Locale locale)},
  * {@link WApplication#getLocale()} and setLocalizedStrings(WLocalizedStrings).
  * <p></li>
  * <li>
@@ -101,7 +107,7 @@ public class WApplication extends WObject {
 		this.title_ = new WString();
 		this.titleChanged_ = false;
 		this.styleSheet_ = new WCssStyleSheet();
-		this.locale_ = "";
+		this.locale_ = new Locale("");
 		this.newInternalPath_ = "";
 		this.internalPathChanged_ = new Signal1<String>(this);
 		this.javaScriptClass_ = "Wt";
@@ -514,7 +520,7 @@ public class WApplication extends WObject {
 	 * @see WApplication#getLocalizedStrings()
 	 * @see WString#tr(String key)
 	 */
-	public void setLocale(String locale) {
+	public void setLocale(Locale locale) {
 		this.locale_ = locale;
 		this.refresh();
 	}
@@ -522,10 +528,8 @@ public class WApplication extends WObject {
 	/**
 	 * Returns the currently used locale.
 	 * <p>
-	 * 
-	 * @see WApplication#setLocale(String locale)
 	 */
-	public String getLocale() {
+	public Locale getLocale() {
 		return this.locale_;
 	}
 
@@ -1444,7 +1448,7 @@ public class WApplication extends WObject {
 	private WContainerWidget timerRoot_;
 	private WCssStyleSheet styleSheet_;
 	private WLocalizedStrings localizedStrings_;
-	private String locale_;
+	private Locale locale_;
 	String newInternalPath_;
 	Signal1<String> internalPathChanged_;
 	boolean internalPathIsChanged_;

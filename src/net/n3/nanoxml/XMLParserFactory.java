@@ -29,7 +29,6 @@
 package net.n3.nanoxml;
 
 
-import java.io.IOException;
 
 
 /**
