@@ -107,9 +107,7 @@ public class StringUtils {
 		return s.replaceAll("\\Q" + c + "\\E", r);
 	}
 
-	public static final int strpbrk(String src, int startPos, String matches) {
-		char [] srcArray = src.toCharArray();
-		char [] matchesArray = matches.toCharArray();
+	public static final int strpbrk(char[] srcArray, int startPos, char[] matchesArray) {
 		int matchesL = matchesArray.length;
 		int srcL = srcArray.length;
 		for (int i = startPos; i < srcL; i++) {

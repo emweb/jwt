@@ -17,16 +17,9 @@ import eu.webtoolkit.jwt.servlet.WebRequest;
 import eu.webtoolkit.jwt.servlet.WebResponse;
 
 class WebSession {
-	public enum Type {
-		Application, WidgetSet;
-
-		public int getValue() {
-			return ordinal();
-		}
-	}
-
 	public WebSession(WtServlet controller, String sessionId,
-			WebSession.Type type, String favicon, WebRequest request) {
+			ApplicationType type, String favicon, WebRequest request,
+			WEnvironment env) {
 		this.mutex_ = new ReentrantLock();
 		this.type_ = type;
 		this.favicon_ = favicon;
@@ -43,12 +36,17 @@ class WebSession {
 		this.redirect_ = "";
 		this.pollResponse_ = null;
 		this.updatesPending_ = false;
-		this.env_ = new WEnvironment(this);
+		this.embeddedEnv_ = new WEnvironment(this);
 		this.app_ = null;
-		this.debug_ = false;
+		this.debug_ = this.controller_.getConfiguration().isDebug();
 		this.handlers_ = new ArrayList<WebSession.Handler>();
 		this.emitStack_ = new ArrayList<WObject>();
-		this.deploymentPath_ = request.getScriptName();
+		this.env_ = env != null ? env : this.embeddedEnv_;
+		if (request != null) {
+			this.deploymentPath_ = request.getScriptName();
+		} else {
+			this.deploymentPath_ = "/";
+		}
 		this.applicationUrl_ = this.deploymentPath_;
 		this.applicationName_ = this.applicationUrl_;
 		this.baseUrl_ = this.applicationUrl_;
@@ -59,6 +57,11 @@ class WebSession {
 			this.baseUrl_ = this.baseUrl_.substring(0, 0 + slashpos + 1);
 		}
 		this.log("notice").append("Session created");
+	}
+
+	public WebSession(WtServlet controller, String sessionId,
+			ApplicationType type, String favicon, WebRequest request) {
+		this(controller, sessionId, type, favicon, request, (WEnvironment) null);
 	}
 
 	public void destroy() {
@@ -77,7 +80,7 @@ class WebSession {
 		return handler != null ? handler.getSession() : null;
 	}
 
-	public WebSession.Type getType() {
+	public ApplicationType getType() {
 		return this.type_;
 	}
 
@@ -112,6 +115,10 @@ class WebSession {
 
 	public WebRenderer getRenderer() {
 		return this.renderer_;
+	}
+
+	public boolean isDebug() {
+		return this.debug_;
 	}
 
 	public void redirect(String url) {
@@ -694,6 +701,7 @@ class WebSession {
 			this.response_ = null;
 			this.eventLoop_ = false;
 			this.killed_ = false;
+			this.init();
 		}
 
 		public Handler(WebSession session) {
@@ -733,11 +741,8 @@ class WebSession {
 			this.eventLoop_ = how;
 		}
 
-		private static void attachThreadToSession(WebSession session) {
-			session
-					.log("error")
-					.append(
-							"attachThreadToSession() requires that Wt is built with threading enabled");
+		static void attachThreadToSession(WebSession session) {
+			threadHandler_.set(new WebSession.Handler(session, false));
 		}
 
 		private boolean isSessionDead() {
@@ -758,14 +763,6 @@ class WebSession {
 		private WebResponse response_;
 		private boolean eventLoop_;
 		private boolean killed_;
-	}
-
-	private void setDebug(boolean debug) {
-		this.debug_ = debug;
-	}
-
-	private boolean isDebug() {
-		return this.debug_;
 	}
 
 	private void checkTimers() {
@@ -801,7 +798,7 @@ class WebSession {
 	}
 
 	private ReentrantLock mutex_;
-	private WebSession.Type type_;
+	private ApplicationType type_;
 	private String favicon_;
 	private WebSession.State state_;
 	private String sessionId_;
@@ -816,6 +813,7 @@ class WebSession {
 	private String redirect_;
 	private WebResponse pollResponse_;
 	private boolean updatesPending_;
+	private WEnvironment embeddedEnv_;
 	private WEnvironment env_;
 	private WApplication app_;
 	private boolean debug_;
@@ -1028,7 +1026,7 @@ class WebSession {
 		if (this.applicationName_.length() == 0) {
 			this.bookmarkUrl_ = this.baseUrl_ + this.applicationName_;
 		}
-		if (this.getType() == WebSession.Type.WidgetSet) {
+		if (this.getType() == ApplicationType.WidgetSet) {
 			this.applicationUrl_ = this.env_.getUrlScheme() + "://"
 					+ this.env_.getHostName() + this.applicationUrl_;
 			this.bookmarkUrl_ = this.absoluteBaseUrl_ + this.bookmarkUrl_;

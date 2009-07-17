@@ -90,6 +90,7 @@ public class WMenuItem extends WObject {
 			// this.implementStateless(WMenuItem.selectVisual,WMenuItem.undoSelectVisual);
 		} else {
 			this.contentsContainer_ = new WContainerWidget();
+			;
 			this.contentsContainer_.resize(WLength.Auto, new WLength(100,
 					WLength.Unit.Percentage));
 		}

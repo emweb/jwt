@@ -58,6 +58,7 @@ public class WText extends WInteractWidget {
 		this.wordWrap_ = true;
 		this.textChanged_ = false;
 		this.wordWrapChanged_ = false;
+		;
 	}
 
 	/**
@@ -93,6 +94,7 @@ public class WText extends WInteractWidget {
 		this.wordWrap_ = true;
 		this.textChanged_ = false;
 		this.wordWrapChanged_ = false;
+		;
 		this.setText(text);
 	}
 
@@ -129,6 +131,7 @@ public class WText extends WInteractWidget {
 		this.wordWrap_ = true;
 		this.textChanged_ = false;
 		this.wordWrapChanged_ = false;
+		;
 		this.setText(text);
 	}
 

@@ -138,21 +138,21 @@ public class WApplication extends WObject {
 		this.internalPathIsChanged_ = false;
 		this.localizedStrings_ = null;
 		this.domRoot_ = new WContainerWidget();
-		this.domRoot_.setObjectName("wt-dom-root");
+		;
 		this.domRoot_.load();
-		if (this.session_.getType() == WebSession.Type.Application) {
+		if (this.session_.getType() == ApplicationType.Application) {
 			this.domRoot_.resize(WLength.Auto, new WLength(100,
 					WLength.Unit.Percentage));
 		}
 		this.timerRoot_ = new WContainerWidget(this.domRoot_);
-		this.timerRoot_.setObjectName("wt-timer-root");
+		;
 		this.timerRoot_.resize(WLength.Auto, new WLength(0));
 		this.timerRoot_.setPositionScheme(PositionScheme.Absolute);
-		if (this.session_.getType() == WebSession.Type.Application) {
+		if (this.session_.getType() == ApplicationType.Application) {
 			this.ajaxMethod_ = WApplication.AjaxMethod.XMLHttpRequest;
 			this.domRoot2_ = null;
 			this.widgetRoot_ = new WContainerWidget(this.domRoot_);
-			this.widgetRoot_.setObjectName("wt-app-root");
+			;
 			this.widgetRoot_.resize(new WLength(100, WLength.Unit.Percentage),
 					new WLength(100, WLength.Unit.Percentage));
 		} else {
@@ -571,9 +571,10 @@ public class WApplication extends WObject {
 	 * <p>
 	 * 
 	 * @see WApplication#getRoot()
+	 * @see ApplicationType#WidgetSet
 	 */
 	public void bindWidget(WWidget widget, String domId) {
-		if (this.session_.getType() != WebSession.Type.WidgetSet) {
+		if (this.session_.getType() != ApplicationType.WidgetSet) {
 			throw new WtException(
 					"WApplication::bind() can be used only in WidgetSet mode.");
 		}
@@ -940,6 +941,27 @@ public class WApplication extends WObject {
 
 	public WebSession getSession() {
 		return this.session_;
+	}
+
+	/**
+	 * Attach an auxiliary thread to this application.
+	 * <p>
+	 * In a multi-threaded environment, {@link WApplication#getInstance()} uses
+	 * thread-local data to retrieve the application object that corresponds to
+	 * the session currently being handled by the thread. This is set
+	 * automatically by the library whenever an event is delivered to the
+	 * application, or when you use the getUpdateLock() to modify the
+	 * application from an auxiliary thread outside the normal event loop.
+	 * <p>
+	 * When you want to manipulate the widget tree inside the main event loop,
+	 * but from within an auxiliary thread, then you cannot use the
+	 * getUpdateLock() since this will create an immediate dead lock. Instead,
+	 * you may attach the auxiliary thread to the application, by calling this
+	 * method from the auxiliary thread, and in this way you can modify the
+	 * application from within that thread without needing the update lock.
+	 */
+	public void attachThread() {
+		WebSession.Handler.attachThreadToSession(this.session_);
 	}
 
 	/**
@@ -1377,6 +1399,10 @@ public class WApplication extends WObject {
 
 	public boolean isConnected() {
 		return this.connected_;
+	}
+
+	public boolean isDebug() {
+		return this.session_.isDebug();
 	}
 
 	/**

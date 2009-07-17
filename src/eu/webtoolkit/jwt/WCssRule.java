@@ -1,3 +1,8 @@
+/*
+ * Copyright (C) 2009 Emweb bvba, Leuven, Belgium.
+ *
+ * See the LICENSE file for terms of use.
+ */
 package eu.webtoolkit.jwt;
 
 
@@ -8,10 +13,10 @@ package eu.webtoolkit.jwt;
  * A rule presents CSS style properties that are applied to a selected set of
  * elements.
  * <p>
- * Use {@link WCssRule#getDeclarations()} if you would like to use a widget as a
- * template for specifying (<i>and</i> updating) a style rule, using the widgets
- * style properties, or {@link WCssRule#getDeclarations()} if you wish to
- * directly specify the CSS declarations.
+ * Use {@link WCssTemplateRule} if you would like to use a widget as a template
+ * for specifying (<i>and</i> updating) a style rule, using the widgets style
+ * properties, or {@link WCssTemplateRule} if you wish to directly specify the
+ * CSS declarations.
  * <p>
  * 
  * @see WCssStyleSheet

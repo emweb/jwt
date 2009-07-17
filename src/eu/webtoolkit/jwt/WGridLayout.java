@@ -22,6 +22,12 @@ import java.util.List;
  * nested layouts. The default minimum height and width may be overridden using
  * {@link WWidget#setMinimumSize(WLength width, WLength height)}.
  * <p>
+ * You can use WContainerWidget::setOverflow(OverflowAuto) to automatically show
+ * scrollbars on a container widget which you have set for a grid cell. In some
+ * cases, you will want to wrap another widget (like a {@link WTable}) into
+ * {@link WContainerWidget} to have the scrollbars, since not all widgets allow
+ * for scrollbars.
+ * <p>
  * Columns and rows are separated using a constant spacing, which defaults to 6
  * pixels by default, and can be changed using
  * {@link WGridLayout#setHorizontalSpacing(int size)} and

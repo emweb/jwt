@@ -20,6 +20,12 @@ import java.util.List;
  * widget, whose default values may be overridden using
  * {@link WWidget#setMinimumSize(WLength width, WLength height)}.
  * <p>
+ * You can use WContainerWidget::setOverflow(OverflowAuto) to automatically show
+ * scrollbars on a container widget which you inserted into the layout. In some
+ * cases, you will want to wrap another widget (like a {@link WTable}) into
+ * {@link WContainerWidget} to have the scrollbars, since not all widgets allow
+ * for scrollbars.
+ * <p>
  * Each item is separated using a constant spacing, which defaults to 6 pixels,
  * and can be changed using {@link WBoxLayout#setSpacing(int size)}. In
  * addition, when this layout is a top-level layout (i.e. is not nested inside

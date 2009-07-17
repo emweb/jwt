@@ -42,10 +42,10 @@ import eu.webtoolkit.jwt.utils.StringUtils;
 
 /**
  * A class that allows configuration of a cartesian chart.
- * 
+ *
  * This widget provides forms for configuring chart, series, and axis properties
  * and manipulates the chart according to user settings.
- * 
+ *
  * This widget is part of the JWt charts example.
  */
 public class ChartConfig extends WContainerWidget {
