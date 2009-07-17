@@ -143,11 +143,14 @@ class EscapeOStream {
 
 	private void put(String s, EscapeOStream rules) {
 		try {
+			char [] sA = s.toCharArray();
+			char [] specialA = rules.special_.toCharArray();
+
 			for (int pos = 0; pos != -1;) {
 				int lastPos = pos;
-				pos = StringUtils.strpbrk(s, pos, rules.special_);
+				pos = StringUtils.strpbrk(sA, pos, specialA);
 				if (pos != -1) {
-					char f = s.charAt(pos);
+					char f = sA[pos];
 
 					sink_.append(s.substring(lastPos, pos));
 

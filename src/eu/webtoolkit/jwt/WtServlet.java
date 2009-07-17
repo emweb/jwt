@@ -99,11 +99,11 @@ public abstract class WtServlet extends HttpServlet {
 		if (wsession == null) {
 			String applicationTypeS = this.getServletConfig().getInitParameter("ApplicationType");
 			
-			WebSession.Type applicationType;
+			ApplicationType applicationType;
 			if (applicationTypeS == null || applicationTypeS.equals("") || applicationTypeS.equals("Application")) {
-				applicationType = WebSession.Type.Application; 
+				applicationType = ApplicationType.Application; 
 			} else if (applicationTypeS.equals("WidgetSet")) {
-				applicationType = WebSession.Type.WidgetSet; 
+				applicationType = ApplicationType.WidgetSet; 
 			} else {
 				throw new WtException("Illegal application type: " + applicationTypeS);
 			}

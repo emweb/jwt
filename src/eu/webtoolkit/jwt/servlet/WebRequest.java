@@ -42,7 +42,16 @@ public class WebRequest extends HttpServletRequestWrapper {
 	}
 
 	public String getScriptName() {
-		return getContextPath() + getServletPath();
+		String result = getContextPath() + getServletPath();
+		if (!result.startsWith("/"))
+			result = "/" + result;
+
+		// Jetty will auto-redirect in this case to .../
+		// I am not sure if this is according to the servlet spec ?
+		if (getServletPath().length() == 0 && !result.endsWith("/"))
+			result += "/"; 
+
+		return result;
 	}
 
 	public String getHeaderValue(String header) {
@@ -52,6 +61,13 @@ public class WebRequest extends HttpServletRequestWrapper {
 
 	public String getPathInfo() {
 		String result = super.getPathInfo();
+		
+		// Jetty will report "/" as an internal path. Which totally makes no sense but is according
+		// to the spec
+		if (getServletPath().length() == 0)
+			if (result != null && result.equals("/"))
+				return "";
+
 		return result == null ? "" : result;
 	}
 

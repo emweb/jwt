@@ -567,11 +567,6 @@ class WebRenderer implements SlotLearnerInterface {
 	private void collectJavaScript() throws IOException {
 		WApplication app = this.session_.getApp();
 		Configuration conf = this.session_.getController().getConfiguration();
-		String redirect = this.session_.getRedirect();
-		if (redirect.length() != 0) {
-			this.streamRedirectJS(this.collectedJS1_, redirect);
-			return;
-		}
 		this.collectedJS1_.append(this.invisibleJS_.toString());
 		this.invisibleJS_ = new StringWriter();
 		if (conf.isInlineCss()) {
@@ -616,6 +611,10 @@ class WebRenderer implements SlotLearnerInterface {
 		app.domRoot_.doneRerender();
 		if (app.domRoot2_ != null) {
 			app.domRoot2_.doneRerender();
+		}
+		String redirect = this.session_.getRedirect();
+		if (redirect.length() != 0) {
+			this.streamRedirectJS(this.collectedJS1_, redirect);
 		}
 	}
 
@@ -812,7 +811,7 @@ class WebRenderer implements SlotLearnerInterface {
 				/* delete changes.get(i) */;
 			}
 		}
-		if (this.session_.getType() == WebSession.Type.WidgetSet) {
+		if (this.session_.getType() == ApplicationType.WidgetSet) {
 			return;
 		}
 		WApplication app = this.session_.getApp();

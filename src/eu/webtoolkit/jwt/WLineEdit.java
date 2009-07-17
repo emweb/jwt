@@ -250,7 +250,7 @@ public class WLineEdit extends WFormWidget {
 		}
 		if (all || this.flags_.get(BIT_MAX_LENGTH_CHANGED)) {
 			if (!all || this.maxLength_ > 0) {
-				element.setAttribute("maxlength", String
+				element.setAttribute("maxLength", String
 						.valueOf(this.maxLength_));
 			}
 			this.flags_.clear(BIT_MAX_LENGTH_CHANGED);

@@ -1,13 +1,14 @@
 <project name="jwt" default="all" basedir=".">
   <!-- Name of project and version -->
   <property name="proj.name" value="jwt"/>
-  <property name="proj.version" value="2.99.1b"/>
+  <property name="proj.version" value="2.99.2"/>
 
   <!-- Global properties for this build -->
   <property name="src.java.dir" value="src"/>
   <property name="build.dir" value="build"/>
   <property name="dist.dir" value="dist"/>
   <property name="javadoc.dir" value="doc/javadoc"/>
+  <property name="userguide.dir" value="doc/userguide"/>
 
   <!-- Classpath declaration -->
   <path id="project.classpath">
@@ -43,7 +44,12 @@
       <fileset dir="${src.java.dir}/eu/webtoolkit/jwt/wt-resources"/>
     </copy>
     <copy todir="${build.dir}">
-      <fileset dir="${src.java.dir}"/>
+      <fileset dir="${src.java.dir}" defaultexcludes="yes">
+	<include name="eu/webtoolkit/jwt/*.java"/>
+	<include name="eu/webtoolkit/jwt/servlet/*.java"/>
+	<include name="eu/webtoolkit/jwt/chart/*.java"/>
+	<include name="eu/webtoolkit/jwt/utils/*.java"/>
+      </fileset>
     </copy>
   </target>
   
@@ -53,7 +59,6 @@
 
   <target name="javadoc">
     <javadoc
-       excludepackagenames="net.n3.nanoxml"
        access="protected"
        destdir="${javadoc.dir}"
        author="true"
@@ -62,9 +67,12 @@
        windowtitle="JWt Javadoc API"
        classpathref="project.classpath"
        >
-
       <fileset dir="${src.java.dir}" defaultexcludes="yes">
-        <include name="**/*.java"/>
+	<include name="eu/webtoolkit/jwt/*.java"/>
+	<include name="eu/webtoolkit/jwt/servlet/*.java"/>
+	<include name="eu/webtoolkit/jwt/chart/*.java"/>
+	<include name="eu/webtoolkit/jwt/utils/*.java"/>
+	<exclude name="eu/webtoolkit/jwt/XSSFilter.java"/>
       </fileset>
     </javadoc>
     <copy todir="${javadoc.dir}/eu/webtoolkit/jwt/doc-files">
@@ -73,6 +81,14 @@
     <copy todir="${javadoc.dir}/eu/webtoolkit/jwt/chart/doc-files">
       <fileset dir="${src.java.dir}/eu/webtoolkit/jwt/chart/doc-files"/>
     </copy>
+  </target>
+
+  <target name="asciidoc">
+    <exec executable="asciidoc">
+      <arg value="-a toc" />
+      <arg value="-a numbered" />
+      <arg value="${userguide.dir}/userguide.doc" />
+    </exec>
   </target>
 
   <target name="dist" depends="build">
@@ -84,4 +100,6 @@
       </fileset>
     </copy>
   </target>
+
+  <target name="release" depends="dist,javadoc,asciidoc" />
 </project>

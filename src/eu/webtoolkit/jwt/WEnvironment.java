@@ -541,36 +541,44 @@ public class WEnvironment {
 	boolean doesJavaScript_;
 	boolean doesAjax_;
 	boolean doesCookies_;
-	private WEnvironment.UserAgent agent_;
+	protected WEnvironment.UserAgent agent_;
 	double dpiScale_;
-	private WEnvironment.ContentType contentType_;
-	private Map<String, List<String>> parameters_;
-	private Map<String, String> cookies_;
-	private Locale locale_;
-	private String host_;
-	private String userAgent_;
+	protected WEnvironment.ContentType contentType_;
+	protected Map<String, List<String>> parameters_;
+	protected Map<String, String> cookies_;
+	protected Locale locale_;
+	protected String host_;
+	protected String userAgent_;
 	String urlScheme_;
-	private String referer_;
-	private String accept_;
-	private String serverSignature_;
-	private String serverSoftware_;
-	private String serverAdmin_;
-	private String clientAddress_;
-	private String pathInfo_;
-	private String internalPath_;
+	protected String referer_;
+	protected String accept_;
+	protected String serverSignature_;
+	protected String serverSoftware_;
+	protected String serverAdmin_;
+	protected String clientAddress_;
+	protected String pathInfo_;
+	protected String internalPath_;
 
-	void init(WebRequest request) {
+	protected WEnvironment() {
+		this.parameters_ = new HashMap<String, List<String>>();
+		this.cookies_ = new HashMap<String, String>();
+		this.locale_ = new Locale("");
+		this.host_ = "";
+		this.userAgent_ = "";
+		this.urlScheme_ = "";
+		this.referer_ = "";
+		this.accept_ = "";
+		this.serverSignature_ = "";
+		this.serverSoftware_ = "";
+		this.serverAdmin_ = "";
+		this.clientAddress_ = "";
+		this.pathInfo_ = "";
+		this.internalPath_ = "";
+	}
+
+	protected void setUserAgent(String userAgent) {
+		this.userAgent_ = userAgent;
 		Configuration conf = this.session_.getController().getConfiguration();
-		this.parameters_ = request.getParameterMap();
-		this.urlScheme_ = request.getUrlScheme();
-		this.userAgent_ = request.getHeaderValue("User-Agent");
-		this.referer_ = request.getHeaderValue("Referer");
-		this.accept_ = request.getHeaderValue("Accept");
-		this.serverSignature_ = request.getEnvValue("SERVER_SIGNATURE");
-		this.serverSoftware_ = request.getEnvValue("SERVER_SOFTWARE");
-		this.serverAdmin_ = request.getEnvValue("SERVER_ADMIN");
-		this.pathInfo_ = request.getPathInfo();
-		System.err.append(this.userAgent_).append('\n');
 		this.agent_ = WEnvironment.UserAgent.Unknown;
 		if (this.userAgent_.indexOf("MSIE 4") != -1
 				|| this.userAgent_.indexOf("MSIE 5") != -1
@@ -629,6 +637,47 @@ public class WEnvironment {
 		if (regexMatchAny(this.userAgent_, conf.getBotList())) {
 			this.agent_ = WEnvironment.UserAgent.BotAgent;
 		}
+	}
+
+	void setInternalPath(String path) {
+		this.internalPath_ = path.length() == 0 ? "/" : path;
+	}
+
+	WEnvironment(WebSession session) {
+		this.session_ = session;
+		this.doesJavaScript_ = false;
+		this.doesAjax_ = false;
+		this.doesCookies_ = false;
+		this.dpiScale_ = 1;
+		this.contentType_ = WEnvironment.ContentType.HTML4;
+		this.parameters_ = new HashMap<String, List<String>>();
+		this.cookies_ = new HashMap<String, String>();
+		this.locale_ = new Locale("");
+		this.host_ = "";
+		this.userAgent_ = "";
+		this.urlScheme_ = "";
+		this.referer_ = "";
+		this.accept_ = "";
+		this.serverSignature_ = "";
+		this.serverSoftware_ = "";
+		this.serverAdmin_ = "";
+		this.clientAddress_ = "";
+		this.pathInfo_ = "";
+		this.internalPath_ = "";
+	}
+
+	void init(WebRequest request) {
+		Configuration conf = this.session_.getController().getConfiguration();
+		this.parameters_ = request.getParameterMap();
+		this.urlScheme_ = request.getUrlScheme();
+		this.referer_ = request.getHeaderValue("Referer");
+		this.accept_ = request.getHeaderValue("Accept");
+		this.serverSignature_ = request.getEnvValue("SERVER_SIGNATURE");
+		this.serverSoftware_ = request.getEnvValue("SERVER_SOFTWARE");
+		this.serverAdmin_ = request.getEnvValue("SERVER_ADMIN");
+		this.pathInfo_ = request.getPathInfo();
+		this.setUserAgent(request.getHeaderValue("User-Agent"));
+		System.err.append(this.userAgent_).append('\n');
 		if (conf.isBehindReverseProxy()) {
 			String forwardedHost = request.getHeaderValue("X-Forwarded-Host");
 			if (forwardedHost.length() != 0) {
@@ -680,33 +729,6 @@ public class WEnvironment {
 				&& this.accept_.indexOf("application/xhtml+xml") != -1) {
 			this.contentType_ = WEnvironment.ContentType.XHTML1;
 		}
-	}
-
-	void setInternalPath(String path) {
-		this.internalPath_ = path.length() == 0 ? "/" : path;
-	}
-
-	WEnvironment(WebSession session) {
-		this.session_ = session;
-		this.doesJavaScript_ = false;
-		this.doesAjax_ = false;
-		this.doesCookies_ = false;
-		this.dpiScale_ = 1;
-		this.contentType_ = WEnvironment.ContentType.HTML4;
-		this.parameters_ = new HashMap<String, List<String>>();
-		this.cookies_ = new HashMap<String, String>();
-		this.locale_ = new Locale("");
-		this.host_ = "";
-		this.userAgent_ = "";
-		this.urlScheme_ = "";
-		this.referer_ = "";
-		this.accept_ = "";
-		this.serverSignature_ = "";
-		this.serverSoftware_ = "";
-		this.serverAdmin_ = "";
-		this.clientAddress_ = "";
-		this.pathInfo_ = "";
-		this.internalPath_ = "";
 	}
 
 	// private String parsePreferredAcceptValue(String value) ;
