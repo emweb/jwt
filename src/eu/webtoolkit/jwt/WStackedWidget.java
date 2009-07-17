@@ -33,6 +33,7 @@ public class WStackedWidget extends WContainerWidget {
 		super(parent);
 		this.widgets_ = new ArrayList<WWidget>();
 		this.currentIndex_ = -1;
+		;
 	}
 
 	/**

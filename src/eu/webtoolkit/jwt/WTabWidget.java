@@ -16,6 +16,11 @@ import java.util.List;
  * This widget combines a horizontal {@link WMenu} with a {@link WStackedWidget}
  * , and a tab-like look.
  * <p>
+ * A tab widget will place the tab bar on top of the contents. If you want an
+ * item to fill the contents (e.g. if it is a {@link WContainerWidget} whose
+ * contents is managed using a layout manager), you should resize the item to
+ * 100% height.
+ * <p>
  * This widget uses the following resources:
  * <ul>
  * <li>
@@ -389,6 +394,7 @@ public class WTabWidget extends WCompositeWidget {
 
 	private void create(EnumSet<AlignmentFlag> layoutAlignment) {
 		this.setImplementation(this.layout_ = new WContainerWidget());
+		;
 		String CSS_RULES_NAME = "Wt::WTabWidget";
 		WApplication app = WApplication.getInstance();
 		if (!app.getStyleSheet().isDefined(CSS_RULES_NAME)) {
