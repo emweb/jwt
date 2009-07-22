@@ -265,7 +265,11 @@ public class WFileUpload extends WWebWidget {
 
 	protected DomElement createDomElement(WApplication app) {
 		DomElement result = DomElement.createNew(this.getDomElementType());
-		result.setId(this, true);
+		if (result.getType() == DomElementType.DomElement_FORM) {
+			result.setId(this.getId());
+		} else {
+			result.setName(this.getId());
+		}
 		EventSignal change = this.voidEventSignal(CHANGE_SIGNAL, false);
 		if (this.fileUploadTarget_ != null) {
 			DomElement form = result;
@@ -273,14 +277,12 @@ public class WFileUpload extends WWebWidget {
 			form.setAttribute("action", this.fileUploadTarget_.generateUrl());
 			form.setAttribute("enctype", "multipart/form-data");
 			form.setAttribute("style", "margin:0;padding:0;display:inline");
-			form
-					.setProperty(Property.PropertyTarget, "if"
-							+ this.getFormName());
+			form.setProperty(Property.PropertyTarget, "if" + this.getId());
 			DomElement i = DomElement
 					.createNew(DomElementType.DomElement_IFRAME);
 			i.setAttribute("class", "Wt-resource");
 			i.setAttribute("src", this.fileUploadTarget_.generateUrl());
-			i.setId("if" + this.getFormName(), true);
+			i.setName("if" + this.getId());
 			DomElement d = DomElement.createNew(DomElementType.DomElement_SPAN);
 			d.addChild(i);
 			form.addChild(d);
@@ -289,7 +291,7 @@ public class WFileUpload extends WWebWidget {
 			input.setAttribute("type", "file");
 			input.setAttribute("name", "data");
 			input.setAttribute("size", String.valueOf(this.textSize_));
-			input.setId("in" + this.getFormName());
+			input.setId("in" + this.getId());
 			if (change != null) {
 				this.updateSignalConnection(input, change, "change", true);
 			}

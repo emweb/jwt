@@ -88,7 +88,7 @@ public class WTreeTable extends WCompositeWidget {
 				.getInstance()
 				.doJavaScript(
 						"function sb"
-								+ this.getFormName()
+								+ this.getId()
 								+ "() {var c="
 								+ this.impl_.getJsRef()
 								+ ";var h="
@@ -100,8 +100,8 @@ public class WTreeTable extends WCompositeWidget {
 								+ ";if (e && sp) {if (Wt2_99_2.pxself("
 								+ this.impl_.getJsRef()
 								+ ",'height') != 0)e.style.height=(c.offsetHeight - h.offsetHeight) + 'px';if (e.scrollHeight > e.offsetHeight) {sp.style.display='block';} else {sp.style.display='none';}setTimeout(sb"
-								+ this.getFormName() + ", 20);}}sb"
-								+ this.getFormName() + "();");
+								+ this.getId() + ", 20);}}sb" + this.getId()
+								+ "();");
 	}
 
 	/**

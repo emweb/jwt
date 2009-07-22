@@ -311,7 +311,7 @@ public abstract class WPaintedWidget extends WInteractWidget {
 		result.setProperty(Property.PropertyStyleOverflowX, "hidden");
 		DomElement canvas = DomElement.createNew(DomElementType.DomElement_DIV);
 		if (!app.getEnvironment().agentIsSpiderBot()) {
-			canvas.setId('p' + this.getFormName());
+			canvas.setId('p' + this.getId());
 		}
 		WPaintDevice device = this.painter_.getCreatePaintDevice();
 		this.paintEvent(device);
@@ -343,8 +343,8 @@ public abstract class WPaintedWidget extends WInteractWidget {
 				device.getPainter().isEnd();
 			}
 			if (createNew) {
-				DomElement canvas = DomElement.getForUpdate('p' + this
-						.getFormName(), DomElementType.DomElement_DIV);
+				DomElement canvas = DomElement.getForUpdate('p' + this.getId(),
+						DomElementType.DomElement_DIV);
 				canvas.removeAllChildren();
 				this.painter_.createContents(canvas, device);
 				result.add(canvas);

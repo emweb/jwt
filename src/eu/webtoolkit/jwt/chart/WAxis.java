@@ -764,7 +764,8 @@ public class WAxis {
 						}
 					}
 				} else {
-					ExtremesIterator iterator = new ExtremesIterator(this.axis_);
+					ExtremesIterator iterator = new ExtremesIterator(
+							this.axis_, this.scale_);
 					renderer.iterateSeries(iterator);
 					minimum = iterator.getMinimum();
 					maximum = iterator.getMaximum();
@@ -797,11 +798,11 @@ public class WAxis {
 				if (this.scale_ == AxisScale.LogScale) {
 					if (findMinimum) {
 						segment.renderMinimum = Math.pow(10, Math.floor(Math
-								.log10(segment.renderMinimum - 1E-4)));
+								.log10(segment.renderMinimum - 0.1)));
 					}
 					if (findMaximum) {
 						segment.renderMaximum = Math.pow(10, Math.ceil(Math
-								.log10(segment.renderMaximum + 1E-4)));
+								.log10(segment.renderMaximum + 0.1)));
 					}
 				} else {
 					if (findMinimum) {
@@ -909,7 +910,7 @@ public class WAxis {
 			break;
 		}
 		case LogScale: {
-			double v = s.renderMinimum;
+			double v = s.renderMinimum > 0 ? s.renderMinimum : 0.0001;
 			double p = v;
 			int i = 0;
 			for (;; ++i) {

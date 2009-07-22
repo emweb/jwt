@@ -7,9 +7,10 @@ package eu.webtoolkit.jwt.chart;
 
 
 class ExtremesIterator extends SeriesIterator {
-	public ExtremesIterator(Axis axis) {
+	public ExtremesIterator(Axis axis, AxisScale scale) {
 		super();
 		this.axis_ = axis;
+		this.scale_ = scale;
 		this.minimum_ = WAxis.AUTO_MINIMUM;
 		this.maximum_ = WAxis.AUTO_MAXIMUM;
 	}
@@ -20,7 +21,7 @@ class ExtremesIterator extends SeriesIterator {
 	}
 
 	public void newValue(WDataSeries series, double x, double y, double stackY) {
-		if (!Double.isNaN(y)) {
+		if (!Double.isNaN(y) && (this.scale_ != AxisScale.LogScale || y > 0.0)) {
 			this.maximum_ = Math.max(y, this.maximum_);
 			this.minimum_ = Math.min(y, this.minimum_);
 		}
@@ -35,6 +36,7 @@ class ExtremesIterator extends SeriesIterator {
 	}
 
 	private Axis axis_;
+	private AxisScale scale_;
 	private double minimum_;
 	private double maximum_;
 }

@@ -654,7 +654,7 @@ public abstract class WWidget extends WObject {
 	 * in custom JavaScript code.
 	 */
 	public String getJsRef() {
-		return "Wt2_99_2.getElement('" + this.getFormName() + "')";
+		return "Wt2_99_2.getElement('" + this.getId() + "')";
 	}
 
 	/**

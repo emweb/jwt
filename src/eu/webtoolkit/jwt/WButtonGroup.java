@@ -142,6 +142,10 @@ public class WButtonGroup extends WObject {
 		return -1;
 	}
 
+	public String getId() {
+		return super.getId();
+	}
+
 	/**
 	 * Returns the buttons in this group.
 	 */
@@ -292,7 +296,7 @@ public class WButtonGroup extends WObject {
 		if (!formData.values.isEmpty()) {
 			String value = formData.values.get(0);
 			for (int i = 0; i < this.buttons_.size(); ++i) {
-				if (value.equals(this.buttons_.get(i).button.getFormName())) {
+				if (value.equals(this.buttons_.get(i).button.getId())) {
 					if (this.buttons_.get(i).button.stateChanged_) {
 						return;
 					}

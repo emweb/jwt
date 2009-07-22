@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -20,6 +21,8 @@ import eu.webtoolkit.jwt.utils.OrderedMultiMap;
 import eu.webtoolkit.jwt.utils.StringUtils;
 
 class WebRenderer implements SlotLearnerInterface {
+	public Map<String, WObject> FormObjectsMap;
+
 	public WebRenderer(WebSession session) {
 		super();
 		this.session_ = session;
@@ -27,7 +30,7 @@ class WebRenderer implements SlotLearnerInterface {
 		this.twoPhaseThreshold_ = 5000;
 		this.expectedAckId_ = 0;
 		this.cookiesToSet_ = new ArrayList<WebRenderer.Cookie>();
-		this.currentFormObjects_ = new ArrayList<WObject>();
+		this.currentFormObjects_ = new HashMap<String, WObject>();
 		this.currentFormObjectsList_ = "";
 		this.collectedJS1_ = new StringWriter();
 		this.collectedJS2_ = new StringWriter();
@@ -84,7 +87,7 @@ class WebRenderer implements SlotLearnerInterface {
 		}
 	}
 
-	public List<WObject> getFormObjects() {
+	public Map<String, WObject> getFormObjects() {
 		return this.currentFormObjects_;
 	}
 
@@ -274,7 +277,7 @@ class WebRenderer implements SlotLearnerInterface {
 	private int twoPhaseThreshold_;
 	private int expectedAckId_;
 	private List<WebRenderer.Cookie> cookiesToSet_;
-	private List<WObject> currentFormObjects_;
+	private Map<String, WObject> currentFormObjects_;
 	private String currentFormObjectsList_;
 	private boolean formObjectsChanged_;
 
@@ -345,20 +348,25 @@ class WebRenderer implements SlotLearnerInterface {
 					"<input name='wtd' id='wtd' type='hidden' value='"
 							+ this.session_.getSessionId() + "' />");
 		}
+		String htmlAttr = app.htmlClass_.length() == 0 ? "" : " class=\""
+				+ app.htmlClass_ + "\"";
 		if (xhtml) {
 			page.setVar("HTMLATTRIBUTES",
-					"xmlns=\"http://www.w3.org/1999/xhtml\"");
+					"xmlns=\"http://www.w3.org/1999/xhtml\"" + htmlAttr);
 			page.setVar("METACLOSE", "/>");
 		} else {
 			if (this.session_.getEnv().agentIsIE()) {
-				page
-						.setVar("HTMLATTRIBUTES",
-								"xmlns:v=\"urn:schemas-microsoft-com:vml\" lang=\"en\" dir=\"ltr\"");
+				page.setVar("HTMLATTRIBUTES",
+						"xmlns:v=\"urn:schemas-microsoft-com:vml\" lang=\"en\" dir=\"ltr\""
+								+ htmlAttr);
 			} else {
-				page.setVar("HTMLATTRIBUTES", "lang=\"en\" dir=\"ltr\"");
+				page.setVar("HTMLATTRIBUTES", "lang=\"en\" dir=\"ltr\""
+						+ htmlAttr);
 			}
 			page.setVar("METACLOSE", ">");
 		}
+		page.setVar("BODYATTRIBUTES", app.bodyClass_.length() == 0 ? ""
+				: " class=\"" + app.bodyClass_ + "\"");
 		String url = conf.getSessionTracking() == Configuration.SessionTracking.CookiesURL
 				&& this.session_.getEnv().supportsCookies() ? this.session_
 				.getBookmarkUrl(app.newInternalPath_) : this.session_
@@ -448,6 +456,13 @@ class WebRenderer implements SlotLearnerInterface {
 		this.loadStyleSheets(response.out(), app);
 		app.scriptLibrariesAdded_ = app.scriptLibraries_.size();
 		this.loadScriptLibraries(response.out(), app, true);
+		if (app.bodyHtmlClassChanged_) {
+			response.out().append("document.body.parentNode.className='")
+					.append(app.htmlClass_).append("';").append(
+							"document.body.className='").append(app.bodyClass_)
+					.append("';");
+			app.bodyHtmlClassChanged_ = false;
+		}
 		response.out().append('\n').append(app.getBeforeLoadJavaScript());
 		response.out().append("window.loadWidgetTree = function(){\n");
 		String cvar = "";
@@ -516,6 +531,13 @@ class WebRenderer implements SlotLearnerInterface {
 		this.loadStyleSheets(response.out(), app);
 		app.scriptLibrariesAdded_ = app.scriptLibraries_.size();
 		this.loadScriptLibraries(response.out(), app, true);
+		if (app.bodyHtmlClassChanged_) {
+			response.out().append("document.body.parentNode.className='")
+					.append(app.htmlClass_).append("';").append(
+							"document.body.className='").append(app.bodyClass_)
+					.append("';");
+			app.bodyHtmlClassChanged_ = false;
+		}
 		response.out().append('\n').append(app.getBeforeLoadJavaScript());
 		String cvar = "";
 		{
@@ -574,6 +596,13 @@ class WebRenderer implements SlotLearnerInterface {
 					.javaScriptUpdate(app, this.collectedJS1_, false);
 		}
 		this.loadStyleSheets(this.collectedJS1_, app);
+		if (app.bodyHtmlClassChanged_) {
+			this.collectedJS1_.append("document.body.parentNode.className='")
+					.append(app.htmlClass_).append("';").append(
+							"document.body.className='").append(app.bodyClass_)
+					.append("';");
+			app.bodyHtmlClassChanged_ = false;
+		}
 		this.loadScriptLibraries(this.collectedJS1_, app, true);
 		this.loadScriptLibraries(this.collectedJS2_, app, false);
 		this.collectedJS1_.append(app.getNewBeforeLoadJavaScript());
@@ -751,11 +780,13 @@ class WebRenderer implements SlotLearnerInterface {
 	private String createFormObjectsList(WApplication app) {
 		this.updateFormObjectsList(app);
 		String result = "";
-		for (int i = 0; i < this.currentFormObjects_.size(); ++i) {
-			if (i != 0) {
+		for (Iterator<Map.Entry<String, WObject>> i_it = this.currentFormObjects_
+				.entrySet().iterator(); i_it.hasNext();) {
+			Map.Entry<String, WObject> i = i_it.next();
+			if (result.length() != 0) {
 				result += ',';
 			}
-			result += "'" + this.currentFormObjects_.get(i).getFormName() + "'";
+			result += "'" + i.getKey() + "'";
 		}
 		this.formObjectsChanged_ = false;
 		return result;

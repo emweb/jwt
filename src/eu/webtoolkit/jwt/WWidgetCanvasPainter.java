@@ -23,19 +23,19 @@ class WWidgetCanvasPainter extends WWidgetPainter {
 		result.setProperty(Property.PropertyStylePosition, "relative");
 		DomElement canvas = DomElement
 				.createNew(DomElementType.DomElement_CANVAS);
-		canvas.setId('c' + this.widget_.getFormName());
+		canvas.setId('c' + this.widget_.getId());
 		canvas.setAttribute("width", wstr);
 		canvas.setAttribute("height", hstr);
 		result.addChild(canvas);
 		DomElement text = DomElement.createNew(DomElementType.DomElement_DIV);
-		text.setId('t' + this.widget_.getFormName());
+		text.setId('t' + this.widget_.getId());
 		text.setProperty(Property.PropertyStylePosition, "absolute");
 		text.setProperty(Property.PropertyStyleZIndex, "1");
 		text.setProperty(Property.PropertyStyleTop, "0px");
 		text.setProperty(Property.PropertyStyleLeft, "0px");
 		WCanvasPaintDevice canvasDevice = ((device) instanceof WCanvasPaintDevice ? (WCanvasPaintDevice) (device)
 				: null);
-		canvasDevice.render("c" + this.widget_.getFormName(), text);
+		canvasDevice.render("c" + this.widget_.getId(), text);
 		result.addChild(text);
 	}
 
@@ -44,7 +44,7 @@ class WWidgetCanvasPainter extends WWidgetPainter {
 				: null);
 		if (this.widget_.sizeChanged_) {
 			DomElement canvas = DomElement.getForUpdate('c' + this.widget_
-					.getFormName(), DomElementType.DomElement_CANVAS);
+					.getId(), DomElementType.DomElement_CANVAS);
 			canvas.setAttribute("width", String.valueOf(this.widget_.getWidth()
 					.getValue()));
 			canvas.setAttribute("height", String.valueOf(this.widget_
@@ -52,10 +52,10 @@ class WWidgetCanvasPainter extends WWidgetPainter {
 			result.add(canvas);
 			this.widget_.sizeChanged_ = false;
 		}
-		DomElement text = DomElement.getForUpdate('t' + this.widget_
-				.getFormName(), DomElementType.DomElement_DIV);
+		DomElement text = DomElement.getForUpdate('t' + this.widget_.getId(),
+				DomElementType.DomElement_DIV);
 		text.removeAllChildren();
-		canvasDevice.render('c' + this.widget_.getFormName(), text);
+		canvasDevice.render('c' + this.widget_.getId(), text);
 		result.add(text);
 	}
 }

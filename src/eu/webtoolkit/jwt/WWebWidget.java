@@ -492,11 +492,11 @@ public abstract class WWebWidget extends WWidget {
 		this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyAttribute));
 	}
 
-	public String getFormName() {
+	public String getId() {
 		if (this.otherImpl_ != null && this.otherImpl_.id_ != null) {
 			return this.otherImpl_.id_;
 		} else {
-			return super.getFormName();
+			return super.getId();
 		}
 	}
 
@@ -532,7 +532,7 @@ public abstract class WWebWidget extends WWidget {
 			}
 			if (!app.getEnvironment().agentIsSpiderBot()
 					|| this.otherImpl_ != null && this.otherImpl_.id_ != null) {
-				stub.setId(this);
+				stub.setId(this.getId());
 			}
 			super.askRerender(true);
 			return stub;
@@ -683,6 +683,8 @@ public abstract class WWebWidget extends WWidget {
 		}
 	}
 
+	protected Map<String, WObject> FormObjectsMap;
+
 	protected void repaint(EnumSet<RepaintFlag> flags) {
 		super.askRerender();
 		if (!EnumUtils.mask(flags, RepaintFlag.RepaintPropertyIEMobile)
@@ -704,6 +706,18 @@ public abstract class WWebWidget extends WWidget {
 
 	protected final void repaint() {
 		repaint(RepaintFlag.RepaintAll);
+	}
+
+	protected void getFormObjects(Map<String, WObject> formObjects) {
+		if (this.flags_.get(BIT_FORM_OBJECT)) {
+			formObjects.put(this.getId(), this);
+		}
+		if (this.children_ != null) {
+			for (int i = 0; i < this.children_.size(); ++i) {
+				this.children_.get(i).getWebWidget().getSFormObjects(
+						formObjects);
+			}
+		}
 	}
 
 	protected void doneRerender() {
@@ -1415,21 +1429,9 @@ public abstract class WWebWidget extends WWidget {
 		}
 	}
 
-	private void getSFormObjects(List<WObject> result) {
+	private void getSFormObjects(Map<String, WObject> result) {
 		if (!this.flags_.get(BIT_STUBBED) && !this.flags_.get(BIT_HIDDEN)) {
 			this.getFormObjects(result);
-		}
-	}
-
-	void getFormObjects(List<WObject> formObjects) {
-		if (this.flags_.get(BIT_FORM_OBJECT)) {
-			formObjects.add(this);
-		}
-		if (this.children_ != null) {
-			for (int i = 0; i < this.children_.size(); ++i) {
-				this.children_.get(i).getWebWidget().getSFormObjects(
-						formObjects);
-			}
 		}
 	}
 
@@ -1493,7 +1495,11 @@ public abstract class WWebWidget extends WWidget {
 	protected void setId(DomElement element, WApplication app) {
 		if (!app.getEnvironment().agentIsSpiderBot() || this.otherImpl_ != null
 				&& this.otherImpl_.id_ != null) {
-			element.setId(this, this.flags_.get(BIT_FORM_OBJECT));
+			if (!this.flags_.get(BIT_FORM_OBJECT)) {
+				element.setId(this.getId());
+			} else {
+				element.setName(this.getId());
+			}
 		}
 	}
 

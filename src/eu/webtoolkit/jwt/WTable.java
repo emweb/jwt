@@ -370,20 +370,20 @@ public class WTable extends WInteractWidget {
 		if (this.headerRowCount_ != 0) {
 			thead = DomElement.createNew(DomElementType.DomElement_THEAD);
 			if (withIds) {
-				thead.setId(this.getFormName() + "th");
+				thead.setId(this.getId() + "th");
 			}
 		}
 		DomElement tbody = DomElement
 				.createNew(DomElementType.DomElement_TBODY);
 		if (withIds) {
-			tbody.setId(this.getFormName() + "tb");
+			tbody.setId(this.getId() + "tb");
 		}
 		if (this.columns_ != null) {
 			for (int col = 0; col < this.columns_.size(); ++col) {
 				DomElement c = DomElement
 						.createNew(DomElementType.DomElement_COL);
 				if (withIds) {
-					c.setId(this.columns_.get(col));
+					c.setId(this.columns_.get(col).getId());
 				}
 				this.columns_.get(col).updateDom(c, true);
 				table.addChild(c);
@@ -434,8 +434,8 @@ public class WTable extends WInteractWidget {
 				this.rowsChanged_ = null;
 			}
 			if (this.rowsAdded_ != 0) {
-				DomElement etb = DomElement.getForUpdate(this.getFormName()
-						+ "tb", DomElementType.DomElement_TBODY);
+				DomElement etb = DomElement.getForUpdate(this.getId() + "tb",
+						DomElementType.DomElement_TBODY);
 				for (int i = 0; i < (int) this.rowsAdded_; ++i) {
 					DomElement tr = this.createRow(this.getRowCount()
 							- this.rowsAdded_ + i, true, app);
@@ -473,7 +473,7 @@ public class WTable extends WInteractWidget {
 	private DomElement createRow(int row, boolean withIds, WApplication app) {
 		DomElement tr = DomElement.createNew(DomElementType.DomElement_TR);
 		if (withIds) {
-			tr.setId(this.rows_.get(row));
+			tr.setId(this.rows_.get(row).getId());
 		}
 		this.rows_.get(row).updateDom(tr, true);
 		tr.setWasEmpty(false);

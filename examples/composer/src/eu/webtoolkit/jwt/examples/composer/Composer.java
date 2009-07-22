@@ -424,7 +424,7 @@ public class Composer extends WCompositeWidget
 		/*
 		 * Attachments
 		 */
-		new WImage("paperclip.png", edits_.getElementAt(5, 0));
+		new WImage("pics/paperclip.png", edits_.getElementAt(5, 0));
 		edits_.getElementAt(5, 0).setContentAlignment(EnumSet.of(AlignmentFlag.AlignTop, AlignmentFlag.AlignRight));
 
 		// Attachment edits: we always have the next attachmentedit ready

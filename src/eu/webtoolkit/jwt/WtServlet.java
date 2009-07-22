@@ -119,7 +119,6 @@ public abstract class WtServlet extends HttpServlet {
 				jsession.setAttribute(WT_WEBSESSION_ID, null);
 				jsession.invalidate();
 			}
-			System.gc();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

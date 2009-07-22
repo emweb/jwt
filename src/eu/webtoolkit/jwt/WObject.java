@@ -130,8 +130,13 @@ public class WObject {
 	 * By default, the id is auto-generated, unless a custom id is set for a widget using {@link WWidget#setId(String)}. The
 	 * auto-generated id is created by concatenating {@link #getObjectName()} with a unique number.
 	 */
-	public final String getId() {
-		return getFormName();
+	public String getId() {
+		String result = getObjectName();
+
+		if (result != "")
+			return result + '-' + getUniqueId();
+		else
+			return getUniqueId();
 	}
 
 	void setFormData(FormData formData) {

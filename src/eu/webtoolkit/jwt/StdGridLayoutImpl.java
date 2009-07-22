@@ -44,6 +44,17 @@ class StdGridLayoutImpl extends StdLayoutImpl {
 	}
 
 	public void destroy() {
+		WApplication app = WApplication.getInstance();
+		if (this.getParentLayoutImpl() == null) {
+			if (this.getContainer() == app.getRoot()) {
+				app.setBodyClass("");
+				app.setHtmlClass("");
+			}
+			if (app.getEnvironment().agentIsIE()) {
+				this.getContainer().setOverflow(
+						WContainerWidget.Overflow.OverflowVisible);
+			}
+		}
 	}
 
 	public int getMinimumHeight() {
@@ -85,7 +96,7 @@ class StdGridLayoutImpl extends StdLayoutImpl {
 			margin[2] = this.getLayout().getContentsMargin(Side.Bottom);
 		}
 		DomElement div = DomElement.createNew(DomElementType.DomElement_DIV);
-		div.setId(this);
+		div.setId(this.getId());
 		String divStyle = "";
 		if (fitHeight && !app.getEnvironment().agentIsIE()) {
 			divStyle += "height: 100%;";
@@ -292,6 +303,7 @@ class StdGridLayoutImpl extends StdLayoutImpl {
 									.length() == 0
 									&& this.useFixedLayout_
 									&& !app.getEnvironment().agentIsWebKit()
+									&& !app.getEnvironment().agentIsGecko()
 									&& !c.isDefaultInline()) {
 								c.setProperty(Property.PropertyStyleWidth,
 										"100%");
@@ -388,19 +400,8 @@ class StdGridLayoutImpl extends StdLayoutImpl {
 		WApplication app = WApplication.getInstance();
 		if (this.getParentLayoutImpl() == null) {
 			if (container == app.getRoot()) {
-				app
-						.getStyleSheet()
-						.addRule("body, html",
-								"height: 100%; width: 100%;margin: 0px; padding: 0px; border: none;");
-				if (app.getEnvironment().hasJavaScript()) {
-					if (app.getEnvironment().getAgent() != WEnvironment.UserAgent.IE6) {
-						app.getStyleSheet().addRule("html, body",
-								"overflow: hidden;");
-					} else {
-						app.getStyleSheet()
-								.addRule("body", "overflow: hidden;");
-					}
-				}
+				app.setBodyClass("Wt-layout");
+				app.setHtmlClass("Wt-layout");
 			}
 			if (app.getEnvironment().agentIsIE()) {
 				container.setOverflow(WContainerWidget.Overflow.OverflowAuto);

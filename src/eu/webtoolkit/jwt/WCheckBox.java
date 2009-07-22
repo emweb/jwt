@@ -176,16 +176,8 @@ public class WCheckBox extends WAbstractToggleButton {
 		super.updateDom(element, all);
 	}
 
-	protected DomElementType getDomElementType() {
-		if (this.triState_) {
-			if (this.needTristateImageWorkaround()) {
-				return DomElementType.DomElement_SPAN;
-			} else {
-				return DomElementType.DomElement_INPUT;
-			}
-		} else {
-			return DomElementType.DomElement_INPUT;
-		}
+	protected boolean isUseImageWorkaround() {
+		return this.triState_ && this.needTristateImageWorkaround();
 	}
 
 	private boolean triState_;

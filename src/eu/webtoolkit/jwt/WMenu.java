@@ -421,6 +421,7 @@ public class WMenu extends WCompositeWidget {
 							WMenu.this.internalPathChanged(e1);
 						}
 					});
+			this.internalPathChanged(this.basePath_);
 			this.updateItems();
 		}
 	}
@@ -448,7 +449,10 @@ public class WMenu extends WCompositeWidget {
 		String bp = StringUtils.terminate(basePath, '/');
 		if (!this.basePath_.equals(bp)) {
 			this.basePath_ = bp;
-			this.updateItems();
+			if (this.internalPathEnabled_) {
+				this.internalPathChanged(this.basePath_);
+				this.updateItems();
+			}
 		}
 	}
 

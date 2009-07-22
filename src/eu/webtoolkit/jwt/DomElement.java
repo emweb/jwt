@@ -99,7 +99,7 @@ class DomElement {
 	}
 
 	public static DomElement getForUpdate(WObject object, DomElementType type) {
-		return getForUpdate(object.getFormName(), type);
+		return getForUpdate(object.getId(), type);
 	}
 
 	public static DomElement updateGiven(String var, DomElementType type) {
@@ -264,24 +264,15 @@ class DomElement {
 		this.setEvent(eventName, code, "");
 	}
 
-	public void setId(String id, boolean andName) {
+	public void setId(String id) {
 		++this.numManipulations_;
 		this.id_ = id;
-		if (andName) {
-			this.setAttribute("name", id);
-		}
 	}
 
-	public final void setId(String id) {
-		setId(id, false);
-	}
-
-	public void setId(WObject object, boolean andName) {
-		this.setId(object.getFormName(), andName);
-	}
-
-	public final void setId(WObject object) {
-		setId(object, false);
+	public void setName(String name) {
+		++this.numManipulations_;
+		this.id_ = name;
+		this.setAttribute("name", name);
 	}
 
 	public void setTimeout(int msec, boolean jsRepeat) {
@@ -403,8 +394,8 @@ class DomElement {
 					out.append(this.var_).append(".setAttribute('id', '")
 							.append(this.id_).append("');\n");
 				}
-				this.setJavaScriptProperties(out, WApplication.getInstance());
 				this.setJavaScriptAttributes(out);
+				this.setJavaScriptProperties(out, WApplication.getInstance());
 			}
 			return this.var_;
 		case Update: {
@@ -483,7 +474,7 @@ class DomElement {
 					out.append("function f").append(fid).append("(event){")
 							.append(i.getValue().jsCode).append("}\n");
 					if (i.getKey().startsWith("key")
-							&& this.id_.equals(app.getRoot().getFormName())) {
+							&& this.id_.equals(app.getRoot().getId())) {
 						out.append("document");
 					} else {
 						out.append(this.var_);

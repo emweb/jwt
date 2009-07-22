@@ -261,7 +261,7 @@ public abstract class WInteractWidget extends WWebWidget {
 		}
 		WApplication app = WApplication.getInstance();
 		this.setAttributeValue("dmt", mimeType);
-		this.setAttributeValue("dwid", dragWidget.getFormName());
+		this.setAttributeValue("dwid", dragWidget.getId());
 		this.setAttributeValue("dsid", app.encodeObject(sourceObject));
 		if (!(this.dragSlot_ != null)) {
 			this.dragSlot_ = new JSlot();

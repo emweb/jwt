@@ -70,7 +70,7 @@ public class WFlashObject extends WContainerWidget {
 	 */
 	public void remove() {
 		WApplication.getInstance().doJavaScript(
-				"swfobject.removeSWF(flash" + this.getFormName() + ");");
+				"swfobject.removeSWF(flash" + this.getId() + ");");
 		super.remove();
 	}
 
@@ -126,14 +126,14 @@ public class WFlashObject extends WContainerWidget {
 	 * or {@link JSlot} in custom JavaScript code to refer to the Flash content.
 	 */
 	public String getJsFlashRef() {
-		return "Wt2_99_2.getElement('flash" + this.getFormName() + "')";
+		return "Wt2_99_2.getElement('flash" + this.getId() + "')";
 	}
 
 	protected void getDomChanges(List<DomElement> result, WApplication app) {
 		super.getDomChanges(result, app);
 		if (this.isRendered_ && this.sizeChanged_) {
-			DomElement innerElement = DomElement.getForUpdate("flahs"
-					+ this.getFormName(), DomElementType.DomElement_DIV);
+			DomElement innerElement = DomElement.getForUpdate("flash"
+					+ this.getId(), DomElementType.DomElement_DIV);
 			innerElement.setAttribute("width", String.valueOf((int) this
 					.getWidth().toPixels()));
 			innerElement.setAttribute("height", String.valueOf((int) this
@@ -146,7 +146,7 @@ public class WFlashObject extends WContainerWidget {
 		DomElement result = super.createDomElement(app);
 		DomElement innerElement = DomElement
 				.createNew(DomElementType.DomElement_DIV);
-		innerElement.setId("flash" + this.getFormName());
+		innerElement.setId("flash" + this.getId());
 		result.addChild(innerElement);
 		String flashvars = mapToJsMap(this.variables_);
 		String params = mapToJsMap(this.parameters_);
@@ -157,7 +157,7 @@ public class WFlashObject extends WContainerWidget {
 		}
 		WApplication.getInstance().doJavaScript(
 				"swfobject.embedSWF(\"" + this.url_ + "\", \"" + "flash"
-						+ this.getFormName() + "\", \""
+						+ this.getId() + "\", \""
 						+ String.valueOf((int) this.getWidth().toPixels())
 						+ "\", \""
 						+ String.valueOf((int) this.getHeight().toPixels())

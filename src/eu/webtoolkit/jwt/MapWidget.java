@@ -13,7 +13,7 @@ class MapWidget extends WContainerWidget {
 
 	protected void updateDom(DomElement element, boolean all) {
 		if (all) {
-			element.setAttribute("name", this.getFormName());
+			element.setAttribute("name", this.getId());
 		}
 		super.updateDom(element, all);
 	}

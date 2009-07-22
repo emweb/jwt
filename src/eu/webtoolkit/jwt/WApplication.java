@@ -118,6 +118,9 @@ public class WApplication extends WObject {
 		this.exposedOnly_ = null;
 		this.loadingIndicator_ = null;
 		this.connected_ = true;
+		this.htmlClass_ = "";
+		this.bodyClass_ = "";
+		this.bodyHtmlClassChanged_ = false;
 		this.scriptLibraries_ = new ArrayList<WApplication.ScriptLibrary>();
 		this.scriptLibrariesAdded_ = 0;
 		this.styleSheets_ = new ArrayList<String>();
@@ -169,7 +172,6 @@ public class WApplication extends WObject {
 				.addRule("td", "vertical-align: top; text-align: left;");
 		this.styleSheet_.addRule("button", "white-space: nowrap");
 		if (this.getEnvironment().getContentType() == WEnvironment.ContentType.XHTML1) {
-			this.styleSheet_.addRule("img", "margin: -3px 0px;");
 			this.styleSheet_.addRule("button", "display: inline");
 		}
 		if (this.getEnvironment().agentIsIE()) {
@@ -202,6 +204,21 @@ public class WApplication extends WObject {
 		this.styleSheet_
 				.addRule(".Wt-sbspacer",
 						"float: right; width: 16px; height: 1px;border: 0px; display: none;");
+		this.styleSheet_
+				.addRule(
+						"body.Wt-layout",
+						""
+								+ "height: 100%; width: 100%;margin: 0px; padding: 0px; border: none;"
+								+ (this.getEnvironment().hasJavaScript() ? "overflow:hidden"
+										: ""));
+		this.styleSheet_
+				.addRule(
+						"html.Wt-layout",
+						""
+								+ "height: 100%; width: 100%;margin: 0px; padding: 0px; border: none;"
+								+ (this.getEnvironment().hasJavaScript()
+										&& this.getEnvironment().getAgent() != WEnvironment.UserAgent.IE6 ? "overflow:hidden"
+										: ""));
 		if (this.getEnvironment().agentIsOpera()) {
 			if (this.getEnvironment().getUserAgent().indexOf("Mac OS X") != -1) {
 				this.styleSheet_.addRule("img.Wt-indeterminate",
@@ -1310,11 +1327,11 @@ public class WApplication extends WObject {
 			this.domRoot_.addWidget(this.loadingIndicatorWidget_);
 			JSlot showLoadJS = new JSlot();
 			showLoadJS.setJavaScript("function(obj, e) {Wt2_99_2.inline('"
-					+ this.loadingIndicatorWidget_.getFormName() + "');}");
+					+ this.loadingIndicatorWidget_.getId() + "');}");
 			this.showLoadingIndicator_.addListener(showLoadJS);
 			JSlot hideLoadJS = new JSlot();
 			hideLoadJS.setJavaScript("function(obj, e) {Wt2_99_2.hide('"
-					+ this.loadingIndicatorWidget_.getFormName() + "');}");
+					+ this.loadingIndicatorWidget_.getId() + "');}");
 			this.hideLoadingIndicator_.addListener(hideLoadJS);
 			this.loadingIndicatorWidget_.hide();
 		}
@@ -1399,6 +1416,16 @@ public class WApplication extends WObject {
 
 	public boolean isConnected() {
 		return this.connected_;
+	}
+
+	public void setBodyClass(String styleClass) {
+		this.bodyClass_ = styleClass;
+		this.bodyHtmlClassChanged_ = true;
+	}
+
+	public void setHtmlClass(String styleClass) {
+		this.htmlClass_ = styleClass;
+		this.bodyHtmlClassChanged_ = true;
 	}
 
 	public boolean isDebug() {
@@ -1488,6 +1515,9 @@ public class WApplication extends WObject {
 	private WLoadingIndicator loadingIndicator_;
 	WWidget loadingIndicatorWidget_;
 	private boolean connected_;
+	String htmlClass_;
+	String bodyClass_;
+	boolean bodyHtmlClassChanged_;
 	List<WApplication.ScriptLibrary> scriptLibraries_;
 	int scriptLibrariesAdded_;
 	List<String> styleSheets_;
@@ -1556,8 +1586,7 @@ public class WApplication extends WObject {
 	}
 
 	AbstractEventSignal decodeExposedSignal(String objectId, String name) {
-		String signalName = (objectId.equals("app") ? this.getFormName()
-				: objectId)
+		String signalName = (objectId.equals("app") ? this.getId() : objectId)
 				+ '.' + name;
 		return this.decodeExposedSignal(signalName);
 	}
@@ -1567,18 +1596,18 @@ public class WApplication extends WObject {
 	}
 
 	String addExposedResource(WResource resource) {
-		this.exposedResources_.put(resource.getFormName(), resource);
+		this.exposedResources_.put(resource.getId(), resource);
 		String fn = resource.getSuggestedFileName();
 		if (fn.length() != 0 && fn.charAt(0) != '/') {
 			fn = '/' + fn;
 		}
 		return this.session_.getMostRelativeUrl(fn) + "&resource="
-				+ DomElement.urlEncodeS(resource.getFormName()) + "&rand="
+				+ DomElement.urlEncodeS(resource.getId()) + "&rand="
 				+ String.valueOf(MathUtils.randomInt());
 	}
 
 	void removeExposedResource(WResource resource) {
-		this.exposedResources_.remove(resource.getFormName());
+		this.exposedResources_.remove(resource.getId());
 	}
 
 	WResource decodeExposedResource(String resourceName) {

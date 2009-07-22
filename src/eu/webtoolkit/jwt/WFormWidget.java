@@ -353,6 +353,10 @@ public abstract class WFormWidget extends WInteractWidget {
 	// protected AbstractEventSignal.LearningListener
 	// getStateless(<pointertomember or dependentsizedarray>
 	// methodpointertomember or dependentsizedarray>) ;
+	protected String getFormName() {
+		return this.getId();
+	}
+
 	protected static String CHANGE_SIGNAL = "M_change";
 	private static String SELECT_SIGNAL = "select";
 	private static String FOCUS_SIGNAL = "focus";

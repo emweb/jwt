@@ -195,11 +195,11 @@ public class WTreeView extends WCompositeWidget {
 							".Wt-treeview .Wt-tv-c",
 							"display: block; float: left;padding: 0px 3px;text-overflow: ellipsis;overflow: hidden;white-space: nowrap;");
 			app.getStyleSheet().addRule(".Wt-treeview img.icon",
-					"margin-right: 3px; vertical-align: middle");
+					"margin: -3px 3px -3px 0px; vertical-align: middle");
 			app.getStyleSheet().addRule(".Wt-treeview .Wt-tv-node img.w0",
 					"width: 0px");
 			app.getStyleSheet().addRule(".Wt-treeview .Wt-tv-node .c0 img",
-					"margin-right: 0px;");
+					"margin-right: 0px; margin: -3px 0px;");
 			app
 					.getStyleSheet()
 					.addRule(".Wt-treeview div.Wt-tv-rh",
@@ -253,27 +253,25 @@ public class WTreeView extends WCompositeWidget {
 			app.getStyleSheet().addRule(".Wt-treeview .Wt-scroll div",
 					"height: 1px;");
 		}
-		app.getStyleSheet().addRule("#" + this.getFormName() + " .cwidth",
+		app.getStyleSheet().addRule("#" + this.getId() + " .cwidth",
 				"height: 1px;");
 		app.getStyleSheet().addRule(
-				"#" + this.getFormName() + "dw",
+				"#" + this.getId() + "dw",
 				"width: 32px; height: 32px;background: url(" + this.imagePack_
 						+ "items-not-ok.gif);");
 		app.getStyleSheet().addRule(
-				"#" + this.getFormName() + "dw.valid-drop",
+				"#" + this.getId() + "dw.valid-drop",
 				"width: 32px; height: 32px;background: url(" + this.imagePack_
 						+ "items-ok.gif);");
-		this.rowHeightRule_ = new WCssTemplateRule("#" + this.getFormName()
-				+ " .rh");
+		this.rowHeightRule_ = new WCssTemplateRule("#" + this.getId() + " .rh");
 		app.getStyleSheet().addRule(this.rowHeightRule_);
-		this.rowWidthRule_ = new WCssTemplateRule("#" + this.getFormName()
+		this.rowWidthRule_ = new WCssTemplateRule("#" + this.getId()
 				+ " .Wt-tv-row");
 		app.getStyleSheet().addRule(this.rowWidthRule_);
-		this.rowContentsWidthRule_ = new WCssTemplateRule("#"
-				+ this.getFormName() + " .Wt-tv-rowc");
+		this.rowContentsWidthRule_ = new WCssTemplateRule("#" + this.getId()
+				+ " .Wt-tv-rowc");
 		app.getStyleSheet().addRule(this.rowContentsWidthRule_);
-		this.c0WidthRule_ = new WCssTemplateRule("#" + this.getFormName()
-				+ " .c0w");
+		this.c0WidthRule_ = new WCssTemplateRule("#" + this.getId() + " .c0w");
 		this.c0WidthRule_.getTemplateWidget().resize(new WLength(150),
 				WLength.Auto);
 		app.getStyleSheet().addRule(this.c0WidthRule_);
@@ -291,7 +289,7 @@ public class WTreeView extends WCompositeWidget {
 		this.headers_ = new WContainerWidget(this.headerContainer_);
 		this.headers_.setStyleClass("header-div headerrh");
 		this.headers_.setSelectable(false);
-		this.headerHeightRule_ = new WCssTemplateRule("#" + this.getFormName()
+		this.headerHeightRule_ = new WCssTemplateRule("#" + this.getId()
 				+ " .headerrh");
 		app.getStyleSheet().addRule(this.headerHeightRule_);
 		this.setHeaderHeight(this.headerHeight_);
@@ -356,7 +354,7 @@ public class WTreeView extends WCompositeWidget {
 						+ ".firstChild,h="
 						+ this.headers_.getJsRef()
 						+ ",hh=h.firstChild;if (lastx != null && lastx != '') {nowxy = WT.pageCoordinates(event);var parent = obj.parentNode,diffx = Math.max(nowxy.x - lastx, -parent.offsetWidth),c = parent.className.split(' ')[2];if (c) {var r = WT.getCssRule('#"
-						+ this.getFormName()
+						+ this.getId()
 						+ " .' + c),tw = WT.pxself(r, 'width');if (tw == 0) tw = parent.offsetWidth;r.style.width = (tw + diffx) + 'px';}"
 						+ this.getJsRef()
 						+ ".adjustHeaderWidth(c, diffx);obj.setAttribute('dsx', nowxy.x);WT.cancelEvent(event);  }}");
@@ -374,7 +372,7 @@ public class WTreeView extends WCompositeWidget {
 				|| app.getEnvironment().agentIsOpera()) {
 			this.tieRowsScrollJS_
 					.setJavaScript("function(obj, event) {Wt2_99_2.getCssRule('#"
-							+ this.getFormName()
+							+ this.getId()
 							+ " .Wt-tv-rowc').style.left= -obj.scrollLeft + 'px';}");
 		} else {
 			this.tieRowsScrollJS_
@@ -392,11 +390,11 @@ public class WTreeView extends WCompositeWidget {
 						+ ",hh=h.firstChild,t="
 						+ this.contents_.getJsRef()
 						+ ".firstChild,r= WT.getCssRule('#"
-						+ this.getFormName()
+						+ this.getId()
 						+ " .cwidth'),vscroll=e.scrollHeight > e.offsetHeight,contentstoo=(r.style.width == h.style.width);if (vscroll) {r.style.width=(tw-17) + 'px';} else {r.style.width=tw + 'px';}e.style.width=tw + 'px';h.style.width=t.offsetWidth + 'px';if (s.className.indexOf('column1') != -1) {var r=WT.getCssRule('#"
-						+ this.getFormName()
+						+ this.getId()
 						+ " .c0w'),hh=h.firstChild,w=tw - WT.pxself(r, 'width') - (vscroll ? 17 : 0);WT.getCssRule('#"
-						+ this.getFormName()
+						+ this.getId()
 						+ " .Wt-tv-row').style.width= w + 'px';var extra = hh.childNodes.length > 1? (WT.hasTag(hh.childNodes[1], 'IMG') ? 21 : 6) : 0;hh.style.width= (w + extra) + 'px';} else if (contentstoo) {h.style.width=r.style.width;t.style.width=r.style.width;}if (s.adjustHeaderWidth)s.adjustHeaderWidth(1, 0);}}}");
 		if (parent != null) {
 			parent.addWidget(this);
@@ -1263,10 +1261,10 @@ public class WTreeView extends WCompositeWidget {
 			this.dragEnabled_ = enable;
 			if (enable) {
 				this.dragWidget_ = new WText(this.headerContainer_);
-				this.dragWidget_.setId(this.getFormName() + "dw");
+				this.dragWidget_.setId(this.getId() + "dw");
 				this.dragWidget_.setInline(false);
 				this.dragWidget_.hide();
-				this.setAttributeValue("dwid", this.dragWidget_.getFormName());
+				this.setAttributeValue("dwid", this.dragWidget_.getId());
 				this.configureModelDragDrop();
 			}
 		}
@@ -1499,13 +1497,13 @@ public class WTreeView extends WCompositeWidget {
 				+ "+ (hh.childNodes.length > 1? (WT.hasTag(hh.childNodes[1], 'IMG') ? 17 : 6): 0);if("
 				+ this.getJsRef()
 				+ ".offsetWidth == 0) return;for (var i=0, length=hc.childNodes.length; i < length; ++i) {var cl = hc.childNodes[i].className.split(' ')[2],r = WT.getCssRule('#"
-				+ this.getFormName()
+				+ this.getId()
 				+ " .' + cl);totalw += WT.pxself(r, 'width') + 7;}var cw = WT.pxself(hh, 'width'),hdiff = c ? (cw == 0 ? 0 : (totalw - (cw - extra))) : diffx;";
 		if (!this.column1Fixed_) {
 			columnsWidth += "t.style.width = (t.offsetWidth + hdiff) + 'px';h.style.width = t.offsetWidth + 'px';hh.style.width = (totalw + extra) + 'px';";
 		} else {
 			columnsWidth += "var r = WT.getCssRule('#"
-					+ this.getFormName()
+					+ this.getId()
 					+ " '+ (c ? '.Wt-tv-rowc' : '.c0w'));totalw += 'px';if (c) {r.style.width = totalw;"
 					+ (app.getEnvironment().agentIsIE() ? "var c =Wt2_99_2.getElementsByClassName('Wt-tv-rowc', "
 							+ this.getJsRef()
@@ -1652,8 +1650,8 @@ public class WTreeView extends WCompositeWidget {
 			this.extraHeaderWidget = null;
 			this.sorting = view.sorting_;
 			this.itemDelegate_ = null;
-			this.styleRule = new WCssTemplateRule("#" + view.getFormName()
-					+ " ." + this.getStyleClass());
+			this.styleRule = new WCssTemplateRule("#" + view.getId() + " ."
+					+ this.getStyleClass());
 			if (column != 0) {
 				this.width = new WLength(150);
 				this.styleRule.getTemplateWidget().resize(this.width,
@@ -2239,7 +2237,7 @@ public class WTreeView extends WCompositeWidget {
 		for (Iterator<Map.Entry<WModelIndex, WTreeViewNode>> i_it = this.renderedNodes_
 				.entrySet().iterator(); i_it.hasNext();) {
 			Map.Entry<WModelIndex, WTreeViewNode> i = i_it.next();
-			if (i.getValue().getFormName().equals(nodeId)) {
+			if (i.getValue().getId().equals(nodeId)) {
 				c0index = i.getValue().getModelIndex();
 				break;
 			}

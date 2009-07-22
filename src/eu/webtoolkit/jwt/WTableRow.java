@@ -161,11 +161,11 @@ public class WTableRow extends WObject {
 		this.id_ = id;
 	}
 
-	public String getFormName() {
+	public String getId() {
 		if (this.id_ != null) {
 			return this.id_;
 		} else {
-			return super.getFormName();
+			return super.getId();
 		}
 	}
 

@@ -51,8 +51,8 @@ public class WCompositeWidget extends WWidget {
 		super.remove();
 	}
 
-	public String getFormName() {
-		return this.impl_.getFormName();
+	public String getId() {
+		return this.impl_.getId();
 	}
 
 	public void setPositionScheme(PositionScheme scheme) {

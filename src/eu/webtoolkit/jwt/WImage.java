@@ -350,7 +350,7 @@ public class WImage extends WInteractWidget {
 
 	protected void getDomChanges(List<DomElement> result, WApplication app) {
 		if (this.map_ != null) {
-			DomElement e = DomElement.getForUpdate("i" + this.getFormName(),
+			DomElement e = DomElement.getForUpdate("i" + this.getId(),
 					DomElementType.DomElement_IMG);
 			this.updateDom(e, false);
 			result.add(e);
@@ -366,7 +366,7 @@ public class WImage extends WInteractWidget {
 					.getInstance());
 			element.addChild(map);
 			img = DomElement.createNew(DomElementType.DomElement_IMG);
-			img.setId("i" + this.getFormName(), false);
+			img.setId("i" + this.getId());
 		}
 		if (this.flags_.get(BIT_IMAGE_REF_CHANGED) || all) {
 			if (this.imageRef_.length() != 0) {
@@ -380,7 +380,7 @@ public class WImage extends WInteractWidget {
 			this.flags_.clear(BIT_ALT_TEXT_CHANGED);
 		}
 		if (this.flags_.get(BIT_MAP_CREATED) || all && this.map_ != null) {
-			img.setAttribute("usemap", '#' + this.map_.getFormName());
+			img.setAttribute("usemap", '#' + this.map_.getId());
 			this.flags_.clear(BIT_MAP_CREATED);
 		}
 		super.updateDom(img, all);

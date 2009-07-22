@@ -37,7 +37,7 @@ class WWidgetVectorPainter extends WWidgetPainter {
 		if (!EnumUtils.mask(device.getPaintFlags(), PaintFlag.PaintUpdate)
 				.isEmpty()) {
 			DomElement painter = DomElement.updateGiven(
-					"Wt2_99_2.getElement('p" + this.widget_.getFormName()
+					"Wt2_99_2.getElement('p" + this.widget_.getId()
 							+ "').firstChild", DomElementType.DomElement_DIV);
 			painter.setProperty(Property.PropertyAddedInnerHTML, vectorDevice
 					.getRendered());
@@ -48,7 +48,7 @@ class WWidgetVectorPainter extends WWidgetPainter {
 			result.add(painter);
 		} else {
 			DomElement canvas = DomElement.getForUpdate('p' + this.widget_
-					.getFormName(), DomElementType.DomElement_DIV);
+					.getId(), DomElementType.DomElement_DIV);
 			canvas.setProperty(Property.PropertyInnerHTML, vectorDevice
 					.getRendered());
 			result.add(canvas);

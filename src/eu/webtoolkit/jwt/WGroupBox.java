@@ -127,7 +127,7 @@ public class WGroupBox extends WContainerWidget {
 		if (all) {
 			DomElement legend = DomElement
 					.createNew(DomElementType.DomElement_LEGEND);
-			legend.setId(this.getFormName() + "l");
+			legend.setId(this.getId() + "l");
 			legend.setProperty(Property.PropertyInnerHTML, escapeText(
 					this.title_).toString());
 			element.addChild(legend);
@@ -141,8 +141,8 @@ public class WGroupBox extends WContainerWidget {
 		this.updateDom(e, false);
 		result.add(e);
 		if (this.titleChanged_) {
-			DomElement legend = DomElement.getForUpdate(this.getFormName()
-					+ "l", DomElementType.DomElement_LEGEND);
+			DomElement legend = DomElement.getForUpdate(this.getId() + "l",
+					DomElementType.DomElement_LEGEND);
 			legend.setProperty(Property.PropertyInnerHTML, escapeText(
 					this.title_).toString());
 			this.titleChanged_ = false;

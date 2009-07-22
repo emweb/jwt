@@ -371,6 +371,7 @@ public class WContainerWidget extends WInteractWidget {
 				w.remove();
 		}
 		/* delete this.layout_ */;
+		this.layout_ = null;
 	}
 
 	/**
@@ -799,7 +800,7 @@ public class WContainerWidget extends WInteractWidget {
 				itd.addChild(c);
 				irow.addChild(itd);
 				itable.addChild(irow);
-				itable.setId(this.getFormName() + "l");
+				itable.setId(this.getId() + "l");
 				c = itable;
 				break;
 			}
@@ -1057,8 +1058,8 @@ public class WContainerWidget extends WInteractWidget {
 			}
 			String fn = EnumUtils.mask(this.contentAlignment_,
 					AlignmentFlag.AlignHorizontalMask).equals(
-					AlignmentFlag.AlignCenter) ? this.getFormName() + "l"
-					: this.getLayoutImpl().getFormName();
+					AlignmentFlag.AlignCenter) ? this.getId() + "l" : this
+					.getLayoutImpl().getId();
 			DomElement e = DomElement.getForUpdate(fn,
 					DomElementType.DomElement_TABLE);
 			e.removeFromParent();

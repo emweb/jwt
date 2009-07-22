@@ -851,12 +851,19 @@ var encodeEvent = function(event, i) {
 	    + encodeURIComponent(el.options[i].value);
 	}
     } else if (WT.hasTag(el, "SPAN")) {
-      var cb = el.lastChild;
-      if (cb.style.display == 'none')
-	v = 'indeterminate';
-      else
-	if (cb.checked)
-	  v = cb.value;
+      for (var i = 0; i < el.childNodes.length; i++) {
+	if (el.childNodes[i].type == 'checkbox') {
+	  var cb = el.childNodes[i];
+
+	  if (cb.style.display == 'none')
+	    v = 'indeterminate';
+	  else
+	    if (cb.checked)
+	      v = cb.value;
+
+	  break;
+	}
+      }
     } else if (el.type == 'checkbox' || el.type == 'radio') {
       if (el.indeterminate)
 	v = 'indeterminate';

@@ -217,12 +217,10 @@ public class TreeViewDragDropApplication extends WApplication
     treeView.setColumnWidth(4, new WLength(100));
     treeView.setColumnWidth(5, new WLength(100));
 
-    WItemDelegate delegate;
-    delegate = (WItemDelegate)treeView.getItemDelegateForColumn(4);
+    WItemDelegate delegate = new WItemDelegate(this);
     delegate.setTextFormat(FileModel.dateDisplayFormat);
-
-    delegate = (WItemDelegate)treeView.getItemDelegateForColumn(5);
-    delegate.setTextFormat(FileModel.dateDisplayFormat);
+    treeView.setItemDelegateForColumn(4, delegate);
+    treeView.setItemDelegateForColumn(5, delegate);
 
     treeView.setColumnAlignment(3, AlignmentFlag.AlignRight);
     treeView.setColumnAlignment(4, AlignmentFlag.AlignRight);

@@ -5,7 +5,7 @@
  */
 package eu.webtoolkit.jwt;
 
-import java.util.List;
+import java.util.Map;
 
 /**
  * A user control that represents a radio button
@@ -120,23 +120,18 @@ public class WRadioButton extends WAbstractToggleButton {
 		if (all) {
 			element.setAttribute("type", "radio");
 			if (this.buttonGroup_ != null) {
-				element.setAttribute("name", this.buttonGroup_.getFormName());
-				element.setAttribute("value", this.getFormName());
-			} else {
-				element.setAttribute("name", this.getFormName());
+				element.setAttribute("name", this.buttonGroup_.getId());
+				element.setAttribute("value", this.getId());
 			}
 		}
 		super.updateDom(element, all);
 	}
 
-	protected void getFormObjects(List<WObject> formObjects) {
+	protected void getFormObjects(Map<String, WObject> formObjects) {
 		if (this.buttonGroup_ != null) {
-			int i = formObjects.indexOf(this.buttonGroup_);
-			if (i == -1) {
-				formObjects.add(this.buttonGroup_);
-			}
+			formObjects.put(this.buttonGroup_.getId(), this.buttonGroup_);
 		}
-		formObjects.add(this);
+		super.getFormObjects(formObjects);
 	}
 
 	protected void setFormData(WObject.FormData formData) {
@@ -145,9 +140,11 @@ public class WRadioButton extends WAbstractToggleButton {
 		}
 		if (!formData.values.isEmpty()) {
 			String value = formData.values.get(0);
-			if (value.equals(this.getFormName())) {
-				this.buttonGroup_.uncheckOthers(this);
-				this.state_ = CheckState.Checked;
+			if (value.equals(this.getId())) {
+				if (this.buttonGroup_ != null) {
+					this.buttonGroup_.uncheckOthers(this);
+					this.state_ = CheckState.Checked;
+				}
 			} else {
 				if (!(this.buttonGroup_ != null)) {
 					super.setFormData(formData);

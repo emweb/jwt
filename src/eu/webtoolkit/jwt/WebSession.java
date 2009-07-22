@@ -976,11 +976,14 @@ class WebSession {
 	private void propagateFormValues(WEvent e, String se) {
 		WebRequest request = e.handler.getRequest();
 		this.renderer_.updateFormObjectsList(this.app_);
-		List<WObject> formObjects = this.renderer_.getFormObjects();
-		for (int i = 0; i < formObjects.size(); ++i) {
-			WObject obj = formObjects.get(i);
+		Map<String, WObject> formObjects = this.renderer_.getFormObjects();
+		for (Iterator<Map.Entry<String, WObject>> i_it = formObjects.entrySet()
+				.iterator(); i_it.hasNext();) {
+			Map.Entry<String, WObject> i = i_it.next();
+			String formName = i.getKey();
+			WObject obj = i.getValue();
 			if (!(request.getPostDataExceeded() != 0)) {
-				obj.setFormData(getFormData(request, se + obj.getFormName()));
+				obj.setFormData(getFormData(request, se + formName));
 			} else {
 				obj.requestTooLarge(request.getPostDataExceeded());
 			}
