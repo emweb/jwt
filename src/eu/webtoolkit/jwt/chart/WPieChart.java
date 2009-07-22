@@ -314,7 +314,7 @@ public class WPieChart extends WAbstractChart {
 		}
 		WRectF rect = rectangle;
 		if (rect.isEmpty()) {
-			rect = painter.getWindow();
+			rect.assign(painter.getWindow());
 		}
 		rect.setX(rect.getX() + this.getPlotAreaPadding(Side.Left));
 		rect.setY(rect.getY() + this.getPlotAreaPadding(Side.Top));

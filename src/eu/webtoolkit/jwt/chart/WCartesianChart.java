@@ -402,7 +402,7 @@ public class WCartesianChart extends WAbstractChart {
 		}
 		WRectF rect = rectangle;
 		if (rect.isEmpty()) {
-			rect = painter.getWindow();
+			rect.assign(painter.getWindow());
 		}
 		WChart2DRenderer renderer = this.createRenderer(painter, rect);
 		renderer.render();

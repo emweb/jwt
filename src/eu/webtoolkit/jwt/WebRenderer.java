@@ -456,6 +456,8 @@ class WebRenderer implements SlotLearnerInterface {
 		this.loadStyleSheets(response.out(), app);
 		app.scriptLibrariesAdded_ = app.scriptLibraries_.size();
 		this.loadScriptLibraries(response.out(), app, true);
+		response.out().append('\n').append(app.getBeforeLoadJavaScript());
+		response.out().append("window.loadWidgetTree = function(){\n");
 		if (app.bodyHtmlClassChanged_) {
 			response.out().append("document.body.parentNode.className='")
 					.append(app.htmlClass_).append("';").append(
@@ -463,8 +465,6 @@ class WebRenderer implements SlotLearnerInterface {
 					.append("';");
 			app.bodyHtmlClassChanged_ = false;
 		}
-		response.out().append('\n').append(app.getBeforeLoadJavaScript());
-		response.out().append("window.loadWidgetTree = function(){\n");
 		String cvar = "";
 		{
 			EscapeOStream sout = new EscapeOStream(response.out());

@@ -140,7 +140,7 @@ public class WPainter {
 		this.viewPort_.setY(0);
 		this.viewPort_.setWidth(this.device_.getWidth().getValue());
 		this.viewPort_.setHeight(this.device_.getHeight().getValue());
-		this.window_ = this.viewPort_;
+		this.window_.assign(this.viewPort_);
 		this.recalculateViewTransform();
 		return true;
 	}
@@ -1263,7 +1263,7 @@ public class WPainter {
 	 * @see WPainter#setWindow(WRectF window)
 	 */
 	public void setViewPort(WRectF viewPort) {
-		this.viewPort_ = viewPort;
+		this.viewPort_.assign(viewPort);
 		this.recalculateViewTransform();
 	}
 
@@ -1304,7 +1304,7 @@ public class WPainter {
 	 * @see WPainter#setViewPort(WRectF viewPort)
 	 */
 	public void setWindow(WRectF window) {
-		this.window_ = window;
+		this.window_.assign(window);
 		this.recalculateViewTransform();
 	}
 

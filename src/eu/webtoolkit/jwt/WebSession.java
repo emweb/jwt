@@ -289,8 +289,18 @@ class WebSession {
 											.length() == 0
 											&& this.env_.getInternalPath()
 													.length() > 1)) {
-								String url = this.getBaseUrl()
-										+ this.getApplicationName();
+								String url = "";
+								if (request.getPathInfo().length() != 0) {
+									String pi = request.getPathInfo();
+									for (int t = pi.indexOf('/'); t != -1; t = pi
+											.indexOf('/', t + 1)) {
+										url += "../";
+									}
+									url += this.getApplicationName();
+								} else {
+									url = this.getBaseUrl()
+											+ this.getApplicationName();
+								}
 								url += '#' + this.env_.getInternalPath();
 								this.redirect(url);
 								this.renderer_.serveMainWidget(handler
@@ -631,8 +641,13 @@ class WebSession {
 			}
 		}
 		case ClearInternalPath:
-			return this.appendSessionQuery(this.baseUrl_
-					+ this.applicationName_);
+			if (WebSession.Handler.getInstance().getRequest().getPathInfo()
+					.length() > 1) {
+				return this.appendSessionQuery(this.baseUrl_
+						+ this.applicationName_);
+			} else {
+				return this.appendSessionQuery(this.applicationName_);
+			}
 		default:
 			assert false;
 		}

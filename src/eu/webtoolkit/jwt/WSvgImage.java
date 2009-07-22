@@ -119,7 +119,7 @@ public class WSvgImage extends WResource implements WVectorImage {
 			this.shapes_.append(' ').append(MathUtils.round(drect.getX(), 3))
 					.append(' ').append(MathUtils.round(drect.getY(), 3))
 					.append(")\">");
-			drect = new WRectF(0, 0, srect.getWidth(), srect.getHeight());
+			drect.assign(new WRectF(0, 0, srect.getWidth(), srect.getHeight()));
 			transformed = true;
 		}
 		double scaleX = drect.getWidth() / srect.getWidth();

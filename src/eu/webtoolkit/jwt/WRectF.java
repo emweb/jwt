@@ -52,6 +52,14 @@ public class WRectF {
 		this.height_ = topRight.getY() - topLeft.getY();
 	}
 
+	public WRectF assign(WRectF rhs) {
+		this.x_ = rhs.x_;
+		this.y_ = rhs.y_;
+		this.width_ = rhs.width_;
+		this.height_ = rhs.height_;
+		return this;
+	}
+
 	public boolean equals(WRectF rhs) {
 		return this.x_ == rhs.x_ && this.y_ == rhs.y_
 				&& this.width_ == rhs.width_ && this.height_ == rhs.height_;

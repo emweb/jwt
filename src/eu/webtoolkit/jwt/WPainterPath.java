@@ -505,18 +505,18 @@ public class WPainterPath {
 	public boolean asRect(WRectF result) {
 		if (this.isRect_) {
 			if (this.segments_.size() == 4) {
-				result = new WRectF(0, 0, this.segments_.get(0).getX(),
-						this.segments_.get(1).getY());
+				result.assign(new WRectF(0, 0, this.segments_.get(0).getX(),
+						this.segments_.get(1).getY()));
 				return true;
 			} else {
 				if (this.segments_.size() == 5
 						&& this.segments_.get(0).getType() == WPainterPath.Segment.Type.MoveTo) {
-					result = new WRectF(this.segments_.get(0).getX(),
+					result.assign(new WRectF(this.segments_.get(0).getX(),
 							this.segments_.get(0).getY(), this.segments_.get(1)
 									.getX()
 									- this.segments_.get(0).getX(),
 							this.segments_.get(2).getY()
-									- this.segments_.get(0).getY());
+									- this.segments_.get(0).getY()));
 					return true;
 				} else {
 					return false;

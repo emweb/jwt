@@ -122,21 +122,21 @@ public class WChart2DRenderer {
 	 */
 	public void calcChartArea() {
 		if (this.chart_.getOrientation() == Orientation.Vertical) {
-			this.chartArea_ = new WRectF(this.chart_
+			this.chartArea_.assign(new WRectF(this.chart_
 					.getPlotAreaPadding(Side.Left), this.chart_
 					.getPlotAreaPadding(Side.Top), this.width_
 					- this.chart_.getPlotAreaPadding(Side.Left)
 					- this.chart_.getPlotAreaPadding(Side.Right), this.height_
 					- this.chart_.getPlotAreaPadding(Side.Top)
-					- this.chart_.getPlotAreaPadding(Side.Bottom));
+					- this.chart_.getPlotAreaPadding(Side.Bottom)));
 		} else {
-			this.chartArea_ = new WRectF(this.chart_
+			this.chartArea_.assign(new WRectF(this.chart_
 					.getPlotAreaPadding(Side.Top), this.chart_
 					.getPlotAreaPadding(Side.Right), this.width_
 					- this.chart_.getPlotAreaPadding(Side.Top)
 					- this.chart_.getPlotAreaPadding(Side.Bottom), this.height_
 					- this.chart_.getPlotAreaPadding(Side.Right)
-					- this.chart_.getPlotAreaPadding(Side.Left));
+					- this.chart_.getPlotAreaPadding(Side.Left)));
 		}
 	}
 

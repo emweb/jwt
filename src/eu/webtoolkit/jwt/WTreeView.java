@@ -223,7 +223,7 @@ public class WTreeView extends WCompositeWidget {
 					.getStyleSheet()
 					.addRule(
 							".Wt-treeview .Wt-tv-sh-nrh",
-							"float: right; width: 16px; margin-top: 6px; margin-right: 4pxcursor: pointer; cursor:hand;");
+							"float: right; width: 16px; margin-top: 6px; margin-right: 4px;cursor: pointer; cursor:hand;");
 			app.getStyleSheet().addRule(".Wt-treeview .Wt-tv-shc0",
 					"float: left;");
 			app.getStyleSheet().addRule(".Wt-treeview .selected",

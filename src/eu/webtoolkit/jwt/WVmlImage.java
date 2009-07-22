@@ -263,8 +263,8 @@ public class WVmlImage implements WVectorImage {
 			}
 		}
 		this.activePaths_.get(thisPath).path += tmp.toString();
-		this.activePaths_.get(thisPath).bbox = this.activePaths_.get(thisPath).bbox
-				.united(bbox);
+		this.activePaths_.get(thisPath).bbox.assign(this.activePaths_
+				.get(thisPath).bbox.united(bbox));
 	}
 
 	public void drawText(WRectF rect, EnumSet<AlignmentFlag> flags,
@@ -603,7 +603,7 @@ public class WVmlImage implements WVectorImage {
 						"\" coordsize=\"").append(
 						String.valueOf(rect.getWidth() * Z)).append(",")
 				.append(String.valueOf(rect.getHeight() * Z)).append("\">");
-		this.currentRect_ = rect;
+		this.currentRect_.assign(rect);
 	}
 
 	private void stopClip() {

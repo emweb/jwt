@@ -58,8 +58,6 @@ public class ComposeExample extends WContainerWidget
 		});
 
 		details_ = new WContainerWidget(this);
-
-		new WText(tr("example.info"), details_);
 	}
 
 	public ComposeExample()
