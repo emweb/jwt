@@ -846,7 +846,10 @@ public class WApplication extends WObject {
 	 * Checks if the internal path matches a given path.
 	 * <p>
 	 * Returns whether the current {@link WApplication#getInternalPath()} starts
-	 * with <i>path</i> (or is equal to <i>path</i>). This may be useful before
+	 * with <i>path</i> (or is equal to <i>path</i>). You will typically use
+	 * this method within a slot conneted to the
+	 * {@link WApplication#internalPathChanged()} signal, to check that an
+	 * internal path change affects the widget. It may also be useful before
 	 * changing <i>path</i> using
 	 * {@link WApplication#setInternalPath(String path, boolean emitChange)} if
 	 * you do not intend to remove sub paths when the current internal path
@@ -870,58 +873,10 @@ public class WApplication extends WObject {
 	/**
 	 * Signal which indicates that the user changes the internal path.
 	 * <p>
-	 * This signal propagates changes to the internal path, which are usually
+	 * This signal indicates a change to the internal path, which is usually
 	 * triggered by the user using the browser back/forward buttons.
 	 * <p>
-	 * When the path changes, this signal is emitted for every prefix whose next
-	 * path element has changed. The prefix is passed as the argument, and may
-	 * be used by listening widgets to quickly determine if they need to respond
-	 * to the path change. This also allows widgets to be created corresponding
-	 * to each path element, and respond in their turn to further internal path
-	 * changes.
-	 * <p>
-	 * For example, when the path would change from
-	 * <code>&quot;/mail/inbox/unread/5&quot;</code> to
-	 * <code>&quot;/mail/addressbook/public/27&quot;</code>, this signal would
-	 * be emitted three times, in the following sequence:
-	 * <p>
-	 * <table border="1" cellspacing="3" cellpadding="3">
-	 * <tr>
-	 * <td><b>prefix</b></td>
-	 * <td><b>{@link WApplication#getInternalPath()}</b></td>
-	 * <td><b>{@link WApplication#getInternalPathNextPart(String path)
-	 * internalPathNextPart(prefix)} </b></td>
-	 * </tr>
-	 * <tr>
-	 * <td><code>&quot;/mail/&quot;</code></td>
-	 * <td><code>&quot;/mail/addressbook&quot;</code></td>
-	 * <td><code>&quot;addressbook&quot;</code></td>
-	 * </tr>
-	 * <tr>
-	 * <td><code>&quot;/mail/addressbook/&quot;</code></td>
-	 * <td><code>&quot;/mail/addressbook/public&quot;</code></td>
-	 * <td><code>&quot;public&quot;</code></td>
-	 * </tr>
-	 * <tr>
-	 * <td><code>&quot;/mail/addressbook/public/&quot;</code></td>
-	 * <td><code>&quot;/mail/addressbook/public/27&quot;</code></td>
-	 * <td><code>&quot;27&quot;</code></td>
-	 * </tr>
-	 * </table>
-	 * <p>
-	 * When the application starts with a non-empty internal path, a patch
-	 * switch is simulated from &quot;/&quot; to the initial path, after the
-	 * application has been created. Therefore you have two options to deal with
-	 * the initial internal path on application start up:
-	 * <ul>
-	 * <li>ignore the internal path when creating the application (perhaps even
-	 * using {@link WApplication#setInternalPath(String path, boolean emitChange)
-	 * setInternalPath(&quot;/&quot;)}) and respond to the initial change. This
-	 * simplifies the initialization of your application, at the potential cost
-	 * of creating widgets that were not necessary.</li>
-	 * <li>use the value of {@link WApplication#getInternalPath()} to setup the
-	 * application directly in the state that corresponds to the internal path.</li>
-	 * </ul>
+	 * The argument contains the new internal path.
 	 * <p>
 	 * 
 	 * @see WApplication#setInternalPath(String path, boolean emitChange)
@@ -1636,36 +1591,11 @@ public class WApplication extends WObject {
 
 	void changeInternalPath(String aPath) {
 		String path = aPath;
-		if (!path.equals(this.newInternalPath_)) {
-			int fileStart = 0;
-			int i = 0;
-			int length = Math
-					.min(path.length(), this.newInternalPath_.length());
-			for (; i < length; ++i) {
-				if (path.charAt(i) == this.newInternalPath_.charAt(i)) {
-					if (path.charAt(i) == '/') {
-						fileStart = i + 1;
-					}
-				} else {
-					i = fileStart;
-					break;
-				}
-			}
-			String common = path.substring(0, 0 + fileStart);
-			for (;;) {
-				common = StringUtils.terminate(common, '/');
-				this.newInternalPath_ = path;
-				String next = this.getInternalPathNextPart(common);
-				if (next.length() != 0) {
-					this.newInternalPath_ = common + next;
-				}
-				this.internalPathChanged().trigger(common);
-				if (next.length() == 0) {
-					this.newInternalPath_ = path;
-					break;
-				}
-				common = this.newInternalPath_;
-			}
+		if (!path.equals(this.newInternalPath_)
+				&& (path.length() == 0 || path.charAt(0) == '/')) {
+			String v = "";
+			this.newInternalPath_ = path;
+			this.internalPathChanged().trigger(this.newInternalPath_);
 		}
 	}
 

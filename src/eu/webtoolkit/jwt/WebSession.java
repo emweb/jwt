@@ -226,16 +226,6 @@ class WebSession {
 											throw new WtException(
 													"Could not start application.");
 										}
-										if (!this.env_.getInternalPath()
-												.equals("/")) {
-											this.app_.setInternalPath("/");
-											this.app_
-													.notify(new WEvent(
-															handler,
-															WEvent.EventType.HashChange,
-															this.env_
-																	.getInternalPath()));
-										}
 										this.app_
 												.notify(new WEvent(
 														handler,

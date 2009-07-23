@@ -421,7 +421,7 @@ public class WMenu extends WCompositeWidget {
 							WMenu.this.internalPathChanged(e1);
 						}
 					});
-			this.internalPathChanged(this.basePath_);
+			this.internalPathChanged(app.getInternalPath());
 			this.updateItems();
 		}
 	}
@@ -450,7 +450,8 @@ public class WMenu extends WCompositeWidget {
 		if (!this.basePath_.equals(bp)) {
 			this.basePath_ = bp;
 			if (this.internalPathEnabled_) {
-				this.internalPathChanged(this.basePath_);
+				WApplication app = WApplication.getInstance();
+				this.internalPathChanged(app.getInternalPath());
 				this.updateItems();
 			}
 		}
@@ -515,8 +516,15 @@ public class WMenu extends WCompositeWidget {
 		if (this.internalPathEnabled_) {
 			WApplication app = WApplication.getInstance();
 			this.previousInternalPath_ = app.getInternalPath();
-			String newPath = this.basePath_
-					+ this.items_.get(this.current_).getPathComponent();
+			String newPath = this.basePath_;
+			String pc = this.items_.get(this.current_).getPathComponent();
+			if (pc.length() == 0) {
+				if (newPath.length() > 1) {
+					newPath = newPath.substring(0, 0 + newPath.length() - 1);
+				}
+			} else {
+				newPath += pc;
+			}
 			if (newPath.equals(this.basePath_)
 					|| !app.isInternalPathMatches(newPath)) {
 				WApplication.getInstance().setInternalPath(newPath);
@@ -536,16 +544,17 @@ public class WMenu extends WCompositeWidget {
 	}
 
 	private void internalPathChanged(String path) {
-		if (path.equals(this.basePath_)) {
-			this.setFromState(WApplication.getInstance()
-					.getInternalPathNextPart(this.basePath_));
+		WApplication app = WApplication.getInstance();
+		if (app.isInternalPathMatches(this.basePath_)) {
+			this.setFromState(app.getInternalPathNextPart(this.basePath_));
 		}
 	}
 
 	private void setFromState(String value) {
 		String v = value;
 		for (int i = 0; i < this.items_.size(); ++i) {
-			if (v.equals(this.items_.get(i).getPathComponent())) {
+			if (this.items_.get(i).getPathComponent().equals(v)
+					|| this.items_.get(i).getPathComponent().equals(v + '/')) {
 				if (this.contentsStack_.getCurrentWidget() != this.items_
 						.get(i).getContents()) {
 					this.select(i);
