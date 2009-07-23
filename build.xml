@@ -1,7 +1,7 @@
 <project name="jwt" default="all" basedir=".">
   <!-- Name of project and version -->
   <property name="proj.name" value="jwt"/>
-  <property name="proj.version" value="2.99.2"/>
+  <property name="proj.version" value="2.99.3"/>
 
   <!-- Global properties for this build -->
   <property name="src.java.dir" value="src"/>
@@ -101,5 +101,7 @@
     </copy>
   </target>
 
-  <target name="release" depends="dist,javadoc,asciidoc" />
+  <target name="release" depends="dist,javadoc,asciidoc" >
+    <delete dir="${build.dir}"/>
+  </target>
 </project>
