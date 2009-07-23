@@ -185,12 +185,6 @@ public class TreeViewDragDropApplication extends WApplication
 		}
     });
 
-    treeView.mouseWentDown().addListener(this, new Signal2.Listener<WModelIndex, WMouseEvent>(){
-		public void trigger(WModelIndex mi, WMouseEvent me) {
-			showPopup(mi, me);
-		}
-    });
-
     folderView_ = treeView;
 
     return treeView;
@@ -296,56 +290,6 @@ private void editFile(WModelIndex item) {
       // escaped -- or use the \Q \E qutoing escape regular expression
       // syntax (and escape \E)
       fileFilterModel_.setFilterRegExp(folder);
-    }
-  }
-
-  /**
-   * Show a popup for a folder item.
-   */
-private void showPopup(WModelIndex index, WMouseEvent event) {
-    if (event.getButton() == WMouseEvent.Button.RightButton) {
-
-      // Select the item, it was not yet selected.
-      folderView_.select(index);
-
-      WPopupMenu popup = new WPopupMenu();
-      popup.addItem("icons/folder_new.gif", "Create a New Folder");
-      popup.addItem("Rename this Folder").setCheckable(true);
-      popup.addItem("Delete this Folder");
-      popup.addSeparator();
-      popup.addItem("Folder Details");
-      popup.addSeparator();
-      popup.addItem("Application Inventory");
-      popup.addItem("Hardware Inventory");
-      popup.addSeparator();
-
-      WPopupMenu subMenu = new WPopupMenu();
-      subMenu.addItem("Sub Item 1");
-      subMenu.addItem("Sub Item 2");
-      popup.addMenu("File Deployments", subMenu);
-
-      /*
-       * This is one method of executing a popup, i.e. by using a reentrant
-       * event loop (blocking the current thread).
-       *
-       * Alternatively you could call WPopupMenu::popup(), listen for
-       * to the WPopupMenu::aboutToHide signal, and check the
-       * WPopupMenu::resu)
-       */
-      WPopupMenuItem item = popup.exec(event);
-
-      if (item!=null) {
-	/*
-	 * You may bind extra data to an item using setData() and
-	 * check here for the action asked.
-	 */
-		  WMessageBox messageBox
-		    = new WMessageBox("Sorry",
-				      "Action '" + item.getText() + "' is not implemented.",
-				      Icon.Warning, EnumSet.of(StandardButton.Ok));
-
-		  messageBox.show();
-      }
     }
   }
 

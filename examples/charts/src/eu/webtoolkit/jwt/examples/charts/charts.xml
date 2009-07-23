@@ -11,31 +11,30 @@
 
 <p class="p">
   This example demonstrates some of the capabilities of
-  the <a href="http://www.webtoolkit.eu/jwt/latest/javadoc/eu/webtoolkit/jwt/chart/package-frame.html"
-  target="_new">Wt charting widgets</a>. These widgets are implemented
-  using
-  the <a href="http://www.webtoolkit.eu/jwt/latest/javadoc/eu/webtoolkit/jwt/WPaintedWidget.html"
+  the Wt charting widgets. 
+  These widgets are implemented using the 
+  <a href="http://www.webtoolkit.eu/jwt/latest/doc/javadoc/eu/webtoolkit/jwt/WPaintedWidget.html"
   target="_new">Wt painting API</a>, which provides cross-browser
   native painting, using VML, SVG, or the Html 5 canvas tag.
 </p>
 
 <p class="p">
   The two main chart widgets
-  are <a href="http://www.webtoolkit.eu/jwt/latest/javadoc/eu/webtoolkit/jwt/chart/WCartesianChart.html"
+  are <a href="http://www.webtoolkit.eu/jwt/latest/doc/javadoc/eu/webtoolkit/jwt/chart/WCartesianChart.html"
   target="_new">WCartesianChart</a>, which provides category charts
   and scatter plots,
-  and <a href="http://www.webtoolkit.eu/jwt/latest/javadoc/eu/webtoolkit/jwt/chart/WPieChart.html" target="_new">WPieChart</a>
+  and <a href="http://www.webtoolkit.eu/jwt/latest/doc/javadoc/eu/webtoolkit/jwt/chart/WPieChart.html" target="_new">WPieChart</a>
   which provides pie charts. These widgets are based on the MVC
   mechanism, and retrieve their data from
-  a <a href="http://www.webtoolkit.eu/jwt/latest/javadoc/eu/webtoolkit/jwt/WAbstractItemModel.html" target="_new">WAbstractItemModel</a>.
+  a <a href="http://www.webtoolkit.eu/jwt/latest/doc/javadoc/eu/webtoolkit/jwt/WAbstractItemModel.html" target="_new">WAbstractItemModel</a>.
 </p>
 
 <p class="p">
   Many aspects of the charts may be customized. By default, style
   information for rendering data series are taken from a
-  <a href="http://www.webtoolkit.eu/jwt/latest/javadoc/eu/webtoolkit/jwt/chart/WChartPalette.html" target="_new">WChartPalette</a>. It
+  <a href="http://www.webtoolkit.eu/jwt/latest/doc/javadoc/eu/webtoolkit/jwt/chart/WChartPalette.html" target="_new">WChartPalette</a>. It
   is straight forward to specialize this class to provide different
-  styles from the standard styles provided by <a href="http://www.webtoolkit.eu/jwt/latest/javadoc/eu/webtoolkit/jwt/chart/WStandardPalette.html" target="_new">WStandardPalette</a>.
+  styles from the standard styles provided by <a href="http://www.webtoolkit.eu/jwt/latest/doc/javadoc/eu/webtoolkit/jwt/chart/WStandardPalette.html" target="_new">WStandardPalette</a>.
 </p>
 
 <p class="p">
