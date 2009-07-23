@@ -4,8 +4,8 @@ Jwt User Guide
 Pieter Libin <pieter@emweb.be>
 v0.9, 11 June 2009
 
-:jwt-version:	3.0.0
-:jwt-src-path:	jwt-src-{jwt-version}
+:jwt-version:	2.99.3
+:jwt-src-path:	jwt-{jwt-version}
 
 == Introduction
 
@@ -41,11 +41,8 @@ a library (rather than a 'framework').
 
 We present two tracks for running your first JWt application: from
 within the Eclipse IDE or from the command line. You will need to
-download the JWt source distribution (TODO see url jwt) which contains
-the library and its dependencies, as well as all the examples:
-
-- +{jwt-src-path}.zip+ (Windows platforms).
-- +{jwt-src-path}.tgz+ (Unix and Unix-alikes).
+download the JWt distribution which contains the library and its dependencies,
+from the homepage's http://www.webtoolkit.eu/jwt#/download[download section].
 
 === 'Hello world' from within Eclipse
 
@@ -117,7 +114,7 @@ image:images/hello_world_import_10.png["Refresh project"]
 
 Below, we use the 'run-jetty-run' plugin. You may also use any other
 JEE application server (with integration in Eclipse) to which you
-deploy the +dist/jwt-hello-{jwt-version}.war+ file which has also been
+deploy the +dist/jwt-hello.war+ file which has also been
 built by the ant tool.
 
 - Open the 'Run' -> 'Run Configurations...' dialog.
@@ -178,11 +175,11 @@ $ cd examples/hello
 $ ant
 .....
 + 
-This will build +dist/jwt-hello-2.99.1b.war+, handling all of the dependencies
+This will build +dist/jwt-hello.war+, handling all of the dependencies
 including JWt itself.
 
 ==== Running
-- Copy the +jwt-hello-2.99.1b.war+ to +jetty-install-dir/webapps/hello.war+.
+- Copy the +jwt-hello.war+ to +jetty-install-dir/webapps/hello.war+.
 - Start Jetty: 
   * On Unix: `jetty-install-dir/bin/jetty.sh start`
   * On Windows: `java -jar jetty-install-dir\start.jar`
