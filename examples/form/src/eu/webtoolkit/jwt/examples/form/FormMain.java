@@ -24,41 +24,43 @@ import eu.webtoolkit.jwt.WtServlet;
  * sound will be played.
  */
 public class FormMain extends WtServlet {
-	public FormMain() {
-		super();
-	}
+    private static final long serialVersionUID = 1L;
 
-	public WApplication createApplication(WEnvironment env) {
-		  WApplication app = new WApplication(env);
-		  
-		  WXmlLocalizedStrings bundle = new WXmlLocalizedStrings();
-		  bundle.use("/eu/webtoolkit/jwt/examples/form/form-example");
-		  app.setLocalizedStrings(bundle);
-		  
-		  app.setTitle("Form example");
+    public FormMain() {
+        super();
+    }
 
-		  app.getRoot().addWidget(new FormExample(null));
+    public WApplication createApplication(WEnvironment env) {
+        WApplication app = new WApplication(env);
 
+        WXmlLocalizedStrings bundle = new WXmlLocalizedStrings();
+        bundle.use("/eu/webtoolkit/jwt/examples/form/form-example");
+        app.setLocalizedStrings(bundle);
 
-		  WCssDecorationStyle langStyle = basicDecoration();
-		  app.getStyleSheet().addRule(".lang", langStyle);
+        app.setTitle("Form example");
 
-		  langStyle = basicDecoration();
-		  langStyle.setCursor(Cursor.ArrowCursor);
-		  langStyle.getFont().setWeight(WFont.Weight.Bold);
-		  app.getStyleSheet().addRule(".langcurrent", langStyle);
+        app.getRoot().addWidget(new FormExample(null));
 
-		  return app;
-	}
-	
-	private WCssDecorationStyle basicDecoration() {
-		  WCssDecorationStyle langStyle =  new WCssDecorationStyle();
-		  
-		  langStyle.getFont().setSize(WFont.Size.Smaller);
-		  langStyle.setCursor(Cursor.PointingHandCursor);
-		  langStyle.setForegroundColor(WColor.blue);
-		  langStyle.setTextDecoration(WCssDecorationStyle.TextDecoration.Underline);
-		  
-		  return langStyle;
-	}
+        WCssDecorationStyle langStyle = basicDecoration();
+        app.getStyleSheet().addRule(".lang", langStyle);
+
+        langStyle = basicDecoration();
+        langStyle.setCursor(Cursor.ArrowCursor);
+        langStyle.getFont().setWeight(WFont.Weight.Bold);
+        app.getStyleSheet().addRule(".langcurrent", langStyle);
+
+        return app;
+    }
+
+    private WCssDecorationStyle basicDecoration() {
+        WCssDecorationStyle langStyle = new WCssDecorationStyle();
+
+        langStyle.getFont().setSize(WFont.Size.Smaller);
+        langStyle.setCursor(Cursor.PointingHandCursor);
+        langStyle.setForegroundColor(WColor.blue);
+        langStyle
+                .setTextDecoration(WCssDecorationStyle.TextDecoration.Underline);
+
+        return langStyle;
+    }
 }

@@ -20,63 +20,66 @@ import eu.webtoolkit.jwt.WString;
 import eu.webtoolkit.jwt.WText;
 
 public class CsvUtil {
-	public static void readFromCsv(BufferedReader reader, WAbstractItemModel model) {
-		try {
-			Pattern pat = Pattern.compile(",(\".+?\")");
-			String line = null;
-			int row = 0;
-			while ((line = reader.readLine()) != null) {
-				Matcher matcher = pat.matcher(line);
-				StringBuffer sb = new StringBuffer();
-				while (matcher.find()) {
-					matcher.appendReplacement(sb, ","
-							+ matcher.group(1).replaceAll(",", "&comm"));
-				}
-				matcher.appendTail(sb);
-				String[] fields = sb.toString().split(",");
-				String text;
-				
-				if (row != 0) {
-					model.insertRow(model.getRowCount());
-				}
-//				if (row != 0) {
-//					model.insertRows(row, 1);
-//				}
-				for (int col = 0; col < fields.length; col++) {
-					text = fields[col] != null ? fields[col].replaceAll(
-							"&comm", ",") : "".replaceAll("\"", "");
+    public static void readFromCsv(BufferedReader reader,
+            WAbstractItemModel model) {
+        try {
+            Pattern pat = Pattern.compile(",(\".+?\")");
+            String line = null;
+            int row = 0;
+            while ((line = reader.readLine()) != null) {
+                Matcher matcher = pat.matcher(line);
+                StringBuffer sb = new StringBuffer();
+                while (matcher.find()) {
+                    matcher.appendReplacement(sb, ","
+                            + matcher.group(1).replaceAll(",", "&comm"));
+                }
+                matcher.appendTail(sb);
+                String[] fields = sb.toString().split(",");
+                String text;
 
-					if (col >= model.getColumnCount())
-						model.insertColumn(col);
+                if (row != 0) {
+                    model.insertRow(model.getRowCount());
+                }
+                // if (row != 0) {
+                // model.insertRows(row, 1);
+                // }
+                for (int col = 0; col < fields.length; col++) {
+                    text = fields[col] != null ? fields[col].replaceAll(
+                            "&comm", ",") : "".replaceAll("\"", "");
 
-					if (row == 0) {
-						model.setHeaderData(col, text);
-					} else {
-						model.setData(row - 1, col, text);
-					}
-				}
-				row++;
-			}
-		} catch (FileNotFoundException ex) {
-			ex.printStackTrace();
-		} catch (IOException ex) {
-			ex.printStackTrace();
-		}
-	}
+                    if (col >= model.getColumnCount())
+                        model.insertColumn(col);
 
-	public static WAbstractItemModel readCsvFile(String fname, WContainerWidget parent) {
-		WStandardItemModel model = new WStandardItemModel(0, 0, parent);
+                    if (row == 0) {
+                        model.setHeaderData(col, text);
+                    } else {
+                        model.setData(row - 1, col, text);
+                    }
+                }
+                row++;
+            }
+        } catch (FileNotFoundException ex) {
+            ex.printStackTrace();
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+    }
 
-		InputStream is = model.getClass().getResourceAsStream("/eu/webtoolkit/jwt/examples/charts/csv/"+fname);
+    public static WAbstractItemModel readCsvFile(String fname,
+            WContainerWidget parent) {
+        WStandardItemModel model = new WStandardItemModel(0, 0, parent);
 
-		if (is!=null) {
-			readFromCsv(new BufferedReader(new InputStreamReader(is)), model);
-			return model;
-		} else {
-			WString error = WString.tr("error-missing-data");
-			error.arg(fname);
-			new WText(error, parent);
-			return null;
-		}
-	}
+        InputStream is = model.getClass().getResourceAsStream(
+                "/eu/webtoolkit/jwt/examples/charts/csv/" + fname);
+
+        if (is != null) {
+            readFromCsv(new BufferedReader(new InputStreamReader(is)), model);
+            return model;
+        } else {
+            WString error = WString.tr("error-missing-data");
+            error.arg(fname);
+            new WText(error, parent);
+            return null;
+        }
+    }
 }

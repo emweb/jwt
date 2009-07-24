@@ -10,17 +10,19 @@ import eu.webtoolkit.jwt.WEnvironment;
 import eu.webtoolkit.jwt.WtServlet;
 
 public class StyleMain extends WtServlet {
-	public StyleMain() {
-		super();
-	}
+    private static final long serialVersionUID = 8134425135017460475L;
 
-	@Override
-	public WApplication createApplication(WEnvironment env) {
-		WApplication app = new WApplication(env);
-		app.setTitle("Style example");
+    public StyleMain() {
+        super();
+    }
 
-		new StyleExample(app.getRoot());
+    @Override
+    public WApplication createApplication(WEnvironment env) {
+        WApplication app = new WApplication(env);
+        app.setTitle("Style example");
 
-		return app;
-	}
+        new StyleExample(app.getRoot());
+
+        return app;
+    }
 }

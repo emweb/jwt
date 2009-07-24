@@ -16,67 +16,69 @@ import eu.webtoolkit.jwt.WTimer;
  * A widget which displays a decrementing number.
  */
 public class CountDownWidget extends WText {
-	/**
-	 * Create a new CountDownWidget.
-	 * 
-	 * The widget will count down from start to stop, decrementing the number every msec milliseconds.
-	 */
-	public CountDownWidget(int start, int stop, int msec, WContainerWidget parent) {
-		super(parent);
+    /**
+     * Create a new CountDownWidget.
+     * 
+     * The widget will count down from start to stop, decrementing the number
+     * every msec milliseconds.
+     */
+    public CountDownWidget(int start, int stop, int msec,
+            WContainerWidget parent) {
+        super(parent);
 
-		done_ = new Signal();
+        done_ = new Signal();
 
-		start_ = start;
-		stop_ = stop;
+        start_ = start;
+        stop_ = stop;
 
-		stop_ = Math.min(start_ - 1, stop_); // stop must be smaller than start
-		current_ = start_;
+        stop_ = Math.min(start_ - 1, stop_); // stop must be smaller than start
+        current_ = start_;
 
-		timer_ = new WTimer(this);
-		timer_.setInterval(msec);
-		timer_.timeout().addListener(this, new Signal1.Listener<WMouseEvent>() {
-			
-			public void trigger(WMouseEvent a1) {
-				timerTick();
-			}
-		});
-		timer_.start();
+        timer_ = new WTimer(this);
+        timer_.setInterval(msec);
+        timer_.timeout().addListener(this, new Signal1.Listener<WMouseEvent>() {
 
-		setText(current_ + "");
-	}
+            public void trigger(WMouseEvent a1) {
+                timerTick();
+            }
+        });
+        timer_.start();
 
-	/**
-	 * Signal emitted when the countdown reached stop.
-	 */
-	public Signal done() {
-		return done_;
-	}
+        setText(current_ + "");
+    }
 
-	/**
-	 * brief Cancel the count down.
-	 */
-	public void cancel() {
-		timer_.stop();
-	}
+    /**
+     * Signal emitted when the countdown reached stop.
+     */
+    public Signal done() {
+        return done_;
+    }
 
-	private Signal done_;
-	private int start_;
-	private int stop_;
+    /**
+     * brief Cancel the count down.
+     */
+    public void cancel() {
+        timer_.stop();
+    }
 
-	private int current_;
+    private Signal done_;
+    private int start_;
+    private int stop_;
 
-	private WTimer timer_;
+    private int current_;
 
-	/**
-	 * Process one timer tick.
-	 */
-	private void timerTick() {
-		setText(--current_ + "");
+    private WTimer timer_;
 
-		if (current_ <= stop_) {
-			timer_.stop();
-			done_.trigger();
-		}
+    /**
+     * Process one timer tick.
+     */
+    private void timerTick() {
+        setText(--current_ + "");
 
-	}
+        if (current_ <= stop_) {
+            timer_.stop();
+            done_.trigger();
+        }
+
+    }
 };

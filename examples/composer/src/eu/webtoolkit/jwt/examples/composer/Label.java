@@ -13,18 +13,16 @@ import eu.webtoolkit.jwt.WText;
 
 /**
  * A label.
- *
- * A label is a WText that is styled as "label", and aligned
- * to the right in its parent.
+ * 
+ * A label is a WText that is styled as "label", and aligned to the right in its
+ * parent.
  */
-public class Label extends WText
-{
-	public Label(final String msg, WContainerWidget parent)
-	{
-		super(tr(msg), parent);
+public class Label extends WText {
+    public Label(final String msg, WContainerWidget parent) {
+        super(tr(msg), parent);
 
-		setStyleClass("label");
-		parent.setContentAlignment(EnumSet.of(AlignmentFlag.AlignRight));
+        setStyleClass("label");
+        parent.setContentAlignment(EnumSet.of(AlignmentFlag.AlignRight));
 
-	}
+    }
 }

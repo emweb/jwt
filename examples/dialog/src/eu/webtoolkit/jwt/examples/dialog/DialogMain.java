@@ -10,11 +10,13 @@ import eu.webtoolkit.jwt.WEnvironment;
 import eu.webtoolkit.jwt.WtServlet;
 
 public class DialogMain extends WtServlet {
-	public DialogMain() {
-		super();
-	}
+    private static final long serialVersionUID = 1L;
 
-	public WApplication createApplication(WEnvironment env) {
-		return new DialogApplication(env);
-	}
+    public DialogMain() {
+        super();
+    }
+
+    public WApplication createApplication(WEnvironment env) {
+        return new DialogApplication(env);
+    }
 }

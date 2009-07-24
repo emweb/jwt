@@ -24,133 +24,137 @@ import eu.webtoolkit.jwt.WObject;
  */
 public class Popup extends WObject {
 
-	/**
-	 * Create a confirm dialog.
-	 */
-	public static Popup createConfirm(CharSequence message, WObject parent) {
-		return new Popup(Type.Confirm, message, "", parent);
-	}
+    /**
+     * Create a confirm dialog.
+     */
+    public static Popup createConfirm(CharSequence message, WObject parent) {
+        return new Popup(Type.Confirm, message, "", parent);
+    }
 
-	/**
-	 * Create a prompt dialog with the given default value
-	 */
-	public static Popup createPrompt(CharSequence message, String defaultValue,
-			WObject parent) {
-		return new Popup(Type.Prompt, message, defaultValue, parent);
-	}
+    /**
+     * Create a prompt dialog with the given default value
+     */
+    public static Popup createPrompt(CharSequence message, String defaultValue,
+            WObject parent) {
+        return new Popup(Type.Prompt, message, defaultValue, parent);
+    }
 
-	/**
-	 * Create an alert dialog.
-	 */
-	public static Popup createAlert(CharSequence message, WObject parent) {
-		return new Popup(Type.Alert, message, "", parent);
-	}
+    /**
+     * Create an alert dialog.
+     */
+    public static Popup createAlert(CharSequence message, WObject parent) {
+        return new Popup(Type.Alert, message, "", parent);
+    }
 
-	/**
-	 * Change the message
-	 */
-	public void setMessage(CharSequence message) {
-		message_ = message;
-		setJavaScript();
-	}
+    /**
+     * Change the message
+     */
+    public void setMessage(CharSequence message) {
+        message_ = message;
+        setJavaScript();
+    }
 
-	/**
-	 * Change the default value for a prompt dialog.
-	 */
-	public void setDefaultValue(String defaultValue) {
-		defaultValue_ = defaultValue;
-		setJavaScript();
-	}
+    /**
+     * Change the default value for a prompt dialog.
+     */
+    public void setDefaultValue(String defaultValue) {
+        defaultValue_ = defaultValue;
+        setJavaScript();
+    }
 
-	/**
-	 * Get the current message.
-	 */
-	public CharSequence message() {
-		return message_;
-	}
+    /**
+     * Get the current message.
+     */
+    public CharSequence message() {
+        return message_;
+    }
 
-	/**
-	 * Get the default value for a prompt dialog.
-	 */
-	public String defaultValue() {
-		return defaultValue_;
-	}
+    /**
+     * Get the default value for a prompt dialog.
+     */
+    public String defaultValue() {
+        return defaultValue_;
+    }
 
-	/**
-	 * Show the dialog.
-	 * 
-	 * Use show.exec() to show the dialog, or connect the slot to an EventSignal
-	 * to directly show the dialog without a server round trip.
-	 */
-	public JSlot show = new JSlot();
+    /**
+     * Show the dialog.
+     * 
+     * Use show.exec() to show the dialog, or connect the slot to an EventSignal
+     * to directly show the dialog without a server round trip.
+     */
+    public JSlot show = new JSlot();
 
-	/**
-	 * Signal emitted when ok pressed.
-	 */
-	public JSignal1<String> okPressed() {
-		return okPressed_;
-	}
+    /**
+     * Signal emitted when ok pressed.
+     */
+    public JSignal1<String> okPressed() {
+        return okPressed_;
+    }
 
-	/**
-	 * Signal emitted when cancel is pressed.
-	 */
-	public JSignal cancelPressed() {
-		return cancelPressed_;
-	}
+    /**
+     * Signal emitted when cancel is pressed.
+     */
+    public JSignal cancelPressed() {
+        return cancelPressed_;
+    }
 
-	/**
-	 * Popup type.
-	 */
-	private enum Type {
-		Confirm, Alert, Prompt
-	}
+    /**
+     * Popup type.
+     */
+    private enum Type {
+        Confirm, Alert, Prompt
+    }
 
-	/**
-	 * Popup constructor.
-	 */
-	private Popup(Type t, CharSequence message, String defaultValue, WObject parent) {
-		super();
-		okPressed_ = new JSignal1<String>(this, "ok") {	};
-		cancelPressed_ = new JSignal(this, "cancel") { };
-		t_ = t;
-		message_ = message;
-		defaultValue_ = defaultValue;
-		setJavaScript();
-	}
+    /**
+     * Popup constructor.
+     */
+    private Popup(Type t, CharSequence message, String defaultValue,
+            WObject parent) {
+        super();
+        okPressed_ = new JSignal1<String>(this, "ok") {
+        };
+        cancelPressed_ = new JSignal(this, "cancel") {
+        };
+        t_ = t;
+        message_ = message;
+        defaultValue_ = defaultValue;
+        setJavaScript();
+    }
 
-	private JSignal1<String> okPressed_;
-	private JSignal cancelPressed_;
+    private JSignal1<String> okPressed_;
+    private JSignal cancelPressed_;
 
-	private Type t_;
-	private CharSequence message_;
-	private String defaultValue_;
+    private Type t_;
+    private CharSequence message_;
+    private String defaultValue_;
 
-	/**
-	 * Update the javascript code.
-	 */
-	private void setJavaScript() {
-		/*
-		 * Sets the JavaScript code.
-		 * 
-		 * Notice how Wt.emit() is used to emit the okPressed or cancelPressed
-		 * signal, and how arguments may be passed to it, matching the number
-		 * and type of arguments in the JSignal definition.
-		 */
-		switch (t_) {
-		case Confirm:
-			show.setJavaScript("function(){ if (confirm('" + message_.toString()
-					+ "')) {" + okPressed_.createCall("''") + "} else {"
-					+ cancelPressed_.createCall() + "}}");
-			break;
-		case Alert:
-			show.setJavaScript("function(){ alert('" + message_.toString() + "');"
-					+ okPressed_.createCall("''") + "}");
-			break;
-		case Prompt:
-			show.setJavaScript("function(){var n = prompt('" + message_.toString()
-					+ "', '" + defaultValue_ + "');" + "if (n != null) {"
-					+ okPressed_.createCall("n") + "} else {"
-					+ cancelPressed_.createCall() + "}}");
-		}
-	}
+    /**
+     * Update the javascript code.
+     */
+    private void setJavaScript() {
+        /*
+         * Sets the JavaScript code.
+         * 
+         * Notice how Wt.emit() is used to emit the okPressed or cancelPressed
+         * signal, and how arguments may be passed to it, matching the number
+         * and type of arguments in the JSignal definition.
+         */
+        switch (t_) {
+        case Confirm:
+            show.setJavaScript("function(){ if (confirm('"
+                    + message_.toString() + "')) {"
+                    + okPressed_.createCall("''") + "} else {"
+                    + cancelPressed_.createCall() + "}}");
+            break;
+        case Alert:
+            show.setJavaScript("function(){ alert('" + message_.toString()
+                    + "');" + okPressed_.createCall("''") + "}");
+            break;
+        case Prompt:
+            show.setJavaScript("function(){var n = prompt('"
+                    + message_.toString() + "', '" + defaultValue_ + "');"
+                    + "if (n != null) {" + okPressed_.createCall("n")
+                    + "} else {" + cancelPressed_.createCall() + "}}");
+        }
+    }
 }

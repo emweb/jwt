@@ -17,34 +17,36 @@ import eu.webtoolkit.jwt.WtServlet;
 import eu.webtoolkit.jwt.WTreeNode.ChildCountPolicy;
 
 public class FileTreeExample extends WtServlet {
-	private File startDir;
-	
-	public FileTreeExample() {
-		super();
-	}
+    private static final long serialVersionUID = 1L;
+    private File startDir;
 
-	public WApplication createApplication(WEnvironment env) {
-		WApplication app = new WApplication(env);
-		app.setTitle("File explorer example");
-		app.useStyleSheet("style/filetree.css");
+    public FileTreeExample() {
+        super();
+    }
 
-		FileTreeTable treeTable = new FileTreeTable(startDir);
+    public WApplication createApplication(WEnvironment env) {
+        WApplication app = new WApplication(env);
+        app.setTitle("File explorer example");
+        app.useStyleSheet("style/filetree.css");
 
-		treeTable.resize(500, 300);
-		treeTable.getTree().setSelectionMode(SelectionMode.ExtendedSelection);
-		treeTable.getTreeRoot().setNodeVisible(false);
-		treeTable.getTreeRoot().setChildCountPolicy(ChildCountPolicy.Enabled);
+        FileTreeTable treeTable = new FileTreeTable(startDir);
 
-		app.getRoot().addWidget(treeTable);
+        treeTable.resize(500, 300);
+        treeTable.getTree().setSelectionMode(SelectionMode.ExtendedSelection);
+        treeTable.getTreeRoot().setNodeVisible(false);
+        treeTable.getTreeRoot().setChildCountPolicy(ChildCountPolicy.Enabled);
 
-		return app;
-	}
-	
-	@Override
-	public void init(ServletConfig config) throws ServletException {
-		//The start dir is configured in a servlet container variable (see web.xml).
-		startDir = new File(config.getInitParameter("startDir"));
+        app.getRoot().addWidget(treeTable);
 
-		super.init(config);
-	}
+        return app;
+    }
+
+    @Override
+    public void init(ServletConfig config) throws ServletException {
+        // The start dir is configured in a servlet container variable (see
+        // web.xml).
+        startDir = new File(config.getInitParameter("startDir"));
+
+        super.init(config);
+    }
 }

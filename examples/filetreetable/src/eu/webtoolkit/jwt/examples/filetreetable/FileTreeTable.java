@@ -27,31 +27,31 @@ import eu.webtoolkit.jwt.WTreeTable;
  * This widget is part of the JWt File Explorer example.
  */
 public class FileTreeTable extends WTreeTable {
-	/**
-	 * Construct a new FileTreeTable.
-	 * 
-	 * Create a new FileTreeTable to browse the given path.
-	 */
-	public FileTreeTable(File path) {
-		this(path, null);
-	}
-	
-	/**
-	 * Construct a new FileTreeTable.
-	 * 
-	 * Create a new FileTreeTable to browse the given path.
-	 */
-	public FileTreeTable(File path, WContainerWidget parent) {
-		super(parent);
-		addColumn("Size", new WLength(80));
-		addColumn("Modified", new WLength(110));
+    /**
+     * Construct a new FileTreeTable.
+     * 
+     * Create a new FileTreeTable to browse the given path.
+     */
+    public FileTreeTable(File path) {
+        this(path, null);
+    }
 
-		header(1).setStyleClass("fsize");
-		header(2).setStyleClass("date");
+    /**
+     * Construct a new FileTreeTable.
+     * 
+     * Create a new FileTreeTable to browse the given path.
+     */
+    public FileTreeTable(File path, WContainerWidget parent) {
+        super(parent);
+        addColumn("Size", new WLength(80));
+        addColumn("Modified", new WLength(110));
 
-		setTreeRoot(new FileTreeTableNode(path), "File");
+        header(1).setStyleClass("fsize");
+        header(2).setStyleClass("date");
 
-		getTreeRoot().setImagePack("pics/");
-		getTreeRoot().expand();
-	}
+        setTreeRoot(new FileTreeTableNode(path), "File");
+
+        getTreeRoot().setImagePack("pics/");
+        getTreeRoot().expand();
+    }
 }

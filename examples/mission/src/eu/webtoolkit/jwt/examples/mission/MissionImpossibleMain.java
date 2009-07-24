@@ -16,51 +16,58 @@ import eu.webtoolkit.jwt.WText;
 import eu.webtoolkit.jwt.WtServlet;
 
 public class MissionImpossibleMain extends WtServlet {
+    private static final long serialVersionUID = 1L;
 
-	public MissionImpossibleMain() {
-		super();
-	}
+    public MissionImpossibleMain() {
+        super();
+    }
 
-	@Override
-	public WApplication createApplication(WEnvironment env) {
-		final WApplication appl = new WApplication(env);
+    @Override
+    public WApplication createApplication(WEnvironment env) {
+        final WApplication appl = new WApplication(env);
 
-		new WText("<h1>Your mission</h1>", appl.getRoot());
-		final WText secret = new WText("Your mission, Jim, should you accept, is to create solid web applications.", appl.getRoot());
+        new WText("<h1>Your mission</h1>", appl.getRoot());
+        final WText secret = new WText(
+                "Your mission, Jim, should you accept, is to create solid web applications.",
+                appl.getRoot());
 
-		new WBreak(appl.getRoot());
-		new WBreak(appl.getRoot());
+        new WBreak(appl.getRoot());
+        new WBreak(appl.getRoot());
 
-		new WText("This program will quit in ", appl.getRoot());
-		final CountDownWidget countdown = new CountDownWidget(10, 0, 1000, appl.getRoot());
-		new WText(" seconds.", appl.getRoot());
+        new WText("This program will quit in ", appl.getRoot());
+        final CountDownWidget countdown = new CountDownWidget(10, 0, 1000, appl
+                .getRoot());
+        new WText(" seconds.", appl.getRoot());
 
-		new WBreak(appl.getRoot());
-		new WBreak(appl.getRoot());
+        new WBreak(appl.getRoot());
+        new WBreak(appl.getRoot());
 
-		final WPushButton cancelButton = new WPushButton("Cancel!", appl.getRoot());
-		WPushButton quitButton = new WPushButton("Quit", appl.getRoot());
-		quitButton.clicked().addListener(appl, new Signal1.Listener<WMouseEvent>() {
-			
-			public void trigger(WMouseEvent a1) {
-				appl.quit();
-			}
-		});
+        final WPushButton cancelButton = new WPushButton("Cancel!", appl
+                .getRoot());
+        WPushButton quitButton = new WPushButton("Quit", appl.getRoot());
+        quitButton.clicked().addListener(appl,
+                new Signal1.Listener<WMouseEvent>() {
 
-		countdown.done().addListener(appl, new Signal.Listener() {
-			public void trigger() {
-				appl.quit();
-			}
-		});
+                    public void trigger(WMouseEvent a1) {
+                        appl.quit();
+                    }
+                });
 
-		cancelButton.clicked().addListener(appl, new Signal1.Listener<WMouseEvent>() {
-			public void trigger(WMouseEvent a1) {
-				countdown.cancel();
-				cancelButton.disable();
-				secret.hide();
-			}
-		});
+        countdown.done().addListener(appl, new Signal.Listener() {
+            public void trigger() {
+                appl.quit();
+            }
+        });
 
-		return appl;
-	}
+        cancelButton.clicked().addListener(appl,
+                new Signal1.Listener<WMouseEvent>() {
+                    public void trigger(WMouseEvent a1) {
+                        countdown.cancel();
+                        cancelButton.disable();
+                        secret.hide();
+                    }
+                });
+
+        return appl;
+    }
 }

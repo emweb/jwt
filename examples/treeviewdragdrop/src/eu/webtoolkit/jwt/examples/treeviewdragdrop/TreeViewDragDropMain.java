@@ -10,14 +10,15 @@ import eu.webtoolkit.jwt.WEnvironment;
 import eu.webtoolkit.jwt.WtServlet;
 
 public class TreeViewDragDropMain extends WtServlet {
-	public WApplication createApplication(WEnvironment env) {
-		WApplication app = new TreeViewDragDropApplication(env);
-		app.setTwoPhaseRenderingThreshold(0);
-		app.setTitle("WTreeView Drag & Drop");
-		app.useStyleSheet("style/styles.css");
-		
-		app.refresh();
+    private static final long serialVersionUID = 1L;
 
-		return app;
-	}
+    public WApplication createApplication(WEnvironment env) {
+        WApplication app = new TreeViewDragDropApplication(env);
+        app.setTitle("WTreeView Drag & Drop");
+        app.useStyleSheet("style/styles.css");
+
+        app.refresh();
+
+        return app;
+    }
 }

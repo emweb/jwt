@@ -16,25 +16,25 @@ import eu.webtoolkit.jwt.WStandardItemModel;
  * is returned by the model.
  */
 public class FileModel extends WStandardItemModel {
-	/**
-	 * Constructor.
-	 */
-	public FileModel(WObject parent) {
-		super(parent);
-	}
+    /**
+     * Constructor.
+     */
+    public FileModel(WObject parent) {
+        super(parent);
+    }
 
-	@Override
-	public String getMimeType() {
-		return FolderView.FileSelectionMimeType;
-	}
+    @Override
+    public String getMimeType() {
+        return FolderView.FileSelectionMimeType;
+    }
 
-	/**
-	 * Date display format.
-	 */
-	public static String dateDisplayFormat = "MMM dd, yyyy";
+    /**
+     * Date display format.
+     */
+    public static String dateDisplayFormat = "MMM dd, yyyy";
 
-	/**
-	 * Date edit format.
-	 */
-	public static String dateEditFormat = "dd-MM-yyyy";
+    /**
+     * Date edit format.
+     */
+    public static String dateEditFormat = "dd-MM-yyyy";
 }

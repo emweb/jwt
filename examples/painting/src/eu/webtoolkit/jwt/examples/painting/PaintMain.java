@@ -11,19 +11,21 @@ import eu.webtoolkit.jwt.WString;
 import eu.webtoolkit.jwt.WtServlet;
 
 public class PaintMain extends WtServlet {
-	public PaintMain() {
-		super();
-	}
+    private static final long serialVersionUID = 1L;
 
-	@Override
-	public WApplication createApplication(WEnvironment env) {
-		WApplication app = new WApplication(env);
-		app.setTitle(new WString("Paint example"));
-		
-		app.useStyleSheet("style/painting.css");
-		
-		new PaintExample(app.getRoot());
+    public PaintMain() {
+        super();
+    }
 
-		return app;
-	}
+    @Override
+    public WApplication createApplication(WEnvironment env) {
+        WApplication app = new WApplication(env);
+        app.setTitle(new WString("Paint example"));
+
+        app.useStyleSheet("style/painting.css");
+
+        new PaintExample(app.getRoot());
+
+        return app;
+    }
 }

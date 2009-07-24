@@ -10,9 +10,10 @@ import eu.webtoolkit.jwt.WEnvironment;
 import eu.webtoolkit.jwt.WtServlet;
 
 public class HelloWidgetSetMain extends WtServlet {
-	@Override
-	public WApplication createApplication(WEnvironment env)
-	{
-	  return new HelloWidgetSetApplication(env, true);
-	}
+    private static final long serialVersionUID = 1L;
+
+    @Override
+    public WApplication createApplication(WEnvironment env) {
+        return new HelloWidgetSetApplication(env, true);
+    }
 }

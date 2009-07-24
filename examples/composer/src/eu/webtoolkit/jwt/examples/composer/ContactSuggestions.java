@@ -21,32 +21,33 @@ import eu.webtoolkit.jwt.WSuggestionPopup;
  * entirely on the client-side.
  */
 public class ContactSuggestions extends WSuggestionPopup {
-	private static WSuggestionPopup.Options contactOptions = new WSuggestionPopup.Options();
+    private static WSuggestionPopup.Options contactOptions = new WSuggestionPopup.Options();
 
-	static {
-		contactOptions.highlightBeginTag = "<b>";
-		contactOptions.highlightEndTag = "</b>";
-		contactOptions.listSeparator = ',';
-		contactOptions.whitespace = " \\n";
-		contactOptions.wordSeparators = "-., \"@\\n;";
-		contactOptions.appendReplacedText = ", ";
-	}
+    static {
+        contactOptions.highlightBeginTag = "<b>";
+        contactOptions.highlightEndTag = "</b>";
+        contactOptions.listSeparator = ',';
+        contactOptions.whitespace = " \\n";
+        contactOptions.wordSeparators = "-., \"@\\n;";
+        contactOptions.appendReplacedText = ", ";
+    }
 
-	/**
-	 * Create a new ContactSuggestions popup.
-	 */
-	public ContactSuggestions(WContainerWidget parent) {
-		super(WSuggestionPopup.generateMatcherJS(contactOptions),
-				WSuggestionPopup.generateReplacerJS(contactOptions), parent);
-	}
+    /**
+     * Create a new ContactSuggestions popup.
+     */
+    public ContactSuggestions(WContainerWidget parent) {
+        super(WSuggestionPopup.generateMatcherJS(contactOptions),
+                WSuggestionPopup.generateReplacerJS(contactOptions), parent);
+    }
 
-	/**
-	 * Set the address book.
-	 */
-	public void setAddressBook(List<Contact> contacts) {
-		clearSuggestions();
+    /**
+     * Set the address book.
+     */
+    public void setAddressBook(List<Contact> contacts) {
+        clearSuggestions();
 
-		for (int i = 0; i < contacts.size(); ++i)
-			addSuggestion(contacts.get(i).formatted(), contacts.get(i).formatted());
-	}
+        for (int i = 0; i < contacts.size(); ++i)
+            addSuggestion(contacts.get(i).formatted(), contacts.get(i)
+                    .formatted());
+    }
 }

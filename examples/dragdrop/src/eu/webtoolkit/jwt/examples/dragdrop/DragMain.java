@@ -11,22 +11,23 @@ import eu.webtoolkit.jwt.WText;
 import eu.webtoolkit.jwt.WtServlet;
 
 public class DragMain extends WtServlet {
-	public DragMain() {
-		super();
-	}
+    private static final long serialVersionUID = 1L;
 
-	@Override
-	public WApplication createApplication(WEnvironment env) {
-		WApplication app = new WApplication(env);
-		app.setTitle("Drag & drop");
+    public DragMain() {
+        super();
+    }
 
-		new WText("<h1>Wt Drag &amp; drop example.</h1>", app
-				.getRoot());
+    @Override
+    public WApplication createApplication(WEnvironment env) {
+        WApplication app = new WApplication(env);
+        app.setTitle("Drag & drop");
 
-		new DragExample(app.getRoot());
+        new WText("<h1>Wt Drag &amp; drop example.</h1>", app.getRoot());
 
-		app.useStyleSheet("style/dragdrop.css");
+        new DragExample(app.getRoot());
 
-		return app;
-	}
+        app.useStyleSheet("style/dragdrop.css");
+
+        return app;
+    }
 }

@@ -12,26 +12,26 @@ import eu.webtoolkit.jwt.WXmlLocalizedStrings;
 import eu.webtoolkit.jwt.WtServlet;
 
 public class ChartsMain extends WtServlet {
-	public ChartsMain() {
-		super();
-		
-		//getConfiguration().setSendXHTMLMimeType(false);
-	}
+    private static final long serialVersionUID = 1L;
 
-	public WApplication createApplication(WEnvironment env) {
-		WApplication app = new WApplication(env);
-		app.setTitle("Charts example");
+    public ChartsMain() {
+        super();
+    }
 
-		WXmlLocalizedStrings resourceBundle = new WXmlLocalizedStrings();
-		resourceBundle.use("/eu/webtoolkit/jwt/examples/charts/charts");
-		app.setLocalizedStrings(resourceBundle);
+    public WApplication createApplication(WEnvironment env) {
+        WApplication app = new WApplication(env);
+        app.setTitle("Charts example");
 
-		app.getRoot().setPadding(new WLength(10));
+        WXmlLocalizedStrings resourceBundle = new WXmlLocalizedStrings();
+        resourceBundle.use("/eu/webtoolkit/jwt/examples/charts/charts");
+        app.setLocalizedStrings(resourceBundle);
 
-		new ChartsExample(app.getRoot());
+        app.getRoot().setPadding(new WLength(10));
 
-		app.useStyleSheet("style/charts.css");
+        new ChartsExample(app.getRoot());
 
-		return app;
-	}
+        app.useStyleSheet("style/charts.css");
+
+        return app;
+    }
 }

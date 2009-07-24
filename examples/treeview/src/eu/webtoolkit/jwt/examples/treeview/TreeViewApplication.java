@@ -12,35 +12,35 @@ import eu.webtoolkit.jwt.WText;
 import eu.webtoolkit.jwt.WXmlLocalizedStrings;
 
 public class TreeViewApplication extends WApplication {
-	public TreeViewApplication(WEnvironment env) {
-		super(env);
-		
-		WXmlLocalizedStrings resourceBundle = new WXmlLocalizedStrings();
-		resourceBundle.use("/eu/webtoolkit/jwt/examples/treeview/drinks");
-		setLocalizedStrings(resourceBundle);
-		
-		getStyleSheet().addRule("button", "margin: 2px");
-		  
-		new TreeViewExample(true, getRoot());
-		/*
-		 * Stub for the drink info
-		 */
-		aboutDrink_ = new WText("", getRoot());
+    public TreeViewApplication(WEnvironment env) {
+        super(env);
 
-		internalPathChanged().addListener(this, new Signal1.Listener<String>() {
-			public void trigger(String p) {
-				handlePathChange(p);
-			}
-		});
-	}
+        WXmlLocalizedStrings resourceBundle = new WXmlLocalizedStrings();
+        resourceBundle.use("/eu/webtoolkit/jwt/examples/treeview/drinks");
+        setLocalizedStrings(resourceBundle);
 
-	private WText aboutDrink_;
+        getStyleSheet().addRule("button", "margin: 2px");
 
-	private void handlePathChange(String prefix) {
-		if (prefix == "/drinks/") {
-			String drink = getInternalPathNextPart(prefix);
+        new TreeViewExample(true, getRoot());
+        /*
+         * Stub for the drink info
+         */
+        aboutDrink_ = new WText("", getRoot());
 
-			aboutDrink_.setText(tr("drink-" + drink));
-		}
-	}
+        internalPathChanged().addListener(this, new Signal1.Listener<String>() {
+            public void trigger(String p) {
+                handlePathChange(p);
+            }
+        });
+    }
+
+    private WText aboutDrink_;
+
+    private void handlePathChange(String prefix) {
+        if (prefix == "/drinks/") {
+            String drink = getInternalPathNextPart(prefix);
+
+            aboutDrink_.setText(tr("drink-" + drink));
+        }
+    }
 }

@@ -20,70 +20,72 @@ import eu.webtoolkit.jwt.WTreeView;
  * A specialized treeview that supports a custom drop event.
  */
 public class FolderView extends WTreeView {
-	/**
-	 * Constant that indicates the mime type for a selection of files.
-	 * 
-	 * Every kind of dragged data should be identified using a unique mime type.
-	 */
-	public static final String FileSelectionMimeType = "application/x-computers-selection";
+    /**
+     * Constant that indicates the mime type for a selection of files.
+     * 
+     * Every kind of dragged data should be identified using a unique mime type.
+     */
+    public static final String FileSelectionMimeType = "application/x-computers-selection";
 
-	/**
-	 * Constructor.
-	 */
-	public FolderView() {
-		this(null);
-	}
-	
-	/**
-	 * Constructor.
-	 */
-	public FolderView(WContainerWidget parent) {
-		super(parent);
-		/*
-		 * Accept drops for the custom mime type.
-		 */
-		acceptDrops(FileSelectionMimeType);
-	}
+    /**
+     * Constructor.
+     */
+    public FolderView() {
+        this(null);
+    }
 
-	/**
-	 * Drop event.
-	 */
-	@Override
-	protected void dropEvent(WDropEvent event, WModelIndex target) {
-		/*
-		 * We reimplement the drop event to handle the dropping of a selection
-		 * of computers.
-		 * 
-		 * The test below would always be true in this case, since we only
-		 * indicated support for that particular mime type.
-		 */
-		if (event.getMimeType().equals(FileSelectionMimeType)) {
-			/*
-			 * The source object for a drag of a selection from a WTreeView is a
-			 * WItemSelectionModel.
-			 */
-			WItemSelectionModel selection = (WItemSelectionModel) event.getSource();
+    /**
+     * Constructor.
+     */
+    public FolderView(WContainerWidget parent) {
+        super(parent);
+        /*
+         * Accept drops for the custom mime type.
+         */
+        acceptDrops(FileSelectionMimeType);
+    }
 
-			/*
-			 * You can access the source model from the selection and
-			 * manipulate it.
-			 */
-			WAbstractItemModel sourceModel = selection.getModel();
+    /**
+     * Drop event.
+     */
+    @Override
+    protected void dropEvent(WDropEvent event, WModelIndex target) {
+        /*
+         * We reimplement the drop event to handle the dropping of a selection
+         * of computers.
+         * 
+         * The test below would always be true in this case, since we only
+         * indicated support for that particular mime type.
+         */
+        if (event.getMimeType().equals(FileSelectionMimeType)) {
+            /*
+             * The source object for a drag of a selection from a WTreeView is a
+             * WItemSelectionModel.
+             */
+            WItemSelectionModel selection = (WItemSelectionModel) event
+                    .getSource();
 
-			TreeSet<WModelIndex> toChange = new TreeSet<WModelIndex>(selection.getSelectedIndexes());
+            /*
+             * You can access the source model from the selection and manipulate
+             * it.
+             */
+            WAbstractItemModel sourceModel = selection.getModel();
 
-			for (WModelIndex index : toChange.descendingSet()) {
-				/*
-				 * Copy target folder to file. Since we are using a dynamic
-				 * WSortFilterProxyModel that filters on folder, this will
-				 * also result in the removal of the file from the current
-				 * view.
-				 */
-				SortedMap<Integer, Object> data = getModel().getItemData(target);
-				data.put(ItemDataRole.DecorationRole, index
-						.getData(ItemDataRole.DecorationRole));
-				sourceModel.setItemData(index, data);
-			}
-		}
-	}
+            TreeSet<WModelIndex> toChange = new TreeSet<WModelIndex>(selection
+                    .getSelectedIndexes());
+
+            for (WModelIndex index : toChange.descendingSet()) {
+                /*
+                 * Copy target folder to file. Since we are using a dynamic
+                 * WSortFilterProxyModel that filters on folder, this will also
+                 * result in the removal of the file from the current view.
+                 */
+                SortedMap<Integer, Object> data = getModel()
+                        .getItemData(target);
+                data.put(ItemDataRole.DecorationRole, index
+                        .getData(ItemDataRole.DecorationRole));
+                sourceModel.setItemData(index, data);
+            }
+        }
+    }
 }

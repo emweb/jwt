@@ -18,72 +18,70 @@ import eu.webtoolkit.jwt.WText;
 
 /**
  * Main widget for the %Form example.
-*
-* This class demonstrates, next instantiating the form itself,
-* handling of different languages.
-*/
-public class FormExample extends WContainerWidget
-{
- /**
-  * Instantiate a new form example.
-  */
-	public FormExample(WContainerWidget parent) {
-		  super(parent);
-		    WContainerWidget langLayout = new WContainerWidget(this);
-		    langLayout.setContentAlignment(AlignmentFlag.AlignRight);
-		    new WText(tr("language"), langLayout);
+ * 
+ * This class demonstrates, next instantiating the form itself, handling of
+ * different languages.
+ */
+public class FormExample extends WContainerWidget {
+    /**
+     * Instantiate a new form example.
+     */
+    public FormExample(WContainerWidget parent) {
+        super(parent);
+        WContainerWidget langLayout = new WContainerWidget(this);
+        langLayout.setContentAlignment(AlignmentFlag.AlignRight);
+        new WText(tr("language"), langLayout);
 
-		    final String lang[] = { "en", "nl" };
+        final String lang[] = { "en", "nl" };
 
-		    for (String l : lang) {
-		      final WText t = new WText(l, langLayout);
-		      t.setMargin(5);
-		      t.clicked().addListener(this, new Signal1.Listener<WMouseEvent>(){
-				public void trigger(WMouseEvent a1) {
-					changeLanguage(t);
-				}
-		      });
-		      
-		      languageSelects_.add(t);
-		    }
+        for (String l : lang) {
+            final WText t = new WText(l, langLayout);
+            t.setMargin(5);
+            t.clicked().addListener(this, new Signal1.Listener<WMouseEvent>() {
+                public void trigger(WMouseEvent a1) {
+                    changeLanguage(t);
+                }
+            });
 
-		    /*
-		     * Start with the reported locale, if available
-		     */
-		    setLanguage(WApplication.getInstance().getLocale());
+            languageSelects_.add(t);
+        }
 
-		    Form form = new Form(this);
-		    form.setMargin(20);
-	}
+        /*
+         * Start with the reported locale, if available
+         */
+        setLanguage(WApplication.getInstance().getLocale());
 
- /**
-  * Change the language.
-  */
-	private void changeLanguage(WText t) {
-		  setLanguage(new Locale(t.getText().getValue()));
-	}
+        Form form = new Form(this);
+        form.setMargin(20);
+    }
 
+    /**
+     * Change the language.
+     */
+    private void changeLanguage(WText t) {
+        setLanguage(new Locale(t.getText().getValue()));
+    }
 
-	private List<WText> languageSelects_ = new ArrayList<WText>();
+    private List<WText> languageSelects_ = new ArrayList<WText>();
 
-	private void setLanguage(Locale locale) {
-		  boolean haveLang = false;
+    private void setLanguage(Locale locale) {
+        boolean haveLang = false;
 
-		  for (int i = 0; i < languageSelects_.size(); ++i) {
-		    WText t = languageSelects_.get(i);
+        for (int i = 0; i < languageSelects_.size(); ++i) {
+            WText t = languageSelects_.get(i);
 
-		    // prefix match, e.g. en matches en-us.
-		    boolean isLang = locale.toString().contains(t.getText().getValue());
-		    t.setStyleClass(isLang ? "langcurrent" : "lang");
+            // prefix match, e.g. en matches en-us.
+            boolean isLang = locale.toString().contains(t.getText().getValue());
+            t.setStyleClass(isLang ? "langcurrent" : "lang");
 
-		    haveLang = haveLang || isLang;
-		  }
+            haveLang = haveLang || isLang;
+        }
 
-		  if (!haveLang) {
-		    languageSelects_.get(0).setStyleClass("langcurrent");
-		    WApplication.getInstance()
-		      .setLocale(new Locale(languageSelects_.get(0).getText().getValue()));
-		  } else
-		    WApplication.getInstance().setLocale(locale);
-	}
+        if (!haveLang) {
+            languageSelects_.get(0).setStyleClass("langcurrent");
+            WApplication.getInstance().setLocale(
+                    new Locale(languageSelects_.get(0).getText().getValue()));
+        } else
+            WApplication.getInstance().setLocale(locale);
+    }
 }

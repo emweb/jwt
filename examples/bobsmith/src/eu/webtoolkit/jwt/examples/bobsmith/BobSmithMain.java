@@ -12,21 +12,22 @@ import eu.webtoolkit.jwt.WText;
 import eu.webtoolkit.jwt.WtServlet;
 
 public class BobSmithMain extends WtServlet {
-	public BobSmithMain() {
-		super();
-	}
+    private static final long serialVersionUID = 1L;
 
-	public WApplication createApplication(WEnvironment env) {
-		WApplication app = new WApplication(env);
+    public BobSmithMain() {
+        super();
+    }
 
-		new WText("Name: ", app.getRoot());
-		WInPlaceEdit edit = new WInPlaceEdit("Bob Smith", app
-				.getRoot());
-		edit.setStyleClass("inplace");
+    public WApplication createApplication(WEnvironment env) {
+        WApplication app = new WApplication(env);
 
-		app.getStyleSheet().addRule("*.inplace span:hover",
-				"background-color: gray");
+        new WText("Name: ", app.getRoot());
+        WInPlaceEdit edit = new WInPlaceEdit("Bob Smith", app.getRoot());
+        edit.setStyleClass("inplace");
 
-		return app;
-	}
+        app.getStyleSheet().addRule("*.inplace span:hover",
+                "background-color: gray");
+
+        return app;
+    }
 }

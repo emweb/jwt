@@ -10,16 +10,18 @@ import eu.webtoolkit.jwt.WEnvironment;
 import eu.webtoolkit.jwt.WtServlet;
 
 public class HelloMain extends WtServlet {
-	public HelloMain() {
-		super();
-	}
+    private static final long serialVersionUID = 1L;
 
-	@Override
-	public WApplication createApplication(WEnvironment env) {
-		/*
-		 * You could read information from the environment to decide whether the user has permission to start a new
-		 * application
-		 */
-		return new HelloApplication(env);
-	}
+    public HelloMain() {
+        super();
+    }
+
+    @Override
+    public WApplication createApplication(WEnvironment env) {
+        /*
+         * You could read information from the environment to decide whether the
+         * user has permission to start a new application
+         */
+        return new HelloApplication(env);
+    }
 }
