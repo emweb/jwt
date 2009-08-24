@@ -75,6 +75,18 @@ public class WebResponse extends HttpServletResponseWrapper {
 
 	public String getPathInfo() {
 		String result = request.getPathInfo();
+
+                // Jetty will report "/" as an internal path. Which totally makes no sense but is according
+                // to the spec
+                if (request.getServletPath().length() == 0)
+                        if (result != null && result.equals("/"))
+                                return "";
+
+		return result == null ? "" : result;
+	}
+
+	public String getParameter(String string) {
+		String result = request.getParameter("_");
 		return result == null ? "" : result;
 	}
 

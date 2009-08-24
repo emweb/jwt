@@ -227,7 +227,7 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 	}
 
 	public void render(String canvasId, DomElement text) {
-		String canvasVar = "Wt2_99_2.getElement('" + canvasId + "')";
+		String canvasVar = "Wt2_99_4.getElement('" + canvasId + "')";
 		StringWriter tmp = new StringWriter();
 		tmp.append("if(").append(canvasVar).append(
 				".getContext){new Wt._p_.ImagePreloader([");

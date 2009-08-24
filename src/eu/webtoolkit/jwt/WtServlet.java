@@ -35,19 +35,19 @@ public abstract class WtServlet extends HttpServlet {
 
 	private static final String WT_WEBSESSION_ID = "wt-websession";
 
-	final static String Boot_html;
-	final static String Plain_html;
-	final static String JsNoAjax_html;
-	final static String Wt_js;
-	final static String CommAjax_js;
-	final static String CommScript_js;
+	static final String Boot_html;
+	static final String Plain_html;
+	static final String Wt_js;
+	static final String CommAjax_js;
+	static final String CommScript_js;
+	static final String ProgressiveBoot_html;
 
 	private String resourcePath;
 
 	static {
 		Boot_html = readFile("/eu/webtoolkit/jwt/skeletons/Boot.html");
 		Plain_html = readFile("/eu/webtoolkit/jwt/skeletons/Plain.html");
-		JsNoAjax_html = readFile("/eu/webtoolkit/jwt/skeletons/JsNoAjax.html");
+		ProgressiveBoot_html = readFile("/eu/webtoolkit/jwt/skeletons/ProgressiveBoot.html");
 		Wt_js = readFile("/eu/webtoolkit/jwt/skeletons/Wt.js");
 		CommAjax_js = readFile("/eu/webtoolkit/jwt/skeletons/CommAjax.js");
 		CommScript_js = readFile("/eu/webtoolkit/jwt/skeletons/CommScript.js");

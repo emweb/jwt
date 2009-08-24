@@ -37,7 +37,7 @@ import java.util.Set;
  * <p>
  * The widget corresponds to the HTML <code>&lt;table&gt;</code> tag.
  * <p>
- * WComboBox is a {@link WWidget#setInline(boolean inlined) stacked} widget.
+ * WTable is displayed as a {@link WWidget#setInline(boolean inlined) block}.
  * <p>
  * 
  * @see WTableCell
@@ -166,10 +166,12 @@ public class WTable extends WInteractWidget {
 	/**
 	 * Insert an empty row.
 	 */
-	public void insertRow(int row) {
-		this.rows_.add(0 + row, new WTableRow(this, this.getColumnCount()));
+	public WTableRow insertRow(int row) {
+		WTableRow tableRow = new WTableRow(this, this.getColumnCount());
+		this.rows_.add(0 + row, tableRow);
 		this.flags_.set(BIT_GRID_CHANGED);
 		this.repaint(EnumSet.of(RepaintFlag.RepaintInnerHtml));
+		return tableRow;
 	}
 
 	/**
@@ -199,15 +201,18 @@ public class WTable extends WInteractWidget {
 	/**
 	 * Insert an empty column.
 	 */
-	public void insertColumn(int column) {
+	public WTableColumn insertColumn(int column) {
 		for (int i = 0; i < this.rows_.size(); ++i) {
 			this.rows_.get(i).insertColumn(column);
 		}
+		WTableColumn tableColumn = null;
 		if (this.columns_ != null && (int) column <= this.columns_.size()) {
-			this.columns_.add(0 + column, new WTableColumn(this));
+			tableColumn = new WTableColumn(this);
+			this.columns_.add(0 + column, tableColumn);
 		}
 		this.flags_.set(BIT_GRID_CHANGED);
 		this.repaint(EnumSet.of(RepaintFlag.RepaintInnerHtml));
+		return tableColumn;
 	}
 
 	/**

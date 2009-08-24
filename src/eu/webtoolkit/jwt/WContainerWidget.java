@@ -23,12 +23,12 @@ import eu.webtoolkit.jwt.utils.EnumUtils;
  * Use {@link WContainerWidget#addWidget(WWidget widget)} or pass the container
  * as constructor argument to a widget to directly add children to the
  * container, without using a layout manager. In that case, CSS-based layout is
- * used, which is governed by properties of the children, and properties of the
- * container. By default, a WContainerWidget is
- * {@link WWidget#setInline(boolean inlined) stacked} and manages its children
+ * used, and the resulting display is determined by properties of the children
+ * and the container. By default, a WContainerWidget is displayed as a
+ * {@link WWidget#setInline(boolean inlined) block} and manages its children
  * within a rectangle. Inline child widgets are layed out in lines, wrapping
- * around as needed, while stacked widgets are stacked vertically. The container
- * may add padding at the container edges using
+ * around as needed, while block child widgets are stacked vertically. The
+ * container may add padding at the container edges using
  * {@link WContainerWidget#setPadding(WLength length, EnumSet sides)}, and
  * provide alignment of contents using
  * {@link WContainerWidget#setContentAlignment(EnumSet alignment)}. A container
@@ -44,7 +44,8 @@ import eu.webtoolkit.jwt.utils.EnumUtils;
  * inline} the container only acts as a conceptual container, offering a common
  * style to its children. Inline children are still layed out inline within the
  * flow of the parent container of this container, as if they were inserted
- * directly into that parent container.
+ * directly into that parent container. Block children are then not allowed
+ * (according to the HTML specification).
  * <p>
  * To use a layout manager instead of CSS-based layout, use
  * {@link WContainerWidget#setLayout(WLayout layout)} or pass the container as
@@ -75,6 +76,13 @@ import eu.webtoolkit.jwt.utils.EnumUtils;
 		  <br> 
  container2.setLayout(layout);      // set the layout to the container.
 </code>
+ * <p>
+ * When using a layout manager, you need to carefully consider the alignment of
+ * the layout manager with respect to the container: when the container&apos;s
+ * height is unconstrained (not specified explicitly using
+ * {@link WWebWidget#resize(WLength width, WLength height)} or a style class,
+ * and the container is not included in a layout manager), you should pass
+ * AlignTop to {@link WContainerWidget#setLayout(WLayout layout)}.
  * <p>
  * Depending on its configuration and usage, the widget corresponds to the
  * following HTML tags:

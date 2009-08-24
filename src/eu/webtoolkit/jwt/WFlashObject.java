@@ -126,7 +126,7 @@ public class WFlashObject extends WContainerWidget {
 	 * or {@link JSlot} in custom JavaScript code to refer to the Flash content.
 	 */
 	public String getJsFlashRef() {
-		return "Wt2_99_2.getElement('flash" + this.getId() + "')";
+		return "Wt2_99_4.getElement('flash" + this.getId() + "')";
 	}
 
 	protected void getDomChanges(List<DomElement> result, WApplication app) {

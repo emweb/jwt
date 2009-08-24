@@ -79,6 +79,9 @@ public class WTableRow extends WObject {
 	 * @see WWidget#setStyleClass(String styleClass)
 	 */
 	public void setStyleClass(String style) {
+		if (WWebWidget.canOptimizeUpdates() && style.equals(this.styleClass_)) {
+			return;
+		}
 		this.styleClass_ = style;
 		this.table_.repaintRow(this);
 	}

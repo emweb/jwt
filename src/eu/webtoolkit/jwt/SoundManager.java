@@ -8,8 +8,9 @@ package eu.webtoolkit.jwt;
 import java.io.StringWriter;
 import java.util.EnumSet;
 
-class SoundManager {
+class SoundManager extends WObject {
 	public SoundManager(WApplication app) {
+		super(app);
 		this.wApp_ = app;
 		WFlashObject player_ = new WFlashObject(WApplication.getResourcesUrl()
 				+ "WtSoundManager.swf", this.wApp_.getDomRoot());
@@ -24,7 +25,7 @@ class SoundManager {
 				.doJavaScript(
 						"WtSoundManager = {};WtSoundManager.initialized = false;WtSoundManager.queue = new Array();WtSoundManager.player = null;WtSoundManager.flashInitializedCB = function() {WtSoundManager.initialized = true;WtSoundManager.player = "
 								+ player_.getJsFlashRef()
-								+ ";for (var i in WtSoundManager.queue) {var action = WtSoundManager.queue[i].action;if (action == 'add') {WtSoundManager.add(WtSoundManager.queue[i].id, WtSoundManager.queue[i].url);} else if (action == 'remove') {WtSoundManager.remove(WtSoundManager.queue[i].id);} else if (action == 'play') {WtSoundManager.doPlay(WtSoundManager.queue[i].id, WtSoundManager.queue[i].loops);} else if (action == 'stop') {WtSoundManager.doStop(WtSoundManager.queue[i].id);} else {alert('WWtSoundManager internal error: action not found: ' + action);}}};WtSoundManager.onerror = function() {alert('WtSoundManager failed to start');};WtSoundManager.add = function(id, url) {if(WtSoundManager.initialized) {WtSoundManager.player.WtAdd(id, url);} else {WtSoundManager.queue.push({action: 'add', id: id, url: url});}};WtSoundManager.remove = function(id) {if (WtSoundManager.initialized) {WtSoundManager.player.WtRemove(id);} else {WtSoundManager.queue.push({action: 'remove', id: id});}};\nWtSoundManager.doPlay = function(id, loops) {\nif (WtSoundManager.initialized) {\nWtSoundManager.player.WtPlay(id, loops);\n} else {\nWtSoundManager.queue.push({action: 'play', id: id, loops: loops});\n}\n};\nWtSoundManager.doStop = function(id) {if (WtSoundManager.initialized) {WtSoundManager.player.WtStop(id);} else {WtSoundManager.queue.push({action: 'stop', id: id});}};",
+								+ ";var i, il;for (i = 0, il = WtSoundManager.queue.length; i < il; i++) {var action = WtSoundManager.queue[i].action;if (action == 'add') {WtSoundManager.add(WtSoundManager.queue[i].id, WtSoundManager.queue[i].url);} else if (action == 'remove') {WtSoundManager.remove(WtSoundManager.queue[i].id);} else if (action == 'play') {WtSoundManager.doPlay(WtSoundManager.queue[i].id, WtSoundManager.queue[i].loops);} else if (action == 'stop') {WtSoundManager.doStop(WtSoundManager.queue[i].id);} else {alert('WWtSoundManager internal error: action not found: ' + action);}}};WtSoundManager.onerror = function() {alert('WtSoundManager failed to start');};WtSoundManager.add = function(id, url) {if(WtSoundManager.initialized) {WtSoundManager.player.WtAdd(id, url);} else {WtSoundManager.queue.push({action: 'add', id: id, url: url});}};WtSoundManager.remove = function(id) {if (WtSoundManager.initialized) {WtSoundManager.player.WtRemove(id);} else {WtSoundManager.queue.push({action: 'remove', id: id});}};\nWtSoundManager.doPlay = function(id, loops) {\nif (WtSoundManager.initialized) {\nWtSoundManager.player.WtPlay(id, loops);\n} else {\nWtSoundManager.queue.push({action: 'play', id: id, loops: loops});\n}\n};\nWtSoundManager.doStop = function(id) {if (WtSoundManager.initialized) {WtSoundManager.player.WtStop(id);} else {WtSoundManager.queue.push({action: 'stop', id: id});}};",
 						false);
 	}
 

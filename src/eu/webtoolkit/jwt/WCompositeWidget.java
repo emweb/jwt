@@ -277,6 +277,10 @@ public class WCompositeWidget extends WWidget {
 		}
 	}
 
+	protected void enableAjax() {
+		this.impl_.enableAjax();
+	}
+
 	/**
 	 * Set the implementation widget.
 	 * <p>
@@ -321,6 +325,14 @@ public class WCompositeWidget extends WWidget {
 
 	protected boolean needsToBeRendered() {
 		return this.impl_.needsToBeRendered();
+	}
+
+	protected int boxPadding(Orientation orientation) {
+		return this.impl_.boxPadding(orientation);
+	}
+
+	protected int boxBorder(Orientation orientation) {
+		return this.impl_.boxBorder(orientation);
 	}
 
 	private WWidget impl_;

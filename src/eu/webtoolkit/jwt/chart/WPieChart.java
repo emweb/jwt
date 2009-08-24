@@ -158,6 +158,7 @@ public class WPieChart extends WAbstractChart {
 	 * @see WAbstractChart#setPalette(WChartPalette palette)
 	 */
 	public void setBrush(int modelRow, WBrush brush) {
+		this.pie_.get(modelRow).customBrush = true;
 		this.pie_.get(modelRow).brush = brush;
 		this.update();
 	}

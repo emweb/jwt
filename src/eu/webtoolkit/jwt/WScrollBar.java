@@ -95,21 +95,14 @@ public class WScrollBar extends WObject {
 		if (this.tiesChanged_ || all) {
 			String jsCode = "";
 			for (int i = 0; i < this.ties_.size(); ++i) {
-				DomElement tieElement = DomElement.getForUpdate(this.ties_
-						.get(i).scrollArea_, DomElementType.DomElement_DIV);
-				DomElement scrollElement = DomElement.getForUpdate(
-						this.scrollArea_, DomElementType.DomElement_DIV);
-				jsCode += tieElement.createReference()
-						+ ".scroll"
-						+ (this.orientation_ == Orientation.Horizontal ? "Left"
-								: "Top")
-						+ "="
-						+ scrollElement.createReference()
-						+ ".scroll"
-						+ (this.orientation_ == Orientation.Horizontal ? "Left"
-								: "Top") + ";";
-				/* delete tieElement */;
-				/* delete scrollElement */;
+				String tieElement = "Wt2_99_4.getElement('"
+						+ this.ties_.get(i).scrollArea_.getId() + "')";
+				String scrollElement = "Wt2_99_4.getElement('"
+						+ this.scrollArea_.getId() + "')";
+				String side = this.orientation_ == Orientation.Horizontal ? "Left"
+						: "Top";
+				jsCode += tieElement + ".scroll" + side + "=" + scrollElement
+						+ ".scroll" + side + ";";
 			}
 			element.setEvent("scroll", jsCode, "");
 			this.tiesChanged_ = false;

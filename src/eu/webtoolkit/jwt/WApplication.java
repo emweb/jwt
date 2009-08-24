@@ -108,6 +108,7 @@ public class WApplication extends WObject {
 		this.titleChanged_ = false;
 		this.styleSheet_ = new WCssStyleSheet();
 		this.locale_ = new Locale("");
+		this.oldInternalPath_ = "";
 		this.newInternalPath_ = "";
 		this.internalPathChanged_ = new Signal1<String>(this);
 		this.javaScriptClass_ = "Wt";
@@ -192,7 +193,7 @@ public class WApplication extends WObject {
 		this.styleSheet_
 				.addRule(
 						"button.Wt-wrap",
-						"border: 0px; text-align: left;background-color: transparent; margin: 0px; padding: 0px; font-size: inherit; pointer: hand; cursor: pointer; cursor: hand; color: inherit;");
+						"border: 0px !important;text-align: left;margin: 0px !important;padding: 0px !important;font-size: inherit; pointer: hand; cursor: pointer; cursor: hand;background-color: transparent;color: inherit;");
 		this.styleSheet_.addRule("a.Wt-wrap", "text-decoration: none;");
 		this.styleSheet_.addRule(".Wt-invalid", "background-color: #f79a9a;");
 		this.styleSheet_
@@ -770,6 +771,9 @@ public class WApplication extends WObject {
 	 */
 	public void setInternalPath(String path, boolean emitChange) {
 		this.isLoadRsh();
+		if (!this.internalPathIsChanged_) {
+			this.oldInternalPath_ = this.newInternalPath_;
+		}
 		if (!this.session_.getRenderer().isPreLearning() && emitChange) {
 			this.changeInternalPath(path);
 		} else {
@@ -797,7 +801,7 @@ public class WApplication extends WObject {
 	 * 
 	 * @see WApplication#setInternalPath(String path, boolean emitChange)
 	 * @see WApplication#getInternalPathNextPart(String path)
-	 * @see WApplication#isInternalPathMatches(String path)
+	 * @see WApplication#internalPathMatches(String path)
 	 */
 	public String getInternalPath() {
 		return this.newInternalPath_;
@@ -815,8 +819,8 @@ public class WApplication extends WObject {
 	 * <code>&quot;/project/z3cbc/&quot;</code> as <i>path</i> argument.
 	 * <p>
 	 * The <i>path</i> must start with a &apos;/&apos;, and
-	 * {@link WApplication#isInternalPathMatches(String path)} should evaluate
-	 * to <i>true</i> for the given <i>path</i>. If not, an empty string is
+	 * {@link WApplication#internalPathMatches(String path)} should evaluate to
+	 * <i>true</i> for the given <i>path</i>. If not, an empty string is
 	 * returned and an error message is logged.
 	 * <p>
 	 * 
@@ -861,7 +865,7 @@ public class WApplication extends WObject {
 	 * @see WApplication#setInternalPath(String path, boolean emitChange)
 	 * @see WApplication#getInternalPath()
 	 */
-	public boolean isInternalPathMatches(String path) {
+	public boolean internalPathMatches(String path) {
 		if (this.session_.getRenderer().isPreLearning()) {
 			return false;
 		} else {
@@ -1281,11 +1285,11 @@ public class WApplication extends WObject {
 			this.loadingIndicatorWidget_ = indicator.getWidget();
 			this.domRoot_.addWidget(this.loadingIndicatorWidget_);
 			JSlot showLoadJS = new JSlot();
-			showLoadJS.setJavaScript("function(obj, e) {Wt2_99_2.inline('"
+			showLoadJS.setJavaScript("function(obj, e) {Wt2_99_4.inline('"
 					+ this.loadingIndicatorWidget_.getId() + "');}");
 			this.showLoadingIndicator_.addListener(showLoadJS);
 			JSlot hideLoadJS = new JSlot();
-			hideLoadJS.setJavaScript("function(obj, e) {Wt2_99_2.hide('"
+			hideLoadJS.setJavaScript("function(obj, e) {Wt2_99_4.hide('"
 					+ this.loadingIndicatorWidget_.getId() + "');}");
 			this.hideLoadingIndicator_.addListener(hideLoadJS);
 			this.loadingIndicatorWidget_.hide();
@@ -1422,6 +1426,27 @@ public class WApplication extends WObject {
 		}
 	}
 
+	/**
+	 * Progress to an Ajax-enabled user interface.
+	 * <p>
+	 * This method is called when the progressive bootstrap method is used, and
+	 * support for AJAX has been detected. The default behavior will propagate
+	 * the {@link WWidget#enableAjax()} method through the widget hierarchy.
+	 * <p>
+	 * You may want to reimplement this method if you want to make changes to
+	 * the user-interface when AJAX is enabled. You should always call the base
+	 * implementation.
+	 * <p>
+	 * 
+	 * @see WWidget#enableAjax()
+	 */
+	protected void enableAjax() {
+		this.domRoot_.enableAjax();
+		if (this.domRoot2_ != null) {
+			this.domRoot2_.enableAjax();
+		}
+	}
+
 	protected void exposeOnly(WWidget w) {
 		this.exposedOnly_ = w;
 	}
@@ -1457,6 +1482,7 @@ public class WApplication extends WObject {
 	private WCssStyleSheet styleSheet_;
 	private WLocalizedStrings localizedStrings_;
 	private Locale locale_;
+	String oldInternalPath_;
 	String newInternalPath_;
 	Signal1<String> internalPathChanged_;
 	boolean internalPathIsChanged_;

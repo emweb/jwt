@@ -14,6 +14,8 @@ public class HelloMain extends WtServlet {
 
     public HelloMain() {
         super();
+
+	getConfiguration().setProgressiveBootstrap(true);
     }
 
     @Override

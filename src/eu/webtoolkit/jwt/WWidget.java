@@ -526,21 +526,22 @@ public abstract class WWidget extends WObject {
 	public abstract boolean isPopup();
 
 	/**
-	 * Sets whether this widget is inline or stacked.
+	 * Sets whether this widget is displayed inline or as a block.
 	 * <p>
 	 * This option changes whether this widget must be rendered in-line with
 	 * sibling widgets wrapping at the right edge of the parent container (like
-	 * text), or whether this widget must be stacked vertically with sibling
-	 * widgets. Depending on the widget type, the default value is inline (such
-	 * as for example for {@link WText}, or {@link WPushButton}), or stacked
-	 * (such as for example for {@link WTable}).
+	 * text), or whether this widget must be rendered as a rectangular block
+	 * that stacks vertically with sibling widgets (unless a CSS float property
+	 * is applied). Depending on the widget type, the default value is inline
+	 * (such as for example for {@link WText}, or {@link WPushButton}), or block
+	 * (such as for example for a {@link WContainerWidget}).
 	 * <p>
 	 * This applies to CSS-based layout.
 	 */
 	public abstract void setInline(boolean inlined);
 
 	/**
-	 * Returns whether this widget is inline or stacked.
+	 * Returns whether this widget is displayed inline or as block.
 	 * <p>
 	 * 
 	 * @see WWidget#setInline(boolean inlined)
@@ -654,7 +655,7 @@ public abstract class WWidget extends WObject {
 	 * in custom JavaScript code.
 	 */
 	public String getJsRef() {
-		return "Wt2_99_2.getElement('" + this.getId() + "')";
+		return "Wt2_99_4.getElement('" + this.getId() + "')";
 	}
 
 	/**
@@ -806,13 +807,13 @@ public abstract class WWidget extends WObject {
 	}
 
 	public String createJavaScript(StringWriter js, String insertJS) {
-		DomElement de = this.getWebWidget().createSDomElement(
-				WApplication.getInstance());
-		String var = de.asJavaScript(js, true);
+		WApplication app = WApplication.getInstance();
+		DomElement de = this.getWebWidget().createSDomElement(app);
+		String var = de.getCreateVar();
 		if (insertJS.length() != 0) {
-			js.append(insertJS).append(var).append(");");
+			insertJS += var + ");";
 		}
-		de.asJavaScript(js, false);
+		de.createElement(js, app, insertJS);
 		/* delete de */;
 		return var;
 	}
@@ -881,6 +882,74 @@ public abstract class WWidget extends WObject {
 	 *      boolean isDragWidgetOnly, WObject sourceObject)
 	 */
 	protected void dropEvent(WDropEvent event) {
+	}
+
+	/**
+	 * Progress to an Ajax-enabled widget.
+	 * <p>
+	 * This method is called when the progressive bootstrap method is used, and
+	 * support for AJAX has been detected. The default behavior will upgrade the
+	 * widget&apos;s event handling to use AJAX instead of full page reloads,
+	 * and propagate the call to its children.
+	 * <p>
+	 * You may want to reimplement this method if you want to make changes to
+	 * widget when AJAX is enabled. You should always call the base
+	 * implementation.
+	 * <p>
+	 * 
+	 * @see WApplication#enableAjax()
+	 */
+	protected abstract void enableAjax();
+
+	/**
+	 * Returns the widget&apos;s built-in padding.
+	 * <p>
+	 * This is used by the layout managers to correct for a built-in padding
+	 * which interferes with setting a widget&apos;s width (or height) to 100%.
+	 * <p>
+	 * A layout manager needs to set the width to 100% only for form widgets (
+	 * {@link WTextArea}, {@link WLineEdit}, {@link WComboBox}, etc...).
+	 * Therefore, only for those widgets this needs to return the padding (the
+	 * default implementation returns 0).
+	 * <p>
+	 * For form widgets, the padding depends on the specific browser/platform
+	 * combination, unless an explicit padding is set for the widget.
+	 * <p>
+	 * When setting an explicit padding for the widget using a style class, you
+	 * will want to reimplement this method to return this padding in case you
+	 * want to set the widget inside a layout manager.
+	 * <p>
+	 * 
+	 * @see WWidget#boxBorder(Orientation orientation)
+	 */
+	protected int boxPadding(Orientation orientation) {
+		return 0;
+	}
+
+	/**
+	 * Returns the widget&apos;s built-in border width.
+	 * <p>
+	 * This is used by the layout managers to correct for a built-in border
+	 * which interferes with setting a widget&apos;s width (or height) to 100%.
+	 * <p>
+	 * A layout manager needs to set the width to 100% only for form widgets (
+	 * {@link WTextArea}, {@link WLineEdit}, {@link WComboBox}, etc...).
+	 * Therefore, only for those widgets this needs to return the border width
+	 * (the default implementation returns 0).
+	 * <p>
+	 * For form widgets, the border width depends on the specific
+	 * browser/platform combination, unless an explicit border is set for the
+	 * widget.
+	 * <p>
+	 * When setting an explicit border for the widget using a style class, you
+	 * will want to reimplement this method to return this border width, in case
+	 * you want to set the widget inside a layout manager.
+	 * <p>
+	 * 
+	 * @see WWidget#boxPadding(Orientation orientation)
+	 */
+	protected int boxBorder(Orientation orientation) {
+		return 0;
 	}
 
 	protected void getDrop(String sourceId, String mimeType, WMouseEvent event) {

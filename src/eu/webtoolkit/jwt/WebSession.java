@@ -17,6 +17,14 @@ import eu.webtoolkit.jwt.servlet.WebRequest;
 import eu.webtoolkit.jwt.servlet.WebResponse;
 
 class WebSession {
+	public enum State {
+		JustCreated, Bootstrap, ProgressiveBootstrap, Loaded, Dead;
+
+		public int getValue() {
+			return ordinal();
+		}
+	}
+
 	public WebSession(WtServlet controller, String sessionId,
 			ApplicationType type, String favicon, WebRequest request,
 			WEnvironment env) {
@@ -151,7 +159,15 @@ class WebSession {
 			session.notifySignal(e);
 			break;
 		case Refresh:
+			session.env_.parameters_ = e.handler.getRequest().getParameterMap();
 			session.app_.refresh();
+			break;
+		case EnableAjax:
+			session.app_.enableAjax();
+			if (session.env_.getInternalPath().length() > 1) {
+				session.app_.changeInternalPath(session.env_.getInternalPath());
+			}
+			session.renderer_.serveMainscript(e.handler.getResponse(), true);
 			break;
 		case Render:
 			session.render(e.handler, e.responseType);
@@ -218,19 +234,36 @@ class WebSession {
 									boolean forcePlain = this.env_
 											.agentIsSpiderBot()
 											|| !this.env_.agentSupportsAjax();
-									if (forcePlain) {
+									boolean progressiveBoot = !forcePlain
+											&& this.controller_
+													.getConfiguration()
+													.progressiveBootstrap();
+									if (forcePlain || progressiveBoot) {
 										this.env_.doesJavaScript_ = false;
 										this.env_.doesAjax_ = false;
 										this.env_.doesCookies_ = false;
+										try {
+											String internalPath = this.env_
+													.getCookie("WtInternalPath");
+											this.env_
+													.setInternalPath(internalPath);
+										} catch (Exception e) {
+										}
 										if (!this.isStart()) {
 											throw new WtException(
 													"Could not start application.");
+										}
+										if (progressiveBoot) {
+											this.state_ = WebSession.State.ProgressiveBootstrap;
 										}
 										this.app_
 												.notify(new WEvent(
 														handler,
 														WEvent.EventType.Render,
 														WebRenderer.ResponseType.FullResponse));
+										if (progressiveBoot) {
+											this.state_ = WebSession.State.ProgressiveBootstrap;
+										}
 										if (this.env_.agentIsSpiderBot()) {
 											handler.killSession();
 										}
@@ -274,34 +307,6 @@ class WebSession {
 									&& ajaxE != null && ajaxE.equals("yes");
 							this.env_.doesCookies_ = request.getHeaderValue(
 									"Cookie").length() != 0;
-							if (this.env_.doesAjax_
-									&& (request.getPathInfo().length() != 0 || this.applicationName_
-											.length() == 0
-											&& this.env_.getInternalPath()
-													.length() > 1)) {
-								String url = "";
-								if (request.getPathInfo().length() != 0) {
-									String pi = request.getPathInfo();
-									for (int t = pi.indexOf('/'); t != -1; t = pi
-											.indexOf('/', t + 1)) {
-										url += "../";
-									}
-									url += this.getApplicationName();
-								} else {
-									url = this.getBaseUrl()
-											+ this.getApplicationName();
-								}
-								url += '#' + this.env_.getInternalPath();
-								this.redirect(url);
-								this.renderer_.serveMainWidget(handler
-										.getResponse(),
-										WebRenderer.ResponseType.FullResponse);
-								this.log("notice").append(
-										"Redirecting to canonical URL: ")
-										.append(url);
-								handler.killSession();
-								break;
-							}
 							try {
 								this.env_.dpiScale_ = scaleE != null ? Double
 										.parseDouble(scaleE) : 1;
@@ -314,12 +319,6 @@ class WebSession {
 							if (!this.isStart()) {
 								throw new WtException(
 										"Could not start application.");
-							}
-							if (!this.env_.getInternalPath().equals("/")) {
-								this.app_.setInternalPath("/");
-								this.app_.notify(new WEvent(handler,
-										WEvent.EventType.HashChange, this.env_
-												.getInternalPath()));
 							}
 						} else {
 							if (jsE.equals("no") && this.env_.doesAjax_) {
@@ -342,6 +341,33 @@ class WebSession {
 								WEvent.EventType.Render,
 								WebRenderer.ResponseType.FullResponse));
 						break;
+					}
+					case ProgressiveBootstrap: {
+						if (requestE != null && requestE.equals("script")) {
+							String hashE = request.getParameter("_");
+							String scaleE = request.getParameter("scale");
+							this.env_.doesJavaScript_ = true;
+							this.env_.doesAjax_ = true;
+							this.env_.doesCookies_ = request.getHeaderValue(
+									"Cookie").length() != 0;
+							try {
+								this.env_.dpiScale_ = scaleE != null ? Double
+										.parseDouble(scaleE) : 1;
+							} catch (NumberFormatException e) {
+								this.env_.dpiScale_ = 1;
+							}
+							if (hashE != null) {
+								this.env_.setInternalPath(hashE);
+							}
+							this.app_.notify(new WEvent(handler,
+									WEvent.EventType.EnableAjax,
+									WebRenderer.ResponseType.FullResponse));
+							break;
+						} else {
+							if (signalE != null) {
+								this.setLoaded();
+							}
+						}
 					}
 					case Loaded: {
 						responseType = signalE != null && !(requestE != null)
@@ -415,7 +441,8 @@ class WebSession {
 							} else {
 								if (responseType == WebRenderer.ResponseType.FullResponse
 										&& !this.env_.doesAjax_
-										&& !(signalE != null)) {
+										&& !(signalE != null)
+										&& this.applicationName_.length() != 0) {
 									this.app_.notify(new WEvent(handler,
 											WEvent.EventType.HashChange,
 											request.getPathInfo()));
@@ -545,6 +572,10 @@ class WebSession {
 		return this.state_ == WebSession.State.Dead;
 	}
 
+	public WebSession.State getState() {
+		return this.state_;
+	}
+
 	public String getApplicationName() {
 		return this.applicationName_;
 	}
@@ -582,20 +613,48 @@ class WebSession {
 	}
 
 	public String appendSessionQuery(String url) {
-		String result = WebSession.Handler.getInstance().getResponse()
-				.encodeURL(url);
+		String result = url;
 		if (this.env_.agentIsSpiderBot()) {
 			return result;
 		}
 		int questionPos = result.indexOf('?');
 		if (questionPos == -1) {
-			return result + this.getSessionQuery();
+			result += this.getSessionQuery();
 		} else {
 			if (questionPos == result.length() - 1) {
-				return result + this.getSessionQuery().substring(1);
+				result += this.getSessionQuery().substring(1);
 			} else {
-				return result + '&' + this.getSessionQuery().substring(1);
+				result += '&' + this.getSessionQuery().substring(1);
 			}
+		}
+		if (result.startsWith("?")) {
+			result = this.applicationUrl_ + result;
+		}
+		return WebSession.Handler.getInstance().getResponse().encodeURL(result);
+	}
+
+	public String ajaxCanonicalUrl(WebResponse request) {
+		String hashE = null;
+		if (this.applicationName_.length() == 0) {
+			hashE = request.getParameter("_");
+		}
+		if (request.getPathInfo().length() != 0 || hashE != null
+				&& hashE.length() > 1) {
+			String url = "";
+			if (request.getPathInfo().length() != 0) {
+				String pi = request.getPathInfo();
+				for (int t = pi.indexOf('/'); t != -1; t = pi.indexOf('/',
+						t + 1)) {
+					url += "../";
+				}
+				url += this.getApplicationName();
+			} else {
+				url = this.getBaseUrl() + this.getApplicationName();
+			}
+			url += '#' + this.env_.getInternalPath();
+			return url;
+		} else {
+			return "";
 		}
 	}
 
@@ -611,9 +670,10 @@ class WebSession {
 			WebSession.BootstrapOption option) {
 		switch (option) {
 		case KeepInternalPath: {
-			String internalPath = this.app_ != null ? this.app_
-					.getInternalPath() : this.env_.getInternalPath();
+			String internalPath = "";
 			if (this.applicationName_.length() == 0) {
+				internalPath = this.app_ != null ? this.app_.getInternalPath()
+						: this.env_.getInternalPath();
 				if (internalPath.length() > 1) {
 					return this.appendSessionQuery("?_="
 							+ DomElement.urlEncodeS(internalPath));
@@ -621,13 +681,15 @@ class WebSession {
 					return this.appendSessionQuery("");
 				}
 			} else {
-				if (internalPath.length() > 1) {
-					String lastPart = internalPath.substring(internalPath
-							.lastIndexOf('/') + 1);
-					return this.appendSessionQuery(lastPart);
-				} else {
-					return this.appendSessionQuery(this.applicationName_);
-				}
+				internalPath = WebSession.Handler.getInstance().getRequest()
+						.getPathInfo();
+			}
+			if (internalPath.length() > 1) {
+				String lastPart = internalPath.substring(internalPath
+						.lastIndexOf('/') + 1);
+				return this.appendSessionQuery(lastPart);
+			} else {
+				return this.appendSessionQuery(this.applicationName_);
 			}
 		}
 		case ClearInternalPath:
@@ -770,6 +832,11 @@ class WebSession {
 		private boolean killed_;
 	}
 
+	public void setLoaded() {
+		this.setState(WebSession.State.Loaded, this.controller_
+				.getConfiguration().getSessionTimeout());
+	}
+
 	private void checkTimers() {
 		WContainerWidget timers = this.app_.getTimerRoot();
 		List<WWidget> timerWidgets = timers.getChildren();
@@ -791,14 +858,6 @@ class WebSession {
 	private void hibernate() {
 		if (this.app_ != null && this.app_.getLocalizedStrings() != null) {
 			this.app_.getLocalizedStrings().hibernate();
-		}
-	}
-
-	private enum State {
-		JustCreated, Bootstrap, Loaded, Dead;
-
-		public int getValue() {
-			return ordinal();
 		}
 	}
 
@@ -883,8 +942,6 @@ class WebSession {
 			handler.killSession();
 		}
 		this.renderer_.serveMainWidget(handler.getResponse(), type);
-		this.setState(WebSession.State.Loaded, this.controller_
-				.getConfiguration().getSessionTimeout());
 		this.updatesPending_ = false;
 	}
 

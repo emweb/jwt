@@ -323,15 +323,25 @@ public class WTabWidget extends WCompositeWidget {
 	 * 
 	 * @see WMenuItem#setPathComponent(String path)
 	 */
-	public void setInternalPathEnabled() {
-		this.menu_.setInternalPathEnabled();
+	public void setInternalPathEnabled(String basePath) {
+		this.menu_.setInternalPathEnabled(basePath);
+	}
+
+	/**
+	 * Enable internal paths for items.
+	 * <p>
+	 * Calls {@link #setInternalPathEnabled(String basePath)
+	 * setInternalPathEnabled("")}
+	 */
+	public final void setInternalPathEnabled() {
+		setInternalPathEnabled("");
 	}
 
 	/**
 	 * Returns whether internal paths are enabled.
 	 * <p>
 	 * 
-	 * @see WMenu#setInternalPathEnabled()
+	 * @see WMenu#setInternalPathEnabled(String basePath)
 	 */
 	public boolean isInternalPathEnabled() {
 		return this.menu_.isInternalPathEnabled();
@@ -343,7 +353,7 @@ public class WTabWidget extends WCompositeWidget {
 	 * A &apos;/&apos; is appended to turn it into a folder, if needed.
 	 * <p>
 	 * 
-	 * @see WMenu#setInternalPathEnabled()
+	 * @see WMenu#setInternalPathEnabled(String basePath)
 	 * @see WMenu#getInternalBasePath()
 	 */
 	public void setInternalBasePath(String path) {
@@ -355,8 +365,9 @@ public class WTabWidget extends WCompositeWidget {
 	 * <p>
 	 * The default value is the application&apos;s internalPath (
 	 * {@link WApplication#getInternalPath()}) that was recorded when
-	 * {@link WMenu#setInternalPathEnabled()} was called, and together with each
-	 * {@link WMenuItem#getPathComponent()} determines the paths for each item.
+	 * {@link WMenu#setInternalPathEnabled(String basePath)} was called, and
+	 * together with each {@link WMenuItem#getPathComponent()} determines the
+	 * paths for each item.
 	 * <p>
 	 * For example, if {@link WMenu#getInternalBasePath()} is
 	 * <code>&quot;/examples/&quot;</code> and pathComponent() for a particular
@@ -364,7 +375,7 @@ public class WTabWidget extends WCompositeWidget {
 	 * item will be <code>&quot;/examples/charts/&quot;</code>.
 	 * <p>
 	 * 
-	 * @see WMenu#setInternalPathEnabled()
+	 * @see WMenu#setInternalPathEnabled(String basePath)
 	 */
 	public String getInternalBasePath() {
 		return this.menu_.getInternalBasePath();

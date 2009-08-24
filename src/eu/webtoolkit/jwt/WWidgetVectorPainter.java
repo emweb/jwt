@@ -37,7 +37,7 @@ class WWidgetVectorPainter extends WWidgetPainter {
 		if (!EnumUtils.mask(device.getPaintFlags(), PaintFlag.PaintUpdate)
 				.isEmpty()) {
 			DomElement painter = DomElement.updateGiven(
-					"Wt2_99_2.getElement('p" + this.widget_.getId()
+					"Wt2_99_4.getElement('p" + this.widget_.getId()
 							+ "').firstChild", DomElementType.DomElement_DIV);
 			painter.setProperty(Property.PropertyAddedInnerHTML, vectorDevice
 					.getRendered());

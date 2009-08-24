@@ -53,7 +53,12 @@ public class CsvUtil {
                     if (row == 0) {
                         model.setHeaderData(col, text);
                     } else {
-                        model.setData(row - 1, col, text);
+                        try {
+                            Integer i = Integer.valueOf(text);
+                            model.setData(row - 1, col, i);
+                        } catch (NumberFormatException e) {
+                            model.setData(row - 1, col, text);
+                        }
                     }
                 }
                 row++;

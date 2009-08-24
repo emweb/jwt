@@ -15,7 +15,7 @@ package eu.webtoolkit.jwt;
  */
 public class WEvent {
 	public enum EventType {
-		EmitSignal, Refresh, Render, HashChange;
+		EmitSignal, EnableAjax, Refresh, Render, HashChange;
 
 		public int getValue() {
 			return ordinal();

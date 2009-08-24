@@ -362,6 +362,14 @@ public abstract class WPaintedWidget extends WInteractWidget {
 		super.propagateRenderOk(deep);
 	}
 
+	protected void enableAjax() {
+		if (((this.painter_) instanceof WWidgetCanvasPainter ? (WWidgetCanvasPainter) (this.painter_)
+				: null) != null) {
+			this.update();
+		}
+		super.enableAjax();
+	}
+
 	private WPaintedWidget.Method preferredMethod_;
 	private WWidgetPainter painter_;
 	private boolean needRepaint_;
@@ -380,11 +388,11 @@ public abstract class WPaintedWidget extends WInteractWidget {
 			return true;
 		}
 		WPaintedWidget.Method method;
-		if (!env.hasJavaScript()) {
-			method = WPaintedWidget.Method.InlineSvgVml;
+		if (env.getContentType() != WEnvironment.ContentType.XHTML1) {
+			method = WPaintedWidget.Method.HtmlCanvas;
 		} else {
-			if (env.getContentType() != WEnvironment.ContentType.XHTML1) {
-				method = WPaintedWidget.Method.HtmlCanvas;
+			if (!env.hasJavaScript()) {
+				method = WPaintedWidget.Method.InlineSvgVml;
 			} else {
 				boolean oldFirefoxMac = (env.getUserAgent().indexOf(
 						"Firefox/1.5") != -1 || env.getUserAgent().indexOf(

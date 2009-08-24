@@ -51,7 +51,7 @@ import eu.webtoolkit.jwt.utils.StringUtils;
  * <p>
  * The WMenu may participate in the application&apos;s internal path, which lets
  * menu items correspond to internal URLs, see
- * {@link WMenu#setInternalPathEnabled()}.
+ * {@link WMenu#setInternalPathEnabled(String basePath)}.
  * <p>
  * The layout of the menu may be Horizontal or Vertical. The look of the items
  * may be defined through style sheets. The default {@link WMenuItem}
@@ -410,11 +410,12 @@ public class WMenu extends WCompositeWidget {
 	 * 
 	 * @see WMenuItem#setPathComponent(String path)
 	 */
-	public void setInternalPathEnabled() {
+	public void setInternalPathEnabled(String basePath) {
 		if (!this.internalPathEnabled_) {
 			this.internalPathEnabled_ = true;
 			WApplication app = WApplication.getInstance();
-			this.basePath_ = StringUtils.terminate(app.getInternalPath(), '/');
+			this.basePath_ = StringUtils.terminate(basePath.length() == 0 ? app
+					.getInternalPath() : basePath, '/');
 			app.internalPathChanged().addListener(this,
 					new Signal1.Listener<String>() {
 						public void trigger(String e1) {
@@ -427,10 +428,20 @@ public class WMenu extends WCompositeWidget {
 	}
 
 	/**
+	 * Enable internal paths for items.
+	 * <p>
+	 * Calls {@link #setInternalPathEnabled(String basePath)
+	 * setInternalPathEnabled("")}
+	 */
+	public final void setInternalPathEnabled() {
+		setInternalPathEnabled("");
+	}
+
+	/**
 	 * Returns whether the menu generates internal paths entries.
 	 * <p>
 	 * 
-	 * @see WMenu#setInternalPathEnabled()
+	 * @see WMenu#setInternalPathEnabled(String basePath)
 	 */
 	public boolean isInternalPathEnabled() {
 		return this.internalPathEnabled_;
@@ -442,7 +453,7 @@ public class WMenu extends WCompositeWidget {
 	 * A &apos;/&apos; is appended to turn it into a folder, if needed.
 	 * <p>
 	 * 
-	 * @see WMenu#setInternalPathEnabled()
+	 * @see WMenu#setInternalPathEnabled(String basePath)
 	 * @see WMenu#getInternalBasePath()
 	 */
 	public void setInternalBasePath(String basePath) {
@@ -462,8 +473,9 @@ public class WMenu extends WCompositeWidget {
 	 * <p>
 	 * The default value is the application&apos;s internalPath (
 	 * {@link WApplication#getInternalPath()}) that was recorded when
-	 * {@link WMenu#setInternalPathEnabled()} was called, and together with each
-	 * {@link WMenuItem#getPathComponent()} determines the paths for each item.
+	 * {@link WMenu#setInternalPathEnabled(String basePath)} was called, and
+	 * together with each {@link WMenuItem#getPathComponent()} determines the
+	 * paths for each item.
 	 * <p>
 	 * For example, if {@link WMenu#getInternalBasePath()} is
 	 * <code>&quot;/examples/&quot;</code> and pathComponent() for a particular
@@ -471,10 +483,17 @@ public class WMenu extends WCompositeWidget {
 	 * item will be <code>&quot;/examples/charts/&quot;</code>.
 	 * <p>
 	 * 
-	 * @see WMenu#setInternalPathEnabled()
+	 * @see WMenu#setInternalPathEnabled(String basePath)
 	 */
 	public String getInternalBasePath() {
 		return this.basePath_;
+	}
+
+	protected void enableAjax() {
+		if (this.internalPathEnabled_) {
+			this.updateItems();
+		}
+		super.enableAjax();
 	}
 
 	private WWidget impl_;
@@ -526,8 +545,8 @@ public class WMenu extends WCompositeWidget {
 				newPath += pc;
 			}
 			if (newPath.equals(this.basePath_)
-					|| !app.isInternalPathMatches(newPath)) {
-				WApplication.getInstance().setInternalPath(newPath);
+					|| !app.internalPathMatches(newPath)) {
+				app.setInternalPath(newPath);
 			}
 		}
 		this.itemSelectRendered_.trigger(this.items_.get(this.current_));
@@ -545,7 +564,7 @@ public class WMenu extends WCompositeWidget {
 
 	private void internalPathChanged(String path) {
 		WApplication app = WApplication.getInstance();
-		if (app.isInternalPathMatches(this.basePath_)) {
+		if (app.internalPathMatches(this.basePath_)) {
 			this.setFromState(app.getInternalPathNextPart(this.basePath_));
 		}
 	}

@@ -41,8 +41,10 @@ import eu.webtoolkit.jwt.utils.StringUtils;
  * The widget corresponds to an HTML <code>&lt;span&gt;</code> tag or an HTML
  * <code>&lt;div&gt;</code> depending on whether the widget is
  * {@link WWidget#setInline(boolean inlined) inline}. WText is by default
- * inline, unless the XHTML contents starts with a block-level element such as
- * <code>&lt;div&gt;</code>, <code>&lt;h&gt;</code> or <code>&lt;p&gt;</code>.
+ * inline, unless the XHTML contents starts with an element such as
+ * <code>&lt;div&gt;</code>, <code>&lt;h&gt;</code> or <code>&lt;p&gt;</code>
+ * that is displayed as a block, in which case the widget will also display as a
+ * block.
  * <p>
  * 
  * @see WApplication#setLocale(Locale locale)
@@ -309,8 +311,11 @@ public class WText extends WInteractWidget {
 
 	protected void updateDom(DomElement element, boolean all) {
 		if (this.textChanged_ || all) {
-			element.setProperty(Property.PropertyInnerHTML, this
-					.getFormattedText());
+			String text = this.getFormattedText();
+			if (this.textChanged_ || text.length() != 0) {
+				element.setProperty(Property.PropertyInnerHTML, this
+						.getFormattedText());
+			}
 			this.textChanged_ = false;
 		}
 		if (this.wordWrapChanged_ || all) {

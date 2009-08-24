@@ -16,6 +16,8 @@ public class ChartsMain extends WtServlet {
 
     public ChartsMain() {
         super();
+
+	getConfiguration().setProgressiveBootstrap(true);
     }
 
     public WApplication createApplication(WEnvironment env) {

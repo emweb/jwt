@@ -203,14 +203,8 @@ public class WEnvironment {
 	/**
 	 * Returns whether the browser has enabled support for JavaScript.
 	 * <p>
-	 * Without support for JavaScript, Wt will still be able to serve the
-	 * application, but with one considerable limitation: only the
-	 * {@link WTimer#timeout()}, {@link WInteractWidget#clicked()},
-	 * {@link WApplication#internalPathChanged()}, and
-	 * {@link WAbstractArea#clicked()} signals (and any derived signals) will
-	 * generate events.
-	 * <p>
-	 * Every event will cause the complete page to be rerendered.
+	 * This is the same as {@link WEnvironment#hasAjax()}: Wt only considers
+	 * using JavaScript when it has detected AJAX support.
 	 * <p>
 	 * 
 	 * @see WEnvironment#hasAjax()
@@ -222,9 +216,14 @@ public class WEnvironment {
 	/**
 	 * Returns whether the browser has enabled support for AJAX.
 	 * <p>
-	 * Without support for AJAX, Wt will still be able to serve the application,
-	 * but every event will cause the application to retransmit the whole page,
-	 * rendering many events inpractical.
+	 * Without support for JavaScript/AJAX, Wt will still be able to serve the
+	 * application, but with one considerable limitation: only the
+	 * {@link WTimer#timeout()}, {@link WInteractWidget#clicked()},
+	 * {@link WApplication#internalPathChanged()}, and
+	 * {@link WAbstractArea#clicked()} signals (and any derived signals) will
+	 * generate events.
+	 * <p>
+	 * Every event will cause the complete page to be rerendered.
 	 * <p>
 	 * 
 	 * @see WEnvironment#hasJavaScript()
@@ -439,7 +438,7 @@ public class WEnvironment {
 	 * Example: <code>&quot;1.99.2&quot;</code>
 	 */
 	public static String getLibraryVersion() {
-		return "2.99.2";
+		return "2.99.4";
 	}
 
 	// public void libraryVersion(bad java simple ref int series, bad java
@@ -783,5 +782,5 @@ public class WEnvironment {
 		return false;
 	}
 
-	public static String wt_class = "Wt2_99_2";
+	public static String wt_class = "Wt2_99_4";
 }

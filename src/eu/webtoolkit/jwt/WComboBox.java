@@ -235,6 +235,12 @@ public class WComboBox extends WFormWidget {
 						WComboBox.this.itemsChanged();
 					}
 				}));
+		this.modelConnections_.add(this.model_.layoutChanged().addListener(
+				this, new Signal.Listener() {
+					public void trigger() {
+						WComboBox.this.itemsChanged();
+					}
+				}));
 	}
 
 	/**
@@ -248,7 +254,7 @@ public class WComboBox extends WFormWidget {
 	 * @see WComboBox#setModel(WAbstractItemModel model)
 	 */
 	public void setModelColumn(int index) {
-		this.modelColumn_ = 0;
+		this.modelColumn_ = index;
 	}
 
 	/**

@@ -53,11 +53,9 @@ class WebRenderer implements SlotLearnerInterface {
 	}
 
 	public void needUpdate(WWidget w, boolean laterOnly) {
-		if (this.session_.getEnv().hasAjax()) {
-			this.updateMap_.add(w);
-			if (!laterOnly) {
-				this.moreUpdates_ = true;
-			}
+		this.updateMap_.add(w);
+		if (!laterOnly) {
+			this.moreUpdates_ = true;
 		}
 	}
 
@@ -134,65 +132,100 @@ class WebRenderer implements SlotLearnerInterface {
 			this.serveJavaScriptUpdate(response);
 			break;
 		case FullResponse:
-			switch (this.session_.getType()) {
-			case Application:
-				if (this.session_.getEnv().hasAjax()) {
-					this.serveMainscript(response);
-				} else {
-					this.serveMainpage(response);
-				}
-				break;
-			case WidgetSet:
-				this.serveWidgetSet(response);
+			if (this.session_.getEnv().hasAjax()) {
+				this.serveMainscript(response, false);
+			} else {
+				this.serveMainpage(response);
 			}
 		}
+	}
+
+	public void serveMainscript(WebResponse response, boolean upgradeToAjax)
+			throws IOException {
+		Configuration conf = this.session_.getController().getConfiguration();
+		boolean widgetset = this.session_.getType() == ApplicationType.WidgetSet;
+		this.setHeaders(response, "text/javascript; charset=UTF-8");
+		if (!widgetset) {
+			String redirect = this.session_.getRedirect();
+			if (redirect.length() != 0) {
+				this.streamRedirectJS(response.out(), redirect);
+				return;
+			}
+		}
+		WApplication app = this.session_.getApp();
+		final boolean xhtml = app.getEnvironment().getContentType() == WEnvironment.ContentType.XHTML1;
+		final boolean innerHtml = !xhtml || app.getEnvironment().agentIsGecko();
+		this.formObjectsChanged_ = true;
+		this.currentFormObjectsList_ = this.createFormObjectsList(app);
+		FileServe script = new FileServe(WtServlet.Wt_js);
+		script.setCondition("DEBUG", conf.isDebug());
+		script.setVar("WT_CLASS", "Wt2_99_4");
+		script.setVar("APP_CLASS", app.getJavaScriptClass());
+		script.setVar("AUTO_JAVASCRIPT", app.autoJavaScript_);
+		script.setCondition("STRICTLY_SERIALIZED_EVENTS", conf
+				.isSerializedEvents());
+		script.setVar("INNER_HTML", innerHtml);
+		script.setVar("FORM_OBJECTS", '[' + this.currentFormObjectsList_ + ']');
+		script.setVar("RELATIVE_URL", '"' + this.session_.getBootstrapUrl(
+				response, WebSession.BootstrapOption.ClearInternalPath) + '"');
+		script.setVar("KEEP_ALIVE", String
+				.valueOf(conf.getSessionTimeout() / 2));
+		script.setVar("INITIAL_HASH", app.getInternalPath());
+		script.setVar("INDICATOR_TIMEOUT", "500");
+		script
+				.setVar("SERVER_PUSH_TIMEOUT",
+						conf.getServerPushTimeout() * 1000);
+		script.setVar("ONLOAD", widgetset ? "" : "window.loadWidgetTree();");
+		script.stream(response.out());
+		app.autoJavaScriptChanged_ = false;
+		this.streamCommJs(app, response.out());
+		if (!upgradeToAjax) {
+			this.serveMainAjax(response);
+		} else {
+			response
+					.out()
+					.append("window.loadWidgetTree = function(){\n")
+					.append("var domRoot = ")
+					.append(app.domRoot_.getJsRef())
+					.append(
+							";var form = Wt2_99_4.getElement('Wt-form');domRoot.style.display = form.style.display;document.body.replaceChild(domRoot, form);");
+			this.visibleOnly_ = false;
+			this.collectJavaScript();
+			response
+					.out()
+					.append(this.collectedJS1_.toString())
+					.append(this.session_.getApp().getJavaScriptClass())
+					.append("._p_.response(")
+					.append(String.valueOf(this.expectedAckId_))
+					.append(");domRoot.style.display = 'block';")
+					.append(this.collectedJS2_.toString())
+					.append(
+							"};window.WtScriptLoaded = true;if (window.isLoaded) onLoad();\n");
+		}
+		this.session_.setLoaded();
 	}
 
 	public void serveBootstrap(WebResponse response) throws IOException {
 		boolean xhtml = this.session_.getEnv().getContentType() == WEnvironment.ContentType.XHTML1;
 		Configuration conf = this.session_.getController().getConfiguration();
 		FileServe boot = new FileServe(WtServlet.Boot_html);
-		boot.setVar("XMLPREAMBLE", "");
-		boot.setVar("DOCTYPE", this.session_.getDocType());
+		this.setPageVars(boot);
+		this.setBootVars(response, boot);
 		StringWriter noJsRedirectUrl = new StringWriter();
 		DomElement.htmlAttributeValue(noJsRedirectUrl, this.session_
 				.getBootstrapUrl(response,
 						WebSession.BootstrapOption.KeepInternalPath)
 				+ "&js=no");
 		if (xhtml) {
-			boot.setVar("HTMLATTRIBUTES",
-					"xmlns=\"http://www.w3.org/1999/xhtml\"");
-			boot.setVar("METACLOSE", "/>");
 			boot.setVar("AUTO_REDIRECT", "");
 			boot.setVar("NOSCRIPT_TEXT", conf.getRedirectMessage());
 		} else {
-			if (this.session_.getEnv().agentIsIE()) {
-				boot
-						.setVar("HTMLATTRIBUTES",
-								"xmlns:v=\"urn:schemas-microsoft-com:vml\" lang=\"en\" dir=\"ltr\"");
-			} else {
-				boot.setVar("HTMLATTRIBUTES", "lang=\"en\" dir=\"ltr\"");
-			}
-			boot.setVar("METACLOSE", ">");
 			boot.setVar("AUTO_REDIRECT",
 					"<noscript><meta http-equiv=\"refresh\" content=\"0;url="
 							+ noJsRedirectUrl.toString() + "\"></noscript>");
 			boot.setVar("NOSCRIPT_TEXT", conf.getRedirectMessage());
 		}
-		boot.setVar("BLANK_HTML", this.session_.getBootstrapUrl(response,
-				WebSession.BootstrapOption.ClearInternalPath)
-				+ "&amp;resource=blank");
-		boot.setVar("SELF_URL", this.session_.getBootstrapUrl(response,
-				WebSession.BootstrapOption.KeepInternalPath));
 		boot.setVar("REDIRECT_URL", noJsRedirectUrl.toString());
-		boot.setVar("SESSION_ID", this.session_.getSessionId());
-		boot.setVar("RANDOMSEED", String.valueOf(MathUtils.randomInt() + 0));
-		boot.setVar("RELOAD_IS_NEWSESSION", conf.isReloadIsNewSession());
-		boot
-				.setVar(
-						"USE_COOKIES",
-						conf.getSessionTracking() == Configuration.SessionTracking.CookiesURL);
-		boot.setVar("HEADDECLARATIONS", this.getHeadDeclarations());
 		response.addHeader("Cache-Control", "no-cache, no-store");
 		response.addHeader("Expires", "-1");
 		String contentType = xhtml ? "application/xhtml+xml" : "text/html";
@@ -313,13 +346,19 @@ class WebRenderer implements SlotLearnerInterface {
 				this.session_.getApp().getJavaScriptClass()).append(
 				"._p_.response(").append(String.valueOf(this.expectedAckId_))
 				.append(");").append(this.collectedJS2_.toString());
+		this.session_.setLoaded();
 	}
 
 	private void serveMainpage(WebResponse response) throws IOException {
 		Configuration conf = this.session_.getController().getConfiguration();
 		WApplication app = this.session_.getApp();
+		if (!app.getEnvironment().hasAjax() && app.internalPathIsChanged_
+				&& !app.oldInternalPath_.equals(app.newInternalPath_)) {
+			this.session_.redirect(app.getBookmarkUrl(app.newInternalPath_));
+		}
 		String redirect = this.session_.getRedirect();
 		if (redirect.length() != 0) {
+			System.err.append("Redirect: ").append(redirect).append('\n');
 			response.setRedirect(redirect);
 			return;
 		}
@@ -333,41 +372,27 @@ class WebRenderer implements SlotLearnerInterface {
 			styleSheets += "<link href='"
 					+ app.fixRelativeUrl(app.styleSheets_.get(i))
 					+ "' rel='stylesheet' type='text/css'"
-					+ (xhtml ? "/>" : ">");
+					+ (xhtml ? "/>" : ">") + '\n';
 		}
 		app.styleSheetsAdded_ = 0;
+		for (int i = 0; i < app.scriptLibraries_.size(); ++i) {
+			styleSheets += "<script src='"
+					+ app.fixRelativeUrl(app.scriptLibraries_.get(i).uri)
+					+ "'></script>\n";
+			this.collectedJS1_.append(app.scriptLibraries_.get(i).beforeLoadJS);
+		}
 		app.scriptLibrariesAdded_ = 0;
-		FileServe page = new FileServe(WtServlet.Plain_html);
-		page.setVar("XMLPREAMBLE", "");
-		page.setVar("DOCTYPE", this.session_.getDocType());
-		page.setVar("SESSIONID", this.session_.getSessionId());
-		if (app.getEnvironment().agentIsSpiderBot()) {
-			page.setVar("WTD_SESSIONID_FIELD", "");
-		} else {
-			page.setVar("WTD_SESSIONID_FIELD",
-					"<input name='wtd' id='wtd' type='hidden' value='"
-							+ this.session_.getSessionId() + "' />");
+		final boolean progressiveBoot = this.session_.getState() == WebSession.State.ProgressiveBootstrap;
+		FileServe page = new FileServe(
+				progressiveBoot ? WtServlet.ProgressiveBoot_html
+						: WtServlet.Plain_html);
+		this.setPageVars(page);
+		page.setVar("SESSION_ID", this.session_.getSessionId());
+		if (progressiveBoot) {
+			this.setBootVars(response, page);
 		}
-		String htmlAttr = app.htmlClass_.length() == 0 ? "" : " class=\""
-				+ app.htmlClass_ + "\"";
-		if (xhtml) {
-			page.setVar("HTMLATTRIBUTES",
-					"xmlns=\"http://www.w3.org/1999/xhtml\"" + htmlAttr);
-			page.setVar("METACLOSE", "/>");
-		} else {
-			if (this.session_.getEnv().agentIsIE()) {
-				page.setVar("HTMLATTRIBUTES",
-						"xmlns:v=\"urn:schemas-microsoft-com:vml\" lang=\"en\" dir=\"ltr\""
-								+ htmlAttr);
-			} else {
-				page.setVar("HTMLATTRIBUTES", "lang=\"en\" dir=\"ltr\""
-						+ htmlAttr);
-			}
-			page.setVar("METACLOSE", ">");
-		}
-		page.setVar("BODYATTRIBUTES", app.bodyClass_.length() == 0 ? ""
-				: " class=\"" + app.bodyClass_ + "\"");
-		String url = conf.getSessionTracking() == Configuration.SessionTracking.CookiesURL
+		String url = app.getEnvironment().agentIsSpiderBot()
+				|| conf.getSessionTracking() == Configuration.SessionTracking.CookiesURL
 				&& this.session_.getEnv().supportsCookies() ? this.session_
 				.getBookmarkUrl(app.newInternalPath_) : this.session_
 				.getMostRelativeUrl(app.newInternalPath_);
@@ -381,8 +406,11 @@ class WebRenderer implements SlotLearnerInterface {
 		}
 		page.setVar("STYLESHEETS", styleSheets);
 		page.setVar("TITLE", WWebWidget.escapeText(app.getTitle()).toString());
-		page.setVar("HEADDECLARATIONS", this.getHeadDeclarations());
 		app.titleChanged_ = false;
+		if (progressiveBoot) {
+			response.addHeader("Cache-Control", "no-cache, no-store");
+			response.addHeader("Expires", "-1");
+		}
 		String contentType = xhtml ? "application/xhtml+xml" : "text/html";
 		contentType += "; charset=UTF-8";
 		this.setHeaders(response, contentType);
@@ -407,43 +435,15 @@ class WebRenderer implements SlotLearnerInterface {
 		page.setVar("REFRESH", String.valueOf(refresh));
 		page.stream(response.out());
 		app.internalPathIsChanged_ = false;
+		if (!progressiveBoot) {
+			this.session_.setLoaded();
+		}
 	}
 
-	private void serveMainscript(WebResponse response) throws IOException {
+	private void serveMainAjax(WebResponse response) throws IOException {
 		Configuration conf = this.session_.getController().getConfiguration();
-		this.setHeaders(response, "text/javascript; charset=UTF-8");
-		String redirect = this.session_.getRedirect();
-		if (redirect.length() != 0) {
-			this.streamRedirectJS(response.out(), redirect);
-			return;
-		}
+		boolean widgetset = this.session_.getType() == ApplicationType.WidgetSet;
 		WApplication app = this.session_.getApp();
-		final boolean xhtml = app.getEnvironment().getContentType() == WEnvironment.ContentType.XHTML1;
-		this.formObjectsChanged_ = true;
-		this.currentFormObjectsList_ = this.createFormObjectsList(app);
-		FileServe script = new FileServe(WtServlet.Wt_js);
-		script.setVar("DEBUG", conf.isDebug());
-		script.setVar("WT_CLASS", "Wt2_99_2");
-		script.setVar("APP_CLASS", app.getJavaScriptClass());
-		script.setVar("AUTO_JAVASCRIPT", app.autoJavaScript_);
-		script.setVar("STRICTLY_SERIALIZED_EVENTS", conf.isSerializedEvents());
-		boolean innerHtml = !xhtml || app.getEnvironment().agentIsGecko();
-		script.setVar("INNER_HTML", innerHtml);
-		script.setVar("FORM_OBJECTS", '[' + this.currentFormObjectsList_ + ']');
-		script.setVar("RELATIVE_URL", '"' + this.session_.getBootstrapUrl(
-				response, WebSession.BootstrapOption.ClearInternalPath) + '"');
-		script.setVar("KEEP_ALIVE", String
-				.valueOf(conf.getSessionTimeout() / 2));
-		script.setVar("INITIAL_HASH", app.getInternalPath());
-		script.setVar("INDICATOR_TIMEOUT", "500");
-		script
-				.setVar("SERVER_PUSH_TIMEOUT",
-						conf.getServerPushTimeout() * 1000);
-		script.setVar("ONLOAD", "loadWidgetTree();");
-		script.setVar("WT_HISTORY_PREFIX", "Wt-history");
-		script.stream(response.out());
-		app.autoJavaScriptChanged_ = false;
-		this.streamCommJs(app, response.out());
 		WWebWidget mainWebWidget = app.domRoot_;
 		this.visibleOnly_ = true;
 		app.loadingIndicatorWidget_.show();
@@ -457,7 +457,9 @@ class WebRenderer implements SlotLearnerInterface {
 		app.scriptLibrariesAdded_ = app.scriptLibraries_.size();
 		this.loadScriptLibraries(response.out(), app, true);
 		response.out().append('\n').append(app.getBeforeLoadJavaScript());
-		response.out().append("window.loadWidgetTree = function(){\n");
+		if (!widgetset) {
+			response.out().append("window.loadWidgetTree = function(){\n");
+		}
 		if (app.bodyHtmlClassChanged_) {
 			response.out().append("document.body.parentNode.className='")
 					.append(app.htmlClass_).append("';").append(
@@ -465,124 +467,56 @@ class WebRenderer implements SlotLearnerInterface {
 					.append("';");
 			app.bodyHtmlClassChanged_ = false;
 		}
-		String cvar = "";
-		{
-			EscapeOStream sout = new EscapeOStream(response.out());
-			cvar = mainElement.asJavaScript(sout, DomElement.Priority.Create);
-		}
-		response.out().append("document.body.appendChild(").append(cvar)
-				.append(");\n");
-		{
-			EscapeOStream sout = new EscapeOStream(response.out());
-			mainElement.asJavaScript(sout, DomElement.Priority.Update);
-		}
+		Writer s = response.out();
+		mainElement.addToParent(s, "document.body", widgetset ? 0 : -1, app);
 		/* delete mainElement */;
+		if (widgetset) {
+			app.domRoot2_.rootAsJavaScript(app, s, true);
+		}
 		this.setJSSynced(true);
 		this.preLearnStateless(app, this.collectedJS1_);
 		response.out().append(this.collectedJS1_.toString());
 		this.collectedJS1_ = new StringWriter();
 		this.updateLoadIndicator(response.out(), app, true);
+		if (widgetset) {
+			String historyE = app.getEnvironment().getParameter("Wt-history");
+			if (historyE != null) {
+				response.out().append("Wt2_99_4").append(
+						".history.initialize('").append(historyE.charAt(0))
+						.append("-field', '").append(historyE.charAt(0))
+						.append("-iframe');\n");
+			}
+		}
 		response.out().append(app.getAfterLoadJavaScript()).append(
 				"{var e=null;").append(
-				app.hideLoadingIndicator_.getJavaScript()).append("}").append(
-				"};\n");
-		response.out().append("scriptLoaded = true; if (isLoaded) onLoad();\n");
-		this.loadScriptLibraries(response.out(), app, false);
-	}
-
-	private void serveWidgetSet(WebResponse response) throws IOException {
-		Configuration conf = this.session_.getController().getConfiguration();
-		WApplication app = this.session_.getApp();
-		this.setHeaders(response, "text/javascript; charset=UTF-8");
-		final boolean xhtml = app.getEnvironment().getContentType() == WEnvironment.ContentType.XHTML1;
-		final boolean innerHtml = !xhtml || app.getEnvironment().agentIsGecko();
-		this.formObjectsChanged_ = true;
-		this.currentFormObjectsList_ = this.createFormObjectsList(app);
-		FileServe script = new FileServe(WtServlet.Wt_js);
-		script.setVar("DEBUG", conf.isDebug());
-		script.setVar("WT_CLASS", "Wt2_99_2");
-		script.setVar("APP_CLASS", app.getJavaScriptClass());
-		script.setVar("AUTO_JAVASCRIPT", app.autoJavaScript_);
-		script.setVar("STRICTLY_SERIALIZED_EVENTS", conf.isSerializedEvents());
-		script.setVar("INNER_HTML", innerHtml);
-		script.setVar("FORM_OBJECTS", '[' + this.currentFormObjectsList_ + ']');
-		script.setVar("RELATIVE_URL", '"' + this.session_.getBootstrapUrl(
-				response, WebSession.BootstrapOption.KeepInternalPath) + '"');
-		script.setVar("KEEP_ALIVE", String
-				.valueOf(conf.getSessionTimeout() / 2));
-		script.setVar("INITIAL_HASH", app.getInternalPath());
-		script.setVar("INDICATOR_TIMEOUT", "500");
-		script
-				.setVar("SERVER_PUSH_TIMEOUT",
-						conf.getServerPushTimeout() * 1000);
-		script.setVar("ONLOAD", "");
-		script.stream(response.out());
-		app.autoJavaScriptChanged_ = false;
-		this.streamCommJs(app, response.out());
-		WWebWidget mainWebWidget = app.domRoot_;
-		this.visibleOnly_ = true;
-		app.loadingIndicatorWidget_.show();
-		DomElement mainElement = mainWebWidget.createSDomElement(app);
-		app.loadingIndicatorWidget_.hide();
-		if (conf.isInlineCss()) {
-			app.getStyleSheet().javaScriptUpdate(app, response.out(), true);
-		}
-		app.styleSheetsAdded_ = app.styleSheets_.size();
-		this.loadStyleSheets(response.out(), app);
-		app.scriptLibrariesAdded_ = app.scriptLibraries_.size();
-		this.loadScriptLibraries(response.out(), app, true);
-		if (app.bodyHtmlClassChanged_) {
-			response.out().append("document.body.parentNode.className='")
-					.append(app.htmlClass_).append("';").append(
-							"document.body.className='").append(app.bodyClass_)
-					.append("';");
-			app.bodyHtmlClassChanged_ = false;
-		}
-		response.out().append('\n').append(app.getBeforeLoadJavaScript());
-		String cvar = "";
-		{
-			EscapeOStream sout = new EscapeOStream(response.out());
-			mainElement.asJavaScript(sout, DomElement.Priority.Create);
-			cvar = mainElement.asJavaScript(sout, DomElement.Priority.Update);
-		}
-		/* delete mainElement */;
-		response.out().append("document.body.insertBefore(").append(cvar)
-				.append(",document.body.firstChild);").append("{var e=null; ")
-				.append(app.hideLoadingIndicator_.getJavaScript()).append("}")
-				.append('\n');
-		app.domRoot2_.rootAsJavaScript(app, response.out(), true);
-		this.setJSSynced(true);
-		this.preLearnStateless(app, this.collectedJS1_);
-		response.out().append(this.collectedJS1_.toString());
-		this.collectedJS1_ = new StringWriter();
-		this.updateLoadIndicator(response.out(), app, true);
-		String historyE = app.getEnvironment().getParameter("Wt-history");
-		if (historyE != null) {
-			response.out().append("Wt2_99_2").append(".history.initialize('")
-					.append(historyE.charAt(0)).append("-field', '").append(
-							historyE.charAt(0)).append("-iframe');\n");
-		}
-		response.out().append(app.getAfterLoadJavaScript()).append(
-				app.getJavaScriptClass()).append("._p_.load();\n");
-		if (!(app.getTitle().length() == 0)) {
+				app.hideLoadingIndicator_.getJavaScript()).append("}");
+		if (widgetset) {
 			response.out().append(app.getJavaScriptClass()).append(
-					"._p_.setTitle(");
-			DomElement.jsStringLiteral(response.out(), app.getTitle()
-					.toString(), '\'');
-			response.out().append(");\n");
+					"._p_.load();\n");
+		} else {
+			response.out().append("};\n");
+			response
+					.out()
+					.append(
+							"window.WtScriptLoaded = true;if (window.isLoaded) onLoad();\n");
 		}
-		app.titleChanged_ = false;
 		this.loadScriptLibraries(response.out(), app, false);
 	}
 
+	// private void serveWidgetSet(WebResponse request) ;
 	private void streamCommJs(WApplication app, Writer out) throws IOException {
 		Configuration conf = this.session_.getController().getConfiguration();
 		FileServe js = new FileServe(
 				app.getAjaxMethod() == WApplication.AjaxMethod.XMLHttpRequest ? WtServlet.CommAjax_js
 						: WtServlet.CommScript_js);
 		js.setVar("APP_CLASS", app.getJavaScriptClass());
-		js.setVar("CLOSE_CONNECTION",
-				conf.getServerType() == Configuration.ServerType.WtHttpdServer);
+		js
+				.setVar(
+						"CLOSE_CONNECTION",
+						conf.getServerType() == Configuration.ServerType.WtHttpdServer
+								&& this.session_.getEnv().agentIsGecko()
+								&& this.session_.getEnv().getAgent().getValue() < WEnvironment.UserAgent.Firefox3
+										.getValue());
 		js.stream(out);
 	}
 
@@ -721,7 +655,7 @@ class WebRenderer implements SlotLearnerInterface {
 			throws IOException {
 		int first = app.styleSheets_.size() - app.styleSheetsAdded_;
 		for (int i = first; i < app.styleSheets_.size(); ++i) {
-			out.append("Wt2_99_2").append(".addStyleSheet('").append(
+			out.append("Wt2_99_4").append(".addStyleSheet('").append(
 					app.fixRelativeUrl(app.styleSheets_.get(i)))
 					.append("');\n");
 		}
@@ -828,7 +762,9 @@ class WebRenderer implements SlotLearnerInterface {
 	private void collectJS(Writer js) throws IOException {
 		List<DomElement> changes = new ArrayList<DomElement>();
 		this.collectChanges(changes);
+		WApplication app = this.session_.getApp();
 		if (js != null) {
+			js.append(app.getNewBeforeLoadJavaScript());
 			EscapeOStream sout = new EscapeOStream(js);
 			for (int i = 0; i < changes.size(); ++i) {
 				changes.get(i).asJavaScript(sout, DomElement.Priority.Delete);
@@ -842,16 +778,15 @@ class WebRenderer implements SlotLearnerInterface {
 				/* delete changes.get(i) */;
 			}
 		}
-		if (this.session_.getType() == ApplicationType.WidgetSet) {
-			return;
-		}
-		WApplication app = this.session_.getApp();
 		if (js != null) {
 			if (app.titleChanged_) {
 				js.append(app.getJavaScriptClass()).append("._p_.setTitle(");
 				DomElement.jsStringLiteral(js, app.getTitle().toString(), '\'');
 				js.append(");\n");
 			}
+		}
+		app.titleChanged_ = false;
+		if (js != null) {
 			if (app.internalPathIsChanged_) {
 				js.append(app.getJavaScriptClass()).append("._p_.setHash('")
 						.append(app.newInternalPath_).append("');\n");
@@ -861,7 +796,58 @@ class WebRenderer implements SlotLearnerInterface {
 			app.getAfterLoadJavaScript();
 		}
 		app.internalPathIsChanged_ = false;
-		app.titleChanged_ = false;
+	}
+
+	private void setPageVars(FileServe page) {
+		boolean xhtml = this.session_.getEnv().getContentType() == WEnvironment.ContentType.XHTML1;
+		Configuration conf = this.session_.getController().getConfiguration();
+		WApplication app = this.session_.getApp();
+		page.setVar("DOCTYPE", this.session_.getDocType());
+		String htmlAttr = "";
+		if (app != null && app.htmlClass_.length() != 0) {
+			htmlAttr = " class=\"" + app.htmlClass_ + "\"";
+		}
+		if (xhtml) {
+			page.setVar("HTMLATTRIBUTES",
+					"xmlns=\"http://www.w3.org/1999/xhtml\"" + htmlAttr);
+			page.setVar("METACLOSE", "/>");
+		} else {
+			if (this.session_.getEnv().agentIsIE()) {
+				page.setVar("HTMLATTRIBUTES",
+						"xmlns:v=\"urn:schemas-microsoft-com:vml\" lang=\"en\" dir=\"ltr\""
+								+ htmlAttr);
+			} else {
+				page.setVar("HTMLATTRIBUTES", "lang=\"en\" dir=\"ltr\""
+						+ htmlAttr);
+			}
+			page.setVar("METACLOSE", ">");
+		}
+		page.setVar("BODYATTRIBUTES", !(app != null)
+				|| app.bodyClass_.length() == 0 ? "" : " class=\""
+				+ app.bodyClass_ + "\"");
+		page.setVar("HEADDECLARATIONS", this.getHeadDeclarations());
+		page.setCondition("AGENT_BOT", this.session_.getEnv()
+				.agentIsSpiderBot());
+	}
+
+	private void setBootVars(WebResponse response, FileServe boot) {
+		boolean xhtml = this.session_.getEnv().getContentType() == WEnvironment.ContentType.XHTML1;
+		Configuration conf = this.session_.getController().getConfiguration();
+		boot.setVar("BLANK_HTML", this.session_.getBootstrapUrl(response,
+				WebSession.BootstrapOption.ClearInternalPath)
+				+ "&amp;resource=blank");
+		boot.setVar("SELF_URL", this.session_.getBootstrapUrl(response,
+				WebSession.BootstrapOption.KeepInternalPath));
+		boot.setVar("SESSION_ID", this.session_.getSessionId());
+		boot.setVar("RANDOMSEED", String.valueOf(MathUtils.randomInt() + 0));
+		boot.setVar("RELOAD_IS_NEWSESSION", conf.isReloadIsNewSession());
+		boot
+				.setVar(
+						"USE_COOKIES",
+						conf.getSessionTracking() == Configuration.SessionTracking.CookiesURL);
+		boot.setVar("AJAX_CANONICAL_URL", this.session_
+				.ajaxCanonicalUrl(response));
+		boot.setVar("INTERNAL_PATH", this.session_.getEnv().getInternalPath());
 	}
 
 	private String getHeadDeclarations() {

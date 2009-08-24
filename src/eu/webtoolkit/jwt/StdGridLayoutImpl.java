@@ -26,17 +26,14 @@ class StdGridLayoutImpl extends StdLayoutImpl {
 			if (jsHeights) {
 				app
 						.doJavaScript(
-								"Wt2_99_2.layoutAdjust=function(w,c,mh){if (Wt2_99_2.isHidden(w))return;var WT=Wt2_99_2,t=w.firstChild;var r=WT.pxself(w.parentNode, 'height');if (r==0) {r=w.parentNode.clientHeight;r+= -WT.px(w.parentNode, 'paddingTop')-WT.px(w.parentNode, 'paddingBottom');}r+= -WT.px(w, 'marginTop')-WT.px(w, 'marginBottom');var ts=0,tmh=0,i, j, il, jl,row, tds, td;for (i=0, il=t.rows.length; i<il; i++) {tmh += mh[i];if (c[i] <= 0)r -= t.rows[i].offsetHeight;else ts += c[i];}r=r>tmh?r:tmh;if (ts!=0 && r>0) {var left=r, h;for (i=0, il=t.rows.length; i<il; i++) {row=t.rows[i];if (c[i] != 0) {if (c[i] != -1) {h=r*c[i]/ts;h=left>h?h:left;h=Math.round(mh[i]>h?mh[i]:h);left -= h;} else {h=row.offsetHeight;}if (row.style.height!=h+'px'){row.style.height=h+'px';tds=row.childNodes;for (j=0, jl=tds.length; j<jl; ++j){td=tds[j];var k=h-WT.pxself(td, 'paddingTop')-WT.pxself(td, 'paddingBottom');if (k <= 0) k=0;td.style.height= k+'px';if (td.style['verticalAlign']|| td.childNodes.length == 0) continue;var ch=td.childNodes[0];if (k <= 0) k=0;if (ch.className=='Wt-hcenter'){ch.style.height= k+'px';var itd=ch.firstChild.firstChild;if (!WT.hasTag(itd, 'TD'))itd=itd.firstChild;if (itd.style.height!=k+'px')itd.style.height=k+'px';ch=itd.firstChild;}if (td.childNodes.length==1)k += -WT.px(ch, 'marginTop')-WT.px(ch, 'marginBottom')-WT.px(ch, 'borderTopWidth')-WT.px(ch, 'borderBottomWidth')-WT.px(ch, 'paddingTop')-WT.px(ch, 'paddingBottom');if (k <= 0) k=0;if (WT.hasTag(ch, 'BUTTON')|| WT.hasTag(ch, 'INPUT')|| WT.hasTag(ch, 'SELECT')|| WT.hasTag(ch, 'TABLE'))continue;if (ch.style.height != k+'px') {if (ch.wtSetHeight) ch.wtSetHeight(ch, k);else ch.style.height = k+'px';}if (td.childNodes.length==1&& WT.hasTag(ch, 'TEXTAREA')) {"
-										+ (app.getEnvironment().agentIsOpera() ? "if (k <= 6) k=6;ch.style.height = (k-6) + 'px';td.style.marginLeft = '-1px';"
-												: "if (k <= 8) k=8;ch.style.height = (k-8) + 'px';td.style.marginLeft = '-1px';td.style.marginTop = '-1px';")
-										+ "}}}}}}if (t.style.tableLayout != 'fixed')return;var jc=0, chn=t.childNodes;for (j=0, jl=chn.length; j<jl; j++) {var col=chn[j], chw, mw,c, ci, cil;if (WT.hasTag(col, 'COLGROUP')) {j=-1;chn=col.childNodes;jl=chn.length;}if (!WT.hasTag(col, 'COL'))continue;if (WT.pctself(col, 'width') == 0) {mw=0;for (i=0, il=t.rows.length; i<il; i++) {row=t.rows[i];tds=row.childNodes;c=0;for (ci=0, cil=tds.length; ci<cil; ci++) {td=tds[ci];if (td.colSpan==1 && c==jc && td.childNodes.length==1) {ch=td.firstChild;w=ch.offsetWidth+WT.px(ch, 'marginLeft')+WT.px(ch, 'marginRight')+WT.px(td, 'paddingLeft')+WT.px(td, 'paddingRight');mw=Math.max(mw, w);break;}c += td.colSpan;if (c>jc) break;}}if (mw>0 && WT.pxself(col, 'width') != mw)col.style.width=mw+'px';}++jc;}};",
+								"Wt2_99_4.layoutAdjust=function(w,c,mh){if (Wt2_99_4.isHidden(w))return;var WT=Wt2_99_4,t=w.firstChild;var r=WT.pxself(w.parentNode, 'height');if (r==0) {r=w.parentNode.clientHeight;r+= -WT.px(w.parentNode, 'paddingTop')-WT.px(w.parentNode, 'paddingBottom');}r+= -WT.px(w, 'marginTop')-WT.px(w, 'marginBottom');var ts=0,tmh=0,i, j, il, jl,row, tds, td;for (i=0, il=t.rows.length; i<il; i++) {tmh += mh[i];if (c[i] <= 0)r -= t.rows[i].offsetHeight;else ts += c[i];}r=r>tmh?r:tmh;if (ts!=0 && r>0) {var left=r, h;for (i=0, il=t.rows.length; i<il; i++) {row=t.rows[i];if (c[i] != 0) {if (c[i] != -1) {h=r*c[i]/ts;h=left>h?h:left;h=Math.round(mh[i]>h?mh[i]:h);left -= h;} else {h=row.offsetHeight;}if (row.style.height!=h+'px'){row.style.height=h+'px';tds=row.childNodes;for (j=0, jl=tds.length; j<jl; ++j){td=tds[j];var k=h-WT.pxself(td, 'paddingTop')-WT.pxself(td, 'paddingBottom');if (k <= 0) k=0;td.style.height= k+'px';if (td.style['verticalAlign']|| td.childNodes.length == 0) continue;var ch=td.childNodes[0];if (k <= 0) k=0;if (ch.className=='Wt-hcenter'){ch.style.height= k+'px';var itd=ch.firstChild.firstChild;if (!WT.hasTag(itd, 'TD'))itd=itd.firstChild;if (itd.style.height!=k+'px')itd.style.height=k+'px';ch=itd.firstChild;}if (td.childNodes.length==1)k += -WT.px(ch, 'marginTop')-WT.px(ch, 'marginBottom')-WT.px(ch, 'borderTopWidth')-WT.px(ch, 'borderBottomWidth')-WT.px(ch, 'paddingTop')-WT.px(ch, 'paddingBottom');if (k <= 0) k=0;if (WT.hasTag(ch, 'TABLE'))continue;if (ch.style.height != k+'px') {if (ch.wtSetHeight) ch.wtSetHeight(ch, k);else ch.style.height = k+'px';}}}}}}if (t.style.tableLayout != 'fixed')return;var jc=0, chn=t.childNodes;for (j=0, jl=chn.length; j<jl; j++) {var col=chn[j], chw, mw,c, ci, cil;if (WT.hasTag(col, 'COLGROUP')) {j=-1;chn=col.childNodes;jl=chn.length;}if (!WT.hasTag(col, 'COL'))continue;if (WT.pctself(col, 'width') == 0) {mw=0;for (i=0, il=t.rows.length; i<il; i++) {row=t.rows[i];tds=row.childNodes;c=0;for (ci=0, cil=tds.length; ci<cil; ci++) {td=tds[ci];if (td.colSpan==1 && c==jc && td.childNodes.length==1) {ch=td.firstChild;w=ch.offsetWidth+WT.px(ch, 'marginLeft')+WT.px(ch, 'marginRight')+WT.px(td, 'paddingLeft')+WT.px(td, 'paddingRight');mw=Math.max(mw, w);break;}c += td.colSpan;if (c>jc) break;}}if (mw>0 && WT.pxself(col, 'width') != mw)col.style.width=mw+'px';}++jc;}};",
 								false);
 				app
 						.declareJavaScriptFunction(
 								"layoutsAdjust",
 								"function(){var a="
 										+ app.getJavaScriptClass()
-										+ ".layoutTableObjs;var i;for(i=0;i<a.length;++i){var id=a[i][0];var c=a[i][1];var mh=a[i][2];var w=Wt2_99_2.getElement(id);if(!w){Wt2_99_2.arrayRemove(a, i);--i;}else{Wt2_99_2.layoutAdjust(w,c,mh);}}}");
+										+ ".layoutTableObjs;var i;for(i=0;i<a.length;++i){var id=a[i][0];var c=a[i][1];var mh=a[i][2];var w=Wt2_99_4.getElement(id);if(!w){Wt2_99_4.arrayRemove(a, i);--i;}else{Wt2_99_4.layoutAdjust(w,c,mh);}}}");
 				app.addAutoJavaScript(app.getJavaScriptClass()
 						+ ".layoutsAdjust();");
 			}
@@ -225,7 +222,7 @@ class StdGridLayoutImpl extends StdLayoutImpl {
 					AlignmentFlag vAlign = EnumUtils.enumFromSet(EnumUtils
 							.mask(item.alignment_,
 									AlignmentFlag.AlignVerticalMask));
-					if (hAlign != null) {
+					if (hAlign != null && hAlign != AlignmentFlag.AlignJustify) {
 						itemFitWidth = false;
 					}
 					if (vAlign != null) {
@@ -318,7 +315,6 @@ class StdGridLayoutImpl extends StdLayoutImpl {
 					if (!jsHeights && vAlign == null) {
 						style2 += heightPct;
 					}
-					style2 += "overflow:auto;";
 					int padding2 = padding[2] + additionalVerticalPadding;
 					if (padding[0] == padding[1] && padding[0] == padding2
 							&& padding[0] == padding[3]) {

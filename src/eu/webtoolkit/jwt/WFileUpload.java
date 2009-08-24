@@ -7,6 +7,7 @@ package eu.webtoolkit.jwt;
 
 import java.io.File;
 import java.util.EnumSet;
+import java.util.List;
 import eu.webtoolkit.jwt.servlet.UploadedFile;
 
 /**
@@ -73,18 +74,10 @@ public class WFileUpload extends WWebWidget {
 		this.contentDescription_ = "";
 		this.isStolen_ = false;
 		this.doUpload_ = false;
+		this.enableAjax_ = false;
 		this.fileTooLarge_ = new Signal1<Integer>(this);
-		boolean methodIframe = WApplication.getInstance().getEnvironment()
-				.hasAjax();
-		if (methodIframe) {
-			this.fileUploadTarget_ = new WFileUploadResource(this);
-		} else {
-			this.fileUploadTarget_ = null;
-		}
 		this.setInline(true);
-		if (!(this.fileUploadTarget_ != null)) {
-			this.setFormObject(true);
-		}
+		this.create();
 	}
 
 	/**
@@ -242,14 +235,33 @@ public class WFileUpload extends WWebWidget {
 		}
 	}
 
+	public void enableAjax() {
+		this.create();
+		this.enableAjax_ = true;
+		this.repaint();
+		super.enableAjax();
+	}
+
 	private int textSize_;
 	private String spoolFileName_;
 	private String clientFileName_;
 	private String contentDescription_;
 	private boolean isStolen_;
 	private boolean doUpload_;
+	private boolean enableAjax_;
 	private Signal1<Integer> fileTooLarge_;
 	private WResource fileUploadTarget_;
+
+	private void create() {
+		boolean methodIframe = WApplication.getInstance().getEnvironment()
+				.hasAjax();
+		if (methodIframe) {
+			this.fileUploadTarget_ = new WFileUploadResource(this);
+		} else {
+			this.fileUploadTarget_ = null;
+		}
+		this.setFormObject(!(this.fileUploadTarget_ != null));
+	}
 
 	void requestTooLarge(int size) {
 		this.fileTooLarge().trigger(size);
@@ -304,6 +316,7 @@ public class WFileUpload extends WWebWidget {
 			}
 		}
 		this.updateDom(result, true);
+		this.enableAjax_ = false;
 		return result;
 	}
 
@@ -314,6 +327,18 @@ public class WFileUpload extends WWebWidget {
 
 	protected void propagateRenderOk(boolean deep) {
 		super.propagateRenderOk(deep);
+	}
+
+	protected void getDomChanges(List<DomElement> result, WApplication app) {
+		if (this.enableAjax_) {
+			DomElement plainE = DomElement.getForUpdate(this,
+					DomElementType.DomElement_INPUT);
+			DomElement ajaxE = this.createDomElement(app);
+			plainE.replaceWith(ajaxE, true);
+			result.add(ajaxE);
+		} else {
+			super.getDomChanges(result, app);
+		}
 	}
 
 	protected void setFormData(WObject.FormData formData) {

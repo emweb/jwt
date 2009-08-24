@@ -7,6 +7,7 @@ package eu.webtoolkit.jwt;
 
 import java.util.BitSet;
 import java.util.EnumSet;
+import java.util.List;
 
 /**
  * A widget that provides a single line edit
@@ -267,6 +268,19 @@ public class WLineEdit extends WFormWidget {
 		super.propagateRenderOk(deep);
 	}
 
+	protected void getDomChanges(List<DomElement> result, WApplication app) {
+		if (app.getEnvironment().agentIsIE()
+				&& this.flags_.get(BIT_ECHO_MODE_CHANGED)) {
+			DomElement e = DomElement.getForUpdate(this, this
+					.getDomElementType());
+			DomElement d = this.createDomElement(app);
+			e.replaceWith(d, false);
+			result.add(e);
+		} else {
+			super.getDomChanges(result, app);
+		}
+	}
+
 	protected void setFormData(WObject.FormData formData) {
 		if (this.flags_.get(BIT_CONTENT_CHANGED)) {
 			return;
@@ -275,5 +289,26 @@ public class WLineEdit extends WFormWidget {
 			String value = formData.values.get(0);
 			this.content_ = value;
 		}
+	}
+
+	protected int boxPadding(Orientation orientation) {
+		WEnvironment env = WApplication.getInstance().getEnvironment();
+		if (env.agentIsIE() || env.agentIsOpera()) {
+			return 1;
+		} else {
+			if (env.getUserAgent().indexOf("Mac OS X") != -1) {
+				return 1;
+			} else {
+				if (env.getUserAgent().indexOf("Windows") != -1) {
+					return 0;
+				} else {
+					return 1;
+				}
+			}
+		}
+	}
+
+	protected int boxBorder(Orientation orientation) {
+		return 2;
 	}
 }

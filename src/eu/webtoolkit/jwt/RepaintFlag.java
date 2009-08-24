@@ -9,7 +9,7 @@ import java.util.EnumSet;
 
 enum RepaintFlag {
 	RepaintPropertyIEMobile(0x1 << 12), RepaintPropertyAttribute(0x1 << 13), RepaintInnerHtml(
-			0x1 << 14);
+			0x1 << 14), RepaintToAjax(0x1 << 15);
 
 	private int value;
 

@@ -14,6 +14,11 @@ class FileServe {
 		this.template_ = contents;
 		this.currentPos_ = 0;
 		this.vars_ = new HashMap<String, String>();
+		this.conditions_ = new HashMap<String, Boolean>();
+	}
+
+	public void setCondition(String name, boolean value) {
+		this.conditions_.put(name, value);
 	}
 
 	public void setVar(String name, String value) {
@@ -36,21 +41,49 @@ class FileServe {
 		String currentVar = "";
 		boolean readingVar = false;
 		int start = currentPos_;
+		int noMatchConditions = 0;
 
 		for (; currentPos_ < template_.length(); ++currentPos_) {
 			if (readingVar) {
 				if (template_.startsWith("_$_", currentPos_)) {
-					if (currentVar.equals(until)) {
-						this.currentPos_ += 3;
-						return;
-					}
+					if (currentVar.charAt(0) == '$') {
+						int _pos = currentVar.indexOf('_');
+						String fname = _pos == -1 ? currentVar.substring(1) : currentVar.substring(1, _pos);
 
-					String v = vars_.get(currentVar);
-					if (v == null) {
-						throw new WtException("Internal error: could not find variable: " + currentVar);
-					}
+						if (fname.equals("endif")) {
+							if (noMatchConditions > 0)
+								--noMatchConditions;
+						} else {
+							String farg = currentVar.substring(_pos + 1);
 
-					out.append(v);
+							Boolean i = conditions_.get(farg);
+
+							if (i == null)
+								throw new WtException("Internal error: could not find condition: " + farg);
+
+							boolean c = i;
+							if (fname.equals("if"))
+								;
+							else if (fname.equals("ifnot"))
+								c = !c;
+
+							if (!c || noMatchConditions > 0)
+								++noMatchConditions;
+						}
+					} else {
+						if (currentVar.equals(until)) {
+							this.currentPos_ += 3;
+							return;
+						}
+
+						String v = vars_.get(currentVar);
+						if (v == null) {
+							throw new WtException("Internal error: could not find variable: " + currentVar);
+						}
+
+						if (noMatchConditions == 0)
+							out.append(v);					
+					}
 
 					readingVar = false;
 					start = this.currentPos_ + 3;
@@ -60,7 +93,7 @@ class FileServe {
 				}
 			} else {
 				if (template_.startsWith("_$_", currentPos_)) {
-					if (currentPos_ - start > 0) {
+					if (noMatchConditions == 0 && (currentPos_ - start > 0)) {
 						out.append(this.template_.substring(start, this.currentPos_));
 					}
 					this.currentPos_ += 2;
@@ -69,7 +102,7 @@ class FileServe {
 				}
 			}
 		}
-		if (this.currentPos_ - start > 0) {
+		if (noMatchConditions == 0 && (currentPos_ - start > 0)) {
 			out.append(this.template_.substring(start, this.currentPos_));
 		}
 	}
@@ -77,4 +110,5 @@ class FileServe {
 	private final String template_;
 	private int currentPos_;
 	private HashMap<String, String> vars_;
+	private HashMap<String, Boolean> conditions_;
 }

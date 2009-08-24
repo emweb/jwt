@@ -1,6 +1,5 @@
-_$_XMLPREAMBLE_$_
 _$_DOCTYPE_$_
-<html _$_HTMLATTRIBUTES_$_ class="ext-strict">
+<html _$_HTMLATTRIBUTES_$_>
 <head>
 <meta http-equiv='X-UA-Compatible' content='IE=7' _$_METACLOSE_$_
 _$_HEADDECLARATIONS_$_
@@ -32,6 +31,13 @@ function loadScript(uri) {
 
 function rand() {
   return Math.round(Math.random()*1000000) + _$_RANDOMSEED_$_;
+}
+
+function setUrl(url) {
+  if (window.location.replace)
+    window.location.replace(url);
+  else
+    window.location.href=url;
 }
 
 if (window.opera)
@@ -97,23 +103,25 @@ if (needSessionInUrl) {
 if (needSessionInUrl) {
   if (hash.length > 0)
     selfUrl += '#' + hash;
-  if (document.images)
-    window.location.replace(selfUrl);
-  else
-    window.location.href = selfUrl;
-} else {
-  if (hash.length > 0)
-    selfUrl += '&_=' + encodeURIComponent(hash);
+  setUrl(selfUrl);
+} else if (ajax) {
+  var canonicalUrl = '_$_AJAX_CANONICAL_URL_$_';
+  if (canonicalUrl.length > 1)
+    setUrl(canonicalUrl);
+  else {
+    if (hash.length > 1 && hash.charAt(0) == '/')
+      selfUrl += '&_=' + encodeURIComponent(hash);
 
-  loadScript(selfUrl + '&js=yes&ajax=yes' + scaleInfo + '&request=script&rand='
-    + rand());
+    loadScript(selfUrl + '&js=yes&ajax=yes'
+	       + scaleInfo + '&request=script&rand=' + rand());
+  }
 }
 
 })();
 
-var isLoaded = false;
+window.isLoaded = false;
 
-function onLoad() { isLoaded = true; }
+function onLoad() { window.isLoaded = true; }
 
 /* ]]> */
 </script>

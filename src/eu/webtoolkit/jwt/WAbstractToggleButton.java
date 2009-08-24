@@ -264,7 +264,7 @@ public class WAbstractToggleButton extends WFormWidget {
 		if (this.stateChanged_ || all) {
 			element.setProperty(Property.PropertyChecked,
 					this.state_ == CheckState.Checked ? "true" : "false");
-			if (this.getDomElementType() == DomElementType.DomElement_INPUT) {
+			if (!this.isUseImageWorkaround()) {
 				element.setProperty(Property.PropertyIndeterminate,
 						this.state_ == CheckState.PartiallyChecked ? "true"
 								: "false");
@@ -283,7 +283,7 @@ public class WAbstractToggleButton extends WFormWidget {
 				&& uncheck.needUpdate();
 		super.updateDom(element, all);
 		if (needUpdateClickedSignal || all) {
-			String dom = "Wt2_99_2.getElement('" + element.getId() + "')";
+			String dom = "Wt2_99_4.getElement('" + element.getId() + "')";
 			List<DomElement.EventAction> actions = new ArrayList<DomElement.EventAction>();
 			if (check != null) {
 				if (check.isConnected()) {

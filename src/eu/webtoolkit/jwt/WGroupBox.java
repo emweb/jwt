@@ -44,7 +44,8 @@ import java.util.List;
  * The widget corresponds to the HTML <code>&lt;fieldset&gt;</code> tag, and the
  * title in a nested <code>&lt;legend&gt;</code> tag.
  * <p>
- * Like {@link WContainerWidget}, WGroupBox is by default a block level widget.
+ * Like {@link WContainerWidget}, WGroupBox is by default displayed as a
+ * {@link WWidget#setInline(boolean inlined) block}.
  * <p>
  * <div align="center"> <img src="doc-files//WGroupBox-1.png"
  * alt="WGroupBox example">

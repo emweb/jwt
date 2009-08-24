@@ -389,7 +389,6 @@ class DomElement {
 			return this.var_;
 		case Create:
 			if (this.mode_ == DomElement.Mode.ModeCreate) {
-				this.declare(out);
 				if (this.id_.length() != 0) {
 					out.append(this.var_).append(".setAttribute('id', '")
 							.append(this.id_).append("');\n");
@@ -409,22 +408,22 @@ class DomElement {
 					String style = this.properties_
 							.get(Property.PropertyStyleDisplay);
 					if (style.equals("none")) {
-						out.append("Wt2_99_2.hide('").append(this.id_).append(
+						out.append("Wt2_99_4.hide('").append(this.id_).append(
 								"');\n");
 						return this.var_;
 					} else {
 						if (style.length() == 0) {
-							out.append("Wt2_99_2.show('").append(this.id_)
+							out.append("Wt2_99_4.show('").append(this.id_)
 									.append("');\n");
 							return this.var_;
 						} else {
 							if (style.equals("inline")) {
-								out.append("Wt2_99_2.inline('" + this.id_
+								out.append("Wt2_99_4.inline('" + this.id_
 										+ "');\n");
 								return this.var_;
 							} else {
 								if (style.equals("block")) {
-									out.append("Wt2_99_2.block('" + this.id_
+									out.append("Wt2_99_4.block('" + this.id_
 											+ "');\n");
 									return this.var_;
 								}
@@ -437,26 +436,26 @@ class DomElement {
 			this.processProperties(app);
 			if (this.replaced_ != null) {
 				this.declare(out);
-				String varr = this.replaced_.asJavaScript(out,
-						DomElement.Priority.Create);
-				out.append(this.var_).append(".parentNode.replaceChild(")
+				String varr = this.replaced_.getCreateVar();
+				StringWriter insertJs = new StringWriter();
+				insertJs.append(this.var_).append(".parentNode.replaceChild(")
 						.append(varr).append(',').append(this.var_).append(
 								");\n");
-				this.replaced_.asJavaScript(out, DomElement.Priority.Update);
-				out.append("Wt2_99_2.unstub(").append(this.var_).append(',')
+				this.replaced_.createElement(out, app, insertJs.toString());
+				out.append("Wt2_99_4.unstub(").append(this.var_).append(',')
 						.append(varr).append(',').append(
 								this.hideWithDisplay_ ? 1 : 0).append(");\n");
 				return this.var_;
 			} else {
 				if (this.insertBefore_ != null) {
 					this.declare(out);
-					String varr = this.insertBefore_.asJavaScript(out,
-							DomElement.Priority.Create);
-					out.append(this.var_).append(".parentNode.insertBefore(")
-							.append(varr).append(",")
-							.append(this.var_ + ");\n");
-					this.insertBefore_.asJavaScript(out,
-							DomElement.Priority.Update);
+					String varr = this.insertBefore_.getCreateVar();
+					StringWriter insertJs = new StringWriter();
+					insertJs.append(this.var_).append(
+							".parentNode.insertBefore(").append(varr).append(
+							",").append(this.var_ + ");\n");
+					this.insertBefore_.createElement(out, app, insertJs
+							.toString());
 					return this.var_;
 				}
 			}
@@ -483,78 +482,15 @@ class DomElement {
 							fid).append(";\n");
 				}
 			}
-			if (this.wasEmpty_ && this.canWriteInnerHTML(app)) {
-				if (!this.childrenToAdd_.isEmpty()
-						|| this.childrenHtml_ != null) {
-					this.declare(out);
-					out.append("Wt2_99_2.setHtml(").append(this.var_).append(
-							",'");
-					out.pushEscape(EscapeOStream.RuleSet.JsStringLiteralSQuote);
-					if (this.childrenHtml_ != null) {
-						out.append(this.childrenHtml_.toString());
-					}
-					List<DomElement.TimeoutEvent> timeouts = new ArrayList<DomElement.TimeoutEvent>();
-					for (int i = 0; i < this.childrenToAdd_.size(); ++i) {
-						this.childrenToAdd_.get(i).child.asHTML(out, timeouts);
-					}
-					out.popEscape();
-					out.append("');\n");
-					timeouts.addAll(this.timeouts_);
-					for (int i = 0; i < timeouts.size(); ++i) {
-						out.append(app.getJavaScriptClass()).append(
-								"._p_.addTimerEvent('").append(
-								timeouts.get(i).event).append("', ").append(
-								timeouts.get(i).msec).append(",").append(
-								timeouts.get(i).repeat ? "true" : "false")
-								.append(");\n");
-					}
-				}
-			} else {
-				for (int i = 0; i < this.childrenToAdd_.size(); ++i) {
-					this.declare(out);
-					DomElement child = this.childrenToAdd_.get(i).child;
-					String cvar = child.createAsJavaScript(out, this.var_,
-							this.childrenToAdd_.get(i).pos);
-					child.asJavaScript(out, DomElement.Priority.Update);
-				}
-			}
-			for (int i = 0; i < this.methodCalls_.size(); ++i) {
-				this.declare(out);
-				out.append(this.var_).append(".").append(
-						this.methodCalls_.get(i)).append(';').append('\n');
-			}
-			if (this.javaScriptEvenWhenDeleted_.length() != 0) {
-				this.declare(out);
-				out.append(this.javaScriptEvenWhenDeleted_).append('\n');
-			}
-			if (this.javaScript_.length() != 0) {
-				this.declare(out);
-				out.append(this.javaScript_).append('\n');
-			}
-			if (this.timeOut_ != -1) {
-				out.append(app.getJavaScriptClass()).append(
-						"._p_.addTimerEvent('").append(this.id_).append("', ")
-						.append(this.timeOut_).append(",").append(
-								this.timeOutJSRepeat_ ? "true" : "false")
-						.append(");\n");
-			}
+			this.renderInnerHtmlJS(out, app);
 			return this.var_;
 		}
 		}
 		return this.var_;
 	}
 
-	public String asJavaScript(StringWriter js, boolean create) {
-		EscapeOStream sout = new EscapeOStream(js);
-		if (create) {
-			this.asJavaScript(sout, DomElement.Priority.Create);
-		} else {
-			this.asJavaScript(sout, DomElement.Priority.Update);
-		}
-		return this.var_;
-	}
-
-	public void asHTML(EscapeOStream out, List<DomElement.TimeoutEvent> timeouts) {
+	public void asHTML(EscapeOStream out,
+			List<DomElement.TimeoutEvent> timeouts, boolean openingTagOnly) {
 		if (this.mode_ != DomElement.Mode.ModeCreate) {
 			throw new WtException("DomElement::asHTML() called with ModeUpdate");
 		}
@@ -566,12 +502,6 @@ class DomElement {
 		boolean needButtonWrap = !app.getEnvironment().hasAjax()
 				&& clickEvent != null && clickEvent.jsCode.length() != 0
 				&& !app.getEnvironment().agentIsSpiderBot();
-		if (needButtonWrap) {
-			String i = this.properties_.get(Property.PropertyStyleDisplay);
-			if (i != null && i.equals("none")) {
-				return;
-			}
-		}
 		boolean isSubmit = needButtonWrap;
 		DomElementType renderedType = this.type_;
 		if (needButtonWrap) {
@@ -590,6 +520,12 @@ class DomElement {
 									+ clickEvent.signalName);
 					needButtonWrap = false;
 				}
+			}
+		}
+		if (needButtonWrap) {
+			String i = this.properties_.get(Property.PropertyStyleDisplay);
+			if (i != null && i.equals("none")) {
+				return;
 			}
 		}
 		if (needButtonWrap) {
@@ -776,6 +712,17 @@ class DomElement {
 		if (needButtonWrap && !supportButton) {
 			out.append(" />");
 		} else {
+			if (openingTagOnly) {
+				out.append(">");
+				if (innerHTML.length() != 0) {
+					DomElement self = this;
+					if (!(self.childrenHtml_ != null)) {
+						self.childrenHtml_ = new StringWriter();
+					}
+					self.childrenHtml_.append(innerHTML);
+				}
+				return;
+			}
 			if (!isSelfClosingTag(renderedType)) {
 				out.append(">").append(innerHTML);
 				for (int i = 0; i < this.childrenToAdd_.size(); ++i) {
@@ -783,6 +730,13 @@ class DomElement {
 				}
 				if (this.childrenHtml_ != null) {
 					out.append(this.childrenHtml_.toString());
+				}
+				if (renderedType == DomElementType.DomElement_DIV
+						&& app.getEnvironment().getAgent() == WEnvironment.UserAgent.IE6
+						&& innerHTML.length() == 0
+						&& this.childrenToAdd_.isEmpty()
+						&& !(this.childrenHtml_ != null)) {
+					out.append("&nbsp;");
 				}
 				out.append("</").append(elementNames_[renderedType.getValue()])
 						.append(">");
@@ -798,7 +752,7 @@ class DomElement {
 			}
 		}
 		for (int i = 0; i < this.methodCalls_.size(); ++i) {
-			app.doJavaScript("Wt2_99_2.getElement('" + this.id_ + "')."
+			app.doJavaScript("Wt2_99_4.getElement('" + this.id_ + "')."
 					+ this.methodCalls_.get(i) + ';');
 		}
 		if (this.timeOut_ != -1) {
@@ -806,6 +760,11 @@ class DomElement {
 					this.timeOutJSRepeat_));
 		}
 		timeouts.addAll(this.timeouts_);
+	}
+
+	public final void asHTML(EscapeOStream out,
+			List<DomElement.TimeoutEvent> timeouts) {
+		asHTML(out, timeouts, false);
 	}
 
 	public static void createTimeoutJs(Writer out,
@@ -826,27 +785,8 @@ class DomElement {
 
 	public void declare(EscapeOStream out) {
 		if (this.var_.length() == 0) {
-			this.var_ = "j" + String.valueOf(nextId_++);
-			out.append("var ").append(this.var_).append("=");
-			this.createReference(out);
-			out.append(';').append('\n');
-		}
-	}
-
-	public void createReference(EscapeOStream out) {
-		if (this.mode_ == DomElement.Mode.ModeCreate) {
-			out.append("document.createElement('").append(
-					elementNames_[this.type_.getValue()]).append("')");
-		} else {
-			out.append("Wt2_99_2.getElement('").append(this.id_).append("')");
-		}
-	}
-
-	public String createReference() {
-		if (this.mode_ == DomElement.Mode.ModeCreate) {
-			return CREATE + elementNames_[this.type_.getValue()] + "')";
-		} else {
-			return "Wt2_99_2.getElement('" + this.id_ + "')";
+			out.append("var ").append(this.getCreateVar()).append("=").append(
+					"Wt2_99_4.getElement('").append(this.id_).append("');\n");
 		}
 	}
 
@@ -916,7 +856,6 @@ class DomElement {
 		EscapeOStream sout = new EscapeOStream(out);
 		sout.pushEscape(EscapeOStream.RuleSet.HtmlAttribute);
 		sout.append(s);
-		sout.flush();
 	}
 
 	public static boolean isSelfClosingTag(String tag) {
@@ -954,6 +893,22 @@ class DomElement {
 				this.properties_.remove(i);
 			}
 		}
+	}
+
+	public String addToParent(Writer out, String parentVar, int pos,
+			WApplication app) {
+		EscapeOStream sout = new EscapeOStream(out);
+		return this.addToParent(sout, parentVar, pos, app);
+	}
+
+	public void createElement(Writer out, WApplication app, String domInsertJS) {
+		EscapeOStream sout = new EscapeOStream(out);
+		this.createElement(sout, app, domInsertJS);
+	}
+
+	public String getCreateVar() {
+		this.var_ = "j" + String.valueOf(nextId_++);
+		return this.var_;
 	}
 
 	private boolean canWriteInnerHTML(WApplication app) {
@@ -1011,7 +966,7 @@ class DomElement {
 		DomElement.EventHandler keypress = this.eventHandlers_.get(S_keypress);
 		if (keypress != null && keypress.jsCode.length() != 0) {
 			MapUtils.access(self.eventHandlers_, S_keypress,
-					DomElement.EventHandler.class).jsCode = "if (Wt2_99_2.isKeyPress(event)){"
+					DomElement.EventHandler.class).jsCode = "if (Wt2_99_4.isKeyPress(event)){"
 					+ MapUtils.access(self.eventHandlers_, S_keypress,
 							DomElement.EventHandler.class).jsCode + '}';
 		}
@@ -1027,7 +982,7 @@ class DomElement {
 			if (minw != null || maxw != null) {
 				if (w == null) {
 					StringWriter style = new StringWriter();
-					style.append("expression(Wt2_99_2.IEwidth(this,");
+					style.append("expression(Wt2_99_4.IEwidth(this,");
 					if (minw != null) {
 						style.append('\'').append(minw).append('\'');
 						self.properties_.remove(Property.PropertyStyleMinWidth);
@@ -1064,7 +1019,7 @@ class DomElement {
 			switch (i.getKey()) {
 			case PropertyInnerHTML:
 			case PropertyAddedInnerHTML:
-				out.append("Wt2_99_2.setHtml(").append(this.var_).append(',');
+				out.append("Wt2_99_4.setHtml(").append(this.var_).append(',');
 				if (!pushed) {
 					escaped
 							.pushEscape(EscapeOStream.RuleSet.JsStringLiteralSQuote);
@@ -1197,32 +1152,125 @@ class DomElement {
 		}
 	}
 
-	private String createAsJavaScript(EscapeOStream out, String parentVar,
-			int pos) {
-		this.var_ = "j" + String.valueOf(nextId_++);
+	private void createElement(EscapeOStream out, WApplication app,
+			String domInsertJS) {
+		if (this.var_.length() == 0) {
+			this.getCreateVar();
+		}
 		out.append("var ").append(this.var_).append("=");
-		if (this.type_ == DomElementType.DomElement_TD) {
-			out.append(parentVar).append(".insertCell(").append(pos).append(
-					");");
+		if (app.getEnvironment().agentIsIE()) {
+			out.append("document.createElement('");
+			out.pushEscape(EscapeOStream.RuleSet.JsStringLiteralSQuote);
+			List<DomElement.TimeoutEvent> timeouts = new ArrayList<DomElement.TimeoutEvent>();
+			this.asHTML(out, timeouts, true);
+			out.popEscape();
+			out.append("');");
+			out.append(domInsertJS);
+			this.renderInnerHtmlJS(out, app);
 		} else {
-			if (this.type_ == DomElementType.DomElement_TR) {
-				out.append(parentVar).append(".insertRow(").append(pos).append(
-						");");
+			out.append("document.createElement('").append(
+					elementNames_[this.type_.getValue()]).append("');");
+			out.append(domInsertJS);
+			this.asJavaScript(out, DomElement.Priority.Create);
+			this.asJavaScript(out, DomElement.Priority.Update);
+		}
+	}
+
+	private String addToParent(EscapeOStream out, String parentVar, int pos,
+			WApplication app) {
+		this.getCreateVar();
+		if (this.type_ == DomElementType.DomElement_TD
+				|| this.type_ == DomElementType.DomElement_TR) {
+			out.append("var ").append(this.var_).append("=");
+			if (this.type_ == DomElementType.DomElement_TD) {
+				out.append(parentVar).append(".insertCell(").append(pos)
+						.append(");\n");
 			} else {
-				out.append("document.createElement('").append(
-						elementNames_[this.type_.getValue()]).append("');");
-				if (pos != -1) {
-					out.append(parentVar).append(".insertBefore(").append(
-							this.var_).append(",").append(parentVar).append(
-							".childNodes[").append(pos).append("]);");
-				} else {
-					out.append(parentVar).append(".appendChild(").append(
-							this.var_).append(");");
+				out.append(parentVar).append(".insertRow(").append(pos).append(
+						");\n");
+			}
+			this.asJavaScript(out, DomElement.Priority.Create);
+			this.asJavaScript(out, DomElement.Priority.Update);
+		} else {
+			StringWriter insertJS = new StringWriter();
+			if (pos != -1) {
+				insertJS.append(parentVar).append(".insertBefore(").append(
+						this.var_).append(",").append(parentVar).append(
+						".childNodes[").append(String.valueOf(pos)).append(
+						"]);\n");
+			} else {
+				insertJS.append(parentVar).append(".appendChild(").append(
+						this.var_).append(");\n");
+			}
+			this.createElement(out, app, insertJS.toString());
+		}
+		return this.var_;
+	}
+
+	// private String createAsJavaScript(EscapeOStream out, String parentVar,
+	// int pos, WApplication app) ;
+	private void renderInnerHtmlJS(EscapeOStream out, WApplication app) {
+		if (this.wasEmpty_ && this.canWriteInnerHTML(app)) {
+			if (this.type_ == DomElementType.DomElement_DIV
+					&& app.getEnvironment().getAgent() == WEnvironment.UserAgent.IE6
+					|| !this.childrenToAdd_.isEmpty()
+					|| this.childrenHtml_ != null) {
+				this.declare(out);
+				out.append("Wt2_99_4.setHtml(").append(this.var_).append(",'");
+				out.pushEscape(EscapeOStream.RuleSet.JsStringLiteralSQuote);
+				if (this.childrenHtml_ != null) {
+					out.append(this.childrenHtml_.toString());
+				}
+				List<DomElement.TimeoutEvent> timeouts = new ArrayList<DomElement.TimeoutEvent>();
+				for (int i = 0; i < this.childrenToAdd_.size(); ++i) {
+					this.childrenToAdd_.get(i).child.asHTML(out, timeouts);
+				}
+				if (this.type_ == DomElementType.DomElement_DIV
+						&& app.getEnvironment().getAgent() == WEnvironment.UserAgent.IE6
+						&& this.childrenToAdd_.isEmpty()
+						&& !(this.childrenHtml_ != null)) {
+					out.append("&nbsp;");
+				}
+				out.popEscape();
+				out.append("');\n");
+				timeouts.addAll(this.timeouts_);
+				for (int i = 0; i < timeouts.size(); ++i) {
+					out.append(app.getJavaScriptClass()).append(
+							"._p_.addTimerEvent('").append(
+							timeouts.get(i).event).append("', ").append(
+							timeouts.get(i).msec).append(",").append(
+							timeouts.get(i).repeat ? "true" : "false").append(
+							");\n");
 				}
 			}
+		} else {
+			for (int i = 0; i < this.childrenToAdd_.size(); ++i) {
+				this.declare(out);
+				DomElement child = this.childrenToAdd_.get(i).child;
+				child.addToParent(out, this.var_,
+						this.childrenToAdd_.get(i).pos, app);
+			}
 		}
-		out.append('\n');
-		return this.asJavaScript(out, DomElement.Priority.Create);
+		for (int i = 0; i < this.methodCalls_.size(); ++i) {
+			this.declare(out);
+			out.append(this.var_).append(".").append(this.methodCalls_.get(i))
+					.append(';').append('\n');
+		}
+		if (this.javaScriptEvenWhenDeleted_.length() != 0) {
+			this.declare(out);
+			out.append(this.javaScriptEvenWhenDeleted_).append('\n');
+		}
+		if (this.javaScript_.length() != 0) {
+			this.declare(out);
+			out.append(this.javaScript_).append('\n');
+		}
+		if (this.timeOut_ != -1) {
+			out.append(app.getJavaScriptClass()).append("._p_.addTimerEvent('")
+					.append(this.id_).append("', ").append(this.timeOut_)
+					.append(",").append(
+							this.timeOutJSRepeat_ ? "true" : "false").append(
+							");\n");
+		}
 	}
 
 	private DomElement.Mode mode_;
@@ -1284,7 +1332,6 @@ class DomElement {
 	private StringWriter childrenHtml_;
 	private List<DomElement.TimeoutEvent> timeouts_;
 	private boolean discardWithParent_;
-	private static final String CREATE = "document.createElement('";
 	private static String[] cssNames = { "position", "z-index", "float",
 			"clear", "width", "height", "line-height", "min-width",
 			"min-height", "max-width", "max-height", "left", "right", "top",

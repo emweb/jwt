@@ -5,6 +5,7 @@
  */
 package eu.webtoolkit.jwt;
 
+import java.io.StringWriter;
 
 class StdWidgetItemImpl extends StdLayoutItemImpl {
 	public StdWidgetItemImpl(WWidgetItem item) {
@@ -41,25 +42,38 @@ class StdWidgetItemImpl extends StdLayoutItemImpl {
 
 	public DomElement createDomElement(boolean fitWidth, boolean fitHeight,
 			WApplication app) {
-		DomElement d = this.item_.getWidget().createSDomElement(app);
+		WWidget w = this.item_.getWidget();
+		DomElement d = w.createSDomElement(app);
 		DomElement result = d;
-		if (!app.getEnvironment().agentIsIE()
-				&& !app.getEnvironment().agentIsOpera()
-				&& (isTextArea(this.item_.getWidget())
-						&& (fitWidth || fitHeight)
-						|| d.getType() == DomElementType.DomElement_INPUT
-						&& fitWidth || d.getType() == DomElementType.DomElement_BUTTON
-						&& fitWidth
-						&& app.getEnvironment().getAgent() == WEnvironment.UserAgent.Konqueror)) {
+		int marginRight = 0;
+		int marginBottom = 0;
+		if (fitWidth) {
+			marginRight = (w.boxPadding(Orientation.Horizontal) + w
+					.boxBorder(Orientation.Horizontal)) * 2;
+		}
+		if (fitHeight) {
+			marginBottom = (w.boxPadding(Orientation.Vertical) + w
+					.boxBorder(Orientation.Horizontal)) * 2;
+		}
+		boolean forceDiv = fitHeight
+				&& d.getType() == DomElementType.DomElement_SELECT
+				&& d.getAttribute("size").length() == 0;
+		if (marginRight != 0 || marginBottom != 0 || forceDiv) {
 			result = DomElement.createNew(DomElementType.DomElement_DIV);
-			String style = "height:100%;";
-			if (fitWidth) {
-				style += "margin-right:8px;";
+			StringWriter style = new StringWriter();
+			if (app.getEnvironment().agentIsIE() && !forceDiv) {
+				style.append("margin-top:-1px;");
+				marginBottom -= 1;
 			}
-			if (fitHeight && d.getType() == DomElementType.DomElement_TEXTAREA) {
-				style += "height:100%;";
+			if (marginRight != 0) {
+				style.append("margin-right:").append(
+						String.valueOf(marginRight)).append("px;");
 			}
-			result.setAttribute("style", style);
+			if (marginBottom != 0) {
+				style.append("margin-bottom:").append(
+						String.valueOf(marginBottom)).append("px;");
+			}
+			result.setAttribute("style", style.toString());
 		}
 		if (fitHeight
 				&& d.getProperty(Property.PropertyStyleHeight).length() == 0) {
@@ -74,6 +88,7 @@ class StdWidgetItemImpl extends StdLayoutItemImpl {
 				&& d.getProperty(Property.PropertyStyleWidth).length() == 0) {
 			if (d.getType() == DomElementType.DomElement_BUTTON
 					|| d.getType() == DomElementType.DomElement_INPUT
+					|| d.getType() == DomElementType.DomElement_SELECT
 					|| d.getType() == DomElementType.DomElement_TEXTAREA) {
 				d.setProperty(Property.PropertyStyleWidth, "100%");
 			}
@@ -85,14 +100,7 @@ class StdWidgetItemImpl extends StdLayoutItemImpl {
 	}
 
 	public int getAdditionalVerticalPadding(boolean fitWidth, boolean fitHeight) {
-		WApplication app = WApplication.getInstance();
-		if (!app.getEnvironment().agentIsIE()
-				&& !app.getEnvironment().agentIsOpera() && fitHeight
-				&& isTextArea(this.item_.getWidget())) {
-			return 5;
-		} else {
-			return 0;
-		}
+		return 0;
 	}
 
 	public void setHint(String name, String value) {
@@ -101,9 +109,4 @@ class StdWidgetItemImpl extends StdLayoutItemImpl {
 	}
 
 	private WWidgetItem item_;
-
-	static boolean isTextArea(WWidget w) {
-		return ((w) instanceof WTextArea ? (WTextArea) (w) : null) != null
-				&& !(((w) instanceof WTextEdit ? (WTextEdit) (w) : null) != null);
-	}
 }

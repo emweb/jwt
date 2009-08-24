@@ -194,12 +194,16 @@ public class WTreeView extends WCompositeWidget {
 					.addRule(
 							".Wt-treeview .Wt-tv-c",
 							"display: block; float: left;padding: 0px 3px;text-overflow: ellipsis;overflow: hidden;white-space: nowrap;");
-			app.getStyleSheet().addRule(".Wt-treeview img.icon",
-					"margin: -3px 3px -3px 0px; vertical-align: middle");
+			app.getStyleSheet().addRule(
+					".Wt-treeview img.icon, .Wt-treeview input.icon",
+					"margin: 0px 3px 2px 0px; vertical-align: middle");
 			app.getStyleSheet().addRule(".Wt-treeview .Wt-tv-node img.w0",
 					"width: 0px");
-			app.getStyleSheet().addRule(".Wt-treeview .Wt-tv-node .c0 img",
-					"margin-right: 0px; margin: -3px 0px;");
+			app
+					.getStyleSheet()
+					.addRule(
+							".Wt-treeview .Wt-tv-node .c0 img, .Wt-treeview .Wt-tv-node .c0 input",
+							"margin-right: 0px; margin: -4px 0px;");
 			app
 					.getStyleSheet()
 					.addRule(".Wt-treeview div.Wt-tv-rh",
@@ -321,7 +325,7 @@ public class WTreeView extends WCompositeWidget {
 		app
 				.declareJavaScriptFunction(
 						"getItem",
-						"function(event) {var columnId = -1, nodeId = null, selected = false, drop = false, el = null;var t = event.target || event.srcElement;while (t) {if (t.className.indexOf('c1 rh') == 0) {if (columnId == -1)columnId = 0;} else if (t.className.indexOf('Wt-tv-c') == 0) {if (t.className.indexOf('Wt-tv-c rh Wt-tv-c') == 0)columnId = t.className.split(' ')[2].substring(7) * 1;else if (columnId == -1)columnId = 0;if (t.getAttribute('drop') === 'true')drop = true;el = t;} else if (t.className == 'Wt-tv-node') {nodeId = t.id;break;}if (t.className === 'selected')selected = true;t = t.parentNode;if (Wt2_99_2.hasTag(t, 'BODY'))break;}return { columnId: columnId, nodeId: nodeId, selected: selected, drop: drop, el: el };}");
+						"function(event) {var columnId = -1, nodeId = null, selected = false, drop = false, el = null;var t = event.target || event.srcElement;while (t) {if (t.className.indexOf('c1 rh') == 0) {if (columnId == -1)columnId = 0;} else if (t.className.indexOf('Wt-tv-c') == 0) {if (t.className.indexOf('Wt-tv-c rh Wt-tv-c') == 0)columnId = t.className.split(' ')[2].substring(7) * 1;else if (columnId == -1)columnId = 0;if (t.getAttribute('drop') === 'true')drop = true;el = t;} else if (t.className == 'Wt-tv-node') {nodeId = t.id;break;}if (t.className === 'selected')selected = true;t = t.parentNode;if (Wt2_99_4.hasTag(t, 'BODY'))break;}return { columnId: columnId, nodeId: nodeId, selected: selected, drop: drop, el: el };}");
 		this.itemClickedJS_.setJavaScript("function(obj, event) {var item="
 				+ app.getJavaScriptClass()
 				+ ".getItem(event);if (item.columnId != -1) {"
@@ -347,9 +351,9 @@ public class WTreeView extends WCompositeWidget {
 								"''", "''")
 						+ ";if (tv.getAttribute('drag') === 'true' && item.selected)APP._p_.dragStart(tv, event);}}");
 		this.resizeHandleMDownJS_
-				.setJavaScript("function(obj, event) {var pc = Wt2_99_2.pageCoordinates(event);obj.setAttribute('dsx', pc.x);}");
+				.setJavaScript("function(obj, event) {var pc = Wt2_99_4.pageCoordinates(event);obj.setAttribute('dsx', pc.x);}");
 		this.resizeHandleMMovedJS_
-				.setJavaScript("function(obj, event) {var WT = Wt2_99_2,lastx = obj.getAttribute('dsx'),t = "
+				.setJavaScript("function(obj, event) {var WT = Wt2_99_4,lastx = obj.getAttribute('dsx'),t = "
 						+ this.contents_.getJsRef()
 						+ ".firstChild,h="
 						+ this.headers_.getJsRef()
@@ -359,7 +363,7 @@ public class WTreeView extends WCompositeWidget {
 						+ this.getJsRef()
 						+ ".adjustHeaderWidth(c, diffx);obj.setAttribute('dsx', nowxy.x);WT.cancelEvent(event);  }}");
 		this.resizeHandleMUpJS_
-				.setJavaScript("function(obj, event) {obj.removeAttribute('dsx');Wt2_99_2.cancelEvent(event);}");
+				.setJavaScript("function(obj, event) {obj.removeAttribute('dsx');Wt2_99_4.cancelEvent(event);}");
 		this.tieContentsHeaderScrollJS_
 				.setJavaScript("function(obj, event) {"
 						+ this.headerContainer_.getJsRef()
@@ -371,12 +375,12 @@ public class WTreeView extends WCompositeWidget {
 		if (app.getEnvironment().agentIsWebKit()
 				|| app.getEnvironment().agentIsOpera()) {
 			this.tieRowsScrollJS_
-					.setJavaScript("function(obj, event) {Wt2_99_2.getCssRule('#"
+					.setJavaScript("function(obj, event) {Wt2_99_4.getCssRule('#"
 							+ this.getId()
 							+ " .Wt-tv-rowc').style.left= -obj.scrollLeft + 'px';}");
 		} else {
 			this.tieRowsScrollJS_
-					.setJavaScript("function(obj, event) {var c =Wt2_99_2.getElementsByClassName('Wt-tv-rowc', "
+					.setJavaScript("function(obj, event) {var c =Wt2_99_4.getElementsByClassName('Wt-tv-rowc', "
 							+ this.getJsRef()
 							+ ");for (var i = 0, length = c.length; i < length; ++i) {var cc=c[i];if (cc.parentNode.scrollLeft != obj.scrollLeft)cc.parentNode.scrollLeft=obj.scrollLeft;}}");
 		}
@@ -385,7 +389,7 @@ public class WTreeView extends WCompositeWidget {
 						+ this.contentsContainer_.getJsRef()
 						+ ";var s="
 						+ this.getJsRef()
-						+ ";var WT=Wt2_99_2;if (e) {var tw=s.offsetWidth-WT.px(s, 'borderLeftWidth')-WT.px(s, 'borderRightWidth');if (tw > 200) {var h= "
+						+ ";var WT=Wt2_99_4;if (e) {var tw=s.offsetWidth-WT.px(s, 'borderLeftWidth')-WT.px(s, 'borderRightWidth');if (tw > 200) {var h= "
 						+ this.headers_.getJsRef()
 						+ ",hh=h.firstChild,t="
 						+ this.contents_.getJsRef()
@@ -605,7 +609,8 @@ public class WTreeView extends WCompositeWidget {
 					WLength.Auto);
 		}
 		this.headers_.resize(this.headers_.getWidth(), this.headerHeight_);
-		this.headerContainer_.resize(WLength.Auto, this.headerHeight_);
+		this.headerContainer_.resize(this.headerContainer_.getWidth(),
+				this.headerHeight_);
 		if (this.renderState_.getValue() >= WTreeView.RenderState.NeedRerenderHeader
 				.getValue()) {
 			return;
@@ -1486,7 +1491,7 @@ public class WTreeView extends WCompositeWidget {
 	public void refresh() {
 		WApplication app = WApplication.getInstance();
 		String columnsWidth = ""
-				+ "var WT=Wt2_99_2,t="
+				+ "var WT=Wt2_99_4,t="
 				+ this.contents_.getJsRef()
 				+ ".firstChild,h="
 				+ this.headers_.getJsRef()
@@ -1496,16 +1501,16 @@ public class WTreeView extends WCompositeWidget {
 				+ (this.column1Fixed_ ? "1" : "4")
 				+ "+ (hh.childNodes.length > 1? (WT.hasTag(hh.childNodes[1], 'IMG') ? 17 : 6): 0);if("
 				+ this.getJsRef()
-				+ ".offsetWidth == 0) return;for (var i=0, length=hc.childNodes.length; i < length; ++i) {var cl = hc.childNodes[i].className.split(' ')[2],r = WT.getCssRule('#"
+				+ ".offsetWidth == 0) return;for (var i=0, length=hc.childNodes.length; i < length; ++i) {if (hc.childNodes[i].className) {var cl = hc.childNodes[i].className.split(' ')[2],r = WT.getCssRule('#"
 				+ this.getId()
-				+ " .' + cl);totalw += WT.pxself(r, 'width') + 7;}var cw = WT.pxself(hh, 'width'),hdiff = c ? (cw == 0 ? 0 : (totalw - (cw - extra))) : diffx;";
+				+ " .' + cl);totalw += WT.pxself(r, 'width') + 7;}}var cw = WT.pxself(hh, 'width'),hdiff = c ? (cw == 0 ? 0 : (totalw - (cw - extra))) : diffx;";
 		if (!this.column1Fixed_) {
 			columnsWidth += "t.style.width = (t.offsetWidth + hdiff) + 'px';h.style.width = t.offsetWidth + 'px';hh.style.width = (totalw + extra) + 'px';";
 		} else {
 			columnsWidth += "var r = WT.getCssRule('#"
 					+ this.getId()
 					+ " '+ (c ? '.Wt-tv-rowc' : '.c0w'));totalw += 'px';if (c) {r.style.width = totalw;"
-					+ (app.getEnvironment().agentIsIE() ? "var c =Wt2_99_2.getElementsByClassName('Wt-tv-rowc', "
+					+ (app.getEnvironment().agentIsIE() ? "var c =Wt2_99_4.getElementsByClassName('Wt-tv-rowc', "
 							+ this.getJsRef()
 							+ ");for (var i = 0, length = c.length; i < length; ++i) {var cc=c[i];cc.style.width = totalw;}"
 							: "")
@@ -1624,6 +1629,15 @@ public class WTreeView extends WCompositeWidget {
 	 */
 	protected WWidget extraHeaderWidget(int column) {
 		return this.columnInfo(column).extraHeaderWidget;
+	}
+
+	protected void enableAjax() {
+		this.rootNode_.clicked().addListener(this.itemClickedJS_);
+		this.rootNode_.doubleClicked().addListener(this.itemDoubleClickedJS_);
+		if (this.mouseWentDown_.isConnected() || this.dragEnabled_) {
+			this.rootNode_.mouseWentDown().addListener(this.itemMouseDownJS_);
+		}
+		super.enableAjax();
 	}
 
 	private static class ColumnInfo {

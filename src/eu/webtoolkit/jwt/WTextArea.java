@@ -195,6 +195,48 @@ public class WTextArea extends WFormWidget {
 		}
 	}
 
+	protected int boxPadding(Orientation orientation) {
+		WEnvironment env = WApplication.getInstance().getEnvironment();
+		if (env.agentIsIE() || env.agentIsOpera()) {
+			return 1;
+		} else {
+			if (env.agentIsChrome()) {
+				return 2;
+			} else {
+				if (env.getUserAgent().indexOf("Mac OS X") != -1) {
+					return 0;
+				} else {
+					if (env.getUserAgent().indexOf("Windows") != -1) {
+						return 0;
+					} else {
+						return 1;
+					}
+				}
+			}
+		}
+	}
+
+	protected int boxBorder(Orientation orientation) {
+		WEnvironment env = WApplication.getInstance().getEnvironment();
+		if (env.agentIsIE() || env.agentIsOpera()) {
+			return 2;
+		} else {
+			if (env.agentIsChrome()) {
+				return 1;
+			} else {
+				if (env.getUserAgent().indexOf("Mac OS X") != -1) {
+					return 1;
+				} else {
+					if (env.getUserAgent().indexOf("Windows") != -1) {
+						return 2;
+					} else {
+						return 2;
+					}
+				}
+			}
+		}
+	}
+
 	protected void resetContentChanged() {
 		this.contentChanged_ = false;
 	}

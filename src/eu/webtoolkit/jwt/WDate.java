@@ -395,6 +395,7 @@ public class WDate implements Comparable<WDate> {
 	public static WDate fromString(String text, String format) {
 		SimpleDateFormat formatter = new SimpleDateFormat(format);
 		try {
+			formatter.setLenient(false);
 			return new WDate(formatter.parse(text));
 		} catch (ParseException e) {
 			return null;

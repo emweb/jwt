@@ -502,6 +502,7 @@ public class WStandardItemModel extends WAbstractItemModel {
 			role = ItemDataRole.DisplayRole;
 		}
 		d.put(role, value);
+		this.headerDataChanged().trigger(orientation, section, section);
 		return true;
 	}
 

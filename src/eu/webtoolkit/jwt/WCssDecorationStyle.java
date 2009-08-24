@@ -76,6 +76,7 @@ public class WCssDecorationStyle {
 	public WCssDecorationStyle() {
 		this.widget_ = null;
 		this.cursor_ = Cursor.AutoCursor;
+		this.cursorImage_ = "";
 		this.border_ = new WBorder();
 		this.backgroundColor_ = new WColor();
 		this.foregroundColor_ = new WColor();
@@ -111,6 +112,40 @@ public class WCssDecorationStyle {
 	 */
 	public Cursor getCursor() {
 		return this.cursor_;
+	}
+
+	/**
+	 * Set a custom cursor image URI, with optionally a fallback cursor.
+	 * <p>
+	 * The URI should point to a .cur file (this shoul be a real .cur file,
+	 * renaming an .ico is not enough for Internet Explorer.
+	 */
+	public void setCursor(String cursorImage, Cursor fallback) {
+		if (!WWebWidget.canOptimizeUpdates()
+				|| !this.cursorImage_.equals(cursorImage)
+				|| this.cursor_ != fallback) {
+			this.cursorImage_ = cursorImage;
+			this.cursor_ = fallback;
+			this.cursorChanged_ = true;
+			this.changed();
+		}
+	}
+
+	/**
+	 * Set a custom cursor image URI, with optionally a fallback cursor.
+	 * <p>
+	 * Calls {@link #setCursor(String cursorImage, Cursor fallback)
+	 * setCursor(cursorImage, Cursor.ArrowCursor)}
+	 */
+	public final void setCursor(String cursorImage) {
+		setCursor(cursorImage, Cursor.ArrowCursor);
+	}
+
+	/**
+	 * Get the cursor image.
+	 */
+	public String getCursorImage() {
+		return this.cursorImage_;
 	}
 
 	/**
@@ -357,6 +392,11 @@ public class WCssDecorationStyle {
 				element.setProperty(Property.PropertyStyleCursor, "help");
 				break;
 			}
+			if (this.cursorImage_.length() != 0) {
+				element.setProperty(Property.PropertyStyleCursor, "url("
+						+ this.cursorImage_ + "),"
+						+ element.getProperty(Property.PropertyStyleCursor));
+			}
 			this.cursorChanged_ = false;
 		}
 		this.font_.updateDomElement(element, this.fontChanged_, all);
@@ -487,6 +527,7 @@ public class WCssDecorationStyle {
 
 	private WWebWidget widget_;
 	private Cursor cursor_;
+	private String cursorImage_;
 	private WBorder border_;
 	private WColor backgroundColor_;
 	private WColor foregroundColor_;

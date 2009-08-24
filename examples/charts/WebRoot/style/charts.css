@@ -1,9 +1,5 @@
-html {
+body, html {
   font-family:verdana,helvetica,tahoma,sans-serif;
-}
-
-body {
-  overflow: hidden;
 }
 
 p.p {

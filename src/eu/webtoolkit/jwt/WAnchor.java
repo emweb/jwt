@@ -262,11 +262,13 @@ public class WAnchor extends WContainerWidget {
 	 * @see WAnchor#setRefInternalPath(String path)
 	 */
 	public void setRef(String ref) {
-		if (!this.ref_.equals(ref)) {
-			this.ref_ = ref;
-			this.flags_.set(BIT_REF_CHANGED);
-			this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyIEMobile));
+		if (!this.flags_.get(BIT_REF_INTERNAL_PATH) && this.ref_.equals(ref)) {
+			return;
 		}
+		this.flags_.clear(BIT_REF_INTERNAL_PATH);
+		this.ref_ = ref;
+		this.flags_.set(BIT_REF_CHANGED);
+		this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyIEMobile));
 	}
 
 	/**
@@ -296,23 +298,11 @@ public class WAnchor extends WContainerWidget {
 	 * @see WApplication#setInternalPath(String path, boolean emitChange)
 	 */
 	public void setRefInternalPath(String path) {
-		WApplication app = WApplication.getInstance();
-		String r = app.getBookmarkUrl(path);
-		if (r.equals(this.ref_)) {
+		if (this.flags_.get(BIT_REF_INTERNAL_PATH) && path.equals(this.ref_)) {
 			return;
 		}
-		this.ref_ = r;
-		if (app.getEnvironment().hasAjax()) {
-			if (!(this.changeInternalPathJS_ != null)) {
-				this.changeInternalPathJS_ = new JSlot();
-				this.clicked().addListener(this.changeInternalPathJS_);
-				this.clicked().setPreventDefault(true);
-			}
-			this.changeInternalPathJS_
-					.setJavaScript("function(obj, event){window.location.hash='#"
-							+ DomElement.urlEncodeS(path) + "';}");
-			this.clicked().senderRepaint();
-		}
+		this.flags_.set(BIT_REF_INTERNAL_PATH);
+		this.ref_ = path;
 		this.flags_.set(BIT_REF_CHANGED);
 		this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyIEMobile));
 	}
@@ -503,8 +493,9 @@ public class WAnchor extends WContainerWidget {
 		return this.target_;
 	}
 
-	private static final int BIT_REF_CHANGED = 0;
-	private static final int BIT_TARGET_CHANGED = 1;
+	private static final int BIT_REF_INTERNAL_PATH = 0;
+	private static final int BIT_REF_CHANGED = 1;
+	private static final int BIT_TARGET_CHANGED = 2;
 	private String ref_;
 	private WResource resource_;
 	private WText text_;
@@ -519,8 +510,27 @@ public class WAnchor extends WContainerWidget {
 
 	protected void updateDom(DomElement element, boolean all) {
 		if (this.flags_.get(BIT_REF_CHANGED) || all) {
-			String uri = this.ref_;
-			element.setAttribute("href", fixRelativeUrl(uri));
+			String url = "";
+			if (this.flags_.get(BIT_REF_INTERNAL_PATH)) {
+				WApplication app = WApplication.getInstance();
+				url = app.getBookmarkUrl(this.ref_);
+				if (app.getEnvironment().hasAjax()) {
+					if (!(this.changeInternalPathJS_ != null)) {
+						this.changeInternalPathJS_ = new JSlot();
+						this.clicked().addListener(this.changeInternalPathJS_);
+						this.clicked().setPreventDefault(true);
+					}
+					this.changeInternalPathJS_
+							.setJavaScript("function(obj, event){window.location.hash='#"
+									+ DomElement.urlEncodeS(this.ref_) + "';}");
+					this.clicked().senderRepaint();
+				}
+			} else {
+				url = this.ref_;
+				/* delete this.changeInternalPathJS_ */;
+				this.changeInternalPathJS_ = null;
+			}
+			element.setAttribute("href", fixRelativeUrl(url));
 			this.flags_.clear(BIT_REF_CHANGED);
 		}
 		if (this.flags_.get(BIT_TARGET_CHANGED) || all) {
@@ -549,6 +559,14 @@ public class WAnchor extends WContainerWidget {
 		this.flags_.clear(BIT_REF_CHANGED);
 		this.flags_.clear(BIT_TARGET_CHANGED);
 		super.propagateRenderOk(deep);
+	}
+
+	protected void enableAjax() {
+		if (this.flags_.get(BIT_REF_INTERNAL_PATH)) {
+			this.flags_.set(BIT_REF_CHANGED);
+			this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyIEMobile));
+		}
+		super.enableAjax();
 	}
 
 	protected static WString empty = new WString("");

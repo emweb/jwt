@@ -144,16 +144,17 @@ public abstract class WWebWidget extends WWidget {
 		if (!(this.width_ != null) && !width.isAuto()) {
 			this.width_ = new WLength();
 		}
-		if (this.width_ != null) {
+		if (this.width_ != null && !this.width_.equals(width)) {
 			this.width_ = width;
+			this.flags_.set(BIT_WIDTH_CHANGED);
 		}
 		if (!(this.height_ != null) && !height.isAuto()) {
 			this.height_ = new WLength();
 		}
-		if (this.height_ != null) {
+		if (this.height_ != null && !this.height_.equals(height)) {
 			this.height_ = height;
+			this.flags_.set(BIT_HEIGHT_CHANGED);
 		}
-		this.flags_.set(BIT_GEOMETRY_CHANGED);
 		this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyAttribute));
 	}
 
@@ -356,6 +357,9 @@ public abstract class WWebWidget extends WWidget {
 	}
 
 	public void setStyleClass(String styleClass) {
+		if (canOptimizeUpdates() && styleClass.equals(this.getStyleClass())) {
+			return;
+		}
 		if (!(this.lookImpl_ != null)) {
 			this.lookImpl_ = new WWebWidget.LookImpl();
 		}
@@ -698,6 +702,9 @@ public abstract class WWebWidget extends WWidget {
 		if (!EnumUtils.mask(flags, RepaintFlag.RepaintInnerHtml).isEmpty()) {
 			this.flags_.set(BIT_REPAINT_INNER_HTML);
 		}
+		if (!EnumUtils.mask(flags, RepaintFlag.RepaintToAjax).isEmpty()) {
+			this.flags_.set(BIT_REPAINT_TO_AJAX);
+		}
 	}
 
 	protected final void repaint(RepaintFlag flag, RepaintFlag... flags) {
@@ -811,7 +818,7 @@ public abstract class WWebWidget extends WWidget {
 						app
 								.addAutoJavaScript("{var w = "
 										+ this.getJsRef()
-										+ ";if (w && !Wt2_99_2.isHidden(w)) {var i = Wt2_99_2.getElement('"
+										+ ";if (w && !Wt2_99_4.isHidden(w)) {var i = Wt2_99_4.getElement('"
 										+ i.getId()
 										+ "');i.style.width=w.clientWidth + 'px';i.style.height=w.clientHeight + 'px';}}");
 						element.addChild(i);
@@ -901,15 +908,22 @@ public abstract class WWebWidget extends WWidget {
 							this.layoutImpl_.lineHeight_.getCssText());
 				}
 			}
-			if (this.width_ != null && !this.width_.isAuto()) {
+			this.flags_.clear(BIT_GEOMETRY_CHANGED);
+		}
+		if (this.width_ != null && (this.flags_.get(BIT_WIDTH_CHANGED) || all)) {
+			if (this.flags_.get(BIT_WIDTH_CHANGED) || !this.width_.isAuto()) {
 				element.setProperty(Property.PropertyStyleWidth, this.width_
 						.getCssText());
 			}
-			if (this.height_ != null && !this.height_.isAuto()) {
+			this.flags_.clear(BIT_WIDTH_CHANGED);
+		}
+		if (this.height_ != null
+				&& (this.flags_.get(BIT_HEIGHT_CHANGED) || all)) {
+			if (this.flags_.get(BIT_HEIGHT_CHANGED) || !this.height_.isAuto()) {
 				element.setProperty(Property.PropertyStyleHeight, this.height_
 						.getCssText());
 			}
-			this.flags_.clear(BIT_GEOMETRY_CHANGED);
+			this.flags_.clear(BIT_HEIGHT_CHANGED);
 		}
 		if (this.flags_.get(BIT_FLOAT_SIDE_CHANGED) || all) {
 			if (this.layoutImpl_ != null) {
@@ -1077,6 +1091,8 @@ public abstract class WWebWidget extends WWidget {
 		this.flags_.clear(BIT_MARGINS_CHANGED);
 		this.flags_.clear(BIT_STYLECLASS_CHANGED);
 		this.flags_.clear(BIT_SELECTABLE_CHANGED);
+		this.flags_.clear(BIT_WIDTH_CHANGED);
+		this.flags_.clear(BIT_HEIGHT_CHANGED);
 		this.renderOk();
 		if (deep && this.children_ != null) {
 			for (int i = 0; i < this.children_.size(); ++i) {
@@ -1116,6 +1132,25 @@ public abstract class WWebWidget extends WWidget {
 		} else {
 			WWidget p = this.getParent();
 			return p != null ? p.isStubbed() : false;
+		}
+	}
+
+	protected void enableAjax() {
+		if (!this.isStubbed()) {
+			for (Iterator<AbstractEventSignal> i_it = this.eventSignals()
+					.iterator(); i_it.hasNext();) {
+				AbstractEventSignal i = i_it.next();
+				AbstractEventSignal s = i;
+				if (s.getName() == WInteractWidget.CLICK_SIGNAL) {
+					this.repaint(EnumSet.of(RepaintFlag.RepaintToAjax));
+				}
+				s.senderRepaint();
+			}
+		}
+		if (this.children_ != null) {
+			for (int i = 0; i < this.children_.size(); ++i) {
+				this.children_.get(i).enableAjax();
+			}
 		}
 	}
 
@@ -1203,13 +1238,16 @@ public abstract class WWebWidget extends WWidget {
 	private static final int BIT_REPAINT_PROPERTY_IEMOBILE = 12;
 	private static final int BIT_REPAINT_PROPERTY_ATTRIBUTE = 13;
 	private static final int BIT_REPAINT_INNER_HTML = 14;
-	private static final int BIT_TOOLTIP_CHANGED = 15;
-	private static final int BIT_MARGINS_CHANGED = 16;
-	private static final int BIT_STYLECLASS_CHANGED = 17;
-	private static final int BIT_SET_UNSELECTABLE = 18;
-	private static final int BIT_SET_SELECTABLE = 19;
-	private static final int BIT_SELECTABLE_CHANGED = 20;
-	private BitSet flags_;
+	static final int BIT_REPAINT_TO_AJAX = 15;
+	private static final int BIT_TOOLTIP_CHANGED = 16;
+	private static final int BIT_MARGINS_CHANGED = 17;
+	private static final int BIT_STYLECLASS_CHANGED = 18;
+	private static final int BIT_SET_UNSELECTABLE = 19;
+	private static final int BIT_SET_SELECTABLE = 20;
+	private static final int BIT_SELECTABLE_CHANGED = 21;
+	private static final int BIT_WIDTH_CHANGED = 22;
+	private static final int BIT_HEIGHT_CHANGED = 23;
+	BitSet flags_;
 	private WLength width_;
 	private WLength height_;
 
@@ -1335,6 +1373,7 @@ public abstract class WWebWidget extends WWidget {
 		this.flags_.clear(BIT_REPAINT_PROPERTY_IEMOBILE);
 		this.flags_.clear(BIT_REPAINT_PROPERTY_ATTRIBUTE);
 		this.flags_.clear(BIT_REPAINT_INNER_HTML);
+		this.flags_.clear(BIT_REPAINT_TO_AJAX);
 	}
 
 	private void quickPropagateRenderOk() {
