@@ -31,12 +31,12 @@ import java.util.List;
  * <i>resourcesURL</i>/tab_r.gif</li>
  * </ul>
  * <p>
- * These files may be found in the resources/ folder of the Wt distribution.
+ * These files may be found in the resources/ folder of the JWt distribution.
  * <p>
  * The default value for <i>resourcesURL</i> is &quot;resources/&quot;. This
  * value may be overridden with any valid URL which points to the location where
  * these files may be found, by configuring the <i>resourcesURL</i> property in
- * your Wt configuration file.
+ * your JWt configuration file.
  * <p>
  * Usage example:
  * <p>

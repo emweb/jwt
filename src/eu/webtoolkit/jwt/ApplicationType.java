@@ -7,7 +7,7 @@ package eu.webtoolkit.jwt;
 
 
 /**
- * Enumeration that indicates a Wt application type.
+ * Enumeration that indicates a JWt application type.
  */
 public enum ApplicationType {
 	/**

@@ -21,7 +21,7 @@ import eu.webtoolkit.jwt.utils.StringUtils;
  * {@link WFormWidget#setValidator(WValidator validator)}. If the validator
  * provide client-side validation, then an invalid validation state is reflected
  * using the style class <code>&quot;Wt-invalid&quot;</code>. All validators
- * provided by Wt implement client-side validation.
+ * provided by JWt implement client-side validation.
  * <p>
  * On the server-side, use {@link WFormWidget#validate()} method to validate the
  * content using a validator previously set.

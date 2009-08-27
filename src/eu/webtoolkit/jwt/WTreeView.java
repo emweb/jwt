@@ -832,15 +832,15 @@ public class WTreeView extends WCompositeWidget {
 	/**
 	 * Setss the base urls for icons.
 	 * <p>
-	 * This widget relies on several icons that are distributed together with Wt
-	 * for drawing icons, lines, and backgrounds.
+	 * This widget relies on several icons that are distributed together with
+	 * JWt for drawing icons, lines, and backgrounds.
 	 * <p>
 	 * The default location for the image pack is <i>resourcesURL</i>.
 	 * <p>
 	 * The default value for <i>resourcesURL</i> is &quot;resources/&quot;. This
 	 * value may be overridden with a URL that points to a folder where these
 	 * files are located, by configuring the <i>resourcesURL</i> property in
-	 * your Wt configuration file.
+	 * your JWt configuration file.
 	 */
 	public void setImagePack(String uri) {
 	}

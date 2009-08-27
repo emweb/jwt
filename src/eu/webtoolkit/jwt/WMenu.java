@@ -19,7 +19,7 @@ import eu.webtoolkit.jwt.utils.StringUtils;
  * {@link WMenuItem}) corresponds to a tab in the contents stack. The contents
  * stack may contain other items, and could be shared with other {@link WMenu}
  * instances. (the old restriction of a dedicated contents stack has been
- * removed since Wt 2.2.1).
+ * removed since JWt 2.2.1).
  * <p>
  * Usage example:
  * <p>
@@ -60,7 +60,7 @@ import eu.webtoolkit.jwt.utils.StringUtils;
  * using CSS nested selectors, a different style may be defined for items in a
  * different menu.
  * <p>
- * For example, the (old) Wt homepage used the following CSS rules to style the
+ * For example, the (old) JWt homepage used the following CSS rules to style the
  * two menu (which both are assigned the style class .menu):
  * <p>
  * <code>

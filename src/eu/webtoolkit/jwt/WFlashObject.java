@@ -33,8 +33,8 @@ import java.util.Set;
 </code>
  * <p>
  * This class uses <i>resourcesURL</i>&quot;swfobject.js&quot;, a companion
- * JavaScript library, which is distributed with Wt in the resources folder.
- * <i>resourcesURL</i> is the configuration property that locates the Wt
+ * JavaScript library, which is distributed with JWt in the resources folder.
+ * <i>resourcesURL</i> is the configuration property that locates the JWt
  * resources/ folder inside your docroot.* This class requires swfobject.js in
  * the resources folder.
  */

@@ -40,14 +40,14 @@ public abstract class WtServlet extends HttpServlet {
 	static final String Wt_js;
 	static final String CommAjax_js;
 	static final String CommScript_js;
-	static final String ProgressiveBoot_html;
+	static final String Hybrid_html;
 
 	private String resourcePath;
 
 	static {
 		Boot_html = readFile("/eu/webtoolkit/jwt/skeletons/Boot.html");
 		Plain_html = readFile("/eu/webtoolkit/jwt/skeletons/Plain.html");
-		ProgressiveBoot_html = readFile("/eu/webtoolkit/jwt/skeletons/ProgressiveBoot.html");
+		Hybrid_html = readFile("/eu/webtoolkit/jwt/skeletons/Hybrid.html");
 		Wt_js = readFile("/eu/webtoolkit/jwt/skeletons/Wt.js");
 		CommAjax_js = readFile("/eu/webtoolkit/jwt/skeletons/CommAjax.js");
 		CommScript_js = readFile("/eu/webtoolkit/jwt/skeletons/CommScript.js");

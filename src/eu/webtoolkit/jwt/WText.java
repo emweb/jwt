@@ -25,9 +25,9 @@ import eu.webtoolkit.jwt.utils.StringUtils;
  * Scripting (XSS)</a> malicious attack. XSS is the situation where one user of
  * your web application is able to execute a script in another user&apos;s
  * browser while your application only intended to display a message entered by
- * the mailicious user to the other user. To defeat this attack, Wt assumes that
- * content in a WText is intended to be passive, and not contain any scripting
- * elements.
+ * the mailicious user to the other user. To defeat this attack, JWt assumes
+ * that content in a WText is intended to be passive, and not contain any
+ * scripting elements.
  * <p>
  * The {@link TextFormat#PlainText} format will display the text literally
  * (escaping any HTML special characters).

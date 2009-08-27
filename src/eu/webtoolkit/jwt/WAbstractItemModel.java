@@ -21,7 +21,7 @@ import eu.webtoolkit.jwt.utils.StringUtils;
  * An abstract model for use with Wt&apos;s view classes.
  * <p>
  * 
- * This abstract model is used by several Wt view widgets ({@link WComboBox},
+ * This abstract model is used by several JWt view widgets ({@link WComboBox},
  * {@link WSelectionBox} and {@link WTreeView}) as data models.
  * <p>
  * To provide data for both tree-like and table-like view widgets, it organizes

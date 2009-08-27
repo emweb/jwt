@@ -26,13 +26,13 @@ import java.util.List;
  * To use this widget, you need to download TinyMCE (version 3.0.7 or later) and
  * deploy the tinymce/jscripts/tiny_mce folder to <i>tinyMCEURL</i>. The default
  * value for <i>tinyMCEURL</i> is <i>resourcesURL</i>&quot;/tiny_mce&quot;,
- * where <i>resourcesURL</i> is the configuration property that locates the Wt
+ * where <i>resourcesURL</i> is the configuration property that locates the JWt
  * resources/ folder (i.e., we assume by default that you copy the tiny_mce
  * folder to the resources/ folder).
  * <p>
  * The value may be overridden with a URL that points to the directory where the
  * tiny_mce folder is located, by configuring the <i>tinyMCEURL</i> property in
- * your Wt configuration file.
+ * your JWt configuration file.
  * <p>
  * <div align="center"> <img src="doc-files//WTextEdit-1.png"
  * alt="Default configuration of a WTextEdit">

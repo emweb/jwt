@@ -15,7 +15,7 @@ import eu.webtoolkit.jwt.utils.MathUtils;
 import eu.webtoolkit.jwt.utils.StringUtils;
 
 /**
- * A class that represents an instance of a Wt Application, corresponding to a
+ * A class that represents an instance of a JWt Application, corresponding to a
  * single session.
  * <p>
  * 
@@ -26,8 +26,9 @@ import eu.webtoolkit.jwt.utils.StringUtils;
  * entry point into information pertaining to a single session, and holds a
  * reference to the {@link WApplication#getRoot()} of the widget tree.
  * <p>
- * The recipe for a Wt web application, which allocates new {@link WApplication}
- * instances for every user visiting the application is thus:
+ * The recipe for a JWt web application, which allocates new
+ * {@link WApplication} instances for every user visiting the application is
+ * thus:
  * <p>
  * Throughout the application, the instance is available through
  * {@link WApplication#getInstance()}. The application may be quited either
@@ -711,7 +712,7 @@ public class WApplication extends WObject {
 	/**
 	 * Change the internal path.
 	 * <p>
-	 * A Wt application may manage multiple virtual paths. The virtual path is
+	 * A JWt application may manage multiple virtual paths. The virtual path is
 	 * appended to the application URL. Depending on the situation, the path is
 	 * directly appended to the application URL or it is appended using a name
 	 * anchor (#).
@@ -736,12 +737,12 @@ public class WApplication extends WObject {
 	 * application now serves many different URLs. As a consequence, relative
 	 * URLs will break. Still, you can specify relative URLs within your
 	 * application (in for example {@link WAnchor#setRef(String ref)} or
-	 * {@link WImage#setImageRef(String ref)}) since Wt will transform them to
+	 * {@link WImage#setImageRef(String ref)}) since JWt will transform them to
 	 * absolute URLs when needed. But, this in turn may break deployments behind
 	 * reverse proxies when the context paths differ. For the same reason, you
 	 * will need to use absolute URLs in any XHTML or CSS you write manually. <br>
 	 * This type of URLs are only used when the your application is deployed at
-	 * a location that does not end with a &apos;/&apos;. Otherwise, Wt will
+	 * a location that does not end with a &apos;/&apos;. Otherwise, JWt will
 	 * generate URLS like: <code>
    http://www.mydomain.com/stuff/?_=/project/z3cbc/details/
   </code>
@@ -1154,7 +1155,7 @@ public class WApplication extends WObject {
 	/**
 	 * Initialize the application, post-construction.
 	 * <p>
-	 * This method is invoked by the Wt library after construction of a new
+	 * This method is invoked by the JWt library after construction of a new
 	 * application. You may reimplement this method to do additional
 	 * initialization that is not possible from the constructor (e.g. which uses
 	 * virtual methods).
@@ -1165,7 +1166,7 @@ public class WApplication extends WObject {
 	/**
 	 * Finalize the application, pre-destruction.
 	 * <p>
-	 * This method is invoked by the Wt library before destruction of a new
+	 * This method is invoked by the JWt library before destruction of a new
 	 * application. You may reimplement this method to do additional
 	 * finalization that is not possible from the destructor (e.g. which uses
 	 * virtual methods).
@@ -1260,9 +1261,9 @@ public class WApplication extends WObject {
 	/**
 	 * Add an entry to the application log.
 	 * <p>
-	 * Starts a new log entry of the given <i>type</i> in the Wt application log
-	 * file. This method returns a stream-like object to which the message may
-	 * be streamed.
+	 * Starts a new log entry of the given <i>type</i> in the JWt application
+	 * log file. This method returns a stream-like object to which the message
+	 * may be streamed.
 	 */
 	public WLogEntry log(String type) {
 		return this.session_.log(type);
@@ -1392,14 +1393,28 @@ public class WApplication extends WObject {
 	}
 
 	/**
-	 * Notify an event to the application.
+	 * Notifies an event to the application.
 	 * <p>
 	 * This method is called by the event loop for propagating an event to the
 	 * application. It provides a single point of entry for events to the
 	 * application.
+	 * <p>
+	 * You may want to reimplement this method for two reasons:
+	 * <ul>
+	 * <li>for having a single point for exception handling (you may want to
+	 * catch specialized exceptions at specific points, but general (fatal)
+	 * exceptions may be caught here.</li>
+	 * <li>you want to manage resource usage during requests. For example, at
+	 * the end of request handling, you want to return a database session back
+	 * to the pool.</li>
+	 * </ul>
+	 * <p>
+	 * In either case, you will need to call the base class implementation
+	 * {@link WApplication#notify(WEvent e)}, as otherwise no events will be
+	 * delivered to your application.
 	 */
 	protected void notify(WEvent e) throws IOException {
-		WebSession.notify(e);
+		e.getSession().notify(e);
 	}
 
 	/**
@@ -1441,6 +1456,7 @@ public class WApplication extends WObject {
 	 * @see WWidget#enableAjax()
 	 */
 	protected void enableAjax() {
+		this.enableAjax_ = true;
 		this.domRoot_.enableAjax();
 		if (this.domRoot2_ != null) {
 			this.domRoot2_.enableAjax();
@@ -1499,6 +1515,7 @@ public class WApplication extends WObject {
 	String htmlClass_;
 	String bodyClass_;
 	boolean bodyHtmlClassChanged_;
+	boolean enableAjax_;
 	List<WApplication.ScriptLibrary> scriptLibraries_;
 	int scriptLibrariesAdded_;
 	List<String> styleSheets_;
@@ -1508,8 +1525,8 @@ public class WApplication extends WObject {
 	private Map<String, WObject> encodedObjects_;
 	private boolean exposeSignals_;
 	private String afterLoadJavaScript_;
-	private String beforeLoadJavaScript_;
-	private String newBeforeLoadJavaScript_;
+	String beforeLoadJavaScript_;
+	String newBeforeLoadJavaScript_;
 	String autoJavaScript_;
 	boolean autoJavaScriptChanged_;
 	private EventSignal1<WResponseEvent> javaScriptResponse_;
@@ -1582,7 +1599,8 @@ public class WApplication extends WObject {
 		if (fn.length() != 0 && fn.charAt(0) != '/') {
 			fn = '/' + fn;
 		}
-		return this.session_.getMostRelativeUrl(fn) + "&resource="
+		return this.session_.getMostRelativeUrl(fn)
+				+ "&request=resource&resource="
 				+ DomElement.urlEncodeS(resource.getId()) + "&rand="
 				+ String.valueOf(MathUtils.randomInt());
 	}

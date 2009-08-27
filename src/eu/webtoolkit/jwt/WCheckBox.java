@@ -17,7 +17,7 @@ package eu.webtoolkit.jwt;
  * <p>
  * A checkbox may also provide a third state,
  * {@link CheckState#PartiallyChecked}, which is useful to indicate that it is
- * neither checked or unchecked. Wt will use native browser support for this
+ * neither checked or unchecked. JWt will use native browser support for this
  * HTML5 extension when available (Safari and MS IE), and use an image-based
  * workaround otherwise. You may enable support for the third state using
  * {@link WCheckBox#setTristate(boolean tristate)}, and use

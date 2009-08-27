@@ -20,7 +20,7 @@ import java.util.EnumSet;
  * information will be included to convert these pixel units to lengths (using
  * DPI information).
  * <p>
- * You should reimplement this class if you wish to extend the Wt paint system
+ * You should reimplement this class if you wish to extend the JWt paint system
  * to paint on other devices than the ones provided by the library.
  * <p>
  * <i>Note: this interface is subject to changes to increase optimization

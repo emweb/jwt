@@ -10,7 +10,7 @@ package eu.webtoolkit.jwt;
  * An abstract base class for an MVC view that is rendered using a widget
  * <p>
  * 
- * In principle, Wt widgets are self-contained and manage both their content,
+ * In principle, JWt widgets are self-contained and manage both their content,
  * behavior and layout. From the point of view of a Model-View-Controller (MVC)
  * design pattern, they implement each of these, except for the view widgets
  * that work in conjunction with {@link WAbstractItemModel}. As a developer you
@@ -18,7 +18,7 @@ package eu.webtoolkit.jwt;
  * wish.
  * <p>
  * This widget facilitates separation of the View from the Model and Controller
- * in a particular way. The View is rendered as a Wt widget. The use of this
+ * in a particular way. The View is rendered as a JWt widget. The use of this
  * widget provides two benefits. The classic MVC benefit is a decoupling between
  * view and model, which may allow easier maintainance of code. In addition,
  * this widget enforces the View to be stateless, as it is only created

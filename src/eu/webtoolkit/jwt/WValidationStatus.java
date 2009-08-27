@@ -10,8 +10,8 @@ package eu.webtoolkit.jwt;
  * A widget that keeps track of the validation status of a form widget
  * <p>
  * 
- * <i>Since Wt 2.1.3, all standard validators provide client-side validation and
- * this is reflected in the form widget using the style class
+ * <i>Since JWt 2.1.3, all standard validators provide client-side validation
+ * and this is reflected in the form widget using the style class
  * &quot;Wt-invalid&quot; when the validator returns not
  * {@link WValidator.State#Valid}. Therefore, it is unlikely you will need this
  * class anymore.</i>

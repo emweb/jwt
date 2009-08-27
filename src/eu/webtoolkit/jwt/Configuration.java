@@ -46,8 +46,6 @@ public class Configuration {
 	private ArrayList<String> ajaxAgentList = new ArrayList<String>();
 	private boolean ajaxAgentWhiteList = false;
 	private boolean debug = false;
-	private boolean progressiveBoot = false;
-
 	private String favicon = "";
 	private boolean progressiveBootstrap = false;
 
@@ -106,8 +104,6 @@ public class Configuration {
 						} catch (FileNotFoundException e) {
 							throw new RuntimeException(errorMessage + "log-file file not found (" + node.getTextContent().trim() + ")");
 						}
-					} else if (node.getNodeName().equalsIgnoreCase("progressive-bootstrap")) {
-						setProgressiveBoot(parseBoolean(errorMessage, node));
 					} else if (node.getNodeName().equalsIgnoreCase("send-xhtml-mime-type")) {
 						setSendXHTMLMimeType(parseBoolean(errorMessage, node));
 					} else if (node.getNodeName().equalsIgnoreCase("redirect-message")) {
@@ -158,20 +154,6 @@ public class Configuration {
 		}
 	}
 
-	/**
-	 * Is progressive boot?
-	 */
-	public boolean isProgressiveBoot() {
-		return progressiveBoot;
-	}
-
-	/**
-	 * Set progressive boot.
-	 */
-	public void setProgressiveBoot(boolean progressiveBoot) {
-		this.progressiveBoot = progressiveBoot;
-	}
-	
 	/**
 	 * Sets properties.
 	 * 
@@ -441,7 +423,7 @@ public class Configuration {
 	/**
 	 * Configures a path to a favicon.
 	 * 
-	 * By default, a browser will fecth a favicon from "/favicon.ico". <br>
+	 * By default, a browser will fetch a favicon from "/favicon.ico". <br>
 	 * Using this setting, you may provide a custom path to the favicon.
 	 * <p>
 	 * The default value is "".
@@ -461,10 +443,56 @@ public class Configuration {
 		return this.favicon;
 	}
 
+	/**
+	 * Sets whether the progressive bootstrap method is used.
+	 * <p>
+	 * Since JWt 2.99.4, a new bootstrap method has been added (initially
+	 * proposed by Anthony roger Buck). While the default bootstrap already
+  	 * honors the principle of graceful degradation, this bootstrap
+  	 * implements this using the principle of <a
+  	 * href="http://en.wikipedia.org/wiki/Progressive_enhancement">progressive
+  	 * enhancement</a> (and quite literally so).
+	 * <p>
+	 * This bootstrap method will initially assume that the user agent is a
+  	 * plain HTML user-agent and immediately create the application (with
+  	 * {@link WEnvironment#hasAjax()} always returning <code>false</code>).
+  	 * The initial response will contain the initial page suitable for a plain HTML
+  	 * user-agent.
+	 * <p>
+  	 * JavaScript embedded in this page will sense for AJAX support and
+  	 * trigger a second request which progresses the application to an AJAX
+  	 * application (without repainting the user interface). To that extent,
+  	 * it will change {@link WEnvironment#hasAjax() to return <code>true</code>, and
+  	 * invoke {@link WApplication#enableAjax()} which in turn propagates
+  	 * {@link WWidget#enableAjax()} through the widget hierarchy. This upgrade
+  	 * happens in the back-ground, unnoticed to the user.
+	 * <p>
+  	 * This mitigates disadvantages associated with the default bootstrap, which implements
+  	 * a browser detection first after it starts the application:
+  	 * <ul>
+  	 *   <li>the redirection without JavaScript support may not be supported
+  	 *     by all user agents, leaving these with a link and a {@link #getRedirectMessage()}.
+  	 *    </li>
+  	 *   <li>there is an additional round-trip before any contents is rendered</li>
+  	 *   <li>for an AJAX user interface, all contents will be loaded through
+  	 *     JavaScript. This has a draw-back that IE may delay applying external
+  	 *     stylesheets after the contents has been rendered, which might cause
+  	 *     some confusion, and some 3rd party JavaScript libraries do not support
+  	 *     being loaded on-demand (with as most notable example, Google ads).
+     *   </li>
+     * </ul>
+	 */
 	public void setProgressiveBootstrap(boolean enable) {
 		this.progressiveBootstrap = enable;
 	}
 
+	/**
+	 * Returns whether the progressive bootstrap method is used.
+	 * 
+	 * @return whether the progressive bootstrap method is used.
+	 * 
+	 * @see #setProgressiveBootstrap(boolean).
+	 */
 	public boolean progressiveBootstrap() {
 		return this.progressiveBootstrap ;
 	}

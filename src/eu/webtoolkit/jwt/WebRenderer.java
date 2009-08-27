@@ -68,7 +68,7 @@ class WebRenderer implements SlotLearnerInterface {
 	}
 
 	public enum ResponseType {
-		UpdateResponse, FullResponse;
+		Page, Script, Update;
 
 		public int getValue() {
 			return ordinal();
@@ -125,113 +125,23 @@ class WebRenderer implements SlotLearnerInterface {
 				|| this.invisibleJS_.getBuffer().length() > 0;
 	}
 
-	public void serveMainWidget(WebResponse response,
+	public void serveResponse(WebResponse response,
 			WebRenderer.ResponseType responseType) throws IOException {
 		switch (responseType) {
-		case UpdateResponse:
+		case Update:
 			this.serveJavaScriptUpdate(response);
 			break;
-		case FullResponse:
-			if (this.session_.getEnv().hasAjax()) {
-				this.serveMainscript(response, false);
-			} else {
+		case Page:
+			if (this.session_.getApp() != null) {
 				this.serveMainpage(response);
+			} else {
+				this.serveBootstrap(response);
 			}
+			break;
+		case Script:
+			this.serveMainscript(response);
+			break;
 		}
-	}
-
-	public void serveMainscript(WebResponse response, boolean upgradeToAjax)
-			throws IOException {
-		Configuration conf = this.session_.getController().getConfiguration();
-		boolean widgetset = this.session_.getType() == ApplicationType.WidgetSet;
-		this.setHeaders(response, "text/javascript; charset=UTF-8");
-		if (!widgetset) {
-			String redirect = this.session_.getRedirect();
-			if (redirect.length() != 0) {
-				this.streamRedirectJS(response.out(), redirect);
-				return;
-			}
-		}
-		WApplication app = this.session_.getApp();
-		final boolean xhtml = app.getEnvironment().getContentType() == WEnvironment.ContentType.XHTML1;
-		final boolean innerHtml = !xhtml || app.getEnvironment().agentIsGecko();
-		this.formObjectsChanged_ = true;
-		this.currentFormObjectsList_ = this.createFormObjectsList(app);
-		FileServe script = new FileServe(WtServlet.Wt_js);
-		script.setCondition("DEBUG", conf.isDebug());
-		script.setVar("WT_CLASS", "Wt2_99_4");
-		script.setVar("APP_CLASS", app.getJavaScriptClass());
-		script.setVar("AUTO_JAVASCRIPT", app.autoJavaScript_);
-		script.setCondition("STRICTLY_SERIALIZED_EVENTS", conf
-				.isSerializedEvents());
-		script.setVar("INNER_HTML", innerHtml);
-		script.setVar("FORM_OBJECTS", '[' + this.currentFormObjectsList_ + ']');
-		script.setVar("RELATIVE_URL", '"' + this.session_.getBootstrapUrl(
-				response, WebSession.BootstrapOption.ClearInternalPath) + '"');
-		script.setVar("KEEP_ALIVE", String
-				.valueOf(conf.getSessionTimeout() / 2));
-		script.setVar("INITIAL_HASH", app.getInternalPath());
-		script.setVar("INDICATOR_TIMEOUT", "500");
-		script
-				.setVar("SERVER_PUSH_TIMEOUT",
-						conf.getServerPushTimeout() * 1000);
-		script.setVar("ONLOAD", widgetset ? "" : "window.loadWidgetTree();");
-		script.stream(response.out());
-		app.autoJavaScriptChanged_ = false;
-		this.streamCommJs(app, response.out());
-		if (!upgradeToAjax) {
-			this.serveMainAjax(response);
-		} else {
-			response
-					.out()
-					.append("window.loadWidgetTree = function(){\n")
-					.append("var domRoot = ")
-					.append(app.domRoot_.getJsRef())
-					.append(
-							";var form = Wt2_99_4.getElement('Wt-form');domRoot.style.display = form.style.display;document.body.replaceChild(domRoot, form);");
-			this.visibleOnly_ = false;
-			this.collectJavaScript();
-			response
-					.out()
-					.append(this.collectedJS1_.toString())
-					.append(this.session_.getApp().getJavaScriptClass())
-					.append("._p_.response(")
-					.append(String.valueOf(this.expectedAckId_))
-					.append(");domRoot.style.display = 'block';")
-					.append(this.collectedJS2_.toString())
-					.append(
-							"};window.WtScriptLoaded = true;if (window.isLoaded) onLoad();\n");
-		}
-		this.session_.setLoaded();
-	}
-
-	public void serveBootstrap(WebResponse response) throws IOException {
-		boolean xhtml = this.session_.getEnv().getContentType() == WEnvironment.ContentType.XHTML1;
-		Configuration conf = this.session_.getController().getConfiguration();
-		FileServe boot = new FileServe(WtServlet.Boot_html);
-		this.setPageVars(boot);
-		this.setBootVars(response, boot);
-		StringWriter noJsRedirectUrl = new StringWriter();
-		DomElement.htmlAttributeValue(noJsRedirectUrl, this.session_
-				.getBootstrapUrl(response,
-						WebSession.BootstrapOption.KeepInternalPath)
-				+ "&js=no");
-		if (xhtml) {
-			boot.setVar("AUTO_REDIRECT", "");
-			boot.setVar("NOSCRIPT_TEXT", conf.getRedirectMessage());
-		} else {
-			boot.setVar("AUTO_REDIRECT",
-					"<noscript><meta http-equiv=\"refresh\" content=\"0;url="
-							+ noJsRedirectUrl.toString() + "\"></noscript>");
-			boot.setVar("NOSCRIPT_TEXT", conf.getRedirectMessage());
-		}
-		boot.setVar("REDIRECT_URL", noJsRedirectUrl.toString());
-		response.addHeader("Cache-Control", "no-cache, no-store");
-		response.addHeader("Expires", "-1");
-		String contentType = xhtml ? "application/xhtml+xml" : "text/html";
-		contentType += "; charset=UTF-8";
-		this.setHeaders(response, contentType);
-		boot.stream(response.out());
 	}
 
 	public void serveError(WebResponse response, Exception e,
@@ -241,8 +151,8 @@ class WebRenderer implements SlotLearnerInterface {
 
 	public void serveError(WebResponse response, String message,
 			WebRenderer.ResponseType responseType) throws IOException {
-		boolean js = responseType != WebRenderer.ResponseType.FullResponse
-				|| this.session_.getEnv().hasAjax();
+		boolean js = responseType == WebRenderer.ResponseType.Update
+				|| responseType == WebRenderer.ResponseType.Script;
 		if (!js) {
 			response.setContentType("text/html");
 			response.out().append("<title>Error occurred.</title>").append(
@@ -346,7 +256,104 @@ class WebRenderer implements SlotLearnerInterface {
 				this.session_.getApp().getJavaScriptClass()).append(
 				"._p_.response(").append(String.valueOf(this.expectedAckId_))
 				.append(");").append(this.collectedJS2_.toString());
-		this.session_.setLoaded();
+	}
+
+	private void serveMainscript(WebResponse response) throws IOException {
+		Configuration conf = this.session_.getController().getConfiguration();
+		boolean widgetset = this.session_.getType() == ApplicationType.WidgetSet;
+		this.setHeaders(response, "text/javascript; charset=UTF-8");
+		if (!widgetset) {
+			String redirect = this.session_.getRedirect();
+			if (redirect.length() != 0) {
+				this.streamRedirectJS(response.out(), redirect);
+				return;
+			}
+		}
+		WApplication app = this.session_.getApp();
+		final boolean xhtml = app.getEnvironment().getContentType() == WEnvironment.ContentType.XHTML1;
+		final boolean innerHtml = !xhtml || app.getEnvironment().agentIsGecko();
+		this.formObjectsChanged_ = true;
+		this.currentFormObjectsList_ = this.createFormObjectsList(app);
+		FileServe script = new FileServe(WtServlet.Wt_js);
+		script.setCondition("DEBUG", conf.isDebug());
+		script.setVar("WT_CLASS", "Wt2_99_4");
+		script.setVar("APP_CLASS", app.getJavaScriptClass());
+		script.setVar("AUTO_JAVASCRIPT", app.autoJavaScript_);
+		script.setCondition("STRICTLY_SERIALIZED_EVENTS", conf
+				.isSerializedEvents());
+		script.setVar("INNER_HTML", innerHtml);
+		script.setVar("FORM_OBJECTS", '[' + this.currentFormObjectsList_ + ']');
+		script.setVar("RELATIVE_URL", '"' + this.session_.getBootstrapUrl(
+				response, WebSession.BootstrapOption.ClearInternalPath) + '"');
+		script.setVar("KEEP_ALIVE", String
+				.valueOf(conf.getSessionTimeout() / 2));
+		script.setVar("INITIAL_HASH", app.getInternalPath());
+		script.setVar("INDICATOR_TIMEOUT", "500");
+		script
+				.setVar("SERVER_PUSH_TIMEOUT",
+						conf.getServerPushTimeout() * 1000);
+		script.setVar("ONLOAD", widgetset ? "" : "window.loadWidgetTree();");
+		script.stream(response.out());
+		app.autoJavaScriptChanged_ = false;
+		this.streamCommJs(app, response.out());
+		if (this.session_.getState() == WebSession.State.JustCreated) {
+			this.serveMainAjax(response);
+		} else {
+			response.out().append("window.loadWidgetTree = function(){\n");
+			if (app.enableAjax_) {
+				response
+						.out()
+						.append("var domRoot = ")
+						.append(app.domRoot_.getJsRef())
+						.append(
+								";var form = Wt2_99_4.getElement('Wt-form');domRoot.style.display = form.style.display;document.body.replaceChild(domRoot, form);")
+						.append(app.getAfterLoadJavaScript());
+			}
+			this.visibleOnly_ = false;
+			this.collectJavaScript();
+			response.out().append(this.collectedJS1_.toString()).append(
+					this.session_.getApp().getJavaScriptClass()).append(
+					"._p_.response(").append(
+					String.valueOf(this.expectedAckId_)).append(");");
+			if (app.enableAjax_) {
+				response.out().append("domRoot.style.display = 'block';");
+			}
+			response
+					.out()
+					.append(this.collectedJS2_.toString())
+					.append(
+							"};window.WtScriptLoaded = true;if (window.isLoaded) onLoad();\n");
+			app.enableAjax_ = false;
+		}
+	}
+
+	private void serveBootstrap(WebResponse response) throws IOException {
+		boolean xhtml = this.session_.getEnv().getContentType() == WEnvironment.ContentType.XHTML1;
+		Configuration conf = this.session_.getController().getConfiguration();
+		FileServe boot = new FileServe(WtServlet.Boot_html);
+		this.setPageVars(boot);
+		this.setBootVars(response, boot);
+		StringWriter noJsRedirectUrl = new StringWriter();
+		DomElement.htmlAttributeValue(noJsRedirectUrl, this.session_
+				.getBootstrapUrl(response,
+						WebSession.BootstrapOption.KeepInternalPath)
+				+ "&js=no");
+		if (xhtml) {
+			boot.setVar("AUTO_REDIRECT", "");
+			boot.setVar("NOSCRIPT_TEXT", conf.getRedirectMessage());
+		} else {
+			boot.setVar("AUTO_REDIRECT",
+					"<noscript><meta http-equiv=\"refresh\" content=\"0;url="
+							+ noJsRedirectUrl.toString() + "\"></noscript>");
+			boot.setVar("NOSCRIPT_TEXT", conf.getRedirectMessage());
+		}
+		boot.setVar("REDIRECT_URL", noJsRedirectUrl.toString());
+		response.addHeader("Cache-Control", "no-cache, no-store");
+		response.addHeader("Expires", "-1");
+		String contentType = xhtml ? "application/xhtml+xml" : "text/html";
+		contentType += "; charset=UTF-8";
+		this.setHeaders(response, contentType);
+		boot.stream(response.out());
 	}
 
 	private void serveMainpage(WebResponse response) throws IOException {
@@ -382,13 +389,14 @@ class WebRenderer implements SlotLearnerInterface {
 			this.collectedJS1_.append(app.scriptLibraries_.get(i).beforeLoadJS);
 		}
 		app.scriptLibrariesAdded_ = 0;
-		final boolean progressiveBoot = this.session_.getState() == WebSession.State.ProgressiveBootstrap;
-		FileServe page = new FileServe(
-				progressiveBoot ? WtServlet.ProgressiveBoot_html
-						: WtServlet.Plain_html);
+		app.newBeforeLoadJavaScript_ = app.beforeLoadJavaScript_;
+		boolean hybridPage = this.session_.isProgressiveBoot()
+				|| this.session_.getEnv().hasAjax();
+		FileServe page = new FileServe(hybridPage ? WtServlet.Hybrid_html
+				: WtServlet.Plain_html);
 		this.setPageVars(page);
 		page.setVar("SESSION_ID", this.session_.getSessionId());
-		if (progressiveBoot) {
+		if (hybridPage) {
 			this.setBootVars(response, page);
 		}
 		String url = app.getEnvironment().agentIsSpiderBot()
@@ -407,7 +415,7 @@ class WebRenderer implements SlotLearnerInterface {
 		page.setVar("STYLESHEETS", styleSheets);
 		page.setVar("TITLE", WWebWidget.escapeText(app.getTitle()).toString());
 		app.titleChanged_ = false;
-		if (progressiveBoot) {
+		if (hybridPage) {
 			response.addHeader("Cache-Control", "no-cache, no-store");
 			response.addHeader("Expires", "-1");
 		}
@@ -435,9 +443,6 @@ class WebRenderer implements SlotLearnerInterface {
 		page.setVar("REFRESH", String.valueOf(refresh));
 		page.stream(response.out());
 		app.internalPathIsChanged_ = false;
-		if (!progressiveBoot) {
-			this.session_.setLoaded();
-		}
 	}
 
 	private void serveMainAjax(WebResponse response) throws IOException {
@@ -826,8 +831,8 @@ class WebRenderer implements SlotLearnerInterface {
 				|| app.bodyClass_.length() == 0 ? "" : " class=\""
 				+ app.bodyClass_ + "\"");
 		page.setVar("HEADDECLARATIONS", this.getHeadDeclarations());
-		page.setCondition("AGENT_BOT", this.session_.getEnv()
-				.agentIsSpiderBot());
+		page.setCondition("FORM", !this.session_.getEnv().agentIsSpiderBot()
+				&& !this.session_.getEnv().hasAjax());
 	}
 
 	private void setBootVars(WebResponse response, FileServe boot) {

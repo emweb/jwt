@@ -21,9 +21,9 @@ package eu.webtoolkit.jwt;
  * <p>
  * This class uses <i>resourcesURL</i>&quot;WtSoundManager.swf&quot;, a flash
  * object, and <i>resourcesURL</i>&quot;swfobject.js&quot;, a companion
- * JavaScript library, which are both distributed with Wt in the resources
- * folder. <i>resourcesURL</i> is the configuration property that locates the Wt
- * resources/ folder inside your docroot.
+ * JavaScript library, which are both distributed with JWt in the resources
+ * folder. <i>resourcesURL</i> is the configuration property that locates the
+ * JWt resources/ folder inside your docroot.
  * <p>
  * Usage example: <code>
  WSound *s = new WSound(&quot;djing.mp3&quot;, parent); <br> 

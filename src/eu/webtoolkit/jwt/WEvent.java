@@ -10,44 +10,20 @@ package eu.webtoolkit.jwt;
  * An internal session event
  * <p>
  * 
- * The request controller notifies the application to react to browser events,
- * or to render itself, using {@link WApplication#notify(WEvent e)}.
+ * The request controller notifies the application to react to a request using
+ * {@link WApplication#notify(WEvent e)}.
  */
 public class WEvent {
-	public enum EventType {
-		EmitSignal, EnableAjax, Refresh, Render, HashChange;
-
-		public int getValue() {
-			return ordinal();
-		}
+	public WEvent(WebSession.Handler aHandler,
+			WebRenderer.ResponseType aResponseType) {
+		this.handler = aHandler;
+		this.responseType = aResponseType;
 	}
-
-	WebSession.Handler handler;
-	public WEvent.EventType type;
 
 	WebSession getSession() {
 		return this.handler.getSession();
 	}
 
+	WebSession.Handler handler;
 	WebRenderer.ResponseType responseType;
-	String hash;
-
-	WEvent(WebSession.Handler aHandler, WEvent.EventType aType,
-			WebRenderer.ResponseType aResponseType) {
-		this.handler = aHandler;
-		this.type = aType;
-		this.responseType = aResponseType;
-		this.hash = "";
-	}
-
-	WEvent(WebSession.Handler aHandler, WEvent.EventType aType) {
-		this(aHandler, aType, WebRenderer.ResponseType.FullResponse);
-	}
-
-	WEvent(WebSession.Handler aHandler, WEvent.EventType aType, String aHash) {
-		this.handler = aHandler;
-		this.type = aType;
-		this.responseType = WebRenderer.ResponseType.FullResponse;
-		this.hash = aHash;
-	}
 }

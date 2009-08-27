@@ -189,11 +189,11 @@ public class WButtonGroup extends WObject {
 	public void setCheckedButton(WRadioButton button) {
 		for (int i = 0; i < this.buttons_.size(); ++i) {
 			WRadioButton b = this.buttons_.get(i).button;
-			if (b == button && !button.isChecked()) {
-				button.setChecked(true);
+			if (b == button && !b.isChecked()) {
+				b.setChecked(true);
 			} else {
-				if (b != button && button.isChecked()) {
-					button.setChecked(false);
+				if (b != button && b.isChecked()) {
+					b.setChecked(false);
 				}
 			}
 		}

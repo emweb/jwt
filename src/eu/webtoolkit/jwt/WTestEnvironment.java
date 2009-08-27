@@ -124,18 +124,6 @@ public class WTestEnvironment extends WEnvironment {
 	}
 
 	/**
-	 * Sets whether JavaScript is supported.
-	 * <p>
-	 * The default value is <i>true</i>.
-	 * <p>
-	 * 
-	 * @see WEnvironment#hasJavaScript()
-	 */
-	public void setJavaScript(boolean enabled) {
-		this.doesJavaScript_ = enabled;
-	}
-
-	/**
 	 * Sets whether AJAX is supported.
 	 * <p>
 	 * The default value is <i>true</i>.
@@ -314,7 +302,6 @@ public class WTestEnvironment extends WEnvironment {
 		this.session_ = new WebSession(this.controller_, "testwtd", type, "",
 				(WebRequest) null, this);
 		new WebSession.Handler(this.session_, true);
-		this.doesJavaScript_ = true;
 		this.doesAjax_ = true;
 		this.doesCookies_ = true;
 		this.dpiScale_ = 1;

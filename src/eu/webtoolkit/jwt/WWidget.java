@@ -14,7 +14,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * A WWidget is the abstract base class for any Wt widget
+ * A WWidget is the abstract base class for any JWt widget
  * <p>
  * 
  * The user-interface is organized in a tree structure, in which all nodes are
