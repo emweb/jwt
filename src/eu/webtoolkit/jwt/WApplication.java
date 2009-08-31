@@ -1457,6 +1457,9 @@ public class WApplication extends WObject {
 	 */
 	protected void enableAjax() {
 		this.enableAjax_ = true;
+		this.afterLoadJavaScript_ = this.newBeforeLoadJavaScript_
+				+ this.afterLoadJavaScript_;
+		this.newBeforeLoadJavaScript_ = "";
 		this.domRoot_.enableAjax();
 		if (this.domRoot2_ != null) {
 			this.domRoot2_.enableAjax();

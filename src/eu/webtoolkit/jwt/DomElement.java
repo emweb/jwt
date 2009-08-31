@@ -814,6 +814,11 @@ class DomElement {
 													.getValue()]).append(':')
 							.append(j.getValue()).append(';');
 				}
+			} else {
+				if (j.getKey() == Property.PropertyStyleWidthExpression) {
+					style.append("width:expression(").append(j.getValue())
+							.append(");");
+				}
 			}
 		}
 		if (i != null) {
@@ -981,24 +986,25 @@ class DomElement {
 			String maxw = self.properties_.get(Property.PropertyStyleMaxWidth);
 			if (minw != null || maxw != null) {
 				if (w == null) {
-					StringWriter style = new StringWriter();
-					style.append("expression(Wt2_99_4.IEwidth(this,");
+					StringWriter expr = new StringWriter();
+					expr.append("Wt2_99_4.IEwidth(this,");
 					if (minw != null) {
-						style.append('\'').append(minw).append('\'');
+						expr.append('\'').append(minw).append('\'');
 						self.properties_.remove(Property.PropertyStyleMinWidth);
 					} else {
-						style.append("'0px'");
+						expr.append("'0px'");
 					}
-					style.append(',');
+					expr.append(',');
 					if (maxw != null) {
-						style.append('\'').append(maxw).append('\'');
+						expr.append('\'').append(maxw).append('\'');
 						self.properties_.remove(Property.PropertyStyleMaxWidth);
 					} else {
-						style.append("'100000px'");
+						expr.append("'100000px'");
 					}
-					style.append("));");
-					self.properties_.put(Property.PropertyStyleWidth, style
-							.toString());
+					expr.append(")");
+					self.properties_.remove(Property.PropertyStyleWidth);
+					self.properties_.put(Property.PropertyStyleWidthExpression,
+							expr.toString());
 				}
 			}
 			String i = self.properties_.get(Property.PropertyStyleMinHeight);
@@ -1111,6 +1117,16 @@ class DomElement {
 								: "cssFloat").append("=\'")
 						.append(i.getValue()).append("\';");
 				break;
+			case PropertyStyleWidthExpression:
+				out.append(this.var_).append(".style.setExpression('width',");
+				if (!pushed) {
+					escaped
+							.pushEscape(EscapeOStream.RuleSet.JsStringLiteralSQuote);
+					pushed = true;
+				}
+				fastJsStringLiteral(out, escaped, i.getValue());
+				out.append(");");
+				break;
 			default:
 				if (i.getKey().getValue() >= Property.PropertyStylePosition
 						.getValue()
@@ -1120,8 +1136,8 @@ class DomElement {
 							.append(
 									cssCamelNames[i.getKey().getValue()
 											- Property.PropertyStylePosition
-													.getValue()]).append("=\'")
-							.append(i.getValue()).append("\';");
+													.getValue()]).append("='")
+							.append(i.getValue()).append("';");
 				}
 			}
 			out.append('\n');

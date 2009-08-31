@@ -36,6 +36,7 @@ class WebRenderer implements SlotLearnerInterface {
 		this.collectedJS2_ = new StringWriter();
 		this.invisibleJS_ = new StringWriter();
 		this.statelessJS_ = new StringWriter();
+		this.beforeLoadJS_ = new StringWriter();
 		this.updateMap_ = new HashSet<WWidget>();
 		this.learning_ = false;
 	}
@@ -303,11 +304,13 @@ class WebRenderer implements SlotLearnerInterface {
 			if (app.enableAjax_) {
 				response
 						.out()
+						.append(this.beforeLoadJS_.toString())
 						.append("var domRoot = ")
 						.append(app.domRoot_.getJsRef())
 						.append(
 								";var form = Wt2_99_4.getElement('Wt-form');domRoot.style.display = form.style.display;document.body.replaceChild(domRoot, form);")
 						.append(app.getAfterLoadJavaScript());
+				this.beforeLoadJS_ = new StringWriter();
 			}
 			this.visibleOnly_ = false;
 			this.collectJavaScript();
@@ -316,10 +319,14 @@ class WebRenderer implements SlotLearnerInterface {
 					"._p_.response(").append(
 					String.valueOf(this.expectedAckId_)).append(");");
 			if (app.enableAjax_) {
-				response.out().append("domRoot.style.display = 'block';");
+				response.out().append("domRoot.style.display = 'block';")
+						.append(this.session_.getApp().getJavaScriptClass())
+						.append("._p_.autoJavaScript();");
 			}
 			response
 					.out()
+					.append(this.session_.getApp().getJavaScriptClass())
+					.append("._p_.update(null, 'load', null, false);")
 					.append(this.collectedJS2_.toString())
 					.append(
 							"};window.WtScriptLoaded = true;if (window.isLoaded) onLoad();\n");
@@ -382,11 +389,12 @@ class WebRenderer implements SlotLearnerInterface {
 					+ (xhtml ? "/>" : ">") + '\n';
 		}
 		app.styleSheetsAdded_ = 0;
+		this.beforeLoadJS_ = new StringWriter();
 		for (int i = 0; i < app.scriptLibraries_.size(); ++i) {
 			styleSheets += "<script src='"
 					+ app.fixRelativeUrl(app.scriptLibraries_.get(i).uri)
 					+ "'></script>\n";
-			this.collectedJS1_.append(app.scriptLibraries_.get(i).beforeLoadJS);
+			this.beforeLoadJS_.append(app.scriptLibraries_.get(i).beforeLoadJS);
 		}
 		app.scriptLibrariesAdded_ = 0;
 		app.newBeforeLoadJavaScript_ = app.beforeLoadJavaScript_;
@@ -498,7 +506,10 @@ class WebRenderer implements SlotLearnerInterface {
 		if (widgetset) {
 			response.out().append(app.getJavaScriptClass()).append(
 					"._p_.load();\n");
-		} else {
+		}
+		response.out().append(this.session_.getApp().getJavaScriptClass())
+				.append("._p_.update(null, 'load', null, false);\n");
+		if (!widgetset) {
 			response.out().append("};\n");
 			response
 					.out()
@@ -763,6 +774,7 @@ class WebRenderer implements SlotLearnerInterface {
 	private StringWriter collectedJS2_;
 	private StringWriter invisibleJS_;
 	private StringWriter statelessJS_;
+	private StringWriter beforeLoadJS_;
 
 	private void collectJS(Writer js) throws IOException {
 		List<DomElement> changes = new ArrayList<DomElement>();
@@ -840,7 +852,7 @@ class WebRenderer implements SlotLearnerInterface {
 		Configuration conf = this.session_.getController().getConfiguration();
 		boot.setVar("BLANK_HTML", this.session_.getBootstrapUrl(response,
 				WebSession.BootstrapOption.ClearInternalPath)
-				+ "&amp;resource=blank");
+				+ "&amp;request=resource&amp;resource=blank");
 		boot.setVar("SELF_URL", this.session_.getBootstrapUrl(response,
 				WebSession.BootstrapOption.KeepInternalPath));
 		boot.setVar("SESSION_ID", this.session_.getSessionId());

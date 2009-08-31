@@ -257,31 +257,34 @@ pctself: function(c, s) {
 },
 
 IEwidth: function(c, min, max) {
-  var WT = _$_WT_CLASS_$_;
+  if (c.parentNode) {
+    var WT = _$_WT_CLASS_$_;
 
-  var r = c.parentNode.clientWidth
-   - self.px(c, 'marginLeft')
-   - self.px(c, 'marginRight')
-   - self.px(c, 'borderLeftWidth')
-   - self.px(c, 'borderRightWidth')
-   - self.px(c.parentNode, 'paddingLeft')
-   - self.px(c.parentNode, 'paddingRight');
+    var r = c.parentNode.clientWidth
+    - WT.px(c, 'marginLeft')
+    - WT.px(c, 'marginRight')
+    - WT.px(c, 'borderLeftWidth')
+    - WT.px(c, 'borderRightWidth')
+    - WT.px(c.parentNode, 'paddingLeft')
+    - WT.px(c.parentNode, 'paddingRight');
 
-  var m = /^\s*(\d+)\.?\d*\s*px\s*$/.exec(min);
-  var v = m && m.length == 2 ? m[1] : "0";
-  min = v ? parseInt(v) : 0;
+    var m = /^\s*(\d+)\.?\d*\s*px\s*$/.exec(min);
+    var v = m && m.length == 2 ? m[1] : "0";
+    min = v ? parseInt(v) : 0;
 
-  m = /^\s*(\d+)\.?\d*\s*px\s*$/.exec(max);
-  v = m && m.length == 2 ? m[1] : "100000";
-  max = v ? parseInt(v) : 100000;
+    m = /^\s*(\d+)\.?\d*\s*px\s*$/.exec(max);
+    v = m && m.length == 2 ? m[1] : "100000";
+    max = v ? parseInt(v) : 100000;
 
-  if (r < min)
-    return min-1;
-  else if (r > max)
-    return max+1;
-  else if (c.style["styleFloat"] != "")
-    return min-1;
-  else
+    if (r < min)
+      return min-1;
+    else if (r > max)
+      return max+1;
+    else if (c.style["styleFloat"] != "")
+      return min-1;
+    else
+      return "auto";
+  } else
     return "auto";
 },
 
@@ -690,6 +693,11 @@ var dragState = {
 
 var capture = function(obj) {
   captureElement = obj;
+  if (document.body.setCapture)
+    if (obj != null)
+      document.body.setCapture();
+    else
+      document.body.releaseCapture();
 }
 
 var initDragDrop = function() {
@@ -711,10 +719,16 @@ var initDragDrop = function() {
   if (db.addEventListener) {
     db.addEventListener('mousemove', mouseMove, true);
     db.addEventListener('mouseup', mouseUp, true);
+
+    if (WT.isGecko) {
+      window.addEventListener('mouseout', function(e) {
+	  if (!e.relatedTarget && WT.hasTag(e.target, "HTML"))
+	    mouseUp(e);
+	}, true);
+    }
   } else {
-    db.setCapture(true);
     db.attachEvent('onmousemove', mouseMove);
-    db.attachEvent('onmouseup', mouseMove);
+    db.attachEvent('onmouseup', mouseUp);
   }
 
   document.body.ondragstart=function() {
@@ -723,7 +737,7 @@ var initDragDrop = function() {
 }
 
 var dragStart = function(obj, e) {
-  captureElement = null;
+  capture(null);
 
   // drag element attributes:
   //   dwid = dragWidgetId
@@ -835,7 +849,7 @@ var dragEnd = function(e) {
   if (!e) e = window.event;
   if (captureElement != null) {
     var el = captureElement;
-    captureElement = null;
+    capture(null);
     if (el.onmouseup)
       el.onmouseup(e);
     return false;
@@ -1037,7 +1051,6 @@ var load = function() {
   if (!loaded) {
     loaded = true;
     _$_ONLOAD_$_;
-    update(null, 'load', null, false);
     keepAliveTimer = setTimeout(doKeepAlive, _$_KEEP_ALIVE_$_000);
   }
 };
@@ -1109,7 +1122,7 @@ var doPollTimeout = function() {
 
 var update = function(self, signalName, e, feedback) {
   if (captureElement && (self == captureElement) && e.type == "mouseup")
-    captureElement = null;
+    capture(null);
 
   _$_APP_CLASS_$_._p_.autoJavaScript();
 
@@ -1183,7 +1196,7 @@ var sendUpdate = function() {
   }
 
   responsePending = _$_APP_CLASS_$_._p_.sendUpdate
-    (url + query, 'request=jsupdate&ackId=' + ackUpdateId + data.result,
+    (url + query, 'request=jsupdate&' + data.result + '&ackId=' + ackUpdateId,
      tm, ackUpdateId);
 
   pollTimer

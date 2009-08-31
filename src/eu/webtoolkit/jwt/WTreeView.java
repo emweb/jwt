@@ -389,17 +389,17 @@ public class WTreeView extends WCompositeWidget {
 						+ this.contentsContainer_.getJsRef()
 						+ ";var s="
 						+ this.getJsRef()
-						+ ";var WT=Wt2_99_4;if (e) {var tw=s.offsetWidth-WT.px(s, 'borderLeftWidth')-WT.px(s, 'borderRightWidth');if (tw > 200) {var h= "
+						+ ";var WT=Wt2_99_4;if (e) {var tw=s.offsetWidth-WT.px(s, 'borderLeftWidth')-WT.px(s, 'borderRightWidth'),vscroll=e.scrollHeight > e.offsetHeight,c0w = (s.className.indexOf('column1') != -1? WT.pxself(WT.getCssRule('#"
+						+ this.getId()
+						+ " .c0w'), 'width'): null);if (tw > 200 && (tw != e.tw || vscroll != e.vscroll || c0w != e.c0w)) {e.vscroll = vscroll;e.tw = tw;e.c0w = c0w;var h= "
 						+ this.headers_.getJsRef()
 						+ ",hh=h.firstChild,t="
 						+ this.contents_.getJsRef()
 						+ ".firstChild,r= WT.getCssRule('#"
 						+ this.getId()
-						+ " .cwidth'),vscroll=e.scrollHeight > e.offsetHeight,contentstoo=(r.style.width == h.style.width);if (vscroll) {r.style.width=(tw-17) + 'px';} else {r.style.width=tw + 'px';}e.style.width=tw + 'px';h.style.width=t.offsetWidth + 'px';if (s.className.indexOf('column1') != -1) {var r=WT.getCssRule('#"
+						+ " .cwidth'),contentstoo=(r.style.width == h.style.width);r.style.width=(tw - (vscroll ? 17 : 0)) + 'px';e.style.width=tw + 'px';h.style.width=t.offsetWidth + 'px';if (c0w != null) {var hh=h.firstChild,w=tw - c0w - (vscroll ? 17 : 0);WT.getCssRule('#"
 						+ this.getId()
-						+ " .c0w'),hh=h.firstChild,w=tw - WT.pxself(r, 'width') - (vscroll ? 17 : 0);WT.getCssRule('#"
-						+ this.getId()
-						+ " .Wt-tv-row').style.width= w + 'px';var extra = hh.childNodes.length > 1? (WT.hasTag(hh.childNodes[1], 'IMG') ? 21 : 6) : 0;hh.style.width= (w + extra) + 'px';} else if (contentstoo) {h.style.width=r.style.width;t.style.width=r.style.width;}if (s.adjustHeaderWidth)s.adjustHeaderWidth(1, 0);}}}");
+						+ " .Wt-tv-row').style.width = w + 'px';var extra = hh.childNodes.length > 1? (WT.hasTag(hh.childNodes[1], 'IMG') ? 21 : 6) : 0;hh.style.width= (w + extra) + 'px';} else if (contentstoo) {h.style.width=r.style.width;t.style.width=r.style.width;}if (s.adjustHeaderWidth)s.adjustHeaderWidth(1, 0);}}}");
 		if (parent != null) {
 			parent.addWidget(this);
 		}
@@ -1912,7 +1912,7 @@ public class WTreeView extends WCompositeWidget {
 			int end) {
 		int count = end - start + 1;
 		if (!(parent != null)) {
-			for (int ii = 0; ii < 0 + start + count; ++ii)
+			for (int ii = 0; ii < (0 + start + count) - (0 + start); ++ii)
 				this.columns_.remove(0 + start);
 			;
 			if (start == 0) {

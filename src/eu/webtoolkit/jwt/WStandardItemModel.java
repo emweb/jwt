@@ -627,7 +627,7 @@ public class WStandardItemModel extends WAbstractItemModel {
 	private void removeHeaderData(List<Map<Integer, Object>> headerData,
 			WStandardItem item, int index, int count) {
 		if (item == this.invisibleRootItem_) {
-			for (int ii = 0; ii < 0 + index + count; ++ii)
+			for (int ii = 0; ii < (0 + index + count) - (0 + index); ++ii)
 				headerData.remove(0 + index);
 			;
 		}

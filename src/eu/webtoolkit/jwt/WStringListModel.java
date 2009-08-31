@@ -176,7 +176,7 @@ public class WStringListModel extends WAbstractListModel {
 	public boolean removeRows(int row, int count, WModelIndex parent) {
 		if (!(parent != null)) {
 			this.beginRemoveRows(parent, row, row + count - 1);
-			for (int ii = 0; ii < 0 + row + count; ++ii)
+			for (int ii = 0; ii < (0 + row + count) - (0 + row); ++ii)
 				this.strings_.remove(0 + row);
 			;
 			this.endRemoveRows();
