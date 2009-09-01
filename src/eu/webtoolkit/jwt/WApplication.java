@@ -414,8 +414,8 @@ public class WApplication extends WObject {
 									r = r.substring(3);
 									cond = gt;
 								} else {
-									if (r.length() >= 3
-											&& r.substring(0, 0 + 3).equals(
+									if (r.length() >= 4
+											&& r.substring(0, 0 + 4).equals(
 													"gte ")) {
 										r = r.substring(4);
 										cond = gte;
