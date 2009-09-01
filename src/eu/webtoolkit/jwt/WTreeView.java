@@ -248,8 +248,10 @@ public class WTreeView extends WCompositeWidget {
 						"position: relative;");
 			}
 			if (app.getEnvironment().agentIsIE()) {
-				app.getStyleSheet().addRule(".Wt-treeview .Wt-scroll",
-						"overflow-x: scroll; height: 16px;");
+				app
+						.getStyleSheet()
+						.addRule(".Wt-treeview .Wt-scroll",
+								"position: absolute; overflow-x: scroll; height: 16px;");
 			} else {
 				app.getStyleSheet().addRule(".Wt-treeview .Wt-scroll",
 						"overflow: scroll; height: 16px;");
@@ -389,17 +391,17 @@ public class WTreeView extends WCompositeWidget {
 						+ this.contentsContainer_.getJsRef()
 						+ ";var s="
 						+ this.getJsRef()
-						+ ";var WT=Wt2_99_4;if (e) {var tw=s.offsetWidth-WT.px(s, 'borderLeftWidth')-WT.px(s, 'borderRightWidth');if (tw > 200) {var h= "
+						+ ";var WT=Wt2_99_4;if (e) {var tw=s.offsetWidth-WT.px(s, 'borderLeftWidth')-WT.px(s, 'borderRightWidth'),vscroll=e.scrollHeight > e.offsetHeight;c0w = null;if (s.className.indexOf('column1') != -1)  c0w = WT.pxself(WT.getCssRule('#"
+						+ this.getId()
+						+ " .c0w'), 'width');if (tw > 200 && (tw != e.tw || vscroll != e.vscroll || c0w != e.c0w)) {e.vscroll = vscroll;e.tw = tw;e.c0w = c0w;var h= "
 						+ this.headers_.getJsRef()
 						+ ",hh=h.firstChild,t="
 						+ this.contents_.getJsRef()
 						+ ".firstChild,r= WT.getCssRule('#"
 						+ this.getId()
-						+ " .cwidth'),vscroll=e.scrollHeight > e.offsetHeight,contentstoo=(r.style.width == h.style.width);if (vscroll) {r.style.width=(tw-17) + 'px';} else {r.style.width=tw + 'px';}e.style.width=tw + 'px';h.style.width=t.offsetWidth + 'px';if (s.className.indexOf('column1') != -1) {var r=WT.getCssRule('#"
+						+ " .cwidth'),contentstoo=(r.style.width == h.style.width);r.style.width=(tw - (vscroll ? 17 : 0)) + 'px';e.style.width=tw + 'px';h.style.width=t.offsetWidth + 'px';if (c0w != null) {var hh=h.firstChild,w=tw - c0w - (vscroll ? 17 : 0);if (w > 0) {WT.getCssRule('#"
 						+ this.getId()
-						+ " .c0w'),hh=h.firstChild,w=tw - WT.pxself(r, 'width') - (vscroll ? 17 : 0);WT.getCssRule('#"
-						+ this.getId()
-						+ " .Wt-tv-row').style.width= w + 'px';var extra = hh.childNodes.length > 1? (WT.hasTag(hh.childNodes[1], 'IMG') ? 21 : 6) : 0;hh.style.width= (w + extra) + 'px';} else if (contentstoo) {h.style.width=r.style.width;t.style.width=r.style.width;}if (s.adjustHeaderWidth)s.adjustHeaderWidth(1, 0);}}}");
+						+ " .Wt-tv-row').style.width = w + 'px';var extra = hh.childNodes.length > 1? (WT.hasTag(hh.childNodes[1], 'IMG') ? 22 : 7) : 0;hh.style.width= (w + extra) + 'px';}} else if (contentstoo) {h.style.width=r.style.width;t.style.width=r.style.width;}if (s.adjustHeaderWidth)s.adjustHeaderWidth(1, 0);}}}");
 		if (parent != null) {
 			parent.addWidget(this);
 		}
@@ -1330,14 +1332,18 @@ public class WTreeView extends WCompositeWidget {
 					WLength.Auto);
 			WContainerWidget scrollBarContainer = new WContainerWidget();
 			scrollBarContainer.setStyleClass("cwidth");
-			scrollBarContainer.resize(WLength.Auto, new WLength(16));
+			scrollBarContainer.resize(WLength.Auto, new WLength(17));
 			WContainerWidget scrollBarC = new WContainerWidget(
 					scrollBarContainer);
 			scrollBarC.setStyleClass("Wt-tv-row Wt-scroll");
 			scrollBarC.scrolled().addListener(this.tieRowsScrollJS_);
+			WApplication app = WApplication.getInstance();
+			if (app.getEnvironment().agentIsIE()) {
+				scrollBarContainer.setPositionScheme(PositionScheme.Relative);
+				scrollBarC.setAttributeValue("style", "right: 0px");
+			}
 			WContainerWidget scrollBar = new WContainerWidget(scrollBarC);
 			scrollBar.setStyleClass("Wt-tv-rowc");
-			WApplication app = WApplication.getInstance();
 			if (app.getEnvironment().agentIsWebKit()
 					|| app.getEnvironment().agentIsOpera()) {
 				scrollBar.setAttributeValue("style", "left: 0px;");
@@ -1499,7 +1505,7 @@ public class WTreeView extends WCompositeWidget {
 				+ (this.column1Fixed_ ? ".firstChild" : "")
 				+ ",totalw=0,extra="
 				+ (this.column1Fixed_ ? "1" : "4")
-				+ "+ (hh.childNodes.length > 1? (WT.hasTag(hh.childNodes[1], 'IMG') ? 17 : 6): 0);if("
+				+ "+ (hh.childNodes.length > 1? (WT.hasTag(hh.childNodes[1], 'IMG') ? 18 : 7): 0);if("
 				+ this.getJsRef()
 				+ ".offsetWidth == 0) return;for (var i=0, length=hc.childNodes.length; i < length; ++i) {if (hc.childNodes[i].className) {var cl = hc.childNodes[i].className.split(' ')[2],r = WT.getCssRule('#"
 				+ this.getId()
@@ -1675,7 +1681,6 @@ public class WTreeView extends WCompositeWidget {
 		}
 	}
 
-	private Map<WModelIndex, WTreeViewNode> NodeMap;
 	private WAbstractItemModel model_;
 	private WAbstractItemDelegate itemDelegate_;
 	private WItemSelectionModel selectionModel_;
@@ -1912,7 +1917,7 @@ public class WTreeView extends WCompositeWidget {
 			int end) {
 		int count = end - start + 1;
 		if (!(parent != null)) {
-			for (int ii = 0; ii < 0 + start + count; ++ii)
+			for (int ii = 0; ii < (0 + start + count) - (0 + start); ++ii)
 				this.columns_.remove(0 + start);
 			;
 			if (start == 0) {

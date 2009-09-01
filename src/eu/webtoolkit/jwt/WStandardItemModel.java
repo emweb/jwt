@@ -577,7 +577,6 @@ public class WStandardItemModel extends WAbstractItemModel {
 				.getItemFromIndex(parent), first, last - first + 1);
 	}
 
-	private Map<Integer, Object> HeaderData;
 	private int sortRole_;
 	private List<Map<Integer, Object>> columnHeaderData_;
 	private List<Map<Integer, Object>> rowHeaderData_;
@@ -627,7 +626,7 @@ public class WStandardItemModel extends WAbstractItemModel {
 	private void removeHeaderData(List<Map<Integer, Object>> headerData,
 			WStandardItem item, int index, int count) {
 		if (item == this.invisibleRootItem_) {
-			for (int ii = 0; ii < 0 + index + count; ++ii)
+			for (int ii = 0; ii < (0 + index + count) - (0 + index); ++ii)
 				headerData.remove(0 + index);
 			;
 		}

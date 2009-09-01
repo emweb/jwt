@@ -116,11 +116,6 @@ public class WTree extends WCompositeWidget {
 	}
 
 	/**
-	 * Typedef for a set of WTreeNode&apos;s.
-	 */
-	public Set<WTreeNode> WTreeNodeSet;
-
-	/**
 	 * Get the set of selected tree nodes.
 	 */
 	public Set<WTreeNode> getSelectedNodes() {

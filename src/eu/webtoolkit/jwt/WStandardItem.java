@@ -1110,7 +1110,7 @@ public class WStandardItem {
 				/* delete this.columns_.get( column + i).get(j) */;
 			}
 		}
-		for (int ii = 0; ii < 0 + column + count; ++ii)
+		for (int ii = 0; ii < (0 + column + count) - (0 + column); ++ii)
 			this.columns_.remove(0 + column);
 		;
 		if (this.columns_.isEmpty()) {
@@ -1158,7 +1158,7 @@ public class WStandardItem {
 			for (int j = 0; j < count; ++j) {
 				/* delete c.get( row + j) */;
 			}
-			for (int ii = 0; ii < 0 + row + count; ++ii)
+			for (int ii = 0; ii < (0 + row + count) - (0 + row); ++ii)
 				c.remove(0 + row);
 			;
 		}
@@ -1266,10 +1266,6 @@ public class WStandardItem {
 			this.model_.layoutChanged().trigger();
 		}
 	}
-
-	private SortedMap<Integer, Object> DataMap;
-	private List<WStandardItem> Column;
-	private List<List<WStandardItem>> ColumnList;
 
 	/**
 	 * Compares the item with another item.

@@ -994,8 +994,6 @@ public abstract class WWidget extends WObject {
 		layout.setParent(this);
 	}
 
-	protected LinkedList<AbstractEventSignal> EventSignalList;
-
 	protected void addEventSignal(AbstractEventSignal s) {
 		this.eventSignals_.offer(s);
 	}

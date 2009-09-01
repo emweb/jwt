@@ -235,8 +235,6 @@ public class WCssStyleSheet {
 		}
 	}
 
-	private List<WCssRule> RuleList;
-	private Set<WCssRule> RuleSet;
 	private List<WCssRule> rules_;
 	private List<WCssRule> rulesAdded_;
 	private Set<WCssRule> rulesModified_;

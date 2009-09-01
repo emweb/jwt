@@ -14,28 +14,6 @@ import eu.webtoolkit.jwt.utils.StringUtils;
 
 /**
  * An model that manages a list of strings.
- * <p>
- * 
- * This model only manages a unidimensional list of strings. It is used as the
- * default model for view classes that show a list.
- * <p>
- * The model only presents {@link ItemDataRole#DisplayRole DisplayRole} data of
- * a single column of data, but otherwise provides support for all standard
- * features of a model, including editing and addition and removal of data rows.
- * <p>
- * You can populate the model by passing a list of strings to its consructor, or
- * by using the {@link WStringListModel#setStringList(List strings)} method. You
- * can set or retrieve data using the
- * {@link WStringListModel#setData(WModelIndex index, Object value, int role)}
- * and {@link WStringListModel#getData(WModelIndex index, int role)} methods,
- * and add or remove data using the
- * {@link WStringListModel#insertRows(int row, int count, WModelIndex parent)}
- * and {@link WStringListModel#removeRows(int row, int count, WModelIndex parent)}
- * methods.
- * <p>
- * 
- * @see WComboBox
- * @see WSelectionBox
  */
 public class WStringListModel extends WAbstractListModel {
 	/**
@@ -176,7 +154,7 @@ public class WStringListModel extends WAbstractListModel {
 	public boolean removeRows(int row, int count, WModelIndex parent) {
 		if (!(parent != null)) {
 			this.beginRemoveRows(parent, row, row + count - 1);
-			for (int ii = 0; ii < 0 + row + count; ++ii)
+			for (int ii = 0; ii < (0 + row + count) - (0 + row); ++ii)
 				this.strings_.remove(0 + row);
 			;
 			this.endRemoveRows();

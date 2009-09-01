@@ -414,8 +414,8 @@ public class WApplication extends WObject {
 									r = r.substring(3);
 									cond = gt;
 								} else {
-									if (r.length() >= 3
-											&& r.substring(0, 0 + 3).equals(
+									if (r.length() >= 4
+											&& r.substring(0, 0 + 4).equals(
 													"gte ")) {
 										r = r.substring(4);
 										cond = gte;
@@ -1457,6 +1457,9 @@ public class WApplication extends WObject {
 	 */
 	protected void enableAjax() {
 		this.enableAjax_ = true;
+		this.afterLoadJavaScript_ = this.newBeforeLoadJavaScript_
+				+ this.afterLoadJavaScript_;
+		this.newBeforeLoadJavaScript_ = "";
 		this.domRoot_.enableAjax();
 		if (this.domRoot2_ != null) {
 			this.domRoot2_.enableAjax();
@@ -1485,9 +1488,6 @@ public class WApplication extends WObject {
 		}
 	}
 
-	private Map<String, AbstractEventSignal> SignalMap;
-	private Map<String, WResource> ResourceMap;
-	private Map<String, WObject> ObjectMap;
 	private WebSession session_;
 	private WString title_;
 	boolean titleChanged_;

@@ -60,8 +60,8 @@ import eu.webtoolkit.jwt.utils.StringUtils;
  * <p>
  * A crucial point in implementing a hierarchical model is to decide how to
  * reference an index in terms of an internal pointer (
- * {@link WModelIndex#getInternalPointer()}) Other than the top-level index,
- * which is special since it is referenced using an invalid index), every index
+ * {@link WModelIndex#getInternalPointer()}). Other than the top-level index,
+ * which is special since it is referenced using an invalid index, every index
  * with children must be identifiable using this object. For example, in the
  * {@link WStandardItemModel}, the internal pointer points to the parent
  * {@link WStandardItem}. For table models, the internal pointer plays no role,
@@ -72,10 +72,11 @@ import eu.webtoolkit.jwt.utils.StringUtils;
  * <ul>
  * <li>
  * {@link WAbstractItemModel#setData(WModelIndex index, Object value, int role)}
- * and
+ * </li>
+ * <li>
  * {@link WAbstractItemModel#setHeaderData(int section, Orientation orientation, Object value, int role)}
- * to change data. View classes will use the {@link ItemDataRole#EditRole
- * EditRole} to pass an edited value.</li>
+ * View classes will use the {@link ItemDataRole#EditRole EditRole} to pass an
+ * edited value.</li>
  * </ul>
  * <p>
  * After data was modified, the model must emit the
@@ -87,12 +88,14 @@ import eu.webtoolkit.jwt.utils.StringUtils;
  * <ul>
  * <li>
  * {@link WAbstractItemModel#insertRows(int row, int count, WModelIndex parent)}
- * and
+ * </li>
+ * <li>
  * {@link WAbstractItemModel#insertColumns(int column, int count, WModelIndex parent)}
  * </li>
  * <li>
  * {@link WAbstractItemModel#removeRows(int row, int count, WModelIndex parent)}
- * and
+ * </li>
+ * <li>
  * {@link WAbstractItemModel#removeColumns(int column, int count, WModelIndex parent)}
  * </li>
  * </ul>
@@ -103,11 +106,6 @@ import eu.webtoolkit.jwt.utils.StringUtils;
  * themselves to the new geometry.
  */
 public abstract class WAbstractItemModel extends WObject {
-	/**
-	 * Data map.
-	 */
-	public SortedMap<Integer, Object> DataMap;
-
 	/**
 	 * Create a new data model.
 	 */

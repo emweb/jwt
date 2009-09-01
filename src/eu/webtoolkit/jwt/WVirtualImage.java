@@ -372,7 +372,6 @@ public class WVirtualImage extends WCompositeWidget {
 		}
 	}
 
-	private Map<Long, WImage> GridMap;
 	private Map<Long, WImage> grid_;
 	private int gridImageSize_;
 	private int viewPortWidth_;

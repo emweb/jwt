@@ -46,6 +46,8 @@ public class Configuration {
 	private ArrayList<String> ajaxAgentList = new ArrayList<String>();
 	private boolean ajaxAgentWhiteList = false;
 	private boolean debug = false;
+	private boolean progressiveBoot = false;
+
 	private String favicon = "";
 	private boolean progressiveBootstrap = false;
 
@@ -104,6 +106,8 @@ public class Configuration {
 						} catch (FileNotFoundException e) {
 							throw new RuntimeException(errorMessage + "log-file file not found (" + node.getTextContent().trim() + ")");
 						}
+					} else if (node.getNodeName().equalsIgnoreCase("progressive-bootstrap")) {
+						setProgressiveBoot(parseBoolean(errorMessage, node));
 					} else if (node.getNodeName().equalsIgnoreCase("send-xhtml-mime-type")) {
 						setSendXHTMLMimeType(parseBoolean(errorMessage, node));
 					} else if (node.getNodeName().equalsIgnoreCase("redirect-message")) {
@@ -154,6 +158,20 @@ public class Configuration {
 		}
 	}
 
+	/**
+	 * Is progressive boot?
+	 */
+	public boolean isProgressiveBoot() {
+		return progressiveBoot;
+	}
+
+	/**
+	 * Set progressive boot.
+	 */
+	public void setProgressiveBoot(boolean progressiveBoot) {
+		this.progressiveBoot = progressiveBoot;
+	}
+	
 	/**
 	 * Sets properties.
 	 * 
@@ -449,9 +467,8 @@ public class Configuration {
 	 * Since JWt 2.99.4, a new bootstrap method has been added (initially
 	 * proposed by Anthony roger Buck). While the default bootstrap already
   	 * honors the principle of graceful degradation, this bootstrap
-  	 * implements this using the principle of <a
-  	 * href="http://en.wikipedia.org/wiki/Progressive_enhancement">progressive
-  	 * enhancement</a> (and quite literally so).
+  	 * implements this using the principle of <a href="http://en.wikipedia.org/wiki/Progressive_enhancement">progressive enhancement</a>
+	 * (and quite literally so).
 	 * <p>
 	 * This bootstrap method will initially assume that the user agent is a
   	 * plain HTML user-agent and immediately create the application (with
@@ -462,7 +479,7 @@ public class Configuration {
   	 * JavaScript embedded in this page will sense for AJAX support and
   	 * trigger a second request which progresses the application to an AJAX
   	 * application (without repainting the user interface). To that extent,
-  	 * it will change {@link WEnvironment#hasAjax() to return <code>true</code>, and
+  	 * it will change {@link WEnvironment#hasAjax()} to return <code>true</code>, and
   	 * invoke {@link WApplication#enableAjax()} which in turn propagates
   	 * {@link WWidget#enableAjax()} through the widget hierarchy. This upgrade
   	 * happens in the back-ground, unnoticed to the user.

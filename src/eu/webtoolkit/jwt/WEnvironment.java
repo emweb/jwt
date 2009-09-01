@@ -81,16 +81,6 @@ public class WEnvironment {
 	}
 
 	/**
-	 * Cookie map.
-	 * <p>
-	 * A std::map which associates a cookie name with a cookie value.
-	 * <p>
-	 * 
-	 * @see WEnvironment#getCookies()
-	 */
-	public Map<String, String> CookieMap;
-
-	/**
 	 * Parameters passed to the application.
 	 * <p>
 	 * Arguments passed to the application, either in the URL for a http GET, or

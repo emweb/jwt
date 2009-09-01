@@ -34,14 +34,14 @@ import java.util.List;
  * The painting system distinguishes between device coordinates, logical
  * coordinates, and local coordinates. The device coordinate system ranges from
  * (0, 0) in the top left corner of the device, to (
- * {@link WPaintDevice#getWidth() device()-&gt;width()},
- * {@link WPaintDevice#getHeight() device()-&gt;height()}) for the bottom right
- * corner. The logical coordinate system defines a coordinate system that may be
- * chosen independent of the geometry of the device, which is convenient to make
- * abstraction of the actual device size. Finally, the current local coordinate
- * system may be different from the logical coordinate system because of a world
- * transformation. Initially, the local coordinate system coincides with the
- * logical coordinate system, which coincides with the device coordinate system.
+ * {@link WPaintDevice#getWidth()}, {@link WPaintDevice#getHeight()}) for the
+ * bottom right corner. The logical coordinate system defines a coordinate
+ * system that may be chosen independent of the geometry of the device, which is
+ * convenient to make abstraction of the actual device size. Finally, the
+ * current local coordinate system may be different from the logical coordinate
+ * system because of a world transformation. Initially, the local coordinate
+ * system coincides with the logical coordinate system, which coincides with the
+ * device coordinate system.
  * <p>
  * By setting a {@link WPainter#getViewPort()} and a
  * {@link WPainter#getWindow()}, a viewPort transformation is defined which maps
