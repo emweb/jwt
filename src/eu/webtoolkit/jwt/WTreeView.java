@@ -1681,7 +1681,6 @@ public class WTreeView extends WCompositeWidget {
 		}
 	}
 
-	private Map<WModelIndex, WTreeViewNode> NodeMap;
 	private WAbstractItemModel model_;
 	private WAbstractItemDelegate itemDelegate_;
 	private WItemSelectionModel selectionModel_;

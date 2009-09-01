@@ -687,8 +687,6 @@ public abstract class WWebWidget extends WWidget {
 		}
 	}
 
-	protected Map<String, WObject> FormObjectsMap;
-
 	protected void repaint(EnumSet<RepaintFlag> flags) {
 		super.askRerender();
 		if (!EnumUtils.mask(flags, RepaintFlag.RepaintPropertyIEMobile)
@@ -1341,7 +1339,6 @@ public abstract class WWebWidget extends WWidget {
 		public List<String> attributesSet_;
 		public String id_;
 		public JSignal3<String, String, WMouseEvent> dropSignal_;
-		public Map<String, WWebWidget.DropMimeType> MimeTypesMap;
 		public Map<String, WWebWidget.DropMimeType> acceptedDropMimeTypes_;
 
 		public OtherImpl() {

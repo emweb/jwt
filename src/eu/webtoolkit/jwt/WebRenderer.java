@@ -21,8 +21,6 @@ import eu.webtoolkit.jwt.utils.OrderedMultiMap;
 import eu.webtoolkit.jwt.utils.StringUtils;
 
 class WebRenderer implements SlotLearnerInterface {
-	public Map<String, WObject> FormObjectsMap;
-
 	public WebRenderer(WebSession session) {
 		super();
 		this.session_ = session;
@@ -877,7 +875,6 @@ class WebRenderer implements SlotLearnerInterface {
 		}
 	}
 
-	private Set<WWidget> UpdateMap;
 	private Set<WWidget> updateMap_;
 	private boolean learning_;
 	private boolean moreUpdates_;

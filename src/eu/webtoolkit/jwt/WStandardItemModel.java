@@ -577,7 +577,6 @@ public class WStandardItemModel extends WAbstractItemModel {
 				.getItemFromIndex(parent), first, last - first + 1);
 	}
 
-	private Map<Integer, Object> HeaderData;
 	private int sortRole_;
 	private List<Map<Integer, Object>> columnHeaderData_;
 	private List<Map<Integer, Object>> rowHeaderData_;

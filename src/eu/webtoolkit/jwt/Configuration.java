@@ -46,6 +46,8 @@ public class Configuration {
 	private ArrayList<String> ajaxAgentList = new ArrayList<String>();
 	private boolean ajaxAgentWhiteList = false;
 	private boolean debug = false;
+	private boolean progressiveBoot = false;
+
 	private String favicon = "";
 	private boolean progressiveBootstrap = false;
 
@@ -104,6 +106,8 @@ public class Configuration {
 						} catch (FileNotFoundException e) {
 							throw new RuntimeException(errorMessage + "log-file file not found (" + node.getTextContent().trim() + ")");
 						}
+					} else if (node.getNodeName().equalsIgnoreCase("progressive-bootstrap")) {
+						setProgressiveBoot(parseBoolean(errorMessage, node));
 					} else if (node.getNodeName().equalsIgnoreCase("send-xhtml-mime-type")) {
 						setSendXHTMLMimeType(parseBoolean(errorMessage, node));
 					} else if (node.getNodeName().equalsIgnoreCase("redirect-message")) {
@@ -154,6 +158,20 @@ public class Configuration {
 		}
 	}
 
+	/**
+	 * Is progressive boot?
+	 */
+	public boolean isProgressiveBoot() {
+		return progressiveBoot;
+	}
+
+	/**
+	 * Set progressive boot.
+	 */
+	public void setProgressiveBoot(boolean progressiveBoot) {
+		this.progressiveBoot = progressiveBoot;
+	}
+	
 	/**
 	 * Sets properties.
 	 * 

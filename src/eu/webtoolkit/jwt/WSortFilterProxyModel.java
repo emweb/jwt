@@ -504,7 +504,6 @@ public class WSortFilterProxyModel extends WAbstractProxyModel {
 		public WSortFilterProxyModel.Item item;
 	}
 
-	private Map<WModelIndex, WSortFilterProxyModel.Item> ItemMap;
 	private Pattern regex_;
 	private int filterKeyColumn_;
 	private int filterRole_;

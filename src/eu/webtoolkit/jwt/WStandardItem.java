@@ -1267,10 +1267,6 @@ public class WStandardItem {
 		}
 	}
 
-	private SortedMap<Integer, Object> DataMap;
-	private List<WStandardItem> Column;
-	private List<List<WStandardItem>> ColumnList;
-
 	/**
 	 * Compares the item with another item.
 	 * <p>

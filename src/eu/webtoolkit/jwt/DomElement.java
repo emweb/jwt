@@ -357,8 +357,6 @@ class DomElement {
 		}
 	}
 
-	public List<DomElement.TimeoutEvent> TimeoutList;
-
 	public void asJavaScript(Writer out) {
 		this.mode_ = DomElement.Mode.ModeUpdate;
 		EscapeOStream eout = new EscapeOStream(out);
@@ -1322,9 +1320,6 @@ class DomElement {
 		}
 	}
 
-	private Map<String, String> AttributeMap;
-	private Map<Property, String> PropertyMap;
-	private Map<String, DomElement.EventHandler> EventHandlerMap;
 	private Map<String, String> attributes_;
 	private Map<Property, String> properties_;
 	private Map<String, DomElement.EventHandler> eventHandlers_;

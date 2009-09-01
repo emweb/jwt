@@ -1488,9 +1488,6 @@ public class WApplication extends WObject {
 		}
 	}
 
-	private Map<String, AbstractEventSignal> SignalMap;
-	private Map<String, WResource> ResourceMap;
-	private Map<String, WObject> ObjectMap;
 	private WebSession session_;
 	private WString title_;
 	boolean titleChanged_;

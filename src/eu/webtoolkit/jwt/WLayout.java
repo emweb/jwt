@@ -318,7 +318,6 @@ public abstract class WLayout extends WObject implements WLayoutItem {
 		public String value;
 	}
 
-	private List<WLayout.Hint> HintsList;
 	private int[] margins_;
 	private WLayoutItemImpl impl_;
 	private List<WLayout.Hint> hints_;

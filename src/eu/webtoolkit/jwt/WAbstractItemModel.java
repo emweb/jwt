@@ -107,11 +107,6 @@ import eu.webtoolkit.jwt.utils.StringUtils;
  */
 public abstract class WAbstractItemModel extends WObject {
 	/**
-	 * Data map.
-	 */
-	public SortedMap<Integer, Object> DataMap;
-
-	/**
 	 * Create a new data model.
 	 */
 	public WAbstractItemModel(WObject parent) {
