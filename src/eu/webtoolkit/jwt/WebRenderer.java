@@ -275,7 +275,7 @@ class WebRenderer implements SlotLearnerInterface {
 		this.currentFormObjectsList_ = this.createFormObjectsList(app);
 		FileServe script = new FileServe(WtServlet.Wt_js);
 		script.setCondition("DEBUG", conf.isDebug());
-		script.setVar("WT_CLASS", "Wt2_99_4");
+		script.setVar("WT_CLASS", "Wt2_99_5");
 		script.setVar("APP_CLASS", app.getJavaScriptClass());
 		script.setVar("AUTO_JAVASCRIPT", app.autoJavaScript_);
 		script.setCondition("STRICTLY_SERIALIZED_EVENTS", conf
@@ -306,7 +306,7 @@ class WebRenderer implements SlotLearnerInterface {
 						.append("var domRoot = ")
 						.append(app.domRoot_.getJsRef())
 						.append(
-								";var form = Wt2_99_4.getElement('Wt-form');domRoot.style.display = form.style.display;document.body.replaceChild(domRoot, form);")
+								";var form = Wt2_99_5.getElement('Wt-form');domRoot.style.display = form.style.display;document.body.replaceChild(domRoot, form);")
 						.append(app.getAfterLoadJavaScript());
 				this.beforeLoadJS_ = new StringWriter();
 			}
@@ -492,7 +492,7 @@ class WebRenderer implements SlotLearnerInterface {
 		if (widgetset) {
 			String historyE = app.getEnvironment().getParameter("Wt-history");
 			if (historyE != null) {
-				response.out().append("Wt2_99_4").append(
+				response.out().append("Wt2_99_5").append(
 						".history.initialize('").append(historyE.charAt(0))
 						.append("-field', '").append(historyE.charAt(0))
 						.append("-iframe');\n");
@@ -669,7 +669,7 @@ class WebRenderer implements SlotLearnerInterface {
 			throws IOException {
 		int first = app.styleSheets_.size() - app.styleSheetsAdded_;
 		for (int i = first; i < app.styleSheets_.size(); ++i) {
-			out.append("Wt2_99_4").append(".addStyleSheet('").append(
+			out.append("Wt2_99_5").append(".addStyleSheet('").append(
 					app.fixRelativeUrl(app.styleSheets_.get(i)))
 					.append("');\n");
 		}

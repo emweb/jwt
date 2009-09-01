@@ -406,22 +406,22 @@ class DomElement {
 					String style = this.properties_
 							.get(Property.PropertyStyleDisplay);
 					if (style.equals("none")) {
-						out.append("Wt2_99_4.hide('").append(this.id_).append(
+						out.append("Wt2_99_5.hide('").append(this.id_).append(
 								"');\n");
 						return this.var_;
 					} else {
 						if (style.length() == 0) {
-							out.append("Wt2_99_4.show('").append(this.id_)
+							out.append("Wt2_99_5.show('").append(this.id_)
 									.append("');\n");
 							return this.var_;
 						} else {
 							if (style.equals("inline")) {
-								out.append("Wt2_99_4.inline('" + this.id_
+								out.append("Wt2_99_5.inline('" + this.id_
 										+ "');\n");
 								return this.var_;
 							} else {
 								if (style.equals("block")) {
-									out.append("Wt2_99_4.block('" + this.id_
+									out.append("Wt2_99_5.block('" + this.id_
 											+ "');\n");
 									return this.var_;
 								}
@@ -440,7 +440,7 @@ class DomElement {
 						.append(varr).append(',').append(this.var_).append(
 								");\n");
 				this.replaced_.createElement(out, app, insertJs.toString());
-				out.append("Wt2_99_4.unstub(").append(this.var_).append(',')
+				out.append("Wt2_99_5.unstub(").append(this.var_).append(',')
 						.append(varr).append(',').append(
 								this.hideWithDisplay_ ? 1 : 0).append(");\n");
 				return this.var_;
@@ -750,7 +750,7 @@ class DomElement {
 			}
 		}
 		for (int i = 0; i < this.methodCalls_.size(); ++i) {
-			app.doJavaScript("Wt2_99_4.getElement('" + this.id_ + "')."
+			app.doJavaScript("Wt2_99_5.getElement('" + this.id_ + "')."
 					+ this.methodCalls_.get(i) + ';');
 		}
 		if (this.timeOut_ != -1) {
@@ -784,7 +784,7 @@ class DomElement {
 	public void declare(EscapeOStream out) {
 		if (this.var_.length() == 0) {
 			out.append("var ").append(this.getCreateVar()).append("=").append(
-					"Wt2_99_4.getElement('").append(this.id_).append("');\n");
+					"Wt2_99_5.getElement('").append(this.id_).append("');\n");
 		}
 	}
 
@@ -969,7 +969,7 @@ class DomElement {
 		DomElement.EventHandler keypress = this.eventHandlers_.get(S_keypress);
 		if (keypress != null && keypress.jsCode.length() != 0) {
 			MapUtils.access(self.eventHandlers_, S_keypress,
-					DomElement.EventHandler.class).jsCode = "if (Wt2_99_4.isKeyPress(event)){"
+					DomElement.EventHandler.class).jsCode = "if (Wt2_99_5.isKeyPress(event)){"
 					+ MapUtils.access(self.eventHandlers_, S_keypress,
 							DomElement.EventHandler.class).jsCode + '}';
 		}
@@ -985,7 +985,7 @@ class DomElement {
 			if (minw != null || maxw != null) {
 				if (w == null) {
 					StringWriter expr = new StringWriter();
-					expr.append("Wt2_99_4.IEwidth(this,");
+					expr.append("Wt2_99_5.IEwidth(this,");
 					if (minw != null) {
 						expr.append('\'').append(minw).append('\'');
 						self.properties_.remove(Property.PropertyStyleMinWidth);
@@ -1023,7 +1023,7 @@ class DomElement {
 			switch (i.getKey()) {
 			case PropertyInnerHTML:
 			case PropertyAddedInnerHTML:
-				out.append("Wt2_99_4.setHtml(").append(this.var_).append(',');
+				out.append("Wt2_99_5.setHtml(").append(this.var_).append(',');
 				if (!pushed) {
 					escaped
 							.pushEscape(EscapeOStream.RuleSet.JsStringLiteralSQuote);
@@ -1230,7 +1230,7 @@ class DomElement {
 					|| !this.childrenToAdd_.isEmpty()
 					|| this.childrenHtml_ != null) {
 				this.declare(out);
-				out.append("Wt2_99_4.setHtml(").append(this.var_).append(",'");
+				out.append("Wt2_99_5.setHtml(").append(this.var_).append(",'");
 				out.pushEscape(EscapeOStream.RuleSet.JsStringLiteralSQuote);
 				if (this.childrenHtml_ != null) {
 					out.append(this.childrenHtml_.toString());

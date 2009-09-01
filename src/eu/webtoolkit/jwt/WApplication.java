@@ -1286,11 +1286,11 @@ public class WApplication extends WObject {
 			this.loadingIndicatorWidget_ = indicator.getWidget();
 			this.domRoot_.addWidget(this.loadingIndicatorWidget_);
 			JSlot showLoadJS = new JSlot();
-			showLoadJS.setJavaScript("function(obj, e) {Wt2_99_4.inline('"
+			showLoadJS.setJavaScript("function(obj, e) {Wt2_99_5.inline('"
 					+ this.loadingIndicatorWidget_.getId() + "');}");
 			this.showLoadingIndicator_.addListener(showLoadJS);
 			JSlot hideLoadJS = new JSlot();
-			hideLoadJS.setJavaScript("function(obj, e) {Wt2_99_4.hide('"
+			hideLoadJS.setJavaScript("function(obj, e) {Wt2_99_5.hide('"
 					+ this.loadingIndicatorWidget_.getId() + "');}");
 			this.hideLoadingIndicator_.addListener(hideLoadJS);
 			this.loadingIndicatorWidget_.hide();

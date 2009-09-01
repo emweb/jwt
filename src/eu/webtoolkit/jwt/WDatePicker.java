@@ -43,6 +43,7 @@ public class WDatePicker extends WCompositeWidget {
 	public WDatePicker(WContainerWidget parent) {
 		super(parent);
 		this.format_ = "";
+		this.positionJS_ = new JSlot();
 		this.createDefault(false);
 	}
 
@@ -67,6 +68,7 @@ public class WDatePicker extends WCompositeWidget {
 	public WDatePicker(boolean i18n, WContainerWidget parent) {
 		super(parent);
 		this.format_ = "";
+		this.positionJS_ = new JSlot();
 		this.createDefault(i18n);
 	}
 
@@ -97,6 +99,7 @@ public class WDatePicker extends WCompositeWidget {
 			boolean i18n, WContainerWidget parent) {
 		super(parent);
 		this.format_ = "";
+		this.positionJS_ = new JSlot();
 		this.create(displayWidget, forEdit, i18n);
 	}
 
@@ -254,6 +257,7 @@ public class WDatePicker extends WCompositeWidget {
 	private WContainerWidget layout_;
 	private WContainerWidget popup_;
 	private WCalendar calendar_;
+	private JSlot positionJS_;
 
 	private void createDefault(boolean i18n) {
 		WImage icon = new WImage(WApplication.getResourcesUrl()
@@ -323,6 +327,11 @@ public class WDatePicker extends WCompositeWidget {
 						WDatePicker.this.popup_.show();
 					}
 				});
+		this.positionJS_
+				.setJavaScript("function() { Wt2_99_5.positionAtWidget('"
+						+ this.popup_.getId() + "','" + displayWidget.getId()
+						+ "');}");
+		displayWidget.clicked().addListener(this.positionJS_);
 		displayWidget.clicked().addListener(this,
 				new Signal1.Listener<WMouseEvent>() {
 					public void trigger(WMouseEvent e1) {

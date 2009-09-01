@@ -26,6 +26,10 @@ class WFileUploadResource extends WResource {
 			if (i != null) {
 				p = i;
 				triggerUpdate = true;
+			} else {
+				if (request.getParameter("data") != null) {
+					triggerUpdate = true;
+				}
 			}
 		}
 		response.setContentType("text/html; charset=utf-8");

@@ -97,7 +97,7 @@ public class WTreeTable extends WCompositeWidget {
 								+ content.getJsRef()
 								+ ";var sp="
 								+ spacer.getJsRef()
-								+ ";if (e && sp) {if (Wt2_99_4.pxself("
+								+ ";if (e && sp) {if (Wt2_99_5.pxself("
 								+ this.impl_.getJsRef()
 								+ ",'height') != 0)e.style.height=(c.offsetHeight - h.offsetHeight) + 'px';if (e.scrollHeight > e.offsetHeight) {sp.style.display='block';} else {sp.style.display='none';}setTimeout(sb"
 								+ this.getId() + ", 20);}}sb" + this.getId()

@@ -219,7 +219,7 @@ public class WTextEdit extends WTextArea {
 				.addAutoJavaScript(
 						"{var e="
 								+ this.getJsRef()
-								+ ";if(e && e.ed){e.ed.save();Wt2_99_4.tinyMCEAdjust(e);}}");
+								+ ";if(e && e.ed){e.ed.save();Wt2_99_5.tinyMCEAdjust(e);}}");
 		this.buttons_[0] = "fontselect,|,bold,italic,underline,|,fontsizeselect,|,forecolor,backcolor,|,justifyleft,justifycenter,justifyright,justifyfull,|,anchor,|,numlist,bullist";
 		super.load();
 	}
@@ -267,10 +267,10 @@ public class WTextEdit extends WTextArea {
 					+ ";e.ed=new tinymce.Editor('" + this.getFormName() + "',"
 					+ config.toString() + ");e.ed.render();}");
 			element.callJavaScript(init_cb
-					+ "=function(){var d=Wt2_99_4.getElement('"
+					+ "=function(){var d=Wt2_99_5.getElement('"
 					+ this.getFormName()
 					+ "_tbl'); d.style.cssText='width:100%;"
-					+ dummy.getCssStyle() + "';Wt2_99_4.tinyMCEAdjust("
+					+ dummy.getCssStyle() + "';Wt2_99_5.tinyMCEAdjust("
 					+ this.getJsRef() + ");};");
 			this.contentChanged_ = false;
 		}
@@ -317,7 +317,7 @@ public class WTextEdit extends WTextArea {
 			app.getStyleSheet().addRule(".mceEditor", "height: 100%;");
 			app
 					.doJavaScript(
-							"Wt2_99_4.tinyMCEAdjust=function(e){if (!e.ed.contentAreaContainer) return;var tbl=Wt2_99_4.getElement(e.id + '_tbl');var iframe = e.ed.contentAreaContainer.firstChild;var th=Wt2_99_4.pxself(tbl, 'height');if (th==0)if (e.parentNode.className=='Wt-grtd') {iframe.style.height='0px';th=e.parentNode.offsetHeight-Wt2_99_4.pxself(e.parentNode, 'paddingTop')-Wt2_99_4.pxself(e.parentNode, 'paddingBottom');} else return;th -= iframe.parentNode.offsetTop + 2;if (th <= 0)return;var nh=th+'px';if (iframe.style.height != nh) iframe.style.height=nh;};",
+							"Wt2_99_5.tinyMCEAdjust=function(e){if (!e.ed.contentAreaContainer) return;var tbl=Wt2_99_5.getElement(e.id + '_tbl');var iframe = e.ed.contentAreaContainer.firstChild;var th=Wt2_99_5.pxself(tbl, 'height');if (th==0)if (e.parentNode.className=='Wt-grtd') {iframe.style.height='0px';th=e.parentNode.offsetHeight-Wt2_99_5.pxself(e.parentNode, 'paddingTop')-Wt2_99_5.pxself(e.parentNode, 'paddingBottom');} else return;th -= iframe.parentNode.offsetTop + 2;if (th <= 0)return;var nh=th+'px';if (iframe.style.height != nh) iframe.style.height=nh;};",
 							false);
 		}
 	}
