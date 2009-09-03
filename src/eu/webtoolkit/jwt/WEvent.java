@@ -11,19 +11,23 @@ package eu.webtoolkit.jwt;
  * <p>
  * 
  * The request controller notifies the application to react to a request using
- * {@link WApplication#notify(WEvent e)}.
+ * {@link WApplication#notify(WEvent e) notify() }.
  */
 public class WEvent {
-	public WEvent(WebSession.Handler aHandler,
-			WebRenderer.ResponseType aResponseType) {
+	WEvent(WebSession.Handler aHandler, WebRenderer.ResponseType aResponseType,
+			boolean doRenderOnly) {
 		this.handler = aHandler;
 		this.responseType = aResponseType;
+		this.renderOnly = doRenderOnly;
 	}
 
-	WebSession getSession() {
-		return this.handler.getSession();
+	WEvent(WebSession.Handler aHandler, WebRenderer.ResponseType aResponseType) {
+		this.handler = aHandler;
+		this.responseType = aResponseType;
+		this.renderOnly = false;
 	}
 
 	WebSession.Handler handler;
 	WebRenderer.ResponseType responseType;
+	boolean renderOnly;
 }

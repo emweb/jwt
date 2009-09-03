@@ -66,6 +66,7 @@
        use="true"
        windowtitle="JWt Javadoc API"
        classpathref="project.classpath"
+       overview="overview.html"
        >
       <fileset dir="${src.java.dir}" defaultexcludes="yes">
 	<include name="eu/webtoolkit/jwt/*.java"/>

@@ -12,7 +12,7 @@ import java.util.EnumSet;
  * <p>
  * 
  * To act on a button click, connect a slot to the
- * {@link WInteractWidget#clicked()} signal.
+ * {@link WInteractWidget#clicked() clicked() } signal.
  * <p>
  * The widget corresponds to the HTML <code>&lt;button&gt;</code> tag.
  * <p>

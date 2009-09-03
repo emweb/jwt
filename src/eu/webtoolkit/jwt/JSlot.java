@@ -26,8 +26,8 @@ package eu.webtoolkit.jwt;
  * client-side event handling.
  * <p>
  * The JavaScript code may be set (or changed) using the
- * {@link JSlot#setJavaScript(String js)} method which takes a string that
- * implements a JavaScript function with the following signature:
+ * {@link JSlot#setJavaScript(String js) setJavaScript() } method which takes a
+ * string that implements a JavaScript function with the following signature:
  * <p>
  * <code>
  function(sender, event) { <br> 
@@ -41,12 +41,12 @@ package eu.webtoolkit.jwt;
  }
 </code>
  * <p>
- * In the JavaScript code, you may use {@link WWidget#getJsRef()} to obtain the
- * DOM element corresponding to any {@link WWidget}, or {@link WObject#getId()}
- * to obtain the DOM id. In addition you may trigger server-side events using
- * the JavaScript WtSignalEmit function (see {@link JSignal} documentation).
- * That&apos;s how far we can help you. For the rest you are left to yourself,
- * buggy browsers and quirky JavaScript (<a
+ * In the JavaScript code, you may use {@link WWidget#getJsRef() getJsRef() } to
+ * obtain the DOM element corresponding to any {@link WWidget}, or
+ * {@link WObject#getId() getId() } to obtain the DOM id. In addition you may
+ * trigger server-side events using the JavaScript WtSignalEmit function (see
+ * {@link JSignal} documentation). That&apos;s how far we can help you. For the
+ * rest you are left to yourself, buggy browsers and quirky JavaScript (<a
  * href="http://www.quirksmode.org/">http://www.quirksmode.org/</a> was a
  * reliable companion to me) -- good luck.
  */

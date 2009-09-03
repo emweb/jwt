@@ -14,7 +14,7 @@ package eu.webtoolkit.jwt;
  * accepted string lengths.
  * <p>
  * If you only want to limit the length on a line edit, you may also use
- * {@link WLineEdit#setMaxLength(int chars)}.
+ * {@link WLineEdit#setMaxLength(int chars) setMaxLength() }.
  */
 public class WLengthValidator extends WValidator {
 	/**
@@ -132,10 +132,10 @@ public class WLengthValidator extends WValidator {
 	/**
 	 * Set message to display when the input is too short.
 	 * <p>
-	 * Depending on whether {@link WLengthValidator#getMaximumLength()} is a
-	 * real bound, the default message is &quot;The input must have a length
-	 * between {1} and {2} characters&quot; or &quot; &quot;The input must be at
-	 * least {1} characters&quot;.
+	 * Depending on whether {@link WLengthValidator#getMaximumLength()
+	 * getMaximumLength() } is a real bound, the default message is &quot;The
+	 * input must have a length between {1} and {2} characters&quot; or &quot;
+	 * &quot;The input must be at least {1} characters&quot;.
 	 */
 	public void setInvalidTooShortText(CharSequence text) {
 		this.tooShortText_ = WString.toWString(text);
@@ -172,10 +172,10 @@ public class WLengthValidator extends WValidator {
 	/**
 	 * Set message to display when the input is too long.
 	 * <p>
-	 * Depending on whether {@link WLengthValidator#getMinimumLength()} is
-	 * different from zero, the default message is &quot;The input must have a
-	 * length between {1} and {2} characters&quot; or &quot; &quot;The input
-	 * must be no more than {2} characters&quot;.
+	 * Depending on whether {@link WLengthValidator#getMinimumLength()
+	 * getMinimumLength() } is different from zero, the default message is
+	 * &quot;The input must have a length between {1} and {2} characters&quot;
+	 * or &quot; &quot;The input must be no more than {2} characters&quot;.
 	 */
 	public void setInvalidTooLongText(CharSequence text) {
 		this.tooLongText_ = WString.toWString(text);

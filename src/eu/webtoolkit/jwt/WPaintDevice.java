@@ -15,10 +15,10 @@ import java.util.EnumSet;
  * You should never paint directly on a paint device.
  * <p>
  * The device defines the size of the drawing area, using
- * {@link WPaintDevice#getWidth()} and {@link WPaintDevice#getHeight()}. These
- * dimensions must be defined in pixel units. In the future, additional
- * information will be included to convert these pixel units to lengths (using
- * DPI information).
+ * {@link WPaintDevice#getWidth() getWidth() } and
+ * {@link WPaintDevice#getHeight() getHeight() }. These dimensions must be
+ * defined in pixel units. In the future, additional information will be
+ * included to convert these pixel units to lengths (using DPI information).
  * <p>
  * You should reimplement this class if you wish to extend the JWt paint system
  * to paint on other devices than the ones provided by the library.
@@ -97,9 +97,9 @@ public interface WPaintDevice {
 	 * Draw an arc.
 	 * <p>
 	 * The arc is defined as in
-	 * {@link WPainter#drawArc(WRectF rectangle, int startAngle, int spanAngle)}
-	 * (const {@link WRectF}&amp;, startAngle, spanAngle), but the angle is
-	 * expressed in degrees.
+	 * {@link WPainter#drawArc(WRectF rectangle, int startAngle, int spanAngle)
+	 * WPainter#drawArc() }(const {@link WRectF}&amp;, startAngle, spanAngle),
+	 * but the angle is expressed in degrees.
 	 * <p>
 	 * The arc must be stroked, filled, and transformed using the current
 	 * painter settings.

@@ -15,30 +15,32 @@ package eu.webtoolkit.jwt;
  * always-visible navigation menu for a web application.
  * <p>
  * When initially created, the menu is invisible, until
- * {@link WPopupMenu#popup(WPoint p)} or {@link WPopupMenu#exec(WPoint p)} is
- * called. Then, the menu will remain visible until an item is selected, or the
- * user cancels the menu (by hitting Escape or clicking elsewhere).
+ * {@link WPopupMenu#popup(WPoint p) popup() } or
+ * {@link WPopupMenu#exec(WPoint p) exec() } is called. Then, the menu will
+ * remain visible until an item is selected, or the user cancels the menu (by
+ * hitting Escape or clicking elsewhere).
  * <p>
  * The implementation assumes availability of JavaScript to position the menu at
  * the current mouse position and provide feed-back of the currently selected
  * item.
  * <p>
  * Similar in use as {@link WDialog}, there are two ways of using the menu. The
- * simplest way is to use one of the {@link WPopupMenu#exec(WPoint p)} methods,
- * to use a reentrant event loop and wait until the user cancelled the popup
- * menu (by hitting Escape or clicking elsewhere), or selected an item.
+ * simplest way is to use one of the {@link WPopupMenu#exec(WPoint p) exec() }
+ * methods, to use a reentrant event loop and wait until the user cancelled the
+ * popup menu (by hitting Escape or clicking elsewhere), or selected an item.
  * <p>
- * Alternatively, you can use one of the {@link WPopupMenu#popup(WPoint p)}
- * methods to show the menu and listen to the {@link WPopupMenu#aboutToHide()
- * aboutToHide} signal where you read the {@link WPopupMenu#getResult()}.
+ * Alternatively, you can use one of the {@link WPopupMenu#popup(WPoint p)
+ * popup() } methods to show the menu and listen to the
+ * {@link WPopupMenu#aboutToHide() aboutToHide} signal where you read the
+ * {@link WPopupMenu#getResult() getResult() }.
  * <p>
  * You have several options to react to the selection of an item:
  * <ul>
  * <li>Either you use the {@link WPopupMenuItem} itself to identify the action,
  * perhaps by specialization or simply by binding custom data using
- * {@link WPopupMenuItem#setData(Object data)}.</li>
+ * {@link WPopupMenuItem#setData(Object data) setData() }.</li>
  * <li>You can bind a separate method to each item&apos;s
- * {@link WPopupMenuItem#triggered()} signal.</li>
+ * {@link WPopupMenuItem#triggered() triggered() } signal.</li>
  * </ul>
  * <p>
  * Usage example:
@@ -104,7 +106,8 @@ public class WPopupMenu extends WCompositeWidget {
 	 * Create a new popup menu.
 	 * <p>
 	 * The menu is hidden, by default, and must be shown using
-	 * {@link WPopupMenu#popup(WPoint p)} or {@link WPopupMenu#exec(WPoint p)}.
+	 * {@link WPopupMenu#popup(WPoint p) popup() } or
+	 * {@link WPopupMenu#exec(WPoint p) exec() }.
 	 */
 	public WPopupMenu() {
 		super();
@@ -251,8 +254,8 @@ public class WPopupMenu extends WCompositeWidget {
 	/**
 	 * Show the the popup at the location of a mouse event.
 	 * <p>
-	 * This is a convenience method for {@link WPopupMenu#popup(WPoint p)} that
-	 * uses the event&apos;s document coordinates.
+	 * This is a convenience method for {@link WPopupMenu#popup(WPoint p)
+	 * popup() } that uses the event&apos;s document coordinates.
 	 * <p>
 	 * 
 	 * @see WPopupMenu#popup(WPoint p)
@@ -266,8 +269,8 @@ public class WPopupMenu extends WCompositeWidget {
 	 * Execute the the popup at a position.
 	 * <p>
 	 * Displays the popup at a point with document coordinates <i>p</i>, using
-	 * {@link WPopupMenu#popup(WPoint p)}, and the waits until a menu item is
-	 * selected, or the menu is cancelled.
+	 * {@link WPopupMenu#popup(WPoint p) popup() }, and the waits until a menu
+	 * item is selected, or the menu is cancelled.
 	 * <p>
 	 * Returns the selected menu (or sub-menu) item, or 0 if the user cancelled
 	 * the menu.
@@ -283,15 +286,17 @@ public class WPopupMenu extends WCompositeWidget {
 		WebSession session = WApplication.getInstance().getSession();
 		this.recursiveEventLoop_ = true;
 		this.popup(p);
-		session.doRecursiveEventLoop("");
+		do {
+			session.doRecursiveEventLoop();
+		} while (this.recursiveEventLoop_);
 		return this.result_;
 	}
 
 	/**
 	 * Execute the the popup at the location of a mouse event.
 	 * <p>
-	 * This is a convenience method for {@link WPopupMenu#exec(WPoint p)} that
-	 * uses the event&apos;s document coordinates.
+	 * This is a convenience method for {@link WPopupMenu#exec(WPoint p) exec()
+	 * } that uses the event&apos;s document coordinates.
 	 * <p>
 	 * 
 	 * @see WPopupMenu#exec(WPoint p)
@@ -325,7 +330,8 @@ public class WPopupMenu extends WCompositeWidget {
 	 * This signal is emitted when the popup is hidden, either because an item
 	 * was selected, or when the menu was cancelled.
 	 * <p>
-	 * You can use {@link WPopupMenu#getResult()} to get the selected item.
+	 * You can use {@link WPopupMenu#getResult() getResult() } to get the
+	 * selected item.
 	 */
 	public Signal aboutToHide() {
 		return this.aboutToHide_;
@@ -355,13 +361,8 @@ public class WPopupMenu extends WCompositeWidget {
 		this.globalEscapeConnection_.disconnect();
 		WApplication.getInstance().getRoot().clicked().senderRepaint();
 		WApplication.getInstance().getRoot().escapePressed().senderRepaint();
-		boolean recursive = this.recursiveEventLoop_;
 		this.recursiveEventLoop_ = false;
 		this.aboutToHide_.trigger();
-		if (recursive) {
-			WebSession session = WApplication.getInstance().getSession();
-			session.unlockRecursiveEventLoop();
-		}
 	}
 
 	void popup(WWidget location) {

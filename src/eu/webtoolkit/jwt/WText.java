@@ -14,13 +14,14 @@ import eu.webtoolkit.jwt.utils.StringUtils;
  * 
  * The text is provided through a {@link WString}, which may either hold a
  * literal text, or a key to localized text which is looked up in locale
- * dependent XML files (see {@link WString#tr(String key)}).
+ * dependent XML files (see {@link WString#tr(String key) tr() }).
  * <p>
- * Use {@link WText#setTextFormat(TextFormat textFormat)} to configure the
- * textFormat of the text. The default textFormat is Wt::XHMTLText, which allows
- * XHMTL markup to be included in the text. Tags and attributes that indicate
- * &quot;active&quot; content are not allowed and stripped out, to avoid
- * security risks exposed by JavaScript such as the common web-based <a
+ * Use {@link WText#setTextFormat(TextFormat textFormat) setTextFormat() } to
+ * configure the textFormat of the text. The default textFormat is
+ * Wt::XHMTLText, which allows XHMTL markup to be included in the text. Tags and
+ * attributes that indicate &quot;active&quot; content are not allowed and
+ * stripped out, to avoid security risks exposed by JavaScript such as the
+ * common web-based <a
  * href="http://en.wikipedia.org/wiki/Cross_site_scriptingCross-Site">Cross-Site
  * Scripting (XSS)</a> malicious attack. XSS is the situation where one user of
  * your web application is able to execute a script in another user&apos;s
@@ -77,14 +78,14 @@ public class WText extends WInteractWidget {
 	 * Construct a text widget with given text.
 	 * <p>
 	 * The textFormat is set to {@link TextFormat#XHTMLText}, unless the
-	 * <i>text</i> is literal (not created using {@link WString#tr(String key)})
-	 * and it could not be parsed as valid XML. In that case the textFormat is
-	 * set to {@link TextFormat#PlainText}.
+	 * <i>text</i> is literal (not created using {@link WString#tr(String key)
+	 * WString#tr() }) and it could not be parsed as valid XML. In that case the
+	 * textFormat is set to {@link TextFormat#PlainText}.
 	 * <p>
 	 * Therefore, if you wish to use {@link TextFormat#XHTMLText}, but cannot be
 	 * sure about <i>text</i> being valid XML, you should verify that the
-	 * {@link WText#getTextFormat()} is {@link TextFormat#XHTMLText} after
-	 * construction.
+	 * {@link WText#getTextFormat() getTextFormat() } is
+	 * {@link TextFormat#XHTMLText} after construction.
 	 * <p>
 	 * The XML parser will silently discard malicious tags and attributes for
 	 * literal {@link TextFormat#XHTMLText} text.
@@ -114,14 +115,14 @@ public class WText extends WInteractWidget {
 	 * Construct a text widget with given text and format.
 	 * <p>
 	 * If <i>textFormat</i> is {@link TextFormat#XHTMLText} and <i>text</i> is
-	 * not literal (not created using {@link WString#tr(String key)}), then if
-	 * the <i>text</i> could not be parsed as valid XML, the textFormat is
-	 * changed to {@link TextFormat#PlainText}.
+	 * not literal (not created using {@link WString#tr(String key) WString#tr()
+	 * }), then if the <i>text</i> could not be parsed as valid XML, the
+	 * textFormat is changed to {@link TextFormat#PlainText}.
 	 * <p>
 	 * Therefore, if you wish to use {@link TextFormat#XHTMLText}, but cannot be
 	 * sure about <i>text</i> being valid XML, you should verify that the
-	 * {@link WText#getTextFormat()} is {@link TextFormat#XHTMLText} after
-	 * construction.
+	 * {@link WText#getTextFormat() getTextFormat() } is
+	 * {@link TextFormat#XHTMLText} after construction.
 	 * <p>
 	 * The XML parser will silently discard malicious tags and attributes for
 	 * literal {@link TextFormat#XHTMLText} text.
@@ -165,10 +166,10 @@ public class WText extends WInteractWidget {
 	 * Set the text.
 	 * <p>
 	 * When the current format is {@link TextFormat#XHTMLText}, and <i>text</i>
-	 * is literal (not created using {@link WString#tr(String key)}), it is
-	 * parsed using an XML parser which discards malicious tags and attributes
-	 * silently. When the parser encounters an XML parse error, the textFormat
-	 * is changed to {@link TextFormat#PlainText}.
+	 * is literal (not created using {@link WString#tr(String key) WString#tr()
+	 * }), it is parsed using an XML parser which discards malicious tags and
+	 * attributes silently. When the parser encounters an XML parse error, the
+	 * textFormat is changed to {@link TextFormat#PlainText}.
 	 * <p>
 	 * Returns whether the text could be set using the current textFormat. A
 	 * return value of false indicates that the textFormat was changed in order
@@ -200,11 +201,11 @@ public class WText extends WInteractWidget {
 	 * plain text, which is displayed literally, or as XHTML-markup.
 	 * <p>
 	 * When changing the textFormat to {@link TextFormat#XHTMLText}, and the
-	 * current text is literal (not created using {@link WString#tr(String key)}
-	 * ), the current text is parsed using an XML parser which discards
-	 * malicious tags and attributes silently. When the parser encounters an XML
-	 * parse error, the textFormat is left unchanged, and this method returns
-	 * false.
+	 * current text is literal (not created using {@link WString#tr(String key)
+	 * WString#tr() }), the current text is parsed using an XML parser which
+	 * discards malicious tags and attributes silently. When the parser
+	 * encounters an XML parse error, the textFormat is left unchanged, and this
+	 * method returns false.
 	 * <p>
 	 * Returns whether the textFormat could be set for the current text.
 	 * <p>

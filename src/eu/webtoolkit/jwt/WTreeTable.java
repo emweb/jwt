@@ -25,22 +25,24 @@ import java.util.List;
  * The actual data is organized and provided by {@link WTreeTableNode} widgets.
  * <p>
  * To use the tree table, you must first use
- * {@link WTreeTable#addColumn(CharSequence header, WLength width)} to specify
- * the additional data columns. Then, you must set the tree root using
- * {@link WTreeTable#setTreeRoot(WTreeTableNode root, CharSequence h)} and bind
- * additional information (text or other widgets) in each node using
- * {@link WTreeTableNode#setColumnWidget(int column, WWidget widget)}.
+ * {@link WTreeTable#addColumn(CharSequence header, WLength width) addColumn() }
+ * to specify the additional data columns. Then, you must set the tree root
+ * using {@link WTreeTable#setTreeRoot(WTreeTableNode root, CharSequence h)
+ * setTreeRoot() } and bind additional information (text or other widgets) in
+ * each node using
+ * {@link WTreeTableNode#setColumnWidget(int column, WWidget widget)
+ * setColumnWidget() }.
  * <p>
  * To apply a style to the table header hou should use CSS in conjunction with
  * the style class (&quot;header&quot;) that is set for the header row.
  * Alternatively, you may access the header directly using
- * {@link WTreeTable#getHeaderWidget()}. To apply a different style to each
- * column header, you can access each column header widget using
+ * {@link WTreeTable#getHeaderWidget() getHeaderWidget() }. To apply a different
+ * style to each column header, you can access each column header widget using
  * {@link WTreeTable#header(int column) header(int)}, e.g. to set a style class.
  * <p>
  * The table cannot be given a height using CSS style rules, instead you must
  * use layout managers, or use
- * {@link WCompositeWidget#resize(WLength width, WLength height)}.
+ * {@link WCompositeWidget#resize(WLength width, WLength height) resize() }.
  * <p>
  * 
  * @see WTreeTableNode
@@ -50,11 +52,12 @@ public class WTreeTable extends WCompositeWidget {
 	/**
 	 * Construct a new {@link WTreeTable}.
 	 * <p>
-	 * The {@link WTreeTable#getTreeRoot()} is 0. The table should first be
-	 * properly dimensioned using
-	 * {@link WTreeTable#addColumn(CharSequence header, WLength width)} calls,
-	 * and then data using
-	 * {@link WTreeTable#setTreeRoot(WTreeTableNode root, CharSequence h)}.
+	 * The {@link WTreeTable#getTreeRoot() getTreeRoot() } is 0. The table
+	 * should first be properly dimensioned using
+	 * {@link WTreeTable#addColumn(CharSequence header, WLength width)
+	 * addColumn() } calls, and then data using
+	 * {@link WTreeTable#setTreeRoot(WTreeTableNode root, CharSequence h)
+	 * setTreeRoot() }.
 	 */
 	public WTreeTable(WContainerWidget parent) {
 		super(parent);
@@ -120,8 +123,9 @@ public class WTreeTable extends WCompositeWidget {
 	 * Add an extra column, specifying the column header and a column width. The
 	 * extra columns are numbered from 1 as column 0 contains the tree itself.
 	 * The header for column 0 (the tree itself) is specified in
-	 * {@link WTreeTable#setTreeRoot(WTreeTableNode root, CharSequence h)}, and
-	 * the width of column 0 takes the remaining available width.
+	 * {@link WTreeTable#setTreeRoot(WTreeTableNode root, CharSequence h)
+	 * setTreeRoot() }, and the width of column 0 takes the remaining available
+	 * width.
 	 */
 	public void addColumn(CharSequence header, WLength width) {
 		WText t = new WText(header);

@@ -16,25 +16,26 @@ import eu.webtoolkit.jwt.utils.StringUtils;
  * <p>
  * By default, a {@link WMenuItem} is implemented using a {@link WAnchor}
  * widget. When the menu participates in application internal paths (see
- * {@link WMenu#setInternalPathEnabled(String basePath)}), the anchor references
- * the bookmark URL corresponding to the {@link WMenuItem#getPathComponent()}
- * for the item (see {@link WApplication#getBookmarkUrl()}.
+ * {@link WMenu#setInternalPathEnabled(String basePath) setInternalPathEnabled()
+ * }), the anchor references the bookmark URL corresponding to the
+ * {@link WMenuItem#getPathComponent() getPathComponent() } for the item (see
+ * {@link WApplication#getBookmarkUrl() getBookmarkUrl() }.
  * <p>
  * To provide another look for the menu items (such as perhaps adding an icon),
  * you can specialize this class, and reimplement the virtual methods:
  * <p>
  * <ul>
- * <li>{@link WMenuItem#createItemWidget()}: to provide another widget to
- * represent the item.</li>
- * <li>{@link WMenuItem#updateItemWidget(WWidget itemWidget)}: to update the
- * widget to reflect item changes, triggered by for example
- * {@link WMenuItem#setText(CharSequence text)} and
- * {@link WMenuItem#setPathComponent(String path)}.</li>
- * <li>optionally, {@link WMenuItem#activateSignal()}: to bind the event for
- * activating the item to something else than the clicked event.</li>
- * <li>optionally, {@link WMenuItem#renderSelected(boolean selected)}: if you
- * need to do additional styling to reflect a selection, other than changing
- * style classes.</li>
+ * <li>{@link WMenuItem#createItemWidget() createItemWidget() }: to provide
+ * another widget to represent the item.</li>
+ * <li>{@link WMenuItem#updateItemWidget(WWidget itemWidget) updateItemWidget()
+ * }: to update the widget to reflect item changes, triggered by for example
+ * {@link WMenuItem#setText(CharSequence text) setText() } and
+ * {@link WMenuItem#setPathComponent(String path) setPathComponent() }.</li>
+ * <li>optionally, {@link WMenuItem#activateSignal() activateSignal() }: to bind
+ * the event for activating the item to something else than the clicked event.</li>
+ * <li>optionally, {@link WMenuItem#renderSelected(boolean selected)
+ * renderSelected() }: if you need to do additional styling to reflect a
+ * selection, other than changing style classes.</li>
  * </ul>
  * <p>
  * 
@@ -70,8 +71,9 @@ public class WMenuItem extends WObject {
 	 * only when it the item is activated for the first time (LazyLoading) or
 	 * transmitted prior to first rendering.
 	 * <p>
-	 * The {@link WMenuItem#getPathComponent()} is derived from <i>text</i>, and
-	 * can be customized using {@link WMenuItem#setPathComponent(String path)}.
+	 * The {@link WMenuItem#getPathComponent() getPathComponent() } is derived
+	 * from <i>text</i>, and can be customized using
+	 * {@link WMenuItem#setPathComponent(String path) setPathComponent() }.
 	 * <p>
 	 * <i>contents</i> may be 0, in which case no contents is associated with
 	 * the item in the contents stack.
@@ -121,11 +123,12 @@ public class WMenuItem extends WObject {
 	 * Set the text for this item.
 	 * <p>
 	 * Unless a custom path component was defined, the
-	 * {@link WMenuItem#getPathComponent()} is also updated based on the new
-	 * text.
+	 * {@link WMenuItem#getPathComponent() getPathComponent() } is also updated
+	 * based on the new text.
 	 * <p>
 	 * The item widget is updated using
-	 * {@link WMenuItem#updateItemWidget(WWidget itemWidget)}.
+	 * {@link WMenuItem#updateItemWidget(WWidget itemWidget) updateItemWidget()
+	 * }.
 	 * <p>
 	 * 
 	 * @see WMenuItem#setPathComponent(String path)
@@ -173,23 +176,24 @@ public class WMenuItem extends WObject {
 	 * <p>
 	 * The path component is used by the menu item in the application internal
 	 * path (see
-	 * {@link WApplication#setInternalPath(String path, boolean emitChange)}),
-	 * when internal paths are enabled (see
-	 * {@link WMenu#setInternalPathEnabled(String basePath)}) for the menu.
+	 * {@link WApplication#setInternalPath(String path, boolean emitChange)
+	 * WApplication#setInternalPath() }), when internal paths are enabled (see
+	 * {@link WMenu#setInternalPathEnabled(String basePath)
+	 * WMenu#setInternalPathEnabled() }) for the menu.
 	 * <p>
 	 * You may specify an empty <i>path</i> to let a menu item be the
 	 * &quot;default&quot; menu option.
 	 * <p>
-	 * For example, if {@link WMenu#getInternalBasePath()} is
-	 * <code>&quot;/examples/&quot;</code> and
-	 * {@link WMenuItem#getPathComponent()} for is
+	 * For example, if {@link WMenu#getInternalBasePath()
+	 * WMenu#getInternalBasePath() } is <code>&quot;/examples/&quot;</code> and
+	 * {@link WMenuItem#getPathComponent() getPathComponent() } for is
 	 * <code>&quot;charts/&quot;</code>, then the internal path for the item
 	 * will be <code>&quot;/examples/charts/&quot;</code>.
 	 * <p>
 	 * By default, the path is automatically derived from
-	 * {@link WMenuItem#getText()}. If a {@link WString#isLiteral() literal
-	 * text} is used, the path is based on the text itself, otherwise on the
-	 * {@link WString#getKey() key}. It is converted to lower case, and
+	 * {@link WMenuItem#getText() getText() }. If a {@link WString#isLiteral()
+	 * literal text} is used, the path is based on the text itself, otherwise on
+	 * the {@link WString#getKey() key}. It is converted to lower case, and
 	 * replacing white space and special characters with &apos;_&apos;.
 	 * <p>
 	 * 
@@ -248,7 +252,7 @@ public class WMenuItem extends WObject {
 	 * Returns the widget that represents the item.
 	 * <p>
 	 * This returns the item widget, creating it using
-	 * {@link WMenuItem#createItemWidget()} if necessary.
+	 * {@link WMenuItem#createItemWidget() createItemWidget() } if necessary.
 	 */
 	public WWidget getItemWidget() {
 		if (!(this.itemWidget_ != null)) {
@@ -270,11 +274,14 @@ public class WMenuItem extends WObject {
 	 * Create the widget that represents the item.
 	 * <p>
 	 * The default implementation will simply return a {@link WAnchor}. A call
-	 * to {@link WMenuItem#createItemWidget()} is immediately followed by
-	 * {@link WMenuItem#updateItemWidget(WWidget itemWidget)}.
+	 * to {@link WMenuItem#createItemWidget() createItemWidget() } is
+	 * immediately followed by
+	 * {@link WMenuItem#updateItemWidget(WWidget itemWidget) updateItemWidget()
+	 * }.
 	 * <p>
 	 * If you reimplement this method, you should probably also reimplement
-	 * {@link WMenuItem#updateItemWidget(WWidget itemWidget)}.
+	 * {@link WMenuItem#updateItemWidget(WWidget itemWidget) updateItemWidget()
+	 * }.
 	 */
 	protected WWidget createItemWidget() {
 		WAnchor result = new WAnchor();
@@ -287,7 +294,8 @@ public class WMenuItem extends WObject {
 	 * <p>
 	 * The default implementation will cast the <i>itemWidget</i> to a
 	 * {@link WAnchor}, and set the anchor&apos;s text and destination according
-	 * to {@link WMenuItem#getText()} and {@link WMenuItem#getPathComponent()}.
+	 * to {@link WMenuItem#getText() getText() } and
+	 * {@link WMenuItem#getPathComponent() getPathComponent() }.
 	 * <p>
 	 * 
 	 * @see WMenuItem#createItemWidget()
@@ -314,8 +322,8 @@ public class WMenuItem extends WObject {
 	 * Render the item as selected or unselected.
 	 * <p>
 	 * The default implementation sets the styleclass for
-	 * {@link WMenuItem#getItemWidget()} to &apos;item&apos; for an unselected,
-	 * and &apos;itemselected&apos; for a selected item.
+	 * {@link WMenuItem#getItemWidget() getItemWidget() } to &apos;item&apos;
+	 * for an unselected, and &apos;itemselected&apos; for a selected item.
 	 * <p>
 	 * Note that this method is called from within a stateless slot
 	 * implementation, and thus should be stateless as well.
@@ -328,8 +336,9 @@ public class WMenuItem extends WObject {
 	 * Returns the signal used to activate the item.
 	 * <p>
 	 * The default implementation will tries to cast the
-	 * {@link WMenuItem#getItemWidget()} to a {@link WInteractWidget} and
-	 * returns the {@link WInteractWidget#clicked() clicked signal}.
+	 * {@link WMenuItem#getItemWidget() getItemWidget() } to a
+	 * {@link WInteractWidget} and returns the {@link WInteractWidget#clicked()
+	 * clicked signal}.
 	 */
 	protected AbstractSignal activateSignal() {
 		WInteractWidget wi = ((this.itemWidget_.getWebWidget()) instanceof WInteractWidget ? (WInteractWidget) (this.itemWidget_

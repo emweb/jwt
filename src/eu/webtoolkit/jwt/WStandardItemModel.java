@@ -19,36 +19,39 @@ import java.util.Map;
  * and can thus be used to represent tables, trees and tree tables.
  * <p>
  * The data itself are organized in {@link WStandardItem} objects. There is one
- * invisible root object ({@link WStandardItemModel#getInvisibleRootItem()})
- * that holds the toplevel data. Most methods in this class that access or
- * manipulate data internally operate on this root item.
+ * invisible root object ({@link WStandardItemModel#getInvisibleRootItem()
+ * getInvisibleRootItem() }) that holds the toplevel data. Most methods in this
+ * class that access or manipulate data internally operate on this root item.
  * <p>
  * If you want to use the model as a table, then you can use
- * {@link WStandardItemModel#WStandardItemModel(int rows, int columns, WObject parent)}
- * to set the initial table size, and use the
- * {@link WStandardItemModel#getItem(int row, int column)} and
- * {@link WStandardItemModel#setItem(int row, int column, WStandardItem item)}
- * methods to set data. You can change the geometry by inserting rows (
- * {@link WStandardItemModel#insertRow(int row, List items)}) or columns (
- * {@link WStandardItemModel#insertColumn(int column, List items)}) or removing
- * rows ({@link WAbstractItemModel#removeRow(int row, WModelIndex parent)}) or
- * columns (
- * {@link WAbstractItemModel#removeColumn(int column, WModelIndex parent)}).
+ * {@link WStandardItemModel#WStandardItemModel(int rows, int columns, WObject parent)
+ * WStandardItemModel() } to set the initial table size, and use the
+ * {@link WStandardItemModel#getItem(int row, int column) getItem() } and
+ * {@link WStandardItemModel#setItem(int row, int column, WStandardItem item)
+ * setItem() } methods to set data. You can change the geometry by inserting
+ * rows ({@link WStandardItemModel#insertRow(int row, List items) insertRow() })
+ * or columns ({@link WStandardItemModel#insertColumn(int column, List items)
+ * insertColumn() }) or removing rows (
+ * {@link WAbstractItemModel#removeRow(int row, WModelIndex parent) removeRow()
+ * }) or columns (
+ * {@link WAbstractItemModel#removeColumn(int column, WModelIndex parent)
+ * removeColumn() }).
  * <p>
  * If you want to use the model as a tree (or tree table), then you can use the
  * default constructor to start with an empty tree, and use the
  * {@link WStandardItem} API on
- * {@link WStandardItemModel#getInvisibleRootItem()} to manipulate the tree
- * root. When you are building a tree, the column count at each node is 1. When
- * you are building a tree table, you can add additional columns of data for
- * each internal node. Only the items in the first column have children that
- * result in a hierarchical tree structure.
+ * {@link WStandardItemModel#getInvisibleRootItem() getInvisibleRootItem() } to
+ * manipulate the tree root. When you are building a tree, the column count at
+ * each node is 1. When you are building a tree table, you can add additional
+ * columns of data for each internal node. Only the items in the first column
+ * have children that result in a hierarchical tree structure.
  * <p>
  * When using the model with a view class, you can use the
- * {@link WStandardItemModel#getItemFromIndex(WModelIndex index)} and
- * {@link WStandardItemModel#indexFromItem(WStandardItem item)} models to
- * translate between model indexes (that are used by the view class) and
- * standard items.
+ * {@link WStandardItemModel#getItemFromIndex(WModelIndex index)
+ * getItemFromIndex() } and
+ * {@link WStandardItemModel#indexFromItem(WStandardItem item) indexFromItem() }
+ * models to translate between model indexes (that are used by the view class)
+ * and standard items.
  */
 public class WStandardItemModel extends WAbstractItemModel {
 	/**
@@ -111,8 +114,10 @@ public class WStandardItemModel extends WAbstractItemModel {
 	 * Erase all data in the model.
 	 * <p>
 	 * After clearing the model,
-	 * {@link WAbstractItemModel#getRowCount(WModelIndex parent)} and
-	 * {@link WAbstractItemModel#getColumnCount(WModelIndex parent)} are 0.
+	 * {@link WAbstractItemModel#getRowCount(WModelIndex parent)
+	 * WAbstractItemModel#getRowCount() } and
+	 * {@link WAbstractItemModel#getColumnCount(WModelIndex parent)
+	 * WAbstractItemModel#getColumnCount() } are 0.
 	 */
 	public void clear() {
 		this.invisibleRootItem_.setRowCount(0);
@@ -136,8 +141,8 @@ public class WStandardItemModel extends WAbstractItemModel {
 	 * Returns the model index for a particular item.
 	 * <p>
 	 * If the <i>item</i> is the
-	 * {@link WStandardItemModel#getInvisibleRootItem()}, then an invalid index
-	 * is returned.
+	 * {@link WStandardItemModel#getInvisibleRootItem() getInvisibleRootItem() }
+	 * , then an invalid index is returned.
 	 * <p>
 	 * 
 	 * @see WStandardItemModel#getItemFromIndex(WModelIndex index)
@@ -155,7 +160,8 @@ public class WStandardItemModel extends WAbstractItemModel {
 	 * Returns the standard item that corresponds to a model index.
 	 * <p>
 	 * If the index is an invalid index, then the
-	 * {@link WStandardItemModel#getInvisibleRootItem()} is returned.
+	 * {@link WStandardItemModel#getInvisibleRootItem() getInvisibleRootItem() }
+	 * is returned.
 	 * <p>
 	 * 
 	 * @see WStandardItemModel#indexFromItem(WStandardItem item)
@@ -331,7 +337,7 @@ public class WStandardItemModel extends WAbstractItemModel {
 	 * no item was previously set and thus created.
 	 * <p>
 	 * The new item is created based on this prototype by using
-	 * {@link WStandardItem#clone()}.
+	 * {@link WStandardItem#clone() WStandardItem#clone() }.
 	 * <p>
 	 * The default prototype is WStandardItem().
 	 * <p>

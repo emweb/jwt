@@ -90,4 +90,8 @@ public class WebResponse extends HttpServletResponseWrapper {
 		return result == null ? "" : result;
 	}
 
+	public String getRequestMethod() {
+		return request.getMethod();
+	}
+
 }

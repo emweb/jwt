@@ -20,17 +20,18 @@ import java.util.EnumSet;
  * and determines how to position itself on the current line, with respect to
  * sibling inline widgets.
  * <p>
- * When used with {@link WContainerWidget#setContentAlignment(EnumSet alignment)}
- * , this determines the vertical alignment of contents within the table cell.
+ * When used with {@link WContainerWidget#setContentAlignment(EnumSet alignment)
+ * setContentAlignment() }, this determines the vertical alignment of contents
+ * within the table cell.
  * <p>
  * When used with
- * {@link WPainter#drawText(WRectF rectangle, EnumSet flags, CharSequence text)}
- * , this determines the horizontal and vertical alignment of the text with
- * respect to the bounding rectangle.
+ * {@link WPainter#drawText(WRectF rectangle, EnumSet flags, CharSequence text)
+ * drawText() }, this determines the horizontal and vertical alignment of the
+ * text with respect to the bounding rectangle.
  * <p>
- * When used with {@link WContainerWidget#setContentAlignment(EnumSet alignment)}
- * , this specifies how contents should be aligned horizontally within the
- * container.
+ * When used with {@link WContainerWidget#setContentAlignment(EnumSet alignment)
+ * setContentAlignment() }, this specifies how contents should be aligned
+ * horizontally within the container.
  * <p>
  * Not all values are applicable in all situations. The most commonly used
  * values are AlignLeft, AlignCenter, AlignRight, AlignBottom, AlignMiddle and

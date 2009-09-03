@@ -17,14 +17,17 @@ import java.util.Set;
  * reflected in the calendar, and vice-versa.
  * <p>
  * Each of these widgets may be accessed individually (
- * {@link WDatePicker#getLineEdit()}, {@link WDatePicker#getCalendar()}, and
- * {@link WDatePicker#getDisplayWidget()}) and there is a constructor that
- * allows you to specify an existing line edit and display widget.
+ * {@link WDatePicker#getLineEdit() getLineEdit() },
+ * {@link WDatePicker#getCalendar() getCalendar() }, and
+ * {@link WDatePicker#getDisplayWidget() getDisplayWidget() }) and there is a
+ * constructor that allows you to specify an existing line edit and display
+ * widget.
  * <p>
  * The date format used by default is <code>&quot;dd/MM/yyyy&quot;</code> and
- * can be changed using {@link WDatePicker#setFormat(String format)}. At any
- * time, the date set may be read using {@link WDatePicker#getDate()}, or can be
- * changed using {@link WDatePicker#setDate(WDate date)}.
+ * can be changed using {@link WDatePicker#setFormat(String format) setFormat()
+ * }. At any time, the date set may be read using {@link WDatePicker#getDate()
+ * getDate() }, or can be changed using {@link WDatePicker#setDate(WDate date)
+ * setDate() }.
  * <p>
  * <div align="center"> <img src="doc-files//WDatePicker-1.png"
  * alt="Example of WDatePicker with visible calendar.">
@@ -191,10 +194,11 @@ public class WDatePicker extends WCompositeWidget {
 	/**
 	 * The current date.
 	 * <p>
-	 * Reads the current date from the {@link WDatePicker#getLineEdit()}.
+	 * Reads the current date from the {@link WDatePicker#getLineEdit()
+	 * getLineEdit() }.
 	 * <p>
 	 * Returns null if the date could not be parsed using the current
-	 * {@link WDatePicker#getFormat()}. <br>
+	 * {@link WDatePicker#getFormat() getFormat() }. <br>
 	 * <p>
 	 * 
 	 * @see WDatePicker#setDate(WDate date)

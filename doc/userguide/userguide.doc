@@ -4,7 +4,7 @@ Jwt User Guide
 Pieter Libin <pieter@emweb.be>
 v0.9, 11 June 2009
 
-:jwt-version:	2.99.3
+:jwt-version:	2.99.5
 :jwt-src-path:	jwt-{jwt-version}
 
 == Introduction
@@ -64,30 +64,16 @@ following softwares:
 . Extract the JWt source distribution to a directory on your system.
 . Start Eclipse.
 . Right-click inside your 'Project Explorer' and select 'Import' -> 'Import...'.
-+
-image:images/hello_world_import_1.png["Import project" width=800]
-+
 . Select 'General' -> 'Existing Projects into Workspace' and click 'Next'.
-+
-image:images/hello_world_import_2.png["Import project"]
-+
 . Click 'Browse'.
-+
-image:images/hello_world_import_3.png["Import project"]
-+
 . Navigate to the directory where the JWt source distribution was extracted to.
   Select the +examples/hello+ directory and click 'OK'.
-+
-image:images/hello_world_import_4.png["Import project"]
 +
 [TIP]
 You can import multiple examples at once by selecting the +examples+
 directory instead, and selecting multiple projects in the next step.
 +
 . The hello project will be visible and selected, click 'Finish'.
-+
-image:images/hello_world_import_5.png["Import project"]
-+
 . The imported +jwt-hello+ project becomes visible in the 'Project
   Explorer' tree.
 +
@@ -102,13 +88,9 @@ dependencies in the +lib+ folder and also builds a 'war' file.
 Right-click on the +build.xml+, 'Run As' -> 'Ant Build'.
 When this is your first example, the build script will also build the
 JWt library itself.
-+ 
-image:images/hello_world_import_8.png["Runing Ant"]
 +
 . 'Refresh' your jwt-hello project. The example is now built and ready to be
   run.
-+ 
-image:images/hello_world_import_10.png["Refresh project"]
 
 ==== Running
 
@@ -117,33 +99,20 @@ JEE application server (with integration in Eclipse) to which you
 deploy the +dist/jwt-hello.war+ file which has also been
 built by the ant tool.
 
-- Open the 'Run' -> 'Run Configurations...' dialog.
-+ 
-image:images/hello_world_run_1.png["Run Configurations"]
+. Open the 'Run' -> 'Run Configurations...' dialog.
+. Create a new 'Jetty Webapp'.
 +
-- Create a new 'Jetty Webapp'.
-+ 
-image:images/hello_world_run_2.png["Jetty Run Configuration"]
-+
-- Since this example does not require HTTPS, remove the HTTPS port value in the
+Since this example does not require HTTPS, remove the HTTPS port value in the
 'Ports' section. Removing this value will disable all other HTTPS related 
 settings.
 + 
-Click on the 'Browse...' button in the 'Web Application' section and select
+. Click on the 'Browse...' button in the 'Web Application' section and select
 the 'WebRoot' folder.
-+ 
-image:images/hello_world_run_4.png["Jetty Run Configuration"]
 +
-- Click 'Run' (your configuration settings will be saved).
-+ 
-image:images/hello_world_run_5.png["Jetty Run Configuration"]
+. Click 'Run' (your configuration settings will be saved).
 +
-- (After some disk grinding -- tada!) the servlet container is started listening
-on port 8080
-+ 
-image:images/hello_world_run_6.png["Servlet container starting"]
-+
-- Open your web browser and point it to +http://localhost:8080/+.
+. The servlet container starts listening on port 8080
+. Open your web browser and point it to +http://localhost:8080/+.
 +
 image:images/hello_world_run_7.png["The example in Firefox"]
 

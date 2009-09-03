@@ -14,8 +14,8 @@ package eu.webtoolkit.jwt;
  * clicking on it. When clicked, the text turns into a line edit with a save and
  * cancel button.
  * <p>
- * When the user saves the edit, the {@link WInPlaceEdit#valueChanged()} signal
- * is emitted.
+ * When the user saves the edit, the {@link WInPlaceEdit#valueChanged()
+ * valueChanged() } signal is emitted.
  * <p>
  * Usage example:
  * <p>

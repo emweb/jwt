@@ -20,23 +20,23 @@ import eu.webtoolkit.jwt.utils.EnumUtils;
  * A WContainerWidget acts as a container for child widgets. Child widgets may
  * be added directly to the container or using a layout manager.
  * <p>
- * Use {@link WContainerWidget#addWidget(WWidget widget)} or pass the container
- * as constructor argument to a widget to directly add children to the
- * container, without using a layout manager. In that case, CSS-based layout is
- * used, and the resulting display is determined by properties of the children
- * and the container. By default, a WContainerWidget is displayed as a
+ * Use {@link WContainerWidget#addWidget(WWidget widget) addWidget() } or pass
+ * the container as constructor argument to a widget to directly add children to
+ * the container, without using a layout manager. In that case, CSS-based layout
+ * is used, and the resulting display is determined by properties of the
+ * children and the container. By default, a WContainerWidget is displayed as a
  * {@link WWidget#setInline(boolean inlined) block} and manages its children
  * within a rectangle. Inline child widgets are layed out in lines, wrapping
  * around as needed, while block child widgets are stacked vertically. The
  * container may add padding at the container edges using
- * {@link WContainerWidget#setPadding(WLength length, EnumSet sides)}, and
- * provide alignment of contents using
- * {@link WContainerWidget#setContentAlignment(EnumSet alignment)}. A container
- * is rendered by default using a HTML <code>div</code> tag, but this may be
- * changed to an HTML <code>ul</code> or <code>ol</code> tag to make use of
- * other CSS layout techniques, using
- * {@link WContainerWidget#setList(boolean list, boolean ordered)}. In addition,
- * specializations of this class as implemented by {@link WAnchor},
+ * {@link WContainerWidget#setPadding(WLength length, EnumSet sides)
+ * setPadding() }, and provide alignment of contents using
+ * {@link WContainerWidget#setContentAlignment(EnumSet alignment)
+ * setContentAlignment() }. A container is rendered by default using a HTML
+ * <code>div</code> tag, but this may be changed to an HTML <code>ul</code> or
+ * <code>ol</code> tag to make use of other CSS layout techniques, using
+ * {@link WContainerWidget#setList(boolean list, boolean ordered) setList() }.
+ * In addition, specializations of this class as implemented by {@link WAnchor},
  * {@link WGroupBox}, {@link WStackedWidget} and {@link WTableCell} provide
  * other alternative rendering of the container.
  * <p>
@@ -48,10 +48,11 @@ import eu.webtoolkit.jwt.utils.EnumUtils;
  * (according to the HTML specification).
  * <p>
  * To use a layout manager instead of CSS-based layout, use
- * {@link WContainerWidget#setLayout(WLayout layout)} or pass the container as
- * constructor argument to a layout manager. In that case you should not define
- * any padding for the container, and widgets and nested layout managers must be
- * added to the layout manager, instead of to the container directly.
+ * {@link WContainerWidget#setLayout(WLayout layout) setLayout() } or pass the
+ * container as constructor argument to a layout manager. In that case you
+ * should not define any padding for the container, and widgets and nested
+ * layout managers must be added to the layout manager, instead of to the
+ * container directly.
  * <p>
  * Usage example:
  * <p>
@@ -80,9 +81,10 @@ import eu.webtoolkit.jwt.utils.EnumUtils;
  * When using a layout manager, you need to carefully consider the alignment of
  * the layout manager with respect to the container: when the container&apos;s
  * height is unconstrained (not specified explicitly using
- * {@link WWebWidget#resize(WLength width, WLength height)} or a style class,
- * and the container is not included in a layout manager), you should pass
- * AlignTop to {@link WContainerWidget#setLayout(WLayout layout)}.
+ * {@link WWebWidget#resize(WLength width, WLength height) resize() } or a style
+ * class, and the container is not included in a layout manager), you should
+ * pass AlignTop to {@link WContainerWidget#setLayout(WLayout layout)
+ * setLayout() }.
  * <p>
  * Depending on its configuration and usage, the widget corresponds to the
  * following HTML tags:
@@ -95,7 +97,7 @@ import eu.webtoolkit.jwt.utils.EnumUtils;
  * <li>When configured with setList(true, true), the widget corresponds to a
  * <code>&lt;ol&gt;</code>.</li>
  * <li>When inserted into a container widget that
- * {@link WContainerWidget#isList()}, the widget corresponds to a
+ * {@link WContainerWidget#isList() isList() }, the widget corresponds to a
  * <code>&lt;li&gt;</code>.</li>
  * </ul>
  */
@@ -211,7 +213,8 @@ public class WContainerWidget extends WInteractWidget {
 	 * <p>
 	 * Only a single layout manager may be set. If you want to replace the
 	 * current layout manager, you have to erase all contents first using
-	 * {@link WContainerWidget#clear()}, which also deletes the layout manager.
+	 * {@link WContainerWidget#clear() clear() }, which also deletes the layout
+	 * manager.
 	 * <p>
 	 * Note that you can nest layout managers inside each other, to create a
 	 * complex layout hierarchy.
@@ -661,9 +664,9 @@ public class WContainerWidget extends WInteractWidget {
 	 * <p>
 	 * This event is emitted when the user scrolls in the widget (for setting
 	 * the scroll bar policy, see
-	 * {@link WContainerWidget#setOverflow(WContainerWidget.Overflow value, EnumSet orientation)}
-	 * ). The event conveys details such as the new scroll bar position, the
-	 * total contents height and the current widget height.
+	 * {@link WContainerWidget#setOverflow(WContainerWidget.Overflow value, EnumSet orientation)
+	 * setOverflow() }). The event conveys details such as the new scroll bar
+	 * position, the total contents height and the current widget height.
 	 * <p>
 	 * 
 	 * @see WContainerWidget#setOverflow(WContainerWidget.Overflow value,

@@ -24,7 +24,8 @@ public class WDropEvent {
 	 * The source of the drag&amp;drop operation.
 	 * <p>
 	 * The source is the widget that was set draggable using
-	 * {@link WInteractWidget#setDraggable(String mimeType, WWidget dragWidget, boolean isDragWidgetOnly, WObject sourceObject)}.
+	 * {@link WInteractWidget#setDraggable(String mimeType, WWidget dragWidget, boolean isDragWidgetOnly, WObject sourceObject)
+	 * WInteractWidget#setDraggable() }.
 	 */
 	public WObject getSource() {
 		return this.dropSource_;

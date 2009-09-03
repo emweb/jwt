@@ -17,7 +17,7 @@ import java.util.List;
  * if the date is within a given range.
  * <p>
  * The format string used for validating user input are the same as those used
- * by {@link WDate#fromString(String s)}.
+ * by {@link WDate#fromString(String s) fromString() }.
  */
 public class WDateValidator extends WValidator {
 	/**
@@ -77,7 +77,8 @@ public class WDateValidator extends WValidator {
 	 * <p>
 	 * The validator will accept dates in the date format <i>format</i>.
 	 * <p>
-	 * The syntax for <i>format</i> is as in {@link WDate#fromString(String s)}
+	 * The syntax for <i>format</i> is as in {@link WDate#fromString(String s)
+	 * WDate#fromString() }
 	 */
 	public WDateValidator(String format, WObject parent) {
 		super(parent);
@@ -106,7 +107,8 @@ public class WDateValidator extends WValidator {
 	 * The validator will accept only dates within the indicated range
 	 * <i>bottom</i> to <i>top</i>, in the date format <i>format</i>.
 	 * <p>
-	 * The syntax for <i>format</i> is as in {@link WDate#fromString(String s)}
+	 * The syntax for <i>format</i> is as in {@link WDate#fromString(String s)
+	 * WDate#fromString() }
 	 */
 	public WDateValidator(String format, WDate bottom, WDate top, WObject parent) {
 		super(parent);
@@ -228,7 +230,7 @@ public class WDateValidator extends WValidator {
 					}
 					return WValidator.State.Valid;
 				}
-			} catch (Exception e) {
+			} catch (RuntimeException e) {
 				WApplication.getInstance().log("warn").append(
 						"WDateValidator::validate(): ").append(e.toString());
 			}
@@ -307,10 +309,10 @@ public class WDateValidator extends WValidator {
 	/**
 	 * Set message to display when the date is later than top.
 	 * <p>
-	 * Depending on whether {@link WDateValidator#getBottom()} and
-	 * {@link WDateValidator#getTop()} are defined, the default message is
-	 * &quot;The date must be between {1} and {2}&quot; or &quot;The date must
-	 * be before {2}&quot;.
+	 * Depending on whether {@link WDateValidator#getBottom() getBottom() } and
+	 * {@link WDateValidator#getTop() getTop() } are defined, the default
+	 * message is &quot;The date must be between {1} and {2}&quot; or &quot;The
+	 * date must be before {2}&quot;.
 	 */
 	public void setInvalidTooLateText(CharSequence text) {
 		this.tooLateText_ = WString.toWString(text);

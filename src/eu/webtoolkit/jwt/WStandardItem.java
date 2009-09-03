@@ -26,22 +26,24 @@ import eu.webtoolkit.jwt.utils.StringUtils;
  * {@link WStandardItem#setStyleClass(CharSequence styleClass) CSS style class},
  * {@link WStandardItem#setToolTip(CharSequence toolTip) tool tip}, and
  * {@link WStandardItem#setChecked(boolean checked) check state}, and data flags
- * ({@link WStandardItem#setFlags(EnumSet flags)} and
- * {@link WStandardItem#setCheckable(boolean checkable)}).
+ * ({@link WStandardItem#setFlags(EnumSet flags) setFlags() } and
+ * {@link WStandardItem#setCheckable(boolean checkable) setCheckable() }).
  * <p>
  * An item may contain a table of children items: the initial geometry may be
  * specified in the constructor, or using the methods
- * {@link WStandardItem#setRowCount(int rows)} and setModelCount(). Unspecified
- * items are 0. You can set or inspect children items using the
- * {@link WStandardItem#setChild(int row, int column, WStandardItem item)} and
- * {@link WStandardItem#getChild(int row, int column)} methods.
+ * {@link WStandardItem#setRowCount(int rows) setRowCount() } and
+ * setModelCount(). Unspecified items are 0. You can set or inspect children
+ * items using the
+ * {@link WStandardItem#setChild(int row, int column, WStandardItem item)
+ * setChild() } and {@link WStandardItem#getChild(int row, int column)
+ * getChild() } methods.
  * <p>
  * It is possible to reimplement this class and specialize the methods for data
- * acess ({@link WStandardItem#setData(Object d, int role)} and
- * {@link WStandardItem#getData(int role)}), or provide custom sorting
- * functionality by reimplementing
+ * acess ({@link WStandardItem#setData(Object d, int role) setData() } and
+ * {@link WStandardItem#getData(int role) getData() }), or provide custom
+ * sorting functionality by reimplementing
  * <p>
- * {@link WStandardItem#compare(WStandardItem other)}.
+ * {@link WStandardItem#compare(WStandardItem other) compare() }.
  */
 public class WStandardItem {
 	/**
@@ -336,12 +338,12 @@ public class WStandardItem {
 	 * By default, an item is not checked.
 	 * <p>
 	 * Note: this requires that the item is checkable (see
-	 * {@link WStandardItem#setCheckable(boolean checkable)}).
+	 * {@link WStandardItem#setCheckable(boolean checkable) setCheckable() }).
 	 * <p>
 	 * If the item is tri-state, you may consider using
-	 * {@link WStandardItem#setCheckState(CheckState state)} instead which
-	 * supports also setting the third {@link CheckState#PartiallyChecked}
-	 * state.
+	 * {@link WStandardItem#setCheckState(CheckState state) setCheckState() }
+	 * instead which supports also setting the third
+	 * {@link CheckState#PartiallyChecked} state.
 	 * <p>
 	 * 
 	 * @see WStandardItem#setCheckable(boolean checkable)
@@ -366,8 +368,8 @@ public class WStandardItem {
 	/**
 	 * Set the check state.
 	 * <p>
-	 * Like {@link WStandardItem#setChecked(boolean checked)}, this sets the
-	 * check state, but allows also setting the
+	 * Like {@link WStandardItem#setChecked(boolean checked) setChecked() },
+	 * this sets the check state, but allows also setting the
 	 * {@link CheckState#PartiallyChecked} state when the item is tri-state
 	 * checkable.
 	 * <p>
@@ -489,7 +491,7 @@ public class WStandardItem {
 	 * {@link CheckState#PartiallyChecked}.
 	 * <p>
 	 * This requires that the item is also checkable (see
-	 * {@link WStandardItem#setCheckable(boolean checkable)})
+	 * {@link WStandardItem#setCheckable(boolean checkable) setCheckable() })
 	 * <p>
 	 * 
 	 * @see WStandardItem#setCheckable(boolean checkable)
@@ -583,8 +585,9 @@ public class WStandardItem {
 	 * Returns whether the item has any children.
 	 * <p>
 	 * This is a convenience method and checks whether
-	 * {@link WStandardItem#getRowCount()} and
-	 * {@link WStandardItem#getColumnCount()} differ both from 0.
+	 * {@link WStandardItem#getRowCount() getRowCount() } and
+	 * {@link WStandardItem#getColumnCount() getColumnCount() } differ both from
+	 * 0.
 	 * <p>
 	 * 
 	 * @see WStandardItem#getRowCount()
@@ -604,8 +607,8 @@ public class WStandardItem {
 	 * the end.
 	 * <p>
 	 * <i>Note, if <i>rows</i> &gt; 0, and
-	 * {@link WStandardItem#getColumnCount()} == 0, columnCount is first
-	 * increased to 1 using setColumnCount(1).</i>.
+	 * {@link WStandardItem#getColumnCount() getColumnCount() } == 0,
+	 * columnCount is first increased to 1 using setColumnCount(1).</i>.
 	 * <p>
 	 * 
 	 * @see WStandardItem#setColumnCount(int columns)
@@ -928,8 +931,9 @@ public class WStandardItem {
 	 * Sets a child item <i>item</i> at position (<i>row</i>, <i>column</i>). If
 	 * an item was previously set, it is deleted first.
 	 * <p>
-	 * If necessary, the {@link WStandardItem#getRowCount()} and/or the
-	 * {@link WStandardItem#getColumnCount()} is increased.
+	 * If necessary, the {@link WStandardItem#getRowCount() getRowCount() }
+	 * and/or the {@link WStandardItem#getColumnCount() getColumnCount() } is
+	 * increased.
 	 * <p>
 	 * 
 	 * @see WStandardItem#getChild(int row, int column)
@@ -1248,10 +1252,12 @@ public class WStandardItem {
 	 * Existing model indexes will be invalidated by the operation (will point
 	 * to other items).
 	 * <p>
-	 * The {@link WAbstractItemModel#layoutAboutToBeChanged()} and
-	 * {@link WAbstractItemModel#layoutChanged()} signals are emitted before and
-	 * after the operation so that you get a chance to invalidate or update
-	 * model indexes.
+	 * The {@link WAbstractItemModel#layoutAboutToBeChanged()
+	 * WAbstractItemModel#layoutAboutToBeChanged() } and
+	 * {@link WAbstractItemModel#layoutChanged()
+	 * WAbstractItemModel#layoutChanged() } signals are emitted before and after
+	 * the operation so that you get a chance to invalidate or update model
+	 * indexes.
 	 * <p>
 	 * 
 	 * @see WStandardItem#compare(WStandardItem other)
@@ -1271,11 +1277,13 @@ public class WStandardItem {
 	 * Compares the item with another item.
 	 * <p>
 	 * This is used during sorting (from
-	 * {@link WStandardItem#sortChildren(int column, SortOrder order)}), and
-	 * returns which of the two items is the lesser, based on their data.
+	 * {@link WStandardItem#sortChildren(int column, SortOrder order)
+	 * sortChildren() }), and returns which of the two items is the lesser,
+	 * based on their data.
 	 * <p>
 	 * The default implementation compares the data based on the value
-	 * corresponding to the {@link WStandardItemModel#getSortRole()}.
+	 * corresponding to the {@link WStandardItemModel#getSortRole()
+	 * WStandardItemModel#getSortRole() }.
 	 * <p>
 	 * 
 	 * @see WStandardItem#sortChildren(int column, SortOrder order)

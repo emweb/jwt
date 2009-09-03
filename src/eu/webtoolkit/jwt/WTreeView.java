@@ -31,40 +31,45 @@ import eu.webtoolkit.jwt.utils.StringUtils;
  * first column takes the remaining size. <b>Note that this may have as
  * consequence that the first column&apos;s size is reduced to 0.</b> Column
  * widths of all columns, including the first column, can be set through the API
- * method {@link WTreeView#setColumnWidth(int column, WLength width)}, and also
- * by the user using handles provided in the header.
+ * method {@link WTreeView#setColumnWidth(int column, WLength width)
+ * setColumnWidth() }, and also by the user using handles provided in the
+ * header.
  * <p>
  * Optionally, the treeview may be configured so that the first column is always
  * visible while scrolling through the other columns, which may be convenient if
  * you wish to display a model with many columns. Use
- * {@link WTreeView#setColumn1Fixed(boolean fixed)} to enable this behaviour.
+ * {@link WTreeView#setColumn1Fixed(boolean fixed) setColumn1Fixed() } to enable
+ * this behaviour.
  * <p>
  * If the model supports sorting (
- * {@link WAbstractItemModel#sort(int column, SortOrder order)}), such as the
- * {@link WStandardItemModel}, then you can enable sorting buttons in the
- * header, using {@link WTreeView#setSortingEnabled(boolean enabled)}.
+ * {@link WAbstractItemModel#sort(int column, SortOrder order) sort() }), such
+ * as the {@link WStandardItemModel}, then you can enable sorting buttons in the
+ * header, using {@link WTreeView#setSortingEnabled(boolean enabled)
+ * setSortingEnabled() }.
  * <p>
  * You can allow selection on row or item level (using
- * {@link WTreeView#setSelectionBehavior(SelectionBehavior behavior)}), and
- * selection of single or multiple items (using
- * {@link WTreeView#setSelectionMode(SelectionMode mode)}), and listen for
- * changes in the selection using the {@link WTreeView#selectionChanged()}
- * signal.
+ * {@link WTreeView#setSelectionBehavior(SelectionBehavior behavior)
+ * setSelectionBehavior() }), and selection of single or multiple items (using
+ * {@link WTreeView#setSelectionMode(SelectionMode mode) setSelectionMode() }),
+ * and listen for changes in the selection using the
+ * {@link WTreeView#selectionChanged() selectionChanged() } signal.
  * <p>
  * You may enable drag &amp; drop support for this view, whith awareness of the
  * items in the model. When enabling dragging (see
- * {@link WTreeView#setDragEnabled(boolean enable)}), the current selection may
- * be dragged, but only when all items in the selection indicate support for
- * dragging (controlled by the {@link ItemFlag#ItemIsDragEnabled
- * ItemIsDragEnabled} flag), and if the model indicates a mime-type (controlled
- * by {@link WAbstractItemModel#getMimeType()}). Likewise, by enabling support
- * for dropping (see {@link WTreeView#setDropsEnabled(boolean enable)}), the
+ * {@link WTreeView#setDragEnabled(boolean enable) setDragEnabled() }), the
+ * current selection may be dragged, but only when all items in the selection
+ * indicate support for dragging (controlled by the
+ * {@link ItemFlag#ItemIsDragEnabled ItemIsDragEnabled} flag), and if the model
+ * indicates a mime-type (controlled by {@link WAbstractItemModel#getMimeType()
+ * getMimeType() }). Likewise, by enabling support for dropping (see
+ * {@link WTreeView#setDropsEnabled(boolean enable) setDropsEnabled() }), the
  * treeview may receive a drop event on a particular item, at least if the item
  * indicates support for drops (controlled by the
  * {@link ItemFlag#ItemIsDropEnabled ItemIsDropEnabled} flag).
  * <p>
  * You may also react to mouse click events on any item, by connecting to one of
- * the {@link WTreeView#clicked()} or {@link WTreeView#doubleClicked()} signals.
+ * the {@link WTreeView#clicked() clicked() } or
+ * {@link WTreeView#doubleClicked() doubleClicked() } signals.
  */
 public class WTreeView extends WCompositeWidget {
 	/**
@@ -439,7 +444,8 @@ public class WTreeView extends WCompositeWidget {
 	 * <p>
 	 * When resetting a model, all nodes are initially collapsed, the selection
 	 * is cleared, and the root index corresponds to the model&apos;s top level
-	 * node (see {@link WTreeView#setRootIndex(WModelIndex rootIndex)}).
+	 * node (see {@link WTreeView#setRootIndex(WModelIndex rootIndex)
+	 * setRootIndex() }).
 	 * <p>
 	 * The initial model is 0.
 	 * <p>
@@ -956,7 +962,8 @@ public class WTreeView extends WCompositeWidget {
 	 * <p>
 	 * <strong>Sample image use for alternating row colors</strong>
 	 * </p>
-	 * </div> The image that is used is {@link WTreeView#getImagePack()} +
+	 * </div> The image that is used is {@link WTreeView#getImagePack()
+	 * getImagePack() } +
 	 * &quot;/stripes/stripe-&lt;i&gt;n&lt;/i&gt;px.gif&quot;, where <i>n</i> is
 	 * the row height. In the resource folder are images pregenerated for one
 	 * color and row sizes from 10 to 30px.
@@ -1107,7 +1114,7 @@ public class WTreeView extends WCompositeWidget {
 	 * <p>
 	 * The selection behavior indicates whether whole rows or individual items
 	 * can be selected. It is a property of the
-	 * {@link WTreeView#getSelectionModel()}.
+	 * {@link WTreeView#getSelectionModel() getSelectionModel() }.
 	 * <p>
 	 * By default, selection operates on rows (
 	 * {@link SelectionBehavior#SelectRows SelectRows}), in which case model
@@ -1253,7 +1260,8 @@ public class WTreeView extends WCompositeWidget {
 	 * Enable the selection to be dragged (drag &amp; drop).
 	 * <p>
 	 * To enable dragging of the selection, you first need to enable selection
-	 * using {@link WTreeView#setSelectionMode(SelectionMode mode)}.
+	 * using {@link WTreeView#setSelectionMode(SelectionMode mode)
+	 * setSelectionMode() }.
 	 * <p>
 	 * Whether an individual item may be dragged is controlled by the
 	 * item&apos;s {@link ItemFlag#ItemIsDragEnabled ItemIsDragEnabled} flag.
@@ -1283,14 +1291,16 @@ public class WTreeView extends WCompositeWidget {
 	 * When drop is enabled, the tree view will indicate that something may be
 	 * dropped when the mime-type of the dragged object is compatible with one
 	 * of the model&apos;s accepted drop mime-types (see
-	 * {@link WAbstractItemModel#getAcceptDropMimeTypes()}) or this
-	 * widget&apos;s accepted drop mime-types (see
-	 * {@link WWidget#acceptDrops(String mimeType, String hoverStyleClass)}),
-	 * and the target item has drop enabled (which is controlled by the
-	 * item&apos;s {@link ItemFlag#ItemIsDropEnabled ItemIsDropEnabled} flag).
+	 * {@link WAbstractItemModel#getAcceptDropMimeTypes()
+	 * WAbstractItemModel#getAcceptDropMimeTypes() }) or this widget&apos;s
+	 * accepted drop mime-types (see
+	 * {@link WWidget#acceptDrops(String mimeType, String hoverStyleClass)
+	 * WWidget#acceptDrops() }), and the target item has drop enabled (which is
+	 * controlled by the item&apos;s {@link ItemFlag#ItemIsDropEnabled
+	 * ItemIsDropEnabled} flag).
 	 * <p>
 	 * Drop events must be handled in
-	 * {@link WTreeView#dropEvent(WDropEvent e, WModelIndex index)}.
+	 * {@link WTreeView#dropEvent(WDropEvent e, WModelIndex index) dropEvent() }.
 	 * <p>
 	 * 
 	 * @see WTreeView#setDragEnabled(boolean enable)
@@ -1582,7 +1592,8 @@ public class WTreeView extends WCompositeWidget {
 	 * You may reimplement this method to provide an extra widget to be placed
 	 * below the header label. The extra widget will be visible only if a
 	 * multi-line header is configured using
-	 * {@link WTreeView#setHeaderHeight(WLength height, boolean multiLine)}.
+	 * {@link WTreeView#setHeaderHeight(WLength height, boolean multiLine)
+	 * setHeaderHeight() }.
 	 * <p>
 	 * The widget is created only once, but this method may be called repeatedly
 	 * for a column for which prior calls returned 0 (i.e. each time the header
@@ -1628,7 +1639,8 @@ public class WTreeView extends WCompositeWidget {
 	 * Returns the extra header widget.
 	 * <p>
 	 * Returns the widget previously created using
-	 * {@link WTreeView#createExtraHeaderWidget(int column)}
+	 * {@link WTreeView#createExtraHeaderWidget(int column)
+	 * createExtraHeaderWidget() }
 	 * <p>
 	 * 
 	 * @see WTreeView#createExtraHeaderWidget(int column)

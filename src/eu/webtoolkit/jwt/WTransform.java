@@ -16,29 +16,30 @@ package eu.webtoolkit.jwt;
  dx   dy    1
 </code>
  * <p>
- * In this representation, {@link WTransform#getDx()} (=
- * {@link WTransform#getM31()}) and {@link WTransform#getDy()} (=
- * {@link WTransform#getM32()}) represent the translation components, and
- * m<i>xy</i> represent a 2D matrix that contains the scale, rotation (and skew)
- * components.
+ * In this representation, {@link WTransform#getDx() getDx() } (=
+ * {@link WTransform#getM31() getM31() }) and {@link WTransform#getDy() getDy()
+ * } (= {@link WTransform#getM32() getM32() }) represent the translation
+ * components, and m<i>xy</i> represent a 2D matrix that contains the scale,
+ * rotation (and skew) components.
  * <p>
  * The transformation is used to represent a tansformed coordinate system, and
- * provides methods to {@link WTransform#rotate(double angle)},
- * {@link WTransform#scale(double sx, double sy)},
- * {@link WTransform#shear(double sh, double sv)} or
- * {@link WTransform#translate(double dx, double dy)} this coordinate system.
+ * provides methods to {@link WTransform#rotate(double angle) rotate() },
+ * {@link WTransform#scale(double sx, double sy) scale() },
+ * {@link WTransform#shear(double sh, double sv) shear() } or
+ * {@link WTransform#translate(double dx, double dy) translate() } this
+ * coordinate system.
  * <p>
  * There are also 2 methods to decompose an arbitrary matrix into elementary
  * operations:
  * <ul>
  * <li>
- * {@link WTransform#decomposeTranslateRotateScaleSkew(WTransform.TRSSDecomposition result)}
- * decomposes into a <i>T</i> &#x2218; <i>R</i> &#x2218; <i>Sxx</i> &#x2218;
- * <i>Sxy</i></li>
+ * {@link WTransform#decomposeTranslateRotateScaleSkew(WTransform.TRSSDecomposition result)
+ * decomposeTranslateRotateScaleSkew() } decomposes into a <i>T</i> &#x2218;
+ * <i>R</i> &#x2218; <i>Sxx</i> &#x2218; <i>Sxy</i></li>
  * <li>
- * {@link WTransform#decomposeTranslateRotateScaleRotate(WTransform.TRSRDecomposition result)}
- * decomposes into a <i>T</i> &#x2218; <i>R1</i> &#x2218; <i>Sxx</i> &#x2218;
- * <i>R2</i></li>
+ * {@link WTransform#decomposeTranslateRotateScaleRotate(WTransform.TRSRDecomposition result)
+ * decomposeTranslateRotateScaleRotate() } decomposes into a <i>T</i> &#x2218;
+ * <i>R1</i> &#x2218; <i>Sxx</i> &#x2218; <i>R2</i></li>
  * </ul>
  * <p>
  * with <i>T</i> a translation, <i>R</i> a rotation, <i>Sxx</i> a scale, and
@@ -157,7 +158,7 @@ public class WTransform {
 	/**
 	 * Returns the horizontal translation factor.
 	 * <p>
-	 * Is equivalent to {@link WTransform#getDx()}
+	 * Is equivalent to {@link WTransform#getDx() getDx() }
 	 */
 	public double getM31() {
 		return this.m_[M13];
@@ -166,7 +167,7 @@ public class WTransform {
 	/**
 	 * Returns the vertical translation factor.
 	 * <p>
-	 * Is equivalent to {@link WTransform#getDy()}
+	 * Is equivalent to {@link WTransform#getDy() getDy() }
 	 */
 	public double getM32() {
 		return this.m_[M23];
@@ -182,7 +183,7 @@ public class WTransform {
 	/**
 	 * Returns the horizontal translation factor.
 	 * <p>
-	 * Is equivalent to {@link WTransform#getM31()}
+	 * Is equivalent to {@link WTransform#getM31() getM31() }
 	 */
 	public double getDx() {
 		return this.m_[DX];
@@ -191,7 +192,7 @@ public class WTransform {
 	/**
 	 * Returns the vertical translation factor.
 	 * <p>
-	 * Is equivalent to {@link WTransform#getM32()}
+	 * Is equivalent to {@link WTransform#getM32() getM32() }
 	 */
 	public double getDy() {
 		return this.m_[DY];
@@ -358,7 +359,8 @@ public class WTransform {
 	 * Return the inverted transformation.
 	 * <p>
 	 * Returns <i>this</i> if the transformation could not be inverted (
-	 * {@link WTransform#getDeterminant()} == 0), and logs an error instead.
+	 * {@link WTransform#getDeterminant() getDeterminant() } == 0), and logs an
+	 * error instead.
 	 */
 	public WTransform getInverted() {
 		double det = this.getDeterminant();

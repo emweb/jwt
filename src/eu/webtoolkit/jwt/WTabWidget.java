@@ -310,12 +310,14 @@ public class WTabWidget extends WCompositeWidget {
 	 * navigate through history of visited menu items, and allows indexing of
 	 * pages.
 	 * <p>
-	 * For each menu item, {@link WMenuItem#getPathComponent()} is appended to
-	 * the internal base path ({@link WMenu#getInternalBasePath()}), which
-	 * defaults to the internal path ({@link WApplication#getInternalPath()})
-	 * but may be changed using
-	 * {@link WMenu#setInternalBasePath(String basePath)}, with a &apos;/&apos;
-	 * appended to turn it into a folder, if needed.
+	 * For each menu item, {@link WMenuItem#getPathComponent()
+	 * WMenuItem#getPathComponent() } is appended to the internal base path (
+	 * {@link WMenu#getInternalBasePath() WMenu#getInternalBasePath() }), which
+	 * defaults to the internal path ({@link WApplication#getInternalPath()
+	 * WApplication#getInternalPath() }) but may be changed using
+	 * {@link WMenu#setInternalBasePath(String basePath)
+	 * WMenu#setInternalBasePath() }, with a &apos;/&apos; appended to turn it
+	 * into a folder, if needed.
 	 * <p>
 	 * By default, menu interaction does not change the application internal
 	 * path.
@@ -364,15 +366,18 @@ public class WTabWidget extends WCompositeWidget {
 	 * Returns the internal base path.
 	 * <p>
 	 * The default value is the application&apos;s internalPath (
-	 * {@link WApplication#getInternalPath()}) that was recorded when
-	 * {@link WMenu#setInternalPathEnabled(String basePath)} was called, and
-	 * together with each {@link WMenuItem#getPathComponent()} determines the
-	 * paths for each item.
+	 * {@link WApplication#getInternalPath() WApplication#getInternalPath() })
+	 * that was recorded when
+	 * {@link WMenu#setInternalPathEnabled(String basePath)
+	 * WMenu#setInternalPathEnabled() } was called, and together with each
+	 * {@link WMenuItem#getPathComponent() WMenuItem#getPathComponent() }
+	 * determines the paths for each item.
 	 * <p>
-	 * For example, if {@link WMenu#getInternalBasePath()} is
-	 * <code>&quot;/examples/&quot;</code> and pathComponent() for a particular
-	 * item is <code>&quot;charts/&quot;</code>, then the internal path for that
-	 * item will be <code>&quot;/examples/charts/&quot;</code>.
+	 * For example, if {@link WMenu#getInternalBasePath()
+	 * WMenu#getInternalBasePath() } is <code>&quot;/examples/&quot;</code> and
+	 * pathComponent() for a particular item is <code>&quot;charts/&quot;</code>
+	 * , then the internal path for that item will be
+	 * <code>&quot;/examples/charts/&quot;</code>.
 	 * <p>
 	 * 
 	 * @see WMenu#setInternalPathEnabled(String basePath)

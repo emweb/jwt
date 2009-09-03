@@ -13,7 +13,7 @@ import java.util.List;
  * <p>
  * 
  * A validator may be associated with a form widget using
- * {@link WFormWidget#setValidator(WValidator validator)}.
+ * {@link WFormWidget#setValidator(WValidator validator) setValidator() }.
  * <p>
  * The validator validates the user input. A validator may have a split
  * implementation to provide both validation at the client-side (which gives
@@ -30,10 +30,10 @@ import java.util.List;
  * server-side validation.
  * <p>
  * If these validators are not suitable, you can inherit from this class, and
- * provide a suitable implementation to {@link WValidator#validate(String input)}
- * which does the server-side validation. If you want to provide client-side
- * validation for your own validator, you may also reimplement
- * {@link WValidator#javaScriptValidate(String jsRef)}.
+ * provide a suitable implementation to {@link WValidator#validate(String input)
+ * validate() } which does the server-side validation. If you want to provide
+ * client-side validation for your own validator, you may also reimplement
+ * {@link WValidator#javaScriptValidate(String jsRef) javaScriptValidate() }.
  * <p>
  * 
  * @see WFormWidget

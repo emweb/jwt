@@ -21,16 +21,15 @@ import java.util.EnumSet;
  * A WDialog can be used as any other widget. In this case, the WDialog is
  * created with the proper content, and for example an OK button is connected to
  * a method which deletes the dialog. Unlike other widgets, a dialog is hidden
- * by default. You must use the method {@link WWidget#show()} or setHidden(true)
- * to show the dialog.
+ * by default. You must use the method {@link WWidget#show() show() } or
+ * setHidden(true) to show the dialog.
  * <p>
  * Use setModal(false) to create a non-modal dialog. A non-modal dialog does not
  * block the underlying user interface: the user must not first deal with the
- * dialog before interacting with the rest of the user interface. Multiple
- * non-modal dialogs may be open at the same time.
+ * dialog before interacting with the rest of the user interface.
  * <p>
- * Widgets may be added to the dialog, by adding to the
- * {@link WDialog#getContents()} ContainerWidget.
+ * Contents for the dialog is defined by adding it to the
+ * {@link WDialog#getContents() getContents() } widget.
  * <p>
  * This dialog looks like this (using the standard look):
  * <p>
@@ -42,11 +41,8 @@ import java.util.EnumSet;
  * </div>
  * <p>
  * <p>
- * <i><b>Note:</b>Currently only one modal dialog can be shown at a time, but
- * you can show as many non-modal dialogs as you want.
- * <p>
- * For the dialog to render properly in IE, the &quot;body&quot; margin is set
- * to 0 (if it wasn&apos;t already). </i>
+ * <i><b>Note:</b>For the dialog to render properly in IE, the &quot;html
+ * body&quot; margin is set to 0 (if it wasn&apos;t already). </i>
  * </p>
  */
 public class WDialog extends WCompositeWidget {
@@ -55,11 +51,11 @@ public class WDialog extends WCompositeWidget {
 	 */
 	public enum DialogCode {
 		/**
-		 * Dialog closed with {@link WDialog#reject()}.
+		 * Dialog closed with {@link WDialog#reject() reject() }.
 		 */
 		Rejected,
 		/**
-		 * Dialog closed with {@link WDialog#accept()}.
+		 * Dialog closed with {@link WDialog#accept() accept() }.
 		 */
 		Accepted;
 
@@ -77,6 +73,7 @@ public class WDialog extends WCompositeWidget {
 	public WDialog(CharSequence windowTitle) {
 		super();
 		this.modal_ = true;
+		this.coverPreviousStyle_ = "";
 		this.finished_ = new Signal1<WDialog.DialogCode>(this);
 		this.recursiveEventLoop_ = false;
 		this.mouseDownJS_ = new JSlot();
@@ -167,6 +164,7 @@ public class WDialog extends WCompositeWidget {
 		this.titleBar_.mouseWentDown().addListener(this.mouseDownJS_);
 		this.titleBar_.mouseMoved().addListener(this.mouseMovedJS_);
 		this.titleBar_.mouseWentUp().addListener(this.mouseUpJS_);
+		this.saveCoverState(app, app.getDialogCover());
 		this.hide();
 	}
 
@@ -241,7 +239,8 @@ public class WDialog extends WCompositeWidget {
 	/**
 	 * Stop the dialog.
 	 * <p>
-	 * Sets the dialog result, and emits the {@link WDialog#finished()} signal.
+	 * Sets the dialog result, and emits the {@link WDialog#finished()
+	 * finished() } signal.
 	 * <p>
 	 * 
 	 * @see WDialog#finished()
@@ -250,9 +249,7 @@ public class WDialog extends WCompositeWidget {
 	public void done(WDialog.DialogCode result) {
 		this.result_ = result;
 		if (this.recursiveEventLoop_) {
-			WebSession session = WApplication.getInstance().getSession();
 			this.recursiveEventLoop_ = false;
-			session.unlockRecursiveEventLoop();
 		} else {
 			this.hide();
 		}
@@ -325,17 +322,20 @@ public class WDialog extends WCompositeWidget {
 	}
 
 	public void setHidden(boolean hidden) {
-		WApplication app = WApplication.getInstance();
-		if (this.modal_) {
-			WContainerWidget cover = app.getDialogCover(!hidden);
-			if (cover != null) {
-				cover.setHidden(hidden);
+		if (this.isHidden() != hidden) {
+			if (this.modal_) {
+				WApplication app = WApplication.getInstance();
+				WContainerWidget cover = app.getDialogCover();
 				if (!hidden) {
+					this.saveCoverState(app, cover);
+					cover.show();
 					cover.setAttributeValue("style", "z-index:"
 							+ String.valueOf(this.impl_.getZIndex() - 1));
+					app.constrainExposed(this);
+				} else {
+					this.restoreCoverState(app, cover);
 				}
 			}
-			app.exposeOnly(hidden ? null : this);
 		}
 		super.setHidden(hidden);
 	}
@@ -350,10 +350,25 @@ public class WDialog extends WCompositeWidget {
 	private WContainerWidget titleBar_;
 	private WContainerWidget contents_;
 	private boolean modal_;
+	private WWidget previousExposeConstraint_;
+	private String coverPreviousStyle_;
+	private boolean coverWasHidden_;
 	private Signal1<WDialog.DialogCode> finished_;
 	private WDialog.DialogCode result_;
 	private boolean recursiveEventLoop_;
 	private JSlot mouseDownJS_;
 	private JSlot mouseMovedJS_;
 	private JSlot mouseUpJS_;
+
+	private void saveCoverState(WApplication app, WContainerWidget cover) {
+		this.coverWasHidden_ = cover.isHidden();
+		this.coverPreviousStyle_ = cover.getAttributeValue("style");
+		this.previousExposeConstraint_ = app.getExposeConstraint();
+	}
+
+	private void restoreCoverState(WApplication app, WContainerWidget cover) {
+		cover.setHidden(this.coverWasHidden_);
+		cover.setAttributeValue("style", this.coverPreviousStyle_);
+		app.constrainExposed(this.previousExposeConstraint_);
+	}
 }

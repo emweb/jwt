@@ -19,20 +19,21 @@ import eu.webtoolkit.jwt.utils.StringUtils;
  * <p>
  * WComboBox is an MVC view class, using a simple string list model by default.
  * The model may be populated using addItem(const {@link WString}&amp;) or
- * {@link WComboBox#insertItem(int index, CharSequence text)} and the contents
- * can be cleared through {@link WComboBox#clear()}. These methods manipulate
- * the underlying {@link WComboBox#getModel()}.
+ * {@link WComboBox#insertItem(int index, CharSequence text) insertItem() } and
+ * the contents can be cleared through {@link WComboBox#clear() clear() }. These
+ * methods manipulate the underlying {@link WComboBox#getModel() getModel() }.
  * <p>
  * To use the combo box with a custom model instead of the default
  * {@link WStringListModel}, use
- * {@link WComboBox#setModel(WAbstractItemModel model)}.
+ * {@link WComboBox#setModel(WAbstractItemModel model) setModel() }.
  * <p>
- * To react to selection events, connect to the {@link WFormWidget#changed()},
- * {@link WComboBox#activated()} or {@link WComboBox#sactivated()} signals.
+ * To react to selection events, connect to the {@link WFormWidget#changed()
+ * changed() }, {@link WComboBox#activated() activated() } or
+ * {@link WComboBox#sactivated() sactivated() } signals.
  * <p>
  * At all times, the current selection index is available through
- * {@link WComboBox#getCurrentIndex()} and the current selection text using
- * {@link WComboBox#getCurrentText()}.
+ * {@link WComboBox#getCurrentIndex() getCurrentIndex() } and the current
+ * selection text using {@link WComboBox#getCurrentText() getCurrentText() }.
  * <p>
  * The widget corresponds to the HTML <code>&lt;select&gt;</code> tag.
  * <p>
@@ -72,7 +73,7 @@ public class WComboBox extends WFormWidget {
 	 * Add an option item.
 	 * <p>
 	 * Equivalent to {@link WComboBox#insertItem(int index, CharSequence text)
-	 * insertItem} ({@link WComboBox#getCount()}, <i>text</i>).
+	 * insertItem} ({@link WComboBox#getCount() getCount() }, <i>text</i>).
 	 */
 	public void addItem(CharSequence text) {
 		this.insertItem(this.getCount(), text);
@@ -100,7 +101,8 @@ public class WComboBox extends WFormWidget {
 	 * Insert an item at the specified position.
 	 * <p>
 	 * The item is inserted in the underlying model at position <i>index</i>.
-	 * This requires that the {@link WComboBox#getModel()} is editable.
+	 * This requires that the {@link WComboBox#getModel() getModel() } is
+	 * editable.
 	 * <p>
 	 * 
 	 * @see WComboBox#addItem(CharSequence text)
@@ -116,7 +118,7 @@ public class WComboBox extends WFormWidget {
 	 * Remove the item at the specified position.
 	 * <p>
 	 * The item is removed from the underlying model. This requires that the
-	 * {@link WComboBox#getModel()} is editable.
+	 * {@link WComboBox#getModel() getModel() } is editable.
 	 * <p>
 	 * 
 	 * @see WComboBox#insertItem(int index, CharSequence text)
@@ -145,7 +147,7 @@ public class WComboBox extends WFormWidget {
 	 * Changes the text for a specified option.
 	 * <p>
 	 * The text for the item at position <i>index</i> is changed. This requires
-	 * that the {@link WComboBox#getModel()} is editable.
+	 * that the {@link WComboBox#getModel() getModel() } is editable.
 	 */
 	public void setItemText(int index, CharSequence text) {
 		this.model_.setData(index, this.modelColumn_, text);
@@ -298,7 +300,7 @@ public class WComboBox extends WFormWidget {
 	 * Clear all items.
 	 * <p>
 	 * Removes all items from the underlying model. This requires that the
-	 * {@link WComboBox#getModel()} is editable.
+	 * {@link WComboBox#getModel() getModel() } is editable.
 	 */
 	public void clear() {
 		this.model_.removeRows(0, this.getCount());

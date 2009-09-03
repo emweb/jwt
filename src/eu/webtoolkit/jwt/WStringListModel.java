@@ -24,14 +24,15 @@ import eu.webtoolkit.jwt.utils.StringUtils;
  * features of a model, including editing and addition and removal of data rows.
  * <p>
  * You can populate the model by passing a list of strings to its consructor, or
- * by using the {@link WStringListModel#setStringList(List strings)} method. You
- * can set or retrieve data using the
- * {@link WStringListModel#setData(WModelIndex index, Object value, int role)}
- * and {@link WStringListModel#getData(WModelIndex index, int role)} methods,
- * and add or remove data using the
- * {@link WStringListModel#insertRows(int row, int count, WModelIndex parent)}
- * and {@link WStringListModel#removeRows(int row, int count, WModelIndex parent)}
- * methods.
+ * by using the {@link WStringListModel#setStringList(List strings)
+ * setStringList() } method. You can set or retrieve data using the
+ * {@link WStringListModel#setData(WModelIndex index, Object value, int role)
+ * setData() } and {@link WStringListModel#getData(WModelIndex index, int role)
+ * getData() } methods, and add or remove data using the
+ * {@link WStringListModel#insertRows(int row, int count, WModelIndex parent)
+ * insertRows() } and
+ * {@link WStringListModel#removeRows(int row, int count, WModelIndex parent)
+ * removeRows() } methods.
  * <p>
  * 
  * @see WComboBox

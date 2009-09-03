@@ -57,7 +57,8 @@ import eu.webtoolkit.jwt.utils.EnumUtils;
  * <p>
  * If no JavaScript is available, the JavaScript-based HtmlCanvas will not be
  * used, and InlineSVG will be used instead. The method used may be changed by
- * using {@link WPaintedWidget#setPreferredMethod(WPaintedWidget.Method method)}.
+ * using {@link WPaintedWidget#setPreferredMethod(WPaintedWidget.Method method)
+ * setPreferredMethod() }.
  * <p>
  * InlineSVG requires that the document is rendered as XHTML. This must be
  * enabled in the configuration file using the
@@ -65,13 +66,15 @@ import eu.webtoolkit.jwt.utils.EnumUtils;
  * off.
  * <p>
  * To use a WPaintedWidget, you must derive from it and reimplement
- * {@link WPaintedWidget#paintEvent(WPaintDevice paintDevice)}. To paint on a
- * {@link WPaintDevice}, you will need to use a {@link WPainter}. Repainting is
- * triggered by calling the {@link WPaintedWidget#update(EnumSet flags)} method.
+ * {@link WPaintedWidget#paintEvent(WPaintDevice paintDevice) paintEvent() }. To
+ * paint on a {@link WPaintDevice}, you will need to use a {@link WPainter}.
+ * Repainting is triggered by calling the
+ * {@link WPaintedWidget#update(EnumSet flags) update() } method.
  * <p>
  * <p>
  * <i><b>Note:</b>A WPaintedWidget requires that its size is specified in pixel
- * units using {@link WPaintedWidget#resize(WLength width, WLength height)}.</i>
+ * units using {@link WPaintedWidget#resize(WLength width, WLength height)
+ * resize() }.</i>
  * </p>
  * 
  * @see WImage

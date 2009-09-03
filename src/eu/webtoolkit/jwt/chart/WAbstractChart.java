@@ -34,15 +34,16 @@ import eu.webtoolkit.jwt.utils.EnumUtils;
  * This is an abstract class and should not be used directly.
  * <p>
  * As an abstract base for MVC-based charts, this class manages the model
- * {@link WAbstractChart#setModel(WAbstractItemModel model)} and provides
- * virtual methods that listen to model changes. In addition, it gives access to
- * generic chart properties such as the title
- * {@link WAbstractChart#setTitle(CharSequence title)} and title font
- * {@link WAbstractChart#setTitleFont(WFont titleFont)}, the chart palette
- * {@link WAbstractChart#setPalette(WChartPalette palette)}, plot area padding
- * {@link WAbstractChart#setPlotAreaPadding(int padding, EnumSet sides)}, and
- * the background fill color
- * {@link WAbstractChart#setBackground(WBrush background)}.
+ * {@link WAbstractChart#setModel(WAbstractItemModel model) setModel() } and
+ * provides virtual methods that listen to model changes. In addition, it gives
+ * access to generic chart properties such as the title
+ * {@link WAbstractChart#setTitle(CharSequence title) setTitle() } and title
+ * font {@link WAbstractChart#setTitleFont(WFont titleFont) setTitleFont() },
+ * the chart palette {@link WAbstractChart#setPalette(WChartPalette palette)
+ * setPalette() }, plot area padding
+ * {@link WAbstractChart#setPlotAreaPadding(int padding, EnumSet sides)
+ * setPlotAreaPadding() }, and the background fill color
+ * {@link WAbstractChart#setBackground(WBrush background) setBackground() }.
  * <p>
  * 
  * @see WCartesianChart
@@ -256,7 +257,7 @@ public abstract class WAbstractChart extends WPaintedWidget {
 	 * Set a chart title.
 	 * <p>
 	 * The title is displayed on top of the chart, using the
-	 * {@link WAbstractChart#getTitleFont()}.
+	 * {@link WAbstractChart#getTitleFont() getTitleFont() }.
 	 * <p>
 	 * The default title is an empty title (&quot;&quot;).
 	 * <p>
@@ -379,8 +380,10 @@ public abstract class WAbstractChart extends WPaintedWidget {
 	/**
 	 * Method called whenever the entire model was reset.
 	 * <p>
-	 * Bound to the {@link WAbstractItemModel#modelReset()} and
-	 * {@link WAbstractItemModel#layoutChanged()} signals.
+	 * Bound to the {@link WAbstractItemModel#modelReset()
+	 * WAbstractItemModel#modelReset() } and
+	 * {@link WAbstractItemModel#layoutChanged()
+	 * WAbstractItemModel#layoutChanged() } signals.
 	 */
 	protected void modelReset() {
 	}

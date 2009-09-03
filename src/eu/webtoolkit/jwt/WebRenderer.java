@@ -143,11 +143,8 @@ class WebRenderer implements SlotLearnerInterface {
 		}
 	}
 
-	public void serveError(WebResponse response, Exception e,
-			WebRenderer.ResponseType responseType) throws IOException {
-		this.serveError(response, e.toString(), responseType);
-	}
-
+	// public void serveError(WebResponse request, RuntimeException error,
+	// WebRenderer.ResponseType responseType) ;
 	public void serveError(WebResponse response, String message,
 			WebRenderer.ResponseType responseType) throws IOException {
 		boolean js = responseType == WebRenderer.ResponseType.Update
@@ -364,8 +361,9 @@ class WebRenderer implements SlotLearnerInterface {
 	private void serveMainpage(WebResponse response) throws IOException {
 		Configuration conf = this.session_.getController().getConfiguration();
 		WApplication app = this.session_.getApp();
-		if (!app.getEnvironment().hasAjax() && app.internalPathIsChanged_
-				&& !app.oldInternalPath_.equals(app.newInternalPath_)) {
+		if (!app.getEnvironment().hasAjax()
+				&& (response.getRequestMethod().equals("POST") || app.internalPathIsChanged_
+						&& !app.oldInternalPath_.equals(app.newInternalPath_))) {
 			this.session_.redirect(app.getBookmarkUrl(app.newInternalPath_));
 		}
 		String redirect = this.session_.getRedirect();
@@ -404,6 +402,7 @@ class WebRenderer implements SlotLearnerInterface {
 		page.setVar("SESSION_ID", this.session_.getSessionId());
 		if (hybridPage) {
 			this.setBootVars(response, page);
+			page.setVar("INTERNAL_PATH", app.getInternalPath());
 		}
 		String url = app.getEnvironment().agentIsSpiderBot()
 				|| conf.getSessionTracking() == Configuration.SessionTracking.CookiesURL
@@ -846,7 +845,6 @@ class WebRenderer implements SlotLearnerInterface {
 	}
 
 	private void setBootVars(WebResponse response, FileServe boot) {
-		boolean xhtml = this.session_.getEnv().getContentType() == WEnvironment.ContentType.XHTML1;
 		Configuration conf = this.session_.getController().getConfiguration();
 		boot.setVar("BLANK_HTML", this.session_.getBootstrapUrl(response,
 				WebSession.BootstrapOption.ClearInternalPath)
@@ -862,7 +860,6 @@ class WebRenderer implements SlotLearnerInterface {
 						conf.getSessionTracking() == Configuration.SessionTracking.CookiesURL);
 		boot.setVar("AJAX_CANONICAL_URL", this.session_
 				.ajaxCanonicalUrl(response));
-		boot.setVar("INTERNAL_PATH", this.session_.getEnv().getInternalPath());
 	}
 
 	private String getHeadDeclarations() {

@@ -15,10 +15,11 @@ import eu.webtoolkit.jwt.utils.StringUtils;
  * <p>
  * 
  * The {@link WTableView} operates on a {@link WAbstractItemModel} provided via
- * {@link WTableView#setModel(WAbstractItemModel model)}. Data in the model is
- * rendered using an HTML <code>&lt;table&gt;</code>, and the model reacts to
- * any model changes. You may use CSS stylesheets for <code>&lt;table&gt;</code>, <code>&lt;tr&gt;</code>, and <code>&lt;td&gt;</code> elements to provide
- * style to the table.
+ * {@link WTableView#setModel(WAbstractItemModel model) setModel() }. Data in
+ * the model is rendered using an HTML <code>&lt;table&gt;</code>, and the model
+ * reacts to any model changes. You may use CSS stylesheets for
+ * <code>&lt;table&gt;</code>, <code>&lt;tr&gt;</code>, and
+ * <code>&lt;td&gt;</code> elements to provide style to the table.
  * <p>
  * <p>
  * <i><b>Note:</b>This view widget is a work-in-progress. Support for column

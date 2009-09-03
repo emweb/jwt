@@ -70,7 +70,8 @@ public class WFlashObject extends WContainerWidget {
 	 */
 	public void remove() {
 		WApplication.getInstance().doJavaScript(
-				"swfobject.removeSWF(flash" + this.getId() + ");");
+				"if (swfobject) {swfobject.removeSWF(flash" + this.getId()
+						+ "); }");
 		super.remove();
 	}
 
@@ -120,10 +121,12 @@ public class WFlashObject extends WContainerWidget {
 	/**
 	 * A JavaScript expression that returns the DOM node of the Flash object.
 	 * <p>
-	 * The Flash object is not stored in {@link WWidget#getJsRef()}, but in
-	 * {@link WFlashObject#getJsFlashRef()}. Use this method in conjuction with
-	 * {@link WApplication#doJavaScript(String javascript, boolean afterLoaded)}
-	 * or {@link JSlot} in custom JavaScript code to refer to the Flash content.
+	 * The Flash object is not stored in {@link WWidget#getJsRef()
+	 * WWidget#getJsRef() }, but in {@link WFlashObject#getJsFlashRef()
+	 * getJsFlashRef() }. Use this method in conjuction with
+	 * {@link WApplication#doJavaScript(String javascript, boolean afterLoaded)
+	 * WApplication#doJavaScript() } or {@link JSlot} in custom JavaScript code
+	 * to refer to the Flash content.
 	 */
 	public String getJsFlashRef() {
 		return "Wt2_99_5.getElement('flash" + this.getId() + "')";
@@ -156,13 +159,13 @@ public class WFlashObject extends WContainerWidget {
 					+ jsStringLiteral(this.getStyleClass()) + " }";
 		}
 		WApplication.getInstance().doJavaScript(
-				"swfobject.embedSWF(\"" + this.url_ + "\", \"" + "flash"
-						+ this.getId() + "\", \""
+				"if (swfobject) {swfobject.embedSWF(\"" + this.url_ + "\", \""
+						+ "flash" + this.getId() + "\", \""
 						+ String.valueOf((int) this.getWidth().toPixels())
 						+ "\", \""
 						+ String.valueOf((int) this.getHeight().toPixels())
 						+ "\", \"8.0.0\", " + "false, " + flashvars + ", "
-						+ params + ", " + attributes + ");");
+						+ params + ", " + attributes + ");}");
 		this.isRendered_ = true;
 		return result;
 	}

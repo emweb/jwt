@@ -301,8 +301,8 @@ public class WVirtualImage extends WCompositeWidget {
 	 * Signal emitted whenever the viewport changes.
 	 * <p>
 	 * The viewport can be changed by the user dragging the image or through the
-	 * API methods {@link WVirtualImage#scrollTo(long newX, long newY)} and
-	 * {@link WVirtualImage#scroll(long dx, long dy)}.
+	 * API methods {@link WVirtualImage#scrollTo(long newX, long newY)
+	 * scrollTo() } and {@link WVirtualImage#scroll(long dx, long dy) scroll() }.
 	 */
 	public Signal2<Long, Long> viewPortChanged() {
 		return this.viewPortChanged_;
@@ -315,8 +315,8 @@ public class WVirtualImage extends WCompositeWidget {
 	 * y) and given width and height.
 	 * <p>
 	 * Width and height will not necesarilly equal
-	 * {@link WVirtualImage#getGridImageSize()}, if the the image is not
-	 * infinite sized.
+	 * {@link WVirtualImage#getGridImageSize() getGridImageSize() }, if the the
+	 * image is not infinite sized.
 	 * <p>
 	 * The default implementation calls render() and creates an image for the
 	 * resource returned.
@@ -340,12 +340,13 @@ public class WVirtualImage extends WCompositeWidget {
 	 * width and height.
 	 * <p>
 	 * Width and height will not necesarilly equal to
-	 * {@link WVirtualImage#getGridImageSize()}, if the the image is not
-	 * infinite sized.
+	 * {@link WVirtualImage#getGridImageSize() getGridImageSize() }, if the the
+	 * image is not infinite sized.
 	 * <p>
 	 * The default implementation throws an Exception. You must reimplement this
 	 * method unless you reimplement
-	 * {@link WVirtualImage#createImage(long x, long y, int width, int height)}.
+	 * {@link WVirtualImage#createImage(long x, long y, int width, int height)
+	 * createImage() }.
 	 * <p>
 	 * 
 	 * @see WVirtualImage#createImage(long x, long y, int width, int height)

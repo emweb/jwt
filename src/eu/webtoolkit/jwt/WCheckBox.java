@@ -12,17 +12,17 @@ package eu.webtoolkit.jwt;
  * 
  * By default, a checkbox can have two states: {@link CheckState#Checked} or
  * {@link CheckState#Unchecked}, which can be inspected using
- * {@link WAbstractToggleButton#isChecked()}, and set using
- * {@link WAbstractToggleButton#setChecked()}.
+ * {@link WAbstractToggleButton#isChecked() isChecked() }, and set using
+ * {@link WAbstractToggleButton#setChecked() setChecked() }.
  * <p>
  * A checkbox may also provide a third state,
  * {@link CheckState#PartiallyChecked}, which is useful to indicate that it is
  * neither checked or unchecked. JWt will use native browser support for this
  * HTML5 extension when available (Safari and MS IE), and use an image-based
  * workaround otherwise. You may enable support for the third state using
- * {@link WCheckBox#setTristate(boolean tristate)}, and use
- * {@link WCheckBox#setCheckState(CheckState state)} and
- * {@link WCheckBox#getCheckState()} to read all three states.
+ * {@link WCheckBox#setTristate(boolean tristate) setTristate() }, and use
+ * {@link WCheckBox#setCheckState(CheckState state) setCheckState() } and
+ * {@link WCheckBox#getCheckState() getCheckState() } to read all three states.
  * <p>
  * A label is added as a sibling of the checkbox to the same parent.
  * <p>

@@ -25,37 +25,40 @@ import eu.webtoolkit.jwt.utils.StringUtils;
  * A cartesian chart has two or three axes: an X axis ({@link Axis#XAxis XAxis}
  * ), a Y axis ({@link Axis#YAxis YAxis}) and optionally a second Y axis (
  * {@link Axis#Y2Axis Y2Axis}). Each of the up to three axes in a cartesian
- * chart has a unique {@link WAxis#getId()} that identifies which of these three
- * axes it is in the enclosing {@link WAxis#getChart()}.
+ * chart has a unique {@link WAxis#getId() getId() } that identifies which of
+ * these three axes it is in the enclosing {@link WAxis#getChart() getChart() }.
  * <p>
- * Use {@link WAxis#setVisible(boolean visible)} to change the visibility of an
- * axis, {@link WAxis#setGridLinesEnabled(boolean enabled)} to show grid lines
- * for an axis. The pen styles for rendering the axis or grid lines may be
- * changed using {@link WAxis#setPen(WPen pen)} and
- * {@link WAxis#setGridLinesPen(WPen pen)}. A margin between the axis and the
- * main plot area may be configured using {@link WAxis#setMargin(int pixels)}.
+ * Use {@link WAxis#setVisible(boolean visible) setVisible() } to change the
+ * visibility of an axis, {@link WAxis#setGridLinesEnabled(boolean enabled)
+ * setGridLinesEnabled() } to show grid lines for an axis. The pen styles for
+ * rendering the axis or grid lines may be changed using
+ * {@link WAxis#setPen(WPen pen) setPen() } and
+ * {@link WAxis#setGridLinesPen(WPen pen) setGridLinesPen() }. A margin between
+ * the axis and the main plot area may be configured using
+ * {@link WAxis#setMargin(int pixels) setMargin() }.
  * <p>
  * By default, the axis will automatically adjust its range so that all data
  * will be visible. You may manually specify a range using
- * {@link WAxis#setMinimum(double minimum)}, setMaximum or
- * {@link WAxis#setRange(double minimum, double maximum)}. The interval between
- * labels is by default automatically adjusted depending on the axis length and
- * the range, but may be manually specified using
- * {@link WAxis#setLabelInterval(double labelInterval)}.
+ * {@link WAxis#setMinimum(double minimum) setMinimum() }, setMaximum or
+ * {@link WAxis#setRange(double minimum, double maximum) setRange() }. The
+ * interval between labels is by default automatically adjusted depending on the
+ * axis length and the range, but may be manually specified using
+ * {@link WAxis#setLabelInterval(double labelInterval) setLabelInterval() }.
  * <p>
  * The axis has support for being &quot;broken&quot;, to support displaying data
  * with a few outliers which would otherwise swamp the chart. This is not done
  * automatically, but instead you need to use
- * {@link WAxis#setBreak(double minimum, double maximum)} to specify the value
- * range that needs to be omitted from the axis. The omission is rendered in the
- * axis and in bars that cross the break.
+ * {@link WAxis#setBreak(double minimum, double maximum) setBreak() } to specify
+ * the value range that needs to be omitted from the axis. The omission is
+ * rendered in the axis and in bars that cross the break.
  * <p>
  * The labels are shown using a &quot;%.4g&quot; format string for numbers, and
  * &quot;dd/MM/yyyy&quot; (for {@link AxisScale#DateScale DateScale}). The
  * format may be customized using
- * {@link WAxis#setLabelFormat(CharSequence format)}. The angle of the label
- * text may be changed using {@link WAxis#setLabelAngle(double angle)}. By
- * default, all labels are printed horizontally.
+ * {@link WAxis#setLabelFormat(CharSequence format) setLabelFormat() }. The
+ * angle of the label text may be changed using
+ * {@link WAxis#setLabelAngle(double angle) setLabelAngle() }. By default, all
+ * labels are printed horizontally.
  * <p>
  * 
  * @see WCartesianChart
@@ -77,7 +80,7 @@ public class WAxis {
 	 * <p>
 	 * Changes whether the axis is displayed, including ticks and labels. The
 	 * rendering of the grid lines is controlled seperately by
-	 * {@link WAxis#setGridLinesEnabled(boolean enabled)}.
+	 * {@link WAxis#setGridLinesEnabled(boolean enabled) setGridLinesEnabled() }.
 	 * <p>
 	 * The default value is true for the X axis and first Y axis, but false for
 	 * the second Y axis.
@@ -264,9 +267,9 @@ public class WAxis {
 	 * <p>
 	 * This is useful to display data with a few outliers which would otherwise
 	 * swamp the chart. This is not done automatically, but instead you need to
-	 * use {@link WAxis#setBreak(double minimum, double maximum)} to specify the
-	 * value range that needs to be omitted from the axis. The omission is
-	 * rendered in the axis and in BarSeries that cross the break.
+	 * use {@link WAxis#setBreak(double minimum, double maximum) setBreak() } to
+	 * specify the value range that needs to be omitted from the axis. The
+	 * omission is rendered in the axis and in BarSeries that cross the break.
 	 */
 	public void setBreak(double minimum, double maximum) {
 		if (this.segments_.size() != 2) {
@@ -311,7 +314,8 @@ public class WAxis {
 	 * <p>
 	 * Set a format string which is used to format values, both for the axis
 	 * labels as well as data series values (see
-	 * {@link WDataSeries#setLabelsEnabled(Axis axis, boolean enabled)}).
+	 * {@link WDataSeries#setLabelsEnabled(Axis axis, boolean enabled)
+	 * WDataSeries#setLabelsEnabled() }).
 	 * <p>
 	 * For an axis with a {@link AxisScale#LinearScale LinearScale} or
 	 * {@link AxisScale#LogScale LogScale} scale, the format string must be a
@@ -382,7 +386,7 @@ public class WAxis {
 	 * Sets whether gridlines are displayed for this axis.
 	 * <p>
 	 * When <i>enabled</i>, gird lines are drawn for each tick on this axis,
-	 * using the {@link WAxis#getGridLinesPen()}.
+	 * using the {@link WAxis#getGridLinesPen() getGridLinesPen() }.
 	 * <p>
 	 * Unlike all other visual aspects of an axis, rendering of the gridlines is
 	 * not controlled by setDisplayEnabled(bool).

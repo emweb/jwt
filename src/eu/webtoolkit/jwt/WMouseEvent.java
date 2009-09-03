@@ -125,7 +125,8 @@ public class WMouseEvent implements WAbstractEvent {
 	/**
 	 * Returns the distance over which the mouse has been dragged.
 	 * <p>
-	 * This is only defined for a {@link WInteractWidget#mouseWentUp()} event.
+	 * This is only defined for a {@link WInteractWidget#mouseWentUp()
+	 * WInteractWidget#mouseWentUp() } event.
 	 */
 	public WMouseEvent.Coordinates getDragDelta() {
 		return new WMouseEvent.Coordinates(this.jsEvent_.dragDX,

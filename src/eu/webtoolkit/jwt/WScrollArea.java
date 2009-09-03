@@ -15,8 +15,8 @@ import java.util.EnumSet;
  * When the content is bigger than the {@link WScrollArea}, scrollbars are added
  * so that the user can still view the entire content.
  * <p>
- * Use {@link WScrollArea#setScrollBarPolicy(WScrollArea.ScrollBarPolicy policy)}
- * to configure if and when the scrollbars may appear.
+ * Use {@link WScrollArea#setScrollBarPolicy(WScrollArea.ScrollBarPolicy policy)
+ * setScrollBarPolicy() } to configure if and when the scrollbars may appear.
  * <p>
  * In many cases, it might be easier to use the CSS overflow property
  */

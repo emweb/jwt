@@ -13,22 +13,23 @@ import java.util.List;
  * A widget that provides a single line edit
  * <p>
  * 
- * To act upon text changes, connect a slot to the {@link WFormWidget#changed()}
- * signal. This signal is emitted when the user changed the content, and
- * subsequently removes the focus from the line edit.
+ * To act upon text changes, connect a slot to the {@link WFormWidget#changed()
+ * changed() } signal. This signal is emitted when the user changed the content,
+ * and subsequently removes the focus from the line edit.
  * <p>
  * To act upon editing, connect a slot to the
- * {@link WInteractWidget#keyWentUp()} signal.
+ * {@link WInteractWidget#keyWentUp() keyWentUp() } signal.
  * <p>
  * At all times, the current content may be accessed with the
- * {@link WLineEdit#getText()} method.
+ * {@link WLineEdit#getText() getText() } method.
  * <p>
  * You may specify a maximum length for the input using
- * {@link WLineEdit#setMaxLength(int chars)}. If you wish to provide more
- * detailed input validation, you may set a validator using the
- * {@link WFormWidget#setValidator(WValidator validator)} method. Validators
- * provide, in general, both client-side validation (as visual feed-back only)
- * and server-side validation when calling {@link WLineEdit#validate()}.
+ * {@link WLineEdit#setMaxLength(int chars) setMaxLength() }. If you wish to
+ * provide more detailed input validation, you may set a validator using the
+ * {@link WFormWidget#setValidator(WValidator validator) setValidator() }
+ * method. Validators provide, in general, both client-side validation (as
+ * visual feed-back only) and server-side validation when calling
+ * {@link WLineEdit#validate() validate() }.
  * <p>
  * The widget corresponds to the HTML
  * <code>&lt;input type=&quot;text&quot;&gt;</code> or
@@ -115,7 +116,7 @@ public class WLineEdit extends WFormWidget {
 	 * This specifies the width of the line edit that is roughly equivalent with
 	 * <i>chars</i> characters. This does not limit the maximum length of a
 	 * string that may be entered, which may be set using
-	 * {@link WLineEdit#setMaxLength(int chars)}.
+	 * {@link WLineEdit#setMaxLength(int chars) setMaxLength() }.
 	 * <p>
 	 * The default value is 10.
 	 */

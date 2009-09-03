@@ -20,8 +20,9 @@ import java.util.List;
  * This abstract proxy model may be used as a starting point for implementing a
  * custom proxy model, when {@link WSortFilterProxyModel} is not adequate. It
  * implements data access and manipulation using the a virtual mapping method (
- * {@link WAbstractProxyModel#mapToSource(WModelIndex proxyIndex)}) to access
- * and manipulate the underlying {@link WAbstractProxyModel#getSourceModel()}.
+ * {@link WAbstractProxyModel#mapToSource(WModelIndex proxyIndex) mapToSource()
+ * }) to access and manipulate the underlying
+ * {@link WAbstractProxyModel#getSourceModel() getSourceModel() }.
  */
 public abstract class WAbstractProxyModel extends WAbstractItemModel {
 	/**
@@ -48,7 +49,8 @@ public abstract class WAbstractProxyModel extends WAbstractItemModel {
 	 * the model index <i>sourceIndex</i> in the source model. This method must
 	 * only be implemented for source model indexes that are mapped and thus are
 	 * the result of
-	 * {@link WAbstractProxyModel#mapToSource(WModelIndex proxyIndex)}.
+	 * {@link WAbstractProxyModel#mapToSource(WModelIndex proxyIndex)
+	 * mapToSource() }.
 	 * <p>
 	 * 
 	 * @see WAbstractProxyModel#mapToSource(WModelIndex proxyIndex)

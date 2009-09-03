@@ -141,8 +141,8 @@ public class WEnvironment {
 	 * Cookies set in the initial call to the application.
 	 * <p>
 	 * Note that cookies set with
-	 * {@link WApplication#setCookie(String name, String value, int maxAge, String domain, String path)}
-	 * are not made available in the environment.
+	 * {@link WApplication#setCookie(String name, String value, int maxAge, String domain, String path)
+	 * WApplication#setCookie() } are not made available in the environment.
 	 * <p>
 	 * Not all clients may support cookies or have cookies enabled.
 	 * <p>
@@ -193,8 +193,8 @@ public class WEnvironment {
 	/**
 	 * Returns whether the browser has enabled support for JavaScript.
 	 * <p>
-	 * This is the same as {@link WEnvironment#hasAjax()}: JWt only considers
-	 * using JavaScript when it has detected AJAX support.
+	 * This is the same as {@link WEnvironment#hasAjax() hasAjax() }: JWt only
+	 * considers using JavaScript when it has detected AJAX support.
 	 * <p>
 	 * 
 	 * @see WEnvironment#hasAjax()
@@ -208,10 +208,12 @@ public class WEnvironment {
 	 * <p>
 	 * Without support for JavaScript/AJAX, JWt will still be able to serve the
 	 * application, but with one considerable limitation: only the
-	 * {@link WTimer#timeout()}, {@link WInteractWidget#clicked()},
-	 * {@link WApplication#internalPathChanged()}, and
-	 * {@link WAbstractArea#clicked()} signals (and any derived signals) will
-	 * generate events.
+	 * {@link WTimer#timeout() WTimer#timeout() },
+	 * {@link WInteractWidget#clicked() WInteractWidget#clicked() },
+	 * {@link WApplication#internalPathChanged()
+	 * WApplication#internalPathChanged() }, and {@link WAbstractArea#clicked()
+	 * WAbstractArea#clicked() } signals (and any derived signals) will generate
+	 * events.
 	 * <p>
 	 * Every event will cause the complete page to be rerendered.
 	 * <p>

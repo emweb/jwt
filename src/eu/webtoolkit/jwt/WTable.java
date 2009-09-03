@@ -20,20 +20,21 @@ import java.util.Set;
  * A WTable arranges its children in a table.
  * <p>
  * To insert or access contents, use
- * {@link WTable#getElementAt(int row, int column)} to access the
- * {@link WTableCell cell} at a particular location in the table. The WTable
+ * {@link WTable#getElementAt(int row, int column) getElementAt() } to access
+ * the {@link WTableCell cell} at a particular location in the table. The WTable
  * expands automatically to create the indexed (row, column) as necessary.
  * <p>
  * It is possible to insert and delete entire rows or columns from the table
- * using the {@link WTable#insertColumn(int column)},
- * {@link WTable#insertRow(int row)}, {@link WTable#deleteColumn(int column)},
- * or {@link WTable#deleteRow(int row)} methods.
+ * using the {@link WTable#insertColumn(int column) insertColumn() },
+ * {@link WTable#insertRow(int row) insertRow() },
+ * {@link WTable#deleteColumn(int column) deleteColumn() }, or
+ * {@link WTable#deleteRow(int row) deleteRow() } methods.
  * <p>
  * You may indicate a number of rows and columns that act as headers using
- * {@link WTable#setHeaderCount(int count, Orientation orientation)}. Header
- * cells are rendered as <code>&lt;th&gt;</code> instead of
- * <code>&lt;td&gt;</code> elements. By default, no rows or columns are
- * configured as headers.
+ * {@link WTable#setHeaderCount(int count, Orientation orientation)
+ * setHeaderCount() }. Header cells are rendered as <code>&lt;th&gt;</code>
+ * instead of <code>&lt;td&gt;</code> elements. By default, no rows or columns
+ * are configured as headers.
  * <p>
  * The widget corresponds to the HTML <code>&lt;table&gt;</code> tag.
  * <p>
@@ -104,9 +105,9 @@ public class WTable extends WInteractWidget {
 	/**
 	 * Returns the row object for the given row.
 	 * <p>
-	 * Like with {@link WTable#getElementAt(int row, int column)}, the table
-	 * expands automatically when the row is beyond the current table
-	 * dimensions.
+	 * Like with {@link WTable#getElementAt(int row, int column) getElementAt()
+	 * }, the table expands automatically when the row is beyond the current
+	 * table dimensions.
 	 * <p>
 	 * 
 	 * @see WTable#getElementAt(int row, int column)
@@ -120,9 +121,9 @@ public class WTable extends WInteractWidget {
 	/**
 	 * Returns the column object for the given column.
 	 * <p>
-	 * Like with {@link WTable#getElementAt(int row, int column)}, the table
-	 * expands automatically when the column is beyond the current table
-	 * dimensions.
+	 * Like with {@link WTable#getElementAt(int row, int column) getElementAt()
+	 * }, the table expands automatically when the column is beyond the current
+	 * table dimensions.
 	 * <p>
 	 * 
 	 * @see WTable#getElementAt(int row, int column)

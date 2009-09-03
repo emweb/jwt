@@ -22,8 +22,8 @@ import eu.webtoolkit.jwt.WPen;
  * for drawing text within the brushed area.
  * <p>
  * To use a custom palette, you should reimplement this class, and then use
- * {@link WAbstractChart#setPalette(WChartPalette palette)} to use an instance
- * of the palette.
+ * {@link WAbstractChart#setPalette(WChartPalette palette) setPalette() } to use
+ * an instance of the palette.
  */
 public interface WChartPalette {
 	/**

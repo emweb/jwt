@@ -14,22 +14,22 @@ import java.util.List;
  * 
  * A painter path represents a (complex) path that may be composed of lines,
  * arcs and bezier curve segments, and painted onto a paint device using
- * {@link WPainter#drawPath(WPainterPath path)}.
+ * {@link WPainter#drawPath(WPainterPath path) drawPath() }.
  * <p>
  * The path that is composed in a painter path may consist of multiple closed
  * sub-paths. Only the last sub-path can be left open.
  * <p>
  * To compose a path, this class maintains a current position, which is the
  * starting point for the next drawing operation. An operation may draw a line
- * (see {@link WPainterPath#lineTo(WPointF point)}), arc (see
- * {@link WPainterPath#arcTo(double cx, double cy, double radius, double startAngle, double sweepLength)}
- * ), or bezier curve (see
- * {@link WPainterPath#quadTo(WPointF c, WPointF endPoint)} and
- * {@link WPainterPath#cubicTo(WPointF c1, WPointF c2, WPointF endPoint)}) from
- * the current position to a new position. A new sub path may be started by
- * moving the current position to a new location (see
- * {@link WPainterPath#moveTo(WPointF point)}), which automatically closes the
- * previous sub path.
+ * (see {@link WPainterPath#lineTo(WPointF point) lineTo() }), arc (see
+ * {@link WPainterPath#arcTo(double cx, double cy, double radius, double startAngle, double sweepLength)
+ * arcTo() }), or bezier curve (see
+ * {@link WPainterPath#quadTo(WPointF c, WPointF endPoint) quadTo() } and
+ * {@link WPainterPath#cubicTo(WPointF c1, WPointF c2, WPointF endPoint)
+ * cubicTo() }) from the current position to a new position. A new sub path may
+ * be started by moving the current position to a new location (see
+ * {@link WPainterPath#moveTo(WPointF point) moveTo() }), which automatically
+ * closes the previous sub path.
  * <p>
  * When sub paths overlap, the result is undefined (it is dependent on the
  * underlying painting device).

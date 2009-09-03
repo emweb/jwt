@@ -25,21 +25,22 @@ import eu.webtoolkit.jwt.utils.StringUtils;
  * <p>
  * WSuggestionPopup is an MVC view class, using a simple
  * {@link WStringListModel} by default. You can set a custom model using
- * {@link WSuggestionPopup#setModel(WAbstractItemModel model)}. The member
- * methods {@link WSuggestionPopup#clearSuggestions()} and
- * {@link WSuggestionPopup#addSuggestion(CharSequence suggestionText, CharSequence suggestionValue)}
- * manipulate the model.
+ * {@link WSuggestionPopup#setModel(WAbstractItemModel model) setModel() }. The
+ * member methods {@link WSuggestionPopup#clearSuggestions() clearSuggestions()
+ * } and
+ * {@link WSuggestionPopup#addSuggestion(CharSequence suggestionText, CharSequence suggestionValue)
+ * addSuggestion() } manipulate the model.
  * <p>
  * The class is initialized with two JavaScript functions, one for filtering the
  * suggestions, and one for editing the value of the textarea when a suggestion
  * is selected. Two static methods,
- * {@link WSuggestionPopup#generateMatcherJS(WSuggestionPopup.Options options)}
- * and
- * {@link WSuggestionPopup#generateReplacerJS(WSuggestionPopup.Options options)}
- * may be used to generate these functions based on a set of options (in the
- * {@link Options} struct). If the flexibility provided in this way is not
- * sufficient, and writing JavaScript does not give you an instant heart-attack,
- * you may provide your own implementations.
+ * {@link WSuggestionPopup#generateMatcherJS(WSuggestionPopup.Options options)
+ * generateMatcherJS() } and
+ * {@link WSuggestionPopup#generateReplacerJS(WSuggestionPopup.Options options)
+ * generateReplacerJS() } may be used to generate these functions based on a set
+ * of options (in the {@link Options} struct). If the flexibility provided in
+ * this way is not sufficient, and writing JavaScript does not give you an
+ * instant heart-attack, you may provide your own implementations.
  * <p>
  * The matcherJS function block must have the following JavaScript signature:
  * <p>

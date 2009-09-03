@@ -29,13 +29,13 @@ import java.util.List;
  * a parent {@link WContainerWidget}, either specify the parent in the
  * constructor (which is conventionally the last constructor argument), or add
  * the widget to the parent using
- * {@link WContainerWidget#addWidget(WWidget widget)}.
+ * {@link WContainerWidget#addWidget(WWidget widget) addWidget() }.
  * <p>
  * A widget provides methods to manage its decorative style. It also provides
  * access to CSS-based layout. Alternatively, you may use layout managers (see
- * {@link WContainerWidget#setLayout(WLayout layout)}) to manage layout of
- * widgets, in which case you should not use methods that are marked as being
- * involved in CSS-based layout only.
+ * {@link WContainerWidget#setLayout(WLayout layout) setLayout() }) to manage
+ * layout of widgets, in which case you should not use methods that are marked
+ * as being involved in CSS-based layout only.
  */
 public abstract class WWidget extends WObject {
 	/**
@@ -64,8 +64,9 @@ public abstract class WWidget extends WObject {
 	 * <p>
 	 * With few exceptions, the parent is a {@link WContainerWidget}, and has
 	 * been set implicitly when adding the widget to a container using
-	 * {@link WContainerWidget#addWidget(WWidget widget)} or by passing a
-	 * container as a parent to the constructor.
+	 * {@link WContainerWidget#addWidget(WWidget widget)
+	 * WContainerWidget#addWidget() } or by passing a container as a parent to
+	 * the constructor.
 	 */
 	public WWidget getParent() {
 		return (WWidget) super.getParent();
@@ -202,7 +203,7 @@ public abstract class WWidget extends WObject {
 	 * <p>
 	 * Specify a new size for this widget, by specifying width and height. By
 	 * default a widget has automatic width and height, see
-	 * {@link WLength#isAuto()}.
+	 * {@link WLength#isAuto() WLength#isAuto() }.
 	 * <p>
 	 * This applies to CSS-based layout.
 	 * <p>
@@ -229,7 +230,7 @@ public abstract class WWidget extends WObject {
 	 * <p>
 	 * Returns the width set for this widget. This is not a calculated width,
 	 * based on layout, but the width as specified with
-	 * {@link WWidget#resize(WLength width, WLength height)}.
+	 * {@link WWidget#resize(WLength width, WLength height) resize() }.
 	 * <p>
 	 * This applies to CSS-based layout.
 	 * <p>
@@ -244,7 +245,7 @@ public abstract class WWidget extends WObject {
 	 * <p>
 	 * Returns the height set for this widget. This is not a calculated height,
 	 * based on layout, but the height as specified previously with
-	 * {@link WWidget#resize(WLength width, WLength height)}.
+	 * {@link WWidget#resize(WLength width, WLength height) resize() }.
 	 * <p>
 	 * This applies to CSS-based layout.
 	 * <p>
@@ -271,7 +272,8 @@ public abstract class WWidget extends WObject {
 	 * Returns the minimum width.
 	 * <p>
 	 * Returns the minimum width set for this widget with
-	 * {@link WWidget#setMinimumSize(WLength width, WLength height)}.
+	 * {@link WWidget#setMinimumSize(WLength width, WLength height)
+	 * setMinimumSize() }.
 	 * <p>
 	 * 
 	 * @see WWidget#setMinimumSize(WLength width, WLength height)
@@ -283,7 +285,8 @@ public abstract class WWidget extends WObject {
 	 * Returns the minimum height.
 	 * <p>
 	 * Returns the minmum height set for this widget with
-	 * {@link WWidget#setMinimumSize(WLength width, WLength height)}.
+	 * {@link WWidget#setMinimumSize(WLength width, WLength height)
+	 * setMinimumSize() }.
 	 * <p>
 	 * 
 	 * @see WWidget#setMinimumSize(WLength width, WLength height)
@@ -307,7 +310,8 @@ public abstract class WWidget extends WObject {
 	 * Returns the maximum width.
 	 * <p>
 	 * Returns the maximum width set for this widget with
-	 * {@link WWidget#setMaximumSize(WLength width, WLength height)}.
+	 * {@link WWidget#setMaximumSize(WLength width, WLength height)
+	 * setMaximumSize() }.
 	 * <p>
 	 * 
 	 * @see WWidget#setMaximumSize(WLength width, WLength height)
@@ -319,7 +323,8 @@ public abstract class WWidget extends WObject {
 	 * Returns the maximum height.
 	 * <p>
 	 * Returns the minmum height set for this widget with
-	 * {@link WWidget#setMaximumSize(WLength width, WLength height)}.
+	 * {@link WWidget#setMaximumSize(WLength width, WLength height)
+	 * setMaximumSize() }.
 	 * <p>
 	 * 
 	 * @see WWidget#setMaximumSize(WLength width, WLength height)
@@ -335,7 +340,7 @@ public abstract class WWidget extends WObject {
 	/**
 	 * Returns the line height for contained text.
 	 * <p>
-	 * sa {@link WWidget#setLineHeight(WLength height)}
+	 * sa {@link WWidget#setLineHeight(WLength height) setLineHeight() }
 	 */
 	public abstract WLength getLineHeight();
 
@@ -343,7 +348,7 @@ public abstract class WWidget extends WObject {
 	 * Specify a side to which the {@link WWidget} must float.
 	 * <p>
 	 * This only applies to widgets with a {@link PositionScheme#Static Static}
-	 * {@link WWidget#getPositionScheme()}.
+	 * {@link WWidget#getPositionScheme() getPositionScheme() }.
 	 * <p>
 	 * It specifies if the widget must be positioned on one of the sides of the
 	 * parent widget, at the current line. A typical use is to position images
@@ -503,13 +508,13 @@ public abstract class WWidget extends WObject {
 	/**
 	 * Let the widget overlay other sibling widgets.
 	 * <p>
-	 * A widget that {@link WWidget#isPopup()} will be rendered on top of any
-	 * other sibling widget contained within the same parent (including other
-	 * popup widgets previously added to the container).
+	 * A widget that {@link WWidget#isPopup() isPopup() } will be rendered on
+	 * top of any other sibling widget contained within the same parent
+	 * (including other popup widgets previously added to the container).
 	 * <p>
 	 * This will only have an effect when the widgetis either
 	 * {@link PositionScheme#Absolute Absolute} or {@link PositionScheme#Fixed
-	 * Fixed} {@link WWidget#getPositionScheme()}.
+	 * Fixed} {@link WWidget#getPositionScheme() getPositionScheme() }.
 	 * <p>
 	 * This applies to CSS-based layout.
 	 */
@@ -640,8 +645,8 @@ public abstract class WWidget extends WObject {
 	 * Refresh the widget.
 	 * <p>
 	 * The refresh method is invoked when the locale is changed using
-	 * {@link WApplication#setLocale(Locale locale)} or when the user hit the
-	 * refresh button.
+	 * {@link WApplication#setLocale(Locale locale) WApplication#setLocale() }
+	 * or when the user hit the refresh button.
 	 * <p>
 	 * The widget must actualize its contents in response.
 	 */
@@ -651,8 +656,8 @@ public abstract class WWidget extends WObject {
 	 * A JavaScript expression that returns the corresponding DOM node.
 	 * <p>
 	 * You may want to use this in conjunction with {@link JSlot} or
-	 * {@link WApplication#doJavaScript(String javascript, boolean afterLoaded)}
-	 * in custom JavaScript code.
+	 * {@link WApplication#doJavaScript(String javascript, boolean afterLoaded)
+	 * WApplication#doJavaScript() } in custom JavaScript code.
 	 */
 	public String getJsRef() {
 		return "Wt2_99_5.getElement('" + this.getId() + "')";
@@ -680,7 +685,7 @@ public abstract class WWidget extends WObject {
 	public abstract String getAttributeValue(String name);
 
 	/**
-	 * Short hand for {@link WString#tr(String key)}.
+	 * Short hand for {@link WString#tr(String key) WString#tr() }.
 	 * <p>
 	 * Create a message with the given key.
 	 */
@@ -793,7 +798,8 @@ public abstract class WWidget extends WObject {
 	 * <p>
 	 * By default, the widget inherits this property from its parent, and this
 	 * property propagates to all children. The top level container (
-	 * {@link WApplication#getRoot()}) selectable by default.
+	 * {@link WApplication#getRoot() WApplication#getRoot() }) selectable by
+	 * default.
 	 */
 	public abstract void setSelectable(boolean selectable);
 
@@ -848,7 +854,8 @@ public abstract class WWidget extends WObject {
 	 * Create a widget with a given parent.
 	 * <p>
 	 * If a parent container is specified, the widget is added to the container,
-	 * using {@link WContainerWidget#addWidget(WWidget widget)}.
+	 * using {@link WContainerWidget#addWidget(WWidget widget)
+	 * WContainerWidget#addWidget() }.
 	 */
 	protected WWidget(WContainerWidget parent) {
 		super((WObject) null);

@@ -11,7 +11,8 @@ import java.util.EnumSet;
  * Enumeration that indicates a relative location.
  * <p>
  * Values of CenterX, CenterY, and CenterXY are only valid for
- * {@link WCssDecorationStyle#setBackgroundImage(String image, WCssDecorationStyle.Repeat repeat, EnumSet sides)}
+ * {@link WCssDecorationStyle#setBackgroundImage(String image, WCssDecorationStyle.Repeat repeat, EnumSet sides)
+ * setBackgroundImage() }
  * <p>
  * 
  * @see WWidget#setMargin(WLength margin, EnumSet sides)

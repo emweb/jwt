@@ -930,18 +930,7 @@ class DomElement {
 		return true;
 	}
 
-	private boolean containsElement(DomElementType type) {
-		for (int i = 0; i < this.childrenToAdd_.size(); ++i) {
-			if (this.childrenToAdd_.get(i).child.type_ == type) {
-				return true;
-			}
-			if (this.childrenToAdd_.get(i).child.containsElement(type)) {
-				return true;
-			}
-		}
-		return false;
-	}
-
+	// private boolean containsElement(DomElementType type) ;
 	private void processEvents(WApplication app) {
 		DomElement self = this;
 		String S_mousedown = WInteractWidget.MOUSE_DOWN_SIGNAL;

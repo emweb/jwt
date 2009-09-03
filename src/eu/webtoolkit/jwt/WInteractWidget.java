@@ -17,8 +17,8 @@ import java.util.List;
  * This abstract widget provides access to event signals that correspond to
  * user-interface interaction through mouse or keyboard.
  * <p>
- * When JavaScript is disabled, only the {@link WInteractWidget#clicked()} event
- * will propagate (but without event details information).
+ * When JavaScript is disabled, only the {@link WInteractWidget#clicked()
+ * clicked() } event will propagate (but without event details information).
  */
 public abstract class WInteractWidget extends WWebWidget {
 	/**
@@ -49,9 +49,10 @@ public abstract class WInteractWidget extends WWebWidget {
 	 * <p>
 	 * The keyWentDown signal is the first signal emitted when a key is pressed
 	 * (before the keyPressed signal). Unlike
-	 * {@link WInteractWidget#keyPressed()} however it is also emitted for
-	 * modifier keys (such as &quot;shift&quot;, &quot;control&quot;, ...) or
-	 * keyboard navigation keys that do not have a corresponding character.
+	 * {@link WInteractWidget#keyPressed() keyPressed() } however it is also
+	 * emitted for modifier keys (such as &quot;shift&quot;,
+	 * &quot;control&quot;, ...) or keyboard navigation keys that do not have a
+	 * corresponding character.
 	 * <p>
 	 * 
 	 * @see WInteractWidget#keyPressed()
@@ -65,9 +66,9 @@ public abstract class WInteractWidget extends WWebWidget {
 	 * Event signal emitted when a &quot;character&quot; was entered.
 	 * <p>
 	 * The keyPressed signal is emitted when a key is pressed, and a character
-	 * is entered. Unlike {@link WInteractWidget#keyWentDown()}, it is emitted
-	 * only for key presses that result in a character being entered, and thus
-	 * not for modifier keys or keyboard navigation keys.
+	 * is entered. Unlike {@link WInteractWidget#keyWentDown() keyWentDown() },
+	 * it is emitted only for key presses that result in a character being
+	 * entered, and thus not for modifier keys or keyboard navigation keys.
 	 * <p>
 	 * 
 	 * @see WInteractWidget#keyWentDown()
@@ -79,8 +80,8 @@ public abstract class WInteractWidget extends WWebWidget {
 	/**
 	 * Event signal emitted when a keyboard key is released.
 	 * <p>
-	 * This is the counter-part of the {@link WInteractWidget#keyWentDown()}
-	 * event. Every key-down has its corresponding key-up.
+	 * This is the counter-part of the {@link WInteractWidget#keyWentDown()
+	 * keyWentDown() } event. Every key-down has its corresponding key-up.
 	 * <p>
 	 * 
 	 * @see WInteractWidget#keyWentDown()

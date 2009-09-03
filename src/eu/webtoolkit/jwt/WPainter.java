@@ -15,42 +15,43 @@ import java.util.List;
  * 
  * The painter class provides a rich interface for painting on a
  * {@link WPaintDevice}. To start painting on a device, either pass the device
- * through the constructor {@link WPainter#WPainter(WPaintDevice device)}, or
- * use {@link WPainter#begin(WPaintDevice device)}. Typically, you will
- * instantiate a WPainter from within the
- * {@link WPaintedWidget#paintEvent(WPaintDevice paintDevice)} method, but you
- * can also use a painter to paint directly to a particular paint device, for
- * example to create an SVG image.
+ * through the constructor {@link WPainter#WPainter(WPaintDevice device)
+ * WPainter() }, or use {@link WPainter#begin(WPaintDevice device) begin() }.
+ * Typically, you will instantiate a WPainter from within the
+ * {@link WPaintedWidget#paintEvent(WPaintDevice paintDevice) paintEvent() }
+ * method, but you can also use a painter to paint directly to a particular
+ * paint device, for example to create an SVG image.
  * <p>
  * The painter maintains state such as the current
  * {@link WPainter#setPen(WPen p) pen}, {@link WPainter#setBrush(WBrush b)
  * brush}, {@link WPainter#setFont(WFont f) font},
  * {@link WPainter#getWorldTransform() transformation} and clipping settings
- * (see {@link WPainter#setClipping(boolean enable)} and
- * {@link WPainter#setClipPath(WPainterPath clipPath)}). A particular state can
- * be saved using {@link WPainter#save()} and later restored using
- * {@link WPainter#restore()}.
+ * (see {@link WPainter#setClipping(boolean enable) setClipping() } and
+ * {@link WPainter#setClipPath(WPainterPath clipPath) setClipPath() }). A
+ * particular state can be saved using {@link WPainter#save() save() } and later
+ * restored using {@link WPainter#restore() restore() }.
  * <p>
  * The painting system distinguishes between device coordinates, logical
  * coordinates, and local coordinates. The device coordinate system ranges from
  * (0, 0) in the top left corner of the device, to (
- * {@link WPaintDevice#getWidth()}, {@link WPaintDevice#getHeight()}) for the
- * bottom right corner. The logical coordinate system defines a coordinate
- * system that may be chosen independent of the geometry of the device, which is
- * convenient to make abstraction of the actual device size. Finally, the
- * current local coordinate system may be different from the logical coordinate
- * system because of a world transformation. Initially, the local coordinate
- * system coincides with the logical coordinate system, which coincides with the
- * device coordinate system.
+ * {@link WPaintDevice#getWidth() getWidth() }, {@link WPaintDevice#getHeight()
+ * getHeight() }) for the bottom right corner. The logical coordinate system
+ * defines a coordinate system that may be chosen independent of the geometry of
+ * the device, which is convenient to make abstraction of the actual device
+ * size. Finally, the current local coordinate system may be different from the
+ * logical coordinate system because of a world transformation. Initially, the
+ * local coordinate system coincides with the logical coordinate system, which
+ * coincides with the device coordinate system.
  * <p>
- * By setting a {@link WPainter#getViewPort()} and a
- * {@link WPainter#getWindow()}, a viewPort transformation is defined which maps
- * logical coordinates onto device coordinates. By changing the world
- * transformation (using
- * {@link WPainter#setWorldTransform(WTransform matrix, boolean combine)}, or
- * {@link WPainter#translate(WPointF p)}, {@link WPainter#rotate(double angle)},
- * {@link WPainter#scale(double sx, double sy)} operations), it is defined how
- * current local coordinates map onto logical coordinates.
+ * By setting a {@link WPainter#getViewPort() getViewPort() } and a
+ * {@link WPainter#getWindow() getWindow() }, a viewPort transformation is
+ * defined which maps logical coordinates onto device coordinates. By changing
+ * the world transformation (using
+ * {@link WPainter#setWorldTransform(WTransform matrix, boolean combine)
+ * setWorldTransform() }, or {@link WPainter#translate(WPointF p) translate() },
+ * {@link WPainter#rotate(double angle) rotate() },
+ * {@link WPainter#scale(double sx, double sy) scale() } operations), it is
+ * defined how current local coordinates map onto logical coordinates.
  * <p>
  * Although the painter has support for clipping using an arbitrary
  * {@link WPainterPath path}, not all devices support clipping.
@@ -83,7 +84,7 @@ public class WPainter {
 	 * Default constructor.
 	 * <p>
 	 * Before painting, you must invoke
-	 * {@link WPainter#begin(WPaintDevice device)} on a paint device.
+	 * {@link WPainter#begin(WPaintDevice device) begin() } on a paint device.
 	 * <p>
 	 * 
 	 * @see WPainter#WPainter(WPaintDevice device)
@@ -797,8 +798,8 @@ public class WPainter {
 	 * Draw text using inside the rectangle, using the current font. The text is
 	 * aligned inside the rectangle following alignment indications given in
 	 * <i>flags</i>. The text is drawn using the current transformation, pen
-	 * color ({@link WPainter#getPen()}) and font settings (
-	 * {@link WPainter#getFont()}).
+	 * color ({@link WPainter#getPen() getPen() }) and font settings (
+	 * {@link WPainter#getFont() getFont() }).
 	 * <p>
 	 * Flags is the logical OR of a horizontal and vertical alignment.
 	 * Horizontal alignment may be one of AlignLeft, AlignCenter, or AlignRight.
@@ -833,8 +834,8 @@ public class WPainter {
 	/**
 	 * Fill a (complex) path.
 	 * <p>
-	 * Like {@link WPainter#drawPath(WPainterPath path)}, but does not stroke
-	 * the path, and fills the path with the given <i>brush</i>.
+	 * Like {@link WPainter#drawPath(WPainterPath path) drawPath() }, but does
+	 * not stroke the path, and fills the path with the given <i>brush</i>.
 	 * <p>
 	 * 
 	 * @see WPainter#drawPath(WPainterPath path)
@@ -853,8 +854,8 @@ public class WPainter {
 	/**
 	 * Fill a rectangle.
 	 * <p>
-	 * Like {@link WPainter#drawRect(WRectF rectangle)}, but does not stroke the
-	 * rect, and fills the rect with the given <i>brush</i>.
+	 * Like {@link WPainter#drawRect(WRectF rectangle) drawRect() }, but does
+	 * not stroke the rect, and fills the rect with the given <i>brush</i>.
 	 * <p>
 	 * 
 	 * @see WPainter#drawRect(WRectF rectangle)
@@ -885,8 +886,8 @@ public class WPainter {
 	/**
 	 * Stroke a path.
 	 * <p>
-	 * Like {@link WPainter#drawPath(WPainterPath path)}, but does not fill the
-	 * path, and strokes the path with the given <i>pen</i>.
+	 * Like {@link WPainter#drawPath(WPainterPath path) drawPath() }, but does
+	 * not fill the path, and strokes the path with the given <i>pen</i>.
 	 * <p>
 	 * 
 	 * @see WPainter#drawPath(WPainterPath path)
@@ -994,7 +995,8 @@ public class WPainter {
 	 * Enable or disable clipping.
 	 * <p>
 	 * Enables are disables clipping for subsequent operations using the current
-	 * clip path set using {@link WPainter#setClipPath(WPainterPath clipPath)}.
+	 * clip path set using {@link WPainter#setClipPath(WPainterPath clipPath)
+	 * setClipPath() }.
 	 * <p>
 	 * <i>Note: Clipping is not supported for the VML renderer.</i>
 	 * <p>
@@ -1028,13 +1030,13 @@ public class WPainter {
 	 * <p>
 	 * Sets the path that is used for clipping subsequent drawing operations.
 	 * The clip path is only used when clipping is enabled using
-	 * {@link WPainter#setClipping(boolean enable)}. The path is specified in
-	 * local coordinates.
+	 * {@link WPainter#setClipping(boolean enable) setClipping() }. The path is
+	 * specified in local coordinates.
 	 * <p>
 	 * <i>Note: Only clipping with a rectangle is supported for the VML renderer
-	 * (see {@link WPainterPath#addRect(WRectF rectangle)}). The rectangle must,
-	 * after applying the combined transformation system, be aligned with the
-	 * window.</i>
+	 * (see {@link WPainterPath#addRect(WRectF rectangle) WPainterPath#addRect()
+	 * }). The rectangle must, after applying the combined transformation
+	 * system, be aligned with the window.</i>
 	 * <p>
 	 * 
 	 * @see WPainter#getClipPath()
@@ -1187,14 +1189,14 @@ public class WPainter {
 	 * <p>
 	 * A copy of the current state is saved on a stack. This state will may
 	 * later be restored by popping this state from the stack using
-	 * {@link WPainter#restore()}.
+	 * {@link WPainter#restore() restore() }.
 	 * <p>
 	 * The state that is saved is the current {@link WPainter#setPen(WPen p)
 	 * pen}, {@link WPainter#setBrush(WBrush b) brush},
 	 * {@link WPainter#setFont(WFont f) font},
 	 * {@link WPainter#getWorldTransform() transformation} and clipping settings
-	 * (see {@link WPainter#setClipping(boolean enable)} and
-	 * {@link WPainter#setClipPath(WPainterPath clipPath)}).
+	 * (see {@link WPainter#setClipping(boolean enable) setClipping() } and
+	 * {@link WPainter#setClipPath(WPainterPath clipPath) setClipPath() }).
 	 * <p>
 	 * 
 	 * @see WPainter#restore()

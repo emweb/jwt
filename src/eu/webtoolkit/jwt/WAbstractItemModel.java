@@ -43,61 +43,62 @@ import eu.webtoolkit.jwt.utils.StringUtils;
  * <p>
  * To implement a custom model, you need to reimplement the following methods:
  * <ul>
- * <li>{@link WAbstractItemModel#getIndex(int row, int column, WModelIndex parent)}
- * and {@link WAbstractItemModel#getParent(WModelIndex index)} methods that
- * allow one to navigate the model</li>
- * <li>{@link WAbstractItemModel#getColumnCount(WModelIndex parent)} and
- * {@link WAbstractItemModel#getRowCount(WModelIndex parent)} to specify the top
- * level geometry and the nested geometry at every item</li>
- * <li>{@link WAbstractItemModel#getData(WModelIndex index, int role)} to return
- * the data for an item</li>
+ * <li>{@link WAbstractItemModel#getIndex(int row, int column, WModelIndex parent)
+ * getIndex() } and {@link WAbstractItemModel#getParent(WModelIndex index)
+ * getParent() } methods that allow one to navigate the model</li>
+ * <li>{@link WAbstractItemModel#getColumnCount(WModelIndex parent)
+ * getColumnCount() } and
+ * {@link WAbstractItemModel#getRowCount(WModelIndex parent) getRowCount() } to
+ * specify the top level geometry and the nested geometry at every item</li>
+ * <li>{@link WAbstractItemModel#getData(WModelIndex index, int role) getData()
+ * } to return the data for an item</li>
  * <li>optionally,
- * {@link WAbstractItemModel#getHeaderData(int section, Orientation orientation, int role)}
- * to return row and column header data</li>
- * <li>optionally, {@link WAbstractItemModel#getFlags(WModelIndex index)} to
- * indicate data options</li>
+ * {@link WAbstractItemModel#getHeaderData(int section, Orientation orientation, int role)
+ * getHeaderData() } to return row and column header data</li>
+ * <li>optionally, {@link WAbstractItemModel#getFlags(WModelIndex index)
+ * getFlags() } to indicate data options</li>
  * </ul>
  * <p>
  * A crucial point in implementing a hierarchical model is to decide how to
  * reference an index in terms of an internal pointer (
- * {@link WModelIndex#getInternalPointer()}). Other than the top-level index,
- * which is special since it is referenced using an invalid index, every index
- * with children must be identifiable using this object. For example, in the
- * {@link WStandardItemModel}, the internal pointer points to the parent
- * {@link WStandardItem}. For table models, the internal pointer plays no role,
- * since only the toplevel index has children.
+ * {@link WModelIndex#getInternalPointer() getInternalPointer() }). Other than
+ * the top-level index, which is special since it is referenced using an invalid
+ * index, every index with children must be identifiable using this object. For
+ * example, in the {@link WStandardItemModel}, the internal pointer points to
+ * the parent {@link WStandardItem}. For table models, the internal pointer
+ * plays no role, since only the toplevel index has children.
  * <p>
  * If you want to support editing of the model, then you also need to
  * reimplement:
  * <ul>
  * <li>
- * {@link WAbstractItemModel#setData(WModelIndex index, Object value, int role)}
- * </li>
+ * {@link WAbstractItemModel#setData(WModelIndex index, Object value, int role)
+ * setData() }</li>
  * <li>
- * {@link WAbstractItemModel#setHeaderData(int section, Orientation orientation, Object value, int role)}
- * View classes will use the {@link ItemDataRole#EditRole EditRole} to pass an
- * edited value.</li>
+ * {@link WAbstractItemModel#setHeaderData(int section, Orientation orientation, Object value, int role)
+ * setHeaderData() } View classes will use the {@link ItemDataRole#EditRole
+ * EditRole} to pass an edited value.</li>
  * </ul>
  * <p>
  * After data was modified, the model must emit the
- * {@link WAbstractItemModel#dataChanged()} signal.
+ * {@link WAbstractItemModel#dataChanged() dataChanged() } signal.
  * <p>
  * Finally, if you want to support insertion of new data or removal of data
  * (changing the geometry) by any of the view classes, then you need to
  * reimplement the following methods:
  * <ul>
  * <li>
- * {@link WAbstractItemModel#insertRows(int row, int count, WModelIndex parent)}
- * </li>
+ * {@link WAbstractItemModel#insertRows(int row, int count, WModelIndex parent)
+ * insertRows() }</li>
  * <li>
- * {@link WAbstractItemModel#insertColumns(int column, int count, WModelIndex parent)}
- * </li>
+ * {@link WAbstractItemModel#insertColumns(int column, int count, WModelIndex parent)
+ * insertColumns() }</li>
  * <li>
- * {@link WAbstractItemModel#removeRows(int row, int count, WModelIndex parent)}
- * </li>
+ * {@link WAbstractItemModel#removeRows(int row, int count, WModelIndex parent)
+ * removeRows() }</li>
  * <li>
- * {@link WAbstractItemModel#removeColumns(int column, int count, WModelIndex parent)}
- * </li>
+ * {@link WAbstractItemModel#removeColumns(int column, int count, WModelIndex parent)
+ * removeColumns() }</li>
  * </ul>
  * <p>
  * Alternatively, you can provide your own API for changing the model. In either
@@ -222,8 +223,9 @@ public abstract class WAbstractItemModel extends WObject {
 	 * Returns the parent for a model index.
 	 * <p>
 	 * You should use
-	 * {@link WAbstractItemModel#createIndex(int row, int column, Object ptr)}
-	 * to create a model index that corresponds to the parent of a given index.
+	 * {@link WAbstractItemModel#createIndex(int row, int column, Object ptr)
+	 * createIndex() } to create a model index that corresponds to the parent of
+	 * a given index.
 	 * <p>
 	 * 
 	 * @see WAbstractItemModel#getIndex(int row, int column, WModelIndex parent)
@@ -318,9 +320,9 @@ public abstract class WAbstractItemModel extends WObject {
 	 * Returns the child index for the given row and column.
 	 * <p>
 	 * When implementing this method, you can use
-	 * {@link WAbstractItemModel#createIndex(int row, int column, Object ptr)}
-	 * to create an index that corresponds to the item at <i>row</i> and
-	 * <i>column</i> within <i>parent</i>.
+	 * {@link WAbstractItemModel#createIndex(int row, int column, Object ptr)
+	 * createIndex() } to create an index that corresponds to the item at
+	 * <i>row</i> and <i>column</i> within <i>parent</i>.
 	 * <p>
 	 * If the location is invalid (out of bounds at the parent), then an invalid
 	 * index must be returned.
@@ -443,9 +445,9 @@ public abstract class WAbstractItemModel extends WObject {
 	 * <p>
 	 * The default implementation returns false. If you reimplement this method,
 	 * then you must call
-	 * {@link WAbstractItemModel#beginInsertColumns(WModelIndex parent, int first, int last)}
-	 * and {@link WAbstractItemModel#endInsertColumns()} before and after the
-	 * operation.
+	 * {@link WAbstractItemModel#beginInsertColumns(WModelIndex parent, int first, int last)
+	 * beginInsertColumns() } and {@link WAbstractItemModel#endInsertColumns()
+	 * endInsertColumns() } before and after the operation.
 	 * <p>
 	 * 
 	 * @see WAbstractItemModel#insertRows(int row, int count, WModelIndex
@@ -475,9 +477,9 @@ public abstract class WAbstractItemModel extends WObject {
 	 * <p>
 	 * Returns true if the operation was successful. If you reimplement this
 	 * method, then you must call
-	 * {@link WAbstractItemModel#beginInsertRows(WModelIndex parent, int first, int last)}
-	 * and {@link WAbstractItemModel#endInsertRows()} before and after the
-	 * operation.
+	 * {@link WAbstractItemModel#beginInsertRows(WModelIndex parent, int first, int last)
+	 * beginInsertRows() } and {@link WAbstractItemModel#endInsertRows()
+	 * endInsertRows() } before and after the operation.
 	 * <p>
 	 * The default implementation returns false.
 	 * <p>
@@ -511,9 +513,9 @@ public abstract class WAbstractItemModel extends WObject {
 	 * <p>
 	 * The default implementation returns false. If you reimplement this method,
 	 * then you must call
-	 * {@link WAbstractItemModel#beginRemoveColumns(WModelIndex parent, int first, int last)}
-	 * and {@link WAbstractItemModel#endRemoveColumns()} before and after the
-	 * operation.
+	 * {@link WAbstractItemModel#beginRemoveColumns(WModelIndex parent, int first, int last)
+	 * beginRemoveColumns() } and {@link WAbstractItemModel#endRemoveColumns()
+	 * endRemoveColumns() } before and after the operation.
 	 * <p>
 	 * 
 	 * @see WAbstractItemModel#removeRows(int row, int count, WModelIndex
@@ -545,9 +547,9 @@ public abstract class WAbstractItemModel extends WObject {
 	 * <p>
 	 * The default implementation returns false. If you reimplement this method,
 	 * then you must call
-	 * {@link WAbstractItemModel#beginRemoveRows(WModelIndex parent, int first, int last)}
-	 * and {@link WAbstractItemModel#endRemoveRows()} before and after the
-	 * operation.
+	 * {@link WAbstractItemModel#beginRemoveRows(WModelIndex parent, int first, int last)
+	 * beginRemoveRows() } and {@link WAbstractItemModel#endRemoveRows()
+	 * endRemoveRows() } before and after the operation.
 	 * <p>
 	 * 
 	 * @see WAbstractItemModel#removeColumns(int column, int count, WModelIndex
@@ -578,8 +580,8 @@ public abstract class WAbstractItemModel extends WObject {
 	 * Returns true if the operation was successful.
 	 * <p>
 	 * The default implementation returns false. If you reimplement this method,
-	 * you must emit the {@link WAbstractItemModel#dataChanged()} signal after
-	 * data was changed.
+	 * you must emit the {@link WAbstractItemModel#dataChanged() dataChanged() }
+	 * signal after data was changed.
 	 * <p>
 	 * 
 	 * @see WAbstractItemModel#getData(WModelIndex index, int role)
@@ -669,8 +671,9 @@ public abstract class WAbstractItemModel extends WObject {
 	 * Sort the model according to a particular column.
 	 * <p>
 	 * If the model supports sorting, then it should emit the
-	 * {@link WAbstractItemModel#layoutAboutToBeChanged()} signal, rearrange its
-	 * items, and afterwards emit the {@link WAbstractItemModel#layoutChanged()}
+	 * {@link WAbstractItemModel#layoutAboutToBeChanged()
+	 * layoutAboutToBeChanged() } signal, rearrange its items, and afterwards
+	 * emit the {@link WAbstractItemModel#layoutChanged() layoutChanged() }
 	 * signal.
 	 * <p>
 	 * 
@@ -700,7 +703,7 @@ public abstract class WAbstractItemModel extends WObject {
 	 * The default implementation returns 0, which indicates that the index
 	 * cannot be converted to a raw pointer. If you reimplement this method, you
 	 * also need to reimplemnt
-	 * {@link WAbstractItemModel#fromRawIndex(Object rawIndex)}.
+	 * {@link WAbstractItemModel#fromRawIndex(Object rawIndex) fromRawIndex() }.
 	 * <p>
 	 * 
 	 * @see WAbstractItemModel#layoutAboutToBeChanged()
@@ -716,7 +719,7 @@ public abstract class WAbstractItemModel extends WObject {
 	 * <p>
 	 * Use this method to create model index from temporary raw pointers. It is
 	 * the reciproce method of
-	 * {@link WAbstractItemModel#toRawIndex(WModelIndex index)}.
+	 * {@link WAbstractItemModel#toRawIndex(WModelIndex index) toRawIndex() }.
 	 * <p>
 	 * You can return an invalid modelindex if the rawIndex no longer points to
 	 * a valid item because of the layout change.
@@ -1140,8 +1143,9 @@ public abstract class WAbstractItemModel extends WObject {
 	 * A layout change reorders the data in the model, but no data is added or
 	 * removed. Model indexes are invalidated by a layout change, but indexes
 	 * may be ported across a layout change by using the
-	 * {@link WAbstractItemModel#toRawIndex(WModelIndex index)} and
-	 * {@link WAbstractItemModel#fromRawIndex(Object rawIndex)} methods.
+	 * {@link WAbstractItemModel#toRawIndex(WModelIndex index) toRawIndex() }
+	 * and {@link WAbstractItemModel#fromRawIndex(Object rawIndex)
+	 * fromRawIndex() } methods.
 	 * <p>
 	 * 
 	 * @see WAbstractItemModel#layoutChanged()
@@ -1178,8 +1182,8 @@ public abstract class WAbstractItemModel extends WObject {
 	 * Informs any attached view that all data in the model was invalidated, and
 	 * the model&apos;s data should be reread.
 	 * <p>
-	 * This causes the {@link WAbstractItemModel#modelReset()} signal to be
-	 * emitted.
+	 * This causes the {@link WAbstractItemModel#modelReset() modelReset() }
+	 * signal to be emitted.
 	 */
 	protected void reset() {
 		this.modelReset_.trigger();
@@ -1204,8 +1208,9 @@ public abstract class WAbstractItemModel extends WObject {
 	 * <p>
 	 * If your model supports insertion of columns, then you should call this
 	 * method before inserting one or more columns, and
-	 * {@link WAbstractItemModel#endInsertColumns()} afterwards. These methods
-	 * emit the necessary signals to allow view classes to update themselves.
+	 * {@link WAbstractItemModel#endInsertColumns() endInsertColumns() }
+	 * afterwards. These methods emit the necessary signals to allow view
+	 * classes to update themselves.
 	 * <p>
 	 * 
 	 * @see WAbstractItemModel#endInsertColumns()
@@ -1225,8 +1230,9 @@ public abstract class WAbstractItemModel extends WObject {
 	 * <p>
 	 * If your model supports insertion of rows, then you should call this
 	 * method before inserting one or more rows, and
-	 * {@link WAbstractItemModel#endInsertRows()} afterwards. These methods emit
-	 * the necessary signals to allow view classes to update themselves.
+	 * {@link WAbstractItemModel#endInsertRows() endInsertRows() } afterwards.
+	 * These methods emit the necessary signals to allow view classes to update
+	 * themselves.
 	 * <p>
 	 * 
 	 * @see WAbstractItemModel#endInsertRows()
@@ -1246,8 +1252,9 @@ public abstract class WAbstractItemModel extends WObject {
 	 * <p>
 	 * If your model supports removal of columns, then you should call this
 	 * method before removing one or more columns, and
-	 * {@link WAbstractItemModel#endRemoveColumns()} afterwards. These methods
-	 * emit the necessary signals to allow view classes to update themselves.
+	 * {@link WAbstractItemModel#endRemoveColumns() endRemoveColumns() }
+	 * afterwards. These methods emit the necessary signals to allow view
+	 * classes to update themselves.
 	 * <p>
 	 * 
 	 * @see WAbstractItemModel#endRemoveColumns()
@@ -1267,8 +1274,9 @@ public abstract class WAbstractItemModel extends WObject {
 	 * <p>
 	 * If your model supports removal of rows, then you should call this method
 	 * before removing one or more rows, and
-	 * {@link WAbstractItemModel#endRemoveRows()} afterwards. These methods emit
-	 * the necessary signals to allow view classes to update themselves.
+	 * {@link WAbstractItemModel#endRemoveRows() endRemoveRows() } afterwards.
+	 * These methods emit the necessary signals to allow view classes to update
+	 * themselves.
 	 * <p>
 	 * 
 	 * @see WAbstractItemModel#endRemoveRows()

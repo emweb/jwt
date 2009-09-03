@@ -39,19 +39,20 @@ import eu.webtoolkit.jwt.utils.StringUtils;
  * <p>
  * After contruction, the first entry will be selected. At any time, it is
  * possible to select a particular item using
- * {@link WMenu#select(WMenuItem item)}.
+ * {@link WMenu#select(WMenuItem item) select() }.
  * <p>
  * The WMenu implementation offers fine-grained control on how contents should
  * be preloaded. By default, all contents is lazy-loaded, only when needed. To
  * improve response time, an item may also be preloaded (using
- * {@link WMenu#addItem(CharSequence name, WWidget contents, WMenuItem.LoadPolicy policy)}
- * ). In that case, the item will be loaded in the background, before its first
- * use. In any case, once the contents corresponding to a menu item is loaded,
- * subsequent navigation to it is handled entirely client-side.
+ * {@link WMenu#addItem(CharSequence name, WWidget contents, WMenuItem.LoadPolicy policy)
+ * addItem() }). In that case, the item will be loaded in the background, before
+ * its first use. In any case, once the contents corresponding to a menu item is
+ * loaded, subsequent navigation to it is handled entirely client-side.
  * <p>
  * The WMenu may participate in the application&apos;s internal path, which lets
  * menu items correspond to internal URLs, see
- * {@link WMenu#setInternalPathEnabled(String basePath)}.
+ * {@link WMenu#setInternalPathEnabled(String basePath) setInternalPathEnabled()
+ * }.
  * <p>
  * The layout of the menu may be Horizontal or Vertical. The look of the items
  * may be defined through style sheets. The default {@link WMenuItem}
@@ -284,8 +285,8 @@ public class WMenu extends WCompositeWidget {
 	 * Signal which indicates that a new item was selected.
 	 * <p>
 	 * This signal is emitted when an item was selected. It is emitted both when
-	 * the user activated an item, or when {@link WMenu#select(WMenuItem item)}
-	 * was invoked.
+	 * the user activated an item, or when {@link WMenu#select(WMenuItem item)
+	 * select() } was invoked.
 	 * <p>
 	 * 
 	 * @see WMenu#itemSelectRendered()
@@ -397,12 +398,13 @@ public class WMenu extends WCompositeWidget {
 	 * navigate through history of visited menu items, and allows indexing of
 	 * pages.
 	 * <p>
-	 * For each menu item, {@link WMenuItem#getPathComponent()} is appended to
-	 * the internal base path ({@link WMenu#getInternalBasePath()}), which
-	 * defaults to the internal path ({@link WApplication#getInternalPath()})
-	 * but may be changed using
-	 * {@link WMenu#setInternalBasePath(String basePath)}, with a &apos;/&apos;
-	 * appended to turn it into a folder, if needed.
+	 * For each menu item, {@link WMenuItem#getPathComponent()
+	 * WMenuItem#getPathComponent() } is appended to the internal base path (
+	 * {@link WMenu#getInternalBasePath() getInternalBasePath() }), which
+	 * defaults to the internal path ({@link WApplication#getInternalPath()
+	 * WApplication#getInternalPath() }) but may be changed using
+	 * {@link WMenu#setInternalBasePath(String basePath) setInternalBasePath() }
+	 * , with a &apos;/&apos; appended to turn it into a folder, if needed.
 	 * <p>
 	 * By default, menu interaction does not change the application internal
 	 * path.
@@ -472,15 +474,17 @@ public class WMenu extends WCompositeWidget {
 	 * Returns the internal base path.
 	 * <p>
 	 * The default value is the application&apos;s internalPath (
-	 * {@link WApplication#getInternalPath()}) that was recorded when
-	 * {@link WMenu#setInternalPathEnabled(String basePath)} was called, and
-	 * together with each {@link WMenuItem#getPathComponent()} determines the
-	 * paths for each item.
+	 * {@link WApplication#getInternalPath() WApplication#getInternalPath() })
+	 * that was recorded when
+	 * {@link WMenu#setInternalPathEnabled(String basePath)
+	 * setInternalPathEnabled() } was called, and together with each
+	 * {@link WMenuItem#getPathComponent() WMenuItem#getPathComponent() }
+	 * determines the paths for each item.
 	 * <p>
-	 * For example, if {@link WMenu#getInternalBasePath()} is
-	 * <code>&quot;/examples/&quot;</code> and pathComponent() for a particular
-	 * item is <code>&quot;charts/&quot;</code>, then the internal path for that
-	 * item will be <code>&quot;/examples/charts/&quot;</code>.
+	 * For example, if {@link WMenu#getInternalBasePath() getInternalBasePath()
+	 * } is <code>&quot;/examples/&quot;</code> and pathComponent() for a
+	 * particular item is <code>&quot;charts/&quot;</code>, then the internal
+	 * path for that item will be <code>&quot;/examples/charts/&quot;</code>.
 	 * <p>
 	 * 
 	 * @see WMenu#setInternalPathEnabled(String basePath)

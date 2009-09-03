@@ -14,10 +14,10 @@ package eu.webtoolkit.jwt;
  * one-dimensional lists (i.e. a model with 1 column and no children).
  * <p>
  * It cannot be used directly but must be subclassed. Subclassed models must at
- * least reimplement {@link WAbstractItemModel#getRowCount(WModelIndex parent)}
- * to return the number of rows, and
- * {@link WAbstractItemModel#getData(WModelIndex index, int role)} to return
- * data.
+ * least reimplement {@link WAbstractItemModel#getRowCount(WModelIndex parent)
+ * getRowCount() } to return the number of rows, and
+ * {@link WAbstractItemModel#getData(WModelIndex index, int role) getData() } to
+ * return data.
  */
 public abstract class WAbstractListModel extends WAbstractItemModel {
 	/**

@@ -13,9 +13,10 @@ import eu.webtoolkit.jwt.utils.EnumUtils;
  * <p>
  * 
  * You can manipulate the decoration style of a single widget using
- * {@link WWidget#getDecorationStyle()} or you can use a
+ * {@link WWidget#getDecorationStyle() getDecorationStyle() } or you can use a
  * {@link WCssDecorationStyle} to add a rule to the inline style sheet using
- * {@link WCssStyleSheet#addRule(String selector, WCssDecorationStyle style, String ruleName)}.
+ * {@link WCssStyleSheet#addRule(String selector, WCssDecorationStyle style, String ruleName)
+ * addRule() }.
  */
 public class WCssDecorationStyle {
 	/**

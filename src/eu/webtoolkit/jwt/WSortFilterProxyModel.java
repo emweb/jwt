@@ -28,30 +28,34 @@ import eu.webtoolkit.jwt.utils.StringUtils;
  * sorting of the source model data, without actually altering the source model.
  * This may be convenient when the source model does not support sorting (i.e.
  * does not reimplement
- * {@link WAbstractItemModel#sort(int column, SortOrder order)}), or you do not
- * want to reorder the underlying model since that affects all views on the
- * model.
+ * {@link WAbstractItemModel#sort(int column, SortOrder order) sort() }), or you
+ * do not want to reorder the underlying model since that affects all views on
+ * the model.
  * <p>
  * To use the proxy model to filter data, you use the methods
- * {@link WSortFilterProxyModel#setFilterKeyColumn(int column)},
- * {@link WSortFilterProxyModel#setFilterRegExp(String pattern)} and
- * {@link WSortFilterProxyModel#setFilterRole(int role)} to specify a filtering
- * operation based on the values of a single column. If this filtering mechanism
- * is too limiting, you can provide specialized filtering by reimplementing the
- * {@link WSortFilterProxyModel#filterAcceptRow(int sourceRow, WModelIndex sourceParent)}
- * method.
+ * {@link WSortFilterProxyModel#setFilterKeyColumn(int column)
+ * setFilterKeyColumn() },
+ * {@link WSortFilterProxyModel#setFilterRegExp(String pattern)
+ * setFilterRegExp() } and {@link WSortFilterProxyModel#setFilterRole(int role)
+ * setFilterRole() } to specify a filtering operation based on the values of a
+ * single column. If this filtering mechanism is too limiting, you can provide
+ * specialized filtering by reimplementing the
+ * {@link WSortFilterProxyModel#filterAcceptRow(int sourceRow, WModelIndex sourceParent)
+ * filterAcceptRow() } method.
  * <p>
  * Sorting is provided by reimplementing the standard
- * {@link WAbstractItemModel#sort(int column, SortOrder order)} method. In this
- * way, a view class such as {@link WTreeView} may resort the model as indicated
- * by the user. Use {@link WSortFilterProxyModel#setSortRole(int role)} to
- * indicate on what data role sorting should be done, or reimplement the
- * {@link WSortFilterProxyModel#lessThan(WModelIndex lhs, WModelIndex rhs)}
- * method to provide a specialized sorting method.
+ * {@link WAbstractItemModel#sort(int column, SortOrder order) sort() } method.
+ * In this way, a view class such as {@link WTreeView} may resort the model as
+ * indicated by the user. Use {@link WSortFilterProxyModel#setSortRole(int role)
+ * setSortRole() } to indicate on what data role sorting should be done, or
+ * reimplement the
+ * {@link WSortFilterProxyModel#lessThan(WModelIndex lhs, WModelIndex rhs)
+ * lessThan() } method to provide a specialized sorting method.
  * <p>
  * By default, the proxy does not automatically re-filter and re-sort when the
  * original model changes. You can enable this behaviour using
- * {@link WSortFilterProxyModel#setDynamicSortFilter(boolean enable)}.
+ * {@link WSortFilterProxyModel#setDynamicSortFilter(boolean enable)
+ * setDynamicSortFilter() }.
  * <p>
  * Usage example:
  * <p>
@@ -261,7 +265,8 @@ public class WSortFilterProxyModel extends WAbstractProxyModel {
 	 * Specify the column on which the filtering is applied.
 	 * <p>
 	 * This configures the column on which the
-	 * {@link WSortFilterProxyModel#getFilterRegExp()} is applied.
+	 * {@link WSortFilterProxyModel#getFilterRegExp() getFilterRegExp() } is
+	 * applied.
 	 * <p>
 	 * The default value is 0.
 	 * <p>
@@ -287,7 +292,7 @@ public class WSortFilterProxyModel extends WAbstractProxyModel {
 	 * Specify a regular expression for filtering.
 	 * <p>
 	 * This configures the regular expression used for filtering on
-	 * {@link WSortFilterProxyModel#getFilterKeyColumn()}.
+	 * {@link WSortFilterProxyModel#getFilterKeyColumn() getFilterKeyColumn() }.
 	 * <p>
 	 * The default value is an empty expression, which disables filtering.
 	 * <p>
@@ -322,7 +327,7 @@ public class WSortFilterProxyModel extends WAbstractProxyModel {
 	 * Specify the data role used for filtering.
 	 * <p>
 	 * This configures the data role used for filtering on
-	 * {@link WSortFilterProxyModel#getFilterKeyColumn()}.
+	 * {@link WSortFilterProxyModel#getFilterKeyColumn() getFilterKeyColumn() }.
 	 * <p>
 	 * The default value is {@link ItemDataRole#DisplayRole DisplayRole}.
 	 * <p>
@@ -435,9 +440,9 @@ public class WSortFilterProxyModel extends WAbstractProxyModel {
 	 * Returns whether a source row is accepted by the filter.
 	 * <p>
 	 * The default implementation uses
-	 * {@link WSortFilterProxyModel#getFilterKeyColumn()},
-	 * {@link WSortFilterProxyModel#getFilterRole()} and
-	 * {@link WSortFilterProxyModel#getFilterRegExp()}.
+	 * {@link WSortFilterProxyModel#getFilterKeyColumn() getFilterKeyColumn() },
+	 * {@link WSortFilterProxyModel#getFilterRole() getFilterRole() } and
+	 * {@link WSortFilterProxyModel#getFilterRegExp() getFilterRegExp() }.
 	 * <p>
 	 * You may want to reimplement this method to provide specialized filtering.
 	 */
@@ -457,9 +462,9 @@ public class WSortFilterProxyModel extends WAbstractProxyModel {
 	 * Compares two indexes.
 	 * <p>
 	 * The default implementation uses
-	 * {@link WSortFilterProxyModel#getSortRole()} and an order operator that
-	 * tries to use the operator&lt; when the data is of the same type, or
-	 * lexicographical ordering otherwise.
+	 * {@link WSortFilterProxyModel#getSortRole() getSortRole() } and an order
+	 * operator that tries to use the operator&lt; when the data is of the same
+	 * type, or lexicographical ordering otherwise.
 	 * <p>
 	 * You may want to reimplement this method to provide specialized sorting.
 	 */

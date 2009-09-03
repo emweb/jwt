@@ -12,11 +12,12 @@ import java.util.List;
  * A row in a {@link WTable}
  * <p>
  * 
- * A WTableRow is returned by {@link WTable#getRowAt(int row)} and managing
- * various properties of a single row in a table (it is however not a widget).
+ * A WTableRow is returned by {@link WTable#getRowAt(int row) getRowAt() } and
+ * managing various properties of a single row in a table (it is however not a
+ * widget).
  * <p>
  * You cannot access table cells through the row. Instead, to access table
- * cells, see {@link WTable#getElementAt(int row, int column)}.
+ * cells, see {@link WTable#getElementAt(int row, int column) getElementAt() }.
  * <p>
  * A table row corresponds to the HTML <code>&lt;tr&gt;</code> tag.
  * <p>

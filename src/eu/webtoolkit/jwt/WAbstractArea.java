@@ -76,14 +76,14 @@ public class WAbstractArea extends WObject {
 	 * <p>
 	 * This method should not be used when the area has been pointed to a
 	 * dynamically generated resource using
-	 * {@link WAbstractArea#setResource(WResource resource)}.
+	 * {@link WAbstractArea#setResource(WResource resource) setResource() }.
 	 * <p>
 	 * 
 	 * @see WAbstractArea#setResource(WResource resource) <p>
 	 *      <i><b>Note:</b>Even when no destination URL is set, in some
 	 *      circumstances, a identity URL (&apos;#&apos;) will be set on the
 	 *      underlying HTML &lt;area&gt; element (see also
-	 *      {@link WAbstractArea#setCursor(Cursor cursor)}). </i>
+	 *      {@link WAbstractArea#setCursor(Cursor cursor) setCursor() }). </i>
 	 *      </p>
 	 */
 	public void setRef(String ref) {
@@ -156,8 +156,8 @@ public class WAbstractArea extends WObject {
 	 * Specify the location where the referred content should be displayed.
 	 * <p>
 	 * This configures the location where referred content should be displayed,
-	 * that was specified using {@link WAbstractArea#setRef(String ref)} or
-	 * {@link WAbstractArea#setResource(WResource resource)}.
+	 * that was specified using {@link WAbstractArea#setRef(String ref) setRef()
+	 * } or {@link WAbstractArea#setResource(WResource resource) setResource() }.
 	 * <p>
 	 * By default, the reference is displayed in the application (
 	 * {@link AnchorTarget#TargetSelf}). When the destination is an HTML
@@ -201,9 +201,9 @@ public class WAbstractArea extends WObject {
 	 * display an image. If no sensible fallback text can be provided, an empty
 	 * text is preferred over nonsense.
 	 * <p>
-	 * This should not be confused with {@link WAbstractArea#getToolTip()} text,
-	 * which provides additional information that is displayed when the mouse
-	 * hovers over the area.
+	 * This should not be confused with {@link WAbstractArea#getToolTip()
+	 * getToolTip() } text, which provides additional information that is
+	 * displayed when the mouse hovers over the area.
 	 * <p>
 	 * The default alternate text is an empty text (&quot;&quot;).
 	 * <p>
@@ -302,10 +302,11 @@ public class WAbstractArea extends WObject {
 	 * Event signal emitted when a keyboard key is pushed down.
 	 * <p>
 	 * The keyWentDown signal is the first signal emitted when a key is pressed
-	 * (before the {@link WAbstractArea#keyPressed()} signal). Unlike
-	 * {@link WAbstractArea#keyPressed()} however it is also emitted for
-	 * modifier keys (such as &quot;shift&quot;, &quot;control&quot;, ...) or
-	 * keyboard navigation keys that do not have a corresponding character.
+	 * (before the {@link WAbstractArea#keyPressed() keyPressed() } signal).
+	 * Unlike {@link WAbstractArea#keyPressed() keyPressed() } however it is
+	 * also emitted for modifier keys (such as &quot;shift&quot;,
+	 * &quot;control&quot;, ...) or keyboard navigation keys that do not have a
+	 * corresponding character.
 	 * <p>
 	 * 
 	 * @see WAbstractArea#keyPressed()
@@ -319,9 +320,9 @@ public class WAbstractArea extends WObject {
 	 * Event signal emitted when a &quot;character&quot; was entered.
 	 * <p>
 	 * The keyPressed signal is emitted when a key is pressed, and a character
-	 * is entered. Unlike {@link WAbstractArea#keyWentDown()}, it is emitted
-	 * only for key presses that result in a character being entered, and thus
-	 * not for modifier keys or keyboard navigation keys.
+	 * is entered. Unlike {@link WAbstractArea#keyWentDown() keyWentDown() }, it
+	 * is emitted only for key presses that result in a character being entered,
+	 * and thus not for modifier keys or keyboard navigation keys.
 	 * <p>
 	 * 
 	 * @see WAbstractArea#keyWentDown()
@@ -333,8 +334,8 @@ public class WAbstractArea extends WObject {
 	/**
 	 * Event signal emitted when a keyboard key is released.
 	 * <p>
-	 * This is the counter-part of the {@link WAbstractArea#keyWentDown()}
-	 * event. Every key-down has its corresponding key-up.
+	 * This is the counter-part of the {@link WAbstractArea#keyWentDown()
+	 * keyWentDown() } event. Every key-down has its corresponding key-up.
 	 * <p>
 	 * 
 	 * @see WAbstractArea#keyWentDown()

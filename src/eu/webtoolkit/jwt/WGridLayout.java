@@ -20,7 +20,8 @@ import java.util.List;
  * dived according to stretch factors among the columns/rows. The minimum width
  * of a column/row is based on the minimum dimensions of contained widgets or
  * nested layouts. The default minimum height and width may be overridden using
- * {@link WWidget#setMinimumSize(WLength width, WLength height)}.
+ * {@link WWidget#setMinimumSize(WLength width, WLength height) setMinimumSize()
+ * }.
  * <p>
  * You can use WContainerWidget::setOverflow(OverflowAuto) to automatically show
  * scrollbars on a container widget which you have set for a grid cell. In some
@@ -30,15 +31,17 @@ import java.util.List;
  * <p>
  * Columns and rows are separated using a constant spacing, which defaults to 6
  * pixels by default, and can be changed using
- * {@link WGridLayout#setHorizontalSpacing(int size)} and
- * {@link WGridLayout#setVerticalSpacing(int size)}. In addition, when this
- * layout is a top-level layout (i.e. is not nested inside another layout), a
- * margin is set around the contents, which thus replaces padding defined for
- * the container. It is not allowed to define padding for the container widget
- * using its CSS &apos;padding&apos; property or the
- * {@link WContainerWidget#setPadding(WLength length, EnumSet sides)}. This
- * margin also defaults to 9 pixels, and can be changed using
- * {@link WLayout#setContentsMargins(int left, int top, int right, int bottom)}.
+ * {@link WGridLayout#setHorizontalSpacing(int size) setHorizontalSpacing() }
+ * and {@link WGridLayout#setVerticalSpacing(int size) setVerticalSpacing() }.
+ * In addition, when this layout is a top-level layout (i.e. is not nested
+ * inside another layout), a margin is set around the contents, which thus
+ * replaces padding defined for the container. It is not allowed to define
+ * padding for the container widget using its CSS &apos;padding&apos; property
+ * or the {@link WContainerWidget#setPadding(WLength length, EnumSet sides)
+ * setPadding() }. This margin also defaults to 9 pixels, and can be changed
+ * using
+ * {@link WLayout#setContentsMargins(int left, int top, int right, int bottom)
+ * setContentsMargins() }.
  * <p>
  * For each column or row, a stretch factor may be defined, which controls how
  * remaining horizontal or vertical space is used. Each column and row is
@@ -72,8 +75,8 @@ import java.util.List;
  * their minimum size.
  * <p>
  * When set on a {@link WContainerWidget}, this layout manager accepts the
- * following hints (see {@link WLayout#setLayoutHint(String name, String value)}
- * ):
+ * following hints (see {@link WLayout#setLayoutHint(String name, String value)
+ * setLayoutHint() }):
  * <ul>
  * <li>
  * &quot;table-layout&quot; with possible values &quot;auto&quot; (default) or
@@ -86,9 +89,10 @@ import java.util.List;
  * </p>
  * <p>
  * <i><b>Warning:</b>You should specify AlignTop in the alignment flags of
- * {@link WContainerWidget#setLayout(WLayout layout)} if the container does not
- * have a height that is constrained somehow. Otherwise the behavior is
- * undefined (the parent container will continue to increase in size) </i>
+ * {@link WContainerWidget#setLayout(WLayout layout) setLayout() } if the
+ * container does not have a height that is constrained somehow. Otherwise the
+ * behavior is undefined (the parent container will continue to increase in
+ * size) </i>
  * </p>
  */
 public class WGridLayout extends WLayout {

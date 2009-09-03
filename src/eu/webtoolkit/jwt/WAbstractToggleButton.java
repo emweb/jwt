@@ -18,12 +18,12 @@ import java.util.Map;
  * unchecked), and a text label.
  * <p>
  * To act on a change of the state, either connect a slot to the
- * {@link WFormWidget#changed()} signal, or connect a slot to the
- * {@link WAbstractToggleButton#checked()} or
- * {@link WAbstractToggleButton#unChecked()} signals.
+ * {@link WFormWidget#changed() changed() } signal, or connect a slot to the
+ * {@link WAbstractToggleButton#checked() checked() } or
+ * {@link WAbstractToggleButton#unChecked() unChecked() } signals.
  * <p>
  * The current state (checked or unchecked) may be inspected using the
- * {@link WAbstractToggleButton#isChecked()} method.
+ * {@link WAbstractToggleButton#isChecked() isChecked() } method.
  */
 public class WAbstractToggleButton extends WFormWidget {
 	/**
@@ -112,8 +112,8 @@ public class WAbstractToggleButton extends WFormWidget {
 	/**
 	 * Change the state of the button.
 	 * <p>
-	 * Does not emit one of the {@link WAbstractToggleButton#checked()} or
-	 * {@link WAbstractToggleButton#unChecked()} signals.
+	 * Does not emit one of the {@link WAbstractToggleButton#checked() checked()
+	 * } or {@link WAbstractToggleButton#unChecked() unChecked() } signals.
 	 * <p>
 	 * 
 	 * @see WAbstractToggleButton#setChecked()
@@ -126,7 +126,8 @@ public class WAbstractToggleButton extends WFormWidget {
 	/**
 	 * Set the button checked.
 	 * <p>
-	 * Does not emit the {@link WAbstractToggleButton#checked()} signal.
+	 * Does not emit the {@link WAbstractToggleButton#checked() checked() }
+	 * signal.
 	 * <p>
 	 * 
 	 * @see WAbstractToggleButton#setChecked(boolean how)
@@ -139,7 +140,8 @@ public class WAbstractToggleButton extends WFormWidget {
 	/**
 	 * Set the button unChecked.
 	 * <p>
-	 * Does not emit the {@link WAbstractToggleButton#unChecked()} signal.
+	 * Does not emit the {@link WAbstractToggleButton#unChecked() unChecked() }
+	 * signal.
 	 * <p>
 	 * 
 	 * @see WAbstractToggleButton#setChecked(boolean how)

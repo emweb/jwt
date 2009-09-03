@@ -14,10 +14,11 @@ import eu.webtoolkit.jwt.utils.EnumUtils;
  * <p>
  * 
  * Composite widgets, built on top of the WebWidgets, should derive from this
- * class, and use {@link WCompositeWidget#setImplementation(WWidget widget)} to
- * set the widget that implements the composite widget (which is typically a
- * {@link WContainerWidget} or a {@link WTable}, or another widget that allows
- * composition, including perhaps another WCompositeWidget).
+ * class, and use {@link WCompositeWidget#setImplementation(WWidget widget)
+ * setImplementation() } to set the widget that implements the composite widget
+ * (which is typically a {@link WContainerWidget} or a {@link WTable}, or
+ * another widget that allows composition, including perhaps another
+ * WCompositeWidget).
  * <p>
  * Using this class you can completely hide the implementation of your composite
  * widget, and provide access to only the standard {@link WWidget} methods.
