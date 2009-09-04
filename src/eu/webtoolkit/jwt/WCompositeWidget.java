@@ -200,7 +200,7 @@ public class WCompositeWidget extends WWidget {
 		return this.impl_.getVerticalAlignmentLength();
 	}
 
-	public WWebWidget getWebWidget() {
+	WWebWidget getWebWidget() {
 		return this.impl_ != null ? this.impl_.getWebWidget() : null;
 	}
 
@@ -242,7 +242,7 @@ public class WCompositeWidget extends WWidget {
 		this.impl_.setSelectable(selectable);
 	}
 
-	protected void addChild(WWidget child) {
+	void addChild(WWidget child) {
 		if (child != this.impl_) {
 			this.impl_.addChild(child);
 		} else {
@@ -250,7 +250,7 @@ public class WCompositeWidget extends WWidget {
 		}
 	}
 
-	protected void removeChild(WWidget child) {
+	void removeChild(WWidget child) {
 		if (child != this.impl_) {
 			this.impl_.removeChild(child);
 		} else {
@@ -258,11 +258,11 @@ public class WCompositeWidget extends WWidget {
 		}
 	}
 
-	protected void setHideWithOffsets(boolean how) {
+	void setHideWithOffsets(boolean how) {
 		this.impl_.setHideWithOffsets(how);
 	}
 
-	protected boolean isVisible() {
+	boolean isVisible() {
 		if (this.getParent() != null) {
 			return this.getParent().isVisible();
 		} else {
@@ -270,7 +270,7 @@ public class WCompositeWidget extends WWidget {
 		}
 	}
 
-	protected boolean isStubbed() {
+	boolean isStubbed() {
 		if (this.getParent() != null) {
 			return this.getParent().isStubbed();
 		} else {
@@ -317,14 +317,14 @@ public class WCompositeWidget extends WWidget {
 		return this.impl_.createSDomElement(app);
 	}
 
-	protected void getSDomChanges(List<DomElement> result, WApplication app) {
+	void getSDomChanges(List<DomElement> result, WApplication app) {
 		if (this.needsToBeRendered()) {
 			this.render();
 		}
 		this.impl_.getSDomChanges(result, app);
 	}
 
-	protected boolean needsToBeRendered() {
+	boolean needsToBeRendered() {
 		return this.impl_.needsToBeRendered();
 	}
 

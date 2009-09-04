@@ -36,7 +36,7 @@ class StdWidgetItemImpl extends StdLayoutItemImpl {
 		return this.item_;
 	}
 
-	public void containerAddWidgets(WContainerWidget container) {
+	void containerAddWidgets(WContainerWidget container) {
 		container.addWidget(this.item_.getWidget());
 	}
 

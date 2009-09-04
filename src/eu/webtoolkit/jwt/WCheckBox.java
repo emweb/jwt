@@ -158,7 +158,7 @@ public class WCheckBox extends WAbstractToggleButton {
 	 * Unless it is a tri-state checkbox, only {@link CheckState#Checked} and
 	 * {@link CheckState#Unchecked} are valid states.
 	 */
-	public void setCheckState(CheckState state) {
+	void setCheckState(CheckState state) {
 		super.setCheckState(state);
 	}
 

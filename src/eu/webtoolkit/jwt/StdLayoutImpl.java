@@ -50,7 +50,7 @@ abstract class StdLayoutImpl extends StdLayoutItemImpl {
 		return this.layout_;
 	}
 
-	protected void containerAddWidgets(WContainerWidget container) {
+	void containerAddWidgets(WContainerWidget container) {
 		int c = this.layout_.getCount();
 		for (int i = 0; i < c; ++i) {
 			WLayoutItem item = this.layout_.getItemAt(i);

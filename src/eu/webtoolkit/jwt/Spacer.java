@@ -12,7 +12,7 @@ class Spacer extends WWebWidget {
 		this.setInline(false);
 	}
 
-	protected DomElementType getDomElementType() {
+	DomElementType getDomElementType() {
 		return DomElementType.DomElement_DIV;
 	}
 }

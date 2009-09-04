@@ -58,7 +58,7 @@ class RowSpacer extends WWebWidget {
 		return renderedRow(lowerBound, Integer.MAX_VALUE);
 	}
 
-	protected DomElementType getDomElementType() {
+	DomElementType getDomElementType() {
 		return DomElementType.DomElement_DIV;
 	}
 

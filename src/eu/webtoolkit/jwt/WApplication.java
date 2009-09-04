@@ -37,7 +37,7 @@ import eu.webtoolkit.jwt.utils.StringUtils;
  * 	}
  * 
  * 	public WApplication createApplication(WEnvironment env) {
- * 		// In pracitce, you will specialize WApplication and simply
+ * 		// In practice, you will specialize WApplication and simply
  * 		// return a new instance.
  * 		WApplication app = new WApplication(env);
  * 		app.getRoot().addWidget(new WText(&quot;Hello world.&quot;));

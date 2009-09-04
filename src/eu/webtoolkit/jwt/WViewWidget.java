@@ -152,7 +152,7 @@ public abstract class WViewWidget extends WWebWidget {
 	 * This method must be reimplemented to return a widget that renders the
 	 * view. The returned widget will be deleted by WViewWidget.
 	 */
-	protected void propagateRenderOk(boolean deep) {
+	void propagateRenderOk(boolean deep) {
 		this.needContentsUpdate_ = false;
 		super.propagateRenderOk(deep);
 	}
@@ -163,7 +163,7 @@ public abstract class WViewWidget extends WWebWidget {
 	 * This method must be reimplemented to return a widget that renders the
 	 * view. The returned widget will be deleted by WViewWidget.
 	 */
-	protected DomElementType getDomElementType() {
+	DomElementType getDomElementType() {
 		return this.isInline() ? DomElementType.DomElement_SPAN
 				: DomElementType.DomElement_DIV;
 	}

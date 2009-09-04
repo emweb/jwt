@@ -225,7 +225,7 @@ public class WScrollArea extends WWebWidget {
 		super.updateDom(element, all);
 	}
 
-	protected DomElementType getDomElementType() {
+	DomElementType getDomElementType() {
 		return DomElementType.DomElement_DIV;
 	}
 }

@@ -83,7 +83,7 @@ class WCssTemplateWidget extends WWebWidget {
 		this.rule_.modified();
 	}
 
-	public DomElementType getDomElementType() {
+	DomElementType getDomElementType() {
 		return DomElementType.DomElement_SPAN;
 	}
 

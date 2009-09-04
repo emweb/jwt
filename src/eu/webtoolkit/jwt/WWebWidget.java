@@ -517,7 +517,7 @@ public abstract class WWebWidget extends WWidget {
 		result.add(e);
 	}
 
-	public DomElement createSDomElement(WApplication app) {
+	DomElement createSDomElement(WApplication app) {
 		if (!this.needsToBeRendered()) {
 			this.propagateRenderOk();
 			this.flags_.set(BIT_STUBBED);
@@ -1112,7 +1112,7 @@ public abstract class WWebWidget extends WWidget {
 		return e;
 	}
 
-	protected boolean isVisible() {
+	boolean isVisible() {
 		if (this.flags_.get(BIT_STUBBED) || this.flags_.get(BIT_HIDDEN)) {
 			return false;
 		} else {
@@ -1124,7 +1124,7 @@ public abstract class WWebWidget extends WWidget {
 		}
 	}
 
-	protected boolean isStubbed() {
+	boolean isStubbed() {
 		if (this.flags_.get(BIT_STUBBED)) {
 			return true;
 		} else {
@@ -1152,7 +1152,7 @@ public abstract class WWebWidget extends WWidget {
 		}
 	}
 
-	protected void addChild(WWidget child) {
+	void addChild(WWidget child) {
 		if (child.getParent() != null) {
 			child.setParent((WWidget) null);
 			WApplication.getInstance().log("warn").append(
@@ -1198,7 +1198,7 @@ public abstract class WWebWidget extends WWidget {
 				.updateFormObjects(w.getWebWidget(), true);
 	}
 
-	protected void setHideWithOffsets(boolean how) {
+	void setHideWithOffsets(boolean how) {
 		if (how) {
 			if (!this.flags_.get(BIT_HIDE_WITH_OFFSETS)) {
 				this.flags_.set(BIT_HIDE_WITH_OFFSETS);
@@ -1365,7 +1365,7 @@ public abstract class WWebWidget extends WWidget {
 		this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyAttribute));
 	}
 
-	protected void renderOk() {
+	void renderOk() {
 		super.renderOk();
 		this.flags_.clear(BIT_REPAINT_PROPERTY_IEMOBILE);
 		this.flags_.clear(BIT_REPAINT_PROPERTY_ATTRIBUTE);
@@ -1405,7 +1405,7 @@ public abstract class WWebWidget extends WWidget {
 		}
 	}
 
-	protected boolean needsToBeRendered() {
+	boolean needsToBeRendered() {
 		return this.flags_.get(BIT_DONOT_STUB)
 				|| !this.flags_.get(BIT_HIDDEN)
 				|| !WApplication.getInstance().getSession().getRenderer()

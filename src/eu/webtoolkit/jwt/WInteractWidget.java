@@ -383,7 +383,7 @@ public abstract class WInteractWidget extends WWebWidget {
 		super.updateDom(element, all);
 	}
 
-	protected void propagateRenderOk(boolean deep) {
+	void propagateRenderOk(boolean deep) {
 		LinkedList<AbstractEventSignal> other = this.eventSignals();
 		for (Iterator<AbstractEventSignal> i_it = other.iterator(); i_it
 				.hasNext();) {

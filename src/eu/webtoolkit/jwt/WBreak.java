@@ -33,7 +33,7 @@ public class WBreak extends WWebWidget {
 		this((WContainerWidget) null);
 	}
 
-	protected DomElementType getDomElementType() {
+	DomElementType getDomElementType() {
 		return DomElementType.DomElement_BR;
 	}
 }
