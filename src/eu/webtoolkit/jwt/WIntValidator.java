@@ -162,8 +162,8 @@ public class WIntValidator extends WValidator {
 	/**
 	 * Set message to display when the number is too small.
 	 * <p>
-	 * Depending on whether {@link WIntValidator#getBottom() getBottom() } and
-	 * {@link WIntValidator#getTop() getTop() } are real bounds, the default
+	 * Depending on whether {@link WIntValidator#getBottom() getBottom()} and
+	 * {@link WIntValidator#getTop() getTop()} are real bounds, the default
 	 * message is &quot;The number must be between {1} and {2}&quot; or
 	 * &quot;The number must be larger than {1}&quot;.
 	 */
@@ -202,8 +202,8 @@ public class WIntValidator extends WValidator {
 	/**
 	 * Set message to display when the number is too large.
 	 * <p>
-	 * Depending on whether {@link WIntValidator#getBottom() getBottom() } and
-	 * {@link WIntValidator#getTop() getTop() } are real bounds, the default
+	 * Depending on whether {@link WIntValidator#getBottom() getBottom()} and
+	 * {@link WIntValidator#getTop() getTop()} are real bounds, the default
 	 * message is &quot;The number must be between {1} and {2}&quot; or
 	 * &quot;The number must be smaller than {2}&quot;.
 	 */

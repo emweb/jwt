@@ -16,31 +16,30 @@ import java.util.Set;
  * 
  * By default, a selection box may be used to let the user select one item from
  * a list. This may be changed to multiple selection mode using
- * {@link WSelectionBox#setSelectionMode(SelectionMode mode) setSelectionMode()
- * }.
+ * {@link WSelectionBox#setSelectionMode(SelectionMode mode) setSelectionMode()}.
  * <p>
  * The current selection may be set and read using
- * {@link WComboBox#setCurrentIndex(int index) setCurrentIndex() } and
- * {@link WComboBox#getCurrentIndex() getCurrentIndex() }, for
+ * {@link WComboBox#setCurrentIndex(int index) setCurrentIndex()} and
+ * {@link WComboBox#getCurrentIndex() getCurrentIndex()}, for
  * {@link SelectionMode#SingleSelection SingleSelection} mode, or
- * {@link WSelectionBox#setSelectedIndexes(Set selection) setSelectedIndexes() }
- * and {@link WSelectionBox#getSelectedIndexes() getSelectedIndexes() } for
+ * {@link WSelectionBox#setSelectedIndexes(Set selection) setSelectedIndexes()}
+ * and {@link WSelectionBox#getSelectedIndexes() getSelectedIndexes()} for
  * {@link SelectionMode#ExtendedSelection ExtendedSelection} mode. The
- * {@link WComboBox#activated() activated() } and {@link WComboBox#sactivated()
- * sactivated() } signals are not emited in the ExtendedSelection mode, use the
- * {@link WFormWidget#changed() changed() } signal {@link WFormWidget#changed()
- * changed() }.
+ * {@link WComboBox#activated() activated()} and {@link WComboBox#sactivated()
+ * sactivated()} signals are not emited in the ExtendedSelection mode, use the
+ * {@link WFormWidget#changed() changed()} signal {@link WFormWidget#changed()
+ * changed()}.
  * <p>
  * WSelectionBox is an MVC view class, using a simple string list model by
  * default. The model may be populated using addItem(const {@link WString}&amp;)
- * or {@link WComboBox#insertItem(int index, CharSequence text) insertItem() }
- * and the contents can be cleared through {@link WComboBox#clear() clear() }.
+ * or {@link WComboBox#insertItem(int index, CharSequence text) insertItem()}
+ * and the contents can be cleared through {@link WComboBox#clear() clear()}.
  * These methods manipulate the underlying {@link WComboBox#getModel()
- * getModel() }.
+ * getModel()}.
  * <p>
  * To use the selectionbox with a custom model instead of the default
  * {@link WStringListModel}, use
- * {@link WComboBox#setModel(WAbstractItemModel model) setModel() }.
+ * {@link WComboBox#setModel(WAbstractItemModel model) setModel()}.
  * <p>
  * The widget corresponds to the HTML <code>&lt;select&gt;</code> tag.
  * <p>
@@ -118,9 +117,9 @@ public class WSelectionBox extends WComboBox {
 	 * Get the current selection (in ExtendedSelection mode).
 	 * <p>
 	 * Get the list of currently selected items. This method is only defined
-	 * when {@link WSelectionBox#getSelectionMode() getSelectionMode() } is
+	 * when {@link WSelectionBox#getSelectionMode() getSelectionMode()} is
 	 * ExtendedSelection. Otherwise, you should use
-	 * {@link WComboBox#getCurrentIndex() WComboBox#getCurrentIndex() } to get
+	 * {@link WComboBox#getCurrentIndex() WComboBox#getCurrentIndex()} to get
 	 * item currently selected.
 	 * <p>
 	 * 

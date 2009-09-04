@@ -16,29 +16,33 @@ import java.util.Map;
  * <p>
  * Usage example:
  * <p>
- * <code>
- enum Vote { Republican, Democrate, NoVote }; <br> 
- <br> 
- // use a group box as widget container for 3 radio buttons, with a title <br> 
- WGroupBox container = new WGroupBox(&quot;USA elections vote&quot;); <br> 
-		  <br> 
- // use a button group to logically group the 3 options <br> 
- WButtonGroup group = new WButtonGroup(this); <br> 
-		  <br> 
- WRadioButton button; <br> 
- button = new WRadioButton(&quot;I voted Republican&quot;, container); <br> 
- new WBreak(container); <br> 
- group.addButton(button, Vote.Republican.ordinal()); <br> 
- button = new WRadioButton(&quot;I voted Democrat&quot;, container); <br> 
- new WBreak(container); <br> 
- group.addButton(button, Vote.Democrate.ordinal()); <br> 
- <br> 
- button = new WRadioButton(&quot;I didn&apos;t vote&quot;, container); <br> 
- new WBreak(container); <br> 
- group.addButton(button, Vote.NoVote.ordinal()); <br> 
-		  <br> 
- group.setCheckedButton(group.button(Vote.NoVote.ordinal()));	
-</code>
+ * <blockquote>
+ * 
+ * <pre>
+ * enum Vote { Republican, Democrate, NoVote };
+ * 
+ *  // use a group box as widget container for 3 radio buttons, with a title
+ *  WGroupBox container = new WGroupBox(&quot;USA elections vote&quot;);
+ * 		 
+ *  // use a button group to logically group the 3 options
+ *  WButtonGroup group = new WButtonGroup(this);
+ * 		 
+ *  WRadioButton button;
+ *  button = new WRadioButton(&quot;I voted Republican&quot;, container);
+ *  new WBreak(container);
+ *  group.addButton(button, Vote.Republican.ordinal());
+ *  button = new WRadioButton(&quot;I voted Democrat&quot;, container);
+ *  new WBreak(container);
+ *  group.addButton(button, Vote.Democrate.ordinal());
+ * 
+ *  button = new WRadioButton(&quot;I didn't vote&quot;, container);
+ *  new WBreak(container);
+ *  group.addButton(button, Vote.NoVote.ordinal());
+ * 		 
+ *  group.setCheckedButton(group.button(Vote.NoVote.ordinal()));
+ * </pre>
+ * 
+ * </blockquote>
  * <p>
  * The widget corresponds to the HTML
  * <code>&lt;input type=&quot;radio&quot;&gt;</code> tag.

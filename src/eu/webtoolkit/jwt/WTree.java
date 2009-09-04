@@ -27,7 +27,7 @@ import eu.webtoolkit.jwt.utils.EnumUtils;
  * The tree is implemented as a hierarchy of {@link WTreeNode} widgets.
  * <p>
  * Selection is rendered by calling
- * {@link WTreeNode#renderSelected(boolean isSelected) renderSelected() }. Only
+ * {@link WTreeNode#renderSelected(boolean isSelected) renderSelected()}. Only
  * tree nodes that are {@link WTreeNode#setSelectable(boolean selectable)
  * selectable} may participate in the selection.
  * <p>

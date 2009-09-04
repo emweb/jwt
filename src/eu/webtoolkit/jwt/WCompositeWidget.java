@@ -15,7 +15,7 @@ import eu.webtoolkit.jwt.utils.EnumUtils;
  * 
  * Composite widgets, built on top of the WebWidgets, should derive from this
  * class, and use {@link WCompositeWidget#setImplementation(WWidget widget)
- * setImplementation() } to set the widget that implements the composite widget
+ * setImplementation()} to set the widget that implements the composite widget
  * (which is typically a {@link WContainerWidget} or a {@link WTable}, or
  * another widget that allows composition, including perhaps another
  * WCompositeWidget).

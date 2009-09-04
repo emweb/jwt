@@ -17,7 +17,7 @@ import java.util.List;
  * <p>
  * It is not a widget, but instead provides only a logical grouping. Radio
  * buttons are aware of the group in which they have been added, see
- * {@link WRadioButton#getGroup() getGroup() }. When a button is deleted, it is
+ * {@link WRadioButton#getGroup() getGroup()}. When a button is deleted, it is
  * automatically removed its button group.
  * <p>
  * It allows you to associate id&apos;s with each button, which you may use to
@@ -229,7 +229,7 @@ public class WButtonGroup extends WObject {
 	 * Returns the index of the checked radiobutton.
 	 * <p>
 	 * The index reflects the order in which the buttons have been added to the
-	 * button group. Use {@link WButtonGroup#getCheckedId() getCheckedId() } if
+	 * button group. Use {@link WButtonGroup#getCheckedId() getCheckedId()} if
 	 * you want to know the id of the button that is currently checked. If there
 	 * is no radiobutton selected this function returns -1.
 	 * <p>
@@ -249,7 +249,7 @@ public class WButtonGroup extends WObject {
 	 * {@link Signal} emitted when a button was checked.
 	 * <p>
 	 * The argument passed is the new {@link WButtonGroup#getCheckedButton()
-	 * getCheckedButton() }.
+	 * getCheckedButton()}.
 	 */
 	public Signal1<WRadioButton> checkedChanged() {
 		this.checkedChangedConnected_ = true;

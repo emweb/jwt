@@ -20,8 +20,8 @@ import java.util.List;
  * dived according to stretch factors among the columns/rows. The minimum width
  * of a column/row is based on the minimum dimensions of contained widgets or
  * nested layouts. The default minimum height and width may be overridden using
- * {@link WWidget#setMinimumSize(WLength width, WLength height) setMinimumSize()
- * }.
+ * {@link WWidget#setMinimumSize(WLength width, WLength height)
+ * setMinimumSize()}.
  * <p>
  * You can use WContainerWidget::setOverflow(OverflowAuto) to automatically show
  * scrollbars on a container widget which you have set for a grid cell. In some
@@ -31,17 +31,17 @@ import java.util.List;
  * <p>
  * Columns and rows are separated using a constant spacing, which defaults to 6
  * pixels by default, and can be changed using
- * {@link WGridLayout#setHorizontalSpacing(int size) setHorizontalSpacing() }
- * and {@link WGridLayout#setVerticalSpacing(int size) setVerticalSpacing() }.
- * In addition, when this layout is a top-level layout (i.e. is not nested
- * inside another layout), a margin is set around the contents, which thus
- * replaces padding defined for the container. It is not allowed to define
- * padding for the container widget using its CSS &apos;padding&apos; property
- * or the {@link WContainerWidget#setPadding(WLength length, EnumSet sides)
- * setPadding() }. This margin also defaults to 9 pixels, and can be changed
+ * {@link WGridLayout#setHorizontalSpacing(int size) setHorizontalSpacing()} and
+ * {@link WGridLayout#setVerticalSpacing(int size) setVerticalSpacing()}. In
+ * addition, when this layout is a top-level layout (i.e. is not nested inside
+ * another layout), a margin is set around the contents, which thus replaces
+ * padding defined for the container. It is not allowed to define padding for
+ * the container widget using its CSS &apos;padding&apos; property or the
+ * {@link WContainerWidget#setPadding(WLength length, EnumSet sides)
+ * setPadding()}. This margin also defaults to 9 pixels, and can be changed
  * using
  * {@link WLayout#setContentsMargins(int left, int top, int right, int bottom)
- * setContentsMargins() }.
+ * setContentsMargins()}.
  * <p>
  * For each column or row, a stretch factor may be defined, which controls how
  * remaining horizontal or vertical space is used. Each column and row is
@@ -55,18 +55,22 @@ import java.util.List;
  * <p>
  * Usage example:
  * <p>
- * <code>
- WContainerWidget w = new WContainerWidget(this); <br> 
- w.resize(WLength.Auto, new WLength(600)); <br> 
-		  <br> 
- WGridLayout layout = new WGridLayout(); <br> 
- layout.addWidget(new WText(&quot;Item 0 0&quot;), 0, 0); <br> 
- layout.addWidget(new WText(&quot;Item 0 1&quot;), 0, 1); <br> 
- layout.addWidget(new WText(&quot;Item 1 0&quot;), 1, 0); <br> 
- layout.addWidget(new WText(&quot;Item 1 1&quot;), 1, 1); <br> 
-		  <br> 
- w.setLayout(layout);
-</code>
+ * <blockquote>
+ * 
+ * <pre>
+ * WContainerWidget w = new WContainerWidget(this);
+ * w.resize(WLength.Auto, new WLength(600));
+ * 
+ * WGridLayout layout = new WGridLayout();
+ * layout.addWidget(new WText(&quot;Item 0 0&quot;), 0, 0);
+ * layout.addWidget(new WText(&quot;Item 0 1&quot;), 0, 1);
+ * layout.addWidget(new WText(&quot;Item 1 0&quot;), 1, 0);
+ * layout.addWidget(new WText(&quot;Item 1 1&quot;), 1, 1);
+ * 
+ * w.setLayout(layout);
+ * </pre>
+ * 
+ * </blockquote>
  * <p>
  * <p>
  * <i><b>Note:</b>When JavaScript support is not available, only Safari and
@@ -76,7 +80,7 @@ import java.util.List;
  * <p>
  * When set on a {@link WContainerWidget}, this layout manager accepts the
  * following hints (see {@link WLayout#setLayoutHint(String name, String value)
- * setLayoutHint() }):
+ * setLayoutHint()}):
  * <ul>
  * <li>
  * &quot;table-layout&quot; with possible values &quot;auto&quot; (default) or
@@ -89,7 +93,7 @@ import java.util.List;
  * </p>
  * <p>
  * <i><b>Warning:</b>You should specify AlignTop in the alignment flags of
- * {@link WContainerWidget#setLayout(WLayout layout) setLayout() } if the
+ * {@link WContainerWidget#setLayout(WLayout layout) setLayout()} if the
  * container does not have a height that is constrained somehow. Otherwise the
  * behavior is undefined (the parent container will continue to increase in
  * size) </i>

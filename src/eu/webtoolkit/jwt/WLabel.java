@@ -18,12 +18,16 @@ import java.util.List;
  * <p>
  * Usage example:
  * <p>
- * <code>
- WContainerWidget w = new WContainerWidget(); <br> 
- WLabel label = new WLabel(&quot;Favourite Actress: &quot;, w); <br> 
- WLineEdit edit = new WLineEdit(&quot;Ren&eacute;e Zellweger&quot;, w); <br> 
- label.setBuddy(edit);
-</code>
+ * <blockquote>
+ * 
+ * <pre>
+ * WContainerWidget w = new WContainerWidget();
+ * WLabel label = new WLabel(&quot;Favourite Actress: &quot;, w);
+ * WLineEdit edit = new WLineEdit(&quot;Renee Zellweger&quot;, w);
+ * label.setBuddy(edit);
+ * </pre>
+ * 
+ * </blockquote>
  * <p>
  * The widget corresponds to the HTML <code>&lt;label&gt;</code> tag.
  * <p>

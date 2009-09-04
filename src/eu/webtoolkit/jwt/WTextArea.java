@@ -12,14 +12,14 @@ import java.util.EnumSet;
  * <p>
  * 
  * To act upon text changes, connect a slot to the {@link WFormWidget#changed()
- * changed() } signal. This signal is emitted when the user changed the content,
+ * changed()} signal. This signal is emitted when the user changed the content,
  * and subsequently removes the focus from the line edit.
  * <p>
  * To act upon editing, connect a slot to the
- * {@link WInteractWidget#keyWentUp() keyWentUp() } signal.
+ * {@link WInteractWidget#keyWentUp() keyWentUp()} signal.
  * <p>
  * At all times, the current content may be accessed with the
- * {@link WTextArea#getText() getText() } method.
+ * {@link WTextArea#getText() getText()} method.
  * <p>
  * The widget corresponds to an HTML <code>&lt;textarea&gt;</code> tag.
  * <p>

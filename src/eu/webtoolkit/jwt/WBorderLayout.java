@@ -34,15 +34,16 @@ import java.util.List;
  * <p>
  * When used with a {@link WContainerWidget}, the widget minimum sizes are used
  * for sizing the border widgets, whose default values may be overridden using
- * {@link WWidget#setMinimumSize(WLength width, WLength height) setMinimumSize()
- * }. You may not define any padding for the container widget. Instead, use
+ * {@link WWidget#setMinimumSize(WLength width, WLength height)
+ * setMinimumSize()}. You may not define any padding for the container widget.
+ * Instead, use
  * {@link WLayout#setContentsMargins(int left, int top, int right, int bottom)
- * setContentsMargins() }.
+ * setContentsMargins()}.
  * <p>
  * <p>
  * <i><b>Note:</b>When used on a {@link WContainerWidget}, this layout manager
  * accepts the following hints (see
- * {@link WLayout#setLayoutHint(String name, String value) setLayoutHint() }):
+ * {@link WLayout#setLayoutHint(String name, String value) setLayoutHint()}):
  * <ul>
  * <li>
  * &quot;table-layout&quot; with possible values &quot;auto&quot; (default) or
@@ -55,7 +56,7 @@ import java.util.List;
  * </p>
  * <p>
  * <i><b>Warning:</b>You should specify AlignTop in the alignment flags of
- * {@link WContainerWidget#setLayout(WLayout layout) setLayout() } if the
+ * {@link WContainerWidget#setLayout(WLayout layout) setLayout()} if the
  * container does not have a height that is constrained somehow. Otherwise the
  * behavior is undefined (the parent container will continue to increase in
  * size) </i>

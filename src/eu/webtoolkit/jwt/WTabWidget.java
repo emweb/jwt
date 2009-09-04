@@ -40,21 +40,25 @@ import java.util.List;
  * <p>
  * Usage example:
  * <p>
- * <code>
- WTabWidget examples = new WTabWidget(this); <br> 
-	  <br> 
- examples.addTab(helloWorldExample(), &quot;Hello World&quot;); <br> 
- examples.addTab(chartExample(), &quot;Charts&quot;); <br> 
- examples.addTab(new WText(&quot;A WText&quot;), &quot;WText&quot;); <br> 
-	  <br> 
- examples.currentChanged().addListener(this, new Signal.Listener(){ <br> 
-	public void trigger() { <br> 
-		//custom code <br> 
-	} <br> 
-  }); <br> 
- examples.setInternalPathEnabled(); <br> 
- examples.setInternalBasePath(&quot;/examples&quot;);		
-</code>
+ * <blockquote>
+ * 
+ * <pre>
+ * WTabWidget examples = new WTabWidget(this);
+ * 
+ * examples.addTab(helloWorldExample(), &quot;Hello World&quot;);
+ * examples.addTab(chartExample(), &quot;Charts&quot;);
+ * examples.addTab(new WText(&quot;A WText&quot;), &quot;WText&quot;);
+ * 
+ * examples.currentChanged().addListener(this, new Signal.Listener() {
+ * 	public void trigger() {
+ * 		//custom code
+ * 	}
+ * });
+ * examples.setInternalPathEnabled();
+ * examples.setInternalBasePath(&quot;/examples&quot;);
+ * </pre>
+ * 
+ * </blockquote>
  * <p>
  * <div align="center"> <img src="doc-files//WTabWidget-1.png"
  * alt="An example WTabWidget">
@@ -311,12 +315,12 @@ public class WTabWidget extends WCompositeWidget {
 	 * pages.
 	 * <p>
 	 * For each menu item, {@link WMenuItem#getPathComponent()
-	 * WMenuItem#getPathComponent() } is appended to the internal base path (
-	 * {@link WMenu#getInternalBasePath() WMenu#getInternalBasePath() }), which
+	 * WMenuItem#getPathComponent()} is appended to the internal base path (
+	 * {@link WMenu#getInternalBasePath() WMenu#getInternalBasePath()}), which
 	 * defaults to the internal path ({@link WApplication#getInternalPath()
-	 * WApplication#getInternalPath() }) but may be changed using
+	 * WApplication#getInternalPath()}) but may be changed using
 	 * {@link WMenu#setInternalBasePath(String basePath)
-	 * WMenu#setInternalBasePath() }, with a &apos;/&apos; appended to turn it
+	 * WMenu#setInternalBasePath()}, with a &apos;/&apos; appended to turn it
 	 * into a folder, if needed.
 	 * <p>
 	 * By default, menu interaction does not change the application internal
@@ -366,15 +370,15 @@ public class WTabWidget extends WCompositeWidget {
 	 * Returns the internal base path.
 	 * <p>
 	 * The default value is the application&apos;s internalPath (
-	 * {@link WApplication#getInternalPath() WApplication#getInternalPath() })
+	 * {@link WApplication#getInternalPath() WApplication#getInternalPath()})
 	 * that was recorded when
 	 * {@link WMenu#setInternalPathEnabled(String basePath)
-	 * WMenu#setInternalPathEnabled() } was called, and together with each
-	 * {@link WMenuItem#getPathComponent() WMenuItem#getPathComponent() }
+	 * WMenu#setInternalPathEnabled()} was called, and together with each
+	 * {@link WMenuItem#getPathComponent() WMenuItem#getPathComponent()}
 	 * determines the paths for each item.
 	 * <p>
 	 * For example, if {@link WMenu#getInternalBasePath()
-	 * WMenu#getInternalBasePath() } is <code>&quot;/examples/&quot;</code> and
+	 * WMenu#getInternalBasePath()} is <code>&quot;/examples/&quot;</code> and
 	 * pathComponent() for a particular item is <code>&quot;charts/&quot;</code>
 	 * , then the internal path for that item will be
 	 * <code>&quot;/examples/charts/&quot;</code>.

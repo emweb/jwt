@@ -18,13 +18,13 @@ import java.util.List;
  * by a {@link WResource}.
  * <p>
  * You may listen to events by attaching event listeners to signals such as
- * {@link WInteractWidget#clicked() clicked() }. Since mouse events pass the
+ * {@link WInteractWidget#clicked() clicked()}. Since mouse events pass the
  * coordinates through a {@link WMouseEvent} object, it is possible to react to
  * clicks in specific parts of the image. An alternative is to define
  * interactive areas on the image using
- * {@link WImage#addArea(WAbstractArea area) addArea() }, which in addition
+ * {@link WImage#addArea(WAbstractArea area) addArea()}, which in addition
  * allows to have customized tool tips for certain image areas (using
- * {@link WAbstractArea#setToolTip(CharSequence text) setToolTip() }).
+ * {@link WAbstractArea#setToolTip(CharSequence text) setToolTip()}).
  * <p>
  * WImage is an {@link WWidget#setInline(boolean inlined) inline} widget.
  * <p>
@@ -153,8 +153,8 @@ public class WImage extends WInteractWidget {
 	 * text is preferred over nonsense.
 	 * <p>
 	 * This should not be confused with {@link WWebWidget#getToolTip()
-	 * WWebWidget#getToolTip() } text, which provides additional information
-	 * that is displayed when the mouse hovers over the image.
+	 * WWebWidget#getToolTip()} text, which provides additional information that
+	 * is displayed when the mouse hovers over the image.
 	 * <p>
 	 * The default alternate text is an empty text (&quot;&quot;).
 	 * <p>
@@ -214,7 +214,7 @@ public class WImage extends WInteractWidget {
 	 * generate an image on demand.
 	 * <p>
 	 * This sets <i>resource</i> as the contents for the image, as an
-	 * alternative to {@link WImage#setImageRef(String ref) setImageRef() }. The
+	 * alternative to {@link WImage#setImageRef(String ref) setImageRef()}. The
 	 * resource may be cleared by passing <i>resource</i> = 0.
 	 * <p>
 	 * The image does not assume ownership of the resource.

@@ -31,18 +31,18 @@ import eu.webtoolkit.jwt.utils.EnumUtils;
  * <strong>Different styles of data series</strong>
  * </p>
  * </div> For a category chart, series may be stacked on top of each other. This
- * is controlled by {@link WDataSeries#setStacked(boolean stacked) setStacked()
- * } for a series, which if enabled, will stack that series on top of the
+ * is controlled by {@link WDataSeries#setStacked(boolean stacked) setStacked()}
+ * for a series, which if enabled, will stack that series on top of the
  * preceding data series. This works regardless of whether they are of the same
  * type, but obviously works visually best if these series are of the same type.
  * When not stacked, bar series are rendered next to each other. The margin
  * between bars of different data series is controlled using
- * {@link WCartesianChart#setBarMargin(double margin) setBarMargin() }.
+ * {@link WCartesianChart#setBarMargin(double margin) setBarMargin()}.
  * <p>
  * The line and color type are by default based on the
  * {@link WAbstractChart#getPalette() chart palette}, but may be overridden for
- * a series using {@link WDataSeries#setPen(WPen pen) setPen() },
- * {@link WDataSeries#setBrush(WBrush brush) setBrush() }, etc...
+ * a series using {@link WDataSeries#setPen(WPen pen) setPen()},
+ * {@link WDataSeries#setBrush(WBrush brush) setBrush()}, etc...
  * <p>
  * 
  * @see WCartesianChart#addSeries(WDataSeries series)
@@ -379,7 +379,7 @@ public class WDataSeries {
 	 * Sets the fill range for line or curve series.
 	 * <p>
 	 * Line or curve series may be filled under or above the curve, using the
-	 * {@link WDataSeries#getBrush() getBrush() }. This setting specifies the
+	 * {@link WDataSeries#getBrush() getBrush()}. This setting specifies the
 	 * range that is filled.
 	 */
 	public void setFillRange(FillRangeType fillRange) {
@@ -435,8 +435,8 @@ public class WDataSeries {
 	 * Sets the marker pen.
 	 * <p>
 	 * Overrides the pen used for stroking the marker. By default the marker pen
-	 * is the same as {@link WDataSeries#getPen() getPen() }. Calling this
-	 * method automatically adds CustomMarkerPen to the custom flags.
+	 * is the same as {@link WDataSeries#getPen() getPen()}. Calling this method
+	 * automatically adds CustomMarkerPen to the custom flags.
 	 * <p>
 	 * 
 	 * @see WDataSeries#setPen(WPen pen)
@@ -470,7 +470,7 @@ public class WDataSeries {
 	 * Sets the marker brush.
 	 * <p>
 	 * Overrides the brush used for filling the marker. By default the marker
-	 * brush is the same as {@link WDataSeries#getBrush() getBrush() }. Calling
+	 * brush is the same as {@link WDataSeries#getBrush() getBrush()}. Calling
 	 * this method automatically adds CustomMarkerBrush to the custom flags.
 	 * <p>
 	 * 

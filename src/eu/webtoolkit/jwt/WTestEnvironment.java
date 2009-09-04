@@ -18,33 +18,25 @@ import eu.webtoolkit.jwt.servlet.WebRequest;
  * This environment is useful for use in unit tests: you may configure its
  * properties and pass it to the constructor of an application.
  * <p>
- * This is useful for (unit) test-cases: <code>
- void test() { <br> 
-   Test::WTestEnvironment environment; <br> 
-   MyApplication app(environment); <br> 
-   ... <br> 
- }
-</code>
+ * This is useful for (unit) test-cases:
+ * <p>
+ * <blockquote>
+ * 
+ * <pre>
+ * void testX() {
+ *    WTestEnvironment environment(new Configuration());
+ *    MyApplication app(environment);
+ *    ...
+ *  }
+ * </pre>
+ * 
+ * </blockquote>
  * <p>
  * 
  * @see WEnvironment
  * @see WApplication#WApplication(WEnvironment env)
  */
 public class WTestEnvironment extends WEnvironment {
-	/**
-	 * Default constructor.
-	 * <p>
-	 * Constructs a test environment that resembles FireFox 3.0 with default
-	 * settings.
-	 * <p>
-	 * The <i>applicationPath</i> is the simulated deployment path. The
-	 * configuration file points to a wt_config.xml configuration file. The
-	 * <i>type</i> indicates the application type.
-	 * <p>
-	 * After construction, but before passing it to the constructor of a
-	 * {@link WApplication}, you can change any of the environment properties
-	 * using the setter methods.
-	 */
 	public WTestEnvironment(Configuration configuration, ApplicationType type) {
 		super();
 		List<String> dummy = new ArrayList<String>();
@@ -53,13 +45,6 @@ public class WTestEnvironment extends WEnvironment {
 		this.init(type);
 	}
 
-	/**
-	 * Default constructor.
-	 * <p>
-	 * Calls
-	 * {@link #WTestEnvironment(Configuration configuration, ApplicationType type)
-	 * this(configuration, ApplicationType.Application)}
-	 */
 	public WTestEnvironment(Configuration configuration) {
 		this(configuration, ApplicationType.Application);
 	}

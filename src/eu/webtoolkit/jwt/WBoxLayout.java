@@ -18,8 +18,8 @@ import java.util.List;
  * minimum size, and remaining space is divided according to stretch factors
  * among the widgets. The widget minimum height or width is used for sizing each
  * widget, whose default values may be overridden using
- * {@link WWidget#setMinimumSize(WLength width, WLength height) setMinimumSize()
- * }.
+ * {@link WWidget#setMinimumSize(WLength width, WLength height)
+ * setMinimumSize()}.
  * <p>
  * You can use WContainerWidget::setOverflow(OverflowAuto) to automatically show
  * scrollbars on a container widget which you inserted into the layout. In some
@@ -28,17 +28,17 @@ import java.util.List;
  * for scrollbars.
  * <p>
  * Each item is separated using a constant spacing, which defaults to 6 pixels,
- * and can be changed using {@link WBoxLayout#setSpacing(int size) setSpacing()
- * }. In addition, when this layout is a top-level layout (i.e. is not nested
+ * and can be changed using {@link WBoxLayout#setSpacing(int size) setSpacing()}
+ * . In addition, when this layout is a top-level layout (i.e. is not nested
  * inside another layout), a margin is set around the contents, which thus
  * replaces padding defined for the container. This margin defaults to 9 pixels,
  * and can be changed using
  * {@link WLayout#setContentsMargins(int left, int top, int right, int bottom)
- * setContentsMargins() }. It is not allowed to define padding for the container
+ * setContentsMargins()}. It is not allowed to define padding for the container
  * widget using its CSS &apos;padding&apos; property or the
  * {@link WContainerWidget#setPadding(WLength length, EnumSet sides)
- * setPadding() }. You can add more space between two widgets using
- * {@link WBoxLayout#addSpacing(WLength size) addSpacing() }.
+ * setPadding()}. You can add more space between two widgets using
+ * {@link WBoxLayout#addSpacing(WLength size) addSpacing()}.
  * <p>
  * For each item a stretch factor may be defined, which controls how remaining
  * space is used. Each item is stretched using the stretch factor to fill the
@@ -52,7 +52,7 @@ import java.util.List;
  * <p>
  * When set on a {@link WContainerWidget}, this layout manager accepts the
  * following hints (see {@link WLayout#setLayoutHint(String name, String value)
- * setLayoutHint() }):
+ * setLayoutHint()}):
  * <ul>
  * <li>
  * &quot;table-layout&quot; with possible values &quot;auto&quot; (default) or
@@ -65,7 +65,7 @@ import java.util.List;
  * </p>
  * <p>
  * <i><b>Warning:</b>You should specify AlignTop in the alignment flags of
- * {@link WContainerWidget#setLayout(WLayout layout) setLayout() } if the
+ * {@link WContainerWidget#setLayout(WLayout layout) setLayout()} if the
  * container does not have a height that is constrained somehow. Otherwise the
  * behavior is undefined (the parent container will continue to increase in
  * size) </i>
@@ -510,9 +510,9 @@ public class WBoxLayout extends WLayout {
 	 * <p>
 	 * The <i>layout</i> must have previously been added to this layout using
 	 * {@link WBoxLayout#insertLayout(int index, WLayout layout, int stretch, EnumSet alignment)
-	 * insertLayout() } or
+	 * insertLayout()} or
 	 * {@link WBoxLayout#addLayout(WLayout layout, int stretch, EnumSet alignment)
-	 * addLayout() }.
+	 * addLayout()}.
 	 * <p>
 	 * Returns whether the <i>stretch</i> could be set.
 	 */
@@ -532,9 +532,9 @@ public class WBoxLayout extends WLayout {
 	 * <p>
 	 * The <i>widget</i> must have previously been added to this layout using
 	 * {@link WBoxLayout#insertWidget(int index, WWidget widget, int stretch, EnumSet alignment)
-	 * insertWidget() } or
+	 * insertWidget()} or
 	 * {@link WBoxLayout#addWidget(WWidget widget, int stretch, EnumSet alignment)
-	 * addWidget() }.
+	 * addWidget()}.
 	 * <p>
 	 * Returns whether the <i>stretch</i> could be set.
 	 */

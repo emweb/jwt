@@ -46,29 +46,37 @@ public class WOverlayLoadingIndicator extends WContainerWidget implements
 	 *            the style class for the text that is displayed}
 	 *            <p>
 	 *            <i><b>Note:</b>if styleClass is not set, the central box gets
-	 *            the CSS style elements <code>
-               background: white; <br> 
-               border: 3px solid #333333; <br> 
-               z-index: 10001; visibility: visible; <br> 
-               position: absolute; left: 50%; top: 50%; <br> 
-               margin-left: -50px; margin-top: -40px; <br> 
-               width: 100px; height: 80px; <br> 
-               font-family: arial,sans-serif; <br> 
-               text-align: center
-  </code>
+	 *            the CSS style elements <blockquote>
+	 * 
+	 *            <pre>
+	 * background: white;
+	 *                border: 3px solid #333333;
+	 *                z-index: 10001; visibility: visible;
+	 *                position: absolute; left: 50%; top: 50%;
+	 *                margin-left: -50px; margin-top: -40px;
+	 *                width: 100px; height: 80px;
+	 *                font-family: arial,sans-serif;
+	 *                text-align: center
+	 * </pre>
+	 * 
+	 *            </blockquote>
 	 *            <p>
 	 *            if backgroundStyleClass is not set, the background gets the
-	 *            CSS style elements <code>
-               background: #DDDDDD; <br> 
-               height: 100%; width: 100%; <br> 
-               top: 0px; left: 0px; <br> 
-               z-index: 10000; <br> 
-               -moz-background-clip: -moz-initial; <br> 
-               -moz-background-origin: -moz-initial; <br> 
-               -moz-background-inline-policy: -moz-initial; <br> 
-               opacity: 0.5; filter: alpha(opacity=50); -moz-opacity:0.5; <br> 
-               position: absolute;
-  </code> </i>
+	 *            CSS style elements <blockquote>
+	 * 
+	 *            <pre>
+	 * background: #DDDDDD;
+	 *                height: 100%; width: 100%;
+	 *                top: 0px; left: 0px;
+	 *                z-index: 10000;
+	 *                -moz-background-clip: -moz-initial;
+	 *                -moz-background-origin: -moz-initial;
+	 *                -moz-background-inline-policy: -moz-initial;
+	 *                opacity: 0.5; filter: alpha(opacity=50); -moz-opacity:0.5;
+	 *                position: absolute;
+	 * </pre>
+	 * 
+	 *            </blockquote> </i>
 	 *            </p>
 	 */
 	public WOverlayLoadingIndicator(String styleClass,

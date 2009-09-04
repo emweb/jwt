@@ -138,13 +138,17 @@ public class WIconPair extends WCompositeWidget {
 	/**
 	 * Signal emitted when clicked while in state 0 (icon 1 is shown).
 	 * <p>
-	 * Equivalent to: <code>
-   \if cpp <br> 
-   icon1()-&gt;clicked() <br> 
-   \elseif java <br> 
-   icon1().clicked() <br> 
-   \endif
-  </code>
+	 * Equivalent to: <blockquote>
+	 * 
+	 * <pre>
+	 * \if cpp
+	 *    icon1()-&gt;clicked()
+	 *    \elseif java
+	 *    icon1().clicked()
+	 *    \endif
+	 * </pre>
+	 * 
+	 * </blockquote>
 	 */
 	public EventSignal1<WMouseEvent> icon1Clicked() {
 		return this.icon1_.clicked();
@@ -153,13 +157,17 @@ public class WIconPair extends WCompositeWidget {
 	/**
 	 * Signal emitted when clicked while in state 1 (icon 2 is shown).
 	 * <p>
-	 * Equivalent to: <code>
-   \if cpp <br> 
-   icon2()-&gt;clicked() <br> 
-   \elseif java <br> 
-   icon2().clicked() <br> 
-   \elseif
-  </code>
+	 * Equivalent to: <blockquote>
+	 * 
+	 * <pre>
+	 * \if cpp
+	 *    icon2()-&gt;clicked()
+	 *    \elseif java
+	 *    icon2().clicked()
+	 *    \elseif
+	 * </pre>
+	 * 
+	 * </blockquote>
 	 */
 	public EventSignal1<WMouseEvent> icon2Clicked() {
 		return this.icon2_.clicked();

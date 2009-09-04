@@ -21,7 +21,7 @@ import java.util.EnumSet;
  * A WDialog can be used as any other widget. In this case, the WDialog is
  * created with the proper content, and for example an OK button is connected to
  * a method which deletes the dialog. Unlike other widgets, a dialog is hidden
- * by default. You must use the method {@link WWidget#show() show() } or
+ * by default. You must use the method {@link WWidget#show() show()} or
  * setHidden(true) to show the dialog.
  * <p>
  * Use setModal(false) to create a non-modal dialog. A non-modal dialog does not
@@ -29,7 +29,7 @@ import java.util.EnumSet;
  * dialog before interacting with the rest of the user interface.
  * <p>
  * Contents for the dialog is defined by adding it to the
- * {@link WDialog#getContents() getContents() } widget.
+ * {@link WDialog#getContents() getContents()} widget.
  * <p>
  * This dialog looks like this (using the standard look):
  * <p>
@@ -51,11 +51,11 @@ public class WDialog extends WCompositeWidget {
 	 */
 	public enum DialogCode {
 		/**
-		 * Dialog closed with {@link WDialog#reject() reject() }.
+		 * Dialog closed with {@link WDialog#reject() reject()}.
 		 */
 		Rejected,
 		/**
-		 * Dialog closed with {@link WDialog#accept() accept() }.
+		 * Dialog closed with {@link WDialog#accept() accept()}.
 		 */
 		Accepted;
 
@@ -240,7 +240,7 @@ public class WDialog extends WCompositeWidget {
 	 * Stop the dialog.
 	 * <p>
 	 * Sets the dialog result, and emits the {@link WDialog#finished()
-	 * finished() } signal.
+	 * finished()} signal.
 	 * <p>
 	 * 
 	 * @see WDialog#finished()

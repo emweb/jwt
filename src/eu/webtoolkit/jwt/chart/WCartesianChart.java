@@ -34,11 +34,11 @@ import eu.webtoolkit.jwt.utils.StringUtils;
  * points.
  * <p>
  * To use a cartesian chart, the minimum you need to do is set a model using
- * {@link WAbstractChart#setModel(WAbstractItemModel model) setModel() }, set
- * the model column that holds the X data using
- * {@link WCartesianChart#setXSeriesColumn(int modelColumn) setXSeriesColumn() }
- * , and add one or more series using
- * {@link WCartesianChart#addSeries(WDataSeries series) addSeries() }. Each
+ * {@link WAbstractChart#setModel(WAbstractItemModel model) setModel()}, set the
+ * model column that holds the X data using
+ * {@link WCartesianChart#setXSeriesColumn(int modelColumn) setXSeriesColumn()},
+ * and add one or more series using
+ * {@link WCartesianChart#addSeries(WDataSeries series) addSeries()}. Each
  * series corresponds to one data column that holds Y data.
  * <p>
  * A cartesian chart is either a {@link ChartType#CategoryChart CategoryChart}
@@ -77,10 +77,10 @@ import eu.webtoolkit.jwt.utils.StringUtils;
  * corresponds to a {@link Orientation#Vertical Vertical} orientation. The
  * orientation may be changed to {@link Orientation#Horizontal Horizontal} using
  * {@link WCartesianChart#setOrientation(Orientation orientation)
- * setOrientation() }.
+ * setOrientation()}.
  * <p>
  * The styling of the series data are dictated by a palette which may be set
- * using {@link WAbstractChart#setPalette(WChartPalette palette) setPalette() },
+ * using {@link WAbstractChart#setPalette(WChartPalette palette) setPalette()},
  * but may be overridden by settings in each data series.
  * <p>
  * 
@@ -366,15 +366,15 @@ public class WCartesianChart extends WAbstractChart {
 	 * the chart. You should provide space for the legend using the
 	 * setChartPadding() method. Only series for which the legend is enabled or
 	 * included in this legend (see {@link WDataSeries#isLegendEnabled()
-	 * WDataSeries#isLegendEnabled() }).
+	 * WDataSeries#isLegendEnabled()}).
 	 * <p>
 	 * To have more control over the legend, you could reimplement the
 	 * {@link WCartesianChart#renderLegendItem(WPainter painter, WPointF pos, WDataSeries series)
-	 * renderLegendItem() } method to customize how one item in the legend is
+	 * renderLegendItem()} method to customize how one item in the legend is
 	 * rendered, or, alternatively you could reimplement the paint(WPainter&amp;
 	 * painter, const WRectF&amp;) method in which you use the
 	 * {@link WCartesianChart#renderLegendItem(WPainter painter, WPointF pos, WDataSeries series)
-	 * renderLegendItem() } method repeatedly to render a legend at an arbitrary
+	 * renderLegendItem()} method repeatedly to render a legend at an arbitrary
 	 * position.
 	 * <p>
 	 * The default value is false.

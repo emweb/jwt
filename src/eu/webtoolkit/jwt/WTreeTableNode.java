@@ -15,7 +15,7 @@ import java.util.List;
  * 
  * Additional data for each column can be set using
  * {@link WTreeTableNode#setColumnWidget(int column, WWidget widget)
- * setColumnWidget() }.
+ * setColumnWidget()}.
  * <p>
  * 
  * @see WTreeNode
@@ -96,7 +96,7 @@ public class WTreeTableNode extends WTreeNode {
 	 * <p>
 	 * Returns the widget set previously using
 	 * {@link WTreeTableNode#setColumnWidget(int column, WWidget widget)
-	 * setColumnWidget() }, or 0 if no widget was previously set.
+	 * setColumnWidget()}, or 0 if no widget was previously set.
 	 */
 	public WWidget getColumnWidget(int column) {
 		--column;

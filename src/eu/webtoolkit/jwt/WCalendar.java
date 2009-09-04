@@ -19,28 +19,32 @@ import java.util.Set;
  * <p>
  * The calendar may be configured to allow selection of single or multiple days,
  * and you may listen for changes in the selection using the
- * {@link WCalendar#selectionChanged() selectionChanged() } or
- * {@link WCalendar#selected() selected() } signals.
+ * {@link WCalendar#selectionChanged() selectionChanged()} or
+ * {@link WCalendar#selected() selected()} signals.
  * <p>
  * Internationalization may be provided by indicating i18n == true in the
  * constructor, and providing the appropriate messages for months (with keys
- * from {@link WDate#getLongMonthName(int month) getLongMonthName() }) and days
- * (with keys from {@link WDate#getShortDayName(int weekday) getShortDayName() }
- * ) in your message resource bundle.
+ * from {@link WDate#getLongMonthName(int month) getLongMonthName()}) and days
+ * (with keys from {@link WDate#getShortDayName(int weekday) getShortDayName()})
+ * in your message resource bundle.
  * <p>
  * The look can be overridden using the following style class selectors:
  * <p>
- * <code>
-table.Wt-cal-table        : The table <br> 
- <br> 
-td.Wt-cal-header          : Header cell (week day) <br> 
-td.Wt-cal-header-weekend  : Header cell (weekend day) <br> 
- <br> 
-table.Wt-cal-table TD     : In-month day cell <br> 
-td.Wt-cal-oom             : Out-of-month day cell <br> 
-td.Wt-cal-sel             : Selected day cell <br> 
-td.Wt-cal-now             : Today day cell
-</code>
+ * <blockquote>
+ * 
+ * <pre>
+ * table.Wt-cal-table        : The table
+ * 
+ * td.Wt-cal-header          : Header cell (week day)
+ * td.Wt-cal-header-weekend  : Header cell (weekend day)
+ * 
+ * table.Wt-cal-table TD     : In-month day cell
+ * td.Wt-cal-oom             : Out-of-month day cell
+ * td.Wt-cal-sel             : Selected day cell
+ * td.Wt-cal-now             : Today day cell
+ * </pre>
+ * 
+ * </blockquote>
  * <p>
  * Here is a snapshot of the default look, taken on 31/08/2007 (shown as today),
  * and 11/08/2007 currently selected. <div align="center"> <img
@@ -98,7 +102,7 @@ public class WCalendar extends WCompositeWidget {
 	 * Configure single or multiple selection mode.
 	 * <p>
 	 * In single selection mode, only one date may be selected: the
-	 * {@link WCalendar#getSelection() getSelection() } will be empty or contain
+	 * {@link WCalendar#getSelection() getSelection()} will be empty or contain
 	 * exactly one item.
 	 */
 	public void setMultipleSelection(boolean multiple) {
@@ -202,7 +206,7 @@ public class WCalendar extends WCompositeWidget {
 	 * Clear the current selection.
 	 * <p>
 	 * Clears the current selection. Will result in a
-	 * {@link WCalendar#getSelection() getSelection() } that is empty().
+	 * {@link WCalendar#getSelection() getSelection()} that is empty().
 	 */
 	public void clearSelection() {
 		this.selection_.clear();
@@ -213,7 +217,7 @@ public class WCalendar extends WCompositeWidget {
 	 * Select a date.
 	 * <p>
 	 * Select one date. Both in single or multiple selection mode, this results
-	 * in a {@link WCalendar#getSelection() getSelection() } that contains
+	 * in a {@link WCalendar#getSelection() getSelection()} that contains
 	 * exactly one date.
 	 */
 	public void select(WDate date) {
@@ -226,8 +230,8 @@ public class WCalendar extends WCompositeWidget {
 	 * Select multiple dates.
 	 * <p>
 	 * Select multiple dates. In multiple selection mode, this results in a
-	 * {@link WCalendar#getSelection() getSelection() } that contains exactly
-	 * the given dates. In single selection mode, at most one date is set
+	 * {@link WCalendar#getSelection() getSelection()} that contains exactly the
+	 * given dates. In single selection mode, at most one date is set
 	 * (*dates.begin())
 	 */
 	public void select(Set<WDate> dates) {

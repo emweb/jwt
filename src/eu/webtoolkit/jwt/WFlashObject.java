@@ -23,14 +23,18 @@ import java.util.Set;
  * when a Flash player is not available on the system or when JavaScript is
  * disabled.
  * <p>
- * Usage example: <code>
- WFlash *player = new WFlash(&quot;dummy.swf&quot;, parent); <br> 
- player-&gt;resize(300, 600); <br> 
- player-&gt;setFlashParameter(&quot;allowScriptAccess&quot;, &quot;always&quot;); <br> 
- player-&gt;setFlashParameter(&quot;quality&quot;, &quot;high&quot;); <br> 
- player-&gt;setFlashParameter(&quot;bgcolor&quot;, &quot;#aaaaaa&quot;); <br> 
- player-&gt;setFlashVariable(&quot;someVar&quot;, &quot;foo&quot;);
-</code>
+ * Usage example: <blockquote>
+ * 
+ * <pre>
+ * WFlash *player = new WFlash(&quot;dummy.swf&quot;, parent);
+ *  player-&gt;resize(300, 600);
+ *  player-&gt;setFlashParameter(&quot;allowScriptAccess&quot;, &quot;always&quot;);
+ *  player-&gt;setFlashParameter(&quot;quality&quot;, &quot;high&quot;);
+ *  player-&gt;setFlashParameter(&quot;bgcolor&quot;, &quot;#aaaaaa&quot;);
+ *  player-&gt;setFlashVariable(&quot;someVar&quot;, &quot;foo&quot;);
+ * </pre>
+ * 
+ * </blockquote>
  * <p>
  * This class uses <i>resourcesURL</i>&quot;swfobject.js&quot;, a companion
  * JavaScript library, which is distributed with JWt in the resources folder.
@@ -122,10 +126,10 @@ public class WFlashObject extends WContainerWidget {
 	 * A JavaScript expression that returns the DOM node of the Flash object.
 	 * <p>
 	 * The Flash object is not stored in {@link WWidget#getJsRef()
-	 * WWidget#getJsRef() }, but in {@link WFlashObject#getJsFlashRef()
-	 * getJsFlashRef() }. Use this method in conjuction with
+	 * WWidget#getJsRef()}, but in {@link WFlashObject#getJsFlashRef()
+	 * getJsFlashRef()}. Use this method in conjuction with
 	 * {@link WApplication#doJavaScript(String javascript, boolean afterLoaded)
-	 * WApplication#doJavaScript() } or {@link JSlot} in custom JavaScript code
+	 * WApplication#doJavaScript()} or {@link JSlot} in custom JavaScript code
 	 * to refer to the Flash content.
 	 */
 	public String getJsFlashRef() {

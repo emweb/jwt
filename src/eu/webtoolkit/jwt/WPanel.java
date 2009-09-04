@@ -219,8 +219,8 @@ public class WPanel extends WCompositeWidget {
 	/**
 	 * Set the panel expanded or collapsed.
 	 * <p>
-	 * When <i>on</i> is true, equivalent to {@link WPanel#collapse() collapse()
-	 * }, otherwise to {@link WPanel#expand() expand() }.
+	 * When <i>on</i> is true, equivalent to {@link WPanel#collapse()
+	 * collapse()}, otherwise to {@link WPanel#expand() expand()}.
 	 * <p>
 	 * The default value is false.
 	 * <p>
@@ -250,8 +250,8 @@ public class WPanel extends WCompositeWidget {
 	/**
 	 * Collapse the panel.
 	 * <p>
-	 * When {@link WPanel#isCollapsible() isCollapsible() } is true, the panel
-	 * is collapsed to minimize screen real-estate.
+	 * When {@link WPanel#isCollapsible() isCollapsible()} is true, the panel is
+	 * collapsed to minimize screen real-estate.
 	 * <p>
 	 * 
 	 * @see WPanel#setCollapsible(boolean on)
@@ -267,8 +267,8 @@ public class WPanel extends WCompositeWidget {
 	/**
 	 * Collapse the panel.
 	 * <p>
-	 * When {@link WPanel#isCollapsible() isCollapsible() } is true, the panel
-	 * is expanded to its original state.
+	 * When {@link WPanel#isCollapsible() isCollapsible()} is true, the panel is
+	 * expanded to its original state.
 	 * <p>
 	 * 
 	 * @see WPanel#setCollapsible(boolean on)
@@ -314,7 +314,7 @@ public class WPanel extends WCompositeWidget {
 	 * Signal emitted when the panel is collapsed. The signal is only emitted
 	 * when the panel is collapsed by the user using the collapse icon in the
 	 * tible bar, not when calling {@link WPanel#setCollapsed(boolean on)
-	 * setCollapsed() }.
+	 * setCollapsed()}.
 	 * <p>
 	 * 
 	 * @see WPanel#expanded()
@@ -329,7 +329,7 @@ public class WPanel extends WCompositeWidget {
 	 * Signal emitted when the panel is expanded. The signal is only emitted
 	 * when the panel is expanded by the user using the expand icon in the title
 	 * bar, not when calling {@link WPanel#setCollapsed(boolean on)
-	 * setCollapsed() }.
+	 * setCollapsed()}.
 	 * <p>
 	 * 
 	 * @see WPanel#collapsed()

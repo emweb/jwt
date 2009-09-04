@@ -17,7 +17,7 @@ import java.util.TreeSet;
  * <p>
  * When an item selection is dragged from a view widget, the generated drop
  * events will have as source object (see {@link WDropEvent#getSource()
- * getSource() }) this selection model.
+ * getSource()}) this selection model.
  * <p>
  * Although this class does not (yet) allow you to modify the selection, note
  * that manipulations to the model may modify the selection (row insertions and

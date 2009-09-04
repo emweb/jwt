@@ -14,7 +14,7 @@ import java.util.List;
  * 
  * A {@link WScrollArea} always has two scrollbars (even if they are not
  * visible, for example when the policy is WSCrollArea::ScrollBarAlwaysOff).
- * Using the {@link WScrollBar#tie(WScrollBar one, WScrollBar two) tie() }
+ * Using the {@link WScrollBar#tie(WScrollBar one, WScrollBar two) tie()}
  * functions, it is possible to tie to scrollbars together, so that they will
  * scroll together.
  * <p>
@@ -47,7 +47,7 @@ public class WScrollBar extends WObject {
 	/**
 	 * Untie two scrollbars, that were previously tied together.
 	 * <p>
-	 * Undo a {@link WScrollBar#tie(WScrollBar one, WScrollBar two) tie() };
+	 * Undo a {@link WScrollBar#tie(WScrollBar one, WScrollBar two) tie()};
 	 */
 	public static void unTie(WScrollBar one, WScrollBar two) {
 		one.ties_.remove(two);

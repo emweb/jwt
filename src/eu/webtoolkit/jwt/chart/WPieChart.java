@@ -35,20 +35,20 @@ import eu.webtoolkit.jwt.utils.StringUtils;
  * area of each segment is proportional to the value in the data series.
  * <p>
  * To use a pie chart, you need to set a model using
- * {@link WAbstractChart#setModel(WAbstractItemModel model) setModel() }, and
- * use {@link WPieChart#setLabelsColumn(int modelColumn) setLabelsColumn() } and
- * {@link WPieChart#setDataColumn(int modelColumn) setDataColumn() } to specify
+ * {@link WAbstractChart#setModel(WAbstractItemModel model) setModel()}, and use
+ * {@link WPieChart#setLabelsColumn(int modelColumn) setLabelsColumn()} and
+ * {@link WPieChart#setDataColumn(int modelColumn) setDataColumn()} to specify
  * the model column that contains the category labels and data.
  * <p>
  * The pie chart may be customized visually by enabling a 3D effect (
  * {@link WPieChart#setPerspectiveEnabled(boolean enabled, double height)
- * setPerspectiveEnabled() }), or by specifying the angle of the first segment.
+ * setPerspectiveEnabled()}), or by specifying the angle of the first segment.
  * One or more segments may be exploded, which seperates the segment from the
  * rest of the pie chart, using
- * {@link WPieChart#setExplode(int modelRow, double factor) setExplode() }.
+ * {@link WPieChart#setExplode(int modelRow, double factor) setExplode()}.
  * <p>
  * The segments may be labeled in various ways using
- * {@link WPieChart#setDisplayLabels(EnumSet options) setDisplayLabels() }.
+ * {@link WPieChart#setDisplayLabels(EnumSet options) setDisplayLabels()}.
  * <p>
  * <div align="center"> <img src="doc-files//ChartWPieChart-1.png"
  * alt="Example of a pie chart">
@@ -91,8 +91,8 @@ public class WPieChart extends WAbstractChart {
 	 * Change the model column that holds the labels.
 	 * <p>
 	 * The labels are used only when
-	 * {@link WPieChart#setDisplayLabels(EnumSet options) setDisplayLabels() }
-	 * is called with the {@link LabelOption#TextLabel TextLabel} option.
+	 * {@link WPieChart#setDisplayLabels(EnumSet options) setDisplayLabels()} is
+	 * called with the {@link LabelOption#TextLabel TextLabel} option.
 	 * <p>
 	 * The default value is -1 (not defined).
 	 * <p>
@@ -152,7 +152,7 @@ public class WPieChart extends WAbstractChart {
 	 * Customizes the brush used for a pie segment.
 	 * <p>
 	 * By default, the brush is taken from the
-	 * {@link WAbstractChart#getPalette() WAbstractChart#getPalette() }. You can
+	 * {@link WAbstractChart#getPalette() WAbstractChart#getPalette()}. You can
 	 * use this method to override the palette&apos;s brush for a particular
 	 * <i>modelRow</i>.
 	 * <p>

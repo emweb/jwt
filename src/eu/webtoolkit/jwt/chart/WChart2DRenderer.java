@@ -33,19 +33,19 @@ import eu.webtoolkit.jwt.utils.StringUtils;
  * class if you want to override particular aspects of how the chart is
  * renderered. In that case, you will want to instantiate the specialized class
  * in {@link WCartesianChart#createRenderer(WPainter painter, WRectF rectangle)
- * createRenderer() }.
+ * createRenderer()}.
  * <p>
  * To simplify the simulatenous handling of Horizontal and Vertical charts, the
  * renderer makes abstraction of the orientation of the chart: regardless of the
- * chart orientation, the {@link WChart2DRenderer#getWidth() getWidth() }
+ * chart orientation, the {@link WChart2DRenderer#getWidth() getWidth()}
  * corresponds to the length along the X axis, and
- * {@link WChart2DRenderer#getHeight() getHeight() } corresponds to the length
+ * {@link WChart2DRenderer#getHeight() getHeight()} corresponds to the length
  * along the Y axis. Similarly, {@link WChart2DRenderer#calcChartArea()
- * calcChartArea() } and {@link WChart2DRenderer#getChartArea() getChartArea() }
+ * calcChartArea()} and {@link WChart2DRenderer#getChartArea() getChartArea()}
  * return a rectangle where the bottom side corresponds to the lowest displayed
  * Y values, and the left side corresponds to the lowest displayed X values. To
  * map these &quot;chart coordinates&quot; to painter coordinates, use one of
- * the {@link WChart2DRenderer#hv(double x, double y) hv() } methods.
+ * the {@link WChart2DRenderer#hv(double x, double y) hv()} methods.
  * <p>
  * <i>Note, this class is part of the internal charting API, and may be subject
  * of changes and refactorings.</i>
@@ -105,7 +105,7 @@ public class WChart2DRenderer {
 	 * Returns the main plotting area rectangle.
 	 * <p>
 	 * This area is calculated and cached by
-	 * {@link WChart2DRenderer#calcChartArea() calcChartArea() }.
+	 * {@link WChart2DRenderer#calcChartArea() calcChartArea()}.
 	 */
 	public WRectF getChartArea() {
 		return this.chartArea_;
@@ -145,20 +145,24 @@ public class WChart2DRenderer {
 	 * Renders the chart.
 	 * <p>
 	 * This method renders the chart. The default implementation does the
-	 * following: <code>
-    calcChartArea();           // sets chartArea_ <br> 
-    prepareAxes();             // provides logical dimensions to the axes <br> 
-   <br> 
-    renderBackground();        // render the background <br> 
-    renderAxes(Grid);          // render the grid <br> 
-    renderSeries();            // render the data series <br> 
-    \if cpp <br> 
-    renderAxes(Line | Labels); // render the axes (lines &amp; labels) <br> 
-    \elseif java <br> 
-    renderAxes(AxisProperty.Line, AxisProperty.Labels); // render the axes (lines &amp; labels) <br> 
-    \endif  <br> 
-    renderLegend();            // render legend and titles
-  </code>
+	 * following: <blockquote>
+	 * 
+	 * <pre>
+	 * calcChartArea();           // sets chartArea_
+	 *     prepareAxes();             // provides logical dimensions to the axes
+	 *   
+	 *     renderBackground();        // render the background
+	 *     renderAxes(Grid);          // render the grid
+	 *     renderSeries();            // render the data series
+	 *     \if cpp
+	 *     renderAxes(Line | Labels); // render the axes (lines &amp; labels)
+	 *     \elseif java
+	 *     renderAxes(AxisProperty.Line, AxisProperty.Labels); // render the axes (lines &amp; labels)
+	 *     \endif 
+	 *     renderLegend();            // render legend and titles
+	 * </pre>
+	 * 
+	 * </blockquote>
 	 * <p>
 	 * You may want to reimplement this method to change the sequence of steps
 	 * for rendering the chart.
@@ -194,7 +198,7 @@ public class WChart2DRenderer {
 	 * Note that chart coordinates may not be the same as painter coordinates,
 	 * because of the chart orientation. To map from chart coordinates to
 	 * painter coordinates, use {@link WChart2DRenderer#hv(double x, double y)
-	 * hv() }.
+	 * hv()}.
 	 * <p>
 	 * The <i>currentXSegment</i> and <i>currentYSegment</i> specify the axis
 	 * segments in which you wish to map the point.
@@ -247,7 +251,7 @@ public class WChart2DRenderer {
 	 * This method renders text on the chart position <i>pos</i>, with a
 	 * particular alignment <i>flags</i>. These are both specified in chart
 	 * coordinates. The position is converted to painter coordinates using
-	 * {@link WChart2DRenderer#hv(double x, double y) hv() }, and the alignment
+	 * {@link WChart2DRenderer#hv(double x, double y) hv()}, and the alignment
 	 * flags are changed accordingly. The rotation, indicated by <i>angle</i> is
 	 * specified in painter coordinates and thus an angle of 0 always indicates
 	 * horizontal text, regardless of the chart orientation.

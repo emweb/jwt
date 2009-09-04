@@ -18,17 +18,21 @@ package eu.webtoolkit.jwt;
  * <p>
  * Usage example:
  * <p>
- * <code>
- WContainerWidget w = new WContainerWidget(this); <br> 
-		 <br> 
- WHBoxLayout layout = new WHBoxLayout(); <br> 
- layout.addWidget(new WText(&quot;One&quot;)); <br> 
- layout.addWidget(new WText(&quot;Two&quot;)); <br> 
- layout.addWidget(new WText(&quot;Three&quot;)); <br> 
- layout.addWidget(new WText(&quot;Four&quot;)); <br> 
-	  <br> 
- w.setLayout(layout, AlignmentFlag.AlignTop, AlignmentFlag.AlignJustify);
-</code>
+ * <blockquote>
+ * 
+ * <pre>
+ * WContainerWidget w = new WContainerWidget(this);
+ * 
+ * WHBoxLayout layout = new WHBoxLayout();
+ * layout.addWidget(new WText(&quot;One&quot;));
+ * layout.addWidget(new WText(&quot;Two&quot;));
+ * layout.addWidget(new WText(&quot;Three&quot;));
+ * layout.addWidget(new WText(&quot;Four&quot;));
+ * 
+ * w.setLayout(layout, AlignmentFlag.AlignTop, AlignmentFlag.AlignJustify);
+ * </pre>
+ * 
+ * </blockquote>
  * <p>
  * <p>
  * <i><b>Note:</b>First consider if you can achieve your layout using CSS !</i>

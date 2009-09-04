@@ -15,8 +15,8 @@ package eu.webtoolkit.jwt;
  * always-visible navigation menu for a web application.
  * <p>
  * When initially created, the menu is invisible, until
- * {@link WPopupMenu#popup(WPoint p) popup() } or
- * {@link WPopupMenu#exec(WPoint p) exec() } is called. Then, the menu will
+ * {@link WPopupMenu#popup(WPoint p) popup()} or
+ * {@link WPopupMenu#exec(WPoint p) exec()} is called. Then, the menu will
  * remain visible until an item is selected, or the user cancels the menu (by
  * hitting Escape or clicking elsewhere).
  * <p>
@@ -25,78 +25,86 @@ package eu.webtoolkit.jwt;
  * item.
  * <p>
  * Similar in use as {@link WDialog}, there are two ways of using the menu. The
- * simplest way is to use one of the {@link WPopupMenu#exec(WPoint p) exec() }
+ * simplest way is to use one of the {@link WPopupMenu#exec(WPoint p) exec()}
  * methods, to use a reentrant event loop and wait until the user cancelled the
  * popup menu (by hitting Escape or clicking elsewhere), or selected an item.
  * <p>
  * Alternatively, you can use one of the {@link WPopupMenu#popup(WPoint p)
- * popup() } methods to show the menu and listen to the
+ * popup()} methods to show the menu and listen to the
  * {@link WPopupMenu#aboutToHide() aboutToHide} signal where you read the
- * {@link WPopupMenu#getResult() getResult() }.
+ * {@link WPopupMenu#getResult() getResult()}.
  * <p>
  * You have several options to react to the selection of an item:
  * <ul>
  * <li>Either you use the {@link WPopupMenuItem} itself to identify the action,
  * perhaps by specialization or simply by binding custom data using
- * {@link WPopupMenuItem#setData(Object data) setData() }.</li>
+ * {@link WPopupMenuItem#setData(Object data) setData()}.</li>
  * <li>You can bind a separate method to each item&apos;s
- * {@link WPopupMenuItem#triggered() triggered() } signal.</li>
+ * {@link WPopupMenuItem#triggered() triggered()} signal.</li>
  * </ul>
  * <p>
  * Usage example:
  * <p>
- * <code>
- // Create a menu with some items <br> 
- WPopupMenu popup = new WPopupMenu(); <br> 
- popup.addItem(&quot;icons/item1.gif&quot;, &quot;Item 1&quot;); <br> 
- popup.addItem(&quot;Item 2&quot;).setCheckable(true); <br> 
- popup.addItem(&quot;Item 3&quot;); <br> 
- popup.addSeparator(); <br> 
- popup.addItem(&quot;Item 4&quot;); <br> 
- popup.addSeparator(); <br> 
- popup.addItem(&quot;Item 5&quot;); <br> 
- popup.addItem(&quot;Item 6&quot;); <br> 
- popup.addSeparator(); <br> 
-		  <br> 
- WPopupMenu subMenu = new WPopupMenu(); <br> 
- subMenu.addItem(&quot;Sub Item 1&quot;); <br> 
- subMenu.addItem(&quot;Sub Item 2&quot;); <br> 
- popup.addMenu(&quot;Item 7&quot;, subMenu); <br> 
-		  <br> 
- WPopupMenuItem item = popup.exec(event); <br> 
-		  <br> 
- if (item) { <br> 
-  // ... do associated action. <br> 
- }
-</code>
+ * <blockquote>
+ * 
+ * <pre>
+ * // Create a menu with some items
+ * WPopupMenu popup = new WPopupMenu();
+ * popup.addItem(&quot;icons/item1.gif&quot;, &quot;Item 1&quot;);
+ * popup.addItem(&quot;Item 2&quot;).setCheckable(true);
+ * popup.addItem(&quot;Item 3&quot;);
+ * popup.addSeparator();
+ * popup.addItem(&quot;Item 4&quot;);
+ * popup.addSeparator();
+ * popup.addItem(&quot;Item 5&quot;);
+ * popup.addItem(&quot;Item 6&quot;);
+ * popup.addSeparator();
+ * 
+ * WPopupMenu subMenu = new WPopupMenu();
+ * subMenu.addItem(&quot;Sub Item 1&quot;);
+ * subMenu.addItem(&quot;Sub Item 2&quot;);
+ * popup.addMenu(&quot;Item 7&quot;, subMenu);
+ * 
+ * WPopupMenuItem item = popup.exec(event);
+ * 
+ * if (item) {
+ * 	// ... do associated action.
+ * }
+ * </pre>
+ * 
+ * </blockquote>
  * <p>
  * The menu implementation does not provide any style. You can style the menu
  * using CSS.
  * <p>
- * For example: <code>
- div.Wt-popupmenu { <br> 
-     background: white; <br> 
-     color: black; <br> 
-    border: 1px solid #666666; <br> 
-    z-index: 200; <br> 
-    cursor: default; <br> 
- } <br> 
- <br> 
- div.Wt-popupmenu .notselected, div.Wt-popupmenu .selected { <br> 
-     padding: 2px 0px; <br> 
- } <br> 
- <br> 
- div.Wt-popupmenu .selected { <br> 
-     background: blue; <br> 
-     color: white; <br> 
- } <br> 
- <br> 
- div.Wt-popupmenu .separator { <br> 
-     border-top: 1px solid #CCCCCC; <br> 
-    border-bottom: 1px solid #DDDDDD; <br> 
-    margin: 0px 3px; <br> 
- }
-</code>
+ * For example: <blockquote>
+ * 
+ * <pre>
+ * div.Wt-popupmenu {
+ *      background: white;
+ *      color: black;
+ *     border: 1px solid #666666;
+ *     z-index: 200;
+ *     cursor: default;
+ *  }
+ * 
+ *  div.Wt-popupmenu .notselected, div.Wt-popupmenu .selected {
+ *      padding: 2px 0px;
+ *  }
+ * 
+ *  div.Wt-popupmenu .selected {
+ *      background: blue;
+ *      color: white;
+ *  }
+ * 
+ *  div.Wt-popupmenu .separator {
+ *      border-top: 1px solid #CCCCCC;
+ *     border-bottom: 1px solid #DDDDDD;
+ *     margin: 0px 3px;
+ *  }
+ * </pre>
+ * 
+ * </blockquote>
  * <p>
  * 
  * @see WPopupMenuItem
@@ -106,8 +114,8 @@ public class WPopupMenu extends WCompositeWidget {
 	 * Create a new popup menu.
 	 * <p>
 	 * The menu is hidden, by default, and must be shown using
-	 * {@link WPopupMenu#popup(WPoint p) popup() } or
-	 * {@link WPopupMenu#exec(WPoint p) exec() }.
+	 * {@link WPopupMenu#popup(WPoint p) popup()} or
+	 * {@link WPopupMenu#exec(WPoint p) exec()}.
 	 */
 	public WPopupMenu() {
 		super();
@@ -255,7 +263,7 @@ public class WPopupMenu extends WCompositeWidget {
 	 * Show the the popup at the location of a mouse event.
 	 * <p>
 	 * This is a convenience method for {@link WPopupMenu#popup(WPoint p)
-	 * popup() } that uses the event&apos;s document coordinates.
+	 * popup()} that uses the event&apos;s document coordinates.
 	 * <p>
 	 * 
 	 * @see WPopupMenu#popup(WPoint p)
@@ -269,7 +277,7 @@ public class WPopupMenu extends WCompositeWidget {
 	 * Execute the the popup at a position.
 	 * <p>
 	 * Displays the popup at a point with document coordinates <i>p</i>, using
-	 * {@link WPopupMenu#popup(WPoint p) popup() }, and the waits until a menu
+	 * {@link WPopupMenu#popup(WPoint p) popup()}, and the waits until a menu
 	 * item is selected, or the menu is cancelled.
 	 * <p>
 	 * Returns the selected menu (or sub-menu) item, or 0 if the user cancelled
@@ -295,8 +303,8 @@ public class WPopupMenu extends WCompositeWidget {
 	/**
 	 * Execute the the popup at the location of a mouse event.
 	 * <p>
-	 * This is a convenience method for {@link WPopupMenu#exec(WPoint p) exec()
-	 * } that uses the event&apos;s document coordinates.
+	 * This is a convenience method for {@link WPopupMenu#exec(WPoint p) exec()}
+	 * that uses the event&apos;s document coordinates.
 	 * <p>
 	 * 
 	 * @see WPopupMenu#exec(WPoint p)
@@ -330,7 +338,7 @@ public class WPopupMenu extends WCompositeWidget {
 	 * This signal is emitted when the popup is hidden, either because an item
 	 * was selected, or when the menu was cancelled.
 	 * <p>
-	 * You can use {@link WPopupMenu#getResult() getResult() } to get the
+	 * You can use {@link WPopupMenu#getResult() getResult()} to get the
 	 * selected item.
 	 */
 	public Signal aboutToHide() {

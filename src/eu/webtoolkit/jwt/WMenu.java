@@ -23,36 +23,40 @@ import eu.webtoolkit.jwt.utils.StringUtils;
  * <p>
  * Usage example:
  * <p>
- * <code>
- // create the stack where the contents will be located <br> 
- WStackedWidget contents = new WStackedWidget(contentsParent); <br> 
-		  <br> 
- // create a menu <br> 
- WMenu menu = new WMenu(contents, Orientation.Vertical, menuParent); <br> 
-		  <br> 
- // add four items using the default lazy loading policy. <br> 
- menu.addItem(&quot;Introduction&quot;, new WText(tr(&quot;intro&quot;)); <br> 
- menu.addItem(&quot;Download&quot;, new WText(&quot;Not yet available&quot;)); <br> 
- menu.addItem(&quot;Demo&quot;, new DemoWidget()); <br> 
- menu.addItem(new WMenuItem(&quot;Demo2&quot;, new DemoWidget()));
-</code>
+ * <blockquote>
+ * 
+ * <pre>
+ * // create the stack where the contents will be located
+ *  WStackedWidget contents = new WStackedWidget(contentsParent);
+ * 		 
+ *  // create a menu
+ *  WMenu menu = new WMenu(contents, Orientation.Vertical, menuParent);
+ * 		 
+ *  // add four items using the default lazy loading policy.
+ *  menu.addItem(&quot;Introduction&quot;, new WText(tr(&quot;intro&quot;));
+ *  menu.addItem(&quot;Download&quot;, new WText(&quot;Not yet available&quot;));
+ *  menu.addItem(&quot;Demo&quot;, new DemoWidget());
+ *  menu.addItem(new WMenuItem(&quot;Demo2&quot;, new DemoWidget()));
+ * </pre>
+ * 
+ * </blockquote>
  * <p>
  * After contruction, the first entry will be selected. At any time, it is
  * possible to select a particular item using
- * {@link WMenu#select(WMenuItem item) select() }.
+ * {@link WMenu#select(WMenuItem item) select()}.
  * <p>
  * The WMenu implementation offers fine-grained control on how contents should
  * be preloaded. By default, all contents is lazy-loaded, only when needed. To
  * improve response time, an item may also be preloaded (using
  * {@link WMenu#addItem(CharSequence name, WWidget contents, WMenuItem.LoadPolicy policy)
- * addItem() }). In that case, the item will be loaded in the background, before
+ * addItem()}). In that case, the item will be loaded in the background, before
  * its first use. In any case, once the contents corresponding to a menu item is
  * loaded, subsequent navigation to it is handled entirely client-side.
  * <p>
  * The WMenu may participate in the application&apos;s internal path, which lets
  * menu items correspond to internal URLs, see
- * {@link WMenu#setInternalPathEnabled(String basePath) setInternalPathEnabled()
- * }.
+ * {@link WMenu#setInternalPathEnabled(String basePath)
+ * setInternalPathEnabled()}.
  * <p>
  * The layout of the menu may be Horizontal or Vertical. The look of the items
  * may be defined through style sheets. The default {@link WMenuItem}
@@ -64,19 +68,23 @@ import eu.webtoolkit.jwt.utils.StringUtils;
  * For example, the (old) JWt homepage used the following CSS rules to style the
  * two menu (which both are assigned the style class .menu):
  * <p>
- * <code>
-.menu * .item { <br> 
-  cursor: pointer; cursor: hand; <br> 
-  color: blue; <br> 
-  text-decoration: underline; <br> 
-} <br> 
- <br> 
-.menu * .itemselected { <br> 
-  color: blue; <br> 
-  text-decoration: underline; <br> 
-  font-weight: bold;   <br> 
-}
-</code>
+ * <blockquote>
+ * 
+ * <pre>
+ * .menu * .item {
+ *   cursor: pointer; cursor: hand;
+ *   color: blue;
+ *   text-decoration: underline;
+ * }
+ * 
+ * .menu * .itemselected {
+ *   color: blue;
+ *   text-decoration: underline;
+ *   font-weight: bold;  
+ * }
+ * </pre>
+ * 
+ * </blockquote>
  * <p>
  * You may customize the rendering and behaviour of menu entries by specializing
  * {@link WMenuItem}.
@@ -286,7 +294,7 @@ public class WMenu extends WCompositeWidget {
 	 * <p>
 	 * This signal is emitted when an item was selected. It is emitted both when
 	 * the user activated an item, or when {@link WMenu#select(WMenuItem item)
-	 * select() } was invoked.
+	 * select()} was invoked.
 	 * <p>
 	 * 
 	 * @see WMenu#itemSelectRendered()
@@ -399,12 +407,12 @@ public class WMenu extends WCompositeWidget {
 	 * pages.
 	 * <p>
 	 * For each menu item, {@link WMenuItem#getPathComponent()
-	 * WMenuItem#getPathComponent() } is appended to the internal base path (
-	 * {@link WMenu#getInternalBasePath() getInternalBasePath() }), which
+	 * WMenuItem#getPathComponent()} is appended to the internal base path (
+	 * {@link WMenu#getInternalBasePath() getInternalBasePath()}), which
 	 * defaults to the internal path ({@link WApplication#getInternalPath()
-	 * WApplication#getInternalPath() }) but may be changed using
-	 * {@link WMenu#setInternalBasePath(String basePath) setInternalBasePath() }
-	 * , with a &apos;/&apos; appended to turn it into a folder, if needed.
+	 * WApplication#getInternalPath()}) but may be changed using
+	 * {@link WMenu#setInternalBasePath(String basePath) setInternalBasePath()},
+	 * with a &apos;/&apos; appended to turn it into a folder, if needed.
 	 * <p>
 	 * By default, menu interaction does not change the application internal
 	 * path.
@@ -474,15 +482,15 @@ public class WMenu extends WCompositeWidget {
 	 * Returns the internal base path.
 	 * <p>
 	 * The default value is the application&apos;s internalPath (
-	 * {@link WApplication#getInternalPath() WApplication#getInternalPath() })
+	 * {@link WApplication#getInternalPath() WApplication#getInternalPath()})
 	 * that was recorded when
 	 * {@link WMenu#setInternalPathEnabled(String basePath)
-	 * setInternalPathEnabled() } was called, and together with each
-	 * {@link WMenuItem#getPathComponent() WMenuItem#getPathComponent() }
+	 * setInternalPathEnabled()} was called, and together with each
+	 * {@link WMenuItem#getPathComponent() WMenuItem#getPathComponent()}
 	 * determines the paths for each item.
 	 * <p>
-	 * For example, if {@link WMenu#getInternalBasePath() getInternalBasePath()
-	 * } is <code>&quot;/examples/&quot;</code> and pathComponent() for a
+	 * For example, if {@link WMenu#getInternalBasePath() getInternalBasePath()}
+	 * is <code>&quot;/examples/&quot;</code> and pathComponent() for a
 	 * particular item is <code>&quot;charts/&quot;</code>, then the internal
 	 * path for that item will be <code>&quot;/examples/charts/&quot;</code>.
 	 * <p>

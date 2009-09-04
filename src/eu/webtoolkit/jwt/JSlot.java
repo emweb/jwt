@@ -26,24 +26,28 @@ package eu.webtoolkit.jwt;
  * client-side event handling.
  * <p>
  * The JavaScript code may be set (or changed) using the
- * {@link JSlot#setJavaScript(String js) setJavaScript() } method which takes a
+ * {@link JSlot#setJavaScript(String js) setJavaScript()} method which takes a
  * string that implements a JavaScript function with the following signature:
  * <p>
- * <code>
- function(sender, event) { <br> 
-   // handle the event, and sender is a reference to the DOM element <br> 
-   // which captured the event (and holds the signal). Therefore it <br> 
-   // equivalent to the sender for a normal %Wt slot. <br> 
- <br> 
-   // You can prevent the default action using: <br> 
-   ${WT_CLASS}.cancelEvent(event); <br> 
-   // (where ${WT_CLASS} should be the value of the WT_CLASS define <br> 
- }
-</code>
+ * <blockquote>
+ * 
+ * <pre>
+ * function(sender, event) {
+ *    // handle the event, and sender is a reference to the DOM element
+ *    // which captured the event (and holds the signal). Therefore it
+ *    // equivalent to the sender for a normal %Wt slot.
+ * 
+ *    // You can prevent the default action using:
+ *    ${WT_CLASS}.cancelEvent(event);
+ *    // (where ${WT_CLASS} should be the value of the WT_CLASS define
+ *  }
+ * </pre>
+ * 
+ * </blockquote>
  * <p>
- * In the JavaScript code, you may use {@link WWidget#getJsRef() getJsRef() } to
+ * In the JavaScript code, you may use {@link WWidget#getJsRef() getJsRef()} to
  * obtain the DOM element corresponding to any {@link WWidget}, or
- * {@link WObject#getId() getId() } to obtain the DOM id. In addition you may
+ * {@link WObject#getId() getId()} to obtain the DOM id. In addition you may
  * trigger server-side events using the JavaScript WtSignalEmit function (see
  * {@link JSignal} documentation). That&apos;s how far we can help you. For the
  * rest you are left to yourself, buggy browsers and quirky JavaScript (<a
@@ -112,11 +116,15 @@ public class JSlot {
 	 * When the slot is triggered, the corresponding JavaScript is executed.
 	 * <p>
 	 * The JavaScript function takes two parameters and thus should look like:
-	 * <code>
-       function(obj, event) { <br> 
-         // ... <br> 
-       }
-  </code>
+	 * <blockquote>
+	 * 
+	 * <pre>
+	 * function(obj, event) {
+	 *          // ...
+	 *        }
+	 * </pre>
+	 * 
+	 * </blockquote>
 	 * <p>
 	 * The first parameter <i>obj</i> is a reference to the DOM element that
 	 * generates the event. The <i>event</i> refers to the JavaScript event

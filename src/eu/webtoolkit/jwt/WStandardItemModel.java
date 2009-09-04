@@ -20,27 +20,27 @@ import java.util.Map;
  * <p>
  * The data itself are organized in {@link WStandardItem} objects. There is one
  * invisible root object ({@link WStandardItemModel#getInvisibleRootItem()
- * getInvisibleRootItem() }) that holds the toplevel data. Most methods in this
+ * getInvisibleRootItem()}) that holds the toplevel data. Most methods in this
  * class that access or manipulate data internally operate on this root item.
  * <p>
  * If you want to use the model as a table, then you can use
  * {@link WStandardItemModel#WStandardItemModel(int rows, int columns, WObject parent)
- * WStandardItemModel() } to set the initial table size, and use the
- * {@link WStandardItemModel#getItem(int row, int column) getItem() } and
+ * WStandardItemModel()} to set the initial table size, and use the
+ * {@link WStandardItemModel#getItem(int row, int column) getItem()} and
  * {@link WStandardItemModel#setItem(int row, int column, WStandardItem item)
- * setItem() } methods to set data. You can change the geometry by inserting
- * rows ({@link WStandardItemModel#insertRow(int row, List items) insertRow() })
- * or columns ({@link WStandardItemModel#insertColumn(int column, List items)
- * insertColumn() }) or removing rows (
- * {@link WAbstractItemModel#removeRow(int row, WModelIndex parent) removeRow()
- * }) or columns (
+ * setItem()} methods to set data. You can change the geometry by inserting rows
+ * ({@link WStandardItemModel#insertRow(int row, List items) insertRow()}) or
+ * columns ({@link WStandardItemModel#insertColumn(int column, List items)
+ * insertColumn()}) or removing rows (
+ * {@link WAbstractItemModel#removeRow(int row, WModelIndex parent) removeRow()}
+ * ) or columns (
  * {@link WAbstractItemModel#removeColumn(int column, WModelIndex parent)
- * removeColumn() }).
+ * removeColumn()}).
  * <p>
  * If you want to use the model as a tree (or tree table), then you can use the
  * default constructor to start with an empty tree, and use the
  * {@link WStandardItem} API on
- * {@link WStandardItemModel#getInvisibleRootItem() getInvisibleRootItem() } to
+ * {@link WStandardItemModel#getInvisibleRootItem() getInvisibleRootItem()} to
  * manipulate the tree root. When you are building a tree, the column count at
  * each node is 1. When you are building a tree table, you can add additional
  * columns of data for each internal node. Only the items in the first column
@@ -48,8 +48,8 @@ import java.util.Map;
  * <p>
  * When using the model with a view class, you can use the
  * {@link WStandardItemModel#getItemFromIndex(WModelIndex index)
- * getItemFromIndex() } and
- * {@link WStandardItemModel#indexFromItem(WStandardItem item) indexFromItem() }
+ * getItemFromIndex()} and
+ * {@link WStandardItemModel#indexFromItem(WStandardItem item) indexFromItem()}
  * models to translate between model indexes (that are used by the view class)
  * and standard items.
  */
@@ -115,9 +115,9 @@ public class WStandardItemModel extends WAbstractItemModel {
 	 * <p>
 	 * After clearing the model,
 	 * {@link WAbstractItemModel#getRowCount(WModelIndex parent)
-	 * WAbstractItemModel#getRowCount() } and
+	 * WAbstractItemModel#getRowCount()} and
 	 * {@link WAbstractItemModel#getColumnCount(WModelIndex parent)
-	 * WAbstractItemModel#getColumnCount() } are 0.
+	 * WAbstractItemModel#getColumnCount()} are 0.
 	 */
 	public void clear() {
 		this.invisibleRootItem_.setRowCount(0);
@@ -141,8 +141,8 @@ public class WStandardItemModel extends WAbstractItemModel {
 	 * Returns the model index for a particular item.
 	 * <p>
 	 * If the <i>item</i> is the
-	 * {@link WStandardItemModel#getInvisibleRootItem() getInvisibleRootItem() }
-	 * , then an invalid index is returned.
+	 * {@link WStandardItemModel#getInvisibleRootItem() getInvisibleRootItem()},
+	 * then an invalid index is returned.
 	 * <p>
 	 * 
 	 * @see WStandardItemModel#getItemFromIndex(WModelIndex index)
@@ -160,7 +160,7 @@ public class WStandardItemModel extends WAbstractItemModel {
 	 * Returns the standard item that corresponds to a model index.
 	 * <p>
 	 * If the index is an invalid index, then the
-	 * {@link WStandardItemModel#getInvisibleRootItem() getInvisibleRootItem() }
+	 * {@link WStandardItemModel#getInvisibleRootItem() getInvisibleRootItem()}
 	 * is returned.
 	 * <p>
 	 * 
@@ -176,9 +176,13 @@ public class WStandardItemModel extends WAbstractItemModel {
 	 * Appends a single column of top level <i>items</i>. If necessary, the row
 	 * count is increased.
 	 * <p>
-	 * Equivalent to: <code>
-   insertColumn(columnCount(), items);
-  </code>
+	 * Equivalent to: <blockquote>
+	 * 
+	 * <pre>
+	 * insertColumn(columnCount(), items);
+	 * </pre>
+	 * 
+	 * </blockquote>
 	 * <p>
 	 * 
 	 * @see WStandardItemModel#insertColumn(int column, List items)
@@ -194,9 +198,13 @@ public class WStandardItemModel extends WAbstractItemModel {
 	 * Inserts a single column of top level <i>items</i> at column
 	 * <i>column</i>. If necessary, the row count is increased.
 	 * <p>
-	 * Equivalent to: <code>
-   invisibleRootItem()-&gt;insertColumn(column, items);
-  </code>
+	 * Equivalent to: <blockquote>
+	 * 
+	 * <pre>
+	 * invisibleRootItem()-&gt;insertColumn(column, items);
+	 * </pre>
+	 * 
+	 * </blockquote>
 	 * <p>
 	 * 
 	 * @see WStandardItem#insertColumn(int column, List items)
@@ -211,9 +219,13 @@ public class WStandardItemModel extends WAbstractItemModel {
 	 * Appends a single row of top level <i>items</i>. If necessary, the column
 	 * count is increased.
 	 * <p>
-	 * Equivalent to: <code>
-   insertRow(rowCount(), items);
-  </code>
+	 * Equivalent to: <blockquote>
+	 * 
+	 * <pre>
+	 * insertRow(rowCount(), items);
+	 * </pre>
+	 * 
+	 * </blockquote>
 	 * <p>
 	 * 
 	 * @see WStandardItemModel#insertRow(int row, List items)
@@ -229,9 +241,13 @@ public class WStandardItemModel extends WAbstractItemModel {
 	 * Inserts a single row of top level <i>items</i> at row <i>row</i>. If
 	 * necessary, the column count is increased.
 	 * <p>
-	 * Equivalent to: <code>
-   invisibleRootItem()-&gt;insertRow(row, items);
-  </code>
+	 * Equivalent to: <blockquote>
+	 * 
+	 * <pre>
+	 * invisibleRootItem()-&gt;insertRow(row, items);
+	 * </pre>
+	 * 
+	 * </blockquote>
 	 * <p>
 	 * 
 	 * @see WStandardItem#insertRow(int row, List items)
@@ -245,9 +261,13 @@ public class WStandardItemModel extends WAbstractItemModel {
 	 * <p>
 	 * Appends a single toplevel row, with a single item.
 	 * <p>
-	 * Equivalent to: <code>
-   insertRow(rowCount(), item);
-  </code>
+	 * Equivalent to: <blockquote>
+	 * 
+	 * <pre>
+	 * insertRow(rowCount(), item);
+	 * </pre>
+	 * 
+	 * </blockquote>
 	 * <p>
 	 * 
 	 * @see WStandardItem#insertRow(int row, WStandardItem item)
@@ -261,9 +281,13 @@ public class WStandardItemModel extends WAbstractItemModel {
 	 * <p>
 	 * Inserts a single toplevel row, with a single item.
 	 * <p>
-	 * Equivalent to: <code>
-   invisibleRootItem()-&gt;insertRow(row, item);
-  </code>
+	 * Equivalent to: <blockquote>
+	 * 
+	 * <pre>
+	 * invisibleRootItem()-&gt;insertRow(row, item);
+	 * </pre>
+	 * 
+	 * </blockquote>
 	 * <p>
 	 * 
 	 * @see WStandardItem#insertRow(int row, WStandardItem item)
@@ -279,9 +303,13 @@ public class WStandardItemModel extends WAbstractItemModel {
 	 * no item was set previously at that position, or if the indicated position
 	 * is out of bounds.
 	 * <p>
-	 * Equivalent to: <code>
-   invisibleRootItem()-&gt;child(row, column);
-  </code>
+	 * Equivalent to: <blockquote>
+	 * 
+	 * <pre>
+	 * invisibleRootItem()-&gt;child(row, column);
+	 * </pre>
+	 * 
+	 * </blockquote>
 	 * <p>
 	 * 
 	 * @see WStandardItem#getChild(int row, int column)
@@ -307,9 +335,13 @@ public class WStandardItemModel extends WAbstractItemModel {
 	 * <p>
 	 * If an item was previously set for that position, it is deleted first.
 	 * <p>
-	 * Equivalent to: <code>
-   invisibleRootItem()-&gt;setChild(row, column, item);
-  </code>
+	 * Equivalent to: <blockquote>
+	 * 
+	 * <pre>
+	 * invisibleRootItem()-&gt;setChild(row, column, item);
+	 * </pre>
+	 * 
+	 * </blockquote>
 	 * <p>
 	 * 
 	 * @see WStandardItem#setChild(int row, int column, WStandardItem item)
@@ -337,7 +369,7 @@ public class WStandardItemModel extends WAbstractItemModel {
 	 * no item was previously set and thus created.
 	 * <p>
 	 * The new item is created based on this prototype by using
-	 * {@link WStandardItem#clone() WStandardItem#clone() }.
+	 * {@link WStandardItem#clone() WStandardItem#clone()}.
 	 * <p>
 	 * The default prototype is WStandardItem().
 	 * <p>
@@ -355,9 +387,13 @@ public class WStandardItemModel extends WAbstractItemModel {
 	 * Removes a column from the model, and returns the items that it contained.
 	 * Ownership of the items is transferred out of the model.
 	 * <p>
-	 * Equivalent to: <code>
-   invisibleRootItem()-&gt;takeColumn(column);
-  </code>
+	 * Equivalent to: <blockquote>
+	 * 
+	 * <pre>
+	 * invisibleRootItem()-&gt;takeColumn(column);
+	 * </pre>
+	 * 
+	 * </blockquote>
 	 * <p>
 	 * 
 	 * @see WStandardItem#takeColumn(int column)
@@ -373,9 +409,13 @@ public class WStandardItemModel extends WAbstractItemModel {
 	 * Removes a row from the model, and returns the items that it contained.
 	 * Ownership of the items is transferred out of the model.
 	 * <p>
-	 * Equivalent to: <code>
-   invisibleRootItem()-&gt;takeRow(row);
-  </code>
+	 * Equivalent to: <blockquote>
+	 * 
+	 * <pre>
+	 * invisibleRootItem()-&gt;takeRow(row);
+	 * </pre>
+	 * 
+	 * </blockquote>
 	 * <p>
 	 * 
 	 * @see WStandardItem#takeRow(int row)
@@ -391,9 +431,13 @@ public class WStandardItemModel extends WAbstractItemModel {
 	 * Removes an item from the model, and returns it. Ownership of the item is
 	 * transferred out of the model.
 	 * <p>
-	 * Equivalent to: <code>
-   invisibleRootItem()-&gt;takeItem(row, column);
-  </code>
+	 * Equivalent to: <blockquote>
+	 * 
+	 * <pre>
+	 * invisibleRootItem()-&gt;takeItem(row, column);
+	 * </pre>
+	 * 
+	 * </blockquote>
 	 * <p>
 	 * 
 	 * @see WStandardItemModel#takeItem(int row, int column)

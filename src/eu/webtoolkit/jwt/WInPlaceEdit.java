@@ -15,22 +15,30 @@ package eu.webtoolkit.jwt;
  * cancel button.
  * <p>
  * When the user saves the edit, the {@link WInPlaceEdit#valueChanged()
- * valueChanged() } signal is emitted.
+ * valueChanged()} signal is emitted.
  * <p>
  * Usage example:
  * <p>
- * <code>
- WContainerWidget w = new WContainerWidget(); <br> 
- new WText(&quot;Name: &quot;, w); <br> 
- WInPlaceEdit edit = new WInPlaceEdit(&quot;Bob Smith&quot;, w); <br> 
- edit.setStyleClass(&quot;inplace&quot;);
-</code>
+ * <blockquote>
+ * 
+ * <pre>
+ * WContainerWidget w = new WContainerWidget();
+ * new WText(&quot;Name: &quot;, w);
+ * WInPlaceEdit edit = new WInPlaceEdit(&quot;Bob Smith&quot;, w);
+ * edit.setStyleClass(&quot;inplace&quot;);
+ * </pre>
+ * 
+ * </blockquote>
  * <p>
- * CSS stylesheet: <code>
- .inplace span:hover { <br> 
-    background-color: gray; <br> 
- }
-</code>
+ * CSS stylesheet: <blockquote>
+ * 
+ * <pre>
+ * .inplace span:hover {
+ *     background-color: gray;
+ *  }
+ * </pre>
+ * 
+ * </blockquote>
  * <p>
  * This code will produce an edit that looks like: <div align="center"> <img
  * src="doc-files//WInPlaceEdit-1.png" alt="WInPlaceEdit text mode">

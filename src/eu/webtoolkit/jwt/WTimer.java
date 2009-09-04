@@ -11,14 +11,14 @@ package eu.webtoolkit.jwt;
  * <p>
  * 
  * To use a timer, create a WTimer instance, set the timer interval using
- * {@link WTimer#setInterval(int msec) setInterval() } and connect a slot to the
- * timeout signal. Then, start the timer using {@link WTimer#start() start() }.
+ * {@link WTimer#setInterval(int msec) setInterval()} and connect a slot to the
+ * timeout signal. Then, start the timer using {@link WTimer#start() start()}.
  * An active timer may be cancelled at any time using {@link WTimer#stop()
- * stop() }.
+ * stop()}.
  * <p>
  * By default, a timer will continue to generate events until you
- * {@link WTimer#stop() stop() } it. To create a timer that will fire only once,
- * use {@link WTimer#setSingleShot(boolean singleShot) setSingleShot() }.
+ * {@link WTimer#stop() stop()} it. To create a timer that will fire only once,
+ * use {@link WTimer#setSingleShot(boolean singleShot) setSingleShot()}.
  * <p>
  * When connecting stateless slot implementations to the timeout signal, these
  * stateless slot implementations will be used as for any other signal (when
@@ -106,13 +106,17 @@ public class WTimer extends WObject {
 	 * This static function calls a slot after a given time interval.
 	 * <p>
 	 * For example, the following code will call this-&gt;doSome() after 2
-	 * seconds: <code>
-     WTimer::singleShot(2000, SLOT(this, MyClass::doSome));
-  </code>
+	 * seconds: <blockquote>
+	 * 
+	 * <pre>
+	 * WTimer::singleShot(2000, SLOT(this, MyClass::doSome));
+	 * </pre>
+	 * 
+	 * </blockquote>
 	 * <p>
-	 * Start the timer. The timer will be {@link WTimer#isActive() isActive() },
+	 * Start the timer. The timer will be {@link WTimer#isActive() isActive()},
 	 * until either the interval has elapsed, after which the timeout signal is
-	 * activated, or until {@link WTimer#stop() stop() } is called.
+	 * activated, or until {@link WTimer#stop() stop()} is called.
 	 */
 	public void start() {
 		if (!this.active_) {
@@ -140,7 +144,7 @@ public class WTimer extends WObject {
 	/**
 	 * Stop the timer.
 	 * <p>
-	 * You may stop the timer during its {@link WTimer#timeout() timeout() }, or
+	 * You may stop the timer during its {@link WTimer#timeout() timeout()}, or
 	 * cancel a running timer at any other time.
 	 * <p>
 	 * 

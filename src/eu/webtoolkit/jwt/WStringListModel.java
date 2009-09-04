@@ -25,14 +25,14 @@ import eu.webtoolkit.jwt.utils.StringUtils;
  * <p>
  * You can populate the model by passing a list of strings to its consructor, or
  * by using the {@link WStringListModel#setStringList(List strings)
- * setStringList() } method. You can set or retrieve data using the
+ * setStringList()} method. You can set or retrieve data using the
  * {@link WStringListModel#setData(WModelIndex index, Object value, int role)
- * setData() } and {@link WStringListModel#getData(WModelIndex index, int role)
- * getData() } methods, and add or remove data using the
+ * setData()} and {@link WStringListModel#getData(WModelIndex index, int role)
+ * getData()} methods, and add or remove data using the
  * {@link WStringListModel#insertRows(int row, int count, WModelIndex parent)
- * insertRows() } and
+ * insertRows()} and
  * {@link WStringListModel#removeRows(int row, int count, WModelIndex parent)
- * removeRows() } methods.
+ * removeRows()} methods.
  * <p>
  * 
  * @see WComboBox

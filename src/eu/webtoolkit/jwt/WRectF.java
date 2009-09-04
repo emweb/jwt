@@ -119,7 +119,7 @@ public class WRectF {
 	/**
 	 * Returns the X-position of the left side.
 	 * <p>
-	 * This is equivalent to {@link WRectF#getLeft() getLeft() }.
+	 * This is equivalent to {@link WRectF#getLeft() getLeft()}.
 	 * <p>
 	 * 
 	 * @see WRectF#getY()
@@ -132,7 +132,7 @@ public class WRectF {
 	/**
 	 * Returns the Y-position of the top side.
 	 * <p>
-	 * This is equivalent to {@link WRectF#getTop() getTop() }.
+	 * This is equivalent to {@link WRectF#getTop() getTop()}.
 	 * <p>
 	 * 
 	 * @see WRectF#getX()

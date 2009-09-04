@@ -19,8 +19,8 @@ import java.util.List;
  * The implementation is based on <a
  * href="http://tinymce.moxiecode.com/">TinyMCE</a>. The widget may be
  * configured and tailored using the
- * {@link WTextEdit#setExtraPlugins(String plugins) setExtraPlugins() } and
- * {@link WTextEdit#setToolBar(int i, String config) setToolBar() } methods that
+ * {@link WTextEdit#setExtraPlugins(String plugins) setExtraPlugins()} and
+ * {@link WTextEdit#setToolBar(int i, String config) setToolBar()} methods that
  * provide direct access to the underlying TinyMCE component.
  * <p>
  * To use this widget, you need to download TinyMCE (version 3.0.7 or later) and
@@ -188,8 +188,7 @@ public class WTextEdit extends WTextArea {
 	 * &quot;&quot;).
 	 * <p>
 	 * Note that some buttons are only available after loading extra plugins
-	 * using {@link WTextEdit#setExtraPlugins(String plugins) setExtraPlugins()
-	 * }.
+	 * using {@link WTextEdit#setExtraPlugins(String plugins) setExtraPlugins()}.
 	 * <p>
 	 * <p>
 	 * <i><b>Note:</b>The tool bar configuration can only be set before the

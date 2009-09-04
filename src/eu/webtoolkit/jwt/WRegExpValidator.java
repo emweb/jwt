@@ -28,13 +28,18 @@ import eu.webtoolkit.jwt.utils.StringUtils;
  * <p>
  * Usage example:
  * <p>
- * <code>
- WLineEdit lineEdit = new WLineEdit(this); <br> 
- // an email address validator <br> 
- WRegExpValidator validator = new WRegExpValidator(&quot;[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,4}&quot;); <br> 
- lineEdit.setValidator(validator); <br> 
- lineEdit.setText(&quot;pieter@emweb.be&quot;);
-</code>
+ * <blockquote>
+ * 
+ * <pre>
+ * WLineEdit lineEdit = new WLineEdit(this);
+ * // an email address validator
+ * WRegExpValidator validator = new WRegExpValidator(
+ * 		&quot;[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,4}&quot;);
+ * lineEdit.setValidator(validator);
+ * lineEdit.setText(&quot;pieter@emweb.be&quot;);
+ * </pre>
+ * 
+ * </blockquote>
  * <p>
  * <p>
  * <i><b>Note:</b>This validator does not fully support unicode: it matches on

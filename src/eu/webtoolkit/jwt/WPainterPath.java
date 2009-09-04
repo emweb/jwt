@@ -14,21 +14,21 @@ import java.util.List;
  * 
  * A painter path represents a (complex) path that may be composed of lines,
  * arcs and bezier curve segments, and painted onto a paint device using
- * {@link WPainter#drawPath(WPainterPath path) drawPath() }.
+ * {@link WPainter#drawPath(WPainterPath path) drawPath()}.
  * <p>
  * The path that is composed in a painter path may consist of multiple closed
  * sub-paths. Only the last sub-path can be left open.
  * <p>
  * To compose a path, this class maintains a current position, which is the
  * starting point for the next drawing operation. An operation may draw a line
- * (see {@link WPainterPath#lineTo(WPointF point) lineTo() }), arc (see
+ * (see {@link WPainterPath#lineTo(WPointF point) lineTo()}), arc (see
  * {@link WPainterPath#arcTo(double cx, double cy, double radius, double startAngle, double sweepLength)
- * arcTo() }), or bezier curve (see
- * {@link WPainterPath#quadTo(WPointF c, WPointF endPoint) quadTo() } and
+ * arcTo()}), or bezier curve (see
+ * {@link WPainterPath#quadTo(WPointF c, WPointF endPoint) quadTo()} and
  * {@link WPainterPath#cubicTo(WPointF c1, WPointF c2, WPointF endPoint)
- * cubicTo() }) from the current position to a new position. A new sub path may
+ * cubicTo()}) from the current position to a new position. A new sub path may
  * be started by moving the current position to a new location (see
- * {@link WPainterPath#moveTo(WPointF point) moveTo() }), which automatically
+ * {@link WPainterPath#moveTo(WPointF point) moveTo()}), which automatically
  * closes the previous sub path.
  * <p>
  * When sub paths overlap, the result is undefined (it is dependent on the
@@ -36,18 +36,22 @@ import java.util.List;
  * <p>
  * Usage example:
  * <p>
- * <code>
- WPainter painter = new WPainter(); <br> 
-	  <br> 
- WPainterPath path = new WPainterPath(new WPointF(10, 10)); <br> 
- path.lineTo(10, 20); <br> 
- path.lineTo(30, 20); <br> 
- path.closeSubPath(); <br> 
-		  <br> 
- painter.setPen(new WPen(WColor.red)); <br> 
- painter.setBrush(new WBrush(WColor.blue)); <br> 
- painter.drawPath(path);
-</code>
+ * <blockquote>
+ * 
+ * <pre>
+ * WPainter painter = new WPainter();
+ * 
+ * WPainterPath path = new WPainterPath(new WPointF(10, 10));
+ * path.lineTo(10, 20);
+ * path.lineTo(30, 20);
+ * path.closeSubPath();
+ * 
+ * painter.setPen(new WPen(WColor.red));
+ * painter.setBrush(new WBrush(WColor.blue));
+ * painter.drawPath(path);
+ * </pre>
+ * 
+ * </blockquote>
  * <p>
  * 
  * @see WPainter#drawPath(WPainterPath path)

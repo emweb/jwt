@@ -26,24 +26,24 @@ import eu.webtoolkit.jwt.utils.StringUtils;
  * {@link WStandardItem#setStyleClass(CharSequence styleClass) CSS style class},
  * {@link WStandardItem#setToolTip(CharSequence toolTip) tool tip}, and
  * {@link WStandardItem#setChecked(boolean checked) check state}, and data flags
- * ({@link WStandardItem#setFlags(EnumSet flags) setFlags() } and
- * {@link WStandardItem#setCheckable(boolean checkable) setCheckable() }).
+ * ({@link WStandardItem#setFlags(EnumSet flags) setFlags()} and
+ * {@link WStandardItem#setCheckable(boolean checkable) setCheckable()}).
  * <p>
  * An item may contain a table of children items: the initial geometry may be
  * specified in the constructor, or using the methods
- * {@link WStandardItem#setRowCount(int rows) setRowCount() } and
+ * {@link WStandardItem#setRowCount(int rows) setRowCount()} and
  * setModelCount(). Unspecified items are 0. You can set or inspect children
  * items using the
  * {@link WStandardItem#setChild(int row, int column, WStandardItem item)
- * setChild() } and {@link WStandardItem#getChild(int row, int column)
- * getChild() } methods.
+ * setChild()} and {@link WStandardItem#getChild(int row, int column)
+ * getChild()} methods.
  * <p>
  * It is possible to reimplement this class and specialize the methods for data
- * acess ({@link WStandardItem#setData(Object d, int role) setData() } and
- * {@link WStandardItem#getData(int role) getData() }), or provide custom
- * sorting functionality by reimplementing
+ * acess ({@link WStandardItem#setData(Object d, int role) setData()} and
+ * {@link WStandardItem#getData(int role) getData()}), or provide custom sorting
+ * functionality by reimplementing
  * <p>
- * {@link WStandardItem#compare(WStandardItem other) compare() }.
+ * {@link WStandardItem#compare(WStandardItem other) compare()}.
  */
 public class WStandardItem {
 	/**
@@ -338,10 +338,10 @@ public class WStandardItem {
 	 * By default, an item is not checked.
 	 * <p>
 	 * Note: this requires that the item is checkable (see
-	 * {@link WStandardItem#setCheckable(boolean checkable) setCheckable() }).
+	 * {@link WStandardItem#setCheckable(boolean checkable) setCheckable()}).
 	 * <p>
 	 * If the item is tri-state, you may consider using
-	 * {@link WStandardItem#setCheckState(CheckState state) setCheckState() }
+	 * {@link WStandardItem#setCheckState(CheckState state) setCheckState()}
 	 * instead which supports also setting the third
 	 * {@link CheckState#PartiallyChecked} state.
 	 * <p>
@@ -368,8 +368,8 @@ public class WStandardItem {
 	/**
 	 * Set the check state.
 	 * <p>
-	 * Like {@link WStandardItem#setChecked(boolean checked) setChecked() },
-	 * this sets the check state, but allows also setting the
+	 * Like {@link WStandardItem#setChecked(boolean checked) setChecked()}, this
+	 * sets the check state, but allows also setting the
 	 * {@link CheckState#PartiallyChecked} state when the item is tri-state
 	 * checkable.
 	 * <p>
@@ -491,7 +491,7 @@ public class WStandardItem {
 	 * {@link CheckState#PartiallyChecked}.
 	 * <p>
 	 * This requires that the item is also checkable (see
-	 * {@link WStandardItem#setCheckable(boolean checkable) setCheckable() })
+	 * {@link WStandardItem#setCheckable(boolean checkable) setCheckable()})
 	 * <p>
 	 * 
 	 * @see WStandardItem#setCheckable(boolean checkable)
@@ -585,8 +585,8 @@ public class WStandardItem {
 	 * Returns whether the item has any children.
 	 * <p>
 	 * This is a convenience method and checks whether
-	 * {@link WStandardItem#getRowCount() getRowCount() } and
-	 * {@link WStandardItem#getColumnCount() getColumnCount() } differ both from
+	 * {@link WStandardItem#getRowCount() getRowCount()} and
+	 * {@link WStandardItem#getColumnCount() getColumnCount()} differ both from
 	 * 0.
 	 * <p>
 	 * 
@@ -607,8 +607,8 @@ public class WStandardItem {
 	 * the end.
 	 * <p>
 	 * <i>Note, if <i>rows</i> &gt; 0, and
-	 * {@link WStandardItem#getColumnCount() getColumnCount() } == 0,
-	 * columnCount is first increased to 1 using setColumnCount(1).</i>.
+	 * {@link WStandardItem#getColumnCount() getColumnCount()} == 0, columnCount
+	 * is first increased to 1 using setColumnCount(1).</i>.
 	 * <p>
 	 * 
 	 * @see WStandardItem#setColumnCount(int columns)
@@ -674,9 +674,13 @@ public class WStandardItem {
 	 * Appends a single column of <i>items</i>. If necessary, the row count is
 	 * increased.
 	 * <p>
-	 * Equivalent to: <code>
-   insertColumn(columnCount(), items);
-  </code>
+	 * Equivalent to: <blockquote>
+	 * 
+	 * <pre>
+	 * insertColumn(columnCount(), items);
+	 * </pre>
+	 * 
+	 * </blockquote>
 	 * <p>
 	 * 
 	 * @see WStandardItem#insertColumn(int column, List items)
@@ -729,9 +733,13 @@ public class WStandardItem {
 	 * Appends a single row of <i>items</i>. If necessary, the column count is
 	 * increased.
 	 * <p>
-	 * Equivalent to: <code>
-   insertRow(rowCount(), items);
-  </code>
+	 * Equivalent to: <blockquote>
+	 * 
+	 * <pre>
+	 * insertRow(rowCount(), items);
+	 * </pre>
+	 * 
+	 * </blockquote>
 	 * <p>
 	 * 
 	 * @see WStandardItem#insertRow(int row, List items)
@@ -850,9 +858,13 @@ public class WStandardItem {
 	 * for tree nodes). This adds a row with a single item, and is equivalent
 	 * to:
 	 * <p>
-	 * <code>
-   insertRow(rowCount(), item);
-  </code>
+	 * <blockquote>
+	 * 
+	 * <pre>
+	 * insertRow(rowCount(), item);
+	 * </pre>
+	 * 
+	 * </blockquote>
 	 * <p>
 	 * 
 	 * @see WStandardItem#insertRow(int row, WStandardItem item)
@@ -868,11 +880,15 @@ public class WStandardItem {
 	 * for tree nodes). This inserts a row with a single item, and is equivalent
 	 * to:
 	 * <p>
-	 * <code>
-   List&lt;WStandardItem&gt; r; <br> 
-   r.add(item); <br> 
-   insertRow(row, r);
-  </code>
+	 * <blockquote>
+	 * 
+	 * <pre>
+	 * List&lt;WStandardItem&gt; r;
+	 * r.add(item);
+	 * insertRow(row, r);
+	 * </pre>
+	 * 
+	 * </blockquote>
 	 * <p>
 	 * 
 	 * @see WStandardItem#insertRow(int row, List items)
@@ -890,9 +906,13 @@ public class WStandardItem {
 	 * for tree nodes). This adds a number of rows, each containing a single
 	 * item, and is equivalent to:
 	 * <p>
-	 * <code>
-   insertRows(rowCount(), items);
-  </code>
+	 * <blockquote>
+	 * 
+	 * <pre>
+	 * insertRows(rowCount(), items);
+	 * </pre>
+	 * 
+	 * </blockquote>
 	 * <p>
 	 * 
 	 * @see WStandardItem#insertRows(int row, List items)
@@ -908,10 +928,14 @@ public class WStandardItem {
 	 * for tree nodes). This inserts a number of rows at row <i>row</i>, each
 	 * containing a single item, and is equivalent to:
 	 * <p>
-	 * <code>
-   for (unsigned i = 0; i &lt; items.size(); ++i) <br> 
-     insertRow(row + i, items[i]);
-  </code>
+	 * <blockquote>
+	 * 
+	 * <pre>
+	 * for (unsigned i = 0; i &lt; items.size(); ++i)
+	 * 	insertRow(row + i, items[i]);
+	 * </pre>
+	 * 
+	 * </blockquote>
 	 * <p>
 	 * 
 	 * @see WStandardItem#insertRow(int row, WStandardItem item)
@@ -931,8 +955,8 @@ public class WStandardItem {
 	 * Sets a child item <i>item</i> at position (<i>row</i>, <i>column</i>). If
 	 * an item was previously set, it is deleted first.
 	 * <p>
-	 * If necessary, the {@link WStandardItem#getRowCount() getRowCount() }
-	 * and/or the {@link WStandardItem#getColumnCount() getColumnCount() } is
+	 * If necessary, the {@link WStandardItem#getRowCount() getRowCount()}
+	 * and/or the {@link WStandardItem#getColumnCount() getColumnCount()} is
 	 * increased.
 	 * <p>
 	 * 
@@ -954,9 +978,13 @@ public class WStandardItem {
 	 * Set a child item.
 	 * <p>
 	 * This is a convenience method for nodes with a single column (e.g. tree
-	 * nodes), and is equivalent to: <code>
-   setChild(row, 0, item);
-  </code>
+	 * nodes), and is equivalent to: <blockquote>
+	 * 
+	 * <pre>
+	 * setChild(row, 0, item);
+	 * </pre>
+	 * 
+	 * </blockquote>
 	 * <p>
 	 * 
 	 * @see WStandardItem#setChild(int row, int column, WStandardItem item)
@@ -1082,9 +1110,13 @@ public class WStandardItem {
 	 * Remove a single column.
 	 * <p>
 	 * Removes the column <i>column</i> from the model (reducing the column
-	 * count by one). Is equivalent to: <code>
-   removeColumns(column, 1);
-  </code>
+	 * count by one). Is equivalent to: <blockquote>
+	 * 
+	 * <pre>
+	 * removeColumns(column, 1);
+	 * </pre>
+	 * 
+	 * </blockquote>
 	 * <p>
 	 * 
 	 * @see WStandardItem#removeColumns(int column, int count)
@@ -1131,9 +1163,13 @@ public class WStandardItem {
 	 * Remove a single row.
 	 * <p>
 	 * Removes the row <i>row</i> from the model (reducing the row count by
-	 * one). Is equivalent to: <code>
-   removeRows(row, 1);
-  </code>
+	 * one). Is equivalent to: <blockquote>
+	 * 
+	 * <pre>
+	 * removeRows(row, 1);
+	 * </pre>
+	 * 
+	 * </blockquote>
 	 * <p>
 	 * 
 	 * @see WStandardItem#removeRows(int row, int count)
@@ -1253,9 +1289,9 @@ public class WStandardItem {
 	 * to other items).
 	 * <p>
 	 * The {@link WAbstractItemModel#layoutAboutToBeChanged()
-	 * WAbstractItemModel#layoutAboutToBeChanged() } and
+	 * WAbstractItemModel#layoutAboutToBeChanged()} and
 	 * {@link WAbstractItemModel#layoutChanged()
-	 * WAbstractItemModel#layoutChanged() } signals are emitted before and after
+	 * WAbstractItemModel#layoutChanged()} signals are emitted before and after
 	 * the operation so that you get a chance to invalidate or update model
 	 * indexes.
 	 * <p>
@@ -1278,12 +1314,12 @@ public class WStandardItem {
 	 * <p>
 	 * This is used during sorting (from
 	 * {@link WStandardItem#sortChildren(int column, SortOrder order)
-	 * sortChildren() }), and returns which of the two items is the lesser,
-	 * based on their data.
+	 * sortChildren()}), and returns which of the two items is the lesser, based
+	 * on their data.
 	 * <p>
 	 * The default implementation compares the data based on the value
 	 * corresponding to the {@link WStandardItemModel#getSortRole()
-	 * WStandardItemModel#getSortRole() }.
+	 * WStandardItemModel#getSortRole()}.
 	 * <p>
 	 * 
 	 * @see WStandardItem#sortChildren(int column, SortOrder order)

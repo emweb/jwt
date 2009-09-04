@@ -21,33 +21,33 @@ import eu.webtoolkit.jwt.servlet.UploadedFile;
  * different, but the API is designed in a way which facilitates a portable use.
  * <p>
  * When JavaScript is available, the file will not be uploaded until
- * {@link WFileUpload#upload() upload() } is called. This will start an
+ * {@link WFileUpload#upload() upload()} is called. This will start an
  * asynchronous upload (and thus return immediately). When the file has been
- * uploaded, the {@link WFileUpload#uploaded() uploaded() } signal is emitted,
- * or if the file was too large, the {@link WFileUpload#fileTooLarge()
- * fileTooLarge() } signal is emitted.
+ * uploaded, the {@link WFileUpload#uploaded() uploaded()} signal is emitted, or
+ * if the file was too large, the {@link WFileUpload#fileTooLarge()
+ * fileTooLarge()} signal is emitted.
  * <p>
  * When no JavaScript is available, the file will be uploaded with the next
- * click event. Thus, {@link WFileUpload#upload() upload() } has no effect --
- * the file will already be uploaded, and the corresponding signals will already
- * be emitted. To test if {@link WFileUpload#upload() upload() } will start an
- * upload, you may check using the {@link WFileUpload#canUpload() canUpload() }
+ * click event. Thus, {@link WFileUpload#upload() upload()} has no effect -- the
+ * file will already be uploaded, and the corresponding signals will already be
+ * emitted. To test if {@link WFileUpload#upload() upload()} will start an
+ * upload, you may check using the {@link WFileUpload#canUpload() canUpload()}
  * call.
  * <p>
  * Thus, to properly use the widget, one needs to follow these rules:
  * <ul>
  * <li>
- * Be prepared to handle the {@link WFileUpload#uploaded() uploaded() } or
- * {@link WFileUpload#fileTooLarge() fileTooLarge() } signals also when
- * {@link WFileUpload#upload() upload() } was not called.</li>
+ * Be prepared to handle the {@link WFileUpload#uploaded() uploaded()} or
+ * {@link WFileUpload#fileTooLarge() fileTooLarge()} signals also when
+ * {@link WFileUpload#upload() upload()} was not called.</li>
  * <li>
- * Check using {@link WFileUpload#canUpload() canUpload() } if
- * {@link WFileUpload#upload() upload() } will schedule a new upload. if
- * (!canUpload()) then {@link WFileUpload#upload() upload() } will not have any
- * effect. if ({@link WFileUpload#canUpload() canUpload() }),
- * {@link WFileUpload#upload() upload() } will start a new file upload, which
- * completes succesfully using an {@link WFileUpload#uploaded() uploaded() }
- * signal or a {@link WFileUpload#fileTooLarge() fileTooLarge() } signals gets
+ * Check using {@link WFileUpload#canUpload() canUpload()} if
+ * {@link WFileUpload#upload() upload()} will schedule a new upload. if
+ * (!canUpload()) then {@link WFileUpload#upload() upload()} will not have any
+ * effect. if ({@link WFileUpload#canUpload() canUpload()}),
+ * {@link WFileUpload#upload() upload()} will start a new file upload, which
+ * completes succesfully using an {@link WFileUpload#uploaded() uploaded()}
+ * signal or a {@link WFileUpload#fileTooLarge() fileTooLarge()} signals gets
  * emitted.</li>
  * </ul>
  * <p>
@@ -57,7 +57,7 @@ import eu.webtoolkit.jwt.servlet.UploadedFile;
  * <p>
  * The uploaded file is automatically spooled to a local temporary file which
  * will be deleted together with the {@link WFileUpload} widget, unless
- * {@link WFileUpload#stealSpooledFile() stealSpooledFile() } is called.
+ * {@link WFileUpload#stealSpooledFile() stealSpooledFile()} is called.
  * <p>
  * The file upload itself corresponds to a
  * <code>&lt;input type=&quot;file&quot;&gt;</code> tag, but may be wrapped in a
@@ -163,10 +163,10 @@ public class WFileUpload extends WWebWidget {
 	}
 
 	/**
-	 * Returns whether {@link WFileUpload#upload() upload() } will start a new
+	 * Returns whether {@link WFileUpload#upload() upload()} will start a new
 	 * file upload.
 	 * <p>
-	 * A call to {@link WFileUpload#upload() upload() } will only start a new
+	 * A call to {@link WFileUpload#upload() upload()} will only start a new
 	 * file upload if there is no JavaScript support. Otherwise, the most recent
 	 * file will already be uploaded.
 	 */
@@ -214,8 +214,7 @@ public class WFileUpload extends WWebWidget {
 	 * <p>
 	 * Caveat: this signal is not emitted with konqueror and possibly other
 	 * browsers. Thus, in the above scenario you should still provide an
-	 * alternative way to call the {@link WFileUpload#upload() upload() }
-	 * method.
+	 * alternative way to call the {@link WFileUpload#upload() upload()} method.
 	 */
 	public EventSignal changed() {
 		return this.voidEventSignal(CHANGE_SIGNAL, true);
@@ -224,9 +223,10 @@ public class WFileUpload extends WWebWidget {
 	/**
 	 * Start the file upload.
 	 * <p>
-	 * The {@link WFileUpload#uploaded() uploaded() } signal is emitted when a
-	 * file is uploaded, or the {@link WFileUpload#fileTooLarge() fileTooLarge()
-	 * } signal is emitted when the file size exceeded the maximum request size.
+	 * The {@link WFileUpload#uploaded() uploaded()} signal is emitted when a
+	 * file is uploaded, or the {@link WFileUpload#fileTooLarge()
+	 * fileTooLarge()} signal is emitted when the file size exceeded the maximum
+	 * request size.
 	 * <p>
 	 * 
 	 * @see WFileUpload#uploaded()

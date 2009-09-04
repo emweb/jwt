@@ -25,58 +25,66 @@ import eu.webtoolkit.jwt.utils.StringUtils;
  * <p>
  * WSuggestionPopup is an MVC view class, using a simple
  * {@link WStringListModel} by default. You can set a custom model using
- * {@link WSuggestionPopup#setModel(WAbstractItemModel model) setModel() }. The
- * member methods {@link WSuggestionPopup#clearSuggestions() clearSuggestions()
- * } and
+ * {@link WSuggestionPopup#setModel(WAbstractItemModel model) setModel()}. The
+ * member methods {@link WSuggestionPopup#clearSuggestions() clearSuggestions()}
+ * and
  * {@link WSuggestionPopup#addSuggestion(CharSequence suggestionText, CharSequence suggestionValue)
- * addSuggestion() } manipulate the model.
+ * addSuggestion()} manipulate the model.
  * <p>
  * The class is initialized with two JavaScript functions, one for filtering the
  * suggestions, and one for editing the value of the textarea when a suggestion
  * is selected. Two static methods,
  * {@link WSuggestionPopup#generateMatcherJS(WSuggestionPopup.Options options)
- * generateMatcherJS() } and
+ * generateMatcherJS()} and
  * {@link WSuggestionPopup#generateReplacerJS(WSuggestionPopup.Options options)
- * generateReplacerJS() } may be used to generate these functions based on a set
+ * generateReplacerJS()} may be used to generate these functions based on a set
  * of options (in the {@link Options} struct). If the flexibility provided in
  * this way is not sufficient, and writing JavaScript does not give you an
  * instant heart-attack, you may provide your own implementations.
  * <p>
  * The matcherJS function block must have the following JavaScript signature:
  * <p>
- * <code>
- function (editElement) { <br> 
-   // fetch the location of cursor and current text in the editElement. <br> 
- <br> 
-   // return a function that matches a given suggestion with the current value of the editElement. <br> 
-   return function(suggestion) { <br> 
- <br> 
-     // 1) remove markup from the suggestion <br> 
-     // 2) check suggestion if it matches <br> 
-     // 3) add markup to suggestion <br> 
- <br> 
-     return { match : ...,      // does the suggestion match ? (boolean) <br> 
-              suggestion : ...  // modified suggestion markup <br> 
-             }; <br> 
-   } <br> 
- }
-</code>
+ * <blockquote>
+ * 
+ * <pre>
+ * function (editElement) {
+ *    // fetch the location of cursor and current text in the editElement.
+ * 
+ *    // return a function that matches a given suggestion with the current value of the editElement.
+ *    return function(suggestion) {
+ * 
+ *      // 1) remove markup from the suggestion
+ *      // 2) check suggestion if it matches
+ *      // 3) add markup to suggestion
+ * 
+ *      return { match : ...,      // does the suggestion match ? (boolean)
+ *               suggestion : ...  // modified suggestion markup
+ *              };
+ *    }
+ *  }
+ * </pre>
+ * 
+ * </blockquote>
  * <p>
  * The replacerJS function block that edits the value has the following
  * JavaScript signature.
  * <p>
- * <code>
- function (editElement, suggestionText, suggestionValue) { <br> 
-   // editElement is the form element which must be edited. <br> 
-   // suggestionText is the displayed text for the matched suggestion. <br> 
-   // suggestionValue is the stored value for the matched suggestion. <br> 
- <br> 
-   // computed modifiedEditValue and modifiedPos ... <br> 
- <br> 
-   editElement.value = modifiedEditValue; <br> 
-   editElement.selectionStart = edit.selectionEnd = modifiedPos; <br> 
- }
-</code>
+ * <blockquote>
+ * 
+ * <pre>
+ * function (editElement, suggestionText, suggestionValue) {
+ *    // editElement is the form element which must be edited.
+ *    // suggestionText is the displayed text for the matched suggestion.
+ *    // suggestionValue is the stored value for the matched suggestion.
+ * 
+ *    // computed modifiedEditValue and modifiedPos ...
+ * 
+ *    editElement.value = modifiedEditValue;
+ *    editElement.selectionStart = edit.selectionEnd = modifiedPos;
+ *  }
+ * </pre>
+ * 
+ * </blockquote>
  * <p>
  * To style the suggestions, you should style the &lt;span&gt; element inside
  * this widget, and the &lt;span&gt;.&quot;sel&quot; element to style the
@@ -84,53 +92,61 @@ import eu.webtoolkit.jwt.utils.StringUtils;
  * <p>
  * Usage example:
  * <p>
- * <code>
- // options for email address suggestions <br> 
- WSuggestionPopup.Options contactOptions = new WSuggestionPopup.Options();  <br> 
- contactOptions.highlightBeginTag = &quot;&lt;b&gt;&quot;; <br> 
- contactOptions.highlightEndTag = &quot;&lt;/b&gt;&quot;; <br> 
- contactOptions.listSeparator = &apos;,&apos;; //for multiple addresses) <br> 
- contactOptions.whitespace = &quot; \\n&quot;; <br> 
- contactOptions.wordSeparators = &quot;-., \&quot;@\\n;&quot;; //within an address <br> 
- contactOptions.appendReplacedText = &quot;, &quot;; //prepare next email address <br> 
-	 <br> 
- WSuggestionPopup popup <br> 
-  = new WSuggestionPopup(WSuggestionPopup.generateMatcherJS(contactOptions), <br> 
- WSuggestionPopup.generateReplacerJS(contactOptions), <br> 
- this); <br> 
-  <br> 
- WTextArea textEdit = new WTextArea(this); <br> 
- popup.forEdit(textEdit); <br> 
-		  <br> 
- // load popup data <br> 
- for (int i = 0; i &lt; contacts.size(); ++i) <br> 
- popup.addSuggestion(contacts.get(i).formatted(), contacts.get(i).formatted()); <br> 
-		  <br> 
- // set style <br> 
- popup.setStyleClass(&quot;suggest&quot;);
-</code>
+ * <blockquote>
+ * 
+ * <pre>
+ * // options for email address suggestions
+ * WSuggestionPopup.Options contactOptions = new WSuggestionPopup.Options();
+ * contactOptions.highlightBeginTag = &quot;&lt;b&gt;&quot;;
+ * contactOptions.highlightEndTag = &quot;&lt;/b&gt;&quot;;
+ * contactOptions.listSeparator = ','; //for multiple addresses)
+ * contactOptions.whitespace = &quot; \\n&quot;;
+ * contactOptions.wordSeparators = &quot;-., \&quot;@\\n;&quot;; //within an address
+ * contactOptions.appendReplacedText = &quot;, &quot;; //prepare next email address
+ * 
+ * WSuggestionPopup popup = new WSuggestionPopup(WSuggestionPopup
+ * 		.generateMatcherJS(contactOptions), WSuggestionPopup
+ * 		.generateReplacerJS(contactOptions), this);
+ * 
+ * WTextArea textEdit = new WTextArea(this);
+ * popup.forEdit(textEdit);
+ * 
+ * // load popup data
+ * for (int i = 0; i &lt; contacts.size(); ++i)
+ * 	popup.addSuggestion(contacts.get(i).formatted(), contacts.get(i)
+ * 			.formatted());
+ * 
+ * // set style
+ * popup.setStyleClass(&quot;suggest&quot;);
+ * </pre>
+ * 
+ * </blockquote>
  * <p>
  * Example CSS:
  * <p>
- * <code>
-.suggest { <br> 
-  background-color: #e0ecff; <br> 
-  color: #1010cc; <br> 
-  border: 1px solid #666666; <br> 
-  cursor: default; <br> 
-  font-size: smaller; <br> 
-  padding: 2px; <br> 
-} <br> 
- <br> 
-.suggest span { <br> 
-  padding-left: 0.5em; <br> 
-  padding-right: 0.5em;   <br> 
-} <br> 
- <br> 
-.suggest .sel { <br> 
-  background-color: #C3D9FF; <br> 
-}
-</code>
+ * <blockquote>
+ * 
+ * <pre>
+ * .suggest {
+ *   background-color: #e0ecff;
+ *   color: #1010cc;
+ *   border: 1px solid #666666;
+ *   cursor: default;
+ *   font-size: smaller;
+ *   padding: 2px;
+ * }
+ * 
+ * .suggest span {
+ *   padding-left: 0.5em;
+ *   padding-right: 0.5em;  
+ * }
+ * 
+ * .suggest .sel {
+ *   background-color: #C3D9FF;
+ * }
+ * </pre>
+ * 
+ * </blockquote>
  * <p>
  * A screenshot of this example: <div align="center"> <img
  * src="doc-files//WSuggestionPopup-1.png" alt="Example of WSuggestionPopup">

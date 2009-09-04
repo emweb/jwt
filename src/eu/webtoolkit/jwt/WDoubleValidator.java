@@ -160,9 +160,9 @@ public class WDoubleValidator extends WValidator {
 	/**
 	 * Set message to display when the number is too small.
 	 * <p>
-	 * Depending on whether {@link WDoubleValidator#getBottom() getBottom() }
-	 * and {@link WDoubleValidator#getTop() getTop() } are real bounds, the
-	 * default message is &quot;The number must be between {1} and {2}&quot; or
+	 * Depending on whether {@link WDoubleValidator#getBottom() getBottom()} and
+	 * {@link WDoubleValidator#getTop() getTop()} are real bounds, the default
+	 * message is &quot;The number must be between {1} and {2}&quot; or
 	 * &quot;The number must be larger than {1}&quot;.
 	 */
 	public void setInvalidTooSmallText(CharSequence text) {
@@ -200,9 +200,9 @@ public class WDoubleValidator extends WValidator {
 	/**
 	 * Set message to display when the number is too large.
 	 * <p>
-	 * Depending on whether {@link WDoubleValidator#getBottom() getBottom() }
-	 * and {@link WDoubleValidator#getTop() getTop() } are real bounds, the
-	 * default message is &quot;The number must be between {1} and {2}&quot; or
+	 * Depending on whether {@link WDoubleValidator#getBottom() getBottom()} and
+	 * {@link WDoubleValidator#getTop() getTop()} are real bounds, the default
+	 * message is &quot;The number must be between {1} and {2}&quot; or
 	 * &quot;The number must be smaller than {2}&quot;.
 	 */
 	public void setInvalidTooLargeText(CharSequence text) {

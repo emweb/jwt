@@ -14,8 +14,8 @@ import eu.webtoolkit.jwt.utils.EnumUtils;
  * <p>
  * 
  * A key event is associated with the {@link WInteractWidget#keyWentDown()
- * keyWentDown() }, {@link WInteractWidget#keyWentUp() keyWentUp() } and
- * {@link WInteractWidget#keyPressed() keyPressed() } signals.
+ * keyWentDown()}, {@link WInteractWidget#keyWentUp() keyWentUp()} and
+ * {@link WInteractWidget#keyPressed() keyPressed()} signals.
  */
 public class WKeyEvent implements WAbstractEvent {
 	/**
@@ -73,8 +73,8 @@ public class WKeyEvent implements WAbstractEvent {
 	 * {@link WInteractWidget#keyWentUp() keyWentUp} events, &apos;0&apos; is
 	 * returned.
 	 * <p>
-	 * The {@link WKeyEvent#getCharCode() getCharCode() } may be different from
-	 * {@link WKeyEvent#getKey() getKey() }. For example, a {@link Key#Key_M
+	 * The {@link WKeyEvent#getCharCode() getCharCode()} may be different from
+	 * {@link WKeyEvent#getKey() getKey()}. For example, a {@link Key#Key_M
 	 * Key_M} key may correspond to &apos;m&apos; or &apos;M&apos; character,
 	 * depending on whether the shift key is pressed simultaneously.
 	 * <p>
@@ -93,7 +93,7 @@ public class WKeyEvent implements WAbstractEvent {
 	 * This is only defined for a {@link WInteractWidget#keyPressed()
 	 * keyPressed} event, and returns a string that holds exactly one unicode
 	 * character, which corresponds to {@link WKeyEvent#getCharCode()
-	 * getCharCode() }.
+	 * getCharCode()}.
 	 * <p>
 	 * For the {@link WInteractWidget#keyWentDown() keyWentDown} and
 	 * {@link WInteractWidget#keyWentUp() keyWentUp} events, an empty string is

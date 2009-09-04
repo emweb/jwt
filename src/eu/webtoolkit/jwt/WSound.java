@@ -25,13 +25,17 @@ package eu.webtoolkit.jwt;
  * folder. <i>resourcesURL</i> is the configuration property that locates the
  * JWt resources/ folder inside your docroot.
  * <p>
- * Usage example: <code>
- WSound *s = new WSound(&quot;djing.mp3&quot;, parent); <br> 
- s-&gt;setLoops(3); <br> 
- s-&gt;play(); <br> 
- playButton-&gt;clicked().connect(SLOT(s, WSound::play)); <br> 
- stopButton-&gt;clicked().connect(SLOT(s, WSound::stop));
-</code>
+ * Usage example: <blockquote>
+ * 
+ * <pre>
+ * WSound *s = new WSound(&quot;djing.mp3&quot;, parent);
+ *  s-&gt;setLoops(3);
+ *  s-&gt;play();
+ *  playButton-&gt;clicked().connect(SLOT(s, WSound::play));
+ *  stopButton-&gt;clicked().connect(SLOT(s, WSound::stop));
+ * </pre>
+ * 
+ * </blockquote>
  * <p>
  * <p>
  * <i><b>Note:</b>The current implementation has occasional problems with
@@ -63,7 +67,7 @@ public class WSound extends WObject {
 	/**
 	 * Destructor.
 	 * <p>
-	 * The destructor calls {@link WSound#stop() stop() } and unloads the sound
+	 * The destructor calls {@link WSound#stop() stop()} and unloads the sound
 	 * object.
 	 */
 	public void destroy() {
@@ -81,8 +85,8 @@ public class WSound extends WObject {
 	/**
 	 * Returns the configured number of loops for this object.
 	 * <p>
-	 * When {@link WSound#play() play() } is called, the sound will be played
-	 * for this amount of loops.
+	 * When {@link WSound#play() play()} is called, the sound will be played for
+	 * this amount of loops.
 	 */
 	public int getLoops() {
 		return this.loops_;
@@ -90,7 +94,7 @@ public class WSound extends WObject {
 
 	/**
 	 * Sets the amount of times the sound has to be played for every invocation
-	 * of {@link WSound#play() play() }.
+	 * of {@link WSound#play() play()}.
 	 * <p>
 	 * The behavior is undefined for negative loop numbers.
 	 */
@@ -104,11 +108,11 @@ public class WSound extends WObject {
 	 * This method returns immediately. It will cause the song to be played for
 	 * the configured amount of loops.
 	 * <p>
-	 * The behavior of {@link WSound#play() play() } when a sound is already
+	 * The behavior of {@link WSound#play() play()} when a sound is already
 	 * playing depends on the method to play songs in the browser (Flash/HTML5).
 	 * It may be mixed with an already playing instance, or replace the previous
-	 * instance. It is recommended to call {@link WSound#stop() stop() } before
-	 * {@link WSound#play() play() } if you want to avoid mixing multiple
+	 * instance. It is recommended to call {@link WSound#stop() stop()} before
+	 * {@link WSound#play() play()} if you want to avoid mixing multiple
 	 * instances of a single {@link WSound} object.
 	 */
 	public void play() {

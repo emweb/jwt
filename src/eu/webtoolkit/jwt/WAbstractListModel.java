@@ -15,8 +15,8 @@ package eu.webtoolkit.jwt;
  * <p>
  * It cannot be used directly but must be subclassed. Subclassed models must at
  * least reimplement {@link WAbstractItemModel#getRowCount(WModelIndex parent)
- * getRowCount() } to return the number of rows, and
- * {@link WAbstractItemModel#getData(WModelIndex index, int role) getData() } to
+ * getRowCount()} to return the number of rows, and
+ * {@link WAbstractItemModel#getData(WModelIndex index, int role) getData()} to
  * return data.
  */
 public abstract class WAbstractListModel extends WAbstractItemModel {

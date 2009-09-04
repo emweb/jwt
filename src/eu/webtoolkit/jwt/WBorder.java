@@ -28,7 +28,7 @@ public class WBorder {
 		Thick,
 		/**
 		 * Explicit width. See also {@link WBorder#getExplicitWidth()
-		 * getExplicitWidth() }.
+		 * getExplicitWidth()}.
 		 */
 		Explicit;
 

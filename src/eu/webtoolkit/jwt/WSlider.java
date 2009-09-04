@@ -15,7 +15,7 @@ import java.util.EnumSet;
  * range using a visual slider.
  * <p>
  * The slider must be sized explicitly using
- * {@link WWidget#resize(WLength width, WLength height) resize() }. The default
+ * {@link WWidget#resize(WLength width, WLength height) resize()}. The default
  * size is 150 x 50 pixels for a horizontal slider, and 50 x 150 pixels for a
  * vertical slider.
  * <p>
@@ -209,8 +209,8 @@ public class WSlider extends WCompositeWidget {
 	 * Change the slider value.
 	 * <p>
 	 * The value is automatically trimmed to the valid range (
-	 * {@link WSlider#getMinimum() getMinimum() } to
-	 * {@link WSlider#getMaximum() getMaximum() }).
+	 * {@link WSlider#getMinimum() getMinimum()} to {@link WSlider#getMaximum()
+	 * getMaximum()}).
 	 * <p>
 	 * 
 	 * @see WSlider#getValue()

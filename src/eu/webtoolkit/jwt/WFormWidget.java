@@ -18,12 +18,12 @@ import eu.webtoolkit.jwt.utils.StringUtils;
  * its value, or changes to its focus.
  * <p>
  * Form widgets also have built-in support for validation, using
- * {@link WFormWidget#setValidator(WValidator validator) setValidator() }. If
- * the validator provide client-side validation, then an invalid validation
- * state is reflected using the style class <code>&quot;Wt-invalid&quot;</code>.
- * All validators provided by JWt implement client-side validation.
+ * {@link WFormWidget#setValidator(WValidator validator) setValidator()}. If the
+ * validator provide client-side validation, then an invalid validation state is
+ * reflected using the style class <code>&quot;Wt-invalid&quot;</code>. All
+ * validators provided by JWt implement client-side validation.
  * <p>
- * On the server-side, use {@link WFormWidget#validate() validate() } method to
+ * On the server-side, use {@link WFormWidget#validate() validate()} method to
  * validate the content using a validator previously set.
  */
 public abstract class WFormWidget extends WInteractWidget {
