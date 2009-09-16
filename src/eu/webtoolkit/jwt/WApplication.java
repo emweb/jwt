@@ -218,6 +218,8 @@ public class WApplication extends WObject {
 						"border: 0px !important;text-align: left;margin: 0px !important;padding: 0px !important;font-size: inherit; pointer: hand; cursor: pointer; cursor: hand;background-color: transparent;color: inherit;");
 		this.styleSheet_.addRule("a.Wt-wrap", "text-decoration: none;");
 		this.styleSheet_.addRule(".Wt-invalid", "background-color: #f79a9a;");
+		this.styleSheet_.addRule("span.Wt-disabled", "color: gray;");
+		this.styleSheet_.addRule("fieldset.Wt-disabled legend", "color: gray;");
 		this.styleSheet_
 				.addRule(".unselectable",
 						"-moz-user-select:-moz-none;-khtml-user-select: none;user-select: none;");

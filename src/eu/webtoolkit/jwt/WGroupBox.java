@@ -7,6 +7,7 @@ package eu.webtoolkit.jwt;
 
 import java.util.EnumSet;
 import java.util.List;
+import eu.webtoolkit.jwt.utils.StringUtils;
 
 /**
  * A widget which group widgets into a frame with a title
@@ -153,6 +154,17 @@ public class WGroupBox extends WContainerWidget {
 			this.titleChanged_ = false;
 			result.add(legend);
 		}
+	}
+
+	protected void propagateSetEnabled(boolean enabled) {
+		if (enabled) {
+			this.setStyleClass(new WString(StringUtils.eraseWord(this
+					.getStyleClass(), "Wt-disabled")).toString());
+		} else {
+			this.setStyleClass(new WString(StringUtils.addWord(this
+					.getStyleClass(), "Wt-disabled")).toString());
+		}
+		super.propagateSetEnabled(enabled);
 	}
 
 	protected void propagateRenderOk(boolean deep) {

@@ -292,15 +292,22 @@ public abstract class WWebWidget extends WWidget {
 		}
 	}
 
+	public void setHiddenKeepsGeometry(boolean enabled) {
+		this.flags_.set(BIT_DONOT_STUB);
+		this.flags_.set(BIT_HIDE_WITH_VISIBILITY, enabled);
+		this.flags_.set(BIT_HIDDEN_CHANGED);
+	}
+
+	public boolean isHiddenKeepsGeometry() {
+		return this.flags_.get(BIT_HIDE_WITH_VISIBILITY)
+				&& !this.flags_.get(BIT_HIDE_WITH_OFFSETS);
+	}
+
 	public void setHidden(boolean hidden) {
 		if (canOptimizeUpdates() && hidden == this.isHidden()) {
 			return;
 		}
-		if (hidden) {
-			this.flags_.set(BIT_HIDDEN);
-		} else {
-			this.flags_.clear(BIT_HIDDEN);
-		}
+		this.flags_.set(BIT_HIDDEN, hidden);
 		this.flags_.set(BIT_HIDDEN_CHANGED);
 		WApplication.getInstance().getSession().getRenderer()
 				.updateFormObjects(this, true);
@@ -309,6 +316,46 @@ public abstract class WWebWidget extends WWidget {
 
 	public boolean isHidden() {
 		return this.flags_.get(BIT_HIDDEN);
+	}
+
+	boolean isVisible() {
+		if (this.flags_.get(BIT_STUBBED) || this.flags_.get(BIT_HIDDEN)) {
+			return false;
+		} else {
+			if (this.getParent() != null) {
+				return this.getParent().isVisible();
+			} else {
+				return true;
+			}
+		}
+	}
+
+	public void setDisabled(boolean disabled) {
+		if (canOptimizeUpdates() && disabled == this.isDisabled()) {
+			return;
+		}
+		this.flags_.set(BIT_DISABLED, disabled);
+		this.flags_.set(BIT_DISABLED_CHANGED);
+		this.propagateSetEnabled(!disabled);
+		WApplication.getInstance().getSession().getRenderer()
+				.updateFormObjects(this, true);
+		this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyAttribute));
+	}
+
+	public boolean isDisabled() {
+		return this.flags_.get(BIT_DISABLED);
+	}
+
+	public boolean isEnabled() {
+		if (this.flags_.get(BIT_DISABLED)) {
+			return false;
+		} else {
+			if (this.getParent() != null) {
+				return this.getParent().isEnabled();
+			} else {
+				return true;
+			}
+		}
 	}
 
 	public void setPopup(boolean popup) {
@@ -735,9 +782,9 @@ public abstract class WWebWidget extends WWidget {
 
 	protected void updateDom(DomElement element, boolean all) {
 		if (this.flags_.get(BIT_GEOMETRY_CHANGED)
-				|| !this.flags_.get(BIT_HIDE_WITH_OFFSETS)
+				|| !this.flags_.get(BIT_HIDE_WITH_VISIBILITY)
 				&& this.flags_.get(BIT_HIDDEN_CHANGED) || all) {
-			if (this.flags_.get(BIT_HIDE_WITH_OFFSETS)
+			if (this.flags_.get(BIT_HIDE_WITH_VISIBILITY)
 					|| !this.flags_.get(BIT_HIDDEN)) {
 				if (element.isDefaultInline() != this.flags_.get(BIT_INLINE)) {
 					if (this.flags_.get(BIT_INLINE)) {
@@ -775,7 +822,7 @@ public abstract class WWebWidget extends WWidget {
 			} else {
 				element.setProperty(Property.PropertyStyleDisplay, "none");
 			}
-			if (!this.flags_.get(BIT_HIDE_WITH_OFFSETS)) {
+			if (!this.flags_.get(BIT_HIDE_WITH_VISIBILITY)) {
 				this.flags_.clear(BIT_HIDDEN_CHANGED);
 			}
 		}
@@ -1029,48 +1076,59 @@ public abstract class WWebWidget extends WWidget {
 			/* delete this.otherImpl_.attributesSet_ */;
 			this.otherImpl_.attributesSet_ = null;
 		}
-		if (this.flags_.get(BIT_HIDE_WITH_OFFSETS)) {
+		if (this.flags_.get(BIT_HIDE_WITH_VISIBILITY)) {
 			if (this.flags_.get(BIT_HIDDEN_CHANGED) || all
 					&& this.flags_.get(BIT_HIDDEN)) {
 				if (this.flags_.get(BIT_HIDDEN)) {
-					element.setProperty(Property.PropertyStylePosition,
-							"absolute");
-					element.setProperty(Property.PropertyStyleLeft, "-10000px");
-					element.setProperty(Property.PropertyStyleTop, "-10000px");
 					element.setProperty(Property.PropertyStyleVisibility,
 							"hidden");
+					if (this.flags_.get(BIT_HIDE_WITH_OFFSETS)) {
+						element.setProperty(Property.PropertyStylePosition,
+								"absolute");
+						element.setProperty(Property.PropertyStyleTop,
+								"-10000px");
+						element.setProperty(Property.PropertyStyleLeft,
+								"-10000px");
+					}
 				} else {
-					if (this.layoutImpl_ != null) {
-						switch (this.layoutImpl_.positionScheme_) {
-						case Static:
+					if (this.flags_.get(BIT_HIDE_WITH_OFFSETS)) {
+						if (this.layoutImpl_ != null) {
+							switch (this.layoutImpl_.positionScheme_) {
+							case Static:
+								element.setProperty(
+										Property.PropertyStylePosition,
+										"static");
+								break;
+							case Relative:
+								element.setProperty(
+										Property.PropertyStylePosition,
+										"relative");
+								break;
+							case Absolute:
+								element.setProperty(
+										Property.PropertyStylePosition,
+										"absolute");
+								break;
+							case Fixed:
+								element
+										.setProperty(
+												Property.PropertyStylePosition,
+												"fixed");
+								break;
+							}
+							element.setProperty(Property.PropertyStyleTop,
+									this.layoutImpl_.offsets_[0].getCssText());
+							element.setProperty(Property.PropertyStyleLeft,
+									this.layoutImpl_.offsets_[3].getCssText());
+						} else {
 							element.setProperty(Property.PropertyStylePosition,
 									"static");
-							break;
-						case Relative:
-							element.setProperty(Property.PropertyStylePosition,
-									"relative");
-							break;
-						case Absolute:
-							element.setProperty(Property.PropertyStylePosition,
-									"absolute");
-							break;
-						case Fixed:
-							element.setProperty(Property.PropertyStylePosition,
-									"fixed");
-							break;
 						}
-						element.setProperty(Property.PropertyStyleTop,
-								this.layoutImpl_.offsets_[0].getCssText());
-						element.setProperty(Property.PropertyStyleLeft,
-								this.layoutImpl_.offsets_[3].getCssText());
-					} else {
-						element.setProperty(Property.PropertyStylePosition,
-								"static");
+						element.setProperty(Property.PropertyStyleTop, "0px");
+						element.setProperty(Property.PropertyStyleLeft, "0px");
 					}
 					element.setProperty(Property.PropertyStyleVisibility,
 							"visible");
-					element.setProperty(Property.PropertyStyleTop, "0px");
-					element.setProperty(Property.PropertyStyleLeft, "0px");
 					element.setProperty(Property.PropertyStyleDisplay, "");
 				}
 				this.flags_.clear(BIT_HIDDEN_CHANGED);
@@ -1091,6 +1149,7 @@ public abstract class WWebWidget extends WWidget {
 		this.flags_.clear(BIT_SELECTABLE_CHANGED);
 		this.flags_.clear(BIT_WIDTH_CHANGED);
 		this.flags_.clear(BIT_HEIGHT_CHANGED);
+		this.flags_.clear(BIT_DISABLED_CHANGED);
 		this.renderOk();
 		if (deep && this.children_ != null) {
 			for (int i = 0; i < this.children_.size(); ++i) {
@@ -1112,14 +1171,13 @@ public abstract class WWebWidget extends WWidget {
 		return e;
 	}
 
-	boolean isVisible() {
-		if (this.flags_.get(BIT_STUBBED) || this.flags_.get(BIT_HIDDEN)) {
-			return false;
-		} else {
-			if (this.getParent() != null) {
-				return this.getParent().isVisible();
-			} else {
-				return true;
+	protected void propagateSetEnabled(boolean enabled) {
+		if (this.children_ != null) {
+			for (int i = 0; i < this.children_.size(); ++i) {
+				WWidget c = this.children_.get(i);
+				if (!c.isDisabled()) {
+					c.getWebWidget().propagateSetEnabled(enabled);
+				}
 			}
 		}
 	}
@@ -1201,6 +1259,7 @@ public abstract class WWebWidget extends WWidget {
 	void setHideWithOffsets(boolean how) {
 		if (how) {
 			if (!this.flags_.get(BIT_HIDE_WITH_OFFSETS)) {
+				this.flags_.set(BIT_HIDE_WITH_VISIBILITY);
 				this.flags_.set(BIT_HIDE_WITH_OFFSETS);
 				// this.resetLearnedSlot(WWidget.show);
 				// this.resetLearnedSlot(WWidget.hide);
@@ -1245,6 +1304,9 @@ public abstract class WWebWidget extends WWidget {
 	private static final int BIT_SELECTABLE_CHANGED = 21;
 	private static final int BIT_WIDTH_CHANGED = 22;
 	private static final int BIT_HEIGHT_CHANGED = 23;
+	private static final int BIT_DISABLED = 24;
+	private static final int BIT_DISABLED_CHANGED = 25;
+	private static final int BIT_HIDE_WITH_VISIBILITY = 26;
 	BitSet flags_;
 	private WLength width_;
 	private WLength height_;

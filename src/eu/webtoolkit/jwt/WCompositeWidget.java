@@ -140,12 +140,44 @@ public class WCompositeWidget extends WWidget {
 		return this.impl_.getMargin(side);
 	}
 
+	public void setHiddenKeepsGeometry(boolean enabled) {
+		this.impl_.setHiddenKeepsGeometry(enabled);
+	}
+
+	public boolean isHiddenKeepsGeometry() {
+		return this.impl_.isHiddenKeepsGeometry();
+	}
+
 	public void setHidden(boolean how) {
 		this.impl_.setHidden(how);
 	}
 
 	public boolean isHidden() {
 		return this.impl_.isHidden();
+	}
+
+	boolean isVisible() {
+		if (this.getParent() != null) {
+			return this.getParent().isVisible();
+		} else {
+			return true;
+		}
+	}
+
+	public void setDisabled(boolean disabled) {
+		this.impl_.setDisabled(disabled);
+	}
+
+	public boolean isDisabled() {
+		return this.impl_.isDisabled();
+	}
+
+	public boolean isEnabled() {
+		if (this.getParent() != null) {
+			return this.getParent().isEnabled();
+		} else {
+			return true;
+		}
 	}
 
 	public void setPopup(boolean how) {
@@ -260,14 +292,6 @@ public class WCompositeWidget extends WWidget {
 
 	void setHideWithOffsets(boolean how) {
 		this.impl_.setHideWithOffsets(how);
-	}
-
-	boolean isVisible() {
-		if (this.getParent() != null) {
-			return this.getParent().isVisible();
-		} else {
-			return true;
-		}
 	}
 
 	boolean isStubbed() {

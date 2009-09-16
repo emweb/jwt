@@ -8,6 +8,7 @@ package eu.webtoolkit.jwt;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.ArrayList;
+import java.util.BitSet;
 import java.util.EnumSet;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -51,10 +52,7 @@ public abstract class WWidget extends WObject {
 			this.eventSignals_.removeFirst();
 			s.destroy();
 		}
-		if (this.needRerender_) {
-			WApplication.getInstance().getSession().getRenderer().doneUpdate(
-					this);
-		}
+		this.renderOk();
 	}
 
 	/**
@@ -479,12 +477,37 @@ public abstract class WWidget extends WObject {
 	public abstract WLength getMargin(Side side);
 
 	/**
-	 * Sets whether the widget must be hidden.
+	 * Sets whether the widget keeps its geometry when hidden.
+	 * <p>
+	 * Normally, a widget that is hidden will no longer occupy space, causing a
+	 * reflow of sibling widgets. Using this method you may change this behavior
+	 * to keep an (open) space when hidden.
+	 * <p>
+	 * <p>
+	 * <i><b>Note:</b>Currently you can only set this before initial
+	 * rendering.</i>
+	 * </p>
+	 * 
+	 * @see WWidget#setHidden(boolean hidden)
+	 */
+	public abstract void setHiddenKeepsGeometry(boolean enabled);
+
+	/**
+	 * Returns whether the widget keeps its geometry when hidden.
+	 * <p>
+	 * 
+	 * @see WWidget#setHiddenKeepsGeometry(boolean enabled)
+	 */
+	public abstract boolean isHiddenKeepsGeometry();
+
+	/**
+	 * Sets whether the widget is hidden.
 	 * <p>
 	 * Hides or show the widget (including all its descendant widgets).
-	 * setHidden(false) will show this widget and all child widgets that are not
-	 * hidden. A widget is only shown if it and all its ancestors in the widget
-	 * tree are shown.
+	 * setHidden(false) will show this widget and all descendant widgets that
+	 * are not hidden. A widget is only visible if it and all its ancestors in
+	 * the widget tree are visible, which may be checked using
+	 * {@link WWidget#isVisible() isVisible()}.
 	 * <p>
 	 * 
 	 * @see WWidget#hide()
@@ -496,12 +519,73 @@ public abstract class WWidget extends WObject {
 	 * Returns whether the widget is set hidden.
 	 * <p>
 	 * A widget that is not hidden may still be not visible when one of its
-	 * ancestor widgets are hidden.
+	 * ancestor widgets is hidden. Use {@link WWidget#isVisible() isVisible()}
+	 * to check the visibility of a widget.
 	 * <p>
 	 * 
 	 * @see WWidget#setHidden(boolean hidden)
+	 * @see WWidget#isVisible()
 	 */
 	public abstract boolean isHidden();
+
+	/**
+	 * Returns whether the widget is visible.
+	 * <p>
+	 * A widget is visible if it is not hidden, and none of its ancestors are
+	 * hidden. This method returns the true visibility, while
+	 * {@link WWidget#isHidden() isHidden()} returns whether a widget has been
+	 * explicitly hidden.
+	 * <p>
+	 * Note that a widget may be at the same time not hidden, and not visible,
+	 * in case one of its ancestors was hidden.
+	 * <p>
+	 * 
+	 * @see WWidget#isHidden()
+	 */
+	abstract boolean isVisible();
+
+	/**
+	 * Sets whether the widget is disabled.
+	 * <p>
+	 * Enables or disables the widget (including all its descendant widgets).
+	 * setDisabled(false) will enable this widget and all descendant widgets
+	 * that are not disabled. A widget is only enabled if it and all its
+	 * ancestors in the widget tree are disabled.
+	 * <p>
+	 * 
+	 * @see WWidget#disable()
+	 * @see WWidget#enable()
+	 */
+	public abstract void setDisabled(boolean disabled);
+
+	/**
+	 * Returns whether the widget is set disabled.
+	 * <p>
+	 * A widget that is not set disabled may still be disabled when one of its
+	 * ancestor widgets is set disabled. Use {@link WWidget#isEnabled()
+	 * isEnabled()} to find out whether a widget is enabled.
+	 * <p>
+	 * 
+	 * @see WWidget#setDisabled(boolean disabled)
+	 * @see WWidget#isEnabled()
+	 */
+	public abstract boolean isDisabled();
+
+	/**
+	 * Returns whether the widget is enabled.
+	 * <p>
+	 * A widget is enabled if it is not disabled, and none of its ancestors are
+	 * disabled. This method returns whether the widget is rendered as enabled,
+	 * while {@link WWidget#isDisabled() isDisabled()} returns whether a widget
+	 * has been explicitly disabled.
+	 * <p>
+	 * Note that a widget may be at the same time not enabled, and not disabled,
+	 * in case one of its ancestors was disabled.
+	 * <p>
+	 * 
+	 * @see WWidget#isDisabled()
+	 */
+	public abstract boolean isEnabled();
 
 	/**
 	 * Lets the widget overlay over other sibling widgets.
@@ -847,7 +931,7 @@ public abstract class WWidget extends WObject {
 	 * This calls {@link WWidget#setHidden(boolean hidden) setHidden(true)}.
 	 */
 	public void hide() {
-		this.wasHidden_ = this.isHidden();
+		this.flags_.set(BIT_WAS_HIDDEN, this.isHidden());
 		this.setHidden(true);
 	}
 
@@ -857,8 +941,30 @@ public abstract class WWidget extends WObject {
 	 * This calls {@link WWidget#setHidden(boolean hidden) setHidden(false)}.
 	 */
 	public void show() {
-		this.wasHidden_ = this.isHidden();
+		this.flags_.set(BIT_WAS_HIDDEN, this.isHidden());
 		this.setHidden(false);
+	}
+
+	/**
+	 * Enables the widget.
+	 * <p>
+	 * This calls {@link WWidget#setDisabled(boolean disabled)
+	 * setDisabled(false)}.
+	 */
+	public void enable() {
+		this.flags_.set(BIT_WAS_DISABLED, this.isDisabled());
+		this.setDisabled(false);
+	}
+
+	/**
+	 * Disable thes widget.
+	 * <p>
+	 * This calls {@link WWidget#setDisabled(boolean disabled)
+	 * setDisabled(true)}.
+	 */
+	public void disable() {
+		this.flags_.set(BIT_WAS_DISABLED, this.isDisabled());
+		this.setDisabled(true);
 	}
 
 	abstract DomElement createSDomElement(WApplication app);
@@ -872,8 +978,9 @@ public abstract class WWidget extends WObject {
 	 */
 	protected WWidget(WContainerWidget parent) {
 		super((WObject) null);
+		this.flags_ = new BitSet();
 		this.eventSignals_ = new LinkedList<AbstractEventSignal>();
-		this.needRerender_ = true;
+		this.flags_.set(BIT_NEED_RERENDER);
 	}
 
 	/**
@@ -996,8 +1103,6 @@ public abstract class WWidget extends WObject {
 		}
 	}
 
-	abstract boolean isVisible();
-
 	abstract boolean isStubbed();
 
 	protected void render() {
@@ -1037,16 +1142,16 @@ public abstract class WWidget extends WObject {
 	// getStateless(<pointertomember or dependentsizedarray>
 	// methodpointertomember or dependentsizedarray>) ;
 	void renderOk() {
-		if (this.needRerender_) {
-			this.needRerender_ = false;
+		if (this.flags_.get(BIT_NEED_RERENDER)) {
+			this.flags_.clear(BIT_NEED_RERENDER);
 			WApplication.getInstance().getSession().getRenderer().doneUpdate(
 					this);
 		}
 	}
 
 	void askRerender(boolean laterOnly) {
-		if (!this.needRerender_) {
-			this.needRerender_ = true;
+		if (!this.flags_.get(BIT_NEED_RERENDER)) {
+			this.flags_.set(BIT_NEED_RERENDER);
 			WApplication.getInstance().getSession().getRenderer().needUpdate(
 					this, laterOnly);
 		}
@@ -1057,19 +1162,25 @@ public abstract class WWidget extends WObject {
 	}
 
 	boolean needsRerender() {
-		return this.needRerender_;
+		return this.flags_.get(BIT_NEED_RERENDER);
 	}
 
 	abstract void getSDomChanges(List<DomElement> result, WApplication app);
 
 	abstract boolean needsToBeRendered();
 
+	private static final int BIT_WAS_HIDDEN = 0;
+	private static final int BIT_WAS_DISABLED = 1;
+	private static final int BIT_NEED_RERENDER = 2;
+	private BitSet flags_;
 	private LinkedList<AbstractEventSignal> eventSignals_;
-	private boolean wasHidden_;
-	private boolean needRerender_;
 
 	private void undoHideShow() {
-		this.setHidden(this.wasHidden_);
+		this.setHidden(this.flags_.get(BIT_WAS_HIDDEN));
+	}
+
+	private void undoDisableEnable() {
+		this.setDisabled(this.flags_.get(BIT_WAS_DISABLED));
 	}
 
 	abstract WWebWidget getWebWidget();

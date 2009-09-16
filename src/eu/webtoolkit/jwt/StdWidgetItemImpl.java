@@ -88,7 +88,10 @@ class StdWidgetItemImpl extends StdLayoutItemImpl {
 				&& d.getProperty(Property.PropertyStyleWidth).length() == 0) {
 			if (d.getType() == DomElementType.DomElement_BUTTON
 					|| d.getType() == DomElementType.DomElement_INPUT
+					&& !d.getAttribute("type").equals("radio")
+					&& !d.getAttribute("type").equals("checkbox")
 					|| d.getType() == DomElementType.DomElement_SELECT
+					&& !app.getEnvironment().agentIsIE()
 					|| d.getType() == DomElementType.DomElement_TEXTAREA) {
 				d.setProperty(Property.PropertyStyleWidth, "100%");
 			}
@@ -97,10 +100,6 @@ class StdWidgetItemImpl extends StdLayoutItemImpl {
 			result.addChild(d);
 		}
 		return result;
-	}
-
-	public int getAdditionalVerticalPadding(boolean fitWidth, boolean fitHeight) {
-		return 0;
 	}
 
 	public void setHint(String name, String value) {

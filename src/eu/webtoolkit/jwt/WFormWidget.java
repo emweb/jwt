@@ -37,7 +37,6 @@ public abstract class WFormWidget extends WInteractWidget {
 		this.validateJs_ = null;
 		this.filterInput_ = null;
 		this.flags_ = new BitSet();
-		this.flags_.set(BIT_ENABLED);
 	}
 
 	/**
@@ -93,13 +92,6 @@ public abstract class WFormWidget extends WInteractWidget {
 	}
 
 	/**
-	 * Return whether the widget is enabled.
-	 */
-	public boolean isEnabled() {
-		return this.flags_.get(BIT_ENABLED);
-	}
-
-	/**
 	 * Set a validator for this field.
 	 * <p>
 	 * The validator is used to validate the current input.
@@ -146,35 +138,15 @@ public abstract class WFormWidget extends WInteractWidget {
 	}
 
 	/**
-	 * Change the enabled state of the widget.
+	 * Sets whether the widget is enabled.
 	 * <p>
 	 * A widget that is disabled cannot receive focus or user interaction.
+	 * <p>
+	 * This is the opposite of {@link WWebWidget#setDisabled(boolean disabled)
+	 * WWebWidget#setDisabled()}.
 	 */
 	public void setEnabled(boolean enabled) {
-		this.flags_.set(BIT_WAS_ENABLED, this.flags_.get(BIT_ENABLED));
-		this.flags_.set(BIT_ENABLED, enabled);
-		this.flags_.set(BIT_ENABLED_CHANGED);
-		this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyAttribute));
-	}
-
-	/**
-	 * Enable the widget.
-	 * <p>
-	 * 
-	 * @see WFormWidget#setEnabled(boolean enabled)
-	 */
-	public void enable() {
-		this.setEnabled(true);
-	}
-
-	/**
-	 * Disable the widget.
-	 * <p>
-	 * 
-	 * @see WFormWidget#setEnabled(boolean enabled)
-	 */
-	public void disable() {
-		this.setEnabled(false);
+		this.setDisabled(!enabled);
 	}
 
 	/**
@@ -246,22 +218,12 @@ public abstract class WFormWidget extends WInteractWidget {
 	protected WValidator validator_;
 	protected JSlot validateJs_;
 	protected JSlot filterInput_;
-	private static final int BIT_ENABLED = 0;
-	private static final int BIT_ENABLED_CHANGED = 1;
-	private static final int BIT_WAS_ENABLED = 2;
-	private static final int BIT_GOT_FOCUS = 3;
-	private static final int BIT_INITIAL_FOCUS = 4;
-	private static final int BIT_READONLY = 5;
-	private static final int BIT_READONLY_CHANGED = 6;
+	private static final int BIT_ENABLED_CHANGED = 0;
+	private static final int BIT_GOT_FOCUS = 1;
+	private static final int BIT_INITIAL_FOCUS = 2;
+	private static final int BIT_READONLY = 3;
+	private static final int BIT_READONLY_CHANGED = 4;
 	private BitSet flags_;
-
-	private void undoEnable() {
-		this.setEnabled(this.flags_.get(BIT_WAS_ENABLED));
-	}
-
-	private void undoDisable() {
-		this.undoEnable();
-	}
 
 	private void undoSetFocus() {
 	}
@@ -353,6 +315,12 @@ public abstract class WFormWidget extends WInteractWidget {
 	// protected AbstractEventSignal.LearningListener
 	// getStateless(<pointertomember or dependentsizedarray>
 	// methodpointertomember or dependentsizedarray>) ;
+	protected void propagateSetEnabled(boolean enabled) {
+		this.flags_.set(BIT_ENABLED_CHANGED);
+		this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyAttribute));
+		super.propagateSetEnabled(enabled);
+	}
+
 	protected String getFormName() {
 		return this.getId();
 	}

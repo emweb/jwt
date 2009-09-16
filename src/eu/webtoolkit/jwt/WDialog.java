@@ -88,6 +88,17 @@ public class WDialog extends WCompositeWidget {
 				app.getStyleSheet().addRule("body", "height: 100%;");
 			}
 			app
+					.doJavaScript(
+							""
+									+ "Wt2_99_5.centerDialog = function(d){if (d && d.style.display != 'none' && !d.getAttribute('moved')) {var ws=Wt2_99_5.windowSize();d.style.left=Math.round((ws.x - d.clientWidth)/2"
+									+ (app.getEnvironment().getAgent() == WEnvironment.UserAgent.IE6 ? "+ document.documentElement.scrollLeft"
+											: "")
+									+ ") + 'px';d.style.top=Math.round((ws.y - d.clientHeight)/2"
+									+ (app.getEnvironment().getAgent() == WEnvironment.UserAgent.IE6 ? "+ document.documentElement.scrollTop"
+											: "")
+									+ ") + 'px';d.style.marginLeft='0px';d.style.marginTop='0px';}};",
+							false);
+			app
 					.getStyleSheet()
 					.addRule(
 							"div.Wt-dialogcover",
@@ -96,22 +107,31 @@ public class WDialog extends WCompositeWidget {
 									+ (app.getEnvironment().agentIsIE() ? "filter: alpha(opacity=50);"
 											: "-moz-background-clip: -moz-initial;-moz-background-origin: -moz-initial;-moz-background-inline-policy: -moz-initial;-moz-opacity:0.5;-khtml-opacity: 0.5"),
 							CSS_RULES_NAME);
+			String position = app.getEnvironment().getAgent() == WEnvironment.UserAgent.IE6 ? "absolute"
+					: "fixed";
 			app
 					.getStyleSheet()
 					.addRule(
 							"div.Wt-dialog",
-							"visibility: visible;position: fixed; left: 50%; top: 50%;margin-left: -100px; margin-top: -50px;");
+							""
+									+ "visibility: visible;position: "
+									+ position
+									+ ';'
+									+ (!app.getEnvironment().hasAjax() ? "left: 50%; top: 50%;margin-left: -100px; margin-top: -50px;"
+											: "left: 0px; top: 0px;"));
 			if (app.getEnvironment().getAgent() == WEnvironment.UserAgent.IE6) {
 				app
 						.getStyleSheet()
 						.addRule(
 								"div.Wt-dialogcover",
 								"position: absolute;left: expression((ignoreMe2 = document.documentElement.scrollLeft) + 'px' );top: expression((ignoreMe = document.documentElement.scrollTop) + 'px' );");
-				app
-						.getStyleSheet()
-						.addRule(
-								"div.Wt-dialog",
-								"position: absolute;left: expression((ignoreMe2 = document.documentElement.scrollLeft + document.documentElement.clientWidth/2) + 'px' );top: expression((ignoreMe = document.documentElement.scrollTop + document.documentElement.clientHeight/2) + 'px' );");
+				if (!app.getEnvironment().hasAjax()) {
+					app
+							.getStyleSheet()
+							.addRule(
+									"div.Wt-dialog",
+									"position: absolute;left: expression((ignoreMe2 = document.documentElement.scrollLeft + document.documentElement.clientWidth/2) + 'px' );top: expression((ignoreMe = document.documentElement.scrollTop + document.documentElement.clientHeight/2) + 'px' );");
+				}
 			}
 			app
 					.getStyleSheet()
@@ -129,15 +149,8 @@ public class WDialog extends WCompositeWidget {
 		WContainerWidget parent = app.getDomRoot();
 		this.setPopup(true);
 		app
-				.addAutoJavaScript("{var d="
-						+ this.getJsRef()
-						+ ";if (d && d.style.display != 'none' && !d.getAttribute('moved')) {var ws=Wt2_99_5.windowSize();d.style.left=Math.round((ws.x - d.clientWidth)/2"
-						+ (app.getEnvironment().getAgent() == WEnvironment.UserAgent.IE6 ? "+ document.documentElement.scrollLeft"
-								: "")
-						+ ") + 'px';d.style.top=Math.round((ws.y - d.clientHeight)/2"
-						+ (app.getEnvironment().getAgent() == WEnvironment.UserAgent.IE6 ? "+ document.documentElement.scrollTop"
-								: "")
-						+ ") + 'px';d.style.marginLeft='0px';d.style.marginTop='0px';}}");
+				.addAutoJavaScript("Wt2_99_5.centerDialog(" + this.getJsRef()
+						+ ");");
 		parent.addWidget(this);
 		WVBoxLayout layout = new WVBoxLayout();
 		layout.setSpacing(0);

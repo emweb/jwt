@@ -205,6 +205,10 @@ class StdGridLayoutImpl extends StdLayoutImpl {
 					for (int i = 0; i < item.rowSpan_; ++i) {
 						if (this.grid_.rows_.get(row + i).stretch_ != 0) {
 							itemFitHeight = true;
+						} else {
+							if (!(stretch != 0)) {
+								itemFitHeight = false;
+							}
 						}
 						for (int j = 0; j < item.colSpan_; ++j) {
 							if (this.grid_.columns_.get(col + j).stretch_ != 0) {
@@ -255,13 +259,9 @@ class StdGridLayoutImpl extends StdLayoutImpl {
 					if (!jsHeights) {
 						td.setAttribute("class", "Wt-grtd");
 					}
-					int additionalVerticalPadding = 0;
 					if (item.item_ != null) {
 						DomElement c = getImpl(item.item_).createDomElement(
 								itemFitWidth, itemFitHeight, app);
-						additionalVerticalPadding = getImpl(item.item_)
-								.getAdditionalVerticalPadding(itemFitWidth,
-										itemFitHeight);
 						if (hAlign == null) {
 							hAlign = AlignmentFlag.AlignJustify;
 						}
@@ -315,7 +315,7 @@ class StdGridLayoutImpl extends StdLayoutImpl {
 					if (!jsHeights && vAlign == null) {
 						style2 += heightPct;
 					}
-					int padding2 = padding[2] + additionalVerticalPadding;
+					int padding2 = padding[2];
 					if (padding[0] == padding[1] && padding[0] == padding2
 							&& padding[0] == padding[3]) {
 						if (padding[0] != 0) {
@@ -361,10 +361,6 @@ class StdGridLayoutImpl extends StdLayoutImpl {
 		table.addChild(tbody);
 		div.addChild(table);
 		return div;
-	}
-
-	public int getAdditionalVerticalPadding(boolean fitWidth, boolean fitHeight) {
-		return 0;
 	}
 
 	public static boolean useJavaScriptHeights(WApplication app) {

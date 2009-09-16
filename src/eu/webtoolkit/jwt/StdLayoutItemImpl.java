@@ -46,7 +46,4 @@ abstract class StdLayoutItemImpl extends WObject implements WLayoutItemImpl {
 
 	public abstract DomElement createDomElement(boolean fitWidth,
 			boolean fitHeight, WApplication app);
-
-	public abstract int getAdditionalVerticalPadding(boolean fitWidth,
-			boolean fitHeight);
 }

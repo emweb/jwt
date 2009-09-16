@@ -13,10 +13,10 @@ package eu.webtoolkit.jwt;
  * A rule presents CSS style properties that are applied to a selected set of
  * elements.
  * <p>
- * Use {@link WCssTemplateRule} if you would like to use a widget as a template
- * for specifying (<i>and</i> updating) a style rule, using the widgets style
- * properties, or {@link WCssTemplateRule} if you wish to directly specify the
- * CSS declarations.
+ * Use {@link WCssRule#getDeclarations() getDeclarations()} if you would like to
+ * use a widget as a template for specifying (<i>and</i> updating) a style rule,
+ * using the widgets style properties, or {@link WCssRule#getDeclarations()
+ * getDeclarations()} if you wish to directly specify the CSS declarations.
  * <p>
  * 
  * @see WCssStyleSheet

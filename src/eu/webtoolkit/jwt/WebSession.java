@@ -219,6 +219,9 @@ class WebSession {
 								.out()
 								.append(
 										"<html><head><title>bhm</title></head><body>&#160;</body></html>");
+						handler.getResponse().flush();
+						handler.setRequest((WebRequest) null,
+								(WebResponse) null);
 					} else {
 						WResource resource = this.decodeResource(resourceE);
 						if (resource != null) {
@@ -239,6 +242,9 @@ class WebSession {
 									.out()
 									.append(
 											"<html><body><h1>Refusing to respond.</h1></body></html>");
+							handler.getResponse().flush();
+							handler.setRequest((WebRequest) null,
+									(WebResponse) null);
 						}
 					}
 				} else {
@@ -462,7 +468,9 @@ class WebSession {
 						}
 						{
 							this.app_.notify(new WEvent(handler, responseType));
-							if (handler.getResponse() != null) {
+							if (handler.getResponse() != null
+									&& (!(requestE != null) || !requestE
+											.equals("resource"))) {
 								this.app_.notify(new WEvent(handler,
 										responseType, true));
 							}

@@ -295,6 +295,13 @@ public class WLabel extends WInteractWidget {
 		super.propagateRenderOk(deep);
 	}
 
+	protected void propagateSetEnabled(boolean enabled) {
+		if (this.text_ != null) {
+			this.text_.setStyleClass(enabled ? "" : "Wt-disabled");
+		}
+		super.propagateSetEnabled(enabled);
+	}
+
 	protected void updateImage(DomElement element, boolean all,
 			WApplication app, int pos) {
 		if (this.newImage_ || all) {

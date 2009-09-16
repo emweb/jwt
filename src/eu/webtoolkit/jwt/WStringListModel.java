@@ -14,29 +14,6 @@ import eu.webtoolkit.jwt.utils.StringUtils;
 
 /**
  * An model that manages a list of strings.
- * <p>
- * 
- * This model only manages a unidimensional list of strings. It is used as the
- * default model for view classes that show a list.
- * <p>
- * The model only presents {@link ItemDataRole#DisplayRole DisplayRole} data of
- * a single column of data, but otherwise provides support for all standard
- * features of a model, including editing and addition and removal of data rows.
- * <p>
- * You can populate the model by passing a list of strings to its consructor, or
- * by using the {@link WStringListModel#setStringList(List strings)
- * setStringList()} method. You can set or retrieve data using the
- * {@link WStringListModel#setData(WModelIndex index, Object value, int role)
- * setData()} and {@link WStringListModel#getData(WModelIndex index, int role)
- * getData()} methods, and add or remove data using the
- * {@link WStringListModel#insertRows(int row, int count, WModelIndex parent)
- * insertRows()} and
- * {@link WStringListModel#removeRows(int row, int count, WModelIndex parent)
- * removeRows()} methods.
- * <p>
- * 
- * @see WComboBox
- * @see WSelectionBox
  */
 public class WStringListModel extends WAbstractListModel {
 	/**
@@ -87,6 +64,7 @@ public class WStringListModel extends WAbstractListModel {
 	 * <p>
 	 * 
 	 * @see WAbstractItemModel#dataChanged()
+	 * @see WStringListModel#addString(CharSequence string)
 	 */
 	public void setStringList(List<WString> strings) {
 		int currentSize = this.strings_.size();
@@ -111,6 +89,27 @@ public class WStringListModel extends WAbstractListModel {
 			this.dataChanged().trigger(this.getIndex(0, 0),
 					this.getIndex(numChanged - 1, 0));
 		}
+	}
+
+	/**
+	 * Inserts a string.
+	 * <p>
+	 * 
+	 * @see WStringListModel#setStringList(List strings)
+	 */
+	public void insertString(int row, CharSequence string) {
+		this.insertRows(row, 1);
+		this.setData(row, 0, string);
+	}
+
+	/**
+	 * Adds a string.
+	 * <p>
+	 * 
+	 * @see WStringListModel#setStringList(List strings)
+	 */
+	public void addString(CharSequence string) {
+		this.insertString(this.getRowCount(), string);
 	}
 
 	/**
