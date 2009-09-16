@@ -34,8 +34,8 @@ import eu.webtoolkit.jwt.utils.StringUtils;
  * points.
  * <p>
  * To use a cartesian chart, the minimum you need to do is set a model using
- * {@link WAbstractChart#setModel(WAbstractItemModel model) setModel()}, set the
- * model column that holds the X data using
+ * {@link WAbstractChart#setModel(WAbstractItemModel model)
+ * WAbstractChart#setModel()}, set the model column that holds the X data using
  * {@link WCartesianChart#setXSeriesColumn(int modelColumn) setXSeriesColumn()},
  * and add one or more series using
  * {@link WCartesianChart#addSeries(WDataSeries series) addSeries()}. Each
@@ -80,8 +80,9 @@ import eu.webtoolkit.jwt.utils.StringUtils;
  * setOrientation()}.
  * <p>
  * The styling of the series data are dictated by a palette which may be set
- * using {@link WAbstractChart#setPalette(WChartPalette palette) setPalette()},
- * but may be overridden by settings in each data series.
+ * using {@link WAbstractChart#setPalette(WChartPalette palette)
+ * WAbstractChart#setPalette()}, but may be overridden by settings in each data
+ * series.
  * <p>
  * 
  * @see WDataSeries

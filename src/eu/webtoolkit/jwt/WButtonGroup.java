@@ -17,8 +17,8 @@ import java.util.List;
  * <p>
  * It is not a widget, but instead provides only a logical grouping. Radio
  * buttons are aware of the group in which they have been added, see
- * {@link WRadioButton#getGroup() getGroup()}. When a button is deleted, it is
- * automatically removed its button group.
+ * {@link WRadioButton#getGroup() WRadioButton#getGroup()}. When a button is
+ * deleted, it is automatically removed its button group.
  * <p>
  * It allows you to associate id&apos;s with each button, which you may use to
  * identify a particular button. The special value of -1 is reserved to indicate

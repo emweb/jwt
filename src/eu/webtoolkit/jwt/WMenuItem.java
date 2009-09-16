@@ -17,9 +17,10 @@ import eu.webtoolkit.jwt.utils.StringUtils;
  * By default, a {@link WMenuItem} is implemented using a {@link WAnchor}
  * widget. When the menu participates in application internal paths (see
  * {@link WMenu#setInternalPathEnabled(String basePath)
- * setInternalPathEnabled()}), the anchor references the bookmark URL
+ * WMenu#setInternalPathEnabled()}), the anchor references the bookmark URL
  * corresponding to the {@link WMenuItem#getPathComponent() getPathComponent()}
- * for the item (see {@link WApplication#getBookmarkUrl() getBookmarkUrl()}.
+ * for the item (see {@link WApplication#getBookmarkUrl()
+ * WApplication#getBookmarkUrl()}.
  * <p>
  * To provide another look for the menu items (such as perhaps adding an icon),
  * you can specialize this class, and reimplement the virtual methods:

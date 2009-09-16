@@ -35,7 +35,8 @@ import eu.webtoolkit.jwt.utils.StringUtils;
  * area of each segment is proportional to the value in the data series.
  * <p>
  * To use a pie chart, you need to set a model using
- * {@link WAbstractChart#setModel(WAbstractItemModel model) setModel()}, and use
+ * {@link WAbstractChart#setModel(WAbstractItemModel model)
+ * WAbstractChart#setModel()}, and use
  * {@link WPieChart#setLabelsColumn(int modelColumn) setLabelsColumn()} and
  * {@link WPieChart#setDataColumn(int modelColumn) setDataColumn()} to specify
  * the model column that contains the category labels and data.

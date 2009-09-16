@@ -32,10 +32,10 @@ import java.util.Map;
  * ({@link WStandardItemModel#insertRow(int row, List items) insertRow()}) or
  * columns ({@link WStandardItemModel#insertColumn(int column, List items)
  * insertColumn()}) or removing rows (
- * {@link WAbstractItemModel#removeRow(int row, WModelIndex parent) removeRow()}
- * ) or columns (
+ * {@link WAbstractItemModel#removeRow(int row, WModelIndex parent)
+ * WAbstractItemModel#removeRow()}) or columns (
  * {@link WAbstractItemModel#removeColumn(int column, WModelIndex parent)
- * removeColumn()}).
+ * WAbstractItemModel#removeColumn()}).
  * <p>
  * If you want to use the model as a tree (or tree table), then you can use the
  * default constructor to start with an empty tree, and use the

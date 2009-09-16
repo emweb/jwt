@@ -21,7 +21,7 @@ import java.util.EnumSet;
  * A WTableCell acts as any other {@link WContainerWidget}, except that both the
  * vertical and horizontal alignment of contents may be specified by
  * {@link WContainerWidget#setContentAlignment(EnumSet alignment)
- * setContentAlignment()}.
+ * WContainerWidget#setContentAlignment()}.
  * <p>
  * The widget corresponds to the HTML <code>&lt;td&gt;</code> or
  * <code>&lt;th&gt;</code> tag, depending on whether the cell is a plain cell or

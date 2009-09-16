@@ -14,7 +14,7 @@ import java.util.List;
  * 
  * This is a container widgets which at all times has only one item visible. The
  * widget accomplishes this using {@link WWebWidget#setHidden(boolean hidden)
- * setHidden()} on the children.
+ * WWebWidget#setHidden()} on the children.
  * <p>
  * Using {@link WStackedWidget#getCurrentIndex() getCurrentIndex()} and
  * {@link WStackedWidget#setCurrentIndex(int index) setCurrentIndex()} you can

@@ -24,9 +24,9 @@ import java.util.Set;
  * <p>
  * Internationalization may be provided by indicating i18n == true in the
  * constructor, and providing the appropriate messages for months (with keys
- * from {@link WDate#getLongMonthName(int month) getLongMonthName()}) and days
- * (with keys from {@link WDate#getShortDayName(int weekday) getShortDayName()})
- * in your message resource bundle.
+ * from {@link WDate#getLongMonthName(int month) WDate#getLongMonthName()}) and
+ * days (with keys from {@link WDate#getShortDayName(int weekday)
+ * WDate#getShortDayName()}) in your message resource bundle.
  * <p>
  * The look can be overridden using the following style class selectors:
  * <p>

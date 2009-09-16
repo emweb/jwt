@@ -18,9 +18,9 @@ import java.util.List;
  * through the constructor {@link WPainter#WPainter(WPaintDevice device)
  * WPainter()}, or use {@link WPainter#begin(WPaintDevice device) begin()}.
  * Typically, you will instantiate a WPainter from within the
- * {@link WPaintedWidget#paintEvent(WPaintDevice paintDevice) paintEvent()}
- * method, but you can also use a painter to paint directly to a particular
- * paint device, for example to create an SVG image.
+ * {@link WPaintedWidget#paintEvent(WPaintDevice paintDevice)
+ * WPaintedWidget#paintEvent()} method, but you can also use a painter to paint
+ * directly to a particular paint device, for example to create an SVG image.
  * <p>
  * The painter maintains state such as the current
  * {@link WPainter#setPen(WPen p) pen}, {@link WPainter#setBrush(WBrush b)
@@ -34,14 +34,15 @@ import java.util.List;
  * The painting system distinguishes between device coordinates, logical
  * coordinates, and local coordinates. The device coordinate system ranges from
  * (0, 0) in the top left corner of the device, to (
- * {@link WPaintDevice#getWidth() getWidth()}, {@link WPaintDevice#getHeight()
- * getHeight()}) for the bottom right corner. The logical coordinate system
- * defines a coordinate system that may be chosen independent of the geometry of
- * the device, which is convenient to make abstraction of the actual device
- * size. Finally, the current local coordinate system may be different from the
- * logical coordinate system because of a world transformation. Initially, the
- * local coordinate system coincides with the logical coordinate system, which
- * coincides with the device coordinate system.
+ * {@link WPaintDevice#getWidth() WPaintDevice#getWidth()},
+ * {@link WPaintDevice#getHeight() WPaintDevice#getHeight()}) for the bottom
+ * right corner. The logical coordinate system defines a coordinate system that
+ * may be chosen independent of the geometry of the device, which is convenient
+ * to make abstraction of the actual device size. Finally, the current local
+ * coordinate system may be different from the logical coordinate system because
+ * of a world transformation. Initially, the local coordinate system coincides
+ * with the logical coordinate system, which coincides with the device
+ * coordinate system.
  * <p>
  * By setting a {@link WPainter#getViewPort() getViewPort()} and a
  * {@link WPainter#getWindow() getWindow()}, a viewPort transformation is

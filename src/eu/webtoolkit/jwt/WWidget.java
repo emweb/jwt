@@ -28,9 +28,9 @@ import java.util.List;
  * else). To add a WWebWidget directly to a parent container, either specify the
  * parent in the constructor (which is conventionally the last constructor
  * argument), or add the widget to the parent using
- * {@link WContainerWidget#addWidget(WWidget widget) addWidget()}.
- * Alternatively, you may add the widget to a layout manager set for a
- * WContainerWidget.
+ * {@link WContainerWidget#addWidget(WWidget widget)
+ * WContainerWidget#addWidget()}. Alternatively, you may add the widget to a
+ * layout manager set for a WContainerWidget.
  * <p>
  * A widget provides methods to manage its decorative style base on CSS. It also
  * provides access to CSS-based layout, which you may not use when the widget is

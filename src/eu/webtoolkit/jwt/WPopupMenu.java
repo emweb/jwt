@@ -38,9 +38,9 @@ package eu.webtoolkit.jwt;
  * <ul>
  * <li>Either you use the {@link WPopupMenuItem} itself to identify the action,
  * perhaps by specialization or simply by binding custom data using
- * {@link WPopupMenuItem#setData(Object data) setData()}.</li>
+ * {@link WPopupMenuItem#setData(Object data) WPopupMenuItem#setData()}.</li>
  * <li>You can bind a separate method to each item&apos;s
- * {@link WPopupMenuItem#triggered() triggered()} signal.</li>
+ * {@link WPopupMenuItem#triggered() WPopupMenuItem#triggered()} signal.</li>
  * </ul>
  * <p>
  * Usage example:

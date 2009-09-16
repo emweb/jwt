@@ -14,11 +14,11 @@ import java.util.List;
  * <p>
  * 
  * To act upon text changes, connect a slot to the {@link WFormWidget#changed()
- * changed()} signal. This signal is emitted when the user changed the content,
- * and subsequently removes the focus from the line edit.
+ * WFormWidget#changed()} signal. This signal is emitted when the user changed
+ * the content, and subsequently removes the focus from the line edit.
  * <p>
  * To act upon editing, connect a slot to the
- * {@link WInteractWidget#keyWentUp() keyWentUp()} signal.
+ * {@link WInteractWidget#keyWentUp() WInteractWidget#keyWentUp()} signal.
  * <p>
  * At all times, the current content may be accessed with the
  * {@link WLineEdit#getText() getText()} method.
@@ -26,10 +26,10 @@ import java.util.List;
  * You may specify a maximum length for the input using
  * {@link WLineEdit#setMaxLength(int chars) setMaxLength()}. If you wish to
  * provide more detailed input validation, you may set a validator using the
- * {@link WFormWidget#setValidator(WValidator validator) setValidator()} method.
- * Validators provide, in general, both client-side validation (as visual
- * feed-back only) and server-side validation when calling
- * {@link WLineEdit#validate() validate()}.
+ * {@link WFormWidget#setValidator(WValidator validator)
+ * WFormWidget#setValidator()} method. Validators provide, in general, both
+ * client-side validation (as visual feed-back only) and server-side validation
+ * when calling {@link WLineEdit#validate() validate()}.
  * <p>
  * The widget corresponds to the HTML
  * <code>&lt;input type=&quot;text&quot;&gt;</code> or

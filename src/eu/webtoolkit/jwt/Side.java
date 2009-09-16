@@ -12,7 +12,7 @@ import java.util.EnumSet;
  * <p>
  * Values of CenterX, CenterY, and CenterXY are only valid for
  * {@link WCssDecorationStyle#setBackgroundImage(String image, WCssDecorationStyle.Repeat repeat, EnumSet sides)
- * setBackgroundImage()}
+ * WCssDecorationStyle#setBackgroundImage()}
  * <p>
  * 
  * @see WWidget#setMargin(WLength margin, EnumSet sides)

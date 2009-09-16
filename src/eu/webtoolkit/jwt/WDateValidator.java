@@ -17,7 +17,7 @@ import java.util.List;
  * if the date is within a given range.
  * <p>
  * The format string used for validating user input are the same as those used
- * by {@link WDate#fromString(String s) fromString()}.
+ * by {@link WDate#fromString(String s) WDate#fromString()}.
  */
 public class WDateValidator extends WValidator {
 	/**

@@ -18,13 +18,14 @@ import java.util.List;
  * by a {@link WResource}.
  * <p>
  * You may listen to events by attaching event listeners to signals such as
- * {@link WInteractWidget#clicked() clicked()}. Since mouse events pass the
- * coordinates through a {@link WMouseEvent} object, it is possible to react to
- * clicks in specific parts of the image. An alternative is to define
- * interactive areas on the image using
+ * {@link WInteractWidget#clicked() WInteractWidget#clicked()}. Since mouse
+ * events pass the coordinates through a {@link WMouseEvent} object, it is
+ * possible to react to clicks in specific parts of the image. An alternative is
+ * to define interactive areas on the image using
  * {@link WImage#addArea(WAbstractArea area) addArea()}, which in addition
  * allows to have customized tool tips for certain image areas (using
- * {@link WAbstractArea#setToolTip(CharSequence text) setToolTip()}).
+ * {@link WAbstractArea#setToolTip(CharSequence text)
+ * WAbstractArea#setToolTip()}).
  * <p>
  * WImage is an {@link WWidget#setInline(boolean inlined) inline} widget.
  * <p>

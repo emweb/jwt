@@ -12,8 +12,9 @@ package eu.webtoolkit.jwt;
  * 
  * By default, a checkbox can have two states: {@link CheckState#Checked} or
  * {@link CheckState#Unchecked}, which can be inspected using
- * {@link WAbstractToggleButton#isChecked() isChecked()}, and set using
- * {@link WAbstractToggleButton#setChecked() setChecked()}.
+ * {@link WAbstractToggleButton#isChecked() WAbstractToggleButton#isChecked()},
+ * and set using {@link WAbstractToggleButton#setChecked()
+ * WAbstractToggleButton#setChecked()}.
  * <p>
  * A checkbox may also provide a third state,
  * {@link CheckState#PartiallyChecked}, which is useful to indicate that it is

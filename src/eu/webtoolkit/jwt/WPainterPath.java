@@ -14,7 +14,7 @@ import java.util.List;
  * 
  * A painter path represents a (complex) path that may be composed of lines,
  * arcs and bezier curve segments, and painted onto a paint device using
- * {@link WPainter#drawPath(WPainterPath path) drawPath()}.
+ * {@link WPainter#drawPath(WPainterPath path) WPainter#drawPath()}.
  * <p>
  * The path that is composed in a painter path may consist of multiple closed
  * sub-paths. Only the last sub-path can be left open.

@@ -28,9 +28,9 @@ import eu.webtoolkit.jwt.utils.StringUtils;
  * sorting of the source model data, without actually altering the source model.
  * This may be convenient when the source model does not support sorting (i.e.
  * does not reimplement
- * {@link WAbstractItemModel#sort(int column, SortOrder order) sort()}), or you
- * do not want to reorder the underlying model since that affects all views on
- * the model.
+ * {@link WAbstractItemModel#sort(int column, SortOrder order)
+ * WAbstractItemModel#sort()}), or you do not want to reorder the underlying
+ * model since that affects all views on the model.
  * <p>
  * To use the proxy model to filter data, you use the methods
  * {@link WSortFilterProxyModel#setFilterKeyColumn(int column)
@@ -44,11 +44,11 @@ import eu.webtoolkit.jwt.utils.StringUtils;
  * filterAcceptRow()} method.
  * <p>
  * Sorting is provided by reimplementing the standard
- * {@link WAbstractItemModel#sort(int column, SortOrder order) sort()} method.
- * In this way, a view class such as {@link WTreeView} may resort the model as
- * indicated by the user. Use {@link WSortFilterProxyModel#setSortRole(int role)
- * setSortRole()} to indicate on what data role sorting should be done, or
- * reimplement the
+ * {@link WAbstractItemModel#sort(int column, SortOrder order)
+ * WAbstractItemModel#sort()} method. In this way, a view class such as
+ * {@link WTreeView} may resort the model as indicated by the user. Use
+ * {@link WSortFilterProxyModel#setSortRole(int role) setSortRole()} to indicate
+ * on what data role sorting should be done, or reimplement the
  * {@link WSortFilterProxyModel#lessThan(WModelIndex lhs, WModelIndex rhs)
  * lessThan()} method to provide a specialized sorting method.
  * <p>

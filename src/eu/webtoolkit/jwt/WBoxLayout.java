@@ -19,7 +19,7 @@ import java.util.List;
  * among the widgets. The widget minimum height or width is used for sizing each
  * widget, whose default values may be overridden using
  * {@link WWidget#setMinimumSize(WLength width, WLength height)
- * setMinimumSize()}.
+ * WWidget#setMinimumSize()}.
  * <p>
  * You can use WContainerWidget::setOverflow(OverflowAuto) to automatically show
  * scrollbars on a container widget which you inserted into the layout. In some
@@ -34,11 +34,11 @@ import java.util.List;
  * replaces padding defined for the container. This margin defaults to 9 pixels,
  * and can be changed using
  * {@link WLayout#setContentsMargins(int left, int top, int right, int bottom)
- * setContentsMargins()}. It is not allowed to define padding for the container
- * widget using its CSS &apos;padding&apos; property or the
+ * WLayout#setContentsMargins()}. It is not allowed to define padding for the
+ * container widget using its CSS &apos;padding&apos; property or the
  * {@link WContainerWidget#setPadding(WLength length, EnumSet sides)
- * setPadding()}. You can add more space between two widgets using
- * {@link WBoxLayout#addSpacing(WLength size) addSpacing()}.
+ * WContainerWidget#setPadding()}. You can add more space between two widgets
+ * using {@link WBoxLayout#addSpacing(WLength size) addSpacing()}.
  * <p>
  * For each item a stretch factor may be defined, which controls how remaining
  * space is used. Each item is stretched using the stretch factor to fill the
@@ -52,7 +52,7 @@ import java.util.List;
  * <p>
  * When set on a {@link WContainerWidget}, this layout manager accepts the
  * following hints (see {@link WLayout#setLayoutHint(String name, String value)
- * setLayoutHint()}):
+ * WLayout#setLayoutHint()}):
  * <ul>
  * <li>
  * &quot;table-layout&quot; with possible values &quot;auto&quot; (default) or
@@ -65,10 +65,10 @@ import java.util.List;
  * </p>
  * <p>
  * <i><b>Warning:</b>You should specify AlignTop in the alignment flags of
- * {@link WContainerWidget#setLayout(WLayout layout) setLayout()} if the
- * container does not have a height that is constrained somehow. Otherwise the
- * behavior is undefined (the parent container will continue to increase in
- * size) </i>
+ * {@link WContainerWidget#setLayout(WLayout layout)
+ * WContainerWidget#setLayout()} if the container does not have a height that is
+ * constrained somehow. Otherwise the behavior is undefined (the parent
+ * container will continue to increase in size) </i>
  * </p>
  */
 public class WBoxLayout extends WLayout {

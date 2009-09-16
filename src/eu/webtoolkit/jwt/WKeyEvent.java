@@ -14,8 +14,9 @@ import eu.webtoolkit.jwt.utils.EnumUtils;
  * <p>
  * 
  * A key event is associated with the {@link WInteractWidget#keyWentDown()
- * keyWentDown()}, {@link WInteractWidget#keyWentUp() keyWentUp()} and
- * {@link WInteractWidget#keyPressed() keyPressed()} signals.
+ * WInteractWidget#keyWentDown()}, {@link WInteractWidget#keyWentUp()
+ * WInteractWidget#keyWentUp()} and {@link WInteractWidget#keyPressed()
+ * WInteractWidget#keyPressed()} signals.
  */
 public class WKeyEvent implements WAbstractEvent {
 	/**

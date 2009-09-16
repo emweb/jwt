@@ -28,7 +28,7 @@ import eu.webtoolkit.jwt.utils.StringUtils;
  * {@link WComboBox#setModel(WAbstractItemModel model) setModel()}.
  * <p>
  * To react to selection events, connect to the {@link WFormWidget#changed()
- * changed()}, {@link WComboBox#activated() activated()} or
+ * WFormWidget#changed()}, {@link WComboBox#activated() activated()} or
  * {@link WComboBox#sactivated() sactivated()} signals.
  * <p>
  * At all times, the current selection index is available through

@@ -33,7 +33,7 @@ import eu.webtoolkit.jwt.utils.StringUtils;
  * class if you want to override particular aspects of how the chart is
  * renderered. In that case, you will want to instantiate the specialized class
  * in {@link WCartesianChart#createRenderer(WPainter painter, WRectF rectangle)
- * createRenderer()}.
+ * WCartesianChart#createRenderer()}.
  * <p>
  * To simplify the simulatenous handling of Horizontal and Vertical charts, the
  * renderer makes abstraction of the orientation of the chart: regardless of the

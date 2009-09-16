@@ -16,7 +16,7 @@ package eu.webtoolkit.jwt;
  * By providing a custom implementation of this interface, you may use a custom
  * loading indicator using
  * {@link WApplication#setLoadingIndicator(WLoadingIndicator indicator)
- * setLoadingIndicator()},instead of the default implementation (
+ * WApplication#setLoadingIndicator()},instead of the default implementation (
  * {@link WDefaultLoadingIndicator}).
  * <p>
  * 

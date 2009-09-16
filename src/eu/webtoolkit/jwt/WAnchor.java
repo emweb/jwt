@@ -29,9 +29,10 @@ import java.util.EnumSet;
  * {@link WAnchor#setText(CharSequence text) setText()} or
  * {@link WAnchor#setImage(WImage image) setImage()} or a constructor, you
  * should not attempt to remove all contents (using
- * {@link WContainerWidget#clear() clear()}, or provide a layout (using
- * {@link WContainerWidget#setLayout(WLayout layout) setLayout()}), as this will
- * result in undefined behaviour. </i>
+ * {@link WContainerWidget#clear() WContainerWidget#clear()}, or provide a
+ * layout (using {@link WContainerWidget#setLayout(WLayout layout)
+ * WContainerWidget#setLayout()}), as this will result in undefined behaviour.
+ * </i>
  * </p>
  */
 public class WAnchor extends WContainerWidget {

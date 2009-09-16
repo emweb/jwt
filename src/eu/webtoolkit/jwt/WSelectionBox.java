@@ -19,27 +19,28 @@ import java.util.Set;
  * {@link WSelectionBox#setSelectionMode(SelectionMode mode) setSelectionMode()}.
  * <p>
  * The current selection may be set and read using
- * {@link WComboBox#setCurrentIndex(int index) setCurrentIndex()} and
- * {@link WComboBox#getCurrentIndex() getCurrentIndex()}, for
+ * {@link WComboBox#setCurrentIndex(int index) WComboBox#setCurrentIndex()} and
+ * {@link WComboBox#getCurrentIndex() WComboBox#getCurrentIndex()}, for
  * {@link SelectionMode#SingleSelection SingleSelection} mode, or
  * {@link WSelectionBox#setSelectedIndexes(Set selection) setSelectedIndexes()}
  * and {@link WSelectionBox#getSelectedIndexes() getSelectedIndexes()} for
  * {@link SelectionMode#ExtendedSelection ExtendedSelection} mode. The
- * {@link WComboBox#activated() activated()} and {@link WComboBox#sactivated()
- * sactivated()} signals are not emited in the ExtendedSelection mode, use the
- * {@link WFormWidget#changed() changed()} signal {@link WFormWidget#changed()
- * changed()}.
+ * {@link WComboBox#activated() WComboBox#activated()} and
+ * {@link WComboBox#sactivated() WComboBox#sactivated()} signals are not emited
+ * in the ExtendedSelection mode, use the {@link WFormWidget#changed()
+ * WFormWidget#changed()} signal {@link WFormWidget#changed()
+ * WFormWidget#changed()}.
  * <p>
  * WSelectionBox is an MVC view class, using a simple string list model by
  * default. The model may be populated using addItem(const {@link WString}&amp;)
- * or {@link WComboBox#insertItem(int index, CharSequence text) insertItem()}
- * and the contents can be cleared through {@link WComboBox#clear() clear()}.
- * These methods manipulate the underlying {@link WComboBox#getModel()
- * getModel()}.
+ * or {@link WComboBox#insertItem(int index, CharSequence text)
+ * WComboBox#insertItem()} and the contents can be cleared through
+ * {@link WComboBox#clear() WComboBox#clear()}. These methods manipulate the
+ * underlying {@link WComboBox#getModel() WComboBox#getModel()}.
  * <p>
  * To use the selectionbox with a custom model instead of the default
  * {@link WStringListModel}, use
- * {@link WComboBox#setModel(WAbstractItemModel model) setModel()}.
+ * {@link WComboBox#setModel(WAbstractItemModel model) WComboBox#setModel()}.
  * <p>
  * The widget corresponds to the HTML <code>&lt;select&gt;</code> tag.
  * <p>

@@ -37,7 +37,8 @@ import eu.webtoolkit.jwt.utils.EnumUtils;
  * type, but obviously works visually best if these series are of the same type.
  * When not stacked, bar series are rendered next to each other. The margin
  * between bars of different data series is controlled using
- * {@link WCartesianChart#setBarMargin(double margin) setBarMargin()}.
+ * {@link WCartesianChart#setBarMargin(double margin)
+ * WCartesianChart#setBarMargin()}.
  * <p>
  * The line and color type are by default based on the
  * {@link WAbstractChart#getPalette() chart palette}, but may be overridden for

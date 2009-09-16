@@ -41,10 +41,10 @@ import eu.webtoolkit.jwt.utils.StringUtils;
  * this behaviour.
  * <p>
  * If the model supports sorting (
- * {@link WAbstractItemModel#sort(int column, SortOrder order) sort()}), such as
- * the {@link WStandardItemModel}, then you can enable sorting buttons in the
- * header, using {@link WTreeView#setSortingEnabled(boolean enabled)
- * setSortingEnabled()}.
+ * {@link WAbstractItemModel#sort(int column, SortOrder order)
+ * WAbstractItemModel#sort()}), such as the {@link WStandardItemModel}, then you
+ * can enable sorting buttons in the header, using
+ * {@link WTreeView#setSortingEnabled(boolean enabled) setSortingEnabled()}.
  * <p>
  * You can allow selection on row or item level (using
  * {@link WTreeView#setSelectionBehavior(SelectionBehavior behavior)
@@ -60,10 +60,10 @@ import eu.webtoolkit.jwt.utils.StringUtils;
  * indicate support for dragging (controlled by the
  * {@link ItemFlag#ItemIsDragEnabled ItemIsDragEnabled} flag), and if the model
  * indicates a mime-type (controlled by {@link WAbstractItemModel#getMimeType()
- * getMimeType()}). Likewise, by enabling support for dropping (see
- * {@link WTreeView#setDropsEnabled(boolean enable) setDropsEnabled()}), the
- * treeview may receive a drop event on a particular item, at least if the item
- * indicates support for drops (controlled by the
+ * WAbstractItemModel#getMimeType()}). Likewise, by enabling support for
+ * dropping (see {@link WTreeView#setDropsEnabled(boolean enable)
+ * setDropsEnabled()}), the treeview may receive a drop event on a particular
+ * item, at least if the item indicates support for drops (controlled by the
  * {@link ItemFlag#ItemIsDropEnabled ItemIsDropEnabled} flag).
  * <p>
  * You may also react to mouse click events on any item, by connecting to one of

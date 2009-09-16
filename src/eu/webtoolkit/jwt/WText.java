@@ -14,7 +14,7 @@ import eu.webtoolkit.jwt.utils.StringUtils;
  * 
  * The text is provided through a {@link WString}, which may either hold a
  * literal text, or a key to localized text which is looked up in locale
- * dependent XML files (see {@link WString#tr(String key) tr()}).
+ * dependent XML files (see {@link WString#tr(String key) WString#tr()}).
  * <p>
  * Use {@link WText#setTextFormat(TextFormat textFormat) setTextFormat()} to
  * configure the textFormat of the text. The default textFormat is

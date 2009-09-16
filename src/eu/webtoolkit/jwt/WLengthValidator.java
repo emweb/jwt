@@ -14,7 +14,7 @@ package eu.webtoolkit.jwt;
  * accepted string lengths.
  * <p>
  * If you only want to limit the length on a line edit, you may also use
- * {@link WLineEdit#setMaxLength(int chars) setMaxLength()}.
+ * {@link WLineEdit#setMaxLength(int chars) WLineEdit#setMaxLength()}.
  */
 public class WLengthValidator extends WValidator {
 	/**

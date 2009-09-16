@@ -21,7 +21,7 @@ import java.util.EnumSet;
  * A WDialog can be used as any other widget. In this case, the WDialog is
  * created with the proper content, and for example an OK button is connected to
  * a method which deletes the dialog. Unlike other widgets, a dialog is hidden
- * by default. You must use the method {@link WWidget#show() show()} or
+ * by default. You must use the method {@link WWidget#show() WWidget#show()} or
  * setHidden(true) to show the dialog.
  * <p>
  * Use setModal(false) to create a non-modal dialog. A non-modal dialog does not

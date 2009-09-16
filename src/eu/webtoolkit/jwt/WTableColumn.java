@@ -11,11 +11,12 @@ package eu.webtoolkit.jwt;
  * <p>
  * 
  * A WTableColumn is returned by {@link WTable#getColumnAt(int column)
- * getColumnAt()} and managing various properties of a single column in a table
- * (it is however not a widget).
+ * WTable#getColumnAt()} and managing various properties of a single column in a
+ * table (it is however not a widget).
  * <p>
  * You cannot access table cells through the column. Instead, to access table
- * cells, see {@link WTable#getElementAt(int row, int column) getElementAt()}.
+ * cells, see {@link WTable#getElementAt(int row, int column)
+ * WTable#getElementAt()}.
  * <p>
  * A table column corresponds to the HTML <code>&lt;col&gt;</code> tag.
  * <p>

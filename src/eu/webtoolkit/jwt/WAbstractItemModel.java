@@ -61,12 +61,12 @@ import eu.webtoolkit.jwt.utils.StringUtils;
  * <p>
  * A crucial point in implementing a hierarchical model is to decide how to
  * reference an index in terms of an internal pointer (
- * {@link WModelIndex#getInternalPointer() getInternalPointer()}). Other than
- * the top-level index, which is special since it is referenced using an invalid
- * index, every index with children must be identifiable using this object. For
- * example, in the {@link WStandardItemModel}, the internal pointer points to
- * the parent {@link WStandardItem}. For table models, the internal pointer
- * plays no role, since only the toplevel index has children.
+ * {@link WModelIndex#getInternalPointer() WModelIndex#getInternalPointer()}).
+ * Other than the top-level index, which is special since it is referenced using
+ * an invalid index, every index with children must be identifiable using this
+ * object. For example, in the {@link WStandardItemModel}, the internal pointer
+ * points to the parent {@link WStandardItem}. For table models, the internal
+ * pointer plays no role, since only the toplevel index has children.
  * <p>
  * If you want to support editing of the model, then you also need to
  * reimplement:

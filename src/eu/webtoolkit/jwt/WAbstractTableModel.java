@@ -16,9 +16,11 @@ package eu.webtoolkit.jwt;
  * It cannot be used directly but must be subclassed. Subclassed models must at
  * least reimplement
  * {@link WAbstractItemModel#getColumnCount(WModelIndex parent)
- * getColumnCount()}, {@link WAbstractItemModel#getRowCount(WModelIndex parent)
- * getRowCount()} and
- * {@link WAbstractItemModel#getData(WModelIndex index, int role) getData()}.
+ * WAbstractItemModel#getColumnCount()},
+ * {@link WAbstractItemModel#getRowCount(WModelIndex parent)
+ * WAbstractItemModel#getRowCount()} and
+ * {@link WAbstractItemModel#getData(WModelIndex index, int role)
+ * WAbstractItemModel#getData()}.
  */
 public abstract class WAbstractTableModel extends WAbstractItemModel {
 	/**

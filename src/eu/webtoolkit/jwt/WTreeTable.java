@@ -31,7 +31,7 @@ import java.util.List;
  * setTreeRoot()} and bind additional information (text or other widgets) in
  * each node using
  * {@link WTreeTableNode#setColumnWidget(int column, WWidget widget)
- * setColumnWidget()}.
+ * WTreeTableNode#setColumnWidget()}.
  * <p>
  * To apply a style to the table header hou should use CSS in conjunction with
  * the style class (&quot;header&quot;) that is set for the header row.
@@ -42,7 +42,8 @@ import java.util.List;
  * <p>
  * The table cannot be given a height using CSS style rules, instead you must
  * use layout managers, or use
- * {@link WCompositeWidget#resize(WLength width, WLength height) resize()}.
+ * {@link WCompositeWidget#resize(WLength width, WLength height)
+ * WCompositeWidget#resize()}.
  * <p>
  * 
  * @see WTreeTableNode

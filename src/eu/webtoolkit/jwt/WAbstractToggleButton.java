@@ -18,8 +18,8 @@ import java.util.Map;
  * unchecked), and a text label.
  * <p>
  * To act on a change of the state, either connect a slot to the
- * {@link WFormWidget#changed() changed()} signal, or connect a slot to the
- * {@link WAbstractToggleButton#checked() checked()} or
+ * {@link WFormWidget#changed() WFormWidget#changed()} signal, or connect a slot
+ * to the {@link WAbstractToggleButton#checked() checked()} or
  * {@link WAbstractToggleButton#unChecked() unChecked()} signals.
  * <p>
  * The current state (checked or unchecked) may be inspected using the

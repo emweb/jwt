@@ -13,7 +13,8 @@ import java.util.List;
  * <p>
  * 
  * A validator may be associated with a form widget using
- * {@link WFormWidget#setValidator(WValidator validator) setValidator()}.
+ * {@link WFormWidget#setValidator(WValidator validator)
+ * WFormWidget#setValidator()}.
  * <p>
  * The validator validates the user input. A validator may have a split
  * implementation to provide both validation at the client-side (which gives

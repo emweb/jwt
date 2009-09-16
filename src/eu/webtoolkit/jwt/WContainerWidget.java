@@ -85,9 +85,9 @@ import eu.webtoolkit.jwt.utils.EnumUtils;
  * When using a layout manager, you need to carefully consider the alignment of
  * the layout manager with respect to the container: when the container&apos;s
  * height is unconstrained (not specified explicitly using
- * {@link WWebWidget#resize(WLength width, WLength height) resize()} or a style
- * class, and the container is not included in a layout manager), you should
- * pass AlignTop to {@link WContainerWidget#setLayout(WLayout layout)
+ * {@link WWebWidget#resize(WLength width, WLength height) WWebWidget#resize()}
+ * or a style class, and the container is not included in a layout manager), you
+ * should pass AlignTop to {@link WContainerWidget#setLayout(WLayout layout)
  * setLayout()}.
  * <p>
  * Depending on its configuration and usage, the widget corresponds to the
