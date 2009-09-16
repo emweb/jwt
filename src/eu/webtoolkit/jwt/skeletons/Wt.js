@@ -120,9 +120,26 @@ unwrap: function(e) {
   }
 },
 
-cancelEvent: function(e) {
-  if (e.preventDefault) e.preventDefault(); else e.returnValue=false;
-  if (e.stopPropagation) e.stopPropagation(); else e.cancelBubble=true;
+CancelPropagate: 0x1,
+CancelDefaultAction: 0x2,
+CancelAll: 0x3,
+
+cancelEvent: function(e, cancelType) {
+  var WT = _$_WT_CLASS_$_;
+
+  var ct = cancelType === undefined ? WT.CancelAll : cancelType;
+
+  if (ct & WT.CancelDefaultAction)
+    if (e.preventDefault)
+      e.preventDefault();
+    else
+      e.returnValue=false;
+
+  if (ct & WT.CancelPropagate)
+    if (e.stopPropagation)
+      e.stopPropagation();
+    else
+      e.cancelBubble=true;
 },
 
 getElement: function(id) {

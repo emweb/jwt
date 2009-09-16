@@ -466,11 +466,12 @@ class WebSession {
 							}
 							this.state_ = WebSession.State.JustCreated;
 						}
+						boolean requestForResource = requestE != null
+								&& requestE.equals("resource");
 						{
 							this.app_.notify(new WEvent(handler, responseType));
 							if (handler.getResponse() != null
-									&& (!(requestE != null) || !requestE
-											.equals("resource"))) {
+									&& !requestForResource) {
 								this.app_.notify(new WEvent(handler,
 										responseType, true));
 							}
