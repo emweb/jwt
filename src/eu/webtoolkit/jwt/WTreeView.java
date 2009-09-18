@@ -110,6 +110,7 @@ public class WTreeView extends WCompositeWidget {
 		this.nodeLoad_ = 0;
 		this.currentSortColumn_ = -1;
 		this.contentsContainer_ = null;
+		this.scrollBarC_ = null;
 		this.modelConnections_ = new ArrayList<AbstractSignal.Connection>();
 		this.resizeHandleMDownJS_ = new JSlot(this);
 		this.resizeHandleMMovedJS_ = new JSlot(this);
@@ -1349,16 +1350,15 @@ public class WTreeView extends WCompositeWidget {
 			WContainerWidget scrollBarContainer = new WContainerWidget();
 			scrollBarContainer.setStyleClass("cwidth");
 			scrollBarContainer.resize(WLength.Auto, new WLength(17));
-			WContainerWidget scrollBarC = new WContainerWidget(
-					scrollBarContainer);
-			scrollBarC.setStyleClass("Wt-tv-row Wt-scroll");
-			scrollBarC.scrolled().addListener(this.tieRowsScrollJS_);
+			this.scrollBarC_ = new WContainerWidget(scrollBarContainer);
+			this.scrollBarC_.setStyleClass("Wt-tv-row Wt-scroll");
+			this.scrollBarC_.scrolled().addListener(this.tieRowsScrollJS_);
 			WApplication app = WApplication.getInstance();
 			if (app.getEnvironment().agentIsIE()) {
 				scrollBarContainer.setPositionScheme(PositionScheme.Relative);
-				scrollBarC.setAttributeValue("style", "right: 0px");
+				this.scrollBarC_.setAttributeValue("style", "right: 0px");
 			}
-			WContainerWidget scrollBar = new WContainerWidget(scrollBarC);
+			WContainerWidget scrollBar = new WContainerWidget(this.scrollBarC_);
 			scrollBar.setStyleClass("Wt-tv-rowc");
 			if (app.getEnvironment().agentIsWebKit()
 					|| app.getEnvironment().agentIsOpera()) {
@@ -1763,6 +1763,7 @@ public class WTreeView extends WCompositeWidget {
 	private WContainerWidget headerContainer_;
 	private WContainerWidget contents_;
 	private WContainerWidget contentsContainer_;
+	private WContainerWidget scrollBarC_;
 	private int firstRemovedRow_;
 	private int removedHeight_;
 	private List<AbstractSignal.Connection> modelConnections_;
@@ -2472,6 +2473,9 @@ public class WTreeView extends WCompositeWidget {
 					&& this.nodeLoad_ < this.getCalcOptimalRenderedRowCount()) {
 				this.adjustRenderedNode(this.rootNode_, 0);
 			}
+		}
+		if (this.column1Fixed_) {
+			this.tieRowsScrollJS_.exec(this.scrollBarC_.getJsRef());
 		}
 	}
 

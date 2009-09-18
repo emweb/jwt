@@ -199,16 +199,17 @@ class DomElement {
 		StringWriter js = new StringWriter();
 		if (nonEmpty) {
 			if (app.getEnvironment().agentIsIEMobile()) {
-				js.append("var e=window.event;");
+				js.append("var e=window.event,");
 			} else {
-				js.append("var e=event||window.event;");
+				js.append("var e=event||window.event,");
 			}
+			js.append("o=this;");
 		}
 		if (anchorClick) {
 			js.append("if(e.ctrlKey||e.metaKey)return true;else{");
 		}
 		if (isExposed) {
-			js.append(app.getJavaScriptClass()).append("._p_.update(this,'")
+			js.append(app.getJavaScriptClass()).append("._p_.update(o,'")
 					.append(signalName).append("',e,true);");
 		}
 		js.append(jsCode);

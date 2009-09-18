@@ -139,7 +139,7 @@ public class JSlot {
 			WApplication.getInstance().declareJavaScriptFunction(
 					this.getJsFunctionName(), js);
 		} else {
-			this.imp_.setJavaScript("{var f=" + js + "; f(this, e);}");
+			this.imp_.setJavaScript("{var f=" + js + ";f(o,e);}");
 		}
 	}
 
@@ -149,10 +149,35 @@ public class JSlot {
 	 * Execute the JavaScript code, in the same way as when triggered by a
 	 * {@link EventSignal}. This function returns immediately, and execution of
 	 * the JavaScript code is deferred until after the event handling.
+	 * <p>
+	 * The arguments are the &quot;&lt;tt&gt;object, event&lt;/tt&gt;&quot;
+	 * arguments of the JavaScript event callback function.
+	 * <p>
+	 * 
+	 * @see JSlot#setJavaScript(String js)
 	 */
-	public void exec() {
+	public void exec(String object, String event) {
 		WApplication.getInstance().doJavaScript(
-				"{var e=null;" + this.imp_.getJavaScript() + "}");
+				"{var o=" + object + ", e=" + event + ";"
+						+ this.imp_.getJavaScript() + "}");
+	}
+
+	/**
+	 * Execute the JavaScript code.
+	 * <p>
+	 * Calls {@link #exec(String object, String event) exec("null", "null")}
+	 */
+	public final void exec() {
+		exec("null", "null");
+	}
+
+	/**
+	 * Execute the JavaScript code.
+	 * <p>
+	 * Calls {@link #exec(String object, String event) exec(object, "null")}
+	 */
+	public final void exec(String object) {
+		exec(object, "null");
 	}
 
 	private WWidget widget_;
@@ -170,7 +195,7 @@ public class JSlot {
 		this.imp_ = new AbstractEventSignal.JavaScriptListener(this.widget_,
 				null, this.widget_ != null ? WApplication.getInstance()
 						.getJavaScriptClass()
-						+ '.' + this.getJsFunctionName() + "(this, e);" : "");
+						+ '.' + this.getJsFunctionName() + "(o,e);" : "");
 	}
 
 	private int fid_;

@@ -563,6 +563,7 @@ public class WBoxLayout extends WLayout {
 			if (this.grid_.items_.isEmpty()) {
 				this.grid_.items_.add(new ArrayList<Grid.Item>());
 				this.grid_.rows_.add(new Grid.Row());
+				this.grid_.rows_.get(0).stretch_ = -1;
 			}
 			this.grid_.items_.get(0).add(0 + index,
 					new Grid.Item(item, alignment));

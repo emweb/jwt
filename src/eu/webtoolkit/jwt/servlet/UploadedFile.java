@@ -69,6 +69,10 @@ public class UploadedFile {
 		public boolean isStolen;
 
 		public void destroy() {
+			this.cleanup();
+		}
+
+		public void cleanup() {
 			if (!this.isStolen) {
 				new File(this.spoolFileName).delete();
 			}
