@@ -19,7 +19,7 @@ import eu.webtoolkit.jwt.utils.EnumUtils;
  * {@link WCssStyleSheet#addRule(String selector, WCssDecorationStyle style, String ruleName)
  * WCssStyleSheet#addRule()}.
  */
-public class WCssDecorationStyle {
+public class WCssDecorationStyle extends WObject {
 	/**
 	 * How a background image must be repeated.
 	 */
@@ -76,6 +76,7 @@ public class WCssDecorationStyle {
 	 * Create a default style.
 	 */
 	public WCssDecorationStyle() {
+		super();
 		this.widget_ = null;
 		this.cursor_ = Cursor.AutoCursor;
 		this.cursorImage_ = "";
@@ -174,6 +175,10 @@ public class WCssDecorationStyle {
 	 * <p>
 	 * The image may be placed in a particular location by specifying sides by
 	 * OR&apos;ing {@link Side} values together, e.g. (Right | Top).
+	 * <p>
+	 * 
+	 * @see WCssDecorationStyle#setBackgroundImage(String image,
+	 *      WCssDecorationStyle.Repeat repeat, EnumSet sides)
 	 */
 	public void setBackgroundImage(String image,
 			WCssDecorationStyle.Repeat repeat, EnumSet<Side> sides) {
@@ -182,6 +187,7 @@ public class WCssDecorationStyle {
 				|| this.backgroundImageRepeat_ != repeat
 				|| !this.backgroundImageLocation_.equals(sides)) {
 			this.backgroundImage_ = image;
+			this.backgroundImageResource_ = null;
 			this.backgroundImageRepeat_ = repeat;
 			this.backgroundImageLocation_ = EnumSet.copyOf(sides);
 			this.backgroundImageChanged_ = true;
@@ -224,6 +230,64 @@ public class WCssDecorationStyle {
 	public final void setBackgroundImage(String image,
 			WCssDecorationStyle.Repeat repeat) {
 		setBackgroundImage(image, repeat, EnumSet.noneOf(Side.class));
+	}
+
+	/**
+	 * Set a background image URL.
+	 * <p>
+	 * The image may be placed in a particular location by specifying sides by
+	 * OR&apos;ing {@link Side} values together, e.g. (Right | Top).
+	 * <p>
+	 * 
+	 * @see WCssDecorationStyle#setBackgroundImage(String image,
+	 *      WCssDecorationStyle.Repeat repeat, EnumSet sides)
+	 */
+	public void setBackgroundImage(WResource resource,
+			WCssDecorationStyle.Repeat repeat, EnumSet<Side> sides) {
+		this.backgroundImageResource_ = resource;
+		resource.dataChanged().addListener(this, new Signal.Listener() {
+			public void trigger() {
+				WCssDecorationStyle.this.backgroundImageResourceChanged();
+			}
+		});
+		this.setBackgroundImage(resource.getUrl(), repeat, sides);
+	}
+
+	/**
+	 * Set a background image URL.
+	 * <p>
+	 * Calls
+	 * {@link #setBackgroundImage(WResource resource, WCssDecorationStyle.Repeat repeat, EnumSet sides)
+	 * setBackgroundImage(resource, repeat, EnumSet.of(side, sides))}
+	 */
+	public final void setBackgroundImage(WResource resource,
+			WCssDecorationStyle.Repeat repeat, Side side, Side... sides) {
+		setBackgroundImage(resource, repeat, EnumSet.of(side, sides));
+	}
+
+	/**
+	 * Set a background image URL.
+	 * <p>
+	 * Calls
+	 * {@link #setBackgroundImage(WResource resource, WCssDecorationStyle.Repeat repeat, EnumSet sides)
+	 * setBackgroundImage(resource, WCssDecorationStyle.Repeat.RepeatXY,
+	 * EnumSet.noneOf(Side.class))}
+	 */
+	public final void setBackgroundImage(WResource resource) {
+		setBackgroundImage(resource, WCssDecorationStyle.Repeat.RepeatXY,
+				EnumSet.noneOf(Side.class));
+	}
+
+	/**
+	 * Set a background image URL.
+	 * <p>
+	 * Calls
+	 * {@link #setBackgroundImage(WResource resource, WCssDecorationStyle.Repeat repeat, EnumSet sides)
+	 * setBackgroundImage(resource, repeat, EnumSet.noneOf(Side.class))}
+	 */
+	public final void setBackgroundImage(WResource resource,
+			WCssDecorationStyle.Repeat repeat) {
+		setBackgroundImage(resource, repeat, EnumSet.noneOf(Side.class));
 	}
 
 	/**
@@ -534,6 +598,7 @@ public class WCssDecorationStyle {
 	private WColor backgroundColor_;
 	private WColor foregroundColor_;
 	private String backgroundImage_;
+	private WResource backgroundImageResource_;
 	private WCssDecorationStyle.Repeat backgroundImageRepeat_;
 	private EnumSet<Side> backgroundImageLocation_;
 	private WFont font_;
@@ -551,6 +616,13 @@ public class WCssDecorationStyle {
 		if (this.widget_ != null) {
 			this.widget_.repaint(EnumSet
 					.of(RepaintFlag.RepaintPropertyAttribute));
+		}
+	}
+
+	private void backgroundImageResourceChanged() {
+		if (this.backgroundImageResource_ != null) {
+			this.setBackgroundImage(this.backgroundImageResource_.getUrl(),
+					this.backgroundImageRepeat_, this.backgroundImageLocation_);
 		}
 	}
 

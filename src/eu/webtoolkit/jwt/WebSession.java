@@ -952,10 +952,47 @@ class WebSession {
 		}
 	}
 
+	private List<Integer> getSignalProcessingOrder(WEvent e) {
+		WebSession.Handler handler = e.handler;
+		List<Integer> highPriority = new ArrayList<Integer>();
+		List<Integer> normalPriority = new ArrayList<Integer>();
+		for (int i = 0;; ++i) {
+			WebRequest request = handler.getRequest();
+			String se = i > 0 ? 'e' + String.valueOf(i) : "";
+			String signalE = this.getSignal(request, se);
+			if (!(signalE != null)) {
+				break;
+			}
+			if (!signalE.equals("user") && !signalE.equals("hash")
+					&& !signalE.equals("res") && !signalE.equals("none")
+					&& !signalE.equals("load")) {
+				AbstractEventSignal signal = this.decodeSignal(signalE);
+				if (!(signal != null)) {
+				} else {
+					if (signal.getName() == WFormWidget.CHANGE_SIGNAL) {
+						highPriority.add(i);
+					} else {
+						normalPriority.add(i);
+					}
+				}
+			} else {
+				normalPriority.add(i);
+			}
+		}
+		{
+			int insertPos = highPriority.size();
+			for (int ii = 0; ii < 0; ++ii)
+				highPriority.add(insertPos + ii, normalPriority.size());
+		}
+		;
+		return highPriority;
+	}
+
 	private void notifySignal(WEvent e) throws IOException {
 		WebSession.Handler handler = e.handler;
 		this.renderer_.saveChanges();
-		for (int i = 0;; ++i) {
+		List<Integer> order = this.getSignalProcessingOrder(e);
+		for (int i = 0; i < order.size(); ++i) {
 			if (!(handler.getRequest() != null)) {
 				return;
 			}

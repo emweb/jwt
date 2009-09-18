@@ -79,7 +79,7 @@ public class WAbstractArea extends WObject {
 	 * <p>
 	 * 
 	 * @see WAbstractArea#setRef(String ref)
-	 * @see WResource#generateUrl()
+	 * @see WResource#getUrl()
 	 */
 	public String getRef() {
 		if (this.anchor_ != null) {
@@ -113,7 +113,7 @@ public class WAbstractArea extends WObject {
 						WAbstractArea.this.resourceChanged();
 					}
 				});
-		this.setRef(resource.generateUrl());
+		this.setRef(resource.getUrl());
 	}
 
 	/**
@@ -488,7 +488,7 @@ public class WAbstractArea extends WObject {
 	}
 
 	private void resourceChanged() {
-		this.setRef(this.anchor_.resource_.generateUrl());
+		this.setRef(this.anchor_.resource_.getUrl());
 	}
 
 	protected WAbstractArea() {

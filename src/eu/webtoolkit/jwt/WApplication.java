@@ -1381,7 +1381,7 @@ public class WApplication extends WObject {
 		if (this.onePixelGifUrl_.length() == 0) {
 			WMemoryResource w = new WMemoryResource("image/gif", this);
 			w.setData(gifData);
-			this.onePixelGifUrl_ = w.generateUrl();
+			this.onePixelGifUrl_ = w.getUrl();
 		}
 		return this.onePixelGifUrl_;
 	}

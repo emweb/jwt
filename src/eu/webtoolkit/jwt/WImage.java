@@ -125,7 +125,7 @@ public class WImage extends WInteractWidget {
 				WImage.this.resourceChanged();
 			}
 		});
-		this.imageRef_ = this.resource_.generateUrl();
+		this.imageRef_ = this.resource_.getUrl();
 		this.setLoadLaterWhenInvisible(false);
 	}
 
@@ -230,7 +230,7 @@ public class WImage extends WInteractWidget {
 				WImage.this.resourceChanged();
 			}
 		});
-		this.setImageRef(this.resource_.generateUrl());
+		this.setImageRef(this.resource_.getUrl());
 	}
 
 	/**
@@ -347,7 +347,7 @@ public class WImage extends WInteractWidget {
 	private BitSet flags_;
 
 	private void resourceChanged() {
-		this.setImageRef(this.resource_.generateUrl());
+		this.setImageRef(this.resource_.getUrl());
 	}
 
 	protected void getDomChanges(List<DomElement> result, WApplication app) {

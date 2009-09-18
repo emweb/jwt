@@ -329,7 +329,7 @@ public class WAnchor extends WContainerWidget {
 	 * <p>
 	 * 
 	 * @see WAnchor#setRef(String ref)
-	 * @see WResource#generateUrl()
+	 * @see WResource#getUrl()
 	 */
 	public String getRef() {
 		return this.ref_;
@@ -359,7 +359,7 @@ public class WAnchor extends WContainerWidget {
 							WAnchor.this.resourceChanged();
 						}
 					});
-			this.setRef(this.resource_.generateUrl());
+			this.setRef(this.resource_.getUrl());
 		}
 	}
 
@@ -520,7 +520,7 @@ public class WAnchor extends WContainerWidget {
 	private JSlot changeInternalPathJS_;
 
 	private void resourceChanged() {
-		this.setRef(this.resource_.generateUrl());
+		this.setRef(this.resource_.getUrl());
 	}
 
 	protected void updateDom(DomElement element, boolean all) {

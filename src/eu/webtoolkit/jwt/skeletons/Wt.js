@@ -135,11 +135,16 @@ cancelEvent: function(e, cancelType) {
     else
       e.returnValue=false;
 
-  if (ct & WT.CancelPropagate)
+  if (ct & WT.CancelPropagate) {
     if (e.stopPropagation)
       e.stopPropagation();
     else
       e.cancelBubble=true;
+
+    if (document.activeElement && document.activeElement.blur)
+      if (WT.hasTag(document.activeElement, "TEXTAREA"))
+	document.activeElement.blur();
+  }
 },
 
 getElement: function(id) {
