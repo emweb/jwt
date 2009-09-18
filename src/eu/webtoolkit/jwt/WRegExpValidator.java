@@ -90,13 +90,6 @@ public class WRegExpValidator extends WValidator {
 	}
 
 	/**
-	 * Delete the regexp validator.
-	 */
-	public void destroy() {
-		/* delete this.regexp_ */;
-	}
-
-	/**
 	 * Set the regular expression for valid input.
 	 * <p>
 	 * Sets the perl regular expression <i>expr</i>.

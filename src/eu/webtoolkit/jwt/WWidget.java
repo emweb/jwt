@@ -50,7 +50,7 @@ public abstract class WWidget extends WObject {
 		while (!this.eventSignals_.isEmpty()) {
 			AbstractEventSignal s = this.eventSignals_.peek();
 			this.eventSignals_.removeFirst();
-			s.destroy();
+			;
 		}
 		this.renderOk();
 	}
@@ -888,7 +888,7 @@ public abstract class WWidget extends WObject {
 		List<DomElement.TimeoutEvent> timeouts = new ArrayList<DomElement.TimeoutEvent>();
 		EscapeOStream sout = new EscapeOStream(out);
 		element.asHTML(sout, timeouts);
-		/* delete element */;
+		;
 	}
 
 	/**
@@ -909,7 +909,7 @@ public abstract class WWidget extends WObject {
 		DomElement e = DomElement.getForUpdate(ww, ww.getDomElementType());
 		ww.updateDom(e, true);
 		String result = e.getCssStyle();
-		/* delete e */;
+		;
 		return result;
 	}
 
@@ -921,7 +921,7 @@ public abstract class WWidget extends WObject {
 			insertJS += var + ");";
 		}
 		de.createElement(js, app, insertJS);
-		/* delete de */;
+		;
 		return var;
 	}
 

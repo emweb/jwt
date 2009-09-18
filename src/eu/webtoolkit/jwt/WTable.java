@@ -77,15 +77,15 @@ public class WTable extends WInteractWidget {
 	 */
 	public void remove() {
 		for (int i = 0; i < this.rows_.size(); ++i) {
-			/* delete this.rows_.get(i) */;
+			;
 		}
 		if (this.columns_ != null) {
 			for (int i = 0; i < this.columns_.size(); ++i) {
-				/* delete this.columns_.get(i) */;
+				;
 			}
-			/* delete this.columns_ */;
+			;
 		}
-		/* delete this.rowsChanged_ */;
+		;
 		this.rowsChanged_ = null;
 		super.remove();
 	}
@@ -184,7 +184,7 @@ public class WTable extends WInteractWidget {
 		if (this.rowsChanged_ != null) {
 			this.rowsChanged_.remove(this.rows_.get(row));
 			if (this.rowsChanged_.isEmpty()) {
-				/* delete this.rowsChanged_ */;
+				;
 				this.rowsChanged_ = null;
 			}
 		}
@@ -193,7 +193,7 @@ public class WTable extends WInteractWidget {
 			if (cell != null)
 				cell.remove();
 		}
-		/* delete this.rows_.get(row) */;
+		;
 		this.rows_.remove(0 + row);
 		this.flags_.set(BIT_GRID_CHANGED);
 		this.repaint(EnumSet.of(RepaintFlag.RepaintInnerHtml));
@@ -224,7 +224,7 @@ public class WTable extends WInteractWidget {
 			this.rows_.get(i).deleteColumn(column);
 		}
 		if (this.columns_ != null && (int) column <= this.columns_.size()) {
-			/* delete this.columns_.get(column) */;
+			;
 			this.columns_.remove(0 + column);
 		}
 		this.flags_.set(BIT_GRID_CHANGED);
@@ -416,7 +416,7 @@ public class WTable extends WInteractWidget {
 		table.addChild(tbody);
 		this.updateDom(table, true);
 		this.flags_.clear(BIT_GRID_CHANGED);
-		/* delete this.rowsChanged_ */;
+		;
 		this.rowsChanged_ = null;
 		return table;
 	}
@@ -436,7 +436,7 @@ public class WTable extends WInteractWidget {
 					i.updateDom(e2, false);
 					result.add(e2);
 				}
-				/* delete this.rowsChanged_ */;
+				;
 				this.rowsChanged_ = null;
 			}
 			if (this.rowsAdded_ != 0) {
@@ -469,7 +469,7 @@ public class WTable extends WInteractWidget {
 	protected void propagateRenderOk(boolean deep) {
 		this.flags_.clear();
 		if (this.rowsChanged_ != null) {
-			/* delete this.rowsChanged_ */;
+			;
 			this.rowsChanged_ = null;
 		}
 		this.rowsAdded_ = 0;

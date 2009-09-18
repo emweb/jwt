@@ -161,9 +161,9 @@ public class WContainerWidget extends WInteractWidget {
 	 * Destruct a WContainerWidget.
 	 */
 	public void remove() {
-		/* delete this.layout_ */;
-		/* delete this.padding_ */;
-		/* delete this.overflow_ */;
+		;
+		;
+		;
 		super.remove();
 	}
 
@@ -385,7 +385,7 @@ public class WContainerWidget extends WInteractWidget {
 			if (w != null)
 				w.remove();
 		}
-		/* delete this.layout_ */;
+		;
 		this.layout_ = null;
 	}
 
@@ -720,7 +720,7 @@ public class WContainerWidget extends WInteractWidget {
 								+ "._p_.dragEnd(event);}");
 				c.callMethod("dragstart=function(){return false;}");
 				c.asJavaScript(out);
-				/* delete c */;
+				;
 			}
 		}
 		if (this.transientImpl_ != null) {
@@ -735,7 +735,7 @@ public class WContainerWidget extends WInteractWidget {
 					DomElement c = this.transientImpl_.childRemoveChanges_
 							.get(i);
 					c.asJavaScript(sout, DomElement.Priority.Delete);
-					/* delete c */;
+					;
 				}
 				this.transientImpl_.childRemoveChanges_.clear();
 			}

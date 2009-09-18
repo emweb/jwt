@@ -40,7 +40,7 @@ public abstract class WInteractWidget extends WWebWidget {
 	}
 
 	public void remove() {
-		/* delete this.dragSlot_ */;
+		;
 		super.remove();
 	}
 

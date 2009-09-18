@@ -110,16 +110,6 @@ public class WMenuItem extends WObject {
 		this(text, contents, WMenuItem.LoadPolicy.LazyLoading);
 	}
 
-	public void destroy() {
-		if (this.menu_ != null) {
-			this.menu_.removeItem(this);
-		}
-		if (this.contents_ != null && this.contents_.getParent() == null) {
-			if (this.contents_ != null)
-				this.contents_.remove();
-		}
-	}
-
 	/**
 	 * Set the text for this item.
 	 * <p>

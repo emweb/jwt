@@ -75,12 +75,4 @@ class Grid {
 		this.columns_ = new ArrayList<Grid.Column>();
 		this.items_ = new ArrayList<List<Grid.Item>>();
 	}
-
-	public void destroy() {
-		for (int i = 0; i < this.items_.size(); ++i) {
-			for (int j = 0; j < this.items_.get(i).size(); ++j) {
-				/* delete this.items_.get(i).get(j).item_ */;
-			}
-		}
-	}
 }

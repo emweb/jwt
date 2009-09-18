@@ -111,13 +111,6 @@ public class WPainter {
 	}
 
 	/**
-	 * Destructor.
-	 */
-	public void destroy() {
-		this.isEnd();
-	}
-
-	/**
 	 * Begin painting on a paint device.
 	 * <p>
 	 * Starts painting on a paint device. The paint device is automatically

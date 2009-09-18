@@ -61,8 +61,8 @@ public abstract class WFormWidget extends WInteractWidget {
 		if (this.validator_ != null) {
 			this.validator_.removeFormWidget(this);
 		}
-		/* delete this.validateJs_ */;
-		/* delete this.filterInput_ */;
+		;
+		;
 		super.remove();
 	}
 
@@ -116,9 +116,9 @@ public abstract class WFormWidget extends WInteractWidget {
 			this.setStyleClass(this.validate() == WValidator.State.Valid ? ""
 					: "Wt-invalid");
 		} else {
-			/* delete this.validateJs_ */;
+			;
 			this.validateJs_ = null;
-			/* delete this.filterInput_ */;
+			;
 			this.filterInput_ = null;
 		}
 	}
@@ -254,7 +254,7 @@ public abstract class WFormWidget extends WInteractWidget {
 							+ validateJS
 							+ ";self.className= v.valid ? '' : 'Wt-invalid';if (v.valid) self.removeAttribute('title');else self.setAttribute('title', v.message);}");
 		} else {
-			/* delete this.validateJs_ */;
+			;
 			this.validateJs_ = null;
 		}
 		String inputFilter = this.validator_.getInputFilter();
@@ -269,7 +269,7 @@ public abstract class WFormWidget extends WInteractWidget {
 							+ inputFilter
 							+ "/.test(c)) return true; else{Wt2_99_5.cancelEvent(e);}}");
 		} else {
-			/* delete this.filterInput_ */;
+			;
 			this.filterInput_ = null;
 		}
 	}

@@ -113,14 +113,6 @@ public class WSortFilterProxyModel extends WAbstractProxyModel {
 		this((WObject) null);
 	}
 
-	/**
-	 * Destructor.
-	 */
-	public void destroy() {
-		/* delete this.regex_ */;
-		this.resetMappings();
-	}
-
 	public WModelIndex mapFromSource(WModelIndex sourceIndex) {
 		if ((sourceIndex != null)) {
 			WModelIndex sourceParent = sourceIndex.getParent();
@@ -663,7 +655,7 @@ public class WSortFilterProxyModel extends WAbstractProxyModel {
 		for (Iterator<Map.Entry<WModelIndex, WSortFilterProxyModel.Item>> i_it = this.mappedIndexes_
 				.entrySet().iterator(); i_it.hasNext();) {
 			Map.Entry<WModelIndex, WSortFilterProxyModel.Item> i = i_it.next();
-			/* delete i.getValue() */;
+			;
 		}
 		this.mappedIndexes_.clear();
 	}

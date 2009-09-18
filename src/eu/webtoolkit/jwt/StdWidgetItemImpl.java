@@ -13,9 +13,6 @@ class StdWidgetItemImpl extends StdLayoutItemImpl {
 		this.item_ = item;
 	}
 
-	public void destroy() {
-	}
-
 	public int getMinimumHeight() {
 		return (int) this.item_.getWidget().getMinimumHeight().toPixels();
 	}

@@ -49,15 +49,6 @@ class DomElement {
 		this.discardWithParent_ = true;
 	}
 
-	public void destroy() {
-		for (int i = 0; i < this.childrenToAdd_.size(); ++i) {
-			/* delete this.childrenToAdd_.get(i).child */;
-		}
-		/* delete this.replaced_ */;
-		/* delete this.insertBefore_ */;
-		/* delete this.childrenHtml_ */;
-	}
-
 	public static String urlEncodeS(String url) {
 		StringWriter result = new StringWriter();
 		for (int i = 0; i < url.length(); ++i) {
@@ -129,7 +120,7 @@ class DomElement {
 			}
 			EscapeOStream sout = new EscapeOStream(this.childrenHtml_);
 			child.asHTML(sout, this.timeouts_);
-			/* delete child */;
+			;
 		} else {
 			this.childrenToAdd_.add(new DomElement.ChildInsertion(-1, child));
 		}

@@ -411,7 +411,7 @@ public class WCartesianChart extends WAbstractChart {
 		}
 		WChart2DRenderer renderer = this.createRenderer(painter, rect);
 		renderer.render();
-		/* delete renderer */;
+		;
 	}
 
 	/**

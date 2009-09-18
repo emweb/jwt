@@ -138,20 +138,6 @@ public class WStandardItem {
 	}
 
 	/**
-	 * Destructor.
-	 */
-	public void destroy() {
-		if (this.columns_ != null) {
-			for (int i = 0; i < this.columns_.size(); ++i) {
-				for (int j = 0; j < this.columns_.get(i).size(); ++j) {
-					/* delete this.columns_.get(i).get(j) */;
-				}
-			}
-			/* delete this.columns_ */;
-		}
-	}
-
-	/**
 	 * Set the text.
 	 * <p>
 	 * The text is stored as {@link ItemDataRole#DisplayRole DisplayRole} data.
@@ -969,7 +955,7 @@ public class WStandardItem {
 		if (row >= this.getRowCount()) {
 			this.setRowCount(row + 1);
 		}
-		/* delete this.columns_.get(column).get(row) */;
+		;
 		this.columns_.get(column).set(row, item);
 		this.adoptChild(row, column, item);
 	}
@@ -1058,7 +1044,7 @@ public class WStandardItem {
 		List<WStandardItem> result = this.columns_.get(column);
 		this.columns_.remove(0 + column);
 		if (this.columns_.isEmpty()) {
-			/* delete this.columns_ */;
+			;
 			this.columns_ = null;
 		}
 		for (int i = 0; i < result.size(); ++i) {
@@ -1143,14 +1129,14 @@ public class WStandardItem {
 		}
 		for (int i = 0; i < count; ++i) {
 			for (int j = 0; j < this.getRowCount(); ++j) {
-				/* delete this.columns_.get( column + i).get(j) */;
+				;
 			}
 		}
 		for (int ii = 0; ii < (0 + column + count) - (0 + column); ++ii)
 			this.columns_.remove(0 + column);
 		;
 		if (this.columns_.isEmpty()) {
-			/* delete this.columns_ */;
+			;
 			this.columns_ = null;
 		}
 		this.renumberColumns(column);
@@ -1196,7 +1182,7 @@ public class WStandardItem {
 		for (int i = 0; i < this.getColumnCount(); ++i) {
 			List<WStandardItem> c = this.columns_.get(i);
 			for (int j = 0; j < count; ++j) {
-				/* delete c.get( row + j) */;
+				;
 			}
 			for (int ii = 0; ii < (0 + row + count) - (0 + row); ++ii)
 				c.remove(0 + row);

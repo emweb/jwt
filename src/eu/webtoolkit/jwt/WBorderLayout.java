@@ -146,12 +146,6 @@ public class WBorderLayout extends WLayout {
 		this((WWidget) null);
 	}
 
-	/**
-	 * Remove a border layout.
-	 */
-	public void destroy() {
-	}
-
 	public void addItem(WLayoutItem item) {
 		this.add(item, WBorderLayout.Position.Center);
 	}

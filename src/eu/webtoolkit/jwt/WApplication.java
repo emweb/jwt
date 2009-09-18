@@ -524,7 +524,7 @@ public class WApplication extends WObject {
 	 * @see WString#tr(String key)
 	 */
 	public void setLocalizedStrings(WLocalizedStrings translator) {
-		/* delete this.localizedStrings_ */;
+		;
 		this.localizedStrings_ = translator;
 	}
 
@@ -1350,7 +1350,7 @@ public class WApplication extends WObject {
 	 * When setting a new loading indicator, the previous one is deleted.
 	 */
 	public void setLoadingIndicator(WLoadingIndicator indicator) {
-		/* delete this.loadingIndicator_ */;
+		;
 		this.loadingIndicator_ = indicator;
 		if (this.loadingIndicator_ != null) {
 			this.loadingIndicatorWidget_ = indicator.getWidget();

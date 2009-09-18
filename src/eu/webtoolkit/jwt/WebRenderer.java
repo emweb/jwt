@@ -434,7 +434,7 @@ class WebRenderer implements SlotLearnerInterface {
 		{
 			EscapeOStream out = new EscapeOStream(response.out());
 			mainElement.asHTML(out, timeouts);
-			/* delete mainElement */;
+			;
 		}
 		StringWriter onload = new StringWriter();
 		DomElement.createTimeoutJs(onload, timeouts, app);
@@ -479,7 +479,7 @@ class WebRenderer implements SlotLearnerInterface {
 		}
 		Writer s = response.out();
 		mainElement.addToParent(s, "document.body", widgetset ? 0 : -1, app);
-		/* delete mainElement */;
+		;
 		if (widgetset) {
 			app.domRoot2_.rootAsJavaScript(app, s, true);
 		}
@@ -658,7 +658,7 @@ class WebRenderer implements SlotLearnerInterface {
 			d.setProperty(Property.PropertyInnerHTML, "");
 			EscapeOStream sout = new EscapeOStream(out);
 			d.asJavaScript(sout, DomElement.Priority.Update);
-			/* delete d */;
+			;
 		}
 		this.updateLoadIndicator(out, app, false);
 		out.append('}');
@@ -785,11 +785,11 @@ class WebRenderer implements SlotLearnerInterface {
 			}
 			for (int i = 0; i < changes.size(); ++i) {
 				changes.get(i).asJavaScript(sout, DomElement.Priority.Update);
-				/* delete changes.get(i) */;
+				;
 			}
 		} else {
 			for (int i = 0; i < changes.size(); ++i) {
-				/* delete changes.get(i) */;
+				;
 			}
 		}
 		if (js != null) {

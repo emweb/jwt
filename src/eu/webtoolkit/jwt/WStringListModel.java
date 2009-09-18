@@ -52,12 +52,6 @@ public class WStringListModel extends WAbstractListModel {
 	}
 
 	/**
-	 * Destructor.
-	 */
-	public void destroy() {
-	}
-
-	/**
 	 * Set a new string list.
 	 * <p>
 	 * Replaces the current string list with a new list.

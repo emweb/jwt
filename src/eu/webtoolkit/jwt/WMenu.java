@@ -134,7 +134,7 @@ public class WMenu extends WCompositeWidget {
 	public void remove() {
 		for (int i = 0; i < this.items_.size(); ++i) {
 			this.items_.get(i).setMenu((WMenu) null);
-			/* delete this.items_.get(i) */;
+			;
 		}
 		super.remove();
 	}

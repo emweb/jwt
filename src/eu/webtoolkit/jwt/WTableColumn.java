@@ -129,11 +129,6 @@ public class WTableColumn extends WObject {
 		this.styleClass_ = "";
 	}
 
-	public void destroy() {
-		/* delete this.width_ */;
-		/* delete this.id_ */;
-	}
-
 	private WTable table_;
 	private WLength width_;
 	private String id_;

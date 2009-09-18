@@ -73,17 +73,6 @@ class WebSession {
 		this(controller, sessionId, type, favicon, request, (WEnvironment) null);
 	}
 
-	public void destroy() {
-		if (this.app_ != null) {
-			this.app_.finalize();
-		}
-		/* delete this.app_ */;
-		if (this.pollResponse_ != null) {
-			this.pollResponse_.flush();
-		}
-		this.log("notice").append("Session destroyed");
-	}
-
 	public static WebSession getInstance() {
 		WebSession.Handler handler = WebSession.Handler.getInstance();
 		return handler != null ? handler.getSession() : null;
@@ -502,7 +491,7 @@ class WebSession {
 			if (handler.getResponse() != null) {
 				handler.getResponse().flush();
 			}
-			handler.destroy();
+			;
 			return !handler.isSessionDead();
 		} finally {
 			this.mutex_.unlock();
@@ -751,10 +740,6 @@ class WebSession {
 			this.response_ = null;
 			this.killed_ = false;
 			this.init();
-		}
-
-		public void destroy() {
-			threadHandler_.set((WebSession.Handler) null);
 		}
 
 		public static WebSession.Handler getInstance() {
@@ -1108,7 +1093,7 @@ class WebSession {
 	private void kill() {
 		this.state_ = WebSession.State.Dead;
 		if (this.handlers_.isEmpty()) {
-			/* delete this */;
+			;
 		}
 	}
 

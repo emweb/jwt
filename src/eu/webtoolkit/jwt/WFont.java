@@ -367,7 +367,7 @@ public class WFont {
 		WFont f = this;
 		f.updateDomElement(d, false, true);
 		String result = d.getCssStyle();
-		/* delete d */;
+		;
 		return result;
 	}
 

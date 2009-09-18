@@ -13,12 +13,6 @@ abstract class StdLayoutImpl extends StdLayoutItemImpl {
 		this.container_ = null;
 	}
 
-	public void destroy() {
-		if (this.container_ != null) {
-			this.container_.layoutChanged(true);
-		}
-	}
-
 	public void updateAddItem(WLayoutItem item) {
 		WContainerWidget c = this.getContainer();
 		if (c != null) {

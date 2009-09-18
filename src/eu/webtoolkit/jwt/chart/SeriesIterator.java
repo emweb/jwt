@@ -20,12 +20,6 @@ import eu.webtoolkit.jwt.WRectF;
  */
 public class SeriesIterator {
 	/**
-	 * Destructor.
-	 */
-	public void destroy() {
-	}
-
-	/**
 	 * Set the current axis segments.
 	 * <p>
 	 * Because of a &apos;break&apos; specified in an axis, the axis is divided

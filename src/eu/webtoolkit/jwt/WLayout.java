@@ -31,15 +31,6 @@ import java.util.List;
  */
 public abstract class WLayout extends WObject implements WLayoutItem {
 	/**
-	 * Destroy the layout.
-	 */
-	public void destroy() {
-		/* delete this.impl_ */;
-		/* delete this.hints_ */;
-		/* delete this.margins_ */;
-	}
-
-	/**
 	 * Add a layout <i>item</i>.
 	 * <p>
 	 * The item may be a widget or nested layout.
@@ -96,7 +87,7 @@ public abstract class WLayout extends WObject implements WLayoutItem {
 		WWidgetItem widgetItem = this.findWidgetItem(w);
 		if (widgetItem != null) {
 			widgetItem.getParentLayout().removeItem(widgetItem);
-			/* delete widgetItem */;
+			;
 		}
 	}
 
@@ -337,7 +328,7 @@ public abstract class WLayout extends WObject implements WLayoutItem {
 				this.impl_.setHint(this.hints_.get(i).name,
 						this.hints_.get(i).value);
 			}
-			/* delete this.hints_ */;
+			;
 			this.hints_ = null;
 		}
 	}

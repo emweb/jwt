@@ -58,13 +58,6 @@ public class WSvgImage extends WResource implements WVectorImage {
 		this(width, height, (WObject) null);
 	}
 
-	/**
-	 * Destructor.
-	 */
-	public void destroy() {
-		this.beingDeleted();
-	}
-
 	public void setChanged(EnumSet<WPaintDevice.ChangeFlag> flags) {
 		if (!flags.equals(0)) {
 			this.newGroup_ = true;

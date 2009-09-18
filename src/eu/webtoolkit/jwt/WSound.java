@@ -65,17 +65,6 @@ public class WSound extends WObject {
 	}
 
 	/**
-	 * Destructor.
-	 * <p>
-	 * The destructor calls {@link WSound#stop() stop()} and unloads the sound
-	 * object.
-	 */
-	public void destroy() {
-		this.stop();
-		this.sm_.remove(this);
-	}
-
-	/**
 	 * Returns the url played by this class.
 	 */
 	public String getUrl() {

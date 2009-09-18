@@ -69,19 +69,19 @@ public abstract class WWebWidget extends WWidget {
 					.updateFormObjects(this, false);
 		}
 		this.setParent((WWidget) null);
-		/* delete this.width_ */;
-		/* delete this.height_ */;
+		;
+		;
 		if (this.children_ != null) {
 			while (this.children_.size() != 0) {
 				if (this.children_.get(0) != null)
 					this.children_.get(0).remove();
 			}
-			/* delete this.children_ */;
+			;
 		}
-		/* delete this.transientImpl_ */;
-		/* delete this.layoutImpl_ */;
-		/* delete this.lookImpl_ */;
-		/* delete this.otherImpl_ */;
+		;
+		;
+		;
+		;
 		super.remove();
 	}
 
@@ -1073,7 +1073,7 @@ public abstract class WWebWidget extends WWidget {
 					}
 				}
 			}
-			/* delete this.otherImpl_.attributesSet_ */;
+			;
 			this.otherImpl_.attributesSet_ = null;
 		}
 		if (this.flags_.get(BIT_HIDE_WITH_VISIBILITY)) {
@@ -1135,7 +1135,7 @@ public abstract class WWebWidget extends WWidget {
 			}
 		}
 		this.renderOk();
-		/* delete this.transientImpl_ */;
+		;
 		this.transientImpl_ = null;
 	}
 
@@ -1156,7 +1156,7 @@ public abstract class WWebWidget extends WWidget {
 				this.children_.get(i).getWebWidget().propagateRenderOk();
 			}
 		}
-		/* delete this.transientImpl_ */;
+		;
 		this.transientImpl_ = null;
 	}
 
@@ -1319,12 +1319,6 @@ public abstract class WWebWidget extends WWidget {
 			this.childRemoveChanges_ = new ArrayList<DomElement>();
 			this.addedChildren_ = new ArrayList<WWidget>();
 		}
-
-		public void destroy() {
-			for (int i = 0; i < this.childRemoveChanges_.size(); ++i) {
-				/* delete this.childRemoveChanges_.get(i) */;
-			}
-		}
 	}
 
 	WWebWidget.TransientImpl transientImpl_;
@@ -1375,11 +1369,6 @@ public abstract class WWebWidget extends WWidget {
 			this.styleClass_ = "";
 			this.toolTip_ = null;
 		}
-
-		public void destroy() {
-			/* delete this.decorationStyle_ */;
-			/* delete this.toolTip_ */;
-		}
 	}
 
 	private WWebWidget.LookImpl lookImpl_;
@@ -1409,14 +1398,6 @@ public abstract class WWebWidget extends WWidget {
 			this.id_ = null;
 			this.dropSignal_ = null;
 			this.acceptedDropMimeTypes_ = null;
-		}
-
-		public void destroy() {
-			/* delete this.attributes_ */;
-			/* delete this.attributesSet_ */;
-			/* delete this.dropSignal_ */;
-			/* delete this.acceptedDropMimeTypes_ */;
-			/* delete this.id_ */;
 		}
 	}
 

@@ -143,12 +143,6 @@ public abstract class WAbstractItemModel extends WObject {
 	}
 
 	/**
-	 * Destructor.
-	 */
-	public void destroy() {
-	}
-
-	/**
 	 * Returns the number of columns.
 	 * <p>
 	 * This returns the number of columns at index <i>parent</i>.

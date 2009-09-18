@@ -8,9 +8,6 @@ package eu.webtoolkit.jwt;
 import java.util.List;
 
 abstract class WWidgetPainter {
-	public void destroy() {
-	}
-
 	public abstract WPaintDevice getCreatePaintDevice();
 
 	public abstract void createContents(DomElement element, WPaintDevice device);

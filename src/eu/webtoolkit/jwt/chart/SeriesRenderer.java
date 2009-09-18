@@ -8,9 +8,6 @@ package eu.webtoolkit.jwt.chart;
 import eu.webtoolkit.jwt.WPointF;
 
 abstract class SeriesRenderer {
-	public void destroy() {
-	}
-
 	public abstract void addValue(double x, double y, double stacky);
 
 	public abstract void paint();

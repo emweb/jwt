@@ -181,7 +181,7 @@ public class WTabWidget extends WCompositeWidget {
 		WMenuItem item = this.menu_.getItems().get(this.getIndexOf(child));
 		this.menu_.removeItem(item);
 		item.getTakeContents();
-		/* delete item */;
+		;
 	}
 
 	/**

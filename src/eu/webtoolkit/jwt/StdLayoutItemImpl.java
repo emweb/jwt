@@ -11,9 +11,6 @@ abstract class StdLayoutItemImpl extends WObject implements WLayoutItemImpl {
 		super();
 	}
 
-	public void destroy() {
-	}
-
 	public WContainerWidget getContainer() {
 		StdLayoutImpl p = this.getParentLayoutImpl();
 		if (p != null) {

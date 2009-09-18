@@ -103,14 +103,6 @@ public class WStandardItemModel extends WAbstractItemModel {
 	}
 
 	/**
-	 * Destructor.
-	 */
-	public void destroy() {
-		/* delete this.invisibleRootItem_ */;
-		/* delete this.itemPrototype_ */;
-	}
-
-	/**
 	 * Erase all data in the model.
 	 * <p>
 	 * After clearing the model,
@@ -377,7 +369,7 @@ public class WStandardItemModel extends WAbstractItemModel {
 	 * @see WStandardItemModel#setItemPrototype(WStandardItem item)
 	 */
 	public void setItemPrototype(WStandardItem item) {
-		/* delete this.itemPrototype_ */;
+		;
 		this.itemPrototype_ = item;
 	}
 

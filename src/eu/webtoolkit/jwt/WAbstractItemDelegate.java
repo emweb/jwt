@@ -46,12 +46,6 @@ public abstract class WAbstractItemDelegate extends WObject {
 	}
 
 	/**
-	 * Desturctor.
-	 */
-	public void destroy() {
-	}
-
-	/**
 	 * Create or update a widget that renders an item.
 	 * <p>
 	 * The item is specified by its model <i>index</i>, which also indicates the

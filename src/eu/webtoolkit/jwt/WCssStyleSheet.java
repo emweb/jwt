@@ -32,16 +32,6 @@ public class WCssStyleSheet {
 	}
 
 	/**
-	 * Destroy a style sheet, and all rules in it.
-	 */
-	public void destroy() {
-		while (!this.rules_.isEmpty()) {
-			if (this.rules_.get(this.rules_.size() - 1) != null)
-				this.rules_.get(this.rules_.size() - 1).remove();
-		}
-	}
-
-	/**
 	 * Add a CSS rule.
 	 * <p>
 	 * Add a rule using the CSS selector <i>selector</i>, with CSS declarations
@@ -199,7 +189,7 @@ public class WCssStyleSheet {
 					EscapeOStream sout = new EscapeOStream(js);
 					d.asJavaScript(sout, DomElement.Priority.Update);
 				}
-				/* delete d */;
+				;
 				js.append("}}");
 			}
 			this.rulesModified_.clear();

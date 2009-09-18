@@ -40,20 +40,6 @@ class StdGridLayoutImpl extends StdLayoutImpl {
 		}
 	}
 
-	public void destroy() {
-		WApplication app = WApplication.getInstance();
-		if (this.getParentLayoutImpl() == null) {
-			if (this.getContainer() == app.getRoot()) {
-				app.setBodyClass("");
-				app.setHtmlClass("");
-			}
-			if (app.getEnvironment().agentIsIE()) {
-				this.getContainer().setOverflow(
-						WContainerWidget.Overflow.OverflowVisible);
-			}
-		}
-	}
-
 	public int getMinimumHeight() {
 		final int colCount = this.grid_.columns_.size();
 		final int rowCount = this.grid_.rows_.size();

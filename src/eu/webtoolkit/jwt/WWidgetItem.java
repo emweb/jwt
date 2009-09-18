@@ -23,10 +23,6 @@ public class WWidgetItem implements WLayoutItem {
 		this.impl_ = null;
 	}
 
-	public void destroy() {
-		/* delete this.impl_ */;
-	}
-
 	public WWidget getWidget() {
 		return this.widget_;
 	}

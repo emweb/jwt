@@ -19,12 +19,6 @@ package eu.webtoolkit.jwt;
  */
 public abstract class WLocalizedStrings {
 	/**
-	 * Destructor.
-	 */
-	public void destroy() {
-	}
-
-	/**
 	 * Reread the message resources.
 	 * <p>
 	 * Purge any cached key/values, if applicable.

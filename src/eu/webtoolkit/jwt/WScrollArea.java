@@ -71,8 +71,8 @@ public class WScrollArea extends WWebWidget {
 	}
 
 	public void remove() {
-		/* delete this.horizontalScrollBar_ */;
-		/* delete this.verticalScrollBar_ */;
+		;
+		;
 		super.remove();
 	}
 

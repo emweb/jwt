@@ -248,7 +248,7 @@ public class WAnchor extends WContainerWidget {
 	}
 
 	public void remove() {
-		/* delete this.changeInternalPathJS_ */;
+		;
 		super.remove();
 	}
 
@@ -542,7 +542,7 @@ public class WAnchor extends WContainerWidget {
 				}
 			} else {
 				url = this.ref_;
-				/* delete this.changeInternalPathJS_ */;
+				;
 				this.changeInternalPathJS_ = null;
 			}
 			element.setAttribute("href", fixRelativeUrl(url));

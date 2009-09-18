@@ -188,11 +188,6 @@ public class WTableRow extends WObject {
 		// this.implementStateless(WTableRow.show,WTableRow.undoHide);
 	}
 
-	public void destroy() {
-		/* delete this.height_ */;
-		/* delete this.id_ */;
-	}
-
 	void expand(int numCells) {
 		int cursize = this.cells_.size();
 		for (int col = cursize; col < numCells; ++col) {

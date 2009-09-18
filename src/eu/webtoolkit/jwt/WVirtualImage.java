@@ -116,7 +116,7 @@ public class WVirtualImage extends WCompositeWidget {
 		for (Iterator<Map.Entry<Long, WImage>> it_it = this.grid_.entrySet()
 				.iterator(); it_it.hasNext();) {
 			Map.Entry<Long, WImage> it = it_it.next();
-			/* delete it.getValue().getResource() */;
+			;
 			if (it.getValue() != null)
 				it.getValue().remove();
 		}
@@ -132,7 +132,7 @@ public class WVirtualImage extends WCompositeWidget {
 		for (Iterator<Map.Entry<Long, WImage>> it_it = this.grid_.entrySet()
 				.iterator(); it_it.hasNext();) {
 			Map.Entry<Long, WImage> it = it_it.next();
-			/* delete it.getValue().getResource() */;
+			;
 			if (it.getValue() != null)
 				it.getValue().remove();
 		}
@@ -472,7 +472,7 @@ public class WVirtualImage extends WCompositeWidget {
 			j = it.getKey() % 1000;
 			;
 			if (i < i1 || i > i2 || j < j1 || j > j2) {
-				/* delete it.getValue().getResource() */;
+				;
 				if (it.getValue() != null)
 					it.getValue().remove();
 				it_it.remove();

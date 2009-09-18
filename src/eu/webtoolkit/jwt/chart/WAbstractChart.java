@@ -54,7 +54,7 @@ public abstract class WAbstractChart extends WPaintedWidget {
 	 * Destructor.
 	 */
 	public void remove() {
-		/* delete this.palette_ */;
+		;
 		super.remove();
 	}
 
@@ -172,7 +172,7 @@ public abstract class WAbstractChart extends WPaintedWidget {
 	 * @see WAbstractChart#getPalette()
 	 */
 	public void setPalette(WChartPalette palette) {
-		/* delete this.palette_ */;
+		;
 		this.palette_ = palette;
 		this.update();
 	}

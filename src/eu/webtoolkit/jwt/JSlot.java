@@ -105,13 +105,6 @@ public class JSlot {
 	}
 
 	/**
-	 * Destructor.
-	 */
-	public void destroy() {
-		/* delete this.imp_ */;
-	}
-
-	/**
 	 * Set or modify the JavaScript code associated with the slot.
 	 * <p>
 	 * When the slot is triggered, the corresponding JavaScript is executed.

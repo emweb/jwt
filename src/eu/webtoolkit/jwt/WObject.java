@@ -98,9 +98,6 @@ public class WObject {
 	public String getObjectName() {
 		return objectName_;
 	}
-	
-	void destroy() {
-	}
 
 	final int getInternalId() {
 		return id_;

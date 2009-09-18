@@ -81,13 +81,6 @@ public class WChart2DRenderer {
 	}
 
 	/**
-	 * Destructor.
-	 */
-	public void destroy() {
-		this.painter_.restore();
-	}
-
-	/**
 	 * Returns the corresponding chart.
 	 */
 	public WCartesianChart getChart() {

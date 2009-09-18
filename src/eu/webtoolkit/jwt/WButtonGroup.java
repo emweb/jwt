@@ -48,18 +48,6 @@ public class WButtonGroup extends WObject {
 	}
 
 	/**
-	 * Delete a button group.
-	 * <p>
-	 * This does not delete the radio buttons, but simply removes them from the
-	 * group.
-	 */
-	public void destroy() {
-		for (int i = 0; i < this.buttons_.size(); ++i) {
-			this.buttons_.get(i).button.setGroup((WButtonGroup) null);
-		}
-	}
-
-	/**
 	 * Add a radio button to the group.
 	 * <p>
 	 * You can assign an id to the button. If <i>id</i> is -1, then a unique id

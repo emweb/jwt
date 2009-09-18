@@ -50,18 +50,6 @@ public class WTestEnvironment extends WEnvironment {
 	}
 
 	/**
-	 * Destructor.
-	 * <p>
-	 * !
-	 */
-	public void destroy() {
-		/* delete WebSession.Handler.getInstance() */;
-		/* delete this.session_ */;
-		/* delete this.controller_ */;
-		/* delete this.configuration_ */;
-	}
-
-	/**
 	 * Sets parameters to the application.
 	 * <p>
 	 * The default value is an empty map.

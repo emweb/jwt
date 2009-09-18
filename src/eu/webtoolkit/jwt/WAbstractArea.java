@@ -21,26 +21,6 @@ package eu.webtoolkit.jwt;
  */
 public class WAbstractArea extends WObject {
 	/**
-	 * Destructor.
-	 * <p>
-	 * The are is automatically removed from the {@link WImage} or
-	 * {@link WPaintedWidget} to which it was added.
-	 * <p>
-	 * 
-	 * @see WImage#removeArea(WAbstractArea area)
-	 * @see WPaintedWidget#removeArea(WAbstractArea area)
-	 */
-	public void destroy() {
-		WImage i = this.getImage();
-		if (i != null) {
-			i.removeArea(this);
-		}
-		/* delete this.anchor_ */;
-		if (this.impl_ != null)
-			this.impl_.remove();
-	}
-
-	/**
 	 * Specify that this area specifies a hole for another area.
 	 * <p>
 	 * When set to true, this area will define an area that does not provide

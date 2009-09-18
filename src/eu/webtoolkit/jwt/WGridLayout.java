@@ -178,7 +178,7 @@ public class WGridLayout extends WLayout {
 		rowSpan = Math.max(1, rowSpan);
 		this.expand(row, column, rowSpan, columnSpan);
 		Grid.Item gridItem = this.grid_.items_.get(row).get(column);
-		/* delete gridItem.item_ */;
+		;
 		gridItem.item_ = item;
 		gridItem.rowSpan_ = rowSpan;
 		gridItem.colSpan_ = columnSpan;

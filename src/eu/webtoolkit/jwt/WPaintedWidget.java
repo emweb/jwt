@@ -132,7 +132,7 @@ public abstract class WPaintedWidget extends WInteractWidget {
 	 * Destructor.
 	 */
 	public void remove() {
-		/* delete this.painter_ */;
+		;
 		if (this.areaImage_ != null)
 			this.areaImage_.remove();
 		super.remove();
@@ -146,7 +146,7 @@ public abstract class WPaintedWidget extends WInteractWidget {
 	 */
 	public void setPreferredMethod(WPaintedWidget.Method method) {
 		if (this.preferredMethod_ != method) {
-			/* delete this.painter_ */;
+			;
 			this.painter_ = null;
 			this.preferredMethod_ = method;
 		}
@@ -322,7 +322,7 @@ public abstract class WPaintedWidget extends WInteractWidget {
 			device.getPainter().isEnd();
 		}
 		this.painter_.createContents(canvas, device);
-		/* delete device */;
+		;
 		this.needRepaint_ = false;
 		result.addChild(canvas);
 		this.updateDom(result, true);
@@ -354,7 +354,7 @@ public abstract class WPaintedWidget extends WInteractWidget {
 			} else {
 				this.painter_.updateContents(result, device);
 			}
-			/* delete device */;
+			;
 			this.needRepaint_ = false;
 			this.repaintFlags_.clear();
 		}

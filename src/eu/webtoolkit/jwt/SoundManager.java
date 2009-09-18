@@ -29,9 +29,6 @@ class SoundManager extends WObject {
 						false);
 	}
 
-	public void destroy() {
-	}
-
 	public void add(WSound sound) {
 		StringWriter ss = new StringWriter();
 		ss.append("WtSoundManager.add(\"").append(sound.getId()).append(

@@ -51,7 +51,7 @@ class SeriesRenderIterator extends SeriesIterator {
 
 	public void endSeries() {
 		this.seriesRenderer_.paint();
-		/* delete this.seriesRenderer_ */;
+		;
 		this.series_ = null;
 	}
 

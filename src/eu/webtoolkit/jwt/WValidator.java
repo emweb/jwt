@@ -107,18 +107,6 @@ public class WValidator extends WObject {
 	}
 
 	/**
-	 * Destructor.
-	 * <p>
-	 * The validator automatically removes itself from all formfields to which
-	 * it was associated.
-	 */
-	public void destroy() {
-		for (int i = this.formWidgets_.size() - 1; i >= 0; --i) {
-			this.formWidgets_.get(i).setValidator((WValidator) null);
-		}
-	}
-
-	/**
 	 * Set if input is mandatory.
 	 * <p>
 	 * When an input is not mandatory, then an empty field is always valid.

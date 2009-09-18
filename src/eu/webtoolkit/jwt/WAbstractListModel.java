@@ -36,12 +36,6 @@ public abstract class WAbstractListModel extends WAbstractItemModel {
 		this((WObject) null);
 	}
 
-	/**
-	 * Destructor.
-	 */
-	public void destroy() {
-	}
-
 	public WModelIndex getParent(WModelIndex index) {
 		return null;
 	}

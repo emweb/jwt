@@ -78,12 +78,6 @@ public class WScrollBar extends WObject {
 		this.valueSet_ = false;
 	}
 
-	public void destroy() {
-		while (this.ties_.size() != 0) {
-			unTie(this, this.ties_.get(0));
-		}
-	}
-
 	private WScrollArea scrollArea_;
 	private Orientation orientation_;
 	private List<WScrollBar> ties_;

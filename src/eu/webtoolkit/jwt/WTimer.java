@@ -53,18 +53,6 @@ public class WTimer extends WObject {
 	}
 
 	/**
-	 * Destuctor.
-	 */
-	public void destroy() {
-		if (this.active_) {
-			this.stop();
-		}
-		if (this.timerWidget_ != null)
-			this.timerWidget_.remove();
-		/* delete this.timeout_ */;
-	}
-
-	/**
 	 * Get the interval (msec).
 	 */
 	public int getInterval() {
@@ -188,7 +176,7 @@ public class WTimer extends WObject {
 			}
 		}
 		if (this.selfDestruct_) {
-			/* delete this */;
+			;
 		}
 	}
 
