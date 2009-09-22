@@ -471,15 +471,6 @@ public abstract class AbstractEventSignal extends AbstractSignal {
 		return out.toString();
 	}
 
-	void destroy() {
-		if (isExposedSignal()) {
-			WApplication app = WApplication.getInstance();
-			if (app != null) {
-				app.removeExposedSignal(this);
-			}
-		}
-	}
-
 	public String getName() {
 		return name_;
 	}

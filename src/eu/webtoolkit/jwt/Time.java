@@ -14,10 +14,6 @@ class Time {
 		this.time = other.time;
 	}
 
-	public void destroy() {
-
-	}
-
 	public Time add(int msec) {
 		Time t = new Time(this);
 		t.addToThis(msec);
