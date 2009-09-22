@@ -73,7 +73,7 @@ public class WComboBox extends WFormWidget {
 	 * Add an option item.
 	 * <p>
 	 * Equivalent to {@link WComboBox#insertItem(int index, CharSequence text)
-	 * insertItem} ({@link WComboBox#getCount() getCount()}, <i>text</i>).
+	 * insertItem} ({@link WComboBox#getCount() getCount()}, <code>text</code>).
 	 */
 	public void addItem(CharSequence text) {
 		this.insertItem(this.getCount(), text);
@@ -100,9 +100,9 @@ public class WComboBox extends WFormWidget {
 	/**
 	 * Insert an item at the specified position.
 	 * <p>
-	 * The item is inserted in the underlying model at position <i>index</i>.
-	 * This requires that the {@link WComboBox#getModel() getModel()} is
-	 * editable.
+	 * The item is inserted in the underlying model at position
+	 * <code>index</code>. This requires that the {@link WComboBox#getModel()
+	 * getModel()} is editable.
 	 * <p>
 	 * 
 	 * @see WComboBox#addItem(CharSequence text)
@@ -132,7 +132,7 @@ public class WComboBox extends WFormWidget {
 	/**
 	 * Changes the current selection.
 	 * <p>
-	 * Specify a value of -1 for <i>index</i> to clear the selection.
+	 * Specify a value of -1 for <code>index</code> to clear the selection.
 	 */
 	public void setCurrentIndex(int index) {
 		int newIndex = Math.min(index, this.getCount() - 1);
@@ -146,8 +146,8 @@ public class WComboBox extends WFormWidget {
 	/**
 	 * Changes the text for a specified option.
 	 * <p>
-	 * The text for the item at position <i>index</i> is changed. This requires
-	 * that the {@link WComboBox#getModel() getModel()} is editable.
+	 * The text for the item at position <code>index</code> is changed. This
+	 * requires that the {@link WComboBox#getModel() getModel()} is editable.
 	 */
 	public void setItemText(int index, CharSequence text) {
 		this.model_.setData(index, this.modelColumn_, text);
@@ -184,7 +184,7 @@ public class WComboBox extends WFormWidget {
 	/**
 	 * Sets the model to be used for the items.
 	 * <p>
-	 * The <i>model</i> may not be 0, and ownership of the model is not
+	 * The <code>model</code> may not be 0, and ownership of the model is not
 	 * transferred.
 	 * <p>
 	 * The default value is a {@link WStringListModel} that is owned by the
@@ -248,7 +248,7 @@ public class WComboBox extends WFormWidget {
 	/**
 	 * Sets the column in the model to be used for the items.
 	 * <p>
-	 * The column <i>index</i> in the model will be used to retrieve data.
+	 * The column <code>index</code> in the model will be used to retrieve data.
 	 * <p>
 	 * The default value is 0.
 	 * <p>

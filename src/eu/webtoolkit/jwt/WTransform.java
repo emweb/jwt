@@ -77,7 +77,7 @@ public class WTransform {
 	/**
 	 * Assignment operator.
 	 * <p>
-	 * Copies the transformation from the <i>rhs</i>.
+	 * Copies the transformation from the <code>rhs</code>.
 	 */
 	public WTransform assign(WTransform rhs) {
 		for (int i = 0; i < 6; ++i) {
@@ -95,7 +95,7 @@ public class WTransform {
 	/**
 	 * Comparison operator.
 	 * <p>
-	 * Returns true if the transforms are exactly the same.
+	 * Returns <code>true</code> if the transforms are exactly the same.
 	 */
 	public boolean equals(WTransform rhs) {
 		for (int i = 0; i < 6; ++i) {
@@ -222,8 +222,8 @@ public class WTransform {
 	/**
 	 * Apply the transformation to a point.
 	 * <p>
-	 * Sets the point (<i>tx</i>, <i>ty</i>) to the transformation of the point
-	 * (<i>x</i>, <i>y</i>).
+	 * Sets the point (<i>tx</i>, <code>ty</code>) to the transformation of the
+	 * point (<i>x</i>, <code>y</code>).
 	 * <p>
 	 * 
 	 * @see WTransform#map(WPointF p)
@@ -249,7 +249,7 @@ public class WTransform {
 	 * Rotate the transformation.
 	 * <p>
 	 * Applies a clock-wise rotation to the current transformation matrix, over
-	 * <i>angle</i> degrees.
+	 * <code>angle</code> degrees.
 	 * <p>
 	 * 
 	 * @see WTransform#rotateRadians(double angle)
@@ -263,7 +263,7 @@ public class WTransform {
 	 * Rotate the transformation.
 	 * <p>
 	 * Applies a clock-wise rotation to the current transformation matrix, over
-	 * <i>angle</i> radians.
+	 * <code>angle</code> radians.
 	 * <p>
 	 * 
 	 * @see WTransform#rotate(double angle)
@@ -280,7 +280,7 @@ public class WTransform {
 	 * Scale the transformation.
 	 * <p>
 	 * Applies a clock-wise rotation to the current transformation matrix, over
-	 * <i>angle</i> radians.
+	 * <code>angle</code> radians.
 	 * <p>
 	 * 
 	 * @see WTransform#shear(double sh, double sv)
@@ -362,7 +362,7 @@ public class WTransform {
 	/**
 	 * Return the inverted transformation.
 	 * <p>
-	 * Returns <i>this</i> if the transformation could not be inverted (
+	 * Returns <code>this</code> if the transformation could not be inverted (
 	 * {@link WTransform#getDeterminant() getDeterminant()} == 0), and logs an
 	 * error instead.
 	 */
@@ -419,9 +419,9 @@ public class WTransform {
 	 * Decompose the transformation.
 	 * <p>
 	 * Decomposes the transformation into elementary operations: translation
-	 * (<i>dx</i>, <i>dy</i>), followed by rotation (<i>alpha</i>), followed by
-	 * scale (<i>sx</i>, <i>sy</i>) and vertical shearing factor (<i>sh</i>).
-	 * The angle is expressed in radians.
+	 * (<i>dx</i>, <code>dy</code>), followed by rotation (<i>alpha</i>),
+	 * followed by scale (<i>sx</i>, <code>sy</code>) and vertical shearing
+	 * factor (<code>sh</code>). The angle is expressed in radians.
 	 * <p>
 	 * This performs a <a
 	 * href="http://en.wikipedia.org/wiki/Gram_schmidt">Gram-Schmidt
@@ -485,9 +485,9 @@ public class WTransform {
 	 * Decompose the transformation.
 	 * <p>
 	 * Decomposes the transformation into elementary operations: translation
-	 * (<i>dx</i>, <i>dy</i>), followed by rotation (<i>alpha2</i>), followed by
-	 * scale (<i>sx</i>, <i>sy</i>) and again a rotation (<i>alpha2</i>). The
-	 * angles are expressed in radians.
+	 * (<i>dx</i>, <code>dy</code>), followed by rotation (<i>alpha2</i>),
+	 * followed by scale (<i>sx</i>, <code>sy</code>) and again a rotation (
+	 * <code>alpha2</code>). The angles are expressed in radians.
 	 * <p>
 	 * This performs a <a
 	 * href="http://en.wikipedia.org/wiki/Singular_value_decomposition">Singular

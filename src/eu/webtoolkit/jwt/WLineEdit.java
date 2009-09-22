@@ -114,8 +114,8 @@ public class WLineEdit extends WFormWidget {
 	 * Specify the width of the line edit in number of characters.
 	 * <p>
 	 * This specifies the width of the line edit that is roughly equivalent with
-	 * <i>chars</i> characters. This does not limit the maximum length of a
-	 * string that may be entered, which may be set using
+	 * <code>chars</code> characters. This does not limit the maximum length of
+	 * a string that may be entered, which may be set using
 	 * {@link WLineEdit#setMaxLength(int chars) setMaxLength()}.
 	 * <p>
 	 * The default value is 10.

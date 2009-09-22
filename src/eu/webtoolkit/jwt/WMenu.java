@@ -96,11 +96,12 @@ public class WMenu extends WCompositeWidget {
 	/**
 	 * Construct a new menu.
 	 * <p>
-	 * Construct a menu to manage the widgets in <i>contentsStack</i>, and sets
-	 * the menu <i>orientation</i>.
+	 * Construct a menu to manage the widgets in <code>contentsStack</code>, and
+	 * sets the menu <code>orientation</code>.
 	 * <p>
-	 * Each menu item will manage a single widget in the <i>contentsStack</i>,
-	 * making it the current widget when the menu item is activated.
+	 * Each menu item will manage a single widget in the
+	 * <code>contentsStack</code>, making it the current widget when the menu
+	 * item is activated.
 	 */
 	public WMenu(WStackedWidget contentsStack, Orientation orientation,
 			WContainerWidget parent) {
@@ -142,11 +143,11 @@ public class WMenu extends WCompositeWidget {
 	/**
 	 * Add an item.
 	 * <p>
-	 * Adds a menu item with given <i>contents</i>, which is added to the
+	 * Adds a menu item with given <code>contents</code>, which is added to the
 	 * menu&apos;s associated contents stack.
 	 * <p>
-	 * <i>contents</i> may be 0, in which case no contents in the contents stack
-	 * is associated with the menu item.
+	 * <code>contents</code> may be <code>0</code>, in which case no contents in
+	 * the contents stack is associated with the menu item.
 	 * <p>
 	 * Returns the corresponding {@link WMenuItem}.
 	 * <p>
@@ -261,7 +262,7 @@ public class WMenu extends WCompositeWidget {
 	/**
 	 * Select an item.
 	 * <p>
-	 * Select the menu item <i>item</i>.
+	 * Select the menu item <code>item</code>.
 	 * <p>
 	 * 
 	 * @see WMenu#select(int index)
@@ -274,8 +275,8 @@ public class WMenu extends WCompositeWidget {
 	/**
 	 * Select an item.
 	 * <p>
-	 * Menu items in a menu with <i>N</i> items are numbered from 0 to <i>N</i>
-	 * - 1.
+	 * Menu items in a menu with <code>N</code> items are numbered from 0 to
+	 * <code>N</code> - 1.
 	 * <p>
 	 * 
 	 * @see WMenu#select(WMenuItem item)

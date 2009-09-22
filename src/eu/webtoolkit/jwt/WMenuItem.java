@@ -73,11 +73,11 @@ public class WMenuItem extends WObject {
 	 * transmitted prior to first rendering.
 	 * <p>
 	 * The {@link WMenuItem#getPathComponent() getPathComponent()} is derived
-	 * from <i>text</i>, and can be customized using
+	 * from <code>text</code>, and can be customized using
 	 * {@link WMenuItem#setPathComponent(String path) setPathComponent()}.
 	 * <p>
-	 * <i>contents</i> may be 0, in which case no contents is associated with
-	 * the item in the contents stack.
+	 * <code>contents</code> may be 0, in which case no contents is associated
+	 * with the item in the contents stack.
 	 */
 	public WMenuItem(CharSequence text, WWidget contents,
 			WMenuItem.LoadPolicy policy) {
@@ -171,7 +171,7 @@ public class WMenuItem extends WObject {
 	 * {@link WMenu#setInternalPathEnabled(String basePath)
 	 * WMenu#setInternalPathEnabled()}) for the menu.
 	 * <p>
-	 * You may specify an empty <i>path</i> to let a menu item be the
+	 * You may specify an empty <code>path</code> to let a menu item be the
 	 * &quot;default&quot; menu option.
 	 * <p>
 	 * For example, if {@link WMenu#getInternalBasePath()
@@ -280,7 +280,7 @@ public class WMenuItem extends WObject {
 	/**
 	 * Update the widget that represents the item.
 	 * <p>
-	 * The default implementation will cast the <i>itemWidget</i> to a
+	 * The default implementation will cast the <code>itemWidget</code> to a
 	 * {@link WAnchor}, and set the anchor&apos;s text and destination according
 	 * to {@link WMenuItem#getText() getText()} and
 	 * {@link WMenuItem#getPathComponent() getPathComponent()}.

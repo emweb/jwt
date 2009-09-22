@@ -197,7 +197,7 @@ public class WPopupMenuItem extends WCompositeWidget {
 	 * Change the checked state.
 	 * <p>
 	 * This is only used when {@link WPopupMenuItem#isCheckable() isCheckable()}
-	 * == true.
+	 * == <code>true</code>.
 	 * <p>
 	 * 
 	 * @see WPopupMenuItem#setCheckable(boolean how)
@@ -213,7 +213,7 @@ public class WPopupMenuItem extends WCompositeWidget {
 	 * Return the checked state.
 	 * <p>
 	 * This is only used when {@link WPopupMenuItem#isCheckable() isCheckable()}
-	 * == true.
+	 * == <code>true</code>.
 	 * <p>
 	 * 
 	 * @see WPopupMenuItem#setChecked(boolean how)

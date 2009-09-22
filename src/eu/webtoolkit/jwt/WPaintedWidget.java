@@ -141,8 +141,8 @@ public abstract class WPaintedWidget extends WInteractWidget {
 	/**
 	 * Set the preferred rendering method.
 	 * <p>
-	 * When <i>method</i> is supported by the browser, then it is chosen for
-	 * rendering.
+	 * When <code>method</code> is supported by the browser, then it is chosen
+	 * for rendering.
 	 */
 	public void setPreferredMethod(WPaintedWidget.Method method) {
 		if (this.preferredMethod_ != method) {
@@ -206,12 +206,12 @@ public abstract class WPaintedWidget extends WInteractWidget {
 	/**
 	 * Add an interactive area.
 	 * <p>
-	 * Adds the <i>area</i> which listens to events in a specific region of the
-	 * widget. Areas are organized in a list, to which the given <i>area</i> is
-	 * appended. When areas overlap, the area with the lowest index receives the
-	 * event.
+	 * Adds the <code>area</code> which listens to events in a specific region
+	 * of the widget. Areas are organized in a list, to which the given
+	 * <code>area</code> is appended. When areas overlap, the area with the
+	 * lowest index receives the event.
 	 * <p>
-	 * Ownership of the <i>area</i> is transferred to the widget.
+	 * Ownership of the <code>area</code> is transferred to the widget.
 	 * <p>
 	 * 
 	 * @see WPaintedWidget#insertArea(int index, WAbstractArea area) <p>
@@ -230,12 +230,12 @@ public abstract class WPaintedWidget extends WInteractWidget {
 	/**
 	 * Insert an interactive area.
 	 * <p>
-	 * Inserts the <i>area</i> which listens to events in the coresponding area
-	 * of the widget. Areas are organized in a list, and the <i>area</i> is
-	 * inserted at index <i>index</i>. When areas overlap, the area with the
-	 * lowest index receives the event.
+	 * Inserts the <code>area</code> which listens to events in the coresponding
+	 * area of the widget. Areas are organized in a list, and the <i>area</i> is
+	 * inserted at index <code>index</code>. When areas overlap, the area with
+	 * the lowest index receives the event.
 	 * <p>
-	 * Ownership of the <i>Area</i> is transferred to the widget.
+	 * Ownership of the <code>Area</code> is transferred to the widget.
 	 * <p>
 	 * 
 	 * @see WPaintedWidget#addArea(WAbstractArea area) <p>
@@ -254,7 +254,7 @@ public abstract class WPaintedWidget extends WInteractWidget {
 	/**
 	 * Removes an interactive area.
 	 * <p>
-	 * Removes the <i>area</i> from this widget, returning the ownership.
+	 * Removes the <code>area</code> from this widget, returning the ownership.
 	 * <p>
 	 * 
 	 * @see WPaintedWidget#addArea(WAbstractArea area)
@@ -267,7 +267,7 @@ public abstract class WPaintedWidget extends WInteractWidget {
 	/**
 	 * Returns the interactive area at the given index.
 	 * <p>
-	 * Returns 0 if <i>index</i> was invalid.
+	 * Returns <code>0</code> if <code>index</code> was invalid.
 	 * <p>
 	 * 
 	 * @see WPaintedWidget#insertArea(int index, WAbstractArea area)

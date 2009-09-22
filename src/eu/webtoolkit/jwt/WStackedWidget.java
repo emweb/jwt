@@ -82,7 +82,7 @@ public class WStackedWidget extends WContainerWidget {
 	/**
 	 * Returns the index of the given widget.
 	 * <p>
-	 * Returns -1 if the <i>widget</i> was not added.
+	 * Returns -1 if the <code>widget</code> was not added.
 	 * <p>
 	 * 
 	 * @see WStackedWidget#getWidget(int index)
@@ -122,7 +122,7 @@ public class WStackedWidget extends WContainerWidget {
 	/**
 	 * Shows a particular widget.
 	 * <p>
-	 * The widget with index <i>index</i> is made visible, while all other
+	 * The widget with index <code>index</code> is made visible, while all other
 	 * widgets are invisible.
 	 * <p>
 	 * 
@@ -139,8 +139,8 @@ public class WStackedWidget extends WContainerWidget {
 	/**
 	 * Shows a particular widget.
 	 * <p>
-	 * The widget <i>widget</i>, which must have been added before, is made
-	 * visible, while all other widgets are invisible.
+	 * The widget <code>widget</code>, which must have been added before, is
+	 * made visible, while all other widgets are invisible.
 	 * <p>
 	 * 
 	 * @see WStackedWidget#getCurrentWidget()

@@ -86,7 +86,8 @@ public interface WPaintDevice {
 	/**
 	 * Indicate changes in painter state.
 	 * <p>
-	 * The <i>flags</i> argument is the logical OR of one or more change flags.
+	 * The <code>flags</code> argument is the logical OR of one or more change
+	 * flags.
 	 * <p>
 	 * 
 	 * @see WPaintDevice.ChangeFlag
@@ -109,9 +110,9 @@ public interface WPaintDevice {
 	/**
 	 * Draw an image.
 	 * <p>
-	 * Draws <i>sourceRect</i> from the image with URL <i>imageUri</i> and
-	 * original dimensions <i>imgWidth</i> and <i>imgHeight</i> to the location,
-	 * into the rectangle defined by <i>rect</i>.
+	 * Draws <i>sourceRect</i> from the image with URL <code>imageUri</code> and
+	 * original dimensions <i>imgWidth</i> and <code>imgHeight</code> to the
+	 * location, into the rectangle defined by <code>rect</code>.
 	 * <p>
 	 * The image is transformed using the current painter settings.
 	 */

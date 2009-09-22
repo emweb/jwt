@@ -439,15 +439,15 @@ public class WTreeView extends WCompositeWidget {
 	/**
 	 * Sets the model.
 	 * <p>
-	 * The view will render the data in the given <i>model</i>. Changes to the
-	 * model are reflected in the view.
+	 * The view will render the data in the given <code>model</code>. Changes to
+	 * the model are reflected in the view.
 	 * <p>
 	 * When resetting a model, all nodes are initially collapsed, the selection
 	 * is cleared, and the root index corresponds to the model&apos;s top level
 	 * node (see {@link WTreeView#setRootIndex(WModelIndex rootIndex)
 	 * setRootIndex()}).
 	 * <p>
-	 * The initial model is 0.
+	 * The initial model is <code>0</code>.
 	 * <p>
 	 * Ownership of the model is not transferred (and thus the previously set
 	 * model is not deleted).
@@ -693,8 +693,9 @@ public class WTreeView extends WCompositeWidget {
 	 * <p>
 	 * For a model with
 	 * {@link WAbstractItemModel#getColumnCount(WModelIndex parent)
-	 * columnCount()} == <i>N</i>, the initial width of columns 1..<i>N</i> is
-	 * set to 150 pixels, and column 0 will take all remaining space.
+	 * columnCount()} == <code>N</code>, the initial width of columns 1..
+	 * <code>N</code> is set to 150 pixels, and column 0 will take all remaining
+	 * space.
 	 * <p>
 	 * <p>
 	 * <i><b>Note:</b>The actual space occupied by each column is the column
@@ -843,12 +844,12 @@ public class WTreeView extends WCompositeWidget {
 	 * This widget relies on several icons that are distributed together with
 	 * JWt for drawing icons, lines, and backgrounds.
 	 * <p>
-	 * The default location for the image pack is <i>resourcesURL</i>.
+	 * The default location for the image pack is <code>resourcesURL</code>.
 	 * <p>
-	 * The default value for <i>resourcesURL</i> is &quot;resources/&quot;. This
-	 * value may be overridden with a URL that points to a folder where these
-	 * files are located, by configuring the <i>resourcesURL</i> property in
-	 * your JWt configuration file.
+	 * The default value for <code>resourcesURL</code> is
+	 * &quot;resources/&quot;. This value may be overridden with a URL that
+	 * points to a folder where these files are located, by configuring the
+	 * <code>resourcesURL</code> property in your JWt configuration file.
 	 */
 	public void setImagePack(String uri) {
 	}
@@ -940,8 +941,8 @@ public class WTreeView extends WCompositeWidget {
 	/**
 	 * Expand all nodes to a depth.
 	 * <p>
-	 * Expands all nodes to the given <i>depth</i>. A depth of 1 corresponds to
-	 * the top level nodes.
+	 * Expands all nodes to the given <code>depth</code>. A depth of 1
+	 * corresponds to the top level nodes.
 	 * <p>
 	 * 
 	 * @see WTreeView#expand(WModelIndex index)
@@ -964,10 +965,10 @@ public class WTreeView extends WCompositeWidget {
 	 * </p>
 	 * </div> The image that is used is {@link WTreeView#getImagePack()
 	 * getImagePack()} + &quot;/stripes/stripe-&lt;i&gt;n&lt;/i&gt;px.gif&quot;,
-	 * where <i>n</i> is the row height. In the resource folder are images
+	 * where <code>n</code> is the row height. In the resource folder are images
 	 * pregenerated for one color and row sizes from 10 to 30px.
 	 * <p>
-	 * The default value is false.
+	 * The default value is <code>false</code>.
 	 * <p>
 	 * 
 	 * @see WTreeView#setImagePack(String uri)
@@ -995,8 +996,8 @@ public class WTreeView extends WCompositeWidget {
 	 * By default, top level nodes have expand/collapse and other lines to
 	 * display their linkage and offspring, like any node.
 	 * <p>
-	 * By setting <i>show</i> to false, you can hide these decorations for root
-	 * nodes, and in this way mimic a plain list.
+	 * By setting <code>show</code> to <code>false</code>, you can hide these
+	 * decorations for root nodes, and in this way mimic a plain list.
 	 */
 	public void setRootIsDecorated(boolean show) {
 		this.rootIsDecorated_ = show;
@@ -1015,8 +1016,8 @@ public class WTreeView extends WCompositeWidget {
 	/**
 	 * Sort the data according to a column.
 	 * <p>
-	 * Sorts the data according to data in column <i>column</i> and sort order
-	 * <i>order</i>.
+	 * Sorts the data according to data in column <code>column</code> and sort
+	 * order <code>order</code>.
 	 * <p>
 	 * 
 	 * @see WAbstractItemModel#sort(int column, SortOrder order)
@@ -1117,7 +1118,7 @@ public class WTreeView extends WCompositeWidget {
 	 * <p>
 	 * By default, selection operates on rows (
 	 * {@link SelectionBehavior#SelectRows SelectRows}), in which case model
-	 * indexes will always be in the first column (column 0).
+	 * indexes will always be in the first column (column <code>0</code>).
 	 * <p>
 	 * Alternatively, you can allow selection for individual items (
 	 * {@link SelectionBehavior#SelectItems SelectItems}).
@@ -1181,7 +1182,7 @@ public class WTreeView extends WCompositeWidget {
 	/**
 	 * Sets the selected items.
 	 * <p>
-	 * Replaces the current selection with <i>indexes</i>.
+	 * Replaces the current selection with <code>indexes</code>.
 	 * <p>
 	 * 
 	 * @see WTreeView#select(WModelIndex index, SelectionFlag option)
@@ -1327,12 +1328,12 @@ public class WTreeView extends WCompositeWidget {
 	 * first column fixed while scrolling through the other columns of the
 	 * model.
 	 * <p>
-	 * The default value is false.
+	 * The default value is <code>false</code>.
 	 * <p>
 	 * <p>
 	 * <i><b>Note:</b>Currently, you must set this option before any other
-	 * manipulation of a newly created treeview, and only <i>enable</i> =
-	 * <i>true</i> is supported. </i>
+	 * manipulation of a newly created treeview, and only <code>enable</code> =
+	 * <code>true</code> is supported. </i>
 	 * </p>
 	 */
 	public void setColumn1Fixed(boolean fixed) {
@@ -1559,9 +1560,9 @@ public class WTreeView extends WCompositeWidget {
 	/**
 	 * Handle a drop event (drag &amp; drop).
 	 * <p>
-	 * The <i>event</i> object contains details about the drop operation,
+	 * The <code>event</code> object contains details about the drop operation,
 	 * identifying the source (which provides the data) and the mime-type of the
-	 * data. The drop was received on the <i>target</i> item.
+	 * data. The drop was received on the <code>target</code> item.
 	 * <p>
 	 * The drop event can be handled either by the view itself, or by the model.
 	 * The default implementation checks if the mime-type is accepted by the
@@ -1602,10 +1603,10 @@ public class WTreeView extends WCompositeWidget {
 	 * setHeaderHeight()}.
 	 * <p>
 	 * The widget is created only once, but this method may be called repeatedly
-	 * for a column for which prior calls returned 0 (i.e. each time the header
-	 * is rerendered).
+	 * for a column for which prior calls returned <code>0</code> (i.e. each
+	 * time the header is rerendered).
 	 * <p>
-	 * The default implementation returns 0.
+	 * The default implementation returns <code>0</code>.
 	 * <p>
 	 * 
 	 * @see WTreeView#setHeaderHeight(WLength height, boolean multiLine)

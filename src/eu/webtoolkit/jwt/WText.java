@@ -78,12 +78,13 @@ public class WText extends WInteractWidget {
 	 * Construct a text widget with given text.
 	 * <p>
 	 * The textFormat is set to {@link TextFormat#XHTMLText}, unless the
-	 * <i>text</i> is literal (not created using {@link WString#tr(String key)
-	 * WString#tr()}) and it could not be parsed as valid XML. In that case the
-	 * textFormat is set to {@link TextFormat#PlainText}.
+	 * <code>text</code> is literal (not created using
+	 * {@link WString#tr(String key) WString#tr()}) and it could not be parsed
+	 * as valid XML. In that case the textFormat is set to
+	 * {@link TextFormat#PlainText}.
 	 * <p>
 	 * Therefore, if you wish to use {@link TextFormat#XHTMLText}, but cannot be
-	 * sure about <i>text</i> being valid XML, you should verify that the
+	 * sure about <code>text</code> being valid XML, you should verify that the
 	 * {@link WText#getTextFormat() getTextFormat()} is
 	 * {@link TextFormat#XHTMLText} after construction.
 	 * <p>
@@ -114,13 +115,14 @@ public class WText extends WInteractWidget {
 	/**
 	 * Construct a text widget with given text and format.
 	 * <p>
-	 * If <i>textFormat</i> is {@link TextFormat#XHTMLText} and <i>text</i> is
-	 * not literal (not created using {@link WString#tr(String key)
-	 * WString#tr()}), then if the <i>text</i> could not be parsed as valid XML,
-	 * the textFormat is changed to {@link TextFormat#PlainText}.
+	 * If <i>textFormat</i> is {@link TextFormat#XHTMLText} and
+	 * <code>text</code> is not literal (not created using
+	 * {@link WString#tr(String key) WString#tr()}), then if the
+	 * <code>text</code> could not be parsed as valid XML, the textFormat is
+	 * changed to {@link TextFormat#PlainText}.
 	 * <p>
 	 * Therefore, if you wish to use {@link TextFormat#XHTMLText}, but cannot be
-	 * sure about <i>text</i> being valid XML, you should verify that the
+	 * sure about <code>text</code> being valid XML, you should verify that the
 	 * {@link WText#getTextFormat() getTextFormat()} is
 	 * {@link TextFormat#XHTMLText} after construction.
 	 * <p>
@@ -165,15 +167,16 @@ public class WText extends WInteractWidget {
 	/**
 	 * Set the text.
 	 * <p>
-	 * When the current format is {@link TextFormat#XHTMLText}, and <i>text</i>
-	 * is literal (not created using {@link WString#tr(String key) WString#tr()}
-	 * ), it is parsed using an XML parser which discards malicious tags and
-	 * attributes silently. When the parser encounters an XML parse error, the
-	 * textFormat is changed to {@link TextFormat#PlainText}.
+	 * When the current format is {@link TextFormat#XHTMLText}, and
+	 * <code>text</code> is literal (not created using
+	 * {@link WString#tr(String key) WString#tr()}), it is parsed using an XML
+	 * parser which discards malicious tags and attributes silently. When the
+	 * parser encounters an XML parse error, the textFormat is changed to
+	 * {@link TextFormat#PlainText}.
 	 * <p>
 	 * Returns whether the text could be set using the current textFormat. A
-	 * return value of false indicates that the textFormat was changed in order
-	 * to be able to accept the new text.
+	 * return value of <code>false</code> indicates that the textFormat was
+	 * changed in order to be able to accept the new text.
 	 * <p>
 	 * 
 	 * @see WText#getText()
@@ -238,13 +241,13 @@ public class WText extends WInteractWidget {
 	/**
 	 * Configure word wrapping.
 	 * <p>
-	 * When <i>on</i> is true, the widget may break lines, creating a multi-line
-	 * text. When <i>on</i> is false, the text will displayed on a single line,
-	 * unless the text contains end-of-lines (for {@link TextFormat#PlainText})
-	 * or &lt;br /&gt; tags or other block-level tags (for
-	 * {@link TextFormat#XHTMLText}).
+	 * When <code>wordWrap</code> is <code>true</code>, the widget may break
+	 * lines, creating a multi-line text. When <code>wordWrap</code> is
+	 * <code>false</code>, the text will displayed on a single line, unless the
+	 * text contains end-of-lines (for {@link TextFormat#PlainText}) or &lt;br
+	 * /&gt; tags or other block-level tags (for {@link TextFormat#XHTMLText}).
 	 * <p>
-	 * The default value is true.
+	 * The default value is <code>true</code>.
 	 * <p>
 	 * 
 	 * @see WText#isWordWrap()

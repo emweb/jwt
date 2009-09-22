@@ -45,7 +45,7 @@ public class WPen {
 	 * SquareCap} line ends and {@link PenJoinStyle#BevelJoin BevelJoin} line
 	 * join style.
 	 * <p>
-	 * The line style is set to <i>style</i>.
+	 * The line style is set to <code>style</code>.
 	 */
 	public WPen(PenStyle style) {
 		this.penStyle_ = style;
@@ -62,7 +62,7 @@ public class WPen {
 	 * SquareCap} line ends and {@link PenJoinStyle#BevelJoin BevelJoin} line
 	 * join style.
 	 * <p>
-	 * The pen color is set to <i>color</i>.
+	 * The pen color is set to <code>color</code>.
 	 */
 	public WPen(WColor color) {
 		this.penStyle_ = PenStyle.SolidLine;
@@ -85,7 +85,7 @@ public class WPen {
 	/**
 	 * Comparison operator.
 	 * <p>
-	 * Returns true if the pens are exactly the same.
+	 * Returns <code>true</code> if the pens are exactly the same.
 	 */
 	public boolean equals(WPen other) {
 		return this.penStyle_ == other.penStyle_
@@ -158,8 +158,8 @@ public class WPen {
 	/**
 	 * Change the pen width.
 	 * <p>
-	 * A pen width <i>must</i> be specified using {@link WLength.Unit#Pixel}
-	 * units.
+	 * A pen width <code>must</code> be specified using
+	 * {@link WLength.Unit#Pixel} units.
 	 * <p>
 	 * 
 	 * @see WPen#getWidth()

@@ -665,8 +665,8 @@ public abstract class WWebWidget extends WWidget {
 	 * in {@link WText}, but it may also be useful outside the library to
 	 * sanitize user content when direcly using JavaScript.
 	 * <p>
-	 * Modifies the <i>text</i> if needed. When the text is not proper XML,
-	 * returns false.
+	 * Modifies the <code>text</code> if needed. When the text is not proper
+	 * XML, returns <code>false</code>.
 	 */
 	public static boolean removeScript(CharSequence text) {
 		return XSSFilter.removeScript(text);
@@ -675,7 +675,7 @@ public abstract class WWebWidget extends WWidget {
 	/**
 	 * Turn a UTF8 encoded string into a JavaScript string literal.
 	 * <p>
-	 * The <i>delimiter</i> may be a single or double quote.
+	 * The <code>delimiter</code> may be a single or double quote.
 	 */
 	public static String jsStringLiteral(String value, char delimiter) {
 		StringWriter result = new StringWriter();

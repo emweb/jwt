@@ -13,7 +13,7 @@ public class WPointF {
 	/**
 	 * Default constructor.
 	 * <p>
-	 * Constructs a point (<i>x=0</i>, <i>y=0</i>).
+	 * Constructs a point (<i>x=0</i>, <code>y=0</code>).
 	 */
 	public WPointF() {
 		this.x_ = 0;
@@ -23,7 +23,7 @@ public class WPointF {
 	/**
 	 * Construct a point.
 	 * <p>
-	 * Constructs a point (<i>x</i>, <i>y</i>).
+	 * Constructs a point (<i>x</i>, <code>y</code>).
 	 */
 	public WPointF(double x, double y) {
 		this.x_ = x;

@@ -44,8 +44,9 @@ public class WHBoxLayout extends WBoxLayout {
 	/**
 	 * Create a new horizontal box layout.
 	 * <p>
-	 * Use <i>parent</i>=0 to created a layout manager that can be nested inside
-	 * other layout managers.
+	 * Use <code>parent</code> = <code>0</code> to create a layout manager that
+	 * can be nested inside other layout managers, or to specify a specific
+	 * alignment when setting the layout to a {@link WContainerWidget}.
 	 */
 	public WHBoxLayout(WWidget parent) {
 		super(WBoxLayout.Direction.LeftToRight, parent);

@@ -70,7 +70,7 @@ public class WRegExpValidator extends WValidator {
 	 * the given regular expression.
 	 * <p>
 	 * This constructs a validator that matches the perl regular expression
-	 * <i>expr</i>.
+	 * <code>expr</code>.
 	 */
 	public WRegExpValidator(String pattern, WObject parent) {
 		super(parent);
@@ -92,7 +92,7 @@ public class WRegExpValidator extends WValidator {
 	/**
 	 * Set the regular expression for valid input.
 	 * <p>
-	 * Sets the perl regular expression <i>expr</i>.
+	 * Sets the perl regular expression <code>expr</code>.
 	 */
 	public void setRegExp(String pattern) {
 		if (!(this.regexp_ != null)) {

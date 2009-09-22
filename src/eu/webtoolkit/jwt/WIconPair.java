@@ -19,8 +19,9 @@ public class WIconPair extends WCompositeWidget {
 	/**
 	 * Construct an icon pair from the two icons.
 	 * <p>
-	 * The constructor takes the URL of the two icons. When clickIsSwitch is set
-	 * true, clicking on the icon will switch state.
+	 * The constructor takes the URL of the two icons. When
+	 * <code>clickIsSwitch</code> is set <code>true</code>, clicking on the icon
+	 * will switch state.
 	 */
 	public WIconPair(String icon1URI, String icon2URI, boolean clickIsSwitch,
 			WContainerWidget parent) {

@@ -36,8 +36,9 @@ public class WValidationStatus extends WCompositeWidget {
 	 * <p>
 	 * Constructs a validation status widget for the given field.
 	 * <p>
-	 * The validation stateWidgets (if not 0) will be managed by this widget,
-	 * and shown and hidden to reflect the current validation state.
+	 * The validation stateWidgets (if not <code>0</code>) will be managed by
+	 * this widget, and shown and hidden to reflect the current validation
+	 * state.
 	 */
 	public WValidationStatus(WFormWidget field, WWidget validStateWidget,
 			WWidget invalidStateWidget, WWidget invalidEmptyStateWidget,

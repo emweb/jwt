@@ -48,16 +48,17 @@ public abstract class WAbstractItemDelegate extends WObject {
 	/**
 	 * Create or update a widget that renders an item.
 	 * <p>
-	 * The item is specified by its model <i>index</i>, which also indicates the
-	 * model. If an existing widget already renders the item, but needs to be
-	 * updated, it is passed as the <i>widget</i> parameter. You may decide to
-	 * create a new widget, in which case you are responsible to delete the
-	 * previous <i>widget</i> if it is not reused.
+	 * The item is specified by its model <code>index</code>, which also
+	 * indicates the model. If an existing widget already renders the item, but
+	 * needs to be updated, it is passed as the <code>widget</code> parameter.
+	 * You may decide to create a new widget, in which case you are responsible
+	 * to delete the previous <code>widget</code> if it is not reused.
 	 * <p>
-	 * When <i>widget</i> is <code>null</code>, a new widget needs to be
+	 * When <code>widget</code> is <code>0</code>, a new widget needs to be
 	 * created.
 	 * <p>
-	 * The <i>flags</i> parameter indicates options for rendering the item.
+	 * The <code>flags</code> parameter indicates options for rendering the
+	 * item.
 	 */
 	public abstract WWidget update(WWidget widget, WModelIndex index,
 			EnumSet<ViewItemRenderFlag> flags);
@@ -80,8 +81,8 @@ public abstract class WAbstractItemDelegate extends WObject {
 	 * removals, an index was modified for a widget.
 	 * <p>
 	 * You should reimplement this method if you are storing the model index
-	 * (e.g. for editing purposes) in the <i>widget</i>, which you should update
-	 * to the new <i>index</i>.
+	 * (e.g. for editing purposes) in the <code>widget</code>, which you should
+	 * update to the new <code>index</code>.
 	 * <p>
 	 * The default implementation does nothing.
 	 */

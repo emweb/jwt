@@ -39,7 +39,7 @@ import eu.webtoolkit.jwt.utils.EnumUtils;
  */
 public class WTree extends WCompositeWidget {
 	/**
-	 * Create a new tree.
+	 * Creates a new tree.
 	 */
 	public WTree(WContainerWidget parent) {
 		super(parent);
@@ -58,7 +58,7 @@ public class WTree extends WCompositeWidget {
 	}
 
 	/**
-	 * Create a new tree.
+	 * Creates a new tree.
 	 * <p>
 	 * Calls {@link #WTree(WContainerWidget parent)
 	 * this((WContainerWidget)null)}
@@ -68,7 +68,7 @@ public class WTree extends WCompositeWidget {
 	}
 
 	/**
-	 * Set the tree root node.
+	 * Sets the tree root node.
 	 * <p>
 	 * 
 	 * @see WTree#getTreeRoot()
@@ -84,7 +84,7 @@ public class WTree extends WCompositeWidget {
 	}
 
 	/**
-	 * Get the root node.
+	 * Returns the root node.
 	 * <p>
 	 * 
 	 * @see WTree#setTreeRoot(WTreeNode node)
@@ -94,7 +94,7 @@ public class WTree extends WCompositeWidget {
 	}
 
 	/**
-	 * Set the selection mode.
+	 * Sets the selection mode.
 	 * <p>
 	 * The default selection mode is {@link SelectionMode#NoSelection}.
 	 */
@@ -110,21 +110,21 @@ public class WTree extends WCompositeWidget {
 	}
 
 	/**
-	 * Get the selection mode.
+	 * Returns the selection mode.
 	 */
 	public SelectionMode getSelectionMode() {
 		return this.selectionMode_;
 	}
 
 	/**
-	 * Get the set of selected tree nodes.
+	 * Returns the set of selected tree nodes.
 	 */
 	public Set<WTreeNode> getSelectedNodes() {
 		return this.selection_;
 	}
 
 	/**
-	 * Set a selection of tree nodes.
+	 * Sets a selection of tree nodes.
 	 */
 	public void select(Set<WTreeNode> nodes) {
 		this.clearSelection();
@@ -136,7 +136,7 @@ public class WTree extends WCompositeWidget {
 	}
 
 	/**
-	 * Select or unselect the given <i>node</i>.
+	 * Selects or unselect the given <i>node</i>.
 	 */
 	public void select(WTreeNode node, boolean selected) {
 		if (this.selectionMode_ == SelectionMode.SingleSelection && selected) {
@@ -158,7 +158,7 @@ public class WTree extends WCompositeWidget {
 	}
 
 	/**
-	 * Select or unselect the given <i>node</i>.
+	 * Selects or unselect the given <i>node</i>.
 	 * <p>
 	 * Calls {@link #select(WTreeNode node, boolean selected) select(node,
 	 * true)}
@@ -168,7 +168,7 @@ public class WTree extends WCompositeWidget {
 	}
 
 	/**
-	 * Return if the given <i>node</i> is currently selected.
+	 * Returns if the given <i>node</i> is currently selected.
 	 */
 	public boolean isSelected(WTreeNode node) {
 		boolean i = this.selection_.contains(node);
@@ -176,7 +176,7 @@ public class WTree extends WCompositeWidget {
 	}
 
 	/**
-	 * Clear the current selection.
+	 * Clears the current selection.
 	 */
 	public void clearSelection() {
 		while (!this.selection_.isEmpty()) {

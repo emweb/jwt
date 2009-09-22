@@ -52,7 +52,7 @@ public class WRectArea extends WAbstractArea {
 	/**
 	 * Construct a rectangular area with given geometry.
 	 * <p>
-	 * The <i>rect</i> argument is in pixel units.
+	 * The <code>rect</code> argument is in pixel units.
 	 */
 	public WRectArea(WRectF rect) {
 		super();

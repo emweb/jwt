@@ -25,8 +25,8 @@ public class WVBoxLayout extends WBoxLayout {
 	/**
 	 * Create a new vertical box layout.
 	 * <p>
-	 * Use <i>parent</i>=0 to created a layout manager that can be nested inside
-	 * other layout managers.
+	 * Use <code>parent=0</code> to created a layout manager that can be nested
+	 * inside other layout managers.
 	 */
 	public WVBoxLayout(WWidget parent) {
 		super(WBoxLayout.Direction.TopToBottom, parent);

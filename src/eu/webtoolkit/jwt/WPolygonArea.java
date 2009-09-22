@@ -41,8 +41,9 @@ public class WPolygonArea extends WAbstractArea {
 	/**
 	 * Construct a polygon area with given vertices.
 	 * <p>
-	 * The polygon is defined with vertices corresponding to <i>points</i>. The
-	 * polygon is closed by connecting the last point with the first point.
+	 * The polygon is defined with vertices corresponding to <code>points</code>
+	 * . The polygon is closed by connecting the last point with the first
+	 * point.
 	 */
 	public WPolygonArea(List<WPoint> points) {
 		super();
@@ -66,8 +67,9 @@ public class WPolygonArea extends WAbstractArea {
 	/**
 	 * Set the polygon vertices.
 	 * <p>
-	 * The polygon is defined with vertices corresponding to <i>points</i>. The
-	 * polygon is closed by connecting the last point with the first point.
+	 * The polygon is defined with vertices corresponding to <code>points</code>
+	 * . The polygon is closed by connecting the last point with the first
+	 * point.
 	 */
 	public void setPoints(List<WPoint> points) {
 		this.points_ = points;

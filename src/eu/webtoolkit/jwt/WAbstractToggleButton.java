@@ -27,7 +27,7 @@ import java.util.Map;
  */
 public class WAbstractToggleButton extends WFormWidget {
 	/**
-	 * Create an unchecked toggle button without label.
+	 * Creates an unchecked toggle button without label.
 	 */
 	protected WAbstractToggleButton(WContainerWidget parent) {
 		super(parent);
@@ -36,7 +36,7 @@ public class WAbstractToggleButton extends WFormWidget {
 	}
 
 	/**
-	 * Create an unchecked toggle button without label.
+	 * Creates an unchecked toggle button without label.
 	 * <p>
 	 * Calls {@link #WAbstractToggleButton(WContainerWidget parent)
 	 * this((WContainerWidget)null)}
@@ -46,7 +46,9 @@ public class WAbstractToggleButton extends WFormWidget {
 	}
 
 	/**
-	 * Create an unchecked toggle button with given text label.
+	 * Creates an unchecked toggle button with given text label.
+	 * <p>
+	 * The text label is rendered to the right side of the button.
 	 */
 	protected WAbstractToggleButton(CharSequence text, WContainerWidget parent) {
 		super(parent);
@@ -57,7 +59,7 @@ public class WAbstractToggleButton extends WFormWidget {
 	}
 
 	/**
-	 * Create an unchecked toggle button with given text label.
+	 * Creates an unchecked toggle button with given text label.
 	 * <p>
 	 * Calls
 	 * {@link #WAbstractToggleButton(CharSequence text, WContainerWidget parent)
@@ -80,7 +82,9 @@ public class WAbstractToggleButton extends WFormWidget {
 	}
 
 	/**
-	 * Change the text of the label.
+	 * Sets the label text.
+	 * <p>
+	 * The label is rendered to the right fo the button.
 	 */
 	public void setText(CharSequence text) {
 		WLabel l = this.getLabel();
@@ -92,7 +96,10 @@ public class WAbstractToggleButton extends WFormWidget {
 	}
 
 	/**
-	 * Get the text of the label.
+	 * Returns the label text.
+	 * <p>
+	 * 
+	 * @see WAbstractToggleButton#setText(CharSequence text)
 	 */
 	public WString getText() {
 		if (this.getLabel() != null) {
@@ -103,18 +110,21 @@ public class WAbstractToggleButton extends WFormWidget {
 	}
 
 	/**
-	 * Returns the state of the button.
+	 * Returns the button state.
+	 * <p>
+	 * 
+	 * @see WAbstractToggleButton#setChecked()
 	 */
 	public boolean isChecked() {
 		return this.state_ == CheckState.Checked;
 	}
 
 	/**
-	 * Change the state of the button.
+	 * Sets the button state.
 	 * <p>
-	 * Does not emit one of the {@link WAbstractToggleButton#checked()
-	 * checked()} or {@link WAbstractToggleButton#unChecked() unChecked()}
-	 * signals.
+	 * This method does not emit one of the
+	 * {@link WAbstractToggleButton#checked() checked()} or
+	 * {@link WAbstractToggleButton#unChecked() unChecked()} signals.
 	 * <p>
 	 * 
 	 * @see WAbstractToggleButton#setChecked()
@@ -125,7 +135,7 @@ public class WAbstractToggleButton extends WFormWidget {
 	}
 
 	/**
-	 * Set the button checked.
+	 * Checks the button.
 	 * <p>
 	 * Does not emit the {@link WAbstractToggleButton#checked() checked()}
 	 * signal.
@@ -139,7 +149,7 @@ public class WAbstractToggleButton extends WFormWidget {
 	}
 
 	/**
-	 * Set the button unChecked.
+	 * Unchecks the button.
 	 * <p>
 	 * Does not emit the {@link WAbstractToggleButton#unChecked() unChecked()}
 	 * signal.
@@ -154,6 +164,11 @@ public class WAbstractToggleButton extends WFormWidget {
 
 	/**
 	 * Signal emitted when the button gets checked.
+	 * <p>
+	 * This signal is emitted when the user checks the button.
+	 * <p>
+	 * You can use the {@link WFormWidget#changed() WFormWidget#changed()}
+	 * signal to react to any change of the button state.
 	 */
 	public EventSignal checked() {
 		return this.voidEventSignal(CHECKED_SIGNAL, true);
@@ -161,6 +176,11 @@ public class WAbstractToggleButton extends WFormWidget {
 
 	/**
 	 * Signal emitted when the button gets unChecked.
+	 * <p>
+	 * This signal is emitted when the user unchecks the button.
+	 * <p>
+	 * You can use the {@link WFormWidget#changed() WFormWidget#changed()}
+	 * signal to react to any change of the button state.
 	 */
 	public EventSignal unChecked() {
 		return this.voidEventSignal(UNCHECKED_SIGNAL, true);

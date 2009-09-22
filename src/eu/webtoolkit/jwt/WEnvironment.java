@@ -126,8 +126,8 @@ public class WEnvironment {
 	/**
 	 * Returns a single value for a query parameter.
 	 * <p>
-	 * Returns the first value for a parameter, or 0 if the parameter is not
-	 * found.
+	 * Returns the first value for a parameter, or <code>0</code> if the
+	 * parameter is not found.
 	 * <p>
 	 * 
 	 * @see WEnvironment#getParameterValues(String name)

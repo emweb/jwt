@@ -113,8 +113,8 @@ public class WPanel extends WCompositeWidget {
 	 * <p>
 	 * The title bar appears at the top of the panel.
 	 * <p>
-	 * The default value is false: the title bar is not shown unless a title is
-	 * set or the panel is made collapsible.
+	 * The default value is <code>false:</code> the title bar is not shown
+	 * unless a title is set or the panel is made collapsible.
 	 * <p>
 	 * 
 	 * @see WPanel#setTitle(CharSequence title)
@@ -152,10 +152,11 @@ public class WPanel extends WCompositeWidget {
 	/**
 	 * Make the panel collapsible.
 	 * <p>
-	 * When <i>on</i> is true, a collapse/expand icon is added to the title bar.
-	 * This also calls setTitleBar(true) to enable the title bar.
+	 * When <code>on</code> is <code>true</code>, a collapse/expand icon is
+	 * added to the title bar. This also calls setTitleBar(true) to enable the
+	 * title bar.
 	 * <p>
-	 * The default value is false.
+	 * The default value is <code>false</code>.
 	 * <p>
 	 * 
 	 * @see WPanel#setTitleBar(boolean enable)
@@ -219,10 +220,11 @@ public class WPanel extends WCompositeWidget {
 	/**
 	 * Set the panel expanded or collapsed.
 	 * <p>
-	 * When <i>on</i> is true, equivalent to {@link WPanel#collapse()
-	 * collapse()}, otherwise to {@link WPanel#expand() expand()}.
+	 * When <code>on</code> is <code>true</code>, equivalent to
+	 * {@link WPanel#collapse() collapse()}, otherwise to
+	 * {@link WPanel#expand() expand()}.
 	 * <p>
-	 * The default value is false.
+	 * The default value is <code>false</code>.
 	 * <p>
 	 * 
 	 * @see WPanel#setCollapsible(boolean on)
@@ -287,7 +289,7 @@ public class WPanel extends WCompositeWidget {
 	 * Sets the widget that is the contents of the panel. When a widget was
 	 * previously set, the old widget is deleted first.
 	 * <p>
-	 * The default value is 0 (no widget set).
+	 * The default value is <code>0</code> (no widget set).
 	 */
 	public void setCentralWidget(WWidget w) {
 		if (this.centralWidget_ != null)

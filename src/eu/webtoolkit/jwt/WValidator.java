@@ -181,8 +181,8 @@ public class WValidator extends WObject {
 	 * Creates a Javascript expression that validates the input.
 	 * <p>
 	 * The JavaScript expression should evaluate to an object with two fields: a
-	 * boolean <i>valid</i>, and a <i>message</i> that indicates the problem if
-	 * not valid.
+	 * boolean <i>valid</i>, and a <code>message</code> that indicates the
+	 * problem if not valid.
 	 * <p>
 	 * Return an empty string if you are not provide the client-side validation.
 	 * <p>

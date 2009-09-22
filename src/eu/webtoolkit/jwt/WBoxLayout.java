@@ -104,8 +104,8 @@ public class WBoxLayout extends WLayout {
 	 * This constructor is rarely used. Instead, use the convenient constructors
 	 * of the specialized {@link WHBoxLayout} or {@link WVBoxLayout} classes.
 	 * <p>
-	 * Use <i>parent</i>=0 to created a layout manager that can be nested inside
-	 * other layout managers.
+	 * Use <code>parent</code> = <code>0</code> to created a layout manager that
+	 * can be nested inside other layout managers.
 	 */
 	public WBoxLayout(WBoxLayout.Direction dir, WWidget parent) {
 		super();
@@ -215,14 +215,14 @@ public class WBoxLayout extends WLayout {
 	/**
 	 * Adds a widget to the layout.
 	 * <p>
-	 * Adds a widget to the layout, with given <i>stretch</i> factor. The
-	 * <i>alignemnt</i> parameter is a combination of a horizontal and/or a
-	 * vertical AlignmentFlag OR&apos;ed together.
+	 * Adds a widget to the layout, with given <code>stretch</code> factor. The
+	 * <code>alignemnt</code> parameter is a combination of a horizontal and/or
+	 * a vertical AlignmentFlag OR&apos;ed together.
 	 * <p>
-	 * The <i>alignment</i> specifies the vertical and horizontal alignment of
-	 * the item. The default value 0 indicates that the item is stretched to
-	 * fill the entire column or row. The alignment can be specified as a
-	 * logical combination of a horizontal alignment (
+	 * The <code>alignment</code> specifies the vertical and horizontal
+	 * alignment of the item. The default value 0 indicates that the item is
+	 * stretched to fill the entire column or row. The alignment can be
+	 * specified as a logical combination of a horizontal alignment (
 	 * {@link AlignmentFlag#AlignLeft}, {@link AlignmentFlag#AlignCenter}, or
 	 * {@link AlignmentFlag#AlignRight}) and a vertical alignment (
 	 * {@link AlignmentFlag#AlignTop}, {@link AlignmentFlag#AlignMiddle}, or
@@ -272,7 +272,7 @@ public class WBoxLayout extends WLayout {
 	/**
 	 * Adds a nested layout to the layout.
 	 * <p>
-	 * Adds a nested layout, with given <i>stretch</i> factor.
+	 * Adds a nested layout, with given <code>stretch</code> factor.
 	 * <p>
 	 * 
 	 * @see WBoxLayout#addWidget(WWidget widget, int stretch, EnumSet alignment)
@@ -354,13 +354,13 @@ public class WBoxLayout extends WLayout {
 	/**
 	 * Inserts a widget in the layout.
 	 * <p>
-	 * Inserts a widget in the layout at position <i>index</i>, with given
-	 * <i>stretch</i> factor.
+	 * Inserts a widget in the layout at position <code>index</code>, with given
+	 * <code>stretch</code> factor.
 	 * <p>
-	 * The <i>alignment</i> specifies the vertical and horizontal alignment of
-	 * the item. The default value 0 indicates that the item is stretched to
-	 * fill the entire column or row. The alignment can be specified as a
-	 * logical combination of a horizontal alignment (
+	 * The <code>alignment</code> specifies the vertical and horizontal
+	 * alignment of the item. The default value 0 indicates that the item is
+	 * stretched to fill the entire column or row. The alignment can be
+	 * specified as a logical combination of a horizontal alignment (
 	 * {@link AlignmentFlag#AlignLeft}, {@link AlignmentFlag#AlignCenter}, or
 	 * {@link AlignmentFlag#AlignRight}) and a vertical alignment (
 	 * {@link AlignmentFlag#AlignTop}, {@link AlignmentFlag#AlignMiddle}, or
@@ -415,8 +415,8 @@ public class WBoxLayout extends WLayout {
 	/**
 	 * Inserts a nested layout in the layout.
 	 * <p>
-	 * Inserts a nested layout in the layout at position<i>index</i>, with given
-	 * <i>stretch</i> factor.
+	 * Inserts a nested layout in the layout at position<code>index</code>, with
+	 * given <code>stretch</code> factor.
 	 * <p>
 	 * 
 	 * @see WBoxLayout#insertWidget(int index, WWidget widget, int stretch,
@@ -467,7 +467,7 @@ public class WBoxLayout extends WLayout {
 	/**
 	 * Inserts extra spacing in the layout.
 	 * <p>
-	 * Inserts extra spacing in the layout at position <i>index</i>.
+	 * Inserts extra spacing in the layout at position <code>index</code>.
 	 * <p>
 	 * 
 	 * @see WBoxLayout#insertStretch(int index, int stretch)
@@ -482,8 +482,8 @@ public class WBoxLayout extends WLayout {
 	/**
 	 * Inserts a stretch element in the layout.
 	 * <p>
-	 * Inserts a stretch element in the layout at position <i>index</i>. This
-	 * adds an empty space that stretches as needed.
+	 * Inserts a stretch element in the layout at position <code>index</code>.
+	 * This adds an empty space that stretches as needed.
 	 * <p>
 	 * 
 	 * @see WBoxLayout#insertSpacing(int index, WLength size)
@@ -508,13 +508,14 @@ public class WBoxLayout extends WLayout {
 	/**
 	 * Set the stretch factor for a nested layout.
 	 * <p>
-	 * The <i>layout</i> must have previously been added to this layout using
+	 * The <code>layout</code> must have previously been added to this layout
+	 * using
 	 * {@link WBoxLayout#insertLayout(int index, WLayout layout, int stretch, EnumSet alignment)
 	 * insertLayout()} or
 	 * {@link WBoxLayout#addLayout(WLayout layout, int stretch, EnumSet alignment)
 	 * addLayout()}.
 	 * <p>
-	 * Returns whether the <i>stretch</i> could be set.
+	 * Returns whether the <code>stretch</code> could be set.
 	 */
 	public boolean setStretchFactor(WLayout layout, int stretch) {
 		for (int i = 0; i < this.getCount(); ++i) {
@@ -530,13 +531,14 @@ public class WBoxLayout extends WLayout {
 	/**
 	 * Set the stretch factor for a nested layout.
 	 * <p>
-	 * The <i>widget</i> must have previously been added to this layout using
+	 * The <code>widget</code> must have previously been added to this layout
+	 * using
 	 * {@link WBoxLayout#insertWidget(int index, WWidget widget, int stretch, EnumSet alignment)
 	 * insertWidget()} or
 	 * {@link WBoxLayout#addWidget(WWidget widget, int stretch, EnumSet alignment)
 	 * addWidget()}.
 	 * <p>
-	 * Returns whether the <i>stretch</i> could be set.
+	 * Returns whether the <code>stretch</code> could be set.
 	 */
 	public boolean setStretchFactor(WWidget widget, int stretch) {
 		for (int i = 0; i < this.getCount(); ++i) {

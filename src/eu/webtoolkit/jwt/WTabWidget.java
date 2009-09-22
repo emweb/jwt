@@ -238,8 +238,8 @@ public class WTabWidget extends WCompositeWidget {
 	/**
 	 * Enable or disable a tab.
 	 * <p>
-	 * Enables or disables the tab at <i>index</i>. A disabled tab cannot be
-	 * activated.
+	 * Enables or disables the tab at <code>index</code>. A disabled tab cannot
+	 * be activated.
 	 */
 	public void setTabEnabled(int index, boolean enable) {
 		this.items_.get(index).enabled = enable;
@@ -255,7 +255,7 @@ public class WTabWidget extends WCompositeWidget {
 	/**
 	 * Hide or show a tab.
 	 * <p>
-	 * Hides are shows the tab at <i>index</i>.
+	 * Hides are shows the tab at <code>index</code>.
 	 */
 	public void setTabHidden(int index, boolean hidden) {
 		this.items_.get(index).hidden = hidden;

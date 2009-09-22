@@ -145,7 +145,7 @@ public abstract class WAbstractItemModel extends WObject {
 	/**
 	 * Returns the number of columns.
 	 * <p>
-	 * This returns the number of columns at index <i>parent</i>.
+	 * This returns the number of columns at index <code>parent</code>.
 	 * <p>
 	 * 
 	 * @see WAbstractItemModel#getRowCount(WModelIndex parent)
@@ -164,7 +164,7 @@ public abstract class WAbstractItemModel extends WObject {
 	/**
 	 * Returns the number of rows.
 	 * <p>
-	 * This returns the number of rows at index <i>parent</i>.
+	 * This returns the number of rows at index <code>parent</code>.
 	 * <p>
 	 * 
 	 * @see WAbstractItemModel#getColumnCount(WModelIndex parent)
@@ -203,7 +203,8 @@ public abstract class WAbstractItemModel extends WObject {
 	/**
 	 * Returns if there are children at an index.
 	 * <p>
-	 * Returns true when rowCount(index) &gt; 0 and columnCount(index) &gt; 0.
+	 * Returns <code>true</code> when rowCount(index) &gt; 0 and
+	 * columnCount(index) &gt; 0.
 	 * <p>
 	 * 
 	 * @see WAbstractItemModel#getRowCount(WModelIndex parent)
@@ -274,9 +275,10 @@ public abstract class WAbstractItemModel extends WObject {
 	/**
 	 * Returns the row or column header data.
 	 * <p>
-	 * When <i>orientation</i> is {@link Orientation#Horizontal Horizontal},
-	 * <i>section</i> is a column number, when <i>orientation</i> is
-	 * {@link Orientation#Vertical Vertical}, <i>section</i> is a row number.
+	 * When <code>orientation</code> is {@link Orientation#Horizontal
+	 * Horizontal}, <code>section</code> is a column number, when
+	 * <code>orientation</code> is {@link Orientation#Vertical Vertical},
+	 * <code>section</code> is a row number.
 	 * <p>
 	 * 
 	 * @see WAbstractItemModel#getData(WModelIndex index, int role)
@@ -316,7 +318,7 @@ public abstract class WAbstractItemModel extends WObject {
 	 * When implementing this method, you can use
 	 * {@link WAbstractItemModel#createIndex(int row, int column, Object ptr)
 	 * createIndex()} to create an index that corresponds to the item at
-	 * <i>row</i> and <i>column</i> within <i>parent</i>.
+	 * <code>row</code> and <code>column</code> within <code>parent</code>.
 	 * <p>
 	 * If the location is invalid (out of bounds at the parent), then an invalid
 	 * index must be returned.
@@ -443,10 +445,10 @@ public abstract class WAbstractItemModel extends WObject {
 	/**
 	 * Insert one or more columns.
 	 * <p>
-	 * Returns true if the operation was successful.
+	 * Returns <code>true</code> if the operation was successful.
 	 * <p>
-	 * The default implementation returns false. If you reimplement this method,
-	 * then you must call
+	 * The default implementation returns <code>false</code>. If you reimplement
+	 * this method, then you must call
 	 * {@link WAbstractItemModel#beginInsertColumns(WModelIndex parent, int first, int last)
 	 * beginInsertColumns()} and {@link WAbstractItemModel#endInsertColumns()
 	 * endInsertColumns()} before and after the operation.
@@ -477,13 +479,13 @@ public abstract class WAbstractItemModel extends WObject {
 	/**
 	 * Insert one or more rows.
 	 * <p>
-	 * Returns true if the operation was successful. If you reimplement this
-	 * method, then you must call
+	 * Returns <code>true</code> if the operation was successful. If you
+	 * reimplement this method, then you must call
 	 * {@link WAbstractItemModel#beginInsertRows(WModelIndex parent, int first, int last)
 	 * beginInsertRows()} and {@link WAbstractItemModel#endInsertRows()
 	 * endInsertRows()} before and after the operation.
 	 * <p>
-	 * The default implementation returns false.
+	 * The default implementation returns <code>false</code>.
 	 * <p>
 	 * 
 	 * @see WAbstractItemModel#insertColumns(int column, int count, WModelIndex
@@ -511,10 +513,10 @@ public abstract class WAbstractItemModel extends WObject {
 	/**
 	 * Remove columns.
 	 * <p>
-	 * Returns true if the operation was successful.
+	 * Returns <code>true</code> if the operation was successful.
 	 * <p>
-	 * The default implementation returns false. If you reimplement this method,
-	 * then you must call
+	 * The default implementation returns <code>false</code>. If you reimplement
+	 * this method, then you must call
 	 * {@link WAbstractItemModel#beginRemoveColumns(WModelIndex parent, int first, int last)
 	 * beginRemoveColumns()} and {@link WAbstractItemModel#endRemoveColumns()
 	 * endRemoveColumns()} before and after the operation.
@@ -545,10 +547,10 @@ public abstract class WAbstractItemModel extends WObject {
 	/**
 	 * Remove rows.
 	 * <p>
-	 * Returns true if the operation was successful.
+	 * Returns <code>true</code> if the operation was successful.
 	 * <p>
-	 * The default implementation returns false. If you reimplement this method,
-	 * then you must call
+	 * The default implementation returns <code>false</code>. If you reimplement
+	 * this method, then you must call
 	 * {@link WAbstractItemModel#beginRemoveRows(WModelIndex parent, int first, int last)
 	 * beginRemoveRows()} and {@link WAbstractItemModel#endRemoveRows()
 	 * endRemoveRows()} before and after the operation.
@@ -579,11 +581,11 @@ public abstract class WAbstractItemModel extends WObject {
 	/**
 	 * Set data at the given model index.
 	 * <p>
-	 * Returns true if the operation was successful.
+	 * Returns <code>true</code> if the operation was successful.
 	 * <p>
-	 * The default implementation returns false. If you reimplement this method,
-	 * you must emit the {@link WAbstractItemModel#dataChanged() dataChanged()}
-	 * signal after data was changed.
+	 * The default implementation returns <code>false</code>. If you reimplement
+	 * this method, you must emit the {@link WAbstractItemModel#dataChanged()
+	 * dataChanged()} signal after data was changed.
 	 * <p>
 	 * 
 	 * @see WAbstractItemModel#getData(WModelIndex index, int role)
@@ -633,7 +635,7 @@ public abstract class WAbstractItemModel extends WObject {
 	/**
 	 * Set header data for a column or row.
 	 * <p>
-	 * Returns true if the operation was successful.
+	 * Returns <code>true</code> if the operation was successful.
 	 * <p>
 	 * 
 	 * @see WAbstractItemModel#getHeaderData(int section, Orientation
@@ -659,7 +661,7 @@ public abstract class WAbstractItemModel extends WObject {
 	/**
 	 * Set column header data.
 	 * <p>
-	 * Returns true if the operation was successful.
+	 * Returns <code>true</code> if the operation was successful.
 	 * <p>
 	 * 
 	 * @see WAbstractItemModel#setHeaderData(int section, Orientation
@@ -702,9 +704,9 @@ public abstract class WAbstractItemModel extends WObject {
 	 * Use this method to temporarily save model indexes while the model&apos;s
 	 * layout is changed by for example a sorting operation.
 	 * <p>
-	 * The default implementation returns 0, which indicates that the index
-	 * cannot be converted to a raw pointer. If you reimplement this method, you
-	 * also need to reimplemnt
+	 * The default implementation returns <code>0</code>, which indicates that
+	 * the index cannot be converted to a raw pointer. If you reimplement this
+	 * method, you also need to reimplemnt
 	 * {@link WAbstractItemModel#fromRawIndex(Object rawIndex) fromRawIndex()}.
 	 * <p>
 	 * 
@@ -775,12 +777,13 @@ public abstract class WAbstractItemModel extends WObject {
 	 * abstract item models. Source item data is copied (but not the source
 	 * item&apos;s flags).
 	 * <p>
-	 * The location in the model is indicated by the <i>row</i> and
-	 * <i>column</i> within the <i>parent</i> index. If <i>row</i> is -1, then
-	 * the item is appended to the <i>parent</i>. Otherwise, the item is
-	 * inserted at or copied over the indicated item (and subsequent rows). When
-	 * <i>action</i> is a {@link DropAction#MoveAction MoveAction}, the original
-	 * items are deleted from the source model.
+	 * The location in the model is indicated by the <code>row</code> and
+	 * <code>column</code> within the <code>parent</code> index. If
+	 * <code>row</code> is -1, then the item is appended to the
+	 * <code>parent</code>. Otherwise, the item is inserted at or copied over
+	 * the indicated item (and subsequent rows). When <code>action</code> is a
+	 * {@link DropAction#MoveAction MoveAction}, the original items are deleted
+	 * from the source model.
 	 * <p>
 	 * You may want to reimplement this method if you want to handle other
 	 * mime-type data, or if you want to refine how the drop event of an item
@@ -848,7 +851,7 @@ public abstract class WAbstractItemModel extends WObject {
 	 * 
 	 * </blockquote>
 	 * <p>
-	 * Returns true if the operation was successful.
+	 * Returns <code>true</code> if the operation was successful.
 	 * <p>
 	 * 
 	 * @see WAbstractItemModel#insertColumns(int column, int count, WModelIndex
@@ -880,7 +883,7 @@ public abstract class WAbstractItemModel extends WObject {
 	 * 
 	 * </blockquote>
 	 * <p>
-	 * Returns true if the operation was successful.
+	 * Returns <code>true</code> if the operation was successful.
 	 * <p>
 	 * 
 	 * @see WAbstractItemModel#insertRows(int row, int count, WModelIndex
@@ -912,7 +915,7 @@ public abstract class WAbstractItemModel extends WObject {
 	 * 
 	 * </blockquote>
 	 * <p>
-	 * Returns true if the operation was successful.
+	 * Returns <code>true</code> if the operation was successful.
 	 * <p>
 	 * 
 	 * @see WAbstractItemModel#removeColumns(int column, int count, WModelIndex
@@ -944,7 +947,7 @@ public abstract class WAbstractItemModel extends WObject {
 	 * 
 	 * </blockquote>
 	 * <p>
-	 * Returns true if the operation was successful.
+	 * Returns <code>true</code> if the operation was successful.
 	 * <p>
 	 * 
 	 * @see WAbstractItemModel#removeRows(int row, int count, WModelIndex
@@ -975,7 +978,7 @@ public abstract class WAbstractItemModel extends WObject {
 	 * 
 	 * </blockquote>
 	 * <p>
-	 * Returns true if the operation was successful.
+	 * Returns <code>true</code> if the operation was successful.
 	 * <p>
 	 * 
 	 * @see WAbstractItemModel#setData(WModelIndex index, Object value, int
@@ -1214,7 +1217,7 @@ public abstract class WAbstractItemModel extends WObject {
 	/**
 	 * Create a model index for the given row and column.
 	 * <p>
-	 * Use this method to create a model index. <i>ptr</i> is an internal
+	 * Use this method to create a model index. <code>ptr</code> is an internal
 	 * pointer that may be used to associate the index with particular model
 	 * data.
 	 * <p>

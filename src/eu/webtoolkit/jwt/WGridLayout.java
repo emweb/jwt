@@ -105,8 +105,9 @@ public class WGridLayout extends WLayout {
 	 * <p>
 	 * The grid will grow dynamically as items are added.
 	 * <p>
-	 * Use <i>parent</i>=0 to created a layout manager that can be nested inside
-	 * other layout managers.
+	 * Use <code>parent</code> = <code>0</code> to create a layout manager that
+	 * can be nested inside other layout managers or to specify a specific
+	 * alignment when setting the layout to a {@link WContainerWidget}.
 	 */
 	public WGridLayout(WWidget parent) {
 		super();
@@ -152,19 +153,20 @@ public class WGridLayout extends WLayout {
 	/**
 	 * Adds a layout item to the grid.
 	 * <p>
-	 * Adds the <i>item</i> at (<i>row</i>, <i>column</i>). If an item was
+	 * Adds the <i>item</i> at (<i>row</i>, <code>column</code>). If an item was
 	 * already added to that location, it is replaced (but not deleted).
 	 * <p>
 	 * An item may span several more rows or columns, which is controlled by
-	 * <i>rowSpan</i> and <i>columnSpan</i>.
+	 * <i>rowSpan</i> and <code>columnSpan</code>.
 	 * <p>
-	 * The <i>alignment</i> specifies the vertical and horizontal alignment of
-	 * the item. The default value 0 indicates that the item is stretched to
-	 * fill the entire grid cell. The alignment can be specified as a logical
-	 * combination of a horizontal alignment ({@link AlignmentFlag#AlignLeft},
-	 * {@link AlignmentFlag#AlignCenter}, or {@link AlignmentFlag#AlignRight})
-	 * and a vertical alignment ({@link AlignmentFlag#AlignTop},
-	 * {@link AlignmentFlag#AlignMiddle}, or {@link AlignmentFlag#AlignBottom}).
+	 * The <code>alignment</code> specifies the vertical and horizontal
+	 * alignment of the item. The default value 0 indicates that the item is
+	 * stretched to fill the entire grid cell. The alignment can be specified as
+	 * a logical combination of a horizontal alignment (
+	 * {@link AlignmentFlag#AlignLeft}, {@link AlignmentFlag#AlignCenter}, or
+	 * {@link AlignmentFlag#AlignRight}) and a vertical alignment (
+	 * {@link AlignmentFlag#AlignTop}, {@link AlignmentFlag#AlignMiddle}, or
+	 * {@link AlignmentFlag#AlignBottom}).
 	 * <p>
 	 * 
 	 * @see WGridLayout#addLayout(WLayout layout, int row, int column, EnumSet
@@ -242,16 +244,17 @@ public class WGridLayout extends WLayout {
 	/**
 	 * Adds a nested layout item to the grid.
 	 * <p>
-	 * Adds the <i>layout</i> at (<i>row</i>, <i>column</i>). If an item was
-	 * already added to that location, it is replaced (but not deleted).
+	 * Adds the <i>layout</i> at (<i>row</i>, <code>column</code>). If an item
+	 * was already added to that location, it is replaced (but not deleted).
 	 * <p>
-	 * The <i>alignment</i> specifies the vertical and horizontal alignment of
-	 * the item. The default value 0 indicates that the item is stretched to
-	 * fill the entire grid cell. The alignment can be specified as a logical
-	 * combination of a horizontal alignment ({@link AlignmentFlag#AlignLeft},
-	 * {@link AlignmentFlag#AlignCenter}, or {@link AlignmentFlag#AlignRight})
-	 * and a vertical alignment ({@link AlignmentFlag#AlignTop},
-	 * {@link AlignmentFlag#AlignMiddle}, or {@link AlignmentFlag#AlignBottom}).
+	 * The <code>alignment</code> specifies the vertical and horizontal
+	 * alignment of the item. The default value 0 indicates that the item is
+	 * stretched to fill the entire grid cell. The alignment can be specified as
+	 * a logical combination of a horizontal alignment (
+	 * {@link AlignmentFlag#AlignLeft}, {@link AlignmentFlag#AlignCenter}, or
+	 * {@link AlignmentFlag#AlignRight}) and a vertical alignment (
+	 * {@link AlignmentFlag#AlignTop}, {@link AlignmentFlag#AlignMiddle}, or
+	 * {@link AlignmentFlag#AlignBottom}).
 	 * <p>
 	 * 
 	 * @see WGridLayout#addLayout(WLayout layout, int row, int column, int
@@ -288,19 +291,20 @@ public class WGridLayout extends WLayout {
 	/**
 	 * Adds a nested layout item to the grid.
 	 * <p>
-	 * Adds the <i>layout</i> at (<i>row</i>, <i>column</i>). If an item was
-	 * already added to that location, it is replaced (but not deleted).
+	 * Adds the <i>layout</i> at (<i>row</i>, <code>column</code>). If an item
+	 * was already added to that location, it is replaced (but not deleted).
 	 * <p>
 	 * An item may span several more rows or columns, which is controlled by
-	 * <i>rowSpan</i> and <i>columnSpan</i>.
+	 * <i>rowSpan</i> and <code>columnSpan</code>.
 	 * <p>
-	 * The <i>alignment</i> specifies the vertical and horizontal alignment of
-	 * the item. The default value 0 indicates that the item is stretched to
-	 * fill the entire grid cell. The alignment can be specified as a logical
-	 * combination of a horizontal alignment ({@link AlignmentFlag#AlignLeft},
-	 * {@link AlignmentFlag#AlignCenter}, or {@link AlignmentFlag#AlignRight})
-	 * and a vertical alignment ({@link AlignmentFlag#AlignTop},
-	 * {@link AlignmentFlag#AlignMiddle}, or {@link AlignmentFlag#AlignBottom}).
+	 * The <code>alignment</code> specifies the vertical and horizontal
+	 * alignment of the item. The default value 0 indicates that the item is
+	 * stretched to fill the entire grid cell. The alignment can be specified as
+	 * a logical combination of a horizontal alignment (
+	 * {@link AlignmentFlag#AlignLeft}, {@link AlignmentFlag#AlignCenter}, or
+	 * {@link AlignmentFlag#AlignRight}) and a vertical alignment (
+	 * {@link AlignmentFlag#AlignTop}, {@link AlignmentFlag#AlignMiddle}, or
+	 * {@link AlignmentFlag#AlignBottom}).
 	 * <p>
 	 * 
 	 * @see WGridLayout#addLayout(WLayout layout, int row, int column, EnumSet
@@ -343,16 +347,17 @@ public class WGridLayout extends WLayout {
 	/**
 	 * Adds a widget to the grid.
 	 * <p>
-	 * Adds the <i>widget</i> at (<i>row</i>, <i>column</i>). If an item was
-	 * already added to that location, it is replaced (but not deleted).
+	 * Adds the <i>widget</i> at (<i>row</i>, <code>column</code>). If an item
+	 * was already added to that location, it is replaced (but not deleted).
 	 * <p>
-	 * The <i>alignment</i> specifies the vertical and horizontal alignment of
-	 * the item. The default value 0 indicates that the item is stretched to
-	 * fill the entire grid cell. The alignment can be specified as a logical
-	 * combination of a horizontal alignment ({@link AlignmentFlag#AlignLeft},
-	 * {@link AlignmentFlag#AlignCenter}, or {@link AlignmentFlag#AlignRight})
-	 * and a vertical alignment ({@link AlignmentFlag#AlignTop},
-	 * {@link AlignmentFlag#AlignMiddle}, or {@link AlignmentFlag#AlignBottom}).
+	 * The <code>alignment</code> specifies the vertical and horizontal
+	 * alignment of the item. The default value 0 indicates that the item is
+	 * stretched to fill the entire grid cell. The alignment can be specified as
+	 * a logical combination of a horizontal alignment (
+	 * {@link AlignmentFlag#AlignLeft}, {@link AlignmentFlag#AlignCenter}, or
+	 * {@link AlignmentFlag#AlignRight}) and a vertical alignment (
+	 * {@link AlignmentFlag#AlignTop}, {@link AlignmentFlag#AlignMiddle}, or
+	 * {@link AlignmentFlag#AlignBottom}).
 	 * <p>
 	 * 
 	 * @see WGridLayout#addWidget(WWidget widget, int row, int column, int
@@ -389,19 +394,20 @@ public class WGridLayout extends WLayout {
 	/**
 	 * Adds a widget to the grid.
 	 * <p>
-	 * Adds the <i>widget</i> at (<i>row</i>, <i>column</i>). If an item was
-	 * already added to that location, it is replaced (but not deleted).
+	 * Adds the <i>widget</i> at (<i>row</i>, <code>column</code>). If an item
+	 * was already added to that location, it is replaced (but not deleted).
 	 * <p>
 	 * The widget may span several more rows or columns, which is controlled by
-	 * <i>rowSpan</i> and <i>columnSpan</i>.
+	 * <i>rowSpan</i> and <code>columnSpan</code>.
 	 * <p>
-	 * The <i>alignment</i> specifies the vertical and horizontal alignment of
-	 * the item. The default value 0 indicates that the item is stretched to
-	 * fill the entire grid cell. The alignment can be specified as a logical
-	 * combination of a horizontal alignment ({@link AlignmentFlag#AlignLeft},
-	 * {@link AlignmentFlag#AlignCenter}, or {@link AlignmentFlag#AlignRight})
-	 * and a vertical alignment ({@link AlignmentFlag#AlignTop},
-	 * {@link AlignmentFlag#AlignMiddle}, or {@link AlignmentFlag#AlignBottom}).
+	 * The <code>alignment</code> specifies the vertical and horizontal
+	 * alignment of the item. The default value 0 indicates that the item is
+	 * stretched to fill the entire grid cell. The alignment can be specified as
+	 * a logical combination of a horizontal alignment (
+	 * {@link AlignmentFlag#AlignLeft}, {@link AlignmentFlag#AlignCenter}, or
+	 * {@link AlignmentFlag#AlignRight}) and a vertical alignment (
+	 * {@link AlignmentFlag#AlignTop}, {@link AlignmentFlag#AlignMiddle}, or
+	 * {@link AlignmentFlag#AlignBottom}).
 	 * <p>
 	 * 
 	 * @see WGridLayout#addWidget(WWidget widget, int row, int column, EnumSet
@@ -515,7 +521,7 @@ public class WGridLayout extends WLayout {
 	/**
 	 * Sets the column stretch.
 	 * <p>
-	 * Sets the <i>stretch</i> factor for column <i>column</i>.
+	 * Sets the <i>stretch</i> factor for column <code>column</code>.
 	 * <p>
 	 * 
 	 * @see WGridLayout#getColumnStretch(int column)
@@ -539,8 +545,8 @@ public class WGridLayout extends WLayout {
 	/**
 	 * Sets the row stretch.
 	 * <p>
-	 * Sets the <i>stretch</i> factor for row <i>row</i>. See the description
-	 * for the special value of -1.
+	 * Sets the <i>stretch</i> factor for row <code>row</code>. See the
+	 * description for the special value of -1.
 	 * <p>
 	 * 
 	 * @see WGridLayout#getRowStretch(int row)

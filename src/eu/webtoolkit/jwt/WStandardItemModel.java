@@ -79,7 +79,7 @@ public class WStandardItemModel extends WAbstractItemModel {
 	 * Create a new standard item model with an initial toplevel geometry.
 	 * <p>
 	 * Creates a standard item model with a geometry of <i>rows</i> x
-	 * <i>columns</i>. All items are set to 0.
+	 * <code>columns</code>. All items are set to <code>0</code>.
 	 */
 	public WStandardItemModel(int rows, int columns, WObject parent) {
 		super(parent);
@@ -132,7 +132,7 @@ public class WStandardItemModel extends WAbstractItemModel {
 	/**
 	 * Returns the model index for a particular item.
 	 * <p>
-	 * If the <i>item</i> is the
+	 * If the <code>item</code> is the
 	 * {@link WStandardItemModel#getInvisibleRootItem() getInvisibleRootItem()},
 	 * then an invalid index is returned.
 	 * <p>
@@ -165,8 +165,8 @@ public class WStandardItemModel extends WAbstractItemModel {
 	/**
 	 * Add a single column of top level items.
 	 * <p>
-	 * Appends a single column of top level <i>items</i>. If necessary, the row
-	 * count is increased.
+	 * Appends a single column of top level <code>items</code>. If necessary,
+	 * the row count is increased.
 	 * <p>
 	 * Equivalent to: <blockquote>
 	 * 
@@ -187,8 +187,8 @@ public class WStandardItemModel extends WAbstractItemModel {
 	/**
 	 * Insert a single column of top level items.
 	 * <p>
-	 * Inserts a single column of top level <i>items</i> at column
-	 * <i>column</i>. If necessary, the row count is increased.
+	 * Inserts a single column of top level <code>items</code> at column
+	 * <code>column</code>. If necessary, the row count is increased.
 	 * <p>
 	 * Equivalent to: <blockquote>
 	 * 
@@ -208,8 +208,8 @@ public class WStandardItemModel extends WAbstractItemModel {
 	/**
 	 * Add a single row of top level items.
 	 * <p>
-	 * Appends a single row of top level <i>items</i>. If necessary, the column
-	 * count is increased.
+	 * Appends a single row of top level <code>items</code>. If necessary, the
+	 * column count is increased.
 	 * <p>
 	 * Equivalent to: <blockquote>
 	 * 
@@ -230,8 +230,8 @@ public class WStandardItemModel extends WAbstractItemModel {
 	/**
 	 * Insert a single row of top level items.
 	 * <p>
-	 * Inserts a single row of top level <i>items</i> at row <i>row</i>. If
-	 * necessary, the column count is increased.
+	 * Inserts a single row of top level <code>items</code> at row
+	 * <code>row</code>. If necessary, the column count is increased.
 	 * <p>
 	 * Equivalent to: <blockquote>
 	 * 
@@ -291,9 +291,9 @@ public class WStandardItemModel extends WAbstractItemModel {
 	/**
 	 * Returns a toplevel item.
 	 * <p>
-	 * Returns the top level at at (<i>row</i>, <i>column</i>). This may be 0 if
-	 * no item was set previously at that position, or if the indicated position
-	 * is out of bounds.
+	 * Returns the top level at at (<i>row</i>, <code>column</code>). This may
+	 * be 0 if no item was set previously at that position, or if the indicated
+	 * position is out of bounds.
 	 * <p>
 	 * Equivalent to: <blockquote>
 	 * 
@@ -322,8 +322,8 @@ public class WStandardItemModel extends WAbstractItemModel {
 	/**
 	 * Sets a toplevel item.
 	 * <p>
-	 * Sets the top level at at (<i>row</i>, <i>column</i>). If necessary, the
-	 * number of rows or columns is increased.
+	 * Sets the top level at at (<i>row</i>, <code>column</code>). If necessary,
+	 * the number of rows or columns is increased.
 	 * <p>
 	 * If an item was previously set for that position, it is deleted first.
 	 * <p>

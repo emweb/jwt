@@ -66,7 +66,7 @@ public class WDatePicker extends WCompositeWidget {
 	 * This constructor creates a line edit with an icon that leads to a popup
 	 * calendar. A {@link WDateValidator} is configured for the line edit.
 	 * <p>
-	 * <i>i18n</i> is passed to the {@link WCalendar} constructor.
+	 * <code>i18n</code> is passed to the {@link WCalendar} constructor.
 	 */
 	public WDatePicker(boolean i18n, WContainerWidget parent) {
 		super(parent);
@@ -89,14 +89,14 @@ public class WDatePicker extends WCompositeWidget {
 	 * Create a new date picker for existing line edit and with custom display
 	 * widget.
 	 * <p>
-	 * The <i>displayWidget</i> is a button or image which much be clicked to
-	 * open the date picker. This widget will become owned by the picker.
+	 * The <code>displayWidget</code> is a button or image which much be clicked
+	 * to open the date picker. This widget will become owned by the picker.
 	 * <p>
-	 * The <i>forEdit</i> argument is the lineEdit that works in conjunction
-	 * with the date picker. This widget does not become part of the date
-	 * picker, and may be located anywhere else.
+	 * The <code>forEdit</code> argument is the lineEdit that works in
+	 * conjunction with the date picker. This widget does not become part of the
+	 * date picker, and may be located anywhere else.
 	 * <p>
-	 * <i>i18n</i> is passed to the {@link WCalendar} constructor.
+	 * <code>i18n</code> is passed to the {@link WCalendar} constructor.
 	 */
 	public WDatePicker(WInteractWidget displayWidget, WLineEdit forEdit,
 			boolean i18n, WContainerWidget parent) {
@@ -197,8 +197,8 @@ public class WDatePicker extends WCompositeWidget {
 	 * Reads the current date from the {@link WDatePicker#getLineEdit()
 	 * getLineEdit()}.
 	 * <p>
-	 * Returns null if the date could not be parsed using the current
-	 * {@link WDatePicker#getFormat() getFormat()}. <br>
+	 * Returns <code>null</code> if the date could not be parsed using the
+	 * current {@link WDatePicker#getFormat() getFormat()}. <br>
 	 * <p>
 	 * 
 	 * @see WDatePicker#setDate(WDate date)
@@ -212,7 +212,7 @@ public class WDatePicker extends WCompositeWidget {
 	/**
 	 * Set the current date.
 	 * <p>
-	 * Does nothing if the current date is <i>Null</i>.
+	 * Does nothing if the current date is <code>Null</code>.
 	 * <p>
 	 * 
 	 * @see WDatePicker#getDate()

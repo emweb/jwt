@@ -178,7 +178,8 @@ public class WPopupMenu extends WCompositeWidget {
 	/**
 	 * Add a submenu, with given text.
 	 * <p>
-	 * Adds an item with text <i>text</i>, that leads to a submenu <i>menu</i>.
+	 * Adds an item with text <code>text</code>, that leads to a submenu
+	 * <code>menu</code>.
 	 * <p>
 	 * 
 	 * @see WPopupMenu#add(WPopupMenuItem item)
@@ -191,7 +192,7 @@ public class WPopupMenu extends WCompositeWidget {
 	 * Add a submenu, with given icon and text.
 	 * <p>
 	 * Adds an item with given text and icon, that leads to a submenu
-	 * <i>menu</i>.
+	 * <code>menu</code>.
 	 * <p>
 	 * 
 	 * @see WPopupMenu#add(WPopupMenuItem item)
@@ -225,10 +226,10 @@ public class WPopupMenu extends WCompositeWidget {
 	/**
 	 * Show the the popup at a position.
 	 * <p>
-	 * Displays the popup at a point with document coordinates <i>point</i>. The
-	 * positions intelligent, and will chose one of the four menu corners to
-	 * correspond to this point so that the popup menu is completely visible
-	 * within the window.
+	 * Displays the popup at a point with document coordinates
+	 * <code>point</code>. The positions intelligent, and will chose one of the
+	 * four menu corners to correspond to this point so that the popup menu is
+	 * completely visible within the window.
 	 * <p>
 	 * 
 	 * @see WPopupMenu#exec(WPoint p)
@@ -276,12 +277,12 @@ public class WPopupMenu extends WCompositeWidget {
 	/**
 	 * Execute the the popup at a position.
 	 * <p>
-	 * Displays the popup at a point with document coordinates <i>p</i>, using
-	 * {@link WPopupMenu#popup(WPoint p) popup()}, and the waits until a menu
-	 * item is selected, or the menu is cancelled.
+	 * Displays the popup at a point with document coordinates <code>p</code>,
+	 * using {@link WPopupMenu#popup(WPoint p) popup()}, and the waits until a
+	 * menu item is selected, or the menu is cancelled.
 	 * <p>
-	 * Returns the selected menu (or sub-menu) item, or 0 if the user cancelled
-	 * the menu.
+	 * Returns the selected menu (or sub-menu) item, or <code>0</code> if the
+	 * user cancelled the menu.
 	 * <p>
 	 * 
 	 * @see WPopupMenu#popup(WPoint p)
@@ -316,7 +317,7 @@ public class WPopupMenu extends WCompositeWidget {
 	/**
 	 * Returns the last triggered menu item.
 	 * <p>
-	 * The result is 0 when the user cancelled the popup menu.
+	 * The result is <code>0</code> when the user cancelled the popup menu.
 	 */
 	public WPopupMenuItem getResult() {
 		return this.result_;

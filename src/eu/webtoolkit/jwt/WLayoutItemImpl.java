@@ -17,7 +17,7 @@ public interface WLayoutItemImpl {
 	/**
 	 * Add a layout <i>item</i>.
 	 * <p>
-	 * The <i>item</i> already has an implementation set.
+	 * The <code>item</code> already has an implementation set.
 	 */
 	public void updateAddItem(WLayoutItem item);
 

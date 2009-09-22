@@ -57,13 +57,14 @@ package eu.webtoolkit.jwt;
  */
 public class JSlot {
 	/**
-	 * Construct a JavaScript-only slot within the parent scope.
+	 * Constructs a JavaScript-only slot within the parent scope.
 	 * <p>
-	 * The JavaScript will reside within the scope of the given widget. By
-	 * picking a long-lived parent, one may reuse a single block of JavasCript
-	 * code for multiple widgets.
+	 * The JavaScript code block will reside within the scope of the given
+	 * widget. By picking a long-lived parent, one may reuse a single block of
+	 * JavasCript code for multiple widgets.
 	 * <p>
-	 * If parent = 0, then the JavaScript will be inline.
+	 * When <code>parent</code> = <code>0</code>, then the JavaScript will be
+	 * inlined in each caller (possibly replicating the same JavaScript).
 	 */
 	public JSlot(WWidget parent) {
 		this.widget_ = parent;
@@ -72,7 +73,7 @@ public class JSlot {
 	}
 
 	/**
-	 * Construct a JavaScript-only slot within the parent scope.
+	 * Constructs a JavaScript-only slot within the parent scope.
 	 * <p>
 	 * Calls {@link #JSlot(WWidget parent) this((WWidget)null)}
 	 */
@@ -81,7 +82,7 @@ public class JSlot {
 	}
 
 	/**
-	 * Construct a JavaScript-only slot with given JavaScript.
+	 * Constructs a JavaScript-only and sets the JavaScript code.
 	 * <p>
 	 * 
 	 * @see JSlot#JSlot(WWidget parent)
@@ -95,7 +96,7 @@ public class JSlot {
 	}
 
 	/**
-	 * Construct a JavaScript-only slot with given JavaScript.
+	 * Constructs a JavaScript-only and sets the JavaScript code.
 	 * <p>
 	 * Calls {@link #JSlot(String javaScript, WWidget parent) this(javaScript,
 	 * (WWidget)null)}
@@ -105,9 +106,10 @@ public class JSlot {
 	}
 
 	/**
-	 * Set or modify the JavaScript code associated with the slot.
+	 * Sets or modify the JavaScript code associated with the slot.
 	 * <p>
-	 * When the slot is triggered, the corresponding JavaScript is executed.
+	 * When the slot is triggered, the corresponding function defined by
+	 * <code>javaScript</code> is executed.
 	 * <p>
 	 * The JavaScript function takes two parameters and thus should look like:
 	 * <blockquote>
@@ -120,9 +122,9 @@ public class JSlot {
 	 * 
 	 * </blockquote>
 	 * <p>
-	 * The first parameter <i>obj</i> is a reference to the DOM element that
-	 * generates the event. The <i>event</i> refers to the JavaScript event
-	 * object.
+	 * The first parameter <code>obj</code> is a reference to the DOM element
+	 * that generates the event. The <code>event</code> refers to the JavaScript
+	 * event object.
 	 * <p>
 	 * 
 	 * @see WWidget#getJsRef()
@@ -137,14 +139,14 @@ public class JSlot {
 	}
 
 	/**
-	 * Execute the JavaScript code.
+	 * Executes the JavaScript code.
 	 * <p>
-	 * Execute the JavaScript code, in the same way as when triggered by a
+	 * This executes the JavaScript code in the same way as when triggered by a
 	 * {@link EventSignal}. This function returns immediately, and execution of
 	 * the JavaScript code is deferred until after the event handling.
 	 * <p>
-	 * The arguments are the &quot;&lt;tt&gt;object, event&lt;/tt&gt;&quot;
-	 * arguments of the JavaScript event callback function.
+	 * The arguments are the <code>&quot;object, event&quot;</code> arguments of
+	 * the JavaScript event callback function.
 	 * <p>
 	 * 
 	 * @see JSlot#setJavaScript(String js)
@@ -156,7 +158,7 @@ public class JSlot {
 	}
 
 	/**
-	 * Execute the JavaScript code.
+	 * Executes the JavaScript code.
 	 * <p>
 	 * Calls {@link #exec(String object, String event) exec("null", "null")}
 	 */
@@ -165,7 +167,7 @@ public class JSlot {
 	}
 
 	/**
-	 * Execute the JavaScript code.
+	 * Executes the JavaScript code.
 	 * <p>
 	 * Calls {@link #exec(String object, String event) exec(object, "null")}
 	 */

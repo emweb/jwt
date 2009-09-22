@@ -103,7 +103,8 @@ public abstract class WLayout extends WObject implements WLayoutItem {
 	/**
 	 * Return the layout item at a specific <i>index</i>.
 	 * <p>
-	 * If there is no item at the <i>index</i>, 0 is returned.
+	 * If there is no item at the <code>index</code>, <code>0</code> is
+	 * returned.
 	 * <p>
 	 * 
 	 * @see WLayout#indexOf(WLayoutItem item)
@@ -115,7 +116,7 @@ public abstract class WLayout extends WObject implements WLayoutItem {
 	 * Return the index of a given <i>item</i>.
 	 * <p>
 	 * The default implementation loops over all items, and returns the index
-	 * for which itemAt(index) equals <i>item</i>.
+	 * for which itemAt(index) equals <code>item</code>.
 	 * <p>
 	 * 
 	 * @see WLayout#getItemAt(int index)

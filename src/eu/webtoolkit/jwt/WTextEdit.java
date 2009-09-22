@@ -73,7 +73,7 @@ public class WTextEdit extends WTextArea {
 	/**
 	 * Create a new text editor and initialize with given text.
 	 * <p>
-	 * The <i>text</i> should be valid XHTML.
+	 * The <code>text</code> should be valid XHTML.
 	 */
 	public WTextEdit(String text, WContainerWidget parent) {
 		super(text);
@@ -108,7 +108,7 @@ public class WTextEdit extends WTextArea {
 	/**
 	 * Set the content.
 	 * <p>
-	 * The <i>text</i> should be valid XHTML.
+	 * The <code>text</code> should be valid XHTML.
 	 * <p>
 	 * The default value is &quot;&quot;.
 	 */
@@ -173,18 +173,18 @@ public class WTextEdit extends WTextArea {
 	/**
 	 * Configure a tool bar.
 	 * <p>
-	 * This configures the buttons for the <i>i&apos;th</i> tool bar (with 0
-	 * &lt;= <i>i</i> &lt;= 3).
+	 * This configures the buttons for the <code>i&apos;th</code> tool bar (with
+	 * 0 &lt;= <code>i</code> &lt;= 3).
 	 * <p>
 	 * The syntax and available buttons is documented in the <a href="http://wiki.moxiecode.com/index.php/TinyMCE:Configuration/theme_advanced_buttons_1_n"
 	 * >TinyMCE documentation</a>.
 	 * <p>
-	 * The default <i>config</i> for the first tool bar (<i>i</i> = 0) is:
+	 * The default <i>config</i> for the first tool bar (<code>i</code> = 0) is:
 	 * &quot;fontselect, |, bold, italic, underline, |, fontsizeselect, |,
 	 * forecolor, backcolor, |, justifyleft, justifycenter, justifyright,
 	 * justifyfull, |, anchor, |, numlist, bullist&quot;.
 	 * <p>
-	 * By default, the other three tool bars are disabled (<i>config</i> =
+	 * By default, the other three tool bars are disabled (<code>config</code> =
 	 * &quot;&quot;).
 	 * <p>
 	 * Note that some buttons are only available after loading extra plugins

@@ -372,8 +372,8 @@ public class WSortFilterProxyModel extends WAbstractProxyModel {
 	/**
 	 * Configure the proxy to dynamically track changes in the source model.
 	 * <p>
-	 * When <i>enable</i> is true, the proxy will re-filter and re-sort the
-	 * model when changes happen to the source model.
+	 * When <code>enable</code> is <code>true</code>, the proxy will re-filter
+	 * and re-sort the model when changes happen to the source model.
 	 * <p>
 	 * <p>
 	 * <i><b>Note:</b>This may be ackward when editing through the proxy model,

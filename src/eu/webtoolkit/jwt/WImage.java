@@ -214,9 +214,9 @@ public class WImage extends WInteractWidget {
 	 * A resource specifies application-dependent content, which may be used to
 	 * generate an image on demand.
 	 * <p>
-	 * This sets <i>resource</i> as the contents for the image, as an
+	 * This sets <code>resource</code> as the contents for the image, as an
 	 * alternative to {@link WImage#setImageRef(String ref) setImageRef()}. The
-	 * resource may be cleared by passing <i>resource</i> = 0.
+	 * resource may be cleared by passing <code>resource</code> = <code>0</code>.
 	 * <p>
 	 * The image does not assume ownership of the resource.
 	 * <p>
@@ -236,7 +236,7 @@ public class WImage extends WInteractWidget {
 	/**
 	 * Returns the image resource.
 	 * <p>
-	 * Returns 0 if no image resource was set.
+	 * Returns <code>0</code> if no image resource was set.
 	 */
 	public WResource getResource() {
 		return this.resource_;
@@ -245,12 +245,12 @@ public class WImage extends WInteractWidget {
 	/**
 	 * Add an interactive area.
 	 * <p>
-	 * Adds the <i>area</i> which listens to events in a specific region of the
-	 * image. Areas are organized in an indexed list, to which the given
-	 * <i>area</i> is appended. When areas overlap, the area with the lowest
-	 * index receives the event.
+	 * Adds the <code>area</code> which listens to events in a specific region
+	 * of the image. Areas are organized in an indexed list, to which the given
+	 * <code>area</code> is appended. When areas overlap, the area with the
+	 * lowest index receives the event.
 	 * <p>
-	 * Ownership of the <i>area</i> is transferred to the image.
+	 * Ownership of the <code>area</code> is transferred to the image.
 	 * <p>
 	 * 
 	 * @see WImage#insertArea(int index, WAbstractArea area)
@@ -262,12 +262,12 @@ public class WImage extends WInteractWidget {
 	/**
 	 * Insert an interactive area.
 	 * <p>
-	 * Inserts the <i>area</i> which listens to events in the coresponding area
-	 * of the image. Areas are organized in a list, and the <i>area</i> is
-	 * inserted at index <i>index</i>. When areas overlap, the area with the
-	 * lowest index receives the event.
+	 * Inserts the <code>area</code> which listens to events in the coresponding
+	 * area of the image. Areas are organized in a list, and the <i>area</i> is
+	 * inserted at index <code>index</code>. When areas overlap, the area with
+	 * the lowest index receives the event.
 	 * <p>
-	 * Ownership of the <i>Area</i> is transferred to the image.
+	 * Ownership of the <code>Area</code> is transferred to the image.
 	 * <p>
 	 * 
 	 * @see WImage#addArea(WAbstractArea area)
@@ -284,7 +284,8 @@ public class WImage extends WInteractWidget {
 	/**
 	 * Removes an interactive area.
 	 * <p>
-	 * Removes the <i>area</i> from this widget, and also returns the ownership.
+	 * Removes the <code>area</code> from this widget, and also returns the
+	 * ownership.
 	 * <p>
 	 * 
 	 * @see WImage#addArea(WAbstractArea area)
@@ -301,7 +302,7 @@ public class WImage extends WInteractWidget {
 	/**
 	 * Returns the interactive area at the given index.
 	 * <p>
-	 * Returns 0 if <i>index</i> was invalid.
+	 * Returns <code>0</code> if <code>index</code> was invalid.
 	 * <p>
 	 * 
 	 * @see WImage#insertArea(int index, WAbstractArea area)

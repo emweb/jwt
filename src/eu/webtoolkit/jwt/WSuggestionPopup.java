@@ -249,8 +249,8 @@ public class WSuggestionPopup extends WCompositeWidget {
 	/**
 	 * Set the model to be used for the suggestions.
 	 * <p>
-	 * The <i>model</i> may not be 0, and ownership of the model is not
-	 * transferred.
+	 * The <code>model</code> may not be <code>0</code>, and ownership of the
+	 * model is not transferred.
 	 * <p>
 	 * The default value is a {@link WStringListModel} that is owned by the
 	 * suggestion popup.
@@ -311,7 +311,7 @@ public class WSuggestionPopup extends WCompositeWidget {
 	/**
 	 * Set the column in the model to be used for the items.
 	 * <p>
-	 * The column <i>index</i> in the model will be used to retrieve data.
+	 * The column <code>index</code> in the model will be used to retrieve data.
 	 * <p>
 	 * The default value is 0.
 	 * <p>

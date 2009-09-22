@@ -50,8 +50,8 @@ public class WButtonGroup extends WObject {
 	/**
 	 * Add a radio button to the group.
 	 * <p>
-	 * You can assign an id to the button. If <i>id</i> is -1, then a unique id
-	 * will be generated.
+	 * You can assign an id to the button. If <code>id</code> is -1, then a
+	 * unique id will be generated.
 	 * <p>
 	 * 
 	 * @see WButtonGroup#removeButton(WRadioButton button)
@@ -166,8 +166,8 @@ public class WButtonGroup extends WObject {
 	/**
 	 * Sets the currently checked radiobutton.
 	 * <p>
-	 * The button <i>button</i> of this group is checked. A value of 0 will
-	 * uncheck all radiobuttons.
+	 * The button <code>button</code> of this group is checked. A value of
+	 * <code>0</code> will uncheck all radiobuttons.
 	 * <p>
 	 * Initially, no button is checked.
 	 * <p>
@@ -190,7 +190,8 @@ public class WButtonGroup extends WObject {
 	/**
 	 * Returns the checked radiobutton.
 	 * <p>
-	 * If there is no radiobutton currently checked this function returns 0.
+	 * If there is no radiobutton currently checked this function returns
+	 * <code>0</code>.
 	 * <p>
 	 * 
 	 * @see WButtonGroup#setCheckedButton(WRadioButton button)
@@ -204,7 +205,7 @@ public class WButtonGroup extends WObject {
 	/**
 	 * Sets the currently checked radiobutton.
 	 * <p>
-	 * Sets the <i>idx</i>&apos;th radiobutton checked. A value of -1 will
+	 * Sets the <code>idx&apos;th</code> radiobutton checked. A value of -1 will
 	 * uncheck all radiobuttons.
 	 * <p>
 	 * Initially, no button is checked.

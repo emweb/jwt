@@ -224,10 +224,10 @@ public class WPainter {
 	 * Draws an arc using the current pen, and fills using the current brush.
 	 * <p>
 	 * The arc is defined as a segment from an ellipse, which fits in the
-	 * <i>rectangle</i>. The segment starts at <i>startAngle</i>, and spans an
-	 * angle given by <i>spanAngle</i>. These angles have as unit 1/16th of a
-	 * degree, and are measured counter-clockwise starting from the 3
-	 * o&apos;clock position.
+	 * <i>rectangle</i>. The segment starts at <code>startAngle</code>, and
+	 * spans an angle given by <code>spanAngle</code>. These angles have as unit
+	 * 1/16th of a degree, and are measured counter-clockwise starting from the
+	 * 3 o&apos;clock position.
 	 * <p>
 	 * 
 	 * @see WPainter#drawEllipse(WRectF rectangle)
@@ -263,9 +263,10 @@ public class WPainter {
 	 * a line. The area is filled using the current brush.
 	 * <p>
 	 * The arc is defined as a segment from an ellipse, which fits in the
-	 * <i>rectangle</i>. The segment starts at <i>startAngle</i>, and spans an
-	 * angle given by <i>spanAngle</i>. These angles have as unit 1/16th of a
-	 * degree, and are measured counter-clockwise starting at 3 o&apos;clock.
+	 * <i>rectangle</i>. The segment starts at <code>startAngle</code>, and
+	 * spans an angle given by <code>spanAngle</code>. These angles have as unit
+	 * 1/16th of a degree, and are measured counter-clockwise starting at 3
+	 * o&apos;clock.
 	 * <p>
 	 * 
 	 * @see WPainter#drawEllipse(WRectF rectangle)
@@ -307,7 +308,7 @@ public class WPainter {
 	 * Draws an ellipse using the current pen and fills it using the current
 	 * brush.
 	 * <p>
-	 * The ellipse is defined as being bounded by the <i>rectangle</i>.
+	 * The ellipse is defined as being bounded by the <code>rectangle</code>.
 	 * <p>
 	 * 
 	 * @see WPainter#drawArc(WRectF rectangle, int startAngle, int spanAngle)
@@ -382,8 +383,8 @@ public class WPainter {
 	/**
 	 * Draw an image.
 	 * <p>
-	 * Draws the <i>image</i> so that the top left corner corresponds to
-	 * <i>point</i>.
+	 * Draws the <code>image</code> so that the top left corner corresponds to
+	 * <code>point</code>.
 	 * <p>
 	 * This is an overloaded method provided for convenience.
 	 */
@@ -396,8 +397,8 @@ public class WPainter {
 	/**
 	 * Draw part of an image.
 	 * <p>
-	 * Draws the <i>sourceRect</i> rectangle from an image to the location
-	 * <i>point</i>.
+	 * Draws the <code>sourceRect</code> rectangle from an image to the location
+	 * <code>point</code>.
 	 * <p>
 	 * This is an overloaded method provided for convenience.
 	 */
@@ -409,8 +410,8 @@ public class WPainter {
 	/**
 	 * Draw an image inside a rectangle.
 	 * <p>
-	 * Draw the <i>image</i> inside <i>rect</i> (If necessary, the image is
-	 * scaled to fit into the rectangle).
+	 * Draw the <i>image</i> inside <code>rect</code> (If necessary, the image
+	 * is scaled to fit into the rectangle).
 	 * <p>
 	 * This is an overloaded method provided for convenience.
 	 */
@@ -422,8 +423,9 @@ public class WPainter {
 	/**
 	 * Draw part of an image inside a rectangle.
 	 * <p>
-	 * Draws the <i>sourceRect</i> rectangle from an image inside <i>rect</i>
-	 * (If necessary, the image is scaled to fit into the rectangle).
+	 * Draws the <code>sourceRect</code> rectangle from an image inside
+	 * <code>rect</code> (If necessary, the image is scaled to fit into the
+	 * rectangle).
 	 */
 	public void drawImage(WRectF rect, WPainter.Image image, WRectF sourceRect) {
 		this.device_.drawImage(rect.getNormalized(), image.getUri(), image
@@ -433,9 +435,9 @@ public class WPainter {
 	/**
 	 * Draw part of an image.
 	 * <p>
-	 * Draws the <i>sourceRect</i> rectangle with top left corner (<i>sx</i>,
-	 * <i>sy</i>) and size <i>sw</i> x <i>sh</i> from an image to the location
-	 * (<i>x</i>, <i>y</i>).
+	 * Draws the <code>sourceRect</code> rectangle with top left corner
+	 * (<i>sx</i>, <i>sy</i>) and size <i>sw</i> x <code>sh</code> from an image
+	 * to the location (<i>x</i>, <code>y</code>).
 	 */
 	public void drawImage(double x, double y, WPainter.Image image, double sx,
 			double sy, double sw, double sh) {
@@ -538,7 +540,8 @@ public class WPainter {
 	/**
 	 * Draws an array of lines.
 	 * <p>
-	 * Draws the <i>lineCount</i> first lines from the given array of lines.
+	 * Draws the <code>lineCount</code> first lines from the given array of
+	 * lines.
 	 */
 	public void drawLines(WLineF[] lines, int lineCount) {
 		for (int i = 0; i < lineCount; ++i) {
@@ -549,9 +552,10 @@ public class WPainter {
 	/**
 	 * Draws an array of lines.
 	 * <p>
-	 * Draws <i>lineCount</i> lines, where each line is specified using a begin
-	 * and end point that are read from an array. Thus, the <i>pointPairs</i>
-	 * array must have at least 2*<i>lineCount</i> points.
+	 * Draws <code>lineCount</code> lines, where each line is specified using a
+	 * begin and end point that are read from an array. Thus, the
+	 * <i>pointPairs</i> array must have at least 2*<code>lineCount</code>
+	 * points.
 	 */
 	public void drawLines(WPointF[] pointPairs, int lineCount) {
 		for (int i = 0; i < lineCount; ++i) {
@@ -604,9 +608,10 @@ public class WPainter {
 	 * current brush.
 	 * <p>
 	 * The arc is defined as a segment from an ellipse, which fits in the
-	 * <i>rectangle</i>. The segment starts at <i>startAngle</i>, and spans an
-	 * angle given by <i>spanAngle</i>. These angles have as unit 1/16th of a
-	 * degree, and are measured counter-clockwise starting at 3 o&apos;clock.
+	 * <i>rectangle</i>. The segment starts at <code>startAngle</code>, and
+	 * spans an angle given by <code>spanAngle</code>. These angles have as unit
+	 * 1/16th of a degree, and are measured counter-clockwise starting at 3
+	 * o&apos;clock.
 	 * <p>
 	 * 
 	 * @see WPainter#drawEllipse(WRectF rectangle)
@@ -667,7 +672,8 @@ public class WPainter {
 	/**
 	 * Draw a number of points.
 	 * <p>
-	 * Draws the <i>pointCount</i> first points from the given array of points.
+	 * Draws the <code>pointCount</code> first points from the given array of
+	 * points.
 	 * <p>
 	 * 
 	 * @see WPainter#drawPoint(WPointF point)
@@ -760,8 +766,8 @@ public class WPainter {
 	/**
 	 * Draw a number of rectangles.
 	 * <p>
-	 * Draws and fills the <i>rectCount</i> first rectangles from the given
-	 * array, using the current pen and brush.
+	 * Draws and fills the <code>rectCount</code> first rectangles from the
+	 * given array, using the current pen and brush.
 	 * <p>
 	 * 
 	 * @see WPainter#drawRect(WRectF rectangle)
@@ -791,8 +797,8 @@ public class WPainter {
 	 * <p>
 	 * Draw text using inside the rectangle, using the current font. The text is
 	 * aligned inside the rectangle following alignment indications given in
-	 * <i>flags</i>. The text is drawn using the current transformation, pen
-	 * color ({@link WPainter#getPen() getPen()}) and font settings (
+	 * <code>flags</code>. The text is drawn using the current transformation,
+	 * pen color ({@link WPainter#getPen() getPen()}) and font settings (
 	 * {@link WPainter#getFont() getFont()}).
 	 * <p>
 	 * Flags is the logical OR of a horizontal and vertical alignment.
@@ -829,7 +835,7 @@ public class WPainter {
 	 * Fill a (complex) path.
 	 * <p>
 	 * Like {@link WPainter#drawPath(WPainterPath path) drawPath()}, but does
-	 * not stroke the path, and fills the path with the given <i>brush</i>.
+	 * not stroke the path, and fills the path with the given <code>brush</code>.
 	 * <p>
 	 * 
 	 * @see WPainter#drawPath(WPainterPath path)
@@ -849,7 +855,7 @@ public class WPainter {
 	 * Fill a rectangle.
 	 * <p>
 	 * Like {@link WPainter#drawRect(WRectF rectangle) drawRect()}, but does not
-	 * stroke the rect, and fills the rect with the given <i>brush</i>.
+	 * stroke the rect, and fills the rect with the given <code>brush</code>.
 	 * <p>
 	 * 
 	 * @see WPainter#drawRect(WRectF rectangle)
@@ -881,7 +887,7 @@ public class WPainter {
 	 * Stroke a path.
 	 * <p>
 	 * Like {@link WPainter#drawPath(WPainterPath path) drawPath()}, but does
-	 * not fill the path, and strokes the path with the given <i>pen</i>.
+	 * not fill the path, and strokes the path with the given <code>pen</code>.
 	 * <p>
 	 * 
 	 * @see WPainter#drawPath(WPainterPath path)
@@ -992,7 +998,7 @@ public class WPainter {
 	 * clip path set using {@link WPainter#setClipPath(WPainterPath clipPath)
 	 * setClipPath()}.
 	 * <p>
-	 * <i>Note: Clipping is not supported for the VML renderer.</i>
+	 * <code>Note:</code> Clipping is not supported for the VML renderer.
 	 * <p>
 	 * 
 	 * @see WPainter#hasClipping()
@@ -1009,7 +1015,7 @@ public class WPainter {
 	/**
 	 * Return whether clipping is enabled.
 	 * <p>
-	 * <i>Note: Clipping is not supported for the VML renderer.</i>
+	 * <code>Note:</code> Clipping is not supported for the VML renderer.
 	 * <p>
 	 * 
 	 * @see WPainter#setClipping(boolean enable)
@@ -1073,8 +1079,9 @@ public class WPainter {
 	/**
 	 * Rotate the logical coordinate system.
 	 * <p>
-	 * Rotates the logical coordinate system around its origin. The <i>angle</i>
-	 * is specified in degrees, and positive values are clock-wise.
+	 * Rotates the logical coordinate system around its origin. The
+	 * <code>angle</code> is specified in degrees, and positive values are
+	 * clock-wise.
 	 * <p>
 	 * 
 	 * @see WPainter#scale(double sx, double sy)
@@ -1139,8 +1146,8 @@ public class WPainter {
 	 * Set a transformation for the logical coordinate system.
 	 * <p>
 	 * Sets a new transformation which transforms logical coordinates to device
-	 * coordinates. When <i>combine</i> is true, the transformation is combined
-	 * with the current world transformation matrix.
+	 * coordinates. When <code>combine</code> is <code>true</code>, the
+	 * transformation is combined with the current world transformation matrix.
 	 * <p>
 	 * 
 	 * @see WPainter#getWorldTransform()

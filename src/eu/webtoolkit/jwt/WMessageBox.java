@@ -36,8 +36,9 @@ public class WMessageBox extends WDialog {
 	/**
 	 * Create an empty message box.
 	 * <p>
-	 * The button labels may be set fixed English (if i18n = false), or fetched
-	 * from a resource bundle if i18n = true. In that case, the key for each
+	 * The button labels may be set fixed English (if <code>i18n</code> =
+	 * <code>false</code>), or fetched from a resource bundle if
+	 * <code>i18n</code> = <code>true</code>. In that case, the key for each
 	 * button is exactly the same as the English text.
 	 */
 	public WMessageBox(boolean i18n) {
@@ -62,9 +63,12 @@ public class WMessageBox extends WDialog {
 	/**
 	 * Create a message box with given caption, text, icon, and buttons.
 	 * <p>
-	 * The button labels may be set fixed English (if i18n = false), or fetched
-	 * from a resource bundle if i18n = true. In that case, the key for each
-	 * button is exactly the same as the English text.
+	 * The button labels may be set fixed English (if <code>i18n</code> =
+	 * <code>false</code>), or fetched from a resource bundle if
+	 * <code>i18n</code> = <code>true</code>.
+	 * <p>
+	 * In that case, the key for each button is exactly the same as the English
+	 * text.
 	 */
 	public WMessageBox(CharSequence caption, CharSequence text, Icon icon,
 			EnumSet<StandardButton> buttons, boolean i18n) {

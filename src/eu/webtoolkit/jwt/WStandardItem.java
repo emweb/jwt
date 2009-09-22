@@ -472,9 +472,9 @@ public class WStandardItem {
 	/**
 	 * Make the item tri-state checkable.
 	 * <p>
-	 * When <i>tristate</i> is true, the item is checkable with three states:
-	 * {@link CheckState#Unchecked}, {@link CheckState#Checked}, and
-	 * {@link CheckState#PartiallyChecked}.
+	 * When <code>tristate</code> is <code>true</code>, the item is checkable
+	 * with three states: {@link CheckState#Unchecked},
+	 * {@link CheckState#Checked}, and {@link CheckState#PartiallyChecked}.
 	 * <p>
 	 * This requires that the item is also checkable (see
 	 * {@link WStandardItem#setCheckable(boolean checkable) setCheckable()})
@@ -586,13 +586,13 @@ public class WStandardItem {
 	/**
 	 * Change the row count.
 	 * <p>
-	 * If <i>rows</i> is bigger than the current row count, empty rows are
+	 * If <code>rows</code> is bigger than the current row count, empty rows are
 	 * appended.
 	 * <p>
-	 * If <i>rows</i> is smaller than the current row count, rows are deleted at
-	 * the end.
+	 * If <code>rows</code> is smaller than the current row count, rows are
+	 * deleted at the end.
 	 * <p>
-	 * <i>Note, if <i>rows</i> &gt; 0, and
+	 * <i>Note, if <code>rows</code> &gt; 0, and
 	 * {@link WStandardItem#getColumnCount() getColumnCount()} == 0, columnCount
 	 * is first increased to 1 using setColumnCount(1).</i>.
 	 * <p>
@@ -623,11 +623,11 @@ public class WStandardItem {
 	/**
 	 * Change the column count.
 	 * <p>
-	 * If <i>columns</i> is bigger than the current column count, empty columns
-	 * are appended.
+	 * If <code>columns</code> is bigger than the current column count, empty
+	 * columns are appended.
 	 * <p>
-	 * If <i>columns</i> is smaller than the current column count, columns are
-	 * deleted at the end.
+	 * If <code>columns</code> is smaller than the current column count, columns
+	 * are deleted at the end.
 	 * <p>
 	 * 
 	 * @see WStandardItem#setRowCount(int rows)
@@ -657,8 +657,8 @@ public class WStandardItem {
 	/**
 	 * Add a single column of items.
 	 * <p>
-	 * Appends a single column of <i>items</i>. If necessary, the row count is
-	 * increased.
+	 * Appends a single column of <code>items</code>. If necessary, the row
+	 * count is increased.
 	 * <p>
 	 * Equivalent to: <blockquote>
 	 * 
@@ -679,8 +679,8 @@ public class WStandardItem {
 	/**
 	 * Insert a single column of items.
 	 * <p>
-	 * Inserts a single column of <i>items</i> at column <i>column</i>. If
-	 * necessary, the row count is increased.
+	 * Inserts a single column of <code>items</code> at column
+	 * <code>column</code>. If necessary, the row count is increased.
 	 * <p>
 	 * 
 	 * @see WStandardItem#insertRow(int row, List items)
@@ -716,8 +716,8 @@ public class WStandardItem {
 	/**
 	 * Add a single row of items.
 	 * <p>
-	 * Appends a single row of <i>items</i>. If necessary, the column count is
-	 * increased.
+	 * Appends a single row of <code>items</code>. If necessary, the column
+	 * count is increased.
 	 * <p>
 	 * Equivalent to: <blockquote>
 	 * 
@@ -738,8 +738,8 @@ public class WStandardItem {
 	/**
 	 * Insert a single row of items.
 	 * <p>
-	 * Inserts a single row of <i>items</i> at row <i>row</i>. If necessary, the
-	 * column count is increased.
+	 * Inserts a single row of <i>items</i> at row <code>row</code>. If
+	 * necessary, the column count is increased.
 	 * <p>
 	 * 
 	 * @see WStandardItem#insertColumn(int column, List items)
@@ -771,7 +771,7 @@ public class WStandardItem {
 	/**
 	 * Insert a number of empty columns.
 	 * <p>
-	 * Inserts <i>count</i> empty columns at position <i>column</i>.
+	 * Inserts <i>count</i> empty columns at position <code>column</code>.
 	 * <p>
 	 * 
 	 * @see WStandardItem#insertRows(int row, int count)
@@ -806,7 +806,7 @@ public class WStandardItem {
 	/**
 	 * Insert a number of empty rows.
 	 * <p>
-	 * Inserts <i>count</i> empty rows at position <i>row</i>.
+	 * Inserts <i>count</i> empty rows at position <code>row</code>.
 	 * <p>
 	 * 
 	 * @see WStandardItem#insertColumns(int column, int count)
@@ -911,8 +911,8 @@ public class WStandardItem {
 	 * Inserts multiple rows containing one item.
 	 * <p>
 	 * This is a convenience method for nodes with a single column (for example
-	 * for tree nodes). This inserts a number of rows at row <i>row</i>, each
-	 * containing a single item, and is equivalent to:
+	 * for tree nodes). This inserts a number of rows at row <code>row</code>,
+	 * each containing a single item, and is equivalent to:
 	 * <p>
 	 * <blockquote>
 	 * 
@@ -938,8 +938,8 @@ public class WStandardItem {
 	/**
 	 * Set a child item.
 	 * <p>
-	 * Sets a child item <i>item</i> at position (<i>row</i>, <i>column</i>). If
-	 * an item was previously set, it is deleted first.
+	 * Sets a child item <i>item</i> at position (<code>row</code>,
+	 * <code>column</code>). If an item was previously set, it is deleted first.
 	 * <p>
 	 * If necessary, the {@link WStandardItem#getRowCount() getRowCount()}
 	 * and/or the {@link WStandardItem#getColumnCount() getColumnCount()} is
@@ -982,9 +982,9 @@ public class WStandardItem {
 	/**
 	 * Returns a child item.
 	 * <p>
-	 * Returns the child item at position (<i>row</i>, <i>column</i>). This may
-	 * be 0 if an item was not previously set, or if the position is out of
-	 * bounds.
+	 * Returns the child item at position (<i>row</i>, <code>column</code>).
+	 * This may be <code>0</code> if an item was not previously set, or if the
+	 * position is out of bounds.
 	 * <p>
 	 * 
 	 * @see WStandardItem#setChild(int row, int column, WStandardItem item)
@@ -1009,9 +1009,9 @@ public class WStandardItem {
 	/**
 	 * Takes a child out of the item.
 	 * <p>
-	 * Returns the child item at position (<i>row</i>, <i>column</i>), and
-	 * removes it (by setting 0 instead). Ownership of the item is transferred
-	 * to the caller.
+	 * Returns the child item at position (<i>row</i>, <code>column</code>), and
+	 * removes it (by setting <code>0</code> instead). Ownership of the item is
+	 * transferred to the caller.
 	 * <p>
 	 * 
 	 * @see WStandardItem#getChild(int row, int column)
@@ -1029,9 +1029,9 @@ public class WStandardItem {
 	/**
 	 * Takes a column of children out of the item.
 	 * <p>
-	 * Returns the column <i>column</i>, and removes the column from the model
-	 * (reducing the column count by one). Ownership of all items is transferred
-	 * to the caller.
+	 * Returns the column <code>column</code>, and removes the column from the
+	 * model (reducing the column count by one). Ownership of all items is
+	 * transferred to the caller.
 	 * <p>
 	 * 
 	 * @see WStandardItem#takeRow(int row)
@@ -1060,9 +1060,9 @@ public class WStandardItem {
 	/**
 	 * Takes a row of children out of the item.
 	 * <p>
-	 * Returns the row <i>row</i>, and removes the row from the model (reducing
-	 * the row count by one). Ownership of all items is transferred to the
-	 * caller.
+	 * Returns the row <code>row</code>, and removes the row from the model
+	 * (reducing the row count by one). Ownership of all items is transferred to
+	 * the caller.
 	 * <p>
 	 * 
 	 * @see WStandardItem#takeColumn(int column)
@@ -1095,8 +1095,8 @@ public class WStandardItem {
 	/**
 	 * Remove a single column.
 	 * <p>
-	 * Removes the column <i>column</i> from the model (reducing the column
-	 * count by one). Is equivalent to: <blockquote>
+	 * Removes the column <code>column</code> from the model (reducing the
+	 * column count by one). Is equivalent to: <blockquote>
 	 * 
 	 * <pre>
 	 * removeColumns(column, 1);
@@ -1115,8 +1115,8 @@ public class WStandardItem {
 	/**
 	 * Remove a number of columns.
 	 * <p>
-	 * Removes <i>count</i> columns from the model (reducing the column count by
-	 * <i>count</i>).
+	 * Removes <code>count</code> columns from the model (reducing the column
+	 * count by <code>count</code>).
 	 * <p>
 	 * 
 	 * @see WStandardItem#removeColumn(int column)
@@ -1148,8 +1148,8 @@ public class WStandardItem {
 	/**
 	 * Remove a single row.
 	 * <p>
-	 * Removes the row <i>row</i> from the model (reducing the row count by
-	 * one). Is equivalent to: <blockquote>
+	 * Removes the row <code>row</code> from the model (reducing the row count
+	 * by one). Is equivalent to: <blockquote>
 	 * 
 	 * <pre>
 	 * removeRows(row, 1);
@@ -1168,8 +1168,8 @@ public class WStandardItem {
 	/**
 	 * Remove a number of rows.
 	 * <p>
-	 * Removes <i>count</i> rows from the model (reducing the row count by
-	 * <i>count</i>).
+	 * Removes <code>count</code> rows from the model (reducing the row count by
+	 * <code>count</code>).
 	 * <p>
 	 * 
 	 * @see WStandardItem#removeRow(int row)

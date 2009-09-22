@@ -160,8 +160,8 @@ public class WBorder {
 	/**
 	 * Set the border width.
 	 * <p>
-	 * If width == Explicit, then the width specified in <i>explicitWidth</i> is
-	 * used.
+	 * If width == Explicit, then the width specified in
+	 * <code>explicitWidth</code> is used.
 	 */
 	public void setWidth(WBorder.Width width, WLength explicitWidth) {
 		this.width_ = width;

@@ -34,12 +34,12 @@ public class WCssStyleSheet {
 	/**
 	 * Add a CSS rule.
 	 * <p>
-	 * Add a rule using the CSS selector <i>selector</i>, with CSS declarations
-	 * in <i>declarations</i>. These declarations must be a list separated by
-	 * semi-colons (;).
+	 * Add a rule using the CSS selector <code>selector</code>, with CSS
+	 * declarations in <code>declarations</code>. These declarations must be a
+	 * list separated by semi-colons (;).
 	 * <p>
-	 * Optionally, you may give a <i>ruleName</i>, which may later be used to
-	 * check if the rule was already defined.
+	 * Optionally, you may give a <code>ruleName</code>, which may later be used
+	 * to check if the rule was already defined.
 	 * <p>
 	 * 
 	 * @see WCssStyleSheet#isDefined(String ruleName)
@@ -65,11 +65,11 @@ public class WCssStyleSheet {
 	/**
 	 * Add a CSS rule.
 	 * <p>
-	 * Add a rule using the CSS selector <i>selector</i>, with styles specified
-	 * in <i>style</i>.
+	 * Add a rule using the CSS selector <code>selector</code>, with styles
+	 * specified in <code>style</code>.
 	 * <p>
-	 * Optionally, you may give a <i>ruleName</i>, which may later be used to
-	 * check if the rule was already defined.
+	 * Optionally, you may give a <code>ruleName</code>, which may later be used
+	 * to check if the rule was already defined.
 	 * <p>
 	 * 
 	 * @see WCssStyleSheet#isDefined(String ruleName)
@@ -97,8 +97,8 @@ public class WCssStyleSheet {
 	/**
 	 * Add a CSS rule.
 	 * <p>
-	 * Optionally, you may give a <i>ruleName</i>, which may later be used to
-	 * check if the rule was already defined.
+	 * Optionally, you may give a <code>ruleName</code>, which may later be used
+	 * to check if the rule was already defined.
 	 * <p>
 	 * 
 	 * @see WCssStyleSheet#isDefined(String ruleName)
@@ -126,7 +126,7 @@ public class WCssStyleSheet {
 	/**
 	 * Returns if a rule was already defined in this style sheet.
 	 * <p>
-	 * Returns whether a rule was added with the given <i>ruleName</i>.
+	 * Returns whether a rule was added with the given <code>ruleName</code>.
 	 * <p>
 	 * 
 	 * @see WCssStyleSheet#addRule(String selector, String declarations, String

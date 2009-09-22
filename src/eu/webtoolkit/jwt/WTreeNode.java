@@ -472,8 +472,8 @@ public class WTreeNode extends WCompositeWidget {
 	/**
 	 * Set the visibility of the node itself.
 	 * <p>
-	 * If false, then the node itself is not displayed, but only its children.
-	 * This is typically used to hide the root node of a tree.
+	 * If <code>false</code>, then the node itself is not displayed, but only
+	 * its children. This is typically used to hide the root node of a tree.
 	 */
 	public void setNodeVisible(boolean visible) {
 		this.visible_ = visible;

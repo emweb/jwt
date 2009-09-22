@@ -104,7 +104,7 @@ public class WTableRow extends WObject {
 	 * <p>
 	 * Hide or show the row.
 	 * <p>
-	 * The default value is false (row is not hidden).
+	 * The default value is <code>false</code> (row is not hidden).
 	 * <p>
 	 * 
 	 * @see WTableRow#hide()

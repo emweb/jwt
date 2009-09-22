@@ -32,7 +32,7 @@ public class WBrush {
 	/**
 	 * Construct a brush with a particular style.
 	 * <p>
-	 * Constructs a black brush with the indicated <i>style</i>.
+	 * Constructs a black brush with the indicated <code>style</code>.
 	 */
 	public WBrush(WBrushStyle style) {
 		this.style_ = style;
@@ -42,7 +42,7 @@ public class WBrush {
 	/**
 	 * Construct a solid brush of a particular color.
 	 * <p>
-	 * Constructs a solid brush with the indicated <i>color</i>.
+	 * Constructs a solid brush with the indicated <code>color</code>.
 	 */
 	public WBrush(WColor color) {
 		this.style_ = WBrushStyle.SolidPattern;
@@ -59,7 +59,7 @@ public class WBrush {
 	/**
 	 * Comparison operator.
 	 * <p>
-	 * Returns true if the brushes are exactly the same.
+	 * Returns <code>true</code> if the brushes are exactly the same.
 	 */
 	public boolean equals(WBrush other) {
 		return this.color_.equals(other.color_) && this.style_ == other.style_;

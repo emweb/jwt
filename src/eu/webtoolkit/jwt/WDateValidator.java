@@ -75,10 +75,10 @@ public class WDateValidator extends WValidator {
 	/**
 	 * Construct a date validator.
 	 * <p>
-	 * The validator will accept dates in the date format <i>format</i>.
+	 * The validator will accept dates in the date format <code>format</code>.
 	 * <p>
-	 * The syntax for <i>format</i> is as in {@link WDate#fromString(String s)
-	 * WDate#fromString()}
+	 * The syntax for <code>format</code> is as in
+	 * {@link WDate#fromString(String s) WDate#fromString()}
 	 */
 	public WDateValidator(String format, WObject parent) {
 		super(parent);
@@ -105,10 +105,10 @@ public class WDateValidator extends WValidator {
 	 * Construct a date validator.
 	 * <p>
 	 * The validator will accept only dates within the indicated range
-	 * <i>bottom</i> to <i>top</i>, in the date format <i>format</i>.
+	 * <i>bottom</i> to <i>top</i>, in the date format <code>format</code>.
 	 * <p>
-	 * The syntax for <i>format</i> is as in {@link WDate#fromString(String s)
-	 * WDate#fromString()}
+	 * The syntax for <code>format</code> is as in
+	 * {@link WDate#fromString(String s) WDate#fromString()}
 	 */
 	public WDateValidator(String format, WDate bottom, WDate top, WObject parent) {
 		super(parent);

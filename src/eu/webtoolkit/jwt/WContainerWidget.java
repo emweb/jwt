@@ -176,7 +176,7 @@ public class WContainerWidget extends WInteractWidget {
 	 * The layout manager arranges children in the entire width and height of
 	 * the container. This is equivalent to
 	 * {@link WContainerWidget#setLayout(WLayout layout, EnumSet alignment)
-	 * setLayout(<i>layout</i>, AlignJustify)}
+	 * setLayout(<code>layout</code> AlignJustify)}
 	 * <p>
 	 * 
 	 * @see WContainerWidget#getLayout()
@@ -189,15 +189,15 @@ public class WContainerWidget extends WInteractWidget {
 	/**
 	 * Set a layout manager for the container.
 	 * <p>
-	 * The <i>alignment</i> argument determines how the layout is aligned inside
-	 * the container. By default, the layout manager arranges children over the
-	 * entire width and height of the container, corresponding to a value of
-	 * AlignJustify. This requires that the container has a specified height
-	 * (either because it is managed by another layout manager, is the root
-	 * container widget, or has a height set).
+	 * The <code>alignment</code> argument determines how the layout is aligned
+	 * inside the container. By default, the layout manager arranges children
+	 * over the entire width and height of the container, corresponding to a
+	 * value of AlignJustify. This requires that the container has a specified
+	 * height (either because it is managed by another layout manager, is the
+	 * root container widget, or has a height set).
 	 * <p>
-	 * In general, <i>alignment</i> is the logical OR of a horizontal and a
-	 * vertical flag:
+	 * In general, <code>alignment</code> is the logical OR of a horizontal and
+	 * a vertical flag:
 	 * <ul>
 	 * <li>The horizontal alignment option may be one of
 	 * {@link AlignmentFlag#AlignLeft}, {@link AlignmentFlag#AlignCenter},
@@ -223,7 +223,7 @@ public class WContainerWidget extends WInteractWidget {
 	 * Note that you can nest layout managers inside each other, to create a
 	 * complex layout hierarchy.
 	 * <p>
-	 * The widget will take ownership of <i>layout</i>.
+	 * The widget will take ownership of <code>layout</code>.
 	 * <p>
 	 * 
 	 * @see WContainerWidget#getLayout()
@@ -300,8 +300,8 @@ public class WContainerWidget extends WInteractWidget {
 	/**
 	 * insert a child widget in this container, before another widget.
 	 * <p>
-	 * The <i>widget</i> is inserted at the place of the <i>before</i> widget,
-	 * and subsequent widgets are shifted.
+	 * The <i>widget</i> is inserted at the place of the <code>before</code>
+	 * widget, and subsequent widgets are shifted.
 	 * <p>
 	 * 
 	 * @see WContainerWidget#insertWidget(int index, WWidget widget)
@@ -346,8 +346,8 @@ public class WContainerWidget extends WInteractWidget {
 	/**
 	 * insert a child widget in this container at given index.
 	 * <p>
-	 * The <i>widget</i> is inserted at the given <i>index</i>, and subsequent
-	 * widgets are shifted.
+	 * The <i>widget</i> is inserted at the given <code>index</code>, and
+	 * subsequent widgets are shifted.
 	 * <p>
 	 * 
 	 * @see WContainerWidget#insertBefore(WWidget widget, WWidget before)
@@ -593,12 +593,13 @@ public class WContainerWidget extends WInteractWidget {
 	/**
 	 * Render the container as an HTML list.
 	 * <p>
-	 * Setting <i>renderList</i> to true will cause the container to be using an
-	 * HTML <code>&lt;ul&gt;</code> or <code>&lt;ol&gt;</code> type, depending
-	 * on the value of <i>orderedList</i>. This must be set before the initial
-	 * render of the container. When set, any contained {@link WContainerWidget}
-	 * will be rendered as an HTML <code>&lt;li&gt;</code>. Adding
-	 * non-WContainerWidget children results in unspecified behaviour.
+	 * Setting <code>renderList</code> to <code>true</code> will cause the
+	 * container to be using an HTML <code>&lt;ul&gt;</code> or
+	 * <code>&lt;ol&gt;</code> type, depending on the value of
+	 * <code>orderedList</code>. This must be set before the initial render of
+	 * the container. When set, any contained {@link WContainerWidget} will be
+	 * rendered as an HTML <code>&lt;li&gt;</code>. Adding non-WContainerWidget
+	 * children results in unspecified behaviour.
 	 * <p>
 	 * Note that CSS default layout rules for <code>&lt;ul&gt;</code> and
 	 * <code>&lt;ol&gt;</code> add margin and padding to the container, which

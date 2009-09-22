@@ -96,9 +96,9 @@ public abstract class WWidget extends WObject {
 	/**
 	 * Sets CSS offsets for a non-statically positioned widget.
 	 * <p>
-	 * The argument <i>sides</i> may be a combination of {@link Side#Left Left},
-	 * {@link Side#Right Right}, {@link Side#Top Top}, and {@link Side#Bottom
-	 * Bottom}.
+	 * The argument <code>sides</code> may be a combination of {@link Side#Left
+	 * Left}, {@link Side#Right Right}, {@link Side#Top Top}, and
+	 * {@link Side#Bottom Bottom}.
 	 * <p>
 	 * This applies only to widgets that have a position scheme that is
 	 * {@link PositionScheme#Relative Relative}, {@link PositionScheme#Absolute
@@ -369,8 +369,8 @@ public abstract class WWidget extends WObject {
 	 * Sets the sides that should be cleared of floats.
 	 * <p>
 	 * This pushes the widget down until it is not surrounded by floats at the
-	 * <i>sides</i> (which may be a combination of {@link Side#Left Left} and
-	 * {@link Side#Right Right}.
+	 * <code>sides</code> (which may be a combination of {@link Side#Left Left}
+	 * and {@link Side#Right Right}.
 	 * <p>
 	 * This applies to CSS-based layout.
 	 * <p>

@@ -119,8 +119,8 @@ public class WApplication extends WObject {
 	/**
 	 * Creates a new application instance.
 	 * <p>
-	 * The environment provides information on the initial request, user agent,
-	 * and deployment-related information.
+	 * The <code>environment</code> provides information on the initial request,
+	 * user agent, and deployment-related information.
 	 */
 	public WApplication(WEnvironment env) {
 		super();
@@ -337,7 +337,8 @@ public class WApplication extends WObject {
 	 * classes. These may be defined in an inline stylesheet, or in external
 	 * style sheets.
 	 * <p>
-	 * The <i>url</i> indicates a relative or absolute URL to the stylesheet.
+	 * The <code>url</code> indicates a relative or absolute URL to the
+	 * stylesheet.
 	 * <p>
 	 * External stylesheets are inserted after the internal style sheet, and can
 	 * therefore override default styles set by widgets in the internal style
@@ -357,8 +358,8 @@ public class WApplication extends WObject {
 	 * Adds an external style sheet, conditional to specific Internet Explorer
 	 * browser.
 	 * <p>
-	 * <i>condition</i> is a string that is used to apply the stylesheet to
-	 * specific versions of IE. Only a limited subset of the IE conditional
+	 * <code>condition</code> is a string that is used to apply the stylesheet
+	 * to specific versions of IE. Only a limited subset of the IE conditional
 	 * comments syntax is supported (since these are in fact interpreted
 	 * server-side instead of client-side). Examples are:
 	 * <ul>
@@ -367,7 +368,8 @@ public class WApplication extends WObject {
 	 * <li>&quot;IE lte 7&quot;: only for IE versions prior to IE7.</li>
 	 * </ul>
 	 * <p>
-	 * The <i>url</i> indicates a relative or absolute URL to the stylesheet.
+	 * The <code>url</code> indicates a relative or absolute URL to the
+	 * stylesheet.
 	 * <p>
 	 * 
 	 * @see WApplication#useStyleSheet(String uri)
@@ -470,7 +472,7 @@ public class WApplication extends WObject {
 	/**
 	 * Sets the window title.
 	 * <p>
-	 * Sets the title that appears as the browser window title.
+	 * Sets the browser window title to <code>title</code>.
 	 * <p>
 	 * The default title is &quot;&quot;.
 	 * <p>
@@ -516,8 +518,8 @@ public class WApplication extends WObject {
 	/**
 	 * Sets the resource object that provides localized strings.
 	 * <p>
-	 * This resource resolves localized strings within the current application
-	 * locale.
+	 * The <code>translator</code> resolves localized strings within the current
+	 * application locale.
 	 * <p>
 	 * 
 	 * @see WApplication#getLocalizedStrings()
@@ -534,7 +536,7 @@ public class WApplication extends WObject {
 	 * The locale is used by the localized strings resource to resolve localized
 	 * strings.
 	 * <p>
-	 * By passing an empty <i>locale</i>, the default locale is chosen.
+	 * By passing an empty <code>locale</code>, the default locale is chosen.
 	 * <p>
 	 * When the locale is changed, {@link WApplication#refresh() refresh()} is
 	 * called, which will resolve the strings of the current user-interface in
@@ -565,12 +567,12 @@ public class WApplication extends WObject {
 	/**
 	 * Refreshes the application.
 	 * <p>
-	 * This lets the application to refresh its data, including messages from
+	 * This lets the application to refresh its data, including strings from
 	 * message-resource bundles. This done by propagating
 	 * {@link WWidget#refresh() WWidget#refresh()} through the widget hierarchy.
 	 * <p>
 	 * This method is also called when the user hits the refresh (or reload)
-	 * button, if this may be caught within the current session.
+	 * button, if this can be caught within the current session.
 	 * <p>
 	 * The reload button may only be caught when cookies for session tracking
 	 * are configured in the servlet container.
@@ -595,10 +597,10 @@ public class WApplication extends WObject {
 	/**
 	 * Bind a top-level widget for a WidgetSet deployment.
 	 * <p>
-	 * This method binds a widget to an existing element on the page. The
-	 * element type should correspond with the widget type (e.g. it should be a
-	 * &lt;div&gt; for a {@link WContainerWidget}, or a &lt;table&gt; for a
-	 * {@link WTable}).
+	 * This method binds a <code>widget</code> to an existing element with DOM
+	 * id <code>domId</code> on the page. The element type should correspond
+	 * with the widget type (e.g. it should be a &lt;div&gt; for a
+	 * {@link WContainerWidget}, or a &lt;table&gt; for a {@link WTable}).
 	 * <p>
 	 * 
 	 * @see WApplication#getRoot()
@@ -673,8 +675,8 @@ public class WApplication extends WObject {
 	 * Returns a bookmarkable URL for a given internal path.
 	 * <p>
 	 * Returns the (relative) URL for this application that includes the
-	 * internal path <i>internalPath</i>, usable across sessions. The URL is
-	 * relative and expanded into a full URL by the browser.
+	 * internal path <code>internalPath</code>, usable across sessions. The URL
+	 * is relative and expanded into a full URL by the browser.
 	 * <p>
 	 * For example, for an application with current URL: <blockquote>
 	 * 
@@ -702,8 +704,9 @@ public class WApplication extends WObject {
 	 * <p>
 	 * You can use {@link WApplication#getBookmarkUrl() getBookmarkUrl()} as the
 	 * destination for a {@link WAnchor}, and listen to a click event is
-	 * attached to a slot that switches to the internal path <i>internalPath</i>
-	 * (see {@link WAnchor#setRefInternalPath(String path)
+	 * attached to a slot that switches to the internal path
+	 * <code>internalPath</code> (see
+	 * {@link WAnchor#setRefInternalPath(String path)
 	 * WAnchor#setRefInternalPath()}). In this way, an anchor can be used to
 	 * switch between internal paths within an application regardless of the
 	 * situation (browser with or without Ajax support, or a web spider bot),
@@ -743,7 +746,7 @@ public class WApplication extends WObject {
 	 * http://www.mydomain.com/stuff/app.wt
 	 * </pre>
 	 * 
-	 * </blockquote> for which an <i>internalPath</i>
+	 * </blockquote> for which an <code>internalPath</code>
 	 * <code>&quot;/project/z3cbc/details/&quot;</code> is set, the two forms
 	 * for the application URL are:
 	 * <ul>
@@ -787,14 +790,14 @@ public class WApplication extends WObject {
 	 * (using the browser back/forward buttons), an
 	 * {@link WApplication#internalPathChanged() internalPathChanged()} event is
 	 * emitted. You should listen to this signal to switch the application to
-	 * the corresponding state. When <i>emitChange</i> is true, this signal is
-	 * also emitted by setting the path.
+	 * the corresponding state. When <code>emitChange</code> is
+	 * <code>true</code>, this signal is also emitted by setting the path.
 	 * <p>
 	 * A url that includes the internal path may be obtained using
 	 * {@link WApplication#getBookmarkUrl() getBookmarkUrl()}.
 	 * <p>
-	 * The <i>internalPath</i> must start with a &apos;/&apos;. In this way, you
-	 * can still use normal anchors in your HTML. Internal path changes
+	 * The <code>internalPath</code> must start with a &apos;/&apos;. In this
+	 * way, you can still use normal anchors in your HTML. Internal path changes
 	 * initiated in the browser to paths that do not start with a &apos;/&apos;
 	 * are ignored.
 	 * <p>
@@ -844,19 +847,19 @@ public class WApplication extends WObject {
 	/**
 	 * Returns a part of the current internal path.
 	 * <p>
-	 * This is a convenience method which returns the next <i>folder</i> in the
-	 * internal path, after the given <i>path</i>.
+	 * This is a convenience method which returns the next <code>folder</code>
+	 * in the internal path, after the given <code>path</code>.
 	 * <p>
 	 * For example, when the current internal path is
 	 * <code>&quot;/project/z3cbc/details&quot;</code>, this method returns
 	 * <code>&quot;details&quot;</code> when called with
-	 * <code>&quot;/project/z3cbc/&quot;</code> as <i>path</i> argument.
+	 * <code>&quot;/project/z3cbc/&quot;</code> as <code>path</code> argument.
 	 * <p>
-	 * The <i>path</i> must start with a &apos;/&apos;, and
+	 * The <code>path</code> must start with a &apos;/&apos;, and
 	 * {@link WApplication#internalPathMatches(String path)
 	 * internalPathMatches()} should evaluate to <code>true</code> for the given
-	 * <i>path</i>. If not, an empty string is returned and an error message is
-	 * logged.
+	 * <code>path</code>. If not, an empty string is returned and an error
+	 * message is logged.
 	 * <p>
 	 * 
 	 * @see WApplication#getInternalPath()
@@ -885,16 +888,17 @@ public class WApplication extends WObject {
 	 * Checks if the internal path matches a given path.
 	 * <p>
 	 * Returns whether the current {@link WApplication#getInternalPath()
-	 * getInternalPath()} starts with <i>path</i> (or is equal to <i>path</i>).
-	 * You will typically use this method within a slot conneted to the
-	 * {@link WApplication#internalPathChanged() internalPathChanged()} signal,
-	 * to check that an internal path change affects the widget. It may also be
-	 * useful before changing <i>path</i> using
+	 * getInternalPath()} starts with <code>path</code> (or is equal to
+	 * <code>path</code>). You will typically use this method within a slot
+	 * conneted to the {@link WApplication#internalPathChanged()
+	 * internalPathChanged()} signal, to check that an internal path change
+	 * affects the widget. It may also be useful before changing
+	 * <code>path</code> using
 	 * {@link WApplication#setInternalPath(String path, boolean emitChange)
 	 * setInternalPath()} if you do not intend to remove sub paths when the
-	 * current internal path already matches <i>path</i>.
+	 * current internal path already matches <code>path</code>.
 	 * <p>
-	 * The <i>path</i> must start with a &apos;/&apos;.
+	 * The <code>path</code> must start with a &apos;/&apos;.
 	 * <p>
 	 * 
 	 * @see WApplication#setInternalPath(String path, boolean emitChange)
@@ -927,9 +931,10 @@ public class WApplication extends WObject {
 	/**
 	 * Redirects the application to another location.
 	 * <p>
-	 * The client will be redirected to a new location. Use this in conjunction
-	 * with {@link WApplication#quit() quit()} if you want to the application to
-	 * be terminated as well.
+	 * The client will be redirected to a new location identified by
+	 * <code>url</code>. Use this in conjunction with
+	 * {@link WApplication#quit() quit()} if you want to the application to be
+	 * terminated as well.
 	 * <p>
 	 * Calling redirect() does not imply quit() since it may be useful to switch
 	 * between a non-secure and secure (SSL) transport connection.
@@ -977,12 +982,12 @@ public class WApplication extends WObject {
 	/**
 	 * Executes some JavaScript code.
 	 * <p>
-	 * This method may be used to call some custom JavaScript code as part of an
-	 * event response.
+	 * This method may be used to call some custom <code>javaScript</code> code
+	 * as part of an event response.
 	 * <p>
 	 * This function does not wait until the JavaScript is run, but returns
 	 * immediately. The JavaScript will be run after the normal event handling,
-	 * unless <i>afterLoaded</i> is set to false.
+	 * unless <code>afterLoaded</code> is set to <code>false</code>.
 	 * <p>
 	 * 
 	 * @see WApplication#addAutoJavaScript(String javascript)
@@ -1039,18 +1044,20 @@ public class WApplication extends WObject {
 	/**
 	 * Loads a JavaScript library.
 	 * <p>
-	 * Loads a JavaScript library. JWt keeps track of libraries (with the same
-	 * URL) that already have been loaded, and will load a library only once. In
-	 * addition, you may provide a <i>symbol</i> which if already defined will
-	 * also indicate that the library was already loaded (possibly outside of
-	 * JWt when in WidgetSet mode).
+	 * Loads a JavaScript library located at the URL <code>url</code>. JWt keeps
+	 * track of libraries (with the same URL) that already have been loaded, and
+	 * will load a library only once. In addition, you may provide a
+	 * <code>symbol</code> which if already defined will also indicate that the
+	 * library was already loaded (possibly outside of JWt when in WidgetSet
+	 * mode).
 	 * <p>
 	 * This method returns <code>true</code> only when the library is loaded for
 	 * the first time.
 	 * <p>
 	 * JavaScript libraries may be loaded at any point in time. Any JavaScript
 	 * code is deferred until the library is loaded, except for JavaScript that
-	 * was defined to load before, passing false as second parameter to
+	 * was defined to load before, passing <code>false</code> as second
+	 * parameter to
 	 * {@link WApplication#doJavaScript(String javascript, boolean afterLoaded)
 	 * doJavaScript()}.
 	 */
@@ -1083,7 +1090,7 @@ public class WApplication extends WObject {
 	 * You may call this method during a long operation to:
 	 * <ul>
 	 * <li>propagate widget changes to the client.</li>
-	 * <li>rocess UI events.</li>
+	 * <li>process UI events.</li>
 	 * </ul>
 	 * <p>
 	 * This method starts a recursive event loop, blocking the current thread,
@@ -1101,8 +1108,8 @@ public class WApplication extends WObject {
 	/**
 	 * Reads a configuration property.
 	 * <p>
-	 * Tries to read a configured value for the property <i>name</i>. If no
-	 * value was configured, the default <i>value</i> is returned.
+	 * Tries to read a configured value for the property <code>name</code>. If
+	 * no value was configured, the default <code>value</code> is returned.
 	 */
 	public static String readConfigurationProperty(String name, String value) {
 		String property = WApplication.getInstance().session_.getController()
@@ -1251,10 +1258,11 @@ public class WApplication extends WObject {
 	/**
 	 * Changes the threshold for two-phase rendering.
 	 * <p>
-	 * This changes the threshold for the communication size (in bytes) to
-	 * render invisible changes in one go. If the bandwidth for rendering the
-	 * invisible changes exceed the threshold, they will be fetched in a second
-	 * communication, after the visible changes have been rendered.
+	 * This changes the threshold for the <code>size</code> of a JavaScript
+	 * response (in bytes) to render invisible changes in one go. If the
+	 * bandwidth for rendering the invisible changes exceed the threshold, they
+	 * will be fetched in a second communication, after the visible changes have
+	 * been rendered.
 	 * <p>
 	 * The value is a trade-off: setting it smaller will always use two-phase
 	 * rendering, increasing the total render time but reducing the latency for
@@ -1331,9 +1339,9 @@ public class WApplication extends WObject {
 	/**
 	 * Adds an entry to the application log.
 	 * <p>
-	 * Starts a new log entry of the given <i>type</i> in the JWt application
-	 * log file. This method returns a stream-like object to which the message
-	 * may be streamed.
+	 * Starts a new log entry of the given <code>type</code> in the JWt
+	 * application log file. This method returns a stream-like object to which
+	 * the message may be streamed.
 	 */
 	public WLogEntry log(String type) {
 		return this.session_.log(type);
@@ -1528,9 +1536,9 @@ public class WApplication extends WObject {
 	/**
 	 * Returns whether a widget is exposed in the interface.
 	 * <p>
-	 * The default implementation simply returns true, unless a modal dialog is
-	 * active, in which case it returns true only for widgets that are inside
-	 * the dialog.
+	 * The default implementation simply returns <code>true</code>, unless a
+	 * modal dialog is active, in which case it returns <code>true</code> only
+	 * for widgets that are inside the dialog.
 	 * <p>
 	 * You may want to reimplement this method if you wish to disallow events
 	 * from certain widgets even when they are inserted in the widget hierachy.

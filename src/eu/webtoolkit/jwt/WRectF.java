@@ -16,8 +16,8 @@ public class WRectF {
 	/**
 	 * Default constructor.
 	 * <p>
-	 * Constructs a rectangle from top left point (<i>x=0</i>, <i>y=0</i>) and
-	 * size <i>width=0</i> x <i>height=0</i>.
+	 * Constructs a rectangle from top left point (<i>x=0</i>, <code>y=0</code>)
+	 * and size <i>width=0</i> x <code>height=0</code>.
 	 */
 	public WRectF() {
 		this.x_ = 0;
@@ -29,8 +29,8 @@ public class WRectF {
 	/**
 	 * Construct a rectangle.
 	 * <p>
-	 * Constructs a rectangle with top left point (<i>x</i>, <i>y</i>) and size
-	 * <i>width</i> x <i>height</i>.
+	 * Constructs a rectangle with top left point (<i>x</i>, <code>y</code>) and
+	 * size <i>width</i> x <code>height</code>.
 	 */
 	public WRectF(double x, double y, double width, double height) {
 		this.x_ = x;
@@ -42,8 +42,8 @@ public class WRectF {
 	/**
 	 * Construct a rectangle.
 	 * <p>
-	 * Constructs a rectangle from the two points <i>topLeft</i> and
-	 * <i>bottomRight</i>.
+	 * Constructs a rectangle from the two points <code>topLeft</code> and
+	 * <code>bottomRight</code>.
 	 */
 	public WRectF(WPointF topLeft, WPointF topRight) {
 		this.x_ = topLeft.getX();

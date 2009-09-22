@@ -71,7 +71,7 @@ public class WPainterPath {
 	 * Construct a new path, and set the initial position.
 	 * <p>
 	 * Creates an empty path, and sets the current position to
-	 * <i>startPoint</i>.
+	 * <code>startPoint</code>.
 	 */
 	public WPainterPath(WPointF startPoint) {
 		this.isRect_ = false;
@@ -110,7 +110,7 @@ public class WPainterPath {
 	/**
 	 * Returns whether the path is empty.
 	 * <p>
-	 * Returns true if the path contains no drawing operations.
+	 * Returns <code>true</code> if the path contains no drawing operations.
 	 */
 	public boolean isEmpty() {
 		return this.segments_.isEmpty();
@@ -119,7 +119,7 @@ public class WPainterPath {
 	/**
 	 * Comparison operator.
 	 * <p>
-	 * Returns true if the paths are exactly the same.
+	 * Returns <code>true</code> if the paths are exactly the same.
 	 */
 	public boolean equals(WPainterPath path) {
 		if (this.segments_.size() != path.segments_.size()) {
@@ -184,8 +184,8 @@ public class WPainterPath {
 	/**
 	 * Draws a straight line.
 	 * <p>
-	 * Draws a straight line from the current position to <i>point</i>, which
-	 * becomes the new current position.
+	 * Draws a straight line from the current position to <code>point</code>,
+	 * which becomes the new current position.
 	 * <p>
 	 * 
 	 * @see WPainterPath#lineTo(double x, double y)
@@ -197,8 +197,8 @@ public class WPainterPath {
 	/**
 	 * Draws a straight line.
 	 * <p>
-	 * Draws a straight line from the current position to (<i>x</i>, <i>y</i>),
-	 * which becomes the new current position.
+	 * Draws a straight line from the current position to (<code>x</code>,
+	 * <code>y</code>), which becomes the new current position.
 	 * <p>
 	 * 
 	 * @see WPainterPath#lineTo(WPointF point)
@@ -211,9 +211,9 @@ public class WPainterPath {
 	/**
 	 * Draws a cubic bezier curve.
 	 * <p>
-	 * Draws a cubic bezier curve from the current position to <i>endPoint</i>,
-	 * which becomes the new current position. The bezier curve uses the two
-	 * control points <i>c1</i> and <i>c2</i>.
+	 * Draws a cubic bezier curve from the current position to
+	 * <code>endPoint</code>, which becomes the new current position. The bezier
+	 * curve uses the two control points <i>c1</i> and <code>c2</code>.
 	 * <p>
 	 * 
 	 * @see WPainterPath#cubicTo(double c1x, double c1y, double c2x, double c2y,
@@ -246,10 +246,10 @@ public class WPainterPath {
 	 * Draws an arc.
 	 * <p>
 	 * Draws an arc which is a segment of a circle. The circle is defined with
-	 * center (<i>cx</i>, <i>cy</i>) and <i>radius</i>. The segment starts at
-	 * <i>startAngle</i>, and spans an angle given by <i>spanAngle</i>. These
-	 * angles are expressed in degrees, and are measured counter-clockwise
-	 * starting from the 3 o&apos;clock position.
+	 * center (<i>cx</i>, <i>cy</i>) and <code>radius</code>. The segment starts
+	 * at <code>startAngle</code>, and spans an angle given by
+	 * <code>spanAngle</code>. These angles are expressed in degrees, and are
+	 * measured counter-clockwise starting from the 3 o&apos;clock position.
 	 * <p>
 	 * Implicitly draws a line from the current position to the start of the
 	 * arc, if the current position is different from the start.
@@ -268,8 +268,8 @@ public class WPainterPath {
 	 * Move to a point on an arc.
 	 * <p>
 	 * Moves to a point on a circle. The circle is defined with center
-	 * (<i>cx</i>, <i>cy</i>) and <i>radius</i>, and the point is at
-	 * <i>angle</i> degrees measured counter-clockwise starting from the 3
+	 * (<i>cx</i>, <i>cy</i>) and <code>radius</code>, and the point is at
+	 * <code>angle</code> degrees measured counter-clockwise starting from the 3
 	 * o&apos;clock position.
 	 * <p>
 	 * 
@@ -284,9 +284,9 @@ public class WPainterPath {
 	 * Move to a point on an arc.
 	 * <p>
 	 * Moves to a point on an ellipse. The ellipse fits in the rectangle defined
-	 * by top left position (<i>x</i>, <i>y</i>), and size <i>width</i> x
-	 * <i>height</i>, and the point is at <i>angle</i> degrees measured
-	 * counter-clockwise starting from the 3 o&apos;clock position.
+	 * by top left position (<code>x</code>, <i>y</i>), and size <i>width</i> x
+	 * <code>height</code>, and the point is at <code>angle</code> degrees
+	 * measured counter-clockwise starting from the 3 o&apos;clock position.
 	 * <p>
 	 * 
 	 * @see WPainterPath#arcTo(double cx, double cy, double radius, double
@@ -302,8 +302,8 @@ public class WPainterPath {
 	 * Draw a quadratic bezier curve.
 	 * <p>
 	 * Draws a quadratic bezier curve from the current position to
-	 * <i>endPoint</i>, which becomes the new current position. The bezier curve
-	 * uses the single control point <i>c</i>.
+	 * <code>endPoint</code>, which becomes the new current position. The bezier
+	 * curve uses the single control point <code>c</code>.
 	 * <p>
 	 * 
 	 * @see WPainterPath#quadTo(double cx, double cy, double endPointX, double
@@ -332,9 +332,9 @@ public class WPainterPath {
 	 * Draw an ellipse.
 	 * <p>
 	 * This method closes the current sub path, and adds an ellipse that is
-	 * bounded by the rectangle <i>boundingRectangle</i>.
+	 * bounded by the rectangle <code>boundingRectangle</code>.
 	 * <p>
-	 * <i>Note: some renderers only support circles (width == height)</i>
+	 * <code>Note:</code> some renderers only support circles (width == height)
 	 * <p>
 	 * 
 	 * @see WPainterPath#addEllipse(double x, double y, double width, double
@@ -351,10 +351,10 @@ public class WPainterPath {
 	 * Draw an ellipse.
 	 * <p>
 	 * This method closes the current sub path, and adds an ellipse that is
-	 * bounded by the rectangle defined by top left position (<i>x</i>,
-	 * <i>y</i>), and size <i>width</i> x <i>height</i>.
+	 * bounded by the rectangle defined by top left position (<code>x</code>,
+	 * <i>y</i>), and size <i>width</i> x <code>height</code>.
 	 * <p>
-	 * <i>Note: some renderers only support circles (width == height)</i>
+	 * <code>Note:</code> some renderers only support circles (width == height)
 	 * <p>
 	 * 
 	 * @see WPainterPath#addEllipse(WRectF rect)
@@ -370,7 +370,7 @@ public class WPainterPath {
 	 * Draw a rectangle.
 	 * <p>
 	 * This method closes the current sub path, and adds a rectangle that is
-	 * defined by <i>rectangle</i>.
+	 * defined by <code>rectangle</code>.
 	 * <p>
 	 * 
 	 * @see WPainterPath#addRect(double x, double y, double width, double
@@ -385,8 +385,8 @@ public class WPainterPath {
 	 * Draw a rectangle.
 	 * <p>
 	 * This method closes the current sub path, and adds a rectangle that is
-	 * defined by top left position (<i>x</i>, <i>y</i>), and size <i>width</i>
-	 * x <i>height</i>.
+	 * defined by top left position (<i>x</i>, <code>y</code>), and size
+	 * <i>width</i> x <code>height</code>.
 	 * <p>
 	 * 
 	 * @see WPainterPath#addRect(WRectF rectangle)
@@ -405,9 +405,9 @@ public class WPainterPath {
 	/**
 	 * Add a path.
 	 * <p>
-	 * Adds an entire <i>path</i> to the current path. If the path&apos;s begin
-	 * position is different from the current position, the last sub path is
-	 * first closed, otherwise the last sub path is extended with the
+	 * Adds an entire <code>path</code> to the current path. If the path&apos;s
+	 * begin position is different from the current position, the last sub path
+	 * is first closed, otherwise the last sub path is extended with the
 	 * path&apos;s first sub path.
 	 * <p>
 	 * 
@@ -423,9 +423,9 @@ public class WPainterPath {
 	/**
 	 * Add a path, connecting.
 	 * <p>
-	 * Adds an entire <i>path</i> to the current path. If the path&apos;s begin
-	 * position is different from the current position, the last sub path is
-	 * first closed, otherwise the last sub path is extended with the
+	 * Adds an entire <code>path</code> to the current path. If the path&apos;s
+	 * begin position is different from the current position, the last sub path
+	 * is first closed, otherwise the last sub path is extended with the
 	 * path&apos;s first sub path.
 	 * <p>
 	 * 

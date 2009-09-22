@@ -207,32 +207,32 @@ public class WLabel extends WInteractWidget {
 	/**
 	 * Configure word wrapping.
 	 * <p>
-	 * When <i>on</i> is true, the widget may break lines, creating a multi-line
-	 * text. When <i>on</i> is false, the text will displayed on a single line,
-	 * unless the text contains end-of-lines (for {@link TextFormat#PlainText})
-	 * or &lt;br /&gt; tags or other block-level tags (for
-	 * {@link TextFormat#XHTMLText}).
+	 * When <code>wordWrap</code> is <code>true</code>, the widget may break
+	 * lines, creating a multi-line text. When <code>wordWrap</code> is
+	 * <code>false</code>, the text will displayed on a single line, unless the
+	 * text contains end-of-lines (for {@link TextFormat#PlainText}) or &lt;br
+	 * /&gt; tags or other block-level tags (for {@link TextFormat#XHTMLText}).
 	 * <p>
-	 * The default value is false.
+	 * The default value is <code>false</code>.
 	 * <p>
 	 * 
 	 * @see WLabel#hasWordWrap()
 	 */
-	public void setWordWrap(boolean how) {
+	public void setWordWrap(boolean wordWrap) {
 		if (!(this.text_ != null)) {
 			this.text_ = new WText();
 			this.text_.setParent(this);
 			this.newText_ = true;
 			this.repaint(EnumSet.of(RepaintFlag.RepaintInnerHtml));
 		}
-		this.text_.setWordWrap(how);
+		this.text_.setWordWrap(wordWrap);
 	}
 
 	/**
 	 * Returns whether word wrapping is on.
 	 * <p>
 	 * 
-	 * @see WLabel#setWordWrap(boolean how)
+	 * @see WLabel#setWordWrap(boolean wordWrap)
 	 */
 	public boolean hasWordWrap() {
 		return this.text_ != null ? this.text_.isWordWrap() : false;
