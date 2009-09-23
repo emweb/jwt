@@ -39,6 +39,9 @@ public class WScrollArea extends WWebWidget {
 		 */
 		ScrollBarAlwaysOn;
 
+		/**
+		 * Returns the numerical representation of this enum.
+		 */
 		public int getValue() {
 			return ordinal();
 		}
@@ -179,7 +182,7 @@ public class WScrollArea extends WWebWidget {
 		this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyAttribute));
 	}
 
-	protected void updateDom(DomElement element, boolean all) {
+	void updateDom(DomElement element, boolean all) {
 		if (this.widgetChanged_ || all) {
 			if (this.widget_ != null) {
 				element.addChild(this.widget_.getWebWidget().createDomElement(

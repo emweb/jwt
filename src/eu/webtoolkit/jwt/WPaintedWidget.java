@@ -93,6 +93,9 @@ public abstract class WPaintedWidget extends WInteractWidget {
 		 */
 		HtmlCanvas;
 
+		/**
+		 * Returns the numerical representation of this enum.
+		 */
 		public int getValue() {
 			return ordinal();
 		}
@@ -295,11 +298,11 @@ public abstract class WPaintedWidget extends WInteractWidget {
 	 */
 	protected abstract void paintEvent(WPaintDevice paintDevice);
 
-	protected DomElementType getDomElementType() {
+	DomElementType getDomElementType() {
 		return DomElementType.DomElement_DIV;
 	}
 
-	protected void updateDom(DomElement element, boolean all) {
+	void updateDom(DomElement element, boolean all) {
 		if (all && this.areaImage_ != null) {
 			element.addChild(((WWebWidget) this.areaImage_)
 					.createDomElement(WApplication.getInstance()));
@@ -307,7 +310,7 @@ public abstract class WPaintedWidget extends WInteractWidget {
 		super.updateDom(element, all);
 	}
 
-	protected DomElement createDomElement(WApplication app) {
+	DomElement createDomElement(WApplication app) {
 		this.isCreatePainter();
 		DomElement result = DomElement.createNew(DomElementType.DomElement_DIV);
 		this.setId(result, app);
@@ -329,7 +332,7 @@ public abstract class WPaintedWidget extends WInteractWidget {
 		return result;
 	}
 
-	protected void getDomChanges(List<DomElement> result, WApplication app) {
+	void getDomChanges(List<DomElement> result, WApplication app) {
 		DomElement e = DomElement.getForUpdate(this,
 				DomElementType.DomElement_DIV);
 		this.updateDom(e, false);
@@ -360,7 +363,7 @@ public abstract class WPaintedWidget extends WInteractWidget {
 		}
 	}
 
-	protected void propagateRenderOk(boolean deep) {
+	void propagateRenderOk(boolean deep) {
 		this.needRepaint_ = false;
 		super.propagateRenderOk(deep);
 	}

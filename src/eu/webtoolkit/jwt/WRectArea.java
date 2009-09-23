@@ -127,7 +127,7 @@ public class WRectArea extends WAbstractArea {
 	private int width_;
 	private int height_;
 
-	protected void updateDom(DomElement element, boolean all) {
+	void updateDom(DomElement element, boolean all) {
 		element.setAttribute("shape", "rect");
 		StringWriter coords = new StringWriter();
 		if (this.x_ == 0 && this.y_ == 0 && this.width_ == 0

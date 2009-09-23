@@ -27,16 +27,16 @@ import eu.webtoolkit.jwt.utils.StringUtils;
  * 
  * <pre>
  * // create the stack where the contents will be located
- *  WStackedWidget contents = new WStackedWidget(contentsParent);
- * 		 
- *  // create a menu
- *  WMenu menu = new WMenu(contents, Orientation.Vertical, menuParent);
- * 		 
- *  // add four items using the default lazy loading policy.
- *  menu.addItem(&quot;Introduction&quot;, new WText(tr(&quot;intro&quot;));
- *  menu.addItem(&quot;Download&quot;, new WText(&quot;Not yet available&quot;));
- *  menu.addItem(&quot;Demo&quot;, new DemoWidget());
- *  menu.addItem(new WMenuItem(&quot;Demo2&quot;, new DemoWidget()));
+ * WStackedWidget contents = new WStackedWidget(contentsParent);
+ * 
+ * // create a menu
+ * WMenu menu = new WMenu(contents, Orientation.Vertical, menuParent);
+ * 
+ * // add four items using the default lazy loading policy.
+ * menu.addItem(&quot;Introduction&quot;, new WText(&quot;intro&quot;));
+ * menu.addItem(&quot;Download&quot;, new WText(&quot;Not yet available&quot;));
+ * menu.addItem(&quot;Demo&quot;, new DemoWidget());
+ * menu.addItem(new WMenuItem(&quot;Demo2&quot;, new DemoWidget()));
  * </pre>
  * 
  * </blockquote>

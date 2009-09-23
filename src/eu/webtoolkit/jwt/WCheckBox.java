@@ -174,14 +174,14 @@ public class WCheckBox extends WAbstractToggleButton {
 		return this.state_;
 	}
 
-	protected void updateDom(DomElement element, boolean all) {
+	void updateDom(DomElement element, boolean all) {
 		if (all) {
 			element.setAttribute("type", "checkbox");
 		}
 		super.updateDom(element, all);
 	}
 
-	protected boolean isUseImageWorkaround() {
+	boolean isUseImageWorkaround() {
 		return this.triState_ && this.needTristateImageWorkaround();
 	}
 

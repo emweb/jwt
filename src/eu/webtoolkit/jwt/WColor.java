@@ -20,23 +20,77 @@ import eu.webtoolkit.jwt.utils.MathUtils;
  * invisible), while a value of 255 is completely opaque.
  */
 public class WColor {
+	/**
+	 * White WColor object.
+	 */
 	public static WColor white= new WColor(0xff, 0xff, 0xff);
+	/**
+	 * Black WColor object.
+	 */
 	public static WColor black= new WColor(0x00, 0x00, 0x00);
+	/**
+	 * Red WColor object.
+	 */
 	public static WColor red= new WColor(0xff, 0x00, 0x00);
+	/**
+	 * Dark red WColor object.
+	 */
 	public static WColor darkRed= new WColor(0x80, 0x00, 0x00);
+	/**
+	 * Green WColor object.
+	 */
 	public static WColor green= new WColor(0x00, 0xff, 0x00);
+	/**
+	 * Dark green WColor object.
+	 */
 	public static WColor darkGreen= new WColor(0x00, 0x80, 0x00);
+	/**
+	 * Blue WColor object.
+	 */
 	public static WColor blue= new WColor(0x00, 0x00, 0xff);
+	/**
+	 * Dark blue WColor object.
+	 */
 	public static WColor darkBlue= new WColor(0x00, 0x00, 0x80);
+	/**
+	 * Cyan WColor object.
+	 */
 	public static WColor cyan= new WColor(0x00, 0xff, 0xff);
+	/**
+	 * Dark cyan WColor object.
+	 */
 	public static WColor darkCyan= new WColor(0x00, 0x80, 0x80);
+	/**
+	 * White Magenta object.
+	 */
 	public static WColor magenta= new WColor(0xff, 0x00, 0xff);
+	/**
+	 * Dark magenta WColor object.
+	 */
 	public static WColor darkMagenta= new WColor(0x80, 0x00, 0x80);
+	/**
+	 * Yellow WColor object.
+	 */
 	public static WColor yellow= new WColor(0xff, 0xff, 0x00);
+	/**
+	 * Dark yellow WColor object.
+	 */
 	public static WColor darkYellow= new WColor(0x80, 0x80, 0x00);
+	/**
+	 * Gray WColor object.
+	 */
 	public static WColor gray= new WColor(0xa0, 0xa0, 0xa4);
+	/**
+	 * Dark gray WColor object.
+	 */
 	public static WColor darkGray= new WColor(0x80, 0x80, 0x80);
+	/**
+	 * Light gray WColor object.
+	 */
 	public static WColor lightGray= new WColor(0xc0, 0xc0, 0xc0);
+	/**
+	 * Transparant WColor object.
+	 */
 	public static WColor transparent= new WColor(0x00, 0x00, 0x00, 0x00);
 	
 	/**
@@ -234,7 +288,7 @@ public class WColor {
 				&& this.name_.equals(other.name_);
 	}
 
-	public String getCssText(boolean withAlpha) {
+	String getCssText(boolean withAlpha) {
 		if (this.default_) {
 			return "";
 		} else {
@@ -260,7 +314,7 @@ public class WColor {
 		}
 	}
 
-	public final String getCssText() {
+	final String getCssText() {
 		return getCssText(false);
 	}
 

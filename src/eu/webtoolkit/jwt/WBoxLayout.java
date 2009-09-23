@@ -93,6 +93,9 @@ public class WBoxLayout extends WLayout {
 		 */
 		BottomToTop;
 
+		/**
+		 * Returns the numerical representation of this enum.
+		 */
 		public int getValue() {
 			return ordinal();
 		}
@@ -551,7 +554,7 @@ public class WBoxLayout extends WLayout {
 		return false;
 	}
 
-	public Grid getGrid() {
+	Grid getGrid() {
 		return this.grid_;
 	}
 

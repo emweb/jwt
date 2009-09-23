@@ -23,6 +23,9 @@ public enum ViewItemRenderFlag {
 	 */
 	RenderEditing;
 
+	/**
+	 * Returns the numerical representation of this enum.
+	 */
 	public int getValue() {
 		return ordinal();
 	}

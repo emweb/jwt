@@ -86,7 +86,7 @@ public abstract class WViewWidget extends WWebWidget {
 		super.load();
 	}
 
-	public void render() {
+	void render() {
 		if (this.needContentsUpdate_) {
 			if (this.contents_ != null)
 				this.contents_.remove();
@@ -120,7 +120,7 @@ public abstract class WViewWidget extends WWebWidget {
 	 * This method must be reimplemented to return a widget that renders the
 	 * view. The returned widget will be deleted by WViewWidget.
 	 */
-	protected void updateDom(DomElement element, boolean all) {
+	void updateDom(DomElement element, boolean all) {
 		WApplication app = WApplication.getInstance();
 		if (!app.getSession().getRenderer().isPreLearning()) {
 			if (all && !(this.contents_ != null)) {
@@ -174,7 +174,7 @@ public abstract class WViewWidget extends WWebWidget {
 	 * This method must be reimplemented to return a widget that renders the
 	 * view. The returned widget will be deleted by WViewWidget.
 	 */
-	protected void doneRerender() {
+	void doneRerender() {
 		this.setIgnoreChildRemoves(true);
 		if (this.contents_ != null)
 			this.contents_.remove();

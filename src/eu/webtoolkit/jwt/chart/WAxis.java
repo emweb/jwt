@@ -546,7 +546,7 @@ public class WAxis {
 		return this.titleFont_;
 	}
 
-	public WString getLabel(double u) {
+	WString getLabel(double u) {
 		String buf = null;
 		WString text = new WString();
 		if (this.scale_ == AxisScale.CategoryScale) {
@@ -588,7 +588,7 @@ public class WAxis {
 		return this.chart_;
 	}
 
-	public int getSegmentCount() {
+	int getSegmentCount() {
 		return this.segments_.size();
 	}
 
@@ -847,9 +847,12 @@ public class WAxis {
 	}
 
 	static class TickLabel {
-		public enum TickLength {
+		enum TickLength {
 			Zero, Short, Long;
 
+			/**
+			 * Returns the numerical representation of this enum.
+			 */
 			public int getValue() {
 				return ordinal();
 			}

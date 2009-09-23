@@ -468,7 +468,7 @@ public class WSortFilterProxyModel extends WAbstractProxyModel {
 		return this.compare(lhs, rhs) < 0;
 	}
 
-	private static class Item {
+	static class Item {
 		public List<Integer> sourceRowMap_;
 		public List<Integer> proxyRowMap_;
 		public WModelIndex sourceIndex_;
@@ -480,7 +480,7 @@ public class WSortFilterProxyModel extends WAbstractProxyModel {
 		}
 	}
 
-	private static class Compare implements Comparator<Integer> {
+	static class Compare implements Comparator<Integer> {
 		public Compare(WSortFilterProxyModel aModel,
 				WSortFilterProxyModel.Item anItem) {
 			super();

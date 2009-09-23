@@ -237,7 +237,7 @@ public class WPopupMenuItem extends WCompositeWidget {
 		return this.data_;
 	}
 
-	public WCheckBox getCheckBox() {
+	WCheckBox getCheckBox() {
 		return this.checkBox_;
 	}
 

@@ -215,16 +215,16 @@ public abstract class WFormWidget extends WInteractWidget {
 		return this.voidEventSignal(FOCUS_SIGNAL, true);
 	}
 
-	protected WLabel label_;
-	protected WValidator validator_;
-	protected JSlot validateJs_;
-	protected JSlot filterInput_;
+	WLabel label_;
+	WValidator validator_;
+	JSlot validateJs_;
+	JSlot filterInput_;
 	private static final int BIT_ENABLED_CHANGED = 0;
 	private static final int BIT_GOT_FOCUS = 1;
 	private static final int BIT_INITIAL_FOCUS = 2;
 	private static final int BIT_READONLY = 3;
 	private static final int BIT_READONLY_CHANGED = 4;
-	private BitSet flags_;
+	BitSet flags_;
 
 	private void undoSetFocus() {
 	}
@@ -275,7 +275,7 @@ public abstract class WFormWidget extends WInteractWidget {
 		}
 	}
 
-	protected void updateDom(DomElement element, boolean all) {
+	void updateDom(DomElement element, boolean all) {
 		WEnvironment env = WApplication.getInstance().getEnvironment();
 		if (!env.agentIsIE()
 				|| !(((this) instanceof WAbstractToggleButton ? (WAbstractToggleButton) (this)
@@ -308,7 +308,7 @@ public abstract class WFormWidget extends WInteractWidget {
 		super.updateDom(element, all);
 	}
 
-	protected void propagateRenderOk(boolean deep) {
+	void propagateRenderOk(boolean deep) {
 		this.flags_.clear(BIT_ENABLED_CHANGED);
 		super.propagateRenderOk(deep);
 	}
@@ -316,17 +316,17 @@ public abstract class WFormWidget extends WInteractWidget {
 	// protected AbstractEventSignal.LearningListener
 	// getStateless(<pointertomember or dependentsizedarray>
 	// methodpointertomember or dependentsizedarray>) ;
-	protected void propagateSetEnabled(boolean enabled) {
+	void propagateSetEnabled(boolean enabled) {
 		this.flags_.set(BIT_ENABLED_CHANGED);
 		this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyAttribute));
 		super.propagateSetEnabled(enabled);
 	}
 
-	protected String getFormName() {
+	String getFormName() {
 		return this.getId();
 	}
 
-	protected static String CHANGE_SIGNAL = "M_change";
+	static String CHANGE_SIGNAL = "M_change";
 	private static String SELECT_SIGNAL = "select";
 	private static String FOCUS_SIGNAL = "focus";
 	private static String BLUR_SIGNAL = "blur";

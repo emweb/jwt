@@ -438,10 +438,13 @@ public class WPainterPath {
 		this.addPath(path);
 	}
 
-	public static class Segment {
-		public enum Type {
+	static class Segment {
+		enum Type {
 			MoveTo, LineTo, CubicC1, CubicC2, CubicEnd, QuadC, QuadEnd, ArcC, ArcR, ArcAngleSweep;
 
+			/**
+			 * Returns the numerical representation of this enum.
+			 */
 			public int getValue() {
 				return ordinal();
 			}
@@ -475,11 +478,11 @@ public class WPainterPath {
 		private WPainterPath.Segment.Type type_;
 	}
 
-	public List<WPainterPath.Segment> getSegments() {
+	List<WPainterPath.Segment> getSegments() {
 		return this.segments_;
 	}
 
-	public WPointF getPositionAtSegment(int index) {
+	WPointF getPositionAtSegment(int index) {
 		if (index > 0) {
 			WPainterPath.Segment s = this.segments_.get(index - 1);
 			switch (s.getType()) {
@@ -506,7 +509,7 @@ public class WPainterPath {
 		return new WPointF(0, 0);
 	}
 
-	public boolean asRect(WRectF result) {
+	boolean asRect(WRectF result) {
 		if (this.isRect_) {
 			if (this.segments_.size() == 4) {
 				result.assign(new WRectF(0, 0, this.segments_.get(0).getX(),

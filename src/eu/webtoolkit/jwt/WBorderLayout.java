@@ -89,6 +89,9 @@ public class WBorderLayout extends WLayout {
 		 */
 		Center;
 
+		/**
+		 * Returns the numerical representation of this enum.
+		 */
 		public int getValue() {
 			return ordinal();
 		}
@@ -252,7 +255,7 @@ public class WBorderLayout extends WLayout {
 		throw new WtException("WBorderLayout::position(): invalid item");
 	}
 
-	public Grid getGrid() {
+	Grid getGrid() {
 		return this.grid_;
 	}
 

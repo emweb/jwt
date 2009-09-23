@@ -55,6 +55,9 @@ public class WLength {
 		 */
 		Percentage;
 
+		/**
+		 * Returns the numerical representation of this enum.
+		 */
 		public int getValue() {
 			return ordinal();
 		}
@@ -146,7 +149,7 @@ public class WLength {
 				&& this.value_ == other.value_;
 	}
 
-	public double toPixels() {
+	double toPixels() {
 		if (this.auto_) {
 			return 0;
 		} else {

@@ -226,7 +226,7 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 		return this.painter_ != null;
 	}
 
-	public void render(String canvasId, DomElement text) {
+	void render(String canvasId, DomElement text) {
 		String canvasVar = "Wt2_99_5.getElement('" + canvasId + "')";
 		StringWriter tmp = new StringWriter();
 		tmp.append("if(").append(canvasVar).append(

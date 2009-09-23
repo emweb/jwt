@@ -1616,7 +1616,7 @@ public class WTreeView extends WCompositeWidget {
 		return null;
 	}
 
-	protected void render() {
+	void render() {
 		while (this.renderState_ != WTreeView.RenderState.RenderOk) {
 			WTreeView.RenderState s = this.renderState_;
 			this.renderState_ = WTreeView.RenderState.RenderOk;
@@ -1665,7 +1665,7 @@ public class WTreeView extends WCompositeWidget {
 		super.enableAjax();
 	}
 
-	private static class ColumnInfo {
+	static class ColumnInfo {
 		public WCssTemplateRule styleRule;
 		public int id;
 		public SortOrder sortOrder;
@@ -1747,6 +1747,9 @@ public class WTreeView extends WCompositeWidget {
 			this.value = value;
 		}
 
+		/**
+		 * Returns the numerical representation of this enum.
+		 */
 		public int getValue() {
 			return value;
 		}
@@ -1906,14 +1909,24 @@ public class WTreeView extends WCompositeWidget {
 				this.columns_.add(0 + i, new WTreeView.ColumnInfo(this, app,
 						++this.nextColumnId_, i));
 			}
-			if (start == 0) {
-				this.scheduleRerender(WTreeView.RenderState.NeedRerenderHeader);
-			} else {
-				WContainerWidget row = this.getHeaderRow();
-				for (int i = start; i < start + count; ++i) {
-					row.insertWidget(i - 1, this.createHeaderWidget(app, i));
+			if (this.renderState_.getValue() < WTreeView.RenderState.NeedRerenderHeader
+					.getValue()) {
+				if (start == 0) {
+					this
+							.scheduleRerender(WTreeView.RenderState.NeedRerenderHeader);
+				} else {
+					WContainerWidget row = this.getHeaderRow();
+					for (int i = start; i < start + count; ++i) {
+						row
+								.insertWidget(i - 1, this.createHeaderWidget(
+										app, i));
+					}
 				}
 			}
+		}
+		if (this.renderState_ == WTreeView.RenderState.NeedRerender
+				|| this.renderState_ == WTreeView.RenderState.NeedRerenderTree) {
+			return;
 		}
 		if (start == 0) {
 			this.scheduleRerender(WTreeView.RenderState.NeedRerenderTree);
@@ -1940,12 +1953,16 @@ public class WTreeView extends WCompositeWidget {
 			for (int ii = 0; ii < (0 + start + count) - (0 + start); ++ii)
 				this.columns_.remove(0 + start);
 			;
-			if (start == 0) {
-				this.scheduleRerender(WTreeView.RenderState.NeedRerenderHeader);
-			} else {
-				for (int i = start; i < start + count; ++i) {
-					if (this.headerWidget(start) != null)
-						this.headerWidget(start).remove();
+			if (this.renderState_.getValue() < WTreeView.RenderState.NeedRerenderHeader
+					.getValue()) {
+				if (start == 0) {
+					this
+							.scheduleRerender(WTreeView.RenderState.NeedRerenderHeader);
+				} else {
+					for (int i = start; i < start + count; ++i) {
+						if (this.headerWidget(start) != null)
+							this.headerWidget(start).remove();
+					}
 				}
 			}
 		}
@@ -1955,6 +1972,10 @@ public class WTreeView extends WCompositeWidget {
 	}
 
 	private void modelColumnsRemoved(WModelIndex parent, int start, int end) {
+		if (this.renderState_ == WTreeView.RenderState.NeedRerender
+				|| this.renderState_ == WTreeView.RenderState.NeedRerenderTree) {
+			return;
+		}
 		int count = end - start + 1;
 		if (start != 0) {
 			WWidget parentWidget = this.widgetForIndex(parent);
@@ -1975,6 +1996,10 @@ public class WTreeView extends WCompositeWidget {
 	private void modelRowsInserted(WModelIndex parent, int start, int end) {
 		int count = end - start + 1;
 		this.shiftModelIndexes(parent, start, count);
+		if (this.renderState_ == WTreeView.RenderState.NeedRerender
+				|| this.renderState_ == WTreeView.RenderState.NeedRerenderTree) {
+			return;
+		}
 		WWidget parentWidget = this.widgetForIndex(parent);
 		if (parentWidget != null) {
 			WTreeViewNode parentNode = ((parentWidget) instanceof WTreeViewNode ? (WTreeViewNode) (parentWidget)
@@ -2098,71 +2123,77 @@ public class WTreeView extends WCompositeWidget {
 	private void modelRowsAboutToBeRemoved(WModelIndex parent, int start,
 			int end) {
 		int count = end - start + 1;
-		this.firstRemovedRow_ = -1;
-		this.removedHeight_ = 0;
-		WWidget parentWidget = this.widgetForIndex(parent);
-		if (parentWidget != null) {
-			WTreeViewNode parentNode = ((parentWidget) instanceof WTreeViewNode ? (WTreeViewNode) (parentWidget)
-					: null);
-			if (parentNode != null) {
-				if (parentNode.isChildrenLoaded()) {
-					for (int i = end; i >= start; --i) {
-						WWidget w = parentNode.widgetForModelRow(i);
-						assert w != null;
-						RowSpacer s = ((w) instanceof RowSpacer ? (RowSpacer) (w)
-								: null);
-						if (s != null) {
-							WModelIndex childIndex = this.model_.getIndex(i, 0,
-									parent);
-							if (i == start) {
-								this.firstRemovedRow_ = this.renderedRow(
-										childIndex, w);
-							}
-							int childHeight = this.subTreeHeight(childIndex);
-							this.removedHeight_ += childHeight;
-							s.setRows(s.getRows() - childHeight);
-						} else {
-							WTreeViewNode node = ((w) instanceof WTreeViewNode ? (WTreeViewNode) (w)
-									: null);
-							if (i == start) {
-								this.firstRemovedRow_ = node.renderedRow();
-							}
-							this.removedHeight_ += node.getRenderedHeight();
-							if (w != null)
-								w.remove();
-						}
-					}
-					parentNode.normalizeSpacers();
-					parentNode.adjustChildrenHeight(-this.removedHeight_);
-					parentNode.shiftModelIndexes(start, -count);
-					if (end == this.model_.getRowCount(parent) - 1
-							&& start >= 1) {
-						WTreeViewNode n = ((parentNode
-								.widgetForModelRow(start - 1)) instanceof WTreeViewNode ? (WTreeViewNode) (parentNode
-								.widgetForModelRow(start - 1))
-								: null);
-						if (n != null) {
-							n.updateGraphics(true, this.model_.getRowCount(n
-									.getModelIndex()) == 0);
-						}
-					}
-				}
-				if (this.model_.getRowCount(parent) == count) {
-					parentNode.updateGraphics(parentNode.isLast(), true);
-				}
-			} else {
-				RowSpacer s = ((parentWidget) instanceof RowSpacer ? (RowSpacer) (parentWidget)
+		if (this.renderState_ != WTreeView.RenderState.NeedRerender
+				|| this.renderState_ != WTreeView.RenderState.NeedRerenderTree) {
+			this.firstRemovedRow_ = -1;
+			this.removedHeight_ = 0;
+			WWidget parentWidget = this.widgetForIndex(parent);
+			if (parentWidget != null) {
+				WTreeViewNode parentNode = ((parentWidget) instanceof WTreeViewNode ? (WTreeViewNode) (parentWidget)
 						: null);
-				for (int i = start; i <= end; ++i) {
-					WModelIndex childIndex = this.model_.getIndex(i, 0, parent);
-					int childHeight = this.subTreeHeight(childIndex);
-					this.removedHeight_ += childHeight;
-					if (i == start) {
-						this.firstRemovedRow_ = this.renderedRow(childIndex, s);
+				if (parentNode != null) {
+					if (parentNode.isChildrenLoaded()) {
+						for (int i = end; i >= start; --i) {
+							WWidget w = parentNode.widgetForModelRow(i);
+							assert w != null;
+							RowSpacer s = ((w) instanceof RowSpacer ? (RowSpacer) (w)
+									: null);
+							if (s != null) {
+								WModelIndex childIndex = this.model_.getIndex(
+										i, 0, parent);
+								if (i == start) {
+									this.firstRemovedRow_ = this.renderedRow(
+											childIndex, w);
+								}
+								int childHeight = this
+										.subTreeHeight(childIndex);
+								this.removedHeight_ += childHeight;
+								s.setRows(s.getRows() - childHeight);
+							} else {
+								WTreeViewNode node = ((w) instanceof WTreeViewNode ? (WTreeViewNode) (w)
+										: null);
+								if (i == start) {
+									this.firstRemovedRow_ = node.renderedRow();
+								}
+								this.removedHeight_ += node.getRenderedHeight();
+								if (w != null)
+									w.remove();
+							}
+						}
+						parentNode.normalizeSpacers();
+						parentNode.adjustChildrenHeight(-this.removedHeight_);
+						parentNode.shiftModelIndexes(start, -count);
+						if (end == this.model_.getRowCount(parent) - 1
+								&& start >= 1) {
+							WTreeViewNode n = ((parentNode
+									.widgetForModelRow(start - 1)) instanceof WTreeViewNode ? (WTreeViewNode) (parentNode
+									.widgetForModelRow(start - 1))
+									: null);
+							if (n != null) {
+								n.updateGraphics(true, this.model_
+										.getRowCount(n.getModelIndex()) == 0);
+							}
+						}
 					}
+					if (this.model_.getRowCount(parent) == count) {
+						parentNode.updateGraphics(parentNode.isLast(), true);
+					}
+				} else {
+					RowSpacer s = ((parentWidget) instanceof RowSpacer ? (RowSpacer) (parentWidget)
+							: null);
+					for (int i = start; i <= end; ++i) {
+						WModelIndex childIndex = this.model_.getIndex(i, 0,
+								parent);
+						int childHeight = this.subTreeHeight(childIndex);
+						this.removedHeight_ += childHeight;
+						if (i == start) {
+							this.firstRemovedRow_ = this.renderedRow(
+									childIndex, s);
+						}
+					}
+					s.setRows(s.getRows() - this.removedHeight_);
+					s.getNode().adjustChildrenHeight(-this.removedHeight_);
 				}
-				s.setRows(s.getRows() - this.removedHeight_);
-				s.getNode().adjustChildrenHeight(-this.removedHeight_);
 			}
 		}
 		this.shiftModelIndexes(parent, start, -count);
@@ -2173,6 +2204,10 @@ public class WTreeView extends WCompositeWidget {
 	}
 
 	private void modelDataChanged(WModelIndex topLeft, WModelIndex bottomRight) {
+		if (this.renderState_ == WTreeView.RenderState.NeedRerender
+				|| this.renderState_ == WTreeView.RenderState.NeedRerenderTree) {
+			return;
+		}
 		WModelIndex parent = topLeft.getParent();
 		WWidget parentWidget = this.widgetForIndex(parent);
 		if (parentWidget != null) {
@@ -2197,11 +2232,14 @@ public class WTreeView extends WCompositeWidget {
 
 	private void modelHeaderDataChanged(Orientation orientation, int start,
 			int end) {
-		if (orientation == Orientation.Horizontal) {
-			for (int i = start; i <= end; ++i) {
-				WString label = StringUtils.asString(this.model_
-						.getHeaderData(i));
-				this.headerTextWidget(i).setText(label);
+		if (this.renderState_.getValue() < WTreeView.RenderState.NeedRerenderHeader
+				.getValue()) {
+			if (orientation == Orientation.Horizontal) {
+				for (int i = start; i <= end; ++i) {
+					WString label = StringUtils.asString(this.model_
+							.getHeaderData(i));
+					this.headerTextWidget(i).setText(label);
+				}
 			}
 		}
 	}

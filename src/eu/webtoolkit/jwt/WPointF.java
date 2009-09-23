@@ -73,7 +73,7 @@ public class WPointF {
 		return this.x_ == other.x_ && this.y_ == other.y_;
 	}
 
-	public WPointF add(WPointF other) {
+	WPointF add(WPointF other) {
 		this.x_ += other.x_;
 		this.y_ += other.y_;
 		return this;

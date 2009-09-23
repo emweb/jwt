@@ -102,7 +102,7 @@ public class WCircleArea extends WAbstractArea {
 	private int y_;
 	private int r_;
 
-	protected void updateDom(DomElement element, boolean all) {
+	void updateDom(DomElement element, boolean all) {
 		element.setAttribute("shape", "circle");
 		StringWriter coords = new StringWriter();
 		coords.append(String.valueOf(this.x_)).append(',').append(

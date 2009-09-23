@@ -496,14 +496,14 @@ public class WStandardItem {
 		return !EnumUtils.mask(this.flags_, ItemFlag.ItemIsTristate).isEmpty();
 	}
 
-	public void setEditable(boolean editable) {
+	void setEditable(boolean editable) {
 		if (!this.isEditable()) {
 			this.flags_.add(ItemFlag.ItemIsEditable);
 			this.signalModelDataChange();
 		}
 	}
 
-	public boolean isEditable() {
+	boolean isEditable() {
 		return !EnumUtils.mask(this.flags_, ItemFlag.ItemIsEditable).isEmpty();
 	}
 

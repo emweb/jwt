@@ -292,14 +292,14 @@ public class WTree extends WCompositeWidget {
 		}
 	}
 
-	protected void nodeRemoved(WTreeNode node) {
+	void nodeRemoved(WTreeNode node) {
 		this.select(node, false);
 		for (int i = 0; i < node.getChildNodes().size(); ++i) {
 			this.nodeRemoved(node.getChildNodes().get(i));
 		}
 	}
 
-	protected void nodeAdded(WTreeNode node) {
+	void nodeAdded(WTreeNode node) {
 		this.select(node, false);
 		if (node.isSelectable()) {
 			WInteractWidget w = node.getLabel();

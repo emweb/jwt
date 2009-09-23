@@ -103,6 +103,11 @@ public class WRegExpValidator extends WValidator {
 		this.repaint();
 	}
 
+	/**
+	 * Return the regular expression for valid input.
+	 * <p>
+	 * Returns the perl regular expression.
+	 */
 	public String getRegExp() {
 		return this.regexp_ != null ? this.regexp_.pattern() : "";
 	}
@@ -131,6 +136,11 @@ public class WRegExpValidator extends WValidator {
 	}
 
 	// public void createExtConfig(Writer config) throws IOException;
+	/**
+	 * Set the text to be shown if no match can be found.
+	 * <p>
+	 * Sets the text to be shown if no match can be found.
+	 */
 	public void setNoMatchText(CharSequence text) {
 		this.setInvalidNoMatchText(text);
 	}

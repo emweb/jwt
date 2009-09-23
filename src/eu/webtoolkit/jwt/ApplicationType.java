@@ -39,6 +39,9 @@ public enum ApplicationType {
 	 */
 	WidgetSet;
 
+	/**
+	 * Returns the numerical representation of this enum.
+	 */
 	public int getValue() {
 		return ordinal();
 	}

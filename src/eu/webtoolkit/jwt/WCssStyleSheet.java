@@ -149,11 +149,11 @@ public class WCssStyleSheet {
 		}
 	}
 
-	public void ruleModified(WCssRule rule) {
+	void ruleModified(WCssRule rule) {
 		this.rulesModified_.add(rule);
 	}
 
-	public String getCssText(boolean all) {
+	String getCssText(boolean all) {
 		String result = "";
 		List<WCssRule> toProcess = all ? this.rules_ : this.rulesAdded_;
 		for (int i = 0; i < toProcess.size(); ++i) {
@@ -218,7 +218,7 @@ public class WCssStyleSheet {
 		}
 	}
 
-	public void clear() {
+	void clear() {
 		while (!this.rules_.isEmpty()) {
 			if (this.rules_.get(this.rules_.size() - 1) != null)
 				this.rules_.get(this.rules_.size() - 1).remove();

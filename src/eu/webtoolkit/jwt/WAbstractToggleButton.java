@@ -186,9 +186,9 @@ public class WAbstractToggleButton extends WFormWidget {
 		return this.voidEventSignal(UNCHECKED_SIGNAL, true);
 	}
 
-	protected CheckState state_;
+	CheckState state_;
 
-	protected DomElement createDomElement(WApplication app) {
+	DomElement createDomElement(WApplication app) {
 		DomElement result = DomElement.createNew(this.getDomElementType());
 		this.setId(result, app);
 		DomElement input = result;
@@ -239,7 +239,7 @@ public class WAbstractToggleButton extends WFormWidget {
 		return result;
 	}
 
-	protected void getDomChanges(List<DomElement> result, WApplication app) {
+	void getDomChanges(List<DomElement> result, WApplication app) {
 		DomElementType type = this.getDomElementType();
 		if (type == DomElementType.DomElement_SPAN) {
 			DomElement input = DomElement.getForUpdate("in" + this.getId(),
@@ -283,7 +283,7 @@ public class WAbstractToggleButton extends WFormWidget {
 		}
 	}
 
-	protected void updateDom(DomElement element, boolean all) {
+	void updateDom(DomElement element, boolean all) {
 		if (this.stateChanged_ || all) {
 			element.setProperty(Property.PropertyChecked,
 					this.state_ == CheckState.Checked ? "true" : "false");
@@ -346,11 +346,11 @@ public class WAbstractToggleButton extends WFormWidget {
 		}
 	}
 
-	protected void getFormObjects(Map<String, WObject> formObjects) {
+	void getFormObjects(Map<String, WObject> formObjects) {
 		formObjects.put(this.getFormName(), this);
 	}
 
-	protected void setFormData(WObject.FormData formData) {
+	void setFormData(WObject.FormData formData) {
 		if (this.stateChanged_) {
 			return;
 		}
@@ -368,7 +368,7 @@ public class WAbstractToggleButton extends WFormWidget {
 		}
 	}
 
-	protected void propagateRenderOk(boolean deep) {
+	void propagateRenderOk(boolean deep) {
 		this.stateChanged_ = false;
 		EventSignal check = this.voidEventSignal(CHECKED_SIGNAL, false);
 		if (check != null) {
@@ -381,7 +381,7 @@ public class WAbstractToggleButton extends WFormWidget {
 		super.propagateRenderOk(deep);
 	}
 
-	protected DomElementType getDomElementType() {
+	DomElementType getDomElementType() {
 		if (this.isUseImageWorkaround()) {
 			return DomElementType.DomElement_SPAN;
 		} else {
@@ -394,11 +394,11 @@ public class WAbstractToggleButton extends WFormWidget {
 		}
 	}
 
-	protected boolean isUseImageWorkaround() {
+	boolean isUseImageWorkaround() {
 		return false;
 	}
 
-	protected String getFormName() {
+	String getFormName() {
 		if (this.getDomElementType() == DomElementType.DomElement_SPAN
 				&& !this.isUseImageWorkaround()) {
 			return "in" + this.getId();

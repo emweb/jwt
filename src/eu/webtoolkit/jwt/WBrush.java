@@ -49,6 +49,11 @@ public class WBrush {
 		this.color_ = color;
 	}
 
+	/**
+	 * Clone method.
+	 * <p>
+	 * Clones this {@link WBrush} object.
+	 */
 	public WBrush clone() {
 		WBrush result = new WBrush();
 		result.color_ = this.color_;

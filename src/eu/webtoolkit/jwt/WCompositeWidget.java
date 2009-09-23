@@ -334,7 +334,7 @@ public class WCompositeWidget extends WWidget {
 		widget.setParent(this);
 	}
 
-	public DomElement createSDomElement(WApplication app) {
+	DomElement createSDomElement(WApplication app) {
 		if (this.needsToBeRendered()) {
 			this.render();
 		}

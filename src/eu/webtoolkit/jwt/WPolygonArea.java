@@ -87,7 +87,7 @@ public class WPolygonArea extends WAbstractArea {
 
 	private List<WPoint> points_;
 
-	protected void updateDom(DomElement element, boolean all) {
+	void updateDom(DomElement element, boolean all) {
 		element.setAttribute("shape", "poly");
 		StringWriter coords = new StringWriter();
 		for (int i = 0; i < this.points_.size(); ++i) {

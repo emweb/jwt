@@ -147,7 +147,7 @@ public class WMessageBox extends WDialog {
 		return this.icon_;
 	}
 
-	public WImage getIconImage() {
+	WImage getIconImage() {
 		return this.iconImage_;
 	}
 

@@ -181,9 +181,16 @@ public class WTableView extends WCompositeWidget {
 		return result != null ? result : this.itemDelegate_;
 	}
 
-	protected WTable table_;
+	/**
+	 * Returns the table used for rendering the model.
+	 */
+	protected WTable getTable() {
+		return this.table_;
+	}
 
-	private static class ColumnInfo {
+	private WTable table_;
+
+	static class ColumnInfo {
 		public WAbstractItemDelegate itemDelegate_;
 
 		public ColumnInfo(WTableView view, WApplication app, int column) {

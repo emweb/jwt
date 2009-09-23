@@ -76,6 +76,9 @@ public class WPainter {
 			this.value = value;
 		}
 
+		/**
+		 * Returns the numerical representation of this enum.
+		 */
 		public int getValue() {
 			return value;
 		}
@@ -1352,11 +1355,11 @@ public class WPainter {
 				this.getS().worldTransform_);
 	}
 
-	public WTransform getClipPathTransform() {
+	WTransform getClipPathTransform() {
 		return this.getS().clipPathTransform_;
 	}
 
-	public WLength normalizedPenWidth(WLength penWidth, boolean correctCosmetic) {
+	WLength normalizedPenWidth(WLength penWidth, boolean correctCosmetic) {
 		double w = penWidth.getValue();
 		if (w == 0 && correctCosmetic) {
 			WTransform t = this.getCombinedTransform();
@@ -1388,7 +1391,7 @@ public class WPainter {
 	private WRectF window_;
 	private WTransform viewTransform_;
 
-	private static class State {
+	static class State {
 		public WTransform worldTransform_;
 		public WBrush currentBrush_;
 		public WFont currentFont_;

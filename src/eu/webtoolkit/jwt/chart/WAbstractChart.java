@@ -311,7 +311,7 @@ public abstract class WAbstractChart extends WPaintedWidget {
 		return this.titleFont_;
 	}
 
-	public void setAxisTitleFont(WFont titleFont) {
+	void setAxisTitleFont(WFont titleFont) {
 		if (!ChartUtils.equals(this.axisTitleFont_, titleFont)) {
 			this.axisTitleFont_ = titleFont;
 			update();
@@ -319,7 +319,7 @@ public abstract class WAbstractChart extends WPaintedWidget {
 		;
 	}
 
-	public WFont getAxisTitleFont() {
+	WFont getAxisTitleFont() {
 		return this.titleFont_;
 	}
 
@@ -342,7 +342,7 @@ public abstract class WAbstractChart extends WPaintedWidget {
 		paint(painter, new WRectF());
 	}
 
-	protected WAbstractChart(WContainerWidget parent) {
+	WAbstractChart(WContainerWidget parent) {
 		super(parent);
 		this.model_ = null;
 		this.background_ = new WBrush(WColor.white);

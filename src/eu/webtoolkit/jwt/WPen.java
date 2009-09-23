@@ -72,6 +72,11 @@ public class WPen {
 		this.color_ = color;
 	}
 
+	/**
+	 * Clone method.
+	 * <p>
+	 * Clones this {@link WPen} object.
+	 */
 	public WPen clone() {
 		WPen result = new WPen();
 		result.penStyle_ = this.penStyle_;

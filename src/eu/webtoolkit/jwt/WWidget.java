@@ -1105,7 +1105,7 @@ public abstract class WWidget extends WObject {
 
 	abstract boolean isStubbed();
 
-	protected void render() {
+	void render() {
 		this.renderOk();
 	}
 
@@ -1185,7 +1185,7 @@ public abstract class WWidget extends WObject {
 
 	abstract WWebWidget getWebWidget();
 
-	WLayoutItemImpl createLayoutItemImpl(WLayoutItem layoutItem) {
+	WLayoutItemImpl createLayoutItemImpl(WLayoutItem item) {
 		throw new WtException(
 				"WWidget::setLayout(): widget does not support layout managers");
 	}

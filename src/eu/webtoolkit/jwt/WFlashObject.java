@@ -136,7 +136,7 @@ public class WFlashObject extends WContainerWidget {
 		return "Wt2_99_5.getElement('flash" + this.getId() + "')";
 	}
 
-	protected void getDomChanges(List<DomElement> result, WApplication app) {
+	void getDomChanges(List<DomElement> result, WApplication app) {
 		super.getDomChanges(result, app);
 		if (this.isRendered_ && this.sizeChanged_) {
 			DomElement innerElement = DomElement.getForUpdate("flash"
@@ -149,7 +149,7 @@ public class WFlashObject extends WContainerWidget {
 		}
 	}
 
-	protected DomElement createDomElement(WApplication app) {
+	DomElement createDomElement(WApplication app) {
 		DomElement result = super.createDomElement(app);
 		DomElement innerElement = DomElement
 				.createNew(DomElementType.DomElement_DIV);

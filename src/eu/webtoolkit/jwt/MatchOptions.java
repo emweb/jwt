@@ -14,8 +14,14 @@ import java.util.EnumSet;
 * enabled.
 */
 public class MatchOptions {
+	/**
+	 * The default match options, MatchStartsWith and MatchWrap.
+	 */
 	public static MatchOptions defaultMatchOptions = new MatchOptions(MatchType.MatchStartsWith, MatchFlag.MatchWrap);
 	
+	/**
+	 * Match type enumeration.
+	 */
 	public enum MatchType {
 		MatchExactly, /** Same type and value */
 		MatchStringExactly, /** Lexical match */
@@ -24,6 +30,10 @@ public class MatchOptions {
 		MatchRegExp, /** Regular expression match */
 		MatchWildCard /** Wildcard match */
 	}
+	
+	/**
+	 * Match flag enum.
+	 */
 	public enum MatchFlag {
 	    MatchCaseSensitive, /** Case sensitive */
 	    MatchWrap /** Wrap around whole model */
@@ -32,20 +42,32 @@ public class MatchOptions {
 	private MatchType type;
 	private EnumSet<MatchFlag> flags;
 	
+	/**
+	 * Constructor.
+	 */
 	public MatchOptions(MatchType type, MatchFlag flag) {
 		this.type = type;
 		this.flags = EnumSet.of(flag);
 	}
 	
+	/**
+	 * Constructor.
+	 */
 	public MatchOptions(MatchType type, MatchFlag flag, MatchFlag flag2) {
 		this.type = type;
 		this.flags = EnumSet.of(flag, flag2);
 	}
 	
+	/**
+	 * Return the type.
+	 */
 	public MatchType getType() {
 		return type;
 	}
 
+	/**
+	 * Return the flags.
+	 */
 	public EnumSet<MatchFlag> getFlags() {
 		return flags;
 	}

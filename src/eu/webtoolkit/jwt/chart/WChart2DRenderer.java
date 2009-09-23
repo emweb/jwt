@@ -402,8 +402,22 @@ public class WChart2DRenderer {
 	 * Enumeration that specifies a property of the axes.
 	 */
 	public enum AxisProperty {
-		Labels, Grid, Line;
+		/**
+		 * Labels property.
+		 */
+		Labels,
+		/**
+		 * Grid property.
+		 */
+		Grid,
+		/**
+		 * Grid property.
+		 */
+		Line;
 
+		/**
+		 * Returns the numerical representation of this enum.
+		 */
 		public int getValue() {
 			return ordinal();
 		}

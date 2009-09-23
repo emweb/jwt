@@ -271,7 +271,7 @@ public class WFileUpload extends WWebWidget {
 		this.fileTooLarge().trigger(size);
 	}
 
-	protected void updateDom(DomElement element, boolean all) {
+	void updateDom(DomElement element, boolean all) {
 		if (this.fileUploadTarget_ != null && this.doUpload_) {
 			element.callMethod("submit()");
 			this.doUpload_ = false;
@@ -339,20 +339,20 @@ public class WFileUpload extends WWebWidget {
 					DomElementType.DomElement_INPUT);
 			DomElement ajaxE = this.createDomElement(app);
 			plainE.replaceWith(ajaxE, true);
-			result.add(ajaxE);
+			result.add(plainE);
 		} else {
 			super.getDomChanges(result, app);
 		}
 	}
 
-	protected void setFormData(WObject.FormData formData) {
+	void setFormData(WObject.FormData formData) {
 		if (formData.file != null) {
 			this.setFormData(formData.file);
 			this.uploaded().trigger();
 		}
 	}
 
-	protected void setFormData(UploadedFile file) {
+	void setFormData(UploadedFile file) {
 		this.spoolFileName_ = file.getSpoolFileName();
 		this.clientFileName_ = new WString(file.getClientFileName()).toString();
 		this.contentDescription_ = new WString(file.getContentType())

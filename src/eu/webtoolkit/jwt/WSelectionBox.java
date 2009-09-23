@@ -47,6 +47,9 @@ import java.util.Set;
  * WSelectionBox is an {@link WWidget#setInline(boolean inlined) inline} widget.
  */
 public class WSelectionBox extends WComboBox {
+	/**
+	 * Constructor.
+	 */
 	public WSelectionBox(WContainerWidget parent) {
 		super(parent);
 		this.verticalSize_ = 5;
@@ -55,6 +58,12 @@ public class WSelectionBox extends WComboBox {
 		this.configChanged_ = false;
 	}
 
+	/**
+	 * Constructor.
+	 * <p>
+	 * Calls {@link #WSelectionBox(WContainerWidget parent)
+	 * this((WContainerWidget)null)}
+	 */
 	public WSelectionBox() {
 		this((WContainerWidget) null);
 	}
@@ -170,7 +179,7 @@ public class WSelectionBox extends WComboBox {
 	private Set<Integer> selection_;
 	private boolean configChanged_;
 
-	protected void updateDom(DomElement element, boolean all) {
+	void updateDom(DomElement element, boolean all) {
 		if (this.configChanged_ || all) {
 			element.setAttribute("size", String.valueOf(this.verticalSize_));
 			if (!all || this.selectionMode_ == SelectionMode.ExtendedSelection) {
@@ -198,7 +207,7 @@ public class WSelectionBox extends WComboBox {
 		super.updateDom(element, all);
 	}
 
-	protected void setFormData(WObject.FormData formData) {
+	void setFormData(WObject.FormData formData) {
 		if (this.selectionChanged_) {
 			return;
 		}
@@ -222,13 +231,13 @@ public class WSelectionBox extends WComboBox {
 		}
 	}
 
-	protected void propagateRenderOk(boolean deep) {
+	void propagateRenderOk(boolean deep) {
 		this.configChanged_ = false;
 		this.selectionChanged_ = false;
 		super.propagateRenderOk(deep);
 	}
 
-	protected boolean isSelected(int index) {
+	boolean isSelected(int index) {
 		if (this.selectionMode_ == SelectionMode.ExtendedSelection) {
 			boolean i = this.selection_.contains(index);
 			return i != false;

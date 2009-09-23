@@ -57,6 +57,9 @@ public class WValidator extends WObject {
 		 */
 		Valid;
 
+		/**
+		 * Returns the numerical representation of this enum.
+		 */
 		public int getValue() {
 			return ordinal();
 		}
@@ -220,7 +223,7 @@ public class WValidator extends WObject {
 		return "";
 	}
 
-	protected void repaint() {
+	void repaint() {
 		for (int i = 0; i < this.formWidgets_.size(); ++i) {
 			this.formWidgets_.get(i).validatorChanged();
 		}

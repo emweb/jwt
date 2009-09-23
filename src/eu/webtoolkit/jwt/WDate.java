@@ -248,6 +248,9 @@ public class WDate implements Comparable<WDate> {
 			return false;
 	}
 
+	/**
+	 * Returns the default date format.
+	 */
 	public static String getDefaultFormat() {
 		return "ddd MMM d yyyy";
 	}
@@ -755,10 +758,16 @@ public class WDate implements Comparable<WDate> {
 		return d;
 	}
 
+	/**
+	 * @see java.lang.Object#hashCode()
+	 */
 	public int hashCode() {
 		return d.hashCode();
 	}
 
+	/**
+	 * @see java.lang.Comparable#compareTo(java.lang.Object)
+	 */
 	public int compareTo(WDate o) {
 		if (o == null)
 			return 1;

@@ -567,7 +567,7 @@ public class WGridLayout extends WLayout {
 		return this.grid_.rows_.get(row).stretch_;
 	}
 
-	public Grid getGrid() {
+	Grid getGrid() {
 		return this.grid_;
 	}
 

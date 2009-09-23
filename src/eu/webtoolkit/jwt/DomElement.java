@@ -16,9 +16,12 @@ import java.util.Map;
 import java.util.Set;
 
 class DomElement {
-	public enum Mode {
+	enum Mode {
 		ModeCreate, ModeUpdate;
 
+		/**
+		 * Returns the numerical representation of this enum.
+		 */
 		public int getValue() {
 			return ordinal();
 		}
@@ -222,7 +225,7 @@ class DomElement {
 				""));
 	}
 
-	public static class EventAction {
+	static class EventAction {
 		public String jsCondition;
 		public String jsCode;
 		public String updateCmd;
@@ -325,15 +328,18 @@ class DomElement {
 		return this.discardWithParent_;
 	}
 
-	public enum Priority {
+	enum Priority {
 		Delete, Create, Update;
 
+		/**
+		 * Returns the numerical representation of this enum.
+		 */
 		public int getValue() {
 			return ordinal();
 		}
 	}
 
-	public static class TimeoutEvent {
+	static class TimeoutEvent {
 		public int msec;
 		public String event;
 		public boolean repeat;
@@ -526,7 +532,7 @@ class DomElement {
 			}
 			if (this.type_ == DomElementType.DomElement_A) {
 				String href = this.getAttribute("href");
-				if (!href.equals("#")) {
+				if (app.getEnvironment().agentIsIE() || !href.equals("#")) {
 					needButtonWrap = false;
 				}
 			}
@@ -1305,7 +1311,7 @@ class DomElement {
 	private Map<Property, String> properties_;
 	private Map<String, DomElement.EventHandler> eventHandlers_;
 
-	private static class ChildInsertion {
+	static class ChildInsertion {
 		public int pos;
 		public DomElement child;
 

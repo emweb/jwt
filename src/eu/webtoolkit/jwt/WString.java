@@ -26,6 +26,9 @@ import java.util.List;
  * @see WApplication#getLocale()
  */
 public class WString implements Comparable<WString>, CharSequence {
+	/**
+	 * Empty WString object.
+	 */
 	public static final WString Empty = new WString();
 
 	private String key;
@@ -85,6 +88,9 @@ public class WString implements Comparable<WString>, CharSequence {
 		this(new String(buf));
 	}
 
+	/**	
+	 * Equality comparison method.
+	 */
 	public boolean equals(WString other) {
 		return toString().equals(other.toString());
 	}
@@ -158,6 +164,9 @@ public class WString implements Comparable<WString>, CharSequence {
 		return result;
 	}
 
+	/**
+	 * @see java.lang.Comparable#compareTo(java.lang.Object)
+	 */
 	public int compareTo(WString arg0) {
 		return getValue().compareTo(arg0.getValue());
 	}
@@ -302,14 +311,32 @@ public class WString implements Comparable<WString>, CharSequence {
 		}
 	}
 
+	/**
+	 * Change the WString 's argument at position argIndex.
+	 * 
+	 * @param argIndex
+	 * @param value
+	 */
 	public void changeArg(int argIndex, String value) {
 		arguments.set(argIndex, value);
 	}
 
+	/**
+	 * Change the WString 's argument at position argIndex.
+	 * 
+	 * @param argIndex
+	 * @param value
+	 */
 	public void changeArg(int argIndex, int value) {
 		this.changeArg(argIndex, value + "");
 	}
 
+	/**
+	 * Change the WString 's argument at position argIndex.
+	 * 
+	 * @param argIndex
+	 * @param value
+	 */
 	public void changeArg(int argIndex, double value) {
 		this.changeArg(argIndex, value + "");
 	}

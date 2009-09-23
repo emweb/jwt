@@ -18,6 +18,9 @@ package eu.webtoolkit.jwt;
  */
 public class WDefaultLoadingIndicator extends WText implements
 		WLoadingIndicator {
+	/**
+	 * Constructor.
+	 */
 	public WDefaultLoadingIndicator() {
 		super("Loading...");
 		this.setInline(false);

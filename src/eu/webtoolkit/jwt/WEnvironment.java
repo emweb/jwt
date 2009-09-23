@@ -49,7 +49,7 @@ import eu.webtoolkit.jwt.servlet.WebRequest;
  * </blockquote>
  */
 public class WEnvironment {
-	public enum UserAgent {
+	enum UserAgent {
 		Unknown(0), IE(1000), IE6(1001), IE7(1002), IE8(1003), IEMobile(1100), Opera(
 				3000), WebKit(4000), Safari(4100), Chrome(4200), Konqueror(5000), Gecko(
 				6000), Firefox3(6101), Firefox3_1(6102), Firefox3_2(6103), BotAgent(
@@ -61,6 +61,9 @@ public class WEnvironment {
 			this.value = value;
 		}
 
+		/**
+		 * Returns the numerical representation of this enum.
+		 */
 		public int getValue() {
 			return value;
 		}
@@ -79,6 +82,9 @@ public class WEnvironment {
 		 */
 		HTML4;
 
+		/**
+		 * Returns the numerical representation of this enum.
+		 */
 		public int getValue() {
 			return ordinal();
 		}
@@ -484,52 +490,52 @@ public class WEnvironment {
 		return this.contentType_;
 	}
 
-	public WEnvironment.UserAgent getAgent() {
+	WEnvironment.UserAgent getAgent() {
 		return this.agent_;
 	}
 
-	public boolean agentIsIE() {
+	boolean agentIsIE() {
 		return this.agent_.getValue() >= WEnvironment.UserAgent.IE.getValue()
 				&& this.agent_.getValue() < WEnvironment.UserAgent.Opera
 						.getValue();
 	}
 
-	public boolean agentIsIEMobile() {
+	boolean agentIsIEMobile() {
 		return this.agent_.getValue() >= WEnvironment.UserAgent.IEMobile
 				.getValue()
 				&& this.agent_.getValue() < WEnvironment.UserAgent.Opera
 						.getValue();
 	}
 
-	public boolean agentIsOpera() {
+	boolean agentIsOpera() {
 		return this.agent_.getValue() >= WEnvironment.UserAgent.Opera
 				.getValue()
 				&& this.agent_.getValue() < WEnvironment.UserAgent.Safari
 						.getValue();
 	}
 
-	public boolean agentIsWebKit() {
+	boolean agentIsWebKit() {
 		return this.agent_.getValue() >= WEnvironment.UserAgent.WebKit
 				.getValue()
 				&& this.agent_.getValue() < WEnvironment.UserAgent.Konqueror
 						.getValue();
 	}
 
-	public boolean agentIsSafari() {
+	boolean agentIsSafari() {
 		return this.agent_.getValue() >= WEnvironment.UserAgent.Safari
 				.getValue()
 				&& this.agent_.getValue() < WEnvironment.UserAgent.Chrome
 						.getValue();
 	}
 
-	public boolean agentIsChrome() {
+	boolean agentIsChrome() {
 		return this.agent_.getValue() >= WEnvironment.UserAgent.Chrome
 				.getValue()
 				&& this.agent_.getValue() < WEnvironment.UserAgent.Konqueror
 						.getValue();
 	}
 
-	public boolean agentIsGecko() {
+	boolean agentIsGecko() {
 		return this.agent_.getValue() >= WEnvironment.UserAgent.Gecko
 				.getValue()
 				&& this.agent_.getValue() < WEnvironment.UserAgent.BotAgent
@@ -539,25 +545,25 @@ public class WEnvironment {
 	WebSession session_;
 	boolean doesAjax_;
 	boolean doesCookies_;
-	protected WEnvironment.UserAgent agent_;
+	WEnvironment.UserAgent agent_;
 	double dpiScale_;
-	protected WEnvironment.ContentType contentType_;
-	protected Map<String, List<String>> parameters_;
-	protected Map<String, String> cookies_;
-	protected Locale locale_;
-	protected String host_;
-	protected String userAgent_;
+	WEnvironment.ContentType contentType_;
+	Map<String, List<String>> parameters_;
+	Map<String, String> cookies_;
+	Locale locale_;
+	String host_;
+	String userAgent_;
 	String urlScheme_;
-	protected String referer_;
-	protected String accept_;
-	protected String serverSignature_;
-	protected String serverSoftware_;
-	protected String serverAdmin_;
-	protected String clientAddress_;
-	protected String pathInfo_;
-	protected String internalPath_;
+	String referer_;
+	String accept_;
+	String serverSignature_;
+	String serverSoftware_;
+	String serverAdmin_;
+	String clientAddress_;
+	String pathInfo_;
+	String internalPath_;
 
-	protected WEnvironment() {
+	WEnvironment() {
 		this.parameters_ = new HashMap<String, List<String>>();
 		this.cookies_ = new HashMap<String, String>();
 		this.locale_ = new Locale("");
@@ -574,7 +580,7 @@ public class WEnvironment {
 		this.internalPath_ = "";
 	}
 
-	protected void setUserAgent(String userAgent) {
+	void setUserAgent(String userAgent) {
 		this.userAgent_ = userAgent;
 		Configuration conf = this.session_.getController().getConfiguration();
 		this.agent_ = WEnvironment.UserAgent.Unknown;
@@ -780,5 +786,5 @@ public class WEnvironment {
 		return false;
 	}
 
-	public static String wt_class = "Wt2_99_5";
+	static String wt_class = "Wt2_99_5";
 }

@@ -13,7 +13,7 @@ class Grid {
 	public int horizontalSpacing_;
 	public int verticalSpacing_;
 
-	public static class Row {
+	static class Row {
 		public int stretch_;
 
 		public Row(int stretch) {
@@ -25,7 +25,7 @@ class Grid {
 		}
 	}
 
-	public static class Column {
+	static class Column {
 		public int stretch_;
 
 		public Column(int stretch) {
@@ -37,7 +37,7 @@ class Grid {
 		}
 	}
 
-	public static class Item {
+	static class Item {
 		public WLayoutItem item_;
 		public int rowSpan_;
 		public int colSpan_;

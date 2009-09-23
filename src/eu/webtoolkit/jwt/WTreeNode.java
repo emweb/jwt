@@ -140,6 +140,9 @@ public class WTreeNode extends WCompositeWidget {
 		 */
 		NextLevelLoading;
 
+		/**
+		 * Returns the numerical representation of this enum.
+		 */
 		public int getValue() {
 			return ordinal();
 		}
@@ -162,6 +165,9 @@ public class WTreeNode extends WCompositeWidget {
 		 */
 		Lazy;
 
+		/**
+		 * Returns the numerical representation of this enum.
+		 */
 		public int getValue() {
 			return ordinal();
 		}
@@ -480,12 +486,12 @@ public class WTreeNode extends WCompositeWidget {
 		this.updateChildren(false);
 	}
 
-	public void setChildrenDecorated(boolean decorated) {
+	void setChildrenDecorated(boolean decorated) {
 		this.childrenDecorated_ = decorated;
 		this.updateChildren(false);
 	}
 
-	public void setInteractive(boolean interactive) {
+	void setInteractive(boolean interactive) {
 		this.interactive_ = interactive;
 	}
 
@@ -800,7 +806,7 @@ public class WTreeNode extends WCompositeWidget {
 		}
 	}
 
-	protected WTable getImpl() {
+	WTable getImpl() {
 		return this.layout_;
 	}
 
@@ -1006,7 +1012,7 @@ public class WTreeNode extends WCompositeWidget {
 		}
 	}
 
-	private enum ImageIndex {
+	enum ImageIndex {
 		Middle(0), Last(1);
 
 		private int value;
@@ -1015,6 +1021,9 @@ public class WTreeNode extends WCompositeWidget {
 			this.value = value;
 		}
 
+		/**
+		 * Returns the numerical representation of this enum.
+		 */
 		public int getValue() {
 			return value;
 		}

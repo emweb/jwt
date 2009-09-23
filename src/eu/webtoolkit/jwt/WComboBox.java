@@ -360,7 +360,7 @@ public class WComboBox extends WFormWidget {
 		}
 	}
 
-	protected void updateDom(DomElement element, boolean all) {
+	void updateDom(DomElement element, boolean all) {
 		if (this.itemsChanged_ || all) {
 			if (all && this.getCount() > 0 && this.currentIndex_ == -1) {
 				this.currentIndex_ = 0;
@@ -405,17 +405,17 @@ public class WComboBox extends WFormWidget {
 		super.updateDom(element, all);
 	}
 
-	protected DomElementType getDomElementType() {
+	DomElementType getDomElementType() {
 		return DomElementType.DomElement_SELECT;
 	}
 
-	protected void propagateRenderOk(boolean deep) {
+	void propagateRenderOk(boolean deep) {
 		this.itemsChanged_ = false;
 		this.selectionChanged_ = false;
 		super.propagateRenderOk(deep);
 	}
 
-	protected void setFormData(WObject.FormData formData) {
+	void setFormData(WObject.FormData formData) {
 		if (this.selectionChanged_) {
 			return;
 		}
@@ -435,10 +435,10 @@ public class WComboBox extends WFormWidget {
 		}
 	}
 
-	protected boolean isSelected(int index) {
+	boolean isSelected(int index) {
 		return index == this.currentIndex_;
 	}
 
-	protected void dummy() {
+	void dummy() {
 	}
 }

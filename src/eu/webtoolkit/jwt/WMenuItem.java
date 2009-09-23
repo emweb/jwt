@@ -57,6 +57,9 @@ public class WMenuItem extends WObject {
 		 */
 		PreLoading;
 
+		/**
+		 * Returns the numerical representation of this enum.
+		 */
 		public int getValue() {
 			return ordinal();
 		}
@@ -232,7 +235,7 @@ public class WMenuItem extends WObject {
 		}
 	}
 
-	public WWidget getTakeContents() {
+	WWidget getTakeContents() {
 		WWidget result = this.contents_;
 		this.contents_ = null;
 		return result;

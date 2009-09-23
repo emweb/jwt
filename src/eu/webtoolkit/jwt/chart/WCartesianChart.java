@@ -287,7 +287,7 @@ public class WCartesianChart extends WAbstractChart {
 		this.update();
 	}
 
-	public int getSeriesIndexOf(int modelColumn) {
+	int getSeriesIndexOf(int modelColumn) {
 		for (int i = 0; i < this.series_.size(); ++i) {
 			if (this.series_.get(i).getModelColumn() == modelColumn) {
 				return i;

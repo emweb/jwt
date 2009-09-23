@@ -32,6 +32,9 @@ public class WBorder {
 		 */
 		Explicit;
 
+		/**
+		 * Returns the numerical representation of this enum.
+		 */
 		public int getValue() {
 			return ordinal();
 		}
@@ -82,6 +85,9 @@ public class WBorder {
 		 */
 		Outset;
 
+		/**
+		 * Returns the numerical representation of this enum.
+		 */
 		public int getValue() {
 			return ordinal();
 		}

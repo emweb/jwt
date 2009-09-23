@@ -37,6 +37,16 @@ import eu.webtoolkit.jwt.servlet.WebRequest;
  * @see WApplication#WApplication(WEnvironment env)
  */
 public class WTestEnvironment extends WEnvironment {
+	/**
+	 * Default constructor.
+	 * <p>
+	 * Constructs a test environment that resembles FireFox 3.0 with default
+	 * settings.
+	 * <p>
+	 * After construction, but before passing it to the constructor of a
+	 * {@link WApplication}, you can change any of the environment properties
+	 * using the setter methods.
+	 */
 	public WTestEnvironment(Configuration configuration, ApplicationType type) {
 		super();
 		List<String> dummy = new ArrayList<String>();
@@ -45,6 +55,13 @@ public class WTestEnvironment extends WEnvironment {
 		this.init(type);
 	}
 
+	/**
+	 * Default constructor.
+	 * <p>
+	 * Calls
+	 * {@link #WTestEnvironment(Configuration configuration, ApplicationType type)
+	 * this(configuration, ApplicationType.Application)}
+	 */
 	public WTestEnvironment(Configuration configuration) {
 		this(configuration, ApplicationType.Application);
 	}
@@ -165,7 +182,7 @@ public class WTestEnvironment extends WEnvironment {
 	 * 
 	 * @see WEnvironment#getUserAgent()
 	 */
-	public void setUserAgent(String userAgent) {
+	void setUserAgent(String userAgent) {
 		super.setUserAgent(userAgent);
 	}
 

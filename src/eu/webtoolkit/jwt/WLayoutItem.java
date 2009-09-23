@@ -47,7 +47,13 @@ public interface WLayoutItem {
 	 */
 	public WLayoutItemImpl getImpl();
 
-	void setParent(WWidget parent);
+	/**
+	 * Internal method.
+	 */
+	public void setParent(WWidget parent);
 
-	void setParentLayout(WLayout parentLayout);
+	/**
+	 * Internal method.
+	 */
+	public void setParentLayout(WLayout parentLayout);
 }

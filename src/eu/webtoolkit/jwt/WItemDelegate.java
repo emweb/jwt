@@ -17,6 +17,9 @@ import eu.webtoolkit.jwt.utils.StringUtils;
  * {@link WTreeView}.
  */
 public class WItemDelegate extends WAbstractItemDelegate {
+	/**
+	 * Constructor.
+	 */
 	public WItemDelegate(WObject parent) {
 		super(parent);
 		this.textFormat_ = "";
@@ -29,6 +32,11 @@ public class WItemDelegate extends WAbstractItemDelegate {
 				});
 	}
 
+	/**
+	 * Constructor.
+	 * <p>
+	 * Calls {@link #WItemDelegate(WObject parent) this((WObject)null)}
+	 */
 	public WItemDelegate() {
 		this((WObject) null);
 	}
@@ -164,7 +172,7 @@ public class WItemDelegate extends WAbstractItemDelegate {
 	private String textFormat_;
 	private WSignalMapper1<ItemCheckBox> checkedChangeMapper_;
 
-	private static class WidgetRef {
+	static class WidgetRef {
 		public WWidget w;
 
 		public WidgetRef(WWidget widget) {

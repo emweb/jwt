@@ -125,11 +125,11 @@ public class WGroupBox extends WContainerWidget {
 	private WString title_;
 	private boolean titleChanged_;
 
-	protected DomElementType getDomElementType() {
+	DomElementType getDomElementType() {
 		return DomElementType.DomElement_FIELDSET;
 	}
 
-	protected void updateDom(DomElement element, boolean all) {
+	void updateDom(DomElement element, boolean all) {
 		if (all) {
 			DomElement legend = DomElement
 					.createNew(DomElementType.DomElement_LEGEND);
@@ -142,7 +142,7 @@ public class WGroupBox extends WContainerWidget {
 		super.updateDom(element, all);
 	}
 
-	protected void getDomChanges(List<DomElement> result, WApplication app) {
+	void getDomChanges(List<DomElement> result, WApplication app) {
 		DomElement e = DomElement.getForUpdate(this, this.getDomElementType());
 		this.updateDom(e, false);
 		result.add(e);
@@ -156,7 +156,7 @@ public class WGroupBox extends WContainerWidget {
 		}
 	}
 
-	protected void propagateSetEnabled(boolean enabled) {
+	void propagateSetEnabled(boolean enabled) {
 		if (enabled) {
 			this.setStyleClass(new WString(StringUtils.eraseWord(this
 					.getStyleClass(), "Wt-disabled")).toString());
@@ -167,12 +167,12 @@ public class WGroupBox extends WContainerWidget {
 		super.propagateSetEnabled(enabled);
 	}
 
-	protected void propagateRenderOk(boolean deep) {
+	void propagateRenderOk(boolean deep) {
 		this.titleChanged_ = false;
 		super.propagateRenderOk(deep);
 	}
 
-	protected int getFirstChildIndex() {
+	int getFirstChildIndex() {
 		return 1;
 	}
 }

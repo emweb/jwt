@@ -11,8 +11,7 @@ import java.io.File;
  * Details about a file uploaded with a (POST) request
  */
 public class UploadedFile {
-	public UploadedFile(String spoolName, String clientFileName,
-			String contentType) {
+	UploadedFile(String spoolName, String clientFileName, String contentType) {
 		this.fileInfo_ = null;
 		this.fileInfo_ = new UploadedFile.Impl();
 		this.fileInfo_.spoolFileName = spoolName;
@@ -62,7 +61,7 @@ public class UploadedFile {
 		this.fileInfo_.isStolen = true;
 	}
 
-	private static class Impl {
+	static class Impl {
 		public String spoolFileName;
 		public String clientFileName;
 		public String contentType;

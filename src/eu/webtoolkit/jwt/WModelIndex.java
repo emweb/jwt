@@ -30,6 +30,14 @@ public class WModelIndex implements Comparable<WModelIndex> {
 	private WAbstractItemModel model;
 	private Object internalPointer;
 
+	/**
+	 * Constructor.
+	 * 
+	 * @param row
+	 * @param column
+	 * @param model
+	 * @param ptr
+	 */
 	WModelIndex(int row, int column, WAbstractItemModel model, Object ptr) {
 		this.row = row;
 		this.column = column;
@@ -118,6 +126,9 @@ public class WModelIndex implements Comparable<WModelIndex> {
 		return model.getIndex(row, column, this);
 	}
 	
+	/**
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
 	@Override
 	public boolean equals(Object other) {
 		if (!(other instanceof WModelIndex))
@@ -130,6 +141,9 @@ public class WModelIndex implements Comparable<WModelIndex> {
 				&& i1.getInternalPointer() == i2.getInternalPointer();
 	}
 
+	/**
+	 * @see java.lang.Object#hashCode()
+	 */
 	@Override
 	public int hashCode() {
 		return model.hashCode() + (internalPointer == null ? 0 : internalPointer.hashCode()) + row * 1000 + column;

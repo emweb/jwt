@@ -105,7 +105,7 @@ public class WTreeTableNode extends WTreeNode {
 				.get(column).widget : null;
 	}
 
-	public WTreeTable getTable() {
+	WTreeTable getTable() {
 		return this.table_;
 	}
 
@@ -147,7 +147,7 @@ public class WTreeTableNode extends WTreeNode {
 	private WTreeTable table_;
 	private WContainerWidget row_;
 
-	private static class ColumnWidget {
+	static class ColumnWidget {
 		public WWidget widget;
 		public boolean isSet;
 

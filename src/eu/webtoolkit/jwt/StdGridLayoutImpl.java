@@ -373,7 +373,7 @@ class StdGridLayoutImpl extends StdLayoutImpl {
 		}
 	}
 
-	protected void containerAddWidgets(WContainerWidget container) {
+	void containerAddWidgets(WContainerWidget container) {
 		super.containerAddWidgets(container);
 		WApplication app = WApplication.getInstance();
 		if (this.getParentLayoutImpl() == null) {

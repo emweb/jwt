@@ -693,11 +693,11 @@ public abstract class WWebWidget extends WWidget {
 		return jsStringLiteral(value, '\'');
 	}
 
-	public static String jsStringLiteral(CharSequence value, char delimiter) {
+	static String jsStringLiteral(CharSequence value, char delimiter) {
 		return WString.toWString(value).getJsStringLiteral(delimiter);
 	}
 
-	public static final String jsStringLiteral(CharSequence value) {
+	static final String jsStringLiteral(CharSequence value) {
 		return jsStringLiteral(value, '\'');
 	}
 
@@ -711,22 +711,22 @@ public abstract class WWebWidget extends WWidget {
 		return this.children_ != null ? this.children_ : emptyWidgetList_;
 	}
 
-	public static String fixRelativeUrl(String url) {
+	static String fixRelativeUrl(String url) {
 		return WApplication.getInstance().fixRelativeUrl(url);
 	}
 
-	public void setFormObject(boolean how) {
+	void setFormObject(boolean how) {
 		this.flags_.set(BIT_FORM_OBJECT, how);
 		WApplication.getInstance().getSession().getRenderer()
 				.updateFormObjects(this, false);
 	}
 
-	public static boolean canOptimizeUpdates() {
+	static boolean canOptimizeUpdates() {
 		return !WApplication.getInstance().getSession().getRenderer()
 				.isPreLearning();
 	}
 
-	public int getZIndex() {
+	int getZIndex() {
 		if (this.layoutImpl_ != null) {
 			return this.layoutImpl_.zIndex_;
 		} else {
@@ -734,7 +734,7 @@ public abstract class WWebWidget extends WWidget {
 		}
 	}
 
-	protected void repaint(EnumSet<RepaintFlag> flags) {
+	void repaint(EnumSet<RepaintFlag> flags) {
 		super.askRerender();
 		if (!EnumUtils.mask(flags, RepaintFlag.RepaintPropertyIEMobile)
 				.isEmpty()) {
@@ -752,15 +752,15 @@ public abstract class WWebWidget extends WWidget {
 		}
 	}
 
-	protected final void repaint(RepaintFlag flag, RepaintFlag... flags) {
+	final void repaint(RepaintFlag flag, RepaintFlag... flags) {
 		repaint(EnumSet.of(flag, flags));
 	}
 
-	protected final void repaint() {
+	final void repaint() {
 		repaint(RepaintFlag.RepaintAll);
 	}
 
-	protected void getFormObjects(Map<String, WObject> formObjects) {
+	void getFormObjects(Map<String, WObject> formObjects) {
 		if (this.flags_.get(BIT_FORM_OBJECT)) {
 			formObjects.put(this.getId(), this);
 		}
@@ -772,7 +772,7 @@ public abstract class WWebWidget extends WWidget {
 		}
 	}
 
-	protected void doneRerender() {
+	void doneRerender() {
 		if (this.children_ != null) {
 			for (int i = 0; i < this.children_.size(); ++i) {
 				this.children_.get(i).getWebWidget().doneRerender();
@@ -780,7 +780,7 @@ public abstract class WWebWidget extends WWidget {
 		}
 	}
 
-	protected void updateDom(DomElement element, boolean all) {
+	void updateDom(DomElement element, boolean all) {
 		if (this.flags_.get(BIT_GEOMETRY_CHANGED)
 				|| !this.flags_.get(BIT_HIDE_WITH_VISIBILITY)
 				&& this.flags_.get(BIT_HIDDEN_CHANGED) || all) {
@@ -1164,14 +1164,14 @@ public abstract class WWebWidget extends WWidget {
 		propagateRenderOk(true);
 	}
 
-	protected DomElement renderRemove() {
+	DomElement renderRemove() {
 		DomElement e = DomElement.getForUpdate(this,
 				DomElementType.DomElement_DIV);
 		e.removeFromParent();
 		return e;
 	}
 
-	protected void propagateSetEnabled(boolean enabled) {
+	void propagateSetEnabled(boolean enabled) {
 		if (this.children_ != null) {
 			for (int i = 0; i < this.children_.size(); ++i) {
 				WWidget c = this.children_.get(i);
@@ -1232,13 +1232,13 @@ public abstract class WWebWidget extends WWidget {
 				.updateFormObjects(this, false);
 	}
 
-	protected void removeChild(WWidget w) {
+	void removeChild(WWidget child) {
 		assert this.children_ != null;
-		int i = this.children_.indexOf(w);
+		int i = this.children_.indexOf(child);
 		assert i != -1;
 		if (!this.flags_.get(BIT_IGNORE_CHILD_REMOVES)
 				&& !this.flags_.get(BIT_BEING_DELETED)) {
-			DomElement e = w.getWebWidget().renderRemove();
+			DomElement e = child.getWebWidget().renderRemove();
 			if (e != null) {
 				if (!(this.transientImpl_ != null)) {
 					this.transientImpl_ = new WWebWidget.TransientImpl();
@@ -1247,13 +1247,13 @@ public abstract class WWebWidget extends WWidget {
 				this.repaint(EnumSet.of(RepaintFlag.RepaintInnerHtml));
 			}
 		}
-		w.setParent((WObject) null);
-		if (!w.getWebWidget().flags_.get(BIT_BEING_DELETED)) {
-			w.getWebWidget().quickPropagateRenderOk();
+		child.setParent((WObject) null);
+		if (!child.getWebWidget().flags_.get(BIT_BEING_DELETED)) {
+			child.getWebWidget().quickPropagateRenderOk();
 		}
 		this.children_.remove(0 + i);
 		WApplication.getInstance().getSession().getRenderer()
-				.updateFormObjects(w.getWebWidget(), true);
+				.updateFormObjects(child.getWebWidget(), true);
 	}
 
 	void setHideWithOffsets(boolean how) {
@@ -1270,7 +1270,7 @@ public abstract class WWebWidget extends WWidget {
 		}
 	}
 
-	protected void doLoad(WWidget w) {
+	void doLoad(WWidget w) {
 		w.load();
 		if (!w.isLoaded()) {
 			System.err
@@ -1323,7 +1323,7 @@ public abstract class WWebWidget extends WWidget {
 
 	WWebWidget.TransientImpl transientImpl_;
 
-	private static class LayoutImpl {
+	static class LayoutImpl {
 		public PositionScheme positionScheme_;
 		public Side floatSide_;
 		public EnumSet<Side> clearSides_;
@@ -1359,7 +1359,7 @@ public abstract class WWebWidget extends WWidget {
 
 	private WWebWidget.LayoutImpl layoutImpl_;
 
-	private static class LookImpl {
+	static class LookImpl {
 		public WCssDecorationStyle decorationStyle_;
 		public String styleClass_;
 		public WString toolTip_;
@@ -1373,7 +1373,7 @@ public abstract class WWebWidget extends WWidget {
 
 	private WWebWidget.LookImpl lookImpl_;
 
-	private static class DropMimeType {
+	static class DropMimeType {
 		public String hoverStyleClass;
 
 		public DropMimeType() {
@@ -1455,7 +1455,7 @@ public abstract class WWebWidget extends WWidget {
 						.isVisibleOnly();
 	}
 
-	protected void getSDomChanges(List<DomElement> result, WApplication app) {
+	void getSDomChanges(List<DomElement> result, WApplication app) {
 		boolean isIEMobile = app.getEnvironment().agentIsIEMobile();
 		if (this.flags_.get(BIT_STUBBED)) {
 			if (app.getSession().getRenderer().isPreLearning()) {
@@ -1571,7 +1571,7 @@ public abstract class WWebWidget extends WWidget {
 		}
 	}
 
-	protected void setId(DomElement element, WApplication app) {
+	void setId(DomElement element, WApplication app) {
 		if (!app.getEnvironment().agentIsSpiderBot() || this.otherImpl_ != null
 				&& this.otherImpl_.id_ != null) {
 			if (!this.flags_.get(BIT_FORM_OBJECT)) {
@@ -1586,7 +1586,7 @@ public abstract class WWebWidget extends WWidget {
 		return this;
 	}
 
-	protected EventSignal voidEventSignal(String name, boolean create) {
+	EventSignal voidEventSignal(String name, boolean create) {
 		AbstractEventSignal b = this.getEventSignal(name);
 		if (b != null) {
 			return (EventSignal) b;
@@ -1601,7 +1601,7 @@ public abstract class WWebWidget extends WWidget {
 		}
 	}
 
-	protected EventSignal1<WKeyEvent> keyEventSignal(String name, boolean create) {
+	EventSignal1<WKeyEvent> keyEventSignal(String name, boolean create) {
 		AbstractEventSignal b = this.getEventSignal(name);
 		if (b != null) {
 			return (EventSignal1<WKeyEvent>) b;
@@ -1617,8 +1617,7 @@ public abstract class WWebWidget extends WWidget {
 		}
 	}
 
-	protected EventSignal1<WMouseEvent> mouseEventSignal(String name,
-			boolean create) {
+	EventSignal1<WMouseEvent> mouseEventSignal(String name, boolean create) {
 		AbstractEventSignal b = this.getEventSignal(name);
 		if (b != null) {
 			return (EventSignal1<WMouseEvent>) b;
@@ -1634,8 +1633,7 @@ public abstract class WWebWidget extends WWidget {
 		}
 	}
 
-	protected EventSignal1<WScrollEvent> scrollEventSignal(String name,
-			boolean create) {
+	EventSignal1<WScrollEvent> scrollEventSignal(String name, boolean create) {
 		AbstractEventSignal b = this.getEventSignal(name);
 		if (b != null) {
 			return (EventSignal1<WScrollEvent>) b;
@@ -1665,7 +1663,7 @@ public abstract class WWebWidget extends WWidget {
 		}
 	}
 
-	protected static Property[] properties = { Property.PropertyStyleTop,
+	static Property[] properties = { Property.PropertyStyleTop,
 			Property.PropertyStyleRight, Property.PropertyStyleBottom,
 			Property.PropertyStyleLeft };
 	private static List<WWidget> emptyWidgetList_ = new ArrayList<WWidget>();

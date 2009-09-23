@@ -86,6 +86,11 @@ public class WTransform {
 		return this;
 	}
 
+	/**
+	 * Clone method.
+	 * <p>
+	 * Clones this {@link WTransform} object.
+	 */
 	public WTransform clone() {
 		WTransform result = new WTransform();
 		result.assign(this);
@@ -311,7 +316,7 @@ public class WTransform {
 		return this.multiply(new WTransform(1, 0, 0, 1, dx, dy));
 	}
 
-	public WTransform multiply(WTransform Y) {
+	WTransform multiply(WTransform Y) {
 		WTransform X = this;
 		double z11 = X.m_[M11] * Y.m_[M11] + X.m_[M12] * Y.m_[M21];
 		double z12 = X.m_[M11] * Y.m_[M12] + X.m_[M12] * Y.m_[M22];

@@ -25,14 +25,25 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+/**
+ * WXmlLocalizedStrings is a {@link WLocalizedStrings} implementation which uses an XML file as input resource.
+ */
 public class WXmlLocalizedStrings extends WLocalizedStrings {
 	private String bundleName;
 	private Map<String, String> keyValues = null;
 
+	/**
+	 * Constructor.
+	 */
 	public WXmlLocalizedStrings() {
 		
 	}
 
+	/**
+	 * Use an XML file as input resource.
+	 * 
+	 * @param bundleName
+	 */
 	public void use(String bundleName) {
 		this.bundleName = bundleName;
 		

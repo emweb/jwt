@@ -40,6 +40,9 @@ public class WFont {
 		 */
 		Monospace;
 
+		/**
+		 * Returns the numerical representation of this enum.
+		 */
 		public int getValue() {
 			return ordinal();
 		}
@@ -62,6 +65,9 @@ public class WFont {
 		 */
 		Oblique;
 
+		/**
+		 * Returns the numerical representation of this enum.
+		 */
 		public int getValue() {
 			return ordinal();
 		}
@@ -80,6 +86,9 @@ public class WFont {
 		 */
 		SmallCaps;
 
+		/**
+		 * Returns the numerical representation of this enum.
+		 */
 		public int getValue() {
 			return ordinal();
 		}
@@ -110,6 +119,9 @@ public class WFont {
 		 */
 		Value;
 
+		/**
+		 * Returns the numerical representation of this enum.
+		 */
 		public int getValue() {
 			return ordinal();
 		}
@@ -160,6 +172,9 @@ public class WFont {
 		 */
 		FixedSize;
 
+		/**
+		 * Returns the numerical representation of this enum.
+		 */
 		public int getValue() {
 			return ordinal();
 		}
@@ -362,7 +377,7 @@ public class WFont {
 		return this.fixedSize_;
 	}
 
-	public String getCssText() {
+	String getCssText() {
 		DomElement d = DomElement.createNew(DomElementType.DomElement_DIV);
 		WFont f = this;
 		f.updateDomElement(d, false, true);

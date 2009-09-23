@@ -155,7 +155,7 @@ public class WTextArea extends WFormWidget {
 	private boolean contentChanged_;
 	private boolean attributesChanged_;
 
-	protected void updateDom(DomElement element, boolean all) {
+	void updateDom(DomElement element, boolean all) {
 		if (element.getType() == DomElementType.DomElement_TEXTAREA) {
 			if (this.contentChanged_ || all) {
 				if (all) {
@@ -175,17 +175,17 @@ public class WTextArea extends WFormWidget {
 		super.updateDom(element, all);
 	}
 
-	protected DomElementType getDomElementType() {
+	DomElementType getDomElementType() {
 		return DomElementType.DomElement_TEXTAREA;
 	}
 
-	protected void propagateRenderOk(boolean deep) {
+	void propagateRenderOk(boolean deep) {
 		this.attributesChanged_ = false;
 		this.contentChanged_ = false;
 		super.propagateRenderOk(deep);
 	}
 
-	protected void setFormData(WObject.FormData formData) {
+	void setFormData(WObject.FormData formData) {
 		if (this.contentChanged_) {
 			return;
 		}
@@ -237,7 +237,7 @@ public class WTextArea extends WFormWidget {
 		}
 	}
 
-	protected void resetContentChanged() {
+	void resetContentChanged() {
 		this.contentChanged_ = false;
 	}
 }

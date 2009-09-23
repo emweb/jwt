@@ -340,15 +340,15 @@ public class WPanel extends WCompositeWidget {
 		return this.expanded_;
 	}
 
-	public Signal1<Boolean> collapsedSS() {
+	Signal1<Boolean> collapsedSS() {
 		return this.collapsedSS_;
 	}
 
-	public Signal1<Boolean> expandedSS() {
+	Signal1<Boolean> expandedSS() {
 		return this.expandedSS_;
 	}
 
-	public WIconPair getCollapseIcon() {
+	WIconPair getCollapseIcon() {
 		return this.collapseIcon_;
 	}
 

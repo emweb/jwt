@@ -313,7 +313,7 @@ public class WText extends WInteractWidget {
 		}
 	}
 
-	protected void updateDom(DomElement element, boolean all) {
+	void updateDom(DomElement element, boolean all) {
 		if (this.textChanged_ || all) {
 			String text = this.getFormattedText();
 			if (this.textChanged_ || text.length() != 0) {
@@ -332,12 +332,12 @@ public class WText extends WInteractWidget {
 		super.updateDom(element, all);
 	}
 
-	protected DomElementType getDomElementType() {
+	DomElementType getDomElementType() {
 		return this.isInline() ? DomElementType.DomElement_SPAN
 				: DomElementType.DomElement_DIV;
 	}
 
-	protected void propagateRenderOk(boolean deep) {
+	void propagateRenderOk(boolean deep) {
 		this.textChanged_ = false;
 		this.wordWrapChanged_ = false;
 		super.propagateRenderOk(deep);

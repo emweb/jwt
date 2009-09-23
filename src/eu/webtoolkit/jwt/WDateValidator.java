@@ -193,11 +193,17 @@ public class WDateValidator extends WValidator {
 		return this.formats_.get(0);
 	}
 
+	/**
+	 * Set the date formats used to parse date strings.
+	 */
 	public void setFormats(List<String> formats) {
 		this.formats_ = formats;
 		this.repaint();
 	}
 
+	/**
+	 * Get the date formats used to parse date strings.
+	 */
 	public List<String> getFormats() {
 		return this.formats_;
 	}

@@ -52,6 +52,9 @@ public class WRectF {
 		this.height_ = topRight.getY() - topLeft.getY();
 	}
 
+	/**
+	 * Internal assign method.
+	 */
 	public WRectF assign(WRectF rhs) {
 		this.x_ = rhs.x_;
 		this.y_ = rhs.y_;

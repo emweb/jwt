@@ -41,6 +41,9 @@ public class WCssDecorationStyle extends WObject {
 		 */
 		NoRepeat;
 
+		/**
+		 * Returns the numerical representation of this enum.
+		 */
 		public int getValue() {
 			return ordinal();
 		}
@@ -67,6 +70,9 @@ public class WCssDecorationStyle extends WObject {
 		 */
 		Blink;
 
+		/**
+		 * Returns the numerical representation of this enum.
+		 */
 		public int getValue() {
 			return ordinal();
 		}
@@ -421,14 +427,14 @@ public class WCssDecorationStyle extends WObject {
 		return this.textDecoration_;
 	}
 
-	public String getCssText() {
+	String getCssText() {
 		DomElement e = new DomElement(DomElement.Mode.ModeCreate,
 				DomElementType.DomElement_A);
 		this.updateDomElement(e, true);
 		return e.getCssStyle();
 	}
 
-	public void updateDomElement(DomElement element, boolean all) {
+	void updateDomElement(DomElement element, boolean all) {
 		if (this.cursorChanged_ || all) {
 			switch (this.cursor_) {
 			case AutoCursor:
