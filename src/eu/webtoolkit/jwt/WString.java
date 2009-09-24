@@ -89,7 +89,7 @@ public class WString implements Comparable<WString>, CharSequence {
 	}
 
 	/**	
-	 * Equality comparison method.
+	 * Indicates whether some other object is "equal to" this one.
 	 */
 	public boolean equals(WString other) {
 		return toString().equals(other.toString());
@@ -165,7 +165,7 @@ public class WString implements Comparable<WString>, CharSequence {
 	}
 
 	/**
-	 * @see java.lang.Comparable#compareTo(java.lang.Object)
+	 * Compares this WString object with the specified WString object for order.
 	 */
 	public int compareTo(WString arg0) {
 		return getValue().compareTo(arg0.getValue());

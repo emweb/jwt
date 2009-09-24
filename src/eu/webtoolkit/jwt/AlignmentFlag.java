@@ -94,9 +94,15 @@ public enum AlignmentFlag {
 		return ordinal();
 	}
 
+	/**
+	 * Combination of all horizontal alignment flags.
+	 */
 	public static final EnumSet<AlignmentFlag> AlignHorizontalMask = EnumSet
 			.of(AlignmentFlag.AlignLeft, AlignmentFlag.AlignRight,
 					AlignmentFlag.AlignCenter, AlignmentFlag.AlignJustify);
+	/**
+	 * Combination of all vertical alignment flags.
+	 */
 	public static final EnumSet<AlignmentFlag> AlignVerticalMask = EnumSet.of(
 			AlignmentFlag.AlignBaseline, AlignmentFlag.AlignSub,
 			AlignmentFlag.AlignSuper, AlignmentFlag.AlignTop,

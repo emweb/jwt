@@ -759,14 +759,14 @@ public class WDate implements Comparable<WDate> {
 	}
 
 	/**
-	 * @see java.lang.Object#hashCode()
+	 * Returns a hash code value for the object.
 	 */
 	public int hashCode() {
 		return d.hashCode();
 	}
 
 	/**
-	 * @see java.lang.Comparable#compareTo(java.lang.Object)
+	 * Compares this WDate object with the specified  WDate object for order.
 	 */
 	public int compareTo(WDate o) {
 		if (o == null)

@@ -56,13 +56,28 @@ public enum Side {
 		return ordinal();
 	}
 
+	/**
+	 * No side.
+	 */
 	public static final EnumSet<Side> None = EnumSet.noneOf(Side.class);
+	/**
+	 * (CenterX | CenterY)
+	 */
 	public static final EnumSet<Side> CenterXY = EnumSet.of(Side.CenterX,
 			Side.CenterY);
+	/**
+	 * (Left | Right)
+	 */
 	public static final EnumSet<Side> Horizontals = EnumSet.of(Side.Left,
 			Side.Right);
+	/**
+	 * (Top | Bottom)
+	 */
 	public static final EnumSet<Side> Verticals = EnumSet.of(Side.Top,
 			Side.Bottom);
+	/**
+	 * All sides.
+	 */
 	public static final EnumSet<Side> All = EnumSet.of(Side.Top, Side.Bottom,
 			Side.Left, Side.Right);
 }

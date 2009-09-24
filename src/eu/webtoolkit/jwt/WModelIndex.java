@@ -127,7 +127,7 @@ public class WModelIndex implements Comparable<WModelIndex> {
 	}
 	
 	/**
-	 * @see java.lang.Object#equals(java.lang.Object)
+	 * Indicates whether some other object is "equal to" this one. 
 	 */
 	@Override
 	public boolean equals(Object other) {
@@ -142,7 +142,7 @@ public class WModelIndex implements Comparable<WModelIndex> {
 	}
 
 	/**
-	 * @see java.lang.Object#hashCode()
+	 * Returns a hash code value for the object.
 	 */
 	@Override
 	public int hashCode() {
