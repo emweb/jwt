@@ -253,7 +253,7 @@ public class WButtonGroup extends WObject {
 		return this.checkedChanged_;
 	}
 
-	static class Button {
+	private static class Button {
 		public WRadioButton button;
 		public int id;
 	}

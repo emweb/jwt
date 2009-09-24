@@ -126,7 +126,7 @@ public class WTableCell extends WContainerWidget {
 	private int columnSpan_;
 	private boolean spanChanged_;
 
-	void updateDom(DomElement element, boolean all) {
+	protected void updateDom(DomElement element, boolean all) {
 		if (all && this.rowSpan_ != 1 || this.spanChanged_) {
 			element.setProperty(Property.PropertyRowSpan, String
 					.valueOf(this.rowSpan_));
@@ -148,7 +148,7 @@ public class WTableCell extends WContainerWidget {
 		super.updateDom(element, all);
 	}
 
-	DomElementType getDomElementType() {
+	protected DomElementType getDomElementType() {
 		if (this.column_ < this.getTable().getHeaderCount(Orientation.Vertical)
 				|| this.getRow() < this.getTable().getHeaderCount(
 						Orientation.Horizontal)) {
@@ -158,7 +158,7 @@ public class WTableCell extends WContainerWidget {
 		}
 	}
 
-	void propagateRenderOk(boolean deep) {
+	protected void propagateRenderOk(boolean deep) {
 		this.spanChanged_ = false;
 		super.propagateRenderOk(deep);
 	}

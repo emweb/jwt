@@ -120,7 +120,7 @@ public class WRadioButton extends WAbstractToggleButton {
 		this.buttonGroup_ = group;
 	}
 
-	void updateDom(DomElement element, boolean all) {
+	protected void updateDom(DomElement element, boolean all) {
 		if (all) {
 			element.setAttribute("type", "radio");
 			if (this.buttonGroup_ != null) {
@@ -131,14 +131,14 @@ public class WRadioButton extends WAbstractToggleButton {
 		super.updateDom(element, all);
 	}
 
-	void getFormObjects(Map<String, WObject> formObjects) {
+	protected void getFormObjects(Map<String, WObject> formObjects) {
 		if (this.buttonGroup_ != null) {
 			formObjects.put(this.buttonGroup_.getId(), this.buttonGroup_);
 		}
 		super.getFormObjects(formObjects);
 	}
 
-	void setFormData(WObject.FormData formData) {
+	protected void setFormData(WObject.FormData formData) {
 		if (this.stateChanged_) {
 			return;
 		}

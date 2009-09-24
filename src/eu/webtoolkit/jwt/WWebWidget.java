@@ -1323,7 +1323,7 @@ public abstract class WWebWidget extends WWidget {
 
 	WWebWidget.TransientImpl transientImpl_;
 
-	static class LayoutImpl {
+	private static class LayoutImpl {
 		public PositionScheme positionScheme_;
 		public Side floatSide_;
 		public EnumSet<Side> clearSides_;
@@ -1359,7 +1359,7 @@ public abstract class WWebWidget extends WWidget {
 
 	private WWebWidget.LayoutImpl layoutImpl_;
 
-	static class LookImpl {
+	private static class LookImpl {
 		public WCssDecorationStyle decorationStyle_;
 		public String styleClass_;
 		public WString toolTip_;
@@ -1373,7 +1373,7 @@ public abstract class WWebWidget extends WWidget {
 
 	private WWebWidget.LookImpl lookImpl_;
 
-	static class DropMimeType {
+	private static class DropMimeType {
 		public String hoverStyleClass;
 
 		public DropMimeType() {

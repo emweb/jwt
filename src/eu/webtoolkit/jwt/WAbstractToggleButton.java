@@ -188,7 +188,7 @@ public class WAbstractToggleButton extends WFormWidget {
 
 	CheckState state_;
 
-	DomElement createDomElement(WApplication app) {
+	protected DomElement createDomElement(WApplication app) {
 		DomElement result = DomElement.createNew(this.getDomElementType());
 		this.setId(result, app);
 		DomElement input = result;
@@ -239,7 +239,7 @@ public class WAbstractToggleButton extends WFormWidget {
 		return result;
 	}
 
-	void getDomChanges(List<DomElement> result, WApplication app) {
+	protected void getDomChanges(List<DomElement> result, WApplication app) {
 		DomElementType type = this.getDomElementType();
 		if (type == DomElementType.DomElement_SPAN) {
 			DomElement input = DomElement.getForUpdate("in" + this.getId(),
@@ -283,7 +283,7 @@ public class WAbstractToggleButton extends WFormWidget {
 		}
 	}
 
-	void updateDom(DomElement element, boolean all) {
+	protected void updateDom(DomElement element, boolean all) {
 		if (this.stateChanged_ || all) {
 			element.setProperty(Property.PropertyChecked,
 					this.state_ == CheckState.Checked ? "true" : "false");
@@ -346,11 +346,11 @@ public class WAbstractToggleButton extends WFormWidget {
 		}
 	}
 
-	void getFormObjects(Map<String, WObject> formObjects) {
+	protected void getFormObjects(Map<String, WObject> formObjects) {
 		formObjects.put(this.getFormName(), this);
 	}
 
-	void setFormData(WObject.FormData formData) {
+	protected void setFormData(WObject.FormData formData) {
 		if (this.stateChanged_) {
 			return;
 		}
@@ -368,7 +368,7 @@ public class WAbstractToggleButton extends WFormWidget {
 		}
 	}
 
-	void propagateRenderOk(boolean deep) {
+	protected void propagateRenderOk(boolean deep) {
 		this.stateChanged_ = false;
 		EventSignal check = this.voidEventSignal(CHECKED_SIGNAL, false);
 		if (check != null) {
@@ -381,7 +381,7 @@ public class WAbstractToggleButton extends WFormWidget {
 		super.propagateRenderOk(deep);
 	}
 
-	DomElementType getDomElementType() {
+	protected DomElementType getDomElementType() {
 		if (this.isUseImageWorkaround()) {
 			return DomElementType.DomElement_SPAN;
 		} else {

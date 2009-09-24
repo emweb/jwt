@@ -34,9 +34,6 @@ public enum FillRangeType {
 	 */
 	ZeroValueFill;
 
-	/**
-	 * Returns the numerical representation of this enum.
-	 */
 	public int getValue() {
 		return ordinal();
 	}

@@ -1616,7 +1616,7 @@ public class WTreeView extends WCompositeWidget {
 		return null;
 	}
 
-	void render() {
+	protected void render() {
 		while (this.renderState_ != WTreeView.RenderState.RenderOk) {
 			WTreeView.RenderState s = this.renderState_;
 			this.renderState_ = WTreeView.RenderState.RenderOk;
@@ -1665,7 +1665,7 @@ public class WTreeView extends WCompositeWidget {
 		super.enableAjax();
 	}
 
-	static class ColumnInfo {
+	private static class ColumnInfo {
 		public WCssTemplateRule styleRule;
 		public int id;
 		public SortOrder sortOrder;
@@ -1747,9 +1747,6 @@ public class WTreeView extends WCompositeWidget {
 			this.value = value;
 		}
 
-		/**
-		 * Returns the numerical representation of this enum.
-		 */
 		public int getValue() {
 			return value;
 		}

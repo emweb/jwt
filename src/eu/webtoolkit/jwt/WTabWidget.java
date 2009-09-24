@@ -81,9 +81,6 @@ public class WTabWidget extends WCompositeWidget {
 		 */
 		PreLoading;
 
-		/**
-		 * Returns the numerical representation of this enum.
-		 */
 		public int getValue() {
 			return ordinal();
 		}
@@ -407,7 +404,7 @@ public class WTabWidget extends WCompositeWidget {
 	private WMenu menu_;
 	private WStackedWidget contents_;
 
-	static class TabItem {
+	private static class TabItem {
 		public boolean enabled;
 		public boolean hidden;
 		public WString toolTip;

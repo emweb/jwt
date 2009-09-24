@@ -307,7 +307,7 @@ public abstract class WInteractWidget extends WWebWidget {
 		setDraggable(mimeType, dragWidget, isDragWidgetOnly, (WObject) null);
 	}
 
-	protected void updateDom(DomElement element, boolean all) {
+	void updateDom(DomElement element, boolean all) {
 		boolean updateKeyDown = false;
 		EventSignal enterPress = this
 				.voidEventSignal(ENTER_PRESS_SIGNAL, false);
@@ -395,13 +395,13 @@ public abstract class WInteractWidget extends WWebWidget {
 		super.propagateRenderOk(deep);
 	}
 
-	protected JSlot dragSlot_;
+	JSlot dragSlot_;
 	private static String KEYDOWN_SIGNAL = "M_keydown";
 	static String KEYPRESS_SIGNAL = "keypress";
 	private static String KEYUP_SIGNAL = "keyup";
 	private static String ENTER_PRESS_SIGNAL = "M_enterpress";
 	private static String ESCAPE_PRESS_SIGNAL = "M_escapepress";
-	protected static String CLICK_SIGNAL = "click";
+	static String CLICK_SIGNAL = "click";
 	private static String DBL_CLICK_SIGNAL = "dblclick";
 	static String MOUSE_DOWN_SIGNAL = "mousedown";
 	static String MOUSE_UP_SIGNAL = "mouseup";

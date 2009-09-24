@@ -87,9 +87,6 @@ public enum AlignmentFlag {
 	 */
 	AlignTextBottom, AlignLength;
 
-	/**
-	 * Returns the numerical representation of this enum.
-	 */
 	public int getValue() {
 		return ordinal();
 	}

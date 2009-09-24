@@ -89,9 +89,6 @@ public class WBorderLayout extends WLayout {
 		 */
 		Center;
 
-		/**
-		 * Returns the numerical representation of this enum.
-		 */
 		public int getValue() {
 			return ordinal();
 		}

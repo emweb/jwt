@@ -32,7 +32,7 @@ class WTimerWidget extends WInteractWidget {
 	private boolean timerStarted_;
 	private boolean jsRepeat_;
 
-	void updateDom(DomElement element, boolean all) {
+	protected void updateDom(DomElement element, boolean all) {
 		if (this.timerStarted_
 				|| (!WApplication.getInstance().getEnvironment()
 						.hasJavaScript() || all) && this.timer_.isActive()) {
@@ -43,11 +43,11 @@ class WTimerWidget extends WInteractWidget {
 		super.updateDom(element, all);
 	}
 
-	DomElementType getDomElementType() {
+	protected DomElementType getDomElementType() {
 		return DomElementType.DomElement_SPAN;
 	}
 
-	DomElement renderRemove() {
+	protected DomElement renderRemove() {
 		DomElement e = DomElement.getForUpdate(this,
 				DomElementType.DomElement_DIV);
 		e.removeFromParent();

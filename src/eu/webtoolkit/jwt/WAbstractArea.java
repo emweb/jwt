@@ -271,7 +271,7 @@ public class WAbstractArea extends WObject {
 		return this.impl_.getDecorationStyle().getCursor();
 	}
 
-	public WImage getImage() {
+	WImage getImage() {
 		return ((this.impl_.getParent()) instanceof WImage ? (WImage) (this.impl_
 				.getParent())
 				: null);
@@ -491,14 +491,14 @@ public class WAbstractArea extends WObject {
 		this.setRef(this.anchor_.resource_.getUrl());
 	}
 
-	protected WAbstractArea() {
+	WAbstractArea() {
 		super();
 		this.impl_ = new AreaWidget(this);
 		this.hole_ = false;
 		this.anchor_ = null;
 	}
 
-	protected void updateDom(DomElement element, boolean all) {
+	void updateDom(DomElement element, boolean all) {
 		if (!this.hole_ && this.anchor_ != null) {
 			element.setAttribute("href", WWebWidget
 					.fixRelativeUrl(this.anchor_.ref_));
@@ -520,7 +520,7 @@ public class WAbstractArea extends WObject {
 		}
 	}
 
-	protected void repaint() {
+	void repaint() {
 		this.impl_.repaint();
 	}
 

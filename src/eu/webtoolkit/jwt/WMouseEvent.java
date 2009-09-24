@@ -63,6 +63,9 @@ public class WMouseEvent implements WAbstractEvent {
 		 */
 		public int y;
 
+		/**
+		 * Constructor.
+		 */
 		public Coordinates(int x_, int y_) {
 			this.x = x_;
 			this.y = y_;
@@ -137,12 +140,12 @@ public class WMouseEvent implements WAbstractEvent {
 		return new WMouseEvent(jsEvent);
 	}
 
-	public WMouseEvent(JavaScriptEvent jsEvent) {
+	WMouseEvent(JavaScriptEvent jsEvent) {
 		super();
 		this.jsEvent_ = jsEvent;
 	}
 
-	protected JavaScriptEvent jsEvent_;
+	JavaScriptEvent jsEvent_;
 
 	static int parseIntParameter(WebRequest request, String name, int ifMissing) {
 		String p;

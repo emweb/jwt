@@ -22,7 +22,7 @@ public class WKeyEvent implements WAbstractEvent {
 	/**
 	 * Default constructor.
 	 */
-	public WKeyEvent() {
+	WKeyEvent() {
 		super();
 		this.jsEvent_ = new JavaScriptEvent();
 	}

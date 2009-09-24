@@ -59,9 +59,6 @@ public class WDialog extends WCompositeWidget {
 		 */
 		Accepted;
 
-		/**
-		 * Returns the numerical representation of this enum.
-		 */
 		public int getValue() {
 			return ordinal();
 		}

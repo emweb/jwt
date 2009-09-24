@@ -224,7 +224,7 @@ public abstract class WFormWidget extends WInteractWidget {
 	private static final int BIT_INITIAL_FOCUS = 2;
 	private static final int BIT_READONLY = 3;
 	private static final int BIT_READONLY_CHANGED = 4;
-	BitSet flags_;
+	private BitSet flags_;
 
 	private void undoSetFocus() {
 	}
@@ -275,7 +275,7 @@ public abstract class WFormWidget extends WInteractWidget {
 		}
 	}
 
-	void updateDom(DomElement element, boolean all) {
+	protected void updateDom(DomElement element, boolean all) {
 		WEnvironment env = WApplication.getInstance().getEnvironment();
 		if (!env.agentIsIE()
 				|| !(((this) instanceof WAbstractToggleButton ? (WAbstractToggleButton) (this)
@@ -308,7 +308,7 @@ public abstract class WFormWidget extends WInteractWidget {
 		super.updateDom(element, all);
 	}
 
-	void propagateRenderOk(boolean deep) {
+	protected void propagateRenderOk(boolean deep) {
 		this.flags_.clear(BIT_ENABLED_CHANGED);
 		super.propagateRenderOk(deep);
 	}
@@ -316,7 +316,7 @@ public abstract class WFormWidget extends WInteractWidget {
 	// protected AbstractEventSignal.LearningListener
 	// getStateless(<pointertomember or dependentsizedarray>
 	// methodpointertomember or dependentsizedarray>) ;
-	void propagateSetEnabled(boolean enabled) {
+	protected void propagateSetEnabled(boolean enabled) {
 		this.flags_.set(BIT_ENABLED_CHANGED);
 		this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyAttribute));
 		super.propagateSetEnabled(enabled);

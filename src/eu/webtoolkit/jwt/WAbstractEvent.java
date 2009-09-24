@@ -7,11 +7,8 @@ package eu.webtoolkit.jwt;
 
 
 /**
- * An internal interface for providing details for an event
+ * Internal class {@link WAbstractEvent}
  */
 public interface WAbstractEvent {
-	/**
-	 * Internal method.
-	 */
 	public WAbstractEvent createFromJSEvent(JavaScriptEvent jsEvent);
 }

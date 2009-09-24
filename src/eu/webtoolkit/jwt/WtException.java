@@ -5,13 +5,20 @@
  */
 package eu.webtoolkit.jwt;
 
+/**
+ * JWt runtime exception.
+ */
 public class WtException extends RuntimeException {
-	private static final long serialVersionUID = 1L;
-
+	/**
+	 * Constructor.
+	 */
 	public WtException(String msg) {
 		super(msg);
 	}
 
+	/**
+	 * Constructor.
+	 */
 	public WtException(String msg, Exception wrapped) {
 		super(msg, wrapped);
 	}

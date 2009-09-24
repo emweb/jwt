@@ -246,7 +246,7 @@ public class WLabel extends WInteractWidget {
 	private boolean newImage_;
 	private boolean newText_;
 
-	void updateDom(DomElement element, boolean all) {
+	protected void updateDom(DomElement element, boolean all) {
 		WApplication app = WApplication.getInstance();
 		if (this.image_ != null && this.text_ != null) {
 			if (this.imageSide_ == Side.Left) {
@@ -269,7 +269,7 @@ public class WLabel extends WInteractWidget {
 		super.updateDom(element, all);
 	}
 
-	DomElementType getDomElementType() {
+	protected DomElementType getDomElementType() {
 		if (this.buddy_ != null) {
 			return DomElementType.DomElement_LABEL;
 		} else {
@@ -278,7 +278,7 @@ public class WLabel extends WInteractWidget {
 		}
 	}
 
-	void getDomChanges(List<DomElement> result, WApplication app) {
+	protected void getDomChanges(List<DomElement> result, WApplication app) {
 		super.getDomChanges(result, app);
 		if (this.text_ != null) {
 			((WWebWidget) this.text_).getDomChanges(result, app);
@@ -288,14 +288,14 @@ public class WLabel extends WInteractWidget {
 		}
 	}
 
-	void propagateRenderOk(boolean deep) {
+	protected void propagateRenderOk(boolean deep) {
 		this.newImage_ = false;
 		this.newText_ = false;
 		this.buddyChanged_ = false;
 		super.propagateRenderOk(deep);
 	}
 
-	void propagateSetEnabled(boolean enabled) {
+	protected void propagateSetEnabled(boolean enabled) {
 		if (this.text_ != null) {
 			this.text_.setStyleClass(enabled ? "" : "Wt-disabled");
 		}

@@ -16,12 +16,9 @@ import java.util.Map;
 import java.util.Set;
 
 class DomElement {
-	enum Mode {
+	public enum Mode {
 		ModeCreate, ModeUpdate;
 
-		/**
-		 * Returns the numerical representation of this enum.
-		 */
 		public int getValue() {
 			return ordinal();
 		}
@@ -225,7 +222,7 @@ class DomElement {
 				""));
 	}
 
-	static class EventAction {
+	public static class EventAction {
 		public String jsCondition;
 		public String jsCode;
 		public String updateCmd;
@@ -328,18 +325,15 @@ class DomElement {
 		return this.discardWithParent_;
 	}
 
-	enum Priority {
+	public enum Priority {
 		Delete, Create, Update;
 
-		/**
-		 * Returns the numerical representation of this enum.
-		 */
 		public int getValue() {
 			return ordinal();
 		}
 	}
 
-	static class TimeoutEvent {
+	public static class TimeoutEvent {
 		public int msec;
 		public String event;
 		public boolean repeat;
@@ -1311,7 +1305,7 @@ class DomElement {
 	private Map<Property, String> properties_;
 	private Map<String, DomElement.EventHandler> eventHandlers_;
 
-	static class ChildInsertion {
+	private static class ChildInsertion {
 		public int pos;
 		public DomElement child;
 

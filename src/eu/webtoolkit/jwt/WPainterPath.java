@@ -438,13 +438,10 @@ public class WPainterPath {
 		this.addPath(path);
 	}
 
-	static class Segment {
-		enum Type {
+	public static class Segment {
+		public enum Type {
 			MoveTo, LineTo, CubicC1, CubicC2, CubicEnd, QuadC, QuadEnd, ArcC, ArcR, ArcAngleSweep;
 
-			/**
-			 * Returns the numerical representation of this enum.
-			 */
 			public int getValue() {
 				return ordinal();
 			}

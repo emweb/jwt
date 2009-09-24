@@ -847,12 +847,9 @@ public class WAxis {
 	}
 
 	static class TickLabel {
-		enum TickLength {
+		public enum TickLength {
 			Zero, Short, Long;
 
-			/**
-			 * Returns the numerical representation of this enum.
-			 */
 			public int getValue() {
 				return ordinal();
 			}

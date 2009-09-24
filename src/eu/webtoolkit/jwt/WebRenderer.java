@@ -66,12 +66,9 @@ class WebRenderer implements SlotLearnerInterface {
 		this.formObjectsChanged_ = true;
 	}
 
-	enum ResponseType {
+	public enum ResponseType {
 		Page, Script, Update;
 
-		/**
-		 * Returns the numerical representation of this enum.
-		 */
 		public int getValue() {
 			return ordinal();
 		}
@@ -198,7 +195,7 @@ class WebRenderer implements SlotLearnerInterface {
 				.append(redirect).append("';\n");
 	}
 
-	static class Cookie {
+	private static class Cookie {
 		public String name;
 		public String value;
 		public String path;

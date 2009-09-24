@@ -288,7 +288,7 @@ public class WCalendar extends WCompositeWidget {
 		this.singleClickSelect_ = single;
 	}
 
-	void render() {
+	protected void render() {
 		if (this.needRenderMonth_) {
 			boolean create = this.cellClickMapper_ == null;
 			String buf;
@@ -385,7 +385,7 @@ public class WCalendar extends WCompositeWidget {
 	private Signal selectionChanged_;
 	private Signal1<WDate> selected_;
 
-	static class Coordinate {
+	private static class Coordinate {
 		public int i;
 		public int j;
 

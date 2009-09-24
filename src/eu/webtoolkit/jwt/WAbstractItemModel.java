@@ -180,11 +180,11 @@ public abstract class WAbstractItemModel extends WObject {
 		return getRowCount(null);
 	}
 
-	public boolean canFetchMore(WModelIndex parent) {
+	boolean canFetchMore(WModelIndex parent) {
 		return false;
 	}
 
-	public void fetchMore(WModelIndex parent) {
+	void fetchMore(WModelIndex parent) {
 	}
 
 	/**

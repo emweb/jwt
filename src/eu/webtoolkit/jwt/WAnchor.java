@@ -523,14 +523,14 @@ public class WAnchor extends WContainerWidget {
 	private WText text_;
 	private WImage image_;
 	private AnchorTarget target_;
-	BitSet flags_;
+	private BitSet flags_;
 	private JSlot changeInternalPathJS_;
 
 	private void resourceChanged() {
 		this.setRef(this.resource_.getUrl());
 	}
 
-	void updateDom(DomElement element, boolean all) {
+	protected void updateDom(DomElement element, boolean all) {
 		if (this.flags_.get(BIT_REF_CHANGED) || all) {
 			String url = "";
 			if (this.flags_.get(BIT_REF_INTERNAL_PATH)) {
@@ -573,11 +573,11 @@ public class WAnchor extends WContainerWidget {
 		super.updateDom(element, all);
 	}
 
-	DomElementType getDomElementType() {
+	protected DomElementType getDomElementType() {
 		return DomElementType.DomElement_A;
 	}
 
-	void propagateRenderOk(boolean deep) {
+	protected void propagateRenderOk(boolean deep) {
 		this.flags_.clear(BIT_REF_CHANGED);
 		this.flags_.clear(BIT_TARGET_CHANGED);
 		super.propagateRenderOk(deep);

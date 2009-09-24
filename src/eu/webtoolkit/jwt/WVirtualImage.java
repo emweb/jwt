@@ -359,7 +359,7 @@ public class WVirtualImage extends WCompositeWidget {
 	private WContainerWidget impl_;
 	private WContainerWidget contents_;
 
-	static class Rect {
+	private static class Rect {
 		public long x1;
 		public long y1;
 		public long x2;

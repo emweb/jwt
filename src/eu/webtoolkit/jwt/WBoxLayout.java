@@ -93,9 +93,6 @@ public class WBoxLayout extends WLayout {
 		 */
 		BottomToTop;
 
-		/**
-		 * Returns the numerical representation of this enum.
-		 */
 		public int getValue() {
 			return ordinal();
 		}

@@ -86,7 +86,7 @@ public abstract class WViewWidget extends WWebWidget {
 		super.load();
 	}
 
-	void render() {
+	public void render() {
 		if (this.needContentsUpdate_) {
 			if (this.contents_ != null)
 				this.contents_.remove();

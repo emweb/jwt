@@ -150,12 +150,12 @@ public class WStackedWidget extends WContainerWidget {
 		this.setCurrentIndex(this.getIndexOf(widget));
 	}
 
-	void removeChild(WWidget child) {
+	protected void removeChild(WWidget child) {
 		this.removeWidget(child);
 		super.removeChild(child);
 	}
 
-	DomElement createDomElement(WApplication app) {
+	protected DomElement createDomElement(WApplication app) {
 		this.setCurrentIndex(this.currentIndex_);
 		WApplication
 				.getInstance()
@@ -165,7 +165,7 @@ public class WStackedWidget extends WContainerWidget {
 		return super.createDomElement(app);
 	}
 
-	void getDomChanges(List<DomElement> result, WApplication app) {
+	protected void getDomChanges(List<DomElement> result, WApplication app) {
 		this.setCurrentIndex(this.currentIndex_);
 		super.getDomChanges(result, app);
 	}

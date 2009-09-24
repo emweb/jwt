@@ -147,7 +147,7 @@ public class WTreeTableNode extends WTreeNode {
 	private WTreeTable table_;
 	private WContainerWidget row_;
 
-	static class ColumnWidget {
+	private static class ColumnWidget {
 		public WWidget widget;
 		public boolean isSet;
 

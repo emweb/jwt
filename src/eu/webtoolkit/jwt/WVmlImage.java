@@ -407,7 +407,7 @@ public class WVmlImage implements WVectorImage {
 	private WBrush currentBrush_;
 	private WPen currentPen_;
 
-	static class ActivePath {
+	private static class ActivePath {
 		public String path;
 		public WRectF bbox;
 

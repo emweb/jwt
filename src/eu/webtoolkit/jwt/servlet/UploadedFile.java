@@ -61,7 +61,7 @@ public class UploadedFile {
 		this.fileInfo_.isStolen = true;
 	}
 
-	static class Impl {
+	private static class Impl {
 		public String spoolFileName;
 		public String clientFileName;
 		public String contentType;

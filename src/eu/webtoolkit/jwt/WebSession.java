@@ -17,12 +17,9 @@ import eu.webtoolkit.jwt.servlet.WebRequest;
 import eu.webtoolkit.jwt.servlet.WebResponse;
 
 class WebSession {
-	enum State {
+	public enum State {
 		JustCreated, Loaded, Dead;
 
-		/**
-		 * Returns the numerical representation of this enum.
-		 */
 		public int getValue() {
 			return ordinal();
 		}
@@ -634,12 +631,9 @@ class WebSession {
 		}
 	}
 
-	enum BootstrapOption {
+	public enum BootstrapOption {
 		ClearInternalPath, KeepInternalPath;
 
-		/**
-		 * Returns the numerical representation of this enum.
-		 */
 		public int getValue() {
 			return ordinal();
 		}
@@ -730,7 +724,7 @@ class WebSession {
 		}
 	}
 
-	static class Handler {
+	public static class Handler {
 		public Handler(WebSession session, WebRequest request,
 				WebResponse response) {
 			this.session_ = session;
@@ -925,7 +919,7 @@ class WebSession {
 		handler.setRequest((WebRequest) null, (WebResponse) null);
 	}
 
-	enum SignalKind {
+	private enum SignalKind {
 		LearnedStateless(0), AutoLearnStateless(1), Dynamic(2);
 
 		private int value;
@@ -934,9 +928,6 @@ class WebSession {
 			this.value = value;
 		}
 
-		/**
-		 * Returns the numerical representation of this enum.
-		 */
 		public int getValue() {
 			return value;
 		}

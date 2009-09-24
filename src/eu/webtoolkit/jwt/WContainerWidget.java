@@ -127,9 +127,6 @@ public class WContainerWidget extends WInteractWidget {
 		 */
 		OverflowScroll;
 
-		/**
-		 * Returns the numerical representation of this enum.
-		 */
 		public int getValue() {
 			return ordinal();
 		}
@@ -185,7 +182,7 @@ public class WContainerWidget extends WInteractWidget {
 	 * @see WContainerWidget#getLayout()
 	 * @see WContainerWidget#setLayout(WLayout layout, EnumSet alignment)
 	 */
-	void setLayout(WLayout layout) {
+	public void setLayout(WLayout layout) {
 		this.setLayout(layout, EnumSet.of(AlignmentFlag.AlignJustify));
 	}
 
@@ -266,7 +263,7 @@ public class WContainerWidget extends WInteractWidget {
 	 * 
 	 * @see WContainerWidget#setLayout(WLayout layout)
 	 */
-	WLayout getLayout() {
+	public WLayout getLayout() {
 		return this.layout_;
 	}
 
@@ -691,7 +688,7 @@ public class WContainerWidget extends WInteractWidget {
 	private static final int BIT_LIST = 4;
 	private static final int BIT_ORDERED_LIST = 5;
 	private static final int BIT_LAYOUT_CHANGED = 6;
-	BitSet flags_;
+	private BitSet flags_;
 	EnumSet<AlignmentFlag> contentAlignment_;
 	private WContainerWidget.Overflow[] overflow_;
 	private WLength[] padding_;
@@ -747,7 +744,7 @@ public class WContainerWidget extends WInteractWidget {
 		this.propagateRenderOk(false);
 	}
 
-	void removeChild(WWidget child) {
+	protected void removeChild(WWidget child) {
 		boolean ignoreThisChildRemove = false;
 		if (this.transientImpl_ != null) {
 			if (this.transientImpl_.addedChildren_.remove(child)) {
@@ -772,7 +769,7 @@ public class WContainerWidget extends WInteractWidget {
 		return 0;
 	}
 
-	void getDomChanges(List<DomElement> result, WApplication app) {
+	protected void getDomChanges(List<DomElement> result, WApplication app) {
 		DomElement e = DomElement.getForUpdate(this, this.getDomElementType());
 		if (!app.getSession().getRenderer().isPreLearning()) {
 			if (this.flags_.get(BIT_LAYOUT_CHANGED)) {
@@ -843,7 +840,7 @@ public class WContainerWidget extends WInteractWidget {
 		}
 	}
 
-	DomElementType getDomElementType() {
+	protected DomElementType getDomElementType() {
 		DomElementType type = this.isInline() ? DomElementType.DomElement_SPAN
 				: DomElementType.DomElement_DIV;
 		WContainerWidget p = ((this.getParent()) instanceof WContainerWidget ? (WContainerWidget) (this
@@ -859,7 +856,7 @@ public class WContainerWidget extends WInteractWidget {
 		return type;
 	}
 
-	void updateDom(DomElement element, boolean all) {
+	protected void updateDom(DomElement element, boolean all) {
 		if (all && element.getType() == DomElementType.DomElement_LI
 				&& this.isInline()) {
 			element.setProperty(Property.PropertyStyleDisplay, "inline");
@@ -1007,7 +1004,7 @@ public class WContainerWidget extends WInteractWidget {
 		}
 	}
 
-	void propagateRenderOk(boolean deep) {
+	protected void propagateRenderOk(boolean deep) {
 		this.flags_.clear(BIT_CONTENT_ALIGNMENT_CHANGED);
 		this.flags_.clear(BIT_PADDINGS_CHANGED);
 		this.flags_.clear(BIT_OVERFLOW_CHANGED);
@@ -1022,7 +1019,7 @@ public class WContainerWidget extends WInteractWidget {
 		super.propagateRenderOk(deep);
 	}
 
-	DomElement createDomElement(WApplication app) {
+	protected DomElement createDomElement(WApplication app) {
 		if (this.transientImpl_ != null) {
 			this.transientImpl_.addedChildren_.clear();
 		}
@@ -1031,7 +1028,7 @@ public class WContainerWidget extends WInteractWidget {
 		return result;
 	}
 
-	WLayoutItemImpl createLayoutItemImpl(WLayoutItem item) {
+	protected WLayoutItemImpl createLayoutItemImpl(WLayoutItem item) {
 		{
 			WWidgetItem wi = ((item) instanceof WWidgetItem ? (WWidgetItem) (item)
 					: null);

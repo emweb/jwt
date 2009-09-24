@@ -41,9 +41,6 @@ public class WCssDecorationStyle extends WObject {
 		 */
 		NoRepeat;
 
-		/**
-		 * Returns the numerical representation of this enum.
-		 */
 		public int getValue() {
 			return ordinal();
 		}
@@ -70,9 +67,6 @@ public class WCssDecorationStyle extends WObject {
 		 */
 		Blink;
 
-		/**
-		 * Returns the numerical representation of this enum.
-		 */
 		public int getValue() {
 			return ordinal();
 		}

@@ -345,7 +345,7 @@ public class WFileUpload extends WWebWidget {
 		}
 	}
 
-	void setFormData(WObject.FormData formData) {
+	protected void setFormData(WObject.FormData formData) {
 		if (formData.file != null) {
 			this.setFormData(formData.file);
 			this.uploaded().trigger();

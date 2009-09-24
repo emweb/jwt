@@ -360,7 +360,7 @@ public class WComboBox extends WFormWidget {
 		}
 	}
 
-	void updateDom(DomElement element, boolean all) {
+	protected void updateDom(DomElement element, boolean all) {
 		if (this.itemsChanged_ || all) {
 			if (all && this.getCount() > 0 && this.currentIndex_ == -1) {
 				this.currentIndex_ = 0;
@@ -409,7 +409,7 @@ public class WComboBox extends WFormWidget {
 		return DomElementType.DomElement_SELECT;
 	}
 
-	void propagateRenderOk(boolean deep) {
+	protected void propagateRenderOk(boolean deep) {
 		this.itemsChanged_ = false;
 		this.selectionChanged_ = false;
 		super.propagateRenderOk(deep);
