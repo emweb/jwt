@@ -345,13 +345,13 @@ public class WImage extends WInteractWidget {
 	private String imageRef_;
 	private WResource resource_;
 	private MapWidget map_;
-	private BitSet flags_;
+	BitSet flags_;
 
 	private void resourceChanged() {
 		this.setImageRef(this.resource_.getUrl());
 	}
 
-	protected void getDomChanges(List<DomElement> result, WApplication app) {
+	void getDomChanges(List<DomElement> result, WApplication app) {
 		if (this.map_ != null) {
 			DomElement e = DomElement.getForUpdate("i" + this.getId(),
 					DomElementType.DomElement_IMG);
@@ -362,7 +362,7 @@ public class WImage extends WInteractWidget {
 		}
 	}
 
-	protected void updateDom(DomElement element, boolean all) {
+	void updateDom(DomElement element, boolean all) {
 		DomElement img = element;
 		if (all && element.getType() == DomElementType.DomElement_SPAN) {
 			DomElement map = this.map_.createDomElement(WApplication
@@ -392,12 +392,12 @@ public class WImage extends WInteractWidget {
 		}
 	}
 
-	protected DomElementType getDomElementType() {
+	DomElementType getDomElementType() {
 		return this.map_ != null ? DomElementType.DomElement_SPAN
 				: DomElementType.DomElement_IMG;
 	}
 
-	protected void propagateRenderOk(boolean deep) {
+	void propagateRenderOk(boolean deep) {
 		this.flags_.clear(BIT_IMAGE_REF_CHANGED);
 		this.flags_.clear(BIT_ALT_TEXT_CHANGED);
 		super.propagateRenderOk(deep);

@@ -39,6 +39,9 @@ public enum MarkerType {
 	 */
 	TriangleMarker;
 
+	/**
+	 * Returns the numerical representation of this enum.
+	 */
 	public int getValue() {
 		return ordinal();
 	}

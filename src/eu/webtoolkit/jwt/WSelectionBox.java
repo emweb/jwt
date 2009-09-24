@@ -179,7 +179,7 @@ public class WSelectionBox extends WComboBox {
 	private Set<Integer> selection_;
 	private boolean configChanged_;
 
-	protected void updateDom(DomElement element, boolean all) {
+	void updateDom(DomElement element, boolean all) {
 		if (this.configChanged_ || all) {
 			element.setAttribute("size", String.valueOf(this.verticalSize_));
 			if (!all || this.selectionMode_ == SelectionMode.ExtendedSelection) {
@@ -231,7 +231,7 @@ public class WSelectionBox extends WComboBox {
 		}
 	}
 
-	protected void propagateRenderOk(boolean deep) {
+	void propagateRenderOk(boolean deep) {
 		this.configChanged_ = false;
 		this.selectionChanged_ = false;
 		super.propagateRenderOk(deep);

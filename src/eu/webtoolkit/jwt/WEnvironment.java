@@ -49,7 +49,7 @@ import eu.webtoolkit.jwt.servlet.WebRequest;
  * </blockquote>
  */
 public class WEnvironment {
-	public enum UserAgent {
+	enum UserAgent {
 		Unknown(0), IE(1000), IE6(1001), IE7(1002), IE8(1003), IEMobile(1100), Opera(
 				3000), WebKit(4000), Safari(4100), Chrome(4200), Konqueror(5000), Gecko(
 				6000), Firefox3(6101), Firefox3_1(6102), Firefox3_2(6103), BotAgent(
@@ -61,6 +61,9 @@ public class WEnvironment {
 			this.value = value;
 		}
 
+		/**
+		 * Returns the numerical representation of this enum.
+		 */
 		public int getValue() {
 			return value;
 		}
@@ -79,6 +82,9 @@ public class WEnvironment {
 		 */
 		HTML4;
 
+		/**
+		 * Returns the numerical representation of this enum.
+		 */
 		public int getValue() {
 			return ordinal();
 		}

@@ -13,7 +13,7 @@ class AreaWidget extends WInteractWidget {
 		this.facade_ = facade;
 	}
 
-	public void repaint(EnumSet<RepaintFlag> flags) {
+	void repaint(EnumSet<RepaintFlag> flags) {
 		super.repaint(EnumSet.of(RepaintFlag.RepaintPropertyAttribute));
 	}
 
@@ -23,7 +23,7 @@ class AreaWidget extends WInteractWidget {
 
 	private WAbstractArea facade_;
 
-	protected void updateDom(DomElement element, boolean all) {
+	void updateDom(DomElement element, boolean all) {
 		this.facade_.updateDom(element, all);
 		super.updateDom(element, all);
 		if (element.getProperty(Property.PropertyStyleCursor).length() != 0
@@ -33,7 +33,7 @@ class AreaWidget extends WInteractWidget {
 		}
 	}
 
-	protected DomElementType getDomElementType() {
+	DomElementType getDomElementType() {
 		return DomElementType.DomElement_AREA;
 	}
 }

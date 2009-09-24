@@ -76,6 +76,9 @@ public class WPainter {
 			this.value = value;
 		}
 
+		/**
+		 * Returns the numerical representation of this enum.
+		 */
 		public int getValue() {
 			return value;
 		}
@@ -1388,7 +1391,7 @@ public class WPainter {
 	private WRectF window_;
 	private WTransform viewTransform_;
 
-	private static class State {
+	static class State {
 		public WTransform worldTransform_;
 		public WBrush currentBrush_;
 		public WFont currentFont_;

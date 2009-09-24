@@ -45,6 +45,9 @@ public class WMouseEvent implements WAbstractEvent {
 		 */
 		RightButton;
 
+		/**
+		 * Returns the numerical representation of this enum.
+		 */
 		public int getValue() {
 			return ordinal();
 		}

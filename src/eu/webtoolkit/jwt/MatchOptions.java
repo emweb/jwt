@@ -23,20 +23,28 @@ public class MatchOptions {
 	 * Match type enumeration.
 	 */
 	public enum MatchType {
-		MatchExactly, /** Same type and value */
-		MatchStringExactly, /** Lexical match */
-		MatchStartsWith, /** Match start with query */
-		MatchEndsWith, /** Match end with query */
-		MatchRegExp, /** Regular expression match */
-		MatchWildCard /** Wildcard match */
+		/** Same type and value */
+		MatchExactly, 
+		/** Lexical match */
+		MatchStringExactly,
+		/** Match start with query */
+		MatchStartsWith,
+		/** Match end with query */
+		MatchEndsWith,
+		/** Regular expression match */
+		MatchRegExp, 
+		/** Wildcard match */
+		MatchWildCard 
 	}
 	
 	/**
 	 * Match flag enum.
 	 */
 	public enum MatchFlag {
-	    MatchCaseSensitive, /** Case sensitive */
-	    MatchWrap /** Wrap around whole model */
+		/** Case sensitive */
+	    MatchCaseSensitive,
+	    /** Wrap around whole model */
+	    MatchWrap 
 	}
 	
 	private MatchType type;

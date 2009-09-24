@@ -11,14 +11,14 @@ class MapWidget extends WContainerWidget {
 		super();
 	}
 
-	protected void updateDom(DomElement element, boolean all) {
+	void updateDom(DomElement element, boolean all) {
 		if (all) {
 			element.setAttribute("name", this.getId());
 		}
 		super.updateDom(element, all);
 	}
 
-	protected DomElementType getDomElementType() {
+	DomElementType getDomElementType() {
 		return DomElementType.DomElement_MAP;
 	}
 }

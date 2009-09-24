@@ -57,6 +57,9 @@ public class WLineEdit extends WFormWidget {
 		 */
 		Password;
 
+		/**
+		 * Returns the numerical representation of this enum.
+		 */
 		public int getValue() {
 			return ordinal();
 		}
@@ -233,9 +236,9 @@ public class WLineEdit extends WFormWidget {
 	private static final int BIT_TEXT_SIZE_CHANGED = 1;
 	private static final int BIT_MAX_LENGTH_CHANGED = 2;
 	private static final int BIT_ECHO_MODE_CHANGED = 3;
-	private BitSet flags_;
+	BitSet flags_;
 
-	protected void updateDom(DomElement element, boolean all) {
+	void updateDom(DomElement element, boolean all) {
 		if (all || this.flags_.get(BIT_CONTENT_CHANGED)) {
 			element.setProperty(Property.PropertyValue, this.content_);
 			this.flags_.clear(BIT_CONTENT_CHANGED);
@@ -260,16 +263,16 @@ public class WLineEdit extends WFormWidget {
 		super.updateDom(element, all);
 	}
 
-	protected DomElementType getDomElementType() {
+	DomElementType getDomElementType() {
 		return DomElementType.DomElement_INPUT;
 	}
 
-	protected void propagateRenderOk(boolean deep) {
+	void propagateRenderOk(boolean deep) {
 		this.flags_.clear();
 		super.propagateRenderOk(deep);
 	}
 
-	protected void getDomChanges(List<DomElement> result, WApplication app) {
+	void getDomChanges(List<DomElement> result, WApplication app) {
 		if (app.getEnvironment().agentIsIE()
 				&& this.flags_.get(BIT_ECHO_MODE_CHANGED)) {
 			DomElement e = DomElement.getForUpdate(this, this
@@ -282,7 +285,7 @@ public class WLineEdit extends WFormWidget {
 		}
 	}
 
-	protected void setFormData(WObject.FormData formData) {
+	void setFormData(WObject.FormData formData) {
 		if (this.flags_.get(BIT_CONTENT_CHANGED)) {
 			return;
 		}

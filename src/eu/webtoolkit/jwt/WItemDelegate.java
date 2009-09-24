@@ -172,7 +172,7 @@ public class WItemDelegate extends WAbstractItemDelegate {
 	private String textFormat_;
 	private WSignalMapper1<ItemCheckBox> checkedChangeMapper_;
 
-	private static class WidgetRef {
+	static class WidgetRef {
 		public WWidget w;
 
 		public WidgetRef(WWidget widget) {

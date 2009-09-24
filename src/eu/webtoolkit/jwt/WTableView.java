@@ -190,7 +190,7 @@ public class WTableView extends WCompositeWidget {
 
 	private WTable table_;
 
-	private static class ColumnInfo {
+	static class ColumnInfo {
 		public WAbstractItemDelegate itemDelegate_;
 
 		public ColumnInfo(WTableView view, WApplication app, int column) {

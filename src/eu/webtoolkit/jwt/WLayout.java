@@ -300,7 +300,7 @@ public abstract class WLayout extends WObject implements WLayoutItem {
 		parent.setLayout(this);
 	}
 
-	private static class Hint {
+	static class Hint {
 		public Hint(String aName, String aValue) {
 			this.name = aName;
 			this.value = aValue;

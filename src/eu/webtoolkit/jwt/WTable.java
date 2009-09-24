@@ -311,7 +311,7 @@ public class WTable extends WInteractWidget {
 
 	private static final int BIT_GRID_CHANGED = 0;
 	private static final int BIT_COLUMNS_CHANGED = 1;
-	private BitSet flags_;
+	BitSet flags_;
 	List<WTableRow> rows_;
 	List<WTableColumn> columns_;
 	private Set<WTableRow> rowsChanged_;
@@ -360,15 +360,15 @@ public class WTable extends WInteractWidget {
 		this.repaint(EnumSet.of(RepaintFlag.RepaintInnerHtml));
 	}
 
-	protected void updateDom(DomElement element, boolean all) {
+	void updateDom(DomElement element, boolean all) {
 		super.updateDom(element, all);
 	}
 
-	protected DomElementType getDomElementType() {
+	DomElementType getDomElementType() {
 		return DomElementType.DomElement_TABLE;
 	}
 
-	protected DomElement createDomElement(WApplication app) {
+	DomElement createDomElement(WApplication app) {
 		boolean withIds = !app.getEnvironment().agentIsSpiderBot();
 		DomElement table = DomElement.createNew(this.getDomElementType());
 		this.setId(table, app);
@@ -421,7 +421,7 @@ public class WTable extends WInteractWidget {
 		return table;
 	}
 
-	protected void getDomChanges(List<DomElement> result, WApplication app) {
+	void getDomChanges(List<DomElement> result, WApplication app) {
 		DomElement e = DomElement.getForUpdate(this, this.getDomElementType());
 		if (!this.isStubbed() && this.flags_.get(BIT_GRID_CHANGED)) {
 			DomElement newE = this.createDomElement(app);
@@ -466,7 +466,7 @@ public class WTable extends WInteractWidget {
 		result.add(e);
 	}
 
-	protected void propagateRenderOk(boolean deep) {
+	void propagateRenderOk(boolean deep) {
 		this.flags_.clear();
 		if (this.rowsChanged_ != null) {
 			;

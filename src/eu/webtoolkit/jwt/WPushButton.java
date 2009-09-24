@@ -87,7 +87,7 @@ public class WPushButton extends WFormWidget {
 	private WString text_;
 	private boolean textChanged_;
 
-	protected void updateDom(DomElement element, boolean all) {
+	void updateDom(DomElement element, boolean all) {
 		if (all) {
 			element.setAttribute("type", "button");
 		}
@@ -100,11 +100,11 @@ public class WPushButton extends WFormWidget {
 		super.updateDom(element, all);
 	}
 
-	protected DomElementType getDomElementType() {
+	DomElementType getDomElementType() {
 		return DomElementType.DomElement_BUTTON;
 	}
 
-	protected void propagateRenderOk(boolean deep) {
+	void propagateRenderOk(boolean deep) {
 		this.textChanged_ = false;
 		super.propagateRenderOk(deep);
 	}

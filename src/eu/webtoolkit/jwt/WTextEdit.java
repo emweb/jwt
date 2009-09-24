@@ -224,13 +224,13 @@ public class WTextEdit extends WTextArea {
 		super.load();
 	}
 
-	protected DomElement renderRemove() {
+	DomElement renderRemove() {
 		DomElement e = super.renderRemove();
 		e.callJavaScript(this.getJsRef() + ".ed.remove();", true);
 		return e;
 	}
 
-	protected void updateDom(DomElement element, boolean all) {
+	void updateDom(DomElement element, boolean all) {
 		super.updateDom(element, all);
 		if (element.getType() == DomElementType.DomElement_TEXTAREA) {
 			element.removeProperty(Property.PropertyStyleDisplay);
@@ -280,7 +280,7 @@ public class WTextEdit extends WTextArea {
 		}
 	}
 
-	protected void getDomChanges(List<DomElement> result, WApplication app) {
+	void getDomChanges(List<DomElement> result, WApplication app) {
 		DomElement e = DomElement.getForUpdate(this.getFormName() + "_tbl",
 				DomElementType.DomElement_TABLE);
 		this.updateDom(e, false);

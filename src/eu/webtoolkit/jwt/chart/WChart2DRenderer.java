@@ -415,6 +415,9 @@ public class WChart2DRenderer {
 		 */
 		Line;
 
+		/**
+		 * Returns the numerical representation of this enum.
+		 */
 		public int getValue() {
 			return ordinal();
 		}

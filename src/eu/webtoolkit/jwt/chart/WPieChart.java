@@ -477,7 +477,7 @@ public class WPieChart extends WAbstractChart {
 	private double startAngle_;
 	private EnumSet<LabelOption> labelOptions_;
 
-	private static class PieData {
+	static class PieData {
 		public boolean customBrush;
 		public WBrush brush;
 		public double explode;

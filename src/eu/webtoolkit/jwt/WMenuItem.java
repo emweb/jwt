@@ -57,6 +57,9 @@ public class WMenuItem extends WObject {
 		 */
 		PreLoading;
 
+		/**
+		 * Returns the numerical representation of this enum.
+		 */
 		public int getValue() {
 			return ordinal();
 		}

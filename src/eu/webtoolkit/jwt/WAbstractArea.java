@@ -463,7 +463,7 @@ public class WAbstractArea extends WObject {
 		return this.impl_.mouseMoved();
 	}
 
-	private static class AnchorImpl {
+	static class AnchorImpl {
 		public String ref_;
 		public WResource resource_;
 		public AnchorTarget target_;

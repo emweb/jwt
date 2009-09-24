@@ -9,6 +9,9 @@ package eu.webtoolkit.jwt;
 enum VectorFormat {
 	SvgFormat, VmlFormat;
 
+	/**
+	 * Returns the numerical representation of this enum.
+	 */
 	public int getValue() {
 		return ordinal();
 	}
