@@ -23,7 +23,7 @@ import java.util.List;
  * by the parent widget to which the layout is applied.
  * <p>
  * <p>
- * <i><b>Note:</b>When applying a layout manager to a {@link WContainerWidget},
+ * <i><b>Note: </b>When applying a layout manager to a {@link WContainerWidget},
  * you may not define any padding for the container widget. Instead, use
  * {@link WLayout#setContentsMargins(int left, int top, int right, int bottom)
  * setContentsMargins()}. </i>
@@ -103,7 +103,7 @@ public abstract class WLayout extends WObject implements WLayoutItem {
 	/**
 	 * Return the layout item at a specific <i>index</i>.
 	 * <p>
-	 * If there is no item at the <code>index</code>, <code>0</code> is
+	 * If there is no item at the <code>index</code>, <code>null</code> is
 	 * returned.
 	 * <p>
 	 * 
@@ -151,7 +151,7 @@ public abstract class WLayout extends WObject implements WLayoutItem {
 	/**
 	 * Provide a hint to the layout implementation.
 	 * <p>
-	 * In some caes, a layout implementation may require some hints for
+	 * In some cases, a layout implementation may require some hints for
 	 * rendering its contents. Possible hints are indicated in the reference
 	 * documentation for each layout manager.
 	 */
@@ -189,7 +189,7 @@ public abstract class WLayout extends WObject implements WLayoutItem {
 	 * The default contents margins are 9 pixels in all directions.
 	 * <p>
 	 * <p>
-	 * <i><b>Note:</b>Only used when the layout manager is applied to a
+	 * <i><b>Note: </b>Only used when the layout manager is applied to a
 	 * {@link WContainerWidget}.</i>
 	 * </p>
 	 * 

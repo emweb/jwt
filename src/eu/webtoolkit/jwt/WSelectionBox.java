@@ -24,16 +24,17 @@ import java.util.Set;
  * {@link SelectionMode#SingleSelection SingleSelection} mode, or
  * {@link WSelectionBox#setSelectedIndexes(Set selection) setSelectedIndexes()}
  * and {@link WSelectionBox#getSelectedIndexes() getSelectedIndexes()} for
- * {@link SelectionMode#ExtendedSelection ExtendedSelection} mode. The
+ * {@link SelectionMode#ExtendedSelection} mode. The
  * {@link WComboBox#activated() WComboBox#activated()} and
  * {@link WComboBox#sactivated() WComboBox#sactivated()} signals are not emited
- * in the ExtendedSelection mode, use the {@link WFormWidget#changed()
- * WFormWidget#changed()} signal {@link WFormWidget#changed()
- * WFormWidget#changed()}.
+ * in the {@link SelectionMode#ExtendedSelection} mode, use the
+ * {@link WFormWidget#changed() WFormWidget#changed()} signal
+ * {@link WFormWidget#changed() WFormWidget#changed()}.
  * <p>
  * WSelectionBox is an MVC view class, using a simple string list model by
- * default. The model may be populated using addItem(const {@link WString}&amp;)
- * or {@link WComboBox#insertItem(int index, CharSequence text)
+ * default. The model may be populated using
+ * {@link WComboBox#addItem(CharSequence text) WComboBox#addItem()} or
+ * {@link WComboBox#insertItem(int index, CharSequence text)
  * WComboBox#insertItem()} and the contents can be cleared through
  * {@link WComboBox#clear() WComboBox#clear()}. These methods manipulate the
  * underlying {@link WComboBox#getModel() WComboBox#getModel()}.
@@ -90,7 +91,8 @@ public class WSelectionBox extends WComboBox {
 	 * Sets the selection mode.
 	 * <p>
 	 * The default selection mode is SingleSelection. You can change to
-	 * ExtendedSelection to allow selection of multiple items.
+	 * {@link SelectionMode#ExtendedSelection} to allow selection of multiple
+	 * items.
 	 */
 	public void setSelectionMode(SelectionMode mode) {
 		if (mode != this.selectionMode_) {
@@ -124,11 +126,12 @@ public class WSelectionBox extends WComboBox {
 	}
 
 	/**
-	 * Returns the current selection (in ExtendedSelection mode).
+	 * Returns the current selection (in {@link SelectionMode#ExtendedSelection}
+	 * mode).
 	 * <p>
 	 * Get the list of currently selected items. This method is only defined
 	 * when {@link WSelectionBox#getSelectionMode() getSelectionMode()} is
-	 * ExtendedSelection. Otherwise, you should use
+	 * {@link SelectionMode#ExtendedSelection}. Otherwise, you should use
 	 * {@link WComboBox#getCurrentIndex() WComboBox#getCurrentIndex()} to get
 	 * item currently selected.
 	 * <p>
@@ -140,9 +143,10 @@ public class WSelectionBox extends WComboBox {
 	}
 
 	/**
-	 * Sets the selection (in ExtendedSelection mode).
+	 * Sets the selection (in {@link SelectionMode#ExtendedSelection} mode).
 	 * <p>
-	 * For an ExtendedSelection mode, set the list of currently selected items.
+	 * For an {@link SelectionMode#ExtendedSelection} mode, set the list of
+	 * currently selected items.
 	 * <p>
 	 * 
 	 * @see WSelectionBox#getSelectedIndexes()

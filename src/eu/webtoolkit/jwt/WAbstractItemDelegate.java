@@ -54,7 +54,7 @@ public abstract class WAbstractItemDelegate extends WObject {
 	 * You may decide to create a new widget, in which case you are responsible
 	 * to delete the previous <code>widget</code> if it is not reused.
 	 * <p>
-	 * When <code>widget</code> is <code>0</code>, a new widget needs to be
+	 * When <code>widget</code> is <code>null</code>, a new widget needs to be
 	 * created.
 	 * <p>
 	 * The <code>flags</code> parameter indicates options for rendering the

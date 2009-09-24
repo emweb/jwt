@@ -53,8 +53,8 @@ public class WTreeTable extends WCompositeWidget {
 	/**
 	 * Construct a new {@link WTreeTable}.
 	 * <p>
-	 * The {@link WTreeTable#getTreeRoot() getTreeRoot()} is <code>0</code>. The
-	 * table should first be properly dimensioned using
+	 * The {@link WTreeTable#getTreeRoot() getTreeRoot()} is <code>null</code>.
+	 * The table should first be properly dimensioned using
 	 * {@link WTreeTable#addColumn(CharSequence header, WLength width)
 	 * addColumn()} calls, and then data using
 	 * {@link WTreeTable#setTreeRoot(WTreeTableNode root, CharSequence h)

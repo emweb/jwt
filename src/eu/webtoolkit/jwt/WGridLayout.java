@@ -23,9 +23,11 @@ import java.util.List;
  * {@link WWidget#setMinimumSize(WLength width, WLength height)
  * WWidget#setMinimumSize()}.
  * <p>
- * You can use WContainerWidget::setOverflow(OverflowAuto) to automatically show
- * scrollbars on a container widget which you have set for a grid cell. In some
- * cases, you will want to wrap another widget (like a {@link WTable}) into
+ * You can use
+ * {@link WContainerWidget#setOverflow(WContainerWidget.Overflow value, EnumSet orientation)
+ * WContainerWidget#setOverflow()} to automatically show scrollbars on a
+ * container widget which you have set for a grid cell. In some cases, you will
+ * want to wrap another widget (like a {@link WTable}) into
  * {@link WContainerWidget} to have the scrollbars, since not all widgets allow
  * for scrollbars.
  * <p>
@@ -73,7 +75,7 @@ import java.util.List;
  * </blockquote>
  * <p>
  * <p>
- * <i><b>Note:</b>When JavaScript support is not available, only Safari and
+ * <i><b>Note: </b>When JavaScript support is not available, only Safari and
  * Firefox properly implement this layout. For other browsers, only the
  * horizontal layout is properly implemented, while vertically all widgets use
  * their minimum size.
@@ -105,8 +107,8 @@ public class WGridLayout extends WLayout {
 	 * <p>
 	 * The grid will grow dynamically as items are added.
 	 * <p>
-	 * Use <code>parent</code> = <code>0</code> to create a layout manager that
-	 * can be nested inside other layout managers or to specify a specific
+	 * Use <code>parent</code> = <code>null</code> to create a layout manager
+	 * that can be nested inside other layout managers or to specify a specific
 	 * alignment when setting the layout to a {@link WContainerWidget}.
 	 */
 	public WGridLayout(WWidget parent) {

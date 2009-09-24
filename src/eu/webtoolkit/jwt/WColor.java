@@ -276,7 +276,7 @@ public class WColor {
 	}
 
 	/**
-	 * Comparison operator.
+	 * Indicates whether some other object is "equal to" this one. 
 	 * 
 	 * Returns true if the two colors were defined in exactly the same way. It
 	 * may return false although they actually represent the same color.

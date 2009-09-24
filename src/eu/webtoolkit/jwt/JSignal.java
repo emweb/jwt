@@ -71,7 +71,7 @@ public class JSignal extends AbstractJSignal {
 	}
 
 	@Override
-	protected void processDynamic(JavaScriptEvent jsEvent) {
+	void processDynamic(JavaScriptEvent jsEvent) {
 		trigger();
 	}
 }

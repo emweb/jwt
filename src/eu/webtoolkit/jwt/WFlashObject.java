@@ -23,19 +23,6 @@ import java.util.Set;
  * when a Flash player is not available on the system or when JavaScript is
  * disabled.
  * <p>
- * Usage example: <blockquote>
- * 
- * <pre>
- * WFlash *player = new WFlash(&quot;dummy.swf&quot;, parent);
- *  player-&gt;resize(300, 600);
- *  player-&gt;setFlashParameter(&quot;allowScriptAccess&quot;, &quot;always&quot;);
- *  player-&gt;setFlashParameter(&quot;quality&quot;, &quot;high&quot;);
- *  player-&gt;setFlashParameter(&quot;bgcolor&quot;, &quot;#aaaaaa&quot;);
- *  player-&gt;setFlashVariable(&quot;someVar&quot;, &quot;foo&quot;);
- * </pre>
- * 
- * </blockquote>
- * <p>
  * This class uses <i>resourcesURL</i>&quot;swfobject.js&quot;, a companion
  * JavaScript library, which is distributed with JWt in the resources folder.
  * <i>resourcesURL</i> is the configuration property that locates the JWt

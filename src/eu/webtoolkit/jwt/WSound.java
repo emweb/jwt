@@ -25,20 +25,8 @@ package eu.webtoolkit.jwt;
  * folder. <i>resourcesURL</i> is the configuration property that locates the
  * JWt resources/ folder inside your docroot.
  * <p>
- * Usage example: <blockquote>
- * 
- * <pre>
- * WSound *s = new WSound(&quot;djing.mp3&quot;, parent);
- *  s-&gt;setLoops(3);
- *  s-&gt;play();
- *  playButton-&gt;clicked().connect(SLOT(s, WSound::play));
- *  stopButton-&gt;clicked().connect(SLOT(s, WSound::stop));
- * </pre>
- * 
- * </blockquote>
  * <p>
- * <p>
- * <i><b>Note:</b>The current implementation has occasional problems with
+ * <i><b>Note: </b>The current implementation has occasional problems with
  * playing sound on Internet Explorer. </i>
  * </p>
  */

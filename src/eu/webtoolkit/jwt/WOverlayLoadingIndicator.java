@@ -24,7 +24,7 @@ import java.util.EnumSet;
  * </div>
  * <p>
  * <p>
- * <i><b>Note:</b>For this loading indicator to render properly in IE, you need
+ * <i><b>Note: </b>For this loading indicator to render properly in IE, you need
  * to reset the &quot;body&quot; margin to 0. Using the inline stylesheet, this
  * could be done using:</i>
  * </p>
@@ -45,7 +45,7 @@ public class WOverlayLoadingIndicator extends WContainerWidget implements
 	 * @param textStyleClass
 	 *            the style class for the text that is displayed}
 	 *            <p>
-	 *            <i><b>Note:</b>if styleClass is not set, the central box gets
+	 *            <i><b>Note: </b>if styleClass is not set, the central box gets
 	 *            the CSS style elements <blockquote>
 	 * 
 	 *            <pre>

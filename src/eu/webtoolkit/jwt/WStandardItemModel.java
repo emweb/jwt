@@ -79,7 +79,7 @@ public class WStandardItemModel extends WAbstractItemModel {
 	 * Create a new standard item model with an initial toplevel geometry.
 	 * <p>
 	 * Creates a standard item model with a geometry of <i>rows</i> x
-	 * <code>columns</code>. All items are set to <code>0</code>.
+	 * <code>columns</code>. All items are set to <code>null</code>.
 	 */
 	public WStandardItemModel(int rows, int columns, WObject parent) {
 		super(parent);
@@ -193,7 +193,7 @@ public class WStandardItemModel extends WAbstractItemModel {
 	 * Equivalent to: <blockquote>
 	 * 
 	 * <pre>
-	 * invisibleRootItem()-&gt;insertColumn(column, items);
+	 * invisibleRootItem().insertColumn(column, items);
 	 * </pre>
 	 * 
 	 * </blockquote>
@@ -236,7 +236,7 @@ public class WStandardItemModel extends WAbstractItemModel {
 	 * Equivalent to: <blockquote>
 	 * 
 	 * <pre>
-	 * invisibleRootItem()-&gt;insertRow(row, items);
+	 * invisibleRootItem().insertRow(row, items);
 	 * </pre>
 	 * 
 	 * </blockquote>
@@ -276,7 +276,7 @@ public class WStandardItemModel extends WAbstractItemModel {
 	 * Equivalent to: <blockquote>
 	 * 
 	 * <pre>
-	 * invisibleRootItem()-&gt;insertRow(row, item);
+	 * invisibleRootItem().insertRow(row, item);
 	 * </pre>
 	 * 
 	 * </blockquote>
@@ -298,7 +298,7 @@ public class WStandardItemModel extends WAbstractItemModel {
 	 * Equivalent to: <blockquote>
 	 * 
 	 * <pre>
-	 * invisibleRootItem()-&gt;child(row, column);
+	 * invisibleRootItem().child(row, column);
 	 * </pre>
 	 * 
 	 * </blockquote>
@@ -330,7 +330,7 @@ public class WStandardItemModel extends WAbstractItemModel {
 	 * Equivalent to: <blockquote>
 	 * 
 	 * <pre>
-	 * invisibleRootItem()-&gt;setChild(row, column, item);
+	 * invisibleRootItem().setChild(row, column, item);
 	 * </pre>
 	 * 
 	 * </blockquote>
@@ -382,7 +382,7 @@ public class WStandardItemModel extends WAbstractItemModel {
 	 * Equivalent to: <blockquote>
 	 * 
 	 * <pre>
-	 * invisibleRootItem()-&gt;takeColumn(column);
+	 * invisibleRootItem().takeColumn(column);
 	 * </pre>
 	 * 
 	 * </blockquote>
@@ -404,7 +404,7 @@ public class WStandardItemModel extends WAbstractItemModel {
 	 * Equivalent to: <blockquote>
 	 * 
 	 * <pre>
-	 * invisibleRootItem()-&gt;takeRow(row);
+	 * invisibleRootItem().takeRow(row);
 	 * </pre>
 	 * 
 	 * </blockquote>
@@ -426,7 +426,7 @@ public class WStandardItemModel extends WAbstractItemModel {
 	 * Equivalent to: <blockquote>
 	 * 
 	 * <pre>
-	 * invisibleRootItem()-&gt;takeItem(row, column);
+	 * invisibleRootItem().takeItem(row, column);
 	 * </pre>
 	 * 
 	 * </blockquote>

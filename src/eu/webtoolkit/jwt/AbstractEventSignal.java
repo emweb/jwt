@@ -88,7 +88,7 @@ public abstract class AbstractEventSignal extends AbstractSignal {
 	 * @see AbstractEventSignal#addListener(WObject, LearningListener)
 	 */
 	public static abstract class AutoLearnListener extends LearningListener implements Signal.Listener {
-		public final void undoTrigger() {
+		final void undoTrigger() {
 		}
 
 		SlotType getType() {
@@ -149,10 +149,10 @@ public abstract class AbstractEventSignal extends AbstractSignal {
 			setJavaScript(javaScript);
 		}
 
-		public final void trigger() {
+		final void trigger() {
 		}
 
-		public final void undoTrigger() {
+		final void undoTrigger() {
 		}
 
 		/**
@@ -179,7 +179,7 @@ public abstract class AbstractEventSignal extends AbstractSignal {
 	private static int nextId_ = 0;
 	private WObject sender_;
 
-	protected AbstractEventSignal(String name, WObject sender) {
+	AbstractEventSignal(String name, WObject sender) {
 		sender_ = sender;
 		name_ = name;
 		learningListeners = null;
@@ -233,7 +233,7 @@ public abstract class AbstractEventSignal extends AbstractSignal {
 		}
 	}
 	
-	protected void listenerAdded() {
+	void listenerAdded() {
 		if ((flags_ & BIT_EXPOSED) != 0)
 			return;
 
@@ -247,7 +247,7 @@ public abstract class AbstractEventSignal extends AbstractSignal {
 		ownerRepaint();
 	}
 
-	protected void listenerRemoved() {
+	void listenerRemoved() {
 		if (getListenerCount() == 0) {
 			if ((flags_ & BIT_NEEDS_AUTOLEARN) != 0) {
 				WApplication app = WApplication.getInstance();
@@ -270,7 +270,7 @@ public abstract class AbstractEventSignal extends AbstractSignal {
 			((WWebWidget) getSender()).signalConnectionsChanged();
 	}
 
-	public WObject getSender() {
+	WObject getSender() {
 		return sender_;
 	}
 
@@ -278,6 +278,7 @@ public abstract class AbstractEventSignal extends AbstractSignal {
 		ownerRepaint();
 	}
 
+	@Override
 	protected int getListenerCount() {
 		return learningListeners != null ? learningListeners.size() : 0;
 	}
@@ -471,7 +472,7 @@ public abstract class AbstractEventSignal extends AbstractSignal {
 		return out.toString();
 	}
 
-	public String getName() {
+	String getName() {
 		return name_;
 	}
 }

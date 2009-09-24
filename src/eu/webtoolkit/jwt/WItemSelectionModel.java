@@ -25,7 +25,7 @@ import java.util.TreeSet;
  * selection).
  * <p>
  * <p>
- * <i><b>Note:</b>Currently this class cannot be shared between multiple
+ * <i><b>Note: </b>Currently this class cannot be shared between multiple
  * views.</i>
  * </p>
  * 

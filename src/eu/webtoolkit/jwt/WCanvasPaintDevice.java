@@ -22,7 +22,7 @@ import eu.webtoolkit.jwt.utils.MathUtils;
  * when appropriate.
  * <p>
  * <p>
- * <i><b>Note:</b>Because of the lack for text support in the current HTML 5
+ * <i><b>Note: </b>Because of the lack for text support in the current HTML 5
  * &lt;canvas&gt; specification, there is only limited support for text. Text is
  * rendered in an overlayed DIV and a consequence text is not subject to
  * rotation and scaling components of the current transformation (but does take

@@ -45,7 +45,7 @@ public class WVirtualImage extends WCompositeWidget {
 	 * You must specify the size of the viewport, and the size of the virtual
 	 * image. The latter dimensions may be the special value Infinite,
 	 * indicating that in one or more dimensions, the image size is infinite (in
-	 * practice limited by MAXINT).
+	 * practice limited by the maximum integer value).
 	 * <p>
 	 * In addition, you must specify the size of each square grid item. The
 	 * default is 256 by 256.

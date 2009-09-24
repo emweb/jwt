@@ -63,7 +63,7 @@ public class JSlot {
 	 * widget. By picking a long-lived parent, one may reuse a single block of
 	 * JavasCript code for multiple widgets.
 	 * <p>
-	 * When <code>parent</code> = <code>0</code>, then the JavaScript will be
+	 * When <code>parent</code> = <code>null</code>, then the JavaScript will be
 	 * inlined in each caller (possibly replicating the same JavaScript).
 	 */
 	public JSlot(WWidget parent) {

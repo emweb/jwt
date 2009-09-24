@@ -263,7 +263,7 @@ public class WTable extends WInteractWidget {
 	 * The default values are 0.
 	 * <p>
 	 * <p>
-	 * <i><b>Note:</b>This must be set before the initial rendering and cannot
+	 * <i><b>Note: </b>This must be set before the initial rendering and cannot
 	 * be changed later. </i>
 	 * </p>
 	 */

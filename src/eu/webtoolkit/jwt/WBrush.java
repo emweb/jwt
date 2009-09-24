@@ -62,7 +62,7 @@ public class WBrush {
 	}
 
 	/**
-	 * Comparison operator.
+	 * Indicates whether some other object is "equal to" this one.
 	 * <p>
 	 * Returns <code>true</code> if the brushes are exactly the same.
 	 */

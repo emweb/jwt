@@ -65,9 +65,6 @@ import eu.webtoolkit.jwt.utils.StringUtils;
  * using CSS nested selectors, a different style may be defined for items in a
  * different menu.
  * <p>
- * For example, the (old) JWt homepage used the following CSS rules to style the
- * two menu (which both are assigned the style class .menu):
- * <p>
  * <blockquote>
  * 
  * <pre>
@@ -146,8 +143,8 @@ public class WMenu extends WCompositeWidget {
 	 * Adds a menu item with given <code>contents</code>, which is added to the
 	 * menu&apos;s associated contents stack.
 	 * <p>
-	 * <code>contents</code> may be <code>0</code>, in which case no contents in
-	 * the contents stack is associated with the menu item.
+	 * <code>contents</code> may be <code>null</code>, in which case no contents
+	 * in the contents stack is associated with the menu item.
 	 * <p>
 	 * Returns the corresponding {@link WMenuItem}.
 	 * <p>
@@ -371,7 +368,7 @@ public class WMenu extends WCompositeWidget {
 	 * &lt;il&gt; elements, as is commonly done for CSS-based designs.
 	 * <p>
 	 * <p>
-	 * <i><b>Note:</b>You cannot use this method after items have been added to
+	 * <i><b>Note: </b>You cannot use this method after items have been added to
 	 * the menu. </i>
 	 * </p>
 	 */

@@ -75,7 +75,7 @@ public class WTransform {
 	}
 
 	/**
-	 * Assignment operator.
+	 * Assignment method.
 	 * <p>
 	 * Copies the transformation from the <code>rhs</code>.
 	 */
@@ -98,7 +98,7 @@ public class WTransform {
 	}
 
 	/**
-	 * Comparison operator.
+	 * Indicates whether some other object is "equal to" this one.
 	 * <p>
 	 * Returns <code>true</code> if the transforms are exactly the same.
 	 */

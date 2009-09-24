@@ -72,7 +72,7 @@ import eu.webtoolkit.jwt.utils.EnumUtils;
  * {@link WPaintedWidget#update(EnumSet flags) update()} method.
  * <p>
  * <p>
- * <i><b>Note:</b>A WPaintedWidget requires that its size is specified in pixel
+ * <i><b>Note: </b>A WPaintedWidget requires that its size is specified in pixel
  * units using {@link WPaintedWidget#resize(WLength width, WLength height)
  * resize()}.</i>
  * </p>
@@ -218,7 +218,7 @@ public abstract class WPaintedWidget extends WInteractWidget {
 	 * <p>
 	 * 
 	 * @see WPaintedWidget#insertArea(int index, WAbstractArea area) <p>
-	 *      <i><b>Note:</b>When defining at least one area, no more events will
+	 *      <i><b>Note: </b>When defining at least one area, no more events will
 	 *      propagate to the widget itself. As a work-around, you can emulate
 	 *      this by listening for events on a {@link WRectArea} that corresponds
 	 *      to the whole widget, and which is added as the last area (catching
@@ -242,7 +242,7 @@ public abstract class WPaintedWidget extends WInteractWidget {
 	 * <p>
 	 * 
 	 * @see WPaintedWidget#addArea(WAbstractArea area) <p>
-	 *      <i><b>Note:</b>When defining at least one area, no more events will
+	 *      <i><b>Note: </b>When defining at least one area, no more events will
 	 *      propagate to the widget itself. As a work-around, you can emulate
 	 *      this by listening for events on a {@link WRectArea} that corresponds
 	 *      to the whole widget, and which is added as the last area (catching
@@ -270,7 +270,7 @@ public abstract class WPaintedWidget extends WInteractWidget {
 	/**
 	 * Returns the interactive area at the given index.
 	 * <p>
-	 * Returns <code>0</code> if <code>index</code> was invalid.
+	 * Returns <code>null</code> if <code>index</code> was invalid.
 	 * <p>
 	 * 
 	 * @see WPaintedWidget#insertArea(int index, WAbstractArea area)
@@ -322,7 +322,7 @@ public abstract class WPaintedWidget extends WInteractWidget {
 		WPaintDevice device = this.painter_.getCreatePaintDevice();
 		this.paintEvent(device);
 		if (device.getPainter() != null) {
-			device.getPainter().isEnd();
+			device.getPainter().end();
 		}
 		this.painter_.createContents(canvas, device);
 		;
@@ -346,7 +346,7 @@ public abstract class WPaintedWidget extends WInteractWidget {
 			}
 			this.paintEvent(device);
 			if (device.getPainter() != null) {
-				device.getPainter().isEnd();
+				device.getPainter().end();
 			}
 			if (createNew) {
 				DomElement canvas = DomElement.getForUpdate('p' + this.getId(),

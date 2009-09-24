@@ -67,7 +67,7 @@ public class WPointF {
 	}
 
 	/**
-	 * Comparison operator.
+	 * Indicates whether some other object is "equal to" this one.
 	 */
 	public boolean equals(WPointF other) {
 		return this.x_ == other.x_ && this.y_ == other.y_;

@@ -22,7 +22,7 @@ import eu.webtoolkit.jwt.utils.StringUtils;
  * <code>&lt;td&gt;</code> elements to provide style to the table.
  * <p>
  * <p>
- * <i><b>Note:</b>This view widget is a work-in-progress. Support for column
+ * <i><b>Note: </b>This view widget is a work-in-progress. Support for column
  * resizing, smart rendering, and proper vertical scroll bar support is still
  * lacking. When support for these features is added in the future, an HTML
  * <code>&lt;table&gt;</code> element will still be used. </i>

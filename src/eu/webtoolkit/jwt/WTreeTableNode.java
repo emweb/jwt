@@ -96,7 +96,7 @@ public class WTreeTableNode extends WTreeNode {
 	 * <p>
 	 * Returns the widget set previously using
 	 * {@link WTreeTableNode#setColumnWidget(int column, WWidget widget)
-	 * setColumnWidget()}, or <code>0</code> if no widget was previously set.
+	 * setColumnWidget()}, or <code>null</code> if no widget was previously set.
 	 */
 	public WWidget getColumnWidget(int column) {
 		--column;

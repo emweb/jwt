@@ -84,7 +84,7 @@ public class WLengthValidator extends WValidator {
 	/**
 	 * Set the maximum length.
 	 * <p>
-	 * The default value is std::numeric_limits&lt;int&gt;::max()
+	 * The default value is the maximum integer value.
 	 */
 	public void setMaximumLength(int maxLength) {
 		if (this.maxLength_ != maxLength) {

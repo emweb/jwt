@@ -76,7 +76,7 @@ public final class EventSignal1<E extends WAbstractEvent> extends AbstractEventS
 	}
 
 	@SuppressWarnings("unchecked")
-	protected void processDynamic(JavaScriptEvent jsEvent) {
+	void processDynamic(JavaScriptEvent jsEvent) {
 		E event = (E) instance_.createFromJSEvent(jsEvent);
 		if (dynamic_ != null)
 			dynamic_.trigger(event);

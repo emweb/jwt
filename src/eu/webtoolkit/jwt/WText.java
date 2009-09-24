@@ -18,10 +18,10 @@ import eu.webtoolkit.jwt.utils.StringUtils;
  * <p>
  * Use {@link WText#setTextFormat(TextFormat textFormat) setTextFormat()} to
  * configure the textFormat of the text. The default textFormat is
- * Wt::XHMTLText, which allows XHMTL markup to be included in the text. Tags and
- * attributes that indicate &quot;active&quot; content are not allowed and
- * stripped out, to avoid security risks exposed by JavaScript such as the
- * common web-based <a
+ * {@link TextFormat#XHTMLText}, which allows XHMTL markup to be included in the
+ * text. Tags and attributes that indicate &quot;active&quot; content are not
+ * allowed and stripped out, to avoid security risks exposed by JavaScript such
+ * as the common web-based <a
  * href="http://en.wikipedia.org/wiki/Cross_site_scriptingCross-Site">Cross-Site
  * Scripting (XSS)</a> malicious attack. XSS is the situation where one user of
  * your web application is able to execute a script in another user&apos;s

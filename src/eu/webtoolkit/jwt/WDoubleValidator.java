@@ -59,8 +59,6 @@ public class WDoubleValidator extends WValidator {
 
 	/**
 	 * Return the bottom of the valid double range.
-	 * <p>
-	 * The default value is -stdnumeric_limits&lt;int&gt;::max().
 	 */
 	public double getBottom() {
 		return this.bottom_;
@@ -68,6 +66,8 @@ public class WDoubleValidator extends WValidator {
 
 	/**
 	 * Set the bottom of the valid double range.
+	 * <p>
+	 * The default value is the minimum double value.
 	 */
 	public void setBottom(double bottom) {
 		if (bottom != this.bottom_) {
@@ -86,7 +86,7 @@ public class WDoubleValidator extends WValidator {
 	/**
 	 * Set the top of the valid double range.
 	 * <p>
-	 * The default value is std::numeric_limits&lt;int&gt;::max().
+	 * The default value is the maximum double value.
 	 */
 	public void setTop(double top) {
 		if (top != this.top_) {

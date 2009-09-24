@@ -42,7 +42,7 @@ import eu.webtoolkit.jwt.utils.StringUtils;
  * </blockquote>
  * <p>
  * <p>
- * <i><b>Note:</b>This validator does not fully support unicode: it matches on
+ * <i><b>Note: </b>This validator does not fully support unicode: it matches on
  * the UTF8-encoded representation of the string. </i>
  * </p>
  */

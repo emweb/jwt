@@ -20,23 +20,23 @@ public class WFont {
 		 */
 		Default,
 		/**
-		 * e.g. Times
+		 * for example: Times
 		 */
 		Serif,
 		/**
-		 * e.g. Helvetica
+		 * for example: Helvetica
 		 */
 		SansSerif,
 		/**
-		 * e.g. Zapf-Chancery
+		 * for example: Zapf-Chancery
 		 */
 		Cursive,
 		/**
-		 * e.g. Western
+		 * for example: Western
 		 */
 		Fantasy,
 		/**
-		 * e.g. Courier
+		 * for example: Courier
 		 */
 		Monospace;
 
@@ -200,6 +200,9 @@ public class WFont {
 		this.sizeChanged_ = false;
 	}
 
+	/**
+	 * Indicates whether some other object is "equal to" this one.
+	 */
 	public boolean equals(WFont other) {
 		return this.genericFamily_ == other.genericFamily_
 				&& this.specificFamilies_.equals(other.specificFamilies_)

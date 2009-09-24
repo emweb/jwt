@@ -167,7 +167,7 @@ public class WButtonGroup extends WObject {
 	 * Sets the currently checked radiobutton.
 	 * <p>
 	 * The button <code>button</code> of this group is checked. A value of
-	 * <code>0</code> will uncheck all radiobuttons.
+	 * <code>null</code> will uncheck all radiobuttons.
 	 * <p>
 	 * Initially, no button is checked.
 	 * <p>
@@ -191,7 +191,7 @@ public class WButtonGroup extends WObject {
 	 * Returns the checked radiobutton.
 	 * <p>
 	 * If there is no radiobutton currently checked this function returns
-	 * <code>0</code>.
+	 * <code>null</code>.
 	 * <p>
 	 * 
 	 * @see WButtonGroup#setCheckedButton(WRadioButton button)

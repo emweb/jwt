@@ -69,7 +69,7 @@ public class WIntValidator extends WValidator {
 	/**
 	 * Set the bottom of the valid integer range.
 	 * <p>
-	 * The default value is std::numeric_limits&lt;int&gt;::min().
+	 * The default value is the minimum integer value.
 	 */
 	public void setBottom(int bottom) {
 		if (bottom != this.bottom_) {
@@ -88,7 +88,7 @@ public class WIntValidator extends WValidator {
 	/**
 	 * Set the top of the valid integer range.
 	 * <p>
-	 * The default value is std::numeric_limits&lt;int&gt;::max().
+	 * The default value is the maximum integer value.
 	 */
 	public void setTop(int top) {
 		if (top != this.top_) {

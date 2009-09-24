@@ -53,7 +53,7 @@ public abstract class WFormWidget extends WInteractWidget {
 	 * Destroy a {@link WFormWidget}.
 	 * <p>
 	 * If a label was associated with the widget, its buddy is reset to
-	 * <code>0</code>.
+	 * <code>null</code>.
 	 */
 	public void remove() {
 		if (this.label_ != null) {
@@ -101,7 +101,7 @@ public abstract class WFormWidget extends WInteractWidget {
 	 * form field, and thus the validator will be deleted together with the form
 	 * field.
 	 * <p>
-	 * The default value is <code>0</code>.
+	 * The default value is <code>null</code>.
 	 * <p>
 	 * 
 	 * @see WFormWidget#validate()

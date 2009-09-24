@@ -216,7 +216,8 @@ public class WImage extends WInteractWidget {
 	 * <p>
 	 * This sets <code>resource</code> as the contents for the image, as an
 	 * alternative to {@link WImage#setImageRef(String ref) setImageRef()}. The
-	 * resource may be cleared by passing <code>resource</code> = <code>0</code>.
+	 * resource may be cleared by passing <code>resource</code> =
+	 * <code>null</code>.
 	 * <p>
 	 * The image does not assume ownership of the resource.
 	 * <p>
@@ -236,7 +237,7 @@ public class WImage extends WInteractWidget {
 	/**
 	 * Returns the image resource.
 	 * <p>
-	 * Returns <code>0</code> if no image resource was set.
+	 * Returns <code>null</code> if no image resource was set.
 	 */
 	public WResource getResource() {
 		return this.resource_;
@@ -302,7 +303,7 @@ public class WImage extends WInteractWidget {
 	/**
 	 * Returns the interactive area at the given index.
 	 * <p>
-	 * Returns <code>0</code> if <code>index</code> was invalid.
+	 * Returns <code>null</code> if <code>index</code> was invalid.
 	 * <p>
 	 * 
 	 * @see WImage#insertArea(int index, WAbstractArea area)

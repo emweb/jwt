@@ -155,7 +155,7 @@ import eu.webtoolkit.jwt.utils.StringUtils;
  * </p>
  * </div>
  * <p>
- * <i><b>Note:</b>This widget requires JavaScript support. </i>
+ * <i><b>Note: </b>This widget requires JavaScript support. </i>
  * </p>
  */
 public class WSuggestionPopup extends WCompositeWidget {
@@ -249,7 +249,7 @@ public class WSuggestionPopup extends WCompositeWidget {
 	/**
 	 * Set the model to be used for the suggestions.
 	 * <p>
-	 * The <code>model</code> may not be <code>0</code>, and ownership of the
+	 * The <code>model</code> may not be <code>null</code>, and ownership of the
 	 * model is not transferred.
 	 * <p>
 	 * The default value is a {@link WStringListModel} that is owned by the

@@ -12,7 +12,7 @@ import java.util.EnumSet;
  * <p>
  * 
  * A {@link WTable} provides a table of WTableCell container widgets. A
- * WtableCell may overspan more than one grid location in the table, by
+ * WTableCell may overspan more than one grid location in the table, by
  * specifying a {@link WTableCell#setRowSpan(int rowSpan) rowSpan} and
  * {@link WTableCell#setColumnSpan(int colSpan) columnSpan}. Table cells at
  * overspanned positions are hidden. You cannot directly create a WTableCell,

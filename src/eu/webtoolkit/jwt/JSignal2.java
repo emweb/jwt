@@ -115,7 +115,7 @@ public abstract class JSignal2<A1, A2> extends AbstractJSignal {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	protected void processDynamic(JavaScriptEvent jsEvent) {
+	void processDynamic(JavaScriptEvent jsEvent) {
 		ParameterizedType parameterizedType =  
 		    (ParameterizedType) getClass().getGenericSuperclass();
 		Class A1Class= (Class) parameterizedType.getActualTypeArguments()[0];

@@ -132,7 +132,7 @@ public class WEnvironment {
 	/**
 	 * Returns a single value for a query parameter.
 	 * <p>
-	 * Returns the first value for a parameter, or <code>0</code> if the
+	 * Returns the first value for a parameter, or <code>null</code> if the
 	 * parameter is not found.
 	 * <p>
 	 * 
@@ -167,7 +167,7 @@ public class WEnvironment {
 	/**
 	 * Checks for existence and returns specified argument.
 	 * <p>
-	 * Throws a <code>std::runtime_error(&quot;Missing cookie: ...&quot;)</code>
+	 * Throws a <code>RuntimeException(&quot;Missing cookie: ...&quot;)</code>
 	 * when the cookie is missing, or returns cookie value otherwise.
 	 */
 	public String getCookie(String cookieNname) {

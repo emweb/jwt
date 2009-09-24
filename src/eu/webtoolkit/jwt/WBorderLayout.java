@@ -41,7 +41,7 @@ import java.util.List;
  * WLayout#setContentsMargins()}.
  * <p>
  * <p>
- * <i><b>Note:</b>When used on a {@link WContainerWidget}, this layout manager
+ * <i><b>Note: </b>When used on a {@link WContainerWidget}, this layout manager
  * accepts the following hints (see
  * {@link WLayout#setLayoutHint(String name, String value)
  * WLayout#setLayoutHint()}):
@@ -220,7 +220,7 @@ public class WBorderLayout extends WLayout {
 	/**
 	 * Return the widget at a position.
 	 * <p>
-	 * Returns <code>0</code> if no widget was set for that position.
+	 * Returns <code>null</code> if no widget was set for that position.
 	 */
 	public WWidget widgetAt(WBorderLayout.Position position) {
 		WWidgetItem item = ((this.getItemAt(position)) instanceof WWidgetItem ? (WWidgetItem) (this
@@ -236,7 +236,7 @@ public class WBorderLayout extends WLayout {
 	/**
 	 * Return the item at a position.
 	 * <p>
-	 * Returns <code>0</code> if no item was set for that position.
+	 * Returns <code>null</code> if no item was set for that position.
 	 */
 	public WLayoutItem getItemAt(WBorderLayout.Position position) {
 		Grid.Item gridItem = this.itemAtPosition(position);

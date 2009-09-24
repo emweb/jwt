@@ -440,7 +440,7 @@ public class WStandardItem {
 	/**
 	 * Make the item checkable.
 	 * <p>
-	 * Adds {@link ItemFlag#ItemIsUserCheckable Wt::ItemIsUserCheckable} to the
+	 * Adds {@link ItemFlag#ItemIsUserCheckable ItemIsUserCheckable} to the
 	 * item&apos;s flags.
 	 * <p>
 	 * 
@@ -592,10 +592,11 @@ public class WStandardItem {
 	 * If <code>rows</code> is smaller than the current row count, rows are
 	 * deleted at the end.
 	 * <p>
-	 * <i>Note, if <code>rows</code> &gt; 0, and
-	 * {@link WStandardItem#getColumnCount() getColumnCount()} == 0, columnCount
-	 * is first increased to 1 using setColumnCount(1).</i>.
 	 * <p>
+	 * <i><b>Note: </b>If <code>rows</code> &gt; 0, and
+	 * {@link WStandardItem#getColumnCount() getColumnCount()} == 0, columnCount
+	 * is first increased to 1 using setColumnCount(1).</i>
+	 * </p>
 	 * 
 	 * @see WStandardItem#setColumnCount(int columns)
 	 * @see WStandardItem#getRowCount()
@@ -914,15 +915,6 @@ public class WStandardItem {
 	 * for tree nodes). This inserts a number of rows at row <code>row</code>,
 	 * each containing a single item, and is equivalent to:
 	 * <p>
-	 * <blockquote>
-	 * 
-	 * <pre>
-	 * for (unsigned i = 0; i &lt; items.size(); ++i)
-	 * 	insertRow(row + i, items[i]);
-	 * </pre>
-	 * 
-	 * </blockquote>
-	 * <p>
 	 * 
 	 * @see WStandardItem#insertRow(int row, WStandardItem item)
 	 */
@@ -983,8 +975,8 @@ public class WStandardItem {
 	 * Returns a child item.
 	 * <p>
 	 * Returns the child item at position (<i>row</i>, <code>column</code>).
-	 * This may be <code>0</code> if an item was not previously set, or if the
-	 * position is out of bounds.
+	 * This may be <code>null</code> if an item was not previously set, or if
+	 * the position is out of bounds.
 	 * <p>
 	 * 
 	 * @see WStandardItem#setChild(int row, int column, WStandardItem item)
@@ -1010,8 +1002,8 @@ public class WStandardItem {
 	 * Takes a child out of the item.
 	 * <p>
 	 * Returns the child item at position (<i>row</i>, <code>column</code>), and
-	 * removes it (by setting <code>0</code> instead). Ownership of the item is
-	 * transferred to the caller.
+	 * removes it (by setting <code>null</code> instead). Ownership of the item
+	 * is transferred to the caller.
 	 * <p>
 	 * 
 	 * @see WStandardItem#getChild(int row, int column)

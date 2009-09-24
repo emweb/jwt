@@ -45,7 +45,7 @@ import java.util.List;
  * remaining space.
  * <p>
  * <p>
- * <i><b>Note:</b>When JavaScript support is not available, only Safari and
+ * <i><b>Note: </b>When JavaScript support is not available, only Safari and
  * Firefox properly implement this box layout. For other browsers, only the
  * horizontal layout is properly implemented, while vertically all widgets use
  * their minimum size.
@@ -107,8 +107,8 @@ public class WBoxLayout extends WLayout {
 	 * This constructor is rarely used. Instead, use the convenient constructors
 	 * of the specialized {@link WHBoxLayout} or {@link WVBoxLayout} classes.
 	 * <p>
-	 * Use <code>parent</code> = <code>0</code> to created a layout manager that
-	 * can be nested inside other layout managers.
+	 * Use <code>parent</code> = <code>null</code> to created a layout manager
+	 * that can be nested inside other layout managers.
 	 */
 	public WBoxLayout(WBoxLayout.Direction dir, WWidget parent) {
 		super();

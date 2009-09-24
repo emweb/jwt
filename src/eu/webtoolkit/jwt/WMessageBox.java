@@ -193,7 +193,7 @@ public class WMessageBox extends WDialog {
 	}
 
 	/**
-	 * returns the standard buttons.
+	 * Returns the standard buttons.
 	 */
 	public EnumSet<StandardButton> getButtons() {
 		return this.buttons_;

@@ -88,7 +88,7 @@ public class WPainterPath {
 	}
 
 	/**
-	 * Assignment operator.
+	 * Assignment method.
 	 */
 	public WPainterPath assign(WPainterPath path) {
 		this.segments_ = path.segments_;
@@ -117,7 +117,7 @@ public class WPainterPath {
 	}
 
 	/**
-	 * Comparison operator.
+	 * Indicates whether some other object is "equal to" this one.
 	 * <p>
 	 * Returns <code>true</code> if the paths are exactly the same.
 	 */
@@ -354,8 +354,9 @@ public class WPainterPath {
 	 * bounded by the rectangle defined by top left position (<code>x</code>,
 	 * <i>y</i>), and size <i>width</i> x <code>height</code>.
 	 * <p>
-	 * <code>Note:</code> some renderers only support circles (width == height)
 	 * <p>
+	 * <i><b>Note: </b>Some renderers only support circles (width == height)</i>
+	 * </p>
 	 * 
 	 * @see WPainterPath#addEllipse(WRectF rect)
 	 * @see WPainterPath#arcTo(double cx, double cy, double radius, double

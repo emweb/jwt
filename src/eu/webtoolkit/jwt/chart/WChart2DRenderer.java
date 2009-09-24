@@ -108,7 +108,7 @@ public class WChart2DRenderer {
 	 * Calculates the main plotting area rectangle.
 	 * <p>
 	 * This method calculates the main plotting area, and stores it in the
-	 * memeber chartArea_. The default implementation simply removes the plot
+	 * member chartArea_. The default implementation simply removes the plot
 	 * area padding from the entire painting rectangle.
 	 * <p>
 	 * 
@@ -138,21 +138,19 @@ public class WChart2DRenderer {
 	 * Renders the chart.
 	 * <p>
 	 * This method renders the chart. The default implementation does the
-	 * following: <blockquote>
+	 * following:
+	 * <p>
+	 * <blockquote>
 	 * 
 	 * <pre>
-	 * calcChartArea();           // sets chartArea_
-	 *     prepareAxes();             // provides logical dimensions to the axes
-	 *   
-	 *     renderBackground();        // render the background
-	 *     renderAxes(Grid);          // render the grid
-	 *     renderSeries();            // render the data series
-	 *     \if cpp
-	 *     renderAxes(Line | Labels); // render the axes (lines &amp; labels)
-	 *     \elseif java
-	 *     renderAxes(AxisProperty.Line, AxisProperty.Labels); // render the axes (lines &amp; labels)
-	 *     \endif 
-	 *     renderLegend();            // render legend and titles
+	 * calcChartArea(); // sets chartArea_
+	 * prepareAxes(); // provides logical dimensions to the axes
+	 * 
+	 * renderBackground(); // render the background
+	 * renderAxes(Grid); // render the grid
+	 * renderSeries(); // render the data series
+	 * renderAxes(AxisProperty.Line, AxisProperty.Labels); // render the axes (lines &amp; labels) 
+	 * renderLegend(); // render legend and titles
 	 * </pre>
 	 * 
 	 * </blockquote>

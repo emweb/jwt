@@ -88,7 +88,7 @@ public class WPen {
 	}
 
 	/**
-	 * Comparison operator.
+	 * Indicates whether some other object is "equal to" this one.
 	 * <p>
 	 * Returns <code>true</code> if the pens are exactly the same.
 	 */

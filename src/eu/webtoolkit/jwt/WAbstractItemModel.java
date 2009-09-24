@@ -704,9 +704,9 @@ public abstract class WAbstractItemModel extends WObject {
 	 * Use this method to temporarily save model indexes while the model&apos;s
 	 * layout is changed by for example a sorting operation.
 	 * <p>
-	 * The default implementation returns <code>0</code>, which indicates that
-	 * the index cannot be converted to a raw pointer. If you reimplement this
-	 * method, you also need to reimplemnt
+	 * The default implementation returns <code>null</code>, which indicates
+	 * that the index cannot be converted to a raw pointer. If you reimplement
+	 * this method, you also need to reimplemnt
 	 * {@link WAbstractItemModel#fromRawIndex(Object rawIndex) fromRawIndex()}.
 	 * <p>
 	 * 
@@ -790,7 +790,7 @@ public abstract class WAbstractItemModel extends WObject {
 	 * selection must be interpreted.
 	 * <p>
 	 * <p>
-	 * <i><b>Note:</b>Currently, only row selections are handled by the default
+	 * <i><b>Note: </b>Currently, only row selections are handled by the default
 	 * implementation.</i>
 	 * </p>
 	 * 

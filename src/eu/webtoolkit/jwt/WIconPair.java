@@ -142,11 +142,7 @@ public class WIconPair extends WCompositeWidget {
 	 * Equivalent to: <blockquote>
 	 * 
 	 * <pre>
-	 * \if cpp
-	 *    icon1()-&gt;clicked()
-	 *    \elseif java
-	 *    icon1().clicked()
-	 *    \endif
+	 * icon1().clicked()
 	 * </pre>
 	 * 
 	 * </blockquote>
@@ -161,11 +157,7 @@ public class WIconPair extends WCompositeWidget {
 	 * Equivalent to: <blockquote>
 	 * 
 	 * <pre>
-	 * \if cpp
-	 *    icon2()-&gt;clicked()
-	 *    \elseif java
-	 *    icon2().clicked()
-	 *    \elseif
+	 * icon2().clicked()
 	 * </pre>
 	 * 
 	 * </blockquote>

@@ -72,13 +72,18 @@ public abstract class AbstractSignal {
 		return getListenerCount() != 0;
 	}
 
-	protected SignalImpl getImpl(boolean create) {
+	SignalImpl getImpl(boolean create) {
 		if (impl == null && create)
 			impl = new SignalImpl();
 
 		return impl;
 	}
 
+	/**
+	 * Returns the number of connected listeners.
+	 * 
+	 * @return the number of connected listeners.
+	 */
 	protected int getListenerCount() {
 		if (impl == null)
 			return 0;
@@ -86,6 +91,11 @@ public abstract class AbstractSignal {
 			return impl.getListenerCount();
 	}
 
+	/**
+	 * Returns the connected listeners.
+	 * 
+	 * @return the connected listeners.
+	 */
 	protected ArrayList<SignalImpl.Listener> getListeners() {
 		if (impl == null)
 			return emptyList;

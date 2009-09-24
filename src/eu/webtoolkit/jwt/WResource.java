@@ -55,8 +55,10 @@ public abstract class WResource extends WObject {
 
 	WResource(WObject parent) {
 		super(parent);
-		generateUrl();
+
 		suggestedFileName_ = "";
+
+		generateUrl();
 	}
 
 	/**

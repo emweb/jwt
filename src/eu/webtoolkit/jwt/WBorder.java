@@ -156,7 +156,7 @@ public class WBorder {
 	}
 
 	/**
-	 * Comparison operator.
+	 * Indicates whether some other object is "equal to" this one.
 	 */
 	public boolean equals(WBorder other) {
 		return this.width_ == other.width_ && this.color_.equals(other.color_)

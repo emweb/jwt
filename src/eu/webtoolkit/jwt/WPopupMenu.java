@@ -158,7 +158,7 @@ public class WPopupMenu extends WCompositeWidget {
 	 * corresponding item object.
 	 * <p>
 	 * <p>
-	 * <i><b>Note:</b>The icon should have a width of 16 pixels.</i>
+	 * <i><b>Note: </b>The icon should have a width of 16 pixels.</i>
 	 * </p>
 	 * 
 	 * @see WPopupMenu#add(WPopupMenuItem item)
@@ -281,7 +281,7 @@ public class WPopupMenu extends WCompositeWidget {
 	 * using {@link WPopupMenu#popup(WPoint p) popup()}, and the waits until a
 	 * menu item is selected, or the menu is cancelled.
 	 * <p>
-	 * Returns the selected menu (or sub-menu) item, or <code>0</code> if the
+	 * Returns the selected menu (or sub-menu) item, or <code>null</code> if the
 	 * user cancelled the menu.
 	 * <p>
 	 * 
@@ -317,7 +317,7 @@ public class WPopupMenu extends WCompositeWidget {
 	/**
 	 * Returns the last triggered menu item.
 	 * <p>
-	 * The result is <code>0</code> when the user cancelled the popup menu.
+	 * The result is <code>null</code> when the user cancelled the popup menu.
 	 */
 	public WPopupMenuItem getResult() {
 		return this.result_;

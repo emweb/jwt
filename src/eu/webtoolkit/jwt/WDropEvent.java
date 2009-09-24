@@ -14,6 +14,9 @@ import eu.webtoolkit.jwt.servlet.WebRequest;
  * @see WWidget#dropEvent(WDropEvent event)
  */
 public class WDropEvent {
+	/**
+	 * Constructor.
+	 */
 	public WDropEvent(WObject source, String mimeType, WMouseEvent mouseEvent) {
 		this.dropSource_ = source;
 		this.dropMimeType_ = mimeType;

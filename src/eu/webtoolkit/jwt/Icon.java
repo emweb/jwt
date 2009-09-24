@@ -10,7 +10,7 @@ package eu.webtoolkit.jwt;
  * Enumeration that indiciates a standard icon.
  * <p>
  * <p>
- * <i><b>Note:</b>Not used yet. </i>
+ * <i><b>Note: </b>Not used yet. </i>
  * </p>
  */
 public enum Icon {

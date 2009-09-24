@@ -16,7 +16,7 @@ package eu.webtoolkit.jwt;
  * See {@link WBoxLayout} for available member methods and more information.
  * <p>
  * <p>
- * <i><b>Note:</b>First consider if you can achieve your layout using CSS !</i>
+ * <i><b>Note: </b>First consider if you can achieve your layout using CSS !</i>
  * </p>
  * 
  * @see WHBoxLayout

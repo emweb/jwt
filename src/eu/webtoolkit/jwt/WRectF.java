@@ -63,6 +63,9 @@ public class WRectF {
 		return this;
 	}
 
+	/**
+	 * Indicates whether some other object is "equal to" this one.
+	 */
 	public boolean equals(WRectF rhs) {
 		return this.x_ == rhs.x_ && this.y_ == rhs.y_
 				&& this.width_ == rhs.width_ && this.height_ == rhs.height_;

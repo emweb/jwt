@@ -23,13 +23,6 @@ import java.util.List;
  * {@link WTextEdit#setToolBar(int i, String config) setToolBar()} methods that
  * provide direct access to the underlying TinyMCE component.
  * <p>
- * To use this widget, you need to download TinyMCE (version 3.0.7 or later) and
- * deploy the tinymce/jscripts/tiny_mce folder to <i>tinyMCEURL</i>. The default
- * value for <i>tinyMCEURL</i> is <i>resourcesURL</i>&quot;/tiny_mce&quot;,
- * where <i>resourcesURL</i> is the configuration property that locates the JWt
- * resources/ folder (i.e., we assume by default that you copy the tiny_mce
- * folder to the resources/ folder).
- * <p>
  * The value may be overridden with a URL that points to the directory where the
  * tiny_mce folder is located, by configuring the <i>tinyMCEURL</i> property in
  * your JWt configuration file.
@@ -152,7 +145,7 @@ public class WTextEdit extends WTextArea {
 	 * documentation</a>.
 	 * <p>
 	 * <p>
-	 * <i><b>Note:</b>Plugins can only be loaded before the initial display of
+	 * <i><b>Note: </b>Plugins can only be loaded before the initial display of
 	 * the widget. </i>
 	 * </p>
 	 */
@@ -191,7 +184,7 @@ public class WTextEdit extends WTextArea {
 	 * using {@link WTextEdit#setExtraPlugins(String plugins) setExtraPlugins()}.
 	 * <p>
 	 * <p>
-	 * <i><b>Note:</b>The tool bar configuration can only be set before the
+	 * <i><b>Note: </b>The tool bar configuration can only be set before the
 	 * initial display of the widget. </i>
 	 * </p>
 	 */

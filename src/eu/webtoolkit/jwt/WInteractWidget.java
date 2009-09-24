@@ -127,7 +127,7 @@ public abstract class WInteractWidget extends WWebWidget {
 	 * {@link WMouseEvent#getDocument() document}.
 	 * <p>
 	 * <p>
-	 * <i><b>Note:</b>When JavaScript is disabled, the event details contain
+	 * <i><b>Note: </b>When JavaScript is disabled, the event details contain
 	 * invalid information. </i>
 	 * </p>
 	 */
@@ -146,7 +146,7 @@ public abstract class WInteractWidget extends WWebWidget {
 	 * {@link WMouseEvent#getDocument() document}.
 	 * <p>
 	 * <p>
-	 * <i><b>Note:</b>When JavaScript is disabled, the signal will never fire.
+	 * <i><b>Note: </b>When JavaScript is disabled, the signal will never fire.
 	 * </i>
 	 * </p>
 	 */
@@ -165,7 +165,7 @@ public abstract class WInteractWidget extends WWebWidget {
 	 * {@link WMouseEvent#getDocument() document}.
 	 * <p>
 	 * <p>
-	 * <i><b>Note:</b>When JavaScript is disabled, the signal will never fire.
+	 * <i><b>Note: </b>When JavaScript is disabled, the signal will never fire.
 	 * </i>
 	 * </p>
 	 */
@@ -184,7 +184,7 @@ public abstract class WInteractWidget extends WWebWidget {
 	 * {@link WMouseEvent#getDocument() document}.
 	 * <p>
 	 * <p>
-	 * <i><b>Note:</b>When JavaScript is disabled, the signal will never fire.
+	 * <i><b>Note: </b>When JavaScript is disabled, the signal will never fire.
 	 * </i>
 	 * </p>
 	 */
@@ -196,7 +196,7 @@ public abstract class WInteractWidget extends WWebWidget {
 	 * Event signal emitted when the mouse went out of this widget.
 	 * <p>
 	 * <p>
-	 * <i><b>Note:</b>When JavaScript is disabled, the signal will never fire.
+	 * <i><b>Note: </b>When JavaScript is disabled, the signal will never fire.
 	 * </i>
 	 * </p>
 	 */
@@ -208,7 +208,7 @@ public abstract class WInteractWidget extends WWebWidget {
 	 * Event signal emitted when the mouse entered this widget.
 	 * <p>
 	 * <p>
-	 * <i><b>Note:</b>When JavaScript is disabled, the signal will never fire.
+	 * <i><b>Note: </b>When JavaScript is disabled, the signal will never fire.
 	 * </i>
 	 * </p>
 	 */
@@ -220,7 +220,7 @@ public abstract class WInteractWidget extends WWebWidget {
 	 * Event signal emitted when the mouse moved over this widget.
 	 * <p>
 	 * <p>
-	 * <i><b>Note:</b>When JavaScript is disabled, the signal will never fire.
+	 * <i><b>Note: </b>When JavaScript is disabled, the signal will never fire.
 	 * </i>
 	 * </p>
 	 */
@@ -246,7 +246,7 @@ public abstract class WInteractWidget extends WWebWidget {
 	 * @see WWidget#dropEvent(WDropEvent event)
 	 * @see WWidget#acceptDrops(String mimeType, String hoverStyleClass)
 	 * @see WDropEvent <p>
-	 *      <i><b>Note:</b>When JavaScript is disabled, drag&amp;drop does not
+	 *      <i><b>Note: </b>When JavaScript is disabled, drag&amp;drop does not
 	 *      work. </i>
 	 *      </p>
 	 */

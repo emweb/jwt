@@ -40,7 +40,7 @@ public interface WLoadingIndicator {
 	 * be called during stateless slot prelearning).
 	 * <p>
 	 * <p>
-	 * <i><b>Note:</b>The widget will not be added to the
+	 * <i><b>Note: </b>The widget will not be added to the
 	 * {@link WApplication#getRoot() WApplication#getRoot()} container. </i>
 	 * </p>
 	 */

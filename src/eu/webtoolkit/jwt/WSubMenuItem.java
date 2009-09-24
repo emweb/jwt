@@ -49,11 +49,11 @@ public class WSubMenuItem extends WMenuItem {
 	 * Ownership of the <code>subMenu</code> is transferred to the item. In most
 	 * cases, the sub menu would use the same contents stack as the parent menu.
 	 * <p>
-	 * The default submenu is <code>0</code>, in which case the item behaves as
-	 * a plain {@link WMenuItem}.
+	 * The default submenu is <code>null</code>, in which case the item behaves
+	 * as a plain {@link WMenuItem}.
 	 * <p>
 	 * <p>
-	 * <i><b>Note:</b>A sub menu can only be set before the item is added to a
+	 * <i><b>Note: </b>A sub menu can only be set before the item is added to a
 	 * menu. </i>
 	 * </p>
 	 */

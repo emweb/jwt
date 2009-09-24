@@ -13,18 +13,21 @@ public abstract class AbstractJSignal extends AbstractEventSignal {
 
 	private String name;
 
-	protected AbstractJSignal(WObject sender, String name) {
+	AbstractJSignal(WObject sender, String name) {
 		super(name, sender);
 
 		this.name = name;
 	}
 
+	/**
+	 * Returns the name.
+	 */
 	public String getName() {
 		return name;
 	}
 
 	@Override
-	protected String encodeCmd() {
+	String encodeCmd() {
 		return getSender().getFormName() + "." + name;
 	}
 
@@ -34,7 +37,7 @@ public abstract class AbstractJSignal extends AbstractEventSignal {
 	}
 
 	@SuppressWarnings("unchecked")
-	protected Object unMarshal(JavaScriptEvent jse, int index, Class toClass) {
+	Object unMarshal(JavaScriptEvent jse, int index, Class toClass) {
 		try {
 			if (toClass == String.class)
 				return jse.userEventArgs.get(index);

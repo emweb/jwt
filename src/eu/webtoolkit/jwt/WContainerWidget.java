@@ -539,8 +539,8 @@ public class WContainerWidget extends WInteractWidget {
 	 * Therefore, settings will apply automatically to both orientations.
 	 * <p>
 	 * <p>
-	 * <i><b>Note:</b>For Internet Explorer, setting overflow to OverflowAuto or
-	 * OverflowScroll may cause problems with content that uses absolutely
+	 * <i><b>Note: </b>For Internet Explorer, setting overflow to OverflowAuto
+	 * or OverflowScroll may cause problems with content that uses absolutely
 	 * positioned DOM elements (such as {@link WPaintedWidget} or several Ext
 	 * widgets): due to a bug in IE, these elements will not scroll along, but
 	 * stay &apos;fixed&apos; at their initial position. This problem can

@@ -372,8 +372,9 @@ public class WCartesianChart extends WAbstractChart {
 	 * To have more control over the legend, you could reimplement the
 	 * {@link WCartesianChart#renderLegendItem(WPainter painter, WPointF pos, WDataSeries series)
 	 * renderLegendItem()} method to customize how one item in the legend is
-	 * rendered, or, alternatively you could reimplement the paint(WPainter&amp;
-	 * painter, const WRectF&amp;) method in which you use the
+	 * rendered, or, alternatively you could reimplement the
+	 * {@link WCartesianChart#paint(WPainter painter, WRectF rectangle) paint()}
+	 * method in which you use the
 	 * {@link WCartesianChart#renderLegendItem(WPainter painter, WPointF pos, WDataSeries series)
 	 * renderLegendItem()} method repeatedly to render a legend at an arbitrary
 	 * position.
@@ -460,7 +461,7 @@ public class WCartesianChart extends WAbstractChart {
 	 * Renders the legend item for a given data series.
 	 * <p>
 	 * Renders the legend item for the indicated <i>series</i> in the
-	 * <i>paintert</i> at position <i>pos</i>. The default implementation draws
+	 * <i>painter</i> at position <i>pos</i>. The default implementation draws
 	 * the marker, and the series description to the right. The series
 	 * description is taken from the model&apos;s header data for that
 	 * series&apos; data column.

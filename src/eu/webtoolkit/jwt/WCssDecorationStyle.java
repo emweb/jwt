@@ -127,7 +127,7 @@ public class WCssDecorationStyle extends WObject {
 	 * Set a custom cursor image URI, with optionally a fallback cursor.
 	 * <p>
 	 * The URI should point to a .cur file (this shoul be a real .cur file,
-	 * renaming an .ico is not enough for Internet Explorer.
+	 * renaming an .ico is not enough for Internet Explorer).
 	 */
 	public void setCursor(String cursorImage, Cursor fallback) {
 		if (!WWebWidget.canOptimizeUpdates()

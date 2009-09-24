@@ -289,7 +289,7 @@ public class WPanel extends WCompositeWidget {
 	 * Sets the widget that is the contents of the panel. When a widget was
 	 * previously set, the old widget is deleted first.
 	 * <p>
-	 * The default value is <code>0</code> (no widget set).
+	 * The default value is <code>null</code> (no widget set).
 	 */
 	public void setCentralWidget(WWidget w) {
 		if (this.centralWidget_ != null)

@@ -51,7 +51,7 @@ public class EventSignal extends AbstractEventSignal {
 		super.trigger();
 	}
 
-	protected void processDynamic(JavaScriptEvent jsEvent) {
+	void processDynamic(JavaScriptEvent jsEvent) {
 		if (dynamic_ != null)
 			dynamic_.trigger();
 

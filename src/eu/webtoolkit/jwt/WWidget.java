@@ -484,7 +484,7 @@ public abstract class WWidget extends WObject {
 	 * to keep an (open) space when hidden.
 	 * <p>
 	 * <p>
-	 * <i><b>Note:</b>Currently you can only set this before initial
+	 * <i><b>Note: </b>Currently you can only set this before initial
 	 * rendering.</i>
 	 * </p>
 	 * 

@@ -21,7 +21,7 @@ import eu.webtoolkit.jwt.utils.MathUtils;
  * Explorer browsers).
  * <p>
  * <p>
- * <i><b>Note:</b>The current implementation has only limited support for
+ * <i><b>Note: </b>The current implementation has only limited support for
  * clipping: only rectangular areas aligned with the X/Y axes can be used as
  * clipping path. </i>
  * </p>

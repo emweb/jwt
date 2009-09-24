@@ -447,7 +447,7 @@ public class WTreeView extends WCompositeWidget {
 	 * node (see {@link WTreeView#setRootIndex(WModelIndex rootIndex)
 	 * setRootIndex()}).
 	 * <p>
-	 * The initial model is <code>0</code>.
+	 * The initial model is <code>null</code>.
 	 * <p>
 	 * Ownership of the model is not transferred (and thus the previously set
 	 * model is not deleted).
@@ -659,8 +659,8 @@ public class WTreeView extends WCompositeWidget {
 	 * The default value is 20 pixels.
 	 * <p>
 	 * <p>
-	 * <i><b>Note:</b>The height must be specified in {@link WLength.Unit#Pixel}
-	 * units.</i>
+	 * <i><b>Note: </b>The height must be specified in
+	 * {@link WLength.Unit#Pixel} units.</i>
 	 * </p>
 	 * 
 	 * @see WTreeView#setColumnWidth(int column, WLength width)
@@ -698,7 +698,7 @@ public class WTreeView extends WCompositeWidget {
 	 * space.
 	 * <p>
 	 * <p>
-	 * <i><b>Note:</b>The actual space occupied by each column is the column
+	 * <i><b>Note: </b>The actual space occupied by each column is the column
 	 * width augmented by 7 pixels for internal padding and a border.</i>
 	 * </p>
 	 * 
@@ -744,7 +744,7 @@ public class WTreeView extends WCompositeWidget {
 	 * The default value is {@link AlignmentFlag#AlignLeft AlignLeft}.
 	 * <p>
 	 * <p>
-	 * <i><b>Note:</b>For column 0, {@link AlignmentFlag#AlignCenter
+	 * <i><b>Note: </b>For column 0, {@link AlignmentFlag#AlignCenter
 	 * AlignCenter} is currently not supported.</i>
 	 * </p>
 	 * 
@@ -824,9 +824,9 @@ public class WTreeView extends WCompositeWidget {
 	}
 
 	/**
-	 * Setss the column border color.
+	 * Sets the column border color.
 	 * <p>
-	 * The default border color is WColor.white.
+	 * The default border color is {@link white}.
 	 */
 	public void setColumnBorder(WColor color) {
 		if (this.borderColorRule_ != null)
@@ -1118,7 +1118,7 @@ public class WTreeView extends WCompositeWidget {
 	 * <p>
 	 * By default, selection operates on rows (
 	 * {@link SelectionBehavior#SelectRows SelectRows}), in which case model
-	 * indexes will always be in the first column (column <code>0</code>).
+	 * indexes will always be in the first column (column <code>null</code>).
 	 * <p>
 	 * Alternatively, you can allow selection for individual items (
 	 * {@link SelectionBehavior#SelectItems SelectItems}).
@@ -1229,7 +1229,7 @@ public class WTreeView extends WCompositeWidget {
 	 * This is a convenience method for: <blockquote>
 	 * 
 	 * <pre>
-	 * selectionModel()-&gt;isSelected(index)
+	 * selectionModel().isSelected(index)
 	 * </pre>
 	 * 
 	 * </blockquote>
@@ -1252,7 +1252,7 @@ public class WTreeView extends WCompositeWidget {
 	 * This is a convenience method for: <blockquote>
 	 * 
 	 * <pre>
-	 * selectionModel()-&gt;selectedIndexes()
+	 * selectionModel().selectedIndexes()
 	 * </pre>
 	 * 
 	 * </blockquote>
@@ -1331,7 +1331,7 @@ public class WTreeView extends WCompositeWidget {
 	 * The default value is <code>false</code>.
 	 * <p>
 	 * <p>
-	 * <i><b>Note:</b>Currently, you must set this option before any other
+	 * <i><b>Note: </b>Currently, you must set this option before any other
 	 * manipulation of a newly created treeview, and only <code>enable</code> =
 	 * <code>true</code> is supported. </i>
 	 * </p>
@@ -1603,10 +1603,10 @@ public class WTreeView extends WCompositeWidget {
 	 * setHeaderHeight()}.
 	 * <p>
 	 * The widget is created only once, but this method may be called repeatedly
-	 * for a column for which prior calls returned <code>0</code> (i.e. each
+	 * for a column for which prior calls returned <code>null</code> (i.e. each
 	 * time the header is rerendered).
 	 * <p>
-	 * The default implementation returns <code>0</code>.
+	 * The default implementation returns <code>null</code>.
 	 * <p>
 	 * 
 	 * @see WTreeView#setHeaderHeight(WLength height, boolean multiLine)

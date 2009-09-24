@@ -35,7 +35,7 @@ package eu.webtoolkit.jwt;
  * </blockquote>
  * <p>
  * <p>
- * <i><b>Note:</b>First consider if you can achieve your layout using CSS !</i>
+ * <i><b>Note: </b>First consider if you can achieve your layout using CSS !</i>
  * </p>
  * 
  * @see WVBoxLayout
@@ -44,8 +44,8 @@ public class WHBoxLayout extends WBoxLayout {
 	/**
 	 * Create a new horizontal box layout.
 	 * <p>
-	 * Use <code>parent</code> = <code>0</code> to create a layout manager that
-	 * can be nested inside other layout managers, or to specify a specific
+	 * Use <code>parent</code> = <code>null</code> to create a layout manager
+	 * that can be nested inside other layout managers, or to specify a specific
 	 * alignment when setting the layout to a {@link WContainerWidget}.
 	 */
 	public WHBoxLayout(WWidget parent) {

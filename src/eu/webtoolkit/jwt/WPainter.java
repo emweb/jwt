@@ -120,7 +120,7 @@ public class WPainter {
 	 * cleared to become entirely transparent.
 	 * <p>
 	 * 
-	 * @see WPainter#isEnd()
+	 * @see WPainter#end()
 	 * @see WPainter#isActive()
 	 */
 	public boolean begin(WPaintDevice device) {
@@ -148,7 +148,7 @@ public class WPainter {
 	 * <p>
 	 * 
 	 * @see WPainter#begin(WPaintDevice device)
-	 * @see WPainter#isEnd()
+	 * @see WPainter#end()
 	 */
 	public boolean isActive() {
 		return this.device_ != null;
@@ -156,10 +156,8 @@ public class WPainter {
 
 	/**
 	 * End painting.
-	 * <p>
-	 * This method is called automatically from the destructor.
 	 */
-	public boolean isEnd() {
+	public boolean end() {
 		if (!(this.device_ != null)) {
 			return false;
 		}
@@ -808,12 +806,14 @@ public class WPainter {
 	 * Horizontal alignment may be one of AlignLeft, AlignCenter, or AlignRight.
 	 * Vertical alignment is one of AlignTop, AlignMiddle or AlignBottom.
 	 * <p>
-	 * <i>Note: HtmlCanvas will always render the text horizontally (unaffected
-	 * by rotation), and unaffected by the scaling component of the
+	 * <p>
+	 * <i><b>Note: </b>HtmlCanvas will always render the text horizontally
+	 * (unaffected by rotation), and unaffected by the scaling component of the
 	 * transformation matrix. Also, text is overlayed on top of painted shapes,
 	 * and is not covered by shapes that are painted after the text. Use the SVG
 	 * and VML renderers (WPaintedWidget::inlineSvgVml) for the most accurate
-	 * font rendering.</i>
+	 * font rendering. </i>
+	 * </p>
 	 */
 	public void drawText(WRectF rectangle, EnumSet<AlignmentFlag> flags,
 			CharSequence text) {

@@ -44,7 +44,7 @@ public class WPopupMenuItem extends WCompositeWidget {
 	 * The icon is displayed left to the text.
 	 * <p>
 	 * <p>
-	 * <i><b>Note:</b>The icon should have a width of 16 pixels.</i>
+	 * <i><b>Note: </b>The icon should have a width of 16 pixels.</i>
 	 * </p>
 	 * 
 	 * @see WPopupMenu#addItem(String iconPath, CharSequence text)

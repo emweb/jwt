@@ -26,7 +26,7 @@ import java.util.EnumSet;
  * WAnchor is an {@link WWidget#setInline(boolean inlined) inline} widget.
  * <p>
  * <p>
- * <i><b>Note:</b>If you set a text or image using one of the API methods like
+ * <i><b>Note: </b>If you set a text or image using one of the API methods like
  * {@link WAnchor#setText(CharSequence text) setText()} or
  * {@link WAnchor#setImage(WImage image) setImage()} or a constructor, you
  * should not attempt to remove all contents (using
@@ -295,7 +295,7 @@ public class WAnchor extends WContainerWidget {
 	 * Internally, this method sets the destination URL using: <blockquote>
 	 * 
 	 * <pre>
-	 * setRef(WApplication::instance()-&gt;bookmarkUrl(path))
+	 * setRef(WApplication::instance().bookmarkUrl(path))
 	 * </pre>
 	 * 
 	 * </blockquote>
@@ -305,7 +305,7 @@ public class WAnchor extends WContainerWidget {
 	 * <blockquote>
 	 * 
 	 * <pre>
-	 * WApplication::instance()-&gt;setInternalPath(ref(), true);
+	 * WApplication::instance().setInternalPath(ref(), true);
 	 * </pre>
 	 * 
 	 * </blockquote>
@@ -350,7 +350,8 @@ public class WAnchor extends WContainerWidget {
 	 * <p>
 	 * This sets the <code>resource</code> as the destination of the anchor, and
 	 * is an alternative to {@link WAnchor#setRef(String ref) setRef()}. The
-	 * resource may be cleared by passing <code>resource</code> = <code>0</code>.
+	 * resource may be cleared by passing <code>resource</code> =
+	 * <code>null</code>.
 	 * <p>
 	 * The anchor does not assume ownership of the resource.
 	 * <p>
@@ -373,7 +374,7 @@ public class WAnchor extends WContainerWidget {
 	/**
 	 * Returns the destination resource.
 	 * <p>
-	 * Returns <code>0</code> if no resource has been set.
+	 * Returns <code>null</code> if no resource has been set.
 	 * <p>
 	 * 
 	 * @see WAnchor#setResource(WResource resource)
@@ -473,7 +474,7 @@ public class WAnchor extends WContainerWidget {
 	/**
 	 * Returns the image.
 	 * <p>
-	 * Returns <code>0</code> if no image is set.
+	 * Returns <code>null</code> if no image is set.
 	 * <p>
 	 * 
 	 * @see WAnchor#setImage(WImage image)

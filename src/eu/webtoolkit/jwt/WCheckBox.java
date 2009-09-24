@@ -100,7 +100,7 @@ public class WCheckBox extends WAbstractToggleButton {
 	 * Make a tristate checkbox.
 	 * <p>
 	 * <p>
-	 * <i><b>Note:</b>You should enable tristate functionality right after
+	 * <i><b>Note: </b>You should enable tristate functionality right after
 	 * construction and this cannot be modified later. </i>
 	 * </p>
 	 */

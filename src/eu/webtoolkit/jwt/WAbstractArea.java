@@ -60,7 +60,7 @@ public class WAbstractArea extends WObject {
 	 * <p>
 	 * 
 	 * @see WAbstractArea#setResource(WResource resource) <p>
-	 *      <i><b>Note:</b>Even when no destination URL is set, in some
+	 *      <i><b>Note: </b>Even when no destination URL is set, in some
 	 *      circumstances, a identity URL (&apos;#&apos;) will be set on the
 	 *      underlying HTML &lt;area&gt; element (see also
 	 *      {@link WAbstractArea#setCursor(Cursor cursor) setCursor()}). </i>
@@ -97,7 +97,7 @@ public class WAbstractArea extends WObject {
 	 * <p>
 	 * By setting a resource, the area behaves like a {@link WAnchor} that
 	 * refers to the resource <code>resource</code>. The resource may be cleared
-	 * by passing <code>resource</code> = <code>0</code>.
+	 * by passing <code>resource</code> = <code>null</code>.
 	 * <p>
 	 * The area does not assume ownership of the resource.
 	 * <p>
@@ -362,7 +362,7 @@ public class WAbstractArea extends WObject {
 	 * {@link WMouseEvent#getDocument() document}.
 	 * <p>
 	 * <p>
-	 * <i><b>Note:</b>When JavaScript is disabled, the event details contain
+	 * <i><b>Note: </b>When JavaScript is disabled, the event details contain
 	 * invalid information. </i>
 	 * </p>
 	 */
@@ -381,7 +381,7 @@ public class WAbstractArea extends WObject {
 	 * {@link WMouseEvent#getDocument() document}.
 	 * <p>
 	 * <p>
-	 * <i><b>Note:</b>When JavaScript is disabled, the signal will never fire.
+	 * <i><b>Note: </b>When JavaScript is disabled, the signal will never fire.
 	 * </i>
 	 * </p>
 	 */
@@ -400,7 +400,7 @@ public class WAbstractArea extends WObject {
 	 * {@link WMouseEvent#getDocument() document}.
 	 * <p>
 	 * <p>
-	 * <i><b>Note:</b>When JavaScript is disabled, the signal will never fire.
+	 * <i><b>Note: </b>When JavaScript is disabled, the signal will never fire.
 	 * </i>
 	 * </p>
 	 */
@@ -419,7 +419,7 @@ public class WAbstractArea extends WObject {
 	 * {@link WMouseEvent#getDocument() document}.
 	 * <p>
 	 * <p>
-	 * <i><b>Note:</b>When JavaScript is disabled, the signal will never fire.
+	 * <i><b>Note: </b>When JavaScript is disabled, the signal will never fire.
 	 * </i>
 	 * </p>
 	 */
@@ -431,7 +431,7 @@ public class WAbstractArea extends WObject {
 	 * Event signal emitted when the mouse went out of this widget.
 	 * <p>
 	 * <p>
-	 * <i><b>Note:</b>When JavaScript is disabled, the signal will never fire.
+	 * <i><b>Note: </b>When JavaScript is disabled, the signal will never fire.
 	 * </i>
 	 * </p>
 	 */
@@ -443,7 +443,7 @@ public class WAbstractArea extends WObject {
 	 * Event signal emitted when the mouse entered this widget.
 	 * <p>
 	 * <p>
-	 * <i><b>Note:</b>When JavaScript is disabled, the signal will never fire.
+	 * <i><b>Note: </b>When JavaScript is disabled, the signal will never fire.
 	 * </i>
 	 * </p>
 	 */
@@ -455,7 +455,7 @@ public class WAbstractArea extends WObject {
 	 * Event signal emitted when the mouse moved over this widget.
 	 * <p>
 	 * <p>
-	 * <i><b>Note:</b>When JavaScript is disabled, the signal will never fire.
+	 * <i><b>Note: </b>When JavaScript is disabled, the signal will never fire.
 	 * </i>
 	 * </p>
 	 */

@@ -46,8 +46,6 @@ public class WString implements Comparable<WString>, CharSequence {
 
 	/**
 	 * Creates a literal string.
-	 * 
-	 * @param s
 	 */
 	public WString(String s) {
 		set(s);
@@ -55,8 +53,6 @@ public class WString implements Comparable<WString>, CharSequence {
 
 	/**
 	 * Sets a literal string.
-	 * 
-	 * @param s
 	 */
 	void set(String s) {
 		this.value = s;
@@ -66,8 +62,6 @@ public class WString implements Comparable<WString>, CharSequence {
 
 	/**
 	 * Creates a literal string from a single character.
-	 * 
-	 * @param c
 	 */
 	public WString(char c) {
 		this(c + "");
@@ -81,8 +75,6 @@ public class WString implements Comparable<WString>, CharSequence {
 
 	/**
 	 * Creates a literal string from a char array.
-	 * 
-	 * @param buf
 	 */
 	public WString(char[] buf) {
 		this(new String(buf));
@@ -98,7 +90,6 @@ public class WString implements Comparable<WString>, CharSequence {
 	/**
 	 * Appends a string, converting the string to a literal string if necessary.
 	 * 
-	 * @param other
 	 * @return <code>this</code>
 	 */
 	public WString append(WString other) {
@@ -108,7 +99,6 @@ public class WString implements Comparable<WString>, CharSequence {
 	/**
 	 * Appends a string, converting the string to a literal string if necessary.
 	 * 
-	 * @param other
 	 * @return <code>this</code>
 	 */
 	public WString append(String other) {
@@ -120,7 +110,6 @@ public class WString implements Comparable<WString>, CharSequence {
 	/**
 	 * Appends a string, converting the string to a literal string if necessary.
 	 * 
-	 * @param buf
 	 * @return <code>this</code>
 	 */
 	public WString append(char[] buf) {
@@ -209,7 +198,6 @@ public class WString implements Comparable<WString>, CharSequence {
 	 * For example: the string "<tt>{1} bought {2} apples in the shop.</tt>" with first argument value "<tt>Bart</tt>"
 	 * and second argument value <tt>5</tt> becomes: "<tt>Bart bought 5 apples in the shop.</tt>"
 	 * 
-	 * @param value the argument.
 	 * @return <code>this</code>
 	 */
 	public WString arg(CharSequence value) {
@@ -228,7 +216,6 @@ public class WString implements Comparable<WString>, CharSequence {
 	 * For example: the string "<tt>{1} bought {2} apples in the shop.</tt>" with first argument value "<tt>Bart</tt>"
 	 * and second argument value <tt>5</tt> becomes: "<tt>Bart bought 5 apples in the shop.</tt>"
 	 * 
-	 * @param value the argument.
 	 * @return <code>this</code>
 	 */
 	public WString arg(int value) {
@@ -247,7 +234,6 @@ public class WString implements Comparable<WString>, CharSequence {
 	 * For example: the string "<tt>{1} bought {2} apples in the shop.</tt>" with first argument value "<tt>Bart</tt>"
 	 * and second argument value <tt>5</tt> becomes: "<tt>Bart bought 5 apples in the shop.</tt>"
 	 * 
-	 * @param value the argument.
 	 * @return <code>this</code>
 	 */
 	public WString arg(double value) {
@@ -313,9 +299,6 @@ public class WString implements Comparable<WString>, CharSequence {
 
 	/**
 	 * Change the WString 's argument at position argIndex.
-	 * 
-	 * @param argIndex
-	 * @param value
 	 */
 	public void changeArg(int argIndex, String value) {
 		arguments.set(argIndex, value);
@@ -323,9 +306,6 @@ public class WString implements Comparable<WString>, CharSequence {
 
 	/**
 	 * Change the WString 's argument at position argIndex.
-	 * 
-	 * @param argIndex
-	 * @param value
 	 */
 	public void changeArg(int argIndex, int value) {
 		this.changeArg(argIndex, value + "");
@@ -333,9 +313,6 @@ public class WString implements Comparable<WString>, CharSequence {
 
 	/**
 	 * Change the WString 's argument at position argIndex.
-	 * 
-	 * @param argIndex
-	 * @param value
 	 */
 	public void changeArg(int argIndex, double value) {
 		this.changeArg(argIndex, value + "");
@@ -357,7 +334,6 @@ public class WString implements Comparable<WString>, CharSequence {
 	 * <p>
 	 * When the char sequence is a WString, it is casted otherwise, a new WString is created.
 	 * 
-	 * @param charSequence a char sequence.
 	 * @return a WString casted or created from the char sequence.
 	 */
 	public static WString toWString(CharSequence charSequence) {

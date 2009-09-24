@@ -23,11 +23,10 @@ import eu.webtoolkit.jwt.utils.StringUtils;
  * sorting.
  * <p>
  * 
- * Wt/WSortFilterProxyModel This proxy model does not store data itself, but
- * presents data from a source model, after filtering rows. It also allows
- * sorting of the source model data, without actually altering the source model.
- * This may be convenient when the source model does not support sorting (i.e.
- * does not reimplement
+ * This proxy model does not store data itself, but presents data from a source
+ * model, after filtering rows. It also allows sorting of the source model data,
+ * without actually altering the source model. This may be convenient when the
+ * source model does not support sorting (i.e. does not reimplement
  * {@link WAbstractItemModel#sort(int column, SortOrder order)
  * WAbstractItemModel#sort()}), or you do not want to reorder the underlying
  * model since that affects all views on the model.
@@ -82,7 +81,7 @@ import eu.webtoolkit.jwt.utils.StringUtils;
  * </blockquote>
  * <p>
  * <p>
- * <i><b>Note:</b>The implementation is not yet complete: the proxy model does
+ * <i><b>Note: </b>The implementation is not yet complete: the proxy model does
  * not yet react properly to row insertions and row removals in the source
  * model. </i>
  * </p>
@@ -376,7 +375,7 @@ public class WSortFilterProxyModel extends WAbstractProxyModel {
 	 * and re-sort the model when changes happen to the source model.
 	 * <p>
 	 * <p>
-	 * <i><b>Note:</b>This may be ackward when editing through the proxy model,
+	 * <i><b>Note: </b>This may be ackward when editing through the proxy model,
 	 * since changing some data may rearrange the model and thus invalidate
 	 * model indexes. Therefore it is usually less complicated to manipulate
 	 * directly the source model instead.</i>

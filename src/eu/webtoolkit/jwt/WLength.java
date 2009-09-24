@@ -142,7 +142,7 @@ public class WLength {
 	}
 
 	/**
-	 * Comparison operator.
+	 * Indicates whether some other object is "equal to" this one.
 	 */
 	public boolean equals(WLength other) {
 		return this.auto_ == other.auto_ && this.unit_ == other.unit_

@@ -41,7 +41,7 @@ import java.util.EnumSet;
  * </div>
  * <p>
  * <p>
- * <i><b>Note:</b>For the dialog to render properly in IE, the &quot;html
+ * <i><b>Note: </b>For the dialog to render properly in IE, the &quot;html
  * body&quot; margin is set to 0 (if it wasn&apos;t already). </i>
  * </p>
  */

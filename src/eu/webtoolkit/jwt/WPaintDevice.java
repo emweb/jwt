@@ -173,7 +173,7 @@ public interface WPaintDevice {
 	 * This method is called when a {@link WPainter} stopped painting.
 	 * <p>
 	 * 
-	 * @see WPainter#isEnd()
+	 * @see WPainter#end()
 	 */
 	public void done();
 
