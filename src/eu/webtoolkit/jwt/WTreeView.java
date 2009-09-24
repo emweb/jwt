@@ -227,12 +227,12 @@ public class WTreeView extends WCompositeWidget {
 			app
 					.getStyleSheet()
 					.addRule(".Wt-treeview .Wt-tv-sh",
-							"float: right; width: 16px; margin-top: 6px;cursor: pointer; cursor:hand;");
+							"float: right; width: 19px; margin-top: 6px; cursor: pointer; cursor:hand;");
 			app
 					.getStyleSheet()
 					.addRule(
 							".Wt-treeview .Wt-tv-sh-nrh",
-							"float: right; width: 16px; margin-top: 6px; margin-right: 4px;cursor: pointer; cursor:hand;");
+							"float: right; width: 19px; margin-top: 6px; margin-right: 4px; cursor: pointer; cursor:hand;");
 			app.getStyleSheet().addRule(".Wt-treeview .Wt-tv-shc0",
 					"float: left;");
 			app.getStyleSheet().addRule(".Wt-treeview .selected",
@@ -256,10 +256,10 @@ public class WTreeView extends WCompositeWidget {
 				app
 						.getStyleSheet()
 						.addRule(".Wt-treeview .Wt-scroll",
-								"position: absolute; overflow-x: scroll; height: 16px;");
+								"position: absolute; overflow-x: scroll; height: 19px;");
 			} else {
 				app.getStyleSheet().addRule(".Wt-treeview .Wt-scroll",
-						"overflow: scroll; height: 16px;");
+						"overflow: scroll; height: 19px;");
 			}
 			app.getStyleSheet().addRule(".Wt-treeview .Wt-scroll div",
 					"height: 1px;");
@@ -404,7 +404,7 @@ public class WTreeView extends WCompositeWidget {
 						+ this.contents_.getJsRef()
 						+ ".firstChild,r= WT.getCssRule('#"
 						+ this.getId()
-						+ " .cwidth'),contentstoo=(r.style.width == h.style.width);r.style.width=(tw - (vscroll ? 17 : 0)) + 'px';e.style.width=tw + 'px';h.style.width=t.offsetWidth + 'px';if (c0w != null) {var hh=h.firstChild,w=tw - c0w - (vscroll ? 17 : 0);if (w > 0) {WT.getCssRule('#"
+						+ " .cwidth'),contentstoo=(r.style.width == h.style.width);r.style.width=(tw - (vscroll ? 19 : 0)) + 'px';e.style.width=tw + 'px';h.style.width=t.offsetWidth + 'px';if (c0w != null) {var hh=h.firstChild,w=tw - c0w - (vscroll ? 19 : 0);if (w > 0) {WT.getCssRule('#"
 						+ this.getId()
 						+ " .Wt-tv-row').style.width = w + 'px';var extra = hh.childNodes.length > 1? (WT.hasTag(hh.childNodes[1], 'IMG') ? 22 : 7) : 0;hh.style.width= (w + extra) + 'px';}} else if (contentstoo) {h.style.width=r.style.width;t.style.width=r.style.width;}if (s.adjustHeaderWidth)s.adjustHeaderWidth(1, 0);}}}");
 		if (parent != null) {
@@ -1350,7 +1350,7 @@ public class WTreeView extends WCompositeWidget {
 					WLength.Auto);
 			WContainerWidget scrollBarContainer = new WContainerWidget();
 			scrollBarContainer.setStyleClass("cwidth");
-			scrollBarContainer.resize(WLength.Auto, new WLength(17));
+			scrollBarContainer.resize(WLength.Auto, new WLength(19));
 			this.scrollBarC_ = new WContainerWidget(scrollBarContainer);
 			this.scrollBarC_.setStyleClass("Wt-tv-row Wt-scroll");
 			this.scrollBarC_.scrolled().addListener(this.tieRowsScrollJS_);

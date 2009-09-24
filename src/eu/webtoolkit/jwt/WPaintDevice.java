@@ -98,6 +98,15 @@ public interface WPaintDevice {
 	public void setChanged(EnumSet<WPaintDevice.ChangeFlag> flags);
 
 	/**
+	 * Indicate changes in painter state.
+	 * <p>
+	 * Calls {@link #setChanged(EnumSet flags) setChanged(EnumSet.of(flag,
+	 * flags))}
+	 */
+	public void setChanged(WPaintDevice.ChangeFlag flag,
+			WPaintDevice.ChangeFlag... flags);
+
+	/**
 	 * Draw an arc.
 	 * <p>
 	 * The arc is defined as in
@@ -199,4 +208,12 @@ public interface WPaintDevice {
 	 * Set paint flags.
 	 */
 	public void setPaintFlags(EnumSet<PaintFlag> paintFlags);
+
+	/**
+	 * Set paint flags.
+	 * <p>
+	 * Calls {@link #setPaintFlags(EnumSet paintFlags)
+	 * setPaintFlags(EnumSet.of(paintFlag, paintFlags))}
+	 */
+	public void setPaintFlags(PaintFlag paintFlag, PaintFlag... paintFlags);
 }

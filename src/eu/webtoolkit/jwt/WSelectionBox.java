@@ -69,7 +69,7 @@ public class WSelectionBox extends WComboBox {
 	}
 
 	/**
-	 * Set the number of items that are visible.
+	 * Sets the number of items that are visible.
 	 * <p>
 	 * If more items are available, a scroll-bar is provided.
 	 */
@@ -78,7 +78,7 @@ public class WSelectionBox extends WComboBox {
 	}
 
 	/**
-	 * Get the number of items that are visible.
+	 * Returns the number of items that are visible.
 	 */
 	public void setVerticalSize(int items) {
 		this.verticalSize_ = items;
@@ -87,7 +87,7 @@ public class WSelectionBox extends WComboBox {
 	}
 
 	/**
-	 * Set the selection mode.
+	 * Sets the selection mode.
 	 * <p>
 	 * The default selection mode is SingleSelection. You can change to
 	 * ExtendedSelection to allow selection of multiple items.
@@ -114,7 +114,7 @@ public class WSelectionBox extends WComboBox {
 	}
 
 	/**
-	 * Get the selection mode.
+	 * Returns the selection mode.
 	 * <p>
 	 * 
 	 * @see WSelectionBox#setSelectionMode(SelectionMode mode)
@@ -124,7 +124,7 @@ public class WSelectionBox extends WComboBox {
 	}
 
 	/**
-	 * Get the current selection (in ExtendedSelection mode).
+	 * Returns the current selection (in ExtendedSelection mode).
 	 * <p>
 	 * Get the list of currently selected items. This method is only defined
 	 * when {@link WSelectionBox#getSelectionMode() getSelectionMode()} is
@@ -140,7 +140,7 @@ public class WSelectionBox extends WComboBox {
 	}
 
 	/**
-	 * Set the selection (in ExtendedSelection mode).
+	 * Sets the selection (in ExtendedSelection mode).
 	 * <p>
 	 * For an ExtendedSelection mode, set the list of currently selected items.
 	 * <p>
@@ -158,7 +158,7 @@ public class WSelectionBox extends WComboBox {
 	}
 
 	/**
-	 * Clear the current selection.
+	 * Clears the current selection.
 	 * <p>
 	 * Clears the current selection.
 	 * <p>
