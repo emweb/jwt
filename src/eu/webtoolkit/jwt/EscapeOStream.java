@@ -8,8 +8,6 @@ package eu.webtoolkit.jwt;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import eu.webtoolkit.jwt.utils.StringUtils;
-
 class EscapeOStream {
 	public enum RuleSet {
 		HtmlAttribute, JsStringLiteralSQuote, JsStringLiteralDQuote

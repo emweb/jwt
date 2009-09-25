@@ -15,7 +15,6 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import eu.webtoolkit.jwt.utils.EnumUtils;
-import eu.webtoolkit.jwt.utils.StringUtils;
 
 /**
  * A view class that displays a model as a tree or tree table.
@@ -826,7 +825,7 @@ public class WTreeView extends WCompositeWidget {
 	/**
 	 * Sets the column border color.
 	 * <p>
-	 * The default border color is {@link white}.
+	 * The default border color is white.
 	 */
 	public void setColumnBorder(WColor color) {
 		if (this.borderColorRule_ != null)

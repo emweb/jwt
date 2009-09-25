@@ -15,7 +15,6 @@ import java.util.SortedMap;
 import java.util.SortedSet;
 import java.util.TreeMap;
 import eu.webtoolkit.jwt.utils.EnumUtils;
-import eu.webtoolkit.jwt.utils.StringUtils;
 
 /**
  * An abstract model for use with Wt&apos;s view classes.

@@ -6,7 +6,6 @@
 package eu.webtoolkit.jwt;
 
 import java.util.EnumSet;
-import eu.webtoolkit.jwt.utils.StringUtils;
 
 /**
  * A widget that renders (XHTML) text

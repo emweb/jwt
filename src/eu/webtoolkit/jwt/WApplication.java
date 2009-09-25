@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import eu.webtoolkit.jwt.utils.MathUtils;
-import eu.webtoolkit.jwt.utils.StringUtils;
 
 /**
  * Represents an application instance for a single session.
@@ -1245,17 +1244,6 @@ public class WApplication extends WObject {
 	 * virtual methods).
 	 */
 	public void initialize() {
-	}
-
-	/**
-	 * Finalizes the application, pre-destruction.
-	 * <p>
-	 * This method is invoked by the JWt library before destruction of a new
-	 * application. You may reimplement this method to do additional
-	 * finalization that is not possible from the destructor (e.g. which uses
-	 * virtual methods).
-	 */
-	public void finalize() {
 	}
 
 	/**

@@ -8,7 +8,6 @@ package eu.webtoolkit.jwt;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
-import eu.webtoolkit.jwt.utils.StringUtils;
 
 /**
  * A container widget which provides a view implementation of a {@link WTable}

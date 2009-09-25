@@ -93,8 +93,8 @@ public class WTimer extends WObject {
 	/**
 	 * This static function calls a slot after a given time interval.
 	 * <p>
-	 * For example, the following code will call this-&gt;doSome() after 2
-	 * seconds: <blockquote>
+	 * For example, the following code will call this.doSome() after 2 seconds:
+	 * <blockquote>
 	 * 
 	 * <pre>
 	 * WTimer::singleShot(2000, SLOT(this, MyClass::doSome));

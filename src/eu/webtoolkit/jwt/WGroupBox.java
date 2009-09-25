@@ -7,7 +7,6 @@ package eu.webtoolkit.jwt;
 
 import java.util.EnumSet;
 import java.util.List;
-import eu.webtoolkit.jwt.utils.StringUtils;
 
 /**
  * A widget which group widgets into a frame with a title

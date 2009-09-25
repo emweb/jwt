@@ -8,6 +8,7 @@ package eu.webtoolkit.jwt.chart;
 import java.util.ArrayList;
 import java.util.List;
 import eu.webtoolkit.jwt.Orientation;
+import eu.webtoolkit.jwt.StringUtils;
 import eu.webtoolkit.jwt.WAbstractItemModel;
 import eu.webtoolkit.jwt.WColor;
 import eu.webtoolkit.jwt.WDate;
@@ -16,7 +17,6 @@ import eu.webtoolkit.jwt.WLength;
 import eu.webtoolkit.jwt.WPen;
 import eu.webtoolkit.jwt.WString;
 import eu.webtoolkit.jwt.utils.MathUtils;
-import eu.webtoolkit.jwt.utils.StringUtils;
 
 /**
  * Class which represents an axis of a cartesian chart.

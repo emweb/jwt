@@ -7,7 +7,6 @@ package eu.webtoolkit.jwt;
 
 import java.util.ArrayList;
 import java.util.List;
-import eu.webtoolkit.jwt.utils.StringUtils;
 
 /**
  * A widget that shows a menu of options

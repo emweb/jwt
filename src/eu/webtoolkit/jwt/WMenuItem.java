@@ -5,7 +5,6 @@
  */
 package eu.webtoolkit.jwt;
 
-import eu.webtoolkit.jwt.utils.StringUtils;
 
 /**
  * A single item in a menu

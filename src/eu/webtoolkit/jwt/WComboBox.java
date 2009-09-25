@@ -8,7 +8,6 @@ package eu.webtoolkit.jwt;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
-import eu.webtoolkit.jwt.utils.StringUtils;
 
 /**
  * A widget that provides a drop-down combo-box control.

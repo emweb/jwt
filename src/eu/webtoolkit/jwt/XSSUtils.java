@@ -5,7 +5,6 @@
  */
 package eu.webtoolkit.jwt;
 
-import eu.webtoolkit.jwt.utils.StringUtils;
 
 class XSSUtils {
 	static boolean isBadTag(String name) {

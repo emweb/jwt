@@ -11,6 +11,7 @@ import java.util.List;
 import eu.webtoolkit.jwt.AlignmentFlag;
 import eu.webtoolkit.jwt.Orientation;
 import eu.webtoolkit.jwt.Side;
+import eu.webtoolkit.jwt.StringUtils;
 import eu.webtoolkit.jwt.WAbstractItemModel;
 import eu.webtoolkit.jwt.WContainerWidget;
 import eu.webtoolkit.jwt.WLength;
@@ -23,7 +24,6 @@ import eu.webtoolkit.jwt.WPen;
 import eu.webtoolkit.jwt.WPointF;
 import eu.webtoolkit.jwt.WRectF;
 import eu.webtoolkit.jwt.WtException;
-import eu.webtoolkit.jwt.utils.StringUtils;
 
 /**
  * A cartesian chart.

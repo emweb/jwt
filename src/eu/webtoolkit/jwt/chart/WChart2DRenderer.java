@@ -11,6 +11,7 @@ import java.util.List;
 import eu.webtoolkit.jwt.AlignmentFlag;
 import eu.webtoolkit.jwt.Orientation;
 import eu.webtoolkit.jwt.Side;
+import eu.webtoolkit.jwt.StringUtils;
 import eu.webtoolkit.jwt.WAbstractItemModel;
 import eu.webtoolkit.jwt.WBrush;
 import eu.webtoolkit.jwt.WBrushStyle;
@@ -22,7 +23,6 @@ import eu.webtoolkit.jwt.WPen;
 import eu.webtoolkit.jwt.WPointF;
 import eu.webtoolkit.jwt.WRectF;
 import eu.webtoolkit.jwt.utils.EnumUtils;
-import eu.webtoolkit.jwt.utils.StringUtils;
 
 /**
  * Helper class for rendering a cartesian chart.

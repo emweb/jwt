@@ -5,6 +5,7 @@
  */
 package eu.webtoolkit.jwt.utils;
 
+import eu.webtoolkit.jwt.StringUtils;
 import eu.webtoolkit.jwt.WString;
 
 public class ObjectUtils {

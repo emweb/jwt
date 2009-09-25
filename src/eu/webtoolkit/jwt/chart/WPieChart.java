@@ -10,6 +10,7 @@ import java.util.EnumSet;
 import java.util.List;
 import eu.webtoolkit.jwt.AlignmentFlag;
 import eu.webtoolkit.jwt.Side;
+import eu.webtoolkit.jwt.StringUtils;
 import eu.webtoolkit.jwt.WAbstractItemModel;
 import eu.webtoolkit.jwt.WBrush;
 import eu.webtoolkit.jwt.WColor;
@@ -25,7 +26,6 @@ import eu.webtoolkit.jwt.WRectF;
 import eu.webtoolkit.jwt.WString;
 import eu.webtoolkit.jwt.WtException;
 import eu.webtoolkit.jwt.utils.EnumUtils;
-import eu.webtoolkit.jwt.utils.StringUtils;
 
 /**
  * A pie chart.

@@ -3,17 +3,80 @@
  *
  * See the LICENSE file for terms of use.
  */
-package eu.webtoolkit.jwt.utils;
+package eu.webtoolkit.jwt;
 
 import eu.webtoolkit.jwt.MatchOptions;
 import eu.webtoolkit.jwt.WDate;
 import eu.webtoolkit.jwt.WString;
 import eu.webtoolkit.jwt.WtException;
 
+/**
+ * String utility class.
+ */
 public class StringUtils {
+	/**
+	 * Convert an object to a {@link WString}.
+	 */
+	public static WString asString(Object data) {
+		if (data instanceof WString)
+			return (WString) data;
+		else if (data == null)
+			return WString.Empty;
+		else
+			return new WString(data.toString());
+	}
+
+	/**
+	 * Convert an object to a {@link WString}.
+	 * If the object is a {@link WDate}, 
+	 * it is formatted with the format String.
+	 */
+	public static WString asString(Object data, String format) {
+		if (data instanceof WDate) {
+			WDate d = (WDate) data;
+			return new WString(d.toString(format));
+		} else
+			return asString(data);
+	}
+
+	/**
+	 * Convert an object to a double.
+	 */
+	public static double asNumber(Object data) {
+		if (data == null)
+			return Double.NaN;
+		else if (data instanceof WString)
+			try {
+				return Double.parseDouble(((WString) data).getValue());
+			} catch (NumberFormatException e) {
+				return Double.NaN;
+			}
+		else if (data instanceof String)
+			try {
+				return Double.parseDouble((String) data);
+			} catch (NumberFormatException e) {
+				return Double.NaN;
+			}
+		else if (data instanceof WDate)
+			return (double) ((WDate) data).toJulianDay();
+		else if (data instanceof Double)
+			return (Double) data;
+		else if (data instanceof Short)
+			return ((Short) data).doubleValue();
+		else if (data instanceof Integer)
+			return ((Integer) data).doubleValue();
+		else if (data instanceof Long)
+			return ((Long) data).doubleValue();
+		else if (data instanceof Float)
+			return ((Float) data).doubleValue();
+		else
+			throw new WtException("WAbstractItemModel: unsupported type "
+					+ data.getClass().getName());
+	}
+	
 	// !! maybe we also need to make a function which only replaces 1 char by a
 	// string, making this specific will make it a bit faster
-	public static String replaceAll(final String string,
+	static String replaceAll(final String string,
 			final String charsToChange, String[] newSubstrings) {
 		boolean changed = false;
 		StringBuffer sb = new StringBuffer(string.length());
@@ -40,27 +103,27 @@ public class StringUtils {
 	private final static String[] toReplaceWithNewLines_ = { "&amp;", "&lt;",
 			"&gt;", "<br />" };
 
-	public static String escapeText(final String text, boolean newlinesToo) {
+	static String escapeText(final String text, boolean newlinesToo) {
 		if (newlinesToo)
 			return replaceAll(text, "&<>\n", toReplaceWithNewLines_);
 		else
 			return replaceAll(text, "&<>", toReplaceWith_);
 	}
 
-	public static String terminate(String s, char c) {
+	static String terminate(String s, char c) {
 		if (s.length() > 0 && s.charAt(s.length() - 1) == c)
 			return s;
 		else
 			return s + c;
 	}
 
-	public static String put(String s, int pos, char c) {
+	static String put(String s, int pos, char c) {
 		StringBuilder sb = new StringBuilder(s);
 		sb.setCharAt(pos, c);
 		return sb.toString();
 	}
 
-	public static boolean matchValue(Object query, Object value,
+	static boolean matchValue(Object query, Object value,
 			MatchOptions options) {
 		if (options.getType() == MatchOptions.MatchType.MatchExactly) {
 			return (query.getClass().equals(value.getClass()))
@@ -103,11 +166,11 @@ public class StringUtils {
 		}
 	}
 
-	public static String replace(String s, char c, String r) {
+	static String replace(String s, char c, String r) {
 		return s.replaceAll("\\Q" + c + "\\E", r);
 	}
 
-	public static final int strpbrk(char[] srcArray, int startPos, char[] matchesArray) {
+	static final int strpbrk(char[] srcArray, int startPos, char[] matchesArray) {
 		int matchesL = matchesArray.length;
 		int srcL = srcArray.length;
 		for (int i = startPos; i < srcL; i++) {
@@ -122,63 +185,14 @@ public class StringUtils {
 		return -1;
 	}
 
-	public static WString asString(Object data) {
-		if (data instanceof WString)
-			return (WString) data;
-		else if (data == null)
-			return WString.Empty;
-		else
-			return new WString(data.toString());
-	}
-
-	public static WString asString(Object data, String format) {
-		if (data instanceof WDate) {
-			WDate d = (WDate) data;
-			return new WString(d.toString(format));
-		} else
-			return asString(data);
-	}
-
-	public static double asNumber(Object data) {
-		if (data == null)
-			return Double.NaN;
-		else if (data instanceof WString)
-			try {
-				return Double.parseDouble(((WString) data).getValue());
-			} catch (NumberFormatException e) {
-				return Double.NaN;
-			}
-		else if (data instanceof String)
-			try {
-				return Double.parseDouble((String) data);
-			} catch (NumberFormatException e) {
-				return Double.NaN;
-			}
-		else if (data instanceof WDate)
-			return (double) ((WDate) data).toJulianDay();
-		else if (data instanceof Double)
-			return (Double) data;
-		else if (data instanceof Short)
-			return ((Short) data).doubleValue();
-		else if (data instanceof Integer)
-			return ((Integer) data).doubleValue();
-		else if (data instanceof Long)
-			return ((Long) data).doubleValue();
-		else if (data instanceof Float)
-			return ((Float) data).doubleValue();
-		else
-			throw new WtException("WAbstractItemModel: unsupported type "
-					+ data.getClass().getName());
-	}
-
-	public static String addWord(String s, String w) {
+	static String addWord(String s, String w) {
 		if (s.length() == 0)
 			return w;
 		else
 			return s + ' ' + w;
 	}
 
-	public static String eraseWord(String s, String w) {
+	static String eraseWord(String s, String w) {
 		int i = s.indexOf(w);
 		if (i != -1) {
 			String result = s.substring(0, Math.max(0, i - 1));
@@ -189,15 +203,15 @@ public class StringUtils {
 			return s;
 	}
 
-	public static boolean startsWithIgnoreCase(String name, String string) {
+	static boolean startsWithIgnoreCase(String name, String string) {
 		return name.toLowerCase().startsWith(string.toLowerCase());
 	}
 
-	public static boolean containsIgnoreCase(String value, String string) {
+	static boolean containsIgnoreCase(String value, String string) {
 		return value.toLowerCase().contains(string.toLowerCase());
 	}
 	
-    public static String trimLeft(String s) {
+    static String trimLeft(String s) {
         int start = 0;
         while (start < s.length()) {
             if (!Character.isWhitespace(s.charAt(start))) {

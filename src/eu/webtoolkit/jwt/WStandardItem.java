@@ -14,7 +14,6 @@ import java.util.TreeMap;
 import eu.webtoolkit.jwt.utils.CollectionUtils;
 import eu.webtoolkit.jwt.utils.EnumUtils;
 import eu.webtoolkit.jwt.utils.ObjectUtils;
-import eu.webtoolkit.jwt.utils.StringUtils;
 
 /**
  * An item in a {@link WStandardItemModel}.

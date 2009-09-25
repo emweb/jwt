@@ -16,7 +16,6 @@ import java.util.Set;
 import java.util.regex.Pattern;
 import eu.webtoolkit.jwt.utils.CollectionUtils;
 import eu.webtoolkit.jwt.utils.ObjectUtils;
-import eu.webtoolkit.jwt.utils.StringUtils;
 
 /**
  * A proxy model for Wt&apos;s item models that provides filtering and/or

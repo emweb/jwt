@@ -6,7 +6,6 @@
 package eu.webtoolkit.jwt;
 
 import java.util.EnumSet;
-import eu.webtoolkit.jwt.utils.StringUtils;
 
 class WTreeViewNode extends WTable {
 	public WTreeViewNode(WTreeView view, WModelIndex index, int childrenHeight,

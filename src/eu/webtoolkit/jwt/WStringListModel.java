@@ -10,7 +10,6 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
 import eu.webtoolkit.jwt.utils.ReverseOrder;
-import eu.webtoolkit.jwt.utils.StringUtils;
 
 /**
  * An model that manages a list of strings.

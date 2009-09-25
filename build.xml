@@ -17,6 +17,14 @@
     </fileset>
   </path>
 
+  <!-- Javadoc classpath declaration -->
+  <path id="project.javadoc.classpath">
+    <fileset dir=".">
+      <include name="lib/*.jar"/>
+      <include name="dist/*.jar"/>
+    </fileset>
+  </path>
+
   <target name="all" depends="dist">
   </target>
   
@@ -57,7 +65,7 @@
     <delete dir="${javadoc.dir}"/>
   </target>
 
-  <target name="javadoc">
+  <target name="javadoc" depends="dist">
     <javadoc
        access="protected"
        destdir="${javadoc.dir}"
@@ -65,14 +73,14 @@
        version="true"
        use="true"
        windowtitle="JWt Javadoc API"
-       classpathref="project.classpath"
+       classpathref="project.javadoc.classpath"
        overview="overview.html"
        >
       <fileset dir="${src.java.dir}" defaultexcludes="yes">
 	<include name="eu/webtoolkit/jwt/*.java"/>
 	<include name="eu/webtoolkit/jwt/servlet/*.java"/>
 	<include name="eu/webtoolkit/jwt/chart/*.java"/>
-	<include name="eu/webtoolkit/jwt/utils/*.java"/>
+	<exclude name="eu/webtoolkit/jwt/utils/*.java"/>
 	<exclude name="eu/webtoolkit/jwt/XSSFilter.java"/>
       </fileset>
     </javadoc>

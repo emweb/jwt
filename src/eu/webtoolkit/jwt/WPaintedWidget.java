@@ -241,14 +241,15 @@ public abstract class WPaintedWidget extends WInteractWidget {
 	 * <p>
 	 * Ownership of the <code>Area</code> is transferred to the widget.
 	 * <p>
+	 * <p>
+	 * <i><b>Note: </b>When defining at least one area, no more events will
+	 * propagate to the widget itself. As a work-around, you can emulate this by
+	 * listening for events on a {@link WRectArea} that corresponds to the whole
+	 * widget, and which is added as the last area (catching all events that
+	 * were not caught by preceding areas).</i>
+	 * </p>
 	 * 
-	 * @see WPaintedWidget#addArea(WAbstractArea area) <p>
-	 *      <i><b>Note: </b>When defining at least one area, no more events will
-	 *      propagate to the widget itself. As a work-around, you can emulate
-	 *      this by listening for events on a {@link WRectArea} that corresponds
-	 *      to the whole widget, and which is added as the last area (catching
-	 *      all events that were not caught by preceding areas). </i>
-	 *      </p>
+	 * @see WPaintedWidget#addArea(WAbstractArea area)
 	 */
 	public void insertArea(int index, WAbstractArea area) {
 		this.createAreaImage();

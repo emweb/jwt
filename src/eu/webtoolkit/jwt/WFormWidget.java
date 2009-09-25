@@ -7,7 +7,6 @@ package eu.webtoolkit.jwt;
 
 import java.util.BitSet;
 import java.util.EnumSet;
-import eu.webtoolkit.jwt.utils.StringUtils;
 
 /**
  * An abstract widget that corresponds to an HTML form element

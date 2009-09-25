@@ -21,7 +21,7 @@ import eu.webtoolkit.jwt.utils.EnumUtils;
  * <p>
  * The data column should contain data that can be converted to a number, but
  * should not necessarily be of a number type, see also
- * {@link eu.webtoolkit.jwt.utils.StringUtils#asNumber(Object)}.
+ * {@link eu.webtoolkit.jwt.StringUtils#asNumber(Object)}.
  * <p>
  * Multiple series of different types may be combined on a single chart.
  * <p>
@@ -177,7 +177,7 @@ public class WDataSeries {
 	 * The data column should contain data that can be converted to a number
 	 * (but should not necessarily be of a number type).
 	 * <p>
-	 * See also {@link eu.webtoolkit.jwt.utils.StringUtils#asNumber(Object)}.
+	 * See also {@link eu.webtoolkit.jwt.StringUtils#asNumber(Object)}.
 	 */
 	public void setModelColumn(int modelColumn) {
 		if (!ChartUtils.equals(this.modelColumn_, modelColumn)) {

@@ -6,7 +6,6 @@
 package eu.webtoolkit.jwt;
 
 import java.util.regex.Pattern;
-import eu.webtoolkit.jwt.utils.StringUtils;
 
 /**
  * A validator that checks user input against a regular expression

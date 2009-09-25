@@ -18,7 +18,6 @@ import java.util.Set;
 import eu.webtoolkit.jwt.servlet.WebResponse;
 import eu.webtoolkit.jwt.utils.MathUtils;
 import eu.webtoolkit.jwt.utils.OrderedMultiMap;
-import eu.webtoolkit.jwt.utils.StringUtils;
 
 class WebRenderer implements SlotLearnerInterface {
 	public WebRenderer(WebSession session) {

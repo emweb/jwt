@@ -1261,8 +1261,8 @@ public class WPainter {
 	 * coordinate system.
 	 * <p>
 	 * By default, the viewport spans the entire device: it is the rectangle (0,
-	 * 0) to (device-&gt;width(), device-&gt;height()). The window defines how
-	 * the viewport is mapped to logical coordinates.
+	 * 0) to (device.width(), device.height()). The window defines how the
+	 * viewport is mapped to logical coordinates.
 	 * <p>
 	 * 
 	 * @see WPainter#getViewPort()
@@ -1301,9 +1301,9 @@ public class WPainter {
 	 * Defines the viewport rectangle in logical coordinates, and thus how
 	 * logical coordinates map onto the viewPort.
 	 * <p>
-	 * By default, is (0, 0) to (device-&gt;width(), device-&gt;height()). Thus,
-	 * the default window and viewport leave logical coordinates identical to
-	 * device coordinates.
+	 * By default, is (0, 0) to (device.width(), device.height()). Thus, the
+	 * default window and viewport leave logical coordinates identical to device
+	 * coordinates.
 	 * <p>
 	 * 
 	 * @see WPainter#getWindow()
