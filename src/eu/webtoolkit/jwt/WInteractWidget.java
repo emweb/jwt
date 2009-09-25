@@ -242,13 +242,14 @@ public abstract class WInteractWidget extends WWebWidget {
 	 * The widget to be identified as source in the dropEvent may be given
 	 * explicitly, and will default to this widget otherwise.
 	 * <p>
+	 * <p>
+	 * <i><b>Note: </b>When JavaScript is disabled, drag&amp;drop does not
+	 * work.</i>
+	 * </p>
 	 * 
 	 * @see WWidget#dropEvent(WDropEvent event)
 	 * @see WWidget#acceptDrops(String mimeType, String hoverStyleClass)
-	 * @see WDropEvent <p>
-	 *      <i><b>Note: </b>When JavaScript is disabled, drag&amp;drop does not
-	 *      work. </i>
-	 *      </p>
+	 * @see WDropEvent
 	 */
 	public void setDraggable(String mimeType, WWidget dragWidget,
 			boolean isDragWidgetOnly, WObject sourceObject) {

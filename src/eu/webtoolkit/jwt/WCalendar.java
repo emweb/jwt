@@ -231,8 +231,7 @@ public class WCalendar extends WCompositeWidget {
 	 * <p>
 	 * Select multiple dates. In multiple selection mode, this results in a
 	 * {@link WCalendar#getSelection() getSelection()} that contains exactly the
-	 * given dates. In single selection mode, at most one date is set
-	 * (*dates.begin())
+	 * given dates. In single selection mode, at most one date is set.
 	 */
 	public void select(Set<WDate> dates) {
 		if (this.multipleSelection_) {
