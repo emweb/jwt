@@ -5,7 +5,7 @@
  */
 package eu.webtoolkit.jwt.examples.charts;
 
-import eu.webtoolkit.jwt.Signal1;
+import eu.webtoolkit.jwt.Signal;
 import eu.webtoolkit.jwt.WContainerWidget;
 import eu.webtoolkit.jwt.WPanel;
 import eu.webtoolkit.jwt.WWidget;
@@ -30,9 +30,15 @@ public class PanelList extends WContainerWidget {
         panel.setCollapsible(true);
         panel.collapse();
 
-        panel.expandedSS().addListener(this, new Signal1.Listener<Boolean>() {
-            public void trigger(Boolean b) {
-                onExpand(b, panel);
+        panel.expanded().addListener(this, new Signal.Listener() {
+            public void trigger() {
+                onExpand(true, panel);
+            }
+        });
+        
+        panel.collapsed().addListener(this, new Signal.Listener() {
+            public void trigger() {
+                onExpand(false, panel);
             }
         });
 

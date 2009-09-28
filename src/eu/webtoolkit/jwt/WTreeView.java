@@ -226,12 +226,12 @@ public class WTreeView extends WCompositeWidget {
 			app
 					.getStyleSheet()
 					.addRule(".Wt-treeview .Wt-tv-sh",
-							"float: right; width: 19px; margin-top: 6px; cursor: pointer; cursor:hand;");
+							"float: right; width: 16px; margin-top: 6px; cursor: pointer; cursor:hand;");
 			app
 					.getStyleSheet()
 					.addRule(
 							".Wt-treeview .Wt-tv-sh-nrh",
-							"float: right; width: 19px; margin-top: 6px; margin-right: 4px; cursor: pointer; cursor:hand;");
+							"float: right; width: 16px; margin-top: 6px; margin-right: 4px; cursor: pointer; cursor:hand;");
 			app.getStyleSheet().addRule(".Wt-treeview .Wt-tv-shc0",
 					"float: left;");
 			app.getStyleSheet().addRule(".Wt-treeview .selected",
@@ -331,7 +331,7 @@ public class WTreeView extends WCompositeWidget {
 		app
 				.declareJavaScriptFunction(
 						"getItem",
-						"function(event) {var columnId = -1, nodeId = null, selected = false, drop = false, el = null;var t = event.target || event.srcElement;while (t) {if (t.className.indexOf('c1 rh') == 0) {if (columnId == -1)columnId = 0;} else if (t.className.indexOf('Wt-tv-c') == 0) {if (t.className.indexOf('Wt-tv-c rh Wt-tv-c') == 0)columnId = t.className.split(' ')[2].substring(7) * 1;else if (columnId == -1)columnId = 0;if (t.getAttribute('drop') === 'true')drop = true;el = t;} else if (t.className == 'Wt-tv-node') {nodeId = t.id;break;}if (t.className === 'selected')selected = true;t = t.parentNode;if (Wt2_99_5.hasTag(t, 'BODY'))break;}return { columnId: columnId, nodeId: nodeId, selected: selected, drop: drop, el: el };}");
+						"function(event) {var columnId = -1, nodeId = null, selected = false, drop = false, el = null;var t = event.target || event.srcElement;while (t) {if (t.className.indexOf('c1 rh') == 0) {if (columnId == -1)columnId = 0;} else if (t.className.indexOf('Wt-tv-c') == 0) {if (t.className.indexOf('Wt-tv-c rh Wt-tv-c') == 0)columnId = t.className.split(' ')[2].substring(7) * 1;else if (columnId == -1)columnId = 0;if (t.getAttribute('drop') === 'true')drop = true;el = t;} else if (t.className == 'Wt-tv-node') {nodeId = t.id;break;}if (t.className === 'selected')selected = true;t = t.parentNode;if (Wt3_0_0.hasTag(t, 'BODY'))break;}return { columnId: columnId, nodeId: nodeId, selected: selected, drop: drop, el: el };}");
 		this.itemClickedJS_.setJavaScript("function(obj, event) {var item="
 				+ app.getJavaScriptClass()
 				+ ".getItem(event);if (item.columnId != -1) {"
@@ -357,9 +357,9 @@ public class WTreeView extends WCompositeWidget {
 								"''", "''")
 						+ ";if (tv.getAttribute('drag') === 'true' && item.selected)APP._p_.dragStart(tv, event);}}");
 		this.resizeHandleMDownJS_
-				.setJavaScript("function(obj, event) {var pc = Wt2_99_5.pageCoordinates(event);obj.setAttribute('dsx', pc.x);}");
+				.setJavaScript("function(obj, event) {var pc = Wt3_0_0.pageCoordinates(event);obj.setAttribute('dsx', pc.x);}");
 		this.resizeHandleMMovedJS_
-				.setJavaScript("function(obj, event) {var WT = Wt2_99_5,lastx = obj.getAttribute('dsx'),t = "
+				.setJavaScript("function(obj, event) {var WT = Wt3_0_0,lastx = obj.getAttribute('dsx'),t = "
 						+ this.contents_.getJsRef()
 						+ ".firstChild,h="
 						+ this.headers_.getJsRef()
@@ -369,7 +369,7 @@ public class WTreeView extends WCompositeWidget {
 						+ this.getJsRef()
 						+ ".adjustHeaderWidth(c, diffx);obj.setAttribute('dsx', nowxy.x);WT.cancelEvent(event);  }}");
 		this.resizeHandleMUpJS_
-				.setJavaScript("function(obj, event) {obj.removeAttribute('dsx');Wt2_99_5.cancelEvent(event);}");
+				.setJavaScript("function(obj, event) {obj.removeAttribute('dsx');Wt3_0_0.cancelEvent(event);}");
 		this.tieContentsHeaderScrollJS_
 				.setJavaScript("function(obj, event) {"
 						+ this.headerContainer_.getJsRef()
@@ -381,12 +381,12 @@ public class WTreeView extends WCompositeWidget {
 		if (app.getEnvironment().agentIsWebKit()
 				|| app.getEnvironment().agentIsOpera()) {
 			this.tieRowsScrollJS_
-					.setJavaScript("function(obj, event) {Wt2_99_5.getCssRule('#"
+					.setJavaScript("function(obj, event) {Wt3_0_0.getCssRule('#"
 							+ this.getId()
 							+ " .Wt-tv-rowc').style.left= -obj.scrollLeft + 'px';}");
 		} else {
 			this.tieRowsScrollJS_
-					.setJavaScript("function(obj, event) {var c =Wt2_99_5.getElementsByClassName('Wt-tv-rowc', "
+					.setJavaScript("function(obj, event) {var c =Wt3_0_0.getElementsByClassName('Wt-tv-rowc', "
 							+ this.getJsRef()
 							+ ");for (var i = 0, length = c.length; i < length; ++i) {var cc=c[i];if (cc.parentNode.scrollLeft != obj.scrollLeft)cc.parentNode.scrollLeft=obj.scrollLeft;}}");
 		}
@@ -395,7 +395,7 @@ public class WTreeView extends WCompositeWidget {
 						+ this.contentsContainer_.getJsRef()
 						+ ";var s="
 						+ this.getJsRef()
-						+ ";var WT=Wt2_99_5;if (e) {var tw=s.offsetWidth-WT.px(s, 'borderLeftWidth')-WT.px(s, 'borderRightWidth'),vscroll=e.scrollHeight > e.offsetHeight;c0w = null;if (s.className.indexOf('column1') != -1)  c0w = WT.pxself(WT.getCssRule('#"
+						+ ";var WT=Wt3_0_0;if (e) {var tw=s.offsetWidth-WT.px(s, 'borderLeftWidth')-WT.px(s, 'borderRightWidth'),vscroll=e.scrollHeight > e.offsetHeight;c0w = null;if (s.className.indexOf('column1') != -1)  c0w = WT.pxself(WT.getCssRule('#"
 						+ this.getId()
 						+ " .c0w'), 'width');if (tw > 200 && (tw != e.tw || vscroll != e.vscroll || c0w != e.c0w)) {e.vscroll = vscroll;e.tw = tw;e.c0w = c0w;var h= "
 						+ this.headers_.getJsRef()
@@ -1382,6 +1382,7 @@ public class WTreeView extends WCompositeWidget {
 	}
 
 	public void load() {
+		this.needDefineJS_ = true;
 		super.load();
 	}
 
@@ -1511,9 +1512,10 @@ public class WTreeView extends WCompositeWidget {
 	}
 
 	public void refresh() {
+		this.needDefineJS_ = false;
 		WApplication app = WApplication.getInstance();
 		String columnsWidth = ""
-				+ "var WT=Wt2_99_5,t="
+				+ "var WT=Wt3_0_0,t="
 				+ this.contents_.getJsRef()
 				+ ".firstChild,h="
 				+ this.headers_.getJsRef()
@@ -1532,7 +1534,7 @@ public class WTreeView extends WCompositeWidget {
 			columnsWidth += "var r = WT.getCssRule('#"
 					+ this.getId()
 					+ " '+ (c ? '.Wt-tv-rowc' : '.c0w'));totalw += 'px';if (c) {r.style.width = totalw;"
-					+ (app.getEnvironment().agentIsIE() ? "var c =Wt2_99_5.getElementsByClassName('Wt-tv-rowc', "
+					+ (app.getEnvironment().agentIsIE() ? "var c =Wt3_0_0.getElementsByClassName('Wt-tv-rowc', "
 							+ this.getJsRef()
 							+ ");for (var i = 0, length = c.length; i < length; ++i) {var cc=c[i];cc.style.width = totalw;}"
 							: "")
@@ -1637,6 +1639,9 @@ public class WTreeView extends WCompositeWidget {
 			default:
 				break;
 			}
+		}
+		if (this.needDefineJS_) {
+			this.initLayoutJavaScript();
 		}
 		super.render();
 	}
@@ -1755,6 +1760,7 @@ public class WTreeView extends WCompositeWidget {
 	}
 
 	private WTreeView.RenderState renderState_;
+	private boolean needDefineJS_;
 	private int viewportTop_;
 	private int viewportHeight_;
 	private int firstRenderedRow_;

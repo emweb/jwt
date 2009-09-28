@@ -36,9 +36,9 @@ class WWidgetVectorPainter extends WWidgetPainter {
 				: null);
 		if (!EnumUtils.mask(device.getPaintFlags(), PaintFlag.PaintUpdate)
 				.isEmpty()) {
-			DomElement painter = DomElement.updateGiven(
-					"Wt2_99_5.getElement('p" + this.widget_.getId()
-							+ "').firstChild", DomElementType.DomElement_DIV);
+			DomElement painter = DomElement.updateGiven("Wt3_0_0.getElement('p"
+					+ this.widget_.getId() + "').firstChild",
+					DomElementType.DomElement_DIV);
 			painter.setProperty(Property.PropertyAddedInnerHTML, vectorDevice
 					.getRendered());
 			WApplication app = WApplication.getInstance();

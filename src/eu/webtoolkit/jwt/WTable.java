@@ -425,7 +425,7 @@ public class WTable extends WInteractWidget {
 		DomElement e = DomElement.getForUpdate(this, this.getDomElementType());
 		if (!this.isStubbed() && this.flags_.get(BIT_GRID_CHANGED)) {
 			DomElement newE = this.createDomElement(app);
-			e.replaceWith(newE, true);
+			e.replaceWith(newE);
 		} else {
 			if (this.rowsChanged_ != null) {
 				for (Iterator<WTableRow> i_it = this.rowsChanged_.iterator(); i_it

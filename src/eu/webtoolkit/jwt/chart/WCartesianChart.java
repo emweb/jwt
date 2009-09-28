@@ -287,15 +287,6 @@ public class WCartesianChart extends WAbstractChart {
 		this.update();
 	}
 
-	int getSeriesIndexOf(int modelColumn) {
-		for (int i = 0; i < this.series_.size(); ++i) {
-			if (this.series_.get(i).getModelColumn() == modelColumn) {
-				return i;
-			}
-		}
-		return -1;
-	}
-
 	/**
 	 * Returns a data series corresponding to a data column.
 	 * <p>
@@ -623,5 +614,14 @@ public class WCartesianChart extends WAbstractChart {
 
 	protected void modelReset() {
 		this.update();
+	}
+
+	int getSeriesIndexOf(int modelColumn) {
+		for (int i = 0; i < this.series_.size(); ++i) {
+			if (this.series_.get(i).getModelColumn() == modelColumn) {
+				return i;
+			}
+		}
+		return -1;
 	}
 }

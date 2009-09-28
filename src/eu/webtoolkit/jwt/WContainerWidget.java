@@ -185,7 +185,7 @@ public class WContainerWidget extends WInteractWidget {
 	 * @see WContainerWidget#getLayout()
 	 * @see WContainerWidget#setLayout(WLayout layout, EnumSet alignment)
 	 */
-	void setLayout(WLayout layout) {
+	public void setLayout(WLayout layout) {
 		this.setLayout(layout, EnumSet.of(AlignmentFlag.AlignJustify));
 	}
 

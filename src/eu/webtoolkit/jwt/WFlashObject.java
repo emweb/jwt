@@ -120,7 +120,7 @@ public class WFlashObject extends WContainerWidget {
 	 * to refer to the Flash content.
 	 */
 	public String getJsFlashRef() {
-		return "Wt2_99_5.getElement('flash" + this.getId() + "')";
+		return "Wt3_0_0.getElement('flash" + this.getId() + "')";
 	}
 
 	void getDomChanges(List<DomElement> result, WApplication app) {

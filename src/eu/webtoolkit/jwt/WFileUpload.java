@@ -338,7 +338,7 @@ public class WFileUpload extends WWebWidget {
 			DomElement plainE = DomElement.getForUpdate(this,
 					DomElementType.DomElement_INPUT);
 			DomElement ajaxE = this.createDomElement(app);
-			plainE.replaceWith(ajaxE, true);
+			plainE.replaceWith(ajaxE);
 			result.add(plainE);
 		} else {
 			super.getDomChanges(result, app);

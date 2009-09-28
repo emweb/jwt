@@ -155,7 +155,7 @@ public class WGroupBox extends WContainerWidget {
 		}
 	}
 
-	void propagateSetEnabled(boolean enabled) {
+	protected void propagateSetEnabled(boolean enabled) {
 		if (enabled) {
 			this.setStyleClass(new WString(StringUtils.eraseWord(this
 					.getStyleClass(), "Wt-disabled")).toString());

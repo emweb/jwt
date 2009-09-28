@@ -96,9 +96,8 @@ public class DialogApplication extends WApplication {
                         + "margin-top: 4px; display: block");
         getStyleSheet().addRule(".text", "padding: 4px 8px");
 
-        if (getEnvironment().agentIsIE())
-            getStyleSheet().addRule("body", "margin: 0px;"); // avoid scrollbar
-        // problems
+        if (getEnvironment().getUserAgent().contains("MSIE"))
+            getStyleSheet().addRule("body", "margin: 0px;"); // avoid scrollbar problems
     }
 
     private WMessageBox show(String caption, String text, StandardButton button) {

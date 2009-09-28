@@ -755,7 +755,7 @@ public abstract class WWidget extends WObject {
 	 * WApplication#doJavaScript()} in custom JavaScript code.
 	 */
 	public String getJsRef() {
-		return "Wt2_99_5.getElement('" + this.getId() + "')";
+		return "Wt3_0_0.getElement('" + this.getId() + "')";
 	}
 
 	/**

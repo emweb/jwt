@@ -9,6 +9,7 @@ import eu.webtoolkit.jwt.AlignmentFlag;
 import eu.webtoolkit.jwt.MatchOptions;
 import eu.webtoolkit.jwt.Signal;
 import eu.webtoolkit.jwt.Signal1;
+import eu.webtoolkit.jwt.StringUtils;
 import eu.webtoolkit.jwt.WAbstractItemModel;
 import eu.webtoolkit.jwt.WAbstractProxyModel;
 import eu.webtoolkit.jwt.WComboBox;
@@ -24,7 +25,6 @@ import eu.webtoolkit.jwt.WLineEdit;
 import eu.webtoolkit.jwt.WModelIndex;
 import eu.webtoolkit.jwt.WMouseEvent;
 import eu.webtoolkit.jwt.WPushButton;
-import eu.webtoolkit.jwt.utils.StringUtils;
 
 /**
  * A dialog for editing a 'file'.

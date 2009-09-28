@@ -278,7 +278,7 @@ public class WLineEdit extends WFormWidget {
 			DomElement e = DomElement.getForUpdate(this, this
 					.getDomElementType());
 			DomElement d = this.createDomElement(app);
-			e.replaceWith(d, false);
+			e.replaceWith(d);
 			result.add(e);
 		} else {
 			super.getDomChanges(result, app);

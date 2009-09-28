@@ -388,16 +388,16 @@ public class WSlider extends WCompositeWidget {
 		String maxS = String.valueOf(l - HANDLE_WIDTH);
 		String ppU = String.valueOf(pixelsPerUnit);
 		this.mouseDownJS_
-				.setJavaScript("function(obj, event) {  obj.setAttribute('down', Wt2_99_5.widgetCoordinates(obj, event)."
-						+ u + "); Wt2_99_5.cancelEvent(event);}");
+				.setJavaScript("function(obj, event) {  obj.setAttribute('down', Wt3_0_0.widgetCoordinates(obj, event)."
+						+ u + "); Wt3_0_0.cancelEvent(event);}");
 		this.mouseMovedJS_
 				.setJavaScript("function(obj, event) {  var down = obj.getAttribute('down');  if (down != null && down != '') {    var objh = "
 						+ this.handle_.getJsRef()
 						+ ";    var objb = "
 						+ this.background_.getJsRef()
-						+ ";    var u = Wt2_99_5.pageCoordinates(event)."
+						+ ";    var u = Wt3_0_0.pageCoordinates(event)."
 						+ u
-						+ " - down;    var w = Wt2_99_5.widgetPageCoordinates(objb)."
+						+ " - down;    var w = Wt3_0_0.widgetPageCoordinates(objb)."
 						+ u
 						+ ";    var d = u-w;    d = (d<0?0:(d>"
 						+ maxS

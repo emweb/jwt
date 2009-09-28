@@ -267,7 +267,7 @@ public abstract class WFormWidget extends WInteractWidget {
 			this.filterInput_
 					.setJavaScript("function(self,e){var c=String.fromCharCode((typeof e.charCode!=='undefined')?e.charCode:e.keyCode);if(/"
 							+ inputFilter
-							+ "/.test(c)) return true; else{Wt2_99_5.cancelEvent(e);}}");
+							+ "/.test(c)) return true; else{Wt3_0_0.cancelEvent(e);}}");
 		} else {
 			;
 			this.filterInput_ = null;
@@ -315,7 +315,7 @@ public abstract class WFormWidget extends WInteractWidget {
 	// protected AbstractEventSignal.LearningListener
 	// getStateless(<pointertomember or dependentsizedarray>
 	// methodpointertomember or dependentsizedarray>) ;
-	void propagateSetEnabled(boolean enabled) {
+	protected void propagateSetEnabled(boolean enabled) {
 		this.flags_.set(BIT_ENABLED_CHANGED);
 		this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyAttribute));
 		super.propagateSetEnabled(enabled);

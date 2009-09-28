@@ -486,12 +486,12 @@ public class WTreeNode extends WCompositeWidget {
 		this.updateChildren(false);
 	}
 
-	void setChildrenDecorated(boolean decorated) {
+	public void setChildrenDecorated(boolean decorated) {
 		this.childrenDecorated_ = decorated;
 		this.updateChildren(false);
 	}
 
-	void setInteractive(boolean interactive) {
+	public void setInteractive(boolean interactive) {
 		this.interactive_ = interactive;
 	}
 

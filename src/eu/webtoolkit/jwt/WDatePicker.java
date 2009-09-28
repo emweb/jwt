@@ -332,7 +332,7 @@ public class WDatePicker extends WCompositeWidget {
 					}
 				});
 		this.positionJS_
-				.setJavaScript("function() { Wt2_99_5.positionAtWidget('"
+				.setJavaScript("function() { Wt3_0_0.positionAtWidget('"
 						+ this.popup_.getId() + "','" + displayWidget.getId()
 						+ "');}");
 		displayWidget.clicked().addListener(this.positionJS_);

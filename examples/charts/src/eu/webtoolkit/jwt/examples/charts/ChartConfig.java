@@ -12,6 +12,7 @@ import eu.webtoolkit.jwt.Orientation;
 import eu.webtoolkit.jwt.Side;
 import eu.webtoolkit.jwt.Signal;
 import eu.webtoolkit.jwt.Signal1;
+import eu.webtoolkit.jwt.StringUtils;
 import eu.webtoolkit.jwt.WAbstractItemModel;
 import eu.webtoolkit.jwt.WApplication;
 import eu.webtoolkit.jwt.WCheckBox;
@@ -38,7 +39,6 @@ import eu.webtoolkit.jwt.chart.SeriesType;
 import eu.webtoolkit.jwt.chart.WAxis;
 import eu.webtoolkit.jwt.chart.WCartesianChart;
 import eu.webtoolkit.jwt.chart.WDataSeries;
-import eu.webtoolkit.jwt.utils.StringUtils;
 
 /**
  * A class that allows configuration of a cartesian chart.
@@ -192,7 +192,13 @@ public class ChartConfig extends WContainerWidget {
             sc.labelsEdit.setModel(labels);
             connectSignals(sc.labelsEdit);
 
-            int si = chart.getSeriesIndexOf(j);
+            int si = -1;
+    		for (int i = 0; i < chart.getSeries().size(); ++i) {
+    			if (chart.getSeries().get(i).getModelColumn() == j) {
+    				si = i;
+    				break;
+    			}
+    		}
 
             if (si != -1) {
                 sc.enabledEdit.setChecked();

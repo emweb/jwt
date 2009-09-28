@@ -11,6 +11,7 @@ import java.text.SimpleDateFormat;
 import eu.webtoolkit.jwt.AlignmentFlag;
 import eu.webtoolkit.jwt.Orientation;
 import eu.webtoolkit.jwt.Side;
+import eu.webtoolkit.jwt.StringUtils;
 import eu.webtoolkit.jwt.WAbstractItemModel;
 import eu.webtoolkit.jwt.WContainerWidget;
 import eu.webtoolkit.jwt.WDate;
@@ -30,7 +31,6 @@ import eu.webtoolkit.jwt.chart.WCartesianChart;
 import eu.webtoolkit.jwt.chart.WDataSeries;
 import eu.webtoolkit.jwt.chart.WPieChart;
 import eu.webtoolkit.jwt.examples.charts.csv.CsvUtil;
-import eu.webtoolkit.jwt.utils.StringUtils;
 
 /**
  * A widget that demonstrates various aspects of the charting lib.

@@ -446,7 +446,7 @@ public class WEnvironment {
 	 * Example: <code>&quot;1.99.2&quot;</code>
 	 */
 	public static String getLibraryVersion() {
-		return "2.99.5";
+		return "3.0.0";
 	}
 
 	// public void libraryVersion(bad java simple ref int series, bad java
@@ -788,5 +788,5 @@ public class WEnvironment {
 		return false;
 	}
 
-	static String wt_class = "Wt2_99_5";
+	static String wt_class = "Wt3_0_0";
 }

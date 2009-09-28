@@ -306,7 +306,7 @@ public class WAbstractToggleButton extends WFormWidget {
 				&& uncheck.needUpdate();
 		super.updateDom(element, all);
 		if (needUpdateClickedSignal || all) {
-			String dom = "Wt2_99_5.getElement('" + element.getId() + "')";
+			String dom = "Wt3_0_0.getElement('" + element.getId() + "')";
 			List<DomElement.EventAction> actions = new ArrayList<DomElement.EventAction>();
 			if (check != null) {
 				if (check.isConnected()) {

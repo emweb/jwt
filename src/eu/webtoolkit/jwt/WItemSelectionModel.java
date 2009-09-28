@@ -33,7 +33,10 @@ import java.util.TreeSet;
  * @see WAbstractItemModel
  */
 public class WItemSelectionModel extends WObject {
-	WAbstractItemModel getModel() {
+	/**
+	 * Returns the {@link WAbstractItemModel}.
+	 */
+	public WAbstractItemModel getModel() {
 		return this.model_;
 	}
 

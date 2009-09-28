@@ -862,7 +862,7 @@ public abstract class WWebWidget extends WWidget {
 						app
 								.addAutoJavaScript("{var w = "
 										+ this.getJsRef()
-										+ ";if (w && !Wt2_99_5.isHidden(w)) {var i = Wt2_99_5.getElement('"
+										+ ";if (w && !Wt3_0_0.isHidden(w)) {var i = Wt3_0_0.getElement('"
 										+ i.getId()
 										+ "');i.style.width=w.clientWidth + 'px';i.style.height=w.clientHeight + 'px';}}");
 						element.addChild(i);
@@ -1170,7 +1170,7 @@ public abstract class WWebWidget extends WWidget {
 		return e;
 	}
 
-	void propagateSetEnabled(boolean enabled) {
+	protected void propagateSetEnabled(boolean enabled) {
 		if (this.children_ != null) {
 			for (int i = 0; i < this.children_.size(); ++i) {
 				WWidget c = this.children_.get(i);
@@ -1467,7 +1467,7 @@ public abstract class WWebWidget extends WWidget {
 							DomElementType.DomElement_SPAN);
 					this.render();
 					DomElement realElement = this.createDomElement(app);
-					stub.replaceWith(realElement, !this.flags_
+					stub.unstubWith(realElement, !this.flags_
 							.get(BIT_HIDE_WITH_OFFSETS));
 					result.add(stub);
 				} else {

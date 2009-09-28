@@ -295,7 +295,7 @@ public class WLabel extends WInteractWidget {
 		super.propagateRenderOk(deep);
 	}
 
-	void propagateSetEnabled(boolean enabled) {
+	protected void propagateSetEnabled(boolean enabled) {
 		if (this.text_ != null) {
 			this.text_.setStyleClass(enabled ? "" : "Wt-disabled");
 		}

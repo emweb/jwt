@@ -255,7 +255,7 @@ public class WPopupMenu extends WCompositeWidget {
 		this.prepareRender(app);
 		this.show();
 		WApplication.getInstance().doJavaScript(
-				"Wt2_99_5.positionXY('" + this.getId() + "',"
+				"Wt3_0_0.positionXY('" + this.getId() + "',"
 						+ String.valueOf(p.getX()) + ","
 						+ String.valueOf(p.getY()) + ");");
 	}
@@ -377,7 +377,7 @@ public class WPopupMenu extends WCompositeWidget {
 	void popup(WWidget location) {
 		this.show();
 		WApplication.getInstance().doJavaScript(
-				"Wt2_99_5.positionAtWidget('" + this.getId() + "','"
+				"Wt3_0_0.positionAtWidget('" + this.getId() + "','"
 						+ location.getId() + "');");
 	}
 

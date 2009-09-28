@@ -93,7 +93,7 @@ public class WDialog extends WCompositeWidget {
 			app
 					.doJavaScript(
 							""
-									+ "Wt2_99_5.centerDialog = function(d){if (d && d.style.display != 'none' && !d.getAttribute('moved')) {var ws=Wt2_99_5.windowSize();d.style.left=Math.round((ws.x - d.clientWidth)/2"
+									+ "Wt3_0_0.centerDialog = function(d){if (d && d.style.display != 'none' && !d.getAttribute('moved')) {var ws=Wt3_0_0.windowSize();d.style.left=Math.round((ws.x - d.clientWidth)/2"
 									+ (app.getEnvironment().getAgent() == WEnvironment.UserAgent.IE6 ? "+ document.documentElement.scrollLeft"
 											: "")
 									+ ") + 'px';d.style.top=Math.round((ws.y - d.clientHeight)/2"
@@ -151,9 +151,7 @@ public class WDialog extends WCompositeWidget {
 		}
 		WContainerWidget parent = app.getDomRoot();
 		this.setPopup(true);
-		app
-				.addAutoJavaScript("Wt2_99_5.centerDialog(" + this.getJsRef()
-						+ ");");
+		app.addAutoJavaScript("Wt3_0_0.centerDialog(" + this.getJsRef() + ");");
 		parent.addWidget(this);
 		WVBoxLayout layout = new WVBoxLayout();
 		layout.setSpacing(0);
@@ -170,9 +168,9 @@ public class WDialog extends WCompositeWidget {
 			this.impl_.setOverflow(WContainerWidget.Overflow.OverflowVisible);
 		}
 		this.mouseDownJS_
-				.setJavaScript("function(obj, event) {  var pc = Wt2_99_5.pageCoordinates(event);  obj.setAttribute('dsx', pc.x);  obj.setAttribute('dsy', pc.y);}");
+				.setJavaScript("function(obj, event) {  var pc = Wt3_0_0.pageCoordinates(event);  obj.setAttribute('dsx', pc.x);  obj.setAttribute('dsy', pc.y);}");
 		this.mouseMovedJS_
-				.setJavaScript("function(obj, event) {var WT= Wt2_99_5;var lastx = obj.getAttribute('dsx');var lasty = obj.getAttribute('dsy');if (lastx != null && lastx != '') {nowxy = WT.pageCoordinates(event);var d = "
+				.setJavaScript("function(obj, event) {var WT= Wt3_0_0;var lastx = obj.getAttribute('dsx');var lasty = obj.getAttribute('dsy');if (lastx != null && lastx != '') {nowxy = WT.pageCoordinates(event);var d = "
 						+ this.getJsRef()
 						+ ";d.setAttribute('moved', true);d.style.left = (WT.pxself(d, 'left')+nowxy.x-lastx) + 'px';d.style.top = (WT.pxself(d, 'top')+nowxy.y-lasty) + 'px';obj.setAttribute('dsx', nowxy.x);obj.setAttribute('dsy', nowxy.y);}}");
 		this.mouseUpJS_
