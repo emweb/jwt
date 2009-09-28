@@ -187,9 +187,8 @@ class WebSession {
 				this.render(handler, event.responseType);
 			} else {
 				try {
-					if (request.getPostDataExceeded() != 0) {
-						this.app_.requestTooLarge().trigger(
-								request.getPostDataExceeded());
+					if (0 != 0) {
+						this.app_.requestTooLarge().trigger(0);
 					}
 				} catch (RuntimeException e) {
 					this.log("error").append(
@@ -240,7 +239,7 @@ class WebSession {
 						}
 					}
 				} else {
-					this.env_.urlScheme_ = request.getUrlScheme();
+					this.env_.urlScheme_ = request.getScheme();
 					if (signalE != null) {
 						String ackIdE = request.getParameter("ackId");
 						try {
@@ -715,7 +714,7 @@ class WebSession {
 	public String getCgiValue(String varName) {
 		WebRequest request = WebSession.Handler.getInstance().getRequest();
 		if (request != null) {
-			return request.getEnvValue(varName);
+			return "";
 		} else {
 			return "";
 		}
@@ -1021,7 +1020,7 @@ class WebSession {
 							WebSession.SignalKind kind = WebSession.SignalKind
 									.values()[k];
 							if (kind == WebSession.SignalKind.AutoLearnStateless
-									&& request.getPostDataExceeded() != 0) {
+									&& 0 != 0) {
 								break;
 							}
 							if (signalE.equals("user")) {
@@ -1058,10 +1057,10 @@ class WebSession {
 			Map.Entry<String, WObject> i = i_it.next();
 			String formName = i.getKey();
 			WObject obj = i.getValue();
-			if (!(request.getPostDataExceeded() != 0)) {
+			if (!(0 != 0)) {
 				obj.setFormData(getFormData(request, se + formName));
 			} else {
-				obj.requestTooLarge(request.getPostDataExceeded());
+				obj.requestTooLarge(0);
 			}
 		}
 	}

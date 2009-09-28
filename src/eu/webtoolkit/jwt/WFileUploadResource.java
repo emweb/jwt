@@ -21,7 +21,7 @@ class WFileUploadResource extends WResource {
 			throws IOException {
 		boolean triggerUpdate = false;
 		UploadedFile p = null;
-		if (!(request.tooLarge() != 0)) {
+		if (!(0 != 0)) {
 			UploadedFile i = request.getUploadedFiles().get("data");
 			if (i != null) {
 				p = i;
@@ -48,8 +48,8 @@ class WFileUploadResource extends WResource {
 		o
 				.append("}\n</script></head><body onload=\"load();\"style=\"margin:0;padding:0;\">");
 		o.append("</body></html>");
-		if (request.tooLarge() != 0) {
-			this.fileUpload_.requestTooLarge(request.tooLarge());
+		if (0 != 0) {
+			this.fileUpload_.requestTooLarge(0);
 		} else {
 			if (p != null) {
 				this.fileUpload_.setFormData(p);
