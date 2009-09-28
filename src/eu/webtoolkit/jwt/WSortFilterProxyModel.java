@@ -456,9 +456,9 @@ public class WSortFilterProxyModel extends WAbstractProxyModel {
 	 * Compares two indexes.
 	 * <p>
 	 * The default implementation uses
-	 * {@link WSortFilterProxyModel#getSortRole() getSortRole()} and an order
-	 * operator that tries to use the operator&lt; when the data is of the same
-	 * type, or lexicographical ordering otherwise.
+	 * {@link WSortFilterProxyModel#getSortRole() getSortRole()} and an ordering
+	 * using the operator&lt; when the data is of the same type or compares
+	 * lexicographically otherwise.
 	 * <p>
 	 * You may want to reimplement this method to provide specialized sorting.
 	 */

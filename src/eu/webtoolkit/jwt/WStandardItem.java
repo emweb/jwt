@@ -437,7 +437,7 @@ public class WStandardItem {
 	}
 
 	/**
-	 * Make the item checkable.
+	 * Makes the item checkable.
 	 * <p>
 	 * Adds {@link ItemFlag#ItemIsUserCheckable ItemIsUserCheckable} to the
 	 * item&apos;s flags.

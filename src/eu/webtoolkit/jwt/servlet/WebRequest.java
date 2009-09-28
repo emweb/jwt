@@ -23,24 +23,52 @@ import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 
+import eu.webtoolkit.jwt.WResource;
+
+/**
+ * A WebRequest which wraps the HttpServletRequest to add support for file uploads and
+ * testing.
+ * <p>
+ * WebRequest is used instead of HttpServletRequest inside JWt's request handling,
+ * and also in {@link WResource#handleRequest(WebRequest request, WebResponse response)}.
+ * It handles files being POST'ed, and treats parameters in the URL or within the
+ * request body in the same way.
+ * <p>
+ * @see WebResponse
+ */
 public class WebRequest extends HttpServletRequestWrapper {
-
-	public static ArrayList<String> emptyValues_ = new ArrayList<String>();
-
 	private Map<String, List<String>> parameters_;
 	private Map<String, UploadedFile> files_;
 
+	/**
+	 * Creates a WebRequest by wrapping an HttpServletRequest
+	 * @param request The request to be wrapped.
+	 */
 	public WebRequest(HttpServletRequest request) {
 		super(request);
 		parse();
 	}
 
+	/**
+	 * Creates a mock WebRequest given list of parameters and a list of POST'ed files.
+	 * 
+	 * @param parameters a list of request parameters
+	 * @param files a list of POST'ed files
+	 */
 	public WebRequest(Map<String, List<String>> parameters, Map<String, UploadedFile> files) {
 		super(null);
 		parameters_ = parameters;
 		files_ = files;
 	}
 
+	/**
+	 * Returns the script name.
+	 * <p>
+	 * This returns in principle {@link #getContextPath()} + {@link #getServletPath()}, but
+	 * with workaround code for corner cases and container workarounds.
+	 * 
+	 * @return the url at which the application is deployed
+	 */
 	public String getScriptName() {
 		String result = getContextPath() + getServletPath();
 		if (!result.startsWith("/"))
@@ -54,11 +82,29 @@ public class WebRequest extends HttpServletRequestWrapper {
 		return result;
 	}
 
+	/**
+	 * Returns a header value.
+	 * <p>
+	 * Returns the corresponding header value, using {@link #getHeader(String)}, or
+	 * the empty string (""), if the header is not present.
+	 * 
+	 * @param header the header name
+	 * @return the header value, or an empty string if the header is not present.
+	 */
 	public String getHeaderValue(String header) {
 		String result = getHeader(header);
 		return result == null ? "" : result;
 	}
 
+	/**
+	 * Returns the internal path information.
+	 * <p>
+	 * Returns the {@link HttpServletRequestWrapper#getPathInfo()} or the empty string
+	 * if there is no internal path in the request. This method also uses workarounds
+	 * for corner cases for some servlet containers.
+	 * 
+	 * @return the internal path information, or an empty string if there is no internal path.
+	 */
 	public String getPathInfo() {
 		String result = super.getPathInfo();
 		
@@ -69,14 +115,6 @@ public class WebRequest extends HttpServletRequestWrapper {
 				return "";
 
 		return result == null ? "" : result;
-	}
-
-	public String getUrlScheme() {
-		return getScheme();
-	}
-
-	public String getEnvValue(String string) {
-		return "";
 	}
 
 	@SuppressWarnings({ "unchecked", "deprecation" })
@@ -135,22 +173,33 @@ public class WebRequest extends HttpServletRequestWrapper {
 		}
 	}
 
-	public int getPostDataExceeded() {
-		return 0;
-	}
-
-	public int tooLarge() {
-		return getPostDataExceeded();
-	}
-
+	/**
+	 * Returns the list of uploaded files.
+	 * 
+	 * @return the list of uploaded files.
+	 */
 	public Map<String, UploadedFile> getUploadedFiles() {
 		return files_;
 	}
 
+	/**
+	 * Returns the parameter map.
+	 * <p>
+	 * The parameter map includes both the parameters from the query string, as well
+	 * as parameters posted in the body.
+	 */
 	public Map<String, List<String>> getParameterMap() {
 		return parameters_;
 	}
 
+	/**
+	 * Returns the parameter values for a parameter.
+	 * <p>
+	 * Returns an array of parameters values given for a particular parameter. When
+	 * no parameter value was assigned to the parameter, an empty array is returned.
+	 * 
+	 * @see #getParameterMap()
+	 */
 	@Override
 	public String[] getParameterValues(String name) {
 		if (parameters_.containsKey(name))
@@ -159,5 +208,5 @@ public class WebRequest extends HttpServletRequestWrapper {
 			return new String[0];
 	}
 	
-	private String[] a = new String[0];
+	private static String[] a = new String[0];
 }

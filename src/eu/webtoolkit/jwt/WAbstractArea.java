@@ -119,7 +119,7 @@ public class WAbstractArea extends WObject {
 	/**
 	 * Returns the destination resource.
 	 * <p>
-	 * Returns 0 if no resource has been set.
+	 * Returns <code>null</code> if no resource has been set.
 	 * <p>
 	 * 
 	 * @see WAbstractArea#setResource(WResource resource)

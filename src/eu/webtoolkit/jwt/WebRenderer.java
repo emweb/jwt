@@ -371,7 +371,7 @@ class WebRenderer implements SlotLearnerInterface {
 		String redirect = this.session_.getRedirect();
 		if (redirect.length() != 0) {
 			System.err.append("Redirect: ").append(redirect).append('\n');
-			response.setRedirect(redirect);
+			response.sendRedirect(redirect);
 			return;
 		}
 		WWebWidget mainWebWidget = app.domRoot_;

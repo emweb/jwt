@@ -1096,6 +1096,9 @@ public class WContainerWidget extends WInteractWidget {
 	}
 
 	private void propagateLayoutItemsOk(WLayoutItem item) {
+		if (!(item != null)) {
+			return;
+		}
 		if (item.getLayout() != null) {
 			WLayout layout = item.getLayout();
 			final int c = layout.getCount();

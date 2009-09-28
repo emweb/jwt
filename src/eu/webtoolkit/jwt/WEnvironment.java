@@ -9,6 +9,8 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -125,7 +127,7 @@ public class WEnvironment {
 		if (i != null) {
 			return i;
 		} else {
-			return WebRequest.emptyValues_;
+			return Collections.emptyList();
 		}
 	}
 
@@ -672,12 +674,12 @@ public class WEnvironment {
 	void init(WebRequest request) {
 		Configuration conf = this.session_.getController().getConfiguration();
 		this.parameters_ = request.getParameterMap();
-		this.urlScheme_ = request.getUrlScheme();
+		this.urlScheme_ = request.getScheme();
 		this.referer_ = request.getHeaderValue("Referer");
 		this.accept_ = request.getHeaderValue("Accept");
-		this.serverSignature_ = request.getEnvValue("SERVER_SIGNATURE");
-		this.serverSoftware_ = request.getEnvValue("SERVER_SOFTWARE");
-		this.serverAdmin_ = request.getEnvValue("SERVER_ADMIN");
+		this.serverSignature_ = "";
+		this.serverSoftware_ = "";
+		this.serverAdmin_ = "";
 		this.pathInfo_ = request.getPathInfo();
 		this.setUserAgent(request.getHeaderValue("User-Agent"));
 		System.err.append(this.userAgent_).append('\n');
@@ -719,7 +721,7 @@ public class WEnvironment {
 			}
 		}
 		if (this.clientAddress_.length() == 0) {
-			this.clientAddress_ = request.getEnvValue("REMOTE_ADDR");
+			this.clientAddress_ = "";
 		}
 		String cookie = request.getHeaderValue("Cookie");
 		this.doesCookies_ = cookie.length() != 0;
