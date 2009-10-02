@@ -19,9 +19,14 @@ import java.util.EnumSet;
  * There are two distinct ways for using a WDialog window.
  * <p>
  * A WDialog can be used as any other widget. In this case, the WDialog is
- * created with the proper content, and for example an OK button is connected to
- * a method which deletes the dialog. Unlike other widgets, a dialog is hidden
- * by default. You must use the method {@link WWidget#show() WWidget#show()} or
+ * simply instantiated as another widget. The dialog may be closed by calling
+ * {@link WDialog#accept() accept()}, {@link WDialog#reject() reject()} or
+ * {@link WDialog#done(WDialog.DialogCode result) done()} (or connecting a
+ * signal to one of these methods). This will hide the dialog and emit the
+ * {@link WDialog#finished() finished()} signal, which you then can listen for
+ * to process the dialog result and delete the dialog. Unlike other widgets, a
+ * dialog does not need to be added to a parent widget, but is hidden by
+ * default. You must use the method {@link WWidget#show() WWidget#show()} or
  * setHidden(true) to show the dialog.
  * <p>
  * Use setModal(false) to create a non-modal dialog. A non-modal dialog does not

@@ -312,17 +312,17 @@ class WebRenderer implements SlotLearnerInterface {
 			this.visibleOnly_ = false;
 			this.collectJavaScript();
 			response.out().append(this.collectedJS1_.toString()).append(
-					this.session_.getApp().getJavaScriptClass()).append(
-					"._p_.response(").append(
+					app.getJavaScriptClass()).append("._p_.response(").append(
 					String.valueOf(this.expectedAckId_)).append(");");
+			this.updateLoadIndicator(response.out(), app, true);
 			if (app.enableAjax_) {
 				response.out().append("domRoot.style.display = 'block';")
-						.append(this.session_.getApp().getJavaScriptClass())
-						.append("._p_.autoJavaScript();");
+						.append(app.getJavaScriptClass()).append(
+								"._p_.autoJavaScript();");
 			}
 			response
 					.out()
-					.append(this.session_.getApp().getJavaScriptClass())
+					.append(app.getJavaScriptClass())
 					.append("._p_.update(null, 'load', null, false);")
 					.append(this.collectedJS2_.toString())
 					.append(
@@ -704,13 +704,15 @@ class WebRenderer implements SlotLearnerInterface {
 	private void updateLoadIndicator(Writer out, WApplication app, boolean all)
 			throws IOException {
 		if (app.showLoadingIndicator_.needUpdate() || all) {
-			out.append("showLoadingIndicator = function() {var e = null;\n")
+			out.append(
+					"showLoadingIndicator = function() {var o=null,e=null;\n")
 					.append(app.showLoadingIndicator_.getJavaScript()).append(
 							"};\n");
 			app.showLoadingIndicator_.updateOk();
 		}
 		if (app.hideLoadingIndicator_.needUpdate() || all) {
-			out.append("hideLoadingIndicator = function() {var e = null;\n")
+			out.append(
+					"hideLoadingIndicator = function() {var o=null,e=null;\n")
 					.append(app.hideLoadingIndicator_.getJavaScript()).append(
 							"};\n");
 			app.hideLoadingIndicator_.updateOk();

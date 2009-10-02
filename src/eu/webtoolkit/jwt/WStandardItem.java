@@ -949,6 +949,11 @@ public class WStandardItem {
 		;
 		this.columns_.get(column).set(row, item);
 		this.adoptChild(row, column, item);
+		if (this.model_ != null) {
+			WModelIndex self = item.getIndex();
+			this.model_.dataChanged().trigger(self, self);
+			this.model_.itemChanged().trigger(this);
+		}
 	}
 
 	/**

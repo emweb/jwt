@@ -49,7 +49,13 @@ public class WTableView extends WCompositeWidget {
 		this((WContainerWidget) null);
 	}
 
-	// public void remove() ;
+	/**
+	 * Destructor.
+	 */
+	public void remove() {
+		super.remove();
+	}
+
 	/**
 	 * Sets the model.
 	 * <p>
@@ -74,9 +80,7 @@ public class WTableView extends WCompositeWidget {
 		this.table_.setHeaderCount(1);
 		for (int r = 0; r < model.getRowCount(); r++) {
 			for (int c = 0; c < model.getColumnCount(); c++) {
-				WWidget w = this.itemDelegate_.update((WWidget) null, model
-						.getIndex(r, c), EnumSet
-						.noneOf(ViewItemRenderFlag.class));
+				WWidget w = this.getWidget(r, c);
 				if (w != null) {
 					this.table_.getElementAt(r + this.table_.getHeaderCount(),
 							c).addWidget(w);
@@ -230,13 +234,13 @@ public class WTableView extends WCompositeWidget {
 	private void dataChanged(WModelIndex topLeft, WModelIndex bottomRight) {
 		for (int i = topLeft.getRow(); i <= bottomRight.getRow(); i++) {
 			for (int j = topLeft.getColumn(); j <= bottomRight.getColumn(); j++) {
-				WWidget w = this.itemDelegate_.update((WWidget) null,
-						this.model_.getIndex(i, j), EnumSet
-								.noneOf(ViewItemRenderFlag.class));
 				this.table_.getElementAt(i + this.table_.getHeaderCount(), j)
 						.clear();
-				this.table_.getElementAt(i + this.table_.getHeaderCount(), j)
-						.addWidget(w);
+				WWidget w = this.getWidget(i, j);
+				if (w != null) {
+					this.table_.getElementAt(i + this.table_.getHeaderCount(),
+							j).addWidget(w);
+				}
 			}
 		}
 	}
@@ -258,5 +262,15 @@ public class WTableView extends WCompositeWidget {
 					.getInstance(), column));
 		}
 		return this.columns_.get(column);
+	}
+
+	private WWidget getWidget(int row, int column) {
+		WAbstractItemDelegate itemDelegate = this
+				.getItemDelegateForColumn(column);
+		if (!(itemDelegate != null)) {
+			itemDelegate = this.itemDelegate_;
+		}
+		return itemDelegate.update((WWidget) null, this.model_.getIndex(row,
+				column), EnumSet.noneOf(ViewItemRenderFlag.class));
 	}
 }
