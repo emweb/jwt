@@ -255,6 +255,15 @@ public class WDatePicker extends WCompositeWidget {
 		this.setEnabled(false);
 	}
 
+	/**
+	 * Hide/unhide the widget.
+	 */
+	public void setHidden(boolean hidden) {
+		super.setHidden(hidden);
+		this.forEdit_.setHidden(hidden);
+		this.displayWidget_.setHidden(hidden);
+	}
+
 	private String format_;
 	private WInteractWidget displayWidget_;
 	private WLineEdit forEdit_;

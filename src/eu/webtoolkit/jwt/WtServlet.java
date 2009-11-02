@@ -165,6 +165,10 @@ public abstract class WtServlet extends HttpServlet {
 		return createApplication(session.getEnv());
 	}
 
+	void removeSession(String sessionId) {
+		// in JWt, this is a NOOP: instead we interpret the return value of handleRequest()
+	}
+
 	/**
 	 * Creates a new application for a new session.
 	 * 
@@ -174,4 +178,5 @@ public abstract class WtServlet extends HttpServlet {
 	public abstract WApplication createApplication(WEnvironment env);
 
 	private Configuration configuration;
+
 }

@@ -356,12 +356,18 @@ public class WMenuItem extends WObject {
 			this.contentsContainer_.addWidget(this.contents_);
 			// this.implementStateless(WMenuItem.selectVisual,WMenuItem.undoSelectVisual);
 			this.connectActivate();
-			this.select();
 		}
 	}
 
 	void setMenu(WMenu menu) {
 		this.menu_ = menu;
+	}
+
+	private void selectNotLoaded() {
+		if (this.contentsContainer_ != null
+				&& this.contentsContainer_.getCount() == 0) {
+			this.select();
+		}
 	}
 
 	private void selectVisual() {
@@ -378,7 +384,7 @@ public class WMenuItem extends WObject {
 				&& this.contentsContainer_.getCount() == 0) {
 			as.addListener(this, new Signal.Listener() {
 				public void trigger() {
-					WMenuItem.this.loadContents();
+					WMenuItem.this.selectNotLoaded();
 				}
 			});
 		} else {

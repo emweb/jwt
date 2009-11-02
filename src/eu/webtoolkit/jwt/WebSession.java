@@ -493,6 +493,9 @@ class WebSession {
 			if (handler.getResponse() != null) {
 				handler.getResponse().flush();
 			}
+			if (handler.isSessionDead()) {
+				this.controller_.removeSession(this.sessionId_);
+			}
 			;
 			return !handler.isSessionDead();
 		} finally {

@@ -235,9 +235,9 @@ public abstract class WInteractWidget extends WWebWidget {
 	 * suitable drop target, which must accept dropping of this mimetype.
 	 * <p>
 	 * By default, the entire widget is dragged. One may specify another widget
-	 * to be dragged (for example the parent), or a drag widget whose function
-	 * is only to represent the drag visually (when
-	 * <code>isDragWidgetOnly</code> = <code>true</code>).
+	 * to be dragged (for example the parent as <code>dragWidget</code>) or a
+	 * <code>dragWidget</code> whose function is only to represent the drag
+	 * visually (when <code>isDragWidgetOnly</code> = <code>true</code>).
 	 * <p>
 	 * The widget to be identified as source in the dropEvent may be given
 	 * explicitly, and will default to this widget otherwise.

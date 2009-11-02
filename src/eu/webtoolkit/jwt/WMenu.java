@@ -531,17 +531,7 @@ public class WMenu extends WCompositeWidget {
 		this.previousCurrent_ = this.current_;
 		this.previousStackIndex_ = this.contentsStack_.getCurrentIndex();
 		this.current_ = index;
-		for (int i = 0; i < this.items_.size(); ++i) {
-			this.items_.get(i).renderSelected((int) i == this.current_);
-		}
-		if (index == -1) {
-			return;
-		}
-		WWidget contents = this.items_.get(this.current_).getContents();
-		if (contents != null) {
-			this.contentsStack_.setCurrentWidget(contents);
-		}
-		if (this.internalPathEnabled_) {
+		if (this.internalPathEnabled_ && this.current_ != -1) {
 			WApplication app = WApplication.getInstance();
 			this.previousInternalPath_ = app.getInternalPath();
 			String newPath = this.basePath_;
@@ -557,6 +547,16 @@ public class WMenu extends WCompositeWidget {
 					|| !app.internalPathMatches(newPath)) {
 				app.setInternalPath(newPath);
 			}
+		}
+		for (int i = 0; i < this.items_.size(); ++i) {
+			this.items_.get(i).renderSelected((int) i == this.current_);
+		}
+		if (index == -1) {
+			return;
+		}
+		WWidget contents = this.items_.get(this.current_).getContents();
+		if (contents != null) {
+			this.contentsStack_.setCurrentWidget(contents);
 		}
 		this.itemSelectRendered_.trigger(this.items_.get(this.current_));
 	}

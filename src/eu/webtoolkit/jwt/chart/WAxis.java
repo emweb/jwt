@@ -257,9 +257,11 @@ public class WAxis {
 	 * @see WAxis#setMaximum(double maximum)
 	 */
 	public void setRange(double minimum, double maximum) {
-		this.segments_.get(0).minimum = minimum;
-		this.segments_.get(this.segments_.size() - 1).maximum = maximum;
-		this.update();
+		if (maximum > minimum) {
+			this.segments_.get(0).minimum = minimum;
+			this.segments_.get(this.segments_.size() - 1).maximum = maximum;
+			this.update();
+		}
 	}
 
 	/**
