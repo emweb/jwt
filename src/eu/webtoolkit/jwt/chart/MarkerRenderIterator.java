@@ -28,7 +28,7 @@ class MarkerRenderIterator extends SeriesIterator {
 	}
 
 	public void newValue(WDataSeries series, double x, double y, double stackY) {
-		if (!this.marker_.isEmpty()) {
+		if (!Double.isNaN(x) && !Double.isNaN(y) && !this.marker_.isEmpty()) {
 			WPointF p = this.renderer_.map(x, y, series.getAxis(), this
 					.getCurrentXSegment(), this.getCurrentYSegment());
 			WPainter painter = this.renderer_.getPainter();
