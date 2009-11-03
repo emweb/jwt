@@ -109,8 +109,8 @@ public class WSvgImage extends WResource implements WVectorImage {
 					MathUtils.round(drect.getWidth() / srect.getWidth(), 3));
 			this.shapes_.append(" 0 0 ").append(
 					MathUtils.round(drect.getHeight() / srect.getHeight(), 3));
-			this.shapes_.append(' ').append(MathUtils.round(drect.getX(), 3))
-					.append(' ').append(MathUtils.round(drect.getY(), 3))
+			this.shapes_.append(' ').append(MathUtils.round(drect.getX(), 3));
+			this.shapes_.append(' ').append(MathUtils.round(drect.getY(), 3))
 					.append(")\">");
 			drect.assign(new WRectF(0, 0, srect.getWidth(), srect.getHeight()));
 			transformed = true;

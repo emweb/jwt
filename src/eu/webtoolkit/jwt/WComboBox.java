@@ -242,6 +242,7 @@ public class WComboBox extends WFormWidget {
 						WComboBox.this.itemsChanged();
 					}
 				}));
+		this.refresh();
 	}
 
 	/**

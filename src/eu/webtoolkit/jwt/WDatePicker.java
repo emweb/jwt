@@ -226,33 +226,18 @@ public class WDatePicker extends WCompositeWidget {
 	}
 
 	/**
-	 * Change the enabled state of the widget.
+	 * Sets enabled.
 	 * <p>
-	 * A widget that is disabled cannot receive focus or user interaction.
+	 * This is the oppositie of {@link WDatePicker#setDisabled(boolean disabled)
+	 * setDisabled()}.
 	 */
 	public void setEnabled(boolean enabled) {
-		this.forEdit_.setEnabled(enabled);
-		this.displayWidget_.setHidden(!enabled);
+		this.setDisabled(false);
 	}
 
-	/**
-	 * Enable the widget.
-	 * <p>
-	 * 
-	 * @see WDatePicker#setEnabled(boolean enabled)
-	 */
-	public void enable() {
-		this.setEnabled(true);
-	}
-
-	/**
-	 * Disable the widget.
-	 * <p>
-	 * 
-	 * @see WDatePicker#setEnabled(boolean enabled)
-	 */
-	public void disable() {
-		this.setEnabled(false);
+	public void setDisabled(boolean disabled) {
+		this.forEdit_.setDisabled(disabled);
+		this.displayWidget_.setHidden(disabled);
 	}
 
 	/**

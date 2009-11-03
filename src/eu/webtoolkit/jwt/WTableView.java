@@ -62,6 +62,7 @@ public class WTableView extends WCompositeWidget {
 	 * If a previous model was set, it is not deleted.
 	 */
 	public void setModel(WAbstractItemModel model) {
+		this.table_.clear();
 		if (!(model != null)) {
 			return;
 		}
@@ -87,25 +88,25 @@ public class WTableView extends WCompositeWidget {
 				}
 			}
 		}
-		model.columnsInserted().addListener(this,
+		this.model_.columnsInserted().addListener(this,
 				new Signal3.Listener<WModelIndex, Integer, Integer>() {
 					public void trigger(WModelIndex e1, Integer e2, Integer e3) {
 						WTableView.this.columnsInserted(e1, e2, e3);
 					}
 				});
-		model.columnsRemoved().addListener(this,
+		this.model_.columnsRemoved().addListener(this,
 				new Signal3.Listener<WModelIndex, Integer, Integer>() {
 					public void trigger(WModelIndex e1, Integer e2, Integer e3) {
 						WTableView.this.columnsRemoved(e1, e2, e3);
 					}
 				});
-		model.rowsInserted().addListener(this,
+		this.model_.rowsInserted().addListener(this,
 				new Signal3.Listener<WModelIndex, Integer, Integer>() {
 					public void trigger(WModelIndex e1, Integer e2, Integer e3) {
 						WTableView.this.rowsInserted(e1, e2, e3);
 					}
 				});
-		model.rowsRemoved().addListener(this,
+		this.model_.rowsRemoved().addListener(this,
 				new Signal3.Listener<WModelIndex, Integer, Integer>() {
 					public void trigger(WModelIndex e1, Integer e2, Integer e3) {
 						WTableView.this.rowsRemoved(e1, e2, e3);
@@ -226,7 +227,7 @@ public class WTableView extends WCompositeWidget {
 	}
 
 	private void rowsRemoved(WModelIndex index, int firstRow, int lastRow) {
-		for (int i = lastRow; i >= lastRow; i--) {
+		for (int i = lastRow; i >= firstRow; i--) {
 			this.table_.deleteRow(i - this.table_.getHeaderCount());
 		}
 	}

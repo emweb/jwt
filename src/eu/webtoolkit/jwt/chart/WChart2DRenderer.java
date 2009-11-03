@@ -955,7 +955,8 @@ public class WChart2DRenderer {
 								double y = StringUtils.asNumber(model.getData(
 										row, series.get(g).getModelColumn()));
 								if (!Double.isNaN(y)) {
-									stackedValuesInit.set(row, y);
+									stackedValuesInit.set(row,
+											stackedValuesInit.get(row) + y);
 								}
 							}
 							++g;
@@ -998,7 +999,8 @@ public class WChart2DRenderer {
 						for (int currentYSegment = 0; currentYSegment < this.chart_
 								.getAxis(series.get(i).getAxis())
 								.getSegmentCount(); ++currentYSegment) {
-							stackedValues = stackedValuesInit;
+							stackedValues.clear();
+							stackedValues.addAll(stackedValuesInit);
 							WRectF csa = this.chartSegmentArea(this.chart_
 									.getAxis(series.get(i).getAxis()),
 									currentXSegment, currentYSegment);
@@ -1052,7 +1054,8 @@ public class WChart2DRenderer {
 							this.painter_.restore();
 						}
 					}
-					stackedValuesInit = stackedValues;
+					stackedValuesInit.clear();
+					stackedValuesInit.addAll(stackedValues);
 				}
 				if (doSeries) {
 					iterator.endSeries();
