@@ -162,9 +162,10 @@ public class CornerImage extends WImage {
 
         if (resource_ == null) {
             resource_ = new WMemoryResource("image/png");
+            this.setResource(resource_);
+        } else {
+        	resource_.setChanged();
         }
         resource_.setData(vdata);
-
-        this.setResource(resource_);
     }
 }

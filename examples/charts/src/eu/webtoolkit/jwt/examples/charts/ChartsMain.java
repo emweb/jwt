@@ -16,8 +16,6 @@ public class ChartsMain extends WtServlet {
 
     public ChartsMain() {
         super();
-
-	getConfiguration().setProgressiveBootstrap(true);
     }
 
     public WApplication createApplication(WEnvironment env) {
@@ -29,6 +27,7 @@ public class ChartsMain extends WtServlet {
         app.setLocalizedStrings(resourceBundle);
 
         app.getRoot().setPadding(new WLength(10));
+        app.getRoot().resize(WLength.Auto, WLength.Auto);
 
         new ChartsExample(app.getRoot());
 

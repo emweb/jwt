@@ -185,16 +185,14 @@ public class Form extends WTable {
         // Birth date
         ++row;
 
-        birthDateEdit_ = new WLineEdit(getElementAt(row, 2));
+        birthDateEdit_ = new WDatePicker(getElementAt(row, 2));
         label = new WLabel(tr("example.birthdate"), getElementAt(row, 0));
-        label.setBuddy(birthDateEdit_);
+        label.setBuddy(birthDateEdit_.getLineEdit());
         WDateValidator dv = new WDateValidator(new WDate(1900, 1, 1),
                 new WDate(new Date()));
         dv.setFormat("dd/MM/yyyy");
-        birthDateEdit_.setValidator(dv);
-        birthDateEdit_.getValidator().setMandatory(true);
-
-        new WDatePicker(new WText("..."), birthDateEdit_, true, getElementAt(row, 2));
+        birthDateEdit_.getLineEdit().setValidator(dv);
+        birthDateEdit_.getLineEdit().getValidator().setMandatory(true);
 
         // Child count
         ++row;
@@ -238,7 +236,7 @@ public class Form extends WTable {
     private WComboBox countryEdit_;
     private WComboBox cityEdit_;
 
-    private WLineEdit birthDateEdit_;
+    private WDatePicker birthDateEdit_;
     private WLineEdit childCountEdit_;
 
     private WTextArea remarksEdit_;
@@ -255,7 +253,7 @@ public class Form extends WTable {
             valid = false;
         if (!checkValid(countryEdit_, tr("error.country")))
             valid = false;
-        if (!checkValid(birthDateEdit_, tr("error.birthdate")))
+        if (!checkValid(birthDateEdit_.getLineEdit(), tr("error.birthdate")))
             valid = false;
         if (!checkValid(childCountEdit_, tr("error.childcount")))
             valid = false;

@@ -498,43 +498,21 @@ public class Composer extends WCompositeWidget {
         addcc_.clicked().addListener(this, new Signal1.Listener<WMouseEvent>() {
             public void trigger(WMouseEvent a) {
                 ccEdit_.setHidden(false);
-            }
-
-        });
-        addcc_.clicked().addListener(this, new Signal1.Listener<WMouseEvent>() {
-            public void trigger(WMouseEvent a) {
+                ccEdit_.setFocus();
                 addcc_.setHidden(true);
-            }
-
-        });
-        addcc_.clicked().addListener(this, new Signal1.Listener<WMouseEvent>() {
-            public void trigger(WMouseEvent a) {
                 options_.update();
             }
-
         });
 
         addbcc_.clicked().addListener(this,
                 new Signal1.Listener<WMouseEvent>() {
                     public void trigger(WMouseEvent a) {
                         bccEdit_.setHidden(false);
-                    }
-
-                });
-        addbcc_.clicked().addListener(this,
-                new Signal1.Listener<WMouseEvent>() {
-                    public void trigger(WMouseEvent a) {
+                        bccEdit_.setFocus();
                         addbcc_.setHidden(true);
-                    }
-
-                });
-        addbcc_.clicked().addListener(this,
-                new Signal1.Listener<WMouseEvent>() {
-                    public void trigger(WMouseEvent a) {
                         options_.update();
                     }
-
-                });
+        	});
 
         /*
          * Option event to attach the first attachment. We show the first

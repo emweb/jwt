@@ -77,8 +77,7 @@ public class ComposeExample extends WContainerWidget {
             horiz = new WContainerWidget(feedback);
         for (int i = 0; i < contacts.size(); ++i) {
             WText t = new WText("To: \"" + contacts.get(i).name + "\" <"
-                    + contacts.get(i).email + ">", horiz);
-            t.setTextFormat(TextFormat.PlainText);
+                    + contacts.get(i).email + ">", TextFormat.PlainText, horiz);
             new WBreak(horiz);
         }
 
@@ -87,8 +86,7 @@ public class ComposeExample extends WContainerWidget {
             horiz = new WContainerWidget(feedback);
         for (int i = 0; i < contacts.size(); ++i) {
             WText t = new WText("Cc: \"" + contacts.get(i).name + "\" <"
-                    + contacts.get(i).email + ">", horiz);
-            t.setTextFormat(TextFormat.PlainText);
+                    + contacts.get(i).email + ">", TextFormat.PlainText, horiz);
             new WBreak(horiz);
         }
 
@@ -97,14 +95,12 @@ public class ComposeExample extends WContainerWidget {
             horiz = new WContainerWidget(feedback);
         for (int i = 0; i < contacts.size(); ++i) {
             WText t = new WText("Bcc: \"" + contacts.get(i).name + "\" <"
-                    + contacts.get(i).email + ">", horiz);
-            t.setTextFormat(TextFormat.PlainText);
+                    + contacts.get(i).email + ">", TextFormat.PlainText, horiz);
             new WBreak(horiz);
         }
 
         horiz = new WContainerWidget(feedback);
-        WText t = new WText("Subject: \"" + composer_.subject() + "\"", horiz);
-        t.setTextFormat(TextFormat.PlainText);
+        WText t = new WText("Subject: \"" + composer_.subject() + "\"", TextFormat.PlainText, horiz);
 
         ArrayList<Attachment> attachments = composer_.attachments();
         if (!attachments.isEmpty())
@@ -112,8 +108,7 @@ public class ComposeExample extends WContainerWidget {
         for (int i = 0; i < attachments.size(); ++i) {
             new WText("Attachment: \""
                     + attachments.get(i).fileName + "\" ("
-                    + attachments.get(i).contentDescription + ")", horiz);
-            t.setTextFormat(TextFormat.PlainText);
+                    + attachments.get(i).contentDescription + ")", TextFormat.PlainText, horiz);
 
             new File(attachments.get(i).spoolFileName).delete();
 
@@ -129,8 +124,7 @@ public class ComposeExample extends WContainerWidget {
         new WBreak(horiz);
 
         if (message.length() != 0) {
-            t = new WText(message, horiz);
-            t.setTextFormat(TextFormat.PlainText);
+            t = new WText(message, TextFormat.PlainText, horiz);
         } else
             t = new WText("<i>(empty)</i>", horiz);
 

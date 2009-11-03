@@ -21,6 +21,8 @@ public class DragMain extends WtServlet {
     public WApplication createApplication(WEnvironment env) {
         WApplication app = new WApplication(env);
         app.setTitle("Drag & drop");
+        
+        app.getRoot().setStyleClass("root");
 
         new WText("<h1>Wt Drag &amp; drop example.</h1>", app.getRoot());
 

@@ -168,8 +168,8 @@ public class DialogApplication extends WApplication {
         messageBox_ = new WMessageBox("Your work", "Your work is not saved",
                 Icon.NoIcon, EnumSet.of(StandardButton.NoButton));
 
-        messageBox_.addButton("Cancel modifications", StandardButton.Ok);
-        messageBox_.addButton("Continue modifying work", StandardButton.Cancel);
+        messageBox_.addButton("Cancel modifications", StandardButton.Cancel);
+        messageBox_.addButton("Continue modifying work", StandardButton.Ok);
 
         messageBox_.show();
 
