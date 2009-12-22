@@ -5,6 +5,7 @@
  */
 package eu.webtoolkit.jwt.chart;
 
+import eu.webtoolkit.jwt.WModelIndex;
 import eu.webtoolkit.jwt.WRectF;
 
 /**
@@ -20,9 +21,9 @@ import eu.webtoolkit.jwt.WRectF;
  */
 public class SeriesIterator {
 	/**
-	 * Set the current axis segments.
+	 * Start handling a new segment.
 	 * <p>
-	 * Because of a &apos;break&apos; specified in an axis, the axis is divided
+	 * Because of a &apos;break&apos; specified in an axis, axes may be divided
 	 * in one or two segments (in fact only the API limits this now to two). The
 	 * iterator will iterate all segments seperately, but each time with a
 	 * different clipping region specified in the painter, corresponding to that
@@ -30,10 +31,20 @@ public class SeriesIterator {
 	 * <p>
 	 * The <i>currentSegmentArea</i> specifies the clipping area.
 	 */
-	public void setSegment(int currentXSegment, int currentYSegment,
+	public void startSegment(int currentXSegment, int currentYSegment,
 			WRectF currentSegmentArea) {
 		this.currentXSegment_ = currentXSegment;
 		this.currentYSegment_ = currentYSegment;
+	}
+
+	/**
+	 * End handling a particular segment.
+	 * <p>
+	 * 
+	 * @see SeriesIterator#startSegment(int currentXSegment, int
+	 *      currentYSegment, WRectF currentSegmentArea)
+	 */
+	public void endSegment() {
 	}
 
 	/**
@@ -66,7 +77,8 @@ public class SeriesIterator {
 	 * The <i>stackY</i> argument is the y value from the previous series (also
 	 * after stacking). It will be 0, unless this series is stacked.
 	 */
-	public void newValue(WDataSeries series, double x, double y, double stackY) {
+	public void newValue(WDataSeries series, double x, double y, double stackY,
+			WModelIndex xIndex, WModelIndex yIndex) {
 	}
 
 	/**
@@ -86,5 +98,4 @@ public class SeriesIterator {
 	private int currentXSegment_;
 	private int currentYSegment_;
 	static final int TICK_LENGTH = 5;
-	static final double CATEGORY_WIDTH = 0.8;
 }

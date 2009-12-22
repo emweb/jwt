@@ -62,15 +62,20 @@ import eu.webtoolkit.jwt.WtException;
  * {@link AxisScale#DateScale DateScale} when the X series contains dates (of
  * type {@link eu.webtoolkit.jwt.WDate}) to create a time series chart, or to a
  * {@link AxisScale#LogScale LogScale}. A ScatterPlot supports the same types of
- * data series as a CategoryChart, but does not support stacking.
+ * data series as a CategoryChart, but does not support stacking. In a scatter
+ * plot, the X series do not need to be ordered in increasing values.
  * <p>
  * <div align="center"> <img src="doc-files//ChartWCartesianChart-2.png"
  * alt="A time series scatter plot with line series">
  * <p>
  * <strong>A time series scatter plot with line series</strong>
  * </p>
- * </div> The cartesian chart has support for dual Y axes. Each data series may
- * be bound to one of the two Y axes. By default, only the first Y axis is
+ * </div> Missing data in a model series Y values is interpreted as a
+ * <i>break</i>. For curve-like series, this breaks the curve (or line). This
+ * may also be used to use different X series per Y series in a scatter plot.
+ * <p>
+ * The cartesian chart has support for dual Y axes. Each data series may be
+ * bound to one of the two Y axes. By default, only the first Y axis is
  * displayed. To show the second Y axis you will need to call:
  * <p>
  * By default a chart has a horizontal X axis and a vertical Y axis, which
@@ -418,29 +423,31 @@ public class WCartesianChart extends WAbstractChart {
 	 * @see WCartesianChart#setLegendEnabled(boolean enabled)
 	 */
 	public void drawMarker(WDataSeries series, WPainterPath result) {
+		final double size = series.getMarkerSize();
+		final double hsize = size / 2;
 		switch (series.getMarker()) {
 		case CircleMarker:
-			result.addEllipse(-3, -3, 6, 6);
+			result.addEllipse(-hsize, -hsize, size, size);
 			break;
 		case SquareMarker:
-			result.addRect(new WRectF(-3, -3, 6, 6));
+			result.addRect(new WRectF(-hsize, -hsize, size, size));
 			break;
 		case CrossMarker:
-			result.moveTo(-4, 0);
-			result.lineTo(4, 0);
-			result.moveTo(0, -4);
-			result.lineTo(0, 4);
+			result.moveTo(-1.3 * hsize, 0);
+			result.lineTo(1.3 * hsize, 0);
+			result.moveTo(0, -1.3 * hsize);
+			result.lineTo(0, 1.3 * hsize);
 			break;
 		case XCrossMarker:
-			result.moveTo(-3, -3);
-			result.lineTo(3, 3);
-			result.moveTo(-3, 3);
-			result.lineTo(3, -3);
+			result.moveTo(-hsize, -hsize);
+			result.lineTo(hsize, hsize);
+			result.moveTo(-hsize, hsize);
+			result.lineTo(hsize, -hsize);
 			break;
 		case TriangleMarker:
-			result.moveTo(0, -3);
-			result.lineTo(3, 2);
-			result.lineTo(-3, 2);
+			result.moveTo(0, -hsize);
+			result.lineTo(hsize, 0.6 * hsize);
+			result.lineTo(-hsize, 0.6 * hsize);
 			result.closeSubPath();
 			break;
 		default:
@@ -449,24 +456,21 @@ public class WCartesianChart extends WAbstractChart {
 	}
 
 	/**
-	 * Renders the legend item for a given data series.
+	 * Renders the legend icon for a given data series.
 	 * <p>
-	 * Renders the legend item for the indicated <i>series</i> in the
-	 * <i>painter</i> at position <i>pos</i>. The default implementation draws
-	 * the marker, and the series description to the right. The series
-	 * description is taken from the model&apos;s header data for that
-	 * series&apos; data column.
+	 * Renders the legend icon for the indicated <i>series</i> in the
+	 * <i>painter</i> at position <i>pos</i>.
 	 * <p>
-	 * This method is called while painting the chart, and you may want to
-	 * reimplement this method if you wish to provide a custom marker for a
+	 * This method is called while rendering a legend item, and you may want to
+	 * reimplement this method if you wish to provide a custom legend icon for a
 	 * particular data series.
 	 * <p>
 	 * 
-	 * @see WCartesianChart#setLegendEnabled(boolean enabled)
+	 * @see WCartesianChart#renderLegendItem(WPainter painter, WPointF pos,
+	 *      WDataSeries series)
 	 */
-	public void renderLegendItem(WPainter painter, WPointF pos,
+	public void renderLegendIcon(WPainter painter, WPointF pos,
 			WDataSeries series) {
-		WPen fontPen = painter.getPen();
 		switch (series.getType()) {
 		case BarSeries: {
 			WPainterPath path = new WPainterPath();
@@ -502,11 +506,168 @@ public class WCartesianChart extends WAbstractChart {
 			break;
 		}
 		}
+	}
+
+	/**
+	 * Renders the legend item for a given data series.
+	 * <p>
+	 * Renders the legend item for the indicated <i>series</i> in the
+	 * <i>painter</i> at position <i>pos</i>. The default implementation draws
+	 * the marker, and the series description to the right. The series
+	 * description is taken from the model&apos;s header data for that
+	 * series&apos; data column.
+	 * <p>
+	 * This method is called while painting the chart, and you may want to
+	 * reimplement this method if you wish to provide a custom marker for a
+	 * particular data series.
+	 * <p>
+	 * 
+	 * @see WCartesianChart#setLegendEnabled(boolean enabled)
+	 */
+	public void renderLegendItem(WPainter painter, WPointF pos,
+			WDataSeries series) {
+		WPen fontPen = painter.getPen();
+		this.renderLegendIcon(painter, pos, series);
 		painter.setPen(fontPen);
 		painter.drawText(pos.getX() + 17, pos.getY() - 10, 100, 20, EnumSet.of(
 				AlignmentFlag.AlignLeft, AlignmentFlag.AlignMiddle),
 				StringUtils.asString(this.getModel().getHeaderData(
 						series.getModelColumn())));
+	}
+
+	/**
+	 * Maps from device coordinates to model coordinates.
+	 * <p>
+	 * Maps a position in the chart back to model coordinates.
+	 * <p>
+	 * This uses the axis dimensions that are based on the latest chart
+	 * rendering. If you have not yet rendered the chart, or wish to already the
+	 * mapping reflect model changes since the last rendering, you should call
+	 * {@link WCartesianChart#initLayout(WRectF rectangle) initLayout()} first.
+	 * <p>
+	 * 
+	 * @see WCartesianChart#mapToDevice(Object xValue, Object yValue, Axis
+	 *      ordinateAxis, int xSegment, int ySegment)
+	 */
+	public WPointF mapFromDevice(WPointF point, Axis ordinateAxis) {
+		WAxis xAxis = this.getAxis(Axis.XAxis);
+		WAxis yAxis = this.getAxis(ordinateAxis);
+		WPointF p = this.inverseHv(point.getX(), point.getY(), this.getWidth()
+				.toPixels());
+		return new WPointF(xAxis.mapFromDevice(p.getX()), yAxis.mapFromDevice(p
+				.getY()));
+	}
+
+	/**
+	 * Maps from device coordinates to model coordinates.
+	 * <p>
+	 * Returns {@link #mapFromDevice(WPointF point, Axis ordinateAxis)
+	 * mapFromDevice(point, Axis.OrdinateAxis)}
+	 */
+	public final WPointF mapFromDevice(WPointF point) {
+		return mapFromDevice(point, Axis.OrdinateAxis);
+	}
+
+	/**
+	 * Maps model values onto chart coordinates.
+	 * <p>
+	 * This returns the chart device coordinates for a (x,y) pair of model
+	 * values.
+	 * <p>
+	 * This uses the axis dimensions that are based on the latest chart
+	 * rendering. If you have not yet rendered the chart, or wish to already the
+	 * mapping reflect model changes since the last rendering, you should call
+	 * {@link WCartesianChart#initLayout(WRectF rectangle) initLayout()} first.
+	 * <p>
+	 * The <code>xSegment</code> and <code>ySegment</code> arguments are
+	 * relevant only when the corresponding axis is broken using
+	 * {@link WAxis#setBreak(double minimum, double maximum) WAxis#setBreak()}.
+	 * Then, its possible values may be 0 (below the break) or 1 (above the
+	 * break).
+	 * <p>
+	 * 
+	 * @see WCartesianChart#mapFromDevice(WPointF point, Axis ordinateAxis)
+	 */
+	public WPointF mapToDevice(Object xValue, Object yValue, Axis ordinateAxis,
+			int xSegment, int ySegment) {
+		WAxis xAxis = this.getAxis(Axis.XAxis);
+		WAxis yAxis = this.getAxis(ordinateAxis);
+		return this.hv(xAxis.mapToDevice(xValue, xSegment), yAxis.mapToDevice(
+				yValue, ySegment), this.getWidth().toPixels());
+	}
+
+	/**
+	 * Maps model values onto chart coordinates.
+	 * <p>
+	 * Returns
+	 * {@link #mapToDevice(Object xValue, Object yValue, Axis ordinateAxis, int xSegment, int ySegment)
+	 * mapToDevice(xValue, yValue, Axis.OrdinateAxis, 0, 0)}
+	 */
+	public final WPointF mapToDevice(Object xValue, Object yValue) {
+		return mapToDevice(xValue, yValue, Axis.OrdinateAxis, 0, 0);
+	}
+
+	/**
+	 * Maps model values onto chart coordinates.
+	 * <p>
+	 * Returns
+	 * {@link #mapToDevice(Object xValue, Object yValue, Axis ordinateAxis, int xSegment, int ySegment)
+	 * mapToDevice(xValue, yValue, ordinateAxis, 0, 0)}
+	 */
+	public final WPointF mapToDevice(Object xValue, Object yValue,
+			Axis ordinateAxis) {
+		return mapToDevice(xValue, yValue, ordinateAxis, 0, 0);
+	}
+
+	/**
+	 * Maps model values onto chart coordinates.
+	 * <p>
+	 * Returns
+	 * {@link #mapToDevice(Object xValue, Object yValue, Axis ordinateAxis, int xSegment, int ySegment)
+	 * mapToDevice(xValue, yValue, ordinateAxis, xSegment, 0)}
+	 */
+	public final WPointF mapToDevice(Object xValue, Object yValue,
+			Axis ordinateAxis, int xSegment) {
+		return mapToDevice(xValue, yValue, ordinateAxis, xSegment, 0);
+	}
+
+	/**
+	 * Initializes the chart layout.
+	 * <p>
+	 * A cartesian chart delegates the rendering and layout of the chart and its
+	 * axes to a {@link WChart2DRenderer}. As a consequence, the mapping between
+	 * model and device coordinates is also established by this class, which is
+	 * only created on-demand when painging.
+	 * <p>
+	 * If you wish to establish the layout, in order to use the
+	 * {@link WCartesianChart#mapFromDevice(WPointF point, Axis ordinateAxis)
+	 * mapFromDevice()} and
+	 * {@link WCartesianChart#mapToDevice(Object xValue, Object yValue, Axis ordinateAxis, int xSegment, int ySegment)
+	 * mapToDevice()} methods before the chart has been rendered, you should
+	 * call this method.
+	 * <p>
+	 * Unless a specific chart rectangle is specified, the entire widget area is
+	 * assumed.
+	 */
+	public void initLayout(WRectF rectangle) {
+		WRectF rect = rectangle;
+		if (rect.isEmpty()) {
+			rect.assign(new WRectF(0, 0, this.getWidth().toPixels(), this
+					.getHeight().toPixels()));
+		}
+		WPainter painter = new WPainter();
+		WChart2DRenderer renderer = this.createRenderer(painter, rect);
+		renderer.initLayout();
+		;
+	}
+
+	/**
+	 * Initializes the chart layout.
+	 * <p>
+	 * Calls {@link #initLayout(WRectF rectangle) initLayout(new WRectF())}
+	 */
+	public final void initLayout() {
+		initLayout(new WRectF());
 	}
 
 	protected void paintEvent(WPaintDevice paintDevice) {
@@ -623,5 +784,21 @@ public class WCartesianChart extends WAbstractChart {
 			}
 		}
 		return -1;
+	}
+
+	WPointF hv(double x, double y, double width) {
+		if (this.orientation_ == Orientation.Vertical) {
+			return new WPointF(x, y);
+		} else {
+			return new WPointF(width - y, x);
+		}
+	}
+
+	private WPointF inverseHv(double x, double y, double width) {
+		if (this.orientation_ == Orientation.Vertical) {
+			return new WPointF(x, y);
+		} else {
+			return new WPointF(y, width - x);
+		}
 	}
 }

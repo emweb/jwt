@@ -44,12 +44,16 @@ public class WRectF {
 	 * <p>
 	 * Constructs a rectangle from the two points <code>topLeft</code> and
 	 * <code>bottomRight</code>.
+	 * <p>
+	 * If you want to create a rectangle from two arbitrary corner points, you
+	 * can use this constructor too, but should call
+	 * {@link WRectF#getNormalized() getNormalized()} afterwords.
 	 */
-	public WRectF(WPointF topLeft, WPointF topRight) {
+	public WRectF(WPointF topLeft, WPointF bottomRight) {
 		this.x_ = topLeft.getX();
 		this.y_ = topLeft.getY();
-		this.width_ = topRight.getX() - topLeft.getX();
-		this.height_ = topRight.getY() - topLeft.getY();
+		this.width_ = bottomRight.getX() - topLeft.getX();
+		this.height_ = bottomRight.getY() - topLeft.getY();
 	}
 
 	/**
@@ -73,8 +77,10 @@ public class WRectF {
 
 	// public boolean isNull() ;
 	/**
-	 * Determines whether or not this rectangle is empty. A rectangle is empty
-	 * if its width or its height is less than or equal to zero.
+	 * Determines whether or not this rectangle is empty.
+	 * <p>
+	 * A rectangle is empty if its width or its height is less than or equal to
+	 * zero.
 	 */
 	public boolean isEmpty() {
 		return this.width_ <= 0 || this.height_ <= 0;
@@ -260,6 +266,21 @@ public class WRectF {
 	 */
 	public WPointF getBottomRight() {
 		return new WPointF(this.x_ + this.width_, this.y_ + this.height_);
+	}
+
+	/**
+	 * Tests if a rectangle contains a point.
+	 */
+	public boolean contains(WPointF p) {
+		return this.contains(p.getX(), p.getY());
+	}
+
+	/**
+	 * Tests if a rectangle contains a point.
+	 */
+	public boolean contains(double x, double y) {
+		return x >= this.x_ && x <= this.x_ + this.width_ && y >= this.y_
+				&& y <= this.y_ + this.height_;
 	}
 
 	/**

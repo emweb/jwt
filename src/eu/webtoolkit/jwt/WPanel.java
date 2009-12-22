@@ -47,18 +47,12 @@ public class WPanel extends WCompositeWidget {
 		String CSS_RULES_NAME = "Wt::WPanel";
 		WApplication app = WApplication.getInstance();
 		if (!app.getStyleSheet().isDefined(CSS_RULES_NAME)) {
-			app
-					.getStyleSheet()
-					.addRule(
-							"div.Wt-panel",
-							"border: 3px solid #888888;background: #EEEEEE none repeat scroll 0%;",
-							CSS_RULES_NAME);
-			app
-					.getStyleSheet()
-					.addRule("div.Wt-panel .titlebar",
-							"background: #888888; color: #FFFFFF;padding: 0px 6px 3px;font-size: 10pt;");
-			app.getStyleSheet().addRule("div.Wt-panel .body",
-					"background: #FFFFFF;padding: 4px 6px 4px;");
+			app.getStyleSheet().addRule(".Wt-panel",
+					"border: 3px solid #888888;", CSS_RULES_NAME);
+			app.getStyleSheet().addRule(".Wt-panel .titlebar",
+					"padding: 0px 6px 3px;font-size: 10pt;");
+			app.getStyleSheet().addRule(".Wt-panel .body",
+					"padding: 4px 6px 4px;");
 		}
 	}
 

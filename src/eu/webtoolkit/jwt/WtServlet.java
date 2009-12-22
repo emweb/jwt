@@ -77,12 +77,21 @@ public abstract class WtServlet extends HttpServlet {
 	}
 
 	void handleRequest(HttpServletRequest request, HttpServletResponse response) {
-		if (request.getPathInfo() != null && request.getPathInfo().startsWith(resourcePath)) {
-			String fileName = "wt-resources/" + request.getPathInfo().substring(resourcePath.length());
+		String pathInfo = request.getPathInfo();
+		if (pathInfo != null && pathInfo.startsWith(resourcePath)) {
+			String fileName = "wt-resources/";
+			pathInfo = pathInfo.substring(resourcePath.length());
+			while (pathInfo.charAt(0) == '/')
+				pathInfo = pathInfo.substring(1);
+			fileName += pathInfo;
 			try {
 				InputStream s = getResourceStream(fileName);
-				StreamUtils.copy(s, response.getOutputStream());
-				response.getOutputStream().flush();
+				if (s != null) {
+					StreamUtils.copy(s, response.getOutputStream());
+					response.getOutputStream().flush();
+				} else {
+					response.setStatus(404);
+				}
 			} catch (FileNotFoundException e) {
 				response.setStatus(404);
 				e.printStackTrace();
@@ -99,11 +108,11 @@ public abstract class WtServlet extends HttpServlet {
 		if (wsession == null) {
 			String applicationTypeS = this.getServletConfig().getInitParameter("ApplicationType");
 			
-			ApplicationType applicationType;
+			EntryPointType applicationType;
 			if (applicationTypeS == null || applicationTypeS.equals("") || applicationTypeS.equals("Application")) {
-				applicationType = ApplicationType.Application; 
+				applicationType = EntryPointType.Application; 
 			} else if (applicationTypeS.equals("WidgetSet")) {
-				applicationType = ApplicationType.WidgetSet; 
+				applicationType = EntryPointType.WidgetSet; 
 			} else {
 				throw new WtException("Illegal application type: " + applicationTypeS);
 			}

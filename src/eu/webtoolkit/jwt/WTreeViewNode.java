@@ -16,7 +16,7 @@ class WTreeViewNode extends WTable {
 		this.childrenHeight_ = childrenHeight;
 		this.parentNode_ = parent;
 		this.childrenLoaded_ = false;
-		this.expandIcon_ = null;
+		this.expandButton_ = null;
 		this.noExpandIcon_ = null;
 		this.setStyleClass("Wt-tv-node");
 		int selfHeight = 0;
@@ -38,7 +38,9 @@ class WTreeViewNode extends WTable {
 		}
 		if (!(this.index_ == this.view_.getRootIndex() || (this.index_ != null && this.index_
 				.equals(this.view_.getRootIndex())))) {
-			this.getElementAt(0, 1).setStyleClass("c1 rh");
+			this.getElementAt(0, 1).setStyleClass("c1");
+			WContainerWidget w = new WContainerWidget(this.getElementAt(0, 1));
+			w.setStyleClass("rh c1div");
 			this.updateGraphics(isLast, this.view_.getModel().getRowCount(
 					this.index_) == 0);
 			this.insertColumns(0, this.view_.getColumnCount());
@@ -48,7 +50,9 @@ class WTreeViewNode extends WTable {
 				this.renderSelected(true, 0);
 			}
 		} else {
-			this.getElementAt(0, 0).resize(new WLength(1), WLength.Auto);
+			if (WApplication.getInstance().getEnvironment().agentIsIE()) {
+				this.getElementAt(0, 0).resize(new WLength(1), WLength.Auto);
+			}
 		}
 		this.view_.addRenderedNode(this);
 	}
@@ -88,9 +92,9 @@ class WTreeViewNode extends WTable {
 				.getParent() != null && this.index_.getParent().equals(
 				this.view_.getRootIndex())))
 				&& !this.view_.isRootDecorated()) {
-			if (this.expandIcon_ != null)
-				this.expandIcon_.remove();
-			this.expandIcon_ = null;
+			if (this.expandButton_ != null)
+				this.expandButton_.remove();
+			this.expandButton_ = null;
 			if (this.noExpandIcon_ != null)
 				this.noExpandIcon_.remove();
 			this.noExpandIcon_ = null;
@@ -99,37 +103,40 @@ class WTreeViewNode extends WTable {
 			return;
 		}
 		if (!isEmpty) {
-			if (!(this.expandIcon_ != null)) {
+			if (!(this.expandButton_ != null)) {
 				if (this.noExpandIcon_ != null)
 					this.noExpandIcon_.remove();
 				this.noExpandIcon_ = null;
-				this.expandIcon_ = new WIconPair(this.view_.getImagePack()
-						+ "nav-plus.gif", this.view_.getImagePack()
-						+ "nav-minus.gif");
-				this.getElementAt(0, 0).addWidget(this.expandIcon_);
-				this.expandIcon_.icon1Clicked().addListener(this,
-						new Signal1.Listener<WMouseEvent>() {
-							public void trigger(WMouseEvent e1) {
+				this.expandButton_ = new ToggleButton(this.view_.expandConfig_);
+				if (WApplication.getInstance().getEnvironment().agentIsIE()) {
+					this.expandButton_.resize(new WLength(19), WLength.Auto);
+				}
+				this.getElementAt(0, 0).addWidget(this.expandButton_);
+				this.expandButton_.signal(0).addListener(this,
+						new Signal.Listener() {
+							public void trigger() {
 								WTreeViewNode.this.doExpand();
 							}
 						});
-				this.expandIcon_.icon2Clicked().addListener(this,
-						new Signal1.Listener<WMouseEvent>() {
-							public void trigger(WMouseEvent e1) {
+				this.expandButton_.signal(1).addListener(this,
+						new Signal.Listener() {
+							public void trigger() {
 								WTreeViewNode.this.doCollapse();
 							}
 						});
-				if (this.isExpanded()) {
-					this.expandIcon_.setState(1);
-				}
+				this.expandButton_.setState(this.isExpanded() ? 1 : 0);
 			}
 		} else {
 			if (!(this.noExpandIcon_ != null)) {
-				if (this.expandIcon_ != null)
-					this.expandIcon_.remove();
-				this.expandIcon_ = null;
-				this.noExpandIcon_ = new WImage(this.view_.getImagePack()
-						+ "line-middle.gif");
+				if (this.expandButton_ != null)
+					this.expandButton_.remove();
+				this.expandButton_ = null;
+				this.noExpandIcon_ = new WText();
+				this.noExpandIcon_.setInline(false);
+				this.noExpandIcon_.setStyleClass("Wt-noexpand");
+				if (WApplication.getInstance().getEnvironment().agentIsIE()) {
+					this.noExpandIcon_.resize(new WLength(19), WLength.Auto);
+				}
 				this.getElementAt(0, 0).addWidget(this.noExpandIcon_);
 			}
 		}
@@ -144,7 +151,10 @@ class WTreeViewNode extends WTable {
 
 	public void insertColumns(int column, int count) {
 		WTableCell tc = this.getElementAt(0, 1);
-		tc.clear();
+		WContainerWidget w = ((tc.getWidget(0)) instanceof WContainerWidget ? (WContainerWidget) (tc
+				.getWidget(0))
+				: null);
+		w.clear();
 		if (this.view_.getColumnCount() > 1) {
 			WContainerWidget row = new WContainerWidget();
 			if (this.view_.column1Fixed_) {
@@ -154,7 +164,7 @@ class WTreeViewNode extends WTable {
 				row = rowWrap;
 			}
 			row.setStyleClass("Wt-tv-row rh");
-			tc.insertWidget(0, row);
+			w.insertWidget(0, row);
 		}
 		this.update(0, this.view_.getColumnCount() - 1);
 	}
@@ -203,17 +213,30 @@ class WTreeViewNode extends WTable {
 		if (!this.childrenLoaded_) {
 			return null;
 		}
-		for (WTreeViewNode c = this.nextChildNode((WTreeViewNode) null); c != null; c = this
-				.nextChildNode(c)) {
-			if (c.index_.getRow() > modelRow) {
-				return this.topSpacer();
-			} else {
-				if (c.index_.getRow() == modelRow) {
-					return c;
+		WContainerWidget c = this.getChildContainer();
+		int first = this.topSpacer() != null ? 1 : 0;
+		if (first < c.getCount()) {
+			WTreeViewNode n = ((c.getWidget(first)) instanceof WTreeViewNode ? (WTreeViewNode) (c
+					.getWidget(first))
+					: null);
+			if (n != null) {
+				int row = n.index_.getRow();
+				int index = first + (modelRow - row);
+				if (index < first) {
+					return this.topSpacer();
+				} else {
+					if (index < c.getCount()) {
+						return c.getWidget(index);
+					} else {
+						return this.bottomSpacer();
+					}
 				}
+			} else {
+				return this.bottomSpacer();
 			}
+		} else {
+			return this.topSpacer();
 		}
-		return this.bottomSpacer();
 	}
 
 	public WTreeViewNode nextChildNode(WTreeViewNode prev) {
@@ -464,15 +487,15 @@ class WTreeViewNode extends WTable {
 
 	public void renderSelected(boolean selected, int column) {
 		if (this.view_.getSelectionBehavior() == SelectionBehavior.SelectRows) {
-			this.getRowAt(0).setStyleClass(selected ? "selected" : "");
+			this.getRowAt(0).setStyleClass(selected ? "Wt-selected" : "");
 		} else {
 			WWidget w = this.getWidget(column);
 			if (selected) {
 				w.setStyleClass(StringUtils.addWord(w.getStyleClass(),
-						"selected"));
+						"Wt-selected"));
 			} else {
 				w.setStyleClass(StringUtils.eraseWord(w.getStyleClass(),
-						"selected"));
+						"Wt-selected"));
 			}
 		}
 	}
@@ -482,8 +505,8 @@ class WTreeViewNode extends WTable {
 			return;
 		}
 		this.loadChildren();
-		if (this.expandIcon_ != null) {
-			this.expandIcon_.setState(1);
+		if (this.expandButton_ != null) {
+			this.expandButton_.setState(1);
 		}
 		this.view_.expandedSet_.add(this.index_);
 		this.getRowAt(1).show();
@@ -499,8 +522,8 @@ class WTreeViewNode extends WTable {
 		if (!this.isExpanded()) {
 			return;
 		}
-		if (this.expandIcon_ != null) {
-			this.expandIcon_.setState(0);
+		if (this.expandButton_ != null) {
+			this.expandButton_.setState(0);
 		}
 		this.view_.setCollapsed(this.index_);
 		this.getRowAt(1).hide();
@@ -517,8 +540,8 @@ class WTreeViewNode extends WTable {
 	private int childrenHeight_;
 	private WTreeViewNode parentNode_;
 	private boolean childrenLoaded_;
-	private WIconPair expandIcon_;
-	private WImage noExpandIcon_;
+	private ToggleButton expandButton_;
+	private WText noExpandIcon_;
 
 	private void loadChildren() {
 		if (!this.childrenLoaded_) {
@@ -539,10 +562,13 @@ class WTreeViewNode extends WTable {
 
 	private WWidget getWidget(int column) {
 		WTableCell tc = this.getElementAt(0, 1);
+		WContainerWidget w = ((tc.getWidget(0)) instanceof WContainerWidget ? (WContainerWidget) (tc
+				.getWidget(0))
+				: null);
 		if (column == 0) {
-			return tc.getCount() > 1 ? tc.getWidget(tc.getCount() - 1) : null;
+			return w.getCount() > 1 ? w.getWidget(w.getCount() - 1) : null;
 		} else {
-			WContainerWidget row = ((tc.getWidget(0)) instanceof WContainerWidget ? (WContainerWidget) (tc
+			WContainerWidget row = ((w.getWidget(0)) instanceof WContainerWidget ? (WContainerWidget) (w
 					.getWidget(0))
 					: null);
 			if (this.view_.column1Fixed_) {
@@ -556,6 +582,9 @@ class WTreeViewNode extends WTable {
 
 	private void setWidget(int column, WWidget newW, boolean replace) {
 		WTableCell tc = this.getElementAt(0, 1);
+		WContainerWidget w = ((tc.getWidget(0)) instanceof WContainerWidget ? (WContainerWidget) (tc
+				.getWidget(0))
+				: null);
 		WWidget current = replace ? this.getWidget(column) : null;
 		if (current != null) {
 			newW.setStyleClass(current.getStyleClass());
@@ -569,11 +598,11 @@ class WTreeViewNode extends WTable {
 		}
 		if (column == 0) {
 			if (current != null) {
-				tc.removeWidget(current);
+				w.removeWidget(current);
 			}
-			tc.addWidget(newW);
+			w.addWidget(newW);
 		} else {
-			WContainerWidget row = ((tc.getWidget(0)) instanceof WContainerWidget ? (WContainerWidget) (tc
+			WContainerWidget row = ((w.getWidget(0)) instanceof WContainerWidget ? (WContainerWidget) (w
 					.getWidget(0))
 					: null);
 			if (this.view_.column1Fixed_) {

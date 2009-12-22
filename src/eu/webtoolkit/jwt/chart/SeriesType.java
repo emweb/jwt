@@ -11,7 +11,7 @@ package eu.webtoolkit.jwt.chart;
  * <p>
  * 
  * @see WDataSeries#setType(SeriesType type)
- * @see WCartesianChart
+ * @see eu.webtoolkit.jwt.chart.WCartesianChart
  */
 public enum SeriesType {
 	/**

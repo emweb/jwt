@@ -78,7 +78,9 @@ public abstract class WViewWidget extends WWebWidget {
 	 */
 	public void update() {
 		this.needContentsUpdate_ = true;
-		this.askRerender();
+		if (this.isRendered()) {
+			this.askRerender();
+		}
 	}
 
 	public void load() {

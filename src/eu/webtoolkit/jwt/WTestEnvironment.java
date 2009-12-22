@@ -47,7 +47,7 @@ public class WTestEnvironment extends WEnvironment {
 	 * {@link WApplication}, you can change any of the environment properties
 	 * using the setter methods.
 	 */
-	public WTestEnvironment(Configuration configuration, ApplicationType type) {
+	public WTestEnvironment(Configuration configuration, EntryPointType type) {
 		super();
 		List<String> dummy = new ArrayList<String>();
 		this.configuration_ = configuration;
@@ -59,11 +59,11 @@ public class WTestEnvironment extends WEnvironment {
 	 * Default constructor.
 	 * <p>
 	 * Calls
-	 * {@link #WTestEnvironment(Configuration configuration, ApplicationType type)
-	 * this(configuration, ApplicationType.Application)}
+	 * {@link #WTestEnvironment(Configuration configuration, EntryPointType type)
+	 * this(configuration, EntryPointType.Application)}
 	 */
 	public WTestEnvironment(Configuration configuration) {
-		this(configuration, ApplicationType.Application);
+		this(configuration, EntryPointType.Application);
 	}
 
 	/**
@@ -288,7 +288,7 @@ public class WTestEnvironment extends WEnvironment {
 	private WebSession session;
 	private WtServlet controller_;
 
-	private void init(ApplicationType type) {
+	private void init(EntryPointType type) {
 		this.session_ = new WebSession(this.controller_, "testwtd", type, "",
 				(WebRequest) null, this);
 		new WebSession.Handler(this.session_, true);

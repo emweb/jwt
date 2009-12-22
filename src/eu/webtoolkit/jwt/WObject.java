@@ -151,6 +151,9 @@ public class WObject {
 	void signalConnectionsChanged() {
 	}
 
+	void removeChild(WObject object) {
+	}
+
 	/**
 	 * Creates a localized string.
 	 * 

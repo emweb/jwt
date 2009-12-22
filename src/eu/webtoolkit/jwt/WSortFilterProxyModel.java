@@ -420,6 +420,22 @@ public class WSortFilterProxyModel extends WAbstractProxyModel {
 		return this.createIndex(row, column, item);
 	}
 
+	public boolean setHeaderData(int section, Orientation orientation,
+			Object value, int role) {
+		if (orientation == Orientation.Vertical) {
+			section = this.mapToSource(this.getIndex(section, 0)).getRow();
+		}
+		return this.getSourceModel().setHeaderData(section, orientation, value,
+				role);
+	}
+
+	public Object getHeaderData(int section, Orientation orientation, int role) {
+		if (orientation == Orientation.Vertical) {
+			section = this.mapToSource(this.getIndex(section, 0)).getRow();
+		}
+		return this.getSourceModel().getHeaderData(section, orientation, role);
+	}
+
 	public void sort(int column, SortOrder order) {
 		this.sortKeyColumn_ = column;
 		this.sortOrder_ = order;
@@ -515,7 +531,7 @@ public class WSortFilterProxyModel extends WAbstractProxyModel {
 
 	private void sourceColumnsAboutToBeInserted(WModelIndex parent, int start,
 			int end) {
-		this.beginInsertColumns(parent, start, end);
+		this.beginInsertColumns(this.mapFromSource(parent), start, end);
 	}
 
 	private void sourceColumnsInserted(WModelIndex parent, int start, int end) {
@@ -524,7 +540,7 @@ public class WSortFilterProxyModel extends WAbstractProxyModel {
 
 	private void sourceColumnsAboutToBeRemoved(WModelIndex parent, int start,
 			int end) {
-		this.beginRemoveColumns(parent, start, end);
+		this.beginRemoveColumns(this.mapFromSource(parent), start, end);
 	}
 
 	private void sourceColumnsRemoved(WModelIndex parent, int start, int end) {

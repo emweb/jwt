@@ -93,6 +93,13 @@ public class WEnvironment {
 	}
 
 	/**
+	 * Wt&apos;s JavaScript scope.
+	 */
+	public static String getJavaScriptWtScope() {
+		return "Wt3_1_0";
+	}
+
+	/**
 	 * Parameters passed to the application.
 	 * <p>
 	 * Arguments passed to the application, either in the URL for a http GET, or
@@ -446,7 +453,7 @@ public class WEnvironment {
 	 * Example: <code>&quot;1.99.2&quot;</code>
 	 */
 	public static String getLibraryVersion() {
-		return "3.0.0";
+		return "3.1.0";
 	}
 
 	// public void libraryVersion(bad java simple ref int series, bad java
@@ -787,6 +794,4 @@ public class WEnvironment {
 		}
 		return false;
 	}
-
-	static String wt_class = "Wt3_0_0";
 }

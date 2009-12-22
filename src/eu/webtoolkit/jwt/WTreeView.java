@@ -68,6 +68,31 @@ import eu.webtoolkit.jwt.utils.EnumUtils;
  * You may also react to mouse click events on any item, by connecting to one of
  * the {@link WTreeView#clicked() clicked()} or
  * {@link WTreeView#doubleClicked() doubleClicked()} signals.
+ * <p>
+ * <h3>CSS</h3>
+ * <p>
+ * You may customize the look of a treeview using the <code>Wt-treeview</code>
+ * CSS class.
+ * <p>
+ * The following rules may be used to style the header: <div
+ * class="fragment"><pre class="fragment"> .Wt-treeview .Wt-headerdiv : header
+ * (background) .Wt-treeview .Wt-header .Wt-label : header label .Wt-treeview
+ * .Wt-tv-rh : column resize handle .Wt-treeview .Wt-tv-sh-none : column sort
+ * handle, no sorting .Wt-treeview .Wt-tv-sh-up : column sort handle, sort up
+ * .Wt-treeview .Wt-tv-sh-down : column sort handle, sort down </pre></div> The
+ * following rules may be used to style the tree decoration: <div
+ * class="fragment"><pre class="fragment"> .Wt-treeview .Wt-trunk : vertical
+ * line, trunk .Wt-treeview .Wt-end : vertical line, last item .Wt-treeview
+ * .Wt-collapse : collapse icon .Wt-treeview .Wt-expand : expand icon
+ * .Wt-treeview .Wt-noexpand : leaf icon </pre></div> The following rules may be
+ * used to style the table contents: <div class="fragment"><pre
+ * class="fragment"> .Wt-treeview .Wt-spacer : spacer for non-loaded content
+ * .Wt-treeview .Wt-selected : selected item .Wt-treeview .Wt-drop-site :
+ * possible drop site </pre></div> The following rules may be used to style the
+ * cell border (which must be 1 pixel wide) <div class="fragment"><pre
+ * class="fragment"> .Wt-treeview .Wt-tv-row .Wt-tv-c : border-right property of
+ * cells .Wt-treeview .Wt-header .Wt-tv-row, .Wt-treeview .Wt-tv-node .Wt-tv-row
+ * : border-left property of cells </pre></div>
  */
 public class WTreeView extends WCompositeWidget {
 	/**
@@ -81,11 +106,10 @@ public class WTreeView extends WCompositeWidget {
 				(WAbstractItemModel) null, this);
 		this.rootIndex_ = null;
 		this.rowHeight_ = new WLength(20);
-		this.headerHeight_ = new WLength(20);
+		this.headerLineHeight_ = new WLength(20);
 		this.expandedSet_ = new TreeSet<WModelIndex>();
 		this.renderedNodes_ = new HashMap<WModelIndex, WTreeViewNode>();
 		this.rootNode_ = null;
-		this.imagePack_ = "";
 		this.borderColorRule_ = null;
 		this.alternatingRowColors_ = false;
 		this.rootIsDecorated_ = true;
@@ -134,6 +158,20 @@ public class WTreeView extends WCompositeWidget {
 						WTreeView.this.toggleSortColumn(e1);
 					}
 				});
+		this.clickedForCollapseMapper_ = new WSignalMapper1<Integer>(this);
+		this.clickedForCollapseMapper_.mapped().addListener(this,
+				new Signal1.Listener<Integer>() {
+					public void trigger(Integer e1) {
+						WTreeView.this.collapseColumn(e1);
+					}
+				});
+		this.clickedForExpandMapper_ = new WSignalMapper1<Integer>(this);
+		this.clickedForExpandMapper_.mapped().addListener(this,
+				new Signal1.Listener<Integer>() {
+					public void trigger(Integer e1) {
+						WTreeView.this.expandColumn(e1);
+					}
+				});
 		if (!app.getEnvironment().hasAjax()) {
 			this.clickedMapper_ = new WSignalMapper1<WModelIndex>(this);
 			this.clickedMapper_.mapped().addListener(this,
@@ -155,48 +193,34 @@ public class WTreeView extends WCompositeWidget {
 							}
 						});
 		this.setStyleClass("Wt-treeview");
-		this.imagePack_ = WApplication.getResourcesUrl();
 		String CSS_RULES_NAME = "Wt::WTreeView";
+		this.expandConfig_ = new ToggleButtonConfig(this);
+		this.expandConfig_.addState("Wt-expand");
+		this.expandConfig_.addState("Wt-collapse");
+		this.expandConfig_.generate();
 		if (!app.getStyleSheet().isDefined(CSS_RULES_NAME)) {
 			app
 					.getStyleSheet()
 					.addRule(
-							".Wt-treeview",
-							"font-family: verdana,helvetica,tahoma,sans-serif;font-size: 10pt;cursor: default;",
+							".Wt-treeview .Wt-headerdiv",
+							"-moz-user-select: none;-khtml-user-select: none;user-select: none;background-color: #EEEEEE;overflow: hidden;width: 100%;",
 							CSS_RULES_NAME);
-			app.getStyleSheet().addRule(".Wt-treeview .spacer",
-					"background: url(" + this.imagePack_ + "loading.png);");
-			app
-					.getStyleSheet()
-					.addRule(
-							".Wt-treeview .header-div",
-							"-moz-user-select: none;-khtml-user-select: none;user-select: none;background-color: #EEEEEE;overflow: hidden;width: 100%;");
-			app
-					.getStyleSheet()
-					.addRule(
-							".Wt-treeview .header .Wt-label",
-							""
-									+ "white-space: normal;font-weight: bold;text-overflow: ellipsis;"
-									+ (app.getEnvironment().agentIsIE() ? "zoom: 1;"
-											: "") + "overflow: hidden;");
-			app.getStyleSheet().addRule(
-					".Wt-treeview .Wt-trunk",
-					"background: url(" + this.imagePack_
-							+ "line-trunk.gif) repeat-y;");
-			app.getStyleSheet().addRule(
-					".Wt-treeview .Wt-end",
-					"background: url(" + this.imagePack_
-							+ "tv-line-last.gif) no-repeat 0 center;");
+			if (app.getEnvironment().agentIsIE()) {
+				app.getStyleSheet().addRule(
+						".Wt-treeview .Wt-header .Wt-label", "zoom: 1;");
+			}
 			app.getStyleSheet().addRule(".Wt-treeview table", "width: 100%");
-			app.getStyleSheet().addRule(".Wt-treeview td.c1", "width: 100%");
-			app.getStyleSheet().addRule(".Wt-treeview td.c0",
-					"width: 1px; vertical-align: middle");
+			app.getStyleSheet().addRule(".Wt-treeview .c1", "width: 100%");
+			app.getStyleSheet().addRule(".Wt-treeview .c1div",
+					"overflow: hidden; width: 100%");
+			app.getStyleSheet().addRule(".Wt-treeview .c0",
+					"width: 19px; vertical-align: middle");
 			app.getStyleSheet().addRule(".Wt-treeview .Wt-tv-row",
 					"float: right; overflow: hidden;");
 			app
 					.getStyleSheet()
 					.addRule(
-							".Wt-treeview .Wt-tv-c",
+							".Wt-treeview .Wt-tv-row .Wt-tv-c",
 							"display: block; float: left;padding: 0px 3px;text-overflow: ellipsis;overflow: hidden;white-space: nowrap;");
 			app.getStyleSheet().addRule(
 					".Wt-treeview img.icon, .Wt-treeview input.icon",
@@ -213,11 +237,11 @@ public class WTreeView extends WCompositeWidget {
 					.addRule(".Wt-treeview div.Wt-tv-rh",
 							"float: right; width: 4px; cursor: col-resize;padding-left: 0px;");
 			if (app.getEnvironment().agentIsIE()) {
-				app.getStyleSheet().addRule(".Wt-treeview .header .Wt-tv-c",
-						"padding: 0px;padding-left: 6px;");
+				app.getStyleSheet().addRule(".Wt-treeview .Wt-header .Wt-tv-c",
+						"padding: 0px;padding-left: 7px;");
 			} else {
-				app.getStyleSheet().addRule(".Wt-treeview .header .Wt-tv-c",
-						"padding: 0px;margin-left: 6px;");
+				app.getStyleSheet().addRule(".Wt-treeview .Wt-header .Wt-tv-c",
+						"padding: 0px;margin-left: 7px;");
 			}
 			app.getStyleSheet().addRule(".Wt-treeview .Wt-tv-rh:hover",
 					"background-color: #DDDDDD;");
@@ -232,47 +256,64 @@ public class WTreeView extends WCompositeWidget {
 					.addRule(
 							".Wt-treeview .Wt-tv-sh-nrh",
 							"float: right; width: 16px; margin-top: 6px; margin-right: 4px; cursor: pointer; cursor:hand;");
-			app.getStyleSheet().addRule(".Wt-treeview .Wt-tv-shc0",
-					"float: left;");
-			app.getStyleSheet().addRule(".Wt-treeview .selected",
-					"background-color: #FFFFAA;");
-			app.getStyleSheet().addRule(".Wt-treeview .drop-site",
-					"background-color: #EEEEEE;outline: 1px dotted black;");
-			app.getStyleSheet().addRule(".Wt-treeview .Wt-tv-row .Wt-tv-c",
-					"border-right: 1px solid;");
+			app
+					.getStyleSheet()
+					.addRule(
+							".Wt-treeview .Wt-tv-br, .Wt-treeview .Wt-tv-node .Wt-tv-row .Wt-tv-c",
+							"border-right: 1px solid #FFFFFF;");
 			app
 					.getStyleSheet()
 					.addRule(
 							".Wt-treeview .header .Wt-tv-row, .Wt-treeview .Wt-tv-node .Wt-tv-row",
-							"border-left: 1px solid;");
-			this.setColumnBorder(WColor.white);
+							"border-left: 1px solid #FFFFFF;");
+			app
+					.getStyleSheet()
+					.addRule(
+							".Wt-treeview .Wt-tv-sh",
+							""
+									+ "float: right; width: 16px; height: 10px;"
+									+ (app.getEnvironment().getAgent() != WEnvironment.UserAgent.IE6 ? "margin-top: 6px;"
+											: "")
+									+ "cursor: pointer; cursor:hand;");
+			app
+					.getStyleSheet()
+					.addRule(
+							".Wt-treeview .Wt-tv-sh-nrh",
+							""
+									+ "float: right; width: 16px; height: 10px;"
+									+ (app.getEnvironment().getAgent() != WEnvironment.UserAgent.IE6 ? "margin-top: 6px;"
+											: "")
+									+ "margin-right: 4px;cursor: pointer; cursor:hand;");
+			app.getStyleSheet().addRule(".Wt-treeview .Wt-tv-shc0",
+					"float: left;");
 			if (app.getEnvironment().agentIsWebKit()
 					|| app.getEnvironment().agentIsOpera()) {
 				app.getStyleSheet().addRule(".Wt-treeview .Wt-tv-rowc",
 						"position: relative;");
 			}
 			if (app.getEnvironment().agentIsIE()) {
-				app
-						.getStyleSheet()
-						.addRule(".Wt-treeview .Wt-scroll",
-								"position: absolute; overflow-x: scroll; height: 19px;");
+				app.getStyleSheet().addRule(".Wt-treeview .Wt-scroll",
+						"position: absolute; overflow-x: scroll;height: 19px;");
 			} else {
 				app.getStyleSheet().addRule(".Wt-treeview .Wt-scroll",
-						"overflow: scroll; height: 19px;");
+						"overflow: scroll;height: 19px;");
 			}
 			app.getStyleSheet().addRule(".Wt-treeview .Wt-scroll div",
 					"height: 1px;");
 		}
+		this.setColumnBorder(WColor.white);
 		app.getStyleSheet().addRule("#" + this.getId() + " .cwidth",
 				"height: 1px;");
+		app.getStyleSheet()
+				.addRule(
+						"#" + this.getId() + "dw",
+						"width: 32px; height: 32px;background: url("
+								+ WApplication.getResourcesUrl()
+								+ "items-not-ok.gif);");
 		app.getStyleSheet().addRule(
-				"#" + this.getId() + "dw",
-				"width: 32px; height: 32px;background: url(" + this.imagePack_
-						+ "items-not-ok.gif);");
-		app.getStyleSheet().addRule(
-				"#" + this.getId() + "dw.valid-drop",
-				"width: 32px; height: 32px;background: url(" + this.imagePack_
-						+ "items-ok.gif);");
+				"#" + this.getId() + "dw.Wt-valid-drop",
+				"width: 32px; height: 32px;background: url("
+						+ WApplication.getResourcesUrl() + "items-ok.gif);");
 		this.rowHeightRule_ = new WCssTemplateRule("#" + this.getId() + " .rh");
 		app.getStyleSheet().addRule(this.rowHeightRule_);
 		this.rowWidthRule_ = new WCssTemplateRule("#" + this.getId()
@@ -295,14 +336,14 @@ public class WTreeView extends WCompositeWidget {
 		layout.addWidget(this.headerContainer_ = new WContainerWidget());
 		this.headerContainer_
 				.setOverflow(WContainerWidget.Overflow.OverflowHidden);
-		this.headerContainer_.setStyleClass("header headerrh cwidth");
+		this.headerContainer_.setStyleClass("Wt-header headerrh cwidth");
 		this.headers_ = new WContainerWidget(this.headerContainer_);
-		this.headers_.setStyleClass("header-div headerrh");
+		this.headers_.setStyleClass("Wt-headerdiv headerrh");
 		this.headers_.setSelectable(false);
 		this.headerHeightRule_ = new WCssTemplateRule("#" + this.getId()
 				+ " .headerrh");
 		app.getStyleSheet().addRule(this.headerHeightRule_);
-		this.setHeaderHeight(this.headerHeight_);
+		this.setHeaderHeight(this.headerLineHeight_);
 		this.contentsContainer_ = new WContainerWidget();
 		this.contentsContainer_.setStyleClass("cwidth");
 		this.contentsContainer_
@@ -331,7 +372,7 @@ public class WTreeView extends WCompositeWidget {
 		app
 				.declareJavaScriptFunction(
 						"getItem",
-						"function(event) {var columnId = -1, nodeId = null, selected = false, drop = false, el = null;var t = event.target || event.srcElement;while (t) {if (t.className.indexOf('c1 rh') == 0) {if (columnId == -1)columnId = 0;} else if (t.className.indexOf('Wt-tv-c') == 0) {if (t.className.indexOf('Wt-tv-c rh Wt-tv-c') == 0)columnId = t.className.split(' ')[2].substring(7) * 1;else if (columnId == -1)columnId = 0;if (t.getAttribute('drop') === 'true')drop = true;el = t;} else if (t.className == 'Wt-tv-node') {nodeId = t.id;break;}if (t.className === 'selected')selected = true;t = t.parentNode;if (Wt3_0_0.hasTag(t, 'BODY'))break;}return { columnId: columnId, nodeId: nodeId, selected: selected, drop: drop, el: el };}");
+						"function(event) {var columnId = -1, nodeId = null, selected = false, drop = false, el = null;var t = event.target || event.srcElement;while (t) {if (t.className.indexOf('c1 rh') == 0) {if (columnId == -1)columnId = 0;} else if (t.className.indexOf('Wt-tv-c') == 0) {if (t.className.indexOf('Wt-tv-c rh Wt-tv-c') == 0)columnId = t.className.split(' ')[2].substring(7) * 1;else if (columnId == -1)columnId = 0;if (t.getAttribute('drop') === 'true')drop = true;el = t;} else if (t.className == 'Wt-tv-node') {nodeId = t.id;break;}if (t.className === 'Wt-selected')selected = true;t = t.parentNode;if (Wt3_1_0.hasTag(t, 'BODY'))break;}return { columnId: columnId, nodeId: nodeId, selected: selected, drop: drop, el: el };}");
 		this.itemClickedJS_.setJavaScript("function(obj, event) {var item="
 				+ app.getJavaScriptClass()
 				+ ".getItem(event);if (item.columnId != -1) {"
@@ -357,19 +398,19 @@ public class WTreeView extends WCompositeWidget {
 								"''", "''")
 						+ ";if (tv.getAttribute('drag') === 'true' && item.selected)APP._p_.dragStart(tv, event);}}");
 		this.resizeHandleMDownJS_
-				.setJavaScript("function(obj, event) {var pc = Wt3_0_0.pageCoordinates(event);obj.setAttribute('dsx', pc.x);}");
+				.setJavaScript("function(obj, event) {var pc = Wt3_1_0.pageCoordinates(event);obj.setAttribute('dsx', pc.x);}");
 		this.resizeHandleMMovedJS_
-				.setJavaScript("function(obj, event) {var WT = Wt3_0_0,lastx = obj.getAttribute('dsx'),t = "
+				.setJavaScript("function(obj, event) {var WT = Wt3_1_0,lastx = obj.getAttribute('dsx'),t = "
 						+ this.contents_.getJsRef()
 						+ ".firstChild,h="
 						+ this.headers_.getJsRef()
-						+ ",hh=h.firstChild;if (lastx != null && lastx != '') {nowxy = WT.pageCoordinates(event);var parent = obj.parentNode,diffx = Math.max(nowxy.x - lastx, -parent.offsetWidth),c = parent.className.split(' ')[2];if (c) {var r = WT.getCssRule('#"
+						+ ",hh=h.firstChild;if (lastx != null && lastx != '') {nowxy = WT.pageCoordinates(event);var parent = obj.parentNode.parentNode,diffx = Math.max(nowxy.x - lastx, -parent.offsetWidth),c = parent.className.split(' ')[2];if (c == 'unselectable')c = null;if (c) {var r = WT.getCssRule('#"
 						+ this.getId()
-						+ " .' + c),tw = WT.pxself(r, 'width');if (tw == 0) tw = parent.offsetWidth;r.style.width = (tw + diffx) + 'px';}"
+						+ " .' + c),tw = WT.pxself(r, 'width');if (tw == 0) tw = parent.offsetWidth;r.style.width = Math.max(0, tw + diffx) + 'px';}"
 						+ this.getJsRef()
 						+ ".adjustHeaderWidth(c, diffx);obj.setAttribute('dsx', nowxy.x);WT.cancelEvent(event);  }}");
 		this.resizeHandleMUpJS_
-				.setJavaScript("function(obj, event) {obj.removeAttribute('dsx');Wt3_0_0.cancelEvent(event);}");
+				.setJavaScript("function(obj, event) {obj.removeAttribute('dsx');Wt3_1_0.cancelEvent(event);}");
 		this.tieContentsHeaderScrollJS_
 				.setJavaScript("function(obj, event) {"
 						+ this.headerContainer_.getJsRef()
@@ -381,12 +422,12 @@ public class WTreeView extends WCompositeWidget {
 		if (app.getEnvironment().agentIsWebKit()
 				|| app.getEnvironment().agentIsOpera()) {
 			this.tieRowsScrollJS_
-					.setJavaScript("function(obj, event) {Wt3_0_0.getCssRule('#"
+					.setJavaScript("function(obj, event) {Wt3_1_0.getCssRule('#"
 							+ this.getId()
 							+ " .Wt-tv-rowc').style.left= -obj.scrollLeft + 'px';}");
 		} else {
 			this.tieRowsScrollJS_
-					.setJavaScript("function(obj, event) {var c =Wt3_0_0.getElementsByClassName('Wt-tv-rowc', "
+					.setJavaScript("function(obj, event) {var c =Wt3_1_0.getElementsByClassName('Wt-tv-rowc', "
 							+ this.getJsRef()
 							+ ");for (var i = 0, length = c.length; i < length; ++i) {var cc=c[i];if (cc.parentNode.scrollLeft != obj.scrollLeft)cc.parentNode.scrollLeft=obj.scrollLeft;}}");
 		}
@@ -395,7 +436,7 @@ public class WTreeView extends WCompositeWidget {
 						+ this.contentsContainer_.getJsRef()
 						+ ";var s="
 						+ this.getJsRef()
-						+ ";var WT=Wt3_0_0;if (e) {var tw=s.offsetWidth-WT.px(s, 'borderLeftWidth')-WT.px(s, 'borderRightWidth'),vscroll=e.scrollHeight > e.offsetHeight;c0w = null;if (s.className.indexOf('column1') != -1)  c0w = WT.pxself(WT.getCssRule('#"
+						+ ";var WT=Wt3_1_0;if (e) {var tw=s.offsetWidth-WT.px(s, 'borderLeftWidth')-WT.px(s, 'borderRightWidth'),vscroll=e.scrollHeight > e.offsetHeight;c0w = null;if (s.className.indexOf('column1') != -1)  c0w = WT.pxself(WT.getCssRule('#"
 						+ this.getId()
 						+ " .c0w'), 'width');if (tw > 200 && (tw != e.tw || vscroll != e.vscroll || c0w != e.c0w)) {e.vscroll = vscroll;e.tw = tw;e.c0w = c0w;var h= "
 						+ this.headers_.getJsRef()
@@ -405,7 +446,7 @@ public class WTreeView extends WCompositeWidget {
 						+ this.getId()
 						+ " .cwidth'),contentstoo=(r.style.width == h.style.width);r.style.width=(tw - (vscroll ? 19 : 0)) + 'px';e.style.width=tw + 'px';h.style.width=t.offsetWidth + 'px';if (c0w != null) {var hh=h.firstChild,w=tw - c0w - (vscroll ? 19 : 0);if (w > 0) {WT.getCssRule('#"
 						+ this.getId()
-						+ " .Wt-tv-row').style.width = w + 'px';var extra = hh.childNodes.length > 1? (WT.hasTag(hh.childNodes[1], 'IMG') ? 22 : 7) : 0;hh.style.width= (w + extra) + 'px';}} else if (contentstoo) {h.style.width=r.style.width;t.style.width=r.style.width;}if (s.adjustHeaderWidth)s.adjustHeaderWidth(1, 0);}}}");
+						+ " .Wt-tv-row').style.width = w + 'px';var extra = hh.childNodes.length > 1? (hh.childNodes[1].className.indexOf('Wt-tv-sh') != -1 ? 22 : 7) : 0;hh.style.width= (w + extra) + 'px';}} else if (contentstoo) {h.style.width=r.style.width;t.style.width=r.style.width;}if (s.adjustHeaderWidth)s.adjustHeaderWidth(1, 0);}}}");
 		if (parent != null) {
 			parent.addWidget(this);
 		}
@@ -425,6 +466,7 @@ public class WTreeView extends WCompositeWidget {
 	 * Destructor.
 	 */
 	public void remove() {
+		;
 		this.impl_.clear();
 		if (this.rowHeightRule_ != null)
 			this.rowHeightRule_.remove();
@@ -550,6 +592,7 @@ public class WTreeView extends WCompositeWidget {
 		}
 		this.configureModelDragDrop();
 		this.scheduleRerender(WTreeView.RenderState.NeedRerender);
+		this.setHeaderHeight(this.headerLineHeight_, this.multiLineHeader_);
 	}
 
 	/**
@@ -604,20 +647,23 @@ public class WTreeView extends WCompositeWidget {
 	 * The default value is 20 pixels.
 	 */
 	public void setHeaderHeight(WLength height, boolean multiLine) {
-		this.headerHeight_ = height;
+		this.headerLineHeight_ = height;
 		this.multiLineHeader_ = multiLine;
+		int lineCount = this.getHeaderLevelCount();
+		WLength headerHeight = WLength.multiply(this.headerLineHeight_,
+				lineCount);
 		this.headerHeightRule_.getTemplateWidget().resize(WLength.Auto,
-				this.headerHeight_);
+				headerHeight);
 		if (!this.multiLineHeader_) {
 			this.headerHeightRule_.getTemplateWidget().setLineHeight(
-					this.headerHeight_);
+					this.headerLineHeight_);
 		} else {
 			this.headerHeightRule_.getTemplateWidget().setLineHeight(
 					WLength.Auto);
 		}
-		this.headers_.resize(this.headers_.getWidth(), this.headerHeight_);
+		this.headers_.resize(this.headers_.getWidth(), headerHeight);
 		this.headerContainer_.resize(this.headerContainer_.getWidth(),
-				this.headerHeight_);
+				headerHeight);
 		if (this.renderState_.getValue() >= WTreeView.RenderState.NeedRerenderHeader
 				.getValue()) {
 			return;
@@ -646,7 +692,7 @@ public class WTreeView extends WCompositeWidget {
 	 * @see WTreeView#setHeaderHeight(WLength height, boolean multiLine)
 	 */
 	public WLength getHeaderHeight() {
-		return this.headerHeight_;
+		return this.headerLineHeight_;
 	}
 
 	/**
@@ -766,6 +812,8 @@ public class WTreeView extends WCompositeWidget {
 			case AlignJustify:
 				align = "justify";
 				break;
+			default:
+				break;
 			}
 			if (align != null) {
 				w.setAttributeValue("style", "text-align: " + align);
@@ -831,36 +879,10 @@ public class WTreeView extends WCompositeWidget {
 		if (this.borderColorRule_ != null)
 			this.borderColorRule_.remove();
 		this.borderColorRule_ = new WCssTextRule(
-				".Wt-treeview .Wt-tv-row .Wt-tv-c, .Wt-treeview .header .Wt-tv-row, .Wt-treeview .Wt-tv-node .Wt-tv-row",
+				".Wt-treeview .Wt-tv-br, .Wt-treeview .header .Wt-tv-row, .Wt-treeview .Wt-tv-node .Wt-tv-row .Wt-tv-c, .Wt-treeview .Wt-tv-node .Wt-tv-row",
 				"border-color: " + color.getCssText());
 		WApplication.getInstance().getStyleSheet().addRule(
 				this.borderColorRule_);
-	}
-
-	/**
-	 * Setss the base urls for icons.
-	 * <p>
-	 * This widget relies on several icons that are distributed together with
-	 * JWt for drawing icons, lines, and backgrounds.
-	 * <p>
-	 * The default location for the image pack is <code>resourcesURL</code>.
-	 * <p>
-	 * The default value for <code>resourcesURL</code> is
-	 * &quot;resources/&quot;. This value may be overridden with a URL that
-	 * points to a folder where these files are located, by configuring the
-	 * <code>resourcesURL</code> property in your JWt configuration file.
-	 */
-	public void setImagePack(String uri) {
-	}
-
-	/**
-	 * Returns the base url for icons.
-	 * <p>
-	 * 
-	 * @see WTreeView#setImagePack(String uri)
-	 */
-	public String getImagePack() {
-		return this.imagePack_;
 	}
 
 	/**
@@ -962,15 +984,14 @@ public class WTreeView extends WCompositeWidget {
 	 * <p>
 	 * <strong>Sample image use for alternating row colors</strong>
 	 * </p>
-	 * </div> The image that is used is {@link WTreeView#getImagePack()
-	 * getImagePack()} + &quot;/stripes/stripe-&lt;i&gt;n&lt;/i&gt;px.gif&quot;,
-	 * where <code>n</code> is the row height. In the resource folder are images
-	 * pregenerated for one color and row sizes from 10 to 30px.
+	 * </div> The image that is used is
+	 * <i>resourcesURL</i>&quot;/stripes/stripe-
+	 * &lt;i&gt;n&lt;/i&gt;px.gif&quot;, where <code>n</code> is the row height.
+	 * In the resource folder are images pregenerated for one color and row
+	 * sizes from 10 to 30px.
 	 * <p>
 	 * The default value is <code>false</code>.
 	 * <p>
-	 * 
-	 * @see WTreeView#setImagePack(String uri)
 	 */
 	public void setAlternatingRowColors(boolean enable) {
 		if (this.alternatingRowColors_ != enable) {
@@ -1023,18 +1044,15 @@ public class WTreeView extends WCompositeWidget {
 	 */
 	public void sortByColumn(int column, SortOrder order) {
 		if (this.currentSortColumn_ != -1) {
-			this.headerSortIconWidget(this.currentSortColumn_).setImageRef(
-					this.imagePack_ + "sort-arrow-none.gif");
+			this.headerSortIconWidget(this.currentSortColumn_).setStyleClass(
+					"Wt-tv-sh Wt-tv-sh-none");
 		}
 		this.currentSortColumn_ = column;
 		this.columnInfo(column).sortOrder = order;
 		if (this.renderState_ != WTreeView.RenderState.NeedRerender) {
-			this
-					.headerSortIconWidget(this.currentSortColumn_)
-					.setImageRef(
-							this.imagePack_
-									+ (order == SortOrder.AscendingOrder ? "sort-arrow-up.gif"
-											: "sort-arrow-down.gif"));
+			this.headerSortIconWidget(this.currentSortColumn_).setStyleClass(
+					order == SortOrder.AscendingOrder ? "Wt-tv-sh Wt-tv-sh-up"
+							: "Wt-tv-sh Wt-tv-sh-down");
 		}
 		this.model_.sort(column, order);
 	}
@@ -1515,7 +1533,7 @@ public class WTreeView extends WCompositeWidget {
 		this.needDefineJS_ = false;
 		WApplication app = WApplication.getInstance();
 		String columnsWidth = ""
-				+ "var WT=Wt3_0_0,t="
+				+ "var WT=Wt3_1_0,t="
 				+ this.contents_.getJsRef()
 				+ ".firstChild,h="
 				+ this.headers_.getJsRef()
@@ -1523,18 +1541,18 @@ public class WTreeView extends WCompositeWidget {
 				+ (this.column1Fixed_ ? ".firstChild" : "")
 				+ ",totalw=0,extra="
 				+ (this.column1Fixed_ ? "1" : "4")
-				+ "+ (hh.childNodes.length > 1? (WT.hasTag(hh.childNodes[1], 'IMG') ? 18 : 7): 0);if("
+				+ "+ (hh.childNodes.length > 1? (hh.childNodes[1].className.indexOf('Wt-tv-sh') != -1 ? 18 : 7): 0);if("
 				+ this.getJsRef()
 				+ ".offsetWidth == 0) return;for (var i=0, length=hc.childNodes.length; i < length; ++i) {if (hc.childNodes[i].className) {var cl = hc.childNodes[i].className.split(' ')[2],r = WT.getCssRule('#"
 				+ this.getId()
-				+ " .' + cl);totalw += WT.pxself(r, 'width') + 7;}}var cw = WT.pxself(hh, 'width'),hdiff = c ? (cw == 0 ? 0 : (totalw - (cw - extra))) : diffx;";
+				+ " .' + cl);totalw += WT.pxself(r, 'width') + 7;}}var cw = WT.pxself(hh, 'width'),hdiff = c ? (cw == 0 ? 0 : (totalw - (cw - extra))) : diffx;\n";
 		if (!this.column1Fixed_) {
 			columnsWidth += "t.style.width = (t.offsetWidth + hdiff) + 'px';h.style.width = t.offsetWidth + 'px';hh.style.width = (totalw + extra) + 'px';";
 		} else {
 			columnsWidth += "var r = WT.getCssRule('#"
 					+ this.getId()
 					+ " '+ (c ? '.Wt-tv-rowc' : '.c0w'));totalw += 'px';if (c) {r.style.width = totalw;"
-					+ (app.getEnvironment().agentIsIE() ? "var c =Wt3_0_0.getElementsByClassName('Wt-tv-rowc', "
+					+ (app.getEnvironment().agentIsIE() ? "var c =Wt3_1_0.getElementsByClassName('Wt-tv-rowc', "
 							+ this.getJsRef()
 							+ ");for (var i = 0, length = c.length; i < length; ++i) {var cc=c[i];cc.style.width = totalw;}"
 							: "")
@@ -1555,7 +1573,7 @@ public class WTreeView extends WCompositeWidget {
 						+ this.itemEvent_.createCall("item.nodeId",
 								"item.columnId", "'drop'", "sourceId",
 								"mimeType")
-						+ ";} else {object.className = 'valid-drop';self.dropEl = item.el;self.dropEl.classNameOrig = self.dropEl.className;self.dropEl.className = self.dropEl.className + ' drop-site';}} else {object.className = '';}};");
+						+ ";} else {object.className = 'Wt-valid-drop';self.dropEl = item.el;self.dropEl.classNameOrig = self.dropEl.className;self.dropEl.className = self.dropEl.className + ' Wt-drop-site';}} else {object.className = '';}};");
 	}
 
 	/**
@@ -1709,11 +1727,10 @@ public class WTreeView extends WCompositeWidget {
 	private WItemSelectionModel selectionModel_;
 	private WModelIndex rootIndex_;
 	private WLength rowHeight_;
-	private WLength headerHeight_;
+	private WLength headerLineHeight_;
 	SortedSet<WModelIndex> expandedSet_;
-	private Map<WModelIndex, WTreeViewNode> renderedNodes_;
+	private HashMap<WModelIndex, WTreeViewNode> renderedNodes_;
 	private WTreeViewNode rootNode_;
-	private String imagePack_;
 	private WCssTemplateRule rowHeightRule_;
 	private WCssTemplateRule headerHeightRule_;
 	private WCssTemplateRule rowWidthRule_;
@@ -1740,6 +1757,8 @@ public class WTreeView extends WCompositeWidget {
 	private Signal selectionChanged_;
 	private WSignalMapper1<Integer> clickedForSortMapper_;
 	WSignalMapper1<WModelIndex> clickedMapper_;
+	private WSignalMapper1<Integer> clickedForExpandMapper_;
+	private WSignalMapper1<Integer> clickedForCollapseMapper_;
 
 	enum RenderState {
 		RenderOk(0), NeedAdjustViewPort(1), NeedRerenderTree(2), NeedRerenderHeader(
@@ -1788,12 +1807,14 @@ public class WTreeView extends WCompositeWidget {
 	private boolean dragEnabled_;
 	private boolean dropsEnabled_;
 	private WWidget dragWidget_;
+	ToggleButtonConfig expandConfig_;
 
 	private void initLayoutJavaScript() {
 		this.refresh();
 	}
 
 	private void rerenderHeader() {
+		WApplication app = WApplication.getInstance();
 		for (int i = 0; i < this.getColumnCount(); ++i) {
 			WWidget w = this.columnInfo(i).extraHeaderWidget;
 			if (!(w != null)) {
@@ -1815,10 +1836,17 @@ public class WTreeView extends WCompositeWidget {
 			row.setStyleClass("Wt-tv-rowc");
 		}
 		if (this.columnInfo(0).sorting) {
-			WImage sortIcon = new WImage(rowc);
-			sortIcon.setStyleClass(this.columnResize_ ? "Wt-tv-sh Wt-tv-shc0"
-					: "Wt-tv-sh-nrh Wt-tv-shc0");
-			sortIcon.setImageRef(this.imagePack_ + "sort-arrow-none.gif");
+			WText sortIcon = new WText(rowc);
+			sortIcon.setObjectName("sort");
+			sortIcon.setInline(false);
+			if (!this.columnResize_) {
+				sortIcon.setMargin(new WLength(4), EnumSet.of(Side.Right));
+			}
+			if (!app.getEnvironment().agentIsIE()) {
+				sortIcon.setMargin(new WLength(6), EnumSet.of(Side.Top));
+			}
+			sortIcon.setFloatSide(Side.Left);
+			sortIcon.setStyleClass("Wt-tv-sh Wt-tv-sh-none");
 			this.clickedForSortMapper_.mapConnect(sortIcon.clicked(), 0);
 		}
 		if (this.columnResize_) {
@@ -1828,12 +1856,12 @@ public class WTreeView extends WCompositeWidget {
 			resizeHandle.mouseWentUp().addListener(this.resizeHandleMUpJS_);
 			resizeHandle.mouseMoved().addListener(this.resizeHandleMMovedJS_);
 		}
-		WApplication app = WApplication.getInstance();
 		for (int i = 1; i < this.getColumnCount(); ++i) {
 			WWidget w = this.createHeaderWidget(app, i);
 			row.addWidget(w);
 		}
 		WText t = new WText("&nbsp;");
+		t.setObjectName("text");
 		if (this.getColumnCount() > 0) {
 			if (!this.multiLineHeader_) {
 				t.setStyleClass(this.getColumnStyleClass(0)
@@ -1855,12 +1883,9 @@ public class WTreeView extends WCompositeWidget {
 		}
 		if (this.currentSortColumn_ != -1) {
 			SortOrder order = this.columnInfo(this.currentSortColumn_).sortOrder;
-			this
-					.headerSortIconWidget(this.currentSortColumn_)
-					.setImageRef(
-							this.imagePack_
-									+ (order == SortOrder.AscendingOrder ? "sort-arrow-up.gif"
-											: "sort-arrow-down.gif"));
+			this.headerSortIconWidget(this.currentSortColumn_).setStyleClass(
+					order == SortOrder.AscendingOrder ? "Wt-tv-sh Wt-tv-sh-up"
+							: "Wt-tv-sh Wt-tv-sh-down");
 		}
 		if (this.model_ != null) {
 			this.modelHeaderDataChanged(Orientation.Horizontal, 0, this
@@ -1895,6 +1920,9 @@ public class WTreeView extends WCompositeWidget {
 	}
 
 	void scheduleRerender(WTreeView.RenderState what) {
+		if (!this.isRendered()) {
+			return;
+		}
 		if (what == WTreeView.RenderState.NeedRerenderHeader
 				&& this.renderState_ == WTreeView.RenderState.NeedRerenderTree
 				|| what == WTreeView.RenderState.NeedRerenderTree
@@ -1920,6 +1948,14 @@ public class WTreeView extends WCompositeWidget {
 					this
 							.scheduleRerender(WTreeView.RenderState.NeedRerenderHeader);
 				} else {
+					double newWidth = 0;
+					for (int i = start; i < start + count; ++i) {
+						newWidth += this.columns_.get(i).width.toPixels() + 7;
+					}
+					app.doJavaScript(this.getJsRef()
+							+ ".adjustHeaderWidth(null, "
+							+ (this.column1Fixed_ ? "1" : String
+									.valueOf(newWidth)) + ");");
 					WContainerWidget row = this.getHeaderRow();
 					for (int i = start; i < start + count; ++i) {
 						row
@@ -1955,6 +1991,24 @@ public class WTreeView extends WCompositeWidget {
 			int end) {
 		int count = end - start + 1;
 		if (!(parent != null)) {
+			if (this.renderState_.getValue() < WTreeView.RenderState.NeedRerenderHeader
+					.getValue()) {
+				WApplication app = WApplication.getInstance();
+				for (int i = start; i < start + count; ++i) {
+					String c = this.columns_.get(i).getStyleClass();
+					if (!this.column1Fixed_) {
+						app
+								.doJavaScript(this.getJsRef()
+										+ ".adjustHeaderWidth(null ,-WT.pxself(WT.getCssRule('#"
+										+ this.getId() + " ." + c
+										+ "'), 'width') - 7);");
+					}
+				}
+				if (this.column1Fixed_) {
+					app.doJavaScript(this.getJsRef()
+							+ ".adjustHeaderWidth(1, 0);");
+				}
+			}
 			for (int ii = 0; ii < (0 + start + count) - (0 + start); ++ii)
 				this.columns_.remove(0 + start);
 			;
@@ -1965,8 +2019,8 @@ public class WTreeView extends WCompositeWidget {
 							.scheduleRerender(WTreeView.RenderState.NeedRerenderHeader);
 				} else {
 					for (int i = start; i < start + count; ++i) {
-						if (this.headerWidget(start) != null)
-							this.headerWidget(start).remove();
+						if (this.headerWidget(start, false) != null)
+							this.headerWidget(start, false).remove();
 					}
 				}
 			}
@@ -2039,7 +2093,8 @@ public class WTreeView extends WCompositeWidget {
 											.getRenderUpperBound()), count);
 						} else {
 							int maxRenderHeight = this.firstRenderedRow_
-									+ this.validRowCount_
+									+ Math.max(this.validRowCount_,
+											this.viewportHeight_)
 									- parentNode.renderedRow()
 									- parentNode.getTopSpacerHeight();
 							int containerIndex = startWidget != null ? parentNode
@@ -2359,7 +2414,7 @@ public class WTreeView extends WCompositeWidget {
 		}
 		if (this.alternatingRowColors_) {
 			this.rootNode_.getDecorationStyle().setBackgroundImage(
-					this.imagePack_ + "stripes/stripe-"
+					WApplication.getResourcesUrl() + "stripes/stripe-"
 							+ String.valueOf((int) this.rowHeight_.toPixels())
 							+ "px.gif");
 		} else {
@@ -2389,6 +2444,18 @@ public class WTreeView extends WCompositeWidget {
 		if (selectionHasChanged) {
 			this.selectionChanged_.trigger();
 		}
+	}
+
+	private void expandColumn(int columnid) {
+		this.model_.expandColumn(this.columnById(columnid));
+		this.scheduleRerender(WTreeView.RenderState.NeedRerenderHeader);
+		this.setHeaderHeight(this.headerLineHeight_, this.multiLineHeader_);
+	}
+
+	private void collapseColumn(int columnid) {
+		this.model_.collapseColumn(this.columnById(columnid));
+		this.scheduleRerender(WTreeView.RenderState.NeedRerenderHeader);
+		this.setHeaderHeight(this.headerLineHeight_, this.multiLineHeader_);
 	}
 
 	private int getCalcOptimalFirstRenderedRow() {
@@ -2878,25 +2945,66 @@ public class WTreeView extends WCompositeWidget {
 	}
 
 	private WWidget createHeaderWidget(WApplication app, int column) {
+		int headerLevel = this.model_ != null ? (int) StringUtils
+				.asNumber(this.model_.getHeaderData(column,
+						Orientation.Horizontal, ItemDataRole.LevelRole)) : 0;
+		int rightBorderLevel = headerLevel;
+		if (this.model_ != null && column + 1 < this.getColumnCount()) {
+			EnumSet<HeaderFlag> flagsLeft = this.model_.getHeaderFlags(column);
+			EnumSet<HeaderFlag> flagsRight = this.model_
+					.getHeaderFlags(column + 1);
+			int rightHeaderLevel = (int) StringUtils.asNumber(this.model_
+					.getHeaderData(column + 1, Orientation.Horizontal,
+							ItemDataRole.LevelRole));
+			if (!EnumUtils.mask(flagsLeft, HeaderFlag.ColumnIsExpandedRight)
+					.isEmpty()) {
+				rightBorderLevel = headerLevel + 1;
+			} else {
+				if (!EnumUtils
+						.mask(flagsRight, HeaderFlag.ColumnIsExpandedLeft)
+						.isEmpty()) {
+					rightBorderLevel = rightHeaderLevel + 1;
+				} else {
+					rightBorderLevel = Math.min(headerLevel, rightHeaderLevel);
+				}
+			}
+		}
 		WTreeView.ColumnInfo info = this.columnInfo(column);
 		WContainerWidget w = new WContainerWidget();
-		w.setStyleClass("Wt-tv-c headerrh " + info.getStyleClass());
-		w.setContentAlignment(info.headerAlignment);
-		if (this.columnResize_) {
-			WContainerWidget resizeHandle = new WContainerWidget(w);
-			resizeHandle.setStyleClass("Wt-tv-rh headerrh");
-			resizeHandle.mouseWentDown().addListener(this.resizeHandleMDownJS_);
-			resizeHandle.mouseWentUp().addListener(this.resizeHandleMUpJS_);
-			resizeHandle.mouseMoved().addListener(this.resizeHandleMMovedJS_);
-		}
+		w.setObjectName("contents");
 		if (info.sorting) {
-			WImage sortIcon = new WImage(w);
-			sortIcon.setStyleClass(this.columnResize_ ? "Wt-tv-sh"
-					: "Wt-tv-sh-nrh");
-			sortIcon.setImageRef(this.imagePack_ + "sort-arrow-none.gif");
+			WText sortIcon = new WText(w);
+			sortIcon.setObjectName("sort");
+			sortIcon.setInline(false);
+			if (!this.columnResize_) {
+				sortIcon.setMargin(new WLength(4), EnumSet.of(Side.Right));
+			}
+			sortIcon.setStyleClass("Wt-tv-sh Wt-tv-sh-none");
 			this.clickedForSortMapper_.mapConnect(sortIcon.clicked(), info.id);
 		}
+		if (!EnumUtils.mask(
+				this.model_.getHeaderFlags(column),
+				EnumSet.of(HeaderFlag.ColumnIsExpandedLeft,
+						HeaderFlag.ColumnIsExpandedRight)).isEmpty()) {
+			WImage collapseIcon = new WImage(w);
+			collapseIcon.setFloatSide(Side.Left);
+			collapseIcon.setImageRef(WApplication.getResourcesUrl()
+					+ "minus.gif");
+			this.clickedForCollapseMapper_.mapConnect(collapseIcon.clicked(),
+					info.id);
+		} else {
+			if (!EnumUtils.mask(this.model_.getHeaderFlags(column),
+					HeaderFlag.ColumnIsCollapsed).isEmpty()) {
+				WImage expandIcon = new WImage(w);
+				expandIcon.setFloatSide(Side.Left);
+				expandIcon.setImageRef(WApplication.getResourcesUrl()
+						+ "plus.gif");
+				this.clickedForExpandMapper_.mapConnect(expandIcon.clicked(),
+						info.id);
+			}
+		}
 		WText t = new WText("&nbsp;", w);
+		t.setObjectName("text");
 		t.setStyleClass("Wt-label");
 		t.setInline(false);
 		if (this.multiLineHeader_ || app.getEnvironment().agentIsIE()) {
@@ -2904,37 +3012,85 @@ public class WTreeView extends WCompositeWidget {
 		} else {
 			t.setWordWrap(false);
 		}
-		if (this.columnInfo(column).extraHeaderWidget != null) {
-			w.addWidget(this.columnInfo(column).extraHeaderWidget);
+		WContainerWidget result = new WContainerWidget();
+		result.setFloatSide(Side.Left);
+		if (headerLevel != 0) {
+			WContainerWidget spacer = new WContainerWidget(result);
+			t = new WText(spacer);
+			t.setInline(false);
+			if (rightBorderLevel < headerLevel) {
+				if (rightBorderLevel != 0) {
+					t.setText(repeat(OneLine, rightBorderLevel));
+					spacer = new WContainerWidget(result);
+					t = new WText(spacer);
+					t.setInline(false);
+				}
+				t.setText(repeat(OneLine, headerLevel - rightBorderLevel));
+				spacer.setStyleClass("Wt-tv-br");
+			} else {
+				t.setText(repeat(OneLine, headerLevel));
+			}
 		}
-		return w;
+		w.setStyleClass(w.getStyleClass()
+				+ (rightBorderLevel <= headerLevel ? " Wt-tv-br" : ""));
+		result.addWidget(w);
+		result.setStyleClass("Wt-tv-c headerrh " + info.getStyleClass());
+		result.setContentAlignment(info.headerAlignment);
+		WWidget extraW = this.columnInfo(column).extraHeaderWidget;
+		if (extraW != null) {
+			result.addWidget(extraW);
+			extraW.setStyleClass(extraW.getStyleClass() + " Wt-tv-br");
+		}
+		if (this.columnResize_) {
+			WContainerWidget resizeHandle = new WContainerWidget();
+			resizeHandle.setStyleClass("Wt-tv-rh headerrh");
+			resizeHandle.mouseWentDown().addListener(this.resizeHandleMDownJS_);
+			resizeHandle.mouseWentUp().addListener(this.resizeHandleMUpJS_);
+			resizeHandle.mouseMoved().addListener(this.resizeHandleMMovedJS_);
+			boolean ie = WApplication.getInstance().getEnvironment()
+					.agentIsIE();
+			WContainerWidget parent = ie ? w
+					: ((result.getWidget(0)) instanceof WContainerWidget ? (WContainerWidget) (result
+							.getWidget(0))
+							: null);
+			parent.insertWidget(0, resizeHandle);
+			if (ie) {
+				parent.setAttributeValue("style", "zoom: 1");
+				parent.resize(WLength.Auto, this.headerLineHeight_);
+			}
+		}
+		WText spacer = new WText();
+		spacer.setInline(false);
+		spacer.setStyleClass("Wt-tv-br headerrh");
+		result.addWidget(spacer);
+		return result;
 	}
 
-	private WWidget headerWidget(int column) {
+	private WWidget headerWidget(int column, boolean contentsOnly) {
+		WWidget result = null;
 		if (column == 0) {
-			return this.headers_.getWidget(this.headers_.getCount() - 1);
+			result = this.headers_.getWidget(this.headers_.getCount() - 1);
 		} else {
-			return this.getHeaderRow().getWidget(column - 1);
+			result = this.getHeaderRow().getWidget(column - 1);
 		}
+		if (contentsOnly && column != 0) {
+			return result.find("contents");
+		} else {
+			return result;
+		}
+	}
+
+	private final WWidget headerWidget(int column) {
+		return headerWidget(column, true);
 	}
 
 	private WText headerTextWidget(int column) {
-		WWidget w = this.headerWidget(column);
-		WText result = ((w) instanceof WText ? (WText) (w) : null);
-		if (result != null) {
-			return result;
-		} else {
-			WContainerWidget wc = ((w) instanceof WContainerWidget ? (WContainerWidget) (w)
-					: null);
-			int fromLast = this.columnInfo(column).extraHeaderWidget != null ? 1
-					: 0;
-			return ((wc.getWidget(wc.getCount() - 1 - fromLast)) instanceof WText ? (WText) (wc
-					.getWidget(wc.getCount() - 1 - fromLast))
-					: null);
-		}
+		return ((this.headerWidget(column).find("text")) instanceof WText ? (WText) (this
+				.headerWidget(column).find("text"))
+				: null);
 	}
 
-	private WImage headerSortIconWidget(int column) {
+	private WText headerSortIconWidget(int column) {
 		if (!this.columnInfo(column).sorting) {
 			return null;
 		}
@@ -2942,16 +3098,25 @@ public class WTreeView extends WCompositeWidget {
 			WContainerWidget row = ((this.headers_.getWidget(0)) instanceof WContainerWidget ? (WContainerWidget) (this.headers_
 					.getWidget(0))
 					: null);
-			return ((row.getWidget(1)) instanceof WImage ? (WImage) (row
+			return ((row.getWidget(1)) instanceof WText ? (WText) (row
 					.getWidget(1)) : null);
 		} else {
-			WContainerWidget w = ((this.headerWidget(column)) instanceof WContainerWidget ? (WContainerWidget) (this
-					.headerWidget(column))
-					: null);
-			return ((w.getWidget(this.columnResize_ ? 1 : 0)) instanceof WImage ? (WImage) (w
-					.getWidget(this.columnResize_ ? 1 : 0))
+			return ((this.headerWidget(column).find("sort")) instanceof WText ? (WText) (this
+					.headerWidget(column).find("sort"))
 					: null);
 		}
+	}
+
+	private int getHeaderLevelCount() {
+		int result = 0;
+		if (this.model_ != null) {
+			for (int i = 0; i < this.columns_.size(); ++i) {
+				int l = (int) StringUtils.asNumber(this.model_.getHeaderData(i,
+						Orientation.Horizontal, ItemDataRole.LevelRole));
+				result = Math.max(result, l);
+			}
+		}
+		return result + 1;
 	}
 
 	private void selectionHandleClick(WModelIndex index,
@@ -3131,7 +3296,7 @@ public class WTreeView extends WCompositeWidget {
 		List<String> acceptMimeTypes = this.model_.getAcceptDropMimeTypes();
 		for (int i = 0; i < acceptMimeTypes.size(); ++i) {
 			if (this.dropsEnabled_) {
-				this.acceptDrops(acceptMimeTypes.get(i), "drop-site");
+				this.acceptDrops(acceptMimeTypes.get(i), "Wt-drop-site");
 			} else {
 				this.stopAcceptDrops(acceptMimeTypes.get(i));
 			}
@@ -3156,6 +3321,8 @@ public class WTreeView extends WCompositeWidget {
 		return this.columns_.get(column);
 	}
 
+	private static String OneLine = "<div>&nbsp;</div>";
+
 	static boolean isAncestor(WModelIndex i1, WModelIndex i2) {
 		if (!(i1 != null)) {
 			return false;
@@ -3166,5 +3333,13 @@ public class WTreeView extends WCompositeWidget {
 			}
 		}
 		return !(i2 != null);
+	}
+
+	static String repeat(String s, int times) {
+		String result = "";
+		for (int i = 0; i < times; ++i) {
+			result += s;
+		}
+		return result;
 	}
 }

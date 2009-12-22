@@ -805,16 +805,16 @@ public class WContainerWidget extends WInteractWidget {
 			case AlignCenter: {
 				DomElement itable = DomElement
 						.createNew(DomElementType.DomElement_TABLE);
-				itable.setAttribute("class", "Wt-hcenter");
+				itable.setProperty(Property.PropertyClass, "Wt-hcenter");
 				if (fitHeight) {
-					itable.setAttribute("style", "height:100%;");
+					itable.setProperty(Property.PropertyStyle, "height:100%;");
 				}
 				DomElement irow = DomElement
 						.createNew(DomElementType.DomElement_TR);
 				DomElement itd = DomElement
 						.createNew(DomElementType.DomElement_TD);
 				if (fitHeight) {
-					itd.setAttribute("style", "height:100%;");
+					itd.setProperty(Property.PropertyStyle, "height:100%;");
 				}
 				itd.addChild(c);
 				irow.addChild(itd);

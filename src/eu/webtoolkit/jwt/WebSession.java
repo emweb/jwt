@@ -29,7 +29,7 @@ class WebSession {
 	}
 
 	public WebSession(WtServlet controller, String sessionId,
-			ApplicationType type, String favicon, WebRequest request,
+			EntryPointType type, String favicon, WebRequest request,
 			WEnvironment env) {
 		this.mutex_ = new ReentrantLock();
 		this.type_ = type;
@@ -72,7 +72,7 @@ class WebSession {
 	}
 
 	public WebSession(WtServlet controller, String sessionId,
-			ApplicationType type, String favicon, WebRequest request) {
+			EntryPointType type, String favicon, WebRequest request) {
 		this(controller, sessionId, type, favicon, request, (WEnvironment) null);
 	}
 
@@ -81,7 +81,7 @@ class WebSession {
 		return handler != null ? handler.getSession() : null;
 	}
 
-	public ApplicationType getType() {
+	public EntryPointType getType() {
 		return this.type_;
 	}
 
@@ -294,6 +294,8 @@ class WebSession {
 					}
 				}
 			}
+		case Dead:
+			break;
 		}
 	}
 
@@ -628,6 +630,10 @@ class WebSession {
 			} else {
 				url = this.getBaseUrl() + this.getApplicationName();
 			}
+			String s = request.getQueryString();
+			if (s.length() != 0) {
+				url += "?" + s;
+			}
 			url += '#' + (this.app_ != null ? this.app_.getInternalPath()
 					: this.env_.getInternalPath());
 			return url;
@@ -824,7 +830,7 @@ class WebSession {
 	}
 
 	private ReentrantLock mutex_;
-	private ApplicationType type_;
+	private EntryPointType type_;
 	private String favicon_;
 	private WebSession.State state_;
 	private String sessionId_;
@@ -1013,6 +1019,8 @@ class WebSession {
 				String hashE = request.getParameter(se + "_");
 				if (hashE != null) {
 					this.app_.changeInternalPath(hashE);
+					this.app_.doJavaScript("Wt3_1_0.scrollIntoView('" + hashE
+							+ "');");
 				}
 			} else {
 				if (signalE.equals("none") || signalE.equals("load")) {
@@ -1107,7 +1115,7 @@ class WebSession {
 		if (this.applicationName_.length() == 0) {
 			this.bookmarkUrl_ = this.baseUrl_ + this.applicationName_;
 		}
-		if (this.getType() == ApplicationType.WidgetSet) {
+		if (this.getType() == EntryPointType.WidgetSet) {
 			this.applicationUrl_ = this.env_.getUrlScheme() + "://"
 					+ this.env_.getHostName() + this.applicationUrl_;
 			this.bookmarkUrl_ = this.absoluteBaseUrl_ + this.bookmarkUrl_;

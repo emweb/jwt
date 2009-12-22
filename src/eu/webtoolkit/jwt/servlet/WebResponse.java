@@ -65,7 +65,7 @@ public class WebResponse extends HttpServletResponseWrapper {
 	 * @param out The custom output stream.
 	 */
 	public WebResponse(final OutputStream out) {
-		super(null);
+		super(new MockupHttpServletResponse());
 
 		this.outputStream = new ServletOutputStream() {
 			@Override
@@ -179,6 +179,11 @@ public class WebResponse extends HttpServletResponseWrapper {
 	 */
 	public String getRequestMethod() {
 		return request.getMethod();
+	}
+
+	public String getQueryString() {
+		String result = request.getQueryString();
+		return result == null ? "" : result;
 	}
 
 }

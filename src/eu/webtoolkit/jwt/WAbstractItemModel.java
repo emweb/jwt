@@ -35,8 +35,8 @@ import eu.webtoolkit.jwt.utils.EnumUtils;
  * the following type of data:
  * <ul>
  * <li>Boolean</li>
- * <li>numbers: Short, Integer, Long, Float, Double</li>
- * <li>strings: {@link WString} or String</li>
+ * <li>number: Short, Integer, Long, Float, Double</li>
+ * <li>string: {@link WString} or String</li>
  * <li>dates: {@link eu.webtoolkit.jwt.WDate}</li>
  * </ul>
  * <p>
@@ -200,6 +200,29 @@ public abstract class WAbstractItemModel extends WObject {
 	}
 
 	/**
+	 * Returns the flags for a header.
+	 * <p>
+	 * The default implementation returns no flags set.
+	 * <p>
+	 * 
+	 * @see HeaderFlag
+	 */
+	public EnumSet<HeaderFlag> getHeaderFlags(int section,
+			Orientation orientation) {
+		return EnumSet.noneOf(HeaderFlag.class);
+	}
+
+	/**
+	 * Returns the flags for a header.
+	 * <p>
+	 * Returns {@link #getHeaderFlags(int section, Orientation orientation)
+	 * getHeaderFlags(section, Orientation.Horizontal)}
+	 */
+	public final EnumSet<HeaderFlag> getHeaderFlags(int section) {
+		return getHeaderFlags(section, Orientation.Horizontal);
+	}
+
+	/**
 	 * Returns if there are children at an index.
 	 * <p>
 	 * Returns <code>true</code> when rowCount(index) &gt; 0 and
@@ -285,7 +308,11 @@ public abstract class WAbstractItemModel extends WObject {
 	 *      orientation, Object value, int role)
 	 */
 	public Object getHeaderData(int section, Orientation orientation, int role) {
-		return null;
+		if (role == ItemDataRole.LevelRole) {
+			return 0;
+		} else {
+			return null;
+		}
 	}
 
 	/**
@@ -694,6 +721,35 @@ public abstract class WAbstractItemModel extends WObject {
 	 */
 	public final void sort(int column) {
 		sort(column, SortOrder.AscendingOrder);
+	}
+
+	/**
+	 * Expands a column.
+	 * <p>
+	 * Expands a column. This may only be called by a view when the
+	 * {@link HeaderFlag#ColumnIsCollapsed} flag is set.
+	 * <p>
+	 * The default implementation does nothing.
+	 * <p>
+	 * 
+	 * @see WAggregateProxyModel
+	 */
+	public void expandColumn(int column) {
+	}
+
+	/**
+	 * Collapses a column.
+	 * <p>
+	 * Collapses a column. This may only be called by a view when the
+	 * {@link HeaderFlag#ColumnIsExpandedLeft} or
+	 * {@link HeaderFlag#ColumnIsExpandedRight} flag is set.
+	 * <p>
+	 * The default implementation does nothing.
+	 * <p>
+	 * 
+	 * @see WAggregateProxyModel
+	 */
+	public void collapseColumn(int column) {
 	}
 
 	/**

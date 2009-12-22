@@ -5,6 +5,8 @@
  */
 package eu.webtoolkit.jwt;
 
+import java.text.DecimalFormat;
+
 import eu.webtoolkit.jwt.MatchOptions;
 import eu.webtoolkit.jwt.WDate;
 import eu.webtoolkit.jwt.WString;
@@ -35,6 +37,9 @@ public class StringUtils {
 		if (data instanceof WDate) {
 			WDate d = (WDate) data;
 			return new WString(d.toString(format));
+		} else if (data instanceof Double) {
+			Double d = (Double) data;
+			return new WString(new DecimalFormat(format).format(d));
 		} else
 			return asString(data);
 	}

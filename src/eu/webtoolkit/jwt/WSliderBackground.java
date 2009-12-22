@@ -20,11 +20,11 @@ class WSliderBackground extends WPaintedWidget {
 		int w;
 		int h;
 		if (this.slider_.getOrientation() == Orientation.Horizontal) {
-			w = (int) this.getWidth().getValue();
-			h = (int) this.getHeight().getValue();
+			w = (int) this.getWidth().toPixels();
+			h = (int) this.getHeight().toPixels();
 		} else {
-			w = (int) this.getHeight().getValue();
-			h = (int) this.getWidth().getValue();
+			w = (int) this.getHeight().toPixels();
+			h = (int) this.getWidth().toPixels();
 			painter.translate(0, w);
 			painter.rotate(-90);
 		}

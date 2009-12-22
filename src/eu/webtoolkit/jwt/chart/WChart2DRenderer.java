@@ -17,6 +17,7 @@ import eu.webtoolkit.jwt.WBrush;
 import eu.webtoolkit.jwt.WBrushStyle;
 import eu.webtoolkit.jwt.WColor;
 import eu.webtoolkit.jwt.WFont;
+import eu.webtoolkit.jwt.WModelIndex;
 import eu.webtoolkit.jwt.WPainter;
 import eu.webtoolkit.jwt.WPainterPath;
 import eu.webtoolkit.jwt.WPen;
@@ -28,11 +29,12 @@ import eu.webtoolkit.jwt.utils.EnumUtils;
  * Helper class for rendering a cartesian chart.
  * <p>
  * 
- * This class is used by {@link WCartesianChart} during rendering, and normally,
- * you will not need to use this class directly. You may want to specialize this
- * class if you want to override particular aspects of how the chart is
- * renderered. In that case, you will want to instantiate the specialized class
- * in {@link WCartesianChart#createRenderer(WPainter painter, WRectF rectangle)
+ * This class is used by {@link eu.webtoolkit.jwt.chart.WCartesianChart} during
+ * rendering, and normally, you will not need to use this class directly. You
+ * may want to specialize this class if you want to override particular aspects
+ * of how the chart is renderered. In that case, you will want to instantiate
+ * the specialized class in
+ * {@link WCartesianChart#createRenderer(WPainter painter, WRectF rectangle)
  * WCartesianChart#createRenderer()}.
  * <p>
  * To simplify the simulatenous handling of Horizontal and Vertical charts, the
@@ -76,7 +78,7 @@ public class WChart2DRenderer {
 			this.height_ = (int) rectangle.getWidth();
 		}
 		for (int i = 0; i < 3; ++i) {
-			this.location_[i] = AxisLocation.MinimumValue;
+			this.location_[i] = AxisValue.MinimumValue;
 		}
 	}
 
@@ -118,20 +120,32 @@ public class WChart2DRenderer {
 		if (this.chart_.getOrientation() == Orientation.Vertical) {
 			this.chartArea_.assign(new WRectF(this.chart_
 					.getPlotAreaPadding(Side.Left), this.chart_
-					.getPlotAreaPadding(Side.Top), this.width_
+					.getPlotAreaPadding(Side.Top), Math.max(1, this.width_
 					- this.chart_.getPlotAreaPadding(Side.Left)
-					- this.chart_.getPlotAreaPadding(Side.Right), this.height_
-					- this.chart_.getPlotAreaPadding(Side.Top)
-					- this.chart_.getPlotAreaPadding(Side.Bottom)));
+					- this.chart_.getPlotAreaPadding(Side.Right)), Math.max(1,
+					this.height_ - this.chart_.getPlotAreaPadding(Side.Top)
+							- this.chart_.getPlotAreaPadding(Side.Bottom))));
 		} else {
 			this.chartArea_.assign(new WRectF(this.chart_
 					.getPlotAreaPadding(Side.Top), this.chart_
-					.getPlotAreaPadding(Side.Right), this.width_
+					.getPlotAreaPadding(Side.Right), Math.max(1, this.width_
 					- this.chart_.getPlotAreaPadding(Side.Top)
-					- this.chart_.getPlotAreaPadding(Side.Bottom), this.height_
-					- this.chart_.getPlotAreaPadding(Side.Right)
-					- this.chart_.getPlotAreaPadding(Side.Left)));
+					- this.chart_.getPlotAreaPadding(Side.Bottom)), Math.max(1,
+					this.height_ - this.chart_.getPlotAreaPadding(Side.Right)
+							- this.chart_.getPlotAreaPadding(Side.Left))));
 		}
+	}
+
+	/**
+	 * Initializes the layout.
+	 * <p>
+	 * This computes the chart plotting area dimensions, and intializes the axes
+	 * so that they provide a suitable mapping from logical coordinates to
+	 * device coordinates.
+	 */
+	public void initLayout() {
+		this.calcChartArea();
+		this.prepareAxes();
 	}
 
 	/**
@@ -169,8 +183,7 @@ public class WChart2DRenderer {
 		this.tildeEndMarker_.lineTo(0, -(this.segmentMargin_ - 25));
 		this.tildeEndMarker_.moveTo(-15, -(this.segmentMargin_ - 20));
 		this.tildeEndMarker_.lineTo(15, -(this.segmentMargin_ - 10));
-		this.calcChartArea();
-		this.prepareAxes();
+		this.initLayout();
 		this.renderBackground();
 		this.renderAxes(EnumSet.of(WChart2DRenderer.AxisProperty.Grid));
 		this.renderSeries();
@@ -196,10 +209,10 @@ public class WChart2DRenderer {
 	 */
 	public WPointF map(double xValue, double yValue, Axis axis,
 			int currentXSegment, int currentYSegment) {
-		return new WPointF(this.chart_.getAxis(Axis.XAxis).map(xValue,
-				this.location_[Axis.YAxis.getValue()], currentXSegment),
-				this.chart_.getAxis(axis).map(yValue,
-						this.location_[Axis.XAxis.getValue()], currentYSegment));
+		WAxis xAxis = this.chart_.getAxis(Axis.XAxis);
+		WAxis yAxis = this.chart_.getAxis(axis);
+		return new WPointF(xAxis.mapToDevice(xValue, currentXSegment), yAxis
+				.mapToDevice(yValue, currentYSegment));
 	}
 
 	/**
@@ -338,11 +351,7 @@ public class WChart2DRenderer {
 	 * account the chart orientation.
 	 */
 	public WPointF hv(double x, double y) {
-		if (this.chart_.getOrientation() == Orientation.Vertical) {
-			return new WPointF(x, y);
-		} else {
-			return new WPointF(this.height_ - y, x);
-		}
+		return this.chart_.hv(x, y, this.height_);
 	}
 
 	/**
@@ -433,52 +442,56 @@ public class WChart2DRenderer {
 		this.chart_.getAxis(Axis.XAxis).prepareRender(this);
 		this.chart_.getAxis(Axis.Y1Axis).prepareRender(this);
 		this.chart_.getAxis(Axis.Y2Axis).prepareRender(this);
-		if (this.chart_.getAxis(Axis.XAxis).getScale() == AxisScale.CategoryScale) {
-			switch (this.chart_.getAxis(Axis.XAxis).getLocation()) {
-			case MinimumValue:
-			case ZeroValue:
-				this.location_[Axis.XAxis.getValue()] = AxisLocation.MinimumValue;
-				break;
-			case MaximumValue:
-				this.location_[Axis.XAxis.getValue()] = AxisLocation.MaximumValue;
-			}
-		}
 		WAxis xAxis = this.chart_.getAxis(Axis.XAxis);
 		WAxis yAxis = this.chart_.getAxis(Axis.YAxis);
+		WAxis y2Axis = this.chart_.getAxis(Axis.Y2Axis);
+		if (xAxis.getScale() == AxisScale.CategoryScale) {
+			switch (xAxis.getLocation()) {
+			case MinimumValue:
+			case ZeroValue:
+				this.location_[Axis.XAxis.getValue()] = AxisValue.MinimumValue;
+				break;
+			case MaximumValue:
+				this.location_[Axis.XAxis.getValue()] = AxisValue.MaximumValue;
+			}
+		}
 		for (int i = 0; i < 2; ++i) {
 			WAxis axis = i == 0 ? xAxis : yAxis;
 			WAxis other = i == 0 ? yAxis : xAxis;
-			AxisLocation location = axis.getLocation();
-			if (location == AxisLocation.ZeroValue) {
+			AxisValue location = axis.getLocation();
+			if (location == AxisValue.ZeroValue) {
 				if (other.segments_.get(0).renderMaximum < 0) {
-					location = AxisLocation.MaximumValue;
+					location = AxisValue.MaximumValue;
 				} else {
 					if (other.segments_.get(0).renderMinimum > 0) {
-						location = AxisLocation.MinimumValue;
+						location = AxisValue.MinimumValue;
 					}
 				}
 			} else {
-				if (location == AxisLocation.MinimumValue) {
+				if (location == AxisValue.MinimumValue) {
 					if (other.segments_.get(0).renderMinimum == 0) {
-						location = AxisLocation.ZeroValue;
+						location = AxisValue.ZeroValue;
 					}
 				} else {
 					if (other.segments_.get(0).renderMaximum == 0) {
-						location = AxisLocation.MaximumValue;
+						location = AxisValue.MaximumValue;
 					}
 				}
 			}
 			this.location_[axis.getId().getValue()] = location;
 		}
-		if (this.chart_.getAxis(Axis.Y2Axis).isVisible()) {
-			if (!(this.location_[Axis.Y1Axis.getValue()] == AxisLocation.ZeroValue && this.chart_
-					.getAxis(Axis.XAxis).segments_.get(0).renderMinimum == 0)) {
-				this.location_[Axis.Y1Axis.getValue()] = AxisLocation.MinimumValue;
+		if (y2Axis.isVisible()) {
+			if (!(this.location_[Axis.Y1Axis.getValue()] == AxisValue.ZeroValue && xAxis.segments_
+					.get(0).renderMinimum == 0)) {
+				this.location_[Axis.Y1Axis.getValue()] = AxisValue.MinimumValue;
 			}
-			this.location_[Axis.Y2Axis.getValue()] = AxisLocation.MaximumValue;
+			this.location_[Axis.Y2Axis.getValue()] = AxisValue.MaximumValue;
 		} else {
-			this.location_[Axis.Y2Axis.getValue()] = AxisLocation.MaximumValue;
+			this.location_[Axis.Y2Axis.getValue()] = AxisValue.MaximumValue;
 		}
+		xAxis.setOtherAxisLocation(this.location_[Axis.YAxis.getValue()]);
+		yAxis.setOtherAxisLocation(this.location_[Axis.XAxis.getValue()]);
+		y2Axis.setOtherAxisLocation(this.location_[Axis.XAxis.getValue()]);
 	}
 
 	/**
@@ -495,12 +508,9 @@ public class WChart2DRenderer {
 	 * Renders one or more properties of the axes.
 	 */
 	protected void renderAxes(EnumSet<WChart2DRenderer.AxisProperty> properties) {
-		this.renderAxis(this.chart_.getAxis(Axis.XAxis), this.location_[0],
-				properties);
-		this.renderAxis(this.chart_.getAxis(Axis.Y1Axis), this.location_[1],
-				properties);
-		this.renderAxis(this.chart_.getAxis(Axis.Y2Axis), this.location_[2],
-				properties);
+		this.renderAxis(this.chart_.getAxis(Axis.XAxis), properties);
+		this.renderAxis(this.chart_.getAxis(Axis.Y1Axis), properties);
+		this.renderAxis(this.chart_.getAxis(Axis.Y2Axis), properties);
 	}
 
 	/**
@@ -613,7 +623,7 @@ public class WChart2DRenderer {
 	 * 
 	 * @see WChart2DRenderer#prepareAxes()
 	 */
-	protected AxisLocation[] location_ = new AxisLocation[3];
+	protected AxisValue[] location_ = new AxisValue[3];
 
 	/**
 	 * Render properties of one axis.
@@ -621,7 +631,7 @@ public class WChart2DRenderer {
 	 * 
 	 * @see WChart2DRenderer#renderAxes(EnumSet properties)
 	 */
-	protected void renderAxis(WAxis axis, AxisLocation l,
+	protected void renderAxis(WAxis axis,
 			EnumSet<WChart2DRenderer.AxisProperty> properties) {
 		boolean vertical = axis.getId() != Axis.XAxis;
 		double u = 0;
@@ -630,7 +640,7 @@ public class WChart2DRenderer {
 		final int Both = 3;
 		int tickPos = Left;
 		AlignmentFlag labelHFlag = AlignmentFlag.AlignLeft;
-		switch (l) {
+		switch (this.location_[axis.getId().getValue()]) {
 		case MinimumValue:
 			tickPos = Left;
 			if (vertical) {
@@ -704,15 +714,12 @@ public class WChart2DRenderer {
 			axis.getLabelTicks(this, ticks, segment);
 			for (int i = 0; i < ticks.size(); ++i) {
 				double d = ticks.get(i).u;
-				double dd = axis.map(d,
-						axis.getId() == Axis.XAxis ? this.location_[Axis.YAxis
-								.getValue()] : this.location_[Axis.XAxis
-								.getValue()], segment);
+				double dd = axis.mapToDevice(d, segment);
 				dd = Math.floor(dd) + 0.5;
 				int tickLength = ticks.get(i).tickLength == WAxis.TickLabel.TickLength.Long ? TICK_LENGTH
 						: TICK_LENGTH / 2;
 				WPointF labelPos = new WPointF();
-				switch (l) {
+				switch (this.location_[axis.getId().getValue()]) {
 				case MinimumValue:
 					if (vertical) {
 						labelPos = new WPointF(u - tickLength, dd);
@@ -868,13 +875,13 @@ public class WChart2DRenderer {
 	/**
 	 * Render properties of one axis.
 	 * <p>
-	 * Calls {@link #renderAxis(WAxis axis, AxisLocation l, EnumSet properties)
-	 * renderAxis(axis, l, EnumSet.of(propertie, properties))}
+	 * Calls {@link #renderAxis(WAxis axis, EnumSet properties) renderAxis(axis,
+	 * EnumSet.of(propertie, properties))}
 	 */
-	protected final void renderAxis(WAxis axis, AxisLocation l,
+	protected final void renderAxis(WAxis axis,
 			WChart2DRenderer.AxisProperty propertie,
 			WChart2DRenderer.AxisProperty... properties) {
-		renderAxis(axis, l, EnumSet.of(propertie, properties));
+		renderAxis(axis, EnumSet.of(propertie, properties));
 	}
 
 	/**
@@ -916,18 +923,19 @@ public class WChart2DRenderer {
 		;
 		final boolean scatterPlot = this.chart_.getType() == ChartType.ScatterPlot;
 		if (scatterPlot) {
-			groupWidth = CATEGORY_WIDTH
-					* (this.map(2, 0).getX() - this.map(1, 0).getX());
 			numBarGroups = 1;
 			currentBarGroup = 0;
 		} else {
-			groupWidth = CATEGORY_WIDTH
-					* (this.map(2, 0).getX() - this.map(1, 0).getX());
 			numBarGroups = this.getCalcNumBarGroups();
 			currentBarGroup = 0;
 		}
 		boolean containsBars = false;
 		for (int g = 0; g < series.size(); ++g) {
+			if (series.get(g).isHidden()) {
+				continue;
+			}
+			groupWidth = series.get(g).getBarWidth()
+					* (this.map(2, 0).getX() - this.map(1, 0).getX());
 			if (containsBars) {
 				++currentBarGroup;
 			}
@@ -1004,7 +1012,7 @@ public class WChart2DRenderer {
 							WRectF csa = this.chartSegmentArea(this.chart_
 									.getAxis(series.get(i).getAxis()),
 									currentXSegment, currentYSegment);
-							iterator.setSegment(currentXSegment,
+							iterator.startSegment(currentXSegment,
 									currentYSegment, csa);
 							this.painter_.save();
 							this.painter_.setClipping(true);
@@ -1012,23 +1020,29 @@ public class WChart2DRenderer {
 							clipPath.addRect(this.hv(csa));
 							this.painter_.setClipPath(clipPath);
 							for (int row = 0; row < rows; ++row) {
+								WModelIndex xIndex = null;
+								WModelIndex yIndex = null;
 								double x;
 								if (scatterPlot) {
 									if (this.chart_.XSeriesColumn() != -1) {
-										x = StringUtils.asNumber(model.getData(
-												row, this.chart_
-														.XSeriesColumn()));
+										xIndex = model.getIndex(row,
+												this.chart_.XSeriesColumn());
+										x = StringUtils.asNumber(model
+												.getData(xIndex));
 									} else {
 										x = row;
 									}
 								} else {
 									x = row;
 								}
-								double y = StringUtils.asNumber(model.getData(
-										row, series.get(i).getModelColumn()));
+								yIndex = model.getIndex(row, series.get(i)
+										.getModelColumn());
+								double y = StringUtils.asNumber(model
+										.getData(yIndex));
 								double prevStack;
 								if (scatterPlot) {
-									iterator.newValue(series.get(i), x, y, 0);
+									iterator.newValue(series.get(i), x, y, 0,
+											xIndex, yIndex);
 								} else {
 									prevStack = stackedValues.get(row);
 									double nextStack = stackedValues.get(row);
@@ -1043,14 +1057,17 @@ public class WChart2DRenderer {
 									if (doSeries) {
 										if (reverseStacked) {
 											iterator.newValue(series.get(i), x,
-													prevStack, nextStack);
+													prevStack, nextStack,
+													xIndex, yIndex);
 										} else {
 											iterator.newValue(series.get(i), x,
-													nextStack, prevStack);
+													nextStack, prevStack,
+													xIndex, yIndex);
 										}
 									}
 								}
 							}
+							iterator.endSegment();
 							this.painter_.restore();
 						}
 					}
@@ -1085,5 +1102,4 @@ public class WChart2DRenderer {
 	}
 
 	static final int TICK_LENGTH = 5;
-	static final double CATEGORY_WIDTH = 0.8;
 }

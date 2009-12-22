@@ -79,7 +79,13 @@ public class WFileUpload extends WWebWidget {
 		this.doUpload_ = false;
 		this.enableAjax_ = false;
 		this.fileTooLarge_ = new Signal1<Integer>(this);
+		this.tooLargeSize_ = 0;
 		this.setInline(true);
+		this.fileTooLargeImpl().addListener(this, new Signal.Listener() {
+			public void trigger() {
+				WFileUpload.this.handleFileTooLargeImpl();
+			}
+		});
 		this.create();
 	}
 
@@ -292,12 +298,14 @@ public class WFileUpload extends WWebWidget {
 			form.setAttribute("method", "post");
 			form.setAttribute("action", this.fileUploadTarget_.generateUrl());
 			form.setAttribute("enctype", "multipart/form-data");
-			form.setAttribute("style", "margin:0;padding:0;display:inline");
+			form.setProperty(Property.PropertyStyle,
+					"margin:0;padding:0;display:inline");
 			form.setProperty(Property.PropertyTarget, "if" + this.getId());
 			DomElement i = DomElement
 					.createNew(DomElementType.DomElement_IFRAME);
-			i.setAttribute("class", "Wt-resource");
-			i.setAttribute("src", this.fileUploadTarget_.generateUrl());
+			i.setProperty(Property.PropertyClass, "Wt-resource");
+			i.setProperty(Property.PropertySrc, this.fileUploadTarget_
+					.generateUrl());
 			i.setName("if" + this.getId());
 			DomElement d = DomElement.createNew(DomElementType.DomElement_SPAN);
 			d.addChild(i);
@@ -345,6 +353,16 @@ public class WFileUpload extends WWebWidget {
 		}
 	}
 
+	EventSignal fileTooLargeImpl() {
+		return this.voidEventSignal(FILETOOLARGE_SIGNAL, true);
+	}
+
+	private void handleFileTooLargeImpl() {
+		this.fileTooLarge().trigger(this.tooLargeSize_);
+	}
+
+	int tooLargeSize_;
+
 	void setFormData(WObject.FormData formData) {
 		if (formData.file != null) {
 			this.setFormData(formData.file);
@@ -363,4 +381,5 @@ public class WFileUpload extends WWebWidget {
 
 	private static String CHANGE_SIGNAL = "M_change";
 	private static String UPLOADED_SIGNAL = "M_uploaded";
+	private static String FILETOOLARGE_SIGNAL = "M_filetoolarge";
 }

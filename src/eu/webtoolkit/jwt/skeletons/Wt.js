@@ -166,11 +166,11 @@ getElement: function(id) {
       }
     }
   return el;
-},
+}, 
 
 // Get coordinates of element relative to page origin.
 widgetPageCoordinates: function(obj) {
-  var objX = objY = 0, op, lop = null, WT = _$_WT_CLASS_$_;
+  var objX = objY = 0, op, WT = _$_WT_CLASS_$_;
 
   // bug in safari, according to W3C, offsetParent for an area element should
   // be the map element, but safari returns null.
@@ -220,6 +220,38 @@ pageCoordinates: function(e) {
   }
 
   return { x: posX, y: posY };
+},
+
+scrollIntoView: function(id) {
+  var obj = document.getElementById(id);
+  if (obj && obj.scrollIntoView)
+    obj.scrollIntoView(true);
+},
+
+getSelectionRange: function(e) {
+  if (document.selection) {
+    var range = document.selection.createRange();
+    var stored_range = range.duplicate();
+    stored_range.moveToElementText(e);
+    stored_range.setEndPoint('EndToEnd', range);
+    var selectionStart = stored_range.text.length - range.text.length;
+
+    return { start: selectionStart, end: (selectionStart + range.text.length) };
+  } else
+    return { start: e.selectionStart, end: e.selectionEnd };
+},
+
+setSelectionRange: function(e, start, end) {
+  if (e.createTextRange) {
+    var range = e.createTextRange();
+    range.collapse(true);
+    range.moveEnd('character', end);
+    range.moveStart('character', start);
+    range.select();
+  } else if (e.setSelectionRange) {
+    e.focus();
+    e.setSelectionRange(start, end);
+  }
 },
 
 isKeyPress: function(e) {
@@ -493,6 +525,7 @@ version: 2.5.2
   var _histFrame = null;
   var _stateField = null;
   var _initialized = false;
+  var _interval = null;
   var _fqstates = [];
   var _initialState, _currentState;
   var _onStateChange = function(){};
@@ -571,8 +604,36 @@ version: 2.5.2
     if (_onLoadFn != null)
       _onLoadFn();
   }
+
+  function _initTimeout() {
+    if (_UAie)
+      return;
+
+    var hash = _getHash(), counter = history.length;
+
+    if (_interval)
+      clearInterval(_interval);
+    _interval = setInterval(function () {
+	var state, newHash, newCounter;
+	newHash = _getHash();
+	newCounter = history.length;
+	if (newHash !== hash) {
+	  hash = newHash;
+	  counter = newCounter;
+	  _handleFQStateChange(hash);
+	  _storeStates();
+	} else if (newCounter !== counter && _UAwebkit) {
+	  hash = newHash;
+	  counter = newCounter;
+	  state = _fqstates[counter - 1];
+	  _handleFQStateChange(state);
+	  _storeStates();
+	}
+      }, 50);
+  }
+
   function _initialize() {
-    var parts, counter, hash;
+    var parts;
     parts = _stateField.value.split("|");
     if (parts.length > 1) {
       _initialState = parts[0];
@@ -584,25 +645,7 @@ version: 2.5.2
     if (_UAie) {
       _checkIframeLoaded();
     } else {
-      counter = history.length;
-      hash = _getHash();
-      setInterval(function () {
-	  var state, newHash, newCounter;
-	  newHash = _getHash();
-	  newCounter = history.length;
-	  if (newHash !== hash) {
-	    hash = newHash;
-	    counter = newCounter;
-	    _handleFQStateChange(hash);
-	    _storeStates();
-	  } else if (newCounter !== counter && _UAwebkit) {
-	    hash = newHash;
-	    counter = newCounter;
-	    state = _fqstates[counter - 1];
-	    _handleFQStateChange(state);
-	    _storeStates();
-	  }
-	}, 50);
+      _initTimeout();
       _initialized = true;
       if (_onLoadFn != null)
 	_onLoadFn();
@@ -620,6 +663,9 @@ version: 2.5.2
     if (_stateField != null)
       _initialize();
   },
+  _initTimeout: function() {
+      _initTimeout();
+  },
   register: function (initialState, onStateChange) {
     if (_initialized) {
       return;
@@ -634,16 +680,20 @@ version: 2.5.2
     }
     var vendor = navigator.vendor || "";
     if (vendor === "KDE") {
-    } else if (typeof window.opera !== "undefined") {
+    } else if (typeof window.opera !== "undefined")
       _UAopera = true;
-    } else if (typeof document.all !== "undefined") {
+    else if (typeof document.all !== "undefined")
       _UAie = true;
-    } else if (vendor.indexOf("Apple Computer, Inc.") > -1) {
+    else if (vendor.indexOf("Apple Computer, Inc.") > -1)
       _UAwebkit = true;
-    }
-    if (typeof stateField === "string") {
+
+    /*
+    if (_UAopera && typeof history.navigationMode !== "undefined")
+      history.navigationMode = "compatible";
+    */
+
+    if (typeof stateField === "string")
       stateField = document.getElementById(stateField);
-    }
     if (!stateField ||
 	stateField.tagName.toUpperCase() !== "TEXTAREA" &&
 	(stateField.tagName.toUpperCase() !== "INPUT" ||
@@ -874,7 +924,7 @@ var dragDrag = function(e) {
       if (ds.dropTarget.handleDragDrop)
 	ds.dropTarget.handleDragDrop('drag', ds.object, e, '', mimeType);
       else
-	ds.object.className = 'valid-drop';
+	ds.object.className = 'Wt-valid-drop';
     }
 
     WT.cancelEvent(e);
@@ -1071,6 +1121,7 @@ var pollTimer = null;
 var keepAliveTimer = null;
 
 var doKeepAlive = function() {
+  WT.history._initTimeout();
   update(null, 'none', null, false);
   keepAliveTimer = setTimeout(doKeepAlive, _$_KEEP_ALIVE_$_000);
 };
@@ -1163,8 +1214,6 @@ var update = function(self, signalName, e, feedback) {
   if (captureElement && (self == captureElement) && e.type == "mouseup")
     capture(null);
 
-  _$_APP_CLASS_$_._p_.autoJavaScript();
-
   _$_$if_STRICTLY_SERIALIZED_EVENTS_$_;
   if (responsePending)
     return;
@@ -1179,6 +1228,8 @@ var update = function(self, signalName, e, feedback) {
   pendingEvents[i] = encodeEvent(pendingEvent, i);
 
   scheduleUpdate();
+
+  _$_APP_CLASS_$_._p_.autoJavaScript();
 }
 
 var scheduleUpdate = function() {
@@ -1388,33 +1439,33 @@ WT.history.register('_$_INITIAL_HASH_$_', onHashChange);
 // Public static methods
 return {
   _p_: {
-    "loadScript" : loadScript,
-    "onJsLoad" : onJsLoad,
-    "setTitle" : setTitle,
-    "update" : update,
-    "quit" : function() { quited = true; clearTimeout(keepAliveTimer); },
-    "setFormObjects" : function(o) { formObjects = o; },
-    "saveDownPos" : saveDownPos,
-    "addTimerEvent" : addTimerEvent,
-    "load" : load,
-    "handleResponse" : handleResponse,
-    "setServerPush" : setServerPush,
+    loadScript : loadScript,
+    onJsLoad : onJsLoad,
+    setTitle : setTitle,
+    update : update,
+    quit : function() { quited = true; clearTimeout(keepAliveTimer); },
+    setFormObjects : function(o) { formObjects = o; },
+    saveDownPos : saveDownPos,
+    addTimerEvent : addTimerEvent,
+    load : load,
+    handleResponse : handleResponse,
+    setServerPush : setServerPush,
 
-    "dragStart" : dragStart,
-    "dragDrag" : dragDrag,
-    "dragEnd" : dragEnd,
-    "capture" : capture,
+    dragStart : dragStart,
+    dragDrag : dragDrag,
+    dragEnd : dragEnd,
+    capture : capture,
 
-    "onHashChange" : onHashChange,
-    "setHash" : setHash,
-    "ImagePreloader" : ImagePreloader,
+    onHashChange : onHashChange,
+    setHash : setHash,
+    ImagePreloader : ImagePreloader,
 
-    "autoJavaScript" : function() { _$_AUTO_JAVASCRIPT_$_ },
+    autoJavaScript : function() { _$_AUTO_JAVASCRIPT_$_ },
 
-    "response" : responseReceived
+    response : responseReceived
   },
 
-  "emit" : emit
+  emit : emit
 };
 
 }();

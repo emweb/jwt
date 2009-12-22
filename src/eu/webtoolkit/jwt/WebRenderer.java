@@ -258,7 +258,7 @@ class WebRenderer implements SlotLearnerInterface {
 
 	private void serveMainscript(WebResponse response) throws IOException {
 		Configuration conf = this.session_.getController().getConfiguration();
-		boolean widgetset = this.session_.getType() == ApplicationType.WidgetSet;
+		boolean widgetset = this.session_.getType() == EntryPointType.WidgetSet;
 		this.setHeaders(response, "text/javascript; charset=UTF-8");
 		if (!widgetset) {
 			String redirect = this.session_.getRedirect();
@@ -274,7 +274,7 @@ class WebRenderer implements SlotLearnerInterface {
 		this.currentFormObjectsList_ = this.createFormObjectsList(app);
 		FileServe script = new FileServe(WtServlet.Wt_js);
 		script.setCondition("DEBUG", conf.isDebug());
-		script.setVar("WT_CLASS", "Wt3_0_0");
+		script.setVar("WT_CLASS", "Wt3_1_0");
 		script.setVar("APP_CLASS", app.getJavaScriptClass());
 		script.setVar("AUTO_JAVASCRIPT", app.autoJavaScript_);
 		script.setCondition("STRICTLY_SERIALIZED_EVENTS", conf
@@ -305,7 +305,7 @@ class WebRenderer implements SlotLearnerInterface {
 						.append("var domRoot = ")
 						.append(app.domRoot_.getJsRef())
 						.append(
-								";var form = Wt3_0_0.getElement('Wt-form');domRoot.style.display = form.style.display;document.body.replaceChild(domRoot, form);")
+								";var form = Wt3_1_0.getElement('Wt-form');domRoot.style.display = form.style.display;document.body.replaceChild(domRoot, form);")
 						.append(app.getAfterLoadJavaScript());
 				this.beforeLoadJS_ = new StringWriter();
 			}
@@ -364,8 +364,8 @@ class WebRenderer implements SlotLearnerInterface {
 		Configuration conf = this.session_.getController().getConfiguration();
 		WApplication app = this.session_.getApp();
 		if (!app.getEnvironment().hasAjax()
-				&& (response.getRequestMethod().equals("POST") || app.internalPathIsChanged_
-						&& !app.oldInternalPath_.equals(app.newInternalPath_))) {
+				&& (app.internalPathIsChanged_ && !app.oldInternalPath_
+						.equals(app.newInternalPath_))) {
 			this.session_.redirect(app.getBookmarkUrl(app.newInternalPath_));
 		}
 		String redirect = this.session_.getRedirect();
@@ -380,10 +380,22 @@ class WebRenderer implements SlotLearnerInterface {
 		this.setJSSynced(true);
 		final boolean xhtml = app.getEnvironment().getContentType() == WEnvironment.ContentType.XHTML1;
 		String styleSheets = "";
+		if (app.getCssTheme().length() != 0) {
+			styleSheets += "<link href=\"" + WApplication.getResourcesUrl()
+					+ "/themes/" + app.getCssTheme()
+					+ "/wt.css\" rel=\"stylesheet\" type=\"text/css\""
+					+ (xhtml ? "/>" : ">");
+			if (app.getEnvironment().agentIsIE()) {
+				styleSheets += "<link href=\"" + WApplication.getResourcesUrl()
+						+ "/themes/" + app.getCssTheme()
+						+ "/wt_ie.css\" rel=\"stylesheet\" type=\"text/css\""
+						+ (xhtml ? "/>" : ">");
+			}
+		}
 		for (int i = 0; i < app.styleSheets_.size(); ++i) {
-			styleSheets += "<link href='"
+			styleSheets += "<link href=\""
 					+ app.fixRelativeUrl(app.styleSheets_.get(i))
-					+ "' rel='stylesheet' type='text/css'"
+					+ "\" rel=\"stylesheet\" type=\"text/css\""
 					+ (xhtml ? "/>" : ">") + '\n';
 		}
 		app.styleSheetsAdded_ = 0;
@@ -454,7 +466,7 @@ class WebRenderer implements SlotLearnerInterface {
 
 	private void serveMainAjax(WebResponse response) throws IOException {
 		Configuration conf = this.session_.getController().getConfiguration();
-		boolean widgetset = this.session_.getType() == ApplicationType.WidgetSet;
+		boolean widgetset = this.session_.getType() == EntryPointType.WidgetSet;
 		WApplication app = this.session_.getApp();
 		WWebWidget mainWebWidget = app.domRoot_;
 		this.visibleOnly_ = true;
@@ -463,6 +475,17 @@ class WebRenderer implements SlotLearnerInterface {
 		app.loadingIndicatorWidget_.hide();
 		if (conf.isInlineCss()) {
 			app.getStyleSheet().javaScriptUpdate(app, response.out(), true);
+		}
+		if (app.getCssTheme().length() != 0) {
+			response.out().append("Wt3_1_0").append(".addStyleSheet('").append(
+					WApplication.getResourcesUrl()).append("/themes/").append(
+					app.getCssTheme()).append("/wt.css');");
+			if (app.getEnvironment().agentIsIE()) {
+				response.out().append("Wt3_1_0").append(".addStyleSheet('")
+						.append(WApplication.getResourcesUrl()).append(
+								"/themes/").append(app.getCssTheme()).append(
+								"/wt_ie.css');");
+			}
 		}
 		app.styleSheetsAdded_ = app.styleSheets_.size();
 		this.loadStyleSheets(response.out(), app);
@@ -493,7 +516,7 @@ class WebRenderer implements SlotLearnerInterface {
 		if (widgetset) {
 			String historyE = app.getEnvironment().getParameter("Wt-history");
 			if (historyE != null) {
-				response.out().append("Wt3_0_0")
+				response.out().append("Wt3_1_0")
 						.append(".history.initialize('").append(
 								historyE.charAt(0)).append("-field', '")
 						.append(historyE.charAt(0)).append("-iframe');\n");
@@ -626,7 +649,7 @@ class WebRenderer implements SlotLearnerInterface {
 						continue;
 					}
 					if (!this.learning_ && this.visibleOnly_) {
-						if (!w.isStubbed()) {
+						if (w.isRendered()) {
 							w.getSDomChanges(changes, app);
 						}
 					} else {
@@ -670,7 +693,7 @@ class WebRenderer implements SlotLearnerInterface {
 			throws IOException {
 		int first = app.styleSheets_.size() - app.styleSheetsAdded_;
 		for (int i = first; i < app.styleSheets_.size(); ++i) {
-			out.append("Wt3_0_0").append(".addStyleSheet('").append(
+			out.append("Wt3_1_0").append(".addStyleSheet('").append(
 					app.fixRelativeUrl(app.styleSheets_.get(i)))
 					.append("');\n");
 		}
@@ -760,11 +783,8 @@ class WebRenderer implements SlotLearnerInterface {
 			WWidget ww = ((i.getValue().getSender()) instanceof WWidget ? (WWidget) (i
 					.getValue().getSender())
 					: null);
-			if (ww != null && !ww.isStubbed()) {
-				WWidget a = ww.getAdam();
-				if (a == app.domRoot_ || a == app.domRoot2_) {
-					i.getValue().processPreLearnStateless(this);
-				}
+			if (ww != null && ww.isRendered()) {
+				i.getValue().processPreLearnStateless(this);
 			}
 		}
 		out.append(this.statelessJS_.toString());
@@ -818,7 +838,6 @@ class WebRenderer implements SlotLearnerInterface {
 
 	private void setPageVars(FileServe page) {
 		boolean xhtml = this.session_.getEnv().getContentType() == WEnvironment.ContentType.XHTML1;
-		Configuration conf = this.session_.getController().getConfiguration();
 		WApplication app = this.session_.getApp();
 		page.setVar("DOCTYPE", this.session_.getDocType());
 		String htmlAttr = "";

@@ -65,6 +65,10 @@ public class WSlider extends WCompositeWidget {
 		this.maximum_ = 99;
 		this.value_ = 0;
 		this.valueChanged_ = new Signal1<Integer>(this);
+		this.sliderMoved_ = new JSignal1<Integer>(this, "moved") {
+		};
+		this.sliderReleased_ = new JSignal1<Integer>(this, "released") {
+		};
 		this.mouseDownJS_ = new JSlot();
 		this.mouseMovedJS_ = new JSlot();
 		this.mouseUpJS_ = new JSlot();
@@ -99,6 +103,10 @@ public class WSlider extends WCompositeWidget {
 		this.maximum_ = 99;
 		this.value_ = 0;
 		this.valueChanged_ = new Signal1<Integer>(this);
+		this.sliderMoved_ = new JSignal1<Integer>(this, "moved") {
+		};
+		this.sliderReleased_ = new JSignal1<Integer>(this, "released") {
+		};
 		this.mouseDownJS_ = new JSlot();
 		this.mouseMovedJS_ = new JSlot();
 		this.mouseUpJS_ = new JSlot();
@@ -308,14 +316,36 @@ public class WSlider extends WCompositeWidget {
 	 * Signal emitted when the user has changed the value of the slider.
 	 * <p>
 	 * The new value is passed as the argument.
+	 * <p>
+	 * 
+	 * @see WSlider#sliderMoved()
 	 */
 	public Signal1<Integer> valueChanged() {
 		return this.valueChanged_;
 	}
 
+	/**
+	 * Signal emitted while the user drags the slider.
+	 * <p>
+	 * The current dragged position is passed as the argument. Note that the
+	 * slider value is not changed while dragging the slider, but only after the
+	 * slider has been released.
+	 * <p>
+	 * 
+	 * @see WSlider#valueChanged()
+	 */
+	public JSignal1<Integer> sliderMoved() {
+		return this.sliderMoved_;
+	}
+
 	public void resize(WLength width, WLength height) {
 		super.resize(width, height);
 		this.background_.resize(width, height);
+		this.update();
+	}
+
+	void signalConnectionsChanged() {
+		super.signalConnectionsChanged();
 		this.update();
 	}
 
@@ -326,6 +356,8 @@ public class WSlider extends WCompositeWidget {
 	private int maximum_;
 	private int value_;
 	private Signal1<Integer> valueChanged_;
+	private JSignal1<Integer> sliderMoved_;
+	private JSignal1<Integer> sliderReleased_;
 	private WContainerWidget impl_;
 	private WSliderBackground background_;
 	private WContainerWidget handle_;
@@ -357,6 +389,11 @@ public class WSlider extends WCompositeWidget {
 						WSlider.this.onSliderClick(e1);
 					}
 				});
+		this.sliderReleased_.addListener(this, new Signal1.Listener<Integer>() {
+			public void trigger(Integer e1) {
+				WSlider.this.onSliderReleased(e1);
+			}
+		});
 		this.update();
 	}
 
@@ -372,69 +409,94 @@ public class WSlider extends WCompositeWidget {
 			this.handle_.resize(new WLength(HANDLE_WIDTH), new WLength(
 					HANDLE_HEIGHT));
 			this.handle_.setOffsets(new WLength(
-					this.getHeight().getValue() / 2 + 2), EnumSet.of(Side.Top));
+					this.getHeight().toPixels() / 2 + 2), EnumSet.of(Side.Top));
 		} else {
 			this.handle_.resize(new WLength(HANDLE_HEIGHT), new WLength(
 					HANDLE_WIDTH));
-			this.handle_.setOffsets(new WLength(this.getWidth().getValue() / 2
+			this.handle_.setOffsets(new WLength(this.getWidth().toPixels() / 2
 					- HANDLE_HEIGHT - 2), EnumSet.of(Side.Left));
 		}
-		double l = this.orientation_ == Orientation.Horizontal ? this
-				.getWidth().getValue() : this.getHeight().getValue();
+		double l = (this.orientation_ == Orientation.Horizontal ? this
+				.getWidth() : this.getHeight()).toPixels();
 		double pixelsPerUnit = (l - HANDLE_WIDTH) / this.getRange();
 		String dir = this.orientation_ == Orientation.Horizontal ? "left"
 				: "top";
 		String u = this.orientation_ == Orientation.Horizontal ? "x" : "y";
+		String U = this.orientation_ == Orientation.Horizontal ? "X" : "Y";
 		String maxS = String.valueOf(l - HANDLE_WIDTH);
 		String ppU = String.valueOf(pixelsPerUnit);
+		String minimumS = String.valueOf(this.minimum_);
+		String maximumS = String.valueOf(this.maximum_);
 		this.mouseDownJS_
-				.setJavaScript("function(obj, event) {  obj.setAttribute('down', Wt3_0_0.widgetCoordinates(obj, event)."
-						+ u + "); Wt3_0_0.cancelEvent(event);}");
+				.setJavaScript("function(obj, event) {obj.setAttribute('down', Wt3_1_0.widgetCoordinates(obj, event)."
+						+ u + "); Wt3_1_0.cancelEvent(event);}");
+		String computeD = "var objh = " + this.handle_.getJsRef() + ",objb = "
+				+ this.background_.getJsRef()
+				+ ",u = WT.pageCoordinates(event)." + u
+				+ " - down,w = WT.widgetPageCoordinates(objb)." + u
+				+ ",d = u-w;";
 		this.mouseMovedJS_
-				.setJavaScript("function(obj, event) {  var down = obj.getAttribute('down');  if (down != null && down != '') {    var objh = "
-						+ this.handle_.getJsRef()
-						+ ";    var objb = "
-						+ this.background_.getJsRef()
-						+ ";    var u = Wt3_0_0.pageCoordinates(event)."
-						+ u
-						+ " - down;    var w = Wt3_0_0.widgetPageCoordinates(objb)."
-						+ u
-						+ ";    var d = u-w;    d = (d<0?0:(d>"
+				.setJavaScript("function(obj, event) {var down = obj.getAttribute('down');var WT = Wt3_1_0;if (down != null && down != '') {"
+						+ computeD
+						+ "d = Math.max(0, Math.min(d, "
 						+ maxS
-						+ "?"
-						+ maxS
-						+ ":d));    d = Math.round(d/"
+						+ "));var v = Math.round(d/"
 						+ ppU
-						+ ")*"
+						+ ");var intd = v*"
 						+ ppU
-						+ ";    objh.style."
+						+ ";if (Math.abs(WT.pxself(objh, '"
 						+ dir
-						+ " = d + 'px';  }}");
+						+ "') - intd) > 1) {objh.style."
+						+ dir
+						+ " = intd + 'px';"
+						+ this.sliderMoved_
+								.createCall(this.orientation_ == Orientation.Horizontal ? "v + "
+										+ minimumS
+										: maximumS + " - v") + "}}}");
 		this.mouseUpJS_
-				.setJavaScript("function(obj, event) {  var down = obj.getAttribute('down');  if (down != null && down != '') {    obj.removeAttribute('down');    var objb = "
-						+ this.background_.getJsRef()
-						+ ";    objb.onclick(event);  }}");
+				.setJavaScript("function(obj, event) {var down = obj.getAttribute('down');var WT = Wt3_1_0;if (down != null && down != '') {"
+						+ computeD
+						+ "d += "
+						+ String.valueOf(HANDLE_WIDTH / 2)
+						+ ";"
+						+ this.sliderReleased_.createCall("d")
+						+ "obj.removeAttribute('down');}}");
 		this.updateSliderPosition();
 	}
 
 	private void updateSliderPosition() {
-		double l = this.orientation_ == Orientation.Horizontal ? this
-				.getWidth().getValue() : this.getHeight().getValue();
+		double l = (this.orientation_ == Orientation.Horizontal ? this
+				.getWidth() : this.getHeight()).toPixels();
 		double pixelsPerUnit = (l - HANDLE_WIDTH) / this.getRange();
 		double u = ((double) this.value_ - this.minimum_) * pixelsPerUnit;
-		this.handle_.setOffsets(new WLength(u),
-				this.orientation_ == Orientation.Horizontal ? Side.Left
-						: Side.Top);
+		if (this.orientation_ == Orientation.Horizontal) {
+			this.handle_.setOffsets(new WLength(u), EnumSet.of(Side.Left));
+		} else {
+			this.handle_.setOffsets(new WLength(this.getHeight().toPixels()
+					- HANDLE_WIDTH - u), EnumSet.of(Side.Top));
+		}
 	}
 
 	private void onSliderClick(WMouseEvent event) {
-		double l = this.orientation_ == Orientation.Horizontal ? this
-				.getWidth().getValue() : this.getHeight().getValue();
+		this
+				.onSliderReleased(this.orientation_ == Orientation.Horizontal ? event
+						.getWidget().x
+						: event.getWidget().y);
+	}
+
+	private void onSliderReleased(int u) {
+		if (this.orientation_ == Orientation.Horizontal) {
+			u -= HANDLE_WIDTH / 2;
+		} else {
+			u = (int) this.getHeight().toPixels() - (u + HANDLE_WIDTH / 2);
+		}
+		double l = (this.orientation_ == Orientation.Horizontal ? this
+				.getWidth() : this.getHeight()).toPixels();
 		double pixelsPerUnit = (l - HANDLE_WIDTH) / this.getRange();
-		double u = this.orientation_ == Orientation.Horizontal ? event
-				.getWidget().x : event.getWidget().y;
-		u -= HANDLE_WIDTH / 2;
-		this.setValue(this.minimum_ + (int) (u / pixelsPerUnit + 0.5));
+		double v = Math.max(this.minimum_, Math.min(this.maximum_,
+				this.minimum_ + (int) ((double) u / pixelsPerUnit + 0.5)));
+		this.sliderMoved_.trigger((int) v);
+		this.setValue((int) v);
 		this.valueChanged_.trigger(this.getValue());
 	}
 

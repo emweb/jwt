@@ -8,6 +8,7 @@ package eu.webtoolkit.jwt.chart;
 import java.util.EnumSet;
 import eu.webtoolkit.jwt.AlignmentFlag;
 import eu.webtoolkit.jwt.WColor;
+import eu.webtoolkit.jwt.WModelIndex;
 import eu.webtoolkit.jwt.WPointF;
 import eu.webtoolkit.jwt.WString;
 
@@ -30,7 +31,8 @@ class LabelRenderIterator extends SeriesIterator {
 		}
 	}
 
-	public void newValue(WDataSeries series, double x, double y, double stackY) {
+	public void newValue(WDataSeries series, double x, double y, double stackY,
+			WModelIndex xIndex, WModelIndex yIndex) {
 		WString text = new WString();
 		if (series.isLabelsEnabled(Axis.XAxis)) {
 			text = this.renderer_.getChart().getAxis(Axis.XAxis).getLabel(x);

@@ -379,7 +379,7 @@ public abstract class WInteractWidget extends WWebWidget {
 			if (s.getName() == WInteractWidget.CLICK_SIGNAL
 					&& this.flags_.get(BIT_REPAINT_TO_AJAX)) {
 				WApplication.getInstance().doJavaScript(
-						"Wt3_0_0.unwrap('" + this.getId() + "');");
+						"Wt3_1_0.unwrap('" + this.getId() + "');");
 			}
 		}
 		super.updateDom(element, all);

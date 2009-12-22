@@ -29,9 +29,9 @@ public abstract class AbstractEventSignal extends AbstractSignal {
 	 * @see Listener
 	 */
 	public static abstract class LearningListener {
-		abstract void trigger();
+		public abstract void trigger();
 
-		abstract void undoTrigger();
+		public abstract void undoTrigger();
 
 		void setJavaScript(String javaScript) {
 			this.javaScript = javaScript;
@@ -88,7 +88,7 @@ public abstract class AbstractEventSignal extends AbstractSignal {
 	 * @see AbstractEventSignal#addListener(WObject, LearningListener)
 	 */
 	public static abstract class AutoLearnListener extends LearningListener implements Signal.Listener {
-		final void undoTrigger() {
+		public final void undoTrigger() {
 		}
 
 		SlotType getType() {
@@ -149,10 +149,10 @@ public abstract class AbstractEventSignal extends AbstractSignal {
 			setJavaScript(javaScript);
 		}
 
-		final void trigger() {
+		public final void trigger() {
 		}
 
-		final void undoTrigger() {
+		public final void undoTrigger() {
 		}
 
 		/**
@@ -218,7 +218,34 @@ public abstract class AbstractEventSignal extends AbstractSignal {
 		listener.addSignal(this);
 
 		if (!(listener instanceof JavaScriptListener))
-			listenerAdded();
+			listenerAdded();		
+	}
+
+	/**
+	 * Adds a learning listener to this signal.
+	 * <p>
+	 * @see #addListener(WObject, LearningListener)
+	 */
+	public void addListener(WObject listenerOwner, AutoLearnListener listener) {
+		addListener(listenerOwner, (LearningListener) listener);
+	}
+
+	/**
+	 * Adds a learning listener to this signal.
+	 * <p>
+	 * @see #addListener(WObject, LearningListener)
+	 */
+	public void addListener(WObject listenerOwner, PreLearnListener listener) {
+		addListener(listenerOwner, (LearningListener) listener);
+	}
+
+	/**
+	 * Adds a learning listener to this signal.
+	 * <p>
+	 * @see #addListener(WObject, LearningListener)
+	 */
+	public void addListener(WObject listenerOwner, JavaScriptListener listener) {
+		addListener(listenerOwner, (LearningListener) listener);
 	}
 
 	/**
@@ -307,7 +334,7 @@ public abstract class AbstractEventSignal extends AbstractSignal {
 			}
 
 		 if (isPreventDefault())
-			 result += WEnvironment.wt_class + ".cancelEvent(e);";
+			 result += WEnvironment.getJavaScriptWtScope() + ".cancelEvent(e);";
 		
 		return result;
 	}

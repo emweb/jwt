@@ -56,6 +56,7 @@ public class WAbstractToggleButton extends WFormWidget {
 		this.stateChanged_ = false;
 		WLabel label = new WLabel(text);
 		label.setBuddy(this);
+		this.addChild(label);
 	}
 
 	/**
@@ -73,11 +74,6 @@ public class WAbstractToggleButton extends WFormWidget {
 	 * Destructor.
 	 */
 	public void remove() {
-		WLabel l = this.getLabel();
-		if (l != null && !(l.getParent() != null)) {
-			if (l != null)
-				l.remove();
-		}
 		super.remove();
 	}
 
@@ -91,6 +87,7 @@ public class WAbstractToggleButton extends WFormWidget {
 		if (!(l != null)) {
 			l = new WLabel(text);
 			l.setBuddy(this);
+			this.addChild(l);
 		}
 		l.setText(text);
 	}
@@ -215,7 +212,7 @@ public class WAbstractToggleButton extends WFormWidget {
 					}
 				}
 				img.setProperty(Property.PropertySrc, fixRelativeUrl(src));
-				img.setAttribute("class", "Wt-indeterminate");
+				img.setProperty(Property.PropertyClass, "Wt-indeterminate");
 				EventSignal imgClick = this.voidEventSignal(
 						UNDETERMINATE_CLICK_SIGNAL, true);
 				img.setEventSignal("click", imgClick);
@@ -232,7 +229,7 @@ public class WAbstractToggleButton extends WFormWidget {
 		if (result != input) {
 			result.addChild(input);
 			WLabel l = this.getLabel();
-			if (l != null && !(l.getParent() != null)) {
+			if (l != null && l.getParent() == this) {
 				result.addChild(((WWebWidget) l).createDomElement(app));
 			}
 		}
@@ -271,10 +268,6 @@ public class WAbstractToggleButton extends WFormWidget {
 			}
 			this.updateDom(input, false);
 			result.add(input);
-			WLabel l = this.getLabel();
-			if (l != null && !(l.getParent() != null)) {
-				((WWebWidget) l).getDomChanges(result, app);
-			}
 		} else {
 			DomElement e = DomElement.getForUpdate(this, this
 					.getDomElementType());
@@ -306,7 +299,7 @@ public class WAbstractToggleButton extends WFormWidget {
 				&& uncheck.needUpdate();
 		super.updateDom(element, all);
 		if (needUpdateClickedSignal || all) {
-			String dom = "Wt3_0_0.getElement('" + element.getId() + "')";
+			String dom = "Wt3_1_0.getElement('" + element.getId() + "')";
 			List<DomElement.EventAction> actions = new ArrayList<DomElement.EventAction>();
 			if (check != null) {
 				if (check.isConnected()) {
@@ -386,7 +379,7 @@ public class WAbstractToggleButton extends WFormWidget {
 			return DomElementType.DomElement_SPAN;
 		} else {
 			WLabel l = this.getLabel();
-			if (l != null && !(l.getParent() != null)) {
+			if (l != null && l.getParent() == this) {
 				return DomElementType.DomElement_SPAN;
 			} else {
 				return DomElementType.DomElement_INPUT;

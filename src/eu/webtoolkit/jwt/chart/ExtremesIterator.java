@@ -5,6 +5,7 @@
  */
 package eu.webtoolkit.jwt.chart;
 
+import eu.webtoolkit.jwt.WModelIndex;
 
 class ExtremesIterator extends SeriesIterator {
 	public ExtremesIterator(Axis axis, AxisScale scale) {
@@ -20,7 +21,8 @@ class ExtremesIterator extends SeriesIterator {
 		return series.getAxis() == this.axis_;
 	}
 
-	public void newValue(WDataSeries series, double x, double y, double stackY) {
+	public void newValue(WDataSeries series, double x, double y, double stackY,
+			WModelIndex xIndex, WModelIndex yIndex) {
 		if (!Double.isNaN(y) && (this.scale_ != AxisScale.LogScale || y > 0.0)) {
 			this.maximum_ = Math.max(y, this.maximum_);
 			this.minimum_ = Math.min(y, this.minimum_);

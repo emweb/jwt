@@ -9,6 +9,7 @@ import java.util.EnumSet;
 import eu.webtoolkit.jwt.WBrush;
 import eu.webtoolkit.jwt.WColor;
 import eu.webtoolkit.jwt.WPen;
+import eu.webtoolkit.jwt.WPointF;
 import eu.webtoolkit.jwt.utils.EnumUtils;
 
 /**
@@ -94,7 +95,7 @@ public class WDataSeries {
 	}
 
 	/**
-	 * Construct a new data series.
+	 * Constructs a new data series.
 	 * <p>
 	 * Creates a new data series which plots the Y values from the model column
 	 * <i>modelColumn</i>, with the indicated <i>seriesType</i>. The Y values
@@ -119,13 +120,16 @@ public class WDataSeries {
 		this.fillRange_ = FillRangeType.NoFill;
 		this.marker_ = type == SeriesType.PointSeries ? MarkerType.CircleMarker
 				: MarkerType.NoMarker;
+		this.markerSize_ = 6;
 		this.legend_ = true;
 		this.xLabel_ = false;
 		this.yLabel_ = false;
+		this.barWidth_ = 0.8;
+		this.hidden_ = false;
 	}
 
 	/**
-	 * Construct a new data series.
+	 * Constructs a new data series.
 	 * <p>
 	 * Calls {@link #WDataSeries(int modelColumn, SeriesType type, Axis axis)
 	 * this(modelColumn, SeriesType.PointSeries, Axis.Y1Axis)}
@@ -135,7 +139,7 @@ public class WDataSeries {
 	}
 
 	/**
-	 * Construct a new data series.
+	 * Constructs a new data series.
 	 * <p>
 	 * Calls {@link #WDataSeries(int modelColumn, SeriesType type, Axis axis)
 	 * this(modelColumn, type, Axis.Y1Axis)}
@@ -145,7 +149,38 @@ public class WDataSeries {
 	}
 
 	/**
-	 * Change the series type.
+	 * Sets the bar width.
+	 * <p>
+	 * The bar width specifies the bar width (in axis dimensions). For category
+	 * plots, which may have several bars for different series next to each
+	 * other, you will want to specify the same bar width for each series.
+	 * <p>
+	 * For scatter plots, you may want to set the bar width to a natural size.
+	 * E.g. if you are plotting weekly measurements, you could set the width to
+	 * correspond to a week (=7).
+	 * <p>
+	 * The default value is 0.8 (which leaves a 20% margin between bars for
+	 * different categories in a category chart.
+	 * <p>
+	 * 
+	 * @see WCartesianChart#setBarMargin(double margin)
+	 */
+	public void setBarWidth(double width) {
+		this.barWidth_ = width;
+	}
+
+	/**
+	 * Returns the bar width.
+	 * <p>
+	 * 
+	 * @see WDataSeries#setBarWidth(double width)
+	 */
+	public double getBarWidth() {
+		return this.barWidth_;
+	}
+
+	/**
+	 * Sets the series type.
 	 * <p>
 	 * The series type specifies how the data is plotted, i.e. using mere point
 	 * markers, lines, curves, or bars.
@@ -169,7 +204,7 @@ public class WDataSeries {
 	}
 
 	/**
-	 * Change the model column.
+	 * Sets the model column.
 	 * <p>
 	 * This specifies the model column from which the Y data is retrieved that
 	 * is plotted by this series.
@@ -227,7 +262,7 @@ public class WDataSeries {
 	}
 
 	/**
-	 * Bind this series to a chart axis.
+	 * Binds this series to a chart axis.
 	 * <p>
 	 * A data series may be bound to either the first or second Y axis. Note
 	 * that the second Y axis is by default not displayed.
@@ -256,10 +291,10 @@ public class WDataSeries {
 	}
 
 	/**
-	 * Set which aspects of the look are overriden.
+	 * Sets which aspects of the look are overriden.
 	 * <p>
 	 * Set which aspects of the look, that are by default based on the chart
-	 * palette, or overridden by custom settings.
+	 * palette, are overridden by custom settings.
 	 * <p>
 	 * The default value is 0 (nothing overridden).
 	 */
@@ -272,7 +307,7 @@ public class WDataSeries {
 	}
 
 	/**
-	 * Set which aspects of the look are overriden.
+	 * Sets which aspects of the look are overriden.
 	 * <p>
 	 * Calls {@link #setCustomFlags(EnumSet flags)
 	 * setCustomFlags(EnumSet.of(flag, flags))}
@@ -293,7 +328,7 @@ public class WDataSeries {
 	}
 
 	/**
-	 * Override the pen used for drawing lines for this series.
+	 * Overrides the pen used for drawing lines for this series.
 	 * <p>
 	 * Overrides the pen that is used to draw this series. Calling this method
 	 * automatically adds CustomPen to the custom flags.
@@ -340,7 +375,7 @@ public class WDataSeries {
 	}
 
 	/**
-	 * Override the brush used for filling areas for this series.
+	 * Overrides the brush used for filling areas for this series.
 	 * <p>
 	 * Overrides the brush that is used to draw this series. For a bar plot,
 	 * this is the brush used to fill the bars. For a line chart, this is the
@@ -436,6 +471,29 @@ public class WDataSeries {
 	}
 
 	/**
+	 * Sets the marker size.
+	 * <p>
+	 * The default marker size is 6 pixels.
+	 */
+	public void setMarkerSize(double size) {
+		if (!ChartUtils.equals(this.markerSize_, size)) {
+			this.markerSize_ = size;
+			update();
+		}
+		;
+	}
+
+	/**
+	 * Returns the marker size.
+	 * <p>
+	 * 
+	 * @see WDataSeries#setMarkerSize(double size)
+	 */
+	public double getMarkerSize() {
+		return this.markerSize_;
+	}
+
+	/**
 	 * Sets the marker pen.
 	 * <p>
 	 * Overrides the pen used for stroking the marker. By default the marker pen
@@ -506,7 +564,7 @@ public class WDataSeries {
 	}
 
 	/**
-	 * Enable the entry for this series in the legend.
+	 * Enables the entry for this series in the legend.
 	 * <p>
 	 * When <i>enabled</i>, this series is added to the chart legend.
 	 * <p>
@@ -530,11 +588,15 @@ public class WDataSeries {
 	 * @see WDataSeries#setLegendEnabled(boolean enabled)
 	 */
 	public boolean isLegendEnabled() {
-		return this.legend_;
+		if (!this.isHidden()) {
+			return this.legend_;
+		} else {
+			return false;
+		}
 	}
 
 	/**
-	 * Enable a label that is shown at the series data points.
+	 * Enables a label that is shown at the series data points.
 	 * <p>
 	 * You may enable labels for the XAxis, YAxis or both axes. The label that
 	 * is displayed is the corresponding value on that axis. If both labels are
@@ -556,7 +618,7 @@ public class WDataSeries {
 	}
 
 	/**
-	 * Enable a label that is shown at the series data points.
+	 * Enables a label that is shown at the series data points.
 	 * <p>
 	 * Calls {@link #setLabelsEnabled(Axis axis, boolean enabled)
 	 * setLabelsEnabled(axis, true)}
@@ -576,7 +638,7 @@ public class WDataSeries {
 	}
 
 	/**
-	 * Set the label color.
+	 * Sets the label color.
 	 * <p>
 	 * Specify the color used for the rendering labels at the data points.
 	 * <p>
@@ -611,6 +673,85 @@ public class WDataSeries {
 		}
 	}
 
+	/**
+	 * Hide/unhide this series.
+	 * <p>
+	 * A hidden series will not be show in the chart and legend.
+	 */
+	public void setHidden(boolean hidden) {
+		this.hidden_ = hidden;
+	}
+
+	/**
+	 * Return whether the series is hidden.
+	 * <p>
+	 * /sa {@link WDataSeries#setHidden(boolean hidden) setHidden()}
+	 */
+	public boolean isHidden() {
+		return this.hidden_;
+	}
+
+	/**
+	 * Maps from device coordinates to model coordinates.
+	 * <p>
+	 * Maps a position in the chart back to model coordinates, for data in this
+	 * data series.
+	 * <p>
+	 * This uses WChart::mapFromDevice() passing the
+	 * {@link WDataSeries#getAxis() getAxis()} to which this series is bound.
+	 * <p>
+	 * This method uses the axis dimensions that are based on the latest chart
+	 * rendering. If you have not yet rendered the chart, or wish to already the
+	 * mapping reflect model changes since the last rendering, you should call
+	 * {@link WCartesianChart#initLayout(WRectF rectangle)
+	 * WCartesianChart#initLayout()} first.
+	 * <p>
+	 * 
+	 * @see WDataSeries#mapToDevice(Object xValue, Object yValue, int segment)
+	 */
+	public WPointF mapFromDevice(WPointF deviceCoordinates) {
+		if (this.chart_ != null) {
+			return this.chart_.mapFromDevice(deviceCoordinates, this.axis_);
+		} else {
+			return new WPointF();
+		}
+	}
+
+	/**
+	 * Maps from model values to device coordinates.
+	 * <p>
+	 * Maps model values to device coordinates, for data in this data series.
+	 * <p>
+	 * This uses WChart::mapToDevice() passing the {@link WDataSeries#getAxis()
+	 * getAxis()} to which this series is bound.
+	 * <p>
+	 * This method uses the axis dimensions that are based on the latest chart
+	 * rendering. If you have not yet rendered the chart, or wish to already the
+	 * mapping reflect model changes since the last rendering, you should call
+	 * {@link WCartesianChart#initLayout(WRectF rectangle)
+	 * WCartesianChart#initLayout()} first.
+	 * <p>
+	 * 
+	 * @see WDataSeries#mapFromDevice(WPointF deviceCoordinates)
+	 */
+	public WPointF mapToDevice(Object xValue, Object yValue, int segment) {
+		if (this.chart_ != null) {
+			return this.chart_.mapToDevice(xValue, yValue, this.axis_, segment);
+		} else {
+			return new WPointF();
+		}
+	}
+
+	/**
+	 * Maps from model values to device coordinates.
+	 * <p>
+	 * Returns {@link #mapToDevice(Object xValue, Object yValue, int segment)
+	 * mapToDevice(xValue, yValue, 0)}
+	 */
+	public final WPointF mapToDevice(Object xValue, Object yValue) {
+		return mapToDevice(xValue, yValue, 0);
+	}
+
 	private WCartesianChart chart_;
 	int modelColumn_;
 	private boolean stacked_;
@@ -624,9 +765,12 @@ public class WDataSeries {
 	private WColor labelColor_;
 	private FillRangeType fillRange_;
 	private MarkerType marker_;
+	private double markerSize_;
 	private boolean legend_;
 	private boolean xLabel_;
 	private boolean yLabel_;
+	private double barWidth_;
+	private boolean hidden_;
 
 	// private boolean (T m, T v) ;
 	void setChart(WCartesianChart chart) {

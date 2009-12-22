@@ -56,7 +56,7 @@ public class WebRequest extends HttpServletRequestWrapper {
 	 * @param files a list of POST'ed files
 	 */
 	public WebRequest(Map<String, List<String>> parameters, Map<String, UploadedFile> files) {
-		super(null);
+		super(new MockupHttpServletRequest());
 		parameters_ = parameters;
 		files_ = files;
 	}

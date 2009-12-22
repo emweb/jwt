@@ -16,10 +16,10 @@ import eu.webtoolkit.jwt.WPen;
  * This class provides an interface for a palette which sets strokes and fill
  * strokes for data in a {@link WAbstractChart chart}. A palette is an ordered
  * list of styles, which is indexed by the chart to get a suitable style for a
- * particular series (in case of {@link WCartesianChart}) or data row (in case
- * of {@link WPieChart}). Each style is defined by a brush, two pen styles (one
- * for borders, and one for plain lines), and a font color that is appropriate
- * for drawing text within the brushed area.
+ * particular series (in case of {@link eu.webtoolkit.jwt.chart.WCartesianChart}
+ * ) or data row (in case of {@link WPieChart}). Each style is defined by a
+ * brush, two pen styles (one for borders, and one for plain lines), and a font
+ * color that is appropriate for drawing text within the brushed area.
  * <p>
  * To use a custom palette, you should reimplement this class, and then use
  * {@link WAbstractChart#setPalette(WChartPalette palette)

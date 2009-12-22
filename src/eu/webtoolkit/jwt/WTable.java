@@ -53,7 +53,7 @@ public class WTable extends WInteractWidget {
 		super(parent);
 		this.flags_ = new BitSet();
 		this.rows_ = new ArrayList<WTableRow>();
-		this.columns_ = null;
+		this.columns_ = new ArrayList<WTableColumn>();
 		this.rowsChanged_ = null;
 		this.rowsAdded_ = 0;
 		this.headerRowCount_ = 0;
@@ -79,10 +79,7 @@ public class WTable extends WInteractWidget {
 		for (int i = 0; i < this.rows_.size(); ++i) {
 			;
 		}
-		if (this.columns_ != null) {
-			for (int i = 0; i < this.columns_.size(); ++i) {
-				;
-			}
+		for (int i = 0; i < this.columns_.size(); ++i) {
 			;
 		}
 		;
@@ -131,9 +128,6 @@ public class WTable extends WInteractWidget {
 	 */
 	public WTableColumn getColumnAt(int column) {
 		this.expand(0, column, 0, 1);
-		if (!(this.columns_ != null)) {
-			this.columns_ = new ArrayList<WTableColumn>();
-		}
 		if (this.columns_.size() <= (int) column) {
 			for (int col = this.columns_.size(); col <= (int) column; ++col) {
 				this.columns_.add(new WTableColumn(this));
@@ -207,7 +201,7 @@ public class WTable extends WInteractWidget {
 			this.rows_.get(i).insertColumn(column);
 		}
 		WTableColumn tableColumn = null;
-		if (this.columns_ != null && (int) column <= this.columns_.size()) {
+		if ((int) column <= this.columns_.size()) {
 			tableColumn = new WTableColumn(this);
 			this.columns_.add(0 + column, tableColumn);
 		}
@@ -223,8 +217,7 @@ public class WTable extends WInteractWidget {
 		for (int i = 0; i < this.getRowCount(); ++i) {
 			this.rows_.get(i).deleteColumn(column);
 		}
-		if (this.columns_ != null && (int) column <= this.columns_.size()) {
-			;
+		if ((int) column <= this.columns_.size()) {
 			this.columns_.remove(0 + column);
 		}
 		this.flags_.set(BIT_GRID_CHANGED);
@@ -384,18 +377,15 @@ public class WTable extends WInteractWidget {
 		if (withIds) {
 			tbody.setId(this.getId() + "tb");
 		}
-		if (this.columns_ != null) {
-			for (int col = 0; col < this.columns_.size(); ++col) {
-				DomElement c = DomElement
-						.createNew(DomElementType.DomElement_COL);
-				if (withIds) {
-					c.setId(this.columns_.get(col).getId());
-				}
-				this.columns_.get(col).updateDom(c, true);
-				table.addChild(c);
+		for (int col = 0; col < this.columns_.size(); ++col) {
+			DomElement c = DomElement.createNew(DomElementType.DomElement_COL);
+			if (withIds) {
+				c.setId(this.columns_.get(col).getId());
 			}
-			this.flags_.clear(BIT_COLUMNS_CHANGED);
+			this.columns_.get(col).updateDom(c, true);
+			table.addChild(c);
 		}
+		this.flags_.clear(BIT_COLUMNS_CHANGED);
 		for (int row = 0; row < (int) this.getRowCount(); ++row) {
 			for (int col = 0; col < (int) this.getColumnCount(); ++col) {
 				this.itemAt(row, col).overSpanned = false;
@@ -451,13 +441,11 @@ public class WTable extends WInteractWidget {
 				this.rowsAdded_ = 0;
 			}
 			if (this.flags_.get(BIT_COLUMNS_CHANGED)) {
-				if (this.columns_ != null) {
-					for (int i = 0; i < this.columns_.size(); ++i) {
-						DomElement e2 = DomElement.getForUpdate(this.columns_
-								.get(i), DomElementType.DomElement_COL);
-						this.columns_.get(i).updateDom(e2, false);
-						result.add(e2);
-					}
+				for (int i = 0; i < this.columns_.size(); ++i) {
+					DomElement e2 = DomElement.getForUpdate(this.columns_
+							.get(i), DomElementType.DomElement_COL);
+					this.columns_.get(i).updateDom(e2, false);
+					result.add(e2);
 				}
 				this.flags_.clear(BIT_COLUMNS_CHANGED);
 			}

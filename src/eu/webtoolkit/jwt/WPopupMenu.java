@@ -74,37 +74,14 @@ package eu.webtoolkit.jwt;
  * 
  * </blockquote>
  * <p>
- * The menu implementation does not provide any style. You can style the menu
- * using CSS.
+ * <h3>CSS</h3>
  * <p>
- * For example: <blockquote>
- * 
- * <pre>
- * div.Wt-popupmenu {
- *      background: white;
- *      color: black;
- *     border: 1px solid #666666;
- *     z-index: 200;
- *     cursor: default;
- *  }
- * 
- *  div.Wt-popupmenu .notselected, div.Wt-popupmenu .selected {
- *      padding: 2px 0px;
- *  }
- * 
- *  div.Wt-popupmenu .selected {
- *      background: blue;
- *      color: white;
- *  }
- * 
- *  div.Wt-popupmenu .separator {
- *      border-top: 1px solid #CCCCCC;
- *     border-bottom: 1px solid #DDDDDD;
- *     margin: 0px 3px;
- *  }
- * </pre>
- * 
- * </blockquote>
+ * You may customize the look of a treeview using the <code>Wt-popupmenu</code>
+ * CSS class.
+ * <p>
+ * <div class="fragment"><pre class="fragment"> .Wt-popupmenu .Wt-item,
+ * .Wt-popupmenu .Wt-selected : item .Wt-popupmenu .Wt-selected : selected item
+ * .Wt-popupmenu .Wt-separator : separator </pre></div>
  * <p>
  * 
  * @see WPopupMenuItem
@@ -131,7 +108,7 @@ public class WPopupMenu extends WCompositeWidget {
 		String CSS_RULES_NAME = "Wt::WPopupMenu";
 		WApplication app = WApplication.getInstance();
 		if (!app.getStyleSheet().isDefined(CSS_RULES_NAME)) {
-			app.getStyleSheet().addRule(".notselected .Wt-popupmenu",
+			app.getStyleSheet().addRule(".Wt-notselected .Wt-popupmenu",
 					"visibility: hidden;", CSS_RULES_NAME);
 		}
 		app.getDomRoot().addWidget(this);
@@ -255,7 +232,7 @@ public class WPopupMenu extends WCompositeWidget {
 		this.prepareRender(app);
 		this.show();
 		WApplication.getInstance().doJavaScript(
-				"Wt3_0_0.positionXY('" + this.getId() + "',"
+				"Wt3_1_0.positionXY('" + this.getId() + "',"
 						+ String.valueOf(p.getX()) + ","
 						+ String.valueOf(p.getY()) + ");");
 	}
@@ -377,7 +354,7 @@ public class WPopupMenu extends WCompositeWidget {
 	void popup(WWidget location) {
 		this.show();
 		WApplication.getInstance().doJavaScript(
-				"Wt3_0_0.positionAtWidget('" + this.getId() + "','"
+				"Wt3_1_0.positionAtWidget('" + this.getId() + "','"
 						+ location.getId() + "');");
 	}
 

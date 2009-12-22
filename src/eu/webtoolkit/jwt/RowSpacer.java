@@ -13,7 +13,7 @@ class RowSpacer extends WWebWidget {
 		this.height_ = 0;
 		this.setRows(height);
 		this.setInline(false);
-		this.setStyleClass("spacer");
+		this.setStyleClass("Wt-spacer");
 	}
 
 	public void setRows(int height, boolean force) {

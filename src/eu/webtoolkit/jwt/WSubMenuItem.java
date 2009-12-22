@@ -71,6 +71,10 @@ public class WSubMenuItem extends WMenuItem {
 		return this.subMenu_;
 	}
 
+	public String getPathComponent() {
+		return super.getPathComponent() + "/";
+	}
+
 	protected WWidget createItemWidget() {
 		if (this.subMenu_ != null) {
 			WContainerWidget contents = new WContainerWidget();
@@ -113,6 +117,20 @@ public class WSubMenuItem extends WMenuItem {
 			return wi.clicked();
 		} else {
 			return super.activateSignal();
+		}
+	}
+
+	protected boolean handleInternalPathChange(String path) {
+		if (this.subMenu_ != null) {
+			if (this.subMenu_.isInternalPathEnabled()
+					&& path.equals(this.subMenu_.getInternalBasePath())) {
+				this.subMenu_.select(-1);
+				return false;
+			} else {
+				return true;
+			}
+		} else {
+			return super.handleInternalPathChange(path);
 		}
 	}
 

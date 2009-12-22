@@ -42,7 +42,12 @@ public class WTableColumn extends WObject {
 	 * @see WTable#getRowAt(int row)
 	 */
 	public int getColumnNum() {
-		return this.table_.columns_.indexOf(this);
+		for (int i = 0; i < this.table_.columns_.size(); i++) {
+			if (this.table_.columns_.get(i) == this) {
+				return i;
+			}
+		}
+		return -1;
 	}
 
 	/**
@@ -140,7 +145,7 @@ public class WTableColumn extends WObject {
 					.getCssText());
 		}
 		if (!all || this.styleClass_.length() != 0) {
-			element.setAttribute("class", this.styleClass_);
+			element.setProperty(Property.PropertyClass, this.styleClass_);
 		}
 	}
 }

@@ -12,9 +12,9 @@ package eu.webtoolkit.jwt.chart;
  * The location is dependent on the values of the other axis.
  * <p>
  * 
- * @see WAxis#setLocation(AxisLocation location)
+ * @see WAxis#setLocation(AxisValue location)
  */
-public enum AxisLocation {
+public enum AxisValue {
 	/**
 	 * At the minimum value.
 	 */

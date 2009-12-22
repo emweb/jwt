@@ -23,11 +23,10 @@ import java.util.Set;
  * when a Flash player is not available on the system or when JavaScript is
  * disabled.
  * <p>
- * This class uses <i>resourcesURL</i>&quot;swfobject.js&quot;, a companion
- * JavaScript library, which is distributed with JWt in the resources folder.
- * <i>resourcesURL</i> is the configuration property that locates the JWt
- * resources/ folder inside your docroot.* This class requires swfobject.js in
- * the resources folder.
+ * This class uses <i>resourcesURL</i>&quot;/swfobject.js&quot;, a companion
+ * JavaScript library, which is distributed with JWt in the resources folder,
+ * see also DOCREF<a class="el" href="overview.html#deployment">deployment and
+ * resources</a>.
  */
 public class WFlashObject extends WContainerWidget {
 	/**
@@ -120,7 +119,7 @@ public class WFlashObject extends WContainerWidget {
 	 * to refer to the Flash content.
 	 */
 	public String getJsFlashRef() {
-		return "Wt3_0_0.getElement('flash" + this.getId() + "')";
+		return "Wt3_1_0.getElement('flash" + this.getId() + "')";
 	}
 
 	void getDomChanges(List<DomElement> result, WApplication app) {

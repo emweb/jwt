@@ -99,6 +99,7 @@ public class WPainter {
 		this.window_ = new WRectF();
 		this.viewTransform_ = new WTransform();
 		this.stateStack_ = new ArrayList<WPainter.State>();
+		this.stateStack_.add(new WPainter.State());
 	}
 
 	/**
@@ -130,6 +131,7 @@ public class WPainter {
 		if (device.isPaintActive()) {
 			return false;
 		}
+		this.stateStack_.clear();
 		this.stateStack_.add(new WPainter.State());
 		this.device_ = device;
 		this.device_.setPainter(this);
@@ -1010,8 +1012,10 @@ public class WPainter {
 	public void setClipping(boolean enable) {
 		if (this.getS().clipping_ != enable) {
 			this.getS().clipping_ = enable;
-			this.device_.setChanged(EnumSet
-					.of(WPaintDevice.ChangeFlag.Clipping));
+			if (this.device_ != null) {
+				this.device_.setChanged(EnumSet
+						.of(WPaintDevice.ChangeFlag.Clipping));
+			}
 		}
 	}
 
@@ -1048,7 +1052,7 @@ public class WPainter {
 	public void setClipPath(WPainterPath clipPath) {
 		this.getS().clipPath_.assign(clipPath);
 		this.getS().clipPathTransform_.assign(this.getCombinedTransform());
-		if (this.getS().clipping_) {
+		if (this.getS().clipping_ && this.device_ != null) {
 			this.device_.setChanged(EnumSet
 					.of(WPaintDevice.ChangeFlag.Clipping));
 		}
@@ -1076,7 +1080,10 @@ public class WPainter {
 	 */
 	public void resetTransform() {
 		this.getS().worldTransform_.reset();
-		this.device_.setChanged(EnumSet.of(WPaintDevice.ChangeFlag.Transform));
+		if (this.device_ != null) {
+			this.device_.setChanged(EnumSet
+					.of(WPaintDevice.ChangeFlag.Transform));
+		}
 	}
 
 	/**
@@ -1093,7 +1100,10 @@ public class WPainter {
 	 */
 	public void rotate(double angle) {
 		this.getS().worldTransform_.rotate(angle);
-		this.device_.setChanged(EnumSet.of(WPaintDevice.ChangeFlag.Transform));
+		if (this.device_ != null) {
+			this.device_.setChanged(EnumSet
+					.of(WPaintDevice.ChangeFlag.Transform));
+		}
 	}
 
 	/**
@@ -1109,7 +1119,10 @@ public class WPainter {
 	 */
 	public void scale(double sx, double sy) {
 		this.getS().worldTransform_.scale(sx, sy);
-		this.device_.setChanged(EnumSet.of(WPaintDevice.ChangeFlag.Transform));
+		if (this.device_ != null) {
+			this.device_.setChanged(EnumSet
+					.of(WPaintDevice.ChangeFlag.Transform));
+		}
 	}
 
 	/**
@@ -1142,7 +1155,10 @@ public class WPainter {
 	 */
 	public void translate(double dx, double dy) {
 		this.getS().worldTransform_.translate(dx, dy);
-		this.device_.setChanged(EnumSet.of(WPaintDevice.ChangeFlag.Transform));
+		if (this.device_ != null) {
+			this.device_.setChanged(EnumSet
+					.of(WPaintDevice.ChangeFlag.Transform));
+		}
 	}
 
 	/**
@@ -1165,7 +1181,10 @@ public class WPainter {
 		} else {
 			this.getS().worldTransform_.assign(matrix);
 		}
-		this.device_.setChanged(EnumSet.of(WPaintDevice.ChangeFlag.Transform));
+		if (this.device_ != null) {
+			this.device_.setChanged(EnumSet
+					.of(WPaintDevice.ChangeFlag.Transform));
+		}
 	}
 
 	/**
@@ -1443,6 +1462,9 @@ public class WPainter {
 				- this.window_.getX() * scaleX, this.viewPort_.getY()
 				- this.window_.getY() * scaleY);
 		this.viewTransform_.scale(scaleX, scaleY);
-		this.device_.setChanged(EnumSet.of(WPaintDevice.ChangeFlag.Transform));
+		if (this.device_ != null) {
+			this.device_.setChanged(EnumSet
+					.of(WPaintDevice.ChangeFlag.Transform));
+		}
 	}
 }

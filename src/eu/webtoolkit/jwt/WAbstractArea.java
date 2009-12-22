@@ -506,10 +506,10 @@ public class WAbstractArea extends WObject {
 			case TargetSelf:
 				break;
 			case TargetThisWindow:
-				element.setAttribute("target", "_top");
+				element.setProperty(Property.PropertyTarget, "_top");
 				break;
 			case TargetNewWindow:
-				element.setAttribute("target", "_blank");
+				element.setProperty(Property.PropertyTarget, "_blank");
 			}
 			element.setAttribute("alt", this.anchor_.altText_.toString());
 		} else {

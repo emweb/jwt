@@ -44,12 +44,21 @@ class WFileUploadResource extends WResource {
 					"._p_.update(null, '").append(
 					this.fileUpload_.uploaded().encodeCmd()).append(
 					"', null, true);");
+		} else {
+			if (0 != 0) {
+				o
+						.append("window.parent.")
+						.append(WApplication.getInstance().getJavaScriptClass())
+						.append("._p_.update(null, '")
+						.append(this.fileUpload_.fileTooLargeImpl().encodeCmd())
+						.append("', null, true);");
+			}
 		}
 		o
 				.append("}\n</script></head><body onload=\"load();\"style=\"margin:0;padding:0;\">");
 		o.append("</body></html>");
 		if (0 != 0) {
-			this.fileUpload_.requestTooLarge(0);
+			this.fileUpload_.tooLargeSize_ = 0;
 		} else {
 			if (p != null) {
 				this.fileUpload_.setFormData(p);

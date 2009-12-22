@@ -46,7 +46,7 @@ import eu.webtoolkit.jwt.utils.EnumUtils;
  * {@link WAbstractChart#setBackground(WBrush background) setBackground()}.
  * <p>
  * 
- * @see WCartesianChart
+ * @see eu.webtoolkit.jwt.chart.WCartesianChart
  * @see WPieChart
  */
 public abstract class WAbstractChart extends WPaintedWidget {
@@ -356,7 +356,6 @@ public abstract class WAbstractChart extends WPaintedWidget {
 				WLength.Unit.Point));
 		this.setPlotAreaPadding(5, EnumSet.of(Side.Left, Side.Right));
 		this.setPlotAreaPadding(5, EnumSet.of(Side.Top, Side.Bottom));
-		this.resize(new WLength(600), new WLength(400));
 	}
 
 	private WAbstractItemModel model_;

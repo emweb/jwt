@@ -361,6 +361,7 @@ public class WSvgImage extends WResource implements WVectorImage {
 						double dy = fdy - gdy;
 						this.pathTranslation_.setX(dx);
 						this.pathTranslation_.setY(dy);
+						this.changeFlags_.clear();
 						return;
 					}
 				} else {
@@ -424,7 +425,6 @@ public class WSvgImage extends WResource implements WVectorImage {
 		}
 		tmp.append("<g style=\"").append(this.fillStyle_).append(
 				this.strokeStyle_).append(this.fontStyle_).append('"');
-		this.currentTransform_.assign(this.getPainter().getCombinedTransform());
 		if (!this.currentTransform_.isIdentity()) {
 			tmp.append(" transform=\"matrix(").append(
 					MathUtils.round(this.currentTransform_.getM11(), 3));

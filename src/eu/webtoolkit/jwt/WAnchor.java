@@ -560,14 +560,14 @@ public class WAnchor extends WContainerWidget {
 			switch (this.target_) {
 			case TargetSelf:
 				if (!all) {
-					element.setAttribute("target", "_self");
+					element.setProperty(Property.PropertyTarget, "_self");
 				}
 				break;
 			case TargetThisWindow:
-				element.setAttribute("target", "_top");
+				element.setProperty(Property.PropertyTarget, "_top");
 				break;
 			case TargetNewWindow:
-				element.setAttribute("target", "_blank");
+				element.setProperty(Property.PropertyTarget, "_blank");
 			}
 			this.flags_.clear(BIT_TARGET_CHANGED);
 		}

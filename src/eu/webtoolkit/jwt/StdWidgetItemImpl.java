@@ -70,7 +70,7 @@ class StdWidgetItemImpl extends StdLayoutItemImpl {
 				style.append("margin-bottom:").append(
 						String.valueOf(marginBottom)).append("px;");
 			}
-			result.setAttribute("style", style.toString());
+			result.setProperty(Property.PropertyStyle, style.toString());
 		}
 		if (fitHeight
 				&& d.getProperty(Property.PropertyStyleHeight).length() == 0) {

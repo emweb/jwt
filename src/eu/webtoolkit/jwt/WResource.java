@@ -7,6 +7,7 @@ package eu.webtoolkit.jwt;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -153,6 +154,21 @@ public abstract class WResource extends WObject {
 		WebRequest request = new WebRequest(parameterMap, uploadedFiles);
 		WebResponse response = new WebResponse(out);
 		handleRequest(request, response);
+		response.flush();
+	}
+	
+	/**
+	 * Write the resource to an output stream.
+	 * <p>
+	 * This is a utility method that allows you to write the resource to an
+	 * output stream, by using {@link #handleRequest(WebRequest, WebResponse)}.
+	 * 
+	 * @param out
+	 *            The output stream.
+	 * @throws IOException
+	 */
+	public void write(OutputStream out) throws IOException {
+		write(out, new HashMap<String, List<String>>(), new HashMap<String, UploadedFile>());
 	}
 
 	/**

@@ -42,6 +42,11 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 		this.painter_ = null;
 		this.changeFlags_ = EnumSet.noneOf(WPaintDevice.ChangeFlag.class);
 		this.paintFlags_ = EnumSet.noneOf(PaintFlag.class);
+		this.busyWithPath_ = false;
+		this.currentTransform_ = new WTransform();
+		this.currentBrush_ = new WBrush();
+		this.currentPen_ = new WPen();
+		this.pathTranslation_ = new WPointF();
 		this.js_ = new StringWriter();
 		this.textElements_ = new ArrayList<DomElement>();
 		this.images_ = new ArrayList<String>();
@@ -99,20 +104,24 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 			lw = 0;
 		}
 		r = Math.max(0.005, r - lw / 2);
+		char[] buf = new char[30];
 		this.js_.append("ctx.save();").append("ctx.translate(").append(
-				String.valueOf(rect.getCenter().getX())).append(",").append(
-				String.valueOf(rect.getCenter().getY())).append(");").append(
-				"ctx.scale(").append(String.valueOf(sx)).append(",").append(
-				String.valueOf(sy)).append(");").append("ctx.lineWidth = ")
-				.append(String.valueOf(lw)).append(";").append(
-						"ctx.beginPath();").append("ctx.arc(0,0,").append(
-						String.valueOf(r)).append(',').append(
-						String.valueOf(ra.getX())).append(",").append(
-						String.valueOf(ra.getY())).append(",true);");
-		if (this.getPainter().getBrush().getStyle() != WBrushStyle.NoBrush) {
+				MathUtils.round(rect.getCenter().getX(), 3));
+		this.js_.append(",")
+				.append(MathUtils.round(rect.getCenter().getY(), 3));
+		this.js_.append(");").append("ctx.scale(").append(
+				MathUtils.round(sx, 3));
+		this.js_.append(",").append(MathUtils.round(sy, 3)).append(");");
+		this.js_.append("ctx.lineWidth = ").append(MathUtils.round(lw, 3))
+				.append(";").append("ctx.beginPath();");
+		this.js_.append("ctx.arc(0,0,").append(MathUtils.round(r, 3));
+		this.js_.append(',').append(MathUtils.round(ra.getX(), 3));
+		this.js_.append(",").append(MathUtils.round(ra.getY(), 3)).append(
+				",true);");
+		if (this.currentBrush_.getStyle() != WBrushStyle.NoBrush) {
 			this.js_.append("ctx.fill();");
 		}
-		if (this.getPainter().getPen().getStyle() != PenStyle.NoPen) {
+		if (this.currentPen_.getStyle() != PenStyle.NoPen) {
 			this.js_.append("ctx.stroke();");
 		}
 		this.js_.append("ctx.restore();");
@@ -137,26 +146,15 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 	}
 
 	public void drawLine(double x1, double y1, double x2, double y2) {
-		this.renderStateChanges();
-		char[] buf = new char[30];
-		this.js_.append("ctx.beginPath();").append("ctx.moveTo(").append(
-				MathUtils.round(x1, 3)).append(',');
-		this.js_.append(MathUtils.round(y1, 3)).append(");");
-		this.js_.append("ctx.lineTo(").append(MathUtils.round(x2, 3)).append(
-				',');
-		this.js_.append(MathUtils.round(y2, 3)).append(");ctx.stroke();");
+		WPainterPath path = new WPainterPath();
+		path.moveTo(x1, y1);
+		path.lineTo(x2, y2);
+		this.drawPath(path);
 	}
 
 	public void drawPath(WPainterPath path) {
 		this.renderStateChanges();
 		this.drawPlainPath(this.js_, path);
-		if (this.getPainter().getBrush().getStyle() != WBrushStyle.NoBrush) {
-			this.js_.append("ctx.fill();");
-		}
-		if (this.getPainter().getPen().getStyle() != PenStyle.NoPen) {
-			this.js_.append("ctx.stroke();");
-		}
-		this.js_.append('\n');
 	}
 
 	public void drawText(WRectF rect, EnumSet<AlignmentFlag> flags,
@@ -216,10 +214,13 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 	}
 
 	public void init() {
+		this.currentBrush_ = this.getPainter().getBrush();
+		this.currentPen_ = this.getPainter().getPen();
 		this.changeFlags_.clear();
 	}
 
 	public void done() {
+		this.finishPath();
 	}
 
 	public boolean isPaintActive() {
@@ -227,7 +228,7 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 	}
 
 	void render(String canvasId, DomElement text) {
-		String canvasVar = "Wt3_0_0.getElement('" + canvasId + "')";
+		String canvasVar = "Wt3_1_0.getElement('" + canvasId + "')";
 		StringWriter tmp = new StringWriter();
 		tmp.append("if(").append(canvasVar).append(
 				".getContext){new Wt._p_.ImagePreloader([");
@@ -287,9 +288,27 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 	private WPainter painter_;
 	private EnumSet<WPaintDevice.ChangeFlag> changeFlags_;
 	private EnumSet<PaintFlag> paintFlags_;
+	private boolean busyWithPath_;
+	private WTransform currentTransform_;
+	private WBrush currentBrush_;
+	private WPen currentPen_;
+	private WPointF pathTranslation_;
 	private StringWriter js_;
 	private List<DomElement> textElements_;
 	private List<String> images_;
+
+	private void finishPath() {
+		if (this.busyWithPath_) {
+			if (this.currentBrush_.getStyle() != WBrushStyle.NoBrush) {
+				this.js_.append("ctx.fill();");
+			}
+			if (this.currentPen_.getStyle() != PenStyle.NoPen) {
+				this.js_.append("ctx.stroke();");
+			}
+			this.js_.append('\n');
+			this.busyWithPath_ = false;
+		}
+	}
 
 	private void renderTransform(StringWriter s, WTransform t, boolean invert) {
 		if (!t.isIdentity()) {
@@ -350,12 +369,20 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 		if (this.changeFlags_.equals(0)) {
 			return;
 		}
+		boolean brushChanged = !EnumUtils.mask(this.changeFlags_,
+				WPaintDevice.ChangeFlag.Brush).isEmpty()
+				&& !this.currentBrush_.equals(this.getPainter().getBrush());
+		boolean penChanged = !EnumUtils.mask(this.changeFlags_,
+				WPaintDevice.ChangeFlag.Pen).isEmpty()
+				&& !this.currentPen_.equals(this.getPainter().getPen());
 		if (!EnumUtils.mask(
 				this.changeFlags_,
 				EnumSet.of(WPaintDevice.ChangeFlag.Transform,
 						WPaintDevice.ChangeFlag.Clipping)).isEmpty()) {
+			boolean resetTransform = false;
 			if (!EnumUtils.mask(this.changeFlags_,
 					WPaintDevice.ChangeFlag.Clipping).isEmpty()) {
+				this.finishPath();
 				this.js_.append("ctx.restore();ctx.restore();ctx.save();");
 				WTransform t = this.getPainter().getClipPathTransform();
 				this.renderTransform(this.js_, t);
@@ -363,60 +390,117 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 					this.drawPlainPath(this.js_, this.getPainter()
 							.getClipPath());
 					this.js_.append("ctx.clip();");
+					this.busyWithPath_ = false;
 				}
 				this.renderTransform(this.js_, t, true);
 				this.js_.append("ctx.save();");
+				resetTransform = true;
 			} else {
-				this.js_.append("ctx.restore();ctx.save();");
+				if (!EnumUtils.mask(this.changeFlags_,
+						WPaintDevice.ChangeFlag.Transform).isEmpty()) {
+					WTransform f = this.getPainter().getCombinedTransform();
+					resetTransform = !this.currentTransform_.equals(f);
+					if (this.busyWithPath_) {
+						if (fequal(f.getM11(), this.currentTransform_.getM11())
+								&& fequal(f.getM12(), this.currentTransform_
+										.getM12())
+								&& fequal(f.getM21(), this.currentTransform_
+										.getM21())
+								&& fequal(f.getM22(), this.currentTransform_
+										.getM22())) {
+							double det = f.getM11() * f.getM22() - f.getM12()
+									* f.getM21();
+							double a11 = f.getM22() / det;
+							double a12 = -f.getM12() / det;
+							double a21 = -f.getM21() / det;
+							double a22 = f.getM11() / det;
+							double fdx = f.getDx() * a11 + f.getDy() * a21;
+							double fdy = f.getDx() * a12 + f.getDy() * a22;
+							WTransform g = this.currentTransform_;
+							double gdx = g.getDx() * a11 + g.getDy() * a21;
+							double gdy = g.getDx() * a12 + g.getDy() * a22;
+							double dx = fdx - gdx;
+							double dy = fdy - gdy;
+							this.pathTranslation_.setX(dx);
+							this.pathTranslation_.setY(dy);
+							this.changeFlags_.clear();
+							resetTransform = false;
+						}
+					}
+					if (resetTransform) {
+						this.finishPath();
+						this.js_.append("ctx.restore();ctx.save();");
+					}
+				}
 			}
-			WTransform t = this.getPainter().getCombinedTransform();
-			this.renderTransform(this.js_, t);
-			this.changeFlags_.addAll(EnumSet.of(WPaintDevice.ChangeFlag.Pen,
-					WPaintDevice.ChangeFlag.Brush));
+			if (resetTransform) {
+				this.currentTransform_.assign(this.getPainter()
+						.getCombinedTransform());
+				this.renderTransform(this.js_, this.currentTransform_);
+				this.pathTranslation_.setX(0);
+				this.pathTranslation_.setY(0);
+				penChanged = true;
+				brushChanged = true;
+			}
 		}
-		if (!EnumUtils.mask(this.changeFlags_, WPaintDevice.ChangeFlag.Pen)
-				.isEmpty()) {
-			WPen pen = this.getPainter().getPen();
-			this.js_.append(
-					"ctx.strokeStyle=\"" + pen.getColor().getCssText(true))
-					.append("\";ctx.lineWidth=").append(
-							String.valueOf(this.getPainter()
-									.normalizedPenWidth(pen.getWidth(), true)
-									.getValue())).append(';');
-			switch (pen.getCapStyle()) {
-			case FlatCap:
-				this.js_.append("ctx.lineCap='butt';");
-				break;
-			case SquareCap:
-				this.js_.append("ctx.lineCap='square';");
-				break;
-			case RoundCap:
-				this.js_.append("ctx.lineCap='round';");
-			}
-			switch (pen.getJoinStyle()) {
-			case MiterJoin:
-				this.js_.append("ctx.lineJoin='miter';");
-				break;
-			case BevelJoin:
-				this.js_.append("ctx.lineJoin='bevel';");
-				break;
-			case RoundJoin:
-				this.js_.append("ctx.lineJoin='round';");
-			}
+		if (penChanged || brushChanged) {
+			this.finishPath();
 		}
-		if (!EnumUtils.mask(this.changeFlags_, WPaintDevice.ChangeFlag.Brush)
-				.isEmpty()) {
+		if (penChanged) {
+			if (!this.currentPen_.getColor().equals(
+					this.getPainter().getPen().getColor())) {
+				this.js_.append("ctx.strokeStyle=\"").append(
+						this.getPainter().getPen().getColor().getCssText(true))
+						.append("\";");
+			}
+			this.js_.append("ctx.lineWidth=").append(
+					String.valueOf(this.getPainter().normalizedPenWidth(
+							this.getPainter().getPen().getWidth(), true)
+							.getValue())).append(';');
+			if (this.currentPen_.getCapStyle() != this.getPainter().getPen()
+					.getCapStyle()) {
+				switch (this.getPainter().getPen().getCapStyle()) {
+				case FlatCap:
+					this.js_.append("ctx.lineCap='butt';");
+					break;
+				case SquareCap:
+					this.js_.append("ctx.lineCap='square';");
+					break;
+				case RoundCap:
+					this.js_.append("ctx.lineCap='round';");
+				}
+			}
+			if (this.currentPen_.getJoinStyle() != this.getPainter().getPen()
+					.getJoinStyle()) {
+				switch (this.getPainter().getPen().getJoinStyle()) {
+				case MiterJoin:
+					this.js_.append("ctx.lineJoin='miter';");
+					break;
+				case BevelJoin:
+					this.js_.append("ctx.lineJoin='bevel';");
+					break;
+				case RoundJoin:
+					this.js_.append("ctx.lineJoin='round';");
+				}
+			}
+			this.currentPen_ = this.getPainter().getPen();
+		}
+		if (brushChanged) {
+			this.currentBrush_ = this.painter_.getBrush();
 			this.js_.append("ctx.fillStyle=\"").append(
-					this.getPainter().getBrush().getColor().getCssText(true))
-					.append("\";");
+					this.currentBrush_.getColor().getCssText(true)).append(
+					"\";");
 		}
 		this.changeFlags_.clear();
 	}
 
 	private void drawPlainPath(StringWriter out, WPainterPath path) {
 		char[] buf = new char[30];
+		if (!this.busyWithPath_) {
+			out.append("ctx.beginPath();");
+			this.busyWithPath_ = true;
+		}
 		List<WPainterPath.Segment> segments = path.getSegments();
-		out.append("ctx.beginPath();");
 		if (segments.size() > 0
 				&& segments.get(0).getType() != WPainterPath.Segment.Type.MoveTo) {
 			out.append("ctx.moveTo(0,0);");
@@ -425,43 +509,66 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 			final WPainterPath.Segment s = segments.get(i);
 			switch (s.getType()) {
 			case MoveTo:
-				out.append("ctx.moveTo(").append(MathUtils.round(s.getX(), 3));
-				out.append(',').append(MathUtils.round(s.getY(), 3)).append(
-						");");
+				out.append("ctx.moveTo(").append(
+						MathUtils.round(
+								s.getX() + this.pathTranslation_.getX(), 3));
+				out.append(',').append(
+						MathUtils.round(
+								s.getY() + this.pathTranslation_.getY(), 3))
+						.append(");");
 				break;
 			case LineTo:
-				out.append("ctx.lineTo(").append(MathUtils.round(s.getX(), 3));
-				out.append(',').append(MathUtils.round(s.getY(), 3)).append(
-						");");
+				out.append("ctx.lineTo(").append(
+						MathUtils.round(
+								s.getX() + this.pathTranslation_.getX(), 3));
+				out.append(',').append(
+						MathUtils.round(
+								s.getY() + this.pathTranslation_.getY(), 3))
+						.append(");");
 				break;
 			case CubicC1:
 				out.append("ctx.bezierCurveTo(").append(
-						MathUtils.round(s.getX(), 3));
-				out.append(',').append(MathUtils.round(s.getY(), 3));
+						MathUtils.round(
+								s.getX() + this.pathTranslation_.getX(), 3));
+				out.append(',').append(
+						MathUtils.round(
+								s.getY() + this.pathTranslation_.getY(), 3));
 				break;
 			case CubicC2:
-				out.append(',').append(MathUtils.round(s.getX(), 3))
+				out.append(',').append(
+						MathUtils.round(
+								s.getX() + this.pathTranslation_.getX(), 3))
 						.append(',');
-				out.append(MathUtils.round(s.getY(), 3));
+				out.append(MathUtils.round(s.getY()
+						+ this.pathTranslation_.getY(), 3));
 				break;
 			case CubicEnd:
-				out.append(',').append(MathUtils.round(s.getX(), 3))
+				out.append(',').append(
+						MathUtils.round(
+								s.getX() + this.pathTranslation_.getX(), 3))
 						.append(',');
-				out.append(MathUtils.round(s.getY(), 3)).append(");");
+				out.append(
+						MathUtils.round(
+								s.getY() + this.pathTranslation_.getY(), 3))
+						.append(");");
 				break;
 			case ArcC:
-				out.append("ctx.arc(").append(MathUtils.round(s.getX(), 3))
+				out.append("ctx.arc(").append(
+						MathUtils.round(
+								s.getX() + this.pathTranslation_.getX(), 3))
 						.append(',');
-				out.append(MathUtils.round(s.getY(), 3));
+				out.append(MathUtils.round(s.getY()
+						+ this.pathTranslation_.getY(), 3));
 				break;
 			case ArcR:
 				out.append(',').append(MathUtils.round(s.getX(), 3));
 				break;
 			case ArcAngleSweep: {
 				WPointF r = normalizedDegreesToRadians(s.getX(), s.getY());
-				out.append(',').append(String.valueOf(r.getX())).append(',')
-						.append(String.valueOf(r.getY())).append(',').append(
-								s.getY() > 0 ? "true" : "false").append(");");
+				out.append(',').append(MathUtils.round(r.getX(), 3));
+				out.append(',').append(MathUtils.round(r.getY(), 3));
+				out.append(',').append(s.getY() > 0 ? "true" : "false").append(
+						");");
 			}
 				break;
 			case QuadC: {
@@ -476,17 +583,34 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 						* (cpy - current.getY());
 				final double cp2x = cp1x + (x - current.getX()) / 3.0;
 				final double cp2y = cp1y + (y - current.getY()) / 3.0;
-				out.append("ctx.bezierCurveTo(").append(
-						MathUtils.round(cp1x, 3)).append(',');
-				out.append(MathUtils.round(cp1y, 3)).append(',');
-				out.append(MathUtils.round(cp2x, 3)).append(',');
-				out.append(MathUtils.round(cp2y, 3));
+				out.append("ctx.bezierCurveTo(")
+						.append(
+								MathUtils.round(cp1x
+										+ this.pathTranslation_.getX(), 3))
+						.append(',');
+				out
+						.append(
+								MathUtils.round(cp1y
+										+ this.pathTranslation_.getY(), 3))
+						.append(',');
+				out
+						.append(
+								MathUtils.round(cp2x
+										+ this.pathTranslation_.getX(), 3))
+						.append(',');
+				out.append(MathUtils.round(cp2y + this.pathTranslation_.getY(),
+						3));
 				break;
 			}
 			case QuadEnd:
-				out.append(',').append(MathUtils.round(s.getX(), 3))
+				out.append(',').append(
+						MathUtils.round(
+								s.getX() + this.pathTranslation_.getX(), 3))
 						.append(',');
-				out.append(MathUtils.round(s.getY(), 3)).append(");");
+				out.append(
+						MathUtils.round(
+								s.getY() + this.pathTranslation_.getY(), 3))
+						.append(");");
 			}
 		}
 	}
@@ -511,5 +635,9 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 		double a2 = angle - sweep;
 		double r2 = WTransform.degreesToRadians(a2);
 		return new WPointF(r1, r2);
+	}
+
+	static boolean fequal(double d1, double d2) {
+		return Math.abs(d1 - d2) < 1E-5;
 	}
 }

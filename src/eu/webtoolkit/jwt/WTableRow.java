@@ -222,7 +222,7 @@ public class WTableRow extends WObject {
 					.getCssText());
 		}
 		if (!all || this.styleClass_.length() != 0) {
-			element.setAttribute("class", this.styleClass_);
+			element.setProperty(Property.PropertyClass, this.styleClass_);
 		}
 		if (all && this.hidden_ || !all && this.hiddenChanged_) {
 			element.setProperty(Property.PropertyStyleDisplay,

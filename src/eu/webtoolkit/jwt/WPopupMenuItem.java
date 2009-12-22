@@ -294,7 +294,7 @@ public class WPopupMenuItem extends WCompositeWidget {
 						WPopupMenuItem.this.onMouseUp();
 					}
 				});
-		this.setStyleClass("notselected");
+		this.setStyleClass("Wt-item");
 	}
 
 	private void renderOver() {
@@ -309,7 +309,7 @@ public class WPopupMenuItem extends WCompositeWidget {
 		if (this.separator_) {
 			return;
 		}
-		this.setStyleClass(selected ? "selected" : "notselected");
+		this.setStyleClass(selected ? "Wt-selected" : "Wt-item");
 		if (this.subMenu_ != null) {
 			if (selected) {
 				this.subMenu_.popup(this);

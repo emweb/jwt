@@ -214,6 +214,15 @@ public class WMenu extends WCompositeWidget {
 		} else {
 			item.renderSelected(false);
 		}
+		if (this.internalPathEnabled_) {
+			WApplication app = WApplication.getInstance();
+			if (app.internalPathMatches(this.basePath_
+					+ item.getPathComponent())) {
+				String path = app.getInternalPath();
+				this.select(this.items_.size() - 1);
+				app.setInternalPath(path);
+			}
+		}
 		return item;
 	}
 
@@ -279,10 +288,20 @@ public class WMenu extends WCompositeWidget {
 	 * @see WMenu#getCurrentIndex()
 	 */
 	public void select(int index) {
+		boolean emitPathChange = false;
+		WApplication app = null;
+		if (this.internalPathEnabled_) {
+			app = WApplication.getInstance();
+			emitPathChange = !this.previousInternalPath_.equals(app
+					.getInternalPath());
+		}
 		this.selectVisual(index);
 		if (index != -1) {
 			this.items_.get(index).loadContents();
 			this.itemSelected_.trigger(this.items_.get(this.current_));
+			if (emitPathChange) {
+				app.internalPathChanged().trigger(app.getInternalPath());
+			}
 		}
 	}
 
@@ -429,6 +448,7 @@ public class WMenu extends WCompositeWidget {
 							WMenu.this.internalPathChanged(e1);
 						}
 					});
+			this.previousInternalPath_ = app.getInternalPath();
 			this.internalPathChanged(app.getInternalPath());
 			this.updateItems();
 		}
@@ -469,6 +489,7 @@ public class WMenu extends WCompositeWidget {
 			this.basePath_ = bp;
 			if (this.internalPathEnabled_) {
 				WApplication app = WApplication.getInstance();
+				this.previousInternalPath_ = app.getInternalPath();
 				this.internalPathChanged(app.getInternalPath());
 				this.updateItems();
 			}
@@ -534,19 +555,9 @@ public class WMenu extends WCompositeWidget {
 		if (this.internalPathEnabled_ && this.current_ != -1) {
 			WApplication app = WApplication.getInstance();
 			this.previousInternalPath_ = app.getInternalPath();
-			String newPath = this.basePath_;
-			String pc = this.items_.get(this.current_).getPathComponent();
-			if (pc.length() == 0) {
-				if (newPath.length() > 1) {
-					newPath = newPath.substring(0, 0 + newPath.length() - 1);
-				}
-			} else {
-				newPath += pc;
-			}
-			if (newPath.equals(this.basePath_)
-					|| !app.internalPathMatches(newPath)) {
-				app.setInternalPath(newPath);
-			}
+			String newPath = this.basePath_
+					+ this.items_.get(this.current_).getPathComponent();
+			app.setInternalPath(newPath);
 		}
 		for (int i = 0; i < this.items_.size(); ++i) {
 			this.items_.get(i).renderSelected((int) i == this.current_);
@@ -574,27 +585,29 @@ public class WMenu extends WCompositeWidget {
 	private void internalPathChanged(String path) {
 		WApplication app = WApplication.getInstance();
 		if (app.internalPathMatches(this.basePath_)) {
-			this.setFromState(app.getInternalPathNextPart(this.basePath_));
-		}
-	}
-
-	private void setFromState(String value) {
-		String v = value;
-		for (int i = 0; i < this.items_.size(); ++i) {
-			if (this.items_.get(i).getPathComponent().equals(v)
-					|| this.items_.get(i).getPathComponent().equals(v + '/')) {
-				if (this.contentsStack_.getCurrentWidget() != this.items_
-						.get(i).getContents()) {
-					this.select(i);
+			String value = app.getInternalPathNextPart(this.basePath_);
+			for (int i = 0; i < this.items_.size(); ++i) {
+				if (this.items_.get(i).getPathComponent().equals(value)
+						|| this.items_.get(i).getPathComponent().equals(
+								value + '/')) {
+					if (i == this.current_) {
+						if (this.items_.get(this.current_)
+								.handleInternalPathChange(path)) {
+							return;
+						}
+					}
+					if (this.contentsStack_.getCurrentWidget() != this.items_
+							.get(i).getContents()) {
+						this.select(i);
+					}
+					return;
 				}
-				return;
+			}
+			if (value.length() != 0) {
+				WApplication.getInstance().log("error").append(
+						"WMenu: unknown path: '").append(value).append("'");
 			}
 		}
-		if (value.length() != 0) {
-			WApplication.getInstance().log("error").append(
-					"WMenu: unknown path: '").append(value).append("'");
-		}
-		this.select(-1);
 	}
 
 	private void updateItems() {

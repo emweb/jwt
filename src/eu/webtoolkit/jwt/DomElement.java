@@ -410,22 +410,22 @@ class DomElement {
 					String style = this.properties_
 							.get(Property.PropertyStyleDisplay);
 					if (style.equals("none")) {
-						out.append("Wt3_0_0.hide('").append(this.id_).append(
+						out.append("Wt3_1_0.hide('").append(this.id_).append(
 								"');\n");
 						return this.var_;
 					} else {
 						if (style.length() == 0) {
-							out.append("Wt3_0_0.show('").append(this.id_)
+							out.append("Wt3_1_0.show('").append(this.id_)
 									.append("');\n");
 							return this.var_;
 						} else {
 							if (style.equals("inline")) {
-								out.append("Wt3_0_0.inline('" + this.id_
+								out.append("Wt3_1_0.inline('" + this.id_
 										+ "');\n");
 								return this.var_;
 							} else {
 								if (style.equals("block")) {
-									out.append("Wt3_0_0.block('" + this.id_
+									out.append("Wt3_1_0.block('" + this.id_
 											+ "');\n");
 									return this.var_;
 								}
@@ -445,7 +445,7 @@ class DomElement {
 								");\n");
 				this.replaced_.createElement(out, app, insertJs.toString());
 				if (this.unstubbed_) {
-					out.append("Wt3_0_0.unstub(").append(this.var_).append(',')
+					out.append("Wt3_1_0.unstub(").append(this.var_).append(',')
 							.append(varr).append(',').append(
 									this.hideWithDisplay_ ? 1 : 0).append(
 									");\n");
@@ -465,8 +465,8 @@ class DomElement {
 				}
 			}
 			if (this.mode_ != DomElement.Mode.ModeCreate) {
-				this.setJavaScriptAttributes(out);
 				this.setJavaScriptProperties(out, app);
+				this.setJavaScriptAttributes(out);
 			}
 			for (Iterator<Map.Entry<String, DomElement.EventHandler>> i_it = this.eventHandlers_
 					.entrySet().iterator(); i_it.hasNext();) {
@@ -477,7 +477,7 @@ class DomElement {
 					int fid = nextId_++;
 					out.append("function f").append(fid).append("(event){")
 							.append(i.getValue().jsCode).append("}\n");
-					if (i.getKey().startsWith("key")
+					if (i.getKey().startsWith("key") && app.getRoot() != null
 							&& this.id_.equals(app.getRoot().getId())) {
 						out.append("document");
 					} else {
@@ -578,7 +578,7 @@ class DomElement {
 				fastHtmlAttributeValue(out, attributeValues,
 						clickEvent.signalName);
 				out.append(" class=\"Wt-wrap ");
-				String l = this.attributes_.get("class");
+				String l = this.properties_.get(Property.PropertyClass);
 				if (l != null) {
 					out.append(l);
 				}
@@ -625,9 +625,8 @@ class DomElement {
 		for (Iterator<Map.Entry<String, String>> i_it = this.attributes_
 				.entrySet().iterator(); i_it.hasNext();) {
 			Map.Entry<String, String> i = i_it.next();
-			if (!i.getKey().equals("style")
-					&& (!app.getEnvironment().agentIsSpiderBot() || !i.getKey()
-							.equals("name"))) {
+			if (!app.getEnvironment().agentIsSpiderBot()
+					|| !i.getKey().equals("name")) {
 				out.append(" ").append(i.getKey()).append("=");
 				fastHtmlAttributeValue(out, attributeValues, i.getValue());
 			}
@@ -637,9 +636,20 @@ class DomElement {
 					.entrySet().iterator(); i_it.hasNext();) {
 				Map.Entry<String, DomElement.EventHandler> i = i_it.next();
 				if (i.getValue().jsCode.length() != 0) {
-					out.append(" on").append(i.getKey()).append("=");
-					fastHtmlAttributeValue(out, attributeValues,
-							i.getValue().jsCode);
+					if (i.getKey().startsWith("key") && app.getRoot() != null
+							&& this.id_.equals(app.getRoot().getId())) {
+						StringWriter ss = new StringWriter();
+						ss.append("document.on").append(i.getKey()).append("=")
+								.append(
+										"function (event){"
+												+ i.getValue().jsCode).append(
+										"}\n");
+						app.doJavaScript(ss.toString());
+					} else {
+						out.append(" on").append(i.getKey()).append("=");
+						fastHtmlAttributeValue(out, attributeValues, i
+								.getValue().jsCode);
+					}
 				}
 			}
 		}
@@ -705,6 +715,10 @@ class DomElement {
 				out.append(" rowspan=");
 				fastHtmlAttributeValue(out, attributeValues, i.getValue());
 				break;
+			case PropertyClass:
+				out.append(" class=");
+				fastHtmlAttributeValue(out, attributeValues, i.getValue());
+				break;
 			default:
 				break;
 			}
@@ -729,10 +743,11 @@ class DomElement {
 				return;
 			}
 			if (!isSelfClosingTag(renderedType)) {
-				out.append(">").append(innerHTML);
+				out.append(">");
 				for (int i = 0; i < this.childrenToAdd_.size(); ++i) {
 					this.childrenToAdd_.get(i).child.asHTML(out, timeouts);
 				}
+				out.append(innerHTML);
 				if (this.childrenHtml_ != null) {
 					out.append(this.childrenHtml_.toString());
 				}
@@ -757,7 +772,7 @@ class DomElement {
 			}
 		}
 		for (int i = 0; i < this.methodCalls_.size(); ++i) {
-			app.doJavaScript("Wt3_0_0.getElement('" + this.id_ + "')."
+			app.doJavaScript("Wt3_1_0.getElement('" + this.id_ + "')."
 					+ this.methodCalls_.get(i) + ';');
 		}
 		if (this.timeOut_ != -1) {
@@ -791,43 +806,46 @@ class DomElement {
 	public void declare(EscapeOStream out) {
 		if (this.var_.length() == 0) {
 			out.append("var ").append(this.getCreateVar()).append("=").append(
-					"Wt3_0_0.getElement('").append(this.id_).append("');\n");
+					"Wt3_1_0.getElement('").append(this.id_).append("');\n");
 		}
 	}
 
 	public String getCssStyle() {
-		String i = this.attributes_.get("style");
 		if (this.properties_.isEmpty()) {
-			return i != null ? i : "";
+			return "";
 		}
 		StringWriter style = new StringWriter();
+		String styleProperty = null;
 		for (Iterator<Map.Entry<Property, String>> j_it = this.properties_
 				.entrySet().iterator(); j_it.hasNext();) {
 			Map.Entry<Property, String> j = j_it.next();
-			if (j.getKey().getValue() >= Property.PropertyStylePosition
-					.getValue()
-					&& j.getKey().getValue() <= Property.PropertyStyleDisplay
-							.getValue()) {
-				if (j.getKey() == Property.PropertyStyleCursor
-						&& j.getValue().equals("pointer")) {
-					style.append("cursor:pointer;cursor:hand;");
-				} else {
-					style
-							.append(
-									cssNames[j.getKey().getValue()
-											- Property.PropertyStylePosition
-													.getValue()]).append(':')
-							.append(j.getValue()).append(';');
-				}
+			if (j.getKey() == Property.PropertyStyle) {
+				styleProperty = j.getValue();
 			} else {
-				if (j.getKey() == Property.PropertyStyleWidthExpression) {
-					style.append("width:expression(").append(j.getValue())
-							.append(");");
+				if (j.getKey().getValue() >= Property.PropertyStylePosition
+						.getValue()
+						&& j.getKey().getValue() <= Property.PropertyStyleDisplay
+								.getValue()) {
+					if (j.getKey() == Property.PropertyStyleCursor
+							&& j.getValue().equals("pointer")) {
+						style.append("cursor:pointer;cursor:hand;");
+					} else {
+						style.append(
+								cssNames[j.getKey().getValue()
+										- Property.PropertyStylePosition
+												.getValue()]).append(':')
+								.append(j.getValue()).append(';');
+					}
+				} else {
+					if (j.getKey() == Property.PropertyStyleWidthExpression) {
+						style.append("width:expression(").append(j.getValue())
+								.append(");");
+					}
 				}
 			}
 		}
-		if (i != null) {
-			style.append(i);
+		if (styleProperty != null) {
+			style.append(styleProperty);
 		}
 		return style.toString();
 	}
@@ -965,7 +983,7 @@ class DomElement {
 		DomElement.EventHandler keypress = this.eventHandlers_.get(S_keypress);
 		if (keypress != null && keypress.jsCode.length() != 0) {
 			MapUtils.access(self.eventHandlers_, S_keypress,
-					DomElement.EventHandler.class).jsCode = "if (Wt3_0_0.isKeyPress(event)){"
+					DomElement.EventHandler.class).jsCode = "if (Wt3_1_0.isKeyPress(event)){"
 					+ MapUtils.access(self.eventHandlers_, S_keypress,
 							DomElement.EventHandler.class).jsCode + '}';
 		}
@@ -981,7 +999,7 @@ class DomElement {
 			if (minw != null || maxw != null) {
 				if (w == null) {
 					StringWriter expr = new StringWriter();
-					expr.append("Wt3_0_0.IEwidth(this,");
+					expr.append("Wt3_1_0.IEwidth(this,");
 					if (minw != null) {
 						expr.append('\'').append(minw).append('\'');
 						self.properties_.remove(Property.PropertyStyleMinWidth);
@@ -1019,7 +1037,7 @@ class DomElement {
 			switch (i.getKey()) {
 			case PropertyInnerHTML:
 			case PropertyAddedInnerHTML:
-				out.append("Wt3_0_0.setHtml(").append(this.var_).append(',');
+				out.append("Wt3_1_0.setHtml(").append(this.var_).append(',');
 				if (!pushed) {
 					escaped
 							.pushEscape(EscapeOStream.RuleSet.JsStringLiteralSQuote);
@@ -1095,6 +1113,16 @@ class DomElement {
 				out.append(this.var_).append(".rowSpan=").append(i.getValue())
 						.append(";");
 				break;
+			case PropertyClass:
+				out.append(this.var_).append(".className=");
+				if (!pushed) {
+					escaped
+							.pushEscape(EscapeOStream.RuleSet.JsStringLiteralSQuote);
+					pushed = true;
+				}
+				fastJsStringLiteral(out, escaped, i.getValue());
+				out.append(';');
+				break;
 			case PropertyText:
 				out.append(this.var_).append(".text=");
 				if (!pushed) {
@@ -1122,16 +1150,13 @@ class DomElement {
 				out.append(");");
 				break;
 			default:
-				if (i.getKey().getValue() >= Property.PropertyStylePosition
-						.getValue()
+				if (i.getKey().getValue() >= Property.PropertyStyle.getValue()
 						&& i.getKey().getValue() <= Property.PropertyStyleDisplay
 								.getValue()) {
-					out.append(this.var_).append(".style.")
-							.append(
-									cssCamelNames[i.getKey().getValue()
-											- Property.PropertyStylePosition
-													.getValue()]).append("='")
-							.append(i.getValue()).append("';");
+					out.append(this.var_).append(".style.").append(
+							cssCamelNames[i.getKey().getValue()
+									- Property.PropertyStyle.getValue()])
+							.append("='").append(i.getValue()).append("';");
 				}
 			}
 			out.append('\n');
@@ -1143,21 +1168,15 @@ class DomElement {
 				.entrySet().iterator(); i_it.hasNext();) {
 			Map.Entry<String, String> i = i_it.next();
 			this.declare(out);
-			if (i.getKey().equals("class")) {
-				out.append(this.var_).append(".className = ");
+			if (i.getKey().equals("style")) {
+				out.append(this.var_).append(".style.cssText = ");
 				jsStringLiteral(out, i.getValue(), '\'');
 				out.append(';').append('\n');
 			} else {
-				if (i.getKey().equals("style")) {
-					out.append(this.var_).append(".style.cssText = ");
-					jsStringLiteral(out, i.getValue(), '\'');
-					out.append(';').append('\n');
-				} else {
-					out.append(this.var_).append(".setAttribute('").append(
-							i.getKey()).append("',");
-					jsStringLiteral(out, i.getValue(), '\'');
-					out.append(");\n");
-				}
+				out.append(this.var_).append(".setAttribute('").append(
+						i.getKey()).append("',");
+				jsStringLiteral(out, i.getValue(), '\'');
+				out.append(");\n");
 			}
 		}
 	}
@@ -1204,7 +1223,7 @@ class DomElement {
 		} else {
 			StringWriter insertJS = new StringWriter();
 			if (pos != -1) {
-				insertJS.append("Wt3_0_0.insertAt(").append(parentVar).append(
+				insertJS.append("Wt3_1_0.insertAt(").append(parentVar).append(
 						",").append(this.var_).append(",").append(
 						String.valueOf(pos)).append(");");
 			} else {
@@ -1225,7 +1244,7 @@ class DomElement {
 					|| !this.childrenToAdd_.isEmpty()
 					|| this.childrenHtml_ != null) {
 				this.declare(out);
-				out.append("Wt3_0_0.setHtml(").append(this.var_).append(",'");
+				out.append("Wt3_1_0.setHtml(").append(this.var_).append(",'");
 				out.pushEscape(EscapeOStream.RuleSet.JsStringLiteralSQuote);
 				if (this.childrenHtml_ != null) {
 					out.append(this.childrenHtml_.toString());
@@ -1350,14 +1369,14 @@ class DomElement {
 			"background-image", "background-repeat", "background-attachment",
 			"background-position", "text-decoration", "white-space",
 			"table-layout", "border-spacing", "visibility", "display" };
-	private static String[] cssCamelNames = { "position", "zIndex", "cssFloat",
-			"clear", "width", "height", "lineHeight", "minWidth", "minHeight",
-			"maxWidth", "maxHeight", "left", "right", "top", "bottom",
-			"verticalAlign", "textAlign", "padding", "marginTop",
-			"marginRight", "marginBottom", "marginLeft", "cursor", "borderTop",
-			"borderRight", "borderBottom", "borderLeft", "color", "overflow",
-			"overflow", "fontFamily", "fontStyle", "fontVariant", "fontWeight",
-			"fontSize", "backgroundColor", "backgroundImage",
+	private static String[] cssCamelNames = { "cssText", "width", "position",
+			"zIndex", "cssFloat", "clear", "width", "height", "lineHeight",
+			"minWidth", "minHeight", "maxWidth", "maxHeight", "left", "right",
+			"top", "bottom", "verticalAlign", "textAlign", "padding",
+			"marginTop", "marginRight", "marginBottom", "marginLeft", "cursor",
+			"borderTop", "borderRight", "borderBottom", "borderLeft", "color",
+			"overflow", "overflow", "fontFamily", "fontStyle", "fontVariant",
+			"fontWeight", "fontSize", "backgroundColor", "backgroundImage",
 			"backgroundRepeat", "backgroundAttachment", "backgroundPosition",
 			"textDecoration", "whiteSpace", "tableLayout", "borderSpacing",
 			"visibility", "display" };

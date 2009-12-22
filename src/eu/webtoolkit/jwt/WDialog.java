@@ -81,7 +81,6 @@ public class WDialog extends WCompositeWidget {
 	public WDialog(CharSequence windowTitle) {
 		super();
 		this.modal_ = true;
-		this.coverPreviousStyle_ = "";
 		this.finished_ = new Signal1<WDialog.DialogCode>(this);
 		this.recursiveEventLoop_ = false;
 		this.mouseDownJS_ = new JSlot();
@@ -98,7 +97,7 @@ public class WDialog extends WCompositeWidget {
 			app
 					.doJavaScript(
 							""
-									+ "Wt3_0_0.centerDialog = function(d){if (d && d.style.display != 'none' && !d.getAttribute('moved')) {var ws=Wt3_0_0.windowSize();d.style.left=Math.round((ws.x - d.clientWidth)/2"
+									+ "Wt3_1_0.centerDialog = function(d){if (d && d.style.display != 'none' && !d.getAttribute('moved')) {var ws=Wt3_1_0.windowSize();d.style.left=Math.round((ws.x - d.clientWidth)/2"
 									+ (app.getEnvironment().getAgent() == WEnvironment.UserAgent.IE6 ? "+ document.documentElement.scrollLeft"
 											: "")
 									+ ") + 'px';d.style.top=Math.round((ws.y - d.clientHeight)/2"
@@ -141,22 +140,10 @@ public class WDialog extends WCompositeWidget {
 									"position: absolute;left: expression((ignoreMe2 = document.documentElement.scrollLeft + document.documentElement.clientWidth/2) + 'px' );top: expression((ignoreMe = document.documentElement.scrollTop + document.documentElement.clientHeight/2) + 'px' );");
 				}
 			}
-			app
-					.getStyleSheet()
-					.addRule("div.Wt-dialog",
-							"border: 1px solid #888888;background: #EEEEEE none repeat scroll 0%;");
-			app
-					.getStyleSheet()
-					.addRule("div.Wt-dialog .titlebar",
-							"background: #888888; color: #FFFFFF;cursor: move;padding: 2px 6px 3px;");
-			app.getStyleSheet().addRule("div.Wt-dialog .body",
-					"background: #EEEEEE;padding: 4px 6px 4px;");
-			app.getStyleSheet().addRule("div.Wt-msgbox-buttons button",
-					"padding: 1px 4px 1px;margin: 2px;");
 		}
 		WContainerWidget parent = app.getDomRoot();
 		this.setPopup(true);
-		app.addAutoJavaScript("Wt3_0_0.centerDialog(" + this.getJsRef() + ");");
+		app.addAutoJavaScript("Wt3_1_0.centerDialog(" + this.getJsRef() + ");");
 		parent.addWidget(this);
 		WVBoxLayout layout = new WVBoxLayout();
 		layout.setSpacing(0);
@@ -173,9 +160,9 @@ public class WDialog extends WCompositeWidget {
 			this.impl_.setOverflow(WContainerWidget.Overflow.OverflowVisible);
 		}
 		this.mouseDownJS_
-				.setJavaScript("function(obj, event) {  var pc = Wt3_0_0.pageCoordinates(event);  obj.setAttribute('dsx', pc.x);  obj.setAttribute('dsy', pc.y);}");
+				.setJavaScript("function(obj, event) {  var pc = Wt3_1_0.pageCoordinates(event);  obj.setAttribute('dsx', pc.x);  obj.setAttribute('dsy', pc.y);}");
 		this.mouseMovedJS_
-				.setJavaScript("function(obj, event) {var WT= Wt3_0_0;var lastx = obj.getAttribute('dsx');var lasty = obj.getAttribute('dsy');if (lastx != null && lastx != '') {nowxy = WT.pageCoordinates(event);var d = "
+				.setJavaScript("function(obj, event) {var WT= Wt3_1_0;var lastx = obj.getAttribute('dsx');var lasty = obj.getAttribute('dsy');if (lastx != null && lastx != '') {nowxy = WT.pageCoordinates(event);var d = "
 						+ this.getJsRef()
 						+ ";d.setAttribute('moved', true);d.style.left = (WT.pxself(d, 'left')+nowxy.x-lastx) + 'px';d.style.top = (WT.pxself(d, 'top')+nowxy.y-lasty) + 'px';obj.setAttribute('dsx', nowxy.x);obj.setAttribute('dsy', nowxy.y);}}");
 		this.mouseUpJS_
@@ -348,8 +335,7 @@ public class WDialog extends WCompositeWidget {
 				if (!hidden) {
 					this.saveCoverState(app, cover);
 					cover.show();
-					cover.setAttributeValue("style", "z-index:"
-							+ String.valueOf(this.impl_.getZIndex() - 1));
+					cover.setZIndex(this.impl_.getZIndex() - 1);
 					app.constrainExposed(this);
 				} else {
 					this.restoreCoverState(app, cover);
@@ -370,7 +356,7 @@ public class WDialog extends WCompositeWidget {
 	private WContainerWidget contents_;
 	private boolean modal_;
 	private WWidget previousExposeConstraint_;
-	private String coverPreviousStyle_;
+	private int coverPreviousZIndex_;
 	private boolean coverWasHidden_;
 	private Signal1<WDialog.DialogCode> finished_;
 	private WDialog.DialogCode result_;
@@ -381,13 +367,13 @@ public class WDialog extends WCompositeWidget {
 
 	private void saveCoverState(WApplication app, WContainerWidget cover) {
 		this.coverWasHidden_ = cover.isHidden();
-		this.coverPreviousStyle_ = cover.getAttributeValue("style");
+		this.coverPreviousZIndex_ = cover.getZIndex();
 		this.previousExposeConstraint_ = app.getExposeConstraint();
 	}
 
 	private void restoreCoverState(WApplication app, WContainerWidget cover) {
 		cover.setHidden(this.coverWasHidden_);
-		cover.setAttributeValue("style", this.coverPreviousStyle_);
+		cover.setZIndex(this.coverPreviousZIndex_);
 		app.constrainExposed(this.previousExposeConstraint_);
 	}
 }

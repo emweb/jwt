@@ -95,6 +95,7 @@ public class WMenuItem extends WObject {
 			// this.implementStateless(WMenuItem.selectVisual,WMenuItem.undoSelectVisual);
 		} else {
 			this.contentsContainer_ = new WContainerWidget();
+			this.addChild(this.contents_);
 			;
 			this.contentsContainer_.resize(WLength.Auto, new WLength(100,
 					WLength.Unit.Percentage));
@@ -236,6 +237,9 @@ public class WMenuItem extends WObject {
 
 	WWidget getTakeContents() {
 		WWidget result = this.contents_;
+		if (!this.isContentsLoaded()) {
+			this.removeChild(this.contents_);
+		}
 		this.contents_ = null;
 		return result;
 	}
@@ -342,6 +346,10 @@ public class WMenuItem extends WObject {
 		}
 	}
 
+	protected boolean handleInternalPathChange(String path) {
+		return false;
+	}
+
 	private WWidget itemWidget_;
 	private WContainerWidget contentsContainer_;
 	private WWidget contents_;
@@ -350,9 +358,14 @@ public class WMenuItem extends WObject {
 	private String pathComponent_;
 	private boolean customPathComponent_;
 
+	private boolean isContentsLoaded() {
+		return !(this.contentsContainer_ != null)
+				|| this.contentsContainer_.getCount() == 1;
+	}
+
 	void loadContents() {
-		if (this.contentsContainer_ != null
-				&& this.contentsContainer_.getCount() == 0) {
+		if (!this.isContentsLoaded()) {
+			this.removeChild(this.contents_);
 			this.contentsContainer_.addWidget(this.contents_);
 			// this.implementStateless(WMenuItem.selectVisual,WMenuItem.undoSelectVisual);
 			this.connectActivate();
@@ -364,8 +377,7 @@ public class WMenuItem extends WObject {
 	}
 
 	private void selectNotLoaded() {
-		if (this.contentsContainer_ != null
-				&& this.contentsContainer_.getCount() == 0) {
+		if (!this.isContentsLoaded()) {
 			this.select();
 		}
 	}

@@ -31,12 +31,9 @@ import java.util.List;
  * <i>resourcesURL</i>/tab_r.gif</li>
  * </ul>
  * <p>
- * These files may be found in the resources/ folder of the JWt distribution.
- * <p>
- * The default value for <i>resourcesURL</i> is &quot;resources/&quot;. This
- * value may be overridden with any valid URL which points to the location where
- * these files may be found, by configuring the <i>resourcesURL</i> property in
- * your JWt configuration file.
+ * These files may be found in the resources/ folder of the JWt distribution,
+ * see also DOCREF<a class="el" href="overview.html#deployment">deployment and
+ * resources</a>.
  * <p>
  * Usage example:
  * <p>
@@ -65,7 +62,15 @@ import java.util.List;
  * <p>
  * <strong>An example WTabWidget</strong>
  * </p>
- * </div>
+ * </div> <h3>CSS</h3>
+ * <p>
+ * You may customize the look of the tabs handles using the <code>Wt-tabs</code>
+ * CSS class.
+ * <p>
+ * The following rules may be used to style the header: <div
+ * class="fragment"><pre class="fragment"> .Wt-tabs ul : the list .Wt-tabs li :
+ * a list item .Wt-tabs span : outer span of a list item .Wt-span span span :
+ * inner span of a list item </pre></div>
  */
 public class WTabWidget extends WCompositeWidget {
 	/**
@@ -418,43 +423,6 @@ public class WTabWidget extends WCompositeWidget {
 	private void create(EnumSet<AlignmentFlag> layoutAlignment) {
 		this.setImplementation(this.layout_ = new WContainerWidget());
 		;
-		String CSS_RULES_NAME = "Wt::WTabWidget";
-		WApplication app = WApplication.getInstance();
-		if (!app.getStyleSheet().isDefined(CSS_RULES_NAME)) {
-			String resourcesURL = WApplication.getResourcesUrl();
-			app
-					.getStyleSheet()
-					.addRule(
-							".Wt-tabs",
-							"background: transparent url("
-									+ resourcesURL
-									+ "tab_b.gif) repeat-x scroll center bottom;margin-bottom:4px;zoom: 1;width:100%",
-							CSS_RULES_NAME);
-			app.getStyleSheet().addRule(".Wt-tabs li", "display: inline;");
-			app
-					.getStyleSheet()
-					.addRule(
-							".Wt-tabs ul",
-							"margin: 0px;padding-left: 10px;list-style-type: none;list-style-position: outside;");
-			app
-					.getStyleSheet()
-					.addRule(
-							".Wt-tabs span",
-							"background: transparent url("
-									+ resourcesURL
-									+ "tab_r.gif) no-repeat scroll right top;border-bottom:1px solid #84B0C7;float:left; display:block;cursor:pointer;cursor:hand;font-size: small; font-weight: bold;");
-			app.getStyleSheet().addRule(".Wt-tabs span.itemselected",
-					"background-position:100% -150px;");
-			app
-					.getStyleSheet()
-					.addRule(
-							".Wt-tabs span span",
-							"background: transparent url("
-									+ resourcesURL
-									+ "tab_l.gif) no-repeat scroll left top;border-bottom: 0px;white-space: nowrap;padding:5px 9px;color:#1A419D;");
-			app.getStyleSheet().addRule(".Wt-tabs span.itemselected span",
-					"background-position:0% -150px;");
-		}
 		this.contents_ = new WStackedWidget();
 		this.menu_ = new WMenu(this.contents_, Orientation.Horizontal);
 		this.menu_.setRenderAsList(true);

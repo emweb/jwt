@@ -65,7 +65,8 @@ public abstract class WWidget extends WObject {
 	 * constructor, or by inserting the widget into a layout manager.
 	 */
 	public WWidget getParent() {
-		return (WWidget) super.getParent();
+		return ((super.getParent()) instanceof WWidget ? (WWidget) (super
+				.getParent()) : null);
 	}
 
 	/**
@@ -753,9 +754,12 @@ public abstract class WWidget extends WObject {
 	 * You may want to use this in conjunction with {@link JSlot} or
 	 * {@link WApplication#doJavaScript(String javascript, boolean afterLoaded)
 	 * WApplication#doJavaScript()} in custom JavaScript code.
+	 * <p>
+	 * 
+	 * @see WWidget#isRendered()
 	 */
 	public String getJsRef() {
-		return "Wt3_0_0.getElement('" + this.getId() + "')";
+		return "Wt3_1_0.getElement('" + this.getId() + "')";
 	}
 
 	/**
@@ -873,6 +877,14 @@ public abstract class WWidget extends WObject {
 	public abstract void setId(String id);
 
 	/**
+	 * Finds a descendend widget by name.
+	 * <p>
+	 * 
+	 * @see WObject#setObjectName(String name)
+	 */
+	public abstract WWidget find(String name);
+
+	/**
 	 * Streams the (X)HTML representation.
 	 * <p>
 	 * Streams the widget as UTF8-encoded (HTML-compatible) XHTML.
@@ -903,6 +915,17 @@ public abstract class WWidget extends WObject {
 	 * default.
 	 */
 	public abstract void setSelectable(boolean selectable);
+
+	/**
+	 * Returns whether the widget is rendered.
+	 * <p>
+	 * 
+	 * @see WWidget#getJsRef()
+	 */
+	public boolean isRendered() {
+		WWidget self = this;
+		return self.getWebWidget().isRendered();
+	}
 
 	String getInlineCssStyle() {
 		WWebWidget ww = this.getWebWidget();

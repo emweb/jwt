@@ -21,7 +21,7 @@ import eu.webtoolkit.jwt.WString;
 import eu.webtoolkit.jwt.WText;
 import eu.webtoolkit.jwt.WTreeView;
 import eu.webtoolkit.jwt.chart.Axis;
-import eu.webtoolkit.jwt.chart.AxisLocation;
+import eu.webtoolkit.jwt.chart.AxisValue;
 import eu.webtoolkit.jwt.chart.AxisScale;
 import eu.webtoolkit.jwt.chart.ChartType;
 import eu.webtoolkit.jwt.chart.FillRangeType;
@@ -191,7 +191,7 @@ class ScatterPlotExample extends WContainerWidget {
         super(parent);
         new WText(WString.tr("scatter plot 2"), this);
 
-        WStandardItemModel model = new WStandardItemModel(100, 2, this);
+        WStandardItemModel model = new WStandardItemModel(40, 2, this);
         model.setHeaderData(0, Orientation.Horizontal, new WString("X"));
         model.setHeaderData(1, Orientation.Horizontal,
                 new WString("Y = sin(X)"));
@@ -215,8 +215,8 @@ class ScatterPlotExample extends WContainerWidget {
 
         // Typically, for mathematical functions, you want the axes to cross
         // at the 0 mark:
-        chart.getAxis(Axis.XAxis).setLocation(AxisLocation.ZeroValue);
-        chart.getAxis(Axis.YAxis).setLocation(AxisLocation.ZeroValue);
+        chart.getAxis(Axis.XAxis).setLocation(AxisValue.ZeroValue);
+        chart.getAxis(Axis.YAxis).setLocation(AxisValue.ZeroValue);
         chart.getAxis(Axis.XAxis).setLabelFormat("%.1f");
         chart.getAxis(Axis.YAxis).setLabelFormat("%.1f");
 

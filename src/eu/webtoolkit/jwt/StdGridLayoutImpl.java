@@ -26,14 +26,14 @@ class StdGridLayoutImpl extends StdLayoutImpl {
 			if (jsHeights) {
 				app
 						.doJavaScript(
-								"Wt3_0_0.layoutAdjust=function(w,c,mh){if (Wt3_0_0.isHidden(w))return;var WT=Wt3_0_0,t=w.firstChild;var r=WT.pxself(w.parentNode, 'height');if (r==0) {r=w.parentNode.clientHeight;r+= -WT.px(w.parentNode, 'paddingTop')-WT.px(w.parentNode, 'paddingBottom');}r+= -WT.px(w, 'marginTop')-WT.px(w, 'marginBottom');var ts=0,tmh=0,i, j, il, jl,row, tds, td;for (i=0, il=t.rows.length; i<il; i++) {tmh += mh[i];if (c[i] <= 0)r -= t.rows[i].offsetHeight;else ts += c[i];}r=r>tmh?r:tmh;if (ts!=0 && r>0) {var left=r, h;for (i=0, il=t.rows.length; i<il; i++) {row=t.rows[i];if (c[i] != 0) {if (c[i] != -1) {h=r*c[i]/ts;h=left>h?h:left;h=Math.round(mh[i]>h?mh[i]:h);left -= h;} else {h=row.offsetHeight;}if (row.style.height!=h+'px'){row.style.height=h+'px';tds=row.childNodes;for (j=0, jl=tds.length; j<jl; ++j){td=tds[j];var k=h-WT.pxself(td, 'paddingTop')-WT.pxself(td, 'paddingBottom');if (k <= 0) k=0;td.style.height= k+'px';if (td.style['verticalAlign']|| td.childNodes.length == 0) continue;var ch=td.childNodes[0];if (k <= 0) k=0;if (ch.className=='Wt-hcenter'){ch.style.height= k+'px';var itd=ch.firstChild.firstChild;if (!WT.hasTag(itd, 'TD'))itd=itd.firstChild;if (itd.style.height!=k+'px')itd.style.height=k+'px';ch=itd.firstChild;}if (td.childNodes.length==1)k += -WT.px(ch, 'marginTop')-WT.px(ch, 'marginBottom')-WT.px(ch, 'borderTopWidth')-WT.px(ch, 'borderBottomWidth')-WT.px(ch, 'paddingTop')-WT.px(ch, 'paddingBottom');if (k <= 0) k=0;if (WT.hasTag(ch, 'TABLE'))continue;if (ch.style.height != k+'px') {if (ch.wtSetHeight) ch.wtSetHeight(ch, k);else ch.style.height = k+'px';}}}}}}if (t.style.tableLayout != 'fixed')return;var jc=0, chn=t.childNodes;for (j=0, jl=chn.length; j<jl; j++) {var col=chn[j], chw, mw,c, ci, cil;if (WT.hasTag(col, 'COLGROUP')) {j=-1;chn=col.childNodes;jl=chn.length;}if (!WT.hasTag(col, 'COL'))continue;if (WT.pctself(col, 'width') == 0) {mw=0;for (i=0, il=t.rows.length; i<il; i++) {row=t.rows[i];tds=row.childNodes;c=0;for (ci=0, cil=tds.length; ci<cil; ci++) {td=tds[ci];if (td.colSpan==1 && c==jc && td.childNodes.length==1) {ch=td.firstChild;w=ch.offsetWidth+WT.px(ch, 'marginLeft')+WT.px(ch, 'marginRight')+WT.px(td, 'paddingLeft')+WT.px(td, 'paddingRight');mw=Math.max(mw, w);break;}c += td.colSpan;if (c>jc) break;}}if (mw>0 && WT.pxself(col, 'width') != mw)col.style.width=mw+'px';}++jc;}};",
+								"Wt3_1_0.layoutAdjust=function(w,c,mh){if (Wt3_1_0.isHidden(w))return;var WT=Wt3_1_0,t=w.firstChild;var r=WT.pxself(w.parentNode, 'height');if (r==0) {r=w.parentNode.clientHeight;r+= -WT.px(w.parentNode, 'paddingTop')-WT.px(w.parentNode, 'paddingBottom');}r+= -WT.px(w, 'marginTop')-WT.px(w, 'marginBottom');var ts=0,tmh=0,i, j, il, jl,row, tds, td;for (i=0, il=t.rows.length; i<il; i++) {tmh += mh[i];if (c[i] <= 0)r -= t.rows[i].offsetHeight;else ts += c[i];}r=r>tmh?r:tmh;if (ts!=0 && r>0) {var left=r, h;for (i=0, il=t.rows.length; i<il; i++) {row=t.rows[i];if (c[i] != 0) {if (c[i] != -1) {h=r*c[i]/ts;h=left>h?h:left;h=Math.round(mh[i]>h?mh[i]:h);left -= h;} else {h=row.offsetHeight;}if (row.style.height!=h+'px') row.style.height=h+'px';tds=row.childNodes;for (j=0, jl=tds.length; j<jl; ++j){td=tds[j];var k=h-WT.pxself(td, 'paddingTop')-WT.pxself(td, 'paddingBottom');if (k <= 0) k=0;td.style.height= k+'px';if (td.style['verticalAlign']|| td.childNodes.length == 0) continue;var ch=td.childNodes[0];if (k <= 0) k=0;if (ch.className=='Wt-hcenter'){ch.style.height= k+'px';var itd=ch.firstChild.firstChild;if (!WT.hasTag(itd, 'TD'))itd=itd.firstChild;if (itd.style.height!=k+'px')itd.style.height=k+'px';ch=itd.firstChild;}if (td.childNodes.length==1)k += -WT.px(ch, 'marginTop')-WT.px(ch, 'marginBottom')-WT.px(ch, 'borderTopWidth')-WT.px(ch, 'borderBottomWidth')-WT.px(ch, 'paddingTop')-WT.px(ch, 'paddingBottom');if (k <= 0) k=0;if (WT.hasTag(ch, 'TABLE'))continue;if (ch.wtResize) {var p=ch.parentNode;var w=p.offsetWidth - WT.px(ch, 'marginLeft')-WT.px(ch, 'marginRight')-WT.px(p, 'paddingLeft')-WT.px(p, 'paddingRight');ch.wtResize(ch, w, k);} else if (ch.style.height != k+'px')ch.style.height = k+'px';}}}}if (t.style.tableLayout != 'fixed')return;var jc=0, chn=t.childNodes;for (j=0, jl=chn.length; j<jl; j++) {var col=chn[j], chw, mw,c, ci, cil;if (WT.hasTag(col, 'COLGROUP')) {j=-1;chn=col.childNodes;jl=chn.length;}if (!WT.hasTag(col, 'COL'))continue;if (WT.pctself(col, 'width') == 0) {mw=0;for (i=0, il=t.rows.length; i<il; i++) {row=t.rows[i];tds=row.childNodes;c=0;for (ci=0, cil=tds.length; ci<cil; ci++) {td=tds[ci];if (td.colSpan==1 && c==jc && td.childNodes.length==1) {ch=td.firstChild;w=ch.offsetWidth+WT.px(ch, 'marginLeft')+WT.px(ch, 'marginRight')+WT.px(td, 'paddingLeft')+WT.px(td, 'paddingRight');mw=Math.max(mw, w);break;}c += td.colSpan;if (c>jc) break;}}if (mw>0 && WT.pxself(col, 'width') != mw)col.style.width=mw+'px';}++jc;}};",
 								false);
 				app
 						.declareJavaScriptFunction(
 								"layoutsAdjust",
 								"function(){var a="
 										+ app.getJavaScriptClass()
-										+ ".layoutTableObjs;var i;for(i=0;i<a.length;++i){var id=a[i][0];var c=a[i][1];var mh=a[i][2];var w=Wt3_0_0.getElement(id);if(!w){Wt3_0_0.arrayRemove(a, i);--i;}else{Wt3_0_0.layoutAdjust(w,c,mh);}}}");
+										+ ".layoutTableObjs;var i;for(i=0;i<a.length;++i){var id=a[i][0];var c=a[i][1];var mh=a[i][2];var w=Wt3_1_0.getElement(id);if(!w){Wt3_1_0.arrayRemove(a, i);--i;}else{Wt3_1_0.layoutAdjust(w,c,mh);}}}");
 				app.addAutoJavaScript(app.getJavaScriptClass()
 						+ ".layoutsAdjust();");
 			}
@@ -85,7 +85,7 @@ class StdGridLayoutImpl extends StdLayoutImpl {
 			divStyle += "height: 100%;";
 		}
 		if (divStyle.length() != 0) {
-			div.setAttribute("style", divStyle);
+			div.setProperty(Property.PropertyStyle, divStyle);
 		}
 		DomElement table = DomElement
 				.createNew(DomElementType.DomElement_TABLE);
@@ -100,7 +100,7 @@ class StdGridLayoutImpl extends StdLayoutImpl {
 		if (!jsHeights && fitHeight) {
 			style += "height: 100%;";
 		}
-		table.setAttribute("style", style);
+		table.setProperty(Property.PropertyStyle, style);
 		if (jsHeights && fitHeight) {
 			StringWriter layoutAdd = new StringWriter();
 			layoutAdd.append(app.getJavaScriptClass()).append(
@@ -155,8 +155,8 @@ class StdGridLayoutImpl extends StdLayoutImpl {
 				if (stretch != 0 || fitWidth && totalColStretch == 0) {
 					int pct = totalColStretch == 0 ? 100 / colCount : 100
 							* stretch / totalColStretch;
-					c.setAttribute("style", "width:" + String.valueOf(pct)
-							+ "%;");
+					c.setProperty(Property.PropertyStyle, "width:"
+							+ String.valueOf(pct) + "%;");
 				}
 				table.addChild(c);
 			}
@@ -179,7 +179,7 @@ class StdGridLayoutImpl extends StdLayoutImpl {
 				style2.append("height: ").append(String.valueOf(pct)).append(
 						"%;");
 				heightPct = style2.toString();
-				tr.setAttribute("style", heightPct);
+				tr.setProperty(Property.PropertyStyle, heightPct);
 			}
 			for (int col = 0; col < colCount; ++col) {
 				if (!overSpanned.get(row * colCount + col)) {
@@ -243,7 +243,7 @@ class StdGridLayoutImpl extends StdLayoutImpl {
 					DomElement td = DomElement
 							.createNew(DomElementType.DomElement_TD);
 					if (!jsHeights) {
-						td.setAttribute("class", "Wt-grtd");
+						td.setProperty(Property.PropertyClass, "Wt-grtd");
 					}
 					if (item.item_ != null) {
 						DomElement c = getImpl(item.item_).createDomElement(
@@ -255,19 +255,23 @@ class StdGridLayoutImpl extends StdLayoutImpl {
 						case AlignCenter: {
 							DomElement itable = DomElement
 									.createNew(DomElementType.DomElement_TABLE);
-							itable.setAttribute("class", "Wt-hcenter");
+							itable.setProperty(Property.PropertyClass,
+									"Wt-hcenter");
 							if (vAlign == null && !jsHeights) {
-								itable.setAttribute("style", "height:100%;");
+								itable.setProperty(Property.PropertyStyle,
+										"height:100%;");
 							}
 							DomElement irow = DomElement
 									.createNew(DomElementType.DomElement_TR);
 							DomElement itd = DomElement
 									.createNew(DomElementType.DomElement_TD);
 							if (!jsHeights) {
-								itd.setAttribute("class", "Wt-grtd");
+								itd.setProperty(Property.PropertyClass,
+										"Wt-grtd");
 							}
 							if (vAlign == null) {
-								itd.setAttribute("style", "height:100%;");
+								itd.setProperty(Property.PropertyStyle,
+										"height:100%;");
 							}
 							itd.addChild(c);
 							irow.addChild(itd);
@@ -329,14 +333,14 @@ class StdGridLayoutImpl extends StdLayoutImpl {
 						}
 					}
 					if (style2.length() != 0) {
-						td.setAttribute("style", style2);
+						td.setProperty(Property.PropertyStyle, style2);
 					}
 					if (item.rowSpan_ != 1) {
-						td.setAttribute("rowspan", String
+						td.setProperty(Property.PropertyRowSpan, String
 								.valueOf(item.rowSpan_));
 					}
 					if (item.colSpan_ != 1) {
-						td.setAttribute("colspan", String
+						td.setProperty(Property.PropertyColSpan, String
 								.valueOf(item.colSpan_));
 					}
 					tr.addChild(td);
@@ -378,8 +382,8 @@ class StdGridLayoutImpl extends StdLayoutImpl {
 		WApplication app = WApplication.getInstance();
 		if (this.getParentLayoutImpl() == null) {
 			if (container == app.getRoot()) {
-				app.setBodyClass("Wt-layout");
-				app.setHtmlClass("Wt-layout");
+				app.setBodyClass(app.getBodyClass() + " Wt-layout");
+				app.setHtmlClass(app.getHtmlClass() + " Wt-layout");
 			}
 			if (app.getEnvironment().agentIsIE()) {
 				container.setOverflow(WContainerWidget.Overflow.OverflowAuto);

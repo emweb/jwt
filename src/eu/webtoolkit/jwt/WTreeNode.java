@@ -189,7 +189,6 @@ public class WTreeNode extends WCompositeWidget {
 		this.selectable_ = true;
 		this.visible_ = true;
 		this.childrenDecorated_ = true;
-		this.parentNode_ = null;
 		this.childCountPolicy_ = WTreeNode.ChildCountPolicy.Disabled;
 		this.imagePackUrl_ = "";
 		this.labelIcon_ = labelIcon;
@@ -280,16 +279,17 @@ public class WTreeNode extends WCompositeWidget {
 	 */
 	public void addChildNode(WTreeNode node) {
 		this.childNodes_.add(node);
-		node.parentNode_ = this;
+		if (this.childrenLoaded_) {
+			this.layout_.getElementAt(1, 1).addWidget(node);
+		} else {
+			this.addChild(node);
+		}
 		this.descendantAdded(node);
 		if (this.loadPolicy_ != node.loadPolicy_) {
 			node.setLoadPolicy(this.loadPolicy_);
 		}
 		if (this.childCountPolicy_ != node.childCountPolicy_) {
 			node.setChildCountPolicy(this.childCountPolicy_);
-		}
-		if (this.childrenLoaded_) {
-			this.layout_.getElementAt(1, 1).addWidget(node);
 		}
 		if (this.childNodes_.size() > 1) {
 			this.childNodes_.get(this.childNodes_.size() - 2).update();
@@ -304,9 +304,10 @@ public class WTreeNode extends WCompositeWidget {
 	 */
 	public void removeChildNode(WTreeNode node) {
 		this.childNodes_.remove(node);
-		node.parentNode_ = null;
 		if (this.childrenLoaded_) {
 			this.layout_.getElementAt(1, 1).removeWidget(node);
+		} else {
+			this.removeChild(node);
 		}
 		this.descendantRemoved(node);
 		this.updateChildren();
@@ -348,11 +349,12 @@ public class WTreeNode extends WCompositeWidget {
 			this.layout_.getElementAt(0, 1).addWidget(this.childCountLabel_);
 		}
 		this.childCountPolicy_ = policy;
-		if (this.childCountPolicy_ == WTreeNode.ChildCountPolicy.Enabled
-				&& this.getParentNode() != null
-				&& this.getParentNode().isExpanded()) {
-			if (this.isDoPopulate()) {
-				this.update();
+		if (this.childCountPolicy_ == WTreeNode.ChildCountPolicy.Enabled) {
+			WTreeNode parent = this.getParentNode();
+			if (parent != null && parent.isExpanded()) {
+				if (this.isDoPopulate()) {
+					this.update();
+				}
 			}
 		}
 		if (this.childCountPolicy_ != WTreeNode.ChildCountPolicy.Disabled) {
@@ -400,7 +402,8 @@ public class WTreeNode extends WCompositeWidget {
 				this.loadChildren();
 				this.loadGrandChildren();
 			} else {
-				if (this.parentNode_ != null && this.parentNode_.isExpanded()) {
+				WTreeNode parent = this.getParentNode();
+				if (parent != null && parent.isExpanded()) {
 					this.loadChildren();
 				}
 				this.expandIcon_.icon1Clicked().addListener(this,
@@ -415,10 +418,11 @@ public class WTreeNode extends WCompositeWidget {
 			if (this.isExpanded()) {
 				this.loadChildren();
 			} else {
-				if (this.childCountPolicy_ == WTreeNode.ChildCountPolicy.Enabled
-						&& this.parentNode_ != null
-						&& this.parentNode_.isExpanded()) {
-					this.isDoPopulate();
+				if (this.childCountPolicy_ == WTreeNode.ChildCountPolicy.Enabled) {
+					WTreeNode parent = this.getParentNode();
+					if (parent != null && parent.isExpanded()) {
+						this.isDoPopulate();
+					}
 				}
 				this.expandIcon_.icon1Clicked().addListener(this,
 						new Signal1.Listener<WMouseEvent>() {
@@ -472,7 +476,14 @@ public class WTreeNode extends WCompositeWidget {
 	 * @see WTreeNode#getChildNodes()
 	 */
 	public WTreeNode getParentNode() {
-		return this.parentNode_;
+		WWidget p = this.getParent();
+		for (; p != null; p = p.getParent()) {
+			WTreeNode tn = ((p) instanceof WTreeNode ? (WTreeNode) (p) : null);
+			if (tn != null) {
+				return tn;
+			}
+		}
+		return null;
 	}
 
 	/**
@@ -582,7 +593,6 @@ public class WTreeNode extends WCompositeWidget {
 		this.selectable_ = true;
 		this.visible_ = true;
 		this.childrenDecorated_ = true;
-		this.parentNode_ = null;
 		this.childCountPolicy_ = WTreeNode.ChildCountPolicy.Disabled;
 		this.imagePackUrl_ = "";
 		this.labelIcon_ = null;
@@ -680,8 +690,9 @@ public class WTreeNode extends WCompositeWidget {
 		if (this.imagePackUrl_.length() != 0) {
 			return this.imagePackUrl_;
 		} else {
-			if (this.parentNode_ != null) {
-				return this.parentNode_.getImagePack();
+			WTreeNode parent = this.getParentNode();
+			if (parent != null) {
+				return parent.getImagePack();
 			} else {
 				return "";
 			}
@@ -696,8 +707,9 @@ public class WTreeNode extends WCompositeWidget {
 	 * to the parent.
 	 */
 	protected void descendantRemoved(WTreeNode node) {
-		if (this.parentNode_ != null) {
-			this.parentNode_.descendantRemoved(node);
+		WTreeNode parent = this.getParentNode();
+		if (parent != null) {
+			parent.descendantRemoved(node);
 		}
 	}
 
@@ -709,8 +721,9 @@ public class WTreeNode extends WCompositeWidget {
 	 * to the parent.
 	 */
 	protected void descendantAdded(WTreeNode node) {
-		if (this.parentNode_ != null) {
-			this.parentNode_.descendantAdded(node);
+		WTreeNode parent = this.getParentNode();
+		if (parent != null) {
+			parent.descendantAdded(node);
 		}
 	}
 
@@ -834,6 +847,7 @@ public class WTreeNode extends WCompositeWidget {
 		if (!this.childrenLoaded_) {
 			this.isDoPopulate();
 			for (int i = 0; i < this.childNodes_.size(); ++i) {
+				this.removeChild(this.childNodes_.get(i));
 				this.layout_.getElementAt(1, 1).addWidget(
 						this.childNodes_.get(i));
 			}
@@ -901,7 +915,8 @@ public class WTreeNode extends WCompositeWidget {
 			this.layout_.getRowAt(0).hide();
 			this.expandIcon_.hide();
 		}
-		if (this.parentNode_ != null && !this.parentNode_.childrenDecorated_) {
+		WTreeNode parent = this.getParentNode();
+		if (parent != null && !parent.childrenDecorated_) {
 			this.layout_.getElementAt(0, 0).hide();
 			this.layout_.getElementAt(1, 0).hide();
 		}
@@ -976,9 +991,9 @@ public class WTreeNode extends WCompositeWidget {
 	}
 
 	private boolean isLastChildNode() {
-		if (this.parentNode_ != null) {
-			return this.parentNode_.childNodes_
-					.get(this.parentNode_.childNodes_.size() - 1) == this;
+		WTreeNode parent = this.getParentNode();
+		if (parent != null) {
+			return parent.childNodes_.get(parent.childNodes_.size() - 1) == this;
 		} else {
 			return true;
 		}

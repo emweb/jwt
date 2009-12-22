@@ -157,10 +157,14 @@ public class WCompositeWidget extends WWidget {
 	}
 
 	boolean isVisible() {
-		if (this.getParent() != null) {
-			return this.getParent().isVisible();
+		if (this.isHidden()) {
+			return false;
 		} else {
-			return true;
+			if (this.getParent() != null) {
+				return this.getParent().isVisible();
+			} else {
+				return true;
+			}
 		}
 	}
 
@@ -173,10 +177,14 @@ public class WCompositeWidget extends WWidget {
 	}
 
 	public boolean isEnabled() {
-		if (this.getParent() != null) {
-			return this.getParent().isEnabled();
+		if (this.isDisabled()) {
+			return false;
 		} else {
-			return true;
+			if (this.getParent() != null) {
+				return this.getParent().isEnabled();
+			} else {
+				return true;
+			}
 		}
 	}
 
@@ -268,6 +276,10 @@ public class WCompositeWidget extends WWidget {
 
 	public void setId(String id) {
 		this.impl_.setId(id);
+	}
+
+	public WWidget find(String name) {
+		return this.impl_.find(name);
 	}
 
 	public void setSelectable(boolean selectable) {

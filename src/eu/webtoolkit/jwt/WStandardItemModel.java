@@ -468,6 +468,9 @@ public class WStandardItemModel extends WAbstractItemModel {
 	}
 
 	public Object getHeaderData(int section, Orientation orientation, int role) {
+		if (role == ItemDataRole.LevelRole) {
+			return 0;
+		}
 		Map<Integer, Object> d = orientation == Orientation.Horizontal ? this.columnHeaderData_
 				.get(section)
 				: this.rowHeaderData_.get(section);

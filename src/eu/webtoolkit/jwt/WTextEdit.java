@@ -24,8 +24,9 @@ import java.util.List;
  * provide direct access to the underlying TinyMCE component.
  * <p>
  * The value may be overridden with a URL that points to the directory where the
- * tiny_mce folder is located, by configuring the <i>tinyMCEURL</i> property in
- * your JWt configuration file.
+ * <code>tiny_mce</code> folder is located, by configuring the <i>tinyMCEURL</i>
+ * property in your JWt configuration file, see DOCREF<a class="el"
+ * href="overview.html#config_general">configuration properties</a>.
  * <p>
  * <div align="center"> <img src="doc-files//WTextEdit-1.png"
  * alt="Default configuration of a WTextEdit">
@@ -207,12 +208,9 @@ public class WTextEdit extends WTextArea {
 	}
 
 	public void load() {
-		WApplication
-				.getInstance()
-				.addAutoJavaScript(
-						"{var e="
-								+ this.getJsRef()
-								+ ";if(e && e.ed){e.ed.save();Wt3_0_0.tinyMCEAdjust(e);}}");
+		WApplication.getInstance().addAutoJavaScript(
+				"{var e=" + this.getJsRef()
+						+ ";if(e && e.ed){Wt3_1_0.tinyMCEAdjust(e);}}");
 		this.buttons_[0] = "fontselect,|,bold,italic,underline,|,fontsizeselect,|,forecolor,backcolor,|,justifyleft,justifycenter,justifyright,justifyfull,|,anchor,|,numlist,bullist";
 		super.load();
 	}
@@ -256,14 +254,19 @@ public class WTextEdit extends WTextArea {
 			DomElement dummy = new DomElement(DomElement.Mode.ModeUpdate,
 					DomElementType.DomElement_TABLE);
 			this.updateDom(dummy, true);
-			element.callJavaScript("{var e=" + this.getJsRef()
-					+ ";e.ed=new tinymce.Editor('" + this.getFormName() + "',"
-					+ config.toString() + ");e.ed.render();}");
+			element
+					.callJavaScript("{var e="
+							+ this.getJsRef()
+							+ ";e.ed=new tinymce.Editor('"
+							+ this.getFormName()
+							+ "',"
+							+ config.toString()
+							+ ");e.ed.render();e.ed.onChange.add(function(ed) { ed.save(); });}");
 			element.callJavaScript(init_cb
-					+ "=function(){var d=Wt3_0_0.getElement('"
+					+ "=function(){var d=Wt3_1_0.getElement('"
 					+ this.getFormName()
 					+ "_tbl'); d.style.cssText='width:100%;"
-					+ dummy.getCssStyle() + "';Wt3_0_0.tinyMCEAdjust("
+					+ dummy.getCssStyle() + "';Wt3_1_0.tinyMCEAdjust("
 					+ this.getJsRef() + ");};");
 			this.contentChanged_ = false;
 		}
@@ -310,7 +313,7 @@ public class WTextEdit extends WTextArea {
 			app.getStyleSheet().addRule(".mceEditor", "height: 100%;");
 			app
 					.doJavaScript(
-							"Wt3_0_0.tinyMCEAdjust=function(e){if (!e.ed.contentAreaContainer) return;var tbl=Wt3_0_0.getElement(e.id + '_tbl');var iframe = e.ed.contentAreaContainer.firstChild;var th=Wt3_0_0.pxself(tbl, 'height');if (th==0)if (e.parentNode.className=='Wt-grtd') {iframe.style.height='0px';th=e.parentNode.offsetHeight-Wt3_0_0.pxself(e.parentNode, 'paddingTop')-Wt3_0_0.pxself(e.parentNode, 'paddingBottom');} else return;th -= iframe.parentNode.offsetTop + 2;if (th <= 0)return;var nh=th+'px';if (iframe.style.height != nh) iframe.style.height=nh;};",
+							"Wt3_1_0.tinyMCEAdjust=function(e){if (!e.ed.contentAreaContainer) return;var tbl=Wt3_1_0.getElement(e.id + '_tbl');var iframe = e.ed.contentAreaContainer.firstChild;var th=Wt3_1_0.pxself(tbl, 'height');if (th==0)if (e.parentNode.className=='Wt-grtd') {iframe.style.height='0px';th=e.parentNode.offsetHeight-Wt3_1_0.pxself(e.parentNode, 'paddingTop')-Wt3_1_0.pxself(e.parentNode, 'paddingBottom');} else return;th -= iframe.parentNode.offsetTop + 2;if (th <= 0)return;var nh=th+'px';if (iframe.style.height != nh) iframe.style.height=nh;};",
 							false);
 		}
 	}

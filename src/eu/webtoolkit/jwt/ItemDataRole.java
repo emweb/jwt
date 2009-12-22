@@ -53,6 +53,18 @@ public class ItemDataRole {
 	 */
 	public final static int UrlRole = 7;
 	/**
+	 * Level in aggregation, for header data.
+	 */
+	public final static int LevelRole = 8;
+	/**
+	 * Marker pen color (for {@link eu.webtoolkit.jwt.chart.WCartesianChart}).
+	 */
+	public final static int MarkerPenColorRole = 16;
+	/**
+	 * Marker brush color (for {@link eu.webtoolkit.jwt.chart.WCartesianChart}).
+	 */
+	public final static int MarkerBrushColorRole = 17;
+	/**
 	 * First role reserved for user purposes.
 	 */
 	public final static int UserRole = 32;

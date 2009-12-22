@@ -7,7 +7,7 @@ package eu.webtoolkit.jwt;
 
 
 /**
- * Flags that data item options.
+ * Flags that indicate data item options.
  * <p>
  * 
  * @see WModelIndex#getFlags()

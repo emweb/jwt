@@ -41,7 +41,14 @@ public enum AxisScale {
 	 * a ScatterPlot, when the X series contain dates (of type
 	 * {@link eu.webtoolkit.jwt.WDate}).
 	 */
-	DateScale(3);
+	DateScale(3),
+	/**
+	 * <p>
+	 * A datetime scale is a special linear scale, which is useful for the X
+	 * axis in a ScatterPlot, when the X series contain timedates (of type
+	 * {@link eu.webtoolkit.jwt.WDate}).
+	 */
+	DateTimeScale(4);
 
 	private int value;
 

@@ -5,6 +5,7 @@
  */
 package eu.webtoolkit.jwt.chart;
 
+import eu.webtoolkit.jwt.WModelIndex;
 import eu.webtoolkit.jwt.WRectF;
 
 class SeriesRenderIterator extends SeriesIterator {
@@ -14,9 +15,11 @@ class SeriesRenderIterator extends SeriesIterator {
 		this.series_ = null;
 	}
 
-	public void setSegment(int currentXSegment, int currentYSegment,
+	public void startSegment(int currentXSegment, int currentYSegment,
 			WRectF currentSegmentArea) {
-		super.setSegment(currentXSegment, currentYSegment, currentSegmentArea);
+		super
+				.startSegment(currentXSegment, currentYSegment,
+						currentSegmentArea);
 		WAxis yAxis = this.renderer_.getChart().getAxis(this.series_.getAxis());
 		if (currentYSegment == 0) {
 			this.maxY_ = Double.MAX_VALUE;
@@ -28,6 +31,11 @@ class SeriesRenderIterator extends SeriesIterator {
 		} else {
 			this.minY_ = currentSegmentArea.getTop();
 		}
+	}
+
+	public void endSegment() {
+		super.endSegment();
+		this.seriesRenderer_.paint();
 	}
 
 	public boolean startSeries(WDataSeries series, double groupWidth,
@@ -55,7 +63,8 @@ class SeriesRenderIterator extends SeriesIterator {
 		this.series_ = null;
 	}
 
-	public void newValue(WDataSeries series, double x, double y, double stackY) {
+	public void newValue(WDataSeries series, double x, double y, double stackY,
+			WModelIndex xIndex, WModelIndex yIndex) {
 		if (Double.isNaN(x) || Double.isNaN(y)) {
 			this.seriesRenderer_.paint();
 		} else {

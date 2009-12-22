@@ -14,7 +14,7 @@ package eu.webtoolkit.jwt.chart;
  * <p>
  * 
  * @see WDataSeries#setFillRange(FillRangeType fillRange)
- * @see WCartesianChart
+ * @see eu.webtoolkit.jwt.chart.WCartesianChart
  */
 public enum FillRangeType {
 	/**

@@ -101,32 +101,6 @@ public abstract class WAbstractProxyModel extends WAbstractItemModel {
 		return this.sourceModel_.getFlags(this.mapToSource(index));
 	}
 
-	public boolean setHeaderData(int section, Orientation orientation,
-			Object value, int role) {
-		if (this.getRowCount() > 0) {
-			if (orientation == Orientation.Vertical) {
-				section = this.mapToSource(this.getIndex(section, 0)).getRow();
-			} else {
-				section = this.mapToSource(this.getIndex(0, section))
-						.getColumn();
-			}
-		}
-		return this.sourceModel_.setHeaderData(section, orientation, value,
-				role);
-	}
-
-	public Object getHeaderData(int section, Orientation orientation, int role) {
-		if (this.getRowCount() > 0) {
-			if (orientation == Orientation.Vertical) {
-				section = this.mapToSource(this.getIndex(section, 0)).getRow();
-			} else {
-				section = this.mapToSource(this.getIndex(0, section))
-						.getColumn();
-			}
-		}
-		return this.sourceModel_.getHeaderData(section, orientation, role);
-	}
-
 	public boolean insertColumns(int column, int count, WModelIndex parent) {
 		return this.sourceModel_.insertColumns(column, count, parent);
 	}
@@ -176,6 +150,18 @@ public abstract class WAbstractProxyModel extends WAbstractItemModel {
 
 	public WModelIndex fromRawIndex(Object rawIndex) {
 		return this.mapFromSource(this.sourceModel_.fromRawIndex(rawIndex));
+	}
+
+	/**
+	 * Create a source model index.
+	 * <p>
+	 * This is a utility function that allows you to create indexes in the
+	 * source model. In this way, you can reuse the internal pointers of the
+	 * source model in proxy model indexes, and convert a proxy model index back
+	 * to the source model index using this method.
+	 */
+	protected WModelIndex createSourceIndex(int row, int column, Object ptr) {
+		return this.sourceModel_.createIndex(row, column, ptr);
 	}
 
 	private WAbstractItemModel sourceModel_;

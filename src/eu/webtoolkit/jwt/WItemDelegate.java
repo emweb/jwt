@@ -115,7 +115,7 @@ public class WItemDelegate extends WAbstractItemDelegate {
 					index.getData(ItemDataRole.StyleClassRole)).toString();
 			if (!EnumUtils.mask(flags, ViewItemRenderFlag.RenderSelected)
 					.isEmpty()) {
-				sc += " selected";
+				sc += " Wt-selected";
 			}
 			if (sc.length() != 0) {
 				widgetRef.w.setStyleClass(widgetRef.w.getStyleClass() + " "
@@ -246,6 +246,7 @@ public class WItemDelegate extends WAbstractItemDelegate {
 					WImage inv = new WImage(WApplication.getInstance()
 							.getOnePixelGifUrl());
 					inv.setStyleClass("rh w0 icon");
+					inv.resize(new WLength(0), WLength.Auto);
 					wc.addWidget(inv);
 				}
 				wc.addWidget(w.w);

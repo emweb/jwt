@@ -112,6 +112,10 @@ public abstract class WPaintedWidget extends WInteractWidget {
 		this.sizeChanged_ = false;
 		this.repaintFlags_ = EnumSet.noneOf(PaintFlag.class);
 		this.areaImage_ = null;
+		this.renderWidth_ = 0;
+		this.renderHeight_ = 0;
+		this.resized_ = new JSignal2<Integer, Integer>(this, "resized") {
+		};
 		if (WApplication.getInstance() != null) {
 			WEnvironment env = WApplication.getInstance().getEnvironment();
 			if (env.getUserAgent().indexOf("Opera") != -1) {
@@ -119,6 +123,12 @@ public abstract class WPaintedWidget extends WInteractWidget {
 			}
 		}
 		this.setInline(false);
+		this.resized_.addListener(this,
+				new Signal2.Listener<Integer, Integer>() {
+					public void trigger(Integer e1, Integer e2) {
+						WPaintedWidget.this.onResize(e1, e2);
+					}
+				});
 	}
 
 	/**
@@ -198,12 +208,10 @@ public abstract class WPaintedWidget extends WInteractWidget {
 
 	public void resize(WLength width, WLength height) {
 		super.resize(width, height);
-		this.setMinimumSize(width, height);
-		if (this.areaImage_ != null) {
-			this.areaImage_.resize(width, height);
+		if (!width.isAuto() && !height.isAuto()) {
+			this.resizeCanvas((int) this.getWidth().toPixels(), (int) this
+					.getHeight().toPixels());
 		}
-		this.sizeChanged_ = true;
-		this.update();
 	}
 
 	/**
@@ -316,21 +324,39 @@ public abstract class WPaintedWidget extends WInteractWidget {
 		this.isCreatePainter();
 		DomElement result = DomElement.createNew(DomElementType.DomElement_DIV);
 		this.setId(result, app);
-		result.setProperty(Property.PropertyStyleOverflowX, "hidden");
+		DomElement wrap = result;
+		if (this.getWidth().isAuto() && this.getHeight().isAuto()) {
+			result.setProperty(Property.PropertyStylePosition, "relative");
+			wrap = DomElement.createNew(DomElementType.DomElement_DIV);
+			wrap.setProperty(Property.PropertyStylePosition, "absolute");
+			wrap.setProperty(Property.PropertyStyleLeft, "0");
+			wrap.setProperty(Property.PropertyStyleRight, "0");
+		}
 		DomElement canvas = DomElement.createNew(DomElementType.DomElement_DIV);
 		if (!app.getEnvironment().agentIsSpiderBot()) {
 			canvas.setId('p' + this.getId());
 		}
 		WPaintDevice device = this.painter_.getCreatePaintDevice();
-		this.paintEvent(device);
-		if (device.getPainter() != null) {
-			device.getPainter().end();
+		if (this.renderWidth_ != 0 && this.renderHeight_ != 0) {
+			this.paintEvent(device);
+			if (device.getPainter() != null) {
+				device.getPainter().end();
+			}
 		}
 		this.painter_.createContents(canvas, device);
 		;
 		this.needRepaint_ = false;
-		result.addChild(canvas);
+		wrap.addChild(canvas);
+		if (wrap != result) {
+			result.addChild(wrap);
+		}
 		this.updateDom(result, true);
+		WApplication
+				.getInstance()
+				.doJavaScript(
+						this.getJsRef()
+								+ ".wtResize = function(self, w, h) {if (!self.wtWidth || self.wtWidth!=w || !self.wtHeight || self.wtHeight!=h) {self.wtWidth=w; self.wtHeight=h;"
+								+ this.resized_.createCall("w", "h") + "}};");
 		return result;
 	}
 
@@ -384,6 +410,25 @@ public abstract class WPaintedWidget extends WInteractWidget {
 	boolean sizeChanged_;
 	private EnumSet<PaintFlag> repaintFlags_;
 	private WImage areaImage_;
+	int renderWidth_;
+	int renderHeight_;
+	private JSignal2<Integer, Integer> resized_;
+
+	private void resizeCanvas(int width, int height) {
+		this.renderWidth_ = width;
+		this.renderHeight_ = height;
+		if (this.areaImage_ != null) {
+			this.areaImage_.resize(new WLength(this.renderWidth_), new WLength(
+					this.renderHeight_));
+		}
+		this.sizeChanged_ = true;
+		this.update();
+	}
+
+	private void onResize(int width, int height) {
+		this.resize(WLength.Auto, WLength.Auto);
+		this.resizeCanvas(width, height);
+	}
 
 	private boolean isCreatePainter() {
 		if (this.painter_ != null) {
@@ -442,7 +487,8 @@ public abstract class WPaintedWidget extends WInteractWidget {
 			this.areaImage_.setOffsets(new WLength(0), EnumSet.of(Side.Left,
 					Side.Top));
 			this.areaImage_.setMargin(new WLength(0), EnumSet.of(Side.Top));
-			this.areaImage_.resize(this.getWidth(), this.getHeight());
+			this.areaImage_.resize(new WLength(this.renderWidth_), new WLength(
+					this.renderHeight_));
 			this.areaImage_.setPopup(true);
 		}
 	}

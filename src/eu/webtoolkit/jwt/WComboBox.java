@@ -371,7 +371,7 @@ public class WComboBox extends WFormWidget {
 			for (int i = 0; i < this.getCount(); ++i) {
 				DomElement item = DomElement
 						.createNew(DomElementType.DomElement_OPTION);
-				item.setAttribute("value", String.valueOf(i));
+				item.setProperty(Property.PropertyValue, String.valueOf(i));
 				item.setProperty(Property.PropertyInnerHTML, escapeText(
 						StringUtils.asString(this.model_.getData(i,
 								this.modelColumn_))).toString());
@@ -381,7 +381,7 @@ public class WComboBox extends WFormWidget {
 				WString sc = StringUtils.asString(this.model_.getData(i,
 						this.modelColumn_, ItemDataRole.StyleClassRole));
 				if (!(sc.length() == 0)) {
-					item.setAttribute("class", sc.toString());
+					item.setProperty(Property.PropertyClass, sc.toString());
 				}
 				element.addChild(item);
 			}

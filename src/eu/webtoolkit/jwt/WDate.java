@@ -17,9 +17,9 @@ import java.util.GregorianCalendar;
  * 
  * A valid date may be specified by year, month, and day of month (using the
  * {@link #WDate(int, int, int)} constructor, or the
- * {@link #setDate(int year, int month, int day)} method). When attempting to specify an invalid date
- * (with an impossible combination of year/month/date) an
- * {@link IllegalArgumentException} will be thrown.
+ * {@link #setDate(int year, int month, int day)} method). When attempting to
+ * specify an invalid date (with an impossible combination of year/month/date)
+ * an {@link IllegalArgumentException} will be thrown.
  * 
  * The class provides a flexible way for converting between strings and dates.
  * Use toString() to convert to strings, and fromString() for parsing strings.
@@ -27,9 +27,6 @@ import java.util.GregorianCalendar;
  * both methods.
  * 
  * Simple operations are supported to compare dates, or to calculate with dates.
- * 
- * <i>This class is still missing localization support in its conversion methods
- * from and to string representations.</i>
  */
 public class WDate implements Comparable<WDate> {
 	static class RegExpInfo {
@@ -66,6 +63,34 @@ public class WDate implements Comparable<WDate> {
 	private Date d;
 
 	/**
+	 * Set a date by year, month (1-12), day (1-31), hour (0-23), minute (0-59),
+	 * second (0 - 59), millisecond (0 - 999)
+	 * 
+	 * When the date is invalid, an IllegalArgumentException is thrown.
+	 * 
+	 * @see #setDate(int year, int month, int day, int hour, int minute, int
+	 *      second, int millisecond)
+	 */
+	public WDate(int year, int month, int day, int hour, int minute,
+			int second, int millisecond) {
+		d = new Date();
+		setDate(year, month, day, hour, minute, second, millisecond);
+	}
+
+	/**
+	 * Set a date by year, month (1-12), day (1-31), hour (0-23), minute (0-59),
+	 * second (0 - 59)
+	 * 
+	 * When the date is invalid, an IllegalArgumentException is thrown.
+	 * 
+	 * @see #setDate(int year, int month, int day, int hour, int minute, int
+	 *      second)
+	 */
+	public WDate(int year, int month, int day, int hour, int minute, int second) {
+		this(year, month, day, hour, minute, second, 0);
+	}
+
+	/**
 	 * Specify a date by year, month (1-12), and day (1-31)
 	 * 
 	 * When the date is invalid, an IllegalArgumentException is thrown.
@@ -76,8 +101,7 @@ public class WDate implements Comparable<WDate> {
 	 * @see #getDay()
 	 */
 	public WDate(int year, int month, int day) {
-		d = new Date();
-		setDate(year, month, day);
+		this(year, month, day, 0, 0, 0);
 	}
 
 	/**
@@ -88,27 +112,90 @@ public class WDate implements Comparable<WDate> {
 	}
 
 	/**
-	 * Set a date by year, month (1-12), and day (1-31)
+	 * Set a date by year, month (1-12), day (1-31), hour (0-23), minute (0-59),
+	 * second (0 - 59), millisecond (0 - 999)
 	 * 
 	 * When the new date is invalid, an IllegalArgumentException is thrown.
 	 * 
-	 * @see #WDate(int year, int month, int day)
+	 * @see #WDate(int year, int month, int day, int hour, int minute, int
+	 *      second, int millisecond)
 	 * @see #getYear()
 	 * @see #getMonth()
 	 * @see #getDay()
+	 * @see #getHour()
+	 * @see #getMinute()
+	 * @see #getSecond()
+	 * @see #getMillisecond
 	 */
-	public void setDate(int year, int month, int day) {
+	public void setDate(int year, int month, int day, int hour, int minute,
+			int second, int millisecond) {
 		Calendar c = Calendar.getInstance();
 		c.setTime(d);
-		c.set(year, month - 1, day, 0, 0, 0);
-		c.set(Calendar.MILLISECOND, 0);
+		c.set(year, month - 1, day, hour, minute, second);
+		c.set(Calendar.MILLISECOND, millisecond);
 
 		if (c.get(Calendar.YEAR) != year || c.get(Calendar.MONTH) + 1 != month
-				|| c.get(Calendar.DATE) != day) {
+				|| c.get(Calendar.DATE) != day
+				|| c.get(Calendar.HOUR_OF_DAY) != hour
+				|| c.get(Calendar.MINUTE) != minute
+				|| c.get(Calendar.SECOND) != second
+				|| c.get(Calendar.MILLISECOND) != millisecond) {
 			throw new IllegalArgumentException("Illegal WDate");
 		}
 
 		d = c.getTime();
+	}
+
+	/**
+	 * Set a date by year, month (1-12), day (1-31)
+	 * 
+	 * When the new date is invalid, an IllegalArgumentException is thrown.
+	 * 
+	 * @see #setDate(int, int, int, int, int, int)
+	 */
+	public void setDate(int year, int month, int day) {
+		this.setDate(year, month, day, 0, 0, 0);
+	}
+
+	/**
+	 * Set a date by year, month (1-12), and day (1-31), hour (0-23), minute
+	 * (0-59), second (0 - 59).
+	 * 
+	 * When the new date is invalid, an IllegalArgumentException is thrown.
+	 * 
+	 * @see #setDate(int, int, int, int, int, int, int)
+	 */
+	public void setDate(int year, int month, int day, int hour, int minute,
+			int second) {
+		this.setDate(year, month, day, hour, minute, second, 0);
+	}
+
+	/**
+	 * Adds seconds.
+	 * 
+	 * Returns a time that is <i> nSeconds </i> seconds later than this time.
+	 * Negative values for <i> nSeconds </i> will result in a time that is as
+	 * many seconds earlier.
+	 */
+	public WDate addSeconds(int nSeconds) {
+		Calendar c = Calendar.getInstance();
+		c.setTime(d);
+		c.add(Calendar.SECOND, nSeconds);
+		return new WDate(c.getTime());
+	}
+
+	/**
+	 * Adds milliseconds.
+	 * 
+	 * Returns a time that is <i> nMilliseconds </i> milliseconds later than
+	 * this time. Negative values for <i> nMilliseconds </i> will result in a
+	 * time that is as many seconds earlier.
+	 */
+	public WDate addMilliseconds(int nMilliseconds) {
+		Calendar c = Calendar.getInstance();
+		c.setTime(d);
+		c.add(Calendar.MILLISECOND, nMilliseconds);
+		return new WDate(c.getTime());
 	}
 
 	/**
@@ -124,8 +211,7 @@ public class WDate implements Comparable<WDate> {
 		Calendar c = Calendar.getInstance();
 		c.setTime(d);
 		c.add(Calendar.DATE, ndays);
-		d = c.getTime();
-		return this;
+		return new WDate(c.getTime());
 	}
 
 	/**
@@ -142,8 +228,7 @@ public class WDate implements Comparable<WDate> {
 		Calendar c = Calendar.getInstance();
 		c.setTime(d);
 		c.add(Calendar.MONTH, nmonths);
-		d = c.getTime();
-		return this;
+		return new WDate(c.getTime());
 	}
 
 	/**
@@ -160,8 +245,7 @@ public class WDate implements Comparable<WDate> {
 		Calendar c = Calendar.getInstance();
 		c.setTime(d);
 		c.add(Calendar.YEAR, nyears);
-		d = c.getTime();
-		return this;
+		return new WDate(c.getTime());
 	}
 
 	/**
@@ -192,6 +276,60 @@ public class WDate implements Comparable<WDate> {
 	}
 
 	/**
+	 * Hour (0-24)
+	 */
+	public int getHour() {
+		Calendar c = Calendar.getInstance();
+		c.setTime(d);
+		return c.get(Calendar.HOUR_OF_DAY);
+	}
+
+	/**
+	 * Minute (0-59)
+	 */
+	public int getMinute() {
+		Calendar c = Calendar.getInstance();
+		c.setTime(d);
+		return c.get(Calendar.MINUTE);
+	}
+
+	/**
+	 * Second (0-59)
+	 */
+	public int getSecond() {
+		Calendar c = Calendar.getInstance();
+		c.setTime(d);
+		return c.get(Calendar.SECOND);
+	}
+
+	/**
+	 * Millisecond (0-999)
+	 */
+	public int getMillisecond() {
+		Calendar c = Calendar.getInstance();
+		c.setTime(d);
+		return c.get(Calendar.MILLISECOND);
+	}
+
+	/**
+	 * Returns the difference between to time values (in seconds).
+	 * 
+	 * This returns a value between -86400 s and 86400 s.
+	 */
+	public int getSecondsTo(WDate d) {
+		return (int) (getMillisecondsTo(d) / 1000);
+	}
+
+	/**
+	 * Returns the difference between to time values (in milliseconds).
+	 * 
+	 * This returns a value between -86400000 ms and 86400000 ms.
+	 */
+	public int getMillisecondsTo(WDate d) {
+		return (int) (d.d.getTime() - this.d.getTime());
+	}
+
+	/**
 	 * Day of week (1-7)
 	 */
 	public int getDayOfWeek() {
@@ -203,8 +341,70 @@ public class WDate implements Comparable<WDate> {
 	/**
 	 * Returns the number of days from this date to <i>date</i>.
 	 */
-	public int daysTo(WDate date) {
+	public int getDaysTo(WDate date) {
 		return (int) ((date.d.getTime() - d.getTime()) / 1000 / 3600 / 24);
+	}
+
+	/**
+	 * Returns the difference between two WDate values (as text).
+	 * 
+	 * This returns a textual representation of the approximate difference
+	 * between this time and <i> other </i>. The textual representation returns
+	 * the difference as a number of seconds, minutes, hours, days, weeks,
+	 * months, or years, using the coarsest unit that is more than \p minValue.
+	 * 
+	 * @see #getDaysTo(WDate)
+	 * @see #getSecondsTo(WDate)
+	 */
+	public String getTimeTo(WDate other, int minValue) {
+		int secs = getSecondsTo(other);
+
+		if (Math.abs(secs) < 1)
+			return "less than a second";
+		else if (Math.abs(secs) < 60 * minValue)
+			return String.valueOf(secs) + " second" + multiple(secs, "s");
+		else {
+			int minutes = secs / 60;
+			if (Math.abs(minutes) < 60 * minValue)
+				return String.valueOf(minutes) + " minute"
+						+ multiple(minutes, "s");
+			else {
+				int hours = minutes / 60;
+				if (Math.abs(hours) < 24 * minValue)
+					return String.valueOf(hours) + " hour"
+							+ multiple(hours, "s");
+				else {
+					int days = hours / 24;
+					if (Math.abs(days) < 7 * minValue)
+						return String.valueOf(days) + " day"
+								+ multiple(days, "s");
+					else {
+						if (Math.abs(days) < 31 * minValue) {
+							int weeks = days / 7;
+							return String.valueOf(weeks) + " week"
+									+ multiple(weeks, "s");
+						} else {
+							if (Math.abs(days) < 365 * minValue) {
+								int months = days / 30;
+								return String.valueOf(months) + " month"
+										+ multiple(months, "s");
+							} else {
+								int years = days / 365;
+								return String.valueOf(years) + " year"
+										+ multiple(years, "s");
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+	private String multiple(int secs, String s) {
+		if (Math.abs(secs) == 1)
+			return "";
+		else
+			return s;
 	}
 
 	/**
@@ -252,7 +452,7 @@ public class WDate implements Comparable<WDate> {
 	 * Returns the default date format.
 	 */
 	public static String getDefaultFormat() {
-		return "ddd MMM d yyyy";
+		return "ddd MMM d HH:mm:ss yyyy";
 	}
 
 	/**
@@ -375,8 +575,7 @@ public class WDate implements Comparable<WDate> {
 	   *   WDate d = new WDate(2007,8,29);
 	   * </code>
 	 * 
-	 * When the date could not be parsed or is not valid, 
-	 * null is returned.
+	 * When the date could not be parsed or is not valid, null is returned.
 	 * 
 	 * @see #fromString(String, String)
 	 */
@@ -390,8 +589,7 @@ public class WDate implements Comparable<WDate> {
 	 * The <i>format</i> follows the same syntax as used by
 	 * {@link #toString(String format)}.
 	 * 
-	 * When the date could not be parsed or is not valid, 
-	 * null is returned.
+	 * When the date could not be parsed or is not valid, null is returned.
 	 * 
 	 * @see #toString(String format)
 	 */
@@ -454,100 +652,13 @@ public class WDate implements Comparable<WDate> {
 	 */
 	@Override
 	public String toString() {
-		return toString(getDefaultFormat()).toString();
+		return toString(getDefaultFormat());
 	}
 
 	/**
 	 * Format this date to a WString using a specified format.
 	 * 
-	 * The <i>format</i> is a string in which the following contents has a
-	 * special meaning.
-	 * 
-	 * <table>
-	 * <tr>
-	 * <td><b>Code</b></td>
-	 * <td><b>Meaning</b></td>
-	 * <td><b>Example (for Mon Aug 3 2007)</b></td>
-	 * </tr>
-	 * <tr>
-	 * <td>d</td>
-	 * <td>The day as a one or two-digit number</td>
-	 * <td>3</td>
-	 * </tr>
-	 * <tr>
-	 * <td>dd</td>
-	 * <td>The day as a two-digit number (with leading 0)</td>
-	 * <td>03</td>
-	 * </tr>
-	 * <tr>
-	 * <td>ddd</td>
-	 * <td>The day abbreviated using shortDayName()</td>
-	 * <td>Mon</td>
-	 * </tr>
-	 * <tr>
-	 * <td>dddd</td>
-	 * <td>The day abbreviated using longDayName()</td>
-	 * <td>Monday</td>
-	 * </tr>
-	 * <tr>
-	 * <td>M</td>
-	 * <td>The month as a one or two-digit number</td>
-	 * <td>8</td>
-	 * </tr>
-	 * <tr>
-	 * <td>MM</td>
-	 * <td>The month as a two-digit number (with leading 0)</td>
-	 * <td>08</td>
-	 * </tr>
-	 * <tr>
-	 * <td>MMM</td>
-	 * <td>The month abbreviated using shortMonthName()</td>
-	 * <td>Aug</td>
-	 * </tr>
-	 * <tr>
-	 * <td>MMMM</td>
-	 * <td>The month abbreviated using longMonthName()</td>
-	 * <td>August</td>
-	 * </tr>
-	 * <tr>
-	 * <td>yy</td>
-	 * <td>The year as a two-digit number</td>
-	 * <td>07</td>
-	 * </tr>
-	 * <tr>
-	 * <td>yyyy</td>
-	 * <td>The year as a four-digit number</td>
-	 * <td>2007</td>
-	 * </tr>
-	 * </table>
-	 * 
-	 * Any other text is kept literally. String content between single quotes
-	 * (') are not interpreted as special codes. Inside a string, a literal
-	 * quote may be specifed using a double quote ('').
-	 * 
-	 * Example of format and result:
-	 * <table>
-	 * <tr>
-	 * <td><b>Format</b></td>
-	 * <td><b>Result (for Mon Aug 3 2007)</b></td>
-	 * </tr>
-	 * <tr>
-	 * <td>ddd MMM d yyyy</td>
-	 * <td>Mon Aug 3 2007</td>
-	 * </tr>
-	 * <tr>
-	 * <td>dd/MM/yyyy</td>
-	 * <td>03/08/2007</td>
-	 * </tr>
-	 * <tr>
-	 * <td>dddd, MMM d, yyyy</td>
-	 * <td>Wednesday, Aug 3, 2007</td>
-	 * </tr>
-	 * <tr>
-	 * <td>'MM': MM, 'd': d, 'yyyy': yyyy</td>
-	 * <td>MM: 08, d: 3, yyyy: 2007</td>
-	 * </tr>
-	 * </table>
+	 * The <i>format</i> is a string interpreted by {@link SimpleDateFormat}.
 	 */
 	public String toString(String format) {
 		SimpleDateFormat formatter = new SimpleDateFormat(format);
@@ -766,7 +877,7 @@ public class WDate implements Comparable<WDate> {
 	}
 
 	/**
-	 * Compares this WDate object with the specified  WDate object for order.
+	 * Compares this WDate object with the specified WDate object for order.
 	 */
 	public int compareTo(WDate o) {
 		if (o == null)

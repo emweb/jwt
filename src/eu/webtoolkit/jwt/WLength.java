@@ -73,6 +73,7 @@ public class WLength {
 	 */
 	public WLength() {
 		this.auto_ = true;
+		this.unit_ = WLength.Unit.Pixel;
 		this.value_ = -1;
 	}
 
@@ -149,7 +150,13 @@ public class WLength {
 				&& this.value_ == other.value_;
 	}
 
-	double toPixels() {
+	/**
+	 * Returns the (approximate) length in pixels.
+	 * <p>
+	 * When the length {@link WLength#isAuto() isAuto()}, 0 is returned,
+	 * otherwise the approximate length in pixels.
+	 */
+	public double toPixels() {
 		if (this.auto_) {
 			return 0;
 		} else {

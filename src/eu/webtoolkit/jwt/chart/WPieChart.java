@@ -59,7 +59,7 @@ import eu.webtoolkit.jwt.utils.EnumUtils;
  * </div>
  * <p>
  * 
- * @see WCartesianChart
+ * @see eu.webtoolkit.jwt.chart.WCartesianChart
  */
 public class WPieChart extends WAbstractChart {
 	/**
@@ -503,7 +503,7 @@ public class WPieChart extends WAbstractChart {
 	}
 
 	protected void modelReset() {
-		if (this.getModel().getRowCount() != this.pie_.size()) {
+		if (this.getModel().getRowCount() != (int) this.pie_.size()) {
 			this.modelChanged();
 		} else {
 			this.update();

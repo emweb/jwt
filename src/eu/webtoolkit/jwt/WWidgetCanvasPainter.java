@@ -13,14 +13,15 @@ class WWidgetCanvasPainter extends WWidgetPainter {
 	}
 
 	public WPaintDevice getCreatePaintDevice() {
-		return new WCanvasPaintDevice(this.widget_.getWidth(), this.widget_
-				.getHeight());
+		return new WCanvasPaintDevice(new WLength(this.widget_.renderWidth_),
+				new WLength(this.widget_.renderHeight_));
 	}
 
 	public void createContents(DomElement result, WPaintDevice device) {
-		String wstr = String.valueOf(this.widget_.getWidth().getValue());
-		String hstr = String.valueOf(this.widget_.getHeight().getValue());
+		String wstr = String.valueOf(this.widget_.renderWidth_);
+		String hstr = String.valueOf(this.widget_.renderHeight_);
 		result.setProperty(Property.PropertyStylePosition, "relative");
+		result.setProperty(Property.PropertyStyleOverflowX, "hidden");
 		DomElement canvas = DomElement
 				.createNew(DomElementType.DomElement_CANVAS);
 		canvas.setId('c' + this.widget_.getId());
@@ -45,10 +46,10 @@ class WWidgetCanvasPainter extends WWidgetPainter {
 		if (this.widget_.sizeChanged_) {
 			DomElement canvas = DomElement.getForUpdate('c' + this.widget_
 					.getId(), DomElementType.DomElement_CANVAS);
-			canvas.setAttribute("width", String.valueOf(this.widget_.getWidth()
-					.getValue()));
-			canvas.setAttribute("height", String.valueOf(this.widget_
-					.getHeight().getValue()));
+			canvas.setAttribute("width", String
+					.valueOf(this.widget_.renderWidth_));
+			canvas.setAttribute("height", String
+					.valueOf(this.widget_.renderHeight_));
 			result.add(canvas);
 			this.widget_.sizeChanged_ = false;
 		}

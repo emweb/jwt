@@ -63,10 +63,6 @@ public abstract class WWebWidget extends WWidget {
 
 	public void remove() {
 		this.flags_.set(BIT_BEING_DELETED);
-		if (this.flags_.get(BIT_FORM_OBJECT)) {
-			WApplication.getInstance().getSession().getRenderer()
-					.updateFormObjects(this, false);
-		}
 		this.setParent((WWidget) null);
 		;
 		;
@@ -535,6 +531,22 @@ public abstract class WWebWidget extends WWidget {
 		this.otherImpl_.id_ = id;
 	}
 
+	public WWidget find(String name) {
+		if (this.getObjectName().equals(name)) {
+			return this;
+		} else {
+			if (this.children_ != null) {
+				for (int i = 0; i < this.children_.size(); ++i) {
+					WWidget result = this.children_.get(i).find(name);
+					if (result != null) {
+						return result;
+					}
+				}
+			}
+		}
+		return null;
+	}
+
 	public void setSelectable(boolean selectable) {
 		this.flags_.set(BIT_SET_SELECTABLE, selectable);
 		this.flags_.set(BIT_SET_UNSELECTABLE, !selectable);
@@ -551,6 +563,7 @@ public abstract class WWebWidget extends WWidget {
 	}
 
 	DomElement createDomElement(WApplication app) {
+		this.setRendered(true);
 		DomElement result = DomElement.createNew(this.getDomElementType());
 		this.setId(result, app);
 		this.updateDom(result, true);
@@ -564,6 +577,7 @@ public abstract class WWebWidget extends WWidget {
 	}
 
 	DomElement createSDomElement(WApplication app) {
+		this.setRendered(true);
 		if (!this.needsToBeRendered()) {
 			this.propagateRenderOk();
 			this.flags_.set(BIT_STUBBED);
@@ -733,7 +747,23 @@ public abstract class WWebWidget extends WWidget {
 		}
 	}
 
+	public void setZIndex(int zIndex) {
+		if (!(this.layoutImpl_ != null)) {
+			this.layoutImpl_ = new WWebWidget.LayoutImpl();
+		}
+		this.layoutImpl_.zIndex_ = zIndex;
+		this.flags_.set(BIT_GEOMETRY_CHANGED);
+		this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyAttribute));
+	}
+
+	public boolean isRendered() {
+		return this.flags_.get(WWebWidget.BIT_RENDERED);
+	}
+
 	void repaint(EnumSet<RepaintFlag> flags) {
+		if (!this.flags_.get(BIT_RENDERED)) {
+			return;
+		}
 		super.askRerender();
 		if (!EnumUtils.mask(flags, RepaintFlag.RepaintPropertyIEMobile)
 				.isEmpty()) {
@@ -854,15 +884,17 @@ public abstract class WWebWidget extends WWidget {
 						DomElement i = DomElement
 								.createNew(DomElementType.DomElement_IFRAME);
 						i.setId("sh" + this.getId());
-						i.setAttribute("class", "Wt-shim");
-						i.setAttribute("src", "javascript:false;");
+						i.setProperty(Property.PropertyClass, "Wt-shim");
+						i
+								.setProperty(Property.PropertySrc,
+										"javascript:false;");
 						i.setAttribute("title", "Popup Shim");
 						i.setAttribute("tabindex", "-1");
 						i.setAttribute("frameborder", "0");
 						app
 								.addAutoJavaScript("{var w = "
 										+ this.getJsRef()
-										+ ";if (w && !Wt3_0_0.isHidden(w)) {var i = Wt3_0_0.getElement('"
+										+ ";if (w && !Wt3_1_0.isHidden(w)) {var i = Wt3_1_0.getElement('"
 										+ i.getId()
 										+ "');i.style.width=w.clientWidth + 'px';i.style.height=w.clientHeight + 'px';}}");
 						element.addChild(i);
@@ -1035,20 +1067,25 @@ public abstract class WWebWidget extends WWidget {
 			}
 			if (!all && this.flags_.get(BIT_STYLECLASS_CHANGED) || all
 					&& this.lookImpl_.styleClass_.length() != 0) {
-				element.setAttribute("class", this.lookImpl_.styleClass_);
+				element.setProperty(Property.PropertyClass, StringUtils
+						.addWord(element.getProperty(Property.PropertyClass),
+								this.lookImpl_.styleClass_));
 			}
 			this.flags_.clear(BIT_STYLECLASS_CHANGED);
 		}
 		if (all || this.flags_.get(BIT_SELECTABLE_CHANGED)) {
 			if (this.flags_.get(BIT_SET_UNSELECTABLE)) {
-				element.setAttribute("class", StringUtils.addWord(element
-						.getAttribute("class"), "unselectable"));
+				element.setProperty(Property.PropertyClass, StringUtils
+						.addWord(element.getProperty(Property.PropertyClass),
+								"unselectable"));
 				element.setAttribute("unselectable", "on");
 				element.setAttribute("onselectstart", "return false;");
 			} else {
 				if (this.flags_.get(BIT_SET_SELECTABLE)) {
-					element.setAttribute("class", StringUtils.addWord(element
-							.getAttribute("class"), "selectable"));
+					element.setProperty(Property.PropertyClass, StringUtils
+							.addWord(element
+									.getProperty(Property.PropertyClass),
+									"selectable"));
 					element.setAttribute("unselectable", "off");
 					element.setAttribute("onselectstart",
 							"event.cancelBubble=true;return true;");
@@ -1061,14 +1098,24 @@ public abstract class WWebWidget extends WWidget {
 				for (Iterator<Map.Entry<String, String>> i_it = this.otherImpl_.attributes_
 						.entrySet().iterator(); i_it.hasNext();) {
 					Map.Entry<String, String> i = i_it.next();
-					element.setAttribute(i.getKey(), i.getValue());
+					if (i.getKey().equals("style")) {
+						element.setProperty(Property.PropertyStyle, i
+								.getValue());
+					} else {
+						element.setAttribute(i.getKey(), i.getValue());
+					}
 				}
 			} else {
 				if (this.otherImpl_.attributesSet_ != null) {
 					for (int i = 0; i < this.otherImpl_.attributesSet_.size(); ++i) {
 						String attr = this.otherImpl_.attributesSet_.get(i);
-						element.setAttribute(attr, this.otherImpl_.attributes_
-								.get(attr));
+						if (attr.equals("style")) {
+							element.setProperty(Property.PropertyStyle,
+									this.otherImpl_.attributes_.get(attr));
+						} else {
+							element.setAttribute(attr,
+									this.otherImpl_.attributes_.get(attr));
+						}
 					}
 				}
 			}
@@ -1170,6 +1217,18 @@ public abstract class WWebWidget extends WWidget {
 		return e;
 	}
 
+	/**
+	 * Propagates that a widget was enabled or disabled through children.
+	 * <p>
+	 * When enabling or disabling a widget, you usually also want to disable
+	 * contained children. This method is called by
+	 * {@link WWebWidget#setDisabled(boolean disabled) setDisabled()} to
+	 * propagate its state to all children.
+	 * <p>
+	 * You may want to reimplement this method if they wish to render
+	 * differently when a widget is disabled. The default implementation will
+	 * propagate the signal to all children.
+	 */
 	protected void propagateSetEnabled(boolean enabled) {
 		if (this.children_ != null) {
 			for (int i = 0; i < this.children_.size(); ++i) {
@@ -1248,7 +1307,7 @@ public abstract class WWebWidget extends WWidget {
 		}
 		child.setParent((WObject) null);
 		if (!child.getWebWidget().flags_.get(BIT_BEING_DELETED)) {
-			child.getWebWidget().quickPropagateRenderOk();
+			child.getWebWidget().setRendered(false);
 		}
 		this.children_.remove(0 + i);
 		WApplication.getInstance().getSession().getRenderer()
@@ -1282,7 +1341,7 @@ public abstract class WWebWidget extends WWidget {
 	private static final int BIT_INLINE = 0;
 	private static final int BIT_HIDDEN = 1;
 	private static final int BIT_LOADED = 2;
-	private static final int BIT_HIDDEN_CHANGED = 3;
+	private static final int BIT_RENDERED = 3;
 	private static final int BIT_STUBBED = 4;
 	private static final int BIT_FORM_OBJECT = 5;
 	static final int BIT_IGNORE_CHILD_REMOVES = 6;
@@ -1306,6 +1365,7 @@ public abstract class WWebWidget extends WWidget {
 	private static final int BIT_DISABLED = 24;
 	private static final int BIT_DISABLED_CHANGED = 25;
 	private static final int BIT_HIDE_WITH_VISIBILITY = 26;
+	private static final int BIT_HIDDEN_CHANGED = 27;
 	BitSet flags_;
 	private WLength width_;
 	private WLength height_;
@@ -1413,15 +1473,6 @@ public abstract class WWebWidget extends WWidget {
 		this.flags_.clear(BIT_REPAINT_PROPERTY_ATTRIBUTE);
 		this.flags_.clear(BIT_REPAINT_INNER_HTML);
 		this.flags_.clear(BIT_REPAINT_TO_AJAX);
-	}
-
-	private void quickPropagateRenderOk() {
-		this.renderOk();
-		if (this.children_ != null) {
-			for (int i = 0; i < this.children_.size(); ++i) {
-				this.children_.get(i).getWebWidget().quickPropagateRenderOk();
-			}
-		}
 	}
 
 	private void calcZIndex() {
@@ -1567,6 +1618,20 @@ public abstract class WWebWidget extends WWidget {
 			this.flags_.set(BIT_IGNORE_CHILD_REMOVES);
 		} else {
 			this.flags_.clear(BIT_IGNORE_CHILD_REMOVES);
+		}
+	}
+
+	protected void setRendered(boolean rendered) {
+		if (rendered) {
+			this.flags_.set(BIT_RENDERED);
+		} else {
+			this.flags_.clear(BIT_RENDERED);
+			this.renderOk();
+			if (this.children_ != null) {
+				for (int i = 0; i < this.children_.size(); ++i) {
+					this.children_.get(i).getWebWidget().setRendered(false);
+				}
+			}
 		}
 	}
 

@@ -14,7 +14,7 @@ import java.util.Map;
 import eu.webtoolkit.jwt.utils.MathUtils;
 
 /**
- * Represents an application instance for a single session.
+ * Represents an application instance for a single session
  * <p>
  * 
  * Each user session of your application has a corresponding WApplication
@@ -148,6 +148,7 @@ public class WApplication extends WObject {
 		this.bodyHtmlClassChanged_ = false;
 		this.scriptLibraries_ = new ArrayList<WApplication.ScriptLibrary>();
 		this.scriptLibrariesAdded_ = 0;
+		this.theme_ = "default";
 		this.styleSheets_ = new ArrayList<String>();
 		this.styleSheetsAdded_ = 0;
 		this.exposedSignals_ = new HashMap<String, AbstractEventSignal>();
@@ -168,7 +169,7 @@ public class WApplication extends WObject {
 		this.domRoot_ = new WContainerWidget();
 		;
 		this.domRoot_.load();
-		if (this.session_.getType() == ApplicationType.Application) {
+		if (this.session_.getType() == EntryPointType.Application) {
 			this.domRoot_.resize(WLength.Auto, new WLength(100,
 					WLength.Unit.Percentage));
 		}
@@ -176,7 +177,7 @@ public class WApplication extends WObject {
 		;
 		this.timerRoot_.resize(WLength.Auto, new WLength(0));
 		this.timerRoot_.setPositionScheme(PositionScheme.Absolute);
-		if (this.session_.getType() == ApplicationType.Application) {
+		if (this.session_.getType() == EntryPointType.Application) {
 			this.ajaxMethod_ = WApplication.AjaxMethod.XMLHttpRequest;
 			this.domRoot2_ = null;
 			this.widgetRoot_ = new WContainerWidget(this.domRoot_);
@@ -302,7 +303,7 @@ public class WApplication extends WObject {
 	 * <p>
 	 * The {@link WApplication#getRoot() getRoot()} widget is only defined when
 	 * the application manages the entire window. When deployed as a
-	 * {@link ApplicationType#WidgetSet WidgetSet} application, there is no
+	 * {@link EntryPointType#WidgetSet WidgetSet} application, there is no
 	 * root() container, and <code>null</code> is returned. Instead, use
 	 * {@link WApplication#bindWidget(WWidget widget, String domId)
 	 * bindWidget()} to bind one or more root widgets to existing HTML
@@ -472,6 +473,30 @@ public class WApplication extends WObject {
 	}
 
 	/**
+	 * Sets the theme.
+	 * <p>
+	 * The theme provides the look and feel of several built-in widgets, using
+	 * CSS style rules. Rules for each theme are defined in the
+	 * <code>resources/themes/</code><i>theme</i><code>/</code> folder.
+	 * <p>
+	 * The default theme is &quot;default&quot;. When setting &quot;&quot;, the
+	 * external style sheets related to the theme are not loaded.
+	 */
+	public void setCssTheme(String theme) {
+		this.theme_ = theme;
+	}
+
+	/**
+	 * Returns the theme.
+	 * <p>
+	 * 
+	 * @see WApplication#setCssTheme(String theme)
+	 */
+	public String getCssTheme() {
+		return this.theme_;
+	}
+
+	/**
 	 * Sets the window title.
 	 * <p>
 	 * Sets the browser window title to <code>title</code>.
@@ -597,7 +622,7 @@ public class WApplication extends WObject {
 	}
 
 	/**
-	 * Bind a top-level widget for a WidgetSet deployment.
+	 * Binds a top-level widget for a WidgetSet deployment.
 	 * <p>
 	 * This method binds a <code>widget</code> to an existing element with DOM
 	 * id <code>domId</code> on the page. The element type should correspond
@@ -606,10 +631,10 @@ public class WApplication extends WObject {
 	 * <p>
 	 * 
 	 * @see WApplication#getRoot()
-	 * @see ApplicationType#WidgetSet
+	 * @see EntryPointType#WidgetSet
 	 */
 	public void bindWidget(WWidget widget, String domId) {
-		if (this.session_.getType() != ApplicationType.WidgetSet) {
+		if (this.session_.getType() != EntryPointType.WidgetSet) {
 			throw new WtException(
 					"WApplication::bind() can be used only in WidgetSet mode.");
 		}
@@ -1355,11 +1380,11 @@ public class WApplication extends WObject {
 			this.loadingIndicatorWidget_ = indicator.getWidget();
 			this.domRoot_.addWidget(this.loadingIndicatorWidget_);
 			JSlot showLoadJS = new JSlot();
-			showLoadJS.setJavaScript("function(o,e) {Wt3_0_0.inline('"
+			showLoadJS.setJavaScript("function(o,e) {Wt3_1_0.inline('"
 					+ this.loadingIndicatorWidget_.getId() + "');}");
 			this.showLoadingIndicator_.addListener(showLoadJS);
 			JSlot hideLoadJS = new JSlot();
-			hideLoadJS.setJavaScript("function(o,e) {Wt3_0_0.hide('"
+			hideLoadJS.setJavaScript("function(o,e) {Wt3_1_0.hide('"
 					+ this.loadingIndicatorWidget_.getId() + "');}");
 			this.hideLoadingIndicator_.addListener(hideLoadJS);
 			this.loadingIndicatorWidget_.hide();
@@ -1459,6 +1484,16 @@ public class WApplication extends WObject {
 	}
 
 	/**
+	 * Returns the style class set for the entire page &lt;body&gt;.
+	 * <p>
+	 * 
+	 * @see WApplication#setBodyClass(String styleClass)
+	 */
+	public String getBodyClass() {
+		return this.bodyClass_;
+	}
+
+	/**
 	 * Sets a style class to the entire page &lt;html&gt;.
 	 * <p>
 	 * 
@@ -1467,6 +1502,16 @@ public class WApplication extends WObject {
 	public void setHtmlClass(String styleClass) {
 		this.htmlClass_ = styleClass;
 		this.bodyHtmlClassChanged_ = true;
+	}
+
+	/**
+	 * Returns the style class set for the entire page &lt;html&gt;.
+	 * <p>
+	 * 
+	 * @see WApplication#setHtmlClass(String styleClass)
+	 */
+	public String getHtmlClass() {
+		return this.htmlClass_;
 	}
 
 	boolean isDebug() {
@@ -1622,6 +1667,7 @@ public class WApplication extends WObject {
 	boolean enableAjax_;
 	List<WApplication.ScriptLibrary> scriptLibraries_;
 	int scriptLibrariesAdded_;
+	private String theme_;
 	List<String> styleSheets_;
 	int styleSheetsAdded_;
 	private Map<String, AbstractEventSignal> exposedSignals_;

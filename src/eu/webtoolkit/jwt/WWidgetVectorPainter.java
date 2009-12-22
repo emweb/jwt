@@ -16,11 +16,11 @@ class WWidgetVectorPainter extends WWidgetPainter {
 
 	public WPaintDevice getCreatePaintDevice() {
 		if (this.format_ == VectorFormat.SvgFormat) {
-			return new WSvgImage(this.widget_.getWidth(), this.widget_
-					.getHeight());
+			return new WSvgImage(new WLength(this.widget_.renderWidth_),
+					new WLength(this.widget_.renderHeight_));
 		} else {
-			return new WVmlImage(this.widget_.getWidth(), this.widget_
-					.getHeight());
+			return new WVmlImage(new WLength(this.widget_.renderWidth_),
+					new WLength(this.widget_.renderHeight_));
 		}
 	}
 
@@ -36,7 +36,7 @@ class WWidgetVectorPainter extends WWidgetPainter {
 				: null);
 		if (!EnumUtils.mask(device.getPaintFlags(), PaintFlag.PaintUpdate)
 				.isEmpty()) {
-			DomElement painter = DomElement.updateGiven("Wt3_0_0.getElement('p"
+			DomElement painter = DomElement.updateGiven("Wt3_1_0.getElement('p"
 					+ this.widget_.getId() + "').firstChild",
 					DomElementType.DomElement_DIV);
 			painter.setProperty(Property.PropertyAddedInnerHTML, vectorDevice

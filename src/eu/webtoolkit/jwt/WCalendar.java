@@ -5,7 +5,6 @@
  */
 package eu.webtoolkit.jwt;
 
-import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -28,31 +27,23 @@ import java.util.Set;
  * days (with keys from {@link WDate#getShortDayName(int weekday)
  * WDate#getShortDayName()}) in your message resource bundle.
  * <p>
- * The look can be overridden using the following style class selectors:
- * <p>
- * <blockquote>
- * 
- * <pre>
- * table.Wt-cal-table        : The table
- * 
- * td.Wt-cal-header          : Header cell (week day)
- * td.Wt-cal-header-weekend  : Header cell (weekend day)
- * 
- * table.Wt-cal-table TD     : In-month day cell
- * td.Wt-cal-oom             : Out-of-month day cell
- * td.Wt-cal-sel             : Selected day cell
- * td.Wt-cal-now             : Today day cell
- * </pre>
- * 
- * </blockquote>
- * <p>
  * Here is a snapshot of the default look, taken on 31/08/2007 (shown as today),
  * and 11/08/2007 currently selected. <div align="center"> <img
  * src="doc-files//WCalendar-1.png" alt="WCalendar with default look">
  * <p>
  * <strong>WCalendar with default look</strong>
  * </p>
- * </div>
+ * </div> <h3>CSS</h3>
+ * <p>
+ * The look can be overridden using the following style class selectors:
+ * <p>
+ * <div class="fragment"><pre class="fragment"> .Wt-cal-table : The table
+ * 
+ * .Wt-cal-header : Header cell (week day) .Wt-cal-header-weekend : Header cell
+ * (weekend day)
+ * 
+ * .Wt-cal-table td : In-month day cell .Wt-cal-oom : Out-of-month day cell
+ * .Wt-cal-sel : Selected day cell .Wt-cal-now : Today day cell </pre></div>
  */
 public class WCalendar extends WCompositeWidget {
 	/**
@@ -326,7 +317,7 @@ public class WCalendar extends WCompositeWidget {
 			WDate now = new WDate(nowd.getYear(), nowd.getMonth(), nowd
 					.getDay());
 			WDate d = new WDate(this.currentYear_, this.currentMonth_, 1);
-			d.addDays(-1);
+			d = d.addDays(-1);
 			WDate.Days gw = WDate.Days.Monday;
 			d = WDate.getPreviousWeekday(d, gw);
 			for (int i = 0; i < 6; ++i) {
@@ -366,7 +357,7 @@ public class WCalendar extends WCompositeWidget {
 						styleClass += " Wt-cal-now";
 					}
 					cell.setStyleClass(styleClass);
-					d.addDays(1);
+					d = d.addDays(1);
 				}
 			}
 			this.needRenderMonth_ = false;
@@ -408,51 +399,10 @@ public class WCalendar extends WCompositeWidget {
 
 	private void create() {
 		this.setImplementation(this.layout_ = new WContainerWidget());
-		String CSS_RULES_NAME = "Wt::WCalendar";
 		WApplication app = WApplication.getInstance();
-		if (!app.getStyleSheet().isDefined(CSS_RULES_NAME)) {
-			app.getStyleSheet().addRule("table.Wt-cal-table ",
-					"border-collapse:separate;border-spacing:0pt;width: 18em;",
-					CSS_RULES_NAME);
-			app
-					.getStyleSheet()
-					.addRule(
-							"*.Wt-cal-table td",
-							"color: #003DB8;border: 1px solid #E0E0E0;cursor: pointer; cursor: hand;text-align: center;padding: 0.1em 0.2em;");
-			app
-					.getStyleSheet()
-					.addRule("*.Wt-cal-table td:hover",
-							"color: #FFFFFF;border:1px solid #FF9900;background-color: #FF9900;");
-			app
-					.getStyleSheet()
-					.addRule("td.Wt-cal-header, td.Wt-cal-header:hover",
-							"color: #666666;border: 0px;width: 2em;background-color: transparent;");
-			app
-					.getStyleSheet()
-					.addRule(
-							"td.Wt-cal-header-weekend, td.Wt-cal-header-weekend:hover",
-							"color: #777777;border: 0px;width: 2em;background-color: transparent;");
-			app
-					.getStyleSheet()
-					.addRule("td.Wt-cal-oom, td.Wt-cal-oom:hover",
-							"color: #999999;cursor: default;border: 0px;background-color: transparent;");
-			app.getStyleSheet().addRule("td.Wt-cal-sel",
-					"background-color:#FFF19F;border:1px solid #FF9900;");
-			app.getStyleSheet().addRule("td.Wt-cal-now",
-					"border:1px solid #000000;");
-			app
-					.getStyleSheet()
-					.addRule(
-							"*.Wt-cal-navbutton",
-							"color: #FFFFFF;background-color:#6699CC;cursor: pointer; cursor: hand;margin: 0px 3px;");
-			app.getStyleSheet().addRule("*.Wt-cal-year span",
-					"border: 1px solid transparent;");
-			app.getStyleSheet().addRule("*.Wt-cal-year span:hover",
-					"background-color:#FFFFCC;border: 1px solid #CCCCCC;");
-		}
-		this.layout_.resize(new WLength(18, WLength.Unit.FontEm), WLength.Auto);
+		this.layout_.setStyleClass("Wt-cal");
 		WContainerWidget navigation = new WContainerWidget(this.layout_);
-		navigation.setContentAlignment(EnumSet.of(AlignmentFlag.AlignCenter));
+		navigation.setStyleClass("Wt-cal-navigation");
 		WText prevYear = new WText("<<", TextFormat.PlainText, navigation);
 		prevYear.setStyleClass("Wt-cal-navbutton");
 		prevYear.clicked().addListener(this,
@@ -520,7 +470,9 @@ public class WCalendar extends WCompositeWidget {
 
 	private void renderMonth(boolean create) {
 		this.needRenderMonth_ = true;
-		this.askRerender();
+		if (this.isRendered()) {
+			this.askRerender();
+		}
 	}
 
 	private final void renderMonth() {
@@ -548,10 +500,10 @@ public class WCalendar extends WCompositeWidget {
 
 	private WDate dateForCell(int week, int dayOfWeek) {
 		WDate d = new WDate(this.currentYear_, this.currentMonth_, 1);
-		d.addDays(-1);
+		d = d.addDays(-1);
 		WDate.Days gw = WDate.Days.Monday;
 		d = WDate.getPreviousWeekday(d, gw);
-		d.addDays(week * 7 + dayOfWeek);
+		d = d.addDays(week * 7 + dayOfWeek);
 		return d;
 	}
 
