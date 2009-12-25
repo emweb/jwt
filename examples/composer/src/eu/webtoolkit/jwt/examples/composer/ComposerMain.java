@@ -19,8 +19,10 @@ public class ComposerMain extends WtServlet {
 
     public WApplication createApplication(WEnvironment env) {
         WApplication app = new WApplication(env);
+        //Multiple resources can be used
         WStdLocalizedStrings wsls = new WStdLocalizedStrings();
         wsls.use("eu.webtoolkit.jwt.examples.composer.composer");
+        wsls.use("eu.webtoolkit.jwt.examples.composer.composer-buttons");
         app.setLocalizedStrings(wsls);
         app.setTitle("Composer example");
         app.useStyleSheet("style/composer.css");

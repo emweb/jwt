@@ -22,8 +22,10 @@ public class ChartsMain extends WtServlet {
         WApplication app = new WApplication(env);
         app.setTitle("Charts example");
 
+        //Multiple resources can be used
         WXmlLocalizedStrings resourceBundle = new WXmlLocalizedStrings();
         resourceBundle.use("/eu/webtoolkit/jwt/examples/charts/charts");
+        resourceBundle.use("/eu/webtoolkit/jwt/examples/charts/introduction");
         app.setLocalizedStrings(resourceBundle);
 
         app.getRoot().setPadding(new WLength(10));

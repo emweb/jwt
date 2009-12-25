@@ -8,7 +8,9 @@ package eu.webtoolkit.jwt;
 import java.io.File;
 import java.io.StringWriter;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -29,8 +31,8 @@ import org.w3c.dom.NodeList;
  * WXmlLocalizedStrings is a {@link WLocalizedStrings} implementation which uses an XML file as input resource.
  */
 public class WXmlLocalizedStrings extends WLocalizedStrings {
-	private String bundleName;
-	private Map<String, String> keyValues = null;
+	private List<String> bundleNames = new ArrayList<String>();
+	private Map<String, String> keyValues = new HashMap<String, String>();
 
 	/**
 	 * Constructor.
@@ -45,12 +47,18 @@ public class WXmlLocalizedStrings extends WLocalizedStrings {
 	 * @param bundleName
 	 */
 	public void use(String bundleName) {
-		this.bundleName = bundleName;
-		
-		refresh();
+		this.bundleNames.add(bundleName);
+		readXmlResource(bundleName);
 	}
 
 	public void refresh() {
+		keyValues.clear();
+		
+		for (String bundleName : bundleNames) 
+			readXmlResource(bundleName);
+	}
+	
+	private void readXmlResource(String bundleName) {
 		URL url = getClass().getResource(bundleName + "_" + WApplication.getInstance().getLocale() + ".xml");
 		if(url == null)
 			url = getClass().getResource(bundleName + ".xml");
@@ -66,8 +74,6 @@ public class WXmlLocalizedStrings extends WLocalizedStrings {
 		}
 
 		if (xmlFile != null) {
-			keyValues = new HashMap<String, String>();
-
 			DocumentBuilder docBuilder = null;
 			Document doc = null;
 			DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory
@@ -111,12 +117,8 @@ public class WXmlLocalizedStrings extends WLocalizedStrings {
 	}
 
 	public String resolveKey(String key) {
-		if (keyValues != null)
-			try {
-				return keyValues.get(key);
-			} catch (java.util.MissingResourceException mre) {
-				return "??" + key + "??";
-			}
+		if (keyValues != null && keyValues.get(key) != null)
+			return keyValues.get(key);
 		else
 			return "??" + key + "??";
 	}

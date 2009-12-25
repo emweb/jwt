@@ -27,10 +27,18 @@ import java.util.Set;
  * conveniently store the string in a message resource bundle, and make it
  * localized by using {@link WString#tr(String key) WString#tr()}.
  * <p>
- * The template may contain variable references using a
- * <code>${<i>varName</i>}</code> syntax to reference the variable
- * &quot;&lt;tt&gt;varName&lt;/tt&gt;&quot;. To use a literal &apos;${&apos;,
- * use &quot;$${&quot;.
+ * Variable references use a <code>${<i>varName</i>}</code> syntax to reference
+ * the variable <code>&quot;varName&quot;</code>. To use a literal
+ * <code>&quot;${&quot;</code>, use <code>&quot;$${&quot;</code>.
+ * <p>
+ * You can bind widgets and values to variables using
+ * {@link WTemplate#bindWidget(String varName, WWidget widget) bindWidget()},
+ * {@link WTemplate#bindString(String varName, CharSequence value, TextFormat textFormat)
+ * bindString()} or {@link WTemplate#bindInt(String varName, int value)
+ * bindInt()} or by reimplementing the
+ * {@link WTemplate#resolveString(String varName, List args, Writer result)
+ * resolveString()} and {@link WTemplate#resolveWidget(String varName)
+ * resolveWidget()} methods.
  * <p>
  * Usage example: <blockquote>
  * 
@@ -39,11 +47,16 @@ import java.util.Set;
  * 
  *  WTemplate *t = new WTemplate();
  *  t.setTemplateText(&quot;&lt;div&gt; How old are you, ${friend} ? ${age-input} &lt;/div&gt;&quot;);
+ * 
  *  t.bindString(&quot;friend&quot;, userName);
  *  t.bindWidget(&quot;age-input&quot;, ageEdit_ = new WLineEdit());
  * </pre>
  * 
  * </blockquote>
+ * <p>
+ * The template can return a bound widget using
+ * {@link WTemplate#resolve(String varName) resolve()}, which already tries to
+ * cast the widget to the proper type.
  */
 public class WTemplate extends WInteractWidget {
 	/**
@@ -170,6 +183,7 @@ public class WTemplate extends WInteractWidget {
 	 * 
 	 * @see WTemplate#bindWidget(String varName, WWidget widget)
 	 * @see WTemplate#bindInt(String varName, int value)
+	 * @see WTemplate#resolveString(String varName, List args, Writer result)
 	 */
 	public void bindString(String varName, CharSequence value,
 			TextFormat textFormat) {

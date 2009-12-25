@@ -37,13 +37,21 @@ import java.util.Set;
  * <p>
  * The look can be overridden using the following style class selectors:
  * <p>
- * <div class="fragment"><pre class="fragment"> .Wt-cal-table : The table
+ * <div class="fragment">
  * 
- * .Wt-cal-header : Header cell (week day) .Wt-cal-header-weekend : Header cell
- * (weekend day)
+ * <pre class="fragment">
+ * .Wt-cal-table           : The table
  * 
- * .Wt-cal-table td : In-month day cell .Wt-cal-oom : Out-of-month day cell
- * .Wt-cal-sel : Selected day cell .Wt-cal-now : Today day cell </pre></div>
+ * .Wt-cal-header          : Header cell (week day)
+ * .Wt-cal-header-weekend  : Header cell (weekend day)
+ * 
+ * .Wt-cal-table td        : In-month day cell
+ * .Wt-cal-oom             : Out-of-month day cell
+ * .Wt-cal-sel             : Selected day cell
+ * .Wt-cal-now             : Today day cell
+ * </pre>
+ * 
+ * </div>
  */
 public class WCalendar extends WCompositeWidget {
 	/**

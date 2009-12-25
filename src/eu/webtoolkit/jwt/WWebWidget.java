@@ -857,22 +857,24 @@ public abstract class WWebWidget extends WWidget {
 		}
 		if (this.flags_.get(BIT_GEOMETRY_CHANGED) || all) {
 			if (this.layoutImpl_ != null) {
-				switch (this.layoutImpl_.positionScheme_) {
-				case Static:
-					break;
-				case Relative:
-					element.setProperty(Property.PropertyStylePosition,
-							"relative");
-					break;
-				case Absolute:
-					element.setProperty(Property.PropertyStylePosition,
-							"absolute");
-					break;
-				case Fixed:
-					element
-							.setProperty(Property.PropertyStylePosition,
-									"fixed");
-					break;
+				if (!(this.flags_.get(BIT_HIDE_WITH_VISIBILITY) && this.flags_
+						.get(BIT_HIDDEN))) {
+					switch (this.layoutImpl_.positionScheme_) {
+					case Static:
+						break;
+					case Relative:
+						element.setProperty(Property.PropertyStylePosition,
+								"relative");
+						break;
+					case Absolute:
+						element.setProperty(Property.PropertyStylePosition,
+								"absolute");
+						break;
+					case Fixed:
+						element.setProperty(Property.PropertyStylePosition,
+								"fixed");
+						break;
+					}
 				}
 				if (this.layoutImpl_.zIndex_ > 0) {
 					element.setProperty(Property.PropertyStyleZIndex, String

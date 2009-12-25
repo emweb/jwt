@@ -5,6 +5,8 @@
  */
 package eu.webtoolkit.jwt;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
@@ -19,14 +21,14 @@ import java.util.ResourceBundle;
  * @see WApplication#setLocalizedStrings(WLocalizedStrings)
  */
 public class WStdLocalizedStrings extends WLocalizedStrings {
-	private String bundleName_;
-	private ResourceBundle bundle_, defaultBundle_;
+	private List<String> bundleNames = new ArrayList<String>();
+	private List<ResourceBundle> bundles = new ArrayList<ResourceBundle>();
+	private List<ResourceBundle> defaultBundles = new ArrayList<ResourceBundle>();
 
 	/**
 	 * Constructor.
 	 */
 	public WStdLocalizedStrings() {
-		refresh();
 	}
 
 	/**
@@ -37,34 +39,40 @@ public class WStdLocalizedStrings extends WLocalizedStrings {
 	 * @param bundleName
 	 */
 	public void use(String bundleName) {
-		bundleName_ = bundleName;
-		refresh();
+		bundleNames.add(bundleName);
+		bundles.add(ResourceBundle.getBundle(bundleName, WApplication.getInstance().getLocale()));
+		defaultBundles.add(ResourceBundle.getBundle(bundleName, new Locale("")));
 	}
 
 	@Override
 	public void refresh() {
-		if (bundleName_ != null) {
-			bundle_ = ResourceBundle.getBundle(bundleName_, WApplication.getInstance().getLocale());
-			defaultBundle_ = ResourceBundle.getBundle(bundleName_, new Locale(""));
+		bundles.clear();
+		defaultBundles.clear();
+		
+		for (String bundleName : bundleNames) {
+			bundles.add(ResourceBundle.getBundle(bundleName, WApplication.getInstance().getLocale()));
+			defaultBundles.add(ResourceBundle.getBundle(bundleName, new Locale("")));
 		}
 	}
 
 	@Override
 	public String resolveKey(String key) {
-		if (bundle_ != null)
+		for (ResourceBundle bundle : bundles) {
 			try {
-				return bundle_.getString(key);
+				return bundle.getString(key);
 			} catch (java.util.MissingResourceException mre) {
-				if (defaultBundle_ != null)
-					try {
-						return defaultBundle_.getString(key);
-					} catch (java.util.MissingResourceException mre2) {
-						return "??" + key + "??";
-					}
-				else
-					return "??" + key + "??";
+				
 			}
-		else
-			return "??" + key + "??";
+		}
+		
+		for (ResourceBundle defaultBundle : defaultBundles) {
+			try {
+				return defaultBundle.getString(key);
+			} catch (java.util.MissingResourceException mre) {
+				
+			}
+		}
+		
+		return "??" + key + "??";
 	}
 }
