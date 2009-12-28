@@ -117,10 +117,7 @@ public class WItemDelegate extends WAbstractItemDelegate {
 					.isEmpty()) {
 				sc += " Wt-selected";
 			}
-			if (sc.length() != 0) {
-				widgetRef.w.setStyleClass(widgetRef.w.getStyleClass() + " "
-						+ sc);
-			}
+			widgetRef.w.setStyleClass(sc);
 		}
 		if (!EnumUtils.mask(index.getFlags(), ItemFlag.ItemIsDropEnabled)
 				.isEmpty()) {

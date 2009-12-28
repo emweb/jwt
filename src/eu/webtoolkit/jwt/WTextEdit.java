@@ -40,18 +40,11 @@ public class WTextEdit extends WTextArea {
 	 * Create a new text editor.
 	 */
 	public WTextEdit(WContainerWidget parent) {
-		super();
+		super(parent);
 		this.contentChanged_ = false;
 		this.styleSheet_ = "";
 		this.extraPlugins_ = "";
-		for (int i = 0; i < 4; ++i) {
-			this.buttons_[i] = "";
-		}
-		this.setInline(false);
-		initTinyMCE();
-		if (parent != null) {
-			parent.addWidget(this);
-		}
+		this.init();
 	}
 
 	/**
@@ -70,15 +63,11 @@ public class WTextEdit extends WTextArea {
 	 * The <code>text</code> should be valid XHTML.
 	 */
 	public WTextEdit(String text, WContainerWidget parent) {
-		super(text);
+		super(text, parent);
 		this.contentChanged_ = false;
 		this.styleSheet_ = "";
 		this.extraPlugins_ = "";
-		this.setInline(false);
-		initTinyMCE();
-		if (parent != null) {
-			parent.addWidget(this);
-		}
+		this.init();
 	}
 
 	/**
@@ -207,14 +196,6 @@ public class WTextEdit extends WTextArea {
 		super.resize(width, height);
 	}
 
-	public void load() {
-		WApplication.getInstance().addAutoJavaScript(
-				"{var e=" + this.getJsRef()
-						+ ";if(e && e.ed){Wt3_1_0.tinyMCEAdjust(e);}}");
-		this.buttons_[0] = "fontselect,|,bold,italic,underline,|,fontsizeselect,|,forecolor,backcolor,|,justifyleft,justifycenter,justifyright,justifyfull,|,anchor,|,numlist,bullist";
-		super.load();
-	}
-
 	DomElement renderRemove() {
 		DomElement e = super.renderRemove();
 		e.callJavaScript(this.getJsRef() + ".ed.remove();", true);
@@ -266,8 +247,10 @@ public class WTextEdit extends WTextArea {
 					+ "=function(){var d=Wt3_1_0.getElement('"
 					+ this.getFormName()
 					+ "_tbl'); d.style.cssText='width:100%;"
-					+ dummy.getCssStyle() + "';Wt3_1_0.tinyMCEAdjust("
-					+ this.getJsRef() + ");};");
+					+ dummy.getCssStyle() + "'; };");
+			element
+					.callJavaScript(this.getJsRef()
+							+ ".wtResize = function(e, w, h){Wt3_1_0.tinyMCEResize(e, w, h); };");
 			this.contentChanged_ = false;
 		}
 		if (!all && this.contentChanged_) {
@@ -297,6 +280,15 @@ public class WTextEdit extends WTextArea {
 	private String extraPlugins_;
 	private String[] buttons_ = new String[4];
 
+	private void init() {
+		for (int i = 0; i < 4; ++i) {
+			this.buttons_[i] = "";
+		}
+		this.setInline(false);
+		this.buttons_[0] = "fontselect,|,bold,italic,underline,|,fontsizeselect,|,forecolor,backcolor,|,justifyleft,justifycenter,justifyright,justifyfull,|,anchor,|,numlist,bullist";
+		initTinyMCE();
+	}
+
 	private static void initTinyMCE() {
 		String tinyMCEBaseURL = WApplication.getResourcesUrl() + "tiny_mce/";
 		tinyMCEBaseURL = WApplication.readConfigurationProperty(
@@ -313,7 +305,7 @@ public class WTextEdit extends WTextArea {
 			app.getStyleSheet().addRule(".mceEditor", "height: 100%;");
 			app
 					.doJavaScript(
-							"Wt3_1_0.tinyMCEAdjust=function(e){if (!e.ed.contentAreaContainer) return;var tbl=Wt3_1_0.getElement(e.id + '_tbl');var iframe = e.ed.contentAreaContainer.firstChild;var th=Wt3_1_0.pxself(tbl, 'height');if (th==0)if (e.parentNode.className=='Wt-grtd') {iframe.style.height='0px';th=e.parentNode.offsetHeight-Wt3_1_0.pxself(e.parentNode, 'paddingTop')-Wt3_1_0.pxself(e.parentNode, 'paddingBottom');} else return;th -= iframe.parentNode.offsetTop + 2;if (th <= 0)return;var nh=th+'px';if (iframe.style.height != nh) iframe.style.height=nh;};",
+							"Wt3_1_0.tinyMCEResize=function(e, w, h){e.style.height = (h - 2) + 'px';var iframe = Wt3_1_0.getElement(e.id + '_ifr');if (iframe) {var row=iframe.parentNode.parentNode,tbl=row.parentNode.parentNode,i, il;for (i=0, il=tbl.rows.length; i<il; i++) {if (tbl.rows[i] != row)h -= Math.max(28, tbl.rows[i].offsetHeight);}h = (h - 2) + 'px';if (iframe.style.height != h) iframe.style.height=h;}};",
 							false);
 		}
 	}
