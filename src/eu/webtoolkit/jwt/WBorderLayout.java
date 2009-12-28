@@ -266,11 +266,11 @@ public class WBorderLayout extends WLayout {
 		case North:
 			return this.grid_.items_.get(0).get(0);
 		case East:
-			return this.grid_.items_.get(1).get(0);
+			return this.grid_.items_.get(1).get(2);
 		case South:
 			return this.grid_.items_.get(2).get(0);
 		case West:
-			return this.grid_.items_.get(1).get(2);
+			return this.grid_.items_.get(1).get(0);
 		case Center:
 			return this.grid_.items_.get(1).get(1);
 		default:

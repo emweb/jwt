@@ -1,0 +1,69 @@
+<project name="jwt-googlemap" default="all" basedir=".">
+  <!-- Name of project and version -->
+  <property name="proj.name" value="jwt-googlemap"/>
+
+  <!-- Global properties for this build -->
+  <property name="src.dir" value="src"/>
+  <property name="build.dir" value="build"/>
+  <property name="dist.dir" value="dist"/>
+  <property name="lib.dir" value="lib"/>
+  <property name="bin.dir" value="bin"/>
+
+  <!-- Classpath declaration -->
+  <path id="project.classpath">
+    <fileset dir=".">
+    </fileset>
+    <fileset dir="../../dist">
+    </fileset>
+  </path>
+
+  <target name="all" depends="dist">
+  </target>
+  
+  <!-- Clean up -->
+  <target name="clean">
+    <delete dir="${build.dir}"/>
+    <delete dir="${dist.dir}"/>
+    <delete dir="${lib.dir}"/>
+    <delete dir="${bin.dir}"/>
+  </target>
+
+  <!-- Compile Java source -->
+  <target name="build">
+    <ant dir="../../" target="all"/>
+    <mkdir dir="${lib.dir}"/>
+    
+    <copy todir="${lib.dir}">
+      <fileset dir="../../dist" />
+    </copy>
+
+    <mkdir dir="${build.dir}"/>
+    
+    <javac
+       srcdir="${src.dir}"
+       destdir="${build.dir}"
+       debug="on"
+       source="1.5"
+       target="1.5">
+      <classpath refid="project.classpath"/>
+    </javac>
+  </target>
+
+  <target name="dist" depends="build">
+
+    <mkdir dir="${dist.dir}"/>
+    
+    <copy todir="${build.dir}">
+      <fileset dir="${src.dir}"
+               includes="**/*.xml,**/*.properties,**/*.csv" />
+    </copy>
+    
+    <war destfile="${dist.dir}/${proj.name}.war" 
+	 webxml="WebRoot/WEB-INF/web.xml">
+      <fileset dir="WebRoot"/>
+      <lib dir="${lib.dir}" includes="**/*.jar" excludes="servlet-api-*.jar">
+      </lib>
+      <classes dir="${build.dir}"/>
+    </war>
+  </target>
+</project>
