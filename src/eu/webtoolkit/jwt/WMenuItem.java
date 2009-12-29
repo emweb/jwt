@@ -346,8 +346,10 @@ public class WMenuItem extends WObject {
 		}
 	}
 
-	protected boolean handleInternalPathChange(String path) {
-		return false;
+	protected void setFromInternalPath(String path) {
+		if (this.menu_.contentsStack_.getCurrentWidget() != this.getContents()) {
+			this.menu_.select(this.menu_.indexOf(this), false);
+		}
 	}
 
 	private WWidget itemWidget_;

@@ -120,17 +120,10 @@ public class WSubMenuItem extends WMenuItem {
 		}
 	}
 
-	protected boolean handleInternalPathChange(String path) {
-		if (this.subMenu_ != null) {
-			if (this.subMenu_.isInternalPathEnabled()
-					&& path.equals(this.subMenu_.getInternalBasePath())) {
-				this.subMenu_.select(-1);
-				return false;
-			} else {
-				return true;
-			}
-		} else {
-			return super.handleInternalPathChange(path);
+	protected void setFromInternalPath(String path) {
+		super.setFromInternalPath(path);
+		if (this.subMenu_ != null && this.subMenu_.isInternalPathEnabled()) {
+			this.subMenu_.internalPathChanged(path);
 		}
 	}
 
