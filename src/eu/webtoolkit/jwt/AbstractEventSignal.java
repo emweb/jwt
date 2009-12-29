@@ -218,7 +218,9 @@ public abstract class AbstractEventSignal extends AbstractSignal {
 		listener.addSignal(this);
 
 		if (!(listener instanceof JavaScriptListener))
-			listenerAdded();		
+			listenerAdded();
+		else
+			ownerRepaint(); // does not need to be exposed
 	}
 
 	/**

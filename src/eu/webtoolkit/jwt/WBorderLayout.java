@@ -73,7 +73,7 @@ public class WBorderLayout extends WLayout {
 		 */
 		North,
 		/**
-		 * East (left).
+		 * East (right).
 		 */
 		East,
 		/**
@@ -81,7 +81,7 @@ public class WBorderLayout extends WLayout {
 		 */
 		South,
 		/**
-		 * West (right).
+		 * West (left).
 		 */
 		West,
 		/**
