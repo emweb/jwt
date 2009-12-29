@@ -122,7 +122,9 @@ public abstract class WtServlet extends HttpServlet {
 		}
 
 		try {
-			if (!wsession.handleRequest(new WebRequest(request), new WebResponse(response, request))) {
+			WebRequest webRequest = new WebRequest(request);
+			WebResponse webResponse = new WebResponse(response, webRequest);
+			if (!wsession.handleRequest(webRequest, webResponse)) {
 				System.err.println("Session exiting:" + jsession.getId());
 				jsession.setAttribute(WT_WEBSESSION_ID, null);
 				jsession.invalidate();

@@ -9,6 +9,8 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.util.List;
+import java.util.Map;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
@@ -168,7 +170,7 @@ public class WebResponse extends HttpServletResponseWrapper {
 	 * @return the request parameter value, or the empty string if the parameter was not set.
 	 */
 	public String getParameter(String string) {
-		String result = request.getParameter("_");
+		String result = request.getParameter(string);
 		return result == null ? "" : result;
 	}
 
@@ -181,9 +183,7 @@ public class WebResponse extends HttpServletResponseWrapper {
 		return request.getMethod();
 	}
 
-	public String getQueryString() {
-		String result = request.getQueryString();
-		return result == null ? "" : result;
+	public Map<String, List<String>> getParameterMap() {
+		return ((WebRequest)request).getParameterMap();
 	}
-
 }

@@ -630,9 +630,16 @@ class WebSession {
 			} else {
 				url = this.getBaseUrl() + this.getApplicationName();
 			}
-			String s = request.getQueryString();
-			if (s.length() != 0) {
-				url += "?" + s;
+			boolean firstParameter = true;
+			for (Iterator<Map.Entry<String, List<String>>> i_it = request
+					.getParameterMap().entrySet().iterator(); i_it.hasNext();) {
+				Map.Entry<String, List<String>> i = i_it.next();
+				if (!i.getKey().equals("_")) {
+					url += (firstParameter ? '?' : '&')
+							+ DomElement.urlEncodeS(i.getKey()) + '='
+							+ DomElement.urlEncodeS(i.getValue().get(0));
+					firstParameter = false;
+				}
 			}
 			url += '#' + (this.app_ != null ? this.app_.getInternalPath()
 					: this.env_.getInternalPath());

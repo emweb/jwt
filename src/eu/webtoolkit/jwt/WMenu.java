@@ -599,6 +599,7 @@ public class WMenu extends WCompositeWidget {
 					if (this.contentsStack_.getCurrentWidget() != this.items_
 							.get(i).getContents()) {
 						this.select(i);
+						app.setInternalPath(this.previousInternalPath_);
 					}
 					return;
 				}
