@@ -34,7 +34,17 @@ class StdWidgetItemImpl extends StdLayoutItemImpl {
 	}
 
 	void containerAddWidgets(WContainerWidget container) {
-		container.addWidget(this.item_.getWidget());
+		if (container != null) {
+			container.addWidget(this.item_.getWidget());
+		} else {
+			WContainerWidget wc = ((this.item_.getWidget().getParent()) instanceof WContainerWidget ? (WContainerWidget) (this.item_
+					.getWidget().getParent())
+					: null);
+			if (wc != null) {
+				wc.removeWidget(this.item_.getWidget());
+				wc.addWidget(this.item_.getWidget());
+			}
+		}
 	}
 
 	public DomElement createDomElement(boolean fitWidth, boolean fitHeight,

@@ -62,7 +62,7 @@ public abstract class WWebWidget extends WWidget {
 	}
 
 	public void remove() {
-		this.flags_.set(BIT_BEING_DELETED);
+		this.beingDeleted();
 		this.setParent((WWidget) null);
 		;
 		;
@@ -1296,8 +1296,7 @@ public abstract class WWebWidget extends WWidget {
 		assert this.children_ != null;
 		int i = this.children_.indexOf(child);
 		assert i != -1;
-		if (!this.flags_.get(BIT_IGNORE_CHILD_REMOVES)
-				&& !this.flags_.get(BIT_BEING_DELETED)) {
+		if (!this.flags_.get(BIT_IGNORE_CHILD_REMOVES)) {
 			DomElement e = child.getWebWidget().renderRemove();
 			if (e != null) {
 				if (!(this.transientImpl_ != null)) {
@@ -1346,7 +1345,7 @@ public abstract class WWebWidget extends WWidget {
 	private static final int BIT_RENDERED = 3;
 	private static final int BIT_STUBBED = 4;
 	private static final int BIT_FORM_OBJECT = 5;
-	static final int BIT_IGNORE_CHILD_REMOVES = 6;
+	private static final int BIT_IGNORE_CHILD_REMOVES = 6;
 	private static final int BIT_GEOMETRY_CHANGED = 7;
 	private static final int BIT_HIDE_WITH_OFFSETS = 8;
 	private static final int BIT_BEING_DELETED = 9;
@@ -1621,6 +1620,15 @@ public abstract class WWebWidget extends WWidget {
 		} else {
 			this.flags_.clear(BIT_IGNORE_CHILD_REMOVES);
 		}
+	}
+
+	boolean isIgnoreChildRemoves() {
+		return this.flags_.get(BIT_IGNORE_CHILD_REMOVES);
+	}
+
+	private void beingDeleted() {
+		this.flags_.set(BIT_BEING_DELETED);
+		this.flags_.set(BIT_IGNORE_CHILD_REMOVES);
 	}
 
 	protected void setRendered(boolean rendered) {

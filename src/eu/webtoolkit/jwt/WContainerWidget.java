@@ -173,8 +173,13 @@ public class WContainerWidget extends WInteractWidget {
 	/**
 	 * Set a layout manager for the container.
 	 * <p>
-	 * Only a single layout manager may be set. Note that you can nest layout
-	 * managers inside each other, to create a complex layout hierarchy.
+	 * Note that you can nest layout managers inside each other, to create a
+	 * complex layout hierarchy.
+	 * <p>
+	 * If a previous layout manager was already set, it is first deleted. In
+	 * that case, you will need to make sure that you either readd all widgets
+	 * that were part of the previous layout to the new layout, or delete them,
+	 * to avoid memory leaks.
 	 * <p>
 	 * The layout manager arranges children in the entire width and height of
 	 * the container. This is equivalent to
@@ -232,13 +237,11 @@ public class WContainerWidget extends WInteractWidget {
 	 * @see WContainerWidget#getLayout()
 	 */
 	public void setLayout(WLayout layout, EnumSet<AlignmentFlag> alignment) {
-		if (this.layout_ != null && layout != this.layout_) {
-			WApplication.getInstance().log("error").append(
-					"WContainerWidget::setLayout: already have a layout.");
-			return;
+		if (this.layout_ != null) {
+			;
 		}
 		this.contentAlignment_ = EnumSet.copyOf(alignment);
-		if (!(this.layout_ != null)) {
+		if (layout != null) {
 			this.layout_ = layout;
 			this.flags_.set(BIT_LAYOUT_CHANGED);
 			super.setLayout(layout);
@@ -382,14 +385,14 @@ public class WContainerWidget extends WInteractWidget {
 	 * If a layout was set, also the layout manager is deleted.
 	 */
 	public void clear() {
+		;
+		this.layout_ = null;
 		while (!this.getChildren().isEmpty()) {
 			WWidget w = this.getChildren().get(this.getChildren().size() - 1);
 			this.removeWidget(w);
 			if (w != null)
 				w.remove();
 		}
-		;
-		this.layout_ = null;
 	}
 
 	/**
@@ -754,8 +757,11 @@ public class WContainerWidget extends WInteractWidget {
 				ignoreThisChildRemove = true;
 			}
 		}
+		if (this.layout_ != null) {
+			ignoreThisChildRemove = true;
+		}
 		if (ignoreThisChildRemove) {
-			if (this.flags_.get(BIT_IGNORE_CHILD_REMOVES)) {
+			if (this.isIgnoreChildRemoves()) {
 				ignoreThisChildRemove = false;
 			}
 		}
@@ -776,11 +782,11 @@ public class WContainerWidget extends WInteractWidget {
 		DomElement e = DomElement.getForUpdate(this, this.getDomElementType());
 		if (!app.getSession().getRenderer().isPreLearning()) {
 			if (this.flags_.get(BIT_LAYOUT_CHANGED)) {
-				if (this.layout_ != null) {
-					this.createDomChildren(e, app);
-				} else {
-					this.flags_.clear(BIT_LAYOUT_CHANGED);
-				}
+				DomElement newE = this.createDomElement(app);
+				e.replaceWith(newE);
+				result.add(e);
+				this.flags_.clear(BIT_LAYOUT_CHANGED);
+				return;
 			}
 		}
 		this.updateDom(e, false);
@@ -837,9 +843,9 @@ public class WContainerWidget extends WInteractWidget {
 			for (int i = 0; i < this.children_.size(); ++i) {
 				parent.addChild(this.children_.get(i).createSDomElement(app));
 			}
-			if (this.transientImpl_ != null) {
-				this.transientImpl_.addedChildren_.clear();
-			}
+		}
+		if (this.transientImpl_ != null) {
+			this.transientImpl_.addedChildren_.clear();
 		}
 	}
 
@@ -1071,21 +1077,8 @@ public class WContainerWidget extends WInteractWidget {
 	}
 
 	void layoutChanged(boolean deleted) {
-		if (!this.flags_.get(BIT_LAYOUT_CHANGED)) {
-			if (!(this.transientImpl_ != null)) {
-				this.transientImpl_ = new WWebWidget.TransientImpl();
-			}
-			String fn = EnumUtils.mask(this.contentAlignment_,
-					AlignmentFlag.AlignHorizontalMask).equals(
-					AlignmentFlag.AlignCenter) ? this.getId() + "l" : this
-					.getLayoutImpl().getId();
-			DomElement e = DomElement.getForUpdate(fn,
-					DomElementType.DomElement_TABLE);
-			e.removeFromParent();
-			this.transientImpl_.childRemoveChanges_.add(e);
-			this.flags_.set(BIT_LAYOUT_CHANGED);
-			this.repaint(EnumSet.of(RepaintFlag.RepaintInnerHtml));
-		}
+		this.flags_.set(BIT_LAYOUT_CHANGED);
+		this.repaint(EnumSet.of(RepaintFlag.RepaintInnerHtml));
 		if (deleted) {
 			this.layout_ = null;
 		}

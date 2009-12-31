@@ -22,7 +22,11 @@ abstract class StdLayoutImpl extends StdLayoutItemImpl {
 	}
 
 	public void updateRemoveItem(WLayoutItem item) {
-		this.update(item);
+		WContainerWidget c = this.getContainer();
+		if (c != null) {
+			this.update(item);
+			getImpl(item).containerAddWidgets((WContainerWidget) null);
+		}
 	}
 
 	public void update(WLayoutItem item) {
@@ -69,11 +73,6 @@ abstract class StdLayoutImpl extends StdLayoutItemImpl {
 
 	void setContainer(WContainerWidget c) {
 		if (c.getCount() != 0) {
-			WApplication
-					.getInstance()
-					.log("warn")
-					.append(
-							"WContainerWidget: applying Layout manager to non-empty WContainerWidget. Container is cleared.");
 			while (c.getCount() != 0) {
 				c.removeWidget(c.getWidget(0));
 			}
