@@ -237,15 +237,17 @@ public class WContainerWidget extends WInteractWidget {
 	 * @see WContainerWidget#getLayout()
 	 */
 	public void setLayout(WLayout layout, EnumSet<AlignmentFlag> alignment) {
-		if (this.layout_ != null) {
+		if (this.layout_ != null && layout != this.layout_) {
 			;
 		}
 		this.contentAlignment_ = EnumSet.copyOf(alignment);
-		if (layout != null) {
+		if (layout != this.layout_) {
 			this.layout_ = layout;
 			this.flags_.set(BIT_LAYOUT_CHANGED);
-			super.setLayout(layout);
-			this.getLayoutImpl().setContainer(this);
+			if (layout != null) {
+				super.setLayout(layout);
+				this.getLayoutImpl().setContainer(this);
+			}
 		}
 	}
 

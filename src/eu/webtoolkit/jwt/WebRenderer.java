@@ -548,6 +548,7 @@ class WebRenderer implements SlotLearnerInterface {
 				app.getAjaxMethod() == WApplication.AjaxMethod.XMLHttpRequest ? WtServlet.CommAjax_js
 						: WtServlet.CommScript_js);
 		js.setVar("APP_CLASS", app.getJavaScriptClass());
+		js.setVar("WT_CLASS", "Wt3_1_0");
 		js
 				.setVar(
 						"CLOSE_CONNECTION",
