@@ -25,30 +25,31 @@ import eu.webtoolkit.jwt.utils.EnumUtils;
  * </tr>
  * <tr>
  * <td>Firefox 1.5+</td>
- * <td>HtmlCanvas, InlineSVG</td>
+ * <td>HtmlCanvas, InlineSVG, PngImage</td>
  * <td>HtmlCanvas</td>
  * </tr>
  * <tr>
  * <td>Internet Explorer 6.0+</td>
- * <td>InlineVML</td>
+ * <td>InlineVML, PngImage</td>
  * <td>InlineVML</td>
  * </tr>
  * <tr>
  * <td>Safari</td>
- * <td>HtmlCanvas, InlineSVG</td>
+ * <td>HtmlCanvas, InlineSVG, PngImage</td>
  * <td>HtmlCanvas</td>
  * </tr>
  * <tr>
  * <td>Opera</td>
- * <td>InlineSVG, HtmlCanvas*</td>
+ * <td>InlineSVG, HtmlCanvas*, PngImage</td>
  * <td>InlineSVG</td>
  * </tr>
  * <tr>
  * <td>other</td>
  * <td>?</td>
- * <td>HtmlCanvas</td>
+ * <td>HtmlCanvas, PngImage</td>
  * </tr>
  * </table>
+ * <p>
  * <i>* HtmlCanvas occasionally suffers from rendering artefacts in Opera.</i>
  * <p>
  * The different rendering methods correspond to different {@link WPaintDevice}
@@ -64,6 +65,10 @@ import eu.webtoolkit.jwt.utils.EnumUtils;
  * enabled in the configuration file using the
  * <code>&lt;send-xhtml-mime-type&gt;</code> option. By default, this option is
  * off.
+ * <p>
+ * The PngImage is the most portable rendering method, and may be the fastest if
+ * the painting is of high complexity and/or the image is fairly small. This
+ * method uses the standard library Graphics2D to paint on a BufferedImage.
  * <p>
  * To use a WPaintedWidget, you must derive from it and reimplement
  * {@link WPaintedWidget#paintEvent(WPaintDevice paintDevice) paintEvent()}. To
@@ -91,7 +96,11 @@ public abstract class WPaintedWidget extends WInteractWidget {
 		/**
 		 * The WHATWG HTML 5 canvas element.
 		 */
-		HtmlCanvas;
+		HtmlCanvas,
+		/**
+		 * Using a PNG image resource.
+		 */
+		PngImage;
 
 		/**
 		 * Returns the numerical representation of this enum.
@@ -434,6 +443,10 @@ public abstract class WPaintedWidget extends WInteractWidget {
 	private boolean isCreatePainter() {
 		if (this.painter_ != null) {
 			return false;
+		}
+		if (this.preferredMethod_ == WPaintedWidget.Method.PngImage) {
+			this.painter_ = new WWidgetRasterPainter(this);
+			return true;
 		}
 		WEnvironment env = WApplication.getInstance().getEnvironment();
 		if (env.agentIsIE()) {
