@@ -164,6 +164,8 @@ public class WContainerWidget extends WInteractWidget {
 	 * Destruct a WContainerWidget.
 	 */
 	public void remove() {
+		WLayout layout = this.layout_;
+		this.layout_ = null;
 		;
 		;
 		;
@@ -387,14 +389,13 @@ public class WContainerWidget extends WInteractWidget {
 	 * If a layout was set, also the layout manager is deleted.
 	 */
 	public void clear() {
-		;
-		this.layout_ = null;
 		while (!this.getChildren().isEmpty()) {
 			WWidget w = this.getChildren().get(this.getChildren().size() - 1);
-			this.removeWidget(w);
 			if (w != null)
 				w.remove();
 		}
+		;
+		this.layout_ = null;
 	}
 
 	/**
@@ -761,6 +762,9 @@ public class WContainerWidget extends WInteractWidget {
 		}
 		if (this.layout_ != null) {
 			ignoreThisChildRemove = true;
+			if (this.layout_.removeWidget(child)) {
+				return;
+			}
 		}
 		if (ignoreThisChildRemove) {
 			if (this.isIgnoreChildRemoves()) {
@@ -1105,6 +1109,12 @@ public class WContainerWidget extends WInteractWidget {
 				WWidget w = item.getWidget();
 				w.getWebWidget().propagateRenderOk(true);
 			}
+		}
+	}
+
+	void removeFromLayout(WWidget widget) {
+		if (this.layout_ != null) {
+			this.removeWidget(widget);
 		}
 	}
 

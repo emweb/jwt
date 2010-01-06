@@ -3263,7 +3263,7 @@ public class WTreeView extends WCompositeWidget {
 						index.getParent()));
 				return;
 			}
-			WModelIndex top = this.selectionModel_.selection_.first();
+			WModelIndex top = this.selectionModel_.selection_.iterator().next();
 			if (top.compareTo(index) < 0) {
 				this.selectRange(top, index);
 			} else {

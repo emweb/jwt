@@ -281,11 +281,13 @@ class WebRenderer implements SlotLearnerInterface {
 				.isSerializedEvents());
 		script.setVar("INNER_HTML", innerHtml);
 		script.setVar("FORM_OBJECTS", '[' + this.currentFormObjectsList_ + ']');
-		script.setVar("RELATIVE_URL", '"' + this.session_.getBootstrapUrl(
-				response, WebSession.BootstrapOption.ClearInternalPath) + '"');
+		script.setVar("RELATIVE_URL", WWebWidget.jsStringLiteral(this.session_
+				.getBootstrapUrl(response,
+						WebSession.BootstrapOption.ClearInternalPath)));
 		script.setVar("KEEP_ALIVE", String
 				.valueOf(conf.getSessionTimeout() / 2));
-		script.setVar("INITIAL_HASH", app.getInternalPath());
+		script.setVar("INITIAL_HASH", WWebWidget.jsStringLiteral(app
+				.getInternalPath()));
 		script.setVar("INDICATOR_TIMEOUT", "500");
 		script
 				.setVar("SERVER_PUSH_TIMEOUT",
@@ -416,7 +418,8 @@ class WebRenderer implements SlotLearnerInterface {
 		page.setVar("SESSION_ID", this.session_.getSessionId());
 		if (hybridPage) {
 			this.setBootVars(response, page);
-			page.setVar("INTERNAL_PATH", app.getInternalPath());
+			page.setVar("INTERNAL_PATH", this.safeJsStringLiteral(app
+					.getInternalPath()));
 		}
 		String url = app.getEnvironment().agentIsSpiderBot()
 				|| conf.getSessionTracking() == Configuration.SessionTracking.CookiesURL
@@ -873,8 +876,9 @@ class WebRenderer implements SlotLearnerInterface {
 		boot.setVar("BLANK_HTML", this.session_.getBootstrapUrl(response,
 				WebSession.BootstrapOption.ClearInternalPath)
 				+ "&amp;request=resource&amp;resource=blank");
-		boot.setVar("SELF_URL", this.session_.getBootstrapUrl(response,
-				WebSession.BootstrapOption.KeepInternalPath));
+		boot.setVar("SELF_URL", this.safeJsStringLiteral(this.session_
+				.getBootstrapUrl(response,
+						WebSession.BootstrapOption.KeepInternalPath)));
 		boot.setVar("SESSION_ID", this.session_.getSessionId());
 		boot.setVar("RANDOMSEED", String.valueOf(MathUtils.randomInt() + 0));
 		boot.setVar("RELOAD_IS_NEWSESSION", conf.isReloadIsNewSession());
@@ -882,8 +886,8 @@ class WebRenderer implements SlotLearnerInterface {
 				.setVar(
 						"USE_COOKIES",
 						conf.getSessionTracking() == Configuration.SessionTracking.CookiesURL);
-		boot.setVar("AJAX_CANONICAL_URL", this.session_
-				.ajaxCanonicalUrl(response));
+		boot.setVar("AJAX_CANONICAL_URL", this
+				.safeJsStringLiteral(this.session_.ajaxCanonicalUrl(response)));
 	}
 
 	private String getHeadDeclarations() {
@@ -899,6 +903,11 @@ class WebRenderer implements SlotLearnerInterface {
 	private Set<WWidget> updateMap_;
 	private boolean learning_;
 	private boolean moreUpdates_;
+
+	private String safeJsStringLiteral(String value) {
+		String s = WWebWidget.jsStringLiteral(value);
+		return StringUtils.replace(s, "<", "<'+'");
+	}
 
 	public String learn(AbstractEventSignal.LearningListener slot)
 			throws IOException {

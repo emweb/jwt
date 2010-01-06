@@ -175,6 +175,10 @@ public class StringUtils {
 		return s.replaceAll("\\Q" + c + "\\E", r);
 	}
 
+	static String replace(String s, String c, String r) {
+		return s.replaceAll("\\Q" + c + "\\E", r);
+	}
+
 	static final int strpbrk(char[] srcArray, int startPos, char[] matchesArray) {
 		int matchesL = matchesArray.length;
 		int srcL = srcArray.length;

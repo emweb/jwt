@@ -135,10 +135,10 @@ public class WGridLayout extends WLayout {
 	public void removeItem(WLayoutItem item) {
 		int index = this.indexOf(item);
 		if (index != -1) {
-			this.updateRemoveItem(item);
 			int row = index / this.getColumnCount();
 			int col = index % this.getColumnCount();
 			this.grid_.items_.get(row).get(col).item_ = null;
+			this.updateRemoveItem(item);
 		}
 	}
 

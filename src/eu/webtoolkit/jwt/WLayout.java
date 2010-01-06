@@ -79,15 +79,20 @@ public abstract class WLayout extends WObject implements WLayoutItem {
 	 * {@link WLayout#removeItem(WLayoutItem item) removeItem()}. The widget
 	 * itself is not destroyed.
 	 * <p>
+	 * Returns <code>true</code> if succesful.
+	 * <p>
 	 * 
 	 * @see WLayout#addWidget(WWidget w)
 	 * @see WLayout#removeItem(WLayoutItem item)
 	 */
-	public void removeWidget(WWidget w) {
+	public boolean removeWidget(WWidget w) {
 		WWidgetItem widgetItem = this.findWidgetItem(w);
 		if (widgetItem != null) {
 			widgetItem.getParentLayout().removeItem(widgetItem);
 			;
+			return true;
+		} else {
+			return false;
 		}
 	}
 

@@ -619,10 +619,36 @@ public class WAxis {
 	 * Returns the axis title font.
 	 * <p>
 	 * 
-	 * @see WAxis#setTitle(CharSequence title)
+	 * @see WAxis#setTitleFont(WFont titleFont)
 	 */
 	public WFont getTitleFont() {
 		return this.titleFont_;
+	}
+
+	/**
+	 * Sets the axis label font.
+	 * <p>
+	 * The default label font is a 10 point Sans Serif font.
+	 * <p>
+	 * 
+	 * @see WAxis#getLabelFont()
+	 */
+	public void setLabelFont(WFont labelFont) {
+		if (!ChartUtils.equals(this.labelFont_, labelFont)) {
+			this.labelFont_ = labelFont;
+			update();
+		}
+		;
+	}
+
+	/**
+	 * Returns the axis label font.
+	 * <p>
+	 * 
+	 * @see WAxis#setLabelFont(WFont labelFont)
+	 */
+	public WFont getLabelFont() {
+		return this.labelFont_;
 	}
 
 	WString getLabel(double u) {
@@ -685,6 +711,7 @@ public class WAxis {
 	private double labelAngle_;
 	private WString title_;
 	private WFont titleFont_;
+	private WFont labelFont_;
 
 	static class Segment {
 		public double minimum;
@@ -718,9 +745,13 @@ public class WAxis {
 		this.labelAngle_ = 0;
 		this.title_ = new WString();
 		this.titleFont_ = new WFont();
+		this.labelFont_ = new WFont();
 		this.segments_ = new ArrayList<WAxis.Segment>();
 		this.titleFont_.setFamily(WFont.GenericFamily.SansSerif);
 		this.titleFont_.setSize(WFont.Size.FixedSize, new WLength(12,
+				WLength.Unit.Point));
+		this.labelFont_.setFamily(WFont.GenericFamily.SansSerif);
+		this.labelFont_.setSize(WFont.Size.FixedSize, new WLength(10,
 				WLength.Unit.Point));
 		this.segments_.add(new WAxis.Segment());
 	}

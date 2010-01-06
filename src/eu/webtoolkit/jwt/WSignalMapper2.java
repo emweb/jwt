@@ -17,8 +17,8 @@ class WSignalMapper2<T, E extends WAbstractEvent> extends WObject {
 		this(null);
 	}
 
-	void mapConnect1(EventSignal1<E> signal, final T value) {
-		signal.addListener(this, new Signal1.Listener<E>() {
+	AbstractSignal.Connection mapConnect1(EventSignal1<E> signal, final T value) {
+		return signal.addListener(this, new Signal1.Listener<E>() {
 
 			public void trigger(E e) {
 				mapped_.trigger(value, e);
@@ -28,5 +28,8 @@ class WSignalMapper2<T, E extends WAbstractEvent> extends WObject {
 
 	public Signal2<T, E> mapped() {
 		return mapped_;
+	}
+
+	public void removeMapping(T value) {
 	}
 }

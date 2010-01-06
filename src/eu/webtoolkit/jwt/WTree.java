@@ -139,6 +139,11 @@ public class WTree extends WCompositeWidget {
 	 * Selects or unselect the given <i>node</i>.
 	 */
 	public void select(WTreeNode node, boolean selected) {
+		if (this.selectionMode_ == SelectionMode.SingleSelection && selected
+				&& this.selection_.size() == 1
+				&& this.selection_.iterator().next() == node) {
+			return;
+		}
 		if (this.selectionMode_ == SelectionMode.SingleSelection && selected) {
 			this.clearSelection();
 		}
@@ -294,6 +299,8 @@ public class WTree extends WCompositeWidget {
 
 	void nodeRemoved(WTreeNode node) {
 		this.select(node, false);
+		node.clickedConnection_.disconnect();
+		this.onClickMapper_.removeMapping(node);
 		for (int i = 0; i < node.getChildNodes().size(); ++i) {
 			this.nodeRemoved(node.getChildNodes().get(i));
 		}
@@ -306,7 +313,8 @@ public class WTree extends WCompositeWidget {
 			if (!(w != null)) {
 				w = node.getLabelArea();
 			}
-			this.onClickMapper_.mapConnect1(w.clicked(), node);
+			node.clickedConnection_ = this.onClickMapper_.mapConnect1(w
+					.clicked(), node);
 			for (int i = 0; i < node.getChildNodes().size(); ++i) {
 				this.nodeAdded(node.getChildNodes().get(i));
 			}

@@ -634,6 +634,9 @@ public class WChart2DRenderer {
 	protected void renderAxis(WAxis axis,
 			EnumSet<WChart2DRenderer.AxisProperty> properties) {
 		boolean vertical = axis.getId() != Axis.XAxis;
+		WFont oldFont1 = this.painter_.getFont();
+		WFont labelFont = axis.getLabelFont();
+		this.painter_.setFont(labelFont);
 		double u = 0;
 		final int Left = 1;
 		final int Right = 2;
@@ -824,7 +827,7 @@ public class WChart2DRenderer {
 					&& !EnumUtils.mask(properties,
 							WChart2DRenderer.AxisProperty.Labels).isEmpty()
 					&& !(axis.getTitle().length() == 0)) {
-				WFont oldFont = this.painter_.getFont();
+				WFont oldFont2 = this.painter_.getFont();
 				WFont titleFont = axis.getTitleFont();
 				this.painter_.setFont(titleFont);
 				boolean chartVertical = this.chart_.getOrientation() == Orientation.Vertical;
@@ -867,9 +870,10 @@ public class WChart2DRenderer {
 										AlignmentFlag.AlignLeft), 0, 8);
 					}
 				}
-				this.painter_.setFont(oldFont);
+				this.painter_.setFont(oldFont2);
 			}
 		}
+		this.painter_.setFont(oldFont1);
 	}
 
 	/**

@@ -51,7 +51,8 @@ public class WRasterPaintDevice extends WResource implements WPaintDevice {
 	@Override
 	protected void handleRequest(WebRequest request, WebResponse response) throws IOException {
 		response.setContentType("image/png");
-		ImageIO.write(image, "png", response.getOutputStream());
+		if (image != null)
+			ImageIO.write(image, "png", response.getOutputStream());
 	}
 
 	@Override
@@ -190,6 +191,7 @@ public class WRasterPaintDevice extends WResource implements WPaintDevice {
 		
 		changeFlags.add(ChangeFlag.Pen);
 		changeFlags.add(ChangeFlag.Brush);
+		changeFlags.add(ChangeFlag.Font);
 	}
 
 	@Override
@@ -295,7 +297,7 @@ public class WRasterPaintDevice extends WResource implements WPaintDevice {
 		return new BasicStroke(width, cap, join);
 	}
 	
-	private static Font createFont(WFont font) {
+	private Font createFont(WFont font) {
 		String name = "";
 		
 		switch (font.getGenericFamily()) {
@@ -328,7 +330,8 @@ public class WRasterPaintDevice extends WResource implements WPaintDevice {
 		int size = 12;
 		switch (font.getSize()) {
 		case FixedSize:
-			size = (int) (3.0 / 4.0 * font.getFixedSize().toPixels());
+			// Java assumes 72dpi, while on the web we have 96dpi, this cancels the pixel -> point calculation
+			size = (int) (font.getFixedSize().toPixels());
 			break;
 		}
 		

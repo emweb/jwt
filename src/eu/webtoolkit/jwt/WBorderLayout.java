@@ -158,8 +158,8 @@ public class WBorderLayout extends WLayout {
 			Grid.Item gridItem = this.itemAtPosition(WBorderLayout.Position
 					.values()[i]);
 			if (gridItem.item_ == item) {
-				this.updateRemoveItem(item);
 				gridItem.item_ = null;
+				this.updateRemoveItem(item);
 				break;
 			}
 		}

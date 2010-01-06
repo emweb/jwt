@@ -78,7 +78,9 @@ class WTreeViewNode extends WTable {
 			WWidget newW = this.view_.getItemDelegate(child).update(currentW,
 					child, renderFlags);
 			if (newW != currentW) {
-				this.setWidget(i, newW, currentW != null);
+				this.setWidget(i, newW);
+			} else {
+				this.addColumnStyleClass(i, currentW);
 			}
 		}
 	}
@@ -580,21 +582,15 @@ class WTreeViewNode extends WTable {
 		}
 	}
 
-	private void setWidget(int column, WWidget newW, boolean replace) {
+	private void setWidget(int column, WWidget newW) {
 		WTableCell tc = this.getElementAt(0, 1);
 		WContainerWidget w = ((tc.getWidget(0)) instanceof WContainerWidget ? (WContainerWidget) (tc
 				.getWidget(0))
 				: null);
-		WWidget current = replace ? this.getWidget(column) : null;
+		WWidget current = this.getWidget(column);
+		this.addColumnStyleClass(column, newW);
 		if (current != null) {
-			newW.setStyleClass(current.getStyleClass());
-			current.setStyleClass(new WString().toString());
-		} else {
-			EscapeOStream s = new EscapeOStream();
-			s.append("Wt-tv-c rh ").append(
-					this.view_.getColumnStyleClass(column)).append(' ').append(
-					newW.getStyleClass());
-			newW.setStyleClass(new WString(s.toString()).toString());
+			current.setStyleClass(WString.Empty.toString());
 		}
 		if (column == 0) {
 			if (current != null) {
@@ -623,5 +619,12 @@ class WTreeViewNode extends WTable {
 						.childIndex(column));
 			}
 		}
+	}
+
+	private void addColumnStyleClass(int column, WWidget w) {
+		EscapeOStream s = new EscapeOStream();
+		s.append("Wt-tv-c rh ").append(this.view_.getColumnStyleClass(column))
+				.append(' ').append(w.getStyleClass());
+		w.setStyleClass(new WString(s.toString()).toString());
 	}
 }

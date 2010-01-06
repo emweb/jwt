@@ -41,8 +41,7 @@ class StdWidgetItemImpl extends StdLayoutItemImpl {
 					.getWidget().getParent())
 					: null);
 			if (wc != null) {
-				wc.removeWidget(this.item_.getWidget());
-				wc.addWidget(this.item_.getWidget());
+				wc.removeFromLayout(this.item_.getWidget());
 			}
 		}
 	}

@@ -137,7 +137,6 @@ public class WBoxLayout extends WLayout {
 	public void removeItem(WLayoutItem item) {
 		int index = this.indexOf(item);
 		if (index != -1) {
-			this.updateRemoveItem(item);
 			switch (this.direction_) {
 			case RightToLeft:
 				index = this.grid_.columns_.size() - 1 - index;
@@ -151,6 +150,7 @@ public class WBoxLayout extends WLayout {
 				this.grid_.rows_.remove(0 + index);
 				this.grid_.items_.remove(0 + index);
 			}
+			this.updateRemoveItem(item);
 		}
 	}
 

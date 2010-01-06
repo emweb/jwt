@@ -197,6 +197,7 @@ public class WTreeNode extends WCompositeWidget {
 		this.populated_ = false;
 		this.interactive_ = true;
 		this.selected_ = new Signal1<Boolean>(this);
+		this.clickedConnection_ = new AbstractSignal.Connection();
 		this.create();
 		if (parent != null) {
 			parent.addChildNode(this);
@@ -601,6 +602,7 @@ public class WTreeNode extends WCompositeWidget {
 		this.populated_ = false;
 		this.interactive_ = true;
 		this.selected_ = new Signal1<Boolean>(this);
+		this.clickedConnection_ = new AbstractSignal.Connection();
 		this.create();
 		if (parent != null) {
 			parent.addChildNode(this);
@@ -1044,6 +1046,7 @@ public class WTreeNode extends WCompositeWidget {
 		}
 	}
 
+	AbstractSignal.Connection clickedConnection_;
 	private static String[] imageLine_ = { "line-middle.gif", "line-last.gif" };
 	private static String[] imagePlus_ = { "nav-plus-line-middle.gif",
 			"nav-plus-line-last.gif" };
