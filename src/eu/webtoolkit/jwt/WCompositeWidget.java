@@ -264,6 +264,10 @@ public class WCompositeWidget extends WWidget {
 		return this.impl_.getAttributeValue(name);
 	}
 
+	public void setJavaScriptMember(String name, String value) {
+		this.impl_.setJavaScriptMember(name, value);
+	}
+
 	public void load() {
 		if (this.impl_ != null) {
 			this.impl_.load();
@@ -370,6 +374,10 @@ public class WCompositeWidget extends WWidget {
 
 	protected int boxBorder(Orientation orientation) {
 		return this.impl_.boxBorder(orientation);
+	}
+
+	void render() {
+		this.renderOk();
 	}
 
 	private WWidget impl_;

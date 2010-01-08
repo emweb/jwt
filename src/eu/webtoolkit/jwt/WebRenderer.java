@@ -393,6 +393,12 @@ class WebRenderer implements SlotLearnerInterface {
 						+ "/wt_ie.css\" rel=\"stylesheet\" type=\"text/css\""
 						+ (xhtml ? "/>" : ">");
 			}
+			if (app.getEnvironment().getAgent() == WEnvironment.UserAgent.IE6) {
+				styleSheets += "<link href=\"" + WApplication.getResourcesUrl()
+						+ "/themes/" + app.getCssTheme()
+						+ "/wt_ie6.css\" rel=\"stylesheet\" type=\"text/css\""
+						+ (xhtml ? "/>" : ">");
+			}
 		}
 		for (int i = 0; i < app.styleSheets_.size(); ++i) {
 			styleSheets += "<link href=\""
@@ -488,6 +494,12 @@ class WebRenderer implements SlotLearnerInterface {
 						.append(WApplication.getResourcesUrl()).append(
 								"/themes/").append(app.getCssTheme()).append(
 								"/wt_ie.css');");
+			}
+			if (app.getEnvironment().getAgent() == WEnvironment.UserAgent.IE6) {
+				response.out().append("Wt3_1_0").append(".addStyleSheet('")
+						.append(WApplication.getResourcesUrl()).append(
+								"/themes/").append(app.getCssTheme()).append(
+								"/wt_ie6.css');");
 			}
 		}
 		app.styleSheetsAdded_ = app.styleSheets_.size();

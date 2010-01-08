@@ -200,12 +200,8 @@ public class WApplication extends WObject {
 		if (this.getEnvironment().getContentType() == WEnvironment.ContentType.XHTML1) {
 			this.styleSheet_.addRule("button", "display: inline");
 		}
-		if (this.getEnvironment().agentIsIE()) {
-			this.styleSheet_.addRule("html, body", "overflow: auto;");
-		} else {
-			if (this.getEnvironment().agentIsGecko()) {
-				this.styleSheet_.addRule("html", "overflow: auto;");
-			}
+		if (this.getEnvironment().agentIsGecko()) {
+			this.styleSheet_.addRule("html", "overflow: auto;");
 		}
 		this.styleSheet_.addRule("iframe.Wt-resource",
 				"width: 0px; height: 0px; border: 0px;");
@@ -244,8 +240,7 @@ public class WApplication extends WObject {
 						"html.Wt-layout",
 						""
 								+ "height: 100%; width: 100%;margin: 0px; padding: 0px; border: none;"
-								+ (this.getEnvironment().hasJavaScript()
-										&& this.getEnvironment().getAgent() != WEnvironment.UserAgent.IE6 ? "overflow:hidden"
+								+ (this.getEnvironment().hasJavaScript() ? "overflow:hidden"
 										: ""));
 		if (this.getEnvironment().agentIsOpera()) {
 			if (this.getEnvironment().getUserAgent().indexOf("Mac OS X") != -1) {
@@ -1723,7 +1718,8 @@ public class WApplication extends WObject {
 		if (i != null) {
 			WWidget w = ((i.getSender()) instanceof WWidget ? (WWidget) (i
 					.getSender()) : null);
-			if (!(w != null) || this.isExposed(w)) {
+			if (!(w != null) || this.isExposed(w)
+					|| signalName.endsWith(".resized")) {
 				return i;
 			} else {
 				return null;

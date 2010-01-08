@@ -5,7 +5,6 @@
  */
 package eu.webtoolkit.jwt;
 
-import java.util.EnumSet;
 import java.util.Set;
 
 /**
@@ -253,13 +252,14 @@ public class WDatePicker extends WCompositeWidget {
 	private WInteractWidget displayWidget_;
 	private WLineEdit forEdit_;
 	private WContainerWidget layout_;
-	private WContainerWidget popup_;
+	private WTemplate popup_;
 	private WCalendar calendar_;
 	private JSlot positionJS_;
 
 	private void createDefault(boolean i18n) {
 		WImage icon = new WImage(WApplication.getResourcesUrl()
 				+ "calendar_edit.png");
+		icon.setVerticalAlignment(AlignmentFlag.AlignMiddle);
 		WLineEdit lineEdit = new WLineEdit();
 		this.create(icon, lineEdit, i18n);
 		this.layout_.insertWidget(0, lineEdit);
@@ -271,21 +271,14 @@ public class WDatePicker extends WCompositeWidget {
 		this.setImplementation(this.layout_ = new WContainerWidget());
 		this.displayWidget_ = displayWidget;
 		this.forEdit_ = forEdit;
+		this.forEdit_.setVerticalAlignment(AlignmentFlag.AlignMiddle);
 		this.format_ = "dd/MM/yyyy";
-		String CSS_RULES_NAME = "Wt::WDatePicker";
-		WApplication app = WApplication.getInstance();
-		if (!app.getStyleSheet().isDefined(CSS_RULES_NAME)) {
-			app
-					.getStyleSheet()
-					.addRule(
-							".Wt-popup",
-							"background-color: #EEEEEE;border: 1px solid #000000;padding: 2px;",
-							CSS_RULES_NAME);
-		}
 		this.layout_.setInline(true);
 		this.layout_.addWidget(displayWidget);
-		this.layout_.addWidget(this.popup_ = new WContainerWidget());
-		this.calendar_ = new WCalendar(i18n, this.popup_);
+		String TEMPLATE = "<span class=\"Wt-x1\"><span class=\"Wt-x1a\" /></span><span class=\"Wt-x2\"><span class=\"Wt-x2a\" /></span>${calendar}<div style=\"text-align:center; margin-top:3px\">${close}</div>";
+		this.layout_.addWidget(this.popup_ = new WTemplate(
+				new WString(TEMPLATE)));
+		this.calendar_ = new WCalendar(i18n);
 		this.calendar_.selected().addListener(this.popup_,
 				new Signal1.Listener<WDate>() {
 					public void trigger(WDate e1) {
@@ -298,21 +291,20 @@ public class WDatePicker extends WCompositeWidget {
 						WDatePicker.this.setFromCalendar();
 					}
 				});
-		WContainerWidget buttonContainer = new WContainerWidget(this.popup_);
-		buttonContainer.setContentAlignment(EnumSet
-				.of(AlignmentFlag.AlignCenter));
 		WPushButton closeButton = new WPushButton(i18n ? tr("Close")
-				: new WString("Close"), buttonContainer);
+				: new WString("Close"));
 		closeButton.clicked().addListener(this.popup_,
 				new Signal1.Listener<WMouseEvent>() {
 					public void trigger(WMouseEvent e1) {
 						WDatePicker.this.popup_.hide();
 					}
 				});
+		this.popup_.bindWidget("calendar", this.calendar_);
+		this.popup_.bindWidget("close", closeButton);
 		this.popup_.hide();
 		this.popup_.setPopup(true);
 		this.popup_.setPositionScheme(PositionScheme.Absolute);
-		this.popup_.setStyleClass("Wt-popup");
+		this.popup_.setStyleClass("Wt-outset Wt-popup");
 		this.popup_.escapePressed().addListener(this.popup_,
 				new Signal.Listener() {
 					public void trigger() {

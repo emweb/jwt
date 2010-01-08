@@ -1,82 +1,110 @@
 /*
+ * Outset
+ */
+.Wt-outset {
+    border: 1px solid #888888;
+}
+
+/*
+ * Silk screen
+ */
+.Wt-dialogcover {
+    background: #CCCCCC;
+}
+
+/*
  * WCalendar
  */
 .Wt-cal {
-    width: 16em;
+    padding: 0px;
 }
 
-.Wt-cal-table {
+.Wt-cal table {
+    border-left: 1px solid #E0E0E0;
     border-collapse:separate;
-    border-spacing:0pt;
-    width: 16em;
-}
-
-.Wt-cal-table td {
-    color: #003DB8;
-    border: 1px solid #E0E0E0;
-    cursor: pointer; cursor: hand;
+    background-color: #fff;
     text-align: center;
-    padding: 0.1em 0.2em;
+    font-size: 10pt;
+    line-height: 140%;
 }
 
-.Wt-cal-table td:hover {
-    color: #FFFFFF;
-    border:1px solid #FF9900;
-    background-color: #FF9900;
+.Wt-cal table.d1 td {
+    width: 20px;
 }
 
-td.Wt-cal-header, td.Wt-cal-header:hover
-{
-    color: #666666;
-    border: 0px;
-    width: 2em;
-    background-color: transparent;
+.Wt-cal table.d3 td {
+    width: 30px;
 }
 
-td.Wt-cal-header-weekend, .Wt-cal-table td.Wt-cal-header-weekend:hover {
-    color: #777777;
-    border: 0px;
-    width: 2em;
-    background-color: transparent;
+.Wt-cal caption {
+    margin: 0;
+    padding: 0;
+    text-align: center;
+    background: #EEEEEE;
 }
 
-td.Wt-cal-oom, .Wt-cal-table td.Wt-cal-oom:hover {
-    color: #999999;
-    cursor: default;
-    border: 1px solid transparent;
-    background-color: transparent;
-}
-
-td.Wt-cal-sel {
-    background-color:#FFF19F;
-    border:1px solid #FF9900;
-}
-
-td.Wt-cal-now {
-    border:1px solid #000000;
+.Wt-cal caption select {
+    cursor: pointer; cursor: hand;
+    margin: 2px 0px;
+    vertical-align: middle;
 }
 
 .Wt-cal-navbutton {
     color: #FFFFFF;
     background-color:#6699CC;
     cursor: pointer; cursor: hand;
-    margin: 0px 3px;
+    padding: 0px 2px 2px;
+    vertical-align: middle;
+}
+
+.Wt-cal-year {
+    vertical-align: middle;
 }
 
 .Wt-cal-year span {
-    border: 1px solid transparent;
+    padding: 2px 2px;
 }
 
 .Wt-cal-year span:hover {
     background-color:#FFFFCC;
-    border: 1px solid #CCCCCC;
+}
+
+.Wt-cal th {
+    color: #666666;
+    border: 0px;
+    border-right: 1px solid #E0E0E0;
+    border-bottom: 1px solid #E0E0E0;
+    border-top: 1px solid #E0E0E0;    
+    line-height: 140%;
+}
+
+.Wt-cal td {
+    color: #003DB8;
+    border-right: 1px solid #E0E0E0;
+    border-bottom: 1px solid #E0E0E0;
+    cursor: pointer; cursor: hand;
+    text-align: center;
+}
+
+.Wt-cal-oom {
+    color: #999999;
+    cursor: default;
+    background-color: transparent;
+}
+
+.Wt-cal-sel {
+    background-color:#FFF19F;
+}
+
+.Wt-cal-now {
+    color: black;
+    background: #EEEEEE;
 }
 
 /*
  * WDialog
  */
 .Wt-dialog {
-    border: 1px solid #888888;
     background: #EEEEEE none repeat scroll 0%;
 }
 
@@ -104,12 +132,14 @@ td.Wt-cal-now {
   background: #EEEEEE none repeat scroll 0%;
 }
 .Wt-panel .titlebar {
+  padding: 0px 6px 3px;
   background: #888888; color: #FFFFFF;
   font-size: 10pt;
 }
 
 .Wt-panel .body {
   background: #FFFFFF;
+  padding: 4px 6px 4px;
 }
 
 /*
@@ -157,6 +187,7 @@ td.Wt-cal-now {
     padding-left: 10px;
     list-style-type: none;
     list-style-position: outside;
+    overflow: auto;
 }
 
 .Wt-tabs span {

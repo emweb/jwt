@@ -389,7 +389,7 @@ class StdGridLayoutImpl extends StdLayoutImpl {
 				app.setHtmlClass(app.getHtmlClass() + " Wt-layout");
 			}
 			if (app.getEnvironment().agentIsIE()) {
-				container.setOverflow(WContainerWidget.Overflow.OverflowAuto);
+				container.setOverflow(WContainerWidget.Overflow.OverflowHidden);
 			}
 		}
 	}

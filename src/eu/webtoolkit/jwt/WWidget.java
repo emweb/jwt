@@ -784,6 +784,15 @@ public abstract class WWidget extends WObject {
 	public abstract String getAttributeValue(String name);
 
 	/**
+	 * Sets a JavaScript member.
+	 * <p>
+	 * This binds a JavaScript member, which is set as a JavaScript property to
+	 * the DOM object that implements this widget. The value may be any
+	 * JavaScript expression, including a function.
+	 */
+	public abstract void setJavaScriptMember(String name, String value);
+
+	/**
 	 * Short hand for {@link WString#tr(String key) WString#tr()}.
 	 * <p>
 	 * Creates a localized string with the given key.
@@ -895,6 +904,7 @@ public abstract class WWidget extends WObject {
 	 * library keeping track of changes to the widget.
 	 */
 	public void htmlText(Writer out) {
+		this.render();
 		DomElement element = this.getWebWidget().createSDomElement(
 				WApplication.getInstance());
 		List<DomElement.TimeoutEvent> timeouts = new ArrayList<DomElement.TimeoutEvent>();
@@ -938,6 +948,7 @@ public abstract class WWidget extends WObject {
 
 	String createJavaScript(StringWriter js, String insertJS) {
 		WApplication app = WApplication.getInstance();
+		this.render();
 		DomElement de = this.getWebWidget().createSDomElement(app);
 		String var = de.getCreateVar();
 		if (insertJS.length() != 0) {
@@ -1129,7 +1140,6 @@ public abstract class WWidget extends WObject {
 	abstract boolean isStubbed();
 
 	void render() {
-		this.renderOk();
 	}
 
 	WWidget getAdam() {

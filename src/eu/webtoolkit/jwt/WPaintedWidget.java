@@ -138,6 +138,11 @@ public abstract class WPaintedWidget extends WInteractWidget {
 						WPaintedWidget.this.onResize(e1, e2);
 					}
 				});
+		this
+				.setJavaScriptMember(
+						"wtResize",
+						"function(self, w, h) {if (!self.wtWidth || self.wtWidth!=w || !self.wtHeight || self.wtHeight!=h) {self.wtWidth=w; self.wtHeight=h;self.style.height=h + 'px';"
+								+ this.resized_.createCall("w", "h") + "}};");
 	}
 
 	/**
@@ -360,12 +365,6 @@ public abstract class WPaintedWidget extends WInteractWidget {
 			result.addChild(wrap);
 		}
 		this.updateDom(result, true);
-		WApplication
-				.getInstance()
-				.doJavaScript(
-						this.getJsRef()
-								+ ".wtResize = function(self, w, h) {if (!self.wtWidth || self.wtWidth!=w || !self.wtHeight || self.wtHeight!=h) {self.wtWidth=w; self.wtHeight=h;"
-								+ this.resized_.createCall("w", "h") + "}};");
 		return result;
 	}
 
@@ -437,7 +436,7 @@ public abstract class WPaintedWidget extends WInteractWidget {
 
 	private void onResize(int width, int height) {
 		this.resize(WLength.Auto, WLength.Auto);
-		this.resizeCanvas(width, height);
+		this.resizeCanvas(width, height - 5);
 	}
 
 	private boolean isCreatePainter() {

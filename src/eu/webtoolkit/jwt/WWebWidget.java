@@ -505,6 +505,25 @@ public abstract class WWebWidget extends WWidget {
 		return "";
 	}
 
+	public void setJavaScriptMember(String name, String value) {
+		if (!(this.otherImpl_ != null)) {
+			this.otherImpl_ = new WWebWidget.OtherImpl();
+		}
+		if (!(this.otherImpl_.jsMembers_ != null)) {
+			this.otherImpl_.jsMembers_ = new HashMap<String, String>();
+		}
+		String i = this.otherImpl_.jsMembers_.get(name);
+		if (i != null && i.equals(value)) {
+			return;
+		}
+		this.otherImpl_.jsMembers_.put(name, value);
+		if (!(this.otherImpl_.jsMembersSet_ != null)) {
+			this.otherImpl_.jsMembersSet_ = new ArrayList<String>();
+		}
+		this.otherImpl_.jsMembersSet_.add(name);
+		this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyAttribute));
+	}
+
 	public void load() {
 		this.flags_.set(BIT_LOADED);
 		if (this.children_ != null) {
@@ -1095,34 +1114,57 @@ public abstract class WWebWidget extends WWidget {
 			}
 			this.flags_.clear(BIT_SELECTABLE_CHANGED);
 		}
-		if (this.otherImpl_ != null && this.otherImpl_.attributes_ != null) {
-			if (all) {
-				for (Iterator<Map.Entry<String, String>> i_it = this.otherImpl_.attributes_
-						.entrySet().iterator(); i_it.hasNext();) {
-					Map.Entry<String, String> i = i_it.next();
-					if (i.getKey().equals("style")) {
-						element.setProperty(Property.PropertyStyle, i
-								.getValue());
-					} else {
-						element.setAttribute(i.getKey(), i.getValue());
-					}
-				}
-			} else {
-				if (this.otherImpl_.attributesSet_ != null) {
-					for (int i = 0; i < this.otherImpl_.attributesSet_.size(); ++i) {
-						String attr = this.otherImpl_.attributesSet_.get(i);
-						if (attr.equals("style")) {
-							element.setProperty(Property.PropertyStyle,
-									this.otherImpl_.attributes_.get(attr));
+		if (this.otherImpl_ != null) {
+			if (this.otherImpl_.attributes_ != null) {
+				if (all) {
+					for (Iterator<Map.Entry<String, String>> i_it = this.otherImpl_.attributes_
+							.entrySet().iterator(); i_it.hasNext();) {
+						Map.Entry<String, String> i = i_it.next();
+						if (i.getKey().equals("style")) {
+							element.setProperty(Property.PropertyStyle, i
+									.getValue());
 						} else {
-							element.setAttribute(attr,
-									this.otherImpl_.attributes_.get(attr));
+							element.setAttribute(i.getKey(), i.getValue());
+						}
+					}
+				} else {
+					if (this.otherImpl_.attributesSet_ != null) {
+						for (int i = 0; i < this.otherImpl_.attributesSet_
+								.size(); ++i) {
+							String attr = this.otherImpl_.attributesSet_.get(i);
+							if (attr.equals("style")) {
+								element.setProperty(Property.PropertyStyle,
+										this.otherImpl_.attributes_.get(attr));
+							} else {
+								element.setAttribute(attr,
+										this.otherImpl_.attributes_.get(attr));
+							}
 						}
 					}
 				}
+				;
+				this.otherImpl_.attributesSet_ = null;
 			}
-			;
-			this.otherImpl_.attributesSet_ = null;
+			if (this.otherImpl_.jsMembers_ != null) {
+				if (all) {
+					for (Iterator<Map.Entry<String, String>> i_it = this.otherImpl_.jsMembers_
+							.entrySet().iterator(); i_it.hasNext();) {
+						Map.Entry<String, String> i = i_it.next();
+						element.callMethod(i.getKey() + "=" + i.getValue());
+					}
+				} else {
+					if (this.otherImpl_.jsMembersSet_ != null) {
+						for (int i = 0; i < this.otherImpl_.jsMembersSet_
+								.size(); ++i) {
+							String m = this.otherImpl_.jsMembersSet_.get(i);
+							element.callMethod(m + "="
+									+ this.otherImpl_.jsMembers_.get(m));
+						}
+					}
+				}
+				;
+				this.otherImpl_.jsMembersSet_ = null;
+			}
 		}
 		if (this.flags_.get(BIT_HIDE_WITH_VISIBILITY)) {
 			if (this.flags_.get(BIT_HIDDEN_CHANGED) || all
@@ -1446,16 +1488,20 @@ public abstract class WWebWidget extends WWidget {
 	}
 
 	static class OtherImpl {
+		public String id_;
 		public Map<String, String> attributes_;
 		public List<String> attributesSet_;
-		public String id_;
+		public Map<String, String> jsMembers_;
+		public List<String> jsMembersSet_;
 		public JSignal3<String, String, WMouseEvent> dropSignal_;
 		public Map<String, WWebWidget.DropMimeType> acceptedDropMimeTypes_;
 
 		public OtherImpl() {
+			this.id_ = null;
 			this.attributes_ = null;
 			this.attributesSet_ = null;
-			this.id_ = null;
+			this.jsMembers_ = null;
+			this.jsMembersSet_ = null;
 			this.dropSignal_ = null;
 			this.acceptedDropMimeTypes_ = null;
 		}

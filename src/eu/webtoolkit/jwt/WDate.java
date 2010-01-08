@@ -36,7 +36,7 @@ public class WDate implements Comparable<WDate> {
 		public String monthGetJS;
 	}
 
-	enum Days {
+	enum Day {
 		Sunday(Calendar.SUNDAY), Monday(Calendar.MONDAY), Tuesday(
 				Calendar.TUESDAY), Wednesday(Calendar.WEDNESDAY), Thursday(
 				Calendar.THURSDAY), Friday(Calendar.FRIDAY), Saturday(
@@ -44,8 +44,13 @@ public class WDate implements Comparable<WDate> {
 
 		private int calendarCode;
 
-		private Days(int calendarCode) {
+		private Day(int calendarCode) {
 			this.calendarCode = calendarCode;
+		}
+		
+		// calendarCode: 0 (Sunday) to 6 (Saturday)
+		static Day fromInt(int day) {
+			return values()[day];
 		}
 	}
 
@@ -665,14 +670,17 @@ public class WDate implements Comparable<WDate> {
 		return formatter.format(this.d);
 	}
 
-	static WDate getPreviousWeekday(WDate d, Days gw) {
+	static WDate getPreviousWeekday(WDate d, Day gw) {
 		Calendar c = Calendar.getInstance();
 		c.setTime(d.d);
+		
+		// FIXME we shouldn't need a loop here!
 		while (true) {
 			c.add(Calendar.DATE, -1);
 			if (c.get(Calendar.DAY_OF_WEEK) == gw.calendarCode)
 				break;
 		}
+		
 		return new WDate(c.getTime());
 	}
 

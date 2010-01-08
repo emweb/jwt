@@ -378,7 +378,6 @@ public class WMenu extends WCompositeWidget {
 		if (enable) {
 			WContainerWidget c = new WContainerWidget();
 			c.setList(true);
-			c.setOverflow(WContainerWidget.Overflow.OverflowAuto);
 			this.setImplementation(this.impl_ = c);
 		} else {
 			this.setImplementation(this.impl_ = new WTable());

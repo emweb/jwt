@@ -34,6 +34,10 @@ public class WStackedWidget extends WContainerWidget {
 		this.widgets_ = new ArrayList<WWidget>();
 		this.currentIndex_ = -1;
 		;
+		this
+				.setJavaScriptMember(
+						"wtResize",
+						"function(self, w, h){var j,jl,c;self.style.height=h+'px';for (j=0, jl=self.childNodes.length; j<jl; ++j){c=self.childNodes[j];c.style.height = self.style.height;}}");
 	}
 
 	/**
@@ -157,11 +161,6 @@ public class WStackedWidget extends WContainerWidget {
 
 	DomElement createDomElement(WApplication app) {
 		this.setCurrentIndex(this.currentIndex_);
-		WApplication
-				.getInstance()
-				.doJavaScript(
-						this.getJsRef()
-								+ ".wtResize = function(self, w, h){var j,jl,c;self.style.height=h+'px';for (j=0, jl=self.childNodes.length; j<jl; ++j){c=self.childNodes[j];c.style.height = self.style.height;}}");
 		return super.createDomElement(app);
 	}
 

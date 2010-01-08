@@ -5,7 +5,6 @@
  */
 package eu.webtoolkit.jwt;
 
-import java.util.EnumSet;
 
 /**
  * A WDialog shows a dialog
@@ -47,8 +46,22 @@ import java.util.EnumSet;
  * <p>
  * <p>
  * <i><b>Note: </b>For the dialog to render properly in IE, the &quot;html
- * body&quot; margin is set to 0 (if it wasn&apos;t already). </i>
+ * body&quot; margin is set to 0 (if it wasn&apos;t already).</i>
  * </p>
+ * <h3>CSS</h3>
+ * <p>
+ * A dialog has the <code>Wt-dialog</code> and <code>Wt-outset</code> style
+ * classes. The look can be overridden using the following style class
+ * selectors:
+ * <p>
+ * <div class="fragment">
+ * 
+ * <pre class="fragment">
+ * .Wt-dialog .titlebar : The title bar
+ *  .Wt-dialog .body     : The body (requires vertical padding 4px).
+ * </pre>
+ * 
+ * </div>
  */
 public class WDialog extends WCompositeWidget {
 	/**
@@ -86,8 +99,10 @@ public class WDialog extends WCompositeWidget {
 		this.mouseDownJS_ = new JSlot();
 		this.mouseMovedJS_ = new JSlot();
 		this.mouseUpJS_ = new JSlot();
-		this.setImplementation(this.impl_ = new WContainerWidget());
-		this.impl_.setStyleClass("Wt-dialog");
+		String TEMPLATE = "<span class=\"Wt-x1\"><span class=\"Wt-x1a\" /></span><span class=\"Wt-x2\"><span class=\"Wt-x2a\" /></span>${titlebar}${contents}";
+		this
+				.setImplementation(this.impl_ = new WTemplate(new WString(
+						TEMPLATE)));
 		String CSS_RULES_NAME = "Wt::WDialog";
 		WApplication app = WApplication.getInstance();
 		if (!app.getStyleSheet().isDefined(CSS_RULES_NAME)) {
@@ -97,20 +112,20 @@ public class WDialog extends WCompositeWidget {
 			app
 					.doJavaScript(
 							""
-									+ "Wt3_1_0.centerDialog = function(d){if (d && d.style.display != 'none' && !d.getAttribute('moved')) {var ws=Wt3_1_0.windowSize();d.style.left=Math.round((ws.x - d.clientWidth)/2"
+									+ "Wt3_1_0.centerDialog = function(d){if (d && d.style.display != 'none') {d.style.visibility = 'visible';if (!d.getAttribute('moved')) {var ws=Wt3_1_0.windowSize();d.style.left=Math.round((ws.x - d.clientWidth)/2"
 									+ (app.getEnvironment().getAgent() == WEnvironment.UserAgent.IE6 ? "+ document.documentElement.scrollLeft"
 											: "")
 									+ ") + 'px';d.style.top=Math.round((ws.y - d.clientHeight)/2"
 									+ (app.getEnvironment().getAgent() == WEnvironment.UserAgent.IE6 ? "+ document.documentElement.scrollTop"
 											: "")
-									+ ") + 'px';d.style.marginLeft='0px';d.style.marginTop='0px';}};",
+									+ ") + 'px';d.style.marginLeft='0px';d.style.marginTop='0px';}d.wtResize(d, d.offsetWidth, d.offsetHeight);}};",
 							false);
 			app
 					.getStyleSheet()
 					.addRule(
 							"div.Wt-dialogcover",
 							""
-									+ "background: white;height: 100%; width: 100%;top: 0px; left: 0px;opacity: 0.5; position: fixed;"
+									+ "height: 100%; width: 100%;top: 0px; left: 0px;opacity: 0.5; position: fixed;"
 									+ (app.getEnvironment().agentIsIE() ? "filter: alpha(opacity=50);"
 											: "-moz-background-clip: -moz-initial;-moz-background-origin: -moz-initial;-moz-background-inline-policy: -moz-initial;-moz-opacity:0.5;-khtml-opacity: 0.5"),
 							CSS_RULES_NAME);
@@ -121,7 +136,11 @@ public class WDialog extends WCompositeWidget {
 					.addRule(
 							"div.Wt-dialog",
 							""
-									+ "visibility: visible;position: "
+									+ (app.getEnvironment().hasAjax()
+											&& !app.getEnvironment()
+													.agentIsIE() ? "visibility: hidden;"
+											: "")
+									+ "position: "
 									+ position
 									+ ';'
 									+ (!app.getEnvironment().hasAjax() ? "left: 50%; top: 50%;margin-left: -100px; margin-top: -50px;"
@@ -141,24 +160,18 @@ public class WDialog extends WCompositeWidget {
 				}
 			}
 		}
+		this.impl_.setStyleClass("Wt-dialog Wt-outset");
 		WContainerWidget parent = app.getDomRoot();
 		this.setPopup(true);
 		app.addAutoJavaScript("Wt3_1_0.centerDialog(" + this.getJsRef() + ");");
 		parent.addWidget(this);
-		WVBoxLayout layout = new WVBoxLayout();
-		layout.setSpacing(0);
-		layout.setContentsMargins(0, 0, 0, 0);
 		this.titleBar_ = new WContainerWidget();
 		this.titleBar_.setStyleClass("titlebar");
 		this.caption_ = new WText(windowTitle, this.titleBar_);
-		layout.addWidget(this.titleBar_);
+		this.impl_.bindWidget("titlebar", this.titleBar_);
 		this.contents_ = new WContainerWidget();
 		this.contents_.setStyleClass("body");
-		layout.addWidget(this.contents_, 1);
-		this.impl_.setLayout(layout, EnumSet.of(AlignmentFlag.AlignLeft));
-		if (app.getEnvironment().agentIsIE()) {
-			this.impl_.setOverflow(WContainerWidget.Overflow.OverflowVisible);
-		}
+		this.impl_.bindWidget("contents", this.contents_);
 		this.mouseDownJS_
 				.setJavaScript("function(obj, event) {  var pc = Wt3_1_0.pageCoordinates(event);  obj.setAttribute('dsx', pc.x);  obj.setAttribute('dsy', pc.y);}");
 		this.mouseMovedJS_
@@ -171,6 +184,10 @@ public class WDialog extends WCompositeWidget {
 		this.titleBar_.mouseMoved().addListener(this.mouseMovedJS_);
 		this.titleBar_.mouseWentUp().addListener(this.mouseUpJS_);
 		this.saveCoverState(app, app.getDialogCover());
+		this
+				.setJavaScriptMember(
+						"wtResize",
+						"function(self, w, h) {h -= 2; w -= 2;self.style.height= h + 'px';self.style.width= w + 'px';var c = self.lastChild;var t = c.previousSibling;h -= t.offsetHeight + 8;if (h > 0)c.style.height = h + 'px';};");
 		this.hide();
 	}
 
@@ -345,12 +362,7 @@ public class WDialog extends WCompositeWidget {
 		super.setHidden(hidden);
 	}
 
-	public void resize(WLength width, WLength height) {
-		this.impl_.setLayout(this.impl_.getLayout());
-		super.resize(width, height);
-	}
-
-	private WContainerWidget impl_;
+	private WTemplate impl_;
 	private WText caption_;
 	private WContainerWidget titleBar_;
 	private WContainerWidget contents_;

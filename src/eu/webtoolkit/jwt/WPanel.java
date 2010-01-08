@@ -5,8 +5,6 @@
  */
 package eu.webtoolkit.jwt;
 
-import java.util.EnumSet;
-import java.util.List;
 
 /**
  * A WPanel provides a container with a title bar
@@ -22,6 +20,21 @@ import java.util.List;
  * expanded</strong>
  * </p>
  * </div>
+ * <p>
+ * <h3>CSS</h3>
+ * <p>
+ * A panel has the <code>Wt-panel</code> and <code>Wt-outset</code> style
+ * classes. The look can be overridden using the following style class
+ * selectors:
+ * <p>
+ * <div class="fragment">
+ * 
+ * <pre class="fragment">
+ * .Wt-panel .titlebar : The title bar
+ *  .Wt-panel .body     : The body (requires vertical padding 4px).
+ * </pre>
+ * 
+ * </div>
  */
 public class WPanel extends WCompositeWidget {
 	/**
@@ -29,7 +42,6 @@ public class WPanel extends WCompositeWidget {
 	 */
 	public WPanel(WContainerWidget parent) {
 		super(parent);
-		this.titleBar_ = null;
 		this.collapseIcon_ = null;
 		this.title_ = null;
 		this.centralWidget_ = null;
@@ -37,23 +49,21 @@ public class WPanel extends WCompositeWidget {
 		this.expanded_ = new Signal(this);
 		this.collapsedSS_ = new Signal1<Boolean>(this);
 		this.expandedSS_ = new Signal1<Boolean>(this);
-		this.setImplementation(this.impl_ = new WContainerWidget());
+		String TEMPLATE = "<span class=\"Wt-x1\"><span class=\"Wt-x1a\" /></span><span class=\"Wt-x2\"><span class=\"Wt-x2a\" /></span>${titlebar}${contents}";
+		this
+				.setImplementation(this.impl_ = new WTemplate(new WString(
+						TEMPLATE)));
+		this.impl_.setStyleClass("Wt-panel Wt-outset");
 		// this.implementStateless(WPanel.doExpand,WPanel.undoExpand);
 		// this.implementStateless(WPanel.doCollapse,WPanel.undoCollapse);
-		this.impl_.setStyleClass("Wt-panel");
 		WContainerWidget centralArea = new WContainerWidget();
 		centralArea.setStyleClass("body");
-		this.impl_.addWidget(centralArea);
-		String CSS_RULES_NAME = "Wt::WPanel";
-		WApplication app = WApplication.getInstance();
-		if (!app.getStyleSheet().isDefined(CSS_RULES_NAME)) {
-			app.getStyleSheet().addRule(".Wt-panel",
-					"border: 3px solid #888888;", CSS_RULES_NAME);
-			app.getStyleSheet().addRule(".Wt-panel .titlebar",
-					"padding: 0px 6px 3px;font-size: 10pt;");
-			app.getStyleSheet().addRule(".Wt-panel .body",
-					"padding: 4px 6px 4px;");
-		}
+		this.impl_.bindWidget("titlebar", (WWidget) null);
+		this.impl_.bindWidget("contents", centralArea);
+		this
+				.setJavaScriptMember(
+						"wtResize",
+						"function(self, w, h) {self.style.height= h + 'px';var c = self.lastChild;var t = c.previousSibling;if (t.className == 'titlebar')h -= t.offsetHeight;h -= 8;if (h > 0)c.style.height = h + 'px';};");
 	}
 
 	/**
@@ -82,8 +92,8 @@ public class WPanel extends WCompositeWidget {
 		this.setTitleBar(true);
 		if (!(this.title_ != null)) {
 			this.title_ = new WText();
-			this.titleBar_.insertWidget(this.titleBar_.getCount() - 1,
-					this.title_);
+			this.getTitleBarWidget().insertWidget(
+					this.getTitleBarWidget().getCount() - 1, this.title_);
 		}
 		this.title_.setText(title);
 	}
@@ -115,18 +125,16 @@ public class WPanel extends WCompositeWidget {
 	 * @see WPanel#setCollapsible(boolean on)
 	 */
 	public void setTitleBar(boolean enable) {
-		if (enable && !(this.titleBar_ != null)) {
-			this.titleBar_ = new WContainerWidget();
-			this.impl_.insertWidget(0, this.titleBar_);
-			this.titleBar_.setStyleClass("titlebar");
+		if (enable && !(this.getTitleBarWidget() != null)) {
+			WContainerWidget titleBar = new WContainerWidget();
+			this.impl_.bindWidget("titlebar", titleBar);
+			titleBar.setStyleClass("titlebar");
 			WBreak br;
-			this.titleBar_.addWidget(br = new WBreak());
+			titleBar.addWidget(br = new WBreak());
 			br.setClearSides(Side.Horizontals);
 		} else {
-			if (!enable && this.titleBar_ != null) {
-				if (this.titleBar_ != null)
-					this.titleBar_.remove();
-				this.titleBar_ = null;
+			if (!enable && this.isTitleBar()) {
+				this.impl_.bindWidget("titlebar", (WWidget) null);
 				this.title_ = null;
 				this.collapseIcon_ = null;
 			}
@@ -140,7 +148,7 @@ public class WPanel extends WCompositeWidget {
 	 * @see WPanel#setTitleBar(boolean enable)
 	 */
 	public boolean isTitleBar() {
-		return this.titleBar_ != null;
+		return this.getTitleBarWidget() != null;
 	}
 
 	/**
@@ -165,8 +173,7 @@ public class WPanel extends WCompositeWidget {
 					resources + "expand.gif");
 			this.collapseIcon_.setInline(false);
 			this.collapseIcon_.setFloatSide(Side.Left);
-			this.collapseIcon_.setMargin(new WLength(2), EnumSet.of(Side.Top));
-			this.titleBar_.insertWidget(0, this.collapseIcon_);
+			this.getTitleBarWidget().insertWidget(0, this.collapseIcon_);
 			this.collapseIcon_.icon1Clicked().addListener(this,
 					new Signal1.Listener<WMouseEvent>() {
 						public void trigger(WMouseEvent e1) {
@@ -346,10 +353,9 @@ public class WPanel extends WCompositeWidget {
 		return this.collapseIcon_;
 	}
 
-	private WContainerWidget titleBar_;
 	private WIconPair collapseIcon_;
 	private WText title_;
-	private WContainerWidget impl_;
+	private WTemplate impl_;
 	private WWidget centralWidget_;
 	private Signal collapsed_;
 	private Signal expanded_;
@@ -392,9 +398,14 @@ public class WPanel extends WCompositeWidget {
 	}
 
 	private WContainerWidget getCentralArea() {
-		return ((this.impl_.getChildren()
-				.get(this.impl_.getChildren().size() - 1)) instanceof WContainerWidget ? (WContainerWidget) (this.impl_
-				.getChildren().get(this.impl_.getChildren().size() - 1))
+		return ((this.impl_.resolveWidget("contents")) instanceof WContainerWidget ? (WContainerWidget) (this.impl_
+				.resolveWidget("contents"))
+				: null);
+	}
+
+	private WContainerWidget getTitleBarWidget() {
+		return ((this.impl_.resolveWidget("titlebar")) instanceof WContainerWidget ? (WContainerWidget) (this.impl_
+				.resolveWidget("titlebar"))
 				: null);
 	}
 }

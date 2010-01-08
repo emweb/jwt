@@ -22,8 +22,7 @@ import java.util.List;
  * <p>
  * <h3>CSS</h3>
  * <p>
- * You may customize the look of a push button using the <code>Wt-btn</code> CSS
- * class.
+ * A button has the <code>Wt-btn</code> style.
  */
 public class WPushButton extends WFormWidget {
 	/**

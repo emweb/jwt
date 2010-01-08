@@ -152,6 +152,13 @@ public class WTemplate extends WInteractWidget {
 	 * instantiated only once in a template, the variable <code>varName</code>
 	 * may occur at most once in the template.
 	 * <p>
+	 * If a widget was already bound to the variable, it is deleted first. If
+	 * previously a string or other value was bound to the variable, it is
+	 * removed.
+	 * <p>
+	 * You may also pass a <code>null</code> <code>widget</code>, which will
+	 * resolve to an empty string.
+	 * <p>
 	 * 
 	 * @see WTemplate#bindString(String varName, CharSequence value, TextFormat
 	 *      textFormat)
@@ -165,8 +172,11 @@ public class WTemplate extends WInteractWidget {
 		}
 		if (widget != null) {
 			widget.setParent(this);
+			this.widgets_.put(varName, widget);
+			this.strings_.remove(varName);
+		} else {
+			this.strings_.put(varName, "");
 		}
-		this.widgets_.put(varName, widget);
 		this.changed_ = true;
 		this.repaint(EnumSet.of(RepaintFlag.RepaintInnerHtml));
 	}
