@@ -67,16 +67,10 @@ import java.util.List;
  * You may customize the look of the tabs handles using the <code>Wt-tabs</code>
  * CSS class.
  * <p>
- * The following rules may be used to style the header: <div class="fragment">
- * 
- * <pre class="fragment">
- * .Wt-tabs ul        : the list
- * .Wt-tabs li        : a list item
- * .Wt-tabs span      : outer span of a list item
- * .Wt-span span span : inner span of a list item
- * </pre>
- * 
- * </div>
+ * The following rules may be used to style the header: <div
+ * class="fragment"><pre class="fragment"> .Wt-tabs ul : the list .Wt-tabs li :
+ * a list item .Wt-tabs span : outer span of a list item .Wt-span span span :
+ * inner span of a list item </pre></div>
  */
 public class WTabWidget extends WCompositeWidget {
 	/**

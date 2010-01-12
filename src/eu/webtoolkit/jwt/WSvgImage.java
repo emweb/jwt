@@ -240,6 +240,7 @@ public class WSvgImage extends WResource implements WVectorImage {
 		this.strokeStyle_ = this.getStrokeStyle();
 		this.fillStyle_ = this.getFillStyle();
 		this.fontStyle_ = this.getFontStyle();
+		this.newClipPath_ = true;
 	}
 
 	public void done() {

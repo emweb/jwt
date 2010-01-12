@@ -27,14 +27,8 @@ package eu.webtoolkit.jwt;
  * classes. The look can be overridden using the following style class
  * selectors:
  * <p>
- * <div class="fragment">
- * 
- * <pre class="fragment">
- * .Wt-panel .titlebar : The title bar
- *  .Wt-panel .body     : The body (requires vertical padding 4px).
- * </pre>
- * 
- * </div>
+ * <div class="fragment"><pre class="fragment"> .Wt-panel .titlebar : The title
+ * bar .Wt-panel .body : The body (requires vertical padding 4px). </pre></div>
  */
 public class WPanel extends WCompositeWidget {
 	/**

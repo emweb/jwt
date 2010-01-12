@@ -38,25 +38,17 @@ import java.util.Set;
  * A calendar has the <code>Wt-calendar</code> style class. The look can be
  * overridden using the following style class selectors:
  * <p>
- * <div class="fragment">
+ * <div class="fragment"><pre class="fragment"> .Wt-cal table : The table
+ * .Wt-cal table.d1 : The table (single letter day headers) .Wt-cal table.d3 :
+ * The table (three letter day headers)
  * 
- * <pre class="fragment">
- * .Wt-cal table           : The table
- * .Wt-cal table.d1        : The table (single letter day headers)
- * .Wt-cal table.d3        : The table (three letter day headers)
+ * .Wt-cal caption : The caption (containing the navigation buttons)
+ * .Wt-cal-year : The caption year in-place-edit
  * 
- * .Wt-cal caption		: The caption (containing the navigation buttons)
- * .Wt-cal-year		: The caption year in-place-edit
+ * .Wt-cal th : Header cell (week day)
  * 
- * .Wt-cal th              : Header cell (week day)
- * 
- * .Wt-cal td              : Day cell
- * .Wt-cal-oom             : Out-of-month day
- * .Wt-cal-sel             : Selected day
- * .Wt-cal-now             : Today day
- * </pre>
- * 
- * </div>
+ * .Wt-cal td : Day cell .Wt-cal-oom : Out-of-month day .Wt-cal-sel : Selected
+ * day .Wt-cal-now : Today day </pre></div>
  */
 public class WCalendar extends WCompositeWidget {
 	/**

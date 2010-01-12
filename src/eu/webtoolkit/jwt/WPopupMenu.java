@@ -79,15 +79,9 @@ package eu.webtoolkit.jwt;
  * You may customize the look of a treeview using the <code>Wt-popupmenu</code>
  * CSS class.
  * <p>
- * <div class="fragment">
- * 
- * <pre class="fragment">
- * .Wt-popupmenu .Wt-item, .Wt-popupmenu .Wt-selected : item
- * .Wt-popupmenu .Wt-selected                         : selected item
- * .Wt-popupmenu .Wt-separator                        : separator
- * </pre>
- * 
- * </div>
+ * <div class="fragment"><pre class="fragment"> .Wt-popupmenu .Wt-item,
+ * .Wt-popupmenu .Wt-selected : item .Wt-popupmenu .Wt-selected : selected item
+ * .Wt-popupmenu .Wt-separator : separator </pre></div>
  * <p>
  * 
  * @see WPopupMenuItem
