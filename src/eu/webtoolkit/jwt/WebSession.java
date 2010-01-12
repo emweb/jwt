@@ -281,6 +281,8 @@ class WebSession {
 								String hashE = request.getParameter("_");
 								if (hashE != null) {
 									this.app_.changeInternalPath(hashE);
+								} else {
+									this.app_.changeInternalPath("");
 								}
 							}
 						}

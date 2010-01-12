@@ -230,4 +230,11 @@ public class StringUtils {
         }
         return s.substring(start);
     }
+    
+	public static int findFirstOf(String text, String chars, int pos) {
+		char[] textA = text.toCharArray();
+		char[] charsA = chars.toCharArray();
+		
+		return strpbrk(textA, pos, charsA);
+	}
 }

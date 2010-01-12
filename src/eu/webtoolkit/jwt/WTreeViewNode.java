@@ -20,7 +20,9 @@ class WTreeViewNode extends WTable {
 		this.noExpandIcon_ = null;
 		this.setStyleClass("Wt-tv-node");
 		int selfHeight = 0;
-		if (!view.isExpanded(this.index_)) {
+		if (!(this.index_ == this.view_.getRootIndex() || (this.index_ != null && this.index_
+				.equals(this.view_.getRootIndex())))
+				&& !view.isExpanded(this.index_)) {
 			this.getRowAt(1).hide();
 		}
 		boolean needLoad = this.view_.isExpanded(this.index_);
@@ -202,9 +204,9 @@ class WTreeViewNode extends WTable {
 	}
 
 	public int getRenderedHeight() {
-		return (!(this.index_ == this.view_.getRootIndex() || (this.index_ != null && this.index_
-				.equals(this.view_.getRootIndex()))) ? 1 : 0)
-				+ (this.isExpanded() ? this.childrenHeight_ : 0);
+		return (this.index_ == this.view_.getRootIndex() || (this.index_ != null && this.index_
+				.equals(this.view_.getRootIndex()))) ? this.childrenHeight_
+				: 1 + (this.isExpanded() ? this.childrenHeight_ : 0);
 	}
 
 	public boolean isChildrenLoaded() {
@@ -390,7 +392,9 @@ class WTreeViewNode extends WTable {
 	}
 
 	public boolean isExpanded() {
-		return !this.getRowAt(1).isHidden();
+		return (this.index_ == this.view_.getRootIndex() || (this.index_ != null && this.index_
+				.equals(this.view_.getRootIndex())))
+				|| !this.getRowAt(1).isHidden();
 	}
 
 	public void adjustChildrenHeight(int diff) {

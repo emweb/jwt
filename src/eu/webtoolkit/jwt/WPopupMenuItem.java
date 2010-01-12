@@ -82,8 +82,10 @@ public class WPopupMenuItem extends WCompositeWidget {
 	public void setText(CharSequence text) {
 		if (!(this.text_ != null)) {
 			this.text_ = new WText(this.impl_);
+			this.text_.setInline(false);
 			this.text_
 					.setMargin(new WLength(ICON_WIDTH), EnumSet.of(Side.Left));
+			this.text_.setMargin(new WLength(3), EnumSet.of(Side.Right));
 			this.text_.setAttributeValue("style", "padding-right: "
 					+ String.valueOf(SUBMENU_ARROW_WIDTH) + "px");
 		}
@@ -141,11 +143,13 @@ public class WPopupMenuItem extends WCompositeWidget {
 						EnumSet.of(Side.Left));
 				this.checkBox_ = new WCheckBox();
 				this.impl_.insertWidget(0, this.checkBox_);
+				this.text_.setInline(true);
 			} else {
 				if (this.checkBox_ != null)
 					this.checkBox_.remove();
 				this.text_.setMargin(new WLength(ICON_WIDTH), EnumSet
 						.of(Side.Left));
+				this.text_.setInline(false);
 			}
 		}
 	}
@@ -274,7 +278,7 @@ public class WPopupMenuItem extends WCompositeWidget {
 		this.separator_ = true;
 		this.triggered_ = new Signal(this);
 		this.setImplementation(this.impl_ = new WContainerWidget());
-		this.setStyleClass("separator");
+		this.setStyleClass("Wt-separator");
 	}
 
 	private WContainerWidget impl_;
@@ -312,7 +316,7 @@ public class WPopupMenuItem extends WCompositeWidget {
 		this.setStyleClass(selected ? "Wt-selected" : "Wt-item");
 		if (this.subMenu_ != null) {
 			if (selected) {
-				this.subMenu_.popup(this);
+				this.subMenu_.popupToo(this);
 			} else {
 				this.subMenu_.show();
 				this.subMenu_.hide();
@@ -332,8 +336,8 @@ public class WPopupMenuItem extends WCompositeWidget {
 	}
 
 	private WPopupMenu getParentMenu() {
-		return ((this.getParent().getParent()) instanceof WPopupMenu ? (WPopupMenu) (this
-				.getParent().getParent())
+		return ((this.getParent().getParent().getParent()) instanceof WPopupMenu ? (WPopupMenu) (this
+				.getParent().getParent().getParent())
 				: null);
 	}
 

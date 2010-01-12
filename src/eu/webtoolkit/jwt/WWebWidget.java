@@ -524,6 +524,17 @@ public abstract class WWebWidget extends WWidget {
 		this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyAttribute));
 	}
 
+	public void callJavaScriptMember(String name, String args) {
+		if (!(this.otherImpl_ != null)) {
+			this.otherImpl_ = new WWebWidget.OtherImpl();
+		}
+		if (!(this.otherImpl_.jsMemberCalls_ != null)) {
+			this.otherImpl_.jsMemberCalls_ = new ArrayList<String>();
+		}
+		this.otherImpl_.jsMemberCalls_.add(name + "(" + args + ");");
+		this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyAttribute));
+	}
+
 	public void load() {
 		this.flags_.set(BIT_LOADED);
 		if (this.children_ != null) {
@@ -1165,6 +1176,14 @@ public abstract class WWebWidget extends WWidget {
 				;
 				this.otherImpl_.jsMembersSet_ = null;
 			}
+			if (this.otherImpl_.jsMemberCalls_ != null) {
+				for (int i = 0; i < this.otherImpl_.jsMemberCalls_.size(); ++i) {
+					String m = this.otherImpl_.jsMemberCalls_.get(i);
+					element.callMethod(m);
+				}
+				;
+				this.otherImpl_.jsMemberCalls_ = null;
+			}
 		}
 		if (this.flags_.get(BIT_HIDE_WITH_VISIBILITY)) {
 			if (this.flags_.get(BIT_HIDDEN_CHANGED) || all
@@ -1313,6 +1332,9 @@ public abstract class WWebWidget extends WWidget {
 	}
 
 	void addChild(WWidget child) {
+		if (child.getParent() == this) {
+			return;
+		}
 		if (child.getParent() != null) {
 			child.setParent((WWidget) null);
 			WApplication.getInstance().log("warn").append(
@@ -1493,6 +1515,7 @@ public abstract class WWebWidget extends WWidget {
 		public List<String> attributesSet_;
 		public Map<String, String> jsMembers_;
 		public List<String> jsMembersSet_;
+		public List<String> jsMemberCalls_;
 		public JSignal3<String, String, WMouseEvent> dropSignal_;
 		public Map<String, WWebWidget.DropMimeType> acceptedDropMimeTypes_;
 
@@ -1502,6 +1525,7 @@ public abstract class WWebWidget extends WWidget {
 			this.attributesSet_ = null;
 			this.jsMembers_ = null;
 			this.jsMembersSet_ = null;
+			this.jsMemberCalls_ = null;
 			this.dropSignal_ = null;
 			this.acceptedDropMimeTypes_ = null;
 		}

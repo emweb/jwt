@@ -332,6 +332,44 @@ public abstract class WWidget extends WObject {
 	public abstract WLength getMaximumHeight();
 
 	/**
+	 * Positions a widget next to another widget.
+	 * <p>
+	 * Positions this absolutely positioned widget next to another
+	 * <code>widget</code>. Both widgets must be visible.
+	 * <p>
+	 * When <code>orientation</code> = Vertical, the widget is displayed below
+	 * the other widget (or above in case there is not enough room below). It is
+	 * aligned so that the left edges align (or the right edges if there is not
+	 * enough room to the right).
+	 * <p>
+	 * Conversely, when <code>orientation</code> = Horizontal, the widget is
+	 * displayed to the right of the other widget (or to the left in case there
+	 * is not enough room to the right). It is aligned so that the top edges
+	 * align (or the bottom edges if there is not enough room below).
+	 * <p>
+	 * <p>
+	 * <i><b>Note: </b>This only works if JavaScript is available. </i>
+	 * </p>
+	 */
+	public void positionAt(WWidget widget, Orientation orientation) {
+		String side = orientation == Orientation.Horizontal ? ".Horizontal"
+				: ".Vertical";
+		WApplication.getInstance().doJavaScript(
+				"Wt3_1_0.positionAtWidget('" + this.getId() + "','"
+						+ widget.getId() + "',Wt3_1_0" + side + ");");
+	}
+
+	/**
+	 * Positions a widget next to another widget.
+	 * <p>
+	 * Calls {@link #positionAt(WWidget widget, Orientation orientation)
+	 * positionAt(widget, Orientation.Vertical)}
+	 */
+	public final void positionAt(WWidget widget) {
+		positionAt(widget, Orientation.Vertical);
+	}
+
+	/**
 	 * Sets the CSS line height for contained text.
 	 */
 	public abstract void setLineHeight(WLength height);
@@ -759,7 +797,7 @@ public abstract class WWidget extends WObject {
 	 * @see WWidget#isRendered()
 	 */
 	public String getJsRef() {
-		return "Wt3_1_0.getElement('" + this.getId() + "')";
+		return "$('#" + this.getId() + "').get(0)";
 	}
 
 	/**
@@ -791,6 +829,16 @@ public abstract class WWidget extends WObject {
 	 * JavaScript expression, including a function.
 	 */
 	public abstract void setJavaScriptMember(String name, String value);
+
+	/**
+	 * Calls a JavaScript member.
+	 * <p>
+	 * This calls a JavaScript member.
+	 * <p>
+	 * 
+	 * @see WWidget#setJavaScriptMember(String name, String value)
+	 */
+	public abstract void callJavaScriptMember(String name, String args);
 
 	/**
 	 * Short hand for {@link WString#tr(String key) WString#tr()}.
@@ -1129,6 +1177,9 @@ public abstract class WWidget extends WObject {
 	}
 
 	void setParent(WWidget p) {
+		if (p == this.getParent()) {
+			return;
+		}
 		if (this.getParent() != null) {
 			this.getParent().removeChild(this);
 		}

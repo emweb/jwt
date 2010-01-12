@@ -28,8 +28,16 @@
     line-height: 140%;
 }
 
+.Wt-cal table.d1 {
+    width: 150px;
+}
+
 .Wt-cal table.d1 td {
     width: 20px;
+}
+
+.Wt-cal table.d3 {
+    width: 220px;
 }
 
 .Wt-cal table.d3 td {
@@ -102,10 +110,17 @@
 }
 
 /*
+ * WDatePicker
+ */
+.Wt-popup {
+    background-color: #EEEEEE;
+}
+
+/*
  * WDialog
  */
 .Wt-dialog {
-    background: #EEEEEE none repeat scroll 0%;
+    background-color: #EEEEEE;
 }
 
 .Wt-dialog .titlebar {
@@ -227,8 +242,12 @@
 }
 
 /* header */
-.Wt-treeview .Wt-headerdiv {
+.Wt-treeview .Wt-headerdiv, .Wt-treeview .Wt-headerdiv .Wt-tv-rowc {
     background-color: #EEEEEE;
+}
+
+.Wt-treeview .Wt-headerdiv .background {
+    background-color: #FFFFFF;
 }
 
 .Wt-treeview .Wt-header .Wt-label {
@@ -243,15 +262,15 @@
 }
 
 .Wt-treeview .Wt-tv-sh-none {
-    background: url(../../sort-arrow-none.gif) no-repeat 0 center;
+    background: url(sort-arrow-none.gif) no-repeat 0 6px;
 }
 
 .Wt-treeview .Wt-tv-sh-up {
-    background: url(../../sort-arrow-up.gif) no-repeat 0 center;
+    background: url(sort-arrow-up.gif) no-repeat 0 6px;
 }
 
 .Wt-treeview .Wt-tv-sh-down {
-    background: url(../../sort-arrow-down.gif) no-repeat 0 center;
+    background: url(sort-arrow-down.gif) no-repeat 0 6px;
 }
 
 /* nodes */

@@ -41,6 +41,7 @@ public abstract class WtServlet extends HttpServlet {
 	static final String CommAjax_js;
 	static final String CommScript_js;
 	static final String Hybrid_html;
+	static final String JQuery_js;
 
 	private String resourcePath;
 
@@ -48,9 +49,10 @@ public abstract class WtServlet extends HttpServlet {
 		Boot_html = readFile("/eu/webtoolkit/jwt/skeletons/Boot.html");
 		Plain_html = readFile("/eu/webtoolkit/jwt/skeletons/Plain.html");
 		Hybrid_html = readFile("/eu/webtoolkit/jwt/skeletons/Hybrid.html");
-		Wt_js = readFile("/eu/webtoolkit/jwt/skeletons/Wt.js");
+		Wt_js = readFile("/eu/webtoolkit/jwt/skeletons/Wt.min.js");
 		CommAjax_js = readFile("/eu/webtoolkit/jwt/skeletons/CommAjax.js");
 		CommScript_js = readFile("/eu/webtoolkit/jwt/skeletons/CommScript.js");
+		JQuery_js = readFile("/eu/webtoolkit/jwt/skeletons/jquery.min.js");
 	}
 
 	private InputStream getResourceStream(final String fileName) throws FileNotFoundException {

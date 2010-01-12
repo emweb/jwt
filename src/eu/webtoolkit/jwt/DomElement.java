@@ -772,7 +772,7 @@ class DomElement {
 			}
 		}
 		for (int i = 0; i < this.methodCalls_.size(); ++i) {
-			app.doJavaScript("Wt3_1_0.getElement('" + this.id_ + "')."
+			app.doJavaScript("$('#" + this.id_ + "').get(0)."
 					+ this.methodCalls_.get(i) + ';');
 		}
 		if (this.timeOut_ != -1) {
@@ -805,8 +805,8 @@ class DomElement {
 
 	public void declare(EscapeOStream out) {
 		if (this.var_.length() == 0) {
-			out.append("var ").append(this.getCreateVar()).append("=").append(
-					"Wt3_1_0.getElement('").append(this.id_).append("');\n");
+			out.append("var ").append(this.getCreateVar()).append("=$('#")
+					.append(this.id_).append("').get(0);\n");
 		}
 	}
 

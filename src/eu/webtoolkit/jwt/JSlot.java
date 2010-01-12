@@ -152,9 +152,7 @@ public class JSlot {
 	 * @see JSlot#setJavaScript(String js)
 	 */
 	public void exec(String object, String event) {
-		WApplication.getInstance().doJavaScript(
-				"{var o=" + object + ", e=" + event + ";"
-						+ this.imp_.getJavaScript() + "}");
+		WApplication.getInstance().doJavaScript(this.execJs(object, event));
 	}
 
 	/**
@@ -173,6 +171,42 @@ public class JSlot {
 	 */
 	public final void exec(String object) {
 		exec(object, "null");
+	}
+
+	/**
+	 * Returns a JavaScript statement that executes the slot.
+	 * <p>
+	 * This returns the JavaScript code to execute the slot.
+	 * <p>
+	 * The arguments are the <code>&quot;object, event&quot;</code> arguments of
+	 * the JavaScript event callback function.
+	 * <p>
+	 * 
+	 * @see JSlot#exec(String object, String event)
+	 */
+	public String execJs(String object, String event) {
+		return "{var o=" + object + ", e=" + event + ";"
+				+ this.imp_.getJavaScript() + "}";
+	}
+
+	/**
+	 * Returns a JavaScript statement that executes the slot.
+	 * <p>
+	 * Returns {@link #execJs(String object, String event) execJs("null",
+	 * "null")}
+	 */
+	public final String execJs() {
+		return execJs("null", "null");
+	}
+
+	/**
+	 * Returns a JavaScript statement that executes the slot.
+	 * <p>
+	 * Returns {@link #execJs(String object, String event) execJs(object,
+	 * "null")}
+	 */
+	public final String execJs(String object) {
+		return execJs(object, "null");
 	}
 
 	private WWidget widget_;

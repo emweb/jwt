@@ -94,7 +94,7 @@ package eu.webtoolkit.jwt;
  */
 public class WPopupMenu extends WCompositeWidget {
 	/**
-	 * Create a new popup menu.
+	 * Creates a new popup menu.
 	 * <p>
 	 * The menu is hidden, by default, and must be shown using
 	 * {@link WPopupMenu#popup(WPoint p) popup()} or
@@ -108,9 +108,13 @@ public class WPopupMenu extends WCompositeWidget {
 		this.globalClickConnection_ = new AbstractSignal.Connection();
 		this.globalEscapeConnection_ = new AbstractSignal.Connection();
 		this.recursiveEventLoop_ = false;
-		this.setImplementation(this.impl_ = new WContainerWidget());
+		String TEMPLATE = "<span class=\"Wt-x1\"><span class=\"Wt-x1a\" /></span><span class=\"Wt-x2\"><span class=\"Wt-x2a\" /></span>${contents}";
+		this
+				.setImplementation(this.impl_ = new WTemplate(new WString(
+						TEMPLATE)));
 		this.setPositionScheme(PositionScheme.Absolute);
-		this.setStyleClass("Wt-popupmenu");
+		this.setStyleClass("Wt-popupmenu Wt-outset");
+		this.impl_.bindWidget("contents", new WContainerWidget());
 		String CSS_RULES_NAME = "Wt::WPopupMenu";
 		WApplication app = WApplication.getInstance();
 		if (!app.getStyleSheet().isDefined(CSS_RULES_NAME)) {
@@ -122,7 +126,7 @@ public class WPopupMenu extends WCompositeWidget {
 	}
 
 	/**
-	 * Add an item with given text.
+	 * Adds an item with given text.
 	 * <p>
 	 * Adds an item to the menu with given text, and returns the corresponding
 	 * item object.
@@ -135,7 +139,7 @@ public class WPopupMenu extends WCompositeWidget {
 	}
 
 	/**
-	 * Add an item with given icon and text.
+	 * Adds an item with given icon and text.
 	 * <p>
 	 * Adds an item to the menu with given text and icon, and returns the
 	 * corresponding item object.
@@ -159,7 +163,7 @@ public class WPopupMenu extends WCompositeWidget {
 	// target, <pointertomember or dependentsizedarray> methodpointertomember or
 	// dependentsizedarray>) ;
 	/**
-	 * Add a submenu, with given text.
+	 * Adds a submenu, with given text.
 	 * <p>
 	 * Adds an item with text <code>text</code>, that leads to a submenu
 	 * <code>menu</code>.
@@ -172,7 +176,7 @@ public class WPopupMenu extends WCompositeWidget {
 	}
 
 	/**
-	 * Add a submenu, with given icon and text.
+	 * Adds a submenu, with given icon and text.
 	 * <p>
 	 * Adds an item with given text and icon, that leads to a submenu
 	 * <code>menu</code>.
@@ -188,16 +192,16 @@ public class WPopupMenu extends WCompositeWidget {
 	}
 
 	/**
-	 * Add a menu item.
+	 * Adds a menu item.
 	 * <p>
 	 * Adds an item to the popup menu.
 	 */
 	public void add(WPopupMenuItem item) {
-		this.impl_.addWidget(item);
+		this.getContents().addWidget(item);
 	}
 
 	/**
-	 * Add a separator to the menu.
+	 * Adds a separator to the menu.
 	 * <p>
 	 * Adds a separator the popup menu. The separator is an empty div with
 	 * style-class &quot;separator&quot;.
@@ -207,7 +211,7 @@ public class WPopupMenu extends WCompositeWidget {
 	}
 
 	/**
-	 * Show the the popup at a position.
+	 * Shows the the popup at a position.
 	 * <p>
 	 * Displays the popup at a point with document coordinates
 	 * <code>point</code>. The positions intelligent, and will chose one of the
@@ -218,25 +222,7 @@ public class WPopupMenu extends WCompositeWidget {
 	 * @see WPopupMenu#exec(WPoint p)
 	 */
 	public void popup(WPoint p) {
-		this.result_ = null;
-		WApplication app = WApplication.getInstance();
-		if (app.getRoot().escapePressed().isConnected()) {
-			app.getRoot().escapePressed().trigger();
-		}
-		this.globalClickConnection_ = app.getRoot().clicked().addListener(this,
-				new Signal1.Listener<WMouseEvent>() {
-					public void trigger(WMouseEvent e1) {
-						WPopupMenu.this.done();
-					}
-				});
-		this.globalEscapeConnection_ = app.getRoot().escapePressed()
-				.addListener(this, new Signal.Listener() {
-					public void trigger() {
-						WPopupMenu.this.done();
-					}
-				});
-		this.prepareRender(app);
-		this.show();
+		this.popupImpl();
 		WApplication.getInstance().doJavaScript(
 				"Wt3_1_0.positionXY('" + this.getId() + "',"
 						+ String.valueOf(p.getX()) + ","
@@ -244,7 +230,7 @@ public class WPopupMenu extends WCompositeWidget {
 	}
 
 	/**
-	 * Show the the popup at the location of a mouse event.
+	 * Shows the the popup at the location of a mouse event.
 	 * <p>
 	 * This is a convenience method for {@link WPopupMenu#popup(WPoint p)
 	 * popup()} that uses the event&apos;s document coordinates.
@@ -258,7 +244,28 @@ public class WPopupMenu extends WCompositeWidget {
 	}
 
 	/**
-	 * Execute the the popup at a position.
+	 * Shows the popup besides a widget.
+	 * <p>
+	 * 
+	 * @see WWidget#positionAt(WWidget widget, Orientation orientation)
+	 */
+	public void popup(WWidget location, Orientation orientation) {
+		this.popupImpl();
+		this.positionAt(location, orientation);
+	}
+
+	/**
+	 * Shows the popup besides a widget.
+	 * <p>
+	 * Calls {@link #popup(WWidget location, Orientation orientation)
+	 * popup(location, Orientation.Vertical)}
+	 */
+	public final void popup(WWidget location) {
+		popup(location, Orientation.Vertical);
+	}
+
+	/**
+	 * Executes the the popup at a position.
 	 * <p>
 	 * Displays the popup at a point with document coordinates <code>p</code>,
 	 * using {@link WPopupMenu#popup(WPoint p) popup()}, and the waits until a
@@ -285,7 +292,7 @@ public class WPopupMenu extends WCompositeWidget {
 	}
 
 	/**
-	 * Execute the the popup at the location of a mouse event.
+	 * Executes the the popup at the location of a mouse event.
 	 * <p>
 	 * This is a convenience method for {@link WPopupMenu#exec(WPoint p) exec()}
 	 * that uses the event&apos;s document coordinates.
@@ -295,6 +302,36 @@ public class WPopupMenu extends WCompositeWidget {
 	 */
 	public WPopupMenuItem exec(WMouseEvent e) {
 		return this.exec(new WPoint(e.getDocument().x, e.getDocument().y));
+	}
+
+	/**
+	 * Executes the popup besides a widget.
+	 * <p>
+	 * 
+	 * @see WWidget#positionAt(WWidget widget, Orientation orientation)
+	 */
+	public WPopupMenuItem exec(WWidget location, Orientation orientation) {
+		if (this.recursiveEventLoop_) {
+			throw new WtException(
+					"WPopupMenu::exec(): already in recursive event loop.");
+		}
+		WebSession session = WApplication.getInstance().getSession();
+		this.recursiveEventLoop_ = true;
+		this.popup(location, orientation);
+		do {
+			session.doRecursiveEventLoop();
+		} while (this.recursiveEventLoop_);
+		return this.result_;
+	}
+
+	/**
+	 * Executes the popup besides a widget.
+	 * <p>
+	 * Returns {@link #exec(WWidget location, Orientation orientation)
+	 * exec(location, Orientation.Vertical)}
+	 */
+	public final WPopupMenuItem exec(WWidget location) {
+		return exec(location, Orientation.Vertical);
 	}
 
 	/**
@@ -308,8 +345,9 @@ public class WPopupMenu extends WCompositeWidget {
 
 	public void setHidden(boolean hidden) {
 		super.setHidden(hidden);
-		for (int i = 0; i < this.impl_.getCount(); ++i) {
-			WPopupMenuItem item = ((this.impl_.getWidget(i)) instanceof WPopupMenuItem ? (WPopupMenuItem) (this.impl_
+		WContainerWidget c = this.getContents();
+		for (int i = 0; i < c.getCount(); ++i) {
+			WPopupMenuItem item = ((c.getWidget(i)) instanceof WPopupMenuItem ? (WPopupMenuItem) (c
 					.getWidget(i))
 					: null);
 			item.renderOut();
@@ -329,13 +367,19 @@ public class WPopupMenu extends WCompositeWidget {
 		return this.aboutToHide_;
 	}
 
-	private WContainerWidget impl_;
+	private WTemplate impl_;
 	WPopupMenuItem parentItem_;
 	private WPopupMenuItem result_;
 	private Signal aboutToHide_;
 	private AbstractSignal.Connection globalClickConnection_;
 	private AbstractSignal.Connection globalEscapeConnection_;
 	private boolean recursiveEventLoop_;
+
+	private WContainerWidget getContents() {
+		return ((this.impl_.resolveWidget("contents")) instanceof WContainerWidget ? (WContainerWidget) (this.impl_
+				.resolveWidget("contents"))
+				: null);
+	}
 
 	WPopupMenu getTopLevelMenu() {
 		return this.parentItem_ != null ? this.parentItem_.getTopLevelMenu()
@@ -357,17 +401,37 @@ public class WPopupMenu extends WCompositeWidget {
 		this.aboutToHide_.trigger();
 	}
 
-	void popup(WWidget location) {
+	private void popupImpl() {
+		this.result_ = null;
+		WApplication app = WApplication.getInstance();
+		if (app.getRoot().escapePressed().isConnected()) {
+			app.getRoot().escapePressed().trigger();
+		}
+		this.globalClickConnection_ = app.getRoot().clicked().addListener(this,
+				new Signal1.Listener<WMouseEvent>() {
+					public void trigger(WMouseEvent e1) {
+						WPopupMenu.this.done();
+					}
+				});
+		this.globalEscapeConnection_ = app.getRoot().escapePressed()
+				.addListener(this, new Signal.Listener() {
+					public void trigger() {
+						WPopupMenu.this.done();
+					}
+				});
+		this.prepareRender(app);
 		this.show();
-		WApplication.getInstance().doJavaScript(
-				"Wt3_1_0.positionAtWidget('" + this.getId() + "','"
-						+ location.getId() + "');");
+	}
+
+	void popupToo(WWidget location) {
+		this.show();
+		this.positionAt(location, Orientation.Horizontal);
 	}
 
 	private void prepareRender(WApplication app) {
 		if (app.getEnvironment().agentIsIE()) {
-			app.doJavaScript(this.getJsRef() + ".firstChild.style.width="
-					+ this.getJsRef() + ".firstChild.offsetWidth+'px';");
+			app.doJavaScript(this.getJsRef() + ".lastChild.style.width="
+					+ this.getJsRef() + ".lastChild.offsetWidth+'px';");
 		}
 	}
 }

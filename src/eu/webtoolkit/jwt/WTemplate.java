@@ -208,6 +208,8 @@ public class WTemplate extends WInteractWidget {
 			}
 		}
 		this.strings_.put(varName, v.toString());
+		this.changed_ = true;
+		this.repaint(EnumSet.of(RepaintFlag.RepaintInnerHtml));
 	}
 
 	/**
@@ -229,7 +231,8 @@ public class WTemplate extends WInteractWidget {
 	 *      textFormat)
 	 */
 	public void bindInt(String varName, int value) {
-		this.strings_.put(varName, String.valueOf(value));
+		this.bindString(varName, String.valueOf(value),
+				TextFormat.XHTMLUnsafeText);
 	}
 
 	/**
@@ -271,6 +274,7 @@ public class WTemplate extends WInteractWidget {
 		} else {
 			WWidget w = this.resolveWidget(varName);
 			if (w != null) {
+				w.setParent(this);
 				w.htmlText(result);
 			} else {
 				this.handleUnresolvedVariable(varName, args, result);
@@ -311,7 +315,30 @@ public class WTemplate extends WInteractWidget {
 	 * The default implementation returns a widget that was bound using
 	 * {@link WTemplate#bindWidget(String varName, WWidget widget) bindWidget()}.
 	 * <p>
-	 * You may want to reimplement this method to create widgets on-demand.
+	 * You may want to reimplement this method to create widgets on-demand. All
+	 * widgets that are returned by this method are reparented to the
+	 * {@link WTemplate}, so they will be deleted when the template is
+	 * destroyed, but they are not deleted by {@link WTemplate#clear() clear()}
+	 * (unless bind was called on them as in the example below).
+	 * <p>
+	 * This method is typically used for delayed binding of widgets. Usage
+	 * example: <blockquote>
+	 * 
+	 * <pre>
+	 * {
+	 *      if (Widget *known = WTemplate::resolveWidget(varName)) {
+	 *        return known;
+	 *      } else {
+	 *        if (varName == &quot;age-input&quot;) {
+	 *          WWidget *w = new WLineEdit(); // widget only created when used
+	 *          bind(varName, w);
+	 *          return w;
+	 *        }
+	 *      }
+	 *    }
+	 * </pre>
+	 * 
+	 * </blockquote>
 	 */
 	public WWidget resolveWidget(String varName) {
 		WWidget j = this.widgets_.get(varName);
@@ -343,6 +370,8 @@ public class WTemplate extends WInteractWidget {
 		this.setIgnoreChildRemoves(false);
 		this.widgets_.clear();
 		this.strings_.clear();
+		this.changed_ = true;
+		this.repaint(EnumSet.of(RepaintFlag.RepaintInnerHtml));
 	}
 
 	/**
@@ -384,7 +413,8 @@ public class WTemplate extends WInteractWidget {
 				} else {
 					if (text.charAt(pos + 1) == '{') {
 						int startName = pos + 2;
-						int endName = text.indexOf(" \r\n\t}", startName);
+						int endName = StringUtils.findFirstOf(text, " \r\n\t}",
+								startName);
 						int endVar = text.indexOf('}', endName);
 						if (endName == -1 || endVar == -1) {
 							throw new RuntimeException(

@@ -268,6 +268,10 @@ public class WCompositeWidget extends WWidget {
 		this.impl_.setJavaScriptMember(name, value);
 	}
 
+	public void callJavaScriptMember(String name, String args) {
+		this.impl_.callJavaScriptMember(name, args);
+	}
+
 	public void load() {
 		if (this.impl_ != null) {
 			this.impl_.load();

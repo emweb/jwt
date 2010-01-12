@@ -67,17 +67,25 @@
 }
 
 .Wt-cal table {
-    border-left: 1px solid #A2ADBC;
+    border-left: 1px solid #727D9C;
     font: normal 13px/22px "Trebuchet MS", Verdana, Arial, Helvetica,
       sans-serif;
-    color: #616B76;
+    color: #515B66;
     text-align: center;
     background-color: #fff;
     border-collapse: separate;
 }
 
+.Wt-cal table.d1 {
+    width: 150px;
+}
+
 .Wt-cal table.d1 td {
     width: 20px;
+}
+
+.Wt-cal table.d3 {
+    width: 220px;
 }
 
 .Wt-cal table.d3 td {
@@ -87,7 +95,7 @@
 .Wt-cal caption {
     margin: 0;
     padding: 0;
-    background: #A2ADBC;
+    background: #727D9C url(title-gradient.png) repeat-x scroll 0 -20px;
     color: #fff;
     font: bold 13px "Trebuchet MS", Verdana, Arial, Helvetica, sans-serif;
     text-align: center;
@@ -111,26 +119,27 @@
 }
 
 .Wt-cal-year span {
-    padding: 2px 2px;
+    padding: 1px 2px;
 }
 
 .Wt-cal-year span:hover {
-    background-color: #727D8C;
+    color: #727D9C;
+    background-color: #F0F0F0;
 }
 
 .Wt-cal th {
     font: bold 12px/22px "Trebuchet MS", Verdana, Arial, Helvetica, sans-serif;
-    color: #616B76;
+    color: #515B66;
     background: #D9E2E1;
-    border-right: 1px solid #A2ADBC;
-    border-bottom: 1px solid #A2ADBC;
-    border-top: 1px solid #A2ADBC;
+    border-right: 1px solid #727D9C;
+    border-bottom: 1px solid #727D9C;
+    border-top: 1px solid #727D9C;
     cursor: default;
 }
 
 .Wt-cal td {
-    border-right: 1px solid #A2ADBC;
-    border-bottom: 1px solid #A2ADBC;
+    border-right: 1px solid #727D9C;
+    border-bottom: 1px solid #727D9C;
     text-align: center;
     background: url(images/bg_calendar.gif) no-repeat right bottom;
     cursor: default;
@@ -154,7 +163,7 @@
  * WDatePicker
  */
 .Wt-popup {
-    margin: 0px;
+    background-color: white;
 }
 
 /*
@@ -165,8 +174,8 @@
 }
 
 .Wt-dialog .titlebar {
-    /* background: transparent url(border-dialog.png) repeat-x scroll 0 0; */
-    background: #A2ADBC; color: #FFFFFF;
+    color: #FFFFFF;
+    background: #727D9C url(title-gradient.png) repeat-x scroll 0 -20px;
     cursor: move;
     font: bold 12px Verdana;
     padding: 3px 6px;
@@ -188,25 +197,28 @@
 }
 
 .Wt-panel .titlebar {
-  background: #A2ADBC; color: #FFFFFF;
-  font: bold 12px Verdana;
-  padding: 3px 6px;
-  cursor: default;
+    color: #FFFFFF;
+    background: #727D9C url(title-gradient.png) repeat-x scroll 0 -20px;
+    font: bold 12px Verdana;
+    padding: 3px 6px;
+    cursor: default;
 }
 
 .Wt-panel .body {
-  padding: 4px 6px;
+    padding: 4px 6px;
 }
 
 /*
  * WPopupMenu
  */
 .Wt-popupmenu {
-    background: white;
-    color: black;
-    border: 1px solid #666666;
+    background: #FAFAFA;
+    font: normal 13px/22px "Trebuchet MS", Verdana, Arial, Helvetica,
+      sans-serif;
+    color: #515B66;
     z-index: 200;
     cursor: default;
+    white-space: nowrap;
 }
 
 .Wt-popupmenu .Wt-item, .Wt-popupmenu .Wt-selected {
@@ -214,7 +226,7 @@
 }
 
 .Wt-popupmenu .Wt-selected {
-    background: blue;
+    background: #727D9C;
     color: white;
 }
 
@@ -222,6 +234,7 @@
     border-top: 1px solid #CCCCCC;
     border-bottom: 1px solid #DDDDDD;
     margin: 0px 3px;
+    line-height: 0px;
 }
 
 /*
@@ -232,7 +245,7 @@
 }
 
 .Wt-btn {
-    background: transparent url(border.png) repeat-x scroll 0 0;
+    background: transparent url(gradient.png) repeat-x scroll 0 0;
     border: 1px outset #CCCCCC;
     cursor: pointer;
     font-size: small;
@@ -266,9 +279,9 @@
     margin-right: 3px;
     border: 1px solid gray;
     border-bottom: none;
-    background-color: #eeeeee;
-    background: transparent url(border.png) repeat-x scroll 0 0;
-    color: #2d2b2b;
+    color: #FFFFFF;
+    background-color: #727D9C;
+    background: url(title-gradient.png) repeat-x scroll 0 -20px;
 }
 
 .Wt-tabs li a:hover{
@@ -298,13 +311,17 @@
 }
 
 /* header */
-.Wt-treeview .Wt-headerdiv {
-    background: transparent url(border.png) repeat-x scroll 0 0;
+.Wt-treeview .Wt-headerdiv, .Wt-treeview .Wt-headerdiv .Wt-tv-rowc {
+    background: #727D9C url(title-gradient.png) repeat-x scroll 0 -20px;
+    color: white;
+}
+
+.Wt-treeview .Wt-headerdiv .background {
+    background-color: #FFFFFF;
 }
 
 .Wt-treeview .Wt-header .Wt-label {
     white-space: normal;
-    font-weight: bold;
     text-overflow: ellipsis;
     overflow: hidden;
 }
@@ -314,15 +331,15 @@
 }
 
 .Wt-treeview .Wt-tv-sh-none {
-    background: url(../../sort-arrow-none.gif) no-repeat 0 center;
+    background: url(sort-arrow-none.gif) no-repeat 0 6px;
 }
 
 .Wt-treeview .Wt-tv-sh-up {
-    background: url(../../sort-arrow-up.gif) no-repeat 0 center;
+    background: url(sort-arrow-up.gif) no-repeat 0 6px;
 }
 
 .Wt-treeview .Wt-tv-sh-down {
-    background: url(../../sort-arrow-down.gif) no-repeat 0 center;
+    background: url(sort-arrow-down.gif) no-repeat 0 6px;
 }
 
 /* nodes */
@@ -362,12 +379,21 @@
 }
 
 /* borders */
-.Wt-treeview .Wt-tv-br,
-.Wt-treeview .Wt-tv-node .Wt-tv-row .Wt-tv-c {
-    border-right: 1px solid transparent;
+.Wt-treeview .Wt-tv-br {
+    border-right: 1px solid #525D9C;
 }
 
-.Wt-treeview .Wt-header .Wt-tv-row,
+.Wt-treeview .Wt-header .Wt-tv-row {
+    border-left: 1px solid #525D9C;
+}
+
+/* borders */
+.Wt-treeview .Wt-tv-node .Wt-tv-row .Wt-tv-c {
+    border-right: 0px solid black;
+    margin-right: 1px;
+}
+
 .Wt-treeview .Wt-tv-node .Wt-tv-row {
-    border-left: 1px solid transparent;
+    border-left: 0px solid black;
+    margin-left: 1px;
 }

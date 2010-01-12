@@ -17,7 +17,5 @@
 }
 
 .Wt-treeview .Wt-collapse {
-    width: 19px;
-    height: 18px;
     background: url(nav-minus.gif) no-repeat 0 center;
 }

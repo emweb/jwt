@@ -225,7 +225,7 @@ public class WTreeView extends WCompositeWidget {
 					.getStyleSheet()
 					.addRule(
 							".Wt-treeview .Wt-headerdiv",
-							"-moz-user-select: none;-khtml-user-select: none;user-select: none;background-color: #EEEEEE;overflow: hidden;width: 100%;",
+							"-moz-user-select: none;-khtml-user-select: none;user-select: none;overflow: hidden;width: 100%;",
 							CSS_RULES_NAME);
 			if (app.getEnvironment().agentIsIE()) {
 				app.getStyleSheet().addRule(
@@ -272,12 +272,9 @@ public class WTreeView extends WCompositeWidget {
 			app
 					.getStyleSheet()
 					.addRule(".Wt-treeview .Wt-tv-sh",
-							"float: right; width: 16px; margin-top: 6px; cursor: pointer; cursor:hand;");
-			app
-					.getStyleSheet()
-					.addRule(
-							".Wt-treeview .Wt-tv-sh-nrh",
-							"float: right; width: 16px; margin-top: 6px; margin-right: 4px; cursor: pointer; cursor:hand;");
+							"float: right; width: 16px; padding-bottom: 6px;cursor: pointer; cursor:hand;");
+			app.getStyleSheet().addRule(".Wt-treeview .Wt-tv-sh-nrh",
+					"float: right; width: 16px; cursor: pointer; cursor:hand;");
 			app
 					.getStyleSheet()
 					.addRule(
@@ -293,19 +290,13 @@ public class WTreeView extends WCompositeWidget {
 					.addRule(
 							".Wt-treeview .Wt-tv-sh",
 							""
-									+ "float: right; width: 16px; height: 10px;"
-									+ (app.getEnvironment().getAgent() != WEnvironment.UserAgent.IE6 ? "margin-top: 6px;"
-											: "")
-									+ "cursor: pointer; cursor:hand;");
+									+ "float: right; width: 16px; height: 10px;cursor: pointer; cursor:hand;");
 			app
 					.getStyleSheet()
 					.addRule(
 							".Wt-treeview .Wt-tv-sh-nrh",
 							""
-									+ "float: right; width: 16px; height: 10px;"
-									+ (app.getEnvironment().getAgent() != WEnvironment.UserAgent.IE6 ? "margin-top: 6px;"
-											: "")
-									+ "margin-right: 4px;cursor: pointer; cursor:hand;");
+									+ "float: right; width: 16px; height: 10px;cursor: pointer; cursor:hand;");
 			app.getStyleSheet().addRule(".Wt-treeview .Wt-tv-shc0",
 					"float: left;");
 			if (app.getEnvironment().agentIsWebKit()
@@ -315,10 +306,10 @@ public class WTreeView extends WCompositeWidget {
 			}
 			if (app.getEnvironment().agentIsIE()) {
 				app.getStyleSheet().addRule(".Wt-treeview .Wt-scroll",
-						"position: absolute; overflow-x: scroll;height: 19px;");
+						"position: absolute; overflow-x: auto;height: 19px;");
 			} else {
 				app.getStyleSheet().addRule(".Wt-treeview .Wt-scroll",
-						"overflow: scroll;height: 19px;");
+						"overflow: auto;height: 19px;");
 			}
 			app.getStyleSheet().addRule(".Wt-treeview .Wt-scroll div",
 					"height: 1px;");
@@ -449,9 +440,11 @@ public class WTreeView extends WCompositeWidget {
 							+ " .Wt-tv-rowc').style.left= -obj.scrollLeft + 'px';}");
 		} else {
 			this.tieRowsScrollJS_
-					.setJavaScript("function(obj, event) {var c =Wt3_1_0.getElementsByClassName('Wt-tv-rowc', "
-							+ this.getJsRef()
-							+ ");for (var i = 0, length = c.length; i < length; ++i) {var cc=c[i];if (cc.parentNode.scrollLeft != obj.scrollLeft)cc.parentNode.scrollLeft=obj.scrollLeft;}}");
+					.setJavaScript("function(obj, event) {obj.parentNode.style.width = Wt3_1_0.getCssRule('#"
+							+ this.getId()
+							+ " .cwidth').style.width;$('#"
+							+ this.getId()
+							+ " .Wt-tv-rowc').parent().scrollLeft(obj.scrollLeft);}");
 		}
 		app
 				.addAutoJavaScript("{var e="
@@ -460,15 +453,18 @@ public class WTreeView extends WCompositeWidget {
 						+ this.getJsRef()
 						+ ";var WT=Wt3_1_0;if (e) {var tw=s.offsetWidth-WT.px(s, 'borderLeftWidth')-WT.px(s, 'borderRightWidth'),vscroll=e.scrollHeight > e.offsetHeight;c0w = null;if (s.className.indexOf('column1') != -1)  c0w = WT.pxself(WT.getCssRule('#"
 						+ this.getId()
-						+ " .c0w'), 'width');if (tw > 200 && (tw != e.tw || vscroll != e.vscroll || c0w != e.c0w)) {e.vscroll = vscroll;e.tw = tw;e.c0w = c0w;var h= "
+						+ " .c0w'), 'width');if (tw > 200 && (tw != e.tw || vscroll != e.vscroll || c0w != e.c0w|| s.changed)) {s.changed = false;e.vscroll = vscroll;e.tw = tw;e.c0w = c0w;var h= "
 						+ this.headers_.getJsRef()
 						+ ",hh=h.firstChild,t="
 						+ this.contents_.getJsRef()
 						+ ".firstChild,r= WT.getCssRule('#"
 						+ this.getId()
-						+ " .cwidth'),contentstoo=(r.style.width == h.style.width);r.style.width=(tw - (vscroll ? 19 : 0)) + 'px';e.style.width=tw + 'px';h.style.width=t.offsetWidth + 'px';if (c0w != null) {var hh=h.firstChild,w=tw - c0w - (vscroll ? 19 : 0);if (w > 0) {WT.getCssRule('#"
+						+ " .cwidth'),contentstoo=(r.style.width == h.style.width);r.style.width=(tw - (vscroll ? 19 : 0)) + 'px';e.style.width=tw + 'px';h.style.width=t.offsetWidth + 'px';if (c0w != null) {var hh=h.firstChild,w=tw - c0w - (vscroll ? 19 : 0);if (w > 0) {var sel = '#"
 						+ this.getId()
-						+ " .Wt-tv-row').style.width = w + 'px';var extra = hh.childNodes.length > 1? (hh.childNodes[1].className.indexOf('Wt-tv-sh') != -1 ? 22 : 7) : 0;hh.style.width= (w + extra) + 'px';}} else if (contentstoo) {h.style.width=r.style.width;t.style.width=r.style.width;}if (s.adjustHeaderWidth)s.adjustHeaderWidth(1, 0);}}}");
+						+ " .Wt-tv-row';WT.getCssRule(sel).style.width = w + 'px';$(sel).css('width', w + 'px').css('width', null);var extra = hh.childNodes.length > 1? (hh.childNodes[1].className.indexOf('Wt-tv-sh') != -1 ? 21 : 6) : 0;"
+						+ (app.getEnvironment().getAgent() == WEnvironment.UserAgent.IE6 ? "extra += 1;"
+								: "")
+						+ "hh.style.width= (w + extra) + 'px';}} else if (contentstoo) {h.style.width=r.style.width;t.style.width=r.style.width;}if (s.adjustHeaderWidth)s.adjustHeaderWidth(1, 0);}}}");
 		if (parent != null) {
 			parent.addWidget(this);
 		}
@@ -1405,6 +1401,8 @@ public class WTreeView extends WCompositeWidget {
 				scrollBar.setAttributeValue("style", "left: 0px;");
 			}
 			this.impl_.getLayout().addWidget(scrollBarContainer);
+			app.addAutoJavaScript("{var s=" + this.scrollBarC_.getJsRef()
+					+ ";if (s) " + this.tieRowsScrollJS_.execJs("s") + "}");
 		}
 	}
 
@@ -1573,18 +1571,17 @@ public class WTreeView extends WCompositeWidget {
 		} else {
 			columnsWidth += "var r = WT.getCssRule('#"
 					+ this.getId()
-					+ " '+ (c ? '.Wt-tv-rowc' : '.c0w'));totalw += 'px';if (c) {r.style.width = totalw;"
-					+ (app.getEnvironment().agentIsIE() ? "var c =Wt3_1_0.getElementsByClassName('Wt-tv-rowc', "
-							+ this.getJsRef()
-							+ ");for (var i = 0, length = c.length; i < length; ++i) {var cc=c[i];cc.style.width = totalw;}"
-							: "")
-					+ "} else {r.style.width = (WT.pxself(r, 'width') + diffx) + 'px';"
+					+ " '+ (c ? '.Wt-tv-rowc' : '.c0w'));totalw += 'px';if (c) {r.style.width = totalw;$('#"
+					+ this.getId()
+					+ " .Wt-tv-rowc').css('width', totalw).css('width', null);} else {r.style.width = (WT.pxself(r, 'width') + diffx) + 'px';"
 					+ app.getJavaScriptClass() + "._p_.autoJavaScript();}";
 		}
-		app.doJavaScript(this.getJsRef()
-				+ ".adjustHeaderWidth=function(c, diffx) {if ("
-				+ this.contentsContainer_.getJsRef() + ") {" + columnsWidth
-				+ "}};");
+		app
+				.doJavaScript(this.getJsRef()
+						+ ".adjustHeaderWidth=function(c, diffx) {if (c === undefined) {"
+						+ this.getJsRef() + ".changed=true; c=1; diffx=0;}if ("
+						+ this.contentsContainer_.getJsRef() + ") {"
+						+ columnsWidth + "}};");
 		app
 				.doJavaScript(this.getJsRef()
 						+ ".handleDragDrop=function(action, object, event, sourceId, mimeType) {var self="
@@ -1852,10 +1849,12 @@ public class WTreeView extends WCompositeWidget {
 		WContainerWidget rowc = new WContainerWidget(this.headers_);
 		rowc.setFloatSide(Side.Right);
 		WContainerWidget row = new WContainerWidget(rowc);
-		row.setStyleClass("Wt-tv-row headerrh");
 		if (this.column1Fixed_) {
+			row.setStyleClass("Wt-tv-row headerrh background");
 			row = new WContainerWidget(row);
-			row.setStyleClass("Wt-tv-rowc");
+			row.setStyleClass("Wt-tv-rowc headerrh");
+		} else {
+			row.setStyleClass("Wt-tv-row");
 		}
 		if (this.columnInfo(0).sorting) {
 			WText sortIcon = new WText(rowc);
@@ -1863,9 +1862,6 @@ public class WTreeView extends WCompositeWidget {
 			sortIcon.setInline(false);
 			if (!this.columnResize_) {
 				sortIcon.setMargin(new WLength(4), EnumSet.of(Side.Right));
-			}
-			if (!app.getEnvironment().agentIsIE()) {
-				sortIcon.setMargin(new WLength(6), EnumSet.of(Side.Top));
 			}
 			sortIcon.setFloatSide(Side.Left);
 			sortIcon.setStyleClass("Wt-tv-sh Wt-tv-sh-none");
@@ -1909,6 +1905,7 @@ public class WTreeView extends WCompositeWidget {
 					order == SortOrder.AscendingOrder ? "Wt-tv-sh Wt-tv-sh-up"
 							: "Wt-tv-sh Wt-tv-sh-down");
 		}
+		app.doJavaScript(this.getJsRef() + ".adjustHeaderWidth();");
 		if (this.model_ != null) {
 			this.modelHeaderDataChanged(Orientation.Horizontal, 0, this
 					.getColumnCount() - 1);
@@ -1974,10 +1971,14 @@ public class WTreeView extends WCompositeWidget {
 					for (int i = start; i < start + count; ++i) {
 						newWidth += this.columns_.get(i).width.toPixels() + 7;
 					}
-					app.doJavaScript(this.getJsRef()
-							+ ".adjustHeaderWidth(null, "
-							+ (this.column1Fixed_ ? "1" : String
-									.valueOf(newWidth)) + ");");
+					if (this.column1Fixed_) {
+						app.doJavaScript(this.getJsRef()
+								+ ".adjustHeaderWidth();");
+					} else {
+						app.doJavaScript(this.getJsRef()
+								+ ".adjustHeaderWidth(null, "
+								+ String.valueOf(newWidth) + ");");
+					}
 					WContainerWidget row = this.getHeaderRow();
 					for (int i = start; i < start + count; ++i) {
 						row
@@ -2027,8 +2028,7 @@ public class WTreeView extends WCompositeWidget {
 					}
 				}
 				if (this.column1Fixed_) {
-					app.doJavaScript(this.getJsRef()
-							+ ".adjustHeaderWidth(1, 0);");
+					app.doJavaScript(this.getJsRef() + ".adjustHeaderWidth();");
 				}
 			}
 			for (int ii = 0; ii < (0 + start + count) - (0 + start); ++ii)
@@ -2071,6 +2071,9 @@ public class WTreeView extends WCompositeWidget {
 					}
 				}
 			}
+		}
+		if (start <= this.currentSortColumn_ && this.currentSortColumn_ <= end) {
+			this.currentSortColumn_ = -1;
 		}
 	}
 
@@ -2436,7 +2439,9 @@ public class WTreeView extends WCompositeWidget {
 		}
 		if (this.alternatingRowColors_) {
 			this.rootNode_.getDecorationStyle().setBackgroundImage(
-					WApplication.getResourcesUrl() + "stripes/stripe-"
+					WApplication.getResourcesUrl() + "themes/"
+							+ WApplication.getInstance().getCssTheme()
+							+ "/stripes/stripe-"
 							+ String.valueOf((int) this.rowHeight_.toPixels())
 							+ "px.gif");
 		} else {
@@ -2565,6 +2570,7 @@ public class WTreeView extends WCompositeWidget {
 	}
 
 	private void adjustToViewport(WTreeViewNode changed) {
+		assert this.rootNode_.getRowCount() == 1;
 		this.firstRenderedRow_ = Math.max(0, this.firstRenderedRow_);
 		this.validRowCount_ = Math.max(0, Math.min(this.validRowCount_,
 				this.rootNode_.getRenderedHeight() - this.firstRenderedRow_));
@@ -2574,6 +2580,7 @@ public class WTreeView extends WCompositeWidget {
 				- this.viewportHeight_
 				|| viewportBottom < lastValidRow + this.viewportHeight_;
 		boolean pruneFirst = false;
+		assert this.rootNode_.getRowCount() == 1;
 		if (renderMore) {
 			int newFirstRenderedRow = Math.min(this.firstRenderedRow_, this
 					.getCalcOptimalFirstRenderedRow());
@@ -2581,6 +2588,7 @@ public class WTreeView extends WCompositeWidget {
 					this.rootNode_.getRenderedHeight(), this
 							.getCalcOptimalFirstRenderedRow()
 							+ this.getCalcOptimalRenderedRowCount()));
+			assert this.rootNode_.getRowCount() == 1;
 			int newValidRowCount = newLastValidRow - newFirstRenderedRow;
 			int newRows = Math.max(0, this.firstRenderedRow_
 					- newFirstRenderedRow)
@@ -2607,9 +2615,7 @@ public class WTreeView extends WCompositeWidget {
 				this.adjustRenderedNode(this.rootNode_, 0);
 			}
 		}
-		if (this.column1Fixed_) {
-			this.tieRowsScrollJS_.exec(this.scrollBarC_.getJsRef());
-		}
+		assert this.rootNode_.getRowCount() == 1;
 	}
 
 	private final void adjustToViewport() {
@@ -2690,6 +2696,7 @@ public class WTreeView extends WCompositeWidget {
 	}
 
 	int adjustRenderedNode(WTreeViewNode node, int theNodeRow) {
+		assert this.rootNode_.getRowCount() == 1;
 		WModelIndex index = node.getModelIndex();
 		if (!(index == this.rootIndex_ || (index != null && index
 				.equals(this.rootIndex_)))) {
@@ -2715,8 +2722,10 @@ public class WTreeView extends WCompositeWidget {
 							node.setTopSpacerHeight(rowStubs);
 							rowStubs = 0;
 						}
+						assert this.rootNode_.getRowCount() == 1;
 						WTreeViewNode n = new WTreeViewNode(this, childIndex,
 								childHeight - 1, i == childCount - 1, node);
+						assert this.rootNode_.getRowCount() == 1;
 						node.getChildContainer().addWidget(n);
 						int nestedNodeRow = nodeRow;
 						nestedNodeRow = this.adjustRenderedNode(n,
@@ -2783,6 +2792,7 @@ public class WTreeView extends WCompositeWidget {
 			}
 			nodeRow += nch;
 		}
+		assert this.rootNode_.getRowCount() == 1;
 		return this.isExpanded(index) ? nodeRow : theNodeRow;
 	}
 

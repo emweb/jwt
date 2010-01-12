@@ -50,6 +50,8 @@ class FileServe {
 						int _pos = currentVar.indexOf('_');
 						String fname = _pos == -1 ? currentVar.substring(1) : currentVar.substring(1, _pos);
 
+						currentPos_ += 2; // skip ()
+						
 						if (fname.equals("endif")) {
 							if (noMatchConditions > 0)
 								--noMatchConditions;

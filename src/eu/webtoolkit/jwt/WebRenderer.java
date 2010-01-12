@@ -272,11 +272,14 @@ class WebRenderer implements SlotLearnerInterface {
 		final boolean innerHtml = !xhtml || app.getEnvironment().agentIsGecko();
 		this.formObjectsChanged_ = true;
 		this.currentFormObjectsList_ = this.createFormObjectsList(app);
+		FileServe jquery = new FileServe(WtServlet.JQuery_js);
+		jquery.stream(response.out());
 		FileServe script = new FileServe(WtServlet.Wt_js);
 		script.setCondition("DEBUG", conf.isDebug());
 		script.setVar("WT_CLASS", "Wt3_1_0");
 		script.setVar("APP_CLASS", app.getJavaScriptClass());
-		script.setVar("AUTO_JAVASCRIPT", app.autoJavaScript_);
+		script.setVar("AUTO_JAVASCRIPT", "(function() {" + app.autoJavaScript_
+				+ "})");
 		script.setCondition("STRICTLY_SERIALIZED_EVENTS", conf
 				.isSerializedEvents());
 		script.setVar("INNER_HTML", innerHtml);
@@ -292,7 +295,8 @@ class WebRenderer implements SlotLearnerInterface {
 		script
 				.setVar("SERVER_PUSH_TIMEOUT",
 						conf.getServerPushTimeout() * 1000);
-		script.setVar("ONLOAD", widgetset ? "" : "window.loadWidgetTree();");
+		script.setVar("ONLOAD", "(function() {"
+				+ (widgetset ? "" : "window.loadWidgetTree();") + "})");
 		script.stream(response.out());
 		app.autoJavaScriptChanged_ = false;
 		this.streamCommJs(app, response.out());
