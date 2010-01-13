@@ -74,25 +74,47 @@ import eu.webtoolkit.jwt.utils.EnumUtils;
  * You may customize the look of a treeview using the <code>Wt-treeview</code>
  * CSS class.
  * <p>
- * The following rules may be used to style the header: <div
- * class="fragment"><pre class="fragment"> .Wt-treeview .Wt-headerdiv : header
- * (background) .Wt-treeview .Wt-header .Wt-label : header label .Wt-treeview
- * .Wt-tv-rh : column resize handle .Wt-treeview .Wt-tv-sh-none : column sort
- * handle, no sorting .Wt-treeview .Wt-tv-sh-up : column sort handle, sort up
- * .Wt-treeview .Wt-tv-sh-down : column sort handle, sort down </pre></div> The
- * following rules may be used to style the tree decoration: <div
- * class="fragment"><pre class="fragment"> .Wt-treeview .Wt-trunk : vertical
- * line, trunk .Wt-treeview .Wt-end : vertical line, last item .Wt-treeview
- * .Wt-collapse : collapse icon .Wt-treeview .Wt-expand : expand icon
- * .Wt-treeview .Wt-noexpand : leaf icon </pre></div> The following rules may be
- * used to style the table contents: <div class="fragment"><pre
- * class="fragment"> .Wt-treeview .Wt-spacer : spacer for non-loaded content
- * .Wt-treeview .Wt-selected : selected item .Wt-treeview .Wt-drop-site :
- * possible drop site </pre></div> The following rules may be used to style the
- * cell border (which must be 1 pixel wide) <div class="fragment"><pre
- * class="fragment"> .Wt-treeview .Wt-tv-row .Wt-tv-c : border-right property of
- * cells .Wt-treeview .Wt-header .Wt-tv-row, .Wt-treeview .Wt-tv-node .Wt-tv-row
- * : border-left property of cells </pre></div>
+ * The following rules may be used to style the header: <div class="fragment">
+ * 
+ * <pre class="fragment">
+ * .Wt-treeview .Wt-headerdiv         : header (background)
+ * .Wt-treeview .Wt-header .Wt-label  : header label
+ * .Wt-treeview .Wt-tv-rh             : column resize handle
+ * .Wt-treeview .Wt-tv-sh-none        : column sort handle, no sorting
+ * .Wt-treeview .Wt-tv-sh-up          : column sort handle, sort up
+ * .Wt-treeview .Wt-tv-sh-down        : column sort handle, sort down
+ * </pre>
+ * 
+ * </div> The following rules may be used to style the tree decoration: <div
+ * class="fragment">
+ * 
+ * <pre class="fragment">
+ * .Wt-treeview .Wt-trunk          : vertical line, trunk
+ * .Wt-treeview .Wt-end            : vertical line, last item
+ * .Wt-treeview .Wt-collapse       : collapse icon
+ * .Wt-treeview .Wt-expand         : expand icon
+ * .Wt-treeview .Wt-noexpand       : leaf icon
+ * </pre>
+ * 
+ * </div> The following rules may be used to style the table contents: <div
+ * class="fragment">
+ * 
+ * <pre class="fragment">
+ * .Wt-treeview .Wt-spacer         : spacer for non-loaded content
+ * .Wt-treeview .Wt-selected       : selected item
+ * .Wt-treeview .Wt-drop-site      : possible drop site
+ * </pre>
+ * 
+ * </div> The following rules may be used to style the cell border (which must
+ * be 1 pixel wide) <div class="fragment">
+ * 
+ * <pre class="fragment">
+ * .Wt-treeview .Wt-tv-row .Wt-tv-c      : border-right property of cells
+ * .Wt-treeview .Wt-header .Wt-tv-row,
+ *   .Wt-treeview .Wt-tv-node .Wt-tv-row : border-left property of cells
+ * </pre>
+ * 
+ * </div>
  */
 public class WTreeView extends WCompositeWidget {
 	/**

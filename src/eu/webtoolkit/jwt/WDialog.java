@@ -54,8 +54,14 @@ package eu.webtoolkit.jwt;
  * classes. The look can be overridden using the following style class
  * selectors:
  * <p>
- * <div class="fragment"><pre class="fragment"> .Wt-dialog .titlebar : The title
- * bar .Wt-dialog .body : The body (requires vertical padding 4px). </pre></div>
+ * <div class="fragment">
+ * 
+ * <pre class="fragment">
+ * .Wt-dialog .titlebar : The title bar
+ *  .Wt-dialog .body     : The body (requires vertical padding 4px).
+ * </pre>
+ * 
+ * </div>
  */
 public class WDialog extends WCompositeWidget {
 	/**
