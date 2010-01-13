@@ -48,6 +48,7 @@ class DomElement {
 		this.properties_ = new HashMap<Property, String>();
 		this.eventHandlers_ = new HashMap<String, DomElement.EventHandler>();
 		this.childrenToAdd_ = new ArrayList<DomElement.ChildInsertion>();
+		this.childrenToSave_ = new ArrayList<String>();
 		this.childrenHtml_ = null;
 		this.timeouts_ = new ArrayList<DomElement.TimeoutEvent>();
 		this.discardWithParent_ = true;
@@ -137,6 +138,10 @@ class DomElement {
 		child.javaScriptEvenWhenDeleted_ = "";
 		child.javaScript_ = "";
 		this.childrenToAdd_.add(new DomElement.ChildInsertion(pos, child));
+	}
+
+	public void saveChild(String id) {
+		this.childrenToSave_.add(id);
 	}
 
 	public void setAttribute(String attribute, String value) {
@@ -464,6 +469,12 @@ class DomElement {
 					return this.var_;
 				}
 			}
+			for (int i = 0; i < this.childrenToSave_.size(); ++i) {
+				this.declare(out);
+				out.append("var c").append(this.var_).append((int) i).append(
+						'=').append("$('#").append(this.childrenToSave_.get(i))
+						.append("');");
+			}
 			if (this.mode_ != DomElement.Mode.ModeCreate) {
 				this.setJavaScriptProperties(out, app);
 				this.setJavaScriptAttributes(out);
@@ -488,6 +499,11 @@ class DomElement {
 				}
 			}
 			this.renderInnerHtmlJS(out, app);
+			for (int i = 0; i < this.childrenToSave_.size(); ++i) {
+				out.append("$('#").append(this.childrenToSave_.get(i)).append(
+						"').replaceWith(c").append(this.var_).append((int) i)
+						.append(");");
+			}
 			return this.var_;
 		}
 		}
@@ -1355,6 +1371,7 @@ class DomElement {
 	}
 
 	private List<DomElement.ChildInsertion> childrenToAdd_;
+	private List<String> childrenToSave_;
 	private StringWriter childrenHtml_;
 	private List<DomElement.TimeoutEvent> timeouts_;
 	private boolean discardWithParent_;

@@ -11,6 +11,7 @@ import java.io.Writer;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -275,7 +276,14 @@ public class WTemplate extends WInteractWidget {
 			WWidget w = this.resolveWidget(varName);
 			if (w != null) {
 				w.setParent(this);
-				w.htmlText(result);
+				if (this.previouslyRendered_ != null
+						&& this.previouslyRendered_.contains(w) != false) {
+					result.append("<span id=\"").append(w.getId()).append(
+							"\"></span>");
+				} else {
+					w.htmlText(result);
+				}
+				this.newlyRendered_.add(w);
 			} else {
 				this.handleUnresolvedVariable(varName, args, result);
 			}
@@ -443,11 +451,43 @@ public class WTemplate extends WInteractWidget {
 	void updateDom(DomElement element, boolean all) {
 		try {
 			if (this.changed_ || all) {
-				StringWriter resolved = new StringWriter();
-				this.renderTemplate(resolved);
-				element.setProperty(Property.PropertyInnerHTML, resolved
-						.toString());
+				Set<WWidget> previouslyRendered = new HashSet<WWidget>();
+				List<WWidget> newlyRendered = new ArrayList<WWidget>();
+				for (Iterator<Map.Entry<String, WWidget>> i_it = this.widgets_
+						.entrySet().iterator(); i_it.hasNext();) {
+					Map.Entry<String, WWidget> i = i_it.next();
+					WWidget w = i.getValue();
+					if (w.isRendered()) {
+						previouslyRendered.add(w);
+					}
+				}
+				boolean saveWidgets = element.getMode() == DomElement.Mode.ModeUpdate;
+				this.previouslyRendered_ = saveWidgets ? previouslyRendered
+						: null;
+				this.newlyRendered_ = newlyRendered;
+				StringWriter html = new StringWriter();
+				this.renderTemplate(html);
+				this.previouslyRendered_ = null;
+				this.newlyRendered_ = null;
+				for (int i = 0; i < newlyRendered.size(); ++i) {
+					WWidget w = newlyRendered.get(i);
+					if (previouslyRendered.contains(w) != false) {
+						if (saveWidgets) {
+							element.saveChild(w.getId());
+						}
+						previouslyRendered.remove(w);
+					}
+				}
+				element
+						.setProperty(Property.PropertyInnerHTML, html
+								.toString());
 				this.changed_ = false;
+				for (Iterator<WWidget> i_it = previouslyRendered.iterator(); i_it
+						.hasNext();) {
+					WWidget i = i_it.next();
+					WWidget w = i;
+					w.getWebWidget().setRendered(false);
+				}
 			}
 			super.updateDom(element, all);
 		} catch (IOException ioe) {
@@ -524,6 +564,8 @@ public class WTemplate extends WInteractWidget {
 		format(result, s, TextFormat.PlainText);
 	}
 
+	private Set<WWidget> previouslyRendered_;
+	private List<WWidget> newlyRendered_;
 	private Map<String, WWidget> widgets_;
 	private Map<String, String> strings_;
 	private WString text_;

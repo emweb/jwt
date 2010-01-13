@@ -2570,7 +2570,6 @@ public class WTreeView extends WCompositeWidget {
 	}
 
 	private void adjustToViewport(WTreeViewNode changed) {
-		assert this.rootNode_.getRowCount() == 1;
 		this.firstRenderedRow_ = Math.max(0, this.firstRenderedRow_);
 		this.validRowCount_ = Math.max(0, Math.min(this.validRowCount_,
 				this.rootNode_.getRenderedHeight() - this.firstRenderedRow_));
@@ -2580,7 +2579,6 @@ public class WTreeView extends WCompositeWidget {
 				- this.viewportHeight_
 				|| viewportBottom < lastValidRow + this.viewportHeight_;
 		boolean pruneFirst = false;
-		assert this.rootNode_.getRowCount() == 1;
 		if (renderMore) {
 			int newFirstRenderedRow = Math.min(this.firstRenderedRow_, this
 					.getCalcOptimalFirstRenderedRow());
@@ -2588,7 +2586,6 @@ public class WTreeView extends WCompositeWidget {
 					this.rootNode_.getRenderedHeight(), this
 							.getCalcOptimalFirstRenderedRow()
 							+ this.getCalcOptimalRenderedRowCount()));
-			assert this.rootNode_.getRowCount() == 1;
 			int newValidRowCount = newLastValidRow - newFirstRenderedRow;
 			int newRows = Math.max(0, this.firstRenderedRow_
 					- newFirstRenderedRow)
@@ -2615,7 +2612,6 @@ public class WTreeView extends WCompositeWidget {
 				this.adjustRenderedNode(this.rootNode_, 0);
 			}
 		}
-		assert this.rootNode_.getRowCount() == 1;
 	}
 
 	private final void adjustToViewport() {
@@ -2696,7 +2692,6 @@ public class WTreeView extends WCompositeWidget {
 	}
 
 	int adjustRenderedNode(WTreeViewNode node, int theNodeRow) {
-		assert this.rootNode_.getRowCount() == 1;
 		WModelIndex index = node.getModelIndex();
 		if (!(index == this.rootIndex_ || (index != null && index
 				.equals(this.rootIndex_)))) {
