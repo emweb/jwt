@@ -55,9 +55,9 @@ import java.util.Set;
  * 
  * </blockquote>
  * <p>
- * The template can return a bound widget using
+ * ifndef WT_TARGET_JAVA The template can return a bound widget using
  * {@link WTemplate#resolve(String varName) resolve()}, which already tries to
- * cast the widget to the proper type.
+ * cast the widget to the proper type. endif
  */
 public class WTemplate extends WInteractWidget {
 	/**
@@ -279,7 +279,7 @@ public class WTemplate extends WInteractWidget {
 				if (this.previouslyRendered_ != null
 						&& this.previouslyRendered_.contains(w) != false) {
 					result.append("<span id=\"").append(w.getId()).append(
-							"\"></span>");
+							"\"> </span>");
 				} else {
 					w.htmlText(result);
 				}

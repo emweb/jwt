@@ -10,7 +10,7 @@ package eu.webtoolkit.jwt;
  * Enumeration that indicates what is being selected.
  * <p>
  * 
- * @see WTreeView#setSelectionBehavior(SelectionBehavior behavior)
+ * @see WAbstractItemView#setSelectionBehavior(SelectionBehavior behavior)
  */
 public enum SelectionBehavior {
 	/**

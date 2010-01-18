@@ -151,6 +151,7 @@ public abstract class WWebWidget extends WWidget {
 			this.flags_.set(BIT_HEIGHT_CHANGED);
 		}
 		this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyAttribute));
+		super.resize(width, height);
 	}
 
 	public WLength getWidth() {
@@ -474,6 +475,7 @@ public abstract class WWebWidget extends WWidget {
 				this.children_.get(i).refresh();
 			}
 		}
+		super.refresh();
 	}
 
 	public void setAttributeValue(String name, String value) {
@@ -522,6 +524,15 @@ public abstract class WWebWidget extends WWidget {
 		}
 		this.otherImpl_.jsMembersSet_.add(name);
 		this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyAttribute));
+	}
+
+	public String getJavaScriptMember(String name) {
+		if (this.otherImpl_ != null && this.otherImpl_.jsMembers_ != null) {
+			String i = this.otherImpl_.jsMembers_.get(name);
+			return i != null ? i : "";
+		} else {
+			return "";
+		}
 	}
 
 	public void callJavaScriptMember(String name, String args) {

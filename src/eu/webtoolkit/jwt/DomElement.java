@@ -114,17 +114,15 @@ class DomElement {
 
 	public void addChild(DomElement child) {
 		++this.numManipulations_;
-		this.javaScript_ += child.javaScriptEvenWhenDeleted_
-				+ child.javaScript_;
-		child.javaScriptEvenWhenDeleted_ = "";
-		child.javaScript_ = "";
 		if (this.wasEmpty_
 				&& this.canWriteInnerHTML(WApplication.getInstance())) {
 			if (!(this.childrenHtml_ != null)) {
 				this.childrenHtml_ = new StringWriter();
 			}
+			StringWriter js = new StringWriter();
 			EscapeOStream sout = new EscapeOStream(this.childrenHtml_);
-			child.asHTML(sout, this.timeouts_);
+			child.asHTML(sout, js, this.timeouts_);
+			this.javaScript_ += js.toString();
 			;
 		} else {
 			this.childrenToAdd_.add(new DomElement.ChildInsertion(-1, child));
@@ -133,10 +131,6 @@ class DomElement {
 
 	public void insertChildAt(DomElement child, int pos) {
 		++this.numManipulations_;
-		this.javaScript_ += child.javaScriptEvenWhenDeleted_
-				+ child.javaScript_;
-		child.javaScriptEvenWhenDeleted_ = "";
-		child.javaScript_ = "";
 		this.childrenToAdd_.add(new DomElement.ChildInsertion(pos, child));
 	}
 
@@ -473,7 +467,11 @@ class DomElement {
 				this.declare(out);
 				out.append("var c").append(this.var_).append((int) i).append(
 						'=').append("$('#").append(this.childrenToSave_.get(i))
-						.append("');");
+						.append("')");
+				if (app.getEnvironment().agentIsIE()) {
+					out.append(".remove()");
+				}
+				out.append(";");
 			}
 			if (this.mode_ != DomElement.Mode.ModeCreate) {
 				this.setJavaScriptProperties(out, app);
@@ -510,297 +508,312 @@ class DomElement {
 		return this.var_;
 	}
 
-	public void asHTML(EscapeOStream out,
+	public void asHTML(EscapeOStream out, Writer javaScript,
 			List<DomElement.TimeoutEvent> timeouts, boolean openingTagOnly) {
-		if (this.mode_ != DomElement.Mode.ModeCreate) {
-			throw new WtException("DomElement::asHTML() called with ModeUpdate");
-		}
-		WApplication app = WApplication.getInstance();
-		this.processEvents(app);
-		this.processProperties(app);
-		DomElement.EventHandler clickEvent = this.eventHandlers_
-				.get(WInteractWidget.CLICK_SIGNAL);
-		boolean needButtonWrap = !app.getEnvironment().hasAjax()
-				&& clickEvent != null && clickEvent.jsCode.length() != 0
-				&& !app.getEnvironment().agentIsSpiderBot();
-		boolean isSubmit = needButtonWrap;
-		DomElementType renderedType = this.type_;
-		if (needButtonWrap) {
-			if (this.type_ == DomElementType.DomElement_BUTTON) {
-				DomElement self = this;
-				self.setAttribute("type", "submit");
-				self.setAttribute("name", "signal=" + clickEvent.signalName);
-				needButtonWrap = false;
-			} else {
-				if (this.type_ == DomElementType.DomElement_IMG) {
-					renderedType = DomElementType.DomElement_INPUT;
+		try {
+			if (this.mode_ != DomElement.Mode.ModeCreate) {
+				throw new WtException(
+						"DomElement::asHTML() called with ModeUpdate");
+			}
+			WApplication app = WApplication.getInstance();
+			this.processEvents(app);
+			this.processProperties(app);
+			DomElement.EventHandler clickEvent = this.eventHandlers_
+					.get(WInteractWidget.CLICK_SIGNAL);
+			boolean needButtonWrap = !app.getEnvironment().hasAjax()
+					&& clickEvent != null && clickEvent.jsCode.length() != 0
+					&& !app.getEnvironment().agentIsSpiderBot();
+			boolean isSubmit = needButtonWrap;
+			DomElementType renderedType = this.type_;
+			if (needButtonWrap) {
+				if (this.type_ == DomElementType.DomElement_BUTTON) {
 					DomElement self = this;
-					self.setAttribute("type", "image");
+					self.setAttribute("type", "submit");
 					self
 							.setAttribute("name", "signal="
 									+ clickEvent.signalName);
 					needButtonWrap = false;
+				} else {
+					if (this.type_ == DomElementType.DomElement_IMG) {
+						renderedType = DomElementType.DomElement_INPUT;
+						DomElement self = this;
+						self.setAttribute("type", "image");
+						self.setAttribute("name", "signal="
+								+ clickEvent.signalName);
+						needButtonWrap = false;
+					}
 				}
 			}
-		}
-		if (needButtonWrap) {
-			String i = this.properties_.get(Property.PropertyStyleDisplay);
-			if (i != null && i.equals("none")) {
-				return;
+			if (needButtonWrap) {
+				String i = this.properties_.get(Property.PropertyStyleDisplay);
+				if (i != null && i.equals("none")) {
+					return;
+				}
 			}
-		}
-		if (needButtonWrap) {
-			if (this.type_ == DomElementType.DomElement_AREA
-					|| this.type_ == DomElementType.DomElement_INPUT
-					|| this.type_ == DomElementType.DomElement_SELECT) {
-				needButtonWrap = false;
-			}
-			if (this.type_ == DomElementType.DomElement_A) {
-				String href = this.getAttribute("href");
-				if (app.getEnvironment().agentIsIE() || !href.equals("#")) {
+			if (needButtonWrap) {
+				if (this.type_ == DomElementType.DomElement_AREA
+						|| this.type_ == DomElementType.DomElement_INPUT
+						|| this.type_ == DomElementType.DomElement_SELECT) {
 					needButtonWrap = false;
 				}
-			}
-		}
-		final boolean isIEMobile = app.getEnvironment().agentIsIEMobile();
-		final boolean supportButton = !isIEMobile;
-		boolean needAnchorWrap = false;
-		if (!needButtonWrap) {
-			if (isIEMobile
-					&& app.getEnvironment().hasAjax()
-					&& clickEvent != null
-					&& clickEvent.jsCode.length() != 0
-					&& (this.type_ == DomElementType.DomElement_IMG
-							|| this.type_ == DomElementType.DomElement_SPAN || this.type_ == DomElementType.DomElement_DIV)) {
-				needAnchorWrap = true;
-			}
-		}
-		if (!supportButton && this.type_ == DomElementType.DomElement_BUTTON) {
-			renderedType = DomElementType.DomElement_INPUT;
-			DomElement self = this;
-			if (!isSubmit) {
-				self.setAttribute("type", "button");
-			}
-			self.setAttribute("value", this.properties_
-					.get(Property.PropertyInnerHTML));
-			self.setProperty(Property.PropertyInnerHTML, "");
-		}
-		EscapeOStream attributeValues = out.push();
-		attributeValues.pushEscape(EscapeOStream.RuleSet.HtmlAttribute);
-		String style = "";
-		if (needButtonWrap) {
-			if (supportButton) {
-				out.append("<button type=\"submit\" name=\"signal\" value=");
-				fastHtmlAttributeValue(out, attributeValues,
-						clickEvent.signalName);
-				out.append(" class=\"Wt-wrap ");
-				String l = this.properties_.get(Property.PropertyClass);
-				if (l != null) {
-					out.append(l);
+				if (this.type_ == DomElementType.DomElement_A) {
+					String href = this.getAttribute("href");
+					if (app.getEnvironment().agentIsIE() || !href.equals("#")) {
+						needButtonWrap = false;
+					}
 				}
-				out.append("\"");
-				String i = this.properties_.get(Property.PropertyDisabled);
-				if (i != null && i.equals("true")) {
-					out.append(" disabled=\"disabled\"");
+			}
+			final boolean isIEMobile = app.getEnvironment().agentIsIEMobile();
+			final boolean supportButton = !isIEMobile;
+			boolean needAnchorWrap = false;
+			if (!needButtonWrap) {
+				if (isIEMobile
+						&& app.getEnvironment().hasAjax()
+						&& clickEvent != null
+						&& clickEvent.jsCode.length() != 0
+						&& (this.type_ == DomElementType.DomElement_IMG
+								|| this.type_ == DomElementType.DomElement_SPAN || this.type_ == DomElementType.DomElement_DIV)) {
+					needAnchorWrap = true;
 				}
-				if (app.getEnvironment().getAgent() != WEnvironment.UserAgent.Konqueror
-						&& !app.getEnvironment().agentIsWebKit()) {
-					style = "margin: -1px -3px -2px -3px;";
+			}
+			if (!supportButton
+					&& this.type_ == DomElementType.DomElement_BUTTON) {
+				renderedType = DomElementType.DomElement_INPUT;
+				DomElement self = this;
+				if (!isSubmit) {
+					self.setAttribute("type", "button");
 				}
-				out.append("><").append(elementNames_[renderedType.getValue()]);
-			} else {
-				if (this.type_ == DomElementType.DomElement_IMG) {
-					out.append("<input type=\"image\"");
+				self.setAttribute("value", this.properties_
+						.get(Property.PropertyInnerHTML));
+				self.setProperty(Property.PropertyInnerHTML, "");
+			}
+			EscapeOStream attributeValues = out.push();
+			attributeValues.pushEscape(EscapeOStream.RuleSet.HtmlAttribute);
+			String style = "";
+			if (needButtonWrap) {
+				if (supportButton) {
+					out
+							.append("<button type=\"submit\" name=\"signal\" value=");
+					fastHtmlAttributeValue(out, attributeValues,
+							clickEvent.signalName);
+					out.append(" class=\"Wt-wrap ");
+					String l = this.properties_.get(Property.PropertyClass);
+					if (l != null) {
+						out.append(l);
+					}
+					out.append("\"");
+					String i = this.properties_.get(Property.PropertyDisabled);
+					if (i != null && i.equals("true")) {
+						out.append(" disabled=\"disabled\"");
+					}
+					if (app.getEnvironment().getAgent() != WEnvironment.UserAgent.Konqueror
+							&& !app.getEnvironment().agentIsWebKit()) {
+						style = "margin: -1px -3px -2px -3px;";
+					}
+					out.append("><").append(
+							elementNames_[renderedType.getValue()]);
 				} else {
-					out.append("<input type=\"submit\"");
-				}
-				out.append(" name=");
-				fastHtmlAttributeValue(out, attributeValues, "signal="
-						+ clickEvent.signalName);
-				out.append(" value=");
-				String i = this.properties_.get(Property.PropertyInnerHTML);
-				if (i != null) {
-					fastHtmlAttributeValue(out, attributeValues, i);
-				} else {
-					out.append("\"\"");
-				}
-			}
-		} else {
-			if (needAnchorWrap) {
-				out.append("<a href=\"#\" class=\"Wt-wrap\" onclick=");
-				fastHtmlAttributeValue(out, attributeValues, clickEvent.jsCode);
-				out.append("><").append(elementNames_[renderedType.getValue()]);
-			} else {
-				out.append("<").append(elementNames_[renderedType.getValue()]);
-			}
-		}
-		if (this.id_.length() != 0) {
-			out.append(" id=");
-			fastHtmlAttributeValue(out, attributeValues, this.id_);
-		}
-		for (Iterator<Map.Entry<String, String>> i_it = this.attributes_
-				.entrySet().iterator(); i_it.hasNext();) {
-			Map.Entry<String, String> i = i_it.next();
-			if (!app.getEnvironment().agentIsSpiderBot()
-					|| !i.getKey().equals("name")) {
-				out.append(" ").append(i.getKey()).append("=");
-				fastHtmlAttributeValue(out, attributeValues, i.getValue());
-			}
-		}
-		if (app.getEnvironment().hasAjax()) {
-			for (Iterator<Map.Entry<String, DomElement.EventHandler>> i_it = this.eventHandlers_
-					.entrySet().iterator(); i_it.hasNext();) {
-				Map.Entry<String, DomElement.EventHandler> i = i_it.next();
-				if (i.getValue().jsCode.length() != 0) {
-					if (i.getKey().startsWith("key") && app.getRoot() != null
-							&& this.id_.equals(app.getRoot().getId())) {
-						StringWriter ss = new StringWriter();
-						ss.append("document.on").append(i.getKey()).append("=")
-								.append(
-										"function (event){"
-												+ i.getValue().jsCode).append(
-										"}\n");
-						app.doJavaScript(ss.toString());
+					if (this.type_ == DomElementType.DomElement_IMG) {
+						out.append("<input type=\"image\"");
 					} else {
-						out.append(" on").append(i.getKey()).append("=");
-						fastHtmlAttributeValue(out, attributeValues, i
-								.getValue().jsCode);
+						out.append("<input type=\"submit\"");
+					}
+					out.append(" name=");
+					fastHtmlAttributeValue(out, attributeValues, "signal="
+							+ clickEvent.signalName);
+					out.append(" value=");
+					String i = this.properties_.get(Property.PropertyInnerHTML);
+					if (i != null) {
+						fastHtmlAttributeValue(out, attributeValues, i);
+					} else {
+						out.append("\"\"");
 					}
 				}
-			}
-		}
-		String innerHTML = "";
-		for (Iterator<Map.Entry<Property, String>> i_it = this.properties_
-				.entrySet().iterator(); i_it.hasNext();) {
-			Map.Entry<Property, String> i = i_it.next();
-			switch (i.getKey()) {
-			case PropertyText:
-			case PropertyInnerHTML:
-				innerHTML += i.getValue();
-				break;
-			case PropertyScript:
-				innerHTML += "/*<![CDATA[*/\n" + i.getValue() + "\n/* ]]> */";
-				break;
-			case PropertyDisabled:
-				if (i.getValue().equals("true")) {
-					out.append(" disabled=\"disabled\"");
-				}
-				break;
-			case PropertyReadOnly:
-				if (i.getValue().equals("true")) {
-					out.append(" readonly=\"readonly\"");
-				}
-				break;
-			case PropertyChecked:
-				if (i.getValue().equals("true")) {
-					out.append(" checked=\"checked\"");
-				}
-				break;
-			case PropertySelected:
-				if (i.getValue().equals("true")) {
-					out.append(" selected=\"selected\"");
-				}
-				break;
-			case PropertyMultiple:
-				if (i.getValue().equals("true")) {
-					out.append(" multiple=\"multiple\"");
-				}
-				break;
-			case PropertyTarget:
-				out.append(" target=\"").append(i.getValue()).append("\"");
-				break;
-			case PropertyIndeterminate:
-				if (i.getValue().equals("true")) {
-					DomElement self = this;
-					self.methodCalls_.add("indeterminate=" + i.getValue());
-				}
-				break;
-			case PropertyValue:
-				out.append(" value=");
-				fastHtmlAttributeValue(out, attributeValues, i.getValue());
-				break;
-			case PropertySrc:
-				out.append(" src=");
-				fastHtmlAttributeValue(out, attributeValues, i.getValue());
-				break;
-			case PropertyColSpan:
-				out.append(" colspan=");
-				fastHtmlAttributeValue(out, attributeValues, i.getValue());
-				break;
-			case PropertyRowSpan:
-				out.append(" rowspan=");
-				fastHtmlAttributeValue(out, attributeValues, i.getValue());
-				break;
-			case PropertyClass:
-				out.append(" class=");
-				fastHtmlAttributeValue(out, attributeValues, i.getValue());
-				break;
-			default:
-				break;
-			}
-		}
-		style += this.getCssStyle();
-		if (style.length() != 0) {
-			out.append(" style=");
-			fastHtmlAttributeValue(out, attributeValues, style);
-		}
-		if (needButtonWrap && !supportButton) {
-			out.append(" />");
-		} else {
-			if (openingTagOnly) {
-				out.append(">");
-				if (innerHTML.length() != 0) {
-					DomElement self = this;
-					if (!(self.childrenHtml_ != null)) {
-						self.childrenHtml_ = new StringWriter();
-					}
-					self.childrenHtml_.append(innerHTML);
-				}
-				return;
-			}
-			if (!isSelfClosingTag(renderedType)) {
-				out.append(">");
-				for (int i = 0; i < this.childrenToAdd_.size(); ++i) {
-					this.childrenToAdd_.get(i).child.asHTML(out, timeouts);
-				}
-				out.append(innerHTML);
-				if (this.childrenHtml_ != null) {
-					out.append(this.childrenHtml_.toString());
-				}
-				if (renderedType == DomElementType.DomElement_DIV
-						&& app.getEnvironment().getAgent() == WEnvironment.UserAgent.IE6
-						&& innerHTML.length() == 0
-						&& this.childrenToAdd_.isEmpty()
-						&& !(this.childrenHtml_ != null)) {
-					out.append("&nbsp;");
-				}
-				out.append("</").append(elementNames_[renderedType.getValue()])
-						.append(">");
-			} else {
-				out.append(" />");
-			}
-			if (needButtonWrap && supportButton) {
-				out.append("</button>");
 			} else {
 				if (needAnchorWrap) {
-					out.append("</a>");
+					out.append("<a href=\"#\" class=\"Wt-wrap\" onclick=");
+					fastHtmlAttributeValue(out, attributeValues,
+							clickEvent.jsCode);
+					out.append("><").append(
+							elementNames_[renderedType.getValue()]);
+				} else {
+					out.append("<").append(
+							elementNames_[renderedType.getValue()]);
 				}
 			}
+			if (this.id_.length() != 0) {
+				out.append(" id=");
+				fastHtmlAttributeValue(out, attributeValues, this.id_);
+			}
+			for (Iterator<Map.Entry<String, String>> i_it = this.attributes_
+					.entrySet().iterator(); i_it.hasNext();) {
+				Map.Entry<String, String> i = i_it.next();
+				if (!app.getEnvironment().agentIsSpiderBot()
+						|| !i.getKey().equals("name")) {
+					out.append(" ").append(i.getKey()).append("=");
+					fastHtmlAttributeValue(out, attributeValues, i.getValue());
+				}
+			}
+			if (app.getEnvironment().hasAjax()) {
+				for (Iterator<Map.Entry<String, DomElement.EventHandler>> i_it = this.eventHandlers_
+						.entrySet().iterator(); i_it.hasNext();) {
+					Map.Entry<String, DomElement.EventHandler> i = i_it.next();
+					if (i.getValue().jsCode.length() != 0) {
+						if (i.getKey().startsWith("key")
+								&& app.getRoot() != null
+								&& this.id_.equals(app.getRoot().getId())) {
+							javaScript.append("document.on").append(i.getKey())
+									.append("=").append(
+											"function (event){"
+													+ i.getValue().jsCode)
+									.append("}\n");
+						} else {
+							out.append(" on").append(i.getKey()).append("=");
+							fastHtmlAttributeValue(out, attributeValues, i
+									.getValue().jsCode);
+						}
+					}
+				}
+			}
+			String innerHTML = "";
+			for (Iterator<Map.Entry<Property, String>> i_it = this.properties_
+					.entrySet().iterator(); i_it.hasNext();) {
+				Map.Entry<Property, String> i = i_it.next();
+				switch (i.getKey()) {
+				case PropertyText:
+				case PropertyInnerHTML:
+					innerHTML += i.getValue();
+					break;
+				case PropertyScript:
+					innerHTML += "/*<![CDATA[*/\n" + i.getValue()
+							+ "\n/* ]]> */";
+					break;
+				case PropertyDisabled:
+					if (i.getValue().equals("true")) {
+						out.append(" disabled=\"disabled\"");
+					}
+					break;
+				case PropertyReadOnly:
+					if (i.getValue().equals("true")) {
+						out.append(" readonly=\"readonly\"");
+					}
+					break;
+				case PropertyChecked:
+					if (i.getValue().equals("true")) {
+						out.append(" checked=\"checked\"");
+					}
+					break;
+				case PropertySelected:
+					if (i.getValue().equals("true")) {
+						out.append(" selected=\"selected\"");
+					}
+					break;
+				case PropertyMultiple:
+					if (i.getValue().equals("true")) {
+						out.append(" multiple=\"multiple\"");
+					}
+					break;
+				case PropertyTarget:
+					out.append(" target=\"").append(i.getValue()).append("\"");
+					break;
+				case PropertyIndeterminate:
+					if (i.getValue().equals("true")) {
+						DomElement self = this;
+						self.methodCalls_.add("indeterminate=" + i.getValue());
+					}
+					break;
+				case PropertyValue:
+					out.append(" value=");
+					fastHtmlAttributeValue(out, attributeValues, i.getValue());
+					break;
+				case PropertySrc:
+					out.append(" src=");
+					fastHtmlAttributeValue(out, attributeValues, i.getValue());
+					break;
+				case PropertyColSpan:
+					out.append(" colspan=");
+					fastHtmlAttributeValue(out, attributeValues, i.getValue());
+					break;
+				case PropertyRowSpan:
+					out.append(" rowspan=");
+					fastHtmlAttributeValue(out, attributeValues, i.getValue());
+					break;
+				case PropertyClass:
+					out.append(" class=");
+					fastHtmlAttributeValue(out, attributeValues, i.getValue());
+					break;
+				default:
+					break;
+				}
+			}
+			style += this.getCssStyle();
+			if (style.length() != 0) {
+				out.append(" style=");
+				fastHtmlAttributeValue(out, attributeValues, style);
+			}
+			if (needButtonWrap && !supportButton) {
+				out.append(" />");
+			} else {
+				if (openingTagOnly) {
+					out.append(">");
+					if (innerHTML.length() != 0) {
+						DomElement self = this;
+						if (!(self.childrenHtml_ != null)) {
+							self.childrenHtml_ = new StringWriter();
+						}
+						self.childrenHtml_.append(innerHTML);
+					}
+					return;
+				}
+				if (!isSelfClosingTag(renderedType)) {
+					out.append(">");
+					for (int i = 0; i < this.childrenToAdd_.size(); ++i) {
+						this.childrenToAdd_.get(i).child.asHTML(out,
+								javaScript, timeouts);
+					}
+					out.append(innerHTML);
+					if (this.childrenHtml_ != null) {
+						out.append(this.childrenHtml_.toString());
+					}
+					if (renderedType == DomElementType.DomElement_DIV
+							&& app.getEnvironment().getAgent() == WEnvironment.UserAgent.IE6
+							&& innerHTML.length() == 0
+							&& this.childrenToAdd_.isEmpty()
+							&& !(this.childrenHtml_ != null)) {
+						out.append("&nbsp;");
+					}
+					out.append("</").append(
+							elementNames_[renderedType.getValue()]).append(">");
+				} else {
+					out.append(" />");
+				}
+				if (needButtonWrap && supportButton) {
+					out.append("</button>");
+				} else {
+					if (needAnchorWrap) {
+						out.append("</a>");
+					}
+				}
+			}
+			javaScript.append(this.javaScriptEvenWhenDeleted_).append(
+					this.javaScript_);
+			for (int i = 0; i < this.methodCalls_.size(); ++i) {
+				javaScript.append("$('#").append(this.id_).append("').get(0).")
+						.append(this.methodCalls_.get(i)).append(';');
+			}
+			if (this.timeOut_ != -1) {
+				timeouts.add(new DomElement.TimeoutEvent(this.timeOut_,
+						this.id_, this.timeOutJSRepeat_));
+			}
+			timeouts.addAll(this.timeouts_);
+		} catch (IOException ioe) {
+			ioe.printStackTrace();
 		}
-		for (int i = 0; i < this.methodCalls_.size(); ++i) {
-			app.doJavaScript("$('#" + this.id_ + "').get(0)."
-					+ this.methodCalls_.get(i) + ';');
-		}
-		if (this.timeOut_ != -1) {
-			timeouts.add(new DomElement.TimeoutEvent(this.timeOut_, this.id_,
-					this.timeOutJSRepeat_));
-		}
-		timeouts.addAll(this.timeouts_);
 	}
 
-	public final void asHTML(EscapeOStream out,
+	public final void asHTML(EscapeOStream out, Writer javaScript,
 			List<DomElement.TimeoutEvent> timeouts) {
-		asHTML(out, timeouts, false);
+		asHTML(out, javaScript, timeouts, false);
 	}
 
 	public static void createTimeoutJs(Writer out,
@@ -1204,10 +1217,11 @@ class DomElement {
 		}
 		out.append("var ").append(this.var_).append("=");
 		if (app.getEnvironment().agentIsIE()) {
+			StringWriter dummy = new StringWriter();
 			out.append("document.createElement('");
 			out.pushEscape(EscapeOStream.RuleSet.JsStringLiteralSQuote);
 			List<DomElement.TimeoutEvent> timeouts = new ArrayList<DomElement.TimeoutEvent>();
-			this.asHTML(out, timeouts, true);
+			this.asHTML(out, dummy, timeouts, true);
 			out.popEscape();
 			out.append("');");
 			out.append(domInsertJS);
@@ -1266,8 +1280,9 @@ class DomElement {
 					out.append(this.childrenHtml_.toString());
 				}
 				List<DomElement.TimeoutEvent> timeouts = new ArrayList<DomElement.TimeoutEvent>();
+				StringWriter js = new StringWriter();
 				for (int i = 0; i < this.childrenToAdd_.size(); ++i) {
-					this.childrenToAdd_.get(i).child.asHTML(out, timeouts);
+					this.childrenToAdd_.get(i).child.asHTML(out, js, timeouts);
 				}
 				if (this.type_ == DomElementType.DomElement_DIV
 						&& app.getEnvironment().getAgent() == WEnvironment.UserAgent.IE6
@@ -1286,6 +1301,7 @@ class DomElement {
 							timeouts.get(i).repeat ? "true" : "false").append(
 							");\n");
 				}
+				out.append(js.toString());
 			}
 		} else {
 			for (int i = 0; i < this.childrenToAdd_.size(); ++i) {

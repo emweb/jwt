@@ -9,7 +9,7 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 /**
- * A class that represents a selection for a WAbstractItemView.
+ * A class that represents a selection for a {@link WAbstractItemView}.
  * <p>
  * 
  * This model is currently only used by {@link WTreeView}, and plays only a role

@@ -520,7 +520,8 @@ class WTreeViewNode extends WTable {
 			this.getParentNode().adjustChildrenHeight(this.childrenHeight_);
 		}
 		this.view_.adjustRenderedNode(this, this.renderedRow());
-		this.view_.scheduleRerender(WTreeView.RenderState.NeedAdjustViewPort);
+		this.view_
+				.scheduleRerender(WAbstractItemView.RenderState.NeedAdjustViewPort);
 		this.view_.expanded_.trigger(this.index_);
 	}
 

@@ -10,7 +10,7 @@ package eu.webtoolkit.jwt;
  * Enumeration that indicates how items may be selected.
  * <p>
  * 
- * @see WTreeView#setSelectionMode(SelectionMode mode)
+ * @see WAbstractItemView#setSelectionMode(SelectionMode mode)
  */
 public enum SelectionMode {
 	/**

@@ -6,6 +6,7 @@
 package eu.webtoolkit.jwt.servlet;
 
 import java.io.File;
+import java.io.StringWriter;
 
 /**
  * Details about a file uploaded with a (POST) request
@@ -75,4 +76,5 @@ public class UploadedFile {
 	}
 
 	private UploadedFile.Impl fileInfo_;
+	static StringWriter emptyStream = new StringWriter();
 }

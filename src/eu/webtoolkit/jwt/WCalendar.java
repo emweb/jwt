@@ -35,8 +35,8 @@ import java.util.Set;
  * </p>
  * </div> <h3>CSS</h3>
  * <p>
- * A calendar has the <code>Wt-calendar</code> style class. The look can be
- * overridden using the following style class selectors:
+ * The calendar is styled by the current CSS theme. The look can be overridden
+ * using the <code>Wt-calendar</code> CSS class and the following selectors:
  * <p>
  * <div class="fragment">
  * 

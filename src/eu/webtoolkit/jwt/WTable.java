@@ -128,11 +128,6 @@ public class WTable extends WInteractWidget {
 	 */
 	public WTableColumn getColumnAt(int column) {
 		this.expand(0, column, 0, 1);
-		if (this.columns_.size() <= (int) column) {
-			for (int col = this.columns_.size(); col <= (int) column; ++col) {
-				this.columns_.add(new WTableColumn(this));
-			}
-		}
 		return this.columns_.get(column);
 	}
 
@@ -234,6 +229,9 @@ public class WTable extends WInteractWidget {
 		while (this.getRowCount() > 0) {
 			this.deleteRow(this.getRowCount() - 1);
 		}
+		while (this.getColumnCount() > 0) {
+			this.deleteColumn(this.getColumnCount() - 1);
+		}
 	}
 
 	/**
@@ -247,7 +245,7 @@ public class WTable extends WInteractWidget {
 	 * Returns the number of columns in the table.
 	 */
 	public int getColumnCount() {
-		return this.rows_.size() > 0 ? this.rows_.get(0).cells_.size() : 0;
+		return this.columns_.size();
 	}
 
 	/**
@@ -331,6 +329,9 @@ public class WTable extends WInteractWidget {
 				for (int r = 0; r < this.getRowCount(); ++r) {
 					WTableRow tr = this.rows_.get(r);
 					tr.expand(newNumColumns);
+				}
+				for (int c = curNumColumns; c <= column; ++c) {
+					this.columns_.add(new WTableColumn(this));
 				}
 			}
 		}

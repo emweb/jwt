@@ -50,9 +50,9 @@ package eu.webtoolkit.jwt;
  * </p>
  * <h3>CSS</h3>
  * <p>
- * A dialog has the <code>Wt-dialog</code> and <code>Wt-outset</code> style
- * classes. The look can be overridden using the following style class
- * selectors:
+ * The calendar is styled by the current CSS theme. A dialog has the
+ * <code>Wt-dialog</code> and <code>Wt-outset</code> style classes. The look can
+ * be overridden using the following style class selectors:
  * <p>
  * <div class="fragment">
  * 

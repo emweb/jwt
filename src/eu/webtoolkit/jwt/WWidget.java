@@ -206,11 +206,17 @@ public abstract class WWidget extends WObject {
 	 * {@link WWidget#setInline(boolean inlined) block} widgets can be given a
 	 * size reliably.
 	 * <p>
+	 * See als {@link WWidget#setJavaScriptMember(String name, String value)
+	 * setJavaScriptMember()} for defining a &quot;wtResize&quot; method which
+	 * allows a widget to actively manage its size using client-side JavaScript.
+	 * <p>
 	 * 
 	 * @see WWidget#getWidth()
 	 * @see WWidget#getHeight()
 	 */
-	public abstract void resize(WLength width, WLength height);
+	public void resize(WLength width, WLength height) {
+		this.setJsSize();
+	}
 
 	/**
 	 * Resizes the widget.
@@ -784,7 +790,9 @@ public abstract class WWidget extends WObject {
 	 * <p>
 	 * The widget must actualize its contents in response.
 	 */
-	public abstract void refresh();
+	public void refresh() {
+		this.setJsSize();
+	}
 
 	/**
 	 * Returns a JavaScript expression to the corresponding DOM node.
@@ -827,8 +835,24 @@ public abstract class WWidget extends WObject {
 	 * This binds a JavaScript member, which is set as a JavaScript property to
 	 * the DOM object that implements this widget. The value may be any
 	 * JavaScript expression, including a function.
+	 * <p>
+	 * Members that start with &quot;wt&quot; are reserved for internal use. You
+	 * may define a member &quot;wtResize(self, width, height)&quot; method if
+	 * your widget needs active layout management. If defined, this method will
+	 * be used by layout managers and when doing
+	 * {@link WWidget#resize(WLength width, WLength height) resize()} to set the
+	 * size of the widget, instead of setting the CSS width and height
+	 * properties.
 	 */
 	public abstract void setJavaScriptMember(String name, String value);
+
+	/**
+	 * Returns the value of a JavaScript member.
+	 * <p>
+	 * 
+	 * @see WWidget#setJavaScriptMember(String name, String value)
+	 */
+	public abstract String getJavaScriptMember(String name);
 
 	/**
 	 * Calls a JavaScript member.
@@ -957,7 +981,9 @@ public abstract class WWidget extends WObject {
 				WApplication.getInstance());
 		List<DomElement.TimeoutEvent> timeouts = new ArrayList<DomElement.TimeoutEvent>();
 		EscapeOStream sout = new EscapeOStream(out);
-		element.asHTML(sout, timeouts);
+		StringWriter js = new StringWriter();
+		element.asHTML(sout, js, timeouts);
+		WApplication.getInstance().doJavaScript(js.toString());
 		;
 	}
 
@@ -1258,6 +1284,15 @@ public abstract class WWidget extends WObject {
 	private static final int BIT_NEED_RERENDER = 2;
 	private BitSet flags_;
 	private LinkedList<AbstractEventSignal> eventSignals_;
+
+	private void setJsSize() {
+		if (!this.getHeight().isAuto()
+				&& this.getJavaScriptMember("wtResize").length() != 0) {
+			this.callJavaScriptMember("wtResize", this.getJsRef() + ","
+					+ String.valueOf(this.getWidth().toPixels()) + ","
+					+ String.valueOf(this.getHeight().toPixels()));
+		}
+	}
 
 	private void undoHideShow() {
 		this.setHidden(this.flags_.get(BIT_WAS_HIDDEN));

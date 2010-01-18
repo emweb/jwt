@@ -16,24 +16,8 @@ import java.util.List;
  * This widget combines a horizontal {@link WMenu} with a {@link WStackedWidget}
  * , and a tab-like look.
  * <p>
- * A tab widget will place the tab bar on top of the contents. If you want an
- * item to fill the contents (e.g. if it is a {@link WContainerWidget} whose
- * contents is managed using a layout manager), you should resize the item to
- * 100% height.
- * <p>
- * This widget uses the following resources:
- * <ul>
- * <li>
- * <i>resourcesURL</i>/tab_b.gif</li>
- * <li>
- * <i>resourcesURL</i>/tab_l.gif</li>
- * <li>
- * <i>resourcesURL</i>/tab_r.gif</li>
- * </ul>
- * <p>
- * These files may be found in the resources/ folder of the JWt distribution,
- * see also DOCREF<a class="el" href="overview.html#deployment">deployment and
- * resources</a>.
+ * A tab widget will place the tab bar on top of the contents, and fit the
+ * contents below it.
  * <p>
  * Usage example:
  * <p>
@@ -64,10 +48,11 @@ import java.util.List;
  * </p>
  * </div> <h3>CSS</h3>
  * <p>
- * You may customize the look of the tabs handles using the <code>Wt-tabs</code>
- * CSS class.
+ * The tab widget is styled by the current CSS theme. The look (of the header)
+ * can be overridden using the <code>Wt-tabs</code> CSS class and the following
+ * selectors:
  * <p>
- * The following rules may be used to style the header: <div class="fragment">
+ * <div class="fragment">
  * 
  * <pre class="fragment">
  * .Wt-tabs ul        : the list
@@ -101,7 +86,7 @@ public class WTabWidget extends WCompositeWidget {
 	}
 
 	/**
-	 * Create a new {@link WTabWidget}.
+	 * Creates a new {@link WTabWidget}.
 	 */
 	public WTabWidget(WContainerWidget parent) {
 		super(parent);
@@ -111,7 +96,7 @@ public class WTabWidget extends WCompositeWidget {
 	}
 
 	/**
-	 * Create a new {@link WTabWidget}.
+	 * Creates a new {@link WTabWidget}.
 	 * <p>
 	 * Calls {@link #WTabWidget(WContainerWidget parent)
 	 * this((WContainerWidget)null)}
@@ -121,14 +106,12 @@ public class WTabWidget extends WCompositeWidget {
 	}
 
 	/**
-	 * Create a new {@link WTabWidget} with custom layout alignment.
+	 * Creates a new {@link WTabWidget} with custom layout alignment
+	 * (<b>deprecated</b>).
 	 * <p>
-	 * The default constructor will use a layout manager to fit the tab widget
-	 * within a parent container, and show scrollbars inside a tab if needed.
-	 * <p>
-	 * Here you can override the alignment option for the layout manager, e.g.
-	 * use {@link AlignmentFlag#AlignTop} | {@link AlignmentFlag#AlignJustify}
-	 * to not attempt to constrain the height of the tab widget.
+	 * 
+	 * @deprecated Since JWt 3.1.1, the <code>layoutAlignment</code> is no
+	 *             longer needed and its value is ignored
 	 */
 	public WTabWidget(EnumSet<AlignmentFlag> layoutAlignment,
 			WContainerWidget parent) {
@@ -139,7 +122,8 @@ public class WTabWidget extends WCompositeWidget {
 	}
 
 	/**
-	 * Create a new {@link WTabWidget} with custom layout alignment.
+	 * Creates a new {@link WTabWidget} with custom layout alignment
+	 * (<b>deprecated</b>).
 	 * <p>
 	 * Calls {@link #WTabWidget(EnumSet layoutAlignment, WContainerWidget parent)
 	 * this(layoutAlignment, (WContainerWidget)null)}
@@ -435,12 +419,12 @@ public class WTabWidget extends WCompositeWidget {
 		WContainerWidget menuDiv = new WContainerWidget();
 		menuDiv.setStyleClass("Wt-tabs");
 		menuDiv.addWidget(this.menu_);
-		WVBoxLayout box = new WVBoxLayout();
-		box.setSpacing(0);
-		box.setContentsMargins(0, 0, 0, 0);
-		box.addWidget(menuDiv);
-		box.addWidget(this.contents_, 1);
-		this.layout_.setLayout(box, layoutAlignment);
+		this.layout_.addWidget(menuDiv);
+		this.layout_.addWidget(this.contents_);
+		this
+				.setJavaScriptMember(
+						"wtResize",
+						"function(self, w, h) {self.style.height= h + 'px';var c = self.firstChild;var t = self.lastChild;h -= c.offsetHeight;if (h > 0)t.wtResize(t, w, h);};");
 		this.menu_.itemSelected().addListener(this,
 				new Signal1.Listener<WMenuItem>() {
 					public void trigger(WMenuItem e1) {
@@ -457,4 +441,5 @@ public class WTabWidget extends WCompositeWidget {
 	private void onItemSelected(WMenuItem item) {
 		this.currentChanged_.trigger(this.menu_.getCurrentIndex());
 	}
+	// private void setJsSize() ;
 }

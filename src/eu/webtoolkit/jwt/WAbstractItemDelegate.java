@@ -24,9 +24,9 @@ import java.util.EnumSet;
  * saves the modified value back to the (editable) model.
  * <p>
  * 
- * @see WTreeView#setItemDelegate(WAbstractItemDelegate delegate)
- * @see WTreeView#setItemDelegateForColumn(int column, WAbstractItemDelegate
- *      delegate)
+ * @see WAbstractItemView#setItemDelegate(WAbstractItemDelegate delegate)
+ * @see WAbstractItemView#setItemDelegateForColumn(int column,
+ *      WAbstractItemDelegate delegate)
  */
 public abstract class WAbstractItemDelegate extends WObject {
 	/**

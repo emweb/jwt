@@ -63,7 +63,7 @@ public class WPanel extends WCompositeWidget {
 		this
 				.setJavaScriptMember(
 						"wtResize",
-						"function(self, w, h) {self.style.height= h + 'px';var c = self.lastChild;var t = c.previousSibling;if (t.className == 'titlebar')h -= t.offsetHeight;h -= 8;if (h > 0) {c.style.height = h + 'px';$(c).children().css('height', h + 'px');}};");
+						"function(self, w, h) {self.style.height= h + 'px';var c = self.lastChild;var t = c.previousSibling;if (t.className == 'titlebar')h -= t.offsetHeight;h -= 8;if (h > 0) {c.style.height = h + 'px';$(c).children().each(function() { var self = $(this), padding = self.outerHeight() - self.height();self.height(h - padding);});}};");
 	}
 
 	/**
@@ -341,16 +341,6 @@ public class WPanel extends WCompositeWidget {
 		return this.expanded_;
 	}
 
-	public void refresh() {
-		super.refresh();
-		this.setJsSize();
-	}
-
-	public void resize(WLength width, WLength height) {
-		super.resize(width, height);
-		this.setJsSize();
-	}
-
 	Signal1<Boolean> collapsedSS() {
 		return this.collapsedSS_;
 	}
@@ -373,14 +363,7 @@ public class WPanel extends WCompositeWidget {
 	private Signal1<Boolean> expandedSS_;
 	private boolean wasCollapsed_;
 
-	private void setJsSize() {
-		if (!this.getHeight().isAuto()) {
-			this.callJavaScriptMember("wtResize", this.getJsRef() + ","
-					+ String.valueOf(this.getWidth().toPixels()) + ","
-					+ String.valueOf(this.getHeight().toPixels()));
-		}
-	}
-
+	// private void setJsSize() ;
 	private void doExpand() {
 		this.wasCollapsed_ = this.isCollapsed();
 		this.getCentralArea().show();

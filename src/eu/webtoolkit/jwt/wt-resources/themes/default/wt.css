@@ -235,6 +235,7 @@
     font-family: verdana,helvetica,tahoma,sans-serif;
     font-size: 10pt;
     cursor: default;
+    whitespace: nowrap;
 }
 
 .Wt-treeview .Wt-spacer {
@@ -320,4 +321,12 @@
 .Wt-treeview .Wt-header .Wt-tv-row,
 .Wt-treeview .Wt-tv-node .Wt-tv-row {
     border-left: 1px solid #FFFFFF;
+}
+
+/*
+ * For Ext::TableView
+ */
+
+table.x-grid3-row-table {
+    table-layout: fixed;
 }

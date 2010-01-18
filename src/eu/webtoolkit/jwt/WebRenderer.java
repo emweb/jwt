@@ -459,8 +459,10 @@ class WebRenderer implements SlotLearnerInterface {
 		page.streamUntil(response.out(), "HTML");
 		List<DomElement.TimeoutEvent> timeouts = new ArrayList<DomElement.TimeoutEvent>();
 		{
+			StringWriter js = new StringWriter();
 			EscapeOStream out = new EscapeOStream(response.out());
-			mainElement.asHTML(out, timeouts);
+			mainElement.asHTML(out, js, timeouts);
+			app.doJavaScript(js.toString());
 			;
 		}
 		StringWriter onload = new StringWriter();

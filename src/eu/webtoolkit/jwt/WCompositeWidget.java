@@ -74,6 +74,7 @@ public class WCompositeWidget extends WWidget {
 
 	public void resize(WLength width, WLength height) {
 		this.impl_.resize(width, height);
+		super.resize(width, height);
 	}
 
 	public WLength getWidth() {
@@ -254,6 +255,7 @@ public class WCompositeWidget extends WWidget {
 
 	public void refresh() {
 		this.impl_.refresh();
+		super.refresh();
 	}
 
 	public void setAttributeValue(String name, String value) {
@@ -266,6 +268,10 @@ public class WCompositeWidget extends WWidget {
 
 	public void setJavaScriptMember(String name, String value) {
 		this.impl_.setJavaScriptMember(name, value);
+	}
+
+	public String getJavaScriptMember(String name) {
+		return this.impl_.getJavaScriptMember(name);
 	}
 
 	public void callJavaScriptMember(String name, String args) {

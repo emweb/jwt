@@ -43,31 +43,37 @@ import eu.webtoolkit.jwt.utils.EnumUtils;
  * {@link WAbstractItemModel#sort(int column, SortOrder order)
  * WAbstractItemModel#sort()}), such as the {@link WStandardItemModel}, then you
  * can enable sorting buttons in the header, using
- * {@link WTreeView#setSortingEnabled(boolean enabled) setSortingEnabled()}.
+ * {@link WAbstractItemView#setSortingEnabled(boolean enabled)
+ * WAbstractItemView#setSortingEnabled()}.
  * <p>
  * You can allow selection on row or item level (using
- * {@link WTreeView#setSelectionBehavior(SelectionBehavior behavior)
- * setSelectionBehavior()}), and selection of single or multiple items (using
- * {@link WTreeView#setSelectionMode(SelectionMode mode) setSelectionMode()}),
- * and listen for changes in the selection using the
- * {@link WTreeView#selectionChanged() selectionChanged()} signal.
+ * {@link WAbstractItemView#setSelectionBehavior(SelectionBehavior behavior)
+ * WAbstractItemView#setSelectionBehavior()}), and selection of single or
+ * multiple items (using
+ * {@link WAbstractItemView#setSelectionMode(SelectionMode mode)
+ * WAbstractItemView#setSelectionMode()}), and listen for changes in the
+ * selection using the {@link WAbstractItemView#selectionChanged()
+ * WAbstractItemView#selectionChanged()} signal.
  * <p>
  * You may enable drag &amp; drop support for this view, whith awareness of the
  * items in the model. When enabling dragging (see
- * {@link WTreeView#setDragEnabled(boolean enable) setDragEnabled()}), the
- * current selection may be dragged, but only when all items in the selection
- * indicate support for dragging (controlled by the
- * {@link ItemFlag#ItemIsDragEnabled ItemIsDragEnabled} flag), and if the model
- * indicates a mime-type (controlled by {@link WAbstractItemModel#getMimeType()
- * WAbstractItemModel#getMimeType()}). Likewise, by enabling support for
- * dropping (see {@link WTreeView#setDropsEnabled(boolean enable)
- * setDropsEnabled()}), the treeview may receive a drop event on a particular
- * item, at least if the item indicates support for drops (controlled by the
- * {@link ItemFlag#ItemIsDropEnabled ItemIsDropEnabled} flag).
+ * {@link WAbstractItemView#setDragEnabled(boolean enable)
+ * WAbstractItemView#setDragEnabled()}), the current selection may be dragged,
+ * but only when all items in the selection indicate support for dragging
+ * (controlled by the {@link ItemFlag#ItemIsDragEnabled ItemIsDragEnabled}
+ * flag), and if the model indicates a mime-type (controlled by
+ * {@link WAbstractItemModel#getMimeType() WAbstractItemModel#getMimeType()}).
+ * Likewise, by enabling support for dropping (see
+ * {@link WAbstractItemView#setDropsEnabled(boolean enable)
+ * WAbstractItemView#setDropsEnabled()}), the treeview may receive a drop event
+ * on a particular item, at least if the item indicates support for drops
+ * (controlled by the {@link ItemFlag#ItemIsDropEnabled ItemIsDropEnabled}
+ * flag).
  * <p>
  * You may also react to mouse click events on any item, by connecting to one of
- * the {@link WTreeView#clicked() clicked()} or
- * {@link WTreeView#doubleClicked() doubleClicked()} signals.
+ * the {@link WAbstractItemView#clicked() WAbstractItemView#clicked()} or
+ * {@link WAbstractItemView#doubleClicked() WAbstractItemView#doubleClicked()}
+ * signals.
  * <p>
  * <h3>CSS</h3>
  * <p>
@@ -116,70 +122,35 @@ import eu.webtoolkit.jwt.utils.EnumUtils;
  * 
  * </div>
  */
-public class WTreeView extends WCompositeWidget {
+public class WTreeView extends WAbstractItemView {
 	/**
 	 * Create a new tree view.
 	 */
 	public WTreeView(WContainerWidget parent) {
-		super((WContainerWidget) null);
-		this.model_ = null;
-		this.itemDelegate_ = new WItemDelegate(this);
-		this.selectionModel_ = new WItemSelectionModel(
-				(WAbstractItemModel) null, this);
+		super(parent);
 		this.rootIndex_ = null;
-		this.rowHeight_ = new WLength(20);
-		this.headerLineHeight_ = new WLength(20);
 		this.expandedSet_ = new TreeSet<WModelIndex>();
 		this.renderedNodes_ = new HashMap<WModelIndex, WTreeViewNode>();
 		this.rootNode_ = null;
 		this.borderColorRule_ = null;
-		this.alternatingRowColors_ = false;
 		this.rootIsDecorated_ = true;
-		this.selectionMode_ = SelectionMode.NoSelection;
-		this.sorting_ = true;
-		this.columnResize_ = true;
-		this.multiLineHeader_ = false;
 		this.column1Fixed_ = false;
+		this.alternatingRowColors_ = false;
 		this.expandedRaw_ = new ArrayList<Object>();
 		this.selectionRaw_ = new ArrayList<Object>();
-		this.columns_ = new ArrayList<WTreeView.ColumnInfo>();
-		this.nextColumnId_ = 1;
 		this.collapsed_ = new Signal1<WModelIndex>(this);
 		this.expanded_ = new Signal1<WModelIndex>(this);
-		this.clicked_ = new Signal2<WModelIndex, WMouseEvent>(this);
-		this.doubleClicked_ = new Signal2<WModelIndex, WMouseEvent>(this);
-		this.mouseWentDown_ = new Signal2<WModelIndex, WMouseEvent>(this);
-		this.selectionChanged_ = new Signal(this);
 		this.viewportTop_ = 0;
 		this.viewportHeight_ = 30;
 		this.nodeLoad_ = 0;
-		this.currentSortColumn_ = -1;
 		this.contentsContainer_ = null;
 		this.scrollBarC_ = null;
-		this.modelConnections_ = new ArrayList<AbstractSignal.Connection>();
-		this.resizeHandleMDownJS_ = new JSlot(this);
-		this.resizeHandleMMovedJS_ = new JSlot(this);
-		this.resizeHandleMUpJS_ = new JSlot(this);
-		this.tieContentsHeaderScrollJS_ = new JSlot(this);
-		this.tieRowsScrollJS_ = new JSlot(this);
-		this.itemClickedJS_ = new JSlot(this);
-		this.itemDoubleClickedJS_ = new JSlot(this);
-		this.itemMouseDownJS_ = new JSlot(this);
 		this.itemEvent_ = new JSignal6<String, Integer, String, String, String, WMouseEvent>(
 				this, "itemEvent") {
 		};
-		this.dragEnabled_ = false;
-		this.dropsEnabled_ = false;
 		this.setImplementation(this.impl_ = new WContainerWidget());
-		this.renderState_ = WTreeView.RenderState.NeedRerender;
+		this.renderState_ = WAbstractItemView.RenderState.NeedRerender;
 		WApplication app = WApplication.getInstance();
-		this.clickedForSortMapper_ = new WSignalMapper1<Integer>(this);
-		this.clickedForSortMapper_.mapped().addListener(this,
-				new Signal1.Listener<Integer>() {
-					public void trigger(Integer e1) {
-						WTreeView.this.toggleSortColumn(e1);
-					}
-				});
 		this.clickedForCollapseMapper_ = new WSignalMapper1<Integer>(this);
 		this.clickedForCollapseMapper_.mapped().addListener(this,
 				new Signal1.Listener<Integer>() {
@@ -496,134 +467,6 @@ public class WTreeView extends WCompositeWidget {
 	}
 
 	/**
-	 * Sets the model.
-	 * <p>
-	 * The view will render the data in the given <code>model</code>. Changes to
-	 * the model are reflected in the view.
-	 * <p>
-	 * When resetting a model, all nodes are initially collapsed, the selection
-	 * is cleared, and the root index corresponds to the model&apos;s top level
-	 * node (see {@link WTreeView#setRootIndex(WModelIndex rootIndex)
-	 * setRootIndex()}).
-	 * <p>
-	 * The initial model is <code>null</code>.
-	 * <p>
-	 * Ownership of the model is not transferred (and thus the previously set
-	 * model is not deleted).
-	 * <p>
-	 * 
-	 * @see WTreeView#setRootIndex(WModelIndex rootIndex)
-	 */
-	public void setModel(WAbstractItemModel model) {
-		if (this.model_ != null) {
-			for (int i = 0; i < this.modelConnections_.size(); ++i) {
-				this.modelConnections_.get(i).disconnect();
-			}
-			this.modelConnections_.clear();
-		}
-		this.model_ = model;
-		this.rootIndex_ = null;
-		this.modelConnections_.add(this.model_.columnsInserted().addListener(
-				this, new Signal3.Listener<WModelIndex, Integer, Integer>() {
-					public void trigger(WModelIndex e1, Integer e2, Integer e3) {
-						WTreeView.this.modelColumnsInserted(e1, e2, e3);
-					}
-				}));
-		this.modelConnections_.add(this.model_.columnsAboutToBeRemoved()
-				.addListener(this,
-						new Signal3.Listener<WModelIndex, Integer, Integer>() {
-							public void trigger(WModelIndex e1, Integer e2,
-									Integer e3) {
-								WTreeView.this.modelColumnsAboutToBeRemoved(e1,
-										e2, e3);
-							}
-						}));
-		this.modelConnections_.add(this.model_.columnsRemoved().addListener(
-				this, new Signal3.Listener<WModelIndex, Integer, Integer>() {
-					public void trigger(WModelIndex e1, Integer e2, Integer e3) {
-						WTreeView.this.modelColumnsRemoved(e1, e2, e3);
-					}
-				}));
-		this.modelConnections_.add(this.model_.rowsInserted().addListener(this,
-				new Signal3.Listener<WModelIndex, Integer, Integer>() {
-					public void trigger(WModelIndex e1, Integer e2, Integer e3) {
-						WTreeView.this.modelRowsInserted(e1, e2, e3);
-					}
-				}));
-		this.modelConnections_.add(this.model_.rowsAboutToBeRemoved()
-				.addListener(this,
-						new Signal3.Listener<WModelIndex, Integer, Integer>() {
-							public void trigger(WModelIndex e1, Integer e2,
-									Integer e3) {
-								WTreeView.this.modelRowsAboutToBeRemoved(e1,
-										e2, e3);
-							}
-						}));
-		this.modelConnections_.add(this.model_.rowsRemoved().addListener(this,
-				new Signal3.Listener<WModelIndex, Integer, Integer>() {
-					public void trigger(WModelIndex e1, Integer e2, Integer e3) {
-						WTreeView.this.modelRowsRemoved(e1, e2, e3);
-					}
-				}));
-		this.modelConnections_.add(this.model_.dataChanged().addListener(this,
-				new Signal2.Listener<WModelIndex, WModelIndex>() {
-					public void trigger(WModelIndex e1, WModelIndex e2) {
-						WTreeView.this.modelDataChanged(e1, e2);
-					}
-				}));
-		this.modelConnections_.add(this.model_.headerDataChanged().addListener(
-				this, new Signal3.Listener<Orientation, Integer, Integer>() {
-					public void trigger(Orientation e1, Integer e2, Integer e3) {
-						WTreeView.this.modelHeaderDataChanged(e1, e2, e3);
-					}
-				}));
-		this.modelConnections_.add(this.model_.layoutAboutToBeChanged()
-				.addListener(this, new Signal.Listener() {
-					public void trigger() {
-						WTreeView.this.modelLayoutAboutToBeChanged();
-					}
-				}));
-		this.modelConnections_.add(this.model_.layoutChanged().addListener(
-				this, new Signal.Listener() {
-					public void trigger() {
-						WTreeView.this.modelLayoutChanged();
-					}
-				}));
-		this.modelConnections_.add(this.model_.modelReset().addListener(this,
-				new Signal.Listener() {
-					public void trigger() {
-						WTreeView.this.modelReset();
-					}
-				}));
-		WItemSelectionModel oldSelectionModel = this.selectionModel_;
-		this.selectionModel_ = new WItemSelectionModel(model, this);
-		this.selectionModel_.setSelectionBehavior(oldSelectionModel
-				.getSelectionBehavior());
-		this.expandedSet_.clear();
-		for (int i = this.columns_.size(); i < this.model_.getColumnCount(); ++i) {
-			this.columnInfo(i);
-		}
-		while ((int) this.columns_.size() > model.getColumnCount()) {
-			if (this.columns_.get(this.columns_.size() - 1).styleRule != null)
-				this.columns_.get(this.columns_.size() - 1).styleRule.remove();
-			this.columns_.remove(0 + this.columns_.size() - 1);
-		}
-		this.configureModelDragDrop();
-		this.scheduleRerender(WTreeView.RenderState.NeedRerender);
-		this.setHeaderHeight(this.headerLineHeight_, this.multiLineHeader_);
-	}
-
-	/**
-	 * Returns the model.
-	 * <p>
-	 * 
-	 * @see WTreeView#setModel(WAbstractItemModel model)
-	 */
-	public WAbstractItemModel getModel() {
-		return this.model_;
-	}
-
-	/**
 	 * Sets the root index.
 	 * <p>
 	 * The root index is the model index that is considered the root node. This
@@ -640,7 +483,8 @@ public class WTreeView extends WCompositeWidget {
 				.equals(this.rootIndex_)))) {
 			this.rootIndex_ = rootIndex;
 			if (this.model_ != null) {
-				this.scheduleRerender(WTreeView.RenderState.NeedRerenderTree);
+				this
+						.scheduleRerender(WAbstractItemView.RenderState.NeedRerenderData);
 			}
 		}
 	}
@@ -653,254 +497,6 @@ public class WTreeView extends WCompositeWidget {
 	 */
 	public WModelIndex getRootIndex() {
 		return this.rootIndex_;
-	}
-
-	/**
-	 * Sets the header height.
-	 * <p>
-	 * Use this method to change the header height. You may also enable the use
-	 * of multi-line headers. By default, the header text is a single line, that
-	 * is centered vertically.
-	 * <p>
-	 * The default value is 20 pixels.
-	 */
-	public void setHeaderHeight(WLength height, boolean multiLine) {
-		this.headerLineHeight_ = height;
-		this.multiLineHeader_ = multiLine;
-		int lineCount = this.getHeaderLevelCount();
-		WLength headerHeight = WLength.multiply(this.headerLineHeight_,
-				lineCount);
-		this.headerHeightRule_.getTemplateWidget().resize(WLength.Auto,
-				headerHeight);
-		if (!this.multiLineHeader_) {
-			this.headerHeightRule_.getTemplateWidget().setLineHeight(
-					this.headerLineHeight_);
-		} else {
-			this.headerHeightRule_.getTemplateWidget().setLineHeight(
-					WLength.Auto);
-		}
-		this.headers_.resize(this.headers_.getWidth(), headerHeight);
-		this.headerContainer_.resize(this.headerContainer_.getWidth(),
-				headerHeight);
-		if (this.renderState_.getValue() >= WTreeView.RenderState.NeedRerenderHeader
-				.getValue()) {
-			return;
-		}
-		if (!WApplication.getInstance().getEnvironment().agentIsIE()) {
-			for (int i = 1; i < this.getColumnCount(); ++i) {
-				this.headerTextWidget(i).setWordWrap(multiLine);
-			}
-		}
-	}
-
-	/**
-	 * Sets the header height.
-	 * <p>
-	 * Calls {@link #setHeaderHeight(WLength height, boolean multiLine)
-	 * setHeaderHeight(height, false)}
-	 */
-	public final void setHeaderHeight(WLength height) {
-		setHeaderHeight(height, false);
-	}
-
-	/**
-	 * Returns the header height.
-	 * <p>
-	 * 
-	 * @see WTreeView#setHeaderHeight(WLength height, boolean multiLine)
-	 */
-	public WLength getHeaderHeight() {
-		return this.headerLineHeight_;
-	}
-
-	/**
-	 * Sets the row height.
-	 * <p>
-	 * The view assumes that all rows are of the same height. Use this method to
-	 * set the height.
-	 * <p>
-	 * The default value is 20 pixels.
-	 * <p>
-	 * <p>
-	 * <i><b>Note: </b>The height must be specified in
-	 * {@link WLength.Unit#Pixel} units.</i>
-	 * </p>
-	 * 
-	 * @see WTreeView#setColumnWidth(int column, WLength width)
-	 */
-	public void setRowHeight(WLength rowHeight) {
-		this.rowHeight_ = rowHeight;
-		this.rowHeightRule_.getTemplateWidget().resize(WLength.Auto,
-				this.rowHeight_);
-		this.rowHeightRule_.getTemplateWidget().setLineHeight(this.rowHeight_);
-		this.setRootNodeStyle();
-		for (Iterator<Map.Entry<WModelIndex, WTreeViewNode>> i_it = this.renderedNodes_
-				.entrySet().iterator(); i_it.hasNext();) {
-			Map.Entry<WModelIndex, WTreeViewNode> i = i_it.next();
-			i.getValue().rerenderSpacers();
-		}
-		if (this.rootNode_ != null) {
-			this.scheduleRerender(WTreeView.RenderState.NeedAdjustViewPort);
-		}
-	}
-
-	/**
-	 * Returns the row height.
-	 */
-	public WLength getRowHeight() {
-		return this.rowHeight_;
-	}
-
-	/**
-	 * Sets the column width.
-	 * <p>
-	 * For a model with
-	 * {@link WAbstractItemModel#getColumnCount(WModelIndex parent)
-	 * columnCount()} == <code>N</code>, the initial width of columns 1..
-	 * <code>N</code> is set to 150 pixels, and column 0 will take all remaining
-	 * space.
-	 * <p>
-	 * <p>
-	 * <i><b>Note: </b>The actual space occupied by each column is the column
-	 * width augmented by 7 pixels for internal padding and a border.</i>
-	 * </p>
-	 * 
-	 * @see WTreeView#setRowHeight(WLength rowHeight)
-	 */
-	public void setColumnWidth(int column, WLength width) {
-		this.columnInfo(column).width = width;
-		if (column != 0) {
-			this.columnInfo(column).styleRule.getTemplateWidget().resize(width,
-					WLength.Auto);
-		} else {
-			if (this.column1Fixed_) {
-				this.c0WidthRule_.getTemplateWidget().resize(
-						new WLength(width.toPixels()), WLength.Auto);
-			}
-		}
-		if (!this.column1Fixed_ && !this.columnInfo(0).width.isAuto()) {
-			double total = 0;
-			for (int i = 0; i < this.getColumnCount(); ++i) {
-				total += this.columnInfo(i).width.toPixels() + 7;
-			}
-			this.headers_.resize(new WLength(total), this.headers_.getHeight());
-			WContainerWidget wrapRoot = ((this.contents_.getWidget(0)) instanceof WContainerWidget ? (WContainerWidget) (this.contents_
-					.getWidget(0))
-					: null);
-			wrapRoot.resize(new WLength(total), wrapRoot.getHeight());
-		}
-	}
-
-	/**
-	 * Returns the column width.
-	 * <p>
-	 * 
-	 * @see WTreeView#setColumnWidth(int column, WLength width)
-	 */
-	public WLength getColumnWidth(int column) {
-		return this.columnInfo(column).width;
-	}
-
-	/**
-	 * Sets the content alignment for a column.
-	 * <p>
-	 * The default value is {@link AlignmentFlag#AlignLeft AlignLeft}.
-	 * <p>
-	 * <p>
-	 * <i><b>Note: </b>For column 0, {@link AlignmentFlag#AlignCenter
-	 * AlignCenter} is currently not supported.</i>
-	 * </p>
-	 * 
-	 * @see WTreeView#setHeaderAlignment(int column, AlignmentFlag alignment)
-	 */
-	public void setColumnAlignment(int column, AlignmentFlag alignment) {
-		WWidget w = this.columnInfo(column).styleRule.getTemplateWidget();
-		if (column != 0) {
-			String align = null;
-			switch (alignment) {
-			case AlignLeft:
-				align = "left";
-				break;
-			case AlignCenter:
-				align = "center";
-				break;
-			case AlignRight:
-				align = "right";
-				break;
-			case AlignJustify:
-				align = "justify";
-				break;
-			default:
-				break;
-			}
-			if (align != null) {
-				w.setAttributeValue("style", "text-align: " + align);
-			}
-		} else {
-			if (alignment == AlignmentFlag.AlignRight) {
-				w.setFloatSide(Side.Right);
-			}
-		}
-	}
-
-	/**
-	 * Sets the header alignment for a column.
-	 * <p>
-	 * The default value is {@link AlignmentFlag#AlignLeft AlignLeft}.
-	 * <p>
-	 * 
-	 * @see WTreeView#setColumnAlignment(int column, AlignmentFlag alignment)
-	 */
-	public void setHeaderAlignment(int column, AlignmentFlag alignment) {
-		this.columnInfo(column).headerAlignment = alignment;
-		if (this.renderState_.getValue() >= WTreeView.RenderState.NeedRerenderHeader
-				.getValue()) {
-			return;
-		}
-		WContainerWidget wc;
-		if (column != 0) {
-			wc = ((this.headerWidget(column)) instanceof WContainerWidget ? (WContainerWidget) (this
-					.headerWidget(column))
-					: null);
-		} else {
-			wc = this.headers_;
-		}
-		wc.setContentAlignment(EnumSet.of(alignment));
-	}
-
-	/**
-	 * Returns the content alignment for a column.
-	 * <p>
-	 * 
-	 * @see WTreeView#setColumnAlignment(int column, AlignmentFlag alignment)
-	 */
-	public AlignmentFlag getColumnAlignment(int column) {
-		return this.columnInfo(column).alignment;
-	}
-
-	/**
-	 * Returns the header alignment for a column.
-	 * <p>
-	 * 
-	 * @see WTreeView#setHeaderAlignment(int column, AlignmentFlag alignment)
-	 */
-	public AlignmentFlag getHeaderAlignment(int column) {
-		return this.columnInfo(column).headerAlignment;
-	}
-
-	/**
-	 * Sets the column border color.
-	 * <p>
-	 * The default border color is white.
-	 */
-	public void setColumnBorder(WColor color) {
-		if (this.borderColorRule_ != null)
-			this.borderColorRule_.remove();
-		this.borderColorRule_ = new WCssTextRule(
-				".Wt-treeview .Wt-tv-br, .Wt-treeview .header .Wt-tv-row, .Wt-treeview .Wt-tv-node .Wt-tv-row .Wt-tv-c, .Wt-treeview .Wt-tv-node .Wt-tv-row",
-				"border-color: " + color.getCssText());
-		WApplication.getInstance().getStyleSheet().addRule(
-				this.borderColorRule_);
 	}
 
 	/**
@@ -993,11 +589,11 @@ public class WTreeView extends WCompositeWidget {
 	}
 
 	/**
-	 * Sets if alternating row colors are to be used.
+	 * Sets if alternating row colors are to be used. Configure whether rows get
+	 * an alternating background color. These are implemented by using a
+	 * background image on the root node, like:.
 	 * <p>
-	 * Configure whether rows get an alternating background color. These are
-	 * implemented by using a background image on the root node, like: <div
-	 * align="center"> <img src="doc-files//stripe-30px.gif"
+	 * <div align="center"> <img src="doc-files//stripe-30px.gif"
 	 * alt="Sample image use for alternating row colors">
 	 * <p>
 	 * <strong>Sample image use for alternating row colors</strong>
@@ -1018,12 +614,6 @@ public class WTreeView extends WCompositeWidget {
 		}
 	}
 
-	/**
-	 * Returns whether alternating row colors are used.
-	 * <p>
-	 * 
-	 * @see WTreeView#setAlternatingRowColors(boolean enable)
-	 */
 	public boolean hasAlternatingRowColors() {
 		return this.alternatingRowColors_;
 	}
@@ -1049,311 +639,6 @@ public class WTreeView extends WCompositeWidget {
 	 */
 	public boolean isRootDecorated() {
 		return this.rootIsDecorated_;
-	}
-
-	/**
-	 * Sort the data according to a column.
-	 * <p>
-	 * Sorts the data according to data in column <code>column</code> and sort
-	 * order <code>order</code>.
-	 * <p>
-	 * 
-	 * @see WAbstractItemModel#sort(int column, SortOrder order)
-	 */
-	public void sortByColumn(int column, SortOrder order) {
-		if (this.currentSortColumn_ != -1) {
-			this.headerSortIconWidget(this.currentSortColumn_).setStyleClass(
-					"Wt-tv-sh Wt-tv-sh-none");
-		}
-		this.currentSortColumn_ = column;
-		this.columnInfo(column).sortOrder = order;
-		if (this.renderState_ != WTreeView.RenderState.NeedRerender) {
-			this.headerSortIconWidget(this.currentSortColumn_).setStyleClass(
-					order == SortOrder.AscendingOrder ? "Wt-tv-sh Wt-tv-sh-up"
-							: "Wt-tv-sh Wt-tv-sh-down");
-		}
-		this.model_.sort(column, order);
-	}
-
-	/**
-	 * Enable sorting.
-	 * <p>
-	 * Enable or disable sorting by the user on all columns.
-	 * <p>
-	 * Sorting is enabled by default.
-	 * <p>
-	 * 
-	 * @see WAbstractItemModel#sort(int column, SortOrder order)
-	 */
-	public void setSortingEnabled(boolean enabled) {
-		this.sorting_ = enabled;
-		for (int i = 0; i < this.getColumnCount(); ++i) {
-			this.columnInfo(i).sorting = enabled;
-		}
-		this.scheduleRerender(WTreeView.RenderState.NeedRerenderHeader);
-	}
-
-	/**
-	 * Enable sorting.
-	 * <p>
-	 * Enable or disable sorting by the user for a specific column.
-	 * <p>
-	 * Sorting is enabled by default.
-	 * <p>
-	 * 
-	 * @see WAbstractItemModel#sort(int column, SortOrder order)
-	 */
-	public void setSortingEnabled(int column, boolean enabled) {
-		this.columnInfo(column).sorting = enabled;
-		this.scheduleRerender(WTreeView.RenderState.NeedRerenderHeader);
-	}
-
-	/**
-	 * Returns whether sorting is enabled.
-	 * <p>
-	 * 
-	 * @see WTreeView#setSortingEnabled(boolean enabled)
-	 */
-	public boolean isSortingEnabled() {
-		return this.sorting_;
-	}
-
-	/**
-	 * Enable interactive column resizing.
-	 * <p>
-	 * Enable or disable column resize handles for interactive resizing of the
-	 * columns.
-	 * <p>
-	 * 
-	 * @see WTreeView#setColumnResizeEnabled(boolean enabled)
-	 */
-	public void setColumnResizeEnabled(boolean enabled) {
-		if (enabled != this.columnResize_) {
-			this.columnResize_ = enabled;
-			this.scheduleRerender(WTreeView.RenderState.NeedRerenderHeader);
-		}
-	}
-
-	/**
-	 * Returns whether column resizing is enabled.
-	 * <p>
-	 * 
-	 * @see WTreeView#setColumnResizeEnabled(boolean enabled)
-	 */
-	public boolean isColumnResizeEnabled() {
-		return this.columnResize_;
-	}
-
-	/**
-	 * Change the selection behaviour.
-	 * <p>
-	 * The selection behavior indicates whether whole rows or individual items
-	 * can be selected. It is a property of the
-	 * {@link WTreeView#getSelectionModel() getSelectionModel()}.
-	 * <p>
-	 * By default, selection operates on rows (
-	 * {@link SelectionBehavior#SelectRows SelectRows}), in which case model
-	 * indexes will always be in the first column (column <code>null</code>).
-	 * <p>
-	 * Alternatively, you can allow selection for individual items (
-	 * {@link SelectionBehavior#SelectItems SelectItems}).
-	 * <p>
-	 * 
-	 * @see WItemSelectionModel#setSelectionBehavior(SelectionBehavior behavior)
-	 * @see WTreeView#setSelectionMode(SelectionMode mode)
-	 */
-	public void setSelectionBehavior(SelectionBehavior behavior) {
-		if (behavior != this.getSelectionBehavior()) {
-			this.clearSelection();
-			this.selectionModel_.setSelectionBehavior(behavior);
-		}
-	}
-
-	/**
-	 * Returns the selection behaviour.
-	 * <p>
-	 * 
-	 * @see WTreeView#setSelectionBehavior(SelectionBehavior behavior)
-	 */
-	public SelectionBehavior getSelectionBehavior() {
-		return this.selectionModel_.getSelectionBehavior();
-	}
-
-	/**
-	 * Sets the selection mode.
-	 * <p>
-	 * By default selection is disabled ({@link SelectionMode#NoSelection
-	 * NoSelection}).
-	 * <p>
-	 * 
-	 * @see WTreeView#setSelectionBehavior(SelectionBehavior behavior)
-	 */
-	public void setSelectionMode(SelectionMode mode) {
-		if (mode != this.selectionMode_) {
-			this.clearSelection();
-			this.selectionMode_ = mode;
-		}
-	}
-
-	/**
-	 * Returns the selection mode.
-	 * <p>
-	 * 
-	 * @see WTreeView#setSelectionMode(SelectionMode mode)
-	 */
-	public SelectionMode getSelectionMode() {
-		return this.selectionMode_;
-	}
-
-	/**
-	 * Returns the selection model.
-	 * <p>
-	 * The selection model keeps track of the currently selected items.
-	 */
-	public WItemSelectionModel getSelectionModel() {
-		return this.selectionModel_;
-	}
-
-	/**
-	 * Sets the selected items.
-	 * <p>
-	 * Replaces the current selection with <code>indexes</code>.
-	 * <p>
-	 * 
-	 * @see WTreeView#select(WModelIndex index, SelectionFlag option)
-	 * @see WTreeView#getSelectionModel()
-	 */
-	public void setSelectedIndexes(SortedSet<WModelIndex> indexes) {
-		if (indexes.isEmpty() && this.selectionModel_.selection_.isEmpty()) {
-			return;
-		}
-		this.clearSelection();
-		for (Iterator<WModelIndex> i_it = indexes.iterator(); i_it.hasNext();) {
-			WModelIndex i = i_it.next();
-			this.internalSelect(i, SelectionFlag.Select);
-		}
-		this.selectionChanged_.trigger();
-	}
-
-	/**
-	 * Select a single item.
-	 * <p>
-	 * 
-	 * @see WTreeView#setSelectedIndexes(SortedSet indexes)
-	 * @see WTreeView#getSelectionModel()
-	 */
-	public void select(WModelIndex index, SelectionFlag option) {
-		if (this.internalSelect(index, option)) {
-			this.selectionChanged_.trigger();
-		}
-	}
-
-	/**
-	 * Select a single item.
-	 * <p>
-	 * Calls {@link #select(WModelIndex index, SelectionFlag option)
-	 * select(index, SelectionFlag.Select)}
-	 */
-	public final void select(WModelIndex index) {
-		select(index, SelectionFlag.Select);
-	}
-
-	/**
-	 * Returns wheter an item is selected.
-	 * <p>
-	 * This is a convenience method for: <blockquote>
-	 * 
-	 * <pre>
-	 * selectionModel().isSelected(index)
-	 * </pre>
-	 * 
-	 * </blockquote>
-	 * <p>
-	 * 
-	 * @see WTreeView#getSelectedIndexes()
-	 * @see WTreeView#select(WModelIndex index, SelectionFlag option)
-	 * @see WTreeView#getSelectionModel()
-	 */
-	public boolean isSelected(WModelIndex index) {
-		return this.selectionModel_.isSelected(index);
-	}
-
-	/**
-	 * Returns the set of selected items.
-	 * <p>
-	 * The model indexes are returned as a set, topologically ordered (in the
-	 * order they appear in the view).
-	 * <p>
-	 * This is a convenience method for: <blockquote>
-	 * 
-	 * <pre>
-	 * selectionModel().selectedIndexes()
-	 * </pre>
-	 * 
-	 * </blockquote>
-	 * <p>
-	 * 
-	 * @see WTreeView#setSelectedIndexes(SortedSet indexes)
-	 */
-	public SortedSet<WModelIndex> getSelectedIndexes() {
-		return this.selectionModel_.selection_;
-	}
-
-	/**
-	 * Enable the selection to be dragged (drag &amp; drop).
-	 * <p>
-	 * To enable dragging of the selection, you first need to enable selection
-	 * using {@link WTreeView#setSelectionMode(SelectionMode mode)
-	 * setSelectionMode()}.
-	 * <p>
-	 * Whether an individual item may be dragged is controlled by the
-	 * item&apos;s {@link ItemFlag#ItemIsDragEnabled ItemIsDragEnabled} flag.
-	 * The selection can be dragged only if all items currently selected can be
-	 * dragged.
-	 * <p>
-	 * 
-	 * @see WTreeView#setDropsEnabled(boolean enable)
-	 */
-	public void setDragEnabled(boolean enable) {
-		if (this.dragEnabled_ != enable) {
-			this.dragEnabled_ = enable;
-			if (enable) {
-				this.dragWidget_ = new WText(this.headerContainer_);
-				this.dragWidget_.setId(this.getId() + "dw");
-				this.dragWidget_.setInline(false);
-				this.dragWidget_.hide();
-				this.setAttributeValue("dwid", this.dragWidget_.getId());
-				this.configureModelDragDrop();
-			}
-		}
-	}
-
-	/**
-	 * Enable drop operations (drag &amp; drop).
-	 * <p>
-	 * When drop is enabled, the tree view will indicate that something may be
-	 * dropped when the mime-type of the dragged object is compatible with one
-	 * of the model&apos;s accepted drop mime-types (see
-	 * {@link WAbstractItemModel#getAcceptDropMimeTypes()
-	 * WAbstractItemModel#getAcceptDropMimeTypes()}) or this widget&apos;s
-	 * accepted drop mime-types (see
-	 * {@link WWidget#acceptDrops(String mimeType, String hoverStyleClass)
-	 * WWidget#acceptDrops()}), and the target item has drop enabled (which is
-	 * controlled by the item&apos;s {@link ItemFlag#ItemIsDropEnabled
-	 * ItemIsDropEnabled} flag).
-	 * <p>
-	 * Drop events must be handled in
-	 * {@link WTreeView#dropEvent(WDropEvent e, WModelIndex index) dropEvent()}.
-	 * <p>
-	 * 
-	 * @see WTreeView#setDragEnabled(boolean enable)
-	 * @see WTreeView#dropEvent(WDropEvent e, WModelIndex index)
-	 */
-	public void setDropsEnabled(boolean enable) {
-		if (this.dropsEnabled_ != enable) {
-			this.dropsEnabled_ = enable;
-			this.configureModelDragDrop();
-		}
 	}
 
 	/**
@@ -1410,7 +695,8 @@ public class WTreeView extends WCompositeWidget {
 		if (!height.isAuto()) {
 			this.viewportHeight_ = (int) Math.ceil(height.toPixels()
 					/ this.rowHeight_.toPixels());
-			this.scheduleRerender(WTreeView.RenderState.NeedAdjustViewPort);
+			this
+					.scheduleRerender(WAbstractItemView.RenderState.NeedAdjustViewPort);
 		}
 		WLength w = WApplication.getInstance().getEnvironment().hasAjax() ? WLength.Auto
 				: width;
@@ -1446,107 +732,244 @@ public class WTreeView extends WCompositeWidget {
 		return this.expanded_;
 	}
 
-	/**
-	 * Signal emitted when an item is clicked.
-	 * <p>
-	 * 
-	 * @see WTreeView#doubleClicked()
-	 */
-	public Signal2<WModelIndex, WMouseEvent> clicked() {
-		return this.clicked_;
-	}
-
-	/**
-	 * Signal emitted when an item is double clicked.
-	 * <p>
-	 * 
-	 * @see WTreeView#doubleClicked()
-	 */
-	public Signal2<WModelIndex, WMouseEvent> doubleClicked() {
-		return this.doubleClicked_;
-	}
-
-	/**
-	 * Signal emitted when an item is double clicked.
-	 * <p>
-	 * 
-	 * @see WTreeView#doubleClicked()
-	 */
-	public Signal2<WModelIndex, WMouseEvent> mouseWentDown() {
-		return this.mouseWentDown_;
-	}
-
-	/**
-	 * Signal emitted when the selection is changed.
-	 * <p>
-	 * 
-	 * @see WTreeView#select(WModelIndex index, SelectionFlag option)
-	 * @see WTreeView#setSelectionMode(SelectionMode mode)
-	 * @see WTreeView#setSelectionBehavior(SelectionBehavior behavior)
-	 */
-	public Signal selectionChanged() {
-		return this.selectionChanged_;
-	}
-
 	// public void openPersistentEditor(WModelIndex index) ;
 	// public void closePersistentEditor(WModelIndex index) ;
-	/**
-	 * Sets the default item delegate.
-	 * <p>
-	 * The previous delegate is removed but not deleted.
-	 * <p>
-	 * The default item delegate is a {@link WItemDelegate}.
-	 */
-	public void setItemDelegate(WAbstractItemDelegate delegate) {
-		this.itemDelegate_ = delegate;
+	public void setModel(WAbstractItemModel model) {
+		super.setModel(model);
+		this.rootIndex_ = null;
+		this.modelConnections_.add(this.model_.columnsInserted().addListener(
+				this, new Signal3.Listener<WModelIndex, Integer, Integer>() {
+					public void trigger(WModelIndex e1, Integer e2, Integer e3) {
+						WTreeView.this.modelColumnsInserted(e1, e2, e3);
+					}
+				}));
+		this.modelConnections_.add(this.model_.columnsAboutToBeRemoved()
+				.addListener(this,
+						new Signal3.Listener<WModelIndex, Integer, Integer>() {
+							public void trigger(WModelIndex e1, Integer e2,
+									Integer e3) {
+								WTreeView.this.modelColumnsAboutToBeRemoved(e1,
+										e2, e3);
+							}
+						}));
+		this.modelConnections_.add(this.model_.columnsRemoved().addListener(
+				this, new Signal3.Listener<WModelIndex, Integer, Integer>() {
+					public void trigger(WModelIndex e1, Integer e2, Integer e3) {
+						WTreeView.this.modelColumnsRemoved(e1, e2, e3);
+					}
+				}));
+		this.modelConnections_.add(this.model_.rowsInserted().addListener(this,
+				new Signal3.Listener<WModelIndex, Integer, Integer>() {
+					public void trigger(WModelIndex e1, Integer e2, Integer e3) {
+						WTreeView.this.modelRowsInserted(e1, e2, e3);
+					}
+				}));
+		this.modelConnections_.add(this.model_.rowsAboutToBeRemoved()
+				.addListener(this,
+						new Signal3.Listener<WModelIndex, Integer, Integer>() {
+							public void trigger(WModelIndex e1, Integer e2,
+									Integer e3) {
+								WTreeView.this.modelRowsAboutToBeRemoved(e1,
+										e2, e3);
+							}
+						}));
+		this.modelConnections_.add(this.model_.rowsRemoved().addListener(this,
+				new Signal3.Listener<WModelIndex, Integer, Integer>() {
+					public void trigger(WModelIndex e1, Integer e2, Integer e3) {
+						WTreeView.this.modelRowsRemoved(e1, e2, e3);
+					}
+				}));
+		this.modelConnections_.add(this.model_.dataChanged().addListener(this,
+				new Signal2.Listener<WModelIndex, WModelIndex>() {
+					public void trigger(WModelIndex e1, WModelIndex e2) {
+						WTreeView.this.modelDataChanged(e1, e2);
+					}
+				}));
+		this.modelConnections_.add(this.model_.headerDataChanged().addListener(
+				this, new Signal3.Listener<Orientation, Integer, Integer>() {
+					public void trigger(Orientation e1, Integer e2, Integer e3) {
+						WTreeView.this.modelHeaderDataChanged(e1, e2, e3);
+					}
+				}));
+		this.modelConnections_.add(this.model_.layoutAboutToBeChanged()
+				.addListener(this, new Signal.Listener() {
+					public void trigger() {
+						WTreeView.this.modelLayoutAboutToBeChanged();
+					}
+				}));
+		this.modelConnections_.add(this.model_.layoutChanged().addListener(
+				this, new Signal.Listener() {
+					public void trigger() {
+						WTreeView.this.modelLayoutChanged();
+					}
+				}));
+		this.modelConnections_.add(this.model_.modelReset().addListener(this,
+				new Signal.Listener() {
+					public void trigger() {
+						WTreeView.this.modelReset();
+					}
+				}));
+		this.expandedSet_.clear();
+		while ((int) this.columns_.size() > model.getColumnCount()) {
+			if (this.columns_.get(this.columns_.size() - 1).styleRule != null)
+				this.columns_.get(this.columns_.size() - 1).styleRule.remove();
+			this.columns_.remove(0 + this.columns_.size() - 1);
+		}
 	}
 
 	/**
-	 * Returns the default item delegate.
+	 * Sets the column width.
 	 * <p>
+	 * For a model with
+	 * {@link WAbstractItemModel#getColumnCount(WModelIndex parent)
+	 * columnCount()} == <code>N</code>, the initial width of columns 1..
+	 * <code>N</code> is set to 150 pixels, and column 0 will take all remaining
+	 * space.
+	 * <p>
+	 * <p>
+	 * <i><b>Note: </b>The actual space occupied by each column is the column
+	 * width augmented by 7 pixels for internal padding and a border.</i>
+	 * </p>
 	 * 
-	 * @see WTreeView#setItemDelegate(WAbstractItemDelegate delegate)
+	 * @see WTreeView#setRowHeight(WLength rowHeight)
 	 */
-	public WAbstractItemDelegate getItemDelegate() {
-		return this.itemDelegate_;
+	public void setColumnWidth(int column, WLength width) {
+		this.columnInfo(column).width = width;
+		if (column != 0) {
+			this.columnInfo(column).styleRule.getTemplateWidget().resize(width,
+					WLength.Auto);
+		} else {
+			if (this.column1Fixed_) {
+				this.c0WidthRule_.getTemplateWidget().resize(
+						new WLength(width.toPixels()), WLength.Auto);
+			}
+		}
+		if (!this.column1Fixed_ && !this.columnInfo(0).width.isAuto()) {
+			double total = 0;
+			for (int i = 0; i < this.getColumnCount(); ++i) {
+				total += this.columnInfo(i).width.toPixels() + 7;
+			}
+			this.headers_.resize(new WLength(total), this.headers_.getHeight());
+			WContainerWidget wrapRoot = ((this.contents_.getWidget(0)) instanceof WContainerWidget ? (WContainerWidget) (this.contents_
+					.getWidget(0))
+					: null);
+			wrapRoot.resize(new WLength(total), wrapRoot.getHeight());
+		}
 	}
 
-	/**
-	 * Sets the delegate for a column.
-	 * <p>
-	 * The previous delegate is removed but not deleted.
-	 * <p>
-	 * 
-	 * @see WTreeView#setItemDelegate(WAbstractItemDelegate delegate)
-	 */
-	public void setItemDelegateForColumn(int column,
-			WAbstractItemDelegate delegate) {
-		this.columnInfo(column).itemDelegate_ = delegate;
+	public WLength getColumnWidth(int column) {
+		return this.columnInfo(column).width;
 	}
 
-	/**
-	 * Returns the delegate for a column.
-	 * <p>
-	 * 
-	 * @see WTreeView#setItemDelegateForColumn(int column, WAbstractItemDelegate
-	 *      delegate)
-	 */
-	public WAbstractItemDelegate getItemDelegateForColumn(int column) {
-		return this.columnInfo(column).itemDelegate_;
+	public void setRowHeight(WLength rowHeight) {
+		this.rowHeight_ = rowHeight;
+		this.rowHeightRule_.getTemplateWidget().resize(WLength.Auto,
+				this.rowHeight_);
+		this.rowHeightRule_.getTemplateWidget().setLineHeight(this.rowHeight_);
+		this.setRootNodeStyle();
+		for (Iterator<Map.Entry<WModelIndex, WTreeViewNode>> i_it = this.renderedNodes_
+				.entrySet().iterator(); i_it.hasNext();) {
+			Map.Entry<WModelIndex, WTreeViewNode> i = i_it.next();
+			i.getValue().rerenderSpacers();
+		}
+		if (this.rootNode_ != null) {
+			this
+					.scheduleRerender(WAbstractItemView.RenderState.NeedAdjustViewPort);
+		}
 	}
 
-	/**
-	 * Returns the delegate for rendering an item.
-	 * <p>
-	 * 
-	 * @see WTreeView#setItemDelegateForColumn(int column, WAbstractItemDelegate
-	 *      delegate)
-	 * @see WTreeView#setItemDelegate(WAbstractItemDelegate delegate)
-	 */
-	public WAbstractItemDelegate getItemDelegate(WModelIndex index) {
-		WAbstractItemDelegate result = this.getItemDelegateForColumn(index
-				.getColumn());
-		return result != null ? result : this.itemDelegate_;
+	public void setHeaderHeight(WLength height, boolean multiLine) {
+		this.headerLineHeight_ = height;
+		this.multiLineHeader_ = multiLine;
+		int lineCount = this.getHeaderLevelCount();
+		WLength headerHeight = WLength.multiply(this.headerLineHeight_,
+				lineCount);
+		this.headerHeightRule_.getTemplateWidget().resize(WLength.Auto,
+				headerHeight);
+		if (!this.multiLineHeader_) {
+			this.headerHeightRule_.getTemplateWidget().setLineHeight(
+					this.headerLineHeight_);
+		} else {
+			this.headerHeightRule_.getTemplateWidget().setLineHeight(
+					WLength.Auto);
+		}
+		this.headers_.resize(this.headers_.getWidth(), headerHeight);
+		this.headerContainer_.resize(this.headerContainer_.getWidth(),
+				headerHeight);
+		if (this.renderState_.getValue() >= WAbstractItemView.RenderState.NeedRerenderHeader
+				.getValue()) {
+			return;
+		}
+		if (!WApplication.getInstance().getEnvironment().agentIsIE()) {
+			for (int i = 1; i < this.getColumnCount(); ++i) {
+				this.headerTextWidget(i).setWordWrap(multiLine);
+			}
+		}
+	}
+
+	public void setColumnAlignment(int column, AlignmentFlag alignment) {
+		WWidget w = this.columnInfo(column).styleRule.getTemplateWidget();
+		if (column != 0) {
+			String align = null;
+			switch (alignment) {
+			case AlignLeft:
+				align = "left";
+				break;
+			case AlignCenter:
+				align = "center";
+				break;
+			case AlignRight:
+				align = "right";
+				break;
+			case AlignJustify:
+				align = "justify";
+				break;
+			default:
+				break;
+			}
+			if (align != null) {
+				w.setAttributeValue("style", "text-align: " + align);
+			}
+		} else {
+			if (alignment == AlignmentFlag.AlignRight) {
+				w.setFloatSide(Side.Right);
+			}
+		}
+	}
+
+	public AlignmentFlag getColumnAlignment(int column) {
+		return this.columnInfo(column).alignment;
+	}
+
+	public void setHeaderAlignment(int column, AlignmentFlag alignment) {
+		this.columnInfo(column).headerAlignment = alignment;
+		if (this.renderState_.getValue() >= WAbstractItemView.RenderState.NeedRerenderHeader
+				.getValue()) {
+			return;
+		}
+		WContainerWidget wc;
+		if (column != 0) {
+			wc = ((this.headerWidget(column)) instanceof WContainerWidget ? (WContainerWidget) (this
+					.headerWidget(column))
+					: null);
+		} else {
+			wc = this.headers_;
+		}
+		wc.setContentAlignment(EnumSet.of(alignment));
+	}
+
+	public AlignmentFlag getHeaderAlignment(int column) {
+		return this.columnInfo(column).headerAlignment;
+	}
+
+	public void setColumnBorder(WColor color) {
+		if (this.borderColorRule_ != null)
+			this.borderColorRule_.remove();
+		this.borderColorRule_ = new WCssTextRule(
+				".Wt-treeview .Wt-tv-br, .Wt-treeview .header .Wt-tv-row, .Wt-treeview .Wt-tv-node .Wt-tv-row .Wt-tv-c, .Wt-treeview .Wt-tv-node .Wt-tv-row",
+				"border-color: " + color.getCssText());
+		WApplication.getInstance().getStyleSheet().addRule(
+				this.borderColorRule_);
 	}
 
 	public void refresh() {
@@ -1595,69 +1018,10 @@ public class WTreeView extends WCompositeWidget {
 						+ ";} else {object.className = 'Wt-valid-drop';self.dropEl = item.el;self.dropEl.classNameOrig = self.dropEl.className;self.dropEl.className = self.dropEl.className + ' Wt-drop-site';}} else {object.className = '';}};");
 	}
 
-	/**
-	 * Handle a drop event (drag &amp; drop).
-	 * <p>
-	 * The <code>event</code> object contains details about the drop operation,
-	 * identifying the source (which provides the data) and the mime-type of the
-	 * data. The drop was received on the <code>target</code> item.
-	 * <p>
-	 * The drop event can be handled either by the view itself, or by the model.
-	 * The default implementation checks if the mime-type is accepted by the
-	 * model, and if so passes the drop event to the model. If the source is the
-	 * view&apos;s own selection model, then the drop event will be handled as a
-	 * {@link DropAction#MoveAction MoveAction}, otherwise the drop event will
-	 * be handled as a {@link DropAction#CopyAction CopyAction}.
-	 * <p>
-	 * 
-	 * @see WAbstractItemModel#dropEvent(WDropEvent e, DropAction action, int
-	 *      row, int column, WModelIndex parent)
-	 */
-	protected void dropEvent(WDropEvent e, WModelIndex index) {
-		if (this.dropsEnabled_) {
-			List<String> acceptMimeTypes = this.model_.getAcceptDropMimeTypes();
-			for (int i = 0; i < acceptMimeTypes.size(); ++i) {
-				if (acceptMimeTypes.get(i).equals(e.getMimeType())) {
-					boolean internal = e.getSource() == this.selectionModel_;
-					DropAction action = internal ? DropAction.MoveAction
-							: DropAction.CopyAction;
-					this.model_.dropEvent(e, action, index.getRow(), index
-							.getColumn(), index.getParent());
-					this.setSelectedIndexes(new TreeSet<WModelIndex>());
-					return;
-				}
-			}
-		}
-		super.dropEvent(e);
-	}
-
-	/**
-	 * Create an extra widget in the header.
-	 * <p>
-	 * You may reimplement this method to provide an extra widget to be placed
-	 * below the header label. The extra widget will be visible only if a
-	 * multi-line header is configured using
-	 * {@link WTreeView#setHeaderHeight(WLength height, boolean multiLine)
-	 * setHeaderHeight()}.
-	 * <p>
-	 * The widget is created only once, but this method may be called repeatedly
-	 * for a column for which prior calls returned <code>null</code> (i.e. each
-	 * time the header is rerendered).
-	 * <p>
-	 * The default implementation returns <code>null</code>.
-	 * <p>
-	 * 
-	 * @see WTreeView#setHeaderHeight(WLength height, boolean multiLine)
-	 * @see WTreeView#extraHeaderWidget(int column)
-	 */
-	protected WWidget createExtraHeaderWidget(int column) {
-		return null;
-	}
-
 	void render() {
-		while (this.renderState_ != WTreeView.RenderState.RenderOk) {
-			WTreeView.RenderState s = this.renderState_;
-			this.renderState_ = WTreeView.RenderState.RenderOk;
+		while (this.renderState_ != WAbstractItemView.RenderState.RenderOk) {
+			WAbstractItemView.RenderState s = this.renderState_;
+			this.renderState_ = WAbstractItemView.RenderState.RenderOk;
 			switch (s) {
 			case NeedRerender:
 				this.initLayoutJavaScript();
@@ -1667,7 +1031,7 @@ public class WTreeView extends WCompositeWidget {
 			case NeedRerenderHeader:
 				this.rerenderHeader();
 				break;
-			case NeedRerenderTree:
+			case NeedRerenderData:
 				this.rerenderTree();
 				break;
 			case NeedAdjustViewPort:
@@ -1683,20 +1047,6 @@ public class WTreeView extends WCompositeWidget {
 		super.render();
 	}
 
-	/**
-	 * Returns the extra header widget.
-	 * <p>
-	 * Returns the widget previously created using
-	 * {@link WTreeView#createExtraHeaderWidget(int column)
-	 * createExtraHeaderWidget()}
-	 * <p>
-	 * 
-	 * @see WTreeView#createExtraHeaderWidget(int column)
-	 */
-	protected WWidget extraHeaderWidget(int column) {
-		return this.columnInfo(column).extraHeaderWidget;
-	}
-
 	protected void enableAjax() {
 		this.rootNode_.clicked().addListener(this.itemClickedJS_);
 		this.rootNode_.doubleClicked().addListener(this.itemDoubleClickedJS_);
@@ -1706,47 +1056,7 @@ public class WTreeView extends WCompositeWidget {
 		super.enableAjax();
 	}
 
-	static class ColumnInfo {
-		public WCssTemplateRule styleRule;
-		public int id;
-		public SortOrder sortOrder;
-		public AlignmentFlag alignment;
-		public AlignmentFlag headerAlignment;
-		public WLength width;
-		public WWidget extraHeaderWidget;
-		public boolean sorting;
-		public WAbstractItemDelegate itemDelegate_;
-
-		public String getStyleClass() {
-			return "Wt-tv-c" + String.valueOf(this.id);
-		}
-
-		public ColumnInfo(WTreeView view, WApplication app, int anId, int column) {
-			this.id = anId;
-			this.sortOrder = SortOrder.AscendingOrder;
-			this.alignment = AlignmentFlag.AlignLeft;
-			this.headerAlignment = AlignmentFlag.AlignLeft;
-			this.width = new WLength();
-			this.extraHeaderWidget = null;
-			this.sorting = view.sorting_;
-			this.itemDelegate_ = null;
-			this.styleRule = new WCssTemplateRule("#" + view.getId() + " ."
-					+ this.getStyleClass());
-			if (column != 0) {
-				this.width = new WLength(150);
-				this.styleRule.getTemplateWidget().resize(this.width,
-						WLength.Auto);
-			}
-			app.getStyleSheet().addRule(this.styleRule);
-		}
-	}
-
-	private WAbstractItemModel model_;
-	private WAbstractItemDelegate itemDelegate_;
-	private WItemSelectionModel selectionModel_;
 	private WModelIndex rootIndex_;
-	private WLength rowHeight_;
-	private WLength headerLineHeight_;
 	SortedSet<WModelIndex> expandedSet_;
 	private HashMap<WModelIndex, WTreeViewNode> renderedNodes_;
 	private WTreeViewNode rootNode_;
@@ -1756,55 +1066,19 @@ public class WTreeView extends WCompositeWidget {
 	private WCssTemplateRule rowContentsWidthRule_;
 	private WCssTemplateRule c0WidthRule_;
 	private WCssRule borderColorRule_;
-	private boolean alternatingRowColors_;
 	private boolean rootIsDecorated_;
-	private SelectionMode selectionMode_;
-	private boolean sorting_;
-	private boolean columnResize_;
-	private boolean multiLineHeader_;
 	boolean column1Fixed_;
+	private boolean alternatingRowColors_;
 	private List<Object> expandedRaw_;
 	private List<Object> selectionRaw_;
 	private Object rawRootIndex_;
-	private List<WTreeView.ColumnInfo> columns_;
-	private int nextColumnId_;
 	Signal1<WModelIndex> collapsed_;
 	Signal1<WModelIndex> expanded_;
-	private Signal2<WModelIndex, WMouseEvent> clicked_;
-	private Signal2<WModelIndex, WMouseEvent> doubleClicked_;
-	private Signal2<WModelIndex, WMouseEvent> mouseWentDown_;
-	private Signal selectionChanged_;
-	private WSignalMapper1<Integer> clickedForSortMapper_;
-	WSignalMapper1<WModelIndex> clickedMapper_;
-	private WSignalMapper1<Integer> clickedForExpandMapper_;
-	private WSignalMapper1<Integer> clickedForCollapseMapper_;
-
-	enum RenderState {
-		RenderOk(0), NeedAdjustViewPort(1), NeedRerenderTree(2), NeedRerenderHeader(
-				3), NeedRerender(4);
-
-		private int value;
-
-		RenderState(int value) {
-			this.value = value;
-		}
-
-		/**
-		 * Returns the numerical representation of this enum.
-		 */
-		public int getValue() {
-			return value;
-		}
-	}
-
-	private WTreeView.RenderState renderState_;
-	private boolean needDefineJS_;
 	private int viewportTop_;
 	private int viewportHeight_;
 	private int firstRenderedRow_;
 	private int validRowCount_;
 	private int nodeLoad_;
-	private int currentSortColumn_;
 	private WContainerWidget impl_;
 	private WContainerWidget headers_;
 	private WContainerWidget headerContainer_;
@@ -1813,20 +1087,29 @@ public class WTreeView extends WCompositeWidget {
 	private WContainerWidget scrollBarC_;
 	private int firstRemovedRow_;
 	private int removedHeight_;
-	private List<AbstractSignal.Connection> modelConnections_;
-	private JSlot resizeHandleMDownJS_;
-	private JSlot resizeHandleMMovedJS_;
-	private JSlot resizeHandleMUpJS_;
-	private JSlot tieContentsHeaderScrollJS_;
-	private JSlot tieRowsScrollJS_;
-	private JSlot itemClickedJS_;
-	private JSlot itemDoubleClickedJS_;
-	private JSlot itemMouseDownJS_;
 	private JSignal6<String, Integer, String, String, String, WMouseEvent> itemEvent_;
-	private boolean dragEnabled_;
-	private boolean dropsEnabled_;
-	private WWidget dragWidget_;
 	ToggleButtonConfig expandConfig_;
+
+	WAbstractItemView.ColumnInfo columnInfo(int column) {
+		while (column >= (int) this.columns_.size()) {
+			WAbstractItemView.ColumnInfo ci = this.createColumnInfo(column);
+			this.columns_.add(ci);
+		}
+		return this.columns_.get(column);
+	}
+
+	private WAbstractItemView.ColumnInfo createColumnInfo(int column) {
+		WAbstractItemView.ColumnInfo ci = new WAbstractItemView.ColumnInfo(
+				this, ++this.nextColumnId_, column);
+		ci.styleRule = new WCssTemplateRule("#" + this.getId() + " ."
+				+ ci.getStyleClass());
+		if (column != 0) {
+			ci.width = new WLength(150);
+			ci.styleRule.getTemplateWidget().resize(ci.width, WLength.Auto);
+		}
+		WApplication.getInstance().getStyleSheet().addRule(ci.styleRule);
+		return ci;
+	}
 
 	private void initLayoutJavaScript() {
 		this.refresh();
@@ -1876,6 +1159,7 @@ public class WTreeView extends WCompositeWidget {
 		}
 		for (int i = 1; i < this.getColumnCount(); ++i) {
 			WWidget w = this.createHeaderWidget(app, i);
+			w.setFloatSide(Side.Left);
 			row.addWidget(w);
 		}
 		WText t = new WText("&nbsp;");
@@ -1938,34 +1222,18 @@ public class WTreeView extends WCompositeWidget {
 		this.adjustToViewport();
 	}
 
-	void scheduleRerender(WTreeView.RenderState what) {
-		if (!this.isRendered()) {
-			return;
-		}
-		if (what == WTreeView.RenderState.NeedRerenderHeader
-				&& this.renderState_ == WTreeView.RenderState.NeedRerenderTree
-				|| what == WTreeView.RenderState.NeedRerenderTree
-				&& this.renderState_ == WTreeView.RenderState.NeedRerenderHeader) {
-			this.renderState_ = WTreeView.RenderState.NeedRerender;
-		} else {
-			this.renderState_ = EnumUtils.max(what, this.renderState_);
-		}
-		this.askRerender();
-	}
-
-	private void modelColumnsInserted(WModelIndex parent, int start, int end) {
+	void modelColumnsInserted(WModelIndex parent, int start, int end) {
 		int count = end - start + 1;
 		if (!(parent != null)) {
 			WApplication app = WApplication.getInstance();
 			for (int i = start; i < start + count; ++i) {
-				this.columns_.add(0 + i, new WTreeView.ColumnInfo(this, app,
-						++this.nextColumnId_, i));
+				this.columns_.add(0 + i, this.createColumnInfo(i));
 			}
-			if (this.renderState_.getValue() < WTreeView.RenderState.NeedRerenderHeader
+			if (this.renderState_.getValue() < WAbstractItemView.RenderState.NeedRerenderHeader
 					.getValue()) {
 				if (start == 0) {
 					this
-							.scheduleRerender(WTreeView.RenderState.NeedRerenderHeader);
+							.scheduleRerender(WAbstractItemView.RenderState.NeedRerenderHeader);
 				} else {
 					double newWidth = 0;
 					for (int i = start; i < start + count; ++i) {
@@ -1981,19 +1249,20 @@ public class WTreeView extends WCompositeWidget {
 					}
 					WContainerWidget row = this.getHeaderRow();
 					for (int i = start; i < start + count; ++i) {
-						row
-								.insertWidget(i - 1, this.createHeaderWidget(
-										app, i));
+						WWidget w = this.createHeaderWidget(app, i);
+						w.setFloatSide(Side.Left);
+						row.insertWidget(i - 1, w);
 					}
 				}
 			}
 		}
-		if (this.renderState_ == WTreeView.RenderState.NeedRerender
-				|| this.renderState_ == WTreeView.RenderState.NeedRerenderTree) {
+		if (this.renderState_ == WAbstractItemView.RenderState.NeedRerender
+				|| this.renderState_ == WAbstractItemView.RenderState.NeedRerenderData) {
 			return;
 		}
 		if (start == 0) {
-			this.scheduleRerender(WTreeView.RenderState.NeedRerenderTree);
+			this
+					.scheduleRerender(WAbstractItemView.RenderState.NeedRerenderData);
 		} else {
 			WWidget parentWidget = this.widgetForIndex(parent);
 			if (parentWidget != null) {
@@ -2010,11 +1279,10 @@ public class WTreeView extends WCompositeWidget {
 		}
 	}
 
-	private void modelColumnsAboutToBeRemoved(WModelIndex parent, int start,
-			int end) {
+	void modelColumnsAboutToBeRemoved(WModelIndex parent, int start, int end) {
 		int count = end - start + 1;
 		if (!(parent != null)) {
-			if (this.renderState_.getValue() < WTreeView.RenderState.NeedRerenderHeader
+			if (this.renderState_.getValue() < WAbstractItemView.RenderState.NeedRerenderHeader
 					.getValue()) {
 				WApplication app = WApplication.getInstance();
 				for (int i = start; i < start + count; ++i) {
@@ -2034,11 +1302,11 @@ public class WTreeView extends WCompositeWidget {
 			for (int ii = 0; ii < (0 + start + count) - (0 + start); ++ii)
 				this.columns_.remove(0 + start);
 			;
-			if (this.renderState_.getValue() < WTreeView.RenderState.NeedRerenderHeader
+			if (this.renderState_.getValue() < WAbstractItemView.RenderState.NeedRerenderHeader
 					.getValue()) {
 				if (start == 0) {
 					this
-							.scheduleRerender(WTreeView.RenderState.NeedRerenderHeader);
+							.scheduleRerender(WAbstractItemView.RenderState.NeedRerenderHeader);
 				} else {
 					for (int i = start; i < start + count; ++i) {
 						if (this.headerWidget(start, false) != null)
@@ -2048,13 +1316,14 @@ public class WTreeView extends WCompositeWidget {
 			}
 		}
 		if (start == 0) {
-			this.scheduleRerender(WTreeView.RenderState.NeedRerenderTree);
+			this
+					.scheduleRerender(WAbstractItemView.RenderState.NeedRerenderData);
 		}
 	}
 
-	private void modelColumnsRemoved(WModelIndex parent, int start, int end) {
-		if (this.renderState_ == WTreeView.RenderState.NeedRerender
-				|| this.renderState_ == WTreeView.RenderState.NeedRerenderTree) {
+	void modelColumnsRemoved(WModelIndex parent, int start, int end) {
+		if (this.renderState_ == WAbstractItemView.RenderState.NeedRerender
+				|| this.renderState_ == WAbstractItemView.RenderState.NeedRerenderData) {
 			return;
 		}
 		int count = end - start + 1;
@@ -2077,11 +1346,11 @@ public class WTreeView extends WCompositeWidget {
 		}
 	}
 
-	private void modelRowsInserted(WModelIndex parent, int start, int end) {
+	void modelRowsInserted(WModelIndex parent, int start, int end) {
 		int count = end - start + 1;
 		this.shiftModelIndexes(parent, start, count);
-		if (this.renderState_ == WTreeView.RenderState.NeedRerender
-				|| this.renderState_ == WTreeView.RenderState.NeedRerenderTree) {
+		if (this.renderState_ == WAbstractItemView.RenderState.NeedRerender
+				|| this.renderState_ == WAbstractItemView.RenderState.NeedRerenderData) {
 			return;
 		}
 		WWidget parentWidget = this.widgetForIndex(parent);
@@ -2205,11 +1474,10 @@ public class WTreeView extends WCompositeWidget {
 		}
 	}
 
-	private void modelRowsAboutToBeRemoved(WModelIndex parent, int start,
-			int end) {
+	void modelRowsAboutToBeRemoved(WModelIndex parent, int start, int end) {
 		int count = end - start + 1;
-		if (this.renderState_ != WTreeView.RenderState.NeedRerender
-				|| this.renderState_ != WTreeView.RenderState.NeedRerenderTree) {
+		if (this.renderState_ != WAbstractItemView.RenderState.NeedRerender
+				|| this.renderState_ != WAbstractItemView.RenderState.NeedRerenderData) {
 			this.firstRemovedRow_ = -1;
 			this.removedHeight_ = 0;
 			WWidget parentWidget = this.widgetForIndex(parent);
@@ -2284,13 +1552,13 @@ public class WTreeView extends WCompositeWidget {
 		this.shiftModelIndexes(parent, start, -count);
 	}
 
-	private void modelRowsRemoved(WModelIndex parent, int start, int end) {
+	void modelRowsRemoved(WModelIndex parent, int start, int end) {
 		this.renderedRowsChanged(this.firstRemovedRow_, -this.removedHeight_);
 	}
 
-	private void modelDataChanged(WModelIndex topLeft, WModelIndex bottomRight) {
-		if (this.renderState_ == WTreeView.RenderState.NeedRerender
-				|| this.renderState_ == WTreeView.RenderState.NeedRerenderTree) {
+	void modelDataChanged(WModelIndex topLeft, WModelIndex bottomRight) {
+		if (this.renderState_ == WAbstractItemView.RenderState.NeedRerender
+				|| this.renderState_ == WAbstractItemView.RenderState.NeedRerenderData) {
 			return;
 		}
 		WModelIndex parent = topLeft.getParent();
@@ -2315,9 +1583,8 @@ public class WTreeView extends WCompositeWidget {
 		}
 	}
 
-	private void modelHeaderDataChanged(Orientation orientation, int start,
-			int end) {
-		if (this.renderState_.getValue() < WTreeView.RenderState.NeedRerenderHeader
+	void modelHeaderDataChanged(Orientation orientation, int start, int end) {
+		if (this.renderState_.getValue() < WAbstractItemView.RenderState.NeedRerenderHeader
 				.getValue()) {
 			if (orientation == Orientation.Horizontal) {
 				for (int i = start; i <= end; ++i) {
@@ -2329,13 +1596,13 @@ public class WTreeView extends WCompositeWidget {
 		}
 	}
 
-	private void modelLayoutAboutToBeChanged() {
+	void modelLayoutAboutToBeChanged() {
 		this.convertToRaw(this.expandedSet_, this.expandedRaw_);
 		this.convertToRaw(this.selectionModel_.selection_, this.selectionRaw_);
 		this.rawRootIndex_ = this.model_.toRawIndex(this.rootIndex_);
 	}
 
-	private void modelLayoutChanged() {
+	void modelLayoutChanged() {
 		if (this.rawRootIndex_ != null) {
 			this.rootIndex_ = this.model_.fromRawIndex(this.rawRootIndex_);
 		} else {
@@ -2355,11 +1622,7 @@ public class WTreeView extends WCompositeWidget {
 		}
 		this.selectionRaw_.clear();
 		this.renderedNodes_.clear();
-		this.scheduleRerender(WTreeView.RenderState.NeedRerenderTree);
-	}
-
-	private void modelReset() {
-		this.setModel(this.model_);
+		this.scheduleRerender(WAbstractItemView.RenderState.NeedRerenderData);
 	}
 
 	private void onViewportChange(WScrollEvent e) {
@@ -2367,20 +1630,7 @@ public class WTreeView extends WCompositeWidget {
 				/ this.rowHeight_.toPixels());
 		this.viewportHeight_ = (int) Math.ceil(e.getViewportHeight()
 				/ this.rowHeight_.toPixels());
-		this.scheduleRerender(WTreeView.RenderState.NeedAdjustViewPort);
-	}
-
-	private void toggleSortColumn(int columnid) {
-		int column = this.columnById(columnid);
-		if (column != this.currentSortColumn_) {
-			this.sortByColumn(column, this.columnInfo(column).sortOrder);
-		} else {
-			this
-					.sortByColumn(
-							column,
-							this.columnInfo(column).sortOrder == SortOrder.AscendingOrder ? SortOrder.DescendingOrder
-									: SortOrder.AscendingOrder);
-		}
+		this.scheduleRerender(WAbstractItemView.RenderState.NeedAdjustViewPort);
 	}
 
 	private void onItemEvent(String nodeId, int columnId, String type,
@@ -2475,13 +1725,13 @@ public class WTreeView extends WCompositeWidget {
 
 	private void expandColumn(int columnid) {
 		this.model_.expandColumn(this.columnById(columnid));
-		this.scheduleRerender(WTreeView.RenderState.NeedRerenderHeader);
+		this.scheduleRerender(WAbstractItemView.RenderState.NeedRerenderHeader);
 		this.setHeaderHeight(this.headerLineHeight_, this.multiLineHeader_);
 	}
 
 	private void collapseColumn(int columnid) {
 		this.model_.collapseColumn(this.columnById(columnid));
-		this.scheduleRerender(WTreeView.RenderState.NeedRerenderHeader);
+		this.scheduleRerender(WAbstractItemView.RenderState.NeedRerenderHeader);
 		this.setHeaderHeight(this.headerLineHeight_, this.multiLineHeader_);
 	}
 
@@ -2908,19 +2158,6 @@ public class WTreeView extends WCompositeWidget {
 		return getIndexRow(child, ancestor, lowerBound, Integer.MAX_VALUE);
 	}
 
-	int getColumnCount() {
-		return this.columns_.size();
-	}
-
-	private int columnById(int columnid) {
-		for (int i = 0; i < this.getColumnCount(); ++i) {
-			if (this.columnInfo(i).id == columnid) {
-				return i;
-			}
-		}
-		return 0;
-	}
-
 	String getColumnStyleClass(int column) {
 		return this.columnInfo(column).getStyleClass();
 	}
@@ -2942,7 +2179,7 @@ public class WTreeView extends WCompositeWidget {
 		if (row < this.firstRenderedRow_) {
 			this.firstRenderedRow_ += count;
 		}
-		this.scheduleRerender(WTreeView.RenderState.NeedAdjustViewPort);
+		this.scheduleRerender(WAbstractItemView.RenderState.NeedAdjustViewPort);
 	}
 
 	private void convertToRaw(SortedSet<WModelIndex> set, List<Object> result) {
@@ -2969,181 +2206,6 @@ public class WTreeView extends WCompositeWidget {
 					: null);
 		}
 		return row;
-	}
-
-	private WWidget createHeaderWidget(WApplication app, int column) {
-		int headerLevel = this.model_ != null ? (int) StringUtils
-				.asNumber(this.model_.getHeaderData(column,
-						Orientation.Horizontal, ItemDataRole.LevelRole)) : 0;
-		int rightBorderLevel = headerLevel;
-		if (this.model_ != null && column + 1 < this.getColumnCount()) {
-			EnumSet<HeaderFlag> flagsLeft = this.model_.getHeaderFlags(column);
-			EnumSet<HeaderFlag> flagsRight = this.model_
-					.getHeaderFlags(column + 1);
-			int rightHeaderLevel = (int) StringUtils.asNumber(this.model_
-					.getHeaderData(column + 1, Orientation.Horizontal,
-							ItemDataRole.LevelRole));
-			if (!EnumUtils.mask(flagsLeft, HeaderFlag.ColumnIsExpandedRight)
-					.isEmpty()) {
-				rightBorderLevel = headerLevel + 1;
-			} else {
-				if (!EnumUtils
-						.mask(flagsRight, HeaderFlag.ColumnIsExpandedLeft)
-						.isEmpty()) {
-					rightBorderLevel = rightHeaderLevel + 1;
-				} else {
-					rightBorderLevel = Math.min(headerLevel, rightHeaderLevel);
-				}
-			}
-		}
-		WTreeView.ColumnInfo info = this.columnInfo(column);
-		WContainerWidget w = new WContainerWidget();
-		w.setObjectName("contents");
-		if (info.sorting) {
-			WText sortIcon = new WText(w);
-			sortIcon.setObjectName("sort");
-			sortIcon.setInline(false);
-			if (!this.columnResize_) {
-				sortIcon.setMargin(new WLength(4), EnumSet.of(Side.Right));
-			}
-			sortIcon.setStyleClass("Wt-tv-sh Wt-tv-sh-none");
-			this.clickedForSortMapper_.mapConnect(sortIcon.clicked(), info.id);
-		}
-		if (!EnumUtils.mask(
-				this.model_.getHeaderFlags(column),
-				EnumSet.of(HeaderFlag.ColumnIsExpandedLeft,
-						HeaderFlag.ColumnIsExpandedRight)).isEmpty()) {
-			WImage collapseIcon = new WImage(w);
-			collapseIcon.setFloatSide(Side.Left);
-			collapseIcon.setImageRef(WApplication.getResourcesUrl()
-					+ "minus.gif");
-			this.clickedForCollapseMapper_.mapConnect(collapseIcon.clicked(),
-					info.id);
-		} else {
-			if (!EnumUtils.mask(this.model_.getHeaderFlags(column),
-					HeaderFlag.ColumnIsCollapsed).isEmpty()) {
-				WImage expandIcon = new WImage(w);
-				expandIcon.setFloatSide(Side.Left);
-				expandIcon.setImageRef(WApplication.getResourcesUrl()
-						+ "plus.gif");
-				this.clickedForExpandMapper_.mapConnect(expandIcon.clicked(),
-						info.id);
-			}
-		}
-		WText t = new WText("&nbsp;", w);
-		t.setObjectName("text");
-		t.setStyleClass("Wt-label");
-		t.setInline(false);
-		if (this.multiLineHeader_ || app.getEnvironment().agentIsIE()) {
-			t.setWordWrap(true);
-		} else {
-			t.setWordWrap(false);
-		}
-		WContainerWidget result = new WContainerWidget();
-		result.setFloatSide(Side.Left);
-		if (headerLevel != 0) {
-			WContainerWidget spacer = new WContainerWidget(result);
-			t = new WText(spacer);
-			t.setInline(false);
-			if (rightBorderLevel < headerLevel) {
-				if (rightBorderLevel != 0) {
-					t.setText(repeat(OneLine, rightBorderLevel));
-					spacer = new WContainerWidget(result);
-					t = new WText(spacer);
-					t.setInline(false);
-				}
-				t.setText(repeat(OneLine, headerLevel - rightBorderLevel));
-				spacer.setStyleClass("Wt-tv-br");
-			} else {
-				t.setText(repeat(OneLine, headerLevel));
-			}
-		}
-		w.setStyleClass(w.getStyleClass()
-				+ (rightBorderLevel <= headerLevel ? " Wt-tv-br" : ""));
-		result.addWidget(w);
-		result.setStyleClass("Wt-tv-c headerrh " + info.getStyleClass());
-		result.setContentAlignment(info.headerAlignment);
-		WWidget extraW = this.columnInfo(column).extraHeaderWidget;
-		if (extraW != null) {
-			result.addWidget(extraW);
-			extraW.setStyleClass(extraW.getStyleClass() + " Wt-tv-br");
-		}
-		if (this.columnResize_) {
-			WContainerWidget resizeHandle = new WContainerWidget();
-			resizeHandle.setStyleClass("Wt-tv-rh headerrh");
-			resizeHandle.mouseWentDown().addListener(this.resizeHandleMDownJS_);
-			resizeHandle.mouseWentUp().addListener(this.resizeHandleMUpJS_);
-			resizeHandle.mouseMoved().addListener(this.resizeHandleMMovedJS_);
-			boolean ie = WApplication.getInstance().getEnvironment()
-					.agentIsIE();
-			WContainerWidget parent = ie ? w
-					: ((result.getWidget(0)) instanceof WContainerWidget ? (WContainerWidget) (result
-							.getWidget(0))
-							: null);
-			parent.insertWidget(0, resizeHandle);
-			if (ie) {
-				parent.setAttributeValue("style", "zoom: 1");
-				parent.resize(WLength.Auto, this.headerLineHeight_);
-			}
-		}
-		WText spacer = new WText();
-		spacer.setInline(false);
-		spacer.setStyleClass("Wt-tv-br headerrh");
-		result.addWidget(spacer);
-		return result;
-	}
-
-	private WWidget headerWidget(int column, boolean contentsOnly) {
-		WWidget result = null;
-		if (column == 0) {
-			result = this.headers_.getWidget(this.headers_.getCount() - 1);
-		} else {
-			result = this.getHeaderRow().getWidget(column - 1);
-		}
-		if (contentsOnly && column != 0) {
-			return result.find("contents");
-		} else {
-			return result;
-		}
-	}
-
-	private final WWidget headerWidget(int column) {
-		return headerWidget(column, true);
-	}
-
-	private WText headerTextWidget(int column) {
-		return ((this.headerWidget(column).find("text")) instanceof WText ? (WText) (this
-				.headerWidget(column).find("text"))
-				: null);
-	}
-
-	private WText headerSortIconWidget(int column) {
-		if (!this.columnInfo(column).sorting) {
-			return null;
-		}
-		if (column == 0) {
-			WContainerWidget row = ((this.headers_.getWidget(0)) instanceof WContainerWidget ? (WContainerWidget) (this.headers_
-					.getWidget(0))
-					: null);
-			return ((row.getWidget(1)) instanceof WText ? (WText) (row
-					.getWidget(1)) : null);
-		} else {
-			return ((this.headerWidget(column).find("sort")) instanceof WText ? (WText) (this
-					.headerWidget(column).find("sort"))
-					: null);
-		}
-	}
-
-	private int getHeaderLevelCount() {
-		int result = 0;
-		if (this.model_ != null) {
-			for (int i = 0; i < this.columns_.size(); ++i) {
-				int l = (int) StringUtils.asNumber(this.model_.getHeaderData(i,
-						Orientation.Horizontal, ItemDataRole.LevelRole));
-				result = Math.max(result, l);
-			}
-		}
-		return result + 1;
 	}
 
 	private void selectionHandleClick(WModelIndex index,
@@ -3182,7 +2244,7 @@ public class WTreeView extends WCompositeWidget {
 		this.clicked_.trigger(index, new WMouseEvent());
 	}
 
-	private boolean internalSelect(WModelIndex index, SelectionFlag option) {
+	boolean internalSelect(WModelIndex index, SelectionFlag option) {
 		if (this.getSelectionBehavior() == SelectionBehavior.SelectRows
 				&& index.getColumn() != 0) {
 			return this.internalSelect(this.model_.getIndex(index.getRow(), 0,
@@ -3279,57 +2341,6 @@ public class WTreeView extends WCompositeWidget {
 		this.selectionChanged_.trigger();
 	}
 
-	private void clearSelection() {
-		SortedSet<WModelIndex> nodes = this.selectionModel_.selection_;
-		while (!nodes.isEmpty()) {
-			WModelIndex i = nodes.iterator().next();
-			this.internalSelect(i, SelectionFlag.Deselect);
-		}
-	}
-
-	private void checkDragSelection() {
-		String dragMimeType = this.model_.getMimeType();
-		if (dragMimeType.length() != 0) {
-			SortedSet<WModelIndex> selection = this.selectionModel_
-					.getSelectedIndexes();
-			boolean dragOk = !selection.isEmpty();
-			for (Iterator<WModelIndex> i_it = selection.iterator(); i_it
-					.hasNext();) {
-				WModelIndex i = i_it.next();
-				if (!!EnumUtils.mask(i.getFlags(), ItemFlag.ItemIsDragEnabled)
-						.isEmpty()) {
-					dragOk = false;
-					break;
-				}
-			}
-			if (dragOk) {
-				this.setAttributeValue("drag", "true");
-			} else {
-				this.setAttributeValue("drag", "false");
-			}
-		}
-	}
-
-	private void configureModelDragDrop() {
-		if (!(this.model_ != null)) {
-			return;
-		}
-		if (this.dragEnabled_) {
-			this.setAttributeValue("dmt", this.model_.getMimeType());
-			this.setAttributeValue("dsid", WApplication.getInstance()
-					.encodeObject(this.selectionModel_));
-			this.checkDragSelection();
-		}
-		List<String> acceptMimeTypes = this.model_.getAcceptDropMimeTypes();
-		for (int i = 0; i < acceptMimeTypes.size(); ++i) {
-			if (this.dropsEnabled_) {
-				this.acceptDrops(acceptMimeTypes.get(i), "Wt-drop-site");
-			} else {
-				this.stopAcceptDrops(acceptMimeTypes.get(i));
-			}
-		}
-	}
-
 	private void expandChildrenToDepth(WModelIndex index, int depth) {
 		for (int i = 0; i < this.model_.getRowCount(index); ++i) {
 			WModelIndex c = this.model_.getIndex(i, 0, index);
@@ -3340,15 +2351,40 @@ public class WTreeView extends WCompositeWidget {
 		}
 	}
 
-	private WTreeView.ColumnInfo columnInfo(int column) {
-		while (column >= (int) this.columns_.size()) {
-			this.columns_.add(new WTreeView.ColumnInfo(this, WApplication
-					.getInstance(), ++this.nextColumnId_, column));
-		}
-		return this.columns_.get(column);
+	WContainerWidget getHeaderContainer() {
+		return this.headerContainer_;
 	}
 
-	private static String OneLine = "<div>&nbsp;</div>";
+	WWidget headerWidget(int column, boolean contentsOnly) {
+		WWidget result = null;
+		if (column == 0) {
+			result = this.headers_.getWidget(this.headers_.getCount() - 1);
+		} else {
+			result = this.getHeaderRow().getWidget(column - 1);
+		}
+		if (contentsOnly && column != 0) {
+			return result.find("contents");
+		} else {
+			return result;
+		}
+	}
+
+	WText headerSortIconWidget(int column) {
+		if (!this.columnInfo(column).sorting) {
+			return null;
+		}
+		if (column == 0) {
+			WContainerWidget row = ((this.headers_.getWidget(0)) instanceof WContainerWidget ? (WContainerWidget) (this.headers_
+					.getWidget(0))
+					: null);
+			return ((row.getWidget(1)) instanceof WText ? (WText) (row
+					.getWidget(1)) : null);
+		} else {
+			return ((this.headerWidget(column).find("sort")) instanceof WText ? (WText) (this
+					.headerWidget(column).find("sort"))
+					: null);
+		}
+	}
 
 	static boolean isAncestor(WModelIndex i1, WModelIndex i2) {
 		if (!(i1 != null)) {
@@ -3360,13 +2396,5 @@ public class WTreeView extends WCompositeWidget {
 			}
 		}
 		return !(i2 != null);
-	}
-
-	static String repeat(String s, int times) {
-		String result = "";
-		for (int i = 0; i < times; ++i) {
-			result += s;
-		}
-		return result;
 	}
 }
