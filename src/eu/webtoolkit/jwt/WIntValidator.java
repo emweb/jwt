@@ -15,7 +15,7 @@ package eu.webtoolkit.jwt;
  */
 public class WIntValidator extends WValidator {
 	/**
-	 * Create a new integer validator that accepts any integer.
+	 * Creates a new integer validator that accepts any integer.
 	 */
 	public WIntValidator(WObject parent) {
 		super(parent);
@@ -27,7 +27,7 @@ public class WIntValidator extends WValidator {
 	}
 
 	/**
-	 * Create a new integer validator that accepts any integer.
+	 * Creates a new integer validator that accepts any integer.
 	 * <p>
 	 * Calls {@link #WIntValidator(WObject parent) this((WObject)null)}
 	 */
@@ -36,7 +36,7 @@ public class WIntValidator extends WValidator {
 	}
 
 	/**
-	 * Create a new integer validator that accepts integer input within the
+	 * Creates a new integer validator that accepts integer input within the
 	 * given range.
 	 */
 	public WIntValidator(int bottom, int top, WObject parent) {
@@ -49,7 +49,7 @@ public class WIntValidator extends WValidator {
 	}
 
 	/**
-	 * Create a new integer validator that accepts integer input within the
+	 * Creates a new integer validator that accepts integer input within the
 	 * given range.
 	 * <p>
 	 * Calls {@link #WIntValidator(int bottom, int top, WObject parent)
@@ -60,14 +60,14 @@ public class WIntValidator extends WValidator {
 	}
 
 	/**
-	 * Return the bottom of the valid integer range.
+	 * Returns the bottom of the valid integer range.
 	 */
 	public int getBottom() {
 		return this.bottom_;
 	}
 
 	/**
-	 * Set the bottom of the valid integer range.
+	 * Sets the bottom of the valid integer range.
 	 * <p>
 	 * The default value is the minimum integer value.
 	 */
@@ -79,14 +79,14 @@ public class WIntValidator extends WValidator {
 	}
 
 	/**
-	 * Return the top of the valid integer range.
+	 * Returns the top of the valid integer range.
 	 */
 	public int getTop() {
 		return this.top_;
 	}
 
 	/**
-	 * Set the top of the valid integer range.
+	 * Sets the top of the valid integer range.
 	 * <p>
 	 * The default value is the maximum integer value.
 	 */
@@ -98,7 +98,7 @@ public class WIntValidator extends WValidator {
 	}
 
 	/**
-	 * Set the range of valid integers.
+	 * Sets the range of valid integers.
 	 */
 	public void setRange(int bottom, int top) {
 		this.setBottom(bottom);
@@ -106,7 +106,7 @@ public class WIntValidator extends WValidator {
 	}
 
 	/**
-	 * Validate the given input.
+	 * Validates the given input.
 	 * <p>
 	 * The input is considered valid only when it is blank for a non-mandatory
 	 * field, or represents an integer within the valid range.
@@ -136,7 +136,7 @@ public class WIntValidator extends WValidator {
 
 	// public void createExtConfig(Writer config) throws IOException;
 	/**
-	 * Set the message to display when the input is not a number.
+	 * Sets the message to display when the input is not a number.
 	 * <p>
 	 * The default value is &quot;Must be an integer number.&quot;
 	 */
@@ -160,7 +160,7 @@ public class WIntValidator extends WValidator {
 	}
 
 	/**
-	 * Set message to display when the number is too small.
+	 * Sets the message to display when the number is too small.
 	 * <p>
 	 * Depending on whether {@link WIntValidator#getBottom() getBottom()} and
 	 * {@link WIntValidator#getTop() getTop()} are real bounds, the default
@@ -200,7 +200,7 @@ public class WIntValidator extends WValidator {
 	}
 
 	/**
-	 * Set message to display when the number is too large.
+	 * Sets the message to display when the number is too large.
 	 * <p>
 	 * Depending on whether {@link WIntValidator#getBottom() getBottom()} and
 	 * {@link WIntValidator#getTop() getTop()} are real bounds, the default
@@ -255,11 +255,20 @@ public class WIntValidator extends WValidator {
 			js += "if(n>" + String.valueOf(this.top_)
 					+ ") return {valid:false,message:tb};";
 		}
-		js += "return {valid:true};}(" + jsRef + ','
-				+ this.getInvalidBlankText().getJsStringLiteral() + ','
-				+ this.getInvalidNotANumberText().getJsStringLiteral() + ','
-				+ this.getInvalidTooSmallText().getJsStringLiteral() + ','
-				+ this.getInvalidTooLargeText().getJsStringLiteral() + ')';
+		js += "return {valid:true};}("
+				+ jsRef
+				+ ','
+				+ WString.toWString(this.getInvalidBlankText())
+						.getJsStringLiteral()
+				+ ','
+				+ WString.toWString(this.getInvalidNotANumberText())
+						.getJsStringLiteral()
+				+ ','
+				+ WString.toWString(this.getInvalidTooSmallText())
+						.getJsStringLiteral()
+				+ ','
+				+ WString.toWString(this.getInvalidTooLargeText())
+						.getJsStringLiteral() + ')';
 		return js;
 	}
 

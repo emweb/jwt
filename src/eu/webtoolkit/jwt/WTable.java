@@ -36,9 +36,13 @@ import java.util.Set;
  * instead of <code>&lt;td&gt;</code> elements. By default, no rows or columns
  * are configured as headers.
  * <p>
- * The widget corresponds to the HTML <code>&lt;table&gt;</code> tag.
- * <p>
  * WTable is displayed as a {@link WWidget#setInline(boolean inlined) block}.
+ * <p>
+ * <h3>CSS</h3>
+ * <p>
+ * The widget corresponds to the HTML <code>&lt;table&gt;</code> tag and does
+ * not provide styling. It can be styled using inline or external CSS as
+ * appropriate.
  * <p>
  * 
  * @see WTableCell
@@ -47,7 +51,7 @@ import java.util.Set;
  */
 public class WTable extends WInteractWidget {
 	/**
-	 * Construct an empty table.
+	 * Creates an empty table.
 	 */
 	public WTable(WContainerWidget parent) {
 		super(parent);
@@ -63,7 +67,7 @@ public class WTable extends WInteractWidget {
 	}
 
 	/**
-	 * Construct an empty table.
+	 * Creates an empty table.
 	 * <p>
 	 * Calls {@link #WTable(WContainerWidget parent)
 	 * this((WContainerWidget)null)}
@@ -73,7 +77,7 @@ public class WTable extends WInteractWidget {
 	}
 
 	/**
-	 * Delete the table and its entire contents.
+	 * Deletes the table and its entire contents.
 	 */
 	public void remove() {
 		for (int i = 0; i < this.rows_.size(); ++i) {
@@ -88,7 +92,7 @@ public class WTable extends WInteractWidget {
 	}
 
 	/**
-	 * Access the table element at the given row and column.
+	 * Accesses the table element at the given row and column.
 	 * <p>
 	 * If the row/column is beyond the current table dimensions, then the table
 	 * is expanded automatically.
@@ -132,7 +136,7 @@ public class WTable extends WInteractWidget {
 	}
 
 	/**
-	 * Delete the given table cell and its contents.
+	 * Deletes a table cell and its contents.
 	 * <p>
 	 * The table cell at that position is recreated.
 	 */
@@ -141,7 +145,7 @@ public class WTable extends WInteractWidget {
 	}
 
 	/**
-	 * Delete the table cell at the given position.
+	 * Deletes the table cell at the given position.
 	 * <p>
 	 * 
 	 * @see WTable#removeCell(WTableCell item)
@@ -154,7 +158,7 @@ public class WTable extends WInteractWidget {
 	}
 
 	/**
-	 * Insert an empty row.
+	 * Inserts an empty row.
 	 */
 	public WTableRow insertRow(int row) {
 		WTableRow tableRow = new WTableRow(this, this.getColumnCount());
@@ -165,7 +169,7 @@ public class WTable extends WInteractWidget {
 	}
 
 	/**
-	 * Delete the given row and all its contents.
+	 * Deletes a row and all its contents.
 	 * <p>
 	 * Rows below the given row are shifted up.
 	 */
@@ -189,7 +193,7 @@ public class WTable extends WInteractWidget {
 	}
 
 	/**
-	 * Insert an empty column.
+	 * Inserts an empty column.
 	 */
 	public WTableColumn insertColumn(int column) {
 		for (int i = 0; i < this.rows_.size(); ++i) {
@@ -206,7 +210,7 @@ public class WTable extends WInteractWidget {
 	}
 
 	/**
-	 * Delete the given column and all its contents.
+	 * Delete a column and all its contents.
 	 */
 	public void deleteColumn(int column) {
 		for (int i = 0; i < this.getRowCount(); ++i) {
@@ -249,7 +253,7 @@ public class WTable extends WInteractWidget {
 	}
 
 	/**
-	 * Set the number of header rows or columns.
+	 * Sets the number of header rows or columns.
 	 * <p>
 	 * The default values are 0.
 	 * <p>
@@ -267,7 +271,7 @@ public class WTable extends WInteractWidget {
 	}
 
 	/**
-	 * Set the number of header rows or columns.
+	 * Sets the number of header rows or columns.
 	 * <p>
 	 * Calls {@link #setHeaderCount(int count, Orientation orientation)
 	 * setHeaderCount(count, Orientation.Horizontal)}

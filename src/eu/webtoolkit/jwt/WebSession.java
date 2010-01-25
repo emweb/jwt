@@ -777,6 +777,10 @@ class WebSession {
 			return threadHandler_.get();
 		}
 
+		public boolean isHaveLock() {
+			return false;
+		}
+
 		public WebResponse getResponse() {
 			return this.response_;
 		}

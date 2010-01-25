@@ -21,7 +21,7 @@ import java.util.Set;
  */
 public class WCssStyleSheet {
 	/**
-	 * Create a new empty style sheet.
+	 * Creates a new empty style sheet.
 	 */
 	public WCssStyleSheet() {
 		this.rules_ = new ArrayList<WCssRule>();
@@ -32,7 +32,7 @@ public class WCssStyleSheet {
 	}
 
 	/**
-	 * Add a CSS rule.
+	 * Adds a CSS rule.
 	 * <p>
 	 * Add a rule using the CSS selector <code>selector</code>, with CSS
 	 * declarations in <code>declarations</code>. These declarations must be a
@@ -52,7 +52,7 @@ public class WCssStyleSheet {
 	}
 
 	/**
-	 * Add a CSS rule.
+	 * Adds a CSS rule.
 	 * <p>
 	 * Returns
 	 * {@link #addRule(String selector, String declarations, String ruleName)
@@ -63,7 +63,7 @@ public class WCssStyleSheet {
 	}
 
 	/**
-	 * Add a CSS rule.
+	 * Adds a CSS rule.
 	 * <p>
 	 * Add a rule using the CSS selector <code>selector</code>, with styles
 	 * specified in <code>style</code>.
@@ -83,7 +83,7 @@ public class WCssStyleSheet {
 	}
 
 	/**
-	 * Add a CSS rule.
+	 * Adds a CSS rule.
 	 * <p>
 	 * Returns
 	 * {@link #addRule(String selector, WCssDecorationStyle style, String ruleName)
@@ -95,7 +95,7 @@ public class WCssStyleSheet {
 	}
 
 	/**
-	 * Add a CSS rule.
+	 * Adds a CSS rule.
 	 * <p>
 	 * Optionally, you may give a <code>ruleName</code>, which may later be used
 	 * to check if the rule was already defined.
@@ -114,7 +114,7 @@ public class WCssStyleSheet {
 	}
 
 	/**
-	 * Add a CSS rule.
+	 * Adds a CSS rule.
 	 * <p>
 	 * Returns {@link #addRule(WCssRule rule, String ruleName) addRule(rule,
 	 * "")}
@@ -138,7 +138,7 @@ public class WCssStyleSheet {
 	}
 
 	/**
-	 * Remove a rule.
+	 * Removes a rule.
 	 */
 	public void removeRule(WCssRule rule) {
 		if (this.rules_.remove(rule)) {

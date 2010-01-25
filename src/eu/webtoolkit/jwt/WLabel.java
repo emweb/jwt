@@ -29,13 +29,23 @@ import java.util.List;
  * 
  * </blockquote>
  * <p>
- * The widget corresponds to the HTML <code>&lt;label&gt;</code> tag.
+ * The widget corresponds to the HTML <code>&lt;label&gt;</code> tag. When no
+ * buddy is set, it is rendered using an HTML <code>&lt;span&gt;</code> or
+ * <code>&lt;div&gt;</code> to avoid click event handling misbehavior on
+ * Microsoft Internet Explorer.
  * <p>
  * WLabel is an {@link WWidget#setInline(boolean inlined) inline} widget.
+ * <p>
+ * <h3>CSS</h3>
+ * <p>
+ * This widget does not provide styling, and can be styled using inline or
+ * external CSS as appropriate. A label&apos;s text may be styled via a nested
+ * <code>&lt;span&gt;</code> element, and it&apos;s image may be styled via a
+ * nested <code>&lt;img&gt;</code> element.
  */
 public class WLabel extends WInteractWidget {
 	/**
-	 * Construct a {@link WLabel} with empty text and optional parent.
+	 * Creates a label with empty text and optional parent.
 	 */
 	public WLabel(WContainerWidget parent) {
 		super(parent);
@@ -48,7 +58,7 @@ public class WLabel extends WInteractWidget {
 	}
 
 	/**
-	 * Construct a {@link WLabel} with empty text and optional parent.
+	 * Creates a label with empty text and optional parent.
 	 * <p>
 	 * Calls {@link #WLabel(WContainerWidget parent)
 	 * this((WContainerWidget)null)}
@@ -58,7 +68,7 @@ public class WLabel extends WInteractWidget {
 	}
 
 	/**
-	 * Construct a {@link WLabel} with a given text.
+	 * Creates a label with a given text.
 	 */
 	public WLabel(CharSequence text, WContainerWidget parent) {
 		super(parent);
@@ -73,7 +83,7 @@ public class WLabel extends WInteractWidget {
 	}
 
 	/**
-	 * Construct a {@link WLabel} with a given text.
+	 * Creates a label with a given text.
 	 * <p>
 	 * Calls {@link #WLabel(CharSequence text, WContainerWidget parent)
 	 * this(text, (WContainerWidget)null)}
@@ -83,7 +93,7 @@ public class WLabel extends WInteractWidget {
 	}
 
 	/**
-	 * Construct a {@link WLabel} with an image.
+	 * Creates a label with an image.
 	 */
 	public WLabel(WImage image, WContainerWidget parent) {
 		super(parent);
@@ -97,7 +107,7 @@ public class WLabel extends WInteractWidget {
 	}
 
 	/**
-	 * Construct a {@link WLabel} with an image.
+	 * Creates a label with an image.
 	 * <p>
 	 * Calls {@link #WLabel(WImage image, WContainerWidget parent) this(image,
 	 * (WContainerWidget)null)}
@@ -112,7 +122,7 @@ public class WLabel extends WInteractWidget {
 	}
 
 	/**
-	 * Return the buddy of this label.
+	 * Returns the buddy of this label.
 	 * <p>
 	 * 
 	 * @see WLabel#setBuddy(WFormWidget buddy)
@@ -122,7 +132,7 @@ public class WLabel extends WInteractWidget {
 	}
 
 	/**
-	 * Set the buddy of this label.
+	 * Sets the buddy of this label.
 	 * <p>
 	 * Sets the buddy FormWidget for which this label acts as a proxy.
 	 * <p>
@@ -143,7 +153,7 @@ public class WLabel extends WInteractWidget {
 	}
 
 	/**
-	 * Set the label text.
+	 * Sets the label text.
 	 */
 	public void setText(CharSequence text) {
 		if (this.getText().equals(text)) {
@@ -160,7 +170,7 @@ public class WLabel extends WInteractWidget {
 	}
 
 	/**
-	 * Get the label text.
+	 * Returns the label text.
 	 */
 	public WString getText() {
 		if (this.text_ != null) {
@@ -171,13 +181,11 @@ public class WLabel extends WInteractWidget {
 	}
 
 	/**
-	 * Set the image.
+	 * Sets the image.
 	 */
 	public void setImage(WImage image, Side side) {
-		if (this.image_ != null) {
-			if (this.image_ != null)
-				this.image_.remove();
-		}
+		if (this.image_ != null)
+			this.image_.remove();
 		this.image_ = image;
 		if (this.image_ != null) {
 			this.image_.setParent(this);
@@ -188,7 +196,7 @@ public class WLabel extends WInteractWidget {
 	}
 
 	/**
-	 * Set the image.
+	 * Sets the image.
 	 * <p>
 	 * Calls {@link #setImage(WImage image, Side side) setImage(image,
 	 * Side.Left)}
@@ -198,14 +206,14 @@ public class WLabel extends WInteractWidget {
 	}
 
 	/**
-	 * Get the image.
+	 * Returns the image.
 	 */
 	public WImage getImage() {
 		return this.image_;
 	}
 
 	/**
-	 * Configure word wrapping.
+	 * Configures word wrapping.
 	 * <p>
 	 * When <code>wordWrap</code> is <code>true</code>, the widget may break
 	 * lines, creating a multi-line text. When <code>wordWrap</code> is

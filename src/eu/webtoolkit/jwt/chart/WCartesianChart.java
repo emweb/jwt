@@ -89,6 +89,10 @@ import eu.webtoolkit.jwt.WtException;
  * WAbstractChart#setPalette()}, but may be overridden by settings in each data
  * series.
  * <p>
+ * <h3>CSS</h3>
+ * <p>
+ * Styling through CSS is not applicable.
+ * <p>
  * 
  * @see WDataSeries
  * @see WAxis
@@ -96,7 +100,7 @@ import eu.webtoolkit.jwt.WtException;
  */
 public class WCartesianChart extends WAbstractChart {
 	/**
-	 * Create a new cartesian chart.
+	 * Creates a new cartesian chart.
 	 * <p>
 	 * Creates a cartesian chart of type CategoryChart.
 	 */
@@ -112,7 +116,7 @@ public class WCartesianChart extends WAbstractChart {
 	}
 
 	/**
-	 * Create a new cartesian chart.
+	 * Creates a new cartesian chart.
 	 * <p>
 	 * Calls {@link #WCartesianChart(WContainerWidget parent)
 	 * this((WContainerWidget)null)}
@@ -122,7 +126,7 @@ public class WCartesianChart extends WAbstractChart {
 	}
 
 	/**
-	 * Create a new cartesian chart.
+	 * Creates a new cartesian chart.
 	 * <p>
 	 * Creates a cartesian chart of the indicated <i>type</i>.
 	 */
@@ -138,7 +142,7 @@ public class WCartesianChart extends WAbstractChart {
 	}
 
 	/**
-	 * Create a new cartesian chart.
+	 * Creates a new cartesian chart.
 	 * <p>
 	 * Calls {@link #WCartesianChart(ChartType type, WContainerWidget parent)
 	 * this(type, (WContainerWidget)null)}
@@ -148,7 +152,7 @@ public class WCartesianChart extends WAbstractChart {
 	}
 
 	/**
-	 * Change the chart type.
+	 * Sets the chart type.
 	 * <p>
 	 * The chart type determines how (x,y) data are interpreted. In a
 	 * CategoryChart, the X values are categories, and these are plotted
@@ -181,7 +185,7 @@ public class WCartesianChart extends WAbstractChart {
 	}
 
 	/**
-	 * Change the chart orientation.
+	 * Sets the chart orientation.
 	 * <p>
 	 * Sets the chart orientation, which corresponds to the orientation of the Y
 	 * axis: a Vertical orientation corresponds to the conventional way of a
@@ -211,7 +215,7 @@ public class WCartesianChart extends WAbstractChart {
 	}
 
 	/**
-	 * Change the the model column for the X series.
+	 * Sets the the model column for the X series.
 	 * <p>
 	 * Use this method to specify the data for the X series. For a ScatterPlot
 	 * this is mandatory, while for a CategoryChart, if not specified, an
@@ -240,7 +244,7 @@ public class WCartesianChart extends WAbstractChart {
 	}
 
 	/**
-	 * Add a data series.
+	 * Adds a data series.
 	 * <p>
 	 * A single chart may display one or more data series. Each data series
 	 * displays data from a single model column in the chart. Series are plotted
@@ -257,7 +261,7 @@ public class WCartesianChart extends WAbstractChart {
 	}
 
 	/**
-	 * Remove a data series.
+	 * Removes a data series.
 	 * <p>
 	 * This removes the first data series which plots the given
 	 * <i>modelColumn</i>.
@@ -275,7 +279,7 @@ public class WCartesianChart extends WAbstractChart {
 	}
 
 	/**
-	 * Change all data series.
+	 * Sets all data series.
 	 * <p>
 	 * Replaces the current list of series with the new list.
 	 * <p>
@@ -320,7 +324,7 @@ public class WCartesianChart extends WAbstractChart {
 	}
 
 	/**
-	 * Access a chart axis.
+	 * Returns a chart axis.
 	 * <p>
 	 * Returns a reference to the specified <i>axis</i>.
 	 */
@@ -329,7 +333,7 @@ public class WCartesianChart extends WAbstractChart {
 	}
 
 	/**
-	 * Change the margin between bars of different series.
+	 * Sets the margin between bars of different series.
 	 * <p>
 	 * Use this method to change the margin that is set between bars of
 	 * different series. The margin is specified as a fraction of the width. For
@@ -357,7 +361,7 @@ public class WCartesianChart extends WAbstractChart {
 	}
 
 	/**
-	 * Enable the legend.
+	 * Enables the legend.
 	 * <p>
 	 * If <i>enabled</i> is true, then a default legend is added to the right of
 	 * the chart. You should provide space for the legend using the
@@ -677,7 +681,7 @@ public class WCartesianChart extends WAbstractChart {
 	}
 
 	/**
-	 * Create a renderer which renders the chart.
+	 * Creates a renderer which renders the chart.
 	 * <p>
 	 * The rendering of the chart is delegated to a {@link WChart2DRenderer}
 	 * class, which will render the chart within the <i>rectangle</i> of the

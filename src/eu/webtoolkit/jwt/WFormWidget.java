@@ -27,7 +27,7 @@ import java.util.EnumSet;
  */
 public abstract class WFormWidget extends WInteractWidget {
 	/**
-	 * Construct a {@link WFormWidget} with an optional parent.
+	 * Creates a WFormWidget with an optional parent.
 	 */
 	public WFormWidget(WContainerWidget parent) {
 		super(parent);
@@ -39,7 +39,7 @@ public abstract class WFormWidget extends WInteractWidget {
 	}
 
 	/**
-	 * Construct a {@link WFormWidget} with an optional parent.
+	 * Creates a WFormWidget with an optional parent.
 	 * <p>
 	 * Calls {@link #WFormWidget(WContainerWidget parent)
 	 * this((WContainerWidget)null)}
@@ -49,7 +49,7 @@ public abstract class WFormWidget extends WInteractWidget {
 	}
 
 	/**
-	 * Destroy a {@link WFormWidget}.
+	 * Destructor.
 	 * <p>
 	 * If a label was associated with the widget, its buddy is reset to
 	 * <code>null</code>.
@@ -79,7 +79,7 @@ public abstract class WFormWidget extends WInteractWidget {
 	}
 
 	/**
-	 * Set the hidden state of this widget.
+	 * Sets the hidden state of this widget.
 	 * <p>
 	 * If the widget has a label, it is hidden and shown together with this
 	 * widget.
@@ -92,7 +92,7 @@ public abstract class WFormWidget extends WInteractWidget {
 	}
 
 	/**
-	 * Set a validator for this field.
+	 * Sets a validator for this field.
 	 * <p>
 	 * The validator is used to validate the current input.
 	 * <p>
@@ -125,14 +125,14 @@ public abstract class WFormWidget extends WInteractWidget {
 	}
 
 	/**
-	 * Get the validator.
+	 * Returns the validator.
 	 */
 	public WValidator getValidator() {
 		return this.validator_;
 	}
 
 	/**
-	 * Validate the field.
+	 * Validates the field.
 	 */
 	public WValidator.State validate() {
 		return WValidator.State.Valid;
@@ -151,7 +151,7 @@ public abstract class WFormWidget extends WInteractWidget {
 	}
 
 	/**
-	 * Give focus to this widget.
+	 * Gives focus to this widget.
 	 * <p>
 	 * Giving focus to an input element only works when JavaScript is enabled.
 	 */
@@ -161,7 +161,7 @@ public abstract class WFormWidget extends WInteractWidget {
 	}
 
 	/**
-	 * Set the element read-only.
+	 * Sets the element read-only.
 	 * <p>
 	 * A read-only form element cannot be edited, but the contents can still be
 	 * selected.
@@ -188,28 +188,28 @@ public abstract class WFormWidget extends WInteractWidget {
 	}
 
 	/**
-	 * {@link Signal} emitted when the value was changed.
+	 * Signal emitted when the value was changed.
 	 */
 	public EventSignal changed() {
 		return this.voidEventSignal(CHANGE_SIGNAL, true);
 	}
 
 	/**
-	 * {@link Signal} emitted when ??
+	 * Signal emitted when ??
 	 */
 	public EventSignal selected() {
 		return this.voidEventSignal(SELECT_SIGNAL, true);
 	}
 
 	/**
-	 * {@link Signal} emitted when the widget lost focus.
+	 * Signal emitted when the widget lost focus.
 	 */
 	public EventSignal blurred() {
 		return this.voidEventSignal(BLUR_SIGNAL, true);
 	}
 
 	/**
-	 * {@link Signal} emitted when the widget recieved focus.
+	 * Signal emitted when the widget recieved focus.
 	 */
 	public EventSignal focussed() {
 		return this.voidEventSignal(FOCUS_SIGNAL, true);

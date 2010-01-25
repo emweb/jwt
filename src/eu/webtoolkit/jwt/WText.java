@@ -38,20 +38,25 @@ import java.util.EnumSet;
  * you&apos;re sure that a user cannot interfere with the text set, and
  * XHTMLText is too limiting.
  * <p>
+ * WText is by default {@link WWidget#setInline(boolean inlined) inline}, unless
+ * the XHTML contents starts with an element such as <code>&lt;div&gt;</code>,
+ * <code>&lt;h&gt;</code> or <code>&lt;p&gt;</code> that is displayed as a
+ * block, in which case the widget will also display as a block.
+ * <p>
+ * <h3>CSS</h3>
+ * <p>
  * The widget corresponds to an HTML <code>&lt;span&gt;</code> tag or an HTML
- * <code>&lt;div&gt;</code> depending on whether the widget is
- * {@link WWidget#setInline(boolean inlined) inline}. WText is by default
- * inline, unless the XHTML contents starts with an element such as
- * <code>&lt;div&gt;</code>, <code>&lt;h&gt;</code> or <code>&lt;p&gt;</code>
- * that is displayed as a block, in which case the widget will also display as a
- * block.
+ * <code>&lt;div&gt;</code> depending on whether the widget is inline.
+ * <p>
+ * This widget does not provide styling, and can be styled using inline or
+ * external CSS as appropriate.
  * <p>
  * 
  * @see WApplication#setLocale(Locale locale)
  */
 public class WText extends WInteractWidget {
 	/**
-	 * Construct a text widget with an empty text.
+	 * Creates a text widget with an empty text.
 	 */
 	public WText(WContainerWidget parent) {
 		super(parent);
@@ -64,7 +69,7 @@ public class WText extends WInteractWidget {
 	}
 
 	/**
-	 * Construct a text widget with an empty text.
+	 * Creates a text widget with an empty text.
 	 * <p>
 	 * Calls {@link #WText(WContainerWidget parent)
 	 * this((WContainerWidget)null)}
@@ -74,7 +79,7 @@ public class WText extends WInteractWidget {
 	}
 
 	/**
-	 * Construct a text widget with given text.
+	 * Creates a text widget with given text.
 	 * <p>
 	 * The textFormat is set to {@link TextFormat#XHTMLText}, unless the
 	 * <code>text</code> is literal (not created using
@@ -102,7 +107,7 @@ public class WText extends WInteractWidget {
 	}
 
 	/**
-	 * Construct a text widget with given text.
+	 * Creates a text widget with given text.
 	 * <p>
 	 * Calls {@link #WText(CharSequence text, WContainerWidget parent)
 	 * this(text, (WContainerWidget)null)}
@@ -112,7 +117,7 @@ public class WText extends WInteractWidget {
 	}
 
 	/**
-	 * Construct a text widget with given text and format.
+	 * Creates a text widget with given text and format.
 	 * <p>
 	 * If <i>textFormat</i> is {@link TextFormat#XHTMLText} and
 	 * <code>text</code> is not literal (not created using
@@ -140,7 +145,7 @@ public class WText extends WInteractWidget {
 	}
 
 	/**
-	 * Construct a text widget with given text and format.
+	 * Creates a text widget with given text and format.
 	 * <p>
 	 * Calls
 	 * {@link #WText(CharSequence text, TextFormat format, WContainerWidget parent)
@@ -164,7 +169,7 @@ public class WText extends WInteractWidget {
 	}
 
 	/**
-	 * Set the text.
+	 * Sets the text.
 	 * <p>
 	 * When the current format is {@link TextFormat#XHTMLText}, and
 	 * <code>text</code> is literal (not created using
@@ -197,7 +202,7 @@ public class WText extends WInteractWidget {
 	}
 
 	/**
-	 * Set the textFormat.
+	 * Sets the text format.
 	 * <p>
 	 * The textFormat controls how the string should be interpreted: either as
 	 * plain text, which is displayed literally, or as XHTML-markup.
@@ -228,7 +233,7 @@ public class WText extends WInteractWidget {
 	}
 
 	/**
-	 * Returns the textFormat.
+	 * Returns the text format.
 	 * <p>
 	 * 
 	 * @see WText#setTextFormat(TextFormat textFormat)
@@ -238,7 +243,7 @@ public class WText extends WInteractWidget {
 	}
 
 	/**
-	 * Configure word wrapping.
+	 * Configures word wrapping.
 	 * <p>
 	 * When <code>wordWrap</code> is <code>true</code>, the widget may break
 	 * lines, creating a multi-line text. When <code>wordWrap</code> is

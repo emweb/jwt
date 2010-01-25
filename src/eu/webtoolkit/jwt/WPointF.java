@@ -11,9 +11,7 @@ package eu.webtoolkit.jwt;
  */
 public class WPointF {
 	/**
-	 * Default constructor.
-	 * <p>
-	 * Constructs a point (<i>x=0</i>, <code>y=0</code>).
+	 * Creates point (0, 0).
 	 */
 	public WPointF() {
 		this.x_ = 0;
@@ -21,9 +19,7 @@ public class WPointF {
 	}
 
 	/**
-	 * Construct a point.
-	 * <p>
-	 * Constructs a point (<i>x</i>, <code>y</code>).
+	 * Creates a point (x, y).
 	 */
 	public WPointF(double x, double y) {
 		this.x_ = x;
@@ -39,7 +35,7 @@ public class WPointF {
 	}
 
 	/**
-	 * Construct a point from mouse coordinates.
+	 * Creates a point from mouse coordinates.
 	 */
 	public WPointF(WMouseEvent.Coordinates other) {
 		this.x_ = other.x;
@@ -47,14 +43,14 @@ public class WPointF {
 	}
 
 	/**
-	 * Changes the X coordinate.
+	 * Sets the X coordinate.
 	 */
 	public void setX(double x) {
 		this.x_ = x;
 	}
 
 	/**
-	 * Changes the Y coordinate.
+	 * Sets the Y coordinate.
 	 */
 	public void setY(double y) {
 		this.y_ = y;

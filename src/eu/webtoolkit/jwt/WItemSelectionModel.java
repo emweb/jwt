@@ -61,7 +61,7 @@ public class WItemSelectionModel extends WObject {
 	}
 
 	/**
-	 * Change the selection behaviour.
+	 * Sets the selection behaviour.
 	 * <p>
 	 * By default, the selection contains rows (
 	 * {@link SelectionBehavior#SelectRows SelectRows}), in which case model

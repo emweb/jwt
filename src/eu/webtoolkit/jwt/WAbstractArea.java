@@ -21,7 +21,7 @@ package eu.webtoolkit.jwt;
  */
 public class WAbstractArea extends WObject {
 	/**
-	 * Specify that this area specifies a hole for another area.
+	 * Specifies that this area specifies a hole for another area.
 	 * <p>
 	 * When set to <code>true</code>, this area will define an area that does
 	 * not provide interactivity. When it preceeds other, overlapping, areas, it
@@ -48,7 +48,7 @@ public class WAbstractArea extends WObject {
 	}
 
 	/**
-	 * Set the destination URL.
+	 * Sets the destination URL.
 	 * <p>
 	 * By setting a destination URL, the area behaves like a {@link WAnchor}.
 	 * <p>
@@ -133,7 +133,7 @@ public class WAbstractArea extends WObject {
 	}
 
 	/**
-	 * Specify the location where the referred content should be displayed.
+	 * Specifies the location where the referred content should be displayed.
 	 * <p>
 	 * This configures the location where referred content should be displayed,
 	 * that was specified using {@link WAbstractArea#setRef(String ref)
@@ -176,7 +176,7 @@ public class WAbstractArea extends WObject {
 	}
 
 	/**
-	 * Set an alternate text.
+	 * Sets an alternate text.
 	 * <p>
 	 * The alternate text should provide a fallback for browsers that do not
 	 * display an image. If no sensible fallback text can be provided, an empty
@@ -212,7 +212,7 @@ public class WAbstractArea extends WObject {
 	}
 
 	/**
-	 * Set the tooltip.
+	 * Sets the tooltip.
 	 * <p>
 	 * The tooltip is displayed when the cursor hovers over the area.
 	 */
@@ -231,7 +231,7 @@ public class WAbstractArea extends WObject {
 	}
 
 	/**
-	 * Define a style class.
+	 * Defines a style class.
 	 */
 	public void setStyleClass(String styleClass) {
 		this.impl_.setStyleClass(styleClass);
@@ -248,7 +248,7 @@ public class WAbstractArea extends WObject {
 	}
 
 	/**
-	 * Set the cursor.
+	 * Sets the cursor.
 	 * <p>
 	 * This sets the mouse cursor that is shown when the mouse pointer is over
 	 * the area. Most browsers only support PointingHandCursor, which is

@@ -37,22 +37,28 @@ package eu.webtoolkit.jwt;
  * <p>
  * This dialog looks like this (using the standard look):
  * <p>
- * <div align="center"> <img src="doc-files//WDialog-1.png"
- * alt="A simple custom dialog">
+ * <table border="0" align="center" cellspacing="3" cellpadding="3">
+ * <tr>
+ * <td><div align="center"> <img src="doc-files//WDialog-default-1.png"
+ * alt="A simple custom dialog (default)">
  * <p>
- * <strong>A simple custom dialog</strong>
+ * <strong>A simple custom dialog (default)</strong>
  * </p>
- * </div>
+ * </div></td>
+ * <td><div align="center"> <img src="doc-files//WDialog-polished-1.png"
+ * alt="A simple custom dialog (polished)">
  * <p>
- * <p>
- * <i><b>Note: </b>For the dialog to render properly in IE, the &quot;html
- * body&quot; margin is set to 0 (if it wasn&apos;t already).</i>
+ * <strong>A simple custom dialog (polished)</strong>
  * </p>
+ * </div></td>
+ * </tr>
+ * </table>
+ * <p>
  * <h3>CSS</h3>
  * <p>
- * The calendar is styled by the current CSS theme. A dialog has the
- * <code>Wt-dialog</code> and <code>Wt-outset</code> style classes. The look can
- * be overridden using the following style class selectors:
+ * A dialog has the <code>Wt-dialog</code> and <code>Wt-outset</code> style
+ * classes. The look can be overridden using the following style class
+ * selectors:
  * <p>
  * <div class="fragment">
  * 
@@ -62,6 +68,12 @@ package eu.webtoolkit.jwt;
  * </pre>
  * 
  * </div>
+ * <p>
+ * <p>
+ * <i><b>Note: </b>For the dialog (or rather, the silkscreen covering the user
+ * interface below) to render properly in IE, the &quot;html body&quot; margin
+ * is set to 0 (if it wasn&apos;t already). </i>
+ * </p>
  */
 public class WDialog extends WCompositeWidget {
 	/**
@@ -86,7 +98,7 @@ public class WDialog extends WCompositeWidget {
 	}
 
 	/**
-	 * Construct a WDialog with a given window title.
+	 * Constructs a WDialog with a given window title.
 	 * <p>
 	 * Only a single Dialog may be constructed at any time. Unlike other
 	 * widgets, a dialog does not need to be added to a container widget.
@@ -99,7 +111,7 @@ public class WDialog extends WCompositeWidget {
 		this.mouseDownJS_ = new JSlot();
 		this.mouseMovedJS_ = new JSlot();
 		this.mouseUpJS_ = new JSlot();
-		String TEMPLATE = "<span class=\"Wt-x1\"><span class=\"Wt-x1a\" /></span><span class=\"Wt-x2\"><span class=\"Wt-x2a\" /></span>${titlebar}${contents}";
+		String TEMPLATE = "${shadow-x1-x2}${titlebar}${contents}";
 		this
 				.setImplementation(this.impl_ = new WTemplate(new WString(
 						TEMPLATE)));
@@ -168,6 +180,7 @@ public class WDialog extends WCompositeWidget {
 		this.titleBar_ = new WContainerWidget();
 		this.titleBar_.setStyleClass("titlebar");
 		this.caption_ = new WText(windowTitle, this.titleBar_);
+		this.impl_.bindString("shadow-x1-x2", WTemplate.DropShadow_x1_x2);
 		this.impl_.bindWidget("titlebar", this.titleBar_);
 		this.contents_ = new WContainerWidget();
 		this.contents_.setStyleClass("body");
@@ -192,7 +205,7 @@ public class WDialog extends WCompositeWidget {
 	}
 
 	/**
-	 * Construct a WDialog with a given window title.
+	 * Constructs a WDialog with a given window title.
 	 * <p>
 	 * Calls {@link #WDialog(CharSequence windowTitle) this(new WString())}
 	 */
@@ -201,7 +214,7 @@ public class WDialog extends WCompositeWidget {
 	}
 
 	/**
-	 * Destruct a WDialog.
+	 * Destructs a WDialog.
 	 */
 	public void remove() {
 		this.hide();
@@ -209,7 +222,7 @@ public class WDialog extends WCompositeWidget {
 	}
 
 	/**
-	 * Set the dialog window title.
+	 * Sets the dialog window title.
 	 * <p>
 	 * The window title is displayed in the title bar.
 	 * <p>
@@ -221,7 +234,7 @@ public class WDialog extends WCompositeWidget {
 	}
 
 	/**
-	 * Get the dialog window title.
+	 * Returns the dialog window title.
 	 * <p>
 	 * 
 	 * @see WDialog#setWindowTitle(CharSequence windowTitle)
@@ -231,7 +244,7 @@ public class WDialog extends WCompositeWidget {
 	}
 
 	/**
-	 * Enable or disable the title bar.
+	 * Enables or disables the title bar.
 	 * <p>
 	 * The titlebar is enabled by default.
 	 */
@@ -250,7 +263,7 @@ public class WDialog extends WCompositeWidget {
 	}
 
 	/**
-	 * Get the dialog contents container.
+	 * Returns the dialog contents container.
 	 * <p>
 	 * Content to the dialog window may be added to this container widget.
 	 */
@@ -260,7 +273,7 @@ public class WDialog extends WCompositeWidget {
 
 	// public WDialog.DialogCode getExec() ;
 	/**
-	 * Stop the dialog.
+	 * Stops the dialog.
 	 * <p>
 	 * Sets the dialog result, and emits the {@link WDialog#finished()
 	 * finished()} signal.
@@ -280,7 +293,7 @@ public class WDialog extends WCompositeWidget {
 	}
 
 	/**
-	 * Close the dialog, with result is Accepted.
+	 * Closes the dialog, with result is Accepted.
 	 * <p>
 	 * 
 	 * @see WDialog#done(WDialog.DialogCode result)
@@ -291,7 +304,7 @@ public class WDialog extends WCompositeWidget {
 	}
 
 	/**
-	 * Close the dialog, with result is Rejected.
+	 * Closes the dialog, with result is Rejected.
 	 * <p>
 	 * 
 	 * @see WDialog#done(WDialog.DialogCode result)
@@ -314,7 +327,7 @@ public class WDialog extends WCompositeWidget {
 	}
 
 	/**
-	 * Get the result that was set for this dialog.
+	 * Returns the result that was set for this dialog.
 	 * <p>
 	 * 
 	 * @see WDialog#done(WDialog.DialogCode result)
@@ -324,7 +337,7 @@ public class WDialog extends WCompositeWidget {
 	}
 
 	/**
-	 * Set whether the dialog is modal.
+	 * Sets whether the dialog is modal.
 	 * <p>
 	 * A modal dialog will block the underlying user interface.
 	 * <p>

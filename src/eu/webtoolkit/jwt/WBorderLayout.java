@@ -98,7 +98,7 @@ public class WBorderLayout extends WLayout {
 	}
 
 	/**
-	 * Create a new border layout.
+	 * Creates a new border layout.
 	 */
 	public WBorderLayout(WWidget parent) {
 		super();
@@ -141,7 +141,7 @@ public class WBorderLayout extends WLayout {
 	}
 
 	/**
-	 * Create a new border layout.
+	 * Creates a new border layout.
 	 * <p>
 	 * Calls {@link #WBorderLayout(WWidget parent) this((WWidget)null)}
 	 */
@@ -192,7 +192,7 @@ public class WBorderLayout extends WLayout {
 	}
 
 	/**
-	 * Add a widget to the given position.
+	 * Adds a widget to the given position.
 	 * <p>
 	 * Only one widget per position is supported.
 	 * <p>
@@ -204,7 +204,7 @@ public class WBorderLayout extends WLayout {
 	}
 
 	/**
-	 * Add a layout item to the given position.
+	 * Adds a layout item to the given position.
 	 * <p>
 	 * Only one widget per position is supported.
 	 */
@@ -218,7 +218,7 @@ public class WBorderLayout extends WLayout {
 	}
 
 	/**
-	 * Return the widget at a position.
+	 * Returns the widget at a position.
 	 * <p>
 	 * Returns <code>null</code> if no widget was set for that position.
 	 */
@@ -234,7 +234,7 @@ public class WBorderLayout extends WLayout {
 	}
 
 	/**
-	 * Return the item at a position.
+	 * Returns the item at a position.
 	 * <p>
 	 * Returns <code>null</code> if no item was set for that position.
 	 */
@@ -244,7 +244,7 @@ public class WBorderLayout extends WLayout {
 	}
 
 	/**
-	 * Return the position at which the given layout item is set.
+	 * Returns the position at which the given layout item is set.
 	 */
 	public WBorderLayout.Position getPosition(WLayoutItem item) {
 		for (int i = 0; i < 5; ++i) {

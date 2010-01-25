@@ -97,7 +97,7 @@ public class WPainterPath {
 	}
 
 	/**
-	 * Return the current position.
+	 * Returns the current position.
 	 * <p>
 	 * Returns the current position, which is the end point of the last move or
 	 * draw operation, and which well be the start point of the next draw
@@ -134,7 +134,7 @@ public class WPainterPath {
 	}
 
 	/**
-	 * Close the last sub path.
+	 * Closes the last sub path.
 	 * <p>
 	 * Draws a line from the current position to the start position of the last
 	 * sub path (which is the end point of the last move operation), and sets
@@ -265,7 +265,7 @@ public class WPainterPath {
 	}
 
 	/**
-	 * Move to a point on an arc.
+	 * Moves to a point on an arc.
 	 * <p>
 	 * Moves to a point on a circle. The circle is defined with center
 	 * (<i>cx</i>, <i>cy</i>) and <code>radius</code>, and the point is at
@@ -299,7 +299,7 @@ public class WPainterPath {
 	}
 
 	/**
-	 * Draw a quadratic bezier curve.
+	 * Draws a quadratic bezier curve.
 	 * <p>
 	 * Draws a quadratic bezier curve from the current position to
 	 * <code>endPoint</code>, which becomes the new current position. The bezier
@@ -314,7 +314,7 @@ public class WPainterPath {
 	}
 
 	/**
-	 * Draw a quadratic bezier curve.
+	 * Draws a quadratic bezier curve.
 	 * <p>
 	 * This is an overloaded method provided for convenience.
 	 * <p>
@@ -329,7 +329,7 @@ public class WPainterPath {
 	}
 
 	/**
-	 * Draw an ellipse.
+	 * Draws an ellipse.
 	 * <p>
 	 * This method closes the current sub path, and adds an ellipse that is
 	 * bounded by the rectangle <code>boundingRectangle</code>.
@@ -348,7 +348,7 @@ public class WPainterPath {
 	}
 
 	/**
-	 * Draw an ellipse.
+	 * Draws an ellipse.
 	 * <p>
 	 * This method closes the current sub path, and adds an ellipse that is
 	 * bounded by the rectangle defined by top left position (<code>x</code>,
@@ -368,7 +368,7 @@ public class WPainterPath {
 	}
 
 	/**
-	 * Draw a rectangle.
+	 * Draws a rectangle.
 	 * <p>
 	 * This method closes the current sub path, and adds a rectangle that is
 	 * defined by <code>rectangle</code>.
@@ -383,7 +383,7 @@ public class WPainterPath {
 	}
 
 	/**
-	 * Draw a rectangle.
+	 * Draws a rectangle.
 	 * <p>
 	 * This method closes the current sub path, and adds a rectangle that is
 	 * defined by top left position (<i>x</i>, <code>y</code>), and size
@@ -404,7 +404,7 @@ public class WPainterPath {
 	}
 
 	/**
-	 * Add a path.
+	 * Adds a path.
 	 * <p>
 	 * Adds an entire <code>path</code> to the current path. If the path&apos;s
 	 * begin position is different from the current position, the last sub path
@@ -422,7 +422,7 @@ public class WPainterPath {
 	}
 
 	/**
-	 * Add a path, connecting.
+	 * Adds a path, connecting.
 	 * <p>
 	 * Adds an entire <code>path</code> to the current path. If the path&apos;s
 	 * begin position is different from the current position, the last sub path

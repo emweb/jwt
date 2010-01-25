@@ -45,9 +45,6 @@ import java.util.List;
  * 
  * </blockquote>
  * <p>
- * The widget corresponds to the HTML <code>&lt;fieldset&gt;</code> tag, and the
- * title in a nested <code>&lt;legend&gt;</code> tag.
- * <p>
  * Like {@link WContainerWidget}, WGroupBox is by default displayed as a
  * {@link WWidget#setInline(boolean inlined) block}.
  * <p>
@@ -56,11 +53,16 @@ import java.util.List;
  * <p>
  * <strong>WGroupBox example</strong>
  * </p>
- * </div>
+ * </div> <h3>CSS</h3>
+ * <p>
+ * The widget corresponds to the HTML <code>&lt;fieldset&gt;</code> tag, and the
+ * title in a nested <code>&lt;legend&gt;</code> tag. This widget does not
+ * provide styling, and can be styled using inline or external CSS as
+ * appropriate.
  */
 public class WGroupBox extends WContainerWidget {
 	/**
-	 * Create a groupbox with empty title.
+	 * Creates a groupbox with empty title.
 	 */
 	public WGroupBox(WContainerWidget parent) {
 		super(parent);
@@ -69,7 +71,7 @@ public class WGroupBox extends WContainerWidget {
 	}
 
 	/**
-	 * Create a groupbox with empty title.
+	 * Creates a groupbox with empty title.
 	 * <p>
 	 * Calls {@link #WGroupBox(WContainerWidget parent)
 	 * this((WContainerWidget)null)}
@@ -79,7 +81,7 @@ public class WGroupBox extends WContainerWidget {
 	}
 
 	/**
-	 * Create a groupbox with given title message.
+	 * Creates a groupbox with given title message.
 	 */
 	public WGroupBox(CharSequence title, WContainerWidget parent) {
 		super(parent);
@@ -88,7 +90,7 @@ public class WGroupBox extends WContainerWidget {
 	}
 
 	/**
-	 * Create a groupbox with given title message.
+	 * Creates a groupbox with given title message.
 	 * <p>
 	 * Calls {@link #WGroupBox(CharSequence title, WContainerWidget parent)
 	 * this(title, (WContainerWidget)null)}
@@ -98,14 +100,14 @@ public class WGroupBox extends WContainerWidget {
 	}
 
 	/**
-	 * Get the title.
+	 * Returns the title.
 	 */
 	public WString getTitle() {
 		return this.title_;
 	}
 
 	/**
-	 * Set the title.
+	 * Returns the title.
 	 */
 	public void setTitle(CharSequence title) {
 		this.title_ = WString.toWString(title);

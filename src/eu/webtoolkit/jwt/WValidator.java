@@ -66,7 +66,7 @@ public class WValidator extends WObject {
 	}
 
 	/**
-	 * Create a new validator.
+	 * Creates a new validator.
 	 */
 	public WValidator(WObject parent) {
 		super(parent);
@@ -76,7 +76,7 @@ public class WValidator extends WObject {
 	}
 
 	/**
-	 * Create a new validator.
+	 * Creates a new validator.
 	 * <p>
 	 * Calls {@link #WValidator(WObject parent) this((WObject)null)}
 	 */
@@ -85,7 +85,7 @@ public class WValidator extends WObject {
 	}
 
 	/**
-	 * Create a new validator.
+	 * Creates a new validator.
 	 * <p>
 	 * Indicate whether input is mandatory.
 	 * <p>
@@ -100,7 +100,7 @@ public class WValidator extends WObject {
 	}
 
 	/**
-	 * Create a new validator.
+	 * Creates a new validator.
 	 * <p>
 	 * Calls {@link #WValidator(boolean mandatory, WObject parent)
 	 * this(mandatory, (WObject)null)}
@@ -110,7 +110,7 @@ public class WValidator extends WObject {
 	}
 
 	/**
-	 * Set if input is mandatory.
+	 * Sets if input is mandatory.
 	 * <p>
 	 * When an input is not mandatory, then an empty field is always valid.
 	 */
@@ -129,7 +129,7 @@ public class WValidator extends WObject {
 	}
 
 	/**
-	 * Set message to display when a mandatory field is left blank.
+	 * Sets the message to display when a mandatory field is left blank.
 	 * <p>
 	 * The default value is &quot;This field cannot be empty&quot;.
 	 */
@@ -164,7 +164,7 @@ public class WValidator extends WObject {
 	}
 
 	/**
-	 * Validate the given input.
+	 * Validates the given input.
 	 * <p>
 	 * This function returns the current validation state of the input. The
 	 * default implementation only checks whether a mandatory field is not left
@@ -199,7 +199,8 @@ public class WValidator extends WObject {
 			return "function(e,t){var v=e.value.length!=0;return {valid:v,message:t};}("
 					+ jsRef
 					+ ","
-					+ this.getInvalidBlankText().getJsStringLiteral() + ")";
+					+ WString.toWString(this.getInvalidBlankText())
+							.getJsStringLiteral() + ")";
 		}
 	}
 

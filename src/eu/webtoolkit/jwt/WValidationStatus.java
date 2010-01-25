@@ -29,6 +29,10 @@ package eu.webtoolkit.jwt;
  * When validation state changes from invalid to valid, or from valid to
  * invalid, the widget emits the validated signal. This may be used to for
  * example enable or disable a button.
+ * <p>
+ * 
+ * @deprecated Since JWt 3.1.1, validation is handled directly on
+ *             {@link WFormWidget} subclasses.
  */
 public class WValidationStatus extends WCompositeWidget {
 	/**

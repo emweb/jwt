@@ -23,7 +23,7 @@ package eu.webtoolkit.jwt;
  */
 public abstract class WCssRule {
 	/**
-	 * Delete a CSS rule.
+	 * Destructor.
 	 */
 	public void remove() {
 		if (this.sheet_ != null) {
@@ -46,7 +46,7 @@ public abstract class WCssRule {
 	}
 
 	/**
-	 * Indicate that the rule has changed and needs updating.
+	 * Indicates that the rule has changed and needs updating.
 	 */
 	public void modified() {
 		if (this.sheet_ != null) {

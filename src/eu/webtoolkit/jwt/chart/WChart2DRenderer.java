@@ -54,7 +54,7 @@ import eu.webtoolkit.jwt.utils.EnumUtils;
  */
 public class WChart2DRenderer {
 	/**
-	 * Create a renderer.
+	 * Creates a renderer.
 	 * <p>
 	 * Creates a renderer for the cartesian chart <i>chart</i>, for rendering in
 	 * the specified <i>rectangle</i> of the <i>painter</i>.
@@ -193,7 +193,7 @@ public class WChart2DRenderer {
 	}
 
 	/**
-	 * Map a (X, Y) point to chart coordinates.
+	 * Maps a (X, Y) point to chart coordinates.
 	 * <p>
 	 * This method maps the point with given (<i>xValue</i>, <i>yValue</i>) to
 	 * chart coordinates. The y value is mapped by one of the Y axes indicated
@@ -216,7 +216,7 @@ public class WChart2DRenderer {
 	}
 
 	/**
-	 * Map a (X, Y) point to chart coordinates.
+	 * Maps a (X, Y) point to chart coordinates.
 	 * <p>
 	 * Returns
 	 * {@link #map(double xValue, double yValue, Axis axis, int currentXSegment, int currentYSegment)
@@ -227,7 +227,7 @@ public class WChart2DRenderer {
 	}
 
 	/**
-	 * Map a (X, Y) point to chart coordinates.
+	 * Maps a (X, Y) point to chart coordinates.
 	 * <p>
 	 * Returns
 	 * {@link #map(double xValue, double yValue, Axis axis, int currentXSegment, int currentYSegment)
@@ -238,7 +238,7 @@ public class WChart2DRenderer {
 	}
 
 	/**
-	 * Map a (X, Y) point to chart coordinates.
+	 * Maps a (X, Y) point to chart coordinates.
 	 * <p>
 	 * Returns
 	 * {@link #map(double xValue, double yValue, Axis axis, int currentXSegment, int currentYSegment)
@@ -431,7 +431,7 @@ public class WChart2DRenderer {
 	}
 
 	/**
-	 * Prepare the axes for rendering.
+	 * Prepares the axes for rendering.
 	 * <p>
 	 * Computes axis properties such as the range (if not manually specified),
 	 * label interval (if not manually specified) and axis locations. These
@@ -626,7 +626,7 @@ public class WChart2DRenderer {
 	protected AxisValue[] location_ = new AxisValue[3];
 
 	/**
-	 * Render properties of one axis.
+	 * Renders properties of one axis.
 	 * <p>
 	 * 
 	 * @see WChart2DRenderer#renderAxes(EnumSet properties)
@@ -877,7 +877,7 @@ public class WChart2DRenderer {
 	}
 
 	/**
-	 * Render properties of one axis.
+	 * Renders properties of one axis.
 	 * <p>
 	 * Calls {@link #renderAxis(WAxis axis, EnumSet properties) renderAxis(axis,
 	 * EnumSet.of(propertie, properties))}
@@ -889,7 +889,7 @@ public class WChart2DRenderer {
 	}
 
 	/**
-	 * Calculate the total number of bar groups.
+	 * Calculates the total number of bar groups.
 	 */
 	protected int getCalcNumBarGroups() {
 		List<WDataSeries> series = this.chart_.getSeries();
@@ -909,7 +909,7 @@ public class WChart2DRenderer {
 	}
 
 	/**
-	 * Iterate over the series using an iterator.
+	 * Iterates over the series using an iterator.
 	 */
 	protected void iterateSeries(SeriesIterator iterator, boolean reverseStacked) {
 		List<WDataSeries> series = this.chart_.getSeries();
@@ -1095,7 +1095,7 @@ public class WChart2DRenderer {
 	}
 
 	/**
-	 * Iterate over the series using an iterator.
+	 * Iterates over the series using an iterator.
 	 * <p>
 	 * Calls
 	 * {@link #iterateSeries(SeriesIterator iterator, boolean reverseStacked)

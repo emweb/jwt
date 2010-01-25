@@ -208,7 +208,7 @@ public class WTransform {
 	}
 
 	/**
-	 * Apply the transformation to a point.
+	 * Applys the transformation to a point.
 	 * <p>
 	 * Returns the transformed point.
 	 * <p>
@@ -225,7 +225,7 @@ public class WTransform {
 	}
 
 	/**
-	 * Apply the transformation to a point.
+	 * Applys the transformation to a point.
 	 * <p>
 	 * Sets the point (<i>tx</i>, <code>ty</code>) to the transformation of the
 	 * point (<i>x</i>, <code>y</code>).
@@ -251,7 +251,7 @@ public class WTransform {
 	}
 
 	/**
-	 * Rotate the transformation.
+	 * Rotates the transformation.
 	 * <p>
 	 * Applies a clock-wise rotation to the current transformation matrix, over
 	 * <code>angle</code> degrees.
@@ -265,7 +265,7 @@ public class WTransform {
 	}
 
 	/**
-	 * Rotate the transformation.
+	 * Rotates the transformation.
 	 * <p>
 	 * Applies a clock-wise rotation to the current transformation matrix, over
 	 * <code>angle</code> radians.
@@ -282,7 +282,7 @@ public class WTransform {
 	}
 
 	/**
-	 * Scale the transformation.
+	 * Scales the transformation.
 	 * <p>
 	 * Applies a clock-wise rotation to the current transformation matrix, over
 	 * <code>angle</code> radians.
@@ -295,7 +295,7 @@ public class WTransform {
 	}
 
 	/**
-	 * Shear the transformation.
+	 * Shears the transformation.
 	 * <p>
 	 * Shears the current transformation.
 	 * <p>
@@ -308,7 +308,7 @@ public class WTransform {
 	}
 
 	/**
-	 * Translate the transformation.
+	 * Translates the transformation.
 	 * <p>
 	 * Translates the current transformation.
 	 */
@@ -334,7 +334,7 @@ public class WTransform {
 	}
 
 	/**
-	 * Return the determinant.
+	 * Returns the determinant.
 	 */
 	public double getDeterminant() {
 		return this.getM11()
@@ -349,7 +349,7 @@ public class WTransform {
 	}
 
 	/**
-	 * Return the adjoint.
+	 * Returns the adjoint.
 	 */
 	public WTransform getAdjoint() {
 		return new WTransform(this.getM33() * this.getM22() - this.getM32()
@@ -365,7 +365,7 @@ public class WTransform {
 	}
 
 	/**
-	 * Return the inverted transformation.
+	 * Returns the inverted transformation.
 	 * <p>
 	 * Returns <code>this</code> if the transformation could not be inverted (
 	 * {@link WTransform#getDeterminant() getDeterminant()} == 0), and logs an
@@ -421,7 +421,7 @@ public class WTransform {
 	}
 
 	/**
-	 * Decompose the transformation.
+	 * Decomposes the transformation.
 	 * <p>
 	 * Decomposes the transformation into elementary operations: translation
 	 * (<i>dx</i>, <code>dy</code>), followed by rotation (<i>alpha</i>),
@@ -487,7 +487,7 @@ public class WTransform {
 	}
 
 	/**
-	 * Decompose the transformation.
+	 * Decomposes the transformation.
 	 * <p>
 	 * Decomposes the transformation into elementary operations: translation
 	 * (<i>dx</i>, <code>dy</code>), followed by rotation (<i>alpha2</i>),

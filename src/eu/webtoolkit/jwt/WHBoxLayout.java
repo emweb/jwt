@@ -42,7 +42,7 @@ package eu.webtoolkit.jwt;
  */
 public class WHBoxLayout extends WBoxLayout {
 	/**
-	 * Create a new horizontal box layout.
+	 * Creates a new horizontal box layout.
 	 * <p>
 	 * Use <code>parent</code> = <code>null</code> to create a layout manager
 	 * that can be nested inside other layout managers, or to specify a specific
@@ -53,7 +53,7 @@ public class WHBoxLayout extends WBoxLayout {
 	}
 
 	/**
-	 * Create a new horizontal box layout.
+	 * Creates a new horizontal box layout.
 	 * <p>
 	 * Calls {@link #WHBoxLayout(WWidget parent) this((WWidget)null)}
 	 */

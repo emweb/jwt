@@ -87,7 +87,7 @@ public interface WPaintDevice {
 	public WLength getHeight();
 
 	/**
-	 * Indicate changes in painter state.
+	 * Indicates changes in painter state.
 	 * <p>
 	 * The <code>flags</code> argument is the logical OR of one or more change
 	 * flags.
@@ -98,7 +98,7 @@ public interface WPaintDevice {
 	public void setChanged(EnumSet<WPaintDevice.ChangeFlag> flags);
 
 	/**
-	 * Indicate changes in painter state.
+	 * Indicates changes in painter state.
 	 * <p>
 	 * Calls {@link #setChanged(EnumSet flags) setChanged(EnumSet.of(flag,
 	 * flags))}
@@ -107,7 +107,7 @@ public interface WPaintDevice {
 			WPaintDevice.ChangeFlag... flags);
 
 	/**
-	 * Draw an arc.
+	 * Draws an arc.
 	 * <p>
 	 * The arc is defined as in
 	 * {@link WPainter#drawArc(WRectF rectangle, int startAngle, int spanAngle)
@@ -120,7 +120,7 @@ public interface WPaintDevice {
 	public void drawArc(WRectF rect, double startAngle, double spanAngle);
 
 	/**
-	 * Draw an image.
+	 * Draws an image.
 	 * <p>
 	 * Draws <i>sourceRect</i> from the image with URL <code>imageUri</code> and
 	 * original dimensions <i>imgWidth</i> and <code>imgHeight</code> to the
@@ -132,7 +132,7 @@ public interface WPaintDevice {
 			int imgHeight, WRectF sourceRect);
 
 	/**
-	 * Draw a line.
+	 * Draws a line.
 	 * <p>
 	 * The line must be stroked and transformed using the current painter
 	 * settings.
@@ -140,7 +140,7 @@ public interface WPaintDevice {
 	public void drawLine(double x1, double y1, double x2, double y2);
 
 	/**
-	 * Draw a path.
+	 * Draws a path.
 	 * <p>
 	 * The path must be stroked, filled, and transformed using the current
 	 * painter settings.
@@ -148,7 +148,7 @@ public interface WPaintDevice {
 	public void drawPath(WPainterPath path);
 
 	/**
-	 * Draw text.
+	 * Draws text.
 	 * <p>
 	 * The text must be rendered, stroked and transformed using the current
 	 * painter settings.
@@ -157,7 +157,7 @@ public interface WPaintDevice {
 			CharSequence text);
 
 	/**
-	 * Initialize the device for painting.
+	 * Initializes the device for painting.
 	 * <p>
 	 * This method is called when a {@link WPainter} starts painting.
 	 * <p>
@@ -205,12 +205,12 @@ public interface WPaintDevice {
 	void setPainter(WPainter painter);
 
 	/**
-	 * Set paint flags.
+	 * Sets paint flags.
 	 */
 	public void setPaintFlags(EnumSet<PaintFlag> paintFlags);
 
 	/**
-	 * Set paint flags.
+	 * Sets paint flags.
 	 * <p>
 	 * Calls {@link #setPaintFlags(EnumSet paintFlags)
 	 * setPaintFlags(EnumSet.of(paintFlag, paintFlags))}

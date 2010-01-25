@@ -14,14 +14,14 @@ import java.util.EnumSet;
  * An item may have a text, icon, and can be checkable or lead to a submenu.
  * <p>
  * When the mouse hovers over the item, its class is changed from
- * &quot;unselected&quot; to &quot;selected&quot;.
+ * &quot;Wt-item&quot; to &quot;Wt-selected&quot;.
  * <p>
  * 
  * @see WPopupMenu
  */
 public class WPopupMenuItem extends WCompositeWidget {
 	/**
-	 * Create a new item with given text.
+	 * Creates a new item with given text.
 	 * <p>
 	 * 
 	 * @see WPopupMenu#addItem(CharSequence text)
@@ -39,7 +39,7 @@ public class WPopupMenuItem extends WCompositeWidget {
 	}
 
 	/**
-	 * Create a new item with given icon and text.
+	 * Creates a new item with given icon and text.
 	 * <p>
 	 * The icon is displayed left to the text.
 	 * <p>
@@ -74,7 +74,7 @@ public class WPopupMenuItem extends WCompositeWidget {
 	}
 
 	/**
-	 * Set the item text.
+	 * Sets the item text.
 	 * <p>
 	 * 
 	 * @see WPopupMenuItem#setIcon(String path)
@@ -103,7 +103,7 @@ public class WPopupMenuItem extends WCompositeWidget {
 	}
 
 	/**
-	 * Set the item icon path.
+	 * Sets the item icon path.
 	 * <p>
 	 * The icon should have a width of 16 pixels.
 	 * <p>
@@ -127,7 +127,7 @@ public class WPopupMenuItem extends WCompositeWidget {
 	}
 
 	/**
-	 * Set if the item is checkable.
+	 * Sets if the item is checkable.
 	 * <p>
 	 * When an item is checkable, a checkbox is displayed to the left of the
 	 * item text (instead of an icon).
@@ -165,7 +165,7 @@ public class WPopupMenuItem extends WCompositeWidget {
 	}
 
 	/**
-	 * Set a sub menu for the item.
+	 * Sets a sub menu for the item.
 	 * <p>
 	 * Sets a submenu for the item. Ownership of the submenu is transferred to
 	 * the item.
@@ -198,7 +198,7 @@ public class WPopupMenuItem extends WCompositeWidget {
 	}
 
 	/**
-	 * Change the checked state.
+	 * Sets the checked state.
 	 * <p>
 	 * This is only used when {@link WPopupMenuItem#isCheckable() isCheckable()}
 	 * == <code>true</code>.
@@ -214,7 +214,7 @@ public class WPopupMenuItem extends WCompositeWidget {
 	}
 
 	/**
-	 * Return the checked state.
+	 * Returns the checked state.
 	 * <p>
 	 * This is only used when {@link WPopupMenuItem#isCheckable() isCheckable()}
 	 * == <code>true</code>.
@@ -228,7 +228,7 @@ public class WPopupMenuItem extends WCompositeWidget {
 	}
 
 	/**
-	 * Associated additional data with the item.
+	 * Sets associated additional data with the item.
 	 */
 	public void setData(Object data) {
 		this.data_ = data;

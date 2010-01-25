@@ -14,7 +14,7 @@ package eu.webtoolkit.jwt;
  */
 public class WWidgetItem implements WLayoutItem {
 	/**
-	 * Create a new item for the given <i>widget</i>.
+	 * Creates a new item for the given <i>widget</i>.
 	 */
 	public WWidgetItem(WWidget widget) {
 		super();

@@ -34,13 +34,17 @@ import java.util.List;
  * {@link WComboBox#getCurrentIndex() getCurrentIndex()} and the current
  * selection text using {@link WComboBox#getCurrentText() getCurrentText()}.
  * <p>
- * The widget corresponds to the HTML <code>&lt;select&gt;</code> tag.
- * <p>
  * WComboBox is an {@link WWidget#setInline(boolean inlined) inline} widget.
+ * <p>
+ * <h3>CSS</h3>
+ * <p>
+ * The widget corresponds to the HTML <code>&lt;select&gt;</code> tag and does
+ * not provide styling. It can be styled using inline or external CSS as
+ * appropriate.
  */
 public class WComboBox extends WFormWidget {
 	/**
-	 * Create an empty combo-box with optional <i>parent</i>.
+	 * Creates an empty combo-box with optional <i>parent</i>.
 	 */
 	public WComboBox(WContainerWidget parent) {
 		super(parent);
@@ -59,7 +63,7 @@ public class WComboBox extends WFormWidget {
 	}
 
 	/**
-	 * Create an empty combo-box with optional <i>parent</i>.
+	 * Creates an empty combo-box with optional <i>parent</i>.
 	 * <p>
 	 * Calls {@link #WComboBox(WContainerWidget parent)
 	 * this((WContainerWidget)null)}
@@ -69,7 +73,7 @@ public class WComboBox extends WFormWidget {
 	}
 
 	/**
-	 * Add an option item.
+	 * Adds an option item.
 	 * <p>
 	 * Equivalent to {@link WComboBox#insertItem(int index, CharSequence text)
 	 * insertItem} ({@link WComboBox#getCount() getCount()}, <code>text</code>).
@@ -97,7 +101,7 @@ public class WComboBox extends WFormWidget {
 	}
 
 	/**
-	 * Insert an item at the specified position.
+	 * Inserts an item at the specified position.
 	 * <p>
 	 * The item is inserted in the underlying model at position
 	 * <code>index</code>. This requires that the {@link WComboBox#getModel()
@@ -114,7 +118,7 @@ public class WComboBox extends WFormWidget {
 	}
 
 	/**
-	 * Remove the item at the specified position.
+	 * Removes the item at the specified position.
 	 * <p>
 	 * The item is removed from the underlying model. This requires that the
 	 * {@link WComboBox#getModel() getModel()} is editable.
@@ -297,7 +301,7 @@ public class WComboBox extends WFormWidget {
 	}
 
 	/**
-	 * Clear all items.
+	 * Clears all items.
 	 * <p>
 	 * Removes all items from the underlying model. This requires that the
 	 * {@link WComboBox#getModel() getModel()} is editable.

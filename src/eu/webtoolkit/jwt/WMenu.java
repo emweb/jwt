@@ -60,10 +60,20 @@ import java.util.List;
  * The layout of the menu may be Horizontal or Vertical. The look of the items
  * may be defined through style sheets. The default {@link WMenuItem}
  * implementation uses two style classes to distinguish between activated and
- * inactivated menu items: &quot;item&quot; and &quot;itemselected&quot;. By
+ * inactivated menu items: <code>item</code> and <code>itemselected</code>. By
  * using CSS nested selectors, a different style may be defined for items in a
  * different menu.
  * <p>
+ * You may customize the rendering and behaviour of menu entries by specializing
+ * {@link WMenuItem}.
+ * <p>
+ * <h3>CSS</h3>
+ * <p>
+ * Styling a menu will be different depending of the rendering mode (table,
+ * list). Conventionally, menus like this are styled as a list.
+ * <p>
+ * You will want to differentiate between unselected and selected items based on
+ * the <code>item</code> and <code>itemselected</code> style classes.
  * <blockquote>
  * 
  * <pre>
@@ -82,15 +92,12 @@ import java.util.List;
  * 
  * </blockquote>
  * <p>
- * You may customize the rendering and behaviour of menu entries by specializing
- * {@link WMenuItem}.
- * <p>
  * 
  * @see WMenuItem
  */
 public class WMenu extends WCompositeWidget {
 	/**
-	 * Construct a new menu.
+	 * Creates a new menu.
 	 * <p>
 	 * Construct a menu to manage the widgets in <code>contentsStack</code>, and
 	 * sets the menu <code>orientation</code>.
@@ -115,7 +122,7 @@ public class WMenu extends WCompositeWidget {
 	}
 
 	/**
-	 * Construct a new menu.
+	 * Creates a new menu.
 	 * <p>
 	 * Calls
 	 * {@link #WMenu(WStackedWidget contentsStack, Orientation orientation, WContainerWidget parent)
@@ -137,7 +144,7 @@ public class WMenu extends WCompositeWidget {
 	}
 
 	/**
-	 * Add an item.
+	 * Adds an item.
 	 * <p>
 	 * Adds a menu item with given <code>contents</code>, which is added to the
 	 * menu&apos;s associated contents stack.
@@ -156,7 +163,7 @@ public class WMenu extends WCompositeWidget {
 	}
 
 	/**
-	 * Add an item.
+	 * Adds an item.
 	 * <p>
 	 * Returns
 	 * {@link #addItem(CharSequence name, WWidget contents, WMenuItem.LoadPolicy policy)
@@ -167,7 +174,7 @@ public class WMenu extends WCompositeWidget {
 	}
 
 	/**
-	 * Add an item.
+	 * Adds an item.
 	 * <p>
 	 * Adds a menu item. Use this form to add specialized {@link WMenuItem}
 	 * implementations.
@@ -225,7 +232,7 @@ public class WMenu extends WCompositeWidget {
 	}
 
 	/**
-	 * Remove an item.
+	 * Removes an item.
 	 * <p>
 	 * Removes the given item. The item and its contents is not deleted.
 	 * <p>
@@ -263,7 +270,7 @@ public class WMenu extends WCompositeWidget {
 	}
 
 	/**
-	 * Select an item.
+	 * Selects an item.
 	 * <p>
 	 * Select the menu item <code>item</code>.
 	 * <p>
@@ -276,7 +283,7 @@ public class WMenu extends WCompositeWidget {
 	}
 
 	/**
-	 * Select an item.
+	 * Selects an item.
 	 * <p>
 	 * Menu items in a menu with <code>N</code> items are numbered from 0 to
 	 * <code>N</code> - 1.
@@ -363,7 +370,7 @@ public class WMenu extends WCompositeWidget {
 	}
 
 	/**
-	 * Render using an HTML list.
+	 * Renders using an HTML list.
 	 * <p>
 	 * By default, the the menu is rendered using an HTML &lt;table&gt; element
 	 * for layout. Setting this option enables rendering using &lt;ul&gt; and
@@ -386,7 +393,7 @@ public class WMenu extends WCompositeWidget {
 	}
 
 	/**
-	 * Return whether the menu is rendered as an HTML list.
+	 * Returns whether the menu is rendered as an HTML list.
 	 * <p>
 	 * 
 	 * @see WMenu#setRenderAsList(boolean enable)
@@ -396,7 +403,7 @@ public class WMenu extends WCompositeWidget {
 	}
 
 	/**
-	 * Enable internal paths for items.
+	 * Enables internal paths for items.
 	 * <p>
 	 * The menu participates in the internal path by changing the internal path
 	 * when an item has been selected, and listening for path changes to react
@@ -438,7 +445,7 @@ public class WMenu extends WCompositeWidget {
 	}
 
 	/**
-	 * Enable internal paths for items.
+	 * Enables internal paths for items.
 	 * <p>
 	 * Calls {@link #setInternalPathEnabled(String basePath)
 	 * setInternalPathEnabled("")}
@@ -458,7 +465,7 @@ public class WMenu extends WCompositeWidget {
 	}
 
 	/**
-	 * Set the internal base path.
+	 * Sets the internal base path.
 	 * <p>
 	 * A &apos;/&apos; is appended to turn it into a folder, if needed.
 	 * <p>

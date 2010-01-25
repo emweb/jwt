@@ -53,21 +53,21 @@ public class WTimer extends WObject {
 	}
 
 	/**
-	 * Get the interval (msec).
+	 * Returns the interval (msec).
 	 */
 	public int getInterval() {
 		return this.interval_;
 	}
 
 	/**
-	 * Set the interval (msec).
+	 * Sets the interval (msec).
 	 */
 	public void setInterval(int msec) {
 		this.interval_ = msec;
 	}
 
 	/**
-	 * Return if the timer is running.
+	 * Returns if the timer is running.
 	 */
 	public boolean isActive() {
 		return this.active_;
@@ -81,7 +81,7 @@ public class WTimer extends WObject {
 	}
 
 	/**
-	 * Configure this timer to fire only once.
+	 * Configures this timer to fire only once.
 	 * <p>
 	 * A Timer is by default not single shot, and will fire continuously, until
 	 * it is stopped.
@@ -102,7 +102,7 @@ public class WTimer extends WObject {
 	 * 
 	 * </blockquote>
 	 * <p>
-	 * Start the timer. The timer will be {@link WTimer#isActive() isActive()},
+	 * Starts the timer. The timer will be {@link WTimer#isActive() isActive()},
 	 * until either the interval has elapsed, after which the timeout signal is
 	 * activated, or until {@link WTimer#stop() stop()} is called.
 	 */
@@ -130,7 +130,7 @@ public class WTimer extends WObject {
 	}
 
 	/**
-	 * Stop the timer.
+	 * Stops the timer.
 	 * <p>
 	 * You may stop the timer during its {@link WTimer#timeout() timeout()}, or
 	 * cancel a running timer at any other time.

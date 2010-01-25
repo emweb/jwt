@@ -77,10 +77,10 @@ import eu.webtoolkit.jwt.utils.EnumUtils;
  * <p>
  * <h3>CSS</h3>
  * <p>
- * You may customize the look of a treeview using the <code>Wt-treeview</code>
- * CSS class.
+ * The treeview is styled by the current CSS theme. The look can be overridden
+ * using the <code>Wt-treeview</code> CSS class and the following selectors.
  * <p>
- * The following rules may be used to style the header: <div class="fragment">
+ * Selectors that apply to the header: <div class="fragment">
  * 
  * <pre class="fragment">
  * .Wt-treeview .Wt-headerdiv         : header (background)
@@ -91,8 +91,7 @@ import eu.webtoolkit.jwt.utils.EnumUtils;
  * .Wt-treeview .Wt-tv-sh-down        : column sort handle, sort down
  * </pre>
  * 
- * </div> The following rules may be used to style the tree decoration: <div
- * class="fragment">
+ * </div> Selectors that apply to the tree decoration: <div class="fragment">
  * 
  * <pre class="fragment">
  * .Wt-treeview .Wt-trunk          : vertical line, trunk
@@ -102,8 +101,7 @@ import eu.webtoolkit.jwt.utils.EnumUtils;
  * .Wt-treeview .Wt-noexpand       : leaf icon
  * </pre>
  * 
- * </div> The following rules may be used to style the table contents: <div
- * class="fragment">
+ * </div> Selectors that apply to the table contents: <div class="fragment">
  * 
  * <pre class="fragment">
  * .Wt-treeview .Wt-spacer         : spacer for non-loaded content
@@ -111,8 +109,8 @@ import eu.webtoolkit.jwt.utils.EnumUtils;
  * .Wt-treeview .Wt-drop-site      : possible drop site
  * </pre>
  * 
- * </div> The following rules may be used to style the cell border (which must
- * be 1 pixel wide) <div class="fragment">
+ * </div> Selectors that apply to the table borders (which must be 1 pixel wide)
+ * <div class="fragment">
  * 
  * <pre class="fragment">
  * .Wt-treeview .Wt-tv-row .Wt-tv-c      : border-right property of cells
@@ -121,10 +119,22 @@ import eu.webtoolkit.jwt.utils.EnumUtils;
  * </pre>
  * 
  * </div>
+ * <p>
+ * A snapshot of the {@link WTreeView}: <div align="center"> <img
+ * src="doc-files//WTreeView-default-1.png" alt="WTreeView example (default)">
+ * <p>
+ * <strong>WTreeView example (default)</strong>
+ * </p>
+ * </div> <div align="center"> <img src="doc-files//WTreeView-polished-1.png"
+ * alt="WTreeView example (polished)">
+ * <p>
+ * <strong>WTreeView example (polished)</strong>
+ * </p>
+ * </div>
  */
 public class WTreeView extends WAbstractItemView {
 	/**
-	 * Create a new tree view.
+	 * Creates a new tree view.
 	 */
 	public WTreeView(WContainerWidget parent) {
 		super(parent);
@@ -203,9 +213,8 @@ public class WTreeView extends WAbstractItemView {
 						".Wt-treeview .Wt-header .Wt-label", "zoom: 1;");
 			}
 			app.getStyleSheet().addRule(".Wt-treeview table", "width: 100%");
-			app.getStyleSheet().addRule(".Wt-treeview .c1", "width: 100%");
-			app.getStyleSheet().addRule(".Wt-treeview .c1div",
-					"overflow: hidden; width: 100%");
+			app.getStyleSheet().addRule(".Wt-treeview .c1",
+					"width: 100%; overflow: hidden;");
 			app.getStyleSheet().addRule(".Wt-treeview .c0",
 					"width: 19px; vertical-align: middle");
 			app.getStyleSheet().addRule(".Wt-treeview .Wt-tv-row",
@@ -219,7 +228,7 @@ public class WTreeView extends WAbstractItemView {
 					".Wt-treeview img.icon, .Wt-treeview input.icon",
 					"margin: 0px 3px 2px 0px; vertical-align: middle");
 			app.getStyleSheet().addRule(".Wt-treeview .Wt-tv-node img.w0",
-					"width: 0px");
+					"width: 0px; margin: 0px;");
 			app
 					.getStyleSheet()
 					.addRule(
@@ -242,26 +251,15 @@ public class WTreeView extends WAbstractItemView {
 					"float: left; width: 4px;");
 			app
 					.getStyleSheet()
-					.addRule(".Wt-treeview .Wt-tv-sh",
-							"float: right; width: 16px; padding-bottom: 6px;cursor: pointer; cursor:hand;");
-			app.getStyleSheet().addRule(".Wt-treeview .Wt-tv-sh-nrh",
-					"float: right; width: 16px; cursor: pointer; cursor:hand;");
-			app
-					.getStyleSheet()
 					.addRule(
 							".Wt-treeview .Wt-tv-br, .Wt-treeview .Wt-tv-node .Wt-tv-row .Wt-tv-c",
-							"border-right: 1px solid #FFFFFF;");
-			app
-					.getStyleSheet()
-					.addRule(
-							".Wt-treeview .header .Wt-tv-row, .Wt-treeview .Wt-tv-node .Wt-tv-row",
-							"border-left: 1px solid #FFFFFF;");
+							"border-right: 1px solid white;");
 			app
 					.getStyleSheet()
 					.addRule(
 							".Wt-treeview .Wt-tv-sh",
 							""
-									+ "float: right; width: 16px; height: 10px;cursor: pointer; cursor:hand;");
+									+ "float: right; width: 16px; height: 10px; padding-bottom: 6px;cursor: pointer; cursor:hand;");
 			app
 					.getStyleSheet()
 					.addRule(
@@ -306,10 +304,6 @@ public class WTreeView extends WAbstractItemView {
 		this.rowContentsWidthRule_ = new WCssTemplateRule("#" + this.getId()
 				+ " .Wt-tv-rowc");
 		app.getStyleSheet().addRule(this.rowContentsWidthRule_);
-		this.c0WidthRule_ = new WCssTemplateRule("#" + this.getId() + " .c0w");
-		this.c0WidthRule_.getTemplateWidget().resize(new WLength(150),
-				WLength.Auto);
-		app.getStyleSheet().addRule(this.c0WidthRule_);
 		this.setRowHeight(this.rowHeight_);
 		if (app.getEnvironment().hasJavaScript()) {
 			this.impl_.setPositionScheme(PositionScheme.Relative);
@@ -356,7 +350,7 @@ public class WTreeView extends WAbstractItemView {
 		app
 				.declareJavaScriptFunction(
 						"getItem",
-						"function(event) {var columnId = -1, nodeId = null, selected = false, drop = false, el = null;var t = event.target || event.srcElement;while (t) {if (t.className.indexOf('c1 rh') == 0) {if (columnId == -1)columnId = 0;} else if (t.className.indexOf('Wt-tv-c') == 0) {if (t.className.indexOf('Wt-tv-c rh Wt-tv-c') == 0)columnId = t.className.split(' ')[2].substring(7) * 1;else if (columnId == -1)columnId = 0;if (t.getAttribute('drop') === 'true')drop = true;el = t;} else if (t.className == 'Wt-tv-node') {nodeId = t.id;break;}if (t.className === 'Wt-selected')selected = true;t = t.parentNode;if (Wt3_1_0.hasTag(t, 'BODY'))break;}return { columnId: columnId, nodeId: nodeId, selected: selected, drop: drop, el: el };}");
+						"function(event) {var columnId = -1, nodeId = null, selected = false, drop = false, el = null;var t = event.target || event.srcElement;while (t) {if (t.className.indexOf('c1 rh') == 0) {if (columnId == -1)columnId = 0;} else if (t.className.indexOf('Wt-tv-c') == 0) {if (t.className.indexOf('Wt-tv-c') == 0)columnId = t.className.split(' ')[0].substring(7) * 1;else if (columnId == -1)columnId = 0;if (t.getAttribute('drop') === 'true')drop = true;el = t;} else if (t.className == 'Wt-tv-node') {nodeId = t.id;break;}if (t.className === 'Wt-selected')selected = true;t = t.parentNode;if (Wt3_1_0.hasTag(t, 'BODY'))break;}return { columnId: columnId, nodeId: nodeId, selected: selected, drop: drop, el: el };}");
 		this.itemClickedJS_.setJavaScript("function(obj, event) {var item="
 				+ app.getJavaScriptClass()
 				+ ".getItem(event);if (item.columnId != -1) {"
@@ -388,11 +382,13 @@ public class WTreeView extends WAbstractItemView {
 						+ this.contents_.getJsRef()
 						+ ".firstChild,h="
 						+ this.headers_.getJsRef()
-						+ ",hh=h.firstChild;if (lastx != null && lastx != '') {nowxy = WT.pageCoordinates(event);var parent = obj.parentNode.parentNode,diffx = Math.max(nowxy.x - lastx, -parent.offsetWidth),c = parent.className.split(' ')[2];if (c == 'unselectable')c = null;if (c) {var r = WT.getCssRule('#"
+						+ ",hh=h.firstChild,h0=h.lastChild,c0id = h0.className.split(' ')[0],c0r = WT.getCssRule('#"
 						+ this.getId()
-						+ " .' + c),tw = WT.pxself(r, 'width');if (tw == 0) tw = parent.offsetWidth;r.style.width = Math.max(0, tw + diffx) + 'px';}"
+						+ " .' + c0id);if (lastx != null && lastx != '') {var nowxy = WT.pageCoordinates(event),parent = obj.parentNode.parentNode,diffx = Math.max(nowxy.x - lastx, -parent.offsetWidth),c = parent.className.split(' ')[0];if (c) {var r = WT.getCssRule('#"
+						+ this.getId()
+						+ " .' + c),tw = WT.pxself(r, 'width');r.style.width = Math.max(0, tw + diffx) + 'px';}var s = "
 						+ this.getJsRef()
-						+ ".adjustHeaderWidth(c, diffx);obj.setAttribute('dsx', nowxy.x);WT.cancelEvent(event);  }}");
+						+ ";s.adjustColumns();obj.setAttribute('dsx', nowxy.x);WT.cancelEvent(event);  }}");
 		this.resizeHandleMUpJS_
 				.setJavaScript("function(obj, event) {obj.removeAttribute('dsx');Wt3_1_0.cancelEvent(event);}");
 		this.tieContentsHeaderScrollJS_
@@ -417,32 +413,39 @@ public class WTreeView extends WAbstractItemView {
 							+ this.getId()
 							+ " .Wt-tv-rowc').parent().scrollLeft(obj.scrollLeft);}");
 		}
+		String extra = app.getEnvironment().getAgent() == WEnvironment.UserAgent.IE6 ? "10"
+				: "8";
 		app
-				.addAutoJavaScript("{var e="
-						+ this.contentsContainer_.getJsRef()
-						+ ";var s="
-						+ this.getJsRef()
-						+ ";var WT=Wt3_1_0;if (e) {var tw=s.offsetWidth-WT.px(s, 'borderLeftWidth')-WT.px(s, 'borderRightWidth'),vscroll=e.scrollHeight > e.offsetHeight;c0w = null;if (s.className.indexOf('column1') != -1)  c0w = WT.pxself(WT.getCssRule('#"
+				.addAutoJavaScript("{var e=$('#"
+						+ this.contentsContainer_.getId()
+						+ "').get(0);var $s=$('#"
 						+ this.getId()
-						+ " .c0w'), 'width');if (tw > 200 && (tw != e.tw || vscroll != e.vscroll || c0w != e.c0w|| s.changed)) {s.changed = false;e.vscroll = vscroll;e.tw = tw;e.c0w = c0w;var h= "
+						+ "');var WT=Wt3_1_0;if (e) {var tw=$s.innerWidth(),vscroll=e.scrollHeight > e.offsetHeight,c0id, c0w = null;if ($s.hasClass('column1')) {c0id = $('#"
+						+ this.getId()
+						+ " .Wt-headerdiv').get(0).lastChild.className.split(' ')[0];c0w = WT.pxself(WT.getCssRule('#"
+						+ this.getId()
+						+ " .' + c0id), 'width');}if (tw > 200 && (tw != e.tw || vscroll != e.vscroll || c0w != e.c0w || $s.get(0).changed)) {e.tw = tw;e.vscroll = vscroll;e.c0w = c0w;var h= "
 						+ this.headers_.getJsRef()
-						+ ",hh=h.firstChild,t="
+						+ ",t="
 						+ this.contents_.getJsRef()
 						+ ".firstChild,r= WT.getCssRule('#"
 						+ this.getId()
-						+ " .cwidth'),contentstoo=(r.style.width == h.style.width);r.style.width=(tw - (vscroll ? 19 : 0)) + 'px';e.style.width=tw + 'px';h.style.width=t.offsetWidth + 'px';if (c0w != null) {var hh=h.firstChild,w=tw - c0w - (vscroll ? 19 : 0);if (w > 0) {var sel = '#"
+						+ " .cwidth'),contentstoo=(r.style.width == h.style.width);r.style.width=(tw - (vscroll ? 19 : 0)) + 'px';e.style.width=tw + 'px';h.style.width=t.offsetWidth + 'px';if (c0w != null) {var w=tw - c0w - "
+						+ extra
+						+ " - (vscroll ? 19 : 0);if (w > 0) {w2 = Math.min(w, WT.pxself(WT.getCssRule('#"
 						+ this.getId()
-						+ " .Wt-tv-row';WT.getCssRule(sel).style.width = w + 'px';$(sel).css('width', w + 'px').css('width', null);var extra = hh.childNodes.length > 1? (hh.childNodes[1].className.indexOf('Wt-tv-sh') != -1 ? 21 : 6) : 0;"
-						+ (app.getEnvironment().getAgent() == WEnvironment.UserAgent.IE6 ? "extra += 1;"
-								: "")
-						+ "hh.style.width= (w + extra) + 'px';}} else if (contentstoo) {h.style.width=r.style.width;t.style.width=r.style.width;}if (s.adjustHeaderWidth)s.adjustHeaderWidth(1, 0);}}}");
+						+ " .Wt-tv-rowc'), 'width'));tw -= (w - w2);WT.getCssRule('#"
+						+ this.getId()
+						+ " .Wt-tv-row').style.width = w2+'px';$('#"
+						+ this.getId()
+						+ " .Wt-tv-row').css('width', w2 + 'px').css('width', '');tw -= (vscroll ? 19 : 0);h.style.width=tw + 'px';t.style.width=tw + 'px';}} else if (contentstoo) {h.style.width=r.style.width;t.style.width=r.style.width;}if (!$s.get(0).changed && $s.get(0).adjustColumns)$s.get(0).adjustColumns();$s.get(0).changed = false;}}}");
 		if (parent != null) {
 			parent.addWidget(this);
 		}
 	}
 
 	/**
-	 * Create a new tree view.
+	 * Creates a new tree view.
 	 * <p>
 	 * Calls {@link #WTreeView(WContainerWidget parent)
 	 * this((WContainerWidget)null)}
@@ -500,7 +503,7 @@ public class WTreeView extends WAbstractItemView {
 	}
 
 	/**
-	 * Expand or collapse a node.
+	 * Expands or collapses a node.
 	 * <p>
 	 * 
 	 * @see WTreeView#expand(WModelIndex index)
@@ -552,7 +555,7 @@ public class WTreeView extends WAbstractItemView {
 	}
 
 	/**
-	 * Collapse a node.
+	 * Collapses a node.
 	 * <p>
 	 * 
 	 * @see WTreeView#setExpanded(WModelIndex index, boolean expanded)
@@ -563,7 +566,7 @@ public class WTreeView extends WAbstractItemView {
 	}
 
 	/**
-	 * Expand a node.
+	 * Expands a node.
 	 * <p>
 	 * 
 	 * @see WTreeView#setExpanded(WModelIndex index, boolean expanded)
@@ -574,7 +577,7 @@ public class WTreeView extends WAbstractItemView {
 	}
 
 	/**
-	 * Expand all nodes to a depth.
+	 * Expands all nodes to a depth.
 	 * <p>
 	 * Expands all nodes to the given <code>depth</code>. A depth of 1
 	 * corresponds to the top level nodes.
@@ -642,7 +645,7 @@ public class WTreeView extends WAbstractItemView {
 	}
 
 	/**
-	 * Configure whether horizontal scrolling includes the first column.
+	 * Configures whether horizontal scrolling includes the first column.
 	 * <p>
 	 * To display a model with many columns, this option allows you to keep the
 	 * first column fixed while scrolling through the other columns of the
@@ -687,8 +690,18 @@ public class WTreeView extends WAbstractItemView {
 			}
 			this.impl_.getLayout().addWidget(scrollBarContainer);
 			app.addAutoJavaScript("{var s=" + this.scrollBarC_.getJsRef()
-					+ ";if (s) " + this.tieRowsScrollJS_.execJs("s") + "}");
+					+ ";if (s) {" + this.tieRowsScrollJS_.execJs("s") + "}}");
 		}
+	}
+
+	/**
+	 * Returns whether horizontal scrolling includes the first column.
+	 * <p>
+	 * 
+	 * @see WTreeView#setColumn1Fixed(boolean fixed)
+	 */
+	public boolean isColumn1Fixed() {
+		return this.column1Fixed_;
 	}
 
 	public void resize(WLength width, WLength height) {
@@ -835,25 +848,14 @@ public class WTreeView extends WAbstractItemView {
 	 */
 	public void setColumnWidth(int column, WLength width) {
 		this.columnInfo(column).width = width;
-		if (column != 0) {
-			this.columnInfo(column).styleRule.getTemplateWidget().resize(width,
-					WLength.Auto);
-		} else {
-			if (this.column1Fixed_) {
-				this.c0WidthRule_.getTemplateWidget().resize(
-						new WLength(width.toPixels()), WLength.Auto);
-			}
-		}
-		if (!this.column1Fixed_ && !this.columnInfo(0).width.isAuto()) {
-			double total = 0;
-			for (int i = 0; i < this.getColumnCount(); ++i) {
-				total += this.columnInfo(i).width.toPixels() + 7;
-			}
-			this.headers_.resize(new WLength(total), this.headers_.getHeight());
-			WContainerWidget wrapRoot = ((this.contents_.getWidget(0)) instanceof WContainerWidget ? (WContainerWidget) (this.contents_
-					.getWidget(0))
-					: null);
-			wrapRoot.resize(new WLength(total), wrapRoot.getHeight());
+		WWidget toResize = this.columnInfo(column).styleRule
+				.getTemplateWidget();
+		toResize.resize(new WLength(0), WLength.Auto);
+		toResize.resize(new WLength(width.toPixels()), WLength.Auto);
+		WApplication app = WApplication.getInstance();
+		if (this.renderState_.getValue() < WAbstractItemView.RenderState.NeedRerenderHeader
+				.getValue()) {
+			app.doJavaScript(this.getJsRef() + ".adjustColumns();");
 		}
 	}
 
@@ -908,6 +910,7 @@ public class WTreeView extends WAbstractItemView {
 	}
 
 	public void setColumnAlignment(int column, AlignmentFlag alignment) {
+		this.columnInfo(column).alignment = alignment;
 		WWidget w = this.columnInfo(column).styleRule.getTemplateWidget();
 		if (column != 0) {
 			String align = null;
@@ -947,14 +950,9 @@ public class WTreeView extends WAbstractItemView {
 				.getValue()) {
 			return;
 		}
-		WContainerWidget wc;
-		if (column != 0) {
-			wc = ((this.headerWidget(column)) instanceof WContainerWidget ? (WContainerWidget) (this
-					.headerWidget(column))
-					: null);
-		} else {
-			wc = this.headers_;
-		}
+		WContainerWidget wc = ((this.headerWidget(column)) instanceof WContainerWidget ? (WContainerWidget) (this
+				.headerWidget(column))
+				: null);
 		wc.setContentAlignment(EnumSet.of(alignment));
 	}
 
@@ -975,36 +973,35 @@ public class WTreeView extends WAbstractItemView {
 	public void refresh() {
 		this.needDefineJS_ = false;
 		WApplication app = WApplication.getInstance();
-		String columnsWidth = ""
-				+ "var WT=Wt3_1_0,t="
+		String extra = app.getEnvironment().getAgent() == WEnvironment.UserAgent.IE6 ? "10"
+				: "8";
+		String columnsWidth = "var e="
+				+ this.getJsRef()
+				+ ",WT=Wt3_1_0,t="
 				+ this.contents_.getJsRef()
 				+ ".firstChild,h="
 				+ this.headers_.getJsRef()
-				+ ",hh=h.firstChild,hc=hh.firstChild"
+				+ ",hc=h.firstChild"
 				+ (this.column1Fixed_ ? ".firstChild" : "")
-				+ ",totalw=0,extra="
-				+ (this.column1Fixed_ ? "1" : "4")
-				+ "+ (hh.childNodes.length > 1? (hh.childNodes[1].className.indexOf('Wt-tv-sh') != -1 ? 18 : 7): 0);if("
-				+ this.getJsRef()
-				+ ".offsetWidth == 0) return;for (var i=0, length=hc.childNodes.length; i < length; ++i) {if (hc.childNodes[i].className) {var cl = hc.childNodes[i].className.split(' ')[2],r = WT.getCssRule('#"
+				+ ",allw_1=0, allw=0,c0id = h.lastChild.className.split(' ')[0],c0r = WT.getCssRule('#"
 				+ this.getId()
-				+ " .' + cl);totalw += WT.pxself(r, 'width') + 7;}}var cw = WT.pxself(hh, 'width'),hdiff = c ? (cw == 0 ? 0 : (totalw - (cw - extra))) : diffx;\n";
+				+ " .' + c0id);if (WT.isHidden(e)) return;for (var i=0, length=hc.childNodes.length; i < length; ++i) {\nif (hc.childNodes[i].className) {\nvar cl = hc.childNodes[i].className.split(' ')[0],\nr = WT.getCssRule('#"
+				+ this.getId()
+				+ " .' + cl);\nallw_1 += WT.pxself(r, 'width') + 7;\n}}\nif (!c0r.style.width) c0r.style.width = (h.offsetWidth - hc.offsetWidth - 8) + 'px';allw = allw_1 + WT.pxself(c0r, 'width') + "
+				+ extra + ";\n";
 		if (!this.column1Fixed_) {
-			columnsWidth += "t.style.width = (t.offsetWidth + hdiff) + 'px';h.style.width = t.offsetWidth + 'px';hh.style.width = (totalw + extra) + 'px';";
+			columnsWidth += "h.style.width = t.style.width = allw + 'px';hc.style.width = allw_1 + 'px';";
 		} else {
 			columnsWidth += "var r = WT.getCssRule('#"
 					+ this.getId()
-					+ " '+ (c ? '.Wt-tv-rowc' : '.c0w'));totalw += 'px';if (c) {r.style.width = totalw;$('#"
+					+ " .Wt-tv-rowc');r.style.width = allw_1 + 'px';$('#"
 					+ this.getId()
-					+ " .Wt-tv-rowc').css('width', totalw).css('width', null);} else {r.style.width = (WT.pxself(r, 'width') + diffx) + 'px';"
-					+ app.getJavaScriptClass() + "._p_.autoJavaScript();}";
+					+ " .Wt-tv-rowc').css('width', allw_1 + 'px').css('width', '');e.changed=true;"
+					+ app.getJavaScriptClass() + "._p_.autoJavaScript();";
 		}
-		app
-				.doJavaScript(this.getJsRef()
-						+ ".adjustHeaderWidth=function(c, diffx) {if (c === undefined) {"
-						+ this.getJsRef() + ".changed=true; c=1; diffx=0;}if ("
-						+ this.contentsContainer_.getJsRef() + ") {"
-						+ columnsWidth + "}};");
+		app.doJavaScript(this.getJsRef() + ".adjustColumns=function() {if ("
+				+ this.contentsContainer_.getJsRef() + ") {" + columnsWidth
+				+ "}};");
 		app
 				.doJavaScript(this.getJsRef()
 						+ ".handleDragDrop=function(action, object, event, sourceId, mimeType) {var self="
@@ -1064,7 +1061,6 @@ public class WTreeView extends WAbstractItemView {
 	private WCssTemplateRule headerHeightRule_;
 	private WCssTemplateRule rowWidthRule_;
 	private WCssTemplateRule rowContentsWidthRule_;
-	private WCssTemplateRule c0WidthRule_;
 	private WCssRule borderColorRule_;
 	private boolean rootIsDecorated_;
 	boolean column1Fixed_;
@@ -1103,11 +1099,16 @@ public class WTreeView extends WAbstractItemView {
 				this, ++this.nextColumnId_, column);
 		ci.styleRule = new WCssTemplateRule("#" + this.getId() + " ."
 				+ ci.getStyleClass());
+		WApplication app = WApplication.getInstance();
 		if (column != 0) {
 			ci.width = new WLength(150);
 			ci.styleRule.getTemplateWidget().resize(ci.width, WLength.Auto);
+		} else {
+			app.getStyleSheet().addRule(
+					"#" + this.getId() + " .Wt-tv-node" + " ."
+							+ ci.getStyleClass(), "width: auto;");
 		}
-		WApplication.getInstance().getStyleSheet().addRule(ci.styleRule);
+		app.getStyleSheet().addRule(ci.styleRule);
 		return ci;
 	}
 
@@ -1129,9 +1130,8 @@ public class WTreeView extends WAbstractItemView {
 			}
 		}
 		this.headers_.clear();
-		WContainerWidget rowc = new WContainerWidget(this.headers_);
-		rowc.setFloatSide(Side.Right);
-		WContainerWidget row = new WContainerWidget(rowc);
+		WContainerWidget row = new WContainerWidget(this.headers_);
+		row.setFloatSide(Side.Right);
 		if (this.column1Fixed_) {
 			row.setStyleClass("Wt-tv-row headerrh background");
 			row = new WContainerWidget(row);
@@ -1139,49 +1139,14 @@ public class WTreeView extends WAbstractItemView {
 		} else {
 			row.setStyleClass("Wt-tv-row");
 		}
-		if (this.columnInfo(0).sorting) {
-			WText sortIcon = new WText(rowc);
-			sortIcon.setObjectName("sort");
-			sortIcon.setInline(false);
-			if (!this.columnResize_) {
-				sortIcon.setMargin(new WLength(4), EnumSet.of(Side.Right));
-			}
-			sortIcon.setFloatSide(Side.Left);
-			sortIcon.setStyleClass("Wt-tv-sh Wt-tv-sh-none");
-			this.clickedForSortMapper_.mapConnect(sortIcon.clicked(), 0);
-		}
-		if (this.columnResize_) {
-			WContainerWidget resizeHandle = new WContainerWidget(rowc);
-			resizeHandle.setStyleClass("Wt-tv-rh headerrh Wt-tv-rhc0");
-			resizeHandle.mouseWentDown().addListener(this.resizeHandleMDownJS_);
-			resizeHandle.mouseWentUp().addListener(this.resizeHandleMUpJS_);
-			resizeHandle.mouseMoved().addListener(this.resizeHandleMMovedJS_);
-		}
-		for (int i = 1; i < this.getColumnCount(); ++i) {
+		for (int i = 0; i < this.getColumnCount(); ++i) {
 			WWidget w = this.createHeaderWidget(app, i);
-			w.setFloatSide(Side.Left);
-			row.addWidget(w);
-		}
-		WText t = new WText("&nbsp;");
-		t.setObjectName("text");
-		if (this.getColumnCount() > 0) {
-			if (!this.multiLineHeader_) {
-				t.setStyleClass(this.getColumnStyleClass(0)
-						+ " headerrh Wt-label");
+			if (i != 0) {
+				w.setFloatSide(Side.Left);
+				row.addWidget(w);
 			} else {
-				t.setStyleClass(this.getColumnStyleClass(0) + " Wt-label");
+				this.headers_.addWidget(w);
 			}
-		}
-		t.setInline(false);
-		t.setAttributeValue("style",
-				"float: none; margin: 0px auto;padding-left: 6px;");
-		if (this.columnInfo(0).extraHeaderWidget != null) {
-			WContainerWidget c = new WContainerWidget(this.headers_);
-			c.setInline(true);
-			c.addWidget(t);
-			c.addWidget(this.columnInfo(0).extraHeaderWidget);
-		} else {
-			this.headers_.addWidget(t);
 		}
 		if (this.currentSortColumn_ != -1) {
 			SortOrder order = this.columnInfo(this.currentSortColumn_).sortOrder;
@@ -1189,7 +1154,7 @@ public class WTreeView extends WAbstractItemView {
 					order == SortOrder.AscendingOrder ? "Wt-tv-sh Wt-tv-sh-up"
 							: "Wt-tv-sh Wt-tv-sh-down");
 		}
-		app.doJavaScript(this.getJsRef() + ".adjustHeaderWidth();");
+		app.doJavaScript(this.getJsRef() + ".adjustColumns();");
 		if (this.model_ != null) {
 			this.modelHeaderDataChanged(Orientation.Horizontal, 0, this
 					.getColumnCount() - 1);
@@ -1235,18 +1200,7 @@ public class WTreeView extends WAbstractItemView {
 					this
 							.scheduleRerender(WAbstractItemView.RenderState.NeedRerenderHeader);
 				} else {
-					double newWidth = 0;
-					for (int i = start; i < start + count; ++i) {
-						newWidth += this.columns_.get(i).width.toPixels() + 7;
-					}
-					if (this.column1Fixed_) {
-						app.doJavaScript(this.getJsRef()
-								+ ".adjustHeaderWidth();");
-					} else {
-						app.doJavaScript(this.getJsRef()
-								+ ".adjustHeaderWidth(null, "
-								+ String.valueOf(newWidth) + ");");
-					}
+					app.doJavaScript(this.getJsRef() + ".adjustColumns();");
 					WContainerWidget row = this.getHeaderRow();
 					for (int i = start; i < start + count; ++i) {
 						WWidget w = this.createHeaderWidget(app, i);
@@ -1285,19 +1239,7 @@ public class WTreeView extends WAbstractItemView {
 			if (this.renderState_.getValue() < WAbstractItemView.RenderState.NeedRerenderHeader
 					.getValue()) {
 				WApplication app = WApplication.getInstance();
-				for (int i = start; i < start + count; ++i) {
-					String c = this.columns_.get(i).getStyleClass();
-					if (!this.column1Fixed_) {
-						app
-								.doJavaScript(this.getJsRef()
-										+ ".adjustHeaderWidth(null ,-WT.pxself(WT.getCssRule('#"
-										+ this.getId() + " ." + c
-										+ "'), 'width') - 7);");
-					}
-				}
-				if (this.column1Fixed_) {
-					app.doJavaScript(this.getJsRef() + ".adjustHeaderWidth();");
-				}
+				app.doJavaScript(this.getJsRef() + ".adjustColumns();");
 			}
 			for (int ii = 0; ii < (0 + start + count) - (0 + start); ++ii)
 				this.columns_.remove(0 + start);
@@ -2197,9 +2139,6 @@ public class WTreeView extends WAbstractItemView {
 		WContainerWidget row = ((this.headers_.getWidget(0)) instanceof WContainerWidget ? (WContainerWidget) (this.headers_
 				.getWidget(0))
 				: null);
-		row = ((row.getWidget(0)) instanceof WContainerWidget ? (WContainerWidget) (row
-				.getWidget(0))
-				: null);
 		if (this.column1Fixed_) {
 			row = ((row.getWidget(0)) instanceof WContainerWidget ? (WContainerWidget) (row
 					.getWidget(0))
@@ -2362,7 +2301,7 @@ public class WTreeView extends WAbstractItemView {
 		} else {
 			result = this.getHeaderRow().getWidget(column - 1);
 		}
-		if (contentsOnly && column != 0) {
+		if (contentsOnly) {
 			return result.find("contents");
 		} else {
 			return result;
@@ -2373,17 +2312,9 @@ public class WTreeView extends WAbstractItemView {
 		if (!this.columnInfo(column).sorting) {
 			return null;
 		}
-		if (column == 0) {
-			WContainerWidget row = ((this.headers_.getWidget(0)) instanceof WContainerWidget ? (WContainerWidget) (this.headers_
-					.getWidget(0))
-					: null);
-			return ((row.getWidget(1)) instanceof WText ? (WText) (row
-					.getWidget(1)) : null);
-		} else {
-			return ((this.headerWidget(column).find("sort")) instanceof WText ? (WText) (this
-					.headerWidget(column).find("sort"))
-					: null);
-		}
+		return ((this.headerWidget(column).find("sort")) instanceof WText ? (WText) (this
+				.headerWidget(column).find("sort"))
+				: null);
 	}
 
 	static boolean isAncestor(WModelIndex i1, WModelIndex i2) {

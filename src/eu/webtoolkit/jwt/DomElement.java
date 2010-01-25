@@ -947,7 +947,7 @@ class DomElement {
 					|| i.getKey() == Property.PropertyText
 					|| i.getKey() == Property.PropertyTarget) {
 			} else {
-				this.properties_.remove(i);
+				i_it.remove();
 			}
 		}
 	}

@@ -24,14 +24,14 @@ package eu.webtoolkit.jwt;
  */
 public abstract class WAbstractTableModel extends WAbstractItemModel {
 	/**
-	 * Create a new abstract list model.
+	 * Creates a new abstract list model.
 	 */
 	public WAbstractTableModel(WObject parent) {
 		super(parent);
 	}
 
 	/**
-	 * Create a new abstract list model.
+	 * Creates a new abstract list model.
 	 * <p>
 	 * Calls {@link #WAbstractTableModel(WObject parent) this((WObject)null)}
 	 */

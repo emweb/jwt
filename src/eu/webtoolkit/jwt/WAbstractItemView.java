@@ -117,7 +117,7 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	public abstract boolean hasAlternatingRowColors();
 
 	/**
-	 * Sort the data according to a column.
+	 * Sorts the data according to a column.
 	 * <p>
 	 * Sorts the data according to data in column <code>column</code> and sort
 	 * order <code>order</code>.
@@ -141,7 +141,7 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	}
 
 	/**
-	 * Enable sorting.
+	 * Enables or disables sorting for all columns.
 	 * <p>
 	 * Enable or disable sorting by the user on all columns.
 	 * <p>
@@ -159,7 +159,7 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	}
 
 	/**
-	 * Enable sorting.
+	 * Enables or disables sorting for a single column.
 	 * <p>
 	 * Enable or disable sorting by the user for a specific column.
 	 * <p>
@@ -184,7 +184,7 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	}
 
 	/**
-	 * Enable interactive column resizing.
+	 * Enables interactive column resizing.
 	 * <p>
 	 * Enable or disable column resize handles for interactive resizing of the
 	 * columns.
@@ -211,7 +211,7 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	}
 
 	/**
-	 * Change the selection behaviour.
+	 * Changes the selection behaviour.
 	 * <p>
 	 * The selection behavior indicates whether whole rows or individual items
 	 * can be selected. It is a property of the
@@ -302,7 +302,7 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	}
 
 	/**
-	 * Select a single item.
+	 * Selects a single item.
 	 * <p>
 	 * 
 	 * @see WAbstractItemView#setSelectedIndexes(SortedSet indexes)
@@ -315,7 +315,7 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	}
 
 	/**
-	 * Select a single item.
+	 * Selects a single item.
 	 * <p>
 	 * Calls {@link #select(WModelIndex index, SelectionFlag option)
 	 * select(index, SelectionFlag.Select)}
@@ -366,7 +366,7 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	}
 
 	/**
-	 * Enable the selection to be dragged (drag &amp; drop).
+	 * Enables the selection to be dragged (drag &amp; drop).
 	 * <p>
 	 * To enable dragging of the selection, you first need to enable selection
 	 * using {@link WAbstractItemView#setSelectionMode(SelectionMode mode)
@@ -395,7 +395,7 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	}
 
 	/**
-	 * Enable drop operations (drag &amp; drop).
+	 * Enables drop operations (drag &amp; drop).
 	 * <p>
 	 * When drop is enabled, the tree view will indicate that something may be
 	 * dropped when the mime-type of the dragged object is compatible with one
@@ -500,7 +500,9 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	}
 
 	/**
-	 * Returns the delegate for a column.
+	 * Returns the delegate that was set for a column.
+	 * <p>
+	 * Returns <code>null</code> if no delegate was set for the column.
 	 * <p>
 	 * 
 	 * @see WAbstractItemView#setItemDelegateForColumn(int column,
@@ -519,8 +521,17 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	 * @see WAbstractItemView#setItemDelegate(WAbstractItemDelegate delegate)
 	 */
 	public WAbstractItemDelegate getItemDelegate(WModelIndex index) {
-		WAbstractItemDelegate result = this.getItemDelegateForColumn(index
-				.getColumn());
+		return this.getItemDelegate(index.getColumn());
+	}
+
+	/**
+	 * Returns the delegate for a column.
+	 * <p>
+	 * Returns either the delegate that was set for the column, or the default
+	 * delegate.
+	 */
+	public WAbstractItemDelegate getItemDelegate(int column) {
+		WAbstractItemDelegate result = this.getItemDelegateForColumn(column);
 		return result != null ? result : this.itemDelegate_;
 	}
 
@@ -567,6 +578,37 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	 * The default border color is white.
 	 */
 	public abstract void setColumnBorder(WColor color);
+
+	/**
+	 * Sets the header height.
+	 * <p>
+	 * Use this method to change the header height. You may also enable the use
+	 * of multi-line headers. By default, the header text is a single line, that
+	 * is centered vertically.
+	 * <p>
+	 * The default value is 20 pixels.
+	 */
+	public abstract void setHeaderHeight(WLength height, boolean multiLine);
+
+	/**
+	 * Sets the header height.
+	 * <p>
+	 * Calls {@link #setHeaderHeight(WLength height, boolean multiLine)
+	 * setHeaderHeight(height, false)}
+	 */
+	public final void setHeaderHeight(WLength height) {
+		setHeaderHeight(height, false);
+	}
+
+	/**
+	 * Returns the header height.
+	 * <p>
+	 * 
+	 * @see WAbstractItemView#setHeaderHeight(WLength height, boolean multiLine)
+	 */
+	public WLength getHeaderHeight() {
+		return this.headerLineHeight_;
+	}
 
 	/**
 	 * Creates a new item view.
@@ -621,7 +663,7 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	}
 
 	/**
-	 * Handle a drop event (drag &amp; drop).
+	 * Handles a drop event (drag &amp; drop).
 	 * <p>
 	 * The <code>event</code> object contains details about the drop operation,
 	 * identifying the source (which provides the data) and the mime-type of the
@@ -691,37 +733,6 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	 */
 	protected WWidget extraHeaderWidget(int column) {
 		return this.columnInfo(column).extraHeaderWidget;
-	}
-
-	/**
-	 * Sets the header height.
-	 * <p>
-	 * Use this method to change the header height. You may also enable the use
-	 * of multi-line headers. By default, the header text is a single line, that
-	 * is centered vertically.
-	 * <p>
-	 * The default value is 20 pixels.
-	 */
-	protected abstract void setHeaderHeight(WLength height, boolean multiLine);
-
-	/**
-	 * Sets the header height.
-	 * <p>
-	 * Calls {@link #setHeaderHeight(WLength height, boolean multiLine)
-	 * setHeaderHeight(height, false)}
-	 */
-	protected final void setHeaderHeight(WLength height) {
-		setHeaderHeight(height, false);
-	}
-
-	/**
-	 * Returns the header height.
-	 * <p>
-	 * 
-	 * @see WAbstractItemView#setHeaderHeight(WLength height, boolean multiLine)
-	 */
-	protected WLength getHeaderHeight() {
-		return this.headerLineHeight_;
 	}
 
 	static class ColumnInfo {
@@ -889,7 +900,7 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 		w.setStyleClass(w.getStyleClass()
 				+ (rightBorderLevel <= headerLevel ? " Wt-tv-br" : ""));
 		result.addWidget(w);
-		result.setStyleClass("Wt-tv-c headerrh " + info.getStyleClass());
+		result.setStyleClass(info.getStyleClass() + " Wt-tv-c headerrh");
 		result.setContentAlignment(info.headerAlignment);
 		WWidget extraW = this.columnInfo(column).extraHeaderWidget;
 		if (extraW != null) {

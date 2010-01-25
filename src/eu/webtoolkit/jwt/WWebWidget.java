@@ -518,7 +518,15 @@ public abstract class WWebWidget extends WWidget {
 		if (i != null && i.equals(value)) {
 			return;
 		}
-		this.otherImpl_.jsMembers_.put(name, value);
+		if (value.length() == 0) {
+			if (i != null) {
+				this.otherImpl_.jsMembers_.remove(i);
+			} else {
+				return;
+			}
+		} else {
+			this.otherImpl_.jsMembers_.put(name, value);
+		}
 		if (!(this.otherImpl_.jsMembersSet_ != null)) {
 			this.otherImpl_.jsMembersSet_ = new ArrayList<String>();
 		}
@@ -1179,8 +1187,12 @@ public abstract class WWebWidget extends WWidget {
 						for (int i = 0; i < this.otherImpl_.jsMembersSet_
 								.size(); ++i) {
 							String m = this.otherImpl_.jsMembersSet_.get(i);
-							element.callMethod(m + "="
-									+ this.otherImpl_.jsMembers_.get(m));
+							String it = this.otherImpl_.jsMembers_.get(m);
+							if (it != null) {
+								element.callMethod(m + "=" + it);
+							} else {
+								element.callMethod(m + "= null");
+							}
 						}
 					}
 				}
@@ -1673,7 +1685,7 @@ public abstract class WWebWidget extends WWidget {
 			}
 		} else {
 			if (!accept) {
-				this.otherImpl_.acceptedDropMimeTypes_.remove(i);
+				this.otherImpl_.acceptedDropMimeTypes_.remove(mimeType);
 				changed = true;
 			}
 		}

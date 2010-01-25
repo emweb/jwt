@@ -40,9 +40,7 @@ class WTreeViewNode extends WTable {
 		}
 		if (!(this.index_ == this.view_.getRootIndex() || (this.index_ != null && this.index_
 				.equals(this.view_.getRootIndex())))) {
-			this.getElementAt(0, 1).setStyleClass("c1");
-			WContainerWidget w = new WContainerWidget(this.getElementAt(0, 1));
-			w.setStyleClass("rh c1div");
+			this.getElementAt(0, 1).setStyleClass("c1 rh");
 			this.updateGraphics(isLast, this.view_.getModel().getRowCount(
 					this.index_) == 0);
 			this.insertColumns(0, this.view_.getColumnCount());
@@ -66,10 +64,9 @@ class WTreeViewNode extends WTable {
 
 	public void update(int firstColumn, int lastColumn) {
 		WModelIndex parent = this.index_.getParent();
-		lastColumn = Math.min(lastColumn, this.view_.getModel().getColumnCount(
-				parent) - 1);
+		int thisNodeCount = this.view_.getModel().getColumnCount(parent);
 		for (int i = firstColumn; i <= lastColumn; ++i) {
-			WModelIndex child = this.childIndex(i);
+			WModelIndex child = i < thisNodeCount ? this.childIndex(i) : null;
 			WWidget currentW = this.getWidget(i);
 			EnumSet<ViewItemRenderFlag> renderFlags = EnumSet
 					.noneOf(ViewItemRenderFlag.class);
@@ -77,7 +74,7 @@ class WTreeViewNode extends WTable {
 					&& this.view_.isSelected(child)) {
 				renderFlags.add(ViewItemRenderFlag.RenderSelected);
 			}
-			WWidget newW = this.view_.getItemDelegate(child).update(currentW,
+			WWidget newW = this.view_.getItemDelegate(i).update(currentW,
 					child, renderFlags);
 			if (newW != currentW) {
 				this.setWidget(i, newW);
@@ -155,10 +152,7 @@ class WTreeViewNode extends WTable {
 
 	public void insertColumns(int column, int count) {
 		WTableCell tc = this.getElementAt(0, 1);
-		WContainerWidget w = ((tc.getWidget(0)) instanceof WContainerWidget ? (WContainerWidget) (tc
-				.getWidget(0))
-				: null);
-		w.clear();
+		tc.clear();
 		if (this.view_.getColumnCount() > 1) {
 			WContainerWidget row = new WContainerWidget();
 			if (this.view_.column1Fixed_) {
@@ -167,8 +161,9 @@ class WTreeViewNode extends WTable {
 				rowWrap.addWidget(row);
 				row = rowWrap;
 			}
+			row.setObjectName("row");
 			row.setStyleClass("Wt-tv-row rh");
-			w.insertWidget(0, row);
+			tc.insertWidget(0, row);
 		}
 		this.update(0, this.view_.getColumnCount() - 1);
 	}
@@ -375,11 +370,13 @@ class WTreeViewNode extends WTable {
 				n.index_ = this.view_.getModel().getIndex(
 						n.getModelIndex().getRow() + offset,
 						n.getModelIndex().getColumn(), this.index_);
-				int lastColumn = Math.min(this.view_.getColumnCount() - 1,
-						this.view_.getModel().getColumnCount(this.index_) - 1);
+				int lastColumn = this.view_.getColumnCount() - 1;
+				int thisNodeCount = this.view_.getModel().getColumnCount(
+						this.index_);
 				for (int j = 0; j <= lastColumn; ++j) {
-					WModelIndex child = n.childIndex(j);
-					this.view_.getItemDelegate(child).updateModelIndex(
+					WModelIndex child = i < thisNodeCount ? n.childIndex(j)
+							: null;
+					this.view_.getItemDelegate(j).updateModelIndex(
 							n.getWidget(j), child);
 				}
 				this.view_.addRenderedNode(n);
@@ -569,13 +566,17 @@ class WTreeViewNode extends WTable {
 
 	private WWidget getWidget(int column) {
 		WTableCell tc = this.getElementAt(0, 1);
-		WContainerWidget w = ((tc.getWidget(0)) instanceof WContainerWidget ? (WContainerWidget) (tc
-				.getWidget(0))
-				: null);
 		if (column == 0) {
-			return w.getCount() > 1 ? w.getWidget(w.getCount() - 1) : null;
+			if (tc.getCount() > 0) {
+				WWidget result = tc.getWidget(tc.getCount() - 1);
+				return tc.getCount() > 1
+						|| !result.getObjectName().equals("row") ? result
+						: null;
+			} else {
+				return null;
+			}
 		} else {
-			WContainerWidget row = ((w.getWidget(0)) instanceof WContainerWidget ? (WContainerWidget) (w
+			WContainerWidget row = ((tc.getWidget(0)) instanceof WContainerWidget ? (WContainerWidget) (tc
 					.getWidget(0))
 					: null);
 			if (this.view_.column1Fixed_) {
@@ -589,9 +590,6 @@ class WTreeViewNode extends WTable {
 
 	private void setWidget(int column, WWidget newW) {
 		WTableCell tc = this.getElementAt(0, 1);
-		WContainerWidget w = ((tc.getWidget(0)) instanceof WContainerWidget ? (WContainerWidget) (tc
-				.getWidget(0))
-				: null);
 		WWidget current = this.getWidget(column);
 		this.addColumnStyleClass(column, newW);
 		if (current != null) {
@@ -599,11 +597,12 @@ class WTreeViewNode extends WTable {
 		}
 		if (column == 0) {
 			if (current != null) {
-				w.removeWidget(current);
+				tc.removeWidget(current);
 			}
-			w.addWidget(newW);
+			newW.setInline(false);
+			tc.addWidget(newW);
 		} else {
-			WContainerWidget row = ((w.getWidget(0)) instanceof WContainerWidget ? (WContainerWidget) (w
+			WContainerWidget row = ((tc.getWidget(0)) instanceof WContainerWidget ? (WContainerWidget) (tc
 					.getWidget(0))
 					: null);
 			if (this.view_.column1Fixed_) {
@@ -628,8 +627,8 @@ class WTreeViewNode extends WTable {
 
 	private void addColumnStyleClass(int column, WWidget w) {
 		EscapeOStream s = new EscapeOStream();
-		s.append("Wt-tv-c rh ").append(this.view_.getColumnStyleClass(column))
-				.append(' ').append(w.getStyleClass());
+		s.append(this.view_.getColumnStyleClass(column)).append(" Wt-tv-c rh ")
+				.append(w.getStyleClass());
 		w.setStyleClass(new WString(s.toString()).toString());
 	}
 }

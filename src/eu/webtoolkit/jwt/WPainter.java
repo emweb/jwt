@@ -103,7 +103,7 @@ public class WPainter {
 	}
 
 	/**
-	 * Create a paint and initialize it for a paint device.
+	 * Creates a painter on a given paint device.
 	 */
 	public WPainter(WPaintDevice device) {
 		this.device_ = null;
@@ -115,7 +115,7 @@ public class WPainter {
 	}
 
 	/**
-	 * Begin painting on a paint device.
+	 * Begins painting on a paint device.
 	 * <p>
 	 * Starts painting on a paint device. The paint device is automatically
 	 * cleared to become entirely transparent.
@@ -146,7 +146,7 @@ public class WPainter {
 	}
 
 	/**
-	 * Return whether this painter is active on a paint device.
+	 * Returns whether this painter is active on a paint device.
 	 * <p>
 	 * 
 	 * @see WPainter#begin(WPaintDevice device)
@@ -157,7 +157,7 @@ public class WPainter {
 	}
 
 	/**
-	 * End painting.
+	 * Ends painting.
 	 */
 	public boolean end() {
 		if (!(this.device_ != null)) {
@@ -171,7 +171,7 @@ public class WPainter {
 	}
 
 	/**
-	 * The device on which this painter is active (or 0 if not active).
+	 * Returns the device on which this painter is active (or 0 if not active).
 	 * <p>
 	 * 
 	 * @see WPainter#begin(WPaintDevice device)
@@ -183,7 +183,7 @@ public class WPainter {
 	}
 
 	/**
-	 * Set a render hint.
+	 * Sets a render hint.
 	 * <p>
 	 * Renderers may ignore particular hints for which they have no support.
 	 */
@@ -200,7 +200,7 @@ public class WPainter {
 	}
 
 	/**
-	 * Set a render hint.
+	 * Sets a render hint.
 	 * <p>
 	 * Calls {@link #setRenderHint(WPainter.RenderHint hint, boolean on)
 	 * setRenderHint(hint, true)}
@@ -210,7 +210,7 @@ public class WPainter {
 	}
 
 	/**
-	 * Get the current render hints.
+	 * Returns the current render hints.
 	 * <p>
 	 * Returns the logical OR of render hints currently set.
 	 * <p>
@@ -222,7 +222,7 @@ public class WPainter {
 	}
 
 	/**
-	 * Draw an arc.
+	 * Draws an arc.
 	 * <p>
 	 * Draws an arc using the current pen, and fills using the current brush.
 	 * <p>
@@ -247,7 +247,7 @@ public class WPainter {
 	}
 
 	/**
-	 * Draw an arc.
+	 * Draws an arc.
 	 * <p>
 	 * This is an overloaded method for convenience.
 	 * <p>
@@ -260,7 +260,7 @@ public class WPainter {
 	}
 
 	/**
-	 * Draw a chord.
+	 * Draws a chord.
 	 * <p>
 	 * Draws an arc using the current pen, and connects start and end point with
 	 * a line. The area is filled using the current brush.
@@ -293,7 +293,7 @@ public class WPainter {
 	}
 
 	/**
-	 * Draw a chord.
+	 * Draws a chord.
 	 * <p>
 	 * This is an overloaded method for convenience.
 	 * <p>
@@ -306,7 +306,7 @@ public class WPainter {
 	}
 
 	/**
-	 * Draw an ellipse.
+	 * Draws an ellipse.
 	 * <p>
 	 * Draws an ellipse using the current pen and fills it using the current
 	 * brush.
@@ -323,7 +323,7 @@ public class WPainter {
 	}
 
 	/**
-	 * Draw an ellipse.
+	 * Draws an ellipse.
 	 * <p>
 	 * This is an overloaded method for convenience.
 	 * <p>
@@ -345,7 +345,7 @@ public class WPainter {
 	 */
 	public static class Image {
 		/**
-		 * Create an image.
+		 * Creates an image.
 		 * <p>
 		 * Create an image which is located at the <i>uri</i>, and which has
 		 * dimensions <i>width</i> x <i>height</i>.
@@ -384,7 +384,7 @@ public class WPainter {
 	}
 
 	/**
-	 * Draw an image.
+	 * Draws an image.
 	 * <p>
 	 * Draws the <code>image</code> so that the top left corner corresponds to
 	 * <code>point</code>.
@@ -398,7 +398,7 @@ public class WPainter {
 	}
 
 	/**
-	 * Draw part of an image.
+	 * Draws part of an image.
 	 * <p>
 	 * Draws the <code>sourceRect</code> rectangle from an image to the location
 	 * <code>point</code>.
@@ -411,9 +411,9 @@ public class WPainter {
 	}
 
 	/**
-	 * Draw an image inside a rectangle.
+	 * Draws an image inside a rectangle.
 	 * <p>
-	 * Draw the <i>image</i> inside <code>rect</code> (If necessary, the image
+	 * Draws the <i>image</i> inside <code>rect</code> (If necessary, the image
 	 * is scaled to fit into the rectangle).
 	 * <p>
 	 * This is an overloaded method provided for convenience.
@@ -424,7 +424,7 @@ public class WPainter {
 	}
 
 	/**
-	 * Draw part of an image inside a rectangle.
+	 * Draws part of an image inside a rectangle.
 	 * <p>
 	 * Draws the <code>sourceRect</code> rectangle from an image inside
 	 * <code>rect</code> (If necessary, the image is scaled to fit into the
@@ -436,7 +436,7 @@ public class WPainter {
 	}
 
 	/**
-	 * Draw part of an image.
+	 * Draws part of an image.
 	 * <p>
 	 * Draws the <code>sourceRect</code> rectangle with top left corner
 	 * (<i>sx</i>, <i>sy</i>) and size <i>sw</i> x <code>sh</code> from an image
@@ -455,7 +455,7 @@ public class WPainter {
 	}
 
 	/**
-	 * Draw part of an image.
+	 * Draws part of an image.
 	 * <p>
 	 * Calls
 	 * {@link #drawImage(double x, double y, WPainter.Image image, double sx, double sy, double sw, double sh)
@@ -466,7 +466,7 @@ public class WPainter {
 	}
 
 	/**
-	 * Draw part of an image.
+	 * Draws part of an image.
 	 * <p>
 	 * Calls
 	 * {@link #drawImage(double x, double y, WPainter.Image image, double sx, double sy, double sw, double sh)
@@ -478,7 +478,7 @@ public class WPainter {
 	}
 
 	/**
-	 * Draw part of an image.
+	 * Draws part of an image.
 	 * <p>
 	 * Calls
 	 * {@link #drawImage(double x, double y, WPainter.Image image, double sx, double sy, double sw, double sh)
@@ -490,7 +490,7 @@ public class WPainter {
 	}
 
 	/**
-	 * Draw part of an image.
+	 * Draws part of an image.
 	 * <p>
 	 * Calls
 	 * {@link #drawImage(double x, double y, WPainter.Image image, double sx, double sy, double sw, double sh)
@@ -502,7 +502,7 @@ public class WPainter {
 	}
 
 	/**
-	 * Draw a line.
+	 * Draws a line.
 	 * <p>
 	 * Draws a line using the current pen.
 	 * <p>
@@ -515,7 +515,7 @@ public class WPainter {
 	}
 
 	/**
-	 * Draw a line.
+	 * Draws a line.
 	 * <p>
 	 * Draws a line defined by two points.
 	 * <p>
@@ -528,7 +528,7 @@ public class WPainter {
 	}
 
 	/**
-	 * Draw a line.
+	 * Draws a line.
 	 * <p>
 	 * Draws a line defined by two points.
 	 * <p>
@@ -591,7 +591,7 @@ public class WPainter {
 	}
 
 	/**
-	 * Draw a (complex) path.
+	 * Draws a (complex) path.
 	 * <p>
 	 * Draws and fills the given path using the current pen and brush.
 	 * <p>
@@ -604,7 +604,7 @@ public class WPainter {
 	}
 
 	/**
-	 * Draw a pie.
+	 * Draws a pie.
 	 * <p>
 	 * Draws an arc using the current pen, and connects start and end point with
 	 * the center of the corresponding ellipse. The area is filled using the
@@ -636,7 +636,7 @@ public class WPainter {
 	}
 
 	/**
-	 * Draw a pie.
+	 * Draws a pie.
 	 * <p>
 	 * This is an overloaded method for convenience.
 	 * <p>
@@ -649,9 +649,9 @@ public class WPainter {
 	}
 
 	/**
-	 * Draw a point.
+	 * Draws a point.
 	 * <p>
-	 * Draw a single point using the current pen.
+	 * Draws a single point using the current pen.
 	 * <p>
 	 * 
 	 * @see WPainter#drawPoint(double x, double y)
@@ -661,7 +661,7 @@ public class WPainter {
 	}
 
 	/**
-	 * Draw a point.
+	 * Draws a point.
 	 * <p>
 	 * This is an overloaded method for convenience.
 	 * <p>
@@ -673,7 +673,7 @@ public class WPainter {
 	}
 
 	/**
-	 * Draw a number of points.
+	 * Draws a number of points.
 	 * <p>
 	 * Draws the <code>pointCount</code> first points from the given array of
 	 * points.
@@ -688,7 +688,7 @@ public class WPainter {
 	}
 
 	/**
-	 * Draw a polygon.
+	 * Draws a polygon.
 	 * <p>
 	 * Draws a polygon that is specified by a list of points, using the current
 	 * pen. The polygon is closed by connecting the last point with the first
@@ -712,7 +712,7 @@ public class WPainter {
 	}
 
 	/**
-	 * Draw a polyline.
+	 * Draws a polyline.
 	 * <p>
 	 * Draws a polyline that is specified by a list of points, using the current
 	 * pen.
@@ -737,7 +737,7 @@ public class WPainter {
 	}
 
 	/**
-	 * Draw a rectangle.
+	 * Draws a rectangle.
 	 * <p>
 	 * Draws and fills a rectangle using the current pen and brush.
 	 * <p>
@@ -750,7 +750,7 @@ public class WPainter {
 	}
 
 	/**
-	 * Draw a rectangle.
+	 * Draws a rectangle.
 	 * <p>
 	 * This is an overloaded method for convenience.
 	 * <p>
@@ -767,7 +767,7 @@ public class WPainter {
 	}
 
 	/**
-	 * Draw a number of rectangles.
+	 * Draws a number of rectangles.
 	 * <p>
 	 * Draws and fills the <code>rectCount</code> first rectangles from the
 	 * given array, using the current pen and brush.
@@ -782,7 +782,7 @@ public class WPainter {
 	}
 
 	/**
-	 * Draw a number of rectangles.
+	 * Draws a number of rectangles.
 	 * <p>
 	 * Draws and fills a list of rectangles using the current pen and brush.
 	 * <p>
@@ -796,10 +796,10 @@ public class WPainter {
 	}
 
 	/**
-	 * Draw text.
+	 * Draws text.
 	 * <p>
-	 * Draw text using inside the rectangle, using the current font. The text is
-	 * aligned inside the rectangle following alignment indications given in
+	 * Draws text using inside the rectangle, using the current font. The text
+	 * is aligned inside the rectangle following alignment indications given in
 	 * <code>flags</code>. The text is drawn using the current transformation,
 	 * pen color ({@link WPainter#getPen() getPen()}) and font settings (
 	 * {@link WPainter#getFont() getFont()}).
@@ -809,12 +809,14 @@ public class WPainter {
 	 * Vertical alignment is one of AlignTop, AlignMiddle or AlignBottom.
 	 * <p>
 	 * <p>
-	 * <i><b>Note: </b>HtmlCanvas will always render the text horizontally
-	 * (unaffected by rotation), and unaffected by the scaling component of the
-	 * transformation matrix. Also, text is overlayed on top of painted shapes,
-	 * and is not covered by shapes that are painted after the text. Use the SVG
-	 * and VML renderers (WPaintedWidget::inlineSvgVml) for the most accurate
-	 * font rendering. </i>
+	 * <i><b>Note: </b>HtmlCanvas: on older browsers implementing Html5 canvas,
+	 * text will be rendered horizontally (unaffected by rotation and unaffected
+	 * by the scaling component of the transformation matrix). In that case,
+	 * text is overlayed on top of painted shapes (in DOM div&apos;s), and is
+	 * not covered by shapes that are painted after the text. Use the SVG and
+	 * VML renderers (WPaintedWidget::inlineSvgVml) for the most accurate font
+	 * rendering. Native HTML5 text rendering is supported on Firefox3+,
+	 * Chrome2+ and Safari4+. </i>
 	 * </p>
 	 */
 	public void drawText(WRectF rectangle, EnumSet<AlignmentFlag> flags,
@@ -823,7 +825,7 @@ public class WPainter {
 	}
 
 	/**
-	 * Draw text.
+	 * Draws text.
 	 * <p>
 	 * This is an overloaded method for convenience.
 	 * <p>
@@ -837,7 +839,7 @@ public class WPainter {
 	}
 
 	/**
-	 * Fill a (complex) path.
+	 * Fills a (complex) path.
 	 * <p>
 	 * Like {@link WPainter#drawPath(WPainterPath path) drawPath()}, but does
 	 * not stroke the path, and fills the path with the given <code>brush</code>.
@@ -857,7 +859,7 @@ public class WPainter {
 	}
 
 	/**
-	 * Fill a rectangle.
+	 * Fills a rectangle.
 	 * <p>
 	 * Like {@link WPainter#drawRect(WRectF rectangle) drawRect()}, but does not
 	 * stroke the rect, and fills the rect with the given <code>brush</code>.
@@ -876,7 +878,7 @@ public class WPainter {
 	}
 
 	/**
-	 * Fill a rectangle.
+	 * Fills a rectangle.
 	 * <p>
 	 * This is an overloaded method for convenience.
 	 * <p>
@@ -889,7 +891,7 @@ public class WPainter {
 	}
 
 	/**
-	 * Stroke a path.
+	 * Strokes a path.
 	 * <p>
 	 * Like {@link WPainter#drawPath(WPainterPath path) drawPath()}, but does
 	 * not fill the path, and strokes the path with the given <code>pen</code>.
@@ -909,7 +911,7 @@ public class WPainter {
 	}
 
 	/**
-	 * Change the fill style.
+	 * Sets the fill style.
 	 * <p>
 	 * Changes the fills style for subsequent draw operations.
 	 * <p>
@@ -925,7 +927,7 @@ public class WPainter {
 	}
 
 	/**
-	 * Change the font.
+	 * Sets the font.
 	 * <p>
 	 * Changes the font for subsequent text rendering. Note that only font sizes
 	 * that are defined as an explicit size (see {@link WFont.Size#FixedSize})
@@ -944,7 +946,7 @@ public class WPainter {
 	}
 
 	/**
-	 * Change the pen.
+	 * Sets the pen.
 	 * <p>
 	 * Changes the pen used for stroking subsequent draw operations.
 	 * <p>
@@ -997,7 +999,7 @@ public class WPainter {
 	}
 
 	/**
-	 * Enable or disable clipping.
+	 * Enables or disables clipping.
 	 * <p>
 	 * Enables are disables clipping for subsequent operations using the current
 	 * clip path set using {@link WPainter#setClipPath(WPainterPath clipPath)
@@ -1020,7 +1022,7 @@ public class WPainter {
 	}
 
 	/**
-	 * Return whether clipping is enabled.
+	 * Returns whether clipping is enabled.
 	 * <p>
 	 * <code>Note:</code> Clipping is not supported for the VML renderer.
 	 * <p>
@@ -1033,7 +1035,7 @@ public class WPainter {
 	}
 
 	/**
-	 * Set the clip path.
+	 * Sets the clip path.
 	 * <p>
 	 * Sets the path that is used for clipping subsequent drawing operations.
 	 * The clip path is only used when clipping is enabled using
@@ -1059,7 +1061,7 @@ public class WPainter {
 	}
 
 	/**
-	 * Get the clip path.
+	 * Returns the clip path.
 	 * <p>
 	 * The clip path is returned as it was defined: in the local coordinates at
 	 * time of definition.
@@ -1072,7 +1074,7 @@ public class WPainter {
 	}
 
 	/**
-	 * Reset the current transformation.
+	 * Resets the current transformation.
 	 * <p>
 	 * Resets the current transformation to the identity transformation matrix,
 	 * so that the logical coordinate system coincides with the device
@@ -1087,7 +1089,7 @@ public class WPainter {
 	}
 
 	/**
-	 * Rotate the logical coordinate system.
+	 * Rotates the logical coordinate system.
 	 * <p>
 	 * Rotates the logical coordinate system around its origin. The
 	 * <code>angle</code> is specified in degrees, and positive values are
@@ -1107,7 +1109,7 @@ public class WPainter {
 	}
 
 	/**
-	 * Scale the logical coordinate system.
+	 * Scales the logical coordinate system.
 	 * <p>
 	 * Scales the logical coordinate system around its origin, by a factor in
 	 * the X and Y directions.
@@ -1126,7 +1128,7 @@ public class WPainter {
 	}
 
 	/**
-	 * Translate the origin of the logical coordinate system.
+	 * Translates the origin of the logical coordinate system.
 	 * <p>
 	 * Translates the origin of the logical coordinate system to a new location
 	 * relative to the current logical coordinate system.
@@ -1142,7 +1144,7 @@ public class WPainter {
 	}
 
 	/**
-	 * Translate the origin of the logical coordinate system.
+	 * Translates the origin of the logical coordinate system.
 	 * <p>
 	 * Translates the origin of the logical coordinate system to a new location
 	 * relative to the logical coordinate system.
@@ -1162,7 +1164,7 @@ public class WPainter {
 	}
 
 	/**
-	 * Set a transformation for the logical coordinate system.
+	 * Sets a transformation for the logical coordinate system.
 	 * <p>
 	 * Sets a new transformation which transforms logical coordinates to device
 	 * coordinates. When <code>combine</code> is <code>true</code>, the
@@ -1188,7 +1190,7 @@ public class WPainter {
 	}
 
 	/**
-	 * Set a transformation for the logical coordinate system.
+	 * Sets a transformation for the logical coordinate system.
 	 * <p>
 	 * Calls {@link #setWorldTransform(WTransform matrix, boolean combine)
 	 * setWorldTransform(matrix, false)}
@@ -1198,7 +1200,7 @@ public class WPainter {
 	}
 
 	/**
-	 * Get the current world transformation matrix.
+	 * Returns the current world transformation matrix.
 	 * <p>
 	 * 
 	 * @see WPainter#setWorldTransform(WTransform matrix, boolean combine)
@@ -1208,7 +1210,7 @@ public class WPainter {
 	}
 
 	/**
-	 * Save the current state.
+	 * Saves the current state.
 	 * <p>
 	 * A copy of the current state is saved on a stack. This state will may
 	 * later be restored by popping this state from the stack using
@@ -1230,7 +1232,7 @@ public class WPainter {
 	}
 
 	/**
-	 * Get the last save state.
+	 * Returns the last save state.
 	 * <p>
 	 * Pops the last saved state from the state stack.
 	 * <p>
@@ -1274,7 +1276,7 @@ public class WPainter {
 	}
 
 	/**
-	 * Set the viewport.
+	 * Sets the viewport.
 	 * <p>
 	 * Selects the part of the device that will correspond to the logical
 	 * coordinate system.
@@ -1293,7 +1295,7 @@ public class WPainter {
 	}
 
 	/**
-	 * Set the viewport.
+	 * Sets the viewport.
 	 * <p>
 	 * This is an overloaded method for convenience.
 	 * <p>
@@ -1315,7 +1317,7 @@ public class WPainter {
 	}
 
 	/**
-	 * Set the window.
+	 * Sets the window.
 	 * <p>
 	 * Defines the viewport rectangle in logical coordinates, and thus how
 	 * logical coordinates map onto the viewPort.
@@ -1334,7 +1336,7 @@ public class WPainter {
 	}
 
 	/**
-	 * Set the window.
+	 * Sets the window.
 	 * <p>
 	 * This is an overloaded method for convenience.
 	 * <p>

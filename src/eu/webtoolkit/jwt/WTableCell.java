@@ -23,16 +23,19 @@ import java.util.EnumSet;
  * {@link WContainerWidget#setContentAlignment(EnumSet alignment)
  * WContainerWidget#setContentAlignment()}.
  * <p>
+ * <h3>CSS</h3>
+ * <p>
  * The widget corresponds to the HTML <code>&lt;td&gt;</code> or
  * <code>&lt;th&gt;</code> tag, depending on whether the cell is a plain cell or
- * a header cell.
+ * a header cell. The widget does not provide styling, and can be styled using
+ * inline or external CSS as appropriate.
  * <p>
  * 
  * @see WTable
  */
 public class WTableCell extends WContainerWidget {
 	/**
-	 * Set the row span.
+	 * Sets the row span.
 	 * <p>
 	 * The row span indicates how many table rows this {@link WTableCell}
 	 * overspans. By default, a {@link WTableCell} has a row span of 1, only
@@ -50,7 +53,7 @@ public class WTableCell extends WContainerWidget {
 	}
 
 	/**
-	 * Get the row span.
+	 * Returns the row span.
 	 * <p>
 	 * 
 	 * @see WTableCell#setRowSpan(int rowSpan)
@@ -60,7 +63,7 @@ public class WTableCell extends WContainerWidget {
 	}
 
 	/**
-	 * Set the column span.
+	 * Sets the column span.
 	 * <p>
 	 * The column span indicates how many table columns this {@link WTableCell}
 	 * overspans. By default, a {@link WTableCell} has a column span of 1, only

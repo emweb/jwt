@@ -24,6 +24,18 @@ import java.util.EnumSet;
  * <p>
  * <strong>Horizontal slider with ticks on both sides.</strong>
  * </p>
+ * </div> <h3>CSS</h3>
+ * <p>
+ * The slider is styled by the current CSS theme. The look can be overridden
+ * using the <code>Wt-slider</code> CSS class and the following selectors:
+ * <p>
+ * <div class="fragment">
+ * 
+ * <pre class="fragment">
+ * .Wt-slider .handle-v : The vertical handle
+ * .Wt-slider .handle-h : The horizontal handle
+ * </pre>
+ * 
  * </div>
  */
 public class WSlider extends WCompositeWidget {
@@ -49,7 +61,7 @@ public class WSlider extends WCompositeWidget {
 	}
 
 	/**
-	 * Create a default horizontal slider.
+	 * Creates a default horizontal slider.
 	 * <p>
 	 * The slider shows no ticks, has a range from 0 to 99, and has tickInterval
 	 * of 0 (defaulting to three ticks over the whole range).
@@ -77,7 +89,7 @@ public class WSlider extends WCompositeWidget {
 	}
 
 	/**
-	 * Create a default horizontal slider.
+	 * Creates a default horizontal slider.
 	 * <p>
 	 * Calls {@link #WSlider(WContainerWidget parent)
 	 * this((WContainerWidget)null)}
@@ -87,7 +99,7 @@ public class WSlider extends WCompositeWidget {
 	}
 
 	/**
-	 * Create a default slider of the given orientation.
+	 * Creates a default slider of the given orientation.
 	 * <p>
 	 * The slider shows no ticks, has a range from 0 to 99, and has tickInterval
 	 * of 0 (defaulting to three ticks over the whole range).
@@ -115,7 +127,7 @@ public class WSlider extends WCompositeWidget {
 	}
 
 	/**
-	 * Create a default slider of the given orientation.
+	 * Creates a default slider of the given orientation.
 	 * <p>
 	 * Calls {@link #WSlider(Orientation orientation, WContainerWidget parent)
 	 * this(orientation, (WContainerWidget)null)}
@@ -132,7 +144,7 @@ public class WSlider extends WCompositeWidget {
 	}
 
 	/**
-	 * Change the slider orientation.
+	 * Sets the slider orientation.
 	 * <p>
 	 * 
 	 * @see WSlider#getOrientation()
@@ -153,7 +165,7 @@ public class WSlider extends WCompositeWidget {
 	}
 
 	/**
-	 * Change the tick interval.
+	 * Sets the tick interval.
 	 * <p>
 	 * The tick interval specifies the interval for placing ticks along the
 	 * slider. The interval is specified in value units (not pixel units). A
@@ -180,7 +192,7 @@ public class WSlider extends WCompositeWidget {
 	}
 
 	/**
-	 * Set the tick position.
+	 * Sets the tick position.
 	 * <p>
 	 * The tick position indicates if and where ticks are placed around the
 	 * slider groove.
@@ -195,7 +207,7 @@ public class WSlider extends WCompositeWidget {
 	}
 
 	/**
-	 * Set the tick position.
+	 * Sets the tick position.
 	 * <p>
 	 * Calls {@link #setTickPosition(EnumSet tickPosition)
 	 * setTickPosition(EnumSet.of(tickPositio, tickPosition))}
@@ -206,7 +218,7 @@ public class WSlider extends WCompositeWidget {
 	}
 
 	/**
-	 * Return the tick position.
+	 * Returns the tick position.
 	 * <p>
 	 * 
 	 * @see WSlider#setTickPosition(EnumSet tickPosition)
@@ -217,7 +229,7 @@ public class WSlider extends WCompositeWidget {
 	}
 
 	/**
-	 * Change the slider value.
+	 * Sets the slider value.
 	 * <p>
 	 * The value is automatically trimmed to the valid range (
 	 * {@link WSlider#getMinimum() getMinimum()} to {@link WSlider#getMaximum()
@@ -242,7 +254,7 @@ public class WSlider extends WCompositeWidget {
 	}
 
 	/**
-	 * Set the maximum value.
+	 * Sets the maximum value.
 	 * <p>
 	 * The maximum value defines the upper limit of the valid range. The lower
 	 * limit and current value are automatically adjusted to remain valid.
@@ -270,7 +282,7 @@ public class WSlider extends WCompositeWidget {
 	}
 
 	/**
-	 * Set the minimum value.
+	 * Sets the minimum value.
 	 * <p>
 	 * The minimum value defines the lower limit of the valid range. The upper
 	 * limit and current value are automatically adjusted to remain valid.
@@ -298,7 +310,7 @@ public class WSlider extends WCompositeWidget {
 	}
 
 	/**
-	 * Set the value range.
+	 * Sets the value range.
 	 * <p>
 	 * 
 	 * @see WSlider#setMinimum(int minimum)
@@ -370,6 +382,7 @@ public class WSlider extends WCompositeWidget {
 	}
 
 	private void create() {
+		this.impl_.setStyleClass("Wt-slider");
 		this.setPositionScheme(PositionScheme.Relative);
 		this.impl_.addWidget(this.background_ = new WSliderBackground(this));
 		this.impl_.addWidget(this.handle_ = new WContainerWidget());
@@ -400,11 +413,8 @@ public class WSlider extends WCompositeWidget {
 	private void update() {
 		String resourcesURL = WApplication.getResourcesUrl();
 		this.background_.update();
-		this.handle_.getDecorationStyle().setBackgroundImage(
-				resourcesURL
-						+ "slider-thumb-"
-						+ (this.orientation_ == Orientation.Horizontal ? 'h'
-								: 'v') + ".gif");
+		this.handle_.setStyleClass("handle-"
+				+ (this.orientation_ == Orientation.Horizontal ? 'h' : 'v'));
 		if (this.orientation_ == Orientation.Horizontal) {
 			this.handle_.resize(new WLength(HANDLE_WIDTH), new WLength(
 					HANDLE_HEIGHT));

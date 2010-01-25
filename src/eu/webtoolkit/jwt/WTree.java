@@ -32,6 +32,40 @@ import eu.webtoolkit.jwt.utils.EnumUtils;
  * {@link WTreeNode#setSelectable(boolean selectable) selectable} may
  * participate in the selection.
  * <p>
+ * <h3>CSS</h3>
+ * <p>
+ * The tree is styled by the current CSS theme. The look can be overridden using
+ * the <code>Wt-tree</code> CSS class. The style selectors that affect the
+ * rendering of the decoration of the nodes are indicated in the documentation
+ * for {@link WTreeNode}. In addition, the following selector may be used to
+ * style the header:
+ * <p>
+ * <div class="fragment">
+ * 
+ * <pre class="fragment">
+ * .Wt-tree .Wt-selected : selected item
+ * </pre>
+ * 
+ * </div>
+ * <p>
+ * A screenshot of the tree:
+ * <table border="0" align="center" cellspacing="3" cellpadding="3">
+ * <tr>
+ * <td><div align="center"> <img src="doc-files//WTree-default-1.png"
+ * alt="An example WTree (default)">
+ * <p>
+ * <strong>An example WTree (default)</strong>
+ * </p>
+ * </div></td>
+ * <td><div align="center"> <img src="doc-files//WTree-polished-1.png"
+ * alt="An example WTree (polished)">
+ * <p>
+ * <strong>An example WTree (polished)</strong>
+ * </p>
+ * </div></td>
+ * </tr>
+ * </table>
+ * <p>
  * 
  * @see WTreeNode
  * @see WTreeTable
@@ -102,10 +136,6 @@ public class WTree extends WCompositeWidget {
 		if (mode != this.selectionMode_) {
 			this.selectionMode_ = mode;
 			this.clearSelection();
-			if (this.selectionMode_ != SelectionMode.NoSelection) {
-				this.setAttributeValue("onselectstart", "return false;");
-				this.setStyleClass("unselectable");
-			}
 		}
 	}
 

@@ -59,15 +59,18 @@ import eu.webtoolkit.jwt.servlet.UploadedFile;
  * will be deleted together with the {@link WFileUpload} widget, unless
  * {@link WFileUpload#stealSpooledFile() stealSpooledFile()} is called.
  * <p>
+ * WFileUpload is an {@link WWidget#setInline(boolean inlined) inline} widget.
+ * <p>
+ * <h3>CSS</h3>
+ * <p>
  * The file upload itself corresponds to a
  * <code>&lt;input type=&quot;file&quot;&gt;</code> tag, but may be wrapped in a
- * <code>&lt;form&gt;</code> tag.
- * <p>
- * WFileUpload is an {@link WWidget#setInline(boolean inlined) inline} widget.
+ * <code>&lt;form&gt;</code> tag. This widget does not provide styling, and
+ * styling through CSS is not well supported across browsers.
  */
 public class WFileUpload extends WWebWidget {
 	/**
-	 * Construct a file upload widget.
+	 * Creates a file upload widget.
 	 */
 	public WFileUpload(WContainerWidget parent) {
 		super(parent);
@@ -90,7 +93,7 @@ public class WFileUpload extends WWebWidget {
 	}
 
 	/**
-	 * Construct a file upload widget.
+	 * Creates a file upload widget.
 	 * <p>
 	 * Calls {@link #WFileUpload(WContainerWidget parent)
 	 * this((WContainerWidget)null)}
@@ -107,21 +110,21 @@ public class WFileUpload extends WWebWidget {
 	}
 
 	/**
-	 * Set the size of the file input.
+	 * Sets the size of the file input.
 	 */
 	public void setFileTextSize(int chars) {
 		this.textSize_ = chars;
 	}
 
 	/**
-	 * Get the size of the file input.
+	 * Returns the size of the file input.
 	 */
 	public int getFileTextSize() {
 		return this.textSize_;
 	}
 
 	/**
-	 * Get the spooled location of the uploaded file.
+	 * Returns the spooled location of the uploaded file.
 	 * <p>
 	 * Returns the temporary filename in which the uploaded file was spooled.
 	 * The file is guaranteed to exist as long as the {@link WFileUpload} widget
@@ -136,21 +139,21 @@ public class WFileUpload extends WWebWidget {
 	}
 
 	/**
-	 * Get the client filename.
+	 * Returns the client filename.
 	 */
 	public String getClientFileName() {
 		return this.clientFileName_;
 	}
 
 	/**
-	 * Get the client content description.
+	 * Returns the client content description.
 	 */
 	public String getContentDescription() {
 		return this.contentDescription_;
 	}
 
 	/**
-	 * Steal the spooled file.
+	 * Steals the spooled file.
 	 * <p>
 	 * By stealing the file, the spooled file will no longer be deleted together
 	 * with this widget, which means you need to take care of managing that.
@@ -160,7 +163,7 @@ public class WFileUpload extends WWebWidget {
 	}
 
 	/**
-	 * Check if no filename was given and thus no file uploaded.
+	 * Checks if no filename was given and thus no file uploaded.
 	 * <p>
 	 * Return whether a non-empty filename was given.
 	 */
@@ -227,7 +230,7 @@ public class WFileUpload extends WWebWidget {
 	}
 
 	/**
-	 * Start the file upload.
+	 * Starts the file upload.
 	 * <p>
 	 * The {@link WFileUpload#uploaded() uploaded()} signal is emitted when a
 	 * file is uploaded, or the {@link WFileUpload#fileTooLarge()

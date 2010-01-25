@@ -31,7 +31,7 @@ import java.util.List;
  */
 public abstract class WLayout extends WObject implements WLayoutItem {
 	/**
-	 * Add a layout <i>item</i>.
+	 * Adds a layout <i>item</i>.
 	 * <p>
 	 * The item may be a widget or nested layout.
 	 * <p>
@@ -46,7 +46,7 @@ public abstract class WLayout extends WObject implements WLayoutItem {
 	public abstract void addItem(WLayoutItem item);
 
 	/**
-	 * Add the given <i>widget</i> to the layout.
+	 * Adds the given <i>widget</i> to the layout.
 	 * <p>
 	 * This method wraps the widget in a {@link WWidgetItem} and calls
 	 * {@link WLayout#addItem(WLayoutItem item) addItem()}.
@@ -64,7 +64,7 @@ public abstract class WLayout extends WObject implements WLayoutItem {
 	}
 
 	/**
-	 * Remove a layout <i>item</i> (widget or nested layout).
+	 * Removes a layout <i>item</i> (widget or nested layout).
 	 * <p>
 	 * 
 	 * @see WLayout#addItem(WLayoutItem item)
@@ -73,7 +73,7 @@ public abstract class WLayout extends WObject implements WLayoutItem {
 	public abstract void removeItem(WLayoutItem item);
 
 	/**
-	 * Remove the given <i>widget</i> from the layout.
+	 * Removes the given <i>widget</i> from the layout.
 	 * <p>
 	 * This method finds the corresponding {@link WWidgetItem} and calls
 	 * {@link WLayout#removeItem(WLayoutItem item) removeItem()}. The widget
@@ -97,7 +97,7 @@ public abstract class WLayout extends WObject implements WLayoutItem {
 	}
 
 	/**
-	 * Return the number of items in this layout.
+	 * Returns the number of items in this layout.
 	 * <p>
 	 * This may be a theoretical number, which is greater than the actual number
 	 * of items. It can be used to iterate over the items in the layout, in
@@ -106,7 +106,7 @@ public abstract class WLayout extends WObject implements WLayoutItem {
 	public abstract int getCount();
 
 	/**
-	 * Return the layout item at a specific <i>index</i>.
+	 * Returns the layout item at a specific <i>index</i>.
 	 * <p>
 	 * If there is no item at the <code>index</code>, <code>null</code> is
 	 * returned.
@@ -118,7 +118,7 @@ public abstract class WLayout extends WObject implements WLayoutItem {
 	public abstract WLayoutItem getItemAt(int index);
 
 	/**
-	 * Return the index of a given <i>item</i>.
+	 * Returns the index of a given <i>item</i>.
 	 * <p>
 	 * The default implementation loops over all items, and returns the index
 	 * for which itemAt(index) equals <code>item</code>.
@@ -154,7 +154,7 @@ public abstract class WLayout extends WObject implements WLayoutItem {
 	}
 
 	/**
-	 * Provide a hint to the layout implementation.
+	 * Provides a hint to the layout implementation.
 	 * <p>
 	 * In some cases, a layout implementation may require some hints for
 	 * rendering its contents. Possible hints are indicated in the reference

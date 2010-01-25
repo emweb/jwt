@@ -76,8 +76,8 @@ package eu.webtoolkit.jwt;
  * <p>
  * <h3>CSS</h3>
  * <p>
- * You may customize the look of a treeview using the <code>Wt-popupmenu</code>
- * CSS class.
+ * A {@link WPopupMenu} has the <code>Wt-popupmenu</code> style class. The look
+ * can be overridden using the following style class selectors:
  * <p>
  * <div class="fragment">
  * 
@@ -89,6 +89,17 @@ package eu.webtoolkit.jwt;
  * 
  * </div>
  * <p>
+ * A snapshot of the {@link WPopupMenu}: <div align="center"> <img
+ * src="doc-files//WPopupMenu-default-1.png" alt="WPopupMenu example (default)">
+ * <p>
+ * <strong>WPopupMenu example (default)</strong>
+ * </p>
+ * </div> <div align="center"> <img src="doc-files//WPopupMenu-polished-1.png"
+ * alt="WPopupMenu example (polished)">
+ * <p>
+ * <strong>WPopupMenu example (polished)</strong>
+ * </p>
+ * </div>
  * 
  * @see WPopupMenuItem
  */
@@ -108,12 +119,13 @@ public class WPopupMenu extends WCompositeWidget {
 		this.globalClickConnection_ = new AbstractSignal.Connection();
 		this.globalEscapeConnection_ = new AbstractSignal.Connection();
 		this.recursiveEventLoop_ = false;
-		String TEMPLATE = "<span class=\"Wt-x1\"><span class=\"Wt-x1a\" /></span><span class=\"Wt-x2\"><span class=\"Wt-x2a\" /></span>${contents}";
+		String TEMPLATE = "${shadow-x1-x2}${contents}";
 		this
 				.setImplementation(this.impl_ = new WTemplate(new WString(
 						TEMPLATE)));
 		this.setPositionScheme(PositionScheme.Absolute);
 		this.setStyleClass("Wt-popupmenu Wt-outset");
+		this.impl_.bindString("shadow-x1-x2", WTemplate.DropShadow_x1_x2);
 		this.impl_.bindWidget("contents", new WContainerWidget());
 		String CSS_RULES_NAME = "Wt::WPopupMenu";
 		WApplication app = WApplication.getInstance();

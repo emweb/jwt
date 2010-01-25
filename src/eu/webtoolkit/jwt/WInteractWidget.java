@@ -19,6 +19,10 @@ import java.util.List;
  * <p>
  * When JavaScript is disabled, only the {@link WInteractWidget#clicked()
  * clicked()} event will propagate (but without event details information).
+ * <p>
+ * <h3>CSS</h3>
+ * <p>
+ * Styling through CSS is not applicable.
  */
 public abstract class WInteractWidget extends WWebWidget {
 	/**

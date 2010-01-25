@@ -55,9 +55,10 @@ import java.util.Set;
  * 
  * </blockquote>
  * <p>
- * ifndef WT_TARGET_JAVA The template can return a bound widget using
- * {@link WTemplate#resolve(String varName) resolve()}, which already tries to
- * cast the widget to the proper type. endif
+ * <h3>CSS</h3>
+ * <p>
+ * This widget does not provide styling, and can be styled using inline or
+ * external CSS as appropriate.
  */
 public class WTemplate extends WInteractWidget {
 	/**
@@ -570,4 +571,5 @@ public class WTemplate extends WInteractWidget {
 	private Map<String, String> strings_;
 	private WString text_;
 	private boolean changed_;
+	public static String DropShadow_x1_x2 = "<span class=\"Wt-x1\"><span class=\"Wt-x1a\" /></span><span class=\"Wt-x2\"><span class=\"Wt-x2a\" /></span>";
 }

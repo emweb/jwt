@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * A row in a {@link WTable}
+ * A table row
  * <p>
  * 
  * A WTableRow is returned by {@link WTable#getRowAt(int row) WTable#getRowAt()}
@@ -28,7 +28,7 @@ import java.util.List;
  */
 public class WTableRow extends WObject {
 	/**
-	 * The table to which this row belongs.
+	 * Returns the table to which this row belongs.
 	 * <p>
 	 * 
 	 * @see WTable#getRowAt(int row)
@@ -38,7 +38,7 @@ public class WTableRow extends WObject {
 	}
 
 	/**
-	 * The row number of this row in the table.
+	 * Returns the row number of this row in the table.
 	 * <p>
 	 * 
 	 * @see WTable#getRowAt(int row)
@@ -48,7 +48,7 @@ public class WTableRow extends WObject {
 	}
 
 	/**
-	 * Set the row height.
+	 * Sets the row height.
 	 * <p>
 	 * The default row height is {@link WLength#Auto}.
 	 * <p>
@@ -62,7 +62,7 @@ public class WTableRow extends WObject {
 	}
 
 	/**
-	 * Get the row height.
+	 * Returns the row height.
 	 * <p>
 	 * 
 	 * @see WTableRow#setHeight(WLength height)
@@ -72,7 +72,7 @@ public class WTableRow extends WObject {
 	}
 
 	/**
-	 * Set the CSS style class for this row.
+	 * Sets the CSS style class for this row.
 	 * <p>
 	 * The style is inherited by all table cells in this row.
 	 * <p>
@@ -89,7 +89,7 @@ public class WTableRow extends WObject {
 	}
 
 	/**
-	 * Get the CSS style class for this row.
+	 * Returns the CSS style class for this row.
 	 * <p>
 	 * 
 	 * @see WTableRow#getStyleClass()
@@ -100,7 +100,7 @@ public class WTableRow extends WObject {
 	}
 
 	/**
-	 * Set whether the row must be hidden.
+	 * Sets whether the row must be hidden.
 	 * <p>
 	 * Hide or show the row.
 	 * <p>
@@ -121,7 +121,7 @@ public class WTableRow extends WObject {
 	}
 
 	/**
-	 * Return whether the rows is hidden.
+	 * Returns whether the rows is hidden.
 	 * <p>
 	 * 
 	 * @see WTableRow#setHidden(boolean how)
@@ -131,7 +131,7 @@ public class WTableRow extends WObject {
 	}
 
 	/**
-	 * Hide the row.
+	 * Hides the row.
 	 * <p>
 	 * 
 	 * @see WTableRow#setHidden(boolean how)
@@ -141,7 +141,7 @@ public class WTableRow extends WObject {
 	}
 
 	/**
-	 * Show the row.
+	 * Shows the row.
 	 * <p>
 	 * 
 	 * @see WTableRow#setHidden(boolean how)
@@ -151,7 +151,7 @@ public class WTableRow extends WObject {
 	}
 
 	/**
-	 * Set the CSS Id.
+	 * Sets the CSS Id.
 	 * <p>
 	 * Sets a custom Id. Note that the Id must be unique across the whole widget
 	 * tree, can only be set right after construction and cannot be changed.

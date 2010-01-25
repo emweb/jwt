@@ -27,7 +27,7 @@ public class WRectF {
 	}
 
 	/**
-	 * Construct a rectangle.
+	 * Creates a rectangle.
 	 * <p>
 	 * Constructs a rectangle with top left point (<i>x</i>, <code>y</code>) and
 	 * size <i>width</i> x <code>height</code>.
@@ -40,7 +40,7 @@ public class WRectF {
 	}
 
 	/**
-	 * Construct a rectangle.
+	 * Creates a rectangle.
 	 * <p>
 	 * Constructs a rectangle from the two points <code>topLeft</code> and
 	 * <code>bottomRight</code>.
@@ -87,7 +87,7 @@ public class WRectF {
 	}
 
 	/**
-	 * Changes the X-position of the left side.
+	 * Sets the X-position of the left side.
 	 * <p>
 	 * The right side of the rectangle does not move, and as a result, the
 	 * rectangle may be resized.
@@ -98,7 +98,7 @@ public class WRectF {
 	}
 
 	/**
-	 * Changes the Y-position of the top side.
+	 * Sets the Y-position of the top side.
 	 * <p>
 	 * The bottom side of the rectangle does not move, and as a result, the
 	 * rectangle may be resized.
@@ -109,7 +109,7 @@ public class WRectF {
 	}
 
 	/**
-	 * Changes the width.
+	 * Sets the width.
 	 * <p>
 	 * The right side of the rectangle may move, but does not change the X
 	 * position of the left side.
@@ -119,7 +119,7 @@ public class WRectF {
 	}
 
 	/**
-	 * Changes the Y-position of the top side.
+	 * Sets the Y-position of the top side.
 	 * <p>
 	 * The bottom side of the rectangle may move, but does not change the Y
 	 * position of the top side.

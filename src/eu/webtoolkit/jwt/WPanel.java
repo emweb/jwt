@@ -13,11 +13,15 @@ package eu.webtoolkit.jwt;
  * The panel provides a container with an optional title bar, and an optional
  * collapse icon.
  * <p>
- * <div align="center"> <img src="doc-files//WPanel-1.png"
- * alt="Two panels: the top panel is collapsed, and the bottom panel expanded">
+ * <div align="center"> <img src="doc-files//WPanel-default-1.png"
+ * alt="Two panels: one collapsed and one expanded (default theme)">
  * <p>
- * <strong>Two panels: the top panel is collapsed, and the bottom panel
- * expanded</strong>
+ * <strong>Two panels: one collapsed and one expanded (default theme)</strong>
+ * </p>
+ * </div> <div align="center"> <img src="doc-files//WPanel-polished-1.png"
+ * alt="Two panels: one collapsed and one expanded (polished theme)">
+ * <p>
+ * <strong>Two panels: one collapsed and one expanded (polished theme)</strong>
  * </p>
  * </div>
  * <p>
@@ -38,7 +42,7 @@ package eu.webtoolkit.jwt;
  */
 public class WPanel extends WCompositeWidget {
 	/**
-	 * Construct a panel.
+	 * Creates a panel.
 	 */
 	public WPanel(WContainerWidget parent) {
 		super(parent);
@@ -49,7 +53,7 @@ public class WPanel extends WCompositeWidget {
 		this.expanded_ = new Signal(this);
 		this.collapsedSS_ = new Signal1<Boolean>(this);
 		this.expandedSS_ = new Signal1<Boolean>(this);
-		String TEMPLATE = "<span class=\"Wt-x1\"><span class=\"Wt-x1a\" /></span><span class=\"Wt-x2\"><span class=\"Wt-x2a\" /></span>${titlebar}${contents}";
+		String TEMPLATE = "${shadow-x1-x2}${titlebar}${contents}";
 		this
 				.setImplementation(this.impl_ = new WTemplate(new WString(
 						TEMPLATE)));
@@ -58,6 +62,7 @@ public class WPanel extends WCompositeWidget {
 		// this.implementStateless(WPanel.doCollapse,WPanel.undoCollapse);
 		WContainerWidget centralArea = new WContainerWidget();
 		centralArea.setStyleClass("body");
+		this.impl_.bindString("shadow-x1-x2", WTemplate.DropShadow_x1_x2);
 		this.impl_.bindWidget("titlebar", (WWidget) null);
 		this.impl_.bindWidget("contents", centralArea);
 		this
@@ -67,7 +72,7 @@ public class WPanel extends WCompositeWidget {
 	}
 
 	/**
-	 * Construct a panel.
+	 * Creates a panel.
 	 * <p>
 	 * Calls {@link #WPanel(WContainerWidget parent)
 	 * this((WContainerWidget)null)}
@@ -77,7 +82,7 @@ public class WPanel extends WCompositeWidget {
 	}
 
 	/**
-	 * Set a title.
+	 * Sets a title.
 	 * <p>
 	 * The panel title is set in the title bar. This method also makes the title
 	 * bar visible by calling setTitleBar(true).
@@ -99,7 +104,7 @@ public class WPanel extends WCompositeWidget {
 	}
 
 	/**
-	 * Get the title.
+	 * Returns the title.
 	 * <p>
 	 * 
 	 * @see WPanel#setTitle(CharSequence title)
@@ -113,7 +118,7 @@ public class WPanel extends WCompositeWidget {
 	}
 
 	/**
-	 * Show or hide a title bar for the panel.
+	 * Shows or hides the title bar for the panel.
 	 * <p>
 	 * The title bar appears at the top of the panel.
 	 * <p>
@@ -152,7 +157,7 @@ public class WPanel extends WCompositeWidget {
 	}
 
 	/**
-	 * Make the panel collapsible.
+	 * Makes the panel collapsible.
 	 * <p>
 	 * When <code>on</code> is <code>true</code>, a collapse/expand icon is
 	 * added to the title bar. This also calls setTitleBar(true) to enable the
@@ -219,7 +224,7 @@ public class WPanel extends WCompositeWidget {
 	}
 
 	/**
-	 * Set the panel expanded or collapsed.
+	 * Sets the panel expanded or collapsed.
 	 * <p>
 	 * When <code>on</code> is <code>true</code>, equivalent to
 	 * {@link WPanel#collapse() collapse()}, otherwise to
@@ -251,7 +256,7 @@ public class WPanel extends WCompositeWidget {
 	}
 
 	/**
-	 * Collapse the panel.
+	 * Collapses the panel.
 	 * <p>
 	 * When {@link WPanel#isCollapsible() isCollapsible()} is true, the panel is
 	 * collapsed to minimize screen real-estate.
@@ -268,7 +273,7 @@ public class WPanel extends WCompositeWidget {
 	}
 
 	/**
-	 * Collapse the panel.
+	 * Collapses the panel.
 	 * <p>
 	 * When {@link WPanel#isCollapsible() isCollapsible()} is true, the panel is
 	 * expanded to its original state.
@@ -285,7 +290,7 @@ public class WPanel extends WCompositeWidget {
 	}
 
 	/**
-	 * Set the central widget.
+	 * Sets the central widget.
 	 * <p>
 	 * Sets the widget that is the contents of the panel. When a widget was
 	 * previously set, the old widget is deleted first.
@@ -302,7 +307,7 @@ public class WPanel extends WCompositeWidget {
 	}
 
 	/**
-	 * Return the central widget.
+	 * Returns the central widget.
 	 * <p>
 	 * 
 	 * @see WPanel#setCentralWidget(WWidget w)

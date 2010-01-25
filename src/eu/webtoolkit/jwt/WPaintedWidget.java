@@ -76,10 +76,14 @@ import eu.webtoolkit.jwt.utils.EnumUtils;
  * Repainting is triggered by calling the
  * {@link WPaintedWidget#update(EnumSet flags) update()} method.
  * <p>
+ * <h3>CSS</h3>
  * <p>
- * <i><b>Note: </b>A WPaintedWidget requires that its size is specified in pixel
- * units using {@link WPaintedWidget#resize(WLength width, WLength height)
- * resize()}.</i>
+ * Styling through CSS is not applicable.
+ * <p>
+ * <p>
+ * <i><b>Note: </b>A WPaintedWidget requires that it is given a size using
+ * {@link WPaintedWidget#resize(WLength width, WLength height) resize()} or by a
+ * layout manager.</i>
  * </p>
  * 
  * @see WImage
@@ -166,7 +170,7 @@ public abstract class WPaintedWidget extends WInteractWidget {
 	}
 
 	/**
-	 * Set the preferred rendering method.
+	 * Sets the preferred rendering method.
 	 * <p>
 	 * When <code>method</code> is supported by the browser, then it is chosen
 	 * for rendering.
@@ -180,7 +184,7 @@ public abstract class WPaintedWidget extends WInteractWidget {
 	}
 
 	/**
-	 * Get the preferred rendering method.
+	 * Returns the preferred rendering method.
 	 * <p>
 	 * 
 	 * @see WPaintedWidget#setPreferredMethod(WPaintedWidget.Method method)
@@ -190,7 +194,7 @@ public abstract class WPaintedWidget extends WInteractWidget {
 	}
 
 	/**
-	 * Let the widget repaint itself.
+	 * Lets the widget repaint itself.
 	 * <p>
 	 * Repainting is not immediate, but happens after when the event loop is
 	 * exited.
@@ -202,7 +206,7 @@ public abstract class WPaintedWidget extends WInteractWidget {
 	}
 
 	/**
-	 * Let the widget repaint itself.
+	 * Lets the widget repaint itself.
 	 * <p>
 	 * Calls {@link #update(EnumSet flags) update(EnumSet.of(flag, flags))}
 	 */
@@ -211,7 +215,7 @@ public abstract class WPaintedWidget extends WInteractWidget {
 	}
 
 	/**
-	 * Let the widget repaint itself.
+	 * Lets the widget repaint itself.
 	 * <p>
 	 * Calls {@link #update(EnumSet flags)
 	 * update(EnumSet.noneOf(PaintFlag.class))}
@@ -221,15 +225,15 @@ public abstract class WPaintedWidget extends WInteractWidget {
 	}
 
 	public void resize(WLength width, WLength height) {
-		super.resize(width, height);
 		if (!width.isAuto() && !height.isAuto()) {
-			this.resizeCanvas((int) this.getWidth().toPixels(), (int) this
-					.getHeight().toPixels());
+			this.setJavaScriptMember("wtResize", "");
+			this.resizeCanvas((int) width.toPixels(), (int) height.toPixels());
 		}
+		super.resize(width, height);
 	}
 
 	/**
-	 * Add an interactive area.
+	 * Adds an interactive area.
 	 * <p>
 	 * Adds the <code>area</code> which listens to events in a specific region
 	 * of the widget. Areas are organized in a list, to which the given
@@ -254,7 +258,7 @@ public abstract class WPaintedWidget extends WInteractWidget {
 	}
 
 	/**
-	 * Insert an interactive area.
+	 * Inserts an interactive area.
 	 * <p>
 	 * Inserts the <code>area</code> which listens to events in the coresponding
 	 * area of the widget. Areas are organized in a list, and the <i>area</i> is
@@ -315,7 +319,7 @@ public abstract class WPaintedWidget extends WInteractWidget {
 	}
 
 	/**
-	 * Paint the widget.
+	 * Paints the widget.
 	 * <p>
 	 * You should reimplement this method to paint the contents of the widget,
 	 * using the given paintDevice.

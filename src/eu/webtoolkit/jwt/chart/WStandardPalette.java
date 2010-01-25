@@ -123,7 +123,7 @@ public class WStandardPalette implements WChartPalette {
 	}
 
 	/**
-	 * Create a standard palette of a particular flavour.
+	 * Creates a standard palette of a particular flavour.
 	 */
 	public WStandardPalette(WStandardPalette.Flavour flavour) {
 		super();

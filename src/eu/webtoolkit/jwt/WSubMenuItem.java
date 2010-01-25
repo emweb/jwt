@@ -21,7 +21,7 @@ package eu.webtoolkit.jwt;
  */
 public class WSubMenuItem extends WMenuItem {
 	/**
-	 * Create a new item.
+	 * Creates a new item.
 	 * <p>
 	 * 
 	 * @see WMenuItem#WMenuItem(CharSequence text, WWidget contents,
@@ -33,7 +33,7 @@ public class WSubMenuItem extends WMenuItem {
 	}
 
 	/**
-	 * Create a new item.
+	 * Creates a new item.
 	 * <p>
 	 * Calls
 	 * {@link #WSubMenuItem(CharSequence text, WWidget contents, WMenuItem.LoadPolicy policy)
@@ -44,7 +44,7 @@ public class WSubMenuItem extends WMenuItem {
 	}
 
 	/**
-	 * Set a sub menu.
+	 * Sets a sub menu.
 	 * <p>
 	 * Ownership of the <code>subMenu</code> is transferred to the item. In most
 	 * cases, the sub menu would use the same contents stack as the parent menu.
@@ -62,7 +62,7 @@ public class WSubMenuItem extends WMenuItem {
 	}
 
 	/**
-	 * Return the sub menu.
+	 * Returns the sub menu.
 	 * <p>
 	 * 
 	 * @see WSubMenuItem#setSubMenu(WMenu subMenu)

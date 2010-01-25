@@ -45,6 +45,10 @@ import eu.webtoolkit.jwt.utils.EnumUtils;
  * setPlotAreaPadding()}, and the background fill color
  * {@link WAbstractChart#setBackground(WBrush background) setBackground()}.
  * <p>
+ * <h3>CSS</h3>
+ * <p>
+ * Styling through CSS is not applicable.
+ * <p>
  * 
  * @see eu.webtoolkit.jwt.chart.WCartesianChart
  * @see WPieChart

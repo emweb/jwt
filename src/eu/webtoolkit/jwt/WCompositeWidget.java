@@ -22,10 +22,18 @@ import eu.webtoolkit.jwt.utils.EnumUtils;
  * <p>
  * Using this class you can completely hide the implementation of your composite
  * widget, and provide access to only the standard {@link WWidget} methods.
+ * <p>
+ * <h3>CSS</h3>
+ * <p>
+ * Styling through CSS is propagated to its implementation.
  */
 public class WCompositeWidget extends WWidget {
 	/**
-	 * Create a {@link WCompositeWidget}.
+	 * Creates a WCompositeWidget.
+	 * <p>
+	 * You need to set an implemetation using
+	 * {@link WCompositeWidget#setImplementation(WWidget widget)
+	 * setImplementation()}.
 	 */
 	public WCompositeWidget(WContainerWidget parent) {
 		super(parent);
@@ -36,7 +44,7 @@ public class WCompositeWidget extends WWidget {
 	}
 
 	/**
-	 * Create a {@link WCompositeWidget}.
+	 * Creates a WCompositeWidget.
 	 * <p>
 	 * Calls {@link #WCompositeWidget(WContainerWidget parent)
 	 * this((WContainerWidget)null)}
@@ -343,10 +351,8 @@ public class WCompositeWidget extends WWidget {
 			throw new WtException(
 					"WCompositeWidget implemnation widget cannot have a parent");
 		}
-		if (this.impl_ != null) {
-			if (this.impl_ != null)
-				this.impl_.remove();
-		}
+		if (this.impl_ != null)
+			this.impl_.remove();
 		this.impl_ = widget;
 		if (this.getParent() != null) {
 			WWebWidget ww = this.impl_.getWebWidget();

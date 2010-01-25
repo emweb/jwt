@@ -28,12 +28,29 @@ import java.util.Set;
  * getDate()}, or can be changed using {@link WDatePicker#setDate(WDate date)
  * setDate()}.
  * <p>
- * <div align="center"> <img src="doc-files//WDatePicker-1.png"
- * alt="Example of WDatePicker with visible calendar.">
+ * <h3>CSS</h3>
  * <p>
- * <strong>Example of WDatePicker with visible calendar.</strong>
+ * The date picker is styled by the current CSS theme. The look can be
+ * overridden using the <code>Wt-datepicker</code> and <code>Wt-outset</code>
+ * CSS class; the calendar itself can be styled as documented in
+ * {@link WCalendar}.
+ * <p>
+ * <table border="0" align="center" cellspacing="3" cellpadding="3">
+ * <tr>
+ * <td><div align="center"> <img src="doc-files//WDatePicker-default-1.png"
+ * alt="Example of a WDatePicker (default theme)">
+ * <p>
+ * <strong>Example of a WDatePicker (default theme)</strong>
  * </p>
- * </div>
+ * </div></td>
+ * <td><div align="center"> <img src="doc-files//WDatePicker-polished-1.png"
+ * alt="Example of a WDatePicker (polished theme)">
+ * <p>
+ * <strong>Example of a WDatePicker (polished theme)</strong>
+ * </p>
+ * </div></td>
+ * </tr>
+ * </table>
  */
 public class WDatePicker extends WCompositeWidget {
 	/**
@@ -131,7 +148,7 @@ public class WDatePicker extends WCompositeWidget {
 	}
 
 	/**
-	 * Set the format used for parsing or writing the date in the line edit.
+	 * Sets the format used for parsing or writing the date in the line edit.
 	 * <p>
 	 * Sets the format used for representing the date in the line edit. If the
 	 * line edit has a {@link WDateValidator} configured for it, then also there
@@ -209,7 +226,7 @@ public class WDatePicker extends WCompositeWidget {
 	}
 
 	/**
-	 * Set the current date.
+	 * Sets the current date.
 	 * <p>
 	 * Does nothing if the current date is <code>Null</code>.
 	 * <p>
@@ -225,7 +242,7 @@ public class WDatePicker extends WCompositeWidget {
 	}
 
 	/**
-	 * Sets enabled.
+	 * Sets whether the widget is enabled.
 	 * <p>
 	 * This is the oppositie of {@link WDatePicker#setDisabled(boolean disabled)
 	 * setDisabled()}.
@@ -275,7 +292,7 @@ public class WDatePicker extends WCompositeWidget {
 		this.format_ = "dd/MM/yyyy";
 		this.layout_.setInline(true);
 		this.layout_.addWidget(displayWidget);
-		String TEMPLATE = "<span class=\"Wt-x1\"><span class=\"Wt-x1a\" /></span><span class=\"Wt-x2\"><span class=\"Wt-x2a\" /></span>${calendar}<div style=\"text-align:center; margin-top:3px\">${close}</div>";
+		String TEMPLATE = "${shadow-x1-x2}${calendar}<div style=\"text-align:center; margin-top:3px\">${close}</div>";
 		this.layout_.addWidget(this.popup_ = new WTemplate(
 				new WString(TEMPLATE)));
 		this.calendar_ = new WCalendar(i18n);
@@ -299,12 +316,13 @@ public class WDatePicker extends WCompositeWidget {
 						WDatePicker.this.popup_.hide();
 					}
 				});
+		this.popup_.bindString("shadow-x1-x2", WTemplate.DropShadow_x1_x2);
 		this.popup_.bindWidget("calendar", this.calendar_);
 		this.popup_.bindWidget("close", closeButton);
 		this.popup_.hide();
 		this.popup_.setPopup(true);
 		this.popup_.setPositionScheme(PositionScheme.Absolute);
-		this.popup_.setStyleClass("Wt-outset Wt-popup");
+		this.popup_.setStyleClass("Wt-outset Wt-datepicker");
 		this.popup_.escapePressed().addListener(this.popup_,
 				new Signal.Listener() {
 					public void trigger() {

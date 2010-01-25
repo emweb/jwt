@@ -47,17 +47,23 @@ package eu.webtoolkit.jwt;
  * 
  * </blockquote>
  * <p>
- * The widget corresponds to the HTML
- * <code>&lt;input type=&quot;checkbox&quot;&gt;</code> tag.
- * <p>
  * WCheckBox is an {@link WWidget#setInline(boolean inlined) inline} widget.
+ * <p>
+ * <h3>CSS</h3>
+ * <p>
+ * This widget corresponds to the HTML
+ * <code>&lt;input type=&quot;checkbox&quot;&gt;</code> tag. Depending on
+ * whether a text is included, it may be nested in a <code>&lt;span&gt;</code>
+ * tag which also includes a rendered {@link WLabel}. This widget does not
+ * provide styling, and can be styled using inline or external CSS as
+ * appropriate.
  * <p>
  * 
  * @see WAbstractToggleButton
  */
 public class WCheckBox extends WAbstractToggleButton {
 	/**
-	 * Create a checkbox with empty label.
+	 * Creates a checkbox with empty label.
 	 */
 	public WCheckBox(WContainerWidget parent) {
 		super(parent);
@@ -67,7 +73,7 @@ public class WCheckBox extends WAbstractToggleButton {
 	}
 
 	/**
-	 * Create a checkbox with empty label.
+	 * Creates a checkbox with empty label.
 	 * <p>
 	 * Calls {@link #WCheckBox(WContainerWidget parent)
 	 * this((WContainerWidget)null)}
@@ -77,7 +83,7 @@ public class WCheckBox extends WAbstractToggleButton {
 	}
 
 	/**
-	 * Create a checkbox with given label.
+	 * Creates a checkbox with given label.
 	 */
 	public WCheckBox(CharSequence text, WContainerWidget parent) {
 		super(text, parent);
@@ -87,7 +93,7 @@ public class WCheckBox extends WAbstractToggleButton {
 	}
 
 	/**
-	 * Create a checkbox with given label.
+	 * Creates a checkbox with given label.
 	 * <p>
 	 * Calls {@link #WCheckBox(CharSequence text, WContainerWidget parent)
 	 * this(text, (WContainerWidget)null)}
@@ -97,7 +103,7 @@ public class WCheckBox extends WAbstractToggleButton {
 	}
 
 	/**
-	 * Make a tristate checkbox.
+	 * Makes a tristate checkbox.
 	 * <p>
 	 * <p>
 	 * <i><b>Note: </b>You should enable tristate functionality right after
@@ -135,7 +141,7 @@ public class WCheckBox extends WAbstractToggleButton {
 	}
 
 	/**
-	 * Make a tristate checkbox.
+	 * Makes a tristate checkbox.
 	 * <p>
 	 * Calls {@link #setTristate(boolean tristate) setTristate(true)}
 	 */
@@ -154,7 +160,7 @@ public class WCheckBox extends WAbstractToggleButton {
 	}
 
 	/**
-	 * Set the check state.
+	 * Sets the check state.
 	 * <p>
 	 * Unless it is a tri-state checkbox, only {@link CheckState#Checked} and
 	 * {@link CheckState#Unchecked} are valid states.
@@ -194,7 +200,7 @@ public class WCheckBox extends WAbstractToggleButton {
 				&& (app.getEnvironment().agentIsIE()
 						|| app.getEnvironment().agentIsSafari() || app
 						.getEnvironment().agentIsGecko()
-						&& app.getEnvironment().getAgent().getValue() >= WEnvironment.UserAgent.Firefox3_2
+						&& app.getEnvironment().getAgent().getValue() >= WEnvironment.UserAgent.Firefox3_1b
 								.getValue());
 		return !supportIndeterminate;
 	}

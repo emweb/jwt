@@ -47,7 +47,7 @@ import java.util.regex.Pattern;
  */
 public class WRegExpValidator extends WValidator {
 	/**
-	 * Create a new regular expression validator.
+	 * Sets a new regular expression validator.
 	 */
 	public WRegExpValidator(WObject parent) {
 		super(parent);
@@ -56,7 +56,7 @@ public class WRegExpValidator extends WValidator {
 	}
 
 	/**
-	 * Create a new regular expression validator.
+	 * Sets a new regular expression validator.
 	 * <p>
 	 * Calls {@link #WRegExpValidator(WObject parent) this((WObject)null)}
 	 */
@@ -65,7 +65,7 @@ public class WRegExpValidator extends WValidator {
 	}
 
 	/**
-	 * Create a new regular expression validator that accepts input that matches
+	 * Sets a new regular expression validator that accepts input that matches
 	 * the given regular expression.
 	 * <p>
 	 * This constructs a validator that matches the perl regular expression
@@ -78,7 +78,7 @@ public class WRegExpValidator extends WValidator {
 	}
 
 	/**
-	 * Create a new regular expression validator that accepts input that matches
+	 * Sets a new regular expression validator that accepts input that matches
 	 * the given regular expression.
 	 * <p>
 	 * Calls {@link #WRegExpValidator(String pattern, WObject parent)
@@ -89,7 +89,7 @@ public class WRegExpValidator extends WValidator {
 	}
 
 	/**
-	 * Set the regular expression for valid input.
+	 * Sets the regular expression for valid input.
 	 * <p>
 	 * Sets the perl regular expression <code>expr</code>.
 	 */
@@ -103,7 +103,7 @@ public class WRegExpValidator extends WValidator {
 	}
 
 	/**
-	 * Return the regular expression for valid input.
+	 * Returns the regular expression for valid input.
 	 * <p>
 	 * Returns the perl regular expression.
 	 */
@@ -112,7 +112,7 @@ public class WRegExpValidator extends WValidator {
 	}
 
 	/**
-	 * Validate the given input.
+	 * Validates the given input.
 	 * <p>
 	 * The input is considered valid only when it is blank for a non-mandatory
 	 * field, or matches the regular expression.
@@ -136,7 +136,7 @@ public class WRegExpValidator extends WValidator {
 
 	// public void createExtConfig(Writer config) throws IOException;
 	/**
-	 * Set the text to be shown if no match can be found.
+	 * Sets the text to be shown if no match can be found.
 	 * <p>
 	 * Sets the text to be shown if no match can be found.
 	 */
@@ -145,7 +145,7 @@ public class WRegExpValidator extends WValidator {
 	}
 
 	/**
-	 * Set the message to display when the input does not match.
+	 * Sets the message to display when the input does not match.
 	 * <p>
 	 * The default value is &quot;Invalid input&quot;.
 	 */
@@ -183,9 +183,14 @@ public class WRegExpValidator extends WValidator {
 		} else {
 			js += "return {valid:true};";
 		}
-		js += "}(" + jsRef + ','
-				+ this.getInvalidBlankText().getJsStringLiteral() + ','
-				+ this.getInvalidNoMatchText().getJsStringLiteral() + ')';
+		js += "}("
+				+ jsRef
+				+ ','
+				+ WString.toWString(this.getInvalidBlankText())
+						.getJsStringLiteral()
+				+ ','
+				+ WString.toWString(this.getInvalidNoMatchText())
+						.getJsStringLiteral() + ')';
 		return js;
 	}
 

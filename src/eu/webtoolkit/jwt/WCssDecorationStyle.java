@@ -79,7 +79,7 @@ public class WCssDecorationStyle extends WObject {
 	}
 
 	/**
-	 * Create a default style.
+	 * Creates a default style.
 	 */
 	public WCssDecorationStyle() {
 		super();
@@ -106,7 +106,7 @@ public class WCssDecorationStyle extends WObject {
 	}
 
 	/**
-	 * Set the cursor style.
+	 * Sets the cursor style.
 	 */
 	public void setCursor(Cursor c) {
 		if (!WWebWidget.canOptimizeUpdates() || this.cursor_ != c) {
@@ -117,14 +117,14 @@ public class WCssDecorationStyle extends WObject {
 	}
 
 	/**
-	 * Get the cursor style.
+	 * Returns the cursor style.
 	 */
 	public Cursor getCursor() {
 		return this.cursor_;
 	}
 
 	/**
-	 * Set a custom cursor image URI, with optionally a fallback cursor.
+	 * Sets a custom cursor image URI, with optionally a fallback cursor.
 	 * <p>
 	 * The URI should point to a .cur file (this shoul be a real .cur file,
 	 * renaming an .ico is not enough for Internet Explorer).
@@ -141,7 +141,7 @@ public class WCssDecorationStyle extends WObject {
 	}
 
 	/**
-	 * Set a custom cursor image URI, with optionally a fallback cursor.
+	 * Sets a custom cursor image URI, with optionally a fallback cursor.
 	 * <p>
 	 * Calls {@link #setCursor(String cursorImage, Cursor fallback)
 	 * setCursor(cursorImage, Cursor.ArrowCursor)}
@@ -151,14 +151,14 @@ public class WCssDecorationStyle extends WObject {
 	}
 
 	/**
-	 * Get the cursor image.
+	 * Returns the cursor image.
 	 */
 	public String getCursorImage() {
 		return this.cursorImage_;
 	}
 
 	/**
-	 * Set the background color.
+	 * Sets the background color.
 	 */
 	public void setBackgroundColor(WColor color) {
 		if (!WWebWidget.canOptimizeUpdates()
@@ -170,14 +170,14 @@ public class WCssDecorationStyle extends WObject {
 	}
 
 	/**
-	 * Get the background color.
+	 * Returns the background color.
 	 */
 	public WColor getBackgroundColor() {
 		return this.backgroundColor_;
 	}
 
 	/**
-	 * Set a background image URL.
+	 * Sets a background image URL.
 	 * <p>
 	 * The image may be placed in a particular location by specifying sides by
 	 * OR&apos;ing {@link Side} values together, e.g. (Right | Top).
@@ -202,7 +202,7 @@ public class WCssDecorationStyle extends WObject {
 	}
 
 	/**
-	 * Set a background image URL.
+	 * Sets a background image URL.
 	 * <p>
 	 * Calls
 	 * {@link #setBackgroundImage(String image, WCssDecorationStyle.Repeat repeat, EnumSet sides)
@@ -214,7 +214,7 @@ public class WCssDecorationStyle extends WObject {
 	}
 
 	/**
-	 * Set a background image URL.
+	 * Sets a background image URL.
 	 * <p>
 	 * Calls
 	 * {@link #setBackgroundImage(String image, WCssDecorationStyle.Repeat repeat, EnumSet sides)
@@ -227,7 +227,7 @@ public class WCssDecorationStyle extends WObject {
 	}
 
 	/**
-	 * Set a background image URL.
+	 * Sets a background image URL.
 	 * <p>
 	 * Calls
 	 * {@link #setBackgroundImage(String image, WCssDecorationStyle.Repeat repeat, EnumSet sides)
@@ -239,7 +239,7 @@ public class WCssDecorationStyle extends WObject {
 	}
 
 	/**
-	 * Set a background image URL.
+	 * Sets a background image URL.
 	 * <p>
 	 * The image may be placed in a particular location by specifying sides by
 	 * OR&apos;ing {@link Side} values together, e.g. (Right | Top).
@@ -260,7 +260,7 @@ public class WCssDecorationStyle extends WObject {
 	}
 
 	/**
-	 * Set a background image URL.
+	 * Sets a background image URL.
 	 * <p>
 	 * Calls
 	 * {@link #setBackgroundImage(WResource resource, WCssDecorationStyle.Repeat repeat, EnumSet sides)
@@ -272,7 +272,7 @@ public class WCssDecorationStyle extends WObject {
 	}
 
 	/**
-	 * Set a background image URL.
+	 * Sets a background image URL.
 	 * <p>
 	 * Calls
 	 * {@link #setBackgroundImage(WResource resource, WCssDecorationStyle.Repeat repeat, EnumSet sides)
@@ -285,7 +285,7 @@ public class WCssDecorationStyle extends WObject {
 	}
 
 	/**
-	 * Set a background image URL.
+	 * Sets a background image URL.
 	 * <p>
 	 * Calls
 	 * {@link #setBackgroundImage(WResource resource, WCssDecorationStyle.Repeat repeat, EnumSet sides)
@@ -297,21 +297,21 @@ public class WCssDecorationStyle extends WObject {
 	}
 
 	/**
-	 * Get the background image URL.
+	 * Returns the background image URL.
 	 */
 	public String getBackgroundImage() {
 		return this.backgroundImage_;
 	}
 
 	/**
-	 * Get the background image repeat.
+	 * Returns the background image repeat.
 	 */
 	public WCssDecorationStyle.Repeat getBackgroundImageRepeat() {
 		return this.backgroundImageRepeat_;
 	}
 
 	/**
-	 * Set the foreground color.
+	 * Sets the foreground color.
 	 */
 	public void setForegroundColor(WColor color) {
 		if (!WWebWidget.canOptimizeUpdates()
@@ -323,14 +323,14 @@ public class WCssDecorationStyle extends WObject {
 	}
 
 	/**
-	 * Get the foreground color.
+	 * Returns the foreground color.
 	 */
 	public WColor getForegroundColor() {
 		return this.foregroundColor_;
 	}
 
 	/**
-	 * Set the border style.
+	 * Sets the border style.
 	 * <p>
 	 * A border may be placed in a particular location by specifying sides by
 	 * OR&apos;ing WWidget::Side values together, e.g. (Right | Top).
@@ -346,7 +346,7 @@ public class WCssDecorationStyle extends WObject {
 	}
 
 	/**
-	 * Set the border style.
+	 * Sets the border style.
 	 * <p>
 	 * Calls {@link #setBorder(WBorder border, EnumSet sides) setBorder(border,
 	 * EnumSet.of(side, sides))}
@@ -356,7 +356,7 @@ public class WCssDecorationStyle extends WObject {
 	}
 
 	/**
-	 * Set the border style.
+	 * Sets the border style.
 	 * <p>
 	 * Calls {@link #setBorder(WBorder border, EnumSet sides) setBorder(border,
 	 * Side.All)}
@@ -366,14 +366,14 @@ public class WCssDecorationStyle extends WObject {
 	}
 
 	/**
-	 * Get the border style.
+	 * Returns the border style.
 	 */
 	public WBorder getBorder() {
 		return this.border_;
 	}
 
 	/**
-	 * Change the font.
+	 * Sets the font.
 	 */
 	public void setFont(WFont font) {
 		if (!WWebWidget.canOptimizeUpdates() || !this.font_.equals(font)) {
@@ -384,14 +384,14 @@ public class WCssDecorationStyle extends WObject {
 	}
 
 	/**
-	 * Get a reference to the font.
+	 * Returns a reference to the font.
 	 */
 	public WFont getFont() {
 		return this.font_;
 	}
 
 	/**
-	 * Set the text decoration options.
+	 * Sets the text decoration options.
 	 * <p>
 	 * You may logically or together any of the options of the TextDecoration
 	 * enumeration.
@@ -409,7 +409,7 @@ public class WCssDecorationStyle extends WObject {
 	}
 
 	/**
-	 * Set the text decoration options.
+	 * Sets the text decoration options.
 	 * <p>
 	 * Calls {@link #setTextDecoration(EnumSet options)
 	 * setTextDecoration(EnumSet.of(option, options))}
@@ -421,7 +421,7 @@ public class WCssDecorationStyle extends WObject {
 	}
 
 	/**
-	 * Get the text decoration options.
+	 * Returns the text decoration options.
 	 */
 	public EnumSet<WCssDecorationStyle.TextDecoration> getTextDecoration() {
 		return this.textDecoration_;

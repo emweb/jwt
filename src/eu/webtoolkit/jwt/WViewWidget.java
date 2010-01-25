@@ -47,10 +47,15 @@ package eu.webtoolkit.jwt;
  * Thus, currently, event handling code related to the View cannot be
  * implemented at server-side (but we are thinking about a solution for this as
  * well...).
+ * <p>
+ * <h3>CSS</h3>
+ * <p>
+ * This widget does not provide styling, and can be styled using inline or
+ * external CSS as appropriate.
  */
 public abstract class WViewWidget extends WWebWidget {
 	/**
-	 * Create a new view widget.
+	 * Creates a new view widget.
 	 */
 	public WViewWidget(WContainerWidget parent) {
 		super(parent);
@@ -58,7 +63,7 @@ public abstract class WViewWidget extends WWebWidget {
 	}
 
 	/**
-	 * Create a new view widget.
+	 * Creates a new view widget.
 	 * <p>
 	 * Calls {@link #WViewWidget(WContainerWidget parent)
 	 * this((WContainerWidget)null)}
@@ -68,7 +73,7 @@ public abstract class WViewWidget extends WWebWidget {
 	}
 
 	/**
-	 * Update the view.
+	 * Updates the view.
 	 * <p>
 	 * Typically, the model will want to update the view when the model has
 	 * changed.
@@ -109,7 +114,7 @@ public abstract class WViewWidget extends WWebWidget {
 	}
 
 	/**
-	 * Create a widget that renders the View.
+	 * Creates a widget that renders the View.
 	 * <p>
 	 * This method must be reimplemented to return a widget that renders the
 	 * view. The returned widget will be deleted by WViewWidget.
@@ -117,7 +122,7 @@ public abstract class WViewWidget extends WWebWidget {
 	protected abstract WWidget getRenderView();
 
 	/**
-	 * Create a widget that renders the View.
+	 * Creates a widget that renders the View.
 	 * <p>
 	 * This method must be reimplemented to return a widget that renders the
 	 * view. The returned widget will be deleted by WViewWidget.
@@ -149,7 +154,7 @@ public abstract class WViewWidget extends WWebWidget {
 	}
 
 	/**
-	 * Create a widget that renders the View.
+	 * Creates a widget that renders the View.
 	 * <p>
 	 * This method must be reimplemented to return a widget that renders the
 	 * view. The returned widget will be deleted by WViewWidget.
@@ -160,7 +165,7 @@ public abstract class WViewWidget extends WWebWidget {
 	}
 
 	/**
-	 * Create a widget that renders the View.
+	 * Creates a widget that renders the View.
 	 * <p>
 	 * This method must be reimplemented to return a widget that renders the
 	 * view. The returned widget will be deleted by WViewWidget.
@@ -171,7 +176,7 @@ public abstract class WViewWidget extends WWebWidget {
 	}
 
 	/**
-	 * Create a widget that renders the View.
+	 * Creates a widget that renders the View.
 	 * <p>
 	 * This method must be reimplemented to return a widget that renders the
 	 * view. The returned widget will be deleted by WViewWidget.
@@ -185,14 +190,14 @@ public abstract class WViewWidget extends WWebWidget {
 	}
 
 	/**
-	 * Create a widget that renders the View.
+	 * Creates a widget that renders the View.
 	 * <p>
 	 * This method must be reimplemented to return a widget that renders the
 	 * view. The returned widget will be deleted by WViewWidget.
 	 */
 	private WWidget contents_;
 	/**
-	 * Create a widget that renders the View.
+	 * Creates a widget that renders the View.
 	 * <p>
 	 * This method must be reimplemented to return a widget that renders the
 	 * view. The returned widget will be deleted by WViewWidget.

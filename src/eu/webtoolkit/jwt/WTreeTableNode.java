@@ -17,13 +17,18 @@ import java.util.List;
  * {@link WTreeTableNode#setColumnWidget(int column, WWidget widget)
  * setColumnWidget()}.
  * <p>
+ * <h3>CSS</h3>
+ * <p>
+ * This widget is styled by the current CSS theme. See {@link WTreeNode} for
+ * details.
+ * <p>
  * 
  * @see WTreeNode
  * @see WTreeTable
  */
 public class WTreeTableNode extends WTreeNode {
 	/**
-	 * Create a new {@link WTreeTableNode}.
+	 * Creates a new tree table node.
 	 * <p>
 	 * 
 	 * @see WTreeNode#WTreeNode(CharSequence labelText, WIconPair labelIcon,
@@ -41,7 +46,7 @@ public class WTreeTableNode extends WTreeNode {
 	}
 
 	/**
-	 * Create a new {@link WTreeTableNode}.
+	 * Creates a new tree table node.
 	 * <p>
 	 * Calls
 	 * {@link #WTreeTableNode(CharSequence labelText, WIconPair labelIcon, WTreeTableNode parentNode)
@@ -52,7 +57,7 @@ public class WTreeTableNode extends WTreeNode {
 	}
 
 	/**
-	 * Create a new {@link WTreeTableNode}.
+	 * Creates a new tree table node.
 	 * <p>
 	 * Calls
 	 * {@link #WTreeTableNode(CharSequence labelText, WIconPair labelIcon, WTreeTableNode parentNode)
@@ -63,7 +68,7 @@ public class WTreeTableNode extends WTreeNode {
 	}
 
 	/**
-	 * Set a widget to be displayed in the given column for this node.
+	 * Sets a widget to be displayed in the given column for this node.
 	 * <p>
 	 * Columns are counted starting from 0 for the tree list itself, and 1 for
 	 * the first additional column.

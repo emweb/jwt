@@ -28,6 +28,11 @@ import java.util.EnumSet;
  * to reset the &quot;body&quot; margin to 0. Using the inline stylesheet, this
  * could be done using:</i>
  * </p>
+ * <h3>CSS</h3>
+ * <p>
+ * This widget does not provide styling, and can be styled using inline or
+ * external CSS as appropriate.
+ * <p>
  * 
  * @see WApplication#setLoadingIndicator(WLoadingIndicator indicator)
  */

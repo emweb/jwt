@@ -65,58 +65,28 @@ import java.util.List;
  * {@link WTreeNode#doExpand() doExpand()} and {@link WTreeNode#doCollapse()
  * doCollapse()}).
  * <p>
- * Next to the icons, two style classes determine the look of a WTreeNode: the
- * label has CSS style class &quot;treenodelabel&quot;, and the child count has
- * CSS style class &quot;treenodechildcount&quot;.
+ * See {@link WTree} for a usage example.
  * <p>
- * For example, the following CSS stylesheet styles a tree for which the root
- * has style class &quot;mytree&quot;:
+ * <h3>CSS</h3>
  * <p>
- * <blockquote>
+ * The tree is styled by the current CSS theme. The look can be overridden using
+ * the <code>Wt-tree</code> CSS class and the following selectors:
+ * <p>
+ * <div class="fragment">
  * 
- * <pre>
- * mytree * .treenodelabel {
- *   font-size: smaller;
- * }
- * mytree * .treenodechildcount {
- *   font-size: smaller;
- *   color: blue;
- * }
+ * <pre class="fragment">
+ * .Wt-tree .Wt-trunk          : vertical line, trunk
+ * .Wt-tree .Wt-end            : vertical line, last item
+ * .Wt-tree .Wt-collapse       : collapse icon (img *)
+ * .Wt-tree .Wt-expand         : expand icon (img *)
+ * .Wt-tree .Wt-noexpand       : leaf icon
+ * 
+ * .Wt-tree .Wt-label          : the node label
+ * .Wt-tree .Wt-childcount     : the node child count
  * </pre>
  * 
- * </blockquote>
- * <p>
- * The tree node uses an image-pack, which is a collection of images to render
- * the expand/collapse icons and lines. Use
- * {@link WTreeNode#setImagePack(String url) setImagePack()} to specify the
- * location of these icons -- a suitable set of images are distributed in
- * Wt&apos;s <code>resources/</code> folder. This needs only be done on the root
- * of the tree, as child nodes will query their ancestors for the location of
- * these images, when they are not set explicitly:
- * <ul>
- * <li>
- * <b>nav-plus-line-middle.gif</b>: expand icon for all but the last child in a
- * node.</li>
- * <li>
- * <b>nav-minus-line-middle.gif</b>: collapse icon for all but the last child in
- * a node.</li>
- * <li>
- * <b>line-middle.gif</b>: like nav-plus-line-middle.gif but for nodes that
- * cannot be expanded as they have no children.</li>
- * <li>
- * <b>nav-plus-line-last.gif</b>: same as nav-plus-line-middle.gif but for the
- * last node (terminates the vertical line).</li>
- * <li>
- * <b>nav-minus-line-last.gif</b>: same as nav-minus-line-middle.gif but for the
- * last node (terminates the vertical line).</li>
- * <li>
- * <b>line-last.gif</b>: same as line-middle.gif but for the last node
- * (terminates the vertical line).</li>
- * <li>
- * <b>line-trunk.gif</b>: extension gif for the vertical line.</li>
- * </ul>
- * <p>
- * See {@link WTree} for a usage example.
+ * </div> * The collapse and expand icons are fetched themselves as images,
+ * <code>nav-plus.gif</code> and <code>nav-minus.gif</code>.
  * <p>
  * 
  * @see WTree
@@ -174,7 +144,7 @@ public class WTreeNode extends WCompositeWidget {
 	}
 
 	/**
-	 * Construct a tree node with the given label.
+	 * Creates a tree node with the given label.
 	 * <p>
 	 * The labelIcon, if specified, will appear just before the label and its
 	 * state reflect the expand/collapse state of the node.
@@ -190,7 +160,6 @@ public class WTreeNode extends WCompositeWidget {
 		this.visible_ = true;
 		this.childrenDecorated_ = true;
 		this.childCountPolicy_ = WTreeNode.ChildCountPolicy.Disabled;
-		this.imagePackUrl_ = "";
 		this.labelIcon_ = labelIcon;
 		this.labelText_ = new WText(labelText);
 		this.childrenLoaded_ = false;
@@ -205,7 +174,7 @@ public class WTreeNode extends WCompositeWidget {
 	}
 
 	/**
-	 * Construct a tree node with the given label.
+	 * Creates a tree node with the given label.
 	 * <p>
 	 * Calls
 	 * {@link #WTreeNode(CharSequence labelText, WIconPair labelIcon, WTreeNode parent)
@@ -216,7 +185,7 @@ public class WTreeNode extends WCompositeWidget {
 	}
 
 	/**
-	 * Construct a tree node with the given label.
+	 * Creates a tree node with the given label.
 	 * <p>
 	 * Calls
 	 * {@link #WTreeNode(CharSequence labelText, WIconPair labelIcon, WTreeNode parent)
@@ -242,27 +211,25 @@ public class WTreeNode extends WCompositeWidget {
 	}
 
 	/**
-	 * Get a reference to the label.
+	 * Returns the label.
 	 */
 	public WText getLabel() {
 		return this.labelText_;
 	}
 
 	/**
-	 * Get a reference to the label icon.
+	 * Returns the label icon.
 	 */
 	public WIconPair getLabelIcon() {
 		return this.labelIcon_;
 	}
 
 	/**
-	 * Change the label icon.
+	 * Sets the label icon.
 	 */
 	public void setLabelIcon(WIconPair labelIcon) {
-		if (this.labelIcon_ != null) {
-			if (this.labelIcon_ != null)
-				this.labelIcon_.remove();
-		}
+		if (this.labelIcon_ != null)
+			this.labelIcon_.remove();
 		this.labelIcon_ = labelIcon;
 		if (this.labelIcon_ != null) {
 			if (this.labelText_ != null) {
@@ -276,7 +243,7 @@ public class WTreeNode extends WCompositeWidget {
 	}
 
 	/**
-	 * Add a child node.
+	 * Adds a child node.
 	 */
 	public void addChildNode(WTreeNode node) {
 		this.childNodes_.add(node);
@@ -301,7 +268,7 @@ public class WTreeNode extends WCompositeWidget {
 	}
 
 	/**
-	 * Remove a child node.
+	 * Removes a child node.
 	 */
 	public void removeChildNode(WTreeNode node) {
 		this.childNodes_.remove(node);
@@ -315,14 +282,14 @@ public class WTreeNode extends WCompositeWidget {
 	}
 
 	/**
-	 * Get the list of children.
+	 * Returns the list of children.
 	 */
 	public List<WTreeNode> getChildNodes() {
 		return this.childNodes_;
 	}
 
 	/**
-	 * Get the number of children that should be displayed.
+	 * Returns the number of children that should be displayed.
 	 * <p>
 	 * This is used to display the count in the count label. The default
 	 * implementation simply returns {@link WTreeNode#getChildNodes()
@@ -333,7 +300,7 @@ public class WTreeNode extends WCompositeWidget {
 	}
 
 	/**
-	 * Configure how and when the child count should be displayed.
+	 * Configures how and when the child count should be displayed.
 	 * <p>
 	 * By default, no child count indication is disabled (this is the behaviour
 	 * since 2.1.1). Use this method to enable child count indications.
@@ -346,7 +313,8 @@ public class WTreeNode extends WCompositeWidget {
 			this.childCountLabel_ = new WText();
 			this.childCountLabel_.setMargin(new WLength(7), EnumSet
 					.of(Side.Left));
-			this.childCountLabel_.setStyleClass("treenodechildcount");
+			this.childCountLabel_
+					.setStyleClass("Wt-childcount treenodechildcount");
 			this.layout_.getElementAt(0, 1).addWidget(this.childCountLabel_);
 		}
 		this.childCountPolicy_ = policy;
@@ -367,7 +335,7 @@ public class WTreeNode extends WCompositeWidget {
 	}
 
 	/**
-	 * Get the child count policy.
+	 * Returns the child count policy.
 	 * <p>
 	 * 
 	 * @see WTreeNode#setChildCountPolicy(WTreeNode.ChildCountPolicy policy)
@@ -377,17 +345,17 @@ public class WTreeNode extends WCompositeWidget {
 	}
 
 	/**
-	 * Set the image pack for this (sub)tree.
+	 * Sets the image pack for this (sub)tree (<b>deprecated</b>).
 	 * <p>
-	 * You must specify a valid url for the directory that contains the icons.
+	 * 
+	 * @deprecated This method does not do anything since {@link } 3.1.1, as the
+	 *             tree is now styled based on the current CSS theme.
 	 */
 	public void setImagePack(String url) {
-		this.imagePackUrl_ = url;
-		this.updateChildren(true);
 	}
 
 	/**
-	 * Change the load policy for this tree.
+	 * Sets the load policy for this tree.
 	 * <p>
 	 * This may only be set on the root of a tree, and before adding any
 	 * children.
@@ -448,7 +416,7 @@ public class WTreeNode extends WCompositeWidget {
 	}
 
 	/**
-	 * Allow this node to be selected.
+	 * Allows this node to be selected.
 	 * <p>
 	 * By default, all nodes may be selected.
 	 * <p>
@@ -461,7 +429,7 @@ public class WTreeNode extends WCompositeWidget {
 	}
 
 	/**
-	 * Return if this node may be selected.
+	 * Returns if this node may be selected.
 	 * <p>
 	 * 
 	 * @see WTreeNode#setSelectable(boolean selectable)
@@ -471,7 +439,7 @@ public class WTreeNode extends WCompositeWidget {
 	}
 
 	/**
-	 * Return the parent node.
+	 * Returns the parent node.
 	 * <p>
 	 * 
 	 * @see WTreeNode#getChildNodes()
@@ -488,7 +456,7 @@ public class WTreeNode extends WCompositeWidget {
 	}
 
 	/**
-	 * Set the visibility of the node itself.
+	 * Sets the visibility of the node itself.
 	 * <p>
 	 * If <code>false</code>, then the node itself is not displayed, but only
 	 * its children. This is typically used to hide the root node of a tree.
@@ -508,7 +476,7 @@ public class WTreeNode extends WCompositeWidget {
 	}
 
 	/**
-	 * Expand this node.
+	 * Expands this node.
 	 * <p>
 	 * Besides the actual expansion of the node, this may also trigger the
 	 * loading and population of the node children, or of the children&apos;s
@@ -537,7 +505,7 @@ public class WTreeNode extends WCompositeWidget {
 	}
 
 	/**
-	 * Collapse this node.
+	 * Collapses this node.
 	 * <p>
 	 * 
 	 * @see WTreeNode#expand()
@@ -581,7 +549,7 @@ public class WTreeNode extends WCompositeWidget {
 	}
 
 	/**
-	 * Construct a tree node with empty {@link WTreeNode#getLabelArea()
+	 * Creates a tree node with empty {@link WTreeNode#getLabelArea()
 	 * getLabelArea()}.
 	 * <p>
 	 * This tree node has no label or labelicon, and is therefore ideally suited
@@ -595,7 +563,6 @@ public class WTreeNode extends WCompositeWidget {
 		this.visible_ = true;
 		this.childrenDecorated_ = true;
 		this.childCountPolicy_ = WTreeNode.ChildCountPolicy.Disabled;
-		this.imagePackUrl_ = "";
 		this.labelIcon_ = null;
 		this.labelText_ = null;
 		this.childrenLoaded_ = false;
@@ -610,7 +577,7 @@ public class WTreeNode extends WCompositeWidget {
 	}
 
 	/**
-	 * Construct a tree node with empty {@link WTreeNode#getLabelArea()
+	 * Creates a tree node with empty {@link WTreeNode#getLabelArea()
 	 * getLabelArea()}.
 	 * <p>
 	 * Calls {@link #WTreeNode(WTreeNode parent) this((WTreeNode)null)}
@@ -620,7 +587,7 @@ public class WTreeNode extends WCompositeWidget {
 	}
 
 	/**
-	 * Access the container widget that holds the label area.
+	 * Accesses the container widget that holds the label area.
 	 * <p>
 	 * Use this to customize how the label should look like.
 	 */
@@ -629,7 +596,7 @@ public class WTreeNode extends WCompositeWidget {
 	}
 
 	/**
-	 * Populate the node dynamically on loading.
+	 * Populates the node dynamically on loading.
 	 * <p>
 	 * Reimplement this method if you want to populate the widget dynamically,
 	 * as the tree is being browsed and therefore loaded. This is only usefull
@@ -672,37 +639,30 @@ public class WTreeNode extends WCompositeWidget {
 	}
 
 	/**
-	 * Render the node to be selected.
+	 * Renders the node to be selected.
 	 * <p>
 	 * The default implementation changes the style class of the
 	 * {@link WTreeNode#getLabelArea() getLabelArea()} to &quot;selected&quot;.
 	 */
 	protected void renderSelected(boolean isSelected) {
-		this.getLabelArea().setStyleClass(isSelected ? "selected" : "");
+		this.getLabelArea().setStyleClass(
+				isSelected ? "Wt-selected selected" : "");
 		this.selected().trigger(isSelected);
 	}
 
 	/**
-	 * The image pack that is used for this tree node.
+	 * The image pack that is used for this tree node (<b>deprecated</b>).
 	 * <p>
-	 * This is the imagepack that was set, or if not set, the image pack of its
-	 * parent.
+	 * 
+	 * @deprecated This method returns &quot;&quot; since {@link } 3.1.1, as the
+	 *             image pack is no longer used in favour of the CSS themes.
 	 */
 	protected String getImagePack() {
-		if (this.imagePackUrl_.length() != 0) {
-			return this.imagePackUrl_;
-		} else {
-			WTreeNode parent = this.getParentNode();
-			if (parent != null) {
-				return parent.getImagePack();
-			} else {
-				return "";
-			}
-		}
+		return "";
 	}
 
 	/**
-	 * React to the removal of a descendant node.
+	 * Reacts to the removal of a descendant node.
 	 * <p>
 	 * Reimplement this method if you wish to react on the removal of a
 	 * descendant node. The default implementation simply propagates the event
@@ -716,7 +676,7 @@ public class WTreeNode extends WCompositeWidget {
 	}
 
 	/**
-	 * React to the addition of a descendant node.
+	 * Reacts to the addition of a descendant node.
 	 * <p>
 	 * Reimplement this method if you wish to react on the addition of a
 	 * descendant node. The default implementation simply propagates the event
@@ -833,10 +793,9 @@ public class WTreeNode extends WCompositeWidget {
 	private WTreeNode parentNode_;
 	private WTreeNode.LoadPolicy loadPolicy_;
 	private WTreeNode.ChildCountPolicy childCountPolicy_;
-	private String imagePackUrl_;
 	private WTable layout_;
 	private WIconPair expandIcon_;
-	private WImage noExpandIcon_;
+	private WText noExpandIcon_;
 	private WIconPair labelIcon_;
 	private WText labelText_;
 	private WText childCountLabel_;
@@ -878,17 +837,23 @@ public class WTreeNode extends WCompositeWidget {
 
 	private void create() {
 		this.setImplementation(this.layout_ = new WTable());
+		this.setStyleClass("Wt-tree");
+		this.layout_.setSelectable(false);
 		// this.implementStateless(WTreeNode.doExpand,WTreeNode.undoDoExpand);
 		// this.implementStateless(WTreeNode.doCollapse,WTreeNode.undoDoCollapse);
-		this.expandIcon_ = new WIconPair(imagePlus_[WTreeNode.ImageIndex.Last
-				.getValue()], imageMin_[WTreeNode.ImageIndex.Last.getValue()]);
-		this.noExpandIcon_ = new WImage(imageLine_[WTreeNode.ImageIndex.Last
-				.getValue()]);
+		WApplication app = WApplication.getInstance();
+		this.expandIcon_ = new WIconPair(WApplication.getResourcesUrl()
+				+ "themes/" + app.getCssTheme() + "/" + imagePlus_,
+				WApplication.getResourcesUrl() + "themes/" + app.getCssTheme()
+						+ "/" + imageMin_);
+		this.noExpandIcon_ = new WText();
+		this.noExpandIcon_.setStyleClass("Wt-noexpand");
 		this.layout_.getRowAt(1).hide();
 		if (this.labelText_ != null) {
-			this.labelText_.setStyleClass("treenodelabel");
+			this.labelText_.setStyleClass("Wt-label treenodelabel");
 		}
 		this.childCountLabel_ = null;
+		this.layout_.getElementAt(0, 0).setStyleClass("Wt-trunk");
 		this.layout_.getElementAt(0, 0).addWidget(this.noExpandIcon_);
 		if (this.labelIcon_ != null) {
 			this.layout_.getElementAt(0, 1).addWidget(this.labelIcon_);
@@ -896,10 +861,6 @@ public class WTreeNode extends WCompositeWidget {
 		}
 		if (this.labelText_ != null) {
 			this.layout_.getElementAt(0, 1).addWidget(this.labelText_);
-		}
-		if (WApplication.getInstance().getEnvironment().agentIsIE()) {
-			this.layout_.getElementAt(0, 0)
-					.resize(new WLength(1), WLength.Auto);
 		}
 		this.layout_.getElementAt(0, 0).setContentAlignment(
 				EnumSet.of(AlignmentFlag.AlignLeft, AlignmentFlag.AlignTop));
@@ -910,9 +871,7 @@ public class WTreeNode extends WCompositeWidget {
 	}
 
 	private void update() {
-		WTreeNode.ImageIndex index = this.isLastChildNode() ? WTreeNode.ImageIndex.Last
-				: WTreeNode.ImageIndex.Middle;
-		String img = this.getImagePack();
+		boolean isLast = this.isLastChildNode();
 		if (!this.visible_) {
 			this.layout_.getRowAt(0).hide();
 			this.expandIcon_.hide();
@@ -932,34 +891,12 @@ public class WTreeNode extends WCompositeWidget {
 				&& this.labelIcon_.getState() != (this.isExpanded() ? 1 : 0)) {
 			this.labelIcon_.setState(this.isExpanded() ? 1 : 0);
 		}
-		if (!this.expandIcon_.isHidden()) {
-			if (!this.expandIcon_.getIcon1().getImageRef().equals(
-					img + imagePlus_[index.getValue()])) {
-				this.expandIcon_.getIcon1().setImageRef(
-						img + imagePlus_[index.getValue()]);
-			}
-			if (!this.expandIcon_.getIcon2().getImageRef().equals(
-					img + imageMin_[index.getValue()])) {
-				this.expandIcon_.getIcon2().setImageRef(
-						img + imageMin_[index.getValue()]);
-			}
-		}
-		if (!this.noExpandIcon_.getImageRef().equals(
-				img + imageLine_[index.getValue()])) {
-			this.noExpandIcon_.setImageRef(img + imageLine_[index.getValue()]);
-		}
-		if (index == WTreeNode.ImageIndex.Last) {
-			this.layout_.getElementAt(0, 0).getDecorationStyle()
-					.setBackgroundImage("");
-			this.layout_.getElementAt(1, 0).getDecorationStyle()
-					.setBackgroundImage("");
+		if (isLast) {
+			this.layout_.getElementAt(0, 0).setStyleClass("Wt-end");
+			this.layout_.getElementAt(1, 0).setStyleClass("");
 		} else {
-			this.layout_.getElementAt(0, 0).getDecorationStyle()
-					.setBackgroundImage(img + "line-trunk.gif",
-							WCssDecorationStyle.Repeat.RepeatY);
-			this.layout_.getElementAt(1, 0).getDecorationStyle()
-					.setBackgroundImage(img + "line-trunk.gif",
-							WCssDecorationStyle.Repeat.RepeatY);
+			this.layout_.getElementAt(0, 0).setStyleClass("Wt-trunk");
+			this.layout_.getElementAt(1, 0).setStyleClass("Wt-trunk");
 		}
 		if (!(this.getParentNode() != null)
 				|| this.getParentNode().isExpanded()) {
@@ -1029,27 +966,7 @@ public class WTreeNode extends WCompositeWidget {
 		}
 	}
 
-	enum ImageIndex {
-		Middle(0), Last(1);
-
-		private int value;
-
-		ImageIndex(int value) {
-			this.value = value;
-		}
-
-		/**
-		 * Returns the numerical representation of this enum.
-		 */
-		public int getValue() {
-			return value;
-		}
-	}
-
 	AbstractSignal.Connection clickedConnection_;
-	private static String[] imageLine_ = { "line-middle.gif", "line-last.gif" };
-	private static String[] imagePlus_ = { "nav-plus-line-middle.gif",
-			"nav-plus-line-last.gif" };
-	private static String[] imageMin_ = { "nav-minus-line-middle.gif",
-			"nav-minus-line-last.gif" };
+	private static String imagePlus_ = "nav-plus.gif";
+	private static String imageMin_ = "nav-minus.gif";
 }

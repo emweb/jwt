@@ -114,52 +114,51 @@ import java.util.List;
  * for (int i = 0; i &lt; contacts.size(); ++i)
  * 	popup.addSuggestion(contacts.get(i).formatted(), contacts.get(i)
  * 			.formatted());
- * 
- * // set style
- * popup.setStyleClass(&quot;suggest&quot;);
  * </pre>
  * 
  * </blockquote>
  * <p>
- * Example CSS:
+ * A screenshot of this example:
+ * <table border="0" align="center" cellspacing="3" cellpadding="3">
+ * <tr>
+ * <td><div align="center"> <img src="doc-files//WSuggestionPopup-default-1.png"
+ * alt="An example WSuggestionPopup (default)">
  * <p>
- * <blockquote>
- * 
- * <pre>
- * .suggest {
- *   background-color: #e0ecff;
- *   color: #1010cc;
- *   border: 1px solid #666666;
- *   cursor: default;
- *   font-size: smaller;
- *   padding: 2px;
- * }
- * 
- * .suggest span {
- *   padding-left: 0.5em;
- *   padding-right: 0.5em;  
- * }
- * 
- * .suggest .sel {
- *   background-color: #C3D9FF;
- * }
- * </pre>
- * 
- * </blockquote>
- * <p>
- * A screenshot of this example: <div align="center"> <img
- * src="doc-files//WSuggestionPopup-1.png" alt="Example of WSuggestionPopup">
- * <p>
- * <strong>Example of WSuggestionPopup</strong>
+ * <strong>An example WSuggestionPopup (default)</strong>
  * </p>
+ * </div></td>
+ * <td><div align="center"> <img
+ * src="doc-files//WSuggestionPopup-polished-1.png"
+ * alt="An example WSuggestionPopup (polished)">
+ * <p>
+ * <strong>An example WSuggestionPopup (polished)</strong>
+ * </p>
+ * </div></td>
+ * </tr>
+ * </table>
+ * <p>
+ * <h3>CSS</h3>
+ * <p>
+ * The suggestion popup is styled by the current CSS theme. The look can be
+ * overridden using the <code>Wt-suggest</code> CSS class and the following
+ * selectors:
+ * <p>
+ * <div class="fragment">
+ * 
+ * <pre class="fragment">
+ * .Wt-suggest span : A suggestion element
+ * .Wt-suggest .sel : A selected suggestion element
+ * </pre>
+ * 
  * </div>
+ * <p>
  * <p>
  * <i><b>Note: </b>This widget requires JavaScript support. </i>
  * </p>
  */
 public class WSuggestionPopup extends WCompositeWidget {
 	/**
-	 * Construct a {@link WSuggestionPopup} with given matcherJS and replacerJS.
+	 * Creates a suggestion popup with given matcherJS and replacerJS.
 	 */
 	public WSuggestionPopup(String matcherJS, String replacerJS,
 			WContainerWidget parent) {
@@ -173,35 +172,44 @@ public class WSuggestionPopup extends WCompositeWidget {
 		this.editKeyUp_ = new JSlot(parent);
 		this.suggestionClicked_ = new JSlot(parent);
 		this.delayHide_ = new JSlot(parent);
-		this.setImplementation(this.content_ = new WContainerWidget());
+		String TEMPLATE = "${shadow-x1-x2}${contents}";
+		this
+				.setImplementation(this.impl_ = new WTemplate(new WString(
+						TEMPLATE)));
+		this.impl_.setStyleClass("Wt-suggest Wt-outset");
+		this.impl_.bindString("shadow-x1-x2", WTemplate.DropShadow_x1_x2);
+		this.impl_.bindWidget("contents",
+				this.content_ = new WContainerWidget());
 		this.setPopup(true);
 		this.setPositionScheme(PositionScheme.Absolute);
 		this.editKeyDown_
-				.setJavaScript("function(edit, event) {  var self = "
+				.setJavaScript("function(edit, event) {var self = "
 						+ this.getJsRef()
-						+ ";  var sel = self.getAttribute('sel');  if (sel != null) sel = Wt3_1_0.getElement(sel);  if (self.style.display != 'none' && sel != null) {    if ((event.keyCode == 13) || (event.keyCode == 9)) {      sel.firstChild.onclick();      Wt3_1_0.cancelEvent(event);      return false;    } else if (event.keyCode == 40 || event.keyCode == 38) {      if (event.type.toUpperCase() == 'KEYDOWN')        self.setAttribute('kd', 'true');      if (event.type.toUpperCase() == 'KEYPRESS'        && self.getAttribute('kd') == 'true') {        Wt3_1_0.cancelEvent(event);        return false;      }      var n = sel;      for (var n = (event.keyCode == 40) ? n.nextSibling : n.previousSibling;            n != null && n.nodeName.toUpperCase() == 'DIV' && n.style.display == 'none';           n = (event.keyCode == 40) ? n.nextSibling : n.previousSibling) { }      if (n != null && n.nodeName.toUpperCase() == 'DIV') {        sel.setAttribute('class', null);        n.setAttribute('class', 'sel');        self.setAttribute('sel', n.id);      }      return false;    }  }  return (event.keyCode != 13 && event.keyCode != 9);}");
+						+ ";var sel = self.sel;if (sel != null) sel = Wt3_1_0.getElement(sel);if (self.style.display != 'none' && sel != null) {if ((event.keyCode == 13) || (event.keyCode == 9)) {sel.firstChild.onclick();Wt3_1_0.cancelEvent(event);return false;} else if (event.keyCode == 40 || event.keyCode == 38) {if (event.type.toUpperCase() == 'KEYDOWN')self.kd = true;if (event.type.toUpperCase() == 'KEYPRESS'&& self.kd == true) {Wt3_1_0.cancelEvent(event);return false;}var n = sel;for (var n = (event.keyCode == 40) ? n.nextSibling : n.previousSibling; n != null&& n.nodeName.toUpperCase() == 'DIV' && n.style.display == 'none';n = (event.keyCode == 40) ? n.nextSibling : n.previousSibling) { }if (n != null && n.nodeName.toUpperCase() == 'DIV') {sel.setAttribute('class', null);n.setAttribute('class', 'sel');self.sel = n.id;}Wt3_1_0.cancelEvent(event);return false;}}return (event.keyCode != 13 && event.keyCode != 9);}");
 		this.editKeyUp_
-				.setJavaScript("function(edit, event) {  var self = "
+				.setJavaScript("function(edit, event) {var self = "
 						+ this.getJsRef()
-						+ ";  var sel = self.getAttribute('sel');  if (sel != null) sel = Wt3_1_0.getElement(sel);  if (event.keyCode == 27 || event.keyCode == 37 || event.keyCode == 39) {    self.style.display = 'none';    if (event.keyCode == 27)      edit.blur();  } else {    var text = edit.value;    var matcher = "
+						+ ";var sel = self.sel;if (sel != null)sel = Wt3_1_0.getElement(sel);if (event.keyCode == 27|| event.keyCode == 37|| event.keyCode == 39) {self.style.display = 'none';if (event.keyCode == 27)edit.blur();} else {var text = edit.value;var matcher = "
 						+ this.matcherJS_
-						+ "(edit);    var first = null;    for (var i = 0; i < self.childNodes.length; i++) {      var child = self.childNodes[i];      if (child.nodeName.toUpperCase() == 'DIV') {        if (child.getAttribute('orig') == null)          child.setAttribute('orig', child.firstChild.innerHTML);        else          child.firstChild.innerHTML = child.getAttribute('orig');        var result = matcher(child.firstChild.innerHTML);        child.firstChild.innerHTML = result.suggestion;        if (result.match) {          child.style.display = 'block';          if (first == null) first = child;        } else          child.style.display = 'none';        child.className = null;      }    }    if (first == null) {      self.style.display = 'none';    } else {      if (self.style.display != 'block') {        self.style.display = 'block';        edit.parentNode.insertBefore(self, edit.nextSibling);        self.setAttribute('sel', null);        sel = null;      }      if ((sel == null) || (sel.style.display == 'none')) {        self.setAttribute('sel', first.id);        first.className = 'sel';      } else {        sel.className = 'sel';      }    }  }}");
+						+ "(edit);var first = null;var sels = self.lastChild.childNodes;for (var i = 0; i < sels.length; i++) {var child = sels[i];if (child.nodeName.toUpperCase() == 'DIV') {if (child.orig == null)child.orig = child.firstChild.innerHTML;else child.firstChild.innerHTML = child.orig;var result = matcher(child.firstChild.innerHTML);child.firstChild.innerHTML = result.suggestion;if (result.match) {child.style.display = 'block';if (first == null) first = child;} else child.style.display = 'none';child.className = null;}}if (first == null) {self.style.display = 'none';} else {if (self.style.display != 'block') {self.style.display = 'block';Wt3_1_0.positionAtWidget(self.id, edit.id, Wt3_1_0.Vertical);self.sel = null;self.edit = edit.id;sel = null;}if ((sel == null) || (sel.style.display == 'none')) {self.sel = first.id;first.className = 'sel';} else {sel.className = 'sel';}}}}");
 		this.suggestionClicked_
-				.setJavaScript("function(suggestion, event) {  var self = "
+				.setJavaScript("function(suggestion, event) {var self = "
 						+ this.getJsRef()
-						+ ";  var edit = self.previousSibling;  var sText = suggestion.innerHTML;  var sValue = suggestion.getAttribute('sug');  var replacer = "
+						+ ";var edit = Wt3_1_0.getElement(self.edit);var sText = suggestion.innerHTML;var sValue = suggestion.getAttribute('sug');var replacer = "
 						+ this.replacerJS_
-						+ ";  edit.focus();  replacer(edit, sText, sValue);  self.style.display = 'none';}");
+						+ ";edit.focus();replacer(edit, sText, sValue);self.style.display = 'none';}");
 		this.delayHide_
-				.setJavaScript("function(edit, event) {  setTimeout(\"if ("
-						+ this.getJsRef() + ") " + this.getJsRef()
-						+ ".style.display = 'none';\", 300);}");
+				.setJavaScript("function(edit, event) {setTimeout(function() {if ("
+						+ this.getJsRef()
+						+ ") "
+						+ this.getJsRef()
+						+ ".style.display = 'none';}, 300);}");
 		this.hide();
 		this.setModel(new WStringListModel(this));
 	}
 
 	/**
-	 * Construct a {@link WSuggestionPopup} with given matcherJS and replacerJS.
+	 * Creates a suggestion popup with given matcherJS and replacerJS.
 	 * <p>
 	 * Calls
 	 * {@link #WSuggestionPopup(String matcherJS, String replacerJS, WContainerWidget parent)
@@ -212,7 +220,7 @@ public class WSuggestionPopup extends WCompositeWidget {
 	}
 
 	/**
-	 * Let this suggestion popup assist in editing the given edit field.
+	 * Lets this suggestion popup assist in editing the given edit field.
 	 * <p>
 	 * A single suggestion popup may assist in several edits by repeated calls
 	 * of this method.
@@ -225,14 +233,14 @@ public class WSuggestionPopup extends WCompositeWidget {
 	}
 
 	/**
-	 * Clear the list of suggestions.
+	 * Clears the list of suggestions.
 	 */
 	public void clearSuggestions() {
 		this.model_.removeRows(0, this.model_.getRowCount());
 	}
 
 	/**
-	 * Add a new suggestion.
+	 * Adds a new suggestion.
 	 */
 	public void addSuggestion(CharSequence suggestionText,
 			CharSequence suggestionValue) {
@@ -246,7 +254,7 @@ public class WSuggestionPopup extends WCompositeWidget {
 	}
 
 	/**
-	 * Set the model to be used for the suggestions.
+	 * Sets the model to be used for the suggestions.
 	 * <p>
 	 * The <code>model</code> may not be <code>null</code>, and ownership of the
 	 * model is not transferred.
@@ -308,7 +316,7 @@ public class WSuggestionPopup extends WCompositeWidget {
 	}
 
 	/**
-	 * Set the column in the model to be used for the items.
+	 * Sets the column in the model to be used for the items.
 	 * <p>
 	 * The column <code>index</code> in the model will be used to retrieve data.
 	 * <p>
@@ -324,7 +332,7 @@ public class WSuggestionPopup extends WCompositeWidget {
 	}
 
 	/**
-	 * Return the data model.
+	 * Returns the data model.
 	 * <p>
 	 * 
 	 * @see WSuggestionPopup#setModel(WAbstractItemModel model)
@@ -383,7 +391,7 @@ public class WSuggestionPopup extends WCompositeWidget {
 	}
 
 	/**
-	 * Create a matcher JavaScript function based on some generic options.
+	 * Creates a matcher JavaScript function based on some generic options.
 	 */
 	public static String generateMatcherJS(WSuggestionPopup.Options options) {
 		return ""
@@ -400,11 +408,11 @@ public class WSuggestionPopup extends WCompositeWidget {
 						+ String.valueOf(options.highlightBeginTag.length()
 								+ options.highlightEndTag.length()) + ";"
 						: "")
-				+ "      matched = true;    }    i = matchpos + 1;  } else    i = matchpos;}}return { match: matched,         suggestion: suggestion }}}";
+				+ "      matched = true;    }    i = matchpos + 1;  } else     i = matchpos;}}return { match: matched,         suggestion: suggestion }}}";
 	}
 
 	/**
-	 * Create a replacer JavaScript function based on some generic options.
+	 * Creates a replacer JavaScript function based on some generic options.
 	 */
 	public static String generateReplacerJS(WSuggestionPopup.Options options) {
 		return ""
@@ -421,6 +429,7 @@ public class WSuggestionPopup extends WCompositeWidget {
 						+ String.valueOf(2) : "") + "; }}";
 	}
 
+	private WTemplate impl_;
 	private WAbstractItemModel model_;
 	private int modelColumn_;
 	private String matcherJS_;

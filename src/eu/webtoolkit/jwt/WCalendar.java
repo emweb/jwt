@@ -27,13 +27,26 @@ import java.util.Set;
  * days (with keys from {@link WDate#getShortDayName(int weekday)
  * WDate#getShortDayName()}) in your message resource bundle.
  * <p>
- * Here is a snapshot of the default look, taken on 31/08/2007 (shown as today),
- * and 11/08/2007 currently selected. <div align="center"> <img
- * src="doc-files//WCalendar-1.png" alt="WCalendar with default look">
+ * Here is a snapshot, taken on 19/01/2010 (shown as today), and 14/01/2010
+ * currently selected.
+ * <table border="0" align="center" cellspacing="3" cellpadding="3">
+ * <tr>
+ * <td><div align="center"> <img src="doc-files//WCalendar-default-1.png"
+ * alt="WCalendar with default look">
  * <p>
  * <strong>WCalendar with default look</strong>
  * </p>
- * </div> <h3>CSS</h3>
+ * </div></td>
+ * <td><div align="center"> <img src="doc-files//WCalendar-polished-1.png"
+ * alt="WCalendar with polished look">
+ * <p>
+ * <strong>WCalendar with polished look</strong>
+ * </p>
+ * </div></td>
+ * </tr>
+ * </table>
+ * <p>
+ * <h3>CSS</h3>
  * <p>
  * The calendar is styled by the current CSS theme. The look can be overridden
  * using the <code>Wt-calendar</code> CSS class and the following selectors:
@@ -41,19 +54,19 @@ import java.util.Set;
  * <div class="fragment">
  * 
  * <pre class="fragment">
- * .Wt-cal table           : The table
- * .Wt-cal table.d1        : The table (single letter day headers)
- * .Wt-cal table.d3        : The table (three letter day headers)
+ * .Wt-cal table    : The table
+ * .Wt-cal table.d1 : The table (single letter day headers)
+ * .Wt-cal table.d3 : The table (three letter day headers)
  * 
- * .Wt-cal caption		: The caption (containing the navigation buttons)
- * .Wt-cal-year		: The caption year in-place-edit
+ * .Wt-cal caption	 : The caption (containing the navigation buttons)
+ * .Wt-cal-year	 : The caption year in-place-edit
  * 
- * .Wt-cal th              : Header cell (week day)
+ * .Wt-cal th       : Header cell (week day)
  * 
- * .Wt-cal td              : Day cell
- * .Wt-cal-oom             : Out-of-month day
- * .Wt-cal-sel             : Selected day
- * .Wt-cal-now             : Today day
+ * .Wt-cal td       : Day cell
+ * .Wt-cal-oom      : Out-of-month day
+ * .Wt-cal-sel      : Selected day
+ * .Wt-cal-now      : Today day
  * </pre>
  * 
  * </div>

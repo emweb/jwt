@@ -33,25 +33,46 @@ import java.util.List;
  * {@link WTreeTableNode#setColumnWidget(int column, WWidget widget)
  * WTreeTableNode#setColumnWidget()}.
  * <p>
- * To apply a style to the table header hou should use CSS in conjunction with
- * the style class (&quot;header&quot;) that is set for the header row.
- * Alternatively, you may access the header directly using
- * {@link WTreeTable#getHeaderWidget() getHeaderWidget()}. To apply a different
- * style to each column header, you can access each column header widget using
- * {@link WTreeTable#header(int column) header(int)}, e.g. to set a style class.
- * <p>
  * The table cannot be given a height using CSS style rules, instead you must
  * use layout managers, or use
  * {@link WCompositeWidget#resize(WLength width, WLength height)
  * WCompositeWidget#resize()}.
  * <p>
+ * <h3>CSS</h3>
+ * <p>
+ * The treetable is styled by the current CSS theme. The look can be overridden
+ * using the <code>Wt-treetable</code> CSS class. The style selectors that
+ * affect the rendering of the tree are indicated in the documentation for
+ * {@link WTree} (for selection) and {@link WTreeNode} (for decoration). In
+ * addition, the following selector may be used to to style the header:
+ * <p>
+ * <div class="fragment">
+ * 
+ * <pre class="fragment">
+ * .Wt-treetable .Wt-header : header
+ * </pre>
+ * 
+ * </div>
+ * <p>
+ * A screenshot of the treetable: <div align="center"> <img
+ * src="doc-files//WTreeTable-default-1.png"
+ * alt="An example WTreeTable (default)">
+ * <p>
+ * <strong>An example WTreeTable (default)</strong>
+ * </p>
+ * </div> <div align="center"> <img src="doc-files//WTreeTable-polished-1.png"
+ * alt="An example WTreeTable (polished)">
+ * <p>
+ * <strong>An example WTreeTable (polished)</strong>
+ * </p>
+ * </div>
  * 
  * @see WTreeTableNode
  * @see WTreeView
  */
 public class WTreeTable extends WCompositeWidget {
 	/**
-	 * Construct a new {@link WTreeTable}.
+	 * Creates a new tree table.
 	 * <p>
 	 * The {@link WTreeTable#getTreeRoot() getTreeRoot()} is <code>null</code>.
 	 * The table should first be properly dimensioned using
@@ -64,11 +85,10 @@ public class WTreeTable extends WCompositeWidget {
 		super(parent);
 		this.columnWidths_ = new ArrayList<WLength>();
 		this.setImplementation(this.impl_ = new WContainerWidget());
+		this.setStyleClass("Wt-treetable");
 		this.setPositionScheme(PositionScheme.Relative);
 		this.headers_ = new WContainerWidget(this.impl_);
-		this.headers_.setStyleClass("header");
-		this.headers_.resize(new WLength(100, WLength.Unit.Percentage),
-				WLength.Auto);
+		this.headers_.setStyleClass("Wt-header header");
 		WContainerWidget spacer = new WContainerWidget(this.headers_);
 		spacer.setStyleClass("Wt-sbspacer");
 		this.headerContainer_ = new WContainerWidget(this.headers_);
@@ -88,28 +108,26 @@ public class WTreeTable extends WCompositeWidget {
 		this.tree_.setMargin(new WLength(3), EnumSet.of(Side.Top));
 		this.tree_.resize(new WLength(100, WLength.Unit.Percentage),
 				WLength.Auto);
+		this
+				.setJavaScriptMember(
+						"wtResize",
+						"function(self, w, h) {self.style.height= h + 'px';var c = self.lastChild;var t = self.firstChild;h -= $(t).outerHeight();if (h > 0) c.style.height = h + 'px';};");
 		WApplication
 				.getInstance()
 				.doJavaScript(
 						"function sb"
 								+ this.getId()
-								+ "() {var c="
-								+ this.impl_.getJsRef()
-								+ ";var h="
-								+ this.headers_.getJsRef()
-								+ ";var e="
+								+ "() {var e="
 								+ content.getJsRef()
 								+ ";var sp="
 								+ spacer.getJsRef()
-								+ ";if (e && sp) {if (Wt3_1_0.pxself("
-								+ this.impl_.getJsRef()
-								+ ",'height') != 0)e.style.height=(c.offsetHeight - h.offsetHeight) + 'px';if (e.scrollHeight > e.offsetHeight) {sp.style.display='block';} else {sp.style.display='none';}setTimeout(sb"
+								+ ";if (e && sp) {if (e.scrollHeight > e.offsetHeight) {sp.style.display='block';} else {sp.style.display='none';}setTimeout(sb"
 								+ this.getId() + ", 20);}}sb" + this.getId()
 								+ "();");
 	}
 
 	/**
-	 * Construct a new {@link WTreeTable}.
+	 * Creates a new tree table.
 	 * <p>
 	 * Calls {@link #WTreeTable(WContainerWidget parent)
 	 * this((WContainerWidget)null)}
@@ -119,7 +137,7 @@ public class WTreeTable extends WCompositeWidget {
 	}
 
 	/**
-	 * Add an extra column.
+	 * Adds an extra column.
 	 * <p>
 	 * Add an extra column, specifying the column header and a column width. The
 	 * extra columns are numbered from 1 as column 0 contains the tree itself.
@@ -138,7 +156,7 @@ public class WTreeTable extends WCompositeWidget {
 	}
 
 	/**
-	 * The number of columns in this table.
+	 * Returns the number of columns in this table.
 	 * <p>
 	 * Returns the number of columns in the table, including in the count column
 	 * 0 (which contains the tree).
@@ -151,7 +169,7 @@ public class WTreeTable extends WCompositeWidget {
 	}
 
 	/**
-	 * Set the tree root.
+	 * Sets the tree root.
 	 * <p>
 	 * Sets the data for the tree table, and specify the header for the first
 	 * column.
@@ -176,16 +194,14 @@ public class WTreeTable extends WCompositeWidget {
 	}
 
 	/**
-	 * Set the tree which provides the data for the tree table.
+	 * Sets the tree which provides the data for the tree table.
 	 * <p>
 	 * 
 	 * @see WTreeTable#setTreeRoot(WTreeTableNode root, CharSequence h)
 	 */
 	public void setTree(WTree root, CharSequence h) {
-		if (this.tree_ != null) {
-			if (this.tree_ != null)
-				this.tree_.remove();
-		}
+		if (this.tree_ != null)
+			this.tree_.remove();
 		this.header(0).setText(h);
 		this.impl_.addWidget(this.tree_ = new WTree());
 		this.tree_.resize(new WLength(100, WLength.Unit.Percentage),

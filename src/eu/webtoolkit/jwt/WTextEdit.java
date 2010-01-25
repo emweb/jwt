@@ -28,6 +28,10 @@ import java.util.List;
  * property in your JWt configuration file, see DOCREF<a class="el"
  * href="overview.html#config_general">configuration properties</a>.
  * <p>
+ * <h3>CSS</h3>
+ * <p>
+ * Styling through CSS is not applicable.
+ * <p>
  * <div align="center"> <img src="doc-files//WTextEdit-1.png"
  * alt="Default configuration of a WTextEdit">
  * <p>
@@ -37,7 +41,7 @@ import java.util.List;
  */
 public class WTextEdit extends WTextArea {
 	/**
-	 * Create a new text editor.
+	 * Creates a new text editor.
 	 */
 	public WTextEdit(WContainerWidget parent) {
 		super(parent);
@@ -48,7 +52,7 @@ public class WTextEdit extends WTextArea {
 	}
 
 	/**
-	 * Create a new text editor.
+	 * Creates a new text editor.
 	 * <p>
 	 * Calls {@link #WTextEdit(WContainerWidget parent)
 	 * this((WContainerWidget)null)}
@@ -58,7 +62,7 @@ public class WTextEdit extends WTextArea {
 	}
 
 	/**
-	 * Create a new text editor and initialize with given text.
+	 * Creates a new text editor and initialize with given text.
 	 * <p>
 	 * The <code>text</code> should be valid XHTML.
 	 */
@@ -71,7 +75,7 @@ public class WTextEdit extends WTextArea {
 	}
 
 	/**
-	 * Create a new text editor and initialize with given text.
+	 * Creates a new text editor and initialize with given text.
 	 * <p>
 	 * Calls {@link #WTextEdit(String text, WContainerWidget parent) this(text,
 	 * (WContainerWidget)null)}
@@ -89,7 +93,7 @@ public class WTextEdit extends WTextArea {
 	}
 
 	/**
-	 * Set the content.
+	 * Sets the content.
 	 * <p>
 	 * The <code>text</code> should be valid XHTML.
 	 * <p>
@@ -101,7 +105,7 @@ public class WTextEdit extends WTextArea {
 	}
 
 	/**
-	 * Set the stylesheet for displaying the content.
+	 * Sets the stylesheet for displaying the content.
 	 * <p>
 	 * The content is rendered using the rules defined in this stylesheet. The
 	 * stylesheet is also used to derive additional styles that are available in
@@ -124,7 +128,7 @@ public class WTextEdit extends WTextArea {
 	}
 
 	/**
-	 * Load additional TinyMCE plugins.
+	 * Loads additional TinyMCE plugins.
 	 * <p>
 	 * Wt loads by default only the plugin &apos;safari&apos; (which adds
 	 * support for the Safari web browser). Use this method to load additional
@@ -154,7 +158,7 @@ public class WTextEdit extends WTextArea {
 	}
 
 	/**
-	 * Configure a tool bar.
+	 * Configures a tool bar.
 	 * <p>
 	 * This configures the buttons for the <code>i&apos;th</code> tool bar (with
 	 * 0 &lt;= <code>i</code> &lt;= 3).

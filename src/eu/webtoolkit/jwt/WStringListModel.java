@@ -39,7 +39,7 @@ import eu.webtoolkit.jwt.utils.ReverseOrder;
  */
 public class WStringListModel extends WAbstractListModel {
 	/**
-	 * Create a new empty string list model.
+	 * Creates a new empty string list model.
 	 */
 	public WStringListModel(WObject parent) {
 		super(parent);
@@ -47,7 +47,7 @@ public class WStringListModel extends WAbstractListModel {
 	}
 
 	/**
-	 * Create a new empty string list model.
+	 * Creates a new empty string list model.
 	 * <p>
 	 * Calls {@link #WStringListModel(WObject parent) this((WObject)null)}
 	 */
@@ -56,7 +56,7 @@ public class WStringListModel extends WAbstractListModel {
 	}
 
 	/**
-	 * Create a new string list model.
+	 * Creates a new string list model.
 	 */
 	public WStringListModel(List<WString> strings, WObject parent) {
 		super(parent);
@@ -64,7 +64,7 @@ public class WStringListModel extends WAbstractListModel {
 	}
 
 	/**
-	 * Create a new string list model.
+	 * Creates a new string list model.
 	 * <p>
 	 * Calls {@link #WStringListModel(List strings, WObject parent)
 	 * this(strings, (WObject)null)}
@@ -74,7 +74,7 @@ public class WStringListModel extends WAbstractListModel {
 	}
 
 	/**
-	 * Set a new string list.
+	 * Sets a new string list.
 	 * <p>
 	 * Replaces the current string list with a new list.
 	 * <p>

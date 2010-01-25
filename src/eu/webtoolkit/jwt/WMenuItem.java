@@ -65,7 +65,7 @@ public class WMenuItem extends WObject {
 	}
 
 	/**
-	 * Create a new item.
+	 * Creates a new item.
 	 * <p>
 	 * The text specifies the item text. The contents is the widget that must be
 	 * shown in the {@link WMenu} contents stack when the item is selected.
@@ -103,7 +103,7 @@ public class WMenuItem extends WObject {
 	}
 
 	/**
-	 * Create a new item.
+	 * Creates a new item.
 	 * <p>
 	 * Calls
 	 * {@link #WMenuItem(CharSequence text, WWidget contents, WMenuItem.LoadPolicy policy)
@@ -114,7 +114,7 @@ public class WMenuItem extends WObject {
 	}
 
 	/**
-	 * Set the text for this item.
+	 * Sets the text for this item.
 	 * <p>
 	 * Unless a custom path component was defined, the
 	 * {@link WMenuItem#getPathComponent() getPathComponent()} is also updated
@@ -155,7 +155,7 @@ public class WMenuItem extends WObject {
 	}
 
 	/**
-	 * Return the text for this item.
+	 * Returns the text for this item.
 	 * <p>
 	 * 
 	 * @see WMenuItem#setText(CharSequence text)
@@ -165,7 +165,7 @@ public class WMenuItem extends WObject {
 	}
 
 	/**
-	 * Set the path component for this item.
+	 * Sets the path component for this item.
 	 * <p>
 	 * The path component is used by the menu item in the application internal
 	 * path (see
@@ -222,7 +222,7 @@ public class WMenuItem extends WObject {
 	}
 
 	/**
-	 * Returs the contents widget for this item.
+	 * Returns the contents widget for this item.
 	 * <p>
 	 * The contents widget is the widget in the {@link WStackedWidget}
 	 * associated with this item.
@@ -260,14 +260,14 @@ public class WMenuItem extends WObject {
 	}
 
 	/**
-	 * Select this item.
+	 * Selects this item.
 	 */
 	public void select() {
 		this.menu_.select(this);
 	}
 
 	/**
-	 * Create the widget that represents the item.
+	 * Creates the widget that represents the item.
 	 * <p>
 	 * The default implementation will simply return a {@link WAnchor}. A call
 	 * to {@link WMenuItem#createItemWidget() createItemWidget()} is immediately
@@ -284,7 +284,7 @@ public class WMenuItem extends WObject {
 	}
 
 	/**
-	 * Update the widget that represents the item.
+	 * Updates the widget that represents the item.
 	 * <p>
 	 * The default implementation will cast the <code>itemWidget</code> to a
 	 * {@link WAnchor}, and set the anchor&apos;s text and destination according
@@ -313,7 +313,7 @@ public class WMenuItem extends WObject {
 	}
 
 	/**
-	 * Render the item as selected or unselected.
+	 * Renders the item as selected or unselected.
 	 * <p>
 	 * The default implementation sets the styleclass for
 	 * {@link WMenuItem#getItemWidget() getItemWidget()} to &apos;item&apos; for

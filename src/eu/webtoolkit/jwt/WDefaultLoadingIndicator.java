@@ -13,6 +13,11 @@ package eu.webtoolkit.jwt;
  * The default loading indicator displays the text message
  * <span>Loading...</span> in the right top corner of the window.
  * <p>
+ * <h3>CSS</h3>
+ * <p>
+ * This widget does not provide styling, and can be styled using inline or
+ * external CSS as appropriate.
+ * <p>
  * 
  * @see WApplication#setLoadingIndicator(WLoadingIndicator indicator)
  */

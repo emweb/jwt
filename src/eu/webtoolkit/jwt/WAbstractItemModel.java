@@ -107,7 +107,7 @@ import eu.webtoolkit.jwt.utils.EnumUtils;
  */
 public abstract class WAbstractItemModel extends WObject {
 	/**
-	 * Create a new data model.
+	 * Creates a new data model.
 	 */
 	public WAbstractItemModel(WObject parent) {
 		super(parent);
@@ -133,7 +133,7 @@ public abstract class WAbstractItemModel extends WObject {
 	}
 
 	/**
-	 * Create a new data model.
+	 * Creates a new data model.
 	 * <p>
 	 * Calls {@link #WAbstractItemModel(WObject parent) this((WObject)null)}
 	 */
@@ -469,7 +469,7 @@ public abstract class WAbstractItemModel extends WObject {
 	}
 
 	/**
-	 * Insert one or more columns.
+	 * Inserts one or more columns.
 	 * <p>
 	 * Returns <code>true</code> if the operation was successful.
 	 * <p>
@@ -493,7 +493,7 @@ public abstract class WAbstractItemModel extends WObject {
 	}
 
 	/**
-	 * Insert one or more columns.
+	 * Inserts one or more columns.
 	 * <p>
 	 * Returns {@link #insertColumns(int column, int count, WModelIndex parent)
 	 * insertColumns(column, count, null)}
@@ -503,7 +503,7 @@ public abstract class WAbstractItemModel extends WObject {
 	}
 
 	/**
-	 * Insert one or more rows.
+	 * Inserts one or more rows.
 	 * <p>
 	 * Returns <code>true</code> if the operation was successful. If you
 	 * reimplement this method, then you must call
@@ -527,7 +527,7 @@ public abstract class WAbstractItemModel extends WObject {
 	}
 
 	/**
-	 * Insert one or more rows.
+	 * Inserts one or more rows.
 	 * <p>
 	 * Returns {@link #insertRows(int row, int count, WModelIndex parent)
 	 * insertRows(row, count, null)}
@@ -537,7 +537,7 @@ public abstract class WAbstractItemModel extends WObject {
 	}
 
 	/**
-	 * Remove columns.
+	 * Removes columns.
 	 * <p>
 	 * Returns <code>true</code> if the operation was successful.
 	 * <p>
@@ -561,7 +561,7 @@ public abstract class WAbstractItemModel extends WObject {
 	}
 
 	/**
-	 * Remove columns.
+	 * Removes columns.
 	 * <p>
 	 * Returns {@link #removeColumns(int column, int count, WModelIndex parent)
 	 * removeColumns(column, count, null)}
@@ -571,7 +571,7 @@ public abstract class WAbstractItemModel extends WObject {
 	}
 
 	/**
-	 * Remove rows.
+	 * Removes rows.
 	 * <p>
 	 * Returns <code>true</code> if the operation was successful.
 	 * <p>
@@ -595,7 +595,7 @@ public abstract class WAbstractItemModel extends WObject {
 	}
 
 	/**
-	 * Remove rows.
+	 * Removes rows.
 	 * <p>
 	 * Returns {@link #removeRows(int row, int count, WModelIndex parent)
 	 * removeRows(row, count, null)}
@@ -605,7 +605,7 @@ public abstract class WAbstractItemModel extends WObject {
 	}
 
 	/**
-	 * Set data at the given model index.
+	 * Sets data at the given model index.
 	 * <p>
 	 * Returns <code>true</code> if the operation was successful.
 	 * <p>
@@ -621,7 +621,7 @@ public abstract class WAbstractItemModel extends WObject {
 	}
 
 	/**
-	 * Set data at the given model index.
+	 * Sets data at the given model index.
 	 * <p>
 	 * Returns {@link #setData(WModelIndex index, Object value, int role)
 	 * setData(index, value, ItemDataRole.EditRole)}
@@ -631,7 +631,7 @@ public abstract class WAbstractItemModel extends WObject {
 	}
 
 	/**
-	 * Set data at the given model index.
+	 * Sets data at the given model index.
 	 * <p>
 	 * This is a convenience function that sets data for all roles at once.
 	 * <p>
@@ -659,7 +659,7 @@ public abstract class WAbstractItemModel extends WObject {
 	}
 
 	/**
-	 * Set header data for a column or row.
+	 * Sets header data for a column or row.
 	 * <p>
 	 * Returns <code>true</code> if the operation was successful.
 	 * <p>
@@ -673,7 +673,7 @@ public abstract class WAbstractItemModel extends WObject {
 	}
 
 	/**
-	 * Set header data for a column or row.
+	 * Sets header data for a column or row.
 	 * <p>
 	 * Returns
 	 * {@link #setHeaderData(int section, Orientation orientation, Object value, int role)
@@ -685,7 +685,7 @@ public abstract class WAbstractItemModel extends WObject {
 	}
 
 	/**
-	 * Set column header data.
+	 * Sets column header data.
 	 * <p>
 	 * Returns <code>true</code> if the operation was successful.
 	 * <p>
@@ -698,7 +698,7 @@ public abstract class WAbstractItemModel extends WObject {
 	}
 
 	/**
-	 * Sort the model according to a particular column.
+	 * Sorts the model according to a particular column.
 	 * <p>
 	 * If the model supports sorting, then it should emit the
 	 * {@link WAbstractItemModel#layoutAboutToBeChanged()
@@ -714,7 +714,7 @@ public abstract class WAbstractItemModel extends WObject {
 	}
 
 	/**
-	 * Sort the model according to a particular column.
+	 * Sorts the model according to a particular column.
 	 * <p>
 	 * Calls {@link #sort(int column, SortOrder order) sort(column,
 	 * SortOrder.AscendingOrder)}
@@ -753,7 +753,7 @@ public abstract class WAbstractItemModel extends WObject {
 	}
 
 	/**
-	 * Convert a model index to a raw pointer that remains valid while the
+	 * Converts a model index to a raw pointer that remains valid while the
 	 * model&apos;s layout is changed.
 	 * <p>
 	 * Use this method to temporarily save model indexes while the model&apos;s
@@ -774,7 +774,7 @@ public abstract class WAbstractItemModel extends WObject {
 	}
 
 	/**
-	 * Convert a raw pointer to a model index.
+	 * Converts a raw pointer to a model index.
 	 * <p>
 	 * Use this method to create model index from temporary raw pointers. It is
 	 * the reciproce method of
@@ -826,7 +826,7 @@ public abstract class WAbstractItemModel extends WObject {
 	}
 
 	/**
-	 * Handle a drop event.
+	 * Handles a drop event.
 	 * <p>
 	 * The default implementation only handles generic drag&amp;drop between
 	 * abstract item models. Source item data is copied (but not the source
@@ -895,7 +895,7 @@ public abstract class WAbstractItemModel extends WObject {
 	}
 
 	/**
-	 * Insert one column.
+	 * Inserts one column.
 	 * <p>
 	 * This is a convenience method that adds a single column, and is equivalent
 	 * to: <blockquote>
@@ -917,7 +917,7 @@ public abstract class WAbstractItemModel extends WObject {
 	}
 
 	/**
-	 * Insert one column.
+	 * Inserts one column.
 	 * <p>
 	 * Returns {@link #insertColumn(int column, WModelIndex parent)
 	 * insertColumn(column, null)}
@@ -927,7 +927,7 @@ public abstract class WAbstractItemModel extends WObject {
 	}
 
 	/**
-	 * Insert one row.
+	 * Inserts one row.
 	 * <p>
 	 * This is a convenience method that adds a single row, and is equivalent
 	 * to: <blockquote>
@@ -949,7 +949,7 @@ public abstract class WAbstractItemModel extends WObject {
 	}
 
 	/**
-	 * Insert one row.
+	 * Inserts one row.
 	 * <p>
 	 * Returns {@link #insertRow(int row, WModelIndex parent) insertRow(row,
 	 * null)}
@@ -959,7 +959,7 @@ public abstract class WAbstractItemModel extends WObject {
 	}
 
 	/**
-	 * Remove one column.
+	 * Removes one column.
 	 * <p>
 	 * This is a convenience method that removes a single column, and is
 	 * equivalent to: <blockquote>
@@ -981,7 +981,7 @@ public abstract class WAbstractItemModel extends WObject {
 	}
 
 	/**
-	 * Remove one column.
+	 * Removes one column.
 	 * <p>
 	 * Returns {@link #removeColumn(int column, WModelIndex parent)
 	 * removeColumn(column, null)}
@@ -991,7 +991,7 @@ public abstract class WAbstractItemModel extends WObject {
 	}
 
 	/**
-	 * Remove one row.
+	 * Removes one row.
 	 * <p>
 	 * This is a convenience method that removes a single row, and is equivalent
 	 * to: <blockquote>
@@ -1013,7 +1013,7 @@ public abstract class WAbstractItemModel extends WObject {
 	}
 
 	/**
-	 * Remove one row.
+	 * Removes one row.
 	 * <p>
 	 * Returns {@link #removeRow(int row, WModelIndex parent) removeRow(row,
 	 * null)}
@@ -1023,7 +1023,7 @@ public abstract class WAbstractItemModel extends WObject {
 	}
 
 	/**
-	 * Set data at the given row and column.
+	 * Sets data at the given row and column.
 	 * <p>
 	 * This is a convience method, and is equivalent to: <blockquote>
 	 * 
@@ -1051,7 +1051,7 @@ public abstract class WAbstractItemModel extends WObject {
 	}
 
 	/**
-	 * Set data at the given row and column.
+	 * Sets data at the given row and column.
 	 * <p>
 	 * Returns
 	 * {@link #setData(int row, int column, Object value, int role, WModelIndex parent)
@@ -1062,7 +1062,7 @@ public abstract class WAbstractItemModel extends WObject {
 	}
 
 	/**
-	 * Set data at the given row and column.
+	 * Sets data at the given row and column.
 	 * <p>
 	 * Returns
 	 * {@link #setData(int row, int column, Object value, int role, WModelIndex parent)
@@ -1270,7 +1270,7 @@ public abstract class WAbstractItemModel extends WObject {
 	}
 
 	/**
-	 * Create a model index for the given row and column.
+	 * Creates a model index for the given row and column.
 	 * <p>
 	 * Use this method to create a model index. <code>ptr</code> is an internal
 	 * pointer that may be used to associate the index with particular model

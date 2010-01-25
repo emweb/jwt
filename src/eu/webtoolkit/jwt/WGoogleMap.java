@@ -21,6 +21,10 @@ import java.util.List;
  * <code>&quot;google_api_key&quot;</code>. If this configuration property has
  * not been set, it will use a key that is suitable for localhost.
  * <p>
+ * <h3>CSS</h3>
+ * <p>
+ * Styling through CSS is not applicable.
+ * <p>
  * Contributed by: Richard Ulrich.
  */
 public class WGoogleMap extends WCompositeWidget {
@@ -66,7 +70,7 @@ public class WGoogleMap extends WCompositeWidget {
 		}
 
 		/**
-		 * Construct given a latitude and longitude.
+		 * Creates with given latitude and longitude.
 		 */
 		public Coordinate(double lat, double lon) {
 			this.setLatitude(lat);
@@ -74,7 +78,7 @@ public class WGoogleMap extends WCompositeWidget {
 		}
 
 		/**
-		 * Set the latitude.
+		 * Sets the latitude.
 		 */
 		public void setLatitude(double latitude) {
 			if (latitude < -90.0 || latitude > 90.0) {
@@ -85,7 +89,7 @@ public class WGoogleMap extends WCompositeWidget {
 		}
 
 		/**
-		 * Set the longitude.
+		 * Sets the longitude.
 		 */
 		public void setLongitude(double longitude) {
 			if (longitude < -180.0 || longitude > 180.0) {
@@ -110,7 +114,7 @@ public class WGoogleMap extends WCompositeWidget {
 		}
 
 		/**
-		 * Calculate the distance between two points in km (approximate).
+		 * Calculates the distance between two points in km (approximate).
 		 * <p>
 		 * The calculation uses a sphere. Results can be out by 0.3%.
 		 */
@@ -130,7 +134,7 @@ public class WGoogleMap extends WCompositeWidget {
 	}
 
 	/**
-	 * Create a map widget with optional parent.
+	 * Creates a map widget with optional parent.
 	 */
 	public WGoogleMap(WContainerWidget parent) {
 		super();
@@ -157,7 +161,7 @@ public class WGoogleMap extends WCompositeWidget {
 	}
 
 	/**
-	 * Create a map widget with optional parent.
+	 * Creates a map widget with optional parent.
 	 * <p>
 	 * Calls {@link #WGoogleMap(WContainerWidget parent)
 	 * this((WContainerWidget)null)}
@@ -178,7 +182,7 @@ public class WGoogleMap extends WCompositeWidget {
 	}
 
 	/**
-	 * Add a marker overlay to the map.
+	 * Adds a marker overlay to the map.
 	 */
 	public void addMarker(WGoogleMap.Coordinate pos) {
 		StringWriter strm = new StringWriter();
@@ -191,7 +195,7 @@ public class WGoogleMap extends WCompositeWidget {
 	}
 
 	/**
-	 * Add a polyline overlay to the map.
+	 * Adds a polyline overlay to the map.
 	 * <p>
 	 * specify a value between 0.0 and 1.0 for the opacity.
 	 */
@@ -216,7 +220,7 @@ public class WGoogleMap extends WCompositeWidget {
 	}
 
 	/**
-	 * Add a polyline overlay to the map.
+	 * Adds a polyline overlay to the map.
 	 * <p>
 	 * Calls
 	 * {@link #addPolyline(List points, WColor color, int width, double opacity)
@@ -227,7 +231,7 @@ public class WGoogleMap extends WCompositeWidget {
 	}
 
 	/**
-	 * Add a polyline overlay to the map.
+	 * Adds a polyline overlay to the map.
 	 * <p>
 	 * Calls
 	 * {@link #addPolyline(List points, WColor color, int width, double opacity)
@@ -239,7 +243,7 @@ public class WGoogleMap extends WCompositeWidget {
 	}
 
 	/**
-	 * Add a polyline overlay to the map.
+	 * Adds a polyline overlay to the map.
 	 * <p>
 	 * Calls
 	 * {@link #addPolyline(List points, WColor color, int width, double opacity)
@@ -296,7 +300,7 @@ public class WGoogleMap extends WCompositeWidget {
 	}
 
 	/**
-	 * Change the center point of the map to the given point.
+	 * Changes the center point of the map to the given point.
 	 * <p>
 	 * If the point is already visible in the current map view, change the
 	 * center in a smooth animation.
@@ -311,7 +315,7 @@ public class WGoogleMap extends WCompositeWidget {
 	}
 
 	/**
-	 * Zoom the map to a region defined by a bounding box.
+	 * Zooms the map to a region defined by a bounding box.
 	 */
 	public void zoomWindow(WGoogleMap.Coordinate topLeft,
 			WGoogleMap.Coordinate rightBottom) {

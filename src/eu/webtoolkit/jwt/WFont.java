@@ -5,6 +5,7 @@
  */
 package eu.webtoolkit.jwt;
 
+import java.io.StringWriter;
 import java.util.EnumSet;
 
 /**
@@ -215,7 +216,7 @@ public class WFont {
 	}
 
 	/**
-	 * Set the font family.
+	 * Sets the font family.
 	 * <p>
 	 * The font family is specified using a generic family name, in addition to
 	 * a comma-seperated list of specific font choices.
@@ -235,7 +236,7 @@ public class WFont {
 	}
 
 	/**
-	 * Set the font family.
+	 * Sets the font family.
 	 * <p>
 	 * Calls
 	 * {@link #setFamily(WFont.GenericFamily genericFamily, CharSequence specificFamilies)
@@ -246,21 +247,21 @@ public class WFont {
 	}
 
 	/**
-	 * Get the font generic family.
+	 * Returns the font generic family.
 	 */
 	public WFont.GenericFamily getGenericFamily() {
 		return this.genericFamily_;
 	}
 
 	/**
-	 * Get the font specific family names.
+	 * Returns the font specific family names.
 	 */
 	public WString getSpecificFamilies() {
 		return this.specificFamilies_;
 	}
 
 	/**
-	 * Set the font style.
+	 * Sets the font style.
 	 */
 	public void setStyle(WFont.Style style) {
 		this.style_ = style;
@@ -272,14 +273,14 @@ public class WFont {
 	}
 
 	/**
-	 * Get the font style.
+	 * Returns the font style.
 	 */
 	public WFont.Style getStyle() {
 		return this.style_;
 	}
 
 	/**
-	 * Set the font variant.
+	 * Sets the font variant.
 	 */
 	public void setVariant(WFont.Variant variant) {
 		this.variant_ = variant;
@@ -291,14 +292,14 @@ public class WFont {
 	}
 
 	/**
-	 * Get the font variant.
+	 * Returns the font variant.
 	 */
 	public WFont.Variant getVariant() {
 		return this.variant_;
 	}
 
 	/**
-	 * Set the font weight.
+	 * Sets the font weight.
 	 * <p>
 	 * When setting weight == Value, you may specify a value.
 	 * <p>
@@ -316,7 +317,7 @@ public class WFont {
 	}
 
 	/**
-	 * Set the font weight.
+	 * Sets the font weight.
 	 * <p>
 	 * Calls {@link #setWeight(WFont.Weight weight, int value) setWeight(weight,
 	 * 400)}
@@ -326,21 +327,21 @@ public class WFont {
 	}
 
 	/**
-	 * Get the font weight.
+	 * Returns the font weight.
 	 */
 	public WFont.Weight getWeight() {
 		return this.weight_;
 	}
 
 	/**
-	 * Get the font weight value.
+	 * Returns the font weight value.
 	 */
 	public int getWeightValue() {
 		return this.weightValue_;
 	}
 
 	/**
-	 * Set the font size.
+	 * Sets the font size.
 	 */
 	public void setSize(WFont.Size size, WLength fixedSize) {
 		this.size_ = size;
@@ -357,7 +358,7 @@ public class WFont {
 	}
 
 	/**
-	 * Set the font size.
+	 * Sets the font size.
 	 * <p>
 	 * Calls {@link #setSize(WFont.Size size, WLength fixedSize) setSize(size,
 	 * WLength.Auto)}
@@ -367,159 +368,62 @@ public class WFont {
 	}
 
 	/**
-	 * Get the font size.
+	 * Returns the font size.
 	 */
 	public WFont.Size getSize() {
 		return this.size_;
 	}
 
 	/**
-	 * Get the fixed font size for {@link WFont.Size#FixedSize FixedSize}.
+	 * Returns the fixed font size for {@link WFont.Size#FixedSize FixedSize}.
 	 */
 	public WLength getFixedSize() {
 		return this.fixedSize_;
 	}
 
 	String getCssText() {
-		DomElement d = DomElement.createNew(DomElementType.DomElement_DIV);
-		WFont f = this;
-		f.updateDomElement(d, false, true);
-		String result = d.getCssStyle();
-		;
-		return result;
+		StringWriter result = new StringWriter();
+		result.append(this.cssVariant(false)).append(' ').append(
+				this.cssStyle(false)).append(' ').append(this.cssWeight(false))
+				.append(' ').append(this.cssSize(true)).append(' ').append(
+						this.cssFamily(true));
+		return result.toString();
 	}
 
 	public void updateDomElement(DomElement element, boolean fontall,
 			boolean all) {
 		if (this.familyChanged_ || fontall || all) {
-			String family = this.specificFamilies_.toString();
-			if (family.length() != 0) {
-				family += ',';
-			}
-			switch (this.genericFamily_) {
-			case Default:
-				if (this.familyChanged_ || fontall) {
-					family = "inherit";
-				}
-				break;
-			case Serif:
-				family += "serif";
-				break;
-			case SansSerif:
-				family += "sans-serif";
-				break;
-			case Cursive:
-				family += "cursive";
-				break;
-			case Fantasy:
-				family += "fantasay";
-				break;
-			case Monospace:
-				family += "monospace";
-				break;
-			}
+			String family = this.cssFamily(fontall);
 			if (family.length() != 0) {
 				element.setProperty(Property.PropertyStyleFontFamily, family);
 			}
 			this.familyChanged_ = false;
 		}
 		if (this.styleChanged_ || fontall || all) {
-			switch (this.style_) {
-			case NormalStyle:
-				if (this.styleChanged_ || fontall) {
-					element.setProperty(Property.PropertyStyleFontStyle,
-							"normal");
-				}
-				break;
-			case Italic:
-				element.setProperty(Property.PropertyStyleFontStyle, "italic");
-				break;
-			case Oblique:
-				element.setProperty(Property.PropertyStyleFontStyle, "oblique");
-				break;
+			String style = this.cssStyle(fontall);
+			if (style.length() != 0) {
+				element.setProperty(Property.PropertyStyleFontStyle, style);
 			}
 			this.styleChanged_ = false;
 		}
 		if (this.variantChanged_ || fontall || all) {
-			switch (this.variant_) {
-			case NormalVariant:
-				if (this.variantChanged_ || fontall) {
-					element.setProperty(Property.PropertyStyleFontVariant,
-							"normal");
-				}
-				break;
-			case SmallCaps:
-				element.setProperty(Property.PropertyStyleFontVariant,
-						"small-caps");
-				break;
+			String variant = this.cssVariant(fontall);
+			if (variant.length() != 0) {
+				element.setProperty(Property.PropertyStyleFontVariant, variant);
 			}
 			this.variantChanged_ = false;
 		}
 		if (this.weightChanged_ || fontall || all) {
-			switch (this.weight_) {
-			case NormalWeight:
-				if (this.weightChanged_ || fontall) {
-					element.setProperty(Property.PropertyStyleFontWeight,
-							"normal");
-				}
-				break;
-			case Bold:
-				element.setProperty(Property.PropertyStyleFontWeight, "bold");
-				break;
-			case Bolder:
-				element.setProperty(Property.PropertyStyleFontWeight, "bolder");
-				break;
-			case Lighter:
-				element
-						.setProperty(Property.PropertyStyleFontWeight,
-								"lighter");
-				break;
-			case Value: {
-				int v = Math.min(900, Math.max(100,
-						this.weightValue_ / 100 * 100));
-				element.setProperty(Property.PropertyStyleFontWeight, String
-						.valueOf(v));
-				break;
-			}
+			String weight = this.cssWeight(fontall);
+			if (weight.length() != 0) {
+				element.setProperty(Property.PropertyStyleFontWeight, weight);
 			}
 			this.weightChanged_ = false;
 		}
 		if (this.sizeChanged_ || fontall || all) {
-			switch (this.size_) {
-			case Medium:
-				if (this.sizeChanged_ || fontall) {
-					element.setProperty(Property.PropertyStyleFontSize,
-							"medium");
-				}
-				break;
-			case XXSmall:
-				element.setProperty(Property.PropertyStyleFontSize, "xx-small");
-				break;
-			case XSmall:
-				element.setProperty(Property.PropertyStyleFontSize, "x-small");
-				break;
-			case Small:
-				element.setProperty(Property.PropertyStyleFontSize, "small");
-				break;
-			case Large:
-				element.setProperty(Property.PropertyStyleFontSize, "large");
-				break;
-			case XLarge:
-				element.setProperty(Property.PropertyStyleFontSize, "x-large");
-				break;
-			case XXLarge:
-				element.setProperty(Property.PropertyStyleFontSize, "xx-large");
-				break;
-			case Smaller:
-				element.setProperty(Property.PropertyStyleFontSize, "smaller");
-				break;
-			case Larger:
-				element.setProperty(Property.PropertyStyleFontSize, "larger");
-				break;
-			case FixedSize:
-				element.setProperty(Property.PropertyStyleFontSize,
-						this.fixedSize_.getCssText());
-				break;
+			String size = this.cssSize(fontall);
+			if (size.length() != 0) {
+				element.setProperty(Property.PropertyStyleFontSize, size);
 			}
 			this.sizeChanged_ = false;
 		}
@@ -539,6 +443,114 @@ public class WFont {
 	private boolean variantChanged_;
 	private boolean weightChanged_;
 	private boolean sizeChanged_;
+
+	private String cssStyle(boolean all) {
+		switch (this.style_) {
+		case NormalStyle:
+			if (this.styleChanged_ || all) {
+				return "normal";
+			}
+			break;
+		case Italic:
+			return "italic";
+		case Oblique:
+			return "oblique";
+		}
+		return "";
+	}
+
+	private String cssVariant(boolean all) {
+		switch (this.variant_) {
+		case NormalVariant:
+			if (this.variantChanged_ || all) {
+				return "normal";
+			}
+			break;
+		case SmallCaps:
+			return "small-caps";
+		}
+		return "";
+	}
+
+	private String cssWeight(boolean all) {
+		switch (this.weight_) {
+		case NormalWeight:
+			if (this.weightChanged_ || all) {
+				return "normal";
+			}
+			break;
+		case Bold:
+			return "bold";
+		case Bolder:
+			return "bolder";
+		case Lighter:
+			return "lighter";
+		case Value: {
+			int v = Math.min(900, Math.max(100, this.weightValue_ / 100 * 100));
+			return String.valueOf(v);
+		}
+		}
+		return "";
+	}
+
+	private String cssFamily(boolean all) {
+		String family = this.specificFamilies_.toString();
+		if (family.length() != 0) {
+			family += ',';
+		}
+		switch (this.genericFamily_) {
+		case Default:
+			if (this.familyChanged_ || all) {
+				family = "inherit";
+			}
+			break;
+		case Serif:
+			family += "serif";
+			break;
+		case SansSerif:
+			family += "sans-serif";
+			break;
+		case Cursive:
+			family += "cursive";
+			break;
+		case Fantasy:
+			family += "fantasay";
+			break;
+		case Monospace:
+			family += "monospace";
+			break;
+		}
+		return family;
+	}
+
+	private String cssSize(boolean all) {
+		switch (this.size_) {
+		case Medium:
+			if (this.sizeChanged_ || all) {
+				return "medium";
+			}
+			break;
+		case XXSmall:
+			return "xx-small";
+		case XSmall:
+			return "x-small";
+		case Small:
+			return "small";
+		case Large:
+			return "large";
+		case XLarge:
+			return "x-large";
+		case XXLarge:
+			return "xx-large";
+		case Smaller:
+			return "smaller";
+		case Larger:
+			return "larger";
+		case FixedSize:
+			return this.fixedSize_.getCssText();
+		}
+		return "";
+	}
 
 	void setWebWidget(WWebWidget w) {
 		this.widget_ = w;

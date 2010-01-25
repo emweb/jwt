@@ -27,6 +27,10 @@ import java.util.Set;
  * JavaScript library, which is distributed with JWt in the resources folder,
  * see also DOCREF<a class="el" href="overview.html#deployment">deployment and
  * resources</a>.
+ * <p>
+ * <h3>CSS</h3>
+ * <p>
+ * Styling through CSS is not applicable.
  */
 public class WFlashObject extends WContainerWidget {
 	/**
@@ -179,7 +183,7 @@ public class WFlashObject extends WContainerWidget {
 				ss.append(", ");
 			}
 			ss.append(i.getKey()).append(": ").append(
-					i.getValue().getJsStringLiteral());
+					WString.toWString(i.getValue()).getJsStringLiteral());
 		}
 		ss.append("}");
 		return ss.toString();

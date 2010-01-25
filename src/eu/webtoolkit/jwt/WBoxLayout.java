@@ -102,7 +102,7 @@ public class WBoxLayout extends WLayout {
 	}
 
 	/**
-	 * Create a new box layout.
+	 * Creates a new box layout.
 	 * <p>
 	 * This constructor is rarely used. Instead, use the convenient constructors
 	 * of the specialized {@link WHBoxLayout} or {@link WVBoxLayout} classes.
@@ -120,7 +120,7 @@ public class WBoxLayout extends WLayout {
 	}
 
 	/**
-	 * Create a new box layout.
+	 * Creates a new box layout.
 	 * <p>
 	 * Calls {@link #WBoxLayout(WBoxLayout.Direction dir, WWidget parent)
 	 * this(dir, (WWidget)null)}
@@ -174,7 +174,7 @@ public class WBoxLayout extends WLayout {
 	}
 
 	/**
-	 * Set the layout direction.
+	 * Sets the layout direction.
 	 * <p>
 	 * 
 	 * @see WBoxLayout#getDirection()
@@ -196,7 +196,7 @@ public class WBoxLayout extends WLayout {
 	}
 
 	/**
-	 * Set spacing between each item.
+	 * Sets spacing between each item.
 	 * <p>
 	 * The default spacing is 6 pixels.
 	 */
@@ -509,7 +509,7 @@ public class WBoxLayout extends WLayout {
 	}
 
 	/**
-	 * Set the stretch factor for a nested layout.
+	 * Sets the stretch factor for a nested layout.
 	 * <p>
 	 * The <code>layout</code> must have previously been added to this layout
 	 * using
@@ -532,7 +532,7 @@ public class WBoxLayout extends WLayout {
 	}
 
 	/**
-	 * Set the stretch factor for a nested layout.
+	 * Sets the stretch factor for a nested layout.
 	 * <p>
 	 * The <code>widget</code> must have previously been added to this layout
 	 * using

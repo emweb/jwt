@@ -41,7 +41,7 @@ class WSliderBackground extends WPaintedWidget {
 		painter.setPen(pen);
 		painter.drawLine(WSlider.HANDLE_WIDTH / 2, h / 2, w
 				- WSlider.HANDLE_WIDTH / 2, h / 2);
-		if (!this.slider_.getTickPosition().equals(0)) {
+		if (!this.slider_.getTickPosition().isEmpty()) {
 			int tickInterval = this.slider_.getTickInterval();
 			int range = this.slider_.getMaximum() - this.slider_.getMinimum();
 			if (tickInterval == 0) {

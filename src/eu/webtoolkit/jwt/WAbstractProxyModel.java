@@ -43,7 +43,7 @@ public abstract class WAbstractProxyModel extends WAbstractItemModel {
 	}
 
 	/**
-	 * Map a source model index to the proxy model.
+	 * Maps a source model index to the proxy model.
 	 * <p>
 	 * This method returns a model index in the proxy model that corresponds to
 	 * the model index <code>sourceIndex</code> in the source model. This method
@@ -58,7 +58,7 @@ public abstract class WAbstractProxyModel extends WAbstractItemModel {
 	public abstract WModelIndex mapFromSource(WModelIndex sourceIndex);
 
 	/**
-	 * Map a proxy model index to the source model.
+	 * Maps a proxy model index to the source model.
 	 * <p>
 	 * This method returns a model index in the source model that corresponds to
 	 * the proxy model index <code>proxyIndex</code>.
@@ -69,7 +69,7 @@ public abstract class WAbstractProxyModel extends WAbstractItemModel {
 	public abstract WModelIndex mapToSource(WModelIndex proxyIndex);
 
 	/**
-	 * Set a source model.
+	 * Sets the source model.
 	 * <p>
 	 * The source model provides the actual data for the proxy model.
 	 * <p>

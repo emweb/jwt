@@ -24,7 +24,7 @@ public class WDropEvent {
 	}
 
 	/**
-	 * The source of the drag&amp;drop operation.
+	 * Returns the source of the drag&amp;drop operation.
 	 * <p>
 	 * The source is the widget that was set draggable using
 	 * {@link WInteractWidget#setDraggable(String mimeType, WWidget dragWidget, boolean isDragWidgetOnly, WObject sourceObject)
@@ -35,14 +35,14 @@ public class WDropEvent {
 	}
 
 	/**
-	 * The mime type of this drop event.
+	 * Returns the mime type of this drop event.
 	 */
 	public String getMimeType() {
 		return this.dropMimeType_;
 	}
 
 	/**
-	 * Return the original mouse event.
+	 * Returns the original mouse event.
 	 */
 	public WMouseEvent getMouseEvent() {
 		return this.mouseEvent_;

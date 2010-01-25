@@ -35,7 +35,7 @@ public class WCircleArea extends WAbstractArea {
 	}
 
 	/**
-	 * Construct a circular area with given geometry.
+	 * Creates a circular area with given geometry.
 	 * <p>
 	 * The arguments are in pixel units.
 	 */
@@ -47,21 +47,21 @@ public class WCircleArea extends WAbstractArea {
 	}
 
 	/**
-	 * Set the center.
+	 * Sets the center.
 	 */
 	public void setCenter(WPoint point) {
 		this.setCenter(point.getX(), point.getY());
 	}
 
 	/**
-	 * Set the center.
+	 * Sets the center.
 	 */
 	public void setCenter(WPointF point) {
 		this.setCenter((int) point.getX(), (int) point.getY());
 	}
 
 	/**
-	 * Set the center.
+	 * Sets the center.
 	 */
 	public void setCenter(int x, int y) {
 		this.x_ = x;
@@ -84,7 +84,7 @@ public class WCircleArea extends WAbstractArea {
 	}
 
 	/**
-	 * Set the radius.
+	 * Sets the radius.
 	 */
 	public void setRadius(int radius) {
 		this.r_ = radius;

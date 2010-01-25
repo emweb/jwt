@@ -46,7 +46,7 @@ public abstract class WAbstractItemDelegate extends WObject {
 	}
 
 	/**
-	 * Create or update a widget that renders an item.
+	 * Creates or updates a widget that renders an item.
 	 * <p>
 	 * The item is specified by its model <code>index</code>, which also
 	 * indicates the model. If an existing widget already renders the item, but
@@ -64,7 +64,7 @@ public abstract class WAbstractItemDelegate extends WObject {
 			EnumSet<ViewItemRenderFlag> flags);
 
 	/**
-	 * Create or update a widget that renders an item.
+	 * Creates or updates a widget that renders an item.
 	 * <p>
 	 * Returns {@link #update(WWidget widget, WModelIndex index, EnumSet flags)
 	 * update(widget, index, EnumSet.of(flag, flags))}
@@ -75,7 +75,7 @@ public abstract class WAbstractItemDelegate extends WObject {
 	}
 
 	/**
-	 * Update the model index of a widget.
+	 * Updates the model index of a widget.
 	 * <p>
 	 * This method is invoked by the view when due to row/column insertions or
 	 * removals, an index was modified for a widget.

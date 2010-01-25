@@ -14,6 +14,12 @@ package eu.webtoolkit.jwt;
  * shown at a single time, which reflects the current &apos;state&apos;.
  * <p>
  * The widget may react to click events, by changing state.
+ * <p>
+ * <h3>CSS</h3>
+ * <p>
+ * This widget does not provide styling, and can be styled using inline or
+ * external CSS as appropriate. The image may be styled via the
+ * <code>&lt;img&gt;</code> elements.
  */
 public class WIconPair extends WCompositeWidget {
 	/**
@@ -73,7 +79,7 @@ public class WIconPair extends WCompositeWidget {
 	}
 
 	/**
-	 * Set the state, which determines the visible icon.
+	 * Sets the state, which determines the visible icon.
 	 * <p>
 	 * The first icon has number 0, and the second icon has number 1.
 	 * <p>

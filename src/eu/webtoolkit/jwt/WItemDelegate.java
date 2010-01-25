@@ -17,7 +17,7 @@ import eu.webtoolkit.jwt.utils.EnumUtils;
  */
 public class WItemDelegate extends WAbstractItemDelegate {
 	/**
-	 * Constructor.
+	 * Create an item delegate.
 	 */
 	public WItemDelegate(WObject parent) {
 		super(parent);
@@ -32,7 +32,7 @@ public class WItemDelegate extends WAbstractItemDelegate {
 	}
 
 	/**
-	 * Constructor.
+	 * Create an item delegate.
 	 * <p>
 	 * Calls {@link #WItemDelegate(WObject parent) this((WObject)null)}
 	 */
@@ -54,6 +54,9 @@ public class WItemDelegate extends WAbstractItemDelegate {
 			}
 			t.setWordWrap(true);
 			widgetRef.w = t;
+		}
+		if (!(index != null)) {
+			return widgetRef.w;
 		}
 		boolean haveCheckBox = false;
 		if (!EnumUtils.mask(index.getFlags(), ItemFlag.ItemIsUserCheckable)
@@ -146,7 +149,7 @@ public class WItemDelegate extends WAbstractItemDelegate {
 	}
 
 	/**
-	 * Set the text format string.
+	 * Sets the text format string.
 	 * <p>
 	 * The DisplayRole data is converted to a string using
 	 * {@link StringUtils#asString(Object)} by passing the given format.

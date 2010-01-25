@@ -44,10 +44,15 @@ import java.util.Map;
  * 
  * </blockquote>
  * <p>
- * The widget corresponds to the HTML
- * <code>&lt;input type=&quot;radio&quot;&gt;</code> tag.
- * <p>
  * WRadioButton is an {@link WWidget#setInline(boolean inlined) inline} widget.
+ * <p>
+ * <h3>CSS</h3>
+ * <p>
+ * This widget corresponds to the HTML
+ * <code>&lt;input type=&quot;radio&quot;&gt;</code> tag. Depending on whether a
+ * text is included, it may be nested in a <code>&lt;span&gt;</code> tag which
+ * also includes a rendered {@link WLabel}. This widget does not provide
+ * styling, and can be styled using inline or external CSS as appropriate.
  * <p>
  * 
  * @see WAbstractToggleButton
@@ -55,7 +60,7 @@ import java.util.Map;
  */
 public class WRadioButton extends WAbstractToggleButton {
 	/**
-	 * Create an unchecked radio button with empty label and optional parent.
+	 * Creates an unchecked radio button with empty label and optional parent.
 	 */
 	public WRadioButton(WContainerWidget parent) {
 		super(parent);
@@ -64,7 +69,7 @@ public class WRadioButton extends WAbstractToggleButton {
 	}
 
 	/**
-	 * Create an unchecked radio button with empty label and optional parent.
+	 * Creates an unchecked radio button with empty label and optional parent.
 	 * <p>
 	 * Calls {@link #WRadioButton(WContainerWidget parent)
 	 * this((WContainerWidget)null)}
@@ -74,7 +79,7 @@ public class WRadioButton extends WAbstractToggleButton {
 	}
 
 	/**
-	 * Create an unchecked radio button with given text and optional parent.
+	 * Creates an unchecked radio button with given text and optional parent.
 	 */
 	public WRadioButton(CharSequence text, WContainerWidget parent) {
 		super(text, parent);
@@ -83,7 +88,7 @@ public class WRadioButton extends WAbstractToggleButton {
 	}
 
 	/**
-	 * Create an unchecked radio button with given text and optional parent.
+	 * Creates an unchecked radio button with given text and optional parent.
 	 * <p>
 	 * Calls {@link #WRadioButton(CharSequence text, WContainerWidget parent)
 	 * this(text, (WContainerWidget)null)}
@@ -93,7 +98,7 @@ public class WRadioButton extends WAbstractToggleButton {
 	}
 
 	/**
-	 * Delete a radio button.
+	 * Destructor.
 	 */
 	public void remove() {
 		if (this.buttonGroup_ != null) {
@@ -103,7 +108,7 @@ public class WRadioButton extends WAbstractToggleButton {
 	}
 
 	/**
-	 * Return the button group.
+	 * Returns the button group.
 	 * <p>
 	 * Returns the button group to which this button belongs.
 	 * <p>

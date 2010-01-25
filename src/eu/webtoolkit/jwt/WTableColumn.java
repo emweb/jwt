@@ -7,7 +7,7 @@ package eu.webtoolkit.jwt;
 
 
 /**
- * A column in a {@link WTable}
+ * A table column
  * <p>
  * 
  * A WTableColumn is returned by {@link WTable#getColumnAt(int column)
@@ -26,7 +26,7 @@ package eu.webtoolkit.jwt;
  */
 public class WTableColumn extends WObject {
 	/**
-	 * The table to which this column belongs.
+	 * Returns the table to which this column belongs.
 	 * <p>
 	 * 
 	 * @see WTable#getRowAt(int row)
@@ -36,7 +36,7 @@ public class WTableColumn extends WObject {
 	}
 
 	/**
-	 * The column number of this column in the table.
+	 * Returns the column number of this column in the table.
 	 * <p>
 	 * 
 	 * @see WTable#getRowAt(int row)
@@ -51,7 +51,7 @@ public class WTableColumn extends WObject {
 	}
 
 	/**
-	 * Set the column width.
+	 * Sets the column width.
 	 * <p>
 	 * The default column width is {@link WLength#Auto}.
 	 * <p>
@@ -65,7 +65,7 @@ public class WTableColumn extends WObject {
 	}
 
 	/**
-	 * Get the column width.
+	 * Returns the column width.
 	 * <p>
 	 * 
 	 * @see WTableColumn#setWidth(WLength width)
@@ -75,7 +75,7 @@ public class WTableColumn extends WObject {
 	}
 
 	/**
-	 * Set the CSS style class for this column.
+	 * Sets the CSS style class for this column.
 	 * <p>
 	 * The style is inherited by all table cells in this column.
 	 * <p>
@@ -92,7 +92,7 @@ public class WTableColumn extends WObject {
 	}
 
 	/**
-	 * Get the CSS style class for this column.
+	 * Returns the CSS style class for this column.
 	 * <p>
 	 * 
 	 * @see WTableColumn#getStyleClass()
@@ -103,7 +103,7 @@ public class WTableColumn extends WObject {
 	}
 
 	/**
-	 * Set the CSS Id.
+	 * Sets the CSS Id.
 	 * <p>
 	 * Sets a custom Id. Note that the Id must be unique across the whole widget
 	 * tree, can only be set right after construction and cannot be changed.

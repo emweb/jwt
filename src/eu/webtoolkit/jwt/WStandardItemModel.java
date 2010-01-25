@@ -55,7 +55,7 @@ import java.util.Map;
  */
 public class WStandardItemModel extends WAbstractItemModel {
 	/**
-	 * Create a new standard item model.
+	 * Creates a new standard item model.
 	 */
 	public WStandardItemModel(WObject parent) {
 		super(parent);
@@ -67,7 +67,7 @@ public class WStandardItemModel extends WAbstractItemModel {
 	}
 
 	/**
-	 * Create a new standard item model.
+	 * Creates a new standard item model.
 	 * <p>
 	 * Calls {@link #WStandardItemModel(WObject parent) this((WObject)null)}
 	 */
@@ -76,7 +76,7 @@ public class WStandardItemModel extends WAbstractItemModel {
 	}
 
 	/**
-	 * Create a new standard item model with an initial toplevel geometry.
+	 * Creates a new standard item model with an initial geometry.
 	 * <p>
 	 * Creates a standard item model with a geometry of <i>rows</i> x
 	 * <code>columns</code>. All items are set to <code>null</code>.
@@ -93,7 +93,7 @@ public class WStandardItemModel extends WAbstractItemModel {
 	}
 
 	/**
-	 * Create a new standard item model with an initial toplevel geometry.
+	 * Creates a new standard item model with an initial geometry.
 	 * <p>
 	 * Calls {@link #WStandardItemModel(int rows, int columns, WObject parent)
 	 * this(rows, columns, (WObject)null)}
@@ -103,7 +103,7 @@ public class WStandardItemModel extends WAbstractItemModel {
 	}
 
 	/**
-	 * Erase all data in the model.
+	 * Erases all data in the model.
 	 * <p>
 	 * After clearing the model,
 	 * {@link WAbstractItemModel#getRowCount(WModelIndex parent)
@@ -163,7 +163,7 @@ public class WStandardItemModel extends WAbstractItemModel {
 	}
 
 	/**
-	 * Add a single column of top level items.
+	 * Adds a single column of top level items.
 	 * <p>
 	 * Appends a single column of top level <code>items</code>. If necessary,
 	 * the row count is increased.
@@ -185,7 +185,7 @@ public class WStandardItemModel extends WAbstractItemModel {
 	}
 
 	/**
-	 * Insert a single column of top level items.
+	 * Inserts a single column of top level items.
 	 * <p>
 	 * Inserts a single column of top level <code>items</code> at column
 	 * <code>column</code>. If necessary, the row count is increased.
@@ -206,7 +206,7 @@ public class WStandardItemModel extends WAbstractItemModel {
 	}
 
 	/**
-	 * Add a single row of top level items.
+	 * Adds a single row of top level items.
 	 * <p>
 	 * Appends a single row of top level <code>items</code>. If necessary, the
 	 * column count is increased.
@@ -228,7 +228,7 @@ public class WStandardItemModel extends WAbstractItemModel {
 	}
 
 	/**
-	 * Insert a single row of top level items.
+	 * Inserts a single row of top level items.
 	 * <p>
 	 * Inserts a single row of top level <code>items</code> at row
 	 * <code>row</code>. If necessary, the column count is increased.
@@ -249,7 +249,7 @@ public class WStandardItemModel extends WAbstractItemModel {
 	}
 
 	/**
-	 * Append a single row containing a single item.
+	 * Appends a single row containing a single item.
 	 * <p>
 	 * Appends a single toplevel row, with a single item.
 	 * <p>
@@ -269,7 +269,7 @@ public class WStandardItemModel extends WAbstractItemModel {
 	}
 
 	/**
-	 * Insert a single row containing a single item.
+	 * Inserts a single row containing a single item.
 	 * <p>
 	 * Inserts a single toplevel row, with a single item.
 	 * <p>
@@ -374,7 +374,7 @@ public class WStandardItemModel extends WAbstractItemModel {
 	}
 
 	/**
-	 * Take a column out of the model.
+	 * Takes a column out of the model.
 	 * <p>
 	 * Removes a column from the model, and returns the items that it contained.
 	 * Ownership of the items is transferred out of the model.
@@ -396,7 +396,7 @@ public class WStandardItemModel extends WAbstractItemModel {
 	}
 
 	/**
-	 * Take a row out of the model.
+	 * Takes a row out of the model.
 	 * <p>
 	 * Removes a row from the model, and returns the items that it contained.
 	 * Ownership of the items is transferred out of the model.
@@ -418,7 +418,7 @@ public class WStandardItemModel extends WAbstractItemModel {
 	}
 
 	/**
-	 * Take an item out of the model.
+	 * Takes an item out of the model.
 	 * <p>
 	 * Removes an item from the model, and returns it. Ownership of the item is
 	 * transferred out of the model.
@@ -441,7 +441,7 @@ public class WStandardItemModel extends WAbstractItemModel {
 	}
 
 	/**
-	 * Take an item out of the model.
+	 * Takes an item out of the model.
 	 * <p>
 	 * Returns {@link #takeItem(int row, int column) takeItem(row, 0)}
 	 */

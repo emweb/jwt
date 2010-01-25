@@ -14,9 +14,7 @@ package eu.webtoolkit.jwt;
  */
 public class WPoint {
 	/**
-	 * Default constructor.
-	 * <p>
-	 * Constructs a point (<i>x=0</i>, <code>y=0</code>).
+	 * Creates a point (0, 0).
 	 */
 	public WPoint() {
 		this.x_ = 0;
@@ -24,9 +22,7 @@ public class WPoint {
 	}
 
 	/**
-	 * Construct a point.
-	 * <p>
-	 * Constructs a point (<i>x</i>, <code>y</code>).
+	 * Creates a point (x, y).
 	 */
 	public WPoint(int x, int y) {
 		this.x_ = x;
@@ -34,14 +30,14 @@ public class WPoint {
 	}
 
 	/**
-	 * Changes the X coordinate.
+	 * Sets the X coordinate.
 	 */
 	public void setX(int x) {
 		this.x_ = x;
 	}
 
 	/**
-	 * Changes the Y coordinate.
+	 * Sets the Y coordinate.
 	 */
 	public void setY(int y) {
 		this.y_ = y;

@@ -29,7 +29,7 @@ import java.util.List;
  */
 public class WButtonGroup extends WObject {
 	/**
-	 * Create a new empty button group.
+	 * Creates a new empty button group.
 	 */
 	public WButtonGroup(WObject parent) {
 		super(parent);
@@ -39,7 +39,7 @@ public class WButtonGroup extends WObject {
 	}
 
 	/**
-	 * Create a new empty button group.
+	 * Creates a new empty button group.
 	 * <p>
 	 * Calls {@link #WButtonGroup(WObject parent) this((WObject)null)}
 	 */
@@ -48,7 +48,7 @@ public class WButtonGroup extends WObject {
 	}
 
 	/**
-	 * Add a radio button to the group.
+	 * Adds a radio button to the group.
 	 * <p>
 	 * You can assign an id to the button. If <code>id</code> is -1, then a
 	 * unique id will be generated.
@@ -72,7 +72,7 @@ public class WButtonGroup extends WObject {
 	}
 
 	/**
-	 * Add a radio button to the group.
+	 * Adds a radio button to the group.
 	 * <p>
 	 * Calls {@link #addButton(WRadioButton button, int id) addButton(button, -
 	 * 1)}
@@ -82,7 +82,7 @@ public class WButtonGroup extends WObject {
 	}
 
 	/**
-	 * Remove a radio button from the group.
+	 * Removes a radio button from the group.
 	 * <p>
 	 * 
 	 * @see WButtonGroup#addButton(WRadioButton button, int id)
@@ -235,7 +235,7 @@ public class WButtonGroup extends WObject {
 	}
 
 	/**
-	 * {@link Signal} emitted when a button was checked.
+	 * Signal emitted when a button was checked.
 	 * <p>
 	 * The argument passed is the new {@link WButtonGroup#getCheckedButton()
 	 * getCheckedButton()}.

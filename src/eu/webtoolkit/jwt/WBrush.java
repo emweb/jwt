@@ -20,9 +20,9 @@ package eu.webtoolkit.jwt;
  */
 public class WBrush {
 	/**
-	 * Default constructor.
+	 * Creates a brush.
 	 * <p>
-	 * Constructs a brush with a {@link WBrushStyle#NoBrush NoBrush} fill style.
+	 * Creates a brush with a {@link WBrushStyle#NoBrush NoBrush} fill style.
 	 */
 	public WBrush() {
 		this.style_ = WBrushStyle.NoBrush;
@@ -30,9 +30,9 @@ public class WBrush {
 	}
 
 	/**
-	 * Construct a brush with a particular style.
+	 * Creates a black brush with given style.
 	 * <p>
-	 * Constructs a black brush with the indicated <code>style</code>.
+	 * Creates a black brush with the indicated <code>style</code>.
 	 */
 	public WBrush(WBrushStyle style) {
 		this.style_ = style;
@@ -40,9 +40,9 @@ public class WBrush {
 	}
 
 	/**
-	 * Construct a solid brush of a particular color.
+	 * Creates a solid brush of a given color.
 	 * <p>
-	 * Constructs a solid brush with the indicated <code>color</code>.
+	 * Creates a solid brush with the indicated <code>color</code>.
 	 */
 	public WBrush(WColor color) {
 		this.style_ = WBrushStyle.SolidPattern;
@@ -71,7 +71,7 @@ public class WBrush {
 	}
 
 	/**
-	 * Change the brush style.
+	 * Sets the brush style.
 	 * <p>
 	 * 
 	 * @see WBrush#getStyle()
@@ -91,7 +91,7 @@ public class WBrush {
 	}
 
 	/**
-	 * Change the brush color.
+	 * Sets the brush color.
 	 * <p>
 	 * 
 	 * @see WBrush#getColor()

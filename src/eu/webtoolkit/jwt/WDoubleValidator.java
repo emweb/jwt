@@ -15,7 +15,7 @@ package eu.webtoolkit.jwt;
  */
 public class WDoubleValidator extends WValidator {
 	/**
-	 * Create a new double validator that accepts any double.
+	 * Creates a new double validator that accepts any double.
 	 */
 	public WDoubleValidator(WObject parent) {
 		super(parent);
@@ -27,7 +27,7 @@ public class WDoubleValidator extends WValidator {
 	}
 
 	/**
-	 * Create a new double validator that accepts any double.
+	 * Creates a new double validator that accepts any double.
 	 * <p>
 	 * Calls {@link #WDoubleValidator(WObject parent) this((WObject)null)}
 	 */
@@ -36,7 +36,8 @@ public class WDoubleValidator extends WValidator {
 	}
 
 	/**
-	 * Create a new double validator that accepts double within the given range.
+	 * Creates a new double validator that accepts double within the given
+	 * range.
 	 */
 	public WDoubleValidator(double bottom, double top, WObject parent) {
 		super(parent);
@@ -48,7 +49,8 @@ public class WDoubleValidator extends WValidator {
 	}
 
 	/**
-	 * Create a new double validator that accepts double within the given range.
+	 * Creates a new double validator that accepts double within the given
+	 * range.
 	 * <p>
 	 * Calls {@link #WDoubleValidator(double bottom, double top, WObject parent)
 	 * this(bottom, top, (WObject)null)}
@@ -58,14 +60,14 @@ public class WDoubleValidator extends WValidator {
 	}
 
 	/**
-	 * Return the bottom of the valid double range.
+	 * Returns the bottom of the valid double range.
 	 */
 	public double getBottom() {
 		return this.bottom_;
 	}
 
 	/**
-	 * Set the bottom of the valid double range.
+	 * Sets the bottom of the valid double range.
 	 * <p>
 	 * The default value is the minimum double value.
 	 */
@@ -77,14 +79,14 @@ public class WDoubleValidator extends WValidator {
 	}
 
 	/**
-	 * Return the top of the valid double range.
+	 * Returns the top of the valid double range.
 	 */
 	public double getTop() {
 		return this.top_;
 	}
 
 	/**
-	 * Set the top of the valid double range.
+	 * Sets the top of the valid double range.
 	 * <p>
 	 * The default value is the maximum double value.
 	 */
@@ -96,7 +98,7 @@ public class WDoubleValidator extends WValidator {
 	}
 
 	/**
-	 * Set the range of valid doubles.
+	 * Sets the range of valid doubles.
 	 */
 	public void setRange(double bottom, double top) {
 		this.setBottom(bottom);
@@ -104,7 +106,7 @@ public class WDoubleValidator extends WValidator {
 	}
 
 	/**
-	 * Validate the given input.
+	 * Validates the given input.
 	 * <p>
 	 * The input is considered valid only when it is blank for a non-mandatory
 	 * field, or represents a double within the valid range.
@@ -134,7 +136,7 @@ public class WDoubleValidator extends WValidator {
 
 	// public void createExtConfig(Writer config) throws IOException;
 	/**
-	 * Set the message to display when the input is not a number.
+	 * Sets the message to display when the input is not a number.
 	 * <p>
 	 * The default value is &quot;Must be a number.&quot;
 	 */
@@ -158,7 +160,7 @@ public class WDoubleValidator extends WValidator {
 	}
 
 	/**
-	 * Set message to display when the number is too small.
+	 * Sets the message to display when the number is too small.
 	 * <p>
 	 * Depending on whether {@link WDoubleValidator#getBottom() getBottom()} and
 	 * {@link WDoubleValidator#getTop() getTop()} are real bounds, the default
@@ -198,7 +200,7 @@ public class WDoubleValidator extends WValidator {
 	}
 
 	/**
-	 * Set message to display when the number is too large.
+	 * Sets the message to display when the number is too large.
 	 * <p>
 	 * Depending on whether {@link WDoubleValidator#getBottom() getBottom()} and
 	 * {@link WDoubleValidator#getTop() getTop()} are real bounds, the default
@@ -253,11 +255,20 @@ public class WDoubleValidator extends WValidator {
 			js += "if(n>" + String.valueOf(this.top_)
 					+ ") return {valid:false,message:tb};";
 		}
-		js += "return {valid:true};}(" + jsRef + ','
-				+ this.getInvalidBlankText().getJsStringLiteral() + ','
-				+ this.getInvalidNotANumberText().getJsStringLiteral() + ','
-				+ this.getInvalidTooSmallText().getJsStringLiteral() + ','
-				+ this.getInvalidTooLargeText().getJsStringLiteral() + ')';
+		js += "return {valid:true};}("
+				+ jsRef
+				+ ','
+				+ WString.toWString(this.getInvalidBlankText())
+						.getJsStringLiteral()
+				+ ','
+				+ WString.toWString(this.getInvalidNotANumberText())
+						.getJsStringLiteral()
+				+ ','
+				+ WString.toWString(this.getInvalidTooSmallText())
+						.getJsStringLiteral()
+				+ ','
+				+ WString.toWString(this.getInvalidTooLargeText())
+						.getJsStringLiteral() + ')';
 		return js;
 	}
 

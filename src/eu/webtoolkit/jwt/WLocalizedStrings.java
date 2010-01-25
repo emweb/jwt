@@ -19,7 +19,7 @@ package eu.webtoolkit.jwt;
  */
 public abstract class WLocalizedStrings {
 	/**
-	 * Reread the message resources.
+	 * Rereads the message resources.
 	 * <p>
 	 * Purge any cached key/values, if applicable.
 	 * <p>
@@ -29,7 +29,7 @@ public abstract class WLocalizedStrings {
 	}
 
 	/**
-	 * Purge memory resources, if possible.
+	 * Purges memory resources, if possible.
 	 * <p>
 	 * This is called afer event handling, and is an opportunity to conserve
 	 * memory inbetween events, by freeing memory used for cached key/value
@@ -41,7 +41,7 @@ public abstract class WLocalizedStrings {
 	}
 
 	/**
-	 * Resolve a key in the current locale.
+	 * Resolves a key in the current locale.
 	 * <p>
 	 * This method is used by {@link WString} to obtain the UTF8 value
 	 * corresponding to a key in the current locale.

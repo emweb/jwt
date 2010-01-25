@@ -16,13 +16,13 @@ import java.util.List;
  * To act on a button click, connect a slot to the
  * {@link WInteractWidget#clicked() WInteractWidget#clicked()} signal.
  * <p>
- * The widget corresponds to the HTML <code>&lt;button&gt;</code> tag.
- * <p>
  * WPushButton is an {@link WWidget#setInline(boolean inlined) inline} widget.
  * <p>
  * <h3>CSS</h3>
  * <p>
- * A button has the <code>Wt-btn</code> style.
+ * The widget corresponds to the HTML <code>&lt;button&gt;</code> tag and has
+ * the <code>Wt-btn</code> style. It may be styled through the current theme, or
+ * you can override the style using internal or external CSS as appropriate.
  */
 public class WPushButton extends WFormWidget {
 	/**

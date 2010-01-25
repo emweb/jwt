@@ -18,7 +18,7 @@ package eu.webtoolkit.jwt;
  */
 public class WLengthValidator extends WValidator {
 	/**
-	 * Create a length validator that accepts input of any length.
+	 * Creates a length validator that accepts input of any length.
 	 */
 	public WLengthValidator(WObject parent) {
 		super(parent);
@@ -29,7 +29,7 @@ public class WLengthValidator extends WValidator {
 	}
 
 	/**
-	 * Create a length validator that accepts input of any length.
+	 * Creates a length validator that accepts input of any length.
 	 * <p>
 	 * Calls {@link #WLengthValidator(WObject parent) this((WObject)null)}
 	 */
@@ -38,7 +38,7 @@ public class WLengthValidator extends WValidator {
 	}
 
 	/**
-	 * Create a length validator that accepts input within a length range.
+	 * Creates a length validator that accepts input within a length range.
 	 */
 	public WLengthValidator(int minLength, int maxLength, WObject parent) {
 		super(parent);
@@ -49,7 +49,7 @@ public class WLengthValidator extends WValidator {
 	}
 
 	/**
-	 * Create a length validator that accepts input within a length range.
+	 * Creates a length validator that accepts input within a length range.
 	 * <p>
 	 * Calls
 	 * {@link #WLengthValidator(int minLength, int maxLength, WObject parent)
@@ -60,7 +60,7 @@ public class WLengthValidator extends WValidator {
 	}
 
 	/**
-	 * Set the minimum length.
+	 * Sets the minimum length.
 	 * <p>
 	 * The default value is 0.
 	 */
@@ -72,7 +72,7 @@ public class WLengthValidator extends WValidator {
 	}
 
 	/**
-	 * Return the minimum length.
+	 * Returns the minimum length.
 	 * <p>
 	 * 
 	 * @see WLengthValidator#setMinimumLength(int minLength)
@@ -82,7 +82,7 @@ public class WLengthValidator extends WValidator {
 	}
 
 	/**
-	 * Set the maximum length.
+	 * Sets the maximum length.
 	 * <p>
 	 * The default value is the maximum integer value.
 	 */
@@ -104,7 +104,7 @@ public class WLengthValidator extends WValidator {
 	}
 
 	/**
-	 * Validate the given input.
+	 * Validates the given input.
 	 * <p>
 	 * The input is considered valid only when it is blank for a non-mandatory
 	 * field, or has a length within the valid range.
@@ -130,7 +130,7 @@ public class WLengthValidator extends WValidator {
 
 	// public void createExtConfig(Writer config) throws IOException;
 	/**
-	 * Set message to display when the input is too short.
+	 * Sets the message to display when the input is too short.
 	 * <p>
 	 * Depending on whether {@link WLengthValidator#getMaximumLength()
 	 * getMaximumLength()} is a real bound, the default message is &quot;The
@@ -170,7 +170,7 @@ public class WLengthValidator extends WValidator {
 	}
 
 	/**
-	 * Set message to display when the input is too long.
+	 * Sets the message to display when the input is too long.
 	 * <p>
 	 * Depending on whether {@link WLengthValidator#getMinimumLength()
 	 * getMinimumLength()} is different from zero, the default message is
@@ -224,10 +224,17 @@ public class WLengthValidator extends WValidator {
 			js += "if(e.value.length>" + String.valueOf(this.maxLength_)
 					+ ") return {valid:false,message:tb};";
 		}
-		js += "return {valid:true};}(" + jsRef + ','
-				+ this.getInvalidBlankText().getJsStringLiteral() + ','
-				+ this.getInvalidTooShortText().getJsStringLiteral() + ','
-				+ this.getInvalidTooLongText().getJsStringLiteral() + ')';
+		js += "return {valid:true};}("
+				+ jsRef
+				+ ','
+				+ WString.toWString(this.getInvalidBlankText())
+						.getJsStringLiteral()
+				+ ','
+				+ WString.toWString(this.getInvalidTooShortText())
+						.getJsStringLiteral()
+				+ ','
+				+ WString.toWString(this.getInvalidTooLongText())
+						.getJsStringLiteral() + ')';
 		return js;
 	}
 

@@ -15,30 +15,30 @@ package eu.webtoolkit.jwt;
  */
 public interface WLayoutItemImpl {
 	/**
-	 * Add a layout <i>item</i>.
+	 * Adds a layout <i>item</i>.
 	 * <p>
 	 * The <code>item</code> already has an implementation set.
 	 */
 	public void updateAddItem(WLayoutItem item);
 
 	/**
-	 * Remove a layout <i>item</i>.
+	 * Removes a layout <i>item</i>.
 	 */
 	public void updateRemoveItem(WLayoutItem item);
 
 	/**
-	 * Update the layout.
+	 * Updates the layout.
 	 */
 	public void update(WLayoutItem item);
 
 	/**
-	 * Get the widget for which this layout item participates in layout
+	 * Returns the widget for which this layout item participates in layout
 	 * management.
 	 */
 	public WWidget getParent();
 
 	/**
-	 * Provide a hint that can aid in layout strategy / algorithm.
+	 * Provides a hint that can aid in layout strategy / algorithm.
 	 */
 	public void setHint(String name, String value);
 }

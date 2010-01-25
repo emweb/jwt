@@ -41,12 +41,7 @@ import java.util.List;
  * 
  * </blockquote>
  * <p>
- * <div align="center"> <img src="doc-files//WTabWidget-1.png"
- * alt="An example WTabWidget">
- * <p>
- * <strong>An example WTabWidget</strong>
- * </p>
- * </div> <h3>CSS</h3>
+ * <h3>CSS</h3>
  * <p>
  * The tab widget is styled by the current CSS theme. The look (of the header)
  * can be overridden using the <code>Wt-tabs</code> CSS class and the following
@@ -62,6 +57,23 @@ import java.util.List;
  * </pre>
  * 
  * </div>
+ * <p>
+ * <table border="0" align="center" cellspacing="3" cellpadding="3">
+ * <tr>
+ * <td><div align="center"> <img src="doc-files//WTabWidget-default-1.png"
+ * alt="An example WTabWidget (default)">
+ * <p>
+ * <strong>An example WTabWidget (default)</strong>
+ * </p>
+ * </div></td>
+ * <td><div align="center"> <img src="doc-files//WTabWidget-polished-1.png"
+ * alt="An example WTabWidget (polished)">
+ * <p>
+ * <strong>An example WTabWidget (polished)</strong>
+ * </p>
+ * </div></td>
+ * </tr>
+ * </table>
  */
 public class WTabWidget extends WCompositeWidget {
 	/**
@@ -86,7 +98,7 @@ public class WTabWidget extends WCompositeWidget {
 	}
 
 	/**
-	 * Creates a new {@link WTabWidget}.
+	 * Creates a new tab widget.
 	 */
 	public WTabWidget(WContainerWidget parent) {
 		super(parent);
@@ -96,7 +108,7 @@ public class WTabWidget extends WCompositeWidget {
 	}
 
 	/**
-	 * Creates a new {@link WTabWidget}.
+	 * Creates a new tab widget.
 	 * <p>
 	 * Calls {@link #WTabWidget(WContainerWidget parent)
 	 * this((WContainerWidget)null)}
@@ -106,7 +118,7 @@ public class WTabWidget extends WCompositeWidget {
 	}
 
 	/**
-	 * Creates a new {@link WTabWidget} with custom layout alignment
+	 * Creates a new tab widget (indicating layout alignment)
 	 * (<b>deprecated</b>).
 	 * <p>
 	 * 
@@ -122,7 +134,7 @@ public class WTabWidget extends WCompositeWidget {
 	}
 
 	/**
-	 * Creates a new {@link WTabWidget} with custom layout alignment
+	 * Creates a new tab widget (indicating layout alignment)
 	 * (<b>deprecated</b>).
 	 * <p>
 	 * Calls {@link #WTabWidget(EnumSet layoutAlignment, WContainerWidget parent)
@@ -133,7 +145,7 @@ public class WTabWidget extends WCompositeWidget {
 	}
 
 	/**
-	 * Add a new tab, with <i>child</i> as content, and the given label.
+	 * Adds a new tab, with <i>child</i> as content, and the given label.
 	 * <p>
 	 * Returns the menu item that implements the tab item.
 	 */
@@ -157,7 +169,7 @@ public class WTabWidget extends WCompositeWidget {
 	}
 
 	/**
-	 * Add a new tab, with <i>child</i> as content, and the given label.
+	 * Adds a new tab, with <i>child</i> as content, and the given label.
 	 * <p>
 	 * Returns
 	 * {@link #addTab(WWidget child, CharSequence label, WTabWidget.LoadPolicy loadPolicy)
@@ -183,21 +195,21 @@ public class WTabWidget extends WCompositeWidget {
 	}
 
 	/**
-	 * Return the number of tabs.
+	 * Returns the number of tabs.
 	 */
 	public int getCount() {
 		return this.contents_.getCount();
 	}
 
 	/**
-	 * Get the content widget at the given tab <i>index</i>.
+	 * Returns the content widget at the given tab <i>index</i>.
 	 */
 	public WWidget getWidget(int index) {
 		return this.contents_.getWidget(index);
 	}
 
 	/**
-	 * Get the index of the given widget.
+	 * Returns the index of the given widget.
 	 * <p>
 	 * If the widget is not in this tab widget, then -1 is returned.
 	 */
@@ -206,35 +218,35 @@ public class WTabWidget extends WCompositeWidget {
 	}
 
 	/**
-	 * Activate the tab at <i>index</i>.
+	 * Activates the tab at <i>index</i>.
 	 */
 	public void setCurrentIndex(int index) {
 		this.menu_.select(index);
 	}
 
 	/**
-	 * Get the index of the activated tab.
+	 * Returns the index of the activated tab.
 	 */
 	public int getCurrentIndex() {
 		return this.menu_.getCurrentIndex();
 	}
 
 	/**
-	 * Activate the tab showing the given <i>widget</i>.
+	 * Activates the tab showing the given <i>widget</i>.
 	 */
 	public void setCurrentWidget(WWidget widget) {
 		this.setCurrentIndex(this.contents_.getIndexOf(widget));
 	}
 
 	/**
-	 * Get the widget of the activated tab.
+	 * Returns the widget of the activated tab.
 	 */
 	public WWidget getCurrentWidget() {
 		return this.contents_.getCurrentWidget();
 	}
 
 	/**
-	 * Enable or disable a tab.
+	 * Enables or disables a tab.
 	 * <p>
 	 * Enables or disables the tab at <code>index</code>. A disabled tab cannot
 	 * be activated.
@@ -251,7 +263,7 @@ public class WTabWidget extends WCompositeWidget {
 	}
 
 	/**
-	 * Hide or show a tab.
+	 * Hides or shows a tab.
 	 * <p>
 	 * Hides are shows the tab at <code>index</code>.
 	 */
@@ -260,14 +272,14 @@ public class WTabWidget extends WCompositeWidget {
 	}
 
 	/**
-	 * Return if a tab is hidden.
+	 * Returns if a tab is hidden.
 	 */
 	public boolean isTabHidden(int index) {
 		return this.items_.get(index).hidden;
 	}
 
 	/**
-	 * Change the label for a tab.
+	 * Changes the label for a tab.
 	 */
 	public void setTabText(int index, CharSequence label) {
 		TabWidgetItem item = ((this.menu_.getItems().get(index)) instanceof TabWidgetItem ? (TabWidgetItem) (this.menu_
@@ -277,7 +289,7 @@ public class WTabWidget extends WCompositeWidget {
 	}
 
 	/**
-	 * Get the label for a tab.
+	 * Returns the label for a tab.
 	 */
 	public WString getTabText(int index) {
 		TabWidgetItem item = ((this.menu_.getItems().get(index)) instanceof TabWidgetItem ? (TabWidgetItem) (this.menu_
@@ -287,7 +299,7 @@ public class WTabWidget extends WCompositeWidget {
 	}
 
 	/**
-	 * Set the tooltip for a tab.
+	 * Sets the tooltip for a tab.
 	 * <p>
 	 * The tooltip is shown when the user hovers over the label.
 	 */
@@ -296,14 +308,14 @@ public class WTabWidget extends WCompositeWidget {
 	}
 
 	/**
-	 * Get the tooltip for a tab.
+	 * Returns the tooltip for a tab.
 	 */
 	public WString getTabToolTip(int index) {
 		return this.items_.get(index).toolTip;
 	}
 
 	/**
-	 * Enable internal paths for items.
+	 * Enables internal paths for items.
 	 * <p>
 	 * The menu participates in the internal path by changing the internal path
 	 * when an item has been selected, and listening for path changes to react
@@ -332,7 +344,7 @@ public class WTabWidget extends WCompositeWidget {
 	}
 
 	/**
-	 * Enable internal paths for items.
+	 * Enables internal paths for items.
 	 * <p>
 	 * Calls {@link #setInternalPathEnabled(String basePath)
 	 * setInternalPathEnabled("")}
@@ -352,7 +364,7 @@ public class WTabWidget extends WCompositeWidget {
 	}
 
 	/**
-	 * Set the internal base path.
+	 * Sets the internal base path.
 	 * <p>
 	 * A &apos;/&apos; is appended to turn it into a folder, if needed.
 	 * <p>

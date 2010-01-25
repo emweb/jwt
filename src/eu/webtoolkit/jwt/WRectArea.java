@@ -37,7 +37,7 @@ public class WRectArea extends WAbstractArea {
 	}
 
 	/**
-	 * Construct a rectangular area with given geometry.
+	 * Creates a rectangular area with given geometry.
 	 * <p>
 	 * The arguments are in pixel units.
 	 */
@@ -50,7 +50,7 @@ public class WRectArea extends WAbstractArea {
 	}
 
 	/**
-	 * Construct a rectangular area with given geometry.
+	 * Creates a rectangular area with given geometry.
 	 * <p>
 	 * The <code>rect</code> argument is in pixel units.
 	 */
@@ -63,7 +63,7 @@ public class WRectArea extends WAbstractArea {
 	}
 
 	/**
-	 * Set the top-left X coordinate.
+	 * Sets the top-left X coordinate.
 	 */
 	public void setX(int x) {
 		this.x_ = x;
@@ -78,7 +78,7 @@ public class WRectArea extends WAbstractArea {
 	}
 
 	/**
-	 * Set the top-left Y coordinate.
+	 * Sets the top-left Y coordinate.
 	 */
 	public void setY(int y) {
 		this.y_ = y;
@@ -93,7 +93,7 @@ public class WRectArea extends WAbstractArea {
 	}
 
 	/**
-	 * Set the width.
+	 * Sets the width.
 	 */
 	public void setWidth(int width) {
 		this.width_ = width;
@@ -108,7 +108,7 @@ public class WRectArea extends WAbstractArea {
 	}
 
 	/**
-	 * Set the height.
+	 * Sets the height.
 	 */
 	public void setHeight(int height) {
 		this.height_ = height;

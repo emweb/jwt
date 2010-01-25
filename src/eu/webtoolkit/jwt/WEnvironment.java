@@ -52,10 +52,11 @@ import eu.webtoolkit.jwt.servlet.WebRequest;
  */
 public class WEnvironment {
 	enum UserAgent {
-		Unknown(0), IE(1000), IE6(1001), IE7(1002), IE8(1003), IEMobile(1100), Opera(
-				3000), WebKit(4000), Safari(4100), Chrome(4200), Konqueror(5000), Gecko(
-				6000), Firefox3(6101), Firefox3_1(6102), Firefox3_2(6103), BotAgent(
-				10000);
+		Unknown(0), IEMobile(1000), IE6(1001), IE7(1002), IE8(1003), Opera(3000), WebKit(
+				4000), Safari(4100), Safari3(4103), Safari4(4104), Chrome0(4200), Chrome1(
+				4201), Chrome2(4202), Chrome3(4203), Chrome4(4204), Konqueror(
+				5000), Gecko(6000), Firefox(6100), Firefox3_0(6101), Firefox3_1(
+				6102), Firefox3_1b(6103), Firefox3_5(6104), BotAgent(10000);
 
 		private int value;
 
@@ -504,16 +505,14 @@ public class WEnvironment {
 	}
 
 	boolean agentIsIE() {
-		return this.agent_.getValue() >= WEnvironment.UserAgent.IE.getValue()
+		return this.agent_.getValue() >= WEnvironment.UserAgent.IEMobile
+				.getValue()
 				&& this.agent_.getValue() < WEnvironment.UserAgent.Opera
 						.getValue();
 	}
 
 	boolean agentIsIEMobile() {
-		return this.agent_.getValue() >= WEnvironment.UserAgent.IEMobile
-				.getValue()
-				&& this.agent_.getValue() < WEnvironment.UserAgent.Opera
-						.getValue();
+		return this.agent_ == WEnvironment.UserAgent.IEMobile;
 	}
 
 	boolean agentIsOpera() {
@@ -533,12 +532,12 @@ public class WEnvironment {
 	boolean agentIsSafari() {
 		return this.agent_.getValue() >= WEnvironment.UserAgent.Safari
 				.getValue()
-				&& this.agent_.getValue() < WEnvironment.UserAgent.Chrome
+				&& this.agent_.getValue() < WEnvironment.UserAgent.Chrome0
 						.getValue();
 	}
 
 	boolean agentIsChrome() {
-		return this.agent_.getValue() >= WEnvironment.UserAgent.Chrome
+		return this.agent_.getValue() >= WEnvironment.UserAgent.Chrome0
 				.getValue()
 				&& this.agent_.getValue() < WEnvironment.UserAgent.Konqueror
 						.getValue();
@@ -593,7 +592,9 @@ public class WEnvironment {
 		this.userAgent_ = userAgent;
 		Configuration conf = this.session_.getController().getConfiguration();
 		this.agent_ = WEnvironment.UserAgent.Unknown;
-		if (this.userAgent_.indexOf("MSIE 4") != -1
+		if (this.userAgent_.indexOf("MSIE 2") != -1
+				|| this.userAgent_.indexOf("MSIE 3") != -1
+				|| this.userAgent_.indexOf("MSIE 4") != -1
 				|| this.userAgent_.indexOf("MSIE 5") != -1
 				|| this.userAgent_.indexOf("IEMobile") != -1) {
 			this.agent_ = WEnvironment.UserAgent.IEMobile;
@@ -604,12 +605,8 @@ public class WEnvironment {
 				if (this.userAgent_.indexOf("MSIE 7") != -1) {
 					this.agent_ = WEnvironment.UserAgent.IE7;
 				} else {
-					if (this.userAgent_.indexOf("MSIE 8") != -1) {
+					if (this.userAgent_.indexOf("MSIE") != -1) {
 						this.agent_ = WEnvironment.UserAgent.IE8;
-					} else {
-						if (this.userAgent_.indexOf("MSIE") != -1) {
-							this.agent_ = WEnvironment.UserAgent.IE;
-						}
 					}
 				}
 			}
@@ -618,10 +615,34 @@ public class WEnvironment {
 			this.agent_ = WEnvironment.UserAgent.Opera;
 		}
 		if (this.userAgent_.indexOf("Chrome") != -1) {
-			this.agent_ = WEnvironment.UserAgent.Chrome;
+			if (this.userAgent_.indexOf("Chrome/0") != -1) {
+				this.agent_ = WEnvironment.UserAgent.Chrome0;
+			} else {
+				if (this.userAgent_.indexOf("Chrome/1") != -1) {
+					this.agent_ = WEnvironment.UserAgent.Chrome1;
+				} else {
+					if (this.userAgent_.indexOf("Chrome/2") != -1) {
+						this.agent_ = WEnvironment.UserAgent.Chrome2;
+					} else {
+						if (this.userAgent_.indexOf("Chrome/3") != -1) {
+							this.agent_ = WEnvironment.UserAgent.Chrome3;
+						} else {
+							this.agent_ = WEnvironment.UserAgent.Chrome4;
+						}
+					}
+				}
+			}
 		} else {
 			if (this.userAgent_.indexOf("Safari") != -1) {
-				this.agent_ = WEnvironment.UserAgent.Safari;
+				if (this.userAgent_.indexOf("Version") == -1) {
+					this.agent_ = WEnvironment.UserAgent.Safari;
+				} else {
+					if (this.userAgent_.indexOf("Version/3") != -1) {
+						this.agent_ = WEnvironment.UserAgent.Safari3;
+					} else {
+						this.agent_ = WEnvironment.UserAgent.Safari4;
+					}
+				}
 			} else {
 				if (this.userAgent_.indexOf("WebKit") != -1) {
 					this.agent_ = WEnvironment.UserAgent.WebKit;
@@ -636,14 +657,30 @@ public class WEnvironment {
 				}
 			}
 		}
-		if (this.userAgent_.indexOf("Firefox/3.2.") != -1) {
-			this.agent_ = WEnvironment.UserAgent.Firefox3_2;
-		} else {
-			if (this.userAgent_.indexOf("Firefox/3.1.") != -1) {
-				this.agent_ = WEnvironment.UserAgent.Firefox3_1;
+		if (this.userAgent_.indexOf("Firefox") != -1) {
+			if (this.userAgent_.indexOf("Firefox/0") != -1) {
+				this.agent_ = WEnvironment.UserAgent.Firefox;
 			} else {
-				if (this.userAgent_.indexOf("Firefox/3.") != -1) {
-					this.agent_ = WEnvironment.UserAgent.Firefox3;
+				if (this.userAgent_.indexOf("Firefox/1") != -1) {
+					this.agent_ = WEnvironment.UserAgent.Firefox;
+				} else {
+					if (this.userAgent_.indexOf("Firefox/2") != -1) {
+						this.agent_ = WEnvironment.UserAgent.Firefox;
+					} else {
+						if (this.userAgent_.indexOf("Firefox/3.0") != -1) {
+							this.agent_ = WEnvironment.UserAgent.Firefox3_0;
+						} else {
+							if (this.userAgent_.indexOf("Firefox/3.1") != -1) {
+								this.agent_ = WEnvironment.UserAgent.Firefox3_1;
+							} else {
+								if (this.userAgent_.indexOf("Firefox/3.1b") != -1) {
+									this.agent_ = WEnvironment.UserAgent.Firefox3_1b;
+								} else {
+									this.agent_ = WEnvironment.UserAgent.Firefox3_5;
+								}
+							}
+						}
+					}
 				}
 			}
 		}

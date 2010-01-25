@@ -28,16 +28,22 @@ class WWidgetCanvasPainter extends WWidgetPainter {
 		canvas.setAttribute("width", wstr);
 		canvas.setAttribute("height", hstr);
 		result.addChild(canvas);
-		DomElement text = DomElement.createNew(DomElementType.DomElement_DIV);
-		text.setId('t' + this.widget_.getId());
-		text.setProperty(Property.PropertyStylePosition, "absolute");
-		text.setProperty(Property.PropertyStyleZIndex, "1");
-		text.setProperty(Property.PropertyStyleTop, "0px");
-		text.setProperty(Property.PropertyStyleLeft, "0px");
 		WCanvasPaintDevice canvasDevice = ((device) instanceof WCanvasPaintDevice ? (WCanvasPaintDevice) (device)
 				: null);
-		canvasDevice.render("c" + this.widget_.getId(), text);
-		result.addChild(text);
+		DomElement text = null;
+		if (canvasDevice.getTextMethod() == WCanvasPaintDevice.TextMethod.DomText) {
+			text = DomElement.createNew(DomElementType.DomElement_DIV);
+			text.setId('t' + this.widget_.getId());
+			text.setProperty(Property.PropertyStylePosition, "absolute");
+			text.setProperty(Property.PropertyStyleZIndex, "1");
+			text.setProperty(Property.PropertyStyleTop, "0px");
+			text.setProperty(Property.PropertyStyleLeft, "0px");
+		}
+		canvasDevice.render("c" + this.widget_.getId(), text != null ? text
+				: result);
+		if (text != null) {
+			result.addChild(text);
+		}
 	}
 
 	public void updateContents(List<DomElement> result, WPaintDevice device) {
@@ -53,10 +59,13 @@ class WWidgetCanvasPainter extends WWidgetPainter {
 			result.add(canvas);
 			this.widget_.sizeChanged_ = false;
 		}
-		DomElement text = DomElement.getForUpdate('t' + this.widget_.getId(),
-				DomElementType.DomElement_DIV);
-		text.removeAllChildren();
-		canvasDevice.render('c' + this.widget_.getId(), text);
-		result.add(text);
+		boolean domText = canvasDevice.getTextMethod() == WCanvasPaintDevice.TextMethod.DomText;
+		DomElement el = DomElement.getForUpdate(domText ? 't' + this.widget_
+				.getId() : this.widget_.getId(), DomElementType.DomElement_DIV);
+		if (domText) {
+			el.removeAllChildren();
+		}
+		canvasDevice.render('c' + this.widget_.getId(), el);
+		result.add(el);
 	}
 }

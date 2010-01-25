@@ -37,6 +37,11 @@ import java.util.List;
  * <p>
  * WLineEdit is an {@link WWidget#setInline(boolean inlined) inline} widget.
  * <p>
+ * <h3>CSS</h3>
+ * <p>
+ * This widget does not provide styling, and can be styled using inline or
+ * external CSS as appropriate.
+ * <p>
  * 
  * @see WTextArea
  */
@@ -66,7 +71,7 @@ public class WLineEdit extends WFormWidget {
 	}
 
 	/**
-	 * Construct a line edit with empty content and optional parent.
+	 * Creates a line edit with empty content and optional parent.
 	 */
 	public WLineEdit(WContainerWidget parent) {
 		super(parent);
@@ -80,7 +85,7 @@ public class WLineEdit extends WFormWidget {
 	}
 
 	/**
-	 * Construct a line edit with empty content and optional parent.
+	 * Creates a line edit with empty content and optional parent.
 	 * <p>
 	 * Calls {@link #WLineEdit(WContainerWidget parent)
 	 * this((WContainerWidget)null)}
@@ -90,7 +95,7 @@ public class WLineEdit extends WFormWidget {
 	}
 
 	/**
-	 * Construct a line edit with given content and optional parent.
+	 * Creates a line edit with given content and optional parent.
 	 */
 	public WLineEdit(String text, WContainerWidget parent) {
 		super(parent);
@@ -104,7 +109,7 @@ public class WLineEdit extends WFormWidget {
 	}
 
 	/**
-	 * Construct a line edit with given content and optional parent.
+	 * Creates a line edit with given content and optional parent.
 	 * <p>
 	 * Calls {@link #WLineEdit(String text, WContainerWidget parent) this(text,
 	 * (WContainerWidget)null)}
@@ -114,7 +119,7 @@ public class WLineEdit extends WFormWidget {
 	}
 
 	/**
-	 * Specify the width of the line edit in number of characters.
+	 * Specifies the width of the line edit in number of characters.
 	 * <p>
 	 * This specifies the width of the line edit that is roughly equivalent with
 	 * <code>chars</code> characters. This does not limit the maximum length of
@@ -132,7 +137,7 @@ public class WLineEdit extends WFormWidget {
 	}
 
 	/**
-	 * Get the current width of the line edit in number of characters.
+	 * Returns the current width of the line edit in number of characters.
 	 * <p>
 	 * 
 	 * @see WLineEdit#setTextSize(int chars)
@@ -142,7 +147,7 @@ public class WLineEdit extends WFormWidget {
 	}
 
 	/**
-	 * Change the content of the line edit.
+	 * Sets the content of the line edit.
 	 * <p>
 	 * The default value is &quot;&quot;.
 	 * <p>
@@ -163,7 +168,7 @@ public class WLineEdit extends WFormWidget {
 	}
 
 	/**
-	 * Get the current content.
+	 * Returns the current content.
 	 * <p>
 	 * 
 	 * @see WLineEdit#setText(String text)
@@ -173,7 +178,7 @@ public class WLineEdit extends WFormWidget {
 	}
 
 	/**
-	 * Specify the maximum length of text that can be entered.
+	 * Specifies the maximum length of text that can be entered.
 	 * <p>
 	 * A value &lt;= 0 indicates that there is no limit.
 	 * <p>
@@ -198,7 +203,7 @@ public class WLineEdit extends WFormWidget {
 	}
 
 	/**
-	 * Set the echo mode.
+	 * Sets the echo mode.
 	 * <p>
 	 * The default echo mode is Normal.
 	 */
@@ -211,7 +216,7 @@ public class WLineEdit extends WFormWidget {
 	}
 
 	/**
-	 * Get the echo mode.
+	 * Returns the echo mode.
 	 * <p>
 	 * 
 	 * @see WLineEdit#setEchoMode(WLineEdit.EchoMode echoMode)

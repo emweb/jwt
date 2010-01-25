@@ -21,7 +21,7 @@ import java.util.List;
  */
 public class WDateValidator extends WValidator {
 	/**
-	 * Construct a date validator.
+	 * Creates a date validator.
 	 * <p>
 	 * The validator will accept any date of the format &apos;yyyy-MM-dd&apos;.
 	 */
@@ -37,7 +37,7 @@ public class WDateValidator extends WValidator {
 	}
 
 	/**
-	 * Construct a date validator.
+	 * Creates a date validator.
 	 * <p>
 	 * Calls {@link #WDateValidator(WObject parent) this((WObject)null)}
 	 */
@@ -46,7 +46,7 @@ public class WDateValidator extends WValidator {
 	}
 
 	/**
-	 * Construct a date validator.
+	 * Creates a date validator.
 	 * <p>
 	 * The validator will accept dates in the indicated range in the format
 	 * &apos;yyyy-MM-dd&apos;.
@@ -63,7 +63,7 @@ public class WDateValidator extends WValidator {
 	}
 
 	/**
-	 * Construct a date validator.
+	 * Creates a date validator.
 	 * <p>
 	 * Calls {@link #WDateValidator(WDate bottom, WDate top, WObject parent)
 	 * this(bottom, top, (WObject)null)}
@@ -73,7 +73,7 @@ public class WDateValidator extends WValidator {
 	}
 
 	/**
-	 * Construct a date validator.
+	 * Creates a date validator.
 	 * <p>
 	 * The validator will accept dates in the date format <code>format</code>.
 	 * <p>
@@ -92,7 +92,7 @@ public class WDateValidator extends WValidator {
 	}
 
 	/**
-	 * Construct a date validator.
+	 * Creates a date validator.
 	 * <p>
 	 * Calls {@link #WDateValidator(String format, WObject parent) this(format,
 	 * (WObject)null)}
@@ -102,7 +102,7 @@ public class WDateValidator extends WValidator {
 	}
 
 	/**
-	 * Construct a date validator.
+	 * Creates a date validator.
 	 * <p>
 	 * The validator will accept only dates within the indicated range
 	 * <i>bottom</i> to <i>top</i>, in the date format <code>format</code>.
@@ -122,7 +122,7 @@ public class WDateValidator extends WValidator {
 	}
 
 	/**
-	 * Construct a date validator.
+	 * Creates a date validator.
 	 * <p>
 	 * Calls
 	 * {@link #WDateValidator(String format, WDate bottom, WDate top, WObject parent)
@@ -133,7 +133,7 @@ public class WDateValidator extends WValidator {
 	}
 
 	/**
-	 * Set the bottom of the valid date range.
+	 * Sets the bottom of the valid date range.
 	 * <p>
 	 * The default is a null date constructed using WDate().
 	 */
@@ -146,14 +146,14 @@ public class WDateValidator extends WValidator {
 	}
 
 	/**
-	 * Get the bottom date of the valid range.
+	 * Returns the bottom date of the valid range.
 	 */
 	public WDate getBottom() {
 		return this.bottom_;
 	}
 
 	/**
-	 * Set the top of the valid date range.
+	 * Sets the top of the valid date range.
 	 * <p>
 	 * The default is a null date constructed using WDate().
 	 */
@@ -165,14 +165,14 @@ public class WDateValidator extends WValidator {
 	}
 
 	/**
-	 * Get the top date of the valid range.
+	 * Returns the top date of the valid range.
 	 */
 	public WDate getTop() {
 		return this.top_;
 	}
 
 	/**
-	 * Set the date format used to parse date strings.
+	 * Sets the date format used to parse date strings.
 	 * <p>
 	 * 
 	 * @see WDate#fromString(String s)
@@ -184,7 +184,7 @@ public class WDateValidator extends WValidator {
 	}
 
 	/**
-	 * Get the format string used to parse date strings.
+	 * Returns the format string used to parse date strings.
 	 * <p>
 	 * 
 	 * @see WDateValidator#setFormat(String format)
@@ -194,7 +194,7 @@ public class WDateValidator extends WValidator {
 	}
 
 	/**
-	 * Set the date formats used to parse date strings.
+	 * Sets the date formats used to parse date strings.
 	 */
 	public void setFormats(List<String> formats) {
 		this.formats_ = formats;
@@ -202,14 +202,14 @@ public class WDateValidator extends WValidator {
 	}
 
 	/**
-	 * Get the date formats used to parse date strings.
+	 * Returns the date formats used to parse date strings.
 	 */
 	public List<String> getFormats() {
 		return this.formats_;
 	}
 
 	/**
-	 * Validate the given input.
+	 * Validates the given input.
 	 * <p>
 	 * The input is considered valid only when it is blank for a non-mandatory
 	 * field, or represents a date in the given format, and within the valid
@@ -246,7 +246,7 @@ public class WDateValidator extends WValidator {
 
 	// public void createExtConfig(Writer config) throws IOException;
 	/**
-	 * Set the message to display when the input is not a date.
+	 * Sets the message to display when the input is not a date.
 	 * <p>
 	 * The default message is &quot;The date must be of the format {1}&quot;,
 	 * with as first argument the format string.
@@ -273,7 +273,7 @@ public class WDateValidator extends WValidator {
 	}
 
 	/**
-	 * Set message to display when the date is earlier than bottom
+	 * Sets the message to display when the date is earlier than bottom.
 	 * <p>
 	 * The default message is &quot;The date must be between {1} and {2}&quot;
 	 * or &quot;The date must be after {1}&quot;.
@@ -313,7 +313,7 @@ public class WDateValidator extends WValidator {
 	}
 
 	/**
-	 * Set message to display when the date is later than top.
+	 * Sets the message to display when the date is later than top.
 	 * <p>
 	 * Depending on whether {@link WDateValidator#getBottom() getBottom()} and
 	 * {@link WDateValidator#getTop() getTop()} are defined, the default message
@@ -391,13 +391,14 @@ public class WDateValidator extends WValidator {
 							").getTime())return {valid:false,message:tb};");
 		}
 		js.append("return {valid:true};}(").append(jsRef).append(',').append(
-				this.getInvalidBlankText().getJsStringLiteral()).append(',')
-				.append(this.getInvalidNotADateText().getJsStringLiteral())
-				.append(',').append(
-						this.getInvalidTooEarlyText().getJsStringLiteral())
-				.append(',').append(
-						this.getInvalidTooLateText().getJsStringLiteral())
-				.append(')');
+				WString.toWString(this.getInvalidBlankText())
+						.getJsStringLiteral()).append(',').append(
+				WString.toWString(this.getInvalidNotADateText())
+						.getJsStringLiteral()).append(',').append(
+				WString.toWString(this.getInvalidTooEarlyText())
+						.getJsStringLiteral()).append(',').append(
+				WString.toWString(this.getInvalidTooLateText())
+						.getJsStringLiteral()).append(')');
 		return js.toString();
 	}
 

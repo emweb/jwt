@@ -29,7 +29,11 @@ import java.util.List;
  * <p>
  * WImage is an {@link WWidget#setInline(boolean inlined) inline} widget.
  * <p>
- * The widget corresponds to the HTML <code>&lt;img&gt;</code> tag.
+ * <h3>CSS</h3>
+ * <p>
+ * The widget corresponds to the HTML <code>&lt;img&gt;</code> tag and does not
+ * provide styling. It can be styled using inline or external CSS as
+ * appropriate.
  * <p>
  * 
  * @see WResource
@@ -37,7 +41,7 @@ import java.util.List;
  */
 public class WImage extends WInteractWidget {
 	/**
-	 * Create an empty image widget.
+	 * Creates an empty image widget.
 	 */
 	public WImage(WContainerWidget parent) {
 		super(parent);
@@ -50,7 +54,7 @@ public class WImage extends WInteractWidget {
 	}
 
 	/**
-	 * Create an empty image widget.
+	 * Creates an empty image widget.
 	 * <p>
 	 * Calls {@link #WImage(WContainerWidget parent)
 	 * this((WContainerWidget)null)}
@@ -60,7 +64,7 @@ public class WImage extends WInteractWidget {
 	}
 
 	/**
-	 * Create an image widget with given image URL.
+	 * Creates an image widget with given image URL.
 	 */
 	public WImage(String imageRef, WContainerWidget parent) {
 		super(parent);
@@ -73,7 +77,7 @@ public class WImage extends WInteractWidget {
 	}
 
 	/**
-	 * Create an image widget with given image URL.
+	 * Creates an image widget with given image URL.
 	 * <p>
 	 * Calls {@link #WImage(String imageRef, WContainerWidget parent)
 	 * this(imageRef, (WContainerWidget)null)}
@@ -83,7 +87,7 @@ public class WImage extends WInteractWidget {
 	}
 
 	/**
-	 * Create an image widget with given image URL and alternate text.
+	 * Creates an image widget with given image URL and alternate text.
 	 */
 	public WImage(String imageRef, CharSequence altText, WContainerWidget parent) {
 		super(parent);
@@ -96,7 +100,7 @@ public class WImage extends WInteractWidget {
 	}
 
 	/**
-	 * Create an image widget with given image URL and alternate text.
+	 * Creates an image widget with given image URL and alternate text.
 	 * <p>
 	 * Calls
 	 * {@link #WImage(String imageRef, CharSequence altText, WContainerWidget parent)
@@ -107,7 +111,7 @@ public class WImage extends WInteractWidget {
 	}
 
 	/**
-	 * Create an image widget with given image resource and alternate text.
+	 * Creates an image widget with given image resource and alternate text.
 	 * <p>
 	 * Use this constructor if you want to present a dynamically generated
 	 * image.
@@ -130,7 +134,7 @@ public class WImage extends WInteractWidget {
 	}
 
 	/**
-	 * Create an image widget with given image resource and alternate text.
+	 * Creates an image widget with given image resource and alternate text.
 	 * <p>
 	 * Calls
 	 * {@link #WImage(WResource resource, CharSequence altText, WContainerWidget parent)
@@ -147,7 +151,7 @@ public class WImage extends WInteractWidget {
 	}
 
 	/**
-	 * Set an alternate text.
+	 * Sets an alternate text.
 	 * <p>
 	 * The alternate text should provide a fallback for browsers that do not
 	 * display an image. If no sensible fallback text can be provided, an empty
@@ -182,7 +186,7 @@ public class WImage extends WInteractWidget {
 	}
 
 	/**
-	 * Set the image URL.
+	 * Sets the image URL.
 	 * <p>
 	 * This should not be used when the image is specified as a resource.
 	 * <p>
@@ -209,7 +213,7 @@ public class WImage extends WInteractWidget {
 	}
 
 	/**
-	 * Set the image resource.
+	 * Sets the image resource.
 	 * <p>
 	 * A resource specifies application-dependent content, which may be used to
 	 * generate an image on demand.
@@ -244,7 +248,7 @@ public class WImage extends WInteractWidget {
 	}
 
 	/**
-	 * Add an interactive area.
+	 * Adds an interactive area.
 	 * <p>
 	 * Adds the <code>area</code> which listens to events in a specific region
 	 * of the image. Areas are organized in an indexed list, to which the given
@@ -261,7 +265,7 @@ public class WImage extends WInteractWidget {
 	}
 
 	/**
-	 * Insert an interactive area.
+	 * Inserts an interactive area.
 	 * <p>
 	 * Inserts the <code>area</code> which listens to events in the coresponding
 	 * area of the image. Areas are organized in a list, and the <i>area</i> is

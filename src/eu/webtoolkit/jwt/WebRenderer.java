@@ -575,7 +575,7 @@ class WebRenderer implements SlotLearnerInterface {
 						"CLOSE_CONNECTION",
 						conf.getServerType() == Configuration.ServerType.WtHttpdServer
 								&& this.session_.getEnv().agentIsGecko()
-								&& this.session_.getEnv().getAgent().getValue() < WEnvironment.UserAgent.Firefox3
+								&& this.session_.getEnv().getAgent().getValue() < WEnvironment.UserAgent.Firefox3_0
 										.getValue());
 		js.stream(out);
 	}

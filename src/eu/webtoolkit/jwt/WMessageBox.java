@@ -25,16 +25,33 @@ import eu.webtoolkit.jwt.utils.EnumUtils;
  * <p>
  * This will show a message box that looks like this:
  * <p>
- * <div align="center"> <img src="doc-files//WMessageBox-1.png"
- * alt="Example of a WMessageBox">
+ * <table border="0" align="center" cellspacing="3" cellpadding="3">
+ * <tr>
+ * <td><div align="center"> <img src="doc-files//WMessageBox-default-1.png"
+ * alt="Example of a WMessageBox (default)">
  * <p>
- * <strong>Example of a WMessageBox</strong>
+ * <strong>Example of a WMessageBox (default)</strong>
  * </p>
- * </div>
+ * </div></td>
+ * <td><div align="center"> <img src="doc-files//WMessageBox-polished-1.png"
+ * alt="Example of a WMessageBox (polished)">
+ * <p>
+ * <strong>Example of a WMessageBox (polished)</strong>
+ * </p>
+ * </div></td>
+ * </tr>
+ * </table>
+ * <p>
+ * <h3>CSS</h3>
+ * <p>
+ * A {@link WMessageBox} can be styled using the <code>Wt-dialog</code> and
+ * <code>Wt-outset</code> style classes from it&apos;s superclass
+ * {@link WDialog}. The messagebox&apos; buttons can be styled using
+ * <code>Wt-msgbox-buttons</code> style class.
  */
 public class WMessageBox extends WDialog {
 	/**
-	 * Create an empty message box.
+	 * Creates an empty message box.
 	 * <p>
 	 * The button labels may be set fixed English (if <code>i18n</code> =
 	 * <code>false</code>), or fetched from a resource bundle if
@@ -52,7 +69,7 @@ public class WMessageBox extends WDialog {
 	}
 
 	/**
-	 * Create an empty message box.
+	 * Creates an empty message box.
 	 * <p>
 	 * Calls {@link #WMessageBox(boolean i18n) this(false)}
 	 */
@@ -61,7 +78,7 @@ public class WMessageBox extends WDialog {
 	}
 
 	/**
-	 * Create a message box with given caption, text, icon, and buttons.
+	 * Creates a message box with given caption, text, icon, and buttons.
 	 * <p>
 	 * The button labels may be set fixed English (if <code>i18n</code> =
 	 * <code>false</code>), or fetched from a resource bundle if
@@ -84,7 +101,7 @@ public class WMessageBox extends WDialog {
 	}
 
 	/**
-	 * Create a message box with given caption, text, icon, and buttons.
+	 * Creates a message box with given caption, text, icon, and buttons.
 	 * <p>
 	 * Calls
 	 * {@link #WMessageBox(CharSequence caption, CharSequence text, Icon icon, EnumSet buttons, boolean i18n)
@@ -96,21 +113,21 @@ public class WMessageBox extends WDialog {
 	}
 
 	/**
-	 * Set the text for the message box.
+	 * Sets the text for the message box.
 	 */
 	public void setText(CharSequence text) {
 		this.text_.setText(text);
 	}
 
 	/**
-	 * Get the message box text.
+	 * Returns the message box text.
 	 */
 	public WString getText() {
 		return this.text_.getText();
 	}
 
 	/**
-	 * Get the text widget.
+	 * Returns the text widget.
 	 * <p>
 	 * This may be useful to customize the style or layout of the displayed
 	 * text.
@@ -120,7 +137,7 @@ public class WMessageBox extends WDialog {
 	}
 
 	/**
-	 * Set the icon.
+	 * Sets the icon.
 	 */
 	public void setIcon(Icon icon) {
 		this.icon_ = icon;
@@ -132,16 +149,14 @@ public class WMessageBox extends WDialog {
 				this.iconImage_.setImageRef(iconURI[this.icon_.getValue() - 1]);
 			}
 		} else {
-			if (this.iconImage_ != null) {
-				if (this.iconImage_ != null)
-					this.iconImage_.remove();
-			}
+			if (this.iconImage_ != null)
+				this.iconImage_.remove();
 			this.iconImage_ = null;
 		}
 	}
 
 	/**
-	 * Get the icon.
+	 * Returns the icon.
 	 */
 	public Icon getIcon() {
 		return this.icon_;
@@ -163,7 +178,7 @@ public class WMessageBox extends WDialog {
 	}
 
 	/**
-	 * Set standard buttons for the message box.
+	 * Sets standard buttons for the message box.
 	 */
 	public void setButtons(EnumSet<StandardButton> buttons) {
 		this.buttons_ = EnumSet.copyOf(buttons);
@@ -182,7 +197,7 @@ public class WMessageBox extends WDialog {
 	}
 
 	/**
-	 * Set standard buttons for the message box.
+	 * Sets standard buttons for the message box.
 	 * <p>
 	 * Calls {@link #setButtons(EnumSet buttons) setButtons(EnumSet.of(button,
 	 * buttons))}

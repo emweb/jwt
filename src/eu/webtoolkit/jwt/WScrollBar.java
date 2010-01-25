@@ -23,14 +23,14 @@ import java.util.List;
  */
 public class WScrollBar extends WObject {
 	/**
-	 * Get the orientation of this scrollbar.
+	 * Returns the orientation of this scrollbar.
 	 */
 	public Orientation getOrientation() {
 		return this.orientation_;
 	}
 
 	/**
-	 * Tie two scrollbars together.
+	 * Ties two scrollbars together.
 	 * <p>
 	 * The effect of this call is that these scrollbars will keep their
 	 * positions synchronised.
@@ -45,7 +45,7 @@ public class WScrollBar extends WObject {
 	}
 
 	/**
-	 * Untie two scrollbars, that were previously tied together.
+	 * Unties two scrollbars, that were previously tied together.
 	 * <p>
 	 * Undo a {@link WScrollBar#tie(WScrollBar one, WScrollBar two) tie()};
 	 */
@@ -59,7 +59,7 @@ public class WScrollBar extends WObject {
 	}
 
 	/**
-	 * Set the scrollbar value.
+	 * Sets the scrollbar value.
 	 * <p>
 	 * This will move the scrollbar to the given value.
 	 */

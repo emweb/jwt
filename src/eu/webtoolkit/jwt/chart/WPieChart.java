@@ -51,6 +51,10 @@ import eu.webtoolkit.jwt.utils.EnumUtils;
  * The segments may be labeled in various ways using
  * {@link WPieChart#setDisplayLabels(EnumSet options) setDisplayLabels()}.
  * <p>
+ * <h3>CSS</h3>
+ * <p>
+ * Styling through CSS is not applicable.
+ * <p>
  * <div align="center"> <img src="doc-files//ChartWPieChart-1.png"
  * alt="Example of a pie chart">
  * <p>
@@ -63,7 +67,7 @@ import eu.webtoolkit.jwt.utils.EnumUtils;
  */
 public class WPieChart extends WAbstractChart {
 	/**
-	 * Create a new pie chart.
+	 * Creates a new pie chart.
 	 */
 	public WPieChart(WContainerWidget parent) {
 		super(parent);
@@ -79,7 +83,7 @@ public class WPieChart extends WAbstractChart {
 	}
 
 	/**
-	 * Create a new pie chart.
+	 * Creates a new pie chart.
 	 * <p>
 	 * Calls {@link #WPieChart(WContainerWidget parent)
 	 * this((WContainerWidget)null)}
@@ -89,7 +93,7 @@ public class WPieChart extends WAbstractChart {
 	}
 
 	/**
-	 * Change the model column that holds the labels.
+	 * Sets the model column that holds the labels.
 	 * <p>
 	 * The labels are used only when
 	 * {@link WPieChart#setDisplayLabels(EnumSet options) setDisplayLabels()} is
@@ -120,7 +124,7 @@ public class WPieChart extends WAbstractChart {
 	}
 
 	/**
-	 * Change the model column that holds the data.
+	 * Sets the model column that holds the data.
 	 * <p>
 	 * The data column should contain data that can be converted to a number,
 	 * but should not necessarily be of a number type, see also
@@ -181,7 +185,7 @@ public class WPieChart extends WAbstractChart {
 	}
 
 	/**
-	 * Change the explosion factor for a pie segment.
+	 * Sets the explosion factor for a pie segment.
 	 * <p>
 	 * Separates the segment corresponding to model row <i>modelRow</i> from the
 	 * rest of the pie. The <i>factor</i> is a positive number that represents
@@ -243,7 +247,7 @@ public class WPieChart extends WAbstractChart {
 	}
 
 	/**
-	 * Change the angle of the first segment.
+	 * Sets the angle of the first segment.
 	 * <p>
 	 * The default value is 45 degrees.
 	 */
@@ -265,7 +269,7 @@ public class WPieChart extends WAbstractChart {
 	}
 
 	/**
-	 * Configure if and how labels should be displayed.
+	 * Configures if and how labels should be displayed.
 	 * <p>
 	 * The <i>options</i> must be the logical OR of a placement option (
 	 * {@link LabelOption#Inside Inside} or {@link LabelOption#Outside Outside})
@@ -282,7 +286,7 @@ public class WPieChart extends WAbstractChart {
 	}
 
 	/**
-	 * Configure if and how labels should be displayed.
+	 * Configures if and how labels should be displayed.
 	 * <p>
 	 * Calls {@link #setDisplayLabels(EnumSet options)
 	 * setDisplayLabels(EnumSet.of(option, options))}

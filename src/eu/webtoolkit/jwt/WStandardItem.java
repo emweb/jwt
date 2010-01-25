@@ -46,7 +46,7 @@ import eu.webtoolkit.jwt.utils.ObjectUtils;
  */
 public class WStandardItem {
 	/**
-	 * Create an empty standard item.
+	 * Creates an empty standard item.
 	 */
 	public WStandardItem() {
 		this.model_ = null;
@@ -59,7 +59,7 @@ public class WStandardItem {
 	}
 
 	/**
-	 * Create an item with a text.
+	 * Creates an item with a text.
 	 * <p>
 	 * 
 	 * @see WStandardItem#setText(CharSequence text)
@@ -76,7 +76,7 @@ public class WStandardItem {
 	}
 
 	/**
-	 * Create an item with an icon and a text.
+	 * Creates an item with an icon and a text.
 	 * <p>
 	 * 
 	 * @see WStandardItem#setText(CharSequence text)
@@ -95,7 +95,7 @@ public class WStandardItem {
 	}
 
 	/**
-	 * Create an item with an initial geometry.
+	 * Creates an item with an initial geometry.
 	 * <p>
 	 * 
 	 * @see WStandardItem#setRowCount(int rows)
@@ -128,7 +128,7 @@ public class WStandardItem {
 	}
 
 	/**
-	 * Create an item with an initial geometry.
+	 * Creates an item with an initial geometry.
 	 * <p>
 	 * Calls {@link #WStandardItem(int rows, int columns) this(rows, 1)}
 	 */
@@ -137,7 +137,7 @@ public class WStandardItem {
 	}
 
 	/**
-	 * Set the text.
+	 * Sets the text.
 	 * <p>
 	 * The text is stored as {@link ItemDataRole#DisplayRole DisplayRole} data.
 	 * <p>
@@ -163,7 +163,7 @@ public class WStandardItem {
 	}
 
 	/**
-	 * Set the icon url.
+	 * Sets the icon url.
 	 * <p>
 	 * The icon is stored as {@link ItemDataRole#DecorationRole DecorationRole}
 	 * data.
@@ -194,7 +194,7 @@ public class WStandardItem {
 	}
 
 	/**
-	 * Set the CSS style class.
+	 * Sets the CSS style class.
 	 * <p>
 	 * The style class is stored as {@link ItemDataRole#StyleClassRole
 	 * StyleClassRole} data.
@@ -225,7 +225,7 @@ public class WStandardItem {
 	}
 
 	/**
-	 * Set a tool tip.
+	 * Sets a tool tip.
 	 * <p>
 	 * The tool tip is stored as {@link ItemDataRole#ToolTipRole ToolTipRole}
 	 * data.
@@ -256,7 +256,7 @@ public class WStandardItem {
 	}
 
 	/**
-	 * Set an anchor to an internal path.
+	 * Sets an anchor to an internal path.
 	 * <p>
 	 * The internal path is stored as {@link ItemDataRole#InternalPathRole
 	 * InternalPathRole} data.
@@ -286,7 +286,7 @@ public class WStandardItem {
 	}
 
 	/**
-	 * Set an anchor to an external URL.
+	 * Sets an anchor to an external URL.
 	 * <p>
 	 * The anchor Url is stored as {@link ItemDataRole#UrlRole UrlRole} data.
 	 * <p>
@@ -315,7 +315,7 @@ public class WStandardItem {
 	}
 
 	/**
-	 * Check or uncheck the item.
+	 * Checks or unchecks the item.
 	 * <p>
 	 * The value is stored as {@link ItemDataRole#CheckStateRole CheckStateRole}
 	 * data.
@@ -336,7 +336,8 @@ public class WStandardItem {
 	 */
 	public void setChecked(boolean checked) {
 		if (this.isChecked() != checked) {
-			this.setCheckState(CheckState.Checked);
+			this.setCheckState(checked ? CheckState.Checked
+					: CheckState.Unchecked);
 		}
 	}
 
@@ -351,7 +352,7 @@ public class WStandardItem {
 	}
 
 	/**
-	 * Set the check state.
+	 * Sets the check state.
 	 * <p>
 	 * Like {@link WStandardItem#setChecked(boolean checked) setChecked()}, this
 	 * sets the check state, but allows also setting the
@@ -400,7 +401,7 @@ public class WStandardItem {
 	}
 
 	/**
-	 * Set the flags.
+	 * Sets the flags.
 	 * <p>
 	 * The default flag value is {@link ItemFlag#ItemIsSelectable
 	 * ItemIsSelectable}.
@@ -418,7 +419,7 @@ public class WStandardItem {
 	}
 
 	/**
-	 * Set the flags.
+	 * Sets the flags.
 	 * <p>
 	 * Calls {@link #setFlags(EnumSet flags) setFlags(EnumSet.of(flag, flags))}
 	 */
@@ -469,7 +470,7 @@ public class WStandardItem {
 	}
 
 	/**
-	 * Make the item tri-state checkable.
+	 * Makes the item tri-state checkable.
 	 * <p>
 	 * When <code>tristate</code> is <code>true</code>, the item is checkable
 	 * with three states: {@link CheckState#Unchecked},
@@ -507,7 +508,7 @@ public class WStandardItem {
 	}
 
 	/**
-	 * Set item data.
+	 * Sets item data.
 	 * <p>
 	 * Sets item data for the given role.
 	 * <p>
@@ -531,7 +532,7 @@ public class WStandardItem {
 	}
 
 	/**
-	 * Set item data.
+	 * Sets item data.
 	 * <p>
 	 * Calls {@link #setData(Object d, int role) setData(d,
 	 * ItemDataRole.UserRole)}
@@ -583,7 +584,7 @@ public class WStandardItem {
 	}
 
 	/**
-	 * Change the row count.
+	 * Sets the row count.
 	 * <p>
 	 * If <code>rows</code> is bigger than the current row count, empty rows are
 	 * appended.
@@ -621,7 +622,7 @@ public class WStandardItem {
 	}
 
 	/**
-	 * Change the column count.
+	 * Sets the column count.
 	 * <p>
 	 * If <code>columns</code> is bigger than the current column count, empty
 	 * columns are appended.
@@ -677,7 +678,7 @@ public class WStandardItem {
 	}
 
 	/**
-	 * Insert a single column of items.
+	 * Inserts a single column of items.
 	 * <p>
 	 * Inserts a single column of <code>items</code> at column
 	 * <code>column</code>. If necessary, the row count is increased.
@@ -736,7 +737,7 @@ public class WStandardItem {
 	}
 
 	/**
-	 * Insert a single row of items.
+	 * Inserts a single row of items.
 	 * <p>
 	 * Inserts a single row of <i>items</i> at row <code>row</code>. If
 	 * necessary, the column count is increased.
@@ -769,7 +770,7 @@ public class WStandardItem {
 	}
 
 	/**
-	 * Insert a number of empty columns.
+	 * Inserts a number of empty columns.
 	 * <p>
 	 * Inserts <i>count</i> empty columns at position <code>column</code>.
 	 * <p>
@@ -804,7 +805,7 @@ public class WStandardItem {
 	}
 
 	/**
-	 * Insert a number of empty rows.
+	 * Inserts a number of empty rows.
 	 * <p>
 	 * Inserts <i>count</i> empty rows at position <code>row</code>.
 	 * <p>
@@ -927,7 +928,7 @@ public class WStandardItem {
 	}
 
 	/**
-	 * Set a child item.
+	 * Sets a child item.
 	 * <p>
 	 * Sets a child item <i>item</i> at position (<code>row</code>,
 	 * <code>column</code>). If an item was previously set, it is deleted first.
@@ -957,7 +958,7 @@ public class WStandardItem {
 	}
 
 	/**
-	 * Set a child item.
+	 * Sets a child item.
 	 * <p>
 	 * This is a convenience method for nodes with a single column (e.g. tree
 	 * nodes), and is equivalent to: <blockquote>
@@ -1089,7 +1090,7 @@ public class WStandardItem {
 	}
 
 	/**
-	 * Remove a single column.
+	 * Removes a single column.
 	 * <p>
 	 * Removes the column <code>column</code> from the model (reducing the
 	 * column count by one). Is equivalent to: <blockquote>
@@ -1109,7 +1110,7 @@ public class WStandardItem {
 	}
 
 	/**
-	 * Remove a number of columns.
+	 * Removes a number of columns.
 	 * <p>
 	 * Removes <code>count</code> columns from the model (reducing the column
 	 * count by <code>count</code>).
@@ -1142,7 +1143,7 @@ public class WStandardItem {
 	}
 
 	/**
-	 * Remove a single row.
+	 * Removes a single row.
 	 * <p>
 	 * Removes the row <code>row</code> from the model (reducing the row count
 	 * by one). Is equivalent to: <blockquote>
@@ -1162,7 +1163,7 @@ public class WStandardItem {
 	}
 
 	/**
-	 * Remove a number of rows.
+	 * Removes a number of rows.
 	 * <p>
 	 * Removes <code>count</code> rows from the model (reducing the row count by
 	 * <code>count</code>).

@@ -21,16 +21,20 @@ import java.util.EnumSet;
  * At all times, the current content may be accessed with the
  * {@link WTextArea#getText() getText()} method.
  * <p>
- * The widget corresponds to an HTML <code>&lt;textarea&gt;</code> tag.
- * <p>
  * WTextArea is an {@link WWidget#setInline(boolean inlined) inline} widget.
+ * <p>
+ * <h3>CSS</h3>
+ * <p>
+ * The widget corresponds to an HTML <code>&lt;textarea&gt;</code> tag and does
+ * not provide styling. It can be styled using inline or external CSS as
+ * appropriate.
  * <p>
  * 
  * @see WLineEdit
  */
 public class WTextArea extends WFormWidget {
 	/**
-	 * Construct a text area with empty content and optional parent.
+	 * Creates a text area with empty content and optional parent.
 	 */
 	public WTextArea(WContainerWidget parent) {
 		super(parent);
@@ -44,7 +48,7 @@ public class WTextArea extends WFormWidget {
 	}
 
 	/**
-	 * Construct a text area with empty content and optional parent.
+	 * Creates a text area with empty content and optional parent.
 	 * <p>
 	 * Calls {@link #WTextArea(WContainerWidget parent)
 	 * this((WContainerWidget)null)}
@@ -54,7 +58,7 @@ public class WTextArea extends WFormWidget {
 	}
 
 	/**
-	 * Construct a text area with given content and optional parent.
+	 * Creates a text area with given content and optional parent.
 	 */
 	public WTextArea(String text, WContainerWidget parent) {
 		super(parent);
@@ -68,7 +72,7 @@ public class WTextArea extends WFormWidget {
 	}
 
 	/**
-	 * Construct a text area with given content and optional parent.
+	 * Creates a text area with given content and optional parent.
 	 * <p>
 	 * Calls {@link #WTextArea(String text, WContainerWidget parent) this(text,
 	 * (WContainerWidget)null)}
@@ -78,7 +82,7 @@ public class WTextArea extends WFormWidget {
 	}
 
 	/**
-	 * Set the number of columns.
+	 * Sets the number of columns.
 	 * <p>
 	 * The default value is 20.
 	 */
@@ -89,7 +93,7 @@ public class WTextArea extends WFormWidget {
 	}
 
 	/**
-	 * Set the number of rows.
+	 * Sets the number of rows.
 	 * <p>
 	 * The default value is 5.
 	 */
@@ -127,7 +131,7 @@ public class WTextArea extends WFormWidget {
 	}
 
 	/**
-	 * Change the content of the text area.
+	 * Sets the content of the text area.
 	 * <p>
 	 * The default text is &quot;&quot;.
 	 */

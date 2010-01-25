@@ -47,7 +47,7 @@ public interface WLoadingIndicator {
 	public WWidget getWidget();
 
 	/**
-	 * Change the message that you want to be displayed.
+	 * Sets the message that you want to be displayed.
 	 * <p>
 	 * If the indicator is capable of displaying a text message, then you should
 	 * reimplement this method to allow this message to be modified.

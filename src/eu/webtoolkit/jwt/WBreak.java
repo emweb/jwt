@@ -13,7 +13,10 @@ package eu.webtoolkit.jwt;
  * This is an {@link WWidget#setInline(boolean inlined) inline} widget that
  * provides a line break inbetween its sibling widgets (such as {@link WText}).
  * <p>
- * The widget corresponds to the HTML <code>&lt;br /&gt;</code> tag.
+ * <h3>CSS</h3>
+ * <p>
+ * The widget corresponds to the HTML <code>&lt;br /&gt;</code> tag and does not
+ * provide styling. Styling through CSS is not applicable.
  */
 public class WBreak extends WWebWidget {
 	/**

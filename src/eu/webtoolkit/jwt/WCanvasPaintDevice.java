@@ -32,6 +32,17 @@ import eu.webtoolkit.jwt.utils.MathUtils;
  * </p>
  */
 public class WCanvasPaintDevice extends WObject implements WPaintDevice {
+	enum TextMethod {
+		MozText, Html5Text, DomText;
+
+		/**
+		 * Returns the numerical representation of this enum.
+		 */
+		public int getValue() {
+			return ordinal();
+		}
+	}
+
 	/**
 	 * Create a canvas paint device.
 	 */
@@ -50,6 +61,35 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 		this.js_ = new StringWriter();
 		this.textElements_ = new ArrayList<DomElement>();
 		this.images_ = new ArrayList<String>();
+		this.textMethod_ = WCanvasPaintDevice.TextMethod.DomText;
+		WApplication app = WApplication.getInstance();
+		if (app != null) {
+			if (app.getEnvironment().agentIsChrome()) {
+				if (app.getEnvironment().getAgent().getValue() >= WEnvironment.UserAgent.Chrome2
+						.getValue()) {
+					this.textMethod_ = WCanvasPaintDevice.TextMethod.Html5Text;
+				}
+			} else {
+				if (app.getEnvironment().agentIsGecko()) {
+					if (app.getEnvironment().getAgent().getValue() >= WEnvironment.UserAgent.Firefox3_5
+							.getValue()) {
+						this.textMethod_ = WCanvasPaintDevice.TextMethod.Html5Text;
+					} else {
+						if (app.getEnvironment().getAgent().getValue() >= WEnvironment.UserAgent.Firefox3_0
+								.getValue()) {
+							this.textMethod_ = WCanvasPaintDevice.TextMethod.MozText;
+						}
+					}
+				} else {
+					if (app.getEnvironment().agentIsSafari()) {
+						if (app.getEnvironment().getAgent().getValue() >= WEnvironment.UserAgent.Safari4
+								.getValue()) {
+							this.textMethod_ = WCanvasPaintDevice.TextMethod.Html5Text;
+						}
+					}
+				}
+			}
+		}
 	}
 
 	/**
@@ -73,6 +113,7 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 	}
 
 	public void drawArc(WRectF rect, double startAngle, double spanAngle) {
+		this.finishPath();
 		if (rect.getWidth() < MathUtils.EPSILON
 				|| rect.getHeight() < MathUtils.EPSILON) {
 			return;
@@ -129,6 +170,7 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 
 	public void drawImage(WRectF rect, String imgUri, int imgWidth,
 			int imgHeight, WRectF sourceRect) {
+		this.finishPath();
 		this.renderStateChanges();
 		int imageIndex = this.createImage(imgUri);
 		char[] buf = new char[30];
@@ -159,58 +201,185 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 
 	public void drawText(WRectF rect, EnumSet<AlignmentFlag> flags,
 			CharSequence text) {
-		WPointF pos = this.getPainter().getCombinedTransform().map(
-				rect.getTopLeft());
-		DomElement e = DomElement.createNew(DomElementType.DomElement_DIV);
-		e.setProperty(Property.PropertyStylePosition, "absolute");
-		e.setProperty(Property.PropertyStyleTop, String.valueOf(pos.getY())
-				+ "px");
-		e.setProperty(Property.PropertyStyleLeft, String.valueOf(pos.getX())
-				+ "px");
-		e.setProperty(Property.PropertyStyleWidth, String.valueOf(rect
-				.getWidth())
-				+ "px");
-		e.setProperty(Property.PropertyStyleHeight, String.valueOf(rect
-				.getHeight())
-				+ "px");
 		AlignmentFlag horizontalAlign = EnumUtils.enumFromSet(EnumUtils.mask(
 				flags, AlignmentFlag.AlignHorizontalMask));
 		AlignmentFlag verticalAlign = EnumUtils.enumFromSet(EnumUtils.mask(
 				flags, AlignmentFlag.AlignVerticalMask));
-		DomElement t = e;
-		if (verticalAlign != AlignmentFlag.AlignTop) {
-			t = DomElement.createNew(DomElementType.DomElement_DIV);
-			if (verticalAlign == AlignmentFlag.AlignMiddle) {
-				e.setProperty(Property.PropertyStyleDisplay, "table");
-				t.setProperty(Property.PropertyStyleDisplay, "table-cell");
-				t.setProperty(Property.PropertyStyleVerticalAlign, "middle");
-			} else {
-				if (verticalAlign == AlignmentFlag.AlignBottom) {
-					t.setProperty(Property.PropertyStylePosition, "absolute");
-					t.setProperty(Property.PropertyStyleWidth, "100%");
-					t.setProperty(Property.PropertyStyleBottom, "0px");
+		if (this.textMethod_ != WCanvasPaintDevice.TextMethod.DomText) {
+			this.finishPath();
+			this.renderStateChanges();
+		}
+		switch (this.textMethod_) {
+		case Html5Text: {
+			double x = 0;
+			double y = 0;
+			this.js_.append("ctx.textAlign='");
+			switch (horizontalAlign) {
+			case AlignLeft:
+				this.js_.append("left");
+				x = rect.getLeft();
+				break;
+			case AlignRight:
+				this.js_.append("right");
+				x = rect.getRight();
+				break;
+			case AlignCenter:
+				this.js_.append("center");
+				x = rect.getCenter().getX();
+				break;
+			default:
+				break;
+			}
+			this.js_.append("';").append("ctx.textBaseline='");
+			switch (verticalAlign) {
+			case AlignTop:
+				this.js_.append("top");
+				y = rect.getTop();
+				break;
+			case AlignBottom:
+				this.js_.append("bottom");
+				y = rect.getBottom();
+				break;
+			case AlignMiddle:
+				this.js_.append("middle");
+				y = rect.getCenter().getY();
+				break;
+			default:
+				break;
+			}
+			this.js_.append("';");
+			this.js_.append("ctx.font='").append(
+					this.getPainter().getFont().getCssText()).append("';");
+			if (!this.currentBrush_.getColor().equals(
+					this.currentPen_.getColor())) {
+				this.js_.append("ctx.fillStyle=\"").append(
+						this.currentPen_.getColor().getCssText(true)).append(
+						"\";");
+			}
+			this.js_.append("ctx.fillText(").append(
+					WString.toWString(text).getJsStringLiteral()).append(',')
+					.append(String.valueOf(x)).append(',').append(
+							String.valueOf(y)).append(");");
+			if (!this.currentBrush_.getColor().equals(
+					this.currentPen_.getColor())) {
+				this.js_.append("ctx.fillStyle=\"").append(
+						this.currentBrush_.getColor().getCssText(true)).append(
+						"\";");
+			}
+		}
+			break;
+		case MozText: {
+			String x = "";
+			switch (horizontalAlign) {
+			case AlignLeft:
+				x = String.valueOf(rect.getLeft());
+				break;
+			case AlignRight:
+				x = String.valueOf(rect.getRight()) + " - ctx.mozMeasureText("
+						+ WString.toWString(text).getJsStringLiteral() + ")";
+				break;
+			case AlignCenter:
+				x = String.valueOf(rect.getCenter().getX())
+						+ " - ctx.mozMeasureText("
+						+ WString.toWString(text).getJsStringLiteral() + ")/2";
+				break;
+			default:
+				break;
+			}
+			double fontSize;
+			switch (this.getPainter().getFont().getSize()) {
+			case FixedSize:
+				fontSize = this.getPainter().getFont().getFixedSize()
+						.toPixels();
+				break;
+			default:
+				fontSize = 16;
+			}
+			double y = 0;
+			switch (verticalAlign) {
+			case AlignTop:
+				y = rect.getTop() + fontSize * 0.75;
+				break;
+			case AlignMiddle:
+				y = rect.getCenter().getY() + fontSize * 0.25;
+				break;
+			case AlignBottom:
+				y = rect.getBottom() - fontSize * 0.25;
+				break;
+			default:
+				break;
+			}
+			this.js_.append("ctx.save();");
+			this.js_.append("ctx.translate(").append(x).append(", ").append(
+					String.valueOf(y)).append(");");
+			if (!this.currentBrush_.getColor().equals(
+					this.currentPen_.getColor())) {
+				this.js_.append("ctx.fillStyle=\"").append(
+						this.currentPen_.getColor().getCssText(true)).append(
+						"\";");
+			}
+			this.js_.append("ctx.mozTextStyle = '").append(
+					this.getPainter().getFont().getCssText()).append("';");
+			this.js_.append("ctx.mozDrawText(").append(
+					WString.toWString(text).getJsStringLiteral()).append(");");
+			this.js_.append("ctx.restore();");
+		}
+			break;
+		case DomText: {
+			WPointF pos = this.getPainter().getCombinedTransform().map(
+					rect.getTopLeft());
+			DomElement e = DomElement.createNew(DomElementType.DomElement_DIV);
+			e.setProperty(Property.PropertyStylePosition, "absolute");
+			e.setProperty(Property.PropertyStyleTop, String.valueOf(pos.getY())
+					+ "px");
+			e.setProperty(Property.PropertyStyleLeft, String
+					.valueOf(pos.getX())
+					+ "px");
+			e.setProperty(Property.PropertyStyleWidth, String.valueOf(rect
+					.getWidth())
+					+ "px");
+			e.setProperty(Property.PropertyStyleHeight, String.valueOf(rect
+					.getHeight())
+					+ "px");
+			DomElement t = e;
+			if (verticalAlign != AlignmentFlag.AlignTop) {
+				t = DomElement.createNew(DomElementType.DomElement_DIV);
+				if (verticalAlign == AlignmentFlag.AlignMiddle) {
+					e.setProperty(Property.PropertyStyleDisplay, "table");
+					t.setProperty(Property.PropertyStyleDisplay, "table-cell");
+					t
+							.setProperty(Property.PropertyStyleVerticalAlign,
+									"middle");
+				} else {
+					if (verticalAlign == AlignmentFlag.AlignBottom) {
+						t.setProperty(Property.PropertyStylePosition,
+								"absolute");
+						t.setProperty(Property.PropertyStyleWidth, "100%");
+						t.setProperty(Property.PropertyStyleBottom, "0px");
+					}
 				}
 			}
-		}
-		t.setProperty(Property.PropertyInnerHTML, WWebWidget.escapeText(text,
-				true).toString());
-		WFont f = this.getPainter().getFont();
-		f.updateDomElement(t, false, true);
-		t.setProperty(Property.PropertyStyleColor, this.getPainter().getPen()
-				.getColor().getCssText());
-		if (horizontalAlign == AlignmentFlag.AlignRight) {
-			t.setProperty(Property.PropertyStyleTextAlign, "right");
-		} else {
-			if (horizontalAlign == AlignmentFlag.AlignCenter) {
-				t.setProperty(Property.PropertyStyleTextAlign, "center");
+			t.setProperty(Property.PropertyInnerHTML, WWebWidget.escapeText(
+					text, true).toString());
+			WFont f = this.getPainter().getFont();
+			f.updateDomElement(t, false, true);
+			t.setProperty(Property.PropertyStyleColor, this.getPainter()
+					.getPen().getColor().getCssText());
+			if (horizontalAlign == AlignmentFlag.AlignRight) {
+				t.setProperty(Property.PropertyStyleTextAlign, "right");
 			} else {
-				t.setProperty(Property.PropertyStyleTextAlign, "left");
+				if (horizontalAlign == AlignmentFlag.AlignCenter) {
+					t.setProperty(Property.PropertyStyleTextAlign, "center");
+				} else {
+					t.setProperty(Property.PropertyStyleTextAlign, "left");
+				}
 			}
+			if (t != e) {
+				e.addChild(t);
+			}
+			this.textElements_.add(e);
 		}
-		if (t != e) {
-			e.addChild(t);
 		}
-		this.textElements_.add(e);
 	}
 
 	public void init() {
@@ -225,6 +394,10 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 
 	public boolean isPaintActive() {
 		return this.painter_ != null;
+	}
+
+	public WCanvasPaintDevice.TextMethod getTextMethod() {
+		return this.textMethod_;
 	}
 
 	void render(String canvasId, DomElement text) {
@@ -288,6 +461,7 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 	private WPainter painter_;
 	private EnumSet<WPaintDevice.ChangeFlag> changeFlags_;
 	private EnumSet<PaintFlag> paintFlags_;
+	private WCanvasPaintDevice.TextMethod textMethod_;
 	private boolean busyWithPath_;
 	private WTransform currentTransform_;
 	private WBrush currentBrush_;
@@ -366,7 +540,7 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 	}
 
 	private void renderStateChanges() {
-		if (this.changeFlags_.equals(0)) {
+		if (!!this.changeFlags_.isEmpty()) {
 			return;
 		}
 		boolean brushChanged = !EnumUtils.mask(this.changeFlags_,

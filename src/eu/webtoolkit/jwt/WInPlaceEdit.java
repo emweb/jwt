@@ -11,8 +11,9 @@ package eu.webtoolkit.jwt;
  * <p>
  * 
  * The WInPlaceEdit provides a text that may be edited in place by the user by
- * clicking on it. When clicked, the text turns into a line edit with a save and
- * cancel button.
+ * clicking on it. When clicked, the text turns into a line edit, with
+ * optionally a save and cancel button (see
+ * {@link WInPlaceEdit#setButtonsEnabled(boolean enabled) setButtonsEnabled()}).
  * <p>
  * When the user saves the edit, the {@link WInPlaceEdit#valueChanged()
  * valueChanged()} signal is emitted.
@@ -30,16 +31,6 @@ package eu.webtoolkit.jwt;
  * 
  * </blockquote>
  * <p>
- * CSS stylesheet: <blockquote>
- * 
- * <pre>
- * .inplace span:hover {
- *     background-color: gray;
- *  }
- * </pre>
- * 
- * </blockquote>
- * <p>
  * This code will produce an edit that looks like: <div align="center"> <img
  * src="doc-files//WInPlaceEdit-1.png" alt="WInPlaceEdit text mode">
  * <p>
@@ -51,11 +42,29 @@ package eu.webtoolkit.jwt;
  * <p>
  * <strong>WInPlaceEdit edit mode</strong>
  * </p>
- * </div>
+ * </div> <h3>CSS</h3>
+ * <p>
+ * A {@link WInPlaceEdit} widget renders as a <code>&lt;span&gt;</code>
+ * containing a {@link WText}, a {@link WLineEdit} and optional buttons (
+ * {@link WPushButton}). All these widgets may be styled as such. It does not
+ * provide style information.
+ * <p>
+ * In particular, you may want to provide a visual indication that the text is
+ * editable e.g. using a hover effect:
+ * <p>
+ * CSS stylesheet: <blockquote>
+ * 
+ * <pre>
+ * .inplace span:hover {
+ *     background-color: gray;
+ *  }
+ * </pre>
+ * 
+ * </blockquote>
  */
 public class WInPlaceEdit extends WCompositeWidget {
 	/**
-	 * Create an in-place edit with the given text.
+	 * Creates an in-place edit with the given text.
 	 */
 	public WInPlaceEdit(CharSequence text, WContainerWidget parent) {
 		super(parent);
@@ -119,11 +128,26 @@ public class WInPlaceEdit extends WCompositeWidget {
 			}
 		});
 		this.edit_.escapePressed().setPreventDefault(true);
+		this.edit_.blurred().addListener(this.edit_, new Signal.Listener() {
+			public void trigger() {
+				WInPlaceEdit.this.edit_.hide();
+			}
+		});
+		this.edit_.blurred().addListener(this.text_, new Signal.Listener() {
+			public void trigger() {
+				WInPlaceEdit.this.text_.show();
+			}
+		});
+		this.edit_.blurred().addListener(this, new Signal.Listener() {
+			public void trigger() {
+				WInPlaceEdit.this.cancel();
+			}
+		});
 		this.setButtonsEnabled();
 	}
 
 	/**
-	 * Create an in-place edit with the given text.
+	 * Creates an in-place edit with the given text.
 	 * <p>
 	 * Calls {@link #WInPlaceEdit(CharSequence text, WContainerWidget parent)
 	 * this(text, (WContainerWidget)null)}
@@ -133,7 +157,7 @@ public class WInPlaceEdit extends WCompositeWidget {
 	}
 
 	/**
-	 * Returns the current text value.
+	 * Returns the current value.
 	 * <p>
 	 * 
 	 * @see WInPlaceEdit#setText(CharSequence text)
@@ -143,7 +167,7 @@ public class WInPlaceEdit extends WCompositeWidget {
 	}
 
 	/**
-	 * Set the current text.
+	 * Sets the current value.
 	 * <p>
 	 * 
 	 * @see WInPlaceEdit#getText()
@@ -156,7 +180,7 @@ public class WInPlaceEdit extends WCompositeWidget {
 	/**
 	 * Returns the line edit.
 	 * <p>
-	 * You may for example set a validator on the line edit.
+	 * You may use this for example to set a validator on the line edit.
 	 */
 	public WLineEdit getLineEdit() {
 		return this.edit_;
@@ -165,7 +189,7 @@ public class WInPlaceEdit extends WCompositeWidget {
 	/**
 	 * Returns the save button.
 	 * <p>
-	 * This method returns a null pointer if the buttons were disabled.
+	 * This method returns <code>null</code> if the buttons were disabled.
 	 * <p>
 	 * 
 	 * @see WInPlaceEdit#getCancelButton()
@@ -178,7 +202,7 @@ public class WInPlaceEdit extends WCompositeWidget {
 	/**
 	 * Returns the cancel button.
 	 * <p>
-	 * This method returns a null pointer if the buttons were disabled.
+	 * This method returns <code>null</code> if the buttons were disabled.
 	 * <p>
 	 * 
 	 * @see WInPlaceEdit#getSaveButton()
@@ -198,12 +222,12 @@ public class WInPlaceEdit extends WCompositeWidget {
 	}
 
 	/**
-	 * Display the Save and &apos;Cancel&apos; button during editing.
+	 * Displays the Save and &apos;Cancel&apos; button during editing.
 	 * <p>
 	 * By default, the Save and Cancel buttons are shown. Call this function
-	 * with a false parameter to only show a line edit. In this mode, the enter
-	 * key has the effect of the save button and the escape key has the effect
-	 * of the cancel button.
+	 * with <code>enabled</code> = <code>false</code> to only show a line edit.
+	 * In this mode, the enter key has the effect of the save button and the
+	 * escape key has the effect of the cancel button.
 	 */
 	public void setButtonsEnabled(boolean enabled) {
 		if (this.c1_.isConnected()) {
@@ -248,6 +272,17 @@ public class WInPlaceEdit extends WCompositeWidget {
 						}
 					});
 			this.edit_.escapePressed().addListener(this.cancel_,
+					new Signal.Listener() {
+						public void trigger() {
+							WInPlaceEdit.this.cancel_.hide();
+						}
+					});
+			this.edit_.blurred().addListener(this.save_, new Signal.Listener() {
+				public void trigger() {
+					WInPlaceEdit.this.save_.hide();
+				}
+			});
+			this.edit_.blurred().addListener(this.cancel_,
 					new Signal.Listener() {
 						public void trigger() {
 							WInPlaceEdit.this.cancel_.hide();
@@ -330,7 +365,7 @@ public class WInPlaceEdit extends WCompositeWidget {
 	}
 
 	/**
-	 * Display the Save and &apos;Cancel&apos; button during editing.
+	 * Displays the Save and &apos;Cancel&apos; button during editing.
 	 * <p>
 	 * Calls {@link #setButtonsEnabled(boolean enabled) setButtonsEnabled(true)}
 	 */

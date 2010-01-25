@@ -59,7 +59,7 @@ public class WSvgImage extends WResource implements WVectorImage {
 	}
 
 	public void setChanged(EnumSet<WPaintDevice.ChangeFlag> flags) {
-		if (!flags.equals(0)) {
+		if (!flags.isEmpty()) {
 			this.newGroup_ = true;
 		}
 		if (!EnumUtils.mask(flags, WPaintDevice.ChangeFlag.Clipping).isEmpty()) {
@@ -425,7 +425,8 @@ public class WSvgImage extends WResource implements WVectorImage {
 			this.fontStyle_ = this.getFontStyle();
 		}
 		tmp.append("<g style=\"").append(this.fillStyle_).append(
-				this.strokeStyle_).append(this.fontStyle_).append('"');
+				this.strokeStyle_).append("font:").append(this.fontStyle_)
+				.append('"');
 		if (!this.currentTransform_.isIdentity()) {
 			tmp.append(" transform=\"matrix(").append(
 					MathUtils.round(this.currentTransform_.getM11(), 3));

@@ -18,7 +18,15 @@ import java.util.EnumSet;
  * Use {@link WScrollArea#setScrollBarPolicy(WScrollArea.ScrollBarPolicy policy)
  * setScrollBarPolicy()} to configure if and when the scrollbars may appear.
  * <p>
- * In many cases, it might be easier to use the CSS overflow property
+ * In many cases, it might be easier to use the CSS overflow property on a
+ * {@link WContainerWidget} (see
+ * {@link WContainerWidget#setOverflow(WContainerWidget.Overflow value, EnumSet orientation)
+ * WContainerWidget#setOverflow()}).
+ * <p>
+ * <h3>CSS</h3>
+ * <p>
+ * This widget is rendered using a
+ * <code>&lt;<div>&gt; with a CSS overflow attribute. It can be styled using inline or external CSS as appropriate. </div></code>
  */
 public class WScrollArea extends WWebWidget {
 	/**
@@ -48,7 +56,7 @@ public class WScrollArea extends WWebWidget {
 	}
 
 	/**
-	 * Create a scroll area.
+	 * Creates a scroll area.
 	 */
 	public WScrollArea(WContainerWidget parent) {
 		super(parent);
@@ -64,7 +72,7 @@ public class WScrollArea extends WWebWidget {
 	}
 
 	/**
-	 * Create a scroll area.
+	 * Creates a scroll area.
 	 * <p>
 	 * Calls {@link #WScrollArea(WContainerWidget parent)
 	 * this((WContainerWidget)null)}
@@ -80,7 +88,7 @@ public class WScrollArea extends WWebWidget {
 	}
 
 	/**
-	 * Set the widget that is the contents of the scroll area.
+	 * Sets the widget that is the contents of the scroll area.
 	 * <p>
 	 * Setting a new widget will delete the previously set widget.
 	 */
@@ -109,28 +117,28 @@ public class WScrollArea extends WWebWidget {
 	}
 
 	/**
-	 * Get the widget content.
+	 * Returns the widget content.
 	 */
 	public WWidget getWidget() {
 		return this.widget_;
 	}
 
 	/**
-	 * Get the horizontal scrollbar.
+	 * Returns the horizontal scrollbar.
 	 */
 	public WScrollBar getHorizontalScrollBar() {
 		return this.horizontalScrollBar_;
 	}
 
 	/**
-	 * Get the vertical scrollbar.
+	 * Returns the vertical scrollbar.
 	 */
 	public WScrollBar getVerticalScrollBar() {
 		return this.verticalScrollBar_;
 	}
 
 	/**
-	 * Set the policy for both scrollbars.
+	 * Returns the policy for both scrollbars.
 	 * <p>
 	 * 
 	 * @see WScrollArea#setHorizontalScrollBarPolicy(WScrollArea.ScrollBarPolicy
@@ -145,7 +153,7 @@ public class WScrollArea extends WWebWidget {
 	}
 
 	/**
-	 * Set the horizontal scroll bar policy.
+	 * Returns the horizontal scroll bar policy.
 	 * <p>
 	 * 
 	 * @see WScrollArea#setScrollBarPolicy(WScrollArea.ScrollBarPolicy policy)
@@ -157,7 +165,7 @@ public class WScrollArea extends WWebWidget {
 	}
 
 	/**
-	 * Set the vertical scroll bar policy.
+	 * Returns the vertical scroll bar policy.
 	 * <p>
 	 * 
 	 * @see WScrollArea#setScrollBarPolicy(WScrollArea.ScrollBarPolicy policy)

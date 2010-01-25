@@ -37,10 +37,14 @@ import java.util.Set;
  * The total image dimensions are (0, 0) to (imageWidth, imageHeight) for a
  * finite image, and become unbounded (including negative numbers) for each
  * dimension which is Infinite.
+ * <p>
+ * <h3>CSS</h3>
+ * <p>
+ * Styling through CSS is not applicable.
  */
 public class WVirtualImage extends WCompositeWidget {
 	/**
-	 * Construct a viewport for a virtual image.
+	 * Creates a viewport for a virtual image.
 	 * <p>
 	 * You must specify the size of the viewport, and the size of the virtual
 	 * image. The latter dimensions may be the special value Infinite,
@@ -82,7 +86,7 @@ public class WVirtualImage extends WCompositeWidget {
 	}
 
 	/**
-	 * Construct a viewport for a virtual image.
+	 * Creates a viewport for a virtual image.
 	 * <p>
 	 * Calls
 	 * {@link #WVirtualImage(int viewPortWidth, int viewPortHeight, long imageWidth, long imageHeight, int gridImageSize, WContainerWidget parent)
@@ -96,7 +100,7 @@ public class WVirtualImage extends WCompositeWidget {
 	}
 
 	/**
-	 * Construct a viewport for a virtual image.
+	 * Creates a viewport for a virtual image.
 	 * <p>
 	 * Calls
 	 * {@link #WVirtualImage(int viewPortWidth, int viewPortHeight, long imageWidth, long imageHeight, int gridImageSize, WContainerWidget parent)
@@ -124,7 +128,7 @@ public class WVirtualImage extends WCompositeWidget {
 	}
 
 	/**
-	 * Regenerate and redraw the image pieces.
+	 * Regenerates and redraws the image pieces.
 	 * <p>
 	 * This method invalidates all current grid images, and recreates them.
 	 */
@@ -168,7 +172,7 @@ public class WVirtualImage extends WCompositeWidget {
 	}
 
 	/**
-	 * Scroll the viewport of the image over a distance.
+	 * Scrolls the viewport of the image over a distance.
 	 * <p>
 	 * 
 	 * @see WVirtualImage#scrollTo(long newX, long newY)
@@ -178,7 +182,7 @@ public class WVirtualImage extends WCompositeWidget {
 	}
 
 	/**
-	 * Scroll the viewport of the image to a specific coordinate.
+	 * Scrolls the viewport of the image to a specific coordinate.
 	 * <p>
 	 * Scroll the viewport so that its top left coordinate becomes (x, y).
 	 * <p>
@@ -190,7 +194,7 @@ public class WVirtualImage extends WCompositeWidget {
 	}
 
 	/**
-	 * Return the virtual image width.
+	 * Returns the virtual image width.
 	 * <p>
 	 * 
 	 * @see WVirtualImage#getImageHeight()
@@ -201,7 +205,7 @@ public class WVirtualImage extends WCompositeWidget {
 	}
 
 	/**
-	 * Return the virtual image height.
+	 * Returns the virtual image height.
 	 * <p>
 	 * 
 	 * @see WVirtualImage#getImageWidth()
@@ -212,7 +216,7 @@ public class WVirtualImage extends WCompositeWidget {
 	}
 
 	/**
-	 * Resize the virtual image.
+	 * Resizes the virtual image.
 	 * <p>
 	 * This sets a new virtual size for the image. The viewport size sets the
 	 * visible portion of the image.
@@ -228,7 +232,7 @@ public class WVirtualImage extends WCompositeWidget {
 	}
 
 	/**
-	 * Return the viewport width.
+	 * Returns the viewport width.
 	 * <p>
 	 * 
 	 * @see WVirtualImage#getViewPortHeight()
@@ -238,7 +242,7 @@ public class WVirtualImage extends WCompositeWidget {
 	}
 
 	/**
-	 * Return the viewport height.
+	 * Returns the viewport height.
 	 * <p>
 	 * 
 	 * @see WVirtualImage#getViewPortWidth()
@@ -309,7 +313,7 @@ public class WVirtualImage extends WCompositeWidget {
 	}
 
 	/**
-	 * Create a grid image for the given rectangle.
+	 * Creates a grid image for the given rectangle.
 	 * <p>
 	 * Create the image which spans image coordinates with left upper corner (x,
 	 * y) and given width and height.

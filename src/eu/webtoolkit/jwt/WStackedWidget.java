@@ -22,6 +22,12 @@ import java.util.List;
  * <p>
  * WStackedWidget, like {@link WContainerWidget}, is by default not inline.
  * <p>
+ * <h3>CSS</h3>
+ * <p>
+ * The widget is rendered using an HTML <code>&lt;div&gt;</code> tag and does
+ * not provide styling. It can be styled using inline or external CSS as
+ * appropriate.
+ * <p>
  * 
  * @see WMenu
  */

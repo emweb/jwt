@@ -29,7 +29,7 @@ import java.util.List;
  */
 public class WPolygonArea extends WAbstractArea {
 	/**
-	 * Default constructor.
+	 * Creates an empty polygon.
 	 * <p>
 	 * Defines an empty polygon.
 	 */
@@ -39,7 +39,7 @@ public class WPolygonArea extends WAbstractArea {
 	}
 
 	/**
-	 * Construct a polygon area with given vertices.
+	 * Creates a polygon area with given vertices.
 	 * <p>
 	 * The polygon is defined with vertices corresponding to <code>points</code>
 	 * . The polygon is closed by connecting the last point with the first
@@ -51,21 +51,21 @@ public class WPolygonArea extends WAbstractArea {
 	}
 
 	/**
-	 * Add a point.
+	 * Adds a point.
 	 */
 	public void addPoint(int x, int y) {
 		this.points_.add(new WPoint(x, y));
 	}
 
 	/**
-	 * Add a point.
+	 * Adds a point.
 	 */
 	public void addPoint(WPoint point) {
 		this.points_.add(point);
 	}
 
 	/**
-	 * Set the polygon vertices.
+	 * Sets the polygon vertices.
 	 * <p>
 	 * The polygon is defined with vertices corresponding to <code>points</code>
 	 * . The polygon is closed by connecting the last point with the first

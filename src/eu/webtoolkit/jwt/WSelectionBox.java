@@ -43,9 +43,13 @@ import java.util.Set;
  * {@link WStringListModel}, use
  * {@link WComboBox#setModel(WAbstractItemModel model) WComboBox#setModel()}.
  * <p>
- * The widget corresponds to the HTML <code>&lt;select&gt;</code> tag.
- * <p>
  * WSelectionBox is an {@link WWidget#setInline(boolean inlined) inline} widget.
+ * <p>
+ * <h3>CSS</h3>
+ * <p>
+ * The widget corresponds to the HTML <code>&lt;select&gt;</code> tag and does
+ * not provide styling. It can be styled using inline or external CSS as
+ * appropriate.
  */
 public class WSelectionBox extends WComboBox {
 	/**

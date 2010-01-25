@@ -24,10 +24,10 @@ package eu.webtoolkit.jwt;
  */
 public class WPen {
 	/**
-	 * Default constructor.
+	 * Creates a black cosmetic pen.
 	 * <p>
-	 * Constructs a black solid pen of 0 width, with
-	 * {@link PenCapStyle#SquareCap SquareCap} line ends and
+	 * Constructs a black solid pen of 0 width (i.e. cosmetic single pixel
+	 * width), with {@link PenCapStyle#SquareCap SquareCap} line ends and
 	 * {@link PenJoinStyle#BevelJoin BevelJoin} line join style.
 	 */
 	public WPen() {
@@ -39,11 +39,11 @@ public class WPen {
 	}
 
 	/**
-	 * Construct a black pen with a particular style.
+	 * Creates a black pen with a particular style.
 	 * <p>
-	 * Constructs a black pen of 0 width, with {@link PenCapStyle#SquareCap
-	 * SquareCap} line ends and {@link PenJoinStyle#BevelJoin BevelJoin} line
-	 * join style.
+	 * Constructs a black pen of 0 width (i.e. cosmetic single pixel width),
+	 * with {@link PenCapStyle#SquareCap SquareCap} line ends and
+	 * {@link PenJoinStyle#BevelJoin BevelJoin} line join style.
 	 * <p>
 	 * The line style is set to <code>style</code>.
 	 */
@@ -56,11 +56,11 @@ public class WPen {
 	}
 
 	/**
-	 * Construct a solid pen of a particular color.
+	 * Creates a solid pen of a particular color.
 	 * <p>
-	 * Constructs a solid pen of 0 width, with {@link PenCapStyle#SquareCap
-	 * SquareCap} line ends and {@link PenJoinStyle#BevelJoin BevelJoin} line
-	 * join style.
+	 * Constructs a solid pen of 0 width (i.e. cosmetic single pixel width),
+	 * with {@link PenCapStyle#SquareCap SquareCap} line ends and
+	 * {@link PenJoinStyle#BevelJoin BevelJoin} line join style.
 	 * <p>
 	 * The pen color is set to <code>color</code>.
 	 */
@@ -101,7 +101,7 @@ public class WPen {
 	}
 
 	/**
-	 * Change the pen style.
+	 * Sets the pen style.
 	 * <p>
 	 * 
 	 * @see WPen#getStyle()
@@ -111,7 +111,7 @@ public class WPen {
 	}
 
 	/**
-	 * Return the pen style.
+	 * Returns the pen style.
 	 * <p>
 	 * 
 	 * @see WPen#setStyle(PenStyle style)
@@ -121,7 +121,7 @@ public class WPen {
 	}
 
 	/**
-	 * Change the style for rendering line ends.
+	 * Sets the style for rendering line ends.
 	 * <p>
 	 * 
 	 * @see WPen#getCapStyle()
@@ -141,7 +141,7 @@ public class WPen {
 	}
 
 	/**
-	 * Change the style for rendering line joins.
+	 * Sets the style for rendering line joins.
 	 * <p>
 	 * 
 	 * @see WPen#getJoinStyle()
@@ -161,7 +161,7 @@ public class WPen {
 	}
 
 	/**
-	 * Change the pen width.
+	 * Sets the pen width.
 	 * <p>
 	 * A pen width <code>must</code> be specified using
 	 * {@link WLength.Unit#Pixel} units.
@@ -184,7 +184,7 @@ public class WPen {
 	}
 
 	/**
-	 * Change the pen color.
+	 * Sets the pen color.
 	 * <p>
 	 * 
 	 * @see WPen#getColor()

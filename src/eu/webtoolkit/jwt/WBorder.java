@@ -94,7 +94,7 @@ public class WBorder {
 	}
 
 	/**
-	 * Create a border indicating <i>no border</i>.
+	 * Creates a border indicating <i>no border</i>.
 	 */
 	public WBorder() {
 		this.width_ = WBorder.Width.Medium;
@@ -104,7 +104,7 @@ public class WBorder {
 	}
 
 	/**
-	 * Create a border with given style, thickness and color.
+	 * Creates a border with given style, thickness and color.
 	 */
 	public WBorder(WBorder.Style style, WBorder.Width width, WColor color) {
 		this.width_ = width;
@@ -114,7 +114,7 @@ public class WBorder {
 	}
 
 	/**
-	 * Create a border with given style, thickness and color.
+	 * Creates a border with given style, thickness and color.
 	 * <p>
 	 * Calls
 	 * {@link #WBorder(WBorder.Style style, WBorder.Width width, WColor color)
@@ -125,7 +125,7 @@ public class WBorder {
 	}
 
 	/**
-	 * Create a border with given style, thickness and color.
+	 * Creates a border with given style, thickness and color.
 	 * <p>
 	 * Calls
 	 * {@link #WBorder(WBorder.Style style, WBorder.Width width, WColor color)
@@ -136,7 +136,7 @@ public class WBorder {
 	}
 
 	/**
-	 * Create a border with an absolute width.
+	 * Creates a border with an absolute width.
 	 */
 	public WBorder(WBorder.Style style, WLength width, WColor color) {
 		this.width_ = WBorder.Width.Explicit;
@@ -146,7 +146,7 @@ public class WBorder {
 	}
 
 	/**
-	 * Create a border with an absolute width.
+	 * Creates a border with an absolute width.
 	 * <p>
 	 * Calls {@link #WBorder(WBorder.Style style, WLength width, WColor color)
 	 * this(style, width, new WColor())}
@@ -164,7 +164,7 @@ public class WBorder {
 	}
 
 	/**
-	 * Set the border width.
+	 * Sets the border width.
 	 * <p>
 	 * If width == Explicit, then the width specified in
 	 * <code>explicitWidth</code> is used.
@@ -175,7 +175,7 @@ public class WBorder {
 	}
 
 	/**
-	 * Set the border width.
+	 * Sets the border width.
 	 * <p>
 	 * Calls {@link #setWidth(WBorder.Width width, WLength explicitWidth)
 	 * setWidth(width, WLength.Auto)}
@@ -185,14 +185,14 @@ public class WBorder {
 	}
 
 	/**
-	 * Set the border color.
+	 * Sets the border color.
 	 */
 	public void setColor(WColor color) {
 		this.color_ = color;
 	}
 
 	/**
-	 * Set the border style.
+	 * Sets the border style.
 	 */
 	public void setStyle(WBorder.Style style) {
 		this.style_ = style;

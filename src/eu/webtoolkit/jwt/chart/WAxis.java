@@ -79,7 +79,7 @@ public class WAxis {
 	}
 
 	/**
-	 * Set whether this axis is visible.
+	 * Sets whether this axis is visible.
 	 * <p>
 	 * Changes whether the axis is displayed, including ticks and labels. The
 	 * rendering of the grid lines is controlled seperately by
@@ -110,7 +110,7 @@ public class WAxis {
 	}
 
 	/**
-	 * Set the axis location.
+	 * Sets the axis location.
 	 * <p>
 	 * Configures the location of the axis, relative to values on the other
 	 * values (i.e. Y values for the X axis, and X values for the Y axis).
@@ -139,7 +139,7 @@ public class WAxis {
 	}
 
 	/**
-	 * Set the scale of the axis.
+	 * Sets the scale of the axis.
 	 * <p>
 	 * For the X scale in a {@link ChartType#CategoryChart CategoryChart}, the
 	 * scale should be left unchanged to {@link AxisScale#CategoryScale
@@ -173,7 +173,7 @@ public class WAxis {
 	}
 
 	/**
-	 * Set the minimum value displayed on the axis.
+	 * Sets the minimum value displayed on the axis.
 	 * <p>
 	 * Specify the minimum value to be displayed on the axis. By default, the
 	 * minimum and maximum values are determined automatically so that all the
@@ -216,7 +216,7 @@ public class WAxis {
 	}
 
 	/**
-	 * Set the maximum value for the axis displayed on the axis.
+	 * Sets the maximum value for the axis displayed on the axis.
 	 * <p>
 	 * Specify the maximum value to be displayed on the axis. By default, the
 	 * minimum and maximum values are determined automatically so that all the
@@ -258,7 +258,7 @@ public class WAxis {
 	}
 
 	/**
-	 * Set the axis range (minimum and maximum values) manually.
+	 * Sets the axis range (minimum and maximum values) manually.
 	 * <p>
 	 * Specifies both minimum and maximum value for the axis. This automatically
 	 * disables automatic range calculation.
@@ -361,7 +361,7 @@ public class WAxis {
 	}
 
 	/**
-	 * Set the label interval.
+	 * Sets the label interval.
 	 * <p>
 	 * Specifies the interval for displaying labels (and ticks) on the axis. The
 	 * default value is 0.0, and indicates that the interval should be computed
@@ -389,9 +389,9 @@ public class WAxis {
 	}
 
 	/**
-	 * Set the label format.
+	 * Sets the label format.
 	 * <p>
-	 * Set a format string which is used to format values, both for the axis
+	 * Sets a format string which is used to format values, both for the axis
 	 * labels as well as data series values (see
 	 * {@link WDataSeries#setLabelsEnabled(Axis axis, boolean enabled)
 	 * WDataSeries#setLabelsEnabled()}).
@@ -574,7 +574,7 @@ public class WAxis {
 	}
 
 	/**
-	 * Set the axis title.
+	 * Sets the axis title.
 	 * <p>
 	 * The default title is empty.
 	 * <p>
@@ -600,7 +600,7 @@ public class WAxis {
 	}
 
 	/**
-	 * Set the axis title font.
+	 * Sets the axis title font.
 	 * <p>
 	 * The default title font is a 12 point Sans Serif font.
 	 * <p>
