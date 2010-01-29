@@ -7,6 +7,7 @@
   <property name="src.java.dir" value="src"/>
   <property name="build.dir" value="build"/>
   <property name="dist.dir" value="dist"/>
+  <property name="archives.dir" value="archives"/>
   <property name="javadoc.dir" value="doc/javadoc"/>
   <property name="userguide.dir" value="doc/userguide"/>
 
@@ -30,8 +31,9 @@
   
   <!-- Clean up -->
   <target name="clean">
-    <delete dir="${build.dir}"/>
-    <delete dir="${dist.dir}"/>
+    <delete dir="${build.dir}" />
+    <delete dir="${dist.dir}" />
+    <delete dir="${archives.dir}" />
   </target>
 
   <!-- Compile Java source -->
@@ -110,7 +112,24 @@
     </copy>
   </target>
 
-  <target name="release" depends="dist,javadoc,asciidoc" >
-    <delete dir="${build.dir}"/>
+  <target name="archive" >
+    <delete dir="${build.dir}" />
+    <mkdir dir="${archives.dir}" />
+    <zip destfile="${archives.dir}/jwt-${proj.version}.zip">
+      <zipfileset 
+        dir="." 
+        prefix="jwt-${proj.version}/" 
+        excludes=".git/**,.git*,${archives.dir}/**" />
+    </zip>
+    <tar destfile="${archives.dir}/jwt-${proj.version}.tar.gz" compression="gzip">
+      <tarfileset 
+        dir="." 
+        prefix="jwt-${proj.version}/" 
+        excludes=".git/**,.git*,${archives.dir}/**" />
+    </tar>
+  </target>
+    
+
+  <target name="release" depends="dist,javadoc,asciidoc,archive" >
   </target>
 </project>

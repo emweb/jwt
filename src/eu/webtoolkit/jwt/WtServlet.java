@@ -43,8 +43,6 @@ public abstract class WtServlet extends HttpServlet {
 	static final String Hybrid_html;
 	static final String JQuery_js;
 
-	private String resourcePath;
-
 	static {
 		Boot_html = readFile("/eu/webtoolkit/jwt/skeletons/Boot.html");
 		Plain_html = readFile("/eu/webtoolkit/jwt/skeletons/Plain.html");
@@ -72,14 +70,11 @@ public abstract class WtServlet extends HttpServlet {
 	 */
 	public WtServlet() {
 		this.configuration = new Configuration();
-
-		this.resourcePath = configuration.getProperties().get("ResourcesURL");
-		if (resourcePath == null)
-			resourcePath = "/wt-resources/";
 	}
 
 	void handleRequest(HttpServletRequest request, HttpServletResponse response) {
 		String pathInfo = request.getPathInfo();
+		String resourcePath = configuration.getProperty(WApplication.RESOURCES_URL);
 		if (pathInfo != null && pathInfo.startsWith(resourcePath)) {
 			String fileName = "wt-resources/";
 			pathInfo = pathInfo.substring(resourcePath.length());

@@ -196,6 +196,7 @@ public class WTreeView extends WAbstractItemView {
 							}
 						});
 		this.setStyleClass("Wt-treeview");
+		this.setSelectable(false);
 		String CSS_RULES_NAME = "Wt::WTreeView";
 		this.expandConfig_ = new ToggleButtonConfig(this);
 		this.expandConfig_.addState("Wt-expand");
@@ -317,7 +318,6 @@ public class WTreeView extends WAbstractItemView {
 		this.headerContainer_.setStyleClass("Wt-header headerrh cwidth");
 		this.headers_ = new WContainerWidget(this.headerContainer_);
 		this.headers_.setStyleClass("Wt-headerdiv headerrh");
-		this.headers_.setSelectable(false);
 		this.headerHeightRule_ = new WCssTemplateRule("#" + this.getId()
 				+ " .headerrh");
 		app.getStyleSheet().addRule(this.headerHeightRule_);
@@ -1172,7 +1172,6 @@ public class WTreeView extends WAbstractItemView {
 				(WTreeViewNode) null);
 		this.rootNode_.resize(new WLength(100, WLength.Unit.Percentage),
 				new WLength(1));
-		this.rootNode_.setSelectable(false);
 		if (WApplication.getInstance().getEnvironment().hasAjax()) {
 			this.rootNode_.clicked().addListener(this.itemClickedJS_);
 			this.rootNode_.doubleClicked().addListener(
@@ -2122,17 +2121,6 @@ public class WTreeView extends WAbstractItemView {
 			this.firstRenderedRow_ += count;
 		}
 		this.scheduleRerender(WAbstractItemView.RenderState.NeedAdjustViewPort);
-	}
-
-	private void convertToRaw(SortedSet<WModelIndex> set, List<Object> result) {
-		for (Iterator<WModelIndex> i_it = set.iterator(); i_it.hasNext();) {
-			WModelIndex i = i_it.next();
-			Object rawIndex = this.model_.toRawIndex(i);
-			if (rawIndex != null) {
-				result.add(rawIndex);
-			}
-		}
-		set.clear();
 	}
 
 	private WContainerWidget getHeaderRow() {

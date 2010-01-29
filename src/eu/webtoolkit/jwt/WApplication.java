@@ -1244,14 +1244,19 @@ public class WApplication extends WObject {
 	 * Returns the URL at which the resources are deployed.
 	 */
 	public static String getResourcesUrl() {
-		String path = "/wt-resources/";
-		readConfigurationProperty("resourcesURL", path);
-		String result = WApplication.getInstance().getEnvironment()
-				.getDeploymentPath();
-		if (result.length() != 0 && result.charAt(result.length() - 1) == '/') {
-			return result + path.substring(1);
+		String path = WApplication.getInstance().session_.getController()
+				.getConfiguration().getProperty(WApplication.RESOURCES_URL);
+		if (path == "/wt-resources/") {
+			String result = WApplication.getInstance().getEnvironment()
+					.getDeploymentPath();
+			if (result.length() != 0
+					&& result.charAt(result.length() - 1) == '/') {
+				return result + path.substring(1);
+			} else {
+				return result + path;
+			}
 		} else {
-			return result + path;
+			return path;
 		}
 	}
 
@@ -1844,4 +1849,5 @@ public class WApplication extends WObject {
 			0x00, 0x21, 0xf9, 0x04, 0x01, 0x00, 0x00, 0x00, 0x00, 0x2c, 0x00,
 			0x00, 0x00, 0x00, 0x01, 0x00, 0x01, 0x00, 0x00, 0x02, 0x02, 0x44,
 			0x01, 0x00, 0x3b };
+	public static String RESOURCES_URL = "resourcesURL";
 }

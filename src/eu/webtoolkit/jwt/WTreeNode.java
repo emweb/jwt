@@ -348,8 +348,8 @@ public class WTreeNode extends WCompositeWidget {
 	 * Sets the image pack for this (sub)tree (<b>deprecated</b>).
 	 * <p>
 	 * 
-	 * @deprecated This method does not do anything since {@link } 3.1.1, as the
-	 *             tree is now styled based on the current CSS theme.
+	 * @deprecated This method does not do anything since 3.1.1, as the tree is
+	 *             now styled based on the current CSS theme.
 	 */
 	public void setImagePack(String url) {
 	}
@@ -654,8 +654,8 @@ public class WTreeNode extends WCompositeWidget {
 	 * The image pack that is used for this tree node (<b>deprecated</b>).
 	 * <p>
 	 * 
-	 * @deprecated This method returns &quot;&quot; since {@link } 3.1.1, as the
-	 *             image pack is no longer used in favour of the CSS themes.
+	 * @deprecated This method returns &quot;&quot; since 3.1.1, as the image
+	 *             pack is no longer used in favour of the CSS themes.
 	 */
 	protected String getImagePack() {
 		return "";

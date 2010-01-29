@@ -867,7 +867,7 @@ public class WAxis {
 							if (findMaximum) {
 								maximum = Math.max(v, maximum);
 							}
-							if (findMaximum) {
+							if (findMinimum) {
 								minimum = Math.min(v, minimum);
 							}
 						}

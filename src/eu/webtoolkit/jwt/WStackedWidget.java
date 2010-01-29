@@ -43,7 +43,7 @@ public class WStackedWidget extends WContainerWidget {
 		this
 				.setJavaScriptMember(
 						"wtResize",
-						"function(self, w, h){var j,jl,c;self.style.height=h+'px';for (j=0, jl=self.childNodes.length; j<jl; ++j){c=self.childNodes[j];c.style.height = self.style.height;}}");
+						"function(self, w, h){var j,jl,c;self.style.height=h+'px';for (j=0, jl=self.childNodes.length; j<jl; ++j){c=self.childNodes[j];if (c.wtResize) c.wtResize(c, w, h);else if (c.style.height != self.style.height)c.style.height = self.style.height;}}");
 	}
 
 	/**

@@ -55,6 +55,8 @@ public class Configuration {
 	 * Creates a default configuration.
 	 */
 	public Configuration() {
+		properties_.put(WApplication.RESOURCES_URL, "/wt-resources/");
+		
 		botList.add(".*Googlebot.*");
 		botList.add(".*msnbot.*");
 		botList.add(".*Slurp.*");
@@ -73,6 +75,8 @@ public class Configuration {
 	 * @param configurationFile
 	 */
 	public Configuration(File configurationFile) {
+		properties_.put(WApplication.RESOURCES_URL, "/wt-resources/");
+		
 		final String errorMessage = "Error parsing configuration file: ";
 
 		if (configurationFile != null) {

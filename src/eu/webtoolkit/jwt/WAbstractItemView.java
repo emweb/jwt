@@ -127,15 +127,20 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	 */
 	public void sortByColumn(int column, SortOrder order) {
 		if (this.currentSortColumn_ != -1) {
-			this.headerSortIconWidget(this.currentSortColumn_).setStyleClass(
-					"Wt-tv-sh Wt-tv-sh-none");
+			WText t = this.headerSortIconWidget(this.currentSortColumn_);
+			if (t != null) {
+				t.setStyleClass("Wt-tv-sh Wt-tv-sh-none");
+			}
 		}
 		this.currentSortColumn_ = column;
 		this.columnInfo(column).sortOrder = order;
 		if (this.renderState_ != WAbstractItemView.RenderState.NeedRerender) {
-			this.headerSortIconWidget(this.currentSortColumn_).setStyleClass(
-					order == SortOrder.AscendingOrder ? "Wt-tv-sh Wt-tv-sh-up"
-							: "Wt-tv-sh Wt-tv-sh-down");
+			WText t = this.headerSortIconWidget(this.currentSortColumn_);
+			if (t != null) {
+				t
+						.setStyleClass(order == SortOrder.AscendingOrder ? "Wt-tv-sh Wt-tv-sh-up"
+								: "Wt-tv-sh Wt-tv-sh-down");
+			}
 		}
 		this.model_.sort(column, order);
 	}
@@ -1094,6 +1099,17 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 			}
 		}
 		return result + 1;
+	}
+
+	protected void convertToRaw(SortedSet<WModelIndex> set, List<Object> result) {
+		for (Iterator<WModelIndex> i_it = set.iterator(); i_it.hasNext();) {
+			WModelIndex i = i_it.next();
+			Object rawIndex = this.model_.toRawIndex(i);
+			if (rawIndex != null) {
+				result.add(rawIndex);
+			}
+		}
+		set.clear();
 	}
 
 	static String OneLine = "<div>&nbsp;</div>";
