@@ -252,16 +252,12 @@ class WebSession {
 									.append(ackIdE);
 						}
 						if (this.pollResponse_ != null) {
+							if (signalE.equals("poll")) {
+								this.renderer_.letReloadJS(this.pollResponse_,
+										true);
+							}
 							this.pollResponse_.flush();
 							this.pollResponse_ = null;
-							if (signalE.equals("poll")) {
-								this
-										.log("notice")
-										.append(
-												"Concurrent poll requests: sending reload.");
-								this.renderer_.letReloadJS(handler
-										.getResponse(), true);
-							}
 						}
 						if (!signalE.equals("res") && !signalE.equals("poll")) {
 							try {

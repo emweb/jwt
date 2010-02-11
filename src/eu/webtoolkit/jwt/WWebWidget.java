@@ -520,7 +520,7 @@ public abstract class WWebWidget extends WWidget {
 		}
 		if (value.length() == 0) {
 			if (i != null) {
-				this.otherImpl_.jsMembers_.remove(i);
+				this.otherImpl_.jsMembers_.remove(name);
 			} else {
 				return;
 			}

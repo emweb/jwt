@@ -875,6 +875,10 @@ public class WTreeNode extends WCompositeWidget {
 		if (!this.visible_) {
 			this.layout_.getRowAt(0).hide();
 			this.expandIcon_.hide();
+			this.layout_.getElementAt(0, 0)
+					.resize(new WLength(0), WLength.Auto);
+			this.layout_.getElementAt(1, 0)
+					.resize(new WLength(0), WLength.Auto);
 		}
 		WTreeNode parent = this.getParentNode();
 		if (parent != null && !parent.childrenDecorated_) {

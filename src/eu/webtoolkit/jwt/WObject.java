@@ -45,7 +45,7 @@ public class WObject {
 	private String objectName_;
 	private static int nextObjId_;
 
-	ArrayList<SignalImpl.Listener> listeners;
+	ArrayList<SignalImpl.ListenerSignalPair> listenerSignalsPairs;
 
 	/**
 	 * Default constructor.
@@ -161,5 +161,11 @@ public class WObject {
 	 */
 	public static WString tr(String intlKey) {
 		return WString.tr(intlKey);
+	}
+	
+	public void remove() {
+		if (listenerSignalsPairs != null) 
+			for (SignalImpl.ListenerSignalPair lsp : listenerSignalsPairs)
+				lsp.signal.removeListener(lsp.listener);
 	}
 }

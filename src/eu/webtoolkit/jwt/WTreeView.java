@@ -985,7 +985,7 @@ public class WTreeView extends WAbstractItemView {
 				+ (this.column1Fixed_ ? ".firstChild" : "")
 				+ ",allw_1=0, allw=0,c0id = h.lastChild.className.split(' ')[0],c0r = WT.getCssRule('#"
 				+ this.getId()
-				+ " .' + c0id);if (WT.isHidden(e)) return;for (var i=0, length=hc.childNodes.length; i < length; ++i) {\nif (hc.childNodes[i].className) {\nvar cl = hc.childNodes[i].className.split(' ')[0],\nr = WT.getCssRule('#"
+				+ " .' + c0id);if (WT.isHidden(e) || h.offsetWidth - hc.offsetWidth < 8) return;for (var i=0, length=hc.childNodes.length; i < length; ++i) {\nif (hc.childNodes[i].className) {\nvar cl = hc.childNodes[i].className.split(' ')[0],\nr = WT.getCssRule('#"
 				+ this.getId()
 				+ " .' + cl);\nallw_1 += WT.pxself(r, 'width') + 7;\n}}\nif (!c0r.style.width) c0r.style.width = (h.offsetWidth - hc.offsetWidth - 8) + 'px';allw = allw_1 + WT.pxself(c0r, 'width') + "
 				+ extra + ";\n";
@@ -1184,6 +1184,16 @@ public class WTreeView extends WAbstractItemView {
 		this.setRootNodeStyle();
 		wrapRoot.addWidget(this.rootNode_);
 		this.adjustToViewport();
+	}
+
+	void scheduleRerender(WAbstractItemView.RenderState what) {
+		if (what == WAbstractItemView.RenderState.NeedRerender
+				|| what == WAbstractItemView.RenderState.NeedRerenderData) {
+			if (this.rootNode_ != null)
+				this.rootNode_.remove();
+			this.rootNode_ = null;
+		}
+		super.scheduleRerender(what);
 	}
 
 	void modelColumnsInserted(WModelIndex parent, int start, int end) {
@@ -1485,8 +1495,9 @@ public class WTreeView extends WAbstractItemView {
 									childIndex, s);
 						}
 					}
+					WTreeViewNode node = s.getNode();
 					s.setRows(s.getRows() - this.removedHeight_);
-					s.getNode().adjustChildrenHeight(-this.removedHeight_);
+					node.adjustChildrenHeight(-this.removedHeight_);
 				}
 			}
 		}
@@ -1908,10 +1919,8 @@ public class WTreeView extends WAbstractItemView {
 							node.setTopSpacerHeight(rowStubs);
 							rowStubs = 0;
 						}
-						assert this.rootNode_.getRowCount() == 1;
 						WTreeViewNode n = new WTreeViewNode(this, childIndex,
 								childHeight - 1, i == childCount - 1, node);
-						assert this.rootNode_.getRowCount() == 1;
 						node.getChildContainer().addWidget(n);
 						int nestedNodeRow = nodeRow;
 						nestedNodeRow = this.adjustRenderedNode(n,
@@ -1978,7 +1987,6 @@ public class WTreeView extends WAbstractItemView {
 			}
 			nodeRow += nch;
 		}
-		assert this.rootNode_.getRowCount() == 1;
 		return this.isExpanded(index) ? nodeRow : theNodeRow;
 	}
 

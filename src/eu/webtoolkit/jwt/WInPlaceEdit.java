@@ -69,6 +69,7 @@ public class WInPlaceEdit extends WCompositeWidget {
 	public WInPlaceEdit(CharSequence text, WContainerWidget parent) {
 		super(parent);
 		this.valueChanged_ = new Signal1<WString>(this);
+		this.emptyText_ = new WString();
 		this.c1_ = new AbstractSignal.Connection();
 		this.c2_ = new AbstractSignal.Connection();
 		this.setImplementation(this.impl_ = new WContainerWidget());
@@ -128,21 +129,6 @@ public class WInPlaceEdit extends WCompositeWidget {
 			}
 		});
 		this.edit_.escapePressed().setPreventDefault(true);
-		this.edit_.blurred().addListener(this.edit_, new Signal.Listener() {
-			public void trigger() {
-				WInPlaceEdit.this.edit_.hide();
-			}
-		});
-		this.edit_.blurred().addListener(this.text_, new Signal.Listener() {
-			public void trigger() {
-				WInPlaceEdit.this.text_.show();
-			}
-		});
-		this.edit_.blurred().addListener(this, new Signal.Listener() {
-			public void trigger() {
-				WInPlaceEdit.this.cancel();
-			}
-		});
 		this.setButtonsEnabled();
 	}
 
@@ -163,7 +149,7 @@ public class WInPlaceEdit extends WCompositeWidget {
 	 * @see WInPlaceEdit#setText(CharSequence text)
 	 */
 	public WString getText() {
-		return this.text_.getText();
+		return new WString(this.edit_.getText());
 	}
 
 	/**
@@ -173,8 +159,33 @@ public class WInPlaceEdit extends WCompositeWidget {
 	 * @see WInPlaceEdit#getText()
 	 */
 	public void setText(CharSequence text) {
-		this.text_.setText(text);
+		if (!text.equals(WString.Empty)) {
+			this.text_.setText(text);
+		} else {
+			this.text_.setText(this.emptyText_);
+		}
 		this.edit_.setText(text.toString());
+	}
+
+	/**
+	 * Sets the empty text to be shown when the field is empty and not editable.
+	 * <p>
+	 * 
+	 * @see WInPlaceEdit#getEmptyText()
+	 */
+	public void setEmptyText(CharSequence emptyText) {
+		this.emptyText_ = WString.toWString(emptyText);
+	}
+
+	/**
+	 * Returns the empty text to be shown when the field is empty and not
+	 * editable.
+	 * <p>
+	 * 
+	 * @see WInPlaceEdit#setEmptyText(CharSequence emptyText)
+	 */
+	public WString getEmptyText() {
+		return this.emptyText_;
 	}
 
 	/**
@@ -277,17 +288,6 @@ public class WInPlaceEdit extends WCompositeWidget {
 							WInPlaceEdit.this.cancel_.hide();
 						}
 					});
-			this.edit_.blurred().addListener(this.save_, new Signal.Listener() {
-				public void trigger() {
-					WInPlaceEdit.this.save_.hide();
-				}
-			});
-			this.edit_.blurred().addListener(this.cancel_,
-					new Signal.Listener() {
-						public void trigger() {
-							WInPlaceEdit.this.cancel_.hide();
-						}
-					});
 			this.save_.clicked().addListener(this.save_,
 					new Signal1.Listener<WMouseEvent>() {
 						public void trigger(WMouseEvent e1) {
@@ -376,7 +376,11 @@ public class WInPlaceEdit extends WCompositeWidget {
 	private void save() {
 		this.edit_.hide();
 		this.text_.show();
-		this.text_.setText(this.edit_.getText());
+		if (!this.edit_.getText().equals(WString.Empty.toString())) {
+			this.text_.setText(this.edit_.getText());
+		} else {
+			this.text_.setText(this.emptyText_);
+		}
 		this.edit_.enable();
 		this.valueChanged().trigger(new WString(this.edit_.getText()));
 	}
@@ -388,6 +392,7 @@ public class WInPlaceEdit extends WCompositeWidget {
 	private Signal1<WString> valueChanged_;
 	private WContainerWidget impl_;
 	private WText text_;
+	private WString emptyText_;
 	private WLineEdit edit_;
 	private WPushButton save_;
 	private WPushButton cancel_;

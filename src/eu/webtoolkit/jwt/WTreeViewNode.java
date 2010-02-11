@@ -405,11 +405,14 @@ class WTreeViewNode extends WTable {
 	}
 
 	public void normalizeSpacers() {
-		if (this.childrenLoaded_ && this.getChildContainer().getCount() == 2
-				&& this.topSpacer() != null && this.bottomSpacer() != null) {
-			this.addTopSpacerHeight(this.getBottomSpacerHeight());
-			if (this.bottomSpacer() != null)
-				this.bottomSpacer().remove();
+		if (this.childrenLoaded_ && this.getChildContainer().getCount() == 2) {
+			RowSpacer top = this.topSpacer();
+			RowSpacer bottom = this.bottomSpacer();
+			if (top != null && bottom != null && top != bottom) {
+				top.setRows(top.getRows() + bottom.getRows());
+				if (bottom != null)
+					bottom.remove();
+			}
 		}
 	}
 

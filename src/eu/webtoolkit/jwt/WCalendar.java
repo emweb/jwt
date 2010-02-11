@@ -485,7 +485,7 @@ public class WCalendar extends WCompositeWidget {
 		this.currentMonth_ = currentDay.getMonth();
 		StringWriter text = new StringWriter();
 		text
-				.append("<table class=${table-class} cellspacing=\"0\" cellpadding=\"0\"><caption>${nav-prev} ${month} ${year} ${nav-next}</caption><tr>");
+				.append("<table class=\"${table-class}\" cellspacing=\"0\" cellpadding=\"0\"><caption>${nav-prev} ${month} ${year} ${nav-next}</caption><tr>");
 		for (int j = 0; j < 7; ++j) {
 			text.append("<th title=\"${t").append(String.valueOf(j)).append(
 					"}\" scope=\"col\">${d").append(String.valueOf(j)).append(

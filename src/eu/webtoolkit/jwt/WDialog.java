@@ -130,7 +130,7 @@ public class WDialog extends WCompositeWidget {
 									+ ") + 'px';d.style.top=Math.round((ws.y - d.clientHeight)/2"
 									+ (app.getEnvironment().getAgent() == WEnvironment.UserAgent.IE6 ? "+ document.documentElement.scrollTop"
 											: "")
-									+ ") + 'px';d.style.marginLeft='0px';d.style.marginTop='0px';}d.wtResize(d, d.offsetWidth, d.offsetHeight);}};",
+									+ ") + 'px';d.style.marginLeft='0px';d.style.marginTop='0px';}}};",
 							false);
 			app
 					.getStyleSheet()

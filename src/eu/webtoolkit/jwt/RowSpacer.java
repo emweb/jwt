@@ -11,16 +11,21 @@ class RowSpacer extends WWebWidget {
 		super();
 		this.node_ = node;
 		this.height_ = 0;
-		this.setRows(height);
+		this.resize(WLength.Auto, new WLength(0));
 		this.setInline(false);
 		this.setStyleClass("Wt-spacer");
 	}
 
 	public void setRows(int height, boolean force) {
-		if (force || height != this.height_) {
-			this.height_ = height;
-			this.resize(WLength.Auto, WLength.multiply(this.node_.getView()
-					.getRowHeight(), height));
+		if (height == 0) {
+			if (this != null)
+				this.remove();
+		} else {
+			if (force || height != this.height_) {
+				this.height_ = height;
+				this.resize(WLength.Auto, WLength.multiply(this.node_.getView()
+						.getRowHeight(), height));
+			}
 		}
 	}
 

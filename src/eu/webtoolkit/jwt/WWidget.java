@@ -53,6 +53,7 @@ public abstract class WWidget extends WObject {
 			;
 		}
 		this.renderOk();
+		super.remove();
 	}
 
 	/**

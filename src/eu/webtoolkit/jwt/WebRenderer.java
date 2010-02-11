@@ -101,7 +101,7 @@ class WebRenderer implements SlotLearnerInterface {
 	public void letReloadJS(WebResponse response, boolean newSession,
 			boolean embedded) throws IOException {
 		if (!embedded) {
-			this.setHeaders(response, "text/plain; charset=UTF-8");
+			this.setHeaders(response, "text/javascript; charset=UTF-8");
 		}
 		response.out().append("window.location.reload(true);");
 	}
@@ -248,7 +248,7 @@ class WebRenderer implements SlotLearnerInterface {
 	}
 
 	private void serveJavaScriptUpdate(WebResponse response) throws IOException {
-		this.setHeaders(response, "text/plain; charset=UTF-8");
+		this.setHeaders(response, "text/javascript; charset=UTF-8");
 		this.collectJavaScript();
 		response.out().append(this.collectedJS1_.toString()).append(
 				this.session_.getApp().getJavaScriptClass()).append(

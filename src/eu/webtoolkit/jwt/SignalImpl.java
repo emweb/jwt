@@ -15,6 +15,16 @@ import eu.webtoolkit.jwt.AbstractSignal.Connection;
 class SignalImpl {
 	static interface Listener {
 	}
+	
+	static class ListenerSignalPair {
+		public ListenerSignalPair(Listener listener, SignalImpl signal) {
+			this.listener = listener;
+			this.signal = signal;
+		}
+
+		Listener listener;
+		SignalImpl signal;
+	}
 
 	private final ArrayList<Listener> observerCatalog = new ArrayList<Listener>();
 	private final ArrayList<WeakReference<Listener>> weakObserverCatalog = new ArrayList<WeakReference<Listener>>();
@@ -28,9 +38,9 @@ class SignalImpl {
 	public Connection addListener(WObject listenerOwner, Listener listener) {
 		if (listenerOwner != null) {
 			weakObserverCatalog.add(new WeakReference<Listener>(listener));
-			if (listenerOwner.listeners == null)
-				listenerOwner.listeners = new ArrayList<Listener>();
-			listenerOwner.listeners.add(listener);
+			if (listenerOwner.listenerSignalsPairs == null)
+				listenerOwner.listenerSignalsPairs = new ArrayList<ListenerSignalPair>();
+			listenerOwner.listenerSignalsPairs.add(new ListenerSignalPair(listener, this));
 		} else
 			observerCatalog.add(listener);
 
