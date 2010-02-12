@@ -29,7 +29,7 @@ public class HelloWidgetSetApplication extends WApplication {
          * will only work if your application is hosted on the same domain as
          * the web page in which it is embedded.
          */
-        setAjaxMethod(AjaxMethod.XMLHttpRequest);
+        //setAjaxMethod(AjaxMethod.XMLHttpRequest);
 
         WContainerWidget top;
 

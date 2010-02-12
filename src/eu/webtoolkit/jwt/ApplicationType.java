@@ -32,7 +32,7 @@ public enum ApplicationType {
 	 * from within the &lt;body&gt; (since it needs access to the &lt;body&gt;).
 	 * <p>
 	 * <p>
-	 * <i><b>Note: </b>A WidgetSet application requires JavaScript support</i>
+	 * <i><b>Note:</b>A WidgetSet application requires JavaScript support</i>
 	 * </p>
 	 * 
 	 * @see WApplication#bindWidget(WWidget widget, String domId)

@@ -124,8 +124,8 @@ public class WebRequest extends HttpServletRequestWrapper {
 		parameters_ = new HashMap<String, List<String>>(parameterMap.size());
 		files_ = new HashMap<String, UploadedFile>();
 
-		for (String name : parameterMap.keySet())
-			parameters_.put(name, new ArrayList<String>(Arrays.asList(parameterMap.get(name))));
+		for (Map.Entry<String, String[]> i : parameterMap.entrySet())
+		  parameters_.put(i.getKey(), new ArrayList<String>(Arrays.asList(i.getValue())));
 
 		if (FileUploadBase.isMultipartContent(this)) {
 			try {

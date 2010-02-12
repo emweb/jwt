@@ -670,36 +670,47 @@ class WebSession {
 			WebSession.BootstrapOption option) {
 		switch (option) {
 		case KeepInternalPath: {
+			String url = "";
 			String internalPath = "";
 			if (this.applicationName_.length() == 0) {
 				internalPath = this.app_ != null ? this.app_.getInternalPath()
 						: this.env_.getInternalPath();
 				if (internalPath.length() > 1) {
-					return this.appendSessionQuery("?_="
-							+ DomElement.urlEncodeS(internalPath));
-				} else {
-					return this.appendSessionQuery("");
+					url = "?_=" + DomElement.urlEncodeS(internalPath);
+				}
+				if (this.getType() == EntryPointType.WidgetSet) {
+					url = this.applicationUrl_ + url;
 				}
 			} else {
 				internalPath = WebSession.Handler.getInstance().getRequest()
 						.getPathInfo();
+				if (this.getType() != EntryPointType.WidgetSet) {
+					if (internalPath.length() > 1) {
+						String lastPart = internalPath.substring(internalPath
+								.lastIndexOf('/') + 1);
+						url = lastPart;
+					} else {
+						url = this.applicationName_;
+					}
+				} else {
+					url = this.applicationUrl_ + internalPath;
+				}
 			}
-			if (internalPath.length() > 1) {
-				String lastPart = internalPath.substring(internalPath
-						.lastIndexOf('/') + 1);
-				return this.appendSessionQuery(lastPart);
+			return this.appendSessionQuery(url);
+		}
+		case ClearInternalPath: {
+			if (this.getType() != EntryPointType.WidgetSet) {
+				if (WebSession.Handler.getInstance().getRequest().getPathInfo()
+						.length() > 1) {
+					return this.appendSessionQuery(this.baseUrl_
+							+ this.applicationName_);
+				} else {
+					return this.appendSessionQuery(this.applicationName_);
+				}
 			} else {
-				return this.appendSessionQuery(this.applicationName_);
+				return this.appendSessionQuery(this.applicationUrl_);
 			}
 		}
-		case ClearInternalPath:
-			if (WebSession.Handler.getInstance().getRequest().getPathInfo()
-					.length() > 1) {
-				return this.appendSessionQuery(this.baseUrl_
-						+ this.applicationName_);
-			} else {
-				return this.appendSessionQuery(this.applicationName_);
-			}
 		default:
 			assert false;
 		}
@@ -1130,12 +1141,12 @@ class WebSession {
 				+ this.env_.getHostName() + this.baseUrl_;
 		this.bookmarkUrl_ = this.applicationName_;
 		if (this.applicationName_.length() == 0) {
-			this.bookmarkUrl_ = this.baseUrl_ + this.applicationName_;
+			this.bookmarkUrl_ = this.applicationUrl_;
 		}
 		if (this.getType() == EntryPointType.WidgetSet) {
 			this.applicationUrl_ = this.env_.getUrlScheme() + "://"
 					+ this.env_.getHostName() + this.applicationUrl_;
-			this.bookmarkUrl_ = this.absoluteBaseUrl_ + this.bookmarkUrl_;
+			this.bookmarkUrl_ = this.applicationUrl_;
 		}
 		String path = request.getPathInfo();
 		if (path.length() == 0 && hashE != null) {

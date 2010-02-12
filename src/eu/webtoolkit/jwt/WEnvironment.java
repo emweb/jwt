@@ -754,7 +754,7 @@ public class WEnvironment {
 		for (int pos = 0; pos != -1;) {
 			int komma_pos = ips.indexOf(',', pos);
 			this.clientAddress_ = ips.substring(pos, pos + komma_pos);
-			this.clientAddress_.trim();
+			this.clientAddress_ = this.clientAddress_.trim();
 			if (!this.clientAddress_.startsWith("10.")
 					&& !this.clientAddress_.startsWith("172.16.")
 					&& !this.clientAddress_.startsWith("192.168.")) {
@@ -790,8 +790,8 @@ public class WEnvironment {
 			String cookieValue = e != -1 && cookies.get(i).length() > e + 1 ? cookies
 					.get(i).substring(e + 1)
 					: "";
-			cookieName.trim();
-			cookieValue.trim();
+			cookieName = cookieName.trim();
+			cookieValue = cookieValue.trim();
 			try {
 				cookieName = java.net.URLDecoder.decode(cookieName, "UTF-8");
 			} catch (UnsupportedEncodingException eee) {

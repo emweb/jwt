@@ -36,7 +36,7 @@ class JavaScriptEvent {
 
 	public void get(WebRequest request, String se) {
 		this.type = getStringParameter(request, se + "type");
-		this.type.toLowerCase();
+		this.type = this.type.toLowerCase();
 		this.clientX = parseIntParameter(request, se + "clientX", 0);
 		this.clientY = parseIntParameter(request, se + "clientY", 0);
 		this.documentX = parseIntParameter(request, se + "documentX", 0);
