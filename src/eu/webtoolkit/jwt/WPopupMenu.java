@@ -236,7 +236,7 @@ public class WPopupMenu extends WCompositeWidget {
 	public void popup(WPoint p) {
 		this.popupImpl();
 		WApplication.getInstance().doJavaScript(
-				"Wt3_1_0.positionXY('" + this.getId() + "',"
+				"Wt3_1_1.positionXY('" + this.getId() + "',"
 						+ String.valueOf(p.getX()) + ","
 						+ String.valueOf(p.getY()) + ");");
 	}

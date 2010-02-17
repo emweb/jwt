@@ -152,9 +152,9 @@ public class WVirtualImage extends WCompositeWidget {
 	 */
 	public void enableDragging() {
 		this.mouseDownJS_
-				.setJavaScript("function(obj, event) {  var pc = Wt3_1_0.pageCoordinates(event);  obj.setAttribute('dsx', pc.x);  obj.setAttribute('dsy', pc.y);}");
+				.setJavaScript("function(obj, event) {  var pc = Wt3_1_1.pageCoordinates(event);  obj.setAttribute('dsx', pc.x);  obj.setAttribute('dsy', pc.y);}");
 		this.mouseMovedJS_
-				.setJavaScript("function(obj, event) {var WT= Wt3_1_0;var lastx = obj.getAttribute('dsx');var lasty = obj.getAttribute('dsy');if (lastx != null && lastx != '') {var nowxy = WT.pageCoordinates(event);var img = "
+				.setJavaScript("function(obj, event) {var WT= Wt3_1_1;var lastx = obj.getAttribute('dsx');var lasty = obj.getAttribute('dsy');if (lastx != null && lastx != '') {var nowxy = WT.pageCoordinates(event);var img = "
 						+ this.contents_.getJsRef()
 						+ ";img.style.left = (WT.pxself(img, 'left')+nowxy.x-lastx) + 'px';img.style.top = (WT.pxself(img, 'top')+nowxy.y-lasty) + 'px';obj.setAttribute('dsx', nowxy.x);obj.setAttribute('dsy', nowxy.y);}}");
 		this.mouseUpJS_.setJavaScript("function(obj, event) {"

@@ -350,7 +350,7 @@ public class WTreeView extends WAbstractItemView {
 		app
 				.declareJavaScriptFunction(
 						"getItem",
-						"function(event) {var columnId = -1, nodeId = null, selected = false, drop = false, el = null;var t = event.target || event.srcElement;while (t) {if (t.className.indexOf('c1 rh') == 0) {if (columnId == -1)columnId = 0;} else if (t.className.indexOf('Wt-tv-c') == 0) {if (t.className.indexOf('Wt-tv-c') == 0)columnId = t.className.split(' ')[0].substring(7) * 1;else if (columnId == -1)columnId = 0;if (t.getAttribute('drop') === 'true')drop = true;el = t;} else if (t.className == 'Wt-tv-node') {nodeId = t.id;break;}if (t.className === 'Wt-selected')selected = true;t = t.parentNode;if (Wt3_1_0.hasTag(t, 'BODY'))break;}return { columnId: columnId, nodeId: nodeId, selected: selected, drop: drop, el: el };}");
+						"function(event) {var columnId = -1, nodeId = null, selected = false, drop = false, el = null;var t = event.target || event.srcElement;while (t) {if (t.className.indexOf('c1 rh') == 0) {if (columnId == -1)columnId = 0;} else if (t.className.indexOf('Wt-tv-c') == 0) {if (t.className.indexOf('Wt-tv-c') == 0)columnId = t.className.split(' ')[0].substring(7) * 1;else if (columnId == -1)columnId = 0;if (t.getAttribute('drop') === 'true')drop = true;el = t;} else if (t.className == 'Wt-tv-node') {nodeId = t.id;break;}if (t.className === 'Wt-selected')selected = true;t = t.parentNode;if (Wt3_1_1.hasTag(t, 'BODY'))break;}return { columnId: columnId, nodeId: nodeId, selected: selected, drop: drop, el: el };}");
 		this.itemClickedJS_.setJavaScript("function(obj, event) {var item="
 				+ app.getJavaScriptClass()
 				+ ".getItem(event);if (item.columnId != -1) {"
@@ -385,9 +385,9 @@ public class WTreeView extends WAbstractItemView {
 								"item.columnId", "'mouseup'", "''", "''")
 				+ ";}}");
 		this.resizeHandleMDownJS_
-				.setJavaScript("function(obj, event) {var pc = Wt3_1_0.pageCoordinates(event);obj.setAttribute('dsx', pc.x);}");
+				.setJavaScript("function(obj, event) {var pc = Wt3_1_1.pageCoordinates(event);obj.setAttribute('dsx', pc.x);}");
 		this.resizeHandleMMovedJS_
-				.setJavaScript("function(obj, event) {var WT = Wt3_1_0,lastx = obj.getAttribute('dsx'),t = "
+				.setJavaScript("function(obj, event) {var WT = Wt3_1_1,lastx = obj.getAttribute('dsx'),t = "
 						+ this.contents_.getJsRef()
 						+ ".firstChild,h="
 						+ this.headers_.getJsRef()
@@ -399,7 +399,7 @@ public class WTreeView extends WAbstractItemView {
 						+ this.getJsRef()
 						+ ";s.adjustColumns();obj.setAttribute('dsx', nowxy.x);WT.cancelEvent(event);  }}");
 		this.resizeHandleMUpJS_
-				.setJavaScript("function(obj, event) {obj.removeAttribute('dsx');Wt3_1_0.cancelEvent(event);}");
+				.setJavaScript("function(obj, event) {obj.removeAttribute('dsx');Wt3_1_1.cancelEvent(event);}");
 		this.tieContentsHeaderScrollJS_
 				.setJavaScript("function(obj, event) {"
 						+ this.headerContainer_.getJsRef()
@@ -411,12 +411,12 @@ public class WTreeView extends WAbstractItemView {
 		if (app.getEnvironment().agentIsWebKit()
 				|| app.getEnvironment().agentIsOpera()) {
 			this.tieRowsScrollJS_
-					.setJavaScript("function(obj, event) {Wt3_1_0.getCssRule('#"
+					.setJavaScript("function(obj, event) {Wt3_1_1.getCssRule('#"
 							+ this.getId()
 							+ " .Wt-tv-rowc').style.left= -obj.scrollLeft + 'px';}");
 		} else {
 			this.tieRowsScrollJS_
-					.setJavaScript("function(obj, event) {obj.parentNode.style.width = Wt3_1_0.getCssRule('#"
+					.setJavaScript("function(obj, event) {obj.parentNode.style.width = Wt3_1_1.getCssRule('#"
 							+ this.getId()
 							+ " .cwidth').style.width;$('#"
 							+ this.getId()
@@ -429,7 +429,7 @@ public class WTreeView extends WAbstractItemView {
 						+ this.contentsContainer_.getId()
 						+ "').get(0);var $s=$('#"
 						+ this.getId()
-						+ "');var WT=Wt3_1_0;if (e) {var tw=$s.innerWidth(),vscroll=e.scrollHeight > e.offsetHeight,c0id, c0w = null;if ($s.hasClass('column1')) {c0id = $('#"
+						+ "');var WT=Wt3_1_1;if (e) {var tw=$s.innerWidth(),vscroll=e.scrollHeight > e.offsetHeight,c0id, c0w = null;if ($s.hasClass('column1')) {c0id = $('#"
 						+ this.getId()
 						+ " .Wt-headerdiv').get(0).lastChild.className.split(' ')[0];c0w = WT.pxself(WT.getCssRule('#"
 						+ this.getId()
@@ -986,7 +986,7 @@ public class WTreeView extends WAbstractItemView {
 				: "8";
 		String columnsWidth = "var e="
 				+ this.getJsRef()
-				+ ",WT=Wt3_1_0,t="
+				+ ",WT=Wt3_1_1,t="
 				+ this.contents_.getJsRef()
 				+ ".firstChild,h="
 				+ this.headers_.getJsRef()

@@ -268,7 +268,7 @@ public abstract class WFormWidget extends WInteractWidget {
 			this.filterInput_
 					.setJavaScript("function(self,e){var c=String.fromCharCode((typeof e.charCode!=='undefined')?e.charCode:e.keyCode);if(/"
 							+ inputFilter
-							+ "/.test(c)) return true; else{Wt3_1_0.cancelEvent(e);}}");
+							+ "/.test(c)) return true; else{Wt3_1_1.cancelEvent(e);}}");
 		} else {
 			;
 			this.filterInput_ = null;
