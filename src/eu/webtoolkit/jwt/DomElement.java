@@ -482,18 +482,7 @@ class DomElement {
 				Map.Entry<String, DomElement.EventHandler> i = i_it.next();
 				if (this.mode_ == DomElement.Mode.ModeUpdate
 						|| i.getValue().jsCode.length() != 0) {
-					this.declare(out);
-					int fid = nextId_++;
-					out.append("function f").append(fid).append("(event){")
-							.append(i.getValue().jsCode).append("}\n");
-					if (i.getKey().startsWith("key") && app.getRoot() != null
-							&& this.id_.equals(app.getRoot().getId())) {
-						out.append("document");
-					} else {
-						out.append(this.var_);
-					}
-					out.append(".on").append(i.getKey()).append("=f").append(
-							fid).append(";\n");
+					this.setJavaScriptEvent(out, i.getKey(), i.getValue(), app);
 				}
 			}
 			this.renderInnerHtmlJS(out, app);
@@ -659,14 +648,10 @@ class DomElement {
 						.entrySet().iterator(); i_it.hasNext();) {
 					Map.Entry<String, DomElement.EventHandler> i = i_it.next();
 					if (i.getValue().jsCode.length() != 0) {
-						if (i.getKey().startsWith("key")
-								&& app.getRoot() != null
-								&& this.id_.equals(app.getRoot().getId())) {
-							javaScript.append("document.on").append(i.getKey())
-									.append("=").append(
-											"function (event){"
-													+ i.getValue().jsCode)
-									.append("}\n");
+						if (this.id_.equals(app.getDomRoot().getId())) {
+							EscapeOStream eos = new EscapeOStream(javaScript);
+							this.setJavaScriptEvent(eos, i.getKey(), i
+									.getValue(), app);
 						} else {
 							out.append(" on").append(i.getKey()).append("=");
 							fastHtmlAttributeValue(out, attributeValues, i
@@ -968,6 +953,21 @@ class DomElement {
 		return this.var_;
 	}
 
+	static class EventHandler {
+		public String jsCode;
+		public String signalName;
+
+		public EventHandler() {
+			this.jsCode = "";
+			this.signalName = "";
+		}
+
+		public EventHandler(String j, String sn) {
+			this.jsCode = j;
+			this.signalName = sn;
+		}
+	}
+
 	private boolean canWriteInnerHTML(WApplication app) {
 		if (app.getEnvironment().agentIsIEMobile()) {
 			return true;
@@ -1210,6 +1210,28 @@ class DomElement {
 		}
 	}
 
+	private void setJavaScriptEvent(EscapeOStream out, String eventName,
+			DomElement.EventHandler handler, WApplication app) {
+		boolean globalUnfocused = this.id_.equals(app.getDomRoot().getId());
+		String extra1 = "";
+		String extra2 = "";
+		if (globalUnfocused) {
+			extra1 = "var g = event||window.event; var t = g.target||g.srcElement;if ((!t||Wt3_1_0.hasTag(t,'DIV') ||Wt3_1_0.hasTag(t,'HTML'))) { ";
+			extra2 = "}";
+		}
+		int fid = nextId_++;
+		out.append("function f").append(fid).append("(event){ ").append(extra1)
+				.append(handler.jsCode).append(extra2).append("}\n");
+		if (globalUnfocused) {
+			out.append("document");
+		} else {
+			this.declare(out);
+			out.append(this.var_);
+		}
+		out.append(".on").append(eventName).append("=f").append(fid).append(
+				";\n");
+	}
+
 	private void createElement(EscapeOStream out, WApplication app,
 			String domInsertJS) {
 		if (this.var_.length() == 0) {
@@ -1351,22 +1373,6 @@ class DomElement {
 	private String javaScript_;
 	private String javaScriptEvenWhenDeleted_;
 	private String var_;
-
-	static class EventHandler {
-		public String jsCode;
-		public String signalName;
-
-		public EventHandler() {
-			this.jsCode = "";
-			this.signalName = "";
-		}
-
-		public EventHandler(String j, String sn) {
-			this.jsCode = j;
-			this.signalName = sn;
-		}
-	}
-
 	private Map<String, String> attributes_;
 	private Map<Property, String> properties_;
 	private Map<String, DomElement.EventHandler> eventHandlers_;

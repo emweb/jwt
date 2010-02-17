@@ -1514,6 +1514,76 @@ public class WApplication extends WObject {
 		return this.htmlClass_;
 	}
 
+	/**
+	 * Event signal emitted when a keyboard key is pushed down.
+	 * <p>
+	 * The application receives key events when no widget currently has focus.
+	 * Otherwise, key events are handled by the widget in focus, and its
+	 * ancestors.
+	 * <p>
+	 * 
+	 * @see WInteractWidget#keyWentDown()
+	 */
+	public EventSignal1<WKeyEvent> globalKeyWentDown() {
+		return this.domRoot_.keyWentDown();
+	}
+
+	/**
+	 * Event signal emitted when a &quot;character&quot; was entered.
+	 * <p>
+	 * The application receives key events when no widget currently has focus.
+	 * Otherwise, key events are handled by the widget in focus, and its
+	 * ancestors.
+	 * <p>
+	 * 
+	 * @see WInteractWidget#keyPressed()
+	 */
+	public EventSignal1<WKeyEvent> globalKeyPressed() {
+		return this.domRoot_.keyPressed();
+	}
+
+	/**
+	 * Event signal emitted when a keyboard key is released.
+	 * <p>
+	 * The application receives key events when no widget currently has focus.
+	 * Otherwise, key events are handled by the widget in focus, and its
+	 * ancestors.
+	 * <p>
+	 * 
+	 * @see WInteractWidget#keyWentUp()
+	 */
+	public EventSignal1<WKeyEvent> globalKeyWentUp() {
+		return this.domRoot_.keyWentUp();
+	}
+
+	/**
+	 * Event signal emitted when enter was pressed.
+	 * <p>
+	 * The application receives key events when no widget currently has focus.
+	 * Otherwise, key events are handled by the widget in focus, and its
+	 * ancestors.
+	 * <p>
+	 * 
+	 * @see WInteractWidget#enterPressed()
+	 */
+	public EventSignal globalEnterPressed() {
+		return this.domRoot_.enterPressed();
+	}
+
+	/**
+	 * Event signal emitted when escape was pressed.
+	 * <p>
+	 * The application receives key events when no widget currently has focus.
+	 * Otherwise, key events are handled by the widget in focus, and its
+	 * ancestors.
+	 * <p>
+	 * 
+	 * @see WInteractWidget#escapePressed()
+	 */
+	public EventSignal globalEscapePressed() {
+		return this.domRoot_.escapePressed();
+	}
+
 	boolean isDebug() {
 		return this.session_.isDebug();
 	}
@@ -1580,7 +1650,7 @@ public class WApplication extends WObject {
 	 * from certain widgets even when they are inserted in the widget hierachy.
 	 */
 	protected boolean isExposed(WWidget w) {
-		if (this.exposedOnly_ != null) {
+		if (w != this.domRoot_ && this.exposedOnly_ != null) {
 			for (WWidget p = w; p != null; p = p.getParent()) {
 				if (p == this.exposedOnly_ || p == this.timerRoot_) {
 					return true;

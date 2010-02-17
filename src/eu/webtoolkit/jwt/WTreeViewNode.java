@@ -374,7 +374,7 @@ class WTreeViewNode extends WTable {
 				int thisNodeCount = this.view_.getModel().getColumnCount(
 						this.index_);
 				for (int j = 0; j <= lastColumn; ++j) {
-					WModelIndex child = i < thisNodeCount ? n.childIndex(j)
+					WModelIndex child = j < thisNodeCount ? n.childIndex(j)
 							: null;
 					this.view_.getItemDelegate(j).updateModelIndex(
 							n.getWidget(j), child);

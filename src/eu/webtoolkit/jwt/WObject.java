@@ -163,6 +163,15 @@ public class WObject {
 		return WString.tr(intlKey);
 	}
 	
+        /**
+	 * Disconnects listeners owned by the object from signals.
+	 *
+	 * This method provides automatic connection management, forcing signal
+	 * disconnection. Note that signals would be automatically disconnected
+	 * when the object is garbage collected (and signals use weak references
+	 * to allow garbage collection of an object which is otherwise no
+	 * longer referenced but is still connected by signals).
+	 */
 	public void remove() {
 		if (listenerSignalsPairs != null) 
 			for (SignalImpl.ListenerSignalPair lsp : listenerSignalsPairs)

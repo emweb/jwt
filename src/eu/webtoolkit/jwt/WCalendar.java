@@ -323,7 +323,8 @@ public class WCalendar extends WCompositeWidget {
 	public void setDayOfWeekLength(int chars) {
 		this.dayOfWeekChars_ = chars == 3 ? 3 : 1;
 		this.impl_.bindString("table-class", "d"
-				+ String.valueOf(this.dayOfWeekChars_));
+				+ String.valueOf(this.dayOfWeekChars_),
+				TextFormat.XHTMLUnsafeText);
 		this.setFirstDayOfWeek(this.firstDayOfWeek_);
 	}
 
@@ -341,13 +342,15 @@ public class WCalendar extends WCompositeWidget {
 			int day = (i + this.firstDayOfWeek_ - 1) % 7 + 1;
 			WString title = this.i18n_ ? tr(WDate.getLongDayName(day))
 					: new WString(WDate.getLongDayName(day));
-			this.impl_.bindString("t" + String.valueOf(i), title);
+			this.impl_.bindString("t" + String.valueOf(i), title,
+					TextFormat.XHTMLUnsafeText);
 			WString abbr = this.i18n_ ? tr(WDate.getShortDayName(day))
 					: new WString(WDate.getShortDayName(day));
 			if (this.dayOfWeekChars_ != 3) {
 				abbr = new WString(abbr.toString().substring(0, 0 + 1));
 			}
-			this.impl_.bindString("d" + String.valueOf(i), abbr);
+			this.impl_.bindString("d" + String.valueOf(i), abbr,
+					TextFormat.XHTMLUnsafeText);
 		}
 		this.renderMonth();
 	}
@@ -501,8 +504,9 @@ public class WCalendar extends WCompositeWidget {
 			text.append("</tr>");
 		}
 		text.append("</table>");
-		this.setImplementation(this.impl_ = new WTemplate(new WString(text
-				.toString())));
+		this.setImplementation(this.impl_ = new WTemplate());
+		this.impl_.setTemplateText(new WString(text.toString()),
+				TextFormat.XHTMLUnsafeText);
 		this.impl_.setStyleClass("Wt-cal");
 		this.setSelectable(false);
 		WText prevMonth = new WText("«", TextFormat.PlainText);

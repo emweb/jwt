@@ -375,6 +375,15 @@ public class WTreeView extends WAbstractItemView {
 								"item.nodeId", "item.columnId", "'mousedown'",
 								"''", "''")
 						+ ";if (tv.getAttribute('drag') === 'true' && item.selected)APP._p_.dragStart(tv, event);}}");
+		this.itemMouseUpJS_.setJavaScript("function(obj, event) {var APP="
+				+ app.getJavaScriptClass()
+				+ ", tv="
+				+ this.getJsRef()
+				+ ";var item=APP.getItem(event);if (item.columnId != -1) {"
+				+ this.itemEvent_
+						.createEventCall("item.el", "event", "item.nodeId",
+								"item.columnId", "'mouseup'", "''", "''")
+				+ ";}}");
 		this.resizeHandleMDownJS_
 				.setJavaScript("function(obj, event) {var pc = Wt3_1_0.pageCoordinates(event);obj.setAttribute('dsx', pc.x);}");
 		this.resizeHandleMMovedJS_
@@ -1050,6 +1059,9 @@ public class WTreeView extends WAbstractItemView {
 		if (this.mouseWentDown_.isConnected() || this.dragEnabled_) {
 			this.rootNode_.mouseWentDown().addListener(this.itemMouseDownJS_);
 		}
+		if (this.mouseWentUp_.isConnected()) {
+			this.rootNode_.mouseWentUp().addListener(this.itemMouseUpJS_);
+		}
 		super.enableAjax();
 	}
 
@@ -1179,6 +1191,9 @@ public class WTreeView extends WAbstractItemView {
 			if (this.mouseWentDown_.isConnected() || this.dragEnabled_) {
 				this.rootNode_.mouseWentDown().addListener(
 						this.itemMouseDownJS_);
+			}
+			if (this.mouseWentUp_.isConnected()) {
+				this.rootNode_.mouseWentUp().addListener(this.itemMouseUpJS_);
 			}
 		}
 		this.setRootNodeStyle();
@@ -1624,11 +1639,15 @@ public class WTreeView extends WAbstractItemView {
 				if (type.equals("mousedown")) {
 					this.mouseWentDown_.trigger(index, event);
 				} else {
-					if (type.equals("drop")) {
-						WDropEvent e = new WDropEvent(WApplication
-								.getInstance().decodeObject(extra1), extra2,
-								event);
-						this.dropEvent(e, index);
+					if (type.equals("mouseup")) {
+						this.mouseWentUp_.trigger(index, event);
+					} else {
+						if (type.equals("drop")) {
+							WDropEvent e = new WDropEvent(WApplication
+									.getInstance().decodeObject(extra1),
+									extra2, event);
+							this.dropEvent(e, index);
+						}
 					}
 				}
 			}

@@ -442,20 +442,30 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	 * Signal emitted when an item is double clicked.
 	 * <p>
 	 * 
-	 * @see WAbstractItemView#doubleClicked()
+	 * @see WAbstractItemView#clicked()
 	 */
 	public Signal2<WModelIndex, WMouseEvent> doubleClicked() {
 		return this.doubleClicked_;
 	}
 
 	/**
-	 * Signal emitted when an item is double clicked.
+	 * Signal emitted when a mouse button is pressed down.
 	 * <p>
 	 * 
-	 * @see WAbstractItemView#doubleClicked()
+	 * @see WAbstractItemView#mouseWentUp()
 	 */
 	public Signal2<WModelIndex, WMouseEvent> mouseWentDown() {
 		return this.mouseWentDown_;
+	}
+
+	/**
+	 * Signal emitted when the mouse button is released.
+	 * <p>
+	 * 
+	 * @see WAbstractItemView#mouseWentDown()
+	 */
+	public Signal2<WModelIndex, WMouseEvent> mouseWentUp() {
+		return this.mouseWentUp_;
 	}
 
 	/**
@@ -644,9 +654,11 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 		this.itemClickedJS_ = new JSlot(this);
 		this.itemDoubleClickedJS_ = new JSlot(this);
 		this.itemMouseDownJS_ = new JSlot(this);
+		this.itemMouseUpJS_ = new JSlot(this);
 		this.clicked_ = new Signal2<WModelIndex, WMouseEvent>(this);
 		this.doubleClicked_ = new Signal2<WModelIndex, WMouseEvent>(this);
 		this.mouseWentDown_ = new Signal2<WModelIndex, WMouseEvent>(this);
+		this.mouseWentUp_ = new Signal2<WModelIndex, WMouseEvent>(this);
 		this.selectionChanged_ = new Signal(this);
 		this.clickedForSortMapper_ = new WSignalMapper1<Integer>(this);
 		this.clickedForSortMapper_.mapped().addListener(this,
@@ -815,6 +827,7 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	JSlot itemClickedJS_;
 	JSlot itemDoubleClickedJS_;
 	JSlot itemMouseDownJS_;
+	JSlot itemMouseUpJS_;
 
 	WWidget createHeaderWidget(WApplication app, int column) {
 		int headerLevel = this.model_ != null ? (int) StringUtils
@@ -961,6 +974,7 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	Signal2<WModelIndex, WMouseEvent> clicked_;
 	Signal2<WModelIndex, WMouseEvent> doubleClicked_;
 	Signal2<WModelIndex, WMouseEvent> mouseWentDown_;
+	Signal2<WModelIndex, WMouseEvent> mouseWentUp_;
 	Signal selectionChanged_;
 
 	void clearSelection() {
@@ -1101,7 +1115,7 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 		return result + 1;
 	}
 
-	protected void convertToRaw(SortedSet<WModelIndex> set, List<Object> result) {
+	void convertToRaw(SortedSet<WModelIndex> set, List<Object> result) {
 		for (Iterator<WModelIndex> i_it = set.iterator(); i_it.hasNext();) {
 			WModelIndex i = i_it.next();
 			Object rawIndex = this.model_.toRawIndex(i);

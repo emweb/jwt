@@ -114,8 +114,6 @@ public class WTemplate extends WInteractWidget {
 	/**
 	 * Returns the template.
 	 * <p>
-	 * 
-	 * @see WTemplate#setTemplateText(CharSequence text)
 	 */
 	public WString getTemplateText() {
 		return this.text_;
@@ -125,9 +123,10 @@ public class WTemplate extends WInteractWidget {
 	 * Sets the template text.
 	 * <p>
 	 * The <code>text</code> must be proper XHTML, and this is checked unless
-	 * the XHTML is resolved from a message resource bundle. This behavior is
-	 * similar to a {@link WText} when configured with the
-	 * {@link TextFormat#XHTMLText} textformat.
+	 * the XHTML is resolved from a message resource bundle or TextFormat is
+	 * {@link TextFormat#XHTMLUnsafeText}. This behavior is similar to a
+	 * {@link WText} when configured with the {@link TextFormat#XHTMLText}
+	 * textformat.
 	 * <p>
 	 * Changing the template text does not {@link WTemplate#clear() clear()}
 	 * bound widgets or values.
@@ -135,15 +134,29 @@ public class WTemplate extends WInteractWidget {
 	 * 
 	 * @see WTemplate#clear()
 	 */
-	public void setTemplateText(CharSequence text) {
+	public void setTemplateText(CharSequence text, TextFormat textFormat) {
 		this.text_ = WString.toWString(text);
-		if (this.text_.isLiteral()) {
+		if (textFormat == TextFormat.XHTMLText && this.text_.isLiteral()) {
 			if (!removeScript(this.text_)) {
+				this.text_ = escapeText(this.text_, true);
+			}
+		} else {
+			if (textFormat == TextFormat.PlainText) {
 				this.text_ = escapeText(this.text_, true);
 			}
 		}
 		this.changed_ = true;
 		this.repaint(EnumSet.of(RepaintFlag.RepaintInnerHtml));
+	}
+
+	/**
+	 * Sets the template text.
+	 * <p>
+	 * Calls {@link #setTemplateText(CharSequence text, TextFormat textFormat)
+	 * setTemplateText(text, TextFormat.XHTMLText)}
+	 */
+	public final void setTemplateText(CharSequence text) {
+		setTemplateText(text, TextFormat.XHTMLText);
 	}
 
 	/**
@@ -571,5 +584,5 @@ public class WTemplate extends WInteractWidget {
 	private Map<String, String> strings_;
 	private WString text_;
 	private boolean changed_;
-	public static String DropShadow_x1_x2 = "<span class=\"Wt-x1\"><span class=\"Wt-x1a\" /></span><span class=\"Wt-x2\"><span class=\"Wt-x2a\" /></span>";
+	static String DropShadow_x1_x2 = "<span class=\"Wt-x1\"><span class=\"Wt-x1a\" /></span><span class=\"Wt-x2\"><span class=\"Wt-x2a\" /></span>";
 }
