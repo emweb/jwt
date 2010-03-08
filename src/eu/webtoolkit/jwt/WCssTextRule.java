@@ -7,26 +7,20 @@ package eu.webtoolkit.jwt;
 
 
 /**
- * Returns the declarations.
+ * A CSS rule specified directly using CSS declarations.
  * <p>
- * This is a semi-colon separated list of CSS declarations.
+ * 
+ * @see WCssStyleSheet
  */
 public class WCssTextRule extends WCssRule {
 	/**
-	 * Returns the declarations.
-	 * <p>
-	 * This is a semi-colon separated list of CSS declarations.
+	 * Creates a CSS rule with a given selector and declarations.
 	 */
 	public WCssTextRule(String selector, String declarations) {
 		super(selector);
 		this.declarations_ = declarations;
 	}
 
-	/**
-	 * Returns the declarations.
-	 * <p>
-	 * This is a semi-colon separated list of CSS declarations.
-	 */
 	public String getDeclarations() {
 		return this.declarations_;
 	}

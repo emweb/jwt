@@ -122,12 +122,6 @@ public abstract class WViewWidget extends WWebWidget {
 	 */
 	protected abstract WWidget getRenderView();
 
-	/**
-	 * Creates a widget that renders the View.
-	 * <p>
-	 * This method must be reimplemented to return a widget that renders the
-	 * view. The returned widget will be deleted by WViewWidget.
-	 */
 	void updateDom(DomElement element, boolean all) {
 		WApplication app = WApplication.getInstance();
 		if (!app.getSession().getRenderer().isPreLearning()) {
@@ -154,34 +148,16 @@ public abstract class WViewWidget extends WWebWidget {
 		super.updateDom(element, all);
 	}
 
-	/**
-	 * Creates a widget that renders the View.
-	 * <p>
-	 * This method must be reimplemented to return a widget that renders the
-	 * view. The returned widget will be deleted by WViewWidget.
-	 */
 	void propagateRenderOk(boolean deep) {
 		this.needContentsUpdate_ = false;
 		super.propagateRenderOk(deep);
 	}
 
-	/**
-	 * Creates a widget that renders the View.
-	 * <p>
-	 * This method must be reimplemented to return a widget that renders the
-	 * view. The returned widget will be deleted by WViewWidget.
-	 */
 	DomElementType getDomElementType() {
 		return this.isInline() ? DomElementType.DomElement_SPAN
 				: DomElementType.DomElement_DIV;
 	}
 
-	/**
-	 * Creates a widget that renders the View.
-	 * <p>
-	 * This method must be reimplemented to return a widget that renders the
-	 * view. The returned widget will be deleted by WViewWidget.
-	 */
 	void doneRerender() {
 		this.setIgnoreChildRemoves(true);
 		if (this.contents_ != null)
@@ -190,18 +166,6 @@ public abstract class WViewWidget extends WWebWidget {
 		this.setIgnoreChildRemoves(false);
 	}
 
-	/**
-	 * Creates a widget that renders the View.
-	 * <p>
-	 * This method must be reimplemented to return a widget that renders the
-	 * view. The returned widget will be deleted by WViewWidget.
-	 */
 	private WWidget contents_;
-	/**
-	 * Creates a widget that renders the View.
-	 * <p>
-	 * This method must be reimplemented to return a widget that renders the
-	 * view. The returned widget will be deleted by WViewWidget.
-	 */
 	private boolean needContentsUpdate_;
 }
