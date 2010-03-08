@@ -6,6 +6,13 @@
 }
 
 /*
+ * WFormWidget
+ */
+.Wt-edit-emptyText {
+    color: gray;
+}
+
+/*
  * Silk screen
  */
 .Wt-dialogcover {
@@ -29,7 +36,7 @@
 }
 
 .Wt-cal table.d1 {
-    width: 150px;
+    width: 170px;
 }
 
 .Wt-cal table.d1 td {
@@ -42,6 +49,14 @@
 
 .Wt-cal table.d3 td {
     width: 30px;
+}
+
+.Wt-cal table.dlong {
+    width: 560px;
+}
+
+.Wt-cal table.dlong td {
+    width: 80px;
 }
 
 .Wt-cal caption {
@@ -140,6 +155,40 @@
 .Wt-msgbox-buttons button {
     padding: 1px 4px 1px;
     margin: 2px;
+}
+
+/*
+ * WGridLayout
+ */
+
+.Wt-hrh div, .Wt-vsh {
+    cursor: row-resize;
+    margin: 2px;
+}
+
+.Wt-vrh div, .Wt-hsh {
+    cursor: col-resize;
+    margin: 0px 2px;
+}
+
+.Wt-hrh div {
+    background: url(splitter-v.png) no-repeat 50% 50%;
+}
+
+.Wt-vrh div {
+    background: url(splitter-h.png) no-repeat 50% 50%;
+}
+
+.Wt-hrh div, .Wt-vrh div {
+    background-color: #CCCCCC;
+}
+
+.Wt-hsh, .Wt-vsh {
+    background-color: #EEEEEE;
+}
+
+.Wt-hrh div:hover, .Wt-vrh div:hover {
+    background-color: #EEEEEE;
 }
 
 /*

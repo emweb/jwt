@@ -153,12 +153,13 @@ public class WTreeView extends WAbstractItemView {
 		this.viewportTop_ = 0;
 		this.viewportHeight_ = 30;
 		this.nodeLoad_ = 0;
+		this.impl_ = new WContainerWidget();
 		this.contentsContainer_ = null;
 		this.scrollBarC_ = null;
 		this.itemEvent_ = new JSignal6<String, Integer, String, String, String, WMouseEvent>(
-				this, "itemEvent") {
+				this.impl_, "itemEvent") {
 		};
-		this.setImplementation(this.impl_ = new WContainerWidget());
+		this.setImplementation(this.impl_);
 		this.renderState_ = WAbstractItemView.RenderState.NeedRerender;
 		WApplication app = WApplication.getInstance();
 		this.clickedForCollapseMapper_ = new WSignalMapper1<Integer>(this);
@@ -225,6 +226,8 @@ public class WTreeView extends WAbstractItemView {
 					.addRule(
 							".Wt-treeview .Wt-tv-row .Wt-tv-c",
 							"display: block; float: left;padding: 0px 3px;text-overflow: ellipsis;overflow: hidden;white-space: nowrap;");
+			app.getStyleSheet().addRule(".Wt-treeview .Wt-tv-c",
+					"padding: 0px 3px;");
 			app.getStyleSheet().addRule(
 					".Wt-treeview img.icon, .Wt-treeview input.icon",
 					"margin: 0px 3px 2px 0px; vertical-align: middle");
@@ -347,50 +350,13 @@ public class WTreeView extends WAbstractItemView {
 				WTreeView.this.checkDragSelection();
 			}
 		});
-		app
-				.declareJavaScriptFunction(
-						"getItem",
-						"function(event) {var columnId = -1, nodeId = null, selected = false, drop = false, el = null;var t = event.target || event.srcElement;while (t) {if (t.className.indexOf('c1 rh') == 0) {if (columnId == -1)columnId = 0;} else if (t.className.indexOf('Wt-tv-c') == 0) {if (t.className.indexOf('Wt-tv-c') == 0)columnId = t.className.split(' ')[0].substring(7) * 1;else if (columnId == -1)columnId = 0;if (t.getAttribute('drop') === 'true')drop = true;el = t;} else if (t.className == 'Wt-tv-node') {nodeId = t.id;break;}if (t.className === 'Wt-selected')selected = true;t = t.parentNode;if (Wt3_1_0.hasTag(t, 'BODY'))break;}return { columnId: columnId, nodeId: nodeId, selected: selected, drop: drop, el: el };}");
-		this.itemClickedJS_.setJavaScript("function(obj, event) {var item="
-				+ app.getJavaScriptClass()
-				+ ".getItem(event);if (item.columnId != -1) {"
-				+ this.itemEvent_
-						.createEventCall("item.el", "event", "item.nodeId",
-								"item.columnId", "'clicked'", "''", "''")
-				+ ";}}");
-		this.itemDoubleClickedJS_
-				.setJavaScript("function(obj, event) {var item="
-						+ app.getJavaScriptClass()
-						+ ".getItem(event);if (item.columnId != -1)"
-						+ this.itemEvent_.createEventCall("item.el", "event",
-								"item.nodeId", "item.columnId", "'dblclicked'",
-								"''", "''") + ";}");
-		this.itemMouseDownJS_
-				.setJavaScript("function(obj, event) {var APP="
-						+ app.getJavaScriptClass()
-						+ ", tv="
-						+ this.getJsRef()
-						+ ";APP._p_.capture(null);var item=APP.getItem(event);if (item.columnId != -1) {"
-						+ this.itemEvent_.createEventCall("item.el", "event",
-								"item.nodeId", "item.columnId", "'mousedown'",
-								"''", "''")
-						+ ";if (tv.getAttribute('drag') === 'true' && item.selected)APP._p_.dragStart(tv, event);}}");
-		this.resizeHandleMDownJS_
-				.setJavaScript("function(obj, event) {var pc = Wt3_1_0.pageCoordinates(event);obj.setAttribute('dsx', pc.x);}");
-		this.resizeHandleMMovedJS_
-				.setJavaScript("function(obj, event) {var WT = Wt3_1_0,lastx = obj.getAttribute('dsx'),t = "
-						+ this.contents_.getJsRef()
-						+ ".firstChild,h="
-						+ this.headers_.getJsRef()
-						+ ",hh=h.firstChild,h0=h.lastChild,c0id = h0.className.split(' ')[0],c0r = WT.getCssRule('#"
-						+ this.getId()
-						+ " .' + c0id);if (lastx != null && lastx != '') {var nowxy = WT.pageCoordinates(event),parent = obj.parentNode.parentNode,diffx = Math.max(nowxy.x - lastx, -parent.offsetWidth),c = parent.className.split(' ')[0];if (c) {var r = WT.getCssRule('#"
-						+ this.getId()
-						+ " .' + c),tw = WT.pxself(r, 'width');r.style.width = Math.max(0, tw + diffx) + 'px';}var s = "
-						+ this.getJsRef()
-						+ ";s.adjustColumns();obj.setAttribute('dsx', nowxy.x);WT.cancelEvent(event);  }}");
-		this.resizeHandleMUpJS_
-				.setJavaScript("function(obj, event) {obj.removeAttribute('dsx');Wt3_1_0.cancelEvent(event);}");
+		this.bindObjJS(this.itemClickedJS_, "click");
+		this.bindObjJS(this.itemDoubleClickedJS_, "dblClick");
+		this.bindObjJS(this.itemMouseDownJS_, "mouseDown");
+		this.bindObjJS(this.itemMouseUpJS_, "mouseUp");
+		this.bindObjJS(this.resizeHandleMDownJS_, "resizeHandleMDown");
+		this.bindObjJS(this.resizeHandleMMovedJS_, "resizeHandleMMoved");
+		this.bindObjJS(this.resizeHandleMUpJS_, "resizeHandleMUp");
 		this.tieContentsHeaderScrollJS_
 				.setJavaScript("function(obj, event) {"
 						+ this.headerContainer_.getJsRef()
@@ -402,43 +368,19 @@ public class WTreeView extends WAbstractItemView {
 		if (app.getEnvironment().agentIsWebKit()
 				|| app.getEnvironment().agentIsOpera()) {
 			this.tieRowsScrollJS_
-					.setJavaScript("function(obj, event) {Wt3_1_0.getCssRule('#"
+					.setJavaScript("function(obj, event) {Wt3_1_1.getCssRule('#"
 							+ this.getId()
 							+ " .Wt-tv-rowc').style.left= -obj.scrollLeft + 'px';}");
 		} else {
 			this.tieRowsScrollJS_
-					.setJavaScript("function(obj, event) {obj.parentNode.style.width = Wt3_1_0.getCssRule('#"
+					.setJavaScript("function(obj, event) {obj.parentNode.style.width = Wt3_1_1.getCssRule('#"
 							+ this.getId()
 							+ " .cwidth').style.width;$('#"
 							+ this.getId()
 							+ " .Wt-tv-rowc').parent().scrollLeft(obj.scrollLeft);}");
 		}
-		String extra = app.getEnvironment().getAgent() == WEnvironment.UserAgent.IE6 ? "10"
-				: "8";
-		app
-				.addAutoJavaScript("{var e=$('#"
-						+ this.contentsContainer_.getId()
-						+ "').get(0);var $s=$('#"
-						+ this.getId()
-						+ "');var WT=Wt3_1_0;if (e) {var tw=$s.innerWidth(),vscroll=e.scrollHeight > e.offsetHeight,c0id, c0w = null;if ($s.hasClass('column1')) {c0id = $('#"
-						+ this.getId()
-						+ " .Wt-headerdiv').get(0).lastChild.className.split(' ')[0];c0w = WT.pxself(WT.getCssRule('#"
-						+ this.getId()
-						+ " .' + c0id), 'width');}if (tw > 200 && (tw != e.tw || vscroll != e.vscroll || c0w != e.c0w || $s.get(0).changed)) {e.tw = tw;e.vscroll = vscroll;e.c0w = c0w;var h= "
-						+ this.headers_.getJsRef()
-						+ ",t="
-						+ this.contents_.getJsRef()
-						+ ".firstChild,r= WT.getCssRule('#"
-						+ this.getId()
-						+ " .cwidth'),contentstoo=(r.style.width == h.style.width);r.style.width=(tw - (vscroll ? 19 : 0)) + 'px';e.style.width=tw + 'px';h.style.width=t.offsetWidth + 'px';if (c0w != null) {var w=tw - c0w - "
-						+ extra
-						+ " - (vscroll ? 19 : 0);if (w > 0) {w2 = Math.min(w, WT.pxself(WT.getCssRule('#"
-						+ this.getId()
-						+ " .Wt-tv-rowc'), 'width'));tw -= (w - w2);WT.getCssRule('#"
-						+ this.getId()
-						+ " .Wt-tv-row').style.width = w2+'px';$('#"
-						+ this.getId()
-						+ " .Wt-tv-row').css('width', w2 + 'px').css('width', '');tw -= (vscroll ? 19 : 0);h.style.width=tw + 'px';t.style.width=tw + 'px';}} else if (contentstoo) {h.style.width=r.style.width;t.style.width=r.style.width;}if (!$s.get(0).changed && $s.get(0).adjustColumns)$s.get(0).adjustColumns();$s.get(0).changed = false;}}}");
+		app.addAutoJavaScript("{var obj = $('#" + this.getId()
+				+ "').data('obj');if (obj) obj.autoJavaScript();}");
 		if (parent != null) {
 			parent.addWidget(this);
 		}
@@ -718,11 +660,6 @@ public class WTreeView extends WAbstractItemView {
 		super.resize(width, height);
 	}
 
-	public void load() {
-		this.needDefineJS_ = true;
-		super.load();
-	}
-
 	/**
 	 * Signal emitted when a node is collapsed.
 	 * <p>
@@ -855,7 +792,8 @@ public class WTreeView extends WAbstractItemView {
 		WApplication app = WApplication.getInstance();
 		if (this.renderState_.getValue() < WAbstractItemView.RenderState.NeedRerenderHeader
 				.getValue()) {
-			app.doJavaScript(this.getJsRef() + ".adjustColumns();");
+			app.doJavaScript("$('#" + this.getId()
+					+ "').data('obj').adjustColumns();");
 		}
 	}
 
@@ -970,58 +908,15 @@ public class WTreeView extends WAbstractItemView {
 				this.borderColorRule_);
 	}
 
-	public void refresh() {
-		this.needDefineJS_ = false;
-		WApplication app = WApplication.getInstance();
-		String extra = app.getEnvironment().getAgent() == WEnvironment.UserAgent.IE6 ? "10"
-				: "8";
-		String columnsWidth = "var e="
-				+ this.getJsRef()
-				+ ",WT=Wt3_1_0,t="
-				+ this.contents_.getJsRef()
-				+ ".firstChild,h="
-				+ this.headers_.getJsRef()
-				+ ",hc=h.firstChild"
-				+ (this.column1Fixed_ ? ".firstChild" : "")
-				+ ",allw_1=0, allw=0,c0id = h.lastChild.className.split(' ')[0],c0r = WT.getCssRule('#"
-				+ this.getId()
-				+ " .' + c0id);if (WT.isHidden(e) || h.offsetWidth - hc.offsetWidth < 8) return;for (var i=0, length=hc.childNodes.length; i < length; ++i) {\nif (hc.childNodes[i].className) {\nvar cl = hc.childNodes[i].className.split(' ')[0],\nr = WT.getCssRule('#"
-				+ this.getId()
-				+ " .' + cl);\nallw_1 += WT.pxself(r, 'width') + 7;\n}}\nif (!c0r.style.width) c0r.style.width = (h.offsetWidth - hc.offsetWidth - 8) + 'px';allw = allw_1 + WT.pxself(c0r, 'width') + "
-				+ extra + ";\n";
-		if (!this.column1Fixed_) {
-			columnsWidth += "h.style.width = t.style.width = allw + 'px';hc.style.width = allw_1 + 'px';";
-		} else {
-			columnsWidth += "var r = WT.getCssRule('#"
-					+ this.getId()
-					+ " .Wt-tv-rowc');r.style.width = allw_1 + 'px';$('#"
-					+ this.getId()
-					+ " .Wt-tv-rowc').css('width', allw_1 + 'px').css('width', '');e.changed=true;"
-					+ app.getJavaScriptClass() + "._p_.autoJavaScript();";
+	protected void render(EnumSet<RenderFlag> flags) {
+		if (!EnumUtils.mask(flags, RenderFlag.RenderFull).isEmpty()) {
+			this.defineJavaScript();
 		}
-		app.doJavaScript(this.getJsRef() + ".adjustColumns=function() {if ("
-				+ this.contentsContainer_.getJsRef() + ") {" + columnsWidth
-				+ "}};");
-		app
-				.doJavaScript(this.getJsRef()
-						+ ".handleDragDrop=function(action, object, event, sourceId, mimeType) {var self="
-						+ this.getJsRef()
-						+ ";if (self.dropEl) {self.dropEl.className = self.dropEl.classNameOrig;self.dropEl = null;}if (action=='end')return;var item="
-						+ app.getJavaScriptClass()
-						+ ".getItem(event);if (!item.selected && item.drop && item.columnId != -1) {if (action=='drop') {"
-						+ this.itemEvent_.createCall("item.nodeId",
-								"item.columnId", "'drop'", "sourceId",
-								"mimeType")
-						+ ";} else {object.className = 'Wt-valid-drop';self.dropEl = item.el;self.dropEl.classNameOrig = self.dropEl.className;self.dropEl.className = self.dropEl.className + ' Wt-drop-site';}} else {object.className = '';}};");
-	}
-
-	void render() {
 		while (this.renderState_ != WAbstractItemView.RenderState.RenderOk) {
 			WAbstractItemView.RenderState s = this.renderState_;
 			this.renderState_ = WAbstractItemView.RenderState.RenderOk;
 			switch (s) {
 			case NeedRerender:
-				this.initLayoutJavaScript();
 				this.rerenderHeader();
 				this.rerenderTree();
 				break;
@@ -1038,10 +933,7 @@ public class WTreeView extends WAbstractItemView {
 				break;
 			}
 		}
-		if (this.needDefineJS_) {
-			this.initLayoutJavaScript();
-		}
-		super.render();
+		super.render(flags);
 	}
 
 	protected void enableAjax() {
@@ -1049,6 +941,9 @@ public class WTreeView extends WAbstractItemView {
 		this.rootNode_.doubleClicked().addListener(this.itemDoubleClickedJS_);
 		if (this.mouseWentDown_.isConnected() || this.dragEnabled_) {
 			this.rootNode_.mouseWentDown().addListener(this.itemMouseDownJS_);
+		}
+		if (this.mouseWentUp_.isConnected()) {
+			this.rootNode_.mouseWentUp().addListener(this.itemMouseUpJS_);
 		}
 		super.enableAjax();
 	}
@@ -1105,15 +1000,25 @@ public class WTreeView extends WAbstractItemView {
 			ci.styleRule.getTemplateWidget().resize(ci.width, WLength.Auto);
 		} else {
 			app.getStyleSheet().addRule(
-					"#" + this.getId() + " .Wt-tv-node" + " ."
-							+ ci.getStyleClass(), "width: auto;");
+					"#" + this.getId() + " .Wt-tv-node ." + ci.getStyleClass(),
+					"width: auto;text-overflow: ellipsis;overflow: hidden");
 		}
 		app.getStyleSheet().addRule(ci.styleRule);
 		return ci;
 	}
 
-	private void initLayoutJavaScript() {
-		this.refresh();
+	private void defineJavaScript() {
+		WApplication app = WApplication.getInstance();
+		String THIS_JS = "js/WTreeView.js";
+		if (!app.isJavaScriptLoaded(THIS_JS)) {
+			app.doJavaScript(wtjs1(app), false);
+			app.setJavaScriptLoaded(THIS_JS);
+		}
+		app.doJavaScript("new Wt3_1_1.WTreeView(" + app.getJavaScriptClass()
+				+ "," + this.getJsRef() + ","
+				+ this.contentsContainer_.getJsRef() + ","
+				+ this.headerContainer_.getJsRef() + ","
+				+ (this.column1Fixed_ ? "true" : "false") + ");");
 	}
 
 	private void rerenderHeader() {
@@ -1154,7 +1059,8 @@ public class WTreeView extends WAbstractItemView {
 					order == SortOrder.AscendingOrder ? "Wt-tv-sh Wt-tv-sh-up"
 							: "Wt-tv-sh Wt-tv-sh-down");
 		}
-		app.doJavaScript(this.getJsRef() + ".adjustColumns();");
+		app.doJavaScript("$('#" + this.getId()
+				+ "').data('obj').adjustColumns();");
 		if (this.model_ != null) {
 			this.modelHeaderDataChanged(Orientation.Horizontal, 0, this
 					.getColumnCount() - 1);
@@ -1179,6 +1085,9 @@ public class WTreeView extends WAbstractItemView {
 			if (this.mouseWentDown_.isConnected() || this.dragEnabled_) {
 				this.rootNode_.mouseWentDown().addListener(
 						this.itemMouseDownJS_);
+			}
+			if (this.mouseWentUp_.isConnected()) {
+				this.rootNode_.mouseWentUp().addListener(this.itemMouseUpJS_);
 			}
 		}
 		this.setRootNodeStyle();
@@ -1209,7 +1118,8 @@ public class WTreeView extends WAbstractItemView {
 					this
 							.scheduleRerender(WAbstractItemView.RenderState.NeedRerenderHeader);
 				} else {
-					app.doJavaScript(this.getJsRef() + ".adjustColumns();");
+					app.doJavaScript("$('#" + this.getId()
+							+ "').data('obj').adjustColumns();");
 					WContainerWidget row = this.getHeaderRow();
 					for (int i = start; i < start + count; ++i) {
 						WWidget w = this.createHeaderWidget(app, i);
@@ -1248,7 +1158,8 @@ public class WTreeView extends WAbstractItemView {
 			if (this.renderState_.getValue() < WAbstractItemView.RenderState.NeedRerenderHeader
 					.getValue()) {
 				WApplication app = WApplication.getInstance();
-				app.doJavaScript(this.getJsRef() + ".adjustColumns();");
+				app.doJavaScript("$('#" + this.getId()
+						+ "').data('obj').adjustColumns();");
 			}
 			for (int ii = 0; ii < (0 + start + count) - (0 + start); ++ii)
 				this.columns_.remove(0 + start);
@@ -1624,11 +1535,15 @@ public class WTreeView extends WAbstractItemView {
 				if (type.equals("mousedown")) {
 					this.mouseWentDown_.trigger(index, event);
 				} else {
-					if (type.equals("drop")) {
-						WDropEvent e = new WDropEvent(WApplication
-								.getInstance().decodeObject(extra1), extra2,
-								event);
-						this.dropEvent(e, index);
+					if (type.equals("mouseup")) {
+						this.mouseWentUp_.trigger(index, event);
+					} else {
+						if (type.equals("drop")) {
+							WDropEvent e = new WDropEvent(WApplication
+									.getInstance().decodeObject(extra1),
+									extra2, event);
+							this.dropEvent(e, index);
+						}
 					}
 				}
 			}
@@ -2286,6 +2201,11 @@ public class WTreeView extends WAbstractItemView {
 		}
 	}
 
+	private void bindObjJS(JSlot slot, String jsMethod) {
+		slot.setJavaScript("function(obj, event) {jQuery.data("
+				+ this.getJsRef() + ", 'obj')." + jsMethod + "(obj, event);}");
+	}
+
 	WContainerWidget getHeaderContainer() {
 		return this.headerContainer_;
 	}
@@ -2311,6 +2231,10 @@ public class WTreeView extends WAbstractItemView {
 		return ((this.headerWidget(column).find("sort")) instanceof WText ? (WText) (this
 				.headerWidget(column).find("sort"))
 				: null);
+	}
+
+	static String wtjs1(WApplication app) {
+		return "Wt3_1_1.WTreeView = function(k,d,i,p,q){function n(c){var a=-1,b=null,f=false,e=false,h=null;for(c=c.target||c.srcElement;c;){if(c.className.indexOf(\"c1 rh\")==0){if(a==-1)a=0}else if(c.className.indexOf(\"Wt-tv-c\")==0){if(c.className.indexOf(\"Wt-tv-c\")==0)a=c.className.split(\" \")[0].substring(7)*1;else if(a==-1)a=0;if(c.getAttribute(\"drop\")===\"true\")e=true;h=c}else if(c.className==\"Wt-tv-node\"){b=c.id;break}if(c.className===\"Wt-selected\")f=true;c=c.parentNode;if(g.hasTag(c,\"BODY\"))break}return{columnId:a, nodeId:b,selected:f,drop:e,el:h}}jQuery.data(d,\"obj\",this);var o=i.firstChild,j=p.firstChild,g=k.WT;this.click=function(c,a){var b=n(a);b.columnId!=-1&&k.emit(d,{name:\"itemEvent\",eventObject:c,event:a},b.nodeId,b.columnId,\"clicked\",\"\",\"\")};this.dblClick=function(c,a){var b=n(a);b.columnId!=-1&&k.emit(d,{name:\"itemEvent\",eventObject:c,event:a},b.nodeId,b.columnId,\"dblclicked\",\"\",\"\")};this.mouseDown=function(c,a){g.capture(null);var b=n(a);if(b.columnId!=-1){k.emit(d,{name:\"itemEvent\",eventObject:c, event:a},b.nodeId,b.columnId,\"mousedown\",\"\",\"\");d.getAttribute(\"drag\")===\"true\"&&b.selected&&k._p_.dragStart(d,a)}};this.mouseUp=function(c,a){var b=n(a);b.columnId!=-1&&k.emit(d,{name:\"itemEvent\",eventObject:c,event:a},b.nodeId,b.columnId,\"mouseup\",\"\",\"\")};this.resizeHandleMDown=function(c,a){a=g.pageCoordinates(a);c.setAttribute(\"dsx\",a.x)};this.resizeHandleMMoved=function(c,a){var b=c.getAttribute(\"dsx\"),f=j.lastChild.className.split(\" \")[0];g.getCssRule(\"#\"+d.id+\" .\"+f);if(b!=null&&b!=\"\"){f=g.pageCoordinates(a); var e=c.parentNode.parentNode;b=Math.max(f.x-b,-e.offsetWidth);if(e=e.className.split(\" \")[0]){e=g.getCssRule(\"#\"+d.id+\" .\"+e);var h=g.pxself(e,\"width\");e.style.width=Math.max(0,h+b)+\"px\"}this.adjustColumns();c.setAttribute(\"dsx\",f.x);g.cancelEvent(a)}};this.resizeHandleMUp=function(c,a){c.removeAttribute(\"dsx\");g.cancelEvent(a)};this.adjustColumns=function(){var c=o.firstChild,a=j.firstChild,b=0,f=0;f=j.lastChild.className.split(\" \")[0];f=g.getCssRule(\"#\"+d.id+\" .\"+f);if(q)a=a.firstChild;if(!g.isHidden(d)){for(var e= 0,h=a.childNodes.length;e<h;++e)if(a.childNodes[e].className){var m=a.childNodes[e].className.split(\" \")[0];m=g.getCssRule(\"#\"+d.id+\" .\"+m);b+=g.pxself(m,\"width\")+7}if(!f.style.width)f.style.width=j.offsetWidth-a.offsetWidth-8+\"px\";f=b+g.pxself(f,\"width\")+(g.isIE6?10:8);if(q){m=g.getCssRule(\"#\"+d.id+\" .Wt-tv-rowc\");m.style.width=b+\"px\";$(d).find(\" .Wt-tv-rowc\").css(\"width\",b+\"px\").css(\"width\",\"\");d.changed=true;k._p_.autoJavaScript()}else{j.style.width=c.style.width=f+\"px\";a.style.width=b+\"px\"}}}; var l=null;d.handleDragDrop=function(c,a,b,f,e){if(l){l.className=l.classNameOrig;l=null}if(c!=\"end\"){b=n(b);if(!b.selected&&b.drop&&b.columnId!=-1)if(c==\"drop\")k.emit(d.id,\"itemEvent\",b.nodeId,b.columnId,\"drop\",f,e);else{a.className=\"Wt-valid-drop\";l=b.el;l.classNameOrig=l.className;l.className+=\" Wt-drop-site\"}else a.className=\"\"}};this.autoJavaScript=function(){if(d.parentNode==null){d=i=p=o=j=null;this.autoJavaScript()=function(){}}else{var c=$(d),a=c.innerWidth(),b=i.scrollHeight>i.offsetHeight, f,e=null;if(c.hasClass(\"column1\")){f=c.find(\".Wt-headerdiv\").get(0).lastChild.className.split(\" \")[0];e=g.pxself(g.getCssRule(\"#\"+d.id+\" .\"+f),\"width\")}if(!g.isIE||a>100&&(a!=i.tw||b!=i.vscroll||e!=i.c0w||d.changed)){i.tw=a;i.vscroll=b;i.c0w=e;f=o.firstChild;var h=g.getCssRule(\"#\"+d.id+\" .cwidth\"),m=h.style.width==j.style.width;h.style.width=a-(b?19:0)+\"px\";i.style.width=a+\"px\";j.style.width=f.offsetWidth+\"px\";if(e!=null){e=a-e-(g.isIE6?10:8)-(b?19:0);if(e>0){h=Math.min(e,g.pxself(g.getCssRule(\"#\"+ d.id+\" .Wt-tv-rowc\"),\"width\"));a-=e-h;g.getCssRule(\"#\"+d.id+\" .Wt-tv-row\").style.width=h+\"px\";c.find(\" .Wt-tv-row\").css(\"width\",h+\"px\").css(\"width\",\"\");a-=b?19:0;j.style.width=a+\"px\";f.style.width=a+\"px\"}}else if(m){j.style.width=h.style.width;f.style.width=h.style.width}d.changed&&this.adjustColumns();d.changed=false}}}};";
 	}
 
 	static boolean isAncestor(WModelIndex i1, WModelIndex i2) {

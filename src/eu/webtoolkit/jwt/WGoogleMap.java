@@ -7,7 +7,9 @@ package eu.webtoolkit.jwt;
 
 import java.io.StringWriter;
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
+import eu.webtoolkit.jwt.utils.EnumUtils;
 
 /**
  * A widget that displays a google map
@@ -146,7 +148,6 @@ public class WGoogleMap extends WCompositeWidget {
 		this.mouseMoved_ = new JSignal1<WGoogleMap.Coordinate>(this,
 				"mousemove") {
 		};
-		this.rendered_ = false;
 		this.additions_ = new ArrayList<String>();
 		this.setImplementation(new WContainerWidget());
 		WApplication app = WApplication.getInstance();
@@ -175,10 +176,6 @@ public class WGoogleMap extends WCompositeWidget {
 	 */
 	public void remove() {
 		super.remove();
-	}
-
-	public void refresh() {
-		this.rendered_ = false;
 	}
 
 	/**
@@ -537,8 +534,8 @@ public class WGoogleMap extends WCompositeWidget {
 	private JSignal1<WGoogleMap.Coordinate> doubleClicked_;
 	private JSignal1<WGoogleMap.Coordinate> mouseMoved_;
 
-	void render() {
-		if (!this.rendered_) {
+	protected void render(EnumSet<RenderFlag> flags) {
+		if (!EnumUtils.mask(flags, RenderFlag.RenderFull).isEmpty()) {
 			StringWriter strm = new StringWriter();
 			strm
 					.append("{ function initialize() {var self = ")
@@ -566,9 +563,8 @@ public class WGoogleMap extends WCompositeWidget {
 					.append("}google.load(\"maps\", \"2\", {other_params:\"sensor=false\", callback: initialize});}");
 			this.additions_.clear();
 			WApplication.getInstance().doJavaScript(strm.toString());
-			this.rendered_ = true;
 		}
-		super.render();
+		super.render(flags);
 	}
 
 	protected void doGmJavaScript(String jscode, boolean sepScope) {
@@ -576,14 +572,13 @@ public class WGoogleMap extends WCompositeWidget {
 		if (sepScope) {
 			js = "{" + js + "}";
 		}
-		if (this.rendered_) {
+		if (this.isRendered()) {
 			WApplication.getInstance().doJavaScript(js);
 		} else {
 			this.additions_.add(js);
 		}
 	}
 
-	private boolean rendered_;
 	private List<String> additions_;
 	static final String localhost_key = "ABQIAAAAWqrN5o4-ISwj0Up_depYvhTwM0brOpm-All5BF6PoaKBxRWWERS-S9gPtCri-B6BZeXV8KpT4F80DQ";
 }

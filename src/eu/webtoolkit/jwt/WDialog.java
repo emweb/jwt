@@ -124,13 +124,13 @@ public class WDialog extends WCompositeWidget {
 			app
 					.doJavaScript(
 							""
-									+ "Wt3_1_0.centerDialog = function(d){if (d && d.style.display != 'none') {d.style.visibility = 'visible';if (!d.getAttribute('moved')) {var ws=Wt3_1_0.windowSize();d.style.left=Math.round((ws.x - d.clientWidth)/2"
+									+ "Wt3_1_1.centerDialog = function(d){if (d && d.style.display != 'none') {if (!d.getAttribute('moved')) {var ws=Wt3_1_1.windowSize();d.style.left=Math.round((ws.x - d.clientWidth)/2"
 									+ (app.getEnvironment().getAgent() == WEnvironment.UserAgent.IE6 ? "+ document.documentElement.scrollLeft"
 											: "")
 									+ ") + 'px';d.style.top=Math.round((ws.y - d.clientHeight)/2"
 									+ (app.getEnvironment().getAgent() == WEnvironment.UserAgent.IE6 ? "+ document.documentElement.scrollTop"
 											: "")
-									+ ") + 'px';d.style.marginLeft='0px';d.style.marginTop='0px';}}};",
+									+ ") + 'px';d.style.marginLeft='0px';d.style.marginTop='0px';}d.style.visibility = 'visible';}};",
 							false);
 			app
 					.getStyleSheet()
@@ -175,7 +175,7 @@ public class WDialog extends WCompositeWidget {
 		this.impl_.setStyleClass("Wt-dialog Wt-outset");
 		WContainerWidget parent = app.getDomRoot();
 		this.setPopup(true);
-		app.addAutoJavaScript("Wt3_1_0.centerDialog(" + this.getJsRef() + ");");
+		app.addAutoJavaScript("Wt3_1_1.centerDialog(" + this.getJsRef() + ");");
 		parent.addWidget(this);
 		this.titleBar_ = new WContainerWidget();
 		this.titleBar_.setStyleClass("titlebar");
@@ -186,9 +186,9 @@ public class WDialog extends WCompositeWidget {
 		this.contents_.setStyleClass("body");
 		this.impl_.bindWidget("contents", this.contents_);
 		this.mouseDownJS_
-				.setJavaScript("function(obj, event) {  var pc = Wt3_1_0.pageCoordinates(event);  obj.setAttribute('dsx', pc.x);  obj.setAttribute('dsy', pc.y);}");
+				.setJavaScript("function(obj, event) {  var pc = Wt3_1_1.pageCoordinates(event);  obj.setAttribute('dsx', pc.x);  obj.setAttribute('dsy', pc.y);}");
 		this.mouseMovedJS_
-				.setJavaScript("function(obj, event) {var WT= Wt3_1_0;var lastx = obj.getAttribute('dsx');var lasty = obj.getAttribute('dsy');if (lastx != null && lastx != '') {nowxy = WT.pageCoordinates(event);var d = "
+				.setJavaScript("function(obj, event) {var WT= Wt3_1_1;var lastx = obj.getAttribute('dsx');var lasty = obj.getAttribute('dsy');if (lastx != null && lastx != '') {nowxy = WT.pageCoordinates(event);var d = "
 						+ this.getJsRef()
 						+ ";d.setAttribute('moved', true);d.style.left = (WT.pxself(d, 'left')+nowxy.x-lastx) + 'px';d.style.top = (WT.pxself(d, 'top')+nowxy.y-lasty) + 'px';obj.setAttribute('dsx', nowxy.x);obj.setAttribute('dsy', nowxy.y);}}");
 		this.mouseUpJS_

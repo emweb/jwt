@@ -8,6 +8,7 @@ package eu.webtoolkit.jwt;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
+import eu.webtoolkit.jwt.utils.EnumUtils;
 
 /**
  * Helper class for painting on a {@link WPaintDevice}.
@@ -821,6 +822,13 @@ public class WPainter {
 	 */
 	public void drawText(WRectF rectangle, EnumSet<AlignmentFlag> flags,
 			CharSequence text) {
+		if (!!EnumUtils.mask(flags, AlignmentFlag.AlignVerticalMask).isEmpty()) {
+			flags.add(AlignmentFlag.AlignTop);
+		}
+		if (!!EnumUtils.mask(flags, AlignmentFlag.AlignHorizontalMask)
+				.isEmpty()) {
+			flags.add(AlignmentFlag.AlignLeft);
+		}
 		this.device_.drawText(rectangle.getNormalized(), flags, text);
 	}
 
@@ -835,7 +843,7 @@ public class WPainter {
 	 */
 	public void drawText(double x, double y, double width, double height,
 			EnumSet<AlignmentFlag> flags, CharSequence text) {
-		this.device_.drawText(new WRectF(x, y, width, height), flags, text);
+		this.drawText(new WRectF(x, y, width, height), flags, text);
 	}
 
 	/**

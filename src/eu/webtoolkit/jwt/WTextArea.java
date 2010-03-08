@@ -25,9 +25,9 @@ import java.util.EnumSet;
  * <p>
  * <h3>CSS</h3>
  * <p>
- * The widget corresponds to an HTML <code>&lt;textarea&gt;</code> tag and does
- * not provide styling. It can be styled using inline or external CSS as
- * appropriate.
+ * The widget corresponds to an HTML <code>&lt;textarea&gt;</code> tag can be
+ * styled using inline or external CSS as appropriate. The emptyText style can
+ * be configured via .Wt-edit-emptyText.
  * <p>
  * 
  * @see WLineEdit
@@ -143,6 +143,7 @@ public class WTextArea extends WFormWidget {
 			this.setStyleClass(this.validate() == WValidator.State.Valid ? ""
 					: "Wt-invalid");
 		}
+		this.updateEmptyText();
 	}
 
 	public WValidator.State validate() {
@@ -193,8 +194,8 @@ public class WTextArea extends WFormWidget {
 		if (this.contentChanged_) {
 			return;
 		}
-		if (!formData.values.isEmpty()) {
-			String value = formData.values.get(0);
+		if (!(formData.values.length == 0)) {
+			String value = formData.values[0];
 			this.content_ = value;
 		}
 	}

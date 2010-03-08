@@ -7,7 +7,6 @@ package eu.webtoolkit.jwt;
 
 import java.util.EnumSet;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -223,8 +222,8 @@ public class WSelectionBox extends WComboBox {
 			super.setFormData(formData);
 		} else {
 			this.selection_.clear();
-			for (int j = 0; j < formData.values.size(); ++j) {
-				String v = formData.values.get(j);
+			for (int j = 0; j < formData.values.length; ++j) {
+				String v = formData.values[j];
 				if (v.length() != 0) {
 					try {
 						int i = Integer.parseInt(v);

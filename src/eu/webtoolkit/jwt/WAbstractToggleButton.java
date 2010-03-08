@@ -299,7 +299,7 @@ public class WAbstractToggleButton extends WFormWidget {
 				&& uncheck.needUpdate();
 		super.updateDom(element, all);
 		if (needUpdateClickedSignal || all) {
-			String dom = "Wt3_1_0.getElement('" + element.getId() + "')";
+			String dom = "Wt3_1_1.getElement('" + element.getId() + "')";
 			List<DomElement.EventAction> actions = new ArrayList<DomElement.EventAction>();
 			if (check != null) {
 				if (check.isConnected()) {
@@ -347,11 +347,11 @@ public class WAbstractToggleButton extends WFormWidget {
 		if (this.stateChanged_) {
 			return;
 		}
-		if (!formData.values.isEmpty()) {
-			if (formData.values.get(0).equals("indeterminate")) {
+		if (!(formData.values.length == 0)) {
+			if (formData.values[0].equals("indeterminate")) {
 				this.state_ = CheckState.PartiallyChecked;
 			} else {
-				this.state_ = !formData.values.get(0).equals("0") ? CheckState.Checked
+				this.state_ = !formData.values[0].equals("0") ? CheckState.Checked
 						: CheckState.Unchecked;
 			}
 		} else {

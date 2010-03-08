@@ -23,13 +23,29 @@ import java.util.List;
  * {@link WWidget#setMinimumSize(WLength width, WLength height)
  * WWidget#setMinimumSize()}.
  * <p>
+ * If you want to use the layout manager for a container which does not have a
+ * height that is constrained somehow, you need to specify AlignTop in the
+ * alignment flags of {@link WContainerWidget#setLayout(WLayout layout)
+ * WContainerWidget#setLayout()}. Otherwise the behavior is undefined (the
+ * parent container will continue to increase in size as it tries to satisfy the
+ * constraints assuming a contrained height).
+ * <p>
  * You can use
  * {@link WContainerWidget#setOverflow(WContainerWidget.Overflow value, EnumSet orientation)
- * WContainerWidget#setOverflow()} to automatically show scrollbars on a
- * container widget which you have set for a grid cell. In some cases, you will
- * want to wrap another widget (like a {@link WTable}) into
- * {@link WContainerWidget} to have the scrollbars, since not all widgets allow
- * for scrollbars.
+ * WContainerWidget::setOverflow(OverflowAuto)} to automatically show scrollbars
+ * on a container widget inserted in the layout. In some cases, you will want to
+ * wrap another widget (like a {@link WTable}) into {@link WContainerWidget} to
+ * have the scrollbars, since not all widgets allow for scrollbars.
+ * <p>
+ * A layout manager may provide resize handles between columns or rows which
+ * allow the user to change the automatic layout provided by the layout manager
+ * (see {@link WGridLayout#setRowResizable(int row, boolean enabled)
+ * setRowResizable()} and
+ * {@link WGridLayout#setColumnResizable(int column, boolean enabled)
+ * setColumnResizable()}). Resize handles between rows only work when the layout
+ * fills the parent vertical space (i.e. is not aligned to the top). Likewise,
+ * resize handles between columns only work when the layout fills the parent
+ * horiziontal space (i.e. is not aligned left, right or centered).
  * <p>
  * Columns and rows are separated using a constant spacing, which defaults to 6
  * pixels by default, and can be changed using
@@ -92,13 +108,6 @@ import java.util.List;
  * least one item in every column that has no stretch factor.</li>
  * </ul>
  * </i>
- * </p>
- * <p>
- * <i><b>Warning:</b>You should specify AlignTop in the alignment flags of
- * {@link WContainerWidget#setLayout(WLayout layout)
- * WContainerWidget#setLayout()} if the container does not have a height that is
- * constrained somehow. Otherwise the behavior is undefined (the parent
- * container will continue to increase in size) </i>
  * </p>
  */
 public class WGridLayout extends WLayout {
@@ -571,6 +580,82 @@ public class WGridLayout extends WLayout {
 	 */
 	public int getRowStretch(int row) {
 		return this.grid_.rows_.get(row).stretch_;
+	}
+
+	/**
+	 * Sets whether the user may drag a particular column border.
+	 * <p>
+	 * This method sets whether the border that separates column <i>column</i>
+	 * from the next column may be resized by the user, depending on the value
+	 * of <i>enabled</i>.
+	 * <p>
+	 * The default value is <i>false</i>.
+	 */
+	public void setColumnResizable(int column, boolean enabled) {
+		this.expand(0, column, 0, 1);
+		this.grid_.columns_.get(column).resizable_ = enabled;
+		this.update();
+	}
+
+	/**
+	 * Sets whether the user may drag a particular column border.
+	 * <p>
+	 * Calls {@link #setColumnResizable(int column, boolean enabled)
+	 * setColumnResizable(column, true)}
+	 */
+	public final void setColumnResizable(int column) {
+		setColumnResizable(column, true);
+	}
+
+	/**
+	 * Returns whether the user may drag a particular column border.
+	 * <p>
+	 * This method returns whether the border that separates column
+	 * <i>column</i> from the next column may be resized by the user.
+	 * <p>
+	 * 
+	 * @see WGridLayout#setColumnResizable(int column, boolean enabled)
+	 */
+	public boolean columnIsResizable(int column) {
+		return this.grid_.columns_.get(column).resizable_;
+	}
+
+	/**
+	 * Sets whether the user may drag a particular row border.
+	 * <p>
+	 * This method sets whether the border that separates row <i>row</i> from
+	 * the next row may be resized by the user, depending on the value of
+	 * <i>enabled</i>.
+	 * <p>
+	 * The default value is <i>false</i>.
+	 */
+	public void setRowResizable(int row, boolean enabled) {
+		this.expand(row, 0, 1, 0);
+		this.grid_.rows_.get(row).resizable_ = enabled;
+		this.update();
+	}
+
+	/**
+	 * Sets whether the user may drag a particular row border.
+	 * <p>
+	 * Calls {@link #setRowResizable(int row, boolean enabled)
+	 * setRowResizable(row, true)}
+	 */
+	public final void setRowResizable(int row) {
+		setRowResizable(row, true);
+	}
+
+	/**
+	 * Returns whether the user may drag a particular row border.
+	 * <p>
+	 * This method returns whether the border that separates row <i>row</i> from
+	 * the next row may be resized by the user.
+	 * <p>
+	 * 
+	 * @see WGridLayout#setRowResizable(int row, boolean enabled)
+	 */
+	public boolean rowIsResizable(int row) {
+		return this.grid_.rows_.get(row).resizable_;
 	}
 
 	Grid getGrid() {

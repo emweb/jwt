@@ -109,7 +109,7 @@ public class WTimer extends WObject {
 	public void start() {
 		if (!this.active_) {
 			WApplication app = WApplication.getInstance();
-			if (app != null && app.getDomRoot() != null) {
+			if (app != null && app.getTimerRoot() != null) {
 				app.getTimerRoot().addWidget(this.timerWidget_);
 			}
 			this.active_ = true;
@@ -141,7 +141,7 @@ public class WTimer extends WObject {
 	public void stop() {
 		if (this.active_) {
 			WApplication app = WApplication.getInstance();
-			if (app != null && app.getDomRoot() != null) {
+			if (app != null && app.getTimerRoot() != null) {
 				app.getTimerRoot().removeWidget(this.timerWidget_);
 			}
 			this.active_ = false;

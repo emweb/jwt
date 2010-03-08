@@ -8,9 +8,11 @@ package eu.webtoolkit.jwt;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import eu.webtoolkit.jwt.utils.MathUtils;
 
 /**
@@ -84,6 +86,8 @@ import eu.webtoolkit.jwt.utils.MathUtils;
  * bookmarks) using
  * {@link WApplication#setInternalPath(String path, boolean emitChange)
  * setInternalPath()} and related methods.</li>
+ * <li>support for server-initiated updates with
+ * {@link WApplication#enableUpdates(boolean enabled) enableUpdates()}</li>
  * </ul>
  * <p>
  * <ul>
@@ -135,6 +139,8 @@ public class WApplication extends WObject {
 		this.oldInternalPath_ = "";
 		this.newInternalPath_ = "";
 		this.internalPathChanged_ = new Signal1<String>(this);
+		this.serverPush_ = 0;
+		this.shouldTriggerUpdate_ = false;
 		this.javaScriptClass_ = "Wt";
 		this.dialogCover_ = null;
 		this.quited_ = false;
@@ -146,6 +152,7 @@ public class WApplication extends WObject {
 		this.htmlClass_ = "";
 		this.bodyClass_ = "";
 		this.bodyHtmlClassChanged_ = false;
+		this.enableAjax_ = false;
 		this.scriptLibraries_ = new ArrayList<WApplication.ScriptLibrary>();
 		this.scriptLibrariesAdded_ = 0;
 		this.theme_ = "default";
@@ -159,6 +166,7 @@ public class WApplication extends WObject {
 		this.beforeLoadJavaScript_ = "";
 		this.newBeforeLoadJavaScript_ = "";
 		this.autoJavaScript_ = "";
+		this.javaScriptLoaded_ = new HashSet<String>();
 		this.autoJavaScriptChanged_ = false;
 		this.soundManager_ = null;
 		this.session_.setApplication(this);
@@ -981,21 +989,186 @@ public class WApplication extends WObject {
 	}
 
 	/**
+	 * Enables server-initiated updates.
+	 * <p>
+	 * By default, updates to the user interface are possible only at startup,
+	 * during any event (in a slot), or at regular time points using
+	 * {@link WTimer}. This is the normal JWt event loop.
+	 * <p>
+	 * In some cases, one may want to modify the user interface from a second
+	 * thread, outside the event loop. While this may be worked around by the
+	 * {@link WTimer}, in some cases, there are bandwidth and processing
+	 * overheads associated which may be unnecessary, and which create a
+	 * trade-off with time resolution of the updates.
+	 * <p>
+	 * When <code>enabled</code> is <code>true</code>, this enables &quot;server
+	 * push&quot; (what is called &apos;comet&apos; in AJAX terminology).
+	 * Widgets may then be modified, created or deleted outside of the event
+	 * loop (e.g. in response to execution of another thread), and these changes
+	 * are propagated by calling {@link WApplication#triggerUpdate()
+	 * triggerUpdate()}.
+	 * <p>
+	 * Note that you need to grab the application&apos;s update lock to avoid
+	 * concurrency problems, whenever you modify the application&apos;s state
+	 * from another thread.
+	 * <p>
+	 * An example of how to modify the widget tree outside the event loop and
+	 * propagate changes is:
+	 * <p>
+	 * <blockquote>
+	 * 
+	 * <pre>
+	 * // You need to have a reference to the application whose state
+	 *    // you are about to manipulate.
+	 *    WApplication app = ...;
+	 *   
+	 *    // Grab the application lock
+	 *    WApplication.UpdateLock lock = app.getUpdateLock();
+	 *   
+	 *    try {
+	 *      // We now have exclusive access to the application:
+	 *      // we can safely modify the widget tree for example.
+	 *      app.getRoot().addWidget(new WText("Something happened!"));
+	 *   
+	 *      // Push the changes to the browser
+	 *      app.triggerUpdate();
+	 *    } finally {
+	 *      lock.release();
+	 *    }
+	 * </pre>
+	 * 
+	 * </blockquote>
+	 * <p>
+	 * <p>
+	 * <i><b>Note: </b>This works only if JavaScript is available on the
+	 * client.</i>
+	 * </p>
+	 * 
+	 * @see WApplication#triggerUpdate()
+	 */
+	void enableUpdates(boolean enabled) {
+		if (enabled) {
+			++this.serverPush_;
+		} else {
+			--this.serverPush_;
+		}
+		if (enabled && this.serverPush_ == 1 || !enabled
+				&& this.serverPush_ == 0) {
+			this.doJavaScript(this.javaScriptClass_ + "._p_.setServerPush("
+					+ (enabled ? "true" : "false") + ");");
+		}
+	}
+
+	/**
+	 * Enables server-initiated updates.
+	 * <p>
+	 * Calls {@link #enableUpdates(boolean enabled) enableUpdates(true)}
+	 */
+	final void enableUpdates() {
+		enableUpdates(true);
+	}
+
+	/**
+	 * Returns whether server-initiated updates are enabled.
+	 * <p>
+	 * 
+	 * @see WApplication#enableUpdates(boolean enabled)
+	 */
+	public boolean isUpdatesEnabled() {
+		return this.serverPush_ > 0;
+	}
+
+	/**
+	 * Propagates server-initiated updates.
+	 * <p>
+	 * Propagate changes made to the user interface outside of the main event
+	 * loop. This is only possible after a call to
+	 * {@link WApplication#enableUpdates(boolean enabled) enableUpdates()}, and
+	 * must be done while holding the {@link UpdateLock} (or from within a
+	 * socket event, see {@link WSocketNotifier}).
+	 * <p>
+	 * 
+	 * @see WApplication#enableUpdates(boolean enabled)
+	 * @see WApplication#getUpdateLock()
+	 */
+	void triggerUpdate() {
+		if (!this.shouldTriggerUpdate_) {
+			return;
+		}
+		if (this.serverPush_ > 0) {
+			this.session_.pushUpdates();
+		} else {
+			throw new WtException(
+					"WApplication::triggerUpdate() called but server-triggered updates not enabled using WApplication::enableUpdates()");
+		}
+	}
+
+	/**
+	 * A synchronisation lock for manipulating and updating the application and
+	 * its widgets outside of the event loop
+	 * <p>
+	 * 
+	 * You need to get this lock only when you want to manipulate widgets
+	 * outside of the event loop. Inside the event loop, this lock is already
+	 * held by the library itself.
+	 * <p>
+	 * 
+	 * @see WApplication#getUpdateLock()
+	 */
+	public static class UpdateLock {
+		public void release() {
+			if (WApplication.getInstance().shouldTriggerUpdate_) {
+				WApplication.getInstance().shouldTriggerUpdate_ = false;
+				WebSession.getInstance().getMutex().unlock();
+				WebSession.Handler.getInstance().release();
+			}
+		}
+
+		private UpdateLock(WApplication app) {
+			System.err.append("Grabbing update lock").append('\n');
+			WebSession.Handler handler = WebSession.Handler.getInstance();
+			if (!(handler != null) || !handler.isHaveLock()
+					|| handler.getSession() != app.session_) {
+				new WebSession.Handler(app.getSession(), true);
+				app.shouldTriggerUpdate_ = true;
+			}
+		}
+	}
+
+	/**
+	 * Grabs and returns the lock for manipulating widgets outside the event
+	 * loop.
+	 * <p>
+	 * You need to keep this lock in scope while manipulating widgets outside of
+	 * the event loop. In normal cases, inside the JWt event loop, you do not
+	 * need to care about it.
+	 * <p>
+	 * 
+	 * @see WApplication#enableUpdates(boolean enabled)
+	 * @see WApplication#triggerUpdate()
+	 */
+	public WApplication.UpdateLock getUpdateLock() {
+		return new WApplication.UpdateLock(this);
+	}
+
+	/**
 	 * Attach an auxiliary thread to this application.
 	 * <p>
 	 * In a multi-threaded environment, {@link WApplication#getInstance()
 	 * getInstance()} uses thread-local data to retrieve the application object
 	 * that corresponds to the session currently being handled by the thread.
 	 * This is set automatically by the library whenever an event is delivered
-	 * to the application, or when you use the getUpdateLock() to modify the
+	 * to the application, or when you use the
+	 * {@link WApplication#getUpdateLock() getUpdateLock()} to modify the
 	 * application from an auxiliary thread outside the normal event loop.
 	 * <p>
 	 * When you want to manipulate the widget tree inside the main event loop,
 	 * but from within an auxiliary thread, then you cannot use the
-	 * getUpdateLock() since this will create an immediate dead lock. Instead,
-	 * you may attach the auxiliary thread to the application, by calling this
-	 * method from the auxiliary thread, and in this way you can modify the
-	 * application from within that thread without needing the update lock.
+	 * {@link WApplication#getUpdateLock() getUpdateLock()} since this will
+	 * create an immediate dead lock. Instead, you may attach the auxiliary
+	 * thread to the application, by calling this method from the auxiliary
+	 * thread, and in this way you can modify the application from within that
+	 * thread without needing the update lock.
 	 */
 	public void attachThread() {
 		WebSession.Handler.attachThreadToSession(this.session_);
@@ -1380,11 +1553,11 @@ public class WApplication extends WObject {
 			this.loadingIndicatorWidget_ = indicator.getWidget();
 			this.domRoot_.addWidget(this.loadingIndicatorWidget_);
 			JSlot showLoadJS = new JSlot();
-			showLoadJS.setJavaScript("function(o,e) {Wt3_1_0.inline('"
+			showLoadJS.setJavaScript("function(o,e) {Wt3_1_1.inline('"
 					+ this.loadingIndicatorWidget_.getId() + "');}");
 			this.showLoadingIndicator_.addListener(showLoadJS);
 			JSlot hideLoadJS = new JSlot();
-			hideLoadJS.setJavaScript("function(o,e) {Wt3_1_0.hide('"
+			hideLoadJS.setJavaScript("function(o,e) {Wt3_1_1.hide('"
 					+ this.loadingIndicatorWidget_.getId() + "');}");
 			this.hideLoadingIndicator_.addListener(hideLoadJS);
 			this.loadingIndicatorWidget_.hide();
@@ -1514,8 +1687,86 @@ public class WApplication extends WObject {
 		return this.htmlClass_;
 	}
 
+	/**
+	 * Event signal emitted when a keyboard key is pushed down.
+	 * <p>
+	 * The application receives key events when no widget currently has focus.
+	 * Otherwise, key events are handled by the widget in focus, and its
+	 * ancestors.
+	 * <p>
+	 * 
+	 * @see WInteractWidget#keyWentDown()
+	 */
+	public EventSignal1<WKeyEvent> globalKeyWentDown() {
+		return this.domRoot_.keyWentDown();
+	}
+
+	/**
+	 * Event signal emitted when a &quot;character&quot; was entered.
+	 * <p>
+	 * The application receives key events when no widget currently has focus.
+	 * Otherwise, key events are handled by the widget in focus, and its
+	 * ancestors.
+	 * <p>
+	 * 
+	 * @see WInteractWidget#keyPressed()
+	 */
+	public EventSignal1<WKeyEvent> globalKeyPressed() {
+		return this.domRoot_.keyPressed();
+	}
+
+	/**
+	 * Event signal emitted when a keyboard key is released.
+	 * <p>
+	 * The application receives key events when no widget currently has focus.
+	 * Otherwise, key events are handled by the widget in focus, and its
+	 * ancestors.
+	 * <p>
+	 * 
+	 * @see WInteractWidget#keyWentUp()
+	 */
+	public EventSignal1<WKeyEvent> globalKeyWentUp() {
+		return this.domRoot_.keyWentUp();
+	}
+
+	/**
+	 * Event signal emitted when enter was pressed.
+	 * <p>
+	 * The application receives key events when no widget currently has focus.
+	 * Otherwise, key events are handled by the widget in focus, and its
+	 * ancestors.
+	 * <p>
+	 * 
+	 * @see WInteractWidget#enterPressed()
+	 */
+	public EventSignal globalEnterPressed() {
+		return this.domRoot_.enterPressed();
+	}
+
+	/**
+	 * Event signal emitted when escape was pressed.
+	 * <p>
+	 * The application receives key events when no widget currently has focus.
+	 * Otherwise, key events are handled by the widget in focus, and its
+	 * ancestors.
+	 * <p>
+	 * 
+	 * @see WInteractWidget#escapePressed()
+	 */
+	public EventSignal globalEscapePressed() {
+		return this.domRoot_.escapePressed();
+	}
+
 	boolean isDebug() {
 		return this.session_.isDebug();
+	}
+
+	public boolean isJavaScriptLoaded(String jsFile) {
+		return this.javaScriptLoaded_.contains(jsFile) != false;
+	}
+
+	public void setJavaScriptLoaded(String jsFile) {
+		this.javaScriptLoaded_.add(jsFile);
 	}
 
 	/**
@@ -1580,7 +1831,7 @@ public class WApplication extends WObject {
 	 * from certain widgets even when they are inserted in the widget hierachy.
 	 */
 	protected boolean isExposed(WWidget w) {
-		if (this.exposedOnly_ != null) {
+		if (w != this.domRoot_ && this.exposedOnly_ != null) {
 			for (WWidget p = w; p != null; p = p.getParent()) {
 				if (p == this.exposedOnly_ || p == this.timerRoot_) {
 					return true;
@@ -1651,6 +1902,8 @@ public class WApplication extends WObject {
 	String newInternalPath_;
 	Signal1<String> internalPathChanged_;
 	boolean internalPathIsChanged_;
+	private int serverPush_;
+	private boolean shouldTriggerUpdate_;
 	private String javaScriptClass_;
 	private WApplication.AjaxMethod ajaxMethod_;
 	private WContainerWidget dialogCover_;
@@ -1678,6 +1931,7 @@ public class WApplication extends WObject {
 	String beforeLoadJavaScript_;
 	String newBeforeLoadJavaScript_;
 	String autoJavaScript_;
+	private Set<String> javaScriptLoaded_;
 	boolean autoJavaScriptChanged_;
 	EventSignal showLoadingIndicator_;
 	EventSignal hideLoadingIndicator_;
@@ -1744,28 +1998,48 @@ public class WApplication extends WObject {
 		return this.exposedSignals_;
 	}
 
-	String addExposedResource(WResource resource) {
-		this.exposedResources_.put(resource.getId(), resource);
+	private String resourceMapKey(WResource resource) {
+		return resource.getInternalPath().length() == 0 ? resource.getId()
+				: "/path/" + resource.getInternalPath();
+	}
+
+	String addExposedResource(WResource resource, String internalPath) {
+		this.exposedResources_.put(this.resourceMapKey(resource), resource);
 		String fn = resource.getSuggestedFileName();
 		if (fn.length() != 0 && fn.charAt(0) != '/') {
 			fn = '/' + fn;
 		}
-		return this.session_.getMostRelativeUrl(fn)
-				+ "&request=resource&resource="
-				+ DomElement.urlEncodeS(resource.getId()) + "&rand="
-				+ String.valueOf(MathUtils.randomInt());
+		if (resource.getInternalPath().length() == 0) {
+			return this.session_.getMostRelativeUrl(fn)
+					+ "&request=resource&resource="
+					+ DomElement.urlEncodeS(resource.getId()) + "&rand="
+					+ String.valueOf(MathUtils.randomInt());
+		} else {
+			fn = resource.getInternalPath() + fn;
+			if (this.session_.getApplicationName().length() != 0
+					&& fn.charAt(0) != '/') {
+				fn = '/' + fn;
+			}
+			return this.session_.getMostRelativeUrl(fn);
+		}
 	}
 
 	void removeExposedResource(WResource resource) {
-		this.exposedResources_.remove(resource.getId());
+		this.exposedResources_.remove(this.resourceMapKey(resource));
 	}
 
-	WResource decodeExposedResource(String resourceName) {
-		WResource i = this.exposedResources_.get(resourceName);
+	WResource decodeExposedResource(String resourceKey) {
+		WResource i = this.exposedResources_.get(resourceKey);
 		if (i != null) {
 			return i;
 		} else {
-			return null;
+			int j = resourceKey.lastIndexOf('/');
+			if (j != -1 && j > 1) {
+				return this.decodeExposedResource(resourceKey.substring(0,
+						0 + j));
+			} else {
+				return null;
+			}
 		}
 	}
 

@@ -276,7 +276,8 @@ class WebRenderer implements SlotLearnerInterface {
 		jquery.stream(response.out());
 		FileServe script = new FileServe(WtServlet.Wt_js);
 		script.setCondition("DEBUG", conf.isDebug());
-		script.setVar("WT_CLASS", "Wt3_1_0");
+		script.setCondition("DYNAMIC_JS", false);
+		script.setVar("WT_CLASS", "Wt3_1_1");
 		script.setVar("APP_CLASS", app.getJavaScriptClass());
 		script.setVar("AUTO_JAVASCRIPT", "(function() {" + app.autoJavaScript_
 				+ "})");
@@ -311,7 +312,7 @@ class WebRenderer implements SlotLearnerInterface {
 						.append("var domRoot = ")
 						.append(app.domRoot_.getJsRef())
 						.append(
-								";var form = Wt3_1_0.getElement('Wt-form');domRoot.style.display = form.style.display;document.body.replaceChild(domRoot, form);")
+								";var form = Wt3_1_1.getElement('Wt-form');domRoot.style.display = form.style.display;document.body.replaceChild(domRoot, form);")
 						.append(app.getAfterLoadJavaScript());
 				this.beforeLoadJS_ = new StringWriter();
 			}
@@ -492,17 +493,17 @@ class WebRenderer implements SlotLearnerInterface {
 			app.getStyleSheet().javaScriptUpdate(app, response.out(), true);
 		}
 		if (app.getCssTheme().length() != 0) {
-			response.out().append("Wt3_1_0").append(".addStyleSheet('").append(
+			response.out().append("Wt3_1_1").append(".addStyleSheet('").append(
 					WApplication.getResourcesUrl()).append("/themes/").append(
 					app.getCssTheme()).append("/wt.css');");
 			if (app.getEnvironment().agentIsIE()) {
-				response.out().append("Wt3_1_0").append(".addStyleSheet('")
+				response.out().append("Wt3_1_1").append(".addStyleSheet('")
 						.append(WApplication.getResourcesUrl()).append(
 								"/themes/").append(app.getCssTheme()).append(
 								"/wt_ie.css');");
 			}
 			if (app.getEnvironment().getAgent() == WEnvironment.UserAgent.IE6) {
-				response.out().append("Wt3_1_0").append(".addStyleSheet('")
+				response.out().append("Wt3_1_1").append(".addStyleSheet('")
 						.append(WApplication.getResourcesUrl()).append(
 								"/themes/").append(app.getCssTheme()).append(
 								"/wt_ie6.css');");
@@ -537,7 +538,7 @@ class WebRenderer implements SlotLearnerInterface {
 		if (widgetset) {
 			String historyE = app.getEnvironment().getParameter("Wt-history");
 			if (historyE != null) {
-				response.out().append("Wt3_1_0")
+				response.out().append("Wt3_1_1")
 						.append(".history.initialize('").append(
 								historyE.charAt(0)).append("-field', '")
 						.append(historyE.charAt(0)).append("-iframe');\n");
@@ -554,6 +555,9 @@ class WebRenderer implements SlotLearnerInterface {
 				.append("._p_.update(null, 'load', null, false);\n");
 		if (!widgetset) {
 			response.out().append("};\n");
+			response.out().append(app.getJavaScriptClass()).append(
+					"._p_.setServerPush(").append(
+					app.isUpdatesEnabled() ? "true" : "false").append(");");
 			response
 					.out()
 					.append(
@@ -569,7 +573,7 @@ class WebRenderer implements SlotLearnerInterface {
 				app.getAjaxMethod() == WApplication.AjaxMethod.XMLHttpRequest ? WtServlet.CommAjax_js
 						: WtServlet.CommScript_js);
 		js.setVar("APP_CLASS", app.getJavaScriptClass());
-		js.setVar("WT_CLASS", "Wt3_1_0");
+		js.setVar("WT_CLASS", "Wt3_1_1");
 		js
 				.setVar(
 						"CLOSE_CONNECTION",
@@ -715,7 +719,7 @@ class WebRenderer implements SlotLearnerInterface {
 			throws IOException {
 		int first = app.styleSheets_.size() - app.styleSheetsAdded_;
 		for (int i = first; i < app.styleSheets_.size(); ++i) {
-			out.append("Wt3_1_0").append(".addStyleSheet('").append(
+			out.append("Wt3_1_1").append(".addStyleSheet('").append(
 					app.fixRelativeUrl(app.styleSheets_.get(i)))
 					.append("');\n");
 		}
@@ -739,6 +743,10 @@ class WebRenderer implements SlotLearnerInterface {
 						.append(uri).append("\",function() {\n");
 			}
 		} else {
+			if (app.scriptLibraries_.size() - first > 0) {
+				out.append(app.getJavaScriptClass()).append(
+						"._p_.autoJavaScript();");
+			}
 			for (int i = first; i < app.scriptLibraries_.size(); ++i) {
 				out.append("});");
 			}

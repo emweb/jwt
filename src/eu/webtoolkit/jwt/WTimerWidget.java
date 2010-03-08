@@ -59,4 +59,12 @@ class WTimerWidget extends WInteractWidget {
 						true);
 		return e;
 	}
+
+	protected void enableAjax() {
+		if (this.timer_.isActive()) {
+			this.timerStarted_ = true;
+			this.repaint();
+		}
+		super.enableAjax();
+	}
 }

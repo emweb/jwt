@@ -362,8 +362,8 @@ public abstract class WWidget extends WObject {
 		String side = orientation == Orientation.Horizontal ? ".Horizontal"
 				: ".Vertical";
 		WApplication.getInstance().doJavaScript(
-				"Wt3_1_0.positionAtWidget('" + this.getId() + "','"
-						+ widget.getId() + "',Wt3_1_0" + side + ");");
+				"Wt3_1_1.positionAtWidget('" + this.getId() + "','"
+						+ widget.getId() + "',Wt3_1_1" + side + ");");
 	}
 
 	/**
@@ -977,7 +977,7 @@ public abstract class WWidget extends WObject {
 	 * library keeping track of changes to the widget.
 	 */
 	public void htmlText(Writer out) {
-		this.render();
+		this.render(EnumSet.of(RenderFlag.RenderFull));
 		DomElement element = this.getWebWidget().createSDomElement(
 				WApplication.getInstance());
 		List<DomElement.TimeoutEvent> timeouts = new ArrayList<DomElement.TimeoutEvent>();
@@ -1022,8 +1022,8 @@ public abstract class WWidget extends WObject {
 	}
 
 	String createJavaScript(StringWriter js, String insertJS) {
+		this.render(EnumSet.of(RenderFlag.RenderFull));
 		WApplication app = WApplication.getInstance();
-		this.render();
 		DomElement de = this.getWebWidget().createSDomElement(app);
 		String var = de.getCreateVar();
 		if (insertJS.length() != 0) {
@@ -1217,7 +1217,11 @@ public abstract class WWidget extends WObject {
 
 	abstract boolean isStubbed();
 
-	void render() {
+	protected void render(EnumSet<RenderFlag> flags) {
+	}
+
+	protected final void render(RenderFlag flag, RenderFlag... flags) {
+		render(EnumSet.of(flag, flags));
 	}
 
 	WWidget getAdam() {

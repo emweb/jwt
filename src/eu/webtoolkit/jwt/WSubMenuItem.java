@@ -120,7 +120,7 @@ public class WSubMenuItem extends WMenuItem {
 		}
 	}
 
-	protected void setFromInternalPath(String path) {
+	void setFromInternalPath(String path) {
 		super.setFromInternalPath(path);
 		if (this.subMenu_ != null && this.subMenu_.isInternalPathEnabled()) {
 			this.subMenu_.internalPathChanged(path);

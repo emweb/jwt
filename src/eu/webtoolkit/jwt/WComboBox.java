@@ -423,8 +423,8 @@ public class WComboBox extends WFormWidget {
 		if (this.selectionChanged_) {
 			return;
 		}
-		if (!formData.values.isEmpty()) {
-			String value = formData.values.get(0);
+		if (!(formData.values.length == 0)) {
+			String value = formData.values[0];
 			if (value.length() != 0) {
 				try {
 					this.currentIndex_ = Integer.parseInt(value);

@@ -510,8 +510,9 @@ public class WMenu extends WCompositeWidget {
 	}
 
 	protected void enableAjax() {
-		if (this.internalPathEnabled_) {
-			this.updateItems();
+		for (int i = 0; i < this.items_.size(); ++i) {
+			WMenuItem item = this.items_.get(i);
+			item.enableAjax();
 		}
 		super.enableAjax();
 	}

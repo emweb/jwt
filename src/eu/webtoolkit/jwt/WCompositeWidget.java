@@ -368,14 +368,15 @@ public class WCompositeWidget extends WWidget {
 
 	DomElement createSDomElement(WApplication app) {
 		if (this.needsToBeRendered()) {
-			this.render();
+			this.render(EnumSet.of(RenderFlag.RenderFull));
 		}
 		return this.impl_.createSDomElement(app);
 	}
 
 	void getSDomChanges(List<DomElement> result, WApplication app) {
 		if (this.needsToBeRendered()) {
-			this.render();
+			this.render(this.impl_.isRendered() ? RenderFlag.RenderUpdate
+					: RenderFlag.RenderFull);
 		}
 		this.impl_.getSDomChanges(result, app);
 	}
@@ -392,7 +393,7 @@ public class WCompositeWidget extends WWidget {
 		return this.impl_.boxBorder(orientation);
 	}
 
-	void render() {
+	protected void render(EnumSet<RenderFlag> flags) {
 		this.renderOk();
 	}
 

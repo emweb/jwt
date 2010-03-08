@@ -296,7 +296,7 @@ public class WDatePicker extends WCompositeWidget {
 		this.layout_.addWidget(this.popup_ = new WTemplate(
 				new WString(TEMPLATE)));
 		this.calendar_ = new WCalendar(i18n);
-		this.calendar_.selected().addListener(this.popup_,
+		this.calendar_.activated().addListener(this.popup_,
 				new Signal1.Listener<WDate>() {
 					public void trigger(WDate e1) {
 						WDatePicker.this.popup_.hide();
@@ -336,9 +336,9 @@ public class WDatePicker extends WCompositeWidget {
 					}
 				});
 		this.positionJS_
-				.setJavaScript("function() { Wt3_1_0.positionAtWidget('"
+				.setJavaScript("function() { Wt3_1_1.positionAtWidget('"
 						+ this.popup_.getId() + "','" + displayWidget.getId()
-						+ "', Wt3_1_0.Horizontal);}");
+						+ "', Wt3_1_1.Horizontal);}");
 		displayWidget.clicked().addListener(this.positionJS_);
 		displayWidget.clicked().addListener(this,
 				new Signal1.Listener<WMouseEvent>() {

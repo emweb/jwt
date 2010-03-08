@@ -651,7 +651,7 @@ public abstract class WWebWidget extends WWidget {
 			return stub;
 		} else {
 			this.flags_.clear(BIT_STUBBED);
-			this.render();
+			this.render(EnumSet.of(RenderFlag.RenderFull));
 			return this.createDomElement(app);
 		}
 	}
@@ -945,7 +945,7 @@ public abstract class WWebWidget extends WWidget {
 						app
 								.addAutoJavaScript("{var w = "
 										+ this.getJsRef()
-										+ ";if (w && !Wt3_1_0.isHidden(w)) {var i = Wt3_1_0.getElement('"
+										+ ";if (w && !Wt3_1_1.isHidden(w)) {var i = Wt3_1_1.getElement('"
 										+ i.getId()
 										+ "');i.style.width=w.clientWidth + 'px';i.style.height=w.clientHeight + 'px';}}");
 						element.addChild(i);
@@ -1139,7 +1139,7 @@ public abstract class WWebWidget extends WWidget {
 									"selectable"));
 					element.setAttribute("unselectable", "off");
 					element.setAttribute("onselectstart",
-							"event.cancelBubble=true;return true;");
+							"event.cancelBubble=true; return true;");
 				}
 			}
 			this.flags_.clear(BIT_SELECTABLE_CHANGED);
@@ -1610,7 +1610,7 @@ public abstract class WWebWidget extends WWidget {
 				if (!isIEMobile) {
 					DomElement stub = DomElement.getForUpdate(this,
 							DomElementType.DomElement_SPAN);
-					this.render();
+					this.render(EnumSet.of(RenderFlag.RenderFull));
 					DomElement realElement = this.createDomElement(app);
 					stub.unstubWith(realElement, !this.flags_
 							.get(BIT_HIDE_WITH_OFFSETS));
@@ -1620,7 +1620,7 @@ public abstract class WWebWidget extends WWidget {
 				}
 			}
 		} else {
-			this.render();
+			this.render(EnumSet.of(RenderFlag.RenderUpdate));
 			if (isIEMobile) {
 				if (this.flags_.get(BIT_REPAINT_PROPERTY_ATTRIBUTE)) {
 					WWidget p = this;

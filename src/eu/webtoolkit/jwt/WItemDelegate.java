@@ -190,6 +190,14 @@ public class WItemDelegate extends WAbstractItemDelegate {
 		if (t != null || a != null) {
 			if (autoCreate) {
 				wc = new WContainerWidget();
+				w.w.setInline(true);
+				w.w.setStyleClass(WString.Empty.toString());
+				WContainerWidget p = ((w.w.getParent()) instanceof WContainerWidget ? (WContainerWidget) (w.w
+						.getParent())
+						: null);
+				if (p != null) {
+					p.removeWidget(w.w);
+				}
 				wc.addWidget(w.w);
 				w.w = wc;
 			} else {

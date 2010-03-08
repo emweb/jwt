@@ -147,8 +147,8 @@ public class WRadioButton extends WAbstractToggleButton {
 		if (this.stateChanged_) {
 			return;
 		}
-		if (!formData.values.isEmpty()) {
-			String value = formData.values.get(0);
+		if (!(formData.values.length == 0)) {
+			String value = formData.values[0];
 			if (value.equals(this.getId())) {
 				if (this.buttonGroup_ != null) {
 					this.buttonGroup_.uncheckOthers(this);

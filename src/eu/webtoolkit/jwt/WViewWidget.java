@@ -5,6 +5,7 @@
  */
 package eu.webtoolkit.jwt;
 
+import java.util.EnumSet;
 
 /**
  * An abstract base class for an MVC view that is rendered using a widget
@@ -93,7 +94,7 @@ public abstract class WViewWidget extends WWebWidget {
 		super.load();
 	}
 
-	void render() {
+	public void render(EnumSet<RenderFlag> flags) {
 		if (this.needContentsUpdate_) {
 			if (this.contents_ != null)
 				this.contents_.remove();
@@ -104,7 +105,7 @@ public abstract class WViewWidget extends WWebWidget {
 			this.setInline(this.contents_.isInline());
 			this.needContentsUpdate_ = false;
 		}
-		super.render();
+		super.render(flags);
 	}
 
 	public void refresh() {
@@ -132,7 +133,7 @@ public abstract class WViewWidget extends WWebWidget {
 		if (!app.getSession().getRenderer().isPreLearning()) {
 			if (all && !(this.contents_ != null)) {
 				this.needContentsUpdate_ = true;
-				this.render();
+				this.render(EnumSet.of(RenderFlag.RenderFull));
 			}
 			if (this.contents_ != null) {
 				boolean savedVisibleOnly = app.getSession().getRenderer()

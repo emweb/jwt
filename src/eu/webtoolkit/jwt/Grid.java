@@ -15,9 +15,11 @@ class Grid {
 
 	static class Row {
 		public int stretch_;
+		public boolean resizable_;
 
 		public Row(int stretch) {
 			this.stretch_ = stretch;
+			this.resizable_ = false;
 		}
 
 		public Row() {
@@ -27,9 +29,11 @@ class Grid {
 
 	static class Column {
 		public int stretch_;
+		public boolean resizable_;
 
 		public Column(int stretch) {
 			this.stretch_ = stretch;
+			this.resizable_ = false;
 		}
 
 		public Column() {

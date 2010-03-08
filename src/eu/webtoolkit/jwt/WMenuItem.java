@@ -346,9 +346,19 @@ public class WMenuItem extends WObject {
 		}
 	}
 
-	protected void setFromInternalPath(String path) {
+	void setFromInternalPath(String path) {
 		if (this.menu_.contentsStack_.getCurrentWidget() != this.getContents()) {
 			this.menu_.select(this.menu_.indexOf(this), false);
+		}
+	}
+
+	protected void enableAjax() {
+		if (!this.isContentsLoaded()) {
+			this.contents_.enableAjax();
+		}
+		if (this.menu_.isInternalPathEnabled()) {
+			this.updateItemWidget(this.getItemWidget());
+			this.resetLearnedSlots();
 		}
 	}
 
