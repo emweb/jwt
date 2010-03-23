@@ -5,7 +5,6 @@
  */
 package eu.webtoolkit.jwt;
 
-import java.io.StringWriter;
 import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Set;
@@ -695,20 +694,18 @@ public class WCalendar extends WCompositeWidget {
 		WDate currentDay = WDate.getCurrentDate();
 		this.currentYear_ = currentDay.getYear();
 		this.currentMonth_ = currentDay.getMonth();
-		StringWriter text = new StringWriter();
+		StringBuilder text = new StringBuilder();
 		text
 				.append("<table class=\"${table-class}\" cellspacing=\"0\" cellpadding=\"0\"><caption>${nav-prev} ${month} ${year} ${nav-next}</caption><tr>");
 		for (int j = 0; j < 7; ++j) {
-			text.append("<th title=\"${t").append(String.valueOf(j)).append(
-					"}\" scope=\"col\">${d").append(String.valueOf(j)).append(
-					"}</th>");
+			text.append("<th title=\"${t").append(j).append(
+					"}\" scope=\"col\">${d").append(j).append("}</th>");
 		}
 		text.append("</tr>");
 		for (int i = 0; i < 6; ++i) {
 			text.append("<tr>");
 			for (int j = 0; j < 7; ++j) {
-				text.append("<td>${c").append(String.valueOf(i * 7 + j))
-						.append("}</td>");
+				text.append("<td>${c").append(i * 7 + j).append("}</td>");
 			}
 			text.append("</tr>");
 		}

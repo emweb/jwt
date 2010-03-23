@@ -291,21 +291,30 @@ this.isKeyPress = function(e) {
 	   || (e.keyCode > 46 && e.keyCode < 112));
 };
 
+var rnumpx = /^-?\d+(?:px)?$/i;
+
+function css(c, s) {
+  if (c.style[s])
+    return c.style[s];
+  else if (document.defaultView && document.defaultView.getComputedStyle)
+    return document.defaultView.getComputedStyle(c, null)[s];
+  else if (c.currentStyle)
+    return c.currentStyle[s];
+  else
+    return null;
+}
+
 // Get an element metric in pixels
 this.px = function(c, s) {
-  var v = null;
-  if (document.defaultView && document.defaultView.getComputedStyle) {
-    v = document.defaultView.getComputedStyle(c, null)[s];
-  } else if (c.currentStyle) {
-    v = c.currentStyle[s];
-  } else {
-    v = c.style[s];
-  }
+  var v = css(c, s);
+
   if (v == 'auto' || v == null)
     return 0;
-  var m = /^\s*(-?\d+(?:\.\d+)?)\s*px\s*$/.exec(v);
-  v = m && m.length == 2 ? m[1] : "0";
-  return v ? parseFloat(v) : 0;
+
+  if (rnumpx.test(v))
+    return parseFloat(v);
+  else
+    return 0;
 };
 
 // Return if an element (or one of its ancestors) is hidden
@@ -438,11 +447,11 @@ this.capture = function(obj) {
       db.releaseCapture();
 
   if (obj != null) {
-    db.className = 'unselectable';
+    $(db).addClass('unselectable');
     db.setAttribute('unselectable', 'on');
     db.onselectstart = 'return false;';
   } else {
-    db.className = '';
+    $(db).removeClass('unselectable');
     db.setAttribute('unselectable', 'off');
     db.onselectstart = '';
   }
@@ -753,19 +762,19 @@ version: 2.5.2
       }, 50);
   }
 
-  function _trackActiveElement(evt) {
-    if (evt && evt.target) {
-      document.activeElement = evt.target == document ? null : evt.target;
-    }
-  }
-
-  function _trackActiveElementLost(evt) {
-    document.activeElement = null;
-  }
-
   if (!document.activeElement) {
-    document.addEventListener("focus", _trackActiveElement, true);
-    document.addEventListener("blur", _trackActiveElementLost, true);
+    function trackActiveElement(evt) {
+      if (evt && evt.target) {
+	document.activeElement = evt.target == document ? null : evt.target;
+      }
+    }
+
+    function trackActiveElementLost(evt) {
+      document.activeElement = null;
+    }
+
+    document.addEventListener("focus", trackActiveElement, true);
+    document.addEventListener("blur", trackActiveElementLost, true);
   }
 
   function _initialize() {
@@ -854,7 +863,7 @@ version: 2.5.2
     }
     fqstate = state;
     if (_UAie) {
-      updateIFrame(fqstate);
+      _updateIFrame(fqstate);
       return;
     } else {
       location.hash = fqstate;
@@ -973,7 +982,6 @@ function dragStart(obj, e) {
 };
 
 function dragDrag(e) {
-  //console.log("dragDrag");
   if (dragState.object != null) {
     var ds = dragState;
     var xy = WT.pageCoordinates(e);
@@ -1038,7 +1046,6 @@ function dragDrag(e) {
 };
 
 function dragEnd(e) {
-  //console.log("dragEnd()");
   WT.capture(null);
 
   var ds = dragState;

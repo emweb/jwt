@@ -280,7 +280,7 @@ public class WTextEdit extends WTextArea {
 		this.setInline(false);
 		this.buttons_[0] = "fontselect,|,bold,italic,underline,|,fontsizeselect,|,forecolor,backcolor,|,justifyleft,justifycenter,justifyright,justifyfull,|,anchor,|,numlist,bullist";
 		initTinyMCE();
-		this.setJavaScriptMember("wtResize",
+		this.setJavaScriptMember(WT_RESIZE_JS,
 				"function(e,w,h){Wt3_1_1.tinyMCEResize(e, w, h); };");
 	}
 

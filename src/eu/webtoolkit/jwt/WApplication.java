@@ -1117,9 +1117,10 @@ public class WApplication extends WObject {
 	 */
 	public static class UpdateLock {
 		public void release() {
+			System.err.append("Releasing update lock").append('\n');
 			if (WApplication.getInstance().shouldTriggerUpdate_) {
+				System.err.append("Releasing handler").append('\n');
 				WApplication.getInstance().shouldTriggerUpdate_ = false;
-				WebSession.getInstance().getMutex().unlock();
 				WebSession.Handler.getInstance().release();
 			}
 		}
@@ -1129,6 +1130,9 @@ public class WApplication extends WObject {
 			WebSession.Handler handler = WebSession.Handler.getInstance();
 			if (!(handler != null) || !handler.isHaveLock()
 					|| handler.getSession() != app.session_) {
+				System.err.append(
+						"Creating new handler for app: app.sessionId()")
+						.append('\n');
 				new WebSession.Handler(app.getSession(), true);
 				app.shouldTriggerUpdate_ = true;
 			}
@@ -1941,7 +1945,7 @@ public class WApplication extends WObject {
 	}
 
 	WContainerWidget getDialogCover(boolean create) {
-		if (this.dialogCover_ == null && create) {
+		if (this.dialogCover_ == null && create && this.timerRoot_ != null) {
 			this.dialogCover_ = new WContainerWidget(this.domRoot_);
 			this.dialogCover_.setStyleClass("Wt-dialogcover");
 			this.dialogCover_.hide();

@@ -67,7 +67,7 @@ public class WPanel extends WCompositeWidget {
 		this.impl_.bindWidget("contents", centralArea);
 		this
 				.setJavaScriptMember(
-						"wtResize",
+						WT_RESIZE_JS,
 						"function(self, w, h) {self.style.height= h + 'px';var c = self.lastChild;var t = c.previousSibling;if (t.className == 'titlebar')h -= t.offsetHeight;h -= 8;if (h > 0) {c.style.height = h + 'px';$(c).children().each(function() { var self = $(this), padding = self.outerHeight() - self.height();self.height(h - padding);});}};");
 	}
 

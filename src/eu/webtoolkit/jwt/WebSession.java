@@ -322,8 +322,7 @@ class WebSession {
 	public boolean handleRequest(WebRequest request, WebResponse response)
 			throws IOException {
 		Configuration conf = this.controller_.getConfiguration();
-		this.mutex_.lock();
-		try {
+		{
 			WebSession.Handler handler = new WebSession.Handler(this, request,
 					response);
 			String wtdE = request.getParameter("wtd");
@@ -539,8 +538,6 @@ class WebSession {
 			}
 			handler.release();
 			return !handler.isSessionDead();
-		} finally {
-			this.mutex_.unlock();
 		}
 	}
 
@@ -799,24 +796,35 @@ class WebSession {
 		public Handler(WebSession session, WebRequest request,
 				WebResponse response) {
 			this.signalOrder = new ArrayList<Integer>();
+			this.prevHandler_ = null;
 			this.session_ = session;
 			this.request_ = request;
 			this.response_ = response;
 			this.killed_ = false;
+			session.getMutex().lock();
+			this.locked_ = true;
 			this.init();
 		}
 
 		public Handler(WebSession session, boolean takeLock) {
 			this.signalOrder = new ArrayList<Integer>();
+			this.prevHandler_ = null;
 			this.session_ = session;
 			this.request_ = null;
 			this.response_ = null;
 			this.killed_ = false;
+			if (takeLock) {
+				session.getMutex().lock();
+				this.locked_ = true;
+			}
 			this.init();
 		}
 
 		public void release() {
-			threadHandler_.set((WebSession.Handler) null);
+			if (this.locked_) {
+				this.session_.getMutex().unlock();
+			}
+			threadHandler_.set(this.prevHandler_);
 		}
 
 		public static WebSession.Handler getInstance() {
@@ -824,7 +832,7 @@ class WebSession {
 		}
 
 		public boolean isHaveLock() {
-			return false;
+			return this.locked_;
 		}
 
 		public WebResponse getResponse() {
@@ -848,6 +856,7 @@ class WebSession {
 		public List<Integer> signalOrder;
 
 		private void init() {
+			this.prevHandler_ = threadHandler_.get();
 			threadHandler_.set(this);
 		}
 
@@ -864,6 +873,8 @@ class WebSession {
 			this.response_ = response;
 		}
 
+		private boolean locked_;
+		private WebSession.Handler prevHandler_;
 		private WebSession session_;
 		private WebRequest request_;
 		private WebResponse response_;

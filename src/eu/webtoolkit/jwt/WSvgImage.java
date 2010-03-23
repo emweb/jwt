@@ -377,7 +377,7 @@ public class WSvgImage extends WResource implements WVectorImage {
 		this.newGroup_ = false;
 		this.finishPath();
 		char[] buf = new char[30];
-		EscapeOStream tmp = new EscapeOStream();
+		StringBuilder tmp = new StringBuilder();
 		tmp.append("</g>");
 		this.currentTransform_.assign(this.getPainter().getCombinedTransform());
 		if (this.newClipPath_) {
@@ -387,7 +387,7 @@ public class WSvgImage extends WResource implements WVectorImage {
 				tmp.append("<defs><clipPath id=\"clip").append(
 						this.currentClipId_).append("\">");
 				this.shapes_.append(tmp.toString());
-				tmp.clear();
+				tmp.setLength(0);
 				this.drawPlainPath(this.shapes_, this.getPainter()
 						.getClipPath());
 				tmp.append('"');
@@ -469,7 +469,7 @@ public class WSvgImage extends WResource implements WVectorImage {
 	}
 
 	private String getStrokeStyle() {
-		EscapeOStream result = new EscapeOStream();
+		StringBuilder result = new StringBuilder();
 		String buf;
 		WPen pen = this.getPainter().getPen();
 		if (!((this.getPainter().getRenderHints() & WPainter.RenderHint.Antialiasing

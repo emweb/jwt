@@ -124,6 +124,14 @@ public class WString implements Comparable<WString>, CharSequence {
 	public boolean isEmpty() {
 		return getValue().length() == 0;
 	}
+	
+	private String resolveKey(String key) {
+		String result = WApplication.getInstance().getLocalizedStrings().resolveKey(key);
+		if (result == null)
+			return "??" + result + "??";
+		else 
+			return result;
+	}
 
 	/**
 	 * Returns the value.

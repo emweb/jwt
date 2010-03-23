@@ -127,26 +127,14 @@ public abstract class WPaintedWidget extends WInteractWidget {
 		this.areaImage_ = null;
 		this.renderWidth_ = 0;
 		this.renderHeight_ = 0;
-		this.resized_ = new JSignal2<Integer, Integer>(this, "resized") {
-		};
 		if (WApplication.getInstance() != null) {
 			WEnvironment env = WApplication.getInstance().getEnvironment();
 			if (env.getUserAgent().indexOf("Opera") != -1) {
 				this.preferredMethod_ = WPaintedWidget.Method.InlineSvgVml;
 			}
 		}
+		this.setLayoutSizeAware(true);
 		this.setInline(false);
-		this.resized_.addListener(this,
-				new Signal2.Listener<Integer, Integer>() {
-					public void trigger(Integer e1, Integer e2) {
-						WPaintedWidget.this.onResize(e1, e2);
-					}
-				});
-		this
-				.setJavaScriptMember(
-						"wtResize",
-						"function(self, w, h) {if (!self.wtWidth || self.wtWidth!=w || !self.wtHeight || self.wtHeight!=h) {self.wtWidth=w; self.wtHeight=h;self.style.height=h + 'px';"
-								+ this.resized_.createCall("w", "h") + "}};");
 	}
 
 	/**
@@ -226,7 +214,7 @@ public abstract class WPaintedWidget extends WInteractWidget {
 
 	public void resize(WLength width, WLength height) {
 		if (!width.isAuto() && !height.isAuto()) {
-			this.setJavaScriptMember("wtResize", "");
+			this.setLayoutSizeAware(false);
 			this.resizeCanvas((int) width.toPixels(), (int) height.toPixels());
 		}
 		super.resize(width, height);
@@ -316,6 +304,11 @@ public abstract class WPaintedWidget extends WInteractWidget {
 	public List<WAbstractArea> getAreas() {
 		return this.areaImage_ != null ? this.areaImage_.getAreas()
 				: (List<WAbstractArea>) new ArrayList<WAbstractArea>();
+	}
+
+	protected void layoutSizeChanged(int width, int height) {
+		this.resize(WLength.Auto, WLength.Auto);
+		this.resizeCanvas(width, height - 5);
 	}
 
 	/**
@@ -425,7 +418,6 @@ public abstract class WPaintedWidget extends WInteractWidget {
 	private WImage areaImage_;
 	int renderWidth_;
 	int renderHeight_;
-	private JSignal2<Integer, Integer> resized_;
 
 	private void resizeCanvas(int width, int height) {
 		this.renderWidth_ = width;
@@ -436,11 +428,6 @@ public abstract class WPaintedWidget extends WInteractWidget {
 		}
 		this.sizeChanged_ = true;
 		this.update();
-	}
-
-	private void onResize(int width, int height) {
-		this.resize(WLength.Auto, WLength.Auto);
-		this.resizeCanvas(width, height - 5);
 	}
 
 	private boolean isCreatePainter() {

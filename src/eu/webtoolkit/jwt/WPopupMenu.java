@@ -381,7 +381,7 @@ public class WPopupMenu extends WCompositeWidget {
 
 	private WTemplate impl_;
 	WPopupMenuItem parentItem_;
-	private WPopupMenuItem result_;
+	WPopupMenuItem result_;
 	private Signal aboutToHide_;
 	private AbstractSignal.Connection globalClickConnection_;
 	private AbstractSignal.Connection globalEscapeConnection_;

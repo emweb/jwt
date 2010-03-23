@@ -73,6 +73,6 @@ public class WStdLocalizedStrings extends WLocalizedStrings {
 			}
 		}
 		
-		return "??" + key + "??";
+		return null;
 	}
 }

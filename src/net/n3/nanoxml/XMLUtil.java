@@ -336,7 +336,7 @@ public class XMLUtil
     */
    static void skipWhitespace(IXMLReader   reader,
                               StringBuffer buffer)
-      throws IOException
+      throws IOException, XMLParseException
    {
       char ch;
 

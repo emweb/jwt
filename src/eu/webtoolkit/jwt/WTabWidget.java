@@ -435,8 +435,10 @@ public class WTabWidget extends WCompositeWidget {
 		this.layout_.addWidget(this.contents_);
 		this
 				.setJavaScriptMember(
-						"wtResize",
-						"function(self, w, h) {self.style.height= h + 'px';var c = self.firstChild;var t = self.lastChild;h -= c.offsetHeight;if (h > 0)t.wtResize(t, w, h);};");
+						WT_RESIZE_JS,
+						""
+								+ "function(self, w, h) {self.style.height= h + 'px';var c = self.firstChild;var t = self.lastChild;h -= c.offsetHeight;if (h > 0)t."
+								+ WT_RESIZE_JS + "(t, w, h);};");
 		this.menu_.itemSelected().addListener(this,
 				new Signal1.Listener<WMenuItem>() {
 					public void trigger(WMenuItem e1) {

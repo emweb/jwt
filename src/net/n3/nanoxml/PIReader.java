@@ -96,39 +96,43 @@ class PIReader
                    int    size)
       throws IOException
    {
-      if (this.atEndOfData) {
-         return -1;
-      }
-
-      int charsRead = 0;
-
-      if ((offset + size) > buffer.length) {
-         size = buffer.length - offset;
-      }
-
-      while (charsRead < size) {
-         char ch = this.reader.read();
-
-         if (ch == '?') {
-            char ch2 = this.reader.read();
-
-            if (ch2 == '>') {
-               this.atEndOfData = true;
-               break;
-            }
-
-            this.reader.unread(ch2);
-         }
-
-         buffer[charsRead] = ch;
-         charsRead++;
-      }
-
-      if (charsRead == 0) {
-         charsRead = -1;
-      }
-
-      return charsRead;
+	   try {
+	      if (this.atEndOfData) {
+	         return -1;
+	      }
+	
+	      int charsRead = 0;
+	
+	      if ((offset + size) > buffer.length) {
+	         size = buffer.length - offset;
+	      }
+	
+	      while (charsRead < size) {
+	         char ch = this.reader.read();
+	
+	         if (ch == '?') {
+	            char ch2 = this.reader.read();
+	
+	            if (ch2 == '>') {
+	               this.atEndOfData = true;
+	               break;
+	            }
+	
+	            this.reader.unread(ch2);
+	         }
+	
+	         buffer[charsRead] = ch;
+	         charsRead++;
+	      }
+	
+	      if (charsRead == 0) {
+	         charsRead = -1;
+	      }
+	
+	      return charsRead;
+	   } catch (XMLParseException xmlpe) {
+		   throw new IOException(xmlpe);
+	   }
    }
 
 
@@ -141,17 +145,21 @@ class PIReader
    public void close()
       throws IOException
    {
-      while (! this.atEndOfData) {
-         char ch = this.reader.read();
-
-         if (ch == '?') {
-            char ch2 = this.reader.read();
-
-            if (ch2 == '>') {
-               this.atEndOfData = true;
-            }
-         }
-      }
+	   try {
+	      while (! this.atEndOfData) {
+	         char ch = this.reader.read();
+	
+	         if (ch == '?') {
+	            char ch2 = this.reader.read();
+	
+	            if (ch2 == '>') {
+	               this.atEndOfData = true;
+	            }
+	         }
+	      }
+	   } catch (XMLParseException xmlpe) {
+		   throw new IOException(xmlpe);
+	   }
    }
 
 }

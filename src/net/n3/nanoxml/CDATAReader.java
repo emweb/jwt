@@ -103,51 +103,55 @@ class CDATAReader
                    int    size)
       throws IOException
    {
-      int charsRead = 0;
-
-      if (this.atEndOfData) {
-         return -1;
-      }
-
-      if ((offset + size) > buffer.length) {
-         size = buffer.length - offset;
-      }
-
-      while (charsRead < size) {
-         char ch = this.savedChar;
-
-         if (ch == 0) {
-            ch = this.reader.read();
-         } else {
-            this.savedChar = 0;
-         }
-
-         if (ch == ']') {
-            char ch2 = this.reader.read();
-            
-            if (ch2 == ']') {
-               char ch3 = this.reader.read();
-
-               if (ch3 == '>') {
-                  this.atEndOfData = true;
-                  break;
-               }
-
-               this.savedChar = ch2;
-               this.reader.unread(ch3);
-            } else {
-               this.reader.unread(ch2);
-            }
-         }
-         buffer[charsRead] = ch;
-         charsRead++;
-      }
-
-      if (charsRead == 0) {
-         charsRead = -1;
-      }
-
-      return charsRead;
+	  try {
+	      int charsRead = 0;
+	
+	      if (this.atEndOfData) {
+	         return -1;
+	      }
+	
+	      if ((offset + size) > buffer.length) {
+	         size = buffer.length - offset;
+	      }
+	
+	      while (charsRead < size) {
+	         char ch = this.savedChar;
+	
+	         if (ch == 0) {
+	            ch = this.reader.read();
+	         } else {
+	            this.savedChar = 0;
+	         }
+	
+	         if (ch == ']') {
+	            char ch2 = this.reader.read();
+	            
+	            if (ch2 == ']') {
+	               char ch3 = this.reader.read();
+	
+	               if (ch3 == '>') {
+	                  this.atEndOfData = true;
+	                  break;
+	               }
+	
+	               this.savedChar = ch2;
+	               this.reader.unread(ch3);
+	            } else {
+	               this.reader.unread(ch2);
+	            }
+	         }
+	         buffer[charsRead] = ch;
+	         charsRead++;
+	      }
+	
+	      if (charsRead == 0) {
+	         charsRead = -1;
+	      }
+	
+	      return charsRead;
+	  } catch (XMLParseException xmlpe) {
+		  throw new IOException(xmlpe);
+	  }
    }
     
 
@@ -160,34 +164,38 @@ class CDATAReader
    public void close()
       throws IOException
    {
-      while (! this.atEndOfData) {
-         char ch = this.savedChar;
-
-         if (ch == 0) {
-            ch = this.reader.read();
-         } else {
-            this.savedChar = 0;
-         }
-
-         if (ch == ']') {
-            char ch2 = this.reader.read();
-
-            if (ch2 == ']') {
-               char ch3 = this.reader.read();
-
-               if (ch3 == '>') {
-                  break;
-               }
-
-               this.savedChar = ch2;
-               this.reader.unread(ch3);
-            } else {
-               this.reader.unread(ch2);
-            }
-         }
-      }
-
-      this.atEndOfData = true;
+	   try {
+	      while (! this.atEndOfData) {
+	         char ch = this.savedChar;
+	
+	         if (ch == 0) {
+	            ch = this.reader.read();
+	         } else {
+	            this.savedChar = 0;
+	         }
+	
+	         if (ch == ']') {
+	            char ch2 = this.reader.read();
+	
+	            if (ch2 == ']') {
+	               char ch3 = this.reader.read();
+	
+	               if (ch3 == '>') {
+	                  break;
+	               }
+	
+	               this.savedChar = ch2;
+	               this.reader.unread(ch3);
+	            } else {
+	               this.reader.unread(ch2);
+	            }
+	         }
+	      }
+	
+	      this.atEndOfData = true;
+	   } catch (XMLParseException xmlpe) {
+		   throw new IOException(xmlpe);
+	   }
    }
 
 }

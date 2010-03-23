@@ -611,5 +611,5 @@ public class WTemplate extends WInteractWidget {
 	private Map<String, String> strings_;
 	private WString text_;
 	private boolean changed_;
-	static String DropShadow_x1_x2 = "<span class=\"Wt-x1\"><span class=\"Wt-x1a\" /></span><span class=\"Wt-x2\"><span class=\"Wt-x2a\" /></span>";
+	static String DropShadow_x1_x2 = "<span class=\"Wt-x1\"><span class=\"Wt-x1a\"></span></span><span class=\"Wt-x2\"><span class=\"Wt-x2a\"></span></span>";
 }

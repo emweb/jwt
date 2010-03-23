@@ -101,6 +101,7 @@ public abstract class WtServlet extends HttpServlet {
 
 		HttpSession jsession = request.getSession();
 		WebSession wsession = (WebSession) jsession.getAttribute(WT_WEBSESSION_ID);
+		getConfiguration().setSessionTimeout(jsession.getMaxInactiveInterval());
 
 		if (wsession == null) {
 			String applicationTypeS = this.getServletConfig().getInitParameter("ApplicationType");

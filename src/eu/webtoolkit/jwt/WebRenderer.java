@@ -327,13 +327,13 @@ class WebRenderer implements SlotLearnerInterface {
 						.append(app.getJavaScriptClass()).append(
 								"._p_.autoJavaScript();");
 			}
-			response
-					.out()
-					.append(app.getJavaScriptClass())
-					.append("._p_.update(null, 'load', null, false);")
-					.append(this.collectedJS2_.toString())
-					.append(
-							"};window.WtScriptLoaded = true;if (window.isLoaded) onLoad();\n");
+			response.out().append(app.getJavaScriptClass()).append(
+					"._p_.update(null, 'load', null, false);").append(
+					this.collectedJS2_.toString()).append("};").append(
+					app.getJavaScriptClass()).append("._p_.setServerPush(")
+					.append(app.isUpdatesEnabled() ? "true" : "false").append(
+							");").append("window.WtScriptLoaded = true;")
+					.append("if (window.isLoaded) onLoad();\n");
 			app.enableAjax_ = false;
 		}
 	}
@@ -460,7 +460,7 @@ class WebRenderer implements SlotLearnerInterface {
 		page.streamUntil(response.out(), "HTML");
 		List<DomElement.TimeoutEvent> timeouts = new ArrayList<DomElement.TimeoutEvent>();
 		{
-			StringWriter js = new StringWriter();
+			EscapeOStream js = new EscapeOStream();
 			EscapeOStream out = new EscapeOStream(response.out());
 			mainElement.asHTML(out, js, timeouts);
 			app.doJavaScript(js.toString());
