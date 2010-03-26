@@ -191,7 +191,7 @@ public class WContainerWidget extends WInteractWidget {
 	 * The layout manager arranges children in the entire width and height of
 	 * the container. This is equivalent to
 	 * {@link WContainerWidget#setLayout(WLayout layout, EnumSet alignment)
-	 * setLayout(<code>layout</code> AlignJustify)}
+	 * setLayout(layout, AlignJustify)}
 	 * <p>
 	 * 
 	 * @see WContainerWidget#getLayout()

@@ -349,7 +349,7 @@ public class WSuggestionPopup extends WCompositeWidget {
 		 * items.
 		 * <p>
 		 * For example, &apos;,&apos; to separate different values on komma.
-		 * Specify 0 (&apos;&apos;) for no list separation.
+		 * Specify 0 (&apos;\0&apos;) for no list separation.
 		 */
 		public char listSeparator;
 		/**
