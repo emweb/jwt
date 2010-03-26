@@ -6,7 +6,9 @@
 package eu.webtoolkit.jwt;
 
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
+import eu.webtoolkit.jwt.utils.EnumUtils;
 
 /**
  * A widget which popups to assist in editing a textarea or lineedit.
@@ -182,28 +184,10 @@ public class WSuggestionPopup extends WCompositeWidget {
 				this.content_ = new WContainerWidget());
 		this.setPopup(true);
 		this.setPositionScheme(PositionScheme.Absolute);
-		this.editKeyDown_
-				.setJavaScript("function(edit, event) {var self = "
-						+ this.getJsRef()
-						+ ";var sel = self.sel;if (sel != null) sel = Wt3_1_1.getElement(sel);if (self.style.display != 'none' && sel != null) {if ((event.keyCode == 13) || (event.keyCode == 9)) {sel.firstChild.onclick();Wt3_1_1.cancelEvent(event);return false;} else if (event.keyCode == 40 || event.keyCode == 38) {if (event.type.toUpperCase() == 'KEYDOWN')self.kd = true;if (event.type.toUpperCase() == 'KEYPRESS'&& self.kd == true) {Wt3_1_1.cancelEvent(event);return false;}var n = sel;for (var n = (event.keyCode == 40) ? n.nextSibling : n.previousSibling; n != null&& n.nodeName.toUpperCase() == 'DIV' && n.style.display == 'none';n = (event.keyCode == 40) ? n.nextSibling : n.previousSibling) { }if (n != null && n.nodeName.toUpperCase() == 'DIV') {sel.className = null;n.className = 'sel';self.sel = n.id;}return false;}}return (event.keyCode != 13 && event.keyCode != 9);}");
-		this.editKeyUp_
-				.setJavaScript("function(edit, event) {var self = "
-						+ this.getJsRef()
-						+ ";var sel = self.sel;if (sel != null)sel = Wt3_1_1.getElement(sel);if (event.keyCode == 27|| event.keyCode == 37|| event.keyCode == 39) {self.style.display = 'none';if (event.keyCode == 27)edit.blur();} else {var text = edit.value;var matcher = "
-						+ this.matcherJS_
-						+ "(edit);var first = null;var sels = self.lastChild.childNodes;for (var i = 0; i < sels.length; i++) {var child = sels[i];if (child.nodeName.toUpperCase() == 'DIV') {if (child.orig == null)child.orig = child.firstChild.innerHTML;else child.firstChild.innerHTML = child.orig;var result = matcher(child.firstChild.innerHTML);child.firstChild.innerHTML = result.suggestion;if (result.match) {child.style.display = 'block';if (first == null) first = child;} else child.style.display = 'none';child.className = null;}}if (first == null) {self.style.display = 'none';} else {if (self.style.display != 'block') {self.style.display = 'block';Wt3_1_1.positionAtWidget(self.id, edit.id, Wt3_1_1.Vertical);self.sel = null;self.edit = edit.id;sel = null;}if ((sel == null) || (sel.style.display == 'none')) {self.sel = first.id;first.className = 'sel';} else {sel.className = 'sel';}}}}");
-		this.suggestionClicked_
-				.setJavaScript("function(suggestion, event) {var self = "
-						+ this.getJsRef()
-						+ ";var edit = Wt3_1_1.getElement(self.edit);var sText = suggestion.innerHTML;var sValue = suggestion.getAttribute('sug');var replacer = "
-						+ this.replacerJS_
-						+ ";edit.focus();replacer(edit, sText, sValue);self.style.display = 'none';}");
-		this.delayHide_
-				.setJavaScript("function(edit, event) {setTimeout(function() {if ("
-						+ this.getJsRef()
-						+ ") "
-						+ this.getJsRef()
-						+ ".style.display = 'none';}, 300);}");
+		this.setJavaScript(this.editKeyDown_, "editKeyDown");
+		this.setJavaScript(this.editKeyUp_, "editKeyUp");
+		this.setJavaScript(this.suggestionClicked_, "suggestionClicked");
+		this.setJavaScript(this.delayHide_, "delayHide");
 		this.hide();
 		this.setModel(new WStringListModel(this));
 	}
@@ -365,7 +349,7 @@ public class WSuggestionPopup extends WCompositeWidget {
 		 * items.
 		 * <p>
 		 * For example, &apos;,&apos; to separate different values on komma.
-		 * Specify 0 for no list separation.
+		 * Specify 0 (&apos;&apos;) for no list separation.
 		 */
 		public char listSeparator;
 		/**
@@ -441,6 +425,12 @@ public class WSuggestionPopup extends WCompositeWidget {
 	private JSlot suggestionClicked_;
 	private JSlot delayHide_;
 
+	private void setJavaScript(JSlot slot, String methodName) {
+		String jsFunction = "function(obj, event) {jQuery.data("
+				+ this.getJsRef() + ", 'obj')." + methodName + "(obj, event);}";
+		slot.setJavaScript(jsFunction);
+	}
+
 	private void modelRowsInserted(WModelIndex parent, int start, int end) {
 		if (this.modelColumn_ >= this.model_.getColumnCount()) {
 			return;
@@ -503,6 +493,29 @@ public class WSuggestionPopup extends WCompositeWidget {
 	private void modelLayoutChanged() {
 		this.content_.clear();
 		this.setModelColumn(this.modelColumn_);
+	}
+
+	private void defineJavaScript() {
+		WApplication app = WApplication.getInstance();
+		String THIS_JS = "js/WSuggestionPopup.js";
+		if (!app.isJavaScriptLoaded(THIS_JS)) {
+			app.doJavaScript(wtjs1(app), false);
+			app.setJavaScriptLoaded(THIS_JS);
+		}
+		app.doJavaScript("new Wt3_1_2.WSuggestionPopup("
+				+ app.getJavaScriptClass() + "," + this.getJsRef() + ","
+				+ this.replacerJS_ + "," + this.matcherJS_ + ");");
+	}
+
+	protected void render(EnumSet<RenderFlag> flags) {
+		if (!EnumUtils.mask(flags, RenderFlag.RenderFull).isEmpty()) {
+			this.defineJavaScript();
+		}
+		super.render(flags);
+	}
+
+	static String wtjs1(WApplication app) {
+		return "Wt3_1_2.WSuggestionPopup = function(n,c,o,p){jQuery.data(c,\"obj\",this);var g=n.WT,h=null,j=null,k=false;this.editKeyDown=function(e,a){var f=h?g.getElement(h):null;if(c.style.display!=\"none\"&&f)if(a.keyCode==13||a.keyCode==9){f.firstChild.onclick();g.cancelEvent(a);setTimeout(function(){e.focus()},0);return false}else if(a.keyCode==40||a.keyCode==38){if(a.type.toUpperCase()==\"KEYDOWN\"){k=true;g.cancelEvent(a,g.CancelDefaultAction)}if(a.type.toUpperCase()==\"KEYPRESS\"&&k==true){g.cancelEvent(a); return false}var b=f;for(b=a.keyCode==40?b.nextSibling:b.previousSibling;b&&b.nodeName.toUpperCase()==\"DIV\"&&b.style.display==\"none\";b=a.keyCode==40?b.nextSibling:b.previousSibling);if(b&&b.nodeName.toUpperCase()==\"DIV\"){f.className=null;b.className=\"sel\";h=b.id}return false}return a.keyCode!=13&&a.keyCode!=9};this.editKeyUp=function(e,a){var f=h?g.getElement(h):null;if(!((a.keyCode==13||a.keyCode==9)&&c.style.display==\"none\"))if(a.keyCode==27||a.keyCode==37||a.keyCode==39){c.style.display=\"none\"; a.keyCode==27&&e.blur()}else{a=p(e);for(var b=null,l=c.lastChild.childNodes,i=0;i<l.length;i++){var d=l[i];if(d.nodeName.toUpperCase()==\"DIV\"){if(d.orig==null)d.orig=d.firstChild.innerHTML;else d.firstChild.innerHTML=d.orig;var m=a(d.firstChild.innerHTML);d.firstChild.innerHTML=m.suggestion;if(m.match){d.style.display=\"block\";if(b==null)b=d}else d.style.display=\"none\";d.className=null}}if(b==null)c.style.display=\"none\";else{if(c.style.display!=\"block\"){c.style.display=\"block\";g.positionAtWidget(c.id, e.id,g.Vertical);h=null;j=e.id;f=null}if(!f||f.style.display==\"none\"){h=b.id;b.className=\"sel\"}else f.className=\"sel\"}}};this.suggestionClicked=function(e){var a=g.getElement(j),f=e.innerHTML;e=e.getAttribute(\"sug\");a.focus();o(a,f,e);c.style.display=\"none\"};this.delayHide=function(){setTimeout(function(){if(c)c.style.display=\"none\"},300)}};";
 	}
 
 	static String generateParseEditJS(WSuggestionPopup.Options options) {

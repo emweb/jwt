@@ -25,9 +25,9 @@ import eu.webtoolkit.jwt.utils.EnumUtils;
  * <p>
  * The painter maintains state such as the current
  * {@link WPainter#setPen(WPen p) pen}, {@link WPainter#setBrush(WBrush b)
- * brush}, {@link WPainter#setFont(WFont f) font},
- * {@link WPainter#getWorldTransform() transformation} and clipping settings
- * (see {@link WPainter#setClipping(boolean enable) setClipping()} and
+ * brush}, {@link WPainter#setFont(WFont f) font}, {@link WPainter#getShadow()
+ * shadow}, {@link WPainter#getWorldTransform() transformation} and clipping
+ * settings (see {@link WPainter#setClipping(boolean enable) setClipping()} and
  * {@link WPainter#setClipPath(WPainterPath clipPath) setClipPath()}). A
  * particular state can be saved using {@link WPainter#save() save()} and later
  * restored using {@link WPainter#restore() restore()}.
@@ -69,7 +69,11 @@ public class WPainter {
 		/**
 		 * Antialiasing.
 		 */
-		Antialiasing(0X1);
+		Antialiasing(1),
+		/**
+		 * Use low-quality shadows (applies only to VML).
+		 */
+		LowQualityShadows(2);
 
 		private int value;
 
@@ -919,6 +923,37 @@ public class WPainter {
 	}
 
 	/**
+	 * Sets a shadow effect.
+	 * <p>
+	 * The shadow effect is applied to all things drawn (paths, text and
+	 * images).
+	 * <p>
+	 * <p>
+	 * <i><b>Note: </b>With the VML backend (IE), the shadow is not applied to
+	 * images, and the shadow color is always black; only the opacity (alpha)
+	 * channel is taken into account. </i>
+	 * </p>
+	 * 
+	 * @see WPainter.RenderHint#LowQualityShadows
+	 */
+	public void setShadow(WShadow shadow) {
+		if (!this.getShadow().equals(shadow)) {
+			this.getS().currentShadow_ = shadow;
+			this.device_.setChanged(EnumSet.of(WPaintDevice.ChangeFlag.Shadow));
+		}
+	}
+
+	/**
+	 * Returns the current shadow effect.
+	 * <p>
+	 * 
+	 * @see WPainter#setShadow(WShadow shadow)
+	 */
+	public WShadow getShadow() {
+		return this.getS().currentShadow_;
+	}
+
+	/**
 	 * Sets the fill style.
 	 * <p>
 	 * Changes the fills style for subsequent draw operations.
@@ -1226,10 +1261,10 @@ public class WPainter {
 	 * <p>
 	 * The state that is saved is the current {@link WPainter#setPen(WPen p)
 	 * pen}, {@link WPainter#setBrush(WBrush b) brush},
-	 * {@link WPainter#setFont(WFont f) font},
-	 * {@link WPainter#getWorldTransform() transformation} and clipping settings
-	 * (see {@link WPainter#setClipping(boolean enable) setClipping()} and
-	 * {@link WPainter#setClipPath(WPainterPath clipPath) setClipPath()}).
+	 * {@link WPainter#setFont(WFont f) font}, {@link WPainter#getShadow()
+	 * shadow}, {@link WPainter#getWorldTransform() transformation} and clipping
+	 * settings (see {@link WPainter#setClipping(boolean enable) setClipping()}
+	 * and {@link WPainter#setClipPath(WPainterPath clipPath) setClipPath()}).
 	 * <p>
 	 * 
 	 * @see WPainter#restore()
@@ -1266,6 +1301,9 @@ public class WPainter {
 			}
 			if (!last.currentPen_.equals(next.currentPen_)) {
 				flags.add(WPaintDevice.ChangeFlag.Pen);
+			}
+			if (!last.currentShadow_.equals(next.currentShadow_)) {
+				flags.add(WPaintDevice.ChangeFlag.Shadow);
 			}
 			if (last.renderHints_ != next.renderHints_) {
 				flags.add(WPaintDevice.ChangeFlag.Hints);
@@ -1425,6 +1463,7 @@ public class WPainter {
 		public WBrush currentBrush_;
 		public WFont currentFont_;
 		public WPen currentPen_;
+		public WShadow currentShadow_;
 		public int renderHints_;
 		public WPainterPath clipPath_;
 		public WTransform clipPathTransform_;
@@ -1435,6 +1474,7 @@ public class WPainter {
 			this.currentBrush_ = new WBrush();
 			this.currentFont_ = new WFont();
 			this.currentPen_ = new WPen();
+			this.currentShadow_ = new WShadow();
 			this.renderHints_ = 0;
 			this.clipPath_ = new WPainterPath();
 			this.clipPathTransform_ = new WTransform();
@@ -1450,6 +1490,7 @@ public class WPainter {
 			result.currentBrush_ = this.currentBrush_;
 			result.currentFont_ = this.currentFont_;
 			result.currentPen_ = this.currentPen_;
+			result.currentShadow_ = this.currentShadow_;
 			result.renderHints_ = this.renderHints_;
 			result.clipPath_.assign(this.clipPath_);
 			result.clipPathTransform_.assign(this.clipPathTransform_);

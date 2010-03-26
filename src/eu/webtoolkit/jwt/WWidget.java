@@ -366,8 +366,8 @@ public abstract class WWidget extends WObject {
 		String side = orientation == Orientation.Horizontal ? ".Horizontal"
 				: ".Vertical";
 		WApplication.getInstance().doJavaScript(
-				"Wt3_1_1.positionAtWidget('" + this.getId() + "','"
-						+ widget.getId() + "',Wt3_1_1" + side + ");");
+				"Wt3_1_2.positionAtWidget('" + this.getId() + "','"
+						+ widget.getId() + "',Wt3_1_2" + side + ");");
 	}
 
 	/**
@@ -981,9 +981,7 @@ public abstract class WWidget extends WObject {
 	 * library keeping track of changes to the widget.
 	 */
 	public void htmlText(Writer out) {
-		this.render(EnumSet.of(RenderFlag.RenderFull));
-		DomElement element = this.getWebWidget().createSDomElement(
-				WApplication.getInstance());
+		DomElement element = this.createSDomElement(WApplication.getInstance());
 		List<DomElement.TimeoutEvent> timeouts = new ArrayList<DomElement.TimeoutEvent>();
 		EscapeOStream sout = new EscapeOStream(out);
 		EscapeOStream js = new EscapeOStream();
@@ -1026,9 +1024,8 @@ public abstract class WWidget extends WObject {
 	}
 
 	String createJavaScript(StringWriter js, String insertJS) {
-		this.render(EnumSet.of(RenderFlag.RenderFull));
 		WApplication app = WApplication.getInstance();
-		DomElement de = this.getWebWidget().createSDomElement(app);
+		DomElement de = this.createSDomElement(app);
 		String var = de.getCreateVar();
 		if (insertJS.length() != 0) {
 			insertJS += var + ");";
@@ -1080,7 +1077,18 @@ public abstract class WWidget extends WObject {
 		this.setDisabled(true);
 	}
 
-	abstract DomElement createSDomElement(WApplication app);
+	DomElement createSDomElement(WApplication app) {
+		if (!this.needsToBeRendered()) {
+			DomElement result = this.getWebWidget().createStubElement(app);
+			this.renderOk();
+			this.askRerender(true);
+			return result;
+		} else {
+			this.getWebWidget().setRendered(true);
+			this.render(EnumSet.of(RenderFlag.RenderFull));
+			return this.getWebWidget().createActualElement(app);
+		}
+	}
 
 	/**
 	 * Sets the widget to be aware of its size set by a layout manager.

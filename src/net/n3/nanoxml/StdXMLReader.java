@@ -378,7 +378,7 @@ public class StdXMLReader
    {
       int ch = this.currentReader.pbReader.read();
       
-      if ((ch == 0x9) ||
+      if (ch < 0 || (ch == 0x9) ||
               (ch == 0xA) ||
               (ch == 0xD) ||
               ((ch >= 0x20) && (ch <= 0xD7FF)) ||

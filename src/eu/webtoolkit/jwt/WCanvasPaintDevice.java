@@ -57,6 +57,8 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 		this.currentTransform_ = new WTransform();
 		this.currentBrush_ = new WBrush();
 		this.currentPen_ = new WPen();
+		this.currentShadow_ = new WShadow();
+		this.currentFont_ = new WFont();
 		this.pathTranslation_ = new WPointF();
 		this.js_ = new StringWriter();
 		this.textElements_ = new ArrayList<DomElement>();
@@ -159,11 +161,11 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 		this.js_.append(',').append(MathUtils.round(ra.getX(), 3));
 		this.js_.append(",").append(MathUtils.round(ra.getY(), 3)).append(
 				",true);");
-		if (this.currentBrush_.getStyle() != WBrushStyle.NoBrush) {
-			this.js_.append("ctx.fill();");
-		}
 		if (this.currentPen_.getStyle() != PenStyle.NoPen) {
 			this.js_.append("ctx.stroke();");
+		}
+		if (this.currentBrush_.getStyle() != WBrushStyle.NoBrush) {
+			this.js_.append("ctx.fill();");
 		}
 		this.js_.append("ctx.restore();");
 	}
@@ -213,43 +215,68 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 		case Html5Text: {
 			double x = 0;
 			double y = 0;
-			this.js_.append("ctx.textAlign='");
+			if (horizontalAlign != this.currentTextHAlign_) {
+				this.js_.append("ctx.textAlign='");
+				switch (horizontalAlign) {
+				case AlignLeft:
+					this.js_.append("left");
+					break;
+				case AlignRight:
+					this.js_.append("right");
+					break;
+				case AlignCenter:
+					this.js_.append("center");
+					break;
+				default:
+					break;
+				}
+				this.js_.append("';");
+				this.currentTextHAlign_ = horizontalAlign;
+			}
 			switch (horizontalAlign) {
 			case AlignLeft:
-				this.js_.append("left");
 				x = rect.getLeft();
 				break;
 			case AlignRight:
-				this.js_.append("right");
 				x = rect.getRight();
 				break;
 			case AlignCenter:
-				this.js_.append("center");
 				x = rect.getCenter().getX();
 				break;
 			default:
 				break;
 			}
-			this.js_.append("';").append("ctx.textBaseline='");
+			if (verticalAlign != this.currentTextVAlign_) {
+				this.js_.append("ctx.textBaseline='");
+				switch (verticalAlign) {
+				case AlignTop:
+					this.js_.append("top");
+					break;
+				case AlignBottom:
+					this.js_.append("bottom");
+					break;
+				case AlignMiddle:
+					this.js_.append("middle");
+					break;
+				default:
+					break;
+				}
+				this.js_.append("';");
+				this.currentTextVAlign_ = verticalAlign;
+			}
 			switch (verticalAlign) {
 			case AlignTop:
-				this.js_.append("top");
 				y = rect.getTop();
 				break;
 			case AlignBottom:
-				this.js_.append("bottom");
 				y = rect.getBottom();
 				break;
 			case AlignMiddle:
-				this.js_.append("middle");
 				y = rect.getCenter().getY();
 				break;
 			default:
 				break;
 			}
-			this.js_.append("';");
-			this.js_.append("ctx.font='").append(
-					this.getPainter().getFont().getCssText()).append("';");
 			if (!this.currentBrush_.getColor().equals(
 					this.currentPen_.getColor())) {
 				this.js_.append("ctx.fillStyle=\"").append(
@@ -318,8 +345,6 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 						this.currentPen_.getColor().getCssText(true)).append(
 						"\";");
 			}
-			this.js_.append("ctx.mozTextStyle = '").append(
-					this.getPainter().getFont().getCssText()).append("';");
 			this.js_.append("ctx.mozDrawText(").append(
 					WString.toWString(text).getJsStringLiteral()).append(");");
 			this.js_.append("ctx.restore();");
@@ -385,6 +410,9 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 	public void init() {
 		this.currentBrush_ = this.getPainter().getBrush();
 		this.currentPen_ = this.getPainter().getPen();
+		this.currentShadow_ = this.getPainter().getShadow();
+		this.currentFont_ = this.getPainter().getFont();
+		this.currentTextVAlign_ = this.currentTextHAlign_ = AlignmentFlag.AlignLength;
 		this.changeFlags_.clear();
 	}
 
@@ -401,7 +429,7 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 	}
 
 	void render(String canvasId, DomElement text) {
-		String canvasVar = "Wt3_1_1.getElement('" + canvasId + "')";
+		String canvasVar = "Wt3_1_2.getElement('" + canvasId + "')";
 		StringWriter tmp = new StringWriter();
 		tmp.append("if(").append(canvasVar).append(
 				".getContext){new Wt._p_.ImagePreloader([");
@@ -466,18 +494,22 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 	private WTransform currentTransform_;
 	private WBrush currentBrush_;
 	private WPen currentPen_;
+	private WShadow currentShadow_;
+	private WFont currentFont_;
 	private WPointF pathTranslation_;
+	private AlignmentFlag currentTextHAlign_;
+	private AlignmentFlag currentTextVAlign_;
 	private StringWriter js_;
 	private List<DomElement> textElements_;
 	private List<String> images_;
 
 	private void finishPath() {
 		if (this.busyWithPath_) {
-			if (this.currentBrush_.getStyle() != WBrushStyle.NoBrush) {
-				this.js_.append("ctx.fill();");
-			}
 			if (this.currentPen_.getStyle() != PenStyle.NoPen) {
 				this.js_.append("ctx.stroke();");
+			}
+			if (this.currentBrush_.getStyle() != WBrushStyle.NoBrush) {
+				this.js_.append("ctx.fill();");
 			}
 			this.js_.append('\n');
 			this.busyWithPath_ = false;
@@ -549,6 +581,15 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 		boolean penChanged = !EnumUtils.mask(this.changeFlags_,
 				WPaintDevice.ChangeFlag.Pen).isEmpty()
 				&& !this.currentPen_.equals(this.getPainter().getPen());
+		boolean penColorChanged = penChanged
+				&& !this.currentPen_.getColor().equals(
+						this.getPainter().getPen().getColor());
+		boolean shadowChanged = !EnumUtils.mask(this.changeFlags_,
+				WPaintDevice.ChangeFlag.Shadow).isEmpty()
+				&& !this.currentShadow_.equals(this.getPainter().getShadow());
+		boolean fontChanged = !EnumUtils.mask(this.changeFlags_,
+				WPaintDevice.ChangeFlag.Font).isEmpty()
+				&& !this.currentFont_.equals(this.getPainter().getFont());
 		if (!EnumUtils.mask(
 				this.changeFlags_,
 				EnumSet.of(WPaintDevice.ChangeFlag.Transform,
@@ -614,15 +655,17 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 				this.pathTranslation_.setX(0);
 				this.pathTranslation_.setY(0);
 				penChanged = true;
+				penColorChanged = true;
 				brushChanged = true;
+				shadowChanged = true;
+				fontChanged = true;
 			}
 		}
-		if (penChanged || brushChanged) {
+		if (penChanged || brushChanged || shadowChanged) {
 			this.finishPath();
 		}
 		if (penChanged) {
-			if (!this.currentPen_.getColor().equals(
-					this.getPainter().getPen().getColor())) {
+			if (penColorChanged) {
 				this.js_.append("ctx.strokeStyle=\"").append(
 						this.getPainter().getPen().getColor().getCssText(true))
 						.append("\";");
@@ -664,6 +707,33 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 			this.js_.append("ctx.fillStyle=\"").append(
 					this.currentBrush_.getColor().getCssText(true)).append(
 					"\";");
+		}
+		if (shadowChanged) {
+			this.currentShadow_ = this.painter_.getShadow();
+			this.js_.append("ctx.shadowOffsetX=").append(
+					String.valueOf(this.currentShadow_.getOffsetX())).append(
+					';').append("ctx.shadowOffsetY=").append(
+					String.valueOf(this.currentShadow_.getOffsetY())).append(
+					';').append("ctx.shadowBlur=").append(
+					String.valueOf(this.currentShadow_.getBlur())).append(';')
+					.append("ctx.shadowColor=\"").append(
+							this.currentShadow_.getColor().getCssText(true))
+					.append("\";");
+		}
+		if (fontChanged) {
+			this.currentFont_ = this.painter_.getFont();
+			switch (this.textMethod_) {
+			case Html5Text:
+				this.js_.append("ctx.font='").append(
+						this.getPainter().getFont().getCssText()).append("';");
+				break;
+			case MozText:
+				this.js_.append("ctx.mozTextStyle = '").append(
+						this.getPainter().getFont().getCssText()).append("';");
+				break;
+			case DomText:
+				break;
+			}
 		}
 		this.changeFlags_.clear();
 	}

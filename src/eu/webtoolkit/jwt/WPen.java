@@ -75,7 +75,7 @@ public class WPen {
 	/**
 	 * Clone method.
 	 * <p>
-	 * Clones this {@link WPen} object.
+	 * Clones this pen.
 	 */
 	public WPen clone() {
 		WPen result = new WPen();

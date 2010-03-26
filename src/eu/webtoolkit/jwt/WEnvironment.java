@@ -95,7 +95,7 @@ public class WEnvironment {
 	 * Wt&apos;s JavaScript scope.
 	 */
 	public static String getJavaScriptWtScope() {
-		return "Wt3_1_1";
+		return "Wt3_1_2";
 	}
 
 	/**
@@ -452,7 +452,7 @@ public class WEnvironment {
 	 * Example: <code>&quot;1.99.2&quot;</code>
 	 */
 	public static String getLibraryVersion() {
-		return "3.1.1";
+		return "3.1.2";
 	}
 
 	// public void libraryVersion(bad java simple ref int series, bad java

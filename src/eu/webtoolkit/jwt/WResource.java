@@ -212,7 +212,7 @@ public abstract class WResource extends WObject {
 	/**
 	 * Returns the internal path.
 	 * 
-	 * @see #setInternalPath()
+	 * @see #setInternalPath(String)
 	 */
 	public String getInternalPath() {
 		return internalPath_;
@@ -225,7 +225,7 @@ public abstract class WResource extends WObject {
 	 * session identifier will be appended to the path.
 	 *
 	 * You should use internal paths that are different from internal paths 
-	 * handled by your application ({@link WApplication#setInternalPath(String)), if you
+	 * handled by your application ({@link WApplication#setInternalPath(String)}), if you
 	 * do not want a conflict between these two when the browser does not use
 	 * AJAX (and thus url fragments for its internal paths).
 	 *

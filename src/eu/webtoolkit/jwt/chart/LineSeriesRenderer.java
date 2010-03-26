@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.WBrushStyle;
 import eu.webtoolkit.jwt.WPainter;
 import eu.webtoolkit.jwt.WPainterPath;
 import eu.webtoolkit.jwt.WPointF;
+import eu.webtoolkit.jwt.WShadow;
 
 class LineSeriesRenderer extends SeriesRenderer {
 	public LineSeriesRenderer(WChart2DRenderer renderer, WDataSeries series,
@@ -69,16 +70,22 @@ class LineSeriesRenderer extends SeriesRenderer {
 				this.fill_.cubicTo(this.hv(this.c_), this.hv(c1), this
 						.hv(this.p0));
 			}
-			this.renderer_.getPainter().strokePath(this.curve_,
-					this.series_.getPen());
 			if (this.series_.getFillRange() != FillRangeType.NoFill
 					&& !this.series_.getBrush().equals(
 							new WBrush(WBrushStyle.NoBrush))) {
 				this.fill_.lineTo(this.hv(this.fillOtherPoint(this.lastX_)));
 				this.fill_.closeSubPath();
+				this.renderer_.getPainter().setShadow(this.series_.getShadow());
 				this.renderer_.getPainter().fillPath(this.fill_,
 						this.series_.getBrush());
 			}
+			if (this.series_.getFillRange() == FillRangeType.NoFill) {
+				this.renderer_.getPainter().setShadow(this.series_.getShadow());
+			} else {
+				this.renderer_.getPainter().setShadow(new WShadow());
+			}
+			this.renderer_.getPainter().strokePath(this.curve_,
+					this.series_.getPen());
 		}
 		this.curveLength_ = 0;
 		this.curve_.assign(new WPainterPath());

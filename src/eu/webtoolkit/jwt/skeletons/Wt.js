@@ -437,6 +437,10 @@ function initCapture() {
 
 this.capture = function(obj) {
   initCapture();
+
+  if (captureElement && obj)
+    return;
+
   captureElement = obj;
 
   var db = document.body;
@@ -1290,9 +1294,7 @@ function doJavaScript(js) {
     if (window.execScript)
       window.execScript(js);
     else
-      with (window) {
-	eval(js);
-      }
+      window.eval(js);
 
   _$_APP_CLASS_$_._p_.autoJavaScript();
 }
@@ -1611,7 +1613,7 @@ this._p_ = {
  setHash : setHash,
  ImagePreloader : ImagePreloader,
 
- autoJavaScript : function() { with (window) { _$_AUTO_JAVASCRIPT_$_(); } },
+ autoJavaScript : function() {  _$_AUTO_JAVASCRIPT_$_(); },
 
  response : responseReceived
 };

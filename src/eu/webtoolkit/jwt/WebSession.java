@@ -1077,7 +1077,6 @@ class WebSession {
 
 	private void notifySignal(WEvent e) throws IOException {
 		WebSession.Handler handler = e.handler;
-		this.renderer_.saveChanges();
 		if (handler.nextSignal == 0) {
 			handler.signalOrder = this.getSignalProcessingOrder(e);
 		}
@@ -1092,13 +1091,16 @@ class WebSession {
 			if (!(signalE != null)) {
 				return;
 			}
+			if (i == handler.nextSignal) {
+				this.renderer_.saveChanges();
+			}
 			this.propagateFormValues(e, se);
 			handler.nextSignal = i + 1;
 			if (signalE.equals("hash")) {
 				String hashE = request.getParameter(se + "_");
 				if (hashE != null) {
 					this.app_.changeInternalPath(hashE);
-					this.app_.doJavaScript("Wt3_1_1.scrollIntoView('" + hashE
+					this.app_.doJavaScript("Wt3_1_2.scrollIntoView('" + hashE
 							+ "');");
 				}
 			} else {

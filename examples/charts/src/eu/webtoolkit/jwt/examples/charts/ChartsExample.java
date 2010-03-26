@@ -13,9 +13,11 @@ import eu.webtoolkit.jwt.Orientation;
 import eu.webtoolkit.jwt.Side;
 import eu.webtoolkit.jwt.StringUtils;
 import eu.webtoolkit.jwt.WAbstractItemModel;
+import eu.webtoolkit.jwt.WColor;
 import eu.webtoolkit.jwt.WContainerWidget;
 import eu.webtoolkit.jwt.WDate;
 import eu.webtoolkit.jwt.WLength;
+import eu.webtoolkit.jwt.WShadow;
 import eu.webtoolkit.jwt.WStandardItemModel;
 import eu.webtoolkit.jwt.WString;
 import eu.webtoolkit.jwt.WText;
@@ -105,6 +107,7 @@ class TimeSeriesExample extends WContainerWidget {
          */
         for (int i = 1; i < 3; ++i) {
             WDataSeries s = new WDataSeries(i, SeriesType.LineSeries);
+            s.setShadow(new WShadow(3, 3, new WColor(0, 0, 0, 127), 3));
             chart.addSeries(s);
         }
 
@@ -167,6 +170,7 @@ class CategoryExample extends WContainerWidget {
          */
         for (int i = 1; i < model.getColumnCount(); ++i) {
             WDataSeries s = new WDataSeries(i, SeriesType.BarSeries);
+            s.setShadow(new WShadow(3, 3, new WColor(0, 0, 0, 127), 3));
             chart.addSeries(s);
         }
 
@@ -224,8 +228,9 @@ class ScatterPlotExample extends WContainerWidget {
         chart.setPlotAreaPadding(100, Side.Left);
         chart.setPlotAreaPadding(50, Side.Top, Side.Bottom);
 
-        // Add the two curves
-        chart.addSeries(new WDataSeries(1, SeriesType.CurveSeries));
+        WDataSeries s = new WDataSeries(1, SeriesType.CurveSeries);
+        s.setShadow(new WShadow(3, 3, new WColor(0, 0, 0, 127), 3));
+        chart.addSeries(s);
 
         chart.resize(800, 300); // WPaintedWidget must be given explicit size
 

@@ -54,11 +54,13 @@ class SeriesRenderIterator extends SeriesIterator {
 			break;
 		}
 		this.series_ = series;
+		this.renderer_.getPainter().save();
 		return this.seriesRenderer_ != null;
 	}
 
 	public void endSeries() {
 		this.seriesRenderer_.paint();
+		this.renderer_.getPainter().restore();
 		;
 		this.series_ = null;
 	}

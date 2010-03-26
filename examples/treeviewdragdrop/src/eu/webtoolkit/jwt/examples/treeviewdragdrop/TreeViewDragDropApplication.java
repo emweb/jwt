@@ -121,14 +121,16 @@ public class TreeViewDragDropApplication extends WApplication {
         layout.addWidget(createTitle("Folders"), 0, 0);
         layout.addWidget(createTitle("Files"), 0, 1);
         layout.addWidget(folderView(), 1, 0);
+        layout.setColumnResizable(0);
 
         // select the first folder
         folderView_.select(folderModel_.getIndex(0, 0, folderModel_.getIndex(0,
                 0)));
 
         WVBoxLayout vbox = new WVBoxLayout();
-        vbox.addWidget(fileView(), 1);
+        vbox.addWidget(fileView(), 0);
         vbox.addWidget(pieChart(), 0);
+        vbox.setResizable(0);
 
         layout.addLayout(vbox, 1, 1);
 
@@ -241,7 +243,6 @@ public class TreeViewDragDropApplication extends WApplication {
      */
     private WWidget pieChart() {
         WPieChart chart = new WPieChart();
-        chart.resize(450, 200);
         chart.setModel(fileFilterModel_);
         chart.setTitle("File sizes");
 
@@ -251,12 +252,9 @@ public class TreeViewDragDropApplication extends WApplication {
         chart.setPerspectiveEnabled(true, 0.2);
         chart.setDisplayLabels(LabelOption.Outside, LabelOption.TextLabel);
 
-        WContainerWidget w = new WContainerWidget();
-        w.setContentAlignment(AlignmentFlag.AlignCenter);
-        w.setStyleClass("about");
-        w.addWidget(chart);
+        chart.setStyleClass("about");
 
-        return w;
+        return chart;
     }
 
     /**

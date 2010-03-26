@@ -790,12 +790,18 @@ public class WAxis {
 			totalRenderRange += s.renderMaximum - s.renderMinimum;
 		}
 		boolean vertical = this.axis_ != Axis.XAxis;
+		double clipMin = this.segments_.get(0).renderMinimum == 0 ? 0
+				: CLIP_MARGIN;
+		double clipMax = this.segments_.get(this.segments_.size() - 1).renderMaximum == 0 ? 0
+				: CLIP_MARGIN;
 		double totalRenderLength = vertical ? renderer.getChartArea()
 				.getHeight() : renderer.getChartArea().getWidth();
 		double totalRenderStart = vertical ? renderer.getChartArea()
-				.getBottom() : renderer.getChartArea().getLeft();
+				.getBottom()
+				- clipMin : renderer.getChartArea().getLeft() + clipMin;
 		final double SEGMENT_MARGIN = 40;
-		totalRenderLength -= SEGMENT_MARGIN * (this.segments_.size() - 1);
+		totalRenderLength -= SEGMENT_MARGIN * (this.segments_.size() - 1)
+				- clipMin - clipMax;
 		for (int it = 0; it < 2; ++it) {
 			double rs = totalRenderStart;
 			double TRR = totalRenderRange;
@@ -1379,6 +1385,7 @@ public class WAxis {
 		}
 	}
 
+	private static final int CLIP_MARGIN = 5;
 	private static double EPSILON = 1E-3;
 	static final int AXIS_MARGIN = 4;
 	static final int AUTO_V_LABEL_PIXELS = 25;

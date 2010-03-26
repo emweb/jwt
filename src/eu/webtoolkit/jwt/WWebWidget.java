@@ -629,38 +629,34 @@ public abstract class WWebWidget extends WWidget {
 		result.add(e);
 	}
 
-	DomElement createSDomElement(WApplication app) {
-		this.setRendered(true);
-		if (!this.needsToBeRendered()) {
-			this.propagateRenderOk();
-			this.flags_.set(BIT_STUBBED);
-			DomElement stub = DomElement
-					.createNew(DomElementType.DomElement_SPAN);
-			if (!this.flags_.get(BIT_HIDE_WITH_OFFSETS)) {
-				stub.setProperty(Property.PropertyStyleDisplay, "none");
-			} else {
-				stub.setProperty(Property.PropertyStylePosition, "absolute");
-				stub.setProperty(Property.PropertyStyleLeft, "-10000px");
-				stub.setProperty(Property.PropertyStyleTop, "-10000px");
-				stub.setProperty(Property.PropertyStyleVisibility, "hidden");
-			}
-			if (WApplication.getInstance().getEnvironment().hasJavaScript()) {
-				stub.setProperty(Property.PropertyInnerHTML, "...");
-			}
-			if (!app.getEnvironment().agentIsSpiderBot()
-					|| this.otherImpl_ != null && this.otherImpl_.id_ != null) {
-				stub.setId(this.getId());
-			}
-			super.askRerender(true);
-			return stub;
+	abstract DomElementType getDomElementType();
+
+	public DomElement createStubElement(WApplication app) {
+		this.propagateRenderOk();
+		this.flags_.set(BIT_STUBBED);
+		DomElement stub = DomElement.createNew(DomElementType.DomElement_SPAN);
+		if (!this.flags_.get(BIT_HIDE_WITH_OFFSETS)) {
+			stub.setProperty(Property.PropertyStyleDisplay, "none");
 		} else {
-			this.flags_.clear(BIT_STUBBED);
-			this.render(EnumSet.of(RenderFlag.RenderFull));
-			return this.createDomElement(app);
+			stub.setProperty(Property.PropertyStylePosition, "absolute");
+			stub.setProperty(Property.PropertyStyleLeft, "-10000px");
+			stub.setProperty(Property.PropertyStyleTop, "-10000px");
+			stub.setProperty(Property.PropertyStyleVisibility, "hidden");
 		}
+		if (app.getEnvironment().hasJavaScript()) {
+			stub.setProperty(Property.PropertyInnerHTML, "...");
+		}
+		if (!app.getEnvironment().agentIsSpiderBot() || this.otherImpl_ != null
+				&& this.otherImpl_.id_ != null) {
+			stub.setId(this.getId());
+		}
+		return stub;
 	}
 
-	abstract DomElementType getDomElementType();
+	public DomElement createActualElement(WApplication app) {
+		this.flags_.clear(BIT_STUBBED);
+		return this.createDomElement(app);
+	}
 
 	/**
 	 * Change the way the widget is loaded when invisible.
@@ -956,7 +952,7 @@ public abstract class WWebWidget extends WWidget {
 						app
 								.addAutoJavaScript("{var w = "
 										+ this.getJsRef()
-										+ ";if (w && !Wt3_1_1.isHidden(w)) {var i = Wt3_1_1.getElement('"
+										+ ";if (w && !Wt3_1_2.isHidden(w)) {var i = Wt3_1_2.getElement('"
 										+ i.getId()
 										+ "');i.style.width=w.clientWidth + 'px';i.style.height=w.clientHeight + 'px';}}");
 						element.addChild(i);
@@ -1620,13 +1616,14 @@ public abstract class WWebWidget extends WWidget {
 		if (this.flags_.get(BIT_STUBBED)) {
 			if (app.getSession().getRenderer().isPreLearning()) {
 				this.getDomChanges(result, app);
-				this.repaint();
+				this.askRerender(true);
 			} else {
 				if (!app.getSession().getRenderer().isVisibleOnly()) {
 					this.flags_.clear(BIT_STUBBED);
 					if (!isIEMobile) {
 						DomElement stub = DomElement.getForUpdate(this,
 								DomElementType.DomElement_SPAN);
+						this.setRendered(true);
 						this.render(EnumSet.of(RenderFlag.RenderFull));
 						DomElement realElement = this.createDomElement(app);
 						stub.unstubWith(realElement, !this.flags_

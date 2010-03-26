@@ -28,11 +28,12 @@ import java.util.List;
  * parent container will continue to increase in size as it tries to satisfy the
  * constraints assuming a contrained height).
  * <p>
- * You can use {@link WContainerWidget::setOverflow(OverflowAuto)} to
- * automatically show scrollbars on a container widget inserted in the layout.
- * In some cases, you will want to wrap another widget (like a {@link WTable})
- * into {@link WContainerWidget} to have the scrollbars, since not all widgets
- * allow for scrollbars.
+ * You can use
+ * {@link WContainerWidget#setOverflow(WContainerWidget.Overflow value, EnumSet orientation)
+ * WContainerWidget::setOverflow(OverflowAuto)} to automatically show scrollbars
+ * on a container widget inserted in the layout. In some cases, you will want to
+ * wrap another widget (like a {@link WTable}) into {@link WContainerWidget} to
+ * have the scrollbars, since not all widgets allow for scrollbars.
  * <p>
  * A layout manager may provide resize handles between items which allow the
  * user to change the automatic layout provided by the layout manager (see

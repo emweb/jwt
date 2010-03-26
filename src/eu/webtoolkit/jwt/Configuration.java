@@ -512,6 +512,9 @@ public class Configuration {
 	}
 	
 	void setSessionTimeout(int sessionTimeout) {
-		this.sessionTimeout = sessionTimeout;
+		if (sessionTimeout <= 0)
+			this.sessionTimeout = 10 * 60;
+		else
+			this.sessionTimeout = sessionTimeout;
 	}
 }
