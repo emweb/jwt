@@ -58,6 +58,13 @@ public abstract class WInteractWidget extends WWebWidget {
 	 * &quot;control&quot;, ...) or keyboard navigation keys that do not have a
 	 * corresponding character.
 	 * <p>
+	 * Form widgets (like {@link WLineEdit}) will receive key events when
+	 * focussed. Other widgets will receive key events when they contain
+	 * (directly or indirectly) a form widget that has focus.
+	 * <p>
+	 * To capture a key down event when no element has focus, see
+	 * {@link WApplication#globalKeyWentDown() WApplication#globalKeyWentDown()}
+	 * <p>
 	 * 
 	 * @see WInteractWidget#keyPressed()
 	 * @see WInteractWidget#keyWentUp()
@@ -74,6 +81,13 @@ public abstract class WInteractWidget extends WWebWidget {
 	 * it is emitted only for key presses that result in a character being
 	 * entered, and thus not for modifier keys or keyboard navigation keys.
 	 * <p>
+	 * Form widgets (like {@link WLineEdit}) will receive key events when
+	 * focussed. Other widgets will receive key events when they contain
+	 * (directly or indirectly) a form widget that has focus.
+	 * <p>
+	 * To capture a key press when no element has focus, see
+	 * {@link WApplication#globalKeyPressed() WApplication#globalKeyPressed()}
+	 * <p>
 	 * 
 	 * @see WInteractWidget#keyWentDown()
 	 */
@@ -87,6 +101,13 @@ public abstract class WInteractWidget extends WWebWidget {
 	 * This is the counter-part of the {@link WInteractWidget#keyWentDown()
 	 * keyWentDown()} event. Every key-down has its corresponding key-up.
 	 * <p>
+	 * Form widgets (like {@link WLineEdit}) will receive key events when
+	 * focussed. Other widgets will receive key events when they contain
+	 * (directly or indirectly) a form widget that has focus.
+	 * <p>
+	 * To capture a key up event when no element has focus, see
+	 * {@link WApplication#globalKeyWentUp() WApplication#globalKeyWentUp()}
+	 * <p>
 	 * 
 	 * @see WInteractWidget#keyWentDown()
 	 */
@@ -98,6 +119,14 @@ public abstract class WInteractWidget extends WWebWidget {
 	 * Event signal emitted when enter was pressed.
 	 * <p>
 	 * This signal is emitted when the Enter or Return key was pressed.
+	 * <p>
+	 * Form widgets (like {@link WLineEdit}) will receive key events when
+	 * focussed. Other widgets will receive key events when they contain
+	 * (directly or indirectly) a form widget that has focus.
+	 * <p>
+	 * To capture an enter press when no element has focus, see
+	 * {@link WApplication#globalEnterPressed()
+	 * WApplication#globalEnterPressed()}
 	 * <p>
 	 * 
 	 * @see WInteractWidget#keyPressed()
@@ -111,6 +140,14 @@ public abstract class WInteractWidget extends WWebWidget {
 	 * Event signal emitted when escape was pressed.
 	 * <p>
 	 * This signal is emitted when the Escape key was pressed.
+	 * <p>
+	 * Form widgets (like {@link WLineEdit}) will receive key events when
+	 * focussed. Other widgets will receive key events when they contain
+	 * (directly or indirectly) a form widget that has focus.
+	 * <p>
+	 * To capture an escape press when no element has focus, see
+	 * {@link WApplication#globalEscapePressed()
+	 * WApplication#globalEscapePressed()}
 	 * <p>
 	 * 
 	 * @see WInteractWidget#keyPressed()
@@ -383,7 +420,7 @@ public abstract class WInteractWidget extends WWebWidget {
 			if (s.getName() == WInteractWidget.CLICK_SIGNAL
 					&& this.flags_.get(BIT_REPAINT_TO_AJAX)) {
 				WApplication.getInstance().doJavaScript(
-						"Wt3_1_0.unwrap('" + this.getId() + "');");
+						"Wt3_1_2.unwrap('" + this.getId() + "');");
 			}
 		}
 		super.updateDom(element, all);

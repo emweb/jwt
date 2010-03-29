@@ -9,7 +9,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
-import java.util.List;
 import java.util.Map;
 
 import javax.servlet.ServletOutputStream;
@@ -183,7 +182,11 @@ public class WebResponse extends HttpServletResponseWrapper {
 		return request.getMethod();
 	}
 
-	public Map<String, List<String>> getParameterMap() {
+	public Map<String, String[]> getParameterMap() {
 		return ((WebRequest)request).getParameterMap();
+	}
+
+	public void startAsync() {
+		throw new RuntimeException("Server-push is not implemented with the servlet-2.5 API");
 	}
 }

@@ -52,6 +52,8 @@ public abstract class WWidget extends WObject {
 			this.eventSignals_.removeFirst();
 			;
 		}
+		;
+		this.resized_ = null;
 		this.renderOk();
 		super.remove();
 	}
@@ -207,9 +209,11 @@ public abstract class WWidget extends WObject {
 	 * {@link WWidget#setInline(boolean inlined) block} widgets can be given a
 	 * size reliably.
 	 * <p>
-	 * See als {@link WWidget#setJavaScriptMember(String name, String value)
-	 * setJavaScriptMember()} for defining a &quot;wtResize&quot; method which
-	 * allows a widget to actively manage its size using client-side JavaScript.
+	 * When inserted in a layout manager, the widget may be informed about its
+	 * current size using {@link WWidget#setLayoutSizeAware(boolean aware)
+	 * setLayoutSizeAware()}. If you have defined a &quot;wtResize()&quot;
+	 * JavaScript method for the widget, then this method will also be called.
+	 * operation.
 	 * <p>
 	 * 
 	 * @see WWidget#getWidth()
@@ -362,8 +366,8 @@ public abstract class WWidget extends WObject {
 		String side = orientation == Orientation.Horizontal ? ".Horizontal"
 				: ".Vertical";
 		WApplication.getInstance().doJavaScript(
-				"Wt3_1_0.positionAtWidget('" + this.getId() + "','"
-						+ widget.getId() + "',Wt3_1_0" + side + ");");
+				"Wt3_1_2.positionAtWidget('" + this.getId() + "','"
+						+ widget.getId() + "',Wt3_1_2" + side + ");");
 	}
 
 	/**
@@ -977,12 +981,10 @@ public abstract class WWidget extends WObject {
 	 * library keeping track of changes to the widget.
 	 */
 	public void htmlText(Writer out) {
-		this.render();
-		DomElement element = this.getWebWidget().createSDomElement(
-				WApplication.getInstance());
+		DomElement element = this.createSDomElement(WApplication.getInstance());
 		List<DomElement.TimeoutEvent> timeouts = new ArrayList<DomElement.TimeoutEvent>();
 		EscapeOStream sout = new EscapeOStream(out);
-		StringWriter js = new StringWriter();
+		EscapeOStream js = new EscapeOStream();
 		element.asHTML(sout, js, timeouts);
 		WApplication.getInstance().doJavaScript(js.toString());
 		;
@@ -1023,8 +1025,7 @@ public abstract class WWidget extends WObject {
 
 	String createJavaScript(StringWriter js, String insertJS) {
 		WApplication app = WApplication.getInstance();
-		this.render();
-		DomElement de = this.getWebWidget().createSDomElement(app);
+		DomElement de = this.createSDomElement(app);
 		String var = de.getCreateVar();
 		if (insertJS.length() != 0) {
 			insertJS += var + ");";
@@ -1076,7 +1077,80 @@ public abstract class WWidget extends WObject {
 		this.setDisabled(true);
 	}
 
-	abstract DomElement createSDomElement(WApplication app);
+	DomElement createSDomElement(WApplication app) {
+		if (!this.needsToBeRendered()) {
+			DomElement result = this.getWebWidget().createStubElement(app);
+			this.renderOk();
+			this.askRerender(true);
+			return result;
+		} else {
+			this.getWebWidget().setRendered(true);
+			this.render(EnumSet.of(RenderFlag.RenderFull));
+			return this.getWebWidget().createActualElement(app);
+		}
+	}
+
+	/**
+	 * Sets the widget to be aware of its size set by a layout manager.
+	 * <p>
+	 * When the widget is inserted in a layout manager, it will be resized to
+	 * fit within the constraints imposed by the layout manager. By default,
+	 * this done client-side only by setting the CSS height (and if needed,
+	 * width) properties of the DOM element corresponding to the widget.
+	 * <p>
+	 * A widget may define a JavaScript method, &quot;wtResize(self, width,
+	 * height)&quot;, to actively manage its client-side width and height, if it
+	 * wants to react to these client-side size hints in a custom way (see
+	 * {@link WWidget#setJavaScriptMember(String name, String value)
+	 * setJavaScriptMember()}).
+	 * <p>
+	 * By setting <code>sizeAware</code> to true, the widget will propagate the
+	 * width and height provided by the layout manager to the virtual
+	 * {@link WWidget#layoutSizeChanged(int width, int height)
+	 * layoutSizeChanged()} method, so that you may for example change the size
+	 * of contained children in a particular way (doing a custom, manual,
+	 * layout).
+	 * <p>
+	 * 
+	 * @see WWidget#layoutSizeChanged(int width, int height)
+	 */
+	protected void setLayoutSizeAware(boolean aware) {
+		if (aware && !(this.resized_ != null)) {
+			this.resized_ = new JSignal2<Integer, Integer>(this, "resized") {
+			};
+			this.resized_.addListener(this,
+					new Signal2.Listener<Integer, Integer>() {
+						public void trigger(Integer e1, Integer e2) {
+							WWidget.this.layoutSizeChanged(e1, e2);
+						}
+					});
+			this
+					.setJavaScriptMember(
+							WT_RESIZE_JS,
+							"function(self, w, h) {if (!self.wtWidth || self.wtWidth!=w || !self.wtHeight || self.wtHeight!=h) {self.wtWidth=w; self.wtHeight=h;self.style.height=h + 'px';"
+									+ this.resized_.createCall("Math.round(w)",
+											"Math.round(h)") + "}};");
+		} else {
+			if (this.getJavaScriptMember(WT_RESIZE_JS).length() != 0) {
+				this.setJavaScriptMember(WT_RESIZE_JS, "");
+			}
+			;
+			this.resized_ = null;
+		}
+	}
+
+	/**
+	 * Virtual method that indicates a size change.
+	 * <p>
+	 * This method propagates the client-side width and height of the widget
+	 * when the widget is contained by a layout manager and
+	 * setLayoutSizeAware(true) was called.
+	 * <p>
+	 * 
+	 * @see WWidget#setLayoutSizeAware(boolean aware)
+	 */
+	protected void layoutSizeChanged(int width, int height) {
+	}
 
 	/**
 	 * Creates a widget.
@@ -1088,6 +1162,7 @@ public abstract class WWidget extends WObject {
 	protected WWidget(WContainerWidget parent) {
 		super((WObject) null);
 		this.flags_ = new BitSet();
+		this.resized_ = null;
 		this.eventSignals_ = new LinkedList<AbstractEventSignal>();
 		this.flags_.set(BIT_NEED_RERENDER);
 	}
@@ -1217,7 +1292,11 @@ public abstract class WWidget extends WObject {
 
 	abstract boolean isStubbed();
 
-	void render() {
+	protected void render(EnumSet<RenderFlag> flags) {
+	}
+
+	protected final void render(RenderFlag flag, RenderFlag... flags) {
+		render(EnumSet.of(flag, flags));
 	}
 
 	WWidget getAdam() {
@@ -1284,12 +1363,14 @@ public abstract class WWidget extends WObject {
 	private static final int BIT_WAS_DISABLED = 1;
 	private static final int BIT_NEED_RERENDER = 2;
 	private BitSet flags_;
+	private JSignal2<Integer, Integer> resized_;
 	private LinkedList<AbstractEventSignal> eventSignals_;
 
 	private void setJsSize() {
 		if (!this.getHeight().isAuto()
-				&& this.getJavaScriptMember("wtResize").length() != 0) {
-			this.callJavaScriptMember("wtResize", this.getJsRef() + ","
+				&& this.getHeight().getUnit() != WLength.Unit.Percentage
+				&& this.getJavaScriptMember(WT_RESIZE_JS).length() != 0) {
+			this.callJavaScriptMember(WT_RESIZE_JS, this.getJsRef() + ","
 					+ String.valueOf(this.getWidth().toPixels()) + ","
 					+ String.valueOf(this.getHeight().toPixels()));
 		}
@@ -1313,4 +1394,6 @@ public abstract class WWidget extends WObject {
 	WLayout getLayout() {
 		return null;
 	}
+
+	protected static String WT_RESIZE_JS = "wtResize";
 }

@@ -390,17 +390,21 @@ public class WChart2DRenderer {
 		WAxis.Segment xs = xAxis.segments_.get(xSegment);
 		WAxis.Segment ys = yAxis.segments_.get(ySegment);
 		double x1 = xs.renderStart
-				+ (xSegment == 0 ? 0 : -this.segmentMargin_ / 2);
+				+ (xSegment == 0 ? xs.renderMinimum == 0 ? 0 : -CLIP_MARGIN
+						: -this.segmentMargin_ / 2);
 		double x2 = xs.renderStart
 				+ xs.renderLength
-				+ (xSegment == xAxis.getSegmentCount() - 1 ? 0
+				+ (xSegment == xAxis.getSegmentCount() - 1 ? xs.renderMaximum == 0 ? 0
+						: CLIP_MARGIN
 						: this.segmentMargin_ / 2);
 		double y1 = ys.renderStart
 				- ys.renderLength
-				- (ySegment == yAxis.getSegmentCount() - 1 ? 0
+				- (ySegment == yAxis.getSegmentCount() - 1 ? ys.renderMaximum == 0 ? 0
+						: CLIP_MARGIN
 						: this.segmentMargin_ / 2);
 		double y2 = ys.renderStart
-				+ (ySegment == 0 ? 0 : this.segmentMargin_ / 2);
+				+ (ySegment == 0 ? ys.renderMinimum == 0 ? 0 : CLIP_MARGIN
+						: this.segmentMargin_ / 2);
 		return new WRectF(Math.floor(x1 + 0.5), Math.floor(y1 + 0.5), Math
 				.floor(x2 - x1 + 0.5), Math.floor(y2 - y1 + 0.5));
 	}
@@ -1105,5 +1109,6 @@ public class WChart2DRenderer {
 		iterateSeries(iterator, false);
 	}
 
+	protected static final int CLIP_MARGIN = 5;
 	static final int TICK_LENGTH = 5;
 }

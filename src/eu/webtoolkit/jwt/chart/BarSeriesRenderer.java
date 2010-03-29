@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.WPainter;
 import eu.webtoolkit.jwt.WPainterPath;
 import eu.webtoolkit.jwt.WPen;
 import eu.webtoolkit.jwt.WPointF;
+import eu.webtoolkit.jwt.WShadow;
 
 class BarSeriesRenderer extends SeriesRenderer {
 	public BarSeriesRenderer(WChart2DRenderer renderer, WDataSeries series,
@@ -37,9 +38,10 @@ class BarSeriesRenderer extends SeriesRenderer {
 		bar.lineTo(this.hv(crisp(left + width), crisp(bottomMid.getY())));
 		bar.lineTo(this.hv(crisp(left), crisp(bottomMid.getY())));
 		bar.closeSubPath();
-		this.renderer_.getPainter().setPen(this.series_.getPen());
-		this.renderer_.getPainter().setBrush(this.series_.getBrush());
-		this.renderer_.getPainter().drawPath(bar);
+		this.renderer_.getPainter().setShadow(this.series_.getShadow());
+		this.renderer_.getPainter().fillPath(bar, this.series_.getBrush());
+		this.renderer_.getPainter().setShadow(new WShadow());
+		this.renderer_.getPainter().strokePath(bar, this.series_.getPen());
 		double bTopMidY = this.it_.breakY(topMid.getY());
 		double bBottomMidY = this.it_.breakY(bottomMid.getY());
 		if (bTopMidY > topMid.getY() && bBottomMidY <= bottomMid.getY()) {

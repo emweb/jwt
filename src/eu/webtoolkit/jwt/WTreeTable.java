@@ -110,7 +110,7 @@ public class WTreeTable extends WCompositeWidget {
 				WLength.Auto);
 		this
 				.setJavaScriptMember(
-						"wtResize",
+						WT_RESIZE_JS,
 						"function(self, w, h) {self.style.height= h + 'px';var c = self.lastChild;var t = self.firstChild;h -= $(t).outerHeight();if (h > 0) c.style.height = h + 'px';};");
 		WApplication
 				.getInstance()

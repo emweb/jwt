@@ -26,10 +26,16 @@ class MarkerRenderIterator extends SeriesIterator {
 		if (series.getMarker() != MarkerType.NoMarker) {
 			this.marker_.assign(new WPainterPath());
 			this.renderer_.getChart().drawMarker(series, this.marker_);
+			this.renderer_.getPainter().save();
+			this.renderer_.getPainter().setShadow(series.getShadow());
 			return true;
 		} else {
 			return false;
 		}
+	}
+
+	public void endSeries() {
+		this.renderer_.getPainter().restore();
 	}
 
 	public void newValue(WDataSeries series, double x, double y, double stackY,

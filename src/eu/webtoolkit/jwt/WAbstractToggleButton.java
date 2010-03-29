@@ -225,7 +225,7 @@ public class WAbstractToggleButton extends WFormWidget {
 				result.addChild(img);
 			}
 		}
-		this.updateDom(input, true);
+		this.updateDomElements(result, input, true);
 		if (result != input) {
 			result.addChild(input);
 			WLabel l = this.getLabel();
@@ -237,10 +237,12 @@ public class WAbstractToggleButton extends WFormWidget {
 	}
 
 	void getDomChanges(List<DomElement> result, WApplication app) {
-		DomElementType type = this.getDomElementType();
-		if (type == DomElementType.DomElement_SPAN) {
+		DomElement element = DomElement.getForUpdate(this, this
+				.getDomElementType());
+		if (element.getType() == DomElementType.DomElement_SPAN) {
 			DomElement input = DomElement.getForUpdate("in" + this.getId(),
 					DomElementType.DomElement_INPUT);
+			this.updateDomElements(element, input, false);
 			if (this.isUseImageWorkaround()) {
 				EventSignal imgClick = this.voidEventSignal(
 						UNDETERMINATE_CLICK_SIGNAL, true);
@@ -266,27 +268,16 @@ public class WAbstractToggleButton extends WFormWidget {
 					result.add(img);
 				}
 			}
-			this.updateDom(input, false);
+			result.add(element);
 			result.add(input);
 		} else {
-			DomElement e = DomElement.getForUpdate(this, this
-					.getDomElementType());
-			this.updateDom(e, false);
-			result.add(e);
+			this.updateDomElements(element, element, false);
+			result.add(element);
 		}
 	}
 
-	void updateDom(DomElement element, boolean all) {
-		if (this.stateChanged_ || all) {
-			element.setProperty(Property.PropertyChecked,
-					this.state_ == CheckState.Checked ? "true" : "false");
-			if (!this.isUseImageWorkaround()) {
-				element.setProperty(Property.PropertyIndeterminate,
-						this.state_ == CheckState.PartiallyChecked ? "true"
-								: "false");
-			}
-			this.stateChanged_ = false;
-		}
+	protected void updateDomElements(DomElement element, DomElement input,
+			boolean all) {
 		WEnvironment env = WApplication.getInstance().getEnvironment();
 		EventSignal check = this.voidEventSignal(CHECKED_SIGNAL, false);
 		EventSignal uncheck = this.voidEventSignal(UNCHECKED_SIGNAL, false);
@@ -297,9 +288,23 @@ public class WAbstractToggleButton extends WFormWidget {
 				|| env.agentIsIE() && change != null && change.needUpdate()
 				|| check != null && check.needUpdate() || uncheck != null
 				&& uncheck.needUpdate();
-		super.updateDom(element, all);
+		this.updateDom(input, all);
+		if (element != input) {
+			element.setProperties(input.getProperties());
+			input.clearProperties();
+		}
+		if (this.stateChanged_ || all) {
+			input.setProperty(Property.PropertyChecked,
+					this.state_ == CheckState.Checked ? "true" : "false");
+			if (!this.isUseImageWorkaround()) {
+				input.setProperty(Property.PropertyIndeterminate,
+						this.state_ == CheckState.PartiallyChecked ? "true"
+								: "false");
+			}
+			this.stateChanged_ = false;
+		}
 		if (needUpdateClickedSignal || all) {
-			String dom = "Wt3_1_0.getElement('" + element.getId() + "')";
+			String dom = "Wt3_1_2.getElement('" + input.getId() + "')";
 			List<DomElement.EventAction> actions = new ArrayList<DomElement.EventAction>();
 			if (check != null) {
 				if (check.isConnected()) {
@@ -334,7 +339,7 @@ public class WAbstractToggleButton extends WFormWidget {
 				click.updateOk();
 			}
 			if (!(all && actions.isEmpty())) {
-				element.setEvent("click", actions);
+				input.setEvent("click", actions);
 			}
 		}
 	}
@@ -347,11 +352,11 @@ public class WAbstractToggleButton extends WFormWidget {
 		if (this.stateChanged_) {
 			return;
 		}
-		if (!formData.values.isEmpty()) {
-			if (formData.values.get(0).equals("indeterminate")) {
+		if (!(formData.values.length == 0)) {
+			if (formData.values[0].equals("indeterminate")) {
 				this.state_ = CheckState.PartiallyChecked;
 			} else {
-				this.state_ = !formData.values.get(0).equals("0") ? CheckState.Checked
+				this.state_ = !formData.values[0].equals("0") ? CheckState.Checked
 						: CheckState.Unchecked;
 			}
 		} else {

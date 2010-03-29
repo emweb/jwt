@@ -331,6 +331,7 @@ public class WPopupMenuItem extends WCompositeWidget {
 		if (this.checkBox_ != null) {
 			this.checkBox_.setChecked(!this.checkBox_.isChecked());
 		}
+		this.getTopLevelMenu().result_ = this;
 		this.triggered_.trigger();
 		this.getTopLevelMenu().done(this);
 	}

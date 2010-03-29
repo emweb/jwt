@@ -236,7 +236,7 @@ public class WPopupMenu extends WCompositeWidget {
 	public void popup(WPoint p) {
 		this.popupImpl();
 		WApplication.getInstance().doJavaScript(
-				"Wt3_1_0.positionXY('" + this.getId() + "',"
+				"Wt3_1_2.positionXY('" + this.getId() + "',"
 						+ String.valueOf(p.getX()) + ","
 						+ String.valueOf(p.getY()) + ");");
 	}
@@ -381,7 +381,7 @@ public class WPopupMenu extends WCompositeWidget {
 
 	private WTemplate impl_;
 	WPopupMenuItem parentItem_;
-	private WPopupMenuItem result_;
+	WPopupMenuItem result_;
 	private Signal aboutToHide_;
 	private AbstractSignal.Connection globalClickConnection_;
 	private AbstractSignal.Connection globalEscapeConnection_;
@@ -408,7 +408,7 @@ public class WPopupMenu extends WCompositeWidget {
 		this.globalClickConnection_.disconnect();
 		this.globalEscapeConnection_.disconnect();
 		WApplication.getInstance().getRoot().clicked().senderRepaint();
-		WApplication.getInstance().getRoot().escapePressed().senderRepaint();
+		WApplication.getInstance().globalEscapePressed().senderRepaint();
 		this.recursiveEventLoop_ = false;
 		this.aboutToHide_.trigger();
 	}
@@ -416,8 +416,8 @@ public class WPopupMenu extends WCompositeWidget {
 	private void popupImpl() {
 		this.result_ = null;
 		WApplication app = WApplication.getInstance();
-		if (app.getRoot().escapePressed().isConnected()) {
-			app.getRoot().escapePressed().trigger();
+		if (app.globalEscapePressed().isConnected()) {
+			app.globalEscapePressed().trigger();
 		}
 		this.globalClickConnection_ = app.getRoot().clicked().addListener(this,
 				new Signal1.Listener<WMouseEvent>() {
@@ -425,8 +425,8 @@ public class WPopupMenu extends WCompositeWidget {
 						WPopupMenu.this.done();
 					}
 				});
-		this.globalEscapeConnection_ = app.getRoot().escapePressed()
-				.addListener(this, new Signal.Listener() {
+		this.globalEscapeConnection_ = app.globalEscapePressed().addListener(
+				this, new Signal.Listener() {
 					public void trigger() {
 						WPopupMenu.this.done();
 					}

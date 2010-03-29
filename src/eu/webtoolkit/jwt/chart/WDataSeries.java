@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.WBrush;
 import eu.webtoolkit.jwt.WColor;
 import eu.webtoolkit.jwt.WPen;
 import eu.webtoolkit.jwt.WPointF;
+import eu.webtoolkit.jwt.WShadow;
 import eu.webtoolkit.jwt.utils.EnumUtils;
 
 /**
@@ -117,6 +118,7 @@ public class WDataSeries {
 		this.brush_ = new WBrush();
 		this.markerBrush_ = new WBrush();
 		this.labelColor_ = new WColor();
+		this.shadow_ = new WShadow();
 		this.fillRange_ = FillRangeType.NoFill;
 		this.marker_ = type == SeriesType.PointSeries ? MarkerType.CircleMarker
 				: MarkerType.NoMarker;
@@ -377,10 +379,11 @@ public class WDataSeries {
 	/**
 	 * Overrides the brush used for filling areas for this series.
 	 * <p>
-	 * Overrides the brush that is used to draw this series. For a bar plot,
-	 * this is the brush used to fill the bars. For a line chart, this is the
-	 * brush used to fill the area under (or above) the line. Calling this
-	 * method automatically adds CustomBrush to the custom flags.
+	 * Overrides the brush that is used to draw this series which is otherwise
+	 * provided by the chart palette. For a bar plot, this is the brush used to
+	 * fill the bars. For a line chart, this is the brush used to fill the area
+	 * under (or above) the line. Calling this method automatically adds
+	 * CustomBrush to the custom flags.
 	 * <p>
 	 * 
 	 * @see WChartPalette#getBrush(int index)
@@ -412,6 +415,27 @@ public class WDataSeries {
 				return new WBrush();
 			}
 		}
+	}
+
+	/**
+	 * Sets a shadow used for stroking lines for this series.
+	 */
+	public void setShadow(WShadow shadow) {
+		if (!ChartUtils.equals(this.shadow_, shadow)) {
+			this.shadow_ = shadow;
+			update();
+		}
+		;
+	}
+
+	/**
+	 * Returns the shadow used for stroking lines for this series.
+	 * <p>
+	 * 
+	 * @see WDataSeries#setShadow(WShadow shadow)
+	 */
+	public WShadow getShadow() {
+		return this.shadow_;
 	}
 
 	/**
@@ -763,6 +787,7 @@ public class WDataSeries {
 	private WBrush brush_;
 	private WBrush markerBrush_;
 	private WColor labelColor_;
+	private WShadow shadow_;
 	private FillRangeType fillRange_;
 	private MarkerType marker_;
 	private double markerSize_;

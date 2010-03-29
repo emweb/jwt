@@ -7,26 +7,33 @@ package eu.webtoolkit.jwt;
 
 
 /**
- * Returns the declarations.
+ * A CSS rule based on a template widget.
  * <p>
- * This is a semi-colon separated list of CSS declarations.
+ * 
+ * This is a CSS rule whose CSS style properties are defined based on properties
+ * of a template widget. When modifying the template widget, these changes are
+ * reflected on the CSS rule and thus all widgets that have this CSS rule.
+ * <p>
+ * 
+ * @see WCssStyleSheet
  */
 public class WCssTemplateRule extends WCssRule {
 	/**
-	 * Returns the declarations.
+	 * Creates a CSS rule with a given selector.
 	 * <p>
-	 * This is a semi-colon separated list of CSS declarations.
+	 * The selector should be a valid CSS selector.
+	 * <p>
+	 * <p>
+	 * <i><b>Note: </b>If you want to update the rule, then the selector should
+	 * be unique and not contain commas, since this is not supported by
+	 * Microsoft Internet Explorer. </i>
+	 * </p>
 	 */
 	public WCssTemplateRule(String selector) {
 		super(selector);
 		this.widget_ = new WCssTemplateWidget(this);
 	}
 
-	/**
-	 * Returns the declarations.
-	 * <p>
-	 * This is a semi-colon separated list of CSS declarations.
-	 */
 	public void remove() {
 		if (this.widget_ != null)
 			this.widget_.remove();
@@ -34,19 +41,40 @@ public class WCssTemplateRule extends WCssRule {
 	}
 
 	/**
-	 * Returns the declarations.
+	 * Returns the widget that is used as a template.
 	 * <p>
-	 * This is a semi-colon separated list of CSS declarations.
+	 * Various properties of the widget are reflected in the CSS style:
+	 * <ul>
+	 * <li>size and dimensions:
+	 * {@link WWidget#resize(WLength width, WLength height) WWidget#resize()},
+	 * {@link WWidget#setMinimumSize(WLength width, WLength height)
+	 * WWidget#setMinimumSize()}, and
+	 * {@link WWidget#setMaximumSize(WLength width, WLength height)
+	 * WWidget#setMaximumSize()}</li>
+	 * <li>its position: {@link WWidget#setPositionScheme(PositionScheme scheme)
+	 * WWidget#setPositionScheme()},
+	 * {@link WWidget#setOffsets(WLength offset, EnumSet sides)
+	 * WWidget#setOffsets()}, {@link WWidget#setFloatSide(Side s)
+	 * WWidget#setFloatSide()}, {@link WWidget#setClearSides(EnumSet sides)
+	 * WWidget#setClearSides()}</li>
+	 * <li>visibility: {@link WWidget#hide() WWidget#hide()},
+	 * {@link WWidget#show() WWidget#show()} and
+	 * {@link WWidget#setHidden(boolean hidden) WWidget#setHidden()}</li>
+	 * <li>margins: {@link WWidget#setMargin(WLength margin, EnumSet sides)
+	 * WWidget#setMargin()}</li>
+	 * <li>line height: {@link WWidget#setLineHeight(WLength height)
+	 * WWidget#setLineHeight()}</li>
+	 * <li>all decoration style properties: {@link WWidget#getDecorationStyle()
+	 * WWidget#getDecorationStyle()}</li>
+	 * </ul>
+	 * <p>
+	 * When modifying one of these properties of the returned widget, the rule
+	 * will be updated accordingly.
 	 */
 	public WWidget getTemplateWidget() {
 		return this.widget_;
 	}
 
-	/**
-	 * Returns the declarations.
-	 * <p>
-	 * This is a semi-colon separated list of CSS declarations.
-	 */
 	public String getDeclarations() {
 		DomElement e = new DomElement(DomElement.Mode.ModeUpdate, this.widget_
 				.getDomElementType());
@@ -54,20 +82,10 @@ public class WCssTemplateRule extends WCssRule {
 		return e.getCssStyle();
 	}
 
-	/**
-	 * Returns the declarations.
-	 * <p>
-	 * This is a semi-colon separated list of CSS declarations.
-	 */
 	public boolean updateDomElement(DomElement element, boolean all) {
 		this.widget_.updateDom(element, all);
 		return true;
 	}
 
-	/**
-	 * Returns the declarations.
-	 * <p>
-	 * This is a semi-colon separated list of CSS declarations.
-	 */
 	private WCssTemplateWidget widget_;
 }

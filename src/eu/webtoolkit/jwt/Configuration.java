@@ -50,6 +50,8 @@ public class Configuration {
 
 	private String favicon = "";
 	private boolean progressiveBootstrap = false;
+	
+	private int sessionTimeout;
 
 	/**
 	 * Creates a default configuration.
@@ -232,10 +234,6 @@ public class Configuration {
 
 	SessionTracking getSessionTracking() {
 		return SessionTracking.Auto;
-	}
-
-	int getSessionTimeout() {
-		return 600;
 	}
 
 	ServerType getServerType() {
@@ -502,5 +500,21 @@ public class Configuration {
 	 */
 	public boolean progressiveBootstrap() {
 		return this.progressiveBootstrap ;
+	}
+	
+	/**
+	 * Returns the session timeout.
+	 * 
+	 * @return the session timeout.
+	 */
+	public int getSessionTimeout() {
+		return sessionTimeout;
+	}
+	
+	void setSessionTimeout(int sessionTimeout) {
+		if (sessionTimeout <= 0)
+			this.sessionTimeout = 10 * 60;
+		else
+			this.sessionTimeout = sessionTimeout;
 	}
 }

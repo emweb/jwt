@@ -371,23 +371,33 @@ public class StdXMLReader
     *
     * @throws java.io.IOException
     *		if no character could be read
+ * @throws XMLException 
     */
    public char read()
-      throws IOException
+      throws IOException, XMLParseException
    {
       int ch = this.currentReader.pbReader.read();
-
-      while (ch < 0) {
-         if (this.readers.empty()) {
-            throw new IOException("Unexpected EOF");
-         }
-
-         this.currentReader.pbReader.close();
-         this.currentReader = (StackedReader) this.readers.pop();
-         ch = this.currentReader.pbReader.read();
+      
+      if (ch < 0 || (ch == 0x9) ||
+              (ch == 0xA) ||
+              (ch == 0xD) ||
+              ((ch >= 0x20) && (ch <= 0xD7FF)) ||
+              ((ch >= 0xE000) && (ch <= 0xFFFD)) ||
+              ((ch >= 0x10000) && (ch <= 0x10FFFF))) {
+	      while (ch < 0) {
+	         if (this.readers.empty()) {
+	            throw new IOException("Unexpected EOF");
+	         }
+	
+	         this.currentReader.pbReader.close();
+	         this.currentReader = (StackedReader) this.readers.pop();
+	         ch = this.currentReader.pbReader.read();
+	      }
+	
+	      return (char) ch;
+      } else {
+    	  throw new XMLParseException(getSystemID(), getLineNr(), "Invalid XML character: int value=" + ch);
       }
-
-      return (char) ch;
    }
 
 

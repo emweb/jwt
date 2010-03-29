@@ -125,15 +125,16 @@ public class WRadioButton extends WAbstractToggleButton {
 		this.buttonGroup_ = group;
 	}
 
-	void updateDom(DomElement element, boolean all) {
+	protected void updateDomElements(DomElement element, DomElement input,
+			boolean all) {
 		if (all) {
-			element.setAttribute("type", "radio");
+			input.setAttribute("type", "radio");
 			if (this.buttonGroup_ != null) {
-				element.setAttribute("name", this.buttonGroup_.getId());
-				element.setAttribute("value", this.getId());
+				input.setAttribute("name", this.buttonGroup_.getId());
+				input.setAttribute("value", this.getId());
 			}
 		}
-		super.updateDom(element, all);
+		super.updateDomElements(element, input, all);
 	}
 
 	void getFormObjects(Map<String, WObject> formObjects) {
@@ -147,8 +148,8 @@ public class WRadioButton extends WAbstractToggleButton {
 		if (this.stateChanged_) {
 			return;
 		}
-		if (!formData.values.isEmpty()) {
-			String value = formData.values.get(0);
+		if (!(formData.values.length == 0)) {
+			String value = formData.values[0];
 			if (value.equals(this.getId())) {
 				if (this.buttonGroup_ != null) {
 					this.buttonGroup_.uncheckOthers(this);

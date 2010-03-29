@@ -39,8 +39,8 @@ import java.util.List;
  * <p>
  * <h3>CSS</h3>
  * <p>
- * This widget does not provide styling, and can be styled using inline or
- * external CSS as appropriate.
+ * The emptyText style can be configured via .Wt-edit-emptyText, other styling
+ * can be done using inline or external CSS as appropriate.
  * <p>
  * 
  * @see WTextArea
@@ -164,6 +164,7 @@ public class WLineEdit extends WFormWidget {
 						.setStyleClass(this.validate() == WValidator.State.Valid ? ""
 								: "Wt-invalid");
 			}
+			this.updateEmptyText();
 		}
 	}
 
@@ -294,8 +295,8 @@ public class WLineEdit extends WFormWidget {
 		if (this.flags_.get(BIT_CONTENT_CHANGED)) {
 			return;
 		}
-		if (!formData.values.isEmpty()) {
-			String value = formData.values.get(0);
+		if (!(formData.values.length == 0)) {
+			String value = formData.values[0];
 			this.content_ = value;
 		}
 	}

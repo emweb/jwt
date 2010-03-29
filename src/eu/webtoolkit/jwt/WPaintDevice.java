@@ -60,7 +60,11 @@ public interface WPaintDevice {
 		/**
 		 * The clipping has changed.
 		 */
-		Clipping;
+		Clipping,
+		/**
+		 * Properties of the shadow have changed.
+		 */
+		Shadow;
 
 		/**
 		 * Returns the numerical representation of this enum.

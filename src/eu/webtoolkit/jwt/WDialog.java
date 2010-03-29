@@ -108,9 +108,6 @@ public class WDialog extends WCompositeWidget {
 		this.modal_ = true;
 		this.finished_ = new Signal1<WDialog.DialogCode>(this);
 		this.recursiveEventLoop_ = false;
-		this.mouseDownJS_ = new JSlot();
-		this.mouseMovedJS_ = new JSlot();
-		this.mouseUpJS_ = new JSlot();
 		String TEMPLATE = "${shadow-x1-x2}${titlebar}${contents}";
 		this
 				.setImplementation(this.impl_ = new WTemplate(new WString(
@@ -121,17 +118,6 @@ public class WDialog extends WCompositeWidget {
 			if (app.getEnvironment().agentIsIE()) {
 				app.getStyleSheet().addRule("body", "height: 100%;");
 			}
-			app
-					.doJavaScript(
-							""
-									+ "Wt3_1_0.centerDialog = function(d){if (d && d.style.display != 'none') {d.style.visibility = 'visible';if (!d.getAttribute('moved')) {var ws=Wt3_1_0.windowSize();d.style.left=Math.round((ws.x - d.clientWidth)/2"
-									+ (app.getEnvironment().getAgent() == WEnvironment.UserAgent.IE6 ? "+ document.documentElement.scrollLeft"
-											: "")
-									+ ") + 'px';d.style.top=Math.round((ws.y - d.clientHeight)/2"
-									+ (app.getEnvironment().getAgent() == WEnvironment.UserAgent.IE6 ? "+ document.documentElement.scrollTop"
-											: "")
-									+ ") + 'px';d.style.marginLeft='0px';d.style.marginTop='0px';}}};",
-							false);
 			app
 					.getStyleSheet()
 					.addRule(
@@ -175,7 +161,15 @@ public class WDialog extends WCompositeWidget {
 		this.impl_.setStyleClass("Wt-dialog Wt-outset");
 		WContainerWidget parent = app.getDomRoot();
 		this.setPopup(true);
-		app.addAutoJavaScript("Wt3_1_0.centerDialog(" + this.getJsRef() + ");");
+		String THIS_JS = "js/WDialog.js";
+		if (!app.isJavaScriptLoaded(THIS_JS)) {
+			app.doJavaScript(wtjs1(app), false);
+			app.setJavaScriptLoaded(THIS_JS);
+		}
+		this.setJavaScriptMember("_a", "0;new Wt3_1_2.WDialog("
+				+ app.getJavaScriptClass() + "," + this.getJsRef() + ")");
+		app.addAutoJavaScript("{var obj = $('#" + this.getId()
+				+ "').data('obj');if (obj) obj.centerDialog();}");
 		parent.addWidget(this);
 		this.titleBar_ = new WContainerWidget();
 		this.titleBar_.setStyleClass("titlebar");
@@ -185,23 +179,20 @@ public class WDialog extends WCompositeWidget {
 		this.contents_ = new WContainerWidget();
 		this.contents_.setStyleClass("body");
 		this.impl_.bindWidget("contents", this.contents_);
-		this.mouseDownJS_
-				.setJavaScript("function(obj, event) {  var pc = Wt3_1_0.pageCoordinates(event);  obj.setAttribute('dsx', pc.x);  obj.setAttribute('dsy', pc.y);}");
-		this.mouseMovedJS_
-				.setJavaScript("function(obj, event) {var WT= Wt3_1_0;var lastx = obj.getAttribute('dsx');var lasty = obj.getAttribute('dsy');if (lastx != null && lastx != '') {nowxy = WT.pageCoordinates(event);var d = "
-						+ this.getJsRef()
-						+ ";d.setAttribute('moved', true);d.style.left = (WT.pxself(d, 'left')+nowxy.x-lastx) + 'px';d.style.top = (WT.pxself(d, 'top')+nowxy.y-lasty) + 'px';obj.setAttribute('dsx', nowxy.x);obj.setAttribute('dsy', nowxy.y);}}");
-		this.mouseUpJS_
-				.setJavaScript("function(obj, event) {obj.removeAttribute('dsx');}");
-		this.titleBar_.mouseWentDown().addListener(this.mouseDownJS_);
-		this.titleBar_.mouseMoved().addListener(this.mouseMovedJS_);
-		this.titleBar_.mouseWentUp().addListener(this.mouseUpJS_);
 		this.saveCoverState(app, app.getDialogCover());
-		this
-				.setJavaScriptMember(
-						"wtResize",
-						"function(self, w, h) {h -= 2; w -= 2;self.style.height= h + 'px';self.style.width= w + 'px';var c = self.lastChild;var t = c.previousSibling;h -= t.offsetHeight + 8;if (h > 0)c.style.height = h + 'px';};");
+		this.setJavaScriptMember(WT_RESIZE_JS, "$('#" + this.getId()
+				+ "').data('obj').wtResize");
 		this.hide();
+		app.globalEscapePressed().addListener(this, new Signal.Listener() {
+			public void trigger() {
+				WDialog.this.reject();
+			}
+		});
+		this.impl_.escapePressed().addListener(this, new Signal.Listener() {
+			public void trigger() {
+				WDialog.this.reject();
+			}
+		});
 	}
 
 	/**
@@ -362,11 +353,16 @@ public class WDialog extends WCompositeWidget {
 			if (this.modal_) {
 				WApplication app = WApplication.getInstance();
 				WContainerWidget cover = app.getDialogCover();
+				if (!(cover != null)) {
+					return;
+				}
 				if (!hidden) {
 					this.saveCoverState(app, cover);
 					cover.show();
 					cover.setZIndex(this.impl_.getZIndex() - 1);
 					app.constrainExposed(this);
+					app
+							.doJavaScript("if (document.activeElement && document.activeElement.blur)document.activeElement.blur();");
 				} else {
 					this.restoreCoverState(app, cover);
 				}
@@ -386,9 +382,6 @@ public class WDialog extends WCompositeWidget {
 	private Signal1<WDialog.DialogCode> finished_;
 	private WDialog.DialogCode result_;
 	private boolean recursiveEventLoop_;
-	private JSlot mouseDownJS_;
-	private JSlot mouseMovedJS_;
-	private JSlot mouseUpJS_;
 
 	private void saveCoverState(WApplication app, WContainerWidget cover) {
 		this.coverWasHidden_ = cover.isHidden();
@@ -400,5 +393,9 @@ public class WDialog extends WCompositeWidget {
 		cover.setHidden(this.coverWasHidden_);
 		cover.setZIndex(this.coverPreviousZIndex_);
 		app.constrainExposed(this.previousExposeConstraint_);
+	}
+
+	static String wtjs1(WApplication app) {
+		return "Wt3_1_2.WDialog = function(j,b){function k(a){a=c.pageCoordinates(a||window.event);h=true;b.style.left=c.pxself(b,\"left\")+a.x-f+\"px\";b.style.top=c.pxself(b,\"top\")+a.y-g+\"px\";f=a.x;g=a.y}jQuery.data(b,\"obj\",this);var d=$(b).find(\".titlebar\").first().get(0),c=j.WT,f,g,h=false;d.onmousedown=function(a){a=a||window.event;c.capture(d);a=c.pageCoordinates(a);f=a.x;g=a.y;d.onmousemove=k};d.onmouseup=function(){d.onmousemove=null;c.capture(null)};this.centerDialog=function(){if(b.parentNode== null){b=d=null;this.centerDialog=function(){}}else if(b.style.display!=\"none\"){if(!h){var a=c.windowSize();b.style.left=Math.round((a.x-b.clientWidth)/2+(c.isIE6?document.documentElement.scrollLeft:0))+\"px\";b.style.top=Math.round((a.y-b.clientHeight)/2+(c.isIE6?document.documentElement.scrollTop:0))+\"px\";b.style.marginLeft=\"0px\";b.style.marginTop=\"0px\"}b.style.visibility=\"visible\"}};this.wtResize=function(a,i,e){e-=2;i-=2;a.style.height=e+\"px\";a.style.width=i+\"px\";a=a.lastChild;e-=a.previousSibling.offsetHeight+ 8;if(e>0)a.style.height=e+\"px\"}};";
 	}
 }

@@ -27,6 +27,11 @@ package eu.webtoolkit.jwt;
  * In clients without (enabled) JavaScript support, the minimum resolution of
  * the timer is one second (1000 milli-seconds), and it is probably wise to use
  * timers sparingly.
+ * <p>
+ * A {@link WTimer} is only usable inside of a JWt event loop.
+ * <p>
+ * If you want to create a timer outside the JWt event loop, take a look at
+ * {@link java.util.Timer}.
  */
 public class WTimer extends WObject {
 	/**
@@ -109,7 +114,7 @@ public class WTimer extends WObject {
 	public void start() {
 		if (!this.active_) {
 			WApplication app = WApplication.getInstance();
-			if (app != null && app.getDomRoot() != null) {
+			if (app != null && app.getTimerRoot() != null) {
 				app.getTimerRoot().addWidget(this.timerWidget_);
 			}
 			this.active_ = true;
@@ -141,7 +146,7 @@ public class WTimer extends WObject {
 	public void stop() {
 		if (this.active_) {
 			WApplication app = WApplication.getInstance();
-			if (app != null && app.getDomRoot() != null) {
+			if (app != null && app.getTimerRoot() != null) {
 				app.getTimerRoot().removeWidget(this.timerWidget_);
 			}
 			this.active_ = false;

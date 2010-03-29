@@ -104,17 +104,6 @@ public class StringUtils {
 		return sb.toString();
 	}
 
-	private final static String[] toReplaceWith_ = { "&amp;", "&lt;", "&gt;" };
-	private final static String[] toReplaceWithNewLines_ = { "&amp;", "&lt;",
-			"&gt;", "<br />" };
-
-	static String escapeText(final String text, boolean newlinesToo) {
-		if (newlinesToo)
-			return replaceAll(text, "&<>\n", toReplaceWithNewLines_);
-		else
-			return replaceAll(text, "&<>", toReplaceWith_);
-	}
-
 	static String terminate(String s, char c) {
 		if (s.length() > 0 && s.charAt(s.length() - 1) == c)
 			return s;
@@ -236,5 +225,21 @@ public class StringUtils {
 		char[] charsA = chars.toCharArray();
 		
 		return strpbrk(textA, pos, charsA);
+	}
+
+	public static boolean isValidUnicode(char c) {
+		return ((c == 0x9) || (c == 0xA) || (c == 0xD)
+				|| ((c >= 0x20) && (c <= 0xD7FF))
+				|| ((c >= 0xE000) && (c <= 0xFFFD)) || ((c >= 0x10000) && (c <= 0x10FFFF)));
+	}
+	
+	public static void sanitizeUnicode(EscapeOStream sout, String text) {
+		for (int i = 0; i < text.length(); i++) {
+			char c = text.charAt(i);
+		      if (isValidUnicode(c))
+		    	  sout.append(c);
+		      else 
+		    	  sout.append(0xFFFD);
+		}
 	}
 }

@@ -15,6 +15,7 @@ import eu.webtoolkit.jwt.WPaintedWidget;
 import eu.webtoolkit.jwt.WPainter;
 import eu.webtoolkit.jwt.WPainterPath;
 import eu.webtoolkit.jwt.WPen;
+import eu.webtoolkit.jwt.WShadow;
 
 public class ShapesWidget extends WPaintedWidget {
     public ShapesWidget(WContainerWidget parent) {
@@ -55,6 +56,7 @@ public class ShapesWidget extends WPaintedWidget {
     protected void paintEvent(WPaintDevice paintDevice) {
         WPainter painter = new WPainter(paintDevice);
         painter.setRenderHint(WPainter.RenderHint.Antialiasing);
+        painter.setShadow(new WShadow(10, 10, new WColor(0, 0, 0, 50), 10));
         painter.translate(this.getWidth().getValue() / 2, this.getHeight()
                 .getValue() / 2);
         painter.rotate(this.angle_);
@@ -129,8 +131,8 @@ public class ShapesWidget extends WPaintedWidget {
         p.cubicTo(164.8499, 21.235634, 169.81314, 24.512492, 173.10599,
                 31.841463);
         p.cubicTo(176.10311, 38.53904, 176.215, 45.708164, 176.215, 45.780095);
-        p.lineTo(176.215, 80.41343);
-        p.lineTo(197.97014, 80.41343);
+        p.lineTo(176.215, 70.41343);
+        p.lineTo(197.97014, 70.41343);
         p.lineTo(197.97014, 45.732141);
         p.cubicTo(197.97014, 44.605222, 197.83427, 34.518895, 193.35057,
                 24.072913);

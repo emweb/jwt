@@ -10,7 +10,7 @@ import java.util.ArrayList;
 
 class EscapeOStream {
 	public enum RuleSet {
-		HtmlAttribute, JsStringLiteralSQuote, JsStringLiteralDQuote
+		HtmlAttribute, JsStringLiteralSQuote, JsStringLiteralDQuote, PlainText, PlainTextNewLines
 	};
 
 	public EscapeOStream() {
@@ -41,6 +41,11 @@ class EscapeOStream {
 	public void popEscape() {
 		ruleSets_.remove(ruleSets_.size() - 1);
 		mixRules();
+	}
+
+
+	public EscapeOStream append(EscapeOStream stream) {
+		return append(stream.toString());
 	}
 
 	public EscapeOStream append(char c) {
@@ -89,6 +94,11 @@ class EscapeOStream {
 			e.printStackTrace();
 		}
 		return this;
+	}
+
+
+	public boolean isEmpty() {
+		return sink_.toString().isEmpty();
 	}
 
 	public void flush() {
@@ -185,15 +195,26 @@ class EscapeOStream {
 	private static ArrayList<Entry> jsStringLiteralSQuoteEntries_ = new ArrayList<Entry>();
 	private static ArrayList<Entry> jsStringLiteralDQuoteEntries_ = new ArrayList<Entry>();
 	private static ArrayList<ArrayList<Entry>> standardSets_ = new ArrayList<ArrayList<Entry>>();
-
+	private static ArrayList<Entry> plainTextEntries_ = new ArrayList<Entry>();
+	private static ArrayList<Entry> plainTextEntriesNewLines_ = new ArrayList<Entry>(); 
+	
 	static {
 		standardSetsSpecial_.add("&\"<");
 		standardSetsSpecial_.add("\\\n\r\t'");
 		standardSetsSpecial_.add("\\\n\r\t\"");
+		standardSetsSpecial_.add("&><");
+		standardSetsSpecial_.add("&><\n");
 
 		htmlAttributeEntries_.add(new Entry('&', "&amp;"));
 		htmlAttributeEntries_.add(new Entry('\"', "&#34;"));
 		htmlAttributeEntries_.add(new Entry('<', "&lt;"));
+		
+		plainTextEntries_.add(new Entry('&', "&amp;"));
+		plainTextEntries_.add(new Entry('>', "&gt;"));
+		plainTextEntries_.add(new Entry('<', "&lt;"));
+		
+		plainTextEntriesNewLines_.addAll(plainTextEntries_);
+		plainTextEntriesNewLines_.add(new Entry('\n', "<br />"));
 
 		jsStringLiteralSQuoteEntries_.add(new Entry('\\', "\\\\"));
 		jsStringLiteralSQuoteEntries_.add(new Entry('\n', "\\n"));
@@ -210,5 +231,7 @@ class EscapeOStream {
 		standardSets_.add(htmlAttributeEntries_);
 		standardSets_.add(jsStringLiteralSQuoteEntries_);
 		standardSets_.add(jsStringLiteralDQuoteEntries_);
+		standardSets_.add(plainTextEntries_);
+		standardSets_.add(plainTextEntriesNewLines_);
 	}
 }

@@ -7,8 +7,6 @@ package eu.webtoolkit.jwt.servlet;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -37,7 +35,7 @@ import eu.webtoolkit.jwt.WResource;
  * @see WebResponse
  */
 public class WebRequest extends HttpServletRequestWrapper {
-	private Map<String, List<String>> parameters_;
+	private Map<String, String[]> parameters_;
 	private Map<String, UploadedFile> files_;
 
 	/**
@@ -55,10 +53,17 @@ public class WebRequest extends HttpServletRequestWrapper {
 	 * @param parameters a list of request parameters
 	 * @param files a list of POST'ed files
 	 */
-	public WebRequest(Map<String, List<String>> parameters, Map<String, UploadedFile> files) {
+	public WebRequest(Map<String, String[]> parameters, Map<String, UploadedFile> files) {
 		super(new MockupHttpServletRequest());
 		parameters_ = parameters;
 		files_ = files;
+	}
+	
+	/**
+	 * Returns the request method.
+	 */
+	public String getRequestMethod() {
+		return this.getMethod();
 	}
 
 	/**
@@ -121,11 +126,8 @@ public class WebRequest extends HttpServletRequestWrapper {
 	private void parse() {
 		Map<String, String[]> parameterMap = super.getParameterMap();
 
-		parameters_ = new HashMap<String, List<String>>(parameterMap.size());
+		parameters_ = parameterMap;
 		files_ = new HashMap<String, UploadedFile>();
-
-		for (Map.Entry<String, String[]> i : parameterMap.entrySet())
-		  parameters_.put(i.getKey(), new ArrayList<String>(Arrays.asList(i.getValue())));
 
 		if (FileUploadBase.isMultipartContent(this)) {
 			try {
@@ -160,10 +162,16 @@ public class WebRequest extends HttpServletRequestWrapper {
 
 						files_.put(fi.getFieldName(), new UploadedFile(f.getAbsolutePath(), fi.getName(), fi.getContentType()));
 					} else {
-						List<String> v = parameters_.get(fi.getFieldName());
+						String[] v = parameters_.get(fi.getFieldName());
 						if (v == null)
-							v = new ArrayList<String>(1);
-						v.add(fi.getString());
+							v = new String[1];
+						else {
+							String[] newv = new String[v.length + 1];
+							for (int i = 0; i < v.length; ++i)
+								newv[i] = v[i];
+							v = newv;
+						}
+						v[v.length - 1] = fi.getString();
 						parameters_.put(fi.getFieldName(), v);
 					}
 				}
@@ -188,7 +196,7 @@ public class WebRequest extends HttpServletRequestWrapper {
 	 * The parameter map includes both the parameters from the query string, as well
 	 * as parameters posted in the body.
 	 */
-	public Map<String, List<String>> getParameterMap() {
+	public Map<String, String[]> getParameterMap() {
 		return parameters_;
 	}
 
@@ -203,10 +211,8 @@ public class WebRequest extends HttpServletRequestWrapper {
 	@Override
 	public String[] getParameterValues(String name) {
 		if (parameters_.containsKey(name))
-			return parameters_.get(name).toArray(a);
+			return parameters_.get(name);
 		else
 			return new String[0];
 	}
-	
-	private static String[] a = new String[0];
 }

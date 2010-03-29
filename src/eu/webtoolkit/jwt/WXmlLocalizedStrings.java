@@ -120,6 +120,6 @@ public class WXmlLocalizedStrings extends WLocalizedStrings {
 		if (keyValues != null && keyValues.get(key) != null)
 			return keyValues.get(key);
 		else
-			return "??" + key + "??";
+			return null;
 	}
 }

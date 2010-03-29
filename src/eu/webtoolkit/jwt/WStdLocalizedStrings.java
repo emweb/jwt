@@ -10,6 +10,13 @@ import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
+import net.n3.nanoxml.IXMLElement;
+import net.n3.nanoxml.IXMLParser;
+import net.n3.nanoxml.IXMLReader;
+import net.n3.nanoxml.StdXMLReader;
+import net.n3.nanoxml.XMLException;
+import net.n3.nanoxml.XMLParserFactory;
+
 /**
  * A localized strings implementation that uses {@link java.util.ResourceBundle} resource bundles.
  * <p>
@@ -24,6 +31,8 @@ public class WStdLocalizedStrings extends WLocalizedStrings {
 	private List<String> bundleNames = new ArrayList<String>();
 	private List<ResourceBundle> bundles = new ArrayList<ResourceBundle>();
 	private List<ResourceBundle> defaultBundles = new ArrayList<ResourceBundle>();
+	
+	private boolean plainText = false;
 
 	/**
 	 * Constructor.
@@ -59,7 +68,7 @@ public class WStdLocalizedStrings extends WLocalizedStrings {
 	public String resolveKey(String key) {
 		for (ResourceBundle bundle : bundles) {
 			try {
-				return bundle.getString(key);
+				return checkForValidXml(bundle.getString(key));
 			} catch (java.util.MissingResourceException mre) {
 				
 			}
@@ -67,12 +76,46 @@ public class WStdLocalizedStrings extends WLocalizedStrings {
 		
 		for (ResourceBundle defaultBundle : defaultBundles) {
 			try {
-				return defaultBundle.getString(key);
+				return checkForValidXml(defaultBundle.getString(key));
 			} catch (java.util.MissingResourceException mre) {
 				
 			}
 		}
 		
-		return "??" + key + "??";
+		return null;
+	}
+	
+	private String checkForValidXml(String s) {
+		if (!plainText && WApplication.getInstance().getSession().getController().getConfiguration().isDebug()) {
+			try {
+				IXMLParser parser = XMLParserFactory.createDefaultXMLParser();
+				IXMLReader reader = StdXMLReader.stringReader("<span>" + s + "</span>");
+				parser.setReader(reader);
+				parser.parse();
+				return s;
+			} catch (Exception e) {
+				throw new RuntimeException("WStdLocalizedStrings: no valid xml: \"" + s + "\"");
+			}
+		} else 
+			return s;
+	}
+
+	/**
+	 * Returns whether this resource bundle is plain text or can contain XML.
+	 * When the bundle is able to contain XML, and debug is on, 
+	 * the resources will be checked for valid XML when they are resolved.W
+	 */
+	public boolean isPlainText() {
+		return plainText;
+	}
+
+	/** Sets whether this resource bundle is plain text or can contain XML.
+	 * 
+	 * @param plainText
+	 * 
+	 * @see #isPlainText()
+	 */
+	public void setPlainText(boolean plainText) {
+		this.plainText = plainText;
 	}
 }

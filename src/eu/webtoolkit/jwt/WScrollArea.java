@@ -25,8 +25,8 @@ import java.util.EnumSet;
  * <p>
  * <h3>CSS</h3>
  * <p>
- * This widget is rendered using a
- * <code>&lt;<div>&gt; with a CSS overflow attribute. It can be styled using inline or external CSS as appropriate. </div></code>
+ * This widget is rendered using a <code>&lt;div&gt;</code> with a CSS overflow
+ * attribute. It can be styled using inline or external CSS as appropriate.
  */
 public class WScrollArea extends WWebWidget {
 	/**

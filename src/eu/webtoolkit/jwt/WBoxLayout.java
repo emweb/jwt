@@ -21,11 +21,28 @@ import java.util.List;
  * {@link WWidget#setMinimumSize(WLength width, WLength height)
  * WWidget#setMinimumSize()}.
  * <p>
- * You can use WContainerWidget::setOverflow(OverflowAuto) to automatically show
- * scrollbars on a container widget which you inserted into the layout. In some
- * cases, you will want to wrap another widget (like a {@link WTable}) into
- * {@link WContainerWidget} to have the scrollbars, since not all widgets allow
- * for scrollbars.
+ * If you want to use the layout manager for a container which does not have a
+ * height that is constrained somehow, you need to specify AlignTop in the
+ * alignment flags of {@link WContainerWidget#setLayout(WLayout layout)
+ * WContainerWidget#setLayout()}. Otherwise the behavior is undefined (the
+ * parent container will continue to increase in size as it tries to satisfy the
+ * constraints assuming a contrained height).
+ * <p>
+ * You can use
+ * {@link WContainerWidget#setOverflow(WContainerWidget.Overflow value, EnumSet orientation)
+ * WContainerWidget::setOverflow(OverflowAuto)} to automatically show scrollbars
+ * on a container widget inserted in the layout. In some cases, you will want to
+ * wrap another widget (like a {@link WTable}) into {@link WContainerWidget} to
+ * have the scrollbars, since not all widgets allow for scrollbars.
+ * <p>
+ * A layout manager may provide resize handles between items which allow the
+ * user to change the automatic layout provided by the layout manager (see
+ * {@link WBoxLayout#setResizable(int index, boolean enabled) setResizable()}).
+ * Resize handles between rows for a vertically oriented box layout only work
+ * when the layout fills the parent vertical space (i.e. is not aligned to the
+ * top). Likewise, resize handles between columns for a horizontally oriented
+ * box layout only work when the layout fills the parent horiziontal space (i.e.
+ * is not aligned left, right or centered).
  * <p>
  * Each item is separated using a constant spacing, which defaults to 6 pixels,
  * and can be changed using {@link WBoxLayout#setSpacing(int size) setSpacing()}
@@ -62,13 +79,6 @@ import java.util.List;
  * least one item in every column that has no stretch factor.</li>
  * </ul>
  * </i>
- * </p>
- * <p>
- * <i><b>Warning:</b>You should specify AlignTop in the alignment flags of
- * {@link WContainerWidget#setLayout(WLayout layout)
- * WContainerWidget#setLayout()} if the container does not have a height that is
- * constrained somehow. Otherwise the behavior is undefined (the parent
- * container will continue to increase in size) </i>
  * </p>
  */
 public class WBoxLayout extends WLayout {
@@ -550,6 +560,62 @@ public class WBoxLayout extends WLayout {
 				this.setStretchFactor(i, stretch);
 				return true;
 			}
+		}
+		return false;
+	}
+
+	/**
+	 * Sets whether the use may drag a particular border.
+	 * <p>
+	 * This method sets whether the border that separates item <i>index</i> from
+	 * the next item may be resized by the user, depending on the value of
+	 * <i>enabled</i>.
+	 * <p>
+	 * The default value is <i>false</i>.
+	 */
+	public void setResizable(int index, boolean enabled) {
+		switch (this.direction_) {
+		case RightToLeft:
+			index = this.grid_.columns_.size() - 1 - index;
+		case LeftToRight:
+			this.grid_.columns_.get(index).resizable_ = enabled;
+			break;
+		case BottomToTop:
+			index = this.grid_.rows_.size() - 1 - index;
+		case TopToBottom:
+			this.grid_.rows_.get(index).resizable_ = enabled;
+		}
+	}
+
+	/**
+	 * Sets whether the use may drag a particular border.
+	 * <p>
+	 * Calls {@link #setResizable(int index, boolean enabled)
+	 * setResizable(index, true)}
+	 */
+	public final void setResizable(int index) {
+		setResizable(index, true);
+	}
+
+	/**
+	 * Returns whether the user may drag a particular border.
+	 * <p>
+	 * This method returns whether the border that separates item <i>index</i>
+	 * from the next item may be resized by the user.
+	 * <p>
+	 * 
+	 * @see WBoxLayout#setResizable(int index, boolean enabled)
+	 */
+	public boolean isResizable(int index) {
+		switch (this.direction_) {
+		case RightToLeft:
+			index = this.grid_.columns_.size() - 1 - index;
+		case LeftToRight:
+			return this.grid_.columns_.get(index).resizable_;
+		case BottomToTop:
+			index = this.grid_.rows_.size() - 1 - index;
+		case TopToBottom:
+			return this.grid_.rows_.get(index).resizable_;
 		}
 		return false;
 	}

@@ -16,16 +16,18 @@ import eu.webtoolkit.jwt.WGridLayout;
 import eu.webtoolkit.jwt.WLength;
 import eu.webtoolkit.jwt.WPaintedWidget;
 import eu.webtoolkit.jwt.WSlider;
-import eu.webtoolkit.jwt.WString;
 import eu.webtoolkit.jwt.WText;
 
 public class PaintExample extends WContainerWidget {
     public PaintExample(WContainerWidget root) {
         super(root);
         new WText(
-                new WString(
-                        "<h2>Paint example</h2><p>A simple example demonstrating cross-browser vector graphics.</p><p>The emweb logo below is painted using the Wt WPainter API, and rendered to the browser using inline SVG, inline VML or the HTML 5 &lt;canvas&gt; element.</p>"),
-                this);
+                "<h2>Paint example</h2>" +
+                "<p>A simple example demonstrating cross-browser vector graphics.</p>" +
+                "<p>The emweb logo below is painted using the Wt WPainter API, and rendered to the browser " +
+                "using inline SVG, inline VML or the HTML 5 &lt;canvas&gt; element.</p>" +
+                "<p>In non-IE browsers, a different backend is used for positive or negative " +
+                "angles (SVG or HTML canvas).</p>", this);
         WContainerWidget emweb = new WContainerWidget(this);
         emweb.setMargin(new WLength(), EnumSet.of(Side.Left, Side.Right));
         WGridLayout layout = new WGridLayout();

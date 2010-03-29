@@ -16,6 +16,7 @@ import eu.webtoolkit.jwt.StringUtils;
 import eu.webtoolkit.jwt.WAbstractItemModel;
 import eu.webtoolkit.jwt.WApplication;
 import eu.webtoolkit.jwt.WCheckBox;
+import eu.webtoolkit.jwt.WColor;
 import eu.webtoolkit.jwt.WComboBox;
 import eu.webtoolkit.jwt.WContainerWidget;
 import eu.webtoolkit.jwt.WDoubleValidator;
@@ -26,6 +27,7 @@ import eu.webtoolkit.jwt.WLineEdit;
 import eu.webtoolkit.jwt.WMouseEvent;
 import eu.webtoolkit.jwt.WPanel;
 import eu.webtoolkit.jwt.WPushButton;
+import eu.webtoolkit.jwt.WShadow;
 import eu.webtoolkit.jwt.WStandardItemModel;
 import eu.webtoolkit.jwt.WTable;
 import eu.webtoolkit.jwt.WText;
@@ -160,6 +162,7 @@ public class ChartConfig extends WContainerWidget {
         addHeader(seriesConfig, "Marker");
         addHeader(seriesConfig, "Y axis");
         addHeader(seriesConfig, "Legend");
+        addHeader(seriesConfig, "Shadow");
         addHeader(seriesConfig, "Value labels");
 
         seriesConfig.getRowAt(0).setStyleClass("trhead");
@@ -188,7 +191,10 @@ public class ChartConfig extends WContainerWidget {
             sc.legendEdit = new WCheckBox(seriesConfig.getElementAt(j, 5));
             connectSignals(sc.legendEdit);
 
-            sc.labelsEdit = new WComboBox(seriesConfig.getElementAt(j, 6));
+            sc.shadowEdit = new WCheckBox(seriesConfig.getElementAt(j, 6));
+            connectSignals(sc.shadowEdit);
+
+            sc.labelsEdit = new WComboBox(seriesConfig.getElementAt(j, 7));
             sc.labelsEdit.setModel(labels);
             connectSignals(sc.labelsEdit);
 
@@ -225,6 +231,7 @@ public class ChartConfig extends WContainerWidget {
 
                 sc.markerEdit.setCurrentIndex(s.getMarker().getValue());
                 sc.legendEdit.setChecked(s.isLegendEnabled());
+                sc.shadowEdit.setChecked(!s.getShadow().isNone());
             }
 
             seriesControls_.add(sc);
@@ -392,6 +399,7 @@ public class ChartConfig extends WContainerWidget {
         WComboBox markerEdit;
         WComboBox axisEdit;
         WCheckBox legendEdit;
+        WCheckBox shadowEdit;
         WComboBox labelsEdit;
     }
 
@@ -502,6 +510,11 @@ public class ChartConfig extends WContainerWidget {
                     haveLegend = true;
                 } else
                     s.setLegendEnabled(false);
+                
+                if (sc.shadowEdit.isChecked())
+                    s.setShadow(new WShadow(3, 3, new WColor(0, 0, 0, 127), 3));
+                else
+                    s.setShadow(new WShadow());
 
                 switch (sc.labelsEdit.getCurrentIndex()) {
                 case 1:

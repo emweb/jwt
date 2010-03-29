@@ -9,8 +9,6 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -97,7 +95,7 @@ public class WEnvironment {
 	 * Wt&apos;s JavaScript scope.
 	 */
 	public static String getJavaScriptWtScope() {
-		return "Wt3_1_0";
+		return "Wt3_1_2";
 	}
 
 	/**
@@ -109,7 +107,7 @@ public class WEnvironment {
 	 * 
 	 * @see WEnvironment#getParameterValues(String name)
 	 */
-	public Map<String, List<String>> getParameterMap() {
+	public Map<String, String[]> getParameterMap() {
 		return this.parameters_;
 	}
 
@@ -130,12 +128,12 @@ public class WEnvironment {
 	 * 
 	 * @see WEnvironment#getParameterMap()
 	 */
-	public List<String> getParameterValues(String name) {
-		List<String> i = this.parameters_.get(name);
+	public String[] getParameterValues(String name) {
+		String[] i = this.parameters_.get(name);
 		if (i != null) {
 			return i;
 		} else {
-			return Collections.emptyList();
+			return new String[0];
 		}
 	}
 
@@ -149,9 +147,9 @@ public class WEnvironment {
 	 * @see WEnvironment#getParameterValues(String name)
 	 */
 	public String getParameter(String name) {
-		List<String> values = this.getParameterValues(name);
-		if (!values.isEmpty()) {
-			return values.get(0);
+		String[] values = this.getParameterValues(name);
+		if (!(values.length == 0)) {
+			return values[0];
 		} else {
 			return null;
 		}
@@ -454,7 +452,7 @@ public class WEnvironment {
 	 * Example: <code>&quot;1.99.2&quot;</code>
 	 */
 	public static String getLibraryVersion() {
-		return "3.1.0";
+		return "3.1.2";
 	}
 
 	// public void libraryVersion(bad java simple ref int series, bad java
@@ -556,7 +554,7 @@ public class WEnvironment {
 	WEnvironment.UserAgent agent_;
 	double dpiScale_;
 	WEnvironment.ContentType contentType_;
-	Map<String, List<String>> parameters_;
+	Map<String, String[]> parameters_;
 	Map<String, String> cookies_;
 	Locale locale_;
 	String host_;
@@ -572,7 +570,7 @@ public class WEnvironment {
 	String internalPath_;
 
 	WEnvironment() {
-		this.parameters_ = new HashMap<String, List<String>>();
+		this.parameters_ = new HashMap<String, String[]>();
 		this.cookies_ = new HashMap<String, String>();
 		this.locale_ = new Locale("");
 		this.host_ = "";
@@ -699,7 +697,7 @@ public class WEnvironment {
 		this.doesCookies_ = false;
 		this.dpiScale_ = 1;
 		this.contentType_ = WEnvironment.ContentType.HTML4;
-		this.parameters_ = new HashMap<String, List<String>>();
+		this.parameters_ = new HashMap<String, String[]>();
 		this.cookies_ = new HashMap<String, String>();
 		this.locale_ = new Locale("");
 		this.host_ = "";

@@ -5,6 +5,7 @@
  */
 package eu.webtoolkit.jwt;
 
+import java.util.EnumSet;
 
 /**
  * An abstract base class for an MVC view that is rendered using a widget
@@ -93,7 +94,7 @@ public abstract class WViewWidget extends WWebWidget {
 		super.load();
 	}
 
-	void render() {
+	public void render(EnumSet<RenderFlag> flags) {
 		if (this.needContentsUpdate_) {
 			if (this.contents_ != null)
 				this.contents_.remove();
@@ -104,7 +105,7 @@ public abstract class WViewWidget extends WWebWidget {
 			this.setInline(this.contents_.isInline());
 			this.needContentsUpdate_ = false;
 		}
-		super.render();
+		super.render(flags);
 	}
 
 	public void refresh() {
@@ -121,18 +122,12 @@ public abstract class WViewWidget extends WWebWidget {
 	 */
 	protected abstract WWidget getRenderView();
 
-	/**
-	 * Creates a widget that renders the View.
-	 * <p>
-	 * This method must be reimplemented to return a widget that renders the
-	 * view. The returned widget will be deleted by WViewWidget.
-	 */
 	void updateDom(DomElement element, boolean all) {
 		WApplication app = WApplication.getInstance();
 		if (!app.getSession().getRenderer().isPreLearning()) {
 			if (all && !(this.contents_ != null)) {
 				this.needContentsUpdate_ = true;
-				this.render();
+				this.render(EnumSet.of(RenderFlag.RenderFull));
 			}
 			if (this.contents_ != null) {
 				boolean savedVisibleOnly = app.getSession().getRenderer()
@@ -153,34 +148,16 @@ public abstract class WViewWidget extends WWebWidget {
 		super.updateDom(element, all);
 	}
 
-	/**
-	 * Creates a widget that renders the View.
-	 * <p>
-	 * This method must be reimplemented to return a widget that renders the
-	 * view. The returned widget will be deleted by WViewWidget.
-	 */
 	void propagateRenderOk(boolean deep) {
 		this.needContentsUpdate_ = false;
 		super.propagateRenderOk(deep);
 	}
 
-	/**
-	 * Creates a widget that renders the View.
-	 * <p>
-	 * This method must be reimplemented to return a widget that renders the
-	 * view. The returned widget will be deleted by WViewWidget.
-	 */
 	DomElementType getDomElementType() {
 		return this.isInline() ? DomElementType.DomElement_SPAN
 				: DomElementType.DomElement_DIV;
 	}
 
-	/**
-	 * Creates a widget that renders the View.
-	 * <p>
-	 * This method must be reimplemented to return a widget that renders the
-	 * view. The returned widget will be deleted by WViewWidget.
-	 */
 	void doneRerender() {
 		this.setIgnoreChildRemoves(true);
 		if (this.contents_ != null)
@@ -189,18 +166,6 @@ public abstract class WViewWidget extends WWebWidget {
 		this.setIgnoreChildRemoves(false);
 	}
 
-	/**
-	 * Creates a widget that renders the View.
-	 * <p>
-	 * This method must be reimplemented to return a widget that renders the
-	 * view. The returned widget will be deleted by WViewWidget.
-	 */
 	private WWidget contents_;
-	/**
-	 * Creates a widget that renders the View.
-	 * <p>
-	 * This method must be reimplemented to return a widget that renders the
-	 * view. The returned widget will be deleted by WViewWidget.
-	 */
 	private boolean needContentsUpdate_;
 }

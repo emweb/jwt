@@ -53,7 +53,7 @@ public interface IXMLReader
     *		If no character could be read.
     */
    public char read()
-      throws IOException;
+      throws IOException, XMLParseException;
 
 
    /**

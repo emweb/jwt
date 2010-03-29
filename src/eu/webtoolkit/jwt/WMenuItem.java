@@ -95,6 +95,8 @@ public class WMenuItem extends WObject {
 			// this.implementStateless(WMenuItem.selectVisual,WMenuItem.undoSelectVisual);
 		} else {
 			this.contentsContainer_ = new WContainerWidget();
+			this.contentsContainer_.setJavaScriptMember("wtResize",
+					StdGridLayoutImpl.getChildrenResizeJS());
 			this.addChild(this.contents_);
 			;
 			this.contentsContainer_.resize(WLength.Auto, new WLength(100,
@@ -346,9 +348,19 @@ public class WMenuItem extends WObject {
 		}
 	}
 
-	protected void setFromInternalPath(String path) {
+	void setFromInternalPath(String path) {
 		if (this.menu_.contentsStack_.getCurrentWidget() != this.getContents()) {
 			this.menu_.select(this.menu_.indexOf(this), false);
+		}
+	}
+
+	protected void enableAjax() {
+		if (!this.isContentsLoaded()) {
+			this.contents_.enableAjax();
+		}
+		if (this.menu_.isInternalPathEnabled()) {
+			this.updateItemWidget(this.getItemWidget());
+			this.resetLearnedSlots();
 		}
 	}
 

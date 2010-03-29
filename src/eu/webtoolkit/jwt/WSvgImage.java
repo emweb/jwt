@@ -41,6 +41,9 @@ public class WSvgImage extends WResource implements WVectorImage {
 		this.currentBrush_ = new WBrush();
 		this.currentFont_ = new WFont();
 		this.currentPen_ = new WPen();
+		this.currentShadow_ = new WShadow();
+		this.currentShadowId_ = -1;
+		this.nextShadowId_ = 0;
 		this.pathTranslation_ = new WPointF();
 		this.shapes_ = new StringWriter();
 		this.fillStyle_ = "";
@@ -311,6 +314,9 @@ public class WSvgImage extends WResource implements WVectorImage {
 	private WBrush currentBrush_;
 	private WFont currentFont_;
 	private WPen currentPen_;
+	private WShadow currentShadow_;
+	private int currentShadowId_;
+	private int nextShadowId_;
 	private WPointF pathTranslation_;
 	private StringWriter shapes_;
 
@@ -336,6 +342,19 @@ public class WSvgImage extends WResource implements WVectorImage {
 		boolean fontChanged = !EnumUtils.mask(this.changeFlags_,
 				WPaintDevice.ChangeFlag.Font).isEmpty()
 				&& !this.currentFont_.equals(this.getPainter().getFont());
+		boolean shadowChanged = false;
+		if (!EnumUtils.mask(this.changeFlags_, WPaintDevice.ChangeFlag.Shadow)
+				.isEmpty()) {
+			if (this.currentShadowId_ == -1) {
+				shadowChanged = !this.getPainter().getShadow().isNone();
+			} else {
+				shadowChanged = !this.currentShadow_.equals(this.getPainter()
+						.getShadow());
+			}
+		}
+		if (shadowChanged) {
+			this.newClipPath_ = true;
+		}
 		if (!this.newClipPath_) {
 			if (!brushChanged && !penChanged) {
 				WTransform f = this.getPainter().getCombinedTransform();
@@ -377,7 +396,7 @@ public class WSvgImage extends WResource implements WVectorImage {
 		this.newGroup_ = false;
 		this.finishPath();
 		char[] buf = new char[30];
-		EscapeOStream tmp = new EscapeOStream();
+		StringBuilder tmp = new StringBuilder();
 		tmp.append("</g>");
 		this.currentTransform_.assign(this.getPainter().getCombinedTransform());
 		if (this.newClipPath_) {
@@ -387,7 +406,7 @@ public class WSvgImage extends WResource implements WVectorImage {
 				tmp.append("<defs><clipPath id=\"clip").append(
 						this.currentClipId_).append("\">");
 				this.shapes_.append(tmp.toString());
-				tmp.clear();
+				tmp.setLength(0);
 				this.drawPlainPath(this.shapes_, this.getPainter()
 						.getClipPath());
 				tmp.append('"');
@@ -406,9 +425,26 @@ public class WSvgImage extends WResource implements WVectorImage {
 				tmp.append("/></clipPath></defs>");
 			}
 			this.newClipPath_ = false;
+			if (shadowChanged) {
+				if (!this.getPainter().getShadow().isNone()) {
+					if (!this.getPainter().getShadow().equals(
+							this.currentShadow_)) {
+						this.currentShadow_ = this.getPainter().getShadow();
+						this.currentShadowId_ = this.createShadowFilter(tmp);
+					} else {
+						this.currentShadowId_ = this.nextShadowId_;
+					}
+				} else {
+					this.currentShadowId_ = -1;
+				}
+			}
 			tmp.append("<g");
 			if (this.getPainter().hasClipping()) {
 				tmp.append(this.getClipPath());
+			}
+			if (this.currentShadowId_ != -1) {
+				tmp.append(" filter=\"url(#f").append(this.currentShadowId_)
+						.append(")\"");
 			}
 			tmp.append('>');
 		}
@@ -469,7 +505,7 @@ public class WSvgImage extends WResource implements WVectorImage {
 	}
 
 	private String getStrokeStyle() {
-		EscapeOStream result = new EscapeOStream();
+		StringBuilder result = new StringBuilder();
 		String buf;
 		WPen pen = this.getPainter().getPen();
 		if (!((this.getPainter().getRenderHints() & WPainter.RenderHint.Antialiasing
@@ -541,6 +577,37 @@ public class WSvgImage extends WResource implements WVectorImage {
 		} else {
 			return "";
 		}
+	}
+
+	private int createShadowFilter(StringBuilder out) {
+		char[] buf = new char[30];
+		int result = ++this.nextShadowId_;
+		out
+				.append("<filter id=\"f")
+				.append(result)
+				.append(
+						"\" width=\"150%\" height=\"150%\"><feOffset result=\"offOut\" in=\"SourceAlpha\" dx=\"")
+				.append(MathUtils.round(this.currentShadow_.getOffsetX(), 3))
+				.append("\" dy=\"");
+		out.append(MathUtils.round(this.currentShadow_.getOffsetY(), 3))
+				.append("\" />");
+		out
+				.append("<feColorMatrix result=\"colorOut\" in=\"offOut\" type=\"matrix\" values=\"");
+		double r = this.currentShadow_.getColor().getRed() / 255.;
+		double g = this.currentShadow_.getColor().getGreen() / 255.;
+		double b = this.currentShadow_.getColor().getBlue() / 255.;
+		double a = this.currentShadow_.getColor().getAlpha() / 255.;
+		out.append("0 0 0 ").append(MathUtils.round(r, 3)).append(" 0 ");
+		out.append("0 0 0 ").append(MathUtils.round(g, 3)).append(" 0 ");
+		out.append("0 0 0 ").append(MathUtils.round(b, 3)).append(" 0 ");
+		out.append("0 0 0 ").append(MathUtils.round(a, 3)).append(" 0\"/>");
+		out
+				.append(
+						"<feGaussianBlur result=\"blurOut\" in=\"colorOut\" stdDeviation=\"")
+				.append(MathUtils.round(this.currentShadow_.getBlur() / 2, 3))
+				.append(
+						"\" /><feBlend in=\"SourceGraphic\" in2=\"blurOut\" mode=\"normal\" /></filter>");
+		return result;
 	}
 
 	private String fillStyle_;

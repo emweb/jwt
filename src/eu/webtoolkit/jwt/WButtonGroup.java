@@ -283,8 +283,8 @@ public class WButtonGroup extends WObject {
 	}
 
 	void setFormData(WObject.FormData formData) {
-		if (!formData.values.isEmpty()) {
-			String value = formData.values.get(0);
+		if (!(formData.values.length == 0)) {
+			String value = formData.values[0];
 			for (int i = 0; i < this.buttons_.size(); ++i) {
 				if (value.equals(this.buttons_.get(i).button.getId())) {
 					if (this.buttons_.get(i).button.stateChanged_) {

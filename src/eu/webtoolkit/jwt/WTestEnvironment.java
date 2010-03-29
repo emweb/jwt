@@ -74,7 +74,7 @@ public class WTestEnvironment extends WEnvironment {
 	 * 
 	 * @see WEnvironment#getParameterMap()
 	 */
-	public void setParameterMap(Map<String, List<String>> parameters) {
+	public void setParameterMap(Map<String, String[]> parameters) {
 		this.parameters_ = parameters;
 	}
 
