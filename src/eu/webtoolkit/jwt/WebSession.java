@@ -1091,7 +1091,7 @@ class WebSession {
 			if (!(signalE != null)) {
 				return;
 			}
-			if (i == handler.nextSignal) {
+			if (i == 0) {
 				this.renderer_.saveChanges();
 			}
 			this.propagateFormValues(e, se);
