@@ -659,6 +659,7 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 				brushChanged = true;
 				shadowChanged = true;
 				fontChanged = true;
+				this.currentTextHAlign_ = this.currentTextVAlign_ = AlignmentFlag.AlignLength;
 			}
 		}
 		if (penChanged || brushChanged || shadowChanged) {

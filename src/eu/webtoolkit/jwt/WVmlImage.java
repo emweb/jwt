@@ -613,16 +613,16 @@ public class WVmlImage implements WVectorImage {
 	private String getCreateShadowFilter() {
 		char[] buf = new char[30];
 		StringBuilder filter = new StringBuilder();
+		double r = Math.sqrt(2 * this.currentShadow_.getBlur());
 		filter.append("left: ").append(
-				MathUtils.round(this.currentShadow_.getOffsetX(), 0)).append(
-				';');
+				myzround(this.currentShadow_.getOffsetX() - r / 2 - 1)).append(
+				"px;");
 		filter.append("top: ").append(
-				MathUtils.round(this.currentShadow_.getOffsetY(), 0)).append(
-				";z-index:-10;");
+				myzround(this.currentShadow_.getOffsetY() - r / 2 - 1)).append(
+				"px;z-index:-10;");
 		filter
 				.append("filter:progid:DXImageTransform.Microsoft.Blur(makeShadow=1,");
-		filter.append("pixelradius=").append(
-				MathUtils.round(this.currentShadow_.getBlur() * 0.66, 1));
+		filter.append("pixelradius=").append(MathUtils.round(r, 2));
 		filter.append(",shadowOpacity=").append(
 				MathUtils.round(
 						this.currentShadow_.getColor().getAlpha() / 255., 2))
