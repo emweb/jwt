@@ -157,6 +157,28 @@ public class WPanel extends WCompositeWidget {
 	}
 
 	/**
+	 * Returns the title bar widget.
+	 * <p>
+	 * The title bar widget contains the collapse/expand icon (if the panel
+	 * {@link WPanel#isCollapsible() isCollapsible()}), and the title text (if a
+	 * title was set using {@link WPanel#setTitle(CharSequence title)
+	 * setTitle()}). You can access the title bar widget to customize the
+	 * contents of the title.
+	 * <p>
+	 * The method returns <code>null</code> if {@link WPanel#isTitleBar()
+	 * isTitleBar()} is <code>false</code>. You need to call
+	 * {@link WPanel#setTitleBar(boolean enable) setTitleBar()} first.
+	 * <p>
+	 * 
+	 * @see WPanel#setTitleBar(boolean enable)
+	 */
+	public WContainerWidget getTitleBarWidget() {
+		return ((this.impl_.resolveWidget("titlebar")) instanceof WContainerWidget ? (WContainerWidget) (this.impl_
+				.resolveWidget("titlebar"))
+				: null);
+	}
+
+	/**
 	 * Makes the panel collapsible.
 	 * <p>
 	 * When <code>on</code> is <code>true</code>, a collapse/expand icon is
@@ -406,12 +428,6 @@ public class WPanel extends WCompositeWidget {
 	private WContainerWidget getCentralArea() {
 		return ((this.impl_.resolveWidget("contents")) instanceof WContainerWidget ? (WContainerWidget) (this.impl_
 				.resolveWidget("contents"))
-				: null);
-	}
-
-	private WContainerWidget getTitleBarWidget() {
-		return ((this.impl_.resolveWidget("titlebar")) instanceof WContainerWidget ? (WContainerWidget) (this.impl_
-				.resolveWidget("titlebar"))
 				: null);
 	}
 }

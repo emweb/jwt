@@ -97,7 +97,7 @@ public class WSortFilterProxyModel extends WAbstractProxyModel {
 		this.sortKeyColumn_ = -1;
 		this.sortRole_ = ItemDataRole.DisplayRole;
 		this.sortOrder_ = SortOrder.AscendingOrder;
-		this.dynamic_ = 0 != 0;
+		this.dynamic_ = false;
 		this.modelConnections_ = new ArrayList<AbstractSignal.Connection>();
 		this.mappedIndexes_ = new HashMap<WModelIndex, WSortFilterProxyModel.Item>();
 	}
@@ -300,7 +300,7 @@ public class WSortFilterProxyModel extends WAbstractProxyModel {
 		} else {
 			this.regex_ = Pattern.compile(pattern);
 		}
-		if (this.getSourceModel() != null && this.dynamic_) {
+		if (this.getSourceModel() != null) {
 			this.layoutAboutToBeChanged().trigger();
 			this.resetMappings();
 			this.layoutChanged().trigger();

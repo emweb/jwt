@@ -188,7 +188,14 @@ public class WEnvironment {
 	}
 
 	/**
-	 * Returns a cgi environment header value.
+	 * Returns a header value.
+	 * <p>
+	 * Returns a header value, or an empty string if the header was present.
+	 * <p>
+	 * <p>
+	 * <i><b>Note: </b>Currently, the header name is case sensitive, although
+	 * this should not be the case according to RFC2616 </i>
+	 * </p>
 	 */
 	public String getHeaderValue(String name) {
 		return this.session_.getCgiHeader(name);

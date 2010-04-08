@@ -17,7 +17,6 @@ import eu.webtoolkit.jwt.WContainerWidget;
 import eu.webtoolkit.jwt.WLength;
 import eu.webtoolkit.jwt.WModelIndex;
 import eu.webtoolkit.jwt.WPaintDevice;
-import eu.webtoolkit.jwt.WPaintedWidget;
 import eu.webtoolkit.jwt.WPainter;
 import eu.webtoolkit.jwt.WPainterPath;
 import eu.webtoolkit.jwt.WPen;
@@ -710,7 +709,6 @@ public class WCartesianChart extends WAbstractChart {
 
 	private void init() {
 		this.setPalette(new WStandardPalette(WStandardPalette.Flavour.Muted));
-		this.setPreferredMethod(WPaintedWidget.Method.InlineSvgVml);
 		for (int i = 0; i < 3; ++i) {
 			this.axes_[i] = new WAxis();
 		}
