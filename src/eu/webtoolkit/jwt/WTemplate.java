@@ -47,10 +47,10 @@ import java.util.Set;
  * WString userName = ...;
  * 
  *  WTemplate *t = new WTemplate();
- *  t.setTemplateText(&quot;&lt;div&gt; How old are you, ${friend} ? ${age-input} &lt;/div&gt;&quot;);
+ *  t.setTemplateText("<div> How old are you, ${friend} ? ${age-input} </div>");
  * 
- *  t.bindString(&quot;friend&quot;, userName);
- *  t.bindWidget(&quot;age-input&quot;, ageEdit_ = new WLineEdit());
+ *  t.bindString("friend", userName);
+ *  t.bindWidget("age-input", ageEdit_ = new WLineEdit());
  * </pre>
  * 
  * </blockquote>
@@ -358,7 +358,7 @@ public class WTemplate extends WInteractWidget {
 	 *      if (Widget *known = WTemplate::resolveWidget(varName)) {
 	 *        return known;
 	 *      } else {
-	 *        if (varName == &quot;age-input&quot;) {
+	 *        if (varName == "age-input") {
 	 *          WWidget *w = new WLineEdit(); // widget only created when used
 	 *          bind(varName, w);
 	 *          return w;

@@ -75,6 +75,7 @@ import java.util.Set;
  * 
  * .Wt-cal td          : Day cell
  * .Wt-cal-oom         : Out-of-month day
+ * .Wt-cal-oom         : Out-of-range day (day &lt; bottom or day &gt; top)
  * .Wt-cal-sel         : Selected day
  * .Wt-cal-now         : Today day
  * </pre>
@@ -121,6 +122,8 @@ public class WCalendar extends WCompositeWidget {
 		this.activated_ = new Signal1<WDate>(this);
 		this.clicked_ = new Signal1<WDate>(this);
 		this.currentPageChanged_ = new Signal2<Integer, Integer>(this);
+		this.bottom_ = null;
+		this.top_ = null;
 		this.create();
 	}
 
@@ -149,6 +152,8 @@ public class WCalendar extends WCompositeWidget {
 		this.activated_ = new Signal1<WDate>(this);
 		this.clicked_ = new Signal1<WDate>(this);
 		this.currentPageChanged_ = new Signal2<Integer, Integer>(this);
+		this.bottom_ = null;
+		this.top_ = null;
 		this.create();
 	}
 
@@ -529,6 +534,45 @@ public class WCalendar extends WCompositeWidget {
 						: WCalendar.HorizontalHeaderFormat.SingleLetterDayNames);
 	}
 
+	/**
+	 * Sets the bottom of the valid date range.
+	 * <p>
+	 * The default bottom is null.
+	 */
+	public void setBottom(WDate bottom) {
+		if (!(this.bottom_ == bottom || (this.bottom_ != null && this.bottom_
+				.equals(bottom)))) {
+			this.bottom_ = bottom;
+			this.renderMonth();
+		}
+	}
+
+	/**
+	 * Returns the bottom date of the valid range.
+	 */
+	public WDate getBottom() {
+		return this.bottom_;
+	}
+
+	/**
+	 * Sets the top of the valid date range.
+	 * <p>
+	 * The default top is null.
+	 */
+	public void setTop(WDate top) {
+		if (!(this.top_ == top || (this.top_ != null && this.top_.equals(top)))) {
+			this.top_ = top;
+			this.renderMonth();
+		}
+	}
+
+	/**
+	 * Returns the top date of the valid range.
+	 */
+	public WDate getTop() {
+		return this.top_;
+	}
+
 	protected void render(EnumSet<RenderFlag> flags) {
 		if (this.needRenderMonth_) {
 			boolean create = this.cellClickMapper_ == null;
@@ -615,8 +659,13 @@ public class WCalendar extends WCompositeWidget {
 		buf = String.valueOf(date.getDay());
 		t.setText(new WString(buf));
 		String styleClass = "";
-		if (date.getMonth() != this.getCurrentMonth()) {
-			styleClass += " Wt-cal-oom";
+		if (!(this.bottom_ == null) && date.before(this.bottom_)
+				|| !(this.top_ == null) && date.after(this.top_)) {
+			styleClass += " Wt-cal-oor";
+		} else {
+			if (date.getMonth() != this.getCurrentMonth()) {
+				styleClass += " Wt-cal-oom";
+			}
 		}
 		if (this.isSelected(date)) {
 			styleClass += " Wt-cal-sel";
@@ -657,6 +706,8 @@ public class WCalendar extends WCompositeWidget {
 	private Signal1<WDate> activated_;
 	private Signal1<WDate> clicked_;
 	private Signal2<Integer, Integer> currentPageChanged_;
+	private WDate bottom_;
+	private WDate top_;
 
 	static class Coordinate {
 		public int i;

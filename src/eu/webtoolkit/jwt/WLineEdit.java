@@ -160,6 +160,7 @@ public class WLineEdit extends WFormWidget {
 			this.flags_.set(BIT_CONTENT_CHANGED);
 			this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyIEMobile));
 			if (this.getValidator() != null) {
+				this.setStyleClass("undo-current-state");
 				this
 						.setStyleClass(this.validate() == WValidator.State.Valid ? ""
 								: "Wt-invalid");

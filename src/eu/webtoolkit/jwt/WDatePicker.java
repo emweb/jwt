@@ -265,6 +265,62 @@ public class WDatePicker extends WCompositeWidget {
 		this.displayWidget_.setHidden(hidden);
 	}
 
+	/**
+	 * Sets the bottom of the valid date range in the picker&apos;s
+	 * {@link WDateValidator}.
+	 */
+	public void setBottom(WDate bottom) {
+		WDateValidator dv = ((this.forEdit_.getValidator()) instanceof WDateValidator ? (WDateValidator) (this.forEdit_
+				.getValidator())
+				: null);
+		if (dv != null) {
+			dv.setBottom(bottom);
+			this.calendar_.setBottom(bottom);
+		}
+	}
+
+	/**
+	 * Returns the bottom date of the valid range.
+	 */
+	public WDate getBottom() {
+		WDateValidator dv = ((this.forEdit_.getValidator()) instanceof WDateValidator ? (WDateValidator) (this.forEdit_
+				.getValidator())
+				: null);
+		if (dv != null) {
+			return dv.getBottom();
+		} else {
+			return null;
+		}
+	}
+
+	/**
+	 * Sets the top of the valid date range in the picker&apos;s
+	 * {@link WDateValidator}.
+	 */
+	public void setTop(WDate top) {
+		WDateValidator dv = ((this.forEdit_.getValidator()) instanceof WDateValidator ? (WDateValidator) (this.forEdit_
+				.getValidator())
+				: null);
+		if (dv != null) {
+			dv.setTop(top);
+			this.calendar_.setTop(top);
+		}
+	}
+
+	/**
+	 * Returns the top date of the valid range.
+	 */
+	public WDate getTop() {
+		WDateValidator dv = ((this.forEdit_.getValidator()) instanceof WDateValidator ? (WDateValidator) (this.forEdit_
+				.getValidator())
+				: null);
+		if (dv != null) {
+			return dv.getTop();
+		} else {
+			return null;
+		}
+	}
+
 	private String format_;
 	private WInteractWidget displayWidget_;
 	private WLineEdit forEdit_;

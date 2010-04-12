@@ -1028,7 +1028,7 @@ public class WApplication extends WObject {
 	 *    try {
 	 *      // We now have exclusive access to the application:
 	 *      // we can safely modify the widget tree for example.
-	 *      app.getRoot().addWidget(new WText(&quot;Something happened!&quot;));
+	 *      app.getRoot().addWidget(new WText("Something happened!"));
 	 *   
 	 *      // Push the changes to the browser
 	 *      app.triggerUpdate();

@@ -139,6 +139,7 @@ public class WebResponse extends HttpServletResponseWrapper {
 	public void flush() {
 		try {
 			outWriter.flush();
+			getOutputStream().flush();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
