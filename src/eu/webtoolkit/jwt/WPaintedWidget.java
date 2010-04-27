@@ -483,7 +483,7 @@ public abstract class WPaintedWidget extends WInteractWidget {
 		if (!(this.areaImage_ != null)) {
 			this.areaImage_ = new WImage(WApplication.getInstance()
 					.getOnePixelGifUrl());
-			this.areaImage_.setParent(this);
+			this.areaImage_.setParentWidget(this);
 			if (this.getPositionScheme() == PositionScheme.Static) {
 				this.setPositionScheme(PositionScheme.Relative);
 			}

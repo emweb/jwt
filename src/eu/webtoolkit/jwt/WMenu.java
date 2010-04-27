@@ -12,13 +12,18 @@ import java.util.List;
  * A widget that shows a menu of options
  * <p>
  * 
- * The WMenu widget offers menu navigation in conjunction with a
- * {@link WStackedWidget}, where different &apos;contents&apos; are stacked upon
- * each other. Each choice in the menu (which is implemented as a
+ * The WMenu widget offers menu navigation.
+ * <p>
+ * Typically, a menu is used in conjunction with a {@link WStackedWidget} (but
+ * can be used without too), where different &apos;contents&apos; are stacked
+ * upon each other. Each choice in the menu (which is implemented as a
  * {@link WMenuItem}) corresponds to a tab in the contents stack. The contents
  * stack may contain other items, and could be shared with other {@link WMenu}
- * instances. (the old restriction of a dedicated contents stack has been
- * removed since JWt 2.2.1).
+ * instances.
+ * <p>
+ * When used without a contents stack, you can react to menu item selection
+ * using the {@link WMenu#itemSelected() itemSelected()} signal, to implement
+ * some custom handling of item selection.
  * <p>
  * Usage example:
  * <p>
@@ -99,6 +104,38 @@ public class WMenu extends WCompositeWidget {
 	/**
 	 * Creates a new menu.
 	 * <p>
+	 * Construct a menu with given <code>orientation</code>. The menu is not
+	 * associated with a contents stack, and thus you will want to react to the
+	 * {@link WMenu#itemSelected() itemSelected()} signal to react to menu
+	 * changes.
+	 */
+	public WMenu(Orientation orientation, WContainerWidget parent) {
+		super(parent);
+		this.contentsStack_ = null;
+		this.orientation_ = orientation;
+		this.internalPathEnabled_ = false;
+		this.basePath_ = "";
+		this.previousInternalPath_ = "";
+		this.itemSelected_ = new Signal1<WMenuItem>(this);
+		this.itemSelectRendered_ = new Signal1<WMenuItem>(this);
+		this.items_ = new ArrayList<WMenuItem>();
+		this.current_ = -1;
+		this.setRenderAsList(false);
+	}
+
+	/**
+	 * Creates a new menu.
+	 * <p>
+	 * Calls {@link #WMenu(Orientation orientation, WContainerWidget parent)
+	 * this(orientation, (WContainerWidget)null)}
+	 */
+	public WMenu(Orientation orientation) {
+		this(orientation, (WContainerWidget) null);
+	}
+
+	/**
+	 * Creates a new menu.
+	 * <p>
 	 * Construct a menu to manage the widgets in <code>contentsStack</code>, and
 	 * sets the menu <code>orientation</code>.
 	 * <p>
@@ -149,8 +186,13 @@ public class WMenu extends WCompositeWidget {
 	 * Adds a menu item with given <code>contents</code>, which is added to the
 	 * menu&apos;s associated contents stack.
 	 * <p>
-	 * <code>contents</code> may be <code>null</code>, in which case no contents
-	 * in the contents stack is associated with the menu item.
+	 * <code>contents</code> may be <code>null</code> for two reasons:
+	 * <ul>
+	 * <li>if the menu is not associated with a contents stack, then you cannot
+	 * associate a menu item with a contents widget</li>
+	 * <li>or, you may have one or more items which which are not associated
+	 * with a contents widget in the contents stack.</li>
+	 * </ul>
 	 * <p>
 	 * Returns the corresponding {@link WMenuItem}.
 	 * <p>
@@ -207,19 +249,21 @@ public class WMenu extends WCompositeWidget {
 		for (int i = 0; i < this.items_.size(); ++i) {
 			this.items_.get(i).resetLearnedSlots();
 		}
-		WWidget contents = item.getContents();
-		if (contents != null) {
-			this.contentsStack_.addWidget(contents);
-		}
-		if (this.contentsStack_.getCount() == 1) {
-			this.current_ = 0;
+		if (this.contentsStack_ != null) {
+			WWidget contents = item.getContents();
 			if (contents != null) {
-				this.contentsStack_.setCurrentWidget(contents);
+				this.contentsStack_.addWidget(contents);
 			}
-			this.items_.get(0).renderSelected(true);
-			this.items_.get(0).loadContents();
-		} else {
-			item.renderSelected(false);
+			if (this.contentsStack_.getCount() == 1) {
+				this.current_ = 0;
+				if (contents != null) {
+					this.contentsStack_.setCurrentWidget(contents);
+				}
+				this.items_.get(0).renderSelected(true);
+				this.items_.get(0).loadContents();
+			} else {
+				item.renderSelected(false);
+			}
 		}
 		if (this.internalPathEnabled_) {
 			WApplication app = WApplication.getInstance();
@@ -257,7 +301,9 @@ public class WMenu extends WCompositeWidget {
 								"WMenu::removeItem() only implemented when renderAsList == true")
 						.append('\n');
 			}
-			this.contentsStack_.removeWidget(item.getContents());
+			if (this.contentsStack_ != null && item.getContents() != null) {
+				this.contentsStack_.removeWidget(item.getContents());
+			}
 			item.setMenu((WMenu) null);
 			if (itemIndex <= this.current_ && this.current_ > 0) {
 				--this.current_;
@@ -509,6 +555,13 @@ public class WMenu extends WCompositeWidget {
 		return this.basePath_;
 	}
 
+	/**
+	 * Returns the contents stack associated with the menu.
+	 */
+	public WStackedWidget getContentsStack() {
+		return this.contentsStack_;
+	}
+
 	protected void enableAjax() {
 		for (int i = 0; i < this.items_.size(); ++i) {
 			WMenuItem item = this.items_.get(i);
@@ -560,7 +613,9 @@ public class WMenu extends WCompositeWidget {
 
 	private void selectVisual(int index, boolean changePath) {
 		this.previousCurrent_ = this.current_;
-		this.previousStackIndex_ = this.contentsStack_.getCurrentIndex();
+		if (this.contentsStack_ != null) {
+			this.previousStackIndex_ = this.contentsStack_.getCurrentIndex();
+		}
 		this.current_ = index;
 		if (this.internalPathEnabled_ && this.current_ != -1) {
 			WApplication app = WApplication.getInstance();
@@ -577,9 +632,11 @@ public class WMenu extends WCompositeWidget {
 		if (index == -1) {
 			return;
 		}
-		WWidget contents = this.items_.get(this.current_).getContents();
-		if (contents != null) {
-			this.contentsStack_.setCurrentWidget(contents);
+		if (this.contentsStack_ != null) {
+			WWidget contents = this.items_.get(this.current_).getContents();
+			if (contents != null) {
+				this.contentsStack_.setCurrentWidget(contents);
+			}
 		}
 		this.itemSelectRendered_.trigger(this.items_.get(this.current_));
 	}
@@ -591,7 +648,9 @@ public class WMenu extends WCompositeWidget {
 		if (this.internalPathEnabled_) {
 			WApplication.getInstance().setInternalPath(prevPath);
 		}
-		this.contentsStack_.setCurrentIndex(prevStackIndex);
+		if (this.contentsStack_ != null) {
+			this.contentsStack_.setCurrentIndex(prevStackIndex);
+		}
 	}
 
 	void internalPathChanged(String path) {

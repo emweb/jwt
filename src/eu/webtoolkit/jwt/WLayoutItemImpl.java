@@ -35,7 +35,7 @@ public interface WLayoutItemImpl {
 	 * Returns the widget for which this layout item participates in layout
 	 * management.
 	 */
-	public WWidget getParent();
+	public WWidget getParentWidget();
 
 	/**
 	 * Provides a hint that can aid in layout strategy / algorithm.

@@ -421,6 +421,9 @@ class WebSession {
 								this.app_.notify(new WEvent(handler,
 										WebRenderer.ResponseType.Script));
 								this.setLoaded();
+								break;
+							default:
+								assert false;
 							}
 							break;
 						}

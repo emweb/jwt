@@ -294,7 +294,7 @@ public class WContainerWidget extends WInteractWidget {
 			if (widget.getParent() != this) {
 				WApplication.getInstance().log("warn").append(
 						"WContainerWidget::addWidget(): reparenting widget");
-				widget.setParent((WWidget) null);
+				widget.setParentWidget((WWidget) null);
 			} else {
 				return;
 			}
@@ -309,7 +309,7 @@ public class WContainerWidget extends WInteractWidget {
 		this.transientImpl_.addedChildren_.add(widget);
 		this.flags_.set(BIT_ADJUST_CHILDREN_ALIGN);
 		this.repaint(EnumSet.of(RepaintFlag.RepaintInnerHtml));
-		widget.setParent(this);
+		widget.setParentWidget(this);
 	}
 
 	/**
@@ -334,7 +334,7 @@ public class WContainerWidget extends WInteractWidget {
 			if (widget.getParent() != this) {
 				WApplication.getInstance().log("warn").append(
 						"WContainerWidget::insertWidget(): reparenting widget");
-				widget.setParent((WWidget) null);
+				widget.setParentWidget((WWidget) null);
 			} else {
 				return;
 			}
@@ -350,7 +350,7 @@ public class WContainerWidget extends WInteractWidget {
 			this.transientImpl_ = new WWebWidget.TransientImpl();
 		}
 		this.transientImpl_.addedChildren_.add(widget);
-		widget.setParent((WObject) this);
+		widget.setParent(this);
 		if (this.isLoaded()) {
 			this.doLoad(widget);
 		}
@@ -382,7 +382,7 @@ public class WContainerWidget extends WInteractWidget {
 	 * widget !
 	 */
 	public void removeWidget(WWidget widget) {
-		widget.setParent((WWidget) null);
+		widget.setParentWidget((WWidget) null);
 		this.repaint(EnumSet.of(RepaintFlag.RepaintInnerHtml));
 	}
 

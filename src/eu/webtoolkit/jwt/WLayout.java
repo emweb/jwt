@@ -276,7 +276,7 @@ public abstract class WLayout extends WObject implements WLayoutItem {
 		}
 		item.setParentLayout(this);
 		if (this.impl_ != null) {
-			item.setParent(this.impl_.getParent());
+			item.setParentWidget(this.impl_.getParentWidget());
 			this.impl_.updateAddItem(item);
 		}
 	}
@@ -319,13 +319,16 @@ public abstract class WLayout extends WObject implements WLayoutItem {
 	private WLayoutItemImpl impl_;
 	private List<WLayout.Hint> hints_;
 
-	public void setParent(WWidget parent) {
+	public void setParentWidget(WWidget parent) {
+		if (!(this.getParent() != null)) {
+			this.setParent(parent);
+		}
 		assert !(this.impl_ != null);
 		int c = this.getCount();
 		for (int i = 0; i < c; ++i) {
 			WLayoutItem item = this.getItemAt(i);
 			if (item != null) {
-				item.setParent(parent);
+				item.setParentWidget(parent);
 			}
 		}
 		this.impl_ = parent.createLayoutItemImpl(this);

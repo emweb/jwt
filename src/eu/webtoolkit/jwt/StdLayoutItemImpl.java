@@ -22,7 +22,7 @@ abstract class StdLayoutItemImpl extends WObject implements WLayoutItemImpl {
 
 	public abstract WLayoutItem getLayoutItem();
 
-	public WWidget getParent() {
+	public WWidget getParentWidget() {
 		return this.getContainer();
 	}
 

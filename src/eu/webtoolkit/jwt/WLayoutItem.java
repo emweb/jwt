@@ -50,7 +50,7 @@ public interface WLayoutItem {
 	/**
 	 * Internal method.
 	 */
-	public void setParent(WWidget parent);
+	public void setParentWidget(WWidget parent);
 
 	/**
 	 * Internal method.

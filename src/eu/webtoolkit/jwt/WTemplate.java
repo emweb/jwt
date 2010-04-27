@@ -190,7 +190,7 @@ public class WTemplate extends WInteractWidget {
 			}
 		}
 		if (widget != null) {
-			widget.setParent(this);
+			widget.setParentWidget(this);
 			this.widgets_.put(varName, widget);
 			this.strings_.remove(varName);
 		} else {
@@ -296,7 +296,7 @@ public class WTemplate extends WInteractWidget {
 		} else {
 			WWidget w = this.resolveWidget(varName);
 			if (w != null) {
-				w.setParent(this);
+				w.setParentWidget(this);
 				if (this.previouslyRendered_ != null
 						&& this.previouslyRendered_.contains(w) != false) {
 					result.append("<span id=\"").append(w.getId()).append(

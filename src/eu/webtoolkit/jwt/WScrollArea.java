@@ -99,7 +99,7 @@ public class WScrollArea extends WWebWidget {
 		this.widgetChanged_ = true;
 		this.repaint(EnumSet.of(RepaintFlag.RepaintInnerHtml));
 		if (widget != null) {
-			widget.setParent(this);
+			widget.setParentWidget(this);
 		}
 	}
 
@@ -111,7 +111,7 @@ public class WScrollArea extends WWebWidget {
 		this.widget_ = null;
 		this.setWidget((WWidget) null);
 		if (result != null) {
-			result.setParent((WWidget) null);
+			result.setParentWidget((WWidget) null);
 		}
 		return result;
 	}

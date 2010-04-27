@@ -1278,7 +1278,7 @@ public abstract class WWidget extends WObject {
 		setHideWithOffsets(true);
 	}
 
-	void setParent(WWidget p) {
+	protected void setParentWidget(WWidget p) {
 		if (p == this.getParent()) {
 			return;
 		}
@@ -1305,7 +1305,7 @@ public abstract class WWidget extends WObject {
 	}
 
 	void setLayout(WLayout layout) {
-		layout.setParent(this);
+		layout.setParentWidget(this);
 	}
 
 	void addEventSignal(AbstractEventSignal s) {

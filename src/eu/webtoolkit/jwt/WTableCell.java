@@ -120,7 +120,7 @@ public class WTableCell extends WContainerWidget {
 		this.spanChanged_ = false;
 		this.contentAlignment_ = EnumSet.copyOf(EnumSet.of(
 				AlignmentFlag.AlignLeft, AlignmentFlag.AlignTop));
-		this.setParent(row.getTable());
+		this.setParentWidget(row.getTable());
 	}
 
 	private WTableRow row_;

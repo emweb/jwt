@@ -63,7 +63,7 @@ public abstract class WWebWidget extends WWidget {
 
 	public void remove() {
 		this.beingDeleted();
-		this.setParent((WWidget) null);
+		this.setParentWidget((WWidget) null);
 		;
 		;
 		if (this.children_ != null) {
@@ -1366,7 +1366,7 @@ public abstract class WWebWidget extends WWidget {
 			return;
 		}
 		if (child.getParent() != null) {
-			child.setParent((WWidget) null);
+			child.setParentWidget((WWidget) null);
 			WApplication.getInstance().log("warn").append(
 					"WWebWidget::addChild(): reparenting child");
 		}
@@ -1374,7 +1374,7 @@ public abstract class WWebWidget extends WWidget {
 			this.children_ = new ArrayList<WWidget>();
 		}
 		this.children_.add(child);
-		child.setParent((WObject) this);
+		child.setParent(this);
 		WWebWidget ww = child.getWebWidget();
 		if (ww != null) {
 			ww.gotParent();

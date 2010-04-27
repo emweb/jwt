@@ -54,7 +54,7 @@ public class WCompositeWidget extends WWidget {
 	}
 
 	public void remove() {
-		this.setParent((WWidget) null);
+		this.setParentWidget((WWidget) null);
 		if (this.impl_ != null)
 			this.impl_.remove();
 		super.remove();
@@ -312,7 +312,7 @@ public class WCompositeWidget extends WWidget {
 		if (child != this.impl_) {
 			this.impl_.addChild(child);
 		} else {
-			this.impl_.setParent((WObject) this);
+			this.impl_.setParent(this);
 		}
 	}
 
@@ -363,7 +363,7 @@ public class WCompositeWidget extends WWidget {
 				this.impl_.load();
 			}
 		}
-		widget.setParent(this);
+		widget.setParentWidget(this);
 	}
 
 	void getSDomChanges(List<DomElement> result, WApplication app) {

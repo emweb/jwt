@@ -51,7 +51,7 @@ public class WWidgetItem implements WLayoutItem {
 	private WLayout parentLayout_;
 	private WLayoutItemImpl impl_;
 
-	public void setParent(WWidget parent) {
+	public void setParentWidget(WWidget parent) {
 		assert !(this.impl_ != null);
 		this.impl_ = parent.createLayoutItemImpl(this);
 	}

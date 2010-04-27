@@ -1089,6 +1089,8 @@ public class WAxis {
 				daysRange = (double) ((s.renderMaximum - s.renderMinimum) / (60.0 * 60.0 * 24));
 				dt = new WDate(new Date((long) (long) s.renderMinimum));
 				break;
+			default:
+				assert false;
 			}
 			double numLabels = this.calcAutoNumLabels(s);
 			double days = daysRange / numLabels;

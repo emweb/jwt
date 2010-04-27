@@ -88,7 +88,7 @@ public class WTextEdit extends WTextArea {
 	 * Destructor.
 	 */
 	public void remove() {
-		this.setParent((WWidget) null);
+		this.setParentWidget((WWidget) null);
 		super.remove();
 	}
 
