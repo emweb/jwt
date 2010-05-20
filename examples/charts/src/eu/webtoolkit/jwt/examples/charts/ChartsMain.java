@@ -32,6 +32,8 @@ public class ChartsMain extends WtServlet {
         app.getRoot().setPadding(new WLength(10));
         app.getRoot().resize(WLength.Auto, WLength.Auto);
 
+        app.setCssTheme("polished");
+        
         new ChartsExample(app.getRoot());
 
         app.useStyleSheet("style/charts.css");

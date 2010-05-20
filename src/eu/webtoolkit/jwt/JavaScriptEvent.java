@@ -21,7 +21,7 @@ class JavaScriptEvent {
 	public int widgetY;
 	public int dragDX;
 	public int dragDY;
-	public boolean right;
+	public int button;
 	public int keyCode;
 	public int charCode;
 	public EnumSet<KeyboardModifier> modifiers;
@@ -62,9 +62,7 @@ class JavaScriptEvent {
 		}
 		this.keyCode = parseIntParameter(request, se + "keyCode", 0);
 		this.charCode = parseIntParameter(request, se + "charCode", 0);
-		String p;
-		this.right = (p = request.getParameter(se + "right")) != null ? p
-				.equals("true") : false;
+		this.button = parseIntParameter(request, se + "button", 0);
 		this.scrollX = parseIntParameter(request, se + "scrollX", 0);
 		this.scrollY = parseIntParameter(request, se + "scrollY", 0);
 		this.viewportWidth = parseIntParameter(request, se + "width", 0);

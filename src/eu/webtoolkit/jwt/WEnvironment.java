@@ -52,7 +52,7 @@ public class WEnvironment {
 	enum UserAgent {
 		Unknown(0), IEMobile(1000), IE6(1001), IE7(1002), IE8(1003), Opera(3000), WebKit(
 				4000), Safari(4100), Safari3(4103), Safari4(4104), Chrome0(4200), Chrome1(
-				4201), Chrome2(4202), Chrome3(4203), Chrome4(4204), Konqueror(
+				4201), Chrome2(4202), Chrome3(4203), Chrome4(4204), Arora(4300), Konqueror(
 				5000), Gecko(6000), Firefox(6100), Firefox3_0(6101), Firefox3_1(
 				6102), Firefox3_1b(6103), Firefox3_5(6104), BotAgent(10000);
 
@@ -95,7 +95,7 @@ public class WEnvironment {
 	 * Wt&apos;s JavaScript scope.
 	 */
 	public static String getJavaScriptWtScope() {
-		return "Wt3_1_2";
+		return "Wt3_1_3";
 	}
 
 	/**
@@ -459,7 +459,7 @@ public class WEnvironment {
 	 * Example: <code>&quot;1.99.2&quot;</code>
 	 */
 	public static String getLibraryVersion() {
-		return "3.1.2";
+		return "3.1.3";
 	}
 
 	// public void libraryVersion(bad java simple ref int series, bad java
@@ -640,7 +640,11 @@ public class WEnvironment {
 		} else {
 			if (this.userAgent_.indexOf("Safari") != -1) {
 				if (this.userAgent_.indexOf("Version") == -1) {
-					this.agent_ = WEnvironment.UserAgent.Safari;
+					if (this.userAgent_.indexOf("Arora") != -1) {
+						this.agent_ = WEnvironment.UserAgent.Arora;
+					} else {
+						this.agent_ = WEnvironment.UserAgent.Safari;
+					}
 				} else {
 					if (this.userAgent_.indexOf("Version/3") != -1) {
 						this.agent_ = WEnvironment.UserAgent.Safari3;

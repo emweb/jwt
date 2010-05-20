@@ -7,36 +7,256 @@ package eu.webtoolkit.jwt;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
+import java.util.Iterator;
 import java.util.List;
+import java.util.SortedSet;
+import eu.webtoolkit.jwt.utils.EnumUtils;
 
 /**
- * A container widget which provides a view implementation of a {@link WTable}
+ * An MVC View widget for tabular data.
  * <p>
  * 
- * The {@link WTableView} operates on a {@link WAbstractItemModel} provided via
- * {@link WTableView#setModel(WAbstractItemModel model) setModel()}. Data in the
- * model is rendered using an HTML <code>&lt;table&gt;</code>, and the model
- * reacts to any model changes. You may use CSS stylesheets for
- * <code>&lt;table&gt;</code>, <code>&lt;tr&gt;</code>, and
- * <code>&lt;td&gt;</code> elements to provide style to the table.
+ * The view displays data from a {@link WAbstractItemModel} in a table. It
+ * provides incremental rendering, without excessive use of client- or
+ * serverside resources.
  * <p>
+ * The rendering (and editing) of items is handled by a
+ * {@link WAbstractItemDelegate}, by default it uses {@link WItemDelegate} which
+ * renders data of all predefined roles (see also {@link ItemDataRole}),
+ * including text, icons, checkboxes, and tooltips.
  * <p>
- * <i><b>Note: </b>This view widget is a work-in-progress. Support for column
- * resizing, smart rendering, and proper vertical scroll bar support is still
- * lacking. When support for these features is added in the future, an HTML
- * <code>&lt;table&gt;</code> element will still be used. </i>
- * </p>
+ * The view provides virtual scrolling in both horizontal and vertical
+ * directions, and can therefore be used to display large data models (with
+ * large number of columns and rows).
+ * <p>
+ * The view may support editing of items, if the model indicates support (see
+ * the {@link ItemFlag#ItemIsEditable} flag). You can define triggers that
+ * initiate editing of an item using
+ * {@link WAbstractItemView#setEditTriggers(EnumSet editTriggers)
+ * WAbstractItemView#setEditTriggers()}. The actual editing is provided by the
+ * item delegate (you can set an appropriate delegate for one column using
+ * {@link WAbstractItemView#setItemDelegateForColumn(int column, WAbstractItemDelegate delegate)
+ * WAbstractItemView#setItemDelegateForColumn()}). Using
+ * {@link WAbstractItemView#setEditOptions(EnumSet editOptions)
+ * WAbstractItemView#setEditOptions()} you can customize if and how the view
+ * deals with multiple editors.
+ * <p>
+ * By default, all columns are given a width of 150px. Column widths of all
+ * columns can be set through the API method
+ * {@link WTableView#setColumnWidth(int column, WLength width) setColumnWidth()}
+ * , and also by the user using handles provided in the header.
+ * <p>
+ * If the model supports sorting (
+ * {@link WAbstractItemModel#sort(int column, SortOrder order)
+ * WAbstractItemModel#sort()}), such as the {@link WStandardItemModel}, then you
+ * can enable sorting buttons in the header, using
+ * {@link WAbstractItemView#setSortingEnabled(boolean enabled)
+ * WAbstractItemView#setSortingEnabled()}.
+ * <p>
+ * You can allow selection on row or item level (using
+ * {@link WAbstractItemView#setSelectionBehavior(SelectionBehavior behavior)
+ * WAbstractItemView#setSelectionBehavior()}), and selection of single or
+ * multiple items (using
+ * {@link WAbstractItemView#setSelectionMode(SelectionMode mode)
+ * WAbstractItemView#setSelectionMode()}), and listen for changes in the
+ * selection using the {@link WAbstractItemView#selectionChanged()
+ * WAbstractItemView#selectionChanged()} signal.
+ * <p>
+ * You may enable drag &amp; drop support for this view, whith awareness of the
+ * items in the model. When enabling dragging (see
+ * {@link WAbstractItemView#setDragEnabled(boolean enable)
+ * WAbstractItemView#setDragEnabled()}), the current selection may be dragged,
+ * but only when all items in the selection indicate support for dragging
+ * (controlled by the {@link ItemFlag#ItemIsDragEnabled ItemIsDragEnabled}
+ * flag), and if the model indicates a mime-type (controlled by
+ * {@link WAbstractItemModel#getMimeType() WAbstractItemModel#getMimeType()}).
+ * Likewise, by enabling support for dropping (see
+ * {@link WAbstractItemView#setDropsEnabled(boolean enable)
+ * WAbstractItemView#setDropsEnabled()}), the view may receive a drop event on a
+ * particular item, at least if the item indicates support for drops (controlled
+ * by the {@link ItemFlag#ItemIsDropEnabled ItemIsDropEnabled} flag).
+ * <p>
+ * You may also react to mouse click events on any item, by connecting to one of
+ * the {@link WAbstractItemView#clicked() WAbstractItemView#clicked()} or
+ * {@link WAbstractItemView#doubleClicked() WAbstractItemView#doubleClicked()}
+ * signals.
  */
-public class WTableView extends WCompositeWidget {
+public class WTableView extends WAbstractItemView {
 	/**
 	 * Constructor.
 	 */
 	public WTableView(WContainerWidget parent) {
 		super(parent);
-		this.columns_ = new ArrayList<WTableView.ColumnInfo>();
-		this.setImplementation(this.table_ = new WTable());
-		this.itemDelegate_ = new WItemDelegate();
-		this.model_ = null;
+		this.headers_ = null;
+		this.canvas_ = null;
+		this.table_ = null;
+		this.headerContainer_ = null;
+		this.contentsContainer_ = null;
+		this.plainTable_ = null;
+		this.dropEvent_ = new JSignal5<Integer, Integer, String, String, WMouseEvent>(
+				this.impl_, "dropEvent") {
+		};
+		this.columnWidthChanged_ = new JSignal2<Integer, Integer>(this.impl_,
+				"columnResized") {
+		};
+		this.viewportLeft_ = 0;
+		this.viewportWidth_ = 1000;
+		this.viewportTop_ = 0;
+		this.viewportHeight_ = 600;
+		this.tieContentsHeaderScrollJS_ = new JSlot(this);
+		this.itemMouseDownJS_ = new JSlot(this);
+		this.setSelectable(false);
+		this.dropEvent_
+				.addListener(
+						this,
+						new Signal5.Listener<Integer, Integer, String, String, WMouseEvent>() {
+							public void trigger(Integer e1, Integer e2,
+									String e3, String e4, WMouseEvent e5) {
+								WTableView.this.onDropEvent(e1, e2, e3, e4, e5);
+							}
+						});
+		this.setStyleClass("Wt-tableview");
+		String CSS_RULES_NAME = "Wt::WTableView";
+		WApplication app = WApplication.getInstance();
+		if (!app.getStyleSheet().isDefined(CSS_RULES_NAME)) {
+			app
+					.getStyleSheet()
+					.addRule(
+							".Wt-tableview .Wt-headertable",
+							"-moz-user-select: none;-khtml-user-select: none;user-select: none;overflow: hidden;width: 100%;",
+							CSS_RULES_NAME);
+			if (app.getEnvironment().agentIsIE()) {
+				app.getStyleSheet().addRule(
+						".Wt-tableview .Wt-header .Wt-label", "zoom: 1;");
+			}
+			app
+					.getStyleSheet()
+					.addRule(".Wt-tableview div.Wt-tv-rh",
+							"float: right; width: 4px; cursor: col-resize;padding-left: 0px;");
+			app
+					.getStyleSheet()
+					.addRule(
+							".Wt-tableview .Wt-header-el, .Wt-tableview .Wt-tv-c",
+							"text-overflow: ellipsis;overflow: hidden;white-space: nowrap;padding: 0px;");
+			app.getStyleSheet().addRule(".Wt-tableview .Wt-header .Wt-tv-c",
+					"padding-left: 6px;");
+			app
+					.getStyleSheet()
+					.addRule(
+							".Wt-tableview .Wt-tv-contents .Wt-tv-c,.Wt-tableview tbody .Wt-tv-c",
+							"padding: 0px 3px;");
+			app.getStyleSheet().addRule(".Wt-tableview .Wt-tv-rh:hover",
+					"background-color: #DDDDDD;");
+			app.getStyleSheet().addRule(".Wt-tableview div.Wt-tv-rhc0",
+					"float: left; width: 4px;");
+			app
+					.getStyleSheet()
+					.addRule(
+							".Wt-tableview .Wt-tv-sh",
+							""
+									+ "float: right; width: 16px; height: 16px; padding-bottom: 6px;cursor: pointer; cursor:hand;");
+			app
+					.getStyleSheet()
+					.addRule(
+							".Wt-tableview .Wt-tv-sh-nrh",
+							""
+									+ "float: right; width: 16px; height: 16px;cursor: pointer; cursor:hand;");
+			app
+					.getStyleSheet()
+					.addRule(
+							".Wt-tableview .Wt-tv-br, .Wt-tableview .Wt-tv-contents .Wt-tv-c",
+							"border-right: 1px solid white;");
+			app
+					.getStyleSheet()
+					.addRule(
+							".Wt-tableview .Wt-tv-contents img.icon, .Wt-tableview .Wt-tv-contents input.icon",
+							"margin: 0px 3px 2px 0px; vertical-align: middle");
+		}
+		app.getStyleSheet()
+				.addRule(
+						"#" + this.getId() + "dw",
+						"width: 32px; height: 32px;background: url("
+								+ WApplication.getResourcesUrl()
+								+ "items-not-ok.gif);");
+		app.getStyleSheet().addRule(
+				"#" + this.getId() + "dw.Wt-valid-drop",
+				"width: 32px; height: 32px;background: url("
+						+ WApplication.getResourcesUrl() + "items-ok.gif);");
+		if (app.getEnvironment().hasAjax()) {
+			this.impl_.setPositionScheme(PositionScheme.Relative);
+			this.headers_ = new WContainerWidget();
+			this.headers_.setStyleClass("Wt-headertable headerrh");
+			this.table_ = new WContainerWidget();
+			this.table_.setStyleClass("Wt-tv-contents");
+			WVBoxLayout layout = new WVBoxLayout();
+			layout.setSpacing(0);
+			layout.setContentsMargins(0, 0, 0, 0);
+			this.headerContainer_ = new WContainerWidget();
+			this.headerContainer_
+					.setOverflow(WContainerWidget.Overflow.OverflowHidden);
+			this.headerContainer_.setPositionScheme(PositionScheme.Relative);
+			this.headerContainer_.setStyleClass("Wt-header headerrh cwidth");
+			this.headerContainer_.addWidget(this.headers_);
+			this.contentsContainer_ = new WContainerWidget();
+			this.contentsContainer_.setStyleClass("cwidth");
+			this.contentsContainer_
+					.setOverflow(WContainerWidget.Overflow.OverflowAuto);
+			this.contentsContainer_.setPositionScheme(PositionScheme.Absolute);
+			this.canvas_ = new WContainerWidget();
+			this.canvas_.setStyleClass("Wt-spacer");
+			this.canvas_.setPositionScheme(PositionScheme.Relative);
+			this.canvas_.clicked().addListener(this,
+					new Signal1.Listener<WMouseEvent>() {
+						public void trigger(WMouseEvent e1) {
+							WTableView.this.handleSingleClick(e1);
+						}
+					});
+			this.canvas_.doubleClicked().addListener(this,
+					new Signal1.Listener<WMouseEvent>() {
+						public void trigger(WMouseEvent e1) {
+							WTableView.this.handleDoubleClick(e1);
+						}
+					});
+			this.canvas_.mouseWentDown().addListener(this,
+					new Signal1.Listener<WMouseEvent>() {
+						public void trigger(WMouseEvent e1) {
+							WTableView.this.handleMouseWentDown(e1);
+						}
+					});
+			this.canvas_.mouseWentDown().addListener(this.itemMouseDownJS_);
+			this.canvas_.addWidget(this.table_);
+			this.table_.setPositionScheme(PositionScheme.Absolute);
+			this.table_.resize(new WLength(100, WLength.Unit.Percentage),
+					WLength.Auto);
+			this.contentsContainer_.addWidget(this.canvas_);
+			this.contentsContainer_.scrolled().addListener(this,
+					new Signal1.Listener<WScrollEvent>() {
+						public void trigger(WScrollEvent e1) {
+							WTableView.this.onViewportChange(e1);
+						}
+					});
+			this.contentsContainer_.scrolled().addListener(
+					this.tieContentsHeaderScrollJS_);
+			this.tieContentsHeaderScrollJS_
+					.setJavaScript("function(obj, event) {"
+							+ this.headerContainer_.getJsRef()
+							+ ".scrollLeft=obj.scrollLeft;}");
+			layout.addWidget(this.headerContainer_);
+			layout.addWidget(this.contentsContainer_, 1);
+			this.impl_.setLayout(layout);
+			app.addAutoJavaScript("{var obj = $('#" + this.getId()
+					+ "').data('obj');if (obj) obj.autoJavaScript();}");
+			this.bindObjJS(this.itemMouseDownJS_, "mouseDown");
+		} else {
+			this.plainTable_ = new WTable();
+			this.plainTable_.setStyleClass("Wt-plaintable");
+			this.plainTable_.setAttributeValue("style", "table-layout: fixed;");
+			this.plainTable_.setHeaderCount(1);
+			this.impl_.addWidget(this.plainTable_);
+			this.resize(this.getWidth(), this.getHeight());
+		}
+		this.setRowHeight(this.getRowHeight());
+		this.updateTableBackground();
 	}
 
 	/**
@@ -49,229 +269,1232 @@ public class WTableView extends WCompositeWidget {
 		this((WContainerWidget) null);
 	}
 
-	/**
-	 * Destructor.
-	 */
 	public void remove() {
+		this.impl_.clear();
 		super.remove();
 	}
 
-	/**
-	 * Sets the model.
-	 * <p>
-	 * If a previous model was set, it is not deleted.
-	 */
 	public void setModel(WAbstractItemModel model) {
-		this.table_.clear();
-		if (!(model != null)) {
-			return;
-		}
-		this.model_ = model;
-		for (int r = 0; r < this.model_.getRowCount(); r++) {
-			this.table_.insertRow(r);
-		}
-		for (int c = 0; c < model.getColumnCount(); c++) {
-			this.table_.insertColumn(c);
-		}
-		for (int c = 0; c < model.getColumnCount(); c++) {
-			Object header = model.getHeaderData(c);
-			this.table_.getElementAt(0, c).addWidget(
-					new WText(StringUtils.asString(header)));
-		}
-		this.table_.setHeaderCount(1);
-		for (int r = 0; r < model.getRowCount(); r++) {
-			for (int c = 0; c < model.getColumnCount(); c++) {
-				WWidget w = this.getWidget(r, c);
-				if (w != null) {
-					this.table_.getElementAt(r + this.table_.getHeaderCount(),
-							c).addWidget(w);
-				}
-			}
-		}
-		this.model_.columnsInserted().addListener(this,
+		super.setModel(model);
+		this.modelConnections_.add(model.columnsInserted().addListener(this,
 				new Signal3.Listener<WModelIndex, Integer, Integer>() {
 					public void trigger(WModelIndex e1, Integer e2, Integer e3) {
-						WTableView.this.columnsInserted(e1, e2, e3);
+						WTableView.this.modelColumnsInserted(e1, e2, e3);
 					}
-				});
-		this.model_.columnsRemoved().addListener(this,
+				}));
+		this.modelConnections_.add(model.columnsAboutToBeRemoved().addListener(
+				this, new Signal3.Listener<WModelIndex, Integer, Integer>() {
+					public void trigger(WModelIndex e1, Integer e2, Integer e3) {
+						WTableView.this
+								.modelColumnsAboutToBeRemoved(e1, e2, e3);
+					}
+				}));
+		this.modelConnections_.add(model.rowsInserted().addListener(this,
 				new Signal3.Listener<WModelIndex, Integer, Integer>() {
 					public void trigger(WModelIndex e1, Integer e2, Integer e3) {
-						WTableView.this.columnsRemoved(e1, e2, e3);
+						WTableView.this.modelRowsInserted(e1, e2, e3);
 					}
-				});
-		this.model_.rowsInserted().addListener(this,
+				}));
+		this.modelConnections_.add(model.rowsAboutToBeRemoved().addListener(
+				this, new Signal3.Listener<WModelIndex, Integer, Integer>() {
+					public void trigger(WModelIndex e1, Integer e2, Integer e3) {
+						WTableView.this.modelRowsAboutToBeRemoved(e1, e2, e3);
+					}
+				}));
+		this.modelConnections_.add(model.rowsRemoved().addListener(this,
 				new Signal3.Listener<WModelIndex, Integer, Integer>() {
 					public void trigger(WModelIndex e1, Integer e2, Integer e3) {
-						WTableView.this.rowsInserted(e1, e2, e3);
+						WTableView.this.modelRowsRemoved(e1, e2, e3);
 					}
-				});
-		this.model_.rowsRemoved().addListener(this,
-				new Signal3.Listener<WModelIndex, Integer, Integer>() {
-					public void trigger(WModelIndex e1, Integer e2, Integer e3) {
-						WTableView.this.rowsRemoved(e1, e2, e3);
-					}
-				});
-		this.model_.dataChanged().addListener(this,
+				}));
+		this.modelConnections_.add(model.dataChanged().addListener(this,
 				new Signal2.Listener<WModelIndex, WModelIndex>() {
 					public void trigger(WModelIndex e1, WModelIndex e2) {
-						WTableView.this.dataChanged(e1, e2);
+						WTableView.this.modelDataChanged(e1, e2);
 					}
-				});
-		this.model_.headerDataChanged().addListener(this,
+				}));
+		this.modelConnections_.add(model.headerDataChanged().addListener(this,
 				new Signal3.Listener<Orientation, Integer, Integer>() {
 					public void trigger(Orientation e1, Integer e2, Integer e3) {
-						WTableView.this.headerDataChanged(e1, e2, e3);
+						WTableView.this.modelHeaderDataChanged(e1, e2, e3);
 					}
-				});
+				}));
+		this.modelConnections_.add(model.layoutAboutToBeChanged().addListener(
+				this, new Signal.Listener() {
+					public void trigger() {
+						WTableView.this.modelLayoutAboutToBeChanged();
+					}
+				}));
+		this.modelConnections_.add(model.layoutChanged().addListener(this,
+				new Signal.Listener() {
+					public void trigger() {
+						WTableView.this.modelLayoutChanged();
+					}
+				}));
+		this.modelConnections_.add(model.modelReset().addListener(this,
+				new Signal.Listener() {
+					public void trigger() {
+						WTableView.this.modelReset();
+					}
+				}));
 	}
 
-	/**
-	 * Sets the default item delegate.
-	 * <p>
-	 * The previous delegate is removed but not deleted.
-	 * <p>
-	 * The default item delegate is a {@link WItemDelegate}.
-	 */
-	public void setItemDelegate(WAbstractItemDelegate delegate) {
-		this.itemDelegate_ = delegate;
-	}
-
-	/**
-	 * Returns the default item delegate.
-	 * <p>
-	 * 
-	 * @see WTableView#setItemDelegate(WAbstractItemDelegate delegate)
-	 */
-	public WAbstractItemDelegate getItemDelegate() {
-		return this.itemDelegate_;
-	}
-
-	/**
-	 * Sets the delegate for a column.
-	 * <p>
-	 * The previous delegate is removed but not deleted.
-	 * <p>
-	 * 
-	 * @see WTableView#setItemDelegate(WAbstractItemDelegate delegate)
-	 */
-	public void setItemDelegateForColumn(int column,
-			WAbstractItemDelegate delegate) {
-		this.columnInfo(column).itemDelegate_ = delegate;
-	}
-
-	/**
-	 * Returns the delegate for a column.
-	 * <p>
-	 * 
-	 * @see WTableView#setItemDelegateForColumn(int column,
-	 *      WAbstractItemDelegate delegate)
-	 */
-	public WAbstractItemDelegate getItemDelegateForColumn(int column) {
-		return this.columnInfo(column).itemDelegate_;
-	}
-
-	/**
-	 * Returns the delegate for rendering an item.
-	 * <p>
-	 * 
-	 * @see WTableView#setItemDelegateForColumn(int column,
-	 *      WAbstractItemDelegate delegate)
-	 * @see WTableView#setItemDelegate(WAbstractItemDelegate delegate)
-	 */
-	public WAbstractItemDelegate getItemDelegate(WModelIndex index) {
-		WAbstractItemDelegate result = this.getItemDelegateForColumn(index
-				.getColumn());
-		return result != null ? result : this.itemDelegate_;
-	}
-
-	/**
-	 * Returns the table used for rendering the model.
-	 */
-	protected WTable getTable() {
-		return this.table_;
-	}
-
-	private WTable table_;
-
-	static class ColumnInfo {
-		public WAbstractItemDelegate itemDelegate_;
-
-		public ColumnInfo(WTableView view, WApplication app, int column) {
-			this.itemDelegate_ = null;
+	public void setColumnWidth(int column, WLength width) {
+		int delta = (int) (width.toPixels() - this.columnInfo(column).width
+				.toPixels());
+		this.columnInfo(column).width = width;
+		if (this.isAjaxMode()) {
+			this.headers_.resize(new WLength(this.headers_.getWidth()
+					.toPixels()
+					+ delta), this.headers_.getHeight());
+			this.canvas_.resize(new WLength(this.canvas_.getWidth().toPixels()
+					+ delta), this.canvas_.getHeight());
+			if (this.renderState_.getValue() >= WAbstractItemView.RenderState.NeedRerenderHeader
+					.getValue()) {
+				return;
+			}
+			if (this.isColumnRendered(column)) {
+				this.updateColumnOffsets();
+			} else {
+				if (column < this.getFirstColumn()) {
+					this.setSpannerCount(Side.Left, this
+							.getSpannerCount(Side.Left));
+				}
+			}
+		}
+		if (this.renderState_.getValue() >= WAbstractItemView.RenderState.NeedRerenderHeader
+				.getValue()) {
+			return;
+		}
+		WWidget hc = this.headers_.getWidget(column);
+		hc.resize(new WLength(width.toPixels() + 1), hc.getHeight());
+		if (!this.isAjaxMode()) {
+			hc.getParent().resize(new WLength(width.toPixels() + 1),
+					hc.getHeight());
 		}
 	}
 
-	private WAbstractItemDelegate itemDelegate_;
-	private List<WTableView.ColumnInfo> columns_;
-	private WAbstractItemModel model_;
+	public void setAlternatingRowColors(boolean enable) {
+		super.setAlternatingRowColors(enable);
+		this.updateTableBackground();
+	}
 
-	private void columnsInserted(WModelIndex index, int firstColumn,
-			int lastColumn) {
-		for (int i = firstColumn; i <= lastColumn; i++) {
-			this.table_.insertColumn(i);
+	public void setRowHeight(WLength rowHeight) {
+		int renderedRowCount = this.getModel() != null ? this.getLastRow()
+				- this.getFirstRow() + 1 : 0;
+		super.setRowHeight(rowHeight);
+		if (this.isAjaxMode()) {
+			this.canvas_.setAttributeValue("style", "line-height: "
+					+ rowHeight.getCssText());
+			if (this.getModel() != null) {
+				this.canvas_.resize(this.canvas_.getWidth(), new WLength(this
+						.getModel().getRowCount(this.getRootIndex())
+						* rowHeight.toPixels()));
+				this.table_.resize(this.table_.getWidth(), new WLength(
+						renderedRowCount * rowHeight.toPixels()));
+			}
+		} else {
+			this.resize(this.getWidth(), this.getHeight());
+		}
+		this.updateTableBackground();
+		this.scheduleRerender(WAbstractItemView.RenderState.NeedRerenderData);
+	}
+
+	public void setHeaderHeight(WLength height, boolean multiLine) {
+		super.setHeaderHeight(height, multiLine);
+		if (!this.isAjaxMode()) {
+			this.resize(this.getWidth(), this.getHeight());
+		}
+		if (this.renderState_.getValue() >= WAbstractItemView.RenderState.NeedRerenderHeader
+				.getValue()) {
+			return;
+		}
+		if (!WApplication.getInstance().getEnvironment().agentIsIE()) {
+			for (int i = 0; i < this.getColumnCount(); ++i) {
+				this.headerTextWidget(i).setWordWrap(multiLine);
+			}
 		}
 	}
 
-	private void columnsRemoved(WModelIndex index, int firstColumn,
-			int lastColumn) {
-		for (int i = lastColumn; i >= firstColumn; i--) {
-			this.table_.deleteColumn(i);
+	public void setColumnBorder(WColor color) {
+	}
+
+	public void resize(WLength width, WLength height) {
+		if (this.isAjaxMode()) {
+			if (!height.isAuto()) {
+				this.viewportHeight_ = (int) Math.ceil(height.toPixels()
+						- this.getHeaderHeight().toPixels());
+			}
+		} else {
+			if (!(this.plainTable_ != null)) {
+				return;
+			}
+			this.plainTable_.resize(width, WLength.Auto);
+			if (!height.isAuto()) {
+				if (this.impl_.getCount() < 2) {
+					this.impl_.addWidget(this.getCreatePageNavigationBar());
+				}
+			}
+		}
+		this.computeRenderedArea();
+		super.resize(width, height);
+		this.scheduleRerender(WAbstractItemView.RenderState.NeedAdjustViewPort);
+	}
+
+	public int getPageCount() {
+		if (this.getModel() != null) {
+			return (this.getModel().getRowCount(this.getRootIndex()) - 1)
+					/ this.getPageSize() + 1;
+		} else {
+			return 1;
 		}
 	}
 
-	private void rowsInserted(WModelIndex index, int firstRow, int lastRow) {
-		for (int i = firstRow; i <= lastRow; i++) {
-			this.table_.insertRow(i + this.table_.getHeaderCount());
+	public int getPageSize() {
+		if (this.getHeight().isAuto()) {
+			return 10000;
+		} else {
+			final int navigationBarHeight = 25;
+			return (int) ((this.getHeight().toPixels()
+					- this.getHeaderHeight().toPixels() - navigationBarHeight) / this
+					.getRowHeight().toPixels());
 		}
 	}
 
-	private void rowsRemoved(WModelIndex index, int firstRow, int lastRow) {
-		for (int i = lastRow; i >= firstRow; i--) {
-			this.table_.deleteRow(i - this.table_.getHeaderCount());
+	public int getCurrentPage() {
+		return this.renderedFirstRow_ / this.getPageSize();
+	}
+
+	public void setCurrentPage(int page) {
+		this.renderedFirstRow_ = page * this.getPageSize();
+		if (this.getModel() != null) {
+			this.renderedLastRow_ = Math.min(this.renderedFirstRow_
+					+ this.getPageSize() - 1, this.getModel().getRowCount(
+					this.getRootIndex()) - 1);
+		} else {
+			this.renderedLastRow_ = this.renderedFirstRow_;
+		}
+		this.scheduleRerender(WAbstractItemView.RenderState.NeedRerenderData);
+	}
+
+	static class ColumnWidget extends WContainerWidget {
+		public ColumnWidget(WTableView view, int column) {
+			super();
+			this.column_ = column;
+			assert view.isAjaxMode();
+			WAbstractItemView.ColumnInfo ci = view.columnInfo(column);
+			this.setStyleClass(ci.getStyleClass());
+			this.setPositionScheme(PositionScheme.Absolute);
+			this.setOffsets(new WLength(0), EnumSet.of(Side.Top, Side.Left));
+			this.setOverflow(WContainerWidget.Overflow.OverflowHidden);
+			if (view.table_.getCount() == 0
+					|| column > view.columnContainer(-1).getColumn()) {
+				view.table_.addWidget(this);
+			} else {
+				view.table_.insertWidget(0, this);
+			}
+		}
+
+		public int getColumn() {
+			return this.column_;
+		}
+
+		private int column_;
+	}
+
+	private WContainerWidget headers_;
+	private WContainerWidget canvas_;
+	private WContainerWidget table_;
+	private WContainerWidget headerContainer_;
+	private WContainerWidget contentsContainer_;
+	private WTable plainTable_;
+	private JSignal5<Integer, Integer, String, String, WMouseEvent> dropEvent_;
+	private JSignal2<Integer, Integer> columnWidthChanged_;
+	private int firstColumn_;
+	private int lastColumn_;
+	private int viewportLeft_;
+	private int viewportWidth_;
+	private int viewportTop_;
+	private int viewportHeight_;
+	private int renderedFirstRow_;
+	private int renderedLastRow_;
+	private int renderedFirstColumn_;
+	private int renderedLastColumn_;
+	private JSlot tieContentsHeaderScrollJS_;
+	private JSlot itemMouseDownJS_;
+	private int tabIndex_;
+
+	private void updateTableBackground() {
+		String backgroundImage = "";
+		if (this.hasAlternatingRowColors()) {
+			backgroundImage = "/stripes/stripe-";
+		} else {
+			backgroundImage = "/no-stripes/no-stripe-";
+		}
+		backgroundImage = WApplication.getResourcesUrl() + "themes/"
+				+ WApplication.getInstance().getCssTheme() + backgroundImage
+				+ String.valueOf((int) this.getRowHeight().toPixels())
+				+ "px.gif";
+		if (this.isAjaxMode()) {
+			this.canvas_.getDecorationStyle().setBackgroundImage(
+					backgroundImage);
+		} else {
+			this.plainTable_.getDecorationStyle().setBackgroundImage(
+					backgroundImage);
 		}
 	}
 
-	private void dataChanged(WModelIndex topLeft, WModelIndex bottomRight) {
-		for (int i = topLeft.getRow(); i <= bottomRight.getRow(); i++) {
-			for (int j = topLeft.getColumn(); j <= bottomRight.getColumn(); j++) {
-				this.table_.getElementAt(i + this.table_.getHeaderCount(), j)
-						.clear();
-				WWidget w = this.getWidget(i, j);
-				if (w != null) {
-					this.table_.getElementAt(i + this.table_.getHeaderCount(),
-							j).addWidget(w);
+	private WTableView.ColumnWidget columnContainer(int renderedColumn) {
+		assert this.isAjaxMode();
+		if (this.table_.getCount() > 0) {
+			if (renderedColumn < 0) {
+				return ((this.table_.getWidget(this.table_.getCount() - 1)) instanceof WTableView.ColumnWidget ? (WTableView.ColumnWidget) (this.table_
+						.getWidget(this.table_.getCount() - 1))
+						: null);
+			} else {
+				return ((this.table_.getWidget(renderedColumn)) instanceof WTableView.ColumnWidget ? (WTableView.ColumnWidget) (this.table_
+						.getWidget(renderedColumn))
+						: null);
+			}
+		} else {
+			return null;
+		}
+	}
+
+	private void modelColumnsInserted(WModelIndex parent, int start, int end) {
+		if (!(parent == this.getRootIndex() || (parent != null && parent
+				.equals(this.getRootIndex())))) {
+			return;
+		}
+		int count = end - start + 1;
+		int width = 0;
+		for (int i = start; i < start + count; ++i) {
+			this.columns_.add(0 + i, this.createColumnInfo(i));
+			width += (int) this.columnInfo(i).width.toPixels() + 7;
+		}
+		if (this.isAjaxMode()) {
+			this.canvas_.resize(new WLength(this.canvas_.getWidth().toPixels()
+					+ width), this.canvas_.getHeight());
+		}
+		if (this.renderState_.getValue() < WAbstractItemView.RenderState.NeedRerenderHeader
+				.getValue()) {
+			this
+					.scheduleRerender(WAbstractItemView.RenderState.NeedRerenderHeader);
+		}
+		if (start > this.getLastColumn()
+				|| this.renderState_ == WAbstractItemView.RenderState.NeedRerender
+				|| this.renderState_ == WAbstractItemView.RenderState.NeedRerenderData) {
+			return;
+		}
+		this.scheduleRerender(WAbstractItemView.RenderState.NeedRerenderData);
+	}
+
+	private void modelColumnsAboutToBeRemoved(WModelIndex parent, int start,
+			int end) {
+		if (!(parent == this.getRootIndex() || (parent != null && parent
+				.equals(this.getRootIndex())))) {
+			return;
+		}
+		int count = end - start + 1;
+		int width = 0;
+		for (int i = start; i < start + count; ++i) {
+			width += (int) this.columnInfo(i).width.toPixels() + 7;
+		}
+		for (int ii = 0; ii < (0 + start + count) - (0 + start); ++ii)
+			this.columns_.remove(0 + start);
+		;
+		if (this.isAjaxMode()) {
+			this.canvas_.resize(new WLength(this.canvas_.getWidth().toPixels()
+					- width), this.canvas_.getHeight());
+		}
+		if (start <= this.currentSortColumn_ && this.currentSortColumn_ <= end) {
+			this.currentSortColumn_ = -1;
+		}
+		if (this.renderState_.getValue() < WAbstractItemView.RenderState.NeedRerenderHeader
+				.getValue()) {
+			this
+					.scheduleRerender(WAbstractItemView.RenderState.NeedRerenderHeader);
+		}
+		if (start > this.getLastColumn()
+				|| this.renderState_ == WAbstractItemView.RenderState.NeedRerender
+				|| this.renderState_ == WAbstractItemView.RenderState.NeedRerenderData) {
+			return;
+		}
+		this.scheduleRerender(WAbstractItemView.RenderState.NeedRerenderData);
+	}
+
+	private void modelRowsInserted(WModelIndex parent, int start, int end) {
+		if (!(parent == this.getRootIndex() || (parent != null && parent
+				.equals(this.getRootIndex())))) {
+			return;
+		}
+		this.shiftModelIndexes(start, end - start + 1);
+		if (this.isAjaxMode()) {
+			this.canvas_.resize(this.canvas_.getWidth(), new WLength(this
+					.getModel().getRowCount(this.getRootIndex())
+					* this.getRowHeight().toPixels()));
+			this
+					.scheduleRerender(WAbstractItemView.RenderState.NeedAdjustViewPort);
+		}
+		this.computeRenderedArea();
+		if (start <= this.getLastRow()) {
+			this
+					.scheduleRerender(WAbstractItemView.RenderState.NeedRerenderData);
+		}
+	}
+
+	private void modelRowsAboutToBeRemoved(WModelIndex parent, int start,
+			int end) {
+		if (!(parent == this.getRootIndex() || (parent != null && parent
+				.equals(this.getRootIndex())))) {
+			return;
+		}
+		this.shiftModelIndexes(start, -(end - start + 1));
+	}
+
+	private void modelRowsRemoved(WModelIndex parent, int start, int end) {
+		if (!(parent == this.getRootIndex() || (parent != null && parent
+				.equals(this.getRootIndex())))) {
+			return;
+		}
+		if (this.isAjaxMode()) {
+			this.canvas_.resize(this.canvas_.getWidth(), new WLength(this
+					.getModel().getRowCount(this.getRootIndex())
+					* this.getRowHeight().toPixels()));
+			this
+					.scheduleRerender(WAbstractItemView.RenderState.NeedAdjustViewPort);
+		}
+		this.computeRenderedArea();
+		if (start <= this.getLastRow()) {
+			this
+					.scheduleRerender(WAbstractItemView.RenderState.NeedRerenderData);
+		}
+	}
+
+	void modelDataChanged(WModelIndex topLeft, WModelIndex bottomRight) {
+		if (!(topLeft.getParent() == this.getRootIndex() || (topLeft
+				.getParent() != null && topLeft.getParent().equals(
+				this.getRootIndex())))) {
+			return;
+		}
+		if (this.renderState_.getValue() < WAbstractItemView.RenderState.NeedRerenderData
+				.getValue()) {
+			int row1 = Math.max(topLeft.getRow(), this.getFirstRow());
+			int row2 = Math.min(bottomRight.getRow(), this.getLastRow());
+			int col1 = Math.max(topLeft.getColumn(), this.getFirstColumn());
+			int col2 = Math.min(bottomRight.getColumn(), this.getLastColumn());
+			for (int i = row1; i <= row2; ++i) {
+				for (int j = col1; j <= col2; ++j) {
+					int renderedRow = i - this.getFirstRow();
+					int renderedColumn = j - this.getFirstColumn();
+					WContainerWidget parentWidget;
+					WWidget w;
+					int wIndex;
+					if (this.isAjaxMode()) {
+						parentWidget = this.columnContainer(renderedColumn);
+						wIndex = renderedRow;
+					} else {
+						parentWidget = this.plainTable_.getElementAt(
+								renderedRow + 1, renderedColumn);
+						wIndex = 0;
+					}
+					w = parentWidget.getWidget(wIndex);
+					WModelIndex index = this.getModel().getIndex(i, j,
+							this.getRootIndex());
+					w = this.renderWidget(w, index);
+					if (!(w.getParent() != null)) {
+						parentWidget.insertWidget(wIndex, w);
+						if (!this.isAjaxMode() && !this.isEditing(index)) {
+							WInteractWidget wi = ((w) instanceof WInteractWidget ? (WInteractWidget) (w)
+									: null);
+							if (wi != null) {
+								this.clickedMapper_.mapConnect1(wi.clicked(),
+										index);
+							}
+						}
+					}
 				}
 			}
 		}
 	}
 
-	private void headerDataChanged(Orientation orientation, int first, int last) {
-		for (int c = first; c <= last; c++) {
-			Object header = this.model_.getHeaderData(c);
-			this.table_.getElementAt(0, c).clear();
-			if (!(header == null)) {
-				this.table_.getElementAt(0, c).addWidget(
-						new WText(StringUtils.asString(header)));
+	private void modelHeaderDataChanged(Orientation orientation, int start,
+			int end) {
+		if (this.renderState_.getValue() < WAbstractItemView.RenderState.NeedRerenderHeader
+				.getValue()) {
+			if (orientation == Orientation.Horizontal) {
+				for (int i = start; i <= end; ++i) {
+					WString label = StringUtils.asString(this.getModel()
+							.getHeaderData(i));
+					this.headerTextWidget(i).setText(label);
+				}
 			}
 		}
 	}
 
-	private WTableView.ColumnInfo columnInfo(int column) {
-		while (column >= (int) this.columns_.size()) {
-			this.columns_.add(new WTableView.ColumnInfo(this, WApplication
-					.getInstance(), column));
-		}
-		return this.columns_.get(column);
+	void modelLayoutChanged() {
+		super.modelLayoutChanged();
+		this.resetGeometry();
 	}
 
-	private WWidget getWidget(int row, int column) {
-		WAbstractItemDelegate itemDelegate = this
-				.getItemDelegateForColumn(column);
-		if (!(itemDelegate != null)) {
-			itemDelegate = this.itemDelegate_;
+	private WWidget renderWidget(WWidget widget, WModelIndex index) {
+		WAbstractItemDelegate itemDelegate = this.getItemDelegate(index
+				.getColumn());
+		EnumSet<ViewItemRenderFlag> renderFlags = EnumSet
+				.noneOf(ViewItemRenderFlag.class);
+		if (this.isAjaxMode()) {
+			if (this.getSelectionBehavior() == SelectionBehavior.SelectItems
+					&& this.isSelected(index)
+					|| this.getSelectionBehavior() == SelectionBehavior.SelectRows
+					&& this.isSelected(this.getModel().getIndex(index.getRow(),
+							0, this.getRootIndex()))) {
+				renderFlags.add(ViewItemRenderFlag.RenderSelected);
+			}
 		}
-		return itemDelegate.update((WWidget) null, this.model_.getIndex(row,
-				column), EnumSet.noneOf(ViewItemRenderFlag.class));
+		if (this.isEditing(index)) {
+			renderFlags.add(ViewItemRenderFlag.RenderEditing);
+			if (this.hasEditFocus(index)) {
+				renderFlags.add(ViewItemRenderFlag.RenderFocused);
+			}
+		}
+		boolean initial = !(widget != null);
+		widget = itemDelegate.update(widget, index, renderFlags);
+		widget.setInline(false);
+		widget.setStyleClass(widget.getStyleClass() + " Wt-tv-c");
+		widget.resize(WLength.Auto, this.getRowHeight());
+		if (!EnumUtils.mask(renderFlags, ViewItemRenderFlag.RenderEditing)
+				.isEmpty()) {
+			widget.setTabIndex(-1);
+			this.setEditorWidget(index, widget);
+		}
+		if (initial) {
+			if (!EnumUtils.mask(renderFlags, ViewItemRenderFlag.RenderEditing)
+					.isEmpty()) {
+				Object state = this.getEditState(index);
+				if (!(state == null)) {
+					itemDelegate.setEditState(widget, state);
+				}
+			}
+		}
+		return widget;
+	}
+
+	private int getSpannerCount(Side side) {
+		assert this.isAjaxMode();
+		switch (side) {
+		case Top: {
+			return (int) (this.table_.getOffset(Side.Top).toPixels() / this
+					.getRowHeight().toPixels());
+		}
+		case Bottom: {
+			return (int) (this.getModel().getRowCount(this.getRootIndex()) - (this.table_
+					.getOffset(Side.Top).toPixels() + this.table_.getHeight()
+					.toPixels())
+					/ this.getRowHeight().toPixels());
+		}
+		case Left:
+			return this.firstColumn_;
+		case Right:
+			return this.getColumnCount() - (this.lastColumn_ + 1);
+		default:
+			assert false;
+			return -1;
+		}
+	}
+
+	private void setSpannerCount(Side side, int count) {
+		assert this.isAjaxMode();
+		switch (side) {
+		case Top: {
+			int size = this.getModel().getRowCount(this.getRootIndex()) - count
+					- this.getSpannerCount(Side.Bottom);
+			this.table_.setOffsets(new WLength(count
+					* this.getRowHeight().toPixels()), EnumSet.of(Side.Top));
+			this.table_.resize(this.table_.getWidth(), new WLength(size
+					* this.getRowHeight().toPixels()));
+			break;
+		}
+		case Bottom: {
+			int size = this.getModel().getRowCount(this.getRootIndex())
+					- this.getSpannerCount(Side.Top) - count;
+			this.table_.resize(this.table_.getWidth(), new WLength(size
+					* this.getRowHeight().toPixels()));
+			break;
+		}
+		case Left: {
+			int total = 0;
+			for (int i = 0; i < count; i++) {
+				total += (int) this.columnInfo(i).width.toPixels() + 7;
+			}
+			this.table_.setOffsets(new WLength(total), EnumSet.of(Side.Left));
+			this.firstColumn_ = count;
+			break;
+		}
+		case Right:
+			this.lastColumn_ = this.getColumnCount() - count - 1;
+			break;
+		default:
+			assert false;
+		}
+	}
+
+	private void renderTable(int fr, int lr, int fc, int lc) {
+		assert this.isAjaxMode();
+		if (fr > this.getLastRow() || this.getFirstRow() > lr
+				|| fc > this.getLastColumn() || this.getFirstColumn() > lc) {
+			this.reset();
+		}
+		int oldFirstRow = this.getFirstRow();
+		int oldLastRow = this.getLastRow();
+		int topRowsToAdd = 0;
+		int bottomRowsToAdd = 0;
+		if (oldLastRow - oldFirstRow < 0) {
+			topRowsToAdd = 0;
+			this.setSpannerCount(Side.Top, fr);
+			this.setSpannerCount(Side.Bottom, this.getSpannerCount(Side.Bottom)
+					- fr);
+			bottomRowsToAdd = lr - fr + 1;
+		} else {
+			topRowsToAdd = this.getFirstRow() - fr;
+			bottomRowsToAdd = lr - this.getLastRow();
+		}
+		int oldFirstCol = this.getFirstColumn();
+		int oldLastCol = this.getLastColumn();
+		int leftColsToAdd = 0;
+		int rightColsToAdd = 0;
+		if (oldLastCol - oldFirstCol < 0) {
+			leftColsToAdd = 0;
+			this.setSpannerCount(Side.Left, fc);
+			this.setSpannerCount(Side.Right, this.getSpannerCount(Side.Right)
+					- fc);
+			rightColsToAdd = lc - fc + 1;
+		} else {
+			leftColsToAdd = this.getFirstColumn() - fc;
+			rightColsToAdd = lc - this.getLastColumn();
+		}
+		for (int i = 0; i < -leftColsToAdd; ++i) {
+			this.removeSection(Side.Left);
+		}
+		for (int i = 0; i < -rightColsToAdd; ++i) {
+			this.removeSection(Side.Right);
+		}
+		for (int i = 0; i < -topRowsToAdd; ++i) {
+			this.removeSection(Side.Top);
+		}
+		for (int i = 0; i < -bottomRowsToAdd; ++i) {
+			this.removeSection(Side.Bottom);
+		}
+		for (int i = 0; i < topRowsToAdd; i++) {
+			int row = this.getFirstRow() - 1;
+			List<WWidget> items = new ArrayList<WWidget>();
+			for (int j = this.getFirstColumn(); j <= this.getLastColumn(); ++j) {
+				items.add(this.renderWidget((WWidget) null, this.getModel()
+						.getIndex(row, j, this.getRootIndex())));
+			}
+			this.addSection(Side.Top, items);
+		}
+		for (int i = 0; i < bottomRowsToAdd; ++i) {
+			int row = this.getLastRow() + 1;
+			List<WWidget> items = new ArrayList<WWidget>();
+			for (int j = this.getFirstColumn(); j <= this.getLastColumn(); ++j) {
+				items.add(this.renderWidget((WWidget) null, this.getModel()
+						.getIndex(row, j, this.getRootIndex())));
+			}
+			this.addSection(Side.Bottom, items);
+		}
+		for (int i = 0; i < leftColsToAdd; ++i) {
+			int col = this.getFirstColumn() - 1;
+			List<WWidget> items = new ArrayList<WWidget>();
+			for (int j = this.getFirstRow(); j <= this.getLastRow(); ++j) {
+				items.add(this.renderWidget((WWidget) null, this.getModel()
+						.getIndex(j, col, this.getRootIndex())));
+			}
+			this.addSection(Side.Left, items);
+		}
+		for (int i = 0; i < rightColsToAdd; ++i) {
+			int col = this.getLastColumn() + 1;
+			List<WWidget> items = new ArrayList<WWidget>();
+			for (int j = this.getFirstRow(); j <= this.getLastRow(); ++j) {
+				items.add(this.renderWidget((WWidget) null, this.getModel()
+						.getIndex(j, col, this.getRootIndex())));
+			}
+			this.addSection(Side.Right, items);
+		}
+		this.updateColumnOffsets();
+	}
+
+	private void addSection(Side side, List<WWidget> items) {
+		assert this.isAjaxMode();
+		switch (side) {
+		case Top:
+			for (int i = 0; i < items.size(); ++i) {
+				WTableView.ColumnWidget w = this.columnContainer(i);
+				w.insertWidget(0, items.get(i));
+			}
+			this.setSpannerCount(side, this.getSpannerCount(side) - 1);
+			break;
+		case Bottom:
+			for (int i = 0; i < items.size(); ++i) {
+				WTableView.ColumnWidget w = this.columnContainer(i);
+				w.addWidget(items.get(i));
+			}
+			this.setSpannerCount(side, this.getSpannerCount(side) - 1);
+			break;
+		case Left: {
+			WTableView.ColumnWidget w = new WTableView.ColumnWidget(this, this
+					.getFirstColumn() - 1);
+			for (int i = 0; i < items.size(); ++i) {
+				w.addWidget(items.get(i));
+			}
+			this.table_.setOffsets(new WLength(this.table_.getOffset(Side.Left)
+					.toPixels()
+					- this.getColumnWidth(w.getColumn()).toPixels() - 7),
+					EnumSet.of(Side.Left));
+			--this.firstColumn_;
+			break;
+		}
+		case Right: {
+			WTableView.ColumnWidget w = new WTableView.ColumnWidget(this, this
+					.getLastColumn() + 1);
+			for (int i = 0; i < items.size(); ++i) {
+				w.addWidget(items.get(i));
+			}
+			++this.lastColumn_;
+			break;
+		}
+		default:
+			assert false;
+		}
+	}
+
+	private void removeSection(Side side) {
+		assert this.isAjaxMode();
+		int row = this.getFirstRow();
+		int col = this.getFirstColumn();
+		switch (side) {
+		case Top:
+			this.setSpannerCount(side, this.getSpannerCount(side) + 1);
+			for (int i = 0; i < this.table_.getCount(); ++i) {
+				WTableView.ColumnWidget w = this.columnContainer(i);
+				this.deleteItem(row, col + i, w.getWidget(0));
+			}
+			break;
+		case Bottom:
+			row = this.getLastRow();
+			this.setSpannerCount(side, this.getSpannerCount(side) + 1);
+			for (int i = 0; i < this.table_.getCount(); ++i) {
+				WTableView.ColumnWidget w = this.columnContainer(i);
+				this.deleteItem(row, col + i, w.getWidget(w.getCount() - 1));
+			}
+			break;
+		case Left: {
+			WTableView.ColumnWidget w = this.columnContainer(0);
+			this.table_.setOffsets(new WLength(this.table_.getOffset(Side.Left)
+					.toPixels()
+					+ this.getColumnWidth(w.getColumn()).toPixels() + 7),
+					EnumSet.of(Side.Left));
+			++this.firstColumn_;
+			for (int i = w.getCount() - 1; i >= 0; --i) {
+				this.deleteItem(row + i, col, w.getWidget(i));
+			}
+			if (w != null)
+				w.remove();
+			break;
+		}
+		case Right: {
+			WTableView.ColumnWidget w = this.columnContainer(-1);
+			col = w.getColumn();
+			--this.lastColumn_;
+			for (int i = w.getCount() - 1; i >= 0; --i) {
+				this.deleteItem(row + i, col, w.getWidget(i));
+			}
+			if (w != null)
+				w.remove();
+			break;
+		}
+		default:
+			break;
+		}
+	}
+
+	private int getFirstRow() {
+		if (this.isAjaxMode()) {
+			return this.getSpannerCount(Side.Top);
+		} else {
+			return this.renderedFirstRow_;
+		}
+	}
+
+	private int getLastRow() {
+		if (this.isAjaxMode()) {
+			return this.getModel().getRowCount(this.getRootIndex())
+					- this.getSpannerCount(Side.Bottom) - 1;
+		} else {
+			return this.renderedLastRow_;
+		}
+	}
+
+	private int getFirstColumn() {
+		if (this.isAjaxMode()) {
+			return this.firstColumn_;
+		} else {
+			return 0;
+		}
+	}
+
+	private int getLastColumn() {
+		if (this.isAjaxMode()) {
+			return this.lastColumn_;
+		} else {
+			return this.getModel().getColumnCount(this.getRootIndex()) - 1;
+		}
+	}
+
+	void render(EnumSet<RenderFlag> flags) {
+		if (this.isAjaxMode()
+				&& !EnumUtils.mask(flags, RenderFlag.RenderFull).isEmpty()) {
+			this.defineJavaScript();
+		}
+		if (this.getModel() != null) {
+			while (this.renderState_ != WAbstractItemView.RenderState.RenderOk) {
+				WAbstractItemView.RenderState s = this.renderState_;
+				this.renderState_ = WAbstractItemView.RenderState.RenderOk;
+				switch (s) {
+				case NeedRerender:
+					this.resetGeometry();
+					this.rerenderHeader();
+					this.rerenderData();
+					break;
+				case NeedRerenderHeader:
+					this.rerenderHeader();
+					break;
+				case NeedRerenderData:
+					this.rerenderData();
+					break;
+				case NeedAdjustViewPort:
+					this.adjustToViewport();
+					break;
+				default:
+					break;
+				}
+			}
+		}
+		super.render(flags);
+	}
+
+	private void reset() {
+		assert this.isAjaxMode();
+		int total = 0;
+		for (int i = 0; i < this.getColumnCount(); ++i) {
+			total += (int) this.columnInfo(i).width.toPixels() + 7;
+		}
+		this.headers_.resize(new WLength(total), this.headers_.getHeight());
+		this.canvas_.resize(new WLength(total), new WLength(this.getModel()
+				.getRowCount(this.getRootIndex())
+				* this.getRowHeight().toPixels()));
+		this.computeRenderedArea();
+		int renderedRows = this.getLastRow() - this.getFirstRow() + 1;
+		for (int i = 0; i < renderedRows; ++i) {
+			this.removeSection(Side.Top);
+		}
+		this.setSpannerCount(Side.Top, 0);
+		this.setSpannerCount(Side.Left, 0);
+		this.table_.clear();
+		this.setSpannerCount(Side.Bottom, this.getModel().getRowCount(
+				this.getRootIndex()));
+		this.setSpannerCount(Side.Right, this.getColumnCount());
+	}
+
+	private void rerenderHeader() {
+		for (int i = 0; i < this.getColumnCount(); ++i) {
+			WWidget w = this.columnInfo(i).extraHeaderWidget;
+			if (!(w != null)) {
+				this.columnInfo(i).extraHeaderWidget = this
+						.createExtraHeaderWidget(i);
+			} else {
+				(((w.getParent()) instanceof WContainerWidget ? (WContainerWidget) (w
+						.getParent())
+						: null)).removeWidget(w);
+			}
+		}
+		WApplication app = WApplication.getInstance();
+		if (this.isAjaxMode()) {
+			this.headers_.clear();
+			int total = 0;
+			for (int i = 0; i < this.getColumnCount(); ++i) {
+				WWidget w = this.createHeaderWidget(app, i);
+				w.setPositionScheme(PositionScheme.Absolute);
+				w.resize(new WLength(this.columnInfo(i).width.toPixels() + 1),
+						WLength.Auto);
+				w.setOffsets(total, EnumSet.of(Side.Left));
+				this.headers_.addWidget(w);
+				total += (int) this.columnInfo(i).width.toPixels() + 7;
+			}
+		} else {
+			for (int i = 0; i < this.getColumnCount(); ++i) {
+				WWidget w = this.createHeaderWidget(app, i);
+				WTableCell cell = this.plainTable_.getElementAt(0, i);
+				cell.addWidget(w);
+				w.resize(new WLength(this.columnInfo(i).width.toPixels() + 1),
+						WLength.Auto);
+				cell.resize(
+						new WLength(this.columnInfo(i).width.toPixels() + 1), w
+								.getHeight());
+			}
+		}
+		if (this.getModel() != null) {
+			this.modelHeaderDataChanged(Orientation.Horizontal, 0, this
+					.getColumnCount() - 1);
+		}
+	}
+
+	private void rerenderData() {
+		if (this.isAjaxMode()) {
+			this.reset();
+			this.renderTable(this.renderedFirstRow_, this.renderedLastRow_,
+					this.renderedFirstColumn_, this.renderedLastColumn_);
+		} else {
+			this.pageChanged().trigger();
+			while (this.plainTable_.getRowCount() > 1) {
+				this.plainTable_.deleteRow(this.plainTable_.getRowCount() - 1);
+			}
+			for (int i = this.getFirstRow(); i <= this.getLastRow(); ++i) {
+				int renderedRow = i - this.getFirstRow();
+				if (this.getSelectionBehavior() == SelectionBehavior.SelectRows
+						&& this.isSelected(this.getModel().getIndex(i, 0,
+								this.getRootIndex()))) {
+					WTableRow row = this.plainTable_.getRowAt(renderedRow + 1);
+					row.setStyleClass("Wt-selected");
+				}
+				for (int j = this.getFirstColumn(); j <= this.getLastColumn(); ++j) {
+					int renderedCol = j - this.getFirstColumn();
+					WModelIndex index = this.getModel().getIndex(i, j,
+							this.getRootIndex());
+					WWidget w = this.renderWidget((WWidget) null, index);
+					WTableCell cell = this.plainTable_.getElementAt(
+							renderedRow + 1, renderedCol);
+					cell.addWidget(w);
+					WInteractWidget wi = ((w) instanceof WInteractWidget ? (WInteractWidget) (w)
+							: null);
+					if (wi != null && !this.isEditing(index)) {
+						this.clickedMapper_.mapConnect1(wi.clicked(), index);
+					}
+					if (this.getSelectionBehavior() == SelectionBehavior.SelectItems
+							&& this.isSelected(index)) {
+						cell.setStyleClass("Wt-selected");
+					}
+				}
+			}
+		}
+	}
+
+	private void adjustToViewport() {
+		assert this.isAjaxMode();
+		if (this.renderedFirstRow_ != this.getFirstRow()
+				|| this.renderedLastRow_ != this.getLastRow()
+				|| this.renderedFirstColumn_ != this.getFirstColumn()
+				|| this.renderedLastColumn_ != this.getLastColumn()) {
+			this.renderTable(this.renderedFirstRow_, this.renderedLastRow_,
+					this.renderedFirstColumn_, this.renderedLastColumn_);
+		}
+	}
+
+	private void computeRenderedArea() {
+		if (this.isAjaxMode()) {
+			final int borderRows = 5;
+			final int borderColumnPixels = 200;
+			int top = Math.min(this.viewportTop_, (int) this.canvas_
+					.getHeight().toPixels());
+			int height = Math.min(this.viewportHeight_, (int) this.canvas_
+					.getHeight().toPixels());
+			this.renderedFirstRow_ = (int) (top / this.getRowHeight()
+					.toPixels());
+			int renderedRows = (int) (height / this.getRowHeight().toPixels() + 0.5);
+			this.renderedLastRow_ = Math.min(this.renderedFirstRow_
+					+ renderedRows * 2 + borderRows, this.getModel()
+					.getRowCount(this.getRootIndex()) - 1);
+			this.renderedFirstRow_ = Math.max(this.renderedFirstRow_
+					- renderedRows - borderRows, 0);
+			int left = Math.max(0, this.viewportLeft_ - this.viewportWidth_
+					- borderColumnPixels);
+			int right = Math.min((int) this.canvas_.getWidth().toPixels(),
+					this.viewportLeft_ + 2 * this.viewportWidth_
+							+ borderColumnPixels);
+			int total = 0;
+			this.renderedFirstColumn_ = 0;
+			this.renderedLastColumn_ = this.getColumnCount() - 1;
+			for (int i = 0; i < this.getColumnCount(); i++) {
+				int w = (int) this.columnInfo(i).width.toPixels();
+				if (total <= left && left < total + w) {
+					this.renderedFirstColumn_ = i;
+				}
+				if (total <= right && right < total + w) {
+					this.renderedLastColumn_ = i;
+					break;
+				}
+				total += w + 7;
+			}
+			assert this.renderedFirstColumn_ <= this.renderedLastColumn_;
+		} else {
+			this.renderedFirstColumn_ = 0;
+			if (this.getModel() != null) {
+				this.renderedLastColumn_ = this.getModel().getColumnCount(
+						this.getRootIndex()) - 1;
+				int cp = Math.max(0, Math.min(this.getCurrentPage(), this
+						.getPageCount() - 1));
+				this.setCurrentPage(cp);
+			} else {
+				this.renderedFirstRow_ = this.renderedLastRow_ = 0;
+			}
+		}
+	}
+
+	WContainerWidget getHeaderContainer() {
+		return this.headerContainer_;
+	}
+
+	WWidget headerWidget(int column, boolean contentsOnly) {
+		WWidget result = null;
+		if (this.isAjaxMode()) {
+			result = this.headers_.getWidget(column);
+		} else {
+			result = this.plainTable_.getElementAt(0, column).getWidget(0);
+		}
+		if (contentsOnly) {
+			return result.find("contents");
+		} else {
+			return result;
+		}
+	}
+
+	private void onViewportChange(WScrollEvent e) {
+		assert this.isAjaxMode();
+		this.viewportLeft_ = e.getScrollX();
+		this.viewportWidth_ = e.getViewportWidth();
+		this.viewportTop_ = e.getScrollY();
+		this.viewportHeight_ = e.getViewportHeight();
+		this.computeRenderedArea();
+		this.scheduleRerender(WAbstractItemView.RenderState.NeedAdjustViewPort);
+	}
+
+	private void resetGeometry() {
+		if (this.isAjaxMode()) {
+			this.reset();
+		} else {
+			this.renderedLastRow_ = Math.min(this.getModel().getRowCount(
+					this.getRootIndex()) - 1, this.renderedFirstRow_
+					+ this.getPageSize() - 1);
+			this.renderedLastColumn_ = this.getModel().getColumnCount(
+					this.getRootIndex()) - 1;
+		}
+	}
+
+	private void handleSingleClick(WMouseEvent event) {
+		WModelIndex index = this.translateModelIndex(event);
+		super.handleClick(index, event);
+	}
+
+	private void handleDoubleClick(WMouseEvent event) {
+		WModelIndex index = this.translateModelIndex(event);
+		super.handleDoubleClick(index, event);
+	}
+
+	private void handleMouseWentDown(WMouseEvent event) {
+		WModelIndex index = this.translateModelIndex(event);
+		super.handleMouseDown(index, event);
+	}
+
+	private WModelIndex translateModelIndex(WMouseEvent event) {
+		int row = (int) (event.getWidget().y / this.getRowHeight().toPixels());
+		int column = -1;
+		int total = 0;
+		for (int i = 0; i < this.getColumnCount(); i++) {
+			total += (int) this.columnInfo(i).width.toPixels() + 7;
+			if (event.getWidget().x < total) {
+				column = i;
+				break;
+			}
+		}
+		if (column >= 0 && row >= 0
+				&& row < this.getModel().getRowCount(this.getRootIndex())) {
+			return this.getModel().getIndex(row, column, this.getRootIndex());
+		} else {
+			return null;
+		}
+	}
+
+	boolean internalSelect(WModelIndex index, SelectionFlag option) {
+		if (this.getSelectionBehavior() == SelectionBehavior.SelectRows
+				&& index.getColumn() != 0) {
+			return this.internalSelect(this.getModel().getIndex(index.getRow(),
+					0, index.getParent()), option);
+		}
+		if (super.internalSelect(index, option)) {
+			this.renderSelected(this.isSelected(index), index);
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	void selectRange(WModelIndex first, WModelIndex last) {
+		for (int c = first.getColumn(); c <= last.getColumn(); ++c) {
+			for (int r = first.getRow(); r <= last.getRow(); ++r) {
+				this.internalSelect(this.getModel().getIndex(r, c,
+						this.getRootIndex()), SelectionFlag.Select);
+			}
+		}
+	}
+
+	private void shiftModelIndexes(int start, int count) {
+		SortedSet<WModelIndex> set = this.getSelectionModel().selection_;
+		List<WModelIndex> toShift = new ArrayList<WModelIndex>();
+		List<WModelIndex> toErase = new ArrayList<WModelIndex>();
+		for (Iterator<WModelIndex> it_it = set.tailSet(
+				this.getModel().getIndex(start, 0, this.getRootIndex()))
+				.iterator(); it_it.hasNext();) {
+			WModelIndex it = it_it.next();
+			if (count < 0) {
+				if (it.getRow() < start - count) {
+					toErase.add(it);
+					continue;
+				}
+			}
+			toShift.add(it);
+			toErase.add(it);
+		}
+		for (int i = 0; i < toErase.size(); ++i) {
+			set.remove(toErase.get(i));
+		}
+		for (int i = 0; i < toShift.size(); ++i) {
+			WModelIndex newIndex = this.getModel().getIndex(
+					toShift.get(i).getRow() + count,
+					toShift.get(i).getColumn(), toShift.get(i).getParent());
+			set.add(newIndex);
+		}
+	}
+
+	private void renderSelected(boolean selected, WModelIndex index) {
+		if (this.getSelectionBehavior() == SelectionBehavior.SelectRows) {
+			if (this.isRowRendered(index.getRow())) {
+				int renderedRow = index.getRow() - this.getFirstRow();
+				if (this.isAjaxMode()) {
+					for (int i = 0; i < this.table_.getCount(); ++i) {
+						WTableView.ColumnWidget column = this
+								.columnContainer(i);
+						WWidget w = column.getWidget(renderedRow);
+						if (selected) {
+							w.setStyleClass(StringUtils.addWord(w
+									.getStyleClass(), "Wt-selected"));
+						} else {
+							w.setStyleClass(StringUtils.eraseWord(w
+									.getStyleClass(), "Wt-selected"));
+						}
+					}
+				} else {
+					WTableRow row = this.plainTable_.getRowAt(renderedRow + 1);
+					if (selected) {
+						row.setStyleClass("Wt-selected");
+					} else {
+						row.setStyleClass("");
+					}
+				}
+			}
+		} else {
+			if (this.isRowRendered(index.getRow())
+					&& this.isColumnRendered(index.getColumn())) {
+				int renderedRow = index.getRow() - this.getFirstRow();
+				int renderedCol = index.getColumn() - this.getFirstColumn();
+				WWidget w = null;
+				if (this.isAjaxMode()) {
+					WTableView.ColumnWidget column = this
+							.columnContainer(renderedCol);
+					w = column.getWidget(renderedRow);
+				} else {
+					w = this.plainTable_.getElementAt(renderedRow + 1,
+							renderedCol);
+				}
+				if (selected) {
+					w.setStyleClass(StringUtils.addWord(w.getStyleClass(),
+							"Wt-selected"));
+				} else {
+					w.setStyleClass(StringUtils.eraseWord(w.getStyleClass(),
+							"Wt-selected"));
+				}
+			}
+		}
+	}
+
+	private void defineJavaScript() {
+		WApplication app = WApplication.getInstance();
+		String THIS_JS = "js/WTableView.js";
+		if (!app.isJavaScriptLoaded(THIS_JS)) {
+			app.doJavaScript(wtjs1(app), false);
+			app.setJavaScriptLoaded(THIS_JS);
+		}
+		app.doJavaScript("new Wt3_1_3.WTableView(" + app.getJavaScriptClass()
+				+ "," + this.getJsRef() + ","
+				+ this.contentsContainer_.getJsRef() + ","
+				+ this.headerContainer_.getJsRef() + ");");
+	}
+
+	private boolean isRowRendered(int row) {
+		return row >= this.getFirstRow() && row <= this.getLastRow();
+	}
+
+	private boolean isColumnRendered(int column) {
+		return column >= this.getFirstColumn()
+				&& column <= this.getLastColumn();
+	}
+
+	private void updateColumnOffsets() {
+		assert this.isAjaxMode();
+		int fc = this.getFirstColumn();
+		int lc = this.getLastColumn();
+		int totalRendered = 0;
+		int total = 0;
+		for (int i = 0; i < this.getColumnCount(); ++i) {
+			WAbstractItemView.ColumnInfo ci = this.columnInfo(i);
+			if (i >= fc && i <= lc) {
+				WTableView.ColumnWidget w = this.columnContainer(i - fc);
+				w.setOffsets(new WLength(totalRendered), EnumSet.of(Side.Left));
+				w.resize(new WLength(ci.width.toPixels() + 7), WLength.Auto);
+				totalRendered += (int) this.columnInfo(i).width.toPixels() + 7;
+			}
+			total += (int) this.columnInfo(i).width.toPixels() + 7;
+		}
+		this.canvas_.resize(new WLength(total), new WLength(this.getModel()
+				.getRowCount(this.getRootIndex())
+				* this.getRowHeight().toPixels()));
+		this.headers_.resize(new WLength(total), this.headers_.getHeight());
+	}
+
+	private void onDropEvent(int renderedRow, int columnId, String sourceId,
+			String mimeType, WMouseEvent event) {
+		WDropEvent e = new WDropEvent(WApplication.getInstance().decodeObject(
+				sourceId), mimeType, event);
+		WModelIndex index = this.getModel().getIndex(
+				this.getFirstRow() + renderedRow, this.columnById(columnId),
+				this.getRootIndex());
+		this.dropEvent(e, index);
+	}
+
+	private void deleteItem(int row, int col, WWidget w) {
+		WModelIndex index = this.getModel().getIndex(row, col,
+				this.getRootIndex());
+		if (this.isEditing(index)) {
+			this.setEditState(index, this.getItemDelegate(col).getEditState(w));
+			this.setEditorWidget(index, (WWidget) null);
+		}
+		if (w != null)
+			w.remove();
+	}
+
+	private boolean isAjaxMode() {
+		return this.table_ != null;
+	}
+
+	static String wtjs1(WApplication app) {
+		return "Wt3_1_3.WTableView = function(n,d,k,o){function p(a){var b=-1,c=false,e=false,h=null;for(a=a.target||a.srcElement;a;){var f=$(a);if(f.hasClass(\"Wt-tv-contents\"))break;else if(f.hasClass(\"Wt-tv-c\")){if(a.getAttribute(\"drop\")===\"true\")e=true;if(f.hasClass(\"Wt-selected\"))c=true;h=a;a=a.parentNode;b=a.className.split(\" \")[0].substring(7)*1;break}a=a.parentNode}return{columnId:b,rowIdx:-1,selected:c,drop:e,el:h}}function q(a){var b,c,e=a.parentNode.childNodes;b=0;for(c=e.length;b<c;++b)if(e[b]== a)return b;return-1}function s(a,b){var c=a.className.split(\" \")[0],e=c.substring(7)*1,h=o.firstChild,f=k.firstChild;c=$(f).find(\".\"+c).get(0);var l=a.nextSibling,g=c.nextSibling,j=i.pxself(a,\"width\")-1+b;h.style.width=f.style.width=i.pxself(h,\"width\")+b+\"px\";a.style.width=j+1+\"px\";for(c.style.width=j+7+\"px\";l;l=l.nextSibling){l.style.left=i.pxself(l,\"left\")+b+\"px\";if(g){g.style.left=i.pxself(g,\"left\")+b+\"px\";g=g.nextSibling}}n.emit(d,\"columnResized\",e,j)}jQuery.data(d,\"obj\",this);var i=n.WT;this.mouseDown= function(a,b){i.capture(null);a=p(b);d.getAttribute(\"drag\")===\"true\"&&a.selected&&n._p_.dragStart(d,b)};this.resizeHandleMDown=function(a,b){var c=a.parentNode.parentNode,e=-(i.pxself(c,\"width\")-1);new i.SizeHandle(i,\"h\",a.offsetWidth,d.offsetHeight,e,1E4,\"Wt-hsh\",function(h){s(c,h)},a,d,b,-2,-1)};var m=null;d.handleDragDrop=function(a,b,c,e,h){if(m){m.className=m.classNameOrig;m=null}if(a!=\"end\"){var f=p(c);if(!f.selected&&f.drop)if(a==\"drop\")n.emit(d,{name:\"dropEvent\",eventObject:b,event:c},f.rowIdx, f.columnId,e,h);else{b.className=\"Wt-valid-drop\";m=f.el;m.classNameOrig=m.className;m.className+=\" Wt-drop-site\"}else b.className=\"\"}};d.onkeydown=function(a){var b=a||window.event;if(b.keyCode==9){i.cancelEvent(b);var c=p(b);a=c.el.parentNode;c=q(c.el);var e=q(a),h=a.parentNode.childNodes.length,f=a.childNodes.length;b=b.shiftKey;for(var l=false,g=c,j;;){for(;b?g>=0:g<f;g=b?g-1:g+1)for(j=g==c&&!l?b?e-1:e+1:b?h-1:0;b?j>=0:j<h;j=b?j-1:j+1){if(g==c&&j==e)return;a=a.parentNode.childNodes[j];var r=$(a.childNodes[g]).find(\":input\"); if(r.size()>0){r.focus();return}}g=b?f-1:0;l=true}}};this.autoJavaScript=function(){if(d.parentNode==null){d=k=o=null;this.autoJavaScript=function(){}}else if(!i.isHidden(d)){var a=d.offsetWidth-i.px(d,\"borderLeftWidth\")-i.px(d,\"borderRightWidth\"),b=k.scrollHeight>k.offsetHeight;if(a>200&&(a!=k.tw||b!=k.vscroll)){k.vscroll=b;k.tw=a;k.style.width=a+\"px\";o.style.width=a-(b?19:0)+\"px\"}}}};";
 	}
 }

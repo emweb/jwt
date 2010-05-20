@@ -14,6 +14,7 @@ class SoundManager extends WObject {
 		this.wApp_ = app;
 		WFlashObject player_ = new WFlashObject(WApplication.getResourcesUrl()
 				+ "WtSoundManager.swf", this.wApp_.getDomRoot());
+		player_.setAlternativeContent((WWidget) null);
 		player_.resize(new WLength(100), new WLength(100));
 		player_.setPositionScheme(PositionScheme.Absolute);
 		player_.setOffsets(new WLength(-900), EnumSet.of(Side.Left, Side.Top));

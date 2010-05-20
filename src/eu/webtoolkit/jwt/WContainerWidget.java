@@ -278,7 +278,7 @@ public class WContainerWidget extends WInteractWidget {
 	 * 
 	 * @see WContainerWidget#setLayout(WLayout layout)
 	 */
-	WLayout getLayout() {
+	public WLayout getLayout() {
 		return this.layout_;
 	}
 

@@ -574,6 +574,28 @@ public abstract class WWebWidget extends WWidget {
 		return this.flags_.get(BIT_LOADED);
 	}
 
+	public void setTabIndex(int index) {
+		if (this.children_ != null) {
+			for (int i = 0; i < this.children_.size(); ++i) {
+				WWidget c = this.children_.get(i);
+				c.setTabIndex(index);
+			}
+		}
+	}
+
+	public int getTabIndex() {
+		if (this.children_ != null) {
+			int result = 0;
+			for (int i = 0; i < this.children_.size(); ++i) {
+				WWidget c = this.children_.get(i);
+				result = Math.max(result, c.getTabIndex());
+			}
+			return result;
+		} else {
+			return 0;
+		}
+	}
+
 	public void setId(String id) {
 		if (!(this.otherImpl_ != null)) {
 			this.otherImpl_ = new WWebWidget.OtherImpl();
@@ -631,7 +653,7 @@ public abstract class WWebWidget extends WWidget {
 
 	abstract DomElementType getDomElementType();
 
-	public DomElement createStubElement(WApplication app) {
+	DomElement createStubElement(WApplication app) {
 		this.propagateRenderOk();
 		this.flags_.set(BIT_STUBBED);
 		DomElement stub = DomElement.createNew(DomElementType.DomElement_SPAN);
@@ -653,7 +675,7 @@ public abstract class WWebWidget extends WWidget {
 		return stub;
 	}
 
-	public DomElement createActualElement(WApplication app) {
+	DomElement createActualElement(WApplication app) {
 		this.flags_.clear(BIT_STUBBED);
 		return this.createDomElement(app);
 	}
@@ -803,7 +825,7 @@ public abstract class WWebWidget extends WWidget {
 		}
 	}
 
-	public void setZIndex(int zIndex) {
+	void setZIndex(int zIndex) {
 		if (!(this.layoutImpl_ != null)) {
 			this.layoutImpl_ = new WWebWidget.LayoutImpl();
 		}
@@ -952,7 +974,7 @@ public abstract class WWebWidget extends WWidget {
 						app
 								.addAutoJavaScript("{var w = "
 										+ this.getJsRef()
-										+ ";if (w && !Wt3_1_2.isHidden(w)) {var i = Wt3_1_2.getElement('"
+										+ ";if (w && !Wt3_1_3.isHidden(w)) {var i = Wt3_1_3.getElement('"
 										+ i.getId()
 										+ "');i.style.width=w.clientWidth + 'px';i.style.height=w.clientHeight + 'px';}}");
 						element.addChild(i);
@@ -1045,7 +1067,7 @@ public abstract class WWebWidget extends WWidget {
 			this.flags_.clear(BIT_GEOMETRY_CHANGED);
 		}
 		if (this.width_ != null && (this.flags_.get(BIT_WIDTH_CHANGED) || all)) {
-			if (this.flags_.get(BIT_WIDTH_CHANGED) || !this.width_.isAuto()) {
+			if (!all || !this.width_.isAuto()) {
 				element.setProperty(Property.PropertyStyleWidth, this.width_
 						.getCssText());
 			}
@@ -1053,7 +1075,7 @@ public abstract class WWebWidget extends WWidget {
 		}
 		if (this.height_ != null
 				&& (this.flags_.get(BIT_HEIGHT_CHANGED) || all)) {
-			if (this.flags_.get(BIT_HEIGHT_CHANGED) || !this.height_.isAuto()) {
+			if (!all || !this.height_.isAuto()) {
 				element.setProperty(Property.PropertyStyleHeight, this.height_
 						.getCssText());
 			}
@@ -1087,23 +1109,19 @@ public abstract class WWebWidget extends WWidget {
 		}
 		if (this.layoutImpl_ != null) {
 			if (this.flags_.get(BIT_MARGINS_CHANGED) || all) {
-				if (this.flags_.get(BIT_MARGINS_CHANGED)
-						|| this.layoutImpl_.margin_[0].getValue() != 0) {
+				if (!all || this.layoutImpl_.margin_[0].getValue() != 0) {
 					element.setProperty(Property.PropertyStyleMarginTop,
 							this.layoutImpl_.margin_[0].getCssText());
 				}
-				if (this.flags_.get(BIT_MARGINS_CHANGED)
-						|| this.layoutImpl_.margin_[1].getValue() != 0) {
+				if (!all || this.layoutImpl_.margin_[1].getValue() != 0) {
 					element.setProperty(Property.PropertyStyleMarginRight,
 							this.layoutImpl_.margin_[1].getCssText());
 				}
-				if (this.flags_.get(BIT_MARGINS_CHANGED)
-						|| this.layoutImpl_.margin_[2].getValue() != 0) {
+				if (!all || this.layoutImpl_.margin_[2].getValue() != 0) {
 					element.setProperty(Property.PropertyStyleMarginBottom,
 							this.layoutImpl_.margin_[2].getCssText());
 				}
-				if (this.flags_.get(BIT_MARGINS_CHANGED)
-						|| this.layoutImpl_.margin_[3].getValue() != 0) {
+				if (!all || this.layoutImpl_.margin_[3].getValue() != 0) {
 					element.setProperty(Property.PropertyStyleMarginLeft,
 							this.layoutImpl_.margin_[3].getCssText());
 				}
@@ -1113,8 +1131,7 @@ public abstract class WWebWidget extends WWidget {
 		if (this.lookImpl_ != null) {
 			if (this.lookImpl_.toolTip_ != null
 					&& (this.flags_.get(BIT_TOOLTIP_CHANGED) || all)) {
-				if (this.lookImpl_.toolTip_.toString().length() > 0
-						|| this.flags_.get(BIT_TOOLTIP_CHANGED)) {
+				if (!all || !(this.lookImpl_.toolTip_.length() == 0)) {
 					element.setAttribute("title", this.lookImpl_.toolTip_
 							.toString());
 				}
@@ -1123,11 +1140,13 @@ public abstract class WWebWidget extends WWidget {
 			if (this.lookImpl_.decorationStyle_ != null) {
 				this.lookImpl_.decorationStyle_.updateDomElement(element, all);
 			}
-			if (!all && this.flags_.get(BIT_STYLECLASS_CHANGED) || all
-					&& this.lookImpl_.styleClass_.length() != 0) {
-				element.setProperty(Property.PropertyClass, StringUtils
-						.addWord(element.getProperty(Property.PropertyClass),
-								this.lookImpl_.styleClass_));
+			if (all || this.flags_.get(BIT_STYLECLASS_CHANGED)) {
+				if (!all || this.lookImpl_.styleClass_.length() != 0) {
+					element.setProperty(Property.PropertyClass, StringUtils
+							.addWord(element
+									.getProperty(Property.PropertyClass),
+									this.lookImpl_.styleClass_));
+				}
 			}
 			this.flags_.clear(BIT_STYLECLASS_CHANGED);
 		}
@@ -1310,18 +1329,6 @@ public abstract class WWebWidget extends WWidget {
 		return e;
 	}
 
-	/**
-	 * Propagates that a widget was enabled or disabled through children.
-	 * <p>
-	 * When enabling or disabling a widget, you usually also want to disable
-	 * contained children. This method is called by
-	 * {@link WWebWidget#setDisabled(boolean disabled) setDisabled()} to
-	 * propagate its state to all children.
-	 * <p>
-	 * You may want to reimplement this method if they wish to render
-	 * differently when a widget is disabled. The default implementation will
-	 * propagate the signal to all children.
-	 */
 	protected void propagateSetEnabled(boolean enabled) {
 		if (this.children_ != null) {
 			for (int i = 0; i < this.children_.size(); ++i) {
@@ -1750,7 +1757,7 @@ public abstract class WWebWidget extends WWidget {
 		return -1;
 	}
 
-	protected void setRendered(boolean rendered) {
+	void setRendered(boolean rendered) {
 		if (rendered) {
 			this.flags_.set(BIT_RENDERED);
 		} else {
@@ -1844,14 +1851,8 @@ public abstract class WWebWidget extends WWidget {
 
 	protected void updateSignalConnection(DomElement element,
 			AbstractEventSignal signal, String name, boolean all) {
-		if (name.charAt(0) != 'M' && (all || signal.needUpdate())) {
-			if (signal.isConnected()) {
-				element.setEventSignal(name, signal);
-			} else {
-				if (!all) {
-					element.setEvent(name, "", "");
-				}
-			}
+		if (name.charAt(0) != 'M' && signal.needsUpdate(all)) {
+			element.setEventSignal(name, signal);
 			signal.updateOk();
 		}
 	}

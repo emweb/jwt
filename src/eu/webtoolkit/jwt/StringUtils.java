@@ -34,7 +34,9 @@ public class StringUtils {
 	 * it is formatted with the format String.
 	 */
 	public static WString asString(Object data, String format) {
-		if (data instanceof WDate) {
+		if (format == null || format.length() == 0)
+			return asString(data);
+		else if (data instanceof WDate) {
 			WDate d = (WDate) data;
 			return new WString(d.toString(format));
 		} else if (data instanceof Double) {
@@ -227,13 +229,13 @@ public class StringUtils {
 		return strpbrk(textA, pos, charsA);
 	}
 
-	public static boolean isValidUnicode(char c) {
+	static boolean isValidUnicode(char c) {
 		return ((c == 0x9) || (c == 0xA) || (c == 0xD)
 				|| ((c >= 0x20) && (c <= 0xD7FF))
 				|| ((c >= 0xE000) && (c <= 0xFFFD)) || ((c >= 0x10000) && (c <= 0x10FFFF)));
 	}
 	
-	public static void sanitizeUnicode(EscapeOStream sout, String text) {
+	static void sanitizeUnicode(EscapeOStream sout, String text) {
 		for (int i = 0; i < text.length(); i++) {
 			char c = text.charAt(i);
 		      if (isValidUnicode(c))

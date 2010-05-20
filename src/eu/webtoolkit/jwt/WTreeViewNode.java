@@ -6,6 +6,7 @@
 package eu.webtoolkit.jwt;
 
 import java.util.EnumSet;
+import eu.webtoolkit.jwt.utils.EnumUtils;
 
 class WTreeViewNode extends WTable {
 	public WTreeViewNode(WTreeView view, WModelIndex index, int childrenHeight,
@@ -59,6 +60,19 @@ class WTreeViewNode extends WTable {
 
 	public void remove() {
 		this.view_.removeRenderedNode(this);
+		if (this.view_.isEditing()) {
+			WModelIndex parent = this.index_.getParent();
+			int thisNodeCount = this.view_.getModel().getColumnCount(parent);
+			for (int i = 0; i < thisNodeCount; ++i) {
+				WModelIndex child = this.childIndex(i);
+				if (this.view_.isEditing(child)) {
+					Object editState = this.view_.getItemDelegate(i)
+							.getEditState(this.getWidget(i));
+					this.view_.setEditState(child, editState);
+					this.view_.setEditorWidget(child, (WWidget) null);
+				}
+			}
+		}
 		super.remove();
 	}
 
@@ -67,19 +81,35 @@ class WTreeViewNode extends WTable {
 		int thisNodeCount = this.view_.getModel().getColumnCount(parent);
 		for (int i = firstColumn; i <= lastColumn; ++i) {
 			WModelIndex child = i < thisNodeCount ? this.childIndex(i) : null;
-			WWidget currentW = this.getWidget(i);
+			WWidget w = this.getWidget(i);
 			EnumSet<ViewItemRenderFlag> renderFlags = EnumSet
 					.noneOf(ViewItemRenderFlag.class);
 			if (this.view_.getSelectionBehavior() == SelectionBehavior.SelectItems
 					&& this.view_.isSelected(child)) {
 				renderFlags.add(ViewItemRenderFlag.RenderSelected);
 			}
-			WWidget newW = this.view_.getItemDelegate(i).update(currentW,
-					child, renderFlags);
-			if (newW != currentW) {
-				this.setWidget(i, newW);
+			if (this.view_.isEditing(child)) {
+				renderFlags.add(ViewItemRenderFlag.RenderEditing);
+				if (this.view_.hasEditFocus(child)) {
+					renderFlags.add(ViewItemRenderFlag.RenderFocused);
+				}
+			}
+			w = this.view_.getItemDelegate(i).update(w, child, renderFlags);
+			if (!EnumUtils.mask(renderFlags, ViewItemRenderFlag.RenderEditing)
+					.isEmpty()) {
+				this.view_.setEditorWidget(child, w);
+			}
+			if (!(w.getParent() != null)) {
+				this.setWidget(i, w);
+				if (!EnumUtils.mask(renderFlags,
+						ViewItemRenderFlag.RenderEditing).isEmpty()) {
+					Object state = this.view_.getEditState(child);
+					if (!(state == null)) {
+						this.view_.getItemDelegate(i).setEditState(w, state);
+					}
+				}
 			} else {
-				this.addColumnStyleClass(i, currentW);
+				this.addColumnStyleClass(i, w);
 			}
 		}
 	}
@@ -400,6 +430,8 @@ class WTreeViewNode extends WTable {
 			WTreeViewNode parent = this.getParentNode();
 			if (parent != null) {
 				parent.adjustChildrenHeight(diff);
+			} else {
+				this.view_.pageChanged().trigger();
 			}
 		}
 	}
@@ -542,6 +574,30 @@ class WTreeViewNode extends WTable {
 		this.view_.collapsed_.trigger(this.index_);
 	}
 
+	public WWidget getWidget(int column) {
+		WTableCell tc = this.getElementAt(0, 1);
+		if (column == 0) {
+			if (tc.getCount() > 0) {
+				WWidget result = tc.getWidget(tc.getCount() - 1);
+				return tc.getCount() > 1
+						|| !result.getObjectName().equals("row") ? result
+						: null;
+			} else {
+				return null;
+			}
+		} else {
+			WContainerWidget row = ((tc.getWidget(0)) instanceof WContainerWidget ? (WContainerWidget) (tc
+					.getWidget(0))
+					: null);
+			if (this.view_.column1Fixed_) {
+				row = ((row.getWidget(0)) instanceof WContainerWidget ? (WContainerWidget) (row
+						.getWidget(0))
+						: null);
+			}
+			return row.getCount() >= column ? row.getWidget(column - 1) : null;
+		}
+	}
+
 	private WTreeView view_;
 	private WModelIndex index_;
 	private int childrenHeight_;
@@ -565,30 +621,6 @@ class WTreeViewNode extends WTable {
 	private WModelIndex childIndex(int column) {
 		return this.view_.getModel().getIndex(this.index_.getRow(), column,
 				this.index_.getParent());
-	}
-
-	private WWidget getWidget(int column) {
-		WTableCell tc = this.getElementAt(0, 1);
-		if (column == 0) {
-			if (tc.getCount() > 0) {
-				WWidget result = tc.getWidget(tc.getCount() - 1);
-				return tc.getCount() > 1
-						|| !result.getObjectName().equals("row") ? result
-						: null;
-			} else {
-				return null;
-			}
-		} else {
-			WContainerWidget row = ((tc.getWidget(0)) instanceof WContainerWidget ? (WContainerWidget) (tc
-					.getWidget(0))
-					: null);
-			if (this.view_.column1Fixed_) {
-				row = ((row.getWidget(0)) instanceof WContainerWidget ? (WContainerWidget) (row
-						.getWidget(0))
-						: null);
-			}
-			return row.getCount() >= column ? row.getWidget(column - 1) : null;
-		}
 	}
 
 	private void setWidget(int column, WWidget newW) {
@@ -622,7 +654,7 @@ class WTreeViewNode extends WTable {
 			WInteractWidget wi = ((newW) instanceof WInteractWidget ? (WInteractWidget) (newW)
 					: null);
 			if (wi != null) {
-				this.view_.clickedMapper_.mapConnect(wi.clicked(), this
+				this.view_.clickedMapper_.mapConnect1(wi.clicked(), this
 						.childIndex(column));
 			}
 		}

@@ -23,6 +23,7 @@ import eu.webtoolkit.jwt.WPainter;
 import eu.webtoolkit.jwt.WPainterPath;
 import eu.webtoolkit.jwt.WPen;
 import eu.webtoolkit.jwt.WRectF;
+import eu.webtoolkit.jwt.WShadow;
 import eu.webtoolkit.jwt.WString;
 import eu.webtoolkit.jwt.WtException;
 import eu.webtoolkit.jwt.utils.EnumUtils;
@@ -76,6 +77,7 @@ public class WPieChart extends WAbstractChart {
 		this.height_ = 0.0;
 		this.startAngle_ = 45;
 		this.labelOptions_ = EnumSet.noneOf(LabelOption.class);
+		this.shadow_ = false;
 		this.pie_ = new ArrayList<WPieChart.PieData>();
 		this.setPalette(new WStandardPalette(WStandardPalette.Flavour.Neutral));
 		this.setPreferredMethod(WPaintedWidget.Method.InlineSvgVml);
@@ -244,6 +246,30 @@ public class WPieChart extends WAbstractChart {
 	 */
 	public boolean isPerspectiveEnabled() {
 		return this.height_ > 0.0;
+	}
+
+	/**
+	 * Enables a shadow effect.
+	 * <p>
+	 * A soft shadow effect is added.
+	 * <p>
+	 * The default value is false.
+	 */
+	public void setShadowEnabled(boolean enabled) {
+		if (this.shadow_ != enabled) {
+			this.shadow_ = enabled;
+			this.update();
+		}
+	}
+
+	/**
+	 * Returns whether a shadow effect is enabled.
+	 * <p>
+	 * 
+	 * @see WPieChart#setShadowEnabled(boolean enabled)
+	 */
+	public boolean isShadowEnabled() {
+		return this.shadow_;
 	}
 
 	/**
@@ -480,6 +506,7 @@ public class WPieChart extends WAbstractChart {
 	private double height_;
 	private double startAngle_;
 	private EnumSet<LabelOption> labelOptions_;
+	private boolean shadow_;
 
 	static class PieData {
 		public boolean customBrush;
@@ -572,9 +599,21 @@ public class WPieChart extends WAbstractChart {
 	private void drawPie(WPainter painter, double cx, double cy, double r,
 			double h, double total) {
 		if (h > 0) {
-			if (this.getModel().getRowCount() == 0) {
+			if (total == 0) {
+				if (this.shadow_) {
+					this.setShadow(painter);
+				}
 				this.drawOuter(painter, cx, cy, r, 0, -180, h);
+				if (this.shadow_) {
+					painter.setShadow(new WShadow());
+				}
 			} else {
+				if (this.shadow_) {
+					this.setShadow(painter);
+					painter.setBrush(new WBrush(WColor.black));
+					this.drawSlices(painter, cx, cy + h, r, total, true);
+					painter.setShadow(new WShadow());
+				}
 				List<Double> startAngles = new ArrayList<Double>();
 				List<Double> midAngles = new ArrayList<Double>();
 				{
@@ -717,8 +756,13 @@ public class WPieChart extends WAbstractChart {
 		}
 		if (total == 0) {
 			painter.drawArc(cx - r, cy - r, r * 2, r * 2, 0, 16 * 360);
-			return;
+		} else {
+			this.drawSlices(painter, cx, cy, r, total, false);
 		}
+	}
+
+	private void drawSlices(WPainter painter, double cx, double cy, double r,
+			double total, boolean ignoreBrush) {
 		double currentAngle = this.startAngle_;
 		for (int i = 0; i < this.getModel().getRowCount(); ++i) {
 			double v = StringUtils.asNumber(this.getModel().getData(i,
@@ -732,7 +776,9 @@ public class WPieChart extends WAbstractChart {
 					* Math.cos(-midAngle / 180.0 * 3.14159265358979323846);
 			double pcy = cy + r * this.pie_.get(i).explode
 					* Math.sin(-midAngle / 180.0 * 3.14159265358979323846);
-			painter.setBrush(this.getBrush(i));
+			if (!ignoreBrush) {
+				painter.setBrush(this.getBrush(i));
+			}
 			painter.drawPie(pcx - r, pcy - r, r * 2, r * 2,
 					(int) (currentAngle * 16), (int) (spanAngle * 16));
 			double endAngle = currentAngle + spanAngle;
@@ -767,6 +813,10 @@ public class WPieChart extends WAbstractChart {
 		path.arcTo(pcx, pcy, r, a2, a1 - a2);
 		path.closeSubPath();
 		painter.drawPath(path);
+	}
+
+	private void setShadow(WPainter painter) {
+		painter.setShadow(new WShadow(5, 15, new WColor(0, 0, 0, 20), 40));
 	}
 
 	private int prevIndex(int i) {

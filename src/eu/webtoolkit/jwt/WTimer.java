@@ -96,20 +96,11 @@ public class WTimer extends WObject {
 	}
 
 	/**
-	 * This static function calls a slot after a given time interval.
+	 * Starts the timer.
 	 * <p>
-	 * For example, the following code will call this.doSome() after 2 seconds:
-	 * <blockquote>
-	 * 
-	 * <pre>
-	 * WTimer::singleShot(2000, SLOT(this, MyClass::doSome));
-	 * </pre>
-	 * 
-	 * </blockquote>
-	 * <p>
-	 * Starts the timer. The timer will be {@link WTimer#isActive() isActive()},
-	 * until either the interval has elapsed, after which the timeout signal is
-	 * activated, or until {@link WTimer#stop() stop()} is called.
+	 * The timer will be {@link WTimer#isActive() isActive()}, until either the
+	 * interval has elapsed, after which the timeout signal is activated, or
+	 * until {@link WTimer#stop() stop()} is called.
 	 */
 	public void start() {
 		if (!this.active_) {

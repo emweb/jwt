@@ -24,6 +24,17 @@ var _$_WT_CLASS_$_ = new (function() {
 
 var WT = this;
 
+// buttons currently down
+this.buttons = 0;
+
+this.mouseDown = function(e) {
+  WT.buttons |= WT.button(e);
+};
+
+this.mouseUp = function(e) {
+  WT.buttons ^= WT.button(e);
+};
+
 // Array Remove - By John Resig (MIT Licensed)
 this.arrayRemove = function(a, from, to) {
   var rest = a.slice((to || from) + 1 || a.length);
@@ -125,7 +136,12 @@ this.unwrap = function(e) {
   if (e.parentNode.className.indexOf('Wt-wrap') == 0) {
     var wrapped = e;
     e = e.parentNode;
-    wrapped.style.margin = e.style.margin;
+    if (e.className.length >= 8)
+      wrapped.className = e.className.substring(8);
+    if (WT.isIE)
+      wrapped.style.setAttribute('cssText', e.getAttribute('style'));
+    else
+      wrapped.setAttribute('style', e.getAttribute('style'));
     e.parentNode.replaceChild(wrapped, e);
   } else {
     if (e.getAttribute('type') == 'submit') {
@@ -766,21 +782,6 @@ version: 2.5.2
       }, 50);
   }
 
-  if (!document.activeElement) {
-    function trackActiveElement(evt) {
-      if (evt && evt.target) {
-	document.activeElement = evt.target == document ? null : evt.target;
-      }
-    }
-
-    function trackActiveElementLost(evt) {
-      document.activeElement = null;
-    }
-
-    document.addEventListener("focus", trackActiveElement, true);
-    document.addEventListener("blur", trackActiveElementLost, true);
-  }
-
   function _initialize() {
     var parts;
     parts = _stateField.value.split("|");
@@ -1187,11 +1188,16 @@ function encodeEvent(event, i) {
       + se + 'widgetX=' + (posX - objX) + se + 'widgetY=' + (posY - objY);
   }
 
-  if (e.which)
-    result += se + 'right=' + (e.which==3);
-  else
-    if (e.button)
-      result += se + 'right=' + (e.button==2);
+  var button = WT.button(e);
+  if (!button) {
+    if (WT.buttons & 1)
+      button = 1;
+    else if (WT.buttons & 2)
+      button = 2;
+    else if (WT.buttons & 4)
+      button = 4;
+  }
+  result += se + 'button=' + button;
 
   if (typeof e.keyCode !== 'undefined')
     result += se + 'keyCode=' + e.keyCode;
@@ -1210,6 +1216,35 @@ function encodeEvent(event, i) {
 
   event.data = result;
   return event;
+};
+
+// returns the button associated with the event (0 if none)
+WT.button = function(e)
+{
+  if (e.which) {
+    if (e.which == 3)
+      return 4;
+    else if (e.which == 2)
+      return 2;
+    else
+      return 1;
+  } else if (WT.isIE && typeof e.button != 'undefined') {
+    if (e.button == 2)
+      return 4;
+    else if (e.button == 4)
+      return 2;
+    else
+      return 1;
+  } else if (typeof e.button != 'undefined') {
+    if (e.button == 2)
+      return 4;
+    else if (e.button == 1)
+      return 2;
+    else
+      return 1;
+  } else {
+    return 0;
+  }
 };
 
 var sentEvents = [], pendingEvents = [];
@@ -1256,6 +1291,21 @@ function setTitle(title) {
 };
 
 function load() {
+  if (!document.activeElement) {
+    function trackActiveElement(evt) {
+      if (evt && evt.target) {
+	document.activeElement = evt.target == document ? null : evt.target;
+      }
+    }
+
+    function trackActiveElementLost(evt) {
+      document.activeElement = null;
+    }
+
+    document.addEventListener("focus", trackActiveElement, true);
+    document.addEventListener("blur", trackActiveElementLost, true);
+  }
+
   WT.history._initialize();
   initDragDrop();
   if (!loaded) {
@@ -1592,7 +1642,21 @@ ImagePreloader.prototype.onload = function() {
 
 WT.history.register(_$_INITIAL_HASH_$_, onHashChange);
 
+// For use in FlashObject.js. In IE7, the alternative content is
+// not inserted in the DOM and when it is, it cannot contain JavaScript.
+// Through a hack in the style attribute, we do execute JS, but what we
+// can do there is limited. Hence this helper method.
+function ieAlternative(d)
+{
+  if (d.ieAlternativeExecuted) return '0';
+  self.emit(d.parentNode, 'IeAltnernative');
+  d.style.width = '';
+  d.ieAlternativeExecuted = true;
+  return '0';
+}
+
 this._p_ = {
+ ieAlternative : ieAlternative,
  loadScript : loadScript,
  onJsLoad : onJsLoad,
  setTitle : setTitle,

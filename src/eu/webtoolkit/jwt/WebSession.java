@@ -11,6 +11,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 import eu.webtoolkit.jwt.servlet.UploadedFile;
 import eu.webtoolkit.jwt.servlet.WebRequest;
@@ -47,6 +48,7 @@ class WebSession {
 		this.redirect_ = "";
 		this.asyncResponse_ = null;
 		this.updatesPending_ = false;
+		this.recursiveEvent_ = this.mutex_.newCondition();
 		this.embeddedEnv_ = new WEnvironment(this);
 		this.app_ = null;
 		this.debug_ = this.controller_.getConfiguration().isDebug();
@@ -283,7 +285,6 @@ class WebSession {
 						} else {
 							if (signalE.equals("poll") && !this.updatesPending_) {
 								this.asyncResponse_ = handler.getResponse();
-								this.asyncResponse_.startAsync();
 								handler.setRequest((WebRequest) null,
 										(WebResponse) null);
 							}
@@ -439,6 +440,8 @@ class WebSession {
 								}
 							}
 							if (!(this.app_ != null)) {
+								String resourceE = request
+										.getParameter("resource");
 								if (responseType == WebRenderer.ResponseType.Script) {
 									String hashE = request.getParameter("_");
 									String scaleE = request
@@ -461,42 +464,58 @@ class WebSession {
 												"Could not start application.");
 									}
 								} else {
-									String jsE = request.getParameter("js");
-									if (jsE != null && jsE.equals("no")) {
-										if (!this.start()) {
-											throw new WtException(
-													"Could not start application.");
-										}
-									} else {
-										if (!conf.isReloadIsNewSession()
-												&& wtdE != null
-												&& wtdE.equals(this.sessionId_)) {
-											this
-													.serveResponse(
-															handler,
-															WebRenderer.ResponseType.Page);
-											this
-													.setState(
-															WebSession.State.Loaded,
-															10);
-										} else {
-											handler
-													.getResponse()
-													.setContentType("text/html");
-											handler
-													.getResponse()
-													.out()
-													.append(
-															"<html><body><h1>Refusing to respond.</h1></body></html>");
-										}
+									if (requestE != null
+											&& requestE.equals("resource")
+											&& resourceE != null
+											&& resourceE.equals("blank")) {
+										handler.getResponse().setContentType(
+												"text/html");
+										handler
+												.getResponse()
+												.out()
+												.append(
+														"<html><head><title>bhm</title></head><body>&#160;</body></html>");
 										break;
+									} else {
+										String jsE = request.getParameter("js");
+										if (jsE != null && jsE.equals("no")) {
+											if (!this.start()) {
+												throw new WtException(
+														"Could not start application.");
+											}
+										} else {
+											if (!conf.isReloadIsNewSession()
+													&& wtdE != null
+													&& wtdE
+															.equals(this.sessionId_)) {
+												this
+														.serveResponse(
+																handler,
+																WebRenderer.ResponseType.Page);
+												this
+														.setState(
+																WebSession.State.Loaded,
+																10);
+											} else {
+												handler.getResponse()
+														.setContentType(
+																"text/html");
+												handler
+														.getResponse()
+														.out()
+														.append(
+																"<html><body><h1>Refusing to respond.</h1></body></html>");
+											}
+											break;
+										}
 									}
 								}
 								this.state_ = WebSession.State.JustCreated;
 							}
 							boolean requestForResource = requestE != null
 									&& requestE.equals("resource");
-							{
+							if (requestForResource
+									|| !this.isUnlockRecursiveEventLoop()) {
 								this.app_.notify(new WEvent(handler,
 										responseType));
 								if (handler.getResponse() != null
@@ -562,8 +581,44 @@ class WebSession {
 	}
 
 	public void doRecursiveEventLoop() {
-		this.log("error").append(
-				"Cannot do recursive event loop without threads");
+		try {
+			WebSession.Handler handler = WebSession.Handler.getInstance();
+			handler.getSession().notifySignal(
+					new WEvent(handler, WebRenderer.ResponseType.Update));
+			if (handler.getResponse() != null) {
+				handler
+						.getSession()
+						.render(
+								handler,
+								this.app_.getEnvironment().hasAjax() ? WebRenderer.ResponseType.Update
+										: WebRenderer.ResponseType.Page);
+			}
+			this.recursiveEventLoop_ = handler;
+			this.recursiveEvent_.await();
+			if (this.state_ == WebSession.State.Dead) {
+				this.recursiveEventLoop_ = null;
+				throw new WtException(
+						"doRecursiveEventLoop(): session was killed");
+			}
+			this.app_.notify(new WEvent(handler, this.app_.getEnvironment()
+					.hasAjax() ? WebRenderer.ResponseType.Update
+					: WebRenderer.ResponseType.Page));
+			this.recursiveEventLoop_ = null;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	public boolean isUnlockRecursiveEventLoop() {
+		if (!(this.recursiveEventLoop_ != null)) {
+			return false;
+		}
+		WebSession.Handler handler = WebSession.Handler.getInstance();
+		this.recursiveEventLoop_.setRequest(handler.getRequest(), handler
+				.getResponse());
+		handler.setRequest((WebRequest) null, (WebResponse) null);
+		this.recursiveEvent_.signal();
+		return true;
 	}
 
 	public void pushEmitStack(WObject o) {
@@ -934,6 +989,7 @@ class WebSession {
 	private WebResponse asyncResponse_;
 	private boolean updatesPending_;
 	private boolean progressiveBoot_;
+	private java.util.concurrent.locks.Condition recursiveEvent_;
 	private WEnvironment embeddedEnv_;
 	private WEnvironment env_;
 	private WApplication app_;
@@ -1103,7 +1159,7 @@ class WebSession {
 				String hashE = request.getParameter(se + "_");
 				if (hashE != null) {
 					this.app_.changeInternalPath(hashE);
-					this.app_.doJavaScript("Wt3_1_2.scrollIntoView('" + hashE
+					this.app_.doJavaScript("Wt3_1_3.scrollIntoView('" + hashE
 							+ "');");
 				}
 			} else {
@@ -1163,13 +1219,16 @@ class WebSession {
 	private String getSignal(WebRequest request, String se) {
 		String signalE = request.getParameter(se + "signal");
 		if (!(signalE != null)) {
+			final int signalLength = 7 + se.length();
 			Map<String, String[]> entries = request.getParameterMap();
 			for (Iterator<Map.Entry<String, String[]>> i_it = entries
 					.entrySet().iterator(); i_it.hasNext();) {
 				Map.Entry<String, String[]> i = i_it.next();
-				if (i.getKey().indexOf(se + "signal=") == 0) {
+				if (i.getKey().length() > signalLength
+						&& i.getKey().substring(0, 0 + signalLength).equals(
+								se + "signal=")) {
 					signalE = i.getValue()[0];
-					String v = i.getKey().substring(7 + se.length());
+					String v = i.getKey().substring(signalLength);
 					if (v.length() >= 2) {
 						String e = v.substring(v.length() - 2);
 						if (e.equals(".x") || e.equals(".y")) {
@@ -1227,6 +1286,7 @@ class WebSession {
 
 	private void kill() {
 		this.state_ = WebSession.State.Dead;
+		this.isUnlockRecursiveEventLoop();
 		if (this.handlers_.isEmpty()) {
 			;
 		}

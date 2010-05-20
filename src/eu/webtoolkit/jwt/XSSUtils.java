@@ -26,6 +26,7 @@ class XSSUtils {
 				|| name.equalsIgnoreCase("body")
 				|| name.equalsIgnoreCase("embed")
 				|| name.equalsIgnoreCase("style")
+				|| name.equalsIgnoreCase("comment")
 				|| name.equalsIgnoreCase("blink");
 	}
 
@@ -33,7 +34,13 @@ class XSSUtils {
 		return StringUtils.startsWithIgnoreCase(name, "on")
 				|| StringUtils.startsWithIgnoreCase(name, "data")
 				|| name.equalsIgnoreCase("dynsrc")
-				|| name.equalsIgnoreCase("id") || name.equalsIgnoreCase("name");
+				|| name.equalsIgnoreCase("id")
+				|| name.equalsIgnoreCase("autofocus")
+				|| name.equalsIgnoreCase("name")
+				|| name.equalsIgnoreCase("repeat-start")
+				|| name.equalsIgnoreCase("repeat-end")
+				|| name.equalsIgnoreCase("repeat")
+				|| name.equalsIgnoreCase("pattern");
 	}
 
 	static boolean isBadAttributeValue(String name, String value) {
@@ -42,6 +49,8 @@ class XSSUtils {
 				|| name.equalsIgnoreCase("codebase")
 				|| name.equalsIgnoreCase("dynsrc")
 				|| name.equalsIgnoreCase("href")
+				|| name.equalsIgnoreCase("formaction")
+				|| name.equalsIgnoreCase("poster")
 				|| name.equalsIgnoreCase("src")) {
 			return StringUtils.startsWithIgnoreCase(value, "javascript:")
 					|| StringUtils.startsWithIgnoreCase(value, "vbscript:")
@@ -69,6 +78,7 @@ class XSSUtils {
 			if (name.equalsIgnoreCase("style")) {
 				return StringUtils.containsIgnoreCase(value, "absolute")
 						|| StringUtils.containsIgnoreCase(value, "behaviour")
+						|| StringUtils.containsIgnoreCase(value, "behavior")
 						|| StringUtils.containsIgnoreCase(value, "content")
 						|| StringUtils.containsIgnoreCase(value, "expression")
 						|| StringUtils.containsIgnoreCase(value, "fixed")

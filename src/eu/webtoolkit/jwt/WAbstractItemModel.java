@@ -20,25 +20,26 @@ import eu.webtoolkit.jwt.utils.EnumUtils;
  * An abstract model for use with Wt&apos;s view classes.
  * <p>
  * 
- * This abstract model is used by several JWt view widgets ({@link WComboBox},
- * {@link WSelectionBox} and {@link WTreeView}) as data models.
+ * This abstract model is used by several JWt view widgets as data models.
  * <p>
- * To provide data for both tree-like and table-like view widgets, it organizes
- * data in a hierarchical structure of tables, where every item stores data and
- * optionally a nested table of data. Every data item is at a particular row and
- * column of a parent item, and items may be referenced using the helper class
- * {@link WModelIndex}.
+ * It may model data for both tree-like and table-like view widgets. Data is
+ * therefore organized in a hierarchical structure of tables, where every item
+ * stores data and items in column 0 can be the parent of a nested table of
+ * data. Every data item is uniquely identified by their row, column and parent
+ * index, and items may be referenced using the helper class {@link WModelIndex}.
  * <p>
- * Column header data may also be specified, for each top-level column.
+ * Each item may provide data for one or more {@link ItemDataRole roles}, and
+ * indicate options using {@link ItemFlag flags}. The different roles can be
+ * used to model different aspects of an item (its text value, an icon, style
+ * class), or to hold auxiliary custom information. The flags provide
+ * information to the View on possible interactivity.
  * <p>
- * The data itself is of type Object, which can either be null, or hold any of
- * the following type of data:
- * <ul>
- * <li>Boolean</li>
- * <li>number: Short, Integer, Long, Float, Double</li>
- * <li>string: {@link WString} or String</li>
- * <li>dates: {@link eu.webtoolkit.jwt.WDate}</li>
- * </ul>
+ * Top level data have a <code>null</code> parent {@link WModelIndex}.
+ * <p>
+ * The data itself is of type Object, which can either be <code>null</code>, or
+ * be any type of data. Depending on the role however, view classes may expect
+ * certain types of data (e.g. numerical types for charts) or will convert the
+ * data to a string (e.g. for {@link ItemDataRole#DisplayRole}).
  * <p>
  * To implement a custom model, you need to reimplement the following methods:
  * <ul>
@@ -67,24 +68,19 @@ import eu.webtoolkit.jwt.utils.EnumUtils;
  * points to the parent {@link WStandardItem}. For table models, the internal
  * pointer plays no role, since only the toplevel index has children.
  * <p>
- * If you want to support editing of the model, then you also need to
- * reimplement:
- * <ul>
- * <li>
+ * If you want to support editing of the model, then you need to indicate this
+ * support using a {@link ItemFlag#ItemIsEditable} flag, and reimplement
  * {@link WAbstractItemModel#setData(WModelIndex index, Object value, int role)
- * setData()}</li>
- * <li>
- * {@link WAbstractItemModel#setHeaderData(int section, Orientation orientation, Object value, int role)
- * setHeaderData()} View classes will use the {@link ItemDataRole#EditRole
- * EditRole} to pass an edited value.</li>
- * </ul>
+ * setData()}. View classes will use the {@link ItemDataRole#EditRole EditRole}
+ * to read and update the data for the editor.
  * <p>
- * After data was modified, the model must emit the
+ * When the model&apos;s data has been changed, the model must emit the
  * {@link WAbstractItemModel#dataChanged() dataChanged()} signal.
  * <p>
- * Finally, if you want to support insertion of new data or removal of data
- * (changing the geometry) by any of the view classes, then you need to
- * reimplement the following methods:
+ * Finally, there is a generic interface for insertion of new data or removal of
+ * data (changing the geometry), although this interface is not yet used by any
+ * View class:
+ * <p>
  * <ul>
  * <li>
  * {@link WAbstractItemModel#insertRows(int row, int count, WModelIndex parent)
@@ -239,7 +235,7 @@ public abstract class WAbstractItemModel extends WObject {
 	/**
 	 * Returns the parent for a model index.
 	 * <p>
-	 * You should use
+	 * An implementation should use
 	 * {@link WAbstractItemModel#createIndex(int row, int column, Object ptr)
 	 * createIndex()} to create a model index that corresponds to the parent of
 	 * a given index.
@@ -368,7 +364,7 @@ public abstract class WAbstractItemModel extends WObject {
 	 * Returns an index list for data items that match.
 	 * <p>
 	 * Returns an index list of data items that match, starting at start, and
-	 * searching further in that column. If flags specifes MatchWrap then the
+	 * searching further in that column. If flags specifes {@link } then the
 	 * search wraps around from the start. If hits is not -1, then at most that
 	 * number of hits are returned.
 	 */
@@ -473,11 +469,14 @@ public abstract class WAbstractItemModel extends WObject {
 	 * <p>
 	 * Returns <code>true</code> if the operation was successful.
 	 * <p>
-	 * The default implementation returns <code>false</code>. If you reimplement
-	 * this method, then you must call
+	 * The default implementation returns <code>false</code>.
+	 * <p>
+	 * The model implementation must call
 	 * {@link WAbstractItemModel#beginInsertColumns(WModelIndex parent, int first, int last)
 	 * beginInsertColumns()} and {@link WAbstractItemModel#endInsertColumns()
-	 * endInsertColumns()} before and after the operation.
+	 * endInsertColumns()} before and after the operation whenever its geometry
+	 * is changed by inserting columns. This emits signals for views to properly
+	 * react to these changes.
 	 * <p>
 	 * 
 	 * @see WAbstractItemModel#insertRows(int row, int count, WModelIndex
@@ -505,13 +504,16 @@ public abstract class WAbstractItemModel extends WObject {
 	/**
 	 * Inserts one or more rows.
 	 * <p>
-	 * Returns <code>true</code> if the operation was successful. If you
-	 * reimplement this method, then you must call
-	 * {@link WAbstractItemModel#beginInsertRows(WModelIndex parent, int first, int last)
-	 * beginInsertRows()} and {@link WAbstractItemModel#endInsertRows()
-	 * endInsertRows()} before and after the operation.
+	 * Returns <code>true</code> if the operation was successful.
 	 * <p>
 	 * The default implementation returns <code>false</code>.
+	 * <p>
+	 * The model implementation must call
+	 * {@link WAbstractItemModel#beginInsertRows(WModelIndex parent, int first, int last)
+	 * beginInsertRows()} and {@link WAbstractItemModel#endInsertRows()
+	 * endInsertRows()} before and after the operation whenever its geometry is
+	 * changed by inserting rows. This emits signals for views to properly react
+	 * to these changes.
 	 * <p>
 	 * 
 	 * @see WAbstractItemModel#insertColumns(int column, int count, WModelIndex
@@ -541,11 +543,14 @@ public abstract class WAbstractItemModel extends WObject {
 	 * <p>
 	 * Returns <code>true</code> if the operation was successful.
 	 * <p>
-	 * The default implementation returns <code>false</code>. If you reimplement
-	 * this method, then you must call
+	 * The default implementation returns <code>false</code>.
+	 * <p>
+	 * The model implementation must call
 	 * {@link WAbstractItemModel#beginRemoveColumns(WModelIndex parent, int first, int last)
 	 * beginRemoveColumns()} and {@link WAbstractItemModel#endRemoveColumns()
-	 * endRemoveColumns()} before and after the operation.
+	 * endRemoveColumns()} before and after the operation whenever its geometry
+	 * is changed by removing columns. This emits signals for views to properly
+	 * react to these changes.
 	 * <p>
 	 * 
 	 * @see WAbstractItemModel#removeRows(int row, int count, WModelIndex
@@ -575,11 +580,14 @@ public abstract class WAbstractItemModel extends WObject {
 	 * <p>
 	 * Returns <code>true</code> if the operation was successful.
 	 * <p>
-	 * The default implementation returns <code>false</code>. If you reimplement
-	 * this method, then you must call
+	 * The default implementation returns <code>false</code>.
+	 * <p>
+	 * The model implementation must call
 	 * {@link WAbstractItemModel#beginRemoveRows(WModelIndex parent, int first, int last)
 	 * beginRemoveRows()} and {@link WAbstractItemModel#endRemoveRows()
-	 * endRemoveRows()} before and after the operation.
+	 * endRemoveRows()} before and after the operation whenever its geometry is
+	 * changed by removing rows. This emits signals for views to properly react
+	 * to these changes.
 	 * <p>
 	 * 
 	 * @see WAbstractItemModel#removeColumns(int column, int count, WModelIndex
@@ -609,9 +617,11 @@ public abstract class WAbstractItemModel extends WObject {
 	 * <p>
 	 * Returns <code>true</code> if the operation was successful.
 	 * <p>
-	 * The default implementation returns <code>false</code>. If you reimplement
-	 * this method, you must emit the {@link WAbstractItemModel#dataChanged()
-	 * dataChanged()} signal after data was changed.
+	 * The default implementation returns <code>false</code>.
+	 * <p>
+	 * The model implementation must emit the
+	 * {@link WAbstractItemModel#dataChanged() dataChanged()} signal after data
+	 * was changed.
 	 * <p>
 	 * 
 	 * @see WAbstractItemModel#getData(WModelIndex index, int role)

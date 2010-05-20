@@ -201,9 +201,10 @@ public class WTestEnvironment extends WEnvironment {
 	/**
 	 * Sets the accept header.
 	 * <p>
+	 * 
 	 * The default value is
-	 * &quot;text/html,application/xhtml+xml,application/xml;q=0.9,*
-	 * /*;q=0.8&quot;.
+	 * "text/html,application/xhtml+xml,application/xml;q=0.9,*<span>/</span>*;q=0.8"
+	 * .
 	 * <p>
 	 * 
 	 * @see WEnvironment#getAccept()

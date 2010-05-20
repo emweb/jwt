@@ -36,6 +36,7 @@
     <copy todir="${lib.dir}">
       <fileset dir="../../dist" />
     </copy>
+  	<copy file="../../servlet-lib/servlet-api-2.5-6.0.2.jar" todir="${lib.dir}"/>
 
     <mkdir dir="${build.dir}"/>
     

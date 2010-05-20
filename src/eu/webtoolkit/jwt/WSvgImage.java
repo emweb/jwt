@@ -604,7 +604,9 @@ public class WSvgImage extends WResource implements WVectorImage {
 		out
 				.append(
 						"<feGaussianBlur result=\"blurOut\" in=\"colorOut\" stdDeviation=\"")
-				.append(MathUtils.round(this.currentShadow_.getBlur() / 2, 3))
+				.append(
+						MathUtils.round(Math
+								.sqrt(this.currentShadow_.getBlur()), 3))
 				.append(
 						"\" /><feBlend in=\"SourceGraphic\" in2=\"blurOut\" mode=\"normal\" /></filter>");
 		return result;
@@ -710,8 +712,8 @@ public class WSvgImage extends WResource implements WVectorImage {
 		if (!EnumUtils.mask(this.paintFlags_, PaintFlag.PaintUpdate).isEmpty()) {
 			stream
 					.append(
-							"<g xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\"><g>")
-					.append(this.shapes_.toString()).append("</g></g>");
+							"<g xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\"><g><g>")
+					.append(this.shapes_.toString()).append("</g></g></g>");
 		} else {
 			stream
 					.append(

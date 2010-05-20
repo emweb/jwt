@@ -389,6 +389,7 @@ public class WChart2DRenderer {
 		WAxis xAxis = this.chart_.getAxis(Axis.XAxis);
 		WAxis.Segment xs = xAxis.segments_.get(xSegment);
 		WAxis.Segment ys = yAxis.segments_.get(ySegment);
+		final int CLIP_MARGIN = 5;
 		double x1 = xs.renderStart
 				+ (xSegment == 0 ? xs.renderMinimum == 0 ? 0 : -CLIP_MARGIN
 						: -this.segmentMargin_ / 2);
@@ -719,6 +720,10 @@ public class WChart2DRenderer {
 			WPainterPath ticksPath = new WPainterPath();
 			List<WAxis.TickLabel> ticks = new ArrayList<WAxis.TickLabel>();
 			axis.getLabelTicks(this, ticks, segment);
+			WAxis other = axis.getId() == Axis.XAxis ? this.chart_
+					.getAxis(Axis.Y1Axis) : this.chart_.getAxis(Axis.XAxis);
+			WAxis.Segment s0 = other.segments_.get(0);
+			WAxis.Segment sn = other.segments_.get(other.segments_.size() - 1);
 			for (int i = 0; i < ticks.size(); ++i) {
 				double d = ticks.get(i).u;
 				double dd = axis.mapToDevice(d, segment);
@@ -769,10 +774,9 @@ public class WChart2DRenderer {
 								+ ((tickPos & Right) != 0 ? +tickLength : 0),
 								dd));
 						if (ticks.get(i).tickLength == WAxis.TickLabel.TickLength.Long) {
-							gridPath.moveTo(this.hv(this.chartArea_.getLeft(),
-									dd));
-							gridPath.lineTo(this.hv(this.chartArea_.getRight(),
-									dd));
+							gridPath.moveTo(this.hv(s0.renderStart, dd));
+							gridPath.lineTo(this.hv(sn.renderStart
+									+ sn.renderLength, dd));
 						}
 					} else {
 						ticksPath.moveTo(this.hv(dd, u
@@ -780,10 +784,9 @@ public class WChart2DRenderer {
 						ticksPath.lineTo(this.hv(dd, u
 								+ ((tickPos & Left) != 0 ? +tickLength : 0)));
 						if (ticks.get(i).tickLength == WAxis.TickLabel.TickLength.Long) {
-							gridPath.moveTo(this.hv(dd, this.chartArea_
-									.getTop()));
-							gridPath.lineTo(this.hv(dd, this.chartArea_
-									.getBottom()));
+							gridPath.moveTo(this.hv(dd, s0.renderStart));
+							gridPath.lineTo(this.hv(dd, sn.renderStart
+									- sn.renderLength));
 						}
 					}
 				}
@@ -1109,6 +1112,5 @@ public class WChart2DRenderer {
 		iterateSeries(iterator, false);
 	}
 
-	protected static final int CLIP_MARGIN = 5;
 	static final int TICK_LENGTH = 5;
 }

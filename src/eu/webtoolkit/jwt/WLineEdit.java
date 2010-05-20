@@ -307,19 +307,33 @@ public class WLineEdit extends WFormWidget {
 		if (env.agentIsIE() || env.agentIsOpera()) {
 			return 1;
 		} else {
-			if (env.getUserAgent().indexOf("Mac OS X") != -1) {
-				return 1;
+			if (env.getAgent() == WEnvironment.UserAgent.Arora) {
+				return 0;
 			} else {
-				if (env.getUserAgent().indexOf("Windows") != -1) {
-					return 0;
-				} else {
+				if (env.getUserAgent().indexOf("Mac OS X") != -1) {
 					return 1;
+				} else {
+					if (env.getUserAgent().indexOf("Windows") != -1
+							&& !env.agentIsGecko()) {
+						return 0;
+					} else {
+						return 1;
+					}
 				}
 			}
 		}
 	}
 
 	protected int boxBorder(Orientation orientation) {
-		return 2;
+		WEnvironment env = WApplication.getInstance().getEnvironment();
+		if (env.getUserAgent().indexOf("Mac OS X") != -1 && env.agentIsGecko()) {
+			return 3;
+		} else {
+			if (env.getAgent() == WEnvironment.UserAgent.Arora) {
+				return 0;
+			} else {
+				return 2;
+			}
+		}
 	}
 }

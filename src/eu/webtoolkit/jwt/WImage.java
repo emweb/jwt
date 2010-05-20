@@ -230,12 +230,17 @@ public class WImage extends WInteractWidget {
 	 */
 	public void setResource(WResource resource) {
 		this.resource_ = resource;
-		this.resource_.dataChanged().addListener(this, new Signal.Listener() {
-			public void trigger() {
-				WImage.this.resourceChanged();
-			}
-		});
-		this.setImageRef(this.resource_.getUrl());
+		if (this.resource_ != null) {
+			this.resource_.dataChanged().addListener(this,
+					new Signal.Listener() {
+						public void trigger() {
+							WImage.this.resourceChanged();
+						}
+					});
+			this.setImageRef(this.resource_.getUrl());
+		} else {
+			this.setImageRef("#");
+		}
 	}
 
 	/**
@@ -353,7 +358,9 @@ public class WImage extends WInteractWidget {
 	BitSet flags_;
 
 	private void resourceChanged() {
-		this.setImageRef(this.resource_.getUrl());
+		if (this.resource_ != null) {
+			this.setImageRef(this.resource_.getUrl());
+		}
 	}
 
 	void getDomChanges(List<DomElement> result, WApplication app) {

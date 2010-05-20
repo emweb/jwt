@@ -244,6 +244,38 @@ public class WMessageBox extends WDialog {
 	}
 
 	/**
+	 * Convenience method to show a message box, blocking the current thread.
+	 * <p>
+	 * Show a message box, blocking the current thread until the message box is
+	 * closed, and return the result.
+	 */
+	public static StandardButton show(CharSequence caption, CharSequence text,
+			EnumSet<StandardButton> buttons, boolean i18n) {
+		final WMessageBox box = new WMessageBox(caption, text,
+				Icon.Information, buttons, i18n);
+		box.buttonClicked().addListener(box,
+				new Signal1.Listener<StandardButton>() {
+					public void trigger(StandardButton e1) {
+						box.accept();
+					}
+				});
+		box.exec();
+		return box.getButtonResult();
+	}
+
+	/**
+	 * Convenience method to show a message box, blocking the current thread.
+	 * <p>
+	 * Returns
+	 * {@link #show(CharSequence caption, CharSequence text, EnumSet buttons, boolean i18n)
+	 * show(caption, text, buttons, false)}
+	 */
+	public static final StandardButton show(CharSequence caption,
+			CharSequence text, EnumSet<StandardButton> buttons) {
+		return show(caption, text, buttons, false);
+	}
+
+	/**
 	 * Signal emitted when a button is clicked.
 	 */
 	public Signal1<StandardButton> buttonClicked() {

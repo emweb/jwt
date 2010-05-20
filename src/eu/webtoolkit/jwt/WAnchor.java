@@ -542,7 +542,7 @@ public class WAnchor extends WContainerWidget {
 					if (!(this.changeInternalPathJS_ != null)) {
 						this.changeInternalPathJS_ = new JSlot();
 						this.clicked().addListener(this.changeInternalPathJS_);
-						this.clicked().setPreventDefault(true);
+						this.clicked().preventDefaultAction();
 					}
 					this.changeInternalPathJS_
 							.setJavaScript("function(obj, event){window.location.hash='#"

@@ -277,7 +277,7 @@ class WebRenderer implements SlotLearnerInterface {
 		FileServe script = new FileServe(WtServlet.Wt_js);
 		script.setCondition("DEBUG", conf.isDebug());
 		script.setCondition("DYNAMIC_JS", false);
-		script.setVar("WT_CLASS", "Wt3_1_2");
+		script.setVar("WT_CLASS", "Wt3_1_3");
 		script.setVar("APP_CLASS", app.getJavaScriptClass());
 		script.setVar("AUTO_JAVASCRIPT", "(function() {" + app.autoJavaScript_
 				+ "})");
@@ -305,16 +305,19 @@ class WebRenderer implements SlotLearnerInterface {
 			this.serveMainAjax(response);
 		} else {
 			response.out().append("window.loadWidgetTree = function(){\n");
+			StringWriter scopeClose = new StringWriter();
 			if (app.enableAjax_) {
+				response.out().append(this.beforeLoadJS_.toString());
+				this.beforeLoadJS_ = new StringWriter();
+				this.loadScriptLibraries(response.out(), app, true);
+				this.loadScriptLibraries(scopeClose, app, false);
 				response
 						.out()
-						.append(this.beforeLoadJS_.toString())
+						.append(app.getNewBeforeLoadJavaScript())
 						.append("var domRoot = ")
 						.append(app.domRoot_.getJsRef())
 						.append(
-								";var form = Wt3_1_2.getElement('Wt-form');domRoot.style.display = form.style.display;document.body.replaceChild(domRoot, form);")
-						.append(app.getAfterLoadJavaScript());
-				this.beforeLoadJS_ = new StringWriter();
+								";var form = Wt3_1_3.getElement('Wt-form');domRoot.style.display = form.style.display;document.body.replaceChild(domRoot, form);");
 			}
 			this.visibleOnly_ = false;
 			this.collectJavaScript();
@@ -323,15 +326,17 @@ class WebRenderer implements SlotLearnerInterface {
 					String.valueOf(this.expectedAckId_)).append(");");
 			this.updateLoadIndicator(response.out(), app, true);
 			if (app.enableAjax_) {
-				response.out().append("domRoot.style.display = 'block';")
+				response.out().append("domRoot.style.visibility = 'visible';")
 						.append(app.getJavaScriptClass()).append(
 								"._p_.autoJavaScript();");
 			}
 			response.out().append(app.getJavaScriptClass()).append(
 					"._p_.update(null, 'load', null, false);").append(
-					this.collectedJS2_.toString()).append("};").append(
-					app.getJavaScriptClass()).append("._p_.setServerPush(")
-					.append(app.isUpdatesEnabled() ? "true" : "false").append(
+					this.collectedJS2_.toString())
+					.append(scopeClose.toString()).append("};").append(
+							app.getJavaScriptClass()).append(
+							"._p_.setServerPush(").append(
+							app.isUpdatesEnabled() ? "true" : "false").append(
 							");").append("window.WtScriptLoaded = true;")
 					.append("if (window.isLoaded) onLoad();\n");
 			app.enableAjax_ = false;
@@ -373,6 +378,7 @@ class WebRenderer implements SlotLearnerInterface {
 		if (!app.getEnvironment().hasAjax()
 				&& (app.internalPathIsChanged_ && !app.oldInternalPath_
 						.equals(app.newInternalPath_))) {
+			app.oldInternalPath_ = app.newInternalPath_;
 			this.session_.redirect(app.getBookmarkUrl(app.newInternalPath_));
 		}
 		String redirect = this.session_.getRedirect();
@@ -493,17 +499,17 @@ class WebRenderer implements SlotLearnerInterface {
 			app.getStyleSheet().javaScriptUpdate(app, response.out(), true);
 		}
 		if (app.getCssTheme().length() != 0) {
-			response.out().append("Wt3_1_2").append(".addStyleSheet('").append(
+			response.out().append("Wt3_1_3").append(".addStyleSheet('").append(
 					WApplication.getResourcesUrl()).append("/themes/").append(
 					app.getCssTheme()).append("/wt.css');");
 			if (app.getEnvironment().agentIsIE()) {
-				response.out().append("Wt3_1_2").append(".addStyleSheet('")
+				response.out().append("Wt3_1_3").append(".addStyleSheet('")
 						.append(WApplication.getResourcesUrl()).append(
 								"/themes/").append(app.getCssTheme()).append(
 								"/wt_ie.css');");
 			}
 			if (app.getEnvironment().getAgent() == WEnvironment.UserAgent.IE6) {
-				response.out().append("Wt3_1_2").append(".addStyleSheet('")
+				response.out().append("Wt3_1_3").append(".addStyleSheet('")
 						.append(WApplication.getResourcesUrl()).append(
 								"/themes/").append(app.getCssTheme()).append(
 								"/wt_ie6.css');");
@@ -538,7 +544,7 @@ class WebRenderer implements SlotLearnerInterface {
 		if (widgetset) {
 			String historyE = app.getEnvironment().getParameter("Wt-history");
 			if (historyE != null) {
-				response.out().append("Wt3_1_2")
+				response.out().append("Wt3_1_3")
 						.append(".history.initialize('").append(
 								historyE.charAt(0)).append("-field', '")
 						.append(historyE.charAt(0)).append("-iframe');\n");
@@ -573,7 +579,7 @@ class WebRenderer implements SlotLearnerInterface {
 				app.getAjaxMethod() == WApplication.AjaxMethod.XMLHttpRequest ? WtServlet.CommAjax_js
 						: WtServlet.CommScript_js);
 		js.setVar("APP_CLASS", app.getJavaScriptClass());
-		js.setVar("WT_CLASS", "Wt3_1_2");
+		js.setVar("WT_CLASS", "Wt3_1_3");
 		js
 				.setVar(
 						"CLOSE_CONNECTION",
@@ -719,7 +725,7 @@ class WebRenderer implements SlotLearnerInterface {
 			throws IOException {
 		int first = app.styleSheets_.size() - app.styleSheetsAdded_;
 		for (int i = first; i < app.styleSheets_.size(); ++i) {
-			out.append("Wt3_1_2").append(".addStyleSheet('").append(
+			out.append("Wt3_1_3").append(".addStyleSheet('").append(
 					app.fixRelativeUrl(app.styleSheets_.get(i)))
 					.append("');\n");
 		}
@@ -756,14 +762,14 @@ class WebRenderer implements SlotLearnerInterface {
 
 	private void updateLoadIndicator(Writer out, WApplication app, boolean all)
 			throws IOException {
-		if (app.showLoadingIndicator_.needUpdate() || all) {
+		if (app.showLoadingIndicator_.needsUpdate(all)) {
 			out.append(
 					"showLoadingIndicator = function() {var o=null,e=null;\n")
 					.append(app.showLoadingIndicator_.getJavaScript()).append(
 							"};\n");
 			app.showLoadingIndicator_.updateOk();
 		}
-		if (app.hideLoadingIndicator_.needUpdate() || all) {
+		if (app.hideLoadingIndicator_.needsUpdate(all)) {
 			out.append(
 					"hideLoadingIndicator = function() {var o=null,e=null;\n")
 					.append(app.hideLoadingIndicator_.getJavaScript()).append(
@@ -825,7 +831,7 @@ class WebRenderer implements SlotLearnerInterface {
 	private StringWriter collectedJS2_;
 	private StringWriter invisibleJS_;
 	private StringWriter statelessJS_;
-	private StringWriter beforeLoadJS_;
+	StringWriter beforeLoadJS_;
 
 	private void collectJS(Writer js) throws IOException {
 		List<DomElement> changes = new ArrayList<DomElement>();
@@ -917,13 +923,42 @@ class WebRenderer implements SlotLearnerInterface {
 	}
 
 	private String getHeadDeclarations() {
-		if (this.session_.getFavicon().length() != 0) {
-			final boolean xhtml = this.session_.getEnv().getContentType() == WEnvironment.ContentType.XHTML1;
-			return "<link rel=\"icon\" type=\"image/vnd.microsoft.icon\" href=\""
-					+ this.session_.getFavicon() + (xhtml ? "\"/>" : "\">");
-		} else {
-			return "";
+		final boolean xhtml = this.session_.getEnv().getContentType() == WEnvironment.ContentType.XHTML1;
+		EscapeOStream result = new EscapeOStream();
+		if (this.session_.getApp() != null) {
+			for (int i = 0; i < this.session_.getApp().metaHeaders_.size(); ++i) {
+				WApplication.MetaHeader m = this.session_.getApp().metaHeaders_
+						.get(i);
+				result.append("<meta");
+				if (m.name.length() != 0) {
+					result.append(" name=\"");
+					result.pushEscape(EscapeOStream.RuleSet.HtmlAttribute);
+					result.append(m.name);
+					result.popEscape();
+					result.append('"');
+				}
+				if (m.lang.length() != 0) {
+					result.append(" lang=\"");
+					result.pushEscape(EscapeOStream.RuleSet.HtmlAttribute);
+					result.append(m.lang);
+					result.popEscape();
+					result.append('"');
+				}
+				result.append(" content=\"");
+				result.pushEscape(EscapeOStream.RuleSet.HtmlAttribute);
+				result.append(m.content.toString());
+				result.popEscape();
+				result.append(xhtml ? "\"/>" : "\">");
+			}
 		}
+		if (this.session_.getFavicon().length() != 0) {
+			result
+					.append(
+							"<link rel=\"icon\" type=\"image/vnd.microsoft.icon\" href=\"")
+					.append(this.session_.getFavicon()).append(
+							xhtml ? "\"/>" : "\">");
+		}
+		return result.toString();
 	}
 
 	private Set<WWidget> updateMap_;

@@ -13,6 +13,7 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
+import eu.webtoolkit.jwt.ItemFlag;
 import eu.webtoolkit.jwt.Orientation;
 import eu.webtoolkit.jwt.WAbstractItemModel;
 import eu.webtoolkit.jwt.WContainerWidget;
@@ -114,6 +115,11 @@ public class CsvUtil {
 
         if (is != null) {
             readFromCsv(new BufferedReader(new InputStreamReader(is)), model);
+            
+            for (int row = 0; row < model.getRowCount(); ++row)
+                for (int col = 0; col < model.getColumnCount(); ++col)
+                  model.getItem(row, col).setFlags(ItemFlag.ItemIsSelectable, ItemFlag.ItemIsEditable);
+
             return model;
         } else {
             WString error = WString.tr("error-missing-data");

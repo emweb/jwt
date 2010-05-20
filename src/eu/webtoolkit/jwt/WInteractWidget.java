@@ -260,6 +260,10 @@ public abstract class WInteractWidget extends WWebWidget {
 	/**
 	 * Event signal emitted when the mouse moved over this widget.
 	 * <p>
+	 * The mouse event contains information on the button(s) currently pressed.
+	 * If multiple buttons are currently pressed, only the button with smallest
+	 * enum value is returned.
+	 * <p>
 	 * <p>
 	 * <i><b>Note: </b>When JavaScript is disabled, the signal will never fire.
 	 * </i>
@@ -270,7 +274,23 @@ public abstract class WInteractWidget extends WWebWidget {
 	}
 
 	/**
-	 * Configure dragging.
+	 * Event signal emitted when the mouse is dragged over this widget.
+	 * <p>
+	 * The mouse event contains information on the button(s) currently pressed.
+	 * If multiple buttons are currently pressed, only the button with smallest
+	 * enum value is returned.
+	 * <p>
+	 * <p>
+	 * <i><b>Note: </b>When JavaScript is disabled, the signal will never fire.
+	 * </i>
+	 * </p>
+	 */
+	public EventSignal1<WMouseEvent> mouseDragged() {
+		return this.mouseEventSignal(MOUSE_DRAG_SIGNAL, true);
+	}
+
+	/**
+	 * Configure dragging for drag and drop.
 	 * <p>
 	 * Enable drag&amp;drop for this widget. The mimeType is used to find a
 	 * suitable drop target, which must accept dropping of this mimetype.
@@ -316,7 +336,7 @@ public abstract class WInteractWidget extends WWebWidget {
 	}
 
 	/**
-	 * Configure dragging.
+	 * Configure dragging for drag and drop.
 	 * <p>
 	 * Calls
 	 * {@link #setDraggable(String mimeType, WWidget dragWidget, boolean isDragWidgetOnly, WObject sourceObject)
@@ -327,7 +347,7 @@ public abstract class WInteractWidget extends WWebWidget {
 	}
 
 	/**
-	 * Configure dragging.
+	 * Configure dragging for drag and drop.
 	 * <p>
 	 * Calls
 	 * {@link #setDraggable(String mimeType, WWidget dragWidget, boolean isDragWidgetOnly, WObject sourceObject)
@@ -338,7 +358,7 @@ public abstract class WInteractWidget extends WWebWidget {
 	}
 
 	/**
-	 * Configure dragging.
+	 * Configure dragging for drag and drop.
 	 * <p>
 	 * Calls
 	 * {@link #setDraggable(String mimeType, WWidget dragWidget, boolean isDragWidgetOnly, WObject sourceObject)
@@ -357,15 +377,9 @@ public abstract class WInteractWidget extends WWebWidget {
 				false);
 		EventSignal1<WKeyEvent> keyDown = this.keyEventSignal(KEYDOWN_SIGNAL,
 				false);
-		if (all) {
-			updateKeyDown = enterPress != null && enterPress.isConnected()
-					|| escapePress != null && escapePress.isConnected()
-					|| keyDown != null && keyDown.isConnected();
-		} else {
-			updateKeyDown = enterPress != null && enterPress.needUpdate()
-					|| escapePress != null && escapePress.needUpdate()
-					|| keyDown != null && keyDown.needUpdate();
-		}
+		updateKeyDown = enterPress != null && enterPress.needsUpdate(all)
+				|| escapePress != null && escapePress.needsUpdate(all)
+				|| keyDown != null && keyDown.needsUpdate(all);
 		if (updateKeyDown) {
 			List<DomElement.EventAction> actions = new ArrayList<DomElement.EventAction>();
 			if (enterPress != null) {
@@ -396,7 +410,7 @@ public abstract class WInteractWidget extends WWebWidget {
 				escapePress.updateOk();
 			}
 			if (keyDown != null) {
-				if (keyDown.isConnected()) {
+				if (keyDown.needsUpdate(all)) {
 					actions.add(new DomElement.EventAction("", keyDown
 							.getJavaScript(), keyDown.encodeCmd(), keyDown
 							.isExposedSignal()));
@@ -411,17 +425,86 @@ public abstract class WInteractWidget extends WWebWidget {
 				}
 			}
 		}
+		EventSignal1<WMouseEvent> mouseDown = this.mouseEventSignal(
+				MOUSE_DOWN_SIGNAL, false);
+		EventSignal1<WMouseEvent> mouseUp = this.mouseEventSignal(
+				MOUSE_UP_SIGNAL, false);
+		EventSignal1<WMouseEvent> mouseMove = this.mouseEventSignal(
+				MOUSE_MOVE_SIGNAL, false);
+		EventSignal1<WMouseEvent> mouseDrag = this.mouseEventSignal(
+				MOUSE_DRAG_SIGNAL, false);
+		boolean updateMouseMove = mouseMove != null
+				&& mouseMove.needsUpdate(all) || mouseDrag != null
+				&& mouseDrag.needsUpdate(all);
+		boolean updateMouseDown = mouseDown != null
+				&& mouseDown.needsUpdate(all) || updateMouseMove;
+		boolean updateMouseUp = mouseUp != null
+				&& mouseUp.needsUpdate(!Side.All.isEmpty()) || updateMouseMove;
+		if (updateMouseDown) {
+			String js = "";
+			if (mouseUp != null && mouseUp.isConnected()) {
+				js += WApplication.getInstance().getJavaScriptClass()
+						+ "._p_.saveDownPos(event);";
+			}
+			if (js.length() != 0 || mouseMove != null
+					&& mouseMove.isConnected() || mouseDrag != null
+					&& mouseDrag.isConnected()) {
+				js += "Wt3_1_3.capture(this);";
+			}
+			if (mouseMove != null && mouseMove.isConnected()
+					|| mouseDrag != null && mouseDrag.isConnected()) {
+				js += "Wt3_1_3.mouseDown(e);";
+			}
+			if (mouseDown != null) {
+				js += mouseDown.getJavaScript();
+				element.setEvent("mousedown", js, mouseDown.encodeCmd(),
+						mouseDown.isExposedSignal());
+				mouseDown.updateOk();
+			} else {
+				element.setEvent("mousedown", js, "", false);
+			}
+		}
+		if (updateMouseUp) {
+			String js = "";
+			if (mouseMove != null && mouseMove.isConnected()
+					|| mouseDrag != null && mouseDrag.isConnected()) {
+				js += "Wt3_1_3.mouseUp(e);";
+			}
+			if (mouseUp != null) {
+				js += mouseUp.getJavaScript();
+				element.setEvent("mouseup", js, mouseUp.encodeCmd(), mouseUp
+						.isExposedSignal());
+				mouseUp.updateOk();
+			} else {
+				element.setEvent("mouseup", js, "", false);
+			}
+		}
+		if (updateMouseMove) {
+			List<DomElement.EventAction> actions = new ArrayList<DomElement.EventAction>();
+			if (mouseMove != null) {
+				actions.add(new DomElement.EventAction("", mouseMove
+						.getJavaScript(), mouseMove.encodeCmd(), mouseMove
+						.isExposedSignal()));
+				mouseMove.updateOk();
+			}
+			if (mouseDrag != null) {
+				actions.add(new DomElement.EventAction("Wt3_1_3.buttons",
+						mouseDrag.getJavaScript(), mouseDrag.encodeCmd(),
+						mouseDrag.isExposedSignal()));
+				mouseDrag.updateOk();
+			}
+			element.setEvent("mousemove", actions);
+		}
 		LinkedList<AbstractEventSignal> other = this.eventSignals();
 		for (Iterator<AbstractEventSignal> i_it = other.iterator(); i_it
 				.hasNext();) {
 			AbstractEventSignal i = i_it.next();
 			AbstractEventSignal s = i;
-			this.updateSignalConnection(element, s, s.getName(), all);
 			if (s.getName() == WInteractWidget.CLICK_SIGNAL
 					&& this.flags_.get(BIT_REPAINT_TO_AJAX)) {
-				WApplication.getInstance().doJavaScript(
-						"Wt3_1_2.unwrap('" + this.getId() + "');");
+				element.unwrap();
 			}
+			this.updateSignalConnection(element, s, s.getName(), all);
 		}
 		super.updateDom(element, all);
 	}
@@ -445,9 +528,10 @@ public abstract class WInteractWidget extends WWebWidget {
 	private static String ESCAPE_PRESS_SIGNAL = "M_escapepress";
 	static String CLICK_SIGNAL = "click";
 	private static String DBL_CLICK_SIGNAL = "dblclick";
-	static String MOUSE_DOWN_SIGNAL = "mousedown";
-	static String MOUSE_UP_SIGNAL = "mouseup";
+	static String MOUSE_DOWN_SIGNAL = "M_mousedown";
+	static String MOUSE_UP_SIGNAL = "M_mouseup";
 	private static String MOUSE_OUT_SIGNAL = "mouseout";
 	private static String MOUSE_OVER_SIGNAL = "mouseover";
-	private static String MOUSE_MOVE_SIGNAL = "mousemove";
+	private static String MOUSE_MOVE_SIGNAL = "M_mousemove";
+	private static String MOUSE_DRAG_SIGNAL = "M_mousedrag";
 }

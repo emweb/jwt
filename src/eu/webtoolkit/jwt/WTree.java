@@ -186,6 +186,8 @@ public class WTree extends WCompositeWidget {
 			} else {
 				if (this.selection_.remove(node)) {
 					node.renderSelected(false);
+				} else {
+					return;
 				}
 			}
 		}
@@ -231,7 +233,7 @@ public class WTree extends WCompositeWidget {
 	private SentinelTreeNode sentinelRoot_;
 	private SelectionMode selectionMode_;
 	private Set<WTreeNode> selection_;
-	private WSignalMapper2<WTreeNode, WMouseEvent> onClickMapper_;
+	private final WSignalMapper2<WTreeNode, WMouseEvent> onClickMapper_;
 	private Signal itemSelectionChanged_;
 
 	private void onClick(WTreeNode node, WMouseEvent event) {
@@ -337,7 +339,6 @@ public class WTree extends WCompositeWidget {
 	}
 
 	void nodeAdded(WTreeNode node) {
-		this.select(node, false);
 		if (node.isSelectable()) {
 			WInteractWidget w = node.getLabel();
 			if (!(w != null)) {

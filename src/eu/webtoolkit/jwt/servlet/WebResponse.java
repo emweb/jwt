@@ -17,6 +17,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletResponseWrapper;
 
 import eu.webtoolkit.jwt.WResource;
+import eu.webtoolkit.jwt.WtServlet;
 
 /**
  * A WebResponse which wraps the HttpServletResponse to support testing.
@@ -66,7 +67,7 @@ public class WebResponse extends HttpServletResponseWrapper {
 	 * @param out The custom output stream.
 	 */
 	public WebResponse(final OutputStream out) {
-		super(new MockupHttpServletResponse());
+		super(WtServlet.getServletApi().getMockupHttpServletResponse());
 
 		this.outputStream = new ServletOutputStream() {
 			@Override
@@ -140,6 +141,7 @@ public class WebResponse extends HttpServletResponseWrapper {
 		try {
 			outWriter.flush();
 			getOutputStream().flush();
+			WtServlet.getServletApi().completeAsyncContext(request);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -183,11 +185,12 @@ public class WebResponse extends HttpServletResponseWrapper {
 		return request.getMethod();
 	}
 
+	/**
+	 * Returns the request's parameter map.
+	 * 
+	 * @return the request's parameter map
+	 */
 	public Map<String, String[]> getParameterMap() {
 		return ((WebRequest)request).getParameterMap();
-	}
-
-	public void startAsync() {
-		throw new RuntimeException("Server-push is not implemented with the servlet-2.5 API");
 	}
 }

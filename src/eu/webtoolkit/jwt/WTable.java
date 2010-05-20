@@ -304,7 +304,7 @@ public class WTable extends WInteractWidget {
 		return getHeaderCount(Orientation.Horizontal);
 	}
 
-	private static final int BIT_GRID_CHANGED = 0;
+	static final int BIT_GRID_CHANGED = 0;
 	private static final int BIT_COLUMNS_CHANGED = 1;
 	BitSet flags_;
 	List<WTableRow> rows_;
@@ -489,6 +489,8 @@ public class WTable extends WInteractWidget {
 					for (int j = 0; j < d.cell.getColumnSpan(); ++j) {
 						if (i + j > 0) {
 							this.itemAt(row + i, col + j).overSpanned = true;
+							this.itemAt(row + i, col + j).cell
+									.setRendered(false);
 						}
 					}
 				}

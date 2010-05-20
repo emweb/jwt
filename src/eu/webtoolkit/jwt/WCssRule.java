@@ -61,7 +61,7 @@ public abstract class WCssRule {
 	 */
 	public abstract String getDeclarations();
 
-	public boolean updateDomElement(DomElement cssRuleElement, boolean all) {
+	boolean updateDomElement(DomElement cssRuleElement, boolean all) {
 		return false;
 	}
 

@@ -22,27 +22,15 @@ import eu.webtoolkit.jwt.utils.MathUtils;
  * when appropriate.
  * <p>
  * <p>
- * <i><b>Note: </b>Because of the lack for text support in the current HTML 5
- * &lt;canvas&gt; specification, there is only limited support for text. Text is
- * rendered in an overlayed DIV and a consequence text is not subject to
- * rotation and scaling components of the current transformation (but does take
- * into account translation). This will be fixed in the future (some way, some
- * how!). On most browser you can use the {@link WSvgImage} or {@link WVmlImage}
- * paint devices which do support text natively. </i>
+ * <i><b>Note: </b>Older browsers do not have text support in &lt;canvas&gt;.
+ * Text is then rendered in an overlayed DIV and a consequence text is not
+ * subject to rotation and scaling components of the current transformation (but
+ * does take into account translation). On most browser you can use the
+ * {@link WSvgImage} or {@link WVmlImage} paint devices which do support text
+ * natively. </i>
  * </p>
  */
 public class WCanvasPaintDevice extends WObject implements WPaintDevice {
-	enum TextMethod {
-		MozText, Html5Text, DomText;
-
-		/**
-		 * Returns the numerical representation of this enum.
-		 */
-		public int getValue() {
-			return ordinal();
-		}
-	}
-
 	/**
 	 * Create a canvas paint device.
 	 */
@@ -424,12 +412,8 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 		return this.painter_ != null;
 	}
 
-	public WCanvasPaintDevice.TextMethod getTextMethod() {
-		return this.textMethod_;
-	}
-
 	void render(String canvasId, DomElement text) {
-		String canvasVar = "Wt3_1_2.getElement('" + canvasId + "')";
+		String canvasVar = "Wt3_1_3.getElement('" + canvasId + "')";
 		StringWriter tmp = new StringWriter();
 		tmp.append("if(").append(canvasVar).append(
 				".getContext){new Wt._p_.ImagePreloader([");
@@ -482,6 +466,17 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 	public final void setPaintFlags(PaintFlag paintFlag,
 			PaintFlag... paintFlags) {
 		setPaintFlags(EnumSet.of(paintFlag, paintFlags));
+	}
+
+	enum TextMethod {
+		MozText, Html5Text, DomText;
+
+		/**
+		 * Returns the numerical representation of this enum.
+		 */
+		public int getValue() {
+			return ordinal();
+		}
 	}
 
 	private WLength width_;
@@ -602,6 +597,8 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 				WTransform t = this.getPainter().getClipPathTransform();
 				this.renderTransform(this.js_, t);
 				if (this.getPainter().hasClipping()) {
+					this.pathTranslation_.setX(0);
+					this.pathTranslation_.setY(0);
 					this.drawPlainPath(this.js_, this.getPainter()
 							.getClipPath());
 					this.js_.append("ctx.clip();");
@@ -863,6 +860,10 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 	private int createImage(String imgUri) {
 		this.images_.add(imgUri);
 		return this.images_.size() - 1;
+	}
+
+	WCanvasPaintDevice.TextMethod getTextMethod() {
+		return this.textMethod_;
 	}
 
 	static WPointF normalizedDegreesToRadians(double angle, double sweep) {

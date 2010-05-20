@@ -158,6 +158,7 @@ public class WApplication extends WObject {
 		this.theme_ = "default";
 		this.styleSheets_ = new ArrayList<String>();
 		this.styleSheetsAdded_ = 0;
+		this.metaHeaders_ = new ArrayList<WApplication.MetaHeader>();
 		this.exposedSignals_ = new HashMap<String, AbstractEventSignal>();
 		this.exposedResources_ = new HashMap<String, WResource>();
 		this.encodedObjects_ = new HashMap<String, WObject>();
@@ -205,6 +206,7 @@ public class WApplication extends WObject {
 		this.styleSheet_
 				.addRule("td", "vertical-align: top; text-align: left;");
 		this.styleSheet_.addRule("button", "white-space: nowrap");
+		this.styleSheet_.addRule("video", "display: block");
 		if (this.getEnvironment().getContentType() == WEnvironment.ContentType.XHTML1) {
 			this.styleSheet_.addRule("button", "display: inline");
 		}
@@ -221,9 +223,8 @@ public class WApplication extends WObject {
 		}
 		this.styleSheet_
 				.addRule(
-						"button.Wt-wrap",
-						"border: 0px !important;text-align: left;margin: 0px !important;padding: 0px !important;font-size: inherit; pointer: hand; cursor: pointer; cursor: hand;background-color: transparent;color: inherit;");
-		this.styleSheet_.addRule("a.Wt-wrap", "text-decoration: none;");
+						".Wt-wrap",
+						"border: 0px;text-align: left;margin: 0px;padding: 0px;font-size: inherit; pointer: hand; cursor: pointer; cursor: hand;background: transparent;text-decoration: none;color: inherit;");
 		this.styleSheet_.addRule(".Wt-invalid", "background-color: #f79a9a;");
 		this.styleSheet_.addRule("span.Wt-disabled", "color: gray;");
 		this.styleSheet_.addRule("fieldset.Wt-disabled legend", "color: gray;");
@@ -497,6 +498,48 @@ public class WApplication extends WObject {
 	 */
 	public String getCssTheme() {
 		return this.theme_;
+	}
+
+	/**
+	 * Sets a style class to the entire page &lt;body&gt;.
+	 * <p>
+	 * 
+	 * @see WApplication#setHtmlClass(String styleClass)
+	 */
+	public void setBodyClass(String styleClass) {
+		this.bodyClass_ = styleClass;
+		this.bodyHtmlClassChanged_ = true;
+	}
+
+	/**
+	 * Returns the style class set for the entire page &lt;body&gt;.
+	 * <p>
+	 * 
+	 * @see WApplication#setBodyClass(String styleClass)
+	 */
+	public String getBodyClass() {
+		return this.bodyClass_;
+	}
+
+	/**
+	 * Sets a style class to the entire page &lt;html&gt;.
+	 * <p>
+	 * 
+	 * @see WApplication#setBodyClass(String styleClass)
+	 */
+	public void setHtmlClass(String styleClass) {
+		this.htmlClass_ = styleClass;
+		this.bodyHtmlClassChanged_ = true;
+	}
+
+	/**
+	 * Returns the style class set for the entire page &lt;html&gt;.
+	 * <p>
+	 * 
+	 * @see WApplication#setHtmlClass(String styleClass)
+	 */
+	public String getHtmlClass() {
+		return this.htmlClass_;
 	}
 
 	/**
@@ -974,6 +1017,26 @@ public class WApplication extends WObject {
 	}
 
 	/**
+	 * Returns the URL at which the resources are deployed.
+	 */
+	public static String getResourcesUrl() {
+		String path = WApplication.getInstance().session_.getController()
+				.getConfiguration().getProperty(WApplication.RESOURCES_URL);
+		if (path == "/wt-resources/") {
+			String result = WApplication.getInstance().getEnvironment()
+					.getDeploymentPath();
+			if (result.length() != 0
+					&& result.charAt(result.length() - 1) == '/') {
+				return result + path.substring(1);
+			} else {
+				return result + path;
+			}
+		} else {
+			return path;
+		}
+	}
+
+	/**
 	 * Returns the unique identifier for the current session.
 	 * <p>
 	 * The session id is a string that uniquely identifies the current session.
@@ -1028,7 +1091,7 @@ public class WApplication extends WObject {
 	 *    try {
 	 *      // We now have exclusive access to the application:
 	 *      // we can safely modify the widget tree for example.
-	 *      app.getRoot().addWidget(new WText("Something happened!"));
+	 *      app.getRoot().addWidget(new WText(&quot;Something happened!&quot;));
 	 *   
 	 *      // Push the changes to the browser
 	 *      app.triggerUpdate();
@@ -1046,7 +1109,7 @@ public class WApplication extends WObject {
 	 * 
 	 * @see WApplication#triggerUpdate()
 	 */
-	void enableUpdates(boolean enabled) {
+	public void enableUpdates(boolean enabled) {
 		if (enabled) {
 			++this.serverPush_;
 		} else {
@@ -1064,7 +1127,7 @@ public class WApplication extends WObject {
 	 * <p>
 	 * Calls {@link #enableUpdates(boolean enabled) enableUpdates(true)}
 	 */
-	final void enableUpdates() {
+	public final void enableUpdates() {
 		enableUpdates(true);
 	}
 
@@ -1084,14 +1147,13 @@ public class WApplication extends WObject {
 	 * Propagate changes made to the user interface outside of the main event
 	 * loop. This is only possible after a call to
 	 * {@link WApplication#enableUpdates(boolean enabled) enableUpdates()}, and
-	 * must be done while holding the {@link UpdateLock} (or from within a
-	 * socket event, see {@link WSocketNotifier}).
+	 * must be done while holding the {@link UpdateLock}.
 	 * <p>
 	 * 
 	 * @see WApplication#enableUpdates(boolean enabled)
 	 * @see WApplication#getUpdateLock()
 	 */
-	void triggerUpdate() {
+	public void triggerUpdate() {
 		if (!this.shouldTriggerUpdate_) {
 			return;
 		}
@@ -1116,6 +1178,9 @@ public class WApplication extends WObject {
 	 * @see WApplication#getUpdateLock()
 	 */
 	public static class UpdateLock {
+		/**
+		 * Releases the scope dependent lock.
+		 */
 		public void release() {
 			System.err.append("Releasing update lock").append('\n');
 			if (WApplication.getInstance().shouldTriggerUpdate_) {
@@ -1284,6 +1349,18 @@ public class WApplication extends WObject {
 	}
 
 	/**
+	 * Returns the name of the application JavaScript class.
+	 * <p>
+	 * This JavaScript class encapsulates all JavaScript methods specific to
+	 * this application instance. The method is foreseen to allow multiple
+	 * applications to run simultaneously on the same page in Wt::WidgtSet mode,
+	 * without interfering.
+	 */
+	public String getJavaScriptClass() {
+		return this.javaScriptClass_;
+	}
+
+	/**
 	 * Processes UI events.
 	 * <p>
 	 * You may call this method during a long operation to:
@@ -1349,18 +1426,6 @@ public class WApplication extends WObject {
 		return this.ajaxMethod_;
 	}
 
-	/**
-	 * Returns the name of the application JavaScript class.
-	 * <p>
-	 * This JavaScript class encapsulates all JavaScript methods specific to
-	 * this application instance. The method is foreseen to allow multiple
-	 * applications to run simultaneously on the same page in WidgtSet mode,
-	 * without interfering.
-	 */
-	public String getJavaScriptClass() {
-		return this.javaScriptClass_;
-	}
-
 	WContainerWidget getDomRoot() {
 		return this.domRoot_;
 	}
@@ -1414,26 +1479,6 @@ public class WApplication extends WObject {
 			} else {
 				return url;
 			}
-		}
-	}
-
-	/**
-	 * Returns the URL at which the resources are deployed.
-	 */
-	public static String getResourcesUrl() {
-		String path = WApplication.getInstance().session_.getController()
-				.getConfiguration().getProperty(WApplication.RESOURCES_URL);
-		if (path == "/wt-resources/") {
-			String result = WApplication.getInstance().getEnvironment()
-					.getDeploymentPath();
-			if (result.length() != 0
-					&& result.charAt(result.length() - 1) == '/') {
-				return result + path.substring(1);
-			} else {
-				return result + path;
-			}
-		} else {
-			return path;
 		}
 	}
 
@@ -1519,14 +1564,47 @@ public class WApplication extends WObject {
 	}
 
 	/**
-	 * Returns the current maximum size of a request to the application.
+	 * Adds an HTML meta header.
 	 * <p>
-	 * 
-	 * @see WApplication#requestTooLarge()
+	 * A meta header can only be added in the following situations:
+	 * <p>
+	 * <ul>
+	 * <li>when a plain HTML session is used (including when the user agent is a
+	 * bot), you can add meta headers at any time.</li>
+	 * </ul>
+	 * <p>
+	 * <ul>
+	 * <li>or, when DOCREF<a class="el"
+	 * href="overview.html#progressive_bootstrap">progressive bootstrap</a> is
+	 * used, you can set meta headers for any type of session, from within the
+	 * application constructor (which corresponds to the initial request).</li>
+	 * </ul>
+	 * <p>
+	 * <ul>
+	 * <li>but never for a {@link EntryPointType#WidgetSet} mode application
+	 * since then the application is hosted within a foreign HTML page.</li>
+	 * </ul>
+	 * <p>
+	 * These situations coincide with {@link WEnvironment#hasAjax()
+	 * WEnvironment#hasAjax()} returning <code>false</code> (see
+	 * {@link WApplication#getEnvironment() getEnvironment()}).
 	 */
-	public int getMaximumRequestSize() {
-		return this.session_.getController().getConfiguration()
-				.getMaxRequestSize() * 1024;
+	public void addMetaHeader(String name, CharSequence content, String lang) {
+		if (this.getEnvironment().hasJavaScript()) {
+			this.log("warn").append(
+					"WApplication::addMetaHeader() with no effect");
+		}
+		this.metaHeaders_.add(new WApplication.MetaHeader(name, content, lang));
+	}
+
+	/**
+	 * Adds an HTML meta header.
+	 * <p>
+	 * Calls {@link #addMetaHeader(String name, CharSequence content, String lang)
+	 * addMetaHeader(name, content, "")}
+	 */
+	public final void addMetaHeader(String name, CharSequence content) {
+		addMetaHeader(name, content, "");
 	}
 
 	/**
@@ -1557,11 +1635,11 @@ public class WApplication extends WObject {
 			this.loadingIndicatorWidget_ = indicator.getWidget();
 			this.domRoot_.addWidget(this.loadingIndicatorWidget_);
 			JSlot showLoadJS = new JSlot();
-			showLoadJS.setJavaScript("function(o,e) {Wt3_1_2.inline('"
+			showLoadJS.setJavaScript("function(o,e) {Wt3_1_3.inline('"
 					+ this.loadingIndicatorWidget_.getId() + "');}");
 			this.showLoadingIndicator_.addListener(showLoadJS);
 			JSlot hideLoadJS = new JSlot();
-			hideLoadJS.setJavaScript("function(o,e) {Wt3_1_2.hide('"
+			hideLoadJS.setJavaScript("function(o,e) {Wt3_1_3.hide('"
 					+ this.loadingIndicatorWidget_.getId() + "');}");
 			this.hideLoadingIndicator_.addListener(hideLoadJS);
 			this.loadingIndicatorWidget_.hide();
@@ -1624,6 +1702,17 @@ public class WApplication extends WObject {
 	}
 
 	/**
+	 * Returns the current maximum size of a request to the application.
+	 * <p>
+	 * 
+	 * @see WApplication#requestTooLarge()
+	 */
+	public int getMaximumRequestSize() {
+		return this.session_.getController().getConfiguration()
+				.getMaxRequestSize() * 1024;
+	}
+
+	/**
 	 * Signal which indicates that too a large request was received.
 	 * <p>
 	 * The integer parameter is the request size that was received in bytes.
@@ -1647,48 +1736,6 @@ public class WApplication extends WObject {
 
 	boolean isConnected() {
 		return this.connected_;
-	}
-
-	/**
-	 * Sets a style class to the entire page &lt;body&gt;.
-	 * <p>
-	 * 
-	 * @see WApplication#setHtmlClass(String styleClass)
-	 */
-	public void setBodyClass(String styleClass) {
-		this.bodyClass_ = styleClass;
-		this.bodyHtmlClassChanged_ = true;
-	}
-
-	/**
-	 * Returns the style class set for the entire page &lt;body&gt;.
-	 * <p>
-	 * 
-	 * @see WApplication#setBodyClass(String styleClass)
-	 */
-	public String getBodyClass() {
-		return this.bodyClass_;
-	}
-
-	/**
-	 * Sets a style class to the entire page &lt;html&gt;.
-	 * <p>
-	 * 
-	 * @see WApplication#setBodyClass(String styleClass)
-	 */
-	public void setHtmlClass(String styleClass) {
-		this.htmlClass_ = styleClass;
-		this.bodyHtmlClassChanged_ = true;
-	}
-
-	/**
-	 * Returns the style class set for the entire page &lt;html&gt;.
-	 * <p>
-	 * 
-	 * @see WApplication#setHtmlClass(String styleClass)
-	 */
-	public String getHtmlClass() {
-		return this.htmlClass_;
 	}
 
 	/**
@@ -1765,11 +1812,11 @@ public class WApplication extends WObject {
 		return this.session_.isDebug();
 	}
 
-	public boolean isJavaScriptLoaded(String jsFile) {
+	boolean isJavaScriptLoaded(String jsFile) {
 		return this.javaScriptLoaded_.contains(jsFile) != false;
 	}
 
-	public void setJavaScriptLoaded(String jsFile) {
+	void setJavaScriptLoaded(String jsFile) {
 		this.javaScriptLoaded_.add(jsFile);
 	}
 
@@ -1865,9 +1912,12 @@ public class WApplication extends WObject {
 	 */
 	protected void enableAjax() {
 		this.enableAjax_ = true;
-		this.afterLoadJavaScript_ = this.newBeforeLoadJavaScript_
-				+ this.afterLoadJavaScript_;
+		this.session_.getRenderer().beforeLoadJS_
+				.append(this.newBeforeLoadJavaScript_);
 		this.newBeforeLoadJavaScript_ = "";
+		this.session_.getRenderer().beforeLoadJS_
+				.append(this.afterLoadJavaScript_);
+		this.afterLoadJavaScript_ = "";
 		this.domRoot_.enableAjax();
 		if (this.domRoot2_ != null) {
 			this.domRoot2_.enableAjax();
@@ -1890,6 +1940,18 @@ public class WApplication extends WObject {
 		public boolean equals(WApplication.ScriptLibrary other) {
 			return this.uri.equals(other.uri);
 		}
+	}
+
+	static class MetaHeader {
+		public MetaHeader(String aName, CharSequence aContent, String aLang) {
+			this.name = aName;
+			this.lang = aLang;
+			this.content = WString.toWString(aContent);
+		}
+
+		public String name;
+		public String lang;
+		public WString content;
 	}
 
 	private WebSession session_;
@@ -1927,6 +1989,7 @@ public class WApplication extends WObject {
 	private String theme_;
 	List<String> styleSheets_;
 	int styleSheetsAdded_;
+	List<WApplication.MetaHeader> metaHeaders_;
 	private Map<String, AbstractEventSignal> exposedSignals_;
 	private Map<String, WResource> exposedResources_;
 	private Map<String, WObject> encodedObjects_;
@@ -2127,5 +2190,5 @@ public class WApplication extends WObject {
 			0x00, 0x21, 0xf9, 0x04, 0x01, 0x00, 0x00, 0x00, 0x00, 0x2c, 0x00,
 			0x00, 0x00, 0x00, 0x01, 0x00, 0x01, 0x00, 0x00, 0x02, 0x02, 0x44,
 			0x01, 0x00, 0x3b };
-	public static String RESOURCES_URL = "resourcesURL";
+	static String RESOURCES_URL = "resourcesURL";
 }

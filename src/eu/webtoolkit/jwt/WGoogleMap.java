@@ -534,7 +534,7 @@ public class WGoogleMap extends WCompositeWidget {
 	private JSignal1<WGoogleMap.Coordinate> doubleClicked_;
 	private JSignal1<WGoogleMap.Coordinate> mouseMoved_;
 
-	protected void render(EnumSet<RenderFlag> flags) {
+	void render(EnumSet<RenderFlag> flags) {
 		if (!EnumUtils.mask(flags, RenderFlag.RenderFull).isEmpty()) {
 			StringWriter strm = new StringWriter();
 			strm
@@ -567,7 +567,9 @@ public class WGoogleMap extends WCompositeWidget {
 		super.render(flags);
 	}
 
-	protected void doGmJavaScript(String jscode, boolean sepScope) {
+	private List<String> additions_;
+
+	private void doGmJavaScript(String jscode, boolean sepScope) {
 		String js = jscode;
 		if (sepScope) {
 			js = "{" + js + "}";
@@ -579,6 +581,5 @@ public class WGoogleMap extends WCompositeWidget {
 		}
 	}
 
-	private List<String> additions_;
 	static final String localhost_key = "ABQIAAAAWqrN5o4-ISwj0Up_depYvhTwM0brOpm-All5BF6PoaKBxRWWERS-S9gPtCri-B6BZeXV8KpT4F80DQ";
 }

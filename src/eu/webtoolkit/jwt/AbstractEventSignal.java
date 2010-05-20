@@ -171,6 +171,7 @@ public abstract class AbstractEventSignal extends AbstractSignal {
 	static final int BIT_EXPOSED = 0x2;
 	static final int BIT_NEEDS_AUTOLEARN = 0x4;
 	static final int BIT_PREVENT_DEFAULT = 0x8;
+	static final int BIT_PREVENT_PROPAGATION = 0x10;
 
 	private ArrayList<LearningListener> learningListeners;
 	private byte flags_;
@@ -335,9 +336,16 @@ public abstract class AbstractEventSignal extends AbstractSignal {
 				}
 			}
 
-		 if (isPreventDefault())
-			 result += WEnvironment.getJavaScriptWtScope() + ".cancelEvent(e);";
-		
+		if (isDefaultActionPrevented() || isPropagationPrevented()) {
+			result += WEnvironment.getJavaScriptWtScope() + ".cancelEvent(e";
+			if (isDefaultActionPrevented() && isPropagationPrevented())
+				result += ");";
+			else if (isDefaultActionPrevented())
+				result += ",0x2);";
+			else
+				result += ",0x1);";
+		}
+
 		return result;
 	}
 
@@ -345,8 +353,32 @@ public abstract class AbstractEventSignal extends AbstractSignal {
 		flags_ &= ~BIT_NEED_UPDATE;
 	}
 
-	boolean needUpdate() {
-		return (flags_ & BIT_NEED_UPDATE) != 0;
+
+	boolean needsUpdate(boolean all) {
+		return (!all && (flags_ & BIT_NEED_UPDATE) != 0)
+				|| (all && (isConnected() || isDefaultActionPrevented() || isPropagationPrevented()));
+	}
+
+	/**
+	 * Returns whether the default action is prevented.
+	 * 
+	 * @return whether the default action is prevented.
+	 *
+	 * @see #preventPropagation(boolean)
+	 */
+	public boolean isPropagationPrevented() {
+		return (flags_ & BIT_PREVENT_PROPAGATION) != 0;
+	}
+
+	/**
+	 * Returns whether propagation of the event is prevented.
+	 * 
+	 * @return whether the default action is prevented.
+	 * 
+	 * @see #preventDefaultAction(boolean)
+	 */
+	public boolean isDefaultActionPrevented() {
+		return (flags_ & BIT_PREVENT_DEFAULT) != 0;
 	}
 
 	/**
@@ -436,25 +468,48 @@ public abstract class AbstractEventSignal extends AbstractSignal {
 	/**
 	 * Prevents the default action associated with this event.
 	 * <p>
-	 * This prevents both the default browser action associated with this event as well as the
-	 * event bubbling up or cascading its hierarchy.
+	 * This prevents the default browser action associated with this event.
 	 * 
 	 * @param prevent whether the default action should be prevented.
 	 */
-	public void setPreventDefault(boolean prevent) {
-		if (isPreventDefault() != prevent) {
+	public void preventDefaultAction(boolean prevent) {
+		if (isDefaultActionPrevented() != prevent) {
 			flags_ |= BIT_PREVENT_DEFAULT;
 			senderRepaint();
 		}
 	}
 
 	/**
-	 * Returns whether the default action is prevented.
-	 * 
-	 * @return whether the default action is prevented.
+	 * Prevents the default action associated with this event.
+	 * <p>
+	 * This prevents the default browser action associated with this event.
 	 */
-	public boolean isPreventDefault() {
-		return (flags_ & BIT_PREVENT_DEFAULT) != 0;
+	public void preventDefaultAction() {
+		preventDefaultAction(true);
+	}
+
+	/**
+	 * Prevents the default action associated with this event.
+	 * <p>
+	 * This prevents the event propagation to ancestors.
+	 * 
+	 * @param prevent whether the default action should be prevented.
+	 */
+	public void preventPropagation(boolean prevent) {
+		if (isPropagationPrevented() != prevent) {
+			flags_ |= BIT_PREVENT_PROPAGATION;
+			senderRepaint();
+		}
+	}
+
+	/**
+	 * Prevents the default action associated with this event.
+	 * <p>
+	 * This prevents both the default browser action associated with this event as well as the
+	 * event bubbling up or cascading its hierarchy.
+	 */
+	public final void preventPropagation() {
+		preventPropagation(true);
 	}
 
 	void setNotExposed() {

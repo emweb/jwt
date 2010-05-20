@@ -94,13 +94,15 @@ public class WMenuItem extends WObject {
 		if (policy == WMenuItem.LoadPolicy.PreLoading) {
 			// this.implementStateless(WMenuItem.selectVisual,WMenuItem.undoSelectVisual);
 		} else {
-			this.contentsContainer_ = new WContainerWidget();
-			this.contentsContainer_.setJavaScriptMember("wtResize",
-					StdGridLayoutImpl.getChildrenResizeJS());
-			this.addChild(this.contents_);
-			;
-			this.contentsContainer_.resize(WLength.Auto, new WLength(100,
-					WLength.Unit.Percentage));
+			if (this.contents_ != null) {
+				this.contentsContainer_ = new WContainerWidget();
+				this.contentsContainer_.setJavaScriptMember("wtResize",
+						StdGridLayoutImpl.getChildrenResizeJS());
+				this.addChild(this.contents_);
+				;
+				this.contentsContainer_.resize(WLength.Auto, new WLength(100,
+						WLength.Unit.Percentage));
+			}
 		}
 	}
 
@@ -310,7 +312,7 @@ public class WMenuItem extends WObject {
 				url = "#";
 			}
 			a.setRef(url);
-			a.clicked().setPreventDefault(true);
+			a.clicked().preventDefaultAction();
 		}
 	}
 
@@ -349,11 +351,27 @@ public class WMenuItem extends WObject {
 	}
 
 	void setFromInternalPath(String path) {
-		if (this.menu_.contentsStack_.getCurrentWidget() != this.getContents()) {
+		if (this.menu_.contentsStack_ != null
+				&& this.menu_.contentsStack_.getCurrentWidget() != this
+						.getContents()) {
 			this.menu_.select(this.menu_.indexOf(this), false);
 		}
 	}
 
+	/**
+	 * Progresses to an Ajax-enabled widget.
+	 * <p>
+	 * This method is called when the progressive bootstrap method is used, and
+	 * support for AJAX has been detected. The default behavior will upgrade the
+	 * menu and the contents event handling to use AJAX instead of full page
+	 * reloads.
+	 * <p>
+	 * You may want to reimplement this method if you want to make changes to
+	 * widget when AJAX is enabled.
+	 * <p>
+	 * 
+	 * @see WMenu#enableAjax()
+	 */
 	protected void enableAjax() {
 		if (!this.isContentsLoaded()) {
 			this.contents_.enableAjax();

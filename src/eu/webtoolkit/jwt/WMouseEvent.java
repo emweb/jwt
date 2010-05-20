@@ -33,23 +33,33 @@ public class WMouseEvent implements WAbstractEvent {
 	 */
 	public enum Button {
 		/**
+		 * No button.
+		 */
+		NoButton(0),
+		/**
 		 * Left button.
 		 */
-		LeftButton,
+		LeftButton(1),
 		/**
 		 * Middle button.
 		 */
-		MiddleButton,
+		MiddleButton(2),
 		/**
 		 * Right button.
 		 */
-		RightButton;
+		RightButton(4);
+
+		private int value;
+
+		Button(int value) {
+			this.value = value;
+		}
 
 		/**
 		 * Returns the numerical representation of this enum.
 		 */
 		public int getValue() {
-			return ordinal();
+			return value;
 		}
 	}
 
@@ -77,10 +87,13 @@ public class WMouseEvent implements WAbstractEvent {
 
 	/**
 	 * Returns the button.
+	 * <p>
+	 * If multiple buttons are currently pressed for a mouse moved or mouse
+	 * dragged event, then the one with the smallest numerical value is
+	 * returned.
 	 */
 	public WMouseEvent.Button getButton() {
-		return this.jsEvent_.right ? WMouseEvent.Button.RightButton
-				: WMouseEvent.Button.LeftButton;
+		return WMouseEvent.Button.values()[this.jsEvent_.button];
 	}
 
 	/**

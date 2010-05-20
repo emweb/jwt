@@ -18,8 +18,8 @@ class StdGridLayoutImpl extends StdLayoutImpl {
 		String THIS_JS = "js/StdGridLayoutImpl.js";
 		WApplication app = WApplication.getInstance();
 		if (!app.isJavaScriptLoaded(THIS_JS)) {
-			app.getStyleSheet()
-					.addRule("table.Wt-hcenter", "margin: 0px auto;");
+			app.getStyleSheet().addRule("table.Wt-hcenter",
+					"margin: 0px auto;position: relative");
 			app.doJavaScript(wtjs1(app), false);
 			app.doJavaScript(appjs1(app), false);
 			app.doJavaScript(appjs2(app), false);
@@ -90,9 +90,13 @@ class StdGridLayoutImpl extends StdLayoutImpl {
 		}
 		DomElement div = DomElement.createNew(DomElementType.DomElement_DIV);
 		div.setId(this.getId());
+		div.setProperty(Property.PropertyStylePosition, "relative");
 		String divStyle = "";
 		if (fitHeight && !app.getEnvironment().agentIsIE()) {
 			divStyle += "height: 100%;";
+		}
+		if (app.getEnvironment().agentIsIE()) {
+			divStyle += "zoom: 1;";
 		}
 		if (divStyle.length() != 0) {
 			div.setProperty(Property.PropertyStyle, divStyle);
@@ -115,7 +119,7 @@ class StdGridLayoutImpl extends StdLayoutImpl {
 		if (fitHeight) {
 			StringWriter layoutAdd = new StringWriter();
 			layoutAdd.append(app.getJavaScriptClass()).append(
-					".layouts.push(new Wt3_1_2.StdLayout( Wt3_1_2, '").append(
+					".layouts.push(new Wt3_1_3.StdLayout( Wt3_1_3, '").append(
 					div.getId()).append("', { stretch: [");
 			for (int i = 0; i < rowCount; ++i) {
 				if (i != 0) {
@@ -284,6 +288,10 @@ class StdGridLayoutImpl extends StdLayoutImpl {
 					}
 					DomElement td = DomElement
 							.createNew(DomElementType.DomElement_TD);
+					if (app.getEnvironment().agentIsIE()) {
+						td.setProperty(Property.PropertyStylePosition,
+								"relative");
+					}
 					if (item.item_ != null) {
 						DomElement c = getImpl(item.item_).createDomElement(
 								itemFitWidth, itemFitHeight, app);
@@ -315,10 +323,22 @@ class StdGridLayoutImpl extends StdLayoutImpl {
 							break;
 						}
 						case AlignRight:
-							c.setProperty(Property.PropertyStyleFloat, "right");
+							if (!c.isDefaultInline()) {
+								c.setProperty(Property.PropertyStyleFloat,
+										"right");
+							} else {
+								td.setProperty(Property.PropertyStyleTextAlign,
+										"right");
+							}
 							break;
 						case AlignLeft:
-							c.setProperty(Property.PropertyStyleFloat, "left");
+							if (!c.isDefaultInline()) {
+								c.setProperty(Property.PropertyStyleFloat,
+										"left");
+							} else {
+								td.setProperty(Property.PropertyStyleTextAlign,
+										"left");
+							}
 							break;
 						case AlignJustify:
 							if (c.getProperty(Property.PropertyStyleWidth)
@@ -455,7 +475,7 @@ class StdGridLayoutImpl extends StdLayoutImpl {
 			app.doJavaScript(wtjs10(app), false);
 			app.setJavaScriptLoaded(THIS_JS);
 		}
-		return "Wt3_1_2.ChildrenResize";
+		return "Wt3_1_3.ChildrenResize";
 	}
 
 	void containerAddWidgets(WContainerWidget container) {
@@ -479,11 +499,11 @@ class StdGridLayoutImpl extends StdLayoutImpl {
 	private boolean useFixedLayout_;
 
 	static String wtjs1(WApplication app) {
-		return "Wt3_1_2.StdLayout = function(a,z,p){var x=this;this.marginH=function(b){var l=b.parentNode;return a.px(b,\"marginLeft\")+a.px(b,\"marginRight\")+a.px(b,\"borderLeftWidth\")+a.px(b,\"borderRightWidth\")+a.px(l,\"paddingLeft\")+a.px(l,\"paddingRight\")};this.marginV=function(b){return a.px(b,\"marginTop\")+a.px(b,\"marginBottom\")+a.px(b,\"borderTopWidth\")+a.px(b,\"borderBottomWidth\")+a.px(b,\"paddingTop\")+a.px(b,\"paddingBottom\")};this.adjustRow=function(b,l){if(b.style.height!=l+\"px\")b.style.height=l+ \"px\";b=b.childNodes;var h,s,g;h=0;for(s=b.length;h<s;++h){g=b[h];var d=l-a.pxself(g,\"paddingTop\")-a.pxself(g,\"paddingBottom\");if(d<=0)d=0;g.style.height=d+\"px\";if(!(g.style.verticalAlign||g.childNodes.length==0)){var e=g.childNodes[0];if(d<=0)d=0;if(e.className==\"Wt-hcenter\"){e.style.height=d+\"px\";e=e.firstChild.firstChild;if(!a.hasTag(e,\"TD\"))e=e.firstChild;if(e.style.height!=d+\"px\")e.style.height=d+\"px\";e=e.firstChild}if(g.childNodes.length==1)d+=-this.marginV(e);if(d<=0)d=0;if(!a.hasTag(e,\"TABLE\"))if(e.wtResize){g= e.parentNode.offsetWidth-x.marginH(e);e.wtResize(e,g,d)}else if(e.style.height!=d+\"px\")e.style.height=d+\"px\"}}};this.adjust=function(){var b=a.getElement(z);if(!b)return false;x.initResize&&x.initResize(a,z,p);if(a.isHidden(b))return true;var l=b.firstChild;if(l.style.height!=\"\")l.style.height=\"\";var h=a.pxself(b.parentNode,\"height\");if(h==0){h=b.parentNode.clientHeight;h+=-a.px(b.parentNode,\"paddingTop\")-a.px(b.parentNode,\"paddingBottom\")}h+=-a.px(b,\"marginTop\")-a.px(b,\"marginBottom\");var s=0,g= 0,d,e,i,q;d=b=0;for(e=l.rows.length;b<e;b++){i=l.rows[b];if(i.className==\"Wt-hrh\")h-=i.offsetHeight;else{g+=p.minheight[d];if(p.stretch[d]<=0)h-=i.offsetHeight;else s+=p.stretch[d];++d}}h=h>g?h:g;if(s!=0&&h>0){g=h;var m;d=b=0;for(e=l.rows.length;b<e;b++)if(l.rows[b].className!=\"Wt-hrh\"){i=l.rows[b];if(p.stretch[d]!=0){if(p.stretch[d]!=-1){m=h*p.stretch[d]/s;m=g>m?m:g;m=Math.round(p.minheight[d]>m?p.minheight[d]:m);g-=m}else m=i.offsetHeight;this.adjustRow(i,m)}++d}}if(l.style.tableLayout!=\"fixed\")return true; d=0;g=l.childNodes;h=0;for(s=g.length;h<s;h++){m=g[h];var w,t,r,y;if(a.hasTag(m,\"COLGROUP\")){h=-1;g=m.childNodes;s=g.length}if(a.hasTag(m,\"COL\")){if(a.pctself(m,\"width\")==0){b=w=0;for(e=l.rows.length;b<e;b++){i=l.rows[b];i=i.childNodes;r=t=0;for(y=i.length;r<y;r++){q=i[r];if(q.colSpan==1&&t==d&&q.childNodes.length==1){i=q.firstChild;i=i.offsetWidth+x.marginH(i);w=Math.max(w,i);break}t+=q.colSpan;if(t>d)break}}if(w>0&&a.pxself(m,\"width\")!=w)m.style.width=w+\"px\"}++d}}return true}};";
+		return "Wt3_1_3.StdLayout = function(a,z,q){var x=this;this.marginH=function(b){var l=b.parentNode;return a.px(b,\"marginLeft\")+a.px(b,\"marginRight\")+a.px(b,\"borderLeftWidth\")+a.px(b,\"borderRightWidth\")+a.px(l,\"paddingLeft\")+a.px(l,\"paddingRight\")};this.marginV=function(b){return a.px(b,\"marginTop\")+a.px(b,\"marginBottom\")+a.px(b,\"borderTopWidth\")+a.px(b,\"borderBottomWidth\")+a.px(b,\"paddingTop\")+a.px(b,\"paddingBottom\")};this.adjustRow=function(b,l){if(b.style.height!=l+\"px\")b.style.height=l+ \"px\";b=b.childNodes;var g,j,m;g=0;for(j=b.length;g<j;++g){m=b[g];var e=l-a.pxself(m,\"paddingTop\")-a.pxself(m,\"paddingBottom\");if(e<=0)e=0;m.style.height=e+\"px\";if(!(m.style.verticalAlign||m.childNodes.length==0)){var c=m.childNodes[0];if(e<=0)e=0;if(c.className==\"Wt-hcenter\"){c.style.height=e+\"px\";c=c.firstChild.firstChild;if(!a.hasTag(c,\"TD\"))c=c.firstChild;if(c.style.height!=e+\"px\")c.style.height=e+\"px\";c=c.firstChild}if(m.childNodes.length==1)e+=-this.marginV(c);if(e<=0)e=0;if(!a.hasTag(c,\"TABLE\"))if(c.wtResize){m= c.parentNode.offsetWidth-x.marginH(c);c.wtResize(c,m,e)}else if(c.style.height!=e+\"px\"){c.style.height=e+\"px\";if(c.className==\"Wt-wrapdiv\")if(a.isIE&&a.hasTag(c.firstChild,\"TEXTAREA\"))c.firstChild.style.height=e-a.pxself(c,\"marginBottom\")+\"px\"}}}};this.adjust=function(){var b=a.getElement(z);if(!b)return false;x.initResize&&x.initResize(a,z,q);if(a.isHidden(b))return true;var l=b.firstChild;if(l.style.height!=\"\")l.style.height=\"\";var g=a.pxself(b.parentNode,\"height\");if(g==0){g=b.parentNode.clientHeight; g+=-a.px(b.parentNode,\"paddingTop\")-a.px(b.parentNode,\"paddingBottom\")}g+=-a.px(b,\"marginTop\")-a.px(b,\"marginBottom\");var j,m;if(b.parentNode.children){j=0;for(m=b.parentNode.children.length;j<m;++j){var e=b.parentNode.children[j];if(e!=b)g-=$(e).outerHeight()}}var c=b=0,n,r;n=j=0;for(m=l.rows.length;j<m;j++){e=l.rows[j];if(e.className==\"Wt-hrh\")g-=e.offsetHeight;else{c+=q.minheight[n];if(q.stretch[n]<=0)g-=e.offsetHeight;else b+=q.stretch[n];++n}}g=g>c?g:c;if(b!=0&&g>0){c=g;var k;n=j=0;for(m=l.rows.length;j< m;j++)if(l.rows[j].className!=\"Wt-hrh\"){e=l.rows[j];if(q.stretch[n]!=0){if(q.stretch[n]!=-1){k=g*q.stretch[n]/b;k=c>k?k:c;k=Math.round(q.minheight[n]>k?q.minheight[n]:k);c-=k}else k=e.offsetHeight;this.adjustRow(e,k)}++n}}if(l.style.tableLayout!=\"fixed\")return true;n=0;c=l.childNodes;g=0;for(b=c.length;g<b;g++){k=c[g];var s,y,t,u;if(a.hasTag(k,\"COLGROUP\")){g=-1;c=k.childNodes;b=c.length}if(a.hasTag(k,\"COL\")){if(a.pctself(k,\"width\")==0){j=s=0;for(m=l.rows.length;j<m;j++){e=l.rows[j];e=e.childNodes; t=y=0;for(u=e.length;t<u;t++){r=e[t];if(r.colSpan==1&&y==n&&r.childNodes.length==1){e=r.firstChild;e=e.offsetWidth+x.marginH(e);s=Math.max(s,e);break}y+=r.colSpan;if(y>n)break}}if(s>0&&a.pxself(k,\"width\")!=s)k.style.width=s+\"px\"}++n}}return true}};";
 	}
 
 	static String wtjs2(WApplication app) {
-		return "Wt3_1_2.StdLayout.prototype.initResize = function(a,z,p){function x(c){var f,k,j,n=a.getElement(z).firstChild.childNodes;k=f=0;for(j=n.length;k<j;k++){var o=n[k];if(a.hasTag(o,\"COLGROUP\")){k=-1;n=o.childNodes;j=n.length}if(a.hasTag(o,\"COL\"))if(o.className!=\"Wt-vrh\")if(f==c)return o;else++f}return null}function b(c,f){if(c.offsetWidth>0)return c.offsetWidth;else{c=c.parentNode.rows[0];var k,j,n,o;n=j=0;for(o=c.childNodes.length;j<o;++j){k=c.childNodes[j];if(k.className!=\"Wt-vrh\"){if(n== f)return k.offsetWidth;n+=k.colSpan}}return 0}}function l(c,f){var k=a.getElement(z).firstChild;x(c).style.width=f+\"px\";var j,n,o,u;n=j=0;for(o=k.rows.length;j<o;j++){u=k.rows[j];if(u.className!=\"Wt-hrh\"){var v,A,B,D;B=A=0;for(D=u.childNodes.length;A<D;++A){v=u.childNodes[A];if(v.className!=\"Wt-vrh\"){if(v.colSpan==1&&B==c&&v.childNodes.length==1){u=v.firstChild;v=f-e.marginH(u);u.style.width=v+\"px\";break}B+=v.colSpan}}++n}}}function h(c,f,k){var j=c.firstChild;new a.SizeHandle(a,\"v\",j.offsetHeight, j.offsetWidth,-c.parentNode.previousSibling.offsetHeight,c.parentNode.nextSibling.offsetHeight,\"Wt-vsh\",function(n){g(c,f,n)},j,k,0,0)}function s(c,f,k){var j=-c.previousSibling.offsetWidth,n=c.nextSibling.offsetWidth,o=c.firstChild,u=a.pxself(q.rows[0].childNodes[0],\"paddingTop\"),v=a.pxself(q.rows[q.rows.length-1].childNodes[0],\"paddingBottom\");new a.SizeHandle(a,\"h\",o.offsetWidth,q.offsetHeight-u-v,j,n,\"Wt-hsh\",function(A){d(c,f,A)},o,k,0,-c.offsetTop+u-a.pxself(c,\"paddingTop\"))}function g(c,f, k){var j=c.parentNode.previousSibling;c=c.parentNode.nextSibling;var n=j.offsetHeight,o=c.offsetHeight;if(p.stretch[f]>0&&p.stretch[f+1]>0)p.stretch[f]=-1;if(p.stretch[f+1]==0)p.stretch[f+1]=-1;p.stretch[f]<=0&&e.adjustRow(j,n+k);p.stretch[f+1]<=0&&e.adjustRow(c,o-k);window.onresize()}function d(c,f,k){c=x(f);var j=b(c,f),n=x(f+1),o=b(n,f+1);if(a.pctself(c,\"width\")>0&&a.pctself(n,\"width\")>0)c.style.width=\"\";a.pctself(c,\"width\")==0&&l(f,j+k);a.pctself(n,\"width\")==0&&l(f+1,o-k);window.onresize()}var e= this,i=a.getElement(z);if(i)if(!e.resizeInitialized){var q=i.firstChild,m,w,t;m=i=0;for(w=q.rows.length;i<w;i++){t=q.rows[i];if(t.className==\"Wt-hrh\"){var r=t.firstChild;r.ri=m-1;r.onmousedown=function(c){h(this,this.ri,c||window.event)}}else{var y,C,E;C=y=0;for(E=t.childNodes.length;y<E;++y){r=t.childNodes[y];if(r.className==\"Wt-vrh\"){r.ci=C-1;r.onmousedown=function(c){s(this,this.ci,c||window.event)}}else C+=r.colSpan}++m}}e.resizeInitialized=true}};";
+		return "Wt3_1_3.StdLayout.prototype.initResize = function(a,z,q){function x(d){var f,i,h,o=a.getElement(z).firstChild.childNodes;i=f=0;for(h=o.length;i<h;i++){var p=o[i];if(a.hasTag(p,\"COLGROUP\")){i=-1;o=p.childNodes;h=o.length}if(a.hasTag(p,\"COL\"))if(p.className!=\"Wt-vrh\")if(f==d)return p;else++f}return null}function b(d,f){if(d.offsetWidth>0)return d.offsetWidth;else{d=d.parentNode.rows[0];var i,h,o,p;o=h=0;for(p=d.childNodes.length;h<p;++h){i=d.childNodes[h];if(i.className!=\"Wt-vrh\"){if(o== f)return i.offsetWidth;o+=i.colSpan}}return 0}}function l(d,f){var i=a.getElement(z).firstChild;x(d).style.width=f+\"px\";var h,o,p,v;o=h=0;for(p=i.rows.length;h<p;h++){v=i.rows[h];if(v.className!=\"Wt-hrh\"){var w,A,C,E;C=A=0;for(E=v.childNodes.length;A<E;++A){w=v.childNodes[A];if(w.className!=\"Wt-vrh\"){if(w.colSpan==1&&C==d&&w.childNodes.length==1){v=w.firstChild;w=f-c.marginH(v);v.style.width=w+\"px\";break}C+=w.colSpan}}++o}}}function g(d,f,i){var h=d.firstChild;new a.SizeHandle(a,\"v\",h.offsetHeight, h.offsetWidth,-d.parentNode.previousSibling.offsetHeight,d.parentNode.nextSibling.offsetHeight,\"Wt-vsh\",function(o){m(d,f,o)},h,n,i,0,0)}function j(d,f,i){var h=-d.previousSibling.offsetWidth,o=d.nextSibling.offsetWidth,p=d.firstChild,v=a.pxself(r.rows[0].childNodes[0],\"paddingTop\"),w=a.pxself(r.rows[r.rows.length-1].childNodes[0],\"paddingBottom\");new a.SizeHandle(a,\"h\",p.offsetWidth,r.offsetHeight-v-w,h,o,\"Wt-hsh\",function(A){e(d,f,A)},p,n,i,0,-d.offsetTop+v-a.pxself(d,\"paddingTop\"))}function m(d, f,i){var h=d.parentNode.previousSibling;d=d.parentNode.nextSibling;var o=h.offsetHeight,p=d.offsetHeight;if(q.stretch[f]>0&&q.stretch[f+1]>0)q.stretch[f]=-1;if(q.stretch[f+1]==0)q.stretch[f+1]=-1;q.stretch[f]<=0&&c.adjustRow(h,o+i);q.stretch[f+1]<=0&&c.adjustRow(d,p-i);window.onresize()}function e(d,f,i){d=x(f);var h=b(d,f),o=x(f+1),p=b(o,f+1);if(a.pctself(d,\"width\")>0&&a.pctself(o,\"width\")>0)d.style.width=\"\";a.pctself(d,\"width\")==0&&l(f,h+i);a.pctself(o,\"width\")==0&&l(f+1,p-i);window.onresize()} var c=this,n=a.getElement(z);if(n)if(!c.resizeInitialized){var r=n.firstChild,k,s,y,t;s=k=0;for(y=r.rows.length;k<y;k++){t=r.rows[k];if(t.className==\"Wt-hrh\"){var u=t.firstChild;u.ri=s-1;u.onmousedown=function(d){g(this,this.ri,d||window.event)}}else{var B,D,F;D=B=0;for(F=t.childNodes.length;B<F;++B){u=t.childNodes[B];if(u.className==\"Wt-vrh\"){u.ci=D-1;u.onmousedown=function(d){j(this,this.ci,d||window.event)}}else D+=u.colSpan}++s}}c.resizeInitialized=true}};";
 	}
 
 	static String appjs1(WApplication app) {
@@ -496,6 +516,6 @@ class StdGridLayoutImpl extends StdLayoutImpl {
 	}
 
 	static String wtjs10(WApplication app) {
-		return "Wt3_1_2.ChildrenResize = function(b,f,d){var c,e,a;b.style.height=d+\"px\";c=0;for(e=b.childNodes.length;c<e;++c){a=b.childNodes[c];if(a.wtResize)a.wtResize(a,f,d);else if(a.style.height!=b.style.height)a.style.height=b.style.height}};";
+		return "Wt3_1_3.ChildrenResize = function(b,f,d){var c,e,a;b.style.height=d+\"px\";c=0;for(e=b.childNodes.length;c<e;++c){a=b.childNodes[c];if(a.nodeType==1)if(a.wtResize)a.wtResize(a,f,d);else if(a.style.height!=b.style.height)a.style.height=b.style.height}};";
 	}
 }

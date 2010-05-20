@@ -94,7 +94,7 @@ public abstract class WViewWidget extends WWebWidget {
 		super.load();
 	}
 
-	public void render(EnumSet<RenderFlag> flags) {
+	void render(EnumSet<RenderFlag> flags) {
 		if (this.needContentsUpdate_) {
 			if (this.contents_ != null)
 				this.contents_.remove();

@@ -9,14 +9,13 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
-import eu.webtoolkit.jwt.servlet.WebRequest;
-import eu.webtoolkit.jwt.servlet.WebResponse;
 import eu.webtoolkit.jwt.utils.JarUtils;
 import eu.webtoolkit.jwt.utils.StreamUtils;
 
@@ -33,7 +32,7 @@ import eu.webtoolkit.jwt.utils.StreamUtils;
 public abstract class WtServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
-	private static final String WT_WEBSESSION_ID = "wt-websession";
+	static final String WT_WEBSESSION_ID = "wt-websession";
 
 	static final String Boot_html;
 	static final String Plain_html;
@@ -43,6 +42,8 @@ public abstract class WtServlet extends HttpServlet {
 	static final String Hybrid_html;
 	static final String JQuery_js;
 
+	private static ServletApi servletApi;
+
 	static {
 		Boot_html = readFile("/eu/webtoolkit/jwt/skeletons/Boot.html");
 		Plain_html = readFile("/eu/webtoolkit/jwt/skeletons/Plain.html");
@@ -51,6 +52,8 @@ public abstract class WtServlet extends HttpServlet {
 		CommAjax_js = readFile("/eu/webtoolkit/jwt/skeletons/CommAjax.js");
 		CommScript_js = readFile("/eu/webtoolkit/jwt/skeletons/CommScript.js");
 		JQuery_js = readFile("/eu/webtoolkit/jwt/skeletons/jquery.min.js");
+		
+		servletApi = null;
 	}
 
 	private InputStream getResourceStream(final String fileName) throws FileNotFoundException {
@@ -59,6 +62,15 @@ public abstract class WtServlet extends HttpServlet {
 
 	private static String readFile(final String fileName) {
 		return JarUtils.getInstance().readTextFromJar(fileName);
+	}
+	
+	/**
+	 * This function is only to be used by JWt internals.
+	 * 
+	 * @return the servlet API interface
+	 */
+	public static ServletApi getServletApi() {
+		return servletApi;
 	}
 
 	/**
@@ -71,9 +83,42 @@ public abstract class WtServlet extends HttpServlet {
 	public WtServlet() {
 		this.configuration = new Configuration();
 	}
+	
+	/**
+	 * Initiate the internal servlet api.
+	 * 
+	 * If you want to override this function, make sure to call the super function,
+	 * to ensure the initialization of the servlet api.
+	 */
+	@Override
+	public void init(ServletConfig config) throws ServletException {
+		super.init(config);
+		initServletApi(config.getServletContext());
+	}
 
-	void handleRequest(HttpServletRequest request, HttpServletResponse response) {
+	private void initServletApi(ServletContext context) {
+		if (servletApi == null) {
+			try {
+				if (context.getMajorVersion() == 3) {
+					System.err.println("Using servlet API 3");
+					servletApi = (ServletApi)Class.forName("eu.webtoolkit.jwt.ServletApi3").newInstance();
+				} else {
+					System.err.println("Using servlet API 2.5");
+					servletApi = (ServletApi)Class.forName("eu.webtoolkit.jwt.ServletApi25").newInstance();
+				}
+			} catch (InstantiationException e) {
+				e.printStackTrace();
+			} catch (IllegalAccessException e) {
+				e.printStackTrace();
+			} catch (ClassNotFoundException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	void handleRequest(final HttpServletRequest request, final HttpServletResponse response) {
 		String pathInfo = request.getPathInfo();
+		
 		String resourcePath = configuration.getProperty(WApplication.RESOURCES_URL);
 		if (pathInfo != null && pathInfo.startsWith(resourcePath)) {
 			String fileName = "wt-resources/";
@@ -99,38 +144,9 @@ public abstract class WtServlet extends HttpServlet {
 			return;
 		}
 
-		HttpSession jsession = request.getSession();
-		WebSession wsession = (WebSession) jsession.getAttribute(WT_WEBSESSION_ID);
-		getConfiguration().setSessionTimeout(jsession.getMaxInactiveInterval());
-
-		if (wsession == null) {
-			String applicationTypeS = this.getServletConfig().getInitParameter("ApplicationType");
-			
-			EntryPointType applicationType;
-			if (applicationTypeS == null || applicationTypeS.equals("") || applicationTypeS.equals("Application")) {
-				applicationType = EntryPointType.Application; 
-			} else if (applicationTypeS.equals("WidgetSet")) {
-				applicationType = EntryPointType.WidgetSet; 
-			} else {
-				throw new WtException("Illegal application type: " + applicationTypeS);
-			}
-			
-			wsession = new WebSession(this, jsession.getId(), applicationType, this.configuration.getFavicon(), new WebRequest(request));
-			jsession.setAttribute(WT_WEBSESSION_ID, wsession);
-		}
-
-		try {
-			WebRequest webRequest = new WebRequest(request);
-			WebResponse webResponse = new WebResponse(response, webRequest);
-			if (!wsession.handleRequest(webRequest, webResponse)) {
-				System.err.println("Session exiting:" + jsession.getId());
-				jsession.setAttribute(WT_WEBSESSION_ID, null);
-				jsession.invalidate();
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		servletApi.doHandleRequest(this, request, response);
 	}
+
 
 	/**
 	 * Implement the GET request.

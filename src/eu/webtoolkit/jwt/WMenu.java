@@ -264,6 +264,8 @@ public class WMenu extends WCompositeWidget {
 			} else {
 				item.renderSelected(false);
 			}
+		} else {
+			item.renderSelected(false);
 		}
 		if (this.internalPathEnabled_) {
 			WApplication app = WApplication.getInstance();
@@ -570,6 +572,36 @@ public class WMenu extends WCompositeWidget {
 		super.enableAjax();
 	}
 
+	/**
+	 * Handling of internal path changes.
+	 * <p>
+	 * This methods makes the menu react to internal path changes (and also the
+	 * initial internal path).
+	 * <p>
+	 * You may want to reimplement this if you want to customize the internal
+	 * path handling.
+	 */
+	void internalPathChanged(String path) {
+		WApplication app = WApplication.getInstance();
+		if (app.internalPathMatches(this.basePath_)) {
+			String value = app.getInternalPathNextPart(this.basePath_);
+			for (int i = 0; i < this.items_.size(); ++i) {
+				if (this.items_.get(i).getPathComponent().equals(value)
+						|| this.items_.get(i).getPathComponent().equals(
+								value + '/')) {
+					this.items_.get(i).setFromInternalPath(path);
+					return;
+				}
+			}
+			if (value.length() != 0) {
+				WApplication.getInstance().log("error").append(
+						"WMenu: unknown path: '").append(value).append("'");
+			} else {
+				this.select(-1, false);
+			}
+		}
+	}
+
 	private WWidget impl_;
 	WStackedWidget contentsStack_;
 	private Orientation orientation_;
@@ -584,10 +616,11 @@ public class WMenu extends WCompositeWidget {
 	void select(int index, boolean changePath) {
 		boolean emitPathChange = false;
 		WApplication app = null;
-		if (changePath && this.internalPathEnabled_) {
+		if (changePath && this.internalPathEnabled_ && index != -1) {
+			String newPath = this.basePath_
+					+ this.items_.get(index).getPathComponent();
 			app = WApplication.getInstance();
-			emitPathChange = !this.previousInternalPath_.equals(app
-					.getInternalPath());
+			emitPathChange = !newPath.equals(app.getInternalPath());
 		}
 		this.selectVisual(index, changePath);
 		if (index != -1) {
@@ -650,27 +683,6 @@ public class WMenu extends WCompositeWidget {
 		}
 		if (this.contentsStack_ != null) {
 			this.contentsStack_.setCurrentIndex(prevStackIndex);
-		}
-	}
-
-	void internalPathChanged(String path) {
-		WApplication app = WApplication.getInstance();
-		if (app.internalPathMatches(this.basePath_)) {
-			String value = app.getInternalPathNextPart(this.basePath_);
-			for (int i = 0; i < this.items_.size(); ++i) {
-				if (this.items_.get(i).getPathComponent().equals(value)
-						|| this.items_.get(i).getPathComponent().equals(
-								value + '/')) {
-					this.items_.get(i).setFromInternalPath(path);
-					return;
-				}
-			}
-			if (value.length() != 0) {
-				WApplication.getInstance().log("error").append(
-						"WMenu: unknown path: '").append(value).append("'");
-			} else {
-				this.select(-1, false);
-			}
 		}
 	}
 

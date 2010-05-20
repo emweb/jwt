@@ -30,6 +30,7 @@ import java.util.TreeSet;
  * </p>
  * 
  * @see WTreeView
+ * @see WTableView
  * @see WAbstractItemModel
  */
 public class WItemSelectionModel extends WObject {

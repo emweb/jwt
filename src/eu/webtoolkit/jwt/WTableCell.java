@@ -48,7 +48,8 @@ public class WTableCell extends WContainerWidget {
 			this.row_.getTable().expand(this.getRow(), this.column_,
 					this.rowSpan_, this.columnSpan_);
 			this.spanChanged_ = true;
-			this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyAttribute));
+			this.getTable().flags_.set(WTable.BIT_GRID_CHANGED);
+			this.getTable().repaint(EnumSet.of(RepaintFlag.RepaintInnerHtml));
 		}
 	}
 
@@ -76,7 +77,8 @@ public class WTableCell extends WContainerWidget {
 			this.row_.getTable().expand(this.getRow(), this.column_,
 					this.rowSpan_, this.columnSpan_);
 			this.spanChanged_ = true;
-			this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyAttribute));
+			this.getTable().flags_.set(WTable.BIT_GRID_CHANGED);
+			this.getTable().repaint(EnumSet.of(RepaintFlag.RepaintInnerHtml));
 		}
 	}
 

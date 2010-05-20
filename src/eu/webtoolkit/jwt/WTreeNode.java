@@ -460,11 +460,27 @@ public class WTreeNode extends WCompositeWidget {
 		this.updateChildren(false);
 	}
 
+	/**
+	 * Sets whether this node&apos;s children are decorated.
+	 * <p>
+	 * By default, node&apos;s children have expand/collapse and other lines to
+	 * display their linkage and offspring.
+	 * <p>
+	 * By setting <code>decorated</code> to <code>false</code>, you can hide the
+	 * decorations for the node&apos;s children.
+	 */
 	public void setChildrenDecorated(boolean decorated) {
 		this.childrenDecorated_ = decorated;
 		this.updateChildren(false);
 	}
 
+	/**
+	 * Sets whether this node is interactive.
+	 * <p>
+	 * Interactive nodes can be clicked upon and will populate a list of
+	 * children when clicked. By disabling the interactivity, a node will not
+	 * react to a click event.
+	 */
 	public void setInteractive(boolean interactive) {
 		this.interactive_ = interactive;
 	}
@@ -540,10 +556,6 @@ public class WTreeNode extends WCompositeWidget {
 	 */
 	public Signal1<Boolean> selected() {
 		return this.selected_;
-	}
-
-	public boolean hasParent() {
-		return this.parentNode_ != null;
 	}
 
 	/**

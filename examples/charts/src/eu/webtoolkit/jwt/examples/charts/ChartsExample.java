@@ -10,16 +10,21 @@ import java.text.SimpleDateFormat;
 
 import eu.webtoolkit.jwt.AlignmentFlag;
 import eu.webtoolkit.jwt.Orientation;
+import eu.webtoolkit.jwt.SelectionMode;
 import eu.webtoolkit.jwt.Side;
 import eu.webtoolkit.jwt.StringUtils;
 import eu.webtoolkit.jwt.WAbstractItemModel;
+import eu.webtoolkit.jwt.WAbstractItemView;
+import eu.webtoolkit.jwt.WApplication;
 import eu.webtoolkit.jwt.WColor;
 import eu.webtoolkit.jwt.WContainerWidget;
 import eu.webtoolkit.jwt.WDate;
+import eu.webtoolkit.jwt.WItemDelegate;
 import eu.webtoolkit.jwt.WLength;
 import eu.webtoolkit.jwt.WShadow;
 import eu.webtoolkit.jwt.WStandardItemModel;
 import eu.webtoolkit.jwt.WString;
+import eu.webtoolkit.jwt.WTableView;
 import eu.webtoolkit.jwt.WText;
 import eu.webtoolkit.jwt.WTreeView;
 import eu.webtoolkit.jwt.chart.Axis;
@@ -84,6 +89,39 @@ class TimeSeriesExample extends WContainerWidget {
             model.setData(i, 0, d);
         }
 
+        WContainerWidget w = new WContainerWidget(this);
+        WTableView table = new WTableView(w);
+
+        table.setMargin(10, Side.Top, Side.Bottom);
+        table.setMargin(WLength.Auto, Side.Left, Side.Right);
+
+        table.setModel(model);
+        table.setSortingEnabled(false); // Does not make much sense for time series
+        table.setColumnResizeEnabled(true);
+        table.setSelectionMode(SelectionMode.NoSelection);
+        table.setAlternatingRowColors(true);
+        table.setColumnAlignment(0, AlignmentFlag.AlignCenter);
+        table.setHeaderAlignment(0, AlignmentFlag.AlignCenter);
+        table.setRowHeight(new WLength(22));
+
+        // Editing does not really work without Ajax, it would require an
+        // additional button somewhere to confirm the edited value.
+        if (WApplication.getInstance().getEnvironment().hasAjax()) {
+          table.resize(800, 20 + 5*22);
+          table.setEditTriggers(WAbstractItemView.EditTrigger.SingleClicked);
+        } else {
+          table.resize(800, 20 + 5*22 + 25);
+          table.setEditTriggers(WAbstractItemView.EditTrigger.NoEditTrigger);
+        }
+
+        table.setColumnWidth(0, new WLength(80));
+        for (int i = 1; i < model.getColumnCount(); ++i)
+          table.setColumnWidth(i, new WLength(90));
+        
+        WItemDelegate delegate = new WItemDelegate(this);
+        delegate.setTextFormat("dd/MM/yy");
+        table.setItemDelegateForColumn(0, delegate);
+
         /*
          * Create the scatter plot.
          */
@@ -138,17 +176,31 @@ class CategoryExample extends WContainerWidget {
             return;
 
         WContainerWidget w = new WContainerWidget(this);
-        WTreeView table = new WTreeView(w);
-        table.setRootIsDecorated(false);
+        WTableView table = new WTableView(w);
         table.setMargin(new WLength(10), Side.Top, Side.Bottom);
         table.setMargin(WLength.Auto, Side.Left, Side.Right);
-        table.resize(550, 175);
         table.setModel(model);
-        for (int i = 0; i < model.getColumnCount(); ++i) {
-            table.setColumnWidth(i, new WLength(i == 0 ? 60 : 110));
-            if (i != 0)
-                table.setColumnAlignment(i, AlignmentFlag.AlignRight);
+        table.setSortingEnabled(true);
+        table.setColumnResizeEnabled(true);
+        table.setSelectionMode(SelectionMode.NoSelection);
+        table.setAlternatingRowColors(true);
+        table.setColumnAlignment(0, AlignmentFlag.AlignCenter);
+        table.setHeaderAlignment(0, AlignmentFlag.AlignCenter);
+        table.setRowHeight(new WLength(22));
+
+        // Editing does not really work without Ajax, it would require an
+        // additional button somewhere to confirm the edited value.
+        if (WApplication.getInstance().getEnvironment().hasAjax()) {
+          table.resize(600, 20 + 5*22);
+          table.setEditTriggers(WAbstractItemView.EditTrigger.SingleClicked);
+        } else {
+          table.resize(new WLength(600), WLength.Auto);
+          table.setEditTriggers(WAbstractItemView.EditTrigger.NoEditTrigger);
         }
+
+        table.setColumnWidth(0, new WLength(80));
+        for (int i = 1; i < model.getColumnCount(); ++i)
+          table.setColumnWidth(i, new WLength(120));
 
         /*
          * Create the category chart.
@@ -162,8 +214,6 @@ class CategoryExample extends WContainerWidget {
         chart.setPlotAreaPadding(100, Side.Left);
         chart.setPlotAreaPadding(50, Side.Top, Side.Bottom);
         chart.getAxis(Axis.YAxis).setLabelFormat("%.0f");
-
-        // chart.axis(YAxis).setBreak(70, 110);
 
         /*
          * Add all (but first) column as bar series
@@ -261,12 +311,24 @@ class PieExample extends WContainerWidget {
             return;
 
         WContainerWidget w = new WContainerWidget(this);
-        WTreeView table = new WTreeView(w);
-        table.setRootIsDecorated(false);
+
+        WTableView table = new WTableView(w);
         table.setMargin(10, Side.Top, Side.Bottom);
         table.setMargin(WLength.Auto, Side.Left, Side.Right);
-        table.resize(300, 175);
+        table.setSortingEnabled(true);
         table.setModel(model);
+        table.setColumnWidth(1, new WLength(100));
+        table.setRowHeight(new WLength(22));
+
+        table.resize(300, 175);
+
+        if (WApplication.getInstance().getEnvironment().hasAjax()) {
+            table.resize(150 + 100 + 14, 20 + 6 * 22);
+            table.setEditTriggers(WAbstractItemView.EditTrigger.SingleClicked);
+        } else {
+            table.resize(new WLength(150 + 100 + 14), WLength.Auto);
+            table.setEditTriggers(WAbstractItemView.EditTrigger.NoEditTrigger);    
+        }
 
         /*
          * Create the pie chart.
@@ -282,6 +344,7 @@ class PieExample extends WContainerWidget {
 
         // enable a 3D effect
         chart.setPerspectiveEnabled(true, 0.2);
+        chart.setShadowEnabled(true);
 
         // explode the first item
         chart.setExplode(0, 0.3);

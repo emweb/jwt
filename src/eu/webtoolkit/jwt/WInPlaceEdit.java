@@ -110,7 +110,7 @@ public class WInPlaceEdit extends WCompositeWidget {
 				WInPlaceEdit.this.save();
 			}
 		});
-		this.edit_.enterPressed().setPreventDefault(true);
+		this.edit_.enterPressed().preventDefaultAction();
 		this.edit_.escapePressed().addListener(this.edit_,
 				new Signal.Listener() {
 					public void trigger() {
@@ -128,7 +128,7 @@ public class WInPlaceEdit extends WCompositeWidget {
 				WInPlaceEdit.this.cancel();
 			}
 		});
-		this.edit_.escapePressed().setPreventDefault(true);
+		this.edit_.escapePressed().preventDefaultAction();
 		this.setButtonsEnabled();
 	}
 

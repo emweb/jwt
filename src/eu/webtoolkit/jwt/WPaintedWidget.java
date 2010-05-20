@@ -129,7 +129,8 @@ public abstract class WPaintedWidget extends WInteractWidget {
 		this.renderHeight_ = 0;
 		if (WApplication.getInstance() != null) {
 			WEnvironment env = WApplication.getInstance().getEnvironment();
-			if (env.getUserAgent().indexOf("Opera") != -1) {
+			if (env.agentIsOpera()
+					&& env.getUserAgent().indexOf("Mac OS X") == -1) {
 				this.preferredMethod_ = WPaintedWidget.Method.InlineSvgVml;
 			}
 		}

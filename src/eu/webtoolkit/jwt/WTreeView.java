@@ -23,8 +23,24 @@ import eu.webtoolkit.jwt.utils.EnumUtils;
  * The view displays data from a {@link WAbstractItemModel} in a tree or tree
  * table. It provides incremental rendering, allowing the display of data models
  * of any size efficiently, without excessive use of client- or serverside
- * resources. Data of all predefined roles is displayed (see also ItemDataRole),
- * including text, icons, checkboxes, and tooltips .
+ * resources.
+ * <p>
+ * The rendering (and editing) of items is handled by a
+ * {@link WAbstractItemDelegate}, by default it uses {@link WItemDelegate} which
+ * renders data of all predefined roles (see also {@link ItemDataRole}),
+ * including text, icons, checkboxes, and tooltips.
+ * <p>
+ * The view may support editing of items, if the model indicates support (see
+ * the {@link ItemFlag#ItemIsEditable} flag). You can define triggers that
+ * initiate editing of an item using
+ * {@link WAbstractItemView#setEditTriggers(EnumSet editTriggers)
+ * WAbstractItemView#setEditTriggers()}. The actual editing is provided by the
+ * item delegate (you can set an appropriate delegate for one column using
+ * {@link WAbstractItemView#setItemDelegateForColumn(int column, WAbstractItemDelegate delegate)
+ * WAbstractItemView#setItemDelegateForColumn()}). Using
+ * {@link WAbstractItemView#setEditOptions(EnumSet editOptions)
+ * WAbstractItemView#setEditOptions()} you can customize if and how the view
+ * deals with multiple editors.
  * <p>
  * By default, all but the first columns are given a width of 150px, and the
  * first column takes the remaining size. <b>Note that this may have as
@@ -74,6 +90,16 @@ import eu.webtoolkit.jwt.utils.EnumUtils;
  * the {@link WAbstractItemView#clicked() WAbstractItemView#clicked()} or
  * {@link WAbstractItemView#doubleClicked() WAbstractItemView#doubleClicked()}
  * signals.
+ * <p>
+ * <h3>Graceful degradation</h3>
+ * <p>
+ * The view provides a virtual scrolling behavior which relies on Ajax
+ * availability. When Ajax is not available, a page navigation bar is used
+ * instead, see {@link WAbstractItemView#getCreatePageNavigationBar()
+ * WAbstractItemView#getCreatePageNavigationBar()}. In that case, the widget
+ * needs to be given an explicit height using
+ * {@link WTreeView#resize(WLength width, WLength height) resize()} which
+ * determines the number of rows that are displayed at a time.
  * <p>
  * <h3>CSS</h3>
  * <p>
@@ -138,53 +164,36 @@ public class WTreeView extends WAbstractItemView {
 	 */
 	public WTreeView(WContainerWidget parent) {
 		super(parent);
-		this.rootIndex_ = null;
 		this.expandedSet_ = new TreeSet<WModelIndex>();
 		this.renderedNodes_ = new HashMap<WModelIndex, WTreeViewNode>();
+		this.renderedNodesAdded_ = false;
 		this.rootNode_ = null;
 		this.borderColorRule_ = null;
 		this.rootIsDecorated_ = true;
 		this.column1Fixed_ = false;
-		this.alternatingRowColors_ = false;
 		this.expandedRaw_ = new ArrayList<Object>();
-		this.selectionRaw_ = new ArrayList<Object>();
 		this.collapsed_ = new Signal1<WModelIndex>(this);
 		this.expanded_ = new Signal1<WModelIndex>(this);
 		this.viewportTop_ = 0;
 		this.viewportHeight_ = 30;
 		this.nodeLoad_ = 0;
-		this.impl_ = new WContainerWidget();
+		this.headerContainer_ = null;
 		this.contentsContainer_ = null;
 		this.scrollBarC_ = null;
 		this.itemEvent_ = new JSignal6<String, Integer, String, String, String, WMouseEvent>(
 				this.impl_, "itemEvent") {
 		};
-		this.setImplementation(this.impl_);
-		this.renderState_ = WAbstractItemView.RenderState.NeedRerender;
-		WApplication app = WApplication.getInstance();
-		this.clickedForCollapseMapper_ = new WSignalMapper1<Integer>(this);
-		this.clickedForCollapseMapper_.mapped().addListener(this,
-				new Signal1.Listener<Integer>() {
-					public void trigger(Integer e1) {
-						WTreeView.this.collapseColumn(e1);
-					}
-				});
-		this.clickedForExpandMapper_ = new WSignalMapper1<Integer>(this);
-		this.clickedForExpandMapper_.mapped().addListener(this,
-				new Signal1.Listener<Integer>() {
-					public void trigger(Integer e1) {
-						WTreeView.this.expandColumn(e1);
-					}
-				});
-		if (!app.getEnvironment().hasAjax()) {
-			this.clickedMapper_ = new WSignalMapper1<WModelIndex>(this);
-			this.clickedMapper_.mapped().addListener(this,
-					new Signal1.Listener<WModelIndex>() {
-						public void trigger(WModelIndex e1) {
-							WTreeView.this.handleClick(e1);
-						}
-					});
-		}
+		this.tieContentsHeaderScrollJS_ = new JSlot(this);
+		this.tieRowsScrollJS_ = new JSlot();
+		this.itemClickedJS_ = new JSlot(this);
+		this.itemDoubleClickedJS_ = new JSlot(this);
+		this.itemMouseDownJS_ = new JSlot(this);
+		this.itemMouseUpJS_ = new JSlot(this);
+		this.setSelectable(false);
+		this.expandConfig_ = new ToggleButtonConfig(this);
+		this.expandConfig_.addState("Wt-expand");
+		this.expandConfig_.addState("Wt-collapse");
+		this.expandConfig_.generate();
 		this.itemEvent_
 				.addListener(
 						this,
@@ -197,12 +206,8 @@ public class WTreeView extends WAbstractItemView {
 							}
 						});
 		this.setStyleClass("Wt-treeview");
-		this.setSelectable(false);
 		String CSS_RULES_NAME = "Wt::WTreeView";
-		this.expandConfig_ = new ToggleButtonConfig(this);
-		this.expandConfig_.addState("Wt-expand");
-		this.expandConfig_.addState("Wt-collapse");
-		this.expandConfig_.generate();
+		WApplication app = WApplication.getInstance();
 		if (!app.getStyleSheet().isDefined(CSS_RULES_NAME)) {
 			app
 					.getStyleSheet()
@@ -257,19 +262,19 @@ public class WTreeView extends WAbstractItemView {
 					.getStyleSheet()
 					.addRule(
 							".Wt-treeview .Wt-tv-br, .Wt-treeview .Wt-tv-node .Wt-tv-row .Wt-tv-c",
-							"border-right: 1px solid white;");
+							"margin-right: 0px; border-right: 1px solid white;");
 			app
 					.getStyleSheet()
 					.addRule(
 							".Wt-treeview .Wt-tv-sh",
 							""
-									+ "float: right; width: 16px; height: 10px; padding-bottom: 6px;cursor: pointer; cursor:hand;");
+									+ "float: right; width: 16px; height: 16px; padding-bottom: 6px;cursor: pointer; cursor:hand;");
 			app
 					.getStyleSheet()
 					.addRule(
 							".Wt-treeview .Wt-tv-sh-nrh",
 							""
-									+ "float: right; width: 16px; height: 10px;cursor: pointer; cursor:hand;");
+									+ "float: right; width: 16px; height: 16px;cursor: pointer; cursor:hand;");
 			app.getStyleSheet().addRule(".Wt-treeview .Wt-tv-shc0",
 					"float: left;");
 			if (app.getEnvironment().agentIsWebKit()
@@ -288,18 +293,7 @@ public class WTreeView extends WAbstractItemView {
 					"height: 1px;");
 		}
 		this.setColumnBorder(WColor.white);
-		app.getStyleSheet().addRule("#" + this.getId() + " .cwidth",
-				"height: 1px;");
-		app.getStyleSheet()
-				.addRule(
-						"#" + this.getId() + "dw",
-						"width: 32px; height: 32px;background: url("
-								+ WApplication.getResourcesUrl()
-								+ "items-not-ok.gif);");
-		app.getStyleSheet().addRule(
-				"#" + this.getId() + "dw.Wt-valid-drop",
-				"width: 32px; height: 32px;background: url("
-						+ WApplication.getResourcesUrl() + "items-ok.gif);");
+		app.getStyleSheet().addRule("#" + this.getId() + " .cwidth", "");
 		this.rowHeightRule_ = new WCssTemplateRule("#" + this.getId() + " .rh");
 		app.getStyleSheet().addRule(this.rowHeightRule_);
 		this.rowWidthRule_ = new WCssTemplateRule("#" + this.getId()
@@ -308,82 +302,12 @@ public class WTreeView extends WAbstractItemView {
 		this.rowContentsWidthRule_ = new WCssTemplateRule("#" + this.getId()
 				+ " .Wt-tv-rowc");
 		app.getStyleSheet().addRule(this.rowContentsWidthRule_);
-		this.setRowHeight(this.rowHeight_);
-		if (app.getEnvironment().hasJavaScript()) {
-			this.impl_.setPositionScheme(PositionScheme.Relative);
-		}
-		WVBoxLayout layout = new WVBoxLayout();
-		layout.setSpacing(0);
-		layout.setContentsMargins(0, 0, 0, 0);
-		layout.addWidget(this.headerContainer_ = new WContainerWidget());
-		this.headerContainer_
-				.setOverflow(WContainerWidget.Overflow.OverflowHidden);
-		this.headerContainer_.setStyleClass("Wt-header headerrh cwidth");
-		this.headers_ = new WContainerWidget(this.headerContainer_);
-		this.headers_.setStyleClass("Wt-headerdiv headerrh");
-		this.headerHeightRule_ = new WCssTemplateRule("#" + this.getId()
-				+ " .headerrh");
-		app.getStyleSheet().addRule(this.headerHeightRule_);
-		this.setHeaderHeight(this.headerLineHeight_);
-		this.contentsContainer_ = new WContainerWidget();
-		this.contentsContainer_.setStyleClass("cwidth");
-		this.contentsContainer_
-				.setOverflow(WContainerWidget.Overflow.OverflowAuto);
-		this.contentsContainer_
-				.addWidget(this.contents_ = new WContainerWidget());
-		this.contentsContainer_.scrolled().addListener(this,
-				new Signal1.Listener<WScrollEvent>() {
-					public void trigger(WScrollEvent e1) {
-						WTreeView.this.onViewportChange(e1);
-					}
-				});
-		this.contentsContainer_.scrolled().addListener(
-				this.tieContentsHeaderScrollJS_);
-		this.contents_.addWidget(new WContainerWidget());
-		if (app.getEnvironment().agentIsIE()) {
-			this.contents_.setAttributeValue("style", "zoom: 1");
-		}
-		layout.addWidget(this.contentsContainer_, 1);
-		this.impl_.setLayout(layout);
-		this.selectionChanged().addListener(this, new Signal.Listener() {
-			public void trigger() {
-				WTreeView.this.checkDragSelection();
-			}
-		});
-		this.bindObjJS(this.itemClickedJS_, "click");
-		this.bindObjJS(this.itemDoubleClickedJS_, "dblClick");
-		this.bindObjJS(this.itemMouseDownJS_, "mouseDown");
-		this.bindObjJS(this.itemMouseUpJS_, "mouseUp");
-		this.bindObjJS(this.resizeHandleMDownJS_, "resizeHandleMDown");
-		this.bindObjJS(this.resizeHandleMMovedJS_, "resizeHandleMMoved");
-		this.bindObjJS(this.resizeHandleMUpJS_, "resizeHandleMUp");
-		this.tieContentsHeaderScrollJS_
-				.setJavaScript("function(obj, event) {"
-						+ this.headerContainer_.getJsRef()
-						+ ".scrollLeft=obj.scrollLeft;var t = "
-						+ this.contents_.getJsRef()
-						+ ".firstChild;var h = "
-						+ this.headers_.getJsRef()
-						+ ";h.style.width = (t.offsetWidth - 1) + 'px';h.style.width = t.offsetWidth + 'px';}");
-		if (app.getEnvironment().agentIsWebKit()
-				|| app.getEnvironment().agentIsOpera()) {
-			this.tieRowsScrollJS_
-					.setJavaScript("function(obj, event) {Wt3_1_2.getCssRule('#"
-							+ this.getId()
-							+ " .Wt-tv-rowc').style.left= -obj.scrollLeft + 'px';}");
-		} else {
-			this.tieRowsScrollJS_
-					.setJavaScript("function(obj, event) {obj.parentNode.style.width = Wt3_1_2.getCssRule('#"
-							+ this.getId()
-							+ " .cwidth').style.width;$('#"
-							+ this.getId()
-							+ " .Wt-tv-rowc').parent().scrollLeft(obj.scrollLeft);}");
-		}
 		app.addAutoJavaScript("{var obj = $('#" + this.getId()
 				+ "').data('obj');if (obj) obj.autoJavaScript();}");
 		if (parent != null) {
 			parent.addWidget(this);
 		}
+		this.setup();
 	}
 
 	/**
@@ -396,52 +320,12 @@ public class WTreeView extends WAbstractItemView {
 		this((WContainerWidget) null);
 	}
 
-	/**
-	 * Destructor.
-	 */
 	public void remove() {
 		;
-		this.impl_.clear();
 		if (this.rowHeightRule_ != null)
 			this.rowHeightRule_.remove();
-		for (int i = 0; i < this.columns_.size(); ++i) {
-			if (this.columns_.get(i).styleRule != null)
-				this.columns_.get(i).styleRule.remove();
-		}
+		this.impl_.clear();
 		super.remove();
-	}
-
-	/**
-	 * Sets the root index.
-	 * <p>
-	 * The root index is the model index that is considered the root node. This
-	 * node itself is not rendered, but all its children are the top level
-	 * nodes.
-	 * <p>
-	 * The default value is WModelIndex(), corresponding to the invisible root.
-	 * <p>
-	 * 
-	 * @see WTreeView#setModel(WAbstractItemModel model)
-	 */
-	public void setRootIndex(WModelIndex rootIndex) {
-		if (!(rootIndex == this.rootIndex_ || (rootIndex != null && rootIndex
-				.equals(this.rootIndex_)))) {
-			this.rootIndex_ = rootIndex;
-			if (this.model_ != null) {
-				this
-						.scheduleRerender(WAbstractItemView.RenderState.NeedRerenderData);
-			}
-		}
-	}
-
-	/**
-	 * Returns the root index.
-	 * <p>
-	 * 
-	 * @see WTreeView#setRootIndex(WModelIndex rootIndex)
-	 */
-	public WModelIndex getRootIndex() {
-		return this.rootIndex_;
 	}
 
 	/**
@@ -491,8 +375,8 @@ public class WTreeView extends WAbstractItemView {
 	 * @see WTreeView#setExpanded(WModelIndex index, boolean expanded)
 	 */
 	public boolean isExpanded(WModelIndex index) {
-		return (index == this.rootIndex_ || (index != null && index
-				.equals(this.rootIndex_)))
+		return (index == this.getRootIndex() || (index != null && index
+				.equals(this.getRootIndex())))
 				|| this.expandedSet_.contains(index) != false;
 	}
 
@@ -529,38 +413,8 @@ public class WTreeView extends WAbstractItemView {
 	 */
 	public void expandToDepth(int depth) {
 		if (depth > 0) {
-			this.expandChildrenToDepth(this.rootIndex_, depth);
+			this.expandChildrenToDepth(this.getRootIndex(), depth);
 		}
-	}
-
-	/**
-	 * Sets if alternating row colors are to be used. Configure whether rows get
-	 * an alternating background color. These are implemented by using a
-	 * background image on the root node, like:.
-	 * <p>
-	 * <div align="center"> <img src="doc-files//stripe-30px.gif"
-	 * alt="Sample image use for alternating row colors">
-	 * <p>
-	 * <strong>Sample image use for alternating row colors</strong>
-	 * </p>
-	 * </div> The image that is used is
-	 * <i>resourcesURL</i>&quot;/stripes/stripe-
-	 * &lt;i&gt;n&lt;/i&gt;px.gif&quot;, where <code>n</code> is the row height.
-	 * In the resource folder are images pregenerated for one color and row
-	 * sizes from 10 to 30px.
-	 * <p>
-	 * The default value is <code>false</code>.
-	 * <p>
-	 */
-	public void setAlternatingRowColors(boolean enable) {
-		if (this.alternatingRowColors_ != enable) {
-			this.alternatingRowColors_ = enable;
-			this.setRootNodeStyle();
-		}
-	}
-
-	public boolean hasAlternatingRowColors() {
-		return this.alternatingRowColors_;
 	}
 
 	/**
@@ -570,7 +424,8 @@ public class WTreeView extends WAbstractItemView {
 	 * display their linkage and offspring, like any node.
 	 * <p>
 	 * By setting <code>show</code> to <code>false</code>, you can hide these
-	 * decorations for root nodes, and in this way mimic a plain list.
+	 * decorations for root nodes, and in this way mimic a plain list. You could
+	 * also consider using a {@link WTableView} instead.
 	 */
 	public void setRootIsDecorated(boolean show) {
 		this.rootIsDecorated_ = show;
@@ -602,6 +457,10 @@ public class WTreeView extends WAbstractItemView {
 	 * </p>
 	 */
 	public void setColumn1Fixed(boolean fixed) {
+		WApplication app = WApplication.getInstance();
+		if (!app.getEnvironment().hasAjax()) {
+			return;
+		}
 		if (fixed && !this.column1Fixed_) {
 			this.column1Fixed_ = fixed;
 			this.setStyleClass("Wt-treeview column1");
@@ -613,26 +472,37 @@ public class WTreeView extends WAbstractItemView {
 			rootWrap.setOverflow(WContainerWidget.Overflow.OverflowHidden);
 			this.rowWidthRule_.getTemplateWidget().resize(new WLength(0),
 					WLength.Auto);
+			boolean useStyleLeft = app.getEnvironment().agentIsWebKit()
+					|| app.getEnvironment().agentIsOpera();
+			if (useStyleLeft) {
+				this.tieRowsScrollJS_
+						.setJavaScript("function(obj, event) {Wt3_1_3.getCssRule('#"
+								+ this.getId()
+								+ " .Wt-tv-rowc').style.left= -obj.scrollLeft + 'px';}");
+			} else {
+				this.tieRowsScrollJS_
+						.setJavaScript("function(obj, event) {obj.parentNode.style.width = Wt3_1_3.getCssRule('#"
+								+ this.getId()
+								+ " .cwidth').style.width;$('#"
+								+ this.getId()
+								+ " .Wt-tv-rowc').parent().scrollLeft(obj.scrollLeft);}");
+			}
 			WContainerWidget scrollBarContainer = new WContainerWidget();
 			scrollBarContainer.setStyleClass("cwidth");
 			scrollBarContainer.resize(WLength.Auto, new WLength(19));
 			this.scrollBarC_ = new WContainerWidget(scrollBarContainer);
 			this.scrollBarC_.setStyleClass("Wt-tv-row Wt-scroll");
 			this.scrollBarC_.scrolled().addListener(this.tieRowsScrollJS_);
-			WApplication app = WApplication.getInstance();
 			if (app.getEnvironment().agentIsIE()) {
 				scrollBarContainer.setPositionScheme(PositionScheme.Relative);
 				this.scrollBarC_.setAttributeValue("style", "right: 0px");
 			}
 			WContainerWidget scrollBar = new WContainerWidget(this.scrollBarC_);
 			scrollBar.setStyleClass("Wt-tv-rowc");
-			if (app.getEnvironment().agentIsWebKit()
-					|| app.getEnvironment().agentIsOpera()) {
+			if (useStyleLeft) {
 				scrollBar.setAttributeValue("style", "left: 0px;");
 			}
 			this.impl_.getLayout().addWidget(scrollBarContainer);
-			app.addAutoJavaScript("{var s=" + this.scrollBarC_.getJsRef()
-					+ ";if (s) {" + this.tieRowsScrollJS_.execJs("s") + "}}");
 		}
 	}
 
@@ -647,16 +517,33 @@ public class WTreeView extends WAbstractItemView {
 	}
 
 	public void resize(WLength width, WLength height) {
+		WApplication app = WApplication.getInstance();
+		WLength w = app.getEnvironment().hasAjax() ? WLength.Auto : width;
+		this.contentsContainer_.resize(w, WLength.Auto);
+		if (this.headerContainer_ != null) {
+			this.headerContainer_.resize(w, WLength.Auto);
+		}
 		if (!height.isAuto()) {
-			this.viewportHeight_ = (int) Math.ceil(height.toPixels()
-					/ this.rowHeight_.toPixels());
+			if (!app.getEnvironment().hasAjax()) {
+				if (this.impl_.getCount() < 3) {
+					this.impl_.addWidget(this.getCreatePageNavigationBar());
+				}
+				double navigationBarHeight = 25;
+				double headerHeight = this.getHeaderHeight().toPixels();
+				this.contentsContainer_.resize(width, new WLength(height
+						.toPixels()
+						- navigationBarHeight - headerHeight));
+				this.viewportHeight_ = (int) (this.contentsContainer_
+						.getHeight().toPixels() / this.getRowHeight()
+						.toPixels());
+			} else {
+				this.viewportHeight_ = (int) Math.ceil(height.toPixels()
+						/ this.getRowHeight().toPixels());
+			}
+		} else {
 			this
 					.scheduleRerender(WAbstractItemView.RenderState.NeedAdjustViewPort);
 		}
-		WLength w = WApplication.getInstance().getEnvironment().hasAjax() ? WLength.Auto
-				: width;
-		this.contentsContainer_.resize(w, WLength.Auto);
-		this.headerContainer_.resize(w, WLength.Auto);
 		super.resize(width, height);
 	}
 
@@ -682,78 +569,69 @@ public class WTreeView extends WAbstractItemView {
 		return this.expanded_;
 	}
 
-	// public void openPersistentEditor(WModelIndex index) ;
-	// public void closePersistentEditor(WModelIndex index) ;
 	public void setModel(WAbstractItemModel model) {
 		super.setModel(model);
-		this.rootIndex_ = null;
-		this.modelConnections_.add(this.model_.columnsInserted().addListener(
-				this, new Signal3.Listener<WModelIndex, Integer, Integer>() {
+		this.modelConnections_.add(model.columnsInserted().addListener(this,
+				new Signal3.Listener<WModelIndex, Integer, Integer>() {
 					public void trigger(WModelIndex e1, Integer e2, Integer e3) {
 						WTreeView.this.modelColumnsInserted(e1, e2, e3);
 					}
 				}));
-		this.modelConnections_.add(this.model_.columnsAboutToBeRemoved()
-				.addListener(this,
-						new Signal3.Listener<WModelIndex, Integer, Integer>() {
-							public void trigger(WModelIndex e1, Integer e2,
-									Integer e3) {
-								WTreeView.this.modelColumnsAboutToBeRemoved(e1,
-										e2, e3);
-							}
-						}));
-		this.modelConnections_.add(this.model_.columnsRemoved().addListener(
+		this.modelConnections_.add(model.columnsAboutToBeRemoved().addListener(
 				this, new Signal3.Listener<WModelIndex, Integer, Integer>() {
+					public void trigger(WModelIndex e1, Integer e2, Integer e3) {
+						WTreeView.this.modelColumnsAboutToBeRemoved(e1, e2, e3);
+					}
+				}));
+		this.modelConnections_.add(model.columnsRemoved().addListener(this,
+				new Signal3.Listener<WModelIndex, Integer, Integer>() {
 					public void trigger(WModelIndex e1, Integer e2, Integer e3) {
 						WTreeView.this.modelColumnsRemoved(e1, e2, e3);
 					}
 				}));
-		this.modelConnections_.add(this.model_.rowsInserted().addListener(this,
+		this.modelConnections_.add(model.rowsInserted().addListener(this,
 				new Signal3.Listener<WModelIndex, Integer, Integer>() {
 					public void trigger(WModelIndex e1, Integer e2, Integer e3) {
 						WTreeView.this.modelRowsInserted(e1, e2, e3);
 					}
 				}));
-		this.modelConnections_.add(this.model_.rowsAboutToBeRemoved()
-				.addListener(this,
-						new Signal3.Listener<WModelIndex, Integer, Integer>() {
-							public void trigger(WModelIndex e1, Integer e2,
-									Integer e3) {
-								WTreeView.this.modelRowsAboutToBeRemoved(e1,
-										e2, e3);
-							}
-						}));
-		this.modelConnections_.add(this.model_.rowsRemoved().addListener(this,
+		this.modelConnections_.add(model.rowsAboutToBeRemoved().addListener(
+				this, new Signal3.Listener<WModelIndex, Integer, Integer>() {
+					public void trigger(WModelIndex e1, Integer e2, Integer e3) {
+						WTreeView.this.modelRowsAboutToBeRemoved(e1, e2, e3);
+					}
+				}));
+		this.modelConnections_.add(model.rowsRemoved().addListener(this,
 				new Signal3.Listener<WModelIndex, Integer, Integer>() {
 					public void trigger(WModelIndex e1, Integer e2, Integer e3) {
 						WTreeView.this.modelRowsRemoved(e1, e2, e3);
 					}
 				}));
-		this.modelConnections_.add(this.model_.dataChanged().addListener(this,
+		this.modelConnections_.add(model.dataChanged().addListener(this,
 				new Signal2.Listener<WModelIndex, WModelIndex>() {
 					public void trigger(WModelIndex e1, WModelIndex e2) {
 						WTreeView.this.modelDataChanged(e1, e2);
 					}
 				}));
-		this.modelConnections_.add(this.model_.headerDataChanged().addListener(
-				this, new Signal3.Listener<Orientation, Integer, Integer>() {
+		this.modelConnections_.add(model.headerDataChanged().addListener(this,
+				new Signal3.Listener<Orientation, Integer, Integer>() {
 					public void trigger(Orientation e1, Integer e2, Integer e3) {
 						WTreeView.this.modelHeaderDataChanged(e1, e2, e3);
 					}
 				}));
-		this.modelConnections_.add(this.model_.layoutAboutToBeChanged()
-				.addListener(this, new Signal.Listener() {
+		this.modelConnections_.add(model.layoutAboutToBeChanged().addListener(
+				this, new Signal.Listener() {
 					public void trigger() {
 						WTreeView.this.modelLayoutAboutToBeChanged();
 					}
 				}));
-		this.modelConnections_.add(this.model_.layoutChanged().addListener(
-				this, new Signal.Listener() {
+		this.modelConnections_.add(model.layoutChanged().addListener(this,
+				new Signal.Listener() {
 					public void trigger() {
 						WTreeView.this.modelLayoutChanged();
 					}
 				}));
-		this.modelConnections_.add(this.model_.modelReset().addListener(this,
+		this.modelConnections_.add(model.modelReset().addListener(this,
 				new Signal.Listener() {
 					public void trigger() {
 						WTreeView.this.modelReset();
@@ -765,6 +643,7 @@ public class WTreeView extends WAbstractItemView {
 				this.columns_.get(this.columns_.size() - 1).styleRule.remove();
 			this.columns_.remove(0 + this.columns_.size() - 1);
 		}
+		this.pageChanged().trigger();
 	}
 
 	/**
@@ -790,22 +669,35 @@ public class WTreeView extends WAbstractItemView {
 		toResize.resize(new WLength(0), WLength.Auto);
 		toResize.resize(new WLength(width.toPixels()), WLength.Auto);
 		WApplication app = WApplication.getInstance();
-		if (this.renderState_.getValue() < WAbstractItemView.RenderState.NeedRerenderHeader
-				.getValue()) {
+		if (app.getEnvironment().hasAjax()
+				&& this.renderState_.getValue() < WAbstractItemView.RenderState.NeedRerenderHeader
+						.getValue()) {
 			app.doJavaScript("$('#" + this.getId()
 					+ "').data('obj').adjustColumns();");
 		}
+		if (!app.getEnvironment().hasAjax() && column == 0 && !width.isAuto()) {
+			double total = 0;
+			for (int i = 0; i < this.getColumnCount(); ++i) {
+				total += this.getColumnWidth(i).toPixels();
+			}
+			this.resize(new WLength(total), this.getHeight());
+		}
 	}
 
-	public WLength getColumnWidth(int column) {
-		return this.columnInfo(column).width;
+	public void setAlternatingRowColors(boolean enable) {
+		super.setAlternatingRowColors(enable);
+		this.setRootNodeStyle();
 	}
 
 	public void setRowHeight(WLength rowHeight) {
-		this.rowHeight_ = rowHeight;
-		this.rowHeightRule_.getTemplateWidget().resize(WLength.Auto,
-				this.rowHeight_);
-		this.rowHeightRule_.getTemplateWidget().setLineHeight(this.rowHeight_);
+		super.setRowHeight(rowHeight);
+		this.rowHeightRule_.getTemplateWidget().resize(WLength.Auto, rowHeight);
+		this.rowHeightRule_.getTemplateWidget().setLineHeight(rowHeight);
+		if (!WApplication.getInstance().getEnvironment().hasAjax()
+				&& !this.getHeight().isAuto()) {
+			this.viewportHeight_ = (int) (this.contentsContainer_.getHeight()
+					.toPixels() / rowHeight.toPixels());
+		}
 		this.setRootNodeStyle();
 		for (Iterator<Map.Entry<WModelIndex, WTreeViewNode>> i_it = this.renderedNodes_
 				.entrySet().iterator(); i_it.hasNext();) {
@@ -819,23 +711,7 @@ public class WTreeView extends WAbstractItemView {
 	}
 
 	public void setHeaderHeight(WLength height, boolean multiLine) {
-		this.headerLineHeight_ = height;
-		this.multiLineHeader_ = multiLine;
-		int lineCount = this.getHeaderLevelCount();
-		WLength headerHeight = WLength.multiply(this.headerLineHeight_,
-				lineCount);
-		this.headerHeightRule_.getTemplateWidget().resize(WLength.Auto,
-				headerHeight);
-		if (!this.multiLineHeader_) {
-			this.headerHeightRule_.getTemplateWidget().setLineHeight(
-					this.headerLineHeight_);
-		} else {
-			this.headerHeightRule_.getTemplateWidget().setLineHeight(
-					WLength.Auto);
-		}
-		this.headers_.resize(this.headers_.getWidth(), headerHeight);
-		this.headerContainer_.resize(this.headerContainer_.getWidth(),
-				headerHeight);
+		super.setHeaderHeight(height, multiLine);
 		if (this.renderState_.getValue() >= WAbstractItemView.RenderState.NeedRerenderHeader
 				.getValue()) {
 			return;
@@ -845,57 +721,6 @@ public class WTreeView extends WAbstractItemView {
 				this.headerTextWidget(i).setWordWrap(multiLine);
 			}
 		}
-	}
-
-	public void setColumnAlignment(int column, AlignmentFlag alignment) {
-		this.columnInfo(column).alignment = alignment;
-		WWidget w = this.columnInfo(column).styleRule.getTemplateWidget();
-		if (column != 0) {
-			String align = null;
-			switch (alignment) {
-			case AlignLeft:
-				align = "left";
-				break;
-			case AlignCenter:
-				align = "center";
-				break;
-			case AlignRight:
-				align = "right";
-				break;
-			case AlignJustify:
-				align = "justify";
-				break;
-			default:
-				break;
-			}
-			if (align != null) {
-				w.setAttributeValue("style", "text-align: " + align);
-			}
-		} else {
-			if (alignment == AlignmentFlag.AlignRight) {
-				w.setFloatSide(Side.Right);
-			}
-		}
-	}
-
-	public AlignmentFlag getColumnAlignment(int column) {
-		return this.columnInfo(column).alignment;
-	}
-
-	public void setHeaderAlignment(int column, AlignmentFlag alignment) {
-		this.columnInfo(column).headerAlignment = alignment;
-		if (this.renderState_.getValue() >= WAbstractItemView.RenderState.NeedRerenderHeader
-				.getValue()) {
-			return;
-		}
-		WContainerWidget wc = ((this.headerWidget(column)) instanceof WContainerWidget ? (WContainerWidget) (this
-				.headerWidget(column))
-				: null);
-		wc.setContentAlignment(EnumSet.of(alignment));
-	}
-
-	public AlignmentFlag getHeaderAlignment(int column) {
-		return this.columnInfo(column).headerAlignment;
 	}
 
 	public void setColumnBorder(WColor color) {
@@ -908,7 +733,32 @@ public class WTreeView extends WAbstractItemView {
 				this.borderColorRule_);
 	}
 
-	protected void render(EnumSet<RenderFlag> flags) {
+	public int getPageCount() {
+		if (this.rootNode_ != null) {
+			return (this.rootNode_.getRenderedHeight() - 1)
+					/ this.viewportHeight_ + 1;
+		} else {
+			return 1;
+		}
+	}
+
+	public int getPageSize() {
+		return this.viewportHeight_;
+	}
+
+	public int getCurrentPage() {
+		return this.viewportTop_ / this.viewportHeight_;
+	}
+
+	public void setCurrentPage(int page) {
+		this.viewportTop_ = page * this.viewportHeight_;
+		this.contents_.setOffsets(new WLength(-this.viewportTop_
+				* this.getRowHeight().toPixels()), EnumSet.of(Side.Top));
+		this.pageChanged().trigger();
+		this.scheduleRerender(WAbstractItemView.RenderState.NeedAdjustViewPort);
+	}
+
+	void render(EnumSet<RenderFlag> flags) {
 		if (!EnumUtils.mask(flags, RenderFlag.RenderFull).isEmpty()) {
 			this.defineJavaScript();
 		}
@@ -933,36 +783,35 @@ public class WTreeView extends WAbstractItemView {
 				break;
 			}
 		}
+		if (this.column1Fixed_ && this.renderedNodesAdded_) {
+			WApplication.getInstance().doJavaScript(
+					"{var s=" + this.scrollBarC_.getJsRef() + ";if (s) {"
+							+ this.tieRowsScrollJS_.execJs("s") + "}}");
+			this.renderedNodesAdded_ = false;
+		}
 		super.render(flags);
 	}
 
 	protected void enableAjax() {
-		this.rootNode_.clicked().addListener(this.itemClickedJS_);
-		this.rootNode_.doubleClicked().addListener(this.itemDoubleClickedJS_);
-		if (this.mouseWentDown_.isConnected() || this.dragEnabled_) {
-			this.rootNode_.mouseWentDown().addListener(this.itemMouseDownJS_);
-		}
-		if (this.mouseWentUp_.isConnected()) {
-			this.rootNode_.mouseWentUp().addListener(this.itemMouseUpJS_);
-		}
+		this.setup();
+		this.defineJavaScript();
+		this.rerenderHeader();
+		this.rerenderTree();
 		super.enableAjax();
 	}
 
-	private WModelIndex rootIndex_;
 	SortedSet<WModelIndex> expandedSet_;
 	private HashMap<WModelIndex, WTreeViewNode> renderedNodes_;
+	private boolean renderedNodesAdded_;
 	private WTreeViewNode rootNode_;
 	private WCssTemplateRule rowHeightRule_;
-	private WCssTemplateRule headerHeightRule_;
 	private WCssTemplateRule rowWidthRule_;
 	private WCssTemplateRule rowContentsWidthRule_;
+	private WCssTemplateRule c0WidthRule_;
 	private WCssRule borderColorRule_;
 	private boolean rootIsDecorated_;
 	boolean column1Fixed_;
-	private boolean alternatingRowColors_;
 	private List<Object> expandedRaw_;
-	private List<Object> selectionRaw_;
-	private Object rawRootIndex_;
 	Signal1<WModelIndex> collapsed_;
 	Signal1<WModelIndex> expanded_;
 	private int viewportTop_;
@@ -970,7 +819,6 @@ public class WTreeView extends WAbstractItemView {
 	private int firstRenderedRow_;
 	private int validRowCount_;
 	private int nodeLoad_;
-	private WContainerWidget impl_;
 	private WContainerWidget headers_;
 	private WContainerWidget headerContainer_;
 	private WContainerWidget contents_;
@@ -980,41 +828,37 @@ public class WTreeView extends WAbstractItemView {
 	private int removedHeight_;
 	private JSignal6<String, Integer, String, String, String, WMouseEvent> itemEvent_;
 	ToggleButtonConfig expandConfig_;
+	private JSlot tieContentsHeaderScrollJS_;
+	private JSlot tieRowsScrollJS_;
+	private JSlot itemClickedJS_;
+	private JSlot itemDoubleClickedJS_;
+	private JSlot itemMouseDownJS_;
+	private JSlot itemMouseUpJS_;
 
-	WAbstractItemView.ColumnInfo columnInfo(int column) {
-		while (column >= (int) this.columns_.size()) {
-			WAbstractItemView.ColumnInfo ci = this.createColumnInfo(column);
-			this.columns_.add(ci);
-		}
-		return this.columns_.get(column);
-	}
-
-	private WAbstractItemView.ColumnInfo createColumnInfo(int column) {
-		WAbstractItemView.ColumnInfo ci = new WAbstractItemView.ColumnInfo(
-				this, ++this.nextColumnId_, column);
-		ci.styleRule = new WCssTemplateRule("#" + this.getId() + " ."
-				+ ci.getStyleClass());
-		WApplication app = WApplication.getInstance();
-		if (column != 0) {
-			ci.width = new WLength(150);
-			ci.styleRule.getTemplateWidget().resize(ci.width, WLength.Auto);
-		} else {
+	WAbstractItemView.ColumnInfo createColumnInfo(int column) {
+		WAbstractItemView.ColumnInfo ci = super.createColumnInfo(column);
+		if (column == 0) {
+			ci.width = WLength.Auto;
+			ci.styleRule.getTemplateWidget().resize(WLength.Auto, WLength.Auto);
+			WApplication app = WApplication.getInstance();
 			app.getStyleSheet().addRule(
 					"#" + this.getId() + " .Wt-tv-node ." + ci.getStyleClass(),
 					"width: auto;text-overflow: ellipsis;overflow: hidden");
 		}
-		app.getStyleSheet().addRule(ci.styleRule);
 		return ci;
 	}
 
 	private void defineJavaScript() {
 		WApplication app = WApplication.getInstance();
+		if (!app.getEnvironment().hasAjax()) {
+			return;
+		}
 		String THIS_JS = "js/WTreeView.js";
 		if (!app.isJavaScriptLoaded(THIS_JS)) {
 			app.doJavaScript(wtjs1(app), false);
 			app.setJavaScriptLoaded(THIS_JS);
 		}
-		app.doJavaScript("new Wt3_1_2.WTreeView(" + app.getJavaScriptClass()
+		app.doJavaScript("new Wt3_1_3.WTreeView(" + app.getJavaScriptClass()
 				+ "," + this.getJsRef() + ","
 				+ this.contentsContainer_.getJsRef() + ","
 				+ this.headerContainer_.getJsRef() + ","
@@ -1053,15 +897,11 @@ public class WTreeView extends WAbstractItemView {
 				this.headers_.addWidget(w);
 			}
 		}
-		if (this.currentSortColumn_ != -1) {
-			SortOrder order = this.columnInfo(this.currentSortColumn_).sortOrder;
-			this.headerSortIconWidget(this.currentSortColumn_).setStyleClass(
-					order == SortOrder.AscendingOrder ? "Wt-tv-sh Wt-tv-sh-up"
-							: "Wt-tv-sh Wt-tv-sh-down");
+		if (app.getEnvironment().hasAjax()) {
+			app.doJavaScript("$('#" + this.getId()
+					+ "').data('obj').adjustColumns();");
 		}
-		app.doJavaScript("$('#" + this.getId()
-				+ "').data('obj').adjustColumns();");
-		if (this.model_ != null) {
+		if (this.getModel() != null) {
 			this.modelHeaderDataChanged(Orientation.Horizontal, 0, this
 					.getColumnCount() - 1);
 		}
@@ -1074,7 +914,7 @@ public class WTreeView extends WAbstractItemView {
 		wrapRoot.clear();
 		this.firstRenderedRow_ = this.getCalcOptimalFirstRenderedRow();
 		this.validRowCount_ = 0;
-		this.rootNode_ = new WTreeViewNode(this, this.rootIndex_, -1, true,
+		this.rootNode_ = new WTreeViewNode(this, this.getRootIndex(), -1, true,
 				(WTreeViewNode) null);
 		this.rootNode_.resize(new WLength(100, WLength.Unit.Percentage),
 				new WLength(1));
@@ -1082,17 +922,87 @@ public class WTreeView extends WAbstractItemView {
 			this.rootNode_.clicked().addListener(this.itemClickedJS_);
 			this.rootNode_.doubleClicked().addListener(
 					this.itemDoubleClickedJS_);
-			if (this.mouseWentDown_.isConnected() || this.dragEnabled_) {
+			if (this.mouseWentDown().isConnected() || this.dragEnabled_) {
 				this.rootNode_.mouseWentDown().addListener(
 						this.itemMouseDownJS_);
 			}
-			if (this.mouseWentUp_.isConnected()) {
+			if (this.mouseWentUp().isConnected()) {
 				this.rootNode_.mouseWentUp().addListener(this.itemMouseUpJS_);
 			}
 		}
 		this.setRootNodeStyle();
 		wrapRoot.addWidget(this.rootNode_);
+		this.pageChanged().trigger();
 		this.adjustToViewport();
+	}
+
+	private void setup() {
+		WApplication app = WApplication.getInstance();
+		this.impl_.clear();
+		this.rootNode_ = null;
+		this.headers_ = new WContainerWidget();
+		this.headers_.setStyleClass("Wt-headerdiv headerrh");
+		this.contents_ = new WContainerWidget();
+		WContainerWidget wrapRoot = new WContainerWidget();
+		this.contents_.addWidget(wrapRoot);
+		if (app.getEnvironment().agentIsIE()) {
+			wrapRoot.setAttributeValue("style", "zoom: 1");
+			this.contents_.setAttributeValue("style", "zoom: 1");
+		}
+		if (app.getEnvironment().hasAjax()) {
+			this.impl_.setPositionScheme(PositionScheme.Relative);
+			WVBoxLayout layout = new WVBoxLayout();
+			layout.setSpacing(0);
+			layout.setContentsMargins(0, 0, 0, 0);
+			this.headerContainer_ = new WContainerWidget();
+			this.headerContainer_
+					.setOverflow(WContainerWidget.Overflow.OverflowHidden);
+			this.headerContainer_.setStyleClass("Wt-header headerrh cwidth");
+			this.headerContainer_.addWidget(this.headers_);
+			this.contentsContainer_ = new WContainerWidget();
+			this.contentsContainer_.setStyleClass("cwidth");
+			this.contentsContainer_
+					.setOverflow(WContainerWidget.Overflow.OverflowAuto);
+			this.contentsContainer_.scrolled().addListener(this,
+					new Signal1.Listener<WScrollEvent>() {
+						public void trigger(WScrollEvent e1) {
+							WTreeView.this.onViewportChange(e1);
+						}
+					});
+			this.contentsContainer_.scrolled().addListener(
+					this.tieContentsHeaderScrollJS_);
+			this.contentsContainer_.addWidget(this.contents_);
+			layout.addWidget(this.headerContainer_);
+			layout.addWidget(this.contentsContainer_, 1);
+			this.impl_.setLayout(layout);
+		} else {
+			this.contentsContainer_ = new WContainerWidget();
+			this.contentsContainer_.addWidget(this.contents_);
+			this.contentsContainer_
+					.setOverflow(WContainerWidget.Overflow.OverflowHidden);
+			this.impl_.setPositionScheme(PositionScheme.Relative);
+			this.contentsContainer_.setPositionScheme(PositionScheme.Relative);
+			this.contents_.setPositionScheme(PositionScheme.Relative);
+			this.impl_.addWidget(this.headers_);
+			this.impl_.addWidget(this.contentsContainer_);
+			this.viewportHeight_ = 1000;
+			this.resize(this.getWidth(), this.getHeight());
+		}
+		this.setRowHeight(this.getRowHeight());
+		this.bindObjJS(this.itemClickedJS_, "click");
+		this.bindObjJS(this.itemDoubleClickedJS_, "dblClick");
+		this.bindObjJS(this.itemMouseDownJS_, "mouseDown");
+		this.bindObjJS(this.itemMouseUpJS_, "mouseUp");
+		if (this.headerContainer_ != null) {
+			this.tieContentsHeaderScrollJS_
+					.setJavaScript("function(obj, event) {"
+							+ this.headerContainer_.getJsRef()
+							+ ".scrollLeft=obj.scrollLeft;var t = "
+							+ this.contents_.getJsRef()
+							+ ".firstChild;var h = "
+							+ this.headers_.getJsRef()
+							+ ";h.style.width = (t.offsetWidth - 1) + 'px';h.style.width = t.offsetWidth + 'px';}");
+		}
 	}
 
 	void scheduleRerender(WAbstractItemView.RenderState what) {
@@ -1105,7 +1015,7 @@ public class WTreeView extends WAbstractItemView {
 		super.scheduleRerender(what);
 	}
 
-	void modelColumnsInserted(WModelIndex parent, int start, int end) {
+	private void modelColumnsInserted(WModelIndex parent, int start, int end) {
 		int count = end - start + 1;
 		if (!(parent != null)) {
 			WApplication app = WApplication.getInstance();
@@ -1118,8 +1028,10 @@ public class WTreeView extends WAbstractItemView {
 					this
 							.scheduleRerender(WAbstractItemView.RenderState.NeedRerenderHeader);
 				} else {
-					app.doJavaScript("$('#" + this.getId()
-							+ "').data('obj').adjustColumns();");
+					if (app.getEnvironment().hasAjax()) {
+						app.doJavaScript("$('#" + this.getId()
+								+ "').data('obj').adjustColumns();");
+					}
 					WContainerWidget row = this.getHeaderRow();
 					for (int i = start; i < start + count; ++i) {
 						WWidget w = this.createHeaderWidget(app, i);
@@ -1137,29 +1049,27 @@ public class WTreeView extends WAbstractItemView {
 			this
 					.scheduleRerender(WAbstractItemView.RenderState.NeedRerenderData);
 		} else {
-			WWidget parentWidget = this.widgetForIndex(parent);
-			if (parentWidget != null) {
-				WTreeViewNode node = ((parentWidget) instanceof WTreeViewNode ? (WTreeViewNode) (parentWidget)
-						: null);
-				if (node != null) {
-					for (WTreeViewNode c = node
-							.nextChildNode((WTreeViewNode) null); c != null; c = node
-							.nextChildNode(c)) {
-						c.insertColumns(start, count);
-					}
+			WTreeViewNode node = this.nodeForIndex(parent);
+			if (node != null) {
+				for (WTreeViewNode c = node.nextChildNode((WTreeViewNode) null); c != null; c = node
+						.nextChildNode(c)) {
+					c.insertColumns(start, count);
 				}
 			}
 		}
 	}
 
-	void modelColumnsAboutToBeRemoved(WModelIndex parent, int start, int end) {
+	private void modelColumnsAboutToBeRemoved(WModelIndex parent, int start,
+			int end) {
 		int count = end - start + 1;
 		if (!(parent != null)) {
 			if (this.renderState_.getValue() < WAbstractItemView.RenderState.NeedRerenderHeader
 					.getValue()) {
 				WApplication app = WApplication.getInstance();
-				app.doJavaScript("$('#" + this.getId()
-						+ "').data('obj').adjustColumns();");
+				if (app.getEnvironment().hasAjax()) {
+					app.doJavaScript("$('#" + this.getId()
+							+ "').data('obj').adjustColumns();");
+				}
 			}
 			for (int ii = 0; ii < (0 + start + count) - (0 + start); ++ii)
 				this.columns_.remove(0 + start);
@@ -1183,23 +1093,18 @@ public class WTreeView extends WAbstractItemView {
 		}
 	}
 
-	void modelColumnsRemoved(WModelIndex parent, int start, int end) {
+	private void modelColumnsRemoved(WModelIndex parent, int start, int end) {
 		if (this.renderState_ == WAbstractItemView.RenderState.NeedRerender
 				|| this.renderState_ == WAbstractItemView.RenderState.NeedRerenderData) {
 			return;
 		}
 		int count = end - start + 1;
 		if (start != 0) {
-			WWidget parentWidget = this.widgetForIndex(parent);
-			if (parentWidget != null) {
-				WTreeViewNode node = ((parentWidget) instanceof WTreeViewNode ? (WTreeViewNode) (parentWidget)
-						: null);
-				if (node != null) {
-					for (WTreeViewNode c = node
-							.nextChildNode((WTreeViewNode) null); c != null; c = node
-							.nextChildNode(c)) {
-						c.removeColumns(start, count);
-					}
+			WTreeViewNode node = this.nodeForIndex(parent);
+			if (node != null) {
+				for (WTreeViewNode c = node.nextChildNode((WTreeViewNode) null); c != null; c = node
+						.nextChildNode(c)) {
+					c.removeColumns(start, count);
 				}
 			}
 		}
@@ -1208,7 +1113,7 @@ public class WTreeView extends WAbstractItemView {
 		}
 	}
 
-	void modelRowsInserted(WModelIndex parent, int start, int end) {
+	private void modelRowsInserted(WModelIndex parent, int start, int end) {
 		int count = end - start + 1;
 		this.shiftModelIndexes(parent, start, count);
 		if (this.renderState_ == WAbstractItemView.RenderState.NeedRerender
@@ -1222,7 +1127,7 @@ public class WTreeView extends WAbstractItemView {
 			if (parentNode != null) {
 				if (parentNode.isChildrenLoaded()) {
 					WWidget startWidget = null;
-					if (end < this.model_.getRowCount(parent) - 1) {
+					if (end < this.getModel().getRowCount(parent) - 1) {
 						startWidget = parentNode.widgetForModelRow(start);
 					} else {
 						if (parentNode.getBottomSpacerHeight() != 0) {
@@ -1234,16 +1139,17 @@ public class WTreeView extends WAbstractItemView {
 					if (startWidget != null
 							&& startWidget == parentNode.topSpacer()) {
 						parentNode.addTopSpacerHeight(count);
-						this.renderedRowsChanged(this.renderedRow(this.model_
-								.getIndex(start, 0, parent), parentNode
-								.topSpacer(), this.getRenderLowerBound(), this
-								.getRenderUpperBound()), count);
+						this.renderedRowsChanged(this.renderedRow(this
+								.getModel().getIndex(start, 0, parent),
+								parentNode.topSpacer(), this
+										.getRenderLowerBound(), this
+										.getRenderUpperBound()), count);
 					} else {
 						if (startWidget != null
 								&& startWidget == parentNode.bottomSpacer()) {
 							parentNode.addBottomSpacerHeight(count);
-							this.renderedRowsChanged(this.renderedRow(
-									this.model_.getIndex(start, 0, parent),
+							this.renderedRowsChanged(this.renderedRow(this
+									.getModel().getIndex(start, 0, parent),
 									parentNode.bottomSpacer(), this
 											.getRenderLowerBound(), this
 											.getRenderUpperBound()), count);
@@ -1257,13 +1163,13 @@ public class WTreeView extends WAbstractItemView {
 									.getChildContainer()
 									.getIndexOf(startWidget)
 									: parentNode.getChildContainer().getCount();
-							int parentRowCount = this.model_
-									.getRowCount(parent);
+							int parentRowCount = this.getModel().getRowCount(
+									parent);
 							int nodesToAdd = Math.min(count, maxRenderHeight);
 							WTreeViewNode first = null;
 							for (int i = 0; i < nodesToAdd; ++i) {
-								WTreeViewNode n = new WTreeViewNode(this,
-										this.model_.getIndex(start + i, 0,
+								WTreeViewNode n = new WTreeViewNode(this, this
+										.getModel().getIndex(start + i, 0,
 												parent), -1,
 										start + i == parentRowCount - 1,
 										parentNode);
@@ -1306,7 +1212,7 @@ public class WTreeView extends WAbstractItemView {
 										.getRenderLowerBound(), this
 										.getRenderUpperBound()), nodesToAdd);
 							}
-							if (end == this.model_.getRowCount(parent) - 1
+							if (end == this.getModel().getRowCount(parent) - 1
 									&& start >= 1) {
 								WTreeViewNode n = ((parentNode
 										.widgetForModelRow(start - 1)) instanceof WTreeViewNode ? (WTreeViewNode) (parentNode
@@ -1314,14 +1220,14 @@ public class WTreeView extends WAbstractItemView {
 										: null);
 								if (n != null) {
 									n.updateGraphics(false,
-											this.model_.getRowCount(n
-													.getModelIndex()) == 0);
+											this.getModel().getRowCount(
+													n.getModelIndex()) == 0);
 								}
 							}
 						}
 					}
 				}
-				if (this.model_.getRowCount(parent) == count) {
+				if (this.getModel().getRowCount(parent) == count) {
 					parentNode.updateGraphics(parentNode.isLast(), false);
 				}
 			} else {
@@ -1329,14 +1235,16 @@ public class WTreeView extends WAbstractItemView {
 						: null);
 				s.setRows(s.getRows() + count);
 				s.getNode().adjustChildrenHeight(count);
-				this.renderedRowsChanged(this.renderedRow(this.model_.getIndex(
-						start, 0, parent), s, this.getRenderLowerBound(), this
-						.getRenderUpperBound()), count);
+				this.renderedRowsChanged(this.renderedRow(this.getModel()
+						.getIndex(start, 0, parent), s, this
+						.getRenderLowerBound(), this.getRenderUpperBound()),
+						count);
 			}
 		}
 	}
 
-	void modelRowsAboutToBeRemoved(WModelIndex parent, int start, int end) {
+	private void modelRowsAboutToBeRemoved(WModelIndex parent, int start,
+			int end) {
 		int count = end - start + 1;
 		if (this.renderState_ != WAbstractItemView.RenderState.NeedRerender
 				|| this.renderState_ != WAbstractItemView.RenderState.NeedRerenderData) {
@@ -1354,8 +1262,8 @@ public class WTreeView extends WAbstractItemView {
 							RowSpacer s = ((w) instanceof RowSpacer ? (RowSpacer) (w)
 									: null);
 							if (s != null) {
-								WModelIndex childIndex = this.model_.getIndex(
-										i, 0, parent);
+								WModelIndex childIndex = this.getModel()
+										.getIndex(i, 0, parent);
 								if (i == start) {
 									this.firstRemovedRow_ = this.renderedRow(
 											childIndex, w);
@@ -1371,33 +1279,33 @@ public class WTreeView extends WAbstractItemView {
 									this.firstRemovedRow_ = node.renderedRow();
 								}
 								this.removedHeight_ += node.getRenderedHeight();
-								if (w != null)
-									w.remove();
+								if (node != null)
+									node.remove();
 							}
 						}
 						parentNode.normalizeSpacers();
 						parentNode.adjustChildrenHeight(-this.removedHeight_);
 						parentNode.shiftModelIndexes(start, -count);
-						if (end == this.model_.getRowCount(parent) - 1
+						if (end == this.getModel().getRowCount(parent) - 1
 								&& start >= 1) {
 							WTreeViewNode n = ((parentNode
 									.widgetForModelRow(start - 1)) instanceof WTreeViewNode ? (WTreeViewNode) (parentNode
 									.widgetForModelRow(start - 1))
 									: null);
 							if (n != null) {
-								n.updateGraphics(true, this.model_
+								n.updateGraphics(true, this.getModel()
 										.getRowCount(n.getModelIndex()) == 0);
 							}
 						}
 					}
-					if (this.model_.getRowCount(parent) == count) {
+					if (this.getModel().getRowCount(parent) == count) {
 						parentNode.updateGraphics(parentNode.isLast(), true);
 					}
 				} else {
 					RowSpacer s = ((parentWidget) instanceof RowSpacer ? (RowSpacer) (parentWidget)
 							: null);
 					for (int i = start; i <= end; ++i) {
-						WModelIndex childIndex = this.model_.getIndex(i, 0,
+						WModelIndex childIndex = this.getModel().getIndex(i, 0,
 								parent);
 						int childHeight = this.subTreeHeight(childIndex);
 						this.removedHeight_ += childHeight;
@@ -1415,7 +1323,7 @@ public class WTreeView extends WAbstractItemView {
 		this.shiftModelIndexes(parent, start, -count);
 	}
 
-	void modelRowsRemoved(WModelIndex parent, int start, int end) {
+	private void modelRowsRemoved(WModelIndex parent, int start, int end) {
 		this.renderedRowsChanged(this.firstRemovedRow_, -this.removedHeight_);
 	}
 
@@ -1432,7 +1340,8 @@ public class WTreeView extends WAbstractItemView {
 			if (parentNode != null) {
 				if (parentNode.isChildrenLoaded()) {
 					for (int r = topLeft.getRow(); r <= bottomRight.getRow(); ++r) {
-						WModelIndex index = this.model_.getIndex(r, 0, parent);
+						WModelIndex index = this.getModel().getIndex(r, 0,
+								parent);
 						WTreeViewNode n = ((this.widgetForIndex(index)) instanceof WTreeViewNode ? (WTreeViewNode) (this
 								.widgetForIndex(index))
 								: null);
@@ -1446,12 +1355,13 @@ public class WTreeView extends WAbstractItemView {
 		}
 	}
 
-	void modelHeaderDataChanged(Orientation orientation, int start, int end) {
+	private void modelHeaderDataChanged(Orientation orientation, int start,
+			int end) {
 		if (this.renderState_.getValue() < WAbstractItemView.RenderState.NeedRerenderHeader
 				.getValue()) {
 			if (orientation == Orientation.Horizontal) {
 				for (int i = start; i <= end; ++i) {
-					WString label = StringUtils.asString(this.model_
+					WString label = StringUtils.asString(this.getModel()
 							.getHeaderData(i));
 					this.headerTextWidget(i).setText(label);
 				}
@@ -1461,38 +1371,25 @@ public class WTreeView extends WAbstractItemView {
 
 	void modelLayoutAboutToBeChanged() {
 		this.convertToRaw(this.expandedSet_, this.expandedRaw_);
-		this.convertToRaw(this.selectionModel_.selection_, this.selectionRaw_);
-		this.rawRootIndex_ = this.model_.toRawIndex(this.rootIndex_);
+		super.modelLayoutAboutToBeChanged();
 	}
 
 	void modelLayoutChanged() {
-		if (this.rawRootIndex_ != null) {
-			this.rootIndex_ = this.model_.fromRawIndex(this.rawRootIndex_);
-		} else {
-			this.rootIndex_ = null;
-		}
+		super.modelLayoutChanged();
 		for (int i = 0; i < this.expandedRaw_.size(); ++i) {
-			this.expandedSet_.add(this.model_.fromRawIndex(this.expandedRaw_
-					.get(i)));
+			this.expandedSet_.add(this.getModel().fromRawIndex(
+					this.expandedRaw_.get(i)));
 		}
 		this.expandedRaw_.clear();
-		for (int i = 0; i < this.selectionRaw_.size(); ++i) {
-			WModelIndex index = this.model_.fromRawIndex(this.selectionRaw_
-					.get(i));
-			if ((index != null)) {
-				this.selectionModel_.selection_.add(index);
-			}
-		}
-		this.selectionRaw_.clear();
 		this.renderedNodes_.clear();
-		this.scheduleRerender(WAbstractItemView.RenderState.NeedRerenderData);
+		this.pageChanged().trigger();
 	}
 
 	private void onViewportChange(WScrollEvent e) {
 		this.viewportTop_ = (int) Math.floor(e.getScrollY()
-				/ this.rowHeight_.toPixels());
+				/ this.getRowHeight().toPixels());
 		this.viewportHeight_ = (int) Math.ceil(e.getViewportHeight()
-				/ this.rowHeight_.toPixels());
+				/ this.getRowHeight().toPixels());
 		this.scheduleRerender(WAbstractItemView.RenderState.NeedAdjustViewPort);
 	}
 
@@ -1523,20 +1420,19 @@ public class WTreeView extends WAbstractItemView {
 					.append('\n');
 			return;
 		}
-		WModelIndex index = this.model_.getIndex(c0index.getRow(), column,
+		WModelIndex index = this.getModel().getIndex(c0index.getRow(), column,
 				c0index.getParent());
 		if (type.equals("clicked")) {
-			this.selectionHandleClick(index, event.getModifiers());
-			this.clicked_.trigger(index, event);
+			this.handleClick(index, event);
 		} else {
 			if (type.equals("dblclicked")) {
-				this.doubleClicked_.trigger(index, event);
+				this.handleDoubleClick(index, event);
 			} else {
 				if (type.equals("mousedown")) {
-					this.mouseWentDown_.trigger(index, event);
+					this.mouseWentDown().trigger(index, event);
 				} else {
 					if (type.equals("mouseup")) {
-						this.mouseWentUp_.trigger(index, event);
+						this.mouseWentUp().trigger(index, event);
 					} else {
 						if (type.equals("drop")) {
 							WDropEvent e = new WDropEvent(WApplication
@@ -1554,13 +1450,14 @@ public class WTreeView extends WAbstractItemView {
 		if (!(this.rootNode_ != null)) {
 			return;
 		}
-		if (this.alternatingRowColors_) {
+		if (this.hasAlternatingRowColors()) {
 			this.rootNode_.getDecorationStyle().setBackgroundImage(
-					WApplication.getResourcesUrl() + "themes/"
+					WApplication.getResourcesUrl()
+							+ "themes/"
 							+ WApplication.getInstance().getCssTheme()
 							+ "/stripes/stripe-"
-							+ String.valueOf((int) this.rowHeight_.toPixels())
-							+ "px.gif");
+							+ String.valueOf((int) this.getRowHeight()
+									.toPixels()) + "px.gif");
 		} else {
 			this.rootNode_.getDecorationStyle().setBackgroundImage("");
 		}
@@ -1569,7 +1466,7 @@ public class WTreeView extends WAbstractItemView {
 	void setCollapsed(WModelIndex index) {
 		this.expandedSet_.remove(index);
 		boolean selectionHasChanged = false;
-		SortedSet<WModelIndex> selection = this.selectionModel_.selection_;
+		SortedSet<WModelIndex> selection = this.getSelectionModel().selection_;
 		for (Iterator<WModelIndex> it_it = selection.tailSet(index).iterator(); it_it
 				.hasNext();) {
 			WModelIndex it = it_it.next();
@@ -1586,20 +1483,8 @@ public class WTreeView extends WAbstractItemView {
 			}
 		}
 		if (selectionHasChanged) {
-			this.selectionChanged_.trigger();
+			this.selectionChanged().trigger();
 		}
-	}
-
-	private void expandColumn(int columnid) {
-		this.model_.expandColumn(this.columnById(columnid));
-		this.scheduleRerender(WAbstractItemView.RenderState.NeedRerenderHeader);
-		this.setHeaderHeight(this.headerLineHeight_, this.multiLineHeader_);
-	}
-
-	private void collapseColumn(int columnid) {
-		this.model_.collapseColumn(this.columnById(columnid));
-		this.scheduleRerender(WAbstractItemView.RenderState.NeedRerenderHeader);
-		this.setHeaderHeight(this.headerLineHeight_, this.multiLineHeader_);
 	}
 
 	private int getCalcOptimalFirstRenderedRow() {
@@ -1607,7 +1492,7 @@ public class WTreeView extends WAbstractItemView {
 			return Math.max(0, this.viewportTop_ - this.viewportHeight_
 					- this.viewportHeight_ / 2);
 		} else {
-			return 0;
+			return this.viewportTop_;
 		}
 	}
 
@@ -1615,16 +1500,17 @@ public class WTreeView extends WAbstractItemView {
 		if (WApplication.getInstance().getEnvironment().hasAjax()) {
 			return 4 * this.viewportHeight_;
 		} else {
-			return this.rootNode_.getRenderedHeight();
+			return this.viewportHeight_ + 5;
 		}
 	}
 
 	private void shiftModelIndexes(WModelIndex parent, int start, int count) {
-		shiftModelIndexes(parent, start, count, this.model_, this.expandedSet_);
-		int removed = shiftModelIndexes(parent, start, count, this.model_,
-				this.selectionModel_.selection_);
+		shiftModelIndexes(parent, start, count, this.getModel(),
+				this.expandedSet_);
+		int removed = shiftModelIndexes(parent, start, count, this.getModel(),
+				this.getSelectionModel().selection_);
 		if (removed != 0) {
-			this.selectionChanged_.trigger();
+			this.selectionChanged().trigger();
 		}
 	}
 
@@ -1679,6 +1565,7 @@ public class WTreeView extends WAbstractItemView {
 	void addRenderedNode(WTreeViewNode node) {
 		this.renderedNodes_.put(node.getModelIndex(), node);
 		++this.nodeLoad_;
+		this.renderedNodesAdded_ = true;
 	}
 
 	void removeRenderedNode(WTreeViewNode node) {
@@ -1709,7 +1596,9 @@ public class WTreeView extends WAbstractItemView {
 			int newRows = Math.max(0, this.firstRenderedRow_
 					- newFirstRenderedRow)
 					+ Math.max(0, newLastValidRow - lastValidRow);
-			if (this.nodeLoad_ + newRows > 9 * this.viewportHeight_) {
+			final int pruneFactor = WApplication.getInstance().getEnvironment()
+					.hasAjax() ? 9 : 1;
+			if (this.nodeLoad_ + newRows > pruneFactor * this.viewportHeight_) {
 				pruneFirst = true;
 			} else {
 				if (newFirstRenderedRow < this.firstRenderedRow_
@@ -1720,12 +1609,12 @@ public class WTreeView extends WAbstractItemView {
 				}
 			}
 		}
-		if (pruneFirst || this.nodeLoad_ > 5 * this.viewportHeight_) {
+		final int pruneFactor = WApplication.getInstance().getEnvironment()
+				.hasAjax() ? 5 : 1;
+		if (pruneFirst || this.nodeLoad_ > pruneFactor * this.viewportHeight_) {
 			this.firstRenderedRow_ = this.getCalcOptimalFirstRenderedRow();
 			this.validRowCount_ = this.getCalcOptimalRenderedRowCount();
-			if (WApplication.getInstance().getEnvironment().hasAjax()) {
-				this.pruneNodes(this.rootNode_, 0);
-			}
+			this.pruneNodes(this.rootNode_, 0);
 			if (pruneFirst
 					&& this.nodeLoad_ < this.getCalcOptimalRenderedRowCount()) {
 				this.adjustRenderedNode(this.rootNode_, 0);
@@ -1812,8 +1701,8 @@ public class WTreeView extends WAbstractItemView {
 
 	int adjustRenderedNode(WTreeViewNode node, int theNodeRow) {
 		WModelIndex index = node.getModelIndex();
-		if (!(index == this.rootIndex_ || (index != null && index
-				.equals(this.rootIndex_)))) {
+		if (!(index == this.getRootIndex() || (index != null && index
+				.equals(this.getRootIndex())))) {
 			++theNodeRow;
 		}
 		if (!this.isExpanded(index) && !node.isChildrenLoaded()) {
@@ -1823,11 +1712,12 @@ public class WTreeView extends WAbstractItemView {
 		if (node.isAllSpacer()) {
 			if (nodeRow + node.getChildrenHeight() > this.firstRenderedRow_
 					&& nodeRow < this.firstRenderedRow_ + this.validRowCount_) {
-				int childCount = this.model_.getRowCount(index);
+				int childCount = this.getModel().getRowCount(index);
 				boolean firstNode = true;
 				int rowStubs = 0;
 				for (int i = 0; i < childCount; ++i) {
-					WModelIndex childIndex = this.model_.getIndex(i, 0, index);
+					WModelIndex childIndex = this.getModel().getIndex(i, 0,
+							index);
 					int childHeight = this.subTreeHeight(childIndex);
 					if (nodeRow <= this.firstRenderedRow_ + this.validRowCount_
 							&& nodeRow + childHeight > this.firstRenderedRow_) {
@@ -1856,15 +1746,15 @@ public class WTreeView extends WAbstractItemView {
 			int topSpacerHeight = node.getTopSpacerHeight();
 			int nestedNodeRow = nodeRow + topSpacerHeight;
 			WTreeViewNode child = node.nextChildNode((WTreeViewNode) null);
-			int childCount = this.model_.getRowCount(index);
+			int childCount = this.getModel().getRowCount(index);
 			while (topSpacerHeight != 0
 					&& nodeRow + topSpacerHeight > this.firstRenderedRow_) {
 				WTreeViewNode n = ((node.getChildContainer().getWidget(1)) instanceof WTreeViewNode ? (WTreeViewNode) (node
 						.getChildContainer().getWidget(1))
 						: null);
 				assert n != null;
-				WModelIndex childIndex = this.model_.getIndex(n.getModelIndex()
-						.getRow() - 1, 0, index);
+				WModelIndex childIndex = this.getModel().getIndex(
+						n.getModelIndex().getRow() - 1, 0, index);
 				int childHeight = this.subTreeHeight(childIndex);
 				n = new WTreeViewNode(this, childIndex, childHeight - 1,
 						childIndex.getRow() == childCount - 1, node);
@@ -1889,8 +1779,8 @@ public class WTreeView extends WAbstractItemView {
 						.getChildContainer().getWidget(lastNodeIndex))
 						: null);
 				assert n != null;
-				WModelIndex childIndex = this.model_.getIndex(n.getModelIndex()
-						.getRow() + 1, 0, index);
+				WModelIndex childIndex = this.getModel().getIndex(
+						n.getModelIndex().getRow() + 1, 0, index);
 				int childHeight = this.subTreeHeight(childIndex);
 				n = new WTreeViewNode(this, childIndex, childHeight - 1,
 						childIndex.getRow() == childCount - 1, node);
@@ -1932,19 +1822,26 @@ public class WTreeView extends WAbstractItemView {
 		}
 	}
 
+	private WTreeViewNode nodeForIndex(WModelIndex index) {
+		WModelIndex column0Index = this.getModel().getIndex(index.getRow(), 0,
+				index.getParent());
+		WTreeViewNode i = this.renderedNodes_.get(column0Index);
+		return i != null ? i : null;
+	}
+
 	int subTreeHeight(WModelIndex index, int lowerBound, int upperBound) {
 		int result = 0;
-		if (!(index == this.rootIndex_ || (index != null && index
-				.equals(this.rootIndex_)))) {
+		if (!(index == this.getRootIndex() || (index != null && index
+				.equals(this.getRootIndex())))) {
 			++result;
 		}
 		if (result >= upperBound) {
 			return result;
 		}
 		if (this.isExpanded(index)) {
-			int childCount = this.model_.getRowCount(index);
+			int childCount = this.getModel().getRowCount(index);
 			for (int i = 0; i < childCount; ++i) {
-				WModelIndex childIndex = this.model_.getIndex(i, 0, index);
+				WModelIndex childIndex = this.getModel().getIndex(i, 0, index);
 				result += this.subTreeHeight(childIndex, upperBound - result);
 				if (result >= upperBound) {
 					return result;
@@ -2002,9 +1899,8 @@ public class WTreeView extends WAbstractItemView {
 			WModelIndex parent = child.getParent();
 			int result = 0;
 			for (int r = 0; r < child.getRow(); ++r) {
-				result += this.subTreeHeight(
-						this.model_.getIndex(r, 0, parent), 0, upperBound
-								- result);
+				result += this.subTreeHeight(this.getModel().getIndex(r, 0,
+						parent), 0, upperBound - result);
 				if (result >= upperBound) {
 					return result;
 				}
@@ -2060,109 +1956,46 @@ public class WTreeView extends WAbstractItemView {
 		return row;
 	}
 
-	private void selectionHandleClick(WModelIndex index,
-			EnumSet<KeyboardModifier> modifiers) {
-		if (this.selectionMode_ == SelectionMode.NoSelection) {
-			return;
-		}
-		if (this.selectionMode_ == SelectionMode.ExtendedSelection) {
-			if (!EnumUtils.mask(modifiers, KeyboardModifier.ShiftModifier)
-					.isEmpty()) {
-				this.extendSelection(index);
-			} else {
-				if (!!EnumUtils.mask(
-						modifiers,
-						EnumSet.of(KeyboardModifier.ControlModifier,
-								KeyboardModifier.MetaModifier)).isEmpty()) {
-					this.select(index, SelectionFlag.ClearAndSelect);
-				} else {
-					this.select(index, SelectionFlag.ToggleSelect);
-				}
-			}
-		} else {
-			this.select(index, SelectionFlag.Select);
-		}
-	}
-
-	private final void selectionHandleClick(WModelIndex index,
-			KeyboardModifier modifier, KeyboardModifier... modifiers) {
-		selectionHandleClick(index, EnumSet.of(modifier, modifiers));
-	}
-
-	private void handleClick(WModelIndex index) {
-		this
-				.selectionHandleClick(index, EnumSet
-						.noneOf(KeyboardModifier.class));
-		this.clicked_.trigger(index, new WMouseEvent());
-	}
-
 	boolean internalSelect(WModelIndex index, SelectionFlag option) {
 		if (this.getSelectionBehavior() == SelectionBehavior.SelectRows
 				&& index.getColumn() != 0) {
-			return this.internalSelect(this.model_.getIndex(index.getRow(), 0,
-					index.getParent()), option);
+			return this.internalSelect(this.getModel().getIndex(index.getRow(),
+					0, index.getParent()), option);
 		}
-		if (!!EnumUtils.mask(index.getFlags(), ItemFlag.ItemIsSelectable)
-				.isEmpty()
-				|| this.selectionMode_ == SelectionMode.NoSelection) {
+		if (super.internalSelect(index, option)) {
+			WTreeViewNode node = this.nodeForIndex(index);
+			if (node != null) {
+				node.renderSelected(this.isSelected(index), index.getColumn());
+			}
+			return true;
+		} else {
 			return false;
 		}
-		if (option == SelectionFlag.ToggleSelect) {
-			option = this.isSelected(index) ? SelectionFlag.Deselect
-					: SelectionFlag.Select;
-		} else {
-			if (option == SelectionFlag.ClearAndSelect) {
-				this.clearSelection();
-				option = SelectionFlag.Select;
-			} else {
-				if (this.selectionMode_ == SelectionMode.SingleSelection
-						&& option == SelectionFlag.Select) {
-					this.clearSelection();
-				}
-			}
-		}
-		if (option == SelectionFlag.Select) {
-			this.selectionModel_.selection_.add(index);
-		} else {
-			if (!this.selectionModel_.selection_.remove(index)) {
-				return false;
-			}
-		}
-		WModelIndex column0Index = this.model_.getIndex(index.getRow(), 0,
-				index.getParent());
-		WWidget w = this.widgetForIndex(column0Index);
-		WTreeViewNode node = ((w) instanceof WTreeViewNode ? (WTreeViewNode) (w)
-				: null);
-		if (node != null) {
-			node.renderSelected(option == SelectionFlag.Select, index
-					.getColumn());
-		}
-		return true;
 	}
 
-	private void selectRange(WModelIndex first, WModelIndex last) {
-		this.clearSelection();
+	void selectRange(WModelIndex first, WModelIndex last) {
 		WModelIndex index = first;
 		for (;;) {
 			for (int c = first.getColumn(); c <= last.getColumn(); ++c) {
-				WModelIndex ic = this.model_.getIndex(index.getRow(), c, index
-						.getParent());
+				WModelIndex ic = this.getModel().getIndex(index.getRow(), c,
+						index.getParent());
 				this.internalSelect(ic, SelectionFlag.Select);
 				if ((ic == last || (ic != null && ic.equals(last)))) {
 					return;
 				}
 			}
-			WModelIndex indexc0 = index.getColumn() == 0 ? index : this.model_
-					.getIndex(index.getRow(), 0, index.getParent());
+			WModelIndex indexc0 = index.getColumn() == 0 ? index : this
+					.getModel().getIndex(index.getRow(), 0, index.getParent());
 			if (this.isExpanded(indexc0)
-					&& this.model_.getRowCount(indexc0) > 0) {
-				index = this.model_.getIndex(0, first.getColumn(), indexc0);
+					&& this.getModel().getRowCount(indexc0) > 0) {
+				index = this.getModel().getIndex(0, first.getColumn(), indexc0);
 			} else {
 				for (;;) {
 					WModelIndex parent = index.getParent();
-					if (index.getRow() + 1 < this.model_.getRowCount(parent)) {
-						index = this.model_.getIndex(index.getRow() + 1, first
-								.getColumn(), parent);
+					if (index.getRow() + 1 < this.getModel()
+							.getRowCount(parent)) {
+						index = this.getModel().getIndex(index.getRow() + 1,
+								first.getColumn(), parent);
 						break;
 					} else {
 						index = index.getParent();
@@ -2172,30 +2005,9 @@ public class WTreeView extends WAbstractItemView {
 		}
 	}
 
-	private void extendSelection(WModelIndex index) {
-		if (this.selectionModel_.selection_.isEmpty()) {
-			this.internalSelect(index, SelectionFlag.Select);
-		} else {
-			if (this.getSelectionBehavior() == SelectionBehavior.SelectRows
-					&& index.getColumn() != 0) {
-				this.extendSelection(this.model_.getIndex(index.getRow(), 0,
-						index.getParent()));
-				return;
-			}
-			WModelIndex top = this.selectionModel_.selection_.iterator().next();
-			if (top.compareTo(index) < 0) {
-				this.selectRange(top, index);
-			} else {
-				WModelIndex bottom = this.selectionModel_.selection_.last();
-				this.selectRange(index, bottom);
-			}
-		}
-		this.selectionChanged_.trigger();
-	}
-
 	private void expandChildrenToDepth(WModelIndex index, int depth) {
-		for (int i = 0; i < this.model_.getRowCount(index); ++i) {
-			WModelIndex c = this.model_.getIndex(i, 0, index);
+		for (int i = 0; i < this.getModel().getRowCount(index); ++i) {
+			WModelIndex c = this.getModel().getIndex(i, 0, index);
 			this.expand(c);
 			if (depth > 1) {
 				this.expandChildrenToDepth(c, depth - 1);
@@ -2203,11 +2015,7 @@ public class WTreeView extends WAbstractItemView {
 		}
 	}
 
-	private void bindObjJS(JSlot slot, String jsMethod) {
-		slot.setJavaScript("function(obj, event) {jQuery.data("
-				+ this.getJsRef() + ", 'obj')." + jsMethod + "(obj, event);}");
-	}
-
+	// private void updateColumnWidth(int columnId, int width) ;
 	WContainerWidget getHeaderContainer() {
 		return this.headerContainer_;
 	}
@@ -2226,17 +2034,8 @@ public class WTreeView extends WAbstractItemView {
 		}
 	}
 
-	WText headerSortIconWidget(int column) {
-		if (!this.columnInfo(column).sorting) {
-			return null;
-		}
-		return ((this.headerWidget(column).find("sort")) instanceof WText ? (WText) (this
-				.headerWidget(column).find("sort"))
-				: null);
-	}
-
 	static String wtjs1(WApplication app) {
-		return "Wt3_1_2.WTreeView = function(m,d,i,p,q){function n(c){var a=-1,b=null,e=false,f=false,j=null;for(c=c.target||c.srcElement;c;){if(c.className.indexOf(\"c1 rh\")==0){if(a==-1)a=0}else if(c.className.indexOf(\"Wt-tv-c\")==0){if(c.className.indexOf(\"Wt-tv-c\")==0)a=c.className.split(\" \")[0].substring(7)*1;else if(a==-1)a=0;if(c.getAttribute(\"drop\")===\"true\")f=true;j=c}else if(c.className==\"Wt-tv-node\"){b=c.id;break}if(c.className===\"Wt-selected\")e=true;c=c.parentNode;if(g.hasTag(c,\"BODY\"))break}return{columnId:a, nodeId:b,selected:e,drop:f,el:j}}jQuery.data(d,\"obj\",this);var o=i.firstChild,k=p.firstChild,g=m.WT;this.click=function(c,a){var b=n(a);b.columnId!=-1&&m.emit(d,{name:\"itemEvent\",eventObject:c,event:a},b.nodeId,b.columnId,\"clicked\",\"\",\"\")};this.dblClick=function(c,a){var b=n(a);b.columnId!=-1&&m.emit(d,{name:\"itemEvent\",eventObject:c,event:a},b.nodeId,b.columnId,\"dblclicked\",\"\",\"\")};this.mouseDown=function(c,a){g.capture(null);var b=n(a);if(b.columnId!=-1){m.emit(d,{name:\"itemEvent\",eventObject:c, event:a},b.nodeId,b.columnId,\"mousedown\",\"\",\"\");d.getAttribute(\"drag\")===\"true\"&&b.selected&&m._p_.dragStart(d,a)}};this.mouseUp=function(c,a){var b=n(a);b.columnId!=-1&&m.emit(d,{name:\"itemEvent\",eventObject:c,event:a},b.nodeId,b.columnId,\"mouseup\",\"\",\"\")};this.resizeHandleMDown=function(c,a){a=g.pageCoordinates(a);c.setAttribute(\"dsx\",a.x)};this.resizeHandleMMoved=function(c,a){var b=c.getAttribute(\"dsx\"),e=k.lastChild.className.split(\" \")[0];g.getCssRule(\"#\"+d.id+\" .\"+e);if(b!=null&&b!=\"\"){e=g.pageCoordinates(a); var f=c.parentNode.parentNode;b=Math.max(e.x-b,-f.offsetWidth);if(f=f.className.split(\" \")[0]){f=g.getCssRule(\"#\"+d.id+\" .\"+f);var j=g.pxself(f,\"width\");f.style.width=Math.max(0,j+b)+\"px\"}this.adjustColumns();c.setAttribute(\"dsx\",e.x);g.cancelEvent(a)}};this.resizeHandleMUp=function(c,a){c.removeAttribute(\"dsx\");g.cancelEvent(a)};this.adjustColumns=function(){var c=o.firstChild,a=k.firstChild,b=0,e=0;e=k.lastChild.className.split(\" \")[0];e=g.getCssRule(\"#\"+d.id+\" .\"+e);if(q)a=a.firstChild;if(!g.isHidden(d)){for(var f= 0,j=a.childNodes.length;f<j;++f)if(a.childNodes[f].className){var h=a.childNodes[f].className.split(\" \")[0];h=g.getCssRule(\"#\"+d.id+\" .\"+h);b+=g.pxself(h,\"width\")+7}if(!e.style.width)e.style.width=k.offsetWidth-a.offsetWidth-8+\"px\";e=b+g.pxself(e,\"width\")+(g.isIE6?10:8);if(q){h=g.getCssRule(\"#\"+d.id+\" .Wt-tv-rowc\");h.style.width=b+\"px\";$(d).find(\" .Wt-tv-rowc\").css(\"width\",b+\"px\").css(\"width\",\"\");d.changed=true;this.autoJavaScript()}else{k.style.width=c.style.width=e+\"px\";a.style.width=b+\"px\"}}}; var l=null;d.handleDragDrop=function(c,a,b,e,f){if(l){l.className=l.classNameOrig;l=null}if(c!=\"end\"){b=n(b);if(!b.selected&&b.drop&&b.columnId!=-1)if(c==\"drop\")m.emit(d.id,\"itemEvent\",b.nodeId,b.columnId,\"drop\",e,f);else{a.className=\"Wt-valid-drop\";l=b.el;l.classNameOrig=l.className;l.className+=\" Wt-drop-site\"}else a.className=\"\"}};this.autoJavaScript=function(){if(d.parentNode==null){d=i=p=o=k=null;this.autoJavaScript=function(){}}else if(!g.isHidden(d)){var c=$(d),a=c.innerWidth(),b=i.scrollHeight> i.offsetHeight,e,f=null;if(c.hasClass(\"column1\")){e=c.find(\".Wt-headerdiv\").get(0).lastChild.className.split(\" \")[0];e=g.getCssRule(\"#\"+d.id+\" .\"+e);f=g.pxself(e,\"width\")}if((!g.isIE||a>100)&&(a!=i.tw||b!=i.vscroll||f!=i.c0w||d.changed)){i.tw=a;i.vscroll=b;i.c0w=f;e=c.find(\".Wt-headerdiv\").get(0).lastChild.className.split(\" \")[0];e=g.getCssRule(\"#\"+d.id+\" .\"+e);var j=o.firstChild,h=g.getCssRule(\"#\"+d.id+\" .cwidth\"),r=h.style.width==k.style.width,s=k.firstChild;h.style.width=a-(b?19:0)+\"px\";i.style.width= a+\"px\";k.style.width=j.offsetWidth+\"px\";if(f!=null){f=a-f-(g.isIE6?10:8)-(b?19:0);if(f>0){h=Math.min(f,g.pxself(g.getCssRule(\"#\"+d.id+\" .Wt-tv-rowc\"),\"width\"));a-=f-h;g.getCssRule(\"#\"+d.id+\" .Wt-tv-row\").style.width=h+\"px\";c.find(\" .Wt-tv-row\").css(\"width\",h+\"px\").css(\"width\",\"\");a-=b?19:0;k.style.width=a+\"px\";j.style.width=a+\"px\"}}else if(r){k.style.width=h.style.width;j.style.width=h.style.width}e.style.width=j.offsetWidth-s.offsetWidth-8+\"px\";d.changed=false}}};this.adjustColumns()};";
+		return "Wt3_1_3.WTreeView = function(l,d,j,s,p){function o(b){var a=-1,c=null,f=false,g=false,h=null;for(b=b.target||b.srcElement;b;){if(b.className.indexOf(\"c1 rh\")==0){if(a==-1)a=0}else if(b.className.indexOf(\"Wt-tv-c\")==0){if(b.className.indexOf(\"Wt-tv-c\")==0)a=b.className.split(\" \")[0].substring(7)*1;else if(a==-1)a=0;if(b.getAttribute(\"drop\")===\"true\")g=true;h=b}else if(b.className==\"Wt-tv-node\"){c=b.id;break}if(b.className===\"Wt-selected\")f=true;b=b.parentNode;if(e.hasTag(b,\"BODY\"))break}return{columnId:a, nodeId:c,selected:f,drop:g,el:h}}jQuery.data(d,\"obj\",this);var q=j.firstChild,k=s.firstChild,r=this,e=l.WT;this.click=function(b,a){var c=o(a);c.columnId!=-1&&l.emit(d,{name:\"itemEvent\",eventObject:b,event:a},c.nodeId,c.columnId,\"clicked\",\"\",\"\")};this.dblClick=function(b,a){var c=o(a);c.columnId!=-1&&l.emit(d,{name:\"itemEvent\",eventObject:b,event:a},c.nodeId,c.columnId,\"dblclicked\",\"\",\"\")};this.mouseDown=function(b,a){e.capture(null);var c=o(a);if(c.columnId!=-1){l.emit(d,{name:\"itemEvent\",eventObject:b, event:a},c.nodeId,c.columnId,\"mousedown\",\"\",\"\");d.getAttribute(\"drag\")===\"true\"&&c.selected&&l._p_.dragStart(d,a)}};this.mouseUp=function(b,a){var c=o(a);c.columnId!=-1&&l.emit(d,{name:\"itemEvent\",eventObject:b,event:a},c.nodeId,c.columnId,\"mouseup\",\"\",\"\")};this.resizeHandleMDown=function(b,a){var c=b.parentNode.parentNode.className.split(\" \")[0];if(c){var f=e.getCssRule(\"#\"+d.id+\" .\"+c),g=e.pxself(f,\"width\");new e.SizeHandle(e,\"h\",b.offsetWidth,d.offsetHeight,-g,1E4,\"Wt-hsh\",function(h){h=g+h;var m= c.substring(7)*1;f.style.width=h+\"px\";r.adjustColumns();l.emit(d,\"columnResized\",m,h)},b,d,a,-2,-1)}};this.adjustColumns=function(){var b=q.firstChild,a=k.firstChild,c=0,f=0;f=k.lastChild.className.split(\" \")[0];var g=e.getCssRule(\"#\"+d.id+\" .\"+f);if(p)a=a.firstChild;if(!e.isHidden(d)){for(var h=0,m=a.childNodes.length;h<m;++h)if(a.childNodes[h].className){var i=a.childNodes[h].className.split(\" \")[0];i=e.getCssRule(\"#\"+d.id+\" .\"+i);c+=e.pxself(i,\"width\")+7}if(!p)if(g.style.width)$(d).find(\".Wt-headerdiv .\"+ f).css(\"width\",g.style.width);else g.style.width=k.offsetWidth-a.offsetWidth-8+\"px\";f=c+e.pxself(g,\"width\")+(e.isIE6?10:8);if(p){i=e.getCssRule(\"#\"+d.id+\" .Wt-tv-rowc\");i.style.width=c+\"px\";$(d).find(\".Wt-tv-rowc\").css(\"width\",c+\"px\").css(\"width\",\"\");d.changed=true;this.autoJavaScript()}else{k.style.width=b.style.width=f+\"px\";a.style.width=c+\"px\"}}};var n=null;d.handleDragDrop=function(b,a,c,f,g){if(n){n.className=n.classNameOrig;n=null}if(b!=\"end\"){var h=o(c);if(!h.selected&&h.drop&&h.columnId!= -1)if(b==\"drop\")l.emit(d,{name:\"itemEvent\",eventObject:a,event:c},h.nodeId,h.columnId,\"drop\",f,g);else{a.className=\"Wt-valid-drop\";n=h.el;n.classNameOrig=n.className;n.className+=\" Wt-drop-site\"}else a.className=\"\"}};this.autoJavaScript=function(){if(d.parentNode==null){d=j=s=q=k=null;this.autoJavaScript=function(){}}else if(!e.isHidden(d)){var b=$(d),a=b.innerWidth(),c=j.scrollHeight>j.offsetHeight,f,g=null;if(b.hasClass(\"column1\")){f=b.find(\".Wt-headerdiv\").get(0).lastChild.className.split(\" \")[0]; f=e.getCssRule(\"#\"+d.id+\" .\"+f);g=e.pxself(f,\"width\")}if((!e.isIE||a>100)&&(a!=j.tw||c!=j.vscroll||g!=j.c0w||d.changed)){var h=!d.changed;j.tw=a;j.vscroll=c;j.c0w=g;f=b.find(\".Wt-headerdiv\").get(0).lastChild.className.split(\" \")[0];f=e.getCssRule(\"#\"+d.id+\" .\"+f);var m=q.firstChild,i=e.getCssRule(\"#\"+d.id+\" .cwidth\"),t=i.style.width==k.style.width,u=k.firstChild;i.style.width=a-(c?19:0)+\"px\";j.style.width=a+\"px\";k.style.width=m.offsetWidth+\"px\";if(g!=null){g=a-g-(e.isIE6?10:8)-(c?19:0);if(g>0){i= Math.min(g,e.pxself(e.getCssRule(\"#\"+d.id+\" .Wt-tv-rowc\"),\"width\"));a-=g-i;e.getCssRule(\"#\"+d.id+\" .Wt-tv-row\").style.width=i+\"px\";b.find(\" .Wt-tv-row\").css(\"width\",i+\"px\").css(\"width\",\"\");a-=c?19:0;k.style.width=a+\"px\";m.style.width=a+\"px\"}}else if(t){k.style.width=i.style.width;m.style.width=i.style.width}if(!p)f.style.width=m.offsetWidth-u.offsetWidth-8+\"px\";d.changed=false;h&&e.isIE&&r.adjustColumns()}}};r.adjustColumns()};";
 	}
 
 	static boolean isAncestor(WModelIndex i1, WModelIndex i2) {

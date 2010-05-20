@@ -53,6 +53,18 @@ public class WCompositeWidget extends WWidget {
 		this((WContainerWidget) null);
 	}
 
+	/**
+	 * Creates a WCompositeWidget with given implementation.
+	 */
+	public WCompositeWidget(WWidget implementation, WContainerWidget parent) {
+		super(parent);
+		this.impl_ = null;
+		if (parent != null) {
+			parent.addWidget(this);
+		}
+		this.setImplementation(implementation);
+	}
+
 	public void remove() {
 		this.setParentWidget((WWidget) null);
 		if (this.impl_ != null)
@@ -296,6 +308,14 @@ public class WCompositeWidget extends WWidget {
 		return this.impl_ != null ? this.impl_.isLoaded() : true;
 	}
 
+	public void setTabIndex(int index) {
+		this.impl_.setTabIndex(index);
+	}
+
+	public int getTabIndex() {
+		return this.impl_.getTabIndex();
+	}
+
 	public void setId(String id) {
 		this.impl_.setId(id);
 	}
@@ -306,6 +326,10 @@ public class WCompositeWidget extends WWidget {
 
 	public void setSelectable(boolean selectable) {
 		this.impl_.setSelectable(selectable);
+	}
+
+	public void propagateSetEnabled(boolean enabled) {
+		this.impl_.getWebWidget().propagateSetEnabled(enabled);
 	}
 
 	void addChild(WWidget child) {
@@ -366,6 +390,15 @@ public class WCompositeWidget extends WWidget {
 		widget.setParentWidget(this);
 	}
 
+	/**
+	 * Get the implementation widget.
+	 * <p>
+	 * This returns the widget that implements this compositeWidget.
+	 */
+	protected WWidget getImplementation() {
+		return this.impl_;
+	}
+
 	void getSDomChanges(List<DomElement> result, WApplication app) {
 		if (this.needsToBeRendered()) {
 			this.render(this.impl_.isRendered() ? RenderFlag.RenderUpdate
@@ -386,7 +419,7 @@ public class WCompositeWidget extends WWidget {
 		return this.impl_.boxBorder(orientation);
 	}
 
-	protected void render(EnumSet<RenderFlag> flags) {
+	void render(EnumSet<RenderFlag> flags) {
 		this.impl_.render(flags);
 		this.renderOk();
 	}

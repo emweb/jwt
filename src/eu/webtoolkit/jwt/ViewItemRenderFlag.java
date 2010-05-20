@@ -21,7 +21,11 @@ public enum ViewItemRenderFlag {
 	/**
 	 * Render in editing mode.
 	 */
-	RenderEditing;
+	RenderEditing,
+	/**
+	 * Render (the editor) focused.
+	 */
+	RenderFocused;
 
 	/**
 	 * Returns the numerical representation of this enum.

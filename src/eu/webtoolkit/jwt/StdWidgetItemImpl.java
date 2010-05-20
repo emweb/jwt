@@ -59,13 +59,14 @@ class StdWidgetItemImpl extends StdLayoutItemImpl {
 		}
 		if (fitHeight) {
 			marginBottom = (w.boxPadding(Orientation.Vertical) + w
-					.boxBorder(Orientation.Horizontal)) * 2;
+					.boxBorder(Orientation.Vertical)) * 2;
 		}
 		boolean forceDiv = fitHeight
 				&& d.getType() == DomElementType.DomElement_SELECT
 				&& d.getAttribute("size").length() == 0;
 		if (marginRight != 0 || marginBottom != 0 || forceDiv) {
 			result = DomElement.createNew(DomElementType.DomElement_DIV);
+			result.setProperty(Property.PropertyClass, "Wt-wrapdiv");
 			StringWriter style = new StringWriter();
 			if (app.getEnvironment().agentIsIE() && !forceDiv) {
 				style.append("margin-top:-1px;");
@@ -85,6 +86,7 @@ class StdWidgetItemImpl extends StdLayoutItemImpl {
 				&& d.getProperty(Property.PropertyStyleHeight).length() == 0) {
 			if (d.getType() == DomElementType.DomElement_DIV
 					|| d.getType() == DomElementType.DomElement_UL
+					|| d.getType() == DomElementType.DomElement_INPUT
 					|| d.getType() == DomElementType.DomElement_TABLE
 					|| d.getType() == DomElementType.DomElement_TEXTAREA) {
 				d.setProperty(Property.PropertyStyleHeight, "100%");

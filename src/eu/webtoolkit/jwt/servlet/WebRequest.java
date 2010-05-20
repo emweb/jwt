@@ -22,6 +22,7 @@ import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 
 import eu.webtoolkit.jwt.WResource;
+import eu.webtoolkit.jwt.WtServlet;
 
 /**
  * A WebRequest which wraps the HttpServletRequest to add support for file uploads and
@@ -54,7 +55,7 @@ public class WebRequest extends HttpServletRequestWrapper {
 	 * @param files a list of POST'ed files
 	 */
 	public WebRequest(Map<String, String[]> parameters, Map<String, UploadedFile> files) {
-		super(new MockupHttpServletRequest());
+		super(WtServlet.getServletApi().getMockupHttpServletRequest());
 		parameters_ = parameters;
 		files_ = files;
 	}
@@ -126,7 +127,7 @@ public class WebRequest extends HttpServletRequestWrapper {
 	private void parse() {
 		Map<String, String[]> parameterMap = super.getParameterMap();
 
-		parameters_ = parameterMap;
+		parameters_ = new HashMap<String, String []>(parameterMap);
 		files_ = new HashMap<String, UploadedFile>();
 
 		if (FileUploadBase.isMultipartContent(this)) {

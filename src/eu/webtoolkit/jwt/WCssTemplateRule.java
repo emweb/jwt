@@ -82,7 +82,7 @@ public class WCssTemplateRule extends WCssRule {
 		return e.getCssStyle();
 	}
 
-	public boolean updateDomElement(DomElement element, boolean all) {
+	boolean updateDomElement(DomElement element, boolean all) {
 		this.widget_.updateDom(element, all);
 		return true;
 	}

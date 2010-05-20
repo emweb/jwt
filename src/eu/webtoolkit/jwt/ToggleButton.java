@@ -11,13 +11,25 @@ import java.util.List;
 class ToggleButton extends WText {
 	public ToggleButton(ToggleButtonConfig config, WContainerWidget parent) {
 		super(parent);
-		this.signals_ = new ArrayList<JSignal>();
+		this.signals_ = new ArrayList<AbstractSignal>();
 		this.config_ = config;
 		this.setInline(false);
-		this.clicked().addListener(this.config_.toggleJS_);
-		for (int i = 0; i < this.config_.getStates().size(); ++i) {
-			this.signals_.add(new JSignal(this, "t-"
-					+ this.config_.getStates().get(i)));
+		if (WApplication.getInstance().getEnvironment().hasAjax()) {
+			this.clicked().addListener(this.config_.toggleJS_);
+			for (int i = 0; i < this.config_.getStates().size(); ++i) {
+				this.signals_.add(new JSignal(this, "t-"
+						+ this.config_.getStates().get(i)));
+			}
+		} else {
+			this.clicked().addListener(this,
+					new Signal1.Listener<WMouseEvent>() {
+						public void trigger(WMouseEvent e1) {
+							ToggleButton.this.handleClick();
+						}
+					});
+			for (int i = 0; i < this.config_.getStates().size(); ++i) {
+				this.signals_.add(new Signal(this));
+			}
 		}
 	}
 
@@ -32,7 +44,7 @@ class ToggleButton extends WText {
 		super.remove();
 	}
 
-	public JSignal signal(int i) {
+	public AbstractSignal signal(int i) {
 		return this.signals_.get(i);
 	}
 
@@ -40,6 +52,17 @@ class ToggleButton extends WText {
 		this.setStyleClass(this.config_.getStates().get(i));
 	}
 
-	private List<JSignal> signals_;
+	private List<AbstractSignal> signals_;
 	private ToggleButtonConfig config_;
+
+	private void handleClick() {
+		for (int i = 0; i < this.config_.getStates().size(); ++i) {
+			if (this.config_.getStates().get(i).equals(this.getStyleClass())) {
+				(((this.signals_.get(i)) instanceof Signal ? (Signal) (this.signals_
+						.get(i))
+						: null)).trigger();
+				break;
+			}
+		}
+	}
 }

@@ -554,7 +554,11 @@ public class WStandardItem {
 		if (i != null) {
 			return i;
 		} else {
-			return null;
+			if (role == ItemDataRole.EditRole) {
+				return this.getData(ItemDataRole.DisplayRole);
+			} else {
+				return null;
+			}
 		}
 	}
 

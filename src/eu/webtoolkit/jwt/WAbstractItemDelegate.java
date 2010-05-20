@@ -8,23 +8,30 @@ package eu.webtoolkit.jwt;
 import java.util.EnumSet;
 
 /**
- * Abstract delegate class for rendering a view item.
+ * Abstract delegate class for rendering an item in a MVC view.
  * <p>
  * 
- * Rendering of an item in a {@link WTreeView} is delegated to an implementation
- * of this delegate class. The default implementation used by {@link WTreeView}
- * is {@link WItemDelegate}. To provide specialized rendering support, you can
- * reimplement this class, and indicate to the treeview to use this delegate for
- * rendering items.
+ * Rendering of an item in a {@link WAbstractItemView} is delegated to an
+ * implementation of this delegate class. The default implementation used by
+ * Wt&apos;s item views is {@link WItemDelegate}. To provide specialized
+ * rendering support, you can reimplement this class, and provide a specialized
+ * delegate to the view for rendering items.
  * <p>
  * As a delegate is used for rendering multiple items, the class should not keep
  * state about one specific item.
  * <p>
- * An example of a delegate that always renders the text in a line-edit, and
- * saves the modified value back to the (editable) model.
+ * A delegate may provide editing support by instantiating an editor when
+ * {@link WAbstractItemDelegate#update(WWidget widget, WModelIndex index, EnumSet flags)
+ * update()} is called with the {@link ViewItemRenderFlag#RenderEditing} flag.
+ * In that case, you will also need to implement
+ * {@link WAbstractItemDelegate#getEditState(WWidget widget) getEditState()} and
+ * {@link WAbstractItemDelegate#setEditState(WWidget widget, Object value)
+ * setEditState()} to support virtual scrolling and
+ * {@link WAbstractItemDelegate#setModelData(Object editState, WAbstractItemModel model, WModelIndex index)
+ * setModelData()} to save the edited value to the model. For an example, see
+ * the {@link WItemDelegate}.
  * <p>
  * 
- * @see WAbstractItemView#setItemDelegate(WAbstractItemDelegate delegate)
  * @see WAbstractItemView#setItemDelegateForColumn(int column,
  *      WAbstractItemDelegate delegate)
  */
@@ -34,6 +41,7 @@ public abstract class WAbstractItemDelegate extends WObject {
 	 */
 	public WAbstractItemDelegate(WObject parent) {
 		super(parent);
+		this.closeEditor_ = new Signal2<WWidget, Boolean>(this);
 	}
 
 	/**
@@ -57,6 +65,13 @@ public abstract class WAbstractItemDelegate extends WObject {
 	 * When <code>widget</code> is <code>null</code>, a new widget needs to be
 	 * created.
 	 * <p>
+	 * The returned widget should be a widget that responds properly to be given
+	 * a height, width and style class. In practice, that means it cannot have a
+	 * border or margin, and thus cannot be a {@link WFormWidget} since those
+	 * widgets typically have built-in borders and margins. If you want to
+	 * return a form widget (for editing the item), you should wrap it in a
+	 * container widget.
+	 * <p>
 	 * The <code>flags</code> parameter indicates options for rendering the
 	 * item.
 	 */
@@ -78,14 +93,90 @@ public abstract class WAbstractItemDelegate extends WObject {
 	 * Updates the model index of a widget.
 	 * <p>
 	 * This method is invoked by the view when due to row/column insertions or
-	 * removals, an index was modified for a widget.
+	 * removals, the index has shifted.
 	 * <p>
-	 * You should reimplement this method if you are storing the model index
-	 * (e.g. for editing purposes) in the <code>widget</code>, which you should
-	 * update to the new <code>index</code>.
+	 * You should reimplement this method only if you are storing the model
+	 * index in the <code>widget</code>, to update the stored model index.
 	 * <p>
 	 * The default implementation does nothing.
 	 */
 	public void updateModelIndex(WWidget widget, WModelIndex index) {
 	}
+
+	/**
+	 * Returns the current edit state.
+	 * <p>
+	 * Because a View may support virtual scrolling in combination with editing,
+	 * it may happen that the view decides to delete the editor widget while the
+	 * user is editing. To allow to reconstruct the editor in its original
+	 * state, the View will therefore ask for the editor to serialize its state
+	 * in a boost::any.
+	 * <p>
+	 * When the view decides to close an editor and save its value back to the
+	 * model, he will first call
+	 * {@link WAbstractItemDelegate#getEditState(WWidget widget) getEditState()}
+	 * and then
+	 * {@link WAbstractItemDelegate#setModelData(Object editState, WAbstractItemModel model, WModelIndex index)
+	 * setModelData()}.
+	 * <p>
+	 * The default implementation assumes a read-only delegate, and returns a
+	 * boost::any().
+	 * <p>
+	 * 
+	 * @see WAbstractItemDelegate#setEditState(WWidget widget, Object value)
+	 * @see WAbstractItemDelegate#setModelData(Object editState,
+	 *      WAbstractItemModel model, WModelIndex index)
+	 */
+	public Object getEditState(WWidget widget) {
+		return null;
+	}
+
+	/**
+	 * Sets the editor data from the editor state.
+	 * <p>
+	 * When the View scrolls back into view an item that was being edited, he
+	 * will use
+	 * {@link WAbstractItemDelegate#setEditState(WWidget widget, Object value)
+	 * setEditState()} to allow the editor to restore its current editor state.
+	 * <p>
+	 * The default implementation assumes a read-only delegate and does nothing.
+	 * <p>
+	 * 
+	 * @see WAbstractItemDelegate#getEditState(WWidget widget)
+	 */
+	public void setEditState(WWidget widget, Object value) {
+	}
+
+	/**
+	 * Saves the edited data to the model.
+	 * <p>
+	 * The View will use this method to save the edited value to the model. The
+	 * <code>editState</code> is first fetched from the editor using
+	 * {@link WAbstractItemDelegate#getEditState(WWidget widget) getEditState()}.
+	 * <p>
+	 * The default implementation assumes a read-only delegate does nothing.
+	 */
+	public void setModelData(Object editState, WAbstractItemModel model,
+			WModelIndex index) {
+	}
+
+	/**
+	 * Signal which indicates that an editor needs to be closed.
+	 * <p>
+	 * The delegate should emit this signal when it decides for itself that it
+	 * should be closed (e.g. because the user confirmed the edited value or
+	 * cancelled the editing). The View will then rerender the item if needed.
+	 * <p>
+	 * The second boolean argument passed to the signal is a flag which
+	 * indicates whether the editor feels that the value should be saved or
+	 * cancelled.
+	 * <p>
+	 * 
+	 * @see WAbstractItemView#closeEditor(WModelIndex index, boolean saveData)
+	 */
+	public Signal2<WWidget, Boolean> closeEditor() {
+		return this.closeEditor_;
+	}
+
+	private Signal2<WWidget, Boolean> closeEditor_;
 }

@@ -8,6 +8,7 @@ package eu.webtoolkit.jwt;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
+import eu.webtoolkit.jwt.utils.EnumUtils;
 
 /**
  * A table with a navigatable tree in the first column
@@ -96,6 +97,7 @@ public class WTreeTable extends WCompositeWidget {
 		this.headers_.addWidget(new WText());
 		this.columnWidths_.add(WLength.Auto);
 		WContainerWidget content = new WContainerWidget(this.impl_);
+		content.setStyleClass("Wt-content");
 		content.resize(new WLength(100, WLength.Unit.Percentage), new WLength(
 				100, WLength.Unit.Percentage));
 		if (!WApplication.getInstance().getEnvironment().agentIsIE()) {
@@ -112,18 +114,6 @@ public class WTreeTable extends WCompositeWidget {
 				.setJavaScriptMember(
 						WT_RESIZE_JS,
 						"function(self, w, h) {self.style.height= h + 'px';var c = self.lastChild;var t = self.firstChild;h -= $(t).outerHeight();if (h > 0) c.style.height = h + 'px';};");
-		WApplication
-				.getInstance()
-				.doJavaScript(
-						"function sb"
-								+ this.getId()
-								+ "() {var e="
-								+ content.getJsRef()
-								+ ";var sp="
-								+ spacer.getJsRef()
-								+ ";if (e && sp) {if (e.scrollHeight > e.offsetHeight) {sp.style.display='block';} else {sp.style.display='none';}setTimeout(sb"
-								+ this.getId() + ", 20);}}sb" + this.getId()
-								+ "();");
 	}
 
 	/**
@@ -200,10 +190,13 @@ public class WTreeTable extends WCompositeWidget {
 	 * @see WTreeTable#setTreeRoot(WTreeTableNode root, CharSequence h)
 	 */
 	public void setTree(WTree root, CharSequence h) {
+		WContainerWidget parent = ((this.tree_.getParent()) instanceof WContainerWidget ? (WContainerWidget) (this.tree_
+				.getParent())
+				: null);
 		if (this.tree_ != null)
 			this.tree_.remove();
 		this.header(0).setText(h);
-		this.impl_.addWidget(this.tree_ = new WTree());
+		parent.addWidget(this.tree_ = new WTree());
 		this.tree_.resize(new WLength(100, WLength.Unit.Percentage),
 				WLength.Auto);
 		this.getTreeRoot().setTable(this);
@@ -264,6 +257,18 @@ public class WTreeTable extends WCompositeWidget {
 	 */
 	public WWidget getHeaderWidget() {
 		return this.headers_;
+	}
+
+	void render(EnumSet<RenderFlag> flags) {
+		if (!EnumUtils.mask(flags, RenderFlag.RenderFull).isEmpty()) {
+			WApplication
+					.getInstance()
+					.doJavaScript(
+							"{var id='"
+									+ this.getId()
+									+ "';function sb() {var $el=$('#' + id);if ($el.size()) {var e=$el.find('.Wt-content').get(0);var sp=$el.find('.Wt-sbspacer').get(0);if (e.scrollHeight > e.offsetHeight) {sp.style.display='block';} else {sp.style.display='none';}setTimeout(sb, 20);}}sb();}");
+		}
+		super.render(flags);
 	}
 
 	private WContainerWidget impl_;

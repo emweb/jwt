@@ -366,8 +366,8 @@ public abstract class WWidget extends WObject {
 		String side = orientation == Orientation.Horizontal ? ".Horizontal"
 				: ".Vertical";
 		WApplication.getInstance().doJavaScript(
-				"Wt3_1_2.positionAtWidget('" + this.getId() + "','"
-						+ widget.getId() + "',Wt3_1_2" + side + ");");
+				"Wt3_1_3.positionAtWidget('" + this.getId() + "','"
+						+ widget.getId() + "',Wt3_1_3" + side + ");");
 	}
 
 	/**
@@ -903,6 +903,36 @@ public abstract class WWidget extends WObject {
 	public abstract boolean isLoaded();
 
 	/**
+	 * Sets the tab index.
+	 * <p>
+	 * For widgets that receive focus, focus is passed on to the next widget in
+	 * the <i>tabbing chain</i> based on their tab index. When the user
+	 * navigates through form widgets using the keyboard, widgets receive focus
+	 * starting from the element with the lowest tab index to elements with the
+	 * highest tab index.
+	 * <p>
+	 * A tab index only applies to widgets than can receive focus (which are
+	 * {@link WFormWidget}, {@link WAnchor}, {@link WPushButton}), but setting a
+	 * tab index on any other type of widget will propagate to its contained
+	 * form widgets.
+	 * <p>
+	 * Widgets with a same tab index will receive focus in the same order as
+	 * they are inserted in the widget tree.
+	 * <p>
+	 * The default tab index is 0.
+	 * <p>
+	 */
+	public abstract void setTabIndex(int index);
+
+	/**
+	 * Returns the tab index.
+	 * <p>
+	 * 
+	 * @see WWidget#setTabIndex(int index)
+	 */
+	public abstract int getTabIndex();
+
+	/**
 	 * Sets a mime type to be accepted for dropping.
 	 * <p>
 	 * You may specify a style class that is applied to the widget when the
@@ -1090,6 +1120,10 @@ public abstract class WWidget extends WObject {
 		}
 	}
 
+	public static void setTabOrder(WWidget first, WWidget second) {
+		second.setTabIndex(first.getTabIndex() + 1);
+	}
+
 	/**
 	 * Sets the widget to be aware of its size set by a layout manager.
 	 * <p>
@@ -1115,7 +1149,10 @@ public abstract class WWidget extends WObject {
 	 * @see WWidget#layoutSizeChanged(int width, int height)
 	 */
 	protected void setLayoutSizeAware(boolean aware) {
-		if (aware && !(this.resized_ != null)) {
+		if (aware == (this.resized_ != null)) {
+			return;
+		}
+		if (aware) {
 			this.resized_ = new JSignal2<Integer, Integer>(this, "resized") {
 			};
 			this.resized_.addListener(this,
@@ -1262,6 +1299,20 @@ public abstract class WWidget extends WObject {
 		return 0;
 	}
 
+	/**
+	 * Propagates that a widget was enabled or disabled through children.
+	 * <p>
+	 * When enabling or disabling a widget, you usually also want to disable
+	 * contained children. This method is called by
+	 * {@link WWidget#setDisabled(boolean disabled) setDisabled()} to propagate
+	 * its state to all children.
+	 * <p>
+	 * You may want to reimplement this method if they wish to render
+	 * differently when a widget is disabled. The default implementation will
+	 * propagate the signal to all children.
+	 */
+	protected abstract void propagateSetEnabled(boolean enabled);
+
 	void getDrop(String sourceId, String mimeType, WMouseEvent event) {
 		WDropEvent e = new WDropEvent(WApplication.getInstance().decodeObject(
 				sourceId), mimeType, event);
@@ -1278,7 +1329,7 @@ public abstract class WWidget extends WObject {
 		setHideWithOffsets(true);
 	}
 
-	protected void setParentWidget(WWidget p) {
+	void setParentWidget(WWidget p) {
 		if (p == this.getParent()) {
 			return;
 		}
@@ -1292,10 +1343,10 @@ public abstract class WWidget extends WObject {
 
 	abstract boolean isStubbed();
 
-	protected void render(EnumSet<RenderFlag> flags) {
+	void render(EnumSet<RenderFlag> flags) {
 	}
 
-	protected final void render(RenderFlag flag, RenderFlag... flags) {
+	final void render(RenderFlag flag, RenderFlag... flags) {
 		render(EnumSet.of(flag, flags));
 	}
 
@@ -1359,6 +1410,19 @@ public abstract class WWidget extends WObject {
 
 	abstract boolean needsToBeRendered();
 
+	boolean isInLayout() {
+		WWidget p = this.getParent();
+		if (p != null
+				&& (((p) instanceof WCompositeWidget ? (WCompositeWidget) (p)
+						: null) != null || p.getJavaScriptMember(WT_RESIZE_JS)
+						.length() != 0)) {
+			return p.isInLayout();
+		}
+		WContainerWidget c = ((p) instanceof WContainerWidget ? (WContainerWidget) (p)
+				: null);
+		return c != null && c.getLayout() != null;
+	}
+
 	private static final int BIT_WAS_HIDDEN = 0;
 	private static final int BIT_WAS_DISABLED = 1;
 	private static final int BIT_NEED_RERENDER = 2;
@@ -1395,5 +1459,5 @@ public abstract class WWidget extends WObject {
 		return null;
 	}
 
-	protected static String WT_RESIZE_JS = "wtResize";
+	static String WT_RESIZE_JS = "wtResize";
 }

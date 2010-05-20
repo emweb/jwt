@@ -91,7 +91,6 @@ public class WAggregateProxyModel extends WAbstractProxyModel {
 		this.collapse(added);
 	}
 
-	// public void removeAggregate(int parentColumn) ;
 	public WModelIndex mapFromSource(WModelIndex sourceIndex) {
 		if ((sourceIndex != null)) {
 			int column = this.topLevel_.mapFromSource(sourceIndex.getColumn());

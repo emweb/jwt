@@ -35,9 +35,9 @@ public class ItemDataRole {
 	public final static int StyleClassRole = 3;
 	/**
 	 * <p>
-	 * Role that indicates the check state. Is of type <code>bool</code>, unless
-	 * the {@link ItemFlag#ItemIsTristate} flag is set, then is of type
-	 * {@link CheckState}.
+	 * Role that indicates the check state. Data for this role should be a
+	 * <code>bool</code>. When the {@link ItemFlag#ItemIsTristate} flag is set
+	 * for the item, data for this role should be of type {@link CheckState}.
 	 */
 	public final static int CheckStateRole = 4;
 	/**

@@ -42,7 +42,11 @@ public enum ItemFlag {
 	/**
 	 * Item&apos;s textual is HTML.
 	 */
-	ItemIsXHTMLText;
+	ItemIsXHTMLText,
+	/**
+	 * Item&apos;s value has been modified.
+	 */
+	ItemIsDirty;
 
 	/**
 	 * Returns the numerical representation of this enum.

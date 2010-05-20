@@ -30,9 +30,9 @@ public enum EntryPointType {
 	 * HTML elements in that web page may be bound to widgets managed by the
 	 * application.
 	 * <p>
-	 * A widgetset application presents itself as a JavaScript file, and
-	 * therefore should be embedded in the web page using a &lt;script&gt; tag,
-	 * from within the &lt;body&gt; (since it needs access to the &lt;body&gt;).
+	 * The application presents itself as a JavaScript file, and therefore
+	 * should be embedded in the web page using a &lt;script&gt; tag, from
+	 * within the &lt;body&gt; (since it needs access to the &lt;body&gt;).
 	 * <p>
 	 * <p>
 	 * <i><b>Note: </b>A WidgetSet application requires JavaScript support</i>
@@ -44,7 +44,8 @@ public enum EntryPointType {
 	/**
 	 * Specifies a static resource.
 	 * <p>
-	 * A static resource binds a {@link WResource} to a public URL.
+	 * A static resource binds a {@link WResource} to a public URL, and is not
+	 * bound to a specific session.
 	 * <p>
 	 */
 	StaticResource;

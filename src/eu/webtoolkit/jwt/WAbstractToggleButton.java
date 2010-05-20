@@ -246,7 +246,7 @@ public class WAbstractToggleButton extends WFormWidget {
 			if (this.isUseImageWorkaround()) {
 				EventSignal imgClick = this.voidEventSignal(
 						UNDETERMINATE_CLICK_SIGNAL, true);
-				if (this.stateChanged_ || imgClick.needUpdate()) {
+				if (this.stateChanged_ || imgClick.needsUpdate(false)) {
 					DomElement img = DomElement.getForUpdate("im"
 							+ this.getId(), DomElementType.DomElement_IMG);
 					if (this.stateChanged_) {
@@ -261,7 +261,7 @@ public class WAbstractToggleButton extends WFormWidget {
 										this.state_ == CheckState.PartiallyChecked ? "none"
 												: "inline");
 					}
-					if (imgClick.needUpdate()) {
+					if (imgClick.needsUpdate(false)) {
 						img.setEventSignal("click", imgClick);
 						imgClick.updateOk();
 					}
@@ -284,10 +284,11 @@ public class WAbstractToggleButton extends WFormWidget {
 		EventSignal change = this.voidEventSignal(CHANGE_SIGNAL, false);
 		EventSignal1<WMouseEvent> click = this.mouseEventSignal(CLICK_SIGNAL,
 				false);
-		boolean needUpdateClickedSignal = click != null && click.needUpdate()
-				|| env.agentIsIE() && change != null && change.needUpdate()
-				|| check != null && check.needUpdate() || uncheck != null
-				&& uncheck.needUpdate();
+		boolean needUpdateClickedSignal = click != null
+				&& click.needsUpdate(all) || env.agentIsIE() && change != null
+				&& change.needsUpdate(all) || check != null
+				&& check.needsUpdate(all) || uncheck != null
+				&& uncheck.needsUpdate(all);
 		this.updateDom(input, all);
 		if (element != input) {
 			element.setProperties(input.getProperties());
@@ -304,7 +305,7 @@ public class WAbstractToggleButton extends WFormWidget {
 			this.stateChanged_ = false;
 		}
 		if (needUpdateClickedSignal || all) {
-			String dom = "Wt3_1_2.getElement('" + input.getId() + "')";
+			String dom = "Wt3_1_3.getElement('" + input.getId() + "')";
 			List<DomElement.EventAction> actions = new ArrayList<DomElement.EventAction>();
 			if (check != null) {
 				if (check.isConnected()) {
@@ -323,7 +324,7 @@ public class WAbstractToggleButton extends WFormWidget {
 				uncheck.updateOk();
 			}
 			if (change != null) {
-				if (env.agentIsIE() && change.isConnected()) {
+				if (env.agentIsIE() && change.needsUpdate(all)) {
 					actions.add(new DomElement.EventAction("", change
 							.getJavaScript(), change.encodeCmd(), change
 							.isExposedSignal()));
@@ -331,7 +332,7 @@ public class WAbstractToggleButton extends WFormWidget {
 				change.updateOk();
 			}
 			if (click != null) {
-				if (click.isConnected()) {
+				if (click.needsUpdate(all)) {
 					actions.add(new DomElement.EventAction("", click
 							.getJavaScript(), click.encodeCmd(), click
 							.isExposedSignal()));
