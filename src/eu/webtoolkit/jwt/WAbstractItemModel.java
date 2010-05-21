@@ -364,9 +364,10 @@ public abstract class WAbstractItemModel extends WObject {
 	 * Returns an index list for data items that match.
 	 * <p>
 	 * Returns an index list of data items that match, starting at start, and
-	 * searching further in that column. If flags specifes {@link } then the
-	 * search wraps around from the start. If hits is not -1, then at most that
-	 * number of hits are returned.
+	 * searching further in that column. If flags specifies
+	 * {@link MatchOptions.MatchFlag#MatchWrap MatchWrap} then the search wraps
+	 * around from the start. If hits is not -1, then at most that number of
+	 * hits are returned.
 	 */
 	public List<WModelIndex> match(WModelIndex start, int role, Object value,
 			int hits, MatchOptions flags) {

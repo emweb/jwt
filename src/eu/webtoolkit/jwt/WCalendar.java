@@ -69,7 +69,7 @@ import java.util.Set;
  * .Wt-cal table.dlong : The table (long day headers)
  * 
  * .Wt-cal caption	    : The caption (containing the navigation buttons)
- * .Wt-cal-year	    : The caption year in-place-edit
+ * .Wt-cal-year        : The caption year in-place-edit
  * 
  * .Wt-cal th          : Header cell (week day)
  * 

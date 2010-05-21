@@ -405,10 +405,10 @@ public class WPopupMenu extends WCompositeWidget {
 	void done(WPopupMenuItem result) {
 		this.result_ = result;
 		this.hide();
-		this.globalClickConnection_.disconnect();
-		this.globalEscapeConnection_.disconnect();
-		WApplication.getInstance().getRoot().clicked().senderRepaint();
-		WApplication.getInstance().globalEscapePressed().senderRepaint();
+		WApplication.getInstance().getRoot().clicked().disconnect(
+				this.globalClickConnection_);
+		WApplication.getInstance().globalEscapePressed().disconnect(
+				this.globalEscapeConnection_);
 		this.recursiveEventLoop_ = false;
 		this.aboutToHide_.trigger();
 	}

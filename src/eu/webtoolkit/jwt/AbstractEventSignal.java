@@ -10,6 +10,7 @@ import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
+import eu.webtoolkit.jwt.AbstractSignal.Connection;
 import eu.webtoolkit.jwt.Signal.Listener;
 
 /**
@@ -475,7 +476,7 @@ public abstract class AbstractEventSignal extends AbstractSignal {
 	public void preventDefaultAction(boolean prevent) {
 		if (isDefaultActionPrevented() != prevent) {
 			flags_ |= BIT_PREVENT_DEFAULT;
-			senderRepaint();
+			ownerRepaint();
 		}
 	}
 
@@ -498,7 +499,7 @@ public abstract class AbstractEventSignal extends AbstractSignal {
 	public void preventPropagation(boolean prevent) {
 		if (isPropagationPrevented() != prevent) {
 			flags_ |= BIT_PREVENT_PROPAGATION;
-			senderRepaint();
+			ownerRepaint();
 		}
 	}
 
@@ -514,6 +515,19 @@ public abstract class AbstractEventSignal extends AbstractSignal {
 
 	void setNotExposed() {
 		flags_ &= ~BIT_EXPOSED;
+	}
+
+
+	public void disconnect(Connection connection) {
+		connection.disconnect();
+		if ((flags_ & BIT_EXPOSED) != 0)
+			if (!isConnected()) {
+				WApplication app = WApplication.getInstance();
+				app.removeExposedSignal(this);
+				flags_ &= ~BIT_EXPOSED;
+			}
+		
+		ownerRepaint();
 	}
 
 	protected String createUserEventCall(String jsObject, String jsEvent, String name, String arg1, String arg2, String arg3, String arg4, String arg5, String arg6) {

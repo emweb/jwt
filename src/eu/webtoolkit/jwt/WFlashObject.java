@@ -196,10 +196,10 @@ public class WFlashObject extends WWebWidget {
 			if (!WApplication.getInstance().getEnvironment().agentIsIE()) {
 				obj.setAttribute("data", this.url_);
 			}
-			element.setAttribute("width", this.getWidth().isAuto() ? ""
-					: String.valueOf((int) this.getWidth().toPixels()));
-			element.setAttribute("height", this.getHeight().isAuto() ? ""
-					: String.valueOf((int) this.getHeight().toPixels()));
+			obj.setAttribute("width", this.getWidth().isAuto() ? "" : String
+					.valueOf((int) this.getWidth().toPixels()));
+			obj.setAttribute("height", this.getHeight().isAuto() ? "" : String
+					.valueOf((int) this.getHeight().toPixels()));
 			for (Iterator<Map.Entry<String, WString>> i_it = this.parameters_
 					.entrySet().iterator(); i_it.hasNext();) {
 				Map.Entry<String, WString> i = i_it.next();
