@@ -1,0 +1,11 @@
+The example can be run like any other JWt example.
+In order to use it, you will need  to setup a postgresql database.
+
+This can be done by:
+create user jwt password 'jwt';
+create database jwtplanner owner jwt;
+
+applying the schema found in planner/src/META-INF/schema.postgres
+
+If you want to change database/user names, 
+you will need to change the planner/src/META-INF/persistence.xml.   

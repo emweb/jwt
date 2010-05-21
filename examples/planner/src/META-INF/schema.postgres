@@ -1,0 +1,4 @@
+create table UserAccount (id bigint not null primary key, name varchar(50) not null);
+create table Entry (id bigint not null primary key, start timestamp not null, stop timestamp not null, summary varchar(100) not null, body text, useraccount_id bigint not null);
+alter table Entry add constraint "FK_entry_useraccount" foreign key (useraccount_id) references useraccount(id);
+create sequence hibernate_sequence;
