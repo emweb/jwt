@@ -49,12 +49,109 @@ import eu.webtoolkit.jwt.servlet.WebRequest;
  * </blockquote>
  */
 public class WEnvironment {
-	enum UserAgent {
-		Unknown(0), IEMobile(1000), IE6(1001), IE7(1002), IE8(1003), Opera(3000), WebKit(
-				4000), Safari(4100), Safari3(4103), Safari4(4104), Chrome0(4200), Chrome1(
-				4201), Chrome2(4202), Chrome3(4203), Chrome4(4204), Arora(4300), Konqueror(
-				5000), Gecko(6000), Firefox(6100), Firefox3_0(6101), Firefox3_1(
-				6102), Firefox3_1b(6103), Firefox3_5(6104), BotAgent(10000);
+	/**
+	 * An enumeration type for specific user agent.
+	 * <p>
+	 * 
+	 * @see WEnvironment#getAgent()
+	 */
+	public enum UserAgent {
+		/**
+		 * Unknown user agent.
+		 */
+		Unknown(0),
+		/**
+		 * Internet Explorer Mobile, or Internet Explorer 5 or older.
+		 */
+		IEMobile(1000),
+		/**
+		 * Internet Explorer 6.
+		 */
+		IE6(1001),
+		/**
+		 * Internet Explorer 7.
+		 */
+		IE7(1002),
+		/**
+		 * Internet Explorer 8 or later.
+		 */
+		IE8(1003),
+		/**
+		 * Opera.
+		 */
+		Opera(3000),
+		/**
+		 * WebKit.
+		 */
+		WebKit(4000),
+		/**
+		 * Safari 2 or older.
+		 */
+		Safari(4100),
+		/**
+		 * Safari 3.
+		 */
+		Safari3(4103),
+		/**
+		 * Safari 4 or later.
+		 */
+		Safari4(4104),
+		/**
+		 * Chrome 0.
+		 */
+		Chrome0(4200),
+		/**
+		 * Chrome 1.
+		 */
+		Chrome1(4201),
+		/**
+		 * Chrome 2.
+		 */
+		Chrome2(4202),
+		/**
+		 * Chrome 3.
+		 */
+		Chrome3(4203),
+		/**
+		 * Chrome 4 or later.
+		 */
+		Chrome4(4204),
+		/**
+		 * Arora.
+		 */
+		Arora(4300),
+		/**
+		 * Konqueror.
+		 */
+		Konqueror(5000),
+		/**
+		 * Gecko.
+		 */
+		Gecko(6000),
+		/**
+		 * Firefox 2 or older.
+		 */
+		Firefox(6100),
+		/**
+		 * Firefox 3.0.
+		 */
+		Firefox3_0(6101),
+		/**
+		 * Firefox 3.1.
+		 */
+		Firefox3_1(6102),
+		/**
+		 * Firefox 3.1b.
+		 */
+		Firefox3_1b(6103),
+		/**
+		 * Firefox 3.5 or later.
+		 */
+		Firefox3_5(6104),
+		/**
+		 * Bot user agent.
+		 */
+		BotAgent(10000);
 
 		private int value;
 
@@ -95,7 +192,7 @@ public class WEnvironment {
 	 * Wt&apos;s JavaScript scope.
 	 */
 	public static String getJavaScriptWtScope() {
-		return "Wt3_1_3";
+		return "Wt3_1_4";
 	}
 
 	/**
@@ -320,6 +417,9 @@ public class WEnvironment {
 	 * Returns the user agent.
 	 * <p>
 	 * The user agent, as reported in the HTTP <code>User-Agent</code> field.
+	 * <p>
+	 * 
+	 * @see WEnvironment#getAgent()
 	 */
 	public String getUserAgent() {
 		return this.userAgent_;
@@ -459,7 +559,7 @@ public class WEnvironment {
 	 * Example: <code>&quot;1.99.2&quot;</code>
 	 */
 	public static String getLibraryVersion() {
-		return "3.1.3";
+		return "3.1.4";
 	}
 
 	// public void libraryVersion(bad java simple ref int series, bad java
@@ -505,50 +605,115 @@ public class WEnvironment {
 		return this.contentType_;
 	}
 
-	WEnvironment.UserAgent getAgent() {
+	/**
+	 * Returns the user agent type.
+	 * <p>
+	 * This returns an interpretation of the {@link WEnvironment#getUserAgent()
+	 * getUserAgent()}. It should be used only for user-agent specific
+	 * work-arounds (as a last resort).
+	 * <p>
+	 * 
+	 * @see WEnvironment#agentIsIE()
+	 * @see WEnvironment#agentIsOpera()
+	 * @see WEnvironment#agentIsGecko()
+	 * @see WEnvironment#agentIsChrome()
+	 * @see WEnvironment#agentIsSafari()
+	 * @see WEnvironment#agentIsWebKit()
+	 */
+	public WEnvironment.UserAgent getAgent() {
 		return this.agent_;
 	}
 
-	boolean agentIsIE() {
+	/**
+	 * Returns whether the user agent is Microsoft Internet Explorer.
+	 * <p>
+	 * 
+	 * @see WEnvironment#getAgent()
+	 */
+	public boolean agentIsIE() {
 		return this.agent_.getValue() >= WEnvironment.UserAgent.IEMobile
 				.getValue()
 				&& this.agent_.getValue() < WEnvironment.UserAgent.Opera
 						.getValue();
 	}
 
-	boolean agentIsIEMobile() {
+	/**
+	 * Returns whether the user agent is Internet Explorer Mobile.
+	 * <p>
+	 * Returns also <code>true</code> when the agent is Internet Explorer 5 or
+	 * older.
+	 * <p>
+	 * 
+	 * @see WEnvironment#getAgent()
+	 */
+	public boolean agentIsIEMobile() {
 		return this.agent_ == WEnvironment.UserAgent.IEMobile;
 	}
 
-	boolean agentIsOpera() {
+	/**
+	 * Returns whether the user agent is Opera.
+	 * <p>
+	 * 
+	 * @see WEnvironment#getAgent()
+	 */
+	public boolean agentIsOpera() {
 		return this.agent_.getValue() >= WEnvironment.UserAgent.Opera
 				.getValue()
 				&& this.agent_.getValue() < WEnvironment.UserAgent.Safari
 						.getValue();
 	}
 
-	boolean agentIsWebKit() {
+	/**
+	 * Returns whether the user agent is WebKit-based.
+	 * <p>
+	 * Webkit-based browsers include Safari, Chrome, Arora and Konquerer
+	 * browsers.
+	 * <p>
+	 * 
+	 * @see WEnvironment#getAgent()
+	 */
+	public boolean agentIsWebKit() {
 		return this.agent_.getValue() >= WEnvironment.UserAgent.WebKit
 				.getValue()
 				&& this.agent_.getValue() < WEnvironment.UserAgent.Konqueror
 						.getValue();
 	}
 
-	boolean agentIsSafari() {
+	/**
+	 * Returns whether the user agent is Safari.
+	 * <p>
+	 * 
+	 * @see WEnvironment#getAgent()
+	 */
+	public boolean agentIsSafari() {
 		return this.agent_.getValue() >= WEnvironment.UserAgent.Safari
 				.getValue()
 				&& this.agent_.getValue() < WEnvironment.UserAgent.Chrome0
 						.getValue();
 	}
 
-	boolean agentIsChrome() {
+	/**
+	 * Returns whether the user agent is Chrome.
+	 * <p>
+	 * 
+	 * @see WEnvironment#getAgent()
+	 */
+	public boolean agentIsChrome() {
 		return this.agent_.getValue() >= WEnvironment.UserAgent.Chrome0
 				.getValue()
 				&& this.agent_.getValue() < WEnvironment.UserAgent.Konqueror
 						.getValue();
 	}
 
-	boolean agentIsGecko() {
+	/**
+	 * Returns whether the user agent is Gecko-based.
+	 * <p>
+	 * Gecko-based browsers include Firefox.
+	 * <p>
+	 * 
+	 * @see WEnvironment#getAgent()
+	 */
+	public boolean agentIsGecko() {
 		return this.agent_.getValue() >= WEnvironment.UserAgent.Gecko
 				.getValue()
 				&& this.agent_.getValue() < WEnvironment.UserAgent.BotAgent

@@ -94,6 +94,9 @@ class WTreeViewNode extends WTable {
 					renderFlags.add(ViewItemRenderFlag.RenderFocused);
 				}
 			}
+			if (!this.view_.isValid(child)) {
+				renderFlags.add(ViewItemRenderFlag.RenderInvalid);
+			}
 			w = this.view_.getItemDelegate(i).update(w, child, renderFlags);
 			if (!EnumUtils.mask(renderFlags, ViewItemRenderFlag.RenderEditing)
 					.isEmpty()) {
@@ -529,11 +532,9 @@ class WTreeViewNode extends WTable {
 		} else {
 			WWidget w = this.getWidget(column);
 			if (selected) {
-				w.setStyleClass(StringUtils.addWord(w.getStyleClass(),
-						"Wt-selected"));
+				w.addStyleClass("Wt-selected");
 			} else {
-				w.setStyleClass(StringUtils.eraseWord(w.getStyleClass(),
-						"Wt-selected"));
+				w.removeStyleClass("Wt-selected");
 			}
 		}
 	}
@@ -661,7 +662,7 @@ class WTreeViewNode extends WTable {
 	}
 
 	private void addColumnStyleClass(int column, WWidget w) {
-		EscapeOStream s = new EscapeOStream();
+		StringBuilder s = new StringBuilder();
 		s.append(this.view_.getColumnStyleClass(column)).append(" Wt-tv-c rh ")
 				.append(w.getStyleClass());
 		w.setStyleClass(new WString(s.toString()).toString());

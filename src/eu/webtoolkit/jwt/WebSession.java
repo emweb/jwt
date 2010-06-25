@@ -948,6 +948,7 @@ class WebSession {
 				.getConfiguration().getSessionTimeout());
 	}
 
+	// public void generateNewSessionId() ;
 	private void checkTimers() {
 		WContainerWidget timers = this.app_.getTimerRoot();
 		List<WWidget> timerWidgets = timers.getChildren();
@@ -1159,7 +1160,7 @@ class WebSession {
 				String hashE = request.getParameter(se + "_");
 				if (hashE != null) {
 					this.app_.changeInternalPath(hashE);
-					this.app_.doJavaScript("Wt3_1_3.scrollIntoView('" + hashE
+					this.app_.doJavaScript("Wt3_1_4.scrollIntoView('" + hashE
 							+ "');");
 				}
 			} else {
@@ -1224,7 +1225,7 @@ class WebSession {
 			for (Iterator<Map.Entry<String, String[]>> i_it = entries
 					.entrySet().iterator(); i_it.hasNext();) {
 				Map.Entry<String, String[]> i = i_it.next();
-				if (i.getKey().length() > signalLength
+				if (i.getKey().length() > (int) signalLength
 						&& i.getKey().substring(0, 0 + signalLength).equals(
 								se + "signal=")) {
 					signalE = i.getValue()[0];
@@ -1292,7 +1293,6 @@ class WebSession {
 		}
 	}
 
-	// private void generateNewSessionId() ;
 	private String getSessionQuery() {
 		return "?wtd=" + this.sessionId_;
 	}

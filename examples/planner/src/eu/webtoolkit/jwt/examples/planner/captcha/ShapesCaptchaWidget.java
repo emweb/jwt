@@ -1,12 +1,10 @@
 package eu.webtoolkit.jwt.examples.planner.captcha;
 
-import java.util.Random;
-
 import eu.webtoolkit.jwt.Signal;
 import eu.webtoolkit.jwt.Signal1;
+import eu.webtoolkit.jwt.WCompositeWidget;
 import eu.webtoolkit.jwt.WContainerWidget;
 import eu.webtoolkit.jwt.WMouseEvent;
-import eu.webtoolkit.jwt.WPointF;
 import eu.webtoolkit.jwt.WText;
 
 /**
@@ -16,21 +14,23 @@ import eu.webtoolkit.jwt.WText;
  * 
  * @author pieter
  */
-public class ShapesCaptchaWidget extends WContainerWidget {
+public class ShapesCaptchaWidget extends WCompositeWidget {
 	private Signal completed = new Signal();
 	private WText captchaMessage;
 	private ShapesWidget shapesWidget;
 
-	public ShapesCaptchaWidget(WContainerWidget parent, final int width, final int height) {
+	public ShapesCaptchaWidget(final int width, final int height, WContainerWidget parent) {
 		super(parent);
 
 		// set the css style class
 		setStyleClass("captcha");
 
-		captchaMessage = new WText(this);
+		WContainerWidget container = new WContainerWidget();
+		setImplementation(container);
+		captchaMessage = new WText(container);
 
 		// construct the ShapesWidget, this widget will render all shapes
-		shapesWidget = new ShapesWidget(this);
+		shapesWidget = new ShapesWidget(container);
 		shapesWidget.resize(width, height);
 
 		// connect an anonymous listener to the shapesWidget's clicked() signal

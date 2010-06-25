@@ -595,6 +595,11 @@ public class WTableView extends WAbstractItemView {
 				.equals(this.getRootIndex())))) {
 			return;
 		}
+		for (int r = 0; r < this.getModel().getRowCount(); r++) {
+			for (int c = start; c <= end; c++) {
+				this.closeEditor(this.getModel().getIndex(r, c), false);
+			}
+		}
 		int count = end - start + 1;
 		int width = 0;
 		for (int i = start; i < start + count; ++i) {
@@ -648,6 +653,11 @@ public class WTableView extends WAbstractItemView {
 		if (!(parent == this.getRootIndex() || (parent != null && parent
 				.equals(this.getRootIndex())))) {
 			return;
+		}
+		for (int c = 0; c < this.getModel().getColumnCount(); c++) {
+			for (int r = start; r <= end; r++) {
+				this.closeEditor(this.getModel().getIndex(r, c), false);
+			}
 		}
 		this.shiftModelIndexes(start, -(end - start + 1));
 	}
@@ -757,10 +767,13 @@ public class WTableView extends WAbstractItemView {
 				renderFlags.add(ViewItemRenderFlag.RenderFocused);
 			}
 		}
+		if (!this.isValid(index)) {
+			renderFlags.add(ViewItemRenderFlag.RenderInvalid);
+		}
 		boolean initial = !(widget != null);
 		widget = itemDelegate.update(widget, index, renderFlags);
 		widget.setInline(false);
-		widget.setStyleClass(widget.getStyleClass() + " Wt-tv-c");
+		widget.addStyleClass("Wt-tv-c");
 		widget.resize(WLength.Auto, this.getRowHeight());
 		if (!EnumUtils.mask(renderFlags, ViewItemRenderFlag.RenderEditing)
 				.isEmpty()) {
@@ -779,7 +792,7 @@ public class WTableView extends WAbstractItemView {
 		return widget;
 	}
 
-	private int getSpannerCount(Side side) {
+	private int getSpannerCount(final Side side) {
 		assert this.isAjaxMode();
 		switch (side) {
 		case Top: {
@@ -802,7 +815,7 @@ public class WTableView extends WAbstractItemView {
 		}
 	}
 
-	private void setSpannerCount(Side side, int count) {
+	private void setSpannerCount(final Side side, final int count) {
 		assert this.isAjaxMode();
 		switch (side) {
 		case Top: {
@@ -838,7 +851,8 @@ public class WTableView extends WAbstractItemView {
 		}
 	}
 
-	private void renderTable(int fr, int lr, int fc, int lc) {
+	private void renderTable(final int fr, final int lr, final int fc,
+			final int lc) {
 		assert this.isAjaxMode();
 		if (fr > this.getLastRow() || this.getFirstRow() > lr
 				|| fc > this.getLastColumn() || this.getFirstColumn() > lc) {
@@ -923,7 +937,7 @@ public class WTableView extends WAbstractItemView {
 		this.updateColumnOffsets();
 	}
 
-	private void addSection(Side side, List<WWidget> items) {
+	private void addSection(final Side side, List<WWidget> items) {
 		assert this.isAjaxMode();
 		switch (side) {
 		case Top:
@@ -967,7 +981,7 @@ public class WTableView extends WAbstractItemView {
 		}
 	}
 
-	private void removeSection(Side side) {
+	private void removeSection(final Side side) {
 		assert this.isAjaxMode();
 		int row = this.getFirstRow();
 		int col = this.getFirstColumn();
@@ -1291,17 +1305,23 @@ public class WTableView extends WAbstractItemView {
 
 	private void handleSingleClick(WMouseEvent event) {
 		WModelIndex index = this.translateModelIndex(event);
-		super.handleClick(index, event);
+		if ((index != null)) {
+			super.handleClick(index, event);
+		}
 	}
 
 	private void handleDoubleClick(WMouseEvent event) {
 		WModelIndex index = this.translateModelIndex(event);
-		super.handleDoubleClick(index, event);
+		if ((index != null)) {
+			super.handleDoubleClick(index, event);
+		}
 	}
 
 	private void handleMouseWentDown(WMouseEvent event) {
 		WModelIndex index = this.translateModelIndex(event);
-		super.handleMouseDown(index, event);
+		if ((index != null)) {
+			super.handleMouseDown(index, event);
+		}
 	}
 
 	private WModelIndex translateModelIndex(WMouseEvent event) {
@@ -1384,20 +1404,14 @@ public class WTableView extends WAbstractItemView {
 								.columnContainer(i);
 						WWidget w = column.getWidget(renderedRow);
 						if (selected) {
-							w.setStyleClass(StringUtils.addWord(w
-									.getStyleClass(), "Wt-selected"));
+							w.addStyleClass("Wt-selected");
 						} else {
-							w.setStyleClass(StringUtils.eraseWord(w
-									.getStyleClass(), "Wt-selected"));
+							w.removeStyleClass("Wt-selected");
 						}
 					}
 				} else {
 					WTableRow row = this.plainTable_.getRowAt(renderedRow + 1);
-					if (selected) {
-						row.setStyleClass("Wt-selected");
-					} else {
-						row.setStyleClass("");
-					}
+					row.setStyleClass(selected ? "Wt-selected" : "");
 				}
 			}
 		} else {
@@ -1415,11 +1429,9 @@ public class WTableView extends WAbstractItemView {
 							renderedCol);
 				}
 				if (selected) {
-					w.setStyleClass(StringUtils.addWord(w.getStyleClass(),
-							"Wt-selected"));
+					w.addStyleClass("Wt-selected");
 				} else {
-					w.setStyleClass(StringUtils.eraseWord(w.getStyleClass(),
-							"Wt-selected"));
+					w.removeStyleClass("Wt-selected");
 				}
 			}
 		}
@@ -1432,17 +1444,17 @@ public class WTableView extends WAbstractItemView {
 			app.doJavaScript(wtjs1(app), false);
 			app.setJavaScriptLoaded(THIS_JS);
 		}
-		app.doJavaScript("new Wt3_1_3.WTableView(" + app.getJavaScriptClass()
+		app.doJavaScript("new Wt3_1_4.WTableView(" + app.getJavaScriptClass()
 				+ "," + this.getJsRef() + ","
 				+ this.contentsContainer_.getJsRef() + ","
 				+ this.headerContainer_.getJsRef() + ");");
 	}
 
-	private boolean isRowRendered(int row) {
+	private boolean isRowRendered(final int row) {
 		return row >= this.getFirstRow() && row <= this.getLastRow();
 	}
 
-	private boolean isColumnRendered(int column) {
+	private boolean isColumnRendered(final int column) {
 		return column >= this.getFirstColumn()
 				&& column <= this.getLastColumn();
 	}
@@ -1495,6 +1507,6 @@ public class WTableView extends WAbstractItemView {
 	}
 
 	static String wtjs1(WApplication app) {
-		return "Wt3_1_3.WTableView = function(n,d,k,o){function p(a){var b=-1,c=false,e=false,h=null;for(a=a.target||a.srcElement;a;){var f=$(a);if(f.hasClass(\"Wt-tv-contents\"))break;else if(f.hasClass(\"Wt-tv-c\")){if(a.getAttribute(\"drop\")===\"true\")e=true;if(f.hasClass(\"Wt-selected\"))c=true;h=a;a=a.parentNode;b=a.className.split(\" \")[0].substring(7)*1;break}a=a.parentNode}return{columnId:b,rowIdx:-1,selected:c,drop:e,el:h}}function q(a){var b,c,e=a.parentNode.childNodes;b=0;for(c=e.length;b<c;++b)if(e[b]== a)return b;return-1}function s(a,b){var c=a.className.split(\" \")[0],e=c.substring(7)*1,h=o.firstChild,f=k.firstChild;c=$(f).find(\".\"+c).get(0);var l=a.nextSibling,g=c.nextSibling,j=i.pxself(a,\"width\")-1+b;h.style.width=f.style.width=i.pxself(h,\"width\")+b+\"px\";a.style.width=j+1+\"px\";for(c.style.width=j+7+\"px\";l;l=l.nextSibling){l.style.left=i.pxself(l,\"left\")+b+\"px\";if(g){g.style.left=i.pxself(g,\"left\")+b+\"px\";g=g.nextSibling}}n.emit(d,\"columnResized\",e,j)}jQuery.data(d,\"obj\",this);var i=n.WT;this.mouseDown= function(a,b){i.capture(null);a=p(b);d.getAttribute(\"drag\")===\"true\"&&a.selected&&n._p_.dragStart(d,b)};this.resizeHandleMDown=function(a,b){var c=a.parentNode.parentNode,e=-(i.pxself(c,\"width\")-1);new i.SizeHandle(i,\"h\",a.offsetWidth,d.offsetHeight,e,1E4,\"Wt-hsh\",function(h){s(c,h)},a,d,b,-2,-1)};var m=null;d.handleDragDrop=function(a,b,c,e,h){if(m){m.className=m.classNameOrig;m=null}if(a!=\"end\"){var f=p(c);if(!f.selected&&f.drop)if(a==\"drop\")n.emit(d,{name:\"dropEvent\",eventObject:b,event:c},f.rowIdx, f.columnId,e,h);else{b.className=\"Wt-valid-drop\";m=f.el;m.classNameOrig=m.className;m.className+=\" Wt-drop-site\"}else b.className=\"\"}};d.onkeydown=function(a){var b=a||window.event;if(b.keyCode==9){i.cancelEvent(b);var c=p(b);if(c.el){a=c.el.parentNode;c=q(c.el);var e=q(a),h=a.parentNode.childNodes.length,f=a.childNodes.length;b=b.shiftKey;for(var l=false,g=c,j;;){for(;b?g>=0:g<f;g=b?g-1:g+1)for(j=g==c&&!l?b?e-1:e+1:b?h-1:0;b?j>=0:j<h;j=b?j-1:j+1){if(g==c&&j==e)return;a=a.parentNode.childNodes[j]; var r=$(a.childNodes[g]).find(\":input\");if(r.size()>0){r.focus();return}}g=b?f-1:0;l=true}}}};this.autoJavaScript=function(){if(d.parentNode==null){d=k=o=null;this.autoJavaScript=function(){}}else if(!i.isHidden(d)){var a=d.offsetWidth-i.px(d,\"borderLeftWidth\")-i.px(d,\"borderRightWidth\"),b=k.scrollHeight>k.offsetHeight;if(a>200&&(a!=k.tw||b!=k.vscroll)){k.vscroll=b;k.tw=a;k.style.width=a+\"px\";o.style.width=a-(b?19:0)+\"px\"}}}};";
+		return "Wt3_1_4.WTableView = function(o,h,m,r){function p(a){var b=-1,c=false,d=false,j=null;for(a=a.target||a.srcElement;a;){var f=$(a);if(f.hasClass(\"Wt-tv-contents\"))break;else if(f.hasClass(\"Wt-tv-c\")){if(a.getAttribute(\"drop\")===\"true\")d=true;if(f.hasClass(\"Wt-selected\"))c=true;j=a;a=a.parentNode;b=a.className.split(\" \")[0].substring(7)*1;break}a=a.parentNode}return{columnId:b,rowIdx:-1,selected:c,drop:d,el:j}}function q(a){var b,c,d=a.parentNode.childNodes;b=0;for(c=d.length;b<c;++b)if(d[b]== a)return b;return-1}function s(a,b){var c=a.className.split(\" \")[0],d=c.substring(7)*1,j=r.firstChild,f=m.firstChild;c=$(f).find(\".\"+c).get(0);var g=a.nextSibling,e=c.nextSibling,k=i.pxself(a,\"width\")-1+b;j.style.width=f.style.width=i.pxself(j,\"width\")+b+\"px\";a.style.width=k+1+\"px\";for(c.style.width=k+7+\"px\";g;g=g.nextSibling){g.style.left=i.pxself(g,\"left\")+b+\"px\";if(e){e.style.left=i.pxself(e,\"left\")+b+\"px\";e=e.nextSibling}}o.emit(h,\"columnResized\",d,k)}jQuery.data(h,\"obj\",this);var i=o.WT;this.mouseDown= function(a,b){i.capture(null);a=p(b);h.getAttribute(\"drag\")===\"true\"&&a.selected&&o._p_.dragStart(h,b)};this.resizeHandleMDown=function(a,b){var c=a.parentNode.parentNode,d=-(i.pxself(c,\"width\")-1);new i.SizeHandle(i,\"h\",a.offsetWidth,h.offsetHeight,d,1E4,\"Wt-hsh\",function(j){s(c,j)},a,h,b,-2,-1)};var l=null;h.handleDragDrop=function(a,b,c,d,j){if(l){l.className=l.classNameOrig;l=null}if(a!=\"end\"){var f=p(c);if(!f.selected&&f.drop)if(a==\"drop\")o.emit(h,{name:\"dropEvent\",eventObject:b,event:c},f.rowIdx, f.columnId,d,j);else{b.className=\"Wt-valid-drop\";l=f.el;l.classNameOrig=l.className;l.className+=\" Wt-drop-site\"}else b.className=\"\"}};h.onkeydown=function(a){var b=a||window.event;if(b.keyCode==9){i.cancelEvent(b);var c=p(b);if(c.el){a=c.el.parentNode;c=q(c.el);var d=q(a),j=a.parentNode.childNodes.length,f=a.childNodes.length;b=b.shiftKey;for(var g=false,e=c,k;;){for(;b?e>=0:e<f;e=b?e-1:e+1)for(k=e==c&&!g?b?d-1:d+1:b?j-1:0;b?k>=0:k<j;k=b?k-1:k+1){if(e==c&&k==d)return;a=a.parentNode.childNodes[k]; var n=$(a.childNodes[e]).find(\":input\");if(n.size()>0){n.focus();return}}e=b?f-1:0;g=true}}}else if(b.keyCode>=37&&b.keyCode<=40){g=b.target||b.srcElement;if(g.nodeName!=\"select\"){c=p(b);if(c.el){a=c.el.parentNode;c=q(c.el);d=q(a);j=a.parentNode.childNodes.length;f=a.childNodes.length;switch(b.keyCode){case 39:if(g.nodeName==\"input\"&&g.getAttribute(\"type\")==\"text\"){e=i.getSelectionRange(g);if(e.start!=g.value.length)return}d++;break;case 38:c--;break;case 37:if(g.nodeName==\"input\"&&g.getAttribute(\"type\")== \"text\"){e=i.getSelectionRange(g);if(e.start!=0)return}d--;break;case 40:c++;break;default:return}i.cancelEvent(b);if(c>-1&&c<f&&d>-1&&d<j){a=a.parentNode.childNodes[d];n=$(a.childNodes[c]).find(\":input\");n.size()>0&&n.focus()}}}}};this.autoJavaScript=function(){if(h.parentNode==null){h=m=r=null;this.autoJavaScript=function(){}}else if(!i.isHidden(h)){var a=h.offsetWidth-i.px(h,\"borderLeftWidth\")-i.px(h,\"borderRightWidth\"),b=m.offsetWidth-m.clientWidth;a-=b;if(a>200&&a!=m.tw){m.tw=a;m.style.width= a+b+\"px\";r.style.width=a+\"px\"}}}};";
 	}
 }

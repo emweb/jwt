@@ -80,15 +80,8 @@ public class WTree extends WCompositeWidget {
 		this.treeRoot_ = null;
 		this.selectionMode_ = SelectionMode.NoSelection;
 		this.selection_ = new HashSet<WTreeNode>();
-		this.onClickMapper_ = new WSignalMapper2<WTreeNode, WMouseEvent>();
 		this.itemSelectionChanged_ = new Signal(this);
 		this.setImplementation(this.sentinelRoot_ = new SentinelTreeNode(this));
-		this.onClickMapper_.mapped().addListener(this,
-				new Signal2.Listener<WTreeNode, WMouseEvent>() {
-					public void trigger(WTreeNode e1, WMouseEvent e2) {
-						WTree.this.onClick(e1, e2);
-					}
-				});
 	}
 
 	/**
@@ -233,7 +226,6 @@ public class WTree extends WCompositeWidget {
 	private SentinelTreeNode sentinelRoot_;
 	private SelectionMode selectionMode_;
 	private Set<WTreeNode> selection_;
-	private final WSignalMapper2<WTreeNode, WMouseEvent> onClickMapper_;
 	private Signal itemSelectionChanged_;
 
 	private void onClick(WTreeNode node, WMouseEvent event) {
@@ -332,20 +324,25 @@ public class WTree extends WCompositeWidget {
 	void nodeRemoved(WTreeNode node) {
 		this.select(node, false);
 		node.clickedConnection_.disconnect();
-		this.onClickMapper_.removeMapping(node);
 		for (int i = 0; i < node.getChildNodes().size(); ++i) {
 			this.nodeRemoved(node.getChildNodes().get(i));
 		}
 	}
 
-	void nodeAdded(WTreeNode node) {
+	protected void nodeAdded(final WTreeNode node) {
 		if (node.isSelectable()) {
 			WInteractWidget w = node.getLabel();
 			if (!(w != null)) {
 				w = node.getLabelArea();
 			}
-			node.clickedConnection_ = this.onClickMapper_.mapConnect1(w
-					.clicked(), node);
+			node.clickedConnection_ = node.getImpl().clicked().addListener(
+					this, new Signal1.Listener<WMouseEvent>() {
+						@Override
+						public void trigger(WMouseEvent event) {
+							WTree.this.onClick(node, event);
+						}
+					});
+			node.getImpl().clicked().preventPropagation();
 			for (int i = 0; i < node.getChildNodes().size(); ++i) {
 				this.nodeAdded(node.getChildNodes().get(i));
 			}

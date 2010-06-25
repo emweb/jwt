@@ -72,8 +72,10 @@ public class ShapesWidget extends WPaintedWidget {
 	
 	@Override
 	protected void paintEvent(WPaintDevice paintDevice) {
+		//create a WPainter
 		WPainter painter = new WPainter(paintDevice);
 
+		//draw each shape
 		for (Shape s : shapes) {
 			s.paint(painter);
 		}

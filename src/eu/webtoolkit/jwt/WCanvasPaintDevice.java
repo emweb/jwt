@@ -413,7 +413,7 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 	}
 
 	void render(String canvasId, DomElement text) {
-		String canvasVar = "Wt3_1_3.getElement('" + canvasId + "')";
+		String canvasVar = "Wt3_1_4.getElement('" + canvasId + "')";
 		StringWriter tmp = new StringWriter();
 		tmp.append("if(").append(canvasVar).append(
 				".getContext){new Wt._p_.ImagePreloader([");
@@ -723,11 +723,11 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 			switch (this.textMethod_) {
 			case Html5Text:
 				this.js_.append("ctx.font='").append(
-						this.getPainter().getFont().getCssText()).append("';");
+						this.getPainter().getFont().cssText()).append("';");
 				break;
 			case MozText:
 				this.js_.append("ctx.mozTextStyle = '").append(
-						this.getPainter().getFont().getCssText()).append("';");
+						this.getPainter().getFont().cssText()).append("';");
 				break;
 			case DomText:
 				break;

@@ -242,6 +242,14 @@ public class WCompositeWidget extends WWidget {
 		return this.impl_.getStyleClass();
 	}
 
+	public void addStyleClass(String styleClass, boolean force) {
+		this.impl_.addStyleClass(styleClass, force);
+	}
+
+	public void removeStyleClass(String styleClass, boolean force) {
+		this.impl_.removeStyleClass(styleClass, force);
+	}
+
 	public void setVerticalAlignment(AlignmentFlag alignment, WLength length) {
 		if (!EnumUtils.mask(AlignmentFlag.AlignHorizontalMask, alignment)
 				.isEmpty()) {

@@ -410,7 +410,7 @@ public abstract class WInteractWidget extends WWebWidget {
 				escapePress.updateOk();
 			}
 			if (keyDown != null) {
-				if (keyDown.needsUpdate(all)) {
+				if (keyDown.isConnected()) {
 					actions.add(new DomElement.EventAction("", keyDown
 							.getJavaScript(), keyDown.encodeCmd(), keyDown
 							.isExposedSignal()));
@@ -446,14 +446,17 @@ public abstract class WInteractWidget extends WWebWidget {
 				js += WApplication.getInstance().getJavaScriptClass()
 						+ "._p_.saveDownPos(event);";
 			}
-			if (js.length() != 0 || mouseMove != null
-					&& mouseMove.isConnected() || mouseDrag != null
-					&& mouseDrag.isConnected()) {
-				js += "Wt3_1_3.capture(this);";
+			if (mouseDrag != null
+					&& mouseDrag.isConnected()
+					|| mouseDown != null
+					&& mouseDown.isConnected()
+					&& (mouseUp != null && mouseUp.isConnected() || mouseMove != null
+							&& mouseMove.isConnected())) {
+				js += "Wt3_1_4.capture(this);";
 			}
 			if (mouseMove != null && mouseMove.isConnected()
 					|| mouseDrag != null && mouseDrag.isConnected()) {
-				js += "Wt3_1_3.mouseDown(e);";
+				js += "Wt3_1_4.mouseDown(e);";
 			}
 			if (mouseDown != null) {
 				js += mouseDown.getJavaScript();
@@ -468,7 +471,7 @@ public abstract class WInteractWidget extends WWebWidget {
 			String js = "";
 			if (mouseMove != null && mouseMove.isConnected()
 					|| mouseDrag != null && mouseDrag.isConnected()) {
-				js += "Wt3_1_3.mouseUp(e);";
+				js += "Wt3_1_4.mouseUp(e);";
 			}
 			if (mouseUp != null) {
 				js += mouseUp.getJavaScript();
@@ -488,7 +491,7 @@ public abstract class WInteractWidget extends WWebWidget {
 				mouseMove.updateOk();
 			}
 			if (mouseDrag != null) {
-				actions.add(new DomElement.EventAction("Wt3_1_3.buttons",
+				actions.add(new DomElement.EventAction("Wt3_1_4.buttons",
 						mouseDrag.getJavaScript(), mouseDrag.encodeCmd(),
 						mouseDrag.isExposedSignal()));
 				mouseDrag.updateOk();

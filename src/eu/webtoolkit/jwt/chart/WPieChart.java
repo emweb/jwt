@@ -12,10 +12,12 @@ import eu.webtoolkit.jwt.AlignmentFlag;
 import eu.webtoolkit.jwt.Side;
 import eu.webtoolkit.jwt.StringUtils;
 import eu.webtoolkit.jwt.WAbstractItemModel;
+import eu.webtoolkit.jwt.WApplication;
 import eu.webtoolkit.jwt.WBrush;
 import eu.webtoolkit.jwt.WColor;
 import eu.webtoolkit.jwt.WContainerWidget;
 import eu.webtoolkit.jwt.WFont;
+import eu.webtoolkit.jwt.WLength;
 import eu.webtoolkit.jwt.WModelIndex;
 import eu.webtoolkit.jwt.WPaintDevice;
 import eu.webtoolkit.jwt.WPaintedWidget;
@@ -26,6 +28,8 @@ import eu.webtoolkit.jwt.WRectF;
 import eu.webtoolkit.jwt.WShadow;
 import eu.webtoolkit.jwt.WString;
 import eu.webtoolkit.jwt.WtException;
+import eu.webtoolkit.jwt.WText;
+import eu.webtoolkit.jwt.WWidget;
 import eu.webtoolkit.jwt.utils.EnumUtils;
 
 /**
@@ -332,6 +336,60 @@ public class WPieChart extends WAbstractChart {
 		return this.labelOptions_;
 	}
 
+	/**
+	 * Creates a widget which renders the a legend item.
+	 * <p>
+	 * Depending on the passed LabelOption flags, the legend item widget, will
+	 * contain a text (with or without the percentage) and/or a span with the
+	 * segment&apos;s color.
+	 */
+	public WWidget createLegendItemWidget(int index,
+			EnumSet<LabelOption> options) {
+		WContainerWidget legendItem = new WContainerWidget();
+		legendItem.setPadding(new WLength(4));
+		WText colorText = new WText();
+		legendItem.addWidget(colorText);
+		colorText
+				.setPadding(new WLength(10), EnumSet.of(Side.Left, Side.Right));
+		colorText.getDecorationStyle().setBackgroundColor(
+				this.getBrush(index).getColor());
+		if (WApplication.getInstance().getEnvironment().agentIsIE()) {
+			colorText.setAttributeValue("style", "zoom: 1;");
+		}
+		double total = 0;
+		if (this.dataColumn_ != -1) {
+			for (int i = 0; i < this.getModel().getRowCount(); ++i) {
+				double v = StringUtils.asNumber(this.getModel().getData(i,
+						this.dataColumn_));
+				if (!Double.isNaN(v)) {
+					total += v;
+				}
+			}
+		}
+		double value = StringUtils.asNumber(this.getModel().getData(index,
+				this.dataColumn_));
+		if (!Double.isNaN(value)) {
+			WString label = this.labelText(index, value, total, options);
+			if (!(label.length() == 0)) {
+				WText l = new WText(label);
+				l.setPadding(new WLength(5), EnumSet.of(Side.Left));
+				legendItem.addWidget(l);
+			}
+		}
+		return legendItem;
+	}
+
+	/**
+	 * Creates a widget which renders the a legend item.
+	 * <p>
+	 * Returns {@link #createLegendItemWidget(int index, EnumSet options)
+	 * createLegendItemWidget(index, EnumSet.of(option, options))}
+	 */
+	public final WWidget createLegendItemWidget(int index, LabelOption option,
+			LabelOption... options) {
+		return createLegendItemWidget(index, EnumSet.of(option, options));
+	}
+
 	public void paint(WPainter painter, WRectF rectangle) {
 		double total = 0;
 		if (this.dataColumn_ != -1) {
@@ -460,26 +518,10 @@ public class WPieChart extends WAbstractChart {
 								AlignmentFlag.AlignMiddle));
 						c = this.getPalette().getFontColor(i);
 					}
-					WString text = new WString();
-					if (!EnumUtils.mask(this.labelOptions_,
-							LabelOption.TextLabel).isEmpty()) {
-						if (this.labelsColumn_ != -1) {
-							text = StringUtils.asString(this.getModel()
-									.getData(i, this.labelsColumn_));
-						}
-					}
-					if (!EnumUtils.mask(this.labelOptions_,
-							LabelOption.TextPercentage).isEmpty()) {
-						String buf = null;
-						buf = String.format("%.3g%%", v / total * 100);
-						if (!(text.length() == 0)) {
-							text.append(": ");
-						}
-						text.append(buf);
-					}
 					painter.setPen(new WPen(c));
 					painter.drawText(new WRectF(left, top, width, height),
-							alignment, text);
+							alignment, this.labelText(i, v, total,
+									this.labelOptions_));
 					currentAngle = endAngle;
 				}
 			}
@@ -853,5 +895,30 @@ public class WPieChart extends WAbstractChart {
 				c.getAlpha());
 		result.setColor(c);
 		return result;
+	}
+
+	private WString labelText(int index, double v, double total,
+			EnumSet<LabelOption> options) {
+		WString text = new WString();
+		if (!EnumUtils.mask(options, LabelOption.TextLabel).isEmpty()) {
+			if (this.labelsColumn_ != -1) {
+				text = StringUtils.asString(this.getModel().getData(index,
+						this.labelsColumn_));
+			}
+		}
+		if (!EnumUtils.mask(options, LabelOption.TextPercentage).isEmpty()) {
+			String buf = null;
+			buf = String.format("%.3g%%", v / total * 100);
+			if (!(text.length() == 0)) {
+				text.append(": ");
+			}
+			text.append(buf);
+		}
+		return text;
+	}
+
+	private final WString labelText(int index, double v, double total,
+			LabelOption option, LabelOption... options) {
+		return labelText(index, v, total, EnumSet.of(option, options));
 	}
 }

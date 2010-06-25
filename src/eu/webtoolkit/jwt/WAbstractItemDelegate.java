@@ -148,6 +148,18 @@ public abstract class WAbstractItemDelegate extends WObject {
 	}
 
 	/**
+	 * Returns whether the edited value is valid.
+	 * <p>
+	 * The default implementation does nothing and returns Valid.
+	 * <p>
+	 * 
+	 * @see WValidator#validate(String input)
+	 */
+	public WValidator.State validate(WModelIndex index, Object editState) {
+		return WValidator.State.Valid;
+	}
+
+	/**
 	 * Saves the edited data to the model.
 	 * <p>
 	 * The View will use this method to save the edited value to the model. The

@@ -9,13 +9,14 @@ import java.util.List;
 import eu.webtoolkit.jwt.utils.EnumUtils;
 
 class WWidgetVectorPainter extends WWidgetPainter {
-	public WWidgetVectorPainter(WPaintedWidget widget, VectorFormat format) {
+	public WWidgetVectorPainter(WPaintedWidget widget,
+			WWidgetPainter.RenderType renderType) {
 		super(widget);
-		this.format_ = format;
+		this.renderType_ = renderType;
 	}
 
 	public WPaintDevice getCreatePaintDevice() {
-		if (this.format_ == VectorFormat.SvgFormat) {
+		if (this.renderType_ == WWidgetPainter.RenderType.InlineSvg) {
 			return new WSvgImage(new WLength(this.widget_.renderWidth_),
 					new WLength(this.widget_.renderHeight_));
 		} else {
@@ -36,7 +37,7 @@ class WWidgetVectorPainter extends WWidgetPainter {
 				: null);
 		if (!EnumUtils.mask(device.getPaintFlags(), PaintFlag.PaintUpdate)
 				.isEmpty()) {
-			DomElement painter = DomElement.updateGiven("Wt3_1_3.getElement('p"
+			DomElement painter = DomElement.updateGiven("Wt3_1_4.getElement('p"
 					+ this.widget_.getId() + "').firstChild",
 					DomElementType.DomElement_DIV);
 			painter.setProperty(Property.PropertyAddedInnerHTML, vectorDevice
@@ -56,5 +57,9 @@ class WWidgetVectorPainter extends WWidgetPainter {
 		this.widget_.sizeChanged_ = false;
 	}
 
-	private VectorFormat format_;
+	public WWidgetPainter.RenderType getRenderType() {
+		return this.renderType_;
+	}
+
+	private WWidgetPainter.RenderType renderType_;
 }

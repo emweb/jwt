@@ -971,6 +971,75 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	}
 
 	/**
+	 * Closes all open editors.
+	 * <p>
+	 * If <code>saveData</code> is true, then the currently edited values are
+	 * saved to the model before closing the editor.
+	 * <p>
+	 * 
+	 * @see WAbstractItemView#closeEditor(WModelIndex index, boolean saveData)
+	 */
+	public void closeEditors(boolean saveData) {
+		while (!this.editedItems_.isEmpty()) {
+			this.closeEditor(this.editedItems_.entrySet().iterator().next()
+					.getKey(), saveData);
+		}
+	}
+
+	/**
+	 * Closes all open editors.
+	 * <p>
+	 * Calls {@link #closeEditors(boolean saveData) closeEditors(true)}
+	 */
+	public final void closeEditors() {
+		closeEditors(true);
+	}
+
+	/**
+	 * Validates the editor for the given index.
+	 * <p>
+	 * Validation is done by invoking
+	 * {@link WAbstractItemDelegate#validate(WModelIndex index, Object editState)
+	 * WAbstractItemDelegate#validate()}.
+	 */
+	public WValidator.State validateEditor(WModelIndex index) {
+		WAbstractItemView.Editor i = this.editedItems_.get(index);
+		if (i != null) {
+			WAbstractItemDelegate delegate = this.getItemDelegate(index);
+			Object editState = new Object();
+			WAbstractItemView.Editor editor = i;
+			if (editor.widget != null) {
+				editState = delegate.getEditState(editor.widget);
+			} else {
+				editState = editor.editState;
+			}
+			WValidator.State state = delegate.validate(index, editState);
+			editor.valid = state == WValidator.State.Valid;
+			return state;
+		}
+		return WValidator.State.Invalid;
+	}
+
+	/**
+	 * Validates all editors.
+	 * <p>
+	 * 
+	 * @see WAbstractItemView#validateEditor(WModelIndex index)
+	 */
+	public WValidator.State validateEditors() {
+		WValidator.State state = WValidator.State.Valid;
+		for (Iterator<Map.Entry<WModelIndex, WAbstractItemView.Editor>> i_it = this.editedItems_
+				.entrySet().iterator(); i_it.hasNext();) {
+			Map.Entry<WModelIndex, WAbstractItemView.Editor> i = i_it.next();
+			WValidator.State s = this.validateEditor(i.getKey());
+			if (s.getValue() < state.getValue()) {
+				state = s;
+			}
+		}
+		return state;
+	}
+
+	/**
 	 * Returns whether an editor is open for a given index.
 	 * <p>
 	 * 
@@ -978,6 +1047,19 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	 */
 	public boolean isEditing(WModelIndex index) {
 		return this.editedItems_.get(index) != null;
+	}
+
+	/**
+	 * Returns whether an editor&apos;s state is valid.
+	 */
+	public boolean isValid(WModelIndex index) {
+		WAbstractItemView.Editor i = this.editedItems_.get(index);
+		if (i != null) {
+			WAbstractItemView.Editor editor = i;
+			return editor.valid;
+		} else {
+			return false;
+		}
 	}
 
 	boolean isEditing() {
@@ -1459,6 +1541,9 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 		} else {
 			t.setWordWrap(false);
 		}
+		if (info.sorting) {
+			this.clickedForSortMapper_.mapConnect(t.clicked(), info.id);
+		}
 		WContainerWidget result = new WContainerWidget();
 		if (headerLevel != 0) {
 			WContainerWidget spacer = new WContainerWidget(result);
@@ -1477,15 +1562,16 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 				t.setText(repeat(OneLine, headerLevel));
 			}
 		}
-		w.setStyleClass(w.getStyleClass()
-				+ (rightBorderLevel <= headerLevel ? " Wt-tv-br" : ""));
+		if (rightBorderLevel <= headerLevel) {
+			w.addStyleClass("Wt-tv-br");
+		}
 		result.addWidget(w);
 		result.setStyleClass(info.getStyleClass() + " Wt-tv-c headerrh");
 		result.setContentAlignment(info.headerAlignment);
 		WWidget extraW = this.columnInfo(column).extraHeaderWidget;
 		if (extraW != null) {
 			result.addWidget(extraW);
-			extraW.setStyleClass(extraW.getStyleClass() + " Wt-tv-br");
+			extraW.addStyleClass("Wt-tv-br");
 		}
 		if (this.columnResize_ && app.getEnvironment().hasAjax()) {
 			WContainerWidget resizeHandle = new WContainerWidget();
@@ -1617,9 +1703,18 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	}
 
 	static class Editor {
+		public Editor() {
+			this.widget = null;
+			this.editState = new Object();
+			this.stateSaved = false;
+			this.valid = false;
+			this.editState = null;
+		}
+
 		public WWidget widget;
 		public Object editState;
 		public boolean stateSaved;
+		public boolean valid;
 	}
 
 	private WAbstractItemModel model_;

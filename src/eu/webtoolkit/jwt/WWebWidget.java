@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.EnumSet;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -413,6 +414,56 @@ public abstract class WWebWidget extends WWidget {
 
 	public String getStyleClass() {
 		return this.lookImpl_ != null ? this.lookImpl_.styleClass_ : "";
+	}
+
+	public void addStyleClass(String styleClass, boolean force) {
+		if (!(this.lookImpl_ != null)) {
+			this.lookImpl_ = new WWebWidget.LookImpl();
+		}
+		String currentClass = this.lookImpl_.styleClass_;
+		Set<String> classes = new HashSet<String>();
+		StringUtils.split(classes, currentClass, " ", true);
+		if (classes.contains(styleClass) == false) {
+			this.lookImpl_.styleClass_ = StringUtils.addWord(
+					this.lookImpl_.styleClass_, styleClass);
+			if (!force) {
+				this.flags_.set(BIT_STYLECLASS_CHANGED);
+				this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyAttribute));
+			}
+		}
+		if (force && this.isRendered()) {
+			if (!(this.transientImpl_ != null)) {
+				this.transientImpl_ = new WWebWidget.TransientImpl();
+			}
+			this.transientImpl_.addedStyleClasses_.add(styleClass);
+			this.transientImpl_.removedStyleClasses_.remove(styleClass);
+			this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyAttribute));
+		}
+	}
+
+	public void removeStyleClass(String styleClass, boolean force) {
+		if (!(this.lookImpl_ != null)) {
+			this.lookImpl_ = new WWebWidget.LookImpl();
+		}
+		String currentClass = this.lookImpl_.styleClass_;
+		Set<String> classes = new HashSet<String>();
+		StringUtils.split(classes, currentClass, " ", true);
+		if (classes.contains(styleClass) != false) {
+			this.lookImpl_.styleClass_ = StringUtils.eraseWord(
+					this.lookImpl_.styleClass_, styleClass);
+			if (!force) {
+				this.flags_.set(BIT_STYLECLASS_CHANGED);
+				this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyAttribute));
+			}
+		}
+		if (force && this.isRendered()) {
+			if (!(this.transientImpl_ != null)) {
+				this.transientImpl_ = new WWebWidget.TransientImpl();
+			}
+			this.transientImpl_.removedStyleClasses_.add(styleClass);
+			this.transientImpl_.addedStyleClasses_.remove(styleClass);
+			this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyAttribute));
+		}
 	}
 
 	public void setVerticalAlignment(AlignmentFlag alignment, WLength length) {
@@ -974,7 +1025,7 @@ public abstract class WWebWidget extends WWidget {
 						app
 								.addAutoJavaScript("{var w = "
 										+ this.getJsRef()
-										+ ";if (w && !Wt3_1_3.isHidden(w)) {var i = Wt3_1_3.getElement('"
+										+ ";if (w && !Wt3_1_4.isHidden(w)) {var i = Wt3_1_4.getElement('"
 										+ i.getId()
 										+ "');i.style.width=w.clientWidth + 'px';i.style.height=w.clientHeight + 'px';}}");
 						element.addChild(i);
@@ -1149,6 +1200,20 @@ public abstract class WWebWidget extends WWidget {
 				}
 			}
 			this.flags_.clear(BIT_STYLECLASS_CHANGED);
+		}
+		if (this.transientImpl_ != null) {
+			for (int i = 0; i < this.transientImpl_.addedStyleClasses_.size(); ++i) {
+				element
+						.callJavaScript("$('" + this.getId() + "').addClass('"
+								+ this.transientImpl_.addedStyleClasses_.get(i)
+								+ "');");
+			}
+			for (int i = 0; i < this.transientImpl_.removedStyleClasses_.size(); ++i) {
+				element.callJavaScript("$('" + this.getId()
+						+ "').removeClass('"
+						+ this.transientImpl_.removedStyleClasses_.get(i)
+						+ "');");
+			}
 		}
 		if (all || this.flags_.get(BIT_SELECTABLE_CHANGED)) {
 			if (this.flags_.get(BIT_SET_UNSELECTABLE)) {
@@ -1440,6 +1505,45 @@ public abstract class WWebWidget extends WWidget {
 		}
 	}
 
+	void render(EnumSet<RenderFlag> flags) {
+		super.render(flags);
+		if (this.otherImpl_ != null
+				&& this.otherImpl_.delayedDoJavaScript_ != null) {
+			WApplication.getInstance().doJavaScript(
+					this.otherImpl_.delayedDoJavaScript_.toString());
+			;
+			this.otherImpl_.delayedDoJavaScript_ = null;
+		}
+	}
+
+	/**
+	 * Executes the given JavaScript statements, possibly delayed until after
+	 * the widget is rendered.
+	 * <p>
+	 * Calling
+	 * {@link WApplication#doJavaScript(String javascript, boolean afterLoaded)
+	 * WApplication#doJavaScript()} with JavaScript code that refers to a widget
+	 * that is still to be rendered causes JavaScript errors. This happens for
+	 * example when an object is created, but not yet inserted in the widget
+	 * tree.
+	 * <p>
+	 * This method offers an alternative: it queues up all doJavaScript calls
+	 * for widgets that were not yet rendered until they are rendered.
+	 */
+	protected void doJavaScript(String javascript) {
+		if (this.isRendered()) {
+			WApplication.getInstance().doJavaScript(javascript);
+		} else {
+			if (!(this.otherImpl_ != null)) {
+				this.otherImpl_ = new WWebWidget.OtherImpl();
+			}
+			if (!(this.otherImpl_.delayedDoJavaScript_ != null)) {
+				this.otherImpl_.delayedDoJavaScript_ = new StringBuilder();
+			}
+			this.otherImpl_.delayedDoJavaScript_.append(javascript);
+		}
+	}
+
 	private static final int BIT_INLINE = 0;
 	private static final int BIT_HIDDEN = 1;
 	private static final int BIT_LOADED = 2;
@@ -1475,10 +1579,14 @@ public abstract class WWebWidget extends WWidget {
 	static class TransientImpl {
 		public List<DomElement> childRemoveChanges_;
 		public List<WWidget> addedChildren_;
+		public List<String> addedStyleClasses_;
+		public List<String> removedStyleClasses_;
 
 		public TransientImpl() {
 			this.childRemoveChanges_ = new ArrayList<DomElement>();
 			this.addedChildren_ = new ArrayList<WWidget>();
+			this.addedStyleClasses_ = new ArrayList<String>();
+			this.removedStyleClasses_ = new ArrayList<String>();
 		}
 	}
 
@@ -1560,6 +1668,7 @@ public abstract class WWebWidget extends WWidget {
 		public List<String> jsMemberCalls_;
 		public JSignal3<String, String, WMouseEvent> dropSignal_;
 		public Map<String, WWebWidget.DropMimeType> acceptedDropMimeTypes_;
+		public StringBuilder delayedDoJavaScript_;
 
 		public OtherImpl() {
 			this.id_ = null;
@@ -1570,6 +1679,7 @@ public abstract class WWebWidget extends WWidget {
 			this.jsMemberCalls_ = null;
 			this.dropSignal_ = null;
 			this.acceptedDropMimeTypes_ = null;
+			this.delayedDoJavaScript_ = null;
 		}
 	}
 

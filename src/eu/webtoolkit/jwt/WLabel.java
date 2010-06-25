@@ -305,7 +305,11 @@ public class WLabel extends WInteractWidget {
 
 	protected void propagateSetEnabled(boolean enabled) {
 		if (this.text_ != null) {
-			this.text_.setStyleClass(enabled ? "" : "Wt-disabled");
+			if (enabled) {
+				this.text_.removeStyleClass("Wt-disabled");
+			} else {
+				this.text_.addStyleClass("Wt-disabled");
+			}
 		}
 		super.propagateSetEnabled(enabled);
 	}

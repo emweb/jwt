@@ -32,10 +32,12 @@ public class Circle extends Shape {
 		WBrush b = new WBrush();
 		b.setStyle(WBrushStyle.SolidPattern);
 		b.setColor(getColor());
-
+		
+		//create a painterpath, and add an ellipse to it
 		WPainterPath pp = new WPainterPath();
 		pp.addEllipse(getCenter().getX() - getSize(), getCenter().getY() - getSize(), getSize() * 2, getSize() * 2);
-
+		 
+		//draw and fill the painterpath on the painter
 		painter.fillPath(pp, b);
 	}
 }

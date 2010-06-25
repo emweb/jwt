@@ -23,6 +23,8 @@ import eu.webtoolkit.jwt.WPen;
 import eu.webtoolkit.jwt.WPointF;
 import eu.webtoolkit.jwt.WRectF;
 import eu.webtoolkit.jwt.WtException;
+import eu.webtoolkit.jwt.WText;
+import eu.webtoolkit.jwt.WWidget;
 
 /**
  * A cartesian chart.
@@ -671,6 +673,22 @@ public class WCartesianChart extends WAbstractChart {
 	 */
 	public final void initLayout() {
 		initLayout(new WRectF());
+	}
+
+	/**
+	 * Creates a widget which renders the a legend item.
+	 * <p>
+	 * The legend item widget will contain a text and a Wt::WPaintedWidget which
+	 * draws the series&apos; symbol.
+	 */
+	public WWidget createLegendItemWidget(int index) {
+		WContainerWidget legendItem = new WContainerWidget();
+		legendItem.addWidget(new IconWidget(this, index));
+		WText label = new WText(StringUtils.asString(this.getModel()
+				.getHeaderData(index)));
+		label.setVerticalAlignment(AlignmentFlag.AlignTop);
+		legendItem.addWidget(label);
+		return legendItem;
 	}
 
 	protected void paintEvent(WPaintDevice paintDevice) {

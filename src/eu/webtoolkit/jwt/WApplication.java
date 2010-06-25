@@ -183,7 +183,7 @@ public class WApplication extends WObject {
 					WLength.Unit.Percentage));
 		}
 		this.timerRoot_ = new WContainerWidget(this.domRoot_);
-		;
+		this.timerRoot_.setId("Wt-timers");
 		this.timerRoot_.resize(WLength.Auto, new WLength(0));
 		this.timerRoot_.setPositionScheme(PositionScheme.Absolute);
 		if (this.session_.getType() == EntryPointType.Application) {
@@ -1091,7 +1091,7 @@ public class WApplication extends WObject {
 	 *    try {
 	 *      // We now have exclusive access to the application:
 	 *      // we can safely modify the widget tree for example.
-	 *      app.getRoot().addWidget(new WText(&quot;Something happened!&quot;));
+	 *      app.getRoot().addWidget(new WText("Something happened!"));
 	 *   
 	 *      // Push the changes to the browser
 	 *      app.triggerUpdate();
@@ -1635,11 +1635,11 @@ public class WApplication extends WObject {
 			this.loadingIndicatorWidget_ = indicator.getWidget();
 			this.domRoot_.addWidget(this.loadingIndicatorWidget_);
 			JSlot showLoadJS = new JSlot();
-			showLoadJS.setJavaScript("function(o,e) {Wt3_1_3.inline('"
+			showLoadJS.setJavaScript("function(o,e) {Wt3_1_4.inline('"
 					+ this.loadingIndicatorWidget_.getId() + "');}");
 			this.showLoadingIndicator_.addListener(showLoadJS);
 			JSlot hideLoadJS = new JSlot();
-			hideLoadJS.setJavaScript("function(o,e) {Wt3_1_3.hide('"
+			hideLoadJS.setJavaScript("function(o,e) {Wt3_1_4.hide('"
 					+ this.loadingIndicatorWidget_.getId() + "');}");
 			this.hideLoadingIndicator_.addListener(hideLoadJS);
 			this.loadingIndicatorWidget_.hide();

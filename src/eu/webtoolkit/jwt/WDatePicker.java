@@ -392,9 +392,9 @@ public class WDatePicker extends WCompositeWidget {
 					}
 				});
 		this.positionJS_
-				.setJavaScript("function() { Wt3_1_3.positionAtWidget('"
+				.setJavaScript("function() { Wt3_1_4.positionAtWidget('"
 						+ this.popup_.getId() + "','" + displayWidget.getId()
-						+ "', Wt3_1_3.Horizontal);}");
+						+ "', Wt3_1_4.Horizontal);}");
 		displayWidget.clicked().addListener(this.positionJS_);
 		displayWidget.clicked().addListener(this,
 				new Signal1.Listener<WMouseEvent>() {

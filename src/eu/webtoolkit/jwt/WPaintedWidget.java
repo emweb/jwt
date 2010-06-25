@@ -321,7 +321,12 @@ public abstract class WPaintedWidget extends WInteractWidget {
 	protected abstract void paintEvent(WPaintDevice paintDevice);
 
 	DomElementType getDomElementType() {
-		return DomElementType.DomElement_DIV;
+		if (this.isInline()
+				&& WApplication.getInstance().getEnvironment().agentIsIE()) {
+			return DomElementType.DomElement_SPAN;
+		} else {
+			return DomElementType.DomElement_DIV;
+		}
 	}
 
 	void updateDom(DomElement element, boolean all) {
@@ -334,7 +339,7 @@ public abstract class WPaintedWidget extends WInteractWidget {
 
 	DomElement createDomElement(WApplication app) {
 		this.isCreatePainter();
-		DomElement result = DomElement.createNew(DomElementType.DomElement_DIV);
+		DomElement result = DomElement.createNew(this.getDomElementType());
 		this.setId(result, app);
 		DomElement wrap = result;
 		if (this.getWidth().isAuto() && this.getHeight().isAuto()) {
@@ -349,6 +354,12 @@ public abstract class WPaintedWidget extends WInteractWidget {
 			canvas.setId('p' + this.getId());
 		}
 		WPaintDevice device = this.painter_.getCreatePaintDevice();
+		if (this.painter_.getRenderType() == WWidgetPainter.RenderType.InlineVml
+				&& this.isInline()) {
+			result.setProperty(Property.PropertyStyle, "zoom: 1;");
+			canvas.setProperty(Property.PropertyStyleDisplay, "inline");
+			canvas.setProperty(Property.PropertyStyle, "zoom: 1;");
+		}
 		if (this.renderWidth_ != 0 && this.renderHeight_ != 0) {
 			this.paintEvent(device);
 			if (device.getPainter() != null) {
@@ -442,7 +453,7 @@ public abstract class WPaintedWidget extends WInteractWidget {
 		WEnvironment env = WApplication.getInstance().getEnvironment();
 		if (env.agentIsIE()) {
 			this.painter_ = new WWidgetVectorPainter(this,
-					VectorFormat.VmlFormat);
+					WWidgetPainter.RenderType.InlineVml);
 			return true;
 		}
 		WPaintedWidget.Method method;
@@ -473,7 +484,7 @@ public abstract class WPaintedWidget extends WInteractWidget {
 		}
 		if (method == WPaintedWidget.Method.InlineSvgVml) {
 			this.painter_ = new WWidgetVectorPainter(this,
-					VectorFormat.SvgFormat);
+					WWidgetPainter.RenderType.InlineSvg);
 		} else {
 			this.painter_ = new WWidgetCanvasPainter(this);
 		}

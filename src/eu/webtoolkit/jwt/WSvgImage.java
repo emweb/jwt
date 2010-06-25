@@ -461,8 +461,7 @@ public class WSvgImage extends WResource implements WVectorImage {
 			this.fontStyle_ = this.getFontStyle();
 		}
 		tmp.append("<g style=\"").append(this.fillStyle_).append(
-				this.strokeStyle_).append("font:").append(this.fontStyle_)
-				.append('"');
+				this.strokeStyle_).append(this.fontStyle_).append('"');
 		if (!this.currentTransform_.isIdentity()) {
 			tmp.append(" transform=\"matrix(").append(
 					MathUtils.round(this.currentTransform_.getM11(), 3));
@@ -567,7 +566,7 @@ public class WSvgImage extends WResource implements WVectorImage {
 	}
 
 	private String getFontStyle() {
-		return this.getPainter().getFont().getCssText();
+		return this.getPainter().getFont().cssText(false);
 	}
 
 	private String getClipPath() {

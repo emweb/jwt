@@ -248,6 +248,20 @@ public class WAbstractArea extends WObject {
 	}
 
 	/**
+	 * Adds a style class.
+	 */
+	public void addStyleClass(String styleClass, boolean force) {
+		this.impl_.addStyleClass(styleClass, force);
+	}
+
+	/**
+	 * Removes a style class.
+	 */
+	public void removeStyleClass(String styleClass, boolean force) {
+		this.impl_.removeStyleClass(styleClass, force);
+	}
+
+	/**
 	 * Sets the cursor.
 	 * <p>
 	 * This sets the mouse cursor that is shown when the mouse pointer is over

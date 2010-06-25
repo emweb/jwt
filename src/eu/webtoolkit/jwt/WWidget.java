@@ -366,8 +366,8 @@ public abstract class WWidget extends WObject {
 		String side = orientation == Orientation.Horizontal ? ".Horizontal"
 				: ".Vertical";
 		WApplication.getInstance().doJavaScript(
-				"Wt3_1_3.positionAtWidget('" + this.getId() + "','"
-						+ widget.getId() + "',Wt3_1_3" + side + ");");
+				"Wt3_1_4.positionAtWidget('" + this.getId() + "','"
+						+ widget.getId() + "',Wt3_1_4" + side + ");");
 	}
 
 	/**
@@ -729,6 +729,36 @@ public abstract class WWidget extends WObject {
 	 * @see WWidget#setStyleClass(String styleClass)
 	 */
 	public abstract String getStyleClass();
+
+	/**
+	 * Adds a CSS style class.
+	 */
+	public abstract void addStyleClass(String styleClass, boolean force);
+
+	/**
+	 * Adds a CSS style class.
+	 * <p>
+	 * Calls {@link #addStyleClass(String styleClass, boolean force)
+	 * addStyleClass(styleClass, false)}
+	 */
+	public final void addStyleClass(String styleClass) {
+		addStyleClass(styleClass, false);
+	}
+
+	/**
+	 * Removes a CSS style class.
+	 */
+	public abstract void removeStyleClass(String styleClass, boolean force);
+
+	/**
+	 * Removes a CSS style class.
+	 * <p>
+	 * Calls {@link #removeStyleClass(String styleClass, boolean force)
+	 * removeStyleClass(styleClass, false)}
+	 */
+	public final void removeStyleClass(String styleClass) {
+		removeStyleClass(styleClass, false);
+	}
 
 	/**
 	 * Sets the vertical alignment.
@@ -1313,7 +1343,8 @@ public abstract class WWidget extends WObject {
 	 */
 	protected abstract void propagateSetEnabled(boolean enabled);
 
-	void getDrop(String sourceId, String mimeType, WMouseEvent event) {
+	protected void getDrop(final String sourceId, final String mimeType,
+			WMouseEvent event) {
 		WDropEvent e = new WDropEvent(WApplication.getInstance().decodeObject(
 				sourceId), mimeType, event);
 		this.dropEvent(e);

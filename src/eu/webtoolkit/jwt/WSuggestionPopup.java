@@ -17,28 +17,37 @@ import eu.webtoolkit.jwt.utils.EnumUtils;
  * This widget may be associated with one or more {@link WFormWidget
  * WFormWidgets} (typically a {@link WLineEdit} or a {@link WTextArea}).
  * <p>
- * When the user starts editing one of the associated widgets, this popup will
- * show just below it, offering a list of suggestions that match in some way
- * with the current edit. The mechanism for filtering the total list of
- * suggestions must be specified through a separate JavaScript function. This
- * function may also highlight part(s) of the suggestions to provide feed-back
- * on how they match.
+ * The popup provides the user with suggestions to enter input. The popup can be
+ * used by one or more editors, using
+ * {@link WSuggestionPopup#forEdit(WFormWidget edit, EnumSet triggers)
+ * forEdit()}. The popup will show when the user starts editing the edit field,
+ * or when the user opens the suggestions explicitly using a drop down icon or
+ * with the down key. The popup positions itself intelligently just below or
+ * just on top of the edit field. It offers a list of suggestions that match in
+ * some way with the current edit field, and dynamically adjusts this list. The
+ * implementation for matching indivudal suggestions with the current text is
+ * provided through a JavaScript function. This function may also highlight
+ * part(s) of the suggestions to provide feed-back on how they match.
  * <p>
  * WSuggestionPopup is an MVC view class, using a simple
  * {@link WStringListModel} by default. You can set a custom model using
  * {@link WSuggestionPopup#setModel(WAbstractItemModel model) setModel()}. The
- * member methods {@link WSuggestionPopup#clearSuggestions() clearSuggestions()}
- * and
+ * model can provide different text for the suggestion text (
+ * {@link ItemDataRole#DisplayRole}) and value ({@link ItemDataRole#UserRole}).
+ * The member methods {@link WSuggestionPopup#clearSuggestions()
+ * clearSuggestions()} and
  * {@link WSuggestionPopup#addSuggestion(CharSequence suggestionText, CharSequence suggestionValue)
  * addSuggestion()} manipulate the model.
  * <p>
- * The popup may support very large datasets, by using server-side filtering of
- * suggestions based on the input. You can enable this feature using
- * {@link WSuggestionPopup#setFilterLength(int length) setFilterLength()} and
- * then listen to a filter notification using the modelFilter() signal. By using
- * {@link WSuggestionPopup#setMaximumSize(WLength width, WLength height)
+ * By default, the popup implements all filtering client-side. To support large
+ * datasets, you may enable server-side filtering of suggestions based on the
+ * input. The server-side filtering provides a coarse filtering using a fixed
+ * size prefix of the entered text, and complements the client-side filtering.
+ * Use {@link WSuggestionPopup#setFilterLength(int length) setFilterLength()}
+ * and then listen to a filter notification using the modelFilter() signal. By
+ * using {@link WSuggestionPopup#setMaximumSize(WLength width, WLength height)
  * setMaximumSize()} you can also limit the maximum height of the popup, in
- * which case scrolling is provided (similar to a combo box).
+ * which case scrolling is supported (similar to a combo-box).
  * <p>
  * The class is initialized with an {@link Options} struct which configures how
  * suggestion filtering and result editing is done. Alternatively, you can
@@ -59,7 +68,7 @@ import eu.webtoolkit.jwt.utils.EnumUtils;
  *      // 1) if suggestion is null, simply return the current text 'value'
  *      // 2) remove markup from the suggestion
  *      // 3) check suggestion if it matches
- *      // 4) add markup to suggestion
+ *      // 4) add markup to suggestion if necessary
  * 
  *      return { match : ...,      // does the suggestion match ? (boolean)
  *               suggestion : ...  // modified suggestion markup
@@ -155,14 +164,53 @@ import eu.webtoolkit.jwt.utils.EnumUtils;
  * 
  * </div>
  * <p>
+ * When using the DropDownIcon trigger, an additional style class is provided
+ * for the edit field: <code>Wt-suggest-dropdown</code>, which renders the icon
+ * to the right inside the edit field. This class may be used to customize how
+ * the drop down icon is rendered.
+ * <p>
  * <p>
  * <i><b>Note: </b>This widget requires JavaScript support. </i>
  * </p>
  */
 public class WSuggestionPopup extends WCompositeWidget {
 	/**
+	 * Enumeration that defines a trigger for showing the popup.
+	 * <p>
+	 * 
+	 * @see WSuggestionPopup#forEdit(WFormWidget edit, EnumSet triggers)
+	 */
+	public enum PopupTrigger {
+		/**
+		 * Shows popup when the user starts editing.
+		 * <p>
+		 * The popup is shown when the currently edited text has a length longer
+		 * than the {@link WSuggestionPopup#setFilterLength(int length) filter
+		 * length}.
+		 */
+		Editing,
+		/**
+		 * Shows popup when user clicks a drop down icon.
+		 * <p>
+		 * The lineedit is modified to show a drop down icon, and clicking the
+		 * icon shows the suggestions, very much like a WComboCox.
+		 */
+		DropDownIcon;
+
+		/**
+		 * Returns the numerical representation of this enum.
+		 */
+		public int getValue() {
+			return ordinal();
+		}
+	}
+
+	/**
 	 * A configuration object to generate a matcher and replacer JavaScript
 	 * function
+	 * <p>
+	 * 
+	 * @see WSuggestionPopup
 	 */
 	public static class Options {
 		/**
@@ -208,43 +256,10 @@ public class WSuggestionPopup extends WCompositeWidget {
 	}
 
 	/**
-	 * Creates a suggestion popup with given matcherJS and replacerJS.
+	 * Creates a suggestion popup.
 	 * <p>
-	 * See supra for the signature of the matcher and replace JavaScript
-	 * functions.
-	 */
-	public WSuggestionPopup(String matcherJS, String replacerJS,
-			WContainerWidget parent) {
-		super(parent);
-		this.impl_ = new WTemplate(new WString("${shadow-x1-x2}${contents}"));
-		this.model_ = null;
-		this.modelColumn_ = 0;
-		this.filterLength_ = 0;
-		this.matcherJS_ = matcherJS;
-		this.replacerJS_ = replacerJS;
-		this.filterModel_ = new Signal1<String>();
-		this.modelConnections_ = new ArrayList<AbstractSignal.Connection>();
-		this.filter_ = new JSignal1<String>(this.impl_, "filter") {
-		};
-		this.editKeyDown_ = new JSlot(parent);
-		this.editKeyUp_ = new JSlot(parent);
-		this.delayHide_ = new JSlot(parent);
-		this.init();
-	}
-
-	/**
-	 * Creates a suggestion popup with given matcherJS and replacerJS.
-	 * <p>
-	 * Calls
-	 * {@link #WSuggestionPopup(String matcherJS, String replacerJS, WContainerWidget parent)
-	 * this(matcherJS, replacerJS, (WContainerWidget)null)}
-	 */
-	public WSuggestionPopup(String matcherJS, String replacerJS) {
-		this(matcherJS, replacerJS, (WContainerWidget) null);
-	}
-
-	/**
-	 * Creates a suggestion popup with given matcher and replacer options.
+	 * The popup using a standard matcher and replacer implementation that is
+	 * configured using the provided <code>options</code>.
 	 * <p>
 	 * 
 	 * @see WSuggestionPopup#generateMatcherJS(WSuggestionPopup.Options options)
@@ -266,12 +281,14 @@ public class WSuggestionPopup extends WCompositeWidget {
 		};
 		this.editKeyDown_ = new JSlot(parent);
 		this.editKeyUp_ = new JSlot(parent);
+		this.editClick_ = new JSlot(parent);
+		this.editMouseMove_ = new JSlot(parent);
 		this.delayHide_ = new JSlot(parent);
 		this.init();
 	}
 
 	/**
-	 * Creates a suggestion popup with given matcher and replacer options.
+	 * Creates a suggestion popup.
 	 * <p>
 	 * Calls
 	 * {@link #WSuggestionPopup(WSuggestionPopup.Options options, WContainerWidget parent)
@@ -282,20 +299,99 @@ public class WSuggestionPopup extends WCompositeWidget {
 	}
 
 	/**
+	 * Creates a suggestion popup with given matcherJS and replacerJS.
+	 * <p>
+	 * See supra for the expected signature of the matcher and replace
+	 * JavaScript functions.
+	 */
+	public WSuggestionPopup(String matcherJS, String replacerJS,
+			WContainerWidget parent) {
+		super(parent);
+		this.impl_ = new WTemplate(new WString("${shadow-x1-x2}${contents}"));
+		this.model_ = null;
+		this.modelColumn_ = 0;
+		this.filterLength_ = 0;
+		this.matcherJS_ = matcherJS;
+		this.replacerJS_ = replacerJS;
+		this.filterModel_ = new Signal1<String>();
+		this.modelConnections_ = new ArrayList<AbstractSignal.Connection>();
+		this.filter_ = new JSignal1<String>(this.impl_, "filter") {
+		};
+		this.editKeyDown_ = new JSlot(parent);
+		this.editKeyUp_ = new JSlot(parent);
+		this.editClick_ = new JSlot(parent);
+		this.editMouseMove_ = new JSlot(parent);
+		this.delayHide_ = new JSlot(parent);
+		this.init();
+	}
+
+	/**
+	 * Creates a suggestion popup with given matcherJS and replacerJS.
+	 * <p>
+	 * Calls
+	 * {@link #WSuggestionPopup(String matcherJS, String replacerJS, WContainerWidget parent)
+	 * this(matcherJS, replacerJS, (WContainerWidget)null)}
+	 */
+	public WSuggestionPopup(String matcherJS, String replacerJS) {
+		this(matcherJS, replacerJS, (WContainerWidget) null);
+	}
+
+	/**
 	 * Lets this suggestion popup assist in editing the given edit field.
 	 * <p>
 	 * A single suggestion popup may assist in several edits by repeated calls
 	 * of this method.
+	 * <p>
+	 * The <code>popupTrigger</code>
 	 */
-	public void forEdit(WFormWidget edit) {
+	public void forEdit(WFormWidget edit,
+			EnumSet<WSuggestionPopup.PopupTrigger> triggers) {
 		edit.keyPressed().addListener(this.editKeyDown_);
 		edit.keyWentDown().addListener(this.editKeyDown_);
 		edit.keyWentUp().addListener(this.editKeyUp_);
 		edit.blurred().addListener(this.delayHide_);
+		if (!EnumUtils.mask(triggers, WSuggestionPopup.PopupTrigger.Editing)
+				.isEmpty()) {
+			edit.addStyleClass("Wt-suggest-onedit");
+		}
+		if (!EnumUtils.mask(triggers,
+				WSuggestionPopup.PopupTrigger.DropDownIcon).isEmpty()) {
+			edit.addStyleClass("Wt-suggest-dropdown");
+			edit.clicked().addListener(this.editClick_);
+			edit.mouseMoved().addListener(this.editMouseMove_);
+		}
+	}
+
+	/**
+	 * Lets this suggestion popup assist in editing the given edit field.
+	 * <p>
+	 * Calls {@link #forEdit(WFormWidget edit, EnumSet triggers) forEdit(edit,
+	 * EnumSet.of(trigger, triggers))}
+	 */
+	public final void forEdit(WFormWidget edit,
+			WSuggestionPopup.PopupTrigger trigger,
+			WSuggestionPopup.PopupTrigger... triggers) {
+		forEdit(edit, EnumSet.of(trigger, triggers));
+	}
+
+	/**
+	 * Lets this suggestion popup assist in editing the given edit field.
+	 * <p>
+	 * Calls {@link #forEdit(WFormWidget edit, EnumSet triggers) forEdit(edit,
+	 * EnumSet.of(WSuggestionPopup.PopupTrigger.Editing))}
+	 */
+	public final void forEdit(WFormWidget edit) {
+		forEdit(edit, EnumSet.of(WSuggestionPopup.PopupTrigger.Editing));
 	}
 
 	/**
 	 * Clears the list of suggestions.
+	 * <p>
+	 * This clears the underlying model.
+	 * <p>
+	 * 
+	 * @see WSuggestionPopup#addSuggestion(CharSequence suggestionText,
+	 *      CharSequence suggestionValue)
 	 */
 	public void clearSuggestions() {
 		this.model_.removeRows(0, this.model_.getRowCount());
@@ -303,6 +399,15 @@ public class WSuggestionPopup extends WCompositeWidget {
 
 	/**
 	 * Adds a new suggestion.
+	 * <p>
+	 * This adds an entry to the underlying model. The
+	 * <code>suggestionText</code> is set as {@link ItemDataRole#DisplayRole}
+	 * and the <code>suggestionValue</code> (which is inserted into the edit
+	 * field on selection) is set as {@link ItemDataRole#UserRole}.
+	 * <p>
+	 * 
+	 * @see WSuggestionPopup#clearSuggestions()
+	 * @see WSuggestionPopup#setModel(WAbstractItemModel model)
 	 */
 	public void addSuggestion(CharSequence suggestionText,
 			CharSequence suggestionValue) {
@@ -404,7 +509,10 @@ public class WSuggestionPopup extends WCompositeWidget {
 	}
 
 	/**
-	 * Creates a matcher JavaScript function based on some generic options.
+	 * Creates a standard matcher JavaScript function.
+	 * <p>
+	 * This returns a JavaScript function that provides a standard
+	 * implementation for the matching input, based on the given <code></code> .
 	 */
 	public static String generateMatcherJS(WSuggestionPopup.Options options) {
 		return ""
@@ -425,7 +533,10 @@ public class WSuggestionPopup extends WCompositeWidget {
 	}
 
 	/**
-	 * Creates a replacer JavaScript function based on some generic options.
+	 * Creates a standard replacer JavaScript function.
+	 * <p>
+	 * This returns a JavaScript function that provides a standard
+	 * implementation for the matching input, based on the given <code></code> .
 	 */
 	public static String generateReplacerJS(WSuggestionPopup.Options options) {
 		return ""
@@ -472,8 +583,14 @@ public class WSuggestionPopup extends WCompositeWidget {
 	/**
 	 * Signal that indicates that the model should be filtered.
 	 * <p>
-	 * The argument is the initial input, whose length equals the
-	 * {@link WSuggestionPopup#getFilterLength() getFilterLength()}.
+	 * The argument is the initial input. When
+	 * {@link WSuggestionPopup.PopupTrigger#Editing Editing} is used as edit
+	 * trigger, its length will always equal the
+	 * {@link WSuggestionPopup#getFilterLength() getFilterLength()}. When
+	 * {@link WSuggestionPopup.PopupTrigger#DropDownIcon DropDownIcon} is used
+	 * as edit trigger, the input length may be less than
+	 * {@link WSuggestionPopup#getFilterLength() getFilterLength()}, and the the
+	 * signal will be called repeatedly as the user provides more input.
 	 * <p>
 	 * For example, if you are using a {@link WSortFilterProxyModel}, you could
 	 * react to this signal with:
@@ -508,6 +625,8 @@ public class WSuggestionPopup extends WCompositeWidget {
 	private JSignal1<String> filter_;
 	private JSlot editKeyDown_;
 	private JSlot editKeyUp_;
+	private JSlot editClick_;
+	private JSlot editMouseMove_;
 	private JSlot delayHide_;
 
 	private void init() {
@@ -522,6 +641,8 @@ public class WSuggestionPopup extends WCompositeWidget {
 		this.setJavaScript(this.editKeyDown_, "editKeyDown");
 		this.setJavaScript(this.editKeyUp_, "editKeyUp");
 		this.setJavaScript(this.delayHide_, "delayHide");
+		this.setJavaScript(this.editClick_, "editClick");
+		this.setJavaScript(this.editMouseMove_, "editMouseMove");
 		this.hide();
 		this.setModel(new WStringListModel(this));
 		this.filter_.addListener(this, new Signal1.Listener<String>() {
@@ -540,8 +661,9 @@ public class WSuggestionPopup extends WCompositeWidget {
 	}
 
 	private void setJavaScript(JSlot slot, String methodName) {
-		String jsFunction = "function(obj, event) {jQuery.data("
-				+ this.getJsRef() + ", 'obj')." + methodName + "(obj, event);}";
+		String jsFunction = "function(obj, event) {var o = jQuery.data("
+				+ this.getJsRef() + ", 'obj');if (o) o." + methodName
+				+ "(obj, event);}";
 		slot.setJavaScript(jsFunction);
 	}
 
@@ -615,7 +737,7 @@ public class WSuggestionPopup extends WCompositeWidget {
 			app.doJavaScript(wtjs1(app), false);
 			app.setJavaScriptLoaded(THIS_JS);
 		}
-		app.doJavaScript("new Wt3_1_3.WSuggestionPopup("
+		app.doJavaScript("new Wt3_1_4.WSuggestionPopup("
 				+ app.getJavaScriptClass() + "," + this.getJsRef() + ","
 				+ this.replacerJS_ + "," + this.matcherJS_ + ","
 				+ String.valueOf(this.filterLength_) + ");");
@@ -629,7 +751,7 @@ public class WSuggestionPopup extends WCompositeWidget {
 	}
 
 	static String wtjs1(WApplication app) {
-		return "Wt3_1_3.WSuggestionPopup = function(o,e,v,w,l){function p(){return e.style.display!=\"none\"}function k(){e.style.display=\"none\"}function x(b){f.positionAtWidget(e.id,b.id,f.Vertical)}function y(b){b=b||window.event;b=b.target||b.srcElement;if(b.className!=\"content\"){if(!f.hasTag(b,\"DIV\"))b=b.parentNode;q(b)}}function q(b){var a=b.firstChild;b=f.getElement(m);var g=a.innerHTML;a=a.getAttribute(\"sug\");b.focus();v(b,g,a);k()}document.body.appendChild(e);jQuery.data(e,\"obj\",this);var n= this,f=o.WT,i=null,m=null,r=false,s=null,t=null;this.showPopup=function(){e.style.display=\"\";i=null};this.editKeyDown=function(b,a){m=b.id;var g=i?f.getElement(i):null;if(p()&&g)if(a.keyCode==13||a.keyCode==9){q(g);f.cancelEvent(a);setTimeout(function(){b.focus()},0);return false}else if(a.keyCode==40||a.keyCode==38||a.keyCode==34||a.keyCode==33){if(a.type.toUpperCase()==\"KEYDOWN\"){r=true;f.cancelEvent(a,f.CancelDefaultAction)}if(a.type.toUpperCase()==\"KEYPRESS\"&&r==true){f.cancelEvent(a);return false}var c= g,h=g,j=a.keyCode==40||a.keyCode==34;a=a.keyCode==34||a.keyCode==33?e.clientHeight/g.offsetHeight:1;var d;for(d=0;c&&d<a;++d){for(c=j?c.nextSibling:c.previousSibling;c&&c.nodeName.toUpperCase()==\"DIV\"&&c.style.display==\"none\";c=j?c.nextSibling:c.previousSibling)h=c;h=c||h}if(h&&h.nodeName.toUpperCase()==\"DIV\"){g.className=null;h.className=\"sel\";i=h.id}return false}return a.keyCode!=13&&a.keyCode!=9};this.filtered=function(b){s=b;n.refilter()};this.refilter=function(){var b=i?f.getElement(i):null, a=f.getElement(m),g=w(a);if(l){var c=g(null);if(c.length<l){k();return}else{c=c.substring(0,l);if(c!=s){k();if(c!=t){t=c;o.emit(e,\"filter\",c)}return}}}c=null;for(var h=e.lastChild.childNodes,j=0;j<h.length;j++){var d=h[j];if(d.nodeName.toUpperCase()==\"DIV\"){if(d.orig==null)d.orig=d.firstChild.innerHTML;else d.firstChild.innerHTML=d.orig;var u=g(d.firstChild.innerHTML);d.firstChild.innerHTML=u.suggestion;if(u.match){d.style.display=\"\";if(c==null)c=d}else d.style.display=\"none\";d.className=null}}if(c== null)k();else{if(!p()){x(a);n.showPopup();b=null}if(!b||b.style.display==\"none\"){i=c.id;b=c;b.parentNode.scrollTop=0}b.className=\"sel\";a=b.parentNode;if(b.offsetTop+b.offsetHeight>a.scrollTop+a.clientHeight)b.scrollIntoView(false);else b.offsetTop<a.scrollTop&&b.scrollIntoView(true)}};this.editKeyUp=function(b,a){if(!((a.keyCode==13||a.keyCode==9)&&e.style.display==\"none\"))if(a.keyCode==27||a.keyCode==37||a.keyCode==39){e.style.display=\"none\";a.keyCode==27&&b.blur()}else n.refilter()};e.lastChild.onclick= y;this.delayHide=function(){setTimeout(function(){e&&k()},300)}};";
+		return "Wt3_1_4.WSuggestionPopup = function(q,d,w,x,p){function r(){return d.style.display!=\"none\"}function m(){d.style.display=\"none\"}function y(a){c.positionAtWidget(d.id,a.id,c.Vertical)}function z(a){a=a||window.event;a=a.target||a.srcElement;if(a.className!=\"content\"){if(!c.hasTag(a,\"DIV\"))a=a.parentNode;s(a)}}function s(a){var b=a.firstChild;a=c.getElement(h);var i=b.innerHTML;b=b.getAttribute(\"sug\");a.focus();w(a,i,b);m();h=null}function A(a,b){for(a=b?a.nextSibling:a.previousSibling;a;a= b?a.nextSibling:a.previousSibling)if(c.hasTag(a,\"DIV\"))if(a.style.display!=\"none\")return a;return null}document.body.appendChild(d);jQuery.data(d,\"obj\",this);var o=this,c=q.WT,l=null,h=null,t=false,u=null,v=null;this.showPopup=function(){d.style.display=\"\";l=null};this.editMouseMove=function(a,b){a.style.cursor=c.widgetCoordinates(a,b).x>a.offsetWidth-16?\"default\":\"\"};this.editClick=function(a,b){if(b.clientX>a.offsetWidth-16){h=a.id;o.refilter()}};this.editKeyDown=function(a,b){if(h!=a.id)if($(a).hasClass(\"Wt-suggest-onedit\"))h= a.id;else if($(a).hasClass(\"Wt-suggest-dropdown\")&&b.keyCode==40)h=a.id;else{h=null;return}var i=l?c.getElement(l):null;if(r()&&i)if(b.keyCode==13||b.keyCode==9){s(i);c.cancelEvent(b);setTimeout(function(){a.focus()},0);return false}else if(b.keyCode==40||b.keyCode==38||b.keyCode==34||b.keyCode==33){if(b.type.toUpperCase()==\"KEYDOWN\"){t=true;c.cancelEvent(b,c.CancelDefaultAction)}if(b.type.toUpperCase()==\"KEYPRESS\"&&t==true){c.cancelEvent(b);return false}var e=i,j=b.keyCode==40||b.keyCode==34;b=b.keyCode== 34||b.keyCode==33?d.clientHeight/i.offsetHeight:1;var g;for(g=0;e&&g<b;++g){var k=A(e,j);if(!k)break;e=k}if(e&&c.hasTag(e,\"DIV\")){i.className=null;e.className=\"sel\";l=e.id}return false}return b.keyCode!=13&&b.keyCode!=9};this.filtered=function(a){u=a;o.refilter()};this.refilter=function(){var a=l?c.getElement(l):null,b=c.getElement(h),i=x(b),e=!$(b).hasClass(\"Wt-suggest-dropdown\"),j=d.lastChild.childNodes,g=i(null);if(p)if(e&&g.length<p){m();return}else{j=g.substring(0,p);if(j!=u){if(j!=v){v=j;q.emit(d, \"filter\",j)}if(e){m();return}}}var k=null;j=d.lastChild.childNodes;e=!e&&g.length==0;for(g=0;g<j.length;g++){var f=j[g];if(c.hasTag(f,\"DIV\")){if(f.orig==null)f.orig=f.firstChild.innerHTML;else f.firstChild.innerHTML=f.orig;var n=e;if(!e){n=i(f.firstChild.innerHTML);f.firstChild.innerHTML=n.suggestion;n=n.match}if(n){f.style.display=\"\";if(k==null)k=f}else f.style.display=\"none\";f.className=null}}if(k==null)m();else{if(!r()){y(b);o.showPopup();a=null}if(!a||a.style.display==\"none\"){l=k.id;a=k;a.parentNode.scrollTop= 0}a.className=\"sel\";b=a.parentNode;if(a.offsetTop+a.offsetHeight>b.scrollTop+b.clientHeight)a.scrollIntoView(false);else a.offsetTop<b.scrollTop&&a.scrollIntoView(true)}};this.editKeyUp=function(a,b){if(h!=null)if(!((b.keyCode==13||b.keyCode==9)&&d.style.display==\"none\"))if(b.keyCode==27||b.keyCode==37||b.keyCode==39){d.style.display=\"none\";if(b.keyCode==27){h=null;a.blur()}}else o.refilter()};d.lastChild.onclick=z;this.delayHide=function(){setTimeout(function(){d&&m()},300)}};";
 	}
 
 	static String generateParseEditJS(WSuggestionPopup.Options options) {

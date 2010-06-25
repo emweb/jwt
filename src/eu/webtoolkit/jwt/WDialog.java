@@ -166,7 +166,7 @@ public class WDialog extends WCompositeWidget {
 			app.doJavaScript(wtjs1(app), false);
 			app.setJavaScriptLoaded(THIS_JS);
 		}
-		this.setJavaScriptMember("_a", "0;new Wt3_1_3.WDialog("
+		this.setJavaScriptMember("_a", "0;new Wt3_1_4.WDialog("
 				+ app.getJavaScriptClass() + "," + this.getJsRef() + ")");
 		app.addAutoJavaScript("{var obj = $('#" + this.getId()
 				+ "').data('obj');if (obj) obj.centerDialog();}");
@@ -425,6 +425,6 @@ public class WDialog extends WCompositeWidget {
 	}
 
 	static String wtjs1(WApplication app) {
-		return "Wt3_1_3.WDialog = function(j,b){function k(a){a=c.pageCoordinates(a||window.event);h=true;b.style.left=c.pxself(b,\"left\")+a.x-f+\"px\";b.style.top=c.pxself(b,\"top\")+a.y-g+\"px\";f=a.x;g=a.y}jQuery.data(b,\"obj\",this);var d=$(b).find(\".titlebar\").first().get(0),c=j.WT,f,g,h=false;if(d){d.onmousedown=function(a){a=a||window.event;c.capture(d);a=c.pageCoordinates(a);f=a.x;g=a.y;d.onmousemove=k};d.onmouseup=function(){d.onmousemove=null;c.capture(null)}}this.centerDialog=function(){if(b.parentNode== null){b=d=null;this.centerDialog=function(){}}else if(b.style.display!=\"none\"){if(!h){var a=c.windowSize();b.style.left=Math.round((a.x-b.clientWidth)/2+(c.isIE6?document.documentElement.scrollLeft:0))+\"px\";b.style.top=Math.round((a.y-b.clientHeight)/2+(c.isIE6?document.documentElement.scrollTop:0))+\"px\";b.style.marginLeft=\"0px\";b.style.marginTop=\"0px\"}b.style.visibility=\"visible\"}};this.wtResize=function(a,i,e){e-=2;i-=2;a.style.height=e+\"px\";a.style.width=i+\"px\";a=a.lastChild;e-=a.previousSibling.offsetHeight+ 8;if(e>0)a.style.height=e+\"px\"}};";
+		return "Wt3_1_4.WDialog = function(g,b){function k(a){a=c.pageCoordinates(a||window.event);j=true;b.style.left=c.pxself(b,\"left\")+a.x-h+\"px\";b.style.top=c.pxself(b,\"top\")+a.y-i+\"px\";h=a.x;i=a.y}jQuery.data(b,\"obj\",this);var l=this,e=$(b).find(\".titlebar\").first().get(0),c=g.WT,h,i,j=false;if(e){e.onmousedown=function(a){a=a||window.event;c.capture(e);a=c.pageCoordinates(a);h=a.x;i=a.y;e.onmousemove=k};e.onmouseup=function(){e.onmousemove=null;c.capture(null)}}this.centerDialog=function(){if(b.parentNode== null){b=e=null;this.centerDialog=function(){}}else if(b.style.display!=\"none\"){if(!j){var a=c.windowSize(),f=b.offsetWidth,d=b.offsetHeight;b.style.left=Math.round((a.x-f)/2+(c.isIE6?document.documentElement.scrollLeft:0))+\"px\";b.style.top=Math.round((a.y-d)/2+(c.isIE6?document.documentElement.scrollTop:0))+\"px\";b.style.marginLeft=\"0px\";b.style.marginTop=\"0px\";b.style.width!=null&&b.style.height!=null&&l.wtResize(b,f,d)}b.style.visibility=\"visible\"}};this.wtResize=function(a,f,d){d-=2;f-=2;a.style.height= d+\"px\";a.style.width=f+\"px\";a=a.lastChild;d-=a.previousSibling.offsetHeight+8;if(d>0){a.style.height=d+\"px\";g.layoutsAdjust&&g.layoutsAdjust()}}};";
 	}
 }

@@ -517,11 +517,7 @@ public class WStandardItem {
 	 */
 	public void setData(Object d, int role) {
 		if (role == ItemDataRole.EditRole) {
-			if ((d == null)) {
-				return;
-			} else {
-				role = ItemDataRole.DisplayRole;
-			}
+			role = ItemDataRole.DisplayRole;
 		}
 		this.data_.put(role, d);
 		if (this.model_ != null) {

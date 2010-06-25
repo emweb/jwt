@@ -812,10 +812,16 @@ public class WContainerWidget extends WInteractWidget {
 					AlignmentFlag.AlignVerticalMask).isEmpty();
 			DomElement c = this.getLayoutImpl().createDomElement(fitWidth,
 					fitHeight, app);
-			if (this.getPositionScheme() == PositionScheme.Relative) {
+			if (this.getPositionScheme() == PositionScheme.Relative
+					|| this.getPositionScheme() == PositionScheme.Absolute) {
 				c.setProperty(Property.PropertyStylePosition, "absolute");
 				c.setProperty(Property.PropertyStyleLeft, "0");
 				c.setProperty(Property.PropertyStyleRight, "0");
+			} else {
+				if (app.getEnvironment().agentIsIE()) {
+					parent.setProperty(Property.PropertyStylePosition,
+							"relative");
+				}
 			}
 			switch (EnumUtils.enumFromSet(EnumUtils.mask(
 					this.contentAlignment_, AlignmentFlag.AlignHorizontalMask))) {
@@ -1019,6 +1025,11 @@ public class WContainerWidget extends WInteractWidget {
 			element.setProperty(Property.PropertyStyleOverflowX,
 					cssText[this.overflow_[0].getValue()]);
 			this.flags_.clear(BIT_OVERFLOW_CHANGED);
+			WApplication app = WApplication.getInstance();
+			if (app.getEnvironment().agentIsIE()
+					&& (this.overflow_[0] == WContainerWidget.Overflow.OverflowAuto || this.overflow_[0] == WContainerWidget.Overflow.OverflowScroll)) {
+				element.setProperty(Property.PropertyStylePosition, "relative");
+			}
 		}
 	}
 

@@ -140,8 +140,11 @@ public class WTextArea extends WFormWidget {
 		this.contentChanged_ = true;
 		this.repaint(EnumSet.of(RepaintFlag.RepaintInnerHtml));
 		if (this.getValidator() != null) {
-			this.setStyleClass(this.validate() == WValidator.State.Valid ? ""
-					: "Wt-invalid");
+			if (this.validate() == WValidator.State.Valid) {
+				this.removeStyleClass("Wt-invalid", true);
+			} else {
+				this.addStyleClass("Wt-invalid", true);
+			}
 		}
 		this.updateEmptyText();
 	}

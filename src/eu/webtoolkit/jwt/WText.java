@@ -65,6 +65,8 @@ public class WText extends WInteractWidget {
 		this.wordWrap_ = true;
 		this.textChanged_ = false;
 		this.wordWrapChanged_ = false;
+		this.paddingsChanged_ = false;
+		this.padding_ = null;
 		;
 	}
 
@@ -102,6 +104,8 @@ public class WText extends WInteractWidget {
 		this.wordWrap_ = true;
 		this.textChanged_ = false;
 		this.wordWrapChanged_ = false;
+		this.paddingsChanged_ = false;
+		this.padding_ = null;
 		;
 		this.setText(text);
 	}
@@ -140,6 +144,8 @@ public class WText extends WInteractWidget {
 		this.wordWrap_ = true;
 		this.textChanged_ = false;
 		this.wordWrapChanged_ = false;
+		this.paddingsChanged_ = false;
+		this.padding_ = null;
 		;
 		this.setText(text);
 	}
@@ -153,6 +159,14 @@ public class WText extends WInteractWidget {
 	 */
 	public WText(CharSequence text, TextFormat format) {
 		this(text, format, (WContainerWidget) null);
+	}
+
+	/**
+	 * Destructor.
+	 */
+	public void remove() {
+		;
+		super.remove();
 	}
 
 	/**
@@ -274,6 +288,78 @@ public class WText extends WInteractWidget {
 		return this.wordWrap_;
 	}
 
+	/**
+	 * Sets padding inside the widget.
+	 * <p>
+	 * Setting padding has the effect of adding distance between the widget
+	 * children and the border, for a {@link WText} padding is only supported on
+	 * the left and/or right.
+	 */
+	public void setPadding(WLength length, EnumSet<Side> sides) {
+		if (!(this.padding_ != null)) {
+			this.padding_ = new WLength[2];
+			this.padding_[0] = this.padding_[1] = WLength.Auto;
+		}
+		if (sides.contains(Side.Right)) {
+			this.padding_[0] = length;
+		}
+		if (sides.contains(Side.Left)) {
+			this.padding_[1] = length;
+		}
+		if (sides.contains(Side.Top)) {
+			throw new WtException("WText::padding on Top is not supported.");
+		}
+		if (sides.contains(Side.Bottom)) {
+			throw new WtException("WText::padding on Bottom is not supported.");
+		}
+		this.paddingsChanged_ = true;
+		this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyAttribute));
+	}
+
+	/**
+	 * Sets padding inside the widget.
+	 * <p>
+	 * Calls {@link #setPadding(WLength length, EnumSet sides)
+	 * setPadding(length, EnumSet.of(side, sides))}
+	 */
+	public final void setPadding(WLength length, Side side, Side... sides) {
+		setPadding(length, EnumSet.of(side, sides));
+	}
+
+	/**
+	 * Sets padding inside the widget.
+	 * <p>
+	 * Calls {@link #setPadding(WLength length, EnumSet sides)
+	 * setPadding(length, EnumSet.of (Side.Left, Side.Right))}
+	 */
+	public final void setPadding(WLength length) {
+		setPadding(length, EnumSet.of(Side.Left, Side.Right));
+	}
+
+	/**
+	 * Returns the padding set for the widget.
+	 * <p>
+	 * 
+	 * @see WText#setPadding(WLength length, EnumSet sides)
+	 */
+	public WLength getPadding(Side side) {
+		if (!(this.padding_ != null)) {
+			return WLength.Auto;
+		}
+		switch (side) {
+		case Top:
+			throw new WtException("WText::padding on Top is not supported.");
+		case Right:
+			return this.padding_[1];
+		case Bottom:
+			throw new WtException("WText::padding on Bottom is not supported.");
+		case Left:
+			return this.padding_[3];
+		default:
+			throw new WtException("WText::padding(Side) with invalid side.");
+		}
+	}
+
 	public void refresh() {
 		if (this.text_.refresh()) {
 			this.textChanged_ = true;
@@ -288,6 +374,7 @@ public class WText extends WInteractWidget {
 	private boolean wordWrap_;
 	private boolean textChanged_;
 	private boolean wordWrapChanged_;
+	private boolean paddingsChanged_;
 
 	private boolean isCheckWellFormed() {
 		if (this.textFormat_ == TextFormat.XHTMLText && this.text_.isLiteral()) {
@@ -317,6 +404,8 @@ public class WText extends WInteractWidget {
 		}
 	}
 
+	private WLength[] padding_;
+
 	void updateDom(DomElement element, boolean all) {
 		if (this.textChanged_ || all) {
 			String text = this.getFormattedText();
@@ -332,6 +421,14 @@ public class WText extends WInteractWidget {
 						this.wordWrap_ ? "normal" : "nowrap");
 			}
 			this.wordWrapChanged_ = false;
+		}
+		if (this.paddingsChanged_ || all && this.padding_ != null
+				&& !(this.padding_[0].isAuto() && this.padding_[1].isAuto())) {
+			element.setProperty(Property.PropertyStylePaddingRight,
+					this.padding_[0].getCssText());
+			element.setProperty(Property.PropertyStylePaddingLeft,
+					this.padding_[1].getCssText());
+			this.paddingsChanged_ = false;
 		}
 		super.updateDom(element, all);
 	}

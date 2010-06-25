@@ -149,6 +149,26 @@ public class WBorderLayout extends WLayout {
 		this((WWidget) null);
 	}
 
+	/**
+	 * Sets spacing between each item.
+	 * <p>
+	 * The default spacing is 6 pixels.
+	 */
+	public void setSpacing(int size) {
+		this.grid_.horizontalSpacing_ = size;
+		this.grid_.verticalSpacing_ = size;
+	}
+
+	/**
+	 * Returns the spacing between each item.
+	 * <p>
+	 * 
+	 * @see WBorderLayout#setSpacing(int size)
+	 */
+	public int getSpacing() {
+		return this.grid_.horizontalSpacing_;
+	}
+
 	public void addItem(WLayoutItem item) {
 		this.add(item, WBorderLayout.Position.Center);
 	}

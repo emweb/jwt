@@ -68,4 +68,8 @@ class WWidgetCanvasPainter extends WWidgetPainter {
 		canvasDevice.render('c' + this.widget_.getId(), el);
 		result.add(el);
 	}
+
+	public WWidgetPainter.RenderType getRenderType() {
+		return WWidgetPainter.RenderType.HtmlCanvas;
+	}
 }

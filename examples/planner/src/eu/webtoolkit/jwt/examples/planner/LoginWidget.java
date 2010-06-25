@@ -58,7 +58,7 @@ public class LoginWidget extends WContainerWidget {
 		 });
 		 
 		 //construct the captcha widget
-		 captcha = new ShapesCaptchaWidget(this, 150, 70);
+		 captcha = new ShapesCaptchaWidget(150, 70, this);
 		 captcha.completed().addListener(this, new Signal.Listener(){
 			public void trigger() {
 				if (userNameEdit.validate() != State.Valid) {

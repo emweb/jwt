@@ -6,11 +6,8 @@
 package eu.webtoolkit.jwt;
 
 import java.text.DecimalFormat;
-
-import eu.webtoolkit.jwt.MatchOptions;
-import eu.webtoolkit.jwt.WDate;
-import eu.webtoolkit.jwt.WString;
-import eu.webtoolkit.jwt.WtException;
+import java.util.ArrayList;
+import java.util.Set;
 
 /**
  * String utility class.
@@ -242,6 +239,12 @@ public class StringUtils {
 		    	  sout.append(c);
 		      else 
 		    	  sout.append(0xFFFD);
+		}
+	}
+	
+	static void split(Set<String> tokens, String in, String sep, boolean compress_adjacent_tokens) {
+		for (String token : in.split(sep)) {
+			tokens.add(token);
 		}
 	}
 }

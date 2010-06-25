@@ -51,4 +51,8 @@ class WWidgetRasterPainter extends WWidgetPainter {
 		img.setAttribute("src", rasterDevice.generateUrl());
 		result.add(img);
 	}
+
+	public WWidgetPainter.RenderType getRenderType() {
+		return WWidgetPainter.RenderType.PngImage;
+	}
 }

@@ -167,7 +167,7 @@ public class WDataSeries {
 	 * 
 	 * @see WCartesianChart#setBarMargin(double margin)
 	 */
-	public void setBarWidth(double width) {
+	public void setBarWidth(final double width) {
 		this.barWidth_ = width;
 	}
 
@@ -175,7 +175,7 @@ public class WDataSeries {
 	 * Returns the bar width.
 	 * <p>
 	 * 
-	 * @see WDataSeries#setBarWidth(double width)
+	 * @see WDataSeries#setBarWidth(final double width)
 	 */
 	public double getBarWidth() {
 		return this.barWidth_;

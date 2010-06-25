@@ -5,7 +5,6 @@
  */
 package eu.webtoolkit.jwt;
 
-import java.io.StringWriter;
 import java.util.EnumSet;
 
 /**
@@ -381,13 +380,42 @@ public class WFont {
 		return this.fixedSize_;
 	}
 
-	String getCssText() {
-		StringWriter result = new StringWriter();
-		result.append(this.cssVariant(false)).append(' ').append(
-				this.cssStyle(false)).append(' ').append(this.cssWeight(false))
-				.append(' ').append(this.cssSize(true)).append(' ').append(
-						this.cssFamily(true));
+	public String cssText(boolean combined) {
+		StringBuilder result = new StringBuilder();
+		if (combined) {
+			result.append(this.cssStyle(false)).append(' ').append(
+					this.cssVariant(false)).append(' ').append(
+					this.cssWeight(false)).append(' ').append(
+					this.cssSize(true)).append(' ')
+					.append(this.cssFamily(true));
+		} else {
+			String s = "";
+			s = this.cssFamily(false);
+			if (s.length() != 0) {
+				result.append("font-family: ").append(s).append(";");
+			}
+			s = this.cssSize(false);
+			if (s.length() != 0) {
+				result.append("font-size: ").append(s).append(";");
+			}
+			s = this.cssStyle(false);
+			if (s.length() != 0) {
+				result.append("font-style: ").append(s).append(";");
+			}
+			s = this.cssVariant(false);
+			if (s.length() != 0) {
+				result.append("font-variant: ").append(s).append(";");
+			}
+			s = this.cssWeight(false);
+			if (s.length() != 0) {
+				result.append("font-weight: ").append(s).append(";");
+			}
+		}
 		return result.toString();
+	}
+
+	public final String cssText() {
+		return cssText(true);
 	}
 
 	public void updateDomElement(DomElement element, boolean fontall,

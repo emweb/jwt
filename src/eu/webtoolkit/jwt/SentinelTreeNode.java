@@ -10,7 +10,7 @@ class SentinelTreeNode extends WTreeNode {
 	public SentinelTreeNode(WTree tree) {
 		super("");
 		this.tree_ = tree;
-		this.setStyleClass("Wt-tree Wt-sentinel");
+		this.addStyleClass("Wt-sentinel");
 		this.setNodeVisible(false);
 		this.expand();
 		if (WApplication.getInstance().getEnvironment().agentIsIE()) {

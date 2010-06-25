@@ -1445,6 +1445,12 @@ public abstract class WAbstractItemModel extends WObject {
 
 	private static void copyData(WAbstractItemModel source, WModelIndex sIndex,
 			WAbstractItemModel destination, WModelIndex dIndex) {
+		SortedMap<Integer, Object> values = destination.getItemData(dIndex);
+		for (Iterator<Map.Entry<Integer, Object>> i_it = values.entrySet()
+				.iterator(); i_it.hasNext();) {
+			Map.Entry<Integer, Object> i = i_it.next();
+			destination.setData(dIndex, null, i.getKey());
+		}
 		destination.setItemData(dIndex, source.getItemData(sIndex));
 	}
 

@@ -118,10 +118,13 @@ public abstract class WFormWidget extends WInteractWidget {
 		if (this.validator_ != null) {
 			this.validator_.addFormWidget(this);
 			this.validatorChanged();
-			this.setStyleClass(this.validate() == WValidator.State.Valid ? ""
-					: "Wt-invalid");
+			if (this.validate() == WValidator.State.Valid) {
+				this.removeStyleClass("Wt-invalid", true);
+			} else {
+				this.addStyleClass("Wt-invalid", true);
+			}
 		} else {
-			this.setStyleClass("");
+			this.removeStyleClass("Wt-invalid", true);
 			;
 			this.validateJs_ = null;
 			;
@@ -344,7 +347,7 @@ public abstract class WFormWidget extends WInteractWidget {
 			this.validateJs_
 					.setJavaScript("function(self, event) {var v="
 							+ validateJS
-							+ ";self.className= v.valid ? '' : 'Wt-invalid';if (v.valid) self.removeAttribute('title');else self.setAttribute('title', v.message);}");
+							+ ";if (v.valid) {self.removeAttribute('title');$(self).removeClass('Wt-invalid');} else {self.setAttribute('title', v.message);$(self).addClass('Wt-invalid');}}");
 		} else {
 			;
 			this.validateJs_ = null;
@@ -359,7 +362,7 @@ public abstract class WFormWidget extends WInteractWidget {
 			this.filterInput_
 					.setJavaScript("function(self,e){var c=String.fromCharCode((typeof e.charCode!=='undefined') ?e.charCode : e.keyCode);if(/"
 							+ inputFilter
-							+ "/.test(c))return true;else Wt3_1_3.cancelEvent(e);}");
+							+ "/.test(c))return true;else Wt3_1_4.cancelEvent(e);}");
 		} else {
 			;
 			this.filterInput_ = null;
@@ -423,7 +426,7 @@ public abstract class WFormWidget extends WInteractWidget {
 			WApplication app = WApplication.getInstance();
 			WEnvironment env = app.getEnvironment();
 			if (env.hasAjax()) {
-				app.doJavaScript("new Wt3_1_3.WFormWidget("
+				app.doJavaScript("new Wt3_1_4.WFormWidget("
 						+ app.getJavaScriptClass() + "," + this.getJsRef()
 						+ "," + "'" + this.emptyText_.toString() + "');");
 			}
@@ -442,7 +445,7 @@ public abstract class WFormWidget extends WInteractWidget {
 	}
 
 	static String wtjs1(WApplication app) {
-		return "Wt3_1_3.WFormWidget = function(b,a,c){jQuery.data(a,\"obj\",this);var d=b.WT;this.updateEmptyText=function(){if(d.hasFocus(a)){if($(a).hasClass(\"Wt-edit-emptyText\")){$(a).removeClass(\"Wt-edit-emptyText\");a.value=\"\"}}else if(a.value==\"\"){$(a).addClass(\"Wt-edit-emptyText\");a.value=c}};this.updateEmptyText()};";
+		return "Wt3_1_4.WFormWidget = function(b,a,c){jQuery.data(a,\"obj\",this);var d=b.WT;this.updateEmptyText=function(){if(d.hasFocus(a)){if($(a).hasClass(\"Wt-edit-emptyText\")){$(a).removeClass(\"Wt-edit-emptyText\");a.value=\"\"}}else if(a.value==\"\"){$(a).addClass(\"Wt-edit-emptyText\");a.value=c}};this.updateEmptyText()};";
 	}
 
 	static String CHANGE_SIGNAL = "M_change";
