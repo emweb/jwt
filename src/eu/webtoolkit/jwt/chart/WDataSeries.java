@@ -175,7 +175,7 @@ public class WDataSeries {
 	 * Returns the bar width.
 	 * <p>
 	 * 
-	 * @see WDataSeries#setBarWidth(final double width)
+	 * @see WDataSeries#setBarWidth(double width)
 	 */
 	public double getBarWidth() {
 		return this.barWidth_;

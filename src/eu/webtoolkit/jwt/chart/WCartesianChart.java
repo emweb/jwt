@@ -678,8 +678,8 @@ public class WCartesianChart extends WAbstractChart {
 	/**
 	 * Creates a widget which renders the a legend item.
 	 * <p>
-	 * The legend item widget will contain a text and a Wt::WPaintedWidget which
-	 * draws the series&apos; symbol.
+	 * The legend item widget will contain a text and a {@link WPaintedWidget}
+	 * which draws the series&apos; symbol.
 	 */
 	public WWidget createLegendItemWidget(int index) {
 		WContainerWidget legendItem = new WContainerWidget();
