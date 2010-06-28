@@ -332,7 +332,7 @@ public class WVmlImage implements WVectorImage {
 		WFont textFont = this.getPainter().getFont();
 		textFont.setSize(textFont.getSize(), WLength.multiply(textFont
 				.getFixedSize(), app.getEnvironment().getDpiScale()));
-		render.append(";font:").append(textFont.cssText()).append(
+		render.append(";font:").append(textFont.getCssText()).append(
 				"\"/></v:shape>");
 		if (!((this.getPainter().getRenderHints() & WPainter.RenderHint.LowQualityShadows
 				.getValue()) != 0)

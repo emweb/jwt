@@ -380,7 +380,7 @@ public class WFont {
 		return this.fixedSize_;
 	}
 
-	public String cssText(boolean combined) {
+	String getCssText(boolean combined) {
 		StringBuilder result = new StringBuilder();
 		if (combined) {
 			result.append(this.cssStyle(false)).append(' ').append(
@@ -414,8 +414,8 @@ public class WFont {
 		return result.toString();
 	}
 
-	public final String cssText() {
-		return cssText(true);
+	final String getCssText() {
+		return getCssText(true);
 	}
 
 	public void updateDomElement(DomElement element, boolean fontall,

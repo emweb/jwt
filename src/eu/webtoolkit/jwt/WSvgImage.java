@@ -566,7 +566,7 @@ public class WSvgImage extends WResource implements WVectorImage {
 	}
 
 	private String getFontStyle() {
-		return this.getPainter().getFont().cssText(false);
+		return this.getPainter().getFont().getCssText(false);
 	}
 
 	private String getClipPath() {

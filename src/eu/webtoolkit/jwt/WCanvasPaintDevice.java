@@ -723,11 +723,11 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 			switch (this.textMethod_) {
 			case Html5Text:
 				this.js_.append("ctx.font='").append(
-						this.getPainter().getFont().cssText()).append("';");
+						this.getPainter().getFont().getCssText()).append("';");
 				break;
 			case MozText:
 				this.js_.append("ctx.mozTextStyle = '").append(
-						this.getPainter().getFont().cssText()).append("';");
+						this.getPainter().getFont().getCssText()).append("';");
 				break;
 			case DomText:
 				break;
