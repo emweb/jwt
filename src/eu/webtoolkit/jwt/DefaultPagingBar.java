@@ -11,14 +11,14 @@ class DefaultPagingBar extends WContainerWidget {
 		super();
 		this.view_ = view;
 		this.setStyleClass("Wt-pagingbar");
-		this.firstButton_ = new WPushButton(new WString("« First"), this);
+		this.firstButton_ = new WPushButton(new WString(pbFirst), this);
 		this.firstButton_.clicked().addListener(this,
 				new Signal1.Listener<WMouseEvent>() {
 					public void trigger(WMouseEvent e1) {
 						DefaultPagingBar.this.showFirstPage();
 					}
 				});
-		this.prevButton_ = new WPushButton(new WString("‹ Previous"), this);
+		this.prevButton_ = new WPushButton(new WString(pbPrevious), this);
 		this.prevButton_.clicked().addListener(this,
 				new Signal1.Listener<WMouseEvent>() {
 					public void trigger(WMouseEvent e1) {
@@ -26,14 +26,14 @@ class DefaultPagingBar extends WContainerWidget {
 					}
 				});
 		this.current_ = new WText(this);
-		this.nextButton_ = new WPushButton(new WString("Next ›"), this);
+		this.nextButton_ = new WPushButton(new WString(pbNext), this);
 		this.nextButton_.clicked().addListener(this,
 				new Signal1.Listener<WMouseEvent>() {
 					public void trigger(WMouseEvent e1) {
 						DefaultPagingBar.this.showNextPage();
 					}
 				});
-		this.lastButton_ = new WPushButton(new WString("Last »"), this);
+		this.lastButton_ = new WPushButton(new WString(pbLast), this);
 		this.lastButton_.clicked().addListener(this,
 				new Signal1.Listener<WMouseEvent>() {
 					public void trigger(WMouseEvent e1) {
@@ -87,4 +87,9 @@ class DefaultPagingBar extends WContainerWidget {
 			this.view_.setCurrentPage(this.view_.getCurrentPage() + 1);
 		}
 	}
+
+	private static String pbFirst = "« First";
+	private static String pbPrevious = "‹ Previous";
+	private static String pbNext = "Next ›";
+	private static String pbLast = "Last »";
 }

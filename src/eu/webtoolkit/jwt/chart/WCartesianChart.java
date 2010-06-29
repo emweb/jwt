@@ -17,6 +17,7 @@ import eu.webtoolkit.jwt.WContainerWidget;
 import eu.webtoolkit.jwt.WLength;
 import eu.webtoolkit.jwt.WModelIndex;
 import eu.webtoolkit.jwt.WPaintDevice;
+import eu.webtoolkit.jwt.WPaintedWidget;
 import eu.webtoolkit.jwt.WPainter;
 import eu.webtoolkit.jwt.WPainterPath;
 import eu.webtoolkit.jwt.WPen;
@@ -683,7 +684,7 @@ public class WCartesianChart extends WAbstractChart {
 	 */
 	public WWidget createLegendItemWidget(int index) {
 		WContainerWidget legendItem = new WContainerWidget();
-		legendItem.addWidget(new IconWidget(this, index));
+		legendItem.addWidget(new WCartesianChart.IconWidget(this, index));
 		WText label = new WText(StringUtils.asString(this.getModel()
 				.getHeaderData(index)));
 		label.setVerticalAlignment(AlignmentFlag.AlignTop);
@@ -820,5 +821,29 @@ public class WCartesianChart extends WAbstractChart {
 		} else {
 			return new WPointF(y, width - x);
 		}
+	}
+
+	static class IconWidget extends WPaintedWidget {
+		public IconWidget(WCartesianChart chart, int index,
+				WContainerWidget parent) {
+			super(parent);
+			this.chart_ = chart;
+			this.index_ = index;
+			this.setInline(true);
+			this.resize(new WLength(20), new WLength(20));
+		}
+
+		public IconWidget(WCartesianChart chart, int index) {
+			this(chart, index, (WContainerWidget) null);
+		}
+
+		protected void paintEvent(WPaintDevice paintDevice) {
+			WPainter painter = new WPainter(paintDevice);
+			this.chart_.renderLegendIcon(painter, new WPointF(2.5, 10.0),
+					this.chart_.getSeries(this.index_));
+		}
+
+		private WCartesianChart chart_;
+		private int index_;
 	}
 }
