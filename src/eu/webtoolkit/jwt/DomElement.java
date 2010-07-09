@@ -1213,7 +1213,7 @@ class DomElement {
 		String extra1 = "";
 		String extra2 = "";
 		if (globalUnfocused) {
-			extra1 = "var g = event||window.event; var t = g.target||g.srcElement;if ((!t||Wt3_1_4.hasTag(t,'DIV') ||Wt3_1_4.hasTag(t,'HTML'))) { ";
+			extra1 = "var g = event||window.event; var t = g.target||g.srcElement;if ((!t||Wt3_1_4.hasTag(t,'DIV') ||Wt3_1_4.hasTag(t,'BODY') ||Wt3_1_4.hasTag(t,'HTML'))) { ";
 			extra2 = "}";
 		}
 		int fid = nextId_++;

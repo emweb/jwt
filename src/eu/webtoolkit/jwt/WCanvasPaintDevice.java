@@ -396,10 +396,10 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 	}
 
 	public void init() {
-		this.currentBrush_ = this.getPainter().getBrush();
-		this.currentPen_ = this.getPainter().getPen();
-		this.currentShadow_ = this.getPainter().getShadow();
-		this.currentFont_ = this.getPainter().getFont();
+		this.currentBrush_ = new WBrush();
+		this.currentPen_ = new WPen();
+		this.currentShadow_ = new WShadow();
+		this.currentFont_ = new WFont();
 		this.currentTextVAlign_ = this.currentTextHAlign_ = AlignmentFlag.AlignLength;
 		this.changeFlags_.clear();
 	}
@@ -637,6 +637,11 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 							this.pathTranslation_.setY(dy);
 							this.changeFlags_.clear();
 							resetTransform = false;
+						}
+					} else {
+						if (!resetTransform) {
+							this.pathTranslation_.setX(0);
+							this.pathTranslation_.setY(0);
 						}
 					}
 					if (resetTransform) {

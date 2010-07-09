@@ -380,13 +380,17 @@ public abstract class WFormWidget extends WInteractWidget {
 			}
 		}
 		if (this.flags_.get(BIT_ENABLED_CHANGED) || all) {
-			element.setProperty(Property.PropertyDisabled,
-					this.isEnabled() ? "false" : "true");
+			if (!all || !this.isEnabled()) {
+				element.setProperty(Property.PropertyDisabled,
+						this.isEnabled() ? "false" : "true");
+			}
 			this.flags_.clear(BIT_ENABLED_CHANGED);
 		}
 		if (this.flags_.get(BIT_READONLY_CHANGED) || all) {
-			element.setProperty(Property.PropertyReadOnly,
-					this.isReadOnly() ? "true" : "false");
+			if (!all || this.isReadOnly()) {
+				element.setProperty(Property.PropertyReadOnly, this
+						.isReadOnly() ? "true" : "false");
+			}
 			this.flags_.clear(BIT_READONLY_CHANGED);
 		}
 		if (this.flags_.get(BIT_TABINDEX_CHANGED) || all) {

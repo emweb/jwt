@@ -695,8 +695,8 @@ public class WSuggestionPopup extends WCompositeWidget {
 			return;
 		}
 		for (int i = start; i <= end; ++i) {
-			if (this.content_.getWidget(i) != null)
-				this.content_.getWidget(i).remove();
+			if (this.content_.getWidget(start) != null)
+				this.content_.getWidget(start).remove();
 		}
 	}
 

@@ -156,7 +156,7 @@ public class WApplication extends WObject {
 		this.scriptLibraries_ = new ArrayList<WApplication.ScriptLibrary>();
 		this.scriptLibrariesAdded_ = 0;
 		this.theme_ = "default";
-		this.styleSheets_ = new ArrayList<String>();
+		this.styleSheets_ = new ArrayList<WApplication.StyleSheet>();
 		this.styleSheetsAdded_ = 0;
 		this.metaHeaders_ = new ArrayList<WApplication.MetaHeader>();
 		this.exposedSignals_ = new HashMap<String, AbstractEventSignal>();
@@ -353,27 +353,30 @@ public class WApplication extends WObject {
 	 * <p>
 	 * 
 	 * @see WApplication#getStyleSheet()
-	 * @see WApplication#useStyleSheet(String uri, String condition)
 	 * @see WWidget#setStyleClass(String styleClass)
 	 */
 	public void useStyleSheet(String uri) {
-		this.styleSheets_.add(uri);
+		this.styleSheets_.add(new WApplication.StyleSheet(uri, ""));
 		++this.styleSheetsAdded_;
 	}
 
 	/**
-	 * Adds an external style sheet, conditional to specific Internet Explorer
-	 * browser.
+	 * Adds an external style sheet, constrained with conditions.
 	 * <p>
-	 * <code>condition</code> is a string that is used to apply the stylesheet
-	 * to specific versions of IE. Only a limited subset of the IE conditional
-	 * comments syntax is supported (since these are in fact interpreted
-	 * server-side instead of client-side). Examples are:
+	 * If not empty, <code>condition</code> is a string that is used to apply
+	 * the stylesheet to specific versions of IE. Only a limited subset of the
+	 * IE conditional comments syntax is supported (since these are in fact
+	 * interpreted server-side instead of client-side). Examples are:
+	 * <p>
 	 * <ul>
 	 * <li>&quot;IE gte 6&quot;: only for IE version 6 or later.</li>
 	 * <li>&quot;!IE gte 6&quot;: only for IE versions prior to IE6.</li>
 	 * <li>&quot;IE lte 7&quot;: only for IE versions prior to IE7.</li>
 	 * </ul>
+	 * <p>
+	 * The <code>media</code> indicates the CSS media to which this stylesheet
+	 * applies. This may be a comma separated list of media. The default value
+	 * is &quot;all&quot; indicating all media.
 	 * <p>
 	 * The <code>url</code> indicates a relative or absolute URL to the
 	 * stylesheet.
@@ -381,88 +384,93 @@ public class WApplication extends WObject {
 	 * 
 	 * @see WApplication#useStyleSheet(String uri)
 	 */
-	public void useStyleSheet(String uri, String condition) {
-		if (this.getEnvironment().agentIsIE()) {
-			boolean display = false;
-			int thisVersion = 4;
-			switch (this.getEnvironment().getAgent()) {
-			case IEMobile:
-				thisVersion = 5;
-				break;
-			case IE6:
-				thisVersion = 6;
-				break;
-			default:
-				thisVersion = 7;
-			}
-			final int lte = 0;
-			final int lt = 1;
-			final int eq = 2;
-			final int gt = 3;
-			final int gte = 4;
-			int cond = eq;
-			boolean invert = false;
-			String r = condition;
-			while (r.length() != 0) {
-				if (r.length() >= 3 && r.substring(0, 0 + 3).equals("IE ")) {
-					r = r.substring(3);
-				} else {
-					if (r.charAt(0) == '!') {
-						r = r.substring(1);
-						invert = !invert;
+	public void useStyleSheet(String uri, String condition, String media) {
+		boolean display = true;
+		if (condition.length() != 0) {
+			display = false;
+			if (this.getEnvironment().agentIsIE()) {
+				int thisVersion = 4;
+				switch (this.getEnvironment().getAgent()) {
+				case IEMobile:
+					thisVersion = 5;
+					break;
+				case IE6:
+					thisVersion = 6;
+					break;
+				default:
+					thisVersion = 7;
+				}
+				final int lte = 0;
+				final int lt = 1;
+				final int eq = 2;
+				final int gt = 3;
+				final int gte = 4;
+				int cond = eq;
+				boolean invert = false;
+				String r = condition;
+				while (r.length() != 0) {
+					if (r.length() >= 3 && r.substring(0, 0 + 3).equals("IE ")) {
+						r = r.substring(3);
 					} else {
-						if (r.length() >= 4
-								&& r.substring(0, 0 + 4).equals("lte ")) {
-							r = r.substring(4);
-							cond = lte;
+						if (r.charAt(0) == '!') {
+							r = r.substring(1);
+							invert = !invert;
 						} else {
-							if (r.length() >= 3
-									&& r.substring(0, 0 + 3).equals("lt ")) {
-								r = r.substring(3);
-								cond = lt;
+							if (r.length() >= 4
+									&& r.substring(0, 0 + 4).equals("lte ")) {
+								r = r.substring(4);
+								cond = lte;
 							} else {
 								if (r.length() >= 3
-										&& r.substring(0, 0 + 3).equals("gt ")) {
+										&& r.substring(0, 0 + 3).equals("lt ")) {
 									r = r.substring(3);
-									cond = gt;
+									cond = lt;
 								} else {
-									if (r.length() >= 4
-											&& r.substring(0, 0 + 4).equals(
-													"gte ")) {
-										r = r.substring(4);
-										cond = gte;
+									if (r.length() >= 3
+											&& r.substring(0, 0 + 3).equals(
+													"gt ")) {
+										r = r.substring(3);
+										cond = gt;
 									} else {
-										try {
-											int version = Integer.parseInt(r);
-											switch (cond) {
-											case eq:
-												display = thisVersion == version;
-												break;
-											case lte:
-												display = thisVersion <= version;
-												break;
-											case lt:
-												display = thisVersion < version;
-												break;
-											case gte:
-												display = thisVersion >= version;
-												break;
-											case gt:
-												display = thisVersion > version;
-												break;
+										if (r.length() >= 4
+												&& r.substring(0, 0 + 4)
+														.equals("gte ")) {
+											r = r.substring(4);
+											cond = gte;
+										} else {
+											try {
+												int version = Integer
+														.parseInt(r);
+												switch (cond) {
+												case eq:
+													display = thisVersion == version;
+													break;
+												case lte:
+													display = thisVersion <= version;
+													break;
+												case lt:
+													display = thisVersion < version;
+													break;
+												case gte:
+													display = thisVersion >= version;
+													break;
+												case gt:
+													display = thisVersion > version;
+													break;
+												}
+												if (invert) {
+													display = !display;
+												}
+											} catch (RuntimeException e) {
+												this
+														.log("error")
+														.append(
+																"Could not parse condition: '")
+														.append(condition)
+														.append("'");
 											}
-											if (invert) {
-												display = !display;
-											}
-										} catch (RuntimeException e) {
-											this
-													.log("error")
-													.append(
-															"Could not parse condition: '")
-													.append(condition).append(
-															"'");
+											r = "";
 										}
-										r = "";
 									}
 								}
 							}
@@ -470,10 +478,21 @@ public class WApplication extends WObject {
 					}
 				}
 			}
-			if (display) {
-				this.useStyleSheet(uri);
-			}
 		}
+		if (display) {
+			this.styleSheets_.add(new WApplication.StyleSheet(uri, media));
+			++this.styleSheetsAdded_;
+		}
+	}
+
+	/**
+	 * Adds an external style sheet, constrained with conditions.
+	 * <p>
+	 * Calls {@link #useStyleSheet(String uri, String condition, String media)
+	 * useStyleSheet(uri, condition, "all")}
+	 */
+	public final void useStyleSheet(String uri, String condition) {
+		useStyleSheet(uri, condition, "all");
 	}
 
 	/**
@@ -1986,8 +2005,19 @@ public class WApplication extends WObject {
 	boolean enableAjax_;
 	List<WApplication.ScriptLibrary> scriptLibraries_;
 	int scriptLibrariesAdded_;
+
+	static class StyleSheet {
+		public String uri;
+		public String media;
+
+		public StyleSheet(String anUri, String aMedia) {
+			this.uri = anUri;
+			this.media = aMedia;
+		}
+	}
+
 	private String theme_;
-	List<String> styleSheets_;
+	List<WApplication.StyleSheet> styleSheets_;
 	int styleSheetsAdded_;
 	List<WApplication.MetaHeader> metaHeaders_;
 	private Map<String, AbstractEventSignal> exposedSignals_;

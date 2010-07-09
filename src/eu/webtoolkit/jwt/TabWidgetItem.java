@@ -13,18 +13,33 @@ class TabWidgetItem extends WMenuItem {
 	}
 
 	protected WWidget createItemWidget() {
-		WContainerWidget c = new WContainerWidget();
-		c.setInline(true);
-		c.addWidget(super.createItemWidget());
-		return c;
+		if (!this.isCloseable()) {
+			WContainerWidget c = new WContainerWidget();
+			c.setInline(true);
+			c.addWidget(super.createItemWidget());
+			return c;
+		} else {
+			return super.createItemWidget();
+		}
 	}
 
 	protected void updateItemWidget(WWidget itemWidget) {
-		WContainerWidget c = ((itemWidget) instanceof WContainerWidget ? (WContainerWidget) (itemWidget)
-				: null);
-		WAnchor a = ((c.getChildren().get(0)) instanceof WAnchor ? (WAnchor) (c
-				.getChildren().get(0)) : null);
-		super.updateItemWidget(a);
+		if (!this.isCloseable()) {
+			WContainerWidget c = ((itemWidget) instanceof WContainerWidget ? (WContainerWidget) (itemWidget)
+					: null);
+			WWidget label = null;
+			if (!this.isDisabled()) {
+				label = ((c.getChildren().get(0)) instanceof WAnchor ? (WAnchor) (c
+						.getChildren().get(0))
+						: null);
+			} else {
+				label = ((c.getChildren().get(0)) instanceof WText ? (WText) (c
+						.getChildren().get(0)) : null);
+			}
+			super.updateItemWidget(label);
+		} else {
+			super.updateItemWidget(itemWidget);
+		}
 	}
 
 	protected AbstractSignal activateSignal() {

@@ -890,6 +890,13 @@ public abstract class WWebWidget extends WWidget {
 	}
 
 	void repaint(EnumSet<RepaintFlag> flags) {
+		if (!this.flags_.get(BIT_STUBBED) && this.isStubbed()) {
+			WebRenderer renderer = WApplication.getInstance().getSession()
+					.getRenderer();
+			if (renderer.isPreLearning()) {
+				renderer.learningIncomplete();
+			}
+		}
 		if (!this.flags_.get(BIT_RENDERED)) {
 			return;
 		}
@@ -1204,12 +1211,12 @@ public abstract class WWebWidget extends WWidget {
 		if (this.transientImpl_ != null) {
 			for (int i = 0; i < this.transientImpl_.addedStyleClasses_.size(); ++i) {
 				element
-						.callJavaScript("$('" + this.getId() + "').addClass('"
+						.callJavaScript("$('#" + this.getId() + "').addClass('"
 								+ this.transientImpl_.addedStyleClasses_.get(i)
 								+ "');");
 			}
 			for (int i = 0; i < this.transientImpl_.removedStyleClasses_.size(); ++i) {
-				element.callJavaScript("$('" + this.getId()
+				element.callJavaScript("$('#" + this.getId()
 						+ "').removeClass('"
 						+ this.transientImpl_.removedStyleClasses_.get(i)
 						+ "');");

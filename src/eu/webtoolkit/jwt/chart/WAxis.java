@@ -801,7 +801,7 @@ public class WAxis {
 				- clipMin : renderer.getChartArea().getLeft() + clipMin;
 		final double SEGMENT_MARGIN = 40;
 		totalRenderLength -= SEGMENT_MARGIN * (this.segments_.size() - 1)
-				- clipMin - clipMax;
+				+ clipMin + clipMax;
 		for (int it = 0; it < 2; ++it) {
 			double rs = totalRenderStart;
 			double TRR = totalRenderRange;
@@ -861,7 +861,7 @@ public class WAxis {
 			boolean findMaximum = segment.renderMaximum == AUTO_MAXIMUM;
 			if (findMinimum || findMaximum) {
 				double minimum = Double.MAX_VALUE;
-				double maximum = Double.MIN_VALUE;
+				double maximum = -Double.MAX_VALUE;
 				if (this.axis_ == Axis.XAxis) {
 					int dataColumn = this.chart_.XSeriesColumn();
 					if (dataColumn != -1) {
@@ -891,14 +891,22 @@ public class WAxis {
 					if (this.scale_ == AxisScale.LogScale) {
 						minimum = 1;
 					} else {
-						minimum = 0;
+						if (this.scale_ == AxisScale.DateScale) {
+							minimum = WDate.getCurrentDate().toJulianDay() - 10;
+						} else {
+							minimum = 0;
+						}
 					}
 				}
 				if (maximum == -Double.MAX_VALUE) {
 					if (this.scale_ == AxisScale.LogScale) {
 						maximum = 10;
 					} else {
-						maximum = 100;
+						if (this.scale_ == AxisScale.DateScale) {
+							maximum = WDate.getCurrentDate().toJulianDay();
+						} else {
+							maximum = 100;
+						}
 					}
 				}
 				if (findMinimum) {

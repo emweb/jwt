@@ -732,6 +732,11 @@ public abstract class WWidget extends WObject {
 
 	/**
 	 * Adds a CSS style class.
+	 * <p>
+	 * When <code>force</code> = <code>true</code>, a JavaScript call will be
+	 * used to add the style class to the DOM element (if JavaScript is
+	 * available). This may be necessary when client-side JavaScript manipulates
+	 * the same style class.
 	 */
 	public abstract void addStyleClass(String styleClass, boolean force);
 
@@ -747,6 +752,11 @@ public abstract class WWidget extends WObject {
 
 	/**
 	 * Removes a CSS style class.
+	 * <p>
+	 * When <code>force</code> = <code>true</code>, a JavaScript call will be
+	 * used to remove the style class from the DOM element (if JavaScript is
+	 * available). This may be necessary when client-side JavaScript manipulates
+	 * the same style class.
 	 */
 	public abstract void removeStyleClass(String styleClass, boolean force);
 

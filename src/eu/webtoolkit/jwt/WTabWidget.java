@@ -103,7 +103,8 @@ public class WTabWidget extends WCompositeWidget {
 	public WTabWidget(WContainerWidget parent) {
 		super(parent);
 		this.currentChanged_ = new Signal1<Integer>(this);
-		this.items_ = new ArrayList<WTabWidget.TabItem>();
+		this.tabClosed_ = new Signal1<Integer>();
+		this.contentsWidgets_ = new ArrayList<WWidget>();
 		this.create(EnumSet.of(AlignmentFlag.AlignJustify));
 	}
 
@@ -129,7 +130,8 @@ public class WTabWidget extends WCompositeWidget {
 			WContainerWidget parent) {
 		super(parent);
 		this.currentChanged_ = new Signal1<Integer>(this);
-		this.items_ = new ArrayList<WTabWidget.TabItem>();
+		this.tabClosed_ = new Signal1<Integer>();
+		this.contentsWidgets_ = new ArrayList<WWidget>();
 		this.create(layoutAlignment);
 	}
 
@@ -162,9 +164,7 @@ public class WTabWidget extends WCompositeWidget {
 		}
 		WMenuItem result = new TabWidgetItem(label, child, policy);
 		this.menu_.addItem(result);
-		this.items_.add(new WTabWidget.TabItem());
-		this.items_.get(this.items_.size() - 1).enabled = true;
-		this.items_.get(this.items_.size() - 1).hidden = false;
+		this.contentsWidgets_.add(child);
 		return result;
 	}
 
@@ -188,33 +188,37 @@ public class WTabWidget extends WCompositeWidget {
 	 * @see WMenu#removeItem(WMenuItem item)
 	 */
 	public void removeTab(WWidget child) {
-		WMenuItem item = this.menu_.getItems().get(this.getIndexOf(child));
-		this.menu_.removeItem(item);
-		item.getTakeContents();
-		;
+		int tabIndex = this.getIndexOf(child);
+		if (tabIndex != -1) {
+			this.contentsWidgets_.remove(0 + tabIndex);
+			WMenuItem item = this.menu_.getItems().get(tabIndex);
+			this.menu_.removeItem(item);
+			item.getTakeContents();
+			;
+		}
 	}
 
 	/**
 	 * Returns the number of tabs.
 	 */
 	public int getCount() {
-		return this.contents_.getCount();
+		return this.contentsWidgets_.size();
 	}
 
 	/**
 	 * Returns the content widget at the given tab <i>index</i>.
 	 */
 	public WWidget getWidget(int index) {
-		return this.contents_.getWidget(index);
+		return this.contentsWidgets_.get(index);
 	}
 
 	/**
-	 * Returns the index of the given widget.
+	 * Returns the index of the tab of the given content widget.
 	 * <p>
 	 * If the widget is not in this tab widget, then -1 is returned.
 	 */
 	public int getIndexOf(WWidget widget) {
-		return this.contents_.getIndexOf(widget);
+		return this.contentsWidgets_.indexOf(widget);
 	}
 
 	/**
@@ -235,14 +239,14 @@ public class WTabWidget extends WCompositeWidget {
 	 * Activates the tab showing the given <i>widget</i>.
 	 */
 	public void setCurrentWidget(WWidget widget) {
-		this.setCurrentIndex(this.contents_.getIndexOf(widget));
+		this.setCurrentIndex(this.getIndexOf(widget));
 	}
 
 	/**
 	 * Returns the widget of the activated tab.
 	 */
 	public WWidget getCurrentWidget() {
-		return this.contents_.getCurrentWidget();
+		return this.menu_.getCurrentItem().getContents();
 	}
 
 	/**
@@ -252,30 +256,64 @@ public class WTabWidget extends WCompositeWidget {
 	 * be activated.
 	 */
 	public void setTabEnabled(int index, boolean enable) {
-		this.items_.get(index).enabled = enable;
+		TabWidgetItem item = ((this.menu_.getItems().get(index)) instanceof TabWidgetItem ? (TabWidgetItem) (this.menu_
+				.getItems().get(index))
+				: null);
+		item.setDisabled(!enable);
 	}
 
 	/**
-	 * Returns if a tab is enabled.
+	 * Returns whether a tab is enabled.
+	 * <p>
 	 */
 	public boolean isTabEnabled(int index) {
-		return this.items_.get(index).enabled;
+		TabWidgetItem item = ((this.menu_.getItems().get(index)) instanceof TabWidgetItem ? (TabWidgetItem) (this.menu_
+				.getItems().get(index))
+				: null);
+		return !item.isDisabled();
 	}
 
 	/**
 	 * Hides or shows a tab.
 	 * <p>
-	 * Hides are shows the tab at <code>index</code>.
+	 * Hides or shows the tab at <code>index</code>.
 	 */
 	public void setTabHidden(int index, boolean hidden) {
-		this.items_.get(index).hidden = hidden;
+		TabWidgetItem item = ((this.menu_.getItems().get(index)) instanceof TabWidgetItem ? (TabWidgetItem) (this.menu_
+				.getItems().get(index))
+				: null);
+		item.setHidden(hidden);
 	}
 
 	/**
-	 * Returns if a tab is hidden.
+	 * Returns whether a tab is hidden.
 	 */
 	public boolean isTabHidden(int index) {
-		return this.items_.get(index).hidden;
+		TabWidgetItem item = ((this.menu_.getItems().get(index)) instanceof TabWidgetItem ? (TabWidgetItem) (this.menu_
+				.getItems().get(index))
+				: null);
+		return item.isHidden();
+	}
+
+	/**
+	 * Make it possible to close a tab interactively or by
+	 * {@link WTabWidget#closeTab(int index) closeTab}.
+	 */
+	public void setTabCloseable(int index, boolean closeable) {
+		TabWidgetItem item = ((this.menu_.getItems().get(index)) instanceof TabWidgetItem ? (TabWidgetItem) (this.menu_
+				.getItems().get(index))
+				: null);
+		item.setCloseable(closeable);
+	}
+
+	/**
+	 * Returns whether a tab is closeable.
+	 */
+	public boolean isTabCloseable(int index) {
+		TabWidgetItem item = ((this.menu_.getItems().get(index)) instanceof TabWidgetItem ? (TabWidgetItem) (this.menu_
+				.getItems().get(index))
+				: null);
+		return item.isCloseable();
 	}
 
 	/**
@@ -304,14 +342,20 @@ public class WTabWidget extends WCompositeWidget {
 	 * The tooltip is shown when the user hovers over the label.
 	 */
 	public void setTabToolTip(int index, CharSequence tip) {
-		this.items_.get(index).toolTip = WString.toWString(tip);
+		TabWidgetItem item = ((this.menu_.getItems().get(index)) instanceof TabWidgetItem ? (TabWidgetItem) (this.menu_
+				.getItems().get(index))
+				: null);
+		item.setToolTip(tip);
 	}
 
 	/**
 	 * Returns the tooltip for a tab.
 	 */
 	public WString getTabToolTip(int index) {
-		return this.items_.get(index).toolTip;
+		TabWidgetItem item = ((this.menu_.getItems().get(index)) instanceof TabWidgetItem ? (TabWidgetItem) (this.menu_
+				.getItems().get(index))
+				: null);
+		return item.getToolTip();
 	}
 
 	/**
@@ -409,30 +453,39 @@ public class WTabWidget extends WCompositeWidget {
 		return this.currentChanged_;
 	}
 
-	private Signal1<Integer> currentChanged_;
-	private WContainerWidget layout_;
-	private WMenu menu_;
-	private WStackedWidget contents_;
-
-	static class TabItem {
-		public boolean enabled;
-		public boolean hidden;
-		public WString toolTip;
+	/**
+	 * Closes a tab at <code>index</code>.
+	 */
+	public void closeTab(int index) {
+		this.setTabHidden(index, true);
+		this.tabClosed_.trigger(index);
 	}
 
-	private List<WTabWidget.TabItem> items_;
+	/**
+	 * Signal emitted when the user closes a tab.
+	 * <p>
+	 * The index of the closed tab is passed as an argument.
+	 */
+	public Signal1<Integer> tabClosed() {
+		return this.tabClosed_;
+	}
+
+	private Signal1<Integer> currentChanged_;
+	private Signal1<Integer> tabClosed_;
+	private WContainerWidget layout_;
+	private WMenu menu_;
+	private List<WWidget> contentsWidgets_;
 
 	private void create(EnumSet<AlignmentFlag> layoutAlignment) {
 		this.setImplementation(this.layout_ = new WContainerWidget());
 		;
-		this.contents_ = new WStackedWidget();
-		this.menu_ = new WMenu(this.contents_, Orientation.Horizontal);
+		this.menu_ = new WMenu(new WStackedWidget(), Orientation.Horizontal);
 		this.menu_.setRenderAsList(true);
 		WContainerWidget menuDiv = new WContainerWidget();
 		menuDiv.setStyleClass("Wt-tabs");
 		menuDiv.addWidget(this.menu_);
 		this.layout_.addWidget(menuDiv);
-		this.layout_.addWidget(this.contents_);
+		this.layout_.addWidget(this.menu_.getContentsStack());
 		this
 				.setJavaScriptMember(
 						WT_RESIZE_JS,

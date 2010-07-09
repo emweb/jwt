@@ -175,6 +175,10 @@ class WebRenderer implements SlotLearnerInterface {
 		return this.learning_;
 	}
 
+	public void learningIncomplete() {
+		this.learningIncomplete_ = true;
+	}
+
 	public void ackUpdate(int updateId) {
 		if (updateId == this.expectedAckId_) {
 			this.setJSSynced(false);
@@ -383,7 +387,6 @@ class WebRenderer implements SlotLearnerInterface {
 		}
 		String redirect = this.session_.getRedirect();
 		if (redirect.length() != 0) {
-			System.err.append("Redirect: ").append(redirect).append('\n');
 			response.setStatus(302);
 			response.sendRedirect(redirect);
 			return;
@@ -398,25 +401,31 @@ class WebRenderer implements SlotLearnerInterface {
 			styleSheets += "<link href=\"" + WApplication.getResourcesUrl()
 					+ "/themes/" + app.getCssTheme()
 					+ "/wt.css\" rel=\"stylesheet\" type=\"text/css\""
-					+ (xhtml ? "/>" : ">");
+					+ (xhtml ? "/>" : ">") + "\n";
 			if (app.getEnvironment().agentIsIE()) {
 				styleSheets += "<link href=\"" + WApplication.getResourcesUrl()
 						+ "/themes/" + app.getCssTheme()
 						+ "/wt_ie.css\" rel=\"stylesheet\" type=\"text/css\""
-						+ (xhtml ? "/>" : ">");
+						+ (xhtml ? "/>" : ">") + "\n";
 			}
 			if (app.getEnvironment().getAgent() == WEnvironment.UserAgent.IE6) {
 				styleSheets += "<link href=\"" + WApplication.getResourcesUrl()
 						+ "/themes/" + app.getCssTheme()
 						+ "/wt_ie6.css\" rel=\"stylesheet\" type=\"text/css\""
-						+ (xhtml ? "/>" : ">");
+						+ (xhtml ? "/>" : ">") + "\n";
 			}
 		}
 		for (int i = 0; i < app.styleSheets_.size(); ++i) {
 			styleSheets += "<link href=\""
-					+ app.fixRelativeUrl(app.styleSheets_.get(i))
-					+ "\" rel=\"stylesheet\" type=\"text/css\""
-					+ (xhtml ? "/>" : ">") + '\n';
+					+ app.fixRelativeUrl(app.styleSheets_.get(i).uri)
+					+ "\" rel=\"stylesheet\" type=\"text/css\"";
+			if (app.styleSheets_.get(i).media.length() != 0
+					&& !app.styleSheets_.get(i).media.equals("all")) {
+				styleSheets += " media=\"" + app.styleSheets_.get(i).media
+						+ '"';
+			}
+			styleSheets += xhtml ? "/>" : ">";
+			styleSheets += "\n";
 		}
 		app.styleSheetsAdded_ = 0;
 		this.beforeLoadJS_ = new StringWriter();
@@ -502,18 +511,18 @@ class WebRenderer implements SlotLearnerInterface {
 		if (app.getCssTheme().length() != 0) {
 			response.out().append("Wt3_1_4").append(".addStyleSheet('").append(
 					WApplication.getResourcesUrl()).append("/themes/").append(
-					app.getCssTheme()).append("/wt.css');");
+					app.getCssTheme()).append("/wt.css', 'all');");
 			if (app.getEnvironment().agentIsIE()) {
 				response.out().append("Wt3_1_4").append(".addStyleSheet('")
 						.append(WApplication.getResourcesUrl()).append(
 								"/themes/").append(app.getCssTheme()).append(
-								"/wt_ie.css');");
+								"/wt_ie.css', 'all');");
 			}
 			if (app.getEnvironment().getAgent() == WEnvironment.UserAgent.IE6) {
 				response.out().append("Wt3_1_4").append(".addStyleSheet('")
 						.append(WApplication.getResourcesUrl()).append(
 								"/themes/").append(app.getCssTheme()).append(
-								"/wt_ie6.css');");
+								"/wt_ie6.css', 'all');");
 			}
 		}
 		app.styleSheetsAdded_ = app.styleSheets_.size();
@@ -725,8 +734,9 @@ class WebRenderer implements SlotLearnerInterface {
 		int first = app.styleSheets_.size() - app.styleSheetsAdded_;
 		for (int i = first; i < app.styleSheets_.size(); ++i) {
 			out.append("Wt3_1_4").append(".addStyleSheet('").append(
-					app.fixRelativeUrl(app.styleSheets_.get(i)))
-					.append("');\n");
+					app.fixRelativeUrl(app.styleSheets_.get(i).uri)).append(
+					"', '").append(app.styleSheets_.get(i).media).append(
+					"');\n");
 		}
 		app.styleSheetsAdded_ = 0;
 	}
@@ -962,6 +972,7 @@ class WebRenderer implements SlotLearnerInterface {
 
 	private Set<WWidget> updateMap_;
 	private boolean learning_;
+	private boolean learningIncomplete_;
 	private boolean moreUpdates_;
 
 	private String safeJsStringLiteral(String value) {
@@ -975,6 +986,7 @@ class WebRenderer implements SlotLearnerInterface {
 		if (slot.getType() == SlotType.PreLearnStateless) {
 			this.learning_ = true;
 		}
+		this.learningIncomplete_ = false;
 		slot.trigger();
 		StringWriter js = new StringWriter();
 		this.collectJS(js);
@@ -986,7 +998,9 @@ class WebRenderer implements SlotLearnerInterface {
 		} else {
 			this.statelessJS_.append(result);
 		}
-		slot.setJavaScript(result);
+		if (!this.learningIncomplete_) {
+			slot.setJavaScript(result);
+		}
 		return result;
 	}
 }
