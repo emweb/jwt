@@ -68,6 +68,10 @@ public class WObject {
 	WObject getParent() {
 		return parent_;
 	}
+	
+	boolean hasParent() {
+		return parent_ != null;
+	}
 
 	void addChild(WObject child) {
 		child.setParent(this);

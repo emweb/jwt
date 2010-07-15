@@ -1464,12 +1464,26 @@ public abstract class WWidget extends WObject {
 		return c != null && c.getLayout() != null;
 	}
 
+	protected boolean hasParent() {
+		if (this.flags_.get(BIT_HAS_PARENT)) {
+			return true;
+		} else {
+			return super.hasParent();
+		}
+	}
+
 	private static final int BIT_WAS_HIDDEN = 0;
 	private static final int BIT_WAS_DISABLED = 1;
 	private static final int BIT_NEED_RERENDER = 2;
+	private static final int BIT_HAS_PARENT = 3;
 	private BitSet flags_;
 	private JSignal2<Integer, Integer> resized_;
 	private LinkedList<AbstractEventSignal> eventSignals_;
+
+	void setHasParent(boolean hasParent) {
+		this.flags_.set(BIT_HAS_PARENT, hasParent);
+		this.setParent(this.getParent());
+	}
 
 	private void setJsSize() {
 		if (!this.getHeight().isAuto()
