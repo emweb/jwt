@@ -244,13 +244,15 @@ public class WTreeNode extends WCompositeWidget {
 	}
 
 	/**
-	 * Adds a child node.
+	 * Inserts a child node.
+	 * <p>
+	 * Inserts the node <code>node</code> at index <code>index</code>.
 	 */
-	public void addChildNode(WTreeNode node) {
-		this.childNodes_.add(node);
+	public void insertChildNode(int index, WTreeNode node) {
+		this.childNodes_.add(0 + index, node);
 		node.parentNode_ = this;
 		if (this.childrenLoaded_) {
-			this.layout_.getElementAt(1, 1).addWidget(node);
+			this.layout_.getElementAt(1, 1).insertWidget(index, node);
 		} else {
 			node.setParent((WObject) null);
 		}
@@ -261,12 +263,31 @@ public class WTreeNode extends WCompositeWidget {
 		if (this.childCountPolicy_ != node.childCountPolicy_) {
 			node.setChildCountPolicy(this.childCountPolicy_);
 		}
-		if (this.childNodes_.size() > 1) {
+		if (index == (int) this.childNodes_.size() - 1
+				&& this.childNodes_.size() > 1) {
 			this.childNodes_.get(this.childNodes_.size() - 2).update();
 		}
 		node.update();
 		this.update();
 		this.resetLearnedSlots();
+	}
+
+	/**
+	 * Adds a child node.
+	 * <p>
+	 * Equivalent to: <blockquote>
+	 * 
+	 * <pre>
+	 * insertChildNode(childNodes().size(), node);
+	 * </pre>
+	 * 
+	 * </blockquote>
+	 * <p>
+	 * 
+	 * @see WTreeNode#insertChildNode(int index, WTreeNode node)
+	 */
+	public void addChildNode(WTreeNode node) {
+		this.insertChildNode(this.childNodes_.size(), node);
 	}
 
 	/**

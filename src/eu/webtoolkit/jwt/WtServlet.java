@@ -15,7 +15,10 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
+import eu.webtoolkit.jwt.servlet.WebRequest;
+import eu.webtoolkit.jwt.servlet.WebResponse;
 import eu.webtoolkit.jwt.utils.JarUtils;
 import eu.webtoolkit.jwt.utils.StreamUtils;
 
@@ -201,6 +204,47 @@ public abstract class WtServlet extends HttpServlet {
 	 * @return a new application object.
 	 */
 	public abstract WApplication createApplication(WEnvironment env);
+
+	/*
+	 * Actual request handling, may be within an async call depending on the servlet API.
+	 */
+	protected void doHandleRequest(HttpServletRequest request, HttpServletResponse response) {		
+		HttpSession jsession = request.getSession();
+		WebSession wsession = (WebSession) jsession.getAttribute(WtServlet.WT_WEBSESSION_ID);
+		getConfiguration().setSessionTimeout(jsession.getMaxInactiveInterval());
+	
+		if (wsession == null) {
+			String applicationTypeS = getServletConfig().getInitParameter("ApplicationType");
+			
+			EntryPointType applicationType;
+			if (applicationTypeS == null || applicationTypeS.equals("") || applicationTypeS.equals("Application")) {
+				applicationType = EntryPointType.Application; 
+			} else if (applicationTypeS.equals("WidgetSet")) {
+				applicationType = EntryPointType.WidgetSet; 
+			} else {
+				throw new WtException("Illegal application type: " + applicationTypeS);
+			}
+			
+			wsession = new WebSession(this, jsession.getId(), applicationType, getConfiguration().getFavicon(), new WebRequest(request));
+			jsession.setAttribute(WtServlet.WT_WEBSESSION_ID, wsession);
+		}
+	
+		try {
+			WebRequest webRequest = new WebRequest(request);
+			WebResponse webResponse = new WebResponse(response, webRequest);
+
+			WebSession.Handler handler = new WebSession.Handler(wsession, webRequest, webResponse);
+			wsession.handleRequest(handler);
+			handler.release();
+			if (handler.isSessionDead()) {
+				System.err.println("Session exiting:" + jsession.getId());
+				jsession.setAttribute(WtServlet.WT_WEBSESSION_ID, null);
+				jsession.invalidate();
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
 
 	private Configuration configuration;
 

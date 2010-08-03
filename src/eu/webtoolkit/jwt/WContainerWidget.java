@@ -254,6 +254,14 @@ public class WContainerWidget extends WInteractWidget {
 			if (layout != null) {
 				super.setLayout(layout);
 				this.getLayoutImpl().setContainer(this);
+				if (WApplication.getInstance().getEnvironment().agentIsIE()) {
+					AlignmentFlag vAlign = EnumUtils.enumFromSet(EnumUtils
+							.mask(alignment, AlignmentFlag.AlignVerticalMask));
+					if (vAlign == null) {
+						this
+								.setOverflow(WContainerWidget.Overflow.OverflowHidden);
+					}
+				}
 			}
 		}
 	}

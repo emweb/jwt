@@ -176,7 +176,7 @@ public class WApplication extends WObject {
 		this.internalPathIsChanged_ = false;
 		this.localizedStrings_ = null;
 		this.domRoot_ = new WContainerWidget();
-		;
+		this.domRoot_.setStyleClass("Wt-domRoot");
 		this.domRoot_.load();
 		if (this.session_.getType() == EntryPointType.Application) {
 			this.domRoot_.resize(WLength.Auto, new WLength(100,
@@ -237,6 +237,7 @@ public class WApplication extends WObject {
 		this.styleSheet_
 				.addRule(".Wt-sbspacer",
 						"float: right; width: 16px; height: 1px;border: 0px; display: none;");
+		this.styleSheet_.addRule(".Wt-domRoot", "position: relative;");
 		this.styleSheet_
 				.addRule(
 						"body.Wt-layout",
@@ -1110,7 +1111,7 @@ public class WApplication extends WObject {
 	 *    try {
 	 *      // We now have exclusive access to the application:
 	 *      // we can safely modify the widget tree for example.
-	 *      app.getRoot().addWidget(new WText("Something happened!"));
+	 *      app.getRoot().addWidget(new WText(&quot;Something happened!&quot;));
 	 *   
 	 *      // Push the changes to the browser
 	 *      app.triggerUpdate();

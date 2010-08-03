@@ -21,6 +21,7 @@ public class WWidgetItem implements WLayoutItem {
 		this.widget_ = widget;
 		this.parentLayout_ = null;
 		this.impl_ = null;
+		this.widget_.setHasParent(true);
 	}
 
 	public WWidget getWidget() {

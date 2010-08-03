@@ -1026,10 +1026,10 @@ public class WChart2DRenderer {
 							iterator.startSegment(currentXSegment,
 									currentYSegment, csa);
 							this.painter_.save();
-							this.painter_.setClipping(true);
 							WPainterPath clipPath = new WPainterPath();
 							clipPath.addRect(this.hv(csa));
 							this.painter_.setClipPath(clipPath);
+							this.painter_.setClipping(true);
 							for (int row = 0; row < rows; ++row) {
 								WModelIndex xIndex = null;
 								WModelIndex yIndex = null;

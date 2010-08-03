@@ -254,6 +254,16 @@ public class WDialog extends WCompositeWidget {
 	}
 
 	/**
+	 * Returns the dialog title bar container.
+	 * <p>
+	 * The title bar contains a single text that contains the caption. You may
+	 * customize the title bar by for example adding other content.
+	 */
+	public WContainerWidget getTitleBar() {
+		return this.titleBar_;
+	}
+
+	/**
 	 * Returns the dialog contents container.
 	 * <p>
 	 * Content to the dialog window may be added to this container widget.

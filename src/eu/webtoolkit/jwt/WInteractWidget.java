@@ -369,6 +369,23 @@ public abstract class WInteractWidget extends WWebWidget {
 		setDraggable(mimeType, dragWidget, isDragWidgetOnly, (WObject) null);
 	}
 
+	public void load() {
+		if (!this.isDisabled()) {
+			if (this.getParent() != null) {
+				this.flags_.set(BIT_ENABLED, this.getParent().isEnabled());
+			} else {
+				this.flags_.set(BIT_ENABLED, true);
+			}
+		} else {
+			this.flags_.set(BIT_ENABLED, false);
+		}
+		super.load();
+	}
+
+	public boolean isEnabled() {
+		return !this.isDisabled() && this.flags_.get(BIT_ENABLED);
+	}
+
 	void updateDom(DomElement element, boolean all) {
 		boolean updateKeyDown = false;
 		EventSignal enterPress = this
@@ -507,7 +524,14 @@ public abstract class WInteractWidget extends WWebWidget {
 					&& this.flags_.get(BIT_REPAINT_TO_AJAX)) {
 				element.unwrap();
 			}
-			this.updateSignalConnection(element, s, s.getName(), all);
+			if (s.getName() != WInteractWidget.CLICK_SIGNAL
+					&& s.getName() != WInteractWidget.DBL_CLICK_SIGNAL
+					|| this.flags_.get(BIT_ENABLED)) {
+				this.updateSignalConnection(element, s, s.getName(), all);
+			} else {
+				element.setEvent(s.getName(),
+						"Wt3_1_4.cancelEvent(event||window.event);");
+			}
 		}
 		super.updateDom(element, all);
 	}
@@ -521,6 +545,20 @@ public abstract class WInteractWidget extends WWebWidget {
 			s.updateOk();
 		}
 		super.propagateRenderOk(deep);
+	}
+
+	protected void propagateSetEnabled(boolean enabled) {
+		this.flags_.set(BIT_ENABLED, enabled);
+		EventSignal1<WMouseEvent> s;
+		s = this.mouseEventSignal(CLICK_SIGNAL, false);
+		if (s != null) {
+			s.senderRepaint();
+		}
+		s = this.mouseEventSignal(DBL_CLICK_SIGNAL, false);
+		if (s != null) {
+			s.senderRepaint();
+		}
+		super.propagateSetEnabled(enabled);
 	}
 
 	JSlot dragSlot_;

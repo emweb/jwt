@@ -15,10 +15,11 @@ import eu.webtoolkit.jwt.servlet.WebRequest;
  * An environment for testing purposes
  * <p>
  * 
- * This environment is useful for use in unit tests: you may configure its
- * properties and pass it to the constructor of an application.
+ * This environment is useful for use in automated (integration/unit) tests: you
+ * may configure its properties and pass it to the constructor of an
+ * application.
  * <p>
- * This is useful for (unit) test-cases:
+ * This is useful for automated test-cases:
  * <p>
  * <blockquote>
  * 

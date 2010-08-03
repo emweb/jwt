@@ -14,6 +14,12 @@ package eu.webtoolkit.jwt;
  * {@link WApplication#notify(WEvent e) WApplication#notify()}.
  */
 public class WEvent {
+	private WEvent() {
+		this.handler = null;
+		this.responseType = WebRenderer.ResponseType.Page;
+		this.renderOnly = false;
+	}
+
 	WEvent(WebSession.Handler aHandler, WebRenderer.ResponseType aResponseType,
 			boolean doRenderOnly) {
 		this.handler = aHandler;

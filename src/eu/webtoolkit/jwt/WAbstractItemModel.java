@@ -468,7 +468,10 @@ public abstract class WAbstractItemModel extends WObject {
 	/**
 	 * Inserts one or more columns.
 	 * <p>
-	 * Returns <code>true</code> if the operation was successful.
+	 * In models that support column insertion, this inserts <code>count</code>
+	 * columns, starting at <code>column</code>, and returns <code>true</code>
+	 * if the operation was successful. The new columns are inserted under
+	 * <code>parent</code>.
 	 * <p>
 	 * The default implementation returns <code>false</code>.
 	 * <p>
@@ -505,7 +508,13 @@ public abstract class WAbstractItemModel extends WObject {
 	/**
 	 * Inserts one or more rows.
 	 * <p>
-	 * Returns <code>true</code> if the operation was successful.
+	 * In models that support row insertion, this inserts <code>count</code>
+	 * rows, starting at <code>row</code>, and returns <code>true</code> if the
+	 * operation was successful. The new rows are inserted under
+	 * <code>parent</code>.
+	 * <p>
+	 * If parent had no children, then a single column is added with
+	 * <code>count</code> rows.
 	 * <p>
 	 * The default implementation returns <code>false</code>.
 	 * <p>
@@ -658,10 +667,8 @@ public abstract class WAbstractItemModel extends WObject {
 		for (Iterator<Map.Entry<Integer, Object>> i_it = values.entrySet()
 				.iterator(); i_it.hasNext();) {
 			Map.Entry<Integer, Object> i = i_it.next();
-			if (i.getKey() != ItemDataRole.EditRole) {
-				if (!this.setData(index, i.getValue(), i.getKey())) {
-					result = false;
-				}
+			if (!this.setData(index, i.getValue(), i.getKey())) {
+				result = false;
 			}
 		}
 		this.dataChanged().setBlocked(wasBlocked);

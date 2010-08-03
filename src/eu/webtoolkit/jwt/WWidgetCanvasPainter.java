@@ -12,7 +12,7 @@ class WWidgetCanvasPainter extends WWidgetPainter {
 		super(widget);
 	}
 
-	public WPaintDevice getCreatePaintDevice() {
+	public WPaintDevice getPaintDevice() {
 		return new WCanvasPaintDevice(new WLength(this.widget_.renderWidth_),
 				new WLength(this.widget_.renderHeight_));
 	}
@@ -44,6 +44,7 @@ class WWidgetCanvasPainter extends WWidgetPainter {
 		if (text != null) {
 			result.addChild(text);
 		}
+		;
 	}
 
 	public void updateContents(List<DomElement> result, WPaintDevice device) {
@@ -67,6 +68,7 @@ class WWidgetCanvasPainter extends WWidgetPainter {
 		}
 		canvasDevice.render('c' + this.widget_.getId(), el);
 		result.add(el);
+		;
 	}
 
 	public WWidgetPainter.RenderType getRenderType() {
