@@ -501,7 +501,7 @@ public class WBatchEditProxyModel extends WAbstractProxyModel {
 					index.getRow(), index.getColumn()), dataMap);
 		} else {
 			i.put(role, value);
-			if ((role = ItemDataRole.EditRole) != 0) {
+			if (role == ItemDataRole.EditRole) {
 				i.put(ItemDataRole.DisplayRole, value);
 			}
 		}

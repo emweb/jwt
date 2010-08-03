@@ -208,7 +208,7 @@ public abstract class WtServlet extends HttpServlet {
 	/*
 	 * Actual request handling, may be within an async call depending on the servlet API.
 	 */
-	protected void doHandleRequest(HttpServletRequest request, HttpServletResponse response) {		
+	void doHandleRequest(HttpServletRequest request, HttpServletResponse response) {		
 		HttpSession jsession = request.getSession();
 		WebSession wsession = (WebSession) jsession.getAttribute(WtServlet.WT_WEBSESSION_ID);
 		getConfiguration().setSessionTimeout(jsession.getMaxInactiveInterval());

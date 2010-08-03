@@ -248,7 +248,7 @@ public class WModelIndex implements Comparable<WModelIndex> {
 	 * support encoding to raw indexes, or, if the item to which the index previously pointed, is no longer part of the
 	 * model.
 	 * 
-	 * @see WAbstractItemModel#fromRawIndex(Object))
+	 * @see WAbstractItemModel#fromRawIndex(Object)
 	 * @see WAbstractItemModel#layoutChanged()
 	 * @see #encodeAsRawIndex()
 	 */
