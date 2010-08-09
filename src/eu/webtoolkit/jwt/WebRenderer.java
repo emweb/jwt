@@ -813,27 +813,6 @@ class WebRenderer implements SlotLearnerInterface {
 
 	private void preLearnStateless(WApplication app, Writer out)
 			throws IOException {
-		boolean isIEMobile = app.getEnvironment().agentIsIEMobile();
-		if (isIEMobile || !this.session_.getEnv().hasAjax()) {
-			return;
-		}
-		Map<String, AbstractEventSignal> ss = this.session_.getApp()
-				.exposedSignals();
-		for (Iterator<Map.Entry<String, AbstractEventSignal>> i_it = ss
-				.entrySet().iterator(); i_it.hasNext();) {
-			Map.Entry<String, AbstractEventSignal> i = i_it.next();
-			if (i.getValue().getSender() == app) {
-				i.getValue().processPreLearnStateless(this);
-			}
-			WWidget ww = ((i.getValue().getSender()) instanceof WWidget ? (WWidget) (i
-					.getValue().getSender())
-					: null);
-			if (ww != null && ww.isRendered()) {
-				i.getValue().processPreLearnStateless(this);
-			}
-		}
-		out.append(this.statelessJS_.toString());
-		this.statelessJS_ = new StringWriter();
 	}
 
 	private StringWriter collectedJS1_;

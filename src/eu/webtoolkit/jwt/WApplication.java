@@ -6,6 +6,7 @@
 package eu.webtoolkit.jwt;
 
 import java.io.IOException;
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -159,7 +160,7 @@ public class WApplication extends WObject {
 		this.styleSheets_ = new ArrayList<WApplication.StyleSheet>();
 		this.styleSheetsAdded_ = 0;
 		this.metaHeaders_ = new ArrayList<WApplication.MetaHeader>();
-		this.exposedSignals_ = new HashMap<String, AbstractEventSignal>();
+		this.exposedSignals_ = new HashMap<String, WeakReference<AbstractEventSignal>>();
 		this.exposedResources_ = new HashMap<String, WResource>();
 		this.encodedObjects_ = new HashMap<String, WObject>();
 		this.exposeSignals_ = true;
@@ -2021,7 +2022,7 @@ public class WApplication extends WObject {
 	List<WApplication.StyleSheet> styleSheets_;
 	int styleSheetsAdded_;
 	List<WApplication.MetaHeader> metaHeaders_;
-	private Map<String, AbstractEventSignal> exposedSignals_;
+	private Map<String, WeakReference<AbstractEventSignal>> exposedSignals_;
 	private Map<String, WResource> exposedResources_;
 	private Map<String, WObject> encodedObjects_;
 	private boolean exposeSignals_;
@@ -2057,7 +2058,8 @@ public class WApplication extends WObject {
 
 	void addExposedSignal(AbstractEventSignal signal) {
 		String s = signal.encodeCmd();
-		this.exposedSignals_.put(s, signal);
+		this.exposedSignals_.put(s, new WeakReference<AbstractEventSignal>(
+				signal));
 	}
 
 	void removeExposedSignal(AbstractEventSignal signal) {
@@ -2071,13 +2073,15 @@ public class WApplication extends WObject {
 	}
 
 	AbstractEventSignal decodeExposedSignal(String signalName) {
-		AbstractEventSignal i = this.exposedSignals_.get(signalName);
+		WeakReference<AbstractEventSignal> i = this.exposedSignals_
+				.get(signalName);
 		if (i != null) {
-			WWidget w = ((i.getSender()) instanceof WWidget ? (WWidget) (i
-					.getSender()) : null);
+			WWidget w = ((i.get().getSender()) instanceof WWidget ? (WWidget) (i
+					.get().getSender())
+					: null);
 			if (!(w != null) || this.isExposed(w)
 					|| signalName.endsWith(".resized")) {
-				return i;
+				return i.get();
 			} else {
 				return null;
 			}
@@ -2092,7 +2096,7 @@ public class WApplication extends WObject {
 		return this.decodeExposedSignal(signalName);
 	}
 
-	Map<String, AbstractEventSignal> exposedSignals() {
+	private Map<String, WeakReference<AbstractEventSignal>> exposedSignals() {
 		return this.exposedSignals_;
 	}
 

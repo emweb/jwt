@@ -8,6 +8,7 @@ package eu.webtoolkit.jwt;
 import java.util.*;
 import java.util.regex.*;
 import java.io.*;
+import java.lang.ref.*;
 import java.util.concurrent.locks.ReentrantLock;
 import javax.servlet.http.*;
 import javax.servlet.*;

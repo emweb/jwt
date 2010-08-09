@@ -443,7 +443,7 @@ public class WMenu extends WCompositeWidget {
 				this.contentsStack_.removeWidget(item.getContents());
 			}
 			item.setMenu((WMenu) null);
-			if (itemIndex <= this.current_ && this.current_ > 0) {
+			if (itemIndex <= this.current_ && this.current_ >= 0) {
 				--this.current_;
 			}
 			for (int i = 0; i < this.items_.size(); ++i) {

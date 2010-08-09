@@ -190,7 +190,7 @@ public class WTable extends WInteractWidget {
 			if (cell != null)
 				cell.remove();
 		}
-		if (row >= this.getRowCount() - this.rowsAdded_) {
+		if (row >= (int) (this.getRowCount() - this.rowsAdded_)) {
 			--this.rowsAdded_;
 		} else {
 			this.flags_.set(BIT_GRID_CHANGED);
@@ -354,7 +354,7 @@ public class WTable extends WInteractWidget {
 	}
 
 	void repaintRow(WTableRow row) {
-		if (row.getRowNum() >= this.getRowCount() - this.rowsAdded_) {
+		if (row.getRowNum() >= (int) (this.getRowCount() - this.rowsAdded_)) {
 			return;
 		}
 		if (!(this.rowsChanged_ != null)) {
