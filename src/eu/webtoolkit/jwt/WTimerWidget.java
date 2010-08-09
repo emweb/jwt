@@ -55,7 +55,7 @@ class WTimerWidget extends WInteractWidget {
 				.callJavaScript(
 						"{var obj="
 								+ this.getJsRef()
-								+ ";if (obj.timer) {clearTimeout(obj.timer);obj.timer = null;}}",
+								+ ";if (obj && obj.timer) {clearTimeout(obj.timer);obj.timer = null;}}",
 						true);
 		return e;
 	}

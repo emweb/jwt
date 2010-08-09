@@ -1111,7 +1111,7 @@ public class WApplication extends WObject {
 	 *    try {
 	 *      // We now have exclusive access to the application:
 	 *      // we can safely modify the widget tree for example.
-	 *      app.getRoot().addWidget(new WText(&quot;Something happened!&quot;));
+	 *      app.getRoot().addWidget(new WText("Something happened!"));
 	 *   
 	 *      // Push the changes to the browser
 	 *      app.triggerUpdate();
@@ -2158,10 +2158,11 @@ public class WApplication extends WObject {
 
 	void changeInternalPath(String aPath) {
 		String path = aPath;
-		if (!path.equals(this.newInternalPath_)
-				&& (path.length() == 0 || path.charAt(0) == '/')) {
-			String v = "";
-			this.newInternalPath_ = path;
+		if (path.length() == 0 || path.charAt(0) == '/') {
+			if (!path.equals(this.newInternalPath_)) {
+				String v = "";
+				this.newInternalPath_ = path;
+			}
 			this.internalPathChanged().trigger(this.newInternalPath_);
 		}
 	}

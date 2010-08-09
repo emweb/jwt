@@ -161,11 +161,15 @@ public class WTable extends WInteractWidget {
 	 * Inserts an empty row.
 	 */
 	public WTableRow insertRow(int row) {
-		WTableRow tableRow = new WTableRow(this, this.getColumnCount());
-		this.rows_.add(0 + row, tableRow);
-		this.flags_.set(BIT_GRID_CHANGED);
-		this.repaint(EnumSet.of(RepaintFlag.RepaintInnerHtml));
-		return tableRow;
+		if (row == this.getRowCount()) {
+			return this.getRowAt(row);
+		} else {
+			WTableRow tableRow = new WTableRow(this, this.getColumnCount());
+			this.rows_.add(0 + row, tableRow);
+			this.flags_.set(BIT_GRID_CHANGED);
+			this.repaint(EnumSet.of(RepaintFlag.RepaintInnerHtml));
+			return tableRow;
+		}
 	}
 
 	/**
@@ -186,10 +190,14 @@ public class WTable extends WInteractWidget {
 			if (cell != null)
 				cell.remove();
 		}
+		if (row >= this.getRowCount() - this.rowsAdded_) {
+			--this.rowsAdded_;
+		} else {
+			this.flags_.set(BIT_GRID_CHANGED);
+			this.repaint(EnumSet.of(RepaintFlag.RepaintInnerHtml));
+		}
 		;
 		this.rows_.remove(0 + row);
-		this.flags_.set(BIT_GRID_CHANGED);
-		this.repaint(EnumSet.of(RepaintFlag.RepaintInnerHtml));
 	}
 
 	/**
@@ -320,7 +328,7 @@ public class WTable extends WInteractWidget {
 		int newNumColumns = Math.max(curNumColumns, column + columnSpan);
 		if (newNumRows > this.getRowCount() || newNumColumns > curNumColumns) {
 			if (newNumColumns == curNumColumns
-					&& this.getRowCount() > this.headerRowCount_) {
+					&& this.getRowCount() >= this.headerRowCount_) {
 				this.rowsAdded_ += newNumRows - this.getRowCount();
 			} else {
 				this.flags_.set(BIT_GRID_CHANGED);
@@ -346,6 +354,9 @@ public class WTable extends WInteractWidget {
 	}
 
 	void repaintRow(WTableRow row) {
+		if (row.getRowNum() >= this.getRowCount() - this.rowsAdded_) {
+			return;
+		}
 		if (!(this.rowsChanged_ != null)) {
 			this.rowsChanged_ = new HashSet<WTableRow>();
 		}
