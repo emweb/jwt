@@ -105,22 +105,8 @@ public abstract class WAbstractProxyModel extends WAbstractItemModel {
 		return this.sourceModel_.insertColumns(column, count, parent);
 	}
 
-	public boolean insertRows(int row, int count, WModelIndex parent) {
-		int sourceRow = this.mapToSource(this.getIndex(row, 0, parent))
-				.getRow();
-		return this.sourceModel_.insertRows(sourceRow, count, this
-				.mapToSource(parent));
-	}
-
 	public boolean removeColumns(int column, int count, WModelIndex parent) {
 		return this.sourceModel_.removeColumns(column, count, parent);
-	}
-
-	public boolean removeRows(int row, int count, WModelIndex parent) {
-		int sourceRow = this.mapToSource(this.getIndex(row, 0, parent))
-				.getRow();
-		return this.sourceModel_.removeRows(sourceRow, count, this
-				.mapToSource(parent));
 	}
 
 	public String getMimeType() {

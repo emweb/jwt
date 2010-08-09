@@ -40,6 +40,8 @@ public class WIconPair extends WCompositeWidget {
 		this.setInline(true);
 		this.icon2_.hide();
 		if (clickIsSwitch) {
+			this.icon1_.clicked().preventPropagation();
+			this.icon2_.clicked().preventPropagation();
 			this.icon1_.clicked().addListener(this,
 					new Signal1.Listener<WMouseEvent>() {
 						public void trigger(WMouseEvent e1) {

@@ -94,9 +94,32 @@ public class WItemSelectionModel extends WObject {
 		this.selection_ = new TreeSet<WModelIndex>();
 		this.model_ = model;
 		this.selectionBehavior_ = SelectionBehavior.SelectRows;
+		if (this.model_ != null) {
+			this.model_.layoutAboutToBeChanged().addListener(this,
+					new Signal.Listener() {
+						public void trigger() {
+							WItemSelectionModel.this
+									.modelLayoutAboutToBeChanged();
+						}
+					});
+			this.model_.layoutChanged().addListener(this,
+					new Signal.Listener() {
+						public void trigger() {
+							WItemSelectionModel.this.modelLayoutChanged();
+						}
+					});
+		}
 	}
 
 	WItemSelectionModel(WAbstractItemModel model) {
 		this(model, (WObject) null);
+	}
+
+	private void modelLayoutAboutToBeChanged() {
+		WModelIndex.encodeAsRawIndexes(this.selection_);
+	}
+
+	private void modelLayoutChanged() {
+		this.selection_ = WModelIndex.decodeFromRawIndexes(this.selection_);
 	}
 }

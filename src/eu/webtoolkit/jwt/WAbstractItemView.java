@@ -848,6 +848,8 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	/**
 	 * Configures what actions should trigger editing.
 	 * <p>
+	 * The default value is DoubleClicked.
+	 * <p>
 	 * 
 	 * @see WAbstractItemView#edit(WModelIndex index)
 	 */
@@ -880,6 +882,8 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 
 	/**
 	 * Configures editing options.
+	 * <p>
+	 * The default value is SingleEditor;
 	 */
 	public void setEditOptions(EnumSet<WAbstractItemView.EditOption> editOptions) {
 		this.editOptions_ = EnumSet.copyOf(editOptions);
@@ -1174,7 +1178,6 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 		this.alternatingRowColors_ = false;
 		this.resizeHandleMDownJS_ = new JSlot();
 		this.editedItems_ = new HashMap<WModelIndex, WAbstractItemView.Editor>();
-		this.selectionRaw_ = new ArrayList<Object>();
 		this.clicked_ = new Signal2<WModelIndex, WMouseEvent>(this);
 		this.doubleClicked_ = new Signal2<WModelIndex, WMouseEvent>(this);
 		this.mouseWentDown_ = new Signal2<WModelIndex, WMouseEvent>(this);
@@ -1417,25 +1420,16 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	abstract void modelDataChanged(WModelIndex topLeft, WModelIndex bottomRight);
 
 	void modelLayoutAboutToBeChanged() {
-		this.convertToRaw(this.selectionModel_.selection_, this.selectionRaw_);
-		this.rawRootIndex_ = this.model_.toRawIndex(this.rootIndex_);
+		if ((this.rootIndex_ != null)) {
+			this.rootIndex_.encodeAsRawIndex();
+		}
 	}
 
 	void modelLayoutChanged() {
-		if (this.rawRootIndex_ != null) {
-			this.rootIndex_ = this.model_.fromRawIndex(this.rawRootIndex_);
-		} else {
-			this.rootIndex_ = null;
+		if ((this.rootIndex_ != null)) {
+			this.rootIndex_ = this.rootIndex_.decodeFromRawIndex();
 		}
 		this.editedItems_.clear();
-		for (int i = 0; i < this.selectionRaw_.size(); ++i) {
-			WModelIndex index = this.model_.fromRawIndex(this.selectionRaw_
-					.get(i));
-			if ((index != null)) {
-				this.selectionModel_.selection_.add(index);
-			}
-		}
-		this.selectionRaw_.clear();
 		this.scheduleRerender(WAbstractItemView.RenderState.NeedRerenderData);
 	}
 
@@ -1658,17 +1652,6 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 		return true;
 	}
 
-	void convertToRaw(SortedSet<WModelIndex> set, List<Object> result) {
-		for (Iterator<WModelIndex> i_it = set.iterator(); i_it.hasNext();) {
-			WModelIndex i = i_it.next();
-			Object rawIndex = this.model_.toRawIndex(i);
-			if (rawIndex != null) {
-				result.add(rawIndex);
-			}
-		}
-		set.clear();
-	}
-
 	void setEditState(WModelIndex index, Object editState) {
 		this.editedItems_.get(index).editState = editState;
 	}
@@ -1737,8 +1720,6 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	private boolean alternatingRowColors_;
 	private JSlot resizeHandleMDownJS_;
 	private Map<WModelIndex, WAbstractItemView.Editor> editedItems_;
-	private List<Object> selectionRaw_;
-	private Object rawRootIndex_;
 	private Signal2<WModelIndex, WMouseEvent> clicked_;
 	private Signal2<WModelIndex, WMouseEvent> doubleClicked_;
 	private Signal2<WModelIndex, WMouseEvent> mouseWentDown_;

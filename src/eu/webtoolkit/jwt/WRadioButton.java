@@ -22,20 +22,20 @@ import java.util.Map;
  * enum Vote { Republican, Democrate, NoVote };
  * 
  *  // use a group box as widget container for 3 radio buttons, with a title
- *  WGroupBox container = new WGroupBox("USA elections vote");
+ *  WGroupBox container = new WGroupBox(&quot;USA elections vote&quot;);
  * 		 
  *  // use a button group to logically group the 3 options
  *  WButtonGroup group = new WButtonGroup(this);
  * 		 
  *  WRadioButton button;
- *  button = new WRadioButton("I voted Republican", container);
+ *  button = new WRadioButton(&quot;I voted Republican&quot;, container);
  *  new WBreak(container);
  *  group.addButton(button, Vote.Republican.ordinal());
- *  button = new WRadioButton("I voted Democrat", container);
+ *  button = new WRadioButton(&quot;I voted Democrat&quot;, container);
  *  new WBreak(container);
  *  group.addButton(button, Vote.Democrate.ordinal());
  * 
- *  button = new WRadioButton("I didn't vote", container);
+ *  button = new WRadioButton(&quot;I didn't vote&quot;, container);
  *  new WBreak(container);
  *  group.addButton(button, Vote.NoVote.ordinal());
  * 		 

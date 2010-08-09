@@ -171,7 +171,6 @@ public class WTreeView extends WAbstractItemView {
 		this.borderColorRule_ = null;
 		this.rootIsDecorated_ = true;
 		this.column1Fixed_ = false;
-		this.expandedRaw_ = new ArrayList<Object>();
 		this.collapsed_ = new Signal1<WModelIndex>(this);
 		this.expanded_ = new Signal1<WModelIndex>(this);
 		this.viewportTop_ = 0;
@@ -814,7 +813,6 @@ public class WTreeView extends WAbstractItemView {
 	private WCssRule borderColorRule_;
 	private boolean rootIsDecorated_;
 	boolean column1Fixed_;
-	private List<Object> expandedRaw_;
 	Signal1<WModelIndex> collapsed_;
 	Signal1<WModelIndex> expanded_;
 	private int viewportTop_;
@@ -1373,17 +1371,13 @@ public class WTreeView extends WAbstractItemView {
 	}
 
 	void modelLayoutAboutToBeChanged() {
-		this.convertToRaw(this.expandedSet_, this.expandedRaw_);
+		WModelIndex.encodeAsRawIndexes(this.expandedSet_);
 		super.modelLayoutAboutToBeChanged();
 	}
 
 	void modelLayoutChanged() {
 		super.modelLayoutChanged();
-		for (int i = 0; i < this.expandedRaw_.size(); ++i) {
-			this.expandedSet_.add(this.getModel().fromRawIndex(
-					this.expandedRaw_.get(i)));
-		}
-		this.expandedRaw_.clear();
+		this.expandedSet_ = WModelIndex.decodeFromRawIndexes(this.expandedSet_);
 		this.renderedNodes_.clear();
 		this.pageChanged().trigger();
 	}

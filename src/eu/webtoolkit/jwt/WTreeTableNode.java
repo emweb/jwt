@@ -114,8 +114,8 @@ public class WTreeTableNode extends WTreeNode {
 		return this.table_;
 	}
 
-	public void addChildNode(WTreeNode node) {
-		super.addChildNode(node);
+	public void insertChildNode(int index, WTreeNode node) {
+		super.insertChildNode(index, node);
 		if (this.table_ != null) {
 			(((node) instanceof WTreeTableNode ? (WTreeTableNode) (node) : null))
 					.setTable(this.table_);

@@ -7,6 +7,8 @@ package eu.webtoolkit.jwt;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 /**
  * An index to a data item in a data model.
@@ -210,5 +212,79 @@ public class WModelIndex implements Comparable<WModelIndex> {
 	 */
 	public EnumSet<ItemFlag> getFlags() {
 		return model.getFlags(this);
+	}
+
+	/**
+	 * Encodes to raw index (before a layout change).
+	 * 
+	 * Use this method to encode an index for which you want to recover an index after the layout change to the same
+	 * item (which may still be in the model, but at a different location).
+	 * 
+	 * An index that has been encoded as a raw index cannot be used for anything but #decodeFromRawIndex() at a later
+	 * point.
+	 * 
+	 * @see WAbstractItemModel#toRawIndex(WModelIndex)
+	 * @see WAbstractItemModel#layoutAboutToBeChanged()
+	 * @see #decodeFromRawIndex()
+	 */
+	public void encodeAsRawIndex() {
+	    if (isRawIndex())
+		throw new WtException("WModelIndex::encodeAsRawIndex(): cannot encode a raw index to raw again");
+
+	    internalPointer = model.toRawIndex(this);
+	    row = column = -42;
+	}
+
+	private boolean isRawIndex() {
+		return row == -42 && column == -42;
+	}
+
+	/**
+	 * Decodes a raw index (after a layout change).
+	 * 
+	 * A raw index can be decoded, within the context of a model that has been re-layed out.
+	 * 
+	 * This method returns a new index that points to the same item, or <code>null</code> if the underlying model did not
+	 * support encoding to raw indexes, or, if the item to which the index previously pointed, is no longer part of the
+	 * model.
+	 * 
+	 * @see WAbstractItemModel#fromRawIndex(Object)
+	 * @see WAbstractItemModel#layoutChanged()
+	 * @see #encodeAsRawIndex()
+	 */
+	public WModelIndex decodeFromRawIndex() {
+	    	if (!isRawIndex())
+		    	throw new WtException("WModelIndex::decodeFromRawIndex(): can only decode an encoded raw index");
+
+	    	return model.fromRawIndex(getInternalPointer());
+	}
+
+	/**
+	 * Utility method for converting an entire set of indexes to raw.
+	 * 
+	 * @param indexes
+	 * 
+	 * @see #encodeAsRawIndex()
+	 */
+	public static void encodeAsRawIndexes(SortedSet<WModelIndex> indexes) {
+	    	for (WModelIndex i : indexes)
+			i.encodeAsRawIndex();
+	}
+	
+	/**
+	 * Utility method to decode an entire set of raw indexes.
+	 *
+	 * @see #decodeFromRawIndex()
+	 */
+	public static SortedSet<WModelIndex> decodeFromRawIndexes(SortedSet<WModelIndex> encodedIndexes) {
+		SortedSet<WModelIndex> result = new TreeSet<WModelIndex>();
+
+		for (WModelIndex i : encodedIndexes) {
+			WModelIndex n = i.decodeFromRawIndex();
+			if (n != null)
+				result.add(n);
+		}
+		
+		return result;
 	}
 }

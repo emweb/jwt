@@ -19,7 +19,7 @@ abstract class WWidgetPainter {
 		}
 	}
 
-	public abstract WPaintDevice getCreatePaintDevice();
+	public abstract WPaintDevice getPaintDevice();
 
 	public abstract void createContents(DomElement element, WPaintDevice device);
 

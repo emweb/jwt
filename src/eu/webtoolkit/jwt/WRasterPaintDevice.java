@@ -40,10 +40,13 @@ public class WRasterPaintDevice extends WResource implements WPaintDevice {
 	private Paint penPaint, brushPaint;
 	private boolean fontChanged;
 
-	public WRasterPaintDevice(Format format, WLength width, WLength height) {
+	public WRasterPaintDevice(String format, WLength width, WLength height) {
 		this.width = width;
 		this.height = height;
-		this.format = format;
+		if (format.equals("png"))
+		    this.format = Format.PngFormat;
+		else
+		    throw new RuntimeException("Unsupported format: " + format);
 		this.changeFlags = EnumSet.noneOf(ChangeFlag.class);
 		this.paintFlags = EnumSet.noneOf(PaintFlag.class);
 	}

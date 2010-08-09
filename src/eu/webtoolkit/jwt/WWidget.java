@@ -602,6 +602,9 @@ public abstract class WWidget extends WObject {
 	 * that are not disabled. A widget is only enabled if it and all its
 	 * ancestors in the widget tree are disabled.
 	 * <p>
+	 * Typically, a disabled form widget will not allow changing the value, and
+	 * disabled widgets will not react to mouse click events.
+	 * <p>
 	 * 
 	 * @see WWidget#disable()
 	 * @see WWidget#enable()

@@ -6,16 +6,30 @@
 package eu.webtoolkit.jwt;
 
 import java.util.List;
+import eu.webtoolkit.jwt.utils.EnumUtils;
 
 class WWidgetRasterPainter extends WWidgetPainter {
 	public WWidgetRasterPainter(WPaintedWidget widget) {
 		super(widget);
+		this.device_ = null;
 	}
 
-	public WPaintDevice getCreatePaintDevice() {
-		return new WRasterPaintDevice(WRasterPaintDevice.Format.PngFormat,
-				new WLength(this.widget_.renderWidth_), new WLength(
-						this.widget_.renderHeight_));
+	public WPaintDevice getPaintDevice() {
+		if (this.device_ != null) {
+			if (!!EnumUtils.mask(this.device_.getPaintFlags(),
+					PaintFlag.PaintUpdate).isEmpty()) {
+				WPainter painter = new WPainter(this.device_);
+				painter.setBrush(new WBrush(WColor.white));
+				painter.setPen(new WPen(PenStyle.NoPen));
+				painter.drawRect(0, 0, this.widget_.renderWidth_,
+						this.widget_.renderHeight_);
+			}
+		} else {
+			this.device_ = new WRasterPaintDevice("png", new WLength(
+					this.widget_.renderWidth_), new WLength(
+					this.widget_.renderHeight_));
+		}
+		return this.device_;
 	}
 
 	public void createContents(DomElement result, WPaintDevice device) {
@@ -29,14 +43,14 @@ class WWidgetRasterPainter extends WWidgetPainter {
 		img.setAttribute("unselectable", "on");
 		img.setAttribute("onselectstart", "return false;");
 		img.setAttribute("onmousedown", "return false;");
-		WRasterPaintDevice rasterDevice = ((device) instanceof WRasterPaintDevice ? (WRasterPaintDevice) (device)
+		WResource resource = ((device) instanceof WResource ? (WResource) (device)
 				: null);
-		img.setAttribute("src", rasterDevice.generateUrl());
+		img.setAttribute("src", resource.generateUrl());
 		result.addChild(img);
 	}
 
 	public void updateContents(List<DomElement> result, WPaintDevice device) {
-		WRasterPaintDevice rasterDevice = ((device) instanceof WRasterPaintDevice ? (WRasterPaintDevice) (device)
+		WResource resource = ((device) instanceof WResource ? (WResource) (device)
 				: null);
 		DomElement img = DomElement.getForUpdate('i' + this.widget_.getId(),
 				DomElementType.DomElement_IMG);
@@ -48,11 +62,13 @@ class WWidgetRasterPainter extends WWidgetPainter {
 					.valueOf(this.widget_.renderHeight_));
 			this.widget_.sizeChanged_ = false;
 		}
-		img.setAttribute("src", rasterDevice.generateUrl());
+		img.setAttribute("src", resource.generateUrl());
 		result.add(img);
 	}
 
 	public WWidgetPainter.RenderType getRenderType() {
 		return WWidgetPainter.RenderType.PngImage;
 	}
+
+	private WPaintDevice device_;
 }

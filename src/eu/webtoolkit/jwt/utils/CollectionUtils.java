@@ -26,4 +26,22 @@ public class CollectionUtils {
 			return i;
 	}
 
+	/*
+	 * Returns index of first value in list which is equal to, or greater than value.
+	 */
+	public static int lowerBound(List<Integer> list, int value) {
+		int i = Collections.binarySearch(list, value);
+		if (i < 0) {
+			return -1 - i;
+		} else
+			return i;
+	}
+
+	/*
+	 * Returns index of first value in list which is greater than value. 
+	 */
+	public static int upperBound(List<Integer> list, int value) {
+		return lowerBound(list, value + 1);
+	}
+
 }

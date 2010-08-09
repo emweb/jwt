@@ -47,6 +47,7 @@ public abstract class WWebWidget extends WWidget {
 		this.otherImpl_ = null;
 		this.children_ = null;
 		this.flags_.set(BIT_INLINE);
+		this.flags_.set(BIT_ENABLED);
 		if (parent != null) {
 			parent.addWidget(this);
 		}
@@ -736,11 +737,14 @@ public abstract class WWebWidget extends WWidget {
 	 * <p>
 	 * By default, invisible widgets are loaded only after visible content. For
 	 * tiny widgets this may lead to a performance loss, instead of the expected
-	 * increase, because they require many more DOM manipulation to render,
+	 * increase, because they require many more DOM manipulations to render,
 	 * reducing the overall responsiveness of the application.
 	 * <p>
 	 * Therefore, this is disabled for some widgets like {@link WImage}, or
 	 * empty WContainerWidgets.
+	 * <p>
+	 * You may also want to disable deferred loading when JavaScript event
+	 * handling expects the widget to be loaded.
 	 * <p>
 	 * Usually the default settings are fine, but you may want to change the
 	 * behaviour.
@@ -1579,6 +1583,7 @@ public abstract class WWebWidget extends WWidget {
 	private static final int BIT_DISABLED_CHANGED = 25;
 	private static final int BIT_HIDE_WITH_VISIBILITY = 26;
 	private static final int BIT_HIDDEN_CHANGED = 27;
+	static final int BIT_ENABLED = 28;
 	BitSet flags_;
 	private WLength width_;
 	private WLength height_;
@@ -1770,7 +1775,9 @@ public abstract class WWebWidget extends WWidget {
 							w = p.getWebWidget();
 						}
 					} while (p != null && w == this);
-					w.getSDomChanges(result, app);
+					if (w != this) {
+						w.getSDomChanges(result, app);
+					}
 				} else {
 					if (this.flags_.get(BIT_REPAINT_INNER_HTML)
 							|| !this.flags_.get(BIT_REPAINT_PROPERTY_IEMOBILE)) {

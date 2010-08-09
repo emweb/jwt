@@ -11,17 +11,20 @@ import java.util.List;
 import eu.webtoolkit.jwt.utils.EnumUtils;
 
 /**
- * Helper class for painting on a {@link WPaintDevice}.
+ * Vector graphics painting class.
  * <p>
  * 
- * The painter class provides a rich interface for painting on a
- * {@link WPaintDevice}. To start painting on a device, either pass the device
- * through the constructor {@link WPainter#WPainter(WPaintDevice device)
- * WPainter()}, or use {@link WPainter#begin(WPaintDevice device) begin()}.
- * Typically, you will instantiate a WPainter from within the
+ * The painter class provides a vector graphics interface for painting. It needs
+ * to be used in conjunction with a {@link WPaintDevice}, onto which it paints.
+ * To start painting on a device, either pass the device through the
+ * constructor, or use {@link WPainter#begin(WPaintDevice device) begin()}.
+ * <p>
+ * A typical use is to instantiate a WPainter from within a specialized
  * {@link WPaintedWidget#paintEvent(WPaintDevice paintDevice)
- * WPaintedWidget#paintEvent()} method, but you can also use a painter to paint
- * directly to a particular paint device, for example to create an SVG image.
+ * WPaintedWidget#paintEvent()} implementation, to paint on the given paint
+ * device, but you can also use a painter to paint directly to a particular
+ * paint device of choice, for example to create SVG, PDF or PNG images (as
+ * resources).
  * <p>
  * The painter maintains state such as the current
  * {@link WPainter#setPen(WPen p) pen}, {@link WPainter#setBrush(WBrush b)
@@ -34,16 +37,35 @@ import eu.webtoolkit.jwt.utils.EnumUtils;
  * <p>
  * The painting system distinguishes between device coordinates, logical
  * coordinates, and local coordinates. The device coordinate system ranges from
- * (0, 0) in the top left corner of the device, to (
- * {@link WPaintDevice#getWidth() WPaintDevice#getWidth()},
- * {@link WPaintDevice#getHeight() WPaintDevice#getHeight()}) for the bottom
- * right corner. The logical coordinate system defines a coordinate system that
- * may be chosen independent of the geometry of the device, which is convenient
- * to make abstraction of the actual device size. Finally, the current local
- * coordinate system may be different from the logical coordinate system because
- * of a world transformation. Initially, the local coordinate system coincides
- * with the logical coordinate system, which coincides with the device
- * coordinate system.
+ * (0, 0) in the top left corner of the device, to (device.width().toPixels(),
+ * device.height().toPixels()) for the bottom right corner. The logical
+ * coordinate system defines a coordinate system that may be chosen independent
+ * of the geometry of the device, which is convenient to make abstraction of the
+ * actual device size. Finally, the current local coordinate system may be
+ * different from the logical coordinate system because of a transformation set
+ * (using {@link WPainter#translate(WPointF p) translate()},
+ * {@link WPainter#rotate(double angle) rotate()}, and
+ * {@link WPainter#scale(double sx, double sy) scale()}). Initially, the local
+ * coordinate system coincides with the logical coordinate system, which
+ * coincides with the device coordinate system.
+ * <p>
+ * The device coordinates are defined in terms of pixels. Even though most
+ * underlying devices are actual vector graphics formats, when used in
+ * conjunction with a {@link WPaintedWidget}, these vector graphics are rendered
+ * by the browser onto a pixel-based canvas (like the rest of the
+ * user-interface). The coordinates are defined such that integer values
+ * correspond to an imaginary raster which separates the individual pixels, as
+ * in the figure below.
+ * <p>
+ * <div align="center"> <img src="doc-files//WPainter.png"
+ * alt="The device coordinate system for a 6x5 pixel device">
+ * <p>
+ * <strong>The device coordinate system for a 6x5 pixel device</strong>
+ * </p>
+ * </div> As a consequence, to avoid anti-aliasing effects when drawing straight
+ * lines of width one pixel, you will need to use vertices that indicate the
+ * middle of a pixel to get a crisp one-pixel wide line, as in the example
+ * figure.
  * <p>
  * By setting a {@link WPainter#getViewPort() getViewPort()} and a
  * {@link WPainter#getWindow() getWindow()}, a viewPort transformation is
@@ -55,8 +77,9 @@ import eu.webtoolkit.jwt.utils.EnumUtils;
  * {@link WPainter#scale(double sx, double sy) scale()} operations), it is
  * defined how current local coordinates map onto logical coordinates.
  * <p>
- * Although the painter has support for clipping using an arbitrary
- * {@link WPainterPath path}, not all devices support clipping.
+ * The painter provides support for clipping using an arbitrary
+ * {@link WPainterPath path}, but not that the VmlImage only has limited support
+ * for clipping.
  * <p>
  * 
  * @see WPaintedWidget#paintEvent(WPaintDevice paintDevice)
@@ -656,7 +679,11 @@ public class WPainter {
 	/**
 	 * Draws a point.
 	 * <p>
-	 * Draws a single point using the current pen.
+	 * Draws a single point using the current pen. This is implemented by
+	 * drawing a very short line, centered around the given
+	 * <code>position</code>. To get the result of a single point, you should
+	 * use a pen with a {@link PenCapStyle#SquareCap} or
+	 * {@link PenCapStyle#RoundCap} pen cap style.
 	 * <p>
 	 * 
 	 * @see WPainter#drawPoint(double x, double y)
@@ -674,7 +701,7 @@ public class WPainter {
 	 * @see WPainter#drawPoint(WPointF point)
 	 */
 	public void drawPoint(double x, double y) {
-		this.drawLine(x - 0.1, y - 0.1, x + 0.1, y + 0.1);
+		this.drawLine(x - 0.05, y - 0.05, x + 0.05, y + 0.05);
 	}
 
 	/**

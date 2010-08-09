@@ -277,6 +277,13 @@ public class WSvgImage extends WResource implements WVectorImage {
 		return this.paintFlags_;
 	}
 
+	public void handleRequest(WebRequest request, WebResponse response)
+			throws IOException {
+		response.setContentType("image/svg+xml");
+		Writer o = response.out();
+		this.streamResourceData(o);
+	}
+
 	public WPainter getPainter() {
 		return this.painter_;
 	}
@@ -292,13 +299,6 @@ public class WSvgImage extends WResource implements WVectorImage {
 	public final void setPaintFlags(PaintFlag paintFlag,
 			PaintFlag... paintFlags) {
 		setPaintFlags(EnumSet.of(paintFlag, paintFlags));
-	}
-
-	protected void handleRequest(WebRequest request, WebResponse response)
-			throws IOException {
-		response.setContentType("image/svg+xml");
-		Writer o = response.out();
-		this.streamResourceData(o);
 	}
 
 	private WLength width_;

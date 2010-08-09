@@ -67,8 +67,7 @@ import eu.webtoolkit.jwt.utils.EnumUtils;
  * off.
  * <p>
  * The PngImage is the most portable rendering method, and may be the fastest if
- * the painting is of high complexity and/or the image is fairly small. This
- * method uses the standard library Graphics2D to paint on a BufferedImage.
+ * the painting is of high complexity and/or the image is fairly small.
  * <p>
  * To use a WPaintedWidget, you must derive from it and reimplement
  * {@link WPaintedWidget#paintEvent(WPaintDevice paintDevice) paintEvent()}. To
@@ -353,7 +352,7 @@ public abstract class WPaintedWidget extends WInteractWidget {
 		if (!app.getEnvironment().agentIsSpiderBot()) {
 			canvas.setId('p' + this.getId());
 		}
-		WPaintDevice device = this.painter_.getCreatePaintDevice();
+		WPaintDevice device = this.painter_.getPaintDevice();
 		if (this.painter_.getRenderType() == WWidgetPainter.RenderType.InlineVml
 				&& this.isInline()) {
 			result.setProperty(Property.PropertyStyle, "zoom: 1;");
@@ -367,7 +366,6 @@ public abstract class WPaintedWidget extends WInteractWidget {
 			}
 		}
 		this.painter_.createContents(canvas, device);
-		;
 		this.needRepaint_ = false;
 		wrap.addChild(canvas);
 		if (wrap != result) {
@@ -384,7 +382,7 @@ public abstract class WPaintedWidget extends WInteractWidget {
 		result.add(e);
 		boolean createNew = this.isCreatePainter();
 		if (this.needRepaint_) {
-			WPaintDevice device = this.painter_.getCreatePaintDevice();
+			WPaintDevice device = this.painter_.getPaintDevice();
 			if (!createNew) {
 				device.setPaintFlags(EnumUtils.mask(this.repaintFlags_,
 						PaintFlag.PaintUpdate));
@@ -402,7 +400,6 @@ public abstract class WPaintedWidget extends WInteractWidget {
 			} else {
 				this.painter_.updateContents(result, device);
 			}
-			;
 			this.needRepaint_ = false;
 			this.repaintFlags_.clear();
 		}

@@ -500,8 +500,7 @@ public class WPainterPath {
 				double ry = this.segments_.get(i + 1).getY();
 				double theta1 = this.segments_.get(i + 2).getX();
 				double deltaTheta = this.segments_.get(i + 2).getY();
-				return getArcPosition(cx, cy, rx, ry, degreesToRadians(theta1
-						+ deltaTheta));
+				return getArcPosition(cx, cy, rx, ry, theta1 + deltaTheta);
 			}
 			default:
 				assert false;
