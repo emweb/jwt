@@ -287,15 +287,19 @@ public class WSuggestionPopup extends WCompositeWidget {
 		this.filterLength_ = 0;
 		this.matcherJS_ = generateMatcherJS(options);
 		this.replacerJS_ = generateReplacerJS(options);
-		this.filterModel_ = new Signal1<String>();
+		this.filterModel_ = new Signal1<String>(this);
+		this.activated_ = new Signal2<Integer, WFormWidget>(this);
 		this.modelConnections_ = new ArrayList<AbstractSignal.Connection>();
 		this.filter_ = new JSignal1<String>(this.impl_, "filter") {
+		};
+		this.jactivated_ = new JSignal2<String, String>(this.impl_, "select") {
 		};
 		this.editKeyDown_ = new JSlot(parent);
 		this.editKeyUp_ = new JSlot(parent);
 		this.editClick_ = new JSlot(parent);
 		this.editMouseMove_ = new JSlot(parent);
 		this.delayHide_ = new JSlot(parent);
+		this.edits_ = new ArrayList<WFormWidget>();
 		this.init();
 	}
 
@@ -326,14 +330,18 @@ public class WSuggestionPopup extends WCompositeWidget {
 		this.matcherJS_ = matcherJS;
 		this.replacerJS_ = replacerJS;
 		this.filterModel_ = new Signal1<String>();
+		this.activated_ = new Signal2<Integer, WFormWidget>();
 		this.modelConnections_ = new ArrayList<AbstractSignal.Connection>();
 		this.filter_ = new JSignal1<String>(this.impl_, "filter") {
+		};
+		this.jactivated_ = new JSignal2<String, String>(this.impl_, "select") {
 		};
 		this.editKeyDown_ = new JSlot(parent);
 		this.editKeyUp_ = new JSlot(parent);
 		this.editClick_ = new JSlot(parent);
 		this.editMouseMove_ = new JSlot(parent);
 		this.delayHide_ = new JSlot(parent);
+		this.edits_ = new ArrayList<WFormWidget>();
 		this.init();
 	}
 
@@ -354,7 +362,12 @@ public class WSuggestionPopup extends WCompositeWidget {
 	 * A single suggestion popup may assist in several edits by repeated calls
 	 * of this method.
 	 * <p>
-	 * The <code>popupTrigger</code>
+	 * The <code>popupTriggers</code> control how editing is triggered (either
+	 * by the user editing the field by entering keys or by an explicit drop
+	 * down menu that is shown inside the edit).
+	 * <p>
+	 * 
+	 * @see WSuggestionPopup#removeEdit(WFormWidget edit)
 	 */
 	public void forEdit(WFormWidget edit,
 			EnumSet<WSuggestionPopup.PopupTrigger> triggers) {
@@ -372,6 +385,7 @@ public class WSuggestionPopup extends WCompositeWidget {
 			edit.clicked().addListener(this.editClick_);
 			edit.mouseMoved().addListener(this.editMouseMove_);
 		}
+		this.edits_.add(edit);
 	}
 
 	/**
@@ -394,6 +408,21 @@ public class WSuggestionPopup extends WCompositeWidget {
 	 */
 	public final void forEdit(WFormWidget edit) {
 		forEdit(edit, EnumSet.of(WSuggestionPopup.PopupTrigger.Editing));
+	}
+
+	/**
+	 * Removes the edit field from the list of assisted editors.
+	 * <p>
+	 * The editor will no longer be assisted by this popup widget.
+	 * <p>
+	 * 
+	 * @see WSuggestionPopup#forEdit(WFormWidget edit, EnumSet triggers)
+	 */
+	public void removeEdit(WFormWidget edit) {
+		if (this.edits_.remove(edit)) {
+			edit.removeStyleClass("Wt-suggest-onedit");
+			edit.removeStyleClass("Wt-suggest-dropdown");
+		}
 	}
 
 	/**
@@ -621,6 +650,16 @@ public class WSuggestionPopup extends WCompositeWidget {
 		return this.filterModel_;
 	}
 
+	/**
+	 * Signal emitted when a suggestion was selected.
+	 * <p>
+	 * The selected item is passed as the first argument and the editor as the
+	 * second.
+	 */
+	public Signal2<Integer, WFormWidget> activated() {
+		return this.activated_;
+	}
+
 	public void setMaximumSize(WLength width, WLength height) {
 		super.setMaximumSize(width, height);
 		this.content_.setMaximumSize(width, height);
@@ -639,13 +678,16 @@ public class WSuggestionPopup extends WCompositeWidget {
 	private String replacerJS_;
 	private WContainerWidget content_;
 	private Signal1<String> filterModel_;
+	private Signal2<Integer, WFormWidget> activated_;
 	private List<AbstractSignal.Connection> modelConnections_;
 	private JSignal1<String> filter_;
+	private JSignal2<String, String> jactivated_;
 	private JSlot editKeyDown_;
 	private JSlot editKeyUp_;
 	private JSlot editClick_;
 	private JSlot editMouseMove_;
 	private JSlot delayHide_;
+	private List<WFormWidget> edits_;
 
 	private void init() {
 		this.setImplementation(this.impl_);
@@ -669,6 +711,12 @@ public class WSuggestionPopup extends WCompositeWidget {
 				WSuggestionPopup.this.doFilter(e1);
 			}
 		});
+		this.jactivated_.addListener(this,
+				new Signal2.Listener<String, String>() {
+					public void trigger(String e1, String e2) {
+						WSuggestionPopup.this.doActivate(e1, e2);
+					}
+				});
 	}
 
 	private void doFilter(String input) {
@@ -677,6 +725,28 @@ public class WSuggestionPopup extends WCompositeWidget {
 		app.doJavaScript("jQuery.data(" + this.getJsRef()
 				+ ", 'obj').filtered(" + WWebWidget.jsStringLiteral(input)
 				+ ")");
+	}
+
+	private void doActivate(String itemId, String editId) {
+		WFormWidget edit = null;
+		for (int i = 0; i < this.edits_.size(); ++i) {
+			if (this.edits_.get(i).getId().equals(editId)) {
+				edit = this.edits_.get(i);
+				break;
+			}
+		}
+		if (edit == null) {
+			WApplication.getInstance().log("error").append(
+					"WSuggestionPopup activate from bogus editor");
+		}
+		for (int i = 0; i < this.content_.getCount(); ++i) {
+			if (this.content_.getWidget(i).getId().equals(itemId)) {
+				this.activated_.trigger(i, edit);
+				return;
+			}
+		}
+		WApplication.getInstance().log("error").append(
+				"WSuggestionPopup activate for bogus item");
 	}
 
 	private void setJavaScript(JSlot slot, String methodName) {
@@ -770,7 +840,7 @@ public class WSuggestionPopup extends WCompositeWidget {
 	}
 
 	static String wtjs1(WApplication app) {
-		return "Wt3_1_4.WSuggestionPopup = function(q,d,x,y,p){function r(){return d.style.display!=\"none\"}function k(){d.style.display=\"none\"}function z(a){c.positionAtWidget(d.id,a.id,c.Vertical)}function A(a){a=a||window.event;a=a.target||a.srcElement;if(a.className!=\"content\"){if(!c.hasTag(a,\"DIV\"))a=a.parentNode;s(a)}}function s(a){var b=a.firstChild;a=c.getElement(e);var i=b.innerHTML;b=b.getAttribute(\"sug\");a.focus();x(a,i,b);k();e=null}function B(a,b){for(a=b?a.nextSibling:a.previousSibling;a;a= b?a.nextSibling:a.previousSibling)if(c.hasTag(a,\"DIV\"))if(a.style.display!=\"none\")return a;return null}$(\".Wt-domRoot\").add(d);jQuery.data(d,\"obj\",this);var n=this,c=q.WT,m=null,e=null,t=false,u=null,v=null,o=null;this.showPopup=function(){d.style.display=\"\";m=null};this.editMouseMove=function(a,b){a.style.cursor=c.widgetCoordinates(a,b).x>a.offsetWidth-16?\"default\":\"\"};this.editClick=function(a,b){if(c.widgetCoordinates(a,b).x>a.offsetWidth-16)if(e!=a.id){k();e=a.id;n.refilter()}else{e=null;k()}}; this.editKeyDown=function(a,b){if(e!=a.id)if($(a).hasClass(\"Wt-suggest-onedit\"))e=a.id;else if($(a).hasClass(\"Wt-suggest-dropdown\")&&b.keyCode==40)e=a.id;else{e=null;return true}var i=m?c.getElement(m):null;if(r()&&i)if(b.keyCode==13||b.keyCode==9){s(i);c.cancelEvent(b);setTimeout(function(){a.focus()},0);return false}else if(b.keyCode==40||b.keyCode==38||b.keyCode==34||b.keyCode==33){if(b.type.toUpperCase()==\"KEYDOWN\"){t=true;c.cancelEvent(b,c.CancelDefaultAction)}if(b.type.toUpperCase()==\"KEYPRESS\"&& t==true){c.cancelEvent(b);return false}var f=i,j=b.keyCode==40||b.keyCode==34;b=b.keyCode==34||b.keyCode==33?d.clientHeight/i.offsetHeight:1;var h;for(h=0;f&&h<b;++h){var l=B(f,j);if(!l)break;f=l}if(f&&c.hasTag(f,\"DIV\")){i.className=\"\";f.className=\"sel\";m=f.id}return false}return b.keyCode!=13&&b.keyCode!=9};this.filtered=function(a){u=a;n.refilter()};this.refilter=function(){var a=m?c.getElement(m):null,b=c.getElement(e),i=y(b),f=!$(b).hasClass(\"Wt-suggest-dropdown\"),j=d.lastChild.childNodes,h=i(null); if(p)if(f&&h.length<p){k();return}else{j=h.substring(0,p);if(j!=u){if(j!=v){v=j;q.emit(d,\"filter\",j)}if(f){k();return}}}var l=null;j=d.lastChild.childNodes;f=!f&&h.length==0;for(h=0;h<j.length;h++){var g=j[h];if(c.hasTag(g,\"DIV\")){if(g.orig==null)g.orig=g.firstChild.innerHTML;else g.firstChild.innerHTML=g.orig;var w=i(g.firstChild.innerHTML),C=f||w.match;g.firstChild.innerHTML=w.suggestion;if(C){g.style.display=\"\";if(l==null)l=g}else g.style.display=\"none\";g.className=\"\"}}if(l==null)k();else{if(!r()){z(b); n.showPopup();a=null}if(!a||a.style.display==\"none\"){m=l.id;a=l;a.parentNode.scrollTop=0}a.className=\"sel\";b=a.parentNode;if(a.offsetTop+a.offsetHeight>b.scrollTop+b.clientHeight)b.scrollTop=a.offsetTop+a.offsetHeight-b.clientHeight;else if(a.offsetTop<b.scrollTop)b.scrollTop=a.offsetTop}};this.editKeyUp=function(a,b){if(e!=null)if(!((b.keyCode==13||b.keyCode==9)&&d.style.display==\"none\"))if(b.keyCode==27||b.keyCode==37||b.keyCode==39){d.style.display=\"none\";if(b.keyCode==27){e=null;$(a).hasClass(\"Wt-suggest-dropdown\")? k():a.blur()}}else n.refilter()};d.lastChild.onclick=A;d.lastChild.onscroll=function(){if(o){clearTimeout(o);var a=c.getElement(e);a&&a.focus()}};this.delayHide=function(a){o=setTimeout(function(){o=null;if(d&&(a==null||e==a.id))k()},300)}};";
+		return "Wt3_1_4.WSuggestionPopup = function(q,d,y,z,r){function m(a){return $(a).hasClass(\"Wt-suggest-onedit\")||$(a).hasClass(\"Wt-suggest-dropdown\")}function s(){return d.style.display!=\"none\"}function k(){d.style.display=\"none\"}function A(a){c.positionAtWidget(d.id,a.id,c.Vertical)}function B(a){a=a||window.event;a=a.target||a.srcElement;if(a.className!=\"content\"){if(!c.hasTag(a,\"DIV\"))a=a.parentNode;t(a)}}function t(a){var b=a.firstChild,h=c.getElement(f),e=b.innerHTML;b=b.getAttribute(\"sug\"); h.focus();q.emit(d,\"select\",a.id,h.id);y(h,e,b);k();f=null}function C(a,b){for(a=b?a.nextSibling:a.previousSibling;a;a=b?a.nextSibling:a.previousSibling)if(c.hasTag(a,\"DIV\"))if(a.style.display!=\"none\")return a;return null}$(\".Wt-domRoot\").add(d);jQuery.data(d,\"obj\",this);var n=this,c=q.WT,l=null,f=null,u=false,v=null,w=null,o=null;this.showPopup=function(){d.style.display=\"\";l=null};this.editMouseMove=function(a,b){if(m(a))a.style.cursor=c.widgetCoordinates(a,b).x>a.offsetWidth-16?\"default\":\"\"};this.editClick= function(a,b){if(m(a))if(c.widgetCoordinates(a,b).x>a.offsetWidth-16)if(f!=a.id){k();f=a.id;n.refilter()}else{f=null;k()}};this.editKeyDown=function(a,b){if(!m(a))return true;if(f!=a.id)if($(a).hasClass(\"Wt-suggest-onedit\"))f=a.id;else if($(a).hasClass(\"Wt-suggest-dropdown\")&&b.keyCode==40)f=a.id;else{f=null;return true}var h=l?c.getElement(l):null;if(s()&&h)if(b.keyCode==13||b.keyCode==9){t(h);c.cancelEvent(b);setTimeout(function(){a.focus()},0);return false}else if(b.keyCode==40||b.keyCode==38|| b.keyCode==34||b.keyCode==33){if(b.type.toUpperCase()==\"KEYDOWN\"){u=true;c.cancelEvent(b,c.CancelDefaultAction)}if(b.type.toUpperCase()==\"KEYPRESS\"&&u==true){c.cancelEvent(b);return false}var e=h,p=b.keyCode==40||b.keyCode==34;b=b.keyCode==34||b.keyCode==33?d.clientHeight/h.offsetHeight:1;var j;for(j=0;e&&j<b;++j){var g=C(e,p);if(!g)break;e=g}if(e&&c.hasTag(e,\"DIV\")){h.className=\"\";e.className=\"sel\";l=e.id}return false}return b.keyCode!=13&&b.keyCode!=9};this.filtered=function(a){v=a;n.refilter()}; this.refilter=function(){var a=l?c.getElement(l):null,b=c.getElement(f),h=z(b),e=!$(b).hasClass(\"Wt-suggest-dropdown\"),p=d.lastChild.childNodes,j=h(null);if(r)if(e&&j.length<r){k();return}else{var g=j.substring(0,r);if(g!=v){if(g!=w){w=g;q.emit(d,\"filter\",g)}if(e){k();return}}}g=null;e=!e&&j.length==0;for(j=0;j<p.length;j++){var i=p[j];if(c.hasTag(i,\"DIV\")){if(i.orig==null)i.orig=i.firstChild.innerHTML;else i.firstChild.innerHTML=i.orig;var x=h(i.firstChild.innerHTML),D=e||x.match;i.firstChild.innerHTML= x.suggestion;if(D){i.style.display=\"\";if(g==null)g=i}else i.style.display=\"none\";i.className=\"\"}}if(g==null)k();else{if(!s()){A(b);n.showPopup();a=null}if(!a||a.style.display==\"none\"){l=g.id;a=g;a.parentNode.scrollTop=0}a.className=\"sel\";b=a.parentNode;if(a.offsetTop+a.offsetHeight>b.scrollTop+b.clientHeight)b.scrollTop=a.offsetTop+a.offsetHeight-b.clientHeight;else if(a.offsetTop<b.scrollTop)b.scrollTop=a.offsetTop}};this.editKeyUp=function(a,b){if(f!=null)if(m(a))if(!((b.keyCode==13||b.keyCode== 9)&&d.style.display==\"none\"))if(b.keyCode==27||b.keyCode==37||b.keyCode==39){d.style.display=\"none\";if(b.keyCode==27){f=null;$(a).hasClass(\"Wt-suggest-dropdown\")?k():a.blur()}}else n.refilter()};d.lastChild.onclick=B;d.lastChild.onscroll=function(){if(o){clearTimeout(o);var a=c.getElement(f);a&&a.focus()}};this.delayHide=function(a){o=setTimeout(function(){o=null;if(d&&(a==null||f==a.id))k()},300)}};";
 	}
 
 	static String generateParseEditJS(WSuggestionPopup.Options options) {

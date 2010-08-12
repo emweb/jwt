@@ -19,16 +19,13 @@ import eu.webtoolkit.jwt.WText;
  * to events, read input, and give feed-back.
  */
 public class HelloApplication extends WApplication {
-    private WLineEdit nameEdit;
-    private WText greeting;
-
     public HelloApplication(WEnvironment env) {
         super(env);
         
         setTitle("Hello world");
 
         getRoot().addWidget(new WText("Your name, please ? "));
-        nameEdit = new WLineEdit(getRoot());
+        final WLineEdit nameEdit = new WLineEdit(getRoot());
         nameEdit.setFocus();
 
         WPushButton button = new WPushButton("Greet me.", getRoot());
@@ -36,7 +33,7 @@ public class HelloApplication extends WApplication {
 
         getRoot().addWidget(new WBreak());
 
-        greeting = new WText(getRoot());
+        final WText greeting = new WText(getRoot());
 
         button.clicked().addListener(this, new Signal.Listener() {
             public void trigger() {

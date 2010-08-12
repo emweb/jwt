@@ -158,10 +158,13 @@ class WebRenderer implements SlotLearnerInterface {
 					WWebWidget.escapeText(new WString(message), true)
 							.toString()).append('\n');
 		} else {
-			this.collectedJS1_
-					.append("document.title = 'Error occurred.';document.body.innerHtml='<h2>Error occurred.</h2>' +");
-			DomElement.jsStringLiteral(this.collectedJS1_, message, '\'');
-			this.collectedJS1_.append(";");
+			response
+					.out()
+					.append(WApplication.getInstance().getJavaScriptClass())
+					.append(
+							"._p_.quit();document.title = 'Error occurred.';document.body.innerHtml='<h2>Error occurred.</h2>' +");
+			DomElement.jsStringLiteral(response.out(), message, '\'');
+			response.out().append(";");
 		}
 	}
 

@@ -934,6 +934,10 @@ public abstract class WWidget extends WObject {
 	 * The default implementation simply propagates the load signal to its
 	 * children. You may want to override this method to delay loading of
 	 * resource-intensive contents.
+	 * <p>
+	 * During the life-time of a widget, this method may be called multiple
+	 * times, so you should make sure that you do a deferred initializiation
+	 * only once.
 	 */
 	public abstract void load();
 

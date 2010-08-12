@@ -2076,6 +2076,10 @@ public class WApplication extends WObject {
 		WeakReference<AbstractEventSignal> i = this.exposedSignals_
 				.get(signalName);
 		if (i != null) {
+			AbstractEventSignal esb = i.get();
+			if (!(esb != null)) {
+				return null;
+			}
 			WWidget w = ((i.get().getSender()) instanceof WWidget ? (WWidget) (i
 					.get().getSender())
 					: null);
@@ -2166,8 +2170,8 @@ public class WApplication extends WObject {
 			if (!path.equals(this.newInternalPath_)) {
 				String v = "";
 				this.newInternalPath_ = path;
+				this.internalPathChanged().trigger(this.newInternalPath_);
 			}
-			this.internalPathChanged().trigger(this.newInternalPath_);
 		}
 	}
 

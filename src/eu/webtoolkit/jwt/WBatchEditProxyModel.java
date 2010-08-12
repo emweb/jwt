@@ -1052,6 +1052,8 @@ public class WBatchEditProxyModel extends WAbstractProxyModel {
 				} else {
 					c.row += count;
 				}
+			} else {
+				break;
 			}
 		}
 	}
@@ -1080,6 +1082,7 @@ public class WBatchEditProxyModel extends WAbstractProxyModel {
 				} else {
 					c.column += count;
 				}
+			} else {
 			}
 		}
 	}

@@ -277,7 +277,7 @@ public class WImage extends WInteractWidget {
 	 * inserted at index <code>index</code>. When areas overlap, the area with
 	 * the lowest index receives the event.
 	 * <p>
-	 * Ownership of the <code>Area</code> is transferred to the image.
+	 * Ownership of the <code>area</code> is transferred to the image.
 	 * <p>
 	 * 
 	 * @see WImage#addArea(WAbstractArea area)
