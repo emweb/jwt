@@ -225,6 +225,7 @@ public class WTable extends WInteractWidget {
 			this.rows_.get(i).deleteColumn(column);
 		}
 		if ((int) column <= this.columns_.size()) {
+			;
 			this.columns_.remove(0 + column);
 		}
 		this.flags_.set(BIT_GRID_CHANGED);

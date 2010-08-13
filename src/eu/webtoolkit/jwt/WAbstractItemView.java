@@ -1191,6 +1191,9 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 		this.setImplementation(this.impl_);
 		this.setItemDelegate(new WItemDelegate(this));
 		WApplication app = WApplication.getInstance();
+		if (app.getEnvironment().agentIsChrome()) {
+			this.impl_.setMargin(new WLength(1), EnumSet.of(Side.Right));
+		}
 		this.clickedForSortMapper_ = new WSignalMapper1<Integer>(this);
 		this.clickedForSortMapper_.mapped().addListener(this,
 				new Signal1.Listener<Integer>() {

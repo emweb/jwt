@@ -13,6 +13,14 @@ class AreaWidget extends WInteractWidget {
 		this.facade_ = facade;
 	}
 
+	public void remove() {
+		if (this.facade_ != null) {
+			this.facade_.impl_ = null;
+			;
+		}
+		super.remove();
+	}
+
 	void repaint(EnumSet<RepaintFlag> flags) {
 		super.repaint(EnumSet.of(RepaintFlag.RepaintPropertyAttribute));
 	}

@@ -244,6 +244,9 @@ public class WSvgImage extends WResource implements WVectorImage {
 		this.fillStyle_ = this.getFillStyle();
 		this.fontStyle_ = this.getFontStyle();
 		this.newClipPath_ = true;
+		if (!!EnumUtils.mask(this.paintFlags_, PaintFlag.PaintUpdate).isEmpty()) {
+			this.shapes_ = new StringWriter();
+		}
 	}
 
 	public void done() {

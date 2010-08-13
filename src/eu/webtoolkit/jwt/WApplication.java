@@ -1112,7 +1112,7 @@ public class WApplication extends WObject {
 	 *    try {
 	 *      // We now have exclusive access to the application:
 	 *      // we can safely modify the widget tree for example.
-	 *      app.getRoot().addWidget(new WText("Something happened!"));
+	 *      app.getRoot().addWidget(new WText(&quot;Something happened!&quot;));
 	 *   
 	 *      // Push the changes to the browser
 	 *      app.triggerUpdate();
@@ -2076,10 +2076,6 @@ public class WApplication extends WObject {
 		WeakReference<AbstractEventSignal> i = this.exposedSignals_
 				.get(signalName);
 		if (i != null) {
-			AbstractEventSignal esb = i.get();
-			if (!(esb != null)) {
-				return null;
-			}
 			WWidget w = ((i.get().getSender()) instanceof WWidget ? (WWidget) (i
 					.get().getSender())
 					: null);

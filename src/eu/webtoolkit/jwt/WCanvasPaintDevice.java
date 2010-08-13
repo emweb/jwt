@@ -402,6 +402,9 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 		this.currentFont_ = new WFont();
 		this.currentTextVAlign_ = this.currentTextHAlign_ = AlignmentFlag.AlignLength;
 		this.changeFlags_.clear();
+		if (!!EnumUtils.mask(this.paintFlags_, PaintFlag.PaintUpdate).isEmpty()) {
+			this.js_ = new StringWriter();
+		}
 	}
 
 	public void done() {

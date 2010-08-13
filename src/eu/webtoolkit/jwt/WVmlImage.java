@@ -352,6 +352,9 @@ public class WVmlImage implements WVectorImage {
 		this.penBrushShadowChanged_ = true;
 		this.startClip(new WRectF(0, 0, this.getWidth().getValue(), this
 				.getHeight().getValue()));
+		if (!!EnumUtils.mask(this.paintFlags_, PaintFlag.PaintUpdate).isEmpty()) {
+			this.rendered_ = new StringWriter();
+		}
 	}
 
 	public void done() {

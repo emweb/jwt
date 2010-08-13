@@ -291,7 +291,7 @@ public class WAbstractArea extends WObject {
 				: null);
 	}
 
-	private AreaWidget impl_;
+	AreaWidget impl_;
 
 	/**
 	 * Event signal emitted when a keyboard key is pushed down.

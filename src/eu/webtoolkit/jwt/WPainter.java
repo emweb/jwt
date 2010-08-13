@@ -146,7 +146,8 @@ public class WPainter {
 	 * Begins painting on a paint device.
 	 * <p>
 	 * Starts painting on a paint device. The paint device is automatically
-	 * cleared to become entirely transparent.
+	 * cleared to become entirely transparent, unless it a PaintUpdate paint
+	 * flag is set.
 	 * <p>
 	 * 
 	 * @see WPainter#end()
