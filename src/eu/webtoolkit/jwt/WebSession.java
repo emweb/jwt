@@ -275,7 +275,7 @@ class WebSession {
 						}
 						if (!signalE.equals("res") && !signalE.equals("poll")) {
 							try {
-								handler.nextSignal = 0;
+								handler.nextSignal = -1;
 								this.notifySignal(event);
 							} catch (RuntimeException e) {
 								this.log("error").append(
@@ -341,8 +341,12 @@ class WebSession {
 	public void doRecursiveEventLoop() {
 		try {
 			WebSession.Handler handler = WebSession.Handler.getInstance();
-			handler.getSession().notifySignal(
-					new WEvent(handler, WebRenderer.ResponseType.Update));
+			if (handler.getRequest() != null) {
+				handler.getSession().notifySignal(
+						new WEvent(handler, WebRenderer.ResponseType.Update));
+			} else {
+				assert this.asyncResponse_ != null;
+			}
 			if (handler.getResponse() != null) {
 				handler
 						.getSession()
@@ -1119,8 +1123,9 @@ class WebSession {
 
 	private void notifySignal(WEvent e) throws IOException {
 		WebSession.Handler handler = e.handler;
-		if (handler.nextSignal == 0) {
+		if (handler.nextSignal == -1) {
 			handler.signalOrder = this.getSignalProcessingOrder(e);
+			handler.nextSignal = 0;
 		}
 		for (int i = handler.nextSignal; i < handler.signalOrder.size(); ++i) {
 			if (!(handler.getRequest() != null)) {

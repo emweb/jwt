@@ -22,12 +22,12 @@ public class ShapesCaptchaWidget extends WCompositeWidget {
 	public ShapesCaptchaWidget(final int width, final int height, WContainerWidget parent) {
 		super(parent);
 
-		// set the css style class
-		setStyleClass("captcha");
-
 		WContainerWidget container = new WContainerWidget();
 		setImplementation(container);
 		captchaMessage = new WText(container);
+		
+		// set the css style class
+		setStyleClass("captcha");
 
 		// construct the ShapesWidget, this widget will render all shapes
 		shapesWidget = new ShapesWidget(container);
