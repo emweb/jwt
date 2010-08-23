@@ -145,8 +145,13 @@ public class WString implements Comparable<WString>, CharSequence {
 	public String getValue() {
 		String result = value;
 
-		if (key != null)
+		if (key != null) {
 			result = WApplication.getInstance().getLocalizedStrings().resolveKey(key);
+			if (result == null) {
+				System.err.println("Warning: WString resolution for '" + key + "' returns null");
+				return key;
+			}
+		}
 
 		if (arguments != null) {
 			for (int i = 0; i < arguments.size(); ++i) {

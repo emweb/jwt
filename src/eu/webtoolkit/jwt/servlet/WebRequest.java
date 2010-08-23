@@ -216,4 +216,15 @@ public class WebRequest extends HttpServletRequestWrapper {
 		else
 			return new String[0];
 	}
+
+	@Override
+	public String getParameter(String name) {
+		if (parameters_.containsKey(name)) {
+			String[] paramList = parameters_.get(name);
+			if (paramList.length > 0 && paramList[0] != null) 
+				return paramList[0];
+		}
+		
+		return null;
+	}
 }

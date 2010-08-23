@@ -237,7 +237,7 @@ public class WTextEdit extends WTextArea {
 			DomElement dummy = new DomElement(DomElement.Mode.ModeUpdate,
 					DomElementType.DomElement_TABLE);
 			this.updateDom(dummy, true);
-			element.callMethod("init=function(){var d=Wt3_1_4.getElement('"
+			element.callMethod("init=function(){var d=Wt3_1_5.getElement('"
 					+ this.getId() + "_tbl');d.style.cssText='width:100%;"
 					+ dummy.getCssStyle() + "';};");
 			element.callMethod("ed=new tinymce.Editor('" + this.getId() + "',"
@@ -281,7 +281,7 @@ public class WTextEdit extends WTextArea {
 		this.buttons_[0] = "fontselect,|,bold,italic,underline,|,fontsizeselect,|,forecolor,backcolor,|,justifyleft,justifycenter,justifyright,justifyfull,|,anchor,|,numlist,bullist";
 		initTinyMCE();
 		this.setJavaScriptMember(WT_RESIZE_JS,
-				"function(e,w,h){Wt3_1_4.tinyMCEResize(e, w, h); };");
+				"function(e,w,h){Wt3_1_5.tinyMCEResize(e, w, h); };");
 	}
 
 	private static void initTinyMCE() {
@@ -304,7 +304,7 @@ public class WTextEdit extends WTextArea {
 			app.getStyleSheet().addRule(".mceEditor", "height: 100%;");
 			app
 					.doJavaScript(
-							"Wt3_1_4.tinyMCEResize=function(e,w,h){e.style.height = (h - 2) + 'px';var iframe = Wt3_1_4.getElement(e.id + '_ifr');if (iframe) {var row=iframe.parentNode.parentNode,tbl=row.parentNode.parentNode,i, il;for (i=0, il=tbl.rows.length; i<il; i++) {if (tbl.rows[i] != row)h -= Math.max(28, tbl.rows[i].offsetHeight);}h = (h - 2) + 'px';if (iframe.style.height != h) iframe.style.height=h;}};",
+							"Wt3_1_5.tinyMCEResize=function(e,w,h){e.style.height = (h - 2) + 'px';var iframe = Wt3_1_5.getElement(e.id + '_ifr');if (iframe) {var row=iframe.parentNode.parentNode,tbl=row.parentNode.parentNode,i, il;for (i=0, il=tbl.rows.length; i<il; i++) {if (tbl.rows[i] != row)h -= Math.max(28, tbl.rows[i].offsetHeight);}h = (h - 2) + 'px';if (iframe.style.height != h) iframe.style.height=h;}};",
 							false);
 		}
 	}

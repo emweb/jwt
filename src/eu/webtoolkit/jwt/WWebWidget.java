@@ -1036,7 +1036,7 @@ public abstract class WWebWidget extends WWidget {
 						app
 								.addAutoJavaScript("{var w = "
 										+ this.getJsRef()
-										+ ";if (w && !Wt3_1_4.isHidden(w)) {var i = Wt3_1_4.getElement('"
+										+ ";if (w && !Wt3_1_5.isHidden(w)) {var i = Wt3_1_5.getElement('"
 										+ i.getId()
 										+ "');i.style.width=w.clientWidth + 'px';i.style.height=w.clientHeight + 'px';}}");
 						element.addChild(i);

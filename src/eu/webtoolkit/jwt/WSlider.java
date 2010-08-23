@@ -438,15 +438,15 @@ public class WSlider extends WCompositeWidget {
 		String minimumS = String.valueOf(this.minimum_);
 		String maximumS = String.valueOf(this.maximum_);
 		this.mouseDownJS_
-				.setJavaScript("function(obj, event) {obj.setAttribute('down', Wt3_1_4.widgetCoordinates(obj, event)."
-						+ u + "); Wt3_1_4.cancelEvent(event);}");
+				.setJavaScript("function(obj, event) {obj.setAttribute('down', Wt3_1_5.widgetCoordinates(obj, event)."
+						+ u + "); Wt3_1_5.cancelEvent(event);}");
 		String computeD = "var objh = " + this.handle_.getJsRef() + ",objb = "
 				+ this.background_.getJsRef()
 				+ ",u = WT.pageCoordinates(event)." + u
 				+ " - down,w = WT.widgetPageCoordinates(objb)." + u
 				+ ",d = u-w;";
 		this.mouseMovedJS_
-				.setJavaScript("function(obj, event) {var down = obj.getAttribute('down');var WT = Wt3_1_4;if (down != null && down != '') {"
+				.setJavaScript("function(obj, event) {var down = obj.getAttribute('down');var WT = Wt3_1_5;if (down != null && down != '') {"
 						+ computeD
 						+ "d = Math.max(0, Math.min(d, "
 						+ maxS
@@ -464,7 +464,7 @@ public class WSlider extends WCompositeWidget {
 										+ minimumS
 										: maximumS + " - v") + "}}}");
 		this.mouseUpJS_
-				.setJavaScript("function(obj, event) {var down = obj.getAttribute('down');var WT = Wt3_1_4;if (down != null && down != '') {"
+				.setJavaScript("function(obj, event) {var down = obj.getAttribute('down');var WT = Wt3_1_5;if (down != null && down != '') {"
 						+ computeD
 						+ "d += "
 						+ String.valueOf(HANDLE_WIDTH / 2)

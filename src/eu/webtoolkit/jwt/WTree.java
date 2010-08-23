@@ -329,7 +329,7 @@ public class WTree extends WCompositeWidget {
 		}
 	}
 
-	protected void nodeAdded(final WTreeNode node) {
+	void nodeAdded(final WTreeNode node) {
 		if (node.isSelectable()) {
 			WInteractWidget w = node.getLabel();
 			if (!(w != null)) {

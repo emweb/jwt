@@ -1112,7 +1112,7 @@ public class WApplication extends WObject {
 	 *    try {
 	 *      // We now have exclusive access to the application:
 	 *      // we can safely modify the widget tree for example.
-	 *      app.getRoot().addWidget(new WText("Something happened!"));
+	 *      app.getRoot().addWidget(new WText(&quot;Something happened!&quot;));
 	 *   
 	 *      // Push the changes to the browser
 	 *      app.triggerUpdate();
@@ -1656,11 +1656,11 @@ public class WApplication extends WObject {
 			this.loadingIndicatorWidget_ = indicator.getWidget();
 			this.domRoot_.addWidget(this.loadingIndicatorWidget_);
 			JSlot showLoadJS = new JSlot();
-			showLoadJS.setJavaScript("function(o,e) {Wt3_1_4.inline('"
+			showLoadJS.setJavaScript("function(o,e) {Wt3_1_5.inline('"
 					+ this.loadingIndicatorWidget_.getId() + "');}");
 			this.showLoadingIndicator_.addListener(showLoadJS);
 			JSlot hideLoadJS = new JSlot();
-			hideLoadJS.setJavaScript("function(o,e) {Wt3_1_4.hide('"
+			hideLoadJS.setJavaScript("function(o,e) {Wt3_1_5.hide('"
 					+ this.loadingIndicatorWidget_.getId() + "');}");
 			this.hideLoadingIndicator_.addListener(hideLoadJS);
 			this.loadingIndicatorWidget_.hide();
@@ -2100,7 +2100,7 @@ public class WApplication extends WObject {
 		return this.decodeExposedSignal(signalName);
 	}
 
-	private Map<String, WeakReference<AbstractEventSignal>> exposedSignals() {
+	Map<String, WeakReference<AbstractEventSignal>> exposedSignals() {
 		return this.exposedSignals_;
 	}
 

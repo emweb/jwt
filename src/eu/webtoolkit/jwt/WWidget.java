@@ -366,8 +366,8 @@ public abstract class WWidget extends WObject {
 		String side = orientation == Orientation.Horizontal ? ".Horizontal"
 				: ".Vertical";
 		WApplication.getInstance().doJavaScript(
-				"Wt3_1_4.positionAtWidget('" + this.getId() + "','"
-						+ widget.getId() + "',Wt3_1_4" + side + ");");
+				"Wt3_1_5.positionAtWidget('" + this.getId() + "','"
+						+ widget.getId() + "',Wt3_1_5" + side + ");");
 	}
 
 	/**
@@ -1167,7 +1167,7 @@ public abstract class WWidget extends WObject {
 		}
 	}
 
-	public static void setTabOrder(WWidget first, WWidget second) {
+	static void setTabOrder(WWidget first, WWidget second) {
 		second.setTabIndex(first.getTabIndex() + 1);
 	}
 
@@ -1471,7 +1471,7 @@ public abstract class WWidget extends WObject {
 		return c != null && c.getLayout() != null;
 	}
 
-	protected boolean hasParent() {
+	boolean hasParent() {
 		if (this.flags_.get(BIT_HAS_PARENT)) {
 			return true;
 		} else {

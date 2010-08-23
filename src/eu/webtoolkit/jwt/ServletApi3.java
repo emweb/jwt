@@ -25,12 +25,9 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.servlet.http.Part;
 
-import eu.webtoolkit.jwt.servlet.WebRequest;
-
 class ServletApi3 extends ServletApi{
 	public void completeAsyncContext(HttpServletRequest request) {
 		if (request.isAsyncStarted()) {
-			System.err.println(((WebRequest)request).getRequest() + ": calling complete()");
 			request.getAsyncContext().complete();
 		}
 	}
@@ -38,11 +35,6 @@ class ServletApi3 extends ServletApi{
 	public void doHandleRequest(final WtServlet servlet, final HttpServletRequest request, 
 			final HttpServletResponse response) {
 		if (request.isAsyncSupported()) {
-			System.err.println(request + ": starting async");
-			String stackTrace = "";
-			for (StackTraceElement a : Thread.currentThread().getStackTrace())
-				stackTrace += a.toString() + "\n";
-			System.err.println(stackTrace);
 			request.startAsync();
 			request.getAsyncContext().start(new Runnable() {
 				@Override
@@ -50,8 +42,6 @@ class ServletApi3 extends ServletApi{
 					handleRequest(servlet, request, response);
 				}
 			});
-			//request.getAsyncContext().dispatch();
-			System.err.println(request + ":handleRequest returning");
 		} else
 			handleRequest(servlet, request, response);
 	}

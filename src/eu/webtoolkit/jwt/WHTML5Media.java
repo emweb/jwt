@@ -96,7 +96,7 @@ public abstract class WHTML5Media extends WWebWidget {
 			app.doJavaScript(wtjs1(app), false);
 			app.setJavaScriptLoaded(THIS_JS);
 		}
-		this.doJavaScript("new Wt3_1_4.WHTML5Media(" + app.getJavaScriptClass()
+		this.doJavaScript("new Wt3_1_5.WHTML5Media(" + app.getJavaScriptClass()
 				+ "," + this.getJsRef() + ");");
 		this.setJavaScriptMember("WtPlay", "function() {$('#" + this.getId()
 				+ "').data('obj').play();}");
@@ -308,7 +308,7 @@ public abstract class WHTML5Media extends WWebWidget {
 			element
 					.setAttribute(
 							"onerror",
-							"if(event.target.error && event.target.error.code==event.target.error.MEDIA_ERR_SRC_NOT_SUPPORTED){while (this.hasChildNodes())if (Wt3_1_4.hasTag(this.firstChild,'SOURCE')){this.removeChild(this.firstChild);}else{this.parentNode.insertBefore(this.firstChild, this);}this.style.display= 'none';}");
+							"if(event.target.error && event.target.error.code==event.target.error.MEDIA_ERR_SRC_NOT_SUPPORTED){while (this.hasChildNodes())if (Wt3_1_5.hasTag(this.firstChild,'SOURCE')){this.removeChild(this.firstChild);}else{this.parentNode.insertBefore(this.firstChild, this);}this.style.display= 'none';}");
 		}
 		if (all || this.flagsChanged_) {
 			if (!all
@@ -362,7 +362,7 @@ public abstract class WHTML5Media extends WWebWidget {
 					src
 							.setAttribute(
 									"onerror",
-									"media = parentNode;if(media){while (media && media.hasChildNodes())if (Wt3_1_4.hasTag(media.firstChild,'SOURCE')){media.removeChild(media.firstChild);}else{media.parentNode.insertBefore(media.firstChild, media);}media.style.display= 'none';}");
+									"media = parentNode;if(media){while (media && media.hasChildNodes())if (Wt3_1_5.hasTag(media.firstChild,'SOURCE')){media.removeChild(media.firstChild);}else{media.parentNode.insertBefore(media.firstChild, media);}media.style.display= 'none';}");
 				}
 				element.addChild(src);
 			}
@@ -392,7 +392,7 @@ public abstract class WHTML5Media extends WWebWidget {
 		if (this.mediaId_.length() == 0) {
 			return "null";
 		} else {
-			return "Wt3_1_4.getElement('" + this.mediaId_ + "')";
+			return "Wt3_1_5.getElement('" + this.mediaId_ + "')";
 		}
 	}
 
@@ -438,6 +438,6 @@ public abstract class WHTML5Media extends WWebWidget {
 	private boolean hasPoster_;
 
 	static String wtjs1(WApplication app) {
-		return "Wt3_1_4.WHTML5Media = function(c,b){jQuery.data(b,\"obj\",this);this.alternativeEl=this.mediaEl=null;this.play=function(){if(b.mediaId){var a=$(\"#\"+b.mediaId).get(0);if(a){a.play();return}}if(b.alternativeId)(a=$(\"#\"+b.alternativeId).get(0))&&a.WtPlay&&a.WtPlay()};this.pause=function(){if(b.mediaId){var a=$(\"#\"+b.mediaId).get(0);if(a){a.pause();return}}if(b.alternativeId)(a=$(\"#\"+b.alternativeId).get(0))&&a.WtPlay&&a.WtPause()}};";
+		return "Wt3_1_5.WHTML5Media = function(c,b){jQuery.data(b,\"obj\",this);this.alternativeEl=this.mediaEl=null;this.play=function(){if(b.mediaId){var a=$(\"#\"+b.mediaId).get(0);if(a){a.play();return}}if(b.alternativeId)(a=$(\"#\"+b.alternativeId).get(0))&&a.WtPlay&&a.WtPlay()};this.pause=function(){if(b.mediaId){var a=$(\"#\"+b.mediaId).get(0);if(a){a.pause();return}}if(b.alternativeId)(a=$(\"#\"+b.alternativeId).get(0))&&a.WtPlay&&a.WtPause()}};";
 	}
 }

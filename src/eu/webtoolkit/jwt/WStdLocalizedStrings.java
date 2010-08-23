@@ -82,7 +82,7 @@ public class WStdLocalizedStrings extends WLocalizedStrings {
 			}
 		}
 		
-		return null;
+		return "??" + key + "??";
 	}
 	
 	private String checkForValidXml(String s) {

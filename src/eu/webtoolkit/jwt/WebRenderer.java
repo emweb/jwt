@@ -8,6 +8,7 @@ package eu.webtoolkit.jwt;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -284,7 +285,7 @@ class WebRenderer implements SlotLearnerInterface {
 		FileServe script = new FileServe(WtServlet.Wt_js);
 		script.setCondition("DEBUG", conf.isDebug());
 		script.setCondition("DYNAMIC_JS", false);
-		script.setVar("WT_CLASS", "Wt3_1_4");
+		script.setVar("WT_CLASS", "Wt3_1_5");
 		script.setVar("APP_CLASS", app.getJavaScriptClass());
 		script.setVar("AUTO_JAVASCRIPT", "(function() {" + app.autoJavaScript_
 				+ "})");
@@ -324,7 +325,7 @@ class WebRenderer implements SlotLearnerInterface {
 						.append("var domRoot = ")
 						.append(app.domRoot_.getJsRef())
 						.append(
-								";var form = Wt3_1_4.getElement('Wt-form');domRoot.style.display = form.style.display;document.body.replaceChild(domRoot, form);");
+								";var form = Wt3_1_5.getElement('Wt-form');domRoot.style.display = form.style.display;document.body.replaceChild(domRoot, form);");
 			}
 			this.visibleOnly_ = false;
 			this.collectJavaScript();
@@ -512,17 +513,17 @@ class WebRenderer implements SlotLearnerInterface {
 			app.getStyleSheet().javaScriptUpdate(app, response.out(), true);
 		}
 		if (app.getCssTheme().length() != 0) {
-			response.out().append("Wt3_1_4").append(".addStyleSheet('").append(
+			response.out().append("Wt3_1_5").append(".addStyleSheet('").append(
 					WApplication.getResourcesUrl()).append("/themes/").append(
 					app.getCssTheme()).append("/wt.css', 'all');");
 			if (app.getEnvironment().agentIsIE()) {
-				response.out().append("Wt3_1_4").append(".addStyleSheet('")
+				response.out().append("Wt3_1_5").append(".addStyleSheet('")
 						.append(WApplication.getResourcesUrl()).append(
 								"/themes/").append(app.getCssTheme()).append(
 								"/wt_ie.css', 'all');");
 			}
 			if (app.getEnvironment().getAgent() == WEnvironment.UserAgent.IE6) {
-				response.out().append("Wt3_1_4").append(".addStyleSheet('")
+				response.out().append("Wt3_1_5").append(".addStyleSheet('")
 						.append(WApplication.getResourcesUrl()).append(
 								"/themes/").append(app.getCssTheme()).append(
 								"/wt_ie6.css', 'all');");
@@ -560,7 +561,7 @@ class WebRenderer implements SlotLearnerInterface {
 		if (widgetset) {
 			String historyE = app.getEnvironment().getParameter("Wt-history");
 			if (historyE != null) {
-				response.out().append("Wt3_1_4")
+				response.out().append("Wt3_1_5")
 						.append(".history.initialize('").append(
 								historyE.charAt(0)).append("-field', '")
 						.append(historyE.charAt(0)).append("-iframe');\n");
@@ -597,7 +598,7 @@ class WebRenderer implements SlotLearnerInterface {
 				app.getAjaxMethod() == WApplication.AjaxMethod.XMLHttpRequest ? WtServlet.CommAjax_js
 						: WtServlet.CommScript_js);
 		js.setVar("APP_CLASS", app.getJavaScriptClass());
-		js.setVar("WT_CLASS", "Wt3_1_4");
+		js.setVar("WT_CLASS", "Wt3_1_5");
 		js
 				.setVar(
 						"CLOSE_CONNECTION",
@@ -736,7 +737,7 @@ class WebRenderer implements SlotLearnerInterface {
 			throws IOException {
 		int first = app.styleSheets_.size() - app.styleSheetsAdded_;
 		for (int i = first; i < app.styleSheets_.size(); ++i) {
-			out.append("Wt3_1_4").append(".addStyleSheet('").append(
+			out.append("Wt3_1_5").append(".addStyleSheet('").append(
 					app.fixRelativeUrl(app.styleSheets_.get(i).uri)).append(
 					"', '").append(app.styleSheets_.get(i).media).append(
 					"');\n");
@@ -816,6 +817,31 @@ class WebRenderer implements SlotLearnerInterface {
 
 	private void preLearnStateless(WApplication app, Writer out)
 			throws IOException {
+		boolean isIEMobile = app.getEnvironment().agentIsIEMobile();
+		if (isIEMobile || !this.session_.getEnv().hasAjax()) {
+			return;
+		}
+		Map<String, WeakReference<AbstractEventSignal>> ss = this.session_
+				.getApp().exposedSignals();
+		for (Iterator<Map.Entry<String, WeakReference<AbstractEventSignal>>> i_it = ss
+				.entrySet().iterator(); i_it.hasNext();) {
+			Map.Entry<String, WeakReference<AbstractEventSignal>> i = i_it
+					.next();
+			AbstractEventSignal s = i.getValue().get();
+			if (!(s != null)) {
+				continue;
+			}
+			if (s.getSender() == app) {
+				s.processPreLearnStateless(this);
+			}
+			WWidget ww = ((s.getSender()) instanceof WWidget ? (WWidget) (s
+					.getSender()) : null);
+			if (ww != null && ww.isRendered()) {
+				s.processPreLearnStateless(this);
+			}
+		}
+		out.append(this.statelessJS_.toString());
+		this.statelessJS_ = new StringWriter();
 	}
 
 	private StringWriter collectedJS1_;
