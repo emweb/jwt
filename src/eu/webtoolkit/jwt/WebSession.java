@@ -344,8 +344,6 @@ class WebSession {
 			if (handler.getRequest() != null) {
 				handler.getSession().notifySignal(
 						new WEvent(handler, WebRenderer.ResponseType.Update));
-			} else {
-				assert this.asyncResponse_ != null;
 			}
 			if (handler.getResponse() != null) {
 				handler

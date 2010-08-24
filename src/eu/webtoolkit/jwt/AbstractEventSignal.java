@@ -569,18 +569,6 @@ public abstract class AbstractEventSignal extends AbstractSignal {
 	String getName() {
 		return name_;
 	}
-
-	@Override
-	protected void finalize() throws Throwable {
-		super.finalize();
-
-		try {
-			if (app != null)
-				app.removeExposedSignal(this);
-		} catch (Exception e) {
-			System.err.println("Error: AbstractEventSignal.finalize(): " + e.getMessage());
-		}
-	}
 	
 	private WApplication app;
 }

@@ -139,7 +139,7 @@ public class WTableView extends WAbstractItemView {
 							".Wt-tableview .Wt-header-el, .Wt-tableview .Wt-tv-c",
 							"text-overflow: ellipsis;overflow: hidden;white-space: nowrap;padding: 0px;");
 			app.getStyleSheet().addRule(".Wt-tableview .Wt-header .Wt-tv-c",
-					"padding-left: 6px;");
+					"overflow: visible;padding-left: 6px;");
 			app
 					.getStyleSheet()
 					.addRule(
@@ -192,9 +192,6 @@ public class WTableView extends WAbstractItemView {
 			layout.setSpacing(0);
 			layout.setContentsMargins(0, 0, 0, 0);
 			this.headerContainer_ = new WContainerWidget();
-			this.headerContainer_
-					.setOverflow(WContainerWidget.Overflow.OverflowHidden);
-			this.headerContainer_.setPositionScheme(PositionScheme.Relative);
 			this.headerContainer_.setStyleClass("Wt-header headerrh cwidth");
 			this.headerContainer_.addWidget(this.headers_);
 			this.contentsContainer_ = new WContainerWidget();

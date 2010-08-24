@@ -829,6 +829,7 @@ class WebRenderer implements SlotLearnerInterface {
 					.next();
 			AbstractEventSignal s = i.getValue().get();
 			if (!(s != null)) {
+				i_it.remove();
 				continue;
 			}
 			if (s.getSender() == app) {

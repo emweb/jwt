@@ -198,6 +198,10 @@ class StdGridLayoutImpl extends StdLayoutImpl {
 			boolean resizeHandleBelow = row < rowCount - 1
 					&& this.grid_.rows_.get(row).resizable_;
 			DomElement tr = DomElement.createNew(DomElementType.DomElement_TR);
+			String zIndex = "";
+			if (app.getEnvironment().agentIsIE()) {
+				zIndex = String.valueOf(rowCount - row);
+			}
 			String heightPct = "";
 			int stretch = Math.max(0, this.grid_.rows_.get(row).stretch_);
 			if (stretch != 0 || fitHeight && totalRowStretch == 0) {
@@ -295,6 +299,11 @@ class StdGridLayoutImpl extends StdLayoutImpl {
 					if (item.item_ != null) {
 						DomElement c = getImpl(item.item_).createDomElement(
 								itemFitWidth, itemFitHeight, app);
+						if (zIndex.length() != 0) {
+							td
+									.setProperty(Property.PropertyStyleZIndex,
+											zIndex);
+						}
 						if (hAlign == null) {
 							hAlign = AlignmentFlag.AlignJustify;
 						}
