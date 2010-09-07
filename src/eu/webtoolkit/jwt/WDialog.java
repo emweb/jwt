@@ -183,16 +183,6 @@ public class WDialog extends WCompositeWidget {
 		this.setJavaScriptMember(WT_RESIZE_JS, "$('#" + this.getId()
 				+ "').data('obj').wtResize");
 		this.hide();
-		app.globalEscapePressed().addListener(this, new Signal.Listener() {
-			public void trigger() {
-				WDialog.this.reject();
-			}
-		});
-		this.impl_.escapePressed().addListener(this, new Signal.Listener() {
-			public void trigger() {
-				WDialog.this.reject();
-			}
-		});
 	}
 
 	/**
@@ -342,6 +332,31 @@ public class WDialog extends WCompositeWidget {
 	 */
 	public void reject() {
 		this.done(WDialog.DialogCode.Rejected);
+	}
+
+	/**
+	 * Lets pressing the escape key reject the dialog.
+	 * <p>
+	 * Before {@link } 3.1.5, pressing escape automatically rejected the dialog.
+	 * Since 3.1.4 this behaviour is no longer the default since it may
+	 * interfere with other functionality in the dialog. Use this method to
+	 * enable this behaviour.
+	 * <p>
+	 * 
+	 * @see WDialog#reject()
+	 */
+	public void rejectWhenEscapePressed() {
+		WApplication.getInstance().globalEscapePressed().addListener(this,
+				new Signal.Listener() {
+					public void trigger() {
+						WDialog.this.reject();
+					}
+				});
+		this.impl_.escapePressed().addListener(this, new Signal.Listener() {
+			public void trigger() {
+				WDialog.this.reject();
+			}
+		});
 	}
 
 	/**

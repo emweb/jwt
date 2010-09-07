@@ -710,6 +710,7 @@ public class WContainerWidget extends WInteractWidget {
 	private static final int BIT_LIST = 4;
 	private static final int BIT_ORDERED_LIST = 5;
 	private static final int BIT_LAYOUT_CHANGED = 6;
+	private static final int BIT_LAYOUT_NEEDS_UPDATE = 7;
 	BitSet flags_;
 	EnumSet<AlignmentFlag> contentAlignment_;
 	private WContainerWidget.Overflow[] overflow_;
@@ -797,6 +798,28 @@ public class WContainerWidget extends WInteractWidget {
 		return 0;
 	}
 
+	protected void childResized(WWidget child, EnumSet<Orientation> directions) {
+		AlignmentFlag vAlign = EnumUtils.enumFromSet(EnumUtils.mask(
+				this.contentAlignment_, AlignmentFlag.AlignVerticalMask));
+		if (this.layout_ != null
+				&& !EnumUtils.mask(directions, Orientation.Vertical).isEmpty()
+				&& vAlign == null) {
+			if (!this.flags_.get(BIT_LAYOUT_NEEDS_UPDATE)) {
+				WWidgetItem item = this.layout_.findWidgetItem(child);
+				if (item != null) {
+					if ((((item.getParentLayout().getImpl()) instanceof StdLayoutImpl ? (StdLayoutImpl) (item
+							.getParentLayout().getImpl())
+							: null)).itemResized(item)) {
+						this.flags_.set(BIT_LAYOUT_NEEDS_UPDATE);
+						this.repaint(EnumSet.of(RepaintFlag.RepaintInnerHtml));
+					}
+				}
+			}
+		} else {
+			super.childResized(child, directions);
+		}
+	}
+
 	void getDomChanges(List<DomElement> result, WApplication app) {
 		DomElement e = DomElement.getForUpdate(this, this.getDomElementType());
 		if (!app.getSession().getRenderer().isPreLearning()) {
@@ -805,6 +828,7 @@ public class WContainerWidget extends WInteractWidget {
 				e.replaceWith(newE);
 				result.add(e);
 				this.flags_.clear(BIT_LAYOUT_CHANGED);
+				this.flags_.clear(BIT_LAYOUT_NEEDS_UPDATE);
 				return;
 			}
 		}
@@ -1025,6 +1049,12 @@ public class WContainerWidget extends WInteractWidget {
 				this.transientImpl_.addedChildren_.clear();
 			}
 		}
+		if (this.flags_.get(BIT_LAYOUT_NEEDS_UPDATE)) {
+			if (this.layout_ != null) {
+				this.getLayoutImpl().updateDom();
+			}
+			this.flags_.clear(BIT_LAYOUT_NEEDS_UPDATE);
+		}
 		super.updateDom(element, all);
 		if (this.flags_.get(BIT_OVERFLOW_CHANGED)
 				|| all
@@ -1046,6 +1076,7 @@ public class WContainerWidget extends WInteractWidget {
 		this.flags_.clear(BIT_PADDINGS_CHANGED);
 		this.flags_.clear(BIT_OVERFLOW_CHANGED);
 		this.flags_.clear(BIT_LAYOUT_CHANGED);
+		this.flags_.clear(BIT_LAYOUT_NEEDS_UPDATE);
 		if (this.layout_ != null && deep) {
 			this.propagateLayoutItemsOk(this.getLayout());
 		} else {

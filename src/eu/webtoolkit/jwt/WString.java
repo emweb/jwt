@@ -125,14 +125,6 @@ public class WString implements Comparable<WString>, CharSequence {
 		return getValue().length() == 0;
 	}
 	
-	private String resolveKey(String key) {
-		String result = WApplication.getInstance().getLocalizedStrings().resolveKey(key);
-		if (result == null)
-			return "??" + result + "??";
-		else 
-			return result;
-	}
-
 	/**
 	 * Returns the value.
 	 * <p>
@@ -145,13 +137,8 @@ public class WString implements Comparable<WString>, CharSequence {
 	public String getValue() {
 		String result = value;
 
-		if (key != null) {
-			result = WApplication.getInstance().getLocalizedStrings().resolveKey(key);
-			if (result == null) {
-				System.err.println("Warning: WString resolution for '" + key + "' returns null");
-				return key;
-			}
-		}
+		if (key != null)
+			result = resolveKey(key);
 
 		if (arguments != null) {
 			for (int i = 0; i < arguments.size(); ++i) {
@@ -163,6 +150,13 @@ public class WString implements Comparable<WString>, CharSequence {
 			}
 		}
 
+		return result;
+	}
+
+	private static String resolveKey(String key) {
+		String result = WApplication.getInstance().localizedStrings_.resolveKey(key);
+		if (result == null)
+			result = "??" + key + "??";
 		return result;
 	}
 
@@ -305,7 +299,7 @@ public class WString implements Comparable<WString>, CharSequence {
 
 	private void makeLiteral() {
 		if (key != null) {
-			value = WApplication.getInstance().getLocalizedStrings().resolveKey(key);
+			value = resolveKey(key);
 			key = null;
 		}
 	}

@@ -53,6 +53,10 @@ public class WStdLocalizedStrings extends WLocalizedStrings {
 		defaultBundles.add(ResourceBundle.getBundle(bundleName, new Locale("")));
 	}
 
+	public void useBuiltin(String bundleName) {
+		use(bundleName);
+	}
+
 	@Override
 	public void refresh() {
 		bundles.clear();
@@ -82,7 +86,7 @@ public class WStdLocalizedStrings extends WLocalizedStrings {
 			}
 		}
 		
-		return "??" + key + "??";
+		return null;
 	}
 	
 	private String checkForValidXml(String s) {

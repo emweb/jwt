@@ -54,17 +54,6 @@ public class WDate implements Comparable<WDate> {
 		}
 	}
 
-	private final static String[] longMonthNames = { "January", "February",
-			"March", "April", "May", "June", "July", "August", "September",
-			"October", "November", "December" };
-	private final static String[] shortMonthNames = { "Jan", "Feb", "Mar",
-			"Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };
-
-	private final static String[] longDayNames = { "Monday", "Tuesday",
-			"Wednesday", "Thursday", "Friday", "Saturday", "Sunday" };
-	private final static String[] shortDayNames = { "Mon", "Tue", "Wed", "Thu",
-			"Fri", "Sat", "Sun" };
-
 	private Date d;
 
 	/**
@@ -489,7 +478,7 @@ public class WDate implements Comparable<WDate> {
 	/**
 	 * Returns the short day name.
 	 * 
-	 * Results (for given <i>weekDay</i>) are:<br>
+	 * Results (for given <i>weekDay</i>) are (default English):<br>
 	 * "Mon" (1),<br>
 	 * "Tue" (2),<br>
 	 * "Wed" (3),<br>
@@ -497,17 +486,26 @@ public class WDate implements Comparable<WDate> {
 	 * "Fri" (5),<br>
 	 * "Sat" (6),<br>
 	 * "Sun" (7).
+	 *
+	 * The result is affected by localization using the "Wt.WDate.Mon" to
+	 * "Wt.WDate.Sun" keys.
 	 * 
 	 * @see #getLongDayName(int)
 	 */
 	public static String getShortDayName(int weekday) {
-		return shortDayNames[weekday - 1];
+		final String[] shortDayNames = { "Mon", "Tue", "Wed", "Thu",
+			"Fri", "Sat", "Sun" };
+
+		if (WApplication.getInstance() != null)
+			return WString.tr("Wt.WDate." + shortDayNames[weekday - 1]).getValue();
+		else
+			return shortDayNames[weekday - 1];
 	}
 
 	/**
 	 * Returns the short month name.
 	 * 
-	 * Results (for given <i>month</i>) are:<br>
+	 * Results (for given <i>month</i>) are (default English):<br>
 	 * "Jan" (1),<br>
 	 * "Feb" (2),<br>
 	 * "Mar" (3),<br>
@@ -519,19 +517,27 @@ public class WDate implements Comparable<WDate> {
 	 * "Sep" (9),<br>
 	 * "Oct" (10),<br>
 	 * "Nov" (11),<br>
-	 * "Dec" (12)<br>
-	 * .
+	 * "Dec" (12).
+	 * 
+	 * The result is affected by localization using the "Wt.WDate.Jan" to
+	 * "Wt.WDate.Dec" keys.
 	 * 
 	 * @see #getLongMonthName(int)
 	 */
 	public static String getShortMonthName(int month) {
-		return shortMonthNames[month - 1];
+		final String[] shortMonthNames = { "Jan", "Feb", "Mar",
+			"Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };
+		
+		if (WApplication.getInstance() != null)
+			return WString.tr("Wt.WDate." + shortMonthNames[month - 1]).getValue();
+		else
+			return shortMonthNames[month - 1];
 	}
 
 	/**
 	 * Returns the long day name.
 	 * 
-	 * Results (for given <i>weekDay</i>) are:<br>
+	 * Results (for given <i>weekDay</i>) are (default English):<br>
 	 * "Monday" (1),<br>
 	 * "Tuesday" (2),<br>
 	 * "Wednesday" (3),<br>
@@ -540,16 +546,25 @@ public class WDate implements Comparable<WDate> {
 	 * "Saturday" (6),<br>
 	 * "Sunday" (7).
 	 * 
+	 * The result is affected by localization using the "Wt.WDate.Monday" to
+	 * "Wt.WDate.Sunday" keys.
+	 * 
 	 * @see #getShortDayName(int)
 	 */
 	public static String getLongDayName(int weekday) {
-		return longDayNames[weekday - 1];
+		final String[] longDayNames = { "Monday", "Tuesday",
+			"Wednesday", "Thursday", "Friday", "Saturday", "Sunday" };
+
+		if (WApplication.getInstance() != null)
+			return WString.tr("Wt.WDate." + longDayNames[weekday - 1]).getValue();
+		else
+			return longDayNames[weekday - 1];
 	}
 
 	/**
 	 * Returns the long month name.
 	 * 
-	 * Results (for given <i>month</i>) are:<br>
+	 * Results (for given <i>month</i>) are (default English):<br>
 	 * "January" (1),<br>
 	 * "February" (2),<br>
 	 * "March" (3),<br>
@@ -562,11 +577,21 @@ public class WDate implements Comparable<WDate> {
 	 * "October" (10),<br>
 	 * "November" (11),<br>
 	 * "December" (12).
+	 *
+	 * The result is affected by localization using the "Wt.WDate.January" to
+	 * "Wt.WDate.December" keys.
 	 * 
 	 * @see #getShortDayName(int)
 	 */
 	public static String getLongMonthName(int month) {
-		return longMonthNames[month - 1];
+		final String[] longMonthNames = { "January", "February",
+			"March", "April", "May", "June", "July", "August", "September",
+			"October", "November", "December" };
+
+		if (WApplication.getInstance() != null)
+			return WString.tr("Wt.WDate." + longMonthNames[month - 1]).getValue();
+		else
+			return longMonthNames[month - 1];
 	}
 
 	/**

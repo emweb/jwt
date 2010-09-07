@@ -27,7 +27,7 @@ public class WDefaultLoadingIndicator extends WText implements
 	 * Constructor.
 	 */
 	public WDefaultLoadingIndicator() {
-		super("Loading...");
+		super(tr("Wt.WDefaultLoadingIndicator.loading"));
 		this.setInline(false);
 		this.setStyleClass("Wt-loading");
 		WApplication app = WApplication.getInstance();

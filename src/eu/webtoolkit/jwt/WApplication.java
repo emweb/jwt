@@ -136,6 +136,7 @@ public class WApplication extends WObject {
 		this.title_ = new WString();
 		this.titleChanged_ = false;
 		this.styleSheet_ = new WCssStyleSheet();
+		this.localizedStrings_ = null;
 		this.locale_ = new Locale("");
 		this.oldInternalPath_ = "";
 		this.newInternalPath_ = "";
@@ -175,7 +176,7 @@ public class WApplication extends WObject {
 		this.locale_ = this.getEnvironment().getLocale();
 		this.newInternalPath_ = this.getEnvironment().getInternalPath();
 		this.internalPathIsChanged_ = false;
-		this.localizedStrings_ = null;
+		this.setLocalizedStrings((WLocalizedStrings) null);
 		this.domRoot_ = new WContainerWidget();
 		this.domRoot_.setStyleClass("Wt-domRoot");
 		this.domRoot_.load();
@@ -606,7 +607,7 @@ public class WApplication extends WObject {
 	 * @see WString#tr(String key)
 	 */
 	public WLocalizedStrings getLocalizedStrings() {
-		return this.localizedStrings_;
+		return this.localizedStrings_.getItems().get(0);
 	}
 
 	/**
@@ -621,7 +622,13 @@ public class WApplication extends WObject {
 	 */
 	public void setLocalizedStrings(WLocalizedStrings translator) {
 		;
-		this.localizedStrings_ = translator;
+		this.localizedStrings_ = new WCombinedLocalizedStrings();
+		if (translator != null) {
+			this.localizedStrings_.add(translator);
+		}
+		WStdLocalizedStrings defaultMessages = new WStdLocalizedStrings();
+		defaultMessages.useBuiltin(WtServlet.WtMessages_xml);
+		this.localizedStrings_.add(defaultMessages);
 	}
 
 	/**
@@ -1983,7 +1990,7 @@ public class WApplication extends WObject {
 	WContainerWidget domRoot2_;
 	private WContainerWidget timerRoot_;
 	private WCssStyleSheet styleSheet_;
-	private WLocalizedStrings localizedStrings_;
+	WCombinedLocalizedStrings localizedStrings_;
 	private Locale locale_;
 	String oldInternalPath_;
 	String newInternalPath_;

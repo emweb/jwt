@@ -409,14 +409,6 @@ public class WTemplate extends WInteractWidget {
 	 * This rerenders the template.
 	 */
 	public void refresh() {
-		for (Iterator<Map.Entry<String, WWidget>> i_it = this.widgets_
-				.entrySet().iterator(); i_it.hasNext();) {
-			Map.Entry<String, WWidget> i = i_it.next();
-			WWidget w = i.getValue();
-			if (w.isRendered()) {
-				w.refresh();
-			}
-		}
 		if (this.text_.refresh()) {
 			this.changed_ = true;
 			this.repaint(EnumSet.of(RepaintFlag.RepaintInnerHtml));

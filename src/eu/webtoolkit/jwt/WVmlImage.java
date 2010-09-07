@@ -350,11 +350,11 @@ public class WVmlImage implements WVectorImage {
 		this.currentPen_ = this.getPainter().getPen();
 		this.currentShadow_ = this.getPainter().getShadow();
 		this.penBrushShadowChanged_ = true;
-		this.startClip(new WRectF(0, 0, this.getWidth().getValue(), this
-				.getHeight().getValue()));
 		if (!!EnumUtils.mask(this.paintFlags_, PaintFlag.PaintUpdate).isEmpty()) {
 			this.rendered_ = new StringWriter();
 		}
+		this.startClip(new WRectF(0, 0, this.getWidth().getValue(), this
+				.getHeight().getValue()));
 	}
 
 	public void done() {

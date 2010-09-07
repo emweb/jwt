@@ -307,6 +307,7 @@ public class WMessageBox extends WDialog {
 					}
 				});
 		this.buttonContainer_.setStyleClass("Wt-msgbox-buttons");
+		this.rejectWhenEscapePressed();
 	}
 
 	private void onButtonClick(StandardButton b) {

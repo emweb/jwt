@@ -46,8 +46,8 @@ public abstract class WLocalizedStrings {
 	 * This method is used by {@link WString} to obtain the UTF8 value
 	 * corresponding to a key in the current locale.
 	 * <p>
-	 * Returns <code>true</code> if the key could be resolved. The value is
-	 * written in <code>result</code>, encoded using UTF8.
+	 * Returns the value if the key could be resolved. Returns <code>null</code>
+	 * otherwise.
 	 * <p>
 	 * 
 	 * @see WApplication#getLocale()

@@ -300,7 +300,7 @@ class WebRenderer implements SlotLearnerInterface {
 				.valueOf(conf.getSessionTimeout() / 2));
 		script.setVar("INITIAL_HASH", WWebWidget.jsStringLiteral(app
 				.getInternalPath()));
-		script.setVar("INDICATOR_TIMEOUT", "500");
+		script.setVar("INDICATOR_TIMEOUT", conf.getIndicatorTimeout());
 		script
 				.setVar("SERVER_PUSH_TIMEOUT",
 						conf.getServerPushTimeout() * 1000);

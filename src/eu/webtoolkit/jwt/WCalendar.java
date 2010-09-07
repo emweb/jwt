@@ -30,11 +30,8 @@ import java.util.Set;
  * Cell rendering may be customized by reimplementing
  * {@link WCalendar#renderCell(WWidget widget, WDate date) renderCell()}.
  * <p>
- * Internationalization may be provided by indicating i18n == true in the
- * constructor, and providing the appropriate messages for months (with keys
- * from {@link WDate#getLongMonthName(int month) WDate#getLongMonthName()}) and
- * days (with keys from {@link WDate#getShortDayName(int weekday)
- * WDate#getShortDayName()}) in your message resource bundle.
+ * Internationalization is provided by the internationalization features of the
+ * {@link eu.webtoolkit.jwt.WDate} class.
  * <p>
  * Here is a snapshot, taken on 19/01/2010 (shown as today), and 14/01/2010
  * currently selected.
@@ -75,7 +72,7 @@ import java.util.Set;
  * 
  * .Wt-cal td          : Day cell
  * .Wt-cal-oom         : Out-of-month day
- * .Wt-cal-oom         : Out-of-range day (day &lt; bottom or day &gt; top)
+ * .Wt-cal-oor         : Out-of-range day (day &lt; bottom or day &gt; top)
  * .Wt-cal-sel         : Selected day
  * .Wt-cal-now         : Today day
  * </pre>
@@ -116,7 +113,6 @@ public class WCalendar extends WCompositeWidget {
 	 */
 	public WCalendar(WContainerWidget parent) {
 		super(parent);
-		this.i18n_ = false;
 		this.selection_ = new HashSet<WDate>();
 		this.selectionChanged_ = new Signal(this);
 		this.activated_ = new Signal1<WDate>(this);
@@ -135,36 +131,6 @@ public class WCalendar extends WCompositeWidget {
 	 */
 	public WCalendar() {
 		this((WContainerWidget) null);
-	}
-
-	/**
-	 * Creates a new calendar.
-	 * <p>
-	 * Constructs a new calendar, with optional support for
-	 * internationalization. The calendar shows the current day, and has an
-	 * empty selection.
-	 */
-	public WCalendar(boolean i18n, WContainerWidget parent) {
-		super(parent);
-		this.i18n_ = i18n;
-		this.selection_ = new HashSet<WDate>();
-		this.selectionChanged_ = new Signal(this);
-		this.activated_ = new Signal1<WDate>(this);
-		this.clicked_ = new Signal1<WDate>(this);
-		this.currentPageChanged_ = new Signal2<Integer, Integer>(this);
-		this.bottom_ = null;
-		this.top_ = null;
-		this.create();
-	}
-
-	/**
-	 * Creates a new calendar.
-	 * <p>
-	 * Calls {@link #WCalendar(boolean i18n, WContainerWidget parent) this(i18n,
-	 * (WContainerWidget)null)}
-	 */
-	public WCalendar(boolean i18n) {
-		this(i18n, (WContainerWidget) null);
 	}
 
 	/**
@@ -387,28 +353,22 @@ public class WCalendar extends WCompositeWidget {
 		this.firstDayOfWeek_ = dayOfWeek;
 		for (int i = 0; i < 7; ++i) {
 			int day = (i + this.firstDayOfWeek_ - 1) % 7 + 1;
-			WString title = this.i18n_ ? tr(WDate.getLongDayName(day))
-					: new WString(WDate.getLongDayName(day));
+			WString title = new WString(WDate.getLongDayName(day));
 			this.impl_.bindString("t" + String.valueOf(i), title,
 					TextFormat.XHTMLUnsafeText);
-			String d = "";
-			WString a = new WString();
+			WString abbr = new WString();
 			switch (this.horizontalHeaderFormat_) {
 			case SingleLetterDayNames:
-				d = "d1";
-				a = new WString(WDate.getShortDayName(day).substring(0, 0 + 1));
+				abbr = new WString(WDate.getShortDayName(day).substring(0,
+						0 + 1));
 				break;
 			case ShortDayNames:
-				d = "d3";
-				a = new WString(WDate.getShortDayName(day));
+				abbr = new WString(WDate.getShortDayName(day));
 				break;
 			case LongDayNames:
-				d = "dlong";
-				a = new WString(WDate.getLongDayName(day));
+				abbr = new WString(WDate.getLongDayName(day));
 				break;
 			}
-			WString abbr = this.i18n_ ? tr(a.toString()) : new WString(a
-					.toString());
 			this.impl_.bindString("d" + String.valueOf(i), abbr,
 					TextFormat.XHTMLUnsafeText);
 		}
@@ -693,7 +653,6 @@ public class WCalendar extends WCompositeWidget {
 		return this.selection_.contains(d) != false;
 	}
 
-	private boolean i18n_;
 	private SelectionMode selectionMode_;
 	private boolean singleClickSelect_;
 	private int currentYear_;
@@ -784,9 +743,7 @@ public class WCalendar extends WCompositeWidget {
 				});
 		this.monthEdit_ = new WComboBox();
 		for (int i = 0; i < 12; ++i) {
-			this.monthEdit_.addItem(this.i18n_ ? tr(WDate
-					.getLongMonthName(i + 1)) : new WString(WDate
-					.getLongMonthName(i + 1)));
+			this.monthEdit_.addItem(WDate.getLongMonthName(i + 1));
 		}
 		this.monthEdit_.activated().addListener(this,
 				new Signal1.Listener<Integer>() {

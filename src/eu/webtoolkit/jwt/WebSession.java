@@ -952,8 +952,8 @@ class WebSession {
 	}
 
 	private void hibernate() {
-		if (this.app_ != null && this.app_.getLocalizedStrings() != null) {
-			this.app_.getLocalizedStrings().hibernate();
+		if (this.app_ != null && this.app_.localizedStrings_ != null) {
+			this.app_.localizedStrings_.hibernate();
 		}
 	}
 

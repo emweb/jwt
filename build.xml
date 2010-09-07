@@ -76,6 +76,7 @@
     <copy todir="${build.dir}">
       <fileset dir="${src.java.dir}" defaultexcludes="yes">
 	<include name="eu/webtoolkit/jwt/*.java"/>
+	<include name="eu/webtoolkit/jwt/*.properties"/>
 	<include name="eu/webtoolkit/jwt/servlet/*.java"/>
 	<include name="eu/webtoolkit/jwt/chart/*.java"/>
 	<include name="eu/webtoolkit/jwt/utils/*.java"/>

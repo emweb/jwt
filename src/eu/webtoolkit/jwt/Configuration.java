@@ -46,12 +46,12 @@ public class Configuration {
 	private ArrayList<String> ajaxAgentList = new ArrayList<String>();
 	private boolean ajaxAgentWhiteList = false;
 	private boolean debug = false;
-	private boolean progressiveBoot = false;
 
 	private String favicon = "";
 	private boolean progressiveBootstrap = false;
 	
-	private int sessionTimeout;
+	private int sessionTimeout = 600;
+	private int indicatorTimeout = 500;
 
 	/**
 	 * Creates a default configuration.
@@ -516,5 +516,27 @@ public class Configuration {
 			this.sessionTimeout = 10 * 60;
 		else
 			this.sessionTimeout = sessionTimeout;
+	}
+
+	/**
+	 * Returns the loading indicator timeout.
+	 * 
+	 * When a response time for an AJAX call exceeds this time, a loading indicator is shown.
+	 * 
+	 * @return the loading indicator timeout in milliseconds.
+	 */
+	public int getIndicatorTimeout() {
+		return indicatorTimeout;
+	}
+	
+	/**
+	 * Sets the loading indicator timeout.
+	 * 
+	 * When a response time for an AJAX call exceeds this time, a loading indicator is shown.
+	 * 
+	 * @param timeout the timeout in milliseconds.
+	 */
+	public void setIndicatorTimeout(int timeout) {
+		this.indicatorTimeout = timeout;
 	}
 }

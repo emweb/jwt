@@ -761,6 +761,9 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 		int lineCount = this.getHeaderLevelCount();
 		WLength headerHeight = WLength.multiply(this.headerLineHeight_,
 				lineCount);
+		if (this.getColumnCount() > 0) {
+			this.headerWidget(0).askRerender();
+		}
 		this.headerHeightRule_.getTemplateWidget().resize(WLength.Auto,
 				headerHeight);
 		if (!this.multiLineHeader_) {

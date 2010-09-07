@@ -40,6 +40,17 @@ public class WCombinedLocalizedStrings extends WLocalizedStrings {
 		this.localizedStrings_.add(localizedStrings);
 	}
 
+	/**
+	 * Returns all string resolver.
+	 * <p>
+	 * Returns the list of all string resolvers that were added by a call to
+	 * {@link WCombinedLocalizedStrings#add(WLocalizedStrings localizedStrings)
+	 * add()}.
+	 */
+	public List<WLocalizedStrings> getItems() {
+		return this.localizedStrings_;
+	}
+
 	public void refresh() {
 		for (int i = 0; i < this.localizedStrings_.size(); ++i) {
 			this.localizedStrings_.get(i).refresh();

@@ -1199,7 +1199,7 @@ public abstract class WWidget extends WObject {
 		if (aware == (this.resized_ != null)) {
 			return;
 		}
-		if (aware) {
+		if (aware && WApplication.getInstance() != null) {
 			this.resized_ = new JSignal2<Integer, Integer>(this, "resized") {
 			};
 			this.resized_.addListener(this,
@@ -1398,6 +1398,18 @@ public abstract class WWidget extends WObject {
 		render(EnumSet.of(flag, flags));
 	}
 
+	protected void childResized(WWidget child, EnumSet<Orientation> directions) {
+		WWidget p = this.getParent();
+		if (p != null) {
+			p.childResized(this, directions);
+		}
+	}
+
+	protected final void childResized(WWidget child, Orientation direction,
+			Orientation... directions) {
+		childResized(child, EnumSet.of(direction, directions));
+	}
+
 	WWidget getAdam() {
 		WWidget p = this.getParent();
 		return p != null ? p.getAdam() : this;
@@ -1433,8 +1445,10 @@ public abstract class WWidget extends WObject {
 	void renderOk() {
 		if (this.flags_.get(BIT_NEED_RERENDER)) {
 			this.flags_.clear(BIT_NEED_RERENDER);
-			WApplication.getInstance().getSession().getRenderer().doneUpdate(
-					this);
+			WApplication app = WApplication.getInstance();
+			if (app != null) {
+				app.getSession().getRenderer().doneUpdate(this);
+			}
 		}
 	}
 
@@ -1443,6 +1457,10 @@ public abstract class WWidget extends WObject {
 			this.flags_.set(BIT_NEED_RERENDER);
 			WApplication.getInstance().getSession().getRenderer().needUpdate(
 					this, laterOnly);
+			WWidget p = this.getParent();
+			if (p != null) {
+				p.childResized(this, EnumSet.of(Orientation.Vertical));
+			}
 		}
 	}
 

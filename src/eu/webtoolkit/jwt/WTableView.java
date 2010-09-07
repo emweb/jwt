@@ -99,11 +99,13 @@ public class WTableView extends WAbstractItemView {
 		this.columnWidthChanged_ = new JSignal2<Integer, Integer>(this.impl_,
 				"columnResized") {
 		};
+		this.scrolled_ = new JSignal4<Integer, Integer, Integer, Integer>(
+				this.impl_, "scrolled") {
+		};
 		this.viewportLeft_ = 0;
 		this.viewportWidth_ = 1000;
 		this.viewportTop_ = 0;
 		this.viewportHeight_ = 600;
-		this.tieContentsHeaderScrollJS_ = new JSlot(this);
 		this.itemMouseDownJS_ = new JSlot(this);
 		this.setSelectable(false);
 		this.dropEvent_
@@ -143,7 +145,7 @@ public class WTableView extends WAbstractItemView {
 			app
 					.getStyleSheet()
 					.addRule(
-							".Wt-tableview .Wt-tv-contents .Wt-tv-c,.Wt-tableview tbody .Wt-tv-c",
+							".Wt-tableview .Wt-tv-contents .Wt-tv-c,.Wt-plaintable .Wt-tv-c",
 							"padding: 0px 3px;");
 			app.getStyleSheet().addRule(".Wt-tableview .Wt-tv-rh:hover",
 					"background-color: #DDDDDD;");
@@ -226,18 +228,13 @@ public class WTableView extends WAbstractItemView {
 			this.table_.resize(new WLength(100, WLength.Unit.Percentage),
 					WLength.Auto);
 			this.contentsContainer_.addWidget(this.canvas_);
-			this.contentsContainer_.scrolled().addListener(this,
-					new Signal1.Listener<WScrollEvent>() {
-						public void trigger(WScrollEvent e1) {
-							WTableView.this.onViewportChange(e1);
+			this.scrolled_.addListener(this,
+					new Signal4.Listener<Integer, Integer, Integer, Integer>() {
+						public void trigger(Integer e1, Integer e2, Integer e3,
+								Integer e4) {
+							WTableView.this.onViewportChange(e1, e2, e3, e4);
 						}
 					});
-			this.contentsContainer_.scrolled().addListener(
-					this.tieContentsHeaderScrollJS_);
-			this.tieContentsHeaderScrollJS_
-					.setJavaScript("function(obj, event) {"
-							+ this.headerContainer_.getJsRef()
-							+ ".scrollLeft=obj.scrollLeft;}");
 			layout.addWidget(this.headerContainer_);
 			layout.addWidget(this.contentsContainer_, 1);
 			this.impl_.setLayout(layout);
@@ -507,6 +504,7 @@ public class WTableView extends WAbstractItemView {
 	private WTable plainTable_;
 	private JSignal5<Integer, Integer, String, String, WMouseEvent> dropEvent_;
 	private JSignal2<Integer, Integer> columnWidthChanged_;
+	private JSignal4<Integer, Integer, Integer, Integer> scrolled_;
 	private int firstColumn_;
 	private int lastColumn_;
 	private int viewportLeft_;
@@ -517,7 +515,6 @@ public class WTableView extends WAbstractItemView {
 	private int renderedLastRow_;
 	private int renderedFirstColumn_;
 	private int renderedLastColumn_;
-	private JSlot tieContentsHeaderScrollJS_;
 	private JSlot itemMouseDownJS_;
 	private int tabIndex_;
 
@@ -932,6 +929,20 @@ public class WTableView extends WAbstractItemView {
 			this.addSection(Side.Right, items);
 		}
 		this.updateColumnOffsets();
+		int scrollX1 = Math
+				.max(0, this.viewportLeft_ - this.viewportWidth_ / 2);
+		int scrollX2 = this.viewportLeft_ + this.viewportWidth_
+				+ this.viewportWidth_ / 2;
+		int scrollY1 = Math
+				.max(0, this.viewportTop_ - this.viewportHeight_ / 2);
+		int scrollY2 = this.viewportTop_ + this.viewportHeight_
+				+ this.viewportHeight_ / 2;
+		StringBuilder s = new StringBuilder();
+		s.append("jQuery.data(").append(this.getJsRef()).append(
+				", 'obj').scrolled(").append(scrollX1).append(", ").append(
+				scrollX2).append(", ").append(scrollY1).append(", ").append(
+				scrollY2).append(");");
+		WApplication.getInstance().doJavaScript(s.toString());
 	}
 
 	private void addSection(final Side side, List<WWidget> items) {
@@ -1131,15 +1142,12 @@ public class WTableView extends WAbstractItemView {
 		WApplication app = WApplication.getInstance();
 		if (this.isAjaxMode()) {
 			this.headers_.clear();
-			int total = 0;
 			for (int i = 0; i < this.getColumnCount(); ++i) {
 				WWidget w = this.createHeaderWidget(app, i);
-				w.setPositionScheme(PositionScheme.Absolute);
+				w.setFloatSide(Side.Left);
+				this.headers_.addWidget(w);
 				w.resize(new WLength(this.columnInfo(i).width.toPixels() + 1),
 						WLength.Auto);
-				w.setOffsets(total, EnumSet.of(Side.Left));
-				this.headers_.addWidget(w);
-				total += (int) this.columnInfo(i).width.toPixels() + 7;
 			}
 		} else {
 			for (int i = 0; i < this.getColumnCount(); ++i) {
@@ -1281,12 +1289,12 @@ public class WTableView extends WAbstractItemView {
 		}
 	}
 
-	private void onViewportChange(WScrollEvent e) {
+	private void onViewportChange(int left, int top, int width, int height) {
 		assert this.isAjaxMode();
-		this.viewportLeft_ = e.getScrollX();
-		this.viewportWidth_ = e.getViewportWidth();
-		this.viewportTop_ = e.getScrollY();
-		this.viewportHeight_ = e.getViewportHeight();
+		this.viewportLeft_ = left;
+		this.viewportWidth_ = width;
+		this.viewportTop_ = top;
+		this.viewportHeight_ = height;
 		this.computeRenderedArea();
 		this.scheduleRerender(WAbstractItemView.RenderState.NeedAdjustViewPort);
 	}
@@ -1507,6 +1515,6 @@ public class WTableView extends WAbstractItemView {
 	}
 
 	static String wtjs1(WApplication app) {
-		return "Wt3_1_5.WTableView = function(o,i,m,r){function p(a){var b=-1,c=false,d=false,j=null;for(a=a.target||a.srcElement;a;){var f=$(a);if(f.hasClass(\"Wt-tv-contents\"))break;else if(f.hasClass(\"Wt-tv-c\")){if(a.getAttribute(\"drop\")===\"true\")d=true;if(f.hasClass(\"Wt-selected\"))c=true;j=a;a=a.parentNode;b=a.className.split(\" \")[0].substring(7)*1;break}a=a.parentNode}return{columnId:b,rowIdx:-1,selected:c,drop:d,el:j}}function q(a){var b,c,d=a.parentNode.childNodes;b=0;for(c=d.length;b<c;++b)if(d[b]== a)return b;return-1}function s(a,b){var c=a.className.split(\" \")[0],d=c.substring(7)*1,j=r.firstChild,f=m.firstChild;c=$(f).find(\".\"+c).get(0);var g=a.nextSibling,e=c.nextSibling,k=h.pxself(a,\"width\")-1+b;j.style.width=f.style.width=h.pxself(j,\"width\")+b+\"px\";a.style.width=k+1+\"px\";for(c.style.width=k+7+\"px\";g;g=g.nextSibling){g.style.left=h.pxself(g,\"left\")+b+\"px\";if(e){e.style.left=h.pxself(e,\"left\")+b+\"px\";e=e.nextSibling}}o.emit(i,\"columnResized\",d,k)}jQuery.data(i,\"obj\",this);var h=o.WT;this.mouseDown= function(a,b){h.capture(null);a=p(b);i.getAttribute(\"drag\")===\"true\"&&a.selected&&o._p_.dragStart(i,b)};this.resizeHandleMDown=function(a,b){var c=a.parentNode.parentNode,d=-(h.pxself(c,\"width\")-1);new h.SizeHandle(h,\"h\",a.offsetWidth,i.offsetHeight,d,1E4,\"Wt-hsh\",function(j){s(c,j)},a,i,b,-2,-1)};var l=null;i.handleDragDrop=function(a,b,c,d,j){if(l){l.className=l.classNameOrig;l=null}if(a!=\"end\"){var f=p(c);if(!f.selected&&f.drop)if(a==\"drop\")o.emit(i,{name:\"dropEvent\",eventObject:b,event:c},f.rowIdx, f.columnId,d,j);else{b.className=\"Wt-valid-drop\";l=f.el;l.classNameOrig=l.className;l.className+=\" Wt-drop-site\"}else b.className=\"\"}};i.onkeydown=function(a){var b=a||window.event;if(b.keyCode==9){h.cancelEvent(b);var c=p(b);if(c.el){a=c.el.parentNode;c=q(c.el);var d=q(a),j=a.parentNode.childNodes.length,f=a.childNodes.length;b=b.shiftKey;for(var g=false,e=c,k;;){for(;b?e>=0:e<f;e=b?e-1:e+1)for(k=e==c&&!g?b?d-1:d+1:b?j-1:0;b?k>=0:k<j;k=b?k-1:k+1){if(e==c&&k==d)return;a=a.parentNode.childNodes[k]; var n=$(a.childNodes[e]).find(\":input\");if(n.size()>0){setTimeout(function(){n.focus()},0);return}}e=b?f-1:0;g=true}}}else if(b.keyCode>=37&&b.keyCode<=40){g=b.target||b.srcElement;if(g.nodeName!=\"select\"){c=p(b);if(c.el){a=c.el.parentNode;c=q(c.el);d=q(a);j=a.parentNode.childNodes.length;f=a.childNodes.length;switch(b.keyCode){case 39:if(h.hasTag(g,\"INPUT\")&&g.type==\"text\"){e=h.getSelectionRange(g);if(e.start!=g.value.length)return}d++;break;case 38:c--;break;case 37:if(h.hasTag(g,\"INPUT\")&&g.type== \"text\"){e=h.getSelectionRange(g);if(e.start!=0)return}d--;break;case 40:c++;break;default:return}h.cancelEvent(b);if(c>-1&&c<f&&d>-1&&d<j){a=a.parentNode.childNodes[d];n=$(a.childNodes[c]).find(\":input\");n.size()>0&&setTimeout(function(){n.focus()},0)}}}}};this.autoJavaScript=function(){if(i.parentNode==null){i=m=r=null;this.autoJavaScript=function(){}}else if(!h.isHidden(i)){var a=i.offsetWidth-h.px(i,\"borderLeftWidth\")-h.px(i,\"borderRightWidth\"),b=m.offsetWidth-m.clientWidth;a-=b;if(a>200&&a!=m.tw){m.tw= a;m.style.width=a+b+\"px\";r.style.width=a+\"px\"}}}};";
+		return "Wt3_1_5.WTableView = function(n,h,f,p){function q(a){var b=-1,c=false,d=false,k=null;for(a=a.target||a.srcElement;a;){var g=$(a);if(g.hasClass(\"Wt-tv-contents\"))break;else if(g.hasClass(\"Wt-tv-c\")){if(a.getAttribute(\"drop\")===\"true\")d=true;if(g.hasClass(\"Wt-selected\"))c=true;k=a;a=a.parentNode;b=a.className.split(\" \")[0].substring(7)*1;break}a=a.parentNode}return{columnId:b,rowIdx:-1,selected:c,drop:d,el:k}}function r(a){var b,c,d=a.parentNode.childNodes;b=0;for(c=d.length;b<c;++b)if(d[b]== a)return b;return-1}function w(a,b){var c=a.className.split(\" \")[0],d=c.substring(7)*1,k=p.firstChild,g=f.firstChild;c=$(g).find(\".\"+c).get(0);var j=a.nextSibling,e=c.nextSibling,l=i.pxself(a,\"width\")-1+b;k.style.width=g.style.width=i.pxself(k,\"width\")+b+\"px\";a.style.width=l+1+\"px\";for(c.style.width=l+7+\"px\";j;j=j.nextSibling)if(e){e.style.left=i.pxself(e,\"left\")+b+\"px\";e=e.nextSibling}n.emit(h,\"columnResized\",d,l)}jQuery.data(h,\"obj\",this);var i=n.WT,s=0,t=0,u=0,v=0;f.onscroll=function(){p.scrollLeft= f.scrollLeft;if(f.scrollTop<u||f.scrollTop>v||f.scrollLeft<s||f.scrollLeft>t)n.emit(h,\"scrolled\",f.scrollLeft,f.scrollTop,f.clientWidth,f.clientHeight)};this.mouseDown=function(a,b){i.capture(null);a=q(b);h.getAttribute(\"drag\")===\"true\"&&a.selected&&n._p_.dragStart(h,b)};this.resizeHandleMDown=function(a,b){var c=a.parentNode.parentNode,d=-(i.pxself(c,\"width\")-1);new i.SizeHandle(i,\"h\",a.offsetWidth,h.offsetHeight,d,1E4,\"Wt-hsh\",function(k){w(c,k)},a,h,b,-2,-1)};this.scrolled=function(a,b,c,d){s= a;t=b;u=c;v=d};var m=null;h.handleDragDrop=function(a,b,c,d,k){if(m){m.className=m.classNameOrig;m=null}if(a!=\"end\"){var g=q(c);if(!g.selected&&g.drop)if(a==\"drop\")n.emit(h,{name:\"dropEvent\",eventObject:b,event:c},g.rowIdx,g.columnId,d,k);else{b.className=\"Wt-valid-drop\";m=g.el;m.classNameOrig=m.className;m.className+=\" Wt-drop-site\"}else b.className=\"\"}};h.onkeydown=function(a){var b=a||window.event;if(b.keyCode==9){i.cancelEvent(b);var c=q(b);if(c.el){a=c.el.parentNode;c=r(c.el);var d=r(a),k=a.parentNode.childNodes.length, g=a.childNodes.length;b=b.shiftKey;for(var j=false,e=c,l;;){for(;b?e>=0:e<g;e=b?e-1:e+1)for(l=e==c&&!j?b?d-1:d+1:b?k-1:0;b?l>=0:l<k;l=b?l-1:l+1){if(e==c&&l==d)return;a=a.parentNode.childNodes[l];var o=$(a.childNodes[e]).find(\":input\");if(o.size()>0){setTimeout(function(){o.focus()},0);return}}e=b?g-1:0;j=true}}}else if(b.keyCode>=37&&b.keyCode<=40){j=b.target||b.srcElement;if(j.nodeName!=\"select\"){c=q(b);if(c.el){a=c.el.parentNode;c=r(c.el);d=r(a);k=a.parentNode.childNodes.length;g=a.childNodes.length; switch(b.keyCode){case 39:if(i.hasTag(j,\"INPUT\")&&j.type==\"text\"){e=i.getSelectionRange(j);if(e.start!=j.value.length)return}d++;break;case 38:c--;break;case 37:if(i.hasTag(j,\"INPUT\")&&j.type==\"text\"){e=i.getSelectionRange(j);if(e.start!=0)return}d--;break;case 40:c++;break;default:return}i.cancelEvent(b);if(c>-1&&c<g&&d>-1&&d<k){a=a.parentNode.childNodes[d];o=$(a.childNodes[c]).find(\":input\");o.size()>0&&setTimeout(function(){o.focus()},0)}}}}};this.autoJavaScript=function(){if(h.parentNode==null){h= f=p=null;this.autoJavaScript=function(){}}else if(!i.isHidden(h)){var a=h.offsetWidth-i.px(h,\"borderLeftWidth\")-i.px(h,\"borderRightWidth\"),b=f.offsetWidth-f.clientWidth;a-=b;if(a>200&&a!=f.tw){f.tw=a;f.style.width=a+b+\"px\";p.style.width=a+\"px\"}}}};";
 	}
 }

@@ -403,6 +403,7 @@ public class WItemDelegate extends WAbstractItemDelegate {
 				WItemDelegate.this.doCloseEditor(result, false);
 			}
 		});
+		lineEdit.escapePressed().preventPropagation();
 		if (!EnumUtils.mask(flags, ViewItemRenderFlag.RenderFocused).isEmpty()) {
 			lineEdit.setFocus();
 		}

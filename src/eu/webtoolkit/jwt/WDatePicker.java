@@ -28,6 +28,11 @@ import java.util.Set;
  * getDate()}, or can be changed using {@link WDatePicker#setDate(WDate date)
  * setDate()}.
  * <p>
+ * Internationalization of {@link WDatePicker} is mostly handled through the
+ * internationalization mechanism of {@link eu.webtoolkit.jwt.WDate}. The
+ * &apos;Close&apos; button can be internationalized by overriding the default
+ * value for the localization key Wt.DatePicker.Close.
+ * <p>
  * <h3>CSS</h3>
  * <p>
  * The date picker is styled by the current CSS theme. The look can be
@@ -63,7 +68,7 @@ public class WDatePicker extends WCompositeWidget {
 		super(parent);
 		this.format_ = "";
 		this.positionJS_ = new JSlot();
-		this.createDefault(false);
+		this.createDefault();
 	}
 
 	/**
@@ -77,31 +82,6 @@ public class WDatePicker extends WCompositeWidget {
 	}
 
 	/**
-	 * Create a new date picker.
-	 * <p>
-	 * This constructor creates a line edit with an icon that leads to a popup
-	 * calendar. A {@link WDateValidator} is configured for the line edit.
-	 * <p>
-	 * <code>i18n</code> is passed to the {@link WCalendar} constructor.
-	 */
-	public WDatePicker(boolean i18n, WContainerWidget parent) {
-		super(parent);
-		this.format_ = "";
-		this.positionJS_ = new JSlot();
-		this.createDefault(i18n);
-	}
-
-	/**
-	 * Create a new date picker.
-	 * <p>
-	 * Calls {@link #WDatePicker(boolean i18n, WContainerWidget parent)
-	 * this(i18n, (WContainerWidget)null)}
-	 */
-	public WDatePicker(boolean i18n) {
-		this(i18n, (WContainerWidget) null);
-	}
-
-	/**
 	 * Create a new date picker for existing line edit and with custom display
 	 * widget.
 	 * <p>
@@ -111,15 +91,13 @@ public class WDatePicker extends WCompositeWidget {
 	 * The <code>forEdit</code> argument is the lineEdit that works in
 	 * conjunction with the date picker. This widget does not become part of the
 	 * date picker, and may be located anywhere else.
-	 * <p>
-	 * <code>i18n</code> is passed to the {@link WCalendar} constructor.
 	 */
 	public WDatePicker(WInteractWidget displayWidget, WLineEdit forEdit,
-			boolean i18n, WContainerWidget parent) {
+			WContainerWidget parent) {
 		super(parent);
 		this.format_ = "";
 		this.positionJS_ = new JSlot();
-		this.create(displayWidget, forEdit, i18n);
+		this.create(displayWidget, forEdit);
 	}
 
 	/**
@@ -127,24 +105,11 @@ public class WDatePicker extends WCompositeWidget {
 	 * widget.
 	 * <p>
 	 * Calls
-	 * {@link #WDatePicker(WInteractWidget displayWidget, WLineEdit forEdit, boolean i18n, WContainerWidget parent)
-	 * this(displayWidget, forEdit, false, (WContainerWidget)null)}
+	 * {@link #WDatePicker(WInteractWidget displayWidget, WLineEdit forEdit, WContainerWidget parent)
+	 * this(displayWidget, forEdit, (WContainerWidget)null)}
 	 */
 	public WDatePicker(WInteractWidget displayWidget, WLineEdit forEdit) {
-		this(displayWidget, forEdit, false, (WContainerWidget) null);
-	}
-
-	/**
-	 * Create a new date picker for existing line edit and with custom display
-	 * widget.
-	 * <p>
-	 * Calls
-	 * {@link #WDatePicker(WInteractWidget displayWidget, WLineEdit forEdit, boolean i18n, WContainerWidget parent)
-	 * this(displayWidget, forEdit, i18n, (WContainerWidget)null)}
-	 */
-	public WDatePicker(WInteractWidget displayWidget, WLineEdit forEdit,
-			boolean i18n) {
-		this(displayWidget, forEdit, i18n, (WContainerWidget) null);
+		this(displayWidget, forEdit, (WContainerWidget) null);
 	}
 
 	/**
@@ -329,18 +294,17 @@ public class WDatePicker extends WCompositeWidget {
 	private WCalendar calendar_;
 	private JSlot positionJS_;
 
-	private void createDefault(boolean i18n) {
+	private void createDefault() {
 		WImage icon = new WImage(WApplication.getResourcesUrl()
 				+ "calendar_edit.png");
 		icon.setVerticalAlignment(AlignmentFlag.AlignMiddle);
 		WLineEdit lineEdit = new WLineEdit();
-		this.create(icon, lineEdit, i18n);
+		this.create(icon, lineEdit);
 		this.layout_.insertWidget(0, lineEdit);
 		lineEdit.setValidator(new WDateValidator(this.format_, this));
 	}
 
-	private void create(WInteractWidget displayWidget, WLineEdit forEdit,
-			boolean i18n) {
+	private void create(WInteractWidget displayWidget, WLineEdit forEdit) {
 		this.setImplementation(this.layout_ = new WContainerWidget());
 		this.displayWidget_ = displayWidget;
 		this.forEdit_ = forEdit;
@@ -351,7 +315,7 @@ public class WDatePicker extends WCompositeWidget {
 		String TEMPLATE = "${shadow-x1-x2}${calendar}<div style=\"text-align:center; margin-top:3px\">${close}</div>";
 		this.layout_.addWidget(this.popup_ = new WTemplate(
 				new WString(TEMPLATE)));
-		this.calendar_ = new WCalendar(i18n);
+		this.calendar_ = new WCalendar();
 		this.calendar_.activated().addListener(this.popup_,
 				new Signal1.Listener<WDate>() {
 					public void trigger(WDate e1) {
@@ -364,8 +328,7 @@ public class WDatePicker extends WCompositeWidget {
 						WDatePicker.this.setFromCalendar();
 					}
 				});
-		WPushButton closeButton = new WPushButton(i18n ? tr("Close")
-				: new WString("Close"));
+		WPushButton closeButton = new WPushButton(tr("Wt.WDatePicker.Close"));
 		closeButton.clicked().addListener(this.popup_,
 				new Signal1.Listener<WMouseEvent>() {
 					public void trigger(WMouseEvent e1) {

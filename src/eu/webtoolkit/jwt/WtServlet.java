@@ -44,6 +44,7 @@ public abstract class WtServlet extends HttpServlet {
 	static final String CommScript_js;
 	static final String Hybrid_html;
 	static final String JQuery_js;
+	static final String WtMessages_xml = "eu.webtoolkit.jwt.wt";
 
 	private static ServletApi servletApi;
 
