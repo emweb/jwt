@@ -192,38 +192,6 @@ public class WAbstractToggleButton extends WFormWidget {
 		if (result.getType() == DomElementType.DomElement_SPAN) {
 			input = DomElement.createNew(DomElementType.DomElement_INPUT);
 			input.setName("in" + this.getId());
-			if (this.isUseImageWorkaround()) {
-				DomElement img = DomElement
-						.createNew(DomElementType.DomElement_IMG);
-				img.setId("im" + this.getId());
-				String src = WApplication.getResourcesUrl();
-				WEnvironment env = app.getEnvironment();
-				if (env.getUserAgent().indexOf("Mac OS X") != -1) {
-					src += "indeterminate-macosx.png";
-				} else {
-					if (env.agentIsOpera()) {
-						src += "indeterminate-opera.png";
-					} else {
-						if (env.getUserAgent().indexOf("Windows") != -1) {
-							src += "indeterminate-windows.png";
-						} else {
-							src += "indeterminate-linux.png";
-						}
-					}
-				}
-				img.setProperty(Property.PropertySrc, fixRelativeUrl(src));
-				img.setProperty(Property.PropertyClass, "Wt-indeterminate");
-				EventSignal imgClick = this.voidEventSignal(
-						UNDETERMINATE_CLICK_SIGNAL, true);
-				img.setEventSignal("click", imgClick);
-				imgClick.updateOk();
-				if (this.state_ == CheckState.PartiallyChecked) {
-					input.setProperty(Property.PropertyStyleDisplay, "none");
-				} else {
-					img.setProperty(Property.PropertyStyleDisplay, "none");
-				}
-				result.addChild(img);
-			}
 		}
 		this.updateDomElements(result, input, true);
 		if (result != input) {
@@ -243,31 +211,6 @@ public class WAbstractToggleButton extends WFormWidget {
 			DomElement input = DomElement.getForUpdate("in" + this.getId(),
 					DomElementType.DomElement_INPUT);
 			this.updateDomElements(element, input, false);
-			if (this.isUseImageWorkaround()) {
-				EventSignal imgClick = this.voidEventSignal(
-						UNDETERMINATE_CLICK_SIGNAL, true);
-				if (this.stateChanged_ || imgClick.needsUpdate(false)) {
-					DomElement img = DomElement.getForUpdate("im"
-							+ this.getId(), DomElementType.DomElement_IMG);
-					if (this.stateChanged_) {
-						img
-								.setProperty(
-										Property.PropertyStyleDisplay,
-										this.state_ == CheckState.PartiallyChecked ? "inline"
-												: "none");
-						input
-								.setProperty(
-										Property.PropertyStyleDisplay,
-										this.state_ == CheckState.PartiallyChecked ? "none"
-												: "inline");
-					}
-					if (imgClick.needsUpdate(false)) {
-						img.setEventSignal("click", imgClick);
-						imgClick.updateOk();
-					}
-					result.add(img);
-				}
-			}
 			result.add(element);
 			result.add(input);
 		} else {
@@ -306,16 +249,22 @@ public class WAbstractToggleButton extends WFormWidget {
 		}
 		if (this.stateChanged_ || all) {
 			input.setProperty(Property.PropertyChecked,
-					this.state_ == CheckState.Checked ? "true" : "false");
-			if (!this.isUseImageWorkaround()) {
+					this.state_ == CheckState.Unchecked ? "false" : "true");
+			if (this.supportsIndeterminate(env)) {
 				input.setProperty(Property.PropertyIndeterminate,
 						this.state_ == CheckState.PartiallyChecked ? "true"
 								: "false");
+			} else {
+				input
+						.setProperty(
+								Property.PropertyStyleOpacity,
+								this.state_ == CheckState.PartiallyChecked ? "0.5"
+										: "");
 			}
 			this.stateChanged_ = false;
 		}
 		if (needUpdateClickedSignal || all) {
-			String dom = "Wt3_1_5.getElement('" + input.getId() + "')";
+			String dom = "o";
 			List<DomElement.EventAction> actions = new ArrayList<DomElement.EventAction>();
 			if (check != null) {
 				if (check.isConnected()) {
@@ -350,7 +299,7 @@ public class WAbstractToggleButton extends WFormWidget {
 				click.updateOk();
 			}
 			if (!(all && actions.isEmpty())) {
-				input.setEvent("click", actions);
+				input.setEvent(CLICK_SIGNAL, actions);
 			}
 		}
 	}
@@ -364,7 +313,7 @@ public class WAbstractToggleButton extends WFormWidget {
 			return;
 		}
 		if (!(formData.values.length == 0)) {
-			if (formData.values[0].equals("indeterminate")) {
+			if (formData.values[0].equals("i")) {
 				this.state_ = CheckState.PartiallyChecked;
 			} else {
 				this.state_ = !formData.values[0].equals("0") ? CheckState.Checked
@@ -391,25 +340,24 @@ public class WAbstractToggleButton extends WFormWidget {
 	}
 
 	DomElementType getDomElementType() {
-		if (this.isUseImageWorkaround()) {
+		WLabel l = this.getLabel();
+		if (l != null && l.getParent() == this) {
 			return DomElementType.DomElement_SPAN;
 		} else {
-			WLabel l = this.getLabel();
-			if (l != null && l.getParent() == this) {
-				return DomElementType.DomElement_SPAN;
-			} else {
-				return DomElementType.DomElement_INPUT;
-			}
+			return DomElementType.DomElement_INPUT;
 		}
 	}
 
-	boolean isUseImageWorkaround() {
-		return false;
+	protected boolean supportsIndeterminate(WEnvironment env) {
+		return env.hasJavaScript()
+				&& (env.agentIsIE() || env.agentIsSafari() || env
+						.agentIsGecko()
+						&& env.getAgent().getValue() >= WEnvironment.UserAgent.Firefox3_6
+								.getValue());
 	}
 
 	String getFormName() {
-		if (this.getDomElementType() == DomElementType.DomElement_SPAN
-				&& !this.isUseImageWorkaround()) {
+		if (this.getDomElementType() == DomElementType.DomElement_SPAN) {
 			return "in" + this.getId();
 		} else {
 			return super.getFormName();
@@ -441,5 +389,4 @@ public class WAbstractToggleButton extends WFormWidget {
 
 	private static String CHECKED_SIGNAL = "M_checked";
 	private static String UNCHECKED_SIGNAL = "M_unchecked";
-	static String UNDETERMINATE_CLICK_SIGNAL = "M_click";
 }

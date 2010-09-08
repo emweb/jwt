@@ -125,8 +125,7 @@ public class WDialog extends WCompositeWidget {
 							""
 									+ "height: 100%; width: 100%;top: 0px; left: 0px;opacity: 0.5; position: fixed;"
 									+ (app.getEnvironment().agentIsIE() ? "filter: alpha(opacity=50);"
-											: "-moz-background-clip: -moz-initial;-moz-background-origin: -moz-initial;-moz-background-inline-policy: -moz-initial;-moz-opacity:0.5;-khtml-opacity: 0.5"),
-							CSS_RULES_NAME);
+											: "opacity: 0.5"), CSS_RULES_NAME);
 			String position = app.getEnvironment().getAgent() == WEnvironment.UserAgent.IE6 ? "absolute"
 					: "fixed";
 			app

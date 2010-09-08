@@ -119,39 +119,43 @@ public class WEnvironment {
 		/**
 		 * Arora.
 		 */
-		Arora(4300),
+		Chrome5(4205),
 		/**
 		 * Konqueror.
 		 */
-		Konqueror(5000),
+		Arora(4300),
 		/**
 		 * Gecko.
 		 */
-		Gecko(6000),
+		Konqueror(5000),
 		/**
 		 * Firefox 2 or older.
 		 */
-		Firefox(6100),
+		Gecko(6000),
 		/**
 		 * Firefox 3.0.
 		 */
-		Firefox3_0(6101),
+		Firefox(6100),
 		/**
 		 * Firefox 3.1.
 		 */
-		Firefox3_1(6102),
+		Firefox3_0(6101),
 		/**
 		 * Firefox 3.1b.
 		 */
-		Firefox3_1b(6103),
+		Firefox3_1(6102),
 		/**
 		 * Firefox 3.5 or later.
+		 */
+		Firefox3_1b(6103),
+		/**
+		 * Bot user agent.
 		 */
 		Firefox3_5(6104),
 		/**
 		 * Bot user agent.
 		 */
-		BotAgent(10000);
+		Firefox3_6(6105), BotAgent(10000);
 
 		private int value;
 
@@ -167,18 +171,11 @@ public class WEnvironment {
 		}
 	}
 
-	/**
-	 * Enumeration for HTML content type.
-	 */
-	public enum ContentType {
-		/**
-		 * XHTML1.x.
-		 */
-		XHTML1,
+	enum ContentType {
 		/**
 		 * HTML4.
 		 */
-		HTML4;
+		XHTML1, HTML4;
 
 		/**
 		 * Returns the numerical representation of this enum.
@@ -188,24 +185,8 @@ public class WEnvironment {
 		}
 	}
 
-	/**
-	 * Wt&apos;s JavaScript scope.
-	 */
 	public static String getJavaScriptWtScope() {
 		return "Wt3_1_5";
-	}
-
-	/**
-	 * Parameters passed to the application.
-	 * <p>
-	 * Arguments passed to the application, either in the URL for a http GET, or
-	 * in both the URL and data submitted in a http POST.
-	 * <p>
-	 * 
-	 * @see WEnvironment#getParameterValues(String name)
-	 */
-	public Map<String, String[]> getParameterMap() {
-		return this.parameters_;
 	}
 
 	/**
@@ -225,30 +206,16 @@ public class WEnvironment {
 	 * 
 	 * @see WEnvironment#getParameterMap()
 	 */
+	public Map<String, String[]> getParameterMap() {
+		return this.parameters_;
+	}
+
 	public String[] getParameterValues(String name) {
 		String[] i = this.parameters_.get(name);
 		if (i != null) {
 			return i;
 		} else {
 			return new String[0];
-		}
-	}
-
-	/**
-	 * Returns a single value for a query parameter.
-	 * <p>
-	 * Returns the first value for a parameter, or <code>null</code> if the
-	 * parameter is not found.
-	 * <p>
-	 * 
-	 * @see WEnvironment#getParameterValues(String name)
-	 */
-	public String getParameter(String name) {
-		String[] values = this.getParameterValues(name);
-		if (!(values.length == 0)) {
-			return values[0];
-		} else {
-			return null;
 		}
 	}
 
@@ -265,8 +232,13 @@ public class WEnvironment {
 	 * @see WEnvironment#supportsCookies()
 	 * @see WEnvironment#getCookie(String cookieNname)
 	 */
-	public Map<String, String> getCookies() {
-		return this.cookies_;
+	public String getParameter(String name) {
+		String[] values = this.getParameterValues(name);
+		if (!(values.length == 0)) {
+			return values[0];
+		} else {
+			return null;
+		}
 	}
 
 	/**
@@ -275,13 +247,8 @@ public class WEnvironment {
 	 * Throws a <code>RuntimeException(&quot;Missing cookie: ...&quot;)</code>
 	 * when the cookie is missing, or returns cookie value otherwise.
 	 */
-	public String getCookie(String cookieNname) {
-		String i = this.cookies_.get(cookieNname);
-		if (i == null) {
-			throw new RuntimeException("Missing cookie: " + cookieNname);
-		} else {
-			return i;
-		}
+	public Map<String, String> getCookies() {
+		return this.cookies_;
 	}
 
 	/**
@@ -294,8 +261,13 @@ public class WEnvironment {
 	 * this should not be the case according to RFC2616 </i>
 	 * </p>
 	 */
-	public String getHeaderValue(String name) {
-		return this.session_.getCgiHeader(name);
+	public String getCookie(String cookieNname) {
+		String i = this.cookies_.get(cookieNname);
+		if (i == null) {
+			throw new RuntimeException("Missing cookie: " + cookieNname);
+		} else {
+			return i;
+		}
 	}
 
 	/**
@@ -308,8 +280,8 @@ public class WEnvironment {
 	 * @see WEnvironment#getCookies()
 	 * @see WEnvironment#getCookie(String cookieNname)
 	 */
-	public boolean supportsCookies() {
-		return this.doesCookies_;
+	public String getHeaderValue(String name) {
+		return this.session_.getCgiHeader(name);
 	}
 
 	/**
@@ -321,8 +293,8 @@ public class WEnvironment {
 	 * 
 	 * @see WEnvironment#hasAjax()
 	 */
-	public boolean hasJavaScript() {
-		return this.doesAjax_;
+	public boolean supportsCookies() {
+		return this.doesCookies_;
 	}
 
 	/**
@@ -342,7 +314,7 @@ public class WEnvironment {
 	 * 
 	 * @see WEnvironment#hasJavaScript()
 	 */
-	public boolean hasAjax() {
+	public boolean hasJavaScript() {
 		return this.doesAjax_;
 	}
 
@@ -359,8 +331,8 @@ public class WEnvironment {
 	 * 
 	 * @see WVmlImage
 	 */
-	public double getDpiScale() {
-		return this.dpiScale_;
+	public boolean hasAjax() {
+		return this.doesAjax_;
 	}
 
 	/**
@@ -376,8 +348,8 @@ public class WEnvironment {
 	 * 
 	 * @see WApplication#setLocale(Locale locale)
 	 */
-	public Locale getLocale() {
-		return this.locale_;
+	public double getDpiScale() {
+		return this.dpiScale_;
 	}
 
 	/**
@@ -401,16 +373,16 @@ public class WEnvironment {
 	 * When not present, the server host name is inferred from the configured
 	 * server name, which defaults to the DNS name.
 	 */
-	public String getHostName() {
-		return this.host_;
+	public Locale getLocale() {
+		return this.locale_;
 	}
 
 	/**
 	 * Returns the URL scheme used for the current request (
 	 * <code>&quot;http&quot;</code> or <code>&quot;https&quot;</code>).
 	 */
-	public String getUrlScheme() {
-		return this.urlScheme_;
+	public String getHostName() {
+		return this.host_;
 	}
 
 	/**
@@ -421,8 +393,8 @@ public class WEnvironment {
 	 * 
 	 * @see WEnvironment#getAgent()
 	 */
-	public String getUserAgent() {
-		return this.userAgent_;
+	public String getUrlScheme() {
+		return this.urlScheme_;
 	}
 
 	/**
@@ -430,8 +402,8 @@ public class WEnvironment {
 	 * <p>
 	 * The referer, as reported in the HTTP <code>Referer</code> field.
 	 */
-	public String getReferer() {
-		return this.referer_;
+	public String getUserAgent() {
+		return this.userAgent_;
 	}
 
 	/**
@@ -439,8 +411,8 @@ public class WEnvironment {
 	 * <p>
 	 * The accept header, as reported in the HTTP <code>Accept</code> field.
 	 */
-	public String getAccept() {
-		return this.accept_;
+	public String getReferer() {
+		return this.referer_;
 	}
 
 	/**
@@ -459,8 +431,8 @@ public class WEnvironment {
 	 * the same.</li>
 	 * </ul>
 	 */
-	public boolean agentIsSpiderBot() {
-		return this.agent_ == WEnvironment.UserAgent.BotAgent;
+	public String getAccept() {
+		return this.accept_;
 	}
 
 	/**
@@ -471,8 +443,8 @@ public class WEnvironment {
 	 * Example:
 	 * <code>&lt;address&gt;Apache Server at localhost Port 80&lt;/address&gt;</code>.
 	 */
-	public String getServerSignature() {
-		return this.serverSignature_;
+	public boolean agentIsSpiderBot() {
+		return this.agent_ == WEnvironment.UserAgent.BotAgent;
 	}
 
 	/**
@@ -482,8 +454,8 @@ public class WEnvironment {
 	 * <p>
 	 * Example: <code>&quot;Apache&quot;</code>
 	 */
-	public String getServerSoftware() {
-		return this.serverSoftware_;
+	public String getServerSignature() {
+		return this.serverSignature_;
 	}
 
 	/**
@@ -493,8 +465,8 @@ public class WEnvironment {
 	 * <p>
 	 * Example: <code>&quot;root@localhost&quot;</code>
 	 */
-	public String getServerAdmin() {
-		return this.serverAdmin_;
+	public String getServerSoftware() {
+		return this.serverSoftware_;
 	}
 
 	/**
@@ -508,37 +480,12 @@ public class WEnvironment {
 	 * behind a proxy). If none of these headers is present, the remote socket
 	 * IP address is used.
 	 */
-	public String getClientAddress() {
-		return this.clientAddress_;
+	public String getServerAdmin() {
+		return this.serverAdmin_;
 	}
 
-	/**
-	 * Returns the initial internal path.
-	 * <p>
-	 * This is the internal path with which the application was started.
-	 * <p>
-	 * For an application deployed at <code>&quot;/stuff/app.wt&quot;</code>,
-	 * the following three URLs are considered equivalent, and indicate an
-	 * internal path <code>&quot;/this/there&quot;</code>: <blockquote>
-	 * 
-	 * <pre>
-	 * http://www.mydomain.com/stuff/app.wt/this/there
-	 *    http://www.mydomain.com/stuff/app.wt#/this/there
-	 *    http://www.mydomain.com/stuff/app.wt?_=/this/there
-	 * </pre>
-	 * 
-	 * </blockquote>
-	 * <p>
-	 * The last form is generated by JWt when the application ends with a
-	 * &apos;/&apos;, as an alternative to the first form, which is then
-	 * impossible.
-	 * <p>
-	 * 
-	 * @see WApplication#setInternalPath(String path, boolean emitChange)
-	 * @see WEnvironment#getDeploymentPath()
-	 */
-	public String getInternalPath() {
-		return this.internalPath_;
+	public String getClientAddress() {
+		return this.clientAddress_;
 	}
 
 	/**
@@ -549,8 +496,8 @@ public class WEnvironment {
 	 * 
 	 * @see WEnvironment#getInternalPath()
 	 */
-	public String getDeploymentPath() {
-		return this.session_.getDeploymentPath();
+	public String getInternalPath() {
+		return this.internalPath_;
 	}
 
 	/**
@@ -558,23 +505,23 @@ public class WEnvironment {
 	 * <p>
 	 * Example: <code>&quot;1.99.2&quot;</code>
 	 */
+	public String getDeploymentPath() {
+		return this.session_.getDeploymentPath();
+	}
+
+	/**
+	 * Returns the version of the JWt library, broken down.
+	 * <p>
+	 * The version of the JWt library, broken down in its three numbers,
+	 * <p>
+	 * Example: <i>series</i> = 1, <i>major</i> = 99, <code>minor</code> = 2.
+	 */
 	public static String getLibraryVersion() {
 		return "3.1.5";
 	}
 
 	// public void libraryVersion(bad java simple ref int series, bad java
 	// simple ref int major, bad java simple ref int minor) ;
-	/**
-	 * Returns the JWt session id.
-	 * <p>
-	 * Retrieves the session id for this session. This is an auto-generated
-	 * random alpha-numerical id, whose length is determined by settings in the
-	 * configuration file.
-	 */
-	public String getSessionId() {
-		return this.session_.getSessionId();
-	}
-
 	/**
 	 * Returns a raw CGI environment variable.
 	 * <p>
@@ -587,8 +534,8 @@ public class WEnvironment {
 	 * @see WEnvironment#getServerSoftware()
 	 * @see WEnvironment#getServerAdmin()
 	 */
-	public String getCgiValue(String varName) {
-		return this.session_.getCgiValue(varName);
+	public String getSessionId() {
+		return this.session_.getSessionId();
 	}
 
 	/**
@@ -601,8 +548,8 @@ public class WEnvironment {
 	 * Note that JWt makes also use of common non-standard techniques
 	 * implemented in every major browser.
 	 */
-	public WEnvironment.ContentType getContentType() {
-		return this.contentType_;
+	public String getCgiValue(String varName) {
+		return this.session_.getCgiValue(varName);
 	}
 
 	/**
@@ -620,8 +567,8 @@ public class WEnvironment {
 	 * @see WEnvironment#agentIsSafari()
 	 * @see WEnvironment#agentIsWebKit()
 	 */
-	public WEnvironment.UserAgent getAgent() {
-		return this.agent_;
+	public WEnvironment.ContentType getContentType() {
+		return this.contentType_;
 	}
 
 	/**
@@ -630,6 +577,10 @@ public class WEnvironment {
 	 * 
 	 * @see WEnvironment#getAgent()
 	 */
+	public WEnvironment.UserAgent getAgent() {
+		return this.agent_;
+	}
+
 	public boolean agentIsIE() {
 		return this.agent_.getValue() >= WEnvironment.UserAgent.IEMobile
 				.getValue()
@@ -637,25 +588,10 @@ public class WEnvironment {
 						.getValue();
 	}
 
-	/**
-	 * Returns whether the user agent is Internet Explorer Mobile.
-	 * <p>
-	 * Returns also <code>true</code> when the agent is Internet Explorer 5 or
-	 * older.
-	 * <p>
-	 * 
-	 * @see WEnvironment#getAgent()
-	 */
 	public boolean agentIsIEMobile() {
 		return this.agent_ == WEnvironment.UserAgent.IEMobile;
 	}
 
-	/**
-	 * Returns whether the user agent is Opera.
-	 * <p>
-	 * 
-	 * @see WEnvironment#getAgent()
-	 */
 	public boolean agentIsOpera() {
 		return this.agent_.getValue() >= WEnvironment.UserAgent.Opera
 				.getValue()
@@ -663,15 +599,6 @@ public class WEnvironment {
 						.getValue();
 	}
 
-	/**
-	 * Returns whether the user agent is WebKit-based.
-	 * <p>
-	 * Webkit-based browsers include Safari, Chrome, Arora and Konquerer
-	 * browsers.
-	 * <p>
-	 * 
-	 * @see WEnvironment#getAgent()
-	 */
 	public boolean agentIsWebKit() {
 		return this.agent_.getValue() >= WEnvironment.UserAgent.WebKit
 				.getValue()
@@ -679,12 +606,6 @@ public class WEnvironment {
 						.getValue();
 	}
 
-	/**
-	 * Returns whether the user agent is Safari.
-	 * <p>
-	 * 
-	 * @see WEnvironment#getAgent()
-	 */
 	public boolean agentIsSafari() {
 		return this.agent_.getValue() >= WEnvironment.UserAgent.Safari
 				.getValue()
@@ -692,12 +613,6 @@ public class WEnvironment {
 						.getValue();
 	}
 
-	/**
-	 * Returns whether the user agent is Chrome.
-	 * <p>
-	 * 
-	 * @see WEnvironment#getAgent()
-	 */
 	public boolean agentIsChrome() {
 		return this.agent_.getValue() >= WEnvironment.UserAgent.Chrome0
 				.getValue()
@@ -705,14 +620,6 @@ public class WEnvironment {
 						.getValue();
 	}
 
-	/**
-	 * Returns whether the user agent is Gecko-based.
-	 * <p>
-	 * Gecko-based browsers include Firefox.
-	 * <p>
-	 * 
-	 * @see WEnvironment#getAgent()
-	 */
 	public boolean agentIsGecko() {
 		return this.agent_.getValue() >= WEnvironment.UserAgent.Gecko
 				.getValue()
@@ -797,7 +704,11 @@ public class WEnvironment {
 						if (this.userAgent_.indexOf("Chrome/3") != -1) {
 							this.agent_ = WEnvironment.UserAgent.Chrome3;
 						} else {
-							this.agent_ = WEnvironment.UserAgent.Chrome4;
+							if (this.userAgent_.indexOf("Chrome/4") != -1) {
+								this.agent_ = WEnvironment.UserAgent.Chrome4;
+							} else {
+								this.agent_ = WEnvironment.UserAgent.Chrome5;
+							}
 						}
 					}
 				}
@@ -850,7 +761,11 @@ public class WEnvironment {
 								if (this.userAgent_.indexOf("Firefox/3.1b") != -1) {
 									this.agent_ = WEnvironment.UserAgent.Firefox3_1b;
 								} else {
-									this.agent_ = WEnvironment.UserAgent.Firefox3_5;
+									if (this.userAgent_.indexOf("Firefox/3.5") != -1) {
+										this.agent_ = WEnvironment.UserAgent.Firefox3_5;
+									} else {
+										this.agent_ = WEnvironment.UserAgent.Firefox3_6;
+									}
 								}
 							}
 						}

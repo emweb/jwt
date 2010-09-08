@@ -115,9 +115,9 @@ public class WOverlayLoadingIndicator extends WContainerWidget implements
 					.addRule(
 							"div#" + this.cover_.getId(),
 							""
-									+ "background: #DDDDDD;height: 100%; width: 100%;top: 0px; left: 0px;opacity: 0.5; position: absolute;-khtml-opacity: 0.5;z-index: 10000;"
+									+ "background: #DDDDDD;height: 100%; width: 100%;top: 0px; left: 0px;position: absolute;z-index: 10000;"
 									+ (app.getEnvironment().agentIsIE() ? "filter: alpha(opacity=50);"
-											: "-moz-opacity:0.5;-moz-background-clip: -moz-initial;-moz-background-origin: -moz-initial;-moz-background-inline-policy: -moz-initial;"));
+											: "opacity: 0.5;"));
 		}
 		if (styleClass.length() == 0) {
 			app

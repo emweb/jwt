@@ -195,6 +195,8 @@ public class WTableView extends WAbstractItemView {
 			layout.setContentsMargins(0, 0, 0, 0);
 			this.headerContainer_ = new WContainerWidget();
 			this.headerContainer_.setStyleClass("Wt-header headerrh cwidth");
+			this.headerContainer_
+					.setOverflow(WContainerWidget.Overflow.OverflowHidden);
 			this.headerContainer_.addWidget(this.headers_);
 			this.contentsContainer_ = new WContainerWidget();
 			this.contentsContainer_.setStyleClass("cwidth");
@@ -382,8 +384,7 @@ public class WTableView extends WAbstractItemView {
 					+ rowHeight.getCssText());
 			if (this.getModel() != null) {
 				this.canvas_.resize(this.canvas_.getWidth(), new WLength(this
-						.getModel().getRowCount(this.getRootIndex())
-						* rowHeight.toPixels()));
+						.getCanvasHeight()));
 				this.table_.resize(this.table_.getWidth(), new WLength(
 						renderedRowCount * rowHeight.toPixels()));
 			}
@@ -630,8 +631,7 @@ public class WTableView extends WAbstractItemView {
 		this.shiftModelIndexes(start, end - start + 1);
 		if (this.isAjaxMode()) {
 			this.canvas_.resize(this.canvas_.getWidth(), new WLength(this
-					.getModel().getRowCount(this.getRootIndex())
-					* this.getRowHeight().toPixels()));
+					.getCanvasHeight()));
 			this
 					.scheduleRerender(WAbstractItemView.RenderState.NeedAdjustViewPort);
 		}
@@ -663,8 +663,7 @@ public class WTableView extends WAbstractItemView {
 		}
 		if (this.isAjaxMode()) {
 			this.canvas_.resize(this.canvas_.getWidth(), new WLength(this
-					.getModel().getRowCount(this.getRootIndex())
-					* this.getRowHeight().toPixels()));
+					.getCanvasHeight()));
 			this
 					.scheduleRerender(WAbstractItemView.RenderState.NeedAdjustViewPort);
 		}
@@ -1111,9 +1110,8 @@ public class WTableView extends WAbstractItemView {
 			total += (int) this.columnInfo(i).width.toPixels() + 7;
 		}
 		this.headers_.resize(new WLength(total), this.headers_.getHeight());
-		this.canvas_.resize(new WLength(total), new WLength(this.getModel()
-				.getRowCount(this.getRootIndex())
-				* this.getRowHeight().toPixels()));
+		this.canvas_.resize(new WLength(total), new WLength(this
+				.getCanvasHeight()));
 		this.computeRenderedArea();
 		int renderedRows = this.getLastRow() - this.getFirstRow() + 1;
 		for (int i = 0; i < renderedRows; ++i) {
@@ -1483,9 +1481,8 @@ public class WTableView extends WAbstractItemView {
 			}
 			total += (int) this.columnInfo(i).width.toPixels() + 7;
 		}
-		this.canvas_.resize(new WLength(total), new WLength(this.getModel()
-				.getRowCount(this.getRootIndex())
-				* this.getRowHeight().toPixels()));
+		this.canvas_.resize(new WLength(total), new WLength(this
+				.getCanvasHeight()));
 		this.headers_.resize(new WLength(total), this.headers_.getHeight());
 	}
 
@@ -1512,6 +1509,11 @@ public class WTableView extends WAbstractItemView {
 
 	private boolean isAjaxMode() {
 		return this.table_ != null;
+	}
+
+	private double getCanvasHeight() {
+		return Math.max(1.0, this.getModel().getRowCount(this.getRootIndex())
+				* this.getRowHeight().toPixels());
 	}
 
 	static String wtjs1(WApplication app) {

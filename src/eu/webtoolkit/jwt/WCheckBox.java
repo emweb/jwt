@@ -113,23 +113,9 @@ public class WCheckBox extends WAbstractToggleButton {
 	public void setTristate(boolean tristate) {
 		this.triState_ = tristate;
 		if (this.triState_) {
-			if (this.needTristateImageWorkaround()) {
-				EventSignal imgClick = this.voidEventSignal(
-						UNDETERMINATE_CLICK_SIGNAL, false);
-				if (!(imgClick != null)) {
-					imgClick = this.voidEventSignal(UNDETERMINATE_CLICK_SIGNAL,
-							true);
-					imgClick.addListener(this, new Signal.Listener() {
-						public void trigger() {
-							WCheckBox.this.setUnChecked();
-						}
-					});
-					imgClick.addListener(this, new Signal.Listener() {
-						public void trigger() {
-							WCheckBox.this.gotUndeterminateClick();
-						}
-					});
-				}
+			if (!this.supportsIndeterminate(WApplication.getInstance()
+					.getEnvironment())) {
+				this.clicked().addListener(clearOpacityJS);
 			} else {
 				if (WApplication.getInstance().getEnvironment().agentIsSafari()
 						&& !this.safariWorkaround_) {
@@ -188,30 +174,10 @@ public class WCheckBox extends WAbstractToggleButton {
 		super.updateDomElements(element, input, all);
 	}
 
-	boolean isUseImageWorkaround() {
-		return this.triState_ && this.needTristateImageWorkaround();
-	}
-
 	private boolean triState_;
 	private boolean safariWorkaround_;
-
-	private boolean needTristateImageWorkaround() {
-		WApplication app = WApplication.getInstance();
-		boolean supportIndeterminate = app.getEnvironment().hasJavaScript()
-				&& (app.getEnvironment().agentIsIE()
-						|| app.getEnvironment().agentIsSafari() || app
-						.getEnvironment().agentIsGecko()
-						&& app.getEnvironment().getAgent().getValue() >= WEnvironment.UserAgent.Firefox3_1b
-								.getValue());
-		return !supportIndeterminate;
-	}
-
-	private void gotUndeterminateClick() {
-		this.setUnChecked();
-		this.unChecked().trigger();
-		this.changed().trigger();
-	}
-
 	static JSlot safariWorkaroundJS = new JSlot(
-			"function(obj, e) { obj.onchange(); };");
+			"function(obj, e) { obj.onchange(); }");
+	static JSlot clearOpacityJS = new JSlot(
+			"function(obj, e) { obj.style.opacity=''; }");
 }
