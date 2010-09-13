@@ -248,8 +248,9 @@ public class WInPlaceEdit extends WCompositeWidget {
 			this.c2_.disconnect();
 		}
 		if (enabled) {
-			this.save_ = new WPushButton("Save", this.impl_);
-			this.cancel_ = new WPushButton("Cancel", this.impl_);
+			this.save_ = new WPushButton(tr("Wt.WInPlaceEdit.Save"), this.impl_);
+			this.cancel_ = new WPushButton(tr("Wt.WInPlaceEdit.Cancel"),
+					this.impl_);
 			this.save_.hide();
 			this.cancel_.hide();
 			this.text_.clicked().addListener(this.save_,

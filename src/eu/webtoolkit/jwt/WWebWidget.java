@@ -345,7 +345,7 @@ public abstract class WWebWidget extends WWidget {
 	}
 
 	public boolean isEnabled() {
-		if (this.flags_.get(BIT_DISABLED)) {
+		if (this.isDisabled()) {
 			return false;
 		} else {
 			if (this.getParent() != null) {

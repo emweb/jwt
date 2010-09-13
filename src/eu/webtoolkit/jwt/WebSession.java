@@ -330,6 +330,7 @@ class WebSession {
 			if (this.asyncResponse_ != null) {
 				this.renderer_.serveResponse(this.asyncResponse_,
 						WebRenderer.ResponseType.Update);
+				this.updatesPending_ = false;
 				this.asyncResponse_.flush();
 				this.asyncResponse_ = null;
 			}
@@ -1197,7 +1198,7 @@ class WebSession {
 			if (!(0 != 0)) {
 				obj.setFormData(getFormData(request, se + formName));
 			} else {
-				obj.requestTooLarge(0);
+				obj.setRequestTooLarge(0);
 			}
 		}
 	}

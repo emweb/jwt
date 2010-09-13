@@ -18,6 +18,18 @@ import java.util.List;
  * <p>
  * The format string used for validating user input are the same as those used
  * by {@link WDate#fromString(String s) WDate#fromString()}.
+ * <p>
+ * <h3>i18n</h3>
+ * <p>
+ * The strings used in the {@link WDateValidator} can be translated by
+ * overriding the default values for the following localization keys:
+ * <ul>
+ * <li>Wt.WDateValidator.DateTooEarly: The date must be after {1}</li>
+ * <li>Wt.WDateValidator.DateTooLate: The date must be before {1}</li>
+ * <li>Wt.WDateValidator.WrongDateRange: The date must be between {1} and {2}</li>
+ * <li>Wt.WDateValidator.WrongFormat: Must be a date in the format
+ * &apos;{1}&apos;</li>
+ * </ul>
  */
 public class WDateValidator extends WValidator {
 	/**
@@ -267,8 +279,8 @@ public class WDateValidator extends WValidator {
 			s.arg(this.formats_.get(0));
 			return s;
 		} else {
-			return new WString("Must be a date in the format '").append(
-					this.formats_.get(0)).append("'");
+			return WString.tr("Wt.WDateValidator.WrongFormat").arg(
+					this.formats_.get(0));
 		}
 	}
 
@@ -300,13 +312,12 @@ public class WDateValidator extends WValidator {
 				return new WString();
 			} else {
 				if ((this.top_ == null)) {
-					return new WString("The date must be after ")
-							.append(this.bottom_.toString(this.formats_.get(0)));
+					return WString.tr("Wt.WDateValidator.DateTooEarly").arg(
+							this.bottom_.toString(this.formats_.get(0)));
 				} else {
-					return new WString("The date must be between ").append(
-							this.bottom_.toString(this.formats_.get(0)))
-							.append(" and ").append(
-									this.top_.toString(this.formats_.get(0)));
+					return WString.tr("Wt.WDateValidator.WrongDateRange").arg(
+							this.bottom_.toString(this.formats_.get(0))).arg(
+							this.top_.toString(this.formats_.get(0)));
 				}
 			}
 		}
@@ -342,13 +353,12 @@ public class WDateValidator extends WValidator {
 				return new WString();
 			} else {
 				if ((this.bottom_ == null)) {
-					return new WString("The date must be before ")
-							.append(this.top_.toString(this.formats_.get(0)));
+					return WString.tr("Wt.WDateValidator.DateTooLate").arg(
+							this.top_.toString(this.formats_.get(0)));
 				} else {
-					return new WString("The date must be between ").append(
-							this.bottom_.toString(this.formats_.get(0)))
-							.append(" and ").append(
-									this.top_.toString(this.formats_.get(0)));
+					return WString.tr("Wt.WDateValidator.WrongDateRange").arg(
+							this.bottom_.toString(this.formats_.get(0))).arg(
+							this.top_.toString(this.formats_.get(0)));
 				}
 			}
 		}

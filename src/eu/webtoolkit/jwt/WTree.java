@@ -337,7 +337,6 @@ public class WTree extends WCompositeWidget {
 			}
 			node.clickedConnection_ = node.getImpl().clicked().addListener(
 					this, new Signal1.Listener<WMouseEvent>() {
-						@Override
 						public void trigger(WMouseEvent event) {
 							WTree.this.onClick(node, event);
 						}

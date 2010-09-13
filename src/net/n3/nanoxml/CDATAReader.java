@@ -150,7 +150,7 @@ class CDATAReader
 	
 	      return charsRead;
 	  } catch (XMLParseException xmlpe) {
-		  throw new IOException(xmlpe);
+		  throw new IOException(xmlpe.getMessage());
 	  }
    }
     
@@ -194,7 +194,7 @@ class CDATAReader
 	
 	      this.atEndOfData = true;
 	   } catch (XMLParseException xmlpe) {
-		   throw new IOException(xmlpe);
+		   throw new IOException(xmlpe.getMessage());
 	   }
    }
 

@@ -42,6 +42,22 @@ import eu.webtoolkit.jwt.utils.EnumUtils;
  * </tr>
  * </table>
  * <p>
+ * <h3>i18n</h3>
+ * <p>
+ * The strings used in the {@link WMessageBox} buttons can be translated by
+ * overriding the default values for the following localization keys:
+ * <ul>
+ * <li>Wt.WMessageBox.Abort: Abort</li>
+ * <li>Wt.WMessageBox.Cancel: Cancel</li>
+ * <li>Wt.WMessageBox.Ignore: Ignore</li>
+ * <li>Wt.WMessageBox.No: No</li>
+ * <li>Wt.WMessageBox.NoToAll: No to All</li>
+ * <li>Wt.WMessageBox.Ok: Ok</li>
+ * <li>Wt.WMessageBox.Retry: Retry</li>
+ * <li>Wt.WMessageBox.Yes: Yes</li>
+ * <li>Wt.WMessageBox.YesToAll: Yes to All</li>
+ * </ul>
+ * <p>
  * <h3>CSS</h3>
  * <p>
  * A {@link WMessageBox} can be styled using the <code>Wt-dialog</code> and
@@ -52,47 +68,24 @@ import eu.webtoolkit.jwt.utils.EnumUtils;
 public class WMessageBox extends WDialog {
 	/**
 	 * Creates an empty message box.
-	 * <p>
-	 * The button labels may be set fixed English (if <code>i18n</code> =
-	 * <code>false</code>), or fetched from a resource bundle if
-	 * <code>i18n</code> = <code>true</code>. In that case, the key for each
-	 * button is exactly the same as the English text.
 	 */
-	public WMessageBox(boolean i18n) {
+	public WMessageBox() {
 		super();
 		this.buttons_ = EnumSet.noneOf(StandardButton.class);
 		this.icon_ = Icon.NoIcon;
-		this.i18n_ = i18n;
 		this.result_ = StandardButton.NoButton;
 		this.buttonClicked_ = new Signal1<StandardButton>(this);
 		this.create();
 	}
 
 	/**
-	 * Creates an empty message box.
-	 * <p>
-	 * Calls {@link #WMessageBox(boolean i18n) this(false)}
-	 */
-	public WMessageBox() {
-		this(false);
-	}
-
-	/**
 	 * Creates a message box with given caption, text, icon, and buttons.
-	 * <p>
-	 * The button labels may be set fixed English (if <code>i18n</code> =
-	 * <code>false</code>), or fetched from a resource bundle if
-	 * <code>i18n</code> = <code>true</code>.
-	 * <p>
-	 * In that case, the key for each button is exactly the same as the English
-	 * text.
 	 */
 	public WMessageBox(CharSequence caption, CharSequence text, Icon icon,
-			EnumSet<StandardButton> buttons, boolean i18n) {
+			EnumSet<StandardButton> buttons) {
 		super(caption);
 		this.buttons_ = EnumSet.noneOf(StandardButton.class);
 		this.icon_ = Icon.NoIcon;
-		this.i18n_ = i18n;
 		this.buttonClicked_ = new Signal1<StandardButton>(this);
 		this.create();
 		this.setText(text);
@@ -104,12 +97,12 @@ public class WMessageBox extends WDialog {
 	 * Creates a message box with given caption, text, icon, and buttons.
 	 * <p>
 	 * Calls
-	 * {@link #WMessageBox(CharSequence caption, CharSequence text, Icon icon, EnumSet buttons, boolean i18n)
-	 * this(caption, text, icon, buttons, false)}
+	 * {@link #WMessageBox(CharSequence caption, CharSequence text, Icon icon, EnumSet buttons)
+	 * this(caption, text, icon, EnumSet.of(button, buttons))}
 	 */
 	public WMessageBox(CharSequence caption, CharSequence text, Icon icon,
-			EnumSet<StandardButton> buttons) {
-		this(caption, text, icon, buttons, false);
+			StandardButton button, StandardButton... buttons) {
+		this(caption, text, icon, EnumSet.of(button, buttons));
 	}
 
 	/**
@@ -185,8 +178,8 @@ public class WMessageBox extends WDialog {
 		this.buttonContainer_.clear();
 		for (int i = 0; i < 9; ++i) {
 			if (!EnumUtils.mask(this.buttons_, order_[i]).isEmpty()) {
-				WPushButton b = new WPushButton(this.i18n_ ? tr(buttonText_[i])
-						: new WString(buttonText_[i]), this.buttonContainer_);
+				WPushButton b = new WPushButton(tr(buttonText_[i]),
+						this.buttonContainer_);
 				this.buttonMapper_.mapConnect(b.clicked(), order_[i]);
 				if (order_[i] == StandardButton.Ok
 						|| order_[i] == StandardButton.Yes) {
@@ -250,9 +243,9 @@ public class WMessageBox extends WDialog {
 	 * closed, and return the result.
 	 */
 	public static StandardButton show(CharSequence caption, CharSequence text,
-			EnumSet<StandardButton> buttons, boolean i18n) {
+			EnumSet<StandardButton> buttons) {
 		final WMessageBox box = new WMessageBox(caption, text,
-				Icon.Information, buttons, i18n);
+				Icon.Information, buttons);
 		box.buttonClicked().addListener(box,
 				new Signal1.Listener<StandardButton>() {
 					public void trigger(StandardButton e1) {
@@ -267,12 +260,12 @@ public class WMessageBox extends WDialog {
 	 * Convenience method to show a message box, blocking the current thread.
 	 * <p>
 	 * Returns
-	 * {@link #show(CharSequence caption, CharSequence text, EnumSet buttons, boolean i18n)
-	 * show(caption, text, buttons, false)}
+	 * {@link #show(CharSequence caption, CharSequence text, EnumSet buttons)
+	 * show(caption, text, EnumSet.of(button, buttons))}
 	 */
 	public static final StandardButton show(CharSequence caption,
-			CharSequence text, EnumSet<StandardButton> buttons) {
-		return show(caption, text, buttons, false);
+			CharSequence text, StandardButton button, StandardButton... buttons) {
+		return show(caption, text, EnumSet.of(button, buttons));
 	}
 
 	/**
@@ -284,7 +277,6 @@ public class WMessageBox extends WDialog {
 
 	private EnumSet<StandardButton> buttons_;
 	private Icon icon_;
-	private boolean i18n_;
 	private StandardButton result_;
 	private Signal1<StandardButton> buttonClicked_;
 	private WContainerWidget buttonContainer_;
@@ -320,8 +312,11 @@ public class WMessageBox extends WDialog {
 			StandardButton.Yes, StandardButton.YesAll, StandardButton.Retry,
 			StandardButton.No, StandardButton.NoAll, StandardButton.Abort,
 			StandardButton.Ignore, StandardButton.Cancel };
-	private static String[] buttonText_ = { "Ok", "Yes", "Yes to All", "Retry",
-			"No", "No to All", "Abort", "Ignore", "Cancel" };
+	private static String[] buttonText_ = { "Wt.WMessageBox.Ok",
+			"Wt.WMessageBox.Yes", "Wt.WMessageBox.YesToAll",
+			"Wt.WMessageBox.Retry", "Wt.WMessageBox.No",
+			"Wt.WMessageBox.NoToAll", "Wt.WMessageBox.Abort",
+			"Wt.WMessageBox.Ignore", "Wt.WMessageBox.Cancel" };
 	private static String[] iconURI = { "icons/information.png",
 			"icons/warning.png", "icons/critical.png", "icons/question.png" };
 }

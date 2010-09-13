@@ -18,6 +18,14 @@ package eu.webtoolkit.jwt;
  * This widget does not provide styling, and can be styled using inline or
  * external CSS as appropriate.
  * <p>
+ * <h3>i18n</h3>
+ * <p>
+ * The strings used in this class can be translated by overriding the default
+ * values for the following localization keys:
+ * <ul>
+ * <li>Wt.WDefaultLoadingIndicator.Loading: Loading...</li>
+ * </ul>
+ * <p>
  * 
  * @see WApplication#setLoadingIndicator(WLoadingIndicator indicator)
  */
@@ -27,7 +35,7 @@ public class WDefaultLoadingIndicator extends WText implements
 	 * Constructor.
 	 */
 	public WDefaultLoadingIndicator() {
-		super(tr("Wt.WDefaultLoadingIndicator.loading"));
+		super(tr("Wt.WDefaultLoadingIndicator.Loading"));
 		this.setInline(false);
 		this.setStyleClass("Wt-loading");
 		WApplication app = WApplication.getInstance();

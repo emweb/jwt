@@ -62,6 +62,7 @@ public class CalendarCell extends WContainerWidget {
 				extra.setStyleClass("cell-extra");
 				addWidget(extra);
 				
+				//prevents the default browser action
 				extra.clicked().preventDefaultAction(true);
 				//clicking this label will open a dialog
 				//providing an overview of all entries for the cell's date

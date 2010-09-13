@@ -131,7 +131,7 @@ class PIReader
 	
 	      return charsRead;
 	   } catch (XMLParseException xmlpe) {
-		   throw new IOException(xmlpe);
+		   throw new IOException(xmlpe.getMessage());
 	   }
    }
 
@@ -158,7 +158,7 @@ class PIReader
 	         }
 	      }
 	   } catch (XMLParseException xmlpe) {
-		   throw new IOException(xmlpe);
+		   throw new IOException(xmlpe.getMessage());
 	   }
    }
 

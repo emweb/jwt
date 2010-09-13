@@ -140,7 +140,7 @@ public class WObject {
 	void setFormData(FormData formData) {
 	}
 
-	void requestTooLarge(int size) {
+	void setRequestTooLarge(int size) {
 	}
 
 	void formDataSet() {

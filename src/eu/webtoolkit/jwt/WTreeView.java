@@ -2019,12 +2019,14 @@ public class WTreeView extends WAbstractItemView {
 
 	WWidget headerWidget(int column, boolean contentsOnly) {
 		WWidget result = null;
-		if (column == 0) {
-			result = this.headers_.getWidget(this.headers_.getCount() - 1);
-		} else {
-			result = this.getHeaderRow().getWidget(column - 1);
+		if (this.headers_ != null) {
+			if (column == 0) {
+				result = this.headers_.getWidget(this.headers_.getCount() - 1);
+			} else {
+				result = this.getHeaderRow().getWidget(column - 1);
+			}
 		}
-		if (contentsOnly) {
+		if (result != null && contentsOnly) {
 			return result.find("contents");
 		} else {
 			return result;

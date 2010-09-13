@@ -98,7 +98,7 @@ class EscapeOStream {
 
 
 	public boolean isEmpty() {
-		return sink_.toString().isEmpty();
+		return sink_.toString().length() == 0;
 	}
 
 	public void flush() {

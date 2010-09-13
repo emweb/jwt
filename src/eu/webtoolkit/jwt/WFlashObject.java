@@ -196,10 +196,28 @@ public class WFlashObject extends WWebWidget {
 			if (!WApplication.getInstance().getEnvironment().agentIsIE()) {
 				obj.setAttribute("data", this.url_);
 			}
-			obj.setAttribute("width", this.getWidth().isAuto() ? "" : String
-					.valueOf((int) this.getWidth().toPixels()));
-			obj.setAttribute("height", this.getHeight().isAuto() ? "" : String
-					.valueOf((int) this.getHeight().toPixels()));
+			if (this.getWidth().isAuto()) {
+				obj.setAttribute("width", "");
+			} else {
+				if (this.getWidth().getUnit() == WLength.Unit.Percentage) {
+					obj.setAttribute("width", "100%");
+				} else {
+					obj.setAttribute("width", String.valueOf((int) this
+							.getWidth().toPixels())
+							+ "px");
+				}
+			}
+			if (this.getHeight().isAuto()) {
+				obj.setAttribute("height", "");
+			} else {
+				if (this.getHeight().getUnit() == WLength.Unit.Percentage) {
+					obj.setAttribute("height", "100%");
+				} else {
+					obj.setAttribute("height", String.valueOf((int) this
+							.getHeight().toPixels())
+							+ "px");
+				}
+			}
 			for (Iterator<Map.Entry<String, WString>> i_it = this.parameters_
 					.entrySet().iterator(); i_it.hasNext();) {
 				Map.Entry<String, WString> i = i_it.next();
@@ -263,13 +281,31 @@ public class WFlashObject extends WWebWidget {
 	void getDomChanges(List<DomElement> result, WApplication app) {
 		super.getDomChanges(result, app);
 		if (this.sizeChanged_) {
-			DomElement element = DomElement.getForUpdate(this.getId()
-					+ "_flash", DomElementType.DomElement_OBJECT);
-			element.setAttribute("width", this.getWidth().isAuto() ? ""
-					: String.valueOf((int) this.getWidth().toPixels()));
-			element.setAttribute("height", this.getHeight().isAuto() ? ""
-					: String.valueOf((int) this.getHeight().toPixels()));
-			result.add(element);
+			DomElement obj = DomElement.getForUpdate(this.getId() + "_flash",
+					DomElementType.DomElement_OBJECT);
+			if (this.getWidth().isAuto()) {
+				obj.setAttribute("width", "");
+			} else {
+				if (this.getWidth().getUnit() == WLength.Unit.Percentage) {
+					obj.setAttribute("width", "100%");
+				} else {
+					obj.setAttribute("width", String.valueOf((int) this
+							.getWidth().toPixels())
+							+ "px");
+				}
+			}
+			if (this.getHeight().isAuto()) {
+				obj.setAttribute("height", "");
+			} else {
+				if (this.getHeight().getUnit() == WLength.Unit.Percentage) {
+					obj.setAttribute("height", "100%");
+				} else {
+					obj.setAttribute("height", String.valueOf((int) this
+							.getHeight().toPixels())
+							+ "px");
+				}
+			}
+			result.add(obj);
 			this.sizeChanged_ = false;
 		}
 		if (this.alternative_ != null && this.replaceDummyIeContent_) {

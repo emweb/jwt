@@ -392,13 +392,11 @@ public class WItemDelegate extends WAbstractItemDelegate {
 				index.getData(ItemDataRole.EditRole), this.textFormat_)
 				.toString());
 		lineEdit.enterPressed().addListener(this, new Signal.Listener() {
-			@Override
 			public void trigger() {
 				WItemDelegate.this.doCloseEditor(result, true);
 			}
 		});
 		lineEdit.escapePressed().addListener(this, new Signal.Listener() {
-			@Override
 			public void trigger() {
 				WItemDelegate.this.doCloseEditor(result, false);
 			}
@@ -469,7 +467,6 @@ public class WItemDelegate extends WAbstractItemDelegate {
 				}
 				wc.insertWidget(0, checkBox);
 				checkBox.changed().addListener(this, new Signal.Listener() {
-					@Override
 					public void trigger() {
 						WItemDelegate.this.onCheckedChange(result);
 					}

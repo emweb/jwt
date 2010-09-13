@@ -1276,11 +1276,16 @@ public class WTableView extends WAbstractItemView {
 	WWidget headerWidget(int column, boolean contentsOnly) {
 		WWidget result = null;
 		if (this.isAjaxMode()) {
-			result = this.headers_.getWidget(column);
+			if (this.headers_ != null && column < this.headers_.getCount()) {
+				result = this.headers_.getWidget(column);
+			}
 		} else {
-			result = this.plainTable_.getElementAt(0, column).getWidget(0);
+			if (this.plainTable_ != null
+					&& column < this.plainTable_.getColumnCount()) {
+				result = this.plainTable_.getElementAt(0, column).getWidget(0);
+			}
 		}
-		if (contentsOnly) {
+		if (result != null && contentsOnly) {
 			return result.find("contents");
 		} else {
 			return result;

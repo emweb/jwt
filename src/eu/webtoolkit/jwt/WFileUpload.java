@@ -276,7 +276,7 @@ public class WFileUpload extends WWebWidget {
 		this.setFormObject(!(this.fileUploadTarget_ != null));
 	}
 
-	void requestTooLarge(int size) {
+	void setRequestTooLarge(int size) {
 		this.fileTooLarge().trigger(size);
 	}
 

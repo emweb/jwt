@@ -42,8 +42,15 @@ import java.util.regex.Pattern;
  * <p>
  * <p>
  * <i><b>Note: </b>This validator does not fully support unicode: it matches on
- * the UTF8-encoded representation of the string. </i>
+ * the UTF8-encoded representation of the string.</i>
  * </p>
+ * <h3>i18n</h3>
+ * <p>
+ * The strings used in this class can be translated by overriding the default
+ * values for the following localization keys:
+ * <ul>
+ * <li>{@link WValidator.State#Invalid}: Invalid input</li>
+ * </ul>
  */
 public class WRegExpValidator extends WValidator {
 	/**
@@ -164,7 +171,7 @@ public class WRegExpValidator extends WValidator {
 		if (!(this.noMatchText_.length() == 0)) {
 			return this.noMatchText_;
 		} else {
-			return new WString("Invalid input");
+			return WString.tr("Wt.WRegExpValidator.Invalid");
 		}
 	}
 

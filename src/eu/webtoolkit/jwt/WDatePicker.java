@@ -28,6 +28,8 @@ import java.util.Set;
  * getDate()}, or can be changed using {@link WDatePicker#setDate(WDate date)
  * setDate()}.
  * <p>
+ * <h3>i18n</h3>
+ * <p>
  * Internationalization of {@link WDatePicker} is mostly handled through the
  * internationalization mechanism of {@link eu.webtoolkit.jwt.WDate}. The
  * &apos;Close&apos; button can be internationalized by overriding the default

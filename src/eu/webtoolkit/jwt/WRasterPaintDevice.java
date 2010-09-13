@@ -10,8 +10,8 @@ import java.awt.Shape;
 import java.awt.Stroke;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Arc2D;
+import java.awt.geom.GeneralPath;
 import java.awt.geom.Line2D;
-import java.awt.geom.Path2D;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.EnumSet;
@@ -51,55 +51,55 @@ public class WRasterPaintDevice extends WResource implements WPaintDevice {
 		this.paintFlags = EnumSet.noneOf(PaintFlag.class);
 	}
 
-	@Override
+	
 	protected void handleRequest(WebRequest request, WebResponse response) throws IOException {
 		response.setContentType("image/png");
 		if (image != null)
 			ImageIO.write(image, "png", response.getOutputStream());
 	}
 
-	@Override
+	
 	public void done() {
 	}
 
-	@Override
+	
 	public void drawArc(WRectF rect, double startAngle, double spanAngle) {
 		drawShape(new Arc2D.Double(rect.getLeft(), rect.getTop(), rect.getWidth(), rect.getHeight(),
 			startAngle, spanAngle, Arc2D.OPEN));
 	}
 
-	@Override
+	
 	public void drawImage(WRectF rect, String imageUri, int imgWidth, int imgHeight, WRectF sourceRect) {
 		// TODO Auto-generated method stub
 	}
 
-	@Override
+	
 	public void drawLine(double x1, double y1, double x2, double y2) {
 		drawShape(new Line2D.Double(x1, y1, x2, y2));
 	}
 
-	@Override
+	
 	public void drawPath(WPainterPath path) {
-		drawShape(createPath2D(path));
+		drawShape(createPath(path));
 	}
 
-	private static Path2D createPath2D(WPainterPath path) {
-		Path2D p = new Path2D.Double();
+	private static GeneralPath createPath(WPainterPath path) {
+		GeneralPath p = new GeneralPath();
 
 		for (Iterator<Segment> i = path.getSegments().iterator(); i.hasNext();) {
 			Segment s = i.next();
 			switch (s.getType()) {
 			case MoveTo:
-				p.moveTo(s.getX(), s.getY());
+				p.moveTo((float)s.getX(), (float)s.getY());
 				break;
 			case LineTo:
-				p.lineTo(s.getX(), s.getY());
+				p.lineTo((float)s.getX(), (float)s.getY());
 				break;
 			case QuadC:
 				double x1 = s.getX();
 				double y1 = s.getY();
 				s = i.next();
-				p.quadTo(x1, y1, s.getX(), s.getY());
+				p.quadTo((float)x1, (float)y1, (float)s.getX(), (float)s.getY());
 				break;
 			case CubicC1:
 				x1 = s.getX();
@@ -108,7 +108,7 @@ public class WRasterPaintDevice extends WResource implements WPaintDevice {
 				double x2 = s.getX();
 				double y2 = s.getY();
 				s = i.next();
-				p.curveTo(x1, y1, x2, y2, s.getX(), s.getY());
+				p.curveTo((float)x1, (float)y1, (float)x2, (float)y2, (float)s.getX(), (float)s.getY());
 				break;
 			case ArcC:
 				double cx = s.getX();
@@ -117,7 +117,7 @@ public class WRasterPaintDevice extends WResource implements WPaintDevice {
 				double rx = s.getX();
 				double ry = s.getY();
 				s = i.next();
-				Arc2D arc = new Arc2D.Double(cx - rx, cy - ry, rx * 2, ry * 2, s.getX(), s.getY(), Arc2D.OPEN);
+				Arc2D arc = new Arc2D.Double((float)(cx - rx), (float)(cy - ry), (float)(rx * 2), (float)(ry * 2), (float)s.getX(), (float)s.getY(), Arc2D.OPEN);
 				p.append(arc, true);
 				break;
 			default:
@@ -127,7 +127,7 @@ public class WRasterPaintDevice extends WResource implements WPaintDevice {
 		return p;
 	}
 
-	@Override
+	
 	public void drawText(WRectF rect, EnumSet<AlignmentFlag> flags, CharSequence text) {
 		processChangeFlags();
 		
@@ -167,27 +167,27 @@ public class WRasterPaintDevice extends WResource implements WPaintDevice {
 		g2.drawString(s, (float)px, (float)py);
 	}
 
-	@Override
+	
 	public WLength getHeight() {
 		return height;
 	}
 
-	@Override
+	
 	public EnumSet<PaintFlag> getPaintFlags() {
 		return paintFlags;
 	}
 
-	@Override
+	
 	public WPainter getPainter() {
 		return painter;
 	}
 
-	@Override
+	
 	public WLength getWidth() {
 		return width;
 	}
 
-	@Override
+	
 	public void init() {
 		this.image = new BufferedImage((int)width.toPixels(), (int)height.toPixels(), BufferedImage.TYPE_INT_ARGB);
 		this.g2 = image.createGraphics();
@@ -197,32 +197,32 @@ public class WRasterPaintDevice extends WResource implements WPaintDevice {
 		changeFlags.add(ChangeFlag.Font);
 	}
 
-	@Override
+	
 	public boolean isPaintActive() {
 		return painter != null;
 	}
 
-	@Override
+	
 	public void setChanged(EnumSet<ChangeFlag> flags) {
 		this.changeFlags.addAll(flags);
 	}
 
-	@Override
+	
 	public void setChanged(ChangeFlag flag, ChangeFlag... flags) {
 		setChanged(EnumSet.of(flag, flags));
 	}
 
-	@Override
+	
 	public void setPaintFlags(EnumSet<PaintFlag> paintFlags) {
 		this.paintFlags = paintFlags; // ??
 	}
 
-	@Override
+	
 	public final void setPaintFlags(PaintFlag paintFlag, PaintFlag... paintFlags) {
 		setPaintFlags(EnumSet.of(paintFlag, paintFlags));
 	}
 
-	@Override
+	
 	public void setPainter(WPainter painter) {
 		this.painter = painter;
 	}
@@ -249,7 +249,7 @@ public class WRasterPaintDevice extends WResource implements WPaintDevice {
 			if (painter.getClipPath().isEmpty())
 				g2.setClip(null);
 			else
-				g2.setClip(createPath2D(painter.getClipPath()));
+				g2.setClip(createPath(painter.getClipPath()));
 			resetTransform = true;
 		}
 
@@ -306,13 +306,13 @@ public class WRasterPaintDevice extends WResource implements WPaintDevice {
 		switch (font.getGenericFamily()) {
 		case Default: break;
 		case Cursive: break; // ??
-		case Monospace: name = Font.MONOSPACED; break;
-		case Serif:     name = Font.SERIF;      break;
-		case SansSerif: name = Font.SANS_SERIF; break;
+		case Monospace: name = "Monospaced"; break;
+		case Serif:     name = "Serif";      break;
+		case SansSerif: name = "SansSerif"; break;
 		}
 		
-		if (!font.getSpecificFamilies().isEmpty()) {
-			if (!name.isEmpty())
+		if (font.getSpecificFamilies().length() != 0) {
+			if (name.length() != 0)
 				name += " ";
 			name += font.getSpecificFamilies().toString();
 		}

@@ -15,6 +15,18 @@ package eu.webtoolkit.jwt;
  * <p>
  * If you only want to limit the length on a line edit, you may also use
  * {@link WLineEdit#setMaxLength(int chars) WLineEdit#setMaxLength()}.
+ * <p>
+ * <h3>i18n</h3>
+ * <p>
+ * The strings used in this class can be translated by overriding the default
+ * values for the following localization keys:
+ * <ul>
+ * <li>Wt.WLengthValidator.TooShort: The input must be at least {1} characters</li>
+ * <li>Wt.WLengthValidator.BadRange: The input must have a length between {1}
+ * and {2} characters</li>
+ * <li>Wt.WLengthValidator.TooLong: The input must be no more than {1}
+ * characters</li>
+ * </ul>
  */
 public class WLengthValidator extends WValidator {
 	/**
@@ -158,12 +170,11 @@ public class WLengthValidator extends WValidator {
 				return new WString();
 			} else {
 				if (this.maxLength_ == Integer.MAX_VALUE) {
-					return new WString("The input must be at least "
-							+ String.valueOf(this.minLength_) + " characters");
+					return WString.tr("Wt.WLengthValidator.TooShort").arg(
+							this.minLength_);
 				} else {
-					return new WString("The input must have a length between "
-							+ String.valueOf(this.minLength_) + " and "
-							+ String.valueOf(this.maxLength_) + " characters");
+					return WString.tr("Wt.WLengthValidator.BadRange").arg(
+							this.minLength_).arg(this.maxLength_);
 				}
 			}
 		}
@@ -198,12 +209,11 @@ public class WLengthValidator extends WValidator {
 				return new WString();
 			} else {
 				if (this.minLength_ == 0) {
-					return new WString("The input must be no more than "
-							+ String.valueOf(this.maxLength_) + " characters");
+					return WString.tr("Wt.WLengthValidator.TooLong").arg(
+							this.maxLength_);
 				} else {
-					return new WString("The input must have a length between "
-							+ String.valueOf(this.minLength_) + " and "
-							+ String.valueOf(this.maxLength_) + " characters");
+					return WString.tr("Wt.WLengthValidator.BadRange").arg(
+							this.minLength_).arg(this.maxLength_);
 				}
 			}
 		}

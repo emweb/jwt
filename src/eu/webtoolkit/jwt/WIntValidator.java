@@ -12,6 +12,17 @@ package eu.webtoolkit.jwt;
  * 
  * This validator checks whether user input is an integer number in a
  * pre-defined range.
+ * <p>
+ * <h3>i18n</h3>
+ * <p>
+ * The strings used in this class can be translated by overriding the default
+ * values for the following localization keys:
+ * <ul>
+ * <li>Wt.WIntValidator.NotAnInteger: Must be an integer number</li>
+ * <li>Wt.WIntValidator.TooSmall: The number must be larger than {1}</li>
+ * <li>Wt.WIntValidator.BadRange: The number must be in the range {1} to {2}</li>
+ * <li>Wt.WIntValidator.TooLarge: The number must be smaller than {1}</li>
+ * </ul>
  */
 public class WIntValidator extends WValidator {
 	/**
@@ -155,7 +166,7 @@ public class WIntValidator extends WValidator {
 		if (!(this.nanText_.length() == 0)) {
 			return this.nanText_;
 		} else {
-			return new WString("Must be an integer number.");
+			return WString.tr("Wt.WIntValidator.NotAnInteger");
 		}
 	}
 
@@ -188,12 +199,11 @@ public class WIntValidator extends WValidator {
 				return new WString();
 			} else {
 				if (this.top_ == Integer.MAX_VALUE) {
-					return new WString("The number must be larger than "
-							+ String.valueOf(this.bottom_));
+					return WString.tr("Wt.WIntValidator.TooSmall").arg(
+							this.bottom_);
 				} else {
-					return new WString("The number must be in the range "
-							+ String.valueOf(this.bottom_) + " to "
-							+ String.valueOf(this.top_));
+					return WString.tr("Wt.WIntValidator.BadRange").arg(
+							this.bottom_).arg(this.top_);
 				}
 			}
 		}
@@ -228,12 +238,11 @@ public class WIntValidator extends WValidator {
 				return new WString();
 			} else {
 				if (this.bottom_ == Integer.MIN_VALUE) {
-					return new WString("The number must be smaller than "
-							+ String.valueOf(this.top_));
+					return WString.tr("Wt.WIntValidator.TooLarge").arg(
+							this.top_);
 				} else {
-					return new WString("The number must be in the range "
-							+ String.valueOf(this.bottom_) + " to "
-							+ String.valueOf(this.top_));
+					return WString.tr("Wt.WIntValidator.BadRange").arg(
+							this.bottom_).arg(this.top_);
 				}
 			}
 		}

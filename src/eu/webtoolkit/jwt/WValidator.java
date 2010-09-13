@@ -36,6 +36,14 @@ import java.util.List;
  * client-side validation for your own validator, you may also reimplement
  * {@link WValidator#javaScriptValidate(String jsRef) javaScriptValidate()}.
  * <p>
+ * <h3>i18n</h3>
+ * <p>
+ * The strings used in this class can be translated by overriding the default
+ * values for the following localization keys:
+ * <ul>
+ * <li>{@link WValidator.State#Invalid}: This field cannot be empty</li>
+ * </ul>
+ * <p>
  * 
  * @see WFormWidget
  */
@@ -148,7 +156,7 @@ public class WValidator extends WObject {
 		if (!(this.mandatoryText_.length() == 0)) {
 			return this.mandatoryText_;
 		} else {
-			return new WString("This field cannot be empty");
+			return WString.tr("Wt.WValidator.Invalid");
 		}
 	}
 

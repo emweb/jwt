@@ -33,6 +33,14 @@ import java.util.EnumSet;
  * This widget does not provide styling, and can be styled using inline or
  * external CSS as appropriate.
  * <p>
+ * <h3>i18n</h3>
+ * <p>
+ * The strings used in this class can be translated by overriding the default
+ * values for the following localization keys:
+ * <ul>
+ * <li>Wt.WOverlayLoadingIndicator.Loading: Loading...</li>
+ * </ul>
+ * <p>
  * 
  * @see WApplication#setLoadingIndicator(WLoadingIndicator indicator)
  */
@@ -94,7 +102,8 @@ public class WOverlayLoadingIndicator extends WContainerWidget implements
 		WImage img = new WImage(WApplication.getResourcesUrl()
 				+ "ajax-loading.gif", this.center_);
 		img.setMargin(new WLength(7), EnumSet.of(Side.Top, Side.Bottom));
-		this.text_ = new WText("Loading...", this.center_);
+		this.text_ = new WText(tr("Wt.WOverlayLoadingIndicator.Loading"),
+				this.center_);
 		this.text_.setInline(false);
 		this.text_.setMargin(WLength.Auto, EnumSet.of(Side.Left, Side.Right));
 		if (styleClass.length() != 0) {

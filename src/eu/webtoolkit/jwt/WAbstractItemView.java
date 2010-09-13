@@ -21,6 +21,18 @@ import eu.webtoolkit.jwt.utils.EnumUtils;
  * <p>
  * 
  * See {@link WTableView} or {@link WTreeView} for a description.
+ * <p>
+ * <h3>i18n</h3>
+ * <p>
+ * The strings used in this class can be translated by overriding the default
+ * values for the following localization keys:
+ * <ul>
+ * <li>Wt.WAbstractItemView.PageIOfN: <b>{1}</b> of <b>{2}</b></li>
+ * <li>Wt.WAbstractItemView.PageBar.First: &amp;xc2ab; First</li>
+ * <li>Wt.WAbstractItemView.PageBar.Previous: &amp;xe280b9; Previous</li>
+ * <li>Wt.WAbstractItemView.PageBar.Next: Next &amp;xe280ba;</li>
+ * <li>Wt.WAbstractItemView.PageBar.Last: Last &amp;xc2bb;</li>
+ * </ul>
  */
 public abstract class WAbstractItemView extends WCompositeWidget {
 	/**
@@ -762,7 +774,10 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 		WLength headerHeight = WLength.multiply(this.headerLineHeight_,
 				lineCount);
 		if (this.getColumnCount() > 0) {
-			this.headerWidget(0).askRerender();
+			WWidget w = this.headerWidget(0);
+			if (w != null) {
+				w.askRerender();
+			}
 		}
 		this.headerHeightRule_.getTemplateWidget().resize(WLength.Auto,
 				headerHeight);

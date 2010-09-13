@@ -12,6 +12,14 @@ package eu.webtoolkit.jwt;
  * 
  * This validator checks whether user input is a double in the pre-defined
  * range.
+ * <p>
+ * <h3>i18n</h3>
+ * <p>
+ * The strings used in this class can be translated by overriding the default
+ * values for the following localization keys: Wt.WDoubleValidator.NotANumber:
+ * Must be a number Wt.WDoubleValidator.TooSmall: The number must be larger than
+ * {1} Wt.WDoubleValidator.BadRange: The number must be in the range {1} to {2}
+ * Wt.WDoubleValidator.TooLarge: The number must be smaller than {1}
  */
 public class WDoubleValidator extends WValidator {
 	/**
@@ -155,7 +163,7 @@ public class WDoubleValidator extends WValidator {
 		if (!(this.nanText_.length() == 0)) {
 			return this.nanText_;
 		} else {
-			return new WString("Must be a number.");
+			return WString.tr("Wt.WDoubleValidator.NotANumber");
 		}
 	}
 
@@ -188,12 +196,11 @@ public class WDoubleValidator extends WValidator {
 				return new WString();
 			} else {
 				if (this.top_ == Double.MAX_VALUE) {
-					return new WString("The number must be larger than "
-							+ String.valueOf(this.bottom_));
+					return WString.tr("Wt.WDoubleValidator.TooSmall").arg(
+							this.bottom_);
 				} else {
-					return new WString("The number must be in the range "
-							+ String.valueOf(this.bottom_) + " to "
-							+ String.valueOf(this.top_));
+					return WString.tr("Wt.WDoubleValidator.BadRange").arg(
+							this.bottom_).arg(this.top_);
 				}
 			}
 		}
@@ -228,12 +235,11 @@ public class WDoubleValidator extends WValidator {
 				return new WString();
 			} else {
 				if (this.bottom_ == -Integer.MAX_VALUE) {
-					return new WString("The number must be smaller than "
-							+ String.valueOf(this.top_));
+					return WString.tr("Wt.WDoubleValidator.TooLarge").arg(
+							this.top_);
 				} else {
-					return new WString("The number must be in the range "
-							+ String.valueOf(this.bottom_) + " to "
-							+ String.valueOf(this.top_));
+					return WString.tr("Wt.WDoubleValidator.BadRange").arg(
+							this.bottom_).arg(this.top_);
 				}
 			}
 		}
