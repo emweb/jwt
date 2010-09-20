@@ -60,19 +60,19 @@ public class WXmlLocalizedStrings extends WLocalizedStrings {
 	}
 	
 	private void readXmlResource(String bundleName) {
-		URL url = getClass().getResource(bundleName + "_" + WApplication.getInstance().getLocale() + ".xml");
-		if(url == null)
-			url = getClass().getResource(bundleName + ".xml");
-		
-		//support external URLs
-		if(url == null) {
+		URL url = null;
+		for (String path : StringUtils.expandLocales(bundleName, WApplication.getInstance().getLocale().toString())) {
+			url = getClass().getResource(path + ".xml");
 			try {
-				url = new URL(bundleName);
-			} catch (MalformedURLException murle) {
-				murle.printStackTrace();
+				if(url == null)
+				url = new URL(path);
+			} catch (MalformedURLException e) {
 			}
 		}
-
+		
+		if (url == null)
+			throw new RuntimeException("JWt exception: Could not find resource \"" + bundleName + "\"");
+		
 		File xmlFile = new File(url.getFile());
 		
 		TransformerFactory tf = TransformerFactory.newInstance();        
