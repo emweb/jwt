@@ -186,6 +186,9 @@ public abstract class WPaintedWidget extends WInteractWidget {
 	 * <p>
 	 * Repainting is not immediate, but happens after when the event loop is
 	 * exited.
+	 * <p>
+	 * Unless a {@link PaintFlag#PaintUpdate} paint flag is set, the widget is
+	 * first cleared.
 	 */
 	public void update(EnumSet<PaintFlag> flags) {
 		this.needRepaint_ = true;
@@ -353,6 +356,7 @@ public abstract class WPaintedWidget extends WInteractWidget {
 			canvas.setId('p' + this.getId());
 		}
 		WPaintDevice device = this.painter_.getPaintDevice();
+		device.clear();
 		if (this.painter_.getRenderType() == WWidgetPainter.RenderType.InlineVml
 				&& this.isInline()) {
 			result.setProperty(Property.PropertyStyle, "zoom: 1;");
@@ -380,18 +384,21 @@ public abstract class WPaintedWidget extends WInteractWidget {
 				DomElementType.DomElement_DIV);
 		this.updateDom(e, false);
 		result.add(e);
-		boolean createNew = this.isCreatePainter();
+		boolean createdNew = this.isCreatePainter();
 		if (this.needRepaint_) {
 			WPaintDevice device = this.painter_.getPaintDevice();
-			if (!createNew) {
-				device.setPaintFlags(EnumUtils.mask(this.repaintFlags_,
-						PaintFlag.PaintUpdate));
+			if (createdNew
+					|| !!EnumUtils.mask(this.repaintFlags_,
+							PaintFlag.PaintUpdate).isEmpty()) {
+				device.clear();
 			}
-			this.paintEvent(device);
+			if (this.renderWidth_ != 0 && this.renderHeight_ != 0) {
+				this.paintEvent(device);
+			}
 			if (device.getPainter() != null) {
 				device.getPainter().end();
 			}
-			if (createNew) {
+			if (createdNew) {
 				DomElement canvas = DomElement.getForUpdate('p' + this.getId(),
 						DomElementType.DomElement_DIV);
 				canvas.removeAllChildren();
@@ -423,7 +430,7 @@ public abstract class WPaintedWidget extends WInteractWidget {
 	private WWidgetPainter painter_;
 	private boolean needRepaint_;
 	boolean sizeChanged_;
-	private EnumSet<PaintFlag> repaintFlags_;
+	EnumSet<PaintFlag> repaintFlags_;
 	private WImage areaImage_;
 	int renderWidth_;
 	int renderHeight_;

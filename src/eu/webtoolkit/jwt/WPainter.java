@@ -145,10 +145,6 @@ public class WPainter {
 	/**
 	 * Begins painting on a paint device.
 	 * <p>
-	 * Starts painting on a paint device. The paint device is automatically
-	 * cleared to become entirely transparent, unless it a PaintUpdate paint
-	 * flag is set.
-	 * <p>
 	 * 
 	 * @see WPainter#end()
 	 * @see WPainter#isActive()
@@ -1250,7 +1246,7 @@ public class WPainter {
 	 */
 	public void setWorldTransform(WTransform matrix, boolean combine) {
 		if (combine) {
-			this.getS().worldTransform_.multiply(matrix);
+			this.getS().worldTransform_.multiplyAndAssign(matrix);
 		} else {
 			this.getS().worldTransform_.assign(matrix);
 		}
@@ -1446,8 +1442,7 @@ public class WPainter {
 	 * @see WPainter#setWindow(WRectF window)
 	 */
 	public WTransform getCombinedTransform() {
-		return WTransform.multiply(this.viewTransform_,
-				this.getS().worldTransform_);
+		return this.viewTransform_.multiply(this.getS().worldTransform_);
 	}
 
 	WTransform getClipPathTransform() {

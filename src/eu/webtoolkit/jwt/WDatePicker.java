@@ -288,6 +288,16 @@ public class WDatePicker extends WCompositeWidget {
 		}
 	}
 
+	/**
+	 * Signal emitted when the value has changed.
+	 * <p>
+	 * This signal is emitted when a new date has been entered (either through
+	 * the line edit, or through the calendar popup).
+	 */
+	public Signal changed() {
+		return this.calendar_.selectionChanged();
+	}
+
 	private String format_;
 	private WInteractWidget displayWidget_;
 	private WLineEdit forEdit_;
@@ -311,6 +321,11 @@ public class WDatePicker extends WCompositeWidget {
 		this.displayWidget_ = displayWidget;
 		this.forEdit_ = forEdit;
 		this.forEdit_.setVerticalAlignment(AlignmentFlag.AlignMiddle);
+		this.forEdit_.changed().addListener(this, new Signal.Listener() {
+			public void trigger() {
+				WDatePicker.this.setFromLineEdit();
+			}
+		});
 		this.format_ = "dd/MM/yyyy";
 		this.layout_.setInline(true);
 		this.layout_.addWidget(displayWidget);
@@ -380,7 +395,11 @@ public class WDatePicker extends WCompositeWidget {
 	private void setFromLineEdit() {
 		WDate d = WDate.fromString(this.forEdit_.getText(), this.format_);
 		if ((d != null)) {
-			this.calendar_.select(d);
+			if (this.calendar_.getSelection().isEmpty()
+					|| this.calendar_.getSelection().iterator().next() != d) {
+				this.calendar_.select(d);
+				this.calendar_.selectionChanged().trigger();
+			}
 			this.calendar_.browseTo(d);
 		}
 	}

@@ -191,11 +191,6 @@ public interface WPaintDevice {
 	public boolean isPaintActive();
 
 	/**
-	 * Returns the paint flags.
-	 */
-	public EnumSet<PaintFlag> getPaintFlags();
-
-	/**
 	 * Returns the painter that is currently painting on the device.
 	 * <p>
 	 * 
@@ -209,15 +204,7 @@ public interface WPaintDevice {
 	void setPainter(WPainter painter);
 
 	/**
-	 * Sets paint flags.
+	 * Clears the paint device.
 	 */
-	public void setPaintFlags(EnumSet<PaintFlag> paintFlags);
-
-	/**
-	 * Sets paint flags.
-	 * <p>
-	 * Calls {@link #setPaintFlags(EnumSet paintFlags)
-	 * setPaintFlags(EnumSet.of(paintFlag, paintFlags))}
-	 */
-	public void setPaintFlags(PaintFlag paintFlag, PaintFlag... paintFlags);
+	void clear();
 }

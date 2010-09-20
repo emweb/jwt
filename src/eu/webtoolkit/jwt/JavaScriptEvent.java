@@ -21,6 +21,7 @@ class JavaScriptEvent {
 	public int widgetY;
 	public int dragDX;
 	public int dragDY;
+	public int wheelDelta;
 	public int button;
 	public int keyCode;
 	public int charCode;
@@ -47,6 +48,7 @@ class JavaScriptEvent {
 		this.widgetY = parseIntParameter(request, se + "widgetY", 0);
 		this.dragDX = parseIntParameter(request, se + "dragdX", 0);
 		this.dragDY = parseIntParameter(request, se + "dragdY", 0);
+		this.wheelDelta = parseIntParameter(request, se + "wheel", 0);
 		this.modifiers.clear();
 		if (request.getParameter(se + "altKey") != null) {
 			this.modifiers.add(KeyboardModifier.AltModifier);

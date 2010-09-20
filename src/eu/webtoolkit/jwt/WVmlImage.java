@@ -35,7 +35,7 @@ public class WVmlImage implements WVectorImage {
 		this.width_ = width;
 		this.height_ = height;
 		this.painter_ = null;
-		this.paintFlags_ = EnumSet.noneOf(PaintFlag.class);
+		this.paintUpdate_ = true;
 		this.clippingChanged_ = false;
 		this.currentBrush_ = new WBrush();
 		this.currentPen_ = new WPen();
@@ -350,9 +350,6 @@ public class WVmlImage implements WVectorImage {
 		this.currentPen_ = this.getPainter().getPen();
 		this.currentShadow_ = this.getPainter().getShadow();
 		this.penBrushShadowChanged_ = true;
-		if (!!EnumUtils.mask(this.paintFlags_, PaintFlag.PaintUpdate).isEmpty()) {
-			this.rendered_ = new StringWriter();
-		}
 		this.startClip(new WRectF(0, 0, this.getWidth().getValue(), this
 				.getHeight().getValue()));
 	}
@@ -367,7 +364,7 @@ public class WVmlImage implements WVectorImage {
 
 	public String getRendered() {
 		this.stopClip();
-		if (!EnumUtils.mask(this.paintFlags_, PaintFlag.PaintUpdate).isEmpty()) {
+		if (this.paintUpdate_) {
 			return this.rendered_.toString();
 		} else {
 			StringBuilder s = new StringBuilder();
@@ -388,10 +385,6 @@ public class WVmlImage implements WVectorImage {
 		return this.height_;
 	}
 
-	public EnumSet<PaintFlag> getPaintFlags() {
-		return this.paintFlags_;
-	}
-
 	public WPainter getPainter() {
 		return this.painter_;
 	}
@@ -400,19 +393,15 @@ public class WVmlImage implements WVectorImage {
 		this.painter_ = painter;
 	}
 
-	public void setPaintFlags(EnumSet<PaintFlag> paintFlags) {
-		this.paintFlags_.clear();
-	}
-
-	public final void setPaintFlags(PaintFlag paintFlag,
-			PaintFlag... paintFlags) {
-		setPaintFlags(EnumSet.of(paintFlag, paintFlags));
+	public void clear() {
+		this.paintUpdate_ = false;
+		this.rendered_ = new StringWriter();
 	}
 
 	private WLength width_;
 	private WLength height_;
 	private WPainter painter_;
-	private EnumSet<PaintFlag> paintFlags_;
+	private boolean paintUpdate_;
 	private boolean penBrushShadowChanged_;
 	private boolean clippingChanged_;
 	private WBrush currentBrush_;

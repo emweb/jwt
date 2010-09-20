@@ -306,7 +306,8 @@ public class WCalendar extends WCompositeWidget {
 	/**
 	 * Sets the horizontal header format.
 	 * <p>
-	 * The default horizontal header format is ShortDayNames.
+	 * The default horizontal header format is
+	 * {@link WCalendar.HorizontalHeaderFormat#ShortDayNames}.
 	 */
 	public void setHorizontalHeaderFormat(
 			WCalendar.HorizontalHeaderFormat format) {
@@ -468,7 +469,7 @@ public class WCalendar extends WCompositeWidget {
 	 * @deprecated listen to the {@link WCalendar#clicked() clicked()} signal if
 	 *             you want to react to a single click, or
 	 *             {@link WCalendar#activated() activated()} signal if you want
-	 *             to react to a doulbe click.
+	 *             to react to a double click.
 	 * @see WCalendar#setMultipleSelection(boolean multiple)
 	 */
 	public void setSingleClickSelect(boolean single) {

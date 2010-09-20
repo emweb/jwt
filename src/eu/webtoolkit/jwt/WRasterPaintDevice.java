@@ -33,7 +33,6 @@ public class WRasterPaintDevice extends WResource implements WPaintDevice {
 
 	private WPainter painter;
 	private EnumSet<ChangeFlag> changeFlags;
-	private EnumSet<PaintFlag> paintFlags;
 
 	private BufferedImage image;
 	private Graphics2D g2;
@@ -48,7 +47,8 @@ public class WRasterPaintDevice extends WResource implements WPaintDevice {
 		else
 		    throw new RuntimeException("Unsupported format: " + format);
 		this.changeFlags = EnumSet.noneOf(ChangeFlag.class);
-		this.paintFlags = EnumSet.noneOf(PaintFlag.class);
+		
+		this.image = new BufferedImage((int)width.toPixels(), (int)height.toPixels(), BufferedImage.TYPE_INT_ARGB);
 	}
 
 	
@@ -171,13 +171,8 @@ public class WRasterPaintDevice extends WResource implements WPaintDevice {
 	public WLength getHeight() {
 		return height;
 	}
-
 	
-	public EnumSet<PaintFlag> getPaintFlags() {
-		return paintFlags;
-	}
 
-	
 	public WPainter getPainter() {
 		return painter;
 	}
@@ -189,7 +184,6 @@ public class WRasterPaintDevice extends WResource implements WPaintDevice {
 
 	
 	public void init() {
-		this.image = new BufferedImage((int)width.toPixels(), (int)height.toPixels(), BufferedImage.TYPE_INT_ARGB);
 		this.g2 = image.createGraphics();
 		
 		changeFlags.add(ChangeFlag.Pen);
@@ -212,17 +206,6 @@ public class WRasterPaintDevice extends WResource implements WPaintDevice {
 		setChanged(EnumSet.of(flag, flags));
 	}
 
-	
-	public void setPaintFlags(EnumSet<PaintFlag> paintFlags) {
-		this.paintFlags = paintFlags; // ??
-	}
-
-	
-	public final void setPaintFlags(PaintFlag paintFlag, PaintFlag... paintFlags) {
-		setPaintFlags(EnumSet.of(paintFlag, paintFlags));
-	}
-
-	
 	public void setPainter(WPainter painter) {
 		this.painter = painter;
 	}
@@ -343,5 +326,9 @@ public class WRasterPaintDevice extends WResource implements WPaintDevice {
 
 	private void setTransform(WTransform t) {
 		g2.setTransform(new AffineTransform(t.getM11(), t.getM12(), t.getM21(), t.getM22(), t.getM31(), t.getM32()));
+	}
+	
+	public void clear() {
+		g2.clearRect(0, 0, (int)width.getValue(), (int)height.getValue());
 	}
 }

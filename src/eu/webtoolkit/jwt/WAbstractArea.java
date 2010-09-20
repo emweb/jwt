@@ -477,6 +477,41 @@ public class WAbstractArea extends WObject {
 		return this.impl_.mouseMoved();
 	}
 
+	/**
+	 * Event signal emitted when the mouse is dragged over this widget.
+	 * <p>
+	 * The mouse event contains information on the button(s) currently pressed.
+	 * If multiple buttons are currently pressed, only the button with smallest
+	 * enum value is returned.
+	 * <p>
+	 * <p>
+	 * <i><b>Note: </b>When JavaScript is disabled, the signal will never fire.
+	 * </i>
+	 * </p>
+	 */
+	public EventSignal1<WMouseEvent> mouseDragged() {
+		return this.impl_.mouseDragged();
+	}
+
+	/**
+	 * Event signal emitted when the mouse scroll wheel was used.
+	 * <p>
+	 * The event details contains information such as the
+	 * {@link WMouseEvent#getWheelDelta() wheel delta}, optional
+	 * {@link WMouseEvent#getModifiers() keyboard modifiers}, and mouse
+	 * coordinates relative to the {@link WMouseEvent#getWidget() widget}, the
+	 * window {@link WMouseEvent#getWindow() window}, or the
+	 * {@link WMouseEvent#getDocument() document}.
+	 * <p>
+	 * <p>
+	 * <i><b>Note: </b>When JavaScript is disabled, the signal will never fire.
+	 * </i>
+	 * </p>
+	 */
+	public EventSignal1<WMouseEvent> mouseWheel() {
+		return this.impl_.mouseWheel();
+	}
+
 	static class AnchorImpl {
 		public String ref_;
 		public WResource resource_;

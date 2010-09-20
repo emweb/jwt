@@ -271,6 +271,14 @@ this.pageCoordinates = function(e) {
   return { x: posX, y: posY };
 };
 
+this.windowCoordinates = function(e) {
+  var p = WT.pageCoordinates(e);
+  var cx = p.x - document.body.scrollLeft - document.documentElement.scrollLeft;
+  var cy = p.y - document.body.scrollTop - document.documentElement.scrollTop;
+
+  return { x: cx, y: cy };
+}
+
 this.scrollIntoView = function(id) {
   var obj = document.getElementById(id);
   if (obj && obj.scrollIntoView)
@@ -278,29 +286,48 @@ this.scrollIntoView = function(id) {
 };
 
 this.getSelectionRange = function(elem) {
-/*
- * jQuery Caret Range plugin
- * Copyright (c) 2009 Matt Zabriskie
- * Released under the MIT and GPL licenses.
- */
-  var start, end;
+  if (document.selection) { // IE
+    if (WT.hasTag(elem, 'TEXTAREA')) {
+      var sel = document.selection.createRange();
+      var sel2 = sel.duplicate();
+      sel2.moveToElementText(elem);
 
-  if (elem.selectionStart != undefined) {
-    start = elem.selectionStart;
-    end = elem.selectionEnd;
-  }
-  else if (document.selection) {
-    var val = $(elem).val();
-    var range = document.selection.createRange().duplicate();
-    range.moveEnd("character", val.length);
-    start = (range.text == "" ? val.length : val.lastIndexOf(range.text));
+      var pos = 0;
+      if(sel.text.length > 1) {
+	pos = pos - sel.text.length;
+	if(pos < 0) {
+	  pos = 0;
+	}
+      }
 
-    range = document.selection.createRange().duplicate();
-    range.moveStart("character", -val.length);
-    end = range.text.length;
-  }
+      var caretPos = -1 + pos;
+      sel2.moveStart('character', pos);
 
-  return {start:start, end:end};
+      while (sel2.inRange(sel)) {
+	sel2.moveStart('character');
+	caretPos++;
+      }
+
+      var selStr = sel.text.replace(/\r/g, "");
+
+      return {start: caretPos, end: selStr.length + caretPos};
+    } else {
+      var start, end;
+      var val = $(elem).val();
+      var range = document.selection.createRange().duplicate();
+      range.moveEnd("character", val.length);
+      start = (range.text == "" ? val.length : val.lastIndexOf(range.text));
+
+      range = document.selection.createRange().duplicate();
+      range.moveStart("character", -val.length);
+      end = range.text.length;
+
+      return {start: start, end: end};
+    }
+  } else if (elem.selectionStart || elem.selectionStart == 0) {
+    return {start: elem.selectionStart, end: elem.selectionEnd};
+  } else
+    return {start: -1, end: -1};
 };
 
 this.setSelectionRange = function(elem, start, end) {
@@ -343,8 +370,8 @@ this.isKeyPress = function(e) {
   if (charCode > 0 || WT.isIE)
     return true;
   else
-    return (e.keyCode == 13 || e.keyCode == 27 || e.keyCode == 32
-	   || (e.keyCode > 46 && e.keyCode < 112));
+    return (e.keyCode == 13 || e.keyCode == 27
+	   || (e.keyCode >= 32 && e.keyCode < 125));
 };
 
 var rnumpx = /^-?\d+(?:px)?$/i;
@@ -442,21 +469,64 @@ this.show = function(o) { WT.getElement(o).style.display = ''; };
 
 var captureElement = null;
 
+function delegateCapture(e) {
+  if (captureElement == null)
+    return null;
+
+  if (!e) e = window.event;
+
+  if (e) {
+    var t = e.target || e.srcElement, p = t;
+
+    while (p && p != captureElement)
+      p = p.parentNode;
+
+    /*
+     * We don't need to capture	the event when the event falls inside the
+     * capture element. In this way, more specific widgets inside may still
+     * handle (and cancel) the event if they want.
+     *
+     * On IE this means that we need to delegate the event to the event
+     * target; on other browsers we can just rely on event bubbling.
+     */
+    if (p == captureElement)
+      return WT.isIE ? t : null;
+    else
+      return captureElement;
+  } else
+    return captureElement;
+}
+
+var delegating = false;
+
 function mouseMove(e) {
-  if (captureElement != null) {
+  var d = delegateCapture(e);
+
+  if (d && !delegating) {
     if (!e) e = window.event;
-    WT.condCall(captureElement, 'onmousemove', e);
+    delegating = true;
+    if (WT.isIE)
+      d.fireEvent('onmousemove', e);
+    else
+      WT.condCall(d, 'onmousemove', e);
+    delegating = false;
     return false;
   } else
     return true;
 }
 
 function mouseUp(e) {
-  if (captureElement != null) {
-    var el = captureElement;
-    WT.capture(null);
+  var d = delegateCapture(e);
+  WT.capture(null);
+
+  if (d) {
     if (!e) e = window.event;
-    WT.condCall(el, 'onmouseup', e);
+
+    if (WT.isIE)
+      d.fireEvent('onmouseup', e);
+    else
+      WT.condCall(d, 'onmouseup', e);
+
     WT.cancelEvent(e, WT.CancelPropagate);
 
     return false;
@@ -1184,11 +1254,21 @@ function encodeEvent(event, i) {
 	v = '';
       else
 	v = '' + el.value;
+
+      if (WT.hasFocus(el)) {
+	var range = WT.getSelectionRange(el);
+	result += se + "selstart=" + range.start
+	  + se + "selend=" + range.end;
+      }
     }
 
     if (v != null)
       result += se + formObjects[x] + '=' + encodeURIComponent(v);
   }
+
+
+  if (document.activeElement)
+    result += se + "focus=" + document.activeElement.id;
 
   if (currentHash != null)
     result += se + '_=' + encodeURIComponent(unescape(currentHash));
@@ -1219,6 +1299,16 @@ function encodeEvent(event, i) {
   if (posX || posY) {
     result += se + 'documentX=' + posX + se + 'documentY=' + posY;
     result += se + 'dragdX=' + (posX - downX) + se + 'dragdY=' + (posY - downY);
+
+    var delta = 0;
+    if (e.wheelDelta) { /* IE/Opera. */
+      delta = e.wheelDelta > 0 ? 1 : -1;
+      /* if (window.opera)
+	delta = -delta; */
+    } else if (e.detail) {
+      delta = e.detail < 0 ? 1 : -1;
+    }
+    result += se + 'wheel=' + delta;
   }
 
   if (e.screenX || e.screenY)
@@ -1401,13 +1491,15 @@ function setServerPush(how) {
 }
 
 function doJavaScript(js) {
-  if (js)
+  if (js) {
+    js = "(function() {" + js + "})();";
     if (window.execScript)
       window.execScript(js);
     else
       window.eval(js);
+  }
 
-  _$_APP_CLASS_$_._p_.autoJavaScript();
+  self._p_.autoJavaScript();
 }
 
 function handleResponse(status, msg, timer) {
@@ -1573,7 +1665,7 @@ function emit(object, config) {
 
   if (typeof object === "string")
     userEvent.id = object;
-  else if (object == _$_APP_CLASS_$_)
+  else if (object == self)
     userEvent.id = "app";
   else
     userEvent.id = object.id;
@@ -1720,32 +1812,54 @@ function ieAlternative(d)
   return '0';
 }
 
+window.onunload = function()
+{
+  self.emit(self, "Wt-unload");
+  sendUpdate();
+};
+
+function setCloseMessage(m)
+{
+  if (m && m != '') {
+    window.onbeforeunload = function(event) {
+      var e = event || window.event;
+
+      if (e)
+	e.returnValue = m;
+
+      return m;
+    };
+  } else
+    window.onbeforeunload = null;
+};
+
 this._p_ = {
- ieAlternative : ieAlternative,
- loadScript : loadScript,
- onJsLoad : onJsLoad,
- setTitle : setTitle,
- update : update,
- quit : quit,
- setFormObjects : function(o) { formObjects = o; },
- saveDownPos : saveDownPos,
- addTimerEvent : addTimerEvent,
- load : load,
- handleResponse : handleResponse,
- setServerPush : setServerPush,
+  ieAlternative : ieAlternative,
+  loadScript : loadScript,
+  onJsLoad : onJsLoad,
+  setTitle : setTitle,
+  update : update,
+  quit : quit,
+  setFormObjects : function(o) { formObjects = o; },
+  saveDownPos : saveDownPos,
+  addTimerEvent : addTimerEvent,
+  load : load,
+  handleResponse : handleResponse,
+  setServerPush : setServerPush,
 
- dragStart : dragStart,
- dragDrag : dragDrag,
- dragEnd : dragEnd,
- capture : WT.capture,
+  dragStart : dragStart,
+  dragDrag : dragDrag,
+  dragEnd : dragEnd,
+  capture : WT.capture,
 
- onHashChange : onHashChange,
- setHash : setHash,
- ImagePreloader : ImagePreloader,
+  onHashChange : onHashChange,
+  setHash : setHash,
+  ImagePreloader : ImagePreloader,
 
- autoJavaScript : function() {  _$_AUTO_JAVASCRIPT_$_(); },
+  autoJavaScript : function() {  _$_AUTO_JAVASCRIPT_$_(); },
 
- response : responseReceived
+  response : responseReceived,
+  setCloseMessage : setCloseMessage
 };
 
 this.WT = _$_WT_CLASS_$_;

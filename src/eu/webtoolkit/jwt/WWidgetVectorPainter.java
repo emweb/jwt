@@ -36,7 +36,7 @@ class WWidgetVectorPainter extends WWidgetPainter {
 	public void updateContents(List<DomElement> result, WPaintDevice device) {
 		WVectorImage vectorDevice = ((device) instanceof WVectorImage ? (WVectorImage) (device)
 				: null);
-		if (!EnumUtils.mask(device.getPaintFlags(), PaintFlag.PaintUpdate)
+		if (!EnumUtils.mask(this.widget_.repaintFlags_, PaintFlag.PaintUpdate)
 				.isEmpty()) {
 			DomElement painter = DomElement.updateGiven("Wt3_1_5.getElement('p"
 					+ this.widget_.getId() + "').firstChild",

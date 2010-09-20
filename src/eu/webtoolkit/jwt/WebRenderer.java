@@ -872,12 +872,20 @@ class WebRenderer implements SlotLearnerInterface {
 		}
 		if (js != null) {
 			if (app.titleChanged_) {
-				js.append(app.getJavaScriptClass()).append("._p_.setTitle(");
-				DomElement.jsStringLiteral(js, app.getTitle().toString(), '\'');
-				js.append(");\n");
+				js.append(app.getJavaScriptClass()).append("._p_.setTitle(")
+						.append(
+								WString.toWString(app.getTitle())
+										.getJsStringLiteral()).append(");\n");
+			}
+			if (app.closeMessageChanged_) {
+				js.append(app.getJavaScriptClass()).append(
+						"._p_.setCloseMessage(").append(
+						WString.toWString(app.getCloseMessage())
+								.getJsStringLiteral()).append(");\n");
 			}
 		}
 		app.titleChanged_ = false;
+		app.closeMessageChanged_ = false;
 		if (js != null) {
 			if (app.internalPathIsChanged_) {
 				js.append(app.getJavaScriptClass()).append("._p_.setHash('")

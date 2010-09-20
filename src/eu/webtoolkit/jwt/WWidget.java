@@ -1398,14 +1398,14 @@ public abstract class WWidget extends WObject {
 		render(EnumSet.of(flag, flags));
 	}
 
-	protected void childResized(WWidget child, EnumSet<Orientation> directions) {
+	void childResized(WWidget child, EnumSet<Orientation> directions) {
 		WWidget p = this.getParent();
 		if (p != null) {
 			p.childResized(this, directions);
 		}
 	}
 
-	protected final void childResized(WWidget child, Orientation direction,
+	final void childResized(WWidget child, Orientation direction,
 			Orientation... directions) {
 		childResized(child, EnumSet.of(direction, directions));
 	}

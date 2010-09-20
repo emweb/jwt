@@ -329,7 +329,7 @@ public abstract class WWebWidget extends WWidget {
 	}
 
 	public void setDisabled(boolean disabled) {
-		if (canOptimizeUpdates() && disabled == this.isDisabled()) {
+		if (canOptimizeUpdates() && disabled == this.flags_.get(BIT_DISABLED)) {
 			return;
 		}
 		this.flags_.set(BIT_DISABLED, disabled);

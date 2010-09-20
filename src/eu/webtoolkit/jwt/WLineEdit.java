@@ -228,6 +228,70 @@ public class WLineEdit extends WFormWidget {
 		return this.echoMode_;
 	}
 
+	/**
+	 * Returns the current selection start.
+	 * <p>
+	 * Returns -1 if there is no selected text.
+	 * <p>
+	 * 
+	 * @see WLineEdit#hasSelectedText()
+	 * @see WLineEdit#getSelectedText()
+	 */
+	public int getSelectionStart() {
+		WApplication app = WApplication.getInstance();
+		if (app.getFocus().equals(this.getId())) {
+			if (app.getSelectionStart() != -1
+					&& app.getSelectionEnd() != app.getSelectionStart()) {
+				return app.getSelectionStart();
+			} else {
+				return -1;
+			}
+		} else {
+			return -1;
+		}
+	}
+
+	/**
+	 * Returns the currently selected text.
+	 * <p>
+	 * Returns an empty string if there is currently no selected text.
+	 * <p>
+	 * 
+	 * @see WLineEdit#hasSelectedText()
+	 */
+	public String getSelectedText() {
+		if (this.getSelectionStart() != -1) {
+			WApplication app = WApplication.getInstance();
+			String v = this.getText();
+			return v.substring(app.getSelectionStart(), app.getSelectionStart()
+					+ app.getSelectionEnd() - app.getSelectionStart());
+		} else {
+			return WString.Empty.toString();
+		}
+	}
+
+	/**
+	 * Returns whether there is selected text.
+	 * <p>
+	 */
+	public boolean hasSelectedText() {
+		return this.getSelectionStart() != -1;
+	}
+
+	/**
+	 * Returns the current cursor position.
+	 * <p>
+	 * Returns -1 if the widget does not have the focus.
+	 */
+	public int getCursorPosition() {
+		WApplication app = WApplication.getInstance();
+		if (app.getFocus().equals(this.getId())) {
+			return app.getSelectionEnd();
+		} else {
+			return -1;
+		}
+	}
+
 	public WValidator.State validate() {
 		if (this.getValidator() != null) {
 			return this.getValidator().validate(this.content_);

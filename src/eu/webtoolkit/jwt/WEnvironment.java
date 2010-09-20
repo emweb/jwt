@@ -125,6 +125,14 @@ public class WEnvironment {
 		 */
 		Arora(4300),
 		/**
+		 * Mobile WebKit iPhone.
+		 */
+		MobileWebKitiPhone(4400),
+		/**
+		 * Mobile WebKit Android.
+		 */
+		MobileWebKitAndroid(4450),
+		/**
 		 * Konqueror.
 		 */
 		Konqueror(5000),
@@ -688,6 +696,22 @@ public class WEnvironment {
 	}
 
 	/**
+	 * Returns whether the user agent is Mobile WebKit-based.
+	 * <p>
+	 * Mobile Webkit-based browsers include the Android Mobile WebKit and the
+	 * iPhone Mobile WebKit browsers.
+	 * <p>
+	 * 
+	 * @see WEnvironment#getAgent()
+	 */
+	public boolean agentIsMobileWebKit() {
+		return this.agent_.getValue() >= WEnvironment.UserAgent.MobileWebKitiPhone
+				.getValue()
+				&& this.agent_.getValue() < WEnvironment.UserAgent.Konqueror
+						.getValue();
+	}
+
+	/**
 	 * Returns whether the user agent is Safari.
 	 * <p>
 	 * 
@@ -816,22 +840,34 @@ public class WEnvironment {
 			}
 		} else {
 			if (this.userAgent_.indexOf("Safari") != -1) {
-				if (this.userAgent_.indexOf("Version") == -1) {
-					if (this.userAgent_.indexOf("Arora") != -1) {
-						this.agent_ = WEnvironment.UserAgent.Arora;
-					} else {
-						this.agent_ = WEnvironment.UserAgent.Safari;
-					}
+				if (this.userAgent_.indexOf("iPhone") != -1) {
+					this.agent_ = WEnvironment.UserAgent.MobileWebKitiPhone;
 				} else {
-					if (this.userAgent_.indexOf("Version/3") != -1) {
-						this.agent_ = WEnvironment.UserAgent.Safari3;
+					if (this.userAgent_.indexOf("Android") != -1) {
+						this.agent_ = WEnvironment.UserAgent.MobileWebKitAndroid;
 					} else {
-						this.agent_ = WEnvironment.UserAgent.Safari4;
+						if (this.userAgent_.indexOf("Version") == -1) {
+							if (this.userAgent_.indexOf("Arora") != -1) {
+								this.agent_ = WEnvironment.UserAgent.Arora;
+							} else {
+								this.agent_ = WEnvironment.UserAgent.Safari;
+							}
+						} else {
+							if (this.userAgent_.indexOf("Version/3") != -1) {
+								this.agent_ = WEnvironment.UserAgent.Safari3;
+							} else {
+								this.agent_ = WEnvironment.UserAgent.Safari4;
+							}
+						}
 					}
 				}
 			} else {
 				if (this.userAgent_.indexOf("WebKit") != -1) {
-					this.agent_ = WEnvironment.UserAgent.WebKit;
+					if (this.userAgent_.indexOf("iPhone") != -1) {
+						this.agent_ = WEnvironment.UserAgent.MobileWebKitiPhone;
+					} else {
+						this.agent_ = WEnvironment.UserAgent.WebKit;
+					}
 				} else {
 					if (this.userAgent_.indexOf("Konqueror") != -1) {
 						this.agent_ = WEnvironment.UserAgent.Konqueror;

@@ -667,7 +667,9 @@ class DomElement {
 					.entrySet().iterator(); i_it.hasNext();) {
 				Map.Entry<String, DomElement.EventHandler> i = i_it.next();
 				if (i.getValue().jsCode.length() != 0) {
-					if (this.id_.equals(app.getDomRoot().getId())) {
+					if (this.id_.equals(app.getDomRoot().getId())
+							|| i.getKey() == WInteractWidget.MOUSE_WHEEL_SIGNAL
+							&& app.getEnvironment().agentIsGecko()) {
 						this.setJavaScriptEvent(javaScript, i.getKey(), i
 								.getValue(), app);
 					} else {
@@ -1225,8 +1227,14 @@ class DomElement {
 			this.declare(out);
 			out.append(this.var_);
 		}
-		out.append(".on").append(eventName).append("=f").append(fid).append(
-				";\n");
+		if (eventName == WInteractWidget.MOUSE_WHEEL_SIGNAL
+				&& app.getEnvironment().agentIsGecko()) {
+			out.append(".addEventListener('DOMMouseScroll', f").append(fid)
+					.append(", false);\n");
+		} else {
+			out.append(".on").append(eventName).append("=f").append(fid)
+					.append(";\n");
+		}
 	}
 
 	private void createElement(EscapeOStream out, WApplication app,

@@ -11,7 +11,6 @@ package eu.webtoolkit.jwt;
  * <p>
  * 
  * @see WPaintedWidget#update(EnumSet flags)
- * @see WPaintDevice#getPaintFlags()
  */
 public enum PaintFlag {
 	/**

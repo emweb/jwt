@@ -111,9 +111,15 @@ public class WPainterPath {
 	 * Returns whether the path is empty.
 	 * <p>
 	 * Returns <code>true</code> if the path contains no drawing operations.
+	 * Note that move operations are not considered drawing operations.
 	 */
 	public boolean isEmpty() {
-		return this.segments_.isEmpty();
+		for (int i = 0; i < this.segments_.size(); ++i) {
+			if (this.segments_.get(i).getType() != WPainterPath.Segment.Type.MoveTo) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	/**

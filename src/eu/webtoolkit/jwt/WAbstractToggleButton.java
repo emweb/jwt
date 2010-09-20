@@ -348,7 +348,7 @@ public class WAbstractToggleButton extends WFormWidget {
 		}
 	}
 
-	protected boolean supportsIndeterminate(WEnvironment env) {
+	boolean supportsIndeterminate(WEnvironment env) {
 		return env.hasJavaScript()
 				&& (env.agentIsIE() || env.agentIsSafari() || env
 						.agentIsGecko()

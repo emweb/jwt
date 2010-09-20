@@ -278,7 +278,7 @@ public class WTransform {
 		double r12 = -Math.sin(angle);
 		double r21 = -r12;
 		double r22 = r11;
-		return this.multiply(new WTransform(r11, r21, r12, r22, 0, 0));
+		return this.multiplyAndAssign(new WTransform(r11, r21, r12, r22, 0, 0));
 	}
 
 	/**
@@ -291,7 +291,7 @@ public class WTransform {
 	 * @see WTransform#shear(double sh, double sv)
 	 */
 	public WTransform scale(double sx, double sy) {
-		return this.multiply(new WTransform(sx, 0, 0, sy, 0, 0));
+		return this.multiplyAndAssign(new WTransform(sx, 0, 0, sy, 0, 0));
 	}
 
 	/**
@@ -304,7 +304,7 @@ public class WTransform {
 	 * @see WTransform#rotate(double angle)
 	 */
 	public WTransform shear(double sh, double sv) {
-		return this.multiply(new WTransform(0, sv, sh, 0, 0, 0));
+		return this.multiplyAndAssign(new WTransform(0, sv, sh, 0, 0, 0));
 	}
 
 	/**
@@ -313,10 +313,13 @@ public class WTransform {
 	 * Translates the current transformation.
 	 */
 	public WTransform translate(double dx, double dy) {
-		return this.multiply(new WTransform(1, 0, 0, 1, dx, dy));
+		return this.multiplyAndAssign(new WTransform(1, 0, 0, 1, dx, dy));
 	}
 
-	WTransform multiply(WTransform Y) {
+	/**
+	 * Adds a transform that is conceptually applied after this transform.
+	 */
+	public WTransform multiplyAndAssign(WTransform Y) {
 		WTransform X = this;
 		double z11 = X.m_[M11] * Y.m_[M11] + X.m_[M12] * Y.m_[M21];
 		double z12 = X.m_[M11] * Y.m_[M12] + X.m_[M12] * Y.m_[M22];
@@ -331,6 +334,14 @@ public class WTransform {
 		this.m_[M22] = z22;
 		this.m_[M23] = z23;
 		return this;
+	}
+
+	/**
+	 * Multiply 2 transform objects.
+	 */
+	public WTransform multiply(WTransform rhs) {
+		WTransform result = this;
+		return result.multiplyAndAssign(rhs);
 	}
 
 	/**
@@ -612,11 +623,5 @@ public class WTransform {
 		double v2l = Math.sqrt(v[1] * v[1] + v[3] * v[3]);
 		v[1] /= v2l;
 		v[3] /= v2l;
-	}
-
-	public static WTransform multiply(WTransform lhs, WTransform rhs) {
-		WTransform result = new WTransform();
-		result.assign(lhs);
-		return result.multiply(rhs);
 	}
 }

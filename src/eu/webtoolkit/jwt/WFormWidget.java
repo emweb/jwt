@@ -176,6 +176,21 @@ public abstract class WFormWidget extends WInteractWidget {
 	public void setFocus(boolean focus) {
 		this.flags_.set(BIT_GOT_FOCUS, focus);
 		this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyIEMobile));
+		WApplication app = WApplication.getInstance();
+		if (focus) {
+			app.setFocus(this.getId(), -1, -1);
+		} else {
+			if (app.getFocus().equals(this.getId())) {
+				app.setFocus("", -1, -1);
+			}
+		}
+	}
+
+	/**
+	 * Returns whether this widget has focus.
+	 */
+	public boolean hasFocus() {
+		return WApplication.getInstance().getFocus().equals(this.getId());
 	}
 
 	public void setTabIndex(int index) {
@@ -360,9 +375,9 @@ public abstract class WFormWidget extends WInteractWidget {
 			}
 			StringUtils.replace(inputFilter, '/', "\\/");
 			this.filterInput_
-					.setJavaScript("function(self,e){var c=String.fromCharCode((typeof e.charCode!=='undefined') ?e.charCode : e.keyCode);if(/"
+					.setJavaScript("function(self,e){\nvar c=\nString.fromCharCode((typeof e.charCode!=='undefined') ?e.charCode : e.keyCode);\nif(/"
 							+ inputFilter
-							+ "/.test(c))return true;else Wt3_1_5.cancelEvent(e);}");
+							+ "/.test(c))\nreturn true;\nelse\nWt3_1_5.cancelEvent(e);\n}");
 		} else {
 			;
 			this.filterInput_ = null;

@@ -6,7 +6,6 @@
 package eu.webtoolkit.jwt;
 
 import java.util.List;
-import eu.webtoolkit.jwt.utils.EnumUtils;
 
 class WWidgetRasterPainter extends WWidgetPainter {
 	public WWidgetRasterPainter(WPaintedWidget widget) {
@@ -15,16 +14,7 @@ class WWidgetRasterPainter extends WWidgetPainter {
 	}
 
 	public WPaintDevice getPaintDevice() {
-		if (this.device_ != null) {
-			if (!!EnumUtils.mask(this.device_.getPaintFlags(),
-					PaintFlag.PaintUpdate).isEmpty()) {
-				WPainter painter = new WPainter(this.device_);
-				painter.setBrush(new WBrush(WColor.white));
-				painter.setPen(new WPen(PenStyle.NoPen));
-				painter.drawRect(0, 0, this.widget_.renderWidth_,
-						this.widget_.renderHeight_);
-			}
-		} else {
+		if (!(this.device_ != null)) {
 			this.device_ = new WRasterPaintDevice("png", new WLength(
 					this.widget_.renderWidth_), new WLength(
 					this.widget_.renderHeight_));

@@ -355,7 +355,8 @@ public class WMenu extends WCompositeWidget {
 		if (this.renderAsList_) {
 			WContainerWidget p = ((this.impl_) instanceof WContainerWidget ? (WContainerWidget) (this.impl_)
 					: null);
-			WContainerWidget li = new WContainerWidget(p);
+			WContainerWidget li = new WContainerWidget();
+			p.insertWidget(p.getCount(), li);
 			li.addWidget(item.getItemWidget());
 		} else {
 			WTable layout = ((this.impl_) instanceof WTable ? (WTable) (this.impl_)

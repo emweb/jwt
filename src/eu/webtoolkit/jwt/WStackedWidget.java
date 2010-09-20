@@ -5,7 +5,6 @@
  */
 package eu.webtoolkit.jwt;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -37,7 +36,6 @@ public class WStackedWidget extends WContainerWidget {
 	 */
 	public WStackedWidget(WContainerWidget parent) {
 		super(parent);
-		this.widgets_ = new ArrayList<WWidget>();
 		this.currentIndex_ = -1;
 		;
 		this.setJavaScriptMember(WT_RESIZE_JS, StdGridLayoutImpl
@@ -55,14 +53,10 @@ public class WStackedWidget extends WContainerWidget {
 	}
 
 	public void addWidget(WWidget widget) {
-		this.insertWidget(this.widgets_.size(), widget);
-	}
-
-	/**
-	 * Returns the number of widgets in the stack.
-	 */
-	public int getCount() {
-		return this.widgets_.size();
+		super.addWidget(widget);
+		if (this.currentIndex_ == -1) {
+			this.currentIndex_ = 0;
+		}
 	}
 
 	/**
@@ -84,47 +78,21 @@ public class WStackedWidget extends WContainerWidget {
 	 * @see WStackedWidget#getCurrentIndex()
 	 */
 	public WWidget getCurrentWidget() {
-		return this.widgets_.get(this.currentIndex_);
-	}
-
-	/**
-	 * Returns the index of the given widget.
-	 * <p>
-	 * Returns -1 if the <code>widget</code> was not added.
-	 * <p>
-	 * 
-	 * @see WStackedWidget#getWidget(int index)
-	 */
-	public int getIndexOf(WWidget widget) {
-		return this.widgets_.indexOf(widget);
+		if (this.currentIndex_ >= 0) {
+			return this.getWidget(this.currentIndex_);
+		} else {
+			return null;
+		}
 	}
 
 	/**
 	 * Insert a widget at a given index.
 	 */
 	public void insertWidget(int index, WWidget widget) {
-		super.addWidget(widget);
-		this.widgets_.add(0 + index, widget);
+		super.insertWidget(index, widget);
 		if (this.currentIndex_ == -1) {
 			this.currentIndex_ = 0;
 		}
-	}
-
-	public void removeWidget(WWidget widget) {
-		this.widgets_.remove(widget);
-		if (this.currentIndex_ >= (int) this.widgets_.size()) {
-			this.setCurrentIndex(this.widgets_.size() - 1);
-		}
-	}
-
-	/**
-	 * Returns the widget at the specified index.
-	 * <p>
-	 * 
-	 * @see WStackedWidget#getIndexOf(WWidget widget)
-	 */
-	public WWidget getWidget(int index) {
-		return this.widgets_.get(index);
 	}
 
 	/**
@@ -139,8 +107,8 @@ public class WStackedWidget extends WContainerWidget {
 	 */
 	public void setCurrentIndex(int index) {
 		this.currentIndex_ = index;
-		for (int i = 0; i < (int) this.widgets_.size(); ++i) {
-			this.widgets_.get(i).setHidden(this.currentIndex_ != (int) i);
+		for (int i = 0; i < this.getCount(); ++i) {
+			this.getWidget(i).setHidden(this.currentIndex_ != i);
 		}
 	}
 
@@ -159,8 +127,10 @@ public class WStackedWidget extends WContainerWidget {
 	}
 
 	void removeChild(WWidget child) {
-		this.removeWidget(child);
 		super.removeChild(child);
+		if (this.currentIndex_ >= this.getCount()) {
+			this.setCurrentIndex(this.getCount() - 1);
+		}
 	}
 
 	DomElement createDomElement(WApplication app) {
@@ -173,6 +143,5 @@ public class WStackedWidget extends WContainerWidget {
 		super.getDomChanges(result, app);
 	}
 
-	private List<WWidget> widgets_;
 	private int currentIndex_;
 }

@@ -2019,7 +2019,7 @@ public class WTreeView extends WAbstractItemView {
 
 	WWidget headerWidget(int column, boolean contentsOnly) {
 		WWidget result = null;
-		if (this.headers_ != null) {
+		if (this.headers_ != null && this.headers_.getCount() > 0) {
 			if (column == 0) {
 				result = this.headers_.getWidget(this.headers_.getCount() - 1);
 			} else {

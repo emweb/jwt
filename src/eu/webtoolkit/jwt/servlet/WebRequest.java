@@ -217,6 +217,11 @@ public class WebRequest extends HttpServletRequestWrapper {
 			return new String[0];
 	}
 
+	/**
+	 * Returns the parameter value for a parameter's name.
+	 * 
+	 * @see javax.servlet.ServletRequestWrapper#getParameter(java.lang.String)
+	 */
 	@Override
 	public String getParameter(String name) {
 		if (parameters_.containsKey(name)) {

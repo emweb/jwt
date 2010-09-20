@@ -152,6 +152,18 @@ public class WMouseEvent implements WAbstractEvent {
 				this.jsEvent_.dragDY);
 	}
 
+	/**
+	 * Returns the scroll wheel delta.
+	 * <p>
+	 * This is 1 when wheel was scrolled up or -1 when wheel was scrolled down.
+	 * <p>
+	 * This is only defined for a {@link WInteractWidget#mouseWheel()
+	 * WInteractWidget#mouseWheel()} event.
+	 */
+	public int getWheelDelta() {
+		return this.jsEvent_.wheelDelta;
+	}
+
 	public WAbstractEvent createFromJSEvent(JavaScriptEvent jsEvent) {
 		return new WMouseEvent(jsEvent);
 	}

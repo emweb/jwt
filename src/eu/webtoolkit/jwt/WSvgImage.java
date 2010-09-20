@@ -31,7 +31,7 @@ public class WSvgImage extends WResource implements WVectorImage {
 		this.width_ = width;
 		this.height_ = height;
 		this.painter_ = null;
-		this.paintFlags_ = EnumSet.noneOf(PaintFlag.class);
+		this.paintUpdate_ = true;
 		this.changeFlags_ = EnumSet.noneOf(WPaintDevice.ChangeFlag.class);
 		this.newGroup_ = true;
 		this.newClipPath_ = false;
@@ -244,9 +244,6 @@ public class WSvgImage extends WResource implements WVectorImage {
 		this.fillStyle_ = this.getFillStyle();
 		this.fontStyle_ = this.getFontStyle();
 		this.newClipPath_ = true;
-		if (!!EnumUtils.mask(this.paintFlags_, PaintFlag.PaintUpdate).isEmpty()) {
-			this.shapes_ = new StringWriter();
-		}
 	}
 
 	public void done() {
@@ -276,10 +273,6 @@ public class WSvgImage extends WResource implements WVectorImage {
 		return this.height_;
 	}
 
-	public EnumSet<PaintFlag> getPaintFlags() {
-		return this.paintFlags_;
-	}
-
 	public void handleRequest(WebRequest request, WebResponse response)
 			throws IOException {
 		response.setContentType("image/svg+xml");
@@ -295,19 +288,15 @@ public class WSvgImage extends WResource implements WVectorImage {
 		this.painter_ = painter;
 	}
 
-	public void setPaintFlags(EnumSet<PaintFlag> paintFlags) {
-		this.paintFlags_.clear();
-	}
-
-	public final void setPaintFlags(PaintFlag paintFlag,
-			PaintFlag... paintFlags) {
-		setPaintFlags(EnumSet.of(paintFlag, paintFlags));
+	public void clear() {
+		this.paintUpdate_ = false;
+		this.shapes_ = new StringWriter();
 	}
 
 	private WLength width_;
 	private WLength height_;
 	private WPainter painter_;
-	private EnumSet<PaintFlag> paintFlags_;
+	private boolean paintUpdate_;
 	private EnumSet<WPaintDevice.ChangeFlag> changeFlags_;
 	private boolean newGroup_;
 	private boolean newClipPath_;
@@ -711,7 +700,7 @@ public class WSvgImage extends WResource implements WVectorImage {
 
 	private void streamResourceData(Writer stream) throws IOException {
 		this.finishPath();
-		if (!EnumUtils.mask(this.paintFlags_, PaintFlag.PaintUpdate).isEmpty()) {
+		if (this.paintUpdate_) {
 			stream
 					.append(
 							"<g xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\"><g><g>")

@@ -481,9 +481,12 @@ public class WTabWidget extends WCompositeWidget {
 		;
 		this.menu_ = new WMenu(new WStackedWidget(), Orientation.Horizontal);
 		this.menu_.setRenderAsList(true);
+		WBreak clear = new WBreak();
+		clear.setStyleClass("Wt-tabs-clear");
 		WContainerWidget menuDiv = new WContainerWidget();
 		menuDiv.setStyleClass("Wt-tabs");
 		menuDiv.addWidget(this.menu_);
+		menuDiv.addWidget(clear);
 		this.layout_.addWidget(menuDiv);
 		this.layout_.addWidget(this.menu_.getContentsStack());
 		this

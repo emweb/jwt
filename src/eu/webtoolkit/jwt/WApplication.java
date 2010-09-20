@@ -134,7 +134,9 @@ public class WApplication extends WObject {
 		this.requestTooLarge_ = new Signal1<Integer>();
 		this.session_ = env.session_;
 		this.title_ = new WString();
+		this.closeMessage_ = new WString();
 		this.titleChanged_ = false;
+		this.closeMessageChanged_ = false;
 		this.styleSheet_ = new WCssStyleSheet();
 		this.localizedStrings_ = null;
 		this.locale_ = new Locale("");
@@ -155,6 +157,9 @@ public class WApplication extends WObject {
 		this.bodyClass_ = "";
 		this.bodyHtmlClassChanged_ = false;
 		this.enableAjax_ = false;
+		this.focusId_ = "";
+		this.selectionStart_ = -1;
+		this.selectionEnd_ = -1;
 		this.scriptLibraries_ = new ArrayList<WApplication.ScriptLibrary>();
 		this.scriptLibrariesAdded_ = 0;
 		this.theme_ = "default";
@@ -171,6 +176,9 @@ public class WApplication extends WObject {
 		this.autoJavaScript_ = "";
 		this.javaScriptLoaded_ = new HashSet<String>();
 		this.autoJavaScriptChanged_ = false;
+		this.showLoadingIndicator_ = new EventSignal("showload", this);
+		this.hideLoadingIndicator_ = new EventSignal("hideload", this);
+		this.unloaded_ = new JSignal(this, "Wt-unload");
 		this.soundManager_ = null;
 		this.session_.setApplication(this);
 		this.locale_ = this.getEnvironment().getLocale();
@@ -271,9 +279,12 @@ public class WApplication extends WObject {
 						"margin: 3px 3px 0px 4px;");
 			}
 		}
-		this.showLoadingIndicator_ = new EventSignal("showload", this);
-		this.hideLoadingIndicator_ = new EventSignal("hideload", this);
 		this.setLoadingIndicator(new WDefaultLoadingIndicator());
+		this.unloaded_.addListener(this, new Signal.Listener() {
+			public void trigger() {
+				WApplication.this.unload();
+			}
+		});
 	}
 
 	/**
@@ -593,6 +604,13 @@ public class WApplication extends WObject {
 	}
 
 	/**
+	 * Returns the close message.
+	 */
+	public WString getCloseMessage() {
+		return this.closeMessage_;
+	}
+
+	/**
 	 * Returns the resource object that provides localized strings.
 	 * <p>
 	 * This returns the object previously set using
@@ -692,6 +710,9 @@ public class WApplication extends WObject {
 		}
 		if (this.title_.refresh()) {
 			this.titleChanged_ = true;
+		}
+		if (this.closeMessage_.refresh()) {
+			this.closeMessageChanged_ = true;
 		}
 	}
 
@@ -1840,12 +1861,39 @@ public class WApplication extends WObject {
 		return this.session_.isDebug();
 	}
 
+	public void setFocus(String id, int selectionStart, int selectionEnd) {
+		this.focusId_ = id;
+		this.selectionStart_ = selectionStart;
+		this.selectionEnd_ = selectionEnd;
+	}
+
 	boolean isJavaScriptLoaded(String jsFile) {
 		return this.javaScriptLoaded_.contains(jsFile) != false;
 	}
 
 	void setJavaScriptLoaded(String jsFile) {
 		this.javaScriptLoaded_.add(jsFile);
+	}
+
+	/**
+	 * Sets the message for the user to confirm closing of the application
+	 * window/tab.
+	 * <p>
+	 * If the message is empty, then the user may navigate away from the page
+	 * without confirmation.
+	 * <p>
+	 * Otherwise the user will be prompted with a browser-specific dialog asking
+	 * him to confirm leaving the page. This <code>message</code> is added to
+	 * the page.
+	 * <p>
+	 * 
+	 * @see WApplication#unload()
+	 */
+	public void setConfirmCloseMessage(CharSequence message) {
+		if (!message.equals(this.closeMessage_)) {
+			this.closeMessage_ = WString.toWString(message);
+			this.closeMessageChanged_ = true;
+		}
 	}
 
 	/**
@@ -1952,6 +2000,22 @@ public class WApplication extends WObject {
 		}
 	}
 
+	/**
+	 * Handles a browser unload event.
+	 * <p>
+	 * The browser unloads the application when the user navigates away or when
+	 * he closes the window or tab.
+	 * <p>
+	 * The default behaviour is to {@link WApplication#quit() quit()} which in
+	 * turn terminates the session.
+	 * <p>
+	 * You may want to reimplement this if you want to keep the application
+	 * running until it times out (as was the behaviour before JWt 3.1.6).
+	 */
+	protected void unload() {
+		this.quit();
+	}
+
 	private Signal1<Integer> requestTooLarge_;
 
 	static class ScriptLibrary {
@@ -1984,7 +2048,9 @@ public class WApplication extends WObject {
 
 	private WebSession session_;
 	private WString title_;
+	private WString closeMessage_;
 	boolean titleChanged_;
+	boolean closeMessageChanged_;
 	private WContainerWidget widgetRoot_;
 	WContainerWidget domRoot_;
 	WContainerWidget domRoot2_;
@@ -2012,6 +2078,9 @@ public class WApplication extends WObject {
 	String bodyClass_;
 	boolean bodyHtmlClassChanged_;
 	boolean enableAjax_;
+	private String focusId_;
+	private int selectionStart_;
+	private int selectionEnd_;
 	List<WApplication.ScriptLibrary> scriptLibraries_;
 	int scriptLibrariesAdded_;
 
@@ -2041,6 +2110,7 @@ public class WApplication extends WObject {
 	boolean autoJavaScriptChanged_;
 	EventSignal showLoadingIndicator_;
 	EventSignal hideLoadingIndicator_;
+	private JSignal unloaded_;
 
 	WContainerWidget getTimerRoot() {
 		return this.timerRoot_;
@@ -2222,6 +2292,18 @@ public class WApplication extends WObject {
 		} else {
 			return false;
 		}
+	}
+
+	String getFocus() {
+		return this.focusId_;
+	}
+
+	int getSelectionStart() {
+		return this.selectionStart_;
+	}
+
+	int getSelectionEnd() {
+		return this.selectionEnd_;
 	}
 
 	SoundManager getSoundManager() {

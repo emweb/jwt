@@ -40,7 +40,6 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 		this.height_ = height;
 		this.painter_ = null;
 		this.changeFlags_ = EnumSet.noneOf(WPaintDevice.ChangeFlag.class);
-		this.paintFlags_ = EnumSet.noneOf(PaintFlag.class);
 		this.busyWithPath_ = false;
 		this.currentTransform_ = new WTransform();
 		this.currentBrush_ = new WBrush();
@@ -402,9 +401,6 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 		this.currentFont_ = new WFont();
 		this.currentTextVAlign_ = this.currentTextHAlign_ = AlignmentFlag.AlignLength;
 		this.changeFlags_.clear();
-		if (!!EnumUtils.mask(this.paintFlags_, PaintFlag.PaintUpdate).isEmpty()) {
-			this.js_ = new StringWriter();
-		}
 	}
 
 	public void done() {
@@ -418,24 +414,24 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 	void render(String canvasId, DomElement text) {
 		String canvasVar = "Wt3_1_5.getElement('" + canvasId + "')";
 		StringWriter tmp = new StringWriter();
-		tmp.append("if(").append(canvasVar).append(
-				".getContext){new Wt._p_.ImagePreloader([");
-		for (int i = 0; i < this.images_.size(); ++i) {
-			if (i != 0) {
-				tmp.append(',');
+		tmp.append("if(").append(canvasVar).append(".getContext){");
+		if (!this.images_.isEmpty()) {
+			tmp.append("new Wt._p_.ImagePreloader([");
+			for (int i = 0; i < this.images_.size(); ++i) {
+				if (i != 0) {
+					tmp.append(',');
+				}
+				tmp.append('\'').append(this.images_.get(i)).append('\'');
 			}
-			tmp.append('\'').append(this.images_.get(i)).append('\'');
+			tmp.append("],function(images)");
 		}
-		tmp.append("],function(images) {var ctx=").append(canvasVar).append(
-				".getContext('2d');");
-		if (!!EnumUtils.mask(this.paintFlags_, PaintFlag.PaintUpdate).isEmpty()) {
-			tmp.append("ctx.clearRect(0,0,").append(
-					String.valueOf(this.getWidth().getValue())).append(",")
-					.append(String.valueOf(this.getHeight().getValue()))
-					.append(");");
+		tmp.append("{var ctx=").append(canvasVar).append(".getContext('2d');")
+				.append("ctx.save();ctx.save();").append(this.js_.toString())
+				.append("ctx.restore();ctx.restore();}");
+		if (!this.images_.isEmpty()) {
+			tmp.append(");");
 		}
-		tmp.append("ctx.save();ctx.save();").append(this.js_.toString())
-				.append("ctx.restore();ctx.restore();});}");
+		tmp.append("}");
 		text.callJavaScript(tmp.toString());
 		for (int i = 0; i < this.textElements_.size(); ++i) {
 			text.addChild(this.textElements_.get(i));
@@ -450,10 +446,6 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 		return this.height_;
 	}
 
-	public EnumSet<PaintFlag> getPaintFlags() {
-		return this.paintFlags_;
-	}
-
 	public WPainter getPainter() {
 		return this.painter_;
 	}
@@ -462,13 +454,11 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 		this.painter_ = painter;
 	}
 
-	public void setPaintFlags(EnumSet<PaintFlag> paintFlags) {
-		this.paintFlags_.clear();
-	}
-
-	public final void setPaintFlags(PaintFlag paintFlag,
-			PaintFlag... paintFlags) {
-		setPaintFlags(EnumSet.of(paintFlag, paintFlags));
+	public void clear() {
+		this.js_ = new StringWriter();
+		this.js_.append("ctx.clearRect(0,0,").append(
+				String.valueOf(this.getWidth().getValue())).append(",").append(
+				String.valueOf(this.getHeight().getValue())).append(");");
 	}
 
 	enum TextMethod {
@@ -486,7 +476,6 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 	private WLength height_;
 	private WPainter painter_;
 	private EnumSet<WPaintDevice.ChangeFlag> changeFlags_;
-	private EnumSet<PaintFlag> paintFlags_;
 	private WCanvasPaintDevice.TextMethod textMethod_;
 	private boolean busyWithPath_;
 	private WTransform currentTransform_;

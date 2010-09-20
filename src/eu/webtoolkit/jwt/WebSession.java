@@ -1190,6 +1190,27 @@ class WebSession {
 		WebRequest request = e.handler.getRequest();
 		this.renderer_.updateFormObjectsList(this.app_);
 		Map<String, WObject> formObjects = this.renderer_.getFormObjects();
+		String focus = request.getParameter(se + "focus");
+		if (focus != null) {
+			int selectionStart = -1;
+			int selectionEnd = -1;
+			try {
+				String selStart = request.getParameter(se + "selstart");
+				if (selStart != null) {
+					selectionStart = Integer.parseInt(selStart);
+				}
+				String selEnd = request.getParameter(se + "selend");
+				if (selEnd != null) {
+					selectionEnd = Integer.parseInt(selEnd);
+				}
+			} catch (NumberFormatException ee) {
+				this.log("error").append(
+						"Could not lexical cast selection range");
+			}
+			this.app_.setFocus(focus, selectionStart, selectionEnd);
+		} else {
+			this.app_.setFocus("", -1, -1);
+		}
 		for (Iterator<Map.Entry<String, WObject>> i_it = formObjects.entrySet()
 				.iterator(); i_it.hasNext();) {
 			Map.Entry<String, WObject> i = i_it.next();

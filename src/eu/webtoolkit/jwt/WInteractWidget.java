@@ -290,6 +290,25 @@ public abstract class WInteractWidget extends WWebWidget {
 	}
 
 	/**
+	 * Event signal emitted when the mouse scroll wheel was used.
+	 * <p>
+	 * The event details contains information such as the
+	 * {@link WMouseEvent#getWheelDelta() wheel delta}, optional
+	 * {@link WMouseEvent#getModifiers() keyboard modifiers}, and mouse
+	 * coordinates relative to the {@link WMouseEvent#getWidget() widget}, the
+	 * window {@link WMouseEvent#getWindow() window}, or the
+	 * {@link WMouseEvent#getDocument() document}.
+	 * <p>
+	 * <p>
+	 * <i><b>Note: </b>When JavaScript is disabled, the signal will never fire.
+	 * </i>
+	 * </p>
+	 */
+	public EventSignal1<WMouseEvent> mouseWheel() {
+		return this.mouseEventSignal(MOUSE_WHEEL_SIGNAL, true);
+	}
+
+	/**
 	 * Configure dragging for drag and drop.
 	 * <p>
 	 * Enable drag&amp;drop for this widget. The mimeType is used to find a
@@ -575,4 +594,5 @@ public abstract class WInteractWidget extends WWebWidget {
 	private static String MOUSE_OVER_SIGNAL = "mouseover";
 	private static String MOUSE_MOVE_SIGNAL = "M_mousemove";
 	private static String MOUSE_DRAG_SIGNAL = "M_mousedrag";
+	static String MOUSE_WHEEL_SIGNAL = "mousewheel";
 }

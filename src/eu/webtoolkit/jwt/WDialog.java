@@ -336,7 +336,7 @@ public class WDialog extends WCompositeWidget {
 	/**
 	 * Lets pressing the escape key reject the dialog.
 	 * <p>
-	 * Before {@link } 3.1.5, pressing escape automatically rejected the dialog.
+	 * Before JWt 3.1.5, pressing escape automatically rejected the dialog.
 	 * Since 3.1.4 this behaviour is no longer the default since it may
 	 * interfere with other functionality in the dialog. Use this method to
 	 * enable this behaviour.
@@ -449,6 +449,6 @@ public class WDialog extends WCompositeWidget {
 	}
 
 	static String wtjs1(WApplication app) {
-		return "Wt3_1_5.WDialog = function(g,b){function k(a){a=c.pageCoordinates(a||window.event);j=true;b.style.left=c.pxself(b,\"left\")+a.x-h+\"px\";b.style.top=c.pxself(b,\"top\")+a.y-i+\"px\";h=a.x;i=a.y}jQuery.data(b,\"obj\",this);var l=this,e=$(b).find(\".titlebar\").first().get(0),c=g.WT,h,i,j=false;if(e){e.onmousedown=function(a){a=a||window.event;c.capture(e);a=c.pageCoordinates(a);h=a.x;i=a.y;e.onmousemove=k};e.onmouseup=function(){e.onmousemove=null;c.capture(null)}}this.centerDialog=function(){if(b.parentNode== null){b=e=null;this.centerDialog=function(){}}else if(b.style.display!=\"none\"){if(!j){var a=c.windowSize(),f=b.offsetWidth,d=b.offsetHeight;b.style.left=Math.round((a.x-f)/2+(c.isIE6?document.documentElement.scrollLeft:0))+\"px\";b.style.top=Math.round((a.y-d)/2+(c.isIE6?document.documentElement.scrollTop:0))+\"px\";b.style.marginLeft=\"0px\";b.style.marginTop=\"0px\";b.style.width!=null&&b.style.height!=null&&l.wtResize(b,f,d)}b.style.visibility=\"visible\"}};this.wtResize=function(a,f,d){d-=2;f-=2;a.style.height= d+\"px\";a.style.width=f+\"px\";a=a.lastChild;d-=a.previousSibling.offsetHeight+8;if(d>0){a.style.height=d+\"px\";g.layoutsAdjust&&g.layoutsAdjust()}}};";
+		return "Wt3_1_5.WDialog = function(g,b){function k(a){var c=a||window.event;a=d.pageCoordinates(c);c=d.windowCoordinates(c);var e=d.windowSize();if(c.x>0&&c.x<e.x&&c.y>0&&c.y<e.y){j=true;b.style.left=d.pxself(b,\"left\")+a.x-h+\"px\";b.style.top=d.pxself(b,\"top\")+a.y-i+\"px\";h=a.x;i=a.y}}jQuery.data(b,\"obj\",this);var l=this,f=$(b).find(\".titlebar\").first().get(0),d=g.WT,h,i,j=false;if(f){f.onmousedown=function(a){a=a||window.event;d.capture(f);a=d.pageCoordinates(a);h=a.x;i=a.y;f.onmousemove=k}; f.onmouseup=function(){f.onmousemove=null;d.capture(null)}}this.centerDialog=function(){if(b.parentNode==null){b=f=null;this.centerDialog=function(){}}else if(b.style.display!=\"none\"){if(!j){var a=d.windowSize(),c=b.offsetWidth,e=b.offsetHeight;b.style.left=Math.round((a.x-c)/2+(d.isIE6?document.documentElement.scrollLeft:0))+\"px\";b.style.top=Math.round((a.y-e)/2+(d.isIE6?document.documentElement.scrollTop:0))+\"px\";b.style.marginLeft=\"0px\";b.style.marginTop=\"0px\";b.style.width!=null&&b.style.height!= null&&l.wtResize(b,c,e)}b.style.visibility=\"visible\"}};this.wtResize=function(a,c,e){e-=2;c-=2;a.style.height=e+\"px\";a.style.width=c+\"px\";a=a.lastChild;e-=a.previousSibling.offsetHeight+8;if(e>0){a.style.height=e+\"px\";g.layoutsAdjust&&g.layoutsAdjust()}}};";
 	}
 }

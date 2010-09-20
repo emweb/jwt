@@ -253,7 +253,8 @@ public abstract class WHTML5Media extends WWebWidget {
 		if (this.isInLayout()) {
 			this.setJavaScriptMember(WT_RESIZE_JS, "function() {}");
 		}
-		if (app.getEnvironment().agentIsIE()) {
+		if (app.getEnvironment().agentIsIE()
+				|| app.getEnvironment().getAgent() == WEnvironment.UserAgent.MobileWebKitAndroid) {
 			result = DomElement.createNew(DomElementType.DomElement_DIV);
 			if (this.alternative_ != null) {
 				result.addChild(this.alternative_.createSDomElement(app));
@@ -362,7 +363,7 @@ public abstract class WHTML5Media extends WWebWidget {
 					src
 							.setAttribute(
 									"onerror",
-									"media = parentNode;if(media){while (media && media.hasChildNodes())if (Wt3_1_5.hasTag(media.firstChild,'SOURCE')){media.removeChild(media.firstChild);}else{media.parentNode.insertBefore(media.firstChild, media);}media.style.display= 'none';}");
+									"var media = this.parentNode;if(media){while (media && media.children.length)if (Wt3_1_5.hasTag(media.firstChild,'SOURCE')){media.removeChild(media.firstChild);}else{media.parentNode.insertBefore(media.firstChild, media);}media.style.display= 'none';}");
 				}
 				element.addChild(src);
 			}

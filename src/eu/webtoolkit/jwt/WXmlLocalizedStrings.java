@@ -7,6 +7,7 @@ package eu.webtoolkit.jwt;
 
 import java.io.File;
 import java.io.StringWriter;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -62,6 +63,15 @@ public class WXmlLocalizedStrings extends WLocalizedStrings {
 		URL url = getClass().getResource(bundleName + "_" + WApplication.getInstance().getLocale() + ".xml");
 		if(url == null)
 			url = getClass().getResource(bundleName + ".xml");
+		
+		//support external URLs
+		if(url == null) {
+			try {
+				url = new URL(bundleName);
+			} catch (MalformedURLException murle) {
+				murle.printStackTrace();
+			}
+		}
 
 		File xmlFile = new File(url.getFile());
 		

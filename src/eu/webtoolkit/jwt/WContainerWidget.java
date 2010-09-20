@@ -798,7 +798,7 @@ public class WContainerWidget extends WInteractWidget {
 		return 0;
 	}
 
-	protected void childResized(WWidget child, EnumSet<Orientation> directions) {
+	void childResized(WWidget child, EnumSet<Orientation> directions) {
 		AlignmentFlag vAlign = EnumUtils.enumFromSet(EnumUtils.mask(
 				this.contentAlignment_, AlignmentFlag.AlignVerticalMask));
 		if (this.layout_ != null
