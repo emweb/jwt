@@ -537,8 +537,8 @@ public class WAnchor extends WContainerWidget {
 			String url = "";
 			if (this.flags_.get(BIT_REF_INTERNAL_PATH)) {
 				WApplication app = WApplication.getInstance();
-				url = app.getBookmarkUrl(this.ref_);
 				if (app.getEnvironment().hasAjax()) {
+					url = app.getBookmarkUrl(this.ref_);
 					if (!(this.changeInternalPathJS_ != null)) {
 						this.changeInternalPathJS_ = new JSlot();
 						this.clicked().addListener(this.changeInternalPathJS_);
@@ -548,6 +548,12 @@ public class WAnchor extends WContainerWidget {
 							.setJavaScript("function(obj, event){window.location.hash='#"
 									+ DomElement.urlEncodeS(this.ref_) + "';}");
 					this.clicked().senderRepaint();
+				} else {
+					if (app.getEnvironment().agentIsSpiderBot()) {
+						url = app.getBookmarkUrl(this.ref_);
+					} else {
+						url = app.getSession().getMostRelativeUrl(this.ref_);
+					}
 				}
 			} else {
 				url = this.ref_;

@@ -557,9 +557,15 @@ public class WMenuItem extends WObject {
 			enabledLabel.setText(this.getText());
 			String url = "";
 			if (this.menu_ != null && this.menu_.isInternalPathEnabled()) {
-				url = WApplication.getInstance().getBookmarkUrl(
-						this.menu_.getInternalBasePath()
-								+ this.getPathComponent());
+				String internalPath = this.menu_.getInternalBasePath()
+						+ this.getPathComponent();
+				WApplication app = WApplication.getInstance();
+				if (app.getEnvironment().hasAjax()
+						|| app.getEnvironment().agentIsSpiderBot()) {
+					url = app.getBookmarkUrl(internalPath);
+				} else {
+					url = app.getSession().getMostRelativeUrl(internalPath);
+				}
 			} else {
 				url = "#";
 			}

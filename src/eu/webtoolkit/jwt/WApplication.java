@@ -751,13 +751,8 @@ public class WApplication extends WObject {
 	 * </pre>
 	 * 
 	 * </blockquote> this method would return
-	 * <code>&quot;/stuff/app.wt?wtd=AbCdEf&quot;</code>, when using URL
-	 * rewriting for session-tracking or
-	 * <code>&quot;/stuff/app.wt?a=a&quot;</code> when using cookies for
-	 * session-tracking
-	 * <p>
-	 * . As in each case, a query is appended at the end of the URL, additional
-	 * query parameters can be appended in the form of
+	 * <code>&quot;/stuff/app.wt?wtd=AbCdEf&quot;</code>. Additional query
+	 * parameters can be appended in the form of
 	 * <code>&quot;&amp;param1=value&amp;param2=value&quot;</code>.
 	 * <p>
 	 * To obtain a URL that is suitable for bookmarking the current application
@@ -772,6 +767,29 @@ public class WApplication extends WObject {
 	 */
 	public String getUrl() {
 		return this.fixRelativeUrl(this.session_.getApplicationUrl());
+	}
+
+	/**
+	 * Makes an absolute URL.
+	 * <p>
+	 * Returns an absolute URL for a given (relative url) by including the
+	 * schema, hostname, and deployment path.
+	 * <p>
+	 * If <code>url</code> is &quot;&quot;, then the absolute base URL is
+	 * returned. This is the absolute URL at which the application is deployed,
+	 * up to the last &apos;/&apos;.
+	 */
+	public String makeAbsoluteUrl(String url) {
+		if (url.indexOf("://") != -1) {
+			return url;
+		} else {
+			if (url.length() != 0 && url.charAt(0) == '/') {
+				return this.getEnvironment().getUrlScheme() + "://"
+						+ this.getEnvironment().getHostName() + url;
+			} else {
+				return this.session_.getAbsoluteBaseUrl() + url;
+			}
+		}
 	}
 
 	/**
@@ -843,15 +861,7 @@ public class WApplication extends WObject {
 	 * @see WApplication#getBookmarkUrl()
 	 */
 	public String getBookmarkUrl(String internalPath) {
-		if (!this.getEnvironment().hasJavaScript()) {
-			if (this.getEnvironment().agentIsSpiderBot()) {
-				return this.session_.getBookmarkUrl(internalPath);
-			} else {
-				return this.session_.getMostRelativeUrl(internalPath);
-			}
-		} else {
-			return this.session_.getBookmarkUrl(internalPath);
-		}
+		return this.session_.getBookmarkUrl(internalPath);
 	}
 
 	/**
@@ -1140,7 +1150,7 @@ public class WApplication extends WObject {
 	 *    try {
 	 *      // We now have exclusive access to the application:
 	 *      // we can safely modify the widget tree for example.
-	 *      app.getRoot().addWidget(new WText(&quot;Something happened!&quot;));
+	 *      app.getRoot().addWidget(new WText("Something happened!"));
 	 *   
 	 *      // Push the changes to the browser
 	 *      app.triggerUpdate();
@@ -1518,16 +1528,7 @@ public class WApplication extends WObject {
 				return url;
 			}
 		} else {
-			if (url.length() != 0) {
-				if (url.charAt(0) != '/') {
-					return this.session_.getAbsoluteBaseUrl() + url;
-				} else {
-					return this.getEnvironment().getUrlScheme() + "://"
-							+ this.getEnvironment().getHostName() + url;
-				}
-			} else {
-				return url;
-			}
+			return this.makeAbsoluteUrl(url);
 		}
 	}
 
