@@ -7,6 +7,8 @@ package eu.webtoolkit.jwt;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 
 /**
@@ -246,5 +248,24 @@ public class StringUtils {
 		for (String token : in.split(sep)) {
 			tokens.add(token);
 		}
+	}
+	
+	static List<String> expandLocales(String bundleName, String locale) {
+		List<String> expanded = new ArrayList<String>();
+
+		StringBuffer localeBuffer = new StringBuffer(locale);
+		
+		while (localeBuffer.length() != 0) {
+			expanded.add(bundleName + "_" + localeBuffer.toString());
+			
+			int index = localeBuffer.lastIndexOf("_");
+			if (index == -1)
+				index = 0;
+			
+			localeBuffer.delete(index, localeBuffer.length());
+		}
+		expanded.add(bundleName);
+		
+		return expanded;
 	}
 }

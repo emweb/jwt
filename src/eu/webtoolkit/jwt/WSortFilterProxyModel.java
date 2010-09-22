@@ -73,7 +73,7 @@ import eu.webtoolkit.jwt.utils.ObjectUtils;
  *  proxy.setDynamicSortFilter(true);
  *  proxy.setFilterKeyColumn(0);
  *  proxy.setFilterRole(ItemDataRole.UserRole);
- *  proxy.setFilterRegExp(".*");
+ *  proxy.setFilterRegExp(&quot;.*&quot;);
  * 		 
  *  // configure a view to use the proxy model instead of the source model
  *  WTreeView view = new WTreeView(this);
@@ -297,7 +297,7 @@ public class WSortFilterProxyModel extends WAbstractProxyModel {
 		if (!(this.regex_ != null)) {
 			this.regex_ = Pattern.compile(pattern);
 		} else {
-			this.regex_ = Pattern.compile(pattern);
+			this.regex_ = Pattern.compile(pattern, this.regex_.flags());
 		}
 		if (this.getSourceModel() != null) {
 			this.layoutAboutToBeChanged().trigger();
@@ -314,6 +314,27 @@ public class WSortFilterProxyModel extends WAbstractProxyModel {
 	 */
 	public String getFilterRegExp() {
 		return this.regex_ != null ? this.regex_.pattern() : "";
+	}
+
+	/**
+	 * Sets the filter regular expression flags.
+	 */
+	public void setFilterFlags(int flags) {
+		if (!(this.regex_ != null)) {
+			this.regex_ = Pattern.compile(".*");
+		}
+		this.regex_ = Pattern.compile(this.regex_.pattern(), flags);
+	}
+
+	/**
+	 * Returns the filter regular expression flags.
+	 */
+	public int getFilterFlags() {
+		if (this.regex_ != null) {
+			return this.regex_.flags();
+		} else {
+			return (int) 0;
+		}
 	}
 
 	/**

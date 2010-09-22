@@ -1292,6 +1292,18 @@ public class WStandardItem {
 		}
 	}
 
+	protected void setModel(WStandardItemModel model) {
+		this.model_ = model;
+		for (int i = 0; i < this.getColumnCount(); ++i) {
+			for (int j = 0; j < this.getRowCount(); ++j) {
+				WStandardItem c = this.columns_.get(i).get(j);
+				if (c != null) {
+					c.setModel(model);
+				}
+			}
+		}
+	}
+
 	/**
 	 * Compares the item with another item.
 	 * <p>
@@ -1346,18 +1358,6 @@ public class WStandardItem {
 			item.row_ = -1;
 			item.column_ = -1;
 			item.setModel((WStandardItemModel) null);
-		}
-	}
-
-	private void setModel(WStandardItemModel model) {
-		this.model_ = model;
-		for (int i = 0; i < this.getColumnCount(); ++i) {
-			for (int j = 0; j < this.getRowCount(); ++j) {
-				WStandardItem c = this.columns_.get(i).get(j);
-				if (c != null) {
-					c.setModel(model);
-				}
-			}
 		}
 	}
 

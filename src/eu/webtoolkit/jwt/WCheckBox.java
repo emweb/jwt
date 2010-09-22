@@ -166,12 +166,10 @@ public class WCheckBox extends WAbstractToggleButton {
 		return this.state_;
 	}
 
-	protected void updateDomElements(DomElement element, DomElement input,
-			boolean all) {
+	protected void updateInput(DomElement input, boolean all) {
 		if (all) {
 			input.setAttribute("type", "checkbox");
 		}
-		super.updateDomElements(element, input, all);
 	}
 
 	private boolean triState_;

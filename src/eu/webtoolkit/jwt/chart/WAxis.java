@@ -296,15 +296,14 @@ public class WAxis {
 				update();
 			}
 			;
-		} else {
-			if (!EnumUtils.mask(locations, AxisValue.MaximumValue).isEmpty()) {
-				if (!ChartUtils.equals(this.segments_
-						.get(this.segments_.size() - 1).maximum, AUTO_MAXIMUM)) {
-					this.segments_.get(this.segments_.size() - 1).maximum = AUTO_MAXIMUM;
-					update();
-				}
-				;
+		}
+		if (!EnumUtils.mask(locations, AxisValue.MaximumValue).isEmpty()) {
+			if (!ChartUtils.equals(this.segments_
+					.get(this.segments_.size() - 1).maximum, AUTO_MAXIMUM)) {
+				this.segments_.get(this.segments_.size() - 1).maximum = AUTO_MAXIMUM;
+				update();
 			}
+			;
 		}
 	}
 

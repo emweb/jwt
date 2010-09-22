@@ -206,7 +206,6 @@ public class WRasterPaintDevice extends WResource implements WPaintDevice {
 		setChanged(EnumSet.of(flag, flags));
 	}
 
-	
 	public void setPainter(WPainter painter) {
 		this.painter = painter;
 	}

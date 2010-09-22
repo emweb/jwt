@@ -25,7 +25,7 @@ import java.util.Map;
  * The current state (checked or unchecked) may be inspected using the
  * {@link WAbstractToggleButton#isChecked() isChecked()} method.
  */
-public class WAbstractToggleButton extends WFormWidget {
+public abstract class WAbstractToggleButton extends WFormWidget {
 	/**
 	 * Creates an unchecked toggle button without label.
 	 */
@@ -185,43 +185,26 @@ public class WAbstractToggleButton extends WFormWidget {
 
 	CheckState state_;
 
-	DomElement createDomElement(WApplication app) {
-		DomElement result = DomElement.createNew(this.getDomElementType());
-		this.setId(result, app);
-		DomElement input = result;
-		if (result.getType() == DomElementType.DomElement_SPAN) {
-			input = DomElement.createNew(DomElementType.DomElement_INPUT);
-			input.setName("in" + this.getId());
-		}
-		this.updateDomElements(result, input, true);
-		if (result != input) {
-			result.addChild(input);
-			WLabel l = this.getLabel();
-			if (l != null && l.getParent() == this) {
-				result.addChild(((WWebWidget) l).createDomElement(app));
-			}
-		}
-		return result;
-	}
+	protected abstract void updateInput(DomElement input, boolean all);
 
-	void getDomChanges(List<DomElement> result, WApplication app) {
-		DomElement element = DomElement.getForUpdate(this, this
-				.getDomElementType());
+	void updateDom(DomElement element, boolean all) {
+		WApplication app = WApplication.getInstance();
+		WEnvironment env = app.getEnvironment();
+		DomElement input = null;
 		if (element.getType() == DomElementType.DomElement_SPAN) {
-			DomElement input = DomElement.getForUpdate("in" + this.getId(),
-					DomElementType.DomElement_INPUT);
-			this.updateDomElements(element, input, false);
-			result.add(element);
-			result.add(input);
+			if (all) {
+				input = DomElement.createNew(DomElementType.DomElement_INPUT);
+				input.setName("in" + this.getId());
+			} else {
+				input = DomElement.getForUpdate("in" + this.getId(),
+						DomElementType.DomElement_INPUT);
+			}
 		} else {
-			this.updateDomElements(element, element, false);
-			result.add(element);
+			input = element;
 		}
-	}
-
-	protected void updateDomElements(DomElement element, DomElement input,
-			boolean all) {
-		WEnvironment env = WApplication.getInstance().getEnvironment();
+		if (all) {
+			this.updateInput(input, all);
+		}
 		EventSignal check = this.voidEventSignal(CHECKED_SIGNAL, false);
 		EventSignal uncheck = this.voidEventSignal(UNCHECKED_SIGNAL, false);
 		EventSignal change = this.voidEventSignal(CHANGE_SIGNAL, false);
@@ -300,6 +283,15 @@ public class WAbstractToggleButton extends WFormWidget {
 			}
 			if (!(all && actions.isEmpty())) {
 				input.setEvent(CLICK_SIGNAL, actions);
+			}
+		}
+		if (element != input) {
+			element.addChild(input);
+		}
+		if (all) {
+			WLabel l = this.getLabel();
+			if (l != null && l.getParent() == this) {
+				element.addChild(((WWebWidget) l).createDomElement(app));
 			}
 		}
 	}

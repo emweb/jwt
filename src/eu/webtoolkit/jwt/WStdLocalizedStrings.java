@@ -5,16 +5,21 @@
  */
 package eu.webtoolkit.jwt;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.PropertyResourceBundle;
 import java.util.ResourceBundle;
 
-import net.n3.nanoxml.IXMLElement;
 import net.n3.nanoxml.IXMLParser;
 import net.n3.nanoxml.IXMLReader;
 import net.n3.nanoxml.StdXMLReader;
-import net.n3.nanoxml.XMLException;
 import net.n3.nanoxml.XMLParserFactory;
 
 /**
@@ -49,8 +54,8 @@ public class WStdLocalizedStrings extends WLocalizedStrings {
 	 */
 	public void use(String bundleName) {
 		bundleNames.add(bundleName);
-		bundles.add(ResourceBundle.getBundle(bundleName, WApplication.getInstance().getLocale()));
-		defaultBundles.add(ResourceBundle.getBundle(bundleName, new Locale("")));
+		bundles.add(loadResourceBundle(bundleName, WApplication.getInstance().getLocale()));
+		defaultBundles.add(loadResourceBundle(bundleName, new Locale("")));
 	}
 
 	void useBuiltin(String bundleName) {
@@ -63,9 +68,33 @@ public class WStdLocalizedStrings extends WLocalizedStrings {
 		defaultBundles.clear();
 		
 		for (String bundleName : bundleNames) {
-			bundles.add(ResourceBundle.getBundle(bundleName, WApplication.getInstance().getLocale()));
-			defaultBundles.add(ResourceBundle.getBundle(bundleName, new Locale("")));
+			bundles.add(loadResourceBundle(bundleName, WApplication.getInstance().getLocale()));
+			defaultBundles.add(loadResourceBundle(bundleName, new Locale("")));
 		}
+	}
+	
+	private ResourceBundle loadResourceBundle(String bundleName, Locale l) {
+		ResourceBundle rb = null;
+		try {
+			rb = ResourceBundle.getBundle(bundleName, l);
+		} catch(Exception e) {
+		}
+		
+		if (rb != null)
+			return rb;
+		
+		File f;
+		for (String path : StringUtils.expandLocales(bundleName, WApplication.getInstance().getLocale().toString())) {
+			f = new File(path + ".properties");
+			try {
+				if (f.exists())
+					return new PropertyResourceBundle(new FileInputStream(f));
+			} catch (FileNotFoundException e) {
+			} catch (IOException e) {
+			}
+		}
+		
+		throw new RuntimeException("JWt exception: Could not find resource \"" + bundleName + "\" for locale " + l.toString());
 	}
 
 	@Override
@@ -74,7 +103,6 @@ public class WStdLocalizedStrings extends WLocalizedStrings {
 			try {
 				return checkForValidXml(bundle.getString(key));
 			} catch (java.util.MissingResourceException mre) {
-				
 			}
 		}
 		
@@ -82,7 +110,6 @@ public class WStdLocalizedStrings extends WLocalizedStrings {
 			try {
 				return checkForValidXml(defaultBundle.getString(key));
 			} catch (java.util.MissingResourceException mre) {
-				
 			}
 		}
 		
