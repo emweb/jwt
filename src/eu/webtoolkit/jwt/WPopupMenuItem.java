@@ -269,6 +269,16 @@ public class WPopupMenuItem extends WCompositeWidget {
 		this.impl_.mouseWentOver().setNotExposed();
 	}
 
+	public void setDisabled(boolean disabled) {
+		if (disabled) {
+			this.addStyleClass("Wt-disabled");
+		} else {
+			this.removeStyleClass("Wt-disabled");
+		}
+		// this.resetLearnedSlot(WPopupMenuItem.renderOver);
+		super.setDisabled(disabled);
+	}
+
 	WPopupMenuItem(boolean anon1) {
 		super();
 		this.text_ = null;
@@ -302,18 +312,28 @@ public class WPopupMenuItem extends WCompositeWidget {
 	}
 
 	private void renderOver() {
-		this.renderSelected(true);
+		if (!this.isDisabled()) {
+			this.renderSelected(true);
+		}
 	}
 
 	void renderOut() {
-		this.renderSelected(false);
+		if (!this.isDisabled()) {
+			this.renderSelected(false);
+		}
 	}
 
 	private void renderSelected(boolean selected) {
 		if (this.separator_) {
 			return;
 		}
-		this.setStyleClass(selected ? "Wt-selected" : "Wt-item");
+		if (selected) {
+			this.addStyleClass("Wt-selected", true);
+			this.removeStyleClass("Wt-item", true);
+		} else {
+			this.addStyleClass("Wt-item", true);
+			this.removeStyleClass("Wt-selected", true);
+		}
 		if (this.subMenu_ != null) {
 			if (selected) {
 				this.subMenu_.popupToo(this);
@@ -325,7 +345,7 @@ public class WPopupMenuItem extends WCompositeWidget {
 	}
 
 	private void onMouseUp() {
-		if (this.subMenu_ != null) {
+		if (this.isDisabled() || this.subMenu_ != null) {
 			return;
 		}
 		if (this.checkBox_ != null) {

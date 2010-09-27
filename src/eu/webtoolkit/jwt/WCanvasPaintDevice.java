@@ -412,7 +412,7 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 	}
 
 	void render(String canvasId, DomElement text) {
-		String canvasVar = "Wt3_1_5.getElement('" + canvasId + "')";
+		String canvasVar = "Wt3_1_6.getElement('" + canvasId + "')";
 		StringWriter tmp = new StringWriter();
 		tmp.append("if(").append(canvasVar).append(".getContext){");
 		if (!this.images_.isEmpty()) {

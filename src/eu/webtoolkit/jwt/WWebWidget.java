@@ -1036,7 +1036,7 @@ public abstract class WWebWidget extends WWidget {
 						app
 								.addAutoJavaScript("{var w = "
 										+ this.getJsRef()
-										+ ";if (w && !Wt3_1_5.isHidden(w)) {var i = Wt3_1_5.getElement('"
+										+ ";if (w && !Wt3_1_6.isHidden(w)) {var i = Wt3_1_6.getElement('"
 										+ i.getId()
 										+ "');i.style.width=w.clientWidth + 'px';i.style.height=w.clientHeight + 'px';}}");
 						element.addChild(i);
@@ -1224,6 +1224,14 @@ public abstract class WWebWidget extends WWidget {
 						+ "').removeClass('"
 						+ this.transientImpl_.removedStyleClasses_.get(i)
 						+ "');");
+			}
+			if (!this.transientImpl_.childRemoveChanges_.isEmpty()) {
+				element.removeAllChildren();
+				for (int i = 0; i < this.transientImpl_.childRemoveChanges_
+						.size(); ++i) {
+					;
+				}
+				this.transientImpl_.childRemoveChanges_.clear();
 			}
 		}
 		if (all || this.flags_.get(BIT_SELECTABLE_CHANGED)) {
@@ -1791,8 +1799,14 @@ public abstract class WWebWidget extends WWidget {
 				return;
 			}
 			if (this.transientImpl_ != null) {
-				result.addAll(this.transientImpl_.childRemoveChanges_);
-				this.transientImpl_.childRemoveChanges_.clear();
+				if (!this.transientImpl_.childRemoveChanges_.isEmpty()) {
+					if (this.children_ != null
+							&& this.children_.size() != this.transientImpl_.addedChildren_
+									.size()) {
+						result.addAll(this.transientImpl_.childRemoveChanges_);
+						this.transientImpl_.childRemoveChanges_.clear();
+					}
+				}
 			}
 			this.getDomChanges(result, app);
 		}

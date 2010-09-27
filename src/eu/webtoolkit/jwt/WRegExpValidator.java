@@ -104,7 +104,7 @@ public class WRegExpValidator extends WValidator {
 		if (!(this.regexp_ != null)) {
 			this.regexp_ = Pattern.compile(pattern);
 		} else {
-			this.regexp_ = Pattern.compile(pattern);
+			this.regexp_ = Pattern.compile(pattern, this.regexp_.flags());
 		}
 		this.repaint();
 	}
@@ -116,6 +116,27 @@ public class WRegExpValidator extends WValidator {
 	 */
 	public String getRegExp() {
 		return this.regexp_ != null ? this.regexp_.pattern() : "";
+	}
+
+	/**
+	 * Sets regular expression matching flags.
+	 */
+	public void setFlags(int flags) {
+		if (!(this.regexp_ != null)) {
+			this.regexp_ = Pattern.compile(".*");
+		}
+		this.regexp_ = Pattern.compile(this.regexp_.pattern(), flags);
+	}
+
+	/**
+	 * Returns regular expression matching flags.
+	 */
+	public int getFlags() {
+		if (this.regexp_ != null) {
+			return this.regexp_.flags();
+		} else {
+			return (int) 0;
+		}
 	}
 
 	/**
@@ -185,8 +206,12 @@ public class WRegExpValidator extends WValidator {
 		if (this.regexp_ != null) {
 			String s = this.regexp_.pattern();
 			StringUtils.replace(s, '/', "\\/");
-			js += "var r=/^" + s
-					+ "$/; return {valid:r.test(e.value),message:tn};";
+			js += "var r=/^" + s + "$/";
+			int flags = this.regexp_.flags();
+			if ((flags & Pattern.CASE_INSENSITIVE) != 0) {
+				js += "i";
+			}
+			js += "; return {valid:r.test(e.value),message:tn};";
 		} else {
 			js += "return {valid:true};";
 		}

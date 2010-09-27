@@ -661,7 +661,7 @@ public class WApplication extends WObject {
 	 * called, which will resolve the strings of the current user-interface in
 	 * the new locale.
 	 * <p>
-	 * The default locale is copied from the environment (
+	 * At construction, the locale is copied from the environment (
 	 * {@link WEnvironment#getLocale() WEnvironment#getLocale()}), and this is
 	 * the locale that was configured by the user in his browser preferences,
 	 * and passed using an HTTP request header.
@@ -1150,7 +1150,7 @@ public class WApplication extends WObject {
 	 *    try {
 	 *      // We now have exclusive access to the application:
 	 *      // we can safely modify the widget tree for example.
-	 *      app.getRoot().addWidget(new WText("Something happened!"));
+	 *      app.getRoot().addWidget(new WText(&quot;Something happened!&quot;));
 	 *   
 	 *      // Push the changes to the browser
 	 *      app.triggerUpdate();
@@ -1685,11 +1685,11 @@ public class WApplication extends WObject {
 			this.loadingIndicatorWidget_ = indicator.getWidget();
 			this.domRoot_.addWidget(this.loadingIndicatorWidget_);
 			JSlot showLoadJS = new JSlot();
-			showLoadJS.setJavaScript("function(o,e) {Wt3_1_5.inline('"
+			showLoadJS.setJavaScript("function(o,e) {Wt3_1_6.inline('"
 					+ this.loadingIndicatorWidget_.getId() + "');}");
 			this.showLoadingIndicator_.addListener(showLoadJS);
 			JSlot hideLoadJS = new JSlot();
-			hideLoadJS.setJavaScript("function(o,e) {Wt3_1_5.hide('"
+			hideLoadJS.setJavaScript("function(o,e) {Wt3_1_6.hide('"
 					+ this.loadingIndicatorWidget_.getId() + "');}");
 			this.hideLoadingIndicator_.addListener(hideLoadJS);
 			this.loadingIndicatorWidget_.hide();
