@@ -671,7 +671,7 @@ public class WSortFilterProxyModel extends WAbstractProxyModel {
 		WModelIndex pparent = this.mapFromSource(parent);
 		WSortFilterProxyModel.Item item = this.itemFromIndex(pparent);
 		for (int row = start; row <= end; ++row) {
-			int mappedRow = item.proxyRowMap_.get(row);
+			int mappedRow = item.sourceRowMap_.get(row);
 			if (mappedRow != -1) {
 				this.beginRemoveRows(pparent, mappedRow, mappedRow);
 				item.proxyRowMap_.remove(0 + mappedRow);

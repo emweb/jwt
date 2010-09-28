@@ -693,7 +693,7 @@ public class WAxis {
 	}
 
 	int getSegmentCount() {
-		return this.segments_.size();
+		return (int) this.segments_.size();
 	}
 
 	private WCartesianChart chart_;

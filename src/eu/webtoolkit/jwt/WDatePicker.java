@@ -115,6 +115,16 @@ public class WDatePicker extends WCompositeWidget {
 	}
 
 	/**
+	 * Destructor.
+	 */
+	public void remove() {
+		WApplication.getInstance().doJavaScript(
+				"var pp=" + this.popup_.getJsRef()
+						+ "; if(pp) pp.parentNode.removeChild(pp);");
+		super.remove();
+	}
+
+	/**
 	 * Sets the format used for parsing or writing the date in the line edit.
 	 * <p>
 	 * Sets the format used for representing the date in the line edit. If the
@@ -233,8 +243,7 @@ public class WDatePicker extends WCompositeWidget {
 	}
 
 	/**
-	 * Sets the bottom of the valid date range in the picker&apos;s
-	 * {@link WDateValidator}.
+	 * Sets the bottom of the valid date range.
 	 */
 	public void setBottom(WDate bottom) {
 		WDateValidator dv = ((this.forEdit_.getValidator()) instanceof WDateValidator ? (WDateValidator) (this.forEdit_
@@ -261,8 +270,7 @@ public class WDatePicker extends WCompositeWidget {
 	}
 
 	/**
-	 * Sets the top of the valid date range in the picker&apos;s
-	 * {@link WDateValidator}.
+	 * Sets the top of the valid date range.
 	 */
 	public void setTop(WDate top) {
 		WDateValidator dv = ((this.forEdit_.getValidator()) instanceof WDateValidator ? (WDateValidator) (this.forEdit_
@@ -296,6 +304,33 @@ public class WDatePicker extends WCompositeWidget {
 	 */
 	public Signal changed() {
 		return this.calendar_.selectionChanged();
+	}
+
+	/**
+	 * Controls how the calendar popup is positioned.
+	 * <p>
+	 * When <code>global</code> is <code>true</code>, then the popup will
+	 * position itself globally. This avoids that the popup is affected by
+	 * enclosing parents with overflow settings that clip the popup. This makes
+	 * the popup however no longer follow the popup button when this button
+	 * moves.
+	 * <p>
+	 * The default is <code>false</code>.
+	 */
+	public void setGlobalPopup(boolean global) {
+		this.positionJS_
+				.setJavaScript("function() { Wt3_1_6.positionAtWidget('"
+						+ this.popup_.getId() + "','"
+						+ this.displayWidget_.getId()
+						+ "', Wt3_1_6.Horizontal, "
+						+ (global ? "true" : "false") + ");}");
+	}
+
+	/**
+	 * Shows or hides the popup.
+	 */
+	public void setPopupVisible(boolean visible) {
+		this.popup_.setHidden(!visible);
 	}
 
 	private String format_;
@@ -359,6 +394,12 @@ public class WDatePicker extends WCompositeWidget {
 		this.popup_.setPopup(true);
 		this.popup_.setPositionScheme(PositionScheme.Absolute);
 		this.popup_.setStyleClass("Wt-outset Wt-datepicker");
+		WApplication.getInstance().globalEscapePressed().addListener(
+				this.popup_, new Signal.Listener() {
+					public void trigger() {
+						WDatePicker.this.popup_.hide();
+					}
+				});
 		this.popup_.escapePressed().addListener(this.popup_,
 				new Signal.Listener() {
 					public void trigger() {
@@ -371,10 +412,6 @@ public class WDatePicker extends WCompositeWidget {
 						WDatePicker.this.popup_.show();
 					}
 				});
-		this.positionJS_
-				.setJavaScript("function() { Wt3_1_6.positionAtWidget('"
-						+ this.popup_.getId() + "','" + displayWidget.getId()
-						+ "', Wt3_1_6.Horizontal);}");
 		displayWidget.clicked().addListener(this.positionJS_);
 		displayWidget.clicked().addListener(this,
 				new Signal1.Listener<WMouseEvent>() {
@@ -382,6 +419,7 @@ public class WDatePicker extends WCompositeWidget {
 						WDatePicker.this.setFromLineEdit();
 					}
 				});
+		this.setGlobalPopup(true);
 	}
 
 	private void setFromCalendar() {
@@ -395,10 +433,12 @@ public class WDatePicker extends WCompositeWidget {
 	private void setFromLineEdit() {
 		WDate d = WDate.fromString(this.forEdit_.getText(), this.format_);
 		if ((d != null)) {
-			if (this.calendar_.getSelection().isEmpty()
-					|| this.calendar_.getSelection().iterator().next() != d) {
-				this.calendar_.select(d);
-				this.calendar_.selectionChanged().trigger();
+			if (this.calendar_.getSelection().isEmpty()) {
+				WDate j = this.calendar_.getSelection().iterator().next();
+				if (!(j == d || (j != null && j.equals(d)))) {
+					this.calendar_.select(d);
+					this.calendar_.selectionChanged().trigger();
+				}
 			}
 			this.calendar_.browseTo(d);
 		}

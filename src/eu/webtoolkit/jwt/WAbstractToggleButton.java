@@ -215,7 +215,7 @@ public abstract class WAbstractToggleButton extends WFormWidget {
 				&& change.needsUpdate(all) || check != null
 				&& check.needsUpdate(all) || uncheck != null
 				&& uncheck.needsUpdate(all);
-		this.updateDom(input, all);
+		super.updateDom(input, all);
 		if (element != input) {
 			element.setProperties(input.getProperties());
 			input.clearProperties();
