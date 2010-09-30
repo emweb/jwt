@@ -65,7 +65,9 @@ public class WXmlLocalizedStrings extends WLocalizedStrings {
 			url = getClass().getResource(path + ".xml");
 			try {
 				if(url == null)
-				url = new URL(path);
+					url = new URL(path);
+				else 
+					break;
 			} catch (MalformedURLException e) {
 			}
 		}
