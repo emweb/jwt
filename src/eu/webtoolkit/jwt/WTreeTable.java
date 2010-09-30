@@ -155,7 +155,7 @@ public class WTreeTable extends WCompositeWidget {
 	 * @see WTreeTable#addColumn(CharSequence header, WLength width)
 	 */
 	public int getColumnCount() {
-		return this.columnWidths_.size();
+		return (int) this.columnWidths_.size();
 	}
 
 	/**

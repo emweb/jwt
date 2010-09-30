@@ -83,6 +83,7 @@ public abstract class WHTML5Media extends WWebWidget {
 	public WHTML5Media(WContainerWidget parent) {
 		super(parent);
 		this.sources_ = new ArrayList<WHTML5Media.Source>();
+		this.sourcesRendered_ = 0;
 		this.mediaId_ = "";
 		this.flags_ = EnumSet.noneOf(WHTML5Media.Options.class);
 		this.preloadMode_ = WHTML5Media.PreloadMode.PreloadAuto;
@@ -112,6 +113,13 @@ public abstract class WHTML5Media extends WWebWidget {
 	 */
 	public WHTML5Media() {
 		this((WContainerWidget) null);
+	}
+
+	public void remove() {
+		for (int i = 0; i < this.sources_.size(); ++i) {
+			;
+		}
+		super.remove();
 	}
 
 	/**
@@ -161,34 +169,93 @@ public abstract class WHTML5Media extends WWebWidget {
 	}
 
 	/**
-	 * Add a media source.
 	 * <p>
-	 * This method specifies a media source using only the URL. You may add as
-	 * many video sources as you want. The browser will select the appropriate
-	 * video stream to display to the user.
+	 * \ brief Removes all source elements
+	 * <p>
+	 * This method can be used to remove all media sources. Afterward, you may
+	 * add new media sources with calls to
+	 * {@link WHTML5Media#addSource(String url, String type, String media)
+	 * addSource()}.
+	 * <p>
+	 * Use this to reuse a {@link WHTML5Media} instantiation to play something
+	 * else.
 	 */
-	public void addSource(String url) {
-		this.sources_.add(new WHTML5Media.Source(url));
+	public void clearSources() {
+		for (int i = 0; i < this.sources_.size(); ++i) {
+			;
+		}
+		this.sources_.clear();
+		this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyAttribute));
 	}
 
 	/**
 	 * Add a media source.
 	 * <p>
-	 * This method specifies a media source using the URL and the mime type
-	 * (e.g. video/ogg; codecs=&quot;theora, vorbis&quot;).
-	 */
-	public void addSource(String url, String type) {
-		this.sources_.add(new WHTML5Media.Source(url, type));
-	}
-
-	/**
-	 * Add a media source.
+	 * This method specifies a media source. You may add as many media sources
+	 * as you want. The browser will select the appropriate media stream to
+	 * display to the user.
 	 * <p>
 	 * This method specifies a media source using the URL, the mime type, and
-	 * the media attribute.
+	 * the media attribute. HTML allows for empty type and media attributes.
 	 */
 	public void addSource(String url, String type, String media) {
 		this.sources_.add(new WHTML5Media.Source(url, type, media));
+		this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyAttribute));
+	}
+
+	/**
+	 * Add a media source.
+	 * <p>
+	 * Calls {@link #addSource(String url, String type, String media)
+	 * addSource(url, "", "")}
+	 */
+	public final void addSource(String url) {
+		addSource(url, "", "");
+	}
+
+	/**
+	 * Add a media source.
+	 * <p>
+	 * Calls {@link #addSource(String url, String type, String media)
+	 * addSource(url, type, "")}
+	 */
+	public final void addSource(String url, String type) {
+		addSource(url, type, "");
+	}
+
+	/**
+	 * Add a media source.
+	 * <p>
+	 * This method specifies a media source. You may add as many media sources
+	 * as you want. The browser will select the appropriate media stream to
+	 * display to the user.
+	 * <p>
+	 * This method specifies a media source using the URL, the mime type, and
+	 * the media attribute. HTML allows for empty type and media attributes.
+	 */
+	public void addSource(WResource resource, String type, String media) {
+		this.sources_.add(new WHTML5Media.Source(this, resource, type, media));
+		this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyAttribute));
+	}
+
+	/**
+	 * Add a media source.
+	 * <p>
+	 * Calls {@link #addSource(WResource resource, String type, String media)
+	 * addSource(resource, "", "")}
+	 */
+	public final void addSource(WResource resource) {
+		addSource(resource, "", "");
+	}
+
+	/**
+	 * Add a media source.
+	 * <p>
+	 * Calls {@link #addSource(WResource resource, String type, String media)
+	 * addSource(resource, type, "")}
+	 */
+	public final void addSource(WResource resource, String type) {
+		addSource(resource, type, "");
 	}
 
 	/**
@@ -243,6 +310,23 @@ public abstract class WHTML5Media extends WWebWidget {
 			DomElement media = DomElement.getForUpdate(this.mediaId_,
 					DomElementType.DomElement_DIV);
 			this.updateMediaDom(media, false);
+			for (int i = 0; i < this.sourcesRendered_; ++i) {
+				DomElement src = DomElement.getForUpdate(this.mediaId_ + "s"
+						+ String.valueOf(i), DomElementType.DomElement_SOURCE);
+				src.removeFromParent();
+				result.add(src);
+			}
+			this.sourcesRendered_ = 0;
+			for (int i = 0; i < this.sources_.size(); ++i) {
+				DomElement src = DomElement
+						.createNew(DomElementType.DomElement_SOURCE);
+				src.setId(this.mediaId_ + "s" + String.valueOf(i));
+				this.renderSource(src, this.sources_.get(i),
+						i + 1 >= this.sources_.size());
+				media.addChild(src);
+			}
+			this.sourcesRendered_ = this.sources_.size();
+			media.callJavaScript(this.getJsMediaRef() + ".load();");
 			result.add(media);
 		}
 		super.getDomChanges(result, app);
@@ -277,6 +361,15 @@ public abstract class WHTML5Media extends WWebWidget {
 				this.mediaId_ = this.getId();
 			}
 			this.updateMediaDom(media, true);
+			for (int i = 0; i < this.sources_.size(); ++i) {
+				DomElement src = DomElement
+						.createNew(DomElementType.DomElement_SOURCE);
+				src.setId(this.mediaId_ + "s" + String.valueOf(i));
+				this.renderSource(src, this.sources_.get(i),
+						i + 1 >= this.sources_.size());
+				media.addChild(src);
+			}
+			this.sourcesRendered_ = this.sources_.size();
 			if (wrap != null) {
 				wrap.addChild(media);
 			}
@@ -348,27 +441,6 @@ public abstract class WHTML5Media extends WWebWidget {
 			}
 		}
 		if (all) {
-			for (int i = 0; i < this.sources_.size(); ++i) {
-				DomElement src = DomElement
-						.createNew(DomElementType.DomElement_SOURCE);
-				src.setAttribute("src",
-						fixRelativeUrl(this.sources_.get(i).url));
-				if (this.sources_.get(i).hasType) {
-					src.setAttribute("type", this.sources_.get(i).type);
-				}
-				if (this.sources_.get(i).hasMedia) {
-					src.setAttribute("media", this.sources_.get(i).media);
-				}
-				if (i + 1 >= this.sources_.size() && this.alternative_ != null) {
-					src
-							.setAttribute(
-									"onerror",
-									"var media = this.parentNode;if(media){while (media && media.children.length)if (Wt3_1_6.hasTag(media.firstChild,'SOURCE')){media.removeChild(media.firstChild);}else{media.parentNode.insertBefore(media.firstChild, media);}media.style.display= 'none';}");
-				}
-				element.addChild(src);
-			}
-		}
-		if (all) {
 			if (this.alternative_ != null) {
 				element.addChild(this.alternative_
 						.createSDomElement(WApplication.getInstance()));
@@ -397,39 +469,72 @@ public abstract class WHTML5Media extends WWebWidget {
 		}
 	}
 
-	static class Source {
+	static class Source extends WObject {
+		public Source(WHTML5Media parent, WResource resource, String type,
+				String media) {
+			super();
+			this.parent = parent;
+			this.connection = new AbstractSignal.Connection();
+			this.type = type;
+			this.url = resource.getUrl();
+			this.media = media;
+			this.resource = resource;
+			this.hasChanged = true;
+			this.connection = resource.dataChanged().addListener(this,
+					new Signal.Listener() {
+						public void trigger() {
+							WHTML5Media.Source.this.resourceChanged();
+						}
+					});
+		}
+
 		public Source(String url, String type, String media) {
+			super();
+			this.connection = new AbstractSignal.Connection();
 			this.type = type;
 			this.url = url;
 			this.media = media;
-			this.hasMedia = true;
-			this.hasType = true;
+			this.hasChanged = true;
 		}
 
-		public Source(String url, String type) {
-			this.type = type;
-			this.url = url;
-			this.media = "";
-			this.hasMedia = false;
-			this.hasType = true;
+		public void resourceChanged() {
+			this.url = this.resource.getUrl();
+			this.hasChanged = true;
+			this.parent.repaint(EnumSet
+					.of(RepaintFlag.RepaintPropertyAttribute));
 		}
 
-		public Source(String url) {
-			this.type = "";
-			this.url = url;
-			this.media = "";
-			this.hasMedia = false;
-			this.hasType = false;
-		}
-
+		public WHTML5Media parent;
+		public AbstractSignal.Connection connection;
 		public String type;
 		public String url;
 		public String media;
-		public boolean hasMedia;
-		public boolean hasType;
+		public WResource resource;
+		public boolean hasChanged;
+	}
+
+	private void renderSource(DomElement element, WHTML5Media.Source source,
+			boolean isLast) {
+		element.setAttribute("src", fixRelativeUrl(source.url));
+		if (!source.type.equals("")) {
+			element.setAttribute("type", source.type);
+		}
+		if (!source.media.equals("")) {
+			element.setAttribute("media", source.media);
+		}
+		if (isLast && this.alternative_ != null) {
+			element
+					.setAttribute(
+							"onerror",
+							"var media = this.parentNode;if(media){while (media && media.children.length)if (Wt3_1_6.hasTag(media.firstChild,'SOURCE')){media.removeChild(media.firstChild);}else{media.parentNode.insertBefore(media.firstChild, media);}media.style.display= 'none';}");
+		} else {
+			element.setAttribute("onerror", "");
+		}
+		source.hasChanged = false;
 	}
 
 	private List<WHTML5Media.Source> sources_;
+	private int sourcesRendered_;
 	private String mediaId_;
 	EnumSet<WHTML5Media.Options> flags_;
 	private WHTML5Media.PreloadMode preloadMode_;

@@ -31,7 +31,7 @@ class DomElement {
 		this.mode_ = mode;
 		this.wasEmpty_ = this.mode_ == DomElement.Mode.ModeCreate;
 		this.deleted_ = false;
-		this.removeAllChildren_ = false;
+		this.removeAllChildren_ = -1;
 		this.minMaxSizeProperties_ = false;
 		this.unstubbed_ = false;
 		this.unwrapped_ = false;
@@ -316,10 +316,14 @@ class DomElement {
 		return this.id_;
 	}
 
-	public void removeAllChildren() {
+	public void removeAllChildren(int firstChild) {
 		++this.numManipulations_;
-		this.removeAllChildren_ = true;
-		this.wasEmpty_ = true;
+		this.removeAllChildren_ = firstChild;
+		this.wasEmpty_ = firstChild == 0;
+	}
+
+	public final void removeAllChildren() {
+		removeAllChildren(0);
 	}
 
 	public void removeFromParent() {
@@ -398,15 +402,22 @@ class DomElement {
 	public String asJavaScript(EscapeOStream out, DomElement.Priority priority) {
 		switch (priority) {
 		case Delete:
-			if (this.deleted_ || this.removeAllChildren_) {
+			if (this.deleted_ || this.removeAllChildren_ >= 0) {
 				this.declare(out);
 				if (this.deleted_) {
 					out.append(this.javaScriptEvenWhenDeleted_).append(
 							this.var_).append(".parentNode.removeChild(")
 							.append(this.var_).append(");\n");
 				} else {
-					if (this.removeAllChildren_) {
-						out.append(this.var_).append(".innerHTML='';\n");
+					if (this.removeAllChildren_ >= 0) {
+						if (this.removeAllChildren_ == 0) {
+							out.append(this.var_).append(".innerHTML='';\n");
+						} else {
+							out.append("$(").append(this.var_).append(
+									").children(':gt(").append(
+									this.removeAllChildren_).append(
+									")').remove();");
+						}
 					}
 				}
 			}
@@ -1307,7 +1318,8 @@ class DomElement {
 	// private String createAsJavaScript(EscapeOStream out, String parentVar,
 	// int pos, WApplication app) ;
 	private void renderInnerHtmlJS(EscapeOStream out, WApplication app) {
-		if (this.wasEmpty_ && this.canWriteInnerHTML(app)) {
+		if (!this.childrenHtml_.isEmpty() || this.wasEmpty_
+				&& this.canWriteInnerHTML(app)) {
 			if (this.type_ == DomElementType.DomElement_DIV
 					&& app.getEnvironment().getAgent() == WEnvironment.UserAgent.IE6
 					|| !this.childrenToAdd_.isEmpty()
@@ -1373,7 +1385,7 @@ class DomElement {
 	private DomElement.Mode mode_;
 	private boolean wasEmpty_;
 	private boolean deleted_;
-	private boolean removeAllChildren_;
+	private int removeAllChildren_;
 	private boolean hideWithDisplay_;
 	private boolean minMaxSizeProperties_;
 	private boolean unstubbed_;

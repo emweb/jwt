@@ -343,6 +343,10 @@ public abstract class WLayout extends WObject implements WLayoutItem {
 	}
 
 	public void setParentLayout(WLayout layout) {
-		layout.addChild(this);
+		if (layout != null) {
+			layout.addChild(this);
+		} else {
+			this.setParent((WObject) null);
+		}
 	}
 }

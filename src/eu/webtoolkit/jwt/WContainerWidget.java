@@ -824,12 +824,10 @@ public class WContainerWidget extends WInteractWidget {
 		DomElement e = DomElement.getForUpdate(this, this.getDomElementType());
 		if (!app.getSession().getRenderer().isPreLearning()) {
 			if (this.flags_.get(BIT_LAYOUT_CHANGED)) {
-				DomElement newE = this.createDomElement(app);
-				e.replaceWith(newE);
-				result.add(e);
+				e.removeAllChildren(this.getFirstChildIndex());
+				this.createDomChildren(e, app);
 				this.flags_.clear(BIT_LAYOUT_CHANGED);
 				this.flags_.clear(BIT_LAYOUT_NEEDS_UPDATE);
-				return;
 			}
 		}
 		this.updateDom(e, false);

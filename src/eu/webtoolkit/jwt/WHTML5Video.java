@@ -22,7 +22,8 @@ import java.util.EnumSet;
  * of the specified sources contain a video format that is understood by the
  * browser (requires JavaScript to display the alternative content).
  * <p>
- * {@link WHTML5Media#addSource(String url) WHTML5Media#addSource()} and
+ * {@link WHTML5Media#addSource(String url, String type, String media)
+ * WHTML5Media#addSource()} and
  * {@link WHTML5Media#setAlternativeContent(WWidget alternative)
  * WHTML5Media#setAlternativeContent()} must not be called after the
  * {@link WHTML5Video} was rendered. This can easily be avoided by calling these
