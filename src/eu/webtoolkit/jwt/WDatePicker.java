@@ -433,7 +433,7 @@ public class WDatePicker extends WCompositeWidget {
 	private void setFromLineEdit() {
 		WDate d = WDate.fromString(this.forEdit_.getText(), this.format_);
 		if ((d != null)) {
-			if (this.calendar_.getSelection().isEmpty()) {
+			if (!this.calendar_.getSelection().isEmpty()) {
 				WDate j = this.calendar_.getSelection().iterator().next();
 				if (!(j == d || (j != null && j.equals(d)))) {
 					this.calendar_.select(d);
