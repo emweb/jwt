@@ -686,6 +686,7 @@ class WebSession {
 		}
 
 		static void attachThreadToSession(WebSession session) {
+			threadHandler_.set(new WebSession.Handler(session, false));
 		}
 
 		private void setRequest(WebRequest request, WebResponse response) {
