@@ -419,7 +419,7 @@ public class WDatePicker extends WCompositeWidget {
 						WDatePicker.this.setFromLineEdit();
 					}
 				});
-		this.setGlobalPopup(true);
+		this.setGlobalPopup(false);
 	}
 
 	private void setFromCalendar() {
@@ -433,7 +433,10 @@ public class WDatePicker extends WCompositeWidget {
 	private void setFromLineEdit() {
 		WDate d = WDate.fromString(this.forEdit_.getText(), this.format_);
 		if ((d != null)) {
-			if (!this.calendar_.getSelection().isEmpty()) {
+			if (this.calendar_.getSelection().isEmpty()) {
+				this.calendar_.select(d);
+				this.calendar_.selectionChanged().trigger();
+			} else {
 				WDate j = this.calendar_.getSelection().iterator().next();
 				if (!(j == d || (j != null && j.equals(d)))) {
 					this.calendar_.select(d);
