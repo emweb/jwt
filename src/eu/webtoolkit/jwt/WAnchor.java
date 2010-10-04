@@ -539,15 +539,19 @@ public class WAnchor extends WContainerWidget {
 				WApplication app = WApplication.getInstance();
 				if (app.getEnvironment().hasAjax()) {
 					url = app.getBookmarkUrl(this.ref_);
-					if (!(this.changeInternalPathJS_ != null)) {
-						this.changeInternalPathJS_ = new JSlot();
-						this.clicked().addListener(this.changeInternalPathJS_);
-						this.clicked().preventDefaultAction();
+					if (this.target_ == AnchorTarget.TargetSelf) {
+						if (!(this.changeInternalPathJS_ != null)) {
+							this.changeInternalPathJS_ = new JSlot();
+							this.clicked().addListener(
+									this.changeInternalPathJS_);
+							this.clicked().preventDefaultAction();
+						}
+						this.changeInternalPathJS_
+								.setJavaScript("function(obj, event){window.location.hash='#"
+										+ DomElement.urlEncodeS(this.ref_)
+										+ "';}");
+						this.clicked().senderRepaint();
 					}
-					this.changeInternalPathJS_
-							.setJavaScript("function(obj, event){window.location.hash='#"
-									+ DomElement.urlEncodeS(this.ref_) + "';}");
-					this.clicked().senderRepaint();
 				} else {
 					if (app.getEnvironment().agentIsSpiderBot()) {
 						url = app.getBookmarkUrl(this.ref_);

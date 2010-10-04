@@ -7,33 +7,7 @@ package eu.webtoolkit.jwt;
 
 import java.util.EnumSet;
 
-/**
- * A progress bar
- * <p>
- * 
- * The progress bar can be used to indicate the progress of a certain operation.
- * The text displayed in the progress bar can be customized by specializing
- * {@link WProgressBar#getText() getText()}.
- * <p>
- * To use the progress bar, you need to give it a range (minimum and maximum
- * value), and update the progress using
- * {@link WProgressBar#setValue(double value) setValue()}.
- * <p>
- * WProgressBar is an {@link WWidget#setInline(boolean inlined) inline} widget.
- * <p>
- * <h3>CSS</h3>
- * <p>
- * Using HTML4, the widget is implemented using a set of nested DIVs. The
- * element can be styled using the <code>Wt-progressbar</code> style. It may be
- * styled through the current theme, or you can override the style using
- * internal or external CSS as appropriate.
- * <p>
- * <p>
- * <i><b>Note: </b>With the advent of HTML5, this widget will be implemented
- * using the native HTML5 control when available. </i>
- * </p>
- */
-public class WProgressBar extends WInteractWidget {
+class WProgressBar extends WInteractWidget {
 	/**
 	 * Creates a progress bar.
 	 */
@@ -73,8 +47,6 @@ public class WProgressBar extends WInteractWidget {
 	/**
 	 * Returns the minimum value.
 	 * <p>
-	 * 
-	 * @see WProgressBar#setMinimum(double minimum)
 	 */
 	public double getMinimum() {
 		return this.min_;
@@ -96,8 +68,6 @@ public class WProgressBar extends WInteractWidget {
 	/**
 	 * Returns the maximum value.
 	 * <p>
-	 * 
-	 * @see WProgressBar#setMaximum(double maximum)
 	 */
 	public double getMaximum() {
 		return this.max_;
@@ -106,9 +76,6 @@ public class WProgressBar extends WInteractWidget {
 	/**
 	 * Sets the range.
 	 * <p>
-	 * 
-	 * @see WProgressBar#setMinimum(double minimum)
-	 * @see WProgressBar#setMaximum(double maximum)
 	 */
 	public void setRange(double minimum, double maximum) {
 		this.min_ = minimum;
@@ -120,9 +87,7 @@ public class WProgressBar extends WInteractWidget {
 	/**
 	 * Sets the current progress.
 	 * <p>
-	 * <code>value</code> must be a value between
-	 * {@link WProgressBar#getMinimum() getMinimum()} and
-	 * {@link WProgressBar#getMaximum() getMaximum()}.
+	 * <code>value</code> must be a value between {@link } and {@link }.
 	 */
 	public void setValue(double value) {
 		this.value_ = value;
@@ -143,7 +108,7 @@ public class WProgressBar extends WInteractWidget {
 	 * This text must be an XHTML formatted text fragment. The default text
 	 * prints the current progress as a percentage. You may want to reimplement
 	 * this method to display a different text corresponding to the current
-	 * {@link WProgressBar#getValue() getValue()}.
+	 * {@link }.
 	 */
 	public WString getText() {
 		return new WString(String.valueOf((int) this.getPercentage()));

@@ -21,12 +21,16 @@ import java.util.EnumSet;
  * In many cases, it might be easier to use the CSS overflow property on a
  * {@link WContainerWidget} (see
  * {@link WContainerWidget#setOverflow(WContainerWidget.Overflow value, EnumSet orientation)
- * WContainerWidget#setOverflow()}).
+ * WContainerWidget#setOverflow()}). However, this class will behave better when
+ * used inside a layout manager: in that case it will make sure horizontal
+ * scrolling works properly, since otherwise the layout manager would overflow
+ * rather than scrollbars appear.
  * <p>
  * <h3>CSS</h3>
  * <p>
  * This widget is rendered using a <code>&lt;div&gt;</code> with a CSS overflow
- * attribute. It can be styled using inline or external CSS as appropriate.
+ * attribute. When in a layout manager it is positioned absolutely. It can be
+ * styled using inline or external CSS as appropriate.
  */
 public class WScrollArea extends WWebWidget {
 	/**
@@ -191,6 +195,15 @@ public class WScrollArea extends WWebWidget {
 	}
 
 	void updateDom(DomElement element, boolean all) {
+		if (all) {
+			if (this.isInLayout()
+					&& WApplication.getInstance().getEnvironment().hasAjax()) {
+				this.setPositionScheme(PositionScheme.Absolute);
+				this
+						.setJavaScriptMember("wtResize",
+								"function(s, w, h) {s.style.width=w+'px';s.style.height=h+'px';}");
+			}
+		}
 		if (this.widgetChanged_ || all) {
 			if (this.widget_ != null) {
 				element.addChild(this.widget_.getWebWidget().createDomElement(

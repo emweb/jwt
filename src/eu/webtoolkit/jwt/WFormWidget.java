@@ -118,11 +118,7 @@ public abstract class WFormWidget extends WInteractWidget {
 		if (this.validator_ != null) {
 			this.validator_.addFormWidget(this);
 			this.validatorChanged();
-			if (this.validate() == WValidator.State.Valid) {
-				this.removeStyleClass("Wt-invalid", true);
-			} else {
-				this.addStyleClass("Wt-invalid", true);
-			}
+			this.validate();
 		} else {
 			this.removeStyleClass("Wt-invalid", true);
 			;

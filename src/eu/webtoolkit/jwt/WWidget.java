@@ -1154,6 +1154,16 @@ public abstract class WWidget extends WObject {
 		this.setDisabled(true);
 	}
 
+	/**
+	 * Returns whether the widget is layout size aware.
+	 * <p>
+	 * 
+	 * @see WWidget#setLayoutSizeAware(boolean aware)
+	 */
+	public boolean isLayoutSizeAware() {
+		return this.resized_ != null;
+	}
+
 	DomElement createSDomElement(WApplication app) {
 		if (!this.needsToBeRendered()) {
 			DomElement result = this.getWebWidget().createStubElement(app);

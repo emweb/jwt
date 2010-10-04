@@ -52,7 +52,7 @@ class WebSession {
 		this.embeddedEnv_ = new WEnvironment(this);
 		this.app_ = null;
 		this.debug_ = this.controller_.getConfiguration().isDebug();
-		this.handlers_ = new ArrayList<WebSession.Handler>();
+		this.handlerCount_ = 0;
 		this.emitStack_ = new ArrayList<WObject>();
 		this.recursiveEventLoop_ = null;
 		this.env_ = env != null ? env : this.embeddedEnv_;
@@ -293,14 +293,13 @@ class WebSession {
 					} else {
 						this.log("notice").append("Refreshing session");
 						if (event.responseType == WebRenderer.ResponseType.Page) {
-							if (!this.env_.doesAjax_
-									&& request.getPathInfo().length() != 0) {
-								this.app_.changeInternalPath(request
-										.getPathInfo());
+							String hashE = request.getParameter("_");
+							if (hashE != null) {
+								this.app_.changeInternalPath(hashE);
 							} else {
-								String hashE = request.getParameter("_");
-								if (hashE != null) {
-									this.app_.changeInternalPath(hashE);
+								if (request.getPathInfo().length() != 0) {
+									this.app_.changeInternalPath(request
+											.getPathInfo());
 								} else {
 									this.app_.changeInternalPath("");
 								}
@@ -398,12 +397,17 @@ class WebSession {
 		}
 	}
 
-	public boolean isDone() {
+	public boolean isDead() {
 		return this.state_ == WebSession.State.Dead;
 	}
 
 	public WebSession.State getState() {
 		return this.state_;
+	}
+
+	public void kill() {
+		this.state_ = WebSession.State.Dead;
+		this.isUnlockRecursiveEventLoop();
 	}
 
 	public boolean isProgressiveBoot() {
@@ -619,7 +623,6 @@ class WebSession {
 			this.session_ = session;
 			this.request_ = request;
 			this.response_ = response;
-			this.killed_ = false;
 			session.getMutex().lock();
 			this.locked_ = true;
 			this.init();
@@ -631,11 +634,19 @@ class WebSession {
 			this.session_ = session;
 			this.request_ = null;
 			this.response_ = null;
-			this.killed_ = false;
 			if (takeLock) {
 				session.getMutex().lock();
 				this.locked_ = true;
 			}
+			this.init();
+		}
+
+		public Handler(WebSession session) {
+			this.signalOrder = new ArrayList<Integer>();
+			this.prevHandler_ = null;
+			this.session_ = session;
+			this.request_ = null;
+			this.response_ = null;
 			this.init();
 		}
 
@@ -666,15 +677,6 @@ class WebSession {
 			return this.session_;
 		}
 
-		public void killSession() {
-			this.killed_ = true;
-			this.session_.state_ = WebSession.State.Dead;
-		}
-
-		public boolean isSessionDead() {
-			return this.killed_ || this.session_.isDone();
-		}
-
 		public int nextSignal;
 		public List<Integer> signalOrder;
 
@@ -684,7 +686,6 @@ class WebSession {
 		}
 
 		static void attachThreadToSession(WebSession session) {
-			threadHandler_.set(new WebSession.Handler(session, false));
 		}
 
 		private void setRequest(WebRequest request, WebResponse response) {
@@ -737,7 +738,7 @@ class WebSession {
 													"Signal from dead session, sending reload.");
 									this.renderer_.letReloadJS(handler
 											.getResponse(), true);
-									handler.killSession();
+									this.kill();
 									break;
 								} else {
 									if (requestE.equals("resource")) {
@@ -752,7 +753,7 @@ class WebSession {
 												.out()
 												.append(
 														"<html><head></head><body></body></html>");
-										handler.killSession();
+										this.kill();
 										break;
 									}
 								}
@@ -778,7 +779,7 @@ class WebSession {
 										WebRenderer.ResponseType.Page));
 								this.setLoaded();
 								if (this.env_.agentIsSpiderBot()) {
-									handler.killSession();
+									this.kill();
 								}
 							} else {
 								this.serveResponse(handler,
@@ -905,14 +906,14 @@ class WebSession {
 				} catch (WtException e) {
 					this.log("fatal").append(e.toString());
 					e.printStackTrace();
-					handler.killSession();
+					this.kill();
 					if (handler.getResponse() != null) {
 						this.serveError(handler, e.toString(), responseType);
 					}
 				} catch (RuntimeException e) {
 					this.log("fatal").append(e.toString());
 					e.printStackTrace();
-					handler.killSession();
+					this.kill();
 					if (handler.getResponse() != null) {
 						this.serveError(handler, e.toString(), responseType);
 					}
@@ -980,7 +981,7 @@ class WebSession {
 	private WEnvironment env_;
 	private WApplication app_;
 	private boolean debug_;
-	private List<WebSession.Handler> handlers_;
+	private int handlerCount_;
 	private List<WObject> emitStack_;
 	private WebSession.Handler recursiveEventLoop_;
 
@@ -1028,7 +1029,7 @@ class WebSession {
 				}
 			}
 			if (this.app_.isQuited()) {
-				handler.killSession();
+				this.kill();
 			}
 			this.serveResponse(handler, responseType);
 		} catch (RuntimeException e) {
@@ -1287,14 +1288,6 @@ class WebSession {
 			throw e;
 		}
 		return this.app_ != null;
-	}
-
-	private void kill() {
-		this.state_ = WebSession.State.Dead;
-		this.isUnlockRecursiveEventLoop();
-		if (this.handlers_.isEmpty()) {
-			;
-		}
 	}
 
 	private String getSessionQuery() {

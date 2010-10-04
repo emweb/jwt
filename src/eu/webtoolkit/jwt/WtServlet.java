@@ -237,7 +237,7 @@ public abstract class WtServlet extends HttpServlet {
 			WebSession.Handler handler = new WebSession.Handler(wsession, webRequest, webResponse);
 			wsession.handleRequest(handler);
 			handler.release();
-			if (handler.isSessionDead()) {
+			if (handler.getSession().isDead()) {
 				System.err.println("Session exiting:" + jsession.getId());
 				jsession.setAttribute(WtServlet.WT_WEBSESSION_ID, null);
 				jsession.invalidate();

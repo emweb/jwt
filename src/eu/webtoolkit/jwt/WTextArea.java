@@ -139,13 +139,7 @@ public class WTextArea extends WFormWidget {
 		this.content_ = text;
 		this.contentChanged_ = true;
 		this.repaint(EnumSet.of(RepaintFlag.RepaintInnerHtml));
-		if (this.getValidator() != null) {
-			if (this.validate() == WValidator.State.Valid) {
-				this.removeStyleClass("Wt-invalid", true);
-			} else {
-				this.addStyleClass("Wt-invalid", true);
-			}
-		}
+		this.validate();
 		this.updateEmptyText();
 	}
 
@@ -215,7 +209,14 @@ public class WTextArea extends WFormWidget {
 
 	public WValidator.State validate() {
 		if (this.getValidator() != null) {
-			return this.getValidator().validate(this.content_);
+			WValidator.State result = this.getValidator().validate(
+					this.content_);
+			if (result == WValidator.State.Valid) {
+				this.removeStyleClass("Wt-invalid", true);
+			} else {
+				this.addStyleClass("Wt-invalid", true);
+			}
+			return result;
 		} else {
 			return WValidator.State.Valid;
 		}

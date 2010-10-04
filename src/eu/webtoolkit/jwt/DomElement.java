@@ -632,6 +632,9 @@ class DomElement {
 				}
 				out.append('"');
 				String wrapStyle = this.getCssStyle();
+				if (!this.isDefaultInline()) {
+					wrapStyle += "display: block;";
+				}
 				if (wrapStyle.length() != 0) {
 					out.append(" style=");
 					fastHtmlAttributeValue(out, attributeValues, wrapStyle);

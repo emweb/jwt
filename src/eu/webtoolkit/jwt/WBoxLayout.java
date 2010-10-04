@@ -228,9 +228,15 @@ public class WBoxLayout extends WLayout {
 	/**
 	 * Adds a widget to the layout.
 	 * <p>
-	 * Adds a widget to the layout, with given <code>stretch</code> factor. The
-	 * <code>alignemnt</code> parameter is a combination of a horizontal and/or
-	 * a vertical AlignmentFlag OR&apos;ed together.
+	 * Adds a widget to the layout, with given <code>stretch</code> factor. When
+	 * the stretch factor is 0, the widget will not be resized by the layout
+	 * manager (stretched to take excess space). You may use a special stretch
+	 * factor of -1 to indicate that the widget should not take excess space but
+	 * the contents height should still be actively managed. This may make sense
+	 * for example if the widget is {@link layout size aware}).
+	 * <p>
+	 * The <code>alignemnt</code> parameter is a combination of a horizontal
+	 * and/or a vertical AlignmentFlag OR&apos;ed together.
 	 * <p>
 	 * The <code>alignment</code> specifies the vertical and horizontal
 	 * alignment of the item. The default value 0 indicates that the item is
@@ -368,7 +374,12 @@ public class WBoxLayout extends WLayout {
 	 * Inserts a widget in the layout.
 	 * <p>
 	 * Inserts a widget in the layout at position <code>index</code>, with given
-	 * <code>stretch</code> factor.
+	 * <code>stretch</code> factor. When the stretch factor is 0, the widget
+	 * will not be resized by the layout manager (stretched to take excess
+	 * space). You may use a special stretch factor of -1 to indicate that the
+	 * widget should not take excess space but the contents height should still
+	 * be actively managed. This may make sense for example if the widget is
+	 * {@link layout size aware}).
 	 * <p>
 	 * The <code>alignment</code> specifies the vertical and horizontal
 	 * alignment of the item. The default value 0 indicates that the item is
@@ -386,6 +397,9 @@ public class WBoxLayout extends WLayout {
 	 */
 	public void insertWidget(int index, WWidget widget, int stretch,
 			EnumSet<AlignmentFlag> alignment) {
+		if (widget.isLayoutSizeAware() && stretch == 0) {
+			stretch = -1;
+		}
 		this.insertItem(index, new WWidgetItem(widget), stretch, alignment);
 	}
 
@@ -542,7 +556,7 @@ public class WBoxLayout extends WLayout {
 	}
 
 	/**
-	 * Sets the stretch factor for a nested layout.
+	 * Sets the stretch factor for a widget.
 	 * <p>
 	 * The <code>widget</code> must have previously been added to this layout
 	 * using

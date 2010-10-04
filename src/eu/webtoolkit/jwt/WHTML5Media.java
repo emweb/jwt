@@ -90,6 +90,7 @@ public abstract class WHTML5Media extends WWebWidget {
 		this.alternative_ = null;
 		this.flagsChanged_ = false;
 		this.preloadChanged_ = false;
+		this.sourcesChanged_ = false;
 		this.setInline(false);
 		WApplication app = WApplication.getInstance();
 		String THIS_JS = "js/WHTML5Media.js";
@@ -200,6 +201,7 @@ public abstract class WHTML5Media extends WWebWidget {
 	 */
 	public void addSource(String url, String type, String media) {
 		this.sources_.add(new WHTML5Media.Source(url, type, media));
+		this.sourcesChanged_ = true;
 		this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyAttribute));
 	}
 
@@ -235,6 +237,7 @@ public abstract class WHTML5Media extends WWebWidget {
 	 */
 	public void addSource(WResource resource, String type, String media) {
 		this.sources_.add(new WHTML5Media.Source(this, resource, type, media));
+		this.sourcesChanged_ = true;
 		this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyAttribute));
 	}
 
@@ -310,23 +313,27 @@ public abstract class WHTML5Media extends WWebWidget {
 			DomElement media = DomElement.getForUpdate(this.mediaId_,
 					DomElementType.DomElement_DIV);
 			this.updateMediaDom(media, false);
-			for (int i = 0; i < this.sourcesRendered_; ++i) {
-				DomElement src = DomElement.getForUpdate(this.mediaId_ + "s"
-						+ String.valueOf(i), DomElementType.DomElement_SOURCE);
-				src.removeFromParent();
-				result.add(src);
+			if (this.sourcesChanged_) {
+				for (int i = 0; i < this.sourcesRendered_; ++i) {
+					DomElement src = DomElement.getForUpdate(this.mediaId_
+							+ "s" + String.valueOf(i),
+							DomElementType.DomElement_SOURCE);
+					src.removeFromParent();
+					result.add(src);
+				}
+				this.sourcesRendered_ = 0;
+				for (int i = 0; i < this.sources_.size(); ++i) {
+					DomElement src = DomElement
+							.createNew(DomElementType.DomElement_SOURCE);
+					src.setId(this.mediaId_ + "s" + String.valueOf(i));
+					this.renderSource(src, this.sources_.get(i),
+							i + 1 >= this.sources_.size());
+					media.addChild(src);
+				}
+				this.sourcesRendered_ = this.sources_.size();
+				this.sourcesChanged_ = false;
+				media.callJavaScript(this.getJsMediaRef() + ".load();");
 			}
-			this.sourcesRendered_ = 0;
-			for (int i = 0; i < this.sources_.size(); ++i) {
-				DomElement src = DomElement
-						.createNew(DomElementType.DomElement_SOURCE);
-				src.setId(this.mediaId_ + "s" + String.valueOf(i));
-				this.renderSource(src, this.sources_.get(i),
-						i + 1 >= this.sources_.size());
-				media.addChild(src);
-			}
-			this.sourcesRendered_ = this.sources_.size();
-			media.callJavaScript(this.getJsMediaRef() + ".load();");
 			result.add(media);
 		}
 		super.getDomChanges(result, app);
@@ -370,6 +377,7 @@ public abstract class WHTML5Media extends WWebWidget {
 				media.addChild(src);
 			}
 			this.sourcesRendered_ = this.sources_.size();
+			this.sourcesChanged_ = false;
 			if (wrap != null) {
 				wrap.addChild(media);
 			}
@@ -479,7 +487,6 @@ public abstract class WHTML5Media extends WWebWidget {
 			this.url = resource.getUrl();
 			this.media = media;
 			this.resource = resource;
-			this.hasChanged = true;
 			this.connection = resource.dataChanged().addListener(this,
 					new Signal.Listener() {
 						public void trigger() {
@@ -494,12 +501,11 @@ public abstract class WHTML5Media extends WWebWidget {
 			this.type = type;
 			this.url = url;
 			this.media = media;
-			this.hasChanged = true;
 		}
 
 		public void resourceChanged() {
 			this.url = this.resource.getUrl();
-			this.hasChanged = true;
+			this.parent.sourcesChanged_ = true;
 			this.parent.repaint(EnumSet
 					.of(RepaintFlag.RepaintPropertyAttribute));
 		}
@@ -510,7 +516,6 @@ public abstract class WHTML5Media extends WWebWidget {
 		public String url;
 		public String media;
 		public WResource resource;
-		public boolean hasChanged;
 	}
 
 	private void renderSource(DomElement element, WHTML5Media.Source source,
@@ -530,7 +535,6 @@ public abstract class WHTML5Media extends WWebWidget {
 		} else {
 			element.setAttribute("onerror", "");
 		}
-		source.hasChanged = false;
 	}
 
 	private List<WHTML5Media.Source> sources_;
@@ -541,7 +545,7 @@ public abstract class WHTML5Media extends WWebWidget {
 	private WWidget alternative_;
 	private boolean flagsChanged_;
 	private boolean preloadChanged_;
-	private boolean hasPoster_;
+	private boolean sourcesChanged_;
 
 	static String wtjs1(WApplication app) {
 		return "Wt3_1_6.WHTML5Media = function(c,b){jQuery.data(b,\"obj\",this);this.alternativeEl=this.mediaEl=null;this.play=function(){if(b.mediaId){var a=$(\"#\"+b.mediaId).get(0);if(a){a.play();return}}if(b.alternativeId)(a=$(\"#\"+b.alternativeId).get(0))&&a.WtPlay&&a.WtPlay()};this.pause=function(){if(b.mediaId){var a=$(\"#\"+b.mediaId).get(0);if(a){a.pause();return}}if(b.alternativeId)(a=$(\"#\"+b.alternativeId).get(0))&&a.WtPlay&&a.WtPause()}};";

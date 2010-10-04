@@ -235,6 +235,9 @@ public class WApplication extends WObject {
 				.addRule(
 						".Wt-wrap",
 						"border: 0px;text-align: left;margin: 0px;padding: 0px;font-size: inherit; pointer: hand; cursor: pointer; cursor: hand;background: transparent;text-decoration: none;color: inherit;");
+		if (this.getEnvironment().agentIsIE()) {
+			this.styleSheet_.addRule(".Wt-wrap", "margin: -1px 0px -3px;");
+		}
 		this.styleSheet_.addRule(".Wt-invalid", "background-color: #f79a9a;");
 		this.styleSheet_.addRule("span.Wt-disabled", "color: gray;");
 		this.styleSheet_.addRule("fieldset.Wt-disabled legend", "color: gray;");
@@ -1150,7 +1153,7 @@ public class WApplication extends WObject {
 	 *    try {
 	 *      // We now have exclusive access to the application:
 	 *      // we can safely modify the widget tree for example.
-	 *      app.getRoot().addWidget(new WText(&quot;Something happened!&quot;));
+	 *      app.getRoot().addWidget(new WText("Something happened!"));
 	 *   
 	 *      // Push the changes to the browser
 	 *      app.triggerUpdate();

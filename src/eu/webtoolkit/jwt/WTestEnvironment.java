@@ -293,7 +293,6 @@ public class WTestEnvironment extends WEnvironment {
 	private void init(EntryPointType type) {
 		this.session_ = new WebSession(this.controller_, "testwtd", type, "",
 				(WebRequest) null, this);
-		new WebSession.Handler(this.session_, true);
 		this.doesAjax_ = true;
 		this.doesCookies_ = true;
 		this.dpiScale_ = 1;

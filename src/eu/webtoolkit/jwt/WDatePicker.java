@@ -225,7 +225,7 @@ public class WDatePicker extends WCompositeWidget {
 	 * setDisabled()}.
 	 */
 	public void setEnabled(boolean enabled) {
-		this.setDisabled(false);
+		this.setDisabled(!enabled);
 	}
 
 	public void setDisabled(boolean disabled) {
@@ -394,12 +394,6 @@ public class WDatePicker extends WCompositeWidget {
 		this.popup_.setPopup(true);
 		this.popup_.setPositionScheme(PositionScheme.Absolute);
 		this.popup_.setStyleClass("Wt-outset Wt-datepicker");
-		WApplication.getInstance().globalEscapePressed().addListener(
-				this.popup_, new Signal.Listener() {
-					public void trigger() {
-						WDatePicker.this.popup_.hide();
-					}
-				});
 		this.popup_.escapePressed().addListener(this.popup_,
 				new Signal.Listener() {
 					public void trigger() {
@@ -419,7 +413,7 @@ public class WDatePicker extends WCompositeWidget {
 						WDatePicker.this.setFromLineEdit();
 					}
 				});
-		this.setGlobalPopup(true);
+		this.setGlobalPopup(false);
 	}
 
 	private void setFromCalendar() {
