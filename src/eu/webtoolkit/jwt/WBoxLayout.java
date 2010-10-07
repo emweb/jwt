@@ -30,10 +30,17 @@ import java.util.List;
  * <p>
  * You can use
  * {@link WContainerWidget#setOverflow(WContainerWidget.Overflow value, EnumSet orientation)
- * WContainerWidget::setOverflow(OverflowAuto)} to automatically show scrollbars
- * on a container widget inserted in the layout. In some cases, you will want to
- * wrap another widget (like a {@link WTable}) into {@link WContainerWidget} to
- * have the scrollbars, since not all widgets allow for scrollbars.
+ * WContainerWidget::setOverflow(OverflowAuto)} or use a {@link WScrollArea} to
+ * automatically show scrollbars on a widget inserted in the layout.
+ * <p>
+ * A caveat with layout managers is that you cannot reliably use a stylesheet to
+ * add borders (or margin) to a widget inserted in a layout: this is broken on
+ * Internet Explorer. To provide the layout, the layout manager needs to set
+ * sizes on the contained widget but these sizes also need to take into account
+ * the border/margin width. Since on IE, this value will be 0 if the border or
+ * margin is provided by a stylesheet (as opposed to by inline CSS by using
+ * {@link WWidget#getDecorationStyle() WWidget#getDecorationStyle()}), the
+ * result will be wrong behaviour like widgets that keep growing in size.
  * <p>
  * A layout manager may provide resize handles between items which allow the
  * user to change the automatic layout provided by the layout manager (see
@@ -233,7 +240,8 @@ public class WBoxLayout extends WLayout {
 	 * manager (stretched to take excess space). You may use a special stretch
 	 * factor of -1 to indicate that the widget should not take excess space but
 	 * the contents height should still be actively managed. This may make sense
-	 * for example if the widget is {@link layout size aware}).
+	 * for example if the widget is
+	 * {@link WWidget#setLayoutSizeAware(boolean aware) layout size aware}).
 	 * <p>
 	 * The <code>alignemnt</code> parameter is a combination of a horizontal
 	 * and/or a vertical AlignmentFlag OR&apos;ed together.
@@ -379,7 +387,7 @@ public class WBoxLayout extends WLayout {
 	 * space). You may use a special stretch factor of -1 to indicate that the
 	 * widget should not take excess space but the contents height should still
 	 * be actively managed. This may make sense for example if the widget is
-	 * {@link layout size aware}).
+	 * {@link WWidget#setLayoutSizeAware(boolean aware) layout size aware}).
 	 * <p>
 	 * The <code>alignment</code> specifies the vertical and horizontal
 	 * alignment of the item. The default value 0 indicates that the item is
