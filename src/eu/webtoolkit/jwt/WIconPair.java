@@ -7,7 +7,7 @@ package eu.webtoolkit.jwt;
 
 
 /**
- * A widget that shows one of two icons depending on its state
+ * A widget that shows one of two icons depending on its state.
  * <p>
  * 
  * This is a utility class that simply manages two images, only one of which is

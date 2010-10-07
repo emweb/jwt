@@ -10,7 +10,7 @@ import java.util.List;
 import eu.webtoolkit.jwt.utils.EnumUtils;
 
 /**
- * A standard dialog for confirmation or to get simple user input
+ * A standard dialog for confirmation or to get simple user input.
  * <p>
  * 
  * The message box shows a message in a dialog window, with a number of buttons.

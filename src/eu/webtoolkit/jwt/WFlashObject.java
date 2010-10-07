@@ -14,7 +14,7 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * A widget that renders a Flash object (also known as Flash movie)
+ * A widget that renders a Flash object (also known as Flash movie).
  * <p>
  * 
  * This class loads a .swf Flash file in the browser.

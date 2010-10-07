@@ -9,7 +9,7 @@ import java.util.EnumSet;
 import java.util.List;
 
 /**
- * A label for a form field
+ * A label for a form field.
  * <p>
  * 
  * The label may contain an image and/or text. It acts like a proxy for giving

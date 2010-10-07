@@ -7,7 +7,7 @@ package eu.webtoolkit.jwt;
 
 
 /**
- * A menu presented in a popup window
+ * A menu presented in a popup window.
  * <p>
  * 
  * The menu implements a typical context menu, with support for submenu&apos;s.

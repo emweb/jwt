@@ -7,7 +7,7 @@ package eu.webtoolkit.jwt;
 
 
 /**
- * An abstract base class for implementing layout managers
+ * An abstract base class for implementing layout managers.
  * <p>
  * 
  * @see WLayoutItem

@@ -209,7 +209,7 @@ public class WSuggestionPopup extends WCompositeWidget {
 
 	/**
 	 * A configuration object to generate a matcher and replacer JavaScript
-	 * function
+	 * function.
 	 * <p>
 	 * 
 	 * @see WSuggestionPopup

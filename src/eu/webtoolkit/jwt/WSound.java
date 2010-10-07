@@ -7,7 +7,7 @@ package eu.webtoolkit.jwt;
 
 
 /**
- * Utility class to play a sound
+ * Utility class to play a sound.
  * <p>
  * 
  * This class provides a way to play a sound asynchonously (if the browser

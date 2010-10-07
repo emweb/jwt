@@ -7,7 +7,7 @@ package eu.webtoolkit.jwt;
 
 
 /**
- * An internal session event
+ * An internal session event.
  * <p>
  * 
  * The request controller notifies the application to react to a request using

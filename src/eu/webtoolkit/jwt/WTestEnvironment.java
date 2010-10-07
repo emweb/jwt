@@ -12,7 +12,7 @@ import java.util.Map;
 import eu.webtoolkit.jwt.servlet.WebRequest;
 
 /**
- * An environment for testing purposes
+ * An environment for testing purposes.
  * <p>
  * 
  * This environment is useful for use in automated (integration/unit) tests: you

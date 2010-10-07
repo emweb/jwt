@@ -12,7 +12,7 @@ import java.util.List;
 import eu.webtoolkit.jwt.utils.EnumUtils;
 
 /**
- * Abstract baseclass for HTML5 media elements
+ * Abstract baseclass for HTML5 media elements.
  * <p>
  * 
  * This class is an abstract base class for HTML5 media elements (audio, video).

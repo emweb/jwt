@@ -7,7 +7,7 @@ package eu.webtoolkit.jwt;
 
 
 /**
- * An abstract class that provides support for localized strings
+ * An abstract class that provides support for localized strings.
  * <p>
  * 
  * This abstract class provides the content to localized WStrings, by resolving

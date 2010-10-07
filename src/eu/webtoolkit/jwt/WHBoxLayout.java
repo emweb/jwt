@@ -7,7 +7,7 @@ package eu.webtoolkit.jwt;
 
 
 /**
- * A layout manager which arranges widgets horizontally
+ * A layout manager which arranges widgets horizontally.
  * <p>
  * 
  * This convenience class creates a horizontal box layout, laying contained

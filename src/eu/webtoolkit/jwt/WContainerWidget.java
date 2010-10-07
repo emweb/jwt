@@ -14,7 +14,7 @@ import java.util.List;
 import eu.webtoolkit.jwt.utils.EnumUtils;
 
 /**
- * A widget that holds and manages child widgets
+ * A widget that holds and manages child widgets.
  * <p>
  * 
  * A WContainerWidget acts as a container for child widgets. Child widgets may

@@ -15,7 +15,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * The abstract base class for a user-interface component
+ * The abstract base class for a user-interface component.
  * <p>
  * 
  * The user-interface is organized in a tree structure, in which each nodes is a

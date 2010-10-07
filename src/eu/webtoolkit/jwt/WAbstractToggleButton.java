@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * An abstract base class for radio buttons and check boxes
+ * An abstract base class for radio buttons and check boxes.
  * <p>
  * 
  * A toggle button provides a button with a boolean state (checked or

@@ -9,7 +9,7 @@ import java.io.StringWriter;
 import java.util.List;
 
 /**
- * A rich-text XHTML editor
+ * A rich-text XHTML editor.
  * <p>
  * 
  * The editor provides interactive editing of XHTML text. By default it provides

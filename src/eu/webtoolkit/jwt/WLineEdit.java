@@ -10,7 +10,7 @@ import java.util.EnumSet;
 import java.util.List;
 
 /**
- * A widget that provides a single line edit
+ * A widget that provides a single line edit.
  * <p>
  * 
  * To act upon text changes, connect a slot to the {@link WFormWidget#changed()

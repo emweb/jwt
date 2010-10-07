@@ -7,7 +7,7 @@ package eu.webtoolkit.jwt;
 
 
 /**
- * Abstract base class for interactive areas in a widget
+ * Abstract base class for interactive areas in a widget.
  * <p>
  * 
  * Use an WAbstractArea (or rather, one of its concrete implementations), to

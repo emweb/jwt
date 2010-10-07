@@ -19,7 +19,7 @@ import java.util.Set;
 import eu.webtoolkit.jwt.utils.EnumUtils;
 
 /**
- * A base class for widgets with an HTML counterpart
+ * A base class for widgets with an HTML counterpart.
  * <p>
  * 
  * All descendants of WWebWidget implement a widget which corresponds almost

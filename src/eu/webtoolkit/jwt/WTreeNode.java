@@ -10,7 +10,7 @@ import java.util.EnumSet;
 import java.util.List;
 
 /**
- * A single node in a tree
+ * A single node in a tree.
  * <p>
  * 
  * A tree list is constructed by combining several tree node objects in a tree

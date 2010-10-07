@@ -14,7 +14,7 @@ import java.util.Set;
 import eu.webtoolkit.jwt.utils.EnumUtils;
 
 /**
- * A widget that represents a navigatable tree
+ * A widget that represents a navigatable tree.
  * <p>
  * 
  * WTree provides a tree widget, and coordinates selection functionality.

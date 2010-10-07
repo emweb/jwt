@@ -12,7 +12,7 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * An abstract widget that shows a viewport to a virtually large image
+ * An abstract widget that shows a viewport to a virtually large image.
  * <p>
  * 
  * WVirtualImage is an abstract class which renders a large image in small

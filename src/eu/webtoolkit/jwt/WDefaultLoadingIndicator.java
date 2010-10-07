@@ -7,7 +7,7 @@ package eu.webtoolkit.jwt;
 
 
 /**
- * A default loading indicator
+ * A default loading indicator.
  * <p>
  * 
  * The default loading indicator displays the text message

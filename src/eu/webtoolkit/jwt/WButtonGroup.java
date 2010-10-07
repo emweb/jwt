@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * A class for grouping radio buttons logically together
+ * A class for grouping radio buttons logically together.
  * <p>
  * 
  * A button group manages a set of {@link WRadioButton radio buttons}, making

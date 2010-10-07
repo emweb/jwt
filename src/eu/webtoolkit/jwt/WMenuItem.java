@@ -8,7 +8,7 @@ package eu.webtoolkit.jwt;
 import java.util.List;
 
 /**
- * A single item in a menu
+ * A single item in a menu.
  * <p>
  * 
  * The item determines the look and behaviour of a single item in a

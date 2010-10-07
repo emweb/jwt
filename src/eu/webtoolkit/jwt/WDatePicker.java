@@ -8,7 +8,7 @@ package eu.webtoolkit.jwt;
 import java.util.Set;
 
 /**
- * A date picker
+ * A date picker.
  * <p>
  * 
  * A date picker shows a line edit and an icon which when clicked popups a

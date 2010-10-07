@@ -398,7 +398,7 @@ public class WTransform {
 	}
 
 	/**
-	 * Result of a TRSS decomposition
+	 * Result of a TRSS decomposition.
 	 * <p>
 	 * 
 	 * @see WTransform#decomposeTranslateRotateScaleSkew(WTransform.TRSSDecomposition
@@ -464,7 +464,7 @@ public class WTransform {
 	}
 
 	/**
-	 * Result of a TRSR decomposition
+	 * Result of a TRSR decomposition.
 	 * <p>
 	 * 
 	 * @see WTransform#decomposeTranslateRotateScaleRotate(WTransform.TRSRDecomposition

@@ -360,7 +360,7 @@ public class WPainter {
 	}
 
 	/**
-	 * An image that can be rendered on a {@link WPainter}
+	 * An image that can be rendered on a {@link WPainter}.
 	 * <p>
 	 * 
 	 * The image is specified in terms of a URL, and the width and height.

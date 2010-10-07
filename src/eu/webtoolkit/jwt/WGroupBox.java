@@ -9,7 +9,7 @@ import java.util.EnumSet;
 import java.util.List;
 
 /**
- * A widget which group widgets into a frame with a title
+ * A widget which group widgets into a frame with a title.
  * <p>
  * 
  * This is typically used in a form to group certain form elements together.

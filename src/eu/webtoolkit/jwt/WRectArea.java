@@ -8,7 +8,7 @@ package eu.webtoolkit.jwt;
 import java.io.StringWriter;
 
 /**
- * A interactive area in a widget, specified by a rectangle
+ * A interactive area in a widget, specified by a rectangle.
  * <p>
  * 
  * The area may be added to a {@link WImage} or {@link WPaintedWidget} to

@@ -11,7 +11,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * An abstract widget that can receive user-interface interaction
+ * An abstract widget that can receive user-interface interaction.
  * <p>
  * 
  * This abstract widget provides access to event signals that correspond to

@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * A localized string resolver that bundles multiple string resolvers
+ * A localized string resolver that bundles multiple string resolvers.
  * <p>
  * 
  * This class implements the localized strings interface and delegates

@@ -7,7 +7,7 @@ package eu.webtoolkit.jwt;
 
 
 /**
- * A widget that provides a line break between inline widgets
+ * A widget that provides a line break between inline widgets.
  * <p>
  * 
  * This is an {@link WWidget#setInline(boolean inlined) inline} widget that

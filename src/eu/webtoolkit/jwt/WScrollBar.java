@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * A scrollbar attached to a scroll area
+ * A scrollbar attached to a scroll area.
  * <p>
  * 
  * A {@link WScrollArea} always has two scrollbars (even if they are not

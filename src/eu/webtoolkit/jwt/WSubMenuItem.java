@@ -7,7 +7,7 @@ package eu.webtoolkit.jwt;
 
 
 /**
- * A menu item that contains a nested sub menu
+ * A menu item that contains a nested sub menu.
  * <p>
  * 
  * This class specializes menu item to have an optional sub menu.

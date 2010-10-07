@@ -8,7 +8,7 @@ package eu.webtoolkit.jwt;
 import java.util.Map;
 
 /**
- * A user control that represents a radio button
+ * A user control that represents a radio button.
  * <p>
  * 
  * Use a {@link WButtonGroup} to group together radio buttons that reflect

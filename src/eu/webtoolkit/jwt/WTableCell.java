@@ -8,7 +8,7 @@ package eu.webtoolkit.jwt;
 import java.util.EnumSet;
 
 /**
- * A container widget that represents a cell in a table
+ * A container widget that represents a cell in a table.
  * <p>
  * 
  * A {@link WTable} provides a table of WTableCell container widgets. A

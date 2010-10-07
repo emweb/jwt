@@ -7,7 +7,7 @@ package eu.webtoolkit.jwt;
 
 
 /**
- * A WDialog shows a dialog
+ * A WDialog shows a dialog.
  * <p>
  * 
  * By default, the dialog is <i>modal</i>. A modal window blocks the user

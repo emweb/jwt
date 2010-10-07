@@ -11,7 +11,7 @@ import java.util.List;
 import eu.webtoolkit.jwt.utils.EnumUtils;
 
 /**
- * A table with a navigatable tree in the first column
+ * A table with a navigatable tree in the first column.
  * <p>
  * 
  * A WTreeTable implements a tree table, where additional data associated is

@@ -8,7 +8,7 @@ package eu.webtoolkit.jwt;
 import java.util.EnumSet;
 
 /**
- * A widget that provides a multi-line edit
+ * A widget that provides a multi-line edit.
  * <p>
  * 
  * To act upon text changes, connect a slot to the {@link WFormWidget#changed()

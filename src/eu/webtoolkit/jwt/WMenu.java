@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * A widget that shows a menu of options
+ * A widget that shows a menu of options.
  * <p>
  * 
  * The WMenu widget offers menu navigation.

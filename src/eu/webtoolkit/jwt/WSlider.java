@@ -8,7 +8,7 @@ package eu.webtoolkit.jwt;
 import java.util.EnumSet;
 
 /**
- * A horizontal or vertical slider control
+ * A horizontal or vertical slider control.
  * <p>
  * 
  * A slider allows the user to specify an integer value within a particular

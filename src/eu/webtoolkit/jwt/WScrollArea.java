@@ -8,7 +8,7 @@ package eu.webtoolkit.jwt;
 import java.util.EnumSet;
 
 /**
- * A widget that adds scrolling capabilities to its content
+ * A widget that adds scrolling capabilities to its content.
  * <p>
  * 
  * Use a {@link WScrollArea} to add scrolling capabilities to another widget.

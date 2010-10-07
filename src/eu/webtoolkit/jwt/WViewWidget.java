@@ -8,7 +8,7 @@ package eu.webtoolkit.jwt;
 import java.util.EnumSet;
 
 /**
- * An abstract base class for an MVC view that is rendered using a widget
+ * An abstract base class for an MVC view that is rendered using a widget.
  * <p>
  * 
  * In principle, JWt widgets are self-contained and manage both their content,

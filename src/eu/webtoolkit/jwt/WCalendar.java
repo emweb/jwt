@@ -10,7 +10,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * A calendar
+ * A calendar.
  * <p>
  * 
  * The calendar provides navigation by month and year, and indicates the current

@@ -9,7 +9,7 @@ import java.util.BitSet;
 import java.util.EnumSet;
 
 /**
- * A widget that represents an HTML anchor (to link to other documents)
+ * A widget that represents an HTML anchor (to link to other documents).
  * <p>
  * 
  * Use an anchor to link to another web page, document, internal application

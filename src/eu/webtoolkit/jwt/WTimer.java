@@ -7,7 +7,7 @@ package eu.webtoolkit.jwt;
 
 
 /**
- * A utility class which provides timer signals and single-shot timers
+ * A utility class which provides timer signals and single-shot timers.
  * <p>
  * 
  * To use a timer, create a WTimer instance, set the timer interval using

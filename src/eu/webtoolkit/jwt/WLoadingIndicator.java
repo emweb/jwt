@@ -7,7 +7,7 @@ package eu.webtoolkit.jwt;
 
 
 /**
- * An abstract interface for a loading indicator
+ * An abstract interface for a loading indicator.
  * <p>
  * 
  * The loading indicator displays a message while a response from the server is

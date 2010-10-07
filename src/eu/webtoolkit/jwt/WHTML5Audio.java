@@ -7,7 +7,7 @@ package eu.webtoolkit.jwt;
 
 
 /**
- * A widget that plays audio using the HTML5 audio element
+ * A widget that plays audio using the HTML5 audio element.
  * <p>
  * 
  * This class plays HTML5 audio. In a typical usage scenario, you instantiate

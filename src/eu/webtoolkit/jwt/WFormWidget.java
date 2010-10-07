@@ -10,7 +10,7 @@ import java.util.EnumSet;
 import eu.webtoolkit.jwt.utils.EnumUtils;
 
 /**
- * An abstract widget that corresponds to an HTML form element
+ * An abstract widget that corresponds to an HTML form element.
  * <p>
  * 
  * A WFormWidget may receive focus, can be disabled, and can have a label that

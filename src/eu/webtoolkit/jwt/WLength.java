@@ -7,7 +7,7 @@ package eu.webtoolkit.jwt;
 
 
 /**
- * A class that specifies a CSS length
+ * A class that specifies a CSS length.
  * <p>
  * 
  * The class combines a value with a unit. There is a special value <i>auto</i>

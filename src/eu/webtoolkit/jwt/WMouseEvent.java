@@ -64,7 +64,7 @@ public class WMouseEvent implements WAbstractEvent {
 	}
 
 	/**
-	 * A mouse coordinate
+	 * A mouse coordinate.
 	 */
 	public static class Coordinates {
 		/**

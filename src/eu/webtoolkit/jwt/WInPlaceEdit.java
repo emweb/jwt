@@ -7,7 +7,7 @@ package eu.webtoolkit.jwt;
 
 
 /**
- * A widget that provides in-place-editable text
+ * A widget that provides in-place-editable text.
  * <p>
  * 
  * The WInPlaceEdit provides a text that may be edited in place by the user by

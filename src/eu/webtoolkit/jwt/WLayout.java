@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * An abstract base class for layout managers
+ * An abstract base class for layout managers.
  * <p>
  * 
  * This class is the abstract base class for any layout manager. A layout

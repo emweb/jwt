@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * A validator for date input
+ * A validator for date input.
  * <p>
  * 
  * This validator accepts input in the given date format, and optionally checks

@@ -10,7 +10,7 @@ import java.util.List;
 
 /**
  * A specialized tree node which allows additional data to be associated with
- * each node
+ * each node.
  * <p>
  * 
  * Additional data for each column can be set using

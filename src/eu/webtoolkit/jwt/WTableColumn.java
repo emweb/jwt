@@ -7,7 +7,7 @@ package eu.webtoolkit.jwt;
 
 
 /**
- * A table column
+ * A table column.
  * <p>
  * 
  * A WTableColumn is returned by {@link WTable#getColumnAt(int column)

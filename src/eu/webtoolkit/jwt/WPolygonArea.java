@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * An interactive area in a widget, specified by a polygon
+ * An interactive area in a widget, specified by a polygon.
  * <p>
  * 
  * The area may be added to a {@link WImage} or {@link WPaintedWidget} to

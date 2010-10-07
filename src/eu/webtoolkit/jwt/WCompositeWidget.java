@@ -10,7 +10,7 @@ import java.util.List;
 import eu.webtoolkit.jwt.utils.EnumUtils;
 
 /**
- * A widget that hides the implementation of composite widgets
+ * A widget that hides the implementation of composite widgets.
  * <p>
  * 
  * Composite widgets, built on top of the WebWidgets, should derive from this

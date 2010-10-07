@@ -7,7 +7,7 @@ package eu.webtoolkit.jwt;
 
 
 /**
- * A WPanel provides a container with a title bar
+ * A WPanel provides a container with a title bar.
  * <p>
  * 
  * The panel provides a container with an optional title bar, and an optional

@@ -7,7 +7,7 @@ package eu.webtoolkit.jwt;
 
 
 /**
- * An abstract base class for items that can participate in a layout
+ * An abstract base class for items that can participate in a layout.
  * <p>
  * 
  * @see WLayout

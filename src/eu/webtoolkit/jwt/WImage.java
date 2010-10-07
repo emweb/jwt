@@ -11,7 +11,7 @@ import java.util.EnumSet;
 import java.util.List;
 
 /**
- * A widget that displays an image
+ * A widget that displays an image.
  * <p>
  * 
  * The image may be specified either as a URL, or may be dynamically generated

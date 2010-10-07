@@ -8,7 +8,7 @@ package eu.webtoolkit.jwt;
 import java.util.EnumSet;
 
 /**
- * A more obvious loading indicator that grays the window
+ * A more obvious loading indicator that grays the window.
  * <p>
  * 
  * This loading indicator uses a gray semi-transparent overlay to darken the

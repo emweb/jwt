@@ -10,7 +10,7 @@ import java.util.EnumSet;
 import java.util.List;
 
 /**
- * A widget that represents a push button
+ * A widget that represents a push button.
  * <p>
  * 
  * To act on a button click, connect a slot to the

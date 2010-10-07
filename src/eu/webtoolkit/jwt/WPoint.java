@@ -7,7 +7,7 @@ package eu.webtoolkit.jwt;
 
 
 /**
- * Utility class that defines a 2D point with integer coordinates
+ * Utility class that defines a 2D point with integer coordinates.
  * <p>
  * 
  * @see WPolygonArea

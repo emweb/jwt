@@ -9,7 +9,7 @@ import java.io.File;
 import java.io.StringWriter;
 
 /**
- * Details about a file uploaded with a (POST) request
+ * Details about a file uploaded with a (POST) request.
  */
 public class UploadedFile {
 	UploadedFile(String spoolName, String clientFileName, String contentType) {

@@ -7,7 +7,7 @@ package eu.webtoolkit.jwt;
 
 
 /**
- * A user control that represents a check box
+ * A user control that represents a check box.
  * <p>
  * 
  * By default, a checkbox can have two states: {@link CheckState#Checked} or

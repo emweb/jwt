@@ -10,7 +10,7 @@ import java.util.EnumSet;
 import java.util.List;
 
 /**
- * A layout manager which arranges widgets in a grid
+ * A layout manager which arranges widgets in a grid.
  * <p>
  * 
  * This is a layout class that arranges widgets in a grid, to span the entire

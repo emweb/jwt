@@ -7,7 +7,7 @@ package eu.webtoolkit.jwt;
 
 
 /**
- * A layout item that holds a single widget
+ * A layout item that holds a single widget.
  * <p>
  * 
  * @see WLayout#addWidget(WWidget w)

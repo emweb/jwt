@@ -10,7 +10,7 @@ import java.util.EnumSet;
 import java.util.List;
 
 /**
- * A layout manager which arranges widgets horizontally or vertically
+ * A layout manager which arranges widgets horizontally or vertically.
  * <p>
  * 
  * This layout manager arranges widgets horizontally or vertically inside the

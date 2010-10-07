@@ -8,7 +8,7 @@ package eu.webtoolkit.jwt;
 import java.util.EnumSet;
 
 /**
- * A widget that renders video using the HTML5 video element
+ * A widget that renders video using the HTML5 video element.
  * <p>
  * 
  * This class renders HTML5 video. In a typical usage scenario, you instantiate

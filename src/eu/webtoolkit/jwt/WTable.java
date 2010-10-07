@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * A container widget which provides layout of children in a table grid
+ * A container widget which provides layout of children in a table grid.
  * <p>
  * 
  * A WTable arranges its children in a table.

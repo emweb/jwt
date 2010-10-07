@@ -8,7 +8,7 @@ package eu.webtoolkit.jwt;
 import java.util.regex.Pattern;
 
 /**
- * A validator that checks user input against a regular expression
+ * A validator that checks user input against a regular expression.
  * <p>
  * 
  * This validator checks whether user input is matched by the given (perl-like)

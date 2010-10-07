@@ -7,7 +7,7 @@ package eu.webtoolkit.jwt;
 
 
 /**
- * A validator that validates integer user input
+ * A validator that validates integer user input.
  * <p>
  * 
  * This validator checks whether user input is an integer number in a

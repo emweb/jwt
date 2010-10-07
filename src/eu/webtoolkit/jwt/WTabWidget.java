@@ -10,7 +10,7 @@ import java.util.EnumSet;
 import java.util.List;
 
 /**
- * A widget that organizes contents in tab panes
+ * A widget that organizes contents in tab panes.
  * <p>
  * 
  * This widget combines a horizontal {@link WMenu} with a {@link WStackedWidget}

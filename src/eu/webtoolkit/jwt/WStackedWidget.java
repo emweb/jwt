@@ -8,7 +8,7 @@ package eu.webtoolkit.jwt;
 import java.util.List;
 
 /**
- * A container widget that stacks its widgets on top of each other
+ * A container widget that stacks its widgets on top of each other.
  * <p>
  * 
  * This is a container widgets which at all times has only one item visible. The

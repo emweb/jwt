@@ -17,7 +17,7 @@ import java.util.Set;
 import eu.webtoolkit.jwt.utils.MathUtils;
 
 /**
- * Represents an application instance for a single session
+ * Represents an application instance for a single session.
  * <p>
  * 
  * Each user session of your application has a corresponding WApplication
@@ -1229,7 +1229,7 @@ public class WApplication extends WObject {
 
 	/**
 	 * A synchronisation lock for manipulating and updating the application and
-	 * its widgets outside of the event loop
+	 * its widgets outside of the event loop.
 	 * <p>
 	 * 
 	 * You need to get this lock only when you want to manipulate widgets

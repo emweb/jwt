@@ -17,7 +17,7 @@ import java.util.regex.Pattern;
 import eu.webtoolkit.jwt.servlet.WebRequest;
 
 /**
- * A class that captures information on the application environment
+ * A class that captures information on the application environment.
  * <p>
  * 
  * The environment provides information on the client, and gives access to

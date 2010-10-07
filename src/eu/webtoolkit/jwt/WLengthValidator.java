@@ -7,7 +7,7 @@ package eu.webtoolkit.jwt;
 
 
 /**
- * A validator that checks the string length of user input
+ * A validator that checks the string length of user input.
  * <p>
  * 
  * This validator checks whether user input is within the specified range of

@@ -7,7 +7,7 @@ package eu.webtoolkit.jwt;
 
 
 /**
- * A validator for validating floating point user input
+ * A validator for validating floating point user input.
  * <p>
  * 
  * This validator checks whether user input is a double in the pre-defined

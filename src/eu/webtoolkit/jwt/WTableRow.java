@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * A table row
+ * A table row.
  * <p>
  * 
  * A WTableRow is returned by {@link WTable#getRowAt(int row) WTable#getRowAt()}

@@ -8,7 +8,7 @@ package eu.webtoolkit.jwt;
 import java.util.EnumSet;
 
 /**
- * An item in a popup menu
+ * An item in a popup menu.
  * <p>
  * 
  * An item may have a text, icon, and can be checkable or lead to a submenu.

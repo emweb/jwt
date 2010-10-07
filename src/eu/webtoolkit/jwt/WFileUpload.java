@@ -11,7 +11,7 @@ import java.util.List;
 import eu.webtoolkit.jwt.servlet.UploadedFile;
 
 /**
- * A widget that allows a file to be uploaded
+ * A widget that allows a file to be uploaded.
  * <p>
  * 
  * This widget is displayed as a box in which a filename can be entered and a

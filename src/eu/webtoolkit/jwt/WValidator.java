@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * A validator is used to validate user input according to pre-defined rules
+ * A validator is used to validate user input according to pre-defined rules.
  * <p>
  * 
  * A validator may be associated with a form widget using

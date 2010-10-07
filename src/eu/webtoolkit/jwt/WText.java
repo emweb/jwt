@@ -8,7 +8,7 @@ package eu.webtoolkit.jwt;
 import java.util.EnumSet;
 
 /**
- * A widget that renders (XHTML) text
+ * A widget that renders (XHTML) text.
  * <p>
  * 
  * The text is provided through a {@link WString}, which may either hold a

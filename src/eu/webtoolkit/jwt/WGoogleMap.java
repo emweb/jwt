@@ -12,7 +12,7 @@ import java.util.List;
 import eu.webtoolkit.jwt.utils.EnumUtils;
 
 /**
- * A widget that displays a google map
+ * A widget that displays a google map.
  * <p>
  * 
  * This widget uses the online Google Maps server to display a map. It exposes a
@@ -60,7 +60,7 @@ public class WGoogleMap extends WCompositeWidget {
 	}
 
 	/**
-	 * A geographical coordinate (latitude/longitude)
+	 * A geographical coordinate (latitude/longitude).
 	 */
 	public static class Coordinate {
 		/**

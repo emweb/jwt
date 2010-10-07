@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * A layout manager which divides the container region in five regions
+ * A layout manager which divides the container region in five regions.
  * <p>
  * 
  * The five regions are composed of:

@@ -18,7 +18,7 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * A widget that renders an XHTML template
+ * A widget that renders an XHTML template.
  * <p>
  * 
  * The XHTML template may contain references to variables which replaced by
