@@ -83,6 +83,7 @@ import java.util.List;
  * 
  * .Wt-tree .Wt-label          : the node label
  * .Wt-tree .Wt-childcount     : the node child count
+ * .Wt-tree .Wt-node           : the node&apos;s table row
  * </pre>
  * 
  * </div> * The collapse and expand icons are fetched themselves as images,
@@ -677,7 +678,7 @@ public class WTreeNode extends WCompositeWidget {
 	 * {@link WTreeNode#getLabelArea() getLabelArea()} to &quot;selected&quot;.
 	 */
 	protected void renderSelected(boolean isSelected) {
-		this.getLabelArea().setStyleClass(
+		this.layout_.getRowAt(0).setStyleClass(
 				isSelected ? "Wt-selected selected" : "");
 		this.selected().trigger(isSelected);
 	}
@@ -897,6 +898,7 @@ public class WTreeNode extends WCompositeWidget {
 				EnumSet.of(AlignmentFlag.AlignLeft, AlignmentFlag.AlignTop));
 		this.layout_.getElementAt(0, 1).setContentAlignment(
 				EnumSet.of(AlignmentFlag.AlignLeft, AlignmentFlag.AlignMiddle));
+		this.layout_.getRowAt(0).setStyleClass("Wt-node");
 		this.childrenLoaded_ = false;
 		this.setLoadPolicy(WTreeNode.LoadPolicy.LazyLoading);
 	}
