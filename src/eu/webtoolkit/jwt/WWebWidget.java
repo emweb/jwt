@@ -1225,14 +1225,6 @@ public abstract class WWebWidget extends WWidget {
 						+ this.transientImpl_.removedStyleClasses_.get(i)
 						+ "');");
 			}
-			if (!this.transientImpl_.childRemoveChanges_.isEmpty()) {
-				element.removeAllChildren();
-				for (int i = 0; i < this.transientImpl_.childRemoveChanges_
-						.size(); ++i) {
-					;
-				}
-				this.transientImpl_.childRemoveChanges_.clear();
-			}
 		}
 		if (all || this.flags_.get(BIT_SELECTABLE_CHANGED)) {
 			if (this.flags_.get(BIT_SET_UNSELECTABLE)) {
@@ -1799,14 +1791,8 @@ public abstract class WWebWidget extends WWidget {
 				return;
 			}
 			if (this.transientImpl_ != null) {
-				if (!this.transientImpl_.childRemoveChanges_.isEmpty()) {
-					if (this.children_ != null
-							&& this.children_.size() != this.transientImpl_.addedChildren_
-									.size()) {
-						result.addAll(this.transientImpl_.childRemoveChanges_);
-						this.transientImpl_.childRemoveChanges_.clear();
-					}
-				}
+				result.addAll(this.transientImpl_.childRemoveChanges_);
+				this.transientImpl_.childRemoveChanges_.clear();
 			}
 			this.getDomChanges(result, app);
 		}

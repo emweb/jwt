@@ -100,34 +100,33 @@ public abstract class WWidget extends WObject {
 	/**
 	 * Sets CSS offsets for a non-statically positioned widget.
 	 * <p>
-	 * The argument <code>sides</code> may be a combination of {@link Side#Left
-	 * Left}, {@link Side#Right Right}, {@link Side#Top Top}, and
-	 * {@link Side#Bottom Bottom}.
+	 * The argument <code>sides</code> may be a combination of {@link Side#Left}, {@link Side#Right}, {@link Side#Top}, and {@link Side#Bottom}.
 	 * <p>
 	 * This applies only to widgets that have a position scheme that is
-	 * {@link PositionScheme#Relative Relative}, {@link PositionScheme#Absolute
-	 * Absolute}, or {@link PositionScheme#Fixed Fixed}, and has a slightly
-	 * different meaning for these three cases.
+	 * {@link PositionScheme#Relative}, {@link PositionScheme#Absolute}, or
+	 * {@link PositionScheme#Fixed}, and has a slightly different meaning for
+	 * these three cases.
 	 * <p>
-	 * For a relatively positioned widget, an offset applies relative to the
-	 * position the widget would have when layed-out using a
-	 * {@link PositionScheme#Static Static} position scheme. The widget may be
-	 * shifted to the left or right by specifying an offset to the
-	 * {@link Side#Left Left} or {@link Side#Right Right}). The widget may be
-	 * shifted vertically, by specifying an offset for the
-	 * {@link AlignmentFlag#AlignTop Top} or {@link Side#Bottom Bottom}.
+	 * For a {@link PositionScheme#Relative relatively positioned} widget, an
+	 * offset applies relative to the position the widget would have when
+	 * layed-out using a {@link PositionScheme#Static static} position scheme.
+	 * The widget may be shifted to the left or right by specifying an offset
+	 * for the {@link Side#Left left} or {@link Side#Right right}) side. The
+	 * widget may be shifted vertically, by specifying an offset for the
+	 * {@link AlignmentFlag#AlignTop top} or {@link Side#Bottom bottom} side.
 	 * <p>
-	 * For an absolutely positioned widget, an offset specifies a distance of
-	 * the corresponding side of the widget with respect to the corresponding
-	 * side of the reference parent widget. Thus, setting all offsets to 0
-	 * result in a widget that spans the entire reference widget. The reference
-	 * parent widget is the first ancestor widget that is a table cell, or a
-	 * widget with a relative, absolute or fixed position scheme.
+	 * For an {@link PositionScheme#Absolute absolutely positioned} widget, an
+	 * offset specifies a distance of the corresponding side of the widget with
+	 * respect to the corresponding side of the reference parent widget. Thus,
+	 * setting all offsets to 0 result in a widget that spans the entire
+	 * reference widget. The reference parent widget is the first ancestor
+	 * widget that is a table cell, or a widget with a relative, absolute or
+	 * fixed position scheme.
 	 * <p>
-	 * For an fixed positioned widget, an offset specifies a distance of the
-	 * corresponding side of the widget with respect to the browser window,
-	 * regardless of scrolling. Thus, setting all offsets to 0 result in a
-	 * widget that spans the entire browser window.
+	 * For an {@link PositionScheme#Fixed fixed positioned} widget, an offset
+	 * specifies a distance of the corresponding side of the widget with respect
+	 * to the browser window, regardless of scrolling. Thus, setting all offsets
+	 * to 0 result in a widget that spans the entire browser window.
 	 * <p>
 	 * This applies to CSS-based layout.
 	 * <p>
@@ -211,9 +210,9 @@ public abstract class WWidget extends WObject {
 	 * <p>
 	 * When inserted in a layout manager, the widget may be informed about its
 	 * current size using {@link WWidget#setLayoutSizeAware(boolean aware)
-	 * setLayoutSizeAware()}. If you have defined a &quot;wtResize()&quot;
-	 * JavaScript method for the widget, then this method will also be called.
-	 * operation.
+	 * setLayoutSizeAware()}. If you have defined a
+	 * <code>&quot;wtResize()&quot;</code> JavaScript method for the widget,
+	 * then this method will also be called. operation.
 	 * <p>
 	 * 
 	 * @see WWidget#getWidth()
@@ -348,15 +347,16 @@ public abstract class WWidget extends WObject {
 	 * Positions this absolutely positioned widget next to another
 	 * <code>widget</code>. Both widgets must be visible.
 	 * <p>
-	 * When <code>orientation</code> = Vertical, the widget is displayed below
-	 * the other widget (or above in case there is not enough room below). It is
-	 * aligned so that the left edges align (or the right edges if there is not
-	 * enough room to the right).
+	 * When <code>orientation</code> = {@link Orientation#Vertical}, the widget
+	 * is displayed below the other widget (or above in case there is not enough
+	 * room below). It is aligned so that the left edges align (or the right
+	 * edges if there is not enough room to the right).
 	 * <p>
-	 * Conversely, when <code>orientation</code> = Horizontal, the widget is
-	 * displayed to the right of the other widget (or to the left in case there
-	 * is not enough room to the right). It is aligned so that the top edges
-	 * align (or the bottom edges if there is not enough room below).
+	 * Conversely, when <code>orientation</code> =
+	 * {@link Orientation#Horizontal}, the widget is displayed to the right of
+	 * the other widget (or to the left in case there is not enough room to the
+	 * right). It is aligned so that the top edges align (or the bottom edges if
+	 * there is not enough room below).
 	 * <p>
 	 * <p>
 	 * <i><b>Note: </b>This only works if JavaScript is available. </i>
@@ -395,13 +395,13 @@ public abstract class WWidget extends WObject {
 	/**
 	 * Specifies a CSS float side.
 	 * <p>
-	 * This only applies to widgets with a {@link PositionScheme#Static Static}
+	 * This only applies to widgets with a {@link PositionScheme#Static}
 	 * {@link WWidget#getPositionScheme() getPositionScheme()}.
 	 * <p>
 	 * This lets the widget float to one of the sides of the parent widget, at
 	 * the current line. A typical use is to position images within text. Valid
-	 * values for Side or {@link Side#None None} , {@link Side#Left Left} or
-	 * {@link Side#Right Right}.
+	 * values for Side or java {@link Side#None None} , {@link Side#Left} or
+	 * {@link Side#Right}.
 	 * <p>
 	 * This applies to CSS-based layout.
 	 */
@@ -419,8 +419,8 @@ public abstract class WWidget extends WObject {
 	 * Sets the sides that should be cleared of floats.
 	 * <p>
 	 * This pushes the widget down until it is not surrounded by floats at the
-	 * <code>sides</code> (which may be a combination of {@link Side#Left Left}
-	 * and {@link Side#Right Right}.
+	 * <code>sides</code> (which may be a combination of {@link Side#Left} and
+	 * {@link Side#Right}).
 	 * <p>
 	 * This applies to CSS-based layout.
 	 * <p>
@@ -454,8 +454,8 @@ public abstract class WWidget extends WObject {
 	 * surrounding widgets. The default margin (with an automatic length) is
 	 * zero.
 	 * <p>
-	 * Use any combination of {@link Side#Left Left}, {@link Side#Right Right},
-	 * {@link Side#Bottom Bottom}, or {@link Side#Top Top}.
+	 * Use any combination of {@link Side#Left}, {@link Side#Right},
+	 * {@link Side#Bottom}, or {@link Side#Top}.
 	 * <p>
 	 * This applies to CSS-based layout.
 	 * <p>
@@ -553,11 +553,11 @@ public abstract class WWidget extends WObject {
 	/**
 	 * Sets whether the widget is hidden.
 	 * <p>
-	 * Hides or show the widget (including all its descendant widgets).
-	 * setHidden(false) will show this widget and all descendant widgets that
-	 * are not hidden. A widget is only visible if it and all its ancestors in
-	 * the widget tree are visible, which may be checked using
-	 * {@link WWidget#isVisible() isVisible()}.
+	 * Hides or show the widget (including all its descendant widgets). When
+	 * setting <code>hidden</code> = <code>false</code>, this widget and all
+	 * descendant widgets that are not hidden will be shown. A widget is only
+	 * visible if it and all its ancestors in the widget tree are visible, which
+	 * may be checked using {@link WWidget#isVisible() isVisible()}.
 	 * <p>
 	 * 
 	 * @see WWidget#hide()
@@ -648,8 +648,8 @@ public abstract class WWidget extends WObject {
 	 * other popup widgets previously added to the container).
 	 * <p>
 	 * This will only have an effect when the widgetis either
-	 * {@link PositionScheme#Absolute Absolute} or {@link PositionScheme#Fixed
-	 * Fixed} {@link WWidget#getPositionScheme() getPositionScheme()}.
+	 * {@link PositionScheme#Absolute} or {@link PositionScheme#Fixed}
+	 * {@link WWidget#getPositionScheme() getPositionScheme()}.
 	 * <p>
 	 * This applies to CSS-based layout, and configures the z-index property.
 	 */
@@ -884,10 +884,11 @@ public abstract class WWidget extends WObject {
 	 * the DOM object that implements this widget. The value may be any
 	 * JavaScript expression, including a function.
 	 * <p>
-	 * Members that start with &quot;wt&quot; are reserved for internal use. You
-	 * may define a member &quot;wtResize(self, width, height)&quot; method if
-	 * your widget needs active layout management. If defined, this method will
-	 * be used by layout managers and when doing
+	 * Members that start with <code>&quot;wt&quot;</code> are reserved for
+	 * internal use. You may define a member
+	 * <code>&quot;wtResize(self, width, height)&quot;</code> method if your
+	 * widget needs active layout management. If defined, this method will be
+	 * used by layout managers and when doing
 	 * {@link WWidget#resize(WLength width, WLength height) resize()} to set the
 	 * size of the widget, instead of setting the CSS width and height
 	 * properties.
@@ -1189,9 +1190,10 @@ public abstract class WWidget extends WObject {
 	 * this done client-side only by setting the CSS height (and if needed,
 	 * width) properties of the DOM element corresponding to the widget.
 	 * <p>
-	 * A widget may define a JavaScript method, &quot;wtResize(self, width,
-	 * height)&quot;, to actively manage its client-side width and height, if it
-	 * wants to react to these client-side size hints in a custom way (see
+	 * A widget may define a JavaScript method,
+	 * <code>&quot;wtResize(self, width, height)&quot;</code>, to actively
+	 * manage its client-side width and height, if it wants to react to these
+	 * client-side size hints in a custom way (see
 	 * {@link WWidget#setJavaScriptMember(String name, String value)
 	 * setJavaScriptMember()}).
 	 * <p>

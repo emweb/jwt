@@ -7,6 +7,7 @@ package eu.webtoolkit.jwt;
 
 import java.io.StringWriter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.List;
 import eu.webtoolkit.jwt.utils.EnumUtils;
@@ -17,7 +18,7 @@ import eu.webtoolkit.jwt.utils.EnumUtils;
  * 
  * This class is an abstract base class for HTML5 media elements (audio, video).
  */
-public abstract class WHTML5Media extends WWebWidget {
+public abstract class WHTML5Media extends WInteractWidget {
 	/**
 	 * Enumeration for playback options.
 	 */
@@ -92,6 +93,7 @@ public abstract class WHTML5Media extends WWebWidget {
 		this.preloadChanged_ = false;
 		this.sourcesChanged_ = false;
 		this.setInline(false);
+		this.setFormObject(true);
 		WApplication app = WApplication.getInstance();
 		String THIS_JS = "js/WHTML5Media.js";
 		if (!app.isJavaScriptLoaded(THIS_JS)) {
@@ -170,8 +172,7 @@ public abstract class WHTML5Media extends WWebWidget {
 	}
 
 	/**
-	 * <p>
-	 * \ brief Removes all source elements
+	 * Removes all source elements.
 	 * <p>
 	 * This method can be used to remove all media sources. Afterward, you may
 	 * add new media sources with calls to
@@ -306,6 +307,74 @@ public abstract class WHTML5Media extends WWebWidget {
 	 */
 	public void pause() {
 		this.doJavaScript(this.getJsRef() + ".WtPause();");
+	}
+
+	/**
+	 * Event signal emitted when playback has begun.
+	 * <p>
+	 * This event fires when play was invoked, or when the media element starts
+	 * playing because the Autoplay option was provided.
+	 * <p>
+	 * <p>
+	 * <i><b>Note: </b>When JavaScript is disabled, the signal will never fire.
+	 * </i>
+	 * </p>
+	 */
+	public EventSignal playbackStarted() {
+		return this.voidEventSignal(PLAYBACKSTARTED_SIGNAL, true);
+	}
+
+	/**
+	 * Event signal emitted when the playback has paused.
+	 * <p>
+	 * <p>
+	 * <i><b>Note: </b>When JavaScript is disabled, the signal will never fire.
+	 * </i>
+	 * </p>
+	 */
+	public EventSignal playbackPaused() {
+		return this.voidEventSignal(PLAYBACKPAUSED_SIGNAL, true);
+	}
+
+	/**
+	 * Event signal emitted when the playback stopped because the end of the
+	 * media was reached.
+	 * <p>
+	 * <p>
+	 * <i><b>Note: </b>When JavaScript is disabled, the signal will never fire.
+	 * </i>
+	 * </p>
+	 */
+	public EventSignal ended() {
+		return this.voidEventSignal(ENDED_SIGNAL, true);
+	}
+
+	/**
+	 * Event signal emitted when the current playback position has changed.
+	 * <p>
+	 * This event is fired when the playback position has changed, both when the
+	 * media is in a normal playing mode, but also when it has changed
+	 * discontinuously because of another reason.
+	 * <p>
+	 * <p>
+	 * <i><b>Note: </b>When JavaScript is disabled, the signal will never fire.
+	 * </i>
+	 * </p>
+	 */
+	public EventSignal timeUpdated() {
+		return this.voidEventSignal(TIMEUPDATED_SIGNAL, true);
+	}
+
+	/**
+	 * Event signal emitted when the playback volume has changed.
+	 * <p>
+	 * <p>
+	 * <i><b>Note: </b>When JavaScript is disabled, the signal will never fire.
+	 * </i>
+	 * </p>
+	 */
+	public EventSignal volumeChanged() {
+		return this.voidEventSignal(VOLUMECHANGED_SIGNAL, true);
 	}
 
 	void getDomChanges(List<DomElement> result, WApplication app) {
@@ -477,6 +546,33 @@ public abstract class WHTML5Media extends WWebWidget {
 		}
 	}
 
+	void setFormData(WObject.FormData formData) {
+		if (!(formData.values.length == 0)) {
+			List<String> attributes = new ArrayList<String>();
+			attributes = new ArrayList<String>(Arrays.asList(formData.values[0]
+					.split(";")));
+			if (attributes.size() == 5) {
+				boolean bad = false;
+				double volume;
+				double current;
+				double duration;
+				boolean paused;
+				boolean ended;
+				try {
+					volume = Float.parseFloat(attributes.get(0));
+					current = Double.parseDouble(attributes.get(1));
+					duration = Double.parseDouble(attributes.get(2));
+					paused = attributes.get(3).equals("1");
+					ended = attributes.get(4).equals("1");
+				} catch (NumberFormatException e) {
+					bad = true;
+				}
+				if (!bad) {
+				}
+			}
+		}
+	}
+
 	static class Source extends WObject {
 		public Source(WHTML5Media parent, WResource resource, String type,
 				String media) {
@@ -550,4 +646,10 @@ public abstract class WHTML5Media extends WWebWidget {
 	static String wtjs1(WApplication app) {
 		return "Wt3_1_6.WHTML5Media = function(c,b){jQuery.data(b,\"obj\",this);this.alternativeEl=this.mediaEl=null;this.play=function(){if(b.mediaId){var a=$(\"#\"+b.mediaId).get(0);if(a){a.play();return}}if(b.alternativeId)(a=$(\"#\"+b.alternativeId).get(0))&&a.WtPlay&&a.WtPlay()};this.pause=function(){if(b.mediaId){var a=$(\"#\"+b.mediaId).get(0);if(a){a.pause();return}}if(b.alternativeId)(a=$(\"#\"+b.alternativeId).get(0))&&a.WtPlay&&a.WtPause()}};";
 	}
+
+	private static String PLAYBACKSTARTED_SIGNAL = "play";
+	private static String PLAYBACKPAUSED_SIGNAL = "pause";
+	private static String ENDED_SIGNAL = "ended";
+	private static String TIMEUPDATED_SIGNAL = "timeupdate";
+	private static String VOLUMECHANGED_SIGNAL = "volumechange";
 }

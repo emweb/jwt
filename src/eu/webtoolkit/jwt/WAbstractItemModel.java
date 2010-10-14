@@ -1238,8 +1238,8 @@ public abstract class WAbstractItemModel extends WObject {
 	/**
 	 * Signal emitted when the layout is about to be changed.
 	 * <p>
-	 * A layout change reorders the data in the model, but no data is added or
-	 * removed. Model indexes are invalidated by a layout change, but indexes
+	 * A layout change reorders the data in the model, but columns are
+	 * preserved. Model indexes are invalidated by a layout change, but indexes
 	 * may be ported across a layout change by using the
 	 * {@link WAbstractItemModel#toRawIndex(WModelIndex index) toRawIndex()} and
 	 * {@link WAbstractItemModel#fromRawIndex(Object rawIndex) fromRawIndex()}
@@ -1266,6 +1266,9 @@ public abstract class WAbstractItemModel extends WObject {
 
 	/**
 	 * Signal emitted when the model was reset.
+	 * <p>
+	 * A model reset invalidates all existing data, and the model may change its
+	 * entire geometry (column count, row count).
 	 * <p>
 	 * 
 	 * @see WAbstractItemModel#reset()

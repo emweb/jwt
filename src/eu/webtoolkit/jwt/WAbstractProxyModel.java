@@ -5,8 +5,13 @@
  */
 package eu.webtoolkit.jwt;
 
+import java.util.ArrayList;
 import java.util.EnumSet;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.SortedMap;
 
 /**
  * An abstract proxy model for Wt&apos;s item models.
@@ -148,6 +153,109 @@ public abstract class WAbstractProxyModel extends WAbstractItemModel {
 	 */
 	protected WModelIndex createSourceIndex(int row, int column, Object ptr) {
 		return this.sourceModel_.createIndex(row, column, ptr);
+	}
+
+	/**
+	 * A base class for an item modeling a source index parent.
+	 * <p>
+	 * 
+	 * Many mplementations of a proxy model will need to maintain a data
+	 * structure per source model indexes, where they relate source rows or
+	 * columns to proxy rows or columns, per hierarchical parent.
+	 * <p>
+	 * It may be convenient to start from this item class as a base class so
+	 * that
+	 * {@link WAbstractProxyModel#shiftModelIndexes(WModelIndex sourceParent, int start, int count, SortedMap items)
+	 * WAbstractProxyModel#shiftModelIndexes()} can be used to update this data
+	 * structure when the source model adds or removes rows.
+	 * <p>
+	 * You will typically use your derived class of this item as the internal
+	 * pointer for proxy model indexes: a proxy model index will have an item as
+	 * internal pointer whose sourceIndex_ corresponds to the source equivalent
+	 * of the proxy model index parent.
+	 * <p>
+	 * 
+	 * @see WAbstractItemModel#createIndex(int row, int column, Object ptr)
+	 */
+	protected static class BaseItem {
+		/**
+		 * The source model index.
+		 * <p>
+		 * The source model index for this item.
+		 */
+		public WModelIndex sourceIndex_;
+
+		public BaseItem(WModelIndex sourceIndex) {
+			this.sourceIndex_ = sourceIndex;
+		}
+	}
+
+	/**
+	 * Utility methods to shift items in an item map.
+	 * <p>
+	 * You can use this method to adjust an item map after the source model has
+	 * inserted or removed rows. When removing rows (count &lt; 0), items may
+	 * possibly be removed and deleted.
+	 */
+	protected void shiftModelIndexes(WModelIndex sourceParent, int start,
+			int count,
+			SortedMap<WModelIndex, WAbstractProxyModel.BaseItem> items) {
+		List<WAbstractProxyModel.BaseItem> shifted = new ArrayList<WAbstractProxyModel.BaseItem>();
+		List<WAbstractProxyModel.BaseItem> erased = new ArrayList<WAbstractProxyModel.BaseItem>();
+		for (Iterator<Map.Entry<WModelIndex, WAbstractProxyModel.BaseItem>> it_it = items
+				.tailMap(this.getSourceModel().getIndex(start, 0, sourceParent))
+				.entrySet().iterator(); it_it.hasNext();) {
+			Map.Entry<WModelIndex, WAbstractProxyModel.BaseItem> it = it_it
+					.next();
+			WModelIndex i = it.getKey();
+			if ((i != null)) {
+				WModelIndex p = i.getParent();
+				if (!(p == sourceParent || (p != null && p.equals(sourceParent)))
+						&& !WModelIndex.isAncestor(p, sourceParent)) {
+					break;
+				}
+				if ((p == sourceParent || (p != null && p.equals(sourceParent)))) {
+					shifted.add(it.getValue());
+				} else {
+					if (count < 0) {
+						do {
+							if ((p.getParent() == sourceParent || (p
+									.getParent() != null && p.getParent()
+									.equals(sourceParent)))
+									&& p.getRow() >= start
+									&& p.getRow() < start - count) {
+								erased.add(it.getValue());
+								break;
+							} else {
+								p = p.getParent();
+							}
+						} while (!(p == sourceParent || (p != null && p
+								.equals(sourceParent))));
+					}
+				}
+			}
+		}
+		for (int i = 0; i < erased.size(); ++i) {
+			items.remove(erased.get(i).sourceIndex_);
+			;
+		}
+		for (int i = 0; i < shifted.size(); ++i) {
+			WAbstractProxyModel.BaseItem item = shifted.get(i);
+			items.remove(item.sourceIndex_);
+			if (item.sourceIndex_.getRow() + count >= start) {
+				item.sourceIndex_ = this.getSourceModel().getIndex(
+						item.sourceIndex_.getRow() + count,
+						item.sourceIndex_.getColumn(), sourceParent);
+			} else {
+				;
+				shifted.set(i, null);
+			}
+		}
+		for (int i = 0; i < shifted.size(); ++i) {
+			if (shifted.get(i) != null) {
+				items.put(shifted.get(i).sourceIndex_, shifted.get(i));
+			}
+		}
 	}
 
 	private WAbstractItemModel sourceModel_;

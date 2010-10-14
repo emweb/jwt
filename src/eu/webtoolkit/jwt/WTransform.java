@@ -340,7 +340,8 @@ public class WTransform {
 	 * Multiply 2 transform objects.
 	 */
 	public WTransform multiply(WTransform rhs) {
-		WTransform result = this;
+		WTransform result = new WTransform();
+		result.assign(this);
 		return result.multiplyAndAssign(rhs);
 	}
 

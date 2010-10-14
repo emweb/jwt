@@ -693,6 +693,7 @@ public class WStandardItem {
 		} else {
 			if (rc < items.size()) {
 				this.setRowCount(items.size());
+				rc = items.size();
 			}
 		}
 		if (this.model_ != null) {
@@ -706,7 +707,7 @@ public class WStandardItem {
 		}
 		if (items.size() < rc) {
 			List<WStandardItem> inserted = this.columns_.get(column);
-			CollectionUtils.resize(inserted, items.size());
+			CollectionUtils.resize(inserted, rc);
 		}
 		this.renumberColumns(column + 1);
 		if (this.model_ != null) {

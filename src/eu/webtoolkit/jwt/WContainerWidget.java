@@ -440,8 +440,8 @@ public class WContainerWidget extends WInteractWidget {
 	 * children are always pushed to the top of the container.
 	 * <p>
 	 * For a {@link WTableCell}, this may also specify the vertical alignment.
-	 * The default alignment is ({@link AlignmentFlag#AlignTop AlignTop} |
-	 * {@link AlignmentFlag#AlignLeft AlignLeft}).
+	 * The default alignment is ({@link AlignmentFlag#AlignTop} |
+	 * {@link AlignmentFlag#AlignLeft}).
 	 */
 	public void setContentAlignment(EnumSet<AlignmentFlag> alignment) {
 		this.contentAlignment_ = EnumSet.copyOf(alignment);
@@ -557,17 +557,11 @@ public class WContainerWidget extends WInteractWidget {
 	 * horizontal scroll behaviour, since this is not supported on Opera.
 	 * Therefore, settings will apply automatically to both orientations.
 	 * <p>
+	 * Unlike {@link WScrollArea}, horizontal scrolling does not work reliably
+	 * when the container widget is inserted in a layout manager: the layout
+	 * manager will overflow rather than use scrollbars for this container
+	 * widget. A solution there is to use {@link WScrollArea} instead.
 	 * <p>
-	 * <i><b>Note: </b>For Internet Explorer, setting overflow to OverflowAuto
-	 * or OverflowScroll may cause problems with content that uses absolutely
-	 * positioned DOM elements (such as {@link WPaintedWidget} or several Ext
-	 * widgets): due to a bug in IE, these elements will not scroll along, but
-	 * stay &apos;fixed&apos; at their initial position. This problem can
-	 * (usually) be circumvented by using a relative position scheme relative
-	 * (using {@link WWebWidget#setPositionScheme(PositionScheme scheme)
-	 * setPositionScheme(Relative)}) for the same container widget which
-	 * provides the scroll bars.</i>
-	 * </p>
 	 * 
 	 * @see WScrollArea
 	 */

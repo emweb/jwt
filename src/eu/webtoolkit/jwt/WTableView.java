@@ -531,8 +531,8 @@ public class WTableView extends WAbstractItemView {
 				+ String.valueOf((int) this.getRowHeight().toPixels())
 				+ "px.gif";
 		if (this.isAjaxMode()) {
-			this.canvas_.getDecorationStyle().setBackgroundImage(
-					backgroundImage);
+			this.table_.getDecorationStyle()
+					.setBackgroundImage(backgroundImage);
 		} else {
 			this.plainTable_.getDecorationStyle().setBackgroundImage(
 					backgroundImage);
@@ -653,7 +653,6 @@ public class WTableView extends WAbstractItemView {
 				this.closeEditor(this.getModel().getIndex(r, c), false);
 			}
 		}
-		this.shiftModelIndexes(start, -(end - start + 1));
 	}
 
 	private void modelRowsRemoved(WModelIndex parent, int start, int end) {
@@ -661,6 +660,7 @@ public class WTableView extends WAbstractItemView {
 				.equals(this.getRootIndex())))) {
 			return;
 		}
+		this.shiftModelIndexes(start, -(end - start + 1));
 		if (this.isAjaxMode()) {
 			this.canvas_.resize(this.canvas_.getWidth(), new WLength(this
 					.getCanvasHeight()));

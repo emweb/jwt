@@ -7,7 +7,33 @@ package eu.webtoolkit.jwt;
 
 import java.util.EnumSet;
 
-class WProgressBar extends WInteractWidget {
+/**
+ * A progress bar.
+ * <p>
+ * 
+ * The progress bar can be used to indicate the progress of a certain operation.
+ * The text displayed in the progress bar can be customized by specializing
+ * {@link WProgressBar#getText() getText()}.
+ * <p>
+ * To use the progress bar, you need to give it a range (minimum and maximum
+ * value), and update the progress using
+ * {@link WProgressBar#setValue(double value) setValue()}.
+ * <p>
+ * WProgressBar is an {@link WWidget#setInline(boolean inlined) inline} widget.
+ * <p>
+ * <h3>CSS</h3>
+ * <p>
+ * Using HTML4, the widget is implemented using a set of nested DIVs. The
+ * element can be styled using the <code>Wt-progressbar</code> style. It may be
+ * styled through the current theme, or you can override the style using
+ * internal or external CSS as appropriate.
+ * <p>
+ * <p>
+ * <i><b>Note: </b>With the advent of HTML5, this widget will be implemented
+ * using the native HTML5 control when available. </i>
+ * </p>
+ */
+public class WProgressBar extends WInteractWidget {
 	/**
 	 * Creates a progress bar.
 	 */
@@ -17,6 +43,8 @@ class WProgressBar extends WInteractWidget {
 		this.max_ = 100;
 		this.value_ = 0;
 		this.changed_ = false;
+		this.valueChanged_ = new Signal1<Double>();
+		this.progressCompleted_ = new Signal();
 		this.setStyleClass("Wt-progressbar");
 		this.setInline(true);
 	}
@@ -47,6 +75,8 @@ class WProgressBar extends WInteractWidget {
 	/**
 	 * Returns the minimum value.
 	 * <p>
+	 * 
+	 * @see WProgressBar#setMinimum(double minimum)
 	 */
 	public double getMinimum() {
 		return this.min_;
@@ -68,6 +98,8 @@ class WProgressBar extends WInteractWidget {
 	/**
 	 * Returns the maximum value.
 	 * <p>
+	 * 
+	 * @see WProgressBar#setMaximum(double maximum)
 	 */
 	public double getMaximum() {
 		return this.max_;
@@ -76,6 +108,9 @@ class WProgressBar extends WInteractWidget {
 	/**
 	 * Sets the range.
 	 * <p>
+	 * 
+	 * @see WProgressBar#setMinimum(double minimum)
+	 * @see WProgressBar#setMaximum(double maximum)
 	 */
 	public void setRange(double minimum, double maximum) {
 		this.min_ = minimum;
@@ -87,10 +122,16 @@ class WProgressBar extends WInteractWidget {
 	/**
 	 * Sets the current progress.
 	 * <p>
-	 * <code>value</code> must be a value between {@link } and {@link }.
+	 * <code>value</code> must be a value between
+	 * {@link WProgressBar#getMinimum() getMinimum()} and
+	 * {@link WProgressBar#getMaximum() getMaximum()}.
 	 */
 	public void setValue(double value) {
 		this.value_ = value;
+		this.valueChanged_.trigger(this.value_);
+		if (this.value_ == this.max_) {
+			this.progressCompleted_.trigger();
+		}
 		this.changed_ = true;
 		this.repaint(EnumSet.of(RepaintFlag.RepaintInnerHtml));
 	}
@@ -108,10 +149,36 @@ class WProgressBar extends WInteractWidget {
 	 * This text must be an XHTML formatted text fragment. The default text
 	 * prints the current progress as a percentage. You may want to reimplement
 	 * this method to display a different text corresponding to the current
-	 * {@link }.
+	 * {@link WProgressBar#getValue() getValue()}.
 	 */
 	public WString getText() {
 		return new WString(String.valueOf((int) this.getPercentage()));
+	}
+
+	/**
+	 * A signal that indicates when the value has changed.
+	 * <p>
+	 * This signal is emitted when {@link WProgressBar#setValue(double value)
+	 * setValue()} is called.
+	 * <p>
+	 * 
+	 * @see WProgressBar#setValue(double value)
+	 */
+	public Signal1<Double> valueChanged() {
+		return this.valueChanged_;
+	}
+
+	/**
+	 * A signal that indicates when 100% is reached.
+	 * <p>
+	 * This signal is emitted when setValue({@link WProgressBar#getMaximum()
+	 * getMaximum()}) is called.
+	 * <p>
+	 * 
+	 * @see WProgressBar#setValue(double value)
+	 */
+	public Signal progressCompleted() {
+		return this.progressCompleted_;
 	}
 
 	void updateDom(DomElement element, boolean all) {
@@ -164,6 +231,8 @@ class WProgressBar extends WInteractWidget {
 	private double max_;
 	private double value_;
 	private boolean changed_;
+	private Signal1<Double> valueChanged_;
+	private Signal progressCompleted_;
 
 	private double getPercentage() {
 		return (this.getValue() - this.getMinimum()) * 100

@@ -287,4 +287,19 @@ public class WModelIndex implements Comparable<WModelIndex> {
 		
 		return result;
 	}
+
+	/** 
+	 * Returns whether i2 is an ancestor of i1.
+	 */
+	public static boolean isAncestor(final WModelIndex i1, WModelIndex i2) {
+		if (i1 == null)
+			return false;
+
+		for (WModelIndex p = i1.getParent(); p != null; p = p.getParent()) {
+			if (p.equals(i2))
+				return true;
+		}
+
+		return i2 == null;
+	}
 }

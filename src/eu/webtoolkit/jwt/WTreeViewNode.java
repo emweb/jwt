@@ -252,7 +252,7 @@ class WTreeViewNode extends WTable {
 					.getWidget(first))
 					: null);
 			if (n != null) {
-				int row = n.index_.getRow();
+				int row = this.getTopSpacerHeight();
 				int index = first + (modelRow - row);
 				if (index < first) {
 					return this.topSpacer();

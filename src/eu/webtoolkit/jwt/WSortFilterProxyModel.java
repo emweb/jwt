@@ -8,11 +8,12 @@ package eu.webtoolkit.jwt;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.SortedMap;
+import java.util.TreeMap;
 import java.util.regex.Pattern;
 import eu.webtoolkit.jwt.utils.CollectionUtils;
 import eu.webtoolkit.jwt.utils.ObjectUtils;
@@ -98,7 +99,7 @@ public class WSortFilterProxyModel extends WAbstractProxyModel {
 		this.dynamic_ = false;
 		this.inserting_ = false;
 		this.modelConnections_ = new ArrayList<AbstractSignal.Connection>();
-		this.mappedIndexes_ = new HashMap<WModelIndex, WSortFilterProxyModel.Item>();
+		this.mappedIndexes_ = new TreeMap<WModelIndex, WAbstractProxyModel.BaseItem>();
 	}
 
 	/**
@@ -558,15 +559,14 @@ public class WSortFilterProxyModel extends WAbstractProxyModel {
 		return this.compare(lhs, rhs) < 0;
 	}
 
-	static class Item {
+	static class Item extends WAbstractProxyModel.BaseItem {
 		public List<Integer> sourceRowMap_;
 		public List<Integer> proxyRowMap_;
-		public WModelIndex sourceIndex_;
 
 		public Item(WModelIndex sourceIndex) {
+			super(sourceIndex);
 			this.sourceRowMap_ = new ArrayList<Integer>();
 			this.proxyRowMap_ = new ArrayList<Integer>();
-			this.sourceIndex_ = sourceIndex;
 		}
 	}
 
@@ -604,7 +604,7 @@ public class WSortFilterProxyModel extends WAbstractProxyModel {
 	private boolean dynamic_;
 	private boolean inserting_;
 	private List<AbstractSignal.Connection> modelConnections_;
-	private Map<WModelIndex, WSortFilterProxyModel.Item> mappedIndexes_;
+	private SortedMap<WModelIndex, WAbstractProxyModel.BaseItem> mappedIndexes_;
 
 	private void sourceColumnsAboutToBeInserted(WModelIndex parent, int start,
 			int end) {
@@ -633,6 +633,8 @@ public class WSortFilterProxyModel extends WAbstractProxyModel {
 	}
 
 	private void sourceRowsInserted(WModelIndex parent, int start, int end) {
+		this.shiftModelIndexes(parent, start, end - start + 1,
+				this.mappedIndexes_);
 		if (this.inserting_) {
 			return;
 		}
@@ -683,6 +685,7 @@ public class WSortFilterProxyModel extends WAbstractProxyModel {
 
 	private void sourceRowsRemoved(WModelIndex parent, int start, int end) {
 		int count = end - start + 1;
+		this.shiftModelIndexes(parent, start, -count, this.mappedIndexes_);
 		WModelIndex pparent = this.mapFromSource(parent);
 		WSortFilterProxyModel.Item item = this.itemFromIndex(pparent);
 		for (int i = 0; i < item.proxyRowMap_.size(); ++i) {
@@ -769,7 +772,7 @@ public class WSortFilterProxyModel extends WAbstractProxyModel {
 
 	private WSortFilterProxyModel.Item itemFromSourceIndex(
 			WModelIndex sourceParent) {
-		WSortFilterProxyModel.Item i = this.mappedIndexes_.get(sourceParent);
+		WAbstractProxyModel.BaseItem i = this.mappedIndexes_.get(sourceParent);
 		if (i == null) {
 			WSortFilterProxyModel.Item result = new WSortFilterProxyModel.Item(
 					sourceParent);
@@ -777,7 +780,8 @@ public class WSortFilterProxyModel extends WAbstractProxyModel {
 			this.updateItem(result);
 			return result;
 		} else {
-			return i;
+			return ((i) instanceof WSortFilterProxyModel.Item ? (WSortFilterProxyModel.Item) (i)
+					: null);
 		}
 	}
 
@@ -799,9 +803,10 @@ public class WSortFilterProxyModel extends WAbstractProxyModel {
 	}
 
 	private void resetMappings() {
-		for (Iterator<Map.Entry<WModelIndex, WSortFilterProxyModel.Item>> i_it = this.mappedIndexes_
+		for (Iterator<Map.Entry<WModelIndex, WAbstractProxyModel.BaseItem>> i_it = this.mappedIndexes_
 				.entrySet().iterator(); i_it.hasNext();) {
-			Map.Entry<WModelIndex, WSortFilterProxyModel.Item> i = i_it.next();
+			Map.Entry<WModelIndex, WAbstractProxyModel.BaseItem> i = i_it
+					.next();
 			;
 		}
 		this.mappedIndexes_.clear();
