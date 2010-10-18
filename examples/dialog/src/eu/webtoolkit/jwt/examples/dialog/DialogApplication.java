@@ -107,7 +107,7 @@ public class DialogApplication extends WApplication {
     private WMessageBox show(String caption, String text,
             EnumSet<StandardButton> buttons) {
         final WMessageBox box = new WMessageBox(caption, text,
-                Icon.Information, buttons, false);
+                Icon.Information, buttons);
         box.show();
 
         return box;
