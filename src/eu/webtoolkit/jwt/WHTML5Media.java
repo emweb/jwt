@@ -384,11 +384,8 @@ public abstract class WHTML5Media extends WInteractWidget {
 			this.updateMediaDom(media, false);
 			if (this.sourcesChanged_) {
 				for (int i = 0; i < this.sourcesRendered_; ++i) {
-					DomElement src = DomElement.getForUpdate(this.mediaId_
-							+ "s" + String.valueOf(i),
-							DomElementType.DomElement_SOURCE);
-					src.removeFromParent();
-					result.add(src);
+					media.callJavaScript("Wt3_1_6.remove('" + this.mediaId_
+							+ "s" + String.valueOf(i) + "');", true);
 				}
 				this.sourcesRendered_ = 0;
 				for (int i = 0; i < this.sources_.size(); ++i) {

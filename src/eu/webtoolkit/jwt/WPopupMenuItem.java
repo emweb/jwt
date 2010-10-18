@@ -179,6 +179,7 @@ public class WPopupMenuItem extends WCompositeWidget {
 		this.subMenu_ = menu;
 		String resources = WApplication.getResourcesUrl();
 		if (this.subMenu_ != null) {
+			this.subMenu_.getWebWidget().setLoadLaterWhenInvisible(false);
 			this.subMenu_.parentItem_ = this;
 			this.text_.getDecorationStyle().setBackgroundImage(
 					resources + "right-arrow.gif",
@@ -254,12 +255,6 @@ public class WPopupMenuItem extends WCompositeWidget {
 
 	public void load() {
 		super.load();
-		this.impl_.mouseWentOver().addListener(this.getParentMenu(),
-				new Signal1.Listener<WMouseEvent>() {
-					public void trigger(WMouseEvent e1) {
-						WPopupMenuItem.this.getParentMenu().show();
-					}
-				});
 		this.impl_.mouseWentOver().addListener(this,
 				new Signal1.Listener<WMouseEvent>() {
 					public void trigger(WMouseEvent e1) {
@@ -288,6 +283,7 @@ public class WPopupMenuItem extends WCompositeWidget {
 		this.separator_ = true;
 		this.triggered_ = new Signal(this);
 		this.setImplementation(this.impl_ = new WContainerWidget());
+		this.impl_.setLoadLaterWhenInvisible(false);
 		this.setStyleClass("Wt-separator");
 	}
 
@@ -312,6 +308,7 @@ public class WPopupMenuItem extends WCompositeWidget {
 	}
 
 	private void renderOver() {
+		this.getParentMenu().renderOutAll();
 		if (!this.isDisabled()) {
 			this.renderSelected(true);
 		}

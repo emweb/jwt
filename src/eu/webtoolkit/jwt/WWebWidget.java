@@ -1225,6 +1225,28 @@ public abstract class WWebWidget extends WWidget {
 						+ this.transientImpl_.removedStyleClasses_.get(i)
 						+ "');");
 			}
+			if (!this.transientImpl_.childRemoveChanges_.isEmpty()) {
+				if (this.children_ != null
+						&& this.children_.size() != this.transientImpl_.addedChildren_
+								.size()
+						|| this.transientImpl_.specialChildRemove_) {
+					for (int i = 0; i < this.transientImpl_.childRemoveChanges_
+							.size(); ++i) {
+						String js = this.transientImpl_.childRemoveChanges_
+								.get(i);
+						if (js.charAt(0) == '_') {
+							element.callJavaScript("Wt3_1_6.remove('"
+									+ js.substring(1) + "');", true);
+						} else {
+							element.callJavaScript(js);
+						}
+					}
+				} else {
+					element.removeAllChildren();
+				}
+				this.transientImpl_.childRemoveChanges_.clear();
+				this.transientImpl_.specialChildRemove_ = false;
+			}
 		}
 		if (all || this.flags_.get(BIT_SELECTABLE_CHANGED)) {
 			if (this.flags_.get(BIT_SET_UNSELECTABLE)) {
@@ -1398,11 +1420,8 @@ public abstract class WWebWidget extends WWidget {
 		propagateRenderOk(true);
 	}
 
-	DomElement renderRemove() {
-		DomElement e = DomElement.getForUpdate(this,
-				DomElementType.DomElement_DIV);
-		e.removeFromParent();
-		return e;
+	protected String getRenderRemoveJs() {
+		return "_" + this.getId();
 	}
 
 	protected void propagateSetEnabled(boolean enabled) {
@@ -1474,14 +1493,15 @@ public abstract class WWebWidget extends WWidget {
 		int i = this.children_.indexOf(child);
 		assert i != -1;
 		if (!this.flags_.get(BIT_IGNORE_CHILD_REMOVES)) {
-			DomElement e = child.getWebWidget().renderRemove();
-			if (e != null) {
-				if (!(this.transientImpl_ != null)) {
-					this.transientImpl_ = new WWebWidget.TransientImpl();
-				}
-				this.transientImpl_.childRemoveChanges_.add(e);
-				this.repaint(EnumSet.of(RepaintFlag.RepaintInnerHtml));
+			String js = child.getWebWidget().getRenderRemoveJs();
+			if (!(this.transientImpl_ != null)) {
+				this.transientImpl_ = new WWebWidget.TransientImpl();
 			}
+			this.transientImpl_.childRemoveChanges_.add(js);
+			if (js.charAt(0) != '_') {
+				this.transientImpl_.specialChildRemove_ = true;
+			}
+			this.repaint(EnumSet.of(RepaintFlag.RepaintInnerHtml));
 		}
 		child.setParent((WObject) null);
 		if (!child.getWebWidget().flags_.get(BIT_BEING_DELETED)) {
@@ -1589,16 +1609,18 @@ public abstract class WWebWidget extends WWidget {
 	private WLength height_;
 
 	static class TransientImpl {
-		public List<DomElement> childRemoveChanges_;
+		public List<String> childRemoveChanges_;
 		public List<WWidget> addedChildren_;
 		public List<String> addedStyleClasses_;
 		public List<String> removedStyleClasses_;
+		public boolean specialChildRemove_;
 
 		public TransientImpl() {
-			this.childRemoveChanges_ = new ArrayList<DomElement>();
+			this.childRemoveChanges_ = new ArrayList<String>();
 			this.addedChildren_ = new ArrayList<WWidget>();
 			this.addedStyleClasses_ = new ArrayList<String>();
 			this.removedStyleClasses_ = new ArrayList<String>();
+			this.specialChildRemove_ = false;
 		}
 	}
 
@@ -1789,10 +1811,6 @@ public abstract class WWebWidget extends WWidget {
 					}
 				}
 				return;
-			}
-			if (this.transientImpl_ != null) {
-				result.addAll(this.transientImpl_.childRemoveChanges_);
-				this.transientImpl_.childRemoveChanges_.clear();
 			}
 			this.getDomChanges(result, app);
 		}

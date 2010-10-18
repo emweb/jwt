@@ -357,13 +357,6 @@ public class WPopupMenu extends WCompositeWidget {
 
 	public void setHidden(boolean hidden) {
 		super.setHidden(hidden);
-		WContainerWidget c = this.getContents();
-		for (int i = 0; i < c.getCount(); ++i) {
-			WPopupMenuItem item = ((c.getWidget(i)) instanceof WPopupMenuItem ? (WPopupMenuItem) (c
-					.getWidget(i))
-					: null);
-			item.renderOut();
-		}
 	}
 
 	/**
@@ -444,6 +437,16 @@ public class WPopupMenu extends WCompositeWidget {
 		if (app.getEnvironment().agentIsIE()) {
 			app.doJavaScript(this.getJsRef() + ".lastChild.style.width="
 					+ this.getJsRef() + ".lastChild.offsetWidth+'px';");
+		}
+	}
+
+	void renderOutAll() {
+		WContainerWidget c = this.getContents();
+		for (int i = 0; i < c.getCount(); ++i) {
+			WPopupMenuItem item = ((c.getWidget(i)) instanceof WPopupMenuItem ? (WPopupMenuItem) (c
+					.getWidget(i))
+					: null);
+			item.renderOut();
 		}
 	}
 }

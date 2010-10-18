@@ -30,7 +30,6 @@ class DomElement {
 	public DomElement(DomElement.Mode mode, DomElementType type) {
 		this.mode_ = mode;
 		this.wasEmpty_ = this.mode_ == DomElement.Mode.ModeCreate;
-		this.deleted_ = false;
 		this.removeAllChildren_ = -1;
 		this.minMaxSizeProperties_ = false;
 		this.unstubbed_ = false;
@@ -327,8 +326,7 @@ class DomElement {
 	}
 
 	public void removeFromParent() {
-		++this.numManipulations_;
-		this.deleted_ = true;
+		this.callJavaScript("Wt3_1_6.remove('" + this.getId() + "');", true);
 	}
 
 	public void replaceWith(DomElement newElement) {
@@ -402,22 +400,18 @@ class DomElement {
 	public String asJavaScript(EscapeOStream out, DomElement.Priority priority) {
 		switch (priority) {
 		case Delete:
-			if (this.deleted_ || this.removeAllChildren_ >= 0) {
-				this.declare(out);
-				if (this.deleted_) {
-					out.append(this.javaScriptEvenWhenDeleted_).append(
-							this.var_).append(".parentNode.removeChild(")
-							.append(this.var_).append(");\n");
-				} else {
-					if (this.removeAllChildren_ >= 0) {
-						if (this.removeAllChildren_ == 0) {
-							out.append(this.var_).append(".innerHTML='';\n");
-						} else {
-							out.append("$(").append(this.var_).append(
-									").children(':gt(").append(
-									this.removeAllChildren_).append(
-									")').remove();");
-						}
+			if (this.javaScriptEvenWhenDeleted_.length() != 0
+					|| this.removeAllChildren_ >= 0) {
+				out.append(this.javaScriptEvenWhenDeleted_);
+				if (this.removeAllChildren_ >= 0) {
+					this.declare(out);
+					if (this.removeAllChildren_ == 0) {
+						out.append(this.var_).append(".innerHTML='';\n");
+					} else {
+						out.append("$(").append(this.var_).append(
+								").children(':gt(").append(
+								this.removeAllChildren_)
+								.append(")').remove();");
 					}
 				}
 			}
@@ -433,9 +427,6 @@ class DomElement {
 			}
 			return this.var_;
 		case Update: {
-			if (this.deleted_) {
-				break;
-			}
 			WApplication app = WApplication.getInstance();
 			for (int i = 0; i < this.updatedChildren_.size(); ++i) {
 				DomElement child = this.updatedChildren_.get(i);
@@ -962,7 +953,6 @@ class DomElement {
 
 	public void updateInnerHtmlOnly() {
 		this.mode_ = DomElement.Mode.ModeUpdate;
-		assert this.deleted_ == false;
 		assert this.replaced_ == null;
 		assert this.insertBefore_ == null;
 		this.attributes_.clear();
@@ -1368,10 +1358,6 @@ class DomElement {
 			out.append(this.var_).append(".").append(this.methodCalls_.get(i))
 					.append(';').append('\n');
 		}
-		if (this.javaScriptEvenWhenDeleted_.length() != 0) {
-			this.declare(out);
-			out.append(this.javaScriptEvenWhenDeleted_).append('\n');
-		}
 		if (!this.javaScript_.isEmpty()) {
 			this.declare(out);
 			out.append(this.javaScript_).append('\n');
@@ -1387,7 +1373,6 @@ class DomElement {
 
 	private DomElement.Mode mode_;
 	private boolean wasEmpty_;
-	private boolean deleted_;
 	private int removeAllChildren_;
 	private boolean hideWithDisplay_;
 	private boolean minMaxSizeProperties_;

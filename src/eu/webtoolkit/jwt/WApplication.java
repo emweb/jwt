@@ -185,6 +185,11 @@ public class WApplication extends WObject {
 		this.newInternalPath_ = this.getEnvironment().getInternalPath();
 		this.internalPathIsChanged_ = false;
 		this.setLocalizedStrings((WLocalizedStrings) null);
+		if (this.getEnvironment().agentIsIE()
+				&& !this.getEnvironment().hasJavaScript()) {
+			this.addMetaHeader(MetaHeaderType.MetaHttpHeader,
+					"X-UA-Compatible", "IE=7");
+		}
 		this.domRoot_ = new WContainerWidget();
 		this.domRoot_.setStyleClass("Wt-domRoot");
 		this.domRoot_.load();
@@ -1643,11 +1648,7 @@ public class WApplication extends WObject {
 	 * {@link WApplication#getEnvironment() getEnvironment()}).
 	 */
 	public void addMetaHeader(String name, CharSequence content, String lang) {
-		if (this.getEnvironment().hasJavaScript()) {
-			this.log("warn").append(
-					"WApplication::addMetaHeader() with no effect");
-		}
-		this.metaHeaders_.add(new WApplication.MetaHeader(name, content, lang));
+		this.addMetaHeader(MetaHeaderType.MetaName, name, content, lang);
 	}
 
 	/**
@@ -1658,6 +1659,49 @@ public class WApplication extends WObject {
 	 */
 	public final void addMetaHeader(String name, CharSequence content) {
 		addMetaHeader(name, content, "");
+	}
+
+	/**
+	 * Adds an HTML meta header.
+	 * <p>
+	 * This overloaded method allows to define both &quot;name&quot; meta
+	 * headers, relating to document properties as well as
+	 * &quot;http-equiv&quot; meta headers, which define HTTP headers.
+	 * <p>
+	 * 
+	 * @see WApplication#addMetaHeader(String name, CharSequence content, String
+	 *      lang)
+	 */
+	public void addMetaHeader(MetaHeaderType type, String name,
+			CharSequence content, String lang) {
+		if (this.getEnvironment().hasJavaScript()) {
+			this.log("warn").append(
+					"WApplication::addMetaHeader() with no effect");
+		}
+		if (type == MetaHeaderType.MetaHttpHeader) {
+			for (int i = 0; i < this.metaHeaders_.size(); ++i) {
+				WApplication.MetaHeader m = this.metaHeaders_.get(i);
+				if (m.type == MetaHeaderType.MetaHttpHeader
+						&& m.name.equals(name)) {
+					m.content = WString.toWString(content);
+					return;
+				}
+			}
+		}
+		this.metaHeaders_.add(new WApplication.MetaHeader(type, name, content,
+				lang));
+	}
+
+	/**
+	 * Adds an HTML meta header.
+	 * <p>
+	 * Calls
+	 * {@link #addMetaHeader(MetaHeaderType type, String name, CharSequence content, String lang)
+	 * addMetaHeader(type, name, content, "")}
+	 */
+	public final void addMetaHeader(MetaHeaderType type, String name,
+			CharSequence content) {
+		addMetaHeader(type, name, content, "");
 	}
 
 	/**
@@ -2039,12 +2083,15 @@ public class WApplication extends WObject {
 	}
 
 	static class MetaHeader {
-		public MetaHeader(String aName, CharSequence aContent, String aLang) {
+		public MetaHeader(MetaHeaderType aType, String aName,
+				CharSequence aContent, String aLang) {
+			this.type = aType;
 			this.name = aName;
 			this.lang = aLang;
 			this.content = WString.toWString(aContent);
 		}
 
+		public MetaHeaderType type;
 		public String name;
 		public String lang;
 		public WString content;

@@ -745,18 +745,6 @@ public class WContainerWidget extends WInteractWidget {
 			this.transientImpl_.addedChildren_.clear();
 		}
 		if (!all) {
-			if (false && this.transientImpl_ != null
-					&& !this.transientImpl_.childRemoveChanges_.isEmpty()) {
-				EscapeOStream sout = new EscapeOStream(out);
-				for (int i = 0; i < this.transientImpl_.childRemoveChanges_
-						.size(); ++i) {
-					DomElement c = this.transientImpl_.childRemoveChanges_
-							.get(i);
-					c.asJavaScript(sout, DomElement.Priority.Delete);
-					;
-				}
-				this.transientImpl_.childRemoveChanges_.clear();
-			}
 		}
 		this.propagateRenderOk(false);
 	}

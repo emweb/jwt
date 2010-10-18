@@ -200,10 +200,9 @@ public class WTextEdit extends WTextArea {
 		super.resize(width, height);
 	}
 
-	DomElement renderRemove() {
-		DomElement e = super.renderRemove();
-		e.callJavaScript(this.getJsRef() + ".ed.remove();", true);
-		return e;
+	protected String getRenderRemoveJs() {
+		return this.getJsRef() + ".ed.remove();Wt3_1_6.remove('" + this.getId()
+				+ "');";
 	}
 
 	void updateDom(DomElement element, boolean all) {

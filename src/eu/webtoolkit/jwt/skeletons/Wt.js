@@ -116,6 +116,13 @@ this.insertAt = function(p, c, i) {
     p.insertBefore(c, p.childNodes[i]);
 };
 
+this.remove = function(id)
+{
+  var e = WT.getElement(id);
+  if (e)
+    e.parentNode.removeChild(e);
+};
+
 this.unstub = function(from, to, methodDisplay) {
   if (methodDisplay == 1) {
     if (from.style.display != 'none')
@@ -188,9 +195,11 @@ this.cancelEvent = function(e, cancelType) {
     else
       e.cancelBubble=true;
 
-    if (document.activeElement && document.activeElement.blur)
-      if (WT.hasTag(document.activeElement, "TEXTAREA"))
-	document.activeElement.blur();
+    try {
+      if (document.activeElement && document.activeElement.blur)
+	if (WT.hasTag(document.activeElement, "TEXTAREA"))
+	  document.activeElement.blur();
+    } catch(e) { }
   }
 };
 
@@ -475,6 +484,11 @@ this.block = function(o) { WT.getElement(o).style.display = 'block'; };
 this.show = function(o) { WT.getElement(o).style.display = ''; };
 
 var captureElement = null;
+this.firedTarget = null;
+
+this.target = function(event) {
+  return WT.firedTarget || event.target || event.srcElement;
+};
 
 function delegateCapture(e) {
   if (captureElement == null)
@@ -483,7 +497,7 @@ function delegateCapture(e) {
   if (!e) e = window.event;
 
   if (e) {
-    var t = e.target || e.srcElement, p = t;
+    var t = WT.target(e), p = t;
 
     while (p && p != captureElement)
       p = p.parentNode;
@@ -512,9 +526,11 @@ function mouseMove(e) {
   if (d && !delegating) {
     if (!e) e = window.event;
     delegating = true;
-    if (WT.isIE)
+    if (WT.isIE) {
+      WT.firedTarget = e.srcElement || d;
       d.fireEvent('onmousemove', e);
-    else
+      WT.firedTarget = null;
+    } else
       WT.condCall(d, 'onmousemove', e);
     delegating = false;
     return false;
@@ -529,9 +545,11 @@ function mouseUp(e) {
   if (d) {
     if (!e) e = window.event;
 
-    if (WT.isIE)
+    if (WT.isIE) {
+      WT.firedTarget = e.srcElement || d;
       d.fireEvent('onmouseup', e);
-    else
+      WT.firedTarget = null;
+    } else
       WT.condCall(d, 'onmouseup', e);
 
     WT.cancelEvent(e, WT.CancelPropagate);
@@ -1144,7 +1162,7 @@ function dragDrag(e) {
     ds.object.style["top"] = (xy.y - ds.offsetY) + 'px';
 
     var prevDropTarget = ds.dropTarget;
-    var t = e.target || e.srcElement;
+    var t = WT.target(e);
     var mimeType = "{" + ds.mimeType + ":";
     var amts = null;
 
@@ -1189,7 +1207,6 @@ function dragDrag(e) {
 	ds.object.className = 'Wt-valid-drop';
     }
 
-    WT.cancelEvent(e);
     return false;
   }
 
@@ -1281,8 +1298,10 @@ function encodeEvent(event, i) {
   }
 
 
-  if (document.activeElement)
-    result += se + "focus=" + document.activeElement.id;
+  try {
+    if (document.activeElement)
+      result += se + "focus=" + document.activeElement.id;
+  } catch (e) { }
 
   if (currentHash != null)
     result += se + '_=' + encodeURIComponent(unescape(currentHash));
@@ -1292,7 +1311,7 @@ function encodeEvent(event, i) {
     return event;
   }
 
-  var t = e.target || e.srcElement;
+  var t = WT.target(e);
   while (!t.id && t.parentNode)
     t = t.parentNode;
   if (t.id)

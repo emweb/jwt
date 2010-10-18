@@ -821,8 +821,12 @@ public class WPieChart extends WAbstractChart {
 			if (!ignoreBrush) {
 				painter.setBrush(this.getBrush(i));
 			}
-			painter.drawPie(pcx - r, pcy - r, r * 2, r * 2,
-					(int) (currentAngle * 16), (int) (spanAngle * 16));
+			if (v / total != 1.0) {
+				painter.drawPie(pcx - r, pcy - r, r * 2, r * 2,
+						(int) (currentAngle * 16), (int) (spanAngle * 16));
+			} else {
+				painter.drawEllipse(pcx - r, pcy - r, r * 2, r * 2);
+			}
 			double endAngle = currentAngle + spanAngle;
 			if (endAngle < 0) {
 				endAngle += 360;

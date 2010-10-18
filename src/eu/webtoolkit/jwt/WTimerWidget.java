@@ -47,17 +47,11 @@ class WTimerWidget extends WInteractWidget {
 		return DomElementType.DomElement_SPAN;
 	}
 
-	DomElement renderRemove() {
-		DomElement e = DomElement.getForUpdate(this,
-				DomElementType.DomElement_DIV);
-		e.removeFromParent();
-		e
-				.callJavaScript(
-						"{var obj="
-								+ this.getJsRef()
-								+ ";if (obj && obj.timer) {clearTimeout(obj.timer);obj.timer = null;}}",
-						true);
-		return e;
+	protected String getRenderRemoveJs() {
+		return "{var obj="
+				+ this.getJsRef()
+				+ ";if (obj && obj.timer) {clearTimeout(obj.timer);obj.timer = null;}Wt3_1_6.remove('"
+				+ this.getId() + "');}";
 	}
 
 	protected void enableAjax() {

@@ -415,7 +415,7 @@ public class WDialog extends WCompositeWidget {
 					cover.setZIndex(this.impl_.getZIndex() - 1);
 					app.constrainExposed(this);
 					app
-							.doJavaScript("if (document.activeElement && document.activeElement.blur)document.activeElement.blur();");
+							.doJavaScript("try {if (document.activeElement && document.activeElement.blur)document.activeElement.blur();} catch (e) { }");
 				} else {
 					this.restoreCoverState(app, cover);
 				}

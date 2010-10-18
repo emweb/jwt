@@ -152,7 +152,8 @@ class WebRenderer implements SlotLearnerInterface {
 			WebRenderer.ResponseType responseType) throws IOException {
 		boolean js = responseType == WebRenderer.ResponseType.Update
 				|| responseType == WebRenderer.ResponseType.Script;
-		if (!js) {
+		WApplication app = this.session_.getApp();
+		if (!js || !(app != null)) {
 			response.setContentType("text/html");
 			response.out().append("<title>Error occurred.</title>").append(
 					"<h2>Error occurred.</h2>").append(
@@ -161,7 +162,7 @@ class WebRenderer implements SlotLearnerInterface {
 		} else {
 			response
 					.out()
-					.append(WApplication.getInstance().getJavaScriptClass())
+					.append(app.getJavaScriptClass())
 					.append(
 							"._p_.quit();document.title = 'Error occurred.';document.body.innerHtml='<h2>Error occurred.</h2>' +");
 			DomElement.jsStringLiteral(response.out(), message, '\'');
@@ -821,6 +822,7 @@ class WebRenderer implements SlotLearnerInterface {
 		if (isIEMobile || !this.session_.getEnv().hasAjax()) {
 			return;
 		}
+		this.collectJS(out);
 		Map<String, WeakReference<AbstractEventSignal>> ss = this.session_
 				.getApp().exposedSignals();
 		for (Iterator<Map.Entry<String, WeakReference<AbstractEventSignal>>> i_it = ss
@@ -957,7 +959,11 @@ class WebRenderer implements SlotLearnerInterface {
 						.get(i);
 				result.append("<meta");
 				if (m.name.length() != 0) {
-					result.append(" name=\"");
+					if (m.type == MetaHeaderType.MetaName) {
+						result.append(" name=\"");
+					} else {
+						result.append(" http-equiv=\"");
+					}
 					result.pushEscape(EscapeOStream.RuleSet.HtmlAttribute);
 					result.append(m.name);
 					result.popEscape();
@@ -975,6 +981,12 @@ class WebRenderer implements SlotLearnerInterface {
 				result.append(m.content.toString());
 				result.popEscape();
 				result.append(xhtml ? "\"/>" : "\">");
+			}
+		} else {
+			if (this.session_.getEnv().agentIsIE()) {
+				result.append(
+						"<meta http-equiv=\"X-UA-Compatible\" content=\"IE=7")
+						.append(xhtml ? "\"/>" : "\">").append('\n');
 			}
 		}
 		if (this.session_.getFavicon().length() != 0) {
@@ -999,7 +1011,6 @@ class WebRenderer implements SlotLearnerInterface {
 
 	public String learn(AbstractEventSignal.LearningListener slot)
 			throws IOException {
-		this.collectJS(this.statelessJS_);
 		if (slot.getType() == SlotType.PreLearnStateless) {
 			this.learning_ = true;
 		}
@@ -1018,6 +1029,7 @@ class WebRenderer implements SlotLearnerInterface {
 		if (!this.learningIncomplete_) {
 			slot.setJavaScript(result);
 		}
+		this.collectJS(this.statelessJS_);
 		return result;
 	}
 }

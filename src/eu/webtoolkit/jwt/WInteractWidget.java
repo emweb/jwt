@@ -474,8 +474,8 @@ public abstract class WInteractWidget extends WWebWidget {
 				&& mouseDrag.needsUpdate(all);
 		boolean updateMouseDown = mouseDown != null
 				&& mouseDown.needsUpdate(all) || updateMouseMove;
-		boolean updateMouseUp = mouseUp != null
-				&& mouseUp.needsUpdate(!Side.All.isEmpty()) || updateMouseMove;
+		boolean updateMouseUp = mouseUp != null && mouseUp.needsUpdate(all)
+				|| updateMouseMove;
 		if (updateMouseDown) {
 			String js = "";
 			if (mouseUp != null && mouseUp.isConnected()) {

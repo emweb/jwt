@@ -7,7 +7,7 @@ package eu.webtoolkit.jwt;
 
 
 /**
- * Flags that indicate header options.
+ * Flags that indicate table header options.
  * <p>
  * 
  * @see WAbstractItemModel#getHeaderFlags(int section, Orientation orientation)
