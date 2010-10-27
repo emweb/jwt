@@ -28,13 +28,13 @@ import eu.webtoolkit.jwt.servlet.UploadedFile;
  */
 public class WObject {
 	static class FormData {
-		public FormData(String[] parameters, UploadedFile uploadedFile) {
+		public FormData(String[] parameters, List<UploadedFile> uploadedFiles) {
 			values = parameters;
-			file = uploadedFile;
+			files = uploadedFiles;
 		}
 
 		String[] values;
-		UploadedFile file;
+		List<UploadedFile> files;
 	}
 
 	private WObject parent_;

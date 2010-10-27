@@ -8,10 +8,13 @@ package eu.webtoolkit.jwt.utils;
 import java.util.AbstractSet;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.Map.Entry;
+
+import eu.webtoolkit.jwt.servlet.UploadedFile;
 
 public class OrderedMultiMap<T_INDEX, T_VALUE> {
 	private TreeMap<T_INDEX, ArrayList<T_VALUE>> _treeMap = new TreeMap<T_INDEX, ArrayList<T_VALUE>>();
@@ -106,5 +109,11 @@ public class OrderedMultiMap<T_INDEX, T_VALUE> {
 
 	public Set<Map.Entry<T_INDEX, T_VALUE>> entrySet() {
 		return new EntrySet();
+	}
+
+	public void find(T_INDEX key, List<T_VALUE> files) {
+		for (Map.Entry<T_INDEX, ArrayList<T_VALUE>> e : _treeMap.entrySet()) 
+			if (e.getKey().equals(key))
+				files.addAll(e.getValue());
 	}
 }

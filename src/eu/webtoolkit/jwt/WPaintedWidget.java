@@ -455,7 +455,7 @@ public abstract class WPaintedWidget extends WInteractWidget {
 			return true;
 		}
 		WEnvironment env = WApplication.getInstance().getEnvironment();
-		if (env.agentIsIE()) {
+		if (env.agentIsIElt(9)) {
 			this.painter_ = new WWidgetVectorPainter(this,
 					WWidgetPainter.RenderType.InlineVml);
 			return true;

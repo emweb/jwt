@@ -1259,7 +1259,9 @@ class DomElement {
 			this.getCreateVar();
 		}
 		out.append("var ").append(this.var_).append("=");
-		if (app.getEnvironment().agentIsIE()) {
+		if (app.getEnvironment().agentIsIE()
+				&& app.getEnvironment().getAgent().getValue() <= WEnvironment.UserAgent.IE8
+						.getValue()) {
 			out.append("document.createElement('");
 			out.pushEscape(EscapeOStream.RuleSet.JsStringLiteralSQuote);
 			List<DomElement.TimeoutEvent> timeouts = new ArrayList<DomElement.TimeoutEvent>();
@@ -1425,7 +1427,7 @@ class DomElement {
 			"font-variant", "font-weight", "font-size", "background-color",
 			"background-image", "background-repeat", "background-attachment",
 			"background-position", "text-decoration", "white-space",
-			"table-layout", "border-spacing", "visibility", "display" };
+			"table-layout", "border-spacing", "zoom", "visibility", "display" };
 	private static String[] cssCamelNames = { "cssText", "width", "position",
 			"zIndex", "cssFloat", "clear", "width", "height", "lineHeight",
 			"minWidth", "minHeight", "maxWidth", "maxHeight", "left", "right",
@@ -1437,7 +1439,7 @@ class DomElement {
 			"fontSize", "backgroundColor", "backgroundImage",
 			"backgroundRepeat", "backgroundAttachment", "backgroundPosition",
 			"textDecoration", "whiteSpace", "tableLayout", "borderSpacing",
-			"visibility", "display" };
+			"zoom", "visibility", "display" };
 	static String[] elementNames_ = { "a", "br", "button", "col", "div",
 			"fieldset", "form", "h1", "h2", "h3", "h4", "h5", "h6", "iframe",
 			"img", "input", "label", "legend", "li", "ol", "option", "ul",

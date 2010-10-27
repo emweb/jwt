@@ -8,6 +8,7 @@ package eu.webtoolkit.jwt.utils;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 
 public class CollectionUtils {
 
@@ -43,5 +44,10 @@ public class CollectionUtils {
 	public static int upperBound(List<Integer> list, int value) {
 		return lowerBound(list, value + 1);
 	}
-
+	
+	public static <K, V> void findInMultimap(Map<K,List<V>> map, K key, List<V> result) {
+		List<V> tmp = map.get(key);
+		if (tmp != null)
+			result.addAll(tmp);
+	}
 }

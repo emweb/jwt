@@ -67,9 +67,6 @@ public class WVirtualImage extends WCompositeWidget {
 		this.imageHeight_ = imageHeight;
 		this.currentX_ = 0;
 		this.currentY_ = 0;
-		this.mouseDownJS_ = new JSlot(this);
-		this.mouseMovedJS_ = new JSlot(this);
-		this.mouseUpJS_ = new JSlot(this);
 		this.setImplementation(this.impl_ = new WContainerWidget());
 		this.impl_.resize(new WLength(this.viewPortWidth_), new WLength(
 				this.viewPortHeight_));
@@ -151,17 +148,19 @@ public class WVirtualImage extends WCompositeWidget {
 	 * interactivity.
 	 */
 	public void enableDragging() {
-		this.mouseDownJS_
-				.setJavaScript("function(obj, event) {  var pc = Wt3_1_6.pageCoordinates(event);  obj.setAttribute('dsx', pc.x);  obj.setAttribute('dsy', pc.y);}");
-		this.mouseMovedJS_
-				.setJavaScript("function(obj, event) {var WT= Wt3_1_6;var lastx = obj.getAttribute('dsx');var lasty = obj.getAttribute('dsy');if (lastx != null && lastx != '') {var nowxy = WT.pageCoordinates(event);var img = "
-						+ this.contents_.getJsRef()
-						+ ";img.style.left = (WT.pxself(img, 'left')+nowxy.x-lastx) + 'px';img.style.top = (WT.pxself(img, 'top')+nowxy.y-lasty) + 'px';obj.setAttribute('dsx', nowxy.x);obj.setAttribute('dsy', nowxy.y);}}");
-		this.mouseUpJS_.setJavaScript("function(obj, event) {"
-				+ this.impl_.getJsRef() + ".removeAttribute('dsx');}");
-		this.impl_.mouseWentDown().addListener(this.mouseDownJS_);
-		this.impl_.mouseMoved().addListener(this.mouseMovedJS_);
-		this.impl_.mouseWentUp().addListener(this.mouseUpJS_);
+		this.impl_
+				.mouseWentDown()
+				.addListener(
+						"function(obj, event) {  var pc = Wt3_1_6.pageCoordinates(event);  obj.setAttribute('dsx', pc.x);  obj.setAttribute('dsy', pc.y);}");
+		this.impl_
+				.mouseMoved()
+				.addListener(
+						"function(obj, event) {var WT= Wt3_1_6;var lastx = obj.getAttribute('dsx');var lasty = obj.getAttribute('dsy');if (lastx != null && lastx != '') {var nowxy = WT.pageCoordinates(event);var img = "
+								+ this.contents_.getJsRef()
+								+ ";img.style.left = (WT.pxself(img, 'left')+nowxy.x-lastx) + 'px';img.style.top = (WT.pxself(img, 'top')+nowxy.y-lasty) + 'px';obj.setAttribute('dsx', nowxy.x);obj.setAttribute('dsy', nowxy.y);}}");
+		this.impl_.mouseWentUp().addListener(
+				"function(obj, event) {" + this.impl_.getJsRef()
+						+ ".removeAttribute('dsx');}");
 		this.impl_.mouseWentUp().addListener(this,
 				new Signal1.Listener<WMouseEvent>() {
 					public void trigger(WMouseEvent e1) {
@@ -515,9 +514,6 @@ public class WVirtualImage extends WCompositeWidget {
 		this.viewPortChanged_.trigger(this.currentX_, this.currentY_);
 	}
 
-	private JSlot mouseDownJS_;
-	private JSlot mouseMovedJS_;
-	private JSlot mouseUpJS_;
 	/**
 	 * Special value for imageWidth or imageHeight.
 	 */

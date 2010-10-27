@@ -534,24 +534,7 @@ public abstract class WInteractWidget extends WWebWidget {
 			}
 			element.setEvent("mousemove", actions);
 		}
-		LinkedList<AbstractEventSignal> other = this.eventSignals();
-		for (Iterator<AbstractEventSignal> i_it = other.iterator(); i_it
-				.hasNext();) {
-			AbstractEventSignal i = i_it.next();
-			AbstractEventSignal s = i;
-			if (s.getName() == WInteractWidget.CLICK_SIGNAL
-					&& this.flags_.get(BIT_REPAINT_TO_AJAX)) {
-				element.unwrap();
-			}
-			if (s.getName() != WInteractWidget.CLICK_SIGNAL
-					&& s.getName() != WInteractWidget.DBL_CLICK_SIGNAL
-					|| this.flags_.get(BIT_ENABLED)) {
-				this.updateSignalConnection(element, s, s.getName(), all);
-			} else {
-				element.setEvent(s.getName(),
-						"Wt3_1_6.cancelEvent(event||window.event);");
-			}
-		}
+		this.updateEventSignals(element, all);
 		super.updateDom(element, all);
 	}
 
@@ -578,6 +561,27 @@ public abstract class WInteractWidget extends WWebWidget {
 			s.senderRepaint();
 		}
 		super.propagateSetEnabled(enabled);
+	}
+
+	protected void updateEventSignals(DomElement element, boolean all) {
+		LinkedList<AbstractEventSignal> other = this.eventSignals();
+		for (Iterator<AbstractEventSignal> i_it = other.iterator(); i_it
+				.hasNext();) {
+			AbstractEventSignal i = i_it.next();
+			AbstractEventSignal s = i;
+			if (s.getName() == WInteractWidget.CLICK_SIGNAL
+					&& this.flags_.get(BIT_REPAINT_TO_AJAX)) {
+				element.unwrap();
+			}
+			if (s.getName() != WInteractWidget.CLICK_SIGNAL
+					&& s.getName() != WInteractWidget.DBL_CLICK_SIGNAL
+					|| this.flags_.get(BIT_ENABLED)) {
+				this.updateSignalConnection(element, s, s.getName(), all);
+			} else {
+				element.setEvent(s.getName(),
+						"Wt3_1_6.cancelEvent(event||window.event);");
+			}
+		}
 	}
 
 	JSlot dragSlot_;

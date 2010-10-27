@@ -1706,6 +1706,11 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 				+ this.getJsRef() + ", 'obj')." + jsMethod + "(obj, event);}");
 	}
 
+	protected void connectObjJS(AbstractEventSignal s, String jsMethod) {
+		s.addListener("function(obj, event) {jQuery.data(" + this.getJsRef()
+				+ ", 'obj')." + jsMethod + "(obj, event);}");
+	}
+
 	static class Editor {
 		public Editor() {
 			this.widget = null;

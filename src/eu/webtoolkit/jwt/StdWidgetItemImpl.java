@@ -68,7 +68,7 @@ class StdWidgetItemImpl extends StdLayoutItemImpl {
 			result = DomElement.createNew(DomElementType.DomElement_DIV);
 			result.setProperty(Property.PropertyClass, "Wt-wrapdiv");
 			StringWriter style = new StringWriter();
-			if (app.getEnvironment().agentIsIE() && !forceDiv) {
+			if (app.getEnvironment().agentIsIElt(9) && !forceDiv) {
 				style.append("margin-top:-1px;");
 				marginBottom -= 1;
 			}

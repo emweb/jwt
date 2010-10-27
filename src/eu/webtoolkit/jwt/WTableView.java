@@ -106,7 +106,6 @@ public class WTableView extends WAbstractItemView {
 		this.viewportWidth_ = 1000;
 		this.viewportTop_ = 0;
 		this.viewportHeight_ = 600;
-		this.itemMouseDownJS_ = new JSlot(this);
 		this.setSelectable(false);
 		this.dropEvent_
 				.addListener(
@@ -224,7 +223,6 @@ public class WTableView extends WAbstractItemView {
 							WTableView.this.handleMouseWentDown(e1);
 						}
 					});
-			this.canvas_.mouseWentDown().addListener(this.itemMouseDownJS_);
 			this.canvas_.addWidget(this.table_);
 			this.table_.setPositionScheme(PositionScheme.Absolute);
 			this.table_.resize(new WLength(100, WLength.Unit.Percentage),
@@ -242,7 +240,7 @@ public class WTableView extends WAbstractItemView {
 			this.impl_.setLayout(layout);
 			app.addAutoJavaScript("{var obj = $('#" + this.getId()
 					+ "').data('obj');if (obj) obj.autoJavaScript();}");
-			this.bindObjJS(this.itemMouseDownJS_, "mouseDown");
+			this.connectObjJS(this.canvas_.mouseWentDown(), "mouseDown");
 		} else {
 			this.plainTable_ = new WTable();
 			this.plainTable_.setStyleClass("Wt-plaintable");
@@ -516,7 +514,6 @@ public class WTableView extends WAbstractItemView {
 	private int renderedLastRow_;
 	private int renderedFirstColumn_;
 	private int renderedLastColumn_;
-	private JSlot itemMouseDownJS_;
 	private int tabIndex_;
 
 	private void updateTableBackground() {

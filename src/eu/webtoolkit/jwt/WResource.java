@@ -54,6 +54,7 @@ public abstract class WResource extends WObject {
 	private String suggestedFileName_;
 	private String currentUrl_;
 	private String internalPath_;
+	private boolean trackUploadProgress_;
 
 	WResource(WObject parent) {
 		super(parent);
@@ -152,7 +153,7 @@ public abstract class WResource extends WObject {
 	 * @throws IOException
 	 */
 	public void write(OutputStream out, Map<String, String[]> parameterMap,
-			Map<String, UploadedFile> uploadedFiles) throws IOException {
+			Map<String, List<UploadedFile>> uploadedFiles) throws IOException {
 		WebRequest request = new WebRequest(parameterMap, uploadedFiles);
 		WebResponse response = new WebResponse(out);
 		handleRequest(request, response);
@@ -170,7 +171,7 @@ public abstract class WResource extends WObject {
 	 * @throws IOException
 	 */
 	public void write(OutputStream out) throws IOException {
-		write(out, new HashMap<String, String[]>(), new HashMap<String, UploadedFile>());
+		write(out, new HashMap<String, String[]>(), new HashMap<String, List<UploadedFile>>());
 	}
 
 	/**
@@ -182,6 +183,8 @@ public abstract class WResource extends WObject {
 	 */
 	public void suggestFileName(String name) {
 		suggestedFileName_ = name;
+		
+		generateUrl();
 	}
 
 	/**
@@ -237,4 +240,43 @@ public abstract class WResource extends WObject {
 		
 		generateUrl();
 	}
+	
+	/**
+	 * Indicate interest in upload progress.
+	 * 
+	 * When supported, you can track upload progress using this signal. While
+	 * data is being received, and before {@link #handleRequest(WebRequest
+	 * request, WebResponse response)} is called, progress information is
+	 * indicated using {@link #dataReceived()}.
+	 * 
+	 * The default value is false.
+	 */
+	public void setUploadProgress(boolean enabled) {
+		if (trackUploadProgress_ != enabled) {
+			trackUploadProgress_ = enabled;
+
+			WtServlet c = WebSession.getInstance().getController();
+			if (enabled)
+				c.addUploadProgressUrl(getUrl());
+			else
+				c.removeUploadProgressUrl(getUrl());
+		}
+	}
+
+	/**
+	 * Signal emitted when data has been received for this resource.
+	 * 
+	 * When this signal is emitted, you have the update lock to modify the
+	 * application. Because there is however no corresponding request from the
+	 * browser, any update to the user interface is not immediately reflected in
+	 * the client. To update the client interface, you need to use a
+	 * {@link WTimer}.
+	 * 
+	 * @see #setUploadProgress(boolean enabled)
+	 */
+	public Signal2<Long, Long> dataReceived() {
+		return dataReceived_;
+	}
+
+	private Signal2<Long, Long> dataReceived_ = new Signal2<Long, Long>();
 }

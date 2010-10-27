@@ -25,6 +25,8 @@ import eu.webtoolkit.jwt.servlet.WebResponse;
 import eu.webtoolkit.jwt.utils.EnumUtils;
 
 public class WRasterPaintDevice extends WResource implements WPaintDevice {
+	private static final int MITER_LIMIT = 10;
+
 	enum Format { PngFormat }
 
 	private Format format;
@@ -80,10 +82,16 @@ public class WRasterPaintDevice extends WResource implements WPaintDevice {
 
 	
 	public void drawPath(WPainterPath path) {
-		drawShape(createPath(path));
+		drawShape(createShape(path));
 	}
 
-	private static GeneralPath createPath(WPainterPath path) {
+	/**
+	 * Converts a jwt.WPainterPath to an awt.Shape
+	 * 
+	 * @param path
+	 * @return a shape that represents the path
+	 */
+	public static Shape createShape(WPainterPath path) {
 		GeneralPath p = new GeneralPath();
 
 		for (Iterator<Segment> i = path.getSegments().iterator(); i.hasNext();) {
@@ -232,7 +240,7 @@ public class WRasterPaintDevice extends WResource implements WPaintDevice {
 			if (painter.getClipPath().isEmpty())
 				g2.setClip(null);
 			else
-				g2.setClip(createPath(painter.getClipPath()));
+				g2.setClip(createShape(painter.getClipPath()));
 			resetTransform = true;
 		}
 
@@ -240,12 +248,12 @@ public class WRasterPaintDevice extends WResource implements WPaintDevice {
 			setTransform(painter.getCombinedTransform());
 
 		if (changeFlags.contains(ChangeFlag.Pen)) {
-			g2.setStroke(createStroke(painter.getPen()));
-			penPaint = createPaint(painter.getPen().getColor());
+			g2.setStroke(createStroke(painter, painter.getPen()));
+			penPaint = createColor(painter.getPen().getColor());
 		}
 
 		if (changeFlags.contains(ChangeFlag.Brush))
-			brushPaint = createPaint(painter.getBrush().getColor());
+			brushPaint = createColor(painter.getBrush().getColor());
 		
 		if (changeFlags.contains(ChangeFlag.Font))
 			g2.setFont(createFont(painter.getFont()));
@@ -260,11 +268,22 @@ public class WRasterPaintDevice extends WResource implements WPaintDevice {
 		changeFlags.clear();
 	}
 
-	private static Paint createPaint(WColor color) {
+	/** Converts a jwt.WColor to an awt.Color
+	 *
+	 * @param color the JWt color
+	 * @return the corresponding AWT color
+	 */
+	public static Color createColor(WColor color) {
 		return new Color(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha());
 	}
 
-	private Stroke createStroke(WPen pen) {
+	/** converts a jwt.WPen to an awt.Stroke
+	 * 
+	 * @param painter the painter used to take into account transformations for the pen width
+	 * @param pen the JWt pen
+	 * @return the corresponding AWT Stroke
+	 */
+	public static Stroke createStroke(WPainter painter, WPen pen) {
 		int cap = 0;
 		switch (pen.getCapStyle()) {
 		case FlatCap:   cap = BasicStroke.CAP_BUTT; break;
@@ -279,8 +298,34 @@ public class WRasterPaintDevice extends WResource implements WPaintDevice {
 		case RoundJoin: join = BasicStroke.JOIN_ROUND; break;
 		}
 
-		float width = (float) painter.normalizedPenWidth(pen.getWidth(), true).toPixels();
-		return new BasicStroke(width, cap, join);
+		float width = 0;
+		if (pen.getStyle() != PenStyle.NoPen)
+			width = (float) painter.normalizedPenWidth(pen.getWidth(), true).toPixels();
+
+		switch (pen.getStyle()) {
+		case DashLine:
+		{
+			float[] dash = {4, 2};
+			return new BasicStroke(width, cap, join, MITER_LIMIT, dash, 0);
+		}
+		case DotLine:
+		{
+			float[] dash = {1, 2};
+			return new BasicStroke(width, cap, join, MITER_LIMIT, dash, 0);
+		}
+		case DashDotLine:
+		{
+			float[] dash = {4, 2, 1, 2};
+			return new BasicStroke(width, cap, join, MITER_LIMIT, dash, 0);
+		}
+		case DashDotDotLine:
+		{
+			float[] dash = {4, 2, 1, 2, 1, 2};
+			return new BasicStroke(width, cap, join, MITER_LIMIT, dash, 0);
+		}
+		default:
+			return new BasicStroke(width, cap, join);
+		}
 	}
 	
 	private Font createFont(WFont font) {

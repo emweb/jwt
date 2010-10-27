@@ -53,27 +53,31 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 		this.textMethod_ = WCanvasPaintDevice.TextMethod.DomText;
 		WApplication app = WApplication.getInstance();
 		if (app != null) {
-			if (app.getEnvironment().agentIsChrome()) {
-				if (app.getEnvironment().getAgent().getValue() >= WEnvironment.UserAgent.Chrome2
-						.getValue()) {
-					this.textMethod_ = WCanvasPaintDevice.TextMethod.Html5Text;
-				}
+			if (app.getEnvironment().agentIsIE()) {
+				this.textMethod_ = WCanvasPaintDevice.TextMethod.Html5Text;
 			} else {
-				if (app.getEnvironment().agentIsGecko()) {
-					if (app.getEnvironment().getAgent().getValue() >= WEnvironment.UserAgent.Firefox3_5
+				if (app.getEnvironment().agentIsChrome()) {
+					if (app.getEnvironment().getAgent().getValue() >= WEnvironment.UserAgent.Chrome2
 							.getValue()) {
 						this.textMethod_ = WCanvasPaintDevice.TextMethod.Html5Text;
-					} else {
-						if (app.getEnvironment().getAgent().getValue() >= WEnvironment.UserAgent.Firefox3_0
-								.getValue()) {
-							this.textMethod_ = WCanvasPaintDevice.TextMethod.MozText;
-						}
 					}
 				} else {
-					if (app.getEnvironment().agentIsSafari()) {
-						if (app.getEnvironment().getAgent().getValue() >= WEnvironment.UserAgent.Safari4
+					if (app.getEnvironment().agentIsGecko()) {
+						if (app.getEnvironment().getAgent().getValue() >= WEnvironment.UserAgent.Firefox3_5
 								.getValue()) {
 							this.textMethod_ = WCanvasPaintDevice.TextMethod.Html5Text;
+						} else {
+							if (app.getEnvironment().getAgent().getValue() >= WEnvironment.UserAgent.Firefox3_0
+									.getValue()) {
+								this.textMethod_ = WCanvasPaintDevice.TextMethod.MozText;
+							}
+						}
+					} else {
+						if (app.getEnvironment().agentIsSafari()) {
+							if (app.getEnvironment().getAgent().getValue() >= WEnvironment.UserAgent.Safari4
+									.getValue()) {
+								this.textMethod_ = WCanvasPaintDevice.TextMethod.Html5Text;
+							}
 						}
 					}
 				}

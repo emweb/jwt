@@ -8,6 +8,8 @@ package eu.webtoolkit.jwt;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
@@ -18,6 +20,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import eu.webtoolkit.jwt.servlet.WebRequest;
+import eu.webtoolkit.jwt.servlet.WebRequest.ProgressUpdate;
 import eu.webtoolkit.jwt.servlet.WebResponse;
 import eu.webtoolkit.jwt.utils.JarUtils;
 import eu.webtoolkit.jwt.utils.StreamUtils;
@@ -86,6 +89,11 @@ public abstract class WtServlet extends HttpServlet {
 	 */
 	public WtServlet() {
 		this.configuration = new Configuration();
+		this.progressUpdate = new ProgressUpdate() {
+			public void update(WebRequest request, long pBytesRead, long pContentLength) {
+				requestDataReceived(request, pBytesRead, pContentLength);
+			}
+		};
 	}
 	
 	/**
@@ -226,12 +234,12 @@ public abstract class WtServlet extends HttpServlet {
 				throw new WtException("Illegal application type: " + applicationTypeS);
 			}
 			
-			wsession = new WebSession(this, jsession.getId(), applicationType, getConfiguration().getFavicon(), new WebRequest(request));
+			wsession = new WebSession(this, jsession.getId(), applicationType, getConfiguration().getFavicon(), new WebRequest(request, progressUpdate));
 			jsession.setAttribute(WtServlet.WT_WEBSESSION_ID, wsession);
 		}
 	
 		try {
-			WebRequest webRequest = new WebRequest(request);
+			WebRequest webRequest = new WebRequest(request, progressUpdate);
 			WebResponse webResponse = new WebResponse(response, webRequest);
 
 			WebSession.Handler handler = new WebSession.Handler(wsession, webRequest, webResponse);
@@ -246,7 +254,68 @@ public abstract class WtServlet extends HttpServlet {
 			e.printStackTrace();
 		}
 	}
+	
+	void addUploadProgressUrl(String url) {
+		synchronized (uploadProgressUrls_) {
+			uploadProgressUrls_.add(url.substring(url.indexOf('?') + 1));
+		}
+	}
+
+	void removeUploadProgressUrl(String url) {
+		synchronized (uploadProgressUrls_) {
+			uploadProgressUrls_.remove(url.substring(url.indexOf('?') + 1));
+		}
+	}
+	
+	boolean requestDataReceived(WebRequest request, long current, long total) {
+		boolean found = false;
+
+		synchronized (uploadProgressUrls_) {
+			for (String url : uploadProgressUrls_) {
+				if (url.equals(request.getQueryString())) {
+					found = true;
+					break;
+				}
+			}
+		}
+
+		if (found) {
+			HttpSession jsession = request.getSession();
+			WebSession session = (WebSession) jsession.getAttribute(WtServlet.WT_WEBSESSION_ID);
+
+			if (session != null) {
+				WebSession.Handler handler = new WebSession.Handler(session,request, null);
+
+				if (!session.isDead() && session.getApp() != null) {
+					String requestE = request.getParameter("request");
+
+					WResource resource = null;
+					if (requestE == null && request.getPathInfo().length() != 0)
+						resource = session.getApp().
+							decodeExposedResource("/path/" + request.getPathInfo());
+
+					if (resource == null) {
+						String resourceE = request.getParameter("resource");
+						resource = session.getApp().
+							decodeExposedResource(resourceE);
+					}
+
+					if (resource != null) {
+						// FIXME, we should do this within app()->notify()
+						session.getApp().modifiedWithoutEvent_ = true;
+						resource.dataReceived().trigger(current, total);
+						session.getApp().modifiedWithoutEvent_ = false;
+					}
+				}
+				
+				handler.release();
+			}
+		}
+
+		return true;
+	}
 
 	private Configuration configuration;
-
+	private ProgressUpdate progressUpdate;
+	private Set<String> uploadProgressUrls_ = new HashSet<String>();
 }

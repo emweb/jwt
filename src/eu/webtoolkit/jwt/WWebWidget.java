@@ -966,9 +966,18 @@ public abstract class WWebWidget extends WWidget {
 									"inline");
 						} else {
 							if (element.getType() != DomElementType.DomElement_TD) {
-								element.setProperty(
-										Property.PropertyStyleDisplay,
-										"inline-block");
+								WApplication app = WApplication.getInstance();
+								if (app.getEnvironment().agentIsIElt(9)) {
+									element.setProperty(
+											Property.PropertyStyleDisplay,
+											"inline");
+									element.setProperty(
+											Property.PropertyStyleZoom, "1");
+								} else {
+									element.setProperty(
+											Property.PropertyStyleDisplay,
+											"inline-block");
+								}
 							}
 						}
 					} else {

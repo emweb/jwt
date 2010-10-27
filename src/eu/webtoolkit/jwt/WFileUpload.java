@@ -5,7 +5,7 @@
  */
 package eu.webtoolkit.jwt;
 
-import java.io.File;
+import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 import eu.webtoolkit.jwt.servlet.UploadedFile;
@@ -22,10 +22,7 @@ import eu.webtoolkit.jwt.servlet.UploadedFile;
  * <p>
  * When JavaScript is available, the file will not be uploaded until
  * {@link WFileUpload#upload() upload()} is called. This will start an
- * asynchronous upload (and thus return immediately). When the file has been
- * uploaded, the {@link WFileUpload#uploaded() uploaded()} signal is emitted, or
- * if the file was too large, the {@link WFileUpload#fileTooLarge()
- * fileTooLarge()} signal is emitted.
+ * asynchronous upload (and thus return immediately).
  * <p>
  * When no JavaScript is available, the file will be uploaded with the next
  * click event. Thus, {@link WFileUpload#upload() upload()} has no effect -- the
@@ -75,13 +72,14 @@ public class WFileUpload extends WWebWidget {
 	public WFileUpload(WContainerWidget parent) {
 		super(parent);
 		this.textSize_ = 20;
-		this.spoolFileName_ = "";
-		this.clientFileName_ = "";
-		this.contentDescription_ = "";
-		this.isStolen_ = false;
+		this.uploadedFiles_ = new ArrayList<UploadedFile>();
 		this.doUpload_ = false;
 		this.enableAjax_ = false;
+		this.uploading_ = false;
+		this.multiple_ = false;
 		this.fileTooLarge_ = new Signal1<Integer>(this);
+		this.dataReceived_ = new Signal2<Long, Long>(this);
+		this.progressBar_ = null;
 		this.tooLargeSize_ = 0;
 		this.setInline(true);
 		this.fileTooLargeImpl().addListener(this, new Signal.Listener() {
@@ -103,10 +101,37 @@ public class WFileUpload extends WWebWidget {
 	}
 
 	public void remove() {
-		if (!this.isStolen_) {
-			new File(this.spoolFileName_).delete();
+		if (this.uploading_) {
+			WApplication.getInstance().enableUpdates(false);
 		}
 		super.remove();
+	}
+
+	/**
+	 * Sets whether the file upload accepts multiple files.
+	 * <p>
+	 * In browsers which support the &quot;multiple&quot; attribute for the file
+	 * upload (to be part of HTML5) control, this will allow the user to select
+	 * multiple files at once.
+	 * <p>
+	 * All uploaded files are available from
+	 * {@link WFileUpload#getUploadedFiles() getUploadedFiles()}. The
+	 * single-file API will return only information on the first uploaded file.
+	 * <p>
+	 * The default value is <code>false</code>.
+	 */
+	public void setMultiple(boolean multiple) {
+		this.multiple_ = multiple;
+	}
+
+	/**
+	 * Returns whether multiple files can be uploaded.
+	 * <p>
+	 * 
+	 * @see WFileUpload#setMultiple(boolean multiple)
+	 */
+	public boolean isMultiple() {
+		return this.multiple_;
 	}
 
 	/**
@@ -130,26 +155,47 @@ public class WFileUpload extends WWebWidget {
 	 * The file is guaranteed to exist as long as the {@link WFileUpload} widget
 	 * is not deleted, or a new file is not uploaded.
 	 * <p>
+	 * When multiple files were uploaded, this returns the information from the
+	 * first file.
+	 * <p>
 	 * 
 	 * @see WFileUpload#stealSpooledFile()
 	 * @see WFileUpload#uploaded()
 	 */
 	public String getSpoolFileName() {
-		return this.spoolFileName_;
+		if (!this.isEmpty()) {
+			return this.uploadedFiles_.get(0).getSpoolFileName();
+		} else {
+			return "";
+		}
 	}
 
 	/**
 	 * Returns the client filename.
+	 * <p>
+	 * When multiple files were uploaded, this returns the information from the
+	 * first file.
 	 */
 	public String getClientFileName() {
-		return this.clientFileName_;
+		if (!this.isEmpty()) {
+			return this.uploadedFiles_.get(0).getClientFileName();
+		} else {
+			return "";
+		}
 	}
 
 	/**
 	 * Returns the client content description.
+	 * <p>
+	 * When multiple files were uploaded, this returns the information from the
+	 * first file.
 	 */
 	public String getContentDescription() {
-		return this.contentDescription_;
+		if (!this.isEmpty()) {
+			return this.uploadedFiles_.get(0).getContentType();
+		} else {
+			return "";
+		}
 	}
 
 	/**
@@ -157,18 +203,42 @@ public class WFileUpload extends WWebWidget {
 	 * <p>
 	 * By stealing the file, the spooled file will no longer be deleted together
 	 * with this widget, which means you need to take care of managing that.
+	 * <p>
+	 * When multiple files were uploaded, this returns the information from the
+	 * first file.
 	 */
 	public void stealSpooledFile() {
-		this.isStolen_ = true;
+		if (!this.isEmpty()) {
+			this.uploadedFiles_.get(0).stealSpoolFile();
+		}
+	}
+
+	/**
+	 * Returns whether one or more files have been uploaded.
+	 */
+	public boolean isEmpty() {
+		return this.uploadedFiles_.isEmpty();
 	}
 
 	/**
 	 * Checks if no filename was given and thus no file uploaded.
+	 * (<b>Deprecated</b>).
 	 * <p>
 	 * Return whether a non-empty filename was given.
+	 * <p>
+	 * 
+	 * @deprecated This method was renamed to {@link WFileUpload#isEmpty()
+	 *             isEmpty()}
 	 */
 	public boolean isEmptyFileName() {
-		return this.clientFileName_.length() == 0;
+		return this.isEmpty();
+	}
+
+	/**
+	 * Returns the uploaded files.
+	 */
+	public List<UploadedFile> getUploadedFiles() {
+		return this.uploadedFiles_;
 	}
 
 	/**
@@ -186,7 +256,7 @@ public class WFileUpload extends WWebWidget {
 	/**
 	 * Signal emitted when a new file was uploaded.
 	 * <p>
-	 * This signal is emitted when a new file has been received. It is good
+	 * This signal is emitted when file upload has been completed. It is good
 	 * practice to hide or delete the {@link WFileUpload} widget when a file has
 	 * been uploaded succesfully.
 	 * <p>
@@ -201,7 +271,7 @@ public class WFileUpload extends WWebWidget {
 	/**
 	 * Signal emitted when the user tried to upload a too large file.
 	 * <p>
-	 * The parameter is the approximate size of the file the user tried to
+	 * The parameter is the (approximate) size of the file the user tried to
 	 * upload.
 	 * <p>
 	 * The maximum file size is determined by the maximum request size, which
@@ -242,10 +312,68 @@ public class WFileUpload extends WWebWidget {
 	 * @see WFileUpload#canUpload()
 	 */
 	public void upload() {
-		if (this.fileUploadTarget_ != null) {
+		if (this.fileUploadTarget_ != null && !this.uploading_) {
 			this.doUpload_ = true;
 			this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyIEMobile));
+			if (this.progressBar_ != null) {
+				if (this.progressBar_.getParent() != this) {
+					this.hide();
+				} else {
+					this.progressBar_.show();
+				}
+			}
+			WApplication.getInstance().enableUpdates();
+			this.uploading_ = true;
 		}
+	}
+
+	/**
+	 * Sets a progress bar to indicate upload progress.
+	 * <p>
+	 * When the file is being uploaded, upload progress is indicated using the
+	 * provided progress bar. Both the progress bar range and values are
+	 * configured when the upload starts.
+	 * <p>
+	 * If the provided progress bar already has a parent, then the file upload
+	 * itself is hidden as soon as the upload starts. If the provided progress
+	 * bar does not yet have a parent, then the bar becomes part of the file
+	 * upload, and replaces the file prompt when the upload is started.
+	 * <p>
+	 * The default progress bar is 0 (no upload progress is indicated).
+	 * <p>
+	 * 
+	 * @see WFileUpload#dataReceived()
+	 */
+	public void setProgressBar(WProgressBar bar) {
+		if (this.progressBar_ != null)
+			this.progressBar_.remove();
+		this.progressBar_ = bar;
+		if (this.progressBar_ != null) {
+			if (!(this.progressBar_.getParent() != null)) {
+				this.progressBar_.setParentWidget(this);
+				this.progressBar_.hide();
+			}
+		}
+	}
+
+	/**
+	 * Returns the progress bar.
+	 * <p>
+	 * 
+	 * @see WFileUpload#setProgressBar(WProgressBar bar)
+	 */
+	public WProgressBar getProgressBar() {
+		return this.progressBar_;
+	}
+
+	/**
+	 * Signal emitted while a file is being uploaded.
+	 * <p>
+	 * When supported by the connector library, you can track the progress of
+	 * the file upload by listening to this signal.
+	 */
+	public Signal2<Long, Long> dataReceived() {
+		return this.dataReceived_;
 	}
 
 	public void enableAjax() {
@@ -256,14 +384,15 @@ public class WFileUpload extends WWebWidget {
 	}
 
 	private int textSize_;
-	private String spoolFileName_;
-	private String clientFileName_;
-	private String contentDescription_;
-	private boolean isStolen_;
+	private List<UploadedFile> uploadedFiles_;
 	private boolean doUpload_;
 	private boolean enableAjax_;
+	private boolean uploading_;
+	private boolean multiple_;
 	private Signal1<Integer> fileTooLarge_;
+	private Signal2<Long, Long> dataReceived_;
 	private WResource fileUploadTarget_;
+	private WProgressBar progressBar_;
 
 	private void create() {
 		boolean methodIframe = WApplication.getInstance().getEnvironment()
@@ -276,6 +405,31 @@ public class WFileUpload extends WWebWidget {
 		this.setFormObject(!(this.fileUploadTarget_ != null));
 	}
 
+	private void onData(long current, long total) {
+		this.dataReceived_.trigger(current, total);
+		if (0 != 0) {
+			if (this.uploading_) {
+				this.uploading_ = false;
+				this.handleFileTooLargeImpl();
+				WApplication app = WApplication.getInstance();
+				app.triggerUpdate();
+				app.enableUpdates(false);
+			}
+			return;
+		}
+		if (this.progressBar_ != null && this.uploading_) {
+			this.progressBar_.setRange(0, (double) total);
+			this.progressBar_.setValue((double) current);
+			WApplication app = WApplication.getInstance();
+			app.triggerUpdate();
+		}
+		if (current == total) {
+			WApplication app = WApplication.getInstance();
+			this.uploading_ = false;
+			app.enableUpdates(false);
+		}
+	}
+
 	void setRequestTooLarge(int size) {
 		this.fileTooLarge().trigger(size);
 	}
@@ -284,6 +438,25 @@ public class WFileUpload extends WWebWidget {
 		if (this.fileUploadTarget_ != null && this.doUpload_) {
 			element.callMethod("submit()");
 			this.doUpload_ = false;
+			this.fileUploadTarget_.setUploadProgress(true);
+			this.fileUploadTarget_.dataReceived().addListener(this,
+					new Signal2.Listener<Long, Long>() {
+						public void trigger(Long e1, Long e2) {
+							WFileUpload.this.onData(e1, e2);
+						}
+					});
+			if (this.progressBar_ != null) {
+				if (this.progressBar_.getParent() == this) {
+					DomElement inputE = DomElement.getForUpdate("in"
+							+ this.getId(), DomElementType.DomElement_INPUT);
+					inputE.setProperty(Property.PropertyStyleDisplay, "none");
+					element.addChild(inputE);
+				}
+			}
+		}
+		if (this.progressBar_ != null && !this.progressBar_.isRendered()) {
+			element.addChild(((WWebWidget) this.progressBar_)
+					.createDomElement(WApplication.getInstance()));
 		}
 		super.updateDom(element, all);
 	}
@@ -297,6 +470,13 @@ public class WFileUpload extends WWebWidget {
 		}
 		EventSignal change = this.voidEventSignal(CHANGE_SIGNAL, false);
 		if (this.fileUploadTarget_ != null) {
+			DomElement i = DomElement
+					.createNew(DomElementType.DomElement_IFRAME);
+			i.setProperty(Property.PropertyClass, "Wt-resource");
+			i
+					.setProperty(Property.PropertySrc, this.fileUploadTarget_
+							.getUrl());
+			i.setName("if" + this.getId());
 			DomElement form = result;
 			form.setAttribute("method", "post");
 			form.setAttribute("action", this.fileUploadTarget_.generateUrl());
@@ -304,18 +484,15 @@ public class WFileUpload extends WWebWidget {
 			form.setProperty(Property.PropertyStyle,
 					"margin:0;padding:0;display:inline");
 			form.setProperty(Property.PropertyTarget, "if" + this.getId());
-			DomElement i = DomElement
-					.createNew(DomElementType.DomElement_IFRAME);
-			i.setProperty(Property.PropertyClass, "Wt-resource");
-			i.setProperty(Property.PropertySrc, this.fileUploadTarget_
-					.generateUrl());
-			i.setName("if" + this.getId());
 			DomElement d = DomElement.createNew(DomElementType.DomElement_SPAN);
 			d.addChild(i);
 			form.addChild(d);
 			DomElement input = DomElement
 					.createNew(DomElementType.DomElement_INPUT);
 			input.setAttribute("type", "file");
+			if (this.multiple_) {
+				input.setAttribute("multiple", "multiple");
+			}
 			input.setAttribute("name", "data");
 			input.setAttribute("size", String.valueOf(this.textSize_));
 			input.setId("in" + this.getId());
@@ -325,6 +502,9 @@ public class WFileUpload extends WWebWidget {
 			form.addChild(input);
 		} else {
 			result.setAttribute("type", "file");
+			if (this.multiple_) {
+				result.setAttribute("multiple", "multiple");
+			}
 			result.setAttribute("size", String.valueOf(this.textSize_));
 			if (change != null) {
 				this.updateSignalConnection(result, change, "change", true);
@@ -367,19 +547,17 @@ public class WFileUpload extends WWebWidget {
 	int tooLargeSize_;
 
 	void setFormData(WObject.FormData formData) {
-		if (formData.file != null) {
-			this.setFormData(formData.file);
-			this.uploaded().trigger();
-		}
+		this.setFiles(formData.files);
 	}
 
-	void setFormData(UploadedFile file) {
-		this.spoolFileName_ = file.getSpoolFileName();
-		this.clientFileName_ = new WString(file.getClientFileName()).toString();
-		this.contentDescription_ = new WString(file.getContentType())
-				.toString();
-		file.stealSpoolFile();
-		this.isStolen_ = false;
+	void setFiles(List<UploadedFile> files) {
+		this.uploadedFiles_.clear();
+		for (int i = 0; i < files.size(); ++i) {
+			if (files.get(i).getClientFileName().length() != 0) {
+				this.uploadedFiles_.add(files.get(i));
+			}
+		}
+		this.uploaded().trigger();
 	}
 
 	private static String CHANGE_SIGNAL = "M_change";

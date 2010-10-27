@@ -20,13 +20,12 @@ import eu.webtoolkit.jwt.utils.CollectionUtils;
  * A proxy model for Wt&apos;s item models that provides batch editing.
  * <p>
  * 
- * This proxy model does not store data itself, but presents data from a source
- * model. It&apos;s only function is to cache any editing operation without
- * modifying the underlying source model, until
+ * This proxy model presents data from a source model, and caches any editing
+ * operation without affecting the underlying source model, until
  * {@link WBatchEditProxyModel#commitAll() commitAll()} or
  * {@link WBatchEditProxyModel#revertAll() revertAll()} is called. In this way,
- * you can commit all the editing in batch to the underlying source model, when
- * the user confirms the changes.
+ * you can commit all the editing in batch to the underlying source model, only
+ * when the user confirms the changes.
  * <p>
  * All editing operations are supported:
  * <ul>

@@ -115,7 +115,7 @@ public class WDialog extends WCompositeWidget {
 		String CSS_RULES_NAME = "Wt::WDialog";
 		WApplication app = WApplication.getInstance();
 		if (!app.getStyleSheet().isDefined(CSS_RULES_NAME)) {
-			if (app.getEnvironment().agentIsIE()) {
+			if (app.getEnvironment().agentIsIElt(9)) {
 				app.getStyleSheet().addRule("body", "height: 100%;");
 			}
 			app
@@ -124,7 +124,7 @@ public class WDialog extends WCompositeWidget {
 							"div.Wt-dialogcover",
 							""
 									+ "height: 100%; width: 100%;top: 0px; left: 0px;opacity: 0.5; position: fixed;"
-									+ (app.getEnvironment().agentIsIE() ? "filter: alpha(opacity=50);"
+									+ (app.getEnvironment().agentIsIElt(9) ? "filter: alpha(opacity=50);"
 											: "opacity: 0.5"), CSS_RULES_NAME);
 			String position = app.getEnvironment().getAgent() == WEnvironment.UserAgent.IE6 ? "absolute"
 					: "fixed";
@@ -135,7 +135,7 @@ public class WDialog extends WCompositeWidget {
 							""
 									+ (app.getEnvironment().hasAjax()
 											&& !app.getEnvironment()
-													.agentIsIE() ? "visibility: hidden;"
+													.agentIsIElt(9) ? "visibility: hidden;"
 											: "")
 									+ "position: "
 									+ position
@@ -449,6 +449,6 @@ public class WDialog extends WCompositeWidget {
 	}
 
 	static String wtjs1(WApplication app) {
-		return "Wt3_1_6.WDialog = function(g,b){function k(a){var c=a||window.event;a=d.pageCoordinates(c);c=d.windowCoordinates(c);var e=d.windowSize();if(c.x>0&&c.x<e.x&&c.y>0&&c.y<e.y){j=true;b.style.left=d.pxself(b,\"left\")+a.x-h+\"px\";b.style.top=d.pxself(b,\"top\")+a.y-i+\"px\";h=a.x;i=a.y}}jQuery.data(b,\"obj\",this);var l=this,f=$(b).find(\".titlebar\").first().get(0),d=g.WT,h,i,j=false;if(f){f.onmousedown=function(a){a=a||window.event;d.capture(f);a=d.pageCoordinates(a);h=a.x;i=a.y;f.onmousemove=k}; f.onmouseup=function(){f.onmousemove=null;d.capture(null)}}this.centerDialog=function(){if(b.parentNode==null){b=f=null;this.centerDialog=function(){}}else if(b.style.display!=\"none\"){if(!j){var a=d.windowSize(),c=b.offsetWidth,e=b.offsetHeight;b.style.left=Math.round((a.x-c)/2+(d.isIE6?document.documentElement.scrollLeft:0))+\"px\";b.style.top=Math.round((a.y-e)/2+(d.isIE6?document.documentElement.scrollTop:0))+\"px\";b.style.marginLeft=\"0px\";b.style.marginTop=\"0px\";b.style.width!=null&&b.style.height!= null&&l.wtResize(b,c,e)}b.style.visibility=\"visible\"}};this.wtResize=function(a,c,e){e-=2;c-=2;a.style.height=e+\"px\";a.style.width=c+\"px\";a=a.lastChild;e-=a.previousSibling.offsetHeight+8;if(e>0){a.style.height=e+\"px\";g.layouts&&g.layouts.adjust()}}};";
+		return "Wt3_1_6.WDialog = function(g,b){function k(a){var c=a||window.event;a=d.pageCoordinates(c);c=d.windowCoordinates(c);var e=d.windowSize();if(c.x>0&&c.x<e.x&&c.y>0&&c.y<e.y){h=true;b.style.left=d.pxself(b,\"left\")+a.x-i+\"px\";b.style.top=d.pxself(b,\"top\")+a.y-j+\"px\";i=a.x;j=a.y}}jQuery.data(b,\"obj\",this);var l=this,f=$(b).find(\".titlebar\").first().get(0),d=g.WT,i,j,h=false;if(b.style.left!=\"\"||b.style.top!=\"\")h=true;if(f){f.onmousedown=function(a){a=a||window.event;d.capture(f);a=d.pageCoordinates(a); i=a.x;j=a.y;f.onmousemove=k};f.onmouseup=function(){f.onmousemove=null;d.capture(null)}}this.centerDialog=function(){if(b.parentNode==null){b=f=null;this.centerDialog=function(){}}else if(b.style.display!=\"none\"){if(!h){var a=d.windowSize(),c=b.offsetWidth,e=b.offsetHeight;b.style.left=Math.round((a.x-c)/2+(d.isIE6?document.documentElement.scrollLeft:0))+\"px\";b.style.top=Math.round((a.y-e)/2+(d.isIE6?document.documentElement.scrollTop:0))+\"px\";b.style.marginLeft=\"0px\";b.style.marginTop=\"0px\";b.style.width!= \"\"&&b.style.height!=\"\"&&l.wtResize(b,c,e)}b.style.visibility=\"visible\"}};this.wtResize=function(a,c,e){e-=2;c-=2;a.style.height=e+\"px\";a.style.width=c+\"px\";a=a.lastChild;e-=a.previousSibling.offsetHeight+8;if(e>0){a.style.height=e+\"px\";g.layouts&&g.layouts.adjust()}}};";
 	}
 }

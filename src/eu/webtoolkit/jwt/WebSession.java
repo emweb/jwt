@@ -7,6 +7,7 @@ package eu.webtoolkit.jwt;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -16,6 +17,7 @@ import java.util.concurrent.locks.ReentrantLock;
 import eu.webtoolkit.jwt.servlet.UploadedFile;
 import eu.webtoolkit.jwt.servlet.WebRequest;
 import eu.webtoolkit.jwt.servlet.WebResponse;
+import eu.webtoolkit.jwt.utils.CollectionUtils;
 
 class WebSession {
 	enum State {
@@ -52,7 +54,7 @@ class WebSession {
 		this.embeddedEnv_ = new WEnvironment(this);
 		this.app_ = null;
 		this.debug_ = this.controller_.getConfiguration().isDebug();
-		this.handlerCount_ = 0;
+		this.handlers_ = new ArrayList<WebSession.Handler>();
 		this.emitStack_ = new ArrayList<WObject>();
 		this.recursiveEventLoop_ = null;
 		this.env_ = env != null ? env : this.embeddedEnv_;
@@ -270,7 +272,6 @@ class WebSession {
 								this.renderer_.letReloadJS(this.asyncResponse_,
 										true);
 							}
-							this.asyncResponse_.flush();
 							this.asyncResponse_ = null;
 						}
 						if (!signalE.equals("res") && !signalE.equals("poll")) {
@@ -333,8 +334,8 @@ class WebSession {
 				this.asyncResponse_.flush();
 				this.asyncResponse_ = null;
 			}
-		} catch (IOException ioe) {
-			ioe.printStackTrace();
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 	}
 
@@ -367,6 +368,10 @@ class WebSession {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+
+	public void expire() {
+		this.kill();
 	}
 
 	public boolean isUnlockRecursiveEventLoop() {
@@ -616,6 +621,16 @@ class WebSession {
 	}
 
 	static class Handler {
+		public Handler() {
+			this.signalOrder = new ArrayList<Integer>();
+			this.prevHandler_ = null;
+			this.session_ = null;
+			this.request_ = null;
+			this.response_ = null;
+			this.locked_ = true;
+			this.init();
+		}
+
 		public Handler(WebSession session, WebRequest request,
 				WebResponse response) {
 			this.signalOrder = new ArrayList<Integer>();
@@ -654,7 +669,7 @@ class WebSession {
 			if (this.locked_) {
 				this.session_.getMutex().unlock();
 			}
-			threadHandler_.set(this.prevHandler_);
+			attachThreadToHandler(this.prevHandler_);
 		}
 
 		public static WebSession.Handler getInstance() {
@@ -680,13 +695,36 @@ class WebSession {
 		public int nextSignal;
 		public List<Integer> signalOrder;
 
-		private void init() {
-			this.prevHandler_ = threadHandler_.get();
-			threadHandler_.set(this);
+		static void attachThreadToSession(WebSession session) {
+			attachThreadToHandler((WebSession.Handler) null);
+			if (!(session != null)) {
+				return;
+			}
+			if (session.state_ == WebSession.State.Dead) {
+				session.log("warn").append("Attaching to dead session?");
+				attachThreadToHandler(new WebSession.Handler(session, false));
+				return;
+			}
+			for (int i = 0; i < session.handlers_.size(); ++i) {
+				if (session.handlers_.get(i).isHaveLock()) {
+					attachThreadToHandler(session.handlers_.get(i));
+					return;
+				}
+			}
+			session.log("error").append("WApplication::attachThread(): ")
+					.append("no thread is holding this application's lock ?");
 		}
 
-		static void attachThreadToSession(WebSession session) {
-			threadHandler_.set(new WebSession.Handler(session, false));
+		public static WebSession.Handler attachThreadToHandler(
+				WebSession.Handler handler) {
+			WebSession.Handler result;
+			result = threadHandler_.get();
+			threadHandler_.set(handler);
+			return result;
+		}
+
+		private void init() {
+			this.prevHandler_ = attachThreadToHandler(this);
 		}
 
 		private void setRequest(WebRequest request, WebResponse response) {
@@ -982,7 +1020,7 @@ class WebSession {
 	private WEnvironment env_;
 	private WApplication app_;
 	private boolean debug_;
-	private int handlerCount_;
+	private List<WebSession.Handler> handlers_;
 	private List<WObject> emitStack_;
 	private WebSession.Handler recursiveEventLoop_;
 
@@ -1011,9 +1049,9 @@ class WebSession {
 	}
 
 	private static WObject.FormData getFormData(WebRequest request, String name) {
-		UploadedFile file = request.getUploadedFiles().get(name);
-		return new WObject.FormData(request.getParameterValues(name),
-				file != null ? file : null);
+		List<UploadedFile> files = new ArrayList<UploadedFile>();
+		CollectionUtils.findInMultimap(request.getUploadedFiles(), name, files);
+		return new WObject.FormData(request.getParameterValues(name), files);
 	}
 
 	private void render(WebSession.Handler handler,
@@ -1295,5 +1333,6 @@ class WebSession {
 		return "?wtd=" + this.sessionId_;
 	}
 
+	static UploadedFile uf;
 	private static ThreadLocal<WebSession.Handler> threadHandler_ = new ThreadLocal<WebSession.Handler>();
 }

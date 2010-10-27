@@ -7,6 +7,7 @@ package eu.webtoolkit.jwt.servlet;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -18,6 +19,7 @@ import javax.servlet.http.HttpServletRequestWrapper;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileUploadBase;
 import org.apache.commons.fileupload.FileUploadException;
+import org.apache.commons.fileupload.ProgressListener;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 
@@ -36,8 +38,12 @@ import eu.webtoolkit.jwt.WtServlet;
  * @see WebResponse
  */
 public class WebRequest extends HttpServletRequestWrapper {
+	public interface ProgressUpdate {
+		public void update(WebRequest request, long pBytesRead, long pContentLength);
+	}
+	
 	private Map<String, String[]> parameters_;
-	private Map<String, UploadedFile> files_;
+	private Map<String, List<UploadedFile>> files_;
 
 	/**
 	 * Creates a WebRequest by wrapping an HttpServletRequest
@@ -45,7 +51,12 @@ public class WebRequest extends HttpServletRequestWrapper {
 	 */
 	public WebRequest(HttpServletRequest request) {
 		super(request);
-		parse();
+		parse(null);
+	}
+	
+	public WebRequest(HttpServletRequest request, ProgressUpdate progressUpdate) {
+		super(request);
+		parse(progressUpdate);
 	}
 
 	/**
@@ -54,7 +65,7 @@ public class WebRequest extends HttpServletRequestWrapper {
 	 * @param parameters a list of request parameters
 	 * @param files a list of POST'ed files
 	 */
-	public WebRequest(Map<String, String[]> parameters, Map<String, UploadedFile> files) {
+	public WebRequest(Map<String, String[]> parameters, Map<String, List<UploadedFile>> files) {
 		super(WtServlet.getServletApi().getMockupHttpServletRequest());
 		parameters_ = parameters;
 		files_ = files;
@@ -124,11 +135,11 @@ public class WebRequest extends HttpServletRequestWrapper {
 	}
 
 	@SuppressWarnings({ "unchecked", "deprecation" })
-	private void parse() {
+	private void parse(final ProgressUpdate progressUpdate) {
 		Map<String, String[]> parameterMap = super.getParameterMap();
 
 		parameters_ = new HashMap<String, String []>(parameterMap);
-		files_ = new HashMap<String, UploadedFile>();
+		files_ = new HashMap<String, List<UploadedFile>>();
 
 		if (FileUploadBase.isMultipartContent(this)) {
 			try {
@@ -137,6 +148,15 @@ public class WebRequest extends HttpServletRequestWrapper {
 
 				// Create a new file upload handler
 				ServletFileUpload upload = new ServletFileUpload(factory);
+
+				if (progressUpdate != null) {
+					upload.setProgressListener(new ProgressListener(){
+						@Override
+						public void update(long pBytesRead, long pContentLength, int pItems) {
+							progressUpdate.update(WebRequest.this, pBytesRead, pContentLength);
+						}
+					});
+				}
 
 				// Parse the request
 				List items = upload.parseRequest(this);
@@ -161,7 +181,12 @@ public class WebRequest extends HttpServletRequestWrapper {
 							e.printStackTrace();
 						}
 
-						files_.put(fi.getFieldName(), new UploadedFile(f.getAbsolutePath(), fi.getName(), fi.getContentType()));
+						List<UploadedFile> files = files_.get(fi.getFieldName());
+						if (files == null) {
+							files = new ArrayList<UploadedFile>();
+							files_.put(fi.getFieldName(), files);
+						}
+						files.add(new UploadedFile(f.getAbsolutePath(), fi.getName(), fi.getContentType()));
 					} else {
 						String[] v = parameters_.get(fi.getFieldName());
 						if (v == null)
@@ -187,7 +212,7 @@ public class WebRequest extends HttpServletRequestWrapper {
 	 * 
 	 * @return the list of uploaded files.
 	 */
-	public Map<String, UploadedFile> getUploadedFiles() {
+	public Map<String, List<UploadedFile>> getUploadedFiles() {
 		return files_;
 	}
 

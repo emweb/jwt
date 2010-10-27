@@ -73,9 +73,13 @@ public class WEnvironment {
 		 */
 		IE7(1002),
 		/**
-		 * Internet Explorer 8 or later.
+		 * Internet Explorer 8.
 		 */
 		IE8(1003),
+		/**
+		 * Internet Explorer 9 or later.
+		 */
+		IE9(1004),
 		/**
 		 * Opera.
 		 */
@@ -654,6 +658,24 @@ public class WEnvironment {
 	}
 
 	/**
+	 * Returns whether the user agent is an older version of IE.
+	 * <p>
+	 * Returns whether the agent is an IE version older than the given version.
+	 * <p>
+	 * 
+	 * @see WEnvironment#agentIsIE()
+	 */
+	public boolean agentIsIElt(int version) {
+		if (this.agentIsIE()) {
+			return this.agent_.getValue() < WEnvironment.UserAgent.IEMobile
+					.getValue()
+					+ (version - 5);
+		} else {
+			return false;
+		}
+	}
+
+	/**
 	 * Returns whether the user agent is Internet Explorer Mobile.
 	 * <p>
 	 * Returns also <code>true</code> when the agent is Internet Explorer 5 or
@@ -807,8 +829,12 @@ public class WEnvironment {
 				if (this.userAgent_.indexOf("MSIE 7") != -1) {
 					this.agent_ = WEnvironment.UserAgent.IE7;
 				} else {
-					if (this.userAgent_.indexOf("MSIE") != -1) {
+					if (this.userAgent_.indexOf("MSIE 8") != -1) {
 						this.agent_ = WEnvironment.UserAgent.IE8;
+					} else {
+						if (this.userAgent_.indexOf("MSIE") != -1) {
+							this.agent_ = WEnvironment.UserAgent.IE9;
+						}
 					}
 				}
 			}
@@ -1001,7 +1027,8 @@ public class WEnvironment {
 		this.locale_ = request.getLocale();
 		if (this.session_.getController().getConfiguration()
 				.isSendXHTMLMimeType()
-				&& this.accept_.indexOf("application/xhtml+xml") != -1) {
+				&& this.accept_.indexOf("application/xhtml+xml") != -1
+				&& !this.agentIsIE()) {
 			this.contentType_ = WEnvironment.ContentType.XHTML1;
 		}
 	}

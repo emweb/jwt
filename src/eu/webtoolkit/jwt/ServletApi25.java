@@ -21,10 +21,6 @@ class ServletApi25 extends ServletApi {
 	public void completeAsyncContext(HttpServletRequest request) {
 
 	}
-	
-	public void startAsync(HttpServletRequest request) {
-		throw new RuntimeException("Server-push is not implemented with the servlet-2.5 API");
-	}
 
 	public void doHandleRequest(WtServlet servlet, HttpServletRequest request,
 			HttpServletResponse response) {

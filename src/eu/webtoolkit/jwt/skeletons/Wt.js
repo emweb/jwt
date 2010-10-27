@@ -42,11 +42,23 @@ this.arrayRemove = function(a, from, to) {
   return a.push.apply(a, rest);
 };
 
+var ie = (function(){
+    var undef,
+        v = 3,
+        div = document.createElement('div'),
+        all = div.getElementsByTagName('i');
 
-this.isIE = navigator.userAgent.toLowerCase().indexOf("msie") != -1
-  && navigator.userAgent.toLowerCase().indexOf("opera") == -1;
-this.isIE6 = this.isIE
-  && (navigator.userAgent.toLowerCase().indexOf("msie 6") != -1);
+    while (
+        div.innerHTML = '<!--[if gt IE ' + (++v) + ']><i></i><![endif]-->',
+        all[0]
+    ) {}
+
+    return v > 4 ? v : undef;
+}());
+
+this.isIE = ie !== undefined;
+this.isIE6 = ie === 6;
+this.isIElt9 = ie < 9;
 this.isGecko = navigator.userAgent.toLowerCase().indexOf("gecko") != -1;
 this.isIEMobile = navigator.userAgent.toLowerCase().indexOf("msie 4") != -1
   || navigator.userAgent.toLowerCase().indexOf("msie 5") != -1;
@@ -288,6 +300,18 @@ this.windowCoordinates = function(e) {
   return { x: cx, y: cy };
 }
 
+this.wheelDelta = function(e) {
+  var delta = 0;
+  if (e.wheelDelta) { /* IE/Opera. */
+    delta = e.wheelDelta > 0 ? 1 : -1;
+    /* if (window.opera)
+       delta = -delta; */
+  } else if (e.detail) {
+    delta = e.detail < 0 ? 1 : -1;
+  }
+  return delta;
+}
+
 this.scrollIntoView = function(id) {
   var obj = document.getElementById(id);
   if (obj && obj.scrollIntoView)
@@ -511,7 +535,7 @@ function delegateCapture(e) {
      * target; on other browsers we can just rely on event bubbling.
      */
     if (p == captureElement)
-      return WT.isIE ? t : null;
+      return WT.isIElt9 ? t : null;
     else
       return captureElement;
   } else
@@ -526,7 +550,7 @@ function mouseMove(e) {
   if (d && !delegating) {
     if (!e) e = window.event;
     delegating = true;
-    if (WT.isIE) {
+    if (WT.isIElt9) {
       WT.firedTarget = e.srcElement || d;
       d.fireEvent('onmousemove', e);
       WT.firedTarget = null;
@@ -545,7 +569,7 @@ function mouseUp(e) {
   if (d) {
     if (!e) e = window.event;
 
-    if (WT.isIE) {
+    if (WT.isIElt9) {
       WT.firedTarget = e.srcElement || d;
       d.fireEvent('onmouseup', e);
       WT.firedTarget = null;
@@ -784,6 +808,9 @@ this.fitToWindow = function(e, x, y, rightx, bottomy) {
 
 this.positionXY = function(id, x, y) {
   var w = WT.getElement(id);
+
+  w.style.display = '';
+
   if (!WT.isHidden(w))
     WT.fitToWindow(w, x, y, x, y);
 };
@@ -802,6 +829,7 @@ this.positionAtWidget = function(id, atId, orientation, parentInRoot) {
     $('.Wt-domRoot').get(0).appendChild(w);
   }
 
+  w.style.position='absolute';
   w.style.display='block';
 
   if (orientation == WT.Horizontal) {
@@ -817,6 +845,8 @@ this.positionAtWidget = function(id, atId, orientation, parentInRoot) {
   }
 
   WT.fitToWindow(w, x, y, rightx, bottomy);
+
+  w.style.visibility='';
 };
 
 this.hasFocus = function(el) {
@@ -832,7 +862,7 @@ http://developer.yahoo.net/yui/license.txt
 version: 2.5.2
 */
   var _UAwebkit = false;
-  var _UAie = false;
+  var _UAie = self.isIElt9;
   var _UAopera = false;
   var _onLoadFn = null;
   var _histFrame = null;
@@ -995,9 +1025,7 @@ version: 2.5.2
     if (vendor === "KDE") {
     } else if (typeof window.opera !== "undefined")
       _UAopera = true;
-    else if (typeof document.all !== "undefined")
-      _UAie = true;
-    else if (vendor.indexOf("Apple Computer, Inc.") > -1)
+    else if (!_UAie && vendor.indexOf("Apple Computer, Inc.") > -1)
       _UAwebkit = true;
 
     /*
@@ -1333,14 +1361,7 @@ function encodeEvent(event, i) {
     result += se + 'documentX=' + posX + se + 'documentY=' + posY;
     result += se + 'dragdX=' + (posX - downX) + se + 'dragdY=' + (posY - downY);
 
-    var delta = 0;
-    if (e.wheelDelta) { /* IE/Opera. */
-      delta = e.wheelDelta > 0 ? 1 : -1;
-      /* if (window.opera)
-	delta = -delta; */
-    } else if (e.detail) {
-      delta = e.detail < 0 ? 1 : -1;
-    }
+    var delta = WT.wheelDelta(e);
     result += se + 'wheel=' + delta;
   }
 
@@ -1775,8 +1796,18 @@ function jsLoaded(path)
   }
 };
 
-function loadScript(uri, symbol)
+function loadScript(uri, symbol, tries)
 {
+  function onerror() {
+    var t = tries === undefined ? 2 : tries;
+    if (t > 1) {
+      loadScript(uri, symbol, t - 1);
+    } else {
+      alert('Fatal error: failed loading ' + uri);
+      quit();
+    }
+  }
+
   var loaded = false;
   if (symbol != "") {
     try {
@@ -1789,11 +1820,13 @@ function loadScript(uri, symbol)
   if (!loaded) {
     var s = document.createElement('script');
     s.setAttribute('src', uri);
-    s.onload = function() { jsLoaded(uri);};
+    s.onload = function() { jsLoaded(uri); };
+    s.onerror = onerror;
     s.onreadystatechange = function() {
-      if (s.readyState == 'complete' || s.readyState == 'loaded') {
+      if (s.readyState == 'loaded')
+	onerror();
+      else if (s.readyState == 'complete')
 	jsLoaded(uri);
-      }
     };
     var h = document.getElementsByTagName('head')[0];
     h.appendChild(s);

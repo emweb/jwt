@@ -144,7 +144,7 @@ public class WApplication extends WObject {
 		this.newInternalPath_ = "";
 		this.internalPathChanged_ = new Signal1<String>(this);
 		this.serverPush_ = 0;
-		this.shouldTriggerUpdate_ = false;
+		this.modifiedWithoutEvent_ = false;
 		this.javaScriptClass_ = "Wt";
 		this.dialogCover_ = null;
 		this.quited_ = false;
@@ -185,8 +185,7 @@ public class WApplication extends WObject {
 		this.newInternalPath_ = this.getEnvironment().getInternalPath();
 		this.internalPathIsChanged_ = false;
 		this.setLocalizedStrings((WLocalizedStrings) null);
-		if (this.getEnvironment().agentIsIE()
-				&& !this.getEnvironment().hasJavaScript()) {
+		if (this.getEnvironment().agentIsIElt(9)) {
 			this.addMetaHeader(MetaHeaderType.MetaHttpHeader,
 					"X-UA-Compatible", "IE=7");
 		}
@@ -230,7 +229,7 @@ public class WApplication extends WObject {
 		}
 		this.styleSheet_.addRule("iframe.Wt-resource",
 				"width: 0px; height: 0px; border: 0px;");
-		if (this.getEnvironment().agentIsIE()) {
+		if (this.getEnvironment().agentIsIElt(9)) {
 			this.styleSheet_
 					.addRule(
 							"iframe.Wt-shim",
@@ -419,8 +418,15 @@ public class WApplication extends WObject {
 				case IE6:
 					thisVersion = 6;
 					break;
-				default:
+				case IE7:
 					thisVersion = 7;
+					break;
+				case IE8:
+					thisVersion = 8;
+					break;
+				default:
+					thisVersion = 9;
+					break;
 				}
 				final int lte = 0;
 				final int lt = 1;
@@ -594,7 +600,7 @@ public class WApplication extends WObject {
 	 * @see WApplication#getTitle()
 	 */
 	public void setTitle(CharSequence title) {
-		if (this.getSession().getRenderer().isPreLearning()
+		if (this.session_.getRenderer().isPreLearning()
 				|| !this.title_.equals(title)) {
 			this.title_ = WString.toWString(title);
 			this.titleChanged_ = true;
@@ -1087,7 +1093,7 @@ public class WApplication extends WObject {
 	 * Returns the URL at which the resources are deployed.
 	 */
 	public static String getResourcesUrl() {
-		String path = WApplication.getInstance().session_.getController()
+		String path = WebSession.getInstance().getController()
 				.getConfiguration().getProperty(WApplication.RESOURCES_URL);
 		if (path == "/wt-resources/") {
 			String result = WApplication.getInstance().getEnvironment()
@@ -1218,10 +1224,10 @@ public class WApplication extends WObject {
 	 * <p>
 	 * 
 	 * @see WApplication#enableUpdates(boolean enabled)
-	 * @see WApplication#getUpdateLock()
+	 * @see UpdateLock
 	 */
 	public void triggerUpdate() {
-		if (!this.shouldTriggerUpdate_) {
+		if (!this.modifiedWithoutEvent_) {
 			return;
 		}
 		if (this.serverPush_ > 0) {
@@ -1233,11 +1239,11 @@ public class WApplication extends WObject {
 	}
 
 	/**
-	 * A synchronisation lock for manipulating and updating the application and
+	 * A synchronization lock for manipulating and updating the application and
 	 * its widgets outside of the event loop.
 	 * <p>
 	 * 
-	 * You need to get this lock only when you want to manipulate widgets
+	 * You need to take this lock only when you want to manipulate widgets
 	 * outside of the event loop. Inside the event loop, this lock is already
 	 * held by the library itself.
 	 * <p>
@@ -1246,13 +1252,13 @@ public class WApplication extends WObject {
 	 */
 	public static class UpdateLock {
 		/**
-		 * Releases the scope dependent lock.
+		 * Releases the lock.
 		 */
 		public void release() {
 			System.err.append("Releasing update lock").append('\n');
-			if (WApplication.getInstance().shouldTriggerUpdate_) {
+			if (WApplication.getInstance().modifiedWithoutEvent_) {
 				System.err.append("Releasing handler").append('\n');
-				WApplication.getInstance().shouldTriggerUpdate_ = false;
+				WApplication.getInstance().modifiedWithoutEvent_ = false;
 				WebSession.Handler.getInstance().release();
 			}
 		}
@@ -1260,20 +1266,22 @@ public class WApplication extends WObject {
 		private UpdateLock(WApplication app) {
 			System.err.append("Grabbing update lock").append('\n');
 			WebSession.Handler handler = WebSession.Handler.getInstance();
-			if (!(handler != null) || !handler.isHaveLock()
-					|| handler.getSession() != app.session_) {
-				System.err.append(
-						"Creating new handler for app: app.sessionId()")
-						.append('\n');
-				new WebSession.Handler(app.getSession(), true);
-				app.shouldTriggerUpdate_ = true;
+			if (handler != null && handler.isHaveLock()
+					&& handler.getSession() == app.session_) {
+				return;
 			}
+			System.err.append("Creating new handler for app: app.sessionId()")
+					.append('\n');
+			new WebSession.Handler(app.session_, true);
+			app.modifiedWithoutEvent_ = true;
 		}
 	}
 
 	/**
 	 * Grabs and returns the lock for manipulating widgets outside the event
-	 * loop.
+	 * loop. java.
+	 * <p>
+	 * cpp
 	 * <p>
 	 * You need to keep this lock in scope while manipulating widgets outside of
 	 * the event loop. In normal cases, inside the JWt event loop, you do not
@@ -1281,7 +1289,7 @@ public class WApplication extends WObject {
 	 * <p>
 	 * 
 	 * @see WApplication#enableUpdates(boolean enabled)
-	 * @see WApplication#triggerUpdate()
+	 * @see WApplication#triggerUpdate() cpp
 	 */
 	public WApplication.UpdateLock getUpdateLock() {
 		return new WApplication.UpdateLock(this);
@@ -1294,17 +1302,16 @@ public class WApplication extends WObject {
 	 * getInstance()} uses thread-local data to retrieve the application object
 	 * that corresponds to the session currently being handled by the thread.
 	 * This is set automatically by the library whenever an event is delivered
-	 * to the application, or when you use the
-	 * {@link WApplication#getUpdateLock() getUpdateLock()} to modify the
+	 * to the application, or when you use the {@link UpdateLock} to modify the
 	 * application from an auxiliary thread outside the normal event loop.
 	 * <p>
 	 * When you want to manipulate the widget tree inside the main event loop,
 	 * but from within an auxiliary thread, then you cannot use the
-	 * {@link WApplication#getUpdateLock() getUpdateLock()} since this will
-	 * create an immediate dead lock. Instead, you may attach the auxiliary
-	 * thread to the application, by calling this method from the auxiliary
-	 * thread, and in this way you can modify the application from within that
-	 * thread without needing the update lock.
+	 * {@link UpdateLock} since this will create an immediate dead lock.
+	 * Instead, you may attach the auxiliary thread to the application, by
+	 * calling this method from the auxiliary thread, and in this way you can
+	 * modify the application from within that thread without needing the update
+	 * lock.
 	 */
 	public void attachThread() {
 		WebSession.Handler.attachThreadToSession(this.session_);
@@ -1455,7 +1462,7 @@ public class WApplication extends WObject {
 	 * no value was configured, the default <code>value</code> is returned.
 	 */
 	public static String readConfigurationProperty(String name, String value) {
-		String property = WApplication.getInstance().session_.getController()
+		String property = WebSession.getInstance().getController()
 				.getConfiguration().getProperty(name);
 		if (property != null) {
 			return property;
@@ -1804,7 +1811,7 @@ public class WApplication extends WObject {
 	 * 
 	 * @see WApplication#requestTooLarge()
 	 */
-	public int getMaximumRequestSize() {
+	public long getMaximumRequestSize() {
 		return this.session_.getController().getConfiguration()
 				.getMaxRequestSize() * 1024;
 	}
@@ -1992,7 +1999,7 @@ public class WApplication extends WObject {
 	 * the session.
 	 */
 	protected void notify(WEvent e) throws IOException {
-		this.session_.notify(e);
+		WebSession.getInstance().notify(e);
 	}
 
 	/**
@@ -2114,7 +2121,7 @@ public class WApplication extends WObject {
 	Signal1<String> internalPathChanged_;
 	boolean internalPathIsChanged_;
 	private int serverPush_;
-	private boolean shouldTriggerUpdate_;
+	boolean modifiedWithoutEvent_;
 	private String javaScriptClass_;
 	private WApplication.AjaxMethod ajaxMethod_;
 	private WContainerWidget dialogCover_;

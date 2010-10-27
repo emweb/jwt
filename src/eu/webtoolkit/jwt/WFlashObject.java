@@ -193,7 +193,7 @@ public class WFlashObject extends WWebWidget {
 			}
 			obj.setId(this.getId() + "_flash");
 			obj.setAttribute("type", "application/x-shockwave-flash");
-			if (!WApplication.getInstance().getEnvironment().agentIsIE()) {
+			if (!WApplication.getInstance().getEnvironment().agentIsIElt(9)) {
 				obj.setAttribute("data", this.url_);
 			}
 			if (this.getWidth().isAuto()) {
@@ -229,7 +229,7 @@ public class WFlashObject extends WWebWidget {
 					obj.addChild(param);
 				}
 			}
-			if (WApplication.getInstance().getEnvironment().agentIsIE()) {
+			if (WApplication.getInstance().getEnvironment().agentIsIElt(9)) {
 				obj.setAttribute("classid",
 						"clsid:D27CDB6E-AE6D-11cf-96B8-444553540000");
 				DomElement param = DomElement
@@ -260,7 +260,7 @@ public class WFlashObject extends WWebWidget {
 			if (this.alternative_ != null) {
 				if (WApplication.getInstance().getEnvironment().hasJavaScript()
 						&& WApplication.getInstance().getEnvironment()
-								.agentIsIE()) {
+								.agentIsIElt(9)) {
 					DomElement dummyDiv = DomElement
 							.createNew(DomElementType.DomElement_DIV);
 					dummyDiv.setId(this.alternative_.getId());

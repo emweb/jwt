@@ -50,6 +50,7 @@ public class WTestEnvironment extends WEnvironment {
 	 */
 	public WTestEnvironment(Configuration configuration, EntryPointType type) {
 		super();
+		this.theSession_ = null;
 		List<String> dummy = new ArrayList<String>();
 		this.configuration_ = configuration;
 		this.controller_ = new TestController(configuration);
@@ -287,13 +288,14 @@ public class WTestEnvironment extends WEnvironment {
 	}
 
 	private Configuration configuration_;
-	private WebSession session;
+	private WebSession theSession_;
 	private WtServlet controller_;
 
 	private void init(EntryPointType type) {
 		this.session_ = new WebSession(this.controller_, "testwtd", type, "",
 				(WebRequest) null, this);
-		new WebSession.Handler(this.session_, true);
+		this.theSession_ = this.session_;
+		new WebSession.Handler(this.theSession_, true);
 		this.doesAjax_ = true;
 		this.doesCookies_ = true;
 		this.dpiScale_ = 1;

@@ -10,7 +10,6 @@ import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
-import eu.webtoolkit.jwt.AbstractSignal.Connection;
 import eu.webtoolkit.jwt.Signal.Listener;
 
 /**
@@ -130,10 +129,8 @@ public abstract class AbstractEventSignal extends AbstractSignal {
 	 * A listener whose behavior is entirely and solely defined using client-side JavaScript,
 	 * and which will not generate a request to the server.
 	 * <p>
-	 * This class provides functionality similar to {@link JSlot} (in fact, JSlot is implemented
-	 * using this listener).
 	 * 
-	 * @see AbstractEventSignal#addListener(WObject, LearningListener)
+	 * @see AbstractEventSignal#addListener(String)
 	 */
 	public static class JavaScriptListener extends LearningListener {
 
@@ -463,6 +460,25 @@ public abstract class AbstractEventSignal extends AbstractSignal {
 	 */
 	public void addListener(JSlot slot) {
 		addListener(null, slot.getSlotimp());
+	}
+
+	/**
+	 * Adds a JavaScript event listener.
+	 * 
+	 * This adds a listener that is implemented solely as a client-side JavaScript function.
+	 * The argument is a JavaScript function which optinally accepts a DOM element and the
+	 * event:
+	 * <pre>
+	 *   function(element, event)
+	 *   {
+	 *      ...
+	 *   }
+	 * </pre>
+	 * 
+	 * @param javascript the JavaScript function.
+	 */
+	public void addListener(String javascript) {
+		addListener(null, new JavaScriptListener(null, null, "(" + javascript + ")(o,e);"));
 	}
 
 	/**

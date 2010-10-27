@@ -123,6 +123,7 @@ public class WPopupMenu extends WCompositeWidget {
 		this
 				.setImplementation(this.impl_ = new WTemplate(new WString(
 						TEMPLATE)));
+		this.impl_.setLoadLaterWhenInvisible(false);
 		this.setPositionScheme(PositionScheme.Absolute);
 		this.setStyleClass("Wt-popupmenu Wt-outset");
 		this.impl_.bindString("shadow-x1-x2", WTemplate.DropShadow_x1_x2);
@@ -235,6 +236,7 @@ public class WPopupMenu extends WCompositeWidget {
 	 */
 	public void popup(WPoint p) {
 		this.popupImpl();
+		this.hide();
 		WApplication.getInstance().doJavaScript(
 				"Wt3_1_6.positionXY('" + this.getId() + "',"
 						+ String.valueOf(p.getX()) + ","
@@ -357,6 +359,9 @@ public class WPopupMenu extends WCompositeWidget {
 
 	public void setHidden(boolean hidden) {
 		super.setHidden(hidden);
+		if (hidden) {
+			this.renderOutAll();
+		}
 	}
 
 	/**
@@ -397,6 +402,7 @@ public class WPopupMenu extends WCompositeWidget {
 
 	void done(WPopupMenuItem result) {
 		this.result_ = result;
+		this.show();
 		this.hide();
 		WApplication.getInstance().getRoot().clicked().disconnect(
 				this.globalClickConnection_);
@@ -407,6 +413,7 @@ public class WPopupMenu extends WCompositeWidget {
 	}
 
 	private void popupImpl() {
+		this.renderOutAll();
 		this.result_ = null;
 		WApplication app = WApplication.getInstance();
 		if (app.globalEscapePressed().isConnected()) {

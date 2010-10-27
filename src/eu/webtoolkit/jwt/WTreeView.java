@@ -182,12 +182,7 @@ public class WTreeView extends WAbstractItemView {
 		this.itemEvent_ = new JSignal6<String, Integer, String, String, String, WMouseEvent>(
 				this.impl_, "itemEvent") {
 		};
-		this.tieContentsHeaderScrollJS_ = new JSlot(this);
 		this.tieRowsScrollJS_ = new JSlot();
-		this.itemClickedJS_ = new JSlot(this);
-		this.itemDoubleClickedJS_ = new JSlot(this);
-		this.itemMouseDownJS_ = new JSlot(this);
-		this.itemMouseUpJS_ = new JSlot(this);
 		this.setSelectable(false);
 		this.expandConfig_ = new ToggleButtonConfig(this);
 		this.expandConfig_.addState("Wt-expand");
@@ -829,12 +824,7 @@ public class WTreeView extends WAbstractItemView {
 	private int removedHeight_;
 	private JSignal6<String, Integer, String, String, String, WMouseEvent> itemEvent_;
 	ToggleButtonConfig expandConfig_;
-	private JSlot tieContentsHeaderScrollJS_;
 	private JSlot tieRowsScrollJS_;
-	private JSlot itemClickedJS_;
-	private JSlot itemDoubleClickedJS_;
-	private JSlot itemMouseDownJS_;
-	private JSlot itemMouseUpJS_;
 
 	WAbstractItemView.ColumnInfo createColumnInfo(int column) {
 		WAbstractItemView.ColumnInfo ci = super.createColumnInfo(column);
@@ -920,15 +910,13 @@ public class WTreeView extends WAbstractItemView {
 		this.rootNode_.resize(new WLength(100, WLength.Unit.Percentage),
 				new WLength(1));
 		if (WApplication.getInstance().getEnvironment().hasAjax()) {
-			this.rootNode_.clicked().addListener(this.itemClickedJS_);
-			this.rootNode_.doubleClicked().addListener(
-					this.itemDoubleClickedJS_);
+			this.connectObjJS(this.rootNode_.clicked(), "click");
+			this.connectObjJS(this.rootNode_.doubleClicked(), "dblClick");
 			if (this.mouseWentDown().isConnected() || this.dragEnabled_) {
-				this.rootNode_.mouseWentDown().addListener(
-						this.itemMouseDownJS_);
+				this.connectObjJS(this.rootNode_.mouseWentDown(), "mouseDown");
 			}
 			if (this.mouseWentUp().isConnected()) {
-				this.rootNode_.mouseWentUp().addListener(this.itemMouseUpJS_);
+				this.connectObjJS(this.rootNode_.mouseWentUp(), "mouseUp");
 			}
 		}
 		this.setRootNodeStyle();
@@ -970,8 +958,16 @@ public class WTreeView extends WAbstractItemView {
 							WTreeView.this.onViewportChange(e1);
 						}
 					});
-			this.contentsContainer_.scrolled().addListener(
-					this.tieContentsHeaderScrollJS_);
+			this.contentsContainer_
+					.scrolled()
+					.addListener(
+							"function(obj, event) {"
+									+ this.headerContainer_.getJsRef()
+									+ ".scrollLeft=obj.scrollLeft;var t = "
+									+ this.contents_.getJsRef()
+									+ ".firstChild;var h = "
+									+ this.headers_.getJsRef()
+									+ ";h.style.width = (t.offsetWidth - 1) + 'px';h.style.width = t.offsetWidth + 'px';}");
 			this.contentsContainer_.addWidget(this.contents_);
 			layout.addWidget(this.headerContainer_);
 			layout.addWidget(this.contentsContainer_, 1);
@@ -990,20 +986,6 @@ public class WTreeView extends WAbstractItemView {
 			this.resize(this.getWidth(), this.getHeight());
 		}
 		this.setRowHeight(this.getRowHeight());
-		this.bindObjJS(this.itemClickedJS_, "click");
-		this.bindObjJS(this.itemDoubleClickedJS_, "dblClick");
-		this.bindObjJS(this.itemMouseDownJS_, "mouseDown");
-		this.bindObjJS(this.itemMouseUpJS_, "mouseUp");
-		if (this.headerContainer_ != null) {
-			this.tieContentsHeaderScrollJS_
-					.setJavaScript("function(obj, event) {"
-							+ this.headerContainer_.getJsRef()
-							+ ".scrollLeft=obj.scrollLeft;var t = "
-							+ this.contents_.getJsRef()
-							+ ".firstChild;var h = "
-							+ this.headers_.getJsRef()
-							+ ";h.style.width = (t.offsetWidth - 1) + 'px';h.style.width = t.offsetWidth + 'px';}");
-		}
 	}
 
 	void scheduleRerender(WAbstractItemView.RenderState what) {

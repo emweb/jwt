@@ -7,6 +7,7 @@
     <display-name>JWt Composer example</display-name>
     <description>JWt Composer example</description>
     <servlet-class>eu.webtoolkit.jwt.examples.composer.ComposerMain</servlet-class>
+    <async-supported>true</async-supported>
   </servlet>
   <servlet-mapping>
     <servlet-name>Composer</servlet-name>

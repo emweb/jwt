@@ -42,9 +42,11 @@ public class WProgressBar extends WInteractWidget {
 		this.min_ = 0;
 		this.max_ = 100;
 		this.value_ = 0;
+		this.format_ = new WString();
 		this.changed_ = false;
 		this.valueChanged_ = new Signal1<Double>();
 		this.progressCompleted_ = new Signal();
+		this.format_ = new WString("%.0f %%");
 		this.setStyleClass("Wt-progressbar");
 		this.setInline(true);
 	}
@@ -144,15 +146,43 @@ public class WProgressBar extends WInteractWidget {
 	}
 
 	/**
+	 * Sets the progress format string.
+	 * <p>
+	 * The format is used by {@link WProgressBar#getText() getText()} to
+	 * indicate the progress value.
+	 * <p>
+	 * The default value is &quot;%.0f %%&quot;
+	 */
+	public void setFormat(CharSequence format) {
+		this.format_ = WString.toWString(format);
+	}
+
+	/**
+	 * Returns the progress format string.
+	 * <p>
+	 * 
+	 * @see WProgressBar#setFormat(CharSequence format)
+	 */
+	public WString getFormat() {
+		return this.format_;
+	}
+
+	/**
 	 * Returns the text displayed inside the progress bar.
 	 * <p>
 	 * This text must be an XHTML formatted text fragment. The default text
-	 * prints the current progress as a percentage. You may want to reimplement
-	 * this method to display a different text corresponding to the current
+	 * prints the current progress using {@link WProgressBar#getFormat()
+	 * getFormat()}. You may want to reimplement this method to display a
+	 * different text corresponding to the current
 	 * {@link WProgressBar#getValue() getValue()}.
 	 */
-	public WString getText() {
-		return new WString(String.valueOf((int) this.getPercentage()));
+	public String getText() {
+		String f = this.format_.toString();
+		int buflen = f.length() + 5;
+		String buf = String.format(f, this.getPercentage());
+		String result = buf;
+		;
+		return result;
 	}
 
 	/**
@@ -181,6 +211,14 @@ public class WProgressBar extends WInteractWidget {
 		return this.progressCompleted_;
 	}
 
+	public void resize(WLength width, WLength height) {
+		super.resize(width, height);
+		if (!height.isAuto()) {
+			this.setAttributeValue("style", "line-height: "
+					+ height.getCssText());
+		}
+	}
+
 	void updateDom(DomElement element, boolean all) {
 		DomElement bar = null;
 		DomElement label = null;
@@ -204,7 +242,7 @@ public class WProgressBar extends WInteractWidget {
 			bar.setProperty(Property.PropertyStyleWidth, String.valueOf(this
 					.getPercentage())
 					+ "%");
-			WString s = this.getText();
+			WString s = new WString(this.getText());
 			removeScript(s);
 			label.setProperty(Property.PropertyInnerHTML, s.toString());
 			this.changed_ = false;
@@ -230,7 +268,9 @@ public class WProgressBar extends WInteractWidget {
 	private double min_;
 	private double max_;
 	private double value_;
+	private WString format_;
 	private boolean changed_;
+	// private void onChange() ;
 	private Signal1<Double> valueChanged_;
 	private Signal progressCompleted_;
 

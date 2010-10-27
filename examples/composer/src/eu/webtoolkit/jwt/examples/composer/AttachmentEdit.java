@@ -8,6 +8,7 @@ package eu.webtoolkit.jwt.examples.composer;
 import java.io.File;
 import java.util.EnumSet;
 
+import eu.webtoolkit.jwt.AlignmentFlag;
 import eu.webtoolkit.jwt.Side;
 import eu.webtoolkit.jwt.Signal;
 import eu.webtoolkit.jwt.Signal1;
@@ -17,6 +18,8 @@ import eu.webtoolkit.jwt.WFileUpload;
 import eu.webtoolkit.jwt.WFont;
 import eu.webtoolkit.jwt.WLength;
 import eu.webtoolkit.jwt.WMouseEvent;
+import eu.webtoolkit.jwt.WProgressBar;
+import eu.webtoolkit.jwt.WString;
 import eu.webtoolkit.jwt.WText;
 
 /**
@@ -39,6 +42,12 @@ public class AttachmentEdit extends WContainerWidget {
          * The file upload itself.
          */
         upload_ = new WFileUpload(this);
+        
+        WProgressBar progress = new WProgressBar();
+        progress.setFormat(WString.Empty);
+        progress.setVerticalAlignment(AlignmentFlag.AlignMiddle);
+        upload_.setProgressBar(progress);
+        
         upload_.setFileTextSize(40);
 
         /*

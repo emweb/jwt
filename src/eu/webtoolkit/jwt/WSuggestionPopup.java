@@ -297,11 +297,6 @@ public class WSuggestionPopup extends WCompositeWidget {
 		};
 		this.jactivated_ = new JSignal2<String, String>(this.impl_, "select") {
 		};
-		this.editKeyDown_ = new JSlot(parent);
-		this.editKeyUp_ = new JSlot(parent);
-		this.editClick_ = new JSlot(parent);
-		this.editMouseMove_ = new JSlot(parent);
-		this.delayHide_ = new JSlot(parent);
 		this.edits_ = new ArrayList<WFormWidget>();
 		this.init();
 	}
@@ -341,11 +336,6 @@ public class WSuggestionPopup extends WCompositeWidget {
 		};
 		this.jactivated_ = new JSignal2<String, String>(this.impl_, "select") {
 		};
-		this.editKeyDown_ = new JSlot(parent);
-		this.editKeyUp_ = new JSlot(parent);
-		this.editClick_ = new JSlot(parent);
-		this.editMouseMove_ = new JSlot(parent);
-		this.delayHide_ = new JSlot(parent);
 		this.edits_ = new ArrayList<WFormWidget>();
 		this.init();
 	}
@@ -376,10 +366,12 @@ public class WSuggestionPopup extends WCompositeWidget {
 	 */
 	public void forEdit(WFormWidget edit,
 			EnumSet<WSuggestionPopup.PopupTrigger> triggers) {
-		edit.keyPressed().addListener(this.editKeyDown_);
-		edit.keyWentDown().addListener(this.editKeyDown_);
-		edit.keyWentUp().addListener(this.editKeyUp_);
-		edit.blurred().addListener(this.delayHide_);
+		AbstractEventSignal b = edit.keyPressed();
+		AbstractEventSignal c = edit.clicked();
+		this.connectObjJS(edit.keyPressed(), "editKeyDown");
+		this.connectObjJS(edit.keyWentDown(), "editKeyDown");
+		this.connectObjJS(edit.keyWentUp(), "editKeyUp");
+		this.connectObjJS(edit.blurred(), "delayHide");
 		if (!EnumUtils.mask(triggers, WSuggestionPopup.PopupTrigger.Editing)
 				.isEmpty()) {
 			edit.addStyleClass("Wt-suggest-onedit");
@@ -387,8 +379,8 @@ public class WSuggestionPopup extends WCompositeWidget {
 		if (!EnumUtils.mask(triggers,
 				WSuggestionPopup.PopupTrigger.DropDownIcon).isEmpty()) {
 			edit.addStyleClass("Wt-suggest-dropdown");
-			edit.clicked().addListener(this.editClick_);
-			edit.mouseMoved().addListener(this.editMouseMove_);
+			this.connectObjJS(edit.clicked(), "editClick");
+			this.connectObjJS(edit.mouseMoved(), "editMouseMove");
 		}
 		this.edits_.add(edit);
 	}
@@ -692,11 +684,6 @@ public class WSuggestionPopup extends WCompositeWidget {
 	private List<AbstractSignal.Connection> modelConnections_;
 	private JSignal1<String> filter_;
 	private JSignal2<String, String> jactivated_;
-	private JSlot editKeyDown_;
-	private JSlot editKeyUp_;
-	private JSlot editClick_;
-	private JSlot editMouseMove_;
-	private JSlot delayHide_;
 	private List<WFormWidget> edits_;
 
 	private void init() {
@@ -709,11 +696,6 @@ public class WSuggestionPopup extends WCompositeWidget {
 		this.content_.setStyleClass("content");
 		this.setAttributeValue("style", "z-index: 10000");
 		this.setPositionScheme(PositionScheme.Absolute);
-		this.setJavaScript(this.editKeyDown_, "editKeyDown");
-		this.setJavaScript(this.editKeyUp_, "editKeyUp");
-		this.setJavaScript(this.delayHide_, "delayHide");
-		this.setJavaScript(this.editClick_, "editClick");
-		this.setJavaScript(this.editMouseMove_, "editMouseMove");
 		this.hide();
 		this.setModel(new WStringListModel(this));
 		this.filter_.addListener(this, new Signal1.Listener<String>() {
@@ -761,11 +743,11 @@ public class WSuggestionPopup extends WCompositeWidget {
 				"WSuggestionPopup activate for bogus item");
 	}
 
-	private void setJavaScript(JSlot slot, String methodName) {
+	private void connectObjJS(AbstractEventSignal s, String methodName) {
 		String jsFunction = "function(obj, event) {var o = jQuery.data("
 				+ this.getJsRef() + ", 'obj');if (o) o." + methodName
 				+ "(obj, event);}";
-		slot.setJavaScript(jsFunction);
+		s.addListener(jsFunction);
 	}
 
 	private void modelRowsInserted(WModelIndex parent, int start, int end) {

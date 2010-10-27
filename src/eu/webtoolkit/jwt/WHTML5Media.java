@@ -92,6 +92,7 @@ public abstract class WHTML5Media extends WInteractWidget {
 		this.flagsChanged_ = false;
 		this.preloadChanged_ = false;
 		this.sourcesChanged_ = false;
+		this.playing_ = false;
 		this.setInline(false);
 		this.setFormObject(true);
 		WApplication app = WApplication.getInstance();
@@ -310,6 +311,13 @@ public abstract class WHTML5Media extends WInteractWidget {
 	}
 
 	/**
+	 * Returns whether the media is playing.
+	 */
+	public boolean isPlaying() {
+		return this.playing_;
+	}
+
+	/**
 	 * Event signal emitted when playback has begun.
 	 * <p>
 	 * This event fires when play was invoked, or when the media element starts
@@ -410,7 +418,7 @@ public abstract class WHTML5Media extends WInteractWidget {
 		if (this.isInLayout()) {
 			this.setJavaScriptMember(WT_RESIZE_JS, "function() {}");
 		}
-		if (app.getEnvironment().agentIsIE()
+		if (app.getEnvironment().agentIsIElt(9)
 				|| app.getEnvironment().getAgent() == WEnvironment.UserAgent.MobileWebKitAndroid) {
 			result = DomElement.createNew(DomElementType.DomElement_DIV);
 			if (this.alternative_ != null) {
@@ -467,6 +475,13 @@ public abstract class WHTML5Media extends WInteractWidget {
 		}
 		this.setId(result, app);
 		this.updateDom(result, true);
+		if (this.isInLayout()) {
+			result.setEvent(PLAYBACKSTARTED_SIGNAL, "");
+			result.setEvent(PLAYBACKPAUSED_SIGNAL, "");
+			result.setEvent(ENDED_SIGNAL, "");
+			result.setEvent(TIMEUPDATED_SIGNAL, "");
+			result.setEvent(VOLUMECHANGED_SIGNAL, "");
+		}
 		this.setJavaScriptMember("mediaId", "'" + this.mediaId_ + "'");
 		return result;
 	}
@@ -514,6 +529,7 @@ public abstract class WHTML5Media extends WInteractWidget {
 				break;
 			}
 		}
+		this.updateEventSignals(element, all);
 		if (all) {
 			if (this.alternative_ != null) {
 				element.addChild(this.alternative_
@@ -556,15 +572,16 @@ public abstract class WHTML5Media extends WInteractWidget {
 				boolean paused;
 				boolean ended;
 				try {
-					volume = Float.parseFloat(attributes.get(0));
+					volume = Double.parseDouble(attributes.get(0));
 					current = Double.parseDouble(attributes.get(1));
 					duration = Double.parseDouble(attributes.get(2));
 					paused = attributes.get(3).equals("1");
 					ended = attributes.get(4).equals("1");
+					this.playing_ = !paused;
 				} catch (NumberFormatException e) {
-					bad = true;
-				}
-				if (!bad) {
+					WApplication.getInstance().log("error").append(
+							"WHTML5Media: could not parse form data: ").append(
+							formData.values[0]);
 				}
 			}
 		}
@@ -639,6 +656,7 @@ public abstract class WHTML5Media extends WInteractWidget {
 	private boolean flagsChanged_;
 	private boolean preloadChanged_;
 	private boolean sourcesChanged_;
+	private boolean playing_;
 
 	static String wtjs1(WApplication app) {
 		return "Wt3_1_6.WHTML5Media = function(c,b){jQuery.data(b,\"obj\",this);this.alternativeEl=this.mediaEl=null;this.play=function(){if(b.mediaId){var a=$(\"#\"+b.mediaId).get(0);if(a){a.play();return}}if(b.alternativeId)(a=$(\"#\"+b.alternativeId).get(0))&&a.WtPlay&&a.WtPlay()};this.pause=function(){if(b.mediaId){var a=$(\"#\"+b.mediaId).get(0);if(a){a.pause();return}}if(b.alternativeId)(a=$(\"#\"+b.alternativeId).get(0))&&a.WtPlay&&a.WtPause()}};";

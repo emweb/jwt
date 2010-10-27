@@ -187,8 +187,8 @@ class WebRenderer implements SlotLearnerInterface {
 	public void ackUpdate(int updateId) {
 		if (updateId == this.expectedAckId_) {
 			this.setJSSynced(false);
+			++this.expectedAckId_;
 		}
-		++this.expectedAckId_;
 	}
 
 	public void streamRedirectJS(Writer out, String redirect)
@@ -260,9 +260,10 @@ class WebRenderer implements SlotLearnerInterface {
 		this.setHeaders(response, "text/javascript; charset=UTF-8");
 		this.collectJavaScript();
 		response.out().append(this.collectedJS1_.toString()).append(
+				this.collectedJS2_.toString()).append(
 				this.session_.getApp().getJavaScriptClass()).append(
 				"._p_.response(").append(String.valueOf(this.expectedAckId_))
-				.append(");").append(this.collectedJS2_.toString());
+				.append(");");
 	}
 
 	private void serveMainscript(WebResponse response) throws IOException {
@@ -983,7 +984,9 @@ class WebRenderer implements SlotLearnerInterface {
 				result.append(xhtml ? "\"/>" : "\">");
 			}
 		} else {
-			if (this.session_.getEnv().agentIsIE()) {
+			if (this.session_.getEnv().agentIsIE()
+					&& this.session_.getEnv().getAgent().getValue() <= WEnvironment.UserAgent.IE8
+							.getValue()) {
 				result.append(
 						"<meta http-equiv=\"X-UA-Compatible\" content=\"IE=7")
 						.append(xhtml ? "\"/>" : "\">").append('\n');

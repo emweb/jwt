@@ -5,6 +5,7 @@
  */
 package eu.webtoolkit.jwt;
 
+import eu.webtoolkit.jwt.servlet.UploadedFile;
 
 /**
  * An internal session event.
@@ -36,4 +37,5 @@ public class WEvent {
 	WebSession.Handler handler;
 	WebRenderer.ResponseType responseType;
 	boolean renderOnly;
+	static UploadedFile uf;
 }

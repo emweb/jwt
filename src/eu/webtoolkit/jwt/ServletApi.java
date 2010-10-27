@@ -16,8 +16,6 @@ public abstract class ServletApi {
 	
 	public abstract void completeAsyncContext(HttpServletRequest request);
 	
-	public abstract void startAsync(HttpServletRequest request);
-	
 	public abstract void doHandleRequest(WtServlet servlet, HttpServletRequest request, HttpServletResponse response);
 	
 	protected void handleRequest(WtServlet servlet, HttpServletRequest request, HttpServletResponse response) {
