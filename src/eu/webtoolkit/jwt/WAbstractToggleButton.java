@@ -185,7 +185,7 @@ public abstract class WAbstractToggleButton extends WFormWidget {
 
 	CheckState state_;
 
-	protected abstract void updateInput(DomElement input, boolean all);
+	abstract void updateInput(DomElement input, boolean all);
 
 	void updateDom(DomElement element, boolean all) {
 		WApplication app = WApplication.getInstance();

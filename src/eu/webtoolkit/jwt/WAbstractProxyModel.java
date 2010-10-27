@@ -185,6 +185,9 @@ public abstract class WAbstractProxyModel extends WAbstractItemModel {
 		 */
 		public WModelIndex sourceIndex_;
 
+		/**
+		 * Create a {@link BaseItem}.
+		 */
 		public BaseItem(WModelIndex sourceIndex) {
 			this.sourceIndex_ = sourceIndex;
 		}

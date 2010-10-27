@@ -1293,6 +1293,11 @@ public class WStandardItem {
 		}
 	}
 
+	/**
+	 * Set the model for this {@link WStandardItem} and its children.
+	 * <p>
+	 * You may override this method if you want to change its behaviour.
+	 */
 	protected void setModel(WStandardItemModel model) {
 		this.model_ = model;
 		for (int i = 0; i < this.getColumnCount(); ++i) {

@@ -1429,7 +1429,7 @@ public abstract class WWebWidget extends WWidget {
 		propagateRenderOk(true);
 	}
 
-	protected String getRenderRemoveJs() {
+	String renderRemoveJs() {
 		return "_" + this.getId();
 	}
 
@@ -1502,7 +1502,7 @@ public abstract class WWebWidget extends WWidget {
 		int i = this.children_.indexOf(child);
 		assert i != -1;
 		if (!this.flags_.get(BIT_IGNORE_CHILD_REMOVES)) {
-			String js = child.getWebWidget().getRenderRemoveJs();
+			String js = child.getWebWidget().renderRemoveJs();
 			if (!(this.transientImpl_ != null)) {
 				this.transientImpl_ = new WWebWidget.TransientImpl();
 			}

@@ -125,7 +125,7 @@ public class WRadioButton extends WAbstractToggleButton {
 		this.buttonGroup_ = group;
 	}
 
-	protected void updateInput(DomElement input, boolean all) {
+	void updateInput(DomElement input, boolean all) {
 		if (all) {
 			input.setAttribute("type", "radio");
 			if (this.buttonGroup_ != null) {

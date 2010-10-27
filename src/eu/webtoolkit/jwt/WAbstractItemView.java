@@ -380,6 +380,8 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	 * Sorts the data according to data in column <code>column</code> and sort
 	 * order <code>order</code>.
 	 * <p>
+	 * The default sorting column is -1: the model is unsorted.
+	 * <p>
 	 * 
 	 * @see WAbstractItemModel#sort(int column, SortOrder order)
 	 */
@@ -401,6 +403,33 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 			}
 		}
 		this.model_.sort(column, order);
+	}
+
+	/**
+	 * Returns the current sorting columm.
+	 * <p>
+	 * 
+	 * @see WAbstractItemView#sortByColumn(int column, SortOrder order)
+	 * @see WAbstractItemView#getSortOrder()
+	 */
+	public int getSortColumn() {
+		return this.currentSortColumn_;
+	}
+
+	/**
+	 * Returns the current sorting order.
+	 * <p>
+	 * 
+	 * @see WAbstractItemView#sortByColumn(int column, SortOrder order)
+	 * @see WAbstractItemView#getSortColumn()
+	 */
+	public SortOrder getSortOrder() {
+		if (this.currentSortColumn_ >= 0
+				&& this.currentSortColumn_ < this.columns_.size()) {
+			return this.columns_.get(this.currentSortColumn_).sortOrder;
+		} else {
+			return SortOrder.AscendingOrder;
+		}
 	}
 
 	/**
@@ -1706,7 +1735,7 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 				+ this.getJsRef() + ", 'obj')." + jsMethod + "(obj, event);}");
 	}
 
-	protected void connectObjJS(AbstractEventSignal s, String jsMethod) {
+	void connectObjJS(AbstractEventSignal s, String jsMethod) {
 		s.addListener("function(obj, event) {jQuery.data(" + this.getJsRef()
 				+ ", 'obj')." + jsMethod + "(obj, event);}");
 	}

@@ -20,7 +20,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import eu.webtoolkit.jwt.servlet.WebRequest;
-import eu.webtoolkit.jwt.servlet.WebRequest.ProgressUpdate;
+import eu.webtoolkit.jwt.servlet.WebRequest.ProgressListener;
 import eu.webtoolkit.jwt.servlet.WebResponse;
 import eu.webtoolkit.jwt.utils.JarUtils;
 import eu.webtoolkit.jwt.utils.StreamUtils;
@@ -89,7 +89,7 @@ public abstract class WtServlet extends HttpServlet {
 	 */
 	public WtServlet() {
 		this.configuration = new Configuration();
-		this.progressUpdate = new ProgressUpdate() {
+		this.progressListener = new ProgressListener() {
 			public void update(WebRequest request, long pBytesRead, long pContentLength) {
 				requestDataReceived(request, pBytesRead, pContentLength);
 			}
@@ -234,12 +234,12 @@ public abstract class WtServlet extends HttpServlet {
 				throw new WtException("Illegal application type: " + applicationTypeS);
 			}
 			
-			wsession = new WebSession(this, jsession.getId(), applicationType, getConfiguration().getFavicon(), new WebRequest(request, progressUpdate));
+			wsession = new WebSession(this, jsession.getId(), applicationType, getConfiguration().getFavicon(), new WebRequest(request, progressListener));
 			jsession.setAttribute(WtServlet.WT_WEBSESSION_ID, wsession);
 		}
 	
 		try {
-			WebRequest webRequest = new WebRequest(request, progressUpdate);
+			WebRequest webRequest = new WebRequest(request, progressListener);
 			WebResponse webResponse = new WebResponse(response, webRequest);
 
 			WebSession.Handler handler = new WebSession.Handler(wsession, webRequest, webResponse);
@@ -316,6 +316,6 @@ public abstract class WtServlet extends HttpServlet {
 	}
 
 	private Configuration configuration;
-	private ProgressUpdate progressUpdate;
+	private ProgressListener progressListener;
 	private Set<String> uploadProgressUrls_ = new HashSet<String>();
 }

@@ -563,7 +563,7 @@ public abstract class WInteractWidget extends WWebWidget {
 		super.propagateSetEnabled(enabled);
 	}
 
-	protected void updateEventSignals(DomElement element, boolean all) {
+	void updateEventSignals(DomElement element, boolean all) {
 		LinkedList<AbstractEventSignal> other = this.eventSignals();
 		for (Iterator<AbstractEventSignal> i_it = other.iterator(); i_it
 				.hasNext();) {

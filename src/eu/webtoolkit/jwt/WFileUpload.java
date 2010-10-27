@@ -548,6 +548,9 @@ public class WFileUpload extends WWebWidget {
 
 	void setFormData(WObject.FormData formData) {
 		this.setFiles(formData.files);
+		if (!formData.files.isEmpty()) {
+			this.uploaded().trigger();
+		}
 	}
 
 	void setFiles(List<UploadedFile> files) {
@@ -557,7 +560,6 @@ public class WFileUpload extends WWebWidget {
 				this.uploadedFiles_.add(files.get(i));
 			}
 		}
-		this.uploaded().trigger();
 	}
 
 	private static String CHANGE_SIGNAL = "M_change";

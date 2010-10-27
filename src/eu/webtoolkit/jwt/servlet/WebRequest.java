@@ -19,7 +19,6 @@ import javax.servlet.http.HttpServletRequestWrapper;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileUploadBase;
 import org.apache.commons.fileupload.FileUploadException;
-import org.apache.commons.fileupload.ProgressListener;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 
@@ -38,7 +37,13 @@ import eu.webtoolkit.jwt.WtServlet;
  * @see WebResponse
  */
 public class WebRequest extends HttpServletRequestWrapper {
-	public interface ProgressUpdate {
+	/**
+	 * Progress listener interface.
+	 */
+	public interface ProgressListener {
+		/**
+		 * Update callback method.
+		 */
 		public void update(WebRequest request, long pBytesRead, long pContentLength);
 	}
 	
@@ -54,9 +59,14 @@ public class WebRequest extends HttpServletRequestWrapper {
 		parse(null);
 	}
 	
-	public WebRequest(HttpServletRequest request, ProgressUpdate progressUpdate) {
+	/**
+	 * Creates a WebRequest by wrapping an HttpServletRequest
+	 * @param request The request to be wrapped.
+	 * @param progressListener a progress listener implementation
+	 */
+	public WebRequest(HttpServletRequest request, ProgressListener progressListener) {
 		super(request);
-		parse(progressUpdate);
+		parse(progressListener);
 	}
 
 	/**
@@ -135,7 +145,7 @@ public class WebRequest extends HttpServletRequestWrapper {
 	}
 
 	@SuppressWarnings({ "unchecked", "deprecation" })
-	private void parse(final ProgressUpdate progressUpdate) {
+	private void parse(final ProgressListener progressUpdate) {
 		Map<String, String[]> parameterMap = super.getParameterMap();
 
 		parameters_ = new HashMap<String, String []>(parameterMap);
@@ -150,7 +160,7 @@ public class WebRequest extends HttpServletRequestWrapper {
 				ServletFileUpload upload = new ServletFileUpload(factory);
 
 				if (progressUpdate != null) {
-					upload.setProgressListener(new ProgressListener(){
+					upload.setProgressListener(new org.apache.commons.fileupload.ProgressListener(){
 						@Override
 						public void update(long pBytesRead, long pContentLength, int pItems) {
 							progressUpdate.update(WebRequest.this, pBytesRead, pContentLength);
