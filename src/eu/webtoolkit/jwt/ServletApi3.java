@@ -36,6 +36,8 @@ class ServletApi3 extends ServletApi{
 			final HttpServletResponse response) {
 		if (request.isAsyncSupported()) {
 			request.startAsync();
+			
+			request.getAsyncContext().setTimeout(90000);
 			request.getAsyncContext().start(new Runnable() {
 				@Override
 				public void run() {

@@ -48,6 +48,7 @@
         </path>
       </classpath>
 	  <exclude name="eu/webtoolkit/jwt/ServletApi3.java"/>
+	  <exclude name="eu/webtoolkit/jwt/WtServletContextListener.java"/>
     </javac>
   	
     <javac
@@ -65,6 +66,7 @@
         </path>
       </classpath>
 	  <include name="eu/webtoolkit/jwt/ServletApi3.java"/>
+	  <include name="eu/webtoolkit/jwt/WtServletContextListener.java"/>
     </javac>	
   	
     <copy todir="${build.dir}/eu/webtoolkit/jwt/skeletons">

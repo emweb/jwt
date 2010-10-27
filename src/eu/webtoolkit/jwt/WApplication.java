@@ -914,7 +914,7 @@ public class WApplication extends WObject {
 	 * </blockquote> This has as major consequence that from the browser stand
 	 * point, the application now serves many different URLs. As a consequence,
 	 * relative URLs will break. Still, you can specify relative URLs within
-	 * your application (in for example {@link WAnchor#setRef(String ref)
+	 * your application (in for example {@link WAnchor#setRef(String url)
 	 * WAnchor#setRef()} or {@link WImage#setImageRef(String ref)
 	 * WImage#setImageRef()}) since JWt will transform them to absolute URLs
 	 * when needed. But, this in turn may break deployments behind reverse

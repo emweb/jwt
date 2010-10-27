@@ -565,7 +565,6 @@ public abstract class WHTML5Media extends WInteractWidget {
 			attributes = new ArrayList<String>(Arrays.asList(formData.values[0]
 					.split(";")));
 			if (attributes.size() == 5) {
-				boolean bad = false;
 				double volume;
 				double current;
 				double duration;
