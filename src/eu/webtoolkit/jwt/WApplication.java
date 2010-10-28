@@ -1174,6 +1174,10 @@ public class WApplication extends WObject {
 	 * 
 	 * </blockquote>
 	 * <p>
+	 * This works only if your servlet container supports the Servlet 3.0 API.
+	 * If you try to invoke this function on a servlet container with no such
+	 * support, and exception will be thrown.
+	 * <p>
 	 * <p>
 	 * <i><b>Note: </b>This works only if JavaScript is available on the
 	 * client.</i>
@@ -1182,6 +1186,9 @@ public class WApplication extends WObject {
 	 * @see WApplication#triggerUpdate()
 	 */
 	public void enableUpdates(boolean enabled) {
+		if (!WtServlet.isAsyncSupported()) {
+			throw new WtException("Server push requires a Servlet 3.0 API.");
+		}
 		if (enabled) {
 			++this.serverPush_;
 		} else {
@@ -2060,14 +2067,18 @@ public class WApplication extends WObject {
 	 * The browser unloads the application when the user navigates away or when
 	 * he closes the window or tab.
 	 * <p>
-	 * The default behaviour is to {@link WApplication#quit() quit()} which in
-	 * turn terminates the session.
+	 * When <code>reload-is-new-session</code> is set to <code>true</code>, then
+	 * the default implementation of this method terminates this session by
+	 * calling {@link WApplication#quit() quit()}.
 	 * <p>
 	 * You may want to reimplement this if you want to keep the application
 	 * running until it times out (as was the behaviour before JWt 3.1.6).
 	 */
 	protected void unload() {
-		this.quit();
+		Configuration conf = this.session_.getController().getConfiguration();
+		if (conf.isReloadIsNewSession()) {
+			this.quit();
+		}
 	}
 
 	private Signal1<Integer> requestTooLarge_;

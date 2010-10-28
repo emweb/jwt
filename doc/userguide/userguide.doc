@@ -246,6 +246,17 @@ interactivity events. The abstract base classes
 {jwt-javadoc}WFormWidget.html[WFormWidget] define most of these event
 signals.
 
+=== Server push
+By default, updates to the user interface are possible only at startup, during any event (in a slot), or at regular time points using {jwt-javadoc}WTimer.html[WTimer]. This is the normal JWt event loop.
+
+In some cases, one may want to modify the user interface from a second thread, outside the event loop. While this may be worked around by the {jwt-javadoc}WTimer.html[WTimer], in some cases, there are bandwidth and processing overheads associated which may be unnecessary, and which create a trade-off with time resolution of the updates.
+
+When "server push" (what is called 'comet' in AJAX terminology) is enabled, widgets may then be modified, created or deleted outside of the event loop (e.g. in response to execution of another thread), and these changes are propagated by calling {jwt-javadoc}WApplication.html#triggerUpdate()[triggerUpdate()].
+
+For more information, please refer to the reference documentation of {jwt-javadoc}WApplication.html#enableUpdates(boolean)[WApplication.enabledUpdates()], this function enables or disables server push.
+
+Note that server push works only if your servlet container supports the Servlet 3.0 API. You can find a feature example on server push and a more elaborate simplechat example in the JWt source code.
+
 === Optimizing client-side event handling
 
 By default, JWt performs all event processing server-side. Every
@@ -532,4 +543,10 @@ point to a JWt application. An example of this is
 
 To deploy the web application you need to provide a +WebRoot/web.xml+
 configuration file which binds the servlet to a context path:
+
+=== Using server push requires the Servlet 3.0 API
+Server push (used in the simplechat and serverpush feature example) relies on the asynchronous processing of requests, a feature which is only part of the Servlet API since version 3.0. Several servlet containers are currently implementing this new Servlet API, and no official releases exist. We were able to test our examples successfully on Tomcat 7.0.4 Beta.
+
+A note when developing your own server push applications: make sure to include the servlet-api-3.0.jar during compilation, as demonstrated in the build.xml of the serverpush feature example (examples/features/serverpush).
+
 

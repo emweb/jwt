@@ -17,6 +17,8 @@ public abstract class ServletApi {
 	public abstract void completeAsyncContext(HttpServletRequest request);
 	
 	public abstract void doHandleRequest(WtServlet servlet, HttpServletRequest request, HttpServletResponse response);
+
+	public abstract boolean isAsyncSupported();
 	
 	protected void handleRequest(WtServlet servlet, HttpServletRequest request, HttpServletResponse response) {
 		servlet.doHandleRequest(request, response);

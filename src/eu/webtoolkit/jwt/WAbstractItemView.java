@@ -425,7 +425,7 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	 */
 	public SortOrder getSortOrder() {
 		if (this.currentSortColumn_ >= 0
-				&& this.currentSortColumn_ < this.columns_.size()) {
+				&& this.currentSortColumn_ < (int) this.columns_.size()) {
 			return this.columns_.get(this.currentSortColumn_).sortOrder;
 		} else {
 			return SortOrder.AscendingOrder;

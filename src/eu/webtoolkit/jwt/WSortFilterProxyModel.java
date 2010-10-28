@@ -100,6 +100,7 @@ public class WSortFilterProxyModel extends WAbstractProxyModel {
 		this.inserting_ = false;
 		this.modelConnections_ = new ArrayList<AbstractSignal.Connection>();
 		this.mappedIndexes_ = new TreeMap<WModelIndex, WAbstractProxyModel.BaseItem>();
+		this.mappedRootItem_ = null;
 	}
 
 	/**
@@ -605,6 +606,7 @@ public class WSortFilterProxyModel extends WAbstractProxyModel {
 	private boolean inserting_;
 	private List<AbstractSignal.Connection> modelConnections_;
 	private SortedMap<WModelIndex, WAbstractProxyModel.BaseItem> mappedIndexes_;
+	private WSortFilterProxyModel.Item mappedRootItem_;
 
 	private void sourceColumnsAboutToBeInserted(WModelIndex parent, int start,
 			int end) {
@@ -772,6 +774,15 @@ public class WSortFilterProxyModel extends WAbstractProxyModel {
 
 	private WSortFilterProxyModel.Item itemFromSourceIndex(
 			WModelIndex sourceParent) {
+		if (!(sourceParent != null)) {
+			if (!(this.mappedRootItem_ != null)) {
+				WSortFilterProxyModel.Item result = new WSortFilterProxyModel.Item(
+						sourceParent);
+				this.mappedRootItem_ = result;
+				this.updateItem(result);
+			}
+			return this.mappedRootItem_;
+		}
 		WAbstractProxyModel.BaseItem i = this.mappedIndexes_.get(sourceParent);
 		if (i == null) {
 			WSortFilterProxyModel.Item result = new WSortFilterProxyModel.Item(
@@ -810,6 +821,8 @@ public class WSortFilterProxyModel extends WAbstractProxyModel {
 			;
 		}
 		this.mappedIndexes_.clear();
+		;
+		this.mappedRootItem_ = null;
 	}
 
 	private void updateItem(WSortFilterProxyModel.Item item) {

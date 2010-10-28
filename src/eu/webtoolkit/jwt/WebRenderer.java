@@ -422,8 +422,9 @@ class WebRenderer implements SlotLearnerInterface {
 			}
 		}
 		for (int i = 0; i < app.styleSheets_.size(); ++i) {
-			styleSheets += "<link href=\""
-					+ app.fixRelativeUrl(app.styleSheets_.get(i).uri)
+			String url = app.styleSheets_.get(i).uri;
+			url = StringUtils.replace(url, '&', "&amp;");
+			styleSheets += "<link href=\"" + app.fixRelativeUrl(url)
 					+ "\" rel=\"stylesheet\" type=\"text/css\"";
 			if (app.styleSheets_.get(i).media.length() != 0
 					&& !app.styleSheets_.get(i).media.equals("all")) {
@@ -436,8 +437,9 @@ class WebRenderer implements SlotLearnerInterface {
 		app.styleSheetsAdded_ = 0;
 		this.beforeLoadJS_ = new StringWriter();
 		for (int i = 0; i < app.scriptLibraries_.size(); ++i) {
-			styleSheets += "<script src='"
-					+ app.fixRelativeUrl(app.scriptLibraries_.get(i).uri)
+			String url = app.scriptLibraries_.get(i).uri;
+			url = StringUtils.replace(url, '&', "&amp;");
+			styleSheets += "<script src='" + app.fixRelativeUrl(url)
 					+ "'></script>\n";
 			this.beforeLoadJS_.append(app.scriptLibraries_.get(i).beforeLoadJS);
 		}
@@ -487,16 +489,23 @@ class WebRenderer implements SlotLearnerInterface {
 			mainElement.asHTML(out, js, timeouts);
 			app.doJavaScript(js.toString());
 			;
-			this.rendered_ = true;
 		}
-		StringWriter onload = new StringWriter();
-		DomElement.createTimeoutJs(onload, timeouts, app);
-		int refresh = conf.getSessionTimeout() / 3;
-		for (int i = 0; i < timeouts.size(); ++i) {
-			refresh = Math.min(refresh, 1 + timeouts.get(i).msec / 1000);
-		}
-		if (app.isQuited()) {
-			refresh = 100000;
+		int refresh;
+		if (app.getEnvironment().hasAjax()) {
+			StringWriter str = new StringWriter();
+			DomElement.createTimeoutJs(str, timeouts, app);
+			app.doJavaScript(str.toString());
+			refresh = 1000000;
+		} else {
+			if (app.isQuited()) {
+				refresh = 1000000;
+			} else {
+				refresh = conf.getSessionTimeout() / 3;
+				for (int i = 0; i < timeouts.size(); ++i) {
+					refresh = Math
+							.min(refresh, 1 + timeouts.get(i).msec / 1000);
+				}
+			}
 		}
 		page.setVar("REFRESH", String.valueOf(refresh));
 		page.stream(response.out());

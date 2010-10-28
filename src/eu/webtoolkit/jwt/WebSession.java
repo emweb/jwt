@@ -341,6 +341,10 @@ class WebSession {
 
 	public void doRecursiveEventLoop() {
 		try {
+			if (!WtServlet.isAsyncSupported()) {
+				throw new WtException(
+						"Recursive event loop requires a Servlet 3.0 API.");
+			}
 			WebSession.Handler handler = WebSession.Handler.getInstance();
 			if (handler.getRequest() != null) {
 				handler.getSession().notifySignal(

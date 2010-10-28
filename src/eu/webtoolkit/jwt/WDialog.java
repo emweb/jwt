@@ -28,6 +28,21 @@ package eu.webtoolkit.jwt;
  * default. You must use the method {@link WWidget#show() WWidget#show()} or
  * setHidden(true) to show the dialog.
  * <p>
+ * The easiest way to display a modal dialog is using {@link WDialog#exec()
+ * exec()}: after creating a WDialog window, a call to {@link WDialog#exec()
+ * exec()} will block (suspend the thread) until the dialog window is closed,
+ * and return the dialog result. Typically, an OK button will be connected to
+ * {@link WDialog#accept() accept()}, and in some cases a Cancel button to
+ * {@link WDialog#reject() reject()}. This solution has the drawback that it is
+ * not scalable to many concurrent sessions, since for every session with a
+ * recursive event loop (which is running durring the {@link WDialog#exec()
+ * exec()} method), a thread is locked. In practical terms, this means it is
+ * only suitable for software with restricted access or deployed on an intranet
+ * or extranet.
+ * <p>
+ * This functionality is only available on Servlet 3.0 compatible servlet
+ * containers.
+ * <p>
  * Use setModal(false) to create a non-modal dialog. A non-modal dialog does not
  * block the underlying user interface: the user must not first deal with the
  * dialog before interacting with the rest of the user interface.
@@ -271,6 +286,9 @@ public class WDialog extends WCompositeWidget {
 	 * <p>
 	 * <i>Warning: using {@link WDialog#exec() exec()} does not scale to many
 	 * concurrent sessions, since the thread is locked.</i>
+	 * <p>
+	 * <i>This functionality is only available on Servlet 3.0 compatible servlet
+	 * containers.</i>
 	 * <p>
 	 * 
 	 * @see WDialog#done(WDialog.DialogCode result)

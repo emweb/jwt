@@ -25,7 +25,7 @@ public class WFileResource extends WResource {
 	 * 
 	 * @param mimeType the mime type of the file.
 	 * @param fileName the file name.
-	 * @param the resources' parent
+	 * @param parent the resources' parent
 	 */
 	public WFileResource(String mimeType, String fileName, WObject parent) {
 		super();

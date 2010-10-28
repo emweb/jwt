@@ -553,4 +553,9 @@ class ServletApi25 extends ServletApi {
 			}
 		};
 	}
+
+	@Override
+	public boolean isAsyncSupported() {
+		return false;
+	}
 }

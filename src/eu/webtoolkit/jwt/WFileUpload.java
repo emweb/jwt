@@ -341,6 +341,9 @@ public class WFileUpload extends WWebWidget {
 	 * <p>
 	 * The default progress bar is 0 (no upload progress is indicated).
 	 * <p>
+	 * To update the progess bar server push is used, you should only use this
+	 * functionality when using a Servlet 3.0 compatible servlet container.
+	 * <p>
 	 * 
 	 * @see WFileUpload#dataReceived()
 	 */

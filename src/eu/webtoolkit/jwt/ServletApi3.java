@@ -680,4 +680,10 @@ class ServletApi3 extends ServletApi{
 	public void startAsync(HttpServletRequest request) {
 		request.startAsync();
 	}
+
+  
+	@Override
+	public boolean isAsyncSupported() {
+		return false;
+	}
 }

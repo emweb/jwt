@@ -318,4 +318,8 @@ public abstract class WtServlet extends HttpServlet {
 	private Configuration configuration;
 	private ProgressListener progressListener;
 	private Set<String> uploadProgressUrls_ = new HashSet<String>();
+	
+	public static boolean isAsyncSupported() {
+		return servletApi.isAsyncSupported();
+	}
 }
