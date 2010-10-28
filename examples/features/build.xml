@@ -1,0 +1,12 @@
+<project name="jwt-examples" default="all" basedir=".">
+  <target name="all">
+    <subant target="all">
+      <fileset dir="." includes="*/build.xml"/>
+    </subant>
+  </target>
+  <target name="clean">
+    <subant target="clean">
+      <fileset dir="." includes="*/build.xml"/>
+    </subant>
+  </target>
+</project>

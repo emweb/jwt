@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<messages>
+  <message id="introduction">
+
+<h2><span>JWt Chat client</span></h2>
+
+<p>This is a multi-user chat client and server.</p>
+
+<p>To keep the example simple, server and clients all run in the same
+servlet engine, the server is a static reference. 
+When using "server push" which requires an open connection with each client at
+all times, clients do not tie up threads, and as such the application
+could easily support thousands of simultaneous users as well.</p>
+
+<p>The client is contained in a widget (SimpleChatWidget), and can be
+instantiated as many times as you like, even in the same
+application.<br />
+
+Because of the widget abstraction, it is straight forward to include a
+chat client in your own application, by adding both the client and
+server classes to your application.</p>
+  </message>
+
+  <message id="details">
+
+<p>The implementation uses the Servlet 3.0 API to implement server push in JWt, 
+and allows updating a session from outside its regular event loop. When a
+message is received, the user interface (i.e. widget tree) not only of
+the current session, but also of all other sessions is updated and
+"pushed" to these clients simultaneously.</p>
+
+  </message>
+
+</messages>
