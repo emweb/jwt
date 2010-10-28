@@ -6,6 +6,8 @@
 package eu.webtoolkit.jwt.examples.composer;
 
 import eu.webtoolkit.jwt.WContainerWidget;
+import eu.webtoolkit.jwt.WInteractWidget;
+import eu.webtoolkit.jwt.WString;
 import eu.webtoolkit.jwt.WText;
 
 /**
@@ -22,17 +24,17 @@ public class Option extends WContainerWidget {
     /**
      * Create an Option with the given WMessage msg.
      */
-    public Option(final String msg, WContainerWidget parent) {
+    public Option(final WString msg, WContainerWidget parent) {
         super(parent);
         sep_ = null;
         list_ = null;
 
         setInline(true);
-        option_ = new WText(tr(msg), this);
+        option_ = new WText(msg, this);
         option_.setStyleClass("option");
     }
 
-    public Option(final String msg) {
+    public Option(final WString msg) {
         this(msg, null);
     }
 
@@ -89,5 +91,12 @@ public class Option extends WContainerWidget {
      */
     void hideSeparator() {
         sep_.hide();
+    }
+    
+    /**
+     *  Returns the clickable part
+     */
+    WInteractWidget getItem() { 
+    	return option_; 
     }
 }

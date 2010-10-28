@@ -21,17 +21,18 @@ import eu.webtoolkit.jwt.utils.StreamUtils;
  */
 public class WFileResource extends WResource {
 	/**
-	 * Creates a new file resource.
+	 * Creates a new resource with given mime-type for a file.
 	 * 
 	 * @param mimeType the mime type of the file.
 	 * @param fileName the file name.
+	 * @param the resources' parent
 	 */
-	public WFileResource(String mimeType, String fileName) {
+	public WFileResource(String mimeType, String fileName, WObject parent) {
 		super();
 		this.mimeType_ = mimeType;
 		this.fileName_ = fileName;
 	}
-
+	
 	/**
 	 * Changes the file name.
 	 * <p>

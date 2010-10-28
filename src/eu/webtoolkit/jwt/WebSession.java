@@ -922,7 +922,6 @@ class WebSession {
 									}
 								}
 							}
-							this.state_ = WebSession.State.JustCreated;
 						}
 						boolean requestForResource = requestE != null
 								&& requestE.equals("resource");

@@ -25,6 +25,7 @@ class WebRenderer implements SlotLearnerInterface {
 		super();
 		this.session_ = session;
 		this.visibleOnly_ = true;
+		this.rendered_ = false;
 		this.twoPhaseThreshold_ = 5000;
 		this.expectedAckId_ = 0;
 		this.cookiesToSet_ = new ArrayList<WebRenderer.Cookie>();
@@ -224,6 +225,7 @@ class WebRenderer implements SlotLearnerInterface {
 
 	private WebSession session_;
 	private boolean visibleOnly_;
+	private boolean rendered_;
 	private int twoPhaseThreshold_;
 	private int expectedAckId_;
 	private List<WebRenderer.Cookie> cookiesToSet_;
@@ -257,6 +259,7 @@ class WebRenderer implements SlotLearnerInterface {
 	}
 
 	private void serveJavaScriptUpdate(WebResponse response) throws IOException {
+		this.rendered_ = true;
 		this.setHeaders(response, "text/javascript; charset=UTF-8");
 		this.collectJavaScript();
 		response.out().append(this.collectedJS1_.toString()).append(
@@ -311,45 +314,40 @@ class WebRenderer implements SlotLearnerInterface {
 		script.stream(response.out());
 		app.autoJavaScriptChanged_ = false;
 		this.streamCommJs(app, response.out());
-		if (this.session_.getState() != WebSession.State.Loaded) {
+		if (!this.rendered_) {
 			this.serveMainAjax(response);
 		} else {
-			response.out().append("window.loadWidgetTree = function(){\n");
-			StringWriter scopeClose = new StringWriter();
 			if (app.enableAjax_) {
-				response.out().append(this.beforeLoadJS_.toString());
+				this.collectedJS1_.append(this.beforeLoadJS_.toString());
 				this.beforeLoadJS_ = new StringWriter();
-				this.loadScriptLibraries(response.out(), app, true);
-				this.loadScriptLibraries(scopeClose, app, false);
-				response
-						.out()
+				this.collectedJS1_
 						.append(app.getNewBeforeLoadJavaScript())
 						.append("var domRoot = ")
 						.append(app.domRoot_.getJsRef())
 						.append(
 								";var form = Wt3_1_6.getElement('Wt-form');domRoot.style.display = form.style.display;document.body.replaceChild(domRoot, form);");
+				this.loadScriptLibraries(this.collectedJS1_, app, true);
+				this.collectedJS2_.append(
+						"domRoot.style.visibility = 'visible';").append(
+						app.getJavaScriptClass()).append(
+						"._p_.autoJavaScript();");
+				this.loadScriptLibraries(this.collectedJS2_, app, false);
+				app.enableAjax_ = false;
 			}
+			response.out().append("window.loadWidgetTree = function(){\n");
 			this.visibleOnly_ = false;
 			this.collectJavaScript();
+			this.updateLoadIndicator(this.collectedJS1_, app, true);
 			response.out().append(this.collectedJS1_.toString()).append(
 					app.getJavaScriptClass()).append("._p_.response(").append(
 					String.valueOf(this.expectedAckId_)).append(");");
-			this.updateLoadIndicator(response.out(), app, true);
-			if (app.enableAjax_) {
-				response.out().append("domRoot.style.visibility = 'visible';")
-						.append(app.getJavaScriptClass()).append(
-								"._p_.autoJavaScript();");
-			}
 			response.out().append(app.getJavaScriptClass()).append(
 					"._p_.update(null, 'load', null, false);").append(
-					this.collectedJS2_.toString())
-					.append(scopeClose.toString()).append("};").append(
-							app.getJavaScriptClass()).append(
-							"._p_.setServerPush(").append(
-							app.isUpdatesEnabled() ? "true" : "false").append(
+					this.collectedJS2_.toString()).append("};").append(
+					app.getJavaScriptClass()).append("._p_.setServerPush(")
+					.append(app.isUpdatesEnabled() ? "true" : "false").append(
 							");").append("window.WtScriptLoaded = true;")
 					.append("if (window.isLoaded) onLoad();\n");
-			app.enableAjax_ = false;
 		}
 	}
 
@@ -380,6 +378,7 @@ class WebRenderer implements SlotLearnerInterface {
 		contentType += "; charset=UTF-8";
 		this.setHeaders(response, contentType);
 		boot.stream(response.out());
+		this.rendered_ = false;
 	}
 
 	private void serveMainpage(WebResponse response) throws IOException {
@@ -400,6 +399,7 @@ class WebRenderer implements SlotLearnerInterface {
 		WWebWidget mainWebWidget = app.domRoot_;
 		this.visibleOnly_ = true;
 		DomElement mainElement = mainWebWidget.createSDomElement(app);
+		this.rendered_ = true;
 		this.setJSSynced(true);
 		final boolean xhtml = app.getEnvironment().getContentType() == WEnvironment.ContentType.XHTML1;
 		String styleSheets = "";
@@ -487,6 +487,7 @@ class WebRenderer implements SlotLearnerInterface {
 			mainElement.asHTML(out, js, timeouts);
 			app.doJavaScript(js.toString());
 			;
+			this.rendered_ = true;
 		}
 		StringWriter onload = new StringWriter();
 		DomElement.createTimeoutJs(onload, timeouts, app);

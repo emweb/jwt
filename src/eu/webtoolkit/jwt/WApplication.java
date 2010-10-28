@@ -14,7 +14,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
-import eu.webtoolkit.jwt.utils.MathUtils;
 
 /**
  * Represents an application instance for a single session.
@@ -2254,7 +2253,7 @@ public class WApplication extends WObject {
 			return this.session_.getMostRelativeUrl(fn)
 					+ "&request=resource&resource="
 					+ DomElement.urlEncodeS(resource.getId()) + "&rand="
-					+ String.valueOf(MathUtils.randomInt());
+					+ String.valueOf(seq++);
 		} else {
 			fn = resource.getInternalPath() + fn;
 			if (this.session_.getApplicationName().length() != 0
@@ -2377,5 +2376,6 @@ public class WApplication extends WObject {
 			0x00, 0x21, 0xf9, 0x04, 0x01, 0x00, 0x00, 0x00, 0x00, 0x2c, 0x00,
 			0x00, 0x00, 0x00, 0x01, 0x00, 0x01, 0x00, 0x00, 0x02, 0x02, 0x44,
 			0x01, 0x00, 0x3b };
+	private static int seq = 0;
 	static String RESOURCES_URL = "resourcesURL";
 }

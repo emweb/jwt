@@ -9,6 +9,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.EnumSet;
+import java.util.List;
 
 import eu.webtoolkit.jwt.AlignmentFlag;
 import eu.webtoolkit.jwt.Side;
@@ -112,8 +113,8 @@ public class Composer extends WCompositeWidget {
         ArrayList<Attachment> attachments = new ArrayList<Attachment>();
 
         for (int i = 0; i < attachments_.size() - 1; ++i) {
-            if (attachments_.get(i).include())
-                attachments.add(attachments_.get(i).attachment());
+        	List<Attachment> toadd = attachments_.get(i).attachments();
+        	attachments.addAll(toadd);
         }
 
         return attachments;
@@ -223,7 +224,7 @@ public class Composer extends WCompositeWidget {
         /*
          * Create and append the next AttachmentEdit, that will be hidden.
          */
-        AttachmentEdit edit = new AttachmentEdit(this);
+        AttachmentEdit edit = new AttachmentEdit(this, null);
         edits_.getElementAt(5, 1).insertBefore(edit, attachOtherFile_);
         attachments_.add(edit);
         attachments_.get(attachments_.size() - 1).hide();
@@ -389,8 +390,8 @@ public class Composer extends WCompositeWidget {
          */
         options_ = new OptionList(edits_.getElementAt(3, 1));
 
-        options_.add(addcc_ = new Option("msg.addcc"));
-        options_.add(addbcc_ = new Option("msg.addbcc"));
+        options_.add(addcc_ = new Option(tr("msg.addcc")));
+        options_.add(addbcc_ = new Option(tr("msg.addbcc")));
         /*
          * Subject
          */
@@ -415,8 +416,8 @@ public class Composer extends WCompositeWidget {
         /*
          * Two options for attaching files. The first does not say 'another'.
          */
-        attachFile_ = new Option("msg.attachfile", edits_.getElementAt(5, 1));
-        attachOtherFile_ = new Option("msg.attachanother", edits_.getElementAt(
+        attachFile_ = new Option(tr("msg.attachfile"), edits_.getElementAt(5, 1));
+        attachOtherFile_ = new Option(tr("msg.attachanother"), edits_.getElementAt(
                 5, 1));
         attachOtherFile_.hide();
 
