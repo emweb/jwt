@@ -319,6 +319,13 @@ public abstract class WtServlet extends HttpServlet {
 	private ProgressListener progressListener;
 	private Set<String> uploadProgressUrls_ = new HashSet<String>();
 	
+	/**
+	 * Returns whether asynchronous processing is supported,
+	 * which is only the case when the servlet container implements the Servlet 3.0 API.
+	 * Asynchronous processing is required for both server push and the recursive event loop.
+	 * 
+	 * @return whether asynchronous processing is supported
+	 */
 	public static boolean isAsyncSupported() {
 		return servletApi.isAsyncSupported();
 	}

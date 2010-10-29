@@ -25,6 +25,7 @@ button {
   padding-left: 5px;
   padding-right: 5px;
   font-size: smaller;
+  margin-right: 5px;
 }
 
 .chat {

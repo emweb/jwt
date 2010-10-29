@@ -23,6 +23,7 @@ import eu.webtoolkit.jwt.WMouseEvent;
 import eu.webtoolkit.jwt.WProgressBar;
 import eu.webtoolkit.jwt.WString;
 import eu.webtoolkit.jwt.WText;
+import eu.webtoolkit.jwt.WtServlet;
 import eu.webtoolkit.jwt.servlet.UploadedFile;
 
 /**
@@ -53,10 +54,13 @@ public class AttachmentEdit extends WContainerWidget {
 		/*
 		 * A progress bar
 		 */
-		WProgressBar progress = new WProgressBar();
-		progress.setFormat(WString.Empty);
-		progress.setVerticalAlignment(AlignmentFlag.AlignMiddle);
-		upload_.setProgressBar(progress);
+		//Only set the progress bar when server push is supported
+		if (WtServlet.isAsyncSupported()) {
+			WProgressBar progress = new WProgressBar();
+			progress.setFormat(WString.Empty);
+			progress.setVerticalAlignment(AlignmentFlag.AlignMiddle);
+			upload_.setProgressBar(progress);
+		}
 
 		/*
 		 * The 'remove' option.

@@ -5,6 +5,8 @@ import eu.webtoolkit.jwt.WApplication;
 import eu.webtoolkit.jwt.WBreak;
 import eu.webtoolkit.jwt.WDialog;
 import eu.webtoolkit.jwt.WEnvironment;
+import eu.webtoolkit.jwt.WLength;
+import eu.webtoolkit.jwt.WLength.Unit;
 import eu.webtoolkit.jwt.WMouseEvent;
 import eu.webtoolkit.jwt.WPushButton;
 import eu.webtoolkit.jwt.WString;
@@ -15,6 +17,9 @@ public class ChatApplication extends WApplication {
 
 	public ChatApplication(WEnvironment env) {
 		super(env);
+		
+		setCssTheme("polished");
+		
 		setTitle("Wt Chat");
 		
         WXmlLocalizedStrings resourceBundle = new WXmlLocalizedStrings();
@@ -39,6 +44,8 @@ public class ChatApplication extends WApplication {
 		about.clicked().addListener(this, new Signal1.Listener<WMouseEvent>() {
 			public void trigger(WMouseEvent arg) {
 				  final WDialog dialog = new WDialog("About");
+				  
+				  dialog.resize(new WLength(70, Unit.Percentage), WLength.Auto);
 
 				  new WText(tr("about"), dialog.getContents());
 				  new WBreak(dialog.getContents());
