@@ -5,6 +5,7 @@
  */
 package eu.webtoolkit.jwt.examples.composer;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -205,10 +206,7 @@ public class AttachmentEdit extends WContainerWidget {
 			/*
 			 * Give information on the file uploaded.
 			 */
-			long fsize = 0;
-			{
-				// TODO check file size
-			}
+			long fsize = new File(info_.getSpoolFileName()).length();
 			String size;
 			if (fsize < 1024)
 				size = "" + fsize + " bytes";
@@ -263,8 +261,11 @@ public class AttachmentEdit extends WContainerWidget {
 		List<UploadedFile> files = upload_.getUploadedFiles();
 
 		if (files.size() != 0) {
+			this.removeWidget(upload_);
 			upload_ = null;
+			this.removeWidget(remove_);
 			remove_ = null;
+			this.removeWidget(error_);
 			error_ = null;
 
 			for (int i = 0; i < files.size(); ++i)

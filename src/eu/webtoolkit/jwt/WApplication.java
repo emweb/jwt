@@ -1186,9 +1186,6 @@ public class WApplication extends WObject {
 	 * @see WApplication#triggerUpdate()
 	 */
 	public void enableUpdates(boolean enabled) {
-		if (!WtServlet.isAsyncSupported()) {
-			throw new WtException("Server push requires a Servlet 3.0 API.");
-		}
 		if (enabled) {
 			++this.serverPush_;
 		} else {
@@ -1233,6 +1230,9 @@ public class WApplication extends WObject {
 	 * @see UpdateLock
 	 */
 	public void triggerUpdate() {
+		if (!WtServlet.isAsyncSupported()) {
+			throw new WtException("Server push requires a Servlet 3.0 API.");
+		}
 		if (!this.modifiedWithoutEvent_) {
 			return;
 		}
