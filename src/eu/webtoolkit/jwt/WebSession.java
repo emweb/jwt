@@ -161,9 +161,12 @@ class WebSession {
 			return;
 		}
 		String requestE = request.getParameter("request");
+		if (!this.app_.initialized_) {
+			this.app_.initialize();
+			this.app_.initialized_ = true;
+		}
 		switch (this.state_) {
 		case JustCreated:
-			this.app_.initialize();
 			this.render(handler, event.responseType);
 			break;
 		case Loaded:
@@ -1189,7 +1192,7 @@ class WebSession {
 				String hashE = request.getParameter(se + "_");
 				if (hashE != null) {
 					this.app_.changeInternalPath(hashE);
-					this.app_.doJavaScript("Wt3_1_6.scrollIntoView('" + hashE
+					this.app_.doJavaScript("Wt3_1_7.scrollIntoView('" + hashE
 							+ "');");
 				}
 			} else {

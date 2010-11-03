@@ -261,11 +261,11 @@ public class AttachmentEdit extends WContainerWidget {
 		List<UploadedFile> files = upload_.getUploadedFiles();
 
 		if (files.size() != 0) {
-			this.removeWidget(upload_);
+			upload_.remove();
 			upload_ = null;
-			this.removeWidget(remove_);
+			remove_.remove();
 			remove_ = null;
-			this.removeWidget(error_);
+			error_.remove();
 			error_ = null;
 
 			for (int i = 0; i < files.size(); ++i)
@@ -302,6 +302,7 @@ public class AttachmentEdit extends WContainerWidget {
 	 * Slot triggered when the users wishes to remove this attachment edit.
 	 */
 	public void remove() {
+		super.remove();
 		composer_.removeAttachment(this);
 	}
 }

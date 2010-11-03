@@ -8,6 +8,7 @@ package eu.webtoolkit.jwt;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 import eu.webtoolkit.jwt.AbstractSignal.Connection;
@@ -80,12 +81,15 @@ class SignalImpl {
 
 		ArrayList<Listener> result = (ArrayList<Listener>) observerCatalog.clone();
 
-		for (WeakReference<Listener> name : weakObserverCatalog) {
-			Listener listener = name.get();
+		Iterator<WeakReference<Listener>> i = weakObserverCatalog.iterator();
+		while (i.hasNext()) {
+			WeakReference<Listener> ref = i.next();
+			Listener listener = ref.get();
 			if (listener != null)
 				result.add(listener);
-			else
-				System.err.println("Weakly collected listener is garbage.");
+			else {
+				i.remove();
+			}
 		}
 
 		return result;

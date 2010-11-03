@@ -100,7 +100,7 @@ public class WLength {
 	}
 
 	/**
-	 * Returns whether the ength is &apos;auto&apos;.
+	 * Returns whether the length is &apos;auto&apos;.
 	 * <p>
 	 * 
 	 * @see WLength#WLength()

@@ -156,6 +156,7 @@ public class WApplication extends WObject {
 		this.bodyClass_ = "";
 		this.bodyHtmlClassChanged_ = false;
 		this.enableAjax_ = false;
+		this.initialized_ = false;
 		this.focusId_ = "";
 		this.selectionStart_ = -1;
 		this.selectionEnd_ = -1;
@@ -1745,11 +1746,11 @@ public class WApplication extends WObject {
 			this.loadingIndicatorWidget_ = indicator.getWidget();
 			this.domRoot_.addWidget(this.loadingIndicatorWidget_);
 			JSlot showLoadJS = new JSlot();
-			showLoadJS.setJavaScript("function(o,e) {Wt3_1_6.inline('"
+			showLoadJS.setJavaScript("function(o,e) {Wt3_1_7.inline('"
 					+ this.loadingIndicatorWidget_.getId() + "');}");
 			this.showLoadingIndicator_.addListener(showLoadJS);
 			JSlot hideLoadJS = new JSlot();
-			hideLoadJS.setJavaScript("function(o,e) {Wt3_1_6.hide('"
+			hideLoadJS.setJavaScript("function(o,e) {Wt3_1_7.hide('"
 					+ this.loadingIndicatorWidget_.getId() + "');}");
 			this.hideLoadingIndicator_.addListener(hideLoadJS);
 			this.loadingIndicatorWidget_.hide();
@@ -2005,7 +2006,7 @@ public class WApplication extends WObject {
 	 * the session.
 	 */
 	protected void notify(WEvent e) throws IOException {
-		WebSession.getInstance().notify(e);
+		this.session_.notify(e);
 	}
 
 	/**
@@ -2146,6 +2147,7 @@ public class WApplication extends WObject {
 	String bodyClass_;
 	boolean bodyHtmlClassChanged_;
 	boolean enableAjax_;
+	boolean initialized_;
 	private String focusId_;
 	private int selectionStart_;
 	private int selectionEnd_;

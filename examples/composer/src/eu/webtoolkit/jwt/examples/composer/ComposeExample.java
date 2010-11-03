@@ -128,8 +128,8 @@ public class ComposeExample extends WContainerWidget {
         } else
             t = new WText("<i>(empty)</i>", horiz);
 
-        removeWidget(composer_);
-        removeWidget(details_);
+        composer_.remove();
+        details_.remove();
 
         WApplication.getInstance().quit();
     }

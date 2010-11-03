@@ -230,7 +230,7 @@ public class WSpinBox extends WLineEdit {
 			app.doJavaScript(wtjs1(app), false);
 			app.setJavaScriptLoaded(THIS_JS);
 		}
-		app.doJavaScript("new Wt3_1_6.WSpinBox(" + app.getJavaScriptClass()
+		app.doJavaScript("new Wt3_1_7.WSpinBox(" + app.getJavaScriptClass()
 				+ "," + this.getJsRef() + "," + String.valueOf(this.min_) + ","
 				+ String.valueOf(this.max_) + "," + String.valueOf(this.step_)
 				+ ");");
@@ -256,6 +256,6 @@ public class WSpinBox extends WLineEdit {
 	}
 
 	static String wtjs1(WApplication app) {
-		return "Wt3_1_6.WSpinBox = function(n,b,h,i,f){function j(a){if(a>i)a=i;else if(a<h)a=h;b.value=a}function k(){var a=Number(b.value);a+=f;j(a);b.onchange()}function l(){var a=Number(b.value);a-=f;j(a);b.onchange()}jQuery.data(b,\"obj\",this);var d=n.WT,g=$(b),e=null,m;this.update=function(a,c,o){h=a;i=c;f=o};this.mouseOut=function(){g.removeClass(\"Wt-spinbox-dn\").removeClass(\"Wt-spinbox-up\")};this.mouseMove=function(a,c){if(e){a=d.pageCoordinates(c).y-e.y;c=m;c-=a*f;j(c)}else{a=d.widgetCoordinates(b, c);g.removeClass(\"Wt-spinbox-dn\").removeClass(\"Wt-spinbox-up\");if(a.x>b.offsetWidth-16){c=b.offsetHeight/2;if(a.y>=c-1&&a.y<=c+1)b.style.cursor=\"crosshair\";else{b.style.cursor=\"default\";a.y<c-1?g.addClass(\"Wt-spinbox-up\"):g.addClass(\"Wt-spinbox-dn\")}}else b.style.cursor=\"\"}};this.mouseDown=function(a,c){if(b.style.cursor==\"crosshair\"){d.capture(null);d.capture(b);e=d.pageCoordinates(c);m=Number(b.value)}else if(d.widgetCoordinates(b,c).x>b.offsetWidth-16){d.cancelEvent(c);d.capture(b)}};this.keyDown= function(a,c){if(c.keyCode==40)l();else c.keyCode==38&&k()};this.mouseUp=function(a,c){if(e!=null){e=null;a.onchange()}else{a=d.widgetCoordinates(b,c);if(a.x>b.offsetWidth-16)a.y<b.offsetHeight/2?k():l()}}};";
+		return "Wt3_1_7.WSpinBox = function(n,b,h,i,f){function j(a){if(a>i)a=i;else if(a<h)a=h;b.value=a}function k(){var a=Number(b.value);a+=f;j(a);b.onchange()}function l(){var a=Number(b.value);a-=f;j(a);b.onchange()}jQuery.data(b,\"obj\",this);var d=n.WT,g=$(b),e=null,m;this.update=function(a,c,o){h=a;i=c;f=o};this.mouseOut=function(){g.removeClass(\"Wt-spinbox-dn\").removeClass(\"Wt-spinbox-up\")};this.mouseMove=function(a,c){if(e){a=d.pageCoordinates(c).y-e.y;c=m;c-=a*f;j(c)}else{a=d.widgetCoordinates(b, c);g.removeClass(\"Wt-spinbox-dn\").removeClass(\"Wt-spinbox-up\");if(a.x>b.offsetWidth-16){c=b.offsetHeight/2;if(a.y>=c-1&&a.y<=c+1)b.style.cursor=\"crosshair\";else{b.style.cursor=\"default\";a.y<c-1?g.addClass(\"Wt-spinbox-up\"):g.addClass(\"Wt-spinbox-dn\")}}else b.style.cursor=\"\"}};this.mouseDown=function(a,c){if(b.style.cursor==\"crosshair\"){d.capture(null);d.capture(b);e=d.pageCoordinates(c);m=Number(b.value)}else if(d.widgetCoordinates(b,c).x>b.offsetWidth-16){d.cancelEvent(c);d.capture(b)}};this.keyDown= function(a,c){if(c.keyCode==40)l();else c.keyCode==38&&k()};this.mouseUp=function(a,c){if(e!=null){e=null;a.onchange()}else{a=d.widgetCoordinates(b,c);if(a.x>b.offsetWidth-16)a.y<b.offsetHeight/2?k():l()}}};";
 	}
 }

@@ -361,6 +361,12 @@ public class WSlider extends WCompositeWidget {
 		this.update();
 	}
 
+	protected void layoutSizeChanged(int width, int height) {
+		super.resize(WLength.Auto, WLength.Auto);
+		this.background_.resize(new WLength(width), new WLength(height));
+		this.update();
+	}
+
 	private Orientation orientation_;
 	private int tickInterval_;
 	private EnumSet<WSlider.TickPosition> tickPosition_;
@@ -407,6 +413,7 @@ public class WSlider extends WCompositeWidget {
 				WSlider.this.onSliderReleased(e1);
 			}
 		});
+		this.setLayoutSizeAware(true);
 		this.update();
 	}
 
@@ -418,16 +425,17 @@ public class WSlider extends WCompositeWidget {
 		if (this.orientation_ == Orientation.Horizontal) {
 			this.handle_.resize(new WLength(HANDLE_WIDTH), new WLength(
 					HANDLE_HEIGHT));
-			this.handle_.setOffsets(new WLength(
-					this.getHeight().toPixels() / 2 + 2), EnumSet.of(Side.Top));
+			this.handle_.setOffsets(
+					new WLength(this.getH().toPixels() / 2 + 2), EnumSet
+							.of(Side.Top));
 		} else {
 			this.handle_.resize(new WLength(HANDLE_HEIGHT), new WLength(
 					HANDLE_WIDTH));
-			this.handle_.setOffsets(new WLength(this.getWidth().toPixels() / 2
+			this.handle_.setOffsets(new WLength(this.getW().toPixels() / 2
 					- HANDLE_HEIGHT - 2), EnumSet.of(Side.Left));
 		}
-		double l = (this.orientation_ == Orientation.Horizontal ? this
-				.getWidth() : this.getHeight()).toPixels();
+		double l = (this.orientation_ == Orientation.Horizontal ? this.getW()
+				: this.getH()).toPixels();
 		double pixelsPerUnit = (l - HANDLE_WIDTH) / this.getRange();
 		String dir = this.orientation_ == Orientation.Horizontal ? "left"
 				: "top";
@@ -438,15 +446,15 @@ public class WSlider extends WCompositeWidget {
 		String minimumS = String.valueOf(this.minimum_);
 		String maximumS = String.valueOf(this.maximum_);
 		this.mouseDownJS_
-				.setJavaScript("function(obj, event) {obj.setAttribute('down', Wt3_1_6.widgetCoordinates(obj, event)."
-						+ u + "); Wt3_1_6.cancelEvent(event);}");
+				.setJavaScript("function(obj, event) {obj.setAttribute('down', Wt3_1_7.widgetCoordinates(obj, event)."
+						+ u + "); Wt3_1_7.cancelEvent(event);}");
 		String computeD = "var objh = " + this.handle_.getJsRef() + ",objb = "
 				+ this.background_.getJsRef()
 				+ ",u = WT.pageCoordinates(event)." + u
 				+ " - down,w = WT.widgetPageCoordinates(objb)." + u
 				+ ",d = u-w;";
 		this.mouseMovedJS_
-				.setJavaScript("function(obj, event) {var down = obj.getAttribute('down');var WT = Wt3_1_6;if (down != null && down != '') {"
+				.setJavaScript("function(obj, event) {var down = obj.getAttribute('down');var WT = Wt3_1_7;if (down != null && down != '') {"
 						+ computeD
 						+ "d = Math.max(0, Math.min(d, "
 						+ maxS
@@ -464,7 +472,7 @@ public class WSlider extends WCompositeWidget {
 										+ minimumS
 										: maximumS + " - v") + "}}}");
 		this.mouseUpJS_
-				.setJavaScript("function(obj, event) {var down = obj.getAttribute('down');var WT = Wt3_1_6;if (down != null && down != '') {"
+				.setJavaScript("function(obj, event) {var down = obj.getAttribute('down');var WT = Wt3_1_7;if (down != null && down != '') {"
 						+ computeD
 						+ "d += "
 						+ String.valueOf(HANDLE_WIDTH / 2)
@@ -475,14 +483,14 @@ public class WSlider extends WCompositeWidget {
 	}
 
 	private void updateSliderPosition() {
-		double l = (this.orientation_ == Orientation.Horizontal ? this
-				.getWidth() : this.getHeight()).toPixels();
+		double l = (this.orientation_ == Orientation.Horizontal ? this.getW()
+				: this.getH()).toPixels();
 		double pixelsPerUnit = (l - HANDLE_WIDTH) / this.getRange();
 		double u = ((double) this.value_ - this.minimum_) * pixelsPerUnit;
 		if (this.orientation_ == Orientation.Horizontal) {
 			this.handle_.setOffsets(new WLength(u), EnumSet.of(Side.Left));
 		} else {
-			this.handle_.setOffsets(new WLength(this.getHeight().toPixels()
+			this.handle_.setOffsets(new WLength(this.getH().toPixels()
 					- HANDLE_WIDTH - u), EnumSet.of(Side.Top));
 		}
 	}
@@ -498,16 +506,24 @@ public class WSlider extends WCompositeWidget {
 		if (this.orientation_ == Orientation.Horizontal) {
 			u -= HANDLE_WIDTH / 2;
 		} else {
-			u = (int) this.getHeight().toPixels() - (u + HANDLE_WIDTH / 2);
+			u = (int) this.getH().toPixels() - (u + HANDLE_WIDTH / 2);
 		}
-		double l = (this.orientation_ == Orientation.Horizontal ? this
-				.getWidth() : this.getHeight()).toPixels();
+		double l = (this.orientation_ == Orientation.Horizontal ? this.getW()
+				: this.getH()).toPixels();
 		double pixelsPerUnit = (l - HANDLE_WIDTH) / this.getRange();
 		double v = Math.max(this.minimum_, Math.min(this.maximum_,
 				this.minimum_ + (int) ((double) u / pixelsPerUnit + 0.5)));
 		this.sliderMoved_.trigger((int) v);
 		this.setValue((int) v);
 		this.valueChanged_.trigger(this.getValue());
+	}
+
+	private WLength getW() {
+		return this.background_.getWidth();
+	}
+
+	private WLength getH() {
+		return this.background_.getHeight();
 	}
 
 	static final int HANDLE_WIDTH = 17;

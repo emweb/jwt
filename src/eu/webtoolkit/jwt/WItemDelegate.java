@@ -228,8 +228,8 @@ public class WItemDelegate extends WAbstractItemDelegate {
 	/**
 	 * Saves the edited data to the model.
 	 * <p>
-	 * The default implementation saves the current edit value to the database.
-	 * You will need to reimplement this method for a custom editor.
+	 * The default implementation saves the current edit value to the model. You
+	 * will need to reimplement this method for a custom editor.
 	 * <p>
 	 * As an example of how to deal with a specialized editor, consider the
 	 * default implementation:

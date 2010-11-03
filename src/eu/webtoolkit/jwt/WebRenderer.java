@@ -290,7 +290,7 @@ class WebRenderer implements SlotLearnerInterface {
 		FileServe script = new FileServe(WtServlet.Wt_js);
 		script.setCondition("DEBUG", conf.isDebug());
 		script.setCondition("DYNAMIC_JS", false);
-		script.setVar("WT_CLASS", "Wt3_1_6");
+		script.setVar("WT_CLASS", "Wt3_1_7");
 		script.setVar("APP_CLASS", app.getJavaScriptClass());
 		script.setVar("AUTO_JAVASCRIPT", "(function() {" + app.autoJavaScript_
 				+ "})");
@@ -325,7 +325,7 @@ class WebRenderer implements SlotLearnerInterface {
 						.append("var domRoot = ")
 						.append(app.domRoot_.getJsRef())
 						.append(
-								";var form = Wt3_1_6.getElement('Wt-form');domRoot.style.display = form.style.display;document.body.replaceChild(domRoot, form);");
+								";var form = Wt3_1_7.getElement('Wt-form');domRoot.style.display = form.style.display;document.body.replaceChild(domRoot, form);");
 				this.loadScriptLibraries(this.collectedJS1_, app, true);
 				this.collectedJS2_.append(
 						"domRoot.style.visibility = 'visible';").append(
@@ -525,17 +525,17 @@ class WebRenderer implements SlotLearnerInterface {
 			app.getStyleSheet().javaScriptUpdate(app, response.out(), true);
 		}
 		if (app.getCssTheme().length() != 0) {
-			response.out().append("Wt3_1_6").append(".addStyleSheet('").append(
+			response.out().append("Wt3_1_7").append(".addStyleSheet('").append(
 					WApplication.getResourcesUrl()).append("/themes/").append(
 					app.getCssTheme()).append("/wt.css', 'all');");
 			if (app.getEnvironment().agentIsIE()) {
-				response.out().append("Wt3_1_6").append(".addStyleSheet('")
+				response.out().append("Wt3_1_7").append(".addStyleSheet('")
 						.append(WApplication.getResourcesUrl()).append(
 								"/themes/").append(app.getCssTheme()).append(
 								"/wt_ie.css', 'all');");
 			}
 			if (app.getEnvironment().getAgent() == WEnvironment.UserAgent.IE6) {
-				response.out().append("Wt3_1_6").append(".addStyleSheet('")
+				response.out().append("Wt3_1_7").append(".addStyleSheet('")
 						.append(WApplication.getResourcesUrl()).append(
 								"/themes/").append(app.getCssTheme()).append(
 								"/wt_ie6.css', 'all');");
@@ -573,7 +573,7 @@ class WebRenderer implements SlotLearnerInterface {
 		if (widgetset) {
 			String historyE = app.getEnvironment().getParameter("Wt-history");
 			if (historyE != null) {
-				response.out().append("Wt3_1_6")
+				response.out().append("Wt3_1_7")
 						.append(".history.initialize('").append(
 								historyE.charAt(0)).append("-field', '")
 						.append(historyE.charAt(0)).append("-iframe');\n");
@@ -610,7 +610,7 @@ class WebRenderer implements SlotLearnerInterface {
 				app.getAjaxMethod() == WApplication.AjaxMethod.XMLHttpRequest ? WtServlet.CommAjax_js
 						: WtServlet.CommScript_js);
 		js.setVar("APP_CLASS", app.getJavaScriptClass());
-		js.setVar("WT_CLASS", "Wt3_1_6");
+		js.setVar("WT_CLASS", "Wt3_1_7");
 		js
 				.setVar(
 						"CLOSE_CONNECTION",
@@ -749,7 +749,7 @@ class WebRenderer implements SlotLearnerInterface {
 			throws IOException {
 		int first = app.styleSheets_.size() - app.styleSheetsAdded_;
 		for (int i = first; i < app.styleSheets_.size(); ++i) {
-			out.append("Wt3_1_6").append(".addStyleSheet('").append(
+			out.append("Wt3_1_7").append(".addStyleSheet('").append(
 					app.fixRelativeUrl(app.styleSheets_.get(i).uri)).append(
 					"', '").append(app.styleSheets_.get(i).media).append(
 					"');\n");
