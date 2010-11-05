@@ -26,6 +26,11 @@ class JavaScriptEvent {
 	public int keyCode;
 	public int charCode;
 	public EnumSet<KeyboardModifier> modifiers;
+	public List<Touch> touches;
+	public List<Touch> targetTouches;
+	public List<Touch> changedTouches;
+	public double scale;
+	public double rotation;
 	public int scrollX;
 	public int scrollY;
 	public int viewportWidth;
@@ -80,6 +85,9 @@ class JavaScriptEvent {
 
 	public JavaScriptEvent() {
 		this.modifiers = EnumSet.noneOf(KeyboardModifier.class);
+		this.touches = new ArrayList<Touch>();
+		this.targetTouches = new ArrayList<Touch>();
+		this.changedTouches = new ArrayList<Touch>();
 		this.type = "";
 		this.tid = "";
 		this.response = "";

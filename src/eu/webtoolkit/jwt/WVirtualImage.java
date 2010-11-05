@@ -412,6 +412,16 @@ public class WVirtualImage extends WCompositeWidget {
 		return i * 1000 + j;
 	}
 
+	static class Coordinate {
+		public long i;
+		public long j;
+	}
+
+	private void decodeKey(long key, WVirtualImage.Coordinate coordinate) {
+		coordinate.i = key / 1000;
+		coordinate.j = key % 1000;
+	}
+
 	private void generateGridItems(long newX, long newY) {
 		WVirtualImage.Rect newNb = this.neighbourhood(newX, newY,
 				this.viewPortWidth_, this.viewPortHeight_);
@@ -470,12 +480,10 @@ public class WVirtualImage extends WCompositeWidget {
 		for (Iterator<Map.Entry<Long, WImage>> it_it = this.grid_.entrySet()
 				.iterator(); it_it.hasNext();) {
 			Map.Entry<Long, WImage> it = it_it.next();
-			long i;
-			long j;
-			i = it.getKey() / 1000;
-			j = it.getKey() % 1000;
-			;
-			if (i < i1 || i > i2 || j < j1 || j > j2) {
+			WVirtualImage.Coordinate coordinate = new WVirtualImage.Coordinate();
+			this.decodeKey(it.getKey(), coordinate);
+			if (coordinate.i < i1 || coordinate.i > i2 || coordinate.j < j1
+					|| coordinate.j > j2) {
 				;
 				if (it.getValue() != null)
 					it.getValue().remove();

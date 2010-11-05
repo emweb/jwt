@@ -105,7 +105,8 @@
 	<include name="eu/webtoolkit/jwt/*.java"/>
 	<include name="eu/webtoolkit/jwt/servlet/*.java"/>
 	<include name="eu/webtoolkit/jwt/chart/*.java"/>
-	<exclude name="eu/webtoolkit/jwt/utils/*.java"/>
+	<include name="eu/webtoolkit/jwt/utils/WebGraphics2D.java"/>
+	<!--<exclude name="eu/webtoolkit/jwt/utils/*.java"/>-->
 	<exclude name="eu/webtoolkit/jwt/XSSFilter.java"/>
 	<exclude name="eu/webtoolkit/jwt/ServletApi25.java"/>
 	<exclude name="eu/webtoolkit/jwt/ServletApi3.java"/>

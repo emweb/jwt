@@ -308,6 +308,30 @@ public abstract class WInteractWidget extends WWebWidget {
 		return this.mouseEventSignal(MOUSE_WHEEL_SIGNAL, true);
 	}
 
+	public EventSignal1<WTouchEvent> touchStart() {
+		return this.touchEventSignal(TOUCH_START_SIGNAL, true);
+	}
+
+	public EventSignal1<WTouchEvent> touchEnd() {
+		return this.touchEventSignal(TOUCH_END_SIGNAL, true);
+	}
+
+	public EventSignal1<WTouchEvent> touchMove() {
+		return this.touchEventSignal(TOUCH_MOVE_SIGNAL, true);
+	}
+
+	public EventSignal1<WGestureEvent> gestureStart() {
+		return this.gestureEventSignal(GESTURE_START_SIGNAL, true);
+	}
+
+	public EventSignal1<WGestureEvent> gestureChange() {
+		return this.gestureEventSignal(GESTURE_CHANGE_SIGNAL, true);
+	}
+
+	public EventSignal1<WGestureEvent> gestureEnd() {
+		return this.gestureEventSignal(GESTURE_END_SIGNAL, true);
+	}
+
 	/**
 	 * Configure dragging for drag and drop.
 	 * <p>
@@ -599,4 +623,10 @@ public abstract class WInteractWidget extends WWebWidget {
 	private static String MOUSE_MOVE_SIGNAL = "M_mousemove";
 	private static String MOUSE_DRAG_SIGNAL = "M_mousedrag";
 	static String MOUSE_WHEEL_SIGNAL = "mousewheel";
+	private static String TOUCH_START_SIGNAL = "touchstart";
+	private static String TOUCH_MOVE_SIGNAL = "touchmove";
+	private static String TOUCH_END_SIGNAL = "touchend";
+	private static String GESTURE_START_SIGNAL = "gesturestart";
+	private static String GESTURE_CHANGE_SIGNAL = "gesturechange";
+	private static String GESTURE_END_SIGNAL = "gestureend";
 }

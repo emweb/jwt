@@ -2000,6 +2000,40 @@ public abstract class WWebWidget extends WWidget {
 		}
 	}
 
+	protected EventSignal1<WTouchEvent> touchEventSignal(String name,
+			boolean create) {
+		AbstractEventSignal b = this.getEventSignal(name);
+		if (b != null) {
+			return (EventSignal1<WTouchEvent>) b;
+		} else {
+			if (!create) {
+				return null;
+			} else {
+				EventSignal1<WTouchEvent> result = new EventSignal1<WTouchEvent>(
+						name, this, WTouchEvent.templateEvent);
+				this.addEventSignal(result);
+				return result;
+			}
+		}
+	}
+
+	protected EventSignal1<WGestureEvent> gestureEventSignal(String name,
+			boolean create) {
+		AbstractEventSignal b = this.getEventSignal(name);
+		if (b != null) {
+			return (EventSignal1<WGestureEvent>) b;
+		} else {
+			if (!create) {
+				return null;
+			} else {
+				EventSignal1<WGestureEvent> result = new EventSignal1<WGestureEvent>(
+						name, this, WGestureEvent.templateEvent);
+				this.addEventSignal(result);
+				return result;
+			}
+		}
+	}
+
 	protected void updateSignalConnection(DomElement element,
 			AbstractEventSignal signal, String name, boolean all) {
 		if (name.charAt(0) != 'M' && signal.needsUpdate(all)) {

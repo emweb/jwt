@@ -37,7 +37,7 @@ public class WPointF {
 	/**
 	 * Creates a point from mouse coordinates.
 	 */
-	public WPointF(WMouseEvent.Coordinates other) {
+	public WPointF(Coordinates other) {
 		this.x_ = other.x;
 		this.y_ = other.y;
 	}

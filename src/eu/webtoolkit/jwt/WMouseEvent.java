@@ -64,28 +64,6 @@ public class WMouseEvent implements WAbstractEvent {
 	}
 
 	/**
-	 * A mouse coordinate.
-	 */
-	public static class Coordinates {
-		/**
-		 * X coordinate.
-		 */
-		public int x;
-		/**
-		 * Y coordinate.
-		 */
-		public int y;
-
-		/**
-		 * Constructor.
-		 */
-		public Coordinates(int x_, int y_) {
-			this.x = x_;
-			this.y = y_;
-		}
-	}
-
-	/**
 	 * Returns the button.
 	 * <p>
 	 * If multiple buttons are currently pressed for a mouse moved or mouse
@@ -109,9 +87,8 @@ public class WMouseEvent implements WAbstractEvent {
 	/**
 	 * Returns the mouse position relative to the document.
 	 */
-	public WMouseEvent.Coordinates getDocument() {
-		return new WMouseEvent.Coordinates(this.jsEvent_.documentX,
-				this.jsEvent_.documentY);
+	public Coordinates getDocument() {
+		return new Coordinates(this.jsEvent_.documentX, this.jsEvent_.documentY);
 	}
 
 	/**
@@ -120,25 +97,22 @@ public class WMouseEvent implements WAbstractEvent {
 	 * This differs from documentX() only through scrolling through the
 	 * document.
 	 */
-	public WMouseEvent.Coordinates getWindow() {
-		return new WMouseEvent.Coordinates(this.jsEvent_.clientX,
-				this.jsEvent_.clientY);
+	public Coordinates getWindow() {
+		return new Coordinates(this.jsEvent_.clientX, this.jsEvent_.clientY);
 	}
 
 	/**
 	 * Returns the mouse position relative to the screen.
 	 */
-	public WMouseEvent.Coordinates getScreen() {
-		return new WMouseEvent.Coordinates(this.jsEvent_.screenX,
-				this.jsEvent_.screenY);
+	public Coordinates getScreen() {
+		return new Coordinates(this.jsEvent_.screenX, this.jsEvent_.screenY);
 	}
 
 	/**
 	 * Returns the mouse position relative to the widget.
 	 */
-	public WMouseEvent.Coordinates getWidget() {
-		return new WMouseEvent.Coordinates(this.jsEvent_.widgetX,
-				this.jsEvent_.widgetY);
+	public Coordinates getWidget() {
+		return new Coordinates(this.jsEvent_.widgetX, this.jsEvent_.widgetY);
 	}
 
 	/**
@@ -147,9 +121,8 @@ public class WMouseEvent implements WAbstractEvent {
 	 * This is only defined for a {@link WInteractWidget#mouseWentUp()
 	 * WInteractWidget#mouseWentUp()} event.
 	 */
-	public WMouseEvent.Coordinates getDragDelta() {
-		return new WMouseEvent.Coordinates(this.jsEvent_.dragDX,
-				this.jsEvent_.dragDY);
+	public Coordinates getDragDelta() {
+		return new Coordinates(this.jsEvent_.dragDX, this.jsEvent_.dragDY);
 	}
 
 	/**
