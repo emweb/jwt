@@ -308,27 +308,27 @@ public abstract class WInteractWidget extends WWebWidget {
 		return this.mouseEventSignal(MOUSE_WHEEL_SIGNAL, true);
 	}
 
-	public EventSignal1<WTouchEvent> touchStart() {
+	public EventSignal1<WTouchEvent> touchStarted() {
 		return this.touchEventSignal(TOUCH_START_SIGNAL, true);
 	}
 
-	public EventSignal1<WTouchEvent> touchEnd() {
+	public EventSignal1<WTouchEvent> touchEnded() {
 		return this.touchEventSignal(TOUCH_END_SIGNAL, true);
 	}
 
-	public EventSignal1<WTouchEvent> touchMove() {
+	public EventSignal1<WTouchEvent> touchMoved() {
 		return this.touchEventSignal(TOUCH_MOVE_SIGNAL, true);
 	}
 
-	public EventSignal1<WGestureEvent> gestureStart() {
+	public EventSignal1<WGestureEvent> gestureStarted() {
 		return this.gestureEventSignal(GESTURE_START_SIGNAL, true);
 	}
 
-	public EventSignal1<WGestureEvent> gestureChange() {
+	public EventSignal1<WGestureEvent> gestureChanged() {
 		return this.gestureEventSignal(GESTURE_CHANGE_SIGNAL, true);
 	}
 
-	public EventSignal1<WGestureEvent> gestureEnd() {
+	public EventSignal1<WGestureEvent> gestureEnded() {
 		return this.gestureEventSignal(GESTURE_END_SIGNAL, true);
 	}
 

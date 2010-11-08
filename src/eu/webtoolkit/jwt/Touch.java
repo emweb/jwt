@@ -11,78 +11,46 @@ import java.util.List;
 import eu.webtoolkit.jwt.servlet.WebRequest;
 
 /**
- * A class providing details for a scroll event.
+ * A single touch of a touch event.
  * <p>
- * 
- * @see WContainerWidget#scrolled()
  */
-public class WScrollEvent implements WAbstractEvent {
-	/**
-	 * Default constructor.
-	 */
-	public WScrollEvent() {
-		super();
-		this.jsEvent_ = new JavaScriptEvent();
+public class Touch {
+	public Touch(int identifier, int clientX, int clientY, int documentX,
+			int documentY, int screenX, int screenY, int widgetX, int widgetY) {
+		this.clientX_ = clientX;
+		this.clientY_ = clientY;
+		this.documentX_ = documentX;
+		this.documentY_ = documentY;
+		this.widgetX_ = widgetX;
+		this.widgetY_ = widgetY;
+		this.identifier_ = identifier;
 	}
 
-	/**
-	 * Returns the current horizontal scroll position.
-	 * <p>
-	 * 
-	 * @see WScrollEvent#getScrollY()
-	 * @see WScrollEvent#getViewportWidth()
-	 */
-	public int getScrollX() {
-		return this.jsEvent_.scrollX;
+	public Coordinates getDocument() {
+		return new Coordinates(this.documentX_, this.documentY_);
 	}
 
-	/**
-	 * Returns the current vertical scroll position.
-	 * <p>
-	 * 
-	 * @see WScrollEvent#getScrollX()
-	 * @see WScrollEvent#getViewportHeight()
-	 */
-	public int getScrollY() {
-		return this.jsEvent_.scrollY;
+	public Coordinates getWindow() {
+		return new Coordinates(this.clientX_, this.clientY_);
 	}
 
-	/**
-	 * Returns the current horizontal viewport width.
-	 * <p>
-	 * Returns the current viewport width.
-	 * <p>
-	 * 
-	 * @see WScrollEvent#getViewportHeight()
-	 * @see WScrollEvent#getScrollX()
-	 */
-	public int getViewportWidth() {
-		return this.jsEvent_.viewportWidth;
+	public Coordinates getScreen() {
+		return new Coordinates(this.screenX_, this.screenY_);
 	}
 
-	/**
-	 * Returns the current horizontal viewport height.
-	 * <p>
-	 * Returns the current viewport height.
-	 * <p>
-	 * 
-	 * @see WScrollEvent#getViewportWidth()
-	 * @see WScrollEvent#getScrollY()
-	 */
-	public int getViewportHeight() {
-		return this.jsEvent_.viewportHeight;
+	public Coordinates getWidget() {
+		return new Coordinates(this.widgetX_, this.widgetY_);
 	}
 
-	public WAbstractEvent createFromJSEvent(JavaScriptEvent jsEvent) {
-		return new WScrollEvent(jsEvent);
-	}
-
-	private JavaScriptEvent jsEvent_;
-
-	private WScrollEvent(JavaScriptEvent jsEvent) {
-		super();
-		this.jsEvent_ = jsEvent;
-	}
+	private int clientX_;
+	private int clientY_;
+	private int documentX_;
+	private int documentY_;
+	private int screenX_;
+	private int screenY_;
+	private int widgetX_;
+	private int widgetY_;
+	private int identifier_;
 
 	static int asInt(String v) {
 		return Integer.parseInt(v);
@@ -138,6 +106,4 @@ public class WScrollEvent implements WAbstractEvent {
 			return;
 		}
 	}
-
-	static WScrollEvent templateEvent = new WScrollEvent();
 }

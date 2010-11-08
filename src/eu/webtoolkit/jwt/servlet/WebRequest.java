@@ -267,4 +267,12 @@ public class WebRequest extends HttpServletRequestWrapper {
 		
 		return null;
 	}
+
+	public boolean isWebSocketRequest() {
+		return false;
+	}
+
+	public boolean isWebSocketMessage() {
+		return false;
+	}
 }

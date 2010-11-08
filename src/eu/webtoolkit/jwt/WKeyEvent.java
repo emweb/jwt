@@ -5,7 +5,10 @@
  */
 package eu.webtoolkit.jwt;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.EnumSet;
+import java.util.List;
 import eu.webtoolkit.jwt.servlet.WebRequest;
 import eu.webtoolkit.jwt.utils.EnumUtils;
 
@@ -118,11 +121,15 @@ public class WKeyEvent implements WAbstractEvent {
 
 	private JavaScriptEvent jsEvent_;
 
+	static int asInt(String v) {
+		return Integer.parseInt(v);
+	}
+
 	static int parseIntParameter(WebRequest request, String name, int ifMissing) {
 		String p;
 		if ((p = request.getParameter(name)) != null) {
 			try {
-				return Integer.parseInt(p);
+				return asInt(p);
 			} catch (NumberFormatException ee) {
 				WApplication.getInstance().log("error").append(
 						"Could not cast event property '").append(name).append(
@@ -140,6 +147,32 @@ public class WKeyEvent implements WAbstractEvent {
 			return p;
 		} else {
 			return "";
+		}
+	}
+
+	static void decodeTouches(String str, List<Touch> result) {
+		if (str.length() == 0) {
+			return;
+		}
+		List<String> s = new ArrayList<String>();
+		s = new ArrayList<String>(Arrays.asList(str.split(";")));
+		if (s.size() % 9 != 0) {
+			WApplication.getInstance().log("error").append(
+					"Could not parse touches array '").append(str).append("'");
+			return;
+		}
+		try {
+			for (int i = 0; i < s.size(); i += 9) {
+				result.add(new Touch(asInt(s.get(i + 0)), asInt(s.get(i + 1)),
+						asInt(s.get(i + 2)), asInt(s.get(i + 3)), asInt(s
+								.get(i + 4)), asInt(s.get(i + 5)), asInt(s
+								.get(i + 6)), asInt(s.get(i + 7)), asInt(s
+								.get(i + 8))));
+			}
+		} catch (NumberFormatException ee) {
+			WApplication.getInstance().log("error").append(
+					"Could not parse touches array '").append(str).append("'");
+			return;
 		}
 	}
 

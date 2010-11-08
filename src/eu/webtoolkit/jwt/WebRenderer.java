@@ -267,6 +267,9 @@ class WebRenderer implements SlotLearnerInterface {
 				this.session_.getApp().getJavaScriptClass()).append(
 				"._p_.response(").append(String.valueOf(this.expectedAckId_))
 				.append(");");
+		if (response.isWebSocketRequest() || response.isWebSocketMessage()) {
+			this.setJSSynced(false);
+		}
 	}
 
 	private void serveMainscript(WebResponse response) throws IOException {
@@ -292,10 +295,11 @@ class WebRenderer implements SlotLearnerInterface {
 		script.setCondition("DYNAMIC_JS", false);
 		script.setVar("WT_CLASS", "Wt3_1_7");
 		script.setVar("APP_CLASS", app.getJavaScriptClass());
-		script.setVar("AUTO_JAVASCRIPT", "(function() {" + app.autoJavaScript_
+		script.setVar("AUTO_JAVASCRIPT", "(function(){" + app.autoJavaScript_
 				+ "})");
 		script.setCondition("STRICTLY_SERIALIZED_EVENTS", conf
 				.isSerializedEvents());
+		script.setCondition("WEB_SOCKETS", conf.isWebSockets());
 		script.setVar("INNER_HTML", innerHtml);
 		script.setVar("FORM_OBJECTS", '[' + this.currentFormObjectsList_ + ']');
 		script.setVar("RELATIVE_URL", WWebWidget.jsStringLiteral(this.session_

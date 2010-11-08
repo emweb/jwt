@@ -6,6 +6,7 @@
 package eu.webtoolkit.jwt;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.List;
 import eu.webtoolkit.jwt.servlet.WebRequest;
@@ -81,6 +82,11 @@ class JavaScriptEvent {
 			this.userEventArgs.add(getStringParameter(request, se + "a"
 					+ String.valueOf(i)));
 		}
+		decodeTouches(getStringParameter(request, se + "touches"), this.touches);
+		decodeTouches(getStringParameter(request, se + "ttouches"),
+				this.targetTouches);
+		decodeTouches(getStringParameter(request, se + "ctouches"),
+				this.changedTouches);
 	}
 
 	public JavaScriptEvent() {
@@ -94,11 +100,15 @@ class JavaScriptEvent {
 		this.userEventArgs = new ArrayList<String>();
 	}
 
+	static int asInt(String v) {
+		return Integer.parseInt(v);
+	}
+
 	static int parseIntParameter(WebRequest request, String name, int ifMissing) {
 		String p;
 		if ((p = request.getParameter(name)) != null) {
 			try {
-				return Integer.parseInt(p);
+				return asInt(p);
 			} catch (NumberFormatException ee) {
 				WApplication.getInstance().log("error").append(
 						"Could not cast event property '").append(name).append(
@@ -116,6 +126,32 @@ class JavaScriptEvent {
 			return p;
 		} else {
 			return "";
+		}
+	}
+
+	static void decodeTouches(String str, List<Touch> result) {
+		if (str.length() == 0) {
+			return;
+		}
+		List<String> s = new ArrayList<String>();
+		s = new ArrayList<String>(Arrays.asList(str.split(";")));
+		if (s.size() % 9 != 0) {
+			WApplication.getInstance().log("error").append(
+					"Could not parse touches array '").append(str).append("'");
+			return;
+		}
+		try {
+			for (int i = 0; i < s.size(); i += 9) {
+				result.add(new Touch(asInt(s.get(i + 0)), asInt(s.get(i + 1)),
+						asInt(s.get(i + 2)), asInt(s.get(i + 3)), asInt(s
+								.get(i + 4)), asInt(s.get(i + 5)), asInt(s
+								.get(i + 6)), asInt(s.get(i + 7)), asInt(s
+								.get(i + 8))));
+			}
+		} catch (NumberFormatException ee) {
+			WApplication.getInstance().log("error").append(
+					"Could not parse touches array '").append(str).append("'");
+			return;
 		}
 	}
 }

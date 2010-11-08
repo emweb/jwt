@@ -10,79 +10,34 @@ import java.util.Arrays;
 import java.util.List;
 import eu.webtoolkit.jwt.servlet.WebRequest;
 
-/**
- * A class providing details for a scroll event.
- * <p>
- * 
- * @see WContainerWidget#scrolled()
- */
-public class WScrollEvent implements WAbstractEvent {
-	/**
-	 * Default constructor.
-	 */
-	public WScrollEvent() {
+class WTouchEvent implements WAbstractEvent {
+	public WTouchEvent() {
 		super();
 		this.jsEvent_ = new JavaScriptEvent();
 	}
 
-	/**
-	 * Returns the current horizontal scroll position.
-	 * <p>
-	 * 
-	 * @see WScrollEvent#getScrollY()
-	 * @see WScrollEvent#getViewportWidth()
-	 */
-	public int getScrollX() {
-		return this.jsEvent_.scrollX;
+	public List<Touch> getTouches() {
+		return this.jsEvent_.touches;
 	}
 
-	/**
-	 * Returns the current vertical scroll position.
-	 * <p>
-	 * 
-	 * @see WScrollEvent#getScrollX()
-	 * @see WScrollEvent#getViewportHeight()
-	 */
-	public int getScrollY() {
-		return this.jsEvent_.scrollY;
+	public List<Touch> getTargetTouches() {
+		return this.jsEvent_.targetTouches;
 	}
 
-	/**
-	 * Returns the current horizontal viewport width.
-	 * <p>
-	 * Returns the current viewport width.
-	 * <p>
-	 * 
-	 * @see WScrollEvent#getViewportHeight()
-	 * @see WScrollEvent#getScrollX()
-	 */
-	public int getViewportWidth() {
-		return this.jsEvent_.viewportWidth;
-	}
-
-	/**
-	 * Returns the current horizontal viewport height.
-	 * <p>
-	 * Returns the current viewport height.
-	 * <p>
-	 * 
-	 * @see WScrollEvent#getViewportWidth()
-	 * @see WScrollEvent#getScrollY()
-	 */
-	public int getViewportHeight() {
-		return this.jsEvent_.viewportHeight;
+	public List<Touch> getChangedTouches() {
+		return this.jsEvent_.changedTouches;
 	}
 
 	public WAbstractEvent createFromJSEvent(JavaScriptEvent jsEvent) {
-		return new WScrollEvent(jsEvent);
+		return new WTouchEvent(jsEvent);
 	}
 
-	private JavaScriptEvent jsEvent_;
-
-	private WScrollEvent(JavaScriptEvent jsEvent) {
+	public WTouchEvent(JavaScriptEvent jsEvent) {
 		super();
 		this.jsEvent_ = jsEvent;
 	}
+
+	protected JavaScriptEvent jsEvent_;
 
 	static int asInt(String v) {
 		return Integer.parseInt(v);
@@ -139,5 +94,5 @@ public class WScrollEvent implements WAbstractEvent {
 		}
 	}
 
-	static WScrollEvent templateEvent = new WScrollEvent();
+	public static WTouchEvent templateEvent = new WTouchEvent();
 }

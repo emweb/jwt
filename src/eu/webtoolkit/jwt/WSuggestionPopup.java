@@ -298,6 +298,7 @@ public class WSuggestionPopup extends WCompositeWidget {
 		this.jactivated_ = new JSignal2<String, String>(this.impl_, "select") {
 		};
 		this.edits_ = new ArrayList<WFormWidget>();
+		this.global_ = false;
 		this.init();
 	}
 
@@ -337,6 +338,7 @@ public class WSuggestionPopup extends WCompositeWidget {
 		this.jactivated_ = new JSignal2<String, String>(this.impl_, "select") {
 		};
 		this.edits_ = new ArrayList<WFormWidget>();
+		this.global_ = false;
 		this.init();
 	}
 
@@ -660,6 +662,21 @@ public class WSuggestionPopup extends WCompositeWidget {
 		return this.activated_;
 	}
 
+	/**
+	 * Controls how the suggestion popup is positioned.
+	 * <p>
+	 * When <code>global</code> is <code>true</code>, then the popup will
+	 * position itself globally. This avoids that the popup is affected by
+	 * enclosing parents with overflow settings that clip the popup. This makes
+	 * the popup however no longer follow the popup button when this button
+	 * moves.
+	 * <p>
+	 * The default is <code>false</code>.
+	 */
+	public void setGlobalPopup(boolean global) {
+		this.global_ = global;
+	}
+
 	public void setMaximumSize(WLength width, WLength height) {
 		super.setMaximumSize(width, height);
 		this.content_.setMaximumSize(width, height);
@@ -685,6 +702,7 @@ public class WSuggestionPopup extends WCompositeWidget {
 	private JSignal1<String> filter_;
 	private JSignal2<String, String> jactivated_;
 	private List<WFormWidget> edits_;
+	private boolean global_;
 
 	private void init() {
 		this.setImplementation(this.impl_);
@@ -832,7 +850,8 @@ public class WSuggestionPopup extends WCompositeWidget {
 				+ app.getJavaScriptClass() + "," + this.getJsRef() + ","
 				+ this.replacerJS_ + "," + this.matcherJS_ + ","
 				+ String.valueOf(this.filterLength_) + ","
-				+ String.valueOf(this.defaultValue_) + ");");
+				+ String.valueOf(this.defaultValue_) + ","
+				+ (this.global_ ? "true" : "false") + ");");
 	}
 
 	void render(EnumSet<RenderFlag> flags) {

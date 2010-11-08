@@ -539,4 +539,8 @@ public class Configuration {
 	public void setIndicatorTimeout(int timeout) {
 		this.indicatorTimeout = timeout;
 	}
+
+	public boolean isWebSockets() {
+		return false;
+	}
 }

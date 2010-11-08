@@ -50,6 +50,7 @@ class WebSession {
 		this.redirect_ = "";
 		this.asyncResponse_ = null;
 		this.updatesPending_ = false;
+		this.canWriteAsyncResponse_ = false;
 		this.recursiveEvent_ = this.mutex_.newCondition();
 		this.embeddedEnv_ = new WEnvironment(this);
 		this.app_ = null;
@@ -270,12 +271,14 @@ class WebSession {
 							this.log("error").append("Could not parse ackId: ")
 									.append(ackIdE);
 						}
-						if (this.asyncResponse_ != null) {
+						if (this.asyncResponse_ != null
+								&& !this.asyncResponse_.isWebSocketRequest()) {
 							if (signalE.equals("poll")) {
 								this.renderer_.letReloadJS(this.asyncResponse_,
 										true);
 							}
 							this.asyncResponse_ = null;
+							this.canWriteAsyncResponse_ = false;
 						}
 						if (!signalE.equals("res") && !signalE.equals("poll")) {
 							try {
@@ -289,9 +292,17 @@ class WebSession {
 							}
 						} else {
 							if (signalE.equals("poll") && !this.updatesPending_) {
-								this.asyncResponse_ = handler.getResponse();
-								handler.setRequest((WebRequest) null,
-										(WebResponse) null);
+								if (!(this.asyncResponse_ != null)) {
+									this.asyncResponse_ = handler.getResponse();
+									this.canWriteAsyncResponse_ = true;
+									handler.setRequest((WebRequest) null,
+											(WebResponse) null);
+								} else {
+									System.err
+											.append(
+													"Poll after web socket connect. Ignoring")
+											.append('\n');
+								}
 							}
 						}
 					} else {
@@ -330,12 +341,19 @@ class WebSession {
 				return;
 			}
 			this.updatesPending_ = true;
-			if (this.asyncResponse_ != null) {
+			if (this.canWriteAsyncResponse_) {
+				if (this.asyncResponse_.isWebSocketRequest()
+						&& this.asyncResponse_.isWebSocketMessagePending()) {
+					return;
+				}
 				this.renderer_.serveResponse(this.asyncResponse_,
 						WebRenderer.ResponseType.Update);
 				this.updatesPending_ = false;
-				this.asyncResponse_.flush();
-				this.asyncResponse_ = null;
+				if (!this.asyncResponse_.isWebSocketRequest()) {
+					this.asyncResponse_.flush();
+					this.asyncResponse_ = null;
+					this.canWriteAsyncResponse_ = false;
+				}
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -748,8 +766,12 @@ class WebSession {
 	}
 
 	public void handleRequest(WebSession.Handler handler) throws IOException {
-		Configuration conf = this.controller_.getConfiguration();
 		WebRequest request = handler.getRequest();
+		if (request.isWebSocketRequest()) {
+			this.handleWebSocketRequest(handler);
+			return;
+		}
+		Configuration conf = this.controller_.getConfiguration();
 		String wtdE = request.getParameter("wtd");
 		String requestE = request.getParameter("request");
 		WebRenderer.ResponseType responseType = WebRenderer.ResponseType.Page;
@@ -760,7 +782,7 @@ class WebSession {
 		} else {
 			if ((!(wtdE != null) || !wtdE.equals(this.sessionId_))
 					&& this.state_ != WebSession.State.JustCreated
-					&& (requestE != null && (requestE.equals("signal") || requestE
+					&& (requestE != null && (requestE.equals("jsupdate") || requestE
 							.equals("resource")))) {
 				handler.getResponse().setContentType("text/html");
 				handler
@@ -980,6 +1002,15 @@ class WebSession {
 	}
 
 	// public void generateNewSessionId() ;
+	private void handleWebSocketRequest(WebSession.Handler handler) {
+	}
+
+	private static void handleWebSocketMessage(WebSession session) {
+	}
+
+	private static void webSocketReady(WebSession session) {
+	}
+
 	private void checkTimers() {
 		WContainerWidget timers = this.app_.getTimerRoot();
 		List<WWidget> timerWidgets = timers.getChildren();
@@ -1020,6 +1051,7 @@ class WebSession {
 	private String redirect_;
 	private WebResponse asyncResponse_;
 	private boolean updatesPending_;
+	private boolean canWriteAsyncResponse_;
 	private boolean progressiveBoot_;
 	private java.util.concurrent.locks.Condition recursiveEvent_;
 	private WEnvironment embeddedEnv_;
@@ -1094,7 +1126,9 @@ class WebSession {
 
 	private void serveResponse(WebSession.Handler handler,
 			WebRenderer.ResponseType responseType) throws IOException {
-		this.renderer_.serveResponse(handler.getResponse(), responseType);
+		if (!handler.getRequest().isWebSocketMessage()) {
+			this.renderer_.serveResponse(handler.getResponse(), responseType);
+		}
 		handler.getResponse().flush();
 		handler.setRequest((WebRequest) null, (WebResponse) null);
 	}

@@ -195,4 +195,16 @@ public class WebResponse extends HttpServletResponseWrapper {
 	public Map<String, String[]> getParameterMap() {
 		return ((WebRequest)request).getParameterMap();
 	}
+
+	public boolean isWebSocketRequest() {
+		return false;
+	}
+
+	public boolean isWebSocketMessage() {
+		return false;
+	}
+
+	public boolean isWebSocketMessagePending() {
+		return false;
+	}
 }

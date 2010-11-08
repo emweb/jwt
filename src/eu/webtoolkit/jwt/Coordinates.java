@@ -11,77 +11,25 @@ import java.util.List;
 import eu.webtoolkit.jwt.servlet.WebRequest;
 
 /**
- * A class providing details for a scroll event.
- * <p>
- * 
- * @see WContainerWidget#scrolled()
+ * A mouse coordinate.
  */
-public class WScrollEvent implements WAbstractEvent {
+public class Coordinates {
 	/**
-	 * Default constructor.
+	 * X coordinate.
 	 */
-	public WScrollEvent() {
-		super();
-		this.jsEvent_ = new JavaScriptEvent();
-	}
-
+	public int x;
 	/**
-	 * Returns the current horizontal scroll position.
-	 * <p>
-	 * 
-	 * @see WScrollEvent#getScrollY()
-	 * @see WScrollEvent#getViewportWidth()
+	 * Y coordinate.
 	 */
-	public int getScrollX() {
-		return this.jsEvent_.scrollX;
-	}
+	public int y;
 
+	// public ;
 	/**
-	 * Returns the current vertical scroll position.
-	 * <p>
-	 * 
-	 * @see WScrollEvent#getScrollX()
-	 * @see WScrollEvent#getViewportHeight()
+	 * Constructor.
 	 */
-	public int getScrollY() {
-		return this.jsEvent_.scrollY;
-	}
-
-	/**
-	 * Returns the current horizontal viewport width.
-	 * <p>
-	 * Returns the current viewport width.
-	 * <p>
-	 * 
-	 * @see WScrollEvent#getViewportHeight()
-	 * @see WScrollEvent#getScrollX()
-	 */
-	public int getViewportWidth() {
-		return this.jsEvent_.viewportWidth;
-	}
-
-	/**
-	 * Returns the current horizontal viewport height.
-	 * <p>
-	 * Returns the current viewport height.
-	 * <p>
-	 * 
-	 * @see WScrollEvent#getViewportWidth()
-	 * @see WScrollEvent#getScrollY()
-	 */
-	public int getViewportHeight() {
-		return this.jsEvent_.viewportHeight;
-	}
-
-	public WAbstractEvent createFromJSEvent(JavaScriptEvent jsEvent) {
-		return new WScrollEvent(jsEvent);
-	}
-
-	private JavaScriptEvent jsEvent_;
-
-	private WScrollEvent(JavaScriptEvent jsEvent) {
-		super();
-		this.jsEvent_ = jsEvent;
+	public Coordinates(int X, int Y) {
+		this.x = X;
+		this.y = Y;
 	}
 
 	static int asInt(String v) {
@@ -138,6 +86,4 @@ public class WScrollEvent implements WAbstractEvent {
 			return;
 		}
 	}
-
-	static WScrollEvent templateEvent = new WScrollEvent();
 }
