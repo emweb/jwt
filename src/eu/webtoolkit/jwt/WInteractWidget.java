@@ -308,26 +308,102 @@ public abstract class WInteractWidget extends WWebWidget {
 		return this.mouseEventSignal(MOUSE_WHEEL_SIGNAL, true);
 	}
 
+	/**
+	 * Event signal emitted when a finger is placed on the screen.
+	 * <p>
+	 * The event details contains information such as the
+	 * {@link WTouchEvent#getTouches() touches},
+	 * {@link WTouchEvent#getTargetTouches() target touches} and
+	 * {@link WTouchEvent#getChangedTouches() changed touches}.
+	 * <p>
+	 * <p>
+	 * <i><b>Note: </b>When JavaScript is disabled, the signal will never fire.
+	 * </i>
+	 * </p>
+	 */
 	public EventSignal1<WTouchEvent> touchStarted() {
 		return this.touchEventSignal(TOUCH_START_SIGNAL, true);
 	}
 
+	/**
+	 * Event signal emitted when a finger is removed from the screen.
+	 * <p>
+	 * The event details contains information such as the
+	 * {@link WTouchEvent#getTouches() touches},
+	 * {@link WTouchEvent#getTargetTouches() target touches} and
+	 * {@link WTouchEvent#getChangedTouches() changed touches}.
+	 * <p>
+	 * <p>
+	 * <i><b>Note: </b>When JavaScript is disabled, the signal will never fire.
+	 * </i>
+	 * </p>
+	 */
 	public EventSignal1<WTouchEvent> touchEnded() {
 		return this.touchEventSignal(TOUCH_END_SIGNAL, true);
 	}
 
+	/**
+	 * Event signal emitted when a finger, which is already placed on the
+	 * screen, is moved across the screen.
+	 * <p>
+	 * The event details contains information such as the
+	 * {@link WTouchEvent#getTouches() touches},
+	 * {@link WTouchEvent#getTargetTouches() target touches} and
+	 * {@link WTouchEvent#getChangedTouches() changed touches}.
+	 * <p>
+	 * <p>
+	 * <i><b>Note: </b>When JavaScript is disabled, the signal will never fire.
+	 * </i>
+	 * </p>
+	 */
 	public EventSignal1<WTouchEvent> touchMoved() {
 		return this.touchEventSignal(TOUCH_MOVE_SIGNAL, true);
 	}
 
+	/**
+	 * Event signal emitted when a gesture is started.
+	 * <p>
+	 * The event details contains information about the
+	 * {@link WGestureEvent#getScale() scale} and the
+	 * {@link WGestureEvent#getRotation() rotation}.
+	 * <p>
+	 * <p>
+	 * <i><b>Note: </b>When JavaScript is disabled, the signal will never fire.
+	 * </i>
+	 * </p>
+	 */
 	public EventSignal1<WGestureEvent> gestureStarted() {
 		return this.gestureEventSignal(GESTURE_START_SIGNAL, true);
 	}
 
+	/**
+	 * Event signal emitted when a gesture is changed.
+	 * <p>
+	 * The event details contains information about the
+	 * {@link WGestureEvent#getScale() scale} and the
+	 * {@link WGestureEvent#getRotation() rotation}.
+	 * <p>
+	 * <p>
+	 * <i><b>Note: </b>When JavaScript is disabled, the signal will never fire.
+	 * </i>
+	 * </p>
+	 */
 	public EventSignal1<WGestureEvent> gestureChanged() {
 		return this.gestureEventSignal(GESTURE_CHANGE_SIGNAL, true);
 	}
 
+	/**
+	 * Event signal emitted when a gesture is ended.
+	 * <p>
+	 * The event details contains information about the
+	 * {@link WGestureEvent#getScale() scale} and the
+	 * {@link WGestureEvent#getRotation() rotation}.
+	 * <p>
+	 * <p>
+	 * <i><b>Note: </b>When JavaScript is disabled, the signal will never fire.
+	 * </i>
+	 * </p>
+	 */
 	public EventSignal1<WGestureEvent> gestureEnded() {
 		return this.gestureEventSignal(GESTURE_END_SIGNAL, true);
 	}

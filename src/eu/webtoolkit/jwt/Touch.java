@@ -11,10 +11,15 @@ import java.util.List;
 import eu.webtoolkit.jwt.servlet.WebRequest;
 
 /**
- * A single touch of a touch event.
+ * A single finger touch of a touch event.
  * <p>
+ * 
+ * @see WTouchEvent
  */
 public class Touch {
+	/**
+	 * Constructor.
+	 */
 	public Touch(int identifier, int clientX, int clientY, int documentX,
 			int documentY, int screenX, int screenY, int widgetX, int widgetY) {
 		this.clientX_ = clientX;
@@ -26,18 +31,33 @@ public class Touch {
 		this.identifier_ = identifier;
 	}
 
+	/**
+	 * Returns the touch position relative to the document.
+	 */
 	public Coordinates getDocument() {
 		return new Coordinates(this.documentX_, this.documentY_);
 	}
 
+	/**
+	 * Returns the touch position relative to the window.
+	 * <p>
+	 * This differs from {@link Touch#getDocument() getDocument()} only when
+	 * scrolling through the document.
+	 */
 	public Coordinates getWindow() {
 		return new Coordinates(this.clientX_, this.clientY_);
 	}
 
+	/**
+	 * Returns the touch position relative to the screen.
+	 */
 	public Coordinates getScreen() {
 		return new Coordinates(this.screenX_, this.screenY_);
 	}
 
+	/**
+	 * Returns the touch position relative to the widget.
+	 */
 	public Coordinates getWidget() {
 		return new Coordinates(this.widgetX_, this.widgetY_);
 	}

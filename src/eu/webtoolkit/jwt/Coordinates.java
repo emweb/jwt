@@ -11,7 +11,7 @@ import java.util.List;
 import eu.webtoolkit.jwt.servlet.WebRequest;
 
 /**
- * A mouse coordinate.
+ * A coordinate.
  */
 public class Coordinates {
 	/**

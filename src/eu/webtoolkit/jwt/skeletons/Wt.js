@@ -1,5 +1,10 @@
+/**
+ * @preserve Copyright (C) 2010 Emweb bvba, Kessel-Lo, Belgium.
+ *
+ * For terms of use, see LICENSE.
+ */
 _$_$if_DYNAMIC_JS_$_();
-function WT_DECLARE_WT_MEMBER(i, name, fn)
+window.WT_DECLARE_WT_MEMBER = function(i, name, fn)
 {
   var proto = name.indexOf('.prototype');
   if (proto == -1)
@@ -7,9 +12,9 @@ function WT_DECLARE_WT_MEMBER(i, name, fn)
   else
     _$_WT_CLASS_$_[name.substr(0, proto)]
       .prototype[name.substr(proto + '.prototype.'.length)] = fn;
-}
+};
 
-function WT_DECLARE_APP_MEMBER(i, name, fn)
+window.WT_DECLARE_APP_MEMBER = function(i, name, fn)
 {
   var proto = name.indexOf('.prototype');
   if (proto == -1)
@@ -17,11 +22,12 @@ function WT_DECLARE_APP_MEMBER(i, name, fn)
   else
     _$_APP_CLASS_$_[name.substr(0, proto)]
       .prototype[name.substr(proto + '.prototype.'.length)] = fn;
-}
+};
+
 _$_$endif_$_();
 
-var _$_WT_CLASS_$_ = new (function() {
-
+window._$_WT_CLASS_$_ = new (function()
+{
 var WT = this;
 
 // buttons currently down
@@ -35,7 +41,9 @@ this.mouseUp = function(e) {
   WT.buttons ^= WT.button(e);
 };
 
-// Array Remove - By John Resig (MIT Licensed)
+/**
+ * @preserve Includes Array Remove - By John Resig (MIT Licensed)
+ */
 this.arrayRemove = function(a, from, to) {
   var rest = a.slice((to || from) + 1 || a.length);
   a.length = from < 0 ? a.length + from : from;
@@ -62,7 +70,7 @@ this.isIElt9 = ie < 9;
 this.isGecko = navigator.userAgent.toLowerCase().indexOf("gecko") != -1;
 this.isIEMobile = navigator.userAgent.toLowerCase().indexOf("msie 4") != -1
   || navigator.userAgent.toLowerCase().indexOf("msie 5") != -1;
-this.isOpera = typeof window.opera !== "undefined";
+this.isOpera = typeof window.opera !== 'undefined';
 this.updateDelay = this.isIE ? 10 : 51;
 
 this.setHtml = function (el, html, add) {
@@ -115,7 +123,7 @@ this.setHtml = function (el, html, add) {
     for (var i = 0, il = d.childNodes.length; i < il;)
       el.appendChild(myImportNode(d.childNodes[i++], true));
   }
-},
+};
 
 this.hasTag = function(e, s) {
   return e.nodeType == 1 && e.tagName.toUpperCase() === s;
@@ -188,11 +196,16 @@ this.unwrap = function(e) {
   }
 };
 
+var delegating = false;
+
 this.CancelPropagate = 0x1;
 this.CancelDefaultAction = 0x2;
 this.CancelAll = 0x3;
 
 this.cancelEvent = function(e, cancelType) {
+  if (delegating)
+    return;
+
   var ct = cancelType === undefined ? WT.CancelAll : cancelType;
 
   if (ct & WT.CancelDefaultAction)
@@ -298,7 +311,7 @@ this.windowCoordinates = function(e) {
   var cy = p.y - document.body.scrollTop - document.documentElement.scrollTop;
 
   return { x: cx, y: cy };
-}
+};
 
 this.wheelDelta = function(e) {
   var delta = 0;
@@ -310,7 +323,7 @@ this.wheelDelta = function(e) {
     delta = e.detail < 0 ? 1 : -1;
   }
   return delta;
-}
+};
 
 this.scrollIntoView = function(id) {
   var obj = document.getElementById(id);
@@ -364,11 +377,11 @@ this.getSelectionRange = function(elem) {
 };
 
 this.setSelectionRange = function(elem, start, end) {
-/*
- * jQuery Caret Range plugin
- * Copyright (c) 2009 Matt Zabriskie
- * Released under the MIT and GPL licenses.
- */
+  /**
+   * @preserve Includes jQuery Caret Range plugin
+   * Copyright (c) 2009 Matt Zabriskie
+   * Released under the MIT and GPL licenses.
+   */
   var val = $(elem).val();
 
   if (typeof start != "number") start = -1;
@@ -380,7 +393,7 @@ this.setSelectionRange = function(elem, start, end) {
 
   elem.focus();
 
-  if (elem.selectionStart != undefined) {
+  if (typeof elem.selectionStart !== 'undefined') {
     elem.selectionStart = start;
     elem.selectionEnd = end;
   }
@@ -532,8 +545,6 @@ function delegateCapture(e) {
   } else
     return captureElement;
 }
-
-var delegating = false;
 
 function mouseMove(e) {
   var d = delegateCapture(e);
@@ -844,14 +855,16 @@ this.hasFocus = function(el) {
   return el == document.activeElement;
 };
 
-this.history = (function() {
-/*
-Original copyright: heavily simplified for Wt
-Copyright (c) 2008, Yahoo! Inc. All rights reserved.
-Code licensed under the BSD License:
-http://developer.yahoo.net/yui/license.txt
-version: 2.5.2
-*/
+this.history = (function()
+{
+  /**
+   * @preserve
+   * Includes Yahoo History Frameowork
+   * Copyright (c) 2008, Yahoo! Inc. All rights reserved.
+   * Code licensed under the BSD License:
+   * http://developer.yahoo.net/yui/license.txt
+   * version: 2.5.2
+   */
   var _UAwebkit = false;
   var _UAie = self.isIElt9;
   var _UAopera = false;
@@ -1072,7 +1085,7 @@ version: 2.5.2
 
 })();
 
-var _$_APP_CLASS_$_ = new (function() {
+window._$_APP_CLASS_$_ = new (function() {
 
 var self = this;
 var WT = _$_WT_CLASS_$_;
@@ -1414,11 +1427,11 @@ function encodeEvent(event, i) {
   if (e.shiftKey)
     result += se + 'shiftKey=1';
 
-  if (e.touches)
+  if (typeof e.touches !== 'undefined')
     result += encodeTouches(se + "touches", e.touches, widgetCoords);
-  if (e.targetTouches)
+  if (typeof e.targetTouches !== 'undefined')
     result += encodeTouches(se + "ttouches", e.targetTouches, widgetCoords);
-  if (e.changedTouches)
+  if (typeof e.changedTouches !== 'undefined')
     result += encodeTouches(se + "ctouches", e.changedTouches, widgetCoords);
 
   if (e.scale)
@@ -1560,7 +1573,14 @@ function waitFeedback() {
   showLoadingIndicator();
 };
 
-var ws = null;
+/** @const */ var WebSocketsUnknown = 0;
+/** @const */ var WebSocketsWorking = 1;
+/** @const */ var WebSocketsUnavailable = 2;
+
+var websocket = {
+  state: WebSocketsUnknown,
+  socket: null
+};
 
 function setServerPush(how) {
   serverPush = how;
@@ -1665,30 +1685,33 @@ var updateTimeoutStart;
 
 function scheduleUpdate() {
   _$_$if_WEB_SOCKETS_$_();
-  if (ws != null || window.WebSocket !== undefined) {
-    if (ws == null || ws.readyState > 1) {
-      var query = url.substr(url.indexOf('?'));
-      var wsurl = "ws" + location.protocol.substr(4)
-	+ "//" + location.hostname + ":"
-	+ location.port + location.pathname + query;
-      ws = new WebSocket(wsurl);
-      ws.onopen = function() {
-      };
+  if (websocket.state != WebSocketsUnavailable) {
+    if (typeof window.WebSocket === 'undefined')
+      websocket.state = WebSocketsUnavailable;
+    else {
+      var ws = websocket.socket;
 
-      ws.onmessage = function(event) {
-	handleResponse(0, event.data, null);
-      };
+      if ((ws == null || ws.readyState > 1)) {
+	if (ws != null && websocket.state == WebSocketsUnknown)
+	  websocket.state = WebSocketsUnavailable;
+	else {
+	  var query = url.substr(url.indexOf('?'));
+	  var wsurl = "ws" + location.protocol.substr(4)
+	    + "//" + location.hostname + ":"
+	    + location.port + location.pathname + query;
+	  websocket.socket = ws = new WebSocket(wsurl);
 
-      ws.onerror = function(event) {
-      };
+	  ws.onmessage = function(event) {
+	    websocket.state = WebSocketsWorking;
+	    handleResponse(0, event.data, null);
+	  };
+	}
+      }
 
-      ws.onclose = function(event) {
-      };
-    }
-
-    if (ws.readyState == 1) {
-      sendUpdate();
-      return;
+      if (ws.readyState == 1) {
+	sendUpdate();
+	return;
+      }
     }
   }
   _$_$endif_$_();
@@ -1759,7 +1782,7 @@ function sendUpdate() {
     poll = true;
   }
 
-  if (ws != null && ws.readyState == 1) {
+  if (websocket.socket != null && websocket.socket.readyState == 1) {
     responsePending = null;
 
     if (tm != null) {
@@ -1768,7 +1791,7 @@ function sendUpdate() {
     }
 
     if (!poll) {
-      ws.send(data.result + '&ackId=' + ackUpdateId);
+      websocket.socket.send(data.result + '&ackId=' + ackUpdateId);
     }
   } else {
     responsePending = self._p_.comm.sendUpdate
@@ -2006,11 +2029,11 @@ this.emit = emit;
 
 })();
 
-var WtSignalEmit = _$_APP_CLASS_$_.emit;
+window.WtSignalEmit = _$_APP_CLASS_$_.emit;
 
 window.WtScriptLoaded = false;
 
-function onLoad() {
+window.onLoad = function() {
   if (!window.WtScriptLoaded) {
     window.isLoaded = true;
     return;
@@ -2018,4 +2041,4 @@ function onLoad() {
 
   _$_WT_CLASS_$_.history.initialize("Wt-history-field", "Wt-history-iframe");
   _$_APP_CLASS_$_._p_.load();
-}
+};

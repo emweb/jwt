@@ -10,16 +10,34 @@ import java.util.Arrays;
 import java.util.List;
 import eu.webtoolkit.jwt.servlet.WebRequest;
 
-class WGestureEvent implements WAbstractEvent {
+/**
+ * A class providing details for a gesture event.
+ * <p>
+ * 
+ * @see WInteractWidget#gestureStarted()
+ * @see WInteractWidget#gestureChanged()
+ * @see WInteractWidget#gestureEnded()
+ */
+public class WGestureEvent implements WAbstractEvent {
+	/**
+	 * Default constructor.
+	 */
 	public WGestureEvent() {
 		super();
 		this.jsEvent_ = new JavaScriptEvent();
 	}
 
+	/**
+	 * Returns the multiplier which the user has pinched or pushed (relative to
+	 * 1).
+	 */
 	public double getScale() {
 		return this.jsEvent_.scale;
 	}
 
+	/**
+	 * Returns the number of degrees the user has rotated his/her fingers.
+	 */
 	public double getRotation() {
 		return this.jsEvent_.rotation;
 	}
@@ -28,12 +46,12 @@ class WGestureEvent implements WAbstractEvent {
 		return new WGestureEvent(jsEvent);
 	}
 
-	public WGestureEvent(JavaScriptEvent jsEvent) {
+	WGestureEvent(JavaScriptEvent jsEvent) {
 		super();
 		this.jsEvent_ = jsEvent;
 	}
 
-	protected JavaScriptEvent jsEvent_;
+	JavaScriptEvent jsEvent_;
 
 	static int asInt(String v) {
 		return Integer.parseInt(v);
@@ -90,5 +108,5 @@ class WGestureEvent implements WAbstractEvent {
 		}
 	}
 
-	public static WGestureEvent templateEvent = new WGestureEvent();
+	static WGestureEvent templateEvent = new WGestureEvent();
 }

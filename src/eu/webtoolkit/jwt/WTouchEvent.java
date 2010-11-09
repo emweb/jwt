@@ -10,20 +10,43 @@ import java.util.Arrays;
 import java.util.List;
 import eu.webtoolkit.jwt.servlet.WebRequest;
 
-class WTouchEvent implements WAbstractEvent {
+/**
+ * A class providing details for a touch event.
+ * <p>
+ * 
+ * @see WInteractWidget#touchStarted()
+ * @see WInteractWidget#touchMoved()
+ * @see WInteractWidget#touchEnded()
+ */
+public class WTouchEvent implements WAbstractEvent {
+	/**
+	 * Default constructor.
+	 */
 	public WTouchEvent() {
 		super();
 		this.jsEvent_ = new JavaScriptEvent();
 	}
 
+	/**
+	 * Returns a list of {@link Touch Touch} objects for every finger currently
+	 * touching the screen.
+	 */
 	public List<Touch> getTouches() {
 		return this.jsEvent_.touches;
 	}
 
+	/**
+	 * Returns a list of {@link Touch Touch} objects for finger touches that
+	 * started out within the same widget.
+	 */
 	public List<Touch> getTargetTouches() {
 		return this.jsEvent_.targetTouches;
 	}
 
+	/**
+	 * Returns a list of {@link Touch Touch} objects for every finger involved
+	 * in the event.
+	 */
 	public List<Touch> getChangedTouches() {
 		return this.jsEvent_.changedTouches;
 	}
@@ -32,12 +55,12 @@ class WTouchEvent implements WAbstractEvent {
 		return new WTouchEvent(jsEvent);
 	}
 
-	public WTouchEvent(JavaScriptEvent jsEvent) {
+	WTouchEvent(JavaScriptEvent jsEvent) {
 		super();
 		this.jsEvent_ = jsEvent;
 	}
 
-	protected JavaScriptEvent jsEvent_;
+	JavaScriptEvent jsEvent_;
 
 	static int asInt(String v) {
 		return Integer.parseInt(v);
@@ -94,5 +117,5 @@ class WTouchEvent implements WAbstractEvent {
 		}
 	}
 
-	public static WTouchEvent templateEvent = new WTouchEvent();
+	static WTouchEvent templateEvent = new WTouchEvent();
 }
