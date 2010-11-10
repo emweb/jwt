@@ -1815,10 +1815,15 @@ public class WTreeView extends WAbstractItemView {
 	}
 
 	private WTreeViewNode nodeForIndex(WModelIndex index) {
-		WModelIndex column0Index = this.getModel().getIndex(index.getRow(), 0,
-				index.getParent());
-		WTreeViewNode i = this.renderedNodes_.get(column0Index);
-		return i != null ? i : null;
+		if ((index == this.getRootIndex() || (index != null && index
+				.equals(this.getRootIndex())))) {
+			return this.rootNode_;
+		} else {
+			WModelIndex column0Index = this.getModel().getIndex(index.getRow(),
+					0, index.getParent());
+			WTreeViewNode i = this.renderedNodes_.get(column0Index);
+			return i != null ? i : null;
+		}
 	}
 
 	int subTreeHeight(WModelIndex index, int lowerBound, int upperBound) {

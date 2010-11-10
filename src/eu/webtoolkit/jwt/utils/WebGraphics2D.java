@@ -28,7 +28,9 @@ import java.awt.image.RenderedImage;
 import java.awt.image.renderable.RenderableImage;
 import java.text.AttributedCharacterIterator;
 import java.text.CharacterIterator;
+import java.util.ArrayList;
 import java.util.EnumSet;
+import java.util.List;
 import java.util.Map;
 
 import eu.webtoolkit.jwt.AlignmentFlag;
@@ -102,7 +104,10 @@ public class WebGraphics2D extends Graphics2D {
 
 	@Override
 	public void draw(Shape shape) {
-		painter.strokePath(toPath(shape), painter.getPen());
+		List<WPainterPath> paths = toPaths(shape);
+		
+		for (WPainterPath path : paths)
+			painter.strokePath(path, painter.getPen());
 	}
 
 	@Override
@@ -166,7 +171,10 @@ public class WebGraphics2D extends Graphics2D {
 
 	@Override
 	public void fill(Shape shape) {
-		painter.fillPath(toPath(shape), painter.getBrush());
+		List<WPainterPath> paths = toPaths(shape);
+		
+		for (WPainterPath path : paths)
+			painter.fillPath(path, painter.getBrush());
 	}
 
 	@Override
@@ -220,7 +228,7 @@ public class WebGraphics2D extends Graphics2D {
 
 	@Override
 	public boolean hit(Rectangle rect, Shape s, boolean onStroke) {
-		throw new RuntimeException("JWtGraphics2D.getRenderingHints() not supported");
+		return fontGraphics.hit(rect, s, onStroke);
 	}
 
 	@Override
@@ -711,13 +719,16 @@ public class WebGraphics2D extends Graphics2D {
 	@Override
 	public void setClip(Shape clip) {
 		if (clip != null) {
-			painter.setClipPath(toPath(clip));
+			painter.setClipPath(toPaths(clip).get(0));
 		} else
 			painter.setClipping(false);
 	}
 
-	private WPainterPath toPath(Shape shape) {
+	private List<WPainterPath> toPaths(Shape shape) {
+		List<WPainterPath> paths = new ArrayList<WPainterPath>();
+		
 		WPainterPath path = new WPainterPath();
+		paths.add(path);
 		
 		PathIterator it = shape.getPathIterator(null);
 		double coords[] = new double[6];
@@ -726,7 +737,16 @@ public class WebGraphics2D extends Graphics2D {
 			
 			switch (type) {
 			case PathIterator.SEG_MOVETO:
-				path.moveTo(round(coords[0]), round(coords[1]));
+				if (!path.isEmpty()) {
+					WPointF currentPosition = path.getCurrentPosition();
+					if (currentPosition.getX() != round(coords[0])
+						&& currentPosition.getY() != round(coords[1])) {
+						path = new WPainterPath();
+						paths.add(path);
+						path.moveTo(round(coords[0]), round(coords[1]));
+					}
+				} else
+					path.moveTo(round(coords[0]), round(coords[1]));					
 				break;
 			case PathIterator.SEG_LINETO:
 				path.lineTo(round(coords[0]), round(coords[1]));
@@ -744,7 +764,7 @@ public class WebGraphics2D extends Graphics2D {
 			it.next();
 		}
 		
-		return path;
+		return paths;
 	}
 
 	@Override

@@ -55,12 +55,12 @@ public class WTouchEvent implements WAbstractEvent {
 		return new WTouchEvent(jsEvent);
 	}
 
-	WTouchEvent(JavaScriptEvent jsEvent) {
+	public WTouchEvent(JavaScriptEvent jsEvent) {
 		super();
 		this.jsEvent_ = jsEvent;
 	}
 
-	JavaScriptEvent jsEvent_;
+	protected JavaScriptEvent jsEvent_;
 
 	static int asInt(String v) {
 		return Integer.parseInt(v);
@@ -117,5 +117,5 @@ public class WTouchEvent implements WAbstractEvent {
 		}
 	}
 
-	static WTouchEvent templateEvent = new WTouchEvent();
+	public static WTouchEvent templateEvent = new WTouchEvent();
 }

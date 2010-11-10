@@ -137,8 +137,8 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 				.getSelectionBehavior());
 		this.editedItems_.clear();
 		this.configureModelDragDrop();
-		this.setHeaderHeight(this.headerLineHeight_, this.multiLineHeader_);
 		this.setRootIndex(null);
+		this.setHeaderHeight(this.headerLineHeight_, this.multiLineHeader_);
 	}
 
 	/**

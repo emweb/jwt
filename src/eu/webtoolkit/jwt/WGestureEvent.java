@@ -46,12 +46,12 @@ public class WGestureEvent implements WAbstractEvent {
 		return new WGestureEvent(jsEvent);
 	}
 
-	WGestureEvent(JavaScriptEvent jsEvent) {
+	public WGestureEvent(JavaScriptEvent jsEvent) {
 		super();
 		this.jsEvent_ = jsEvent;
 	}
 
-	JavaScriptEvent jsEvent_;
+	protected JavaScriptEvent jsEvent_;
 
 	static int asInt(String v) {
 		return Integer.parseInt(v);
@@ -108,5 +108,5 @@ public class WGestureEvent implements WAbstractEvent {
 		}
 	}
 
-	static WGestureEvent templateEvent = new WGestureEvent();
+	public static WGestureEvent templateEvent = new WGestureEvent();
 }
