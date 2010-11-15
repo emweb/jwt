@@ -37,6 +37,10 @@ import eu.webtoolkit.jwt.WtServlet;
  * @see WebResponse
  */
 public class WebRequest extends HttpServletRequestWrapper {
+	public enum ResponseType {
+		Page, Script, Update
+	};
+	
 	/**
 	 * Progress listener interface.
 	 */

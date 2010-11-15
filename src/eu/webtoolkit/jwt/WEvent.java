@@ -17,25 +17,20 @@ import eu.webtoolkit.jwt.servlet.UploadedFile;
 public class WEvent {
 	private WEvent() {
 		this.handler = null;
-		this.responseType = WebRenderer.ResponseType.Page;
 		this.renderOnly = false;
 	}
 
-	WEvent(WebSession.Handler aHandler, WebRenderer.ResponseType aResponseType,
-			boolean doRenderOnly) {
+	WEvent(WebSession.Handler aHandler, boolean doRenderOnly) {
 		this.handler = aHandler;
-		this.responseType = aResponseType;
 		this.renderOnly = doRenderOnly;
 	}
 
-	WEvent(WebSession.Handler aHandler, WebRenderer.ResponseType aResponseType) {
+	WEvent(WebSession.Handler aHandler) {
 		this.handler = aHandler;
-		this.responseType = aResponseType;
 		this.renderOnly = false;
 	}
 
 	WebSession.Handler handler;
-	WebRenderer.ResponseType responseType;
 	boolean renderOnly;
 	static UploadedFile uf;
 }

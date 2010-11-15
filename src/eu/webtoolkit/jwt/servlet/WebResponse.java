@@ -18,6 +18,7 @@ import javax.servlet.http.HttpServletResponseWrapper;
 
 import eu.webtoolkit.jwt.WResource;
 import eu.webtoolkit.jwt.WtServlet;
+import eu.webtoolkit.jwt.servlet.WebRequest.ResponseType;
 
 /**
  * A WebResponse which wraps the HttpServletResponse to support testing.
@@ -31,11 +32,11 @@ import eu.webtoolkit.jwt.WtServlet;
  * @see WebResponse
  */
 public class WebResponse extends HttpServletResponseWrapper {
-
 	private OutputStreamWriter outWriter;
 	private HttpServletRequest request;
 	private int id;
 	private ServletOutputStream outputStream;
+	private ResponseType responseType;
 
 	/**
 	 * Constructor which wraps a HttpServletResponse.
@@ -206,5 +207,13 @@ public class WebResponse extends HttpServletResponseWrapper {
 
 	public boolean isWebSocketMessagePending() {
 		return false;
+	}
+	
+	public void setResponseType(ResponseType responseType) {
+		this.responseType = responseType;
+	}
+	
+	public ResponseType getResponseType() { 
+		return this.responseType; 
 	}
 }

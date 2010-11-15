@@ -1164,7 +1164,7 @@ public class WApplication extends WObject {
 	 *    try {
 	 *      // We now have exclusive access to the application:
 	 *      // we can safely modify the widget tree for example.
-	 *      app.getRoot().addWidget(new WText(&quot;Something happened!&quot;));
+	 *      app.getRoot().addWidget(new WText("Something happened!"));
 	 *   
 	 *      // Push the changes to the browser
 	 *      app.triggerUpdate();
@@ -2172,7 +2172,7 @@ public class WApplication extends WObject {
 	private Map<String, WResource> exposedResources_;
 	private Map<String, WObject> encodedObjects_;
 	private boolean exposeSignals_;
-	private String afterLoadJavaScript_;
+	String afterLoadJavaScript_;
 	String beforeLoadJavaScript_;
 	String newBeforeLoadJavaScript_;
 	String autoJavaScript_;

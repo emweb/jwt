@@ -540,7 +540,7 @@ public class Configuration {
 		this.indicatorTimeout = timeout;
 	}
 
-	public boolean isWebSockets() {
+	boolean isWebSockets() {
 		return false;
 	}
 }

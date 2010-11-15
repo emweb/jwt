@@ -2000,8 +2000,7 @@ public abstract class WWebWidget extends WWidget {
 		}
 	}
 
-	protected EventSignal1<WTouchEvent> touchEventSignal(String name,
-			boolean create) {
+	EventSignal1<WTouchEvent> touchEventSignal(String name, boolean create) {
 		AbstractEventSignal b = this.getEventSignal(name);
 		if (b != null) {
 			return (EventSignal1<WTouchEvent>) b;
@@ -2017,8 +2016,7 @@ public abstract class WWebWidget extends WWidget {
 		}
 	}
 
-	protected EventSignal1<WGestureEvent> gestureEventSignal(String name,
-			boolean create) {
+	EventSignal1<WGestureEvent> gestureEventSignal(String name, boolean create) {
 		AbstractEventSignal b = this.getEventSignal(name);
 		if (b != null) {
 			return (EventSignal1<WGestureEvent>) b;

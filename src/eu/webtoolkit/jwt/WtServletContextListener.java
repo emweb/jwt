@@ -10,7 +10,14 @@ import javax.servlet.SessionTrackingMode;
 import javax.servlet.annotation.WebListener;
 
 @WebListener
+/**
+ * This implementation recieves notifications about changes to the servlet 
+ * context.
+ */
 public class WtServletContextListener implements ServletContextListener {
+  /**
+   * Apply the url session tracking mode.
+   */
 	public void contextInitialized(ServletContextEvent sce) {
 		ServletContext sc = sce.getServletContext();
 		Set<SessionTrackingMode> trackingMode = new HashSet<SessionTrackingMode>();
@@ -18,6 +25,9 @@ public class WtServletContextListener implements ServletContextListener {
 		sc.setSessionTrackingModes(trackingMode);
 	}
 
+  /**
+   * Do nothing.
+   */
 	public void contextDestroyed(ServletContextEvent sce) {
 	}
 }

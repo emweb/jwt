@@ -16,6 +16,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import eu.webtoolkit.jwt.servlet.WebRequest;
 import eu.webtoolkit.jwt.servlet.WebResponse;
 import eu.webtoolkit.jwt.utils.MathUtils;
 import eu.webtoolkit.jwt.utils.OrderedMultiMap;
@@ -65,17 +66,6 @@ class WebRenderer implements SlotLearnerInterface {
 
 	public void updateFormObjects(WWebWidget source, boolean checkDescendants) {
 		this.formObjectsChanged_ = true;
-	}
-
-	enum ResponseType {
-		Page, Script, Update;
-
-		/**
-		 * Returns the numerical representation of this enum.
-		 */
-		public int getValue() {
-			return ordinal();
-		}
 	}
 
 	public void updateFormObjectsList(WApplication app) {
@@ -128,9 +118,8 @@ class WebRenderer implements SlotLearnerInterface {
 				|| this.invisibleJS_.getBuffer().length() > 0;
 	}
 
-	public void serveResponse(WebResponse response,
-			WebRenderer.ResponseType responseType) throws IOException {
-		switch (responseType) {
+	public void serveResponse(WebResponse response) throws IOException {
+		switch (response.getResponseType()) {
 		case Update:
 			this.serveJavaScriptUpdate(response);
 			break;
@@ -147,12 +136,10 @@ class WebRenderer implements SlotLearnerInterface {
 		}
 	}
 
-	// public void serveError(WebResponse request, RuntimeException error,
-	// WebRenderer.ResponseType responseType) ;
-	public void serveError(WebResponse response, String message,
-			WebRenderer.ResponseType responseType) throws IOException {
-		boolean js = responseType == WebRenderer.ResponseType.Update
-				|| responseType == WebRenderer.ResponseType.Script;
+	// public void serveError(WebResponse request, RuntimeException error) ;
+	public void serveError(WebResponse response, String message)
+			throws IOException {
+		boolean js = response.getResponseType() != WebRequest.ResponseType.Page;
 		WApplication app = this.session_.getApp();
 		if (!js || !(app != null)) {
 			response.setContentType("text/html");
@@ -491,7 +478,7 @@ class WebRenderer implements SlotLearnerInterface {
 			EscapeOStream js = new EscapeOStream();
 			EscapeOStream out = new EscapeOStream(response.out());
 			mainElement.asHTML(out, js, timeouts);
-			app.doJavaScript(js.toString());
+			app.afterLoadJavaScript_ = js.toString() + app.afterLoadJavaScript_;
 			;
 		}
 		int refresh;
