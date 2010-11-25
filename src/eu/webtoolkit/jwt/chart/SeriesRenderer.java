@@ -3,12 +3,29 @@
  *
  * See the LICENSE file for terms of use.
  */
+/*
+ * Copyright (C) 2009 Emweb bvba, Leuven, Belgium.
+ *
+ * See the LICENSE file for terms of use.
+ */
+/*
+ * Copyright (C) 2009 Emweb bvba, Leuven, Belgium.
+ *
+ * See the LICENSE file for terms of use.
+ */
+/*
+ * Copyright (C) 2009 Emweb bvba, Leuven, Belgium.
+ *
+ * See the LICENSE file for terms of use.
+ */
 package eu.webtoolkit.jwt.chart;
 
+import eu.webtoolkit.jwt.WModelIndex;
 import eu.webtoolkit.jwt.WPointF;
 
 abstract class SeriesRenderer {
-	public abstract void addValue(double x, double y, double stacky);
+	public abstract void addValue(double x, double y, double stacky,
+			WModelIndex xIndex, WModelIndex yIndex);
 
 	public abstract void paint();
 

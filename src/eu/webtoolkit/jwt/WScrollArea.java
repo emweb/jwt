@@ -3,6 +3,21 @@
  *
  * See the LICENSE file for terms of use.
  */
+/*
+ * Copyright (C) 2009 Emweb bvba, Leuven, Belgium.
+ *
+ * See the LICENSE file for terms of use.
+ */
+/*
+ * Copyright (C) 2009 Emweb bvba, Leuven, Belgium.
+ *
+ * See the LICENSE file for terms of use.
+ */
+/*
+ * Copyright (C) 2009 Emweb bvba, Leuven, Belgium.
+ *
+ * See the LICENSE file for terms of use.
+ */
 package eu.webtoolkit.jwt;
 
 import java.util.EnumSet;
@@ -142,7 +157,7 @@ public class WScrollArea extends WWebWidget {
 	}
 
 	/**
-	 * Returns the policy for both scrollbars.
+	 * Sets the policy for both scrollbars.
 	 * <p>
 	 * 
 	 * @see WScrollArea#setHorizontalScrollBarPolicy(WScrollArea.ScrollBarPolicy
@@ -157,10 +172,8 @@ public class WScrollArea extends WWebWidget {
 	}
 
 	/**
-	 * Returns the horizontal scroll bar policy.
+	 * Sets the horizontal scroll bar policy.
 	 * <p>
-	 * 
-	 * @see WScrollArea#setScrollBarPolicy(WScrollArea.ScrollBarPolicy policy)
 	 */
 	public void setHorizontalScrollBarPolicy(WScrollArea.ScrollBarPolicy policy) {
 		this.horizontalScrollBarPolicy_ = policy;
@@ -169,10 +182,8 @@ public class WScrollArea extends WWebWidget {
 	}
 
 	/**
-	 * Returns the vertical scroll bar policy.
+	 * Sets the vertical scroll bar policy.
 	 * <p>
-	 * 
-	 * @see WScrollArea#setScrollBarPolicy(WScrollArea.ScrollBarPolicy policy)
 	 */
 	public void setVerticalScrollBarPolicy(WScrollArea.ScrollBarPolicy policy) {
 		this.verticalScrollBarPolicy_ = policy;

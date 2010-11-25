@@ -3,6 +3,21 @@
  *
  * See the LICENSE file for terms of use.
  */
+/*
+ * Copyright (C) 2009 Emweb bvba, Leuven, Belgium.
+ *
+ * See the LICENSE file for terms of use.
+ */
+/*
+ * Copyright (C) 2009 Emweb bvba, Leuven, Belgium.
+ *
+ * See the LICENSE file for terms of use.
+ */
+/*
+ * Copyright (C) 2009 Emweb bvba, Leuven, Belgium.
+ *
+ * See the LICENSE file for terms of use.
+ */
 package eu.webtoolkit.jwt;
 
 import java.io.StringWriter;
@@ -356,6 +371,7 @@ public class WVmlImage implements WVectorImage {
 
 	public void done() {
 		this.finishPaths();
+		this.stopClip();
 	}
 
 	public boolean isPaintActive() {
@@ -363,7 +379,6 @@ public class WVmlImage implements WVectorImage {
 	}
 
 	public String getRendered() {
-		this.stopClip();
 		if (this.paintUpdate_) {
 			return this.rendered_.toString();
 		} else {

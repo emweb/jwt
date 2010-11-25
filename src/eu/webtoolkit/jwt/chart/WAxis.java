@@ -3,6 +3,21 @@
  *
  * See the LICENSE file for terms of use.
  */
+/*
+ * Copyright (C) 2009 Emweb bvba, Leuven, Belgium.
+ *
+ * See the LICENSE file for terms of use.
+ */
+/*
+ * Copyright (C) 2009 Emweb bvba, Leuven, Belgium.
+ *
+ * See the LICENSE file for terms of use.
+ */
+/*
+ * Copyright (C) 2009 Emweb bvba, Leuven, Belgium.
+ *
+ * See the LICENSE file for terms of use.
+ */
 package eu.webtoolkit.jwt.chart;
 
 import java.util.ArrayList;
@@ -18,6 +33,7 @@ import eu.webtoolkit.jwt.WFont;
 import eu.webtoolkit.jwt.WLength;
 import eu.webtoolkit.jwt.WPen;
 import eu.webtoolkit.jwt.WString;
+import eu.webtoolkit.jwt.WtException;
 import eu.webtoolkit.jwt.utils.EnumUtils;
 import eu.webtoolkit.jwt.utils.MathUtils;
 
@@ -1091,6 +1107,11 @@ public class WAxis {
 			case DateScale:
 				daysRange = (double) (s.renderMaximum - s.renderMinimum);
 				dt = WDate.fromJulianDay((int) s.renderMinimum);
+				if (!(dt != null)) {
+					String exception = "Invalid julian day: ";
+					exception += String.valueOf(s.renderMinimum);
+					throw new WtException(exception);
+				}
 				break;
 			case DateTimeScale:
 				daysRange = (double) ((s.renderMaximum - s.renderMinimum) / (60.0 * 60.0 * 24));

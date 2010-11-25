@@ -3,8 +3,22 @@
  *
  * See the LICENSE file for terms of use.
  */
+/*
+ * Copyright (C) 2009 Emweb bvba, Leuven, Belgium.
+ *
+ * See the LICENSE file for terms of use.
+ */
+/*
+ * Copyright (C) 2009 Emweb bvba, Leuven, Belgium.
+ *
+ * See the LICENSE file for terms of use.
+ */
+/*
+ * Copyright (C) 2009 Emweb bvba, Leuven, Belgium.
+ *
+ * See the LICENSE file for terms of use.
+ */
 package eu.webtoolkit.jwt;
-
 
 /**
  * A user control that represents a check box.
@@ -151,7 +165,7 @@ public class WCheckBox extends WAbstractToggleButton {
 	 * Unless it is a tri-state checkbox, only {@link CheckState#Checked} and
 	 * {@link CheckState#Unchecked} are valid states.
 	 */
-	void setCheckState(CheckState state) {
+	public void setCheckState(CheckState state) {
 		super.setCheckState(state);
 	}
 

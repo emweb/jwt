@@ -3,6 +3,21 @@
  *
  * See the LICENSE file for terms of use.
  */
+/*
+ * Copyright (C) 2009 Emweb bvba, Leuven, Belgium.
+ *
+ * See the LICENSE file for terms of use.
+ */
+/*
+ * Copyright (C) 2009 Emweb bvba, Leuven, Belgium.
+ *
+ * See the LICENSE file for terms of use.
+ */
+/*
+ * Copyright (C) 2009 Emweb bvba, Leuven, Belgium.
+ *
+ * See the LICENSE file for terms of use.
+ */
 package eu.webtoolkit.jwt;
 
 import java.io.IOException;
@@ -180,6 +195,8 @@ public class WApplication extends WObject {
 		this.hideLoadingIndicator_ = new EventSignal("hideload", this);
 		this.unloaded_ = new JSignal(this, "Wt-unload");
 		this.soundManager_ = null;
+		this.showLoadJS = new JSlot();
+		this.hideLoadJS = new JSlot();
 		this.session_.setApplication(this);
 		this.locale_ = this.getEnvironment().getLocale();
 		this.newInternalPath_ = this.getEnvironment().getInternalPath();
@@ -1740,19 +1757,19 @@ public class WApplication extends WObject {
 	 * When setting a new loading indicator, the previous one is deleted.
 	 */
 	public void setLoadingIndicator(WLoadingIndicator indicator) {
+		if (!(this.loadingIndicator_ != null)) {
+			this.showLoadingIndicator_.addListener(this.showLoadJS);
+			this.hideLoadingIndicator_.addListener(this.hideLoadJS);
+		}
 		;
 		this.loadingIndicator_ = indicator;
 		if (this.loadingIndicator_ != null) {
 			this.loadingIndicatorWidget_ = indicator.getWidget();
 			this.domRoot_.addWidget(this.loadingIndicatorWidget_);
-			JSlot showLoadJS = new JSlot();
-			showLoadJS.setJavaScript("function(o,e) {Wt3_1_7.inline('"
+			this.showLoadJS.setJavaScript("function(o,e) {Wt3_1_7.inline('"
 					+ this.loadingIndicatorWidget_.getId() + "');}");
-			this.showLoadingIndicator_.addListener(showLoadJS);
-			JSlot hideLoadJS = new JSlot();
-			hideLoadJS.setJavaScript("function(o,e) {Wt3_1_7.hide('"
+			this.hideLoadJS.setJavaScript("function(o,e) {Wt3_1_7.hide('"
 					+ this.loadingIndicatorWidget_.getId() + "');}");
-			this.hideLoadingIndicator_.addListener(hideLoadJS);
 			this.loadingIndicatorWidget_.hide();
 		}
 	}
@@ -2384,6 +2401,8 @@ public class WApplication extends WObject {
 	}
 
 	private SoundManager soundManager_;
+	private JSlot showLoadJS;
+	private JSlot hideLoadJS;
 	private static char[] gifData = { 0x47, 0x49, 0x46, 0x38, 0x39, 0x61, 0x01,
 			0x00, 0x01, 0x00, 0x80, 0x00, 0x00, 0xdb, 0xdf, 0xef, 0x00, 0x00,
 			0x00, 0x21, 0xf9, 0x04, 0x01, 0x00, 0x00, 0x00, 0x00, 0x2c, 0x00,

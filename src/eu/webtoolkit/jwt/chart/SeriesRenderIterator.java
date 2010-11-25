@@ -3,6 +3,21 @@
  *
  * See the LICENSE file for terms of use.
  */
+/*
+ * Copyright (C) 2009 Emweb bvba, Leuven, Belgium.
+ *
+ * See the LICENSE file for terms of use.
+ */
+/*
+ * Copyright (C) 2009 Emweb bvba, Leuven, Belgium.
+ *
+ * See the LICENSE file for terms of use.
+ */
+/*
+ * Copyright (C) 2009 Emweb bvba, Leuven, Belgium.
+ *
+ * See the LICENSE file for terms of use.
+ */
 package eu.webtoolkit.jwt.chart;
 
 import eu.webtoolkit.jwt.WModelIndex;
@@ -70,7 +85,7 @@ class SeriesRenderIterator extends SeriesIterator {
 		if (Double.isNaN(x) || Double.isNaN(y)) {
 			this.seriesRenderer_.paint();
 		} else {
-			this.seriesRenderer_.addValue(x, y, stackY);
+			this.seriesRenderer_.addValue(x, y, stackY, xIndex, yIndex);
 		}
 	}
 

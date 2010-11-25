@@ -3,8 +3,24 @@
  *
  * See the LICENSE file for terms of use.
  */
+/*
+ * Copyright (C) 2009 Emweb bvba, Leuven, Belgium.
+ *
+ * See the LICENSE file for terms of use.
+ */
+/*
+ * Copyright (C) 2009 Emweb bvba, Leuven, Belgium.
+ *
+ * See the LICENSE file for terms of use.
+ */
+/*
+ * Copyright (C) 2009 Emweb bvba, Leuven, Belgium.
+ *
+ * See the LICENSE file for terms of use.
+ */
 package eu.webtoolkit.jwt;
 
+import java.util.EnumSet;
 
 /**
  * A menu presented in a popup window.
@@ -236,7 +252,8 @@ public class WPopupMenu extends WCompositeWidget {
 	 */
 	public void popup(WPoint p) {
 		this.popupImpl();
-		this.hide();
+		this.setOffsets(new WLength(42), EnumSet.of(Side.Left, Side.Top));
+		this.setOffsets(new WLength(-10000), EnumSet.of(Side.Left, Side.Top));
 		WApplication.getInstance().doJavaScript(
 				"Wt3_1_7.positionXY('" + this.getId() + "',"
 						+ String.valueOf(p.getX()) + ","
@@ -402,7 +419,6 @@ public class WPopupMenu extends WCompositeWidget {
 
 	void done(WPopupMenuItem result) {
 		this.result_ = result;
-		this.show();
 		this.hide();
 		WApplication.getInstance().getRoot().clicked().disconnect(
 				this.globalClickConnection_);

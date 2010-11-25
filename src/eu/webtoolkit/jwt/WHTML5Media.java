@@ -3,6 +3,21 @@
  *
  * See the LICENSE file for terms of use.
  */
+/*
+ * Copyright (C) 2009 Emweb bvba, Leuven, Belgium.
+ *
+ * See the LICENSE file for terms of use.
+ */
+/*
+ * Copyright (C) 2009 Emweb bvba, Leuven, Belgium.
+ *
+ * See the LICENSE file for terms of use.
+ */
+/*
+ * Copyright (C) 2009 Emweb bvba, Leuven, Belgium.
+ *
+ * See the LICENSE file for terms of use.
+ */
 package eu.webtoolkit.jwt;
 
 import java.io.StringWriter;
@@ -103,10 +118,10 @@ public abstract class WHTML5Media extends WInteractWidget {
 		}
 		this.doJavaScript("new Wt3_1_7.WHTML5Media(" + app.getJavaScriptClass()
 				+ "," + this.getJsRef() + ");");
-		this.setJavaScriptMember("WtPlay", "function() {$('#" + this.getId()
-				+ "').data('obj').play();}");
-		this.setJavaScriptMember("WtPause", "function() {$('#" + this.getId()
-				+ "').data('obj').pause();}");
+		this.setJavaScriptMember("WtPlay", "function() {jQuery.data("
+				+ this.getJsRef() + ", 'obj').play();}");
+		this.setJavaScriptMember("WtPause", "function() {jQuery.data("
+				+ this.getJsRef() + ", 'obj').pause();}");
 	}
 
 	/**
@@ -385,6 +400,24 @@ public abstract class WHTML5Media extends WInteractWidget {
 		return this.voidEventSignal(VOLUMECHANGED_SIGNAL, true);
 	}
 
+	/**
+	 * Returns the JavaScript reference to the media object, or null.
+	 * <p>
+	 * It is possible, for browser compatibility reasons, that
+	 * {@link WWidget#getJsRef() WWidget#getJsRef()} is not the HTML5 media
+	 * element. {@link WHTML5Media#getJsMediaRef() getJsMediaRef()} is
+	 * guaranteed to be an expression that evaluates to the media object. This
+	 * expression may yield null, if the video object is not rendered at all
+	 * (e.g. on older versions of Internet Explorer).
+	 */
+	public String getJsMediaRef() {
+		if (this.mediaId_.length() == 0) {
+			return "null";
+		} else {
+			return "Wt3_1_7.getElement('" + this.mediaId_ + "')";
+		}
+	}
+
 	void getDomChanges(List<DomElement> result, WApplication app) {
 		if (this.mediaId_.length() != 0) {
 			DomElement media = DomElement.getForUpdate(this.mediaId_,
@@ -541,24 +574,6 @@ public abstract class WHTML5Media extends WInteractWidget {
 
 	abstract DomElement createMediaDomElement();
 
-	/**
-	 * Returns the JavaScript reference to the media object, or null.
-	 * <p>
-	 * It is possible, for browser compatibility reasons, that
-	 * {@link WWidget#getJsRef() WWidget#getJsRef()} is not the HTML5 media
-	 * element. {@link WHTML5Media#getJsMediaRef() getJsMediaRef()} is
-	 * guaranteed to be an expression that evaluates to the media object. This
-	 * expression may yield null, if the video object is not rendered at all
-	 * (e.g. on older versions of Internet Explorer).
-	 */
-	protected String getJsMediaRef() {
-		if (this.mediaId_.length() == 0) {
-			return "null";
-		} else {
-			return "Wt3_1_7.getElement('" + this.mediaId_ + "')";
-		}
-	}
-
 	void setFormData(WObject.FormData formData) {
 		if (!(formData.values.length == 0)) {
 			List<String> attributes = new ArrayList<String>();
@@ -658,7 +673,7 @@ public abstract class WHTML5Media extends WInteractWidget {
 	private boolean playing_;
 
 	static String wtjs1(WApplication app) {
-		return "Wt3_1_7.WHTML5Media = function(c,b){jQuery.data(b,\"obj\",this);this.alternativeEl=this.mediaEl=null;this.play=function(){if(b.mediaId){var a=$(\"#\"+b.mediaId).get(0);if(a){a.play();return}}if(b.alternativeId)(a=$(\"#\"+b.alternativeId).get(0))&&a.WtPlay&&a.WtPlay()};this.pause=function(){if(b.mediaId){var a=$(\"#\"+b.mediaId).get(0);if(a){a.pause();return}}if(b.alternativeId)(a=$(\"#\"+b.alternativeId).get(0))&&a.WtPlay&&a.WtPause()}};";
+		return "Wt3_1_7.WHTML5Media = function(c,b){jQuery.data(b,\"obj\",this);this.play=function(){if(b.mediaId){var a=$(\"#\"+b.mediaId).get(0);if(a){a.play();return}}if(b.alternativeId)(a=$(\"#\"+b.alternativeId).get(0))&&a.WtPlay&&a.WtPlay()};this.pause=function(){if(b.mediaId){var a=$(\"#\"+b.mediaId).get(0);if(a){a.pause();return}}if(b.alternativeId)(a=$(\"#\"+b.alternativeId).get(0))&&a.WtPlay&&a.WtPause()}};";
 	}
 
 	private static String PLAYBACKSTARTED_SIGNAL = "play";

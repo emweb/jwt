@@ -3,10 +3,24 @@
  *
  * See the LICENSE file for terms of use.
  */
+/*
+ * Copyright (C) 2009 Emweb bvba, Leuven, Belgium.
+ *
+ * See the LICENSE file for terms of use.
+ */
+/*
+ * Copyright (C) 2009 Emweb bvba, Leuven, Belgium.
+ *
+ * See the LICENSE file for terms of use.
+ */
+/*
+ * Copyright (C) 2009 Emweb bvba, Leuven, Belgium.
+ *
+ * See the LICENSE file for terms of use.
+ */
 package eu.webtoolkit.jwt;
 
 import java.util.EnumSet;
-import java.util.List;
 
 /**
  * A widget which group widgets into a frame with a title.
@@ -131,30 +145,21 @@ public class WGroupBox extends WContainerWidget {
 	}
 
 	void updateDom(DomElement element, boolean all) {
-		if (all) {
-			DomElement legend = DomElement
-					.createNew(DomElementType.DomElement_LEGEND);
-			legend.setId(this.getId() + "l");
+		if (all || this.titleChanged_) {
+			DomElement legend;
+			if (all) {
+				legend = DomElement.createNew(DomElementType.DomElement_LEGEND);
+				legend.setId(this.getId() + "l");
+			} else {
+				legend = DomElement.getForUpdate(this.getId() + "l",
+						DomElementType.DomElement_LEGEND);
+			}
 			legend.setProperty(Property.PropertyInnerHTML, escapeText(
 					this.title_).toString());
 			element.addChild(legend);
 			this.titleChanged_ = false;
 		}
 		super.updateDom(element, all);
-	}
-
-	void getDomChanges(List<DomElement> result, WApplication app) {
-		DomElement e = DomElement.getForUpdate(this, this.getDomElementType());
-		this.updateDom(e, false);
-		result.add(e);
-		if (this.titleChanged_) {
-			DomElement legend = DomElement.getForUpdate(this.getId() + "l",
-					DomElementType.DomElement_LEGEND);
-			legend.setProperty(Property.PropertyInnerHTML, escapeText(
-					this.title_).toString());
-			this.titleChanged_ = false;
-			result.add(legend);
-		}
 	}
 
 	protected void propagateSetEnabled(boolean enabled) {

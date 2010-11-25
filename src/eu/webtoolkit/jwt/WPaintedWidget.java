@@ -3,6 +3,21 @@
  *
  * See the LICENSE file for terms of use.
  */
+/*
+ * Copyright (C) 2009 Emweb bvba, Leuven, Belgium.
+ *
+ * See the LICENSE file for terms of use.
+ */
+/*
+ * Copyright (C) 2009 Emweb bvba, Leuven, Belgium.
+ *
+ * See the LICENSE file for terms of use.
+ */
+/*
+ * Copyright (C) 2009 Emweb bvba, Leuven, Belgium.
+ *
+ * See the LICENSE file for terms of use.
+ */
 package eu.webtoolkit.jwt;
 
 import java.util.ArrayList;
@@ -122,6 +137,7 @@ public abstract class WPaintedWidget extends WInteractWidget {
 		this.painter_ = null;
 		this.needRepaint_ = false;
 		this.sizeChanged_ = false;
+		this.areaImageAdded_ = false;
 		this.repaintFlags_ = EnumSet.noneOf(PaintFlag.class);
 		this.areaImage_ = null;
 		this.renderWidth_ = 0;
@@ -332,9 +348,10 @@ public abstract class WPaintedWidget extends WInteractWidget {
 	}
 
 	void updateDom(DomElement element, boolean all) {
-		if (all && this.areaImage_ != null) {
+		if (all && this.areaImage_ != null || this.areaImageAdded_) {
 			element.addChild(((WWebWidget) this.areaImage_)
 					.createDomElement(WApplication.getInstance()));
+			this.areaImageAdded_ = false;
 		}
 		super.updateDom(element, all);
 	}
@@ -430,6 +447,7 @@ public abstract class WPaintedWidget extends WInteractWidget {
 	private WWidgetPainter painter_;
 	private boolean needRepaint_;
 	boolean sizeChanged_;
+	private boolean areaImageAdded_;
 	EnumSet<PaintFlag> repaintFlags_;
 	private WImage areaImage_;
 	int renderWidth_;
@@ -510,6 +528,7 @@ public abstract class WPaintedWidget extends WInteractWidget {
 			this.areaImage_.resize(new WLength(this.renderWidth_), new WLength(
 					this.renderHeight_));
 			this.areaImage_.setPopup(true);
+			this.areaImageAdded_ = true;
 		}
 	}
 }

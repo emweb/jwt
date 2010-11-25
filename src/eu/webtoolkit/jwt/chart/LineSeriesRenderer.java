@@ -3,10 +3,26 @@
  *
  * See the LICENSE file for terms of use.
  */
+/*
+ * Copyright (C) 2009 Emweb bvba, Leuven, Belgium.
+ *
+ * See the LICENSE file for terms of use.
+ */
+/*
+ * Copyright (C) 2009 Emweb bvba, Leuven, Belgium.
+ *
+ * See the LICENSE file for terms of use.
+ */
+/*
+ * Copyright (C) 2009 Emweb bvba, Leuven, Belgium.
+ *
+ * See the LICENSE file for terms of use.
+ */
 package eu.webtoolkit.jwt.chart;
 
 import eu.webtoolkit.jwt.WBrush;
 import eu.webtoolkit.jwt.WBrushStyle;
+import eu.webtoolkit.jwt.WModelIndex;
 import eu.webtoolkit.jwt.WPainter;
 import eu.webtoolkit.jwt.WPainterPath;
 import eu.webtoolkit.jwt.WPointF;
@@ -24,7 +40,8 @@ class LineSeriesRenderer extends SeriesRenderer {
 		this.c_ = new WPointF();
 	}
 
-	public void addValue(double x, double y, double stacky) {
+	public void addValue(double x, double y, double stacky, WModelIndex xIndex,
+			WModelIndex yIndex) {
 		WPointF p = this.renderer_.map(x, y, this.series_.getAxis(), this.it_
 				.getCurrentXSegment(), this.it_.getCurrentYSegment());
 		if (this.curveLength_ == 0) {

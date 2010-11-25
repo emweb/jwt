@@ -3,6 +3,21 @@
  *
  * See the LICENSE file for terms of use.
  */
+/*
+ * Copyright (C) 2009 Emweb bvba, Leuven, Belgium.
+ *
+ * See the LICENSE file for terms of use.
+ */
+/*
+ * Copyright (C) 2009 Emweb bvba, Leuven, Belgium.
+ *
+ * See the LICENSE file for terms of use.
+ */
+/*
+ * Copyright (C) 2009 Emweb bvba, Leuven, Belgium.
+ *
+ * See the LICENSE file for terms of use.
+ */
 package eu.webtoolkit.jwt;
 
 import java.util.EnumSet;
@@ -177,9 +192,8 @@ public class WTextArea extends WFormWidget {
 	public String getSelectedText() {
 		if (this.getSelectionStart() != -1) {
 			WApplication app = WApplication.getInstance();
-			String v = this.getText();
-			return v.substring(app.getSelectionStart(), app.getSelectionStart()
-					+ app.getSelectionEnd() - app.getSelectionStart());
+			return this.getText().substring(app.getSelectionStart(),
+					app.getSelectionEnd() - app.getSelectionStart());
 		} else {
 			return WString.Empty.toString();
 		}

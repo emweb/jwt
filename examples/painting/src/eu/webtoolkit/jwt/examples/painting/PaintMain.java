@@ -24,7 +24,7 @@ public class PaintMain extends WtServlet {
 
         app.useStyleSheet("style/painting.css");
 
-        new PaintExample(app.getRoot());
+        new PaintExample(app.getRoot(), true);
 
         return app;
     }

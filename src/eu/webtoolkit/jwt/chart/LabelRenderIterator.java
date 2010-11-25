@@ -3,6 +3,21 @@
  *
  * See the LICENSE file for terms of use.
  */
+/*
+ * Copyright (C) 2009 Emweb bvba, Leuven, Belgium.
+ *
+ * See the LICENSE file for terms of use.
+ */
+/*
+ * Copyright (C) 2009 Emweb bvba, Leuven, Belgium.
+ *
+ * See the LICENSE file for terms of use.
+ */
+/*
+ * Copyright (C) 2009 Emweb bvba, Leuven, Belgium.
+ *
+ * See the LICENSE file for terms of use.
+ */
 package eu.webtoolkit.jwt.chart;
 
 import java.util.EnumSet;
@@ -33,6 +48,9 @@ class LabelRenderIterator extends SeriesIterator {
 
 	public void newValue(WDataSeries series, double x, double y, double stackY,
 			WModelIndex xIndex, WModelIndex yIndex) {
+		if (Double.isNaN(x) || Double.isNaN(y)) {
+			return;
+		}
 		WString text = new WString();
 		if (series.isLabelsEnabled(Axis.XAxis)) {
 			text = this.renderer_.getChart().getAxis(Axis.XAxis).getLabel(x);

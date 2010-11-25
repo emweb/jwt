@@ -3,6 +3,21 @@
  *
  * See the LICENSE file for terms of use.
  */
+/*
+ * Copyright (C) 2009 Emweb bvba, Leuven, Belgium.
+ *
+ * See the LICENSE file for terms of use.
+ */
+/*
+ * Copyright (C) 2009 Emweb bvba, Leuven, Belgium.
+ *
+ * See the LICENSE file for terms of use.
+ */
+/*
+ * Copyright (C) 2009 Emweb bvba, Leuven, Belgium.
+ *
+ * See the LICENSE file for terms of use.
+ */
 package eu.webtoolkit.jwt;
 
 import java.util.EnumSet;
@@ -211,7 +226,6 @@ public class WText extends WInteractWidget {
 		}
 		this.textChanged_ = true;
 		this.repaint(EnumSet.of(RepaintFlag.RepaintInnerHtml));
-		this.autoAdjustInline();
 		return textok;
 	}
 
@@ -363,7 +377,6 @@ public class WText extends WInteractWidget {
 	public void refresh() {
 		if (this.text_.refresh()) {
 			this.textChanged_ = true;
-			this.autoAdjustInline();
 			this.repaint(EnumSet.of(RepaintFlag.RepaintInnerHtml));
 		}
 		super.refresh();
@@ -405,6 +418,12 @@ public class WText extends WInteractWidget {
 	}
 
 	private WLength[] padding_;
+
+	void render(EnumSet<RenderFlag> flags) {
+		if (this.textChanged_) {
+			this.autoAdjustInline();
+		}
+	}
 
 	void updateDom(DomElement element, boolean all) {
 		if (this.textChanged_ || all) {

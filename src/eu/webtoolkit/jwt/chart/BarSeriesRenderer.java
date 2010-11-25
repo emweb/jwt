@@ -3,14 +3,35 @@
  *
  * See the LICENSE file for terms of use.
  */
+/*
+ * Copyright (C) 2009 Emweb bvba, Leuven, Belgium.
+ *
+ * See the LICENSE file for terms of use.
+ */
+/*
+ * Copyright (C) 2009 Emweb bvba, Leuven, Belgium.
+ *
+ * See the LICENSE file for terms of use.
+ */
+/*
+ * Copyright (C) 2009 Emweb bvba, Leuven, Belgium.
+ *
+ * See the LICENSE file for terms of use.
+ */
 package eu.webtoolkit.jwt.chart;
 
+import eu.webtoolkit.jwt.ItemDataRole;
 import eu.webtoolkit.jwt.PenStyle;
-import eu.webtoolkit.jwt.WPainter;
+import eu.webtoolkit.jwt.StringUtils;
+import eu.webtoolkit.jwt.WAbstractArea;
+import eu.webtoolkit.jwt.WModelIndex;
 import eu.webtoolkit.jwt.WPainterPath;
 import eu.webtoolkit.jwt.WPen;
 import eu.webtoolkit.jwt.WPointF;
+import eu.webtoolkit.jwt.WPolygonArea;
+import eu.webtoolkit.jwt.WRectArea;
 import eu.webtoolkit.jwt.WShadow;
+import eu.webtoolkit.jwt.WTransform;
 
 class BarSeriesRenderer extends SeriesRenderer {
 	public BarSeriesRenderer(WChart2DRenderer renderer, WDataSeries series,
@@ -21,7 +42,8 @@ class BarSeriesRenderer extends SeriesRenderer {
 		this.group_ = group;
 	}
 
-	public void addValue(double x, double y, double stacky) {
+	public void addValue(double x, double y, double stacky, WModelIndex xIndex,
+			WModelIndex yIndex) {
 		WPainterPath bar = new WPainterPath();
 		WAxis yAxis = this.renderer_.getChart().getAxis(this.series_.getAxis());
 		WPointF topMid = this.renderer_.map(x, y, yAxis.getId(), this.it_
@@ -42,6 +64,48 @@ class BarSeriesRenderer extends SeriesRenderer {
 		this.renderer_.getPainter().fillPath(bar, this.series_.getBrush());
 		this.renderer_.getPainter().setShadow(new WShadow());
 		this.renderer_.getPainter().strokePath(bar, this.series_.getPen());
+		Object toolTip = yIndex.getData(ItemDataRole.ToolTipRole);
+		if (!(toolTip == null)) {
+			WTransform t = this.renderer_.getPainter().getWorldTransform();
+			WPointF tl = t.map(segmentPoint(bar, 0));
+			WPointF tr = t.map(segmentPoint(bar, 1));
+			WPointF br = t.map(segmentPoint(bar, 2));
+			WPointF bl = t.map(segmentPoint(bar, 3));
+			double tlx = 0;
+			double tly = 0;
+			double brx = 0;
+			double bry = 0;
+			boolean useRect = false;
+			if (fequal(tl.getY(), tr.getY())) {
+				tlx = Math.min(tl.getX(), tr.getX());
+				brx = Math.max(tl.getX(), tr.getX());
+				tly = Math.min(tl.getY(), bl.getY());
+				bry = Math.max(tl.getY(), br.getY());
+				useRect = true;
+			} else {
+				if (fequal(tl.getX(), tr.getX())) {
+					tlx = Math.min(tl.getX(), bl.getX());
+					brx = Math.max(tl.getX(), bl.getX());
+					tly = Math.min(tl.getY(), tr.getY());
+					bry = Math.max(tl.getY(), tr.getY());
+					useRect = true;
+				}
+			}
+			WAbstractArea area;
+			if (useRect) {
+				area = new WRectArea(tlx, tly, brx - tlx, bry - tly);
+			} else {
+				WPolygonArea poly = new WPolygonArea();
+				poly.addPoint(tl.getX(), tl.getY());
+				poly.addPoint(tr.getX(), tr.getY());
+				poly.addPoint(br.getX(), br.getY());
+				poly.addPoint(bl.getX(), bl.getY());
+				area = poly;
+			}
+			area.setToolTip(StringUtils.asString(toolTip));
+			this.renderer_.getChart().addDataPointArea(this.series_, xIndex,
+					area);
+		}
 		double bTopMidY = this.it_.breakY(topMid.getY());
 		double bBottomMidY = this.it_.breakY(bottomMid.getY());
 		if (bTopMidY > topMid.getY() && bBottomMidY <= bottomMid.getY()) {
@@ -77,6 +141,15 @@ class BarSeriesRenderer extends SeriesRenderer {
 	}
 
 	public void paint() {
+	}
+
+	private static WPointF segmentPoint(WPainterPath path, int segment) {
+		WPainterPath.Segment s = path.getSegments().get(segment);
+		return new WPointF(s.getX(), s.getY());
+	}
+
+	private static boolean fequal(double d1, double d2) {
+		return Math.abs(d1 - d2) < 1E-5;
 	}
 
 	private double groupWidth_;

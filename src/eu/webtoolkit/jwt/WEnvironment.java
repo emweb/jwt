@@ -3,6 +3,21 @@
  *
  * See the LICENSE file for terms of use.
  */
+/*
+ * Copyright (C) 2009 Emweb bvba, Leuven, Belgium.
+ *
+ * See the LICENSE file for terms of use.
+ */
+/*
+ * Copyright (C) 2009 Emweb bvba, Leuven, Belgium.
+ *
+ * See the LICENSE file for terms of use.
+ */
+/*
+ * Copyright (C) 2009 Emweb bvba, Leuven, Belgium.
+ *
+ * See the LICENSE file for terms of use.
+ */
 package eu.webtoolkit.jwt;
 
 import java.io.UnsupportedEncodingException;
@@ -129,13 +144,17 @@ public class WEnvironment {
 		 */
 		Arora(4300),
 		/**
-		 * Mobile WebKit iPhone.
+		 * Mobile WebKit.
 		 */
-		MobileWebKitiPhone(4400),
+		MobileWebKit(4400),
+		/**
+		 * Mobile WebKit iPhone/iPad.
+		 */
+		MobileWebKitiPhone(4450),
 		/**
 		 * Mobile WebKit Android.
 		 */
-		MobileWebKitAndroid(4450),
+		MobileWebKitAndroid(4500),
 		/**
 		 * Konqueror.
 		 */
@@ -727,7 +746,7 @@ public class WEnvironment {
 	 * @see WEnvironment#getAgent()
 	 */
 	public boolean agentIsMobileWebKit() {
-		return this.agent_.getValue() >= WEnvironment.UserAgent.MobileWebKitiPhone
+		return this.agent_.getValue() >= WEnvironment.UserAgent.MobileWebKit
 				.getValue()
 				&& this.agent_.getValue() < WEnvironment.UserAgent.Konqueror
 						.getValue();
@@ -866,23 +885,28 @@ public class WEnvironment {
 			}
 		} else {
 			if (this.userAgent_.indexOf("Safari") != -1) {
-				if (this.userAgent_.indexOf("iPhone") != -1) {
+				if (this.userAgent_.indexOf("iPhone") != -1
+						|| this.userAgent_.indexOf("iPad") != -1) {
 					this.agent_ = WEnvironment.UserAgent.MobileWebKitiPhone;
 				} else {
 					if (this.userAgent_.indexOf("Android") != -1) {
 						this.agent_ = WEnvironment.UserAgent.MobileWebKitAndroid;
 					} else {
-						if (this.userAgent_.indexOf("Version") == -1) {
-							if (this.userAgent_.indexOf("Arora") != -1) {
-								this.agent_ = WEnvironment.UserAgent.Arora;
-							} else {
-								this.agent_ = WEnvironment.UserAgent.Safari;
-							}
+						if (this.userAgent_.indexOf("Mobile") != -1) {
+							this.agent_ = WEnvironment.UserAgent.MobileWebKit;
 						} else {
-							if (this.userAgent_.indexOf("Version/3") != -1) {
-								this.agent_ = WEnvironment.UserAgent.Safari3;
+							if (this.userAgent_.indexOf("Version") == -1) {
+								if (this.userAgent_.indexOf("Arora") != -1) {
+									this.agent_ = WEnvironment.UserAgent.Arora;
+								} else {
+									this.agent_ = WEnvironment.UserAgent.Safari;
+								}
 							} else {
-								this.agent_ = WEnvironment.UserAgent.Safari4;
+								if (this.userAgent_.indexOf("Version/3") != -1) {
+									this.agent_ = WEnvironment.UserAgent.Safari3;
+								} else {
+									this.agent_ = WEnvironment.UserAgent.Safari4;
+								}
 							}
 						}
 					}

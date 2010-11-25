@@ -334,7 +334,7 @@ class XSSFilter implements IXMLBuilder, IXMLEntityResolver {
 		} catch (IllegalAccessException e) {
 			e.printStackTrace();
 		} catch (XMLException e) {
-			e.printStackTrace();
+			System.err.println("Error reading XHTML string: " + e.getMessage());
 		}
 
 		return false;

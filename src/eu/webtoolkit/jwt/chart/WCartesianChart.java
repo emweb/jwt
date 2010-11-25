@@ -3,6 +3,21 @@
  *
  * See the LICENSE file for terms of use.
  */
+/*
+ * Copyright (C) 2009 Emweb bvba, Leuven, Belgium.
+ *
+ * See the LICENSE file for terms of use.
+ */
+/*
+ * Copyright (C) 2009 Emweb bvba, Leuven, Belgium.
+ *
+ * See the LICENSE file for terms of use.
+ */
+/*
+ * Copyright (C) 2009 Emweb bvba, Leuven, Belgium.
+ *
+ * See the LICENSE file for terms of use.
+ */
 package eu.webtoolkit.jwt.chart;
 
 import java.util.ArrayList;
@@ -12,6 +27,7 @@ import eu.webtoolkit.jwt.AlignmentFlag;
 import eu.webtoolkit.jwt.Orientation;
 import eu.webtoolkit.jwt.Side;
 import eu.webtoolkit.jwt.StringUtils;
+import eu.webtoolkit.jwt.WAbstractArea;
 import eu.webtoolkit.jwt.WAbstractItemModel;
 import eu.webtoolkit.jwt.WContainerWidget;
 import eu.webtoolkit.jwt.WLength;
@@ -692,7 +708,26 @@ public class WCartesianChart extends WAbstractChart {
 		return legendItem;
 	}
 
+	/**
+	 * Adds a data point area (used for displaying e.g. tooltips).
+	 * <p>
+	 * You may want to specialize this is if you wish to modify (or delete) the
+	 * area.
+	 * <p>
+	 * <p>
+	 * <i><b>Note: </b>Currently, an area is only created if the ToolTipRole
+	 * data at the data point is not empty. </i>
+	 * </p>
+	 */
+	public void addDataPointArea(WDataSeries series, WModelIndex xIndex,
+			WAbstractArea area) {
+		this.addArea(area);
+	}
+
 	protected void paintEvent(WPaintDevice paintDevice) {
+		while (!this.getAreas().isEmpty()) {
+			;
+		}
 		WPainter painter = new WPainter(paintDevice);
 		painter.setRenderHint(WPainter.RenderHint.Antialiasing);
 		this.paint(painter);

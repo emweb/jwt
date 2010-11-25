@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE web-app PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN" "http://java.sun.com/dtd/web-app_2_3.dtd">
+
+<web-app>
+  <servlet>
+    <servlet-name>Gallery</servlet-name>
+    <display-name>JWt Gallery example</display-name>
+    <description>JWt Gallery example</description>
+    <servlet-class>eu.webtoolkit.jwt.examples.gallery.WidgetGalleryServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>Gallery</servlet-name>
+    <url-pattern>/gallery/*</url-pattern>
+  </servlet-mapping>
+</web-app>
+

@@ -3,6 +3,21 @@
  *
  * See the LICENSE file for terms of use.
  */
+/*
+ * Copyright (C) 2009 Emweb bvba, Leuven, Belgium.
+ *
+ * See the LICENSE file for terms of use.
+ */
+/*
+ * Copyright (C) 2009 Emweb bvba, Leuven, Belgium.
+ *
+ * See the LICENSE file for terms of use.
+ */
+/*
+ * Copyright (C) 2009 Emweb bvba, Leuven, Belgium.
+ *
+ * See the LICENSE file for terms of use.
+ */
 package eu.webtoolkit.jwt;
 
 import java.util.ArrayList;
@@ -166,13 +181,16 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	public void setRootIndex(WModelIndex rootIndex) {
 		this.rootIndex_ = rootIndex;
 		this.scheduleRerender(WAbstractItemView.RenderState.NeedRerender);
-		while ((int) this.columns_.size() > this.model_
-				.getColumnCount(this.rootIndex_)) {
-			if (this.columns_.get(this.columns_.size() - 1).styleRule != null)
-				this.columns_.get(this.columns_.size() - 1).styleRule.remove();
-			this.columns_.remove(0 + this.columns_.size() - 1);
+		int modelColumnCount = this.model_.getColumnCount(this.rootIndex_);
+		while (this.columns_.size() > modelColumnCount) {
+			int i = this.columns_.size() - 1;
+			if (this.columns_.get(i).styleRule != null)
+				this.columns_.get(i).styleRule.remove();
+			this.columns_.remove(0 + i);
 		}
-		this.columnInfo(this.model_.getColumnCount(this.rootIndex_) - 1);
+		while (this.columns_.size() < modelColumnCount) {
+			this.columns_.add(this.createColumnInfo(this.columns_.size()));
+		}
 	}
 
 	/**
@@ -317,8 +335,9 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	 */
 	public void setHeaderAlignment(int column, AlignmentFlag alignment) {
 		this.columnInfo(column).headerAlignment = alignment;
-		if (this.renderState_.getValue() >= WAbstractItemView.RenderState.NeedRerenderHeader
-				.getValue()) {
+		if (this.columnInfo(column).hidden
+				|| this.renderState_.getValue() >= WAbstractItemView.RenderState.NeedRerenderHeader
+						.getValue()) {
 			return;
 		}
 		WContainerWidget wc = ((this.headerWidget(column)) instanceof WContainerWidget ? (WContainerWidget) (this
@@ -444,7 +463,7 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	 */
 	public void setSortingEnabled(boolean enabled) {
 		this.sorting_ = enabled;
-		for (int i = 0; i < this.getColumnCount(); ++i) {
+		for (int i = 0; i < this.columns_.size(); ++i) {
 			this.columnInfo(i).sorting = enabled;
 		}
 		this.scheduleRerender(WAbstractItemView.RenderState.NeedRerenderHeader);
@@ -776,6 +795,48 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	}
 
 	/**
+	 * Changes the visibility of a column.
+	 * <p>
+	 * 
+	 * @see WAbstractItemView#isColumnHidden(int column)
+	 */
+	public void setColumnHidden(int column, boolean hidden) {
+		this.columnInfo(column).hidden = hidden;
+	}
+
+	/**
+	 * Returns if a column is hidden.
+	 * <p>
+	 * 
+	 * @see WAbstractItemView#setColumnHidden(int column, boolean hidden)
+	 */
+	public boolean isColumnHidden(int column) {
+		return this.columnInfo(column).hidden;
+	}
+
+	/**
+	 * Hides a column.
+	 * <p>
+	 * 
+	 * @see WAbstractItemView#showColumn(int column)
+	 * @see WAbstractItemView#setColumnHidden(int column, boolean hidden)
+	 */
+	public void hideColumn(int column) {
+		this.setColumnHidden(column, true);
+	}
+
+	/**
+	 * Shows a column.
+	 * <p>
+	 * 
+	 * @see WAbstractItemView#hideColumn(int column)
+	 * @see WAbstractItemView#setColumnHidden(int column, boolean hidden)
+	 */
+	public void showColumn(int column) {
+		this.setColumnHidden(column, false);
+	}
+
+	/**
 	 * Sets the column border color.
 	 * <p>
 	 * The default border color is defined by the CSS theme.
@@ -802,7 +863,7 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 		int lineCount = this.getHeaderLevelCount();
 		WLength headerHeight = WLength.multiply(this.headerLineHeight_,
 				lineCount);
-		if (this.getColumnCount() > 0) {
+		if (this.columns_.size() > 0) {
 			WWidget w = this.headerWidget(0);
 			if (w != null) {
 				w.askRerender();
@@ -1400,13 +1461,14 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 		public WLength width;
 		public WWidget extraHeaderWidget;
 		public boolean sorting;
+		public boolean hidden;
 		public WAbstractItemDelegate itemDelegate_;
 
 		public String getStyleClass() {
 			return "Wt-tv-c" + String.valueOf(this.id);
 		}
 
-		public ColumnInfo(WAbstractItemView view, int anId, int column) {
+		public ColumnInfo(WAbstractItemView view, int anId) {
 			this.id = anId;
 			this.sortOrder = SortOrder.AscendingOrder;
 			this.alignment = AlignmentFlag.AlignLeft;
@@ -1414,6 +1476,7 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 			this.width = new WLength();
 			this.extraHeaderWidget = null;
 			this.sorting = view.sorting_;
+			this.hidden = false;
 			this.itemDelegate_ = null;
 			this.width = new WLength(150);
 			this.styleRule = new WCssTemplateRule("#" + view.getId() + " ."
@@ -1487,24 +1550,12 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 		this.setModel(this.model_);
 	}
 
-	int getColumnCount() {
-		return this.columns_.size();
-	}
-
-	WAbstractItemView.ColumnInfo createColumnInfo(int column) {
-		return new WAbstractItemView.ColumnInfo(this, this.nextColumnId_++,
-				column);
-	}
-
 	WAbstractItemView.ColumnInfo columnInfo(int column) {
-		while (column >= (int) this.columns_.size()) {
-			this.columns_.add(this.createColumnInfo(this.columns_.size()));
-		}
 		return this.columns_.get(column);
 	}
 
 	int columnById(int columnid) {
-		for (int i = 0; i < this.getColumnCount(); ++i) {
+		for (int i = 0; i < this.columns_.size(); ++i) {
 			if (this.columnInfo(i).id == columnid) {
 				return i;
 			}
@@ -1512,28 +1563,76 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 		return 0;
 	}
 
+	int getColumnCount() {
+		return this.columns_.size();
+	}
+
+	protected int getVisibleColumnCount() {
+		int result = 0;
+		for (int i = 0; i < this.columns_.size(); ++i) {
+			if (!this.columns_.get(i).hidden) {
+				++result;
+			}
+		}
+		return result;
+	}
+
+	protected int visibleColumnIndex(int modelColumn) {
+		if (this.columns_.get(modelColumn).hidden) {
+			return -1;
+		}
+		int j = 0;
+		for (int i = 0; i < modelColumn; ++i) {
+			if (!this.columns_.get(i).hidden) {
+				++j;
+			}
+		}
+		return j;
+	}
+
+	protected int modelColumnIndex(int visibleColumn) {
+		int j = -1;
+		for (int i = 0; i <= visibleColumn; ++i) {
+			++j;
+			while ((int) j < this.columns_.size()
+					&& this.columns_.get(j).hidden) {
+				++j;
+			}
+			if ((int) j >= this.columns_.size()) {
+				return -1;
+			}
+		}
+		return j;
+	}
+
+	WAbstractItemView.ColumnInfo createColumnInfo(int column) {
+		return new WAbstractItemView.ColumnInfo(this, this.nextColumnId_++);
+	}
+
 	WWidget createHeaderWidget(WApplication app, int column) {
-		int headerLevel = this.model_ != null ? (int) StringUtils
-				.asNumber(this.model_.getHeaderData(column,
-						Orientation.Horizontal, ItemDataRole.LevelRole)) : 0;
+		int headerLevel = this.model_ != null ? this.headerLevel(column) : 0;
 		int rightBorderLevel = headerLevel;
-		if (this.model_ != null && column + 1 < this.getColumnCount()) {
-			EnumSet<HeaderFlag> flagsLeft = this.model_.getHeaderFlags(column);
-			EnumSet<HeaderFlag> flagsRight = this.model_
-					.getHeaderFlags(column + 1);
-			int rightHeaderLevel = (int) StringUtils.asNumber(this.model_
-					.getHeaderData(column + 1, Orientation.Horizontal,
-							ItemDataRole.LevelRole));
-			if (!EnumUtils.mask(flagsLeft, HeaderFlag.ColumnIsExpandedRight)
-					.isEmpty()) {
-				rightBorderLevel = headerLevel + 1;
-			} else {
+		if (this.model_ != null) {
+			int rightColumn = this.modelColumnIndex(this
+					.visibleColumnIndex(column) + 1);
+			if (rightColumn != -1) {
+				EnumSet<HeaderFlag> flagsLeft = this.model_
+						.getHeaderFlags(column);
+				EnumSet<HeaderFlag> flagsRight = this.model_
+						.getHeaderFlags(rightColumn);
+				int rightHeaderLevel = this.headerLevel(rightColumn);
 				if (!EnumUtils
-						.mask(flagsRight, HeaderFlag.ColumnIsExpandedLeft)
+						.mask(flagsLeft, HeaderFlag.ColumnIsExpandedRight)
 						.isEmpty()) {
-					rightBorderLevel = rightHeaderLevel + 1;
+					rightBorderLevel = headerLevel + 1;
 				} else {
-					rightBorderLevel = Math.min(headerLevel, rightHeaderLevel);
+					if (!EnumUtils.mask(flagsRight,
+							HeaderFlag.ColumnIsExpandedLeft).isEmpty()) {
+						rightBorderLevel = rightHeaderLevel + 1;
+					} else {
+						rightBorderLevel = Math.min(headerLevel,
+								rightHeaderLevel);
+					}
 				}
 			}
 		}
@@ -1641,9 +1740,13 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	}
 
 	WText headerTextWidget(int column) {
-		return ((this.headerWidget(column).find("text")) instanceof WText ? (WText) (this
-				.headerWidget(column).find("text"))
-				: null);
+		WWidget hw = this.headerWidget(column);
+		if (hw != null) {
+			return ((hw.find("text")) instanceof WText ? (WText) (hw
+					.find("text")) : null);
+		} else {
+			return null;
+		}
 	}
 
 	void handleClick(WModelIndex index, WMouseEvent event) {
@@ -1825,9 +1928,13 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 		if (!this.columnInfo(column).sorting) {
 			return null;
 		}
-		return ((this.headerWidget(column).find("sort")) instanceof WText ? (WText) (this
-				.headerWidget(column).find("sort"))
-				: null);
+		WWidget hw = this.headerWidget(column);
+		if (hw != null) {
+			return ((hw.find("sort")) instanceof WText ? (WText) (hw
+					.find("sort")) : null);
+		} else {
+			return null;
+		}
 	}
 
 	private void selectionHandleClick(WModelIndex index,
@@ -1959,13 +2066,18 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 
 	abstract WContainerWidget getHeaderContainer();
 
+	private int headerLevel(int column) {
+		return (int) StringUtils.asNumber(this.model_.getHeaderData(column,
+				Orientation.Horizontal, ItemDataRole.LevelRole));
+	}
+
 	private int getHeaderLevelCount() {
 		int result = 0;
 		if (this.model_ != null) {
 			for (int i = 0; i < this.columns_.size(); ++i) {
-				int l = (int) StringUtils.asNumber(this.model_.getHeaderData(i,
-						Orientation.Horizontal, ItemDataRole.LevelRole));
-				result = Math.max(result, l);
+				if (!this.columns_.get(i).hidden) {
+					result = Math.max(result, this.headerLevel(i));
+				}
 			}
 		}
 		return result + 1;

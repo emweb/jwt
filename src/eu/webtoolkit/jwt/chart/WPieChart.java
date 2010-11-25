@@ -3,14 +3,32 @@
  *
  * See the LICENSE file for terms of use.
  */
+/*
+ * Copyright (C) 2009 Emweb bvba, Leuven, Belgium.
+ *
+ * See the LICENSE file for terms of use.
+ */
+/*
+ * Copyright (C) 2009 Emweb bvba, Leuven, Belgium.
+ *
+ * See the LICENSE file for terms of use.
+ */
+/*
+ * Copyright (C) 2009 Emweb bvba, Leuven, Belgium.
+ *
+ * See the LICENSE file for terms of use.
+ */
 package eu.webtoolkit.jwt.chart;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
+
 import eu.webtoolkit.jwt.AlignmentFlag;
+import eu.webtoolkit.jwt.ItemDataRole;
 import eu.webtoolkit.jwt.Side;
 import eu.webtoolkit.jwt.StringUtils;
+import eu.webtoolkit.jwt.WAbstractArea;
 import eu.webtoolkit.jwt.WAbstractItemModel;
 import eu.webtoolkit.jwt.WApplication;
 import eu.webtoolkit.jwt.WBrush;
@@ -24,12 +42,15 @@ import eu.webtoolkit.jwt.WPaintedWidget;
 import eu.webtoolkit.jwt.WPainter;
 import eu.webtoolkit.jwt.WPainterPath;
 import eu.webtoolkit.jwt.WPen;
+import eu.webtoolkit.jwt.WPointF;
+import eu.webtoolkit.jwt.WPolygonArea;
 import eu.webtoolkit.jwt.WRectF;
 import eu.webtoolkit.jwt.WShadow;
 import eu.webtoolkit.jwt.WString;
-import eu.webtoolkit.jwt.WtException;
 import eu.webtoolkit.jwt.WText;
+import eu.webtoolkit.jwt.WTransform;
 import eu.webtoolkit.jwt.WWidget;
+import eu.webtoolkit.jwt.WtException;
 import eu.webtoolkit.jwt.utils.EnumUtils;
 
 /**
@@ -390,6 +411,21 @@ public class WPieChart extends WAbstractChart {
 		return createLegendItemWidget(index, EnumSet.of(option, options));
 	}
 
+	/**
+	 * Adds a data point area (used for displaying e.g. tooltips).
+	 * <p>
+	 * You may want to specialize this is if you wish to modify (or delete) the
+	 * area.
+	 * <p>
+	 * <p>
+	 * <i><b>Note: </b>Currently, an area is only created if the ToolTipRole
+	 * data at the data point is not empty. </i>
+	 * </p>
+	 */
+	public void addDataPointArea(WModelIndex index, WAbstractArea area) {
+		(this).addArea(area);
+	}
+
 	public void paint(WPainter painter, WRectF rectangle) {
 		double total = 0;
 		if (this.dataColumn_ != -1) {
@@ -538,6 +574,9 @@ public class WPieChart extends WAbstractChart {
 	}
 
 	protected void paintEvent(WPaintDevice paintDevice) {
+		while (!this.getAreas().isEmpty()) {
+			;
+		}
 		WPainter painter = new WPainter(paintDevice);
 		painter.setRenderHint(WPainter.RenderHint.Antialiasing, true);
 		this.paint(painter);
@@ -804,7 +843,7 @@ public class WPieChart extends WAbstractChart {
 	}
 
 	private void drawSlices(WPainter painter, double cx, double cy, double r,
-			double total, boolean ignoreBrush) {
+			double total, boolean shadow) {
 		double currentAngle = this.startAngle_;
 		for (int i = 0; i < this.getModel().getRowCount(); ++i) {
 			double v = StringUtils.asNumber(this.getModel().getData(i,
@@ -818,7 +857,7 @@ public class WPieChart extends WAbstractChart {
 					* Math.cos(-midAngle / 180.0 * 3.14159265358979323846);
 			double pcy = cy + r * this.pie_.get(i).explode
 					* Math.sin(-midAngle / 180.0 * 3.14159265358979323846);
-			if (!ignoreBrush) {
+			if (!shadow) {
 				painter.setBrush(this.getBrush(i));
 			}
 			if (v / total != 1.0) {
@@ -826,6 +865,51 @@ public class WPieChart extends WAbstractChart {
 						(int) (currentAngle * 16), (int) (spanAngle * 16));
 			} else {
 				painter.drawEllipse(pcx - r, pcy - r, r * 2, r * 2);
+			}
+			if (!shadow) {
+				WModelIndex index = this.getModel().getIndex(i,
+						this.dataColumn_);
+				Object toolTip = index.getData(ItemDataRole.ToolTipRole);
+				if (!(toolTip == null)) {
+					final int SEGMENT_ANGLE = 20;
+					WPolygonArea area = new WPolygonArea();
+					WTransform t = painter.getWorldTransform();
+					area.addPoint(t.map(new WPointF(pcx, pcy)));
+					double sa = Math.abs(spanAngle);
+					for (double d = 0; d < sa; d += SEGMENT_ANGLE) {
+						double a;
+						if (spanAngle < 0) {
+							a = currentAngle - d;
+						} else {
+							a = currentAngle + d;
+						}
+						area
+								.addPoint(t
+										.map(new WPointF(
+												pcx
+														+ r
+														* Math
+																.cos(-a / 180.0 * 3.14159265358979323846),
+												pcy
+														+ r
+														* Math
+																.sin(-a / 180.0 * 3.14159265358979323846))));
+					}
+					double a = currentAngle + spanAngle;
+					area
+							.addPoint(t
+									.map(new WPointF(
+											pcx
+													+ r
+													* Math
+															.cos(-a / 180.0 * 3.14159265358979323846),
+											pcy
+													+ r
+													* Math
+															.sin(-a / 180.0 * 3.14159265358979323846))));
+					area.setToolTip(StringUtils.asString(toolTip));
+					this.addDataPointArea(index, area);
+				}
 			}
 			double endAngle = currentAngle + spanAngle;
 			if (endAngle < 0) {

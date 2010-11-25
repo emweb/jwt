@@ -19,15 +19,32 @@ import eu.webtoolkit.jwt.WSlider;
 import eu.webtoolkit.jwt.WText;
 
 public class PaintExample extends WContainerWidget {
-    public PaintExample(WContainerWidget root) {
+    public PaintExample(WContainerWidget root, boolean showTitle) {
         super(root);
-        new WText(
-                "<h2>Paint example</h2>" +
-                "<p>A simple example demonstrating cross-browser vector graphics.</p>" +
-                "<p>The emweb logo below is painted using the Wt WPainter API, and rendered to the browser " +
-                "using inline SVG, inline VML or the HTML 5 &lt;canvas&gt; element.</p>" +
-                "<p>In non-IE browsers, a different backend is used for positive or negative " +
-                "angles (SVG or HTML canvas).</p>", this);
+        String text = "";
+        if (showTitle)
+          text += "<h2>Paint example</h2>";
+
+        text += 
+          "<p>A simple example demonstrating cross-browser vector graphics."
+          + "</p>"
+          + "<p>The emweb logo below is painted using the Wt WPainter API from "
+          + "bezier paths, and rendered to the browser using inline SVG, inline VML "
+          + "or the HTML 5 &lt;canvas&gt; element."
+          + "</p>"
+          + "<p>"
+          + "The example also demonstrates the horizontal and vertical "
+          + "<a href=\"http://www.webtoolkit.eu/wt/doc/reference/html/classWt_1_1WSlider.html\" target=\"_blank\">"
+          + "WSlider</a> widgets (which are rendered using vector graphics). Here, "
+          + "the events of the WSlider widgets are used to scale and rotate the "
+          + "emweb logo."
+          + "</p>"
+          + "<p>"
+          + "In non-IE browsers, a different backend is used for positive or negative "
+          + "angles (SVG or HTML canvas)."
+          + "</p>";
+
+        new WText(text, this);
         WContainerWidget emweb = new WContainerWidget(this);
         emweb.setMargin(new WLength(), EnumSet.of(Side.Left, Side.Right));
         WGridLayout layout = new WGridLayout();

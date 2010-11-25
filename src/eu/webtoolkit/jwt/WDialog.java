@@ -3,8 +3,22 @@
  *
  * See the LICENSE file for terms of use.
  */
+/*
+ * Copyright (C) 2009 Emweb bvba, Leuven, Belgium.
+ *
+ * See the LICENSE file for terms of use.
+ */
+/*
+ * Copyright (C) 2009 Emweb bvba, Leuven, Belgium.
+ *
+ * See the LICENSE file for terms of use.
+ */
+/*
+ * Copyright (C) 2009 Emweb bvba, Leuven, Belgium.
+ *
+ * See the LICENSE file for terms of use.
+ */
 package eu.webtoolkit.jwt;
-
 
 /**
  * A WDialog shows a dialog.
@@ -301,6 +315,10 @@ public class WDialog extends WCompositeWidget {
 					"WDialog::exec(): already in recursive event loop.");
 		}
 		this.show();
+		if (!WtServlet.isAsyncSupported()) {
+			throw new RuntimeException(
+					"Recursive event loop requires a Servlet 3.0 API.");
+		}
 		this.recursiveEventLoop_ = true;
 		do {
 			WApplication.getInstance().getSession().doRecursiveEventLoop();

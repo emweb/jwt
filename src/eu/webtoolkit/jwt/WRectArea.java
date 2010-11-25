@@ -3,6 +3,21 @@
  *
  * See the LICENSE file for terms of use.
  */
+/*
+ * Copyright (C) 2009 Emweb bvba, Leuven, Belgium.
+ *
+ * See the LICENSE file for terms of use.
+ */
+/*
+ * Copyright (C) 2009 Emweb bvba, Leuven, Belgium.
+ *
+ * See the LICENSE file for terms of use.
+ */
+/*
+ * Copyright (C) 2009 Emweb bvba, Leuven, Belgium.
+ *
+ * See the LICENSE file for terms of use.
+ */
 package eu.webtoolkit.jwt;
 
 import java.io.StringWriter;
@@ -47,6 +62,19 @@ public class WRectArea extends WAbstractArea {
 		this.y_ = y;
 		this.width_ = width;
 		this.height_ = height;
+	}
+
+	/**
+	 * Creates a rectangular area with given geometry.
+	 * <p>
+	 * The arguments are in pixel units.
+	 */
+	public WRectArea(double x, double y, double width, double height) {
+		super();
+		this.x_ = (int) x;
+		this.y_ = (int) y;
+		this.width_ = (int) width;
+		this.height_ = (int) height;
 	}
 
 	/**

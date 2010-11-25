@@ -30,7 +30,7 @@
 
   <!-- Compile Java source -->
   <target name="build">
-    <ant dir="../../" target="all"/>
+    <ant dir="../../" target="all" inheritAll="false"/>
     <mkdir dir="${lib.dir}"/>
     
     <copy todir="${lib.dir}">
@@ -58,7 +58,10 @@
       <fileset dir="${src.dir}"
                includes="**/*.xml,**/*.properties,**/*.csv" />
     </copy>
-    
+
+    <jar destfile="${dist.dir}/${proj.name}.jar" 
+	 basedir="${build.dir}" />
+
     <war destfile="${dist.dir}/${proj.name}.war" 
 	 webxml="WebRoot/WEB-INF/web.xml">
       <fileset dir="WebRoot"/>

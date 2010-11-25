@@ -3,6 +3,21 @@
  *
  * See the LICENSE file for terms of use.
  */
+/*
+ * Copyright (C) 2009 Emweb bvba, Leuven, Belgium.
+ *
+ * See the LICENSE file for terms of use.
+ */
+/*
+ * Copyright (C) 2009 Emweb bvba, Leuven, Belgium.
+ *
+ * See the LICENSE file for terms of use.
+ */
+/*
+ * Copyright (C) 2009 Emweb bvba, Leuven, Belgium.
+ *
+ * See the LICENSE file for terms of use.
+ */
 package eu.webtoolkit.jwt;
 
 import java.io.StringWriter;
@@ -58,7 +73,8 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 			} else {
 				if (app.getEnvironment().agentIsChrome()) {
 					if (app.getEnvironment().getAgent().getValue() >= WEnvironment.UserAgent.Chrome2
-							.getValue()) {
+							.getValue()
+							&& !app.getEnvironment().agentIsMobileWebKit()) {
 						this.textMethod_ = WCanvasPaintDevice.TextMethod.Html5Text;
 					}
 				} else {

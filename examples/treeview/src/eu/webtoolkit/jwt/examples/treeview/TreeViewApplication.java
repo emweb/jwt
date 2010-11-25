@@ -8,6 +8,8 @@ package eu.webtoolkit.jwt.examples.treeview;
 import eu.webtoolkit.jwt.Signal1;
 import eu.webtoolkit.jwt.WApplication;
 import eu.webtoolkit.jwt.WEnvironment;
+import eu.webtoolkit.jwt.WStandardItemModel;
+import eu.webtoolkit.jwt.WString;
 import eu.webtoolkit.jwt.WText;
 import eu.webtoolkit.jwt.WXmlLocalizedStrings;
 
@@ -20,8 +22,12 @@ public class TreeViewApplication extends WApplication {
         setLocalizedStrings(resourceBundle);
 
         getStyleSheet().addRule("button", "margin: 2px");
+        
+        WStandardItemModel model = TreeViewExample.createModel(true, this);
 
-        new TreeViewExample(true, getRoot());
+        getRoot().addWidget
+          (new TreeViewExample(model, WString.tr("treeview-introduction"))); 
+
         /*
          * Stub for the drink info
          */

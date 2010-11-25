@@ -3,6 +3,21 @@
  *
  * See the LICENSE file for terms of use.
  */
+/*
+ * Copyright (C) 2009 Emweb bvba, Leuven, Belgium.
+ *
+ * See the LICENSE file for terms of use.
+ */
+/*
+ * Copyright (C) 2009 Emweb bvba, Leuven, Belgium.
+ *
+ * See the LICENSE file for terms of use.
+ */
+/*
+ * Copyright (C) 2009 Emweb bvba, Leuven, Belgium.
+ *
+ * See the LICENSE file for terms of use.
+ */
 package eu.webtoolkit.jwt;
 
 import java.io.StringWriter;
@@ -60,8 +75,22 @@ public class WPolygonArea extends WAbstractArea {
 	/**
 	 * Adds a point.
 	 */
+	public void addPoint(double x, double y) {
+		this.points_.add(new WPoint((int) x, (int) y));
+	}
+
+	/**
+	 * Adds a point.
+	 */
 	public void addPoint(WPoint point) {
 		this.points_.add(point);
+	}
+
+	/**
+	 * Adds a point.
+	 */
+	public void addPoint(WPointF point) {
+		this.points_.add(new WPoint((int) point.getX(), (int) point.getY()));
 	}
 
 	/**

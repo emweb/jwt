@@ -3,6 +3,21 @@
  *
  * See the LICENSE file for terms of use.
  */
+/*
+ * Copyright (C) 2009 Emweb bvba, Leuven, Belgium.
+ *
+ * See the LICENSE file for terms of use.
+ */
+/*
+ * Copyright (C) 2009 Emweb bvba, Leuven, Belgium.
+ *
+ * See the LICENSE file for terms of use.
+ */
+/*
+ * Copyright (C) 2009 Emweb bvba, Leuven, Belgium.
+ *
+ * See the LICENSE file for terms of use.
+ */
 package eu.webtoolkit.jwt;
 
 import java.util.ArrayList;
@@ -445,7 +460,10 @@ public class WPainterPath {
 		this.addPath(path);
 	}
 
-	static class Segment {
+	/**
+	 * A segment.
+	 */
+	public static class Segment {
 		enum Type {
 			MoveTo, LineTo, CubicC1, CubicC2, CubicEnd, QuadC, QuadEnd, ArcC, ArcR, ArcAngleSweep;
 
@@ -485,7 +503,7 @@ public class WPainterPath {
 		private WPainterPath.Segment.Type type_;
 	}
 
-	List<WPainterPath.Segment> getSegments() {
+	public List<WPainterPath.Segment> getSegments() {
 		return this.segments_;
 	}
 

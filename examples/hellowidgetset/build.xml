@@ -30,7 +30,7 @@
 
   <!-- Compile Java source -->
   <target name="build">
-    <ant dir="../../" target="all"/>
+    <ant dir="../../" target="all" inheritAll="false"/>
     <mkdir dir="${lib.dir}"/>
     
     <copy todir="${lib.dir}">

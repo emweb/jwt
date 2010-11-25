@@ -130,7 +130,7 @@
 
   <target name="dist" depends="build">
     <mkdir dir="${dist.dir}"/>
-    <jar destfile="dist/jwt-${proj.version}.jar" basedir="${build.dir}" />
+    <jar destfile="dist/${proj.name}-${proj.version}.jar" basedir="${build.dir}" />
     <copy todir="${dist.dir}">
       <fileset dir="lib">
         <include name="*.jar"/>

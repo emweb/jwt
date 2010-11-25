@@ -1,228 +1,199 @@
-/*
- * Copyright (C) 2009 Emweb bvba, Leuven, Belgium.
- *
- * See the LICENSE file for terms of use.
- */
 package eu.webtoolkit.jwt.examples.treeview;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import eu.webtoolkit.jwt.AlignmentFlag;
 import eu.webtoolkit.jwt.Orientation;
-import eu.webtoolkit.jwt.SelectionMode;
 import eu.webtoolkit.jwt.Signal1;
+import eu.webtoolkit.jwt.WApplication;
 import eu.webtoolkit.jwt.WContainerWidget;
 import eu.webtoolkit.jwt.WLength;
 import eu.webtoolkit.jwt.WMouseEvent;
+import eu.webtoolkit.jwt.WObject;
+import eu.webtoolkit.jwt.WPanel;
 import eu.webtoolkit.jwt.WPushButton;
 import eu.webtoolkit.jwt.WStandardItem;
 import eu.webtoolkit.jwt.WStandardItemModel;
+import eu.webtoolkit.jwt.WString;
 import eu.webtoolkit.jwt.WText;
 import eu.webtoolkit.jwt.WTreeView;
 
 public class TreeViewExample extends WContainerWidget {
-    enum WeatherIcon {
-        Sun("sun01.png"), SunCloud("cloudy01.png"), Cloud("w_cloud.png"), Rain(
-                "rain.png"), Storm("storm.png"), Snow("snow.png");
+	private enum WeatherIcon {
+		Sun("sun01.png"), 
+		SunCloud("cloudy01.png"), 
+		Cloud("w_cloud.png"), 
+		Rain("rain.png"), 
+		Storm("storm.png"), 
+		Snow("snow.png");
 
-        private String icon;
+		private String icon;
 
-        public String getIcon() {
-            return icon;
-        }
+		private WeatherIcon(String icon) {
+			this.icon = icon;
+		}
 
-        private WeatherIcon(String icon) {
-            this.icon = icon;
-        }
-    }
+		public String getIcon() {
+			return icon;
+		}
+	}
 
-    public TreeViewExample(boolean useInternalPath, WContainerWidget parent) {
-        super(parent);
-        useInternalPath_ = useInternalPath;
+	public TreeViewExample(WStandardItemModel model, CharSequence titleText) {
+		super();
+		this.model_ = model;
+		this.belgium_ = this.model_.getItem(0, 0).getChild(0, 0);
+		new WText(titleText, this);
+		WPanel panel = new WPanel(this);
+		panel.resize(new WLength(600), new WLength(300));
+		panel.setCentralWidget(this.treeView_ = new WTreeView());
+		if (!WApplication.getInstance().getEnvironment().hasAjax()) {
+			this.treeView_.resize(WLength.Auto, new WLength(290));
+		}
+		this.treeView_.setAlternatingRowColors(true);
+		this.treeView_.setRowHeight(new WLength(25));
+		this.treeView_.setModel(this.model_);
+		this.treeView_.setColumnWidth(1, new WLength(100));
+		this.treeView_.setColumnAlignment(1, AlignmentFlag.AlignCenter);
+		this.treeView_.setColumnWidth(3, new WLength(100));
+		this.treeView_.setColumnAlignment(3, AlignmentFlag.AlignCenter);
+		this.treeView_.setExpanded(model.getIndex(0, 0), true);
+		this.treeView_.setExpanded(model.getIndex(0, 0, model.getIndex(0, 0)),
+				true);
+		WContainerWidget wc = new WContainerWidget(this);
+		WPushButton b;
+		b = new WPushButton("Toggle row height", wc);
+		b.clicked().addListener(this, new Signal1.Listener<WMouseEvent>() {
+			public void trigger(WMouseEvent e1) {
+				TreeViewExample.this.toggleRowHeight();
+			}
+		});
+		b.setToolTip("Toggles row height between 31px and 25px");
+		b = new WPushButton("Toggle stripes", wc);
+		b.clicked().addListener(this, new Signal1.Listener<WMouseEvent>() {
+			public void trigger(WMouseEvent e1) {
+				TreeViewExample.this.toggleStripes();
+			}
+		});
+		b.setToolTip("Toggle alternating row colors");
+		b = new WPushButton("Toggle root", wc);
+		b.clicked().addListener(this, new Signal1.Listener<WMouseEvent>() {
+			public void trigger(WMouseEvent e1) {
+				TreeViewExample.this.toggleRoot();
+			}
+		});
+		b.setToolTip("Toggles root item between all and the first continent.");
+		b = new WPushButton("Add rows", wc);
+		b.clicked().addListener(this, new Signal1.Listener<WMouseEvent>() {
+			public void trigger(WMouseEvent e1) {
+				TreeViewExample.this.addRows();
+			}
+		});
+		b.setToolTip("Adds some cities to Belgium");
+	}
 
-        new WText(tr("treeview-introduction"), this);
+	public WTreeView getTreeView() {
+		return this.treeView_;
+	}
 
-        /*
-         * Setup a model.
-         * 
-         * We use the standard item model, which is a general model suitable for
-         * hierarchical (tree-like) data, but stores all data in memory.
-         */
-        model_ = new WStandardItemModel(0, 4, this);
+	public static WStandardItemModel createModel(boolean useInternalPath,
+			WObject parent) {
+		WStandardItemModel result = new WStandardItemModel(0, 4, parent);
+		result.setHeaderData(0, Orientation.Horizontal, "Places");
+		result.setHeaderData(1, Orientation.Horizontal, "Weather");
+		result.setHeaderData(2, Orientation.Horizontal, "Drink");
+		result.setHeaderData(3, Orientation.Horizontal, "Visited");
+		WStandardItem continent;
+		WStandardItem country;
+		result.appendRow(continent = continentItem("Europe"));
+		continent.appendRow(country = countryItem("Belgium", "be"));
+		country.appendRow(cityItems("Brussels", WeatherIcon.Rain, "Beer",
+				useInternalPath, true));
+		country.appendRow(cityItems("Leuven", WeatherIcon.Rain, "Beer",
+				useInternalPath, true));
+		continent.appendRow(country = countryItem("France", "fr"));
+		country.appendRow(cityItems("Paris", WeatherIcon.Cloud, "Wine",
+				useInternalPath, true));
+		country.appendRow(cityItems("Bordeaux", WeatherIcon.SunCloud,
+				"Bordeaux wine", useInternalPath, false));
+		continent.appendRow(country = countryItem("Spain", "sp"));
+		country.appendRow(cityItems("Barcelona", WeatherIcon.Sun, "Cava",
+				useInternalPath, true));
+		country.appendRow(cityItems("Madrid", WeatherIcon.Sun, "San Miguel",
+				useInternalPath, false));
+		result.appendRow(continent = continentItem("Africa"));
+		continent.appendRow(country = countryItem("Morocco (المغرب)", "ma"));
+		country.appendRow(cityItems("Casablanca", WeatherIcon.Sun, "Tea",
+				useInternalPath, false));
+		return result;
+	}
 
-        /*
-         * Headers ...
-         */
-        model_.setHeaderData(0, Orientation.Horizontal, "Places");
-        model_.setHeaderData(1, Orientation.Horizontal, "Weather");
-        model_.setHeaderData(2, Orientation.Horizontal, "Drink");
-        model_.setHeaderData(3, Orientation.Horizontal, "Visited");
+	private WStandardItem belgium_;
+	private WStandardItemModel model_;
+	private WTreeView treeView_;
 
-        /*
-         * ... and data
-         */
-        WStandardItem continent, country;
+	private static WStandardItem continentItem(String continent) {
+		return new WStandardItem(continent);
+	}
 
-        model_.appendRow(continent = continentItem("Europe"));
+	private static WStandardItem countryItem(String country, String code) {
+		WStandardItem result = new WStandardItem(new WString(country));
+		result.setIcon("icons/flag_" + code + ".png");
+		return result;
+	}
 
-        continent.appendRow(country = countryItem("Belgium", "be"));
-        country
-                .appendRow(cityItems("Brussels", WeatherIcon.Rain, "Beer", true));
-        country.appendRow(cityItems("Leuven", WeatherIcon.Rain, "Beer", true));
+	private static List<WStandardItem> cityItems(String city,
+			WeatherIcon weather, String drink, boolean useInternalPath,
+			boolean visited) {
+		List<WStandardItem> result = new ArrayList<WStandardItem>();
+		WStandardItem item;
+		item = new WStandardItem(new WString(city));
+		result.add(item);
+		item = new WStandardItem();
+		item.setIcon("icons/" + weather.getIcon());
+		result.add(item);
+		item = new WStandardItem(drink);
+		if (useInternalPath) {
+			item.setInternalPath("/drinks/" + drink);
+		}
+		result.add(item);
+		item = new WStandardItem();
+		item.setCheckable(true);
+		item.setChecked(visited);
+		result.add(item);
+		return result;
+	}
 
-        belgium_ = country;
+	private void toggleRowHeight() {
+		if (this.treeView_.getRowHeight().equals(new WLength(31))) {
+			this.treeView_.setRowHeight(new WLength(25));
+		} else {
+			this.treeView_.setRowHeight(new WLength(31));
+		}
+	}
 
-        continent.appendRow(country = countryItem("France", "fr"));
-        country.appendRow(cityItems("Paris", WeatherIcon.Cloud, "Wine", true));
-        country.appendRow(cityItems("Bordeaux", WeatherIcon.SunCloud,
-                "Bordeaux wine", false));
+	private void toggleStripes() {
+		this.treeView_.setAlternatingRowColors(!this.treeView_
+				.hasAlternatingRowColors());
+	}
 
-        continent.appendRow(country = countryItem("Spain", "sp"));
-        country
-                .appendRow(cityItems("Barcelona", WeatherIcon.Sun, "Cava", true));
-        country.appendRow(cityItems("Madrid", WeatherIcon.Sun, "San Miguel",
-                false));
+	private void toggleRoot() {
+		if ((this.treeView_.getRootIndex() == null || (this.treeView_
+				.getRootIndex() != null && this.treeView_.getRootIndex()
+				.equals(null)))) {
+			this.treeView_.setRootIndex(this.model_.getIndex(0, 0));
+		} else {
+			this.treeView_.setRootIndex(null);
+		}
+	}
 
-        model_.appendRow(continent = continentItem("Africa"));
-
-        continent.appendRow(country = countryItem("Morocco (المغرب)", "ma"));
-        country
-                .appendRow(cityItems("Casablanca", WeatherIcon.Sun, "Tea",
-                        false));
-
-        /*
-         * Now create the view
-         */
-        treeView_ = new WTreeView(this);
-        // treeView_.setColumn1Fixed(true);
-        treeView_.setAlternatingRowColors(!treeView_.hasAlternatingRowColors());
-        treeView_.setRowHeight(new WLength(30));
-        // treeView_.setHeaderHeight(40, true);
-        treeView_.setModel(model_);
-        // treeView_.setSortingEnabled(false);
-        // treeView_.setColumnResizeEnabled(false);
-        treeView_.setSelectionMode(SelectionMode.NoSelection);
-        treeView_.resize(600, 300);
-
-        treeView_.setColumnWidth(1, new WLength(100));
-        treeView_.setColumnAlignment(1, AlignmentFlag.AlignCenter);
-        treeView_.setColumnWidth(3, new WLength(100));
-        treeView_.setColumnAlignment(3, AlignmentFlag.AlignCenter);
-
-        /*
-         * Expand the first (and single) top level node
-         */
-        treeView_.setExpanded(model_.getIndex(0, 0), true);
-
-        /*
-         * Setup some buttons to manipulate the view and the model.
-         */
-        WContainerWidget wc = new WContainerWidget(this);
-        WPushButton b;
-
-        b = new WPushButton("Toggle row height", wc);
-        b.clicked().addListener(this, new Signal1.Listener<WMouseEvent>() {
-            public void trigger(WMouseEvent a1) {
-                toggleRowHeight();
-            }
-        });
-        b.setToolTip("Toggles row height between 30px and 25px");
-
-        b = new WPushButton("Toggle stripes", wc);
-        b.clicked().addListener(this, new Signal1.Listener<WMouseEvent>() {
-            public void trigger(WMouseEvent a1) {
-                toggleStripes();
-            }
-        });
-        b.setToolTip("Toggle alternating row colors");
-
-        b = new WPushButton("Toggle root", wc);
-        b.clicked().addListener(this, new Signal1.Listener<WMouseEvent>() {
-            public void trigger(WMouseEvent a1) {
-                toggleRoot();
-            }
-        });
-        b.setToolTip("Toggles root item between all and the first continent.");
-
-        b = new WPushButton("Add rows", wc);
-        b.clicked().addListener(this, new Signal1.Listener<WMouseEvent>() {
-            public void trigger(WMouseEvent a1) {
-                addRows();
-            }
-        });
-        b.setToolTip("Adds some cities to Belgium");
-    }
-
-    private boolean useInternalPath_;
-    private WStandardItem belgium_;
-    private WStandardItemModel model_;
-    private WTreeView treeView_;
-
-    private WStandardItem continentItem(String continent) {
-        return new WStandardItem(continent);
-    }
-
-    private WStandardItem countryItem(String country, String code) {
-        WStandardItem result = new WStandardItem(country);
-        result.setIcon("pics/flag_" + code + ".png");
-
-        return result;
-    }
-
-    private ArrayList<WStandardItem> cityItems(String city,
-            WeatherIcon weather, String drink, boolean visited) {
-        ArrayList<WStandardItem> result = new ArrayList<WStandardItem>();
-        WStandardItem item;
-
-        // column 0: country
-        item = new WStandardItem(city);
-        result.add(item);
-
-        // column 1: weather
-        item = new WStandardItem();
-        item.setIcon("pics/" + weather.getIcon());
-        result.add(item);
-
-        // column 2: drink
-        item = new WStandardItem(drink);
-        if (useInternalPath_) {
-            item.setInternalPath("/drinks/" + drink);
-        }
-        result.add(item);
-
-        // column 3: visited
-        item = new WStandardItem();
-        item.setCheckable(true);
-        item.setChecked(visited);
-        result.add(item);
-
-        return result;
-    }
-
-    private void toggleRowHeight() {
-        if (treeView_.getRowHeight().equals(new WLength(30)))
-            treeView_.setRowHeight(new WLength(25));
-        else
-            treeView_.setRowHeight(new WLength(30));
-    }
-
-    private void toggleStripes() {
-        treeView_.setAlternatingRowColors(!treeView_.hasAlternatingRowColors());
-    }
-
-    private void toggleRoot() {
-        if (treeView_.getRootIndex() == null)
-            treeView_.setRootIndex(model_.getIndex(0, 0));
-        else
-            treeView_.setRootIndex(null);
-    }
-
-    private void addRows() {
-        for (int i = 0; i < 5; ++i) {
-            String cityName = "City " + (belgium_.getRowCount() + 1);
-
-            belgium_.appendRow(cityItems(cityName, WeatherIcon.Storm, "Juice",
-                    false));
-        }
-    }
+	private void addRows() {
+		for (int i = 0; i < 5; ++i) {
+			String cityName = "City "
+					+ String.valueOf(this.belgium_.getRowCount() + 1);
+			boolean useInternalPath = false;
+			this.belgium_.appendRow(cityItems(cityName, WeatherIcon.Storm,
+					"Juice", useInternalPath, false));
+		}
+	}
 }

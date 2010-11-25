@@ -3,6 +3,21 @@
  *
  * See the LICENSE file for terms of use.
  */
+/*
+ * Copyright (C) 2009 Emweb bvba, Leuven, Belgium.
+ *
+ * See the LICENSE file for terms of use.
+ */
+/*
+ * Copyright (C) 2009 Emweb bvba, Leuven, Belgium.
+ *
+ * See the LICENSE file for terms of use.
+ */
+/*
+ * Copyright (C) 2009 Emweb bvba, Leuven, Belgium.
+ *
+ * See the LICENSE file for terms of use.
+ */
 package eu.webtoolkit.jwt;
 
 import java.util.ArrayList;
@@ -337,6 +352,9 @@ public class WTableView extends WAbstractItemView {
 		int delta = (int) (width.toPixels() - this.columnInfo(column).width
 				.toPixels());
 		this.columnInfo(column).width = width;
+		if (this.columnInfo(column).hidden) {
+			delta = 0;
+		}
 		if (this.isAjaxMode()) {
 			this.headers_.resize(new WLength(this.headers_.getWidth()
 					.toPixels()
@@ -432,6 +450,35 @@ public class WTableView extends WAbstractItemView {
 		this.computeRenderedArea();
 		super.resize(width, height);
 		this.scheduleRerender(WAbstractItemView.RenderState.NeedAdjustViewPort);
+	}
+
+	public void setColumnHidden(int column, boolean hidden) {
+		if (this.columnInfo(column).hidden != hidden) {
+			super.setColumnHidden(column, hidden);
+			int delta = (int) this.columnInfo(column).width.toPixels() + 7;
+			if (hidden) {
+				delta = -delta;
+			}
+			this.headers_.resize(new WLength(this.headers_.getWidth()
+					.toPixels()
+					+ delta), this.headers_.getHeight());
+			this.canvas_.resize(new WLength(this.canvas_.getWidth().toPixels()
+					+ delta), this.canvas_.getHeight());
+			if (this.isColumnRendered(column)) {
+				this.updateColumnOffsets();
+			} else {
+				if (column < this.getFirstColumn()) {
+					this.setSpannerCount(Side.Left, this
+							.getSpannerCount(Side.Left));
+				}
+			}
+			WWidget hc = this.headers_.getWidget(column);
+			if (!this.isAjaxMode()) {
+				hc.getParent().setHidden(hidden);
+			} else {
+				hc.setHidden(hidden);
+			}
+		}
 	}
 
 	public int getPageCount() {
@@ -595,7 +642,9 @@ public class WTableView extends WAbstractItemView {
 		int count = end - start + 1;
 		int width = 0;
 		for (int i = start; i < start + count; ++i) {
-			width += (int) this.columnInfo(i).width.toPixels() + 7;
+			if (!this.columnInfo(i).hidden) {
+				width += (int) this.columnInfo(i).width.toPixels() + 7;
+			}
 		}
 		for (int ii = 0; ii < (0 + start + count) - (0 + start); ++ii)
 			this.columns_.remove(0 + start);
@@ -827,7 +876,9 @@ public class WTableView extends WAbstractItemView {
 		case Left: {
 			int total = 0;
 			for (int i = 0; i < count; i++) {
-				total += (int) this.columnInfo(i).width.toPixels() + 7;
+				if (!this.columnInfo(i).hidden) {
+					total += (int) this.columnInfo(i).width.toPixels() + 7;
+				}
 			}
 			this.table_.setOffsets(new WLength(total), EnumSet.of(Side.Left));
 			this.firstColumn_ = count;
@@ -964,10 +1015,14 @@ public class WTableView extends WAbstractItemView {
 			for (int i = 0; i < items.size(); ++i) {
 				w.addWidget(items.get(i));
 			}
-			this.table_.setOffsets(new WLength(this.table_.getOffset(Side.Left)
-					.toPixels()
-					- this.getColumnWidth(w.getColumn()).toPixels() - 7),
-					EnumSet.of(Side.Left));
+			if (!this.columnInfo(w.getColumn()).hidden) {
+				this.table_.setOffsets(new WLength(this.table_.getOffset(
+						Side.Left).toPixels()
+						- this.getColumnWidth(w.getColumn()).toPixels() - 7),
+						EnumSet.of(Side.Left));
+			} else {
+				w.hide();
+			}
 			--this.firstColumn_;
 			break;
 		}
@@ -976,6 +1031,9 @@ public class WTableView extends WAbstractItemView {
 					.getLastColumn() + 1);
 			for (int i = 0; i < items.size(); ++i) {
 				w.addWidget(items.get(i));
+			}
+			if (this.columnInfo(w.getColumn()).hidden) {
+				w.hide();
 			}
 			++this.lastColumn_;
 			break;
@@ -1007,10 +1065,12 @@ public class WTableView extends WAbstractItemView {
 			break;
 		case Left: {
 			WTableView.ColumnWidget w = this.columnContainer(0);
-			this.table_.setOffsets(new WLength(this.table_.getOffset(Side.Left)
-					.toPixels()
-					+ this.getColumnWidth(w.getColumn()).toPixels() + 7),
-					EnumSet.of(Side.Left));
+			if (!this.columnInfo(w.getColumn()).hidden) {
+				this.table_.setOffsets(new WLength(this.table_.getOffset(
+						Side.Left).toPixels()
+						+ this.getColumnWidth(w.getColumn()).toPixels() + 7),
+						EnumSet.of(Side.Left));
+			}
 			++this.firstColumn_;
 			for (int i = w.getCount() - 1; i >= 0; --i) {
 				this.deleteItem(row + i, col, w.getWidget(i));
@@ -1104,7 +1164,9 @@ public class WTableView extends WAbstractItemView {
 		assert this.isAjaxMode();
 		int total = 0;
 		for (int i = 0; i < this.getColumnCount(); ++i) {
-			total += (int) this.columnInfo(i).width.toPixels() + 7;
+			if (!this.columnInfo(i).hidden) {
+				total += (int) this.columnInfo(i).width.toPixels() + 7;
+			}
 		}
 		this.headers_.resize(new WLength(total), this.headers_.getHeight());
 		this.canvas_.resize(new WLength(total), new WLength(this
@@ -1143,6 +1205,9 @@ public class WTableView extends WAbstractItemView {
 				this.headers_.addWidget(w);
 				w.resize(new WLength(this.columnInfo(i).width.toPixels() + 1),
 						WLength.Auto);
+				if (this.columnInfo(i).hidden) {
+					w.hide();
+				}
 			}
 		} else {
 			for (int i = 0; i < this.getColumnCount(); ++i) {
@@ -1154,6 +1219,9 @@ public class WTableView extends WAbstractItemView {
 				cell.resize(
 						new WLength(this.columnInfo(i).width.toPixels() + 1), w
 								.getHeight());
+				if (this.columnInfo(i).hidden) {
+					cell.hide();
+				}
 			}
 		}
 		if (this.getModel() != null) {
@@ -1337,7 +1405,9 @@ public class WTableView extends WAbstractItemView {
 		int column = -1;
 		int total = 0;
 		for (int i = 0; i < this.getColumnCount(); i++) {
-			total += (int) this.columnInfo(i).width.toPixels() + 7;
+			if (!this.columnInfo(i).hidden) {
+				total += (int) this.columnInfo(i).width.toPixels() + 7;
+			}
 			if (event.getWidget().x < total) {
 				column = i;
 				break;
@@ -1479,9 +1549,14 @@ public class WTableView extends WAbstractItemView {
 				WTableView.ColumnWidget w = this.columnContainer(i - fc);
 				w.setOffsets(new WLength(totalRendered), EnumSet.of(Side.Left));
 				w.resize(new WLength(ci.width.toPixels() + 7), WLength.Auto);
-				totalRendered += (int) this.columnInfo(i).width.toPixels() + 7;
+				if (!this.columnInfo(i).hidden) {
+					totalRendered += (int) this.columnInfo(i).width.toPixels() + 7;
+				}
+				w.setHidden(this.columnInfo(i).hidden);
 			}
-			total += (int) this.columnInfo(i).width.toPixels() + 7;
+			if (!this.columnInfo(i).hidden) {
+				total += (int) this.columnInfo(i).width.toPixels() + 7;
+			}
 		}
 		this.canvas_.resize(new WLength(total), new WLength(this
 				.getCanvasHeight()));

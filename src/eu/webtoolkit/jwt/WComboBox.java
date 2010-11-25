@@ -3,6 +3,21 @@
  *
  * See the LICENSE file for terms of use.
  */
+/*
+ * Copyright (C) 2009 Emweb bvba, Leuven, Belgium.
+ *
+ * See the LICENSE file for terms of use.
+ */
+/*
+ * Copyright (C) 2009 Emweb bvba, Leuven, Belgium.
+ *
+ * See the LICENSE file for terms of use.
+ */
+/*
+ * Copyright (C) 2009 Emweb bvba, Leuven, Belgium.
+ *
+ * See the LICENSE file for terms of use.
+ */
 package eu.webtoolkit.jwt;
 
 import java.util.ArrayList;
@@ -33,6 +48,9 @@ import java.util.List;
  * At all times, the current selection index is available through
  * {@link WComboBox#getCurrentIndex() getCurrentIndex()} and the current
  * selection text using {@link WComboBox#getCurrentText() getCurrentText()}.
+ * <p>
+ * {@link WComboBox} does not have support for auto-completion, this behaviour
+ * can be found in the {@link WSuggestionPopup}.
  * <p>
  * WComboBox is an {@link WWidget#setInline(boolean inlined) inline} widget.
  * <p>

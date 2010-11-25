@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app version="3.0"
+          xmlns="http://java.sun.com/xml/ns/javaee"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"> 
+ 	<session-config>
+    	<session-timeout>1</session-timeout>
+	</session-config>
+ 
+  <servlet>
+    <servlet-name>ServerPush</servlet-name>
+    <servlet-class>eu.webtoolkit.jwt.examples.features.serverpush.ServerPush</servlet-class>
+    <async-supported>true</async-supported>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>ServerPush</servlet-name>
+    <url-pattern>/serverpush/*</url-pattern>
+  </servlet-mapping>
+</web-app>
+
