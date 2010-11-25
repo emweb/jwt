@@ -3,44 +3,19 @@
  *
  * See the LICENSE file for terms of use.
  */
-/*
- * Copyright (C) 2009 Emweb bvba, Leuven, Belgium.
- *
- * See the LICENSE file for terms of use.
- */
-/*
- * Copyright (C) 2009 Emweb bvba, Leuven, Belgium.
- *
- * See the LICENSE file for terms of use.
- */
-/*
- * Copyright (C) 2009 Emweb bvba, Leuven, Belgium.
- *
- * See the LICENSE file for terms of use.
- */
 package eu.webtoolkit.jwt.chart;
 
-import java.util.ArrayList;
-import java.util.EnumSet;
-import java.util.List;
-import eu.webtoolkit.jwt.AbstractSignal;
-import eu.webtoolkit.jwt.Side;
-import eu.webtoolkit.jwt.Signal;
-import eu.webtoolkit.jwt.Signal2;
-import eu.webtoolkit.jwt.Signal3;
-import eu.webtoolkit.jwt.WAbstractItemModel;
-import eu.webtoolkit.jwt.WBrush;
-import eu.webtoolkit.jwt.WColor;
-import eu.webtoolkit.jwt.WContainerWidget;
-import eu.webtoolkit.jwt.WFont;
-import eu.webtoolkit.jwt.WLength;
-import eu.webtoolkit.jwt.WModelIndex;
-import eu.webtoolkit.jwt.WPaintedWidget;
-import eu.webtoolkit.jwt.WPainter;
-import eu.webtoolkit.jwt.WRectF;
-import eu.webtoolkit.jwt.WString;
-import eu.webtoolkit.jwt.WtException;
-import eu.webtoolkit.jwt.utils.EnumUtils;
+import java.util.*;
+import java.util.regex.*;
+import java.io.*;
+import java.lang.ref.*;
+import java.util.concurrent.locks.ReentrantLock;
+import javax.servlet.http.*;
+import javax.servlet.*;
+import eu.webtoolkit.jwt.*;
+import eu.webtoolkit.jwt.chart.*;
+import eu.webtoolkit.jwt.utils.*;
+import eu.webtoolkit.jwt.servlet.*;
 
 /**
  * Abstract base class for MVC-based charts.

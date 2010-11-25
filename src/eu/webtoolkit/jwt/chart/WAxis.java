@@ -3,39 +3,19 @@
  *
  * See the LICENSE file for terms of use.
  */
-/*
- * Copyright (C) 2009 Emweb bvba, Leuven, Belgium.
- *
- * See the LICENSE file for terms of use.
- */
-/*
- * Copyright (C) 2009 Emweb bvba, Leuven, Belgium.
- *
- * See the LICENSE file for terms of use.
- */
-/*
- * Copyright (C) 2009 Emweb bvba, Leuven, Belgium.
- *
- * See the LICENSE file for terms of use.
- */
 package eu.webtoolkit.jwt.chart;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.EnumSet;
-import java.util.List;
-import eu.webtoolkit.jwt.Orientation;
-import eu.webtoolkit.jwt.StringUtils;
-import eu.webtoolkit.jwt.WAbstractItemModel;
-import eu.webtoolkit.jwt.WColor;
-import eu.webtoolkit.jwt.WDate;
-import eu.webtoolkit.jwt.WFont;
-import eu.webtoolkit.jwt.WLength;
-import eu.webtoolkit.jwt.WPen;
-import eu.webtoolkit.jwt.WString;
-import eu.webtoolkit.jwt.WtException;
-import eu.webtoolkit.jwt.utils.EnumUtils;
-import eu.webtoolkit.jwt.utils.MathUtils;
+import java.util.*;
+import java.util.regex.*;
+import java.io.*;
+import java.lang.ref.*;
+import java.util.concurrent.locks.ReentrantLock;
+import javax.servlet.http.*;
+import javax.servlet.*;
+import eu.webtoolkit.jwt.*;
+import eu.webtoolkit.jwt.chart.*;
+import eu.webtoolkit.jwt.utils.*;
+import eu.webtoolkit.jwt.servlet.*;
 
 /**
  * Class which represents an axis of a cartesian chart.

@@ -3,35 +3,19 @@
  *
  * See the LICENSE file for terms of use.
  */
-/*
- * Copyright (C) 2009 Emweb bvba, Leuven, Belgium.
- *
- * See the LICENSE file for terms of use.
- */
-/*
- * Copyright (C) 2009 Emweb bvba, Leuven, Belgium.
- *
- * See the LICENSE file for terms of use.
- */
-/*
- * Copyright (C) 2009 Emweb bvba, Leuven, Belgium.
- *
- * See the LICENSE file for terms of use.
- */
 package eu.webtoolkit.jwt.chart;
 
-import eu.webtoolkit.jwt.ItemDataRole;
-import eu.webtoolkit.jwt.PenStyle;
-import eu.webtoolkit.jwt.StringUtils;
-import eu.webtoolkit.jwt.WAbstractArea;
-import eu.webtoolkit.jwt.WModelIndex;
-import eu.webtoolkit.jwt.WPainterPath;
-import eu.webtoolkit.jwt.WPen;
-import eu.webtoolkit.jwt.WPointF;
-import eu.webtoolkit.jwt.WPolygonArea;
-import eu.webtoolkit.jwt.WRectArea;
-import eu.webtoolkit.jwt.WShadow;
-import eu.webtoolkit.jwt.WTransform;
+import java.util.*;
+import java.util.regex.*;
+import java.io.*;
+import java.lang.ref.*;
+import java.util.concurrent.locks.ReentrantLock;
+import javax.servlet.http.*;
+import javax.servlet.*;
+import eu.webtoolkit.jwt.*;
+import eu.webtoolkit.jwt.chart.*;
+import eu.webtoolkit.jwt.utils.*;
+import eu.webtoolkit.jwt.servlet.*;
 
 class BarSeriesRenderer extends SeriesRenderer {
 	public BarSeriesRenderer(WChart2DRenderer renderer, WDataSeries series,
