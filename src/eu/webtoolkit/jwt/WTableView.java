@@ -1289,6 +1289,9 @@ public class WTableView extends WAbstractItemView {
 			}
 			this.renderedFirstRow_ = Math.max(this.renderedFirstRow_
 					- renderedRows - borderRows, 0);
+			if (this.renderedFirstRow_ % 2 == 1) {
+				--this.renderedFirstRow_;
+			}
 			int left = Math.max(0, this.viewportLeft_ - this.viewportWidth_
 					- borderColumnPixels);
 			int right = Math.min((int) this.canvas_.getWidth().toPixels(),

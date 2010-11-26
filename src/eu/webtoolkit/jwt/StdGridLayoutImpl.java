@@ -124,49 +124,6 @@ class StdGridLayoutImpl extends StdLayoutImpl {
 			}
 			table.setProperty(Property.PropertyStyle, style);
 		}
-		if (fitHeight) {
-			StringWriter layoutAdd = new StringWriter();
-			layoutAdd.append(app.getJavaScriptClass()).append(
-					".layouts.add(new Wt3_1_7.StdLayout( Wt3_1_7, '").append(
-					div.getId()).append("', { stretch: [");
-			for (int i = 0; i < rowCount; ++i) {
-				if (i != 0) {
-					layoutAdd.append(",");
-				}
-				int stretch = 0;
-				if (totalRowStretch == 0 && fitHeight) {
-					stretch = 1;
-				} else {
-					stretch = this.grid_.rows_.get(i).stretch_;
-				}
-				layoutAdd.append(String.valueOf(stretch));
-			}
-			layoutAdd.append("], minheight: [");
-			for (int i = 0; i < rowCount; ++i) {
-				if (i != 0) {
-					layoutAdd.append(",");
-				}
-				int minHeight = 0;
-				for (int j = 0; j < colCount; ++j) {
-					WLayoutItem item = this.grid_.items_.get(i).get(j).item_;
-					if (item != null) {
-						minHeight = Math.max(minHeight, getImpl(item)
-								.getMinimumHeight());
-					}
-				}
-				if (i == 0) {
-					minHeight += margin[0];
-				} else {
-					minHeight += this.grid_.verticalSpacing_;
-				}
-				if (i == rowCount - 1) {
-					minHeight += margin[2];
-				}
-				layoutAdd.append(String.valueOf(minHeight));
-			}
-			layoutAdd.append("]}));");
-			app.doJavaScript(layoutAdd.toString());
-		}
 		DomElement tbody = DomElement
 				.createNew(DomElementType.DomElement_TBODY);
 		if (fitWidth) {
@@ -452,6 +409,49 @@ class StdGridLayoutImpl extends StdLayoutImpl {
 			resizeHandleAbove = resizeHandleBelow;
 		}
 		table.addChild(tbody);
+		if (fitHeight) {
+			StringWriter layoutAdd = new StringWriter();
+			layoutAdd.append(app.getJavaScriptClass()).append(
+					".layouts.add(new Wt3_1_7.StdLayout( Wt3_1_7, '").append(
+					div.getId()).append("', { stretch: [");
+			for (int i = 0; i < rowCount; ++i) {
+				if (i != 0) {
+					layoutAdd.append(",");
+				}
+				int stretch = 0;
+				if (totalRowStretch == 0 && fitHeight) {
+					stretch = 1;
+				} else {
+					stretch = this.grid_.rows_.get(i).stretch_;
+				}
+				layoutAdd.append(String.valueOf(stretch));
+			}
+			layoutAdd.append("], minheight: [");
+			for (int i = 0; i < rowCount; ++i) {
+				if (i != 0) {
+					layoutAdd.append(",");
+				}
+				int minHeight = 0;
+				for (int j = 0; j < colCount; ++j) {
+					WLayoutItem item = this.grid_.items_.get(i).get(j).item_;
+					if (item != null) {
+						minHeight = Math.max(minHeight, getImpl(item)
+								.getMinimumHeight());
+					}
+				}
+				if (i == 0) {
+					minHeight += margin[0];
+				} else {
+					minHeight += this.grid_.verticalSpacing_;
+				}
+				if (i == rowCount - 1) {
+					minHeight += margin[2];
+				}
+				layoutAdd.append(String.valueOf(minHeight));
+			}
+			layoutAdd.append("]}));");
+			table.callJavaScript(layoutAdd.toString());
+		}
 		div.addChild(table);
 		return div;
 	}
@@ -530,16 +530,16 @@ class StdGridLayoutImpl extends StdLayoutImpl {
 	private boolean forceUpdate_;
 
 	static String wtjs1(WApplication app) {
-		return "Wt3_1_7.StdLayout = function(a,s,i){var p=this;this.getId=function(){return s};this.WT=a;this.marginH=function(c){var h=c.parentNode,g=a.px(c,\"marginLeft\");g+=a.px(c,\"marginRight\");g+=a.px(c,\"borderLeftWidth\");g+=a.px(c,\"borderRightWidth\");g+=a.px(h,\"paddingLeft\");g+=a.px(h,\"paddingRight\");return g};this.marginV=function(c){var h=a.px(c,\"marginTop\");h+=a.px(c,\"marginBottom\");h+=a.px(c,\"borderTopWidth\");h+=a.px(c,\"borderBottomWidth\");h+=a.px(c,\"paddingTop\");h+=a.px(c,\"paddingBottom\"); return h};this.getColumn=function(c){var h,g,j,f=a.getElement(s).firstChild.childNodes;g=h=0;for(j=f.length;g<j;g++){var q=f[g];if(a.hasTag(q,\"COLGROUP\")){g=-1;f=q.childNodes;j=f.length}if(a.hasTag(q,\"COL\"))if(q.className!=\"Wt-vrh\")if(h==c)return q;else++h}return null};this.adjustRow=function(c,h){if(c.style.height!=h+\"px\")c.style.height=h+\"px\";c=c.childNodes;var g,j,f,q;g=0;q=-1;for(j=c.length;g<j;++g){f=c[g];var d=h;d-=a.pxself(f,\"paddingTop\");d-=a.pxself(f,\"paddingBottom\");if(d<=0)d=0;f.className!= \"Wt-vrh\"&&++q;f.style.height=d+\"px\";if(!(f.style.verticalAlign||f.childNodes.length==0)){var b=f.childNodes[0];if(d<=0)d=0;if(b.className==\"Wt-hcenter\"){b.style.height=d+\"px\";b=b.firstChild.firstChild;if(!a.hasTag(b,\"TD\"))b=b.firstChild;if(b.style.height!=d+\"px\")b.style.height=d+\"px\";b=b.firstChild}if(f.childNodes.length==1)d-=this.marginV(b);if(d<=0)d=0;if(!a.hasTag(b,\"TABLE\"))if(b.wtResize){f=b.parentNode.offsetWidth-p.marginH(b);if(p.getColumn(q).style.width!=\"\"){b.style.position=\"absolute\";b.style.width= f+\"px\"}b.wtResize(b,f,d)}else if(b.style.height!=d+\"px\"){b.style.height=d+\"px\";if(b.className==\"Wt-wrapdiv\")if(a.isIE&&a.hasTag(b.firstChild,\"TEXTAREA\"))b.firstChild.style.height=d-a.pxself(b,\"marginBottom\")+\"px\"}}}};this.adjust=function(){var c=a.getElement(s);if(!c)return false;p.initResize&&p.initResize(a,s,i);if(a.isHidden(c))return true;var h=c.firstChild,g=c.parentNode;if(h.style.height!=\"\")h.style.height=\"\";if(!(c.dirty||h.w!=g.clientWidth||h.h!=g.clientHeight))return true;c.dirty=null;var j= a.pxself(g,\"height\");if(j==0){j=g.clientHeight;j-=a.px(g,\"paddingTop\");j-=a.px(g,\"paddingBottom\")}j-=a.px(c,\"marginTop\");j-=a.px(c,\"marginBottom\");var f,q;if(g.children){f=0;for(q=g.children.length;f<q;++f){var d=g.children[f];if(d!=c)j-=$(d).outerHeight()}}var b=c=0,l,t;l=f=0;for(q=h.rows.length;f<q;f++){d=h.rows[f];if(d.className==\"Wt-hrh\")j-=d.offsetHeight;else{b+=i.minheight[l];if(i.stretch[l]<=0)j-=d.offsetHeight;else c+=i.stretch[l];++l}}j=j>b?j:b;if(c!=0&&j>0){b=j;var o;l=f=0;for(q=h.rows.length;f< q;f++)if(h.rows[f].className!=\"Wt-hrh\"){d=h.rows[f];if(i.stretch[l]!=0){if(i.stretch[l]!=-1){o=j*i.stretch[l]/c;o=b>o?o:b;o=Math.round(i.minheight[l]>o?i.minheight[l]:o);b-=o}else o=d.offsetHeight;this.adjustRow(d,o)}++l}}h.w=g.clientWidth;h.h=g.clientHeight;if(h.style.tableLayout!=\"fixed\")return true;c=0;l=h.childNodes;g=0;for(j=l.length;g<j;g++){b=l[g];var y,A,z;if(a.hasTag(b,\"COLGROUP\")){g=-1;l=b.childNodes;j=l.length}if(a.hasTag(b,\"COL\")){if(a.pctself(b,\"width\")==0){f=o=0;for(q=h.rows.length;f< q;f++){d=h.rows[f];d=d.childNodes;A=y=0;for(z=d.length;A<z;A++){t=d[A];if(t.colSpan==1&&y==c&&t.childNodes.length==1){d=t.firstChild;d=d.offsetWidth+p.marginH(d);o=Math.max(o,d);break}y+=t.colSpan;if(y>c)break}}if(o>0&&a.pxself(b,\"width\")!=o)b.style.width=o+\"px\"}++c}}return true};this.adjust()};";
+		return "Wt3_1_7.StdLayout = function(a,s,i){var o=this;this.getId=function(){return s};this.WT=a;this.marginH=function(b){var f=b.parentNode,g=a.px(b,\"marginLeft\");g+=a.px(b,\"marginRight\");g+=a.px(b,\"borderLeftWidth\");g+=a.px(b,\"borderRightWidth\");g+=a.px(b,\"paddingLeft\");g+=a.px(b,\"paddingRight\");g+=a.pxself(f,\"paddingLeft\");g+=a.pxself(f,\"paddingRight\");return g};this.marginV=function(b){var f=a.px(b,\"marginTop\");f+=a.px(b,\"marginBottom\");f+=a.px(b,\"borderTopWidth\");f+=a.px(b,\"borderBottomWidth\"); f+=a.px(b,\"paddingTop\");f+=a.px(b,\"paddingBottom\");return f};this.getColumn=function(b){var f,g,j,h=a.getElement(s).firstChild.childNodes;g=f=0;for(j=h.length;g<j;g++){var q=h[g];if(a.hasTag(q,\"COLGROUP\")){g=-1;h=q.childNodes;j=h.length}if(a.hasTag(q,\"COL\"))if(q.className!=\"Wt-vrh\")if(f==b)return q;else++f}return null};this.adjustRow=function(b,f){if(b.style.height!=f+\"px\")b.style.height=f+\"px\";b=b.childNodes;var g,j,h,q;g=0;q=-1;for(j=b.length;g<j;++g){h=b[g];var d=f;d-=a.pxself(h,\"paddingTop\"); d-=a.pxself(h,\"paddingBottom\");if(d<=0)d=0;h.className!=\"Wt-vrh\"&&++q;h.style.height=d+\"px\";if(!(h.style.verticalAlign||h.childNodes.length==0)){var c=h.childNodes[0];if(d<=0)d=0;if(c.className==\"Wt-hcenter\"){c.style.height=d+\"px\";c=c.firstChild.firstChild;if(!a.hasTag(c,\"TD\"))c=c.firstChild;if(c.style.height!=d+\"px\")c.style.height=d+\"px\";c=c.firstChild}if(h.childNodes.length==1)d-=this.marginV(c);if(d<=0)d=0;if(!a.hasTag(c,\"TABLE\"))if(c.wtResize){h=c.parentNode.offsetWidth-o.marginH(c);if(o.getColumn(q).style.width!= \"\"){c.style.position=\"absolute\";c.style.width=h+\"px\"}c.wtResize(c,h,d)}else if(c.style.height!=d+\"px\"){c.style.height=d+\"px\";if(c.className==\"Wt-wrapdiv\")if(a.isIE&&a.hasTag(c.firstChild,\"TEXTAREA\"))c.firstChild.style.height=d-a.pxself(c,\"marginBottom\")+\"px\"}}}};this.adjust=function(){var b=a.getElement(s);if(!b)return false;o.initResize&&o.initResize(a,s,i);if(a.isHidden(b))return true;var f=b.firstChild,g=b.parentNode;if(f.style.height!=\"\")f.style.height=\"\";if(!(b.dirty||f.w!=g.clientWidth||f.h!= g.clientHeight))return true;b.dirty=null;var j=a.pxself(g,\"height\");if(j==0){j=g.clientHeight;j-=a.px(g,\"paddingTop\");j-=a.px(g,\"paddingBottom\")}j-=a.px(b,\"marginTop\");j-=a.px(b,\"marginBottom\");var h,q;if(g.children){h=0;for(q=g.children.length;h<q;++h){var d=g.children[h];if(d!=b)j-=$(d).outerHeight()}}var c=b=0,l,t;l=h=0;for(q=f.rows.length;h<q;h++){d=f.rows[h];if(d.className==\"Wt-hrh\")j-=d.offsetHeight;else{c+=i.minheight[l];if(i.stretch[l]<=0)j-=d.offsetHeight;else b+=i.stretch[l];++l}}j=j>c? j:c;if(b!=0&&j>0){c=j;var p;l=h=0;for(q=f.rows.length;h<q;h++)if(f.rows[h].className!=\"Wt-hrh\"){d=f.rows[h];if(i.stretch[l]!=0){if(i.stretch[l]!=-1){p=j*i.stretch[l]/b;p=c>p?p:c;p=Math.round(i.minheight[l]>p?i.minheight[l]:p);c-=p}else p=d.offsetHeight;this.adjustRow(d,p)}++l}}f.w=g.clientWidth;f.h=g.clientHeight;if(f.style.tableLayout!=\"fixed\")return true;b=0;l=f.childNodes;g=0;for(j=l.length;g<j;g++){c=l[g];var y,A,z;if(a.hasTag(c,\"COLGROUP\")){g=-1;l=c.childNodes;j=l.length}if(a.hasTag(c,\"COL\")){if(a.pctself(c, \"width\")==0){h=p=0;for(q=f.rows.length;h<q;h++){d=f.rows[h];d=d.childNodes;A=y=0;for(z=d.length;A<z;A++){t=d[A];if(t.colSpan==1&&y==b&&t.childNodes.length==1){d=t.firstChild;d=d.offsetWidth+o.marginH(d);p=Math.max(p,d);break}y+=t.colSpan;if(y>b)break}}if(p>0&&a.pxself(c,\"width\")!=p)c.style.width=p+\"px\"}++b}}return true};this.contains=function(b){var f=a.getElement(s);b=a.getElement(b.getId());return a.contains(f,b)};this.adjust()};";
 	}
 
 	static String wtjs2(WApplication app) {
-		return "Wt3_1_7.StdLayout.prototype.initResize = function(a,s,i){function p(e,k){if(e.offsetWidth>0)return e.offsetWidth;else{e=l.firstChild.rows[0];var m,n,r,u;r=n=0;for(u=e.childNodes.length;n<u;++n){m=e.childNodes[n];if(m.className!=\"Wt-vrh\"){if(r==k)return m.offsetWidth;r+=m.colSpan}}return 0}}function c(e,k){var m=a.getElement(s).firstChild;b(e).style.width=k+\"px\";var n,r,u,v;r=n=0;for(u=m.rows.length;n<u;n++){v=m.rows[n];if(v.className!=\"Wt-hrh\"){var w,B,D,F;D=B=0;for(F=v.childNodes.length;B< F;++B){w=v.childNodes[B];if(w.className!=\"Wt-vrh\"){if(w.colSpan==1&&D==e&&w.childNodes.length==1){v=w.firstChild;w=k-d.marginH(v);v.style.width=w+\"px\";break}D+=w.colSpan}}++r}}}function h(e,k,m){var n=e.firstChild;new a.SizeHandle(a,\"v\",n.offsetHeight,n.offsetWidth,-e.parentNode.previousSibling.offsetHeight,e.parentNode.nextSibling.offsetHeight,\"Wt-vsh\",function(r){j(e,k,r)},n,l,m,0,0)}function g(e,k,m){var n=-e.previousSibling.offsetWidth,r=e.nextSibling.offsetWidth,u=e.firstChild,v=a.pxself(t.rows[0].childNodes[0], \"paddingTop\"),w=a.pxself(t.rows[t.rows.length-1].childNodes[0],\"paddingBottom\");new a.SizeHandle(a,\"h\",u.offsetWidth,t.offsetHeight-v-w,n,r,\"Wt-hsh\",function(B){q(e,k,B)},u,l,m,0,-e.offsetTop+v-a.pxself(e,\"paddingTop\"))}function j(e,k,m){var n=e.parentNode.previousSibling;e=e.parentNode.nextSibling;var r=n.offsetHeight,u=e.offsetHeight;if(i.stretch[k]>0&&i.stretch[k+1]>0)i.stretch[k]=-1;if(i.stretch[k+1]==0)i.stretch[k+1]=-1;i.stretch[k]<=0&&d.adjustRow(n,r+m);i.stretch[k+1]<=0&&d.adjustRow(e,u-m); a.getElement(s).dirty=true;window.onresize()}function f(){var e,k=0;for(e=0;;++e){var m=b(e);if(m)k+=a.pctself(m,\"width\");else break}if(k!=0)for(e=0;;++e)if(m=b(e)){var n=a.pctself(m,\"width\");if(n)m.style.width=n*100/k+\"%\"}else break}function q(e,k,m){e=b(k);var n=p(e,k),r=b(k+1),u=p(r,k+1);if(a.pctself(e,\"width\")>0&&a.pctself(r,\"width\")>0){e.style.width=\"\";f()}a.pctself(e,\"width\")==0&&c(k,n+m);a.pctself(r,\"width\")==0&&c(k+1,u-m);window.onresize()}var d=this,b=d.getColumn,l=a.getElement(s);if(l)if(!d.resizeInitialized){var t= l.firstChild,o,y,A,z;y=o=0;for(A=t.rows.length;o<A;o++){z=t.rows[o];if(z.className==\"Wt-hrh\"){var x=z.firstChild;x.ri=y-1;x.onmousedown=x.ontouchstart=function(e){h(this,this.ri,e||window.event)}}else{var C,E,G;E=C=0;for(G=z.childNodes.length;C<G;++C){x=z.childNodes[C];if(x.className==\"Wt-vrh\"){x.ci=E-1;x.onmousedown=x.ontouchstart=function(e){g(this,this.ci,e||window.event)}}else E+=x.colSpan}++y}}d.resizeInitialized=true}};";
+		return "Wt3_1_7.StdLayout.prototype.initResize = function(a,s,i){function o(e,k){if(e.offsetWidth>0)return e.offsetWidth;else{e=l.firstChild.rows[0];var m,n,r,u;r=n=0;for(u=e.childNodes.length;n<u;++n){m=e.childNodes[n];if(m.className!=\"Wt-vrh\"){if(r==k)return m.offsetWidth;r+=m.colSpan}}return 0}}function b(e,k){var m=a.getElement(s).firstChild;c(e).style.width=k+\"px\";var n,r,u,v;r=n=0;for(u=m.rows.length;n<u;n++){v=m.rows[n];if(v.className!=\"Wt-hrh\"){var w,B,D,F;D=B=0;for(F=v.childNodes.length;B< F;++B){w=v.childNodes[B];if(w.className!=\"Wt-vrh\"){if(w.colSpan==1&&D==e&&w.childNodes.length==1){v=w.firstChild;w=k-d.marginH(v);v.style.width=w+\"px\";break}D+=w.colSpan}}++r}}}function f(e,k,m){var n=e.firstChild;new a.SizeHandle(a,\"v\",n.offsetHeight,n.offsetWidth,-e.parentNode.previousSibling.offsetHeight,e.parentNode.nextSibling.offsetHeight,\"Wt-vsh\",function(r){j(e,k,r)},n,l,m,0,0)}function g(e,k,m){var n=-e.previousSibling.offsetWidth,r=e.nextSibling.offsetWidth,u=e.firstChild,v=a.pxself(t.rows[0].childNodes[0], \"paddingTop\"),w=a.pxself(t.rows[t.rows.length-1].childNodes[0],\"paddingBottom\");new a.SizeHandle(a,\"h\",u.offsetWidth,t.offsetHeight-v-w,n,r,\"Wt-hsh\",function(B){q(e,k,B)},u,l,m,0,-e.offsetTop+v-a.pxself(e,\"paddingTop\"))}function j(e,k,m){var n=e.parentNode.previousSibling;e=e.parentNode.nextSibling;var r=n.offsetHeight,u=e.offsetHeight;if(i.stretch[k]>0&&i.stretch[k+1]>0)i.stretch[k]=-1;if(i.stretch[k+1]==0)i.stretch[k+1]=-1;i.stretch[k]<=0&&d.adjustRow(n,r+m);i.stretch[k+1]<=0&&d.adjustRow(e,u-m); a.getElement(s).dirty=true;window.onresize()}function h(){var e,k=0;for(e=0;;++e){var m=c(e);if(m)k+=a.pctself(m,\"width\");else break}if(k!=0)for(e=0;;++e)if(m=c(e)){var n=a.pctself(m,\"width\");if(n)m.style.width=n*100/k+\"%\"}else break}function q(e,k,m){e=c(k);var n=o(e,k),r=c(k+1),u=o(r,k+1);if(a.pctself(e,\"width\")>0&&a.pctself(r,\"width\")>0){e.style.width=\"\";h()}a.pctself(e,\"width\")==0&&b(k,n+m);a.pctself(r,\"width\")==0&&b(k+1,u-m);window.onresize()}var d=this,c=d.getColumn,l=a.getElement(s);if(l)if(!d.resizeInitialized){var t= l.firstChild,p,y,A,z;y=p=0;for(A=t.rows.length;p<A;p++){z=t.rows[p];if(z.className==\"Wt-hrh\"){var x=z.firstChild;x.ri=y-1;x.onmousedown=x.ontouchstart=function(e){f(this,this.ri,e||window.event)}}else{var C,E,G;E=C=0;for(G=z.childNodes.length;C<G;++C){x=z.childNodes[C];if(x.className==\"Wt-vrh\"){x.ci=E-1;x.onmousedown=x.ontouchstart=function(e){g(this,this.ci,e||window.event)}}else E+=x.colSpan}++y}}d.resizeInitialized=true}};";
 	}
 
 	static String appjs1(WApplication app) {
 		return app.getJavaScriptClass()
-				+ ".layouts = new (function(){var a=[],s=false;this.add=function(i){var p,c;p=0;for(c=a.length;p<c;++p)if(a[p].getId()==i.getId()){a[p]=i;return}a.push(i)};this.adjust=function(i){if(i){if(i=$(\"#\"+i).get(0))i.dirty=true}else if(!s){s=true;for(var p=0;p<a.length;++p){i=a[p];if(!i.adjust()){i.WT.arrayRemove(a,p);--p}}s=false}}});";
+				+ ".layouts = new (function(){var a=[],s=false;this.add=function(i){var o,b;o=0;for(b=a.length;o<b;++o){var f=a[o];if(f.getId()==i.getId()){a[o]=i;return}else if(i.contains(f)){a.splice(o,0,i);return}}a.push(i)};this.adjust=function(i){if(i){if(i=$(\"#\"+i).get(0))i.dirty=true}else if(!s){s=true;for(var o=0;o<a.length;++o){i=a[o];if(!i.adjust()){i.WT.arrayRemove(a,o);--o}}s=false}}});";
 	}
 
 	static String wtjs10(WApplication app) {

@@ -152,7 +152,7 @@ public class WScrollArea extends WWebWidget {
 	}
 
 	/**
-	 * Sets the policy for both scrollbars.
+	 * Returns the policy for both scrollbars.
 	 * <p>
 	 * 
 	 * @see WScrollArea#setHorizontalScrollBarPolicy(WScrollArea.ScrollBarPolicy
@@ -167,8 +167,10 @@ public class WScrollArea extends WWebWidget {
 	}
 
 	/**
-	 * Sets the horizontal scroll bar policy.
+	 * Returns the horizontal scroll bar policy.
 	 * <p>
+	 * 
+	 * @see WScrollArea#setScrollBarPolicy(WScrollArea.ScrollBarPolicy policy)
 	 */
 	public void setHorizontalScrollBarPolicy(WScrollArea.ScrollBarPolicy policy) {
 		this.horizontalScrollBarPolicy_ = policy;
@@ -177,8 +179,10 @@ public class WScrollArea extends WWebWidget {
 	}
 
 	/**
-	 * Sets the vertical scroll bar policy.
+	 * Returns the vertical scroll bar policy.
 	 * <p>
+	 * 
+	 * @see WScrollArea#setScrollBarPolicy(WScrollArea.ScrollBarPolicy policy)
 	 */
 	public void setVerticalScrollBarPolicy(WScrollArea.ScrollBarPolicy policy) {
 		this.verticalScrollBarPolicy_ = policy;
