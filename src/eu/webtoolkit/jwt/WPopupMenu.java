@@ -250,7 +250,7 @@ public class WPopupMenu extends WCompositeWidget {
 		this.setOffsets(new WLength(42), EnumSet.of(Side.Left, Side.Top));
 		this.setOffsets(new WLength(-10000), EnumSet.of(Side.Left, Side.Top));
 		WApplication.getInstance().doJavaScript(
-				"Wt3_1_7.positionXY('" + this.getId() + "',"
+				"Wt3_1_7a.positionXY('" + this.getId() + "',"
 						+ String.valueOf(p.getX()) + ","
 						+ String.valueOf(p.getY()) + ");");
 	}

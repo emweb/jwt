@@ -1753,9 +1753,9 @@ public class WApplication extends WObject {
 		if (this.loadingIndicator_ != null) {
 			this.loadingIndicatorWidget_ = indicator.getWidget();
 			this.domRoot_.addWidget(this.loadingIndicatorWidget_);
-			this.showLoadJS.setJavaScript("function(o,e) {Wt3_1_7.inline('"
+			this.showLoadJS.setJavaScript("function(o,e) {Wt3_1_7a.inline('"
 					+ this.loadingIndicatorWidget_.getId() + "');}");
-			this.hideLoadJS.setJavaScript("function(o,e) {Wt3_1_7.hide('"
+			this.hideLoadJS.setJavaScript("function(o,e) {Wt3_1_7a.hide('"
 					+ this.loadingIndicatorWidget_.getId() + "');}");
 			this.loadingIndicatorWidget_.hide();
 		}

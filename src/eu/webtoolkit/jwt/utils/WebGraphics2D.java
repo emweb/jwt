@@ -454,8 +454,10 @@ public class WebGraphics2D extends Graphics2D {
 
 	@Override
 	public void drawOval(int x, int y, int width, int height) {
-		// TODO Auto-generated method stub
-
+		WBrush oldBrush = painter.getBrush();
+		painter.setBrush(new WBrush(WBrushStyle.NoBrush));
+		painter.drawEllipse(x, y, width, height);
+		painter.setBrush(oldBrush);
 	}
 
 	@Override

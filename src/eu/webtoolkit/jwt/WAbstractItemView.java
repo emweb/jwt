@@ -1537,6 +1537,9 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	}
 
 	WAbstractItemView.ColumnInfo columnInfo(int column) {
+		while (column >= (int) this.columns_.size()) {
+			this.columns_.add(this.createColumnInfo(this.columns_.size()));
+		}
 		return this.columns_.get(column);
 	}
 

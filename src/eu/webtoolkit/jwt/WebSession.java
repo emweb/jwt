@@ -1222,7 +1222,7 @@ class WebSession {
 				String hashE = request.getParameter(se + "_");
 				if (hashE != null) {
 					this.app_.changeInternalPath(hashE);
-					this.app_.doJavaScript("Wt3_1_7.scrollIntoView('" + hashE
+					this.app_.doJavaScript("Wt3_1_7a.scrollIntoView('" + hashE
 							+ "');");
 				}
 			} else {

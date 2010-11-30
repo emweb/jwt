@@ -106,8 +106,8 @@ public abstract class WHTML5Media extends WInteractWidget {
 			app.doJavaScript(wtjs1(app), false);
 			app.setJavaScriptLoaded(THIS_JS);
 		}
-		this.doJavaScript("new Wt3_1_7.WHTML5Media(" + app.getJavaScriptClass()
-				+ "," + this.getJsRef() + ");");
+		this.doJavaScript("new Wt3_1_7a.WHTML5Media("
+				+ app.getJavaScriptClass() + "," + this.getJsRef() + ");");
 		this.setJavaScriptMember("WtPlay", "function() {jQuery.data("
 				+ this.getJsRef() + ", 'obj').play();}");
 		this.setJavaScriptMember("WtPause", "function() {jQuery.data("
@@ -404,7 +404,7 @@ public abstract class WHTML5Media extends WInteractWidget {
 		if (this.mediaId_.length() == 0) {
 			return "null";
 		} else {
-			return "Wt3_1_7.getElement('" + this.mediaId_ + "')";
+			return "Wt3_1_7a.getElement('" + this.mediaId_ + "')";
 		}
 	}
 
@@ -415,7 +415,7 @@ public abstract class WHTML5Media extends WInteractWidget {
 			this.updateMediaDom(media, false);
 			if (this.sourcesChanged_) {
 				for (int i = 0; i < this.sourcesRendered_; ++i) {
-					media.callJavaScript("Wt3_1_7.remove('" + this.mediaId_
+					media.callJavaScript("Wt3_1_7a.remove('" + this.mediaId_
 							+ "s" + String.valueOf(i) + "');", true);
 				}
 				this.sourcesRendered_ = 0;
@@ -514,7 +514,7 @@ public abstract class WHTML5Media extends WInteractWidget {
 			element
 					.setAttribute(
 							"onerror",
-							"if(event.target.error && event.target.error.code==event.target.error.MEDIA_ERR_SRC_NOT_SUPPORTED){while (this.hasChildNodes())if (Wt3_1_7.hasTag(this.firstChild,'SOURCE')){this.removeChild(this.firstChild);}else{this.parentNode.insertBefore(this.firstChild, this);}this.style.display= 'none';}");
+							"if(event.target.error && event.target.error.code==event.target.error.MEDIA_ERR_SRC_NOT_SUPPORTED){while (this.hasChildNodes())if (Wt3_1_7a.hasTag(this.firstChild,'SOURCE')){this.removeChild(this.firstChild);}else{this.parentNode.insertBefore(this.firstChild, this);}this.style.display= 'none';}");
 		}
 		if (all || this.flagsChanged_) {
 			if (!all
@@ -645,7 +645,7 @@ public abstract class WHTML5Media extends WInteractWidget {
 			element
 					.setAttribute(
 							"onerror",
-							"var media = this.parentNode;if(media){while (media && media.children.length)if (Wt3_1_7.hasTag(media.firstChild,'SOURCE')){media.removeChild(media.firstChild);}else{media.parentNode.insertBefore(media.firstChild, media);}media.style.display= 'none';}");
+							"var media = this.parentNode;if(media){while (media && media.children.length)if (Wt3_1_7a.hasTag(media.firstChild,'SOURCE')){media.removeChild(media.firstChild);}else{media.parentNode.insertBefore(media.firstChild, media);}media.style.display= 'none';}");
 		} else {
 			element.setAttribute("onerror", "");
 		}
@@ -663,7 +663,7 @@ public abstract class WHTML5Media extends WInteractWidget {
 	private boolean playing_;
 
 	static String wtjs1(WApplication app) {
-		return "Wt3_1_7.WHTML5Media = function(c,b){jQuery.data(b,\"obj\",this);this.play=function(){if(b.mediaId){var a=$(\"#\"+b.mediaId).get(0);if(a){a.play();return}}if(b.alternativeId)(a=$(\"#\"+b.alternativeId).get(0))&&a.WtPlay&&a.WtPlay()};this.pause=function(){if(b.mediaId){var a=$(\"#\"+b.mediaId).get(0);if(a){a.pause();return}}if(b.alternativeId)(a=$(\"#\"+b.alternativeId).get(0))&&a.WtPlay&&a.WtPause()}};";
+		return "Wt3_1_7a.WHTML5Media = function(c,b){jQuery.data(b,\"obj\",this);this.play=function(){if(b.mediaId){var a=$(\"#\"+b.mediaId).get(0);if(a){a.play();return}}if(b.alternativeId)(a=$(\"#\"+b.alternativeId).get(0))&&a.WtPlay&&a.WtPlay()};this.pause=function(){if(b.mediaId){var a=$(\"#\"+b.mediaId).get(0);if(a){a.pause();return}}if(b.alternativeId)(a=$(\"#\"+b.alternativeId).get(0))&&a.WtPlay&&a.WtPause()}};";
 	}
 
 	private static String PLAYBACKSTARTED_SIGNAL = "play";

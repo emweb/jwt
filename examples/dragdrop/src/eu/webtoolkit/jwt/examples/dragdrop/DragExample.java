@@ -32,9 +32,9 @@ public class DragExample extends WContainerWidget {
         WContainerWidget pills = new WContainerWidget(this);
         pills.setContentAlignment(AlignmentFlag.AlignCenter);
 
-        createDragImage("icons/blue-pill.jpg", "pics/blue-pill-small.png",
+        createDragImage("icons/blue-pill.jpg", "icons/blue-pill-small.png",
                 "blue-pill", pills);
-        createDragImage("icons/red-pill.jpg", "pics/red-pill-small.png",
+        createDragImage("icons/red-pill.jpg", "icons/red-pill-small.png",
                 "red-pill", pills);
 
         WContainerWidget dropSites = new WContainerWidget(this);
