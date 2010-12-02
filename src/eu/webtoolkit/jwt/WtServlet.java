@@ -44,8 +44,6 @@ public abstract class WtServlet extends HttpServlet {
 	static final String Boot_html;
 	static final String Plain_html;
 	static final String Wt_js;
-	static final String CommAjax_js;
-	static final String CommScript_js;
 	static final String Hybrid_html;
 	static final String JQuery_js;
 	static final String WtMessages_xml = "eu.webtoolkit.jwt.wt";
@@ -57,8 +55,6 @@ public abstract class WtServlet extends HttpServlet {
 		Plain_html = readFile("/eu/webtoolkit/jwt/skeletons/Plain.html");
 		Hybrid_html = readFile("/eu/webtoolkit/jwt/skeletons/Hybrid.html");
 		Wt_js = readFile("/eu/webtoolkit/jwt/skeletons/Wt.min.js");
-		CommAjax_js = readFile("/eu/webtoolkit/jwt/skeletons/CommAjax.js");
-		CommScript_js = readFile("/eu/webtoolkit/jwt/skeletons/CommScript.js");
 		JQuery_js = readFile("/eu/webtoolkit/jwt/skeletons/jquery.min.js");
 		
 		servletApi = null;
