@@ -11,7 +11,7 @@
 
 <p class="p">
   This example demonstrates some of the capabilities of
-  the <a href="http://www.webtoolkit.eu/jwt/latest/doc/namespaceJWt_1_1Chart.html"
+  the <a href="http://www.webtoolkit.eu/jwt/latest/doc/javadoc/eu/webtoolkit/jwt/chart/package-frame.html"
   target="_new">JWt charting widgets</a>. These widgets are implemented
   using
   the <a href="http://www.webtoolkit.eu/jwt/latest/doc/javadoc/eu/webtoolkit/jwt/WPaintedWidget.html"
@@ -21,10 +21,10 @@
 
 <p class="p">
   The two main chart widgets are <a
-  href="http://www.webtoolkit.eu/jwt/latest/doc/javadoc/eu/webtoolkit/jwt/Chart_1_1WCartesianChart.html"
+  href="http://www.webtoolkit.eu/jwt/latest/doc/javadoc/eu/webtoolkit/jwt/chart/WCartesianChart.html"
   target="_new"><tt>WCartesianChart</tt></a>, which provides category
   charts and scatter plots, and <a
-  href="http://www.webtoolkit.eu/jwt/latest/doc/javadoc/eu/webtoolkit/jwt/Chart_1_1WPieChart.html"
+  href="http://www.webtoolkit.eu/jwt/latest/doc/javadoc/eu/webtoolkit/jwt/chart/WPieChart.html"
   target="_new"><tt>WPieChart</tt></a> which provides pie
   charts. These widgets are based on the MVC mechanism, and retrieve
   their data from a <a
@@ -35,9 +35,9 @@
 <p class="p">
   Many aspects of the charts may be customized. By default, style
   information for rendering data series are taken from a
-  <a href="http://www.webtoolkit.eu/jwt/latest/doc/javadoc/eu/webtoolkit/jwt/Chart_1_1WChartPalette.html" target="_new"><tt>WChartPalette</tt></a>. It
+  <a href="http://www.webtoolkit.eu/jwt/latest/doc/javadoc/eu/webtoolkit/jwt/chart/WChartPalette.html" target="_new"><tt>WChartPalette</tt></a>. It
   is straight forward to specialize this class to provide different
-  styles from the standard styles provided by <a href="http://www.webtoolkit.eu/jwt/latest/doc/javadoc/eu/webtoolkit/jwt/Chart_1_1WStandardPalette.html" target="_new"><tt>WStandardPalette</tt></a>.
+  styles from the standard styles provided by <a href="http://www.webtoolkit.eu/jwt/latest/doc/javadoc/eu/webtoolkit/jwt/chart/WStandardPalette.html" target="_new"><tt>WStandardPalette</tt></a>.
 </p>
 
 <p class="p">

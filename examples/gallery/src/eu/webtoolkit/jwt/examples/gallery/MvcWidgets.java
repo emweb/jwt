@@ -163,7 +163,7 @@ class MvcWidgets extends ControlsWidget {
 
 	private WWidget viewsCombo() {
 		WContainerWidget result = new WContainerWidget();
-		this.topic("WComboBox", "WSelectionBox", "Ext::ComboBox", result);
+		this.topic("WComboBox", "WSelectionBox", result);
 		new WText(tr("mvc-stringlistviews"), result);
 		new WText("<h3>WComboBox</h3>", result);
 		new WComboBox(result).setModel(this.stringList_);

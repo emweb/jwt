@@ -5,6 +5,7 @@
  */
 package eu.webtoolkit.jwt;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -88,12 +89,13 @@ public abstract class WtServlet extends HttpServlet {
 	 * @see #getConfiguration()
 	 */
 	public WtServlet() {
-		this.configuration = new Configuration();
 		this.progressListener = new ProgressListener() {
 			public void update(WebRequest request, long pBytesRead, long pContentLength) {
 				requestDataReceived(request, pBytesRead, pContentLength);
 			}
 		};
+		
+		this.configuration = new Configuration();
 	}
 	
 	/**
@@ -105,6 +107,11 @@ public abstract class WtServlet extends HttpServlet {
 	@Override
 	public void init(ServletConfig config) throws ServletException {
 		super.init(config);
+		
+		String configFile = this.getInitParameter("jwt-config-file");
+		if (configFile != null)
+			this.configuration = new Configuration(new File(configFile));
+		
 		initServletApi(config.getServletContext());
 	}
 
@@ -179,7 +186,8 @@ public abstract class WtServlet extends HttpServlet {
 	/**
 	 * Returns the JWt configuration.
 	 * <p>
-	 * You should only modify the configuration from the servlet constructor.
+	 * The Configuration is only definitively constructed after WtServlet#init() is invoked.
+	 * You should only modify the configuration from this method.
 	 * 
 	 * @return the configuration.
 	 */
@@ -321,12 +329,14 @@ public abstract class WtServlet extends HttpServlet {
 	
 	/**
 	 * Returns whether asynchronous processing is supported,
-	 * which is only the case when the servlet container implements the Servlet 3.0 API.
+	 * which is only the case when the servlet container implements the Servlet 3.0 API,
+	 * and when this application is configured to support asynchronous processing.
 	 * Asynchronous processing is required for both server push and the recursive event loop.
 	 * 
 	 * @return whether asynchronous processing is supported
 	 */
 	public static boolean isAsyncSupported() {
-		return servletApi.isAsyncSupported();
+		WebSession.Handler handler = WebSession.Handler.getInstance();
+		return servletApi.isAsyncSupported(handler != null ? handler.getRequest() : null);
 	}
 }

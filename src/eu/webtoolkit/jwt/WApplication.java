@@ -101,7 +101,8 @@ import eu.webtoolkit.jwt.servlet.*;
  */
 public class WApplication extends WObject {
 	/**
-	 * Enumeration that indicates the method for dynamic (AJAX-alike) updates.
+	 * Enumeration that indicates the method for dynamic (AJAX-alike) updates
+	 * ((<b>deprecated</b>).
 	 * <p>
 	 * 
 	 * @see WApplication#setAjaxMethod(WApplication.AjaxMethod method)
@@ -1236,7 +1237,8 @@ public class WApplication extends WObject {
 	 */
 	public void triggerUpdate() {
 		if (!WtServlet.isAsyncSupported()) {
-			throw new WtException("Server push requires a Servlet 3.0 API.");
+			throw new WtException(
+					"Server push requires a Servlet 3.0 enabled servlet container and an application with async-supported enabled.");
 		}
 		if (!this.modifiedWithoutEvent_) {
 			return;
@@ -1323,9 +1325,26 @@ public class WApplication extends WObject {
 	 * calling this method from the auxiliary thread, and in this way you can
 	 * modify the application from within that thread without needing the update
 	 * lock.
+	 * <p>
+	 * Calling {@link WApplication#attachThread(boolean attach) attachThread()}
+	 * with <code>attach</code> = <code>false</code>, detaches the current
+	 * thread.
 	 */
-	public void attachThread() {
-		WebSession.Handler.attachThreadToSession(this.session_);
+	public void attachThread(boolean attach) {
+		if (attach) {
+			WebSession.Handler.attachThreadToSession(this.session_);
+		} else {
+			WebSession.Handler.attachThreadToSession((WebSession) null);
+		}
+	}
+
+	/**
+	 * Attach an auxiliary thread to this application.
+	 * <p>
+	 * Calls {@link #attachThread(boolean attach) attachThread(true)}
+	 */
+	public final void attachThread() {
+		attachThread(true);
 	}
 
 	/**
@@ -1483,26 +1502,22 @@ public class WApplication extends WObject {
 	}
 
 	/**
-	 * Sets the Ajax communication method.
+	 * Sets the Ajax communication method (<b>deprecated</b>).
 	 * <p>
-	 * You may change the communication method only from within the application
-	 * constructor.
+	 * This method has no effect.
 	 * <p>
-	 * The default method depends on your application deployment type.
+	 * Since {@link } 3.1.8, a communication method that works is detected at run
+	 * time. For widget set mode, cross-domain Ajax is chosen if available.
 	 * <p>
-	 * For plain applications, {@link WApplication.AjaxMethod#XMLHttpRequest
-	 * XMLHttpRequest} is used, while for WidgetSet applications,
-	 * {@link WApplication.AjaxMethod#DynamicScriptTag DynamicScriptTag} is
-	 * used. The latter is less efficient, but has the benefit to allow serving
-	 * the application from a different server than the page that hosts the
-	 * embedded widgets.
+	 * 
+	 * @deprecated this setting is no longer needed.
 	 */
 	public void setAjaxMethod(WApplication.AjaxMethod method) {
 		this.ajaxMethod_ = method;
 	}
 
 	/**
-	 * Returns the Ajax communication method.
+	 * Returns the Ajax communication method (<b>deprecated</b>).
 	 * <p>
 	 * 
 	 * @see WApplication#setAjaxMethod(WApplication.AjaxMethod method)
@@ -1541,7 +1556,7 @@ public class WApplication extends WObject {
 		if (url.length() > 0 && url.charAt(0) == '#') {
 			return url;
 		}
-		if (this.ajaxMethod_ == WApplication.AjaxMethod.XMLHttpRequest) {
+		if (this.session_.getType() == EntryPointType.Application) {
 			if (!this.getEnvironment().hasJavaScript()
 					&& WebSession.Handler.getInstance().getRequest()
 							.getPathInfo().length() != 0) {
@@ -2262,7 +2277,7 @@ public class WApplication extends WObject {
 
 	String addExposedResource(WResource resource, String internalPath) {
 		this.exposedResources_.put(this.resourceMapKey(resource), resource);
-		String fn = resource.getSuggestedFileName();
+		String fn = resource.getSuggestedFileName().toString();
 		if (fn.length() != 0 && fn.charAt(0) != '/') {
 			fn = '/' + fn;
 		}

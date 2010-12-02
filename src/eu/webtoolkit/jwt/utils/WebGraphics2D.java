@@ -84,6 +84,8 @@ public class WebGraphics2D extends Graphics2D {
 		this.currentPenStyle = painter.getPen().getStyle();
 		this.font = new Font("SansSerif", Font.PLAIN, 12);
 		this.renderingHints = new RenderingHints(null);
+
+		painter.translate(0.5, 0.5);
 		
 		fontGraphics.setFont(font);
 	}
@@ -337,7 +339,7 @@ public class WebGraphics2D extends Graphics2D {
 			}
 			pen.setWidth(new WLength(width));
 		}
-		
+
 		pen.setStyle(currentPenStyle);
 		painter.setPen(pen);
 	}
@@ -741,17 +743,17 @@ public class WebGraphics2D extends Graphics2D {
 			case PathIterator.SEG_MOVETO:
 				if (!path.isEmpty()) {
 					WPointF currentPosition = path.getCurrentPosition();
-					if (currentPosition.getX() != round(coords[0])
-						&& currentPosition.getY() != round(coords[1])) {
+					if (currentPosition.getX() != coords[0]
+						&& currentPosition.getY() != coords[1]) {
 						path = new WPainterPath();
 						paths.add(path);
-						path.moveTo(round(coords[0]), round(coords[1]));
+						path.moveTo(coords[0], coords[1]);
 					}
 				} else
-					path.moveTo(round(coords[0]), round(coords[1]));					
+					path.moveTo(coords[0], coords[1]);					
 				break;
 			case PathIterator.SEG_LINETO:
-				path.lineTo(round(coords[0]), round(coords[1]));
+				path.lineTo(coords[0], coords[1]);
 				break;
 			case PathIterator.SEG_QUADTO:
 				path.quadTo(coords[0], coords[1], coords[2], coords[3]);
@@ -760,7 +762,9 @@ public class WebGraphics2D extends Graphics2D {
 				path.cubicTo(coords[0], coords[1], coords[2], coords[3], coords[4], coords[5]);
 				break;				
 			case PathIterator.SEG_CLOSE:
-				path.closeSubPath();
+			    {
+			    	path.closeSubPath();
+			    }
 			}
 			
 			it.next();
@@ -828,8 +832,4 @@ public class WebGraphics2D extends Graphics2D {
 		// TODO Auto-generated method stub
 
 	}
-	
-    private double round(double f) {
-    	return Math.round(f) + 0.5;
-    }
 }

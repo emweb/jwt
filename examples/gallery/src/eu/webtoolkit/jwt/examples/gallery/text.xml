@@ -14,7 +14,7 @@
     <p>
       They are often used to build more complex composite
       widgets. JWt's widgets all inherit from <a
-      href="/jwt/latest/doc/javadoc/eu/webtoolkit/jwt/WWidget.html"><tt>WWidget</tt></a>. Widgets
+      href="http://www.webtoolkit.eu/jwt/latest/doc/javadoc/eu/webtoolkit/jwt/WWidget.html"><tt>WWidget</tt></a>. Widgets
       are rendered by inserting them in the widget tree
       hierarchy. You have the following possibilities to structurally organize your widgets:
       <ul>
@@ -44,10 +44,10 @@
     <p>
       User interaction can be implemented using JWt's signal/slot
       implementation. You may respond to CGI post-backs or JavaScript
-      events by connecting C++ method invocations to corresponding
+      events by connecting Java method invocations to corresponding
       <i>signals</i> exposed by widgets. For example, the descendants
       of <a
-      href="/jwt/latest/doc/javadoc/eu/webtoolkit/jwt/WInteractWidget.html"><tt>WInteractWidget</tt></a>
+      href="http://www.webtoolkit.eu/jwt/latest/doc/javadoc/eu/webtoolkit/jwt/WInteractWidget.html"><tt>WInteractWidget</tt></a>
       emit events such as key events (<tt>keyPressed()</tt>,
       <tt>keyWentDown()</tt>, <tt>keyWentUp()</tt>, ...) and mouse
       events (<tt>clicked()</tt>, <tt>doubleClicked()</tt>, but also
@@ -60,7 +60,7 @@
       In this widget demo application, occasionally selected events
       are demonstrated and shown in the event window at the bottom of
       the browser window. <a
-      href="/jwt/latest/doc/index.html">The reference
+      href="http://www.webtoolkit.eu/jwt/latest/doc/javadoc">The reference
       manual</a> provides a complete reference API reference for each
       widget, including all events implemented by a widget.
     </p>
@@ -86,16 +86,16 @@
 
     <p>
       <tt>WText</tt> displays a <a
-      href="/jwt/latest/doc/javadoc/eu/webtoolkit/jwt/WString.html"
+      href="http://www.webtoolkit.eu/jwt/latest/doc/javadoc/eu/webtoolkit/jwt/WString.html"
       target="_blank">WString</a>. This string class provides at the
       same time support for localization and internationalization:
       <ul>
 	<li>it implements a Unicode string (internally representated
 	as UTF-8).</li>
 	<li>it implements a localizable string (see also <a
-	href="/jwt/latest/doc/javadoc/eu/webtoolkit/jwt/WString.html#0afc7dc0f9897456d71b569a86ca26c1" target="_blank">WString.tr()</a>). The
+	href="http://www.webtoolkit.eu/jwt/latest/doc/javadoc/eu/webtoolkit/jwt/WString.html#0afc7dc0f9897456d71b569a86ca26c1" target="_blank">WString.tr()</a>). The
 	actual value corresponding to a key is retrieved from a <a
-	href="/jwt/latest/doc/javadoc/eu/webtoolkit/jwt/WLocalizedStrings.html"
+	href="http://www.webtoolkit.eu/jwt/latest/doc/javadoc/eu/webtoolkit/jwt/WLocalizedStrings.html"
 	target="_blank">WLocalizedStrings</a> instance, taking into
 	account the current locale. The default implementation of this
 	interface class uses XML files, which are convenient for
@@ -165,7 +165,7 @@
     <p>
       Although the functionality of <tt>WText</tt> is very basic, it
       derives, like many widgets, from <a
-      href="/jwt/latest/doc/javadoc/eu/webtoolkit/jwt/WInteractWidget.html">WInteractWidget</a>
+      href="http://www.webtoolkit.eu/jwt/latest/doc/javadoc/eu/webtoolkit/jwt/WInteractWidget.html">WInteractWidget</a>
       and thus may respond to mouse events, and keyboard events if it
       can be given keyboard focus. A few mouse events are demonstrated
       below.
@@ -208,13 +208,13 @@
     <p>
       You may specify the anchor's target URL directly, but anchors
       can also be pointed to a <a
-      href="/jwt/latest/doc/javadoc/eu/webtoolkit/jwt/WResource.html"
+      href="http://www.webtoolkit.eu/jwt/latest/doc/javadoc/eu/webtoolkit/jwt/WResource.html"
       target="_blank">WResource</a>. This allows you to serve
       auxiliary files related to a particular application session, and
       perhaps dynamically generate the content. JWt includes <a
-      href="/jwt/latest/doc/javadoc/eu/webtoolkit/jwt/WFileResource.html"
+      href="http://www.webtoolkit.eu/jwt/latest/doc/javadoc/eu/webtoolkit/jwt/WFileResource.html"
       target="_blank">WFileResource</a> to stream a file and <a
-      href="/jwt/latest/doc/javadoc/eu/webtoolkit/jwt/WMemoryResource.html"
+      href="http://www.webtoolkit.eu/jwt/latest/doc/javadoc/eu/webtoolkit/jwt/WMemoryResource.html"
       target="_blank">WMemoryResource</a> to stream a data vector.
     </p>
     
@@ -293,13 +293,13 @@
 
     <p>
       The <tt>WTable</tt> widget uses the companion classes <a
-      href="/jwt/latest/doc/javadoc/eu/webtoolkit/jwt/WTableRow.html"
+      href="http://www.webtoolkit.eu/jwt/latest/doc/javadoc/eu/webtoolkit/jwt/WTableRow.html"
       target="_blank">WTableRow</a> and <a
-      href="/jwt/latest/doc/javadoc/eu/webtoolkit/jwt/WTableColumn.html"
+      href="http://www.webtoolkit.eu/jwt/latest/doc/javadoc/eu/webtoolkit/jwt/WTableColumn.html"
       target="_blank">WTableColumn</a> to represent table rows
       (<tt>&lt;tr&gt;</tt>) and columns (<tt>&lt;td&gt;</tt>). Each
       table cell corresponds to a <a
-      href="/jwt/latest/doc/javadoc/eu/webtoolkit/jwt/WTableCell.html"
+      href="http://www.webtoolkit.eu/jwt/latest/doc/javadoc/eu/webtoolkit/jwt/WTableCell.html"
       target="_blank">WTableCell</a> widget, which is a specialized
       <tt>WContainerWidget</tt>.
     </p>
@@ -321,8 +321,9 @@
       href="#/style-and-layout/wgridlayout"><tt>WGridLayout</tt></a>
       layout class instead. If you wish to present a lot of data in a
       table, you can also use one of the Model-View-Classes (<a
-      href="#/mvc-widgets/wtreeview"><tt>WTreeView</tt></a> or <a
-      href="#/mvc-widgets/ext__tableview"><tt>Ext.TableView</tt></a>), as
+      href="#/mvc-widgets/wtreeview"><tt>WTreeView</tt></a>,
+      <a href="#/mvc-widgets/wtableview"><tt>WTableView</tt></a> or 
+      <a href="#/mvc-widgets/ext__tableview"><tt>Ext.TableView</tt></a>), as
       these may offer a higher performance and other benefits such as
       controls for interactive column resizing and headers.
     </p>
@@ -339,7 +340,7 @@
       The tree supports several options for progressively loading the
       tree contents, and all expand/collapse behaviour is optimized to
       client-side when JavaScript is available (although the entire tree
-      is implemented purely in C++).
+      is implemented purely in Java).
     </p>
 
     <p>
@@ -350,7 +351,7 @@
 
     <p>
       This example also uses a small class called <a
-      href="/jwt/latest/doc/javadoc/eu/webtoolkit/jwt/WIconPair.html"
+      href="http://www.webtoolkit.eu/jwt/latest/doc/javadoc/eu/webtoolkit/jwt/WIconPair.html"
       target="_blank"><tt>WIconPair</tt></a>, which provides an easy interface
       to showing one of two icons.
     </p>
@@ -487,9 +488,9 @@
 
     <p>
       You can create items with submenus by using the <a
-      href="/jwt/latest/doc/javadoc/eu/webtoolkit/jwt/WSubMenuItem.html"><tt>WSubMenuItem</tt></a>
+      href="http://www.webtoolkit.eu/jwt/latest/doc/javadoc/eu/webtoolkit/jwt/WSubMenuItem.html"><tt>WSubMenuItem</tt></a>
       rather than the default <a
-      href="/jwt/latest/doc/javadoc/eu/webtoolkit/jwt/WMenuItem.html"
+      href="http://www.webtoolkit.eu/jwt/latest/doc/javadoc/eu/webtoolkit/jwt/WMenuItem.html"
       target="_blank"><tt>WMenuItem</tt></a>.
     </p>
 
@@ -883,7 +884,7 @@ In contrast to a WTextEdit, which is a HTML editor and has rich text editing fun
       The Ext radio button looks like this, and behaves similar to <a
       href="#/form-widgets/wradiobutton">JWt's native radio button</a>.
       <tt>Ext.RadioButton</tt> must be added to a <a
-      href="/jwt/latest/doc/javadoc/eu/webtoolkit/jwt/WButtonGroup.html">
+      href="http://www.webtoolkit.eu/jwt/latest/doc/javadoc/eu/webtoolkit/jwt/WButtonGroup.html">
       <tt>WButtonGroup</tt></a> to give them their typical exclusive
       selection behavior. The following radio buttons all belong to
       the same button group.
@@ -962,7 +963,7 @@ In contrast to a WTextEdit, which is a HTML editor and has rich text editing fun
     <p>
       The example uses a custom cursor image (pencil), this is done by
       providing a cursor image to <a
-      href="/jwt/latest/doc/javadoc/eu/webtoolkit/jwt/WCssDecorationStyle.html"
+      href="http://www.webtoolkit.eu/jwt/latest/doc/javadoc/eu/webtoolkit/jwt/WCssDecorationStyle.html"
       target="_blank"><tt>WCssDecorationStyle</tt></a>.
     </p>
   </message>
@@ -1317,7 +1318,7 @@ In contrast to a WTextEdit, which is a HTML editor and has rich text editing fun
       of the model. They can be seen in action in
       <a href="#/charts/pie-charts">the Charts section</a> of this
       demo. Click on any value in a table to modify the model using
-      editing provided by <a href="/jwt/latest/doc/javadoc/eu/webtoolkit/jwt/WItemDelegate.html">WItemDelegate</a>. The
+      editing provided by <a href="http://www.webtoolkit.eu/jwt/latest/doc/javadoc/eu/webtoolkit/jwt/WItemDelegate.html">WItemDelegate</a>. The
       table and the chart are both views on the same model; the
       changes in the model are immediately reflected in the charts
       too.
@@ -1335,7 +1336,7 @@ In contrast to a WTextEdit, which is a HTML editor and has rich text editing fun
       do. When listening for these events, the browser forwards these
       events to the server, and the slots bound to the corresponding
       signals are invoked. As such, a JWt application can react to
-      events entirely in C++ code.
+      events entirely in Java code.
     </p>
     <p>
       Specific widgets emit of course events specific to their
@@ -1350,7 +1351,7 @@ In contrast to a WTextEdit, which is a HTML editor and has rich text editing fun
       of the client-side event handling (avoids round-trip to the
       server) and how to write your own JavaScript events, please take
       a look in the
-      <a href="/jwt/latest/doc/overview.html" target="_blank">
+      <a href="http://www.webtoolkit.eu/jwt/latest/doc/userguide/userguide.html" target="_blank">
       library overview</a>.
     </p>
   </message>
@@ -1360,7 +1361,7 @@ In contrast to a WTextEdit, which is a HTML editor and has rich text editing fun
       The <tt>WKeyEvent</tt> provides detailed information for a
       keyboard event. Type in the line edits below to demonstrate the
       events. In general, keyboard events can be generated by every <a
-      href="/jwt/latest/doc/javadoc/eu/webtoolkit/jwt/WInteractWidget.html"
+      href="http://www.webtoolkit.eu/jwt/latest/doc/javadoc/eu/webtoolkit/jwt/WInteractWidget.html"
       target="_blank">WInteractWidget</a>, provided that either the
       widget itself has keyboard focus, or one of its children. While
       form widgets can receive keyboard focus out of the box, this
@@ -1394,7 +1395,7 @@ In contrast to a WTextEdit, which is a HTML editor and has rich text editing fun
       <tt>WMouseEvent</tt> gives detailed information for signals
       related to mouse operations. Mouse events can be intercepted
       from any <a
-      href="/jwt/latest/doc/javadoc/eu/webtoolkit/jwt/WInteractWidget.html"><tt>
+      href="http://www.webtoolkit.eu/jwt/latest/doc/javadoc/eu/webtoolkit/jwt/WInteractWidget.html"><tt>
       WInteractWidget</tt></a>.
     </p>
     <p>

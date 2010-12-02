@@ -363,7 +363,7 @@ class WebSession {
 		try {
 			if (!WtServlet.isAsyncSupported()) {
 				throw new WtException(
-						"Recursive event loop requires a Servlet 3.0 API.");
+						"Server push requires a Servlet 3.0 enabled servlet container and an application with async-supported enabled.");
 			}
 			WebSession.Handler handler = WebSession.Handler.getInstance();
 			if (handler.getRequest() != null) {
@@ -766,39 +766,131 @@ class WebSession {
 
 	public void handleRequest(WebSession.Handler handler) throws IOException {
 		WebRequest request = handler.getRequest();
+		String wtdE = request.getParameter("wtd");
+		String origin = request.getHeaderValue("Origin");
+		if (origin.length() != 0) {
+			if (wtdE != null && wtdE.equals(this.sessionId_)
+					&& this.state_ != WebSession.State.JustCreated) {
+				handler.getResponse().addHeader("Access-Control-Allow-Origin",
+						"*");
+				if (request.getRequestMethod().equals("OPTIONS")) {
+					WebResponse response = handler.getResponse();
+					response.setStatus(200);
+					response.addHeader("Access-Control-Allow-Methods",
+							"POST, OPTIONS");
+					response.addHeader("Access-Control-Max-Age", "1728000");
+					response.flush();
+					return;
+				}
+			} else {
+				if (request.isWebSocketRequest()) {
+					handler.getResponse().flush();
+					return;
+				}
+			}
+		}
 		if (request.isWebSocketRequest()) {
 			this.handleWebSocketRequest(handler);
 			return;
 		}
 		Configuration conf = this.controller_.getConfiguration();
-		String wtdE = request.getParameter("wtd");
 		String requestE = request.getParameter("request");
 		handler.getResponse().setResponseType(WebRequest.ResponseType.Page);
 		if (!(requestE != null && requestE.equals("resource")
 				|| request.getRequestMethod().equals("POST") || request
 				.getRequestMethod().equals("GET"))) {
 			handler.getResponse().setStatus(400);
+			handler.getResponse().flush();
+			return;
+		}
+		if ((!(wtdE != null) || !wtdE.equals(this.sessionId_))
+				&& this.state_ != WebSession.State.JustCreated
+				&& (requestE != null && (requestE.equals("jsupdate") || requestE
+						.equals("resource")))) {
+			handler.getResponse().setContentType("text/html");
+			handler.getResponse().out().append(
+					"<html><head></head><body>CSRF prevention</body></html>");
 		} else {
-			if ((!(wtdE != null) || !wtdE.equals(this.sessionId_))
-					&& this.state_ != WebSession.State.JustCreated
-					&& (requestE != null && (requestE.equals("jsupdate") || requestE
-							.equals("resource")))) {
-				handler.getResponse().setContentType("text/html");
-				handler
-						.getResponse()
-						.out()
-						.append(
-								"<html><head></head><body>CSRF prevention</body></html>");
-			} else {
-				try {
-					switch (this.state_) {
-					case JustCreated: {
-						switch (this.type_) {
-						case Application: {
-							this.init(request);
-							if (requestE != null) {
-								if (requestE.equals("jsupdate")
-										|| requestE.equals("script")) {
+			try {
+				switch (this.state_) {
+				case JustCreated: {
+					switch (this.type_) {
+					case Application: {
+						this.init(request);
+						if (requestE != null) {
+							if (requestE.equals("jsupdate")
+									|| requestE.equals("script")) {
+								handler.getResponse().setResponseType(
+										WebRequest.ResponseType.Update);
+								this
+										.log("notice")
+										.append(
+												"Signal from dead session, sending reload.");
+								this.renderer_.letReloadJS(handler
+										.getResponse(), true);
+								this.kill();
+								break;
+							} else {
+								if (requestE.equals("resource")) {
+									this
+											.log("notice")
+											.append(
+													"Not serving bootstrap for resource.");
+									handler.getResponse().setContentType(
+											"text/html");
+									handler
+											.getResponse()
+											.out()
+											.append(
+													"<html><head></head><body></body></html>");
+									this.kill();
+									break;
+								}
+							}
+						}
+						boolean forcePlain = this.env_.agentIsSpiderBot()
+								|| !this.env_.agentSupportsAjax();
+						this.progressiveBoot_ = !forcePlain
+								&& conf.progressiveBootstrap();
+						if (forcePlain || this.progressiveBoot_) {
+							this.env_.doesAjax_ = false;
+							this.env_.doesCookies_ = false;
+							try {
+								String internalPath = this.env_
+										.getCookie("WtInternalPath");
+								this.env_.setInternalPath(internalPath);
+							} catch (RuntimeException e) {
+							}
+							if (!this.start()) {
+								throw new WtException(
+										"Could not start application.");
+							}
+							this.app_.notify(new WEvent(handler));
+							this.setLoaded();
+							if (this.env_.agentIsSpiderBot()) {
+								this.kill();
+							}
+						} else {
+							this.serveResponse(handler);
+							this.setState(WebSession.State.Loaded, 10);
+						}
+						break;
+					}
+					case WidgetSet:
+						if (requestE != null) {
+							String resourceE = request.getParameter("resource");
+							if (requestE.equals("resource")
+									&& resourceE != null
+									&& resourceE.equals("blank")) {
+								handler.getResponse().setContentType(
+										"text/html");
+								handler
+										.getResponse()
+										.out()
+										.append(
+												"<html><head><title>bhm</title></head><body>&#160;</body></html>");
+							} else {
+								if (requestE.equals("jsupdate")) {
 									handler.getResponse().setResponseType(
 											WebRequest.ResponseType.Update);
 									this
@@ -807,8 +899,6 @@ class WebSession {
 													"Signal from dead session, sending reload.");
 									this.renderer_.letReloadJS(handler
 											.getResponse(), true);
-									this.kill();
-									break;
 								} else {
 									if (requestE.equals("resource")) {
 										this
@@ -822,40 +912,11 @@ class WebSession {
 												.out()
 												.append(
 														"<html><head></head><body></body></html>");
-										this.kill();
-										break;
 									}
 								}
 							}
-							boolean forcePlain = this.env_.agentIsSpiderBot()
-									|| !this.env_.agentSupportsAjax();
-							this.progressiveBoot_ = !forcePlain
-									&& conf.progressiveBootstrap();
-							if (forcePlain || this.progressiveBoot_) {
-								this.env_.doesAjax_ = false;
-								this.env_.doesCookies_ = false;
-								try {
-									String internalPath = this.env_
-											.getCookie("WtInternalPath");
-									this.env_.setInternalPath(internalPath);
-								} catch (RuntimeException e) {
-								}
-								if (!this.start()) {
-									throw new WtException(
-											"Could not start application.");
-								}
-								this.app_.notify(new WEvent(handler));
-								this.setLoaded();
-								if (this.env_.agentIsSpiderBot()) {
-									this.kill();
-								}
-							} else {
-								this.serveResponse(handler);
-								this.setState(WebSession.State.Loaded, 10);
-							}
-							break;
-						}
-						case WidgetSet:
+							this.kill();
+						} else {
 							handler.getResponse().setResponseType(
 									WebRequest.ResponseType.Script);
 							this.init(request);
@@ -866,121 +927,115 @@ class WebSession {
 							}
 							this.app_.notify(new WEvent(handler));
 							this.setLoaded();
-							break;
-						default:
-							assert false;
 						}
 						break;
+					default:
+						assert false;
 					}
-					case Loaded: {
-						if (requestE != null) {
-							if (requestE.equals("jsupdate")) {
+					break;
+				}
+				case Loaded: {
+					if (requestE != null) {
+						if (requestE.equals("jsupdate")) {
+							handler.getResponse().setResponseType(
+									WebRequest.ResponseType.Update);
+						} else {
+							if (requestE.equals("script")) {
 								handler.getResponse().setResponseType(
-										WebRequest.ResponseType.Update);
-							} else {
-								if (requestE.equals("script")) {
-									handler.getResponse().setResponseType(
-											WebRequest.ResponseType.Script);
-								}
+										WebRequest.ResponseType.Script);
 							}
 						}
-						if (!(this.app_ != null)) {
-							String resourceE = request.getParameter("resource");
-							if (handler.getResponse().getResponseType() == WebRequest.ResponseType.Script) {
-								String hashE = request.getParameter("_");
-								String scaleE = request.getParameter("scale");
-								this.env_.doesAjax_ = true;
-								this.env_.doesCookies_ = request
-										.getHeaderValue("Cookie").length() != 0;
-								try {
-									this.env_.dpiScale_ = scaleE != null ? Double
-											.parseDouble(scaleE)
-											: 1;
-								} catch (NumberFormatException e) {
-									this.env_.dpiScale_ = 1;
-								}
-								if (hashE != null) {
-									this.env_.setInternalPath(hashE);
-								}
-								if (!this.start()) {
-									throw new WtException(
-											"Could not start application.");
-								}
+					}
+					if (!(this.app_ != null)) {
+						String resourceE = request.getParameter("resource");
+						if (handler.getResponse().getResponseType() == WebRequest.ResponseType.Script) {
+							String hashE = request.getParameter("_");
+							String scaleE = request.getParameter("scale");
+							this.env_.doesAjax_ = true;
+							this.env_.doesCookies_ = request.getHeaderValue(
+									"Cookie").length() != 0;
+							try {
+								this.env_.dpiScale_ = scaleE != null ? Double
+										.parseDouble(scaleE) : 1;
+							} catch (NumberFormatException e) {
+								this.env_.dpiScale_ = 1;
+							}
+							if (hashE != null) {
+								this.env_.setInternalPath(hashE);
+							}
+							if (!this.start()) {
+								throw new WtException(
+										"Could not start application.");
+							}
+						} else {
+							if (requestE != null && requestE.equals("resource")
+									&& resourceE != null
+									&& resourceE.equals("blank")) {
+								handler.getResponse().setContentType(
+										"text/html");
+								handler
+										.getResponse()
+										.out()
+										.append(
+												"<html><head><title>bhm</title></head><body>&#160;</body></html>");
+								break;
 							} else {
-								if (requestE != null
-										&& requestE.equals("resource")
-										&& resourceE != null
-										&& resourceE.equals("blank")) {
-									handler.getResponse().setContentType(
-											"text/html");
-									handler
-											.getResponse()
-											.out()
-											.append(
-													"<html><head><title>bhm</title></head><body>&#160;</body></html>");
-									break;
-								} else {
-									String jsE = request.getParameter("js");
-									if (jsE != null && jsE.equals("no")) {
-										if (!this.start()) {
-											throw new WtException(
-													"Could not start application.");
-										}
-									} else {
-										if (!conf.isReloadIsNewSession()
-												&& wtdE != null
-												&& wtdE.equals(this.sessionId_)) {
-											this.serveResponse(handler);
-											this
-													.setState(
-															WebSession.State.Loaded,
-															10);
-										} else {
-											handler
-													.getResponse()
-													.setContentType("text/html");
-											handler
-													.getResponse()
-													.out()
-													.append(
-															"<html><body><h1>Refusing to respond.</h1></body></html>");
-										}
-										break;
+								String jsE = request.getParameter("js");
+								if (jsE != null && jsE.equals("no")) {
+									if (!this.start()) {
+										throw new WtException(
+												"Could not start application.");
 									}
+								} else {
+									if (!conf.isReloadIsNewSession()
+											&& wtdE != null
+											&& wtdE.equals(this.sessionId_)) {
+										this.serveResponse(handler);
+										this.setState(WebSession.State.Loaded,
+												10);
+									} else {
+										handler.getResponse().setContentType(
+												"text/html");
+										handler
+												.getResponse()
+												.out()
+												.append(
+														"<html><body><h1>Refusing to respond.</h1></body></html>");
+									}
+									break;
 								}
 							}
 						}
-						boolean requestForResource = requestE != null
-								&& requestE.equals("resource");
-						if (requestForResource
-								|| !this.isUnlockRecursiveEventLoop()) {
-							this.app_.notify(new WEvent(handler));
-							if (handler.getResponse() != null
-									&& !requestForResource) {
-								this.app_.notify(new WEvent(handler, true));
-							}
+					}
+					boolean requestForResource = requestE != null
+							&& requestE.equals("resource");
+					if (requestForResource
+							|| !this.isUnlockRecursiveEventLoop()) {
+						this.app_.notify(new WEvent(handler));
+						if (handler.getResponse() != null
+								&& !requestForResource) {
+							this.app_.notify(new WEvent(handler, true));
 						}
-						this.setLoaded();
-						break;
 					}
-					case Dead:
-						throw new WtException(
-								"Internal error: WebSession is dead?");
-					}
-				} catch (WtException e) {
-					this.log("fatal").append(e.toString());
-					e.printStackTrace();
-					this.kill();
-					if (handler.getResponse() != null) {
-						this.serveError(handler, e.toString());
-					}
-				} catch (RuntimeException e) {
-					this.log("fatal").append(e.toString());
-					e.printStackTrace();
-					this.kill();
-					if (handler.getResponse() != null) {
-						this.serveError(handler, e.toString());
-					}
+					this.setLoaded();
+					break;
+				}
+				case Dead:
+					throw new WtException("Internal error: WebSession is dead?");
+				}
+			} catch (WtException e) {
+				this.log("fatal").append(e.toString());
+				e.printStackTrace();
+				this.kill();
+				if (handler.getResponse() != null) {
+					this.serveError(handler, e.toString());
+				}
+			} catch (RuntimeException e) {
+				this.log("fatal").append(e.toString());
+				e.printStackTrace();
+				this.kill();
+				if (handler.getResponse() != null) {
+					this.serveError(handler, e.toString());
 				}
 			}
 		}

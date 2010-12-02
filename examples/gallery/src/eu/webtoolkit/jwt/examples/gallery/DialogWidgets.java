@@ -53,7 +53,8 @@ class DialogWidgets extends ControlsWidget {
 		new WText(tr("dialogs-WMessageBox"), result);
 		WContainerWidget ex = new WContainerWidget(result);
 		WVBoxLayout vLayout = new WVBoxLayout();
-		ex.setLayout(vLayout, EnumSet.of(AlignmentFlag.AlignTop));
+		ex.setLayout(vLayout, EnumSet.of(AlignmentFlag.AlignTop,
+				AlignmentFlag.AlignLeft));
 		vLayout.setContentsMargins(0, 0, 0, 0);
 		vLayout.setSpacing(3);
 		WPushButton button;
@@ -139,7 +140,6 @@ class DialogWidgets extends ControlsWidget {
 
 	private void customModal() {
 		final WDialog dialog = new WDialog("Personalia (modal)");
-		dialog.setModal(true);
 		new WText(
 				"You can freely format the contents of a WDialog by adding any widget you want to it.<br/>Here, we added WText, WLineEdit and WPushButton to a dialog",
 				dialog.getContents());

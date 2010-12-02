@@ -106,6 +106,16 @@ public class Configuration {
 					node = elements.item(i);
 					if (node.getNodeName().equalsIgnoreCase("debug")) {
 						setDebug(parseBoolean(errorMessage, node));
+					} else if (node.getNodeName().equalsIgnoreCase("properties")) {
+						NodeList properties = node.getChildNodes();
+						for (int j = 0; j < properties.getLength(); j++) { 
+							Node n = properties.item(j);
+							if (n.getNodeName().equals("property")) {
+								Node propertyName = n.getAttributes().getNamedItem("name");
+								if (propertyName != null)
+									properties_.put(propertyName.getTextContent().trim(), n.getTextContent().trim());
+							}
+						}
 					} else if (node.getNodeName().equalsIgnoreCase("log-file")) {
 						try {
 							setLogger(new WLogger(new FileOutputStream(node.getTextContent().trim())));

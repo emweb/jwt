@@ -913,7 +913,7 @@ public class WChart2DRenderer {
 	protected void iterateSeries(SeriesIterator iterator, boolean reverseStacked) {
 		List<WDataSeries> series = this.chart_.getSeries();
 		WAbstractItemModel model = this.chart_.getModel();
-		int rows = model.getRowCount();
+		int rows = model != null ? model.getRowCount() : 0;
 		double groupWidth;
 		int numBarGroups;
 		int currentBarGroup;

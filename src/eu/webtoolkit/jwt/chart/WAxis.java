@@ -797,6 +797,10 @@ public class WAxis {
 		final double SEGMENT_MARGIN = 40;
 		totalRenderLength -= SEGMENT_MARGIN * (this.segments_.size() - 1)
 				+ clipMin + clipMax;
+		int rc = 0;
+		if (this.chart_.getModel() != null) {
+			rc = this.chart_.getModel().getRowCount();
+		}
 		for (int it = 0; it < 2; ++it) {
 			double rs = totalRenderStart;
 			double TRR = totalRenderRange;
@@ -811,9 +815,8 @@ public class WAxis {
 					if (this.renderInterval_ == 0) {
 						if (this.scale_ == AxisScale.CategoryScale) {
 							double numLabels = this.calcAutoNumLabels(s) / 1.5;
-							this.renderInterval_ = Math.max(1.0, Math
-									.floor(this.chart_.getModel().getRowCount()
-											/ numLabels));
+							this.renderInterval_ = Math.max(1.0, Math.floor(rc
+									/ numLabels));
 						} else {
 							if (this.scale_ == AxisScale.LinearScale) {
 								double numLabels = this.calcAutoNumLabels(s);
@@ -846,9 +849,13 @@ public class WAxis {
 	}
 
 	private void computeRange(WChart2DRenderer renderer, WAxis.Segment segment) {
+		int rc = 0;
+		if (this.chart_.getModel() != null) {
+			rc = this.chart_.getModel().getRowCount();
+		}
 		if (this.scale_ == AxisScale.CategoryScale) {
 			segment.renderMinimum = -0.5;
-			segment.renderMaximum = this.chart_.getModel().getRowCount() - 0.5;
+			segment.renderMaximum = rc - 0.5;
 		} else {
 			segment.renderMinimum = segment.minimum;
 			segment.renderMaximum = segment.maximum;
@@ -861,7 +868,7 @@ public class WAxis {
 					int dataColumn = this.chart_.XSeriesColumn();
 					if (dataColumn != -1) {
 						WAbstractItemModel model = this.chart_.getModel();
-						for (int i = 0; i < model.getRowCount(); ++i) {
+						for (int i = 0; i < rc; ++i) {
 							double v = this.getValue(model.getData(i,
 									dataColumn));
 							if (Double.isNaN(v)) {
@@ -1017,13 +1024,17 @@ public class WAxis {
 	void getLabelTicks(WChart2DRenderer renderer, List<WAxis.TickLabel> ticks,
 			int segment) {
 		WAxis.Segment s = this.segments_.get(segment);
+		int rc = 0;
+		if (this.chart_.getModel() != null) {
+			rc = this.chart_.getModel().getRowCount();
+		}
 		switch (this.scale_) {
 		case CategoryScale: {
 			int renderInterval = Math.max(1, (int) this.renderInterval_);
 			if (renderInterval == 1) {
 				ticks.add(new WAxis.TickLabel(-0.5,
 						WAxis.TickLabel.TickLength.Long));
-				for (int i = 0; i < this.chart_.getModel().getRowCount(); ++i) {
+				for (int i = 0; i < rc; ++i) {
 					ticks.add(new WAxis.TickLabel(i + 0.5,
 							WAxis.TickLabel.TickLength.Long));
 					ticks.add(new WAxis.TickLabel(i,
@@ -1031,7 +1042,7 @@ public class WAxis {
 									.getLabel((double) i)));
 				}
 			} else {
-				for (int i = 0; i < this.chart_.getModel().getRowCount(); i += renderInterval) {
+				for (int i = 0; i < rc; i += renderInterval) {
 					ticks.add(new WAxis.TickLabel(i,
 							WAxis.TickLabel.TickLength.Long, this
 									.getLabel((double) i)));

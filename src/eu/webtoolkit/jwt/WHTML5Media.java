@@ -81,6 +81,50 @@ public abstract class WHTML5Media extends WInteractWidget {
 	}
 
 	/**
+	 * The HTML5 media ReadyState flag indicates how much of the media is
+	 * loaded.
+	 * <p>
+	 * This is often used in conjunction with the &gt; operator, e.g.
+	 * {@link WHTML5Media#getReadyState() getReadyState()} &gt;
+	 * HAVE_CURRENT_DATA
+	 */
+	public enum ReadyState {
+		/**
+		 * No information available.
+		 */
+		HAVE_NOTHING(0),
+		/**
+		 * Metadata loaded: duration, width, height.
+		 */
+		HAVE_METADATA(1),
+		/**
+		 * Data at playback position is available.
+		 */
+		HAVE_CURRENT_DATA(2),
+		/**
+		 * Have data to play for a while.
+		 */
+		HAVE_FUTURE_DATA(3),
+		/**
+		 * Enough to reach the end without stalling (est).
+		 */
+		HAVE_ENOUGH_DATA(4);
+
+		private int value;
+
+		ReadyState(int value) {
+			this.value = value;
+		}
+
+		/**
+		 * Returns the numerical representation of this enum.
+		 */
+		public int getValue() {
+			return value;
+		}
+	}
+
+	/**
 	 * Consctructor for a HTML5 media widget.
 	 * <p>
 	 * A freshly constructed HTML5Video widget has no options set, no media
@@ -98,6 +142,11 @@ public abstract class WHTML5Media extends WInteractWidget {
 		this.preloadChanged_ = false;
 		this.sourcesChanged_ = false;
 		this.playing_ = false;
+		this.volume_ = -1;
+		this.current_ = -1;
+		this.duration_ = -1;
+		this.ended_ = false;
+		this.readyState_ = WHTML5Media.ReadyState.HAVE_NOTHING;
 		this.setInline(false);
 		this.setFormObject(true);
 		WApplication app = WApplication.getInstance();
@@ -320,6 +369,13 @@ public abstract class WHTML5Media extends WInteractWidget {
 	 */
 	public boolean isPlaying() {
 		return this.playing_;
+	}
+
+	/**
+	 * Returns the media&apos;s readyState.
+	 */
+	public WHTML5Media.ReadyState getReadyState() {
+		return this.readyState_;
 	}
 
 	/**
@@ -569,20 +625,53 @@ public abstract class WHTML5Media extends WInteractWidget {
 			List<String> attributes = new ArrayList<String>();
 			attributes = new ArrayList<String>(Arrays.asList(formData.values[0]
 					.split(";")));
-			if (attributes.size() == 5) {
+			if (attributes.size() == 6) {
 				double volume;
 				double current;
 				double duration;
 				boolean paused;
 				boolean ended;
+				int readystate;
+				boolean error = false;
 				try {
 					volume = Double.parseDouble(attributes.get(0));
+				} catch (NumberFormatException e) {
+					error = true;
+				}
+				try {
 					current = Double.parseDouble(attributes.get(1));
+				} catch (NumberFormatException e) {
+					error = true;
+				}
+				try {
 					duration = Double.parseDouble(attributes.get(2));
+				} catch (NumberFormatException e) {
+					error = true;
+				}
+				try {
 					paused = attributes.get(3).equals("1");
-					ended = attributes.get(4).equals("1");
 					this.playing_ = !paused;
 				} catch (NumberFormatException e) {
+					error = true;
+				}
+				try {
+					ended = attributes.get(4).equals("1");
+				} catch (NumberFormatException e) {
+					error = true;
+				}
+				try {
+					readystate = Integer.parseInt(attributes.get(5));
+					this.readyState_ = WHTML5Media.ReadyState.HAVE_NOTHING;
+					if (readystate <= WHTML5Media.ReadyState.HAVE_ENOUGH_DATA
+							.getValue()
+							&& readystate >= WHTML5Media.ReadyState.HAVE_NOTHING
+									.getValue()) {
+						this.readyState_ = intToReadyState(readystate);
+					}
+				} catch (NumberFormatException e) {
+					error = true;
+				}
+				if (error) {
 					WApplication.getInstance().log("error").append(
 							"WHTML5Media: could not parse form data: ").append(
 							formData.values[0]);
@@ -661,9 +750,32 @@ public abstract class WHTML5Media extends WInteractWidget {
 	private boolean preloadChanged_;
 	private boolean sourcesChanged_;
 	private boolean playing_;
+	private double volume_;
+	private double current_;
+	private double duration_;
+	private boolean ended_;
+	private WHTML5Media.ReadyState readyState_;
 
 	static String wtjs1(WApplication app) {
 		return "Wt3_1_7a.WHTML5Media = function(c,b){jQuery.data(b,\"obj\",this);this.play=function(){if(b.mediaId){var a=$(\"#\"+b.mediaId).get(0);if(a){a.play();return}}if(b.alternativeId)(a=$(\"#\"+b.alternativeId).get(0))&&a.WtPlay&&a.WtPlay()};this.pause=function(){if(b.mediaId){var a=$(\"#\"+b.mediaId).get(0);if(a){a.pause();return}}if(b.alternativeId)(a=$(\"#\"+b.alternativeId).get(0))&&a.WtPlay&&a.WtPause()}};";
+	}
+
+	static WHTML5Media.ReadyState intToReadyState(int i) {
+		switch (i) {
+		case 0:
+			return WHTML5Media.ReadyState.HAVE_NOTHING;
+		case 1:
+			return WHTML5Media.ReadyState.HAVE_METADATA;
+		case 2:
+			return WHTML5Media.ReadyState.HAVE_CURRENT_DATA;
+		case 3:
+			return WHTML5Media.ReadyState.HAVE_FUTURE_DATA;
+		case 4:
+			return WHTML5Media.ReadyState.HAVE_ENOUGH_DATA;
+		default:
+			assert false;
+			throw new RuntimeException("unreachable code");
+		}
 	}
 
 	private static String PLAYBACKSTARTED_SIGNAL = "play";

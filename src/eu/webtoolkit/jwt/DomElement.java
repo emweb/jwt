@@ -58,12 +58,20 @@ class DomElement {
 	}
 
 	public static String urlEncodeS(String url) {
+		return urlEncodeS(url, "");
+	}
+
+	public static String urlEncodeS(String url, String allowed) {
 		StringWriter result = new StringWriter();
 		for (int i = 0; i < url.length(); ++i) {
 			char c = url.charAt(i);
-			if (c < 31 || c >= 127 || unsafeChars_.indexOf(c) != -1) {
-				result.append('%');
-				result.append(Integer.toHexString(c));
+			if (c <= 31 || c >= 127 || unsafeChars_.indexOf(c) != -1) {
+				if (allowed.indexOf(c) != -1) {
+					result.write(c);
+				} else {
+					result.append('%');
+					result.append(Integer.toHexString(c));
+				}
 			} else {
 				result.write(c);
 			}
@@ -1454,6 +1462,6 @@ class DomElement {
 			true, true, false, false, true, false, false, true, true, false,
 			false, false, false, false, true, false, false, false, false, true,
 			false, false, false, false, false };
-	static final String unsafeChars_ = "$&+,:;=?@'\"<>#%{}|\\^~[]`";
+	static final String unsafeChars_ = " $&+,:;=?@'\"<>#%{}|\\^~[]`";
 	private static int nextId_ = 0;
 }

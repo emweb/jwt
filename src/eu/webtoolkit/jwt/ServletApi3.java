@@ -683,7 +683,7 @@ class ServletApi3 extends ServletApi{
 
   
 	@Override
-	public boolean isAsyncSupported() {
-		return true;
+	public boolean isAsyncSupported(HttpServletRequest request) {
+		return true && request != null && request.isAsyncSupported();
 	}
 }

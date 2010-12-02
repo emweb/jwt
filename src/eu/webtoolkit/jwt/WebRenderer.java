@@ -239,6 +239,7 @@ class WebRenderer implements SlotLearnerInterface {
 			}
 		}
 		this.cookiesToSet_.clear();
+		response.addHeader("Cache-Control", "no-cache");
 		response.setContentType(mimeType);
 	}
 
@@ -299,9 +300,15 @@ class WebRenderer implements SlotLearnerInterface {
 						conf.getServerPushTimeout() * 1000);
 		script.setVar("ONLOAD", "(function() {"
 				+ (widgetset ? "" : "window.loadWidgetTree();") + "})");
+		script
+				.setVar(
+						"CLOSE_CONNECTION",
+						conf.getServerType() == Configuration.ServerType.WtHttpdServer
+								&& this.session_.getEnv().agentIsGecko()
+								&& this.session_.getEnv().getAgent().getValue() < WEnvironment.UserAgent.Firefox3_0
+										.getValue());
 		script.stream(response.out());
 		app.autoJavaScriptChanged_ = false;
-		this.streamCommJs(app, response.out());
 		if (!this.rendered_) {
 			this.serveMainAjax(response);
 		} else {
@@ -592,23 +599,6 @@ class WebRenderer implements SlotLearnerInterface {
 	}
 
 	// private void serveWidgetSet(WebResponse request) ;
-	private void streamCommJs(WApplication app, Writer out) throws IOException {
-		Configuration conf = this.session_.getController().getConfiguration();
-		FileServe js = new FileServe(
-				app.getAjaxMethod() == WApplication.AjaxMethod.XMLHttpRequest ? WtServlet.CommAjax_js
-						: WtServlet.CommScript_js);
-		js.setVar("APP_CLASS", app.getJavaScriptClass());
-		js.setVar("WT_CLASS", "Wt3_1_7a");
-		js
-				.setVar(
-						"CLOSE_CONNECTION",
-						conf.getServerType() == Configuration.ServerType.WtHttpdServer
-								&& this.session_.getEnv().agentIsGecko()
-								&& this.session_.getEnv().getAgent().getValue() < WEnvironment.UserAgent.Firefox3_0
-										.getValue());
-		js.stream(out);
-	}
-
 	private void collectJavaScript() throws IOException {
 		WApplication app = this.session_.getApp();
 		Configuration conf = this.session_.getController().getConfiguration();

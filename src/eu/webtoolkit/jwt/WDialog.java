@@ -313,8 +313,8 @@ public class WDialog extends WCompositeWidget {
 		}
 		this.show();
 		if (!WtServlet.isAsyncSupported()) {
-			throw new RuntimeException(
-					"Recursive event loop requires a Servlet 3.0 API.");
+			throw new WtException(
+					"Server push requires a Servlet 3.0 enabled servlet container and an application with async-supported enabled.");
 		}
 		this.recursiveEventLoop_ = true;
 		do {

@@ -102,9 +102,9 @@ class BasicControls extends ControlsWidget {
 				"Wt homepage (in a new window)", result);
 		a1.setTarget(AnchorTarget.TargetNewWindow);
 		new WText(tr("basics-WAnchor-more"), result);
-		WAnchor a2 = new WAnchor("http://www.webtoolkit.eu/", result);
+		WAnchor a2 = new WAnchor("http://www.emweb.be/", result);
 		a2.setTarget(AnchorTarget.TargetNewWindow);
-		new WImage("icons/wt_powered.jpg", a2);
+		new WImage("pics/emweb_small.jpg", a2);
 		new WText(tr("basics-WAnchor-related"), result);
 		return result;
 	}

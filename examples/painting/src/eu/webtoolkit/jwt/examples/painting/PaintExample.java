@@ -57,7 +57,7 @@ public class PaintExample extends WContainerWidget {
         scaleSlider.setTickInterval(5);
         scaleSlider.setTickPosition(WSlider.TicksBothSides);
         scaleSlider.resize(new WLength(300), new WLength(50));
-        scaleSlider.valueChanged().addListener(this,
+        scaleSlider.sliderMoved().addListener(this,
                 new Signal1.Listener<Integer>() {
                     public void trigger(Integer e1) {
                         PaintExample.this.scaleShape(e1);
@@ -72,7 +72,7 @@ public class PaintExample extends WContainerWidget {
         rotateSlider.setTickInterval(10);
         rotateSlider.setTickPosition(WSlider.TicksBothSides);
         rotateSlider.resize(new WLength(50), new WLength(400));
-        rotateSlider.valueChanged().addListener(this,
+        rotateSlider.sliderMoved().addListener(this,
                 new Signal1.Listener<Integer>() {
                     public void trigger(Integer e1) {
                         PaintExample.this.rotateShape(e1);

@@ -1848,7 +1848,7 @@ public class WTreeView extends WAbstractItemView {
 		if (result >= upperBound) {
 			return result;
 		}
-		if (this.isExpanded(index)) {
+		if (this.getModel() != null && this.isExpanded(index)) {
 			int childCount = this.getModel().getRowCount(index);
 			for (int i = 0; i < childCount; ++i) {
 				WModelIndex childIndex = this.getModel().getIndex(i, 0, index);

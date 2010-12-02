@@ -186,11 +186,11 @@ public class WProgressBar extends WInteractWidget {
 	 * different text corresponding to the current
 	 * {@link WProgressBar#getValue() getValue()}.
 	 */
-	public String getText() {
+	public WString getText() {
 		String f = this.format_.toString();
 		int buflen = f.length() + 5;
 		String buf = String.format(f, this.getPercentage());
-		String result = buf;
+		WString result = new WString(buf);
 		;
 		return result;
 	}
@@ -252,7 +252,7 @@ public class WProgressBar extends WInteractWidget {
 			bar.setProperty(Property.PropertyStyleWidth, String.valueOf(this
 					.getPercentage())
 					+ "%");
-			WString s = new WString(this.getText());
+			WString s = this.getText();
 			removeScript(s);
 			label.setProperty(Property.PropertyInnerHTML, s.toString());
 			this.changed_ = false;
