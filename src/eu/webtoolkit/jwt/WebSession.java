@@ -160,6 +160,16 @@ class WebSession {
 			return;
 		}
 		String requestE = request.getParameter("request");
+		String pageIdE = handler.getRequest().getParameter("pageId");
+		if (pageIdE != null
+				&& !pageIdE.equals(String.valueOf(this.renderer_.getPageId()))) {
+			handler.getResponse().setContentType(
+					"text/javascript; charset=UTF-8");
+			handler.getResponse().out().append("{}");
+			handler.getResponse().flush();
+			handler.setRequest((WebRequest) null, (WebResponse) null);
+			return;
+		}
 		if (!this.app_.initialized_) {
 			this.app_.initialize();
 			this.app_.initialized_ = true;

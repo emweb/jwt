@@ -468,7 +468,7 @@ public abstract class WFormWidget extends WInteractWidget {
 	}
 
 	static String wtjs1(WApplication app) {
-		return "Wt3_1_7a.WFormWidget = function(b,a,c){jQuery.data(a,\"obj\",this);var d=b.WT;this.updateEmptyText=function(){if(d.hasFocus(a)){if($(a).hasClass(\"Wt-edit-emptyText\")){$(a).removeClass(\"Wt-edit-emptyText\");a.value=\"\"}}else if(a.value==\"\"){$(a).addClass(\"Wt-edit-emptyText\");a.value=c}};this.updateEmptyText()};";
+		return "Wt3_1_7a.WFormWidget = function(c,a,d){jQuery.data(a,\"obj\",this);var b=c.WT;this.updateEmptyText=function(){if(b.hasFocus(a)){if($(a).hasClass(\"Wt-edit-emptyText\")){if(!b.isIE&&a.oldtype)a.type=a.oldtype;$(a).removeClass(\"Wt-edit-emptyText\");a.value=\"\"}}else if(a.value==\"\"){if(a.type==\"password\")if(b.isIE)return;else{a.oldtype=\"password\";a.type=\"text\"}$(a).addClass(\"Wt-edit-emptyText\");a.value=d}};this.updateEmptyText()};";
 	}
 
 	static String CHANGE_SIGNAL = "M_change";

@@ -165,7 +165,6 @@ public class WebRequest extends HttpServletRequestWrapper {
 
 				if (progressUpdate != null) {
 					upload.setProgressListener(new org.apache.commons.fileupload.ProgressListener(){
-						@Override
 						public void update(long pBytesRead, long pContentLength, int pItems) {
 							progressUpdate.update(WebRequest.this, pBytesRead, pContentLength);
 						}

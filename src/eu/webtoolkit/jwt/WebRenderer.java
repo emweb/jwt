@@ -24,6 +24,7 @@ class WebRenderer implements SlotLearnerInterface {
 		this.visibleOnly_ = true;
 		this.rendered_ = false;
 		this.twoPhaseThreshold_ = 5000;
+		this.pageId_ = 0;
 		this.expectedAckId_ = 0;
 		this.cookiesToSet_ = new ArrayList<WebRenderer.Cookie>();
 		this.currentFormObjects_ = new HashMap<String, WObject>();
@@ -113,6 +114,10 @@ class WebRenderer implements SlotLearnerInterface {
 				|| this.collectedJS1_.getBuffer().length() > 0
 				|| this.collectedJS2_.getBuffer().length() > 0
 				|| this.invisibleJS_.getBuffer().length() > 0;
+	}
+
+	public int getPageId() {
+		return this.pageId_;
 	}
 
 	public void serveResponse(WebResponse response) throws IOException {
@@ -211,6 +216,7 @@ class WebRenderer implements SlotLearnerInterface {
 	private boolean visibleOnly_;
 	private boolean rendered_;
 	private int twoPhaseThreshold_;
+	private int pageId_;
 	private int expectedAckId_;
 	private List<WebRenderer.Cookie> cookiesToSet_;
 	private Map<String, WObject> currentFormObjects_;
@@ -300,6 +306,7 @@ class WebRenderer implements SlotLearnerInterface {
 						conf.getServerPushTimeout() * 1000);
 		script.setVar("ONLOAD", "(function() {"
 				+ (widgetset ? "" : "window.loadWidgetTree();") + "})");
+		script.setVar("PAGE_ID", this.pageId_);
 		script
 				.setVar(
 						"CLOSE_CONNECTION",
@@ -377,6 +384,8 @@ class WebRenderer implements SlotLearnerInterface {
 	}
 
 	private void serveMainpage(WebResponse response) throws IOException {
+		++this.expectedAckId_;
+		++this.pageId_;
 		Configuration conf = this.session_.getController().getConfiguration();
 		WApplication app = this.session_.getApp();
 		if (!app.getEnvironment().hasAjax()
@@ -929,7 +938,7 @@ class WebRenderer implements SlotLearnerInterface {
 				.getBootstrapUrl(response,
 						WebSession.BootstrapOption.KeepInternalPath)));
 		boot.setVar("SESSION_ID", this.session_.getSessionId());
-		boot.setVar("RANDOMSEED", String.valueOf(MathUtils.randomInt() + 0));
+		boot.setVar("RANDOMSEED", String.valueOf(MathUtils.randomInt()));
 		boot.setVar("RELOAD_IS_NEWSESSION", conf.isReloadIsNewSession());
 		boot
 				.setVar(

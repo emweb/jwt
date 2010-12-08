@@ -30,8 +30,36 @@
     <delete dir="${archives.dir}" />
   </target>
 
+  <condition property="jdk6">
+    <not>
+      <contains string="${java.version}" substring="1.5"
+		casesensitive="false" />
+    </not>
+  </condition>
+
+  <target name="build-servlet3" if="jdk6">
+    <mkdir dir="${build.dir}"/>
+    <javac
+       srcdir="${src.java.dir}"
+       destdir="${build.dir}"
+       debug="on"
+       source="1.5"
+       target="1.5">
+      <classpath >
+        <path id="project.classpath">
+          <fileset dir=".">
+            <include name="lib/*.jar"/>
+            <include name="servlet-lib/servlet-api-3.0.jar"/>
+          </fileset>
+        </path>
+      </classpath>
+      <include name="eu/webtoolkit/jwt/ServletApi3.java"/>
+      <include name="eu/webtoolkit/jwt/WtServletContextListener.java"/>
+    </javac>
+  </target>
+
   <!-- Compile Java source -->
-  <target name="build">
+  <target name="build" depends="build-servlet3">
     <mkdir dir="${build.dir}"/>
     <javac
        srcdir="${src.java.dir}"
@@ -50,25 +78,7 @@
 	  <exclude name="eu/webtoolkit/jwt/ServletApi3.java"/>
 	  <exclude name="eu/webtoolkit/jwt/WtServletContextListener.java"/>
     </javac>
-  	
-    <javac
-       srcdir="${src.java.dir}"
-       destdir="${build.dir}"
-       debug="on"
-       source="1.5"
-       target="1.5">
-      <classpath >
-        <path id="project.classpath">
-          <fileset dir=".">
-            <include name="lib/*.jar"/>
-            <include name="servlet-lib/servlet-api-3.0.jar"/>
-          </fileset>
-        </path>
-      </classpath>
-	  <include name="eu/webtoolkit/jwt/ServletApi3.java"/>
-	  <include name="eu/webtoolkit/jwt/WtServletContextListener.java"/>
-    </javac>	
-  	
+
     <copy todir="${build.dir}/eu/webtoolkit/jwt/skeletons">
       <fileset dir="${src.java.dir}/eu/webtoolkit/jwt/skeletons"/>
     </copy>

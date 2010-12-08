@@ -618,10 +618,12 @@ public class WebGraphics2D extends Graphics2D {
 			return m.getFont();
 		}
 
+	  /*
 		@Override
 		public FontRenderContext getFontRenderContext() {
 			return m.getFontRenderContext();
 		}
+	  */
 
 		@Override
 		public int getHeight() {

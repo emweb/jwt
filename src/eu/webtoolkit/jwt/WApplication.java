@@ -2095,10 +2095,7 @@ public class WApplication extends WObject {
 	 * running until it times out (as was the behaviour before JWt 3.1.6).
 	 */
 	protected void unload() {
-		Configuration conf = this.session_.getController().getConfiguration();
-		if (conf.isReloadIsNewSession()) {
-			this.quit();
-		}
+		this.quit();
 	}
 
 	private Signal1<Integer> requestTooLarge_;
