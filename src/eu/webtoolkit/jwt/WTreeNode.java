@@ -91,7 +91,7 @@ import eu.webtoolkit.jwt.servlet.*;
  * 
  * .Wt-tree .Wt-label          : the node label
  * .Wt-tree .Wt-childcount     : the node child count
- * .Wt-tree .Wt-node           : the node&amp;aposs table row
+ * .Wt-tree .Wt-node           : the node&apos;s table row
  * </pre>
  * 
  * </div> * The collapse and expand icons are fetched themselves as images,

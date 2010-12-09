@@ -315,7 +315,8 @@ class WebSession {
 						}
 					} else {
 						this.log("notice").append("Refreshing session");
-						if (handler.getResponse().getResponseType() == WebRequest.ResponseType.Page) {
+						if (handler.getResponse().getResponseType() == WebRequest.ResponseType.Page
+								&& !this.env_.hasAjax()) {
 							String hashE = request.getParameter("_");
 							if (hashE != null) {
 								this.app_.changeInternalPath(hashE);
