@@ -1,25 +1,28 @@
 package eu.webtoolkit.jwt.examples.simplechat;
 
 import eu.webtoolkit.jwt.AlignmentFlag;
+import eu.webtoolkit.jwt.Icon;
 import eu.webtoolkit.jwt.JSlot;
 import eu.webtoolkit.jwt.Signal;
 import eu.webtoolkit.jwt.Signal1;
+import eu.webtoolkit.jwt.Signal1.Listener;
+import eu.webtoolkit.jwt.StandardButton;
 import eu.webtoolkit.jwt.TextFormat;
 import eu.webtoolkit.jwt.WApplication;
+import eu.webtoolkit.jwt.WBreak;
 import eu.webtoolkit.jwt.WContainerWidget;
+import eu.webtoolkit.jwt.WDialog;
 import eu.webtoolkit.jwt.WHBoxLayout;
 import eu.webtoolkit.jwt.WLabel;
 import eu.webtoolkit.jwt.WLineEdit;
+import eu.webtoolkit.jwt.WMessageBox;
 import eu.webtoolkit.jwt.WMouseEvent;
 import eu.webtoolkit.jwt.WPushButton;
 import eu.webtoolkit.jwt.WSound;
-import eu.webtoolkit.jwt.WString;
 import eu.webtoolkit.jwt.WText;
 import eu.webtoolkit.jwt.WTextArea;
 import eu.webtoolkit.jwt.WVBoxLayout;
 import eu.webtoolkit.jwt.WWebWidget;
-import eu.webtoolkit.jwt.AbstractSignal.Connection;
-import eu.webtoolkit.jwt.Signal1.Listener;
 
 /**
  * A self-contained chat widget.
@@ -241,6 +244,11 @@ public class SimpleChatWidget extends WContainerWidget {
 	}
 
 	private void logout() {
+		StandardButton result = WMessageBox.show("Please Confirm", "Do you really want to logout?", StandardButton.Yes, StandardButton.No);
+		
+		if (result == StandardButton.No)
+			return;
+		
 		if (listener_ != null) {
 			server_.chatEvent().removeListener(listener_); // do not listen for more events
 			listener_ = null;

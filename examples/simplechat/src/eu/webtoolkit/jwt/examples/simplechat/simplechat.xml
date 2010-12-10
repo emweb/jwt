@@ -4,12 +4,8 @@
 
 <h2><span>JWt Chat client</span></h2>
 
-<p>This is a multi-user chat client and server. Click the about button for more details.</p>
+<p>This is a multi-user chat client and server.</p>
 
-</message>
-
- <message id="about">
- 
 <p>To keep the example simple, server and clients all run in the same
 servlet engine, the server is a static reference. 
 When using "server push" which requires an open connection with each client at
@@ -23,6 +19,9 @@ application.<br />
 Because of the widget abstraction, it is straight forward to include a
 chat client in your own application, by adding both the client and
 server classes to your application.</p>
+  </message>
+
+  <message id="details">
 
 <p>The implementation uses the Servlet 3.0 API to implement server push in JWt, 
 and allows updating a session from outside its regular event loop. When a
@@ -30,10 +29,11 @@ message is received, the user interface (i.e. widget tree) not only of
 the current session, but also of all other sessions is updated and
 "pushed" to these clients simultaneously.</p>
 
-<p> The about dialog is shown using 
-<a href="http://www.webtoolkit.eu/jwt/latest/doc/javadoc/eu/webtoolkit/jwt/WDialog.html#exec()" target="_blank">exec()</a>.
+<p> The logout message box is shown using 
+<a href="http://www.webtoolkit.eu/jwt/latest/doc/javadoc/eu/webtoolkit/jwt/WMessageBox.html#show%28java.lang.CharSequence,%20java.lang.CharSequence,%20java.util.EnumSet%29" target="_blank">
+WMessageBox.show()</a>, which internally uses 
+<a href="http://www.webtoolkit.eu/jwt/latest/doc/javadoc/eu/webtoolkit/jwt/WDialog.html#exec()" target="_blank">WDialog's exec()</a>.
 </p>
 
   </message>
-
 </messages>

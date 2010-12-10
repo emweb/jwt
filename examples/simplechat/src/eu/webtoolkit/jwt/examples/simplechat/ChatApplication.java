@@ -2,8 +2,6 @@ package eu.webtoolkit.jwt.examples.simplechat;
 
 import eu.webtoolkit.jwt.Signal1;
 import eu.webtoolkit.jwt.WApplication;
-import eu.webtoolkit.jwt.WBreak;
-import eu.webtoolkit.jwt.WDialog;
 import eu.webtoolkit.jwt.WEnvironment;
 import eu.webtoolkit.jwt.WLength;
 import eu.webtoolkit.jwt.WLength.Unit;
@@ -31,32 +29,14 @@ public class ChatApplication extends WApplication {
 		SimpleChatWidget chatWidget = new SimpleChatWidget(theServer, getRoot());
 		chatWidget.setStyleClass("chat");
 
+		getRoot().addWidget(new WText(WString.tr("details")));
+
 		final WPushButton b = new WPushButton("I'm schizophrenic ...",
 				getRoot());
 		b.clicked().addListener(this, new Signal1.Listener<WMouseEvent>() {
 			public void trigger(WMouseEvent arg) {
 				b.hide();
 				addChatWidget();
-			}
-		});
-
-		WPushButton about = new WPushButton("About...", getRoot());
-		about.clicked().addListener(this, new Signal1.Listener<WMouseEvent>() {
-			public void trigger(WMouseEvent arg) {
-				  final WDialog dialog = new WDialog("About");
-				  
-				  dialog.resize(new WLength(70, Unit.Percentage), WLength.Auto);
-
-				  new WText(tr("about"), dialog.getContents());
-				  new WBreak(dialog.getContents());
-				  WPushButton ok = new WPushButton("Ok", dialog.getContents());
-				  ok.clicked().addListener(dialog, new Signal1.Listener<WMouseEvent>(){
-					public void trigger(WMouseEvent arg) {
-						dialog.accept();
-					}
-				  });
-
-				  dialog.exec();
 			}
 		});
 		

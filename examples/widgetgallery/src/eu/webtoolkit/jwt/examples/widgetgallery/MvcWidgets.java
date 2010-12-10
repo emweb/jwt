@@ -3,7 +3,7 @@
  *
  * See the LICENSE file for terms of use.
  */
-package eu.webtoolkit.jwt.examples.gallery;
+package eu.webtoolkit.jwt.examples.widgetgallery;
 
 import java.util.*;
 import java.util.regex.*;
@@ -16,7 +16,6 @@ import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
-import eu.webtoolkit.jwt.examples.treeview.*;
 
 class MvcWidgets extends ControlsWidget {
 	public MvcWidgets(EventDisplayer ed) {

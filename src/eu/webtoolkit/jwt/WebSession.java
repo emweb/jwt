@@ -365,18 +365,18 @@ class WebSession {
 					this.canWriteAsyncResponse_ = false;
 				}
 			}
-		} catch (Exception e) {
-			e.printStackTrace();
+		} catch (IOException ioe) {
+			ioe.printStackTrace();
 		}
 	}
 
 	public void doRecursiveEventLoop() {
 		try {
-			if (!WtServlet.isAsyncSupported()) {
+			WebSession.Handler handler = WebSession.Handler.getInstance();
+			if (handler.getRequest() != null && !WtServlet.isAsyncSupported()) {
 				throw new WtException(
 						"Server push requires a Servlet 3.0 enabled servlet container and an application with async-supported enabled.");
 			}
-			WebSession.Handler handler = WebSession.Handler.getInstance();
 			if (handler.getRequest() != null) {
 				handler.getSession().notifySignal(new WEvent(handler));
 			}
@@ -386,7 +386,11 @@ class WebSession {
 			this.recursiveEventLoop_ = handler;
 			this.newRecursiveEvent_ = false;
 			while (!this.newRecursiveEvent_) {
-				this.recursiveEvent_.await();
+				try {
+					this.recursiveEvent_.await();
+				} catch (InterruptedException ie) {
+					ie.printStackTrace();
+				}
 			}
 			if (this.state_ == WebSession.State.Dead) {
 				this.recursiveEventLoop_ = null;
@@ -395,8 +399,8 @@ class WebSession {
 			}
 			this.app_.notify(new WEvent(handler));
 			this.recursiveEventLoop_ = null;
-		} catch (Exception e) {
-			e.printStackTrace();
+		} catch (IOException ioe) {
+			ioe.printStackTrace();
 		}
 	}
 
