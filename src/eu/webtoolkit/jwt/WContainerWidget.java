@@ -835,8 +835,11 @@ public class WContainerWidget extends WInteractWidget {
 				c.setProperty(Property.PropertyStyleRight, "0");
 			} else {
 				if (app.getEnvironment().agentIsIE()) {
-					parent.setProperty(Property.PropertyStylePosition,
-							"relative");
+					if (app.getEnvironment().agentIsIE()
+							&& this.getParent().getPositionScheme() != PositionScheme.Static) {
+						parent.setProperty(Property.PropertyStylePosition,
+								"relative");
+					}
 				}
 			}
 			switch (EnumUtils.enumFromSet(EnumUtils.mask(

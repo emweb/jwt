@@ -175,6 +175,9 @@ public class WAxis {
 	 * minimum and maximum values are determined automatically so that all the
 	 * data can be displayed.
 	 * <p>
+	 * The numerical value corresponding to a data point is defined by it&apos;s
+	 * AxisScale type.
+	 * <p>
 	 * 
 	 * @see WAxis#getMinimum()
 	 * @see WAxis#setMaximum(double maximum)
@@ -200,6 +203,9 @@ public class WAxis {
 	 * {@link WAxis#setMinimum(double minimum) setMinimum()}, or otherwise the
 	 * automatically calculated minimum.
 	 * <p>
+	 * The numerical value corresponding to a data point is defined by it&apos;s
+	 * AxisScale type.
+	 * <p>
 	 * 
 	 * @see WAxis#getMaximum()
 	 * @see WAxis#setMinimum(double minimum)
@@ -217,6 +223,9 @@ public class WAxis {
 	 * Specify the maximum value to be displayed on the axis. By default, the
 	 * minimum and maximum values are determined automatically so that all the
 	 * data can be displayed.
+	 * <p>
+	 * The numerical value corresponding to a data point is defined by it&apos;s
+	 * AxisScale type.
 	 * <p>
 	 * 
 	 * @see WAxis#getMinimum()
@@ -243,6 +252,9 @@ public class WAxis {
 	 * {@link WAxis#setMaximum(double maximum) setMaximum()}, or otherwise the
 	 * automatically calculated maximum.
 	 * <p>
+	 * The numerical value corresponding to a data point is defined by it&apos;s
+	 * AxisScale type.
+	 * <p>
 	 * 
 	 * @see WAxis#getMinimum()
 	 * @see WAxis#setMaximum(double maximum)
@@ -258,6 +270,9 @@ public class WAxis {
 	 * <p>
 	 * Specifies both minimum and maximum value for the axis. This automatically
 	 * disables automatic range calculation.
+	 * <p>
+	 * The numerical value corresponding to a data point is defined by it&apos;s
+	 * AxisScale type.
 	 * <p>
 	 * 
 	 * @see WAxis#setMinimum(double minimum)

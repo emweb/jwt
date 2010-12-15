@@ -151,7 +151,7 @@ public class WApplication extends WObject {
 		this.dialogCover_ = null;
 		this.quited_ = false;
 		this.onePixelGifUrl_ = "";
-		this.rshLoaded_ = false;
+		this.internalPathsEnabled_ = false;
 		this.exposedOnly_ = null;
 		this.loadingIndicator_ = null;
 		this.connected_ = true;
@@ -958,7 +958,7 @@ public class WApplication extends WObject {
 	 * @see WApplication#internalPathChanged()
 	 */
 	public void setInternalPath(String path, boolean emitChange) {
-		this.isLoadRsh();
+		this.enableInternalPaths();
 		if (!this.internalPathIsChanged_) {
 			this.oldInternalPath_ = this.newInternalPath_;
 		}
@@ -1076,6 +1076,7 @@ public class WApplication extends WObject {
 	 * @see WApplication#setInternalPath(String path, boolean emitChange)
 	 */
 	public Signal1<String> internalPathChanged() {
+		this.enableInternalPaths();
 		return this.internalPathChanged_;
 	}
 
@@ -1450,6 +1451,20 @@ public class WApplication extends WObject {
 	 */
 	public final boolean require(String uri) {
 		return require(uri, "");
+	}
+
+	/**
+	 * Sets the name of the application JavaScript class.
+	 * <p>
+	 * This should be called right after construction of the application, and
+	 * changing the JavaScript class is only supported for WidgetSet mode
+	 * applications. The <code>className</code> should be a valid JavaScript
+	 * identifier, and should also be unique in a single page.
+	 */
+	public void setJavaScriptClass(String javaScriptClass) {
+		if (this.session_.getType() != EntryPointType.Application) {
+			this.javaScriptClass_ = javaScriptClass;
+		}
 	}
 
 	/**
@@ -2154,7 +2169,7 @@ public class WApplication extends WObject {
 	private WContainerWidget dialogCover_;
 	private boolean quited_;
 	private String onePixelGifUrl_;
-	private boolean rshLoaded_;
+	private boolean internalPathsEnabled_;
 	private WWidget exposedOnly_;
 	private WLoadingIndicator loadingIndicator_;
 	WWidget loadingIndicatorWidget_;
@@ -2312,18 +2327,21 @@ public class WApplication extends WObject {
 		}
 	}
 
-	private boolean isLoadRsh() {
-		if (!this.rshLoaded_) {
-			this.rshLoaded_ = true;
+	private void enableInternalPaths() {
+		if (!this.internalPathsEnabled_) {
+			this.internalPathsEnabled_ = true;
+			this.doJavaScript(
+					this.getJavaScriptClass()
+							+ "._p_.enableInternalPaths("
+							+ WWebWidget
+									.jsStringLiteral(this.getInternalPath())
+							+ ");", false);
 			if (this.session_.getApplicationName().length() == 0) {
 				this
 						.log("warn")
 						.append(
 								"Deploy-path ends with '/', using /?_= for internal paths");
 			}
-			return true;
-		} else {
-			return false;
 		}
 	}
 
@@ -2333,7 +2351,7 @@ public class WApplication extends WObject {
 			if (!path.equals(this.newInternalPath_)) {
 				String v = "";
 				this.newInternalPath_ = path;
-				this.internalPathChanged().trigger(this.newInternalPath_);
+				this.internalPathChanged_.trigger(this.newInternalPath_);
 			}
 		}
 	}

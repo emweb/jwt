@@ -149,7 +149,7 @@ class WebSession {
 	}
 
 	public void notify(WEvent event) throws IOException {
-		WebSession.Handler handler = event.handler;
+		WebSession.Handler handler = event.impl_.handler;
 		WebRequest request = handler.getRequest();
 		WebResponse response = handler.getResponse();
 		if (WebSession.Handler.getInstance() != handler) {
@@ -378,7 +378,8 @@ class WebSession {
 						"Server push requires a Servlet 3.0 enabled servlet container and an application with async-supported enabled.");
 			}
 			if (handler.getRequest() != null) {
-				handler.getSession().notifySignal(new WEvent(handler));
+				WEvent.Impl impl = new WEvent.Impl(handler);
+				handler.getSession().notifySignal(new WEvent(impl));
 			}
 			if (handler.getResponse() != null) {
 				handler.getSession().render(handler);
@@ -397,7 +398,8 @@ class WebSession {
 				throw new WtException(
 						"doRecursiveEventLoop(): session was killed");
 			}
-			this.app_.notify(new WEvent(handler));
+			WEvent.Impl impl = new WEvent.Impl(handler);
+			this.app_.notify(new WEvent(impl));
 			this.recursiveEventLoop_ = null;
 		} catch (IOException ioe) {
 			ioe.printStackTrace();
@@ -659,6 +661,83 @@ class WebSession {
 		}
 	}
 
+	public EventType getEventType(WEvent event) {
+		if (event.impl_.handler == null) {
+			return EventType.OtherEvent;
+		}
+		WebSession.Handler handler = event.impl_.handler;
+		WebRequest request = handler.getRequest();
+		if (event.renderOnly) {
+			return EventType.OtherEvent;
+		}
+		String requestE = request.getParameter("request");
+		String pageIdE = handler.getRequest().getParameter("pageId");
+		if (pageIdE != null
+				&& !pageIdE.equals(String.valueOf(this.renderer_.getPageId()))) {
+			return EventType.OtherEvent;
+		}
+		switch (this.state_) {
+		case JustCreated:
+			return EventType.OtherEvent;
+		case Loaded:
+			if (handler.getResponse().getResponseType() == WebRequest.ResponseType.Script) {
+				return EventType.OtherEvent;
+			} else {
+				WResource resource = null;
+				if (!(requestE != null) && request.getPathInfo().length() != 0) {
+					resource = this.app_.decodeExposedResource("/path/"
+							+ request.getPathInfo());
+				}
+				String resourceE = request.getParameter("resource");
+				String signalE = this.getSignal(request, "");
+				if (resource != null || requestE != null
+						&& requestE.equals("resource") && resourceE != null) {
+					return EventType.OtherEvent;
+				} else {
+					if (signalE != null && signalE.equals("none")
+							|| signalE.equals("load") || signalE.equals("hash")
+							|| signalE.equals("res") || signalE.equals("poll")) {
+						return EventType.OtherEvent;
+					} else {
+						if (signalE != null && signalE.equals("user")) {
+							return EventType.UserEvent;
+						} else {
+							int nextSignal = 0;
+							;
+							List<Integer> signalOrder = this
+									.getSignalProcessingOrder(event);
+							int timerSignals = 0;
+							for (int i = nextSignal; i < signalOrder.size(); ++i) {
+								int signalI = signalOrder.get(i);
+								String se = signalI > 0 ? 'e' + String
+										.valueOf(signalI) : "";
+								String s = this.getSignal(request, se);
+								if (!(s != null)) {
+									break;
+								} else {
+									AbstractEventSignal esb = this
+											.decodeSignal(s);
+									WTimerWidget t = ((esb.getSender()) instanceof WTimerWidget ? (WTimerWidget) (esb
+											.getSender())
+											: null);
+									if (t != null) {
+										++timerSignals;
+									} else {
+										return EventType.UserEvent;
+									}
+								}
+							}
+							if (timerSignals != 0) {
+								return EventType.TimerEvent;
+							}
+						}
+					}
+				}
+			}
+		}
+		return EventType.OtherEvent;
+	}
+
 	static class Handler {
 		public Handler() {
 			this.signalOrder = new ArrayList<Integer>();
@@ -880,7 +959,8 @@ class WebSession {
 								throw new WtException(
 										"Could not start application.");
 							}
-							this.app_.notify(new WEvent(handler));
+							WEvent.Impl impl = new WEvent.Impl(handler);
+							this.app_.notify(new WEvent(impl));
 							this.setLoaded();
 							if (this.env_.agentIsSpiderBot()) {
 								this.kill();
@@ -940,7 +1020,8 @@ class WebSession {
 								throw new WtException(
 										"Could not start application.");
 							}
-							this.app_.notify(new WEvent(handler));
+							WEvent.Impl impl = new WEvent.Impl(handler);
+							this.app_.notify(new WEvent(impl));
 							this.setLoaded();
 						}
 						break;
@@ -1026,10 +1107,14 @@ class WebSession {
 							&& requestE.equals("resource");
 					if (requestForResource
 							|| !this.isUnlockRecursiveEventLoop()) {
-						this.app_.notify(new WEvent(handler));
+						{
+							WEvent.Impl impl = new WEvent.Impl(handler);
+							this.app_.notify(new WEvent(impl));
+						}
 						if (handler.getResponse() != null
 								&& !requestForResource) {
-							this.app_.notify(new WEvent(handler, true));
+							WEvent.Impl impl = new WEvent.Impl(handler);
+							this.app_.notify(new WEvent(impl, true));
 						}
 					}
 					this.setLoaded();
@@ -1236,7 +1321,7 @@ class WebSession {
 	}
 
 	private List<Integer> getSignalProcessingOrder(WEvent e) {
-		WebSession.Handler handler = e.handler;
+		WebSession.Handler handler = e.impl_.handler;
 		List<Integer> highPriority = new ArrayList<Integer>();
 		List<Integer> normalPriority = new ArrayList<Integer>();
 		for (int i = 0;; ++i) {
@@ -1267,7 +1352,7 @@ class WebSession {
 	}
 
 	private void notifySignal(WEvent e) throws IOException {
-		WebSession.Handler handler = e.handler;
+		WebSession.Handler handler = e.impl_.handler;
 		if (handler.nextSignal == -1) {
 			handler.signalOrder = this.getSignalProcessingOrder(e);
 			handler.nextSignal = 0;
@@ -1333,7 +1418,7 @@ class WebSession {
 	}
 
 	private void propagateFormValues(WEvent e, String se) {
-		WebRequest request = e.handler.getRequest();
+		WebRequest request = e.impl_.handler.getRequest();
 		this.renderer_.updateFormObjectsList(this.app_);
 		Map<String, WObject> formObjects = this.renderer_.getFormObjects();
 		String focus = request.getParameter(se + "focus");

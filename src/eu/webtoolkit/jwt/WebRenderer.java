@@ -109,7 +109,7 @@ class WebRenderer implements SlotLearnerInterface {
 	}
 
 	public boolean isDirty() {
-		return !this.updateMap_.isEmpty()
+		return !this.updateMap_.isEmpty() || this.formObjectsChanged_
 				|| this.session_.getApp().afterLoadJavaScript_.length() != 0
 				|| this.collectedJS1_.getBuffer().length() > 0
 				|| this.collectedJS2_.getBuffer().length() > 0
@@ -305,7 +305,8 @@ class WebRenderer implements SlotLearnerInterface {
 				.setVar("SERVER_PUSH_TIMEOUT",
 						conf.getServerPushTimeout() * 1000);
 		script.setVar("ONLOAD", "(function() {"
-				+ (widgetset ? "" : "window.loadWidgetTree();") + "})");
+				+ (widgetset ? "" : "window." + app.getJavaScriptClass()
+						+ "LoadWidgetTree();") + "})");
 		script.setVar("PAGE_ID", this.pageId_);
 		script
 				.setVar(
@@ -336,7 +337,8 @@ class WebRenderer implements SlotLearnerInterface {
 				this.loadScriptLibraries(this.collectedJS2_, app, false);
 				app.enableAjax_ = false;
 			}
-			response.out().append("window.loadWidgetTree = function(){\n");
+			response.out().append("window.").append(app.getJavaScriptClass())
+					.append("LoadWidgetTree = function(){\n");
 			this.visibleOnly_ = false;
 			this.collectJavaScript();
 			this.updateLoadIndicator(this.collectedJS1_, app, true);
@@ -348,8 +350,11 @@ class WebRenderer implements SlotLearnerInterface {
 					this.collectedJS2_.toString()).append("};").append(
 					app.getJavaScriptClass()).append("._p_.setServerPush(")
 					.append(app.isUpdatesEnabled() ? "true" : "false").append(
-							");").append("window.WtScriptLoaded = true;")
-					.append("if (window.isLoaded) onLoad();\n");
+							");").append("window.").append(
+							app.getJavaScriptClass()).append(
+							"ScriptLoaded = true;").append("if (window.")
+					.append(app.getJavaScriptClass()).append("Loaded) ")
+					.append(app.getJavaScriptClass()).append("OnLoad();\n");
 		}
 	}
 
@@ -551,7 +556,8 @@ class WebRenderer implements SlotLearnerInterface {
 		this.loadScriptLibraries(response.out(), app, true);
 		response.out().append('\n').append(app.getBeforeLoadJavaScript());
 		if (!widgetset) {
-			response.out().append("window.loadWidgetTree = function(){\n");
+			response.out().append("window.").append(app.getJavaScriptClass())
+					.append("LoadWidgetTree = function(){\n");
 		}
 		if (app.bodyHtmlClassChanged_) {
 			response.out().append("document.body.parentNode.className='")
@@ -599,10 +605,10 @@ class WebRenderer implements SlotLearnerInterface {
 			response.out().append(app.getJavaScriptClass()).append(
 					"._p_.setServerPush(").append(
 					app.isUpdatesEnabled() ? "true" : "false").append(");");
-			response
-					.out()
-					.append(
-							"window.WtScriptLoaded = true;if (window.isLoaded) onLoad();\n");
+			response.out().append("window.").append(app.getJavaScriptClass())
+					.append("ScriptLoaded = true;").append("if (window.")
+					.append(app.getJavaScriptClass()).append("Loaded) ")
+					.append(app.getJavaScriptClass()).append("OnLoad();\n");
 		}
 		this.loadScriptLibraries(response.out(), app, false);
 	}
@@ -902,6 +908,7 @@ class WebRenderer implements SlotLearnerInterface {
 		boolean xhtml = this.session_.getEnv().getContentType() == WEnvironment.ContentType.XHTML1;
 		WApplication app = this.session_.getApp();
 		page.setVar("DOCTYPE", this.session_.getDocType());
+		page.setVar("APP_CLASS", "Wt");
 		String htmlAttr = "";
 		if (app != null && app.htmlClass_.length() != 0) {
 			htmlAttr = " class=\"" + app.htmlClass_ + "\"";
