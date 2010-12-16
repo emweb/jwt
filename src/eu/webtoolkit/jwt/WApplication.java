@@ -1521,7 +1521,7 @@ public class WApplication extends WObject {
 	 * <p>
 	 * This method has no effect.
 	 * <p>
-	 * Since {@link } 3.1.8, a communication method that works is detected at run
+	 * Since JWt 3.1.8, a communication method that works is detected at run
 	 * time. For widget set mode, cross-domain Ajax is chosen if available.
 	 * <p>
 	 * 
