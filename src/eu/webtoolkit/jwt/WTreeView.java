@@ -476,9 +476,7 @@ public class WTreeView extends WAbstractItemView {
 								+ " .Wt-tv-rowc').style.left= -obj.scrollLeft + 'px';}");
 			} else {
 				this.tieRowsScrollJS_
-						.setJavaScript("function(obj, event) {obj.parentNode.style.width = Wt3_1_7a.getCssRule('#"
-								+ this.getId()
-								+ " .cwidth').style.width;$('#"
+						.setJavaScript("function(obj, event) {$('#"
 								+ this.getId()
 								+ " .Wt-tv-rowc').parent().scrollLeft(obj.scrollLeft);}");
 			}

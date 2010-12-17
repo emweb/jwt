@@ -18,15 +18,19 @@ import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
 
 /**
- * An internal session event.
+ * A session event.
  * <p>
  * 
- * The request controller notifies the application to react to a request using
- * {@link WApplication#notify(WEvent e) WApplication#notify()}.
+ * The application is notified of an event (like a user interaction, a timeout
+ * or an internal keep-alive event) using {@link WApplication#notify(WEvent e)
+ * WApplication#notify()}.
+ * <p>
+ * You may want to check the event type using {@link WEvent#getEventType()
+ * getEventType()}.
  */
 public class WEvent {
 	/**
-	 * Return this event&apos;s {@link EventType EventType}.
+	 * Returns the event type.
 	 */
 	public EventType getEventType() {
 		return this.impl_.handler.getSession().getEventType(this);

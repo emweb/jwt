@@ -462,6 +462,10 @@ public class WTableView extends WAbstractItemView {
 							.getSpannerCount(Side.Left));
 				}
 			}
+			if (this.renderState_.getValue() >= WAbstractItemView.RenderState.NeedRerenderHeader
+					.getValue()) {
+				return;
+			}
 			WWidget hc = this.headers_.getWidget(column);
 			if (!this.isAjaxMode()) {
 				hc.getParent().setHidden(hidden);

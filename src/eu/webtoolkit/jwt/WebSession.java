@@ -378,8 +378,8 @@ class WebSession {
 						"Server push requires a Servlet 3.0 enabled servlet container and an application with async-supported enabled.");
 			}
 			if (handler.getRequest() != null) {
-				WEvent.Impl impl = new WEvent.Impl(handler);
-				handler.getSession().notifySignal(new WEvent(impl));
+				handler.getSession().notifySignal(
+						new WEvent(new WEvent.Impl(handler)));
 			}
 			if (handler.getResponse() != null) {
 				handler.getSession().render(handler);
@@ -398,8 +398,7 @@ class WebSession {
 				throw new WtException(
 						"doRecursiveEventLoop(): session was killed");
 			}
-			WEvent.Impl impl = new WEvent.Impl(handler);
-			this.app_.notify(new WEvent(impl));
+			this.app_.notify(new WEvent(new WEvent.Impl(handler)));
 			this.recursiveEventLoop_ = null;
 		} catch (IOException ioe) {
 			ioe.printStackTrace();
@@ -677,8 +676,6 @@ class WebSession {
 			return EventType.OtherEvent;
 		}
 		switch (this.state_) {
-		case JustCreated:
-			return EventType.OtherEvent;
 		case Loaded:
 			if (handler.getResponse().getResponseType() == WebRequest.ResponseType.Script) {
 				return EventType.OtherEvent;
@@ -694,20 +691,17 @@ class WebSession {
 						&& requestE.equals("resource") && resourceE != null) {
 					return EventType.OtherEvent;
 				} else {
-					if (signalE != null && signalE.equals("none")
-							|| signalE.equals("load") || signalE.equals("hash")
-							|| signalE.equals("res") || signalE.equals("poll")) {
-						return EventType.OtherEvent;
-					} else {
-						if (signalE != null && signalE.equals("user")) {
-							return EventType.UserEvent;
+					if (signalE != null) {
+						if (signalE.equals("none") || signalE.equals("load")
+								|| signalE.equals("hash")
+								|| signalE.equals("res")
+								|| signalE.equals("poll")) {
+							return EventType.OtherEvent;
 						} else {
-							int nextSignal = 0;
-							;
 							List<Integer> signalOrder = this
 									.getSignalProcessingOrder(event);
 							int timerSignals = 0;
-							for (int i = nextSignal; i < signalOrder.size(); ++i) {
+							for (int i = 0; i < signalOrder.size(); ++i) {
 								int signalI = signalOrder.get(i);
 								String se = signalI > 0 ? 'e' + String
 										.valueOf(signalI) : "";
@@ -715,15 +709,19 @@ class WebSession {
 								if (!(s != null)) {
 									break;
 								} else {
-									AbstractEventSignal esb = this
-											.decodeSignal(s);
-									WTimerWidget t = ((esb.getSender()) instanceof WTimerWidget ? (WTimerWidget) (esb
-											.getSender())
-											: null);
-									if (t != null) {
-										++timerSignals;
-									} else {
+									if (signalE.equals("user")) {
 										return EventType.UserEvent;
+									} else {
+										AbstractEventSignal esb = this
+												.decodeSignal(s);
+										WTimerWidget t = ((esb.getSender()) instanceof WTimerWidget ? (WTimerWidget) (esb
+												.getSender())
+												: null);
+										if (t != null) {
+											++timerSignals;
+										} else {
+											return EventType.UserEvent;
+										}
 									}
 								}
 							}
@@ -731,11 +729,14 @@ class WebSession {
 								return EventType.TimerEvent;
 							}
 						}
+					} else {
+						return EventType.OtherEvent;
 					}
 				}
 			}
+		default:
+			return EventType.OtherEvent;
 		}
-		return EventType.OtherEvent;
 	}
 
 	static class Handler {
@@ -959,8 +960,8 @@ class WebSession {
 								throw new WtException(
 										"Could not start application.");
 							}
-							WEvent.Impl impl = new WEvent.Impl(handler);
-							this.app_.notify(new WEvent(impl));
+							this.app_.notify(new WEvent(
+									new WEvent.Impl(handler)));
 							this.setLoaded();
 							if (this.env_.agentIsSpiderBot()) {
 								this.kill();
@@ -1020,8 +1021,8 @@ class WebSession {
 								throw new WtException(
 										"Could not start application.");
 							}
-							WEvent.Impl impl = new WEvent.Impl(handler);
-							this.app_.notify(new WEvent(impl));
+							this.app_.notify(new WEvent(
+									new WEvent.Impl(handler)));
 							this.setLoaded();
 						}
 						break;
@@ -1107,14 +1108,11 @@ class WebSession {
 							&& requestE.equals("resource");
 					if (requestForResource
 							|| !this.isUnlockRecursiveEventLoop()) {
-						{
-							WEvent.Impl impl = new WEvent.Impl(handler);
-							this.app_.notify(new WEvent(impl));
-						}
+						this.app_.notify(new WEvent(new WEvent.Impl(handler)));
 						if (handler.getResponse() != null
 								&& !requestForResource) {
-							WEvent.Impl impl = new WEvent.Impl(handler);
-							this.app_.notify(new WEvent(impl, true));
+							this.app_.notify(new WEvent(
+									new WEvent.Impl(handler), true));
 						}
 					}
 					this.setLoaded();
