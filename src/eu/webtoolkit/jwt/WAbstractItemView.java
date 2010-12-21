@@ -1046,14 +1046,14 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 		WAbstractItemView.Editor i = this.editedItems_.get(index);
 		if (i != null) {
 			WAbstractItemView.Editor editor = i;
+			WModelIndex closed = index;
+			this.editedItems_.remove(index);
 			if (saveData
 					|| !EnumUtils.mask(this.editOptions_,
 							WAbstractItemView.EditOption.SaveWhenClosed)
 							.isEmpty()) {
-				this.saveEditedValue(index, editor);
+				this.saveEditedValue(closed, editor);
 			}
-			WModelIndex closed = index;
-			this.editedItems_.remove(index);
 			this.modelDataChanged(closed, closed);
 		}
 	}
@@ -1522,13 +1522,28 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 		if ((this.rootIndex_ != null)) {
 			this.rootIndex_.encodeAsRawIndex();
 		}
+		for (Iterator<Map.Entry<WModelIndex, WAbstractItemView.Editor>> i_it = this.editedItems_
+				.entrySet().iterator(); i_it.hasNext();) {
+			Map.Entry<WModelIndex, WAbstractItemView.Editor> i = i_it.next();
+			this.persistEditor(i.getKey(), i.getValue());
+			i.getKey().encodeAsRawIndex();
+		}
 	}
 
 	void modelLayoutChanged() {
 		if ((this.rootIndex_ != null)) {
 			this.rootIndex_ = this.rootIndex_.decodeFromRawIndex();
 		}
-		this.editedItems_.clear();
+		Map<WModelIndex, WAbstractItemView.Editor> newEditorMap = new HashMap<WModelIndex, WAbstractItemView.Editor>();
+		for (Iterator<Map.Entry<WModelIndex, WAbstractItemView.Editor>> i_it = this.editedItems_
+				.entrySet().iterator(); i_it.hasNext();) {
+			Map.Entry<WModelIndex, WAbstractItemView.Editor> i = i_it.next();
+			WModelIndex m = i.getKey().decodeFromRawIndex();
+			if ((m != null)) {
+				newEditorMap.put(m, i.getValue());
+			}
+		}
+		this.editedItems_ = newEditorMap;
 		this.scheduleRerender(WAbstractItemView.RenderState.NeedRerenderData);
 	}
 
@@ -1832,6 +1847,75 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 				+ ", 'obj')." + jsMethod + "(obj, event);}");
 	}
 
+	protected boolean shiftEditors(WModelIndex parent, int start, int count,
+			boolean persistWhenShifted) {
+		boolean result = false;
+		if (!this.editedItems_.isEmpty()) {
+			List<WModelIndex> toClose = new ArrayList<WModelIndex>();
+			Map<WModelIndex, WAbstractItemView.Editor> newMap = new HashMap<WModelIndex, WAbstractItemView.Editor>();
+			for (Iterator<Map.Entry<WModelIndex, WAbstractItemView.Editor>> i_it = this.editedItems_
+					.entrySet().iterator(); i_it.hasNext();) {
+				Map.Entry<WModelIndex, WAbstractItemView.Editor> i = i_it
+						.next();
+				WModelIndex c = i.getKey();
+				WModelIndex p = c.getParent();
+				if (!(p == parent || (p != null && p.equals(parent)))
+						&& !WModelIndex.isAncestor(p, parent)) {
+					newMap.put(c, i.getValue());
+				} else {
+					if ((p == parent || (p != null && p.equals(parent)))) {
+						if (c.getRow() >= start) {
+							if (c.getRow() < start - count) {
+								toClose.add(c);
+							} else {
+								WModelIndex shifted = this.model_.getIndex(c
+										.getRow()
+										+ count, c.getColumn(), p);
+								newMap.put(shifted, i.getValue());
+								if (i.getValue().widget != null) {
+									if (persistWhenShifted) {
+										this.persistEditor(shifted, i
+												.getValue());
+									}
+									result = true;
+								}
+							}
+						} else {
+							newMap.put(c, i.getValue());
+						}
+					} else {
+						if (count < 0) {
+							do {
+								if ((p.getParent() == parent || (p.getParent() != null && p
+										.getParent().equals(parent)))
+										&& p.getRow() >= start
+										&& p.getRow() < start - count) {
+									toClose.add(c);
+									break;
+								} else {
+									p = p.getParent();
+								}
+							} while (!(p == parent || (p != null && p
+									.equals(parent))));
+						}
+					}
+				}
+			}
+			for (int i = 0; i < toClose.size(); ++i) {
+				this.closeEditor(toClose.get(i));
+			}
+			this.editedItems_ = newMap;
+		}
+		return result;
+	}
+
+	protected void persistEditor(WModelIndex index) {
+		WAbstractItemView.Editor i = this.editedItems_.get(index);
+		if (i != null) {
+			this.persistEditor(index, i);
+		}
+	}
+
 	static class Editor {
 		public Editor() {
 			this.widget = null;
@@ -1905,6 +1989,16 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 			editState = editor.editState;
 		}
 		delegate.setModelData(editState, this.getModel(), index);
+	}
+
+	private void persistEditor(WModelIndex index,
+			WAbstractItemView.Editor editor) {
+		if (editor.widget != null) {
+			editor.editState = this.getItemDelegate(index).getEditState(
+					editor.widget);
+			editor.stateSaved = true;
+			editor.widget = null;
+		}
 	}
 
 	abstract WWidget headerWidget(int column, boolean contentsOnly);

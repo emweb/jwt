@@ -1278,6 +1278,8 @@ public class WTreeView extends WAbstractItemView {
 							}
 						}
 						parentNode.normalizeSpacers();
+						parentNode.adjustChildrenHeight(-this.removedHeight_);
+						parentNode.shiftModelIndexes(start, -count);
 						if (end == this.getModel().getRowCount(parent) - 1
 								&& start >= 1) {
 							WTreeViewNode n = ((parentNode
@@ -1312,25 +1314,10 @@ public class WTreeView extends WAbstractItemView {
 				}
 			}
 		}
+		this.shiftModelIndexes(parent, start, -count);
 	}
 
 	private void modelRowsRemoved(WModelIndex parent, int start, int end) {
-		int count = end - start + 1;
-		if (this.renderState_ != WAbstractItemView.RenderState.NeedRerender
-				|| this.renderState_ != WAbstractItemView.RenderState.NeedRerenderData) {
-			WWidget parentWidget = this.widgetForIndex(parent);
-			if (parentWidget != null) {
-				WTreeViewNode parentNode = ((parentWidget) instanceof WTreeViewNode ? (WTreeViewNode) (parentWidget)
-						: null);
-				if (parentNode != null) {
-					if (parentNode.isChildrenLoaded()) {
-						parentNode.adjustChildrenHeight(-this.removedHeight_);
-						parentNode.shiftModelIndexes(start, -count);
-					}
-				}
-			}
-		}
-		this.shiftModelIndexes(parent, start, -count);
 		this.renderedRowsChanged(this.firstRemovedRow_, -this.removedHeight_);
 	}
 
@@ -1512,6 +1499,7 @@ public class WTreeView extends WAbstractItemView {
 				this.expandedSet_);
 		int removed = shiftModelIndexes(parent, start, count, this.getModel(),
 				this.getSelectionModel().selection_);
+		this.shiftEditors(parent, start, count, false);
 		if (removed != 0) {
 			this.selectionChanged().trigger();
 		}

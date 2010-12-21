@@ -85,9 +85,9 @@ public class WInPlaceEdit extends WCompositeWidget {
 		this.c2_ = new AbstractSignal.Connection();
 		this.setImplementation(this.impl_ = new WContainerWidget());
 		this.setInline(true);
-		this.text_ = new WText(text, TextFormat.PlainText, this.impl_);
+		this.text_ = new WText(WString.Empty, TextFormat.PlainText, this.impl_);
 		this.text_.getDecorationStyle().setCursor(Cursor.ArrowCursor);
-		this.edit_ = new WLineEdit(text.toString(), this.impl_);
+		this.edit_ = new WLineEdit(this.impl_);
 		this.edit_.setTextSize(20);
 		this.save_ = null;
 		this.cancel_ = null;
@@ -141,6 +141,7 @@ public class WInPlaceEdit extends WCompositeWidget {
 		});
 		this.edit_.escapePressed().preventDefaultAction();
 		this.setButtonsEnabled();
+		this.setText(text);
 	}
 
 	/**
@@ -170,27 +171,33 @@ public class WInPlaceEdit extends WCompositeWidget {
 	 * @see WInPlaceEdit#getText()
 	 */
 	public void setText(CharSequence text) {
-		if (!text.equals(WString.Empty)) {
+		if (!(text.length() == 0)) {
 			this.text_.setText(text);
+			this.empty_ = false;
 		} else {
 			this.text_.setText(this.emptyText_);
+			this.empty_ = true;
 		}
 		this.edit_.setText(text.toString());
 	}
 
 	/**
-	 * Sets the empty text to be shown when the field is empty and not editable.
+	 * Sets the empty text to be shown when the field is empty and not being
+	 * edited.
 	 * <p>
 	 * 
 	 * @see WInPlaceEdit#getEmptyText()
 	 */
 	public void setEmptyText(CharSequence emptyText) {
 		this.emptyText_ = WString.toWString(emptyText);
+		if (this.empty_) {
+			this.text_.setText(this.emptyText_);
+		}
 	}
 
 	/**
-	 * Returns the empty text to be shown when the field is empty and not
-	 * editable.
+	 * Returns the empty text to be shown when the field is empty and not being
+	 * edited.
 	 * <p>
 	 * 
 	 * @see WInPlaceEdit#setEmptyText(CharSequence emptyText)
@@ -248,8 +255,9 @@ public class WInPlaceEdit extends WCompositeWidget {
 	 * <p>
 	 * By default, the Save and Cancel buttons are shown. Call this function
 	 * with <code>enabled</code> = <code>false</code> to only show a line edit.
-	 * In this mode, the enter key has the effect of the save button and the
-	 * escape key has the effect of the cancel button.
+	 * <p>
+	 * In this mode, the enter key or any event that causes focus to be lost
+	 * saves the value while the escape key cancels the editing.
 	 */
 	public void setButtonsEnabled(boolean enabled) {
 		if (this.c1_.isConnected()) {
@@ -388,17 +396,18 @@ public class WInPlaceEdit extends WCompositeWidget {
 	private void save() {
 		this.edit_.hide();
 		this.text_.show();
-		if (!this.edit_.getText().equals(WString.Empty.toString())) {
-			this.text_.setText(this.edit_.getText());
-		} else {
-			this.text_.setText(this.emptyText_);
-		}
 		this.edit_.enable();
-		this.valueChanged().trigger(new WString(this.edit_.getText()));
+		boolean changed = this.empty_ ? this.edit_.getText().length() != 0
+				: !this.edit_.getText().equals(this.text_.getText().toString());
+		if (changed) {
+			this.setText(this.edit_.getText());
+			this.valueChanged().trigger(new WString(this.edit_.getText()));
+		}
 	}
 
 	private void cancel() {
-		this.edit_.setText(this.text_.getText().toString());
+		this.edit_.setText((this.empty_ ? WString.Empty : this.text_.getText())
+				.toString());
 	}
 
 	private Signal1<WString> valueChanged_;
@@ -410,4 +419,5 @@ public class WInPlaceEdit extends WCompositeWidget {
 	private WPushButton cancel_;
 	private AbstractSignal.Connection c1_;
 	private AbstractSignal.Connection c2_;
+	private boolean empty_;
 }

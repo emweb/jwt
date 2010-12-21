@@ -84,8 +84,6 @@ public class WItemDelegate extends WAbstractItemDelegate {
 		boolean editing = widget != null && widget.find("t") == null;
 		if (!EnumUtils.mask(flags, ViewItemRenderFlag.RenderEditing).isEmpty()) {
 			if (!editing) {
-				if (widget != null)
-					widget.remove();
 				widget = this.createEditor(index, flags);
 				WInteractWidget iw = ((widget) instanceof WInteractWidget ? (WInteractWidget) (widget)
 						: null);
@@ -96,8 +94,6 @@ public class WItemDelegate extends WAbstractItemDelegate {
 			}
 		} else {
 			if (editing) {
-				if (widget != null)
-					widget.remove();
 				widget = null;
 			}
 		}

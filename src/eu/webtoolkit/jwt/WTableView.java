@@ -693,6 +693,7 @@ public class WTableView extends WAbstractItemView {
 				this.closeEditor(this.getModel().getIndex(r, c), false);
 			}
 		}
+		this.shiftModelIndexes(start, -(end - start + 1));
 	}
 
 	private void modelRowsRemoved(WModelIndex parent, int start, int end) {
@@ -700,7 +701,6 @@ public class WTableView extends WAbstractItemView {
 				.equals(this.getRootIndex())))) {
 			return;
 		}
-		this.shiftModelIndexes(start, -(end - start + 1));
 		if (this.isAjaxMode()) {
 			this.canvas_.resize(this.canvas_.getWidth(), new WLength(this
 					.getCanvasHeight()));
@@ -731,7 +731,6 @@ public class WTableView extends WAbstractItemView {
 					int renderedRow = i - this.getFirstRow();
 					int renderedColumn = j - this.getFirstColumn();
 					WContainerWidget parentWidget;
-					WWidget w;
 					int wIndex;
 					if (this.isAjaxMode()) {
 						parentWidget = this.columnContainer(renderedColumn);
@@ -741,11 +740,15 @@ public class WTableView extends WAbstractItemView {
 								renderedRow + 1, renderedColumn);
 						wIndex = 0;
 					}
-					w = parentWidget.getWidget(wIndex);
+					WWidget current = parentWidget.getWidget(wIndex);
 					WModelIndex index = this.getModel().getIndex(i, j,
 							this.getRootIndex());
-					w = this.renderWidget(w, index);
+					WWidget w = this.renderWidget(current, index);
 					if (!(w.getParent() != null)) {
+						if (current != null) {
+							if (current != null)
+								current.remove();
+						}
 						parentWidget.insertWidget(wIndex, w);
 						if (!this.isAjaxMode() && !this.isEditing(index)) {
 							WInteractWidget wi = ((w) instanceof WInteractWidget ? (WInteractWidget) (w)
@@ -1467,6 +1470,10 @@ public class WTableView extends WAbstractItemView {
 					toShift.get(i).getColumn(), toShift.get(i).getParent());
 			set.add(newIndex);
 		}
+		this.shiftEditors(this.getRootIndex(), start, count, true);
+		if (!toErase.isEmpty()) {
+			this.selectionChanged().trigger();
+		}
 	}
 
 	private void renderSelected(boolean selected, WModelIndex index) {
@@ -1571,12 +1578,8 @@ public class WTableView extends WAbstractItemView {
 	}
 
 	private void deleteItem(int row, int col, WWidget w) {
-		WModelIndex index = this.getModel().getIndex(row, col,
-				this.getRootIndex());
-		if (this.isEditing(index)) {
-			this.setEditState(index, this.getItemDelegate(col).getEditState(w));
-			this.setEditorWidget(index, (WWidget) null);
-		}
+		this.persistEditor(this.getModel().getIndex(row, col,
+				this.getRootIndex()));
 		if (w != null)
 			w.remove();
 	}

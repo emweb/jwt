@@ -74,12 +74,7 @@ class WTreeViewNode extends WTable {
 			int thisNodeCount = this.view_.getModel().getColumnCount(parent);
 			for (int i = 0; i < thisNodeCount; ++i) {
 				WModelIndex child = this.childIndex(i);
-				if (this.view_.isEditing(child)) {
-					Object editState = this.view_.getItemDelegate(i)
-							.getEditState(this.getWidget(i));
-					this.view_.setEditState(child, editState);
-					this.view_.setEditorWidget(child, (WWidget) null);
-				}
+				this.view_.persistEditor(child);
 			}
 		}
 		super.remove();

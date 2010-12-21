@@ -241,6 +241,11 @@ public abstract class WAbstractItemModel extends WObject {
 	 * createIndex()} to create a model index that corresponds to the parent of
 	 * a given index.
 	 * <p>
+	 * Note that the index itself may be stale (referencing a row/column within
+	 * the parent that is outside the model geometry), but its parent
+	 * (identified by the {@link WModelIndex#getInternalPointer()
+	 * WModelIndex#getInternalPointer()}) is referencing an existing parent.
+	 * <p>
 	 * 
 	 * @see WAbstractItemModel#getIndex(int row, int column, WModelIndex parent)
 	 */
@@ -1295,8 +1300,9 @@ public abstract class WAbstractItemModel extends WObject {
 	 * Creates a model index for the given row and column.
 	 * <p>
 	 * Use this method to create a model index. <code>ptr</code> is an internal
-	 * pointer that may be used to associate the index with particular model
-	 * data.
+	 * pointer that may be used to identify the <b>parent</b> of the
+	 * corresponding item. For a flat table model, <code>ptr</code> can thus
+	 * always be 0.
 	 * <p>
 	 * 
 	 * @see WModelIndex#getInternalPointer()
