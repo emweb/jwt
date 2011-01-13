@@ -1548,8 +1548,12 @@ function encodeEvent(event, i) {
     } else if (el.type != 'file') {
       if ($(el).hasClass('Wt-edit-emptyText'))
 	v = '';
-      else
+      else {
+	/* For WTextEdit */
+	if (el.ed)
+	  el.ed.save();
 	v = '' + el.value;
+      }
 
       if (WT.hasFocus(el)) {
 	var range = WT.getSelectionRange(el);
@@ -1577,9 +1581,9 @@ function encodeEvent(event, i) {
   }
 
   var t = WT.target(e);
-  while (!t.id && t.parentNode)
+  while (t && !t.id && t.parentNode)
     t = t.parentNode;
-  if (t.id)
+  if (t && t.id)
     result += se + 'tid=' + t.id;
 
   try {
@@ -2148,7 +2152,7 @@ function jsLoaded(path)
 function loadScript(uri, symbol, tries)
 {
   function onerror() {
-    var t = tries === undefined ? 2 : tries;
+    var t = tries === undefined ? (WT.isIE ? 1 : 2) : tries;
     if (t > 1) {
       loadScript(uri, symbol, t - 1);
     } else {
@@ -2174,7 +2178,7 @@ function loadScript(uri, symbol, tries)
     s.onreadystatechange = function() {
       var rs = s.readyState;
       if (rs == 'loaded') {
-	if (WT.isOpera) {
+	if (WT.isOpera || WT.isIE) {
 	  jsLoaded(uri);
 	} else
 	  onerror();

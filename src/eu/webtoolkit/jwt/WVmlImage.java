@@ -279,14 +279,8 @@ public class WVmlImage implements WVectorImage {
 				AlignmentFlag.AlignHorizontalMask);
 		EnumSet<AlignmentFlag> verticalAlign = EnumUtils.mask(flags,
 				AlignmentFlag.AlignVerticalMask);
-		double fontSize;
-		switch (this.getPainter().getFont().getSize()) {
-		case FixedSize:
-			fontSize = this.getPainter().getFont().getFixedSize().toPixels();
-			break;
-		default:
-			fontSize = 16;
-		}
+		double fontSize = this.getPainter().getFont().getSizeLength()
+				.toPixels();
 		double y = rect.getCenter().getY();
 		switch (EnumUtils.enumFromSet(verticalAlign)) {
 		case AlignTop:
@@ -335,8 +329,8 @@ public class WVmlImage implements WVectorImage {
 		}
 		WApplication app = WApplication.getInstance();
 		WFont textFont = this.getPainter().getFont();
-		textFont.setSize(textFont.getSize(), WLength.multiply(textFont
-				.getFixedSize(), app.getEnvironment().getDpiScale()));
+		textFont.setSize(WFont.Size.FixedSize, WLength.multiply(textFont
+				.getSizeLength(), app.getEnvironment().getDpiScale()));
 		render.append(";font:").append(textFont.getCssText()).append(
 				"\"/></v:shape>");
 		if (!((this.getPainter().getRenderHints() & WPainter.RenderHint.LowQualityShadows
@@ -348,6 +342,23 @@ public class WVmlImage implements WVectorImage {
 					this.getCreateShadowFilter()).append(result.substring(pos));
 		}
 		this.rendered_.append(render.toString());
+	}
+
+	public WTextItem measureText(CharSequence text, double maxWidth,
+			boolean wordWrap) {
+		throw new WtLogicError("WVmlImage::measureText() not supported");
+	}
+
+	public final WTextItem measureText(CharSequence text) {
+		return measureText(text, -1, false);
+	}
+
+	public final WTextItem measureText(CharSequence text, double maxWidth) {
+		return measureText(text, maxWidth, false);
+	}
+
+	public WFontMetrics getFontMetrics() {
+		throw new WtLogicError("WVmlImage::fontMetrics() not (yet?) supported");
 	}
 
 	public void init() {

@@ -54,11 +54,11 @@ public class WSlider extends WCompositeWidget {
 	 */
 	public enum TickPosition {
 		/**
-		 * Render ticks above (horizontal slider).
+		 * {@link } ticks above (horizontal slider).
 		 */
 		TicksAbove,
 		/**
-		 * Render ticks below (horizontal slider).
+		 * {@link } ticks below (horizontal slider).
 		 */
 		TicksBelow;
 
@@ -544,7 +544,7 @@ public class WSlider extends WCompositeWidget {
 	public static final EnumSet<WSlider.TickPosition> NoTicks = EnumSet
 			.noneOf(WSlider.TickPosition.class);
 	/**
-	 * Render ticks on both sides.
+	 * {@link } ticks on both sides.
 	 */
 	public static final EnumSet<WSlider.TickPosition> TicksBothSides = EnumSet
 			.of(WSlider.TickPosition.TicksAbove,

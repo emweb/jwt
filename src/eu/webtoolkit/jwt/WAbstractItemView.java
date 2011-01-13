@@ -103,6 +103,39 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 		}
 	}
 
+	/**
+	 * Enumeration that specifies a scrolling option.
+	 * <p>
+	 * 
+	 * @see WAbstractItemView#scrollTo(WModelIndex index,
+	 *      WAbstractItemView.ScrollHint hint)
+	 */
+	public enum ScrollHint {
+		/**
+		 * Scrolls minimally to make it visible.
+		 */
+		EnsureVisible,
+		/**
+		 * Positions the item at the top of the viewport.
+		 */
+		PositionAtTop,
+		/**
+		 * Positions the item at the bottom of the viewport.
+		 */
+		PositionAtBottom,
+		/**
+		 * Positions the item at the center of the viewport.
+		 */
+		PositionAtCenter;
+
+		/**
+		 * Returns the numerical representation of this enum.
+		 */
+		public int getValue() {
+			return ordinal();
+		}
+	}
+
 	public void remove() {
 		if (this.headerHeightRule_ != null)
 			this.headerHeightRule_.remove();
@@ -132,6 +165,8 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 			this.modelConnections_.clear();
 		}
 		this.model_ = model;
+		;
+		this.headerModel_ = new HeaderProxyModel(this.model_, this);
 		WItemSelectionModel oldSelectionModel = this.selectionModel_;
 		this.selectionModel_ = new WItemSelectionModel(model, this);
 		this.selectionModel_.setSelectionBehavior(oldSelectionModel
@@ -192,8 +227,8 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	/**
 	 * Sets the default item delegate.
 	 * <p>
-	 * The previous delegate is removed but not deleted. This item delegate is
-	 * for all columns for which no specific item delegate is set.
+	 * The previous delegate is not deleted. This item delegate is for all
+	 * columns for which no specific item delegate is set.
 	 * <p>
 	 * The default item delegate is a {@link WItemDelegate}.
 	 * <p>
@@ -224,7 +259,7 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	/**
 	 * Sets the delegate for a column.
 	 * <p>
-	 * The previous delegate is removed but not deleted.
+	 * A delegate previously set (if any) is not deleted.
 	 * <p>
 	 * 
 	 * @see WAbstractItemView#setItemDelegate(WAbstractItemDelegate delegate)
@@ -276,6 +311,21 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 		return result != null ? result : this.itemDelegate_;
 	}
 
+	/**
+	 * Sets the header item delegate.
+	 * <p>
+	 * This item delegate is used for rendering items in the header.
+	 * <p>
+	 * The previous delegate is not deleted. This item delegate is for all
+	 * columns for which no specific item delegate is set.
+	 * <p>
+	 * The default item delegate is a {@link WItemDelegate}.
+	 */
+	public void setHeaderItemDelegate(WAbstractItemDelegate delegate) {
+		this.headerItemDelegate_ = delegate;
+	}
+
+	// public WAbstractItemDelegate getHeaderItemDelegate() ;
 	/**
 	 * Sets the content alignment for a column.
 	 * <p>
@@ -940,6 +990,27 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	public abstract void setCurrentPage(int page);
 
 	/**
+	 * Scrolls the view to an item.
+	 * <p>
+	 * Scrolls the view to ensure that the item which represents the provided
+	 * <code>index</code> is visible. A <code>hint</code> may indicate how the
+	 * item should appear in the viewport (if possible).
+	 */
+	public abstract void scrollTo(WModelIndex index,
+			WAbstractItemView.ScrollHint hint);
+
+	/**
+	 * Scrolls the view to an item.
+	 * <p>
+	 * Calls
+	 * {@link #scrollTo(WModelIndex index, WAbstractItemView.ScrollHint hint)
+	 * scrollTo(index, WAbstractItemView.ScrollHint.EnsureVisible)}
+	 */
+	public final void scrollTo(WModelIndex index) {
+		scrollTo(index, WAbstractItemView.ScrollHint.EnsureVisible);
+	}
+
+	/**
 	 * Configures what actions should trigger editing.
 	 * <p>
 	 * The default value is DoubleClicked.
@@ -1254,8 +1325,10 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 		this.dragEnabled_ = false;
 		this.dropsEnabled_ = false;
 		this.model_ = null;
+		this.headerModel_ = null;
 		this.rootIndex_ = null;
 		this.itemDelegate_ = null;
+		this.headerItemDelegate_ = null;
 		this.selectionModel_ = new WItemSelectionModel(
 				(WAbstractItemModel) null, this);
 		this.rowHeight_ = new WLength(20);
@@ -1284,6 +1357,7 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 				.of(WAbstractItemView.EditOption.SingleEditor);
 		this.setImplementation(this.impl_);
 		this.setItemDelegate(new WItemDelegate(this));
+		this.setHeaderItemDelegate(new WItemDelegate(this));
 		WApplication app = WApplication.getInstance();
 		if (app.getEnvironment().agentIsChrome()) {
 			this.impl_.setMargin(new WLength(1), EnumSet.of(Side.Right));
@@ -1547,6 +1621,26 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 		this.scheduleRerender(WAbstractItemView.RenderState.NeedRerenderData);
 	}
 
+	protected void modelHeaderDataChanged(Orientation orientation, int start,
+			int end) {
+		if (this.renderState_.getValue() < WAbstractItemView.RenderState.NeedRerenderHeader
+				.getValue()) {
+			if (orientation == Orientation.Horizontal) {
+				for (int i = start; i <= end; ++i) {
+					WContainerWidget hw = ((this.headerWidget(i, true)) instanceof WContainerWidget ? (WContainerWidget) (this
+							.headerWidget(i, true))
+							: null);
+					WWidget tw = hw.getWidget(hw.getCount() - 1);
+					this.headerItemDelegate_.update(tw, this.headerModel_
+							.getIndex(0, i), EnumSet
+							.noneOf(ViewItemRenderFlag.class));
+					tw.setInline(false);
+					tw.addStyleClass("Wt-label");
+				}
+			}
+		}
+	}
+
 	void modelReset() {
 		this.setModel(this.model_);
 	}
@@ -1679,22 +1773,23 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 						info.id);
 			}
 		}
-		WText t = new WText("&nbsp;", w);
-		t.setObjectName("text");
-		t.setStyleClass("Wt-label");
-		t.setInline(false);
-		if (this.multiLineHeader_ || app.getEnvironment().agentIsIE()) {
-			t.setWordWrap(true);
-		} else {
-			t.setWordWrap(false);
-		}
+		WWidget i = this.headerItemDelegate_.update((WWidget) null,
+				this.headerModel_.getIndex(0, column), EnumSet
+						.noneOf(ViewItemRenderFlag.class));
+		i.setInline(false);
+		i.addStyleClass("Wt-label");
+		w.addWidget(i);
 		if (info.sorting) {
-			this.clickedForSortMapper_.mapConnect(t.clicked(), info.id);
+			WInteractWidget ww = ((i) instanceof WInteractWidget ? (WInteractWidget) (i)
+					: null);
+			if (ww != null) {
+				this.clickedForSortMapper_.mapConnect(ww.clicked(), info.id);
+			}
 		}
 		WContainerWidget result = new WContainerWidget();
 		if (headerLevel != 0) {
 			WContainerWidget spacer = new WContainerWidget(result);
-			t = new WText(spacer);
+			WText t = new WText(spacer);
 			t.setInline(false);
 			if (rightBorderLevel < headerLevel) {
 				if (rightBorderLevel != 0) {
@@ -1743,16 +1838,7 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 		return result;
 	}
 
-	WText headerTextWidget(int column) {
-		WWidget hw = this.headerWidget(column);
-		if (hw != null) {
-			return ((hw.find("text")) instanceof WText ? (WText) (hw
-					.find("text")) : null);
-		} else {
-			return null;
-		}
-	}
-
+	// WText headerTextWidget(int column) ;
 	void handleClick(WModelIndex index, WMouseEvent event) {
 		boolean doEdit = !EnumUtils.mask(this.getEditTriggers(),
 				WAbstractItemView.EditTrigger.SelectedClicked).isEmpty()
@@ -1777,6 +1863,10 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 
 	void handleMouseDown(WModelIndex index, WMouseEvent event) {
 		this.mouseWentDown_.trigger(index, event);
+	}
+
+	protected void handleMouseUp(WModelIndex index, WMouseEvent event) {
+		this.mouseWentUp_.trigger(index, event);
 	}
 
 	boolean internalSelect(WModelIndex index, SelectionFlag option) {
@@ -1932,8 +2022,10 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	}
 
 	private WAbstractItemModel model_;
+	private WAbstractItemModel headerModel_;
 	private WModelIndex rootIndex_;
 	private WAbstractItemDelegate itemDelegate_;
+	private WAbstractItemDelegate headerItemDelegate_;
 	private WItemSelectionModel selectionModel_;
 	private WLength rowHeight_;
 	private WLength headerLineHeight_;

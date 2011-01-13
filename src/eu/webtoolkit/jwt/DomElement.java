@@ -858,7 +858,7 @@ class DomElement {
 	}
 
 	public boolean isDefaultInline() {
-		return defaultInline_[this.type_.getValue()];
+		return isDefaultInline(this.type_);
 	}
 
 	public void declare(EscapeOStream out) {
@@ -889,7 +889,7 @@ class DomElement {
 						style.append("cursor:pointer;cursor:hand;");
 					} else {
 						style.append(
-								cssNames[j.getKey().getValue()
+								cssNames_[j.getKey().getValue()
 										- Property.PropertyStylePosition
 												.getValue()]).append(':')
 								.append(j.getValue()).append(';');
@@ -956,6 +956,24 @@ class DomElement {
 				|| element == DomElementType.DomElement_AREA
 				|| element == DomElementType.DomElement_COL
 				|| element == DomElementType.DomElement_INPUT;
+	}
+
+	public static DomElementType parseTagName(String tag) {
+		for (int i = 0; i < DomElementType.DomElement_UNKNOWN.getValue(); ++i) {
+			if (tag.equals(elementNames_[i])) {
+				return DomElementType.values()[i];
+			}
+		}
+		return DomElementType.DomElement_UNKNOWN;
+	}
+
+	public static String cssName(Property property) {
+		return cssNames_[property.getValue()
+				- Property.PropertyStylePosition.getValue()];
+	}
+
+	public static boolean isDefaultInline(DomElementType type) {
+		return defaultInline_[type.getValue()];
 	}
 
 	public String getJavaScript() {
@@ -1209,7 +1227,7 @@ class DomElement {
 						&& i.getKey().getValue() <= Property.PropertyStyleDisplay
 								.getValue()) {
 					out.append(this.var_).append(".style.").append(
-							cssCamelNames[i.getKey().getValue()
+							cssCamelNames_[i.getKey().getValue()
 									- Property.PropertyStyle.getValue()])
 							.append("='").append(i.getValue()).append("';");
 				}
@@ -1427,41 +1445,42 @@ class DomElement {
 	private EscapeOStream childrenHtml_;
 	private List<DomElement.TimeoutEvent> timeouts_;
 	private boolean discardWithParent_;
-	private static String[] cssNames = { "position", "z-index", "float",
-			"clear", "width", "height", "line-height", "min-width",
-			"min-height", "max-width", "max-height", "left", "right", "top",
-			"bottom", "vertical-align", "text-align", "padding",
-			"padding-right", "padding-left", "margin-top", "margin-right",
-			"margin-bottom", "margin-left", "cursor", "border-top",
-			"border-right", "border-bottom", "border-left", "color",
-			"overflow", "overflow", "opacity", "font-family", "font-style",
-			"font-variant", "font-weight", "font-size", "background-color",
-			"background-image", "background-repeat", "background-attachment",
-			"background-position", "text-decoration", "white-space",
-			"table-layout", "border-spacing", "zoom", "visibility", "display" };
-	private static String[] cssCamelNames = { "cssText", "width", "position",
-			"zIndex", "cssFloat", "clear", "width", "height", "lineHeight",
-			"minWidth", "minHeight", "maxWidth", "maxHeight", "left", "right",
-			"top", "bottom", "verticalAlign", "textAlign", "padding",
-			"paddingRight", "paddingLeft", "marginTop", "marginRight",
-			"marginBottom", "marginLeft", "cursor", "borderTop", "borderRight",
-			"borderBottom", "borderLeft", "color", "overflow", "overflow",
-			"opacity", "fontFamily", "fontStyle", "fontVariant", "fontWeight",
-			"fontSize", "backgroundColor", "backgroundImage",
-			"backgroundRepeat", "backgroundAttachment", "backgroundPosition",
-			"textDecoration", "whiteSpace", "tableLayout", "borderSpacing",
-			"zoom", "visibility", "display" };
 	static String[] elementNames_ = { "a", "br", "button", "col", "div",
 			"fieldset", "form", "h1", "h2", "h3", "h4", "h5", "h6", "iframe",
 			"img", "input", "label", "legend", "li", "ol", "option", "ul",
-			"script", "select", "span", "table", "tbody", "thead", "th", "td",
-			"textarea", "tr", "p", "canvas", "map", "area", "object", "param",
-			"audio", "video", "source" };
+			"script", "select", "span", "table", "tbody", "thead", "tfoot",
+			"th", "td", "textarea", "tr", "p", "canvas", "map", "area",
+			"object", "param", "audio", "video", "source", "strong", "em" };
 	static boolean[] defaultInline_ = { true, true, true, false, false, false,
 			false, true, false, false, false, false, false, true, true, true,
 			true, true, false, false, true, false, false, true, true, false,
-			false, false, false, false, true, false, false, false, false, true,
-			false, false, false, false, false };
+			false, false, false, false, false, true, false, false, false,
+			false, true, false, false, false, false, false, true, true };
+	static String[] cssNames_ = { "position", "z-index", "float", "clear",
+			"width", "height", "line-height", "min-width", "min-height",
+			"max-width", "max-height", "left", "right", "top", "bottom",
+			"vertical-align", "text-align", "padding", "padding-top",
+			"padding-right", "padding-bottom", "padding-left", "margin-top",
+			"margin-right", "margin-bottom", "margin-left", "cursor",
+			"border-top", "border-right", "border-bottom", "border-left",
+			"color", "overflow", "overflow", "opacity", "font-family",
+			"font-style", "font-variant", "font-weight", "font-size",
+			"background-color", "background-image", "background-repeat",
+			"background-attachment", "background-position", "text-decoration",
+			"white-space", "table-layout", "border-spacing", "zoom",
+			"visibility", "display" };
+	static String[] cssCamelNames_ = { "cssText", "width", "position",
+			"zIndex", "cssFloat", "clear", "width", "height", "lineHeight",
+			"minWidth", "minHeight", "maxWidth", "maxHeight", "left", "right",
+			"top", "bottom", "verticalAlign", "textAlign", "padding",
+			"paddingTop", "paddingRight", "paddingBottom", "paddingLeft",
+			"marginTop", "marginRight", "marginBottom", "marginLeft", "cursor",
+			"borderTop", "borderRight", "borderBottom", "borderLeft", "color",
+			"overflow", "overflow", "opacity", "fontFamily", "fontStyle",
+			"fontVariant", "fontWeight", "fontSize", "backgroundColor",
+			"backgroundImage", "backgroundRepeat", "backgroundAttachment",
+			"backgroundPosition", "textDecoration", "whiteSpace",
+			"tableLayout", "borderSpacing", "zoom", "visibility", "display" };
 	static final String unsafeChars_ = " $&+,:;=?@'\"<>#%{}|\\^~[]`";
 	private static int nextId_ = 0;
 }

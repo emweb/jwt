@@ -253,6 +253,22 @@ public abstract class WWidget extends WObject {
 	public abstract WLength getWidth();
 
 	/**
+	 * Sets the width.
+	 * <p>
+	 * Sets the width for this widget by calling resize(width, WLength(100,
+	 * WLength::Percentage)).
+	 * <p>
+	 * This applies to CSS-based layout.
+	 * <p>
+	 * 
+	 * @see WWidget#resize(WLength width, WLength height)
+	 * @see WWidget#getWidth()
+	 */
+	public void setWidth(WLength width) {
+		this.resize(width, new WLength(100, WLength.Unit.Percentage));
+	}
+
+	/**
 	 * Returns the height.
 	 * <p>
 	 * Returns the height set for this widget. This is not a calculated height,
@@ -266,6 +282,22 @@ public abstract class WWidget extends WObject {
 	 * @see WWidget#getWidth()
 	 */
 	public abstract WLength getHeight();
+
+	/**
+	 * Sets the height.
+	 * <p>
+	 * Sets the height for this widget by calling resize(WLength(100,
+	 * WLength::Percentage), height).
+	 * <p>
+	 * This applies to CSS-based layout.
+	 * <p>
+	 * 
+	 * @see WWidget#resize(WLength width, WLength height)
+	 * @see WWidget#getHeight()
+	 */
+	public void setHeight(WLength height) {
+		this.resize(new WLength(100, WLength.Unit.Percentage), height);
+	}
 
 	/**
 	 * Sets a minimum size.
@@ -1083,6 +1115,22 @@ public abstract class WWidget extends WObject {
 	 * default.
 	 */
 	public abstract void setSelectable(boolean selectable);
+
+	/**
+	 * Executes the given JavaScript statements, possibly delayed until after
+	 * the widget is rendered.
+	 * <p>
+	 * Calling
+	 * {@link WApplication#doJavaScript(String javascript, boolean afterLoaded)
+	 * WApplication#doJavaScript()} with JavaScript code that refers to a widget
+	 * that is still to be rendered causes JavaScript errors. This happens for
+	 * example when an object is created, but not yet inserted in the widget
+	 * tree.
+	 * <p>
+	 * This method offers an alternative: it queues up all doJavaScript calls
+	 * for widgets that were not yet rendered until they are rendered.
+	 */
+	public abstract void doJavaScript(String js);
 
 	/**
 	 * Returns whether the widget is rendered.

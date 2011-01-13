@@ -181,7 +181,9 @@ public class WChart2DRenderer {
 		this.renderSeries();
 		this.renderAxes(EnumSet.of(WChart2DRenderer.AxisProperty.Line,
 				WChart2DRenderer.AxisProperty.Labels));
+		this.painter_.restore();
 		this.renderLegend();
+		this.painter_.save();
 	}
 
 	/**
@@ -544,6 +546,9 @@ public class WChart2DRenderer {
 	 */
 	protected void renderLegend() {
 		boolean vertical = this.chart_.getOrientation() == Orientation.Vertical;
+		int w = vertical ? this.width_ : this.height_;
+		int h = vertical ? this.height_ : this.width_;
+		final int margin = 10;
 		if (this.chart_.isLegendEnabled()) {
 			int numSeriesWithLegend = 0;
 			for (int i = 0; i < this.chart_.getSeries().size(); ++i) {
@@ -551,35 +556,137 @@ public class WChart2DRenderer {
 					++numSeriesWithLegend;
 				}
 			}
-			final int lineHeight = 25;
-			int x = (int) (vertical ? this.chartArea_.getRight() : this.height_
-					- this.chartArea_.getTop()) + 20;
-			if (vertical && this.chart_.getAxis(Axis.Y2Axis).isVisible()) {
-				x += 40;
+			WFont f = this.painter_.getFont();
+			int numLegendRows = (numSeriesWithLegend - 1)
+					/ this.chart_.getLegendColumns() + 1;
+			double lineHeight = f.getSizeLength().toPixels() * 1.5;
+			int legendWidth = (int) this.chart_.getLegendColumnWidth()
+					.toPixels()
+					* Math.min(this.chart_.getLegendColumns(),
+							numSeriesWithLegend);
+			int legendHeight = (int) (numLegendRows * lineHeight);
+			int x = 0;
+			int y = 0;
+			switch (this.chart_.getLegendSide()) {
+			case Left:
+				if (this.chart_.getLegendLocation() == LegendLocation.LegendInside) {
+					x = this.chart_.getPlotAreaPadding(Side.Left) + margin;
+				} else {
+					x = this.chart_.getPlotAreaPadding(Side.Left) - margin
+							- legendWidth;
+				}
+				break;
+			case Right:
+				x = w - this.chart_.getPlotAreaPadding(Side.Right);
+				if (this.chart_.getLegendLocation() == LegendLocation.LegendInside) {
+					x -= margin + legendWidth;
+				} else {
+					x += margin;
+				}
+				break;
+			case Top:
+				if (this.chart_.getLegendLocation() == LegendLocation.LegendInside) {
+					y = this.chart_.getPlotAreaPadding(Side.Top) + margin;
+				} else {
+					y = this.chart_.getPlotAreaPadding(Side.Top) - margin
+							- legendHeight;
+				}
+				break;
+			case Bottom:
+				y = h - this.chart_.getPlotAreaPadding(Side.Bottom);
+				if (this.chart_.getLegendLocation() == LegendLocation.LegendInside) {
+					y -= margin + legendHeight;
+				} else {
+					y += margin;
+				}
+			default:
+				break;
 			}
-			int y = (vertical ? (int) this.chartArea_.getCenter().getY()
-					: (int) this.chartArea_.getCenter().getX())
-					- lineHeight * numSeriesWithLegend / 2;
-			this.painter_.setPen(new WPen());
-			for (int i = 0; i < this.chart_.getSeries().size(); ++i) {
-				if (this.chart_.getSeries().get(i).isLegendEnabled()) {
-					this.chart_
-							.renderLegendItem(this.painter_, new WPointF(x, y
-									+ lineHeight / 2), this.chart_.getSeries()
-									.get(i));
-					y += lineHeight;
+			switch (this.chart_.getLegendAlignment()) {
+			case AlignTop:
+				y = this.chart_.getPlotAreaPadding(Side.Top) + margin;
+				break;
+			case AlignMiddle: {
+				double middle = this.chart_.getPlotAreaPadding(Side.Top)
+						+ (h - this.chart_.getPlotAreaPadding(Side.Top) - this.chart_
+								.getPlotAreaPadding(Side.Bottom)) / 2;
+				y = (int) (middle - legendHeight / 2);
+			}
+				break;
+			case AlignBottom:
+				y = h - this.chart_.getPlotAreaPadding(Side.Bottom) - margin
+						- legendHeight;
+				break;
+			case AlignLeft:
+				x = this.chart_.getPlotAreaPadding(Side.Left) + margin;
+				break;
+			case AlignCenter: {
+				double center = this.chart_.getPlotAreaPadding(Side.Left)
+						+ (w - this.chart_.getPlotAreaPadding(Side.Left) - this.chart_
+								.getPlotAreaPadding(Side.Right)) / 2;
+				x = (int) (center - legendWidth / 2);
+			}
+				break;
+			case AlignRight:
+				x = w - this.chart_.getPlotAreaPadding(Side.Right) - margin
+						- legendWidth;
+				break;
+			default:
+				break;
+			}
+			if (this.chart_.getLegendLocation() == LegendLocation.LegendOutside) {
+				if (this.chart_.getLegendSide() == Side.Top && !vertical
+						&& this.chart_.getAxis(Axis.Y1Axis).isVisible()) {
+					y -= 16;
+				}
+				if (this.chart_.getLegendSide() == Side.Right && vertical
+						&& this.chart_.getAxis(Axis.Y2Axis).isVisible()) {
+					x += 40;
+				}
+				if (this.chart_.getLegendSide() == Side.Bottom
+						&& (vertical
+								&& this.chart_.getAxis(Axis.XAxis).isVisible() || !vertical
+								&& this.chart_.getAxis(Axis.Y2Axis).isVisible())) {
+					y += 16;
+				}
+				if (this.chart_.getLegendSide() == Side.Left
+						&& (vertical
+								&& this.chart_.getAxis(Axis.Y1Axis).isVisible() || !vertical
+								&& this.chart_.getAxis(Axis.XAxis).isVisible())) {
+					x -= 40;
 				}
 			}
+			this.painter_.setPen(this.chart_.getLegendBorder());
+			this.painter_.setBrush(this.chart_.getLegendBackground());
+			this.painter_.drawRect(x - margin / 2, y - margin / 2, legendWidth
+					+ margin, legendHeight + margin);
+			this.painter_.setPen(new WPen());
+			this.painter_.save();
+			this.painter_.setFont(this.chart_.getLegendFont());
+			int item = 0;
+			for (int i = 0; i < this.chart_.getSeries().size(); ++i) {
+				if (this.chart_.getSeries().get(i).isLegendEnabled()) {
+					int col = item % this.chart_.getLegendColumns();
+					int row = item / this.chart_.getLegendColumns();
+					double itemX = x + col
+							* this.chart_.getLegendColumnWidth().toPixels();
+					double itemY = y + row * lineHeight;
+					this.chart_.renderLegendItem(this.painter_, new WPointF(
+							itemX, itemY + lineHeight / 2), this.chart_
+							.getSeries().get(i));
+					++item;
+				}
+			}
+			this.painter_.restore();
 		}
 		if (!(this.chart_.getTitle().length() == 0)) {
-			int x = vertical ? this.width_ / 2 : this.height_ / 2;
-			WFont oldFont = this.painter_.getFont();
-			WFont titleFont = this.chart_.getTitleFont();
-			this.painter_.setFont(titleFont);
+			int x = w / 2;
+			this.painter_.save();
+			this.painter_.setFont(this.chart_.getTitleFont());
 			this.painter_.drawText(x - 50, 5, 100, 50, EnumSet.of(
 					AlignmentFlag.AlignCenter, AlignmentFlag.AlignTop),
 					this.chart_.getTitle());
-			this.painter_.setFont(oldFont);
+			this.painter_.restore();
 		}
 	}
 
@@ -1027,9 +1134,12 @@ public class WChart2DRenderer {
 								WModelIndex yIndex = null;
 								double x;
 								if (scatterPlot) {
-									if (this.chart_.XSeriesColumn() != -1) {
-										xIndex = model.getIndex(row,
-												this.chart_.XSeriesColumn());
+									int c = series.get(i).XSeriesColumn();
+									if (c == -1) {
+										c = this.chart_.XSeriesColumn();
+									}
+									if (c != -1) {
+										xIndex = model.getIndex(row, c);
 										x = StringUtils.asNumber(model
 												.getData(xIndex));
 									} else {

@@ -343,7 +343,7 @@ public class WVirtualImage extends WCompositeWidget {
 	}
 
 	/**
-	 * Render a grid image for the given rectangle.
+	 * {@link } a grid image for the given rectangle.
 	 * <p>
 	 * Returns a resource that streams an image which renders the rectangle
 	 * which spans image coordinates with left upper corner (x, y) and given

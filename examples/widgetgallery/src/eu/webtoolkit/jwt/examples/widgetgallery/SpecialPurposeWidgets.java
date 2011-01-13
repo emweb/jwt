@@ -52,30 +52,143 @@ class SpecialPurposeWidgets extends ControlsWidget {
 		WContainerWidget result = new WContainerWidget();
 		this.topic("WGoogleMap", result);
 		new WText(tr("specialpurposewidgets-WGoogleMap"), result);
-		WTable layout = new WTable(result);
-		final WGoogleMap map = new WGoogleMap(layout.getElementAt(0, 0));
+		WContainerWidget mapContainer = new WContainerWidget(result);
+		WHBoxLayout layout = new WHBoxLayout();
+		mapContainer.setLayout(layout);
+		final WGoogleMap map = new WGoogleMap(WGoogleMap.ApiVersion.Version3);
+		layout.addWidget(map, 1);
 		map.resize(new WLength(700), new WLength(500));
 		map.setMapTypeControl(WGoogleMap.MapTypeControl.DefaultControl);
 		map.enableScrollWheelZoom();
-		layout.getElementAt(0, 1).setPadding(new WLength(3));
-		WContainerWidget zoomContainer = new WContainerWidget(layout
-				.getElementAt(0, 1));
-		new WText("Zoom: ", zoomContainer);
-		WPushButton zoomIn = new WPushButton("+", zoomContainer);
+		WTemplate controls = new WTemplate(
+				tr("specialpurposewidgets-WGoogleMap-controls"));
+		layout.addWidget(controls);
+		WPushButton zoomIn = new WPushButton("+");
+		controls.bindWidget("zoom-in", zoomIn);
 		zoomIn.clicked().addListener(map, new Signal1.Listener<WMouseEvent>() {
 			public void trigger(WMouseEvent e1) {
 				map.zoomIn();
 			}
 		});
-		WPushButton zoomOut = new WPushButton("-", zoomContainer);
+		WPushButton zoomOut = new WPushButton("-");
+		controls.bindWidget("zoom-out", zoomOut);
 		zoomOut.clicked().addListener(map, new Signal1.Listener<WMouseEvent>() {
 			public void trigger(WMouseEvent e1) {
 				map.zoomOut();
 			}
 		});
+		WPushButton brussels = new WPushButton("Brussels");
+		controls.bindWidget("brussels", brussels);
+		brussels.clicked().addListener(map, new Signal.Listener() {
+			public void trigger() {
+				map.panTo(new WGoogleMap.Coordinate(50.85034, 4.35171));
+			}
+		});
+		WPushButton lisbon = new WPushButton("Lisbon");
+		controls.bindWidget("lisbon", lisbon);
+		lisbon.clicked().addListener(map, new Signal.Listener() {
+			public void trigger() {
+				map.panTo(new WGoogleMap.Coordinate(38.703731, -9.135475));
+			}
+		});
+		WPushButton paris = new WPushButton("Paris");
+		controls.bindWidget("paris", paris);
+		paris.clicked().addListener(map, new Signal.Listener() {
+			public void trigger() {
+				map.panTo(new WGoogleMap.Coordinate(48.877474, 2.312579));
+			}
+		});
+		WPushButton savePosition = new WPushButton("Save current position");
+		controls.bindWidget("save-position", savePosition);
+		savePosition.clicked().addListener(new WidgetCreator() {
+			public WWidget create() {
+				return map.savePosition();
+			}
+		});
+		WPushButton returnToPosition = new WPushButton(
+				"Return to saved position");
+		controls.bindWidget("return-to-saved-position", returnToPosition);
+		returnToPosition.setEnabled(false);
+		returnToPosition.clicked().addListener(new WidgetCreator() {
+			public WWidget create() {
+				return map.returnToSavedPosition();
+			}
+		});
+		savePosition.clicked().addListener(returnToPosition,
+				new Signal.Listener() {
+					public void trigger() {
+						returnToPosition.setEnabled(true);
+					}
+				});
+		WAbstractItemModel ctm = new WStandardItemModel();
+		this.addItem(ctm, "No control", WGoogleMap.MapTypeControl.NoControl);
+		this.addItem(ctm, "Default", WGoogleMap.MapTypeControl.DefaultControl);
+		this.addItem(ctm, "Menu", WGoogleMap.MapTypeControl.MenuControl);
+		if (map.getApiVersion() == WGoogleMap.ApiVersion.Version2) {
+			this.addItem(ctm, "Hierarchical",
+					WGoogleMap.MapTypeControl.HierarchicalControl);
+		}
+		if (map.getApiVersion() == WGoogleMap.ApiVersion.Version3) {
+			this.addItem(ctm, "Horizontal bar",
+					WGoogleMap.MapTypeControl.HorizontalBarControl);
+		}
+		WComboBox menuControls = new WComboBox();
+		menuControls.setModel(ctm);
+		controls.bindWidget("control-menu-combo", menuControls);
+		menuControls.activated().addListener(this, new Signal.Listener() {
+			public void trigger() {
+				SpecialPurposeWidgets.this.setMapTypeControl(map, ctm, _1);
+			}
+		});
+		menuControls.setCurrentIndex(1);
+		WCheckBox draggingCB = new WCheckBox("Enable dragging ");
+		controls.bindWidget("dragging-cb", draggingCB);
+		draggingCB.setChecked(true);
+		map.enableDragging();
+		draggingCB.checked().addListener(new WidgetCreator() {
+			public WWidget create() {
+				return map.enableDragging();
+			}
+		});
+		draggingCB.unChecked().addListener(new WidgetCreator() {
+			public WWidget create() {
+				return map.disableDragging();
+			}
+		});
+		WCheckBox enableDoubleClickZoomCB = new WCheckBox(
+				"Enable double click zoom ");
+		controls.bindWidget("double-click-zoom-cb", enableDoubleClickZoomCB);
+		enableDoubleClickZoomCB.setChecked(false);
+		map.disableDoubleClickZoom();
+		enableDoubleClickZoomCB.checked().addListener(new WidgetCreator() {
+			public WWidget create() {
+				return map.enableDoubleClickZoom();
+			}
+		});
+		enableDoubleClickZoomCB.unChecked().addListener(new WidgetCreator() {
+			public WWidget create() {
+				return map.disableDoubleClickZoom();
+			}
+		});
+		WCheckBox enableScrollWheelZoomCB = new WCheckBox(
+				"Enable scroll wheel zoom ");
+		controls.bindWidget("scroll-wheel-zoom-cb", enableScrollWheelZoomCB);
+		enableScrollWheelZoomCB.setChecked(true);
+		map.enableScrollWheelZoom();
+		enableScrollWheelZoomCB.checked().addListener(new WidgetCreator() {
+			public WWidget create() {
+				return map.enableScrollWheelZoom();
+			}
+		});
+		enableScrollWheelZoomCB.unChecked().addListener(new WidgetCreator() {
+			public WWidget create() {
+				return map.disableScrollWheelZoom();
+			}
+		});
 		List<WGoogleMap.Coordinate> road = new ArrayList<WGoogleMap.Coordinate>();
 		this.roadDescription(road);
 		map.addPolyline(road, new WColor(0, 191, 255));
+		map.addMarker(new WGoogleMap.Coordinate(50.885069, 4.71958));
 		map.setCenter(road.get(road.size() - 1));
 		map
 				.openInfoWindow(road.get(0),
@@ -285,5 +398,20 @@ class SpecialPurposeWidgets extends ControlsWidget {
 				String.valueOf(c.getLatitude())).append(",").append(
 				String.valueOf(c.getLongitude())).append(")");
 		this.ed_.setStatus(strm.toString());
+	}
+
+	private void addItem(WAbstractItemModel model, CharSequence description,
+			WGoogleMap.MapTypeControl value) {
+		int r = model.getRowCount();
+		model.insertRow(r);
+		model.setData(r, 0, description);
+		model.setData(r, 0, value, ItemDataRole.UserRole);
+	}
+
+	private void setMapTypeControl(WGoogleMap map, WAbstractItemModel model,
+			int row) {
+		WGoogleMap.MapTypeControl mtc = (WGoogleMap.MapTypeControl) model
+				.getData(row, 0, ItemDataRole.UserRole);
+		map.setMapTypeControl(mtc);
 	}
 }

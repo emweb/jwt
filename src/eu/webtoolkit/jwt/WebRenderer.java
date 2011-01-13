@@ -328,13 +328,15 @@ class WebRenderer implements SlotLearnerInterface {
 						.append(app.domRoot_.getJsRef())
 						.append(
 								";var form = Wt3_1_7a.getElement('Wt-form');domRoot.style.display = form.style.display;document.body.replaceChild(domRoot, form);");
-				this.loadScriptLibraries(this.collectedJS1_, app, true);
+				int librariesLoaded = this.loadScriptLibraries(
+						this.collectedJS1_, app);
 				this.collectedJS1_.append(app.getNewBeforeLoadJavaScript());
 				this.collectedJS2_.append(
 						"domRoot.style.visibility = 'visible';").append(
 						app.getJavaScriptClass()).append(
 						"._p_.autoJavaScript();");
-				this.loadScriptLibraries(this.collectedJS2_, app, false);
+				this.loadScriptLibraries(this.collectedJS2_, app,
+						librariesLoaded);
 				app.enableAjax_ = false;
 			}
 			response.out().append("window.").append(app.getJavaScriptClass())
@@ -397,7 +399,8 @@ class WebRenderer implements SlotLearnerInterface {
 				&& (app.internalPathIsChanged_ && !app.oldInternalPath_
 						.equals(app.newInternalPath_))) {
 			app.oldInternalPath_ = app.newInternalPath_;
-			this.session_.redirect(app.getBookmarkUrl(app.newInternalPath_));
+			this.session_.redirect(this.session_.appendSessionQuery(app
+					.getBookmarkUrl(app.newInternalPath_)));
 		}
 		String redirect = this.session_.getRedirect();
 		if (redirect.length() != 0) {
@@ -553,8 +556,8 @@ class WebRenderer implements SlotLearnerInterface {
 		app.styleSheetsAdded_ = app.styleSheets_.size();
 		this.loadStyleSheets(response.out(), app);
 		app.scriptLibrariesAdded_ = app.scriptLibraries_.size();
-		this.loadScriptLibraries(response.out(), app, true);
-		response.out().append('\n').append(app.getBeforeLoadJavaScript());
+		int librariesLoaded = this.loadScriptLibraries(response.out(), app);
+		response.out().append('\n').append(app.getNewBeforeLoadJavaScript());
 		if (!widgetset) {
 			response.out().append("window.").append(app.getJavaScriptClass())
 					.append("LoadWidgetTree = function(){\n");
@@ -610,7 +613,7 @@ class WebRenderer implements SlotLearnerInterface {
 					.append(app.getJavaScriptClass()).append("Loaded) ")
 					.append(app.getJavaScriptClass()).append("OnLoad();\n");
 		}
-		this.loadScriptLibraries(response.out(), app, false);
+		this.loadScriptLibraries(response.out(), app, librariesLoaded);
 	}
 
 	// private void serveWidgetSet(WebResponse request) ;
@@ -631,8 +634,8 @@ class WebRenderer implements SlotLearnerInterface {
 					.append("';");
 			app.bodyHtmlClassChanged_ = false;
 		}
-		this.loadScriptLibraries(this.collectedJS1_, app, true);
-		this.loadScriptLibraries(this.collectedJS2_, app, false);
+		int librariesLoaded = this.loadScriptLibraries(this.collectedJS1_, app);
+		this.loadScriptLibraries(this.collectedJS2_, app, librariesLoaded);
 		this.collectedJS1_.append(app.getNewBeforeLoadJavaScript());
 		if (app.domRoot2_ != null) {
 			app.domRoot2_.rootAsJavaScript(app, this.collectedJS1_, false);
@@ -750,10 +753,10 @@ class WebRenderer implements SlotLearnerInterface {
 		app.styleSheetsAdded_ = 0;
 	}
 
-	private void loadScriptLibraries(Writer out, WApplication app, boolean start)
+	private int loadScriptLibraries(Writer out, WApplication app, int count)
 			throws IOException {
-		int first = app.scriptLibraries_.size() - app.scriptLibrariesAdded_;
-		if (start) {
+		if (count == -1) {
+			int first = app.scriptLibraries_.size() - app.scriptLibrariesAdded_;
 			for (int i = first; i < app.scriptLibraries_.size(); ++i) {
 				String uri = app
 						.fixRelativeUrl(app.scriptLibraries_.get(i).uri);
@@ -766,16 +769,24 @@ class WebRenderer implements SlotLearnerInterface {
 				out.append(app.getJavaScriptClass()).append("._p_.onJsLoad(\"")
 						.append(uri).append("\",function() {\n");
 			}
+			count = app.scriptLibrariesAdded_;
+			app.scriptLibrariesAdded_ = 0;
+			return count;
 		} else {
-			if (app.scriptLibraries_.size() - first > 0) {
+			if (count != 0) {
 				out.append(app.getJavaScriptClass()).append(
 						"._p_.autoJavaScript();");
+				for (int i = 0; i < count; ++i) {
+					out.append("});");
+				}
 			}
-			for (int i = first; i < app.scriptLibraries_.size(); ++i) {
-				out.append("});");
-			}
-			app.scriptLibrariesAdded_ = 0;
+			return 0;
 		}
+	}
+
+	private final int loadScriptLibraries(Writer out, WApplication app)
+			throws IOException {
+		return loadScriptLibraries(out, app, -1);
 	}
 
 	private void updateLoadIndicator(Writer out, WApplication app, boolean all)
@@ -893,11 +904,13 @@ class WebRenderer implements SlotLearnerInterface {
 		app.titleChanged_ = false;
 		app.closeMessageChanged_ = false;
 		if (js != null) {
+			int librariesLoaded = this.loadScriptLibraries(js, app);
 			if (app.internalPathIsChanged_) {
 				js.append(app.getJavaScriptClass()).append("._p_.setHash('")
 						.append(app.newInternalPath_).append("');\n");
 			}
 			js.append(app.getAfterLoadJavaScript());
+			this.loadScriptLibraries(js, app, librariesLoaded);
 		} else {
 			app.getAfterLoadJavaScript();
 		}

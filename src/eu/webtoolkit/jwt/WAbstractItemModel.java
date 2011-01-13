@@ -244,7 +244,10 @@ public abstract class WAbstractItemModel extends WObject {
 	 * Note that the index itself may be stale (referencing a row/column within
 	 * the parent that is outside the model geometry), but its parent
 	 * (identified by the {@link WModelIndex#getInternalPointer()
-	 * WModelIndex#getInternalPointer()}) is referencing an existing parent.
+	 * WModelIndex#getInternalPointer()}) is referencing an existing parent. A
+	 * stale index can only be used while the model geometry is being updated,
+	 * i.e. during the emission of the corresponding
+	 * [rows/columns](Being)[Removed/Inserted]() signals.
 	 * <p>
 	 * 
 	 * @see WAbstractItemModel#getIndex(int row, int column, WModelIndex parent)

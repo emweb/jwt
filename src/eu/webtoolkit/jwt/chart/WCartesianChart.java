@@ -55,7 +55,10 @@ import eu.webtoolkit.jwt.servlet.*;
  * type {@link eu.webtoolkit.jwt.WDate}) to create a time series chart, or to a
  * {@link AxisScale#LogScale LogScale}. A ScatterPlot supports the same types of
  * data series as a CategoryChart, but does not support stacking. In a scatter
- * plot, the X series do not need to be ordered in increasing values.
+ * plot, the X series do not need to be ordered in increasing values, and may be
+ * set differently for each dataseries using
+ * {@link WDataSeries#setXSeriesColumn(int modelColumn)
+ * WDataSeries#setXSeriesColumn()}.
  * <p>
  * <div align="center"> <img src="doc-files//ChartWCartesianChart-2.png"
  * alt="A time series scatter plot with line series">
@@ -63,8 +66,7 @@ import eu.webtoolkit.jwt.servlet.*;
  * <strong>A time series scatter plot with line series</strong>
  * </p>
  * </div> Missing data in a model series Y values is interpreted as a
- * <i>break</i>. For curve-like series, this breaks the curve (or line). This
- * may also be used to use different X series per Y series in a scatter plot.
+ * <i>break</i>. For curve-like series, this breaks the curve (or line).
  * <p>
  * The cartesian chart has support for dual Y axes. Each data series may be
  * bound to one of the two Y axes. By default, only the first Y axis is
@@ -94,7 +96,8 @@ public class WCartesianChart extends WAbstractChart {
 	/**
 	 * Creates a new cartesian chart.
 	 * <p>
-	 * Creates a cartesian chart of type CategoryChart.
+	 * Creates a cartesian chart of type {@link ChartType#CategoryChart
+	 * CategoryChart}.
 	 */
 	public WCartesianChart(WContainerWidget parent) {
 		super(parent);
@@ -104,6 +107,14 @@ public class WCartesianChart extends WAbstractChart {
 		this.series_ = new ArrayList<WDataSeries>();
 		this.barMargin_ = 0;
 		this.legend_ = false;
+		this.legendLocation_ = LegendLocation.LegendOutside;
+		this.legendSide_ = Side.Right;
+		this.legendAlignment_ = AlignmentFlag.AlignMiddle;
+		this.legendColumns_ = 1;
+		this.legendColumnWidth_ = new WLength(100);
+		this.legendFont_ = new WFont();
+		this.legendBorder_ = new WPen(PenStyle.NoPen);
+		this.legendBackground_ = new WBrush();
 		this.init();
 	}
 
@@ -120,7 +131,7 @@ public class WCartesianChart extends WAbstractChart {
 	/**
 	 * Creates a new cartesian chart.
 	 * <p>
-	 * Creates a cartesian chart of the indicated <i>type</i>.
+	 * Creates a cartesian chart of the indicated <code>type</code>.
 	 */
 	public WCartesianChart(ChartType type, WContainerWidget parent) {
 		super(parent);
@@ -130,6 +141,14 @@ public class WCartesianChart extends WAbstractChart {
 		this.series_ = new ArrayList<WDataSeries>();
 		this.barMargin_ = 0;
 		this.legend_ = false;
+		this.legendLocation_ = LegendLocation.LegendOutside;
+		this.legendSide_ = Side.Right;
+		this.legendAlignment_ = AlignmentFlag.AlignMiddle;
+		this.legendColumns_ = 1;
+		this.legendColumnWidth_ = new WLength(100);
+		this.legendFont_ = new WFont();
+		this.legendBorder_ = new WPen(PenStyle.NoPen);
+		this.legendBackground_ = new WBrush();
 		this.init();
 	}
 
@@ -147,11 +166,12 @@ public class WCartesianChart extends WAbstractChart {
 	 * Sets the chart type.
 	 * <p>
 	 * The chart type determines how (x,y) data are interpreted. In a
-	 * CategoryChart, the X values are categories, and these are plotted
-	 * consecutively, evenly spaced, and in row order. In a ScatterPlot, the X
-	 * values are interpreted numerically (as for Y values).
+	 * {@link ChartType#CategoryChart CategoryChart}, the X values are
+	 * categories, and these are plotted consecutively, evenly spaced, and in
+	 * row order. In a {@link ChartType#ScatterPlot ScatterPlot}, the X values
+	 * are interpreted numerically (as for Y values).
 	 * <p>
-	 * The default chart type is a CategoryChart.
+	 * The default chart type is a {@link ChartType#CategoryChart CategoryChart}.
 	 * <p>
 	 * 
 	 * @see WCartesianChart#getType()
@@ -180,11 +200,11 @@ public class WCartesianChart extends WAbstractChart {
 	 * Sets the chart orientation.
 	 * <p>
 	 * Sets the chart orientation, which corresponds to the orientation of the Y
-	 * axis: a Vertical orientation corresponds to the conventional way of a
-	 * horizontal X axis and vertical Y axis. A Horizontal orientation is the
-	 * other way around.
+	 * axis: a {@link Orientation#Vertical} orientation corresponds to the
+	 * conventional way of a horizontal X axis and vertical Y axis. A
+	 * {@link Orientation#Horizontal} orientation is the other way around.
 	 * <p>
-	 * The default orientation is Vertical.
+	 * The default orientation is {@link Orientation#Vertical}.
 	 * <p>
 	 * 
 	 * @see WCartesianChart#getOrientation()
@@ -209,11 +229,19 @@ public class WCartesianChart extends WAbstractChart {
 	/**
 	 * Sets the the model column for the X series.
 	 * <p>
-	 * Use this method to specify the data for the X series. For a ScatterPlot
-	 * this is mandatory, while for a CategoryChart, if not specified, an
+	 * Use this method to specify the data for the X series. For a
+	 * {@link ChartType#ScatterPlot ScatterPlot} this is mandatory, while for a
+	 * {@link ChartType#CategoryChart CategoryChart}, if not specified, an
 	 * increasing series of integer numbers will be used (1, 2, ...).
 	 * <p>
+	 * Scatterplot dataseries may each individually be given its own X series
+	 * data using {@link WDataSeries#setXSeriesColumn(int modelColumn)
+	 * WDataSeries#setXSeriesColumn()}
+	 * <p>
 	 * The default value is -1 (not specified).
+	 * <p>
+	 * The series column is reset to -1 when the model is set (or changed). Thus
+	 * you need to set a model before configuring the series.
 	 * <p>
 	 * 
 	 * @see WCartesianChart#XSeriesColumn()
@@ -242,6 +270,9 @@ public class WCartesianChart extends WAbstractChart {
 	 * displays data from a single model column in the chart. Series are plotted
 	 * in the order that they have been added to the chart.
 	 * <p>
+	 * The series column is reset to -1 when the model is set (or changed). Thus
+	 * you need to set a model before configuring the series.
+	 * <p>
 	 * 
 	 * @see WCartesianChart#removeSeries(int modelColumn)
 	 * @see WCartesianChart#setSeries(List series)
@@ -256,7 +287,7 @@ public class WCartesianChart extends WAbstractChart {
 	 * Removes a data series.
 	 * <p>
 	 * This removes the first data series which plots the given
-	 * <i>modelColumn</i>.
+	 * <code>modelColumn</code>.
 	 * <p>
 	 * 
 	 * @see WCartesianChart#addSeries(WDataSeries series)
@@ -292,7 +323,7 @@ public class WCartesianChart extends WAbstractChart {
 	 * Returns a data series corresponding to a data column.
 	 * <p>
 	 * Returns a reference to the first data series that plots data from
-	 * <i>modelColumn</i>.
+	 * <code>modelColumn</code>.
 	 */
 	public WDataSeries getSeries(int modelColumn) {
 		int index = this.getSeriesIndexOf(modelColumn);
@@ -318,7 +349,7 @@ public class WCartesianChart extends WAbstractChart {
 	/**
 	 * Returns a chart axis.
 	 * <p>
-	 * Returns a reference to the specified <i>axis</i>.
+	 * Returns a reference to the specified <code>axis</code>.
 	 */
 	public WAxis getAxis(Axis axis) {
 		return this.axes_[axis.getValue()];
@@ -355,26 +386,17 @@ public class WCartesianChart extends WAbstractChart {
 	/**
 	 * Enables the legend.
 	 * <p>
-	 * If <i>enabled</i> is true, then a default legend is added to the right of
-	 * the chart. You should provide space for the legend using the
-	 * setChartPadding() method. Only series for which the legend is enabled or
-	 * included in this legend (see {@link WDataSeries#isLegendEnabled()
-	 * WDataSeries#isLegendEnabled()}).
+	 * The location of the legend can be configured using
+	 * {@link WCartesianChart#setLegendLocation(LegendLocation location, Side side, AlignmentFlag alignment)
+	 * setLegendLocation()}. Only series for which the legend is enabled or
+	 * included in this legend.
 	 * <p>
-	 * To have more control over the legend, you could reimplement the
-	 * {@link WCartesianChart#renderLegendItem(WPainter painter, WPointF pos, WDataSeries series)
-	 * renderLegendItem()} method to customize how one item in the legend is
-	 * rendered, or, alternatively you could reimplement the
-	 * {@link WCartesianChart#paint(WPainter painter, WRectF rectangle) paint()}
-	 * method in which you use the
-	 * {@link WCartesianChart#renderLegendItem(WPainter painter, WPointF pos, WDataSeries series)
-	 * renderLegendItem()} method repeatedly to render a legend at an arbitrary
-	 * position.
-	 * <p>
-	 * The default value is false.
+	 * The default value is <code>false</code>.
 	 * <p>
 	 * 
-	 * @see WDataSeries#setLegendEnabled(boolean enabled)
+	 * @see WDataSeries#isLegendEnabled()
+	 * @see WCartesianChart#setLegendLocation(LegendLocation location, Side
+	 *      side, AlignmentFlag alignment)
 	 */
 	public void setLegendEnabled(boolean enabled) {
 		if (this.legend_ != enabled) {
@@ -391,6 +413,173 @@ public class WCartesianChart extends WAbstractChart {
 	 */
 	public boolean isLegendEnabled() {
 		return this.legend_;
+	}
+
+	/**
+	 * Configures the legend location.
+	 * <p>
+	 * The legend can be renderd either inside or outside of the chart area.
+	 * When <code>location</code> is {@link LegendLocation#LegendInside
+	 * Chart::LegendInside}, the legend will be rendered inside the chart. When
+	 * <code>location</code> is {@link LegendLocation#LegendOutside
+	 * Chart::Legendoutside}, the legend is rendered outside the chart, in the
+	 * chart padding area.
+	 * <p>
+	 * The provided <code>side</code> can either be {@link Side#Left},
+	 * {@link Side#Right}, {@link Side#Top}, {@link Side#Bottom} and configures
+	 * the side of the chart at which the legend is displayed.
+	 * <p>
+	 * The <code>alignment</code> specifies how the legend is aligned. This can
+	 * be a horizontal alignment flag ({@link AlignmentFlag#AlignLeft},
+	 * {@link AlignmentFlag#AlignCenter}, or {@link AlignmentFlag#AlignRight}),
+	 * when the <code>side</code> is Bottom or Top, or a vertical alignment flag
+	 * ({@link AlignmentFlag#AlignTop}, {@link AlignmentFlag#AlignMiddle}, or
+	 * {@link AlignmentFlag#AlignBottom}) when the <code>side</code> is Left or
+	 * Right.
+	 * <p>
+	 * The default location is {@link LegendLocation#LegendOutside
+	 * Chart::LegendOutside}, {@link Side#Right} and
+	 * {@link AlignmentFlag#AlignMiddle}.
+	 * <p>
+	 * To have more control over the legend, you could reimplement the
+	 * {@link WCartesianChart#renderLegendItem(WPainter painter, WPointF pos, WDataSeries series)
+	 * renderLegendItem()} method to customize how one item in the legend is
+	 * rendered, or, alternatively you can disable the legend generated by the
+	 * chart itself, and reimplement the
+	 * {@link WCartesianChart#paint(WPainter painter, WRectF rectangle) paint()}
+	 * method in which you use the
+	 * {@link WCartesianChart#renderLegendItem(WPainter painter, WPointF pos, WDataSeries series)
+	 * renderLegendItem()} method repeatedly to render a customized legend.
+	 * <p>
+	 * 
+	 * @see WDataSeries#setLegendEnabled(boolean enabled)
+	 */
+	public void setLegendLocation(LegendLocation location, Side side,
+			AlignmentFlag alignment) {
+		this.legendLocation_ = location;
+		this.legendSide_ = side;
+		this.legendAlignment_ = alignment;
+		this.update();
+	}
+
+	/**
+	 * Configures the legend decoration.
+	 * <p>
+	 * This configures the font, border and background for the legend.
+	 * <p>
+	 * The default font is a 10pt sans serif font (the same as the default axis
+	 * label font), the default <code>border</code> is {@link PenStyle#NoPen
+	 * NoPen} and the default <code>background</code> is
+	 * {@link WBrushStyle#NoBrush NoBrush}.
+	 * <p>
+	 * 
+	 * @see WCartesianChart#setLegendEnabled(boolean enabled)
+	 */
+	public void setLegendStyle(WFont font, WPen border, WBrush background) {
+		this.legendFont_ = font;
+		this.legendBorder_ = border;
+		this.legendBackground_ = background;
+		this.update();
+	}
+
+	/**
+	 * Returns the legend location.
+	 * <p>
+	 * 
+	 * @see WCartesianChart#setLegendLocation(LegendLocation location, Side
+	 *      side, AlignmentFlag alignment)
+	 */
+	public LegendLocation getLegendLocation() {
+		return this.legendLocation_;
+	}
+
+	/**
+	 * Returns the legend side.
+	 * <p>
+	 * 
+	 * @see WCartesianChart#setLegendLocation(LegendLocation location, Side
+	 *      side, AlignmentFlag alignment)
+	 */
+	public Side getLegendSide() {
+		return this.legendSide_;
+	}
+
+	/**
+	 * Returns the legend alignment.
+	 * <p>
+	 * 
+	 * @see WCartesianChart#setLegendLocation(LegendLocation location, Side
+	 *      side, AlignmentFlag alignment)
+	 */
+	public AlignmentFlag getLegendAlignment() {
+		return this.legendAlignment_;
+	}
+
+	/**
+	 * Returns the legend columns.
+	 * <p>
+	 * 
+	 * @see WCartesianChart#setLegendColumns(int columns, WLength columnWidth)
+	 */
+	public int getLegendColumns() {
+		return this.legendColumns_;
+	}
+
+	/**
+	 * Returns the legend column width.
+	 * <p>
+	 * 
+	 * @see WCartesianChart#setLegendColumns(int columns, WLength columnWidth)
+	 */
+	public WLength getLegendColumnWidth() {
+		return this.legendColumnWidth_;
+	}
+
+	/**
+	 * Returns the legend font.
+	 * <p>
+	 * 
+	 * @see WCartesianChart#setLegendStyle(WFont font, WPen border, WBrush
+	 *      background)
+	 */
+	public WFont getLegendFont() {
+		return this.legendFont_;
+	}
+
+	/**
+	 * Returns the legend border pen.
+	 * <p>
+	 * 
+	 * @see WCartesianChart#setLegendStyle(WFont font, WPen border, WBrush
+	 *      background)
+	 */
+	public WPen getLegendBorder() {
+		return this.legendBorder_;
+	}
+
+	/**
+	 * Returns the legend background brush.
+	 * <p>
+	 * 
+	 * @see WCartesianChart#setLegendStyle(WFont font, WPen border, WBrush
+	 *      background)
+	 */
+	public WBrush getLegendBackground() {
+		return this.legendBackground_;
+	}
+
+	/**
+	 * Configures multiple legend columns.
+	 * <p>
+	 * Multiple columns are typically useful when placing the legend at the top
+	 * or at the bottom of the chart.
+	 * <p>
+	 * The default value is a single column, 100 pixels wide.
+	 */
+	public void setLegendColumns(int columns, WLength columnWidth) {
+		this.legendColumns_ = columns;
+		this.legendColumnWidth_ = columnWidth;
+		this.update();
 	}
 
 	public void paint(WPainter painter, WRectF rectangle) {
@@ -410,10 +599,10 @@ public class WCartesianChart extends WAbstractChart {
 	/**
 	 * Draws the marker for a given data series.
 	 * <p>
-	 * Draws the marker for the indicated <i>series</i> in the <i>result</i>.
-	 * This method is called while painting the chart, and you may want to
-	 * reimplement this method if you wish to provide a custom marker for a
-	 * particular data series.
+	 * Draws the marker for the indicated <code>series</code> in the
+	 * <code>result</code>. This method is called while painting the chart, and
+	 * you may want to reimplement this method if you wish to provide a custom
+	 * marker for a particular data series.
 	 * <p>
 	 * 
 	 * @see WCartesianChart#setLegendEnabled(boolean enabled)
@@ -454,8 +643,8 @@ public class WCartesianChart extends WAbstractChart {
 	/**
 	 * Renders the legend icon for a given data series.
 	 * <p>
-	 * Renders the legend icon for the indicated <i>series</i> in the
-	 * <i>painter</i> at position <i>pos</i>.
+	 * Renders the legend icon for the indicated <code>series</code> in the
+	 * <code>painter</code> at position <code>pos</code>.
 	 * <p>
 	 * This method is called while rendering a legend item, and you may want to
 	 * reimplement this method if you wish to provide a custom legend icon for a
@@ -507,11 +696,11 @@ public class WCartesianChart extends WAbstractChart {
 	/**
 	 * Renders the legend item for a given data series.
 	 * <p>
-	 * Renders the legend item for the indicated <i>series</i> in the
-	 * <i>painter</i> at position <i>pos</i>. The default implementation draws
-	 * the marker, and the series description to the right. The series
-	 * description is taken from the model&apos;s header data for that
-	 * series&apos; data column.
+	 * Renders the legend item for the indicated <code>series</code> in the
+	 * <code>painter</code> at position <code>pos</code>. The default
+	 * implementation draws the marker, and the series description to the right.
+	 * The series description is taken from the model&apos;s header data for
+	 * that series&apos; data column.
 	 * <p>
 	 * This method is called while painting the chart, and you may want to
 	 * reimplement this method if you wish to provide a custom marker for a
@@ -689,8 +878,9 @@ public class WCartesianChart extends WAbstractChart {
 	 * area.
 	 * <p>
 	 * <p>
-	 * <i><b>Note: </b>Currently, an area is only created if the ToolTipRole
-	 * data at the data point is not empty. </i>
+	 * <i><b>Note: </b>Currently, an area is only created if the
+	 * {@link ItemDataRole#ToolTipRole} data at the data point is not empty.
+	 * </i>
 	 * </p>
 	 */
 	public void addDataPointArea(WDataSeries series, WModelIndex xIndex,
@@ -711,8 +901,8 @@ public class WCartesianChart extends WAbstractChart {
 	 * Creates a renderer which renders the chart.
 	 * <p>
 	 * The rendering of the chart is delegated to a {@link WChart2DRenderer}
-	 * class, which will render the chart within the <i>rectangle</i> of the
-	 * <i>painter</i>.
+	 * class, which will render the chart within the <code>rectangle</code> of
+	 * the <code>painter</code>.
 	 * <p>
 	 * You may want to reimplement this method if you wish to override one or
 	 * more aspects of the rendering, by returning an new instance of a
@@ -734,8 +924,19 @@ public class WCartesianChart extends WAbstractChart {
 	private WAxis[] axes_ = new WAxis[3];
 	private double barMargin_;
 	private boolean legend_;
+	private LegendLocation legendLocation_;
+	private Side legendSide_;
+	private AlignmentFlag legendAlignment_;
+	private int legendColumns_;
+	private WLength legendColumnWidth_;
+	private WFont legendFont_;
+	private WPen legendBorder_;
+	private WBrush legendBackground_;
 
 	private void init() {
+		this.legendFont_.setFamily(WFont.GenericFamily.SansSerif);
+		this.legendFont_.setSize(WFont.Size.FixedSize, new WLength(10,
+				WLength.Unit.Point));
 		this.setPalette(new WStandardPalette(WStandardPalette.Flavour.Muted));
 		for (int i = 0; i < 3; ++i) {
 			this.axes_[i] = new WAxis();

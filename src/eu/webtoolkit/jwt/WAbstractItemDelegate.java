@@ -18,14 +18,14 @@ import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
 
 /**
- * Abstract delegate class for rendering an item in a MVC view.
+ * Abstract delegate class for rendering an item in an item view.
  * <p>
  * 
  * Rendering of an item in a {@link WAbstractItemView} is delegated to an
  * implementation of this delegate class. The default implementation used by
  * Wt&apos;s item views is {@link WItemDelegate}. To provide specialized
- * rendering support, you can reimplement this class, and provide a specialized
- * delegate to the view for rendering items.
+ * rendering support, you can reimplement this class (or specialize
+ * {@link WItemDelegate}).
  * <p>
  * As a delegate is used for rendering multiple items, the class should not keep
  * state about one specific item.

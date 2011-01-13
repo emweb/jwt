@@ -3,6 +3,7 @@ package eu.webtoolkit.jwt;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.FontMetrics;
 import java.awt.Graphics2D;
 import java.awt.Paint;
 import java.awt.RenderingHints;
@@ -375,5 +376,29 @@ public class WRasterPaintDevice extends WResource implements WPaintDevice {
 	
 	public void clear() {
 		g2.clearRect(0, 0, (int)width.getValue(), (int)height.getValue());
+	}
+
+
+	@Override
+	public WFontMetrics getFontMetrics() {
+		throw new WtLogicError("WFontMetrics.getFontMetrics() not yet supported");
+	}
+
+
+	@Override
+	public WTextItem measureText(CharSequence text, double maxWidth, boolean wordWrap) {
+		throw new WtLogicError("WFontMetrics.measureText() not yet supported");
+	}
+
+
+	@Override
+	public WTextItem measureText(CharSequence text) {
+		throw new WtLogicError("WFontMetrics.measureText() not yet supported");
+	}
+
+
+	@Override
+	public WTextItem measureText(CharSequence text, double maxWidth) {
+		throw new WtLogicError("WFontMetrics.measureText() not yet supported");
 	}
 }

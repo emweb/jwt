@@ -335,17 +335,19 @@ public class WTree extends WCompositeWidget {
 
 	void nodeAdded(final WTreeNode node) {
 		if (node.isSelectable()) {
-			WInteractWidget w = node.getLabel();
-			if (!(w != null)) {
-				w = node.getLabelArea();
+			WInteractWidget w;
+			if (WApplication.getInstance().getEnvironment().hasAjax()) {
+				w = node.getImpl();
+			} else {
+				w = node.getLabel();
 			}
-			node.clickedConnection_ = node.getImpl().clicked().addListener(
-					this, new Signal1.Listener<WMouseEvent>() {
+			node.clickedConnection_ = w.clicked().addListener(this,
+					new Signal1.Listener<WMouseEvent>() {
 						public void trigger(WMouseEvent event) {
 							WTree.this.onClick(node, event);
 						}
 					});
-			node.getImpl().clicked().preventPropagation();
+			w.clicked().preventPropagation();
 			for (int i = 0; i < node.getChildNodes().size(); ++i) {
 				this.nodeAdded(node.getChildNodes().get(i));
 			}

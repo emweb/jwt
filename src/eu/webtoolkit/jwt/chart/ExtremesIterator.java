@@ -28,14 +28,15 @@ class ExtremesIterator extends SeriesIterator {
 
 	public boolean startSeries(WDataSeries series, double groupWidth,
 			int numBarGroups, int currentBarGroup) {
-		return series.getAxis() == this.axis_;
+		return this.axis_ == Axis.XAxis || series.getAxis() == this.axis_;
 	}
 
 	public void newValue(WDataSeries series, double x, double y, double stackY,
 			WModelIndex xIndex, WModelIndex yIndex) {
-		if (!Double.isNaN(y) && (this.scale_ != AxisScale.LogScale || y > 0.0)) {
-			this.maximum_ = Math.max(y, this.maximum_);
-			this.minimum_ = Math.min(y, this.minimum_);
+		double v = this.axis_ == Axis.XAxis ? x : y;
+		if (!Double.isNaN(v) && (this.scale_ != AxisScale.LogScale || v > 0.0)) {
+			this.maximum_ = Math.max(v, this.maximum_);
+			this.minimum_ = Math.min(v, this.minimum_);
 		}
 	}
 

@@ -221,6 +221,15 @@ public class WTreeNode extends WCompositeWidget {
 	}
 
 	/**
+	 * Returns the tree.
+	 * <p>
+	 * By default if this node has no parent the result will be 0.
+	 */
+	public WTree getTree() {
+		return this.parentNode_ != null ? this.parentNode_.getTree() : null;
+	}
+
+	/**
 	 * Returns the label.
 	 */
 	public WText getLabel() {

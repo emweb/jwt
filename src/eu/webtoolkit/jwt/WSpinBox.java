@@ -261,6 +261,7 @@ public class WSpinBox extends WLineEdit {
 			WDoubleValidator dv = ((v) instanceof WDoubleValidator ? (WDoubleValidator) (v)
 					: null);
 			dv.setRange(this.min_, this.max_);
+			this.validate();
 		}
 	}
 

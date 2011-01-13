@@ -44,7 +44,18 @@ public enum HeaderFlag {
 	 * 
 	 * @see WAbstractItemModel#collapseColumn(int column)
 	 */
-	ColumnIsExpandedRight;
+	ColumnIsExpandedRight,
+	/**
+	 * Flag that indicates that the header can be checked.
+	 */
+	HeaderIsUserCheckable,
+	/**
+	 * Flag that indicates that the item has three states.
+	 * <p>
+	 * When set, {@link ItemDataRole#CheckStateRole} data is of type
+	 * {@link CheckState}
+	 */
+	HeaderIsTristate;
 
 	/**
 	 * Returns the numerical representation of this enum.

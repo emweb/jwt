@@ -879,31 +879,11 @@ public class WAxis {
 			if (findMinimum || findMaximum) {
 				double minimum = Double.MAX_VALUE;
 				double maximum = -Double.MAX_VALUE;
-				if (this.axis_ == Axis.XAxis) {
-					int dataColumn = this.chart_.XSeriesColumn();
-					if (dataColumn != -1) {
-						WAbstractItemModel model = this.chart_.getModel();
-						for (int i = 0; i < rc; ++i) {
-							double v = this.getValue(model.getData(i,
-									dataColumn));
-							if (Double.isNaN(v)) {
-								continue;
-							}
-							if (findMaximum) {
-								maximum = Math.max(v, maximum);
-							}
-							if (findMinimum) {
-								minimum = Math.min(v, minimum);
-							}
-						}
-					}
-				} else {
-					ExtremesIterator iterator = new ExtremesIterator(
-							this.axis_, this.scale_);
-					renderer.iterateSeries(iterator);
-					minimum = iterator.getMinimum();
-					maximum = iterator.getMaximum();
-				}
+				ExtremesIterator iterator = new ExtremesIterator(this.axis_,
+						this.scale_);
+				renderer.iterateSeries(iterator);
+				minimum = iterator.getMinimum();
+				maximum = iterator.getMaximum();
 				if (minimum == Double.MAX_VALUE) {
 					if (this.scale_ == AxisScale.LogScale) {
 						minimum = 1;

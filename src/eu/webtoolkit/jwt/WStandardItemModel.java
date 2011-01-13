@@ -68,6 +68,8 @@ public class WStandardItemModel extends WAbstractItemModel {
 		this.sortRole_ = ItemDataRole.DisplayRole;
 		this.columnHeaderData_ = new ArrayList<Map<Integer, Object>>();
 		this.rowHeaderData_ = new ArrayList<Map<Integer, Object>>();
+		this.columnHeaderFlags_ = new ArrayList<EnumSet<HeaderFlag>>();
+		this.rowHeaderFlags_ = new ArrayList<EnumSet<HeaderFlag>>();
 		this.itemChanged_ = new Signal1<WStandardItem>(this);
 		this.init();
 	}
@@ -92,6 +94,8 @@ public class WStandardItemModel extends WAbstractItemModel {
 		this.sortRole_ = ItemDataRole.DisplayRole;
 		this.columnHeaderData_ = new ArrayList<Map<Integer, Object>>();
 		this.rowHeaderData_ = new ArrayList<Map<Integer, Object>>();
+		this.columnHeaderFlags_ = new ArrayList<EnumSet<HeaderFlag>>();
+		this.rowHeaderFlags_ = new ArrayList<EnumSet<HeaderFlag>>();
 		this.itemChanged_ = new Signal1<WStandardItem>(this);
 		this.init();
 		this.invisibleRootItem_.setColumnCount(columns);
@@ -122,6 +126,8 @@ public class WStandardItemModel extends WAbstractItemModel {
 		this.invisibleRootItem_.setColumnCount(0);
 		this.columnHeaderData_.clear();
 		this.rowHeaderData_.clear();
+		this.columnHeaderFlags_.clear();
+		this.rowHeaderFlags_.clear();
 		this.reset();
 	}
 
@@ -455,6 +461,37 @@ public class WStandardItemModel extends WAbstractItemModel {
 		return takeItem(row, 0);
 	}
 
+	/**
+	 * Sets header flags.
+	 * <p>
+	 * By default, no flags are set.
+	 */
+	public void setHeaderFlags(int section, Orientation orientation,
+			EnumSet<HeaderFlag> flags) {
+		List<EnumSet<HeaderFlag>> fl = orientation == Orientation.Horizontal ? this.columnHeaderFlags_
+				: this.rowHeaderFlags_;
+		fl.set(section, flags);
+	}
+
+	/**
+	 * Sets header flags.
+	 * <p>
+	 * Calls
+	 * {@link #setHeaderFlags(int section, Orientation orientation, EnumSet flags)
+	 * setHeaderFlags(section, orientation, EnumSet.of(flag, flags))}
+	 */
+	public final void setHeaderFlags(int section, Orientation orientation,
+			HeaderFlag flag, HeaderFlag... flags) {
+		setHeaderFlags(section, orientation, EnumSet.of(flag, flags));
+	}
+
+	public EnumSet<HeaderFlag> getHeaderFlags(int section,
+			Orientation orientation) {
+		List<EnumSet<HeaderFlag>> fl = orientation == Orientation.Horizontal ? this.columnHeaderFlags_
+				: this.rowHeaderFlags_;
+		return fl.get(section);
+	}
+
 	public EnumSet<ItemFlag> getFlags(WModelIndex index) {
 		WStandardItem item = this.getItemFromIndex(index, false);
 		return item != null ? item.getFlags() : EnumSet.noneOf(ItemFlag.class);
@@ -606,31 +643,33 @@ public class WStandardItemModel extends WAbstractItemModel {
 
 	protected void beginInsertColumns(WModelIndex parent, int first, int last) {
 		super.beginInsertColumns(parent, first, last);
-		this.insertHeaderData(this.columnHeaderData_, this
-				.getItemFromIndex(parent), first, last - first + 1);
+		this.insertHeaderData(this.columnHeaderData_, this.columnHeaderFlags_,
+				this.getItemFromIndex(parent), first, last - first + 1);
 	}
 
 	protected void beginInsertRows(WModelIndex parent, int first, int last) {
 		super.beginInsertRows(parent, first, last);
-		this.insertHeaderData(this.rowHeaderData_, this
+		this.insertHeaderData(this.rowHeaderData_, this.rowHeaderFlags_, this
 				.getItemFromIndex(parent), first, last - first + 1);
 	}
 
 	protected void beginRemoveColumns(WModelIndex parent, int first, int last) {
 		super.beginRemoveColumns(parent, first, last);
-		this.removeHeaderData(this.columnHeaderData_, this
-				.getItemFromIndex(parent), first, last - first + 1);
+		this.removeHeaderData(this.columnHeaderData_, this.columnHeaderFlags_,
+				this.getItemFromIndex(parent), first, last - first + 1);
 	}
 
 	protected void beginRemoveRows(WModelIndex parent, int first, int last) {
 		super.beginRemoveRows(parent, first, last);
-		this.removeHeaderData(this.rowHeaderData_, this
+		this.removeHeaderData(this.rowHeaderData_, this.rowHeaderFlags_, this
 				.getItemFromIndex(parent), first, last - first + 1);
 	}
 
 	private int sortRole_;
 	private List<Map<Integer, Object>> columnHeaderData_;
 	private List<Map<Integer, Object>> rowHeaderData_;
+	private List<EnumSet<HeaderFlag>> columnHeaderFlags_;
+	private List<EnumSet<HeaderFlag>> rowHeaderFlags_;
 	private WStandardItem invisibleRootItem_;
 	private WStandardItem itemPrototype_;
 	private Signal1<WStandardItem> itemChanged_;
@@ -662,7 +701,8 @@ public class WStandardItemModel extends WAbstractItemModel {
 	}
 
 	private void insertHeaderData(List<Map<Integer, Object>> headerData,
-			WStandardItem item, int index, int count) {
+			List<EnumSet<HeaderFlag>> fl, WStandardItem item, int index,
+			int count) {
 		if (item == this.invisibleRootItem_) {
 			{
 				int insertPos = 0 + index;
@@ -671,14 +711,24 @@ public class WStandardItemModel extends WAbstractItemModel {
 							new HashMap<Integer, Object>());
 			}
 			;
+			{
+				int insertPos = 0 + index;
+				for (int ii = 0; ii < count; ++ii)
+					fl.add(insertPos + ii, EnumSet.noneOf(HeaderFlag.class));
+			}
+			;
 		}
 	}
 
 	private void removeHeaderData(List<Map<Integer, Object>> headerData,
-			WStandardItem item, int index, int count) {
+			List<EnumSet<HeaderFlag>> fl, WStandardItem item, int index,
+			int count) {
 		if (item == this.invisibleRootItem_) {
 			for (int ii = 0; ii < (0 + index + count) - (0 + index); ++ii)
 				headerData.remove(0 + index);
+			;
+			for (int ii = 0; ii < (0 + index + count) - (0 + index); ++ii)
+				fl.remove(0 + index);
 			;
 		}
 	}

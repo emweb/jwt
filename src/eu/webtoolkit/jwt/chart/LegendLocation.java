@@ -3,7 +3,7 @@
  *
  * See the LICENSE file for terms of use.
  */
-package eu.webtoolkit.jwt;
+package eu.webtoolkit.jwt.chart;
 
 import java.util.*;
 import java.util.regex.*;
@@ -18,29 +18,17 @@ import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
 
 /**
- * Enumeration that specifies an option for rendering a view item.
- * <p>
- * 
- * @see WAbstractItemDelegate#update(WWidget widget, WModelIndex index, EnumSet
- *      flags)
+ * Enumeration type that indicates a legend location.
  */
-public enum ViewItemRenderFlag {
+public enum LegendLocation {
 	/**
-	 * {@link } as selected.
+	 * Inside the chart area.
 	 */
-	RenderSelected,
+	LegendInside,
 	/**
-	 * {@link } in editing mode.
+	 * Outside the chart area (in the padding area).
 	 */
-	RenderEditing,
-	/**
-	 * {@link } (the editor) focused.
-	 */
-	RenderFocused,
-	/**
-	 * {@link } as invalid.
-	 */
-	RenderInvalid;
+	LegendOutside;
 
 	/**
 	 * Returns the numerical representation of this enum.

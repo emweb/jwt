@@ -30,6 +30,10 @@ class SentinelTreeNode extends WTreeNode {
 		}
 	}
 
+	public WTree getTree() {
+		return this.tree_;
+	}
+
 	protected void descendantRemoved(WTreeNode node) {
 		this.tree_.nodeRemoved(node);
 	}

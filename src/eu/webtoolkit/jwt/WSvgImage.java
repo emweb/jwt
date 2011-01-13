@@ -238,6 +238,23 @@ public class WSvgImage extends WResource implements WVectorImage {
 				.append("</text>");
 	}
 
+	public WTextItem measureText(CharSequence text, double maxWidth,
+			boolean wordWrap) {
+		throw new WtLogicError("WSvgImage::measureText() not supported");
+	}
+
+	public final WTextItem measureText(CharSequence text) {
+		return measureText(text, -1, false);
+	}
+
+	public final WTextItem measureText(CharSequence text, double maxWidth) {
+		return measureText(text, maxWidth, false);
+	}
+
+	public WFontMetrics getFontMetrics() {
+		throw new WtLogicError("WSvgImage::fontMetrics() not (yet?) supported");
+	}
+
 	public void init() {
 		this.currentBrush_ = this.getPainter().getBrush();
 		this.currentPen_ = this.getPainter().getPen();

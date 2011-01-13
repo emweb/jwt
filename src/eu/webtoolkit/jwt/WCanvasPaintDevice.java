@@ -404,6 +404,25 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 		}
 	}
 
+	public WTextItem measureText(CharSequence text, double maxWidth,
+			boolean wordWrap) {
+		throw new WtLogicError(
+				"WCanvasPaintDevice::measureText() not supported");
+	}
+
+	public final WTextItem measureText(CharSequence text) {
+		return measureText(text, -1, false);
+	}
+
+	public final WTextItem measureText(CharSequence text, double maxWidth) {
+		return measureText(text, maxWidth, false);
+	}
+
+	public WFontMetrics getFontMetrics() {
+		throw new WtLogicError(
+				"WCanvasPaintDevice::fontMetrics() not (yet?) supported");
+	}
+
 	public void init() {
 		this.currentBrush_ = new WBrush();
 		this.currentPen_ = new WPen();

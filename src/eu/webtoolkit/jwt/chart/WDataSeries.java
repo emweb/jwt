@@ -113,6 +113,7 @@ public class WDataSeries {
 	public WDataSeries(int modelColumn, SeriesType type, Axis axis) {
 		this.chart_ = null;
 		this.modelColumn_ = modelColumn;
+		this.XSeriesColumn_ = -1;
 		this.stacked_ = false;
 		this.type_ = type;
 		this.axis_ = axis;
@@ -236,6 +237,17 @@ public class WDataSeries {
 	 */
 	public int getModelColumn() {
 		return this.modelColumn_;
+	}
+
+	// public void setXSeriesColumn(int modelColumn) ;
+	/**
+	 * Returns the X series column.
+	 * <p>
+	 * 
+	 * @see WDataSeries#setXSeriesColumn(int modelColumn)
+	 */
+	public int XSeriesColumn() {
+		return this.XSeriesColumn_;
 	}
 
 	/**
@@ -713,7 +725,8 @@ public class WDataSeries {
 	/**
 	 * Return whether the series is hidden.
 	 * <p>
-	 * /sa {@link WDataSeries#setHidden(boolean hidden) setHidden()}
+	 * 
+	 * @see WDataSeries#setHidden(boolean hidden)
 	 */
 	public boolean isHidden() {
 		return this.hidden_;
@@ -782,6 +795,7 @@ public class WDataSeries {
 
 	private WCartesianChart chart_;
 	int modelColumn_;
+	private int XSeriesColumn_;
 	private boolean stacked_;
 	private SeriesType type_;
 	private Axis axis_;

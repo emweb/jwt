@@ -344,6 +344,10 @@ public class WCompositeWidget extends WWidget {
 		this.impl_.setSelectable(selectable);
 	}
 
+	public void doJavaScript(String js) {
+		this.impl_.doJavaScript(js);
+	}
+
 	public void propagateSetEnabled(boolean enabled) {
 		this.impl_.getWebWidget().propagateSetEnabled(enabled);
 	}

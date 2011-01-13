@@ -8,13 +8,59 @@ package eu.webtoolkit.jwt;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 /**
  * String utility class.
  */
 public class StringUtils {
+	static final Pattern FLOAT_PATTERN;
+
+	static {
+		// This code is copied from the javadoc for java.lang.Double. Why they
+		// didn't make this a field of Double is beyond me...
+		String digits = "(\\p{Digit}+)";
+		String hexDigits = "(\\p{XDigit}+)";
+		// an exponent is 'e' or 'E' followed by an optionally
+		// signed decimal integer.
+		String exp = "[eE][+-]?" + digits;
+		String fpRegex = ("[\\x00-\\x20]*" + // Optional leading "whitespace"
+				"[+-]?(" + // Optional sign character
+				"NaN|" + // "NaN" string
+				"Infinity|" + // "Infinity" string
+
+				// A decimal floating-point string representing a finite
+				// positive
+				// number without a leading sign has at most five basic pieces:
+				// Digits . Digits ExponentPart FloatTypeSuffix
+				//
+				// Since this method allows integer-only strings as input
+				// in addition to strings of floating-point literals, the
+				// two sub-patterns below are simplifications of the grammar
+				// productions from the Java Language Specification, 2nd
+				// edition, section 3.10.2.
+
+				// Digits ._opt Digits_opt ExponentPart_opt FloatTypeSuffix_opt
+				"(((" + digits + "(\\.)?(" + digits + "?)(" + exp + ")?)|" +
+
+				// . Digits ExponentPart_opt FloatTypeSuffix_opt
+				"(\\.(" + digits + ")(" + exp + ")?)|" +
+
+				// Hexadecimal strings
+				"((" +
+				// 0[xX] HexDigits ._opt BinaryExponent FloatTypeSuffix_opt
+				"(0[xX]" + hexDigits + "(\\.)?)|" +
+
+				// 0[xX] HexDigits_opt . HexDigits BinaryExponent
+				// FloatTypeSuffix_opt
+				"(0[xX]" + hexDigits + "?(\\.)" + hexDigits + ")" +
+
+				")[pP][+-]?" + digits + "))" + "[fFdD]?))" + "[\\x00-\\x20]*");// Optional
+																				// trailing
+		FLOAT_PATTERN = Pattern.compile("^\\s*" + fpRegex);
+	}
+	
 	/**
 	 * Convert an object to a {@link WString}.
 	 */

@@ -228,6 +228,12 @@ public class WTableView extends WAbstractItemView {
 							WTableView.this.handleMouseWentDown(e1);
 						}
 					});
+			this.canvas_.mouseWentUp().addListener(this,
+					new Signal1.Listener<WMouseEvent>() {
+						public void trigger(WMouseEvent e1) {
+							WTableView.this.handleMouseWentUp(e1);
+						}
+					});
 			this.canvas_.addWidget(this.table_);
 			this.table_.setPositionScheme(PositionScheme.Absolute);
 			this.table_.resize(new WLength(100, WLength.Unit.Percentage),
@@ -403,17 +409,13 @@ public class WTableView extends WAbstractItemView {
 
 	public void setHeaderHeight(WLength height, boolean multiLine) {
 		super.setHeaderHeight(height, multiLine);
+		if (this.headerContainer_ != null) {
+			this.headerContainer_.setStyleClass("Wt-header Wt-"
+					+ (multiLine ? "multiline" : "singleline")
+					+ " headerrh cwidth");
+		}
 		if (!this.isAjaxMode()) {
 			this.resize(this.getWidth(), this.getHeight());
-		}
-		if (this.renderState_.getValue() >= WAbstractItemView.RenderState.NeedRerenderHeader
-				.getValue()) {
-			return;
-		}
-		if (!WApplication.getInstance().getEnvironment().agentIsIE()) {
-			for (int i = 0; i < this.getColumnCount(); ++i) {
-				this.headerTextWidget(i).setWordWrap(multiLine);
-			}
 		}
 	}
 
@@ -509,6 +511,53 @@ public class WTableView extends WAbstractItemView {
 			this.renderedLastRow_ = this.renderedFirstRow_;
 		}
 		this.scheduleRerender(WAbstractItemView.RenderState.NeedRerenderData);
+	}
+
+	public void scrollTo(WModelIndex index, WAbstractItemView.ScrollHint hint) {
+		if ((index.getParent() == this.getRootIndex() || (index.getParent() != null && index
+				.getParent().equals(this.getRootIndex())))) {
+			if (this.isAjaxMode()) {
+				int rh = (int) this.getRowHeight().toPixels();
+				int rowY = index.getRow() * rh;
+				if (this.viewportHeight_ != 600) {
+					if (hint == WAbstractItemView.ScrollHint.EnsureVisible) {
+						if (this.viewportTop_ + this.viewportHeight_ < rowY) {
+							hint = WAbstractItemView.ScrollHint.PositionAtTop;
+						} else {
+							if (rowY < this.viewportTop_) {
+								hint = WAbstractItemView.ScrollHint.PositionAtBottom;
+							}
+						}
+					}
+					switch (hint) {
+					case PositionAtTop:
+						this.viewportTop_ = rowY;
+						break;
+					case PositionAtBottom:
+						this.viewportTop_ = rowY - this.viewportHeight_ + rh;
+						break;
+					case PositionAtCenter:
+						this.viewportTop_ = rowY - (this.viewportHeight_ - rh)
+								/ 2;
+						break;
+					default:
+						break;
+					}
+					if (hint != WAbstractItemView.ScrollHint.EnsureVisible) {
+						this.computeRenderedArea();
+						this
+								.scheduleRerender(WAbstractItemView.RenderState.NeedAdjustViewPort);
+					}
+				}
+				StringBuilder s = new StringBuilder();
+				s.append("jQuery.data(").append(this.getJsRef()).append(
+						", 'obj').scrollTo(-1, ").append(rowY).append(",")
+						.append(hint.getValue()).append(");");
+				this.doJavaScript(s.toString());
+			} else {
+				this.setCurrentPage(index.getRow() / this.getPageSize());
+			}
+		}
 	}
 
 	static class ColumnWidget extends WContainerWidget {
@@ -745,10 +794,8 @@ public class WTableView extends WAbstractItemView {
 							this.getRootIndex());
 					WWidget w = this.renderWidget(current, index);
 					if (!(w.getParent() != null)) {
-						if (current != null) {
-							if (current != null)
-								current.remove();
-						}
+						if (current != null)
+							current.remove();
 						parentWidget.insertWidget(wIndex, w);
 						if (!this.isAjaxMode() && !this.isEditing(index)) {
 							WInteractWidget wi = ((w) instanceof WInteractWidget ? (WInteractWidget) (w)
@@ -759,20 +806,6 @@ public class WTableView extends WAbstractItemView {
 							}
 						}
 					}
-				}
-			}
-		}
-	}
-
-	private void modelHeaderDataChanged(Orientation orientation, int start,
-			int end) {
-		if (this.renderState_.getValue() < WAbstractItemView.RenderState.NeedRerenderHeader
-				.getValue()) {
-			if (orientation == Orientation.Horizontal) {
-				for (int i = start; i <= end; ++i) {
-					WString label = StringUtils.asString(this.getModel()
-							.getHeaderData(i));
-					this.headerTextWidget(i).setText(label);
 				}
 			}
 		}
@@ -1221,10 +1254,6 @@ public class WTableView extends WAbstractItemView {
 				}
 			}
 		}
-		if (this.getModel() != null) {
-			this.modelHeaderDataChanged(Orientation.Horizontal, 0, this
-					.getColumnCount() - 1);
-		}
 	}
 
 	private void rerenderData() {
@@ -1397,6 +1426,13 @@ public class WTableView extends WAbstractItemView {
 		WModelIndex index = this.translateModelIndex(event);
 		if ((index != null)) {
 			super.handleMouseDown(index, event);
+		}
+	}
+
+	private void handleMouseWentUp(WMouseEvent event) {
+		WModelIndex index = this.translateModelIndex(event);
+		if ((index != null)) {
+			super.handleMouseUp(index, event);
 		}
 	}
 
@@ -1594,6 +1630,6 @@ public class WTableView extends WAbstractItemView {
 	}
 
 	static String wtjs1(WApplication app) {
-		return "Wt3_1_7a.WTableView = function(n,i,g,p){function q(a){var b=-1,c=false,d=false,k=null;for(a=f.target(a);a;){var h=$(a);if(h.hasClass(\"Wt-tv-contents\"))break;else if(h.hasClass(\"Wt-tv-c\")){if(a.getAttribute(\"drop\")===\"true\")d=true;if(h.hasClass(\"Wt-selected\"))c=true;k=a;a=a.parentNode;b=a.className.split(\" \")[0].substring(7)*1;break}a=a.parentNode}return{columnId:b,rowIdx:-1,selected:c,drop:d,el:k}}function r(a){var b,c,d=a.parentNode.childNodes;b=0;for(c=d.length;b<c;++b)if(d[b]==a)return b; return-1}function w(a,b){var c=a.className.split(\" \")[0],d=c.substring(7)*1,k=p.firstChild,h=g.firstChild;c=$(h).find(\".\"+c).get(0);var j=a.nextSibling,e=c.nextSibling,l=f.pxself(a,\"width\")-1+b;k.style.width=h.style.width=f.pxself(k,\"width\")+b+\"px\";a.style.width=l+1+\"px\";for(c.style.width=l+7+\"px\";j;j=j.nextSibling)if(e){e.style.left=f.pxself(e,\"left\")+b+\"px\";e=e.nextSibling}n.emit(i,\"columnResized\",d,parseInt(l))}jQuery.data(i,\"obj\",this);var f=n.WT,s=0,t=0,u=0,v=0;g.onscroll=function(){p.scrollLeft= g.scrollLeft;if(g.scrollTop<u||g.scrollTop>v||g.scrollLeft<s||g.scrollLeft>t)n.emit(i,\"scrolled\",g.scrollLeft,g.scrollTop,g.clientWidth,g.clientHeight)};this.mouseDown=function(a,b){f.capture(null);a=q(b);i.getAttribute(\"drag\")===\"true\"&&a.selected&&n._p_.dragStart(i,b)};this.resizeHandleMDown=function(a,b){var c=a.parentNode.parentNode,d=-(f.pxself(c,\"width\")-1);new f.SizeHandle(f,\"h\",a.offsetWidth,i.offsetHeight,d,1E4,\"Wt-hsh\",function(k){w(c,k)},a,i,b,-2,-1)};this.scrolled=function(a,b,c,d){s= a;t=b;u=c;v=d};var m=null;i.handleDragDrop=function(a,b,c,d,k){if(m){m.className=m.classNameOrig;m=null}if(a!=\"end\"){var h=q(c);if(!h.selected&&h.drop)if(a==\"drop\")n.emit(i,{name:\"dropEvent\",eventObject:b,event:c},h.rowIdx,h.columnId,d,k);else{b.className=\"Wt-valid-drop\";m=h.el;m.classNameOrig=m.className;m.className+=\" Wt-drop-site\"}else b.className=\"\"}};i.onkeydown=function(a){var b=a||window.event;if(b.keyCode==9){f.cancelEvent(b);var c=q(b);if(c.el){a=c.el.parentNode;c=r(c.el);var d=r(a),k=a.parentNode.childNodes.length, h=a.childNodes.length;b=b.shiftKey;for(var j=false,e=c,l;;){for(;b?e>=0:e<h;e=b?e-1:e+1)for(l=e==c&&!j?b?d-1:d+1:b?k-1:0;b?l>=0:l<k;l=b?l-1:l+1){if(e==c&&l==d)return;a=a.parentNode.childNodes[l];var o=$(a.childNodes[e]).find(\":input\");if(o.size()>0){setTimeout(function(){o.focus()},0);return}}e=b?h-1:0;j=true}}}else if(b.keyCode>=37&&b.keyCode<=40){j=f.target(b);if(j.nodeName!=\"select\"){c=q(b);if(c.el){a=c.el.parentNode;c=r(c.el);d=r(a);k=a.parentNode.childNodes.length;h=a.childNodes.length;switch(b.keyCode){case 39:if(f.hasTag(j, \"INPUT\")&&j.type==\"text\"){e=f.getSelectionRange(j);if(e.start!=j.value.length)return}d++;break;case 38:c--;break;case 37:if(f.hasTag(j,\"INPUT\")&&j.type==\"text\"){e=f.getSelectionRange(j);if(e.start!=0)return}d--;break;case 40:c++;break;default:return}f.cancelEvent(b);if(c>-1&&c<h&&d>-1&&d<k){a=a.parentNode.childNodes[d];o=$(a.childNodes[c]).find(\":input\");o.size()>0&&setTimeout(function(){o.focus()},0)}}}}};this.autoJavaScript=function(){if(i.parentNode==null){i=g=p=null;this.autoJavaScript=function(){}}else if(!f.isHidden(i)){var a= i.offsetWidth-f.px(i,\"borderLeftWidth\")-f.px(i,\"borderRightWidth\"),b=g.offsetWidth-g.clientWidth;a-=b;if(a>200&&a!=g.tw){g.tw=a;g.style.width=a+b+\"px\";p.style.width=a+\"px\"}}}};";
+		return "Wt3_1_7a.WTableView = function(n,i,e,p){function q(a){var b=-1,c=false,d=false,k=null;for(a=f.target(a);a;){var h=$(a);if(h.hasClass(\"Wt-tv-contents\"))break;else if(h.hasClass(\"Wt-tv-c\")){if(a.getAttribute(\"drop\")===\"true\")d=true;if(h.hasClass(\"Wt-selected\"))c=true;k=a;a=a.parentNode;b=a.className.split(\" \")[0].substring(7)*1;break}a=a.parentNode}return{columnId:b,rowIdx:-1,selected:c,drop:d,el:k}}function s(){return f.pxself(e.firstChild,\"lineHeight\")}function r(a){var b,c,d=a.parentNode.childNodes; b=0;for(c=d.length;b<c;++b)if(d[b]==a)return b;return-1}function x(a,b){var c=a.className.split(\" \")[0],d=c.substring(7)*1,k=p.firstChild,h=e.firstChild;c=$(h).find(\".\"+c).get(0);var j=a.nextSibling,g=c.nextSibling,l=f.pxself(a,\"width\")-1+b;k.style.width=h.style.width=f.pxself(k,\"width\")+b+\"px\";a.style.width=l+1+\"px\";for(c.style.width=l+7+\"px\";j;j=j.nextSibling)if(g){g.style.left=f.pxself(g,\"left\")+b+\"px\";g=g.nextSibling}n.emit(i,\"columnResized\",d,parseInt(l))}jQuery.data(i,\"obj\",this);var f=n.WT, t=0,u=0,v=0,w=0;e.onscroll=function(){p.scrollLeft=e.scrollLeft;if(e.scrollTop<v||e.scrollTop>w||e.scrollLeft<t||e.scrollLeft>u)n.emit(i,\"scrolled\",e.scrollLeft,e.scrollTop,e.clientWidth,e.clientHeight)};this.mouseDown=function(a,b){f.capture(null);a=q(b);i.getAttribute(\"drag\")===\"true\"&&a.selected&&n._p_.dragStart(i,b)};this.resizeHandleMDown=function(a,b){var c=a.parentNode.parentNode,d=-(f.pxself(c,\"width\")-1);new f.SizeHandle(f,\"h\",a.offsetWidth,i.offsetHeight,d,1E4,\"Wt-hsh\",function(k){x(c,k)}, a,i,b,-2,-1)};this.scrolled=function(a,b,c,d){t=a;u=b;v=c;w=d};this.scrollTo=function(a,b,c){if(b!=-1){a=e.scrollTop;var d=e.clientHeight;if(c==0)if(a+d<b)c=1;else if(b<a)c=2;switch(c){case 1:e.scrollTop=b;break;case 2:e.scrollTop=b-(d-s());break;case 3:e.scrollTop=b-(d-s())/2;break}e.onscroll()}};var m=null;i.handleDragDrop=function(a,b,c,d,k){if(m){m.className=m.classNameOrig;m=null}if(a!=\"end\"){var h=q(c);if(!h.selected&&h.drop)if(a==\"drop\")n.emit(i,{name:\"dropEvent\",eventObject:b,event:c},h.rowIdx, h.columnId,d,k);else{b.className=\"Wt-valid-drop\";m=h.el;m.classNameOrig=m.className;m.className+=\" Wt-drop-site\"}else b.className=\"\"}};i.onkeydown=function(a){var b=a||window.event;if(b.keyCode==9){f.cancelEvent(b);var c=q(b);if(c.el){a=c.el.parentNode;c=r(c.el);var d=r(a),k=a.parentNode.childNodes.length,h=a.childNodes.length;b=b.shiftKey;for(var j=false,g=c,l;;){for(;b?g>=0:g<h;g=b?g-1:g+1)for(l=g==c&&!j?b?d-1:d+1:b?k-1:0;b?l>=0:l<k;l=b?l-1:l+1){if(g==c&&l==d)return;a=a.parentNode.childNodes[l]; var o=$(a.childNodes[g]).find(\":input\");if(o.size()>0){setTimeout(function(){o.focus()},0);return}}g=b?h-1:0;j=true}}}else if(b.keyCode>=37&&b.keyCode<=40){j=f.target(b);if(j.nodeName!=\"select\"){c=q(b);if(c.el){a=c.el.parentNode;c=r(c.el);d=r(a);k=a.parentNode.childNodes.length;h=a.childNodes.length;switch(b.keyCode){case 39:if(f.hasTag(j,\"INPUT\")&&j.type==\"text\"){g=f.getSelectionRange(j);if(g.start!=j.value.length)return}d++;break;case 38:c--;break;case 37:if(f.hasTag(j,\"INPUT\")&&j.type==\"text\"){g= f.getSelectionRange(j);if(g.start!=0)return}d--;break;case 40:c++;break;default:return}f.cancelEvent(b);if(c>-1&&c<h&&d>-1&&d<k){a=a.parentNode.childNodes[d];o=$(a.childNodes[c]).find(\":input\");o.size()>0&&setTimeout(function(){o.focus()},0)}}}}};this.autoJavaScript=function(){if(i.parentNode==null){i=e=p=null;this.autoJavaScript=function(){}}else if(!f.isHidden(i)){var a=i.offsetWidth-f.px(i,\"borderLeftWidth\")-f.px(i,\"borderRightWidth\"),b=e.offsetWidth-e.clientWidth;a-=b;if(a>200&&a!=e.tw){e.tw= a;e.style.width=a+b+\"px\";p.style.width=a+\"px\"}}}};";
 	}
 }

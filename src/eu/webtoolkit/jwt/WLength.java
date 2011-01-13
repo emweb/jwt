@@ -89,6 +89,73 @@ public class WLength {
 	}
 
 	/**
+	 * Creates a length by parsing the argument as a css length string.
+	 * <p>
+	 * Only a combination of a value and a unit is supported. If the string is
+	 * an illegal css length an exception is thrown.
+	 */
+	public WLength(String s) {
+		this.auto_ = false;
+		String end = null;
+		{
+			Matcher matcher = StringUtils.FLOAT_PATTERN.matcher(s);
+			this.value_ = 0.0;
+			if (matcher.find()) {
+				end = s.substring(matcher.end());
+				this.value_ = Double.parseDouble(matcher.group().trim());
+			}
+		}
+		;
+		if (s == end) {
+			throw new WtException(
+					"WLength: Missing value in the css length string '" + s
+							+ "'.");
+		}
+		String unit = end;
+		unit = unit.trim();
+		if (unit.equals("em")) {
+			this.unit_ = WLength.Unit.FontEm;
+		} else {
+			if (unit.equals("ex")) {
+				this.unit_ = WLength.Unit.FontEx;
+			} else {
+				if (unit.length() == 0 || unit.equals("px")) {
+					this.unit_ = WLength.Unit.Pixel;
+				} else {
+					if (unit.equals("in")) {
+						this.unit_ = WLength.Unit.Inch;
+					} else {
+						if (unit.equals("cm")) {
+							this.unit_ = WLength.Unit.Centimeter;
+						} else {
+							if (unit.equals("mm")) {
+								this.unit_ = WLength.Unit.Millimeter;
+							} else {
+								if (unit.equals("pt")) {
+									this.unit_ = WLength.Unit.Point;
+								} else {
+									if (unit.equals("pc")) {
+										this.unit_ = WLength.Unit.Pica;
+									} else {
+										if (unit.equals("%")) {
+											this.unit_ = WLength.Unit.Percentage;
+										} else {
+											throw new WtException(
+													"WLength: Illegal unit '"
+															+ unit
+															+ "' in the css length string.");
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+	/**
 	 * Creates a length with value and unit.
 	 * <p>
 	 * This constructor will also provide the implicit conversion between a
@@ -107,6 +174,26 @@ public class WLength {
 	 * WLength.Unit.Pixel)}
 	 */
 	public WLength(double value) {
+		this(value, WLength.Unit.Pixel);
+	}
+
+	public WLength(int value, WLength.Unit unit) {
+		this.auto_ = false;
+		this.unit_ = unit;
+		this.value_ = (double) value;
+	}
+
+	public WLength(int value) {
+		this(value, WLength.Unit.Pixel);
+	}
+
+	public WLength(long value, WLength.Unit unit) {
+		this.auto_ = false;
+		this.unit_ = unit;
+		this.value_ = (double) value;
+	}
+
+	public WLength(long value) {
 		this(value, WLength.Unit.Pixel);
 	}
 
@@ -167,12 +254,34 @@ public class WLength {
 	 * When the length {@link WLength#isAuto() isAuto()}, 0 is returned,
 	 * otherwise the approximate length in pixels.
 	 */
-	public double toPixels() {
+	public double toPixels(double fontSize) {
 		if (this.auto_) {
 			return 0;
 		} else {
-			return this.value_ * unitFactor[this.unit_.getValue()];
+			if (this.unit_ == WLength.Unit.FontEm) {
+				return this.value_ * fontSize;
+			} else {
+				if (this.unit_ == WLength.Unit.FontEx) {
+					return this.value_ * fontSize / 2.0;
+				} else {
+					if (this.unit_ == WLength.Unit.Percentage) {
+						return this.value_ * fontSize / 100.0;
+					} else {
+						return this.value_
+								* unitFactor[this.unit_.getValue() - 2];
+					}
+				}
+			}
 		}
+	}
+
+	/**
+	 * Returns the (approximate) length in pixels.
+	 * <p>
+	 * Returns {@link #toPixels(double fontSize) toPixels(16.0)}
+	 */
+	public final double toPixels() {
+		return toPixels(16.0);
 	}
 
 	private boolean auto_;
@@ -181,9 +290,8 @@ public class WLength {
 	private static String[] unitText = { "em", "ex", "px", "in", "cm", "mm",
 			"pt", "pc", "%" };
 	private static final double pxPerPt = 4.0 / 3.0;
-	private static double[] unitFactor = { 16, 8, 1, 72 * pxPerPt,
-			72 / 2.54 * pxPerPt, 72 / 25.4 * pxPerPt, pxPerPt, 12 * pxPerPt,
-			0.16 };
+	private static double[] unitFactor = { 1, 72 * pxPerPt,
+			72 / 2.54 * pxPerPt, 72 / 25.4 * pxPerPt, pxPerPt, 12 * pxPerPt };
 
 	static WLength multiply(WLength l, double s) {
 		return new WLength(l.getValue() * s, l.getUnit());

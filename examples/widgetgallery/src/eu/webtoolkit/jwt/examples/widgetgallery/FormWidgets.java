@@ -287,7 +287,6 @@ class FormWidgets extends ControlsWidget {
 				result);
 		WTextEdit te = new WTextEdit(result);
 		this.ed_.showSignal(te.changed(), "Text edit changed");
-		WPushButton b = new WPushButton("print");
 		return result;
 	}
 

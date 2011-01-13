@@ -276,23 +276,27 @@ public class WAggregateProxyModel extends WAbstractProxyModel {
 			Orientation orientation) {
 		if (orientation == Orientation.Horizontal) {
 			int srcColumn = this.topLevel_.mapToSource(section);
+			EnumSet<HeaderFlag> result = this.getSourceModel().getHeaderFlags(
+					srcColumn, orientation);
 			WAggregateProxyModel.Aggregate agg = this.topLevel_
 					.findAggregate(srcColumn);
 			if (agg != null) {
 				if (agg.collapsed_) {
-					return EnumSet.of(HeaderFlag.ColumnIsCollapsed);
+					return EnumUtils.or(result, HeaderFlag.ColumnIsCollapsed);
 				} else {
 					if (agg.parentSrc_ == agg.lastChildSrc_ + 1) {
-						return EnumSet.of(HeaderFlag.ColumnIsExpandedLeft);
+						return EnumUtils.or(result,
+								HeaderFlag.ColumnIsExpandedLeft);
 					} else {
-						return EnumSet.of(HeaderFlag.ColumnIsExpandedRight);
+						return EnumUtils.or(result,
+								HeaderFlag.ColumnIsExpandedRight);
 					}
 				}
 			} else {
-				return super.getHeaderFlags(section, orientation);
+				return result;
 			}
 		} else {
-			return super.getHeaderFlags(section, orientation);
+			return this.getSourceModel().getHeaderFlags(section, orientation);
 		}
 	}
 

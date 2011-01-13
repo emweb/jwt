@@ -171,6 +171,54 @@ public interface WPaintDevice {
 			CharSequence text);
 
 	/**
+	 * Measures rendered text size.
+	 * <p>
+	 * Returns the bounding rect of the given text when rendered using the
+	 * current font.
+	 * <p>
+	 * If <code>maxWidth</code> != -1, then the text is truncated to fit in the
+	 * width.
+	 * <p>
+	 * If <code>wordWrap</code> = <code>true</code> then text is truncated only
+	 * at word boundaries. Note that in this case the whitespace is included in
+	 * the text but not accounted for by the returned width (since usually you
+	 * will not render the whitespace at the end of a line).
+	 * <p>
+	 * Throws a std::logic_error if the underlying device does not provide font
+	 * metrics.
+	 */
+	public WTextItem measureText(CharSequence text, double maxWidth,
+			boolean wordWrap);
+
+	/**
+	 * Measures rendered text size.
+	 * <p>
+	 * Returns
+	 * {@link #measureText(CharSequence text, double maxWidth, boolean wordWrap)
+	 * measureText(text, - 1, false)}
+	 */
+	public WTextItem measureText(CharSequence text);
+
+	/**
+	 * Measures rendered text size.
+	 * <p>
+	 * Returns
+	 * {@link #measureText(CharSequence text, double maxWidth, boolean wordWrap)
+	 * measureText(text, maxWidth, false)}
+	 */
+	public WTextItem measureText(CharSequence text, double maxWidth);
+
+	/**
+	 * Returns font metrics.
+	 * <p>
+	 * This returns font metrics for the current font.
+	 * <p>
+	 * Throws a std::logic_error if the underlying device does not provide font
+	 * metrics.
+	 */
+	public WFontMetrics getFontMetrics();
+
+	/**
 	 * Initializes the device for painting.
 	 * <p>
 	 * This method is called when a {@link WPainter} starts painting.

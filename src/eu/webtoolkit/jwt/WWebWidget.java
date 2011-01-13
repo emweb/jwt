@@ -141,14 +141,14 @@ public abstract class WWebWidget extends WWidget {
 			this.width_ = new WLength();
 		}
 		if (this.width_ != null && !this.width_.equals(width)) {
-			this.width_ = width;
+			this.width_ = nonNegative(width);
 			this.flags_.set(BIT_WIDTH_CHANGED);
 		}
 		if (!(this.height_ != null) && !height.isAuto()) {
 			this.height_ = new WLength();
 		}
 		if (this.height_ != null && !this.height_.equals(height)) {
-			this.height_ = height;
+			this.height_ = nonNegative(height);
 			this.flags_.set(BIT_HEIGHT_CHANGED);
 		}
 		this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyAttribute));
@@ -167,8 +167,8 @@ public abstract class WWebWidget extends WWidget {
 		if (!(this.layoutImpl_ != null)) {
 			this.layoutImpl_ = new WWebWidget.LayoutImpl();
 		}
-		this.layoutImpl_.minimumWidth_ = width;
-		this.layoutImpl_.minimumHeight_ = height;
+		this.layoutImpl_.minimumWidth_ = nonNegative(width);
+		this.layoutImpl_.minimumHeight_ = nonNegative(height);
 		this.flags_.set(BIT_GEOMETRY_CHANGED);
 		this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyAttribute));
 	}
@@ -187,8 +187,8 @@ public abstract class WWebWidget extends WWidget {
 		if (!(this.layoutImpl_ != null)) {
 			this.layoutImpl_ = new WWebWidget.LayoutImpl();
 		}
-		this.layoutImpl_.maximumWidth_ = width;
-		this.layoutImpl_.maximumHeight_ = height;
+		this.layoutImpl_.maximumWidth_ = nonNegative(width);
+		this.layoutImpl_.maximumHeight_ = nonNegative(height);
 		this.flags_.set(BIT_GEOMETRY_CHANGED);
 		this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyAttribute));
 	}
@@ -611,10 +611,8 @@ public abstract class WWebWidget extends WWidget {
 
 	public void load() {
 		this.flags_.set(BIT_LOADED);
-		if (this.children_ != null) {
-			for (int i = 0; i < this.children_.size(); ++i) {
-				this.doLoad(this.children_.get(i));
-			}
+		for (int i = 0; this.children_ != null && i < this.children_.size(); ++i) {
+			this.doLoad(this.children_.get(i));
 		}
 		if (this.flags_.get(BIT_HIDE_WITH_OFFSETS)) {
 			this.getParent().setHideWithOffsets(true);
@@ -678,6 +676,20 @@ public abstract class WWebWidget extends WWidget {
 		this.flags_.set(BIT_SET_UNSELECTABLE, !selectable);
 		this.flags_.set(BIT_SELECTABLE_CHANGED);
 		this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyAttribute));
+	}
+
+	public void doJavaScript(String javascript) {
+		if (this.isRendered()) {
+			WApplication.getInstance().doJavaScript(javascript);
+		} else {
+			if (!(this.otherImpl_ != null)) {
+				this.otherImpl_ = new WWebWidget.OtherImpl();
+			}
+			if (!(this.otherImpl_.delayedDoJavaScript_ != null)) {
+				this.otherImpl_.delayedDoJavaScript_ = new StringBuilder();
+			}
+			this.otherImpl_.delayedDoJavaScript_.append(javascript);
+		}
 	}
 
 	public String getId() {
@@ -1555,34 +1567,6 @@ public abstract class WWebWidget extends WWidget {
 		}
 	}
 
-	/**
-	 * Executes the given JavaScript statements, possibly delayed until after
-	 * the widget is rendered.
-	 * <p>
-	 * Calling
-	 * {@link WApplication#doJavaScript(String javascript, boolean afterLoaded)
-	 * WApplication#doJavaScript()} with JavaScript code that refers to a widget
-	 * that is still to be rendered causes JavaScript errors. This happens for
-	 * example when an object is created, but not yet inserted in the widget
-	 * tree.
-	 * <p>
-	 * This method offers an alternative: it queues up all doJavaScript calls
-	 * for widgets that were not yet rendered until they are rendered.
-	 */
-	protected void doJavaScript(String javascript) {
-		if (this.isRendered()) {
-			WApplication.getInstance().doJavaScript(javascript);
-		} else {
-			if (!(this.otherImpl_ != null)) {
-				this.otherImpl_ = new WWebWidget.OtherImpl();
-			}
-			if (!(this.otherImpl_.delayedDoJavaScript_ != null)) {
-				this.otherImpl_.delayedDoJavaScript_ = new StringBuilder();
-			}
-			this.otherImpl_.delayedDoJavaScript_.append(javascript);
-		}
-	}
-
 	private static final int BIT_INLINE = 0;
 	private static final int BIT_HIDDEN = 1;
 	private static final int BIT_LOADED = 2;
@@ -2042,5 +2026,14 @@ public abstract class WWebWidget extends WWidget {
 	static Property[] properties = { Property.PropertyStyleTop,
 			Property.PropertyStyleRight, Property.PropertyStyleBottom,
 			Property.PropertyStyleLeft };
+
+	static WLength nonNegative(WLength w) {
+		if (w.isAuto()) {
+			return w;
+		} else {
+			return new WLength(Math.abs(w.getValue()), w.getUnit());
+		}
+	}
+
 	private static List<WWidget> emptyWidgetList_ = new ArrayList<WWidget>();
 }

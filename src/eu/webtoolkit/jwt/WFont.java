@@ -202,7 +202,29 @@ public class WFont {
 		this.weight_ = WFont.Weight.NormalWeight;
 		this.weightValue_ = 400;
 		this.size_ = WFont.Size.Medium;
-		this.fixedSize_ = new WLength();
+		this.sizeLength_ = new WLength();
+		this.familyChanged_ = false;
+		this.styleChanged_ = false;
+		this.variantChanged_ = false;
+		this.weightChanged_ = false;
+		this.sizeChanged_ = false;
+	}
+
+	/**
+	 * A font of a given family.
+	 * <p>
+	 * Creates a Medium font of the given family.
+	 */
+	public WFont(WFont.GenericFamily family) {
+		this.widget_ = null;
+		this.genericFamily_ = family;
+		this.specificFamilies_ = new WString();
+		this.style_ = WFont.Style.NormalStyle;
+		this.variant_ = WFont.Variant.NormalVariant;
+		this.weight_ = WFont.Weight.NormalWeight;
+		this.weightValue_ = 400;
+		this.size_ = WFont.Size.Medium;
+		this.sizeLength_ = new WLength();
 		this.familyChanged_ = false;
 		this.styleChanged_ = false;
 		this.variantChanged_ = false;
@@ -221,7 +243,7 @@ public class WFont {
 				&& this.weight_ == other.weight_
 				&& this.weightValue_ == other.weightValue_
 				&& this.size_ == other.size_
-				&& this.fixedSize_.equals(other.fixedSize_);
+				&& this.sizeLength_.equals(other.sizeLength_);
 	}
 
 	/**
@@ -339,26 +361,54 @@ public class WFont {
 	 * Returns the font weight.
 	 */
 	public WFont.Weight getWeight() {
-		return this.weight_;
+		if (this.weight_ != WFont.Weight.Value) {
+			return this.weight_;
+		} else {
+			return this.weightValue_ >= 400 ? WFont.Weight.Bold
+					: WFont.Weight.NormalWeight;
+		}
 	}
 
 	/**
 	 * Returns the font weight value.
 	 */
 	public int getWeightValue() {
-		return this.weightValue_;
+		switch (this.weight_) {
+		case NormalWeight:
+		case Lighter:
+			return 400;
+		case Bold:
+		case Bolder:
+			return 700;
+		case Value:
+			return this.weightValue_;
+		}
+		assert false;
+		return -1;
+	}
+
+	/**
+	 * Sets the font size (<b>deprecated</b>).
+	 * <p>
+	 * Use {@link WFont#setSize(WFont.Size size) setSize()} or
+	 * {@link WFont#setSize(WLength size) setSize()} instead.
+	 */
+	public void setSize(WFont.Size size, WLength length) {
+		if (size == WFont.Size.FixedSize) {
+			this.setSize(length);
+		} else {
+			this.setSize(size);
+		}
 	}
 
 	/**
 	 * Sets the font size.
+	 * <p>
+	 * Sets the font size using a predefined CSS size.
 	 */
-	public void setSize(WFont.Size size, WLength fixedSize) {
+	public void setSize(WFont.Size size) {
 		this.size_ = size;
-		if (this.size_ == WFont.Size.FixedSize) {
-			this.fixedSize_ = fixedSize;
-		} else {
-			this.fixedSize_ = WLength.Auto;
-		}
+		this.sizeLength_ = WLength.Auto;
 		this.sizeChanged_ = true;
 		if (this.widget_ != null) {
 			this.widget_.repaint(EnumSet
@@ -369,25 +419,115 @@ public class WFont {
 	/**
 	 * Sets the font size.
 	 * <p>
-	 * Calls {@link #setSize(WFont.Size size, WLength fixedSize) setSize(size,
-	 * WLength.Auto)}
+	 * Sets the font size.
 	 */
-	public final void setSize(WFont.Size size) {
-		setSize(size, WLength.Auto);
+	public void setSize(WLength size) {
+		this.size_ = WFont.Size.FixedSize;
+		this.sizeLength_ = size;
+		this.sizeChanged_ = true;
+		if (this.widget_ != null) {
+			this.widget_.repaint(EnumSet
+					.of(RepaintFlag.RepaintPropertyAttribute));
+		}
 	}
 
 	/**
 	 * Returns the font size.
 	 */
-	public WFont.Size getSize() {
-		return this.size_;
+	public WFont.Size getSize(double mediumSize) {
+		if (this.size_ != WFont.Size.FixedSize) {
+			return this.size_;
+		} else {
+			double pixels = this.sizeLength_.toPixels();
+			if (pixels == mediumSize) {
+				return WFont.Size.Medium;
+			} else {
+				if (pixels > mediumSize) {
+					if (pixels < 1.2 * 1.19 * mediumSize) {
+						return WFont.Size.Large;
+					} else {
+						if (pixels < 1.2 * 1.2 * 1.19 * mediumSize) {
+							return WFont.Size.XLarge;
+						} else {
+							return WFont.Size.XXLarge;
+						}
+					}
+				} else {
+					if (pixels > mediumSize / 1.2 / 1.19) {
+						return WFont.Size.Small;
+					} else {
+						if (pixels > mediumSize / 1.2 / 1.2 / 1.19) {
+							return WFont.Size.XSmall;
+						} else {
+							return WFont.Size.XXSmall;
+						}
+					}
+				}
+			}
+		}
 	}
 
 	/**
-	 * Returns the fixed font size for {@link WFont.Size#FixedSize FixedSize}.
+	 * Returns the font size.
+	 * <p>
+	 * Returns {@link #getSize(double mediumSize) getSize(16)}
+	 */
+	public final WFont.Size getSize() {
+		return getSize(16);
+	}
+
+	/**
+	 * Returns the font size as a numerical value (<b>deprecated</b>).
+	 * <p>
+	 * 
+	 * @deprecated This method has been renamed to
+	 *             {@link WFont#getSizeLength(double mediumSize)
+	 *             getSizeLength()}
 	 */
 	public WLength getFixedSize() {
-		return this.fixedSize_;
+		return this.getSizeLength();
+	}
+
+	/**
+	 * Returns the font size as a numerical value.
+	 * <p>
+	 * Absolute size enumerations are converted to a length assuming a Medium
+	 * font size of 16 px.
+	 */
+	public WLength getSizeLength(double mediumSize) {
+		switch (this.size_) {
+		case FixedSize:
+			return this.sizeLength_;
+		case XXSmall:
+			return new WLength(mediumSize / 1.2 / 1.2 / 1.2);
+		case XSmall:
+			return new WLength(mediumSize / 1.2 / 1.2);
+		case Small:
+			return new WLength(mediumSize / 1.2);
+		case Medium:
+			return new WLength(mediumSize);
+		case Large:
+			return new WLength(mediumSize * 1.2);
+		case XLarge:
+			return new WLength(mediumSize * 1.2 * 1.2);
+		case XXLarge:
+			return new WLength(mediumSize * 1.2 * 1.2 * 1.2);
+		case Smaller:
+			return new WLength(1 / 1.2, WLength.Unit.FontEm);
+		case Larger:
+			return new WLength(1.2, WLength.Unit.FontEm);
+		}
+		assert false;
+		return new WLength();
+	}
+
+	/**
+	 * Returns the font size as a numerical value.
+	 * <p>
+	 * Returns {@link #getSizeLength(double mediumSize) getSizeLength(16)}
+	 */
+	public final WLength getSizeLength() {
+		return getSizeLength(16);
 	}
 
 	String getCssText(boolean combined) {
@@ -475,7 +615,7 @@ public class WFont {
 	private WFont.Weight weight_;
 	private int weightValue_;
 	private WFont.Size size_;
-	private WLength fixedSize_;
+	private WLength sizeLength_;
 	private boolean familyChanged_;
 	private boolean styleChanged_;
 	private boolean variantChanged_;
@@ -585,7 +725,7 @@ public class WFont {
 		case Larger:
 			return "larger";
 		case FixedSize:
-			return this.fixedSize_.getCssText();
+			return this.sizeLength_.getCssText();
 		}
 		return "";
 	}

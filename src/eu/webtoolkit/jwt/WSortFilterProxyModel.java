@@ -457,6 +457,14 @@ public class WSortFilterProxyModel extends WAbstractProxyModel {
 		return this.getSourceModel().getHeaderData(section, orientation, role);
 	}
 
+	public EnumSet<HeaderFlag> getHeaderFlags(int section,
+			Orientation orientation) {
+		if (orientation == Orientation.Vertical) {
+			section = this.mapToSource(this.getIndex(section, 0)).getRow();
+		}
+		return this.getSourceModel().getHeaderFlags(section, orientation);
+	}
+
 	/**
 	 * Inserts a number rows.
 	 * <p>

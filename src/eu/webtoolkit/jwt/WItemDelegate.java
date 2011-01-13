@@ -453,6 +453,7 @@ public class WItemDelegate extends WAbstractItemDelegate {
 			if (autoCreate) {
 				final IndexCheckBox result = checkBox = new IndexCheckBox(index);
 				checkBox.setObjectName("c");
+				checkBox.clicked().preventPropagation();
 				WContainerWidget wc = ((w.w.find("o")) instanceof WContainerWidget ? (WContainerWidget) (w.w
 						.find("o"))
 						: null);

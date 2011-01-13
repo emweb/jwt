@@ -251,7 +251,6 @@ public class WTextEdit extends WTextArea {
 			element.callMethod("ed=new tinymce.Editor('" + this.getId() + "',"
 					+ config.toString() + ");");
 			element.callMethod("ed.render();");
-			element.callMethod("ed.onChange.add(function(ed) { ed.save(); });");
 			this.contentChanged_ = false;
 		}
 		if (!all && this.contentChanged_) {

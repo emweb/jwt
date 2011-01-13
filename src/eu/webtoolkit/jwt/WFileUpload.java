@@ -413,6 +413,16 @@ public class WFileUpload extends WWebWidget {
 			this.fileUploadTarget_ = null;
 		}
 		this.setFormObject(!(this.fileUploadTarget_ != null));
+		this.uploaded().addListener(this, new Signal.Listener() {
+			public void trigger() {
+				WFileUpload.this.onUploaded();
+			}
+		});
+		this.fileTooLarge().addListener(this, new Signal1.Listener<Integer>() {
+			public void trigger(Integer e1) {
+				WFileUpload.this.onUploaded();
+			}
+		});
 	}
 
 	private void onData(long current, long total) {
@@ -432,11 +442,6 @@ public class WFileUpload extends WWebWidget {
 			this.progressBar_.setValue((double) current);
 			WApplication app = WApplication.getInstance();
 			app.triggerUpdate();
-		}
-		if (current == total) {
-			WApplication app = WApplication.getInstance();
-			this.uploading_ = false;
-			app.enableUpdates(false);
 		}
 	}
 
@@ -553,6 +558,13 @@ public class WFileUpload extends WWebWidget {
 
 	private void handleFileTooLargeImpl() {
 		this.fileTooLarge().trigger(this.tooLargeSize_);
+	}
+
+	private void onUploaded() {
+		if (this.uploading_) {
+			WApplication.getInstance().enableUpdates(false);
+			this.uploading_ = false;
+		}
 	}
 
 	int tooLargeSize_;
