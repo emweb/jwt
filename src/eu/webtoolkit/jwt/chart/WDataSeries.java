@@ -239,7 +239,24 @@ public class WDataSeries {
 		return this.modelColumn_;
 	}
 
-	// public void setXSeriesColumn(int modelColumn) ;
+	/**
+	 * Sets the X series column.
+	 * <p>
+	 * By default, the data series uses the X series column configured for the
+	 * chart. For a scatter plot, each series can have its own matching X data,
+	 * which is configured here. For other plots, this setting is ignored.
+	 * <p>
+	 * The default value is -1, which indicates that
+	 * {@link WCartesianChart#XSeriesColumn() WCartesianChart#XSeriesColumn()}
+	 * is to be used.
+	 * <p>
+	 * 
+	 * @see WCartesianChart#setXSeriesColumn(int modelColumn)
+	 */
+	public void setXSeriesColumn(int modelColumn) {
+		this.XSeriesColumn_ = modelColumn;
+	}
+
 	/**
 	 * Returns the X series column.
 	 * <p>

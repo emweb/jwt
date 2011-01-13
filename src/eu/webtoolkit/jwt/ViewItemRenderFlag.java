@@ -26,19 +26,19 @@ import eu.webtoolkit.jwt.servlet.*;
  */
 public enum ViewItemRenderFlag {
 	/**
-	 * {@link } as selected.
+	 * Render as selected
 	 */
 	RenderSelected,
 	/**
-	 * {@link } in editing mode.
+	 * Render in editing mode
 	 */
 	RenderEditing,
 	/**
-	 * {@link } (the editor) focused.
+	 * Render (the editor) focused
 	 */
 	RenderFocused,
 	/**
-	 * {@link } as invalid.
+	 * Render as invalid
 	 */
 	RenderInvalid;
 
