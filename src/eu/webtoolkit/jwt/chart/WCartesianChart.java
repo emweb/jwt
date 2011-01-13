@@ -114,7 +114,7 @@ public class WCartesianChart extends WAbstractChart {
 		this.legendColumnWidth_ = new WLength(100);
 		this.legendFont_ = new WFont();
 		this.legendBorder_ = new WPen(PenStyle.NoPen);
-		this.legendBackground_ = new WBrush();
+		this.legendBackground_ = new WBrush(BrushStyle.NoBrush);
 		this.init();
 	}
 
@@ -148,7 +148,7 @@ public class WCartesianChart extends WAbstractChart {
 		this.legendColumnWidth_ = new WLength(100);
 		this.legendFont_ = new WFont();
 		this.legendBorder_ = new WPen(PenStyle.NoPen);
-		this.legendBackground_ = new WBrush();
+		this.legendBackground_ = new WBrush(BrushStyle.NoBrush);
 		this.init();
 	}
 
@@ -470,7 +470,7 @@ public class WCartesianChart extends WAbstractChart {
 	 * The default font is a 10pt sans serif font (the same as the default axis
 	 * label font), the default <code>border</code> is {@link PenStyle#NoPen
 	 * NoPen} and the default <code>background</code> is
-	 * {@link WBrushStyle#NoBrush NoBrush}.
+	 * {@link BrushStyle#NoBrush NoBrush}.
 	 * <p>
 	 * 
 	 * @see WCartesianChart#setLegendEnabled(boolean enabled)

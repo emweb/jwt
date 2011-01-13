@@ -181,7 +181,7 @@ public class WSvgImage extends WResource implements WVectorImage {
 		this.shapes_.append(" style=\"stroke:none;");
 		if (!this.getPainter().getPen().getColor().equals(
 				this.getPainter().getBrush().getColor())
-				|| this.getPainter().getBrush().getStyle() == WBrushStyle.NoBrush) {
+				|| this.getPainter().getBrush().getStyle() == BrushStyle.NoBrush) {
 			WColor color = this.getPainter().getPen().getColor();
 			this.shapes_.append("fill:" + color.getCssText()).append(';');
 			if (color.getAlpha() != 255) {

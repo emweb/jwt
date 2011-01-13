@@ -102,7 +102,7 @@ public class WScrollArea extends WWebWidget {
 	}
 
 	/**
-	 * Sets the widget that is the contents of the scroll area.
+	 * Sets the widget that is the content of the scroll area.
 	 * <p>
 	 * Setting a new widget will delete the previously set widget.
 	 */
@@ -118,7 +118,7 @@ public class WScrollArea extends WWebWidget {
 	}
 
 	/**
-	 * Remove the widget content.
+	 * Removes the widget content.
 	 */
 	public WWidget takeWidget() {
 		WWidget result = this.widget_;
@@ -152,7 +152,7 @@ public class WScrollArea extends WWebWidget {
 	}
 
 	/**
-	 * Returns the policy for both scrollbars.
+	 * Sets the policy for both scrollbars.
 	 * <p>
 	 * 
 	 * @see WScrollArea#setHorizontalScrollBarPolicy(WScrollArea.ScrollBarPolicy
@@ -167,7 +167,7 @@ public class WScrollArea extends WWebWidget {
 	}
 
 	/**
-	 * Returns the horizontal scroll bar policy.
+	 * Sets the horizontal scroll bar policy.
 	 * <p>
 	 * 
 	 * @see WScrollArea#setScrollBarPolicy(WScrollArea.ScrollBarPolicy policy)
@@ -179,7 +179,7 @@ public class WScrollArea extends WWebWidget {
 	}
 
 	/**
-	 * Returns the vertical scroll bar policy.
+	 * Sets the vertical scroll bar policy.
 	 * <p>
 	 * 
 	 * @see WScrollArea#setScrollBarPolicy(WScrollArea.ScrollBarPolicy policy)
@@ -188,6 +188,28 @@ public class WScrollArea extends WWebWidget {
 		this.verticalScrollBarPolicy_ = policy;
 		this.scrollBarPolicyChanged_ = true;
 		this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyAttribute));
+	}
+
+	/**
+	 * Returns the horizontal scroll bar policy.
+	 * <p>
+	 * 
+	 * @see WScrollArea#setHorizontalScrollBarPolicy(WScrollArea.ScrollBarPolicy
+	 *      policy)
+	 */
+	public WScrollArea.ScrollBarPolicy getHorizontalScrollBarPolicy() {
+		return this.horizontalScrollBarPolicy_;
+	}
+
+	/**
+	 * Returns the vertical scroll bar policy.
+	 * <p>
+	 * 
+	 * @see WScrollArea#setVerticalScrollBarPolicy(WScrollArea.ScrollBarPolicy
+	 *      policy)
+	 */
+	public WScrollArea.ScrollBarPolicy getVerticalScrollBarPolicy() {
+		return this.verticalScrollBarPolicy_;
 	}
 
 	private WWidget widget_;

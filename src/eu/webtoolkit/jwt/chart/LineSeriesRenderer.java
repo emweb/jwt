@@ -37,7 +37,7 @@ class LineSeriesRenderer extends SeriesRenderer {
 			this.curve_.moveTo(this.hv(p));
 			if (this.series_.getFillRange() != FillRangeType.NoFill
 					&& !this.series_.getBrush().equals(
-							new WBrush(WBrushStyle.NoBrush))) {
+							new WBrush(BrushStyle.NoBrush))) {
 				this.fill_.moveTo(this.hv(this.fillOtherPoint(x)));
 				this.fill_.lineTo(this.hv(p));
 			}
@@ -78,7 +78,7 @@ class LineSeriesRenderer extends SeriesRenderer {
 			}
 			if (this.series_.getFillRange() != FillRangeType.NoFill
 					&& !this.series_.getBrush().equals(
-							new WBrush(WBrushStyle.NoBrush))) {
+							new WBrush(BrushStyle.NoBrush))) {
 				this.fill_.lineTo(this.hv(this.fillOtherPoint(this.lastX_)));
 				this.fill_.closeSubPath();
 				this.renderer_.getPainter().setShadow(this.series_.getShadow());

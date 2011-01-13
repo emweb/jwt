@@ -272,7 +272,7 @@ public class WPainter {
 	 */
 	public void drawArc(WRectF rectangle, int startAngle, int spanAngle) {
 		WBrush oldBrush = this.getBrush().clone();
-		this.setBrush(new WBrush(WBrushStyle.NoBrush));
+		this.setBrush(new WBrush(BrushStyle.NoBrush));
 		this.device_.drawArc(rectangle.getNormalized(), startAngle / 16.,
 				spanAngle / 16.);
 		this.setBrush(oldBrush);

@@ -38,7 +38,7 @@ import eu.webtoolkit.jwt.PenCapStyle;
 import eu.webtoolkit.jwt.PenJoinStyle;
 import eu.webtoolkit.jwt.PenStyle;
 import eu.webtoolkit.jwt.WBrush;
-import eu.webtoolkit.jwt.WBrushStyle;
+import eu.webtoolkit.jwt.BrushStyle;
 import eu.webtoolkit.jwt.WColor;
 import eu.webtoolkit.jwt.WFont;
 import eu.webtoolkit.jwt.WLength;
@@ -408,7 +408,7 @@ public class WebGraphics2D extends Graphics2D {
 	@Override
 	public void drawArc(int x, int y, int width, int height, int startAngle, int arcAngle) {
 		WBrush oldBrush = painter.getBrush();
-		painter.setBrush(new WBrush(WBrushStyle.NoBrush));
+		painter.setBrush(new WBrush(BrushStyle.NoBrush));
 		painter.drawArc(x, y, width, height, startAngle * 16, arcAngle * 16);
 		painter.setBrush(oldBrush);
 	}
@@ -457,7 +457,7 @@ public class WebGraphics2D extends Graphics2D {
 	@Override
 	public void drawOval(int x, int y, int width, int height) {
 		WBrush oldBrush = painter.getBrush();
-		painter.setBrush(new WBrush(WBrushStyle.NoBrush));
+		painter.setBrush(new WBrush(BrushStyle.NoBrush));
 		painter.drawEllipse(x, y, width, height);
 		painter.setBrush(oldBrush);
 	}
@@ -465,7 +465,7 @@ public class WebGraphics2D extends Graphics2D {
 	@Override
 	public void drawPolygon(int[] xPoints, int[] yPoints, int nPoints) {
 		WBrush oldBrush = painter.getBrush();
-		painter.setBrush(new WBrush(WBrushStyle.NoBrush));
+		painter.setBrush(new WBrush(BrushStyle.NoBrush));
 		WPointF points[] = toPoints(xPoints, yPoints, nPoints);
 		painter.drawPolygon(points, nPoints);
 		painter.setBrush(oldBrush);
@@ -481,7 +481,7 @@ public class WebGraphics2D extends Graphics2D {
 	@Override
 	public void drawPolyline(int[] xPoints, int[] yPoints, int nPoints) {
 		WBrush oldBrush = painter.getBrush();
-		painter.setBrush(new WBrush(WBrushStyle.NoBrush));
+		painter.setBrush(new WBrush(BrushStyle.NoBrush));
 		WPointF points[] = toPoints(xPoints, yPoints, nPoints);
 		painter.drawPolyline(points, nPoints);
 		painter.setBrush(oldBrush);

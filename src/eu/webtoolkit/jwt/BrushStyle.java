@@ -20,26 +20,20 @@ import eu.webtoolkit.jwt.servlet.*;
 /**
  * Enumeration that indicates a fill style.
  */
-public enum WBrushStyle {
+public enum BrushStyle {
 	/**
 	 * Do not fill.
 	 */
-	NoBrush(0),
+	NoBrush,
 	/**
 	 * Fill with a solid color.
 	 */
-	SolidPattern(1);
-
-	private int value;
-
-	WBrushStyle(int value) {
-		this.value = value;
-	}
+	SolidPattern;
 
 	/**
 	 * Returns the numerical representation of this enum.
 	 */
 	public int getValue() {
-		return value;
+		return ordinal();
 	}
 }

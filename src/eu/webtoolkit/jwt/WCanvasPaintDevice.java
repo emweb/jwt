@@ -161,7 +161,7 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 		if (this.currentPen_.getStyle() != PenStyle.NoPen) {
 			this.js_.append("ctx.stroke();");
 		}
-		if (this.currentBrush_.getStyle() != WBrushStyle.NoBrush) {
+		if (this.currentBrush_.getStyle() != BrushStyle.NoBrush) {
 			this.js_.append("ctx.fill();");
 		}
 		this.js_.append("ctx.restore();");
@@ -524,7 +524,7 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 			if (this.currentPen_.getStyle() != PenStyle.NoPen) {
 				this.js_.append("ctx.stroke();");
 			}
-			if (this.currentBrush_.getStyle() != WBrushStyle.NoBrush) {
+			if (this.currentBrush_.getStyle() != BrushStyle.NoBrush) {
 				this.js_.append("ctx.fill();");
 			}
 			this.js_.append('\n');

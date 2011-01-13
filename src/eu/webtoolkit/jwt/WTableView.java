@@ -85,6 +85,44 @@ import eu.webtoolkit.jwt.servlet.*;
  * the {@link WAbstractItemView#clicked() WAbstractItemView#clicked()} or
  * {@link WAbstractItemView#doubleClicked() WAbstractItemView#doubleClicked()}
  * signals.
+ * <p>
+ * <h3>CSS</h3>
+ * <p>
+ * The tableview is styled by the current CSS theme. The look can be overridden
+ * using the <code>Wt-tableview</code> CSS class and the following selectors.
+ * <p>
+ * Selectors that apply to the body: <div class="fragment">
+ * 
+ * <pre class="fragment">
+ * .Wt-tableview .Wt-tv-contents : the main div used when javascript is available
+ *  .Wt-tableview .Wt-plaintable  : the main table used when no javascript is 
+ *                                  available
+ *  .Wt-tableview .Wt-pagingbar   : the paging bar
+ * </pre>
+ * 
+ * </div> Selectors that apply to the header: <div class="fragment">
+ * 
+ * <pre class="fragment">
+ * .Wt-tableview .Wt-header      : header background div
+ *  .Wt-tableview .Wt-headertable : div in the .Wt-header div to enable the 
+ *                                  header scrolling
+ *  .Wt-tableview .Wt-label       : header label
+ *  .Wt-tableview .Wt-tv-rh       : column resize handle
+ *  .Wt-tableview .Wt-tv-sh-up    : column sort handle, no sorting
+ *  .Wt-tableview .Wt-tv-sh-none  : column sort handle, sort up
+ *  .Wt-tableview .Wt-tv-sh-down  : column sort handle, sort down
+ * </pre>
+ * 
+ * </div> Selectors that apply to the table contents: <div class="fragment">
+ * 
+ * <pre class="fragment">
+ * .Wt-tableview .Wt-spacer      : spacer for non-loaded content
+ *  .Wt-tableview .Wt-selected    : selected item
+ *  .Wt-tableview .Wt-drop-site   : possible drop site
+ *  .Wt-tableview .Wt-tv-c        : cell style
+ * </pre>
+ * 
+ * </div>
  */
 public class WTableView extends WAbstractItemView {
 	/**

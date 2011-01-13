@@ -33,10 +33,10 @@ public class WBrush {
 	/**
 	 * Creates a brush.
 	 * <p>
-	 * Creates a brush with a {@link WBrushStyle#NoBrush NoBrush} fill style.
+	 * Creates a brush with a {@link BrushStyle#NoBrush NoBrush} fill style.
 	 */
 	public WBrush() {
-		this.style_ = WBrushStyle.NoBrush;
+		this.style_ = BrushStyle.NoBrush;
 		this.color_ = WColor.black;
 	}
 
@@ -45,7 +45,7 @@ public class WBrush {
 	 * <p>
 	 * Creates a black brush with the indicated <code>style</code>.
 	 */
-	public WBrush(WBrushStyle style) {
+	public WBrush(BrushStyle style) {
 		this.style_ = style;
 		this.color_ = WColor.black;
 	}
@@ -56,7 +56,7 @@ public class WBrush {
 	 * Creates a solid brush with the indicated <code>color</code>.
 	 */
 	public WBrush(WColor color) {
-		this.style_ = WBrushStyle.SolidPattern;
+		this.style_ = BrushStyle.SolidPattern;
 		this.color_ = color;
 	}
 
@@ -87,7 +87,7 @@ public class WBrush {
 	 * 
 	 * @see WBrush#getStyle()
 	 */
-	public void setStyle(WBrushStyle style) {
+	public void setStyle(BrushStyle style) {
 		this.style_ = style;
 	}
 
@@ -95,9 +95,9 @@ public class WBrush {
 	 * Returns the fill style.
 	 * <p>
 	 * 
-	 * @see WBrush#setStyle(WBrushStyle style)
+	 * @see WBrush#setStyle(BrushStyle style)
 	 */
-	public WBrushStyle getStyle() {
+	public BrushStyle getStyle() {
 		return this.style_;
 	}
 
@@ -121,6 +121,6 @@ public class WBrush {
 		return this.color_;
 	}
 
-	private WBrushStyle style_;
+	private BrushStyle style_;
 	private WColor color_;
 }

@@ -515,7 +515,7 @@ public class WVmlImage implements WVectorImage {
 	}
 
 	private String fillElement(WBrush brush) {
-		if (brush.getStyle() != WBrushStyle.NoBrush) {
+		if (brush.getStyle() != BrushStyle.NoBrush) {
 			return "<v:fill " + colorAttributes(brush.getColor()) + "/>";
 		} else {
 			return "<v:fill on=\"false\" />";

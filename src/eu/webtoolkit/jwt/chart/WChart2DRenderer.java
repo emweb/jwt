@@ -497,7 +497,7 @@ public class WChart2DRenderer {
 	 * Renders the background.
 	 */
 	protected void renderBackground() {
-		if (this.chart_.getBackground().getStyle() != WBrushStyle.NoBrush) {
+		if (this.chart_.getBackground().getStyle() != BrushStyle.NoBrush) {
 			this.painter_.fillRect(this.hv(this.chartArea_), this.chart_
 					.getBackground());
 		}

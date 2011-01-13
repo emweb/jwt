@@ -227,7 +227,7 @@ public class WRasterPaintDevice extends WResource implements WPaintDevice {
 			g2.draw(shape);
 		}
 
-		if (painter.getBrush().getStyle() != WBrushStyle.NoBrush) {
+		if (painter.getBrush().getStyle() != BrushStyle.NoBrush) {
 			g2.setPaint(brushPaint);
 			g2.fill(shape);
 		}
