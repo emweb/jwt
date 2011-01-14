@@ -1,4 +1,4 @@
-package eu.webtoolkit.jwt.examples.gallery;
+package eu.webtoolkit.jwt.examples.widgetgallery;
 
 class Pair <X,Y> {
 	public Pair(X first, Y second) {

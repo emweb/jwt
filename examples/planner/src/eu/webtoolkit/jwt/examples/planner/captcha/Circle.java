@@ -1,7 +1,7 @@
 package eu.webtoolkit.jwt.examples.planner.captcha;
 
+import eu.webtoolkit.jwt.BrushStyle;
 import eu.webtoolkit.jwt.WBrush;
-import eu.webtoolkit.jwt.WBrushStyle;
 import eu.webtoolkit.jwt.WPainter;
 import eu.webtoolkit.jwt.WPainterPath;
 import eu.webtoolkit.jwt.WPointF;
@@ -30,7 +30,7 @@ public class Circle extends Shape {
 	public void paint(WPainter painter) {
 		//create a brush to define the circle's color and style
 		WBrush b = new WBrush();
-		b.setStyle(WBrushStyle.SolidPattern);
+		b.setStyle(BrushStyle.SolidPattern);
 		b.setColor(getColor());
 		
 		//create a painterpath, and add an ellipse to it

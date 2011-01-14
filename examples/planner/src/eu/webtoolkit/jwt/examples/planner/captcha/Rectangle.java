@@ -1,7 +1,7 @@
 package eu.webtoolkit.jwt.examples.planner.captcha;
 
+import eu.webtoolkit.jwt.BrushStyle;
 import eu.webtoolkit.jwt.WBrush;
-import eu.webtoolkit.jwt.WBrushStyle;
 import eu.webtoolkit.jwt.WPainter;
 import eu.webtoolkit.jwt.WPainterPath;
 import eu.webtoolkit.jwt.WPointF;
@@ -26,7 +26,7 @@ public class Rectangle extends Shape {
 	@Override
 	public void paint(WPainter painter) {
 		WBrush b = new WBrush();
-		b.setStyle(WBrushStyle.SolidPattern);
+		b.setStyle(BrushStyle.SolidPattern);
 		b.setColor(getColor());
 
 		WPainterPath pp = new WPainterPath();

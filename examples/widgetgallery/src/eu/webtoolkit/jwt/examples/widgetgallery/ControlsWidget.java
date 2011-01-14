@@ -54,6 +54,10 @@ class ControlsWidget extends WContainerWidget {
 				+ "<br/>", parent);
 	}
 
+	public EventDisplayer eventDisplayer() {
+		return this.ed_;
+	}
+
 	protected EventDisplayer ed_;
 	private boolean hasSubMenu_;
 

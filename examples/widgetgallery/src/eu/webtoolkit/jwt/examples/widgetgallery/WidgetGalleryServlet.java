@@ -1,4 +1,4 @@
-package eu.webtoolkit.jwt.examples.gallery;
+package eu.webtoolkit.jwt.examples.widgetgallery;
 
 import eu.webtoolkit.jwt.WApplication;
 import eu.webtoolkit.jwt.WEnvironment;

@@ -1,4 +1,4 @@
-package eu.webtoolkit.jwt.examples.gallery;
+package eu.webtoolkit.jwt.examples.widgetgallery;
 
 import eu.webtoolkit.jwt.AbstractSignal;
 import eu.webtoolkit.jwt.Signal;

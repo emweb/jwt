@@ -16,6 +16,7 @@ import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
+import eu.webtoolkit.jwt.examples.treeview.*;
 
 class MvcWidgets extends ControlsWidget {
 	public MvcWidgets(EventDisplayer ed) {

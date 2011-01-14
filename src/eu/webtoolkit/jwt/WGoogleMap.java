@@ -171,7 +171,7 @@ public class WGoogleMap extends WCompositeWidget {
 	}
 
 	/**
-	 * Creates a map widget with optional parent and version.
+	 * Creates a map widget with a version and optionally a parent argument.
 	 */
 	public WGoogleMap(WGoogleMap.ApiVersion version, WContainerWidget parent) {
 		super();
@@ -192,18 +192,7 @@ public class WGoogleMap extends WCompositeWidget {
 	}
 
 	/**
-	 * Creates a map widget with optional parent and version.
-	 * <p>
-	 * Calls
-	 * {@link #WGoogleMap(WGoogleMap.ApiVersion version, WContainerWidget parent)
-	 * this(WGoogleMap.ApiVersion.Version2, (WContainerWidget)null)}
-	 */
-	public WGoogleMap() {
-		this(WGoogleMap.ApiVersion.Version2, (WContainerWidget) null);
-	}
-
-	/**
-	 * Creates a map widget with optional parent and version.
+	 * Creates a map widget with a version and optionally a parent argument.
 	 * <p>
 	 * Calls
 	 * {@link #WGoogleMap(WGoogleMap.ApiVersion version, WContainerWidget parent)
@@ -211,6 +200,37 @@ public class WGoogleMap extends WCompositeWidget {
 	 */
 	public WGoogleMap(WGoogleMap.ApiVersion version) {
 		this(version, (WContainerWidget) null);
+	}
+
+	/**
+	 * Creates a map widget with optionally a parent argument.
+	 */
+	public WGoogleMap(WContainerWidget parent) {
+		super();
+		this.clicked_ = new JSignal1<WGoogleMap.Coordinate>(this, "click") {
+		};
+		this.doubleClicked_ = new JSignal1<WGoogleMap.Coordinate>(this,
+				"dblclick") {
+		};
+		this.mouseMoved_ = new JSignal1<WGoogleMap.Coordinate>(this,
+				"mousemove") {
+		};
+		this.additions_ = new ArrayList<String>();
+		this.apiVersion_ = WGoogleMap.ApiVersion.Version2;
+		this.setImplementation(new WContainerWidget());
+		if (parent != null) {
+			parent.addWidget(this);
+		}
+	}
+
+	/**
+	 * Creates a map widget with optionally a parent argument.
+	 * <p>
+	 * Calls {@link #WGoogleMap(WContainerWidget parent)
+	 * this((WContainerWidget)null)}
+	 */
+	public WGoogleMap() {
+		this((WContainerWidget) null);
 	}
 
 	/**

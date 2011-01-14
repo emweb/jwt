@@ -16,6 +16,7 @@ import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
+import eu.webtoolkit.jwt.examples.painting.*;
 
 class GraphicsWidgets extends ControlsWidget {
 	public GraphicsWidgets(EventDisplayer ed) {

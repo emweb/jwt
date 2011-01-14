@@ -33,6 +33,9 @@ public class WEvent {
 	 * Returns the event type.
 	 */
 	public EventType getEventType() {
+		if (!(this.impl_.handler != null)) {
+			return EventType.OtherEvent;
+		}
 		return this.impl_.handler.getSession().getEventType(this);
 	}
 

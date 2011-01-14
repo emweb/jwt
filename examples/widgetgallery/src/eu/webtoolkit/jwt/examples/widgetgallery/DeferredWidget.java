@@ -1,4 +1,4 @@
-package eu.webtoolkit.jwt.examples.gallery;
+package eu.webtoolkit.jwt.examples.widgetgallery;
 
 import eu.webtoolkit.jwt.WContainerWidget;
 import eu.webtoolkit.jwt.WWidget;

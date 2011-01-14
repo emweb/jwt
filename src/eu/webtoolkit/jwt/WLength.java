@@ -103,6 +103,8 @@ public class WLength {
 			if (matcher.find()) {
 				end = s.substring(matcher.end());
 				this.value_ = Double.parseDouble(matcher.group().trim());
+			} else {
+				end = s;
 			}
 		}
 		;
