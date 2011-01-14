@@ -406,7 +406,7 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 
 	public WTextItem measureText(CharSequence text, double maxWidth,
 			boolean wordWrap) {
-		throw new WtLogicError(
+		throw new UnsupportedOperationException(
 				"WCanvasPaintDevice::measureText() not supported");
 	}
 
@@ -419,7 +419,7 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 	}
 
 	public WFontMetrics getFontMetrics() {
-		throw new WtLogicError(
+		throw new UnsupportedOperationException(
 				"WCanvasPaintDevice::fontMetrics() not (yet?) supported");
 	}
 

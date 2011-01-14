@@ -346,7 +346,8 @@ public class WVmlImage implements WVectorImage {
 
 	public WTextItem measureText(CharSequence text, double maxWidth,
 			boolean wordWrap) {
-		throw new WtLogicError("WVmlImage::measureText() not supported");
+		throw new UnsupportedOperationException(
+				"WVmlImage::measureText() not supported");
 	}
 
 	public final WTextItem measureText(CharSequence text) {
@@ -358,7 +359,8 @@ public class WVmlImage implements WVectorImage {
 	}
 
 	public WFontMetrics getFontMetrics() {
-		throw new WtLogicError("WVmlImage::fontMetrics() not (yet?) supported");
+		throw new UnsupportedOperationException(
+				"WVmlImage::fontMetrics() not (yet?) supported");
 	}
 
 	public void init() {

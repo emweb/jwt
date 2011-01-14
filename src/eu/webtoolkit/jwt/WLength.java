@@ -177,22 +177,46 @@ public class WLength {
 		this(value, WLength.Unit.Pixel);
 	}
 
+	/**
+	 * Creates a length with value and unit.
+	 * <p>
+	 * This constructor will also provide the implicit conversion between an int
+	 * and {@link WLength}, using a pixel unit.
+	 */
 	public WLength(int value, WLength.Unit unit) {
 		this.auto_ = false;
 		this.unit_ = unit;
 		this.value_ = (double) value;
 	}
 
+	/**
+	 * Creates a length with value and unit.
+	 * <p>
+	 * Calls {@link #WLength(int value, WLength.Unit unit) this(value,
+	 * WLength.Unit.Pixel)}
+	 */
 	public WLength(int value) {
 		this(value, WLength.Unit.Pixel);
 	}
 
+	/**
+	 * Creates a length with value and unit.
+	 * <p>
+	 * This constructor will also provide the implicit conversion between a long
+	 * and {@link WLength}, using a pixel unit.
+	 */
 	public WLength(long value, WLength.Unit unit) {
 		this.auto_ = false;
 		this.unit_ = unit;
 		this.value_ = (double) value;
 	}
 
+	/**
+	 * Creates a length with value and unit.
+	 * <p>
+	 * Calls {@link #WLength(long value, WLength.Unit unit) this(value,
+	 * WLength.Unit.Pixel)}
+	 */
 	public WLength(long value) {
 		this(value, WLength.Unit.Pixel);
 	}

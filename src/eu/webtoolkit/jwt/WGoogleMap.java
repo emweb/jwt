@@ -24,13 +24,14 @@ import eu.webtoolkit.jwt.servlet.*;
  * This widget uses the online Google Maps server to display a map. It exposes a
  * part of the google maps API.
  * <p>
+ * This widget supports both version 2 and version 3 of the Google Maps API. The
+ * version 2 API is used by default, to enable the version 3 API, use the
+ * constructor&apos;s version argument.
+ * <p>
  * To use the map on a public server you will need to obtain a key. The widget
  * will look for this key as the configuration property
  * <code>&quot;google_api_key&quot;</code>. If this configuration property has
  * not been set, it will use a key that is suitable for localhost.
- * <p>
- * Loading multiple maps within the same request is currently not possible with
- * the Google Maps v3 API.
  * <p>
  * <h3>CSS</h3>
  * <p>
@@ -195,10 +196,10 @@ public class WGoogleMap extends WCompositeWidget {
 	 * <p>
 	 * Calls
 	 * {@link #WGoogleMap(WGoogleMap.ApiVersion version, WContainerWidget parent)
-	 * this(WGoogleMap.ApiVersion.Version3, (WContainerWidget)null)}
+	 * this(WGoogleMap.ApiVersion.Version2, (WContainerWidget)null)}
 	 */
 	public WGoogleMap() {
-		this(WGoogleMap.ApiVersion.Version3, (WContainerWidget) null);
+		this(WGoogleMap.ApiVersion.Version2, (WContainerWidget) null);
 	}
 
 	/**
@@ -582,13 +583,18 @@ public class WGoogleMap extends WCompositeWidget {
 	 * Google logo.
 	 * <p>
 	 * This control is initially disabled.
+	 * <p>
+	 * <p>
+	 * <i><b>Note: </b>This functionality is no longer available in the Google
+	 * Maps API v3. </i>
+	 * </p>
 	 */
 	public void enableGoogleBar() {
 		if (this.apiVersion_ == WGoogleMap.ApiVersion.Version2) {
 			this.doGmJavaScript(this.getJsRef() + ".map.enableGoogleBar();",
 					false);
 		} else {
-			throw new WtLogicError(
+			throw new UnsupportedOperationException(
 					"WGoogleMap::enableGoogleBar is not supported in the Google Maps API v3.");
 		}
 	}
@@ -599,13 +605,18 @@ public class WGoogleMap extends WCompositeWidget {
 	 * When disabled, the default Powered by Google logo occupies the position
 	 * formerly containing this control. Note that this control is already
 	 * disabled by default.
+	 * <p>
+	 * <p>
+	 * <i><b>Note: </b>This functionality is no longer available in the Google
+	 * Maps API v3. </i>
+	 * </p>
 	 */
 	public void disableGoogleBar() {
 		if (this.apiVersion_ == WGoogleMap.ApiVersion.Version2) {
 			this.doGmJavaScript(this.getJsRef() + ".map.disableGoogleBar();",
 					false);
 		} else {
-			throw new WtLogicError(
+			throw new UnsupportedOperationException(
 					"WGoogleMap::disableGoogleBar is not supported in the Google Maps API v3.");
 		}
 	}
@@ -659,7 +670,7 @@ public class WGoogleMap extends WCompositeWidget {
 				control = "google.maps.HierarchicalMapTypeControl";
 				break;
 			case HorizontalBarControl:
-				throw new WtLogicError(
+				throw new UnsupportedOperationException(
 						"WGoogleMap::setMapTypeControl: HorizontalBarControl is not supported when using Google Maps API v2.");
 			default:
 				control = "";
@@ -685,7 +696,7 @@ public class WGoogleMap extends WCompositeWidget {
 				control = "HORIZONTAL_BAR";
 				break;
 			case HierarchicalControl:
-				throw new WtLogicError(
+				throw new UnsupportedOperationException(
 						"WGoogleMap::setMapTypeControl: HierarchicalControl is not supported when using Google Maps API v3.");
 			default:
 				control = "";

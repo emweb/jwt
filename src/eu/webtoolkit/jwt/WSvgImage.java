@@ -240,7 +240,8 @@ public class WSvgImage extends WResource implements WVectorImage {
 
 	public WTextItem measureText(CharSequence text, double maxWidth,
 			boolean wordWrap) {
-		throw new WtLogicError("WSvgImage::measureText() not supported");
+		throw new UnsupportedOperationException(
+				"WSvgImage::measureText() not supported");
 	}
 
 	public final WTextItem measureText(CharSequence text) {
@@ -252,7 +253,8 @@ public class WSvgImage extends WResource implements WVectorImage {
 	}
 
 	public WFontMetrics getFontMetrics() {
-		throw new WtLogicError("WSvgImage::fontMetrics() not (yet?) supported");
+		throw new UnsupportedOperationException(
+				"WSvgImage::fontMetrics() not (yet?) supported");
 	}
 
 	public void init() {

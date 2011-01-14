@@ -126,7 +126,6 @@ public abstract class WFormWidget extends WInteractWidget {
 		if (this.validator_ != null) {
 			this.validator_.addFormWidget(this);
 			this.validatorChanged();
-			this.validate();
 		} else {
 			this.removeStyleClass("Wt-invalid", true);
 			;
@@ -386,6 +385,7 @@ public abstract class WFormWidget extends WInteractWidget {
 			;
 			this.filterInput_ = null;
 		}
+		this.validate();
 	}
 
 	void updateDom(DomElement element, boolean all) {

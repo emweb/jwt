@@ -107,7 +107,13 @@ import eu.webtoolkit.jwt.servlet.*;
  * The treeview is styled by the current CSS theme. The look can be overridden
  * using the <code>Wt-treeview</code> CSS class and the following selectors.
  * <p>
- * Selectors that apply to the header: <div class="fragment">
+ * Selectors that apply to the body <div class="fragment">
+ * 
+ * <pre class="fragment">
+ * .Wt-treeview .Wt-pagingbar        : paging bar
+ * </pre>
+ * 
+ * </div> Selectors that apply to the header: <div class="fragment">
  * 
  * <pre class="fragment">
  * .Wt-treeview .Wt-headerdiv         : header (background)
@@ -116,6 +122,7 @@ import eu.webtoolkit.jwt.servlet.*;
  * .Wt-treeview .Wt-tv-sh-none        : column sort handle, no sorting
  * .Wt-treeview .Wt-tv-sh-up          : column sort handle, sort up
  * .Wt-treeview .Wt-tv-sh-down        : column sort handle, sort down
+ * .Wt-treeview .Wt-tv-br             : header border
  * </pre>
  * 
  * </div> Selectors that apply to the tree decoration: <div class="fragment">
@@ -251,8 +258,6 @@ public class WTreeView extends WAbstractItemView {
 			}
 			app.getStyleSheet().addRule(".Wt-treeview .Wt-tv-rh:hover",
 					"background-color: #DDDDDD;");
-			app.getStyleSheet().addRule(".Wt-treeview div.Wt-tv-rhc0",
-					"float: left; width: 4px;");
 			app
 					.getStyleSheet()
 					.addRule(
@@ -264,12 +269,6 @@ public class WTreeView extends WAbstractItemView {
 							".Wt-treeview .Wt-tv-sh",
 							""
 									+ "float: right; width: 16px; height: 16px; padding-bottom: 6px;cursor: pointer; cursor:hand;");
-			app
-					.getStyleSheet()
-					.addRule(
-							".Wt-treeview .Wt-tv-sh-nrh",
-							""
-									+ "float: right; width: 16px; height: 16px;cursor: pointer; cursor:hand;");
 			app.getStyleSheet().addRule(".Wt-treeview .Wt-tv-shc0",
 					"float: left;");
 			if (app.getEnvironment().agentIsWebKit()

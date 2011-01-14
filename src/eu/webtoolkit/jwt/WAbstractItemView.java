@@ -1665,7 +1665,7 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 		return this.columns_.size();
 	}
 
-	protected int getVisibleColumnCount() {
+	int getVisibleColumnCount() {
 		int result = 0;
 		for (int i = 0; i < this.columns_.size(); ++i) {
 			if (!this.columns_.get(i).hidden) {
@@ -1675,7 +1675,7 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 		return result;
 	}
 
-	protected int visibleColumnIndex(int modelColumn) {
+	int visibleColumnIndex(int modelColumn) {
 		if (this.columns_.get(modelColumn).hidden) {
 			return -1;
 		}
@@ -1688,7 +1688,7 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 		return j;
 	}
 
-	protected int modelColumnIndex(int visibleColumn) {
+	int modelColumnIndex(int visibleColumn) {
 		int j = -1;
 		for (int i = 0; i <= visibleColumn; ++i) {
 			++j;
@@ -1865,7 +1865,7 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 		this.mouseWentDown_.trigger(index, event);
 	}
 
-	protected void handleMouseUp(WModelIndex index, WMouseEvent event) {
+	void handleMouseUp(WModelIndex index, WMouseEvent event) {
 		this.mouseWentUp_.trigger(index, event);
 	}
 
@@ -1999,7 +1999,7 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 		return result;
 	}
 
-	protected void persistEditor(WModelIndex index) {
+	void persistEditor(WModelIndex index) {
 		WAbstractItemView.Editor i = this.editedItems_.get(index);
 		if (i != null) {
 			this.persistEditor(index, i);

@@ -111,6 +111,7 @@ import eu.webtoolkit.jwt.servlet.*;
  *  .Wt-tableview .Wt-tv-sh-up    : column sort handle, no sorting
  *  .Wt-tableview .Wt-tv-sh-none  : column sort handle, sort up
  *  .Wt-tableview .Wt-tv-sh-down  : column sort handle, sort down
+ *  .Wt-tableview .Wt-tv-br             : header border
  * </pre>
  * 
  * </div> Selectors that apply to the table contents: <div class="fragment">
@@ -177,11 +178,6 @@ public class WTableView extends WAbstractItemView {
 					.getStyleSheet()
 					.addRule(".Wt-tableview div.Wt-tv-rh",
 							"float: right; width: 4px; cursor: col-resize;padding-left: 0px;");
-			app
-					.getStyleSheet()
-					.addRule(
-							".Wt-tableview .Wt-header-el, .Wt-tableview .Wt-tv-c",
-							"text-overflow: ellipsis;overflow: hidden;white-space: nowrap;padding: 0px;");
 			app.getStyleSheet().addRule(".Wt-tableview .Wt-header .Wt-tv-c",
 					"overflow: visible;padding-left: 6px;");
 			app
@@ -191,20 +187,12 @@ public class WTableView extends WAbstractItemView {
 							"padding: 0px 3px;");
 			app.getStyleSheet().addRule(".Wt-tableview .Wt-tv-rh:hover",
 					"background-color: #DDDDDD;");
-			app.getStyleSheet().addRule(".Wt-tableview div.Wt-tv-rhc0",
-					"float: left; width: 4px;");
 			app
 					.getStyleSheet()
 					.addRule(
 							".Wt-tableview .Wt-tv-sh",
 							""
 									+ "float: right; width: 16px; height: 16px; padding-bottom: 6px;cursor: pointer; cursor:hand;");
-			app
-					.getStyleSheet()
-					.addRule(
-							".Wt-tableview .Wt-tv-sh-nrh",
-							""
-									+ "float: right; width: 16px; height: 16px;cursor: pointer; cursor:hand;");
 			app
 					.getStyleSheet()
 					.addRule(
@@ -216,16 +204,6 @@ public class WTableView extends WAbstractItemView {
 							".Wt-tableview .Wt-tv-contents img.icon, .Wt-tableview .Wt-tv-contents input.icon",
 							"margin: 0px 3px 2px 0px; vertical-align: middle");
 		}
-		app.getStyleSheet()
-				.addRule(
-						"#" + this.getId() + "dw",
-						"width: 32px; height: 32px;background: url("
-								+ WApplication.getResourcesUrl()
-								+ "items-not-ok.gif);");
-		app.getStyleSheet().addRule(
-				"#" + this.getId() + "dw.Wt-valid-drop",
-				"width: 32px; height: 32px;background: url("
-						+ WApplication.getResourcesUrl() + "items-ok.gif);");
 		if (app.getEnvironment().hasAjax()) {
 			this.impl_.setPositionScheme(PositionScheme.Relative);
 			this.headers_ = new WContainerWidget();

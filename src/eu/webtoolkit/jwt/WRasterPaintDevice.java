@@ -381,24 +381,24 @@ public class WRasterPaintDevice extends WResource implements WPaintDevice {
 
 	@Override
 	public WFontMetrics getFontMetrics() {
-		throw new WtLogicError("WFontMetrics.getFontMetrics() not yet supported");
+		throw new UnsupportedOperationException("WFontMetrics.getFontMetrics() not yet supported");
 	}
 
 
 	@Override
 	public WTextItem measureText(CharSequence text, double maxWidth, boolean wordWrap) {
-		throw new WtLogicError("WFontMetrics.measureText() not yet supported");
+		throw new UnsupportedOperationException("WFontMetrics.measureText() not yet supported");
 	}
 
 
 	@Override
 	public WTextItem measureText(CharSequence text) {
-		throw new WtLogicError("WFontMetrics.measureText() not yet supported");
+		throw new UnsupportedOperationException("WFontMetrics.measureText() not yet supported");
 	}
 
 
 	@Override
 	public WTextItem measureText(CharSequence text, double maxWidth) {
-		throw new WtLogicError("WFontMetrics.measureText() not yet supported");
+		throw new UnsupportedOperationException("WFontMetrics.measureText() not yet supported");
 	}
 }
