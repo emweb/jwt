@@ -6,7 +6,7 @@
     <servlet-name>Gallery</servlet-name>
     <display-name>JWt Gallery example</display-name>
     <description>JWt Gallery example</description>
-    <servlet-class>eu.webtoolkit.jwt.examples.gallery.WidgetGalleryServlet</servlet-class>
+    <servlet-class>eu.webtoolkit.jwt.examples.widgetgallery.WidgetGalleryServlet</servlet-class>
     <async-supported>true</async-supported>
     <init-param>
       <param-name>jwt-config-file</param-name>

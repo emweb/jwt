@@ -210,8 +210,8 @@ public class WApplication extends WObject {
 			this.domRoot2_ = null;
 			this.widgetRoot_ = new WContainerWidget(this.domRoot_);
 			;
-			this.widgetRoot_.resize(new WLength(100, WLength.Unit.Percentage),
-					new WLength(100, WLength.Unit.Percentage));
+			this.widgetRoot_.resize(WLength.Auto, new WLength(100,
+					WLength.Unit.Percentage));
 		} else {
 			this.ajaxMethod_ = WApplication.AjaxMethod.DynamicScriptTag;
 			this.domRoot2_ = new WContainerWidget();

@@ -21,9 +21,9 @@ public class WidgetGalleryServlet extends WtServlet {
 		app.useStyleSheet("style/combostyle.css");
 		
 		WXmlLocalizedStrings resourceBundle = new WXmlLocalizedStrings();
-		resourceBundle.use("/eu/webtoolkit/jwt/examples/gallery/text");
-		resourceBundle.use("/eu/webtoolkit/jwt/examples/gallery/text.jwt");
-		resourceBundle.use("/eu/webtoolkit/jwt/examples/gallery/charts");
+		resourceBundle.use("/eu/webtoolkit/jwt/examples/widgetgallery/text");
+		resourceBundle.use("/eu/webtoolkit/jwt/examples/widgetgallery/text.jwt");
+		resourceBundle.use("/eu/webtoolkit/jwt/examples/widgetgallery/charts");
 		app.setLocalizedStrings(resourceBundle);
 
 		WHBoxLayout layout = new WHBoxLayout(app.getRoot());

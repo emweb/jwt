@@ -200,28 +200,8 @@ public class WFlashObject extends WWebWidget {
 			if (!WApplication.getInstance().getEnvironment().agentIsIElt(9)) {
 				obj.setAttribute("data", this.url_);
 			}
-			if (this.getWidth().isAuto()) {
-				obj.setAttribute("width", "");
-			} else {
-				if (this.getWidth().getUnit() == WLength.Unit.Percentage) {
-					obj.setAttribute("width", "100%");
-				} else {
-					obj.setAttribute("width", String.valueOf((int) this
-							.getWidth().toPixels())
-							+ "px");
-				}
-			}
-			if (this.getHeight().isAuto()) {
-				obj.setAttribute("height", "");
-			} else {
-				if (this.getHeight().getUnit() == WLength.Unit.Percentage) {
-					obj.setAttribute("height", "100%");
-				} else {
-					obj.setAttribute("height", String.valueOf((int) this
-							.getHeight().toPixels())
-							+ "px");
-				}
-			}
+			obj.setAttribute("width", toString(this.getWidth()));
+			obj.setAttribute("height", toString(this.getHeight()));
 			for (Iterator<Map.Entry<String, WString>> i_it = this.parameters_
 					.entrySet().iterator(); i_it.hasNext();) {
 				Map.Entry<String, WString> i = i_it.next();
@@ -287,29 +267,13 @@ public class WFlashObject extends WWebWidget {
 		if (this.sizeChanged_) {
 			DomElement obj = DomElement.getForUpdate(this.getId() + "_flash",
 					DomElementType.DomElement_OBJECT);
-			if (this.getWidth().isAuto()) {
-				obj.setAttribute("width", "");
-			} else {
-				if (this.getWidth().getUnit() == WLength.Unit.Percentage) {
-					obj.setAttribute("width", "100%");
-				} else {
-					obj.setAttribute("width", String.valueOf((int) this
-							.getWidth().toPixels())
-							+ "px");
-				}
-			}
-			if (this.getHeight().isAuto()) {
-				obj.setAttribute("height", "");
-			} else {
-				if (this.getHeight().getUnit() == WLength.Unit.Percentage) {
-					obj.setAttribute("height", "100%");
-				} else {
-					obj.setAttribute("height", String.valueOf((int) this
-							.getHeight().toPixels())
-							+ "px");
-				}
-			}
-			result.add(obj);
+			StringWriter ss = new StringWriter();
+			ss.append("var v=").append(this.getJsFlashRef()).append(
+					";if(v){v.setAttribute('width', ").append(
+					toString(this.getWidth())).append(
+					");v.setAttribute('height', ").append(
+					toString(this.getHeight())).append(");}");
+			WApplication.getInstance().doJavaScript(ss.toString());
 			this.sizeChanged_ = false;
 		}
 		if (this.alternative_ != null && this.replaceDummyIeContent_) {
@@ -336,5 +300,17 @@ public class WFlashObject extends WWebWidget {
 	private void renderIeAltnerative() {
 		this.replaceDummyIeContent_ = true;
 		this.repaint(EnumSet.of(RepaintFlag.RepaintInnerHtml));
+	}
+
+	static String toString(WLength length) {
+		if (length.isAuto()) {
+			return "";
+		} else {
+			if (length.getUnit() == WLength.Unit.Percentage) {
+				return "100%";
+			} else {
+				return String.valueOf((int) length.toPixels()) + "px";
+			}
+		}
 	}
 }

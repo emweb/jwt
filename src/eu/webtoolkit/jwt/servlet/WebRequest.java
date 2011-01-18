@@ -7,6 +7,7 @@ package eu.webtoolkit.jwt.servlet;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -60,7 +61,11 @@ public class WebRequest extends HttpServletRequestWrapper {
 	 */
 	public WebRequest(HttpServletRequest request) {
 		super(request);
-		parse(null);
+		try {
+			parse(null);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	/**
@@ -70,7 +75,11 @@ public class WebRequest extends HttpServletRequestWrapper {
 	 */
 	public WebRequest(HttpServletRequest request, ProgressListener progressListener) {
 		super(request);
-		parse(progressListener);
+		try {
+			parse(progressListener);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	/**
@@ -149,11 +158,26 @@ public class WebRequest extends HttpServletRequestWrapper {
 	}
 
 	@SuppressWarnings({ "unchecked", "deprecation" })
-	private void parse(final ProgressListener progressUpdate) {
+	private void parse(final ProgressListener progressUpdate) throws IOException {
 		Map<String, String[]> parameterMap = super.getParameterMap();
 
 		parameters_ = new HashMap<String, String []>(parameterMap);
 		files_ = new HashMap<String, List<UploadedFile>>();
+		
+		String[] paramContentType = parameters_.get("contentType"); 
+		if (paramContentType != null && paramContentType[0].equals("x-www-form-urlencoded") && this.getContentType() == null) {
+			byte[] buf = new byte[this.getContentLength()];
+			this.getInputStream().read(buf);
+			String[] pairs = new String(buf, "UTF-8").split("\\&");
+		    for (int i = 0; i < pairs.length; i++) {
+		      String[] fields = {"", ""};
+		      String[] pair = pairs[i].split("=");
+		      for (int j = 0; j < pair.length && j < 2; j++)
+		    	  fields[j] = URLDecoder.decode(pair[j], "UTF-8");
+		      if (!fields[0].equals(""))
+		    	  parameters_.put(fields[0], new String [] { fields[1] });
+		    }
+		}
 
 		if (FileUploadBase.isMultipartContent(this)) {
 			try {

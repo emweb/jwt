@@ -51,7 +51,10 @@ public abstract class AbstractJSignal extends AbstractEventSignal {
 				return new WMouseEvent(jse);
 			else if (toClass == WKeyEvent.class)
 				return new WKeyEvent(jse);
-			else
+			else if (toClass == WGoogleMap.Coordinate.class) {
+				String [] coordinate = jse.userEventArgs.get(index).split(" ");
+				return new WGoogleMap.Coordinate(Double.parseDouble(coordinate[0]), Double.parseDouble(coordinate[1]));
+			} else
 				System.err.println("Unsupported JSignal type: " + toClass.getName());
 		} catch (NumberFormatException e) {
 			throw new WtException("JSignal: could not interpret argument " + index + " ('" + jse.userEventArgs.get(index) + "') as type " + toClass.getName(),

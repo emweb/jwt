@@ -888,6 +888,9 @@ public class WTreeNode extends WCompositeWidget {
 		this.setImplementation(this.layout_ = new WTable());
 		this.setStyleClass("Wt-tree");
 		this.layout_.setSelectable(false);
+		if (WApplication.getInstance().getEnvironment().agentIsOpera()) {
+			this.layout_.setAttributeValue("style", "table-layout: auto");
+		}
 		// this.implementStateless(WTreeNode.doExpand,WTreeNode.undoDoExpand);
 		// this.implementStateless(WTreeNode.doCollapse,WTreeNode.undoDoCollapse);
 		WApplication app = WApplication.getInstance();
