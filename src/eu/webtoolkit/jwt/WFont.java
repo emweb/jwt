@@ -364,7 +364,7 @@ public class WFont {
 		if (this.weight_ != WFont.Weight.Value) {
 			return this.weight_;
 		} else {
-			return this.weightValue_ >= 400 ? WFont.Weight.Bold
+			return this.weightValue_ >= 700 ? WFont.Weight.Bold
 					: WFont.Weight.NormalWeight;
 		}
 	}

@@ -36,6 +36,12 @@ public class Configuration {
 	enum ServerType {
 		WtHttpdServer
 	}
+	
+	enum ErrorReporting {
+		NoErrors,
+		ErrorMessage,
+		ErrorMessageWithStack
+	}
 
 	private HashMap<String, String> properties_ = new HashMap<String, String>();
 	private WLogger logger = new WLogger(System.err);
@@ -45,7 +51,7 @@ public class Configuration {
 	private ArrayList<String> botList = new ArrayList<String>();
 	private ArrayList<String> ajaxAgentList = new ArrayList<String>();
 	private boolean ajaxAgentWhiteList = false;
-	private boolean debug = false;
+	private ErrorReporting errorReporting = ErrorReporting.ErrorMessage;
 
 	private String favicon = "";
 	private boolean progressiveBootstrap = false;
@@ -294,9 +300,14 @@ public class Configuration {
 	 * so that you can inspect the stack trace.
 	 * <p>
 	 * Debugging is off by default.
+	 * 
+	 * @deprecated
 	 */
 	public void setDebug(boolean how) {
-		debug = how;
+		if (how)
+			errorReporting = ErrorReporting.NoErrors;
+		else 
+			errorReporting = ErrorReporting.ErrorMessage;
 	}
 
 	/**
@@ -305,9 +316,11 @@ public class Configuration {
 	 * @return whether debugging is enabled.
 	 * 
 	 * @see #setDebug(boolean)
+	 * 
+	 * @deprecated
 	 */
 	public boolean isDebug() {
-		return debug;
+		return errorReporting == ErrorReporting.NoErrors;
 	}
 
 	int getServerPushTimeout() {
@@ -552,5 +565,19 @@ public class Configuration {
 
 	boolean isWebSockets() {
 		return false;
+	}
+	
+	/**
+	 * Returns the error reporting mode.
+	 */
+	public ErrorReporting getErrorReporting() { 
+		return errorReporting; 
+	}
+	
+	/**
+	 * Set the error reporting mode.
+	 */
+	public ErrorReporting setErrorReporting() { 
+		return errorReporting; 
 	}
 }

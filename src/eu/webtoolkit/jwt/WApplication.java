@@ -382,6 +382,11 @@ public class WApplication extends WObject {
 	 * @see WWidget#setStyleClass(String styleClass)
 	 */
 	public void useStyleSheet(String uri) {
+		for (int i = 0; i < this.styleSheets_.size(); ++i) {
+			if (this.styleSheets_.get(i).uri.equals(uri)) {
+				return;
+			}
+		}
 		this.styleSheets_.add(new WApplication.StyleSheet(uri, ""));
 		++this.styleSheetsAdded_;
 	}
@@ -2390,8 +2395,11 @@ public class WApplication extends WObject {
 	}
 
 	private static boolean pathMatches(String path, String query) {
-		if (query.length() <= path.length()
-				&& path.substring(0, 0 + query.length()).equals(query)) {
+		if (query.equals(path)
+				|| path.length() > query.length()
+				&& path.substring(0, 0 + query.length()).equals(query)
+				&& (query.charAt(query.length() - 1) == '/' || path
+						.charAt(query.length()) == '/')) {
 			return true;
 		} else {
 			return false;

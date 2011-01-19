@@ -52,7 +52,7 @@ class WebSession {
 		this.recursiveEvent_ = this.mutex_.newCondition();
 		this.embeddedEnv_ = new WEnvironment(this);
 		this.app_ = null;
-		this.debug_ = this.controller_.getConfiguration().isDebug();
+		this.debug_ = this.controller_.getConfiguration().getErrorReporting() != Configuration.ErrorReporting.ErrorMessage;
 		this.handlers_ = new ArrayList<WebSession.Handler>();
 		this.emitStack_ = new ArrayList<WObject>();
 		this.recursiveEventLoop_ = null;

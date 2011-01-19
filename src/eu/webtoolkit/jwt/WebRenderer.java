@@ -282,7 +282,14 @@ class WebRenderer implements SlotLearnerInterface {
 		FileServe jquery = new FileServe(WtServlet.JQuery_js);
 		jquery.stream(response.out());
 		FileServe script = new FileServe(WtServlet.Wt_js);
-		script.setCondition("DEBUG", conf.isDebug());
+		script
+				.setCondition(
+						"CATCH_ERROR",
+						conf.getErrorReporting() != Configuration.ErrorReporting.NoErrors);
+		script
+				.setCondition(
+						"SHOW_STACK",
+						conf.getErrorReporting() == Configuration.ErrorReporting.ErrorMessageWithStack);
 		script.setCondition("DYNAMIC_JS", false);
 		script.setVar("WT_CLASS", "Wt3_1_7a");
 		script.setVar("APP_CLASS", app.getJavaScriptClass());
@@ -365,7 +372,6 @@ class WebRenderer implements SlotLearnerInterface {
 		Configuration conf = this.session_.getController().getConfiguration();
 		FileServe boot = new FileServe(WtServlet.Boot_html);
 		this.setPageVars(boot);
-		this.setBootVars(response, boot);
 		StringWriter noJsRedirectUrl = new StringWriter();
 		DomElement.htmlAttributeValue(noJsRedirectUrl, this.session_
 				.getBootstrapUrl(response,
@@ -386,6 +392,7 @@ class WebRenderer implements SlotLearnerInterface {
 		String contentType = xhtml ? "application/xhtml+xml" : "text/html";
 		contentType += "; charset=UTF-8";
 		this.setHeaders(response, contentType);
+		this.streamBootContent(response, boot, false);
 		boot.stream(response.out());
 		this.rendered_ = false;
 	}
@@ -463,11 +470,6 @@ class WebRenderer implements SlotLearnerInterface {
 				: WtServlet.Plain_html);
 		this.setPageVars(page);
 		page.setVar("SESSION_ID", this.session_.getSessionId());
-		if (hybridPage) {
-			this.setBootVars(response, page);
-			page.setVar("INTERNAL_PATH", this.safeJsStringLiteral(app
-					.getInternalPath()));
-		}
 		String url = app.getEnvironment().agentIsSpiderBot()
 				|| conf.getSessionTracking() == Configuration.SessionTracking.CookiesURL
 				&& this.session_.getEnv().supportsCookies() ? this.session_
@@ -493,6 +495,9 @@ class WebRenderer implements SlotLearnerInterface {
 		this.setHeaders(response, contentType);
 		this.formObjectsChanged_ = true;
 		this.currentFormObjectsList_ = this.createFormObjectsList(app);
+		if (hybridPage) {
+			this.streamBootContent(response, page, true);
+		}
 		page.streamUntil(response.out(), "HTML");
 		List<DomElement.TimeoutEvent> timeouts = new ArrayList<DomElement.TimeoutEvent>();
 		{
@@ -921,7 +926,6 @@ class WebRenderer implements SlotLearnerInterface {
 		boolean xhtml = this.session_.getEnv().getContentType() == WEnvironment.ContentType.XHTML1;
 		WApplication app = this.session_.getApp();
 		page.setVar("DOCTYPE", this.session_.getDocType());
-		page.setVar("APP_CLASS", "Wt");
 		String htmlAttr = "";
 		if (app != null && app.htmlClass_.length() != 0) {
 			htmlAttr = " class=\"" + app.htmlClass_ + "\"";
@@ -949,23 +953,34 @@ class WebRenderer implements SlotLearnerInterface {
 				&& !this.session_.getEnv().hasAjax());
 	}
 
-	private void setBootVars(WebResponse response, FileServe boot) {
+	private void streamBootContent(WebResponse response, FileServe boot,
+			boolean hybrid) throws IOException {
 		Configuration conf = this.session_.getController().getConfiguration();
+		FileServe bootJs = new FileServe(WtServlet.Boot_js);
 		boot.setVar("BLANK_HTML", this.session_.getBootstrapUrl(response,
 				WebSession.BootstrapOption.ClearInternalPath)
 				+ "&amp;request=resource&amp;resource=blank");
-		boot.setVar("SELF_URL", this.safeJsStringLiteral(this.session_
+		boot.setVar("SESSION_ID", this.session_.getSessionId());
+		boot.setVar("APP_CLASS", "Wt");
+		bootJs.setVar("SELF_URL", this.safeJsStringLiteral(this.session_
 				.getBootstrapUrl(response,
 						WebSession.BootstrapOption.KeepInternalPath)));
-		boot.setVar("SESSION_ID", this.session_.getSessionId());
-		boot.setVar("RANDOMSEED", String.valueOf(MathUtils.randomInt()));
-		boot.setVar("RELOAD_IS_NEWSESSION", conf.isReloadIsNewSession());
-		boot
+		bootJs.setVar("SESSION_ID", this.session_.getSessionId());
+		bootJs.setVar("RANDOMSEED", String.valueOf(MathUtils.randomInt()));
+		bootJs.setVar("RELOAD_IS_NEWSESSION", conf.isReloadIsNewSession());
+		bootJs
 				.setVar(
 						"USE_COOKIES",
 						conf.getSessionTracking() == Configuration.SessionTracking.CookiesURL);
-		boot.setVar("AJAX_CANONICAL_URL", this
+		bootJs.setVar("AJAX_CANONICAL_URL", this
 				.safeJsStringLiteral(this.session_.ajaxCanonicalUrl(response)));
+		bootJs.setVar("APP_CLASS", "Wt");
+		bootJs.setCondition("HYBRID", hybrid);
+		String internalPath = hybrid ? this.safeJsStringLiteral(this.session_
+				.getApp().getInternalPath()) : "";
+		bootJs.setVar("INTERNAL_PATH", internalPath);
+		boot.streamUntil(response.out(), "BOOT_JS");
+		bootJs.stream(response.out());
 	}
 
 	private String getHeadDeclarations() {

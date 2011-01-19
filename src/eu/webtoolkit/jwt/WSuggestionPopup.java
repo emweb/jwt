@@ -675,8 +675,8 @@ public class WSuggestionPopup extends WCompositeWidget {
 	 * When <code>global</code> is <code>true</code>, then the popup will
 	 * position itself globally. This avoids that the popup is affected by
 	 * enclosing parents with overflow settings that clip the popup. This makes
-	 * the popup however no longer follow the popup button when this button
-	 * moves.
+	 * the popup however no longer follow the popup line edit when this line
+	 * edit moves.
 	 * <p>
 	 * The default is <code>false</code>.
 	 */
