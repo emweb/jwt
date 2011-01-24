@@ -380,7 +380,7 @@ public abstract class WFormWidget extends WInteractWidget {
 			this.filterInput_
 					.setJavaScript("function(self,e){\nvar c=\nString.fromCharCode((typeof e.charCode!=='undefined') ?e.charCode : e.keyCode);\nif(/"
 							+ inputFilter
-							+ "/.test(c))\nreturn true;\nelse\nWt3_1_7a.cancelEvent(e);\n}");
+							+ "/.test(c))\nreturn true;\nelse\nWt3_1_8.cancelEvent(e);\n}");
 		} else {
 			;
 			this.filterInput_ = null;
@@ -449,7 +449,7 @@ public abstract class WFormWidget extends WInteractWidget {
 			WApplication app = WApplication.getInstance();
 			WEnvironment env = app.getEnvironment();
 			if (env.hasAjax()) {
-				app.doJavaScript("new Wt3_1_7a.WFormWidget("
+				app.doJavaScript("new Wt3_1_8.WFormWidget("
 						+ app.getJavaScriptClass() + "," + this.getJsRef()
 						+ "," + "'" + this.emptyText_.toString() + "');");
 			}
@@ -468,7 +468,7 @@ public abstract class WFormWidget extends WInteractWidget {
 	}
 
 	static String wtjs1(WApplication app) {
-		return "Wt3_1_7a.WFormWidget = function(c,a,d){jQuery.data(a,\"obj\",this);var b=c.WT;this.updateEmptyText=function(){if(b.hasFocus(a)){if($(a).hasClass(\"Wt-edit-emptyText\")){if(!b.isIE&&a.oldtype)a.type=a.oldtype;$(a).removeClass(\"Wt-edit-emptyText\");a.value=\"\"}}else if(a.value==\"\"){if(a.type==\"password\")if(b.isIE)return;else{a.oldtype=\"password\";a.type=\"text\"}$(a).addClass(\"Wt-edit-emptyText\");a.value=d}};this.updateEmptyText()};";
+		return "Wt3_1_8.WFormWidget = function(c,a,d){jQuery.data(a,\"obj\",this);var b=c.WT;this.updateEmptyText=function(){if(b.hasFocus(a)){if($(a).hasClass(\"Wt-edit-emptyText\")){if(!b.isIE&&a.oldtype)a.type=a.oldtype;$(a).removeClass(\"Wt-edit-emptyText\");a.value=\"\"}}else if(a.value==\"\"){if(a.type==\"password\")if(b.isIE)return;else{a.oldtype=\"password\";a.type=\"text\"}$(a).addClass(\"Wt-edit-emptyText\");a.value=d}};this.updateEmptyText()};";
 	}
 
 	static String CHANGE_SIGNAL = "M_change";

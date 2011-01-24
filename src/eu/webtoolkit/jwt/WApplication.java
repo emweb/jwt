@@ -1176,7 +1176,7 @@ public class WApplication extends WObject {
 	 *    try {
 	 *      // We now have exclusive access to the application:
 	 *      // we can safely modify the widget tree for example.
-	 *      app.getRoot().addWidget(new WText("Something happened!"));
+	 *      app.getRoot().addWidget(new WText(&quot;Something happened!&quot;));
 	 *   
 	 *      // Push the changes to the browser
 	 *      app.triggerUpdate();
@@ -1789,9 +1789,9 @@ public class WApplication extends WObject {
 		if (this.loadingIndicator_ != null) {
 			this.loadingIndicatorWidget_ = indicator.getWidget();
 			this.domRoot_.addWidget(this.loadingIndicatorWidget_);
-			this.showLoadJS.setJavaScript("function(o,e) {Wt3_1_7a.inline('"
+			this.showLoadJS.setJavaScript("function(o,e) {Wt3_1_8.inline('"
 					+ this.loadingIndicatorWidget_.getId() + "');}");
-			this.hideLoadJS.setJavaScript("function(o,e) {Wt3_1_7a.hide('"
+			this.hideLoadJS.setJavaScript("function(o,e) {Wt3_1_8.hide('"
 					+ this.loadingIndicatorWidget_.getId() + "');}");
 			this.loadingIndicatorWidget_.hide();
 		}

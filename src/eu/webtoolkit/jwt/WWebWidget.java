@@ -1056,7 +1056,7 @@ public abstract class WWebWidget extends WWidget {
 						app
 								.addAutoJavaScript("{var w = "
 										+ this.getJsRef()
-										+ ";if (w && !Wt3_1_7a.isHidden(w)) {var i = Wt3_1_7a.getElement('"
+										+ ";if (w && !Wt3_1_8.isHidden(w)) {var i = Wt3_1_8.getElement('"
 										+ i.getId()
 										+ "');i.style.width=w.clientWidth + 'px';i.style.height=w.clientHeight + 'px';}}");
 						element.addChild(i);
@@ -1255,7 +1255,7 @@ public abstract class WWebWidget extends WWidget {
 						String js = this.transientImpl_.childRemoveChanges_
 								.get(i);
 						if (js.charAt(0) == '_') {
-							element.callJavaScript("Wt3_1_7a.remove('"
+							element.callJavaScript("Wt3_1_8.remove('"
 									+ js.substring(1) + "');", true);
 						} else {
 							element.callJavaScript(js);

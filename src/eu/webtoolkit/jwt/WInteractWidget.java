@@ -595,11 +595,11 @@ public abstract class WInteractWidget extends WWebWidget {
 					&& mouseDown.isConnected()
 					&& (mouseUp != null && mouseUp.isConnected() || mouseMove != null
 							&& mouseMove.isConnected())) {
-				js += "Wt3_1_7a.capture(this);";
+				js += "Wt3_1_8.capture(this);";
 			}
 			if (mouseMove != null && mouseMove.isConnected()
 					|| mouseDrag != null && mouseDrag.isConnected()) {
-				js += "Wt3_1_7a.mouseDown(e);";
+				js += "Wt3_1_8.mouseDown(e);";
 			}
 			if (mouseDown != null) {
 				js += mouseDown.getJavaScript();
@@ -614,7 +614,7 @@ public abstract class WInteractWidget extends WWebWidget {
 			String js = "";
 			if (mouseMove != null && mouseMove.isConnected()
 					|| mouseDrag != null && mouseDrag.isConnected()) {
-				js += "Wt3_1_7a.mouseUp(e);";
+				js += "Wt3_1_8.mouseUp(e);";
 			}
 			if (mouseUp != null) {
 				js += mouseUp.getJavaScript();
@@ -634,7 +634,7 @@ public abstract class WInteractWidget extends WWebWidget {
 				mouseMove.updateOk();
 			}
 			if (mouseDrag != null) {
-				actions.add(new DomElement.EventAction("Wt3_1_7a.buttons",
+				actions.add(new DomElement.EventAction("Wt3_1_8.buttons",
 						mouseDrag.getJavaScript(), mouseDrag.encodeCmd(),
 						mouseDrag.isExposedSignal()));
 				mouseDrag.updateOk();
@@ -686,7 +686,7 @@ public abstract class WInteractWidget extends WWebWidget {
 				this.updateSignalConnection(element, s, s.getName(), all);
 			} else {
 				element.setEvent(s.getName(),
-						"Wt3_1_7a.cancelEvent(event||window.event);");
+						"Wt3_1_8.cancelEvent(event||window.event);");
 			}
 		}
 	}
