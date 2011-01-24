@@ -16,6 +16,7 @@ import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
+import org.apache.commons.io.*;
 
 /**
  * Represents an application instance for a single session.

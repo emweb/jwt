@@ -202,6 +202,7 @@ public abstract class WAbstractToggleButton extends WFormWidget {
 			if (all) {
 				input = DomElement.createNew(DomElementType.DomElement_INPUT);
 				input.setName("in" + this.getId());
+				element.setProperty(Property.PropertyStyleWhiteSpace, "nowrap");
 			} else {
 				input = DomElement.getForUpdate("in" + this.getId(),
 						DomElementType.DomElement_INPUT);

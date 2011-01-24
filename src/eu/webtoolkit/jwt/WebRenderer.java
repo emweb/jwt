@@ -359,11 +359,9 @@ class WebRenderer implements SlotLearnerInterface {
 					this.collectedJS2_.toString()).append("};").append(
 					app.getJavaScriptClass()).append("._p_.setServerPush(")
 					.append(app.isUpdatesEnabled() ? "true" : "false").append(
-							");").append("window.").append(
-							app.getJavaScriptClass()).append(
-							"ScriptLoaded = true;").append("if (window.")
-					.append(app.getJavaScriptClass()).append("Loaded) ")
-					.append(app.getJavaScriptClass()).append("OnLoad();\n");
+							");").append("$(document).ready(function() { ")
+					.append(app.getJavaScriptClass()).append(
+							"._p_.load(true); });\n");
 		}
 	}
 
@@ -602,7 +600,7 @@ class WebRenderer implements SlotLearnerInterface {
 				app.hideLoadingIndicator_.getJavaScript()).append("}");
 		if (widgetset) {
 			response.out().append(app.getJavaScriptClass()).append(
-					"._p_.load();\n");
+					"._p_.load(false);\n");
 		}
 		if (!app.isQuited()) {
 			response.out().append(this.session_.getApp().getJavaScriptClass())
@@ -613,10 +611,8 @@ class WebRenderer implements SlotLearnerInterface {
 			response.out().append(app.getJavaScriptClass()).append(
 					"._p_.setServerPush(").append(
 					app.isUpdatesEnabled() ? "true" : "false").append(");");
-			response.out().append("window.").append(app.getJavaScriptClass())
-					.append("ScriptLoaded = true;").append("if (window.")
-					.append(app.getJavaScriptClass()).append("Loaded) ")
-					.append(app.getJavaScriptClass()).append("OnLoad();\n");
+			response.out().append("$(document).ready(function() { ").append(
+					app.getJavaScriptClass()).append("._p_.load(true); });\n");
 		}
 		this.loadScriptLibraries(response.out(), app, librariesLoaded);
 	}

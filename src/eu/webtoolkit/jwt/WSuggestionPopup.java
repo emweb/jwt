@@ -376,8 +376,7 @@ public class WSuggestionPopup extends WCompositeWidget {
 	public void forEdit(WFormWidget edit,
 			EnumSet<WSuggestionPopup.PopupTrigger> triggers) {
 		AbstractEventSignal b = edit.keyPressed();
-		AbstractEventSignal c = edit.clicked();
-		this.connectObjJS(edit.keyPressed(), "editKeyDown");
+		this.connectObjJS(b, "editKeyDown");
 		this.connectObjJS(edit.keyWentDown(), "editKeyDown");
 		this.connectObjJS(edit.keyWentUp(), "editKeyUp");
 		this.connectObjJS(edit.blurred(), "delayHide");
@@ -388,7 +387,8 @@ public class WSuggestionPopup extends WCompositeWidget {
 		if (!EnumUtils.mask(triggers,
 				WSuggestionPopup.PopupTrigger.DropDownIcon).isEmpty()) {
 			edit.addStyleClass("Wt-suggest-dropdown");
-			this.connectObjJS(edit.clicked(), "editClick");
+			AbstractEventSignal c = edit.clicked();
+			this.connectObjJS(c, "editClick");
 			this.connectObjJS(edit.mouseMoved(), "editMouseMove");
 		}
 		this.edits_.add(edit);

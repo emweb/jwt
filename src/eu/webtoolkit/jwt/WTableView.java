@@ -1024,12 +1024,10 @@ public class WTableView extends WAbstractItemView {
 		this.updateColumnOffsets();
 		int scrollX1 = Math
 				.max(0, this.viewportLeft_ - this.viewportWidth_ / 2);
-		int scrollX2 = this.viewportLeft_ + this.viewportWidth_
-				+ this.viewportWidth_ / 2;
+		int scrollX2 = this.viewportLeft_ + this.viewportWidth_ / 2;
 		int scrollY1 = Math
 				.max(0, this.viewportTop_ - this.viewportHeight_ / 2);
-		int scrollY2 = this.viewportTop_ + this.viewportHeight_
-				+ this.viewportHeight_ / 2;
+		int scrollY2 = this.viewportTop_ + this.viewportHeight_ / 2;
 		StringBuilder s = new StringBuilder();
 		s.append("jQuery.data(").append(this.getJsRef()).append(
 				", 'obj').scrolled(").append(scrollX1).append(", ").append(
@@ -1617,6 +1615,7 @@ public class WTableView extends WAbstractItemView {
 		this.canvas_.resize(new WLength(total), new WLength(this
 				.getCanvasHeight()));
 		this.headers_.resize(new WLength(total), this.headers_.getHeight());
+		this.table_.resize(new WLength(totalRendered), this.table_.getHeight());
 	}
 
 	private void onDropEvent(int renderedRow, int columnId, String sourceId,
