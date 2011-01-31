@@ -34,13 +34,17 @@ import eu.webtoolkit.jwt.servlet.*;
 public class WVmlImage implements WVectorImage {
 	/**
 	 * Create a VML paint device.
+	 * <p>
+	 * If <code>paintUpdate</code> is <code>true</code>, then only a VML
+	 * fragment will be rendered that can be used to update the DOM of an
+	 * existing VML image, instead of a full VML image.
 	 */
-	public WVmlImage(WLength width, WLength height) {
+	public WVmlImage(WLength width, WLength height, boolean paintUpdate) {
 		super();
 		this.width_ = width;
 		this.height_ = height;
 		this.painter_ = null;
-		this.paintUpdate_ = true;
+		this.paintUpdate_ = paintUpdate;
 		this.clippingChanged_ = false;
 		this.currentBrush_ = new WBrush();
 		this.currentPen_ = new WPen();
@@ -273,7 +277,11 @@ public class WVmlImage implements WVectorImage {
 	}
 
 	public void drawText(WRectF rect, EnumSet<AlignmentFlag> flags,
-			CharSequence text) {
+			TextFlag textFlag, CharSequence text) {
+		if (textFlag == TextFlag.TextWordWrap) {
+			throw new UnsupportedOperationException(
+					"WVmlImage::drawText() TextWordWrap is not supported");
+		}
 		this.finishPaths();
 		EnumSet<AlignmentFlag> horizontalAlign = EnumUtils.mask(flags,
 				AlignmentFlag.AlignHorizontalMask);
@@ -409,11 +417,6 @@ public class WVmlImage implements WVectorImage {
 
 	public void setPainter(WPainter painter) {
 		this.painter_ = painter;
-	}
-
-	public void clear() {
-		this.paintUpdate_ = false;
-		this.rendered_ = new StringWriter();
 	}
 
 	private WLength width_;

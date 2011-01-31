@@ -83,8 +83,11 @@ class StdWidgetItemImpl extends StdLayoutItemImpl {
 				marginBottom -= 1;
 			}
 			if (marginRight != 0) {
-				style.append("margin-right:").append(
-						String.valueOf(marginRight)).append("px;");
+				style
+						.append(
+								app.getLayoutDirection() == LayoutDirection.LeftToRight ? "margin-right:"
+										: "margin-left:").append(
+								String.valueOf(marginRight)).append("px;");
 			}
 			if (marginBottom != 0) {
 				style.append("margin-bottom:").append(

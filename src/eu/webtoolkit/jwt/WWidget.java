@@ -255,17 +255,21 @@ public abstract class WWidget extends WObject {
 	/**
 	 * Sets the width.
 	 * <p>
-	 * Sets the width for this widget by calling resize(width, WLength(100,
-	 * WLength::Percentage)).
-	 * <p>
-	 * This applies to CSS-based layout.
+	 * This is a convenience method to change only the width of a widget, and is
+	 * implemented as: <blockquote>
+	 * 
+	 * <pre>
+	 * resize(width, height())
+	 * </pre>
+	 * 
+	 * </blockquote>
 	 * <p>
 	 * 
 	 * @see WWidget#resize(WLength width, WLength height)
-	 * @see WWidget#getWidth()
+	 * @see WWidget#setHeight(WLength height)
 	 */
 	public void setWidth(WLength width) {
-		this.resize(width, new WLength(100, WLength.Unit.Percentage));
+		this.resize(width, this.getHeight());
 	}
 
 	/**
@@ -286,17 +290,23 @@ public abstract class WWidget extends WObject {
 	/**
 	 * Sets the height.
 	 * <p>
-	 * Sets the height for this widget by calling resize(WLength(100,
-	 * WLength::Percentage), height).
+	 * This is a convenience method to change only the width of a widget, and is
+	 * implemented as: <blockquote>
+	 * 
+	 * <pre>
+	 * resize(width(), height)
+	 * </pre>
+	 * 
+	 * </blockquote>
 	 * <p>
 	 * This applies to CSS-based layout.
 	 * <p>
 	 * 
 	 * @see WWidget#resize(WLength width, WLength height)
-	 * @see WWidget#getHeight()
+	 * @see WWidget#setWidth(WLength width)
 	 */
 	public void setHeight(WLength height) {
-		this.resize(new WLength(100, WLength.Unit.Percentage), height);
+		this.resize(this.getWidth(), height);
 	}
 
 	/**

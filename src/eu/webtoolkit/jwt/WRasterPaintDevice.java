@@ -136,8 +136,11 @@ public class WRasterPaintDevice extends WResource implements WPaintDevice {
 		return p;
 	}
 
-	
-	public void drawText(WRectF rect, EnumSet<AlignmentFlag> flags, CharSequence text) {
+	@Override
+	public void drawText(WRectF rect, EnumSet<AlignmentFlag> flags, TextFlag textFlag, CharSequence text) {
+		if (textFlag == TextFlag.TextWordWrap)
+			throw new UnsupportedOperationException("drawText(): TextWordWrap not yet implemented");
+		
 		processChangeFlags();
 		
 		double px = 0, py = 0;
@@ -401,4 +404,5 @@ public class WRasterPaintDevice extends WResource implements WPaintDevice {
 	public WTextItem measureText(CharSequence text, double maxWidth) {
 		throw new UnsupportedOperationException("WFontMetrics.measureText() not yet supported");
 	}
+
 }

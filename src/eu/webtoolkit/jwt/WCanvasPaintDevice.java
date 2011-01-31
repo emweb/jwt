@@ -39,12 +39,14 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 	/**
 	 * Create a canvas paint device.
 	 */
-	public WCanvasPaintDevice(WLength width, WLength height, WObject parent) {
+	public WCanvasPaintDevice(WLength width, WLength height, WObject parent,
+			boolean paintUpdate) {
 		super(parent);
 		this.width_ = width;
 		this.height_ = height;
 		this.painter_ = null;
 		this.changeFlags_ = EnumSet.noneOf(WPaintDevice.ChangeFlag.class);
+		this.paintUpdate_ = paintUpdate;
 		this.busyWithPath_ = false;
 		this.currentTransform_ = new WTransform();
 		this.currentBrush_ = new WBrush();
@@ -95,11 +97,22 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 	 * Create a canvas paint device.
 	 * <p>
 	 * Calls
-	 * {@link #WCanvasPaintDevice(WLength width, WLength height, WObject parent)
-	 * this(width, height, (WObject)null)}
+	 * {@link #WCanvasPaintDevice(WLength width, WLength height, WObject parent, boolean paintUpdate)
+	 * this(width, height, (WObject)null, false)}
 	 */
 	public WCanvasPaintDevice(WLength width, WLength height) {
-		this(width, height, (WObject) null);
+		this(width, height, (WObject) null, false);
+	}
+
+	/**
+	 * Create a canvas paint device.
+	 * <p>
+	 * Calls
+	 * {@link #WCanvasPaintDevice(WLength width, WLength height, WObject parent, boolean paintUpdate)
+	 * this(width, height, parent, false)}
+	 */
+	public WCanvasPaintDevice(WLength width, WLength height, WObject parent) {
+		this(width, height, parent, false);
 	}
 
 	public void setChanged(EnumSet<WPaintDevice.ChangeFlag> flags) {
@@ -199,7 +212,11 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 	}
 
 	public void drawText(WRectF rect, EnumSet<AlignmentFlag> flags,
-			CharSequence text) {
+			TextFlag textFlag, CharSequence text) {
+		if (textFlag == TextFlag.TextWordWrap) {
+			throw new UnsupportedOperationException(
+					"WCanvasPaintDevice::drawText() TextWordWrap is not supported");
+		}
 		AlignmentFlag horizontalAlign = EnumUtils.enumFromSet(EnumUtils.mask(
 				flags, AlignmentFlag.AlignHorizontalMask));
 		AlignmentFlag verticalAlign = EnumUtils.enumFromSet(EnumUtils.mask(
@@ -454,8 +471,14 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 			}
 			tmp.append("],function(images)");
 		}
-		tmp.append("{var ctx=").append(canvasVar).append(".getContext('2d');")
-				.append("ctx.save();ctx.save();").append(this.js_.toString())
+		tmp.append("{var ctx=").append(canvasVar).append(".getContext('2d');");
+		if (!this.paintUpdate_) {
+			tmp.append("ctx.clearRect(0,0,").append(
+					String.valueOf(this.getWidth().getValue())).append(",")
+					.append(String.valueOf(this.getHeight().getValue()))
+					.append(");");
+		}
+		tmp.append("ctx.save();ctx.save();").append(this.js_.toString())
 				.append("ctx.restore();ctx.restore();}");
 		if (!this.images_.isEmpty()) {
 			tmp.append(");");
@@ -483,13 +506,6 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 		this.painter_ = painter;
 	}
 
-	public void clear() {
-		this.js_ = new StringWriter();
-		this.js_.append("ctx.clearRect(0,0,").append(
-				String.valueOf(this.getWidth().getValue())).append(",").append(
-				String.valueOf(this.getHeight().getValue())).append(");");
-	}
-
 	enum TextMethod {
 		MozText, Html5Text, DomText;
 
@@ -505,6 +521,7 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 	private WLength height_;
 	private WPainter painter_;
 	private EnumSet<WPaintDevice.ChangeFlag> changeFlags_;
+	private boolean paintUpdate_;
 	private WCanvasPaintDevice.TextMethod textMethod_;
 	private boolean busyWithPath_;
 	private WTransform currentTransform_;

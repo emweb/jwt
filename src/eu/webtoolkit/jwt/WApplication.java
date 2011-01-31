@@ -164,6 +164,7 @@ public class WApplication extends WObject {
 		this.focusId_ = "";
 		this.selectionStart_ = -1;
 		this.selectionEnd_ = -1;
+		this.layoutDirection_ = LayoutDirection.LeftToRight;
 		this.scriptLibraries_ = new ArrayList<WApplication.ScriptLibrary>();
 		this.scriptLibrariesAdded_ = 0;
 		this.theme_ = "default";
@@ -223,8 +224,9 @@ public class WApplication extends WObject {
 				"border-collapse: collapse; border: 0px");
 		this.styleSheet_.addRule("div, td, img",
 				"margin: 0px; padding: 0px; border: 0px");
-		this.styleSheet_
-				.addRule("td", "vertical-align: top; text-align: left;");
+		this.styleSheet_.addRule("td", "vertical-align: top;");
+		this.styleSheet_.addRule(".Wt-ltr td", "text-align: left;");
+		this.styleSheet_.addRule(".Wt-rtl td", "text-align: right;");
 		this.styleSheet_.addRule("button", "white-space: nowrap");
 		this.styleSheet_.addRule("video", "display: block");
 		if (this.getEnvironment().getContentType() == WEnvironment.ContentType.XHTML1) {
@@ -244,7 +246,9 @@ public class WApplication extends WObject {
 		this.styleSheet_
 				.addRule(
 						".Wt-wrap",
-						"border: 0px;text-align: left;margin: 0px;padding: 0px;font-size: inherit; pointer: hand; cursor: pointer; cursor: hand;background: transparent;text-decoration: none;color: inherit;");
+						"border: 0px;margin: 0px;padding: 0px;font-size: inherit; pointer: hand; cursor: pointer; cursor: hand;background: transparent;text-decoration: none;color: inherit;");
+		this.styleSheet_.addRule(".Wt-ltr .Wt-wrap", "text-align: left;");
+		this.styleSheet_.addRule(".Wt-rtl .Wt-wrap", "text-align: right;");
 		if (this.getEnvironment().agentIsIE()) {
 			this.styleSheet_.addRule(".Wt-wrap", "margin: -1px 0px -3px;");
 		}
@@ -556,6 +560,60 @@ public class WApplication extends WObject {
 	 */
 	public String getCssTheme() {
 		return this.theme_;
+	}
+
+	/**
+	 * Sets the layout direction.
+	 * <p>
+	 * The default direction is LeftToRight.
+	 * <p>
+	 * This sets the language text direction, which by itself sets the default
+	 * text alignment and reverse the column orders of &lt;table&gt; elements.
+	 * <p>
+	 * In addition, JWt will take this setting into account in
+	 * {@link WTableView} and {@link WTreeView} (so that columns are reverted),
+	 * and swap the behaviour of {@link WWidget#setFloatSide(Side s)
+	 * WWidget#setFloatSide()} and
+	 * {@link WWidget#setOffsets(WLength offset, EnumSet sides)
+	 * WWidget#setOffsets()} for RightToLeft languages. Note that CSS settings
+	 * themselves are not affected by this setting, and thus for example
+	 * <code>&quot;float: right&quot;</code> will move a box to the right,
+	 * irrespective of the layout direction.
+	 * <p>
+	 * The library sets <code>&quot;Wt-ltr&quot;</code> or
+	 * <code>&quot;Wt-rtl&quot;</code> as style classes for the document body.
+	 * You may use this if to override certain style rules for a Right-to-Left
+	 * document.
+	 * <p>
+	 * For example: <blockquote>
+	 * 
+	 * <pre>
+	 * body.Wt-ltr .sidebar { float: right; }
+	 *    body.Wt-rtl .sidebar { float: left; }
+	 * </pre>
+	 * 
+	 * </blockquote>
+	 * <p>
+	 * <p>
+	 * <i><b>Note: </b>The layout direction can be set only at application
+	 * startup and does not have the effect of rerendering the entire UI. </i>
+	 * </p>
+	 */
+	public void setLayoutDirection(LayoutDirection direction) {
+		if (direction != this.layoutDirection_) {
+			this.layoutDirection_ = direction;
+			this.bodyHtmlClassChanged_ = true;
+		}
+	}
+
+	/**
+	 * Returns the layout direction.
+	 * <p>
+	 * 
+	 * @see WApplication#setLayoutDirection(LayoutDirection direction)
+	 */
+	public LayoutDirection getLayoutDirection() {
+		return this.layoutDirection_;
 	}
 
 	/**
@@ -2188,6 +2246,7 @@ public class WApplication extends WObject {
 	private String focusId_;
 	private int selectionStart_;
 	private int selectionEnd_;
+	private LayoutDirection layoutDirection_;
 	List<WApplication.ScriptLibrary> scriptLibraries_;
 	int scriptLibrariesAdded_;
 

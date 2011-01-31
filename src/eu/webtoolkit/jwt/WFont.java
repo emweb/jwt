@@ -533,11 +533,21 @@ public class WFont {
 	String getCssText(boolean combined) {
 		StringBuilder result = new StringBuilder();
 		if (combined) {
-			result.append(this.cssStyle(false)).append(' ').append(
-					this.cssVariant(false)).append(' ').append(
-					this.cssWeight(false)).append(' ').append(
-					this.cssSize(true)).append(' ')
-					.append(this.cssFamily(true));
+			String s = "";
+			s = this.cssStyle(false);
+			if (s.length() != 0) {
+				result.append(s).append(' ');
+			}
+			s = this.cssVariant(false);
+			if (s.length() != 0) {
+				result.append(s).append(' ');
+			}
+			s = this.cssWeight(false);
+			if (s.length() != 0) {
+				result.append(s).append(' ');
+			}
+			result.append(this.cssSize(true)).append(' ').append(
+					this.cssFamily(true));
 		} else {
 			String s = "";
 			s = this.cssFamily(false);

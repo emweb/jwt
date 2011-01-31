@@ -909,16 +909,17 @@ public class WContainerWidget extends WInteractWidget {
 		if (this.flags_.get(BIT_CONTENT_ALIGNMENT_CHANGED) || all) {
 			AlignmentFlag hAlign = EnumUtils.enumFromSet(EnumUtils.mask(
 					this.contentAlignment_, AlignmentFlag.AlignHorizontalMask));
+			boolean ltr = WApplication.getInstance().getLayoutDirection() == LayoutDirection.LeftToRight;
 			switch (hAlign) {
 			case AlignLeft:
 				if (this.flags_.get(BIT_CONTENT_ALIGNMENT_CHANGED)) {
-					element
-							.setProperty(Property.PropertyStyleTextAlign,
-									"left");
+					element.setProperty(Property.PropertyStyleTextAlign,
+							ltr ? "left" : "right");
 				}
 				break;
 			case AlignRight:
-				element.setProperty(Property.PropertyStyleTextAlign, "right");
+				element.setProperty(Property.PropertyStyleTextAlign,
+						ltr ? "right" : "left");
 				break;
 			case AlignCenter:
 				element.setProperty(Property.PropertyStyleTextAlign, "center");

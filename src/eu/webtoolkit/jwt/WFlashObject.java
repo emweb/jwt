@@ -265,8 +265,6 @@ public class WFlashObject extends WWebWidget {
 	void getDomChanges(List<DomElement> result, WApplication app) {
 		super.getDomChanges(result, app);
 		if (this.sizeChanged_) {
-			DomElement obj = DomElement.getForUpdate(this.getId() + "_flash",
-					DomElementType.DomElement_OBJECT);
 			StringWriter ss = new StringWriter();
 			ss.append("var v=").append(this.getJsFlashRef()).append(
 					";if(v){v.setAttribute('width', ").append(

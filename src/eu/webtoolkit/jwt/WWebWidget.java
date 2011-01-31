@@ -1097,7 +1097,18 @@ public abstract class WWebWidget extends WWidget {
 				if (this.layoutImpl_.positionScheme_ != PositionScheme.Static) {
 					for (int i = 0; i < 4; ++i) {
 						if (!this.layoutImpl_.offsets_[i].isAuto()) {
-							element.setProperty(properties[i],
+							Property property = properties[i];
+							WApplication app = WApplication.getInstance();
+							if (app.getLayoutDirection() == LayoutDirection.RightToLeft) {
+								if (i == 1) {
+									property = properties[3];
+								} else {
+									if (i == 3) {
+										property = properties[1];
+									}
+								}
+							}
+							element.setProperty(property,
 									this.layoutImpl_.offsets_[i].getCssText());
 						}
 					}
@@ -1172,15 +1183,16 @@ public abstract class WWebWidget extends WWidget {
 										"none");
 					}
 				} else {
+					boolean ltr = WApplication.getInstance()
+							.getLayoutDirection() == LayoutDirection.LeftToRight;
 					switch (this.layoutImpl_.floatSide_) {
 					case Left:
-						element
-								.setProperty(Property.PropertyStyleFloat,
-										"left");
+						element.setProperty(Property.PropertyStyleFloat,
+								ltr ? "left" : "right");
 						break;
 					case Right:
 						element.setProperty(Property.PropertyStyleFloat,
-								"right");
+								ltr ? "right" : "left");
 						break;
 					default:
 						;

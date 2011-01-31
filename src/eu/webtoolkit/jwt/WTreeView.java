@@ -207,37 +207,43 @@ public class WTreeView extends WAbstractItemView {
 										e6);
 							}
 						});
-		this.setStyleClass("Wt-treeview");
+		this.setStyleClass("Wt-itemview Wt-treeview");
 		String CSS_RULES_NAME = "Wt::WTreeView";
 		WApplication app = WApplication.getInstance();
 		if (!app.getStyleSheet().isDefined(CSS_RULES_NAME)) {
-			app
-					.getStyleSheet()
-					.addRule(
-							".Wt-treeview .Wt-headerdiv",
-							"-moz-user-select: none;-khtml-user-select: none;user-select: none;overflow: hidden;width: 100%;",
-							CSS_RULES_NAME);
-			if (app.getEnvironment().agentIsIE()) {
-				app.getStyleSheet().addRule(
-						".Wt-treeview .Wt-header .Wt-label", "zoom: 1;");
-			}
-			app.getStyleSheet().addRule(".Wt-treeview table", "width: 100%");
+			app.getStyleSheet().addRule(".Wt-treeview table", "width: 100%",
+					CSS_RULES_NAME);
 			app.getStyleSheet().addRule(".Wt-treeview .c1",
 					"width: 100%; overflow: hidden;");
 			app.getStyleSheet().addRule(".Wt-treeview .c0",
 					"width: 19px; vertical-align: middle");
 			app.getStyleSheet().addRule(".Wt-treeview .Wt-tv-row",
 					"float: right; overflow: hidden;");
+			app.getStyleSheet().addRule("body.Wt-rtl .Wt-treeview .Wt-tv-row",
+					"float: left;");
 			app
 					.getStyleSheet()
 					.addRule(
 							".Wt-treeview .Wt-tv-row .Wt-tv-c",
 							"display: block; float: left;padding: 0px 3px;text-overflow: ellipsis;overflow: hidden;");
+			app.getStyleSheet().addRule(
+					"body.Wt-rtl .Wt-treeview .Wt-tv-row .Wt-tv-c",
+					"float: right;");
 			app.getStyleSheet().addRule(".Wt-treeview .Wt-tv-c",
 					"padding: 0px 3px;");
 			app.getStyleSheet().addRule(
 					".Wt-treeview img.icon, .Wt-treeview input.icon",
-					"margin: 0px 3px 2px 0px; vertical-align: middle");
+					"vertical-align: middle");
+			app
+					.getStyleSheet()
+					.addRule(
+							"body.Wt-ltr .Wt-treeview img.icon, .Wt-treeview input.icon",
+							"margin: 0px 3px 2px 0px;");
+			app
+					.getStyleSheet()
+					.addRule(
+							"body.Wt-rtl .Wt-treeview img.icon, .Wt-treeview input.icon",
+							"margin: 0px 0px 2px 3px;");
 			app.getStyleSheet().addRule(".Wt-treeview .Wt-tv-node img.w0",
 					"width: 0px; margin: 0px;");
 			app
@@ -245,32 +251,31 @@ public class WTreeView extends WAbstractItemView {
 					.addRule(
 							".Wt-treeview .Wt-tv-node .c0 img, .Wt-treeview .Wt-tv-node .c0 input",
 							"margin-right: 0px; margin: -4px 0px;");
-			app
-					.getStyleSheet()
-					.addRule(".Wt-treeview div.Wt-tv-rh",
-							"float: right; width: 4px; cursor: col-resize;padding-left: 0px;");
 			if (app.getEnvironment().agentIsIE()) {
-				app.getStyleSheet().addRule(".Wt-treeview .Wt-header .Wt-tv-c",
-						"padding: 0px;padding-left: 7px;");
+				app.getStyleSheet().addRule(
+						"body.Wt-ltr .Wt-treeview .Wt-header .Wt-tv-c",
+						"padding: 0px 0px 0px 7px;");
+				app.getStyleSheet().addRule(
+						"body.Wt-rtl .Wt-treeview .Wt-header .Wt-tv-c",
+						"padding: 0px 7px 0px 0px;");
 			} else {
-				app.getStyleSheet().addRule(".Wt-treeview .Wt-header .Wt-tv-c",
+				app.getStyleSheet().addRule(
+						"body.Wt-ltr .Wt-treeview .Wt-header .Wt-tv-c",
 						"padding: 0px;margin-left: 7px;");
+				app.getStyleSheet().addRule(
+						"body.Wt-rtl .Wt-treeview .Wt-header .Wt-tv-c",
+						"padding: 0px;margin-right: 7px;");
 			}
-			app.getStyleSheet().addRule(".Wt-treeview .Wt-tv-rh:hover",
-					"background-color: #DDDDDD;");
 			app
 					.getStyleSheet()
 					.addRule(
-							".Wt-treeview .Wt-tv-br, .Wt-treeview .Wt-tv-node .Wt-tv-row .Wt-tv-c",
+							"body.Wt-ltr .Wt-treeview .Wt-tv-br, body.Wt-ltr .Wt-treeview .Wt-tv-node .Wt-tv-row .Wt-tv-c",
 							"margin-right: 0px; border-right: 1px solid white;");
 			app
 					.getStyleSheet()
 					.addRule(
-							".Wt-treeview .Wt-tv-sh",
-							""
-									+ "float: right; width: 16px; height: 16px; padding-bottom: 6px;cursor: pointer; cursor:hand;");
-			app.getStyleSheet().addRule(".Wt-treeview .Wt-tv-shc0",
-					"float: left;");
+							"body.Wt-rtl .Wt-treeview .Wt-tv-br, body.Wt-rtl .Wt-treeview .Wt-tv-node .Wt-tv-row .Wt-tv-c",
+							"margin-left: 0px; border-left: 1px solid white;");
 			if (app.getEnvironment().agentIsWebKit()
 					|| app.getEnvironment().agentIsOpera()) {
 				app.getStyleSheet().addRule(".Wt-treeview .Wt-tv-rowc",
@@ -457,7 +462,7 @@ public class WTreeView extends WAbstractItemView {
 		}
 		if (fixed && !this.column1Fixed_) {
 			this.column1Fixed_ = fixed;
-			this.setStyleClass("Wt-treeview column1");
+			this.addStyleClass("column1");
 			WContainerWidget rootWrap = ((this.contents_.getWidget(0)) instanceof WContainerWidget ? (WContainerWidget) (this.contents_
 					.getWidget(0))
 					: null);
@@ -469,10 +474,13 @@ public class WTreeView extends WAbstractItemView {
 			boolean useStyleLeft = app.getEnvironment().agentIsWebKit()
 					|| app.getEnvironment().agentIsOpera();
 			if (useStyleLeft) {
+				boolean rtl = app.getLayoutDirection() == LayoutDirection.RightToLeft;
 				this.tieRowsScrollJS_
 						.setJavaScript("function(obj, event) {Wt3_1_8.getCssRule('#"
 								+ this.getId()
-								+ " .Wt-tv-rowc').style.left= -obj.scrollLeft + 'px';}");
+								+ " .Wt-tv-rowc').style.left= -obj.scrollLeft "
+								+ (rtl ? "+ (obj.firstChild.offsetWidth - obj.offsetWidth)"
+										: "") + "+ 'px';}");
 			} else {
 				this.tieRowsScrollJS_
 						.setJavaScript("function(obj, event) {$('#"
@@ -1007,13 +1015,13 @@ public class WTreeView extends WAbstractItemView {
 			this.contentsContainer_
 					.scrolled()
 					.addListener(
-							"function(obj, event) {"
+							"function(obj, event) {if (obj.sb) return;obj.sb = true;"
 									+ this.headerContainer_.getJsRef()
 									+ ".scrollLeft=obj.scrollLeft;var t = "
 									+ this.contents_.getJsRef()
 									+ ".firstChild;var h = "
 									+ this.headers_.getJsRef()
-									+ ";h.style.width = (t.offsetWidth - 1) + 'px';h.style.width = t.offsetWidth + 'px';}");
+									+ ";h.style.width = (t.offsetWidth - 1) + 'px';h.style.width = t.offsetWidth + 'px';obj.sb = false;}");
 			this.contentsContainer_.addWidget(this.contents_);
 			layout.addWidget(this.headerContainer_);
 			layout.addWidget(this.contentsContainer_, 1);
@@ -2054,6 +2062,6 @@ public class WTreeView extends WAbstractItemView {
 	}
 
 	static String wtjs1(WApplication app) {
-		return "Wt3_1_8.WTreeView = function(l,d,i,s,p){function o(c){var a=-1,b=null,e=false,g=false,h=null;for(c=f.target(c);c;){if(c.className.indexOf(\"c1 rh\")==0){if(a==-1)a=0}else if(c.className.indexOf(\"Wt-tv-c\")==0){if(c.className.indexOf(\"Wt-tv-c\")==0)a=c.className.split(\" \")[0].substring(7)*1;else if(a==-1)a=0;if(c.getAttribute(\"drop\")===\"true\")g=true;h=c}else if(c.className==\"Wt-tv-node\"){b=c.id;break}if(c.className===\"Wt-selected\")e=true;c=c.parentNode;if(f.hasTag(c,\"BODY\"))break}return{columnId:a, nodeId:b,selected:e,drop:g,el:h}}jQuery.data(d,\"obj\",this);var q=i.firstChild,k=s.firstChild,r=this,f=l.WT;this.click=function(c,a){var b=o(a);b.columnId!=-1&&l.emit(d,{name:\"itemEvent\",eventObject:c,event:a},b.nodeId,b.columnId,\"clicked\",\"\",\"\")};this.dblClick=function(c,a){var b=o(a);b.columnId!=-1&&l.emit(d,{name:\"itemEvent\",eventObject:c,event:a},b.nodeId,b.columnId,\"dblclicked\",\"\",\"\")};this.mouseDown=function(c,a){f.capture(null);var b=o(a);if(b.columnId!=-1){l.emit(d,{name:\"itemEvent\",eventObject:c, event:a},b.nodeId,b.columnId,\"mousedown\",\"\",\"\");d.getAttribute(\"drag\")===\"true\"&&b.selected&&l._p_.dragStart(d,a)}};this.mouseUp=function(c,a){var b=o(a);b.columnId!=-1&&l.emit(d,{name:\"itemEvent\",eventObject:c,event:a},b.nodeId,b.columnId,\"mouseup\",\"\",\"\")};this.resizeHandleMDown=function(c,a){var b=c.parentNode.parentNode.className.split(\" \")[0];if(b){var e=f.getCssRule(\"#\"+d.id+\" .\"+b),g=f.pxself(e,\"width\");new f.SizeHandle(f,\"h\",c.offsetWidth,d.offsetHeight,-g,1E4,\"Wt-hsh\",function(h){h=g+h;var m= b.substring(7)*1;e.style.width=h+\"px\";r.adjustColumns();l.emit(d,\"columnResized\",m,parseInt(h))},c,d,a,-2,-1)}};this.adjustColumns=function(){var c=q.firstChild,a=k.firstChild,b=0,e=0;e=k.lastChild.className.split(\" \")[0];var g=f.getCssRule(\"#\"+d.id+\" .\"+e);if(p)a=a.firstChild;if(!f.isHidden(d)){for(var h=0,m=a.childNodes.length;h<m;++h)if(a.childNodes[h].className){var j=a.childNodes[h].className.split(\" \")[0];j=f.getCssRule(\"#\"+d.id+\" .\"+j);if(j.style.display!=\"none\")b+=f.pxself(j,\"width\")+7}if(!p)if(g.style.width)$(d).find(\".Wt-headerdiv .\"+ e).css(\"width\",g.style.width);else g.style.width=k.offsetWidth-a.offsetWidth-8+\"px\";e=b+f.pxself(g,\"width\")+(f.isIE6?10:8);if(p){j=f.getCssRule(\"#\"+d.id+\" .Wt-tv-rowc\");j.style.width=b+\"px\";$(d).find(\".Wt-tv-rowc\").css(\"width\",b+\"px\").css(\"width\",\"\");d.changed=true;this.autoJavaScript()}else{k.style.width=c.style.width=e+\"px\";a.style.width=b+\"px\"}}};var n=null;d.handleDragDrop=function(c,a,b,e,g){if(n){n.className=n.classNameOrig;n=null}if(c!=\"end\"){var h=o(b);if(!h.selected&&h.drop&&h.columnId!= -1)if(c==\"drop\")l.emit(d,{name:\"itemEvent\",eventObject:a,event:b},h.nodeId,h.columnId,\"drop\",e,g);else{a.className=\"Wt-valid-drop\";n=h.el;n.classNameOrig=n.className;n.className+=\" Wt-drop-site\"}else a.className=\"\"}};this.autoJavaScript=function(){if(d.parentNode==null){d=i=s=q=k=null;this.autoJavaScript=function(){}}else if(!f.isHidden(d)){var c=$(d),a=c.innerWidth(),b,e=null,g=i.offsetWidth-i.clientWidth;a-=g;if(c.hasClass(\"column1\")){b=c.find(\".Wt-headerdiv\").get(0).lastChild.className.split(\" \")[0]; b=f.getCssRule(\"#\"+d.id+\" .\"+b);e=f.pxself(b,\"width\")}if((!f.isIE||a>100)&&(a!=i.tw||e!=i.c0w||d.changed)){var h=!d.changed;i.tw=a;i.c0w=e;b=c.find(\".Wt-headerdiv\").get(0).lastChild.className.split(\" \")[0];b=f.getCssRule(\"#\"+d.id+\" .\"+b);var m=q.firstChild,j=f.getCssRule(\"#\"+d.id+\" .cwidth\"),t=j.style.width==k.style.width,u=k.firstChild;j.style.width=a+\"px\";i.style.width=a+g+\"px\";k.style.width=m.offsetWidth+\"px\";if(e!=null){e=a-e-(f.isIE6?10:8);if(e>0){g=Math.min(e,f.pxself(f.getCssRule(\"#\"+d.id+ \" .Wt-tv-rowc\"),\"width\"));a-=e-g;f.getCssRule(\"#\"+d.id+\" .Wt-tv-row\").style.width=g+\"px\";c.find(\" .Wt-tv-row\").css(\"width\",g+\"px\").css(\"width\",\"\");k.style.width=a+\"px\";m.style.width=a+\"px\"}}else if(t){k.style.width=j.style.width;m.style.width=j.style.width}if(!p)b.style.width=m.offsetWidth-u.offsetWidth-8+\"px\";d.changed=false;h&&r.adjustColumns()}}};this.scrollTo=function(c,a,b,e){if(a!=-1){a*=b;c=i.scrollTop;var g=i.clientHeight;if(e==0)if(c+g<a)e=1;else if(a<c)e=2;switch(e){case 1:i.scrollTop=a; break;case 2:i.scrollTop=a-(g-b);break;case 3:i.scrollTop=a-(g-b)/2;break}i.onscroll({object:i})}};r.adjustColumns()};";
+		return "Wt3_1_8.WTreeView = function(m,d,i,r,q){function p(c){var a=-1,b=null,e=false,g=false,h=null;for(c=f.target(c);c;){if(c.className.indexOf(\"c1 rh\")==0){if(a==-1)a=0}else if(c.className.indexOf(\"Wt-tv-c\")==0){if(c.className.indexOf(\"Wt-tv-c\")==0)a=c.className.split(\" \")[0].substring(7)*1;else if(a==-1)a=0;if(c.getAttribute(\"drop\")===\"true\")g=true;h=c}else if(c.className==\"Wt-tv-node\"){b=c.id;break}if(c.className===\"Wt-selected\")e=true;c=c.parentNode;if(f.hasTag(c,\"BODY\"))break}return{columnId:a, nodeId:b,selected:e,drop:g,el:h}}jQuery.data(d,\"obj\",this);var s=i.firstChild,k=r.firstChild,t=this,f=m.WT;this.click=function(c,a){var b=p(a);b.columnId!=-1&&m.emit(d,{name:\"itemEvent\",eventObject:c,event:a},b.nodeId,b.columnId,\"clicked\",\"\",\"\")};this.dblClick=function(c,a){var b=p(a);b.columnId!=-1&&m.emit(d,{name:\"itemEvent\",eventObject:c,event:a},b.nodeId,b.columnId,\"dblclicked\",\"\",\"\")};this.mouseDown=function(c,a){f.capture(null);var b=p(a);if(b.columnId!=-1){m.emit(d,{name:\"itemEvent\",eventObject:c, event:a},b.nodeId,b.columnId,\"mousedown\",\"\",\"\");d.getAttribute(\"drag\")===\"true\"&&b.selected&&m._p_.dragStart(d,a)}};this.mouseUp=function(c,a){var b=p(a);b.columnId!=-1&&m.emit(d,{name:\"itemEvent\",eventObject:c,event:a},b.nodeId,b.columnId,\"mouseup\",\"\",\"\")};this.resizeHandleMDown=function(c,a){var b=c.parentNode.parentNode.className.split(\" \")[0];if(b){var e=f.getCssRule(\"#\"+d.id+\" .\"+b),g=f.pxself(e,\"width\"),h=-g,l=1E4,j=$(document.body).hasClass(\"Wt-rtl\");if(j){var u=h;h=-l;l=-u}new f.SizeHandle(f, \"h\",c.offsetWidth,d.firstChild.offsetHeight,h,l,\"Wt-hsh\",function(o){o=g+(j?-o:o);var v=b.substring(7)*1;e.style.width=o+\"px\";t.adjustColumns();m.emit(d,\"columnResized\",v,parseInt(o))},c,d,a,-2,-1)}};this.adjustColumns=function(){var c=s.firstChild,a=k.firstChild,b=0,e=0;e=k.lastChild.className.split(\" \")[0];var g=f.getCssRule(\"#\"+d.id+\" .\"+e);if(q)a=a.firstChild;if(!f.isHidden(d)){for(var h=0,l=a.childNodes.length;h<l;++h)if(a.childNodes[h].className){var j=a.childNodes[h].className.split(\" \")[0]; j=f.getCssRule(\"#\"+d.id+\" .\"+j);if(j.style.display!=\"none\")b+=f.pxself(j,\"width\")+7}if(!q)if(g.style.width)$(d).find(\".Wt-headerdiv .\"+e).css(\"width\",g.style.width);else g.style.width=k.offsetWidth-a.offsetWidth-8+\"px\";e=b+f.pxself(g,\"width\")+(f.isIE6?10:8);if(q){j=f.getCssRule(\"#\"+d.id+\" .Wt-tv-rowc\");j.style.width=b+\"px\";$(d).find(\".Wt-tv-rowc\").css(\"width\",b+\"px\").css(\"width\",\"\");d.changed=true;this.autoJavaScript()}else{k.style.width=c.style.width=e+\"px\";a.style.width=b+\"px\"}}};var n=null;d.handleDragDrop= function(c,a,b,e,g){if(n){n.className=n.classNameOrig;n=null}if(c!=\"end\"){var h=p(b);if(!h.selected&&h.drop&&h.columnId!=-1)if(c==\"drop\")m.emit(d,{name:\"itemEvent\",eventObject:a,event:b},h.nodeId,h.columnId,\"drop\",e,g);else{a.className=\"Wt-valid-drop\";n=h.el;n.classNameOrig=n.className;n.className+=\" Wt-drop-site\"}else a.className=\"\"}};this.autoJavaScript=function(){if(d.parentNode==null){d=i=r=s=k=null;this.autoJavaScript=function(){}}else if(!f.isHidden(d)){var c=$(d),a=c.innerWidth(),b,e=null, g=i.offsetWidth-i.clientWidth;a-=g;if(c.hasClass(\"column1\")){b=c.find(\".Wt-headerdiv\").get(0).lastChild.className.split(\" \")[0];b=f.getCssRule(\"#\"+d.id+\" .\"+b);e=f.pxself(b,\"width\")}if((!f.isIE||a>100)&&(a!=i.tw||e!=i.c0w||d.changed)){var h=!d.changed;i.tw=a;i.c0w=e;b=c.find(\".Wt-headerdiv\").get(0).lastChild.className.split(\" \")[0];b=f.getCssRule(\"#\"+d.id+\" .\"+b);var l=s.firstChild,j=f.getCssRule(\"#\"+d.id+\" .cwidth\"),u=j.style.width==k.style.width,o=k.firstChild;j.style.width=a+\"px\";i.style.width= a+g+\"px\";k.style.width=l.offsetWidth+\"px\";if(!f.isIE)r.style.marginRight=g+\"px\";if(e!=null){e=a-e-(f.isIE6?10:8);if(e>0){g=Math.min(e,f.pxself(f.getCssRule(\"#\"+d.id+\" .Wt-tv-rowc\"),\"width\"));a-=e-g;f.getCssRule(\"#\"+d.id+\" .Wt-tv-row\").style.width=g+\"px\";c.find(\" .Wt-tv-row\").css(\"width\",g+\"px\").css(\"width\",\"\");k.style.width=a+\"px\";l.style.width=a+\"px\"}}else if(u){k.style.width=j.style.width;l.style.width=j.style.width}if(!q)b.style.width=l.offsetWidth-o.offsetWidth-8+\"px\";d.changed=false;h&&t.adjustColumns()}}}; this.scrollTo=function(c,a,b,e){if(a!=-1){a*=b;c=i.scrollTop;var g=i.clientHeight;if(e==0)if(c+g<a)e=1;else if(a<c)e=2;switch(e){case 1:i.scrollTop=a;break;case 2:i.scrollTop=a-(g-b);break;case 3:i.scrollTop=a-(g-b)/2;break}i.onscroll({object:i})}};t.adjustColumns()};";
 	}
 }

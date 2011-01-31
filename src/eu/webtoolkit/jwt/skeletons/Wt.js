@@ -218,7 +218,7 @@ this.initAjaxComm = function(url, handler) {
 
 	this.userData = userData;
 
-	var s = this.script = document.createElement('SCRIPT');
+	var s = this.script = document.createElement('script');
 	s.id = "script" + id;
 	s.setAttribute('src', url + '&' + data);
 
@@ -236,7 +236,7 @@ this.initAjaxComm = function(url, handler) {
 	};
 */
 
-	var h = document.getElementsByTagName('HEAD')[0];
+	var h = document.getElementsByTagName('head')[0];
 	h.appendChild(s);
 
 	this.abort = function() {
@@ -451,6 +451,8 @@ this.widgetPageCoordinates = function(obj) {
   if (WT.hasTag(obj, "AREA"))
     obj = obj.parentNode.nextSibling; // img after map
 
+  var rtl = $(document.body).hasClass('Wt-rtl');
+
   while (obj) {
     objX += obj.offsetLeft;
     objY += obj.offsetTop;
@@ -472,7 +474,8 @@ this.widgetPageCoordinates = function(obj) {
       do {
 	obj = obj.parentNode;
 	if (WT.hasTag(obj, "DIV")) {
-	  objX -= obj.scrollLeft;
+	  if (!rtl) /* Somebody explain me why, but that seems to work +/- */
+	    objX -= obj.scrollLeft;
 	  objY -= obj.scrollTop;
 	}
       } while (obj != null && obj != op);
@@ -1729,26 +1732,33 @@ function quit() {
   var tr = $('#Wt-timers');
   if (tr.size() > 0)
     WT.setHtml(tr.get(0), '', false);
-};
+}
 
 function doKeepAlive() {
   WT.history._initTimeout();
   if (commErrors == 0)
     update(null, 'none', null, false);
-};
+}
 
 function debug(s) {
   document.body.innerHTML += s;
-};
+}
 
 function setTitle(title) {
   if (WT.isIEMobile) return;
   document.title = title;
-};
+}
 
-function load(initHistory) {
-  if (initHistory)
+function load(fullapp) {
+  if (loaded)
+    return;
+
+  if (fullapp) {
+    if (!window._$_APP_CLASS_$_LoadWidgetTree)
+      return; // That's to too soon baby.
+
     WT.history.initialize("Wt-history-field", "Wt-history-iframe");
+  }
 
   if (!("activeElement" in document)) {
     function trackActiveElement(evt) {
@@ -1767,15 +1777,16 @@ function load(initHistory) {
 
   WT.history._initialize();
   initDragDrop();
-  if (!loaded) {
-    loaded = true;
-    _$_ONLOAD_$_();
-    if (!quited) {
-      doKeepAlive();
-      keepAliveTimer = setInterval(doKeepAlive, _$_KEEP_ALIVE_$_000);
-    }
+  loaded = true;
+
+  if (fullapp)
+    window._$_APP_CLASS_$_LoadWidgetTree();
+
+  if (!quited) {
+    doKeepAlive();
+    keepAliveTimer = setInterval(doKeepAlive, _$_KEEP_ALIVE_$_000);
   }
-};
+}
 
 var currentHideLoadingIndicator = null;
 
@@ -1790,13 +1801,13 @@ function cancelFeedback(t) {
     }
     currentHideLoadingIndicator = null;
   }
-};
+}
 
 function waitFeedback() {
   document.body.style.cursor = 'wait';
   currentHideLoadingIndicator = hideLoadingIndicator;
   showLoadingIndicator();
-};
+}
 
 /** @const */ var WebSocketsUnknown = 0;
 /** @const */ var WebSocketsWorking = 1;
@@ -1890,7 +1901,18 @@ function doPollTimeout() {
     sendUpdate();
 }
 
+var updating = false;
+
 function update(el, signalName, e, feedback) {
+  /*
+   * Konqueror may recurisvely call update() because
+   * /reading/ offsetLeft or offsetTop triggers an onscroll event ??
+   */
+  if (updating)
+    return;
+
+  updating = true;
+
   WT.checkReleaseCapture(el, e);
 
   _$_$if_STRICTLY_SERIALIZED_EVENTS_$_();
@@ -1912,6 +1934,8 @@ function update(el, signalName, e, feedback) {
   _$_$if_STRICTLY_SERIALIZED_EVENTS_$_();
   }
   _$_$endif_$_();
+
+  updating = false;
 }
 
 var updateTimeoutStart;

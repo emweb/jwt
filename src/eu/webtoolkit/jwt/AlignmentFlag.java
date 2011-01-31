@@ -35,7 +35,7 @@ import eu.webtoolkit.jwt.servlet.*;
  * alignment of contents within the table cell.
  * <p>
  * When used with
- * {@link WPainter#drawText(WRectF rectangle, EnumSet flags, CharSequence text)
+ * {@link WPainter#drawText(WRectF rectangle, EnumSet alignmentFlags, TextFlag textFlag, CharSequence text)
  * WPainter#drawText()}, this determines the horizontal and vertical alignment
  * of the text with respect to the bounding rectangle.
  * <p>

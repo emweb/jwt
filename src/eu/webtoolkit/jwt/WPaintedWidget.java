@@ -364,8 +364,7 @@ public abstract class WPaintedWidget extends WInteractWidget {
 		if (!app.getEnvironment().agentIsSpiderBot()) {
 			canvas.setId('p' + this.getId());
 		}
-		WPaintDevice device = this.painter_.getPaintDevice();
-		device.clear();
+		WPaintDevice device = this.painter_.getPaintDevice(false);
 		if (this.painter_.getRenderType() == WWidgetPainter.RenderType.InlineVml
 				&& this.isInline()) {
 			result.setProperty(Property.PropertyStyle, "zoom: 1;");
@@ -395,12 +394,9 @@ public abstract class WPaintedWidget extends WInteractWidget {
 		result.add(e);
 		boolean createdNew = this.isCreatePainter();
 		if (this.needRepaint_) {
-			WPaintDevice device = this.painter_.getPaintDevice();
-			if (createdNew
-					|| !!EnumUtils.mask(this.repaintFlags_,
-							PaintFlag.PaintUpdate).isEmpty()) {
-				device.clear();
-			}
+			WPaintDevice device = this.painter_.getPaintDevice(!EnumUtils.mask(
+					this.repaintFlags_, PaintFlag.PaintUpdate).isEmpty()
+					&& !createdNew);
 			if (this.renderWidth_ != 0 && this.renderHeight_ != 0) {
 				this.paintEvent(device);
 			}

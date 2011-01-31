@@ -23,11 +23,14 @@ class WWidgetRasterPainter extends WWidgetPainter {
 		this.device_ = null;
 	}
 
-	public WPaintDevice getPaintDevice() {
+	public WPaintDevice getPaintDevice(boolean paintUpdate) {
 		if (!(this.device_ != null)) {
 			this.device_ = new WRasterPaintDevice("png", new WLength(
 					this.widget_.renderWidth_), new WLength(
 					this.widget_.renderHeight_));
+		}
+		if (!paintUpdate) {
+			this.device_.clear();
 		}
 		return this.device_;
 	}
@@ -70,5 +73,5 @@ class WWidgetRasterPainter extends WWidgetPainter {
 		return WWidgetPainter.RenderType.PngImage;
 	}
 
-	private WPaintDevice device_;
+	private WRasterPaintDevice device_;
 }

@@ -27,13 +27,18 @@ import eu.webtoolkit.jwt.servlet.*;
 public class WSvgImage extends WResource implements WVectorImage {
 	/**
 	 * Create an SVG paint device.
+	 * <p>
+	 * If <code>paintUpdate</code> is <code>true</code>, then only an SVG
+	 * fragment will be rendered that can be used to update the DOM of an
+	 * existing SVG image, instead of a full SVG image.
 	 */
-	public WSvgImage(WLength width, WLength height, WObject parent) {
+	public WSvgImage(WLength width, WLength height, WObject parent,
+			boolean paintUpdate) {
 		super(parent);
 		this.width_ = width;
 		this.height_ = height;
 		this.painter_ = null;
-		this.paintUpdate_ = true;
+		this.paintUpdate_ = paintUpdate;
 		this.changeFlags_ = EnumSet.noneOf(WPaintDevice.ChangeFlag.class);
 		this.newGroup_ = true;
 		this.newClipPath_ = false;
@@ -56,11 +61,23 @@ public class WSvgImage extends WResource implements WVectorImage {
 	/**
 	 * Create an SVG paint device.
 	 * <p>
-	 * Calls {@link #WSvgImage(WLength width, WLength height, WObject parent)
-	 * this(width, height, (WObject)null)}
+	 * Calls
+	 * {@link #WSvgImage(WLength width, WLength height, WObject parent, boolean paintUpdate)
+	 * this(width, height, (WObject)null, false)}
 	 */
 	public WSvgImage(WLength width, WLength height) {
-		this(width, height, (WObject) null);
+		this(width, height, (WObject) null, false);
+	}
+
+	/**
+	 * Create an SVG paint device.
+	 * <p>
+	 * Calls
+	 * {@link #WSvgImage(WLength width, WLength height, WObject parent, boolean paintUpdate)
+	 * this(width, height, parent, false)}
+	 */
+	public WSvgImage(WLength width, WLength height, WObject parent) {
+		this(width, height, parent, false);
 	}
 
 	public void setChanged(EnumSet<WPaintDevice.ChangeFlag> flags) {
@@ -173,69 +190,106 @@ public class WSvgImage extends WResource implements WVectorImage {
 	}
 
 	public void drawText(WRectF rect, EnumSet<AlignmentFlag> flags,
-			CharSequence text) {
+			TextFlag textFlag, CharSequence text) {
 		this.finishPath();
 		this.makeNewGroup();
 		char[] buf = new char[30];
-		this.shapes_.append("<text");
-		this.shapes_.append(" style=\"stroke:none;");
+		StringBuilder style = new StringBuilder();
+		style.append("style=\"stroke:none;");
 		if (!this.getPainter().getPen().getColor().equals(
 				this.getPainter().getBrush().getColor())
 				|| this.getPainter().getBrush().getStyle() == BrushStyle.NoBrush) {
 			WColor color = this.getPainter().getPen().getColor();
-			this.shapes_.append("fill:" + color.getCssText()).append(';');
+			style.append("fill:" + color.getCssText()).append(';');
 			if (color.getAlpha() != 255) {
-				this.shapes_.append("fill-opacity:").append(
+				style.append("fill-opacity:").append(
 						MathUtils.round(color.getAlpha() / 255., 3))
 						.append(';');
 			}
 		}
-		this.shapes_.append('"');
+		style.append('"');
 		AlignmentFlag horizontalAlign = EnumUtils.enumFromSet(EnumUtils.mask(
 				flags, AlignmentFlag.AlignHorizontalMask));
 		AlignmentFlag verticalAlign = EnumUtils.enumFromSet(EnumUtils.mask(
 				flags, AlignmentFlag.AlignVerticalMask));
-		switch (horizontalAlign) {
-		case AlignLeft:
-			this.shapes_.append(" x=").append(quote(rect.getLeft()));
-			break;
-		case AlignRight:
-			this.shapes_.append(" x=").append(quote(rect.getRight())).append(
-					" text-anchor=\"end\"");
-			break;
-		case AlignCenter:
-			this.shapes_.append(" x=").append(quote(rect.getCenter().getX()))
-					.append(" text-anchor=\"middle\"");
-			break;
-		default:
-			break;
+		if (textFlag == TextFlag.TextWordWrap) {
+			String hAlign = "";
+			switch (horizontalAlign) {
+			case AlignLeft:
+				hAlign = "start";
+				break;
+			case AlignRight:
+				hAlign = "end";
+				break;
+			case AlignCenter:
+				hAlign = "center";
+				break;
+			case AlignJustify:
+				hAlign = "justify";
+			default:
+				break;
+			}
+			this.shapes_.append("<flowRoot ").append(style.toString()).append(
+					">\n").append("  <flowRegion>\n").append("    <rect")
+					.append(" width=\"")
+					.append(String.valueOf(rect.getWidth())).append("\"")
+					.append(" height=\"").append(
+							String.valueOf(rect.getHeight())).append("\"")
+					.append(" x=\"").append(String.valueOf(rect.getX()))
+					.append("\"").append(" y=\"").append(
+							String.valueOf(rect.getY())).append("\"").append(
+							"    />\n").append("  </flowRegion>\n").append(
+							"  <flowPara").append(" text-align=\"").append(
+							hAlign).append("\">\n").append(" ").append(
+							WWebWidget.escapeText(text, false).toString())
+					.append("\n").append("  </flowPara>\n").append(
+							"</flowRoot>\n");
+		} else {
+			this.shapes_.append("<text ").append(style.toString());
+			switch (horizontalAlign) {
+			case AlignLeft:
+				this.shapes_.append(" x=").append(quote(rect.getLeft()));
+				break;
+			case AlignRight:
+				this.shapes_.append(" x=").append(quote(rect.getRight()))
+						.append(" text-anchor=\"end\"");
+				break;
+			case AlignCenter:
+				this.shapes_.append(" x=").append(
+						quote(rect.getCenter().getX())).append(
+						" text-anchor=\"middle\"");
+				break;
+			default:
+				break;
+			}
+			double fontSize;
+			switch (this.getPainter().getFont().getSize()) {
+			case FixedSize:
+				fontSize = this.getPainter().getFont().getFixedSize()
+						.toPixels();
+				break;
+			default:
+				fontSize = 16;
+			}
+			double y = rect.getCenter().getY();
+			switch (verticalAlign) {
+			case AlignTop:
+				y = rect.getTop() + fontSize * 0.75;
+				break;
+			case AlignMiddle:
+				y = rect.getCenter().getY() + fontSize * 0.25;
+				break;
+			case AlignBottom:
+				y = rect.getBottom() - fontSize * 0.25;
+				break;
+			default:
+				break;
+			}
+			this.shapes_.append(" y=").append(quote(y));
+			this.shapes_.append(">").append(
+					WWebWidget.escapeText(text, false).toString()).append(
+					"</text>");
 		}
-		double fontSize;
-		switch (this.getPainter().getFont().getSize()) {
-		case FixedSize:
-			fontSize = this.getPainter().getFont().getFixedSize().toPixels();
-			break;
-		default:
-			fontSize = 16;
-		}
-		double y = rect.getCenter().getY();
-		switch (verticalAlign) {
-		case AlignTop:
-			y = rect.getTop() + fontSize * 0.75;
-			break;
-		case AlignMiddle:
-			y = rect.getCenter().getY() + fontSize * 0.25;
-			break;
-		case AlignBottom:
-			y = rect.getBottom() - fontSize * 0.25;
-			break;
-		default:
-			break;
-		}
-		this.shapes_.append(" y=").append(quote(y));
-		this.shapes_.append(">").append(
-				WWebWidget.escapeText(text, false).toString())
-				.append("</text>");
 	}
 
 	public WTextItem measureText(CharSequence text, double maxWidth,
@@ -307,11 +361,6 @@ public class WSvgImage extends WResource implements WVectorImage {
 
 	public void setPainter(WPainter painter) {
 		this.painter_ = painter;
-	}
-
-	public void clear() {
-		this.paintUpdate_ = false;
-		this.shapes_ = new StringWriter();
 	}
 
 	private WLength width_;

@@ -22,9 +22,10 @@ class WWidgetCanvasPainter extends WWidgetPainter {
 		super(widget);
 	}
 
-	public WPaintDevice getPaintDevice() {
+	public WPaintDevice getPaintDevice(boolean paintUpdate) {
 		return new WCanvasPaintDevice(new WLength(this.widget_.renderWidth_),
-				new WLength(this.widget_.renderHeight_));
+				new WLength(this.widget_.renderHeight_), (WObject) null,
+				paintUpdate);
 	}
 
 	public void createContents(DomElement result, WPaintDevice device) {

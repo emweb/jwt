@@ -337,16 +337,19 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	 */
 	public void setColumnAlignment(int column, AlignmentFlag alignment) {
 		this.columnInfo(column).alignment = alignment;
+		WApplication app = WApplication.getInstance();
 		String align = null;
 		switch (alignment) {
 		case AlignLeft:
-			align = "left";
+			align = app.getLayoutDirection() == LayoutDirection.LeftToRight ? "left"
+					: "right";
 			break;
 		case AlignCenter:
 			align = "center";
 			break;
 		case AlignRight:
-			align = "right";
+			align = app.getLayoutDirection() == LayoutDirection.LeftToRight ? "right"
+					: "left";
 			break;
 		case AlignJustify:
 			align = "justify";
@@ -1406,6 +1409,35 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 				+ " .headerrh");
 		app.getStyleSheet().addRule(this.headerHeightRule_);
 		this.setHeaderHeight(this.headerLineHeight_);
+		String CSS_RULES_NAME = "Wt::WAbstractIemView";
+		if (!app.getStyleSheet().isDefined(CSS_RULES_NAME)) {
+			app
+					.getStyleSheet()
+					.addRule(
+							".Wt-itemview .Wt-headerdiv",
+							"-moz-user-select: none;-khtml-user-select: none;user-select: none;overflow: hidden;width: 100%;",
+							CSS_RULES_NAME);
+			if (app.getEnvironment().agentIsIE()) {
+				app.getStyleSheet().addRule(
+						".Wt-itemview .Wt-header .Wt-label", "zoom: 1;");
+			}
+			app
+					.getStyleSheet()
+					.addRule(".Wt-itemview div.Wt-tv-rh",
+							"float: right; width: 4px; cursor: col-resize;padding-left: 0px;");
+			app.getStyleSheet().addRule(
+					"body.Wt-rtl .Wt-itemview div.Wt-tv-rh",
+					"float: left; padding-right: 0px;");
+			app.getStyleSheet().addRule(".Wt-itemview .Wt-tv-rh:hover",
+					"background-color: #DDDDDD;");
+			app
+					.getStyleSheet()
+					.addRule(
+							".Wt-itemview .Wt-tv-sh",
+							"float: right; width: 16px; height: 16px; padding-bottom: 6px;cursor: pointer; cursor:hand;");
+			app.getStyleSheet().addRule("body.Wt-rtl .Wt-itemview .Wt-tv-sh",
+					"float: left;");
+		}
 	}
 
 	/**

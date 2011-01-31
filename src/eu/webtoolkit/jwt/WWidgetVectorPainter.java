@@ -24,13 +24,14 @@ class WWidgetVectorPainter extends WWidgetPainter {
 		this.renderType_ = renderType;
 	}
 
-	public WPaintDevice getPaintDevice() {
+	public WPaintDevice getPaintDevice(boolean paintUpdate) {
 		if (this.renderType_ == WWidgetPainter.RenderType.InlineSvg) {
 			return new WSvgImage(new WLength(this.widget_.renderWidth_),
-					new WLength(this.widget_.renderHeight_));
+					new WLength(this.widget_.renderHeight_), (WObject) null,
+					paintUpdate);
 		} else {
 			return new WVmlImage(new WLength(this.widget_.renderWidth_),
-					new WLength(this.widget_.renderHeight_));
+					new WLength(this.widget_.renderHeight_), paintUpdate);
 		}
 	}
 

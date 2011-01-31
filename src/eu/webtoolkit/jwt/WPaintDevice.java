@@ -167,8 +167,8 @@ public interface WPaintDevice {
 	 * The text must be rendered, stroked and transformed using the current
 	 * painter settings.
 	 */
-	public void drawText(WRectF rect, EnumSet<AlignmentFlag> flags,
-			CharSequence text);
+	public void drawText(WRectF rect, EnumSet<AlignmentFlag> alignmentFlags,
+			TextFlag textFlag, CharSequence text);
 
 	/**
 	 * Measures rendered text size.
@@ -260,9 +260,4 @@ public interface WPaintDevice {
 	 * Sets the painter.
 	 */
 	void setPainter(WPainter painter);
-
-	/**
-	 * Clears the paint device.
-	 */
-	void clear();
 }

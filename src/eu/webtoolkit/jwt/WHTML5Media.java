@@ -85,30 +85,29 @@ public abstract class WHTML5Media extends WInteractWidget {
 	 * loaded.
 	 * <p>
 	 * This is often used in conjunction with the &gt; operator, e.g.
-	 * {@link WHTML5Media#getReadyState() getReadyState()} &gt;
-	 * HAVE_CURRENT_DATA
+	 * {@link WHTML5Media#getReadyState() getReadyState()} &gt; HaveCurrentData
 	 */
 	public enum ReadyState {
 		/**
 		 * No information available.
 		 */
-		HAVE_NOTHING(0),
+		HaveNothing(0),
 		/**
 		 * Metadata loaded: duration, width, height.
 		 */
-		HAVE_METADATA(1),
+		HaveMetaData(1),
 		/**
 		 * Data at playback position is available.
 		 */
-		HAVE_CURRENT_DATA(2),
+		HaveCurrentData(2),
 		/**
 		 * Have data to play for a while.
 		 */
-		HAVE_FUTURE_DATA(3),
+		HaveFutureData(3),
 		/**
 		 * Enough to reach the end without stalling (est).
 		 */
-		HAVE_ENOUGH_DATA(4);
+		HaveEnoughData(4);
 
 		private int value;
 
@@ -146,7 +145,7 @@ public abstract class WHTML5Media extends WInteractWidget {
 		this.current_ = -1;
 		this.duration_ = -1;
 		this.ended_ = false;
-		this.readyState_ = WHTML5Media.ReadyState.HAVE_NOTHING;
+		this.readyState_ = WHTML5Media.ReadyState.HaveNothing;
 		this.setInline(false);
 		this.setFormObject(true);
 		WApplication app = WApplication.getInstance();
@@ -661,10 +660,10 @@ public abstract class WHTML5Media extends WInteractWidget {
 				}
 				try {
 					readystate = Integer.parseInt(attributes.get(5));
-					this.readyState_ = WHTML5Media.ReadyState.HAVE_NOTHING;
-					if (readystate <= WHTML5Media.ReadyState.HAVE_ENOUGH_DATA
+					this.readyState_ = WHTML5Media.ReadyState.HaveNothing;
+					if (readystate <= WHTML5Media.ReadyState.HaveEnoughData
 							.getValue()
-							&& readystate >= WHTML5Media.ReadyState.HAVE_NOTHING
+							&& readystate >= WHTML5Media.ReadyState.HaveNothing
 									.getValue()) {
 						this.readyState_ = intToReadyState(readystate);
 					}
@@ -763,15 +762,15 @@ public abstract class WHTML5Media extends WInteractWidget {
 	static WHTML5Media.ReadyState intToReadyState(int i) {
 		switch (i) {
 		case 0:
-			return WHTML5Media.ReadyState.HAVE_NOTHING;
+			return WHTML5Media.ReadyState.HaveNothing;
 		case 1:
-			return WHTML5Media.ReadyState.HAVE_METADATA;
+			return WHTML5Media.ReadyState.HaveMetaData;
 		case 2:
-			return WHTML5Media.ReadyState.HAVE_CURRENT_DATA;
+			return WHTML5Media.ReadyState.HaveCurrentData;
 		case 3:
-			return WHTML5Media.ReadyState.HAVE_FUTURE_DATA;
+			return WHTML5Media.ReadyState.HaveFutureData;
 		case 4:
-			return WHTML5Media.ReadyState.HAVE_ENOUGH_DATA;
+			return WHTML5Media.ReadyState.HaveEnoughData;
 		default:
 			assert false;
 			throw new RuntimeException("unreachable code");
