@@ -568,8 +568,10 @@ class StdGridLayoutImpl extends StdLayoutImpl {
 		for (;;) {
 			col = col + this.grid_.items_.get(row).get(col).colSpan_;
 			if (col < (int) this.grid_.columns_.size()) {
-				if (this.hasItem(row, col)) {
-					return col;
+				for (int i = 0; i < this.grid_.rows_.size(); ++i) {
+					if (this.hasItem(i, col)) {
+						return col;
+					}
 				}
 			} else {
 				return this.grid_.columns_.size();

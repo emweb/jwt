@@ -16,7 +16,7 @@ public class TreeViewDragDropMain extends WtServlet {
         super();
 
         //getConfiguration().setProgressiveBootstrap(true);
-        getConfiguration().setSendXHTMLMimeType(true);
+        //getConfiguration().setSendXHTMLMimeType(true);
     }
 
     public WApplication createApplication(WEnvironment env) {
