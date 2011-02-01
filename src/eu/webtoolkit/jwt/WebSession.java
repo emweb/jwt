@@ -50,6 +50,7 @@ class WebSession {
 		this.bootStyleResponse_ = null;
 		this.updatesPending_ = false;
 		this.canWriteAsyncResponse_ = false;
+		this.noBootStyleResponse_ = false;
 		this.recursiveEvent_ = this.mutex_.newCondition();
 		this.embeddedEnv_ = new WEnvironment(this);
 		this.app_ = null;
@@ -201,11 +202,6 @@ class WebSession {
 						this.app_.changeInternalPath(this.env_
 								.getInternalPath());
 					}
-				}
-				if (this.bootStyleResponse_ != null) {
-					this.renderer_.serveLinkedCss(this.bootStyleResponse_);
-					this.bootStyleResponse_.flush();
-					this.bootStyleResponse_ = null;
 				}
 				this.render(handler);
 			} else {
@@ -413,6 +409,10 @@ class WebSession {
 		} catch (IOException ioe) {
 			ioe.printStackTrace();
 		}
+	}
+
+	public boolean isBootStyleResponse() {
+		return !this.noBootStyleResponse_;
 	}
 
 	public void expire() {
@@ -937,19 +937,23 @@ class WebSession {
 													"Signal from dead session, sending reload.");
 									this.renderer_.letReloadJS(handler
 											.getResponse(), true);
+									this.kill();
+									break;
 								} else {
-									this.log("notice").append(
-											"Not serving this.");
-									handler.getResponse().setContentType(
-											"text/html");
-									handler
-											.getResponse()
-											.out()
-											.append(
-													"<html><head></head><body></body></html>");
+									if (!requestE.equals("page")) {
+										this.log("notice").append(
+												"Not serving this.");
+										handler.getResponse().setContentType(
+												"text/html");
+										handler
+												.getResponse()
+												.out()
+												.append(
+														"<html><head></head><body></body></html>");
+										this.kill();
+										break;
+									}
 								}
-								this.kill();
-								break;
 							}
 							boolean forcePlain = this.env_.agentIsSpiderBot()
 									|| !this.env_.agentSupportsAjax();
@@ -1052,28 +1056,50 @@ class WebSession {
 											WebRequest.ResponseType.Script);
 								} else {
 									if (requestE.equals("style")) {
-										int i = 0;
-										final int MAX_TRIES = 1000;
-										while (!(this.app_ != null)
-												&& i < MAX_TRIES) {
-											this.mutex_.unlock();
-											Thread.sleep(5);
-											this.mutex_.lock();
-											++i;
+										if (this.bootStyleResponse_ != null) {
+											this.bootStyleResponse_.flush();
 										}
-										if (i < MAX_TRIES) {
-											this.renderer_
-													.serveLinkedCss(handler
-															.getResponse());
+										this.bootStyleResponse_ = null;
+										String jsE = request.getParameter("js");
+										boolean nojs = jsE != null
+												&& jsE.equals("no");
+										final boolean xhtml = this.env_
+												.getContentType() == WEnvironment.ContentType.XHTML1;
+										this.noBootStyleResponse_ = this.noBootStyleResponse_
+												|| !(this.app_ != null)
+												&& (xhtml || nojs);
+										if (nojs || this.noBootStyleResponse_) {
+											handler.getResponse().flush();
+											handler.setRequest(
+													(WebRequest) null,
+													(WebResponse) null);
+										} else {
+											int i = 0;
+											final int MAX_TRIES = 1000;
+											while (!(this.app_ != null)
+													&& i < MAX_TRIES) {
+												this.mutex_.unlock();
+												Thread.sleep(5);
+												this.mutex_.lock();
+												++i;
+											}
+											if (i < MAX_TRIES) {
+												this.renderer_
+														.serveLinkedCss(handler
+																.getResponse());
+											}
+											handler.getResponse().flush();
+											handler.setRequest(
+													(WebRequest) null,
+													(WebResponse) null);
 										}
-										handler.getResponse().flush();
-										handler.setRequest((WebRequest) null,
-												(WebResponse) null);
 										break;
 									}
 								}
 							}
 						}
+						boolean requestForResource = requestE != null
+								&& requestE.equals("resource");
 						if (!(this.app_ != null)) {
 							String resourceE = request.getParameter("resource");
 							if (handler.getResponse().getResponseType() == WebRequest.ResponseType.Script) {
@@ -1097,9 +1123,7 @@ class WebSession {
 											"Could not start application.");
 								}
 							} else {
-								if (requestE != null
-										&& requestE.equals("resource")
-										&& resourceE != null
+								if (requestForResource && resourceE != null
 										&& resourceE.equals("blank")) {
 									handler.getResponse().setContentType(
 											"text/html");
@@ -1140,8 +1164,6 @@ class WebSession {
 								}
 							}
 						}
-						boolean requestForResource = requestE != null
-								&& requestE.equals("resource");
 						if (requestForResource
 								|| !this.isUnlockRecursiveEventLoop()) {
 							this.app_.notify(new WEvent(
@@ -1244,6 +1266,7 @@ class WebSession {
 	private WebResponse bootStyleResponse_;
 	private boolean updatesPending_;
 	private boolean canWriteAsyncResponse_;
+	private boolean noBootStyleResponse_;
 	private boolean progressiveBoot_;
 	private java.util.concurrent.locks.Condition recursiveEvent_;
 	private boolean newRecursiveEvent_;
@@ -1318,6 +1341,13 @@ class WebSession {
 
 	private void serveResponse(WebSession.Handler handler) throws IOException {
 		if (!handler.getRequest().isWebSocketMessage()) {
+			if (this.bootStyleResponse_ != null) {
+				if (handler.getResponse().getResponseType() == WebRequest.ResponseType.Script) {
+					this.renderer_.serveLinkedCss(this.bootStyleResponse_);
+				}
+				this.bootStyleResponse_.flush();
+				this.bootStyleResponse_ = null;
+			}
 			this.renderer_.serveResponse(handler.getResponse());
 		}
 		handler.getResponse().flush();

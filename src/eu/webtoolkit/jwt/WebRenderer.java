@@ -577,7 +577,7 @@ class WebRenderer implements SlotLearnerInterface {
 			response.out().append("window.").append(app.getJavaScriptClass())
 					.append("LoadWidgetTree = function(){\n");
 		}
-		if (widgetset) {
+		if (widgetset || !this.session_.isBootStyleResponse()) {
 			if (app.getCssTheme().length() != 0) {
 				response.out().append("Wt3_1_8").append(".addStyleSheet('")
 						.append(WApplication.getResourcesUrl()).append(
@@ -1029,6 +1029,8 @@ class WebRenderer implements SlotLearnerInterface {
 				.safeJsStringLiteral(this.session_.ajaxCanonicalUrl(response)));
 		bootJs.setVar("APP_CLASS", "Wt");
 		bootJs.setCondition("HYBRID", hybrid);
+		boolean xhtml = this.session_.getEnv().getContentType() == WEnvironment.ContentType.XHTML1;
+		bootJs.setCondition("DEFER_SCRIPT", !xhtml);
 		String internalPath = hybrid ? this.safeJsStringLiteral(this.session_
 				.getApp().getInternalPath()) : "";
 		bootJs.setVar("INTERNAL_PATH", internalPath);
