@@ -546,8 +546,13 @@ public class WFont {
 			if (s.length() != 0) {
 				result.append(s).append(' ');
 			}
-			result.append(this.cssSize(true)).append(' ').append(
-					this.cssFamily(true));
+			result.append(this.cssSize(true)).append(' ');
+			s = this.cssFamily(true);
+			if (s.length() != 0) {
+				result.append(s).append(' ');
+			} else {
+				result.append(s).append(" inherit");
+			}
 		} else {
 			String s = "";
 			s = this.cssFamily(false);
@@ -683,14 +688,12 @@ public class WFont {
 
 	private String cssFamily(boolean all) {
 		String family = this.specificFamilies_.toString();
-		if (family.length() != 0) {
+		if (family.length() != 0
+				&& this.genericFamily_ != WFont.GenericFamily.Default) {
 			family += ',';
 		}
 		switch (this.genericFamily_) {
 		case Default:
-			if (this.familyChanged_ || all) {
-				family = "inherit";
-			}
 			break;
 		case Serif:
 			family += "serif";

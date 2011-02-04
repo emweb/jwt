@@ -271,9 +271,9 @@ public class WTreeTable extends WCompositeWidget {
 			WApplication
 					.getInstance()
 					.doJavaScript(
-							"{var id='"
+							"(function(){var $el=$('#"
 									+ this.getId()
-									+ "';function sb() {var $el=$('#' + id);if ($el.size()) {var e=$el.find('.Wt-content').get(0);var sp=$el.find('.Wt-sbspacer').get(0);if (e.scrollHeight > e.offsetHeight) {sp.style.display='block';} else {sp.style.display='none';}setTimeout(sb, 20);}}sb();}");
+									+ "');var e=$el.find('.Wt-content').get(0);var sp=$el.find('.Wt-sbspacer').get(0);function sb() {if ($el.get(0).parentNode) {if (e.scrollHeight > e.offsetHeight) {sp.style.display='block';} else {sp.style.display='none';}setTimeout(sb, 20);}}sb();})();");
 		}
 		super.render(flags);
 	}

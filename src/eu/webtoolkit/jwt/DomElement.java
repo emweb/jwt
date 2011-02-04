@@ -881,7 +881,7 @@ class DomElement {
 			} else {
 				if (j.getKey().getValue() >= Property.PropertyStylePosition
 						.getValue()
-						&& j.getKey().getValue() <= Property.PropertyStyleDisplay
+						&& j.getKey().getValue() <= Property.PropertyStyleBoxSizing
 								.getValue()) {
 					if (j.getKey() == Property.PropertyStyleCursor
 							&& j.getValue().equals("pointer")) {
@@ -892,6 +892,22 @@ class DomElement {
 										- Property.PropertyStylePosition
 												.getValue()]).append(':')
 								.append(j.getValue()).append(';');
+						if (j.getKey().getValue() >= Property.PropertyStyleBoxSizing
+								.getValue()) {
+							WApplication app = WApplication.getInstance();
+							if (app.getEnvironment().agentIsGecko()) {
+								style.append("-moz-");
+							} else {
+								if (app.getEnvironment().agentIsWebKit()) {
+									style.append("-webkit-");
+								}
+							}
+							style.append(
+									cssNames_[j.getKey().getValue()
+											- Property.PropertyStylePosition
+													.getValue()]).append(':')
+									.append(j.getValue()).append(';');
+						}
 					}
 				} else {
 					if (j.getKey() == Property.PropertyStyleWidthExpression) {
@@ -1223,7 +1239,7 @@ class DomElement {
 				break;
 			default:
 				if (i.getKey().getValue() >= Property.PropertyStyle.getValue()
-						&& i.getKey().getValue() <= Property.PropertyStyleDisplay
+						&& i.getKey().getValue() <= Property.PropertyStyleBoxSizing
 								.getValue()) {
 					out.append(this.var_).append(".style.").append(
 							cssCamelNames_[i.getKey().getValue()
@@ -1467,7 +1483,7 @@ class DomElement {
 			"background-color", "background-image", "background-repeat",
 			"background-attachment", "background-position", "text-decoration",
 			"white-space", "table-layout", "border-spacing", "zoom",
-			"visibility", "display" };
+			"visibility", "display", "box-sizing" };
 	static String[] cssCamelNames_ = { "cssText", "width", "position",
 			"zIndex", "cssFloat", "clear", "width", "height", "lineHeight",
 			"minWidth", "minHeight", "maxWidth", "maxHeight", "left", "right",
@@ -1479,7 +1495,8 @@ class DomElement {
 			"fontVariant", "fontWeight", "fontSize", "backgroundColor",
 			"backgroundImage", "backgroundRepeat", "backgroundAttachment",
 			"backgroundPosition", "textDecoration", "whiteSpace",
-			"tableLayout", "borderSpacing", "zoom", "visibility", "display" };
+			"tableLayout", "borderSpacing", "zoom", "visibility", "display",
+			"boxSizing" };
 	static final String unsafeChars_ = " $&+,:;=?@'\"<>#%{}|\\^~[]`";
 	private static int nextId_ = 0;
 }

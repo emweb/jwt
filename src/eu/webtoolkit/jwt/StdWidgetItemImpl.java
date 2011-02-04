@@ -63,37 +63,40 @@ class StdWidgetItemImpl extends StdLayoutItemImpl {
 		DomElement result = d;
 		int marginRight = 0;
 		int marginBottom = 0;
-		if (fitWidth) {
-			marginRight = (w.boxPadding(Orientation.Horizontal) + w
-					.boxBorder(Orientation.Horizontal)) * 2;
-		}
-		if (fitHeight) {
-			marginBottom = (w.boxPadding(Orientation.Vertical) + w
-					.boxBorder(Orientation.Vertical)) * 2;
-		}
-		boolean forceDiv = fitHeight
-				&& d.getType() == DomElementType.DomElement_SELECT
-				&& d.getAttribute("size").length() == 0;
-		if (marginRight != 0 || marginBottom != 0 || forceDiv) {
-			result = DomElement.createNew(DomElementType.DomElement_DIV);
-			result.setProperty(Property.PropertyClass, "Wt-wrapdiv");
-			StringWriter style = new StringWriter();
-			if (app.getEnvironment().agentIsIElt(9) && !forceDiv) {
-				style.append("margin-top:-1px;");
-				marginBottom -= 1;
+		boolean boxSizing = !app.getEnvironment().agentIsIElt(9);
+		if (!boxSizing) {
+			if (fitWidth) {
+				marginRight = (w.boxPadding(Orientation.Horizontal) + w
+						.boxBorder(Orientation.Horizontal)) * 2;
 			}
-			if (marginRight != 0) {
-				style
-						.append(
-								app.getLayoutDirection() == LayoutDirection.LeftToRight ? "margin-right:"
-										: "margin-left:").append(
-								String.valueOf(marginRight)).append("px;");
+			if (fitHeight) {
+				marginBottom = (w.boxPadding(Orientation.Vertical) + w
+						.boxBorder(Orientation.Vertical)) * 2;
 			}
-			if (marginBottom != 0) {
-				style.append("margin-bottom:").append(
-						String.valueOf(marginBottom)).append("px;");
+			boolean forceDiv = fitHeight
+					&& d.getType() == DomElementType.DomElement_SELECT
+					&& d.getAttribute("size").length() == 0;
+			if (marginRight != 0 || marginBottom != 0 || forceDiv) {
+				result = DomElement.createNew(DomElementType.DomElement_DIV);
+				result.setProperty(Property.PropertyClass, "Wt-wrapdiv");
+				StringWriter style = new StringWriter();
+				if (app.getEnvironment().agentIsIElt(9) && !forceDiv) {
+					style.append("margin-top:-1px;");
+					marginBottom -= 1;
+				}
+				if (marginRight != 0) {
+					style
+							.append(
+									app.getLayoutDirection() == LayoutDirection.LeftToRight ? "margin-right:"
+											: "margin-left:").append(
+									String.valueOf(marginRight)).append("px;");
+				}
+				if (marginBottom != 0) {
+					style.append("margin-bottom:").append(
+							String.valueOf(marginBottom)).append("px;");
+				}
+				result.setProperty(Property.PropertyStyle, style.toString());
 			}
-			result.setProperty(Property.PropertyStyle, style.toString());
 		}
 		if (fitHeight
 				&& d.getProperty(Property.PropertyStyleHeight).length() == 0) {

@@ -80,10 +80,11 @@ var ie = (function(){
 this.isIE = ie !== undefined;
 this.isIE6 = ie === 6;
 this.isIElt9 = ie < 9;
-this.isGecko = navigator.userAgent.toLowerCase().indexOf("gecko") != -1;
 this.isIEMobile = navigator.userAgent.toLowerCase().indexOf("msie 4") != -1
   || navigator.userAgent.toLowerCase().indexOf("msie 5") != -1;
+this.isGecko = navigator.userAgent.toLowerCase().indexOf("gecko") != -1;
 this.isOpera = typeof window.opera !== 'undefined';
+
 this.updateDelay = this.isIE ? 10 : 51;
 
 this.initAjaxComm = function(url, handler) {
@@ -630,15 +631,25 @@ this.isKeyPress = function(e) {
   }
 };
 
+var cacheC = null, cacheS = null;
+
 function css(c, s) {
   if (c.style[s])
     return c.style[s];
-  else if (document.defaultView && document.defaultView.getComputedStyle)
-    return document.defaultView.getComputedStyle(c, null)[s];
-  else if (c.currentStyle)
-    return c.currentStyle[s];
-  else
-    return null;
+  else {
+    if (c !== cacheC) {
+      cacheC = c;
+
+      if (window.getComputedStyle)
+	cacheS = window.getComputedStyle(c, null);
+      else if (c.currentStyle)
+	cacheS = c.currentStyle;
+      else
+	cacheS = null;
+    }
+
+    return cacheS ? cacheS[s] : null;
+  }
 }
 
 function parseCss(value, regex, defaultvalue) {
@@ -1540,12 +1551,22 @@ function encodeEvent(event, i) {
       else if (el.checked)
 	v = el.value;
     } else if (WT.hasTag(el, "VIDEO") || WT.hasTag(el, "AUDIO")) {
-      v = '' + el.volume + ';' + el.currentTime + ';' + el.duration + ';' + (el.paused?'1':'0') + ';' + (el.ended?'1':'0') + ';' + el.readyState;
+      v = '' + el.volume + ';'
+	+ el.currentTime + ';'
+	+ el.duration + ';'
+	+ (el.paused ? '1' : '0') + ';'
+	+ (el.ended ? ' 1' : '0') + ';'
+	+ el.readyState;
     } else if (WT.hasTag(el, "DIV") && el.childNodes.length == 1) {
       // When in Layout, media elements sits in a surrounding DIV
       var m = el.childNodes[0];
       if (WT.hasTag(m, "VIDEO") || WT.hasTag(m, "AUDIO")) {
-        v = '' + m.volume + ';' + m.currentTime + ';' + m.duration + ';' + (m.paused?'1':'0') + ';' + (m.ended?'1':'0') + ';' + m.readyState;
+        v = '' + m.volume + ';'
+	  + m.currentTime + ';'
+	  + m.duration + ';'
+	  + (m.paused ? '1' : '0') + ';'
+	  + (m.ended ? '1' : '0') + ';'
+	  + m.readyState;
       }
     } else if (el.type != 'file') {
       if ($(el).hasClass('Wt-edit-emptyText'))
@@ -1921,7 +1942,7 @@ function update(el, signalName, e, feedback) {
   var pendingEvent = new Object(), i = pendingEvents.length;
   pendingEvent.object = el;
   pendingEvent.signal = signalName;
-  pendingEvent.event = e;
+  pendingEvent.event = window.fakeEvent || e;
   pendingEvent.feedback = feedback;
 
   pendingEvents[i] = encodeEvent(pendingEvent, i);

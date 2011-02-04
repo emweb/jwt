@@ -1404,16 +1404,28 @@ public abstract class WWebWidget extends WWidget {
 												"fixed");
 								break;
 							}
-							element.setProperty(Property.PropertyStyleTop,
-									this.layoutImpl_.offsets_[0].getCssText());
-							element.setProperty(Property.PropertyStyleLeft,
-									this.layoutImpl_.offsets_[3].getCssText());
+							if (!this.layoutImpl_.offsets_[0].isAuto()) {
+								element.setProperty(Property.PropertyStyleTop,
+										this.layoutImpl_.offsets_[0]
+												.getCssText());
+							} else {
+								element.setProperty(Property.PropertyStyleTop,
+										"");
+							}
+							if (!this.layoutImpl_.offsets_[3].isAuto()) {
+								element.setProperty(Property.PropertyStyleLeft,
+										this.layoutImpl_.offsets_[3]
+												.getCssText());
+							} else {
+								element.setProperty(Property.PropertyStyleTop,
+										"");
+							}
 						} else {
 							element.setProperty(Property.PropertyStylePosition,
 									"static");
+							element.setProperty(Property.PropertyStyleTop, "");
+							element.setProperty(Property.PropertyStyleLeft, "");
 						}
-						element.setProperty(Property.PropertyStyleTop, "0px");
-						element.setProperty(Property.PropertyStyleLeft, "0px");
 					}
 					element.setProperty(Property.PropertyStyleVisibility,
 							"visible");

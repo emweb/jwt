@@ -751,6 +751,7 @@ class WebSession {
 
 	static class Handler {
 		public Handler() {
+			this.nextSignal = -1;
 			this.signalOrder = new ArrayList<Integer>();
 			this.prevHandler_ = null;
 			this.session_ = null;
@@ -762,6 +763,7 @@ class WebSession {
 
 		public Handler(WebSession session, WebRequest request,
 				WebResponse response) {
+			this.nextSignal = -1;
 			this.signalOrder = new ArrayList<Integer>();
 			this.prevHandler_ = null;
 			this.session_ = session;
@@ -773,6 +775,7 @@ class WebSession {
 		}
 
 		public Handler(WebSession session, boolean takeLock) {
+			this.nextSignal = -1;
 			this.signalOrder = new ArrayList<Integer>();
 			this.prevHandler_ = null;
 			this.session_ = session;
@@ -786,6 +789,7 @@ class WebSession {
 		}
 
 		public Handler(WebSession session) {
+			this.nextSignal = -1;
 			this.signalOrder = new ArrayList<Integer>();
 			this.prevHandler_ = null;
 			this.session_ = session;

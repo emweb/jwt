@@ -538,6 +538,7 @@ class WebRenderer implements SlotLearnerInterface {
 			mainElement.asHTML(out, js, timeouts);
 			app.afterLoadJavaScript_ = js.toString() + app.afterLoadJavaScript_;
 			;
+			app.domRoot_.doneRerender();
 		}
 		int refresh;
 		if (app.getEnvironment().hasAjax()) {

@@ -1409,35 +1409,6 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 				+ " .headerrh");
 		app.getStyleSheet().addRule(this.headerHeightRule_);
 		this.setHeaderHeight(this.headerLineHeight_);
-		String CSS_RULES_NAME = "Wt::WAbstractIemView";
-		if (!app.getStyleSheet().isDefined(CSS_RULES_NAME)) {
-			app
-					.getStyleSheet()
-					.addRule(
-							".Wt-itemview .Wt-headerdiv",
-							"-moz-user-select: none;-khtml-user-select: none;user-select: none;overflow: hidden;width: 100%;",
-							CSS_RULES_NAME);
-			if (app.getEnvironment().agentIsIE()) {
-				app.getStyleSheet().addRule(
-						".Wt-itemview .Wt-header .Wt-label", "zoom: 1;");
-			}
-			app
-					.getStyleSheet()
-					.addRule(".Wt-itemview div.Wt-tv-rh",
-							"float: right; width: 4px; cursor: col-resize;padding-left: 0px;");
-			app.getStyleSheet().addRule(
-					"body.Wt-rtl .Wt-itemview div.Wt-tv-rh",
-					"float: left; padding-right: 0px;");
-			app.getStyleSheet().addRule(".Wt-itemview .Wt-tv-rh:hover",
-					"background-color: #DDDDDD;");
-			app
-					.getStyleSheet()
-					.addRule(
-							".Wt-itemview .Wt-tv-sh",
-							"float: right; width: 16px; height: 16px; padding-bottom: 6px;cursor: pointer; cursor:hand;");
-			app.getStyleSheet().addRule("body.Wt-rtl .Wt-itemview .Wt-tv-sh",
-					"float: left;");
-		}
 	}
 
 	/**
