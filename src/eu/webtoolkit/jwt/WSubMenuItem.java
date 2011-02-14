@@ -70,6 +70,12 @@ public class WSubMenuItem extends WMenuItem {
 	 */
 	public void setSubMenu(WMenu subMenu) {
 		this.subMenu_ = subMenu;
+		this.subMenu_.itemSelected().addListener(this,
+				new Signal1.Listener<WMenuItem>() {
+					public void trigger(WMenuItem e1) {
+						WSubMenuItem.this.subItemSelected();
+					}
+				});
 	}
 
 	/**
@@ -92,7 +98,6 @@ public class WSubMenuItem extends WMenuItem {
 			WWidget anchor = super.createItemWidget();
 			contents.addWidget(anchor);
 			contents.addWidget(this.subMenu_);
-			this.subMenu_.hide();
 			return contents;
 		} else {
 			return super.createItemWidget();
@@ -111,9 +116,6 @@ public class WSubMenuItem extends WMenuItem {
 	}
 
 	protected void renderSelected(boolean selected) {
-		if (this.subMenu_ != null) {
-			this.subMenu_.setHidden(!selected);
-		}
 		super.renderSelected(selected);
 	}
 
@@ -139,4 +141,9 @@ public class WSubMenuItem extends WMenuItem {
 	}
 
 	private WMenu subMenu_;
+
+	private void subItemSelected() {
+		this.getMenu().select(-1);
+		this.renderSelected(true);
+	}
 }
