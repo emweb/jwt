@@ -73,7 +73,7 @@ import eu.webtoolkit.jwt.servlet.*;
  *  proxy.setDynamicSortFilter(true);
  *  proxy.setFilterKeyColumn(0);
  *  proxy.setFilterRole(ItemDataRole.UserRole);
- *  proxy.setFilterRegExp(&quot;.*&quot;);
+ *  proxy.setFilterRegExp(".*");
  * 		 
  *  // configure a view to use the proxy model instead of the source model
  *  WTreeView view = new WTreeView(this);
