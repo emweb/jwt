@@ -303,6 +303,7 @@ class FormWidgets extends ControlsWidget {
 		});
 		this.ed_.showSignal(fu.changed(), "File upload changed");
 		this.ed_.showSignal(fu.uploaded(), "File upload finished");
+		this.ed_.showSignal(fu.fileTooLarge(), "File too large");
 		new WText(tr("formwidgets-WFileUpload-more"), result);
 		return result;
 	}

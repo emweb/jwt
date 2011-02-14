@@ -468,7 +468,19 @@ public abstract class WFormWidget extends WInteractWidget {
 	}
 
 	static String wtjs1(WApplication app) {
-		return "Wt3_1_8.WFormWidget = function(c,a,d){jQuery.data(a,\"obj\",this);var b=c.WT;this.updateEmptyText=function(){if(b.hasFocus(a)){if($(a).hasClass(\"Wt-edit-emptyText\")){if(!b.isIE&&a.oldtype)a.type=a.oldtype;$(a).removeClass(\"Wt-edit-emptyText\");a.value=\"\"}}else if(a.value==\"\"){if(a.type==\"password\")if(b.isIE)return;else{a.oldtype=\"password\";a.type=\"text\"}$(a).addClass(\"Wt-edit-emptyText\");a.value=d}};this.updateEmptyText()};";
+		String s = "function(c,a,d){jQuery.data(a,\"obj\",this);var b=c.WT;this.updateEmptyText=function(){if(b.hasFocus(a)){if($(a).hasClass(\"Wt-edit-emptyText\")){if(!b.isIE&&a.oldtype)a.type=a.oldtype;$(a).removeClass(\"Wt-edit-emptyText\");a.value=\"\"}}else if(a.value==\"\"){if(a.type==\"password\")if(b.isIE)return;else{a.oldtype=\"password\";a.type=\"text\"}$(a).addClass(\"Wt-edit-emptyText\");a.value=d}};this.updateEmptyText()}";
+		if ("ctor.WFormWidget".indexOf(".prototype") != -1) {
+			return "Wt3_1_8.ctor.WFormWidget = " + s + ";";
+		} else {
+			if ("ctor.WFormWidget".substring(0, 5).compareTo(
+					"ctor.".substring(0, 5)) == 0) {
+				return "Wt3_1_8." + "ctor.WFormWidget".substring(5) + " = " + s
+						+ ";";
+			} else {
+				return "Wt3_1_8.ctor.WFormWidget = function() { (" + s
+						+ ").apply(Wt3_1_8, arguments) };";
+			}
+		}
 	}
 
 	static String CHANGE_SIGNAL = "M_change";

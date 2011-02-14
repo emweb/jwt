@@ -189,7 +189,7 @@ class MvcWidgets extends ControlsWidget {
 		TreeViewExample tv2 = new TreeViewExample(model2,
 				tr("mvc-WTreeView-column1Fixed"));
 		result.addWidget(tv2);
-		tv2.getTreeView().setColumn1Fixed(true);
+		tv2.getTreeView().setRowHeaderCount(1);
 		tv2.getTreeView().setColumnWidth(0, new WLength(300));
 		return result;
 	}

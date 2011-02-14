@@ -958,6 +958,12 @@ public class WMenu extends WCompositeWidget {
 		}
 	}
 
+	private void contentsDestroyed() {
+		for (int i = 0; i < this.items_.size(); ++i) {
+			this.items_.get(i).purgeContents();
+		}
+	}
+
 	private int current_;
 	private int previousCurrent_;
 	private int previousStackIndex_;

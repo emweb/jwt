@@ -24,15 +24,16 @@ class GoogleMapExample extends WContainerWidget {
 		this.controlsWidget_ = controlsWidget;
 		WHBoxLayout layout = new WHBoxLayout();
 		this.setLayout(layout);
+		this.setHeight(new WLength(400));
 		this.map_ = new WGoogleMap(WGoogleMap.ApiVersion.Version3);
 		layout.addWidget(this.map_, 1);
-		this.map_.resize(new WLength(700), new WLength(500));
 		this.map_.setMapTypeControl(WGoogleMap.MapTypeControl.DefaultControl);
 		this.map_.enableScrollWheelZoom();
 		WTemplate controls = new WTemplate(
 				tr("specialpurposewidgets-WGoogleMap-controls"));
 		layout.addWidget(controls);
 		WPushButton zoomIn = new WPushButton("+");
+		zoomIn.addStyleClass("zoom");
 		controls.bindWidget("zoom-in", zoomIn);
 		zoomIn.clicked().addListener(this.map_,
 				new Signal1.Listener<WMouseEvent>() {
@@ -41,6 +42,7 @@ class GoogleMapExample extends WContainerWidget {
 					}
 				});
 		WPushButton zoomOut = new WPushButton("-");
+		zoomOut.addStyleClass("zoom");
 		controls.bindWidget("zoom-out", zoomOut);
 		zoomOut.clicked().addListener(this.map_,
 				new Signal1.Listener<WMouseEvent>() {

@@ -1316,6 +1316,68 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	}
 
 	/**
+	 * Configures the number of columns that are used as row headers.
+	 * <p>
+	 * An item view does not use the vertical header data from the model in any
+	 * way, but instead you can configure data in the first column to be used as
+	 * a row headers.
+	 * <p>
+	 * These columns will not scroll horizontally together with the rest of the
+	 * model.
+	 * <p>
+	 * The default value is 0.
+	 * <p>
+	 * <p>
+	 * <i><b>Note: </b>Currently, this property must be set before any other
+	 * settings of the view and only a value of 0 or 1 is supported. </i>
+	 * </p>
+	 */
+	public void setRowHeaderCount(int count) {
+		this.rowHeaderCount_ = count;
+	}
+
+	/**
+	 * Returns the number of columns that are used as row headers.
+	 * <p>
+	 * 
+	 * @see WAbstractItemView#setRowHeaderCount(int count)
+	 */
+	public int getRowHeaderCount() {
+		return this.rowHeaderCount_;
+	}
+
+	/**
+	 * Configures whether horizontal scrolling includes the first column
+	 * (<b>deprecated</b>).
+	 * <p>
+	 * To display a model with many columns, this option allows you to keep the
+	 * first column fixed while scrolling through the other columns of the
+	 * model.
+	 * <p>
+	 * The default value is <code>false</code>.
+	 * <p>
+	 * 
+	 * @deprecated Use {@link WAbstractItemView#setRowHeaderCount(int count)
+	 *             setRowHeaderCount()} instead.
+	 */
+	public void setColumn1Fixed(boolean enable) {
+		this.setRowHeaderCount(enable ? 1 : 0);
+	}
+
+	/**
+	 * Returns whether horizontal scrolling includes the first column.
+	 * (<b>deprecated</b>).
+	 * <p>
+	 * 
+	 * @see WAbstractItemView#setColumn1Fixed(boolean enable)
+	 * @deprecated Use {@link WAbstractItemView#getRowHeaderCount()
+	 *             getRowHeaderCount()} instead.
+	 */
+	public boolean isColumn1Fixed() {
+		return this.rowHeaderCount_ == 1;
+	}
+
+	/**
 	 * Creates a new item view.
 	 */
 	protected WAbstractItemView(WContainerWidget parent) {
@@ -1325,6 +1387,7 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 		this.modelConnections_ = new ArrayList<AbstractSignal.Connection>();
 		this.columns_ = new ArrayList<WAbstractItemView.ColumnInfo>();
 		this.currentSortColumn_ = -1;
+		this.rowHeaderCount_ = 0;
 		this.dragEnabled_ = false;
 		this.dropsEnabled_ = false;
 		this.model_ = null;
@@ -1574,6 +1637,7 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	WSignalMapper2<WModelIndex, WMouseEvent> clickedMapper_;
 	List<WAbstractItemView.ColumnInfo> columns_;
 	int currentSortColumn_;
+	protected int rowHeaderCount_;
 	boolean dragEnabled_;
 	boolean dropsEnabled_;
 	WWidget dragWidget_;

@@ -36,8 +36,8 @@ ul {
 .contents h1 {
     font-size: 150%;
     font-weight: bold;
-    color: #528B12; 
-    margin: 7px 0px;
+    color: #528B12;
+    margin: 0px 0px 7px;
 }
 
 .contents h2 {
@@ -146,6 +146,11 @@ ul.submenu {
     padding-bottom: 0px;
     width: auto;
     border-right: 0px;
+    display: none;
+}
+
+.itemselected ul.submenu {
+    display: block;
 }
 
 ul.submenu li {
@@ -282,9 +287,8 @@ div.contents {
     margin: 5px;
 }
 
-.googlemaps-controls button {
-    padding-left: 20px; 
-    padding-right: 20px;
+.googlemaps-controls .zoom {
+    width: 2em;
 }
 
 .googlemaps-controls td {

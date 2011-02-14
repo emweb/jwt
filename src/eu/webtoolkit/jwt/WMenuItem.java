@@ -447,6 +447,11 @@ public class WMenuItem extends WObject {
 		return result;
 	}
 
+	public void purgeContents() {
+		this.contentsContainer_ = null;
+		this.contents_ = null;
+	}
+
 	/**
 	 * Returns the widget that represents the item.
 	 * <p>

@@ -389,6 +389,30 @@ public class WSortFilterProxyModel extends WAbstractProxyModel {
 	}
 
 	/**
+	 * Returns the current sort column.
+	 * <p>
+	 * When {@link WSortFilterProxyModel#sort(int column, SortOrder order)
+	 * sort()} has not been called, the model is unsorted, and this method
+	 * returns -1.
+	 * <p>
+	 * 
+	 * @see WSortFilterProxyModel#sort(int column, SortOrder order)
+	 */
+	public int getSortColumn() {
+		return this.sortKeyColumn_;
+	}
+
+	/**
+	 * Returns the current sort order.
+	 * <p>
+	 * 
+	 * @see WSortFilterProxyModel#sort(int column, SortOrder order)
+	 */
+	public SortOrder getSortOrder() {
+		return this.sortOrder_;
+	}
+
+	/**
 	 * Configure the proxy to dynamically track changes in the source model.
 	 * <p>
 	 * When <code>enable</code> is <code>true</code>, the proxy will re-filter

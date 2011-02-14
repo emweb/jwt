@@ -756,7 +756,19 @@ public abstract class WHTML5Media extends WInteractWidget {
 	private WHTML5Media.ReadyState readyState_;
 
 	static String wtjs1(WApplication app) {
-		return "Wt3_1_8.WHTML5Media = function(c,b){jQuery.data(b,\"obj\",this);this.play=function(){if(b.mediaId){var a=$(\"#\"+b.mediaId).get(0);if(a){a.play();return}}if(b.alternativeId)(a=$(\"#\"+b.alternativeId).get(0))&&a.WtPlay&&a.WtPlay()};this.pause=function(){if(b.mediaId){var a=$(\"#\"+b.mediaId).get(0);if(a){a.pause();return}}if(b.alternativeId)(a=$(\"#\"+b.alternativeId).get(0))&&a.WtPlay&&a.WtPause()}};";
+		String s = "function(c,b){jQuery.data(b,\"obj\",this);this.play=function(){if(b.mediaId){var a=$(\"#\"+b.mediaId).get(0);if(a){a.play();return}}if(b.alternativeId)(a=$(\"#\"+b.alternativeId).get(0))&&a.WtPlay&&a.WtPlay()};this.pause=function(){if(b.mediaId){var a=$(\"#\"+b.mediaId).get(0);if(a){a.pause();return}}if(b.alternativeId)(a=$(\"#\"+b.alternativeId).get(0))&&a.WtPlay&&a.WtPause()}}";
+		if ("ctor.WHTML5Media".indexOf(".prototype") != -1) {
+			return "Wt3_1_8.ctor.WHTML5Media = " + s + ";";
+		} else {
+			if ("ctor.WHTML5Media".substring(0, 5).compareTo(
+					"ctor.".substring(0, 5)) == 0) {
+				return "Wt3_1_8." + "ctor.WHTML5Media".substring(5) + " = " + s
+						+ ";";
+			} else {
+				return "Wt3_1_8.ctor.WHTML5Media = function() { (" + s
+						+ ").apply(Wt3_1_8, arguments) };";
+			}
+		}
 	}
 
 	static WHTML5Media.ReadyState intToReadyState(int i) {

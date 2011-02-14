@@ -1591,6 +1591,10 @@ public abstract class WWebWidget extends WWidget {
 		}
 	}
 
+	void signalConnectionsChanged() {
+		this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyAttribute));
+	}
+
 	private static final int BIT_INLINE = 0;
 	private static final int BIT_HIDDEN = 1;
 	private static final int BIT_LOADED = 2;
@@ -1735,10 +1739,6 @@ public abstract class WWebWidget extends WWidget {
 
 	WWebWidget.OtherImpl otherImpl_;
 	List<WWidget> children_;
-
-	void signalConnectionsChanged() {
-		this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyAttribute));
-	}
 
 	void renderOk() {
 		super.renderOk();

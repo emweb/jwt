@@ -62,6 +62,8 @@ class WTreeViewNode extends WTable {
 		} else {
 			if (WApplication.getInstance().getEnvironment().agentIsIE()) {
 				this.getElementAt(0, 0).resize(new WLength(1), WLength.Auto);
+			} else {
+				this.getElementAt(0, 0).resize(new WLength(0), WLength.Auto);
 			}
 		}
 		this.view_.addRenderedNode(this);
@@ -192,7 +194,7 @@ class WTreeViewNode extends WTable {
 		tc.clear();
 		if (this.view_.getColumnCount() > 1) {
 			WContainerWidget row = new WContainerWidget();
-			if (this.view_.column1Fixed_) {
+			if (this.view_.getRowHeaderCount() != 0) {
 				row.setStyleClass("Wt-tv-rowc rh");
 				WContainerWidget rowWrap = new WContainerWidget();
 				rowWrap.addWidget(row);
@@ -594,7 +596,7 @@ class WTreeViewNode extends WTable {
 			WContainerWidget row = ((tc.getWidget(0)) instanceof WContainerWidget ? (WContainerWidget) (tc
 					.getWidget(0))
 					: null);
-			if (this.view_.column1Fixed_) {
+			if (this.view_.getRowHeaderCount() != 0) {
 				row = ((row.getWidget(0)) instanceof WContainerWidget ? (WContainerWidget) (row
 						.getWidget(0))
 						: null);
@@ -645,7 +647,7 @@ class WTreeViewNode extends WTable {
 			WContainerWidget row = ((tc.getWidget(0)) instanceof WContainerWidget ? (WContainerWidget) (tc
 					.getWidget(0))
 					: null);
-			if (this.view_.column1Fixed_) {
+			if (this.view_.getRowHeaderCount() != 0) {
 				row = ((row.getWidget(0)) instanceof WContainerWidget ? (WContainerWidget) (row
 						.getWidget(0))
 						: null);

@@ -53,8 +53,8 @@ import eu.webtoolkit.jwt.servlet.*;
  * Optionally, the treeview may be configured so that the first column is always
  * visible while scrolling through the other columns, which may be convenient if
  * you wish to display a model with many columns. Use
- * {@link WTreeView#setColumn1Fixed(boolean fixed) setColumn1Fixed()} to enable
- * this behaviour.
+ * {@link WAbstractItemView#setColumn1Fixed(boolean enable)
+ * WAbstractItemView#setColumn1Fixed()} to enable this behaviour.
  * <p>
  * If the model supports sorting (
  * {@link WAbstractItemModel#sort(int column, SortOrder order)
@@ -178,7 +178,6 @@ public class WTreeView extends WAbstractItemView {
 		this.rootNode_ = null;
 		this.borderColorRule_ = null;
 		this.rootIsDecorated_ = true;
-		this.column1Fixed_ = false;
 		this.collapsed_ = new Signal1<WModelIndex>(this);
 		this.expanded_ = new Signal1<WModelIndex>(this);
 		this.viewportTop_ = 0;
@@ -364,82 +363,6 @@ public class WTreeView extends WAbstractItemView {
 	 */
 	public boolean isRootDecorated() {
 		return this.rootIsDecorated_;
-	}
-
-	/**
-	 * Configures whether horizontal scrolling includes the first column.
-	 * <p>
-	 * To display a model with many columns, this option allows you to keep the
-	 * first column fixed while scrolling through the other columns of the
-	 * model.
-	 * <p>
-	 * The default value is <code>false</code>.
-	 * <p>
-	 * <p>
-	 * <i><b>Note: </b>Currently, you must set this option before any other
-	 * manipulation of a newly created treeview, and only <code>enable</code> =
-	 * <code>true</code> is supported. </i>
-	 * </p>
-	 */
-	public void setColumn1Fixed(boolean fixed) {
-		WApplication app = WApplication.getInstance();
-		if (!app.getEnvironment().hasAjax()) {
-			return;
-		}
-		if (fixed && !this.column1Fixed_) {
-			this.column1Fixed_ = fixed;
-			this.addStyleClass("column1");
-			WContainerWidget rootWrap = ((this.contents_.getWidget(0)) instanceof WContainerWidget ? (WContainerWidget) (this.contents_
-					.getWidget(0))
-					: null);
-			rootWrap.resize(new WLength(100, WLength.Unit.Percentage),
-					WLength.Auto);
-			rootWrap.setOverflow(WContainerWidget.Overflow.OverflowHidden);
-			this.rowWidthRule_.getTemplateWidget().resize(new WLength(0),
-					WLength.Auto);
-			boolean useStyleLeft = app.getEnvironment().agentIsWebKit()
-					|| app.getEnvironment().agentIsOpera();
-			if (useStyleLeft) {
-				boolean rtl = app.getLayoutDirection() == LayoutDirection.RightToLeft;
-				this.tieRowsScrollJS_
-						.setJavaScript("function(obj, event) {Wt3_1_8.getCssRule('#"
-								+ this.getId()
-								+ " .Wt-tv-rowc').style.left= -obj.scrollLeft "
-								+ (rtl ? "+ (obj.firstChild.offsetWidth - obj.offsetWidth)"
-										: "") + "+ 'px';}");
-			} else {
-				this.tieRowsScrollJS_
-						.setJavaScript("function(obj, event) {$('#"
-								+ this.getId()
-								+ " .Wt-tv-rowc').parent().scrollLeft(obj.scrollLeft);}");
-			}
-			WContainerWidget scrollBarContainer = new WContainerWidget();
-			scrollBarContainer.setStyleClass("cwidth");
-			scrollBarContainer.resize(WLength.Auto, new WLength(22));
-			this.scrollBarC_ = new WContainerWidget(scrollBarContainer);
-			this.scrollBarC_.setStyleClass("Wt-tv-row Wt-scroll");
-			this.scrollBarC_.scrolled().addListener(this.tieRowsScrollJS_);
-			if (app.getEnvironment().agentIsIE()) {
-				scrollBarContainer.setPositionScheme(PositionScheme.Relative);
-				this.scrollBarC_.setAttributeValue("style", "right: 0px");
-			}
-			WContainerWidget scrollBar = new WContainerWidget(this.scrollBarC_);
-			scrollBar.setStyleClass("Wt-tv-rowc");
-			if (useStyleLeft) {
-				scrollBar.setAttributeValue("style", "left: 0px;");
-			}
-			this.impl_.getLayout().addWidget(scrollBarContainer);
-		}
-	}
-
-	/**
-	 * Returns whether horizontal scrolling includes the first column.
-	 * <p>
-	 * 
-	 * @see WTreeView#setColumn1Fixed(boolean fixed)
-	 */
-	public boolean isColumn1Fixed() {
-		return this.column1Fixed_;
 	}
 
 	public void resize(WLength width, WLength height) {
@@ -670,6 +593,64 @@ public class WTreeView extends WAbstractItemView {
 		}
 	}
 
+	public void setRowHeaderCount(int count) {
+		WApplication app = WApplication.getInstance();
+		if (!app.getEnvironment().hasAjax()) {
+			return;
+		}
+		int oldCount = this.getRowHeaderCount();
+		if (count != 0 && count != 1) {
+			throw new UnsupportedOperationException(
+					"WTreeView::setRowHeaderCount: count must be 0 or 1");
+		}
+		super.setRowHeaderCount(count);
+		if (count != 0 && !(oldCount != 0)) {
+			this.addStyleClass("column1");
+			WContainerWidget rootWrap = ((this.contents_.getWidget(0)) instanceof WContainerWidget ? (WContainerWidget) (this.contents_
+					.getWidget(0))
+					: null);
+			rootWrap.resize(new WLength(100, WLength.Unit.Percentage),
+					WLength.Auto);
+			rootWrap.setOverflow(WContainerWidget.Overflow.OverflowHidden);
+			this.contents_.setPositionScheme(PositionScheme.Relative);
+			rootWrap.setPositionScheme(PositionScheme.Absolute);
+			this.rowWidthRule_.getTemplateWidget().resize(new WLength(0),
+					WLength.Auto);
+			boolean useStyleLeft = app.getEnvironment().agentIsWebKit()
+					|| app.getEnvironment().agentIsOpera();
+			if (useStyleLeft) {
+				boolean rtl = app.getLayoutDirection() == LayoutDirection.RightToLeft;
+				this.tieRowsScrollJS_
+						.setJavaScript("function(obj, event) {Wt3_1_8.getCssRule('#"
+								+ this.getId()
+								+ " .Wt-tv-rowc').style.left= -obj.scrollLeft "
+								+ (rtl ? "+ (obj.firstChild.offsetWidth - obj.offsetWidth)"
+										: "") + "+ 'px';}");
+			} else {
+				this.tieRowsScrollJS_
+						.setJavaScript("function(obj, event) {$('#"
+								+ this.getId()
+								+ " .Wt-tv-rowc').parent().scrollLeft(obj.scrollLeft);}");
+			}
+			WContainerWidget scrollBarContainer = new WContainerWidget();
+			scrollBarContainer.setStyleClass("cwidth");
+			scrollBarContainer.resize(WLength.Auto, new WLength(22));
+			this.scrollBarC_ = new WContainerWidget(scrollBarContainer);
+			this.scrollBarC_.setStyleClass("Wt-tv-row Wt-scroll");
+			this.scrollBarC_.scrolled().addListener(this.tieRowsScrollJS_);
+			if (app.getEnvironment().agentIsIE()) {
+				scrollBarContainer.setPositionScheme(PositionScheme.Relative);
+				this.scrollBarC_.setAttributeValue("style", "right: 0px");
+			}
+			WContainerWidget scrollBar = new WContainerWidget(this.scrollBarC_);
+			scrollBar.setStyleClass("Wt-tv-rowc");
+			if (useStyleLeft) {
+				scrollBar.setAttributeValue("style", "left: 0px;");
+			}
+			this.impl_.getLayout().addWidget(scrollBarContainer);
+		}
+	}
+
 	public int getPageCount() {
 		if (this.rootNode_ != null) {
 			return (this.rootNode_.getRenderedHeight() - 1)
@@ -764,7 +745,7 @@ public class WTreeView extends WAbstractItemView {
 				break;
 			}
 		}
-		if (this.column1Fixed_ && this.renderedNodesAdded_) {
+		if (this.getRowHeaderCount() != 0 && this.renderedNodesAdded_) {
 			WApplication.getInstance().doJavaScript(
 					"{var s=" + this.scrollBarC_.getJsRef() + ";if (s) {"
 							+ this.tieRowsScrollJS_.execJs("s") + "}}");
@@ -837,7 +818,7 @@ public class WTreeView extends WAbstractItemView {
 				+ "," + this.getJsRef() + ","
 				+ this.contentsContainer_.getJsRef() + ","
 				+ this.headerContainer_.getJsRef() + ","
-				+ (this.column1Fixed_ ? "true" : "false") + ");");
+				+ String.valueOf(this.getRowHeaderCount()) + ");");
 	}
 
 	private void rerenderHeader() {
@@ -856,7 +837,7 @@ public class WTreeView extends WAbstractItemView {
 		this.headers_.clear();
 		WContainerWidget row = new WContainerWidget(this.headers_);
 		row.setFloatSide(Side.Right);
-		if (this.column1Fixed_) {
+		if (this.getRowHeaderCount() != 0) {
 			row.setStyleClass("Wt-tv-row headerrh background");
 			row = new WContainerWidget(row);
 			row.setStyleClass("Wt-tv-rowc headerrh");
@@ -1899,7 +1880,7 @@ public class WTreeView extends WAbstractItemView {
 		WContainerWidget row = ((this.headers_.getWidget(0)) instanceof WContainerWidget ? (WContainerWidget) (this.headers_
 				.getWidget(0))
 				: null);
-		if (this.column1Fixed_) {
+		if (this.getRowHeaderCount() != 0) {
 			row = ((row.getWidget(0)) instanceof WContainerWidget ? (WContainerWidget) (row
 					.getWidget(0))
 					: null);
@@ -1988,6 +1969,18 @@ public class WTreeView extends WAbstractItemView {
 	}
 
 	static String wtjs1(WApplication app) {
-		return "Wt3_1_8.WTreeView = function(m,d,i,t,r){function p(c){var a=-1,b=null,e=false,g=false,h=null;for(c=f.target(c);c;){if(c.className.indexOf(\"c1 rh\")==0){if(a==-1)a=0}else if(c.className.indexOf(\"Wt-tv-c\")==0){if(c.className.indexOf(\"Wt-tv-c\")==0)a=c.className.split(\" \")[0].substring(7)*1;else if(a==-1)a=0;if(c.getAttribute(\"drop\")===\"true\")g=true;h=c}else if(c.className==\"Wt-tv-node\"){b=c.id;break}if(c.className===\"Wt-selected\")e=true;c=c.parentNode;if(f.hasTag(c,\"BODY\"))break}return{columnId:a, nodeId:b,selected:e,drop:g,el:h}}jQuery.data(d,\"obj\",this);var u=i.firstChild,k=t.firstChild,s=this,f=m.WT;this.click=function(c,a){var b=p(a);b.columnId!=-1&&m.emit(d,{name:\"itemEvent\",eventObject:c,event:a},b.nodeId,b.columnId,\"clicked\",\"\",\"\")};this.dblClick=function(c,a){var b=p(a);b.columnId!=-1&&m.emit(d,{name:\"itemEvent\",eventObject:c,event:a},b.nodeId,b.columnId,\"dblclicked\",\"\",\"\")};this.mouseDown=function(c,a){f.capture(null);var b=p(a);if(b.columnId!=-1){m.emit(d,{name:\"itemEvent\",eventObject:c, event:a},b.nodeId,b.columnId,\"mousedown\",\"\",\"\");d.getAttribute(\"drag\")===\"true\"&&b.selected&&m._p_.dragStart(d,a)}};this.mouseUp=function(c,a){var b=p(a);b.columnId!=-1&&m.emit(d,{name:\"itemEvent\",eventObject:c,event:a},b.nodeId,b.columnId,\"mouseup\",\"\",\"\")};this.resizeHandleMDown=function(c,a){var b=c.parentNode.parentNode.className.split(\" \")[0];if(b){var e=f.getCssRule(\"#\"+d.id+\" .\"+b),g=f.pxself(e,\"width\"),h=-g,l=1E4,j=$(document.body).hasClass(\"Wt-rtl\");if(j){var v=h;h=-l;l=-v}new f.SizeHandle(f, \"h\",c.offsetWidth,d.firstChild.offsetHeight,h,l,\"Wt-hsh\",function(o){o=g+(j?-o:o);var q=b.substring(7)*1;e.style.width=o+\"px\";s.adjustColumns();m.emit(d,\"columnResized\",q,parseInt(o))},c,d,a,-2,-1)}};var w=false;this.adjustColumns=function(){if(!w){w=true;setTimeout(function(){w=false;var c=u.firstChild,a=k.firstChild,b=0,e=0;e=k.lastChild.className.split(\" \")[0];var g=f.getCssRule(\"#\"+d.id+\" .\"+e);if(r)a=a.firstChild;if(!f.isHidden(d)){for(var h=0,l=a.childNodes.length;h<l;++h)if(a.childNodes[h].className){var j= a.childNodes[h].className.split(\" \")[0];j=f.getCssRule(\"#\"+d.id+\" .\"+j);if(j.style.display!=\"none\")b+=f.pxself(j,\"width\")+7}if(!r)if(g.style.width)$(d).find(\".Wt-headerdiv .\"+e).css(\"width\",g.style.width);else g.style.width=k.offsetWidth-a.offsetWidth-8+\"px\";e=b+f.pxself(g,\"width\")+(f.isIE6?10:8);if(r){j=f.getCssRule(\"#\"+d.id+\" .Wt-tv-rowc\");j.style.width=b+\"px\";f.isIE&&setTimeout(function(){$(d).find(\".Wt-tv-rowc\").css(\"width\",b+\"px\").css(\"width\",\"\")},0);d.changed=true;s.autoJavaScript()}else{k.style.width= c.style.width=e+\"px\";a.style.width=b+\"px\"}}},0)}};var n=null;d.handleDragDrop=function(c,a,b,e,g){if(n){n.className=n.classNameOrig;n=null}if(c!=\"end\"){var h=p(b);if(!h.selected&&h.drop&&h.columnId!=-1)if(c==\"drop\")m.emit(d,{name:\"itemEvent\",eventObject:a,event:b},h.nodeId,h.columnId,\"drop\",e,g);else{a.className=\"Wt-valid-drop\";n=h.el;n.classNameOrig=n.className;n.className+=\" Wt-drop-site\"}else a.className=\"\"}};this.autoJavaScript=function(){if(d.parentNode==null){d=i=t=u=k=null;this.autoJavaScript= function(){}}else if(!f.isHidden(d)){var c=$(d),a=c.innerWidth(),b,e=null,g=i.offsetWidth-i.clientWidth;a-=g;if(c.hasClass(\"column1\")){b=c.find(\".Wt-headerdiv\").get(0).lastChild.className.split(\" \")[0];b=f.getCssRule(\"#\"+d.id+\" .\"+b);e=f.pxself(b,\"width\")}if((!f.isIE||a>100)&&(a!=i.tw||e!=i.c0w||d.changed)){var h=!d.changed;i.tw=a;i.c0w=e;b=c.find(\".Wt-headerdiv\").get(0).lastChild.className.split(\" \")[0];b=f.getCssRule(\"#\"+d.id+\" .\"+b);var l=u.firstChild,j=f.getCssRule(\"#\"+d.id+\" .cwidth\"),v=j.style.width== k.style.width,o=k.firstChild;j.style.width=a+\"px\";i.style.width=a+g+\"px\";k.style.width=l.offsetWidth+\"px\";if(!f.isIE)t.style.marginRight=g+\"px\";if(e!=null){e=a-e-(f.isIE6?10:8);if(e>0){var q=Math.min(e,f.pxself(f.getCssRule(\"#\"+d.id+\" .Wt-tv-rowc\"),\"width\"));a-=e-q;f.getCssRule(\"#\"+d.id+\" .Wt-tv-row\").style.width=q+\"px\";f.isIE&&setTimeout(function(){c.find(\" .Wt-tv-row\").css(\"width\",q+\"px\").css(\"width\",\"\")},0);k.style.width=a+\"px\";l.style.width=a+\"px\"}}else if(v){k.style.width=j.style.width;l.style.width= j.style.width}if(!r)b.style.width=l.offsetWidth-o.offsetWidth-8+\"px\";d.changed=false;h&&s.adjustColumns()}}};this.scrollTo=function(c,a,b,e){if(a!=-1){a*=b;c=i.scrollTop;var g=i.clientHeight;if(e==0)if(c+g<a)e=1;else if(a<c)e=2;switch(e){case 1:i.scrollTop=a;break;case 2:i.scrollTop=a-(g-b);break;case 3:i.scrollTop=a-(g-b)/2;break}window.fakeEvent={object:i};i.onscroll(window.fakeEvent);window.fakeEvent=null}};s.adjustColumns()};";
+		String s = "function(m,d,i,s,r){function p(c){var a=-1,b=null,e=false,g=false,h=null;for(c=f.target(c);c;){if(c.className.indexOf(\"c1 rh\")==0){if(a==-1)a=0}else if(c.className.indexOf(\"Wt-tv-c\")==0){if(c.className.indexOf(\"Wt-tv-c\")==0)a=c.className.split(\" \")[0].substring(7)*1;else if(a==-1)a=0;if(c.getAttribute(\"drop\")===\"true\")g=true;h=c}else if(c.className==\"Wt-tv-node\"){b=c.id;break}if(c.className===\"Wt-selected\")e=true;c=c.parentNode;if(f.hasTag(c,\"BODY\"))break}return{columnId:a, nodeId:b,selected:e,drop:g,el:h}}jQuery.data(d,\"obj\",this);var t=i.firstChild,l=s.firstChild,u=this,f=m.WT;this.click=function(c,a){var b=p(a);b.columnId!=-1&&m.emit(d,{name:\"itemEvent\",eventObject:c,event:a},b.nodeId,b.columnId,\"clicked\",\"\",\"\")};this.dblClick=function(c,a){var b=p(a);b.columnId!=-1&&m.emit(d,{name:\"itemEvent\",eventObject:c,event:a},b.nodeId,b.columnId,\"dblclicked\",\"\",\"\")};this.mouseDown=function(c,a){f.capture(null);var b=p(a);if(b.columnId!=-1){m.emit(d,{name:\"itemEvent\",eventObject:c, event:a},b.nodeId,b.columnId,\"mousedown\",\"\",\"\");d.getAttribute(\"drag\")===\"true\"&&b.selected&&m._p_.dragStart(d,a)}};this.mouseUp=function(c,a){var b=p(a);b.columnId!=-1&&m.emit(d,{name:\"itemEvent\",eventObject:c,event:a},b.nodeId,b.columnId,\"mouseup\",\"\",\"\")};this.resizeHandleMDown=function(c,a){var b=c.parentNode.parentNode.className.split(\" \")[0];if(b){var e=f.getCssRule(\"#\"+d.id+\" .\"+b),g=f.pxself(e,\"width\"),h=-g,k=1E4,j=$(document.body).hasClass(\"Wt-rtl\");if(j){var v=h;h=-k;k=-v}new f.SizeHandle(f, \"h\",c.offsetWidth,d.firstChild.offsetHeight,h,k,\"Wt-hsh\",function(o){o=g+(j?-o:o);var q=b.substring(7)*1;e.style.width=o+\"px\";u.adjustColumns();m.emit(d,\"columnResized\",q,parseInt(o))},c,d,a,-2,-1)}};var w=false;this.adjustColumns=function(){if(!w){w=true;setTimeout(function(){w=false;var c=t.firstChild,a=l.firstChild,b=0,e=0;e=l.lastChild.className.split(\" \")[0];var g=f.getCssRule(\"#\"+d.id+\" .\"+e);if(r)a=a.firstChild;if(!f.isHidden(d)){for(var h=0,k=a.childNodes.length;h<k;++h)if(a.childNodes[h].className){var j= a.childNodes[h].className.split(\" \")[0];j=f.getCssRule(\"#\"+d.id+\" .\"+j);if(j.style.display!=\"none\")b+=f.pxself(j,\"width\")+7}if(!r)if(g.style.width)$(d).find(\".Wt-headerdiv .\"+e).css(\"width\",g.style.width);else g.style.width=l.offsetWidth-a.offsetWidth-8+\"px\";e=b+f.pxself(g,\"width\")+(f.isIE6?10:8);if(r){j=f.getCssRule(\"#\"+d.id+\" .Wt-tv-rowc\");j.style.width=b+\"px\";f.isIE&&setTimeout(function(){$(d).find(\".Wt-tv-rowc\").css(\"width\",b+\"px\").css(\"width\",\"\")},0);d.changed=true}else{l.style.width=c.style.width= e+\"px\";a.style.width=b+\"px\"}}},0)}};var n=null;d.handleDragDrop=function(c,a,b,e,g){if(n){n.className=n.classNameOrig;n=null}if(c!=\"end\"){var h=p(b);if(!h.selected&&h.drop&&h.columnId!=-1)if(c==\"drop\")m.emit(d,{name:\"itemEvent\",eventObject:a,event:b},h.nodeId,h.columnId,\"drop\",e,g);else{a.className=\"Wt-valid-drop\";n=h.el;n.classNameOrig=n.className;n.className+=\" Wt-drop-site\"}else a.className=\"\"}};this.autoJavaScript=function(){if(d.parentNode==null){d=i=s=t=l=null;this.autoJavaScript=function(){}}else if(!f.isHidden(d)){var c= $(d),a,b=null,e=f.pxself(d,\"width\");if(e==0)e=d.clientWidth;else if(f.boxSizing(d)){e-=f.px(d,\"borderLeftWidth\");e-=f.px(d,\"borderRightWidth\")}var g=i.offsetWidth-i.clientWidth;e-=g;if(c.hasClass(\"column1\")){a=c.find(\".Wt-headerdiv\").get(0).lastChild.className.split(\" \")[0];a=f.getCssRule(\"#\"+d.id+\" .\"+a);b=f.pxself(a,\"width\")}if((!f.isIE||e>100)&&(e!=i.tw||b!=i.c0w||d.changed)){var h=!d.changed;i.tw=e;i.c0w=b;a=c.find(\".Wt-headerdiv\").get(0).lastChild.className.split(\" \")[0];a=f.getCssRule(\"#\"+d.id+ \" .\"+a);var k=t.firstChild,j=f.getCssRule(\"#\"+d.id+\" .cwidth\"),v=j.style.width==k.offsetWidth+\"px\",o=l.firstChild;j.style.width=e+\"px\";i.style.width=e+g+\"px\";if(!f.isIE)s.style.marginRight=g+\"px\";if(b!=null){b=e-b-(f.isIE6?10:8);if(b>0){var q=Math.min(b,f.pxself(f.getCssRule(\"#\"+d.id+\" .Wt-tv-rowc\"),\"width\"));e-=b-q;l.style.width=e+\"px\";k.style.width=e+\"px\";f.getCssRule(\"#\"+d.id+\" .Wt-tv-row\").style.width=q+\"px\";f.isIE&&setTimeout(function(){c.find(\" .Wt-tv-row\").css(\"width\",q+\"px\").css(\"width\",\"\")}, 0)}}else if(v){l.style.width=j.style.width;k.style.width=j.style.width}else l.style.width=k.offsetWidth+\"px\";if(!r)a.style.width=k.offsetWidth-o.offsetWidth-8+\"px\";d.changed=false;h&&u.adjustColumns()}}};this.scrollTo=function(c,a,b,e){if(a!=-1){a*=b;c=i.scrollTop;var g=i.clientHeight;if(e==0)if(c+g<a)e=1;else if(a<c)e=2;switch(e){case 1:i.scrollTop=a;break;case 2:i.scrollTop=a-(g-b);break;case 3:i.scrollTop=a-(g-b)/2;break}window.fakeEvent={object:i};i.onscroll(window.fakeEvent);window.fakeEvent= null}};u.adjustColumns()}";
+		if ("ctor.WTreeView".indexOf(".prototype") != -1) {
+			return "Wt3_1_8.ctor.WTreeView = " + s + ";";
+		} else {
+			if ("ctor.WTreeView".substring(0, 5).compareTo(
+					"ctor.".substring(0, 5)) == 0) {
+				return "Wt3_1_8." + "ctor.WTreeView".substring(5) + " = " + s
+						+ ";";
+			} else {
+				return "Wt3_1_8.ctor.WTreeView = function() { (" + s
+						+ ").apply(Wt3_1_8, arguments) };";
+			}
+		}
 	}
 }

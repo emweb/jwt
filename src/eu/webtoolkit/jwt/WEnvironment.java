@@ -86,6 +86,10 @@ public class WEnvironment {
 		 */
 		Opera(3000),
 		/**
+		 * Opera 10 or later.
+		 */
+		Opera10(3010),
+		/**
 		 * WebKit.
 		 */
 		WebKit(4000),
@@ -846,6 +850,21 @@ public class WEnvironment {
 		}
 		if (this.userAgent_.indexOf("Opera") != -1) {
 			this.agent_ = WEnvironment.UserAgent.Opera;
+			int t = this.userAgent_.indexOf("Version/");
+			if (t != -1) {
+				String vs = this.userAgent_.substring(t + 8);
+				t = vs.indexOf(' ');
+				if (t != -1) {
+					vs = vs.substring(0, 0 + t);
+				}
+				try {
+					double v = Double.parseDouble(vs);
+					if (v >= 10) {
+						this.agent_ = WEnvironment.UserAgent.Opera10;
+					}
+				} catch (NumberFormatException e) {
+				}
+			}
 		}
 		if (this.userAgent_.indexOf("Chrome") != -1) {
 			if (this.userAgent_.indexOf("Chrome/0") != -1) {

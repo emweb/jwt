@@ -8,16 +8,21 @@ _$_$if_DYNAMIC_JS_$_();
 window.WT_DECLARE_WT_MEMBER = function(i, name, fn)
 {
   var proto = name.indexOf('.prototype');
-  if (proto == -1)
-    _$_WT_CLASS_$_[name] = fn;
-  else
+  var ctor = name.indexOf('ctor.');
+
+  if (proto != -1)
     _$_WT_CLASS_$_[name.substr(0, proto)]
       .prototype[name.substr(proto + '.prototype.'.length)] = fn;
+  else if (ctor == 0)
+    _$_WT_CLASS_$_[name.substr(5)] = fn;
+  else
+    _$_WT_CLASS_$_[name] = function() { fn.apply(_$_WT_CLASS_$_, arguments); };
 };
 
 window.WT_DECLARE_APP_MEMBER = function(i, name, fn)
 {
   var proto = name.indexOf('.prototype');
+
   var app = window.currentApp;
   if (proto == -1)
     app[name] = fn;
@@ -86,6 +91,20 @@ this.isGecko = navigator.userAgent.toLowerCase().indexOf("gecko") != -1;
 this.isOpera = typeof window.opera !== 'undefined';
 
 this.updateDelay = this.isIE ? 10 : 51;
+
+var traceStart = new Date();
+this.trace = function(v, start) {
+  if (start)
+    traceStart = new Date();
+  var now = new Date();
+
+  var diff = (now.getMinutes() - traceStart.getMinutes()) * 60000
+    + (now.getSeconds() - traceStart.getSeconds()) * 1000
+    + (now.getMilliseconds() - traceStart.getMilliseconds());
+
+  if (window.console)
+    console.log("[" + diff + "]: " + v);
+};
 
 this.initAjaxComm = function(url, handler) {
   var crossDomain = url.indexOf("://") != -1;
@@ -680,6 +699,12 @@ this.pxself = function(c, s) {
 
 this.pctself = function(c, s) {
   return parsePct(c.style[s], 0);
+};
+
+this.boxSizing = function(w) {
+  return (w.style['boxSizing']
+	  || w.style['MozBoxSizing']
+	  || w.style['WebkitBoxSizing']) === 'border-box';
 };
 
 // Return if an element (or one of its ancestors) is hidden
@@ -1844,6 +1869,17 @@ function setServerPush(how) {
   serverPush = how;
 }
 
+var autoJavaScriptScheduled = false;
+function doAutoJavaScript() {
+  if (autoJavaScriptScheduled)
+    return;
+
+  autoJavaScriptScheduled = true;
+
+  setTimeout(function() { autoJavaScriptScheduled = false;
+			  self._p_.autoJavaScript(); }, 1);
+}
+
 function doJavaScript(js) {
   if (js) {
     js = "(function() {" + js + "})();";
@@ -1853,7 +1889,7 @@ function doJavaScript(js) {
       window.eval(js);
   }
 
-  self._p_.autoJavaScript();
+  doAutoJavaScript();
 }
 
 function handleResponse(status, msg, timer) {
@@ -2337,6 +2373,7 @@ this._p_ = {
   setHash : setHash,
   ImagePreloader : ImagePreloader,
 
+  doAutoJavaScript : doAutoJavaScript,
   autoJavaScript : function() {  _$_AUTO_JAVASCRIPT_$_(); },
 
   response : responseReceived,
