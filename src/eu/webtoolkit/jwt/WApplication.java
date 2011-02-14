@@ -221,7 +221,7 @@ public class WApplication extends WObject {
 			this.widgetRoot_ = null;
 		}
 		this.styleSheet_.addRule("table",
-				"border-collapse: collapse; border: 0px");
+				"border-collapse: collapse; border: 0px;");
 		this.styleSheet_.addRule("div, td, img",
 				"margin: 0px; padding: 0px; border: 0px");
 		this.styleSheet_.addRule("td", "vertical-align: top;");
@@ -1234,7 +1234,7 @@ public class WApplication extends WObject {
 	 *    try {
 	 *      // We now have exclusive access to the application:
 	 *      // we can safely modify the widget tree for example.
-	 *      app.getRoot().addWidget(new WText(&quot;Something happened!&quot;));
+	 *      app.getRoot().addWidget(new WText("Something happened!"));
 	 *   
 	 *      // Push the changes to the browser
 	 *      app.triggerUpdate();

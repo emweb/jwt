@@ -73,7 +73,7 @@ import eu.webtoolkit.jwt.servlet.*;
  *  proxy.setDynamicSortFilter(true);
  *  proxy.setFilterKeyColumn(0);
  *  proxy.setFilterRole(ItemDataRole.UserRole);
- *  proxy.setFilterRegExp(&quot;.*&quot;);
+ *  proxy.setFilterRegExp(".*");
  * 		 
  *  // configure a view to use the proxy model instead of the source model
  *  WTreeView view = new WTreeView(this);
@@ -386,6 +386,30 @@ public class WSortFilterProxyModel extends WAbstractProxyModel {
 	 */
 	public int getSortRole() {
 		return this.sortRole_;
+	}
+
+	/**
+	 * Returns the current sort column.
+	 * <p>
+	 * When {@link WSortFilterProxyModel#sort(int column, SortOrder order)
+	 * sort()} has not been called, the model is unsorted, and this method
+	 * returns -1.
+	 * <p>
+	 * 
+	 * @see WSortFilterProxyModel#sort(int column, SortOrder order)
+	 */
+	public int getSortColumn() {
+		return this.sortKeyColumn_;
+	}
+
+	/**
+	 * Returns the current sort order.
+	 * <p>
+	 * 
+	 * @see WSortFilterProxyModel#sort(int column, SortOrder order)
+	 */
+	public SortOrder getSortOrder() {
+		return this.sortOrder_;
 	}
 
 	/**

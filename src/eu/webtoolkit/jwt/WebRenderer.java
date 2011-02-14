@@ -370,7 +370,7 @@ class WebRenderer implements SlotLearnerInterface {
 				this.collectedJS2_.append(
 						"domRoot.style.visibility = 'visible';").append(
 						app.getJavaScriptClass()).append(
-						"._p_.autoJavaScript();");
+						"._p_.doAutoJavaScript();");
 				this.loadScriptLibraries(this.collectedJS2_, app,
 						librariesLoaded);
 				app.enableAjax_ = false;
@@ -828,7 +828,7 @@ class WebRenderer implements SlotLearnerInterface {
 		} else {
 			if (count != 0) {
 				out.append(app.getJavaScriptClass()).append(
-						"._p_.autoJavaScript();");
+						"._p_.doAutoJavaScript();");
 				for (int i = 0; i < count; ++i) {
 					out.append("});");
 				}

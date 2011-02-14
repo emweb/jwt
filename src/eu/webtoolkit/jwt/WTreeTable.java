@@ -117,10 +117,6 @@ public class WTreeTable extends WCompositeWidget {
 		this.tree_.setMargin(new WLength(3), EnumSet.of(Side.Top));
 		this.tree_.resize(new WLength(100, WLength.Unit.Percentage),
 				WLength.Auto);
-		this
-				.setJavaScriptMember(
-						WT_RESIZE_JS,
-						"function(self, w, h) {self.style.height= h + 'px';var c = self.lastChild;var t = self.firstChild;h -= $(t).outerHeight();if (h > 0) c.style.height = h + 'px';};");
 	}
 
 	/**
@@ -268,12 +264,13 @@ public class WTreeTable extends WCompositeWidget {
 
 	void render(EnumSet<RenderFlag> flags) {
 		if (!EnumUtils.mask(flags, RenderFlag.RenderFull).isEmpty()) {
-			WApplication
-					.getInstance()
-					.doJavaScript(
-							"(function(){var $el=$('#"
-									+ this.getId()
-									+ "');var e=$el.find('.Wt-content').get(0);var sp=$el.find('.Wt-sbspacer').get(0);function sb() {if ($el.get(0).parentNode) {if (e.scrollHeight > e.offsetHeight) {sp.style.display='block';} else {sp.style.display='none';}setTimeout(sb, 20);}}sb();})();");
+			this.defineJavaScript();
+			this.setJavaScriptMember(WT_RESIZE_JS, "$('#" + this.getId()
+					+ "').data('obj').wtResize");
+			this.resize(this.getWidth(), this.getHeight());
+			WApplication.getInstance().addAutoJavaScript(
+					"{var obj = $('#" + this.getId()
+							+ "').data('obj');if (obj) obj.autoJavaScript();}");
 		}
 		super.render(flags);
 	}
@@ -283,4 +280,34 @@ public class WTreeTable extends WCompositeWidget {
 	private WContainerWidget headerContainer_;
 	private WTree tree_;
 	private List<WLength> columnWidths_;
+
+	private void defineJavaScript() {
+		WApplication app = WApplication.getInstance();
+		if (!app.getEnvironment().hasAjax()) {
+			return;
+		}
+		String THIS_JS = "js/WTreeTable.js";
+		if (!app.isJavaScriptLoaded(THIS_JS)) {
+			app.doJavaScript(wtjs1(app), false);
+			app.setJavaScriptLoaded(THIS_JS);
+		}
+		this.setJavaScriptMember("_a", "0;new Wt3_1_8.WTreeTable("
+				+ app.getJavaScriptClass() + "," + this.getJsRef() + ");");
+	}
+
+	static String wtjs1(WApplication app) {
+		String s = "function(g,a){jQuery.data(a,\"obj\",this);var d=$(a).find(\".Wt-content\").get(0),f=$(a).find(\".Wt-sbspacer\").get(0);this.wtResize=function(c,e,b){c.style.height=b+\"px\";e=c.lastChild;b-=$(c.firstChild).outerHeight();if(b>0)e.style.height=b+\"px\"};this.autoJavaScript=function(){if(a.parentNode)f.style.display=d.scrollHeight>d.offsetHeight?\"block\":\"none\"}}";
+		if ("ctor.WTreeTable".indexOf(".prototype") != -1) {
+			return "Wt3_1_8.ctor.WTreeTable = " + s + ";";
+		} else {
+			if ("ctor.WTreeTable".substring(0, 5).compareTo(
+					"ctor.".substring(0, 5)) == 0) {
+				return "Wt3_1_8." + "ctor.WTreeTable".substring(5) + " = " + s
+						+ ";";
+			} else {
+				return "Wt3_1_8.ctor.WTreeTable = function() { (" + s
+						+ ").apply(Wt3_1_8, arguments) };";
+			}
+		}
+	}
 }

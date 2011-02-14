@@ -62,6 +62,7 @@ public abstract class WLocalizedStrings {
 	 * <p>
 	 * 
 	 * @see WApplication#getLocale()
+	 * @see WString#tr(String key)
 	 */
 	public abstract String resolveKey(String key);
 }

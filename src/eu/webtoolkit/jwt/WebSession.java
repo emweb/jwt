@@ -838,14 +838,7 @@ class WebSession {
 				attachThreadToHandler(new WebSession.Handler(session, false));
 				return;
 			}
-			for (int i = 0; i < session.handlers_.size(); ++i) {
-				if (session.handlers_.get(i).isHaveLock()) {
-					attachThreadToHandler(session.handlers_.get(i));
-					return;
-				}
-			}
-			session.log("error").append("WApplication::attachThread(): ")
-					.append("no thread is holding this application's lock ?");
+			attachThreadToHandler(new WebSession.Handler(session, false));
 		}
 
 		public static WebSession.Handler attachThreadToHandler(

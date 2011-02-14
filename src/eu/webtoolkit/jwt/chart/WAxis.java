@@ -734,6 +734,8 @@ public class WAxis {
 		public Segment() {
 			this.minimum = AUTO_MINIMUM;
 			this.maximum = AUTO_MAXIMUM;
+			this.renderMinimum = AUTO_MINIMUM;
+			this.renderMaximum = AUTO_MAXIMUM;
 			this.renderLength = AUTO_MAXIMUM;
 			this.renderStart = AUTO_MAXIMUM;
 		}
