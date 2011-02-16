@@ -201,7 +201,7 @@ public abstract class WPaintedWidget extends WInteractWidget {
 	public void update(EnumSet<PaintFlag> flags) {
 		this.needRepaint_ = true;
 		this.repaintFlags_.addAll(flags);
-		super.repaint();
+		this.repaint();
 	}
 
 	/**

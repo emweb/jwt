@@ -556,9 +556,9 @@ public class WAnchor extends WContainerWidget {
 							this.clicked().preventDefaultAction();
 						}
 						this.changeInternalPathJS_
-								.setJavaScript("function(){window.location.hash='#"
-										+ DomElement.urlEncodeS(this.ref_)
-										+ "';}");
+								.setJavaScript("function(){Wt3_1_8.history.navigate("
+										+ jsStringLiteral(this.ref_)
+										+ ",true);}");
 						this.clicked().senderRepaint();
 					}
 				} else {

@@ -128,8 +128,10 @@ class PaintedSlider extends WPaintedWidget {
 	public void doUpdateDom(DomElement element, boolean all) {
 		if (all) {
 			WApplication app = WApplication.getInstance();
-			element.addChild(this.createDomElement(app));
-			element.addChild(((WWebWidget) this.handle_).createDomElement(app));
+			element.addChild(this.createSDomElement(app));
+			element
+					.addChild(((WWebWidget) this.handle_)
+							.createSDomElement(app));
 			DomElement west = DomElement
 					.createNew(DomElementType.DomElement_DIV);
 			west.setProperty(Property.PropertyClass, "Wt-w");
@@ -147,13 +149,13 @@ class PaintedSlider extends WPaintedWidget {
 			if (!w.isAuto()) {
 				w = new WLength(w.toPixels() - 10);
 			}
-			super.resize(w, height);
+			this.resize(w, height);
 		} else {
 			WLength h = height;
 			if (!h.isAuto()) {
 				h = new WLength(h.toPixels() - 10);
 			}
-			super.resize(width, h);
+			this.resize(width, h);
 		}
 		this.updateState();
 	}

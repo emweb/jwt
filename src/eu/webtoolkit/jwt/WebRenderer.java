@@ -322,6 +322,8 @@ class WebRenderer implements SlotLearnerInterface {
 				.setCondition(
 						"SHOW_STACK",
 						conf.getErrorReporting() == Configuration.ErrorReporting.ErrorMessageWithStack);
+		script.setCondition("UGLY_INTERNAL_PATHS", this.session_
+				.isUseUglyInternalPaths());
 		script.setCondition("DYNAMIC_JS", false);
 		script.setVar("WT_CLASS", "Wt3_1_8");
 		script.setVar("APP_CLASS", app.getJavaScriptClass());
@@ -335,6 +337,8 @@ class WebRenderer implements SlotLearnerInterface {
 		script.setVar("RELATIVE_URL", WWebWidget.jsStringLiteral(this.session_
 				.getBootstrapUrl(response,
 						WebSession.BootstrapOption.ClearInternalPath)));
+		script.setVar("DEPLOY_URL", WWebWidget.jsStringLiteral(this.session_
+				.getDeploymentPath()));
 		script.setVar("KEEP_ALIVE", String
 				.valueOf(conf.getSessionTimeout() / 2));
 		script.setVar("INITIAL_HASH", WWebWidget.jsStringLiteral(app
@@ -1086,6 +1090,11 @@ class WebRenderer implements SlotLearnerInterface {
 							"<link rel=\"icon\" type=\"image/vnd.microsoft.icon\" href=\"")
 					.append(this.session_.getFavicon()).append(
 							xhtml ? "\"/>" : "\">");
+		}
+		if (!this.session_.getEnv().agentIsIE()) {
+			result.append("<base href=\"").append(
+					this.session_.getDeploymentPath()).append(
+					xhtml ? "\"/>" : "\">");
 		}
 		return result.toString();
 	}

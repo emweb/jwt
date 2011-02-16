@@ -187,12 +187,7 @@ public class WProgressBar extends WInteractWidget {
 	 * {@link WProgressBar#getValue() getValue()}.
 	 */
 	public WString getText() {
-		String f = this.format_.toString();
-		int buflen = f.length() + 5;
-		String buf = String.format(f, this.getPercentage());
-		WString result = new WString(buf);
-		;
-		return result;
+		return StringUtils.formatFloat(this.format_, this.getPercentage());
 	}
 
 	/**

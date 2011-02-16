@@ -898,32 +898,12 @@ public class WApplication extends WObject {
 	 * Returns a bookmarkable URL for a given internal path.
 	 * <p>
 	 * Returns the (relative) URL for this application that includes the
-	 * internal path <code>internalPath</code>, usable across sessions. The URL
-	 * is relative and expanded into a full URL by the browser.
+	 * internal path <code>internalPath</code>, usable across sessions.
 	 * <p>
-	 * For example, for an application with current URL: <blockquote>
-	 * 
-	 * <pre>
-	 * http://www.mydomain.com/stuff/app.wt#/project/internal/
-	 * </pre>
-	 * 
-	 * </blockquote> when called with <code>&quot;/project/external&quot;</code>
-	 * , this method would return:
-	 * <ul>
-	 * <li><code>&quot;app.wt/project/external/&quot;</code> when JavaScript is
-	 * available, or the agent is a web spider, or</li>
-	 * <li><code>&quot;app.wt/project/external/?wtd=AbCdEf&quot;</code> when no
-	 * JavaScript is available and URL rewriting is used for session-tracking</li>
-	 * </ul>
-	 * <p>
-	 * When the application is deployed at a folder (ending with &apos;/&apos;),
-	 * this style of URLs is not possible, and URLs are of the form:
-	 * <ul>
-	 * <li><code>&quot;?_=/project/external/&quot;</code> when JavaScript is
-	 * available, or the agent is a web spider, or</li>
-	 * <li><code>&quot;?_=/project/external/&amp;wtd=AbCdEf&quot;</code> when no
-	 * JavaScript is available and URL rewriting is used for session-tracking.</li>
-	 * </ul>
+	 * The returned URL concatenates the internal path to the application base
+	 * URL, and when no JavaScript is available and URL rewriting is used for
+	 * session-tracking, a session Id is appended to reuse an existing session
+	 * if available.
 	 * <p>
 	 * You can use {@link WApplication#getBookmarkUrl() getBookmarkUrl()} as the
 	 * destination for a {@link WAnchor}, and listen to a click event is
@@ -948,7 +928,7 @@ public class WApplication extends WObject {
 	}
 
 	/**
-	 * Change the internal path.
+	 * Changes the internal path.
 	 * <p>
 	 * A JWt application may manage multiple virtual paths. The virtual path is
 	 * appended to the application URL. Depending on the situation, the path is
@@ -966,7 +946,15 @@ public class WApplication extends WObject {
 	 * for the application URL are:
 	 * <ul>
 	 * <li>
-	 * in an AJAX session: <blockquote>
+	 * in an AJAX session (HTML5): <blockquote>
+	 * 
+	 * <pre>
+	 * http://www.mydomain.com/stuff/app.wt/project/z3cbc/details/
+	 * </pre>
+	 * 
+	 * </blockquote></li>
+	 * <li>
+	 * in an AJAX session (HTML4): <blockquote>
 	 * 
 	 * <pre>
 	 * http://www.mydomain.com/stuff/app.wt#/project/z3cbc/details/
@@ -974,31 +962,22 @@ public class WApplication extends WObject {
 	 * 
 	 * </blockquote></li>
 	 * <li>
+	 * </li>
+	 * <li>
 	 * in a plain HTML session: <blockquote>
 	 * 
 	 * <pre>
 	 * http://www.mydomain.com/stuff/app.wt/project/z3cbc/details/
 	 * </pre>
 	 * 
-	 * </blockquote> This has as major consequence that from the browser stand
-	 * point, the application now serves many different URLs. As a consequence,
-	 * relative URLs will break. Still, you can specify relative URLs within
-	 * your application (in for example {@link WAnchor#setRef(String url)
-	 * WAnchor#setRef()} or {@link WImage#setImageRef(String ref)
-	 * WImage#setImageRef()}) since JWt will transform them to absolute URLs
-	 * when needed. But, this in turn may break deployments behind reverse
-	 * proxies when the context paths differ. For the same reason, you will need
-	 * to use absolute URLs in any XHTML or CSS you write manually. <br>
-	 * This type of URLs are only used when the your application is deployed at
-	 * a location that does not end with a &apos;/&apos;. Otherwise, JWt will
-	 * generate URLS like: <blockquote>
-	 * 
-	 * <pre>
-	 * http://www.mydomain.com/stuff/?_=/project/z3cbc/details/
-	 * </pre>
-	 * 
 	 * </blockquote></li>
 	 * </ul>
+	 * <p>
+	 * Note, since JWt 3.1.9, the actual form of the URL no longer affects
+	 * relative URL resolution, since now JWt includes an HTML
+	 * <code>meta base</code> tag which points to the deployment path,
+	 * regardless of the current internal path. This does break deployments
+	 * behind a reverse proxy which changes paths.
 	 * <p>
 	 * When the internal path is changed, an entry is added to the browser
 	 * history. When the user navigates back and forward through this history
@@ -1035,7 +1014,7 @@ public class WApplication extends WObject {
 	}
 
 	/**
-	 * Change the internal path.
+	 * Changes the internal path.
 	 * <p>
 	 * Calls {@link #setInternalPath(String path, boolean emitChange)
 	 * setInternalPath(path, false)}
@@ -1081,7 +1060,7 @@ public class WApplication extends WObject {
 	 * @see WApplication#internalPathChanged()
 	 */
 	public String getInternalPathNextPart(String path) {
-		String current = StringUtils.terminate(this.newInternalPath_, '/');
+		String current = StringUtils.append(this.newInternalPath_, '/');
 		if (!pathMatches(current, path)) {
 			this.log("warn").append("WApplication::internalPath(): path '")
 					.append(path).append("' not within current path '").append(
@@ -1123,8 +1102,8 @@ public class WApplication extends WObject {
 		if (this.session_.getRenderer().isPreLearning()) {
 			return false;
 		} else {
-			return pathMatches(StringUtils
-					.terminate(this.newInternalPath_, '/'), path);
+			return pathMatches(StringUtils.append(this.newInternalPath_, '/'),
+					path);
 		}
 	}
 
@@ -2401,7 +2380,7 @@ public class WApplication extends WObject {
 							+ WWebWidget
 									.jsStringLiteral(this.getInternalPath())
 							+ ");", false);
-			if (this.session_.getApplicationName().length() == 0) {
+			if (this.session_.isUseUglyInternalPaths()) {
 				this
 						.log("warn")
 						.append(
@@ -2411,7 +2390,7 @@ public class WApplication extends WObject {
 	}
 
 	void changeInternalPath(String aPath) {
-		String path = aPath;
+		String path = StringUtils.prepend(aPath, '/');
 		if (path.length() == 0 || path.charAt(0) == '/') {
 			if (!path.equals(this.newInternalPath_)) {
 				String v = "";

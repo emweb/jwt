@@ -1348,6 +1348,9 @@ public class WTreeView extends WAbstractItemView {
 		}
 		WModelIndex index = this.getModel().getIndex(c0index.getRow(), column,
 				c0index.getParent());
+		if (!(index != null)) {
+			return;
+		}
 		if (type.equals("clicked")) {
 			this.handleClick(index, event);
 		} else {

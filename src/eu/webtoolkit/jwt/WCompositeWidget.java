@@ -199,6 +199,7 @@ public class WCompositeWidget extends WWidget {
 
 	public void setDisabled(boolean disabled) {
 		this.impl_.setDisabled(disabled);
+		this.propagateSetEnabled(!disabled);
 	}
 
 	public boolean isDisabled() {

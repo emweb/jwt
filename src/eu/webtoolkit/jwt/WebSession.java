@@ -477,6 +477,10 @@ class WebSession {
 		return this.deploymentPath_;
 	}
 
+	public boolean isUseUglyInternalPaths() {
+		return true;
+	}
+
 	public String getMostRelativeUrl(String internalPath) {
 		return this.appendSessionQuery(this.getBookmarkUrl(internalPath));
 	}
@@ -493,10 +497,15 @@ class WebSession {
 				return baseUrl;
 			}
 		} else {
-			if (this.applicationName_.length() == 0) {
+			if (this.isUseUglyInternalPaths()) {
 				return baseUrl + "?_=" + DomElement.urlEncodeS(internalPath);
 			} else {
-				return baseUrl + DomElement.urlEncodeS(internalPath);
+				if (this.applicationName_.length() == 0) {
+					return baseUrl
+							+ DomElement.urlEncodeS(internalPath.substring(1));
+				} else {
+					return baseUrl + DomElement.urlEncodeS(internalPath);
+				}
 			}
 		}
 	}
@@ -533,17 +542,7 @@ class WebSession {
 		}
 		if (request.getPathInfo().length() != 0 || hashE != null
 				&& hashE.length() > 1) {
-			String url = "";
-			if (request.getPathInfo().length() != 0) {
-				String pi = request.getPathInfo();
-				for (int t = pi.indexOf('/'); t != -1; t = pi.indexOf('/',
-						t + 1)) {
-					url += "../";
-				}
-				url += this.getApplicationName();
-			} else {
-				url = this.getBaseUrl() + this.getApplicationName();
-			}
+			String url = this.getBaseUrl() + this.getApplicationName();
 			boolean firstParameter = true;
 			for (Iterator<Map.Entry<String, String[]>> i_it = request
 					.getParameterMap().entrySet().iterator(); i_it.hasNext();) {
@@ -580,7 +579,7 @@ class WebSession {
 		case KeepInternalPath: {
 			String url = "";
 			String internalPath = "";
-			if (this.applicationName_.length() == 0) {
+			if (this.isUseUglyInternalPaths()) {
 				internalPath = this.app_ != null ? this.app_.getInternalPath()
 						: this.env_.getInternalPath();
 				if (internalPath.length() > 1) {
@@ -596,11 +595,15 @@ class WebSession {
 					if (internalPath.length() > 1) {
 						String lastPart = internalPath.substring(internalPath
 								.lastIndexOf('/') + 1);
-						url = lastPart;
+						url = "";
 					} else {
 						url = this.applicationName_;
 					}
 				} else {
+					if (this.applicationName_.length() == 0
+							&& internalPath.length() > 1) {
+						internalPath = internalPath.substring(1);
+					}
 					url = this.applicationUrl_ + internalPath;
 				}
 			}

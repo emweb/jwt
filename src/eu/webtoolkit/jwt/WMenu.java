@@ -773,7 +773,7 @@ public class WMenu extends WCompositeWidget {
 		if (!this.internalPathEnabled_) {
 			this.internalPathEnabled_ = true;
 			WApplication app = WApplication.getInstance();
-			this.basePath_ = StringUtils.terminate(basePath.length() == 0 ? app
+			this.basePath_ = StringUtils.append(basePath.length() == 0 ? app
 					.getInternalPath() : basePath, '/');
 			app.internalPathChanged().addListener(this,
 					new Signal1.Listener<String>() {
@@ -817,7 +817,7 @@ public class WMenu extends WCompositeWidget {
 	 * @see WMenu#getInternalBasePath()
 	 */
 	public void setInternalBasePath(String basePath) {
-		String bp = StringUtils.terminate(basePath, '/');
+		String bp = StringUtils.append(basePath, '/');
 		if (!this.basePath_.equals(bp)) {
 			this.basePath_ = bp;
 			if (this.internalPathEnabled_) {

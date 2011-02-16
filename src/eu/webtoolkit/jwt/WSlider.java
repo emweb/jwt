@@ -99,6 +99,7 @@ public class WSlider extends WFormWidget {
 		this.sliderMoved_ = new JSignal1<Integer>(this, "moved") {
 		};
 		this.paintedSlider_ = null;
+		this.resize(new WLength(150), new WLength(50));
 	}
 
 	/**
@@ -134,6 +135,11 @@ public class WSlider extends WFormWidget {
 		this.sliderMoved_ = new JSignal1<Integer>(this, "moved") {
 		};
 		this.paintedSlider_ = null;
+		if (orientation == Orientation.Horizontal) {
+			this.resize(new WLength(150), new WLength(50));
+		} else {
+			this.resize(new WLength(50), new WLength(150));
+		}
 	}
 
 	/**
@@ -424,9 +430,13 @@ public class WSlider extends WFormWidget {
 				}
 			}
 			if (!useNative) {
-				this.addChild(this.paintedSlider_ = new PaintedSlider(this));
-				this.paintedSlider_.sliderResized(this.getWidth(), this
-						.getHeight());
+				if (!(this.paintedSlider_ != null)) {
+					this
+							.addChild(this.paintedSlider_ = new PaintedSlider(
+									this));
+					this.paintedSlider_.sliderResized(this.getWidth(), this
+							.getHeight());
+				}
 			} else {
 				if (this.paintedSlider_ != null)
 					this.paintedSlider_.remove();

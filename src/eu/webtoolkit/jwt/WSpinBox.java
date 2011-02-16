@@ -51,6 +51,7 @@ public class WSpinBox extends WLineEdit {
 		this.step_ = 1;
 		this.changed_ = false;
 		this.valueChanged_ = new Signal1<Double>();
+		this.format_ = new WString();
 		this.setStyleClass("Wt-spinbox");
 		this.changed().addListener(this, new Signal.Listener() {
 			public void trigger() {
@@ -157,6 +158,31 @@ public class WSpinBox extends WLineEdit {
 	}
 
 	/**
+	 * Sets the value format string.
+	 * <p>
+	 * The format is used by {@link WSpinBox#setValue(double value) setValue()}.
+	 * <p>
+	 * When an empty {@link WString} is used as format, the double is cast using
+	 * String::valueOf(). When the value is a real number, it will be cast to an
+	 * int before passing it to String::valueOf().
+	 * <p>
+	 * The default value for format is an empty {@link WString}.
+	 */
+	public void setFormat(CharSequence format) {
+		this.format_ = WString.toWString(format);
+	}
+
+	/**
+	 * Returns the progress format string.
+	 * <p>
+	 * 
+	 * @see WSpinBox#setFormat(CharSequence format)
+	 */
+	public WString getFormat() {
+		return this.format_;
+	}
+
+	/**
 	 * Sets the value.
 	 * <p>
 	 * <code>value</code> must be a value between {@link WSpinBox#getMinimum()
@@ -165,10 +191,15 @@ public class WSpinBox extends WLineEdit {
 	 * The default value is 0
 	 */
 	public void setValue(double value) {
-		if ((int) value == value) {
-			this.setText(String.valueOf((int) value));
+		if (!(this.format_.length() == 0)) {
+			this.setText(StringUtils.formatFloat(this.format_, value)
+					.toString());
 		} else {
-			this.setText(String.valueOf(value));
+			if ((int) value == value) {
+				this.setText(String.valueOf((int) value));
+			} else {
+				this.setText(String.valueOf(value));
+			}
 		}
 		this.valueChanged_.trigger(value);
 		this.changed_ = true;
@@ -227,6 +258,7 @@ public class WSpinBox extends WLineEdit {
 	private double step_;
 	private boolean changed_;
 	private Signal1<Double> valueChanged_;
+	private WString format_;
 
 	private void onChange() {
 		this.valueChanged_.trigger(this.getValue());
