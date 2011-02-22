@@ -80,6 +80,10 @@ public class WSvgImage extends WResource implements WVectorImage {
 		this(width, height, parent, false);
 	}
 
+	public EnumSet<WPaintDevice.FeatureFlag> getFeatures() {
+		return EnumSet.of(WPaintDevice.FeatureFlag.CanWordWrap);
+	}
+
 	public void setChanged(EnumSet<WPaintDevice.ChangeFlag> flags) {
 		if (!flags.isEmpty()) {
 			this.newGroup_ = true;
@@ -262,15 +266,8 @@ public class WSvgImage extends WResource implements WVectorImage {
 			default:
 				break;
 			}
-			double fontSize;
-			switch (this.getPainter().getFont().getSize()) {
-			case FixedSize:
-				fontSize = this.getPainter().getFont().getFixedSize()
-						.toPixels();
-				break;
-			default:
-				fontSize = 16;
-			}
+			double fontSize = this.getPainter().getFont().getSizeLength(16)
+					.toPixels();
 			double y = rect.getCenter().getY();
 			switch (verticalAlign) {
 			case AlignTop:

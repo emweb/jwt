@@ -30,7 +30,7 @@ public enum TextFlag {
 	 */
 	TextSingleLine,
 	/**
-	 * Lines will be braked at word boundaries.
+	 * Lines will break at word boundaries.
 	 */
 	TextWordWrap;
 

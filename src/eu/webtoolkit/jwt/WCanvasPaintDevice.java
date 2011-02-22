@@ -115,6 +115,10 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 		this(width, height, parent, false);
 	}
 
+	public EnumSet<WPaintDevice.FeatureFlag> getFeatures() {
+		return EnumSet.noneOf(WPaintDevice.FeatureFlag.class);
+	}
+
 	public void setChanged(EnumSet<WPaintDevice.ChangeFlag> flags) {
 		this.changeFlags_.addAll(flags);
 	}
