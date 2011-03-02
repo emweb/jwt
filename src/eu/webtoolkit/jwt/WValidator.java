@@ -43,7 +43,7 @@ import eu.webtoolkit.jwt.servlet.*;
  * provide a suitable implementation to {@link WValidator#validate(String input)
  * validate()} which does the server-side validation. If you want to provide
  * client-side validation for your own validator, you may also reimplement
- * {@link WValidator#javaScriptValidate(String jsRef) javaScriptValidate()}.
+ * {@link WValidator#getJavaScriptValidate() getJavaScriptValidate()}.
  * <p>
  * <h3>i18n</h3>
  * <p>
@@ -198,26 +198,32 @@ public class WValidator extends WObject {
 
 	// public void createExtConfig(Writer config) throws IOException;
 	/**
-	 * Creates a Javascript expression that validates the input.
+	 * Creates a Javascript object that validates the input.
 	 * <p>
-	 * The JavaScript expression should evaluate to an object with two fields: a
-	 * boolean <i>valid</i>, and a <code>message</code> that indicates the
-	 * problem if not valid.
+	 * The JavaScript expression should evaluate to an object which contains a
+	 * <code>validate(text)</code> function, which returns an object that
+	 * contains the following two fields:
+	 * <ul>
+	 * <li>fields: a boolean <i>valid</i>,</li>
+	 * <li>a <code>message</code> that indicates the problem if not valid.</li>
+	 * </ul>
 	 * <p>
 	 * Return an empty string if you are not provide the client-side validation.
 	 * <p>
+	 * <p>
+	 * <i><b>Note: </b>The signature and contract changed changed in JWt
+	 * 3.1.9.</i>
+	 * </p>
 	 * 
 	 * @see WValidator#getInputFilter()
 	 */
-	protected String javaScriptValidate(String jsRef) {
-		if (!this.mandatory_) {
-			return "{valid:true}";
-		} else {
-			return "function(e,t){var v=e.value.length!=0;return {valid:v,message:t};}("
-					+ jsRef
-					+ ","
+	public String getJavaScriptValidate() {
+		if (this.mandatory_) {
+			return "new (function() {this.validate = function(text) {return { valid: text.length != 0, message: "
 					+ WString.toWString(this.getInvalidBlankText())
-							.getJsStringLiteral() + ")";
+							.getJsStringLiteral() + "}};})();";
+		} else {
+			return "";
 		}
 	}
 
@@ -235,9 +241,9 @@ public class WValidator extends WObject {
 	 * any input.
 	 * <p>
 	 * 
-	 * @see WValidator#javaScriptValidate(String jsRef)
+	 * @see WValidator#getJavaScriptValidate()
 	 */
-	protected String getInputFilter() {
+	public String getInputFilter() {
 		return "";
 	}
 

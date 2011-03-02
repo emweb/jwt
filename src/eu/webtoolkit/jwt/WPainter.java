@@ -866,16 +866,30 @@ public class WPainter {
 	public void drawText(WRectF rectangle,
 			EnumSet<AlignmentFlag> alignmentFlags, TextFlag textFlag,
 			CharSequence text) {
-		if (!!EnumUtils.mask(alignmentFlags, AlignmentFlag.AlignVerticalMask)
-				.isEmpty()) {
-			alignmentFlags.add(AlignmentFlag.AlignTop);
+		if (textFlag == TextFlag.TextSingleLine) {
+			this.drawText(rectangle, alignmentFlags, text);
+		} else {
+			if (!!EnumUtils.mask(alignmentFlags,
+					AlignmentFlag.AlignVerticalMask).isEmpty()) {
+				alignmentFlags.add(AlignmentFlag.AlignTop);
+			}
+			if (!!EnumUtils.mask(alignmentFlags,
+					AlignmentFlag.AlignHorizontalMask).isEmpty()) {
+				alignmentFlags.add(AlignmentFlag.AlignLeft);
+			}
+			if (!EnumUtils.mask(this.device_.getFeatures(),
+					WPaintDevice.FeatureFlag.CanWordWrap).isEmpty()) {
+				this.device_.drawText(rectangle.getNormalized(),
+						alignmentFlags, textFlag, text);
+			} else {
+				if (!EnumUtils.mask(this.device_.getFeatures(),
+						WPaintDevice.FeatureFlag.HasFontMetrics).isEmpty()) {
+				} else {
+					throw new UnsupportedOperationException(
+							"WPainter::drawText(): device does not support TextWordWrap or FontMetrics");
+				}
+			}
 		}
-		if (!!EnumUtils.mask(alignmentFlags, AlignmentFlag.AlignHorizontalMask)
-				.isEmpty()) {
-			alignmentFlags.add(AlignmentFlag.AlignLeft);
-		}
-		this.device_.drawText(rectangle.getNormalized(), alignmentFlags,
-				textFlag, text);
 	}
 
 	/**
@@ -890,7 +904,15 @@ public class WPainter {
 	 */
 	public void drawText(WRectF rectangle, EnumSet<AlignmentFlag> flags,
 			CharSequence text) {
-		this.drawText(rectangle, flags, TextFlag.TextSingleLine, text);
+		if (!!EnumUtils.mask(flags, AlignmentFlag.AlignVerticalMask).isEmpty()) {
+			flags.add(AlignmentFlag.AlignTop);
+		}
+		if (!!EnumUtils.mask(flags, AlignmentFlag.AlignHorizontalMask)
+				.isEmpty()) {
+			flags.add(AlignmentFlag.AlignLeft);
+		}
+		this.device_.drawText(rectangle.getNormalized(), flags,
+				TextFlag.TextSingleLine, text);
 	}
 
 	/**
@@ -1593,4 +1615,6 @@ public class WPainter {
 					.of(WPaintDevice.ChangeFlag.Transform));
 		}
 	}
+	// private void drawMultilineText(WRectF rect, EnumSet<AlignmentFlag>
+	// alignmentFlags, CharSequence text) ;
 }

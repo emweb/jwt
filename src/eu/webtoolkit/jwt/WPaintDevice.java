@@ -85,6 +85,39 @@ public interface WPaintDevice {
 	}
 
 	/**
+	 * Enumeration to indicate paint device features.
+	 * <p>
+	 * 
+	 * @see WPaintDevice#getFeatures()
+	 */
+	public enum FeatureFlag {
+		/**
+		 * Implements
+		 * {@link WPaintDevice#drawText(WRectF rect, EnumSet alignmentFlags, TextFlag textFlag, CharSequence text)
+		 * drawText()} with {@link TextFlag#TextWordWrap}.
+		 */
+		CanWordWrap,
+		/**
+		 * Implements {@link WPaintDevice#getFontMetrics() getFontMetrics()} and
+		 * {@link WPaintDevice#measureText(CharSequence text, double maxWidth, boolean wordWrap)
+		 * measureText()}.
+		 */
+		HasFontMetrics;
+
+		/**
+		 * Returns the numerical representation of this enum.
+		 */
+		public int getValue() {
+			return ordinal();
+		}
+	}
+
+	/**
+	 * Returns device features.
+	 */
+	public EnumSet<WPaintDevice.FeatureFlag> getFeatures();
+
+	/**
 	 * Returns the device width.
 	 * <p>
 	 * The device width, in pixels, establishes the width of the device
@@ -180,9 +213,10 @@ public interface WPaintDevice {
 	 * width.
 	 * <p>
 	 * If <code>wordWrap</code> = <code>true</code> then text is truncated only
-	 * at word boundaries. Note that in this case the whitespace is included in
-	 * the text but not accounted for by the returned width (since usually you
-	 * will not render the whitespace at the end of a line).
+	 * at word boundaries. Note that in this case the whitespace at the
+	 * truncated position is included in the text but not accounted for by the
+	 * returned width (since usually you will not render the whitespace at the
+	 * end of a line).
 	 * <p>
 	 * Throws a std::logic_error if the underlying device does not provide font
 	 * metrics.

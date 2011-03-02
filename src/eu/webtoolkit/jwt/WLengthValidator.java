@@ -230,37 +230,58 @@ public class WLengthValidator extends WValidator {
 		}
 	}
 
-	protected String javaScriptValidate(String jsRef) {
-		String js = "function(e,te,ts,tb){if(e.value.length==0)";
-		if (this.isMandatory()) {
-			js += "return {valid:false,message:te};";
-		} else {
-			js += "return {valid:true};";
-		}
+	public String getJavaScriptValidate() {
+		loadJavaScript(WApplication.getInstance());
+		StringBuilder js = new StringBuilder();
+		js.append("new Wt3_1_8.WLengthValidator(").append(
+				this.isMandatory() ? "true" : "false").append(",");
 		if (this.minLength_ != 0) {
-			js += "if(e.value.length<" + String.valueOf(this.minLength_)
-					+ ") return {valid:false,message:ts};";
+			js.append(this.minLength_);
+		} else {
+			js.append("null");
 		}
+		js.append(',');
 		if (this.maxLength_ != Integer.MAX_VALUE) {
-			js += "if(e.value.length>" + String.valueOf(this.maxLength_)
-					+ ") return {valid:false,message:tb};";
+			js.append(this.maxLength_);
+		} else {
+			js.append("null");
 		}
-		js += "return {valid:true};}("
-				+ jsRef
-				+ ','
-				+ WString.toWString(this.getInvalidBlankText())
-						.getJsStringLiteral()
-				+ ','
-				+ WString.toWString(this.getInvalidTooShortText())
-						.getJsStringLiteral()
-				+ ','
-				+ WString.toWString(this.getInvalidTooLongText())
-						.getJsStringLiteral() + ')';
-		return js;
+		js.append(',').append(
+				WString.toWString(this.getInvalidBlankText())
+						.getJsStringLiteral()).append(',').append(
+				WString.toWString(this.getInvalidTooShortText())
+						.getJsStringLiteral()).append(',').append(
+				WString.toWString(this.getInvalidTooLongText())
+						.getJsStringLiteral()).append(");");
+		return js.toString();
 	}
 
 	private int minLength_;
 	private int maxLength_;
 	private WString tooLongText_;
 	private WString tooShortText_;
+
+	private static void loadJavaScript(WApplication app) {
+		String THIS_JS = "js/WLengthValidator.js";
+		if (!app.isJavaScriptLoaded(THIS_JS)) {
+			app.doJavaScript(wtjs1(app), false);
+			app.setJavaScriptLoaded(THIS_JS);
+		}
+	}
+
+	static String wtjs1(WApplication app) {
+		String s = "function(d,b,c,e,f,g){this.validate=function(a){if(a.length==0)return d?{valid:false,message:e}:{valid:true};if(b!==null)if(a.length<b)return{valid:false,message:f};if(c!==null)if(a.length>c)return{valid:false,message:g};return{valid:true}}}";
+		if ("ctor.WLengthValidator".indexOf(".prototype") != -1) {
+			return "Wt3_1_8.ctor.WLengthValidator = " + s + ";";
+		} else {
+			if ("ctor.WLengthValidator".substring(0, 5).compareTo(
+					"ctor.".substring(0, 5)) == 0) {
+				return "Wt3_1_8." + "ctor.WLengthValidator".substring(5)
+						+ " = " + s + ";";
+			} else {
+				return "Wt3_1_8.ctor.WLengthValidator = function() { (" + s
+						+ ").apply(Wt3_1_8, arguments) };";
+			}
+		}
+	}
 }

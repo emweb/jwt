@@ -3,7 +3,6 @@ package eu.webtoolkit.jwt;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Font;
-import java.awt.FontMetrics;
 import java.awt.Graphics2D;
 import java.awt.Paint;
 import java.awt.RenderingHints;
@@ -54,7 +53,6 @@ public class WRasterPaintDevice extends WResource implements WPaintDevice {
 		this.image = new BufferedImage((int)width.toPixels(), (int)height.toPixels(), BufferedImage.TYPE_INT_ARGB);
 	}
 
-	
 	protected void handleRequest(WebRequest request, WebResponse response) throws IOException {
 		response.setContentType("image/png");
 		if (image != null)
@@ -361,14 +359,8 @@ public class WRasterPaintDevice extends WResource implements WPaintDevice {
 		case Bolder:
 		case Bold: style |= Font.BOLD; break;
 		}
-		
-		int size = 12;
-		switch (font.getSize()) {
-		case FixedSize:
-			// Java assumes 72dpi, while on the web we have 96dpi, this cancels the pixel -> point calculation
-			size = (int) (font.getFixedSize().toPixels());
-			break;
-		}
+	
+		int size = (int) (font.getSizeLength(16).toPixels() / 96.0 * 72.0);
 		
 		return new Font(name, style, size);
 	}
@@ -403,6 +395,12 @@ public class WRasterPaintDevice extends WResource implements WPaintDevice {
 	@Override
 	public WTextItem measureText(CharSequence text, double maxWidth) {
 		throw new UnsupportedOperationException("WFontMetrics.measureText() not yet supported");
+	}
+
+	@Override
+	public EnumSet<FeatureFlag> getFeatures() {
+		// Later we can implement font metrics.
+		return EnumSet.noneOf(FeatureFlag.class);
 	}
 
 }

@@ -17,20 +17,64 @@ import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
 
-class WTextItem {
-	public WTextItem(CharSequence text, double width) {
+/**
+ * The result of a font metrics computation.
+ * <p>
+ * 
+ * @see WPaintDevice#measureText(CharSequence text, double maxWidth, boolean
+ *      wordWrap)
+ */
+public class WTextItem {
+	/**
+	 * Constructor.
+	 */
+	public WTextItem(CharSequence text, double width, double nextWidth) {
 		this.text_ = WString.toWString(text);
 		this.width_ = width;
+		this.nextWidth_ = nextWidth;
 	}
 
+	/**
+	 * Constructor.
+	 * <p>
+	 * Calls {@link #WTextItem(CharSequence text, double width, double nextWidth)
+	 * this(text, width, - 1)}
+	 */
+	public WTextItem(CharSequence text, double width) {
+		this(text, width, -1);
+	}
+
+	/**
+	 * Returns the measured text.
+	 * <p>
+	 * If the item was measured with word breaking enabled, then the text may
+	 * contain trailing whitespace that is not included in the
+	 * {@link WTextItem#getWidth() getWidth()}.
+	 */
 	public WString getText() {
 		return this.text_;
 	}
 
+	/**
+	 * Returns the measured width.
+	 * <p>
+	 * Returns the text width, in device local coordinates (pixels).
+	 */
 	public double getWidth() {
 		return this.width_;
 	}
 
+	/**
+	 * Returns the width for a next line-break boundary.
+	 * <p>
+	 * Returns the width until the next line-break boundary, or -1 if the
+	 * underlying word boundary analysis does not suppor this.
+	 */
+	public double getNextWidth() {
+		return this.nextWidth_;
+	}
+
 	private WString text_;
 	private double width_;
+	private double nextWidth_;
 }

@@ -1091,9 +1091,10 @@ class WebRenderer implements SlotLearnerInterface {
 					.append(this.session_.getFavicon()).append(
 							xhtml ? "\"/>" : "\">");
 		}
-		if (!this.session_.getEnv().agentIsIE()) {
-			result.append("<base href=\"").append(
-					this.session_.getDeploymentPath()).append(
+		String baseUrl = "";
+		baseUrl = WApplication.readConfigurationProperty("baseURL", baseUrl);
+		if (baseUrl.length() != 0) {
+			result.append("<base href=\"").append(baseUrl).append(
 					xhtml ? "\"/>" : "\">");
 		}
 		return result.toString();

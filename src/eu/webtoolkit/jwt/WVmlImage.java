@@ -54,6 +54,10 @@ public class WVmlImage implements WVectorImage {
 		this.currentRect_ = new WRectF();
 	}
 
+	public EnumSet<WPaintDevice.FeatureFlag> getFeatures() {
+		return EnumSet.noneOf(WPaintDevice.FeatureFlag.class);
+	}
+
 	public void setChanged(EnumSet<WPaintDevice.ChangeFlag> flags) {
 		if (!EnumUtils.mask(
 				flags,
