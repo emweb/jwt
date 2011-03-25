@@ -182,9 +182,10 @@ class FormWidgets extends ControlsWidget {
 		this.topic("WSpinBox", result);
 		new WText(tr("formwidgets-WSpinBox"), result);
 		new WText("Enter a number between 0 and 100: ", result);
-		WSpinBox le = new WSpinBox(result);
+		WDoubleSpinBox le = new WDoubleSpinBox(result);
 		this.ed_.showSignal(le.changed(), "Spin box value changed");
-		le.setValue(30);
+		le.setValue(30.123);
+		le.setDecimals(3);
 		return result;
 	}
 

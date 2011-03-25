@@ -175,11 +175,11 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 		this.js_.append(',').append(MathUtils.round(ra.getX(), 3));
 		this.js_.append(",").append(MathUtils.round(ra.getY(), 3)).append(
 				",true);");
-		if (this.currentPen_.getStyle() != PenStyle.NoPen) {
-			this.js_.append("ctx.stroke();");
-		}
 		if (this.currentBrush_.getStyle() != BrushStyle.NoBrush) {
 			this.js_.append("ctx.fill();");
+		}
+		if (this.currentPen_.getStyle() != PenStyle.NoPen) {
+			this.js_.append("ctx.stroke();");
 		}
 		this.js_.append("ctx.restore();");
 	}
@@ -542,11 +542,11 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 
 	private void finishPath() {
 		if (this.busyWithPath_) {
-			if (this.currentPen_.getStyle() != PenStyle.NoPen) {
-				this.js_.append("ctx.stroke();");
-			}
 			if (this.currentBrush_.getStyle() != BrushStyle.NoBrush) {
 				this.js_.append("ctx.fill();");
+			}
+			if (this.currentPen_.getStyle() != PenStyle.NoPen) {
+				this.js_.append("ctx.stroke();");
 			}
 			this.js_.append('\n');
 			this.busyWithPath_ = false;

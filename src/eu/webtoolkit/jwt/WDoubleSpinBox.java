@@ -18,56 +18,59 @@ import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
 
 /**
- * An input control for integer numbers.
+ * An input control for fixed point numbers.
  * <p>
  * 
- * The spin box provides a control for entering an integer number. It consists
- * of a line edit, and buttons which allow to increase or decrease the value. If
- * you rather need input of a fractional number, use {@link WDoubleSpinBox}
- * instead.
+ * The spin box provides a control for entering a fixed point number. It
+ * consists of a line edit, and buttons which allow to increase or decrease the
+ * value. If you rather need input of an integer number number, use
+ * {@link WDoubleSpinBox} instead.
  * <p>
- * WSpinBox is an {@link WWidget#setInline(boolean inlined) inline} widget.
+ * WDoubleSpinBox is an {@link WWidget#setInline(boolean inlined) inline}
+ * widget.
  * <p>
  * <h3>CSS</h3>
  * <p>
  * See {@link WAbstractSpinBox}.
  * <p>
  * 
- * @see WDoubleSpinBox
+ * @see WSpinBox
  */
-public class WSpinBox extends WAbstractSpinBox {
+public class WDoubleSpinBox extends WAbstractSpinBox {
 	/**
 	 * Creates a spin-box.
 	 * <p>
-	 * The range is (0 - 99) and the step size 1.
+	 * The range is (0.0 - 99.99), the step size 1.0, and the spin box has a
+	 * precision of 2 decimals.
 	 * <p>
-	 * The initial value is 0.
+	 * The initial value is 0.0.
 	 */
-	public WSpinBox(WContainerWidget parent) {
+	public WDoubleSpinBox(WContainerWidget parent) {
 		super(parent);
-		this.value_ = 0;
-		this.min_ = 0;
-		this.max_ = 99;
-		this.step_ = 1;
-		this.valueChanged_ = new Signal1<Integer>();
+		this.value_ = 0.0;
+		this.min_ = 0.0;
+		this.max_ = 99.99;
+		this.step_ = 1.0;
+		this.precision_ = 2;
+		this.valueChanged_ = new Signal1<Double>();
 	}
 
 	/**
 	 * Creates a spin-box.
 	 * <p>
-	 * Calls {@link #WSpinBox(WContainerWidget parent)
+	 * Calls {@link #WDoubleSpinBox(WContainerWidget parent)
 	 * this((WContainerWidget)null)}
 	 */
-	public WSpinBox() {
+	public WDoubleSpinBox() {
 		this((WContainerWidget) null);
 	}
 
 	/**
 	 * Sets the minimum value.
 	 * <p>
-	 * The default value is 0.
+	 * The default value is 0.0.
 	 */
-	public void setMinimum(int minimum) {
+	public void setMinimum(double minimum) {
 		this.min_ = minimum;
 		this.changed_ = true;
 		this.repaint(EnumSet.of(RepaintFlag.RepaintInnerHtml));
@@ -77,18 +80,18 @@ public class WSpinBox extends WAbstractSpinBox {
 	 * Returns the minimum value.
 	 * <p>
 	 * 
-	 * @see WSpinBox#setMinimum(int minimum)
+	 * @see WDoubleSpinBox#setMinimum(double minimum)
 	 */
-	public int getMinimum() {
+	public double getMinimum() {
 		return this.min_;
 	}
 
 	/**
 	 * Sets the maximum value.
 	 * <p>
-	 * The default value is 99.
+	 * The default value is 99.99.
 	 */
-	public void setMaximum(int maximum) {
+	public void setMaximum(double maximum) {
 		this.max_ = maximum;
 		this.changed_ = true;
 		this.repaint(EnumSet.of(RepaintFlag.RepaintInnerHtml));
@@ -98,9 +101,9 @@ public class WSpinBox extends WAbstractSpinBox {
 	 * Returns the maximum value.
 	 * <p>
 	 * 
-	 * @see WSpinBox#setMaximum(int maximum)
+	 * @see WDoubleSpinBox#setMaximum(double maximum)
 	 */
-	public int getMaximum() {
+	public double getMaximum() {
 		return this.max_;
 	}
 
@@ -108,10 +111,10 @@ public class WSpinBox extends WAbstractSpinBox {
 	 * Sets the range.
 	 * <p>
 	 * 
-	 * @see WSpinBox#setMinimum(int minimum)
-	 * @see WSpinBox#setMaximum(int maximum)
+	 * @see WDoubleSpinBox#setMinimum(double minimum)
+	 * @see WDoubleSpinBox#setMaximum(double maximum)
 	 */
-	public void setRange(int minimum, int maximum) {
+	public void setRange(double minimum, double maximum) {
 		this.min_ = minimum;
 		this.max_ = maximum;
 		this.changed_ = true;
@@ -121,9 +124,9 @@ public class WSpinBox extends WAbstractSpinBox {
 	/**
 	 * Sets the step value.
 	 * <p>
-	 * The default value is 1.
+	 * The default value is 1.0.
 	 */
-	public void setSingleStep(int step) {
+	public void setSingleStep(double step) {
 		this.step_ = step;
 		this.changed_ = true;
 		this.repaint(EnumSet.of(RepaintFlag.RepaintInnerHtml));
@@ -131,20 +134,46 @@ public class WSpinBox extends WAbstractSpinBox {
 
 	/**
 	 * Returns the step value.
+	 * <p>
+	 * 
+	 * @see WDoubleSpinBox#setSingleStep(double step)
 	 */
-	public int getSingleStep() {
+	public double getSingleStep() {
 		return this.step_;
+	}
+
+	/**
+	 * Sets the precision.
+	 * <p>
+	 * This sets the number of digits after the decimal point shown
+	 * <p>
+	 * The default precision is 2.
+	 */
+	public void setDecimals(int decimals) {
+		this.precision_ = decimals;
+		this.setText(this.getTextFromValue().toString());
+	}
+
+	/**
+	 * Returns the precision.
+	 * <p>
+	 * 
+	 * @see WDoubleSpinBox#setDecimals(int decimals)
+	 */
+	public int getDecimals() {
+		return this.precision_;
 	}
 
 	/**
 	 * Sets the value.
 	 * <p>
-	 * <code>value</code> must be a value between {@link WSpinBox#getMinimum()
-	 * getMinimum()} and {@link WSpinBox#getMaximum() getMaximum()}.
+	 * <code>value</code> must be a value between
+	 * {@link WDoubleSpinBox#getMinimum() getMinimum()} and
+	 * {@link WDoubleSpinBox#getMaximum() getMaximum()}.
 	 * <p>
 	 * The default value is 0
 	 */
-	public void setValue(int value) {
+	public void setValue(double value) {
 		if (this.value_ != value) {
 			this.value_ = value;
 			this.setText(this.getTextFromValue().toString());
@@ -155,20 +184,20 @@ public class WSpinBox extends WAbstractSpinBox {
 	/**
 	 * Returns the value.
 	 */
-	public int getValue() {
+	public double getValue() {
 		return this.value_;
 	}
 
 	/**
 	 * A signal that indicates when the value has changed.
 	 * <p>
-	 * This signal is emitted when {@link WSpinBox#setValue(int value)
+	 * This signal is emitted when {@link WDoubleSpinBox#setValue(double value)
 	 * setValue()} is called.
 	 * <p>
 	 * 
-	 * @see WSpinBox#setValue(int value)
+	 * @see WDoubleSpinBox#setValue(double value)
 	 */
-	public Signal1<Integer> valueChanged() {
+	public Signal1<Double> valueChanged() {
 		return this.valueChanged_;
 	}
 
@@ -179,7 +208,7 @@ public class WSpinBox extends WAbstractSpinBox {
 				element.setAttribute("max", String.valueOf(this.max_));
 				element.setAttribute("step", String.valueOf(this.step_));
 			} else {
-				final WIntValidator v = new WIntValidator();
+				final WDoubleValidator v = new WDoubleValidator();
 				v.getJavaScriptValidate();
 			}
 		}
@@ -191,7 +220,7 @@ public class WSpinBox extends WAbstractSpinBox {
 			this.valueChangedConnection_ = true;
 			this.changed().addListener(this, new Signal.Listener() {
 				public void trigger() {
-					WSpinBox.this.onChange();
+					WDoubleSpinBox.this.onChange();
 				}
 			});
 		}
@@ -202,13 +231,13 @@ public class WSpinBox extends WAbstractSpinBox {
 				+ "," + String.valueOf(this.step_);
 	}
 
-	protected int getDecimals() {
-		return 0;
-	}
-
 	protected boolean parseNumberValue(String text) {
 		try {
-			this.value_ = Integer.parseInt(text);
+			char[] buf = new char[30];
+			String currentV = MathUtils.round(this.value_, this.precision_);
+			if (!currentV.equals(text)) {
+				this.value_ = Double.parseDouble(text);
+			}
 			return true;
 		} catch (NumberFormatException e) {
 			return false;
@@ -216,26 +245,27 @@ public class WSpinBox extends WAbstractSpinBox {
 	}
 
 	protected WString getTextFromValue() {
-		if (this.isNativeControl()) {
-			return new WString(String.valueOf(this.value_));
-		} else {
-			String text = this.getPrefix().toString()
-					+ String.valueOf(this.value_) + this.getSuffix().toString();
-			return new WString(text);
+		char[] buf = new char[30];
+		String result = MathUtils.round(this.value_, this.precision_);
+		if (!this.isNativeControl()) {
+			result = this.getPrefix().toString() + result
+					+ this.getSuffix().toString();
 		}
+		return new WString(result);
 	}
 
 	protected WValidator getCreateValidator() {
-		WIntValidator validator = new WIntValidator();
+		WDoubleValidator validator = new WDoubleValidator();
 		validator.setRange(this.min_, this.max_);
 		return validator;
 	}
 
-	private int value_;
-	private int min_;
-	private int max_;
-	private int step_;
-	private Signal1<Integer> valueChanged_;
+	private double value_;
+	private double min_;
+	private double max_;
+	private double step_;
+	private int precision_;
+	private Signal1<Double> valueChanged_;
 
 	private void onChange() {
 		this.valueChanged_.trigger(this.getValue());

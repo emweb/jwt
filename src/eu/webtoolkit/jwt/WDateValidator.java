@@ -372,43 +372,41 @@ public class WDateValidator extends WValidator {
 		}
 	}
 
-	protected String javaScriptValidate(String jsRef) {
-		StringWriter js = new StringWriter();
-		js.append("function(e,te,tn,ts,tb){if(e.value.length==0)");
-		if (this.isMandatory()) {
-			js.append("return {valid:false,message:te};");
-		} else {
-			js.append("return {valid:true};");
-		}
-		js.append("var r,res,m=-1,d=-1,y=-1;");
+	public String getJavaScriptValidate() {
+		loadJavaScript(WApplication.getInstance());
+		StringBuilder js = new StringBuilder();
+		js.append("new Wt3_1_8.WDateValidator(").append(
+				this.isMandatory() ? "true" : "false").append(",[");
 		for (int i = 0; i < this.formats_.size(); ++i) {
 			WDate.RegExpInfo r = WDate.formatToRegExp(this.formats_.get(i));
-			js.append("r=/^").append(r.regexp).append(
-					"$/;results=r.exec(e.value);if (results!=null) {m=")
-					.append(r.monthGetJS).append(";d=").append(r.dayGetJS)
-					.append(";y=").append(r.yearGetJS).append(";} else {");
+			if (i != 0) {
+				js.append(',');
+			}
+			js.append("{").append("regexp:").append(
+					WWebWidget.jsStringLiteral(r.regexp)).append(',').append(
+					"getMonth:function(results){").append(r.monthGetJS).append(
+					";},").append("getDay:function(results){").append(
+					r.dayGetJS).append(";},").append(
+					"getYear:function(results){").append(r.yearGetJS).append(
+					";}").append("}");
 		}
-		js.append("return {valid:false,message:tn};");
-		for (int i = 0; i < this.formats_.size(); ++i) {
-			js.append("}");
-		}
-		js
-				.append("if ((d<=0)||(d>31)||(m<=0)||(m>12))return {valid:false,message:tn};var dt=new Date(y,m-1,d);if (dt.getDate() != d || dt.getMonth() != m-1 || dt.getFullYear() != y) return {valid:false,massage:tn};");
+		js.append("],");
 		if (!(this.bottom_ == null)) {
-			js.append("if(dt.getTime()<new Date(").append(
-					String.valueOf(this.bottom_.getYear())).append(',').append(
-					String.valueOf(this.bottom_.getMonth() - 1)).append(',')
-					.append(String.valueOf(this.bottom_.getDay())).append(
-							").getTime())return {valid:false,message:ts};");
+			js.append("new Date(").append(this.bottom_.getYear()).append(',')
+					.append(this.bottom_.getMonth() - 1).append(',').append(
+							this.bottom_.getDay()).append(")");
+		} else {
+			js.append("null");
 		}
+		js.append(',');
 		if (!(this.top_ == null)) {
-			js.append("if(dt.getTime()>new Date(").append(
-					String.valueOf(this.top_.getYear())).append(',').append(
-					String.valueOf(this.top_.getMonth() - 1)).append(',')
-					.append(String.valueOf(this.top_.getDay())).append(
-							").getTime())return {valid:false,message:tb};");
+			js.append("new Date(").append(this.top_.getYear()).append(',')
+					.append(this.top_.getMonth() - 1).append(',').append(
+							this.top_.getDay()).append(")");
+		} else {
+			js.append("null");
 		}
-		js.append("return {valid:true};}(").append(jsRef).append(',').append(
+		js.append(',').append(
 				WString.toWString(this.getInvalidBlankText())
 						.getJsStringLiteral()).append(',').append(
 				WString.toWString(this.getInvalidNotADateText())
@@ -416,7 +414,7 @@ public class WDateValidator extends WValidator {
 				WString.toWString(this.getInvalidTooEarlyText())
 						.getJsStringLiteral()).append(',').append(
 				WString.toWString(this.getInvalidTooLateText())
-						.getJsStringLiteral()).append(')');
+						.getJsStringLiteral()).append(");");
 		return js.toString();
 	}
 
@@ -426,4 +424,28 @@ public class WDateValidator extends WValidator {
 	private WString tooEarlyText_;
 	private WString tooLateText_;
 	private WString notADateText_;
+
+	private static void loadJavaScript(WApplication app) {
+		String THIS_JS = "js/WDateValidator.js";
+		if (!app.isJavaScriptLoaded(THIS_JS)) {
+			app.doJavaScript(wtjs1(app), false);
+			app.setJavaScriptLoaded(THIS_JS);
+		}
+	}
+
+	static String wtjs1(WApplication app) {
+		String s = "function(l,i,j,k,m,f,n,o){this.validate=function(a){if(a.length==0)return l?{valid:false,message:m}:{valid:true};for(var b,c=-1,d=-1,g=-1,h=0,p=i.length;h<p;++h){var e=i[h];b=(new RegExp(\"^\"+e.regexp+\"$\")).exec(a);if(b!=null){c=e.getMonth(b);d=e.getDay(b);g=e.getYear(b);break}}if(b==null)return{valid:false,message:f};if(d<=0||d>31||c<=0||c>12)return{valid:false,message:f};a=new Date(g,c-1,d);if(a.getDate()!=d||a.getMonth()!=c-1||a.getFullYear()!=g)return{valid:false, massage:f};if(j)if(a.getTime()<j.getTime())return{valid:false,message:n};if(k)if(a.getTime()>k.getTime())return{valid:false,message:o};return{valid:true}}}";
+		if ("ctor.WDateValidator".indexOf(".prototype") != -1) {
+			return "Wt3_1_8.ctor.WDateValidator = " + s + ";";
+		} else {
+			if ("ctor.WDateValidator".substring(0, 5).compareTo(
+					"ctor.".substring(0, 5)) == 0) {
+				return "Wt3_1_8." + "ctor.WDateValidator".substring(5) + " = "
+						+ s + ";";
+			} else {
+				return "Wt3_1_8.ctor.WDateValidator = function() { (" + s
+						+ ").apply(Wt3_1_8, arguments) };";
+			}
+		}
+	}
 }

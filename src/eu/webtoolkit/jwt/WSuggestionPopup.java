@@ -44,7 +44,9 @@ import eu.webtoolkit.jwt.servlet.*;
  * The member methods {@link WSuggestionPopup#clearSuggestions()
  * clearSuggestions()} and
  * {@link WSuggestionPopup#addSuggestion(CharSequence suggestionText, CharSequence suggestionValue)
- * addSuggestion()} manipulate this model.
+ * addSuggestion()} manipulate this model. Note that a {@link WStringListModel}
+ * does not support {@link ItemDataRole#UserRole} data, so you may need to use a
+ * {@link WStandardItemModel} instead.
  * <p>
  * By default, the popup implements all filtering client-side. To support large
  * datasets, you may enable server-side filtering of suggestions based on the
@@ -587,7 +589,8 @@ public class WSuggestionPopup extends WCompositeWidget {
 	 * Creates a standard matcher JavaScript function.
 	 * <p>
 	 * This returns a JavaScript function that provides a standard
-	 * implementation for the matching input, based on the given <code></code> .
+	 * implementation for the matching input, based on the given
+	 * <code>options</code>.
 	 */
 	public static String generateMatcherJS(WSuggestionPopup.Options options) {
 		return instantiateStdMatcher(options) + ".match";
@@ -597,7 +600,8 @@ public class WSuggestionPopup extends WCompositeWidget {
 	 * Creates a standard replacer JavaScript function.
 	 * <p>
 	 * This returns a JavaScript function that provides a standard
-	 * implementation for the matching input, based on the given <code></code> .
+	 * implementation for the matching input, based on the given
+	 * <code>options</code>.
 	 */
 	public static String generateReplacerJS(WSuggestionPopup.Options options) {
 		return instantiateStdMatcher(options) + ".replace";

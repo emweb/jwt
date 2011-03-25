@@ -36,7 +36,7 @@ import eu.webtoolkit.jwt.servlet.*;
  * </p>
  * </div> <h3>CSS</h3>
  * <p>
- * The non-native slider (see
+ * The non-native slider (HTML4, see
  * {@link WSlider#setNativeControl(boolean nativeControl) setNativeControl()})
  * is styled by the current CSS theme. The look can be overridden using the
  * <code>Wt-slider-[hv]</code> CSS class and the following selectors (shown here
@@ -163,7 +163,7 @@ public class WSlider extends WFormWidget {
 	 * Configures whether a native HTML5 control should be used.
 	 * <p>
 	 * When <code>native</code>, the new &quot;range&quot; input element,
-	 * specified by HTML and available in a number of browsers, is used rather
+	 * specified by HTML5 and when implemented by the browser, is used rather
 	 * than the built-in element. A native control is styled by the browser
 	 * (usually in sync with the OS) rather than through the theme chosen.
 	 * Settings like tick interval and tick position are ignored.
@@ -178,7 +178,32 @@ public class WSlider extends WFormWidget {
 		this.preferNative_ = nativeControl;
 	}
 
-	// public boolean isNativeControl() ;
+	/**
+	 * Returns whether a native HTML5 control is used.
+	 * <p>
+	 * Taking into account the preference for a native control, configured using
+	 * {@link WSlider#setNativeControl(boolean nativeControl)
+	 * setNativeControl()}, this method returns whether a native control is
+	 * actually being used.
+	 */
+	public boolean isNativeControl() {
+		if (this.preferNative_) {
+			WEnvironment env = WApplication.getInstance().getEnvironment();
+			if (env.agentIsChrome()
+					&& env.getAgent().getValue() >= WEnvironment.UserAgent.Chrome5
+							.getValue()
+					|| env.agentIsSafari()
+					&& env.getAgent().getValue() >= WEnvironment.UserAgent.Safari4
+							.getValue()
+					|| env.agentIsOpera()
+					&& env.getAgent().getValue() >= WEnvironment.UserAgent.Opera10
+							.getValue()) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	/**
 	 * Sets the slider orientation.
 	 * <p>
@@ -414,21 +439,7 @@ public class WSlider extends WFormWidget {
 
 	void render(EnumSet<RenderFlag> flags) {
 		if (!EnumUtils.mask(flags, RenderFlag.RenderFull).isEmpty()) {
-			boolean useNative = false;
-			if (this.preferNative_) {
-				WEnvironment env = WApplication.getInstance().getEnvironment();
-				if (env.agentIsChrome()
-						&& env.getAgent().getValue() >= WEnvironment.UserAgent.Chrome5
-								.getValue()
-						|| env.agentIsSafari()
-						&& env.getAgent().getValue() >= WEnvironment.UserAgent.Safari4
-								.getValue()
-						|| env.agentIsOpera()
-						&& env.getAgent().getValue() >= WEnvironment.UserAgent.Opera10
-								.getValue()) {
-					useNative = true;
-				}
-			}
+			boolean useNative = this.isNativeControl();
 			if (!useNative) {
 				if (!(this.paintedSlider_ != null)) {
 					this
