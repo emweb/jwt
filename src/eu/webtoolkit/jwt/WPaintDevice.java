@@ -84,33 +84,6 @@ public interface WPaintDevice {
 		}
 	}
 
-	enum FeatureFlag {
-		/**
-		 * Implements
-		 * {@link WPaintDevice#drawText(WRectF rect, EnumSet alignmentFlags, TextFlag textFlag, CharSequence text)
-		 * drawText()} with {@link TextFlag#TextWordWrap}.
-		 */
-		CanWordWrap,
-		/**
-		 * Implements {@link WPaintDevice#getFontMetrics() getFontMetrics()} and
-		 * {@link WPaintDevice#measureText(CharSequence text, double maxWidth, boolean wordWrap)
-		 * measureText()}.
-		 */
-		HasFontMetrics;
-
-		/**
-		 * Returns the numerical representation of this enum.
-		 */
-		public int getValue() {
-			return ordinal();
-		}
-	}
-
-	/**
-	 * Returns device features.
-	 */
-	public EnumSet<WPaintDevice.FeatureFlag> getFeatures();
-
 	/**
 	 * Enumeration to indicate paint device features.
 	 * <p>

@@ -116,8 +116,10 @@ this.initAjaxComm = function(url, handler) {
       request = new XMLHttpRequest();
       if (crossDomain) {
 	if ("withCredentials" in request) {
-	  if (url)
+	  if (url) {
 	    request.open(method, url, true);
+	    request.withCredentials = "true";
+	  }
 	} else if (typeof XDomainRequest != "undefined") {
 	  request = new XDomainRequest();
 	  if (url) {
@@ -174,8 +176,13 @@ this.initAjaxComm = function(url, handler) {
 	    handler(1, null, userData);
 
 	  request.onreadystatechange = new Function;
-	  if (!WT.isIE6)
+	  try {
 	    request.onload = request.onreadystatechange;
+	  } catch (e) {
+	    /*
+	     * See comment below.
+	     */
+	  }
 	  request = null;
 
 	  handled = true;
@@ -212,13 +219,18 @@ this.initAjaxComm = function(url, handler) {
 	if (timeout > 0)
 	  timer = setTimeout(handleTimeout, timeout);
 	  request.onreadystatechange = recvCallback;
-	  if (!WT.isIE6) {
+	  try {
 	    request.onload = function() {
 	      handleResponse(true);
 	    };
 	    request.onerror = function() {
 	      handleResponse(false);
 	    };
+	  } catch (e) {
+	    /*
+	     * On IE, when "Enable Native XMLHTTP Support is unchecked",
+	     * setting these members will result in an exception.
+	     */
 	  }
 	request.send(data);
       }
@@ -1061,12 +1073,15 @@ this.fitToWindow = function(e, x, y, rightx, bottomy) {
   var ow = WT.widgetPageCoordinates(e.offsetParent);
 
   var hsides = [ 'left', 'right' ],
-      vsides = ['top', 'bottom' ],
+      vsides = [ 'top', 'bottom' ],
       ew = WT.px(e, 'maxWidth') || e.offsetWidth,
       eh = WT.px(e, 'maxHeight') || e.offsetHeight,
       hside, vside;
 
-  if (x + ew > wx + ws.x) { // too far right, chose other side
+  if (ew > wx) { // wider than window
+    x = wx;
+    hside = 0;
+  } else if (x + ew > wx + ws.x) { // too far right, chose other side
     rightx -= ow.x;
     x = e.offsetParent.offsetWidth - (rightx + WT.px(e, 'marginRight'));
     hside = 1;
@@ -1076,7 +1091,10 @@ this.fitToWindow = function(e, x, y, rightx, bottomy) {
     hside = 0;
   }
 
-  if (y + eh > wy + ws.y) { // too far below, chose other side
+  if (ew > wx) { // taller than window
+    y = wy;
+    vside = 0;
+  } else if (y + eh > wy + ws.y) { // too far below, chose other side
     if (bottomy > wy + ws.y)
       bottomy = wy + ws.y;
     bottomy -= ow.y;
@@ -1628,6 +1646,8 @@ function encodeTouches(s, touches, widgetCoords) {
   result = s + "=";
   for (i = 0, il = touches.length; i < il; ++i) {
     var t = touches[i];
+    if (i != 0)
+      result += ';';
     result += [ t.identifier,
 		t.clientX, t.clientY,
 		t.pageX, t.pageY,

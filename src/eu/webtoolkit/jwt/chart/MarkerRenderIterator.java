@@ -49,25 +49,12 @@ class MarkerRenderIterator extends SeriesIterator {
 				painter.save();
 				painter.translate(this.hv(p));
 				WPen pen = series.getMarkerPen().clone();
-				Object penColor = yIndex
-						.getData(ItemDataRole.MarkerPenColorRole);
-				if ((penColor == null) && (xIndex != null)) {
-					penColor = xIndex.getData(ItemDataRole.MarkerPenColorRole);
-				}
-				if (!(penColor == null)) {
-					pen.setColor((WColor) penColor);
-				}
+				setPenColor(pen, xIndex, yIndex,
+						ItemDataRole.MarkerPenColorRole);
 				painter.setPen(pen);
 				WBrush brush = series.getMarkerBrush().clone();
-				Object brushColor = yIndex
-						.getData(ItemDataRole.MarkerBrushColorRole);
-				if ((brushColor == null) && (xIndex != null)) {
-					brushColor = xIndex
-							.getData(ItemDataRole.MarkerBrushColorRole);
-				}
-				if (!(brushColor == null)) {
-					brush.setColor((WColor) brushColor);
-				}
+				setBrushColor(brush, xIndex, yIndex,
+						ItemDataRole.MarkerBrushColorRole);
 				painter.setBrush(brush);
 				painter.drawPath(this.marker_);
 				painter.restore();

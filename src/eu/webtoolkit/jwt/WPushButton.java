@@ -145,9 +145,10 @@ public class WPushButton extends WFormWidget {
 	 * @see WPushButton#setResource(WResource resource)
 	 */
 	public void setRef(String url) {
-		if (this.ref_.equals(url)) {
+		if (!this.flags_.get(BIT_REF_INTERNAL_PATH) && this.ref_.equals(url)) {
 			return;
 		}
+		this.flags_.clear(BIT_REF_INTERNAL_PATH);
 		this.ref_ = url;
 		this.flags_.set(BIT_REF_CHANGED);
 		this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyIEMobile));
@@ -166,6 +167,16 @@ public class WPushButton extends WFormWidget {
 	 */
 	public String getRef() {
 		return this.ref_;
+	}
+
+	public void setRefInternalPath(String path) {
+		if (this.flags_.get(BIT_REF_INTERNAL_PATH) && this.ref_.equals(path)) {
+			return;
+		}
+		this.flags_.set(BIT_REF_INTERNAL_PATH);
+		this.ref_ = path;
+		this.flags_.set(BIT_REF_CHANGED);
+		this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyIEMobile));
 	}
 
 	/**
@@ -225,6 +236,7 @@ public class WPushButton extends WFormWidget {
 	private static final int BIT_ICON_CHANGED = 1;
 	private static final int BIT_ICON_RENDERED = 2;
 	private static final int BIT_REF_CHANGED = 3;
+	private static final int BIT_REF_INTERNAL_PATH = 4;
 	private WString text_;
 	private String icon_;
 	private String ref_;
@@ -254,10 +266,11 @@ public class WPushButton extends WFormWidget {
 		}
 		if (this.flags_.get(BIT_REF_CHANGED) || all && this.ref_.length() != 0) {
 			if (this.ref_.length() != 0) {
+				WApplication app = WApplication.getInstance();
 				if (!(this.redirectJS_ != null)) {
 					this.redirectJS_ = new JSlot();
 					this.clicked().addListener(this.redirectJS_);
-					if (!WApplication.getInstance().getEnvironment().hasAjax()) {
+					if (!app.getEnvironment().hasAjax()) {
 						this.clicked().addListener(this,
 								new Signal1.Listener<WMouseEvent>() {
 									public void trigger(WMouseEvent e1) {
@@ -266,8 +279,15 @@ public class WPushButton extends WFormWidget {
 								});
 					}
 				}
-				this.redirectJS_.setJavaScript("function(){window.location="
-						+ jsStringLiteral(this.ref_) + ";}");
+				if (this.flags_.get(BIT_REF_INTERNAL_PATH)) {
+					this.redirectJS_
+							.setJavaScript("function(){Wt3_1_8.history.navigate("
+									+ jsStringLiteral(this.ref_) + ",true);}");
+				} else {
+					this.redirectJS_
+							.setJavaScript("function(){window.location="
+									+ jsStringLiteral(this.ref_) + ";}");
+				}
 				this.clicked().senderRepaint();
 			} else {
 				;
@@ -304,8 +324,13 @@ public class WPushButton extends WFormWidget {
 	}
 
 	private void doRedirect() {
-		if (!WApplication.getInstance().getEnvironment().hasAjax()) {
-			WApplication.getInstance().redirect(this.ref_);
+		WApplication app = WApplication.getInstance();
+		if (!app.getEnvironment().hasAjax()) {
+			if (this.flags_.get(BIT_REF_INTERNAL_PATH)) {
+				app.setInternalPath(this.ref_, true);
+			} else {
+				app.redirect(this.ref_);
+			}
 		}
 	}
 

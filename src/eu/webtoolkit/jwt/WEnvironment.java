@@ -862,19 +862,19 @@ public class WEnvironment {
 			}
 		}
 		if (this.userAgent_.indexOf("Chrome") != -1) {
-			if (this.userAgent_.indexOf("Chrome/0") != -1) {
+			if (this.userAgent_.indexOf("Chrome/0.") != -1) {
 				this.agent_ = WEnvironment.UserAgent.Chrome0;
 			} else {
-				if (this.userAgent_.indexOf("Chrome/1") != -1) {
+				if (this.userAgent_.indexOf("Chrome/1.") != -1) {
 					this.agent_ = WEnvironment.UserAgent.Chrome1;
 				} else {
-					if (this.userAgent_.indexOf("Chrome/2") != -1) {
+					if (this.userAgent_.indexOf("Chrome/2.") != -1) {
 						this.agent_ = WEnvironment.UserAgent.Chrome2;
 					} else {
-						if (this.userAgent_.indexOf("Chrome/3") != -1) {
+						if (this.userAgent_.indexOf("Chrome/3.") != -1) {
 							this.agent_ = WEnvironment.UserAgent.Chrome3;
 						} else {
-							if (this.userAgent_.indexOf("Chrome/4") != -1) {
+							if (this.userAgent_.indexOf("Chrome/4.") != -1) {
 								this.agent_ = WEnvironment.UserAgent.Chrome4;
 							} else {
 								this.agent_ = WEnvironment.UserAgent.Chrome5;

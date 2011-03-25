@@ -47,12 +47,13 @@ public class WDoubleSpinBox extends WAbstractSpinBox {
 	 */
 	public WDoubleSpinBox(WContainerWidget parent) {
 		super(parent);
-		this.value_ = 0.0;
+		this.value_ = -1;
 		this.min_ = 0.0;
 		this.max_ = 99.99;
 		this.step_ = 1.0;
 		this.precision_ = 2;
 		this.valueChanged_ = new Signal1<Double>();
+		this.setValue(0.0);
 	}
 
 	/**
@@ -177,7 +178,6 @@ public class WDoubleSpinBox extends WAbstractSpinBox {
 		if (this.value_ != value) {
 			this.value_ = value;
 			this.setText(this.getTextFromValue().toString());
-			this.valueChanged_.trigger(value);
 		}
 	}
 

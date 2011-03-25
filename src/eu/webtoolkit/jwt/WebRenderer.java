@@ -92,7 +92,8 @@ class WebRenderer implements SlotLearnerInterface {
 		if (!embedded) {
 			this.setHeaders(response, "text/javascript; charset=UTF-8");
 		}
-		response.out().append("window.location.reload(true);");
+		response.out().append(
+				"if (Wt) Wt._p_.quit(); window.location.reload(true);");
 	}
 
 	public final void letReloadJS(WebResponse response, boolean newSession)
@@ -311,9 +312,16 @@ class WebRenderer implements SlotLearnerInterface {
 		final boolean innerHtml = !xhtml || app.getEnvironment().agentIsGecko();
 		this.formObjectsChanged_ = true;
 		this.currentFormObjectsList_ = this.createFormObjectsList(app);
-		FileServe jquery = new FileServe(WtServlet.JQuery_js);
-		jquery.stream(response.out());
-		FileServe script = new FileServe(WtServlet.Wt_js);
+		response.out().append(WtServlet.JQuery_js);
+		List<String> parts = new ArrayList<String>();
+		String Wt_js_combined = "";
+		if (parts.size() > 1) {
+			for (int i = 0; i < parts.size(); ++i) {
+				Wt_js_combined += parts.get(i);
+			}
+		}
+		FileServe script = new FileServe(parts.size() > 1 ? Wt_js_combined
+				: WtServlet.Wt_js);
 		script
 				.setCondition(
 						"CATCH_ERROR",
@@ -361,7 +369,10 @@ class WebRenderer implements SlotLearnerInterface {
 			this.serveMainAjax(response);
 		} else {
 			if (app.enableAjax_) {
-				this.collectedJS1_.append(this.beforeLoadJS_.toString());
+				this.collectedJS1_
+						.append(
+								"var form = Wt3_1_8.getElement('Wt-form'); if (form) {")
+						.append(this.beforeLoadJS_.toString());
 				this.beforeLoadJS_ = new StringWriter();
 				this.collectedJS1_
 						.append("var domRoot = ")
@@ -370,11 +381,12 @@ class WebRenderer implements SlotLearnerInterface {
 								";var form = Wt3_1_8.getElement('Wt-form');domRoot.style.display = form.style.display;document.body.replaceChild(domRoot, form);");
 				int librariesLoaded = this.loadScriptLibraries(
 						this.collectedJS1_, app);
-				this.collectedJS1_.append(app.getNewBeforeLoadJavaScript());
+				this.collectedJS1_.append(app.getNewBeforeLoadJavaScript())
+						.append("}");
 				this.collectedJS2_.append(
-						"domRoot.style.visibility = 'visible';").append(
-						app.getJavaScriptClass()).append(
-						"._p_.doAutoJavaScript();");
+						"if (domRoot) domRoot.style.visibility = 'visible';")
+						.append(app.getJavaScriptClass()).append(
+								"._p_.doAutoJavaScript();");
 				this.loadScriptLibraries(this.collectedJS2_, app,
 						librariesLoaded);
 				app.enableAjax_ = false;

@@ -24,7 +24,8 @@ class WWidgetRasterPainter extends WWidgetPainter {
 	}
 
 	public WPaintDevice getPaintDevice(boolean paintUpdate) {
-		if (!(this.device_ != null)) {
+		if (!(this.device_ != null) || this.widget_.sizeChanged_) {
+			;
 			this.device_ = new WRasterPaintDevice("png", new WLength(
 					this.widget_.renderWidth_), new WLength(
 					this.widget_.renderHeight_));

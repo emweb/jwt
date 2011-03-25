@@ -50,7 +50,8 @@ public class WRasterPaintDevice extends WResource implements WPaintDevice {
 		    throw new RuntimeException("Unsupported format: " + format);
 		this.changeFlags = EnumSet.noneOf(ChangeFlag.class);
 		
-		this.image = new BufferedImage((int)width.toPixels(), (int)height.toPixels(), BufferedImage.TYPE_INT_ARGB);
+		if (width.toPixels() > 0 && height.toPixels() > 0)
+			this.image = new BufferedImage((int)width.toPixels(), (int)height.toPixels(), BufferedImage.TYPE_INT_ARGB);
 	}
 
 	protected void handleRequest(WebRequest request, WebResponse response) throws IOException {
@@ -194,7 +195,8 @@ public class WRasterPaintDevice extends WResource implements WPaintDevice {
 
 	
 	public void init() {
-		this.g2 = image.createGraphics();
+		if (image != null)
+			this.g2 = image.createGraphics();
 		
 		changeFlags.add(ChangeFlag.Pen);
 		changeFlags.add(ChangeFlag.Brush);
@@ -370,7 +372,10 @@ public class WRasterPaintDevice extends WResource implements WPaintDevice {
 	}
 	
 	public void clear() {
-		g2.clearRect(0, 0, (int)width.getValue(), (int)height.getValue());
+		if (g2 != null) {
+			g2.setBackground(new Color(255, 255, 255, 0));
+			g2.clearRect(0, 0, (int)width.getValue(), (int)height.getValue());
+		}
 	}
 
 

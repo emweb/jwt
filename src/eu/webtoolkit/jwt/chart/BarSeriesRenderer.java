@@ -45,9 +45,15 @@ class BarSeriesRenderer extends SeriesRenderer {
 		bar.lineTo(this.hv(crisp(left), crisp(bottomMid.getY())));
 		bar.closeSubPath();
 		this.renderer_.getPainter().setShadow(this.series_.getShadow());
-		this.renderer_.getPainter().fillPath(bar, this.series_.getBrush());
+		WBrush brush = this.series_.getBrush().clone();
+		SeriesIterator.setBrushColor(brush, xIndex, yIndex,
+				ItemDataRole.BarBrushColorRole);
+		this.renderer_.getPainter().fillPath(bar, brush);
 		this.renderer_.getPainter().setShadow(new WShadow());
-		this.renderer_.getPainter().strokePath(bar, this.series_.getPen());
+		WPen pen = this.series_.getPen().clone();
+		SeriesIterator.setPenColor(pen, xIndex, yIndex,
+				ItemDataRole.BarPenColorRole);
+		this.renderer_.getPainter().strokePath(bar, pen);
 		Object toolTip = yIndex.getData(ItemDataRole.ToolTipRole);
 		if (!(toolTip == null)) {
 			WTransform t = this.renderer_.getPainter().getWorldTransform();

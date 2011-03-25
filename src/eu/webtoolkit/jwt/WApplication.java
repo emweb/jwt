@@ -184,6 +184,7 @@ public class WApplication extends WObject {
 		this.showLoadingIndicator_ = new EventSignal("showload", this);
 		this.hideLoadingIndicator_ = new EventSignal("hideload", this);
 		this.unloaded_ = new JSignal(this, "Wt-unload");
+		this.objectStore_ = new HashMap<String, Object>();
 		this.soundManager_ = null;
 		this.showLoadJS = new JSlot();
 		this.hideLoadJS = new JSlot();
@@ -1734,6 +1735,10 @@ public class WApplication extends WObject {
 	 * since then the application is hosted within a foreign HTML page.</li>
 	 * </ul>
 	 * <p>
+	 * When a header was previously set for the same <code>name</code>, its
+	 * contents is replaced. You can remove a previously set header by replacing
+	 * it with empty content.
+	 * <p>
 	 * These situations coincide with {@link WEnvironment#hasAjax()
 	 * WEnvironment#hasAjax()} returning <code>false</code> (see
 	 * {@link WApplication#getEnvironment() getEnvironment()}).
@@ -1769,18 +1774,21 @@ public class WApplication extends WObject {
 			this.log("warn").append(
 					"WApplication::addMetaHeader() with no effect");
 		}
-		if (type == MetaHeaderType.MetaHttpHeader) {
-			for (int i = 0; i < this.metaHeaders_.size(); ++i) {
-				WApplication.MetaHeader m = this.metaHeaders_.get(i);
-				if (m.type == MetaHeaderType.MetaHttpHeader
-						&& m.name.equals(name)) {
+		for (int i = 0; i < this.metaHeaders_.size(); ++i) {
+			WApplication.MetaHeader m = this.metaHeaders_.get(i);
+			if (m.type == MetaHeaderType.MetaHttpHeader && m.name.equals(name)) {
+				if ((content.length() == 0)) {
+					this.metaHeaders_.remove(0 + i);
+				} else {
 					m.content = WString.toWString(content);
-					return;
 				}
+				return;
 			}
 		}
-		this.metaHeaders_.add(new WApplication.MetaHeader(type, name, content,
-				lang));
+		if (!(content.length() == 0)) {
+			this.metaHeaders_.add(new WApplication.MetaHeader(type, name,
+					content, lang));
+		}
 	}
 
 	/**
@@ -2035,6 +2043,19 @@ public class WApplication extends WObject {
 		}
 	}
 
+	public void storeObject(String key, Object value) {
+		this.objectStore_.put(key, value);
+	}
+
+	public Object getObject(String key) {
+		Object i = this.objectStore_.get(key);
+		if (i != null) {
+			return i;
+		} else {
+			return null;
+		}
+	}
+
 	/**
 	 * Notifies an event to the application.
 	 * <p>
@@ -2256,6 +2277,7 @@ public class WApplication extends WObject {
 	EventSignal showLoadingIndicator_;
 	EventSignal hideLoadingIndicator_;
 	private JSignal unloaded_;
+	private Map<String, Object> objectStore_;
 
 	WContainerWidget getTimerRoot() {
 		return this.timerRoot_;

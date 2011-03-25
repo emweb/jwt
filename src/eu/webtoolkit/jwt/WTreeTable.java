@@ -296,7 +296,7 @@ public class WTreeTable extends WCompositeWidget {
 	}
 
 	static String wtjs1(WApplication app) {
-		String s = "function(g,a){jQuery.data(a,\"obj\",this);var d=$(a).find(\".Wt-content\").get(0),f=$(a).find(\".Wt-sbspacer\").get(0);this.wtResize=function(c,e,b){c.style.height=b+\"px\";e=c.lastChild;b-=$(c.firstChild).outerHeight();if(b>0)e.style.height=b+\"px\"};this.autoJavaScript=function(){if(a.parentNode)f.style.display=d.scrollHeight>d.offsetHeight?\"block\":\"none\"}}";
+		String s = "function(f,a){jQuery.data(a,\"obj\",this);var g=this,h=f.WT,e=$(a).find(\".Wt-content\").get(0),i=$(a).find(\".Wt-sbspacer\").get(0);this.wtResize=function(b,d,c){b.style.height=c+\"px\";d=b.lastChild;c-=$(b.firstChild).outerHeight();if(c>0)if(d.style.height!=c+\"px\")d.style.height=c+\"px\"};this.autoJavaScript=function(){if(a.parentNode){i.style.display=e.scrollHeight>e.offsetHeight?\"block\":\"none\";var b=h.pxself(a,\"height\");b&&g.wtResize(a,0,b)}}}";
 		if ("ctor.WTreeTable".indexOf(".prototype") != -1) {
 			return "Wt3_1_8.ctor.WTreeTable = " + s + ";";
 		} else {

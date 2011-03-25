@@ -76,6 +76,14 @@ public class ItemDataRole {
 	 */
 	public final static int MarkerBrushColorRole = 17;
 	/**
+	 * Bar pen color (for {@link eu.webtoolkit.jwt.chart.WCartesianChart}).
+	 */
+	public final static int BarPenColorRole = 18;
+	/**
+	 * Bar brush color (for {@link eu.webtoolkit.jwt.chart.WCartesianChart}).
+	 */
+	public final static int BarBrushColorRole = 19;
+	/**
 	 * First role reserved for user purposes.
 	 */
 	public final static int UserRole = 32;

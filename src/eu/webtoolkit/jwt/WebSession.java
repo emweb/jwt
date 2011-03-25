@@ -315,25 +315,27 @@ class WebSession {
 								}
 							}
 						}
-					} else {
+					}
+					if (handler.getResponse() != null
+							&& handler.getResponse().getResponseType() == WebRequest.ResponseType.Page
+							&& !this.env_.hasAjax()) {
+						String hashE = request.getParameter("_");
+						if (hashE != null) {
+							this.app_.changeInternalPath(hashE);
+						} else {
+							if (request.getPathInfo().length() != 0) {
+								this.app_.changeInternalPath(request
+										.getPathInfo());
+							} else {
+								this.app_.changeInternalPath("");
+							}
+						}
+					}
+					if (!(signalE != null)) {
 						this.log("notice").append("Refreshing session");
 						if (this.bootStyleResponse_ != null) {
 							this.bootStyleResponse_.flush();
 							this.bootStyleResponse_ = null;
-						}
-						if (handler.getResponse().getResponseType() == WebRequest.ResponseType.Page
-								&& !this.env_.hasAjax()) {
-							String hashE = request.getParameter("_");
-							if (hashE != null) {
-								this.app_.changeInternalPath(hashE);
-							} else {
-								if (request.getPathInfo().length() != 0) {
-									this.app_.changeInternalPath(request
-											.getPathInfo());
-								} else {
-									this.app_.changeInternalPath("");
-								}
-							}
 						}
 						this.env_.parameters_ = handler.getRequest()
 								.getParameterMap();
@@ -878,7 +880,9 @@ class WebSession {
 				if (wtdE != null && wtdE.equals(this.sessionId_)
 						&& this.state_ != WebSession.State.JustCreated) {
 					handler.getResponse().addHeader(
-							"Access-Control-Allow-Origin", "*");
+							"Access-Control-Allow-Origin", origin);
+					handler.getResponse().addHeader(
+							"Access-Control-Allow-Credentials", "true");
 					if (request.getRequestMethod().equals("OPTIONS")) {
 						WebResponse response = handler.getResponse();
 						response.setStatus(200);
@@ -1449,6 +1453,8 @@ class WebSession {
 					this.app_.changeInternalPath(hashE);
 					this.app_.doJavaScript("Wt3_1_8.scrollIntoView('" + hashE
 							+ "');");
+				} else {
+					this.app_.changeInternalPath("");
 				}
 			} else {
 				if (signalE.equals("none") || signalE.equals("load")) {

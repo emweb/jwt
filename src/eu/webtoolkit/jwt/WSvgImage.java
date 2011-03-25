@@ -204,12 +204,9 @@ public class WSvgImage extends WResource implements WVectorImage {
 				this.getPainter().getBrush().getColor())
 				|| this.getPainter().getBrush().getStyle() == BrushStyle.NoBrush) {
 			WColor color = this.getPainter().getPen().getColor();
-			style.append("fill:" + color.getCssText()).append(';');
-			if (color.getAlpha() != 255) {
-				style.append("fill-opacity:").append(
-						MathUtils.round(color.getAlpha() / 255., 3))
-						.append(';');
-			}
+			style.append("fill:" + color.getCssText()).append(';').append(
+					"fill-opacity:").append(
+					MathUtils.round(color.getAlpha() / 255., 3)).append(';');
 		}
 		style.append('"');
 		AlignmentFlag horizontalAlign = EnumUtils.enumFromSet(EnumUtils.mask(

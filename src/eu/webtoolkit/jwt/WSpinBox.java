@@ -45,11 +45,12 @@ public class WSpinBox extends WAbstractSpinBox {
 	 */
 	public WSpinBox(WContainerWidget parent) {
 		super(parent);
-		this.value_ = 0;
+		this.value_ = -1;
 		this.min_ = 0;
 		this.max_ = 99;
 		this.step_ = 1;
 		this.valueChanged_ = new Signal1<Integer>();
+		this.setValue(0);
 	}
 
 	/**
@@ -148,7 +149,6 @@ public class WSpinBox extends WAbstractSpinBox {
 		if (this.value_ != value) {
 			this.value_ = value;
 			this.setText(this.getTextFromValue().toString());
-			this.valueChanged_.trigger(value);
 		}
 	}
 

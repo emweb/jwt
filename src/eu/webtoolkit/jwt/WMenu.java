@@ -402,13 +402,7 @@ public class WMenu extends WCompositeWidget {
 			item.renderSelected(false);
 		}
 		item.renderHidden(item.isHidden());
-		if (this.internalPathEnabled_) {
-			WApplication app = WApplication.getInstance();
-			if (app.internalPathMatches(this.basePath_
-					+ item.getPathComponent())) {
-				this.select(this.items_.size() - 1, false);
-			}
-		}
+		this.itemPathChanged(item);
 		return item;
 	}
 
@@ -970,6 +964,16 @@ public class WMenu extends WCompositeWidget {
 
 	int indexOf(WMenuItem item) {
 		return this.items_.indexOf(item);
+	}
+
+	void itemPathChanged(WMenuItem item) {
+		if (this.internalPathEnabled_) {
+			WApplication app = WApplication.getInstance();
+			if (app.internalPathMatches(this.basePath_
+					+ item.getPathComponent())) {
+				this.select(this.indexOf(item), false);
+			}
+		}
 	}
 
 	void selectVisual(WMenuItem item) {

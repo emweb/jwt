@@ -65,6 +65,12 @@ import eu.webtoolkit.jwt.servlet.*;
  * and quirky JavaScript (<a
  * href="http://www.quirksmode.org/">http://www.quirksmode.org/</a> was a
  * reliable companion to me) -- good luck.
+ * <p>
+ * Note that the slot object needs to live as long as you want the JavaScript to
+ * be executed by connected signals: when the slot is destroyed, the connection
+ * is destroyed just as with other signal/slot connections where the target
+ * object is deleted. This means that it is (almost?) always a bad idea to
+ * declare a {@link JSlot} on the stack.
  */
 public class JSlot {
 	/**

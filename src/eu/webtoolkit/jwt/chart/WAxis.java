@@ -108,8 +108,8 @@ public class WAxis {
 	/**
 	 * Sets the axis location.
 	 * <p>
-	 * Configures the location of the axis, relative to values on the other
-	 * values (i.e. Y values for the X axis, and X values for the Y axis).
+	 * Configures the location of the axis, relative to values on the other axis
+	 * (i.e. Y values for the X axis, and X values for the Y axis).
 	 * <p>
 	 * The default value is {@link AxisValue#MinimumValue}.
 	 * <p>
@@ -1358,7 +1358,6 @@ public class WAxis {
 	}
 
 	double mapToDevice(Object value, int segment) {
-		assert this.scale_ != AxisScale.CategoryScale;
 		return this.mapToDevice(this.getValue(value), segment);
 	}
 

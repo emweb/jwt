@@ -230,6 +230,9 @@ public class WMenuItem extends WObject {
 		if (this.itemWidget_ != null) {
 			this.updateItemWidget(this.itemWidget_);
 		}
+		if (this.menu_ != null) {
+			this.menu_.itemPathChanged(this);
+		}
 	}
 
 	/**

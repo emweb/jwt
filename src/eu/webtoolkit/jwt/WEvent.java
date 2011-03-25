@@ -68,6 +68,10 @@ public class WEvent {
 		return Integer.parseInt(v);
 	}
 
+	static int asUInt(String v) {
+		return Integer.parseInt(v);
+	}
+
 	static int parseIntParameter(WebRequest request, String name, int ifMissing) {
 		String p;
 		if ((p = request.getParameter(name)) != null) {
@@ -106,7 +110,7 @@ public class WEvent {
 		}
 		try {
 			for (int i = 0; i < s.size(); i += 9) {
-				result.add(new Touch(asInt(s.get(i + 0)), asInt(s.get(i + 1)),
+				result.add(new Touch(asUInt(s.get(i + 0)), asInt(s.get(i + 1)),
 						asInt(s.get(i + 2)), asInt(s.get(i + 3)), asInt(s
 								.get(i + 4)), asInt(s.get(i + 5)), asInt(s
 								.get(i + 6)), asInt(s.get(i + 7)), asInt(s
