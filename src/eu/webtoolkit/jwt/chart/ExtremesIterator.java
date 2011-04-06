@@ -22,8 +22,8 @@ class ExtremesIterator extends SeriesIterator {
 		super();
 		this.axis_ = axis;
 		this.scale_ = scale;
-		this.minimum_ = WAxis.AUTO_MINIMUM;
-		this.maximum_ = WAxis.AUTO_MAXIMUM;
+		this.minimum_ = Double.MAX_VALUE;
+		this.maximum_ = -Double.MAX_VALUE;
 	}
 
 	public boolean startSeries(WDataSeries series, double groupWidth,

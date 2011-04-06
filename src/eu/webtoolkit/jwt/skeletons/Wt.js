@@ -38,6 +38,8 @@ if (!window._$_WT_CLASS_$_)
 {
 var WT = this;
 
+
+
 this.condCall = function(o, f, a) {
   if (o[f])
     o[f](a);
@@ -89,8 +91,18 @@ this.isIEMobile = navigator.userAgent.toLowerCase().indexOf("msie 4") != -1
   || navigator.userAgent.toLowerCase().indexOf("msie 5") != -1;
 this.isGecko = navigator.userAgent.toLowerCase().indexOf("gecko") != -1;
 this.isOpera = typeof window.opera !== 'undefined';
+this.isAndroid = (navigator.userAgent.toLowerCase().indexOf("safari") != -1)
+  && (navigator.userAgent.toLowerCase().indexOf("android") != -1);
 
 this.updateDelay = this.isIE ? 10 : 51;
+
+if (this.isAndroid) {
+  console.error('init console.error');
+  console.info('init console.info');
+  console.log('init console.log');
+  console.warn('init console.warn');
+}
+
 
 var traceStart = new Date();
 this.trace = function(v, start) {
@@ -1070,6 +1082,9 @@ this.fitToWindow = function(e, x, y, rightx, bottomy) {
   var wx = document.body.scrollLeft + document.documentElement.scrollLeft;
   var wy = document.body.scrollTop + document.documentElement.scrollTop;
 
+  if (!e.offsetParent)
+    return;
+
   var ow = WT.widgetPageCoordinates(e.offsetParent);
 
   var hsides = [ 'left', 'right' ],
@@ -1078,7 +1093,7 @@ this.fitToWindow = function(e, x, y, rightx, bottomy) {
       eh = WT.px(e, 'maxHeight') || e.offsetHeight,
       hside, vside;
 
-  if (ew > wx) { // wider than window
+  if (ew > ws.x) { // wider than window
     x = wx;
     hside = 0;
   } else if (x + ew > wx + ws.x) { // too far right, chose other side
@@ -1091,7 +1106,7 @@ this.fitToWindow = function(e, x, y, rightx, bottomy) {
     hside = 0;
   }
 
-  if (ew > wx) { // taller than window
+  if (ew > ws.y) { // taller than window
     y = wy;
     vside = 0;
   } else if (y + eh > wy + ws.y) { // too far below, chose other side
@@ -1129,10 +1144,15 @@ this.positionXY = function(id, x, y) {
 this.Horizontal = 0x1;
 this.Vertical = 0x2;
 
-this.positionAtWidget = function(id, atId, orientation, parentInRoot) {
+this.positionAtWidget = function(id, atId, orientation, parentInRoot,
+				 autoShow) {
   var w = WT.getElement(id),
-    atw = WT.getElement(atId),
-    xy = WT.widgetPageCoordinates(atw),
+    atw = WT.getElement(atId);
+
+  if (!atw || !w)
+    return;
+
+  var xy = WT.widgetPageCoordinates(atw),
     x, y, rightx, bottomy;
 
   if (parentInRoot) {
@@ -1140,8 +1160,9 @@ this.positionAtWidget = function(id, atId, orientation, parentInRoot) {
     $('.Wt-domRoot').get(0).appendChild(w);
   }
 
-  w.style.position='absolute';
-  w.style.display='block';
+  w.style.position = 'absolute';
+  if (autoShow)
+    w.style.display = 'block';
 
   if (orientation == WT.Horizontal) {
     x = xy.x + atw.offsetWidth;
@@ -1182,24 +1203,43 @@ if (html5History) {
 
       function onPopState(event) {
 	var p = window.location.pathname + window.location.search;
-	currentState = p.substr(baseUrl.length);
-	onStateChange(currentState);
+	var newState = p.substr(baseUrl.length);
+	if (newState != currentState) {
+	  currentState = newState;
+	  onStateChange(currentState);
+	}
+      }
+
+      function onHashChange() {
+	var p = window.location.hash;
+	var newState = null;
+	if (p == '')
+	  newState = p;
+	else if (p.substr(0, 2) == '#/')
+	  newState = p.substr(2);
+	if (newState !== currentState) {
+	  currentState = newState;
+	  onStateChange(currentState);
+	}
       }
 
       window.addEventListener("popstate", onPopState, false);
+      window.addEventListener("hashchange", onHashChange, false);
     },
 
     initialize: function (stateField, histFrame, deployUrl) {
       /* FIXME, should depend on ugly URL settings */
-      if (deployUrl[deployUrl.length - 1] == '/') {
+      if (deployUrl && deployUrl[deployUrl.length - 1] == '/') {
 _$_$if_UGLY_INTERNAL_PATHS_$_();
 	baseUrl = deployUrl + "?_=";
 _$_$endif_$_();
 _$_$ifnot_UGLY_INTERNAL_PATHS_$_();
 	baseUrl = deployUrl.substr(0, deployUrl.length - 1);
 _$_$endif_$_();
-      } else
+      } else if (deployUrl)
 	baseUrl = deployUrl;
+      else
+	baseUrl = window.location.pathname;
     },
 
     navigate: function (state, generateEvent) {

@@ -18,14 +18,14 @@ import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
 
 /**
- * A session event.
+ * An application event.
  * <p>
  * 
- * The application is notified of an event (like a user interaction, a timeout
- * or an internal keep-alive event) using {@link WApplication#notify(WEvent e)
- * WApplication#notify()}.
+ * The application is notified of an event (like a user interaction, a sesion
+ * timeout, an internal keep-alive event, or other event) using
+ * {@link WApplication#notify(WEvent e) WApplication#notify()}.
  * <p>
- * You may want to check the event type using {@link WEvent#getEventType()
+ * You can check for a particular event type using {@link WEvent#getEventType()
  * getEventType()}.
  */
 public class WEvent {
@@ -39,24 +39,23 @@ public class WEvent {
 		return this.impl_.handler.getSession().getEventType(this);
 	}
 
-	WEvent(WEvent.Impl impl, boolean doRenderOnly) {
-		this.impl_ = impl;
-		this.renderOnly = doRenderOnly;
-	}
-
 	WEvent(WEvent.Impl impl) {
 		this.impl_ = impl;
-		this.renderOnly = false;
 	}
 
 	WEvent.Impl impl_;
-	boolean renderOnly;
 
 	static class Impl {
 		WebSession.Handler handler;
+		boolean renderOnly;
 
-		Impl(WebSession.Handler aHandler) {
+		Impl(WebSession.Handler aHandler, boolean doRenderOnly) {
 			this.handler = aHandler;
+			this.renderOnly = doRenderOnly;
+		}
+
+		public Impl(WebSession.Handler aHandler) {
+			this(aHandler, false);
 		}
 
 		Impl() {
@@ -126,9 +125,15 @@ public class WEvent {
 
 class Impl {
 	public WebSession.Handler handler;
+	public boolean renderOnly;
+
+	public Impl(WebSession.Handler aHandler, boolean doRenderOnly) {
+		this.handler = aHandler;
+		this.renderOnly = doRenderOnly;
+	}
 
 	public Impl(WebSession.Handler aHandler) {
-		this.handler = aHandler;
+		this(aHandler, false);
 	}
 
 	public Impl() {

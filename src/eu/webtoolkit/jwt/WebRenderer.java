@@ -312,7 +312,9 @@ class WebRenderer implements SlotLearnerInterface {
 		final boolean innerHtml = !xhtml || app.getEnvironment().agentIsGecko();
 		this.formObjectsChanged_ = true;
 		this.currentFormObjectsList_ = this.createFormObjectsList(app);
+		response.out().append("if (typeof window.jQuery === 'undefined') {");
 		response.out().append(WtServlet.JQuery_js);
+		response.out().append("}");
 		List<String> parts = new ArrayList<String>();
 		String Wt_js_combined = "";
 		if (parts.size() > 1) {
@@ -347,8 +349,13 @@ class WebRenderer implements SlotLearnerInterface {
 						WebSession.BootstrapOption.ClearInternalPath)));
 		script.setVar("DEPLOY_URL", WWebWidget.jsStringLiteral(this.session_
 				.getDeploymentPath()));
-		script.setVar("KEEP_ALIVE", String
-				.valueOf(conf.getSessionTimeout() / 2));
+		int keepAlive;
+		if (conf.getSessionTimeout() == -1) {
+			keepAlive = 1000000;
+		} else {
+			keepAlive = conf.getSessionTimeout() / 2;
+		}
+		script.setVar("KEEP_ALIVE", String.valueOf(keepAlive));
 		script.setVar("INITIAL_HASH", WWebWidget.jsStringLiteral(app
 				.getInternalPath()));
 		script.setVar("INDICATOR_TIMEOUT", conf.getIndicatorTimeout());
@@ -378,17 +385,17 @@ class WebRenderer implements SlotLearnerInterface {
 						.append("var domRoot = ")
 						.append(app.domRoot_.getJsRef())
 						.append(
-								";var form = Wt3_1_8.getElement('Wt-form');domRoot.style.display = form.style.display;document.body.replaceChild(domRoot, form);");
+								";domRoot.style.display = form.style.display;document.body.replaceChild(domRoot, form);");
 				int librariesLoaded = this.loadScriptLibraries(
 						this.collectedJS1_, app);
-				this.collectedJS1_.append(app.getNewBeforeLoadJavaScript())
-						.append("}");
+				this.collectedJS1_.append(app.getNewBeforeLoadJavaScript());
 				this.collectedJS2_.append(
-						"if (domRoot) domRoot.style.visibility = 'visible';")
-						.append(app.getJavaScriptClass()).append(
-								"._p_.doAutoJavaScript();");
+						"domRoot.style.visibility = 'visible';").append(
+						app.getJavaScriptClass()).append(
+						"._p_.doAutoJavaScript();");
 				this.loadScriptLibraries(this.collectedJS2_, app,
 						librariesLoaded);
+				this.collectedJS2_.append("}");
 				app.enableAjax_ = false;
 			}
 			response.out().append("window.").append(app.getJavaScriptClass())
@@ -563,7 +570,7 @@ class WebRenderer implements SlotLearnerInterface {
 			app.doJavaScript(str.toString());
 			refresh = 1000000;
 		} else {
-			if (app.isQuited()) {
+			if (app.isQuited() || conf.getSessionTimeout() == -1) {
 				refresh = 1000000;
 			} else {
 				refresh = conf.getSessionTimeout() / 3;
@@ -619,19 +626,21 @@ class WebRenderer implements SlotLearnerInterface {
 		if (conf.isInlineCss()) {
 			app.getStyleSheet().javaScriptUpdate(app, response.out(), true);
 		}
-		response
-				.out()
-				.append("document.body.parentNode.className='")
-				.append(app.htmlClass_)
-				.append("';")
-				.append("document.body.className='")
-				.append(this.getBodyClassRtl())
-				.append("';")
-				.append("document.body.setAttribute('dir', '")
-				.append(
-						app.getLayoutDirection() == LayoutDirection.LeftToRight ? "LTR"
-								: "RTL").append("');");
-		app.bodyHtmlClassChanged_ = false;
+		if (app.bodyHtmlClassChanged_) {
+			response
+					.out()
+					.append("document.body.parentNode.className='")
+					.append(app.htmlClass_)
+					.append("';")
+					.append("document.body.className='")
+					.append(this.getBodyClassRtl())
+					.append("';")
+					.append("document.body.setAttribute('dir', '")
+					.append(
+							app.getLayoutDirection() == LayoutDirection.LeftToRight ? "LTR"
+									: "RTL").append("');");
+			app.bodyHtmlClassChanged_ = false;
+		}
 		Writer s = response.out();
 		mainElement.addToParent(s, "document.body", widgetset ? 0 : -1, app);
 		;
@@ -993,6 +1002,7 @@ class WebRenderer implements SlotLearnerInterface {
 		String htmlAttr = "";
 		if (app != null && app.htmlClass_.length() != 0) {
 			htmlAttr = " class=\"" + app.htmlClass_ + "\"";
+			app.bodyHtmlClassChanged_ = false;
 		}
 		if (xhtml) {
 			page.setVar("HTMLATTRIBUTES",

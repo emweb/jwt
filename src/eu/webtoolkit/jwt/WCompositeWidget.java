@@ -338,7 +338,11 @@ public class WCompositeWidget extends WWidget {
 	}
 
 	public WWidget find(String name) {
-		return this.impl_.find(name);
+		if (this.getObjectName().equals(name)) {
+			return this;
+		} else {
+			return this.impl_.find(name);
+		}
 	}
 
 	public void setSelectable(boolean selectable) {

@@ -891,8 +891,8 @@ public abstract class WWidget extends WObject {
 	 * Returns a JavaScript expression to the corresponding DOM node.
 	 * <p>
 	 * You may want to use this in conjunction with {@link JSlot} or
-	 * {@link WApplication#doJavaScript(String javascript, boolean afterLoaded)
-	 * WApplication#doJavaScript()} in custom JavaScript code.
+	 * {@link WWidget#doJavaScript(String js) doJavaScript()} in custom
+	 * JavaScript code.
 	 * <p>
 	 * 
 	 * @see WWidget#isRendered()
@@ -910,7 +910,7 @@ public abstract class WWidget extends WObject {
 	 * <p>
 	 * 
 	 * @see JSlot
-	 * @see WApplication#doJavaScript(String javascript, boolean afterLoaded)
+	 * @see WWidget#doJavaScript(String js)
 	 */
 	public abstract void setAttributeValue(String name, String value);
 
@@ -1127,18 +1127,23 @@ public abstract class WWidget extends WObject {
 	public abstract void setSelectable(boolean selectable);
 
 	/**
-	 * Executes the given JavaScript statements, possibly delayed until after
-	 * the widget is rendered.
+	 * Executes the given JavaScript statements when the widget is rendered or
+	 * updated.
 	 * <p>
 	 * Calling
 	 * {@link WApplication#doJavaScript(String javascript, boolean afterLoaded)
 	 * WApplication#doJavaScript()} with JavaScript code that refers to a widget
-	 * that is still to be rendered causes JavaScript errors. This happens for
-	 * example when an object is created, but not yet inserted in the widget
-	 * tree.
+	 * using {@link WWidget#getJsRef() getJsRef()}, that is still to be rendered
+	 * may cause JavaScript errors because the corresponding DOM node does not
+	 * exist. This happens for example when a widget is created, but not yet
+	 * inserted in the widget tree.
 	 * <p>
-	 * This method offers an alternative: it queues up all doJavaScript calls
-	 * for widgets that were not yet rendered until they are rendered.
+	 * This method guarantees that the JavaScript code is only run when the
+	 * corresponding DOM node (using {@link WWidget#getJsRef() getJsRef()})
+	 * resolves to a valid DOM object.
+	 * <p>
+	 * 
+	 * @see WWidget#getJsRef()
 	 */
 	public abstract void doJavaScript(String js);
 

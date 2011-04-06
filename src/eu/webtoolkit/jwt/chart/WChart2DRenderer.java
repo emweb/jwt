@@ -17,7 +17,40 @@ import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
 
-class WChart2DRenderer {
+/**
+ * Helper class for rendering a cartesian chart.
+ * <p>
+ * 
+ * This class is used by {@link eu.webtoolkit.jwt.chart.WCartesianChart} during
+ * rendering, and normally, you will not need to use this class directly. You
+ * may want to specialize this class if you want to override particular aspects
+ * of how the chart is renderered. In that case, you will want to instantiate
+ * the specialized class in
+ * {@link WCartesianChart#createRenderer(WPainter painter, WRectF rectangle)
+ * WCartesianChart#createRenderer()}.
+ * <p>
+ * To simplify the simulatenous handling of Horizontal and Vertical charts, the
+ * renderer makes abstraction of the orientation of the chart: regardless of the
+ * chart orientation, the {@link WChart2DRenderer#getWidth() getWidth()}
+ * corresponds to the length along the X axis, and
+ * {@link WChart2DRenderer#getHeight() getHeight()} corresponds to the length
+ * along the Y axis. Similarly, {@link WChart2DRenderer#calcChartArea()
+ * calcChartArea()} and {@link WChart2DRenderer#getChartArea() getChartArea()}
+ * return a rectangle where the bottom side corresponds to the lowest displayed
+ * Y values, and the left side corresponds to the lowest displayed X values. To
+ * map these &quot;chart coordinates&quot; to painter coordinates, use one of
+ * the {@link WChart2DRenderer#hv(double x, double y) hv()} methods.
+ * <p>
+ * <i>Note, this class is part of the internal charting API, and may be subject
+ * of changes and refactorings.</i>
+ */
+public class WChart2DRenderer {
+	/**
+	 * Creates a renderer.
+	 * <p>
+	 * Creates a renderer for the cartesian chart <i>chart</i>, for rendering in
+	 * the specified <i>rectangle</i> of the <i>painter</i>.
+	 */
 	public WChart2DRenderer(WCartesianChart chart, WPainter painter,
 			WRectF rectangle) {
 		this.chart_ = chart;
@@ -42,30 +75,30 @@ class WChart2DRenderer {
 	}
 
 	/**
-	 * Returns the main plotting area rectangle.
-	 * <p>
-	 * This area is calculated and cached by
-	 * {@link WChart2DRenderer#calcChartArea() calcChartArea()}.
+	 * Returns the corresponding chart.
 	 */
 	public WCartesianChart getChart() {
 		return this.chart_;
 	}
 
 	/**
-	 * Calculates the main plotting area rectangle.
-	 * <p>
-	 * This method calculates the main plotting area, and stores it in the
-	 * member chartArea_. The default implementation simply removes the plot
-	 * area padding from the entire painting rectangle.
-	 * <p>
-	 * 
-	 * @see WAbstractChart#getPlotAreaPadding(Side side)
+	 * Returns a reference to the painter.
 	 */
 	public WPainter getPainter() {
 		return this.painter_;
 	}
 
 	/**
+	 * Returns the main plotting area rectangle.
+	 * <p>
+	 * This area is calculated and cached by
+	 * {@link WChart2DRenderer#calcChartArea() calcChartArea()}.
+	 */
+	public WRectF getChartArea() {
+		return this.chartArea_;
+	}
+
+	/**
 	 * Calculates the main plotting area rectangle.
 	 * <p>
 	 * This method calculates the main plotting area, and stores it in the
@@ -74,34 +107,6 @@ class WChart2DRenderer {
 	 * <p>
 	 * 
 	 * @see WAbstractChart#getPlotAreaPadding(Side side)
-	 */
-	public WRectF getChartArea() {
-		return this.chartArea_;
-	}
-
-	/**
-	 * Renders the chart.
-	 * <p>
-	 * This method renders the chart. The default implementation does the
-	 * following:
-	 * <p>
-	 * <blockquote>
-	 * 
-	 * <pre>
-	 * calcChartArea(); // sets chartArea_
-	 * prepareAxes(); // provides logical dimensions to the axes
-	 * 
-	 * renderBackground(); // render the background
-	 * renderAxes(Grid); // render the grid
-	 * renderSeries(); // render the data series
-	 * renderAxes(AxisProperty.Line, AxisProperty.Labels); // render the axes (lines &amp; labels) 
-	 * renderLegend(); // render legend and titles
-	 * </pre>
-	 * 
-	 * </blockquote>
-	 * <p>
-	 * You may want to reimplement this method to change the sequence of steps
-	 * for rendering the chart.
 	 */
 	public void calcChartArea() {
 		if (this.chart_.getOrientation() == Orientation.Vertical) {
@@ -124,6 +129,18 @@ class WChart2DRenderer {
 	}
 
 	/**
+	 * Initializes the layout.
+	 * <p>
+	 * This computes the chart plotting area dimensions, and intializes the axes
+	 * so that they provide a suitable mapping from logical coordinates to
+	 * device coordinates.
+	 */
+	public void initLayout() {
+		this.calcChartArea();
+		this.prepareAxes();
+	}
+
+	/**
 	 * Renders the chart.
 	 * <p>
 	 * This method renders the chart. The default implementation does the
@@ -146,26 +163,6 @@ class WChart2DRenderer {
 	 * <p>
 	 * You may want to reimplement this method to change the sequence of steps
 	 * for rendering the chart.
-	 */
-	public void initLayout() {
-		this.calcChartArea();
-		this.prepareAxes();
-	}
-
-	/**
-	 * Maps a (X, Y) point to chart coordinates.
-	 * <p>
-	 * This method maps the point with given (<i>xValue</i>, <i>yValue</i>) to
-	 * chart coordinates. The y value is mapped by one of the Y axes indicated
-	 * by <i>axis</i>.
-	 * <p>
-	 * Note that chart coordinates may not be the same as painter coordinates,
-	 * because of the chart orientation. To map from chart coordinates to
-	 * painter coordinates, use {@link WChart2DRenderer#hv(double x, double y)
-	 * hv()}.
-	 * <p>
-	 * The <i>currentXSegment</i> and <i>currentYSegment</i> specify the axis
-	 * segments in which you wish to map the point.
 	 */
 	public void render() {
 		this.tildeStartMarker_.assign(new WPainterPath());
@@ -190,15 +187,19 @@ class WChart2DRenderer {
 	}
 
 	/**
-	 * Utility function for rendering text.
+	 * Maps a (X, Y) point to chart coordinates.
 	 * <p>
-	 * This method renders text on the chart position <i>pos</i>, with a
-	 * particular alignment <i>flags</i>. These are both specified in chart
-	 * coordinates. The position is converted to painter coordinates using
-	 * {@link WChart2DRenderer#hv(double x, double y) hv()}, and the alignment
-	 * flags are changed accordingly. The rotation, indicated by <i>angle</i> is
-	 * specified in painter coordinates and thus an angle of 0 always indicates
-	 * horizontal text, regardless of the chart orientation.
+	 * This method maps the point with given (<i>xValue</i>, <i>yValue</i>) to
+	 * chart coordinates. The y value is mapped by one of the Y axes indicated
+	 * by <i>axis</i>.
+	 * <p>
+	 * Note that chart coordinates may not be the same as painter coordinates,
+	 * because of the chart orientation. To map from chart coordinates to
+	 * painter coordinates, use {@link WChart2DRenderer#hv(double x, double y)
+	 * hv()}.
+	 * <p>
+	 * The <i>currentXSegment</i> and <i>currentYSegment</i> specify the axis
+	 * segments in which you wish to map the point.
 	 */
 	public WPointF map(double xValue, double yValue, Axis axis,
 			int currentXSegment, int currentYSegment) {
@@ -209,7 +210,7 @@ class WChart2DRenderer {
 	}
 
 	/**
-	 * Utility function for rendering text.
+	 * Maps a (X, Y) point to chart coordinates.
 	 * <p>
 	 * Returns
 	 * {@link #map(double xValue, double yValue, Axis axis, int currentXSegment, int currentYSegment)
@@ -220,7 +221,7 @@ class WChart2DRenderer {
 	}
 
 	/**
-	 * Utility function for rendering text.
+	 * Maps a (X, Y) point to chart coordinates.
 	 * <p>
 	 * Returns
 	 * {@link #map(double xValue, double yValue, Axis axis, int currentXSegment, int currentYSegment)
@@ -231,7 +232,7 @@ class WChart2DRenderer {
 	}
 
 	/**
-	 * Utility function for rendering text.
+	 * Maps a (X, Y) point to chart coordinates.
 	 * <p>
 	 * Returns
 	 * {@link #map(double xValue, double yValue, Axis axis, int currentXSegment, int currentYSegment)
@@ -242,6 +243,17 @@ class WChart2DRenderer {
 		return map(xValue, yValue, axis, currentXSegment, 0);
 	}
 
+	/**
+	 * Utility function for rendering text.
+	 * <p>
+	 * This method renders text on the chart position <i>pos</i>, with a
+	 * particular alignment <i>flags</i>. These are both specified in chart
+	 * coordinates. The position is converted to painter coordinates using
+	 * {@link WChart2DRenderer#hv(double x, double y) hv()}, and the alignment
+	 * flags are changed accordingly. The rotation, indicated by <i>angle</i> is
+	 * specified in painter coordinates and thus an angle of 0 always indicates
+	 * horizontal text, regardless of the chart orientation.
+	 */
 	public void renderLabel(CharSequence text, WPointF p, WColor color,
 			EnumSet<AlignmentFlag> flags, double angle, int margin) {
 		AlignmentFlag horizontalAlign = EnumUtils.enumFromSet(EnumUtils.mask(
@@ -250,7 +262,7 @@ class WChart2DRenderer {
 				flags, AlignmentFlag.AlignVerticalMask));
 		AlignmentFlag rHorizontalAlign = horizontalAlign;
 		AlignmentFlag rVerticalAlign = verticalAlign;
-		double width = 100;
+		double width = 1000;
 		double height = 20;
 		WPointF pos = this.hv(p);
 		double left = pos.getX();
@@ -337,17 +349,20 @@ class WChart2DRenderer {
 	}
 
 	/**
-	 * Returns the segment area for a combination of X and Y segments.
+	 * Conversion between chart and painter coordinates.
 	 * <p>
-	 * This segment area is used for clipping when rendering in a particular
-	 * segment.
+	 * Converts from chart coordinates to painter coordinates, taking into
+	 * account the chart orientation.
 	 */
 	public WPointF hv(WPointF p) {
 		return this.hv(p.getX(), p.getY());
 	}
 
 	/**
-	 * Enumeration that specifies a property of the axes.
+	 * Conversion between chart and painter coordinates.
+	 * <p>
+	 * Converts from chart coordinates to painter coordinates, taking into
+	 * account the chart orientation.
 	 */
 	public WRectF hv(WRectF r) {
 		if (this.chart_.getOrientation() == Orientation.Vertical) {
@@ -358,6 +373,12 @@ class WChart2DRenderer {
 		}
 	}
 
+	/**
+	 * Returns the segment area for a combination of X and Y segments.
+	 * <p>
+	 * This segment area is used for clipping when rendering in a particular
+	 * segment.
+	 */
 	public WRectF chartSegmentArea(WAxis yAxis, int xSegment, int ySegment) {
 		WAxis xAxis = this.chart_.getAxis(Axis.XAxis);
 		WAxis.Segment xs = xAxis.segments_.get(xSegment);
@@ -383,8 +404,22 @@ class WChart2DRenderer {
 				.floor(x2 - x1 + 0.5), Math.floor(y2 - y1 + 0.5));
 	}
 
-	enum AxisProperty {
-		Labels, Grid, Line;
+	/**
+	 * Enumeration that specifies a property of the axes.
+	 */
+	public enum AxisProperty {
+		/**
+		 * Labels property.
+		 */
+		Labels,
+		/**
+		 * Grid property.
+		 */
+		Grid,
+		/**
+		 * Grid property.
+		 */
+		Line;
 
 		/**
 		 * Returns the numerical representation of this enum.
@@ -395,7 +430,12 @@ class WChart2DRenderer {
 	}
 
 	/**
-	 * Renders all series data, including value labels.
+	 * Prepares the axes for rendering.
+	 * <p>
+	 * Computes axis properties such as the range (if not manually specified),
+	 * label interval (if not manually specified) and axis locations. These
+	 * properties are stored within the axes (we may want to change that later
+	 * to allow for reentrant rendering by multiple renderers ?).
 	 */
 	protected void prepareAxes() {
 		this.chart_.getAxis(Axis.XAxis).prepareRender(this);
@@ -454,7 +494,7 @@ class WChart2DRenderer {
 	}
 
 	/**
-	 * Renders the (default) legend and chart titles.
+	 * Renders the background.
 	 */
 	protected void renderBackground() {
 		if (this.chart_.getBackground().getStyle() != BrushStyle.NoBrush) {
@@ -464,7 +504,7 @@ class WChart2DRenderer {
 	}
 
 	/**
-	 * Returns the width along the X axis (as if orientation is Vertical).
+	 * Renders one or more properties of the axes.
 	 */
 	protected void renderAxes(EnumSet<WChart2DRenderer.AxisProperty> properties) {
 		this.renderAxis(this.chart_.getAxis(Axis.XAxis), properties);
@@ -473,7 +513,7 @@ class WChart2DRenderer {
 	}
 
 	/**
-	 * Returns the width along the X axis (as if orientation is Vertical).
+	 * Renders one or more properties of the axes.
 	 * <p>
 	 * Calls {@link #renderAxes(EnumSet properties)
 	 * renderAxes(EnumSet.of(propertie, properties))}
@@ -484,7 +524,7 @@ class WChart2DRenderer {
 	}
 
 	/**
-	 * Returns the height along the Y axis (as if orientation is Vertical).
+	 * Renders all series data, including value labels.
 	 */
 	protected void renderSeries() {
 		{
@@ -502,9 +542,7 @@ class WChart2DRenderer {
 	}
 
 	/**
-	 * Returns the segment margin.
-	 * <p>
-	 * This is the separation between segments, and defaults to 40 pixels.
+	 * Renders the (default) legend and chart titles.
 	 */
 	protected void renderLegend() {
 		boolean vertical = this.chart_.getOrientation() == Orientation.Vertical;
@@ -645,7 +683,7 @@ class WChart2DRenderer {
 			int x = w / 2;
 			this.painter_.save();
 			this.painter_.setFont(this.chart_.getTitleFont());
-			this.painter_.drawText(x - 50, 5, 100, 50, EnumSet.of(
+			this.painter_.drawText(x - 500, 5, 1000, 50, EnumSet.of(
 					AlignmentFlag.AlignCenter, AlignmentFlag.AlignTop),
 					this.chart_.getTitle());
 			this.painter_.restore();
@@ -653,71 +691,50 @@ class WChart2DRenderer {
 	}
 
 	/**
-	 * Returns the segment margin.
-	 * <p>
-	 * This is the separation between segments, and defaults to 40 pixels.
+	 * Returns the width along the X axis (as if orientation is Vertical).
 	 */
 	protected int getWidth() {
 		return this.width_;
 	}
 
+	/**
+	 * Returns the height along the Y axis (as if orientation is Vertical).
+	 */
 	protected int getHeight() {
 		return this.height_;
 	}
 
+	/**
+	 * Returns the segment margin.
+	 * <p>
+	 * This is the separation between segments, and defaults to 40 pixels.
+	 */
 	protected int getSegmentMargin() {
 		return this.segmentMargin_;
 	}
 
 	private WCartesianChart chart_;
-	/**
-	 * The computed axis locations.
-	 * <p>
-	 * 
-	 * @see WChart2DRenderer#prepareAxes()
-	 */
 	private WPainter painter_;
-	/**
-	 * The computed axis locations.
-	 * <p>
-	 * 
-	 * @see WChart2DRenderer#prepareAxes()
-	 */
 	private int width_;
-	/**
-	 * The computed axis locations.
-	 * <p>
-	 * 
-	 * @see WChart2DRenderer#prepareAxes()
-	 */
 	private int height_;
-	/**
-	 * The computed axis locations.
-	 * <p>
-	 * 
-	 * @see WChart2DRenderer#prepareAxes()
-	 */
 	private int segmentMargin_;
 	private WRectF chartArea_;
-	/**
-	 * Renders properties of one axis.
-	 * <p>
-	 * 
-	 * @see WChart2DRenderer#renderAxes(EnumSet properties)
-	 */
 	private WPainterPath tildeStartMarker_;
-	/**
-	 * Renders properties of one axis.
-	 * <p>
-	 * 
-	 * @see WChart2DRenderer#renderAxes(EnumSet properties)
-	 */
 	private WPainterPath tildeEndMarker_;
 	/**
-	 * Calculates the total number of bar groups.
+	 * The computed axis locations.
+	 * <p>
+	 * 
+	 * @see WChart2DRenderer#prepareAxes()
 	 */
 	protected AxisValue[] location_ = new AxisValue[3];
 
+	/**
+	 * Renders properties of one axis.
+	 * <p>
+	 * 
+	 * @see WChart2DRenderer#renderAxes(EnumSet properties)
+	 */
 	protected void renderAxis(WAxis axis,
 			EnumSet<WChart2DRenderer.AxisProperty> properties) {
 		boolean vertical = axis.getId() != Axis.XAxis;
@@ -965,12 +982,21 @@ class WChart2DRenderer {
 		this.painter_.setFont(oldFont1);
 	}
 
+	/**
+	 * Renders properties of one axis.
+	 * <p>
+	 * Calls {@link #renderAxis(WAxis axis, EnumSet properties) renderAxis(axis,
+	 * EnumSet.of(propertie, properties))}
+	 */
 	protected final void renderAxis(WAxis axis,
 			WChart2DRenderer.AxisProperty propertie,
 			WChart2DRenderer.AxisProperty... properties) {
 		renderAxis(axis, EnumSet.of(propertie, properties));
 	}
 
+	/**
+	 * Calculates the total number of bar groups.
+	 */
 	protected int getCalcNumBarGroups() {
 		List<WDataSeries> series = this.chart_.getSeries();
 		int numBarGroups = 0;
@@ -988,6 +1014,9 @@ class WChart2DRenderer {
 		return numBarGroups;
 	}
 
+	/**
+	 * Iterates over the series using an iterator.
+	 */
 	protected void iterateSeries(SeriesIterator iterator, boolean reverseStacked) {
 		List<WDataSeries> series = this.chart_.getSeries();
 		WAbstractItemModel model = this.chart_.getModel();
@@ -1175,6 +1204,13 @@ class WChart2DRenderer {
 		}
 	}
 
+	/**
+	 * Iterates over the series using an iterator.
+	 * <p>
+	 * Calls
+	 * {@link #iterateSeries(SeriesIterator iterator, boolean reverseStacked)
+	 * iterateSeries(iterator, false)}
+	 */
 	protected final void iterateSeries(SeriesIterator iterator) {
 		iterateSeries(iterator, false);
 	}

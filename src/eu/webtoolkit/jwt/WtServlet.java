@@ -308,9 +308,7 @@ public abstract class WtServlet extends HttpServlet {
 
 					if (resource != null) {
 						// FIXME, we should do this within app()->notify()
-						session.getApp().modifiedWithoutEvent_ = true;
 						resource.dataReceived().trigger(current, total);
-						session.getApp().modifiedWithoutEvent_ = false;
 					}
 				}
 				

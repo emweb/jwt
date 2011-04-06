@@ -99,7 +99,7 @@ class WebSession {
 		if (xhtml) {
 			return "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">";
 		} else {
-			return "<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">";
+			return "<!DOCTYPE html>";
 		}
 	}
 
@@ -157,7 +157,7 @@ class WebSession {
 		if (WebSession.Handler.getInstance() != handler) {
 			WebSession.Handler.getInstance().setRequest(request, response);
 		}
-		if (event.renderOnly) {
+		if (event.impl_.renderOnly) {
 			this.render(handler);
 			return;
 		}
@@ -681,7 +681,7 @@ class WebSession {
 		}
 		WebSession.Handler handler = event.impl_.handler;
 		WebRequest request = handler.getRequest();
-		if (event.renderOnly) {
+		if (event.impl_.renderOnly) {
 			return EventType.OtherEvent;
 		}
 		String requestE = request.getParameter("request");
@@ -830,6 +830,11 @@ class WebSession {
 			return this.session_;
 		}
 
+		public void setRequest(WebRequest request, WebResponse response) {
+			this.request_ = request;
+			this.response_ = response;
+		}
+
 		public int nextSignal;
 		public List<Integer> signalOrder;
 
@@ -856,11 +861,6 @@ class WebSession {
 
 		private void init() {
 			this.prevHandler_ = attachThreadToHandler(this);
-		}
-
-		private void setRequest(WebRequest request, WebResponse response) {
-			this.request_ = request;
-			this.response_ = response;
 		}
 
 		private boolean locked_;
@@ -1175,7 +1175,7 @@ class WebSession {
 							if (handler.getResponse() != null
 									&& !requestForResource) {
 								this.app_.notify(new WEvent(new WEvent.Impl(
-										handler), true));
+										handler, true)));
 							}
 						}
 						this.setLoaded();

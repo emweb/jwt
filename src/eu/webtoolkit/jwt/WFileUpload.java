@@ -427,7 +427,10 @@ public class WFileUpload extends WWebWidget {
 
 	private void onData(long current, long total) {
 		this.dataReceived_.trigger(current, total);
-		if (0 != 0) {
+		WebSession.Handler h = WebSession.Handler.getInstance();
+		long dataExceeded = 0;
+		h.setRequest((WebRequest) null, (WebResponse) null);
+		if (dataExceeded != 0) {
 			if (this.uploading_) {
 				this.uploading_ = false;
 				this.handleFileTooLargeImpl();

@@ -679,17 +679,14 @@ public abstract class WWebWidget extends WWidget {
 	}
 
 	public void doJavaScript(String javascript) {
-		if (this.isRendered()) {
-			WApplication.getInstance().doJavaScript(javascript);
-		} else {
-			if (!(this.otherImpl_ != null)) {
-				this.otherImpl_ = new WWebWidget.OtherImpl();
-			}
-			if (!(this.otherImpl_.delayedDoJavaScript_ != null)) {
-				this.otherImpl_.delayedDoJavaScript_ = new StringBuilder();
-			}
-			this.otherImpl_.delayedDoJavaScript_.append(javascript);
+		if (!(this.otherImpl_ != null)) {
+			this.otherImpl_ = new WWebWidget.OtherImpl();
 		}
+		if (!(this.otherImpl_.delayedDoJavaScript_ != null)) {
+			this.otherImpl_.delayedDoJavaScript_ = new StringBuilder();
+		}
+		this.otherImpl_.delayedDoJavaScript_.append(javascript);
+		this.repaint(RepaintFlag.RepaintAll);
 	}
 
 	public String getId() {

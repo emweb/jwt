@@ -1643,9 +1643,6 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	WWidget dragWidget_;
 
 	void scheduleRerender(WAbstractItemView.RenderState what) {
-		if (!this.isRendered()) {
-			return;
-		}
 		if (what == WAbstractItemView.RenderState.NeedRerenderHeader
 				&& this.renderState_ == WAbstractItemView.RenderState.NeedRerenderData
 				|| what == WAbstractItemView.RenderState.NeedRerenderData
@@ -1653,6 +1650,9 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 			this.renderState_ = WAbstractItemView.RenderState.NeedRerender;
 		} else {
 			this.renderState_ = EnumUtils.max(what, this.renderState_);
+		}
+		if (!this.isRendered()) {
+			return;
 		}
 		this.askRerender();
 	}

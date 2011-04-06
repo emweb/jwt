@@ -287,6 +287,32 @@ public class WAxis {
 	}
 
 	/**
+	 * Sets the axis resolution.
+	 * <p>
+	 * Specifies the axis resolution, in case maximum-minimum &lt; resolution
+	 * minimum and maximum are modified so the maximum - minimum = resolution
+	 * <p>
+	 * The default resolution is 0, which uses a built-in epsilon.
+	 * <p>
+	 * 
+	 * @see WAxis#getResolution()
+	 */
+	public void setResolution(final double resolution) {
+		this.resolution_ = resolution;
+		this.update();
+	}
+
+	/**
+	 * Returns the axis resolution.
+	 * <p>
+	 * 
+	 * @see WAxis#setResolution(double resolution)
+	 */
+	public double getResolution() {
+		return this.resolution_;
+	}
+
+	/**
 	 * Let the minimum and/or maximum be calculated from the data.
 	 * <p>
 	 * Using this method, you can indicate that you want to have automatic
@@ -712,6 +738,7 @@ public class WAxis {
 	private boolean visible_;
 	private AxisValue location_;
 	private AxisScale scale_;
+	private double resolution_;
 	private double labelInterval_;
 	private WString labelFormat_;
 	private boolean gridLines_;
@@ -750,6 +777,7 @@ public class WAxis {
 		this.visible_ = true;
 		this.location_ = AxisValue.MinimumValue;
 		this.scale_ = AxisScale.LinearScale;
+		this.resolution_ = 0.0;
 		this.labelInterval_ = 0;
 		this.labelFormat_ = new WString();
 		this.gridLines_ = false;
@@ -876,8 +904,8 @@ public class WAxis {
 		} else {
 			segment.renderMinimum = segment.minimum;
 			segment.renderMaximum = segment.maximum;
-			boolean findMinimum = segment.renderMinimum == AUTO_MINIMUM;
-			boolean findMaximum = segment.renderMaximum == AUTO_MAXIMUM;
+			final boolean findMinimum = segment.renderMinimum == AUTO_MINIMUM;
+			final boolean findMaximum = segment.renderMaximum == AUTO_MAXIMUM;
 			if (findMinimum || findMaximum) {
 				double minimum = Double.MAX_VALUE;
 				double maximum = -Double.MAX_VALUE;
@@ -918,27 +946,37 @@ public class WAxis {
 				}
 			}
 			double diff = segment.renderMaximum - segment.renderMinimum;
-			if (Math.abs(diff) < 1E-10) {
-				if (this.scale_ == AxisScale.LogScale) {
-					if (findMinimum) {
-						segment.renderMinimum = Math.pow(10, Math.floor(Math
-								.log10(segment.renderMinimum - 0.1)));
-					}
-					if (findMaximum) {
-						segment.renderMaximum = Math.pow(10, Math.ceil(Math
-								.log10(segment.renderMaximum + 0.1)));
-					}
-				} else {
-					if (findMinimum) {
-						segment.renderMinimum = Math
-								.floor(segment.renderMinimum - 1E-4);
-					}
-					if (findMaximum) {
-						segment.renderMaximum = Math
-								.ceil(segment.renderMaximum + 1E-4);
-					}
+			if (this.scale_ == AxisScale.LogScale
+					|| this.scale_ == AxisScale.LinearScale) {
+				double resolution = this.resolution_;
+				if (resolution == 0 || this.scale_ == AxisScale.LogScale) {
+					resolution = 1E-10;
 				}
-				diff = segment.renderMaximum - segment.renderMinimum;
+				if (Math.abs(diff) < resolution) {
+					double average = (segment.renderMaximum + segment.renderMinimum) / 2.0;
+					double d = this.resolution_;
+					if (this.scale_ == AxisScale.LogScale) {
+						d = 0.2;
+					} else {
+						if (d == 0) {
+							d = 2E-4;
+						}
+					}
+					if (findMinimum && findMaximum) {
+						segment.renderMaximum = average + d / 2.0;
+						segment.renderMinimum = average - d / 2.0;
+					} else {
+						if (findMinimum) {
+							segment.renderMinimum = segment.renderMaximum - d;
+						} else {
+							if (findMaximum) {
+								segment.renderMaximum = segment.renderMinimum
+										+ d;
+							}
+						}
+					}
+					diff = segment.renderMaximum - segment.renderMinimum;
+				}
 			}
 			if (this.scale_ == AxisScale.LinearScale) {
 				if (findMinimum && segment.renderMinimum >= 0
@@ -964,6 +1002,7 @@ public class WAxis {
 				}
 			}
 		}
+		assert segment.renderMinimum < segment.renderMaximum;
 	}
 
 	void setOtherAxisLocation(AxisValue otherLocation) {
@@ -1440,12 +1479,12 @@ public class WAxis {
 	 * 
 	 * @see WAxis#setMinimum(double minimum)
 	 */
-	public static final double AUTO_MINIMUM = Double.MAX_VALUE;
+	public static final double AUTO_MINIMUM = -Double.MAX_VALUE;
 	/**
 	 * Constant which indicates automatic maximum calculation.
 	 * <p>
 	 * 
 	 * @see WAxis#setMaximum(double maximum)
 	 */
-	public static final double AUTO_MAXIMUM = -Double.MAX_VALUE;
+	public static final double AUTO_MAXIMUM = Double.MAX_VALUE;
 }

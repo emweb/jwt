@@ -118,37 +118,6 @@ public class SeriesIterator {
 		}
 	}
 
-	/**
-	 * Helper class for rendering a cartesian chart.
-	 * <p>
-	 * 
-	 * This class is used by {@link eu.webtoolkit.jwt.chart.WCartesianChart}
-	 * during rendering, and normally, you will not need to use this class
-	 * directly. You may want to specialize this class if you want to override
-	 * particular aspects of how the chart is renderered. In that case, you will
-	 * want to instantiate the specialized class in
-	 * {@link WCartesianChart#createRenderer(WPainter painter, WRectF rectangle)
-	 * WCartesianChart#createRenderer()}.
-	 * <p>
-	 * To simplify the simulatenous handling of Horizontal and Vertical charts,
-	 * the renderer makes abstraction of the orientation of the chart:
-	 * regardless of the chart orientation, the
-	 * {@link WChart2DRenderer#getWidth() WChart2DRenderer#getWidth()}
-	 * corresponds to the length along the X axis, and
-	 * {@link WChart2DRenderer#getHeight() WChart2DRenderer#getHeight()}
-	 * corresponds to the length along the Y axis. Similarly,
-	 * {@link WChart2DRenderer#calcChartArea() WChart2DRenderer#calcChartArea()}
-	 * and {@link WChart2DRenderer#getChartArea()
-	 * WChart2DRenderer#getChartArea()} return a rectangle where the bottom side
-	 * corresponds to the lowest displayed Y values, and the left side
-	 * corresponds to the lowest displayed X values. To map these &quot;chart
-	 * coordinates&quot; to painter coordinates, use one of the
-	 * {@link WChart2DRenderer#hv(double x, double y) WChart2DRenderer#hv()}
-	 * methods.
-	 * <p>
-	 * <i>Note, this class is part of the internal charting API, and may be
-	 * subject of changes and refactorings.</i>
-	 */
 	public static void setBrushColor(WBrush brush, WModelIndex xIndex,
 			WModelIndex yIndex, int colorRole) {
 		Object color = new Object();
@@ -163,69 +132,7 @@ public class SeriesIterator {
 		}
 	}
 
-	/**
-	 * Helper class for rendering a cartesian chart.
-	 * <p>
-	 * 
-	 * This class is used by {@link eu.webtoolkit.jwt.chart.WCartesianChart}
-	 * during rendering, and normally, you will not need to use this class
-	 * directly. You may want to specialize this class if you want to override
-	 * particular aspects of how the chart is renderered. In that case, you will
-	 * want to instantiate the specialized class in
-	 * {@link WCartesianChart#createRenderer(WPainter painter, WRectF rectangle)
-	 * WCartesianChart#createRenderer()}.
-	 * <p>
-	 * To simplify the simulatenous handling of Horizontal and Vertical charts,
-	 * the renderer makes abstraction of the orientation of the chart:
-	 * regardless of the chart orientation, the
-	 * {@link WChart2DRenderer#getWidth() WChart2DRenderer#getWidth()}
-	 * corresponds to the length along the X axis, and
-	 * {@link WChart2DRenderer#getHeight() WChart2DRenderer#getHeight()}
-	 * corresponds to the length along the Y axis. Similarly,
-	 * {@link WChart2DRenderer#calcChartArea() WChart2DRenderer#calcChartArea()}
-	 * and {@link WChart2DRenderer#getChartArea()
-	 * WChart2DRenderer#getChartArea()} return a rectangle where the bottom side
-	 * corresponds to the lowest displayed Y values, and the left side
-	 * corresponds to the lowest displayed X values. To map these &quot;chart
-	 * coordinates&quot; to painter coordinates, use one of the
-	 * {@link WChart2DRenderer#hv(double x, double y) WChart2DRenderer#hv()}
-	 * methods.
-	 * <p>
-	 * <i>Note, this class is part of the internal charting API, and may be
-	 * subject of changes and refactorings.</i>
-	 */
 	private int currentXSegment_;
-	/**
-	 * Helper class for rendering a cartesian chart.
-	 * <p>
-	 * 
-	 * This class is used by {@link eu.webtoolkit.jwt.chart.WCartesianChart}
-	 * during rendering, and normally, you will not need to use this class
-	 * directly. You may want to specialize this class if you want to override
-	 * particular aspects of how the chart is renderered. In that case, you will
-	 * want to instantiate the specialized class in
-	 * {@link WCartesianChart#createRenderer(WPainter painter, WRectF rectangle)
-	 * WCartesianChart#createRenderer()}.
-	 * <p>
-	 * To simplify the simulatenous handling of Horizontal and Vertical charts,
-	 * the renderer makes abstraction of the orientation of the chart:
-	 * regardless of the chart orientation, the
-	 * {@link WChart2DRenderer#getWidth() WChart2DRenderer#getWidth()}
-	 * corresponds to the length along the X axis, and
-	 * {@link WChart2DRenderer#getHeight() WChart2DRenderer#getHeight()}
-	 * corresponds to the length along the Y axis. Similarly,
-	 * {@link WChart2DRenderer#calcChartArea() WChart2DRenderer#calcChartArea()}
-	 * and {@link WChart2DRenderer#getChartArea()
-	 * WChart2DRenderer#getChartArea()} return a rectangle where the bottom side
-	 * corresponds to the lowest displayed Y values, and the left side
-	 * corresponds to the lowest displayed X values. To map these &quot;chart
-	 * coordinates&quot; to painter coordinates, use one of the
-	 * {@link WChart2DRenderer#hv(double x, double y) WChart2DRenderer#hv()}
-	 * methods.
-	 * <p>
-	 * <i>Note, this class is part of the internal charting API, and may be
-	 * subject of changes and refactorings.</i>
-	 */
 	private int currentYSegment_;
 	static final int TICK_LENGTH = 5;
 }

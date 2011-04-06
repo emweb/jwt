@@ -147,7 +147,6 @@ public class WApplication extends WObject {
 		this.newInternalPath_ = "";
 		this.internalPathChanged_ = new Signal1<String>(this);
 		this.serverPush_ = 0;
-		this.modifiedWithoutEvent_ = false;
 		this.javaScriptClass_ = "Wt";
 		this.dialogCover_ = null;
 		this.quited_ = false;
@@ -1214,7 +1213,7 @@ public class WApplication extends WObject {
 	 *    try {
 	 *      // We now have exclusive access to the application:
 	 *      // we can safely modify the widget tree for example.
-	 *      app.getRoot().addWidget(new WText(&quot;Something happened!&quot;));
+	 *      app.getRoot().addWidget(new WText("Something happened!"));
 	 *   
 	 *      // Push the changes to the browser
 	 *      app.triggerUpdate();
@@ -1271,28 +1270,25 @@ public class WApplication extends WObject {
 	/**
 	 * Propagates server-initiated updates.
 	 * <p>
-	 * Propagate changes made to the user interface outside of the main event
-	 * loop. This is only possible after a call to
-	 * {@link WApplication#enableUpdates(boolean enabled) enableUpdates()}, and
-	 * must be done while holding the {@link UpdateLock}.
+	 * This propagate changes made to the user interface outside of the main
+	 * event loop, e.g. from another thread or from within WServer::post(). This
+	 * call only has an effect after updates have been enabled (from within the
+	 * normal event loop), using
+	 * {@link WApplication#enableUpdates(boolean enabled) enableUpdates()}.
 	 * <p>
 	 * 
 	 * @see WApplication#enableUpdates(boolean enabled)
-	 * @see UpdateLock
 	 */
 	public void triggerUpdate() {
 		if (!WtServlet.isAsyncSupported()) {
 			throw new WtException(
 					"Server push requires a Servlet 3.0 enabled servlet container and an application with async-supported enabled.");
 		}
-		if (!this.modifiedWithoutEvent_) {
+		if (WebSession.Handler.getInstance().getRequest() != null) {
 			return;
 		}
 		if (this.serverPush_ > 0) {
 			this.session_.pushUpdates();
-		} else {
-			throw new WtException(
-					"WApplication::triggerUpdate() called but server-triggered updates not enabled using WApplication::enableUpdates()");
 		}
 	}
 
@@ -1314,9 +1310,8 @@ public class WApplication extends WObject {
 		 */
 		public void release() {
 			System.err.append("Releasing update lock").append('\n');
-			if (WApplication.getInstance().modifiedWithoutEvent_) {
+			if (WebSession.Handler.getInstance().getRequest() != null) {
 				System.err.append("Releasing handler").append('\n');
-				WApplication.getInstance().modifiedWithoutEvent_ = false;
 				WebSession.Handler.getInstance().release();
 			}
 		}
@@ -1331,7 +1326,6 @@ public class WApplication extends WObject {
 			System.err.append("Creating new handler for app: app.sessionId()")
 					.append('\n');
 			new WebSession.Handler(app.session_, true);
-			app.modifiedWithoutEvent_ = true;
 		}
 	}
 
@@ -2227,7 +2221,6 @@ public class WApplication extends WObject {
 	Signal1<String> internalPathChanged_;
 	boolean internalPathIsChanged_;
 	private int serverPush_;
-	boolean modifiedWithoutEvent_;
 	private String javaScriptClass_;
 	private WApplication.AjaxMethod ajaxMethod_;
 	private WContainerWidget dialogCover_;
