@@ -182,8 +182,8 @@ class WebSession {
 			break;
 		case Loaded:
 			if (handler.getResponse().getResponseType() == WebRequest.ResponseType.Script) {
+				String hashE = request.getParameter("_");
 				if (!this.env_.doesAjax_) {
-					String hashE = request.getParameter("_");
 					String scaleE = request.getParameter("scale");
 					this.env_.doesAjax_ = true;
 					this.env_.doesCookies_ = request.getHeaderValue("Cookie")
@@ -201,6 +201,10 @@ class WebSession {
 					if (this.env_.getInternalPath().length() > 1) {
 						this.app_.changeInternalPath(this.env_
 								.getInternalPath());
+					}
+				} else {
+					if (hashE != null) {
+						this.app_.changeInternalPath(hashE);
 					}
 				}
 				this.render(handler);
@@ -1451,7 +1455,7 @@ class WebSession {
 				String hashE = request.getParameter(se + "_");
 				if (hashE != null) {
 					this.app_.changeInternalPath(hashE);
-					this.app_.doJavaScript("Wt3_1_8.scrollIntoView('" + hashE
+					this.app_.doJavaScript("Wt3_1_9.scrollIntoView('" + hashE
 							+ "');");
 				} else {
 					this.app_.changeInternalPath("");

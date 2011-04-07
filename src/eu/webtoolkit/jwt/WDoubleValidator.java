@@ -259,7 +259,7 @@ public class WDoubleValidator extends WValidator {
 	public String getJavaScriptValidate() {
 		loadJavaScript(WApplication.getInstance());
 		StringBuilder js = new StringBuilder();
-		js.append("new Wt3_1_8.WDoubleValidator(").append(
+		js.append("new Wt3_1_9.WDoubleValidator(").append(
 				this.isMandatory() ? "true" : "false").append(",");
 		if (this.bottom_ != -Double.MAX_VALUE) {
 			js.append(String.valueOf(this.bottom_));
@@ -301,15 +301,15 @@ public class WDoubleValidator extends WValidator {
 	static String wtjs1(WApplication app) {
 		String s = "function(d,b,c,e,f,g,h){this.validate=function(a){if(a.length==0)return d?{valid:false,message:e}:{valid:true};a=Number(a);if(isNaN(a))return{valid:false,message:f};if(b!==null)if(a<b)return{valid:false,message:g};if(c!==null)if(a>c)return{valid:false,message:h};return{valid:true}}}";
 		if ("ctor.WDoubleValidator".indexOf(".prototype") != -1) {
-			return "Wt3_1_8.ctor.WDoubleValidator = " + s + ";";
+			return "Wt3_1_9.ctor.WDoubleValidator = " + s + ";";
 		} else {
 			if ("ctor.WDoubleValidator".substring(0, 5).compareTo(
 					"ctor.".substring(0, 5)) == 0) {
-				return "Wt3_1_8." + "ctor.WDoubleValidator".substring(5)
+				return "Wt3_1_9." + "ctor.WDoubleValidator".substring(5)
 						+ " = " + s + ";";
 			} else {
-				return "Wt3_1_8.ctor.WDoubleValidator = function() { (" + s
-						+ ").apply(Wt3_1_8, arguments) };";
+				return "Wt3_1_9.ctor.WDoubleValidator = function() { (" + s
+						+ ").apply(Wt3_1_9, arguments) };";
 			}
 		}
 	}

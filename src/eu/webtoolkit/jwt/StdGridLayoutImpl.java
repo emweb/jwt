@@ -450,7 +450,7 @@ class StdGridLayoutImpl extends StdLayoutImpl {
 		if (fitHeight) {
 			StringWriter layoutAdd = new StringWriter();
 			layoutAdd.append(app.getJavaScriptClass()).append(
-					".layouts.add(new Wt3_1_8.StdLayout( Wt3_1_8, '").append(
+					".layouts.add(new Wt3_1_9.StdLayout( Wt3_1_9, '").append(
 					div.getId()).append("', { stretch: [");
 			for (int i = 0; i < rowCount; ++i) {
 				if (i != 0) {
@@ -530,7 +530,7 @@ class StdGridLayoutImpl extends StdLayoutImpl {
 			app.doJavaScript(wtjs10(app), false);
 			app.setJavaScriptLoaded(THIS_JS);
 		}
-		return "Wt3_1_8.ChildrenResize";
+		return "Wt3_1_9.ChildrenResize";
 	}
 
 	public boolean itemResized(WLayoutItem item) {
@@ -613,15 +613,15 @@ class StdGridLayoutImpl extends StdLayoutImpl {
 	static String wtjs1(WApplication app) {
 		String s = "function(a,t,j){var o=this;this.getId=function(){return t};this.WT=a;this.marginH=function(b){var d=b.parentNode,e=0;if(!a.boxSizing(b)){e=a.px(b,\"marginLeft\");e+=a.px(b,\"marginRight\");e+=a.px(b,\"borderLeftWidth\");e+=a.px(b,\"borderRightWidth\");e+=a.px(b,\"paddingLeft\");e+=a.px(b,\"paddingRight\")}e+=a.pxself(d,\"paddingLeft\");e+=a.pxself(d,\"paddingRight\");return e};this.marginV=function(b){var d=a.px(b,\"marginTop\");d+=a.px(b,\"marginBottom\");if(!a.boxSizing(b)){d+= a.px(b,\"borderTopWidth\");d+=a.px(b,\"borderBottomWidth\");d+=a.px(b,\"paddingTop\");d+=a.px(b,\"paddingBottom\")}return d};this.getColumn=function(b){var d,e,i,c=a.getElement(t).firstChild.childNodes;e=d=0;for(i=c.length;e<i;e++){var f=c[e];if(a.hasTag(f,\"COLGROUP\")){e=-1;c=f.childNodes;i=c.length}if(a.hasTag(f,\"COL\"))if(f.className!=\"Wt-vrh\")if(d==b)return f;else++d}return null};this.adjustCell=function(b,d,e){var i=d==0;d-=a.pxself(b,\"paddingTop\");d-=a.pxself(b,\"paddingBottom\");if(d<=0)d=0;b.style.height= d+\"px\";if(!(b.style.verticalAlign||b.childNodes.length==0)){var c=b.childNodes[0];if(d<=0)d=0;if(c.className==\"Wt-hcenter\"){c.style.height=d+\"px\";c=c.firstChild.firstChild;if(!a.hasTag(c,\"TD\"))c=c.firstChild;if(c.style.height!=d+\"px\")c.style.height=d+\"px\";c=c.firstChild}if(b.childNodes.length==1)d-=this.marginV(c);if(d<=0)d=0;if(!a.hasTag(c,\"TABLE\"))if(!i&&c.wtResize){b=c.parentNode.offsetWidth-o.marginH(c);e=o.getColumn(e).style.width;i=e.length;if(i>0&&e[i-1]==\"%\"){c.style.position=\"absolute\";c.style.width= b+\"px\"}c.wtResize(c,b,d)}else if(c.style.height!=d+\"px\"){c.style.height=d+\"px\";if(c.className==\"Wt-wrapdiv\")if(a.isIE&&a.hasTag(c.firstChild,\"TEXTAREA\"))c.firstChild.style.height=d-a.pxself(c,\"marginBottom\")+\"px\"}}};this.adjustRow=function(b,d){var e=[];if(b.style.height!=d+\"px\")b.style.height=d+\"px\";b=b.childNodes;var i,c,f,h;i=0;h=-1;for(c=b.length;i<c;++i){f=b[i];f.className!=\"Wt-vrh\"&&++h;if(f.rowSpan!=1){this.adjustCell(f,0,h);e.push({td:f,col:h})}else this.adjustCell(f,d,h)}return e};this.adjust= function(){var b=a.getElement(t);if(!b)return false;o.initResize&&o.initResize(a,t,j);if(a.isHidden(b))return true;var d=b.firstChild,e=b.parentNode;if(d.style.height!==\"\")d.style.height=\"\";var i=a.pxself(e,\"height\"),c=false;if(i===0){c=true;i=e.clientHeight}var f=e.clientWidth;if(!(b.dirty||d.w!==f||d.h!==i))return true;d.w=f;d.h=i;b.dirty=null;var h=i;if(c){h-=a.px(e,\"paddingTop\");h-=a.px(e,\"paddingBottom\")}else if(a.boxSizing(e)){h-=a.px(e,\"borderTopWidth\");h-=a.px(e,\"borderBottomWidth\");h-=a.px(e, \"paddingTop\");h-=a.px(e,\"paddingBottom\")}h-=a.px(b,\"marginTop\");h-=a.px(b,\"marginBottom\");if(e.children&&e.children.length!==1){c=0;for(i=e.children.length;c<i;++c){f=e.children[c];if(f!==b)h-=$(f).outerHeight()}}b=e=0;var p,n;i=d.rows.length;for(p=c=0;c<i;c++){f=d.rows[c];if(f.className===\"Wt-hrh\")h-=f.offsetHeight;else{b+=j.minheight[p];if(j.stretch[p]<=0)h-=f.offsetHeight;else e+=j.stretch[p];++p}}h=h>b?h:b;b=[];if(e!==0&&h>0){var r=h,s;for(p=c=0;c<i;c++){f=d.rows[c];if(f.className!==\"Wt-hrh\"){n= j.stretch[p];if(n!==0){if(n!==-1){s=j.minheight[p];n=h*n/e;n=r>n?n:r;n=Math.round(s>n?s:n);r-=n}else n=f.offsetHeight;a.addAll(b,this.adjustRow(f,n))}++p}}}c=0;for(i=b.length;c<i;++c){f=b[c].td;h=b[c].col;this.adjustCell(f,f.offsetHeight,h)}if(d.style.tableLayout!==\"fixed\")return true;p=0;r=d.childNodes;var y,A,z;b=0;for(e=r.length;b<e;b++){h=r[b];if(a.hasTag(h,\"COLGROUP\")){b=-1;r=h.childNodes;e=r.length}if(a.hasTag(h,\"COL\")){if(a.pctself(h,\"width\")===0){c=s=0;for(i=d.rows.length;c<i;c++){f=d.rows[c]; n=f.childNodes;A=y=0;for(z=n.length;A<z;A++){f=n[A];if(f.colSpan===1&&y===p&&f.childNodes.length===1){f=f.firstChild;f=f.offsetWidth+o.marginH(f);s=Math.max(s,f);break}y+=f.colSpan;if(y>p)break}}if(s>0&&a.pxself(h,\"width\")!==s)h.style.width=s+\"px\"}++p}}return true};this.contains=function(b){var d=a.getElement(t);b=a.getElement(b.getId());return d&&b?a.contains(d,b):false}}";
 		if ("ctor.StdLayout".indexOf(".prototype") != -1) {
-			return "Wt3_1_8.ctor.StdLayout = " + s + ";";
+			return "Wt3_1_9.ctor.StdLayout = " + s + ";";
 		} else {
 			if ("ctor.StdLayout".substring(0, 5).compareTo(
 					"ctor.".substring(0, 5)) == 0) {
-				return "Wt3_1_8." + "ctor.StdLayout".substring(5) + " = " + s
+				return "Wt3_1_9." + "ctor.StdLayout".substring(5) + " = " + s
 						+ ";";
 			} else {
-				return "Wt3_1_8.ctor.StdLayout = function() { (" + s
-						+ ").apply(Wt3_1_8, arguments) };";
+				return "Wt3_1_9.ctor.StdLayout = function() { (" + s
+						+ ").apply(Wt3_1_9, arguments) };";
 			}
 		}
 	}
@@ -629,16 +629,16 @@ class StdGridLayoutImpl extends StdLayoutImpl {
 	static String wtjs2(WApplication app) {
 		String s = "function(a,t,j){function o(g,k){if(g.offsetWidth>0)return g.offsetWidth;else{g=n.firstChild.rows[0];var l,m,q,u;q=m=0;for(u=g.childNodes.length;m<u;++m){l=g.childNodes[m];if(l.className!=\"Wt-vrh\"){if(q==k)return l.offsetWidth;q+=l.colSpan}}return 0}}function b(g,k){var l=a.getElement(t).firstChild;p(g).style.width=k+\"px\";var m,q,u,w;q=m=0;for(u=l.rows.length;m<u;m++){w=l.rows[m];if(w.className!=\"Wt-hrh\"){var v,B,C,F;C=B=0;for(F=w.childNodes.length;B< F;++B){v=w.childNodes[B];if(v.className!=\"Wt-vrh\"){if(v.colSpan==1&&C==g&&v.childNodes.length==1){w=v.firstChild;v=k-h.marginH(w);w.style.width=v+\"px\";break}C+=v.colSpan}}++q}}}function d(g,k,l){var m=g.firstChild;new a.SizeHandle(a,\"v\",m.offsetHeight,m.offsetWidth,-g.parentNode.previousSibling.offsetHeight,g.parentNode.nextSibling.offsetHeight,\"Wt-vsh\",function(q){i(g,k,q)},m,n,l,0,0)}function e(g,k,l){var m=-g.previousSibling.offsetWidth,q=g.nextSibling.offsetWidth,u=g.firstChild,w=a.pxself(r.rows[0].childNodes[0], \"paddingTop\"),v=a.pxself(r.rows[r.rows.length-1].childNodes[0],\"paddingBottom\");v=r.offsetHeight-w-v;if($(document.body).hasClass(\"Wt-rtl\")){var B=m;m=-q;q=-B}new a.SizeHandle(a,\"h\",u.offsetWidth,v,m,q,\"Wt-hsh\",function(C){f(g,k,C)},u,n,l,0,-g.offsetTop+w-a.pxself(g,\"paddingTop\"))}function i(g,k,l){var m=g.parentNode.previousSibling;g=g.parentNode.nextSibling;var q=m.offsetHeight,u=g.offsetHeight;if(j.stretch[k]>0&&j.stretch[k+1]>0)j.stretch[k]=-1;if(j.stretch[k+1]==0)j.stretch[k+1]=-1;j.stretch[k]<= 0&&h.adjustRow(m,q+l);j.stretch[k+1]<=0&&h.adjustRow(g,u-l);a.getElement(t).dirty=true;window.onresize()}function c(){var g,k=0;for(g=0;;++g){var l=p(g);if(l)k+=a.pctself(l,\"width\");else break}if(k!=0)for(g=0;;++g)if(l=p(g)){var m=a.pctself(l,\"width\");if(m)l.style.width=m*100/k+\"%\"}else break}function f(g,k,l){g=p(k);var m=o(g,k),q=p(k+1),u=o(q,k+1);if($(document.body).hasClass(\"Wt-rtl\"))l=-l;if(a.pctself(g,\"width\")>0&&a.pctself(q,\"width\")>0){g.style.width=\"\";c()}a.pctself(g,\"width\")==0&&b(k,m+l); a.pctself(q,\"width\")==0&&b(k+1,u-l);window.onresize()}var h=this,p=h.getColumn,n=a.getElement(t);if(n)if(!h.resizeInitialized){var r=n.firstChild,s,y,A,z;y=s=0;for(A=r.rows.length;s<A;s++){z=r.rows[s];if(z.className==\"Wt-hrh\"){var x=z.firstChild;x.ri=y-1;x.onmousedown=x.ontouchstart=function(g){d(this,this.ri,g||window.event)}}else{var D,E,G;E=D=0;for(G=z.childNodes.length;D<G;++D){x=z.childNodes[D];if(x.className==\"Wt-vrh\"){x.ci=E-1;x.onmousedown=x.ontouchstart=function(g){e(this,this.ci,g||window.event)}}else E+= x.colSpan}++y}}h.resizeInitialized=true}}";
 		if ("StdLayout.prototype.initResize".indexOf(".prototype") != -1) {
-			return "Wt3_1_8.StdLayout.prototype.initResize = " + s + ";";
+			return "Wt3_1_9.StdLayout.prototype.initResize = " + s + ";";
 		} else {
 			if ("StdLayout.prototype.initResize".substring(0, 5).compareTo(
 					"ctor.".substring(0, 5)) == 0) {
-				return "Wt3_1_8."
+				return "Wt3_1_9."
 						+ "StdLayout.prototype.initResize".substring(5) + " = "
 						+ s + ";";
 			} else {
-				return "Wt3_1_8.StdLayout.prototype.initResize = function() { ("
-						+ s + ").apply(Wt3_1_8, arguments) };";
+				return "Wt3_1_9.StdLayout.prototype.initResize = function() { ("
+						+ s + ").apply(Wt3_1_9, arguments) };";
 			}
 		}
 	}
@@ -651,15 +651,15 @@ class StdGridLayoutImpl extends StdLayoutImpl {
 	static String wtjs10(WApplication app) {
 		String s = "function(b,d,c){var a,f,e;a=this;b.style.height=c+\"px\";if(a.boxSizing(b)){c-=a.px(b,\"marginTop\");c-=a.px(b,\"marginBottom\");c-=a.px(b,\"borderTopWidth\");c-=a.px(b,\"borderBottomWidth\");c-=a.px(b,\"paddingTop\");c-=a.px(b,\"paddingBottom\");d-=a.px(b,\"marginLeft\");d-=a.px(b,\"marginRight\");d-=a.px(b,\"borderLeftWidth\");d-=a.px(b,\"borderRightWidth\");d-=a.px(b,\"paddingLeft\");d-=a.px(b,\"paddingRight\")}var g=c+\"px\";a=0;for(f=b.childNodes.length;a<f;++a){e=b.childNodes[a]; if(e.nodeType==1)if(e.wtResize)e.wtResize(e,d,c);else if(e.style.height!=g)e.style.height=g}}";
 		if ("ChildrenResize".indexOf(".prototype") != -1) {
-			return "Wt3_1_8.ChildrenResize = " + s + ";";
+			return "Wt3_1_9.ChildrenResize = " + s + ";";
 		} else {
 			if ("ChildrenResize".substring(0, 5).compareTo(
 					"ctor.".substring(0, 5)) == 0) {
-				return "Wt3_1_8." + "ChildrenResize".substring(5) + " = " + s
+				return "Wt3_1_9." + "ChildrenResize".substring(5) + " = " + s
 						+ ";";
 			} else {
-				return "Wt3_1_8.ChildrenResize = function() { (" + s
-						+ ").apply(Wt3_1_8, arguments) };";
+				return "Wt3_1_9.ChildrenResize = function() { (" + s
+						+ ").apply(Wt3_1_9, arguments) };";
 			}
 		}
 	}

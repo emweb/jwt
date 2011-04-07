@@ -233,7 +233,7 @@ public class WLengthValidator extends WValidator {
 	public String getJavaScriptValidate() {
 		loadJavaScript(WApplication.getInstance());
 		StringBuilder js = new StringBuilder();
-		js.append("new Wt3_1_8.WLengthValidator(").append(
+		js.append("new Wt3_1_9.WLengthValidator(").append(
 				this.isMandatory() ? "true" : "false").append(",");
 		if (this.minLength_ != 0) {
 			js.append(this.minLength_);
@@ -272,15 +272,15 @@ public class WLengthValidator extends WValidator {
 	static String wtjs1(WApplication app) {
 		String s = "function(d,b,c,e,f,g){this.validate=function(a){if(a.length==0)return d?{valid:false,message:e}:{valid:true};if(b!==null)if(a.length<b)return{valid:false,message:f};if(c!==null)if(a.length>c)return{valid:false,message:g};return{valid:true}}}";
 		if ("ctor.WLengthValidator".indexOf(".prototype") != -1) {
-			return "Wt3_1_8.ctor.WLengthValidator = " + s + ";";
+			return "Wt3_1_9.ctor.WLengthValidator = " + s + ";";
 		} else {
 			if ("ctor.WLengthValidator".substring(0, 5).compareTo(
 					"ctor.".substring(0, 5)) == 0) {
-				return "Wt3_1_8." + "ctor.WLengthValidator".substring(5)
+				return "Wt3_1_9." + "ctor.WLengthValidator".substring(5)
 						+ " = " + s + ";";
 			} else {
-				return "Wt3_1_8.ctor.WLengthValidator = function() { (" + s
-						+ ").apply(Wt3_1_8, arguments) };";
+				return "Wt3_1_9.ctor.WLengthValidator = function() { (" + s
+						+ ").apply(Wt3_1_9, arguments) };";
 			}
 		}
 	}

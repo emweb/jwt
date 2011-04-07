@@ -259,13 +259,13 @@ public class WCssDecorationStyle extends WObject {
 	 */
 	public void setBackgroundImage(WResource resource,
 			WCssDecorationStyle.Repeat repeat, EnumSet<Side> sides) {
-		this.backgroundImageResource_ = resource;
 		resource.dataChanged().addListener(this, new Signal.Listener() {
 			public void trigger() {
 				WCssDecorationStyle.this.backgroundImageResourceChanged();
 			}
 		});
 		this.setBackgroundImage(resource.getUrl(), repeat, sides);
+		this.backgroundImageResource_ = resource;
 	}
 
 	/**
@@ -636,8 +636,10 @@ public class WCssDecorationStyle extends WObject {
 
 	private void backgroundImageResourceChanged() {
 		if (this.backgroundImageResource_ != null) {
-			this.setBackgroundImage(this.backgroundImageResource_.getUrl(),
+			WResource resource = this.backgroundImageResource_;
+			this.setBackgroundImage(resource.getUrl(),
 					this.backgroundImageRepeat_, this.backgroundImageLocation_);
+			this.backgroundImageResource_ = resource;
 		}
 	}
 

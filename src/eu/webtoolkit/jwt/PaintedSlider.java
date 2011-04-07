@@ -73,14 +73,14 @@ class PaintedSlider extends WPaintedWidget {
 		String minimumS = String.valueOf(this.slider_.getMinimum());
 		String maximumS = String.valueOf(this.slider_.getMaximum());
 		this.mouseDownJS_
-				.setJavaScript("function(obj, event) {obj.setAttribute('down', Wt3_1_8.widgetCoordinates(obj, event)."
-						+ u + "); Wt3_1_8.cancelEvent(event);}");
+				.setJavaScript("function(obj, event) {obj.setAttribute('down', Wt3_1_9.widgetCoordinates(obj, event)."
+						+ u + "); Wt3_1_9.cancelEvent(event);}");
 		String computeD = "var objh = " + this.handle_.getJsRef() + ",objb = "
 				+ this.getJsRef() + ",u = WT.pageCoordinates(event)." + u
 				+ " - down,w = WT.widgetPageCoordinates(objb)." + u
 				+ ",d = u-w;";
 		this.mouseMovedJS_
-				.setJavaScript("function(obj, event) {var down = obj.getAttribute('down');var WT = Wt3_1_8;if (down != null && down != '') {"
+				.setJavaScript("function(obj, event) {var down = obj.getAttribute('down');var WT = Wt3_1_9;if (down != null && down != '') {"
 						+ computeD
 						+ "d = Math.max(0, Math.min(d, "
 						+ maxS
@@ -97,7 +97,7 @@ class PaintedSlider extends WPaintedWidget {
 								o == Orientation.Horizontal ? "v + " + minimumS
 										: maximumS + " - v") + "}}}");
 		this.mouseUpJS_
-				.setJavaScript("function(obj, event) {var down = obj.getAttribute('down');var WT = Wt3_1_8;if (down != null && down != '') {"
+				.setJavaScript("function(obj, event) {var down = obj.getAttribute('down');var WT = Wt3_1_9;if (down != null && down != '') {"
 						+ computeD
 						+ "d += "
 						+ String.valueOf(HANDLE_WIDTH / 2)

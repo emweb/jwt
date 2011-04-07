@@ -157,7 +157,7 @@ public class WApplication extends WObject {
 		this.connected_ = true;
 		this.htmlClass_ = "";
 		this.bodyClass_ = "";
-		this.bodyHtmlClassChanged_ = false;
+		this.bodyHtmlClassChanged_ = true;
 		this.enableAjax_ = false;
 		this.initialized_ = false;
 		this.focusId_ = "";
@@ -1828,9 +1828,9 @@ public class WApplication extends WObject {
 		if (this.loadingIndicator_ != null) {
 			this.loadingIndicatorWidget_ = indicator.getWidget();
 			this.domRoot_.addWidget(this.loadingIndicatorWidget_);
-			this.showLoadJS.setJavaScript("function(o,e) {Wt3_1_8.inline('"
+			this.showLoadJS.setJavaScript("function(o,e) {Wt3_1_9.inline('"
 					+ this.loadingIndicatorWidget_.getId() + "');}");
-			this.hideLoadJS.setJavaScript("function(o,e) {Wt3_1_8.hide('"
+			this.hideLoadJS.setJavaScript("function(o,e) {Wt3_1_9.hide('"
 					+ this.loadingIndicatorWidget_.getId() + "');}");
 			this.loadingIndicatorWidget_.hide();
 		}
