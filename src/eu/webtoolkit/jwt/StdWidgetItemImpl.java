@@ -101,7 +101,6 @@ class StdWidgetItemImpl extends StdLayoutItemImpl {
 		if (fitHeight
 				&& d.getProperty(Property.PropertyStyleHeight).length() == 0) {
 			if (d.getType() == DomElementType.DomElement_DIV
-					&& !app.getEnvironment().agentIsWebKit()
 					|| d.getType() == DomElementType.DomElement_UL
 					|| d.getType() == DomElementType.DomElement_INPUT
 					|| d.getType() == DomElementType.DomElement_TABLE

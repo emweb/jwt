@@ -90,6 +90,7 @@ class WebRenderer implements SlotLearnerInterface {
 	public void letReloadJS(WebResponse response, boolean newSession,
 			boolean embedded) throws IOException {
 		if (!embedded) {
+			response.addHeader("Cache-Control", "no-cache");
 			this.setHeaders(response, "text/javascript; charset=UTF-8");
 		}
 		response.out().append(
@@ -103,6 +104,7 @@ class WebRenderer implements SlotLearnerInterface {
 
 	public void letReloadHTML(WebResponse response, boolean newSession)
 			throws IOException {
+		response.addHeader("Cache-Control", "no-cache");
 		this.setHeaders(response, "text/html; charset=UTF-8");
 		response.out().append("<html><script type=\"text/javascript\">");
 		this.letReloadJS(response, newSession, true);
@@ -216,13 +218,14 @@ class WebRenderer implements SlotLearnerInterface {
 
 	public void streamRedirectJS(Writer out, String redirect)
 			throws IOException {
-		if (this.session_.getApp() != null) {
+		if (this.session_.getApp() != null
+				&& this.session_.getApp().internalPathIsChanged_) {
 			out.append("if (window.").append(
 					this.session_.getApp().getJavaScriptClass()).append(") ")
 					.append(this.session_.getApp().getJavaScriptClass())
 					.append("._p_.setHash('").append(
 							this.session_.getApp().getInternalPath()).append(
-							".');\n");
+							"');\n");
 		}
 		out.append("if (window.location.replace) window.location.replace('")
 				.append(redirect).append("');else window.location.href='")
@@ -278,12 +281,12 @@ class WebRenderer implements SlotLearnerInterface {
 			}
 		}
 		this.cookiesToSet_.clear();
-		response.addHeader("Cache-Control", "no-cache");
 		response.setContentType(mimeType);
 	}
 
 	private void serveJavaScriptUpdate(WebResponse response) throws IOException {
 		this.rendered_ = true;
+		response.addHeader("Cache-Control", "no-cache");
 		this.setHeaders(response, "text/javascript; charset=UTF-8");
 		this.collectJavaScript();
 		response.out().append(this.collectedJS1_.toString()).append(
@@ -299,6 +302,12 @@ class WebRenderer implements SlotLearnerInterface {
 	private void serveMainscript(WebResponse response) throws IOException {
 		Configuration conf = this.session_.getController().getConfiguration();
 		boolean widgetset = this.session_.getType() == EntryPointType.WidgetSet;
+		boolean serveSkeletons = !conf.isSplitScript()
+				|| response.getParameter("skeleton") != null;
+		boolean serveRest = !conf.isSplitScript() || !serveSkeletons;
+		if (conf.isSplitScript() && serveSkeletons) {
+			response.addHeader("Cache-Control", "max-age=2592000,private");
+		}
 		this.setHeaders(response, "text/javascript; charset=UTF-8");
 		if (!widgetset) {
 			String redirect = this.session_.getRedirect();
@@ -308,69 +317,89 @@ class WebRenderer implements SlotLearnerInterface {
 			}
 		}
 		WApplication app = this.session_.getApp();
-		final boolean xhtml = app.getEnvironment().getContentType() == WEnvironment.ContentType.XHTML1;
-		final boolean innerHtml = !xhtml || app.getEnvironment().agentIsGecko();
+		final boolean xhtml = this.session_.getEnv().getContentType() == WEnvironment.ContentType.XHTML1;
+		final boolean innerHtml = !xhtml
+				|| this.session_.getEnv().agentIsGecko();
+		if (serveSkeletons) {
+			boolean haveJQuery = false;
+			for (int i = 0; i < app.scriptLibraries_.size()
+					- app.scriptLibrariesAdded_; ++i) {
+				if (app.scriptLibraries_.get(i).uri.indexOf("jquery-") != -1) {
+					haveJQuery = true;
+					break;
+				}
+			}
+			if (!haveJQuery) {
+				response.out().append(
+						"if (typeof window.jQuery === 'undefined') {");
+				response.out().append(WtServlet.JQuery_js);
+				response.out().append("}");
+			}
+			List<String> parts = new ArrayList<String>();
+			String Wt_js_combined = "";
+			if (parts.size() > 1) {
+				for (int i = 0; i < parts.size(); ++i) {
+					Wt_js_combined += parts.get(i);
+				}
+			}
+			FileServe script = new FileServe(parts.size() > 1 ? Wt_js_combined
+					: WtServlet.Wt_js);
+			script
+					.setCondition(
+							"CATCH_ERROR",
+							conf.getErrorReporting() != Configuration.ErrorReporting.NoErrors);
+			script
+					.setCondition(
+							"SHOW_STACK",
+							conf.getErrorReporting() == Configuration.ErrorReporting.ErrorMessageWithStack);
+			script.setCondition("UGLY_INTERNAL_PATHS", this.session_
+					.isUseUglyInternalPaths());
+			script.setCondition("DYNAMIC_JS", false);
+			script.setVar("WT_CLASS", "Wt3_1_9");
+			script.setVar("APP_CLASS", app.getJavaScriptClass());
+			script.setCondition("STRICTLY_SERIALIZED_EVENTS", conf
+					.isSerializedEvents());
+			script.setCondition("WEB_SOCKETS", conf.isWebSockets());
+			script.setVar("INNER_HTML", innerHtml);
+			script.setVar("RELATIVE_URL", WWebWidget
+					.jsStringLiteral(this.session_.getBootstrapUrl(response,
+							WebSession.BootstrapOption.ClearInternalPath)));
+			script.setVar("DEPLOY_URL", WWebWidget
+					.jsStringLiteral(this.session_.getDeploymentPath()));
+			int keepAlive;
+			if (conf.getSessionTimeout() == -1) {
+				keepAlive = 1000000;
+			} else {
+				keepAlive = conf.getSessionTimeout() / 2;
+			}
+			script.setVar("KEEP_ALIVE", String.valueOf(keepAlive));
+			script.setVar("INITIAL_HASH", WWebWidget.jsStringLiteral(app
+					.getInternalPath()));
+			script.setVar("INDICATOR_TIMEOUT", conf.getIndicatorTimeout());
+			script.setVar("SERVER_PUSH_TIMEOUT",
+					conf.getServerPushTimeout() * 1000);
+			script
+					.setVar(
+							"CLOSE_CONNECTION",
+							conf.getServerType() == Configuration.ServerType.WtHttpdServer
+									&& this.session_.getEnv().agentIsGecko()
+									&& this.session_.getEnv().getAgent()
+											.getValue() < WEnvironment.UserAgent.Firefox3_0
+											.getValue());
+			script.stream(response.out());
+		}
+		if (!serveRest) {
+			return;
+		}
 		this.formObjectsChanged_ = true;
 		this.currentFormObjectsList_ = this.createFormObjectsList(app);
-		response.out().append("if (typeof window.jQuery === 'undefined') {");
-		response.out().append(WtServlet.JQuery_js);
-		response.out().append("}");
-		List<String> parts = new ArrayList<String>();
-		String Wt_js_combined = "";
-		if (parts.size() > 1) {
-			for (int i = 0; i < parts.size(); ++i) {
-				Wt_js_combined += parts.get(i);
-			}
-		}
-		FileServe script = new FileServe(parts.size() > 1 ? Wt_js_combined
-				: WtServlet.Wt_js);
-		script
-				.setCondition(
-						"CATCH_ERROR",
-						conf.getErrorReporting() != Configuration.ErrorReporting.NoErrors);
-		script
-				.setCondition(
-						"SHOW_STACK",
-						conf.getErrorReporting() == Configuration.ErrorReporting.ErrorMessageWithStack);
-		script.setCondition("UGLY_INTERNAL_PATHS", this.session_
-				.isUseUglyInternalPaths());
-		script.setCondition("DYNAMIC_JS", false);
-		script.setVar("WT_CLASS", "Wt3_1_8");
-		script.setVar("APP_CLASS", app.getJavaScriptClass());
-		script.setVar("AUTO_JAVASCRIPT", "(function(){" + app.autoJavaScript_
-				+ "})");
-		script.setCondition("STRICTLY_SERIALIZED_EVENTS", conf
-				.isSerializedEvents());
-		script.setCondition("WEB_SOCKETS", conf.isWebSockets());
-		script.setVar("INNER_HTML", innerHtml);
-		script.setVar("FORM_OBJECTS", '[' + this.currentFormObjectsList_ + ']');
-		script.setVar("RELATIVE_URL", WWebWidget.jsStringLiteral(this.session_
-				.getBootstrapUrl(response,
-						WebSession.BootstrapOption.ClearInternalPath)));
-		script.setVar("DEPLOY_URL", WWebWidget.jsStringLiteral(this.session_
-				.getDeploymentPath()));
-		int keepAlive;
-		if (conf.getSessionTimeout() == -1) {
-			keepAlive = 1000000;
-		} else {
-			keepAlive = conf.getSessionTimeout() / 2;
-		}
-		script.setVar("KEEP_ALIVE", String.valueOf(keepAlive));
-		script.setVar("INITIAL_HASH", WWebWidget.jsStringLiteral(app
-				.getInternalPath()));
-		script.setVar("INDICATOR_TIMEOUT", conf.getIndicatorTimeout());
-		script
-				.setVar("SERVER_PUSH_TIMEOUT",
-						conf.getServerPushTimeout() * 1000);
-		script.setVar("PAGE_ID", this.pageId_);
-		script
-				.setVar(
-						"CLOSE_CONNECTION",
-						conf.getServerType() == Configuration.ServerType.WtHttpdServer
-								&& this.session_.getEnv().agentIsGecko()
-								&& this.session_.getEnv().getAgent().getValue() < WEnvironment.UserAgent.Firefox3_0
-										.getValue());
-		script.stream(response.out());
+		response.out().append(app.getJavaScriptClass()).append(
+				"._p_.setFormObjects([").append(this.currentFormObjectsList_)
+				.append("]);").append(app.getJavaScriptClass()).append(
+						"._p_.autoJavaScript=function(){").append(
+						app.autoJavaScript_).append("};").append(
+						app.getJavaScriptClass()).append("._p_.setPage(")
+				.append(String.valueOf(this.pageId_)).append(");");
 		app.autoJavaScriptChanged_ = false;
 		if (!this.rendered_) {
 			this.serveMainAjax(response);
@@ -378,7 +407,7 @@ class WebRenderer implements SlotLearnerInterface {
 			if (app.enableAjax_) {
 				this.collectedJS1_
 						.append(
-								"var form = Wt3_1_8.getElement('Wt-form'); if (form) {")
+								"var form = Wt3_1_9.getElement('Wt-form'); if (form) {")
 						.append(this.beforeLoadJS_.toString());
 				this.beforeLoadJS_ = new StringWriter();
 				this.collectedJS1_
@@ -603,18 +632,18 @@ class WebRenderer implements SlotLearnerInterface {
 		}
 		if (widgetset || !this.session_.isBootStyleResponse()) {
 			if (app.getCssTheme().length() != 0) {
-				response.out().append("Wt3_1_8").append(".addStyleSheet('")
+				response.out().append("Wt3_1_9").append(".addStyleSheet('")
 						.append(WApplication.getResourcesUrl()).append(
 								"/themes/").append(app.getCssTheme()).append(
 								"/wt.css', 'all');");
 				if (app.getEnvironment().agentIsIE()) {
-					response.out().append("Wt3_1_8").append(".addStyleSheet('")
+					response.out().append("Wt3_1_9").append(".addStyleSheet('")
 							.append(WApplication.getResourcesUrl()).append(
 									"/themes/").append(app.getCssTheme())
 							.append("/wt_ie.css', 'all');");
 				}
 				if (app.getEnvironment().getAgent() == WEnvironment.UserAgent.IE6) {
-					response.out().append("Wt3_1_8").append(".addStyleSheet('")
+					response.out().append("Wt3_1_9").append(".addStyleSheet('")
 							.append(WApplication.getResourcesUrl()).append(
 									"/themes/").append(app.getCssTheme())
 							.append("/wt_ie6.css', 'all');");
@@ -658,7 +687,7 @@ class WebRenderer implements SlotLearnerInterface {
 		if (widgetset) {
 			String historyE = app.getEnvironment().getParameter("Wt-history");
 			if (historyE != null) {
-				response.out().append("Wt3_1_8")
+				response.out().append("Wt3_1_9")
 						.append(".history.initialize('").append(
 								historyE.charAt(0)).append("-field', '")
 						.append(historyE.charAt(0)).append("-iframe');\n");
@@ -823,7 +852,7 @@ class WebRenderer implements SlotLearnerInterface {
 			throws IOException {
 		int first = app.styleSheets_.size() - app.styleSheetsAdded_;
 		for (int i = first; i < app.styleSheets_.size(); ++i) {
-			out.append("Wt3_1_8").append(".addStyleSheet('").append(
+			out.append("Wt3_1_9").append(".addStyleSheet('").append(
 					app.fixRelativeUrl(app.styleSheets_.get(i).uri)).append(
 					"', '").append(app.styleSheets_.get(i).media).append(
 					"');\n");
@@ -1055,6 +1084,7 @@ class WebRenderer implements SlotLearnerInterface {
 		bootJs.setVar("AJAX_CANONICAL_URL", this
 				.safeJsStringLiteral(this.session_.ajaxCanonicalUrl(response)));
 		bootJs.setVar("APP_CLASS", "Wt");
+		bootJs.setCondition("SPLIT_SCRIPT", conf.isSplitScript());
 		bootJs.setCondition("HYBRID", hybrid);
 		boolean xhtml = this.session_.getEnv().getContentType() == WEnvironment.ContentType.XHTML1;
 		bootJs.setCondition("DEFER_SCRIPT", !xhtml);

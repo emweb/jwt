@@ -281,7 +281,7 @@ public class WPushButton extends WFormWidget {
 				}
 				if (this.flags_.get(BIT_REF_INTERNAL_PATH)) {
 					this.redirectJS_
-							.setJavaScript("function(){Wt3_1_8.history.navigate("
+							.setJavaScript("function(){Wt3_1_9.history.navigate("
 									+ jsStringLiteral(this.ref_) + ",true);}");
 				} else {
 					this.redirectJS_

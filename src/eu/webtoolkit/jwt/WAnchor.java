@@ -556,7 +556,7 @@ public class WAnchor extends WContainerWidget {
 							this.clicked().preventDefaultAction();
 						}
 						this.changeInternalPathJS_
-								.setJavaScript("function(){Wt3_1_8.history.navigate("
+								.setJavaScript("function(){Wt3_1_9.history.navigate("
 										+ jsStringLiteral(this.ref_)
 										+ ",true);}");
 						this.clicked().senderRepaint();

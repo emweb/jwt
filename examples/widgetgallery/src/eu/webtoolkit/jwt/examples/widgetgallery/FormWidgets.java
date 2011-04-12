@@ -64,6 +64,7 @@ class FormWidgets extends ControlsWidget {
 		WCheckBox cb = new WCheckBox("Check me!", result);
 		cb.setChecked(true);
 		this.ed_.showSignal(cb.checked(), "'Check me!' checked");
+		this.ed_.showSignal(cb.unChecked(), "'Check me!' unchecked");
 		new WBreak(result);
 		cb = new WCheckBox("Check me too!", result);
 		this.ed_.showSignal(cb.checked(), "'Check me too!' checked");

@@ -291,22 +291,22 @@ public class WTreeTable extends WCompositeWidget {
 			app.doJavaScript(wtjs1(app), false);
 			app.setJavaScriptLoaded(THIS_JS);
 		}
-		this.setJavaScriptMember("_a", "0;new Wt3_1_8.WTreeTable("
+		this.setJavaScriptMember("_a", "0;new Wt3_1_9.WTreeTable("
 				+ app.getJavaScriptClass() + "," + this.getJsRef() + ");");
 	}
 
 	static String wtjs1(WApplication app) {
 		String s = "function(f,a){jQuery.data(a,\"obj\",this);var g=this,h=f.WT,e=$(a).find(\".Wt-content\").get(0),i=$(a).find(\".Wt-sbspacer\").get(0);this.wtResize=function(b,d,c){b.style.height=c+\"px\";d=b.lastChild;c-=$(b.firstChild).outerHeight();if(c>0)if(d.style.height!=c+\"px\")d.style.height=c+\"px\"};this.autoJavaScript=function(){if(a.parentNode){i.style.display=e.scrollHeight>e.offsetHeight?\"block\":\"none\";var b=h.pxself(a,\"height\");b&&g.wtResize(a,0,b)}}}";
 		if ("ctor.WTreeTable".indexOf(".prototype") != -1) {
-			return "Wt3_1_8.ctor.WTreeTable = " + s + ";";
+			return "Wt3_1_9.ctor.WTreeTable = " + s + ";";
 		} else {
 			if ("ctor.WTreeTable".substring(0, 5).compareTo(
 					"ctor.".substring(0, 5)) == 0) {
-				return "Wt3_1_8." + "ctor.WTreeTable".substring(5) + " = " + s
+				return "Wt3_1_9." + "ctor.WTreeTable".substring(5) + " = " + s
 						+ ";";
 			} else {
-				return "Wt3_1_8.ctor.WTreeTable = function() { (" + s
-						+ ").apply(Wt3_1_8, arguments) };";
+				return "Wt3_1_9.ctor.WTreeTable = function() { (" + s
+						+ ").apply(Wt3_1_9, arguments) };";
 			}
 		}
 	}

@@ -360,7 +360,7 @@ public abstract class WFormWidget extends WInteractWidget {
 			if (!(this.validateJs_ != null)) {
 				this.validateJs_ = new JSlot();
 				this.validateJs_
-						.setJavaScript("function(o){Wt3_1_8.validate(o)}");
+						.setJavaScript("function(o){Wt3_1_9.validate(o)}");
 				this.keyWentUp().addListener(this.validateJs_);
 				this.changed().addListener(this.validateJs_);
 				this.clicked().addListener(this.validateJs_);
@@ -376,7 +376,7 @@ public abstract class WFormWidget extends WInteractWidget {
 				this.keyPressed().addListener(this.filterInput_);
 			}
 			StringUtils.replace(inputFilter, '/', "\\/");
-			this.filterInput_.setJavaScript("function(o,e){Wt3_1_8.filter(o,e,"
+			this.filterInput_.setJavaScript("function(o,e){Wt3_1_9.filter(o,e,"
 					+ jsStringLiteral(inputFilter) + ")}");
 		} else {
 			;
@@ -387,9 +387,10 @@ public abstract class WFormWidget extends WInteractWidget {
 
 	void updateDom(DomElement element, boolean all) {
 		WEnvironment env = WApplication.getInstance().getEnvironment();
-		if (!env.agentIsIE()
-				|| !(((this) instanceof WAbstractToggleButton ? (WAbstractToggleButton) (this)
-						: null) != null)) {
+		boolean piggyBackChangeOnClick = env.agentIsIE()
+				&& ((this) instanceof WAbstractToggleButton ? (WAbstractToggleButton) (this)
+						: null) != null;
+		if (!piggyBackChangeOnClick) {
 			EventSignal s = this.voidEventSignal(CHANGE_SIGNAL, false);
 			if (s != null) {
 				this.updateSignalConnection(element, s, "change", all);
@@ -446,7 +447,7 @@ public abstract class WFormWidget extends WInteractWidget {
 			WApplication app = WApplication.getInstance();
 			WEnvironment env = app.getEnvironment();
 			if (env.hasAjax()) {
-				app.doJavaScript("new Wt3_1_8.WFormWidget("
+				app.doJavaScript("new Wt3_1_9.WFormWidget("
 						+ app.getJavaScriptClass() + "," + this.getJsRef()
 						+ "," + "'" + this.emptyText_.toString() + "');");
 			}
@@ -467,15 +468,15 @@ public abstract class WFormWidget extends WInteractWidget {
 	static String wtjs1(WApplication app) {
 		String s = "function(c,a,d){jQuery.data(a,\"obj\",this);var b=c.WT;this.updateEmptyText=function(){if(b.hasFocus(a)){if($(a).hasClass(\"Wt-edit-emptyText\")){if(!b.isIE&&a.oldtype)a.type=a.oldtype;$(a).removeClass(\"Wt-edit-emptyText\");a.value=\"\"}}else if(a.value==\"\"){if(a.type==\"password\")if(b.isIE)return;else{a.oldtype=\"password\";a.type=\"text\"}$(a).addClass(\"Wt-edit-emptyText\");a.value=d}};this.updateEmptyText()}";
 		if ("ctor.WFormWidget".indexOf(".prototype") != -1) {
-			return "Wt3_1_8.ctor.WFormWidget = " + s + ";";
+			return "Wt3_1_9.ctor.WFormWidget = " + s + ";";
 		} else {
 			if ("ctor.WFormWidget".substring(0, 5).compareTo(
 					"ctor.".substring(0, 5)) == 0) {
-				return "Wt3_1_8." + "ctor.WFormWidget".substring(5) + " = " + s
+				return "Wt3_1_9." + "ctor.WFormWidget".substring(5) + " = " + s
 						+ ";";
 			} else {
-				return "Wt3_1_8.ctor.WFormWidget = function() { (" + s
-						+ ").apply(Wt3_1_8, arguments) };";
+				return "Wt3_1_9.ctor.WFormWidget = function() { (" + s
+						+ ").apply(Wt3_1_9, arguments) };";
 			}
 		}
 	}

@@ -142,6 +142,12 @@ public abstract class WPaintedWidget extends WInteractWidget {
 			}
 		}
 		this.setLayoutSizeAware(true);
+		this
+				.setJavaScriptMember(
+						WT_RESIZE_JS,
+						"function(self,w,h) {var lsaJs = "
+								+ this.getJavaScriptMember(WT_RESIZE_JS)
+								+ "lsaJs(self,w,h);$(self).find('canvas, img').width(w).height(h);}");
 		this.setInline(false);
 	}
 
@@ -319,7 +325,7 @@ public abstract class WPaintedWidget extends WInteractWidget {
 
 	protected void layoutSizeChanged(int width, int height) {
 		this.resize(WLength.Auto, WLength.Auto);
-		this.resizeCanvas(width, height - 5);
+		this.resizeCanvas(width, height);
 	}
 
 	/**
@@ -399,9 +405,9 @@ public abstract class WPaintedWidget extends WInteractWidget {
 					&& !createdNew);
 			if (this.renderWidth_ != 0 && this.renderHeight_ != 0) {
 				this.paintEvent(device);
-			}
-			if (device.getPainter() != null) {
-				device.getPainter().end();
+				if (device.getPainter() != null) {
+					device.getPainter().end();
+				}
 			}
 			if (createdNew) {
 				DomElement canvas = DomElement.getForUpdate('p' + this.getId(),

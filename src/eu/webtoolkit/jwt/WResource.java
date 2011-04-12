@@ -183,7 +183,7 @@ public abstract class WResource extends WObject {
 	 */
 	public void suggestFileName(String name) {
 		suggestedFileName_ = name;
-		
+
 		generateUrl();
 	}
 
@@ -201,6 +201,7 @@ public abstract class WResource extends WObject {
 	 */
 	public void setChanged() {
 		generateUrl();
+
 		dataChanged_.trigger();
 	}
 

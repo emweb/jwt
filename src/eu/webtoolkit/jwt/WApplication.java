@@ -157,7 +157,7 @@ public class WApplication extends WObject {
 		this.connected_ = true;
 		this.htmlClass_ = "";
 		this.bodyClass_ = "";
-		this.bodyHtmlClassChanged_ = false;
+		this.bodyHtmlClassChanged_ = true;
 		this.enableAjax_ = false;
 		this.initialized_ = false;
 		this.focusId_ = "";
@@ -1331,9 +1331,7 @@ public class WApplication extends WObject {
 
 	/**
 	 * Grabs and returns the lock for manipulating widgets outside the event
-	 * loop. java.
-	 * <p>
-	 * cpp
+	 * loop.
 	 * <p>
 	 * You need to keep this lock in scope while manipulating widgets outside of
 	 * the event loop. In normal cases, inside the JWt event loop, you do not
@@ -1341,7 +1339,7 @@ public class WApplication extends WObject {
 	 * <p>
 	 * 
 	 * @see WApplication#enableUpdates(boolean enabled)
-	 * @see WApplication#triggerUpdate() cpp
+	 * @see WApplication#triggerUpdate()
 	 */
 	public WApplication.UpdateLock getUpdateLock() {
 		return new WApplication.UpdateLock(this);
@@ -1828,9 +1826,9 @@ public class WApplication extends WObject {
 		if (this.loadingIndicator_ != null) {
 			this.loadingIndicatorWidget_ = indicator.getWidget();
 			this.domRoot_.addWidget(this.loadingIndicatorWidget_);
-			this.showLoadJS.setJavaScript("function(o,e) {Wt3_1_8.inline('"
+			this.showLoadJS.setJavaScript("function(o,e) {Wt3_1_9.inline('"
 					+ this.loadingIndicatorWidget_.getId() + "');}");
-			this.hideLoadJS.setJavaScript("function(o,e) {Wt3_1_8.hide('"
+			this.hideLoadJS.setJavaScript("function(o,e) {Wt3_1_9.hide('"
 					+ this.loadingIndicatorWidget_.getId() + "');}");
 			this.loadingIndicatorWidget_.hide();
 		}

@@ -218,11 +218,14 @@ public abstract class WAbstractToggleButton extends WFormWidget {
 		EventSignal change = this.voidEventSignal(CHANGE_SIGNAL, false);
 		EventSignal1<WMouseEvent> click = this.mouseEventSignal(CLICK_SIGNAL,
 				false);
-		boolean needUpdateClickedSignal = click != null
-				&& click.needsUpdate(all) || env.agentIsIE() && change != null
+		boolean piggyBackChangeOnClick = env.agentIsIE();
+		boolean needUpdateChangeSignal = change != null
 				&& change.needsUpdate(all) || check != null
 				&& check.needsUpdate(all) || uncheck != null
 				&& uncheck.needsUpdate(all);
+		boolean needUpdateClickedSignal = click != null
+				&& click.needsUpdate(all) || piggyBackChangeOnClick
+				&& needUpdateChangeSignal;
 		super.updateDom(input, all);
 		if (element != input) {
 			element.setProperties(input.getProperties());
@@ -254,43 +257,58 @@ public abstract class WAbstractToggleButton extends WFormWidget {
 			}
 			this.stateChanged_ = false;
 		}
-		if (needUpdateClickedSignal || all) {
+		List<DomElement.EventAction> changeActions = new ArrayList<DomElement.EventAction>();
+		if (needUpdateChangeSignal || all) {
 			String dom = "o";
-			List<DomElement.EventAction> actions = new ArrayList<DomElement.EventAction>();
 			if (check != null) {
 				if (check.isConnected()) {
-					actions.add(new DomElement.EventAction(dom + ".checked",
-							check.getJavaScript(), check.encodeCmd(), check
-									.isExposedSignal()));
+					changeActions.add(new DomElement.EventAction(dom
+							+ ".checked", check.getJavaScript(), check
+							.encodeCmd(), check.isExposedSignal()));
 				}
 				check.updateOk();
 			}
 			if (uncheck != null) {
 				if (uncheck.isConnected()) {
-					actions.add(new DomElement.EventAction("!" + dom
+					changeActions.add(new DomElement.EventAction("!" + dom
 							+ ".checked", uncheck.getJavaScript(), uncheck
 							.encodeCmd(), uncheck.isExposedSignal()));
 				}
 				uncheck.updateOk();
 			}
 			if (change != null) {
-				if (env.agentIsIE() && change.needsUpdate(all)) {
-					actions.add(new DomElement.EventAction("", change
+				if (change.needsUpdate(all)) {
+					changeActions.add(new DomElement.EventAction("", change
 							.getJavaScript(), change.encodeCmd(), change
 							.isExposedSignal()));
 				}
 				change.updateOk();
 			}
-			if (click != null) {
-				if (click.needsUpdate(all)) {
-					actions.add(new DomElement.EventAction("", click
-							.getJavaScript(), click.encodeCmd(), click
-							.isExposedSignal()));
+			if (!piggyBackChangeOnClick) {
+				if (!(all && changeActions.isEmpty())) {
+					input.setEvent("change", changeActions);
 				}
-				click.updateOk();
 			}
-			if (!(all && actions.isEmpty())) {
-				input.setEvent(CLICK_SIGNAL, actions);
+		}
+		if (needUpdateClickedSignal || all) {
+			if (piggyBackChangeOnClick) {
+				if (click != null) {
+					if (click.needsUpdate(all)) {
+						changeActions.add(new DomElement.EventAction("", click
+								.getJavaScript(), click.encodeCmd(), click
+								.isExposedSignal()));
+					}
+					click.updateOk();
+				}
+				if (!(all && changeActions.isEmpty())) {
+					input.setEvent(CLICK_SIGNAL, changeActions);
+				}
+			} else {
+				if (click != null) {
+					this
+							.updateSignalConnection(input, click, CLICK_SIGNAL,
+									all);
+				}
 			}
 		}
 		if (element != input) {

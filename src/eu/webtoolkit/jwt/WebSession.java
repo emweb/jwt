@@ -162,7 +162,7 @@ class WebSession {
 			return;
 		}
 		String requestE = request.getParameter("request");
-		String pageIdE = handler.getRequest().getParameter("pageId");
+		String pageIdE = request.getParameter("pageId");
 		if (pageIdE != null
 				&& !pageIdE.equals(String.valueOf(this.renderer_.getPageId()))) {
 			handler.getResponse().setContentType(
@@ -182,25 +182,31 @@ class WebSession {
 			break;
 		case Loaded:
 			if (handler.getResponse().getResponseType() == WebRequest.ResponseType.Script) {
-				if (!this.env_.doesAjax_) {
+				if (!(request.getParameter("skeleton") != null)) {
 					String hashE = request.getParameter("_");
-					String scaleE = request.getParameter("scale");
-					this.env_.doesAjax_ = true;
-					this.env_.doesCookies_ = request.getHeaderValue("Cookie")
-							.length() != 0;
-					try {
-						this.env_.dpiScale_ = scaleE != null ? Double
-								.parseDouble(scaleE) : 1;
-					} catch (NumberFormatException e) {
-						this.env_.dpiScale_ = 1;
-					}
-					if (hashE != null) {
-						this.env_.setInternalPath(hashE);
-					}
-					this.app_.enableAjax();
-					if (this.env_.getInternalPath().length() > 1) {
-						this.app_.changeInternalPath(this.env_
-								.getInternalPath());
+					if (!this.env_.doesAjax_) {
+						String scaleE = request.getParameter("scale");
+						this.env_.doesAjax_ = true;
+						this.env_.doesCookies_ = request.getHeaderValue(
+								"Cookie").length() != 0;
+						try {
+							this.env_.dpiScale_ = scaleE != null ? Double
+									.parseDouble(scaleE) : 1;
+						} catch (NumberFormatException e) {
+							this.env_.dpiScale_ = 1;
+						}
+						if (hashE != null) {
+							this.env_.setInternalPath(hashE);
+						}
+						this.app_.enableAjax();
+						if (this.env_.getInternalPath().length() > 1) {
+							this.app_.changeInternalPath(this.env_
+									.getInternalPath());
+						}
+					} else {
+						if (hashE != null) {
+							this.app_.changeInternalPath(hashE);
+						}
 					}
 				}
 				this.render(handler);
@@ -1107,24 +1113,30 @@ class WebSession {
 						if (!(this.app_ != null)) {
 							String resourceE = request.getParameter("resource");
 							if (handler.getResponse().getResponseType() == WebRequest.ResponseType.Script) {
-								String hashE = request.getParameter("_");
-								String scaleE = request.getParameter("scale");
-								this.env_.doesAjax_ = true;
-								this.env_.doesCookies_ = request
-										.getHeaderValue("Cookie").length() != 0;
-								try {
-									this.env_.dpiScale_ = scaleE != null ? Double
-											.parseDouble(scaleE)
-											: 1;
-								} catch (NumberFormatException e) {
-									this.env_.dpiScale_ = 1;
-								}
-								if (hashE != null) {
-									this.env_.setInternalPath(hashE);
-								}
-								if (!this.start()) {
-									throw new WtException(
-											"Could not start application.");
+								if (!(request.getParameter("skeleton") != null)) {
+									String hashE = request.getParameter("_");
+									String scaleE = request
+											.getParameter("scale");
+									this.env_.doesAjax_ = true;
+									this.env_.doesCookies_ = request
+											.getHeaderValue("Cookie").length() != 0;
+									try {
+										this.env_.dpiScale_ = scaleE != null ? Double
+												.parseDouble(scaleE)
+												: 1;
+									} catch (NumberFormatException e) {
+										this.env_.dpiScale_ = 1;
+									}
+									if (hashE != null) {
+										this.env_.setInternalPath(hashE);
+									}
+									if (!this.start()) {
+										throw new WtException(
+												"Could not start application.");
+									}
+								} else {
+									this.serveResponse(handler);
+									return;
 								}
 							} else {
 								if (requestForResource && resourceE != null
@@ -1346,7 +1358,8 @@ class WebSession {
 	private void serveResponse(WebSession.Handler handler) throws IOException {
 		if (!handler.getRequest().isWebSocketMessage()) {
 			if (this.bootStyleResponse_ != null) {
-				if (handler.getResponse().getResponseType() == WebRequest.ResponseType.Script) {
+				if (handler.getResponse().getResponseType() == WebRequest.ResponseType.Script
+						&& !(handler.getRequest().getParameter("skeleton") != null)) {
 					this.renderer_.serveLinkedCss(this.bootStyleResponse_);
 				}
 				this.bootStyleResponse_.flush();
@@ -1451,7 +1464,7 @@ class WebSession {
 				String hashE = request.getParameter(se + "_");
 				if (hashE != null) {
 					this.app_.changeInternalPath(hashE);
-					this.app_.doJavaScript("Wt3_1_8.scrollIntoView('" + hashE
+					this.app_.doJavaScript("Wt3_1_9.scrollIntoView('" + hashE
 							+ "');");
 				} else {
 					this.app_.changeInternalPath("");

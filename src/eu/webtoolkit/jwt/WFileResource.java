@@ -53,8 +53,12 @@ public class WFileResource extends WResource {
 	 * @param fileName the new filename.
 	 */
 	public void setFileName(String fileName) {
+		boolean replacing = (fileName_ != null && fileName_.length() > 0);
+
 		this.fileName_ = fileName;
-		this.dataChanged().trigger();
+
+		if (replacing)
+			setChanged();
 	}
 
 	/**
@@ -84,7 +88,8 @@ public class WFileResource extends WResource {
 	 */
 	public void setMimeType(String mimeType) {
 		this.mimeType_ = mimeType;
-		this.dataChanged().trigger();
+		
+		setChanged();
 	}
 
 	private String mimeType_;

@@ -84,15 +84,18 @@ var ie = (function(){
     return v > 4 ? v : undef;
 }());
 
+var agent = navigator.userAgent.toLowerCase();
+
 this.isIE = ie !== undefined;
 this.isIE6 = ie === 6;
 this.isIElt9 = ie < 9;
-this.isIEMobile = navigator.userAgent.toLowerCase().indexOf("msie 4") != -1
-  || navigator.userAgent.toLowerCase().indexOf("msie 5") != -1;
-this.isGecko = navigator.userAgent.toLowerCase().indexOf("gecko") != -1;
+this.isIEMobile = agent.indexOf("msie 4")!=-1 || agent.indexOf("msie 5")!=-1;
+this.isGecko = agent.indexOf("gecko") != -1;
 this.isOpera = typeof window.opera !== 'undefined';
-this.isAndroid = (navigator.userAgent.toLowerCase().indexOf("safari") != -1)
-  && (navigator.userAgent.toLowerCase().indexOf("android") != -1);
+this.isAndroid = (agent.indexOf("safari") != -1)
+		  && (agent.indexOf("android") != -1);
+this.isMobileWebKit = (agent.indexOf("applewebkit") != -1)
+		       && (agent.indexOf("mobile") != -1);
 
 this.updateDelay = this.isIE ? 10 : 51;
 
@@ -1185,7 +1188,8 @@ this.hasFocus = function(el) {
   return el == document.activeElement;
 };
 
-var html5History = !!(window.history && window.history.pushState);
+var html5History = !WT.isMobileWebKit
+    && !!(window.history && window.history.pushState);
 
 if (html5History) {
   this.history = (function()
@@ -1698,7 +1702,7 @@ function encodeTouches(s, touches, widgetCoords) {
   return result;
 }
 
-var formObjects = _$_FORM_OBJECTS_$_;
+var formObjects = [];
 
 function encodeEvent(event, i) {
   var se, result, e;
@@ -2257,6 +2261,13 @@ function responseReceived(updateId) {
   comm.responseReceived(updateId);
 }
 
+var pageId = 0;
+
+function setPage(id)
+{
+  pageId = id;
+}
+
 function sendUpdate() {
   if (responsePending)
     return;
@@ -2292,7 +2303,7 @@ function sendUpdate() {
     poll = true;
   }
 
-  data.result += '&ackId=' + ackUpdateId + '&pageId=_$_PAGE_ID_$_';
+  data.result += '&ackId=' + ackUpdateId + '&pageId=' + pageId;
 
   if (websocket.socket != null && websocket.socket.readyState == 1) {
     responsePending = null;
@@ -2533,9 +2544,10 @@ this._p_ = {
   ImagePreloader : ImagePreloader,
 
   doAutoJavaScript : doAutoJavaScript,
-  autoJavaScript : function() {  _$_AUTO_JAVASCRIPT_$_(); },
+  autoJavaScript : function() { },
 
   response : responseReceived,
+  setPage : setPage,
   setCloseMessage : setCloseMessage
 };
 

@@ -580,4 +580,8 @@ public class Configuration {
 	public ErrorReporting setErrorReporting() { 
 		return errorReporting; 
 	}
+
+	boolean isSplitScript() {
+		return false;
+	}
 }

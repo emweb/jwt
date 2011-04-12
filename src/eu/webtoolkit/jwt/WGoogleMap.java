@@ -267,10 +267,14 @@ public class WGoogleMap extends WCompositeWidget {
 	/**
 	 * Adds a polyline overlay to the map.
 	 * <p>
-	 * specify a value between 0.0 and 1.0 for the opacity.
+	 * Specify a value between 0.0 and 1.0 for the opacity or set the alpha
+	 * value in the color.
 	 */
 	public void addPolyline(List<WGoogleMap.Coordinate> points, WColor color,
 			int width, double opacity) {
+		if (opacity == 1.0) {
+			opacity = color.getAlpha() / 255.0;
+		}
 		opacity = Math.max(Math.min(opacity, 1.0), 0.0);
 		StringWriter strm = new StringWriter();
 		strm.append("var waypoints = [];");
@@ -335,6 +339,59 @@ public class WGoogleMap extends WCompositeWidget {
 	public final void addPolyline(List<WGoogleMap.Coordinate> points,
 			WColor color, int width) {
 		addPolyline(points, color, width, 1.0);
+	}
+
+	/**
+	 * Adds a circle to the map.
+	 * <p>
+	 * The stroke and fill opacity can be configured respectively in the
+	 * strokeColor and fillColor. This feature is only supported by the Google
+	 * Maps API version 3.
+	 */
+	public void addCircle(WGoogleMap.Coordinate center, double radius,
+			WColor strokeColor, int strokeWidth, WColor fillColor) {
+		if (this.apiVersion_ == WGoogleMap.ApiVersion.Version2) {
+			throw new UnsupportedOperationException(
+					"WGoogleMap::addCircle is not supported in the Google Maps API v2.");
+		} else {
+			StringWriter strm = new StringWriter();
+			double strokeOpacity = strokeColor.getAlpha() / 255.0;
+			double fillOpacity = fillColor.getAlpha() / 255.0;
+			strm
+					.append("var mapLocal = ")
+					.append(this.getJsRef() + ".map;")
+					.append("var latLng  = new google.maps.LatLng(")
+					.append(String.valueOf(center.getLatitude()))
+					.append(",")
+					.append(String.valueOf(center.getLongitude()))
+					.append(");")
+					.append(
+							"var circle = new google.maps.Circle( {   map: mapLocal,   radius: ")
+					.append(String.valueOf(radius)).append(
+							",   center:  latLng  ,  fillOpacity: \"").append(
+							String.valueOf(fillOpacity)).append(
+							"\",  fillColor: \"")
+					.append(fillColor.getCssText()).append(
+							"\",  strokeWeight: ").append(
+							String.valueOf(strokeWidth)).append(
+							",  strokeColor:\"").append(
+							strokeColor.getCssText()).append(
+							"\",  strokeOpacity: ").append(
+							String.valueOf(strokeOpacity)).append("} );");
+			this.doGmJavaScript(strm.toString(), false);
+		}
+	}
+
+	/**
+	 * Adds a circle to the map.
+	 * <p>
+	 * Calls
+	 * {@link #addCircle(WGoogleMap.Coordinate center, double radius, WColor strokeColor, int strokeWidth, WColor fillColor)
+	 * addCircle(center, radius, strokeColor, strokeWidth, new WColor())}
+	 */
+	public final void addCircle(WGoogleMap.Coordinate center, double radius,
+			WColor strokeColor, int strokeWidth) {
+		addCircle(center, radius, strokeColor, strokeWidth, new WColor());
 	}
 
 	/**
@@ -793,15 +850,16 @@ public class WGoogleMap extends WCompositeWidget {
 					strm
 							.append("var map = new google.maps.Map(self);map.setCenter(new google.maps.LatLng(47.01887777, 8.651888), 13);");
 					this
-							.setJavaScriptMember("wtResize",
-									"function(self, w, h) {if (self.map)  self.map.checkResize();}");
+							.setJavaScriptMember(
+									"wtResize",
+									"function(self, w, h) {self.style.width=w + 'px';self.style.height=h + 'px';if (self.map)  self.map.checkResize();}");
 				} else {
 					strm
 							.append("var latlng = new google.maps.LatLng(47.01887777, 8.651888);var myOptions = {zoom: 13,center: latlng,mapTypeId: google.maps.MapTypeId.ROADMAP};var map = new google.maps.Map(self, myOptions);map.overlays = [];map.infowindows = [];");
 					this
 							.setJavaScriptMember(
 									"wtResize",
-									"function(self, w, h) {if (self.map) google.maps.event.trigger(self.map, 'resize');}");
+									"function(self, w, h) {self.style.width=w + 'px';self.style.height=h + 'px';if (self.map) google.maps.event.trigger(self.map, 'resize');}");
 				}
 				strm.append("self.map = map;");
 				this.streamJSListener(this.clicked_, "click", strm);

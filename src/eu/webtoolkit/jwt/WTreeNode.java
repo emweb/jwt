@@ -932,6 +932,11 @@ public class WTreeNode extends WCompositeWidget {
 					.resize(new WLength(0), WLength.Auto);
 			this.layout_.getElementAt(1, 0)
 					.resize(new WLength(0), WLength.Auto);
+		} else {
+			this.layout_.getRowAt(0).show();
+			this.expandIcon_.show();
+			this.layout_.getElementAt(0, 0).resize(WLength.Auto, WLength.Auto);
+			this.layout_.getElementAt(1, 0).resize(WLength.Auto, WLength.Auto);
 		}
 		WTreeNode parent = this.getParentNode();
 		if (parent != null && !parent.childrenDecorated_) {
