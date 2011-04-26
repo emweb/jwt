@@ -317,6 +317,60 @@ public class WTable extends WInteractWidget {
 		return getHeaderCount(Orientation.Horizontal);
 	}
 
+	/**
+	 * Move a table row from its original position to a new position.
+	 * <p>
+	 * The table expands automatically when to is beyond the current table
+	 * dimensions.
+	 * <p>
+	 * 
+	 * @see WTable#moveColumn(int from, int to)
+	 */
+	public void moveRow(int from, int to) {
+		if (from < 0 || from >= (int) this.rows_.size()) {
+			throw new UnsupportedOperationException(
+					"WTable::moveRow: the from index is not within the current table dimensions.");
+		}
+		WTableRow from_tr = this.getRowAt(from);
+		this.rows_.remove(from_tr);
+		if (to > (int) this.rows_.size()) {
+			this.getRowAt(to);
+		}
+		this.rows_.add(0 + to, from_tr);
+		this.flags_.set(BIT_GRID_CHANGED);
+		this.repaint(EnumSet.of(RepaintFlag.RepaintInnerHtml));
+	}
+
+	/**
+	 * Move a table column from its original position to a new position.
+	 * <p>
+	 * The table expands automatically when to is beyond the current table
+	 * dimensions.
+	 * <p>
+	 * 
+	 * @see WTable#moveRow(int from, int to)
+	 */
+	public void moveColumn(int from, int to) {
+		if (from < 0 || from >= (int) this.columns_.size()) {
+			throw new UnsupportedOperationException(
+					"WTable::moveColumn: the from index is not within the current table dimensions.");
+		}
+		WTableColumn from_tc = this.getColumnAt(from);
+		this.columns_.remove(from_tc);
+		if (to > (int) this.columns_.size()) {
+			this.getColumnAt(to);
+		}
+		this.columns_.add(0 + to, from_tc);
+		for (int i = 0; i < this.rows_.size(); i++) {
+			List<WTableRow.TableData> cells = this.rows_.get(i).cells_;
+			WTableRow.TableData cell = cells.get(from);
+			cells.remove(0 + from);
+			cells.add(0 + to, cell);
+		}
+		this.flags_.set(BIT_GRID_CHANGED);
+		this.repaint(EnumSet.of(RepaintFlag.RepaintInnerHtml));
+	}
+
 	static final int BIT_GRID_CHANGED = 0;
 	private static final int BIT_COLUMNS_CHANGED = 1;
 	BitSet flags_;

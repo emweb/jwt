@@ -418,6 +418,7 @@ public class WText extends WInteractWidget {
 		if (this.textChanged_) {
 			this.autoAdjustInline();
 		}
+		super.render(flags);
 	}
 
 	void updateDom(DomElement element, boolean all) {

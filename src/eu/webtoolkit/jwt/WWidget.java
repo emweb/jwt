@@ -637,7 +637,7 @@ public abstract class WWidget extends WObject {
 	 * 
 	 * @see WWidget#isHidden()
 	 */
-	abstract boolean isVisible();
+	public abstract boolean isVisible();
 
 	/**
 	 * Sets whether the widget is disabled.

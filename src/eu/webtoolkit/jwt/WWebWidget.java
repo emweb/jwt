@@ -315,7 +315,7 @@ public abstract class WWebWidget extends WWidget {
 		return this.flags_.get(BIT_HIDDEN);
 	}
 
-	boolean isVisible() {
+	public boolean isVisible() {
 		if (this.flags_.get(BIT_STUBBED) || this.flags_.get(BIT_HIDDEN)) {
 			return false;
 		} else {
@@ -577,10 +577,14 @@ public abstract class WWebWidget extends WWidget {
 				return;
 			}
 		} else {
-			WWebWidget.OtherImpl.Member m = new WWebWidget.OtherImpl.Member();
-			m.name = name;
-			m.value = value;
-			members.add(m);
+			if (index == -1) {
+				WWebWidget.OtherImpl.Member m = new WWebWidget.OtherImpl.Member();
+				m.name = name;
+				m.value = value;
+				members.add(m);
+			} else {
+				members.get(index).value = value;
+			}
 		}
 		if (!(this.otherImpl_.jsMembersSet_ != null)) {
 			this.otherImpl_.jsMembersSet_ = new ArrayList<String>();

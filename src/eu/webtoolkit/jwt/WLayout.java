@@ -244,6 +244,31 @@ public abstract class WLayout extends WObject implements WLayoutItem {
 	}
 
 	/**
+	 * Removes and deletes all child widgets and nested layouts.
+	 * <p>
+	 * This is similar to {@link WContainerWidget#clear()
+	 * WContainerWidget#clear()}, with the exception that the layout itself is
+	 * not deleted.
+	 */
+	public void clear() {
+		while (this.getCount() != 0) {
+			WLayoutItem item = this.getItemAt(this.getCount() - 1);
+			if (item != null) {
+				WWidget widget = null;
+				if (item.getLayout() != null) {
+					item.getLayout().clear();
+				} else {
+					widget = item.getWidget();
+				}
+				this.removeItem(item);
+				;
+				if (widget != null)
+					widget.remove();
+			}
+		}
+	}
+
+	/**
 	 * Create a layout.
 	 */
 	protected WLayout() {
@@ -355,7 +380,7 @@ public abstract class WLayout extends WObject implements WLayoutItem {
 		if (layout != null) {
 			layout.addChild(this);
 		} else {
-			this.setParent((WObject) null);
+			this.getParent().removeChild(this);
 		}
 	}
 }

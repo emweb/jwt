@@ -150,6 +150,8 @@ public class WTableView extends WAbstractItemView {
 		this.scrolled_ = new JSignal4<Integer, Integer, Integer, Integer>(
 				this.impl_, "scrolled") {
 		};
+		this.firstColumn_ = -1;
+		this.lastColumn_ = -1;
 		this.viewportLeft_ = 0;
 		this.viewportWidth_ = 1000;
 		this.viewportTop_ = 0;
@@ -498,7 +500,7 @@ public class WTableView extends WAbstractItemView {
 					.getValue()) {
 				return;
 			}
-			WWidget hc = this.headers_.getWidget(column);
+			WWidget hc = this.headerWidget(column);
 			if (!this.isAjaxMode()) {
 				hc.getParent().setHidden(hidden);
 			} else {
@@ -1415,6 +1417,9 @@ public class WTableView extends WAbstractItemView {
 			this.renderedFirstColumn_ = this.getRowHeaderCount();
 			this.renderedLastColumn_ = this.getColumnCount() - 1;
 			for (int i = this.getRowHeaderCount(); i < this.getColumnCount(); i++) {
+				if (this.columnInfo(i).hidden) {
+					continue;
+				}
 				int w = (int) this.columnInfo(i).width.toPixels();
 				if (total <= left && left < total + w) {
 					this.renderedFirstColumn_ = i;

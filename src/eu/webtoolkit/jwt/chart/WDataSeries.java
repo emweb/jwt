@@ -708,6 +708,7 @@ public class WDataSeries {
 			update();
 		}
 		;
+		this.customFlags_.add(WDataSeries.CustomFlag.CustomLabelColor);
 	}
 
 	/**

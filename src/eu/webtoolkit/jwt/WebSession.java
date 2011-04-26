@@ -60,11 +60,10 @@ class WebSession {
 		this.recursiveEventLoop_ = null;
 		this.env_ = env != null ? env : this.embeddedEnv_;
 		if (request != null) {
-			this.deploymentPath_ = request.getScriptName();
+			this.applicationUrl_ = request.getScriptName();
 		} else {
-			this.deploymentPath_ = "/";
+			this.applicationUrl_ = "/";
 		}
-		this.applicationUrl_ = this.deploymentPath_;
 		this.applicationName_ = this.applicationUrl_;
 		this.baseUrl_ = this.applicationUrl_;
 		int slashpos = this.applicationName_.lastIndexOf('/');
@@ -296,7 +295,15 @@ class WebSession {
 							this.asyncResponse_ = null;
 							this.canWriteAsyncResponse_ = false;
 						}
-						if (!signalE.equals("res") && !signalE.equals("poll")) {
+						if (signalE.equals("poll") && !this.updatesPending_) {
+							if (!(this.asyncResponse_ != null)) {
+								this.asyncResponse_ = handler.getResponse();
+								this.canWriteAsyncResponse_ = true;
+								handler.setRequest((WebRequest) null,
+										(WebResponse) null);
+							}
+						}
+						if (handler.getRequest() != null) {
 							try {
 								handler.nextSignal = -1;
 								this.notifySignal(event);
@@ -305,20 +312,6 @@ class WebSession {
 										"Error during event handling: ")
 										.append(e.toString());
 								throw e;
-							}
-						} else {
-							if (signalE.equals("poll") && !this.updatesPending_) {
-								if (!(this.asyncResponse_ != null)) {
-									this.asyncResponse_ = handler.getResponse();
-									this.canWriteAsyncResponse_ = true;
-									handler.setRequest((WebRequest) null,
-											(WebResponse) null);
-								} else {
-									System.err
-											.append(
-													"Poll after web socket connect. Ignoring")
-											.append('\n');
-								}
 							}
 						}
 					}
@@ -369,9 +362,12 @@ class WebSession {
 						&& this.asyncResponse_.isWebSocketMessagePending()) {
 					return;
 				}
-				this.asyncResponse_
-						.setResponseType(WebRequest.ResponseType.Update);
-				this.renderer_.serveResponse(this.asyncResponse_);
+				if (this.asyncResponse_.isWebSocketRequest()) {
+				} else {
+					this.asyncResponse_
+							.setResponseType(WebRequest.ResponseType.Update);
+					this.renderer_.serveResponse(this.asyncResponse_);
+				}
 				this.updatesPending_ = false;
 				if (!this.asyncResponse_.isWebSocketRequest()) {
 					this.asyncResponse_.flush();
@@ -593,13 +589,13 @@ class WebSession {
 				if (internalPath.length() > 1) {
 					url = "?_=" + DomElement.urlEncodeS(internalPath);
 				}
-				if (this.getType() == EntryPointType.WidgetSet) {
+				if (isAbsoluteUrl(this.applicationUrl_)) {
 					url = this.applicationUrl_ + url;
 				}
 			} else {
 				internalPath = WebSession.Handler.getInstance().getRequest()
 						.getPathInfo();
-				if (this.getType() != EntryPointType.WidgetSet) {
+				if (!isAbsoluteUrl(this.applicationUrl_)) {
 					if (internalPath.length() > 1) {
 						String lastPart = internalPath.substring(internalPath
 								.lastIndexOf('/') + 1);
@@ -618,7 +614,7 @@ class WebSession {
 			return this.appendSessionQuery(url);
 		}
 		case ClearInternalPath: {
-			if (this.getType() != EntryPointType.WidgetSet) {
+			if (!isAbsoluteUrl(this.applicationUrl_)) {
 				if (WebSession.Handler.getInstance().getRequest().getPathInfo()
 						.length() > 1) {
 					return this.appendSessionQuery(this.baseUrl_
@@ -715,7 +711,6 @@ class WebSession {
 					if (signalE != null) {
 						if (signalE.equals("none") || signalE.equals("load")
 								|| signalE.equals("hash")
-								|| signalE.equals("res")
 								|| signalE.equals("poll")) {
 							return EventType.OtherEvent;
 						} else {
@@ -757,6 +752,12 @@ class WebSession {
 			}
 		default:
 			return EventType.OtherEvent;
+		}
+	}
+
+	public void setState(WebSession.State state, int timeout) {
+		if (this.state_ != WebSession.State.Dead) {
+			this.state_ = state;
 		}
 	}
 
@@ -884,7 +885,7 @@ class WebSession {
 			String origin = request.getHeaderValue("Origin");
 			if (origin.length() != 0) {
 				if (wtdE != null && wtdE.equals(this.sessionId_)
-						&& this.state_ != WebSession.State.JustCreated) {
+						|| this.state_ == WebSession.State.JustCreated) {
 					handler.getResponse().addHeader(
 							"Access-Control-Allow-Origin", origin);
 					handler.getResponse().addHeader(
@@ -906,8 +907,14 @@ class WebSession {
 				}
 			}
 			if (request.isWebSocketRequest()) {
-				this.handleWebSocketRequest(handler);
-				return;
+				if (this.state_ != WebSession.State.JustCreated) {
+					this.handleWebSocketRequest(handler);
+					return;
+				} else {
+					handler.getResponse().flush();
+					this.kill();
+					return;
+				}
 			}
 			Configuration conf = this.controller_.getConfiguration();
 			String requestE = request.getParameter("request");
@@ -995,11 +1002,10 @@ class WebSession {
 							break;
 						}
 						case WidgetSet:
-							if (requestE != null) {
+							if (requestE != null && requestE.equals("resource")) {
 								String resourceE = request
 										.getParameter("resource");
-								if (requestE.equals("resource")
-										&& resourceE != null
+								if (resourceE != null
 										&& resourceE.equals("blank")) {
 									handler.getResponse().setContentType(
 											"text/html");
@@ -1009,31 +1015,17 @@ class WebSession {
 											.append(
 													"<html><head><title>bhm</title></head><body>&#160;</body></html>");
 								} else {
-									if (requestE.equals("jsupdate")) {
-										handler.getResponse().setResponseType(
-												WebRequest.ResponseType.Update);
-										this
-												.log("notice")
-												.append(
-														"Signal from dead session, sending reload.");
-										this.renderer_.letReloadJS(handler
-												.getResponse(), true);
-									} else {
-										if (requestE.equals("resource")) {
-											this
-													.log("notice")
-													.append(
-															"Not serving bootstrap for resource.");
-											handler
-													.getResponse()
-													.setContentType("text/html");
-											handler
-													.getResponse()
-													.out()
-													.append(
-															"<html><head></head><body></body></html>");
-										}
-									}
+									this
+											.log("notice")
+											.append(
+													"Not starting session for resource.");
+									handler.getResponse().setContentType(
+											"text/html");
+									handler
+											.getResponse()
+											.out()
+											.append(
+													"<html><head></head><body></body></html>");
 								}
 								this.kill();
 							} else {
@@ -1182,6 +1174,7 @@ class WebSession {
 						}
 						if (requestForResource
 								|| !this.isUnlockRecursiveEventLoop()) {
+							this.setLoaded();
 							this.app_.notify(new WEvent(
 									new WEvent.Impl(handler)));
 							if (handler.getResponse() != null
@@ -1190,7 +1183,6 @@ class WebSession {
 										handler, true)));
 							}
 						}
-						this.setLoaded();
 						break;
 					}
 					case Dead:
@@ -1419,7 +1411,7 @@ class WebSession {
 				break;
 			}
 			if (!signalE.equals("user") && !signalE.equals("hash")
-					&& !signalE.equals("res") && !signalE.equals("none")
+					&& !signalE.equals("none") && !signalE.equals("poll")
 					&& !signalE.equals("load")) {
 				AbstractEventSignal signal = this.decodeSignal(signalE);
 				if (!(signal != null)) {
@@ -1455,25 +1447,30 @@ class WebSession {
 			if (!(signalE != null)) {
 				return;
 			}
-			if (i == 0) {
-				this.renderer_.saveChanges();
-			}
-			this.propagateFormValues(e, se);
-			handler.nextSignal = i + 1;
-			if (signalE.equals("hash")) {
-				String hashE = request.getParameter(se + "_");
-				if (hashE != null) {
-					this.app_.changeInternalPath(hashE);
-					this.app_.doJavaScript("Wt3_1_9.scrollIntoView('" + hashE
-							+ "');");
-				} else {
-					this.app_.changeInternalPath("");
+			this.renderer_.setRendered(true);
+			if (signalE.equals("none") || signalE.equals("load")) {
+				if (signalE.equals("load")
+						&& this.getType() == EntryPointType.WidgetSet) {
+					this.renderer_.setRendered(false);
 				}
+				this.renderer_.setVisibleOnly(false);
 			} else {
-				if (signalE.equals("none") || signalE.equals("load")) {
-					this.renderer_.setVisibleOnly(false);
-				} else {
-					if (!signalE.equals("res")) {
+				if (!signalE.equals("poll")) {
+					if (i == 0) {
+						this.renderer_.saveChanges();
+					}
+					this.propagateFormValues(e, se);
+					handler.nextSignal = i + 1;
+					if (signalE.equals("hash")) {
+						String hashE = request.getParameter(se + "_");
+						if (hashE != null) {
+							this.app_.changeInternalPath(hashE);
+							this.app_.doJavaScript("Wt3_1_9.scrollIntoView('"
+									+ hashE + "');");
+						} else {
+							this.app_.changeInternalPath("");
+						}
+					} else {
 						for (int k = 0; k < 3; ++k) {
 							WebSession.SignalKind kind = WebSession.SignalKind
 									.values()[k];
@@ -1571,26 +1568,30 @@ class WebSession {
 		return signalE;
 	}
 
-	private void setState(WebSession.State state, int timeout) {
-		if (this.state_ != WebSession.State.Dead) {
-			this.state_ = state;
-		}
-	}
-
 	private void init(WebRequest request) {
 		this.env_.init(request);
 		String hashE = request.getParameter("_");
 		this.absoluteBaseUrl_ = this.env_.getUrlScheme() + "://"
 				+ this.env_.getHostName() + this.baseUrl_;
+		boolean useAbsoluteUrls;
+		String absoluteBaseUrl = this.app_.readConfigurationProperty("baseURL",
+				this.absoluteBaseUrl_);
+		if (absoluteBaseUrl != null) {
+			this.absoluteBaseUrl_ = absoluteBaseUrl;
+			useAbsoluteUrls = true;
+		} else {
+			useAbsoluteUrls = false;
+		}
 		this.bookmarkUrl_ = this.applicationName_;
 		if (this.applicationName_.length() == 0) {
 			this.bookmarkUrl_ = this.applicationUrl_;
 		}
-		if (this.getType() == EntryPointType.WidgetSet) {
-			this.applicationUrl_ = this.env_.getUrlScheme() + "://"
-					+ this.env_.getHostName() + this.applicationUrl_;
+		if (this.getType() == EntryPointType.WidgetSet || useAbsoluteUrls) {
+			this.applicationUrl_ = this.absoluteBaseUrl_
+					+ this.applicationName_;
 			this.bookmarkUrl_ = this.applicationUrl_;
 		}
+		this.deploymentPath_ = this.applicationUrl_;
 		String path = request.getPathInfo();
 		if (path.length() == 0 && hashE != null) {
 			path = hashE;
@@ -1614,5 +1615,10 @@ class WebSession {
 	}
 
 	static UploadedFile uf;
+
+	static boolean isAbsoluteUrl(String url) {
+		return url.indexOf("://") != -1;
+	}
+
 	private static ThreadLocal<WebSession.Handler> threadHandler_ = new ThreadLocal<WebSession.Handler>();
 }

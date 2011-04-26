@@ -299,7 +299,7 @@ public class WApplication extends WObject {
 		this.setLoadingIndicator(new WDefaultLoadingIndicator());
 		this.unloaded_.addListener(this, new Signal.Listener() {
 			public void trigger() {
-				WApplication.this.unload();
+				WApplication.this.doUnload();
 			}
 		});
 	}
@@ -2160,7 +2160,8 @@ public class WApplication extends WObject {
 	 * <p>
 	 * When <code>reload-is-new-session</code> is set to <code>true</code>, then
 	 * the default implementation of this method terminates this session by
-	 * calling {@link WApplication#quit() quit()}.
+	 * calling {@link WApplication#quit() quit()}, otherwise the session is
+	 * scheduled to expire within seconds (since it may be a refresh).
 	 * <p>
 	 * You may want to reimplement this if you want to keep the application
 	 * running until it times out (as was the behaviour before JWt 3.1.6).
@@ -2436,6 +2437,15 @@ public class WApplication extends WObject {
 
 	boolean isExposeSignals() {
 		return this.exposeSignals_;
+	}
+
+	private void doUnload() {
+		Configuration conf = this.session_.getController().getConfiguration();
+		if (conf.isReloadIsNewSession()) {
+			this.unload();
+		} else {
+			this.session_.setState(WebSession.State.Loaded, 5);
+		}
 	}
 
 	void constrainExposed(WWidget w) {

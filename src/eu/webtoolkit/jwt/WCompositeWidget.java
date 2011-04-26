@@ -185,7 +185,7 @@ public class WCompositeWidget extends WWidget {
 		return this.impl_.isHidden();
 	}
 
-	boolean isVisible() {
+	public boolean isVisible() {
 		if (this.isHidden()) {
 			return false;
 		} else {

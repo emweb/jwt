@@ -38,8 +38,6 @@ if (!window._$_WT_CLASS_$_)
 {
 var WT = this;
 
-
-
 this.condCall = function(o, f, a) {
   if (o[f])
     o[f](a);
@@ -47,6 +45,36 @@ this.condCall = function(o, f, a) {
 
 // buttons currently down
 this.buttons = 0;
+
+// returns the button associated with the event (0 if none)
+this.button = function(e)
+{
+  if (e.which) {
+    if (e.which == 3)
+      return 4;
+    else if (e.which == 2)
+      return 2;
+    else
+      return 1;
+  } else if (WT.isIE && typeof e.button != 'undefined') {
+    if (e.button == 2)
+      return 4;
+    else if (e.button == 4)
+      return 2;
+    else
+      return 1;
+  } else if (typeof e.button != 'undefined') {
+    if (e.button == 2)
+      return 4;
+    else if (e.button == 1)
+      return 2;
+    else
+      return 1;
+  } else {
+    return 0;
+  }
+};
+
 
 this.mouseDown = function(e) {
   WT.buttons |= WT.button(e);
@@ -1494,6 +1522,13 @@ _$_$endif_$_();
 
 })();
 
+if (window._$_APP_CLASS_$_) {
+  try {
+    window._$_APP_CLASS_$_._p_.quit();
+  } catch (e) {
+  }
+}
+
 window._$_APP_CLASS_$_ = new (function() {
 
 var self = this;
@@ -1874,35 +1909,6 @@ function encodeEvent(event, i) {
   return event;
 };
 
-// returns the button associated with the event (0 if none)
-WT.button = function(e)
-{
-  if (e.which) {
-    if (e.which == 3)
-      return 4;
-    else if (e.which == 2)
-      return 2;
-    else
-      return 1;
-  } else if (WT.isIE && typeof e.button != 'undefined') {
-    if (e.button == 2)
-      return 4;
-    else if (e.button == 4)
-      return 2;
-    else
-      return 1;
-  } else if (typeof e.button != 'undefined') {
-    if (e.button == 2)
-      return 4;
-    else if (e.button == 1)
-      return 2;
-    else
-      return 1;
-  } else {
-    return 0;
-  }
-};
-
 var sentEvents = [], pendingEvents = [];
 
 function encodePendingEvents() {
@@ -1962,7 +1968,7 @@ function load(fullapp) {
 
   if (fullapp) {
     if (!window._$_APP_CLASS_$_LoadWidgetTree)
-      return; // That's to too soon baby.
+      return; // That's too soon baby.
 
     WT.history.initialize("Wt-history-field", "Wt-history-iframe",
 			  _$_DEPLOY_URL_$_);
@@ -2052,7 +2058,8 @@ function doJavaScript(js) {
       window.eval(js);
   }
 
-  doAutoJavaScript();
+  if (self == window._$_APP_CLASS_$_)
+    doAutoJavaScript();
 }
 
 function handleResponse(status, msg, timer) {
@@ -2160,6 +2167,9 @@ _$_$endif_$_();
 var updateTimeoutStart;
 
 function scheduleUpdate() {
+  if (quited)
+    return;
+
 _$_$if_WEB_SOCKETS_$_();
   if (websocket.state != WebSocketsUnavailable) {
     if (typeof window.WebSocket === 'undefined')
@@ -2269,6 +2279,11 @@ function setPage(id)
 }
 
 function sendUpdate() {
+  if (self != window._$_APP_CLASS_$_) {
+    quit();
+    return;
+  }
+
   if (responsePending)
     return;
 
@@ -2304,6 +2319,9 @@ function sendUpdate() {
   }
 
   data.result += '&ackId=' + ackUpdateId + '&pageId=' + pageId;
+  var params = "_$_PARAMS_$_";
+  if (params.length > 0)
+    data.result += '&' + params;
 
   if (websocket.socket != null && websocket.socket.readyState == 1) {
     responsePending = null;
