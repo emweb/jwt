@@ -48,10 +48,12 @@ class WebSession {
 		this.redirect_ = "";
 		this.asyncResponse_ = null;
 		this.bootStyleResponse_ = null;
-		this.updatesPending_ = false;
 		this.canWriteAsyncResponse_ = false;
 		this.noBootStyleResponse_ = false;
 		this.recursiveEvent_ = this.mutex_.newCondition();
+		this.newRecursiveEvent_ = false;
+		this.updatesPendingEvent_ = this.mutex_.newCondition();
+		this.updatesPending_ = false;
 		this.embeddedEnv_ = new WEnvironment(this);
 		this.app_ = null;
 		this.debug_ = this.controller_.getConfiguration().getErrorReporting() != Configuration.ErrorReporting.ErrorMessage;
@@ -295,8 +297,18 @@ class WebSession {
 							this.asyncResponse_ = null;
 							this.canWriteAsyncResponse_ = false;
 						}
-						if (signalE.equals("poll") && !this.updatesPending_) {
-							if (!(this.asyncResponse_ != null)) {
+						if (signalE.equals("poll")) {
+							if (!WtServlet.isAsyncSupported()) {
+								while (!this.updatesPending_) {
+									try {
+										this.updatesPendingEvent_.await();
+									} catch (InterruptedException ie) {
+										ie.printStackTrace();
+									}
+								}
+							}
+							if (!this.updatesPending_
+									&& !(this.asyncResponse_ != null)) {
 								this.asyncResponse_ = handler.getResponse();
 								this.canWriteAsyncResponse_ = true;
 								handler.setRequest((WebRequest) null,
@@ -374,6 +386,8 @@ class WebSession {
 					this.asyncResponse_ = null;
 					this.canWriteAsyncResponse_ = false;
 				}
+			} else {
+				this.updatesPendingEvent_.signal();
 			}
 		} catch (IOException ioe) {
 			ioe.printStackTrace();
@@ -385,7 +399,7 @@ class WebSession {
 			WebSession.Handler handler = WebSession.Handler.getInstance();
 			if (handler.getRequest() != null && !WtServlet.isAsyncSupported()) {
 				throw new WtException(
-						"Server push requires a Servlet 3.0 enabled servlet container and an application with async-supported enabled.");
+						"Recursive eventloop requires a Servlet 3.0 enabled servlet container and an application with async-supported enabled.");
 			}
 			if (handler.getRequest() != null) {
 				handler.getSession().notifySignal(
@@ -1272,12 +1286,13 @@ class WebSession {
 	private String redirect_;
 	private WebResponse asyncResponse_;
 	private WebResponse bootStyleResponse_;
-	private boolean updatesPending_;
 	private boolean canWriteAsyncResponse_;
 	private boolean noBootStyleResponse_;
 	private boolean progressiveBoot_;
 	private java.util.concurrent.locks.Condition recursiveEvent_;
 	private boolean newRecursiveEvent_;
+	private java.util.concurrent.locks.Condition updatesPendingEvent_;
+	private boolean updatesPending_;
 	private WEnvironment embeddedEnv_;
 	private WEnvironment env_;
 	private WApplication app_;
@@ -1576,7 +1591,7 @@ class WebSession {
 		boolean useAbsoluteUrls;
 		String absoluteBaseUrl = this.app_.readConfigurationProperty("baseURL",
 				this.absoluteBaseUrl_);
-		if (absoluteBaseUrl != null) {
+		if (absoluteBaseUrl != this.absoluteBaseUrl_) {
 			this.absoluteBaseUrl_ = absoluteBaseUrl;
 			useAbsoluteUrls = true;
 		} else {

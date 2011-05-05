@@ -709,7 +709,6 @@ class WebRenderer implements SlotLearnerInterface {
 					.append(
 							app.getLayoutDirection() == LayoutDirection.LeftToRight ? "LTR"
 									: "RTL").append("');");
-			app.bodyHtmlClassChanged_ = false;
 		}
 		Writer s = response.out();
 		mainElement.addToParent(s, "document.body", widgetset ? 0 : -1, app);
@@ -777,7 +776,6 @@ class WebRenderer implements SlotLearnerInterface {
 					.append(
 							app.getLayoutDirection() == LayoutDirection.LeftToRight ? "LTR"
 									: "RTL").append("');");
-			app.bodyHtmlClassChanged_ = false;
 		}
 		int librariesLoaded = this.loadScriptLibraries(this.collectedJS1_, app);
 		this.loadScriptLibraries(this.collectedJS2_, app, librariesLoaded);
@@ -1069,7 +1067,6 @@ class WebRenderer implements SlotLearnerInterface {
 		String htmlAttr = "";
 		if (app != null && app.htmlClass_.length() != 0) {
 			htmlAttr = " class=\"" + app.htmlClass_ + "\"";
-			app.bodyHtmlClassChanged_ = false;
 		}
 		if (xhtml) {
 			page.setVar("HTMLATTRIBUTES",
@@ -1198,6 +1195,7 @@ class WebRenderer implements SlotLearnerInterface {
 			}
 			s += this.session_.getApp().getLayoutDirection() == LayoutDirection.LeftToRight ? "Wt-ltr"
 					: "Wt-rtl";
+			this.session_.getApp().bodyHtmlClassChanged_ = false;
 			return s;
 		} else {
 			return "";

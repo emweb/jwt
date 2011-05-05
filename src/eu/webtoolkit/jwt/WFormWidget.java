@@ -387,10 +387,9 @@ public abstract class WFormWidget extends WInteractWidget {
 
 	void updateDom(DomElement element, boolean all) {
 		WEnvironment env = WApplication.getInstance().getEnvironment();
-		boolean piggyBackChangeOnClick = env.agentIsIE()
-				&& ((this) instanceof WAbstractToggleButton ? (WAbstractToggleButton) (this)
-						: null) != null;
-		if (!piggyBackChangeOnClick) {
+		boolean onChangeHandledElsewhere = ((this) instanceof WAbstractToggleButton ? (WAbstractToggleButton) (this)
+				: null) != null;
+		if (!onChangeHandledElsewhere) {
 			EventSignal s = this.voidEventSignal(CHANGE_SIGNAL, false);
 			if (s != null) {
 				this.updateSignalConnection(element, s, "change", all);

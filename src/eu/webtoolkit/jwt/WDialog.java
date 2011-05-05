@@ -134,6 +134,7 @@ public class WDialog extends WCompositeWidget {
 		this.modal_ = true;
 		this.finished_ = new Signal1<WDialog.DialogCode>(this);
 		this.recursiveEventLoop_ = false;
+		this.addAutoJavaScript_ = false;
 		String TEMPLATE = "${shadow-x1-x2}${titlebar}${contents}";
 		this
 				.setImplementation(this.impl_ = new WTemplate(new WString(
@@ -194,10 +195,6 @@ public class WDialog extends WCompositeWidget {
 			app.doJavaScript(wtjs1(app), false);
 			app.setJavaScriptLoaded(THIS_JS);
 		}
-		this.setJavaScriptMember("_a", "0;new Wt3_1_9.WDialog("
-				+ app.getJavaScriptClass() + "," + this.getJsRef() + ")");
-		app.addAutoJavaScript("{var obj = $('#" + this.getId()
-				+ "').data('obj');if (obj) obj.centerDialog();}");
 		parent.addWidget(this);
 		this.titleBar_ = new WContainerWidget();
 		this.titleBar_.setStyleClass("titlebar");
@@ -208,8 +205,6 @@ public class WDialog extends WCompositeWidget {
 		this.contents_.setStyleClass("body");
 		this.impl_.bindWidget("contents", this.contents_);
 		this.saveCoverState(app, app.getDialogCover());
-		this.setJavaScriptMember(WT_RESIZE_JS, "$('#" + this.getId()
-				+ "').data('obj').wtResize");
 		this.hide();
 	}
 
@@ -460,6 +455,22 @@ public class WDialog extends WCompositeWidget {
 		super.setHidden(hidden);
 	}
 
+	void render(EnumSet<RenderFlag> flags) {
+		super.render(flags);
+		if (!EnumUtils.mask(flags, RenderFlag.RenderFull).isEmpty()) {
+			WApplication app = WApplication.getInstance();
+			this.setJavaScriptMember("_a", "0;new Wt3_1_9.WDialog("
+					+ app.getJavaScriptClass() + "," + this.getJsRef() + ")");
+			if (!this.addAutoJavaScript_) {
+				app.addAutoJavaScript("{var obj = $('#" + this.getId()
+						+ "').data('obj');if (obj) obj.centerDialog();}");
+				this.addAutoJavaScript_ = true;
+			}
+			this.setJavaScriptMember(WT_RESIZE_JS, "$('#" + this.getId()
+					+ "').data('obj').wtResize");
+		}
+	}
+
 	private WTemplate impl_;
 	private WText caption_;
 	private WContainerWidget titleBar_;
@@ -471,6 +482,7 @@ public class WDialog extends WCompositeWidget {
 	private Signal1<WDialog.DialogCode> finished_;
 	private WDialog.DialogCode result_;
 	private boolean recursiveEventLoop_;
+	private boolean addAutoJavaScript_;
 
 	private void saveCoverState(WApplication app, WContainerWidget cover) {
 		this.coverWasHidden_ = cover.isHidden();

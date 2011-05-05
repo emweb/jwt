@@ -60,9 +60,11 @@ public class WXmlLocalizedStrings extends WLocalizedStrings {
 	}
 	
 	private void readXmlResource(String bundleName) {
+		WApplication app = WApplication.getInstance();
+		
 		URL url = null;
 		for (String path : StringUtils.expandLocales(bundleName, WApplication.getInstance().getLocale().toString())) {
-			url = getClass().getResource(path + ".xml");
+			url = app.getClass().getResource(path + ".xml");
 			try {
 				if(url == null)
 					url = new URL(path);

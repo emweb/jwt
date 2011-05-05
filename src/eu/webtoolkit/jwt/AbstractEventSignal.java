@@ -265,8 +265,7 @@ public abstract class AbstractEventSignal extends AbstractSignal {
 		if ((flags_ & BIT_EXPOSED) != 0)
 			return;
 
-		if (app == null)
-			app = WApplication.getInstance();
+		WApplication app = WApplication.getInstance();
 		
 		app.addExposedSignal(this);
 
@@ -281,7 +280,7 @@ public abstract class AbstractEventSignal extends AbstractSignal {
 	void listenerRemoved() {
 		if (getListenerCount() == 0) {
 			if ((flags_ & BIT_NEEDS_AUTOLEARN) != 0) {
-				app.removeExposedSignal(this);
+				WApplication.getInstance().removeExposedSignal(this);
 				flags_ &= ~BIT_EXPOSED;
 				flags_ &= ~BIT_NEEDS_AUTOLEARN;
 			}
@@ -537,7 +536,7 @@ public abstract class AbstractEventSignal extends AbstractSignal {
 		connection.disconnect();
 		if ((flags_ & BIT_EXPOSED) != 0)
 			if (!isConnected()) {
-				app.removeExposedSignal(this);
+				WApplication.getInstance().removeExposedSignal(this);
 				flags_ &= ~BIT_EXPOSED;
 			}
 		
@@ -549,7 +548,8 @@ public abstract class AbstractEventSignal extends AbstractSignal {
 
 		out.append(getJavaScript());
 
-		if (isExposedSignal()) {
+		WApplication app = WApplication.getInstance();
+		{
 			out.append(app.getJavaScriptClass()).append(".emit('").append(getSender().getFormName());
 
 			if (jsObject != null)
@@ -585,6 +585,4 @@ public abstract class AbstractEventSignal extends AbstractSignal {
 	String getName() {
 		return name_;
 	}
-	
-	private WApplication app;
 }

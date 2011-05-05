@@ -830,7 +830,7 @@ class DomElement {
 				this.javaScript_);
 		for (int i = 0; i < this.methodCalls_.size(); ++i) {
 			javaScript.append("$('#").append(this.id_).append("').get(0).")
-					.append(this.methodCalls_.get(i)).append(';');
+					.append(this.methodCalls_.get(i)).append(";\n");
 		}
 		if (this.timeOut_ != -1) {
 			timeouts.add(new DomElement.TimeoutEvent(this.timeOut_, this.id_,
