@@ -1,5 +1,7 @@
 package eu.webtoolkit.jwt.examples.simplechat;
 
+import java.util.EnumSet;
+
 import eu.webtoolkit.jwt.AlignmentFlag;
 import eu.webtoolkit.jwt.Icon;
 import eu.webtoolkit.jwt.JSlot;
@@ -244,7 +246,8 @@ public class SimpleChatWidget extends WContainerWidget {
 	}
 
 	private void logout() {
-		StandardButton result = WMessageBox.show("Please Confirm", "Do you really want to logout?", StandardButton.Yes, StandardButton.No);
+		StandardButton result = WMessageBox.show("Please Confirm", "Do you really want to logout?",
+				EnumSet.of(StandardButton.Yes, StandardButton.No));
 		
 		if (result == StandardButton.No)
 			return;

@@ -60,6 +60,7 @@ public class WPanel extends WCompositeWidget {
 		this.collapseIcon_ = null;
 		this.title_ = null;
 		this.centralWidget_ = null;
+		this.animation_ = new WAnimation();
 		this.collapsed_ = new Signal(this);
 		this.expanded_ = new Signal(this);
 		this.collapsedSS_ = new Signal1<Boolean>(this);
@@ -79,7 +80,7 @@ public class WPanel extends WCompositeWidget {
 		this
 				.setJavaScriptMember(
 						WT_RESIZE_JS,
-						"function(self, w, h) {self.style.height= h + 'px';if (Wt3_1_9.boxSizing(self)) {h -= Wt3_1_9.px(self, 'borderTopWidth') + Wt3_1_9.px(self, 'borderBottomWidth');}var c = self.lastChild;var t = c.previousSibling;if (t.className == 'titlebar')h -= t.offsetHeight;h -= 8;if (h > 0) {c.style.height = h + 'px';$(c).children().each(function() { var self = $(this), padding = self.outerHeight() - self.height();self.height(h - padding);});}};");
+						"function(self, w, h) {self.style.height= h + 'px';if (Wt3_1_10.boxSizing(self)) {h -= Wt3_1_10.px(self, 'borderTopWidth') + Wt3_1_10.px(self, 'borderBottomWidth');}var c = self.lastChild;var t = c.previousSibling;if (t.className == 'titlebar')h -= t.offsetHeight;h -= 8;if (h > 0) {c.style.height = h + 'px';$(c).children().each(function() { var self = $(this), padding = self.outerHeight() - self.height();self.height(h - padding);});}};");
 	}
 
 	/**
@@ -323,6 +324,18 @@ public class WPanel extends WCompositeWidget {
 	}
 
 	/**
+	 * Sets an animation.
+	 * <p>
+	 * The animation is used when collapsing or expanding the panel.
+	 */
+	public void setAnimation(WAnimation transition) {
+		this.animation_ = transition;
+		if (!this.animation_.isEmpty()) {
+			this.addStyleClass("Wt-animated");
+		}
+	}
+
+	/**
 	 * Sets the central widget.
 	 * <p>
 	 * Sets the widget that is the contents of the panel. When a widget was
@@ -395,6 +408,7 @@ public class WPanel extends WCompositeWidget {
 	private WText title_;
 	private WTemplate impl_;
 	private WWidget centralWidget_;
+	private WAnimation animation_;
 	private Signal collapsed_;
 	private Signal expanded_;
 	private Signal1<Boolean> collapsedSS_;
@@ -404,13 +418,13 @@ public class WPanel extends WCompositeWidget {
 	// private void setJsSize() ;
 	private void doExpand() {
 		this.wasCollapsed_ = this.isCollapsed();
-		this.getCentralArea().show();
+		this.getCentralArea().animateShow(this.animation_);
 		this.expandedSS_.trigger(true);
 	}
 
 	private void doCollapse() {
 		this.wasCollapsed_ = this.isCollapsed();
-		this.getCentralArea().hide();
+		this.getCentralArea().animateHide(this.animation_);
 		this.collapsedSS_.trigger(true);
 	}
 

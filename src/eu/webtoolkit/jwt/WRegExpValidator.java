@@ -209,7 +209,7 @@ public class WRegExpValidator extends WValidator {
 	public String getJavaScriptValidate() {
 		loadJavaScript(WApplication.getInstance());
 		StringBuilder js = new StringBuilder();
-		js.append("new Wt3_1_9.WRegExpValidator(").append(
+		js.append("new Wt3_1_10.WRegExpValidator(").append(
 				this.isMandatory() ? "true" : "false").append(",");
 		if (this.regexp_ != null) {
 			js.append(WWebWidget.jsStringLiteral(this.regexp_.pattern()))
@@ -234,26 +234,14 @@ public class WRegExpValidator extends WValidator {
 	private WString noMatchText_;
 
 	private static void loadJavaScript(WApplication app) {
-		String THIS_JS = "js/WRegExpValidator.js";
-		if (!app.isJavaScriptLoaded(THIS_JS)) {
-			app.doJavaScript(wtjs1(app), false);
-			app.setJavaScriptLoaded(THIS_JS);
-		}
+		app.loadJavaScript("js/WRegExpValidator.js", wtjs1());
 	}
 
-	static String wtjs1(WApplication app) {
-		String s = "function(d,a,e,f,g){var b=a?new RegExp(a,e):null;this.validate=function(c){if(c.length==0)return d?{valid:false,message:f}:{valid:true};return b?{valid:b.test(c),message:g}:{valid:true}}}";
-		if ("ctor.WRegExpValidator".indexOf(".prototype") != -1) {
-			return "Wt3_1_9.ctor.WRegExpValidator = " + s + ";";
-		} else {
-			if ("ctor.WRegExpValidator".substring(0, 5).compareTo(
-					"ctor.".substring(0, 5)) == 0) {
-				return "Wt3_1_9." + "ctor.WRegExpValidator".substring(5)
-						+ " = " + s + ";";
-			} else {
-				return "Wt3_1_9.ctor.WRegExpValidator = function() { (" + s
-						+ ").apply(Wt3_1_9, arguments) };";
-			}
-		}
+	static WJavaScriptPreamble wtjs1() {
+		return new WJavaScriptPreamble(
+				JavaScriptScope.WtClassScope,
+				JavaScriptObjectType.JavaScriptConstructor,
+				"WRegExpValidator",
+				"function(d,a,e,f,g){var b=a?new RegExp(a,e):null;this.validate=function(c){if(c.length==0)return d?{valid:false,message:f}:{valid:true};return b?{valid:b.test(c),message:g}:{valid:true}}}");
 	}
 }

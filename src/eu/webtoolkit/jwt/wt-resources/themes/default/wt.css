@@ -16,8 +16,35 @@
  * Silk screen
  */
 .Wt-dialogcover {
-    background: #CCCCCC;
+    background: rgb(204, 204, 204); /* For IE, ... */
+    background: rgba(204, 204, 204, 0.5);
+    height: 100%; width: 100%;
+    top: 0px; left: 0px;
+    position: fixed;
 }
+
+.Wt-animated {
+    -webkit-backface-visibility: hidden; /* avoids flicker on Chrome */
+}
+
+/*
+ * WStackedWidget
+ */
+.Wt-stack.Wt-animated {
+    overflow: hidden;
+    position: relative;
+}
+
+/* This improves it on iPad and reduces artifacts on Safari.
+.Wt-animated > * {
+    -webkit-transform: translate3d(0,0,0);
+    -webkit-backface-visibility: hidden;
+}
+
+.Wt-animated h3 {
+    -webkit-transform: translate3d(0,0,0);
+}
+*/
 
 /*
  * WCalendar
@@ -232,6 +259,7 @@
   border: 3px solid #888888;
   background: #EEEEEE none repeat scroll 0%;
 }
+
 .Wt-panel .titlebar {
   padding: 0px 6px 3px;
   background: #888888; color: #FFFFFF;
@@ -241,6 +269,7 @@
 .Wt-panel .body {
   background: #FFFFFF;
   padding: 4px 6px 4px;
+  -webkit-backface-visibility: hidden; /* !flicker on Chrome */
 }
 
 /*
@@ -252,6 +281,11 @@
     border: 1px solid #666666;
     z-index: 200;
     cursor: default;
+}
+
+.Wt-popupmenu .content {
+    overflow-y: auto;
+    overflow-x: hidden;
 }
 
 .Wt-popupmenu .Wt-item, .Wt-popupmenu .Wt-selected {

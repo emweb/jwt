@@ -129,7 +129,7 @@ public class WDatePicker extends WCompositeWidget {
 	 */
 	public void remove() {
 		WApplication.getInstance().doJavaScript(
-				"Wt3_1_9.remove('" + this.popup_.getId() + "');");
+				"Wt3_1_10.remove('" + this.popup_.getId() + "');");
 		super.remove();
 	}
 
@@ -245,10 +245,10 @@ public class WDatePicker extends WCompositeWidget {
 	/**
 	 * Hide/unhide the widget.
 	 */
-	public void setHidden(boolean hidden) {
-		super.setHidden(hidden);
-		this.forEdit_.setHidden(hidden);
-		this.displayWidget_.setHidden(hidden);
+	public void setHidden(boolean hidden, WAnimation animation) {
+		super.setHidden(hidden, animation);
+		this.forEdit_.setHidden(hidden, animation);
+		this.displayWidget_.setHidden(hidden, animation);
 	}
 
 	/**
@@ -328,10 +328,10 @@ public class WDatePicker extends WCompositeWidget {
 	 */
 	public void setGlobalPopup(boolean global) {
 		this.positionJS_
-				.setJavaScript("function() { Wt3_1_9.positionAtWidget('"
+				.setJavaScript("function() { Wt3_1_10.positionAtWidget('"
 						+ this.popup_.getId() + "','"
 						+ this.displayWidget_.getId()
-						+ "', Wt3_1_9.Horizontal, "
+						+ "', Wt3_1_10.Horizontal, "
 						+ (global ? "true" : "false") + ");}");
 	}
 

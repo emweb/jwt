@@ -178,6 +178,10 @@ public class WEnvironment {
 		 */
 		Firefox3_6(6105),
 		/**
+		 * Firefox 4.0 or later.
+		 */
+		Firefox4_0(6106),
+		/**
 		 * Bot user agent.
 		 */
 		BotAgent(10000);
@@ -221,7 +225,7 @@ public class WEnvironment {
 	 * Wt&apos;s JavaScript scope.
 	 */
 	public static String getJavaScriptWtScope() {
-		return "Wt3_1_9";
+		return "Wt3_1_10";
 	}
 
 	/**
@@ -583,7 +587,7 @@ public class WEnvironment {
 	 * Example: <code>&quot;1.99.2&quot;</code>
 	 */
 	public static String getLibraryVersion() {
-		return "3.1.9";
+		return "3.1.10";
 	}
 
 	// public void libraryVersion(bad java simple ref int series, bad java
@@ -951,7 +955,12 @@ public class WEnvironment {
 									if (this.userAgent_.indexOf("Firefox/3.5") != -1) {
 										this.agent_ = WEnvironment.UserAgent.Firefox3_5;
 									} else {
-										this.agent_ = WEnvironment.UserAgent.Firefox3_6;
+										if (this.userAgent_
+												.indexOf("Firefox/3.6") != -1) {
+											this.agent_ = WEnvironment.UserAgent.Firefox3_6;
+										} else {
+											this.agent_ = WEnvironment.UserAgent.Firefox4_0;
+										}
 									}
 								}
 							}
@@ -1029,6 +1038,9 @@ public class WEnvironment {
 				+ request.getHeaderValue("X-Forwarded-For");
 		for (int pos = 0; pos != -1;) {
 			int komma_pos = ips.indexOf(',', pos);
+			if (komma_pos == -1) {
+				break;
+			}
 			this.clientAddress_ = ips.substring(pos, pos + komma_pos);
 			this.clientAddress_ = this.clientAddress_.trim();
 			if (!this.clientAddress_.startsWith("10.")

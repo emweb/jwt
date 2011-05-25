@@ -128,7 +128,8 @@ public class WHTML5Video extends WHTML5Media {
 		}
 		if (all || this.posterChanged_) {
 			if (!all || !this.posterUrl_.equals("")) {
-				element.setAttribute("poster", fixRelativeUrl(this.posterUrl_));
+				element.setAttribute("poster",
+						resolveRelativeUrl(this.posterUrl_));
 			}
 		}
 		this.sizeChanged_ = this.posterChanged_ = false;

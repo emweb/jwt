@@ -546,6 +546,7 @@ public class WTable extends WInteractWidget {
 		}
 		this.rows_.get(row).updateDom(tr, true);
 		tr.setWasEmpty(false);
+		int spanCounter = 0;
 		for (int col = 0; col < this.getColumnCount(); ++col) {
 			WTableRow.TableData d = this.itemAt(row, col);
 			if (!d.overSpanned) {
@@ -553,7 +554,7 @@ public class WTable extends WInteractWidget {
 				if (col < this.headerColumnCount_ || row < this.headerRowCount_) {
 					tr.addChild(td);
 				} else {
-					tr.insertChildAt(td, col);
+					tr.insertChildAt(td, col - spanCounter);
 				}
 				for (int i = 0; i < d.cell.getRowSpan(); ++i) {
 					for (int j = 0; j < d.cell.getColumnSpan(); ++j) {
@@ -564,6 +565,8 @@ public class WTable extends WInteractWidget {
 						}
 					}
 				}
+			} else {
+				spanCounter++;
 			}
 		}
 		return tr;

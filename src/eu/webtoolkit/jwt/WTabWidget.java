@@ -478,6 +478,10 @@ public class WTabWidget extends WCompositeWidget {
 		return this.tabClosed_;
 	}
 
+	public WStackedWidget getContentsStack() {
+		return this.menu_.getContentsStack();
+	}
+
 	private Signal1<Integer> currentChanged_;
 	private Signal1<Integer> tabClosed_;
 	private WContainerWidget layout_;

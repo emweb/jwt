@@ -11,6 +11,7 @@ package eu.webtoolkit.jwt.utils;
 import java.util.EnumSet;
 
 import eu.webtoolkit.jwt.Key;
+import eu.webtoolkit.jwt.WAnimation.AnimationEffect;
 
 /**
  * @author wim
@@ -62,5 +63,24 @@ public class EnumUtils {
 
 	public static <E extends Enum<E>> E max(E e1, E e2) {
 		return e1.ordinal() > e2.ordinal() ? e1 : e2;
+	}
+
+	public static int valueOf(EnumSet<AnimationEffect> effects) {
+		int result = 0;
+		if (effects.contains(AnimationEffect.SlideInFromLeft))
+			result = 0x1;
+		else if (effects.contains(AnimationEffect.SlideInFromRight))
+			result = 0x2;
+		else if (effects.contains(AnimationEffect.SlideInFromBottom))
+			result = 0x3;
+		else if (effects.contains(AnimationEffect.SlideInFromTop))
+			result = 0x4;
+		else if (effects.contains(AnimationEffect.Pop))
+			result = 0x5;
+		
+		if (effects.contains(AnimationEffect.Fade))
+			result |= 0x100;
+
+		return result;
 	}
 }

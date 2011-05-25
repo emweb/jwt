@@ -54,7 +54,7 @@ import eu.webtoolkit.jwt.servlet.*;
  * selection, other than changing style classes.</li>
  * <li>optionally, {@link WMenuItem#renderHidden(boolean hidden) renderHidden()}
  * : if you need to do additionanl styling to reflect a hide, other than hiding
- * (see {@link WWebWidget#setHidden(boolean hidden) WWebWidget#setHidden()}).</li>
+ * (see WWebWidget::setHidden(bool)).</li>
  * </ul>
  * <p>
  * To provide another look for the close icon you can override

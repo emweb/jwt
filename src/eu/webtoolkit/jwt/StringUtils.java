@@ -345,4 +345,50 @@ public class StringUtils {
 	public static WString formatFloat(WString format, double value) {
 		return new WString(String.format(format.toString(), value));
 	}
+	
+	static String asJSLiteral(Object v, TextFormat textFormat) {
+		if (v.getClass().equals(WString.class)) {
+			WString s = (WString) v;
+			boolean plainText = false;
+			if (textFormat == TextFormat.XHTMLText) {
+				if (s.isLiteral()) {
+					plainText = !WWebWidget.removeScript(s);
+				}
+			} else {
+				plainText = true;
+			}
+			if (plainText && textFormat != TextFormat.XHTMLUnsafeText) {
+				s = WWebWidget.escapeText(s);
+			}
+			return WString.toWString(s).getJsStringLiteral();
+		} else if (v.getClass().equals(String.class)) {
+			WString s = new WString((String) v);
+			boolean plainText;
+			if (textFormat == TextFormat.XHTMLText) {
+				plainText = !WWebWidget.removeScript(s);
+			} else {
+				plainText = true;
+			}
+			if (plainText && textFormat != TextFormat.XHTMLUnsafeText) {
+				s = WWebWidget.escapeText(s);
+			}
+			return WString.toWString(s).getJsStringLiteral();
+		} else if (v.getClass().equals(Boolean.class)) {
+			boolean b = (Boolean) v;
+			return b ? "true" : "false";
+		} else if (v.getClass().equals(WDate.class)) {
+			WDate d = (WDate) v;
+			return "new Date(" + String.valueOf(d.getYear()) + ','
+					+ String.valueOf(d.getMonth() - 1) + ','
+					+ String.valueOf(d.getDay()) + ','
+					+ String.valueOf(d.getHour()) + ','
+					+ String.valueOf(d.getMinute()) + ','
+					+ String.valueOf(d.getSecond()) + ','
+					+ String.valueOf(d.getMillisecond()) + ')';
+		} else if (v instanceof Number) {
+			return v.toString();
+		} else {
+			return "'" + v.toString() + "'";
+		}
+	}
 }

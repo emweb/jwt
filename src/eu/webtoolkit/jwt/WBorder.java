@@ -302,6 +302,20 @@ public class WBorder {
 		return width + " " + style + " " + this.color_.getCssText();
 	}
 
+	/**
+	 * Clone method.
+	 * <p>
+	 * Clones this border.
+	 */
+	public WBorder clone() {
+		WBorder b = new WBorder();
+		b.width_ = this.width_;
+		b.explicitWidth_ = this.explicitWidth_;
+		b.color_ = this.color_;
+		b.style_ = this.style_;
+		return b;
+	}
+
 	private WBorder.Width width_;
 	private WLength explicitWidth_;
 	private WColor color_;

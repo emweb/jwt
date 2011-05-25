@@ -149,13 +149,9 @@ public abstract class WHTML5Media extends WInteractWidget {
 		this.setInline(false);
 		this.setFormObject(true);
 		WApplication app = WApplication.getInstance();
-		String THIS_JS = "js/WHTML5Media.js";
-		if (!app.isJavaScriptLoaded(THIS_JS)) {
-			app.doJavaScript(wtjs1(app), false);
-			app.setJavaScriptLoaded(THIS_JS);
-		}
-		this.doJavaScript("new Wt3_1_9.WHTML5Media(" + app.getJavaScriptClass()
-				+ "," + this.getJsRef() + ");");
+		app.loadJavaScript("js/WHTML5Media.js", wtjs1());
+		this.doJavaScript("new Wt3_1_10.WHTML5Media("
+				+ app.getJavaScriptClass() + "," + this.getJsRef() + ");");
 		this.setJavaScriptMember("WtPlay", "function() {jQuery.data("
 				+ this.getJsRef() + ", 'obj').play();}");
 		this.setJavaScriptMember("WtPause", "function() {jQuery.data("
@@ -459,7 +455,7 @@ public abstract class WHTML5Media extends WInteractWidget {
 		if (this.mediaId_.length() == 0) {
 			return "null";
 		} else {
-			return "Wt3_1_9.getElement('" + this.mediaId_ + "')";
+			return "Wt3_1_10.getElement('" + this.mediaId_ + "')";
 		}
 	}
 
@@ -470,7 +466,7 @@ public abstract class WHTML5Media extends WInteractWidget {
 			this.updateMediaDom(media, false);
 			if (this.sourcesChanged_) {
 				for (int i = 0; i < this.sourcesRendered_; ++i) {
-					media.callJavaScript("Wt3_1_9.remove('" + this.mediaId_
+					media.callJavaScript("Wt3_1_10.remove('" + this.mediaId_
 							+ "s" + String.valueOf(i) + "');", true);
 				}
 				this.sourcesRendered_ = 0;
@@ -569,7 +565,7 @@ public abstract class WHTML5Media extends WInteractWidget {
 			element
 					.setAttribute(
 							"onerror",
-							"if(event.target.error && event.target.error.code==event.target.error.MEDIA_ERR_SRC_NOT_SUPPORTED){while (this.hasChildNodes())if (Wt3_1_9.hasTag(this.firstChild,'SOURCE')){this.removeChild(this.firstChild);}else{this.parentNode.insertBefore(this.firstChild, this);}this.style.display= 'none';}");
+							"if(event.target.error && event.target.error.code==event.target.error.MEDIA_ERR_SRC_NOT_SUPPORTED){while (this.hasChildNodes())if (Wt3_1_10.hasTag(this.firstChild,'SOURCE')){this.removeChild(this.firstChild);}else{this.parentNode.insertBefore(this.firstChild, this);}this.style.display= 'none';}");
 		}
 		if (all || this.flagsChanged_) {
 			if (!all
@@ -722,7 +718,7 @@ public abstract class WHTML5Media extends WInteractWidget {
 
 	private void renderSource(DomElement element, WHTML5Media.Source source,
 			boolean isLast) {
-		element.setAttribute("src", fixRelativeUrl(source.url));
+		element.setAttribute("src", resolveRelativeUrl(source.url));
 		if (!source.type.equals("")) {
 			element.setAttribute("type", source.type);
 		}
@@ -733,7 +729,7 @@ public abstract class WHTML5Media extends WInteractWidget {
 			element
 					.setAttribute(
 							"onerror",
-							"var media = this.parentNode;if(media){while (media && media.children.length)if (Wt3_1_9.hasTag(media.firstChild,'SOURCE')){media.removeChild(media.firstChild);}else{media.parentNode.insertBefore(media.firstChild, media);}media.style.display= 'none';}");
+							"var media = this.parentNode;if(media){while (media && media.children.length)if (Wt3_1_10.hasTag(media.firstChild,'SOURCE')){media.removeChild(media.firstChild);}else{media.parentNode.insertBefore(media.firstChild, media);}media.style.display= 'none';}");
 		} else {
 			element.setAttribute("onerror", "");
 		}
@@ -755,20 +751,12 @@ public abstract class WHTML5Media extends WInteractWidget {
 	private boolean ended_;
 	private WHTML5Media.ReadyState readyState_;
 
-	static String wtjs1(WApplication app) {
-		String s = "function(c,b){jQuery.data(b,\"obj\",this);this.play=function(){if(b.mediaId){var a=$(\"#\"+b.mediaId).get(0);if(a){a.play();return}}if(b.alternativeId)(a=$(\"#\"+b.alternativeId).get(0))&&a.WtPlay&&a.WtPlay()};this.pause=function(){if(b.mediaId){var a=$(\"#\"+b.mediaId).get(0);if(a){a.pause();return}}if(b.alternativeId)(a=$(\"#\"+b.alternativeId).get(0))&&a.WtPlay&&a.WtPause()}}";
-		if ("ctor.WHTML5Media".indexOf(".prototype") != -1) {
-			return "Wt3_1_9.ctor.WHTML5Media = " + s + ";";
-		} else {
-			if ("ctor.WHTML5Media".substring(0, 5).compareTo(
-					"ctor.".substring(0, 5)) == 0) {
-				return "Wt3_1_9." + "ctor.WHTML5Media".substring(5) + " = " + s
-						+ ";";
-			} else {
-				return "Wt3_1_9.ctor.WHTML5Media = function() { (" + s
-						+ ").apply(Wt3_1_9, arguments) };";
-			}
-		}
+	static WJavaScriptPreamble wtjs1() {
+		return new WJavaScriptPreamble(
+				JavaScriptScope.WtClassScope,
+				JavaScriptObjectType.JavaScriptConstructor,
+				"WHTML5Media",
+				"function(c,b){jQuery.data(b,\"obj\",this);this.play=function(){if(b.mediaId){var a=$(\"#\"+b.mediaId).get(0);if(a){a.play();return}}if(b.alternativeId)(a=$(\"#\"+b.alternativeId).get(0))&&a.WtPlay&&a.WtPlay()};this.pause=function(){if(b.mediaId){var a=$(\"#\"+b.mediaId).get(0);if(a){a.pause();return}}if(b.alternativeId)(a=$(\"#\"+b.alternativeId).get(0))&&a.WtPlay&&a.WtPause()}}");
 	}
 
 	static WHTML5Media.ReadyState intToReadyState(int i) {

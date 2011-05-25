@@ -95,7 +95,15 @@ public class WDate implements Comparable<WDate> {
 	 * @see #getDay()
 	 */
 	public WDate(int year, int month, int day) {
-		this(year, month, day, 0, 0, 0);
+		Calendar c = Calendar.getInstance();
+		c.set(year, month - 1, day);
+
+		if (c.get(Calendar.YEAR) != year || c.get(Calendar.MONTH) + 1 != month
+				|| c.get(Calendar.DATE) != day) {
+			throw new IllegalArgumentException("Illegal WDate");
+		}
+
+		d = c.getTime();
 	}
 
 	/**
@@ -497,7 +505,7 @@ public class WDate implements Comparable<WDate> {
 			"Fri", "Sat", "Sun" };
 
 		if (WApplication.getInstance() != null)
-			return WString.tr("Wt.WDate." + shortDayNames[weekday - 1]).getValue();
+			return WString.tr("Wt.WDate.3." + shortDayNames[weekday - 1]).getValue();
 		else
 			return shortDayNames[weekday - 1];
 	}
@@ -794,7 +802,7 @@ public class WDate implements Comparable<WDate> {
 					result.regexp += "(\\d{1,2})";
 				else
 					result.regexp += "(\\d{2})";
-				result.dayGetJS = "parseInt(results["
+				result.dayGetJS = "return parseInt(results["
 						+ String.valueOf(currentGroup++) + "], 10)";
 				break;
 			default:
@@ -810,7 +818,7 @@ public class WDate implements Comparable<WDate> {
 					result.regexp += "(\\d{1,2})";
 				else
 					result.regexp += "(\\d{2})";
-				result.monthGetJS = "parseInt(results["
+				result.monthGetJS = "return parseInt(results["
 						+ String.valueOf(currentGroup++) + "], 10)";
 				break;
 			default:
@@ -822,14 +830,14 @@ public class WDate implements Comparable<WDate> {
 		if (y != 0) {
 			switch (y) {
 			case 2:
-				result.regexp += "(\\d{1,2})";
-				result.yearGetJS = "function() { var y=parseInt(results["
+				result.regexp += "(\\d{2})";
+				result.yearGetJS = "var y=parseInt(results["
 						+ String.valueOf(currentGroup++)
-						+ "], 10);return y>38?1900+y:2000+y;}()";
+						+ "], 10);return y>38?1900+y:2000+y;";
 				break;
 			case 4:
 				result.regexp += "(\\d{4})";
-				result.yearGetJS = "parseInt(results["
+				result.yearGetJS = "return parseInt(results["
 						+ String.valueOf(currentGroup++) + "], 10)";
 				break;
 			default:

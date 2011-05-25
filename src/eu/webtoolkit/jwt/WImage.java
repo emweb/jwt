@@ -384,7 +384,7 @@ public class WImage extends WInteractWidget {
 	void updateDom(DomElement element, boolean all) {
 		DomElement img = element;
 		if (all && element.getType() == DomElementType.DomElement_SPAN) {
-			DomElement map = this.map_.createDomElement(WApplication
+			DomElement map = this.map_.createSDomElement(WApplication
 					.getInstance());
 			element.addChild(map);
 			img = DomElement.createNew(DomElementType.DomElement_IMG);
@@ -393,7 +393,7 @@ public class WImage extends WInteractWidget {
 		if (this.flags_.get(BIT_IMAGE_REF_CHANGED) || all) {
 			if (this.imageRef_.length() != 0) {
 				img.setProperty(Property.PropertySrc,
-						fixRelativeUrl(this.imageRef_));
+						resolveRelativeUrl(this.imageRef_));
 			}
 			this.flags_.clear(BIT_IMAGE_REF_CHANGED);
 		}

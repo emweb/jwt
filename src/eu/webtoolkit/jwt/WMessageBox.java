@@ -251,7 +251,7 @@ public class WMessageBox extends WDialog {
 	 * closed, and return the result.
 	 */
 	public static StandardButton show(CharSequence caption, CharSequence text,
-			EnumSet<StandardButton> buttons) {
+			EnumSet<StandardButton> buttons, WAnimation animation) {
 		final WMessageBox box = new WMessageBox(caption, text,
 				Icon.Information, buttons);
 		box.buttonClicked().addListener(box,
@@ -260,7 +260,7 @@ public class WMessageBox extends WDialog {
 						box.accept();
 					}
 				});
-		box.exec();
+		box.exec(animation);
 		return box.getButtonResult();
 	}
 
@@ -268,12 +268,12 @@ public class WMessageBox extends WDialog {
 	 * Convenience method to show a message box, blocking the current thread.
 	 * <p>
 	 * Returns
-	 * {@link #show(CharSequence caption, CharSequence text, EnumSet buttons)
-	 * show(caption, text, EnumSet.of(button, buttons))}
+	 * {@link #show(CharSequence caption, CharSequence text, EnumSet buttons, WAnimation animation)
+	 * show(caption, text, buttons, new WAnimation())}
 	 */
 	public static final StandardButton show(CharSequence caption,
-			CharSequence text, StandardButton button, StandardButton... buttons) {
-		return show(caption, text, EnumSet.of(button, buttons));
+			CharSequence text, EnumSet<StandardButton> buttons) {
+		return show(caption, text, buttons, new WAnimation());
 	}
 
 	/**

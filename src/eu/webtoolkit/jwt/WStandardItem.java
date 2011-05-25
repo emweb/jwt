@@ -187,7 +187,7 @@ public class WStandardItem {
 	 * @see WStandardItem#setIcon(String uri)
 	 */
 	public String getIcon() {
-		Object d = this.getData(ItemDataRole.DisplayRole);
+		Object d = this.getData(ItemDataRole.DecorationRole);
 		if (!(d == null) && d.getClass().equals(String.class)) {
 			return (String) d;
 		} else {

@@ -816,8 +816,20 @@ public class WContainerWidget extends WInteractWidget {
 				this.flags_.clear(BIT_LAYOUT_NEEDS_UPDATE);
 			}
 		}
+		this.updateDomChildren(e, app);
 		this.updateDom(e, false);
 		result.add(e);
+	}
+
+	protected DomElement createDomElement(WApplication app, boolean addChildren) {
+		if (this.transientImpl_ != null) {
+			this.transientImpl_.addedChildren_.clear();
+		}
+		DomElement result = super.createDomElement(app);
+		if (addChildren) {
+			this.createDomChildren(result, app);
+		}
+		return result;
 	}
 
 	void createDomChildren(DomElement parent, WApplication app) {
@@ -882,6 +894,46 @@ public class WContainerWidget extends WInteractWidget {
 		}
 		if (this.transientImpl_ != null) {
 			this.transientImpl_.addedChildren_.clear();
+		}
+	}
+
+	protected void updateDomChildren(DomElement parent, WApplication app) {
+		if (!app.getSession().getRenderer().isPreLearning()
+				&& !(this.layout_ != null)) {
+			if (parent.getMode() == DomElement.Mode.ModeUpdate) {
+				parent.setWasEmpty(this.isWasEmpty());
+			}
+			if (this.transientImpl_ != null) {
+				List<Integer> orderedInserts = new ArrayList<Integer>();
+				List<WWidget> ac = this.transientImpl_.addedChildren_;
+				for (int i = 0; i < ac.size(); ++i) {
+					orderedInserts.add(this.children_.indexOf(ac.get(i)));
+				}
+				Collections.sort(orderedInserts);
+				int addedCount = this.transientImpl_.addedChildren_.size();
+				int totalCount = this.children_.size();
+				int insertCount = 0;
+				for (int i = 0; i < orderedInserts.size(); ++i) {
+					int pos = orderedInserts.get(i);
+					DomElement c = this.children_.get(pos).createSDomElement(
+							app);
+					if (pos + (addedCount - insertCount) == totalCount) {
+						parent.addChild(c);
+					} else {
+						parent
+								.insertChildAt(c, pos
+										+ this.getFirstChildIndex());
+					}
+					++insertCount;
+				}
+				this.transientImpl_.addedChildren_.clear();
+			}
+		}
+		if (this.flags_.get(BIT_LAYOUT_NEEDS_UPDATE)) {
+			if (this.layout_ != null) {
+				this.getLayoutImpl().updateDom();
+			}
+			this.flags_.clear(BIT_LAYOUT_NEEDS_UPDATE);
 		}
 	}
 
@@ -1007,42 +1059,6 @@ public class WContainerWidget extends WInteractWidget {
 			}
 			this.flags_.clear(BIT_PADDINGS_CHANGED);
 		}
-		if (!WApplication.getInstance().getSession().getRenderer()
-				.isPreLearning()
-				&& !(this.layout_ != null)) {
-			element.setWasEmpty(all || this.isWasEmpty());
-			if (this.transientImpl_ != null) {
-				WApplication app = WApplication.getInstance();
-				List<Integer> orderedInserts = new ArrayList<Integer>();
-				List<WWidget> ac = this.transientImpl_.addedChildren_;
-				for (int i = 0; i < ac.size(); ++i) {
-					orderedInserts.add(this.children_.indexOf(ac.get(i)));
-				}
-				Collections.sort(orderedInserts);
-				int addedCount = this.transientImpl_.addedChildren_.size();
-				int totalCount = this.children_.size();
-				int insertCount = 0;
-				for (int i = 0; i < orderedInserts.size(); ++i) {
-					int pos = orderedInserts.get(i);
-					DomElement c = this.children_.get(pos).createSDomElement(
-							app);
-					if (pos + (addedCount - insertCount) == totalCount) {
-						element.addChild(c);
-					} else {
-						element.insertChildAt(c, pos
-								+ this.getFirstChildIndex());
-					}
-					++insertCount;
-				}
-				this.transientImpl_.addedChildren_.clear();
-			}
-		}
-		if (this.flags_.get(BIT_LAYOUT_NEEDS_UPDATE)) {
-			if (this.layout_ != null) {
-				this.getLayoutImpl().updateDom();
-			}
-			this.flags_.clear(BIT_LAYOUT_NEEDS_UPDATE);
-		}
 		super.updateDom(element, all);
 		if (this.flags_.get(BIT_OVERFLOW_CHANGED)
 				|| all
@@ -1076,12 +1092,7 @@ public class WContainerWidget extends WInteractWidget {
 	}
 
 	DomElement createDomElement(WApplication app) {
-		if (this.transientImpl_ != null) {
-			this.transientImpl_.addedChildren_.clear();
-		}
-		DomElement result = super.createDomElement(app);
-		this.createDomChildren(result, app);
-		return result;
+		return this.createDomElement(app, true);
 	}
 
 	WLayoutItemImpl createLayoutItemImpl(WLayoutItem item) {

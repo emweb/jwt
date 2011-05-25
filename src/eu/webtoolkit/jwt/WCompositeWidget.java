@@ -177,8 +177,8 @@ public class WCompositeWidget extends WWidget {
 		return this.impl_.isHiddenKeepsGeometry();
 	}
 
-	public void setHidden(boolean how) {
-		this.impl_.setHidden(how);
+	public void setHidden(boolean hidden, WAnimation animation) {
+		this.impl_.setHidden(hidden, animation);
 	}
 
 	public boolean isHidden() {
@@ -218,17 +218,17 @@ public class WCompositeWidget extends WWidget {
 		}
 	}
 
-	public void setPopup(boolean how) {
-		this.impl_.setPopup(how);
+	public void setPopup(boolean popup) {
+		this.impl_.setPopup(popup);
 	}
 
 	public boolean isPopup() {
 		return this.impl_.isPopup();
 	}
 
-	public void setInline(boolean how) {
+	public void setInline(boolean isInline) {
 		// this.resetLearnedSlot(WWidget.show);
-		this.impl_.setInline(how);
+		this.impl_.setInline(isInline);
 	}
 
 	public boolean isInline() {
@@ -373,8 +373,8 @@ public class WCompositeWidget extends WWidget {
 		}
 	}
 
-	void setHideWithOffsets(boolean how) {
-		this.impl_.setHideWithOffsets(how);
+	protected void setHideWithOffsets(boolean hideWithOffsets) {
+		this.impl_.setHideWithOffsets(hideWithOffsets);
 	}
 
 	boolean isStubbed() {

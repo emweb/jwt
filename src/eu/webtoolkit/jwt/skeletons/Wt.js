@@ -5,30 +5,35 @@
  * For terms of use, see LICENSE.
  */
 _$_$if_DYNAMIC_JS_$_();
-window.WT_DECLARE_WT_MEMBER = function(i, name, fn)
+window.JavaScriptFunction = 1;
+window.JavaScriptConstructor = 2;
+window.JavaScriptObject = 3;
+window.JavaScriptPrototype = 4;
+window.WT_DECLARE_WT_MEMBER = function(i, type, name, fn)
 {
-  var proto = name.indexOf('.prototype');
-  var ctor = name.indexOf('ctor.');
-
-  if (proto != -1)
+  if (type == JavaScriptPrototype) {
+    var proto = name.indexOf('.prototype');
     _$_WT_CLASS_$_[name.substr(0, proto)]
       .prototype[name.substr(proto + '.prototype.'.length)] = fn;
-  else if (ctor == 0)
-    _$_WT_CLASS_$_[name.substr(5)] = fn;
-  else
+  } else if (type == JavaScriptFunction) {
     _$_WT_CLASS_$_[name] = function() { fn.apply(_$_WT_CLASS_$_, arguments); };
+  } else {
+    _$_WT_CLASS_$_[name] = fn;
+  }
 };
 
-window.WT_DECLARE_APP_MEMBER = function(i, name, fn)
+window.WT_DECLARE_APP_MEMBER = function(i, type, name, fn)
 {
-  var proto = name.indexOf('.prototype');
-
   var app = window.currentApp;
-  if (proto == -1)
-    app[name] = fn;
-  else
+  if (type == JavaScriptPrototype) {
+    var proto = name.indexOf('.prototype');
     app[name.substr(0, proto)]
       .prototype[name.substr(proto + '.prototype.'.length)] = fn;
+  } else if (type == JavaScriptFunction) {
+    app[name] = function() { fn.apply(app, arguments); };
+  } else {
+    app[name] = fn;
+  }
 };
 
 _$_$endif_$_();
@@ -81,7 +86,7 @@ this.mouseDown = function(e) {
 };
 
 this.mouseUp = function(e) {
-  WT.buttons ^= WT.button(e);
+  WT.buttons &= ~WT.button(e);
 };
 
 /**
@@ -149,8 +154,13 @@ this.trace = function(v, start) {
     console.log("[" + diff + "]: " + v);
 };
 
+function host(url) {
+  var parts = url.split('/');
+  return parts[2];
+}
+
 this.initAjaxComm = function(url, handler) {
-  var crossDomain = url.indexOf("://") != -1;
+  var crossDomain = url.indexOf("://") != -1 && host(url) != window.location.host;
 
   function createRequest(method, url) {
     var request = null;
@@ -654,15 +664,20 @@ this.getSelectionRange = function(elem) {
 
       return {start: caretPos, end: selStr.length + caretPos};
     } else {
-      var start, end;
-      var val = $(elem).val();
-      var range = document.selection.createRange().duplicate();
-      range.moveEnd("character", val.length);
-      start = (range.text == "" ? val.length : val.lastIndexOf(range.text));
+      var start = -1;
+      var end = -1;
 
-      range = document.selection.createRange().duplicate();
-      range.moveStart("character", -val.length);
-      end = range.text.length;
+      var val = $(elem).val();
+      if (val) {
+        var range = document.selection.createRange().duplicate();
+
+        range.moveEnd("character", val.length);
+        start = (range.text == "" ? val.length : val.lastIndexOf(range.text));
+
+        range = document.selection.createRange().duplicate();
+        range.moveStart("character", -val.length);
+        end = range.text.length;
+      }
 
       return {start: start, end: end};
     }
@@ -1020,9 +1035,17 @@ this.addCssText = function(cssText) {
     var t = document.createTextNode(cssText);
     s.appendChild(t);
   } else {
-    var ss = document.createElement('style');
-    s.parentNode.insertBefore(ss, s);
-    ss.styleSheet.cssText = cssText;
+    var ss = s.previousSibling;
+    if (!ss || ss.tagName.toLowerCase()!='style' || ss.styleSheet.cssText.length > 32*1024)
+    {
+      ss = document.createElement('style');
+      s.parentNode.insertBefore(ss, s);
+      ss.styleSheet.cssText = cssText;
+    }
+    else
+    {
+      ss.styleSheet.cssText += cssText;
+    }
   }
 };
 
@@ -1234,9 +1257,8 @@ if (html5History) {
       cb = onStateChange;
 
       function onPopState(event) {
-	var p = window.location.pathname + window.location.search;
-	var newState = p.substr(baseUrl.length);
-	if (newState != currentState) {
+	var newState = event.state;
+	if (newState && newState != currentState) {
 	  currentState = newState;
 	  onStateChange(currentState);
 	}
@@ -1260,7 +1282,6 @@ if (html5History) {
     },
 
     initialize: function (stateField, histFrame, deployUrl) {
-      /* FIXME, should depend on ugly URL settings */
       if (deployUrl && deployUrl[deployUrl.length - 1] == '/') {
 _$_$if_UGLY_INTERNAL_PATHS_$_();
 	baseUrl = deployUrl + "?_=";
@@ -1278,8 +1299,18 @@ _$_$endif_$_();
       currentState = state;
 
       var url = baseUrl + state;
+      if (baseUrl.length > 3 && baseUrl.substr(baseUrl.length - 3) != "?_=")
+	url += window.location.search;
 
-      window.history.pushState(state, document.title, url);
+      try {
+	window.history.pushState(state, document.title, url);
+      } catch (error) {
+	/*
+	 * In case we are wrong about our baseUrl or base href
+	 * In any case, this shouldn't be fatal.
+	 */
+	console.log(error.toString());
+      }
 
       if (generateEvent)
 	cb(state);
@@ -1612,6 +1643,7 @@ function dragStart(obj, e) {
 
   WT.capture(null);
   WT.capture(ds.object);
+
   ds.object.onmousemove = dragDrag;
   ds.object.onmouseup = dragEnd;
 
@@ -1621,7 +1653,7 @@ function dragStart(obj, e) {
   ds.mimeType = obj.getAttribute("dmt");
   ds.xy = WT.pageCoordinates(e);
 
-  WT.cancelEvent(e);
+  WT.cancelEvent(e, WT.CancelPropagate);
 
   return false;
 };
@@ -1971,7 +2003,7 @@ function load(fullapp) {
       return; // That's too soon baby.
 
     WT.history.initialize("Wt-history-field", "Wt-history-iframe",
-			  _$_DEPLOY_URL_$_);
+			  _$_DEPLOY_PATH_$_);
   }
 
   if (!("activeElement" in document)) {
@@ -2194,7 +2226,7 @@ _$_$if_WEB_SOCKETS_$_();
 	    var query = url.substr(url.indexOf('?'));
 	    wsurl = "ws" + location.protocol.substr(4)
 	      + "//" + location.hostname + ":"
-	     + location.port + _$_DEPLOY_URL_$_ + query;
+	     + location.port + _$_DEPLOY_PATH_$_ + query;
 	  }
 
 	  // console.log("Url: " + wsurl);
@@ -2499,6 +2531,7 @@ ImagePreloader.prototype.onload = function() {
 };
 
 function enableInternalPaths(initialHash) {
+  currentHash = initialHash;
   WT.history.register(initialHash, onHashChange);
 }
 
@@ -2519,6 +2552,7 @@ window.onunload = function()
 {
   if (!quited) {
     self.emit(self, "Wt-unload");
+    scheduleUpdate();
     sendUpdate();
   }
 };

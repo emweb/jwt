@@ -347,8 +347,8 @@ public abstract class WPaintedWidget extends WInteractWidget {
 
 	void updateDom(DomElement element, boolean all) {
 		if (all && this.areaImage_ != null || this.areaImageAdded_) {
-			element.addChild(((WWebWidget) this.areaImage_)
-					.createDomElement(WApplication.getInstance()));
+			element.addChild(this.areaImage_.createSDomElement(WApplication
+					.getInstance()));
 			this.areaImageAdded_ = false;
 		}
 		super.updateDom(element, all);

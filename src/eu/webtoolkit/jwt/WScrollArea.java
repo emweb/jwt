@@ -237,8 +237,8 @@ public class WScrollArea extends WWebWidget {
 		}
 		if (this.widgetChanged_ || all) {
 			if (this.widget_ != null) {
-				element.addChild(this.widget_.getWebWidget().createDomElement(
-						WApplication.getInstance()));
+				element.addChild(this.widget_.createSDomElement(WApplication
+						.getInstance()));
 			}
 			this.widgetChanged_ = false;
 		}

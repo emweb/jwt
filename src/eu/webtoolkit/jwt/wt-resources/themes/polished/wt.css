@@ -2,6 +2,10 @@
  * Effects
  */
 
+.Wt-animated {
+    -webkit-backface-visibility: hidden; /* avoids flicker on Chrome */
+}
+
 /*
  * Outset using a dropshadow
  */
@@ -53,6 +57,14 @@
 }
 
 /*
+ * WStackedWidget
+ */
+.Wt-stack.Wt-animated {
+    overflow: hidden;
+    position: relative;
+}
+
+/*
  * WFormWidget
  */
 .Wt-edit-emptyText {
@@ -64,6 +76,11 @@
  */
 .Wt-dialogcover {
     background: #CCCCCC;
+    background: rgb(204, 204, 204); /* For IE, ... */
+    background: rgba(204, 204, 204, 0.5);
+    height: 100%; width: 100%;
+    top: 0px; left: 0px;
+    position: fixed;
 }
 
 /*
@@ -285,6 +302,11 @@
     z-index: 200;
     cursor: default;
     white-space: nowrap;
+}
+
+.Wt-popupmenu .content {
+    overflow-y: auto;
+    overflow-x: hidden;
 }
 
 .Wt-popupmenu .Wt-item, .Wt-popupmenu .Wt-selected {

@@ -108,17 +108,6 @@ public class WObject {
 		return String.format("o%x", id_);
 	}
 
-	String getFormName() {
-		StringBuilder result = new StringBuilder(objectName_);
-
-		if (objectName_ != "")
-			result.append("-");
-		
-		result.append(getUniqueId());
-		
-		return result.toString();
-	}
-
 	/**
 	 * Returns the (unique) identifier for this object
 	 * <p>
@@ -132,7 +121,7 @@ public class WObject {
 		String result = getObjectName();
 
 		if (result != "")
-			return result + '-' + getUniqueId();
+			return result + '_' + getUniqueId();
 		else
 			return getUniqueId();
 	}

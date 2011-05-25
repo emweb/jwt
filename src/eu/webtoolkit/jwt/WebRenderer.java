@@ -189,8 +189,7 @@ class WebRenderer implements SlotLearnerInterface {
 		}
 		for (int i = 0; i < app.styleSheets_.size(); ++i) {
 			String url = app.styleSheets_.get(i).uri;
-			response.out().append("@import url(\"").append(
-					app.fixRelativeUrl(url)).append("\")");
+			response.out().append("@import url(\"").append(url).append("\")");
 			if (app.styleSheets_.get(i).media.length() != 0
 					&& !app.styleSheets_.get(i).media.equals("all")) {
 				response.out().append(' ')
@@ -308,11 +307,11 @@ class WebRenderer implements SlotLearnerInterface {
 			this.serveMainAjax(response);
 		} else {
 			this.collectJavaScript();
-			response.out().append(this.collectedJS1_.toString()).append(
-					this.collectedJS2_.toString()).append(
-					this.session_.getApp().getJavaScriptClass()).append(
-					"._p_.response(").append(
-					String.valueOf(this.expectedAckId_)).append(");");
+			response.out().append(this.session_.getApp().getJavaScriptClass())
+					.append("._p_.response(").append(
+							String.valueOf(this.expectedAckId_)).append(");")
+					.append(this.collectedJS1_.toString()).append(
+							this.collectedJS2_.toString());
 			if (response.isWebSocketRequest() || response.isWebSocketMessage()) {
 				this.setJSSynced(false);
 			}
@@ -373,7 +372,7 @@ class WebRenderer implements SlotLearnerInterface {
 			script.setCondition("UGLY_INTERNAL_PATHS", this.session_
 					.isUseUglyInternalPaths());
 			script.setCondition("DYNAMIC_JS", false);
-			script.setVar("WT_CLASS", "Wt3_1_9");
+			script.setVar("WT_CLASS", "Wt3_1_10");
 			script.setVar("APP_CLASS", app.getJavaScriptClass());
 			script.setCondition("STRICTLY_SERIALIZED_EVENTS", conf
 					.isSerializedEvents());
@@ -382,7 +381,7 @@ class WebRenderer implements SlotLearnerInterface {
 			script.setVar("RELATIVE_URL", WWebWidget
 					.jsStringLiteral(this.session_.getBootstrapUrl(response,
 							WebSession.BootstrapOption.ClearInternalPath)));
-			script.setVar("DEPLOY_URL", WWebWidget
+			script.setVar("DEPLOY_PATH", WWebWidget
 					.jsStringLiteral(this.session_.getDeploymentPath()));
 			int keepAlive;
 			if (conf.getSessionTimeout() == -1) {
@@ -439,7 +438,7 @@ class WebRenderer implements SlotLearnerInterface {
 				if (app.enableAjax_) {
 					this.collectedJS1_
 							.append(
-									"var form = Wt3_1_9.getElement('Wt-form'); if (form) {")
+									"var form = Wt3_1_10.getElement('Wt-form'); if (form) {")
 							.append(this.beforeLoadJS_.toString());
 					this.beforeLoadJS_ = new StringWriter();
 					this.collectedJS1_
@@ -449,7 +448,7 @@ class WebRenderer implements SlotLearnerInterface {
 									";domRoot.style.display = form.style.display;document.body.replaceChild(domRoot, form);");
 					int librariesLoaded = this.loadScriptLibraries(
 							this.collectedJS1_, app);
-					this.collectedJS1_.append(app.getNewBeforeLoadJavaScript());
+					app.streamBeforeLoadJavaScript(this.collectedJS1_, false);
 					this.collectedJS2_.append(
 							"domRoot.style.visibility = 'visible';").append(
 							app.getJavaScriptClass()).append(
@@ -563,7 +562,7 @@ class WebRenderer implements SlotLearnerInterface {
 		for (int i = 0; i < app.styleSheets_.size(); ++i) {
 			String url = app.styleSheets_.get(i).uri;
 			url = StringUtils.replace(url, '&', "&amp;");
-			styleSheets += "<link href=\"" + app.fixRelativeUrl(url)
+			styleSheets += "<link href=\"" + this.session_.fixRelativeUrl(url)
 					+ "\" rel=\"stylesheet\" type=\"text/css\"";
 			if (app.styleSheets_.get(i).media.length() != 0
 					&& !app.styleSheets_.get(i).media.equals("all")) {
@@ -578,12 +577,12 @@ class WebRenderer implements SlotLearnerInterface {
 		for (int i = 0; i < app.scriptLibraries_.size(); ++i) {
 			String url = app.scriptLibraries_.get(i).uri;
 			url = StringUtils.replace(url, '&', "&amp;");
-			styleSheets += "<script src='" + app.fixRelativeUrl(url)
+			styleSheets += "<script src='" + this.session_.fixRelativeUrl(url)
 					+ "'></script>\n";
 			this.beforeLoadJS_.append(app.scriptLibraries_.get(i).beforeLoadJS);
 		}
 		app.scriptLibrariesAdded_ = 0;
-		app.newBeforeLoadJavaScript_ = app.beforeLoadJavaScript_;
+		app.newBeforeLoadJavaScript_ = app.beforeLoadJavaScript_.length();
 		boolean hybridPage = this.session_.isProgressiveBoot()
 				|| this.session_.getEnv().hasAjax();
 		FileServe page = new FileServe(hybridPage ? WtServlet.Hybrid_html
@@ -595,7 +594,7 @@ class WebRenderer implements SlotLearnerInterface {
 				&& this.session_.getEnv().supportsCookies() ? this.session_
 				.getBookmarkUrl(app.newInternalPath_) : this.session_
 				.getMostRelativeUrl(app.newInternalPath_);
-		url = app.fixRelativeUrl(url);
+		url = this.session_.fixRelativeUrl(url);
 		url = StringUtils.replace(url, '&', "&amp;");
 		page.setVar("RELATIVE_URL", url);
 		if (conf.isInlineCss()) {
@@ -666,26 +665,29 @@ class WebRenderer implements SlotLearnerInterface {
 				"._p_.setFormObjects([").append(this.currentFormObjectsList_)
 				.append("]);");
 		this.formObjectsChanged_ = false;
-		response.out().append("\n").append(app.getBeforeLoadJavaScript());
+		response.out().append("\n");
+		app.streamBeforeLoadJavaScript(response.out(), true);
 		if (!widgetset) {
 			response.out().append("window.").append(app.getJavaScriptClass())
 					.append("LoadWidgetTree = function(){\n");
 		}
 		if (widgetset || !this.session_.isBootStyleResponse()) {
 			if (app.getCssTheme().length() != 0) {
-				response.out().append("Wt3_1_9").append(".addStyleSheet('")
+				response.out().append("Wt3_1_10").append(".addStyleSheet('")
 						.append(WApplication.getResourcesUrl()).append(
 								"/themes/").append(app.getCssTheme()).append(
 								"/wt.css', 'all');");
 				if (app.getEnvironment().agentIsIE()) {
-					response.out().append("Wt3_1_9").append(".addStyleSheet('")
-							.append(WApplication.getResourcesUrl()).append(
+					response.out().append("Wt3_1_10")
+							.append(".addStyleSheet('").append(
+									WApplication.getResourcesUrl()).append(
 									"/themes/").append(app.getCssTheme())
 							.append("/wt_ie.css', 'all');");
 				}
 				if (app.getEnvironment().getAgent() == WEnvironment.UserAgent.IE6) {
-					response.out().append("Wt3_1_9").append(".addStyleSheet('")
-							.append(WApplication.getResourcesUrl()).append(
+					response.out().append("Wt3_1_10")
+							.append(".addStyleSheet('").append(
+									WApplication.getResourcesUrl()).append(
 									"/themes/").append(app.getCssTheme())
 							.append("/wt_ie6.css', 'all');");
 				}
@@ -727,14 +729,14 @@ class WebRenderer implements SlotLearnerInterface {
 		if (widgetset) {
 			String historyE = app.getEnvironment().getParameter("Wt-history");
 			if (historyE != null) {
-				response.out().append("Wt3_1_9")
-						.append(".history.initialize('").append(
-								historyE.charAt(0)).append("-field', '")
-						.append(historyE.charAt(0)).append("-iframe');\n");
+				response.out().append("Wt3_1_10").append(
+						".history.initialize('").append(historyE.charAt(0))
+						.append("-field', '").append(historyE.charAt(0))
+						.append("-iframe');\n");
 			}
 		}
-		response.out().append(app.getAfterLoadJavaScript()).append(
-				"{var o=null,e=null;").append(
+		app.streamAfterLoadJavaScript(response.out());
+		response.out().append("{var o=null,e=null;").append(
 				app.hideLoadingIndicator_.getJavaScript()).append("}");
 		if (!widgetset) {
 			if (!app.isQuited()) {
@@ -779,7 +781,7 @@ class WebRenderer implements SlotLearnerInterface {
 		}
 		int librariesLoaded = this.loadScriptLibraries(this.collectedJS1_, app);
 		this.loadScriptLibraries(this.collectedJS2_, app, librariesLoaded);
-		this.collectedJS1_.append(app.getNewBeforeLoadJavaScript());
+		app.streamBeforeLoadJavaScript(this.collectedJS1_, false);
 		if (app.domRoot2_ != null) {
 			app.domRoot2_.rootAsJavaScript(app, this.collectedJS1_, false);
 		}
@@ -876,7 +878,7 @@ class WebRenderer implements SlotLearnerInterface {
 						this.currentFormObjectsList_).append("]);");
 			}
 		}
-		out.append(app.getAfterLoadJavaScript());
+		app.streamAfterLoadJavaScript(out);
 		if (app.isQuited()) {
 			out.append(app.getJavaScriptClass()).append("._p_.quit();");
 		}
@@ -888,10 +890,10 @@ class WebRenderer implements SlotLearnerInterface {
 			throws IOException {
 		int first = app.styleSheets_.size() - app.styleSheetsAdded_;
 		for (int i = first; i < app.styleSheets_.size(); ++i) {
-			out.append("Wt3_1_9").append(".addStyleSheet('").append(
-					app.fixRelativeUrl(app.styleSheets_.get(i).uri)).append(
-					"', '").append(app.styleSheets_.get(i).media).append(
-					"');\n");
+			out.append("Wt3_1_10").append(".addStyleSheet('").append(
+					this.session_.fixRelativeUrl(app.styleSheets_.get(i).uri))
+					.append("', '").append(app.styleSheets_.get(i).media)
+					.append("');\n");
 		}
 		app.styleSheetsAdded_ = 0;
 	}
@@ -901,8 +903,8 @@ class WebRenderer implements SlotLearnerInterface {
 		if (count == -1) {
 			int first = app.scriptLibraries_.size() - app.scriptLibrariesAdded_;
 			for (int i = first; i < app.scriptLibraries_.size(); ++i) {
-				String uri = app
-						.fixRelativeUrl(app.scriptLibraries_.get(i).uri);
+				String uri = this.session_.fixRelativeUrl(app.scriptLibraries_
+						.get(i).uri);
 				out.append(app.scriptLibraries_.get(i).beforeLoadJS).append(
 						app.getJavaScriptClass()).append("._p_.loadScript('")
 						.append(uri).append("',");
@@ -1016,7 +1018,9 @@ class WebRenderer implements SlotLearnerInterface {
 		this.collectChanges(changes);
 		WApplication app = this.session_.getApp();
 		if (js != null) {
-			js.append(app.getNewBeforeLoadJavaScript());
+			if (!this.isPreLearning()) {
+				app.streamBeforeLoadJavaScript(js, false);
+			}
 			EscapeOStream sout = new EscapeOStream(js);
 			for (int i = 0; i < changes.size(); ++i) {
 				changes.get(i).asJavaScript(sout, DomElement.Priority.Delete);
@@ -1052,10 +1056,10 @@ class WebRenderer implements SlotLearnerInterface {
 				js.append(app.getJavaScriptClass()).append("._p_.setHash('")
 						.append(app.newInternalPath_).append("');\n");
 			}
-			js.append(app.getAfterLoadJavaScript());
+			app.streamAfterLoadJavaScript(js);
 			this.loadScriptLibraries(js, app, librariesLoaded);
 		} else {
-			app.getAfterLoadJavaScript();
+			app.afterLoadJavaScript_ = "";
 		}
 		app.internalPathIsChanged_ = false;
 	}

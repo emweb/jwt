@@ -68,8 +68,8 @@ class WCssTemplateWidget extends WWebWidget {
 		this.rule_.modified();
 	}
 
-	public void setHidden(boolean hidden) {
-		super.setHidden(hidden);
+	public void setHidden(boolean hidden, WAnimation animation) {
+		super.setHidden(hidden, animation);
 		this.rule_.modified();
 	}
 

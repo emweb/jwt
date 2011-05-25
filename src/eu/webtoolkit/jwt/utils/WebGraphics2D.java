@@ -456,6 +456,7 @@ public class WebGraphics2D extends Graphics2D {
 
 	@Override
 	public void drawOval(int x, int y, int width, int height) {
+		//TODO an eclipse is not the same as an oval
 		WBrush oldBrush = painter.getBrush();
 		painter.setBrush(new WBrush(BrushStyle.NoBrush));
 		painter.drawEllipse(x, y, width, height);
@@ -505,8 +506,11 @@ public class WebGraphics2D extends Graphics2D {
 
 	@Override
 	public void fillOval(int x, int y, int width, int height) {
-		// TODO Auto-generated method stub
-
+		//TODO an eclipse is not the same as an oval
+		WPen oldPen = painter.getPen();
+		painter.setPen(new WPen(PenStyle.NoPen));
+		painter.drawEllipse(x, y, width, height);
+		painter.setPen(oldPen);
 	}
 
 	@Override

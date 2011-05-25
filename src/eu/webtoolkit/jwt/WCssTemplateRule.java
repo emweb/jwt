@@ -70,7 +70,8 @@ public class WCssTemplateRule extends WCssRule {
 	 * WWidget#setClearSides()}</li>
 	 * <li>visibility: {@link WWidget#hide() WWidget#hide()},
 	 * {@link WWidget#show() WWidget#show()} and
-	 * {@link WWidget#setHidden(boolean hidden) WWidget#setHidden()}</li>
+	 * {@link WWidget#setHidden(boolean hidden, WAnimation animation)
+	 * WWidget#setHidden()}</li>
 	 * <li>margins: {@link WWidget#setMargin(WLength margin, EnumSet sides)
 	 * WWidget#setMargin()}</li>
 	 * <li>line height: {@link WWidget#setLineHeight(WLength height)

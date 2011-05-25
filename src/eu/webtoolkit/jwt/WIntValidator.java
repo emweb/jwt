@@ -262,7 +262,7 @@ public class WIntValidator extends WValidator {
 	public String getJavaScriptValidate() {
 		loadJavaScript(WApplication.getInstance());
 		StringBuilder js = new StringBuilder();
-		js.append("new Wt3_1_9.WIntValidator(").append(
+		js.append("new Wt3_1_10.WIntValidator(").append(
 				this.isMandatory() ? "true" : "false").append(",");
 		if (this.bottom_ != Integer.MIN_VALUE) {
 			js.append(this.bottom_);
@@ -298,26 +298,14 @@ public class WIntValidator extends WValidator {
 	private WString nanText_;
 
 	private static void loadJavaScript(WApplication app) {
-		String THIS_JS = "js/WIntValidator.js";
-		if (!app.isJavaScriptLoaded(THIS_JS)) {
-			app.doJavaScript(wtjs1(app), false);
-			app.setJavaScriptLoaded(THIS_JS);
-		}
+		app.loadJavaScript("js/WIntValidator.js", wtjs1());
 	}
 
-	static String wtjs1(WApplication app) {
-		String s = "function(d,b,c,e,f,g,h){this.validate=function(a){if(a.length==0)return d?{valid:false,message:e}:{valid:true};a=Number(a);if(isNaN(a)||Math.round(a)!=a)return{valid:false,message:f};if(b!==null)if(a<b)return{valid:false,message:g};if(c!==null)if(a>c)return{valid:false,message:h};return{valid:true}}}";
-		if ("ctor.WIntValidator".indexOf(".prototype") != -1) {
-			return "Wt3_1_9.ctor.WIntValidator = " + s + ";";
-		} else {
-			if ("ctor.WIntValidator".substring(0, 5).compareTo(
-					"ctor.".substring(0, 5)) == 0) {
-				return "Wt3_1_9." + "ctor.WIntValidator".substring(5) + " = "
-						+ s + ";";
-			} else {
-				return "Wt3_1_9.ctor.WIntValidator = function() { (" + s
-						+ ").apply(Wt3_1_9, arguments) };";
-			}
-		}
+	static WJavaScriptPreamble wtjs1() {
+		return new WJavaScriptPreamble(
+				JavaScriptScope.WtClassScope,
+				JavaScriptObjectType.JavaScriptConstructor,
+				"WIntValidator",
+				"function(d,b,c,e,f,g,h){this.validate=function(a){if(a.length==0)return d?{valid:false,message:e}:{valid:true};a=Number(a);if(isNaN(a)||Math.round(a)!=a)return{valid:false,message:f};if(b!==null)if(a<b)return{valid:false,message:g};if(c!==null)if(a>c)return{valid:false,message:h};return{valid:true}}}");
 	}
 }

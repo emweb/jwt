@@ -550,7 +550,7 @@ public abstract class AbstractEventSignal extends AbstractSignal {
 
 		WApplication app = WApplication.getInstance();
 		{
-			out.append(app.getJavaScriptClass()).append(".emit('").append(getSender().getFormName());
+			out.append(app.getJavaScriptClass()).append(".emit('").append(getSender().getUniqueId());
 
 			if (jsObject != null)
 				out.append("', { name:'").append(name).append("', eventObject:").append(jsObject).append(",event:").append(jsEvent).append('}');

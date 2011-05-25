@@ -39,17 +39,18 @@ import eu.webtoolkit.jwt.servlet.*;
  * default. You must use the method {@link WWidget#show() WWidget#show()} or
  * setHidden(true) to show the dialog.
  * <p>
- * The easiest way to display a modal dialog is using {@link WDialog#exec()
- * exec()}: after creating a WDialog window, a call to {@link WDialog#exec()
- * exec()} will block (suspend the thread) until the dialog window is closed,
- * and return the dialog result. Typically, an OK button will be connected to
+ * The easiest way to display a modal dialog is using
+ * {@link WDialog#exec(WAnimation animation) exec()}: after creating a WDialog
+ * window, a call to {@link WDialog#exec(WAnimation animation) exec()} will
+ * block (suspend the thread) until the dialog window is closed, and return the
+ * dialog result. Typically, an OK button will be connected to
  * {@link WDialog#accept() accept()}, and in some cases a Cancel button to
  * {@link WDialog#reject() reject()}. This solution has the drawback that it is
  * not scalable to many concurrent sessions, since for every session with a
- * recursive event loop (which is running durring the {@link WDialog#exec()
- * exec()} method), a thread is locked. In practical terms, this means it is
- * only suitable for software with restricted access or deployed on an intranet
- * or extranet.
+ * recursive event loop (which is running durring the
+ * {@link WDialog#exec(WAnimation animation) exec()} method), a thread is
+ * locked. In practical terms, this means it is only suitable for software with
+ * restricted access or deployed on an intranet or extranet.
  * <p>
  * This functionality is only available on Servlet 3.0 compatible servlet
  * containers.
@@ -134,7 +135,7 @@ public class WDialog extends WCompositeWidget {
 		this.modal_ = true;
 		this.finished_ = new Signal1<WDialog.DialogCode>(this);
 		this.recursiveEventLoop_ = false;
-		this.addAutoJavaScript_ = false;
+		this.initialized_ = false;
 		String TEMPLATE = "${shadow-x1-x2}${titlebar}${contents}";
 		this
 				.setImplementation(this.impl_ = new WTemplate(new WString(
@@ -148,14 +149,6 @@ public class WDialog extends WCompositeWidget {
 			if (app.getEnvironment().agentIsIElt(9)) {
 				app.getStyleSheet().addRule("body", "height: 100%;");
 			}
-			app
-					.getStyleSheet()
-					.addRule(
-							"div.Wt-dialogcover",
-							""
-									+ "height: 100%; width: 100%;top: 0px; left: 0px;opacity: 0.5; position: fixed;"
-									+ (app.getEnvironment().agentIsIElt(9) ? "filter: alpha(opacity=50);"
-											: "opacity: 0.5"), CSS_RULES_NAME);
 			String position = app.getEnvironment().getAgent() == WEnvironment.UserAgent.IE6 ? "absolute"
 					: "fixed";
 			app
@@ -163,15 +156,14 @@ public class WDialog extends WCompositeWidget {
 					.addRule(
 							"div.Wt-dialog",
 							""
-									+ (app.getEnvironment().hasAjax()
-											&& !app.getEnvironment()
-													.agentIsIElt(9) ? "visibility: hidden;"
+									+ (app.getEnvironment().hasAjax() ? "visibility: hidden;"
 											: "")
 									+ "position: "
 									+ position
 									+ ';'
 									+ (!app.getEnvironment().hasAjax() ? "left: 50%; top: 50%;margin-left: -100px; margin-top: -50px;"
-											: "left: 0px; top: 0px;"));
+											: "left: 0px; top: 0px;"),
+							CSS_RULES_NAME);
 			if (app.getEnvironment().getAgent() == WEnvironment.UserAgent.IE6) {
 				app
 						.getStyleSheet()
@@ -190,11 +182,7 @@ public class WDialog extends WCompositeWidget {
 		this.impl_.setStyleClass("Wt-dialog Wt-outset");
 		WContainerWidget parent = app.getDomRoot();
 		this.setPopup(true);
-		String THIS_JS = "js/WDialog.js";
-		if (!app.isJavaScriptLoaded(THIS_JS)) {
-			app.doJavaScript(wtjs1(app), false);
-			app.setJavaScriptLoaded(THIS_JS);
-		}
+		app.loadJavaScript("js/WDialog.js", wtjs1());
 		parent.addWidget(this);
 		this.titleBar_ = new WContainerWidget();
 		this.titleBar_.setStyleClass("titlebar");
@@ -293,8 +281,8 @@ public class WDialog extends WCompositeWidget {
 	 * {@link WDialog#accept() accept()} or {@link WDialog#reject() reject()} is
 	 * called.
 	 * <p>
-	 * <i>Warning: using {@link WDialog#exec() exec()} does not scale to many
-	 * concurrent sessions, since the thread is locked.</i>
+	 * <i>Warning: using {@link WDialog#exec(WAnimation animation) exec()} does
+	 * not scale to many concurrent sessions, since the thread is locked.</i>
 	 * <p>
 	 * <i>This functionality is only available on Servlet 3.0 compatible servlet
 	 * containers.</i>
@@ -304,12 +292,12 @@ public class WDialog extends WCompositeWidget {
 	 * @see WDialog#accept()
 	 * @see WDialog#reject()
 	 */
-	public WDialog.DialogCode exec() {
+	public WDialog.DialogCode exec(WAnimation animation) {
 		if (this.recursiveEventLoop_) {
 			throw new WtException(
 					"WDialog::exec(): already in recursive event loop.");
 		}
-		this.show();
+		this.animateShow(animation);
 		if (!WtServlet.isAsyncSupported()) {
 			throw new WtException(
 					"Server push requires a Servlet 3.0 enabled servlet container and an application with async-supported enabled.");
@@ -320,6 +308,15 @@ public class WDialog extends WCompositeWidget {
 		} while (this.recursiveEventLoop_);
 		this.hide();
 		return this.result_;
+	}
+
+	/**
+	 * Executes the dialog in a recursive event loop.
+	 * <p>
+	 * Returns {@link #exec(WAnimation animation) exec(new WAnimation())}
+	 */
+	public final WDialog.DialogCode exec() {
+		return exec(new WAnimation());
 	}
 
 	/**
@@ -432,7 +429,7 @@ public class WDialog extends WCompositeWidget {
 		return this.modal_;
 	}
 
-	public void setHidden(boolean hidden) {
+	public void setHidden(boolean hidden, WAnimation animation) {
 		if (this.isHidden() != hidden) {
 			if (this.modal_) {
 				WApplication app = WApplication.getInstance();
@@ -442,7 +439,16 @@ public class WDialog extends WCompositeWidget {
 				}
 				if (!hidden) {
 					this.saveCoverState(app, cover);
-					cover.show();
+					if (cover.isHidden()) {
+						if (!animation.isEmpty()) {
+							cover.animateShow(new WAnimation(
+									WAnimation.AnimationEffect.Fade,
+									WAnimation.TimingFunction.Linear, animation
+											.getDuration() * 4));
+						} else {
+							cover.show();
+						}
+					}
 					cover.setZIndex(this.impl_.getZIndex() - 1);
 					app.constrainExposed(this);
 					app
@@ -452,23 +458,26 @@ public class WDialog extends WCompositeWidget {
 				}
 			}
 		}
-		super.setHidden(hidden);
+		super.setHidden(hidden, animation);
 	}
 
 	void render(EnumSet<RenderFlag> flags) {
-		super.render(flags);
-		if (!EnumUtils.mask(flags, RenderFlag.RenderFull).isEmpty()) {
+		if (!this.initialized_) {
+			this.initialized_ = true;
 			WApplication app = WApplication.getInstance();
-			this.setJavaScriptMember("_a", "0;new Wt3_1_9.WDialog("
-					+ app.getJavaScriptClass() + "," + this.getJsRef() + ")");
-			if (!this.addAutoJavaScript_) {
-				app.addAutoJavaScript("{var obj = $('#" + this.getId()
-						+ "').data('obj');if (obj) obj.centerDialog();}");
-				this.addAutoJavaScript_ = true;
-			}
-			this.setJavaScriptMember(WT_RESIZE_JS, "$('#" + this.getId()
-					+ "').data('obj').wtResize");
+			boolean centerX = this.getOffset(Side.Left).isAuto()
+					&& this.getOffset(Side.Right).isAuto();
+			boolean centerY = this.getOffset(Side.Top).isAuto()
+					&& this.getOffset(Side.Bottom).isAuto();
+			this.setJavaScriptMember("_a", "0;new Wt3_1_10.WDialog("
+					+ app.getJavaScriptClass() + "," + this.getJsRef() + ","
+					+ (centerX ? "1" : "0") + "," + (centerY ? "1" : "0")
+					+ ");");
+			this.setJavaScriptMember(WT_RESIZE_JS, "0");
+			app.addAutoJavaScript("{var obj = $('#" + this.getId()
+					+ "').data('obj');if (obj) obj.centerDialog();}");
 		}
+		super.render(flags);
 	}
 
 	private WTemplate impl_;
@@ -482,7 +491,7 @@ public class WDialog extends WCompositeWidget {
 	private Signal1<WDialog.DialogCode> finished_;
 	private WDialog.DialogCode result_;
 	private boolean recursiveEventLoop_;
-	private boolean addAutoJavaScript_;
+	private boolean initialized_;
 
 	private void saveCoverState(WApplication app, WContainerWidget cover) {
 		this.coverWasHidden_ = cover.isHidden();
@@ -496,19 +505,11 @@ public class WDialog extends WCompositeWidget {
 		app.constrainExposed(this.previousExposeConstraint_);
 	}
 
-	static String wtjs1(WApplication app) {
-		String s = "function(g,b){function k(a){var c=a||window.event;a=d.pageCoordinates(c);c=d.windowCoordinates(c);var e=d.windowSize();if(c.x>0&&c.x<e.x&&c.y>0&&c.y<e.y){h=true;b.style.left=d.pxself(b,\"left\")+a.x-i+\"px\";b.style.top=d.pxself(b,\"top\")+a.y-j+\"px\";i=a.x;j=a.y}}jQuery.data(b,\"obj\",this);var l=this,f=$(b).find(\".titlebar\").first().get(0),d=g.WT,i,j,h=false;if(b.style.left!=\"\"||b.style.top!=\"\")h=true;if(f){f.onmousedown=function(a){a=a||window.event;d.capture(f);a= d.pageCoordinates(a);i=a.x;j=a.y;f.onmousemove=k};f.onmouseup=function(){f.onmousemove=null;d.capture(null)}}this.centerDialog=function(){if(b.parentNode==null){b=f=null;this.centerDialog=function(){}}else if(b.style.display!=\"none\"&&b.style.visibility!=\"hidden\"){if(!h){var a=d.windowSize(),c=b.offsetHeight;b.style.left=Math.round((a.x-b.offsetWidth)/2+(d.isIE6?document.documentElement.scrollLeft:0))+\"px\";b.style.top=Math.round((a.y-c)/2+(d.isIE6?document.documentElement.scrollTop:0))+\"px\";b.style.marginLeft= \"\";b.style.marginTop=\"\";b.style.height!=\"\"&&l.wtResize(b,-1,c)}b.style.visibility=\"visible\"}};this.wtResize=function(a,c,e){e-=2;c-=2;a.style.height=e+\"px\";if(c>0)a.style.width=c+\"px\";a=a.lastChild;e-=a.previousSibling.offsetHeight+8;if(e>0){a.style.height=e+\"px\";g.layouts&&g.layouts.adjust()}}}";
-		if ("ctor.WDialog".indexOf(".prototype") != -1) {
-			return "Wt3_1_9.ctor.WDialog = " + s + ";";
-		} else {
-			if ("ctor.WDialog".substring(0, 5).compareTo(
-					"ctor.".substring(0, 5)) == 0) {
-				return "Wt3_1_9." + "ctor.WDialog".substring(5) + " = " + s
-						+ ";";
-			} else {
-				return "Wt3_1_9.ctor.WDialog = function() { (" + s
-						+ ").apply(Wt3_1_9, arguments) };";
-			}
-		}
+	static WJavaScriptPreamble wtjs1() {
+		return new WJavaScriptPreamble(
+				JavaScriptScope.WtClassScope,
+				JavaScriptObjectType.JavaScriptConstructor,
+				"WDialog",
+				"function(g,b,j,k){function m(a){var c=a||window.event;a=d.pageCoordinates(c);c=d.windowCoordinates(c);var e=d.windowSize();if(c.x>0&&c.x<e.x&&c.y>0&&c.y<e.y){j=k=false;b.style.left=d.pxself(b,\"left\")+a.x-h+\"px\";b.style.top=d.pxself(b,\"top\")+a.y-i+\"px\";h=a.x;i=a.y}}function l(a,c,e){e-=2;c-=2;a.style.height=e+\"px\";if(c>0)a.style.width=c+\"px\";a=a.lastChild;e-=a.previousSibling.offsetHeight+8;if(e>0){a.style.height=e+\"px\";g.layouts&&g.layouts.adjust()}} jQuery.data(b,\"obj\",this);var f=$(b).find(\".titlebar\").first().get(0),d=g.WT,h,i;if(f){f.onmousedown=function(a){a=a||window.event;d.capture(f);a=d.pageCoordinates(a);h=a.x;i=a.y;f.onmousemove=m};f.onmouseup=function(){f.onmousemove=null;d.capture(null)}}this.centerDialog=function(){if(b.parentNode==null)b=f=null;else if(b.style.display!=\"none\"&&b.style.visibility!=\"hidden\"){var a=d.windowSize(),c=b.offsetWidth,e=b.offsetHeight;if(j)b.style.left=Math.round((a.x-c)/2+(d.isIE6?document.documentElement.scrollLeft: 0))+\"px\";if(k)b.style.top=Math.round((a.y-e)/2+(d.isIE6?document.documentElement.scrollTop:0))+\"px\";b.style.height!=\"\"&&l(b,-1,e);b.style.visibility=\"visible\"}};b.wtResize=l;b.wtPosition=this.centerDialog}");
 	}
 }

@@ -244,6 +244,10 @@ class BasicControls extends ControlsWidget {
 		panel.setCentralWidget(new WText("This is a panel with a title"));
 		new WBreak(result);
 		panel = new WPanel(result);
+		panel.setAnimation(new WAnimation(EnumSet.of(
+				WAnimation.AnimationEffect.SlideInFromTop,
+				WAnimation.AnimationEffect.Fade),
+				WAnimation.TimingFunction.EaseOut, 100));
 		panel.setTitle("My third WPanel");
 		panel.setCentralWidget(new WText(
 				"This is a collapsible panel with a title"));

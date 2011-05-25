@@ -842,6 +842,9 @@ public class WAxis {
 		final double SEGMENT_MARGIN = 40;
 		totalRenderLength -= SEGMENT_MARGIN * (this.segments_.size() - 1)
 				+ clipMin + clipMax;
+		if (totalRenderLength <= 0) {
+			return;
+		}
 		int rc = 0;
 		if (this.chart_.getModel() != null) {
 			rc = this.chart_.getModel().getRowCount();

@@ -63,7 +63,7 @@ public class WBrush {
 	/**
 	 * Clone method.
 	 * <p>
-	 * Clones this {@link WBrush} object.
+	 * Clones this brush.
 	 */
 	public WBrush clone() {
 		WBrush result = new WBrush();

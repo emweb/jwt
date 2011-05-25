@@ -8,6 +8,7 @@ package eu.webtoolkit.jwt.examples.composer;
 import java.util.ArrayList;
 import java.util.StringTokenizer;
 
+import eu.webtoolkit.jwt.WAnimation;
 import eu.webtoolkit.jwt.WContainerWidget;
 import eu.webtoolkit.jwt.WLength;
 import eu.webtoolkit.jwt.WTextArea;
@@ -64,9 +65,9 @@ public class AddresseeEdit extends WTextArea {
     /**
      * Reimplement hide() and show() to also hide() and show() the label.
      */
-    public void setHidden(boolean how) {
-        super.setHidden(how);
-        label_.setHidden(how);
+    public void setHidden(boolean hidden, WAnimation animation) {
+        super.setHidden(hidden, animation);
+        label_.setHidden(hidden, animation);
     }
 
     /**

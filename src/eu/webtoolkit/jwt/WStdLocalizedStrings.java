@@ -9,8 +9,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -36,8 +34,8 @@ public class WStdLocalizedStrings extends WLocalizedStrings {
 	private List<String> bundleNames = new ArrayList<String>();
 	private List<ResourceBundle> bundles = new ArrayList<ResourceBundle>();
 	private List<ResourceBundle> defaultBundles = new ArrayList<ResourceBundle>();
-	
-	private boolean plainText = false;
+
+	private boolean containsXML = false;
 
 	/**
 	 * Constructor.
@@ -117,7 +115,8 @@ public class WStdLocalizedStrings extends WLocalizedStrings {
 	}
 	
 	private String checkForValidXml(String s) {
-		if (!plainText && WApplication.getInstance().getSession().getController().getConfiguration().isDebug()) {
+		/* FIXME, we should do this only once for every key ... */
+		if (containsXML) {
 			try {
 				IXMLParser parser = XMLParserFactory.createDefaultXMLParser();
 				IXMLReader reader = StdXMLReader.stringReader("<span>" + s + "</span>");
@@ -132,21 +131,21 @@ public class WStdLocalizedStrings extends WLocalizedStrings {
 	}
 
 	/**
-	 * Returns whether this resource bundle is plain text or can contain XML.
-	 * When the bundle is able to contain XML, and debug is on, 
-	 * the resources will be checked for valid XML when they are resolved.W
+	 * Returns whether this contains only valid XML.
+	 * 
+	 * Values that are being returned will be checked to be valid XML (text).
 	 */
-	public boolean isPlainText() {
-		return plainText;
+	public boolean containsXML() {
+		return containsXML;
 	}
 
-	/** Sets whether this resource bundle is plain text or can contain XML.
-	 * 
-	 * @param plainText
-	 * 
-	 * @see #isPlainText()
+	/** Sets whether this resource bundle contains only valid XML.
+	 *
+	 * @param containsXML
+	 *
+	 * @see #containsXML()
 	 */
-	public void setPlainText(boolean plainText) {
-		this.plainText = plainText;
+	public void setContainsXML(boolean containsXML) {
+		this.containsXML = containsXML;
 	}
 }

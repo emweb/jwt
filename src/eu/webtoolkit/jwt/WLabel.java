@@ -327,8 +327,7 @@ public class WLabel extends WInteractWidget {
 			WApplication app, int pos) {
 		if (this.newImage_ || all) {
 			if (this.image_ != null) {
-				element.insertChildAt(((WWebWidget) this.image_)
-						.createDomElement(app), pos);
+				element.insertChildAt(this.image_.createSDomElement(app), pos);
 			}
 			this.newImage_ = false;
 		}
@@ -338,8 +337,7 @@ public class WLabel extends WInteractWidget {
 			WApplication app, int pos) {
 		if (this.newText_ || all) {
 			if (this.text_ != null) {
-				element.insertChildAt(((WWebWidget) this.text_)
-						.createDomElement(app), pos);
+				element.insertChildAt(this.text_.createSDomElement(app), pos);
 			}
 			this.newText_ = false;
 		}

@@ -561,7 +561,7 @@ public class WAbstractArea extends WObject {
 	void updateDom(DomElement element, boolean all) {
 		if (!this.hole_ && this.anchor_ != null) {
 			element.setAttribute("href", WWebWidget
-					.fixRelativeUrl(this.anchor_.ref_));
+					.resolveRelativeUrl(this.anchor_.ref_));
 			switch (this.anchor_.target_) {
 			case TargetSelf:
 				break;

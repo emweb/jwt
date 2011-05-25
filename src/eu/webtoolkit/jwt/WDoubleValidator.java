@@ -259,7 +259,7 @@ public class WDoubleValidator extends WValidator {
 	public String getJavaScriptValidate() {
 		loadJavaScript(WApplication.getInstance());
 		StringBuilder js = new StringBuilder();
-		js.append("new Wt3_1_9.WDoubleValidator(").append(
+		js.append("new Wt3_1_10.WDoubleValidator(").append(
 				this.isMandatory() ? "true" : "false").append(",");
 		if (this.bottom_ != -Double.MAX_VALUE) {
 			js.append(String.valueOf(this.bottom_));
@@ -291,26 +291,14 @@ public class WDoubleValidator extends WValidator {
 	private WString nanText_;
 
 	private static void loadJavaScript(WApplication app) {
-		String THIS_JS = "js/WDoubleValidator.js";
-		if (!app.isJavaScriptLoaded(THIS_JS)) {
-			app.doJavaScript(wtjs1(app), false);
-			app.setJavaScriptLoaded(THIS_JS);
-		}
+		app.loadJavaScript("js/WDoubleValidator.js", wtjs1());
 	}
 
-	static String wtjs1(WApplication app) {
-		String s = "function(d,b,c,e,f,g,h){this.validate=function(a){if(a.length==0)return d?{valid:false,message:e}:{valid:true};a=Number(a);if(isNaN(a))return{valid:false,message:f};if(b!==null)if(a<b)return{valid:false,message:g};if(c!==null)if(a>c)return{valid:false,message:h};return{valid:true}}}";
-		if ("ctor.WDoubleValidator".indexOf(".prototype") != -1) {
-			return "Wt3_1_9.ctor.WDoubleValidator = " + s + ";";
-		} else {
-			if ("ctor.WDoubleValidator".substring(0, 5).compareTo(
-					"ctor.".substring(0, 5)) == 0) {
-				return "Wt3_1_9." + "ctor.WDoubleValidator".substring(5)
-						+ " = " + s + ";";
-			} else {
-				return "Wt3_1_9.ctor.WDoubleValidator = function() { (" + s
-						+ ").apply(Wt3_1_9, arguments) };";
-			}
-		}
+	static WJavaScriptPreamble wtjs1() {
+		return new WJavaScriptPreamble(
+				JavaScriptScope.WtClassScope,
+				JavaScriptObjectType.JavaScriptConstructor,
+				"WDoubleValidator",
+				"function(d,b,c,e,f,g,h){this.validate=function(a){if(a.length==0)return d?{valid:false,message:e}:{valid:true};a=Number(a);if(isNaN(a))return{valid:false,message:f};if(b!==null)if(a<b)return{valid:false,message:g};if(c!==null)if(a>c)return{valid:false,message:h};return{valid:true}}}");
 	}
 }

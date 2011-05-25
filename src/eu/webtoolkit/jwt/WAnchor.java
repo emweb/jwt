@@ -556,7 +556,7 @@ public class WAnchor extends WContainerWidget {
 							this.clicked().preventDefaultAction();
 						}
 						this.changeInternalPathJS_
-								.setJavaScript("function(){Wt3_1_9.history.navigate("
+								.setJavaScript("function(){Wt3_1_10.history.navigate("
 										+ jsStringLiteral(this.ref_)
 										+ ",true);}");
 						this.clicked().senderRepaint();
@@ -573,7 +573,7 @@ public class WAnchor extends WContainerWidget {
 				;
 				this.changeInternalPathJS_ = null;
 			}
-			element.setAttribute("href", fixRelativeUrl(url));
+			element.setAttribute("href", resolveRelativeUrl(url));
 			this.flags_.clear(BIT_REF_CHANGED);
 		}
 		if (this.flags_.get(BIT_TARGET_CHANGED) || all) {

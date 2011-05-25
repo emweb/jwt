@@ -41,11 +41,12 @@ class WebSession {
 		this.renderer_ = new WebRenderer(this);
 		this.applicationName_ = "";
 		this.bookmarkUrl_ = "";
-		this.baseUrl_ = "";
+		this.basePath_ = "";
 		this.absoluteBaseUrl_ = "";
 		this.applicationUrl_ = "";
 		this.deploymentPath_ = "";
 		this.redirect_ = "";
+		this.pagePathInfo_ = "";
 		this.asyncResponse_ = null;
 		this.bootStyleResponse_ = null;
 		this.canWriteAsyncResponse_ = false;
@@ -66,13 +67,16 @@ class WebSession {
 		} else {
 			this.applicationUrl_ = "/";
 		}
-		this.applicationName_ = this.applicationUrl_;
-		this.baseUrl_ = this.applicationUrl_;
-		int slashpos = this.applicationName_.lastIndexOf('/');
+		this.deploymentPath_ = this.applicationUrl_;
+		int slashpos = this.deploymentPath_.lastIndexOf('/');
 		if (slashpos != -1) {
-			this.applicationName_ = this.applicationName_
+			this.basePath_ = this.deploymentPath_
+					.substring(0, 0 + slashpos + 1);
+			this.applicationName_ = this.deploymentPath_
 					.substring(slashpos + 1);
-			this.baseUrl_ = this.baseUrl_.substring(0, 0 + slashpos + 1);
+		} else {
+			this.basePath_ = "";
+			this.applicationName_ = this.applicationUrl_;
 		}
 		this.log("notice").append("Session created");
 	}
@@ -299,12 +303,20 @@ class WebSession {
 						}
 						if (signalE.equals("poll")) {
 							if (!WtServlet.isAsyncSupported()) {
-								while (!this.updatesPending_) {
+								this.updatesPendingEvent_.signal();
+								if (!this.updatesPending_) {
 									try {
-										this.updatesPendingEvent_.await();
-									} catch (InterruptedException ie) {
-										ie.printStackTrace();
+										this.updatesPendingEvent_
+												.await(
+														this.controller_
+																.getConfiguration()
+																.getServerPushTimeout() * 2,
+														java.util.concurrent.TimeUnit.SECONDS);
+									} catch (InterruptedException e) {
 									}
+								}
+								if (!this.updatesPending_) {
+									return;
 								}
 							}
 							if (!this.updatesPending_
@@ -411,11 +423,7 @@ class WebSession {
 			this.recursiveEventLoop_ = handler;
 			this.newRecursiveEvent_ = false;
 			while (!this.newRecursiveEvent_) {
-				try {
-					this.recursiveEvent_.await();
-				} catch (InterruptedException ie) {
-					ie.printStackTrace();
-				}
+				this.recursiveEvent_.awaitUninterruptibly();
 			}
 			if (this.state_ == WebSession.State.Dead) {
 				this.recursiveEventLoop_ = null;
@@ -496,7 +504,7 @@ class WebSession {
 	}
 
 	public boolean isUseUglyInternalPaths() {
-		return true;
+		return false;
 	}
 
 	public String getMostRelativeUrl(String internalPath) {
@@ -558,9 +566,15 @@ class WebSession {
 		if (this.applicationName_.length() == 0) {
 			hashE = request.getParameter("_");
 		}
-		if (request.getPathInfo().length() != 0 || hashE != null
+		if (this.pagePathInfo_.length() != 0 || hashE != null
 				&& hashE.length() > 1) {
-			String url = this.getBaseUrl() + this.getApplicationName();
+			String url = "";
+			if (this.applicationName_.length() == 0) {
+				url = this.fixRelativeUrl(".");
+				url = url.substring(0, 0 + url.length() - 1);
+			} else {
+				url = this.fixRelativeUrl(this.applicationName_);
+			}
 			boolean firstParameter = true;
 			for (Iterator<Map.Entry<String, String[]>> i_it = request
 					.getParameterMap().entrySet().iterator(); i_it.hasNext();) {
@@ -596,10 +610,9 @@ class WebSession {
 		switch (option) {
 		case KeepInternalPath: {
 			String url = "";
-			String internalPath = "";
+			String internalPath = this.app_ != null ? this.app_
+					.getInternalPath() : this.env_.getInternalPath();
 			if (this.isUseUglyInternalPaths()) {
-				internalPath = this.app_ != null ? this.app_.getInternalPath()
-						: this.env_.getInternalPath();
 				if (internalPath.length() > 1) {
 					url = "?_=" + DomElement.urlEncodeS(internalPath);
 				}
@@ -607,8 +620,6 @@ class WebSession {
 					url = this.applicationUrl_ + url;
 				}
 			} else {
-				internalPath = WebSession.Handler.getInstance().getRequest()
-						.getPathInfo();
 				if (!isAbsoluteUrl(this.applicationUrl_)) {
 					if (internalPath.length() > 1) {
 						String lastPart = internalPath.substring(internalPath
@@ -629,10 +640,8 @@ class WebSession {
 		}
 		case ClearInternalPath: {
 			if (!isAbsoluteUrl(this.applicationUrl_)) {
-				if (WebSession.Handler.getInstance().getRequest().getPathInfo()
-						.length() > 1) {
-					return this.appendSessionQuery(this.baseUrl_
-							+ this.applicationName_);
+				if (this.pagePathInfo_.length() > 1) {
+					return this.appendSessionQuery(this.deploymentPath_);
 				} else {
 					return this.appendSessionQuery(this.applicationName_);
 				}
@@ -646,13 +655,49 @@ class WebSession {
 		return "";
 	}
 
+	public String fixRelativeUrl(String url) {
+		if (isAbsoluteUrl(url)) {
+			return url;
+		}
+		if (url.length() > 0 && url.charAt(0) == '#') {
+			return url;
+		}
+		if (!isAbsoluteUrl(this.applicationUrl_)) {
+			if (url.length() == 0 || url.charAt(0) == '/') {
+				return url;
+			} else {
+				String rel = "";
+				for (int i = 0; i < this.pagePathInfo_.length(); ++i) {
+					if (this.pagePathInfo_.charAt(i) == '/') {
+						rel += "../";
+					}
+				}
+				return rel + url;
+			}
+		} else {
+			return this.makeAbsoluteUrl(url);
+		}
+	}
+
+	public String makeAbsoluteUrl(String url) {
+		if (isAbsoluteUrl(url)) {
+			return url;
+		} else {
+			if (url.length() == 0 || url.charAt(0) != '/') {
+				return this.absoluteBaseUrl_ + url;
+			} else {
+				return host(this.absoluteBaseUrl_) + url;
+			}
+		}
+	}
+
 	public String getBookmarkUrl(String internalPath) {
 		String result = this.bookmarkUrl_;
 		if (!this.env_.hasAjax()
 				&& result.indexOf("://") == -1
 				&& (this.env_.getInternalPath().length() > 1 || internalPath
 						.length() > 1)) {
-			result = this.baseUrl_ + this.applicationName_;
+			result = this.deploymentPath_;
 		}
 		return this.appendInternalPath(result, internalPath);
 	}
@@ -663,14 +708,6 @@ class WebSession {
 		} else {
 			return this.getBookmarkUrl(this.env_.getInternalPath());
 		}
-	}
-
-	public String getAbsoluteBaseUrl() {
-		return this.absoluteBaseUrl_;
-	}
-
-	public String getBaseUrl() {
-		return this.baseUrl_;
 	}
 
 	public String getCgiValue(String varName) {
@@ -783,7 +820,6 @@ class WebSession {
 			this.session_ = null;
 			this.request_ = null;
 			this.response_ = null;
-			this.locked_ = true;
 			this.init();
 		}
 
@@ -796,7 +832,6 @@ class WebSession {
 			this.request_ = request;
 			this.response_ = response;
 			session.getMutex().lock();
-			this.locked_ = true;
 			this.init();
 		}
 
@@ -809,7 +844,6 @@ class WebSession {
 			this.response_ = null;
 			if (takeLock) {
 				session.getMutex().lock();
-				this.locked_ = true;
 			}
 			this.init();
 		}
@@ -825,7 +859,7 @@ class WebSession {
 		}
 
 		public void release() {
-			if (this.locked_) {
+			if (this.session_.getMutex().isHeldByCurrentThread()) {
 				this.session_.getMutex().unlock();
 			}
 			attachThreadToHandler(this.prevHandler_);
@@ -836,7 +870,7 @@ class WebSession {
 		}
 
 		public boolean isHaveLock() {
-			return this.locked_;
+			return this.session_.getMutex().isHeldByCurrentThread();
 		}
 
 		public WebResponse getResponse() {
@@ -884,7 +918,6 @@ class WebSession {
 			this.prevHandler_ = attachThreadToHandler(this);
 		}
 
-		private boolean locked_;
 		private WebSession.Handler prevHandler_;
 		private WebSession session_;
 		private WebRequest request_;
@@ -900,6 +933,9 @@ class WebSession {
 			if (origin.length() != 0) {
 				if (wtdE != null && wtdE.equals(this.sessionId_)
 						|| this.state_ == WebSession.State.JustCreated) {
+					if (origin.equals("null")) {
+						origin = "*";
+					}
 					handler.getResponse().addHeader(
 							"Access-Control-Allow-Origin", origin);
 					handler.getResponse().addHeader(
@@ -1279,11 +1315,12 @@ class WebSession {
 	private WebRenderer renderer_;
 	private String applicationName_;
 	private String bookmarkUrl_;
-	private String baseUrl_;
+	private String basePath_;
 	private String absoluteBaseUrl_;
 	private String applicationUrl_;
 	private String deploymentPath_;
 	private String redirect_;
+	private String pagePathInfo_;
 	private WebResponse asyncResponse_;
 	private WebResponse bootStyleResponse_;
 	private boolean canWriteAsyncResponse_;
@@ -1363,6 +1400,9 @@ class WebSession {
 	}
 
 	private void serveResponse(WebSession.Handler handler) throws IOException {
+		if (handler.getResponse().getResponseType() == WebRequest.ResponseType.Page) {
+			this.pagePathInfo_ = handler.getRequest().getPathInfo();
+		}
 		if (!handler.getRequest().isWebSocketMessage()) {
 			if (this.bootStyleResponse_ != null) {
 				if (handler.getResponse().getResponseType() == WebRequest.ResponseType.Script
@@ -1480,7 +1520,7 @@ class WebSession {
 						String hashE = request.getParameter(se + "_");
 						if (hashE != null) {
 							this.app_.changeInternalPath(hashE);
-							this.app_.doJavaScript("Wt3_1_9.scrollIntoView('"
+							this.app_.doJavaScript("Wt3_1_10.scrollIntoView('"
 									+ hashE + "');");
 						} else {
 							this.app_.changeInternalPath("");
@@ -1587,7 +1627,7 @@ class WebSession {
 		this.env_.init(request);
 		String hashE = request.getParameter("_");
 		this.absoluteBaseUrl_ = this.env_.getUrlScheme() + "://"
-				+ this.env_.getHostName() + this.baseUrl_;
+				+ this.env_.getHostName() + this.basePath_;
 		boolean useAbsoluteUrls;
 		String absoluteBaseUrl = this.app_.readConfigurationProperty("baseURL",
 				this.absoluteBaseUrl_);
@@ -1596,6 +1636,14 @@ class WebSession {
 			useAbsoluteUrls = true;
 		} else {
 			useAbsoluteUrls = false;
+		}
+		if (useAbsoluteUrls) {
+			int slashpos = this.absoluteBaseUrl_.lastIndexOf('/');
+			if (slashpos != -1
+					&& slashpos != this.absoluteBaseUrl_.length() - 1) {
+				this.absoluteBaseUrl_ = this.absoluteBaseUrl_.substring(0,
+						0 + slashpos + 1);
+			}
 		}
 		this.bookmarkUrl_ = this.applicationName_;
 		if (this.applicationName_.length() == 0) {
@@ -1606,7 +1654,6 @@ class WebSession {
 					+ this.applicationName_;
 			this.bookmarkUrl_ = this.applicationUrl_;
 		}
-		this.deploymentPath_ = this.applicationUrl_;
 		String path = request.getPathInfo();
 		if (path.length() == 0 && hashE != null) {
 			path = hashE;
@@ -1633,6 +1680,19 @@ class WebSession {
 
 	static boolean isAbsoluteUrl(String url) {
 		return url.indexOf("://") != -1;
+	}
+
+	static String host(String url) {
+		int pos = 0;
+		for (int i = 0; i < 3; ++i) {
+			pos = url.indexOf('/', pos);
+			if (pos == -1) {
+				return url;
+			} else {
+				++pos;
+			}
+		}
+		return url.substring(0, 0 + pos - 1);
 	}
 
 	private static ThreadLocal<WebSession.Handler> threadHandler_ = new ThreadLocal<WebSession.Handler>();

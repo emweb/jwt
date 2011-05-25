@@ -474,8 +474,8 @@ public class WFileUpload extends WWebWidget {
 		}
 		if (element.getType() != DomElementType.DomElement_INPUT
 				&& this.progressBar_ != null && !this.progressBar_.isRendered()) {
-			element.addChild(((WWebWidget) this.progressBar_)
-					.createDomElement(WApplication.getInstance()));
+			element.addChild(this.progressBar_.createSDomElement(WApplication
+					.getInstance()));
 		}
 		super.updateDom(element, all);
 	}

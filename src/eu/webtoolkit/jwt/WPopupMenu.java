@@ -138,7 +138,9 @@ public class WPopupMenu extends WCompositeWidget {
 		this.setPositionScheme(PositionScheme.Absolute);
 		this.setStyleClass("Wt-popupmenu Wt-outset");
 		this.impl_.bindString("shadow-x1-x2", WTemplate.DropShadow_x1_x2);
-		this.impl_.bindWidget("contents", new WContainerWidget());
+		WContainerWidget content = new WContainerWidget();
+		content.setStyleClass("content");
+		this.impl_.bindWidget("contents", content);
 		String CSS_RULES_NAME = "Wt::WPopupMenu";
 		WApplication app = WApplication.getInstance();
 		if (!app.getStyleSheet().isDefined(CSS_RULES_NAME)) {
@@ -250,7 +252,7 @@ public class WPopupMenu extends WCompositeWidget {
 		this.setOffsets(new WLength(42), EnumSet.of(Side.Left, Side.Top));
 		this.setOffsets(new WLength(-10000), EnumSet.of(Side.Left, Side.Top));
 		WApplication.getInstance().doJavaScript(
-				"Wt3_1_9.positionXY('" + this.getId() + "',"
+				"Wt3_1_10.positionXY('" + this.getId() + "',"
 						+ String.valueOf(p.getX()) + ","
 						+ String.valueOf(p.getY()) + ");");
 	}
@@ -369,11 +371,21 @@ public class WPopupMenu extends WCompositeWidget {
 		return this.result_;
 	}
 
-	public void setHidden(boolean hidden) {
-		super.setHidden(hidden);
+	public void setHidden(boolean hidden, WAnimation animation) {
+		super.setHidden(hidden, animation);
 		if (hidden) {
 			this.renderOutAll();
 		}
+	}
+
+	public void setMaximumSize(WLength width, WLength height) {
+		super.setMaximumSize(width, height);
+		this.getContents().setMaximumSize(width, height);
+	}
+
+	public void setMinimumSize(WLength width, WLength height) {
+		super.setMinimumSize(width, height);
+		this.getContents().setMinimumSize(width, height);
 	}
 
 	/**

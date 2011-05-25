@@ -95,7 +95,6 @@ public class WCssDecorationStyle extends WObject {
 		this.widget_ = null;
 		this.cursor_ = Cursor.AutoCursor;
 		this.cursorImage_ = "";
-		this.border_ = new WBorder();
 		this.backgroundColor_ = new WColor();
 		this.foregroundColor_ = new WColor();
 		this.backgroundImage_ = "";
@@ -104,7 +103,6 @@ public class WCssDecorationStyle extends WObject {
 		this.font_ = new WFont();
 		this.textDecoration_ = EnumSet
 				.noneOf(WCssDecorationStyle.TextDecoration.class);
-		this.borderPosition_ = EnumSet.noneOf(Side.class);
 		this.cursorChanged_ = false;
 		this.borderChanged_ = false;
 		this.foregroundColorChanged_ = false;
@@ -112,6 +110,9 @@ public class WCssDecorationStyle extends WObject {
 		this.backgroundImageChanged_ = false;
 		this.fontChanged_ = false;
 		this.textDecorationChanged_ = false;
+		for (int i = 0; i < 4; ++i) {
+			this.border_[i] = null;
+		}
 	}
 
 	/**
@@ -127,6 +128,9 @@ public class WCssDecorationStyle extends WObject {
 
 	/**
 	 * Returns the cursor style.
+	 * <p>
+	 * 
+	 * @see WCssDecorationStyle#setCursor(Cursor c)
 	 */
 	public Cursor getCursor() {
 		return this.cursor_;
@@ -161,6 +165,8 @@ public class WCssDecorationStyle extends WObject {
 
 	/**
 	 * Returns the cursor image.
+	 * <p>
+	 * ()
 	 */
 	public String getCursorImage() {
 		return this.cursorImage_;
@@ -180,20 +186,19 @@ public class WCssDecorationStyle extends WObject {
 
 	/**
 	 * Returns the background color.
+	 * <p>
+	 * 
+	 * @see WCssDecorationStyle#setBackgroundColor(WColor color)
 	 */
 	public WColor getBackgroundColor() {
 		return this.backgroundColor_;
 	}
 
 	/**
-	 * Sets a background image URL.
+	 * Sets a background image.
 	 * <p>
 	 * The image may be placed in a particular location by specifying sides by
 	 * OR&apos;ing {@link Side} values together, e.g. (Right | Top).
-	 * <p>
-	 * 
-	 * @see WCssDecorationStyle#setBackgroundImage(String image,
-	 *      WCssDecorationStyle.Repeat repeat, EnumSet sides)
 	 */
 	public void setBackgroundImage(String image,
 			WCssDecorationStyle.Repeat repeat, EnumSet<Side> sides) {
@@ -211,7 +216,7 @@ public class WCssDecorationStyle extends WObject {
 	}
 
 	/**
-	 * Sets a background image URL.
+	 * Sets a background image.
 	 * <p>
 	 * Calls
 	 * {@link #setBackgroundImage(String image, WCssDecorationStyle.Repeat repeat, EnumSet sides)
@@ -223,7 +228,7 @@ public class WCssDecorationStyle extends WObject {
 	}
 
 	/**
-	 * Sets a background image URL.
+	 * Sets a background image.
 	 * <p>
 	 * Calls
 	 * {@link #setBackgroundImage(String image, WCssDecorationStyle.Repeat repeat, EnumSet sides)
@@ -236,7 +241,7 @@ public class WCssDecorationStyle extends WObject {
 	}
 
 	/**
-	 * Sets a background image URL.
+	 * Sets a background image.
 	 * <p>
 	 * Calls
 	 * {@link #setBackgroundImage(String image, WCssDecorationStyle.Repeat repeat, EnumSet sides)
@@ -248,14 +253,10 @@ public class WCssDecorationStyle extends WObject {
 	}
 
 	/**
-	 * Sets a background image URL.
+	 * Sets a background image (from a resource).
 	 * <p>
 	 * The image may be placed in a particular location by specifying sides by
 	 * OR&apos;ing {@link Side} values together, e.g. (Right | Top).
-	 * <p>
-	 * 
-	 * @see WCssDecorationStyle#setBackgroundImage(String image,
-	 *      WCssDecorationStyle.Repeat repeat, EnumSet sides)
 	 */
 	public void setBackgroundImage(WResource resource,
 			WCssDecorationStyle.Repeat repeat, EnumSet<Side> sides) {
@@ -269,7 +270,7 @@ public class WCssDecorationStyle extends WObject {
 	}
 
 	/**
-	 * Sets a background image URL.
+	 * Sets a background image (from a resource).
 	 * <p>
 	 * Calls
 	 * {@link #setBackgroundImage(WResource resource, WCssDecorationStyle.Repeat repeat, EnumSet sides)
@@ -281,7 +282,7 @@ public class WCssDecorationStyle extends WObject {
 	}
 
 	/**
-	 * Sets a background image URL.
+	 * Sets a background image (from a resource).
 	 * <p>
 	 * Calls
 	 * {@link #setBackgroundImage(WResource resource, WCssDecorationStyle.Repeat repeat, EnumSet sides)
@@ -294,7 +295,7 @@ public class WCssDecorationStyle extends WObject {
 	}
 
 	/**
-	 * Sets a background image URL.
+	 * Sets a background image (from a resource).
 	 * <p>
 	 * Calls
 	 * {@link #setBackgroundImage(WResource resource, WCssDecorationStyle.Repeat repeat, EnumSet sides)
@@ -307,6 +308,10 @@ public class WCssDecorationStyle extends WObject {
 
 	/**
 	 * Returns the background image URL.
+	 * <p>
+	 * 
+	 * @see WCssDecorationStyle#setBackgroundImage(String image,
+	 *      WCssDecorationStyle.Repeat repeat, EnumSet sides)
 	 */
 	public String getBackgroundImage() {
 		return this.backgroundImage_;
@@ -314,13 +319,17 @@ public class WCssDecorationStyle extends WObject {
 
 	/**
 	 * Returns the background image repeat.
+	 * <p>
+	 * 
+	 * @see WCssDecorationStyle#setBackgroundImage(String image,
+	 *      WCssDecorationStyle.Repeat repeat, EnumSet sides)
 	 */
 	public WCssDecorationStyle.Repeat getBackgroundImageRepeat() {
 		return this.backgroundImageRepeat_;
 	}
 
 	/**
-	 * Sets the foreground color.
+	 * Sets the text color.
 	 */
 	public void setForegroundColor(WColor color) {
 		if (!WWebWidget.canOptimizeUpdates()
@@ -332,7 +341,10 @@ public class WCssDecorationStyle extends WObject {
 	}
 
 	/**
-	 * Returns the foreground color.
+	 * Returns the text color.
+	 * <p>
+	 * 
+	 * @see WCssDecorationStyle#setForegroundColor(WColor color)
 	 */
 	public WColor getForegroundColor() {
 		return this.foregroundColor_;
@@ -341,15 +353,21 @@ public class WCssDecorationStyle extends WObject {
 	/**
 	 * Sets the border style.
 	 * <p>
-	 * A border may be placed in a particular location by specifying sides by
-	 * OR&apos;ing WWidget::Side values together, e.g. (Right | Top).
+	 * The given <code>border</code> will be set for the specified
+	 * <code>sides</code>.
+	 * <p>
+	 * A different border style may be specified for each of the four sides.
 	 */
 	public void setBorder(WBorder border, EnumSet<Side> sides) {
-		if (!WWebWidget.canOptimizeUpdates() || !this.border_.equals(border)
-				|| !this.borderPosition_.equals(sides)) {
-			this.border_ = border;
-			this.borderPosition_ = EnumSet.copyOf(sides);
+		Side[] theSides = { Side.Top, Side.Right, Side.Bottom, Side.Left };
+		for (int i = 0; i < 4; ++i) {
+			if (!EnumUtils.mask(sides, theSides[i]).isEmpty()) {
+				;
+				this.border_[i] = border.clone();
+			}
 			this.borderChanged_ = true;
+		}
+		if (this.borderChanged_) {
 			this.changed();
 		}
 	}
@@ -376,13 +394,44 @@ public class WCssDecorationStyle extends WObject {
 
 	/**
 	 * Returns the border style.
+	 * <p>
+	 * Returns the border style set using
+	 * {@link WCssDecorationStyle#setBorder(WBorder border, EnumSet sides)
+	 * setBorder()} for the given <code>side</code>.
+	 * <p>
+	 * 
+	 * @see WCssDecorationStyle#setBorder(WBorder border, EnumSet sides) <p>
+	 *      <i><b>Note: </b>Prior to version 3.1.9 it was not possible to pass a
+	 *      side and only one border could be configured. </i>
+	 *      </p>
 	 */
-	public WBorder getBorder() {
-		return this.border_;
+	public WBorder getBorder(Side side) {
+		switch (side) {
+		case Top:
+			return this.borderI(0);
+		case Right:
+			return this.borderI(1);
+		case Bottom:
+			return this.borderI(2);
+		case Left:
+			return this.borderI(3);
+		default:
+			break;
+		}
+		return new WBorder();
 	}
 
 	/**
-	 * Sets the font.
+	 * Returns the border style.
+	 * <p>
+	 * Returns {@link #getBorder(Side side) getBorder(Side.Top)}
+	 */
+	public final WBorder getBorder() {
+		return getBorder(Side.Top);
+	}
+
+	/**
+	 * Sets the text font.
 	 */
 	public void setFont(WFont font) {
 		if (!WWebWidget.canOptimizeUpdates() || !this.font_.equals(font)) {
@@ -393,14 +442,17 @@ public class WCssDecorationStyle extends WObject {
 	}
 
 	/**
-	 * Returns a reference to the font.
+	 * Returns the font.
+	 * <p>
+	 * 
+	 * @see WCssDecorationStyle#setFont(WFont font)
 	 */
 	public WFont getFont() {
 		return this.font_;
 	}
 
 	/**
-	 * Sets the text decoration options.
+	 * Sets text decoration options.
 	 * <p>
 	 * You may logically or together any of the options of the TextDecoration
 	 * enumeration.
@@ -418,7 +470,7 @@ public class WCssDecorationStyle extends WObject {
 	}
 
 	/**
-	 * Sets the text decoration options.
+	 * Sets text decoration options.
 	 * <p>
 	 * Calls {@link #setTextDecoration(EnumSet options)
 	 * setTextDecoration(EnumSet.of(option, options))}
@@ -431,6 +483,9 @@ public class WCssDecorationStyle extends WObject {
 
 	/**
 	 * Returns the text decoration options.
+	 * <p>
+	 * 
+	 * @see WCssDecorationStyle#setTextDecoration(EnumSet options)
 	 */
 	public EnumSet<WCssDecorationStyle.TextDecoration> getTextDecoration() {
 		return this.textDecoration_;
@@ -482,29 +537,19 @@ public class WCssDecorationStyle extends WObject {
 		}
 		this.font_.updateDomElement(element, this.fontChanged_, all);
 		this.fontChanged_ = false;
+		Property[] properties = { Property.PropertyStyleBorderTop,
+				Property.PropertyStyleBorderRight,
+				Property.PropertyStyleBorderBottom,
+				Property.PropertyStyleBorderLeft };
 		if (this.borderChanged_ || all) {
-			boolean elementHasDefaultBorder = element.getType() == DomElementType.DomElement_IFRAME
-					|| element.getType() == DomElementType.DomElement_INPUT
-					|| element.getType() == DomElementType.DomElement_SELECT
-					|| element.getType() == DomElementType.DomElement_TEXTAREA;
-			if (this.borderChanged_ || elementHasDefaultBorder
-					|| this.border_.getStyle() != WBorder.Style.None) {
-				if (!EnumUtils.mask(this.borderPosition_, Side.Top).isEmpty()) {
-					element.setProperty(Property.PropertyStyleBorderTop,
-							this.border_.getCssText());
-				}
-				if (!EnumUtils.mask(this.borderPosition_, Side.Left).isEmpty()) {
-					element.setProperty(Property.PropertyStyleBorderLeft,
-							this.border_.getCssText());
-				}
-				if (!EnumUtils.mask(this.borderPosition_, Side.Right).isEmpty()) {
-					element.setProperty(Property.PropertyStyleBorderRight,
-							this.border_.getCssText());
-				}
-				if (!EnumUtils.mask(this.borderPosition_, Side.Bottom)
-						.isEmpty()) {
-					element.setProperty(Property.PropertyStyleBorderBottom,
-							this.border_.getCssText());
+			for (int i = 0; i < 4; ++i) {
+				if (this.border_[i] != null) {
+					element.setProperty(properties[i], this.border_[0]
+							.getCssText());
+				} else {
+					if (this.borderChanged_) {
+						element.setProperty(properties[i], "");
+					}
 				}
 			}
 			this.borderChanged_ = false;
@@ -530,8 +575,10 @@ public class WCssDecorationStyle extends WObject {
 					|| this.backgroundImageChanged_) {
 				element.setProperty(Property.PropertyStyleBackgroundImage,
 						this.backgroundImage_.length() > 0 ? "url("
-								+ WApplication.getInstance().fixRelativeUrl(
-										this.backgroundImage_) + ")" : "none");
+								+ WApplication.getInstance()
+										.resolveRelativeUrl(
+												this.backgroundImage_) + ")"
+								: "none");
 				switch (this.backgroundImageRepeat_) {
 				case RepeatXY:
 					element.setProperty(Property.PropertyStyleBackgroundRepeat,
@@ -609,7 +656,7 @@ public class WCssDecorationStyle extends WObject {
 	private WWebWidget widget_;
 	private Cursor cursor_;
 	private String cursorImage_;
-	private WBorder border_;
+	private WBorder[] border_ = new WBorder[4];
 	private WColor backgroundColor_;
 	private WColor foregroundColor_;
 	private String backgroundImage_;
@@ -618,7 +665,6 @@ public class WCssDecorationStyle extends WObject {
 	private EnumSet<Side> backgroundImageLocation_;
 	private WFont font_;
 	private EnumSet<WCssDecorationStyle.TextDecoration> textDecoration_;
-	private EnumSet<Side> borderPosition_;
 	private boolean cursorChanged_;
 	private boolean borderChanged_;
 	private boolean foregroundColorChanged_;
@@ -640,6 +686,14 @@ public class WCssDecorationStyle extends WObject {
 			this.setBackgroundImage(resource.getUrl(),
 					this.backgroundImageRepeat_, this.backgroundImageLocation_);
 			this.backgroundImageResource_ = resource;
+		}
+	}
+
+	private WBorder borderI(int i) {
+		if (this.border_[i] != null) {
+			return this.border_[i];
+		} else {
+			return new WBorder();
 		}
 	}
 

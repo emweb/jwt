@@ -5,6 +5,7 @@
  */
 package eu.webtoolkit.jwt.examples.composer;
 
+import eu.webtoolkit.jwt.WAnimation;
 import eu.webtoolkit.jwt.WContainerWidget;
 import eu.webtoolkit.jwt.WInteractWidget;
 import eu.webtoolkit.jwt.WString;
@@ -45,8 +46,9 @@ public class Option extends WContainerWidget {
         option_.setText(tr(msg));
     }
 
-    public void setHidden(boolean hidden) {
-        super.setHidden(hidden);
+    @Override
+    public void setHidden(boolean hidden, WAnimation animation) {
+        super.setHidden(hidden, animation);
 
         if (list_ != null)
             list_.optionVisibilityChanged(this, hidden);

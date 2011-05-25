@@ -28,7 +28,7 @@ public abstract class AbstractJSignal extends AbstractEventSignal {
 
 	@Override
 	String encodeCmd() {
-		return getSender().getFormName() + "." + name;
+		return getSender().getUniqueId() + "." + name;
 	}
 
 	protected String createUserEventCall(String jsObject, String jsEvent, String arg1, String arg2, String arg3, String arg4, String arg5, String arg6) {
@@ -57,7 +57,7 @@ public abstract class AbstractJSignal extends AbstractEventSignal {
 			} else
 				System.err.println("Unsupported JSignal type: " + toClass.getName());
 		} catch (NumberFormatException e) {
-			throw new WtException("JSignal: could not interpret argument " + index + " ('" + jse.userEventArgs.get(index) + "') as type " + toClass.getName(),
+			throw new WtException("JSignal: " + this.name + ": could not interpret argument " + index + " ('" + jse.userEventArgs.get(index) + "') as type " + toClass.getName(),
 					e);
 		} catch (IndexOutOfBoundsException e) {
 			throw new WtException("Jsignal: not enough arguments in JavaScript call", e);

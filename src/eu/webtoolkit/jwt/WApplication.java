@@ -176,10 +176,12 @@ public class WApplication extends WObject {
 		this.exposeSignals_ = true;
 		this.afterLoadJavaScript_ = "";
 		this.beforeLoadJavaScript_ = "";
-		this.newBeforeLoadJavaScript_ = "";
+		this.newBeforeLoadJavaScript_ = 0;
 		this.autoJavaScript_ = "";
-		this.javaScriptLoaded_ = new HashSet<String>();
 		this.autoJavaScriptChanged_ = false;
+		this.javaScriptPreamble_ = new ArrayList<WJavaScriptPreamble>();
+		this.newJavaScriptPreamble_ = 0;
+		this.javaScriptLoaded_ = new HashSet<String>();
 		this.showLoadingIndicator_ = new EventSignal("showload", this);
 		this.hideLoadingIndicator_ = new EventSignal("hideload", this);
 		this.unloaded_ = new JSignal(this, "Wt-unload");
@@ -296,6 +298,7 @@ public class WApplication extends WObject {
 						"margin: 3px 3px 0px 4px;");
 			}
 		}
+		this.useStyleSheet(WApplication.getResourcesUrl() + "transitions.css");
 		this.setLoadingIndicator(new WDefaultLoadingIndicator());
 		this.unloaded_.addListener(this, new Signal.Listener() {
 			public void trigger() {
@@ -346,6 +349,27 @@ public class WApplication extends WObject {
 	 */
 	public WContainerWidget getRoot() {
 		return this.widgetRoot_;
+	}
+
+	/**
+	 * Finds a widget by name.
+	 * <p>
+	 * This finds a widget in the application&apos;s widget hierarchy. It does
+	 * not only consider widgets in the {@link WApplication#getRoot() getRoot()}
+	 * , but also widgets that are placed outside this root, such as in dialogs,
+	 * or other &quot;roots&quot; such as all the bound widgets in a widgetset
+	 * application.
+	 * <p>
+	 * 
+	 * @see WObject#setObjectName(String name)
+	 * @see WWidget#find(String name)
+	 */
+	public WWidget findWidget(String name) {
+		WWidget result = this.domRoot_.find(name);
+		if (!(result != null) && this.domRoot2_ != null) {
+			result = this.domRoot2_.find(name);
+		}
+		return result;
 	}
 
 	/**
@@ -570,9 +594,8 @@ public class WApplication extends WObject {
 	 * This sets the language text direction, which by itself sets the default
 	 * text alignment and reverse the column orders of &lt;table&gt; elements.
 	 * <p>
-	 * In addition, JWt will take this setting into account in
-	 * {@link WTableView} and {@link WTreeView} (so that columns are reverted),
-	 * and swap the behaviour of {@link WWidget#setFloatSide(Side s)
+	 * In addition, JWt will take this setting into account in {@link WTextEdit}, {@link WTableView} and {@link WTreeView} (so that columns are
+	 * reverted), and swap the behaviour of {@link WWidget#setFloatSide(Side s)
 	 * WWidget#setFloatSide()} and
 	 * {@link WWidget#setOffsets(WLength offset, EnumSet sides)
 	 * WWidget#setOffsets()} for RightToLeft languages. Note that CSS settings
@@ -849,7 +872,7 @@ public class WApplication extends WObject {
 	 * @see WApplication#getBookmarkUrl()
 	 */
 	public String getUrl() {
-		return this.fixRelativeUrl(this.session_.getApplicationUrl());
+		return this.resolveRelativeUrl(this.session_.getApplicationName());
 	}
 
 	/**
@@ -863,16 +886,36 @@ public class WApplication extends WObject {
 	 * up to the last &apos;/&apos;.
 	 */
 	public String makeAbsoluteUrl(String url) {
-		if (url.indexOf("://") != -1) {
-			return url;
-		} else {
-			if (url.length() != 0 && url.charAt(0) == '/') {
-				return this.getEnvironment().getUrlScheme() + "://"
-						+ this.getEnvironment().getHostName() + url;
-			} else {
-				return this.session_.getAbsoluteBaseUrl() + url;
-			}
-		}
+		return this.session_.makeAbsoluteUrl(url);
+	}
+
+	/**
+	 * &quot;Resolves&quot; a relative URL taking into account internal paths.
+	 * <p>
+	 * Using HTML5 History API or in a plain HTML session (without ugly internal
+	 * paths), the internal path is present as a full part of the URL. This has
+	 * a consequence that relative URLs, if not dealt with, would be resolved
+	 * against the last &apos;folder&apos; name of the internal path, rather
+	 * than against the application deployment path (which is what you probably
+	 * want).
+	 * <p>
+	 * When using a widgetset mode deployment, or when configuring a baseURL
+	 * property in the configuration, this method will make an absolute URL so
+	 * that the property is fetched from the right server.
+	 * <p>
+	 * Otherwise, this method will fixup a relative URL so that it resolves
+	 * correctly against the base path of an application. This does not
+	 * necessarily mean that the URL is resolved into an absolute URL. In fact,
+	 * {@link } will simply prepend a sequence of &quot;../&quot; path elements
+	 * to correct for the internal path. When passed an absolute URL (i.e.
+	 * starting with &apos;/&apos;), the url is returned unchanged.
+	 * <p>
+	 * For URLs passed to the {@link } API (and of which the library knows it is
+	 * represents a URL) this method is called internally by the library. But it
+	 * may be useful for URLs which are set e.g. inside a {@link WTemplate}.
+	 */
+	public String resolveRelativeUrl(String url) {
+		return this.session_.fixRelativeUrl(url);
 	}
 
 	/**
@@ -1280,10 +1323,6 @@ public class WApplication extends WObject {
 	 * @see WApplication#enableUpdates(boolean enabled)
 	 */
 	public void triggerUpdate() {
-		if (!WtServlet.isAsyncSupported()) {
-			throw new WtException(
-					"Server push requires a Servlet 3.0 enabled servlet container and an application with async-supported enabled.");
-		}
 		if (WebSession.Handler.getInstance().getRequest() != null) {
 			return;
 		}
@@ -1310,7 +1349,7 @@ public class WApplication extends WObject {
 		 */
 		public void release() {
 			System.err.append("Releasing update lock").append('\n');
-			if (WebSession.Handler.getInstance().getRequest() != null) {
+			if (this.createdHandler_) {
 				System.err.append("Releasing handler").append('\n');
 				WebSession.Handler.getInstance().release();
 			}
@@ -1319,6 +1358,7 @@ public class WApplication extends WObject {
 		private UpdateLock(WApplication app) {
 			System.err.append("Grabbing update lock").append('\n');
 			WebSession.Handler handler = WebSession.Handler.getInstance();
+			this.createdHandler_ = false;
 			if (handler != null && handler.isHaveLock()
 					&& handler.getSession() == app.session_) {
 				return;
@@ -1326,7 +1366,10 @@ public class WApplication extends WObject {
 			System.err.append("Creating new handler for app: app.sessionId()")
 					.append('\n');
 			new WebSession.Handler(app.session_, true);
+			this.createdHandler_ = true;
 		}
+
+		private boolean createdHandler_;
 	}
 
 	/**
@@ -1405,8 +1448,7 @@ public class WApplication extends WObject {
 		} else {
 			this.beforeLoadJavaScript_ += javascript;
 			this.beforeLoadJavaScript_ += '\n';
-			this.newBeforeLoadJavaScript_ += javascript;
-			this.newBeforeLoadJavaScript_ += '\n';
+			this.newBeforeLoadJavaScript_ += javascript.length() + 1;
 		}
 	}
 
@@ -1470,8 +1512,13 @@ public class WApplication extends WObject {
 		WApplication.ScriptLibrary sl = new WApplication.ScriptLibrary(uri,
 				symbol);
 		if (this.scriptLibraries_.indexOf(sl) == -1) {
-			sl.beforeLoadJS = this.newBeforeLoadJavaScript_;
-			this.newBeforeLoadJavaScript_ = "";
+			try {
+				StringWriter ss = new StringWriter();
+				this.streamBeforeLoadJavaScript(ss, false);
+				sl.beforeLoadJS = ss.toString();
+			} catch (IOException e) {
+				return false;
+			}
 			this.scriptLibraries_.add(sl);
 			++this.scriptLibrariesAdded_;
 			return true;
@@ -1597,30 +1644,6 @@ public class WApplication extends WObject {
 			return i;
 		} else {
 			return null;
-		}
-	}
-
-	String fixRelativeUrl(String url) {
-		if (url.indexOf("://") != -1) {
-			return url;
-		}
-		if (url.length() > 0 && url.charAt(0) == '#') {
-			return url;
-		}
-		if (this.session_.getType() == EntryPointType.Application) {
-			if (!this.getEnvironment().hasJavaScript()
-					&& WebSession.Handler.getInstance().getRequest()
-							.getPathInfo().length() != 0) {
-				if (url.length() != 0 && url.charAt(0) == '/') {
-					return url;
-				} else {
-					return this.session_.getBaseUrl() + url;
-				}
-			} else {
-				return url;
-			}
-		} else {
-			return this.makeAbsoluteUrl(url);
 		}
 	}
 
@@ -1826,9 +1849,9 @@ public class WApplication extends WObject {
 		if (this.loadingIndicator_ != null) {
 			this.loadingIndicatorWidget_ = indicator.getWidget();
 			this.domRoot_.addWidget(this.loadingIndicatorWidget_);
-			this.showLoadJS.setJavaScript("function(o,e) {Wt3_1_9.inline('"
+			this.showLoadJS.setJavaScript("function(o,e) {Wt3_1_10.inline('"
 					+ this.loadingIndicatorWidget_.getId() + "');}");
-			this.hideLoadJS.setJavaScript("function(o,e) {Wt3_1_9.hide('"
+			this.hideLoadJS.setJavaScript("function(o,e) {Wt3_1_10.hide('"
 					+ this.loadingIndicatorWidget_.getId() + "');}");
 			this.loadingIndicatorWidget_.hide();
 		}
@@ -2006,12 +2029,17 @@ public class WApplication extends WObject {
 		this.selectionEnd_ = selectionEnd;
 	}
 
-	boolean isJavaScriptLoaded(String jsFile) {
-		return this.javaScriptLoaded_.contains(jsFile) != false;
+	public void loadJavaScript(String jsFile, WJavaScriptPreamble preamble) {
+		if (!this.isJavaScriptLoaded(preamble.name)) {
+			this.javaScriptLoaded_.add(jsFile);
+			this.javaScriptLoaded_.add(preamble.name);
+			this.javaScriptPreamble_.add(preamble);
+			++this.newJavaScriptPreamble_;
+		}
 	}
 
-	void setJavaScriptLoaded(String jsFile) {
-		this.javaScriptLoaded_.add(jsFile);
+	boolean isJavaScriptLoaded(String jsFile) {
+		return this.javaScriptLoaded_.contains(jsFile) != false;
 	}
 
 	/**
@@ -2140,12 +2168,13 @@ public class WApplication extends WObject {
 	 */
 	protected void enableAjax() {
 		this.enableAjax_ = true;
-		this.session_.getRenderer().beforeLoadJS_
-				.append(this.newBeforeLoadJavaScript_);
-		this.newBeforeLoadJavaScript_ = "";
-		this.session_.getRenderer().beforeLoadJS_
-				.append(this.afterLoadJavaScript_);
-		this.afterLoadJavaScript_ = "";
+		try {
+			this.streamBeforeLoadJavaScript(
+					this.session_.getRenderer().beforeLoadJS_, false);
+			this
+					.streamAfterLoadJavaScript(this.session_.getRenderer().beforeLoadJS_);
+		} catch (IOException e) {
+		}
 		this.domRoot_.enableAjax();
 		if (this.domRoot2_ != null) {
 			this.domRoot2_.enableAjax();
@@ -2262,10 +2291,12 @@ public class WApplication extends WObject {
 	private boolean exposeSignals_;
 	String afterLoadJavaScript_;
 	String beforeLoadJavaScript_;
-	String newBeforeLoadJavaScript_;
+	int newBeforeLoadJavaScript_;
 	String autoJavaScript_;
-	private Set<String> javaScriptLoaded_;
 	boolean autoJavaScriptChanged_;
+	private List<WJavaScriptPreamble> javaScriptPreamble_;
+	private int newJavaScriptPreamble_;
+	private Set<String> javaScriptLoaded_;
 	EventSignal showLoadingIndicator_;
 	EventSignal hideLoadingIndicator_;
 	private JSignal unloaded_;
@@ -2414,21 +2445,47 @@ public class WApplication extends WObject {
 		}
 	}
 
-	String getAfterLoadJavaScript() {
-		String result = this.afterLoadJavaScript_;
+	void streamAfterLoadJavaScript(Writer out) throws IOException {
+		out.append(this.afterLoadJavaScript_);
 		this.afterLoadJavaScript_ = "";
-		return result;
 	}
 
-	String getBeforeLoadJavaScript() {
-		this.newBeforeLoadJavaScript_ = "";
-		return this.beforeLoadJavaScript_;
+	void streamBeforeLoadJavaScript(Writer out, boolean all) throws IOException {
+		this.streamJavaScriptPreamble(out, all);
+		if (!all) {
+			if (this.newBeforeLoadJavaScript_ != 0) {
+				out.append(this.beforeLoadJavaScript_
+						.substring(this.beforeLoadJavaScript_.length()
+								- this.newBeforeLoadJavaScript_));
+			}
+		} else {
+			out.append(this.beforeLoadJavaScript_);
+		}
+		this.newBeforeLoadJavaScript_ = 0;
 	}
 
-	String getNewBeforeLoadJavaScript() {
-		String result = this.newBeforeLoadJavaScript_;
-		this.newBeforeLoadJavaScript_ = "";
-		return result;
+	private void streamJavaScriptPreamble(Writer out, boolean all)
+			throws IOException {
+		if (all) {
+			this.newJavaScriptPreamble_ = this.javaScriptPreamble_.size();
+		}
+		for (int i = this.javaScriptPreamble_.size()
+				- this.newJavaScriptPreamble_; i < this.javaScriptPreamble_
+				.size(); ++i) {
+			WJavaScriptPreamble preamble = this.javaScriptPreamble_.get(i);
+			String scope = preamble.scope == JavaScriptScope.ApplicationScope ? this
+					.getJavaScriptClass()
+					: "Wt3_1_10";
+			if (preamble.type == JavaScriptObjectType.JavaScriptFunction) {
+				out.append(scope).append('.').append(preamble.name).append(
+						" = function() { (").append(preamble.src).append(
+						").apply(").append(scope).append(", arguments) };");
+			} else {
+				out.append(scope).append('.').append(preamble.name).append(
+						" = ").append(preamble.src).append('\n');
+			}
+		}
+		this.newJavaScriptPreamble_ = 0;
 	}
 
 	void setExposeSignals(boolean how) {

@@ -132,7 +132,11 @@ public class WebRequest extends HttpServletRequestWrapper {
 	 * @return the header value, or an empty string if the header is not present.
 	 */
 	public String getHeaderValue(String header) {
+		if (header.equals("Client-IP"))
+			return getRemoteAddr();
+
 		String result = getHeader(header);
+
 		return result == null ? "" : result;
 	}
 

@@ -411,8 +411,8 @@ public abstract class WWidget extends WObject {
 		String side = orientation == Orientation.Horizontal ? ".Horizontal"
 				: ".Vertical";
 		WApplication.getInstance().doJavaScript(
-				"Wt3_1_9.positionAtWidget('" + this.getId() + "','"
-						+ widget.getId() + "',Wt3_1_9" + side + ");");
+				"Wt3_1_10.positionAtWidget('" + this.getId() + "','"
+						+ widget.getId() + "',Wt3_1_10" + side + ");");
 	}
 
 	/**
@@ -583,7 +583,7 @@ public abstract class WWidget extends WObject {
 	 * rendering.</i>
 	 * </p>
 	 * 
-	 * @see WWidget#setHidden(boolean hidden)
+	 * @see WWidget#setHidden(boolean hidden, WAnimation animation)
 	 */
 	public abstract void setHiddenKeepsGeometry(boolean enabled);
 
@@ -596,19 +596,25 @@ public abstract class WWidget extends WObject {
 	public abstract boolean isHiddenKeepsGeometry();
 
 	/**
-	 * Sets whether the widget is hidden.
+	 * Hides or shows the widget.
 	 * <p>
 	 * Hides or show the widget (including all its descendant widgets). When
 	 * setting <code>hidden</code> = <code>false</code>, this widget and all
 	 * descendant widgets that are not hidden will be shown. A widget is only
 	 * visible if it and all its ancestors in the widget tree are visible, which
 	 * may be checked using {@link WWidget#isVisible() isVisible()}.
-	 * <p>
-	 * 
-	 * @see WWidget#hide()
-	 * @see WWidget#show()
 	 */
-	public abstract void setHidden(boolean hidden);
+	public abstract void setHidden(boolean hidden, WAnimation animation);
+
+	/**
+	 * Hides or shows the widget.
+	 * <p>
+	 * Calls {@link #setHidden(boolean hidden, WAnimation animation)
+	 * setHidden(hidden, new WAnimation())}
+	 */
+	public final void setHidden(boolean hidden) {
+		setHidden(hidden, new WAnimation());
+	}
 
 	/**
 	 * Returns whether the widget is set hidden.
@@ -618,7 +624,7 @@ public abstract class WWidget extends WObject {
 	 * to check the visibility of a widget.
 	 * <p>
 	 * 
-	 * @see WWidget#setHidden(boolean hidden)
+	 * @see WWidget#setHidden(boolean hidden, WAnimation animation)
 	 * @see WWidget#isVisible()
 	 */
 	public abstract boolean isHidden();
@@ -1182,7 +1188,8 @@ public abstract class WWidget extends WObject {
 	/**
 	 * Hides the widget.
 	 * <p>
-	 * This calls {@link WWidget#setHidden(boolean hidden) setHidden(true)}.
+	 * 
+	 * @see WWidget#setHidden(boolean hidden, WAnimation animation)
 	 */
 	public void hide() {
 		this.flags_.set(BIT_WAS_HIDDEN, this.isHidden());
@@ -1190,13 +1197,39 @@ public abstract class WWidget extends WObject {
 	}
 
 	/**
-	 * Shows the widget.
+	 * Hides the widget using an animation.
 	 * <p>
-	 * This calls {@link WWidget#setHidden(boolean hidden) setHidden(false)}.
+	 * To hide the widget, the animation is replayed in reverse. A
+	 * <code>duration</code> can be specified in milliseconds.
+	 * <p>
+	 * 
+	 * @see WWidget#setHidden(boolean hidden, WAnimation animation)
+	 */
+	public void animateHide(WAnimation animation) {
+		this.setHidden(true, animation);
+	}
+
+	/**
+	 * Hides the widget.
+	 * <p>
+	 * 
+	 * @see WWidget#setHidden(boolean hidden, WAnimation animation)
 	 */
 	public void show() {
 		this.flags_.set(BIT_WAS_HIDDEN, this.isHidden());
 		this.setHidden(false);
+	}
+
+	/**
+	 * Shows the widget using an animation.
+	 * <p>
+	 * A <code>duration</code> can be specified in milliseconds.
+	 * <p>
+	 * 
+	 * @see WWidget#setHidden(boolean hidden, WAnimation animation)
+	 */
+	public void animateShow(WAnimation animation) {
+		this.setHidden(false, animation);
 	}
 
 	/**

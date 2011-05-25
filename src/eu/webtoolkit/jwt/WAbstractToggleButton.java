@@ -317,7 +317,7 @@ public abstract class WAbstractToggleButton extends WFormWidget {
 		if (all) {
 			WLabel l = this.getLabel();
 			if (l != null && l.getParent() == this) {
-				element.addChild(((WWebWidget) l).createDomElement(app));
+				element.addChild(l.createSDomElement(app));
 			}
 		}
 	}

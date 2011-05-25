@@ -135,6 +135,8 @@ public abstract class WtServlet extends HttpServlet {
 
 	void handleRequest(final HttpServletRequest request, final HttpServletResponse response) {
 		String pathInfo = request.getPathInfo();
+
+		// System.err.println(request.getMethod() + " " + request.getParameter("wtd") + " " + request.getParameter("request") + " " + request.getParameter("signal"));
 		
 		String resourcePath = configuration.getProperty(WApplication.RESOURCES_URL);
 		if (pathInfo != null && pathInfo.startsWith(resourcePath)) {
@@ -162,6 +164,8 @@ public abstract class WtServlet extends HttpServlet {
 		}
 
 		servletApi.doHandleRequest(this, request, response);
+		
+		// System.err.println(request.getMethod() + " " + request.getParameter("request") + ": done");
 	}
 
 
@@ -253,8 +257,12 @@ public abstract class WtServlet extends HttpServlet {
 			handler.release();
 			if (handler.getSession().isDead()) {
 				System.err.println("Session exiting:" + jsession.getId());
-				jsession.setAttribute(WtServlet.WT_WEBSESSION_ID, null);
-				jsession.invalidate();
+				try {
+					jsession.setAttribute(WtServlet.WT_WEBSESSION_ID, null);
+					jsession.invalidate();
+				} catch (IllegalStateException e) {
+					// If session was invalidated by another request...
+				}
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
