@@ -48,7 +48,7 @@ class GraphicsWidgets extends ControlsWidget {
 		WTable layout = new WTable(result);
 		final PaintBrush canvas = new PaintBrush(710, 400, layout.getElementAt(
 				0, 0));
-		canvas.getDecorationStyle().setBorder(WBorder.Style.Solid.clone());
+		canvas.getDecorationStyle().setBorder(new WBorder(WBorder.Style.Solid));
 		new WText("Color chooser:", layout.getElementAt(0, 1));
 		WTable colorTable = new WTable(layout.getElementAt(0, 1));
 		addColor(canvas, colorTable.getElementAt(0, 0), WColor.black);
