@@ -2419,12 +2419,10 @@ public class WApplication extends WObject {
 	private void enableInternalPaths() {
 		if (!this.internalPathsEnabled_) {
 			this.internalPathsEnabled_ = true;
-			this.doJavaScript(
-					this.getJavaScriptClass()
-							+ "._p_.enableInternalPaths("
-							+ WWebWidget
-									.jsStringLiteral(this.getInternalPath())
-							+ ");", false);
+			this.doJavaScript(this.getJavaScriptClass()
+					+ "._p_.enableInternalPaths("
+					+ WWebWidget.jsStringLiteral(this.session_
+							.getPagePathInfo()) + ");", false);
 			if (this.session_.isUseUglyInternalPaths()) {
 				this
 						.log("warn")

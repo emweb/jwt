@@ -507,6 +507,10 @@ class WebSession {
 		return false;
 	}
 
+	public String getPagePathInfo() {
+		return this.pagePathInfo_;
+	}
+
 	public String getMostRelativeUrl(String internalPath) {
 		return this.appendSessionQuery(this.getBookmarkUrl(internalPath));
 	}
@@ -666,13 +670,18 @@ class WebSession {
 			if (url.length() == 0 || url.charAt(0) == '/') {
 				return url;
 			} else {
-				String rel = "";
-				for (int i = 0; i < this.pagePathInfo_.length(); ++i) {
-					if (this.pagePathInfo_.charAt(i) == '/') {
-						rel += "../";
+				if (this.env_.isHashInternalPaths()) {
+					return url;
+				} else {
+					String rel = "";
+					String pi = this.pagePathInfo_;
+					for (int i = 0; i < pi.length(); ++i) {
+						if (pi.charAt(i) == '/') {
+							rel += "../";
+						}
 					}
+					return rel + url;
 				}
-				return rel + url;
 			}
 		} else {
 			return this.makeAbsoluteUrl(url);
@@ -1159,9 +1168,14 @@ class WebSession {
 									String hashE = request.getParameter("_");
 									String scaleE = request
 											.getParameter("scale");
+									String htmlHistoryE = request
+											.getParameter("htmlHistory");
 									this.env_.doesAjax_ = true;
 									this.env_.doesCookies_ = request
 											.getHeaderValue("Cookie").length() != 0;
+									if (!(htmlHistoryE != null)) {
+										this.env_.hashInternalPaths_ = true;
+									}
 									try {
 										this.env_.dpiScale_ = scaleE != null ? Double
 												.parseDouble(scaleE)
@@ -1320,7 +1334,7 @@ class WebSession {
 	private String applicationUrl_;
 	private String deploymentPath_;
 	private String redirect_;
-	private String pagePathInfo_;
+	String pagePathInfo_;
 	private WebResponse asyncResponse_;
 	private WebResponse bootStyleResponse_;
 	private boolean canWriteAsyncResponse_;
@@ -1659,6 +1673,7 @@ class WebSession {
 			path = hashE;
 		}
 		this.env_.setInternalPath(path);
+		this.pagePathInfo_ = request.getPathInfo();
 	}
 
 	private boolean start() {

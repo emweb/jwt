@@ -390,8 +390,6 @@ class WebRenderer implements SlotLearnerInterface {
 				keepAlive = conf.getSessionTimeout() / 2;
 			}
 			script.setVar("KEEP_ALIVE", String.valueOf(keepAlive));
-			script.setVar("INITIAL_HASH", WWebWidget.jsStringLiteral(app
-					.getInternalPath()));
 			script.setVar("INDICATOR_TIMEOUT", conf.getIndicatorTimeout());
 			script.setVar("SERVER_PUSH_TIMEOUT",
 					conf.getServerPushTimeout() * 1000);
@@ -469,7 +467,12 @@ class WebRenderer implements SlotLearnerInterface {
 				response.out().append(this.collectedJS1_.toString()).append(
 						app.getJavaScriptClass()).append("._p_.response(")
 						.append(String.valueOf(this.expectedAckId_)).append(
-								");");
+								");").append(app.getJavaScriptClass()).append(
+								"._p_.setHash('").append(app.newInternalPath_)
+						.append("');\n");
+				if (!app.getEnvironment().isHashInternalPaths()) {
+					this.session_.pagePathInfo_ = app.newInternalPath_;
+				}
 				response.out().append(app.getJavaScriptClass()).append(
 						"._p_.update(null, 'load', null, false);").append(
 						this.collectedJS2_.toString()).append("};").append(
@@ -1052,11 +1055,14 @@ class WebRenderer implements SlotLearnerInterface {
 		app.closeMessageChanged_ = false;
 		if (js != null) {
 			int librariesLoaded = this.loadScriptLibraries(js, app);
+			app.streamAfterLoadJavaScript(js);
 			if (app.internalPathIsChanged_) {
 				js.append(app.getJavaScriptClass()).append("._p_.setHash('")
 						.append(app.newInternalPath_).append("');\n");
+				if (!app.getEnvironment().isHashInternalPaths()) {
+					this.session_.pagePathInfo_ = app.newInternalPath_;
+				}
 			}
-			app.streamAfterLoadJavaScript(js);
 			this.loadScriptLibraries(js, app, librariesLoaded);
 		} else {
 			app.afterLoadJavaScript_ = "";

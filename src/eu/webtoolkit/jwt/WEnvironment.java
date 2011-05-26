@@ -782,9 +782,14 @@ public class WEnvironment {
 						.getValue();
 	}
 
+	public boolean isHashInternalPaths() {
+		return this.hashInternalPaths_;
+	}
+
 	WebSession session_;
 	boolean doesAjax_;
 	boolean doesCookies_;
+	protected boolean hashInternalPaths_;
 	WEnvironment.UserAgent agent_;
 	double dpiScale_;
 	WEnvironment.ContentType contentType_;
@@ -982,6 +987,7 @@ public class WEnvironment {
 		this.session_ = session;
 		this.doesAjax_ = false;
 		this.doesCookies_ = false;
+		this.hashInternalPaths_ = false;
 		this.dpiScale_ = 1;
 		this.contentType_ = WEnvironment.ContentType.HTML4;
 		this.parameters_ = new HashMap<String, String[]>();
