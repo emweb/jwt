@@ -308,7 +308,8 @@ public abstract class WWebWidget extends WWidget {
 		this.flags_.set(BIT_HIDDEN, hidden);
 		this.flags_.set(BIT_HIDDEN_CHANGED);
 		if (!animation.isEmpty()
-				&& WApplication.getInstance().getEnvironment().agentIsWebKit()) {
+				&& WApplication.getInstance().getEnvironment()
+						.isSupportsCss3Animations()) {
 			if (!(this.transientImpl_ != null)) {
 				this.transientImpl_ = new WWebWidget.TransientImpl();
 			}
@@ -501,8 +502,8 @@ public abstract class WWebWidget extends WWidget {
 				: WLength.Auto;
 	}
 
-	public void setToolTip(CharSequence message) {
-		if (canOptimizeUpdates() && this.getToolTip().equals(message)) {
+	public void setToolTip(CharSequence text, TextFormat textFormat) {
+		if (canOptimizeUpdates() && this.getToolTip().equals(text)) {
 			return;
 		}
 		if (!(this.lookImpl_ != null)) {
@@ -511,7 +512,8 @@ public abstract class WWebWidget extends WWidget {
 		if (!(this.lookImpl_.toolTip_ != null)) {
 			this.lookImpl_.toolTip_ = new WString();
 		}
-		this.lookImpl_.toolTip_ = WString.toWString(message);
+		this.lookImpl_.toolTip_ = WString.toWString(text);
+		this.lookImpl_.toolTipTextFormat_ = textFormat;
 		this.flags_.set(BIT_TOOLTIP_CHANGED);
 		this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyAttribute));
 	}
@@ -970,6 +972,7 @@ public abstract class WWebWidget extends WWidget {
 	}
 
 	void updateDom(DomElement element, boolean all) {
+		WApplication app = null;
 		if (this.flags_.get(BIT_GEOMETRY_CHANGED)
 				|| !this.flags_.get(BIT_HIDE_WITH_VISIBILITY)
 				&& this.flags_.get(BIT_HIDDEN_CHANGED) || all) {
@@ -986,7 +989,9 @@ public abstract class WWebWidget extends WWidget {
 									"inline");
 						} else {
 							if (element.getType() != DomElementType.DomElement_TD) {
-								WApplication app = WApplication.getInstance();
+								if (!(app != null)) {
+									app = WApplication.getInstance();
+								}
 								if (app.getEnvironment().agentIsIElt(9)) {
 									element.setProperty(
 											Property.PropertyStyleDisplay,
@@ -1045,7 +1050,9 @@ public abstract class WWebWidget extends WWidget {
 				if (this.layoutImpl_.zIndex_ > 0) {
 					element.setProperty(Property.PropertyStyleZIndex, String
 							.valueOf(this.layoutImpl_.zIndex_));
-					WApplication app = WApplication.getInstance();
+					if (!(app != null)) {
+						app = WApplication.getInstance();
+					}
 					if (all
 							&& app.getEnvironment().getAgent() == WEnvironment.UserAgent.IE6
 							&& element.getType() == DomElementType.DomElement_DIV) {
@@ -1103,7 +1110,9 @@ public abstract class WWebWidget extends WWidget {
 				if (this.layoutImpl_.positionScheme_ != PositionScheme.Static) {
 					for (int i = 0; i < 4; ++i) {
 						Property property = properties[i];
-						WApplication app = WApplication.getInstance();
+						if (!(app != null)) {
+							app = WApplication.getInstance();
+						}
 						if (app.getLayoutDirection() == LayoutDirection.RightToLeft) {
 							if (i == 1) {
 								property = properties[3];
@@ -1113,8 +1122,11 @@ public abstract class WWebWidget extends WWidget {
 								}
 							}
 						}
-						element.setProperty(property,
-								this.layoutImpl_.offsets_[i].getCssText());
+						if (!app.getEnvironment().agentIsIE()
+								|| !this.layoutImpl_.offsets_[i].isAuto()) {
+							element.setProperty(property,
+									this.layoutImpl_.offsets_[i].getCssText());
+						}
 					}
 				}
 				switch (this.layoutImpl_.verticalAlignment_) {
@@ -1187,8 +1199,10 @@ public abstract class WWebWidget extends WWidget {
 										"none");
 					}
 				} else {
-					boolean ltr = WApplication.getInstance()
-							.getLayoutDirection() == LayoutDirection.LeftToRight;
+					if (!(app != null)) {
+						app = WApplication.getInstance();
+					}
+					boolean ltr = app.getLayoutDirection() == LayoutDirection.LeftToRight;
 					switch (this.layoutImpl_.floatSide_) {
 					case Left:
 						element.setProperty(Property.PropertyStyleFloat,
@@ -1230,8 +1244,21 @@ public abstract class WWebWidget extends WWidget {
 			if (this.lookImpl_.toolTip_ != null
 					&& (this.flags_.get(BIT_TOOLTIP_CHANGED) || all)) {
 				if (!all || !(this.lookImpl_.toolTip_.length() == 0)) {
-					element.setAttribute("title", this.lookImpl_.toolTip_
-							.toString());
+					if (!(app != null)) {
+						app = WApplication.getInstance();
+					}
+					if (this.lookImpl_.toolTipTextFormat_ != TextFormat.PlainText
+							&& app.getEnvironment().hasAjax()) {
+						app.loadJavaScript("js/ToolTip.js", wtjs10());
+						element.callJavaScript("Wt3_1_10.toolTip(Wt3_1_10,"
+								+ jsStringLiteral(this.getId())
+								+ ","
+								+ WString.toWString(this.lookImpl_.toolTip_)
+										.getJsStringLiteral() + ");");
+					} else {
+						element.setAttribute("title", this.lookImpl_.toolTip_
+								.toString());
+					}
 				}
 				this.flags_.clear(BIT_TOOLTIP_CHANGED);
 			}
@@ -1442,7 +1469,9 @@ public abstract class WWebWidget extends WWidget {
 			if (this.transientImpl_ != null
 					&& !this.transientImpl_.animation_.isEmpty()) {
 				String THIS_JS = "js/WWebWidget.js";
-				WApplication app = WApplication.getInstance();
+				if (!(app != null)) {
+					app = WApplication.getInstance();
+				}
 				app.loadJavaScript(THIS_JS, wtjs1());
 				app.loadJavaScript(THIS_JS, wtjs2());
 				if (!this.flags_.get(BIT_HIDE_WITH_VISIBILITY)) {
@@ -1787,6 +1816,7 @@ public abstract class WWebWidget extends WWidget {
 		public WCssDecorationStyle decorationStyle_;
 		public String styleClass_;
 		public WString toolTip_;
+		public TextFormat toolTipTextFormat_;
 
 		public LookImpl() {
 			this.decorationStyle_ = null;
@@ -2157,13 +2187,21 @@ public abstract class WWebWidget extends WWidget {
 				JavaScriptScope.WtClassScope,
 				JavaScriptObjectType.JavaScriptFunction,
 				"animateDisplay",
-				"function(k,l,q,n,m){var x=[\"ease\",\"linear\",\"ease-in\",\"ease-out\",\"ease-in-out\"],y=[0,1,3,2,4,5],r=this,e=$(\"#\"+k),a=e.get(0);if(e.css(\"display\")!==m){var o=e.get(0).parentNode;if(o.wtAnimateChild)o.wtAnimateChild(e.get(0),l,q,n,{display:m});else{function u(){b(a,{webkitAnimationDuration:n+\"ms\"},f);var d=(j==5?\"pop \":\"\")+(g?\"out\":\"in\");if(l&256)d+=\" fade\";g||s();e.addClass(d);e.one(\"webkitAnimationEnd\",function(){e.removeClass(d);a.style.display= m;b(a,f)})}function z(){v(\"width\",j==1?\"left\":\"right\",j==1,\"X\")}function A(){v(\"height\",j==4?\"top\":\"bottom\",j==4,\"Y\")}function v(d,h,i,c){g||s();d=r.px(a,d);h=(r.px(a,h)+d)*(i?-1:1);var p;if(g){b(a,{webkitTransform:\"translate\"+c+\"(0px)\"},f);p=h}else{b(a,{webkitTransform:\"translate\"+c+\"(\"+h+\"px)\"},f);p=0}if(l&256)b(a,{opacity:g?1:0},f);setTimeout(function(){b(a,{webkitTransition:\"all \"+n+\"ms \"+t,webkitTransform:\"translate\"+c+\"(\"+p+\"px)\"},f);if(l&256)b(a,{opacity:g?0:1});e.one(\"webkitTransitionEnd\", function(){if(g)a.style.display=m;b(a,f)})},0)}function B(){var d,h,i={},c;if(g){h=e.height()+\"px\";b(a,{height:h,overflow:\"hidden\"},f);if(j==4&&a.childNodes.length==1){c=a.firstChild;b(c,{webkitTransform:\"translateY(0)\"},i);r.hasTag(c,\"TABLE\")||b(c,{display:\"block\"},i)}d=\"0px\"}else{var p=$(o),w={};b(o,{height:p.height()+\"px\",overflow:\"hidden\"},w);s();d=e.height()+\"px\";b(a,{height:\"0px\",overflow:\"hidden\"},f);b(o,w);if(j==4)a.scrollTop=1E3}if(l&256)b(a,{opacity:g?1:0},f);setTimeout(function(){b(a,{webkitTransition:\"all \"+ n+\"ms \"+t,height:d},f);if(l&256)b(a,{opacity:g?0:1});c&&b(c,{webkitTransition:\"-webkit-transform \"+n+\"ms \"+t,webkitTransform:\"translateY(-\"+h+\")\"},i);e.one(\"webkitTransitionEnd\",function(){if(g)a.style.display=m;b(a,f);if(j==4){a.scrollTop=0;c&&b(c,i)}})},0)}function s(){a.style.display=m;a.wtPosition&&a.wtPosition()}function b(d,h,i){var c;for(c in h){if(i&&typeof i[c]===\"undefined\")i[c]=d.style[c];d.style[c]=h[c]}}var j=l&255,g=m===\"none\",t=x[g?y[q]:q],f={};k=e.css(\"position\");k=k===\"absolute\"|| k===\"fixed\";switch(j){case 4:case 3:k?A():B();break;case 1:case 2:k?z():u();break;case 0:case 5:u();break}}}}");
+				"function(l,m,r,o,n){var z=[\"ease\",\"linear\",\"ease-in\",\"ease-out\",\"ease-in-out\"],A=[0,1,3,2,4,5],q=this,g=$(\"#\"+l),a=g.get(0),s=q.cssPrefix(\"Transition\"),B=s==\"Moz\"?\"animationend\":\"webkitAnimationEnd\",v=s==\"Moz\"?\"transitionend\":\"webkitTransitionEnd\";if(g.css(\"display\")!==n){var p=g.get(0).parentNode;if(p.wtAnimateChild)p.wtAnimateChild(g.get(0),m,r,o,{display:n});else{function w(){b(a,{animationDuration:o+\"ms\"},f);var e=(k==5?\"pop \":\"\")+(h? \"out\":\"in\");if(m&256)e+=\" fade\";h||t();g.addClass(e);g.one(B,function(){g.removeClass(e);a.style.display=n;b(a,f)})}function C(){x(\"width\",k==1?\"left\":\"right\",k==1,\"X\")}function D(){x(\"height\",k==4?\"top\":\"bottom\",k==4,\"Y\")}function x(e,i,j,c){h||t();e=q.px(a,e);i=(q.px(a,i)+e)*(j?-1:1);var d;if(h){b(a,{transform:\"translate\"+c+\"(0px)\"},f);d=i}else{b(a,{transform:\"translate\"+c+\"(\"+i+\"px)\"},f);d=0}if(m&256)b(a,{opacity:h?1:0},f);setTimeout(function(){b(a,{transition:\"all \"+o+\"ms \"+u,transform:\"translate\"+ c+\"(\"+d+\"px)\"},f);if(m&256)b(a,{opacity:h?0:1});g.one(v,function(){if(h)a.style.display=n;b(a,f)})},0)}function E(){var e,i,j={},c;if(h){i=g.height()+\"px\";b(a,{height:i,overflow:\"hidden\"},f);if(k==4&&a.childNodes.length==1){c=a.firstChild;b(c,{transform:\"translateY(0)\"},j);q.hasTag(c,\"TABLE\")||b(c,{display:\"block\"},j)}e=\"0px\"}else{var d=$(p),y={};b(p,{height:d.height()+\"px\",overflow:\"hidden\"},y);t();e=g.height()+\"px\";b(a,{height:\"0px\",overflow:\"hidden\"},f);b(p,y);if(k==4){b(a,{WebkitBackfaceVisibility:\"visible\"}, f);a.scrollTop=1E3}}if(m&256)b(a,{opacity:h?1:0},f);setTimeout(function(){b(a,{transition:\"all \"+o+\"ms \"+u,height:e},f);if(m&256)b(a,{opacity:h?0:1});c&&b(c,{transition:\"all \"+o+\"ms \"+u,transform:\"translateY(-\"+i+\")\"},j);g.one(v,function(){if(h)a.style.display=n;b(a,f);if(k==4){a.scrollTop=0;c&&b(c,j)}})},0)}function t(){a.style.display=n;a.wtPosition&&a.wtPosition()}function b(e,i,j){var c;for(c in i){var d=c;if(d==\"transform\"||d==\"transition\")d=s+d.substring(0,1).toUpperCase()+d.substring(1);if(j&& typeof j[d]===\"undefined\")j[d]=e.style[d];e.style[d]=i[c]}}var k=m&255,h=n===\"none\",u=z[h?A[r]:r],f={};l=g.css(\"position\");l=l===\"absolute\"||l===\"fixed\";switch(k){case 4:case 3:l?D():E();break;case 1:case 2:l?C():w();break;case 0:case 5:w();break}}}}");
 	}
 
 	static WJavaScriptPreamble wtjs2() {
 		return new WJavaScriptPreamble(JavaScriptScope.WtClassScope,
 				JavaScriptObjectType.JavaScriptFunction, "animateVisible",
 				"function(){}");
+	}
+
+	static WJavaScriptPreamble wtjs10() {
+		return new WJavaScriptPreamble(
+				JavaScriptScope.WtClassScope,
+				JavaScriptObjectType.JavaScriptFunction,
+				"toolTip",
+				"function(h,b,i){var c=$(\"#\"+b);b=c.get(0);var l=b.toolTip;b.toolTip=i;l||new (function(){function m(){a=document.createElement(\"div\");a.className=\"Wt-tooltip\";a.innerHTML=i;document.body.appendChild(a);var d=f.x,j=f.y;h.fitToWindow(a,d+e,j+e,d-e,j-e)}function k(d){clearTimeout(g);f=h.pageCoordinates(d);a||(g=setTimeout(function(){m()},n))}var g=null,f=null,a=null,e=10,n=500;c.mouseenter(k);c.mousemove(k);c.mouseleave(function(){clearTimeout(g); if(a){$(a).remove();a=null}})})}");
 	}
 
 	static WLength nonNegative(WLength w) {

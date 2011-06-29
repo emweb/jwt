@@ -174,13 +174,17 @@ public class WEnvironment {
 		 */
 		Firefox3_5(6104),
 		/**
-		 * Firefox 3.6 or later.
+		 * Firefox 3.6.
 		 */
 		Firefox3_6(6105),
 		/**
-		 * Firefox 4.0 or later.
+		 * Firefox 4.0.
 		 */
 		Firefox4_0(6106),
+		/**
+		 * Firefox 5.0 or later.
+		 */
+		Firefox5_0(6107),
 		/**
 		 * Bot user agent.
 		 */
@@ -562,7 +566,7 @@ public class WEnvironment {
 	 * </blockquote>
 	 * <p>
 	 * 
-	 * @see WApplication#setInternalPath(String path, boolean emitChange)
+	 * @see WApplication#getBookmarkUrl()
 	 * @see WEnvironment#getDeploymentPath()
 	 */
 	public String getInternalPath() {
@@ -786,6 +790,12 @@ public class WEnvironment {
 		return this.hashInternalPaths_;
 	}
 
+	public boolean isSupportsCss3Animations() {
+		return this.agentIsGecko()
+				&& this.agent_.getValue() >= WEnvironment.UserAgent.Firefox5_0
+						.getValue() || this.agentIsWebKit();
+	}
+
 	WebSession session_;
 	boolean doesAjax_;
 	boolean doesCookies_;
@@ -839,14 +849,18 @@ public class WEnvironment {
 			if (this.userAgent_.indexOf("MSIE 6") != -1) {
 				this.agent_ = WEnvironment.UserAgent.IE6;
 			} else {
-				if (this.userAgent_.indexOf("MSIE 7") != -1) {
-					this.agent_ = WEnvironment.UserAgent.IE7;
+				if (this.userAgent_.indexOf("Trident/5.0") != -1) {
+					this.agent_ = WEnvironment.UserAgent.IE9;
 				} else {
-					if (this.userAgent_.indexOf("MSIE 8") != -1) {
-						this.agent_ = WEnvironment.UserAgent.IE8;
+					if (this.userAgent_.indexOf("MSIE 7") != -1) {
+						this.agent_ = WEnvironment.UserAgent.IE7;
 					} else {
-						if (this.userAgent_.indexOf("MSIE") != -1) {
-							this.agent_ = WEnvironment.UserAgent.IE9;
+						if (this.userAgent_.indexOf("MSIE 8") != -1) {
+							this.agent_ = WEnvironment.UserAgent.IE8;
+						} else {
+							if (this.userAgent_.indexOf("MSIE") != -1) {
+								this.agent_ = WEnvironment.UserAgent.IE9;
+							}
 						}
 					}
 				}
@@ -964,7 +978,12 @@ public class WEnvironment {
 												.indexOf("Firefox/3.6") != -1) {
 											this.agent_ = WEnvironment.UserAgent.Firefox3_6;
 										} else {
-											this.agent_ = WEnvironment.UserAgent.Firefox4_0;
+											if (this.userAgent_
+													.indexOf("Firefox/4.") != -1) {
+												this.agent_ = WEnvironment.UserAgent.Firefox4_0;
+											} else {
+												this.agent_ = WEnvironment.UserAgent.Firefox5_0;
+											}
 										}
 									}
 								}

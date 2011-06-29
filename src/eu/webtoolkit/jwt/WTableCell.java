@@ -117,10 +117,24 @@ public class WTableCell extends WContainerWidget {
 	}
 
 	/**
-	 * Returns the table to which this cell belongs.
+	 * Returns the table containing this cell.
 	 */
 	public WTable getTable() {
 		return this.row_.getTable();
+	}
+
+	/**
+	 * Returns the table row containing this cell.
+	 */
+	public WTableRow getTableRow() {
+		return this.row_;
+	}
+
+	/**
+	 * Returns the table column containing this cell.
+	 */
+	public WTableColumn getTableColumn() {
+		return this.getTable().getColumnAt(this.getColumn());
 	}
 
 	WTableCell(WTableRow row, int column) {

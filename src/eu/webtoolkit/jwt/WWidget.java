@@ -872,8 +872,21 @@ public abstract class WWidget extends WObject {
 	 * Sets a tooltip.
 	 * <p>
 	 * The tooltip is displayed when the cursor hovers over the widget.
+	 * <p>
+	 * When <code>textFormat</code> is XHTMLText, the tooltip may contain any
+	 * valid XHTML snippet. The tooltip will then be rendered using JavaScript.
 	 */
-	public abstract void setToolTip(CharSequence text);
+	public abstract void setToolTip(CharSequence text, TextFormat textFormat);
+
+	/**
+	 * Sets a tooltip.
+	 * <p>
+	 * Calls {@link #setToolTip(CharSequence text, TextFormat textFormat)
+	 * setToolTip(text, TextFormat.PlainText)}
+	 */
+	public final void setToolTip(CharSequence text) {
+		setToolTip(text, TextFormat.PlainText);
+	}
 
 	/**
 	 * Returns the tooltip.
@@ -1606,6 +1619,18 @@ public abstract class WWidget extends WObject {
 		} else {
 			return super.hasParent();
 		}
+	}
+
+	protected WCssTextRule addCssRule(String selector, String declarations,
+			String ruleName) {
+		WApplication app = WApplication.getInstance();
+		WCssTextRule result = new WCssTextRule(selector, declarations, this);
+		app.getStyleSheet().addRule(result, ruleName);
+		return result;
+	}
+
+	protected final WCssTextRule addCssRule(String selector, String declarations) {
+		return addCssRule(selector, declarations, "");
 	}
 
 	private static final int BIT_WAS_HIDDEN = 0;

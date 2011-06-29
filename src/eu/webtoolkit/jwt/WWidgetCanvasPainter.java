@@ -36,6 +36,7 @@ class WWidgetCanvasPainter extends WWidgetPainter {
 		DomElement canvas = DomElement
 				.createNew(DomElementType.DomElement_CANVAS);
 		canvas.setId('c' + this.widget_.getId());
+		canvas.setProperty(Property.PropertyStyleDisplay, "block");
 		canvas.setAttribute("width", wstr);
 		canvas.setAttribute("height", hstr);
 		result.addChild(canvas);

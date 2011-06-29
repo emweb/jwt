@@ -349,6 +349,7 @@ public class WPanel extends WCompositeWidget {
 		this.centralWidget_ = w;
 		if (w != null) {
 			this.getCentralArea().addWidget(w);
+			w.setInline(false);
 		}
 	}
 

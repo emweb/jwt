@@ -199,9 +199,8 @@ public class WMenuItem extends WObject {
 	 * Sets the path component for this item.
 	 * <p>
 	 * The path component is used by the menu item in the application internal
-	 * path (see
-	 * {@link WApplication#setInternalPath(String path, boolean emitChange)
-	 * WApplication#setInternalPath()}), when internal paths are enabled (see
+	 * path (see {@link WApplication#getBookmarkUrl()
+	 * WApplication#getBookmarkUrl()}), when internal paths are enabled (see
 	 * {@link WMenu#setInternalPathEnabled(String basePath)
 	 * WMenu#setInternalPathEnabled()}) for the menu.
 	 * <p>
@@ -710,6 +709,10 @@ public class WMenuItem extends WObject {
 			this.updateItemWidget(this.getItemWidget());
 			this.resetLearnedSlots();
 		}
+	}
+
+	protected void updateSelectionEvent() {
+		this.resetLearnedSlots();
 	}
 
 	private WWidget itemWidget_;

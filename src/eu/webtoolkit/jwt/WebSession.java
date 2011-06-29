@@ -37,6 +37,7 @@ class WebSession {
 		this.favicon_ = favicon;
 		this.state_ = WebSession.State.JustCreated;
 		this.sessionId_ = sessionId;
+		this.sessionIdChanged_ = false;
 		this.controller_ = controller;
 		this.renderer_ = new WebRenderer(this);
 		this.applicationName_ = "";
@@ -104,7 +105,7 @@ class WebSession {
 		if (xhtml) {
 			return "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">";
 		} else {
-			return "<!DOCTYPE html>";
+			return "<!doctype html>";
 		}
 	}
 
@@ -643,15 +644,14 @@ class WebSession {
 			return this.appendSessionQuery(url);
 		}
 		case ClearInternalPath: {
-			if (!isAbsoluteUrl(this.applicationUrl_)) {
-				if (this.pagePathInfo_.length() > 1) {
-					return this.appendSessionQuery(this.deploymentPath_);
-				} else {
-					return this.appendSessionQuery(this.applicationName_);
-				}
+			String url = "";
+			if (this.applicationName_.length() == 0) {
+				url = this.fixRelativeUrl(".");
+				url = url.substring(0, 0 + url.length() - 1);
 			} else {
-				return this.appendSessionQuery(this.applicationUrl_);
+				url = this.fixRelativeUrl(this.applicationName_);
 			}
+			return this.appendSessionQuery(url);
 		}
 		default:
 			assert false;
@@ -702,12 +702,6 @@ class WebSession {
 
 	public String getBookmarkUrl(String internalPath) {
 		String result = this.bookmarkUrl_;
-		if (!this.env_.hasAjax()
-				&& result.indexOf("://") == -1
-				&& (this.env_.getInternalPath().length() > 1 || internalPath
-						.length() > 1)) {
-			result = this.deploymentPath_;
-		}
 		return this.appendInternalPath(result, internalPath);
 	}
 
@@ -1325,6 +1319,7 @@ class WebSession {
 	private String favicon_;
 	private WebSession.State state_;
 	private String sessionId_;
+	boolean sessionIdChanged_;
 	private WtServlet controller_;
 	private WebRenderer renderer_;
 	private String applicationName_;
@@ -1534,8 +1529,8 @@ class WebSession {
 						String hashE = request.getParameter(se + "_");
 						if (hashE != null) {
 							this.app_.changeInternalPath(hashE);
-							this.app_.doJavaScript("Wt3_1_10.scrollIntoView('"
-									+ hashE + "');");
+							this.app_.doJavaScript("Wt3_1_10.scrollIntoView("
+									+ WWebWidget.jsStringLiteral(hashE) + ");");
 						} else {
 							this.app_.changeInternalPath("");
 						}

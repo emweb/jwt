@@ -242,6 +242,6 @@ public class WRegExpValidator extends WValidator {
 				JavaScriptScope.WtClassScope,
 				JavaScriptObjectType.JavaScriptConstructor,
 				"WRegExpValidator",
-				"function(d,a,e,f,g){var b=a?new RegExp(a,e):null;this.validate=function(c){if(c.length==0)return d?{valid:false,message:f}:{valid:true};return b?{valid:b.test(c),message:g}:{valid:true}}}");
+				"function(d,a,e,f,g){var b=a?new RegExp(\"^\"+a+\"$\",e):null;this.validate=function(c){if(c.length==0)return d?{valid:false,message:f}:{valid:true};return b?{valid:b.test(c),message:g}:{valid:true}}}");
 	}
 }

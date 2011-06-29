@@ -41,6 +41,8 @@ public class WSubMenuItem extends WMenuItem {
 	public WSubMenuItem(CharSequence text, WWidget contents,
 			WMenuItem.LoadPolicy policy) {
 		super(text, contents, policy);
+		this.subMenu_ = null;
+		this.updatingSelectionEvent_ = false;
 	}
 
 	/**
@@ -140,7 +142,19 @@ public class WSubMenuItem extends WMenuItem {
 		}
 	}
 
+	protected void updateSelectionEvent() {
+		if (!this.updatingSelectionEvent_) {
+			this.updatingSelectionEvent_ = true;
+			super.updateSelectionEvent();
+			if (this.subMenu_ != null) {
+				this.subMenu_.updateSelectionEvent();
+			}
+			this.updatingSelectionEvent_ = false;
+		}
+	}
+
 	private WMenu subMenu_;
+	private boolean updatingSelectionEvent_;
 
 	private void subItemSelected() {
 		this.getMenu().select(-1);

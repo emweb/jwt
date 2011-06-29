@@ -32,7 +32,7 @@ import eu.webtoolkit.jwt.servlet.*;
  * 
  * @see WCssStyleSheet
  */
-public abstract class WCssRule {
+public abstract class WCssRule extends WObject {
 	/**
 	 * Destructor.
 	 */
@@ -79,9 +79,20 @@ public abstract class WCssRule {
 	/**
 	 * Creates a new CSS rule with given selector.
 	 */
-	protected WCssRule(String selector) {
+	protected WCssRule(String selector, WObject parent) {
+		super(parent);
 		this.selector_ = selector;
 		this.sheet_ = null;
+	}
+
+	/**
+	 * Creates a new CSS rule with given selector.
+	 * <p>
+	 * Calls {@link #WCssRule(String selector, WObject parent) this(selector,
+	 * (WObject)null)}
+	 */
+	protected WCssRule(String selector) {
+		this(selector, (WObject) null);
 	}
 
 	private String selector_;

@@ -63,7 +63,7 @@ class StdWidgetItemImpl extends StdLayoutItemImpl {
 		DomElement result = d;
 		int marginRight = 0;
 		int marginBottom = 0;
-		boolean boxSizing = !app.getEnvironment().agentIsIElt(9);
+		boolean boxSizing = !app.getEnvironment().agentIsIE();
 		if (!boxSizing) {
 			if (fitWidth) {
 				marginRight = (w.boxPadding(Orientation.Horizontal) + w

@@ -635,10 +635,13 @@ public class WDate implements Comparable<WDate> {
 		SimpleDateFormat formatter = new SimpleDateFormat(format);
 		try {
 			formatter.setLenient(false);
-			return new WDate(formatter.parse(text));
+			Date d = formatter.parse(text);
+			if (d != null && formatter.format(d).equals(text))
+				return new WDate(d);
 		} catch (ParseException e) {
-			return null;
 		}
+		
+		return null;
 	}
 
 	/**

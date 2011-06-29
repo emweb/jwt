@@ -53,11 +53,11 @@ public class WScrollArea extends WWebWidget {
 		 */
 		ScrollBarAsNeeded,
 		/**
-		 * Always show a scrollbar.
+		 * Never show a scrollbar.
 		 */
 		ScrollBarAlwaysOff,
 		/**
-		 * Never show a scrollbar.
+		 * Always show a scrollbar.
 		 */
 		ScrollBarAlwaysOn;
 

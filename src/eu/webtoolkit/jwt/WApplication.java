@@ -86,9 +86,8 @@ import org.apache.commons.io.*;
  * {@link WEnvironment#getCookie(String cookieNname) WEnvironment#getCookie()}
  * in a future session.</li>
  * <li>management of the internal path (that enables browser history and
- * bookmarks) using
- * {@link WApplication#setInternalPath(String path, boolean emitChange)
- * setInternalPath()} and related methods.</li>
+ * bookmarks) using {@link WApplication#getBookmarkUrl() getBookmarkUrl()} and
+ * related methods.</li>
  * <li>support for server-initiated updates with
  * {@link WApplication#enableUpdates(boolean enabled) enableUpdates()}</li>
  * </ul>
@@ -197,6 +196,11 @@ public class WApplication extends WObject {
 		if (this.getEnvironment().agentIsIElt(9)) {
 			this.addMetaHeader(MetaHeaderType.MetaHttpHeader,
 					"X-UA-Compatible", "IE=7");
+		} else {
+			if (this.getEnvironment().getAgent() == WEnvironment.UserAgent.IE9) {
+				this.addMetaHeader(MetaHeaderType.MetaHttpHeader,
+						"X-UA-Compatible", "IE=9");
+			}
 		}
 		this.domRoot_ = new WContainerWidget();
 		this.domRoot_.setStyleClass("Wt-domRoot");
@@ -229,7 +233,8 @@ public class WApplication extends WObject {
 		this.styleSheet_.addRule("td", "vertical-align: top;");
 		this.styleSheet_.addRule(".Wt-ltr td", "text-align: left;");
 		this.styleSheet_.addRule(".Wt-rtl td", "text-align: right;");
-		this.styleSheet_.addRule("button", "white-space: nowrap");
+		this.styleSheet_.addRule("button", "white-space: nowrap;");
+		this.styleSheet_.addRule("button img", "vertical-align: middle;");
 		this.styleSheet_.addRule("video", "display: block");
 		if (this.getEnvironment().getContentType() == WEnvironment.ContentType.XHTML1) {
 			this.styleSheet_.addRule("button", "display: inline");
@@ -251,6 +256,7 @@ public class WApplication extends WObject {
 						"border: 0px;margin: 0px;padding: 0px;font-size: inherit; pointer: hand; cursor: pointer; cursor: hand;background: transparent;text-decoration: none;color: inherit;");
 		this.styleSheet_.addRule(".Wt-ltr .Wt-wrap", "text-align: left;");
 		this.styleSheet_.addRule(".Wt-rtl .Wt-wrap", "text-align: right;");
+		this.styleSheet_.addRule("div.Wt-chwrap", "width: 100%; height: 100%");
 		if (this.getEnvironment().agentIsIE()) {
 			this.styleSheet_.addRule(".Wt-wrap", "margin: -1px 0px -3px;");
 		}
@@ -298,7 +304,18 @@ public class WApplication extends WObject {
 						"margin: 3px 3px 0px 4px;");
 			}
 		}
-		this.useStyleSheet(WApplication.getResourcesUrl() + "transitions.css");
+		if (this.getEnvironment().isSupportsCss3Animations()) {
+			String prefix = "";
+			if (this.getEnvironment().agentIsWebKit()) {
+				prefix = "webkit-";
+			} else {
+				if (this.getEnvironment().agentIsGecko()) {
+					prefix = "moz-";
+				}
+			}
+			this.useStyleSheet(WApplication.getResourcesUrl() + prefix
+					+ "transitions.css");
+		}
 		this.setLoadingIndicator(new WDefaultLoadingIndicator());
 		this.unloaded_.addListener(this, new Signal.Listener() {
 			public void trigger() {
@@ -919,51 +936,63 @@ public class WApplication extends WObject {
 	}
 
 	/**
-	 * Returns a bookmarkable URL for the current internal path.
+	 * Returns a URL for the current session.
 	 * <p>
-	 * Is equivalent to
-	 * <code>bookmarkUrl({@link WApplication#getInternalPath() getInternalPath()})</code>
-	 * , see {@link WApplication#getBookmarkUrl(String internalPath)
-	 * getBookmarkUrl()}.
+	 * Returns the (relative) URL for this application session (including the
+	 * session ID if necessary). The URL includes the full application path, and
+	 * is expanded by the browser into a full URL.
 	 * <p>
-	 * To obtain a URL that is refers to the current session of the application,
-	 * use {@link WApplication#getUrl() getUrl()} instead.
+	 * For example, for an application deployed at <blockquote>
+	 * 
+	 * <pre>
+	 * http://www.mydomain.com/stuff/app.wt
+	 * </pre>
+	 * 
+	 * </blockquote> this method would return
+	 * <code>&quot;/stuff/app.wt?wtd=AbCdEf&quot;</code>. Additional query
+	 * parameters can be appended in the form of
+	 * <code>&quot;&amp;param1=value&amp;param2=value&quot;</code>.
+	 * <p>
+	 * To obtain a URL that is suitable for bookmarking the current application
+	 * state, to be used across sessions, use
+	 * {@link WApplication#getBookmarkUrl() getBookmarkUrl()} instead.
 	 * <p>
 	 * 
-	 * @see WApplication#getUrl()
-	 * @see WApplication#getBookmarkUrl(String internalPath)
+	 * @see WApplication#redirect(String url)
+	 * @see WEnvironment#getHostName()
+	 * @see WEnvironment#getUrlScheme()
+	 * @see WApplication#getBookmarkUrl()
 	 */
 	public String getBookmarkUrl() {
 		return this.getBookmarkUrl(this.newInternalPath_);
 	}
 
 	/**
-	 * Returns a bookmarkable URL for a given internal path.
+	 * Returns a URL for the current session.
 	 * <p>
-	 * Returns the (relative) URL for this application that includes the
-	 * internal path <code>internalPath</code>, usable across sessions.
+	 * Returns the (relative) URL for this application session (including the
+	 * session ID if necessary). The URL includes the full application path, and
+	 * is expanded by the browser into a full URL.
 	 * <p>
-	 * The returned URL concatenates the internal path to the application base
-	 * URL, and when no JavaScript is available and URL rewriting is used for
-	 * session-tracking, a session Id is appended to reuse an existing session
-	 * if available.
+	 * For example, for an application deployed at <blockquote>
+	 * 
+	 * <pre>
+	 * http://www.mydomain.com/stuff/app.wt
+	 * </pre>
+	 * 
+	 * </blockquote> this method would return
+	 * <code>&quot;/stuff/app.wt?wtd=AbCdEf&quot;</code>. Additional query
+	 * parameters can be appended in the form of
+	 * <code>&quot;&amp;param1=value&amp;param2=value&quot;</code>.
 	 * <p>
-	 * You can use {@link WApplication#getBookmarkUrl() getBookmarkUrl()} as the
-	 * destination for a {@link WAnchor}, and listen to a click event is
-	 * attached to a slot that switches to the internal path
-	 * <code>internalPath</code> (see
-	 * {@link WAnchor#setRefInternalPath(String path)
-	 * WAnchor#setRefInternalPath()}). In this way, an anchor can be used to
-	 * switch between internal paths within an application regardless of the
-	 * situation (browser with or without Ajax support, or a web spider bot),
-	 * but still generates suitable URLs across sessions, which can be used for
-	 * bookmarking, opening in a new window/tab, or indexing.
-	 * <p>
-	 * To obtain a URL that refers to the current session of the application,
-	 * use {@link WApplication#getUrl() getUrl()} instead.
+	 * To obtain a URL that is suitable for bookmarking the current application
+	 * state, to be used across sessions, use
+	 * {@link WApplication#getBookmarkUrl() getBookmarkUrl()} instead.
 	 * <p>
 	 * 
-	 * @see WApplication#getUrl()
+	 * @see WApplication#redirect(String url)
+	 * @see WEnvironment#getHostName()
+	 * @see WEnvironment#getUrlScheme()
 	 * @see WApplication#getBookmarkUrl()
 	 */
 	public String getBookmarkUrl(String internalPath) {
@@ -1040,7 +1069,7 @@ public class WApplication extends WObject {
 	 * <p>
 	 * 
 	 * @see WApplication#getBookmarkUrl()
-	 * @see WApplication#getInternalPath()
+	 * @see WApplication#getBookmarkUrl()
 	 * @see WApplication#internalPathChanged()
 	 */
 	public void setInternalPath(String path, boolean emitChange) {
@@ -1067,42 +1096,104 @@ public class WApplication extends WObject {
 	}
 
 	/**
-	 * Returns the current internal path.
+	 * Returns a URL for the current session.
 	 * <p>
-	 * When the application is just created, this is equal to
-	 * {@link WEnvironment#getInternalPath() WEnvironment#getInternalPath()}.
+	 * Returns the (relative) URL for this application session (including the
+	 * session ID if necessary). The URL includes the full application path, and
+	 * is expanded by the browser into a full URL.
+	 * <p>
+	 * For example, for an application deployed at <blockquote>
+	 * 
+	 * <pre>
+	 * http://www.mydomain.com/stuff/app.wt
+	 * </pre>
+	 * 
+	 * </blockquote> this method would return
+	 * <code>&quot;/stuff/app.wt?wtd=AbCdEf&quot;</code>. Additional query
+	 * parameters can be appended in the form of
+	 * <code>&quot;&amp;param1=value&amp;param2=value&quot;</code>.
+	 * <p>
+	 * To obtain a URL that is suitable for bookmarking the current application
+	 * state, to be used across sessions, use
+	 * {@link WApplication#getBookmarkUrl() getBookmarkUrl()} instead.
 	 * <p>
 	 * 
-	 * @see WApplication#setInternalPath(String path, boolean emitChange)
-	 * @see WApplication#getInternalPathNextPart(String path)
-	 * @see WApplication#internalPathMatches(String path)
+	 * @see WApplication#redirect(String url)
+	 * @see WEnvironment#getHostName()
+	 * @see WEnvironment#getUrlScheme()
+	 * @see WApplication#getBookmarkUrl()
 	 */
 	public String getInternalPath() {
 		return this.newInternalPath_;
 	}
 
 	/**
-	 * Returns a part of the current internal path.
+	 * Returns a URL for the current session.
 	 * <p>
-	 * This is a convenience method which returns the next <code>folder</code>
-	 * in the internal path, after the given <code>path</code>.
+	 * Returns the (relative) URL for this application session (including the
+	 * session ID if necessary). The URL includes the full application path, and
+	 * is expanded by the browser into a full URL.
 	 * <p>
-	 * For example, when the current internal path is
-	 * <code>&quot;/project/z3cbc/details&quot;</code>, this method returns
-	 * <code>&quot;details&quot;</code> when called with
-	 * <code>&quot;/project/z3cbc/&quot;</code> as <code>path</code> argument.
+	 * For example, for an application deployed at <blockquote>
+	 * 
+	 * <pre>
+	 * http://www.mydomain.com/stuff/app.wt
+	 * </pre>
+	 * 
+	 * </blockquote> this method would return
+	 * <code>&quot;/stuff/app.wt?wtd=AbCdEf&quot;</code>. Additional query
+	 * parameters can be appended in the form of
+	 * <code>&quot;&amp;param1=value&amp;param2=value&quot;</code>.
 	 * <p>
-	 * The <code>path</code> must start with a &apos;/&apos;, and
-	 * {@link WApplication#internalPathMatches(String path)
-	 * internalPathMatches()} should evaluate to <code>true</code> for the given
-	 * <code>path</code>. If not, an empty string is returned and an error
-	 * message is logged.
+	 * To obtain a URL that is suitable for bookmarking the current application
+	 * state, to be used across sessions, use
+	 * {@link WApplication#getBookmarkUrl() getBookmarkUrl()} instead.
 	 * <p>
 	 * 
-	 * @see WApplication#getInternalPath()
-	 * @see WApplication#internalPathChanged()
+	 * @see WApplication#redirect(String url)
+	 * @see WEnvironment#getHostName()
+	 * @see WEnvironment#getUrlScheme()
+	 * @see WApplication#getBookmarkUrl()
 	 */
 	public String getInternalPathNextPart(String path) {
+		String subPath = this.internalSubPath(path);
+		int t = subPath.indexOf('/');
+		if (t == -1) {
+			return subPath;
+		} else {
+			return subPath.substring(0, 0 + t);
+		}
+	}
+
+	/**
+	 * Returns a URL for the current session.
+	 * <p>
+	 * Returns the (relative) URL for this application session (including the
+	 * session ID if necessary). The URL includes the full application path, and
+	 * is expanded by the browser into a full URL.
+	 * <p>
+	 * For example, for an application deployed at <blockquote>
+	 * 
+	 * <pre>
+	 * http://www.mydomain.com/stuff/app.wt
+	 * </pre>
+	 * 
+	 * </blockquote> this method would return
+	 * <code>&quot;/stuff/app.wt?wtd=AbCdEf&quot;</code>. Additional query
+	 * parameters can be appended in the form of
+	 * <code>&quot;&amp;param1=value&amp;param2=value&quot;</code>.
+	 * <p>
+	 * To obtain a URL that is suitable for bookmarking the current application
+	 * state, to be used across sessions, use
+	 * {@link WApplication#getBookmarkUrl() getBookmarkUrl()} instead.
+	 * <p>
+	 * 
+	 * @see WApplication#redirect(String url)
+	 * @see WEnvironment#getHostName()
+	 * @see WEnvironment#getUrlScheme()
+	 * @see WApplication#getBookmarkUrl()
+	 */
+	public String internalSubPath(String path) {
 		String current = StringUtils.append(this.newInternalPath_, '/');
 		if (!pathMatches(current, path)) {
 			this.log("warn").append("WApplication::internalPath(): path '")
@@ -1110,36 +1201,27 @@ public class WApplication extends WObject {
 							this.newInternalPath_).append("'");
 			return "";
 		}
-		int startPos = path.length();
-		int t = current.indexOf('/', startPos);
-		String result = "";
-		if (t == -1) {
-			result = current.substring(startPos);
-		} else {
-			result = current.substring(startPos, startPos + t - startPos);
-		}
-		return result;
+		return current.substring(path.length());
 	}
 
 	/**
 	 * Checks if the internal path matches a given path.
 	 * <p>
-	 * Returns whether the current {@link WApplication#getInternalPath()
-	 * getInternalPath()} starts with <code>path</code> (or is equal to
+	 * Returns whether the current {@link WApplication#getBookmarkUrl()
+	 * getBookmarkUrl()} starts with <code>path</code> (or is equal to
 	 * <code>path</code>). You will typically use this method within a slot
 	 * conneted to the {@link WApplication#internalPathChanged()
 	 * internalPathChanged()} signal, to check that an internal path change
 	 * affects the widget. It may also be useful before changing
-	 * <code>path</code> using
-	 * {@link WApplication#setInternalPath(String path, boolean emitChange)
-	 * setInternalPath()} if you do not intend to remove sub paths when the
+	 * <code>path</code> using {@link WApplication#getBookmarkUrl()
+	 * getBookmarkUrl()} if you do not intend to remove sub paths when the
 	 * current internal path already matches <code>path</code>.
 	 * <p>
 	 * The <code>path</code> must start with a &apos;/&apos;.
 	 * <p>
 	 * 
-	 * @see WApplication#setInternalPath(String path, boolean emitChange)
-	 * @see WApplication#getInternalPath()
+	 * @see WApplication#getBookmarkUrl()
+	 * @see WApplication#getBookmarkUrl()
 	 */
 	public boolean internalPathMatches(String path) {
 		if (this.session_.getRenderer().isPreLearning()) {
@@ -1159,7 +1241,7 @@ public class WApplication extends WObject {
 	 * The argument contains the new internal path.
 	 * <p>
 	 * 
-	 * @see WApplication#setInternalPath(String path, boolean emitChange)
+	 * @see WApplication#getBookmarkUrl()
 	 */
 	public Signal1<String> internalPathChanged() {
 		this.enableInternalPaths();
@@ -1348,23 +1430,18 @@ public class WApplication extends WObject {
 		 * Releases the lock.
 		 */
 		public void release() {
-			System.err.append("Releasing update lock").append('\n');
 			if (this.createdHandler_) {
-				System.err.append("Releasing handler").append('\n');
 				WebSession.Handler.getInstance().release();
 			}
 		}
 
 		private UpdateLock(WApplication app) {
-			System.err.append("Grabbing update lock").append('\n');
 			WebSession.Handler handler = WebSession.Handler.getInstance();
 			this.createdHandler_ = false;
 			if (handler != null && handler.isHaveLock()
 					&& handler.getSession() == app.session_) {
 				return;
 			}
-			System.err.append("Creating new handler for app: app.sessionId()")
-					.append('\n');
 			new WebSession.Handler(app.session_, true);
 			this.createdHandler_ = true;
 		}
@@ -1751,8 +1828,7 @@ public class WApplication extends WObject {
 	 * </ul>
 	 * <p>
 	 * When a header was previously set for the same <code>name</code>, its
-	 * contents is replaced. You can remove a previously set header by replacing
-	 * it with empty content.
+	 * contents is replaced.
 	 * <p>
 	 * These situations coincide with {@link WEnvironment#hasAjax()
 	 * WEnvironment#hasAjax()} returning <code>false</code> (see
@@ -1780,8 +1856,7 @@ public class WApplication extends WObject {
 	 * &quot;http-equiv&quot; meta headers, which define HTTP headers.
 	 * <p>
 	 * 
-	 * @see WApplication#addMetaHeader(String name, CharSequence content, String
-	 *      lang)
+	 * @see WApplication#removeMetaHeader(MetaHeaderType type, String name)
 	 */
 	public void addMetaHeader(MetaHeaderType type, String name,
 			CharSequence content, String lang) {
@@ -1791,7 +1866,7 @@ public class WApplication extends WObject {
 		}
 		for (int i = 0; i < this.metaHeaders_.size(); ++i) {
 			WApplication.MetaHeader m = this.metaHeaders_.get(i);
-			if (m.type == MetaHeaderType.MetaHttpHeader && m.name.equals(name)) {
+			if (m.type == type && m.name.equals(name)) {
 				if ((content.length() == 0)) {
 					this.metaHeaders_.remove(0 + i);
 				} else {
@@ -1816,6 +1891,44 @@ public class WApplication extends WObject {
 	public final void addMetaHeader(MetaHeaderType type, String name,
 			CharSequence content) {
 		addMetaHeader(type, name, content, "");
+	}
+
+	/**
+	 * Removes one or all meta headers.
+	 * <p>
+	 * Removes the meta header with given type and name (if it is present). If
+	 * name is empty, all meta headers of the given type are removed.
+	 * <p>
+	 * 
+	 * @see WApplication#addMetaHeader(String name, CharSequence content, String
+	 *      lang)
+	 */
+	public void removeMetaHeader(MetaHeaderType type, String name) {
+		if (this.getEnvironment().hasJavaScript()) {
+			this.log("warn").append(
+					"WApplication::removeMetaHeader() with no effect");
+		}
+		for (int i = 0; i < this.metaHeaders_.size(); ++i) {
+			WApplication.MetaHeader m = this.metaHeaders_.get(i);
+			if (m.type == type && (name.length() == 0 || m.name.equals(name))) {
+				this.metaHeaders_.remove(0 + i);
+				if (name.length() == 0) {
+					--i;
+				} else {
+					break;
+				}
+			}
+		}
+	}
+
+	/**
+	 * Removes one or all meta headers.
+	 * <p>
+	 * Calls {@link #removeMetaHeader(MetaHeaderType type, String name)
+	 * removeMetaHeader(type, "")}
+	 */
+	public final void removeMetaHeader(MetaHeaderType type) {
+		removeMetaHeader(type, "");
 	}
 
 	/**
@@ -2076,6 +2189,22 @@ public class WApplication extends WObject {
 		}
 	}
 
+	public void enableInternalPaths() {
+		if (!this.internalPathsEnabled_) {
+			this.internalPathsEnabled_ = true;
+			this.doJavaScript(this.getJavaScriptClass()
+					+ "._p_.enableInternalPaths("
+					+ WWebWidget.jsStringLiteral(this.session_
+							.getPagePathInfo()) + ");", false);
+			if (this.session_.isUseUglyInternalPaths()) {
+				this
+						.log("warn")
+						.append(
+								"Deploy-path ends with '/', using /?_= for internal paths");
+			}
+		}
+	}
+
 	/**
 	 * Notifies an event to the application.
 	 * <p>
@@ -2179,6 +2308,9 @@ public class WApplication extends WObject {
 		if (this.domRoot2_ != null) {
 			this.domRoot2_.enableAjax();
 		}
+		this.doJavaScript("Wt3_1_10.ajaxInternalPaths("
+				+ WWebWidget.jsStringLiteral(this.resolveRelativeUrl(this
+						.getBookmarkUrl("/"))) + ");");
 	}
 
 	/**
@@ -2416,27 +2548,10 @@ public class WApplication extends WObject {
 		}
 	}
 
-	private void enableInternalPaths() {
-		if (!this.internalPathsEnabled_) {
-			this.internalPathsEnabled_ = true;
-			this.doJavaScript(this.getJavaScriptClass()
-					+ "._p_.enableInternalPaths("
-					+ WWebWidget.jsStringLiteral(this.session_
-							.getPagePathInfo()) + ");", false);
-			if (this.session_.isUseUglyInternalPaths()) {
-				this
-						.log("warn")
-						.append(
-								"Deploy-path ends with '/', using /?_= for internal paths");
-			}
-		}
-	}
-
 	void changeInternalPath(String aPath) {
 		String path = StringUtils.prepend(aPath, '/');
 		if (path.length() == 0 || path.charAt(0) == '/') {
 			if (!path.equals(this.newInternalPath_)) {
-				String v = "";
 				this.newInternalPath_ = path;
 				this.internalPathChanged_.trigger(this.newInternalPath_);
 			}

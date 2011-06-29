@@ -32,6 +32,12 @@ import eu.webtoolkit.jwt.servlet.*;
  * the variable <code>&quot;varName&quot;</code>. To use a literal
  * <code>&quot;${&quot;</code>, use <code>&quot;$${&quot;</code>.
  * <p>
+ * <p>
+ * <i><b>Note: </b>The use of XML comments (<code>&lt;!-- ... -.</code>) around
+ * variables that are bound to widgets will result in bad behaviour since the
+ * template parser is ignorant about these comments and the corresponding
+ * widgets will believe that they are rendered but aren&apos;t actually.</i>
+ * </p>
  * You can bind widgets and values to variables using
  * {@link WTemplate#bindWidget(String varName, WWidget widget) bindWidget()},
  * {@link WTemplate#bindString(String varName, CharSequence value, TextFormat textFormat)
@@ -69,6 +75,7 @@ public class WTemplate extends WInteractWidget {
 		this.widgets_ = new HashMap<String, WWidget>();
 		this.strings_ = new HashMap<String, String>();
 		this.text_ = new WString();
+		this.encodeInternalPaths_ = false;
 		this.changed_ = false;
 		this.setInline(false);
 	}
@@ -96,6 +103,7 @@ public class WTemplate extends WInteractWidget {
 		this.widgets_ = new HashMap<String, WWidget>();
 		this.strings_ = new HashMap<String, String>();
 		this.text_ = new WString();
+		this.encodeInternalPaths_ = false;
 		this.changed_ = false;
 		this.setInline(false);
 		this.setTemplateText(text);
@@ -217,7 +225,7 @@ public class WTemplate extends WInteractWidget {
 	public void bindString(String varName, CharSequence value,
 			TextFormat textFormat) {
 		WString v = WString.toWString(value);
-		if (textFormat == TextFormat.XHTMLText && this.text_.isLiteral()) {
+		if (textFormat == TextFormat.XHTMLText && v.isLiteral()) {
 			if (!removeScript(v)) {
 				v = escapeText(v, true);
 			}
@@ -404,6 +412,36 @@ public class WTemplate extends WInteractWidget {
 	}
 
 	/**
+	 * Enables internal path anchors in the XHTML template.
+	 * <p>
+	 * Anchors to internal paths are represented differently depending on the
+	 * session implementation (plain HTML, Ajax or HTML5 history). By enabling
+	 * this option, anchors which reference an internal path (by referring a URL
+	 * of the form <code>href=&quot;#/...&quot;</code>), are re-encoded to link
+	 * to the internal path.
+	 * <p>
+	 * The default value is <code>false</code>.
+	 * <p>
+	 */
+	public void setInternalPathEncoding(boolean enabled) {
+		if (this.encodeInternalPaths_ != enabled) {
+			this.encodeInternalPaths_ = enabled;
+			this.changed_ = true;
+			this.repaint(EnumSet.of(RepaintFlag.RepaintInnerHtml));
+		}
+	}
+
+	/**
+	 * Returns whether internal paths are enabled.
+	 * <p>
+	 * 
+	 * @see WTemplate#setInternalPathEncoding(boolean enabled)
+	 */
+	public boolean hasInternalPathEncoding() {
+		return this.encodeInternalPaths_;
+	}
+
+	/**
 	 * Refreshes the template.
 	 * <p>
 	 * This rerenders the template.
@@ -429,7 +467,14 @@ public class WTemplate extends WInteractWidget {
 	 * custom template language.
 	 */
 	protected void renderTemplate(Writer result) throws IOException {
-		String text = this.text_.toString();
+		String text = "";
+		if (this.encodeInternalPaths_) {
+			WString t = this.text_;
+			InternalPathEncoder.EncodeInternalPathRefs(t);
+			text = t.toString();
+		} else {
+			text = this.text_.toString();
+		}
 		int lastPos = 0;
 		for (int pos = text.indexOf('$'); pos != -1; pos = text.indexOf('$',
 				pos)) {
@@ -594,6 +639,7 @@ public class WTemplate extends WInteractWidget {
 	private Map<String, WWidget> widgets_;
 	private Map<String, String> strings_;
 	private WString text_;
+	private boolean encodeInternalPaths_;
 	private boolean changed_;
 	static String DropShadow_x1_x2 = "<span class=\"Wt-x1\"><span class=\"Wt-x1a\"></span></span><span class=\"Wt-x2\"><span class=\"Wt-x2a\"></span></span>";
 }

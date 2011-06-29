@@ -41,6 +41,11 @@ import eu.webtoolkit.jwt.servlet.*;
  * <td>InlineVML</td>
  * </tr>
  * <tr>
+ * <td>Internet Explorer 9+</td>
+ * <td>HtmlCanvas, InlineSVG, PngImage</td>
+ * <td>HtmlCanvas</td>
+ * </tr>
+ * <tr>
  * <td>Safari</td>
  * <td>HtmlCanvas, InlineSVG, PngImage</td>
  * <td>HtmlCanvas</td>
@@ -68,10 +73,10 @@ import eu.webtoolkit.jwt.servlet.*;
  * using {@link WPaintedWidget#setPreferredMethod(WPaintedWidget.Method method)
  * setPreferredMethod()}.
  * <p>
- * InlineSVG requires that the document is rendered as XHTML. This must be
- * enabled in the configuration file using the
+ * In some browsers, InlineSVG requires that the document is rendered as XHTML.
+ * This must be enabled in the configuration file using the
  * <code>&lt;send-xhtml-mime-type&gt;</code> option. By default, this option is
- * off.
+ * off. Firefox 4 and Chrome do support svg in normal html mode.
  * <p>
  * The PngImage is the most portable rendering method, and may be the fastest if
  * the painting is of high complexity and/or the image is fairly small.
@@ -100,7 +105,8 @@ public abstract class WPaintedWidget extends WInteractWidget {
 	 */
 	public enum Method {
 		/**
-		 * SVG (Most browsers) or VML (Internet Explorer) embedded in the page.
+		 * SVG (Most browsers) or VML (Internet Explorer &lt; 9) embedded in the
+		 * page.
 		 */
 		InlineSvgVml,
 		/**
@@ -473,7 +479,12 @@ public abstract class WPaintedWidget extends WInteractWidget {
 			return true;
 		}
 		WPaintedWidget.Method method;
-		if (env.getContentType() != WEnvironment.ContentType.XHTML1) {
+		if (env.getContentType() != WEnvironment.ContentType.XHTML1
+				&& !(env.agentIsChrome()
+						&& env.getAgent().getValue() >= WEnvironment.UserAgent.Chrome5
+								.getValue() || env.agentIsGecko()
+						&& env.getAgent().getValue() >= WEnvironment.UserAgent.Firefox4_0
+								.getValue())) {
 			method = WPaintedWidget.Method.HtmlCanvas;
 		} else {
 			if (!env.hasJavaScript()) {

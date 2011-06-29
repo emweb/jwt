@@ -358,7 +358,7 @@ public class WDataSeries {
 	 * 
 	 * @see WDataSeries#setCustomFlags(EnumSet flags)
 	 */
-	public EnumSet<WDataSeries.CustomFlag> getCurstomFlags() {
+	public EnumSet<WDataSeries.CustomFlag> getCustomFlags() {
 		return this.customFlags_;
 	}
 

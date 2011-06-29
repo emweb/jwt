@@ -282,8 +282,8 @@ public class WCompositeWidget extends WWidget {
 		return this.impl_ != null ? this.impl_.getWebWidget() : null;
 	}
 
-	public void setToolTip(CharSequence text) {
-		this.impl_.setToolTip(text);
+	public void setToolTip(CharSequence text, TextFormat textFormat) {
+		this.impl_.setToolTip(text, textFormat);
 	}
 
 	public WString getToolTip() {

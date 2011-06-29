@@ -40,9 +40,19 @@ public class WCssTemplateRule extends WCssRule {
 	 * Microsoft Internet Explorer. </i>
 	 * </p>
 	 */
-	public WCssTemplateRule(String selector) {
-		super(selector);
+	public WCssTemplateRule(String selector, WObject parent) {
+		super(selector, parent);
 		this.widget_ = new WCssTemplateWidget(this);
+	}
+
+	/**
+	 * Creates a CSS rule with a given selector.
+	 * <p>
+	 * Calls {@link #WCssTemplateRule(String selector, WObject parent)
+	 * this(selector, (WObject)null)}
+	 */
+	public WCssTemplateRule(String selector) {
+		this(selector, (WObject) null);
 	}
 
 	public void remove() {

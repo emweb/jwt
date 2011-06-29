@@ -150,7 +150,7 @@ public class WTextArea extends WFormWidget {
 		this.contentChanged_ = true;
 		this.repaint(EnumSet.of(RepaintFlag.RepaintInnerHtml));
 		this.validate();
-		this.updateEmptyText();
+		this.applyEmptyText();
 	}
 
 	/**

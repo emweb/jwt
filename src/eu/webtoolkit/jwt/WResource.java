@@ -50,7 +50,8 @@ import eu.webtoolkit.jwt.servlet.WebResponse;
  * @see WImage
  */
 public abstract class WResource extends WObject {
-	private Signal dataChanged_ = null;
+	private Signal dataChanged_ = new Signal(this);
+
 	private String suggestedFileName_;
 	private String currentUrl_;
 	private String internalPath_;
@@ -86,7 +87,13 @@ public abstract class WResource extends WObject {
 	public String generateUrl() {
 		WApplication app = WApplication.getInstance();
 
-		currentUrl_ = app.addExposedResource(this, internalPath_);
+		if (currentUrl_ == null)
+			currentUrl_ = app.addExposedResource(this, internalPath_);
+		else {
+			int randPos = currentUrl_.lastIndexOf('=') + 1;
+			currentUrl_ = currentUrl_.substring(0, randPos)
+				+ (Integer.valueOf(currentUrl_.substring(randPos)) + 1);
+		}
 		return currentUrl_;
 	}
 
@@ -131,8 +138,6 @@ public abstract class WResource extends WObject {
 	 * before emitting the signal.
 	 */
 	public Signal dataChanged() {
-		if (dataChanged_ == null)
-			dataChanged_ = new Signal(this);
 		return dataChanged_;
 	}
 

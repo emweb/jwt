@@ -403,11 +403,11 @@ public class WGoogleMap extends WCompositeWidget {
 					false);
 		} else {
 			StringWriter strm = new StringWriter();
-			strm.append("var mapLocal = ").append(this.getJsRef() + ".map;\n")
-					.append("if (mapLocal.overlays) {\n").append(
-							"  for (i in mapLocal.overlays) {\n").append(
-							"    mapLocal.overlays[i].setMap(null);\n").append(
-							"  }\n")
+			strm.append("var mapLocal = ").append(
+					this.getJsRef() + ".map, i;\n").append(
+					"if (mapLocal.overlays) {\n").append(
+					"  for (i in mapLocal.overlays) {\n").append(
+					"    mapLocal.overlays[i].setMap(null);\n").append("  }\n")
 					.append("  mapLocal.overlays.length = 0;\n").append("}\n")
 					.append("if (mapLocal.infowindows) {\n").append(
 							"  for (i in mapLocal.infowindows) {\n").append(

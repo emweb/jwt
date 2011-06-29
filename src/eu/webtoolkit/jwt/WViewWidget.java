@@ -105,13 +105,15 @@ public abstract class WViewWidget extends WWebWidget {
 	}
 
 	void render(EnumSet<RenderFlag> flags) {
-		if (this.needContentsUpdate_) {
+		if (this.needContentsUpdate_
+				|| !EnumUtils.mask(flags, RenderFlag.RenderFull).isEmpty()) {
 			if (this.contents_ != null)
 				this.contents_.remove();
 			WApplication.getInstance().setExposeSignals(false);
 			this.contents_ = this.getRenderView();
 			WApplication.getInstance().setExposeSignals(true);
 			this.addChild(this.contents_);
+			this.contents_.render(flags);
 			this.setInline(this.contents_.isInline());
 			this.needContentsUpdate_ = false;
 		}

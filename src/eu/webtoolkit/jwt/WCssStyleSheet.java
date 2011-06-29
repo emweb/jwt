@@ -198,7 +198,7 @@ public class WCssStyleSheet {
 			}
 			this.rulesModified_.clear();
 		}
-		if (!app.getEnvironment().agentIsIE()
+		if (!app.getEnvironment().agentIsIElt(9)
 				&& app.getEnvironment().getAgent() != WEnvironment.UserAgent.Konqueror) {
 			List<WCssRule> toProcess = all ? this.rules_ : this.rulesAdded_;
 			for (int i = 0; i < toProcess.size(); ++i) {

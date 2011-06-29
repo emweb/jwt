@@ -57,7 +57,7 @@ public class WMemoryResource extends WResource {
 	 */
 	public void setData(byte[] data) {
 		this.data_ = data;
-		this.dataChanged().trigger();
+		setChanged();
 	}
 
 	void setData(char[] data) {
@@ -84,7 +84,7 @@ public class WMemoryResource extends WResource {
 	 */
 	public void setMimeType(String mimeType) {
 		this.mimeType_ = mimeType;
-		this.dataChanged().trigger();
+		setChanged();
 	}
 
 	private String mimeType_;

@@ -1070,7 +1070,10 @@ public class WContainerWidget extends WInteractWidget {
 			WApplication app = WApplication.getInstance();
 			if (app.getEnvironment().agentIsIE()
 					&& (this.overflow_[0] == WContainerWidget.Overflow.OverflowAuto || this.overflow_[0] == WContainerWidget.Overflow.OverflowScroll)) {
-				element.setProperty(Property.PropertyStylePosition, "relative");
+				if (this.getPositionScheme() == PositionScheme.Static) {
+					element.setProperty(Property.PropertyStylePosition,
+							"relative");
+				}
 			}
 		}
 	}

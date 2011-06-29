@@ -72,11 +72,9 @@ public class WText extends WInteractWidget {
 		super(parent);
 		this.text_ = new WString();
 		this.textFormat_ = TextFormat.XHTMLText;
-		this.wordWrap_ = true;
-		this.textChanged_ = false;
-		this.wordWrapChanged_ = false;
-		this.paddingsChanged_ = false;
+		this.flags_ = new BitSet();
 		this.padding_ = null;
+		this.flags_.set(BIT_WORD_WRAP);
 		;
 	}
 
@@ -111,11 +109,9 @@ public class WText extends WInteractWidget {
 		super(parent);
 		this.text_ = new WString();
 		this.textFormat_ = TextFormat.XHTMLText;
-		this.wordWrap_ = true;
-		this.textChanged_ = false;
-		this.wordWrapChanged_ = false;
-		this.paddingsChanged_ = false;
+		this.flags_ = new BitSet();
 		this.padding_ = null;
+		this.flags_.set(BIT_WORD_WRAP);
 		;
 		this.setText(text);
 	}
@@ -151,11 +147,9 @@ public class WText extends WInteractWidget {
 		super(parent);
 		this.text_ = new WString();
 		this.textFormat_ = format;
-		this.wordWrap_ = true;
-		this.textChanged_ = false;
-		this.wordWrapChanged_ = false;
-		this.paddingsChanged_ = false;
+		this.flags_ = new BitSet();
 		this.padding_ = null;
+		this.flags_.set(BIT_WORD_WRAP);
 		;
 		this.setText(text);
 	}
@@ -219,7 +213,7 @@ public class WText extends WInteractWidget {
 		if (!textok) {
 			this.textFormat_ = TextFormat.PlainText;
 		}
-		this.textChanged_ = true;
+		this.flags_.set(BIT_TEXT_CHANGED);
 		this.repaint(EnumSet.of(RepaintFlag.RepaintInnerHtml));
 		return textok;
 	}
@@ -280,9 +274,9 @@ public class WText extends WInteractWidget {
 	 * @see WText#isWordWrap()
 	 */
 	public void setWordWrap(boolean wordWrap) {
-		if (this.wordWrap_ != wordWrap) {
-			this.wordWrap_ = wordWrap;
-			this.wordWrapChanged_ = true;
+		if (this.flags_.get(BIT_WORD_WRAP) != wordWrap) {
+			this.flags_.set(BIT_WORD_WRAP, wordWrap);
+			this.flags_.set(BIT_WORD_WRAP_CHANGED);
 			this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyAttribute));
 		}
 	}
@@ -294,7 +288,7 @@ public class WText extends WInteractWidget {
 	 * @see WText#setWordWrap(boolean wordWrap)
 	 */
 	public boolean isWordWrap() {
-		return this.wordWrap_;
+		return this.flags_.get(BIT_WORD_WRAP);
 	}
 
 	/**
@@ -321,7 +315,7 @@ public class WText extends WInteractWidget {
 		if (sides.contains(Side.Bottom)) {
 			throw new WtException("WText::padding on Bottom is not supported.");
 		}
-		this.paddingsChanged_ = true;
+		this.flags_.set(BIT_PADDINGS_CHANGED);
 		this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyAttribute));
 	}
 
@@ -369,9 +363,44 @@ public class WText extends WInteractWidget {
 		}
 	}
 
+	/**
+	 * Enables internal path encoding of anchors in the XHTML text.
+	 * <p>
+	 * Anchors to internal paths are represented differently depending on the
+	 * session implementation (plain HTML, Ajax or HTML5 history). By enabling
+	 * this option, anchors which reference an internal path (by referring a URL
+	 * of the form <code>href=&quot;#/...&quot;</code>), are re-encoded to link
+	 * to the internal path.
+	 * <p>
+	 * When using {@link TextFormat#XHTMLText} (or
+	 * {@link TextFormat#XHTMLUnsafeText}) formatted text, the text is pasted
+	 * verbatim in the browser (with the exception of XSS filtering if
+	 * applicable). With this option, however, the XHTML text may be transformed
+	 * at the cost of an additional XML parsing step.
+	 * <p>
+	 * The default value is <code>false</code>.
+	 * <p>
+	 */
+	public void setInternalPathEncoding(boolean enabled) {
+		if (this.flags_.get(BIT_ENCODE_INTERNAL_PATHS) != enabled) {
+			this.flags_.set(BIT_ENCODE_INTERNAL_PATHS, enabled);
+			this.flags_.set(BIT_TEXT_CHANGED);
+		}
+	}
+
+	/**
+	 * Returns whether internal paths are encoded.
+	 * <p>
+	 * 
+	 * @see WText#setInternalPathEncoding(boolean enabled)
+	 */
+	public boolean hasInternalPathEncoding() {
+		return this.flags_.get(BIT_ENCODE_INTERNAL_PATHS);
+	}
+
 	public void refresh() {
 		if (this.text_.refresh()) {
-			this.textChanged_ = true;
+			this.flags_.set(BIT_TEXT_CHANGED);
 			this.repaint(EnumSet.of(RepaintFlag.RepaintInnerHtml));
 		}
 		super.refresh();
@@ -379,10 +408,12 @@ public class WText extends WInteractWidget {
 
 	private WString text_;
 	private TextFormat textFormat_;
-	private boolean wordWrap_;
-	private boolean textChanged_;
-	private boolean wordWrapChanged_;
-	private boolean paddingsChanged_;
+	private static final int BIT_WORD_WRAP = 0;
+	private static final int BIT_TEXT_CHANGED = 1;
+	private static final int BIT_WORD_WRAP_CHANGED = 2;
+	private static final int BIT_PADDINGS_CHANGED = 3;
+	private static final int BIT_ENCODE_INTERNAL_PATHS = 4;
+	BitSet flags_;
 
 	private boolean isCheckWellFormed() {
 		if (this.textFormat_ == TextFormat.XHTMLText && this.text_.isLiteral()) {
@@ -396,7 +427,13 @@ public class WText extends WInteractWidget {
 		if (this.textFormat_ == TextFormat.PlainText) {
 			return escapeText(this.text_, true).toString();
 		} else {
-			return this.text_.toString();
+			if (this.flags_.get(BIT_ENCODE_INTERNAL_PATHS)) {
+				WString result = this.text_;
+				InternalPathEncoder.EncodeInternalPathRefs(result);
+				return result.toString();
+			} else {
+				return this.text_.toString();
+			}
 		}
 	}
 
@@ -415,35 +452,36 @@ public class WText extends WInteractWidget {
 	private WLength[] padding_;
 
 	void render(EnumSet<RenderFlag> flags) {
-		if (this.textChanged_) {
+		if (this.flags_.get(BIT_TEXT_CHANGED)) {
 			this.autoAdjustInline();
 		}
 		super.render(flags);
 	}
 
 	void updateDom(DomElement element, boolean all) {
-		if (this.textChanged_ || all) {
+		if (this.flags_.get(BIT_TEXT_CHANGED) || all) {
 			String text = this.getFormattedText();
-			if (this.textChanged_ || text.length() != 0) {
+			if (this.flags_.get(BIT_TEXT_CHANGED) || text.length() != 0) {
 				element.setProperty(Property.PropertyInnerHTML, this
 						.getFormattedText());
 			}
-			this.textChanged_ = false;
+			this.flags_.clear(BIT_TEXT_CHANGED);
 		}
-		if (this.wordWrapChanged_ || all) {
-			if (!all || !this.wordWrap_) {
+		if (this.flags_.get(BIT_WORD_WRAP_CHANGED) || all) {
+			if (!all || !this.flags_.get(BIT_WORD_WRAP)) {
 				element.setProperty(Property.PropertyStyleWhiteSpace,
-						this.wordWrap_ ? "normal" : "nowrap");
+						this.flags_.get(BIT_WORD_WRAP) ? "normal" : "nowrap");
 			}
-			this.wordWrapChanged_ = false;
+			this.flags_.clear(BIT_WORD_WRAP_CHANGED);
 		}
-		if (this.paddingsChanged_ || all && this.padding_ != null
+		if (this.flags_.get(BIT_PADDINGS_CHANGED) || all
+				&& this.padding_ != null
 				&& !(this.padding_[0].isAuto() && this.padding_[1].isAuto())) {
 			element.setProperty(Property.PropertyStylePaddingRight,
 					this.padding_[0].getCssText());
 			element.setProperty(Property.PropertyStylePaddingLeft,
 					this.padding_[1].getCssText());
-			this.paddingsChanged_ = false;
+			this.flags_.clear(BIT_PADDINGS_CHANGED);
 		}
 		super.updateDom(element, all);
 	}
@@ -454,8 +492,9 @@ public class WText extends WInteractWidget {
 	}
 
 	void propagateRenderOk(boolean deep) {
-		this.textChanged_ = false;
-		this.wordWrapChanged_ = false;
+		this.flags_.clear(BIT_TEXT_CHANGED);
+		this.flags_.clear(BIT_WORD_WRAP_CHANGED);
+		this.flags_.clear(BIT_PADDINGS_CHANGED);
 		super.propagateRenderOk(deep);
 	}
 }

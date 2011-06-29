@@ -63,7 +63,7 @@ public class WFontMetrics {
 	 * e.g.~for a font with size set to 16px, this returns 16.
 	 */
 	public double getSize() {
-		return this.font_.getSizeLength(12).toPixels();
+		return this.ascent_ + this.descent_;
 	}
 
 	/**

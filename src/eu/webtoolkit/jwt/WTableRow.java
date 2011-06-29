@@ -47,6 +47,17 @@ public class WTableRow extends WObject {
 	}
 
 	/**
+	 * Access the row element at the given column.
+	 * <p>
+	 * Like {@link WTable#getElementAt(int row, int column)
+	 * WTable#getElementAt()}, if the column is beyond the current table
+	 * dimensions, then the table is expanded automatically.
+	 */
+	public WTableCell elementAt(int column) {
+		return this.table_.getElementAt(this.getRowNum(), column);
+	}
+
+	/**
 	 * Returns the row number of this row in the table.
 	 * <p>
 	 * 

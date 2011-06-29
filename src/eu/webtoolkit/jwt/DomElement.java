@@ -70,6 +70,9 @@ class DomElement {
 					result.write(c);
 				} else {
 					result.append('%');
+					if ((int) c < 16) {
+						result.append('0');
+					}
 					result.append(Integer.toHexString(c));
 				}
 			} else {
@@ -1478,8 +1481,8 @@ class DomElement {
 	static boolean[] defaultInline_ = { true, true, true, false, false, false,
 			false, true, false, false, false, false, false, true, true, true,
 			true, true, false, false, true, false, false, true, true, false,
-			false, false, false, false, false, true, false, false, false,
-			false, true, false, false, false, false, false, true, true };
+			false, false, false, false, false, true, false, false, true, false,
+			true, false, false, false, false, false, true, true };
 	static String[] cssNames_ = { "position", "z-index", "float", "clear",
 			"width", "height", "line-height", "min-width", "min-height",
 			"max-width", "max-height", "left", "right", "top", "bottom",

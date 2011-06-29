@@ -1469,7 +1469,7 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 					}
 				});
 		this.headerHeightRule_ = new WCssTemplateRule("#" + this.getId()
-				+ " .headerrh");
+				+ " .headerrh", this);
 		app.getStyleSheet().addRule(this.headerHeightRule_);
 		this.setHeaderHeight(this.headerLineHeight_);
 	}
@@ -2338,15 +2338,12 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	}
 
 	private void initDragDrop() {
-		WApplication app = WApplication.getInstance();
-		app.getStyleSheet()
-				.addRule(
-						"#" + this.getId() + "dw",
+		this
+				.addCssRule("#" + this.getId() + "dw",
 						"width: 32px; height: 32px;background: url("
 								+ WApplication.getResourcesUrl()
 								+ "items-not-ok.gif);");
-		app.getStyleSheet().addRule(
-				"#" + this.getId() + "dw.Wt-valid-drop",
+		this.addCssRule("#" + this.getId() + "dw.Wt-valid-drop",
 				"width: 32px; height: 32px;background: url("
 						+ WApplication.getResourcesUrl() + "items-ok.gif);");
 		this.selectionChanged_.addListener(this, new Signal.Listener() {

@@ -303,6 +303,16 @@ class WebRenderer implements SlotLearnerInterface {
 	private void serveJavaScriptUpdate(WebResponse response) throws IOException {
 		this.setCaching(response, false);
 		this.setHeaders(response, "text/javascript; charset=UTF-8");
+		if (this.session_.sessionIdChanged_) {
+			this.collectedJS1_.append(
+					this.session_.getApp().getJavaScriptClass()).append(
+					"._p_.setSessionUrl(").append(
+					WWebWidget.jsStringLiteral(this.session_.getBootstrapUrl(
+							response,
+							WebSession.BootstrapOption.ClearInternalPath)))
+					.append(");");
+			this.session_.sessionIdChanged_ = false;
+		}
 		if (!this.rendered_) {
 			this.serveMainAjax(response);
 		} else {
@@ -324,6 +334,7 @@ class WebRenderer implements SlotLearnerInterface {
 		boolean serveSkeletons = !conf.isSplitScript()
 				|| response.getParameter("skeleton") != null;
 		boolean serveRest = !conf.isSplitScript() || !serveSkeletons;
+		this.session_.sessionIdChanged_ = false;
 		this.setCaching(response, conf.isSplitScript() && serveSkeletons);
 		this.setHeaders(response, "text/javascript; charset=UTF-8");
 		if (!widgetset) {
@@ -507,7 +518,8 @@ class WebRenderer implements SlotLearnerInterface {
 		}
 		StringWriter bootStyleUrl = new StringWriter();
 		DomElement.htmlAttributeValue(bootStyleUrl, this.session_
-				.getMostRelativeUrl()
+				.getBootstrapUrl(response,
+						WebSession.BootstrapOption.ClearInternalPath)
 				+ "&request=style");
 		boot.setVar("BOOT_STYLE_URL", bootStyleUrl.toString());
 		this.setCaching(response, false);
@@ -522,14 +534,15 @@ class WebRenderer implements SlotLearnerInterface {
 	private void serveMainpage(WebResponse response) throws IOException {
 		++this.expectedAckId_;
 		++this.pageId_;
+		this.session_.sessionIdChanged_ = false;
 		Configuration conf = this.session_.getController().getConfiguration();
 		WApplication app = this.session_.getApp();
 		if (!app.getEnvironment().hasAjax()
 				&& (app.internalPathIsChanged_ && !app.oldInternalPath_
 						.equals(app.newInternalPath_))) {
 			app.oldInternalPath_ = app.newInternalPath_;
-			this.session_.redirect(this.session_.appendSessionQuery(app
-					.getBookmarkUrl(app.newInternalPath_)));
+			this.session_.redirect(this.session_
+					.getMostRelativeUrl(app.newInternalPath_));
 		}
 		String redirect = this.session_.getRedirect();
 		if (redirect.length() != 0) {
@@ -1118,7 +1131,7 @@ class WebRenderer implements SlotLearnerInterface {
 		boot.setVar("APP_CLASS", "Wt");
 		bootJs.setVar("SELF_URL", this.safeJsStringLiteral(this.session_
 				.getBootstrapUrl(response,
-						WebSession.BootstrapOption.KeepInternalPath)));
+						WebSession.BootstrapOption.ClearInternalPath)));
 		bootJs.setVar("SESSION_ID", this.session_.getSessionId());
 		bootJs.setVar("RANDOMSEED", String.valueOf(MathUtils.randomInt()));
 		bootJs.setVar("RELOAD_IS_NEWSESSION", conf.isReloadIsNewSession());
@@ -1173,12 +1186,17 @@ class WebRenderer implements SlotLearnerInterface {
 				result.append(xhtml ? "\"/>" : "\">");
 			}
 		} else {
-			if (this.session_.getEnv().agentIsIE()
-					&& this.session_.getEnv().getAgent().getValue() <= WEnvironment.UserAgent.IE8
-							.getValue()) {
+			if (this.session_.getEnv().agentIsIElt(9)) {
 				result.append(
 						"<meta http-equiv=\"X-UA-Compatible\" content=\"IE=7")
 						.append(xhtml ? "\"/>" : "\">").append('\n');
+			} else {
+				if (this.session_.getEnv().getAgent() == WEnvironment.UserAgent.IE9) {
+					result
+							.append(
+									"<meta http-equiv=\"X-UA-Compatible\" content=\"IE=9")
+							.append(xhtml ? "\"/>" : "\">").append('\n');
+				}
 			}
 		}
 		if (this.session_.getFavicon().length() != 0) {

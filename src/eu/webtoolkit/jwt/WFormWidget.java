@@ -245,18 +245,23 @@ public abstract class WFormWidget extends WInteractWidget {
 		WEnvironment env = app.getEnvironment();
 		if (env.hasAjax()) {
 			if (!(this.emptyText_.length() == 0)) {
-				app.loadJavaScript("js/WFormWidget.js", wtjs1());
+				if (!this.flags_.get(BIT_JS_OBJECT)) {
+					this.defineJavaScript();
+				} else {
+					this.updateEmptyText();
+				}
 				if (!(this.removeEmptyText_ != null)) {
 					this.removeEmptyText_ = new JSlot(this);
 					this.focussed().addListener(this.removeEmptyText_);
 					this.blurred().addListener(this.removeEmptyText_);
 					this.keyWentDown().addListener(this.removeEmptyText_);
 					String jsFunction = "function(obj, event) {jQuery.data("
-							+ this.getJsRef() + ", 'obj').updateEmptyText();}";
+							+ this.getJsRef() + ", 'obj').applyEmptyText();}";
 					this.removeEmptyText_.setJavaScript(jsFunction);
 				}
 			} else {
 				;
+				this.removeEmptyText_ = null;
 			}
 		} else {
 			this.setToolTip(emptyText);
@@ -301,6 +306,13 @@ public abstract class WFormWidget extends WInteractWidget {
 		return this.voidEventSignal(FOCUS_SIGNAL, true);
 	}
 
+	public void refresh() {
+		if (this.emptyText_.refresh()) {
+			this.updateEmptyText();
+		}
+		super.refresh();
+	}
+
 	WLabel label_;
 	WValidator validator_;
 	JSlot validateJs_;
@@ -308,11 +320,10 @@ public abstract class WFormWidget extends WInteractWidget {
 	JSlot removeEmptyText_;
 	WString emptyText_;
 
-	void updateEmptyText() {
-		if (!(this.emptyText_.length() == 0) && this.isRendered()) {
-			WApplication.getInstance().doJavaScript(
-					"jQuery.data(" + this.getJsRef()
-							+ ", 'obj').updateEmptyText();");
+	protected void applyEmptyText() {
+		if (this.isRendered() && !(this.emptyText_.length() == 0)) {
+			this.doJavaScript("jQuery.data(" + this.getJsRef()
+					+ ", 'obj').applyEmptyText();");
 		}
 	}
 
@@ -331,6 +342,7 @@ public abstract class WFormWidget extends WInteractWidget {
 	private static final int BIT_READONLY = 3;
 	private static final int BIT_READONLY_CHANGED = 4;
 	private static final int BIT_TABINDEX_CHANGED = 5;
+	private static final int BIT_JS_OBJECT = 6;
 	BitSet flags_;
 	private int tabIndex_;
 
@@ -380,6 +392,34 @@ public abstract class WFormWidget extends WInteractWidget {
 			this.filterInput_ = null;
 		}
 		this.validate();
+	}
+
+	private void defineJavaScript(boolean force) {
+		if (force || !this.flags_.get(BIT_JS_OBJECT)) {
+			this.flags_.set(BIT_JS_OBJECT);
+			if (!this.isRendered()) {
+				return;
+			}
+			WApplication app = WApplication.getInstance();
+			app.loadJavaScript("js/WFormWidget.js", wtjs1());
+			this.doJavaScript("new Wt3_1_10.WFormWidget("
+					+ app.getJavaScriptClass() + "," + this.getJsRef() + ","
+					+ WString.toWString(this.emptyText_).getJsStringLiteral()
+					+ ");");
+		}
+	}
+
+	private final void defineJavaScript() {
+		defineJavaScript(false);
+	}
+
+	void updateEmptyText() {
+		if (this.isRendered()) {
+			this.doJavaScript("jQuery.data(" + this.getJsRef()
+					+ ", 'obj').setEmptyText("
+					+ WString.toWString(this.emptyText_).getJsStringLiteral()
+					+ ");");
+		}
 	}
 
 	void updateDom(DomElement element, boolean all) {
@@ -439,14 +479,8 @@ public abstract class WFormWidget extends WInteractWidget {
 	// methodpointertomember or dependentsizedarray>) ;
 	void render(EnumSet<RenderFlag> flags) {
 		if (!EnumUtils.mask(flags, RenderFlag.RenderFull).isEmpty()
-				&& !(this.emptyText_.length() == 0)) {
-			WApplication app = WApplication.getInstance();
-			WEnvironment env = app.getEnvironment();
-			if (env.hasAjax()) {
-				app.doJavaScript("new Wt3_1_10.WFormWidget("
-						+ app.getJavaScriptClass() + "," + this.getJsRef()
-						+ "," + "'" + this.emptyText_.toString() + "');");
-			}
+				&& this.flags_.get(BIT_JS_OBJECT)) {
+			this.defineJavaScript(true);
 		}
 		super.render(flags);
 	}
@@ -466,7 +500,7 @@ public abstract class WFormWidget extends WInteractWidget {
 				JavaScriptScope.WtClassScope,
 				JavaScriptObjectType.JavaScriptConstructor,
 				"WFormWidget",
-				"function(c,a,d){jQuery.data(a,\"obj\",this);var b=c.WT;this.updateEmptyText=function(){if(b.hasFocus(a)){if($(a).hasClass(\"Wt-edit-emptyText\")){if(!b.isIE&&a.oldtype)a.type=a.oldtype;$(a).removeClass(\"Wt-edit-emptyText\");a.value=\"\"}}else if(a.value==\"\"){if(a.type==\"password\")if(b.isIE)return;else{a.oldtype=\"password\";a.type=\"text\"}$(a).addClass(\"Wt-edit-emptyText\");a.value=d}};this.updateEmptyText()}");
+				"function(d,a,b){jQuery.data(a,\"obj\",this);var c=d.WT;this.applyEmptyText=function(){if(c.hasFocus(a)){if($(a).hasClass(\"Wt-edit-emptyText\")){if(!c.isIE&&a.oldtype)a.type=a.oldtype;$(a).removeClass(\"Wt-edit-emptyText\");a.value=\"\"}}else if(a.value==\"\"){if(a.type==\"password\")if(c.isIE)return;else{a.oldtype=\"password\";a.type=\"text\"}$(a).addClass(\"Wt-edit-emptyText\");a.value=b}};this.setEmptyText=function(e){b=e;if($(a).hasClass(\"Wt-edit-emptyText\"))a.value= b};this.applyEmptyText()}");
 	}
 
 	static String CHANGE_SIGNAL = "M_change";

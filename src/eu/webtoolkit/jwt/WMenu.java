@@ -250,6 +250,7 @@ public class WMenu extends WCompositeWidget {
 		this.itemSelectRendered_ = new Signal1<WMenuItem>(this);
 		this.itemClosed_ = new Signal1<WMenuItem>(this);
 		this.items_ = new ArrayList<WMenuItem>();
+		this.contentsStackConnection_ = new AbstractSignal.Connection();
 		this.current_ = -1;
 		this.setRenderAsList(false);
 	}
@@ -287,6 +288,7 @@ public class WMenu extends WCompositeWidget {
 		this.itemSelectRendered_ = new Signal1<WMenuItem>(this);
 		this.itemClosed_ = new Signal1<WMenuItem>(this);
 		this.items_ = new ArrayList<WMenuItem>();
+		this.contentsStackConnection_ = new AbstractSignal.Connection();
 		this.current_ = -1;
 		this.setRenderAsList(false);
 	}
@@ -306,6 +308,7 @@ public class WMenu extends WCompositeWidget {
 	 * Destructor.
 	 */
 	public void remove() {
+		this.contentsStackConnection_.disconnect();
 		for (int i = 0; i < this.items_.size(); ++i) {
 			this.items_.get(i).setMenu((WMenu) null);
 			;
@@ -380,9 +383,7 @@ public class WMenu extends WCompositeWidget {
 				new WText(" ", parent);
 			}
 		}
-		for (int i = 0; i < this.items_.size(); ++i) {
-			this.items_.get(i).resetLearnedSlots();
-		}
+		this.updateSelectionEvent();
 		if (this.contentsStack_ != null) {
 			WWidget contents = item.getContents();
 			if (contents != null) {
@@ -450,9 +451,7 @@ public class WMenu extends WCompositeWidget {
 			if (itemIndex <= this.current_ && this.current_ >= 0) {
 				--this.current_;
 			}
-			for (int i = 0; i < this.items_.size(); ++i) {
-				this.items_.get(i).resetLearnedSlots();
-			}
+			this.updateSelectionEvent();
 			this.select(this.current_, true);
 		}
 	}
@@ -752,8 +751,8 @@ public class WMenu extends WCompositeWidget {
 	 * For each menu item, {@link WMenuItem#getPathComponent()
 	 * WMenuItem#getPathComponent()} is appended to the internal base path (
 	 * {@link WMenu#getInternalBasePath() getInternalBasePath()}), which
-	 * defaults to the internal path ({@link WApplication#getInternalPath()
-	 * WApplication#getInternalPath()}) but may be changed using
+	 * defaults to the internal path ({@link WApplication#getBookmarkUrl()
+	 * WApplication#getBookmarkUrl()}) but may be changed using
 	 * {@link WMenu#setInternalBasePath(String basePath) setInternalBasePath()},
 	 * with a &apos;/&apos; appended to turn it into a folder, if needed.
 	 * <p>
@@ -827,9 +826,8 @@ public class WMenu extends WCompositeWidget {
 	 * Returns the internal base path.
 	 * <p>
 	 * The default value is the application&apos;s internalPath (
-	 * {@link WApplication#getInternalPath() WApplication#getInternalPath()})
-	 * that was recorded when
-	 * {@link WMenu#setInternalPathEnabled(String basePath)
+	 * {@link WApplication#getBookmarkUrl() WApplication#getBookmarkUrl()}) that
+	 * was recorded when {@link WMenu#setInternalPathEnabled(String basePath)
 	 * setInternalPathEnabled()} was called, and together with each
 	 * {@link WMenuItem#getPathComponent() WMenuItem#getPathComponent()}
 	 * determines the paths for each item.
@@ -873,20 +871,30 @@ public class WMenu extends WCompositeWidget {
 	void internalPathChanged(String path) {
 		WApplication app = WApplication.getInstance();
 		if (app.internalPathMatches(this.basePath_)) {
-			String value = app.getInternalPathNextPart(this.basePath_);
+			String subPath = app.internalSubPath(this.basePath_);
+			int bestI = -1;
+			int bestMatchLength = -1;
 			for (int i = 0; i < this.items_.size(); ++i) {
-				if (this.items_.get(i).getPathComponent().equals(value)
-						|| this.items_.get(i).getPathComponent().equals(
-								value + '/')) {
-					this.items_.get(i).setFromInternalPath(path);
-					return;
+				int matchLength = match(subPath, this.items_.get(i)
+						.getPathComponent());
+				System.err.append(this.items_.get(i).getPathComponent())
+						.append(", ").append(subPath).append(": ").append(
+								String.valueOf(matchLength)).append('\n');
+				if (matchLength > bestMatchLength) {
+					bestMatchLength = matchLength;
+					bestI = i;
 				}
 			}
-			if (value.length() != 0) {
-				WApplication.getInstance().log("error").append(
-						"WMenu: unknown path: '").append(value).append("'");
+			if (bestI != -1) {
+				this.items_.get(bestI).setFromInternalPath(path);
 			} else {
-				this.select(-1, false);
+				if (subPath.length() != 0) {
+					WApplication.getInstance().log("error").append(
+							"WMenu: unknown path: '").append(subPath).append(
+							"'");
+				} else {
+					this.select(-1, false);
+				}
 			}
 		}
 	}
@@ -951,6 +959,8 @@ public class WMenu extends WCompositeWidget {
 			}
 		}
 	}
+
+	private AbstractSignal.Connection contentsStackConnection_;
 
 	private void contentsDestroyed() {
 		for (int i = 0; i < this.items_.size(); ++i) {
@@ -1046,9 +1056,7 @@ public class WMenu extends WCompositeWidget {
 		}
 		item.renderSelected(this.current_ == index);
 		item.renderHidden(item.isHidden());
-		for (int i = 0; i < this.items_.size(); ++i) {
-			this.items_.get(i).resetLearnedSlots();
-		}
+		this.updateSelectionEvent();
 	}
 
 	void recreateItem(WMenuItem item) {
@@ -1073,7 +1081,31 @@ public class WMenu extends WCompositeWidget {
 		for (int i = 0; i < this.items_.size(); ++i) {
 			WMenuItem item = this.items_.get(i);
 			item.updateItemWidget(item.getItemWidget());
-			item.resetLearnedSlots();
 		}
+		this.updateSelectionEvent();
+	}
+
+	void updateSelectionEvent() {
+		for (int i = 0; i < this.items_.size(); ++i) {
+			this.items_.get(i).updateSelectionEvent();
+		}
+	}
+
+	static int match(String path, String component) {
+		if (component.length() > path.length()) {
+			return -1;
+		}
+		int length = Math.min(component.length(), path.length());
+		int current = -1;
+		for (int i = 0; i < length; ++i) {
+			if (component.charAt(i) != path.charAt(i)) {
+				return current;
+			} else {
+				if (component.charAt(i) == '/') {
+					current = i;
+				}
+			}
+		}
+		return length;
 	}
 }

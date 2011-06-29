@@ -279,7 +279,6 @@ public class WTableView extends WAbstractItemView {
 		} else {
 			this.plainTable_ = new WTable();
 			this.plainTable_.setStyleClass("Wt-plaintable");
-			this.plainTable_.setAttributeValue("style", "table-layout: fixed;");
 			this.plainTable_.setHeaderCount(1);
 			this.impl_.addWidget(this.plainTable_);
 			this.resize(this.getWidth(), this.getHeight());
@@ -366,6 +365,7 @@ public class WTableView extends WAbstractItemView {
 						WTableView.this.modelReset();
 					}
 				}));
+		this.firstColumn_ = this.lastColumn_ = -1;
 	}
 
 	public void setColumnWidth(int column, WLength width) {
@@ -416,8 +416,8 @@ public class WTableView extends WAbstractItemView {
 		int renderedRowCount = this.getModel() != null ? this.getLastRow()
 				- this.getFirstRow() + 1 : 0;
 		super.setRowHeight(rowHeight);
+		String lh = "line-height: " + rowHeight.getCssText();
 		if (this.isAjaxMode()) {
-			String lh = "line-height: " + rowHeight.getCssText();
 			this.canvas_.setAttributeValue("style", lh);
 			this.headerColumnsCanvas_.setAttributeValue("style", lh);
 			if (this.getModel() != null) {
@@ -428,6 +428,8 @@ public class WTableView extends WAbstractItemView {
 				this.setRenderedHeight(th);
 			}
 		} else {
+			this.plainTable_.setAttributeValue("style", lh
+					+ ";table-layout: fixed;");
 			this.resize(this.getWidth(), this.getHeight());
 		}
 		this.updateTableBackground();
@@ -1147,8 +1149,7 @@ public class WTableView extends WAbstractItemView {
 		switch (side) {
 		case Top:
 			this.setSpannerCount(side, this.getSpannerCount(side) + 1);
-			for (int i = 0; i < this.headerColumnsTable_.getCount()
-					+ this.table_.getCount(); ++i) {
+			for (int i = 0; i < this.getRenderedColumnsCount(); ++i) {
 				WTableView.ColumnWidget w = this.columnContainer(i);
 				this.deleteItem(row, col + i, w.getWidget(0));
 			}
@@ -1156,8 +1157,7 @@ public class WTableView extends WAbstractItemView {
 		case Bottom:
 			row = this.getLastRow();
 			this.setSpannerCount(side, this.getSpannerCount(side) + 1);
-			for (int i = 0; i < this.headerColumnsTable_.getCount()
-					+ this.table_.getCount(); ++i) {
+			for (int i = 0; i < this.getRenderedColumnsCount(); ++i) {
 				WTableView.ColumnWidget w = this.columnContainer(i);
 				this.deleteItem(row, col + i, w.getWidget(w.getCount() - 1));
 			}
@@ -1324,6 +1324,7 @@ public class WTableView extends WAbstractItemView {
 			for (int i = 0; i < this.getColumnCount(); ++i) {
 				WWidget w = this.createHeaderWidget(app, i);
 				WTableCell cell = this.plainTable_.getElementAt(0, i);
+				cell.setStyleClass("headerrh");
 				cell.addWidget(w);
 				w
 						.setWidth(new WLength(this.columnInfo(i).width
@@ -1654,7 +1655,7 @@ public class WTableView extends WAbstractItemView {
 			if (this.isRowRendered(index.getRow())) {
 				int renderedRow = index.getRow() - this.getFirstRow();
 				if (this.isAjaxMode()) {
-					for (int i = 0; i < this.table_.getCount(); ++i) {
+					for (int i = 0; i < this.getRenderedColumnsCount(); ++i) {
 						WTableView.ColumnWidget column = this
 								.columnContainer(i);
 						WWidget w = column.getWidget(renderedRow);
@@ -1690,6 +1691,11 @@ public class WTableView extends WAbstractItemView {
 				}
 			}
 		}
+	}
+
+	private int getRenderedColumnsCount() {
+		assert this.isAjaxMode();
+		return this.headerColumnsTable_.getCount() + this.table_.getCount();
 	}
 
 	private void defineJavaScript() {
@@ -1784,8 +1790,7 @@ public class WTableView extends WAbstractItemView {
 	private void setRenderedHeight(double th) {
 		this.table_.setHeight(new WLength(th));
 		this.headerColumnsTable_.setHeight(new WLength(th));
-		for (int i = 0; i < this.headerColumnsTable_.getCount()
-				+ this.table_.getCount(); ++i) {
+		for (int i = 0; i < this.getRenderedColumnsCount(); ++i) {
 			WTableView.ColumnWidget w = this.columnContainer(i);
 			w.setHeight(new WLength(th));
 		}

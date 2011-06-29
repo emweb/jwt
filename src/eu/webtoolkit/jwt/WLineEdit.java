@@ -168,7 +168,7 @@ public class WLineEdit extends WFormWidget {
 			this.flags_.set(BIT_CONTENT_CHANGED);
 			this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyIEMobile));
 			this.validate();
-			this.updateEmptyText();
+			this.applyEmptyText();
 		}
 	}
 

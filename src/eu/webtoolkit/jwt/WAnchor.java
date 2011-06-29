@@ -326,7 +326,7 @@ public class WAnchor extends WContainerWidget {
 	 * @see WAnchor#setRef(String url)
 	 * @see WAnchor#setResource(WResource resource)
 	 * @see WApplication#getBookmarkUrl()
-	 * @see WApplication#setInternalPath(String path, boolean emitChange)
+	 * @see WApplication#getBookmarkUrl()
 	 */
 	public void setRefInternalPath(String path) {
 		if (this.flags_.get(BIT_REF_INTERNAL_PATH) && path.equals(this.ref_)) {
@@ -335,6 +335,7 @@ public class WAnchor extends WContainerWidget {
 		this.flags_.set(BIT_REF_INTERNAL_PATH);
 		this.ref_ = path;
 		this.flags_.set(BIT_REF_CHANGED);
+		WApplication.getInstance().enableInternalPaths();
 		this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyIEMobile));
 	}
 
@@ -542,10 +543,11 @@ public class WAnchor extends WContainerWidget {
 	}
 
 	void updateDom(DomElement element, boolean all) {
+		boolean needsUrlResolution = false;
 		if (this.flags_.get(BIT_REF_CHANGED) || all) {
 			String url = "";
+			WApplication app = WApplication.getInstance();
 			if (this.flags_.get(BIT_REF_INTERNAL_PATH)) {
-				WApplication app = WApplication.getInstance();
 				if (app.getEnvironment().hasAjax()) {
 					url = app.getBookmarkUrl(this.ref_);
 					if (this.target_ == AnchorTarget.TargetSelf) {
@@ -574,6 +576,7 @@ public class WAnchor extends WContainerWidget {
 				this.changeInternalPathJS_ = null;
 			}
 			element.setAttribute("href", resolveRelativeUrl(url));
+			needsUrlResolution = !app.getEnvironment().isHashInternalPaths();
 			this.flags_.clear(BIT_REF_CHANGED);
 		}
 		if (this.flags_.get(BIT_TARGET_CHANGED) || all) {
@@ -592,6 +595,15 @@ public class WAnchor extends WContainerWidget {
 			this.flags_.clear(BIT_TARGET_CHANGED);
 		}
 		super.updateDom(element, all);
+		if (needsUrlResolution) {
+			if (all) {
+				element.setProperty(Property.PropertyClass, StringUtils
+						.addWord(this.getStyleClass(), "Wt-rr"));
+			} else {
+				element.callJavaScript("$('#" + this.getId()
+						+ "').addClass('Wt-rr');");
+			}
+		}
 	}
 
 	DomElementType getDomElementType() {
