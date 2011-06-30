@@ -2548,7 +2548,7 @@ public class WApplication extends WObject {
 		}
 	}
 
-	void changeInternalPath(String aPath) {
+	private void changeInternalPath(String aPath) {
 		String path = StringUtils.prepend(aPath, '/');
 		if (path.length() == 0 || path.charAt(0) == '/') {
 			if (!path.equals(this.newInternalPath_)) {
@@ -2556,6 +2556,13 @@ public class WApplication extends WObject {
 				this.internalPathChanged_.trigger(this.newInternalPath_);
 			}
 		}
+	}
+
+	void changedInternalPath(String path) {
+		if (!this.getEnvironment().isHashInternalPaths()) {
+			this.session_.setPagePathInfo(path);
+		}
+		this.changeInternalPath(path);
 	}
 
 	void streamAfterLoadJavaScript(Writer out) throws IOException {

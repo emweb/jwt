@@ -482,7 +482,7 @@ class WebRenderer implements SlotLearnerInterface {
 								"._p_.setHash('").append(app.newInternalPath_)
 						.append("');\n");
 				if (!app.getEnvironment().isHashInternalPaths()) {
-					this.session_.pagePathInfo_ = app.newInternalPath_;
+					this.session_.setPagePathInfo(app.newInternalPath_);
 				}
 				response.out().append(app.getJavaScriptClass()).append(
 						"._p_.update(null, 'load', null, false);").append(
@@ -1073,7 +1073,7 @@ class WebRenderer implements SlotLearnerInterface {
 				js.append(app.getJavaScriptClass()).append("._p_.setHash('")
 						.append(app.newInternalPath_).append("');\n");
 				if (!app.getEnvironment().isHashInternalPaths()) {
-					this.session_.pagePathInfo_ = app.newInternalPath_;
+					this.session_.setPagePathInfo(app.newInternalPath_);
 				}
 			}
 			this.loadScriptLibraries(js, app, librariesLoaded);

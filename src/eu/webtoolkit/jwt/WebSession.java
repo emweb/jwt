@@ -206,12 +206,12 @@ class WebSession {
 						}
 						this.app_.enableAjax();
 						if (this.env_.getInternalPath().length() > 1) {
-							this.app_.changeInternalPath(this.env_
+							this.app_.changedInternalPath(this.env_
 									.getInternalPath());
 						}
 					} else {
 						if (hashE != null) {
-							this.app_.changeInternalPath(hashE);
+							this.app_.changedInternalPath(hashE);
 						}
 					}
 				}
@@ -345,13 +345,13 @@ class WebSession {
 							&& !this.env_.hasAjax()) {
 						String hashE = request.getParameter("_");
 						if (hashE != null) {
-							this.app_.changeInternalPath(hashE);
+							this.app_.changedInternalPath(hashE);
 						} else {
 							if (request.getPathInfo().length() != 0) {
-								this.app_.changeInternalPath(request
+								this.app_.changedInternalPath(request
 										.getPathInfo());
 							} else {
-								this.app_.changeInternalPath("");
+								this.app_.changedInternalPath("");
 							}
 						}
 					}
@@ -506,6 +506,10 @@ class WebSession {
 
 	public boolean isUseUglyInternalPaths() {
 		return false;
+	}
+
+	public void setPagePathInfo(String path) {
+		this.pagePathInfo_ = path;
 	}
 
 	public String getPagePathInfo() {
@@ -1528,11 +1532,11 @@ class WebSession {
 					if (signalE.equals("hash")) {
 						String hashE = request.getParameter(se + "_");
 						if (hashE != null) {
-							this.app_.changeInternalPath(hashE);
+							this.app_.changedInternalPath(hashE);
 							this.app_.doJavaScript("Wt3_1_10.scrollIntoView("
 									+ WWebWidget.jsStringLiteral(hashE) + ");");
 						} else {
-							this.app_.changeInternalPath("");
+							this.app_.changedInternalPath("");
 						}
 					} else {
 						for (int k = 0; k < 3; ++k) {
