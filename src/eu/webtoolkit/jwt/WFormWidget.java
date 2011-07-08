@@ -460,7 +460,8 @@ public abstract class WFormWidget extends WInteractWidget {
 			if (this.flags_.get(BIT_GOT_FOCUS) || all
 					&& this.flags_.get(BIT_INITIAL_FOCUS)) {
 				element.callJavaScript("setTimeout(function() {var f = "
-						+ this.getJsRef() + ";if (f) f.focus(); }, "
+						+ this.getJsRef()
+						+ ";if (f) try { f.focus(); } catch (e) { } }, "
 						+ (env.agentIsIElt(9) ? "500" : "10") + ");");
 				this.flags_.clear(BIT_GOT_FOCUS);
 			}
