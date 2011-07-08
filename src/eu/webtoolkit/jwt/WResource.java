@@ -50,18 +50,38 @@ import eu.webtoolkit.jwt.servlet.WebResponse;
  * @see WImage
  */
 public abstract class WResource extends WObject {
+	/**
+	 * Values for the disposition type in the Content-Disposition header
+	 */
+	public enum DispositionType {
+		/**
+		 * Do not specify a disposition type
+		 */
+		NoDisposition,
+		/**
+		 * Open with a helper application or show 'Save As' dialog
+		 */
+		Attachment,
+		/**
+		 * View with a browser plugin
+		 */
+		Inline
+	};
+	
 	private Signal dataChanged_ = new Signal(this);
 
 	private String suggestedFileName_;
 	private String currentUrl_;
 	private String internalPath_;
 	private boolean trackUploadProgress_;
+	private DispositionType dispositionType_;
 
 	WResource(WObject parent) {
 		super(parent);
 
 		suggestedFileName_ = "";
 		internalPath_ = "";
+		dispositionType_ = DispositionType.NoDisposition;
 
 		generateUrl();
 	}
@@ -119,9 +139,55 @@ public abstract class WResource extends WObject {
 			WebResponse response) throws IOException;
 
 	void handle(WebRequest request, WebResponse response) throws IOException {
-		if (suggestedFileName_.length() != 0)
-			response.addHeader("Content-Disposition", "attachment;filename="
-					+ suggestedFileName_);
+		if (dispositionType_ != DispositionType.NoDisposition
+				|| suggestedFileName_.length() != 0) {
+			String theDisposition;
+			switch (dispositionType_) {
+			default:
+			case Inline:
+				theDisposition = "inline";
+				break;
+			case Attachment:
+				theDisposition = "attachment";
+				break;
+			}
+			if (suggestedFileName_.length() != 0) {
+				if (dispositionType_ == DispositionType.NoDisposition) {
+					// backward compatibility-ish with older Wt versions
+					theDisposition = "attachment";
+				}
+				// Browser incompatibility hell: internationalized filename
+				// suggestions
+				// First filename is for browsers that don't support RFC 5987
+				// Second filename is for browsers that do support RFC 5987
+				String fileField;
+				// We cannot query wApp here, because wApp doesn't exist for
+				// static resources.
+				String userAgent = request.getUserAgent();
+				boolean isIE = userAgent.contains("MSIE");
+				boolean isChrome = userAgent.contains("Chrome");
+				if (isIE || isChrome) {
+					// filename="foo-%c3%a4-%e2%82%ac.html"
+					// Note: IE never converts %20 back to space, so avoid escaping
+					// IE will also not url decode the filename if the file has no ASCII
+					// extension (e.g. .txt)
+					fileField = "filename=\""
+							+ StringUtils.urlEncode(suggestedFileName_, " ")
+							+ "\";";
+				} else {
+					// Binary UTF-8 sequence: for FF3, Safari, Chrome, Chrome9
+					fileField = "filename=\"" + suggestedFileName_ + "\";";
+				}
+				// Next will be picked by RFC 5987 in favour of the
+				// one without specified encoding (Chrome9,
+				fileField += StringUtils.EncodeHttpHeaderField("filename",
+						suggestedFileName_);
+				response.addHeader("Content-Disposition", theDisposition + ";"
+						+ fileField);
+			} else {
+				response.addHeader("Content-Disposition", theDisposition);
+			}
+		}
 
 		handleRequest(request, response);
 		response.flush();
@@ -185,11 +251,40 @@ public abstract class WResource extends WObject {
 	 * For resources, intended to be downloaded by the user, suggest a name used
 	 * for saving. The filename extension may also help the browser to identify
 	 * the correct program for opening the resource.
+	 * 
+	 * The disposition type determines if the resource is intended to
+	 * be opened by a plugin in the browser (DispositionType#Inline), or to be saved to disk
+	 * (DispositionType#Attachment). DispositionType#NoDisposition is not a valid Content-Disposition when a
+	 * filename is suggested; this will be rendered as DispositionType#Attachment.
+	 *
+	 * @see WResource#setDispositionType(DispositionType dispositionType)
+	 */
+	public void suggestFileName(String name, DispositionType dispositionType) {
+		suggestedFileName_ = name;
+		dispositionType_ = dispositionType;
+		
+		generateUrl();
+	}
+	
+	/**
+	 * Suggests a filename to the user for the data streamed by this resource.
+	 * <p>
+	 * For resources, intended to be downloaded by the user, suggest a name used
+	 * for saving. The filename extension may also help the browser to identify
+	 * the correct program for opening the resource.
+	 * 
+	 * The disposition type determines if the resource is intended to
+	 * be opened by a plugin in the browser (DispositionType#Inline), or to be saved to disk
+	 * (DispositionType#Attachment). DispositionType#NoDisposition is not a valid Content-Disposition when a
+	 * filename is suggested; this will be rendered as DispositionType#Attachment.
+	 *
+	 * @see WResource#setDispositionType(DispositionType dispositionType)
+	 * 
+	 * Calls {@link #suggestFileName(String name, DispositionType dispositionType)
+	 * suggestFileName(name, DispositionType.Attachment) }
 	 */
 	public void suggestFileName(String name) {
-		suggestedFileName_ = name;
-
-		generateUrl();
+		suggestFileName(name, DispositionType.Attachment);
 	}
 
 	/**
@@ -208,6 +303,34 @@ public abstract class WResource extends WObject {
 		generateUrl();
 
 		dataChanged_.trigger();
+	}
+	
+	/**
+	 * Configures the Content-Disposition header
+	 * 
+	 * The Content-Disposition header allows to instruct the browser that a
+	 * resource should be shown inline or as attachment. This function enables
+	 * you to set this property.
+	 * 
+	 * This is often used in combination with
+	 * {@link #suggestFileName(String, DispositionType)}. The
+	 * Content-Disposition must not be DispositionType#NoDisposition
+	 * when a filename is given; if this case is encountered, None will be
+	 * rendered as DispositionType#Attachment.
+	 * 
+	 * @see #suggestFileName(String, DispositionType)
+	 */
+	public void setDispositionType(DispositionType dispositionType) {
+		dispositionType_ = dispositionType;
+	}
+
+	/**
+	 * Returns the currently configured content disposition
+	 * 
+	 * @see #setDispositionType(DispositionType cd)
+	 */
+	public DispositionType getDispositionType() {
+		return dispositionType_;
 	}
 
 	/**

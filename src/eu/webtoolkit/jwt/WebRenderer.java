@@ -466,6 +466,8 @@ class WebRenderer implements SlotLearnerInterface {
 							librariesLoaded);
 					this.collectedJS2_.append("}");
 					app.enableAjax_ = false;
+				} else {
+					app.streamBeforeLoadJavaScript(response.out(), true);
 				}
 				response.out().append("window.").append(
 						app.getJavaScriptClass()).append(

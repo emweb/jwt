@@ -482,6 +482,9 @@ public abstract class WPaintedWidget extends WInteractWidget {
 		if (env.getContentType() != WEnvironment.ContentType.XHTML1
 				&& !(env.agentIsChrome()
 						&& env.getAgent().getValue() >= WEnvironment.UserAgent.Chrome5
+								.getValue()
+						|| env.agentIsIE()
+						&& env.getAgent().getValue() >= WEnvironment.UserAgent.IE9
 								.getValue() || env.agentIsGecko()
 						&& env.getAgent().getValue() >= WEnvironment.UserAgent.Firefox4_0
 								.getValue())) {

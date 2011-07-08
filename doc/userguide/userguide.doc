@@ -202,6 +202,18 @@ handled from within
 and by reimplementing this method you may control resource usage
 during each request.
 
+By default, servlet containers are configured to use cookies for
+session tracking. This configuration disables a user to have multiple
+concurrent sessions of the same application running in the same
+browser. In order to achieve such behaviour, you should configure your
+servlet container to use URL session tracking instead. This servlet
+container specific configuration can be found in your servlet
+container's documentation. The examples distributed with JWt contain
+a configuration file for a number of servlet containers: Jetty
+({jwt-src-path}/examples/hello/WebRoot/WEB-INF/jetty-web.xml), JBoss
+({jwt-src-path}/examples/hello/WebRoot/WEB-INF/context.xml) and Tomcat
+({jwt-src-path}/examples/hello/WebRoot/META-INF/context.xml).
+
 === Event handling
 
 To respond to user-interactivity events, or in general to communicate

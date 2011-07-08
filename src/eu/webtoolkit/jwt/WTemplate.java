@@ -422,6 +422,8 @@ public class WTemplate extends WInteractWidget {
 	 * <p>
 	 * The default value is <code>false</code>.
 	 * <p>
+	 * 
+	 * @see WAnchor#setRefInternalPath(String path)
 	 */
 	public void setInternalPathEncoding(boolean enabled) {
 		if (this.encodeInternalPaths_ != enabled) {

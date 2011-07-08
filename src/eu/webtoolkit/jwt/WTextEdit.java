@@ -27,8 +27,10 @@ import eu.webtoolkit.jwt.servlet.*;
  * <p>
  * The implementation is based on <a
  * href="http://tinymce.moxiecode.com/">TinyMCE</a>. The widget may be
- * configured and tailored using the setConfigurationSetting() and related
- * methods that provide direct access to the underlying TinyMCE component.
+ * configured and tailored using the
+ * {@link WTextEdit#setConfigurationSetting(String name, Object value)
+ * setConfigurationSetting()} and related methods that provide direct access to
+ * the underlying TinyMCE component.
  * <p>
  * <h3>CSS</h3>
  * <p>
@@ -202,10 +204,26 @@ public class WTextEdit extends WTextArea {
 						+ String.valueOf(i + 1))).toString();
 	}
 
+	/**
+	 * Configure a TinyMCE setting.
+	 * <p>
+	 * A list of possible settings can be found at: <a
+	 * href="http://tinymce.moxiecode.com/wiki.php/Configuration."
+	 * >http://tinymce.moxiecode.com/wiki.php/Configuration.</a>
+	 * <p>
+	 * The widget itself will also define a number of configuration settings and
+	 * these may be overridden using this method.
+	 */
 	public void setConfigurationSetting(String name, Object value) {
 		this.configurationSettings_.put(name, value);
 	}
 
+	/**
+	 * Returns a TinyMCE configuration setting&apos;s value.
+	 * <p>
+	 * An empty boost::any is returned when no value could be found for the
+	 * provided argument.
+	 */
 	public Object getConfigurationSetting(String name) {
 		Object it = this.configurationSettings_.get(name);
 		if (it != null) {

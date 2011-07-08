@@ -923,11 +923,11 @@ public class WApplication extends WObject {
 	 * Otherwise, this method will fixup a relative URL so that it resolves
 	 * correctly against the base path of an application. This does not
 	 * necessarily mean that the URL is resolved into an absolute URL. In fact,
-	 * {@link } will simply prepend a sequence of &quot;../&quot; path elements
-	 * to correct for the internal path. When passed an absolute URL (i.e.
-	 * starting with &apos;/&apos;), the url is returned unchanged.
+	 * JWt will simply prepend a sequence of &quot;../&quot; path elements to
+	 * correct for the internal path. When passed an absolute URL (i.e. starting
+	 * with &apos;/&apos;), the url is returned unchanged.
 	 * <p>
-	 * For URLs passed to the {@link } API (and of which the library knows it is
+	 * For URLs passed to the JWt API (and of which the library knows it is
 	 * represents a URL) this method is called internally by the library. But it
 	 * may be useful for URLs which are set e.g. inside a {@link WTemplate}.
 	 */
@@ -2194,8 +2194,8 @@ public class WApplication extends WObject {
 			this.internalPathsEnabled_ = true;
 			this.doJavaScript(this.getJavaScriptClass()
 					+ "._p_.enableInternalPaths("
-					+ WWebWidget.jsStringLiteral(this.session_
-							.getPagePathInfo()) + ");", false);
+					+ WWebWidget.jsStringLiteral(this.newInternalPath_) + ");",
+					false);
 			if (this.session_.isUseUglyInternalPaths()) {
 				this
 						.log("warn")

@@ -362,12 +362,7 @@ public class WContainerWidget extends WInteractWidget {
 			this.transientImpl_ = new WWebWidget.TransientImpl();
 		}
 		this.transientImpl_.addedChildren_.add(widget);
-		widget.setParent(this);
-		if (this.isLoaded()) {
-			this.doLoad(widget);
-		}
-		WApplication.getInstance().getSession().getRenderer()
-				.updateFormObjects(this, false);
+		this.childAdded(widget);
 	}
 
 	/**

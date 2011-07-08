@@ -252,6 +252,7 @@ public class WMenu extends WCompositeWidget {
 		this.items_ = new ArrayList<WMenuItem>();
 		this.contentsStackConnection_ = new AbstractSignal.Connection();
 		this.current_ = -1;
+		this.needSelectionEventUpdate_ = false;
 		this.setRenderAsList(false);
 	}
 
@@ -290,7 +291,14 @@ public class WMenu extends WCompositeWidget {
 		this.items_ = new ArrayList<WMenuItem>();
 		this.contentsStackConnection_ = new AbstractSignal.Connection();
 		this.current_ = -1;
+		this.needSelectionEventUpdate_ = false;
 		this.setRenderAsList(false);
+		contentsStack.childrenChanged().addListener(this,
+				new Signal.Listener() {
+					public void trigger() {
+						WMenu.this.updateSelectionEvent();
+					}
+				});
 	}
 
 	/**
@@ -383,7 +391,6 @@ public class WMenu extends WCompositeWidget {
 				new WText(" ", parent);
 			}
 		}
-		this.updateSelectionEvent();
 		if (this.contentsStack_ != null) {
 			WWidget contents = item.getContents();
 			if (contents != null) {
@@ -451,7 +458,6 @@ public class WMenu extends WCompositeWidget {
 			if (itemIndex <= this.current_ && this.current_ >= 0) {
 				--this.current_;
 			}
-			this.updateSelectionEvent();
 			this.select(this.current_, true);
 		}
 	}
@@ -859,6 +865,16 @@ public class WMenu extends WCompositeWidget {
 		super.enableAjax();
 	}
 
+	void render(EnumSet<RenderFlag> flags) {
+		if (this.needSelectionEventUpdate_) {
+			for (int i = 0; i < this.items_.size(); ++i) {
+				this.items_.get(i).resetLearnedSlots();
+			}
+			this.needSelectionEventUpdate_ = false;
+		}
+		super.render(flags);
+	}
+
 	/**
 	 * Handling of internal path changes.
 	 * <p>
@@ -877,9 +893,6 @@ public class WMenu extends WCompositeWidget {
 			for (int i = 0; i < this.items_.size(); ++i) {
 				int matchLength = match(subPath, this.items_.get(i)
 						.getPathComponent());
-				System.err.append(this.items_.get(i).getPathComponent())
-						.append(", ").append(subPath).append(": ").append(
-								String.valueOf(matchLength)).append('\n');
 				if (matchLength > bestMatchLength) {
 					bestMatchLength = matchLength;
 					bestI = i;
@@ -971,6 +984,7 @@ public class WMenu extends WCompositeWidget {
 	private int current_;
 	private int previousCurrent_;
 	private int previousStackIndex_;
+	private boolean needSelectionEventUpdate_;
 
 	int indexOf(WMenuItem item) {
 		return this.items_.indexOf(item);
@@ -1086,9 +1100,8 @@ public class WMenu extends WCompositeWidget {
 	}
 
 	void updateSelectionEvent() {
-		for (int i = 0; i < this.items_.size(); ++i) {
-			this.items_.get(i).updateSelectionEvent();
-		}
+		this.needSelectionEventUpdate_ = true;
+		this.askRerender();
 	}
 
 	static int match(String path, String component) {

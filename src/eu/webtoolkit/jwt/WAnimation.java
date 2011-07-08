@@ -24,6 +24,10 @@ import eu.webtoolkit.jwt.servlet.*;
  * A class which defines an animation used as a transition to show or hide a
  * widget.
  * <p>
+ * The animation can be defined as a motion effect (e.g. sliding in or out),
+ * optionally combined with a fade effect. A timing function defines how the
+ * effects(s) are animated during the total duration of the animation.
+ * <p>
  * 
  * @see WWidget#animateShow(WAnimation animation)
  * @see WWidget#animateHide(WAnimation animation)
@@ -31,7 +35,22 @@ import eu.webtoolkit.jwt.servlet.*;
  */
 public class WAnimation {
 	/**
-	 * An enumeration describing an anmiation effects.
+	 * An enumeration describing an animation effect.
+	 * <p>
+	 * An animation effect can be the combination of a motion and an optional
+	 * fade effect, e.g: <blockquote>
+	 * 
+	 * <pre>
+	 * SlideInFromRight
+	 *     SlideInFromTop | Fade
+	 * </pre>
+	 * 
+	 * </blockquote>
+	 * <p>
+	 * You can specify only one motion effect.
+	 * <p>
+	 * 
+	 * @see WAnimation#setEffects(EnumSet effects)
 	 */
 	public enum AnimationEffect {
 		/**
@@ -69,9 +88,35 @@ public class WAnimation {
 
 	/**
 	 * A timing function.
+	 * <p>
+	 * The timing function defines how the animation effects are animated during
+	 * the total duration of the animation.
 	 */
 	public enum TimingFunction {
-		Ease, Linear, EaseIn, EaseOut, EaseInOut, CubicBezier;
+		/**
+		 * Slow start and slow finish.
+		 */
+		Ease,
+		/**
+		 * Linear throughout.
+		 */
+		Linear,
+		/**
+		 * Slow start.
+		 */
+		EaseIn,
+		/**
+		 * Slow finish.
+		 */
+		EaseOut,
+		/**
+		 * Slow start and even slower finish.
+		 */
+		EaseInOut,
+		/**
+		 * (Currently unsupported)
+		 */
+		CubicBezier;
 
 		/**
 		 * Returns the numerical representation of this enum.
@@ -95,6 +140,8 @@ public class WAnimation {
 
 	/**
 	 * Creates an animation.
+	 * <p>
+	 * An animation is created with given effects, timing and duration.
 	 */
 	public WAnimation(EnumSet<WAnimation.AnimationEffect> effects,
 			WAnimation.TimingFunction timing, int duration) {
@@ -126,6 +173,11 @@ public class WAnimation {
 		this(effects, timing, 250);
 	}
 
+	/**
+	 * Creates an animation.
+	 * <p>
+	 * An animation is created with one effect, timing and duration.
+	 */
 	public WAnimation(WAnimation.AnimationEffect effect,
 			WAnimation.TimingFunction timing, int duration) {
 		this.effects_ = EnumSet.of(effect);
@@ -133,15 +185,34 @@ public class WAnimation {
 		this.duration_ = duration;
 	}
 
+	/**
+	 * Creates an animation.
+	 * <p>
+	 * Calls
+	 * {@link #WAnimation(WAnimation.AnimationEffect effect, WAnimation.TimingFunction timing, int duration)
+	 * this(effect, WAnimation.TimingFunction.Linear, 250)}
+	 */
 	public WAnimation(WAnimation.AnimationEffect effect) {
 		this(effect, WAnimation.TimingFunction.Linear, 250);
 	}
 
+	/**
+	 * Creates an animation.
+	 * <p>
+	 * Calls
+	 * {@link #WAnimation(WAnimation.AnimationEffect effect, WAnimation.TimingFunction timing, int duration)
+	 * this(effect, timing, 250)}
+	 */
 	public WAnimation(WAnimation.AnimationEffect effect,
 			WAnimation.TimingFunction timing) {
 		this(effect, timing, 250);
 	}
 
+	/**
+	 * Creates an animation.
+	 * <p>
+	 * An animation is created with two effects (a motion and Fade).
+	 */
 	public WAnimation(WAnimation.AnimationEffect effect1,
 			WAnimation.AnimationEffect effect2,
 			WAnimation.TimingFunction timing, int duration) {
@@ -150,11 +221,25 @@ public class WAnimation {
 		this.duration_ = duration;
 	}
 
+	/**
+	 * Creates an animation.
+	 * <p>
+	 * Calls
+	 * {@link #WAnimation(WAnimation.AnimationEffect effect1, WAnimation.AnimationEffect effect2, WAnimation.TimingFunction timing, int duration)
+	 * this(effect1, effect2, WAnimation.TimingFunction.Linear, 250)}
+	 */
 	public WAnimation(WAnimation.AnimationEffect effect1,
 			WAnimation.AnimationEffect effect2) {
 		this(effect1, effect2, WAnimation.TimingFunction.Linear, 250);
 	}
 
+	/**
+	 * Creates an animation.
+	 * <p>
+	 * Calls
+	 * {@link #WAnimation(WAnimation.AnimationEffect effect1, WAnimation.AnimationEffect effect2, WAnimation.TimingFunction timing, int duration)
+	 * this(effect1, effect2, timing, 250)}
+	 */
 	public WAnimation(WAnimation.AnimationEffect effect1,
 			WAnimation.AnimationEffect effect2, WAnimation.TimingFunction timing) {
 		this(effect1, effect2, timing, 250);
@@ -163,7 +248,7 @@ public class WAnimation {
 	/**
 	 * Clone method.
 	 * <p>
-	 * Clones this transition object.
+	 * Clones this animation object.
 	 */
 	public WAnimation clone() {
 		WAnimation result = new WAnimation();
@@ -174,6 +259,13 @@ public class WAnimation {
 
 	/**
 	 * Sets the animation effects.
+	 * <p>
+	 * A motion effect ({@link SlideInFromLeft}, {@link SlideInFromRight},
+	 * {@link SlideInFromBottom}, {@link SlideInFromTop} or {@link Pop}) can be
+	 * combined with a fade effect ({@link Fade}).
+	 * <p>
+	 * When effects are 0, the animation does not actually specify an animation,
+	 * but instead an instant transition.
 	 */
 	public void setEffects(EnumSet<WAnimation.AnimationEffect> effects) {
 		this.effects_ = EnumSet.copyOf(effects);
@@ -192,6 +284,9 @@ public class WAnimation {
 
 	/**
 	 * Returns animation effects.
+	 * <p>
+	 * 
+	 * @see WAnimation#setEffects(EnumSet effects)
 	 */
 	public EnumSet<WAnimation.AnimationEffect> getEffects() {
 		return this.effects_;
@@ -236,6 +331,9 @@ public class WAnimation {
 
 	/**
 	 * Returns whether the animation is empty.
+	 * <p>
+	 * An animation is empty (meaning the transition is instant), if the
+	 * duration is 0, or if no effects are defined.
 	 */
 	public boolean isEmpty() {
 		return this.duration_ == 0 || !!this.effects_.isEmpty();

@@ -799,9 +799,8 @@ public class WTreeView extends WAbstractItemView {
 		if (column == 0) {
 			ci.width = WLength.Auto;
 			ci.styleRule.getTemplateWidget().resize(WLength.Auto, WLength.Auto);
-			WApplication app = WApplication.getInstance();
-			app.getStyleSheet().addRule(
-					"#" + this.getId() + " .Wt-tv-node ." + ci.getStyleClass(),
+			(this).addCssRule("#" + this.getId() + " .Wt-tv-node ."
+					+ ci.getStyleClass(),
 					"width: auto;text-overflow: ellipsis;overflow: hidden");
 		}
 		return ci;

@@ -409,6 +409,13 @@ public class WFileUpload extends WWebWidget {
 				.hasAjax();
 		if (methodIframe) {
 			this.fileUploadTarget_ = new WFileUploadResource(this);
+			this.fileUploadTarget_.setUploadProgress(true);
+			this.fileUploadTarget_.dataReceived().addListener(this,
+					new Signal2.Listener<Long, Long>() {
+						public void trigger(Long e1, Long e2) {
+							WFileUpload.this.onData(e1, e2);
+						}
+					});
 		} else {
 			this.fileUploadTarget_ = null;
 		}
@@ -456,13 +463,6 @@ public class WFileUpload extends WWebWidget {
 		if (this.fileUploadTarget_ != null && this.doUpload_) {
 			element.callMethod("submit()");
 			this.doUpload_ = false;
-			this.fileUploadTarget_.setUploadProgress(true);
-			this.fileUploadTarget_.dataReceived().addListener(this,
-					new Signal2.Listener<Long, Long>() {
-						public void trigger(Long e1, Long e2) {
-							WFileUpload.this.onData(e1, e2);
-						}
-					});
 			if (this.progressBar_ != null) {
 				if (this.progressBar_.getParent() == this) {
 					DomElement inputE = DomElement.getForUpdate("in"

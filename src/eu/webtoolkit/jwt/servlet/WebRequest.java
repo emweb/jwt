@@ -139,6 +139,14 @@ public class WebRequest extends HttpServletRequestWrapper {
 
 		return result == null ? "" : result;
 	}
+	  
+	/**
+	  * Accesses to specific header fields (calls getHeaderValue()).
+	  */
+	public String getUserAgent()
+	{
+		return getHeaderValue("User-Agent");
+	}
 
 	/**
 	 * Returns the internal path information.

@@ -1105,7 +1105,7 @@ public abstract class WWidget extends WObject {
 	public abstract void setId(String id);
 
 	/**
-	 * Finds a descendend widget by name.
+	 * Finds a descendent widget by name.
 	 * <p>
 	 * 
 	 * @see WObject#setObjectName(String name)

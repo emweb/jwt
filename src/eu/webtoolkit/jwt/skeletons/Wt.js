@@ -1315,9 +1315,17 @@ if (html5History) {
 
       function onPopState(event) {
 	var newState = event.state;
-	if (newState && newState != currentState) {
+
+	/*
+	 * A null state reflects the initial state:
+	 * see http://html5.org/tools/web-apps-tracker?from=5345&to=5346
+	 */
+	if (!newState)
+	  newState = initialState;
+
+	if (newState != currentState) {
 	  currentState = newState;
-	  onStateChange(currentState);
+	  onStateChange(currentState != "" ? currentState : "/");
 	}
       }
 
@@ -1360,11 +1368,30 @@ _$_$endif_$_();
       currentState = state;
 
       var url = baseUrl + state;
-      if (baseUrl.length > 3 && baseUrl.substr(baseUrl.length - 3) != "?_=")
+
+      if (baseUrl.length < 3 || baseUrl.substr(baseUrl.length - 3) != "?_=")
 	url += window.location.search;
+      else {
+	function stripHashParameter(q) {
+	  if (q.length > 1)
+	    q = q.substr(1);
+
+	  var qp = q.split("&"), i, il, q="";
+
+	  for (i=0, il = qp.length; i<il; ++i)
+	    if (qp[i].split("=")[0] != '_')
+	      q += (q.length ? '&' : '?') + qp[i];
+
+	  return q;
+	}
+
+	var q = stripHashParameter(window.location.search);
+	if (q.length > 0)
+	  url += q.substr(1);
+      }
 
       try {
-	window.history.pushState(state, document.title, url);
+	window.history.pushState(state ? state : "", document.title, url);
       } catch (error) {
 	/*
 	 * In case we are wrong about our baseUrl or base href
@@ -1648,10 +1675,11 @@ function onHashChange() {
 };
 
 function setHash(newLocation) {
-  if (currentHash != newLocation) {
-    currentHash = newLocation;
-    WT.history.navigate(escape(newLocation), false);
-  }
+  if (currentHash == newLocation || !currentHash && newLocation == '/')
+    return;
+
+  currentHash = newLocation;
+  WT.history.navigate(escape(newLocation), false);
 };
 
 var dragState = {

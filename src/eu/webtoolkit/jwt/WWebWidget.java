@@ -541,7 +541,7 @@ public abstract class WWebWidget extends WWidget {
 
 	public void setAttributeValue(String name, String value) {
 		if (!(this.otherImpl_ != null)) {
-			this.otherImpl_ = new WWebWidget.OtherImpl();
+			this.otherImpl_ = new WWebWidget.OtherImpl(this);
 		}
 		if (!(this.otherImpl_.attributes_ != null)) {
 			this.otherImpl_.attributes_ = new HashMap<String, String>();
@@ -570,7 +570,7 @@ public abstract class WWebWidget extends WWidget {
 
 	public void setJavaScriptMember(String name, String value) {
 		if (!(this.otherImpl_ != null)) {
-			this.otherImpl_ = new WWebWidget.OtherImpl();
+			this.otherImpl_ = new WWebWidget.OtherImpl(this);
 		}
 		if (!(this.otherImpl_.jsMembers_ != null)) {
 			this.otherImpl_.jsMembers_ = new ArrayList<WWebWidget.OtherImpl.Member>();
@@ -614,7 +614,7 @@ public abstract class WWebWidget extends WWidget {
 
 	public void callJavaScriptMember(String name, String args) {
 		if (!(this.otherImpl_ != null)) {
-			this.otherImpl_ = new WWebWidget.OtherImpl();
+			this.otherImpl_ = new WWebWidget.OtherImpl(this);
 		}
 		if (!(this.otherImpl_.jsMemberCalls_ != null)) {
 			this.otherImpl_.jsMemberCalls_ = new ArrayList<String>();
@@ -661,7 +661,7 @@ public abstract class WWebWidget extends WWidget {
 
 	public void setId(String id) {
 		if (!(this.otherImpl_ != null)) {
-			this.otherImpl_ = new WWebWidget.OtherImpl();
+			this.otherImpl_ = new WWebWidget.OtherImpl(this);
 		}
 		if (!(this.otherImpl_.id_ != null)) {
 			this.otherImpl_.id_ = "";
@@ -694,7 +694,7 @@ public abstract class WWebWidget extends WWidget {
 
 	public void doJavaScript(String javascript) {
 		if (!(this.otherImpl_ != null)) {
-			this.otherImpl_ = new WWebWidget.OtherImpl();
+			this.otherImpl_ = new WWebWidget.OtherImpl(this);
 		}
 		if (!(this.otherImpl_.delayedDoJavaScript_ != null)) {
 			this.otherImpl_.delayedDoJavaScript_ = new StringBuilder();
@@ -877,6 +877,19 @@ public abstract class WWebWidget extends WWidget {
 	 */
 	public List<WWidget> getChildren() {
 		return this.children_ != null ? this.children_ : emptyWidgetList_;
+	}
+
+	/**
+	 * Signal emitted when children have been added or removed.
+	 * <p>
+	 * 
+	 * @see WWebWidget#getChildren()
+	 */
+	public Signal childrenChanged() {
+		if (!(this.otherImpl_ != null)) {
+			this.otherImpl_ = new WWebWidget.OtherImpl(this);
+		}
+		return this.otherImpl_.childrenChanged_;
 	}
 
 	public static String resolveRelativeUrl(String url) {
@@ -1648,16 +1661,7 @@ public abstract class WWebWidget extends WWidget {
 			this.children_ = new ArrayList<WWidget>();
 		}
 		this.children_.add(child);
-		child.setParent(this);
-		WWebWidget ww = child.getWebWidget();
-		if (ww != null) {
-			ww.gotParent();
-		}
-		if (this.flags_.get(BIT_LOADED)) {
-			this.doLoad(child);
-		}
-		WApplication.getInstance().getSession().getRenderer()
-				.updateFormObjects(this, false);
+		this.childAdded(child);
 	}
 
 	void removeChild(WWidget child) {
@@ -1682,6 +1686,9 @@ public abstract class WWebWidget extends WWidget {
 		this.children_.remove(0 + i);
 		WApplication.getInstance().getSession().getRenderer()
 				.updateFormObjects(child.getWebWidget(), true);
+		if (this.otherImpl_ != null) {
+			this.otherImpl_.childrenChanged_.trigger();
+		}
 	}
 
 	void setHideWithOffsets(boolean how) {
@@ -1705,6 +1712,22 @@ public abstract class WWebWidget extends WWidget {
 					.append(
 							"Improper load() implementation: base implementation not called?")
 					.append('\n');
+		}
+	}
+
+	protected void childAdded(WWidget child) {
+		child.setParent(this);
+		WWebWidget ww = child.getWebWidget();
+		if (ww != null) {
+			ww.gotParent();
+		}
+		if (this.flags_.get(BIT_LOADED)) {
+			this.doLoad(child);
+		}
+		WApplication.getInstance().getSession().getRenderer()
+				.updateFormObjects(this, false);
+		if (this.otherImpl_ != null) {
+			this.otherImpl_.childrenChanged_.trigger();
 		}
 	}
 
@@ -1854,8 +1877,9 @@ public abstract class WWebWidget extends WWidget {
 		public JSignal3<String, String, WMouseEvent> dropSignal_;
 		public Map<String, WWebWidget.DropMimeType> acceptedDropMimeTypes_;
 		public StringBuilder delayedDoJavaScript_;
+		public Signal childrenChanged_;
 
-		public OtherImpl() {
+		public OtherImpl(WWebWidget self) {
 			this.id_ = null;
 			this.attributes_ = null;
 			this.attributesSet_ = null;
@@ -1865,6 +1889,7 @@ public abstract class WWebWidget extends WWidget {
 			this.dropSignal_ = null;
 			this.acceptedDropMimeTypes_ = null;
 			this.delayedDoJavaScript_ = null;
+			this.childrenChanged_ = new Signal(self);
 		}
 	}
 
@@ -1980,7 +2005,7 @@ public abstract class WWebWidget extends WWidget {
 		boolean result = false;
 		boolean changed = false;
 		if (!(this.otherImpl_ != null)) {
-			this.otherImpl_ = new WWebWidget.OtherImpl();
+			this.otherImpl_ = new WWebWidget.OtherImpl(this);
 		}
 		if (!(this.otherImpl_.acceptedDropMimeTypes_ != null)) {
 			this.otherImpl_.acceptedDropMimeTypes_ = new HashMap<String, WWebWidget.DropMimeType>();

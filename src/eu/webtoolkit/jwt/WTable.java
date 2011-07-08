@@ -320,8 +320,8 @@ public class WTable extends WInteractWidget {
 	/**
 	 * Move a table row from its original position to a new position.
 	 * <p>
-	 * The table expands automatically when to is beyond the current table
-	 * dimensions.
+	 * The table expands automatically when the <code>to</code> row is beyond
+	 * the current table dimensions.
 	 * <p>
 	 * 
 	 * @see WTable#moveColumn(int from, int to)
@@ -344,8 +344,8 @@ public class WTable extends WInteractWidget {
 	/**
 	 * Move a table column from its original position to a new position.
 	 * <p>
-	 * The table expands automatically when to is beyond the current table
-	 * dimensions.
+	 * The table expands automatically when the <code>to</code> column is beyond
+	 * the current table dimensions.
 	 * <p>
 	 * 
 	 * @see WTable#moveRow(int from, int to)

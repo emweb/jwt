@@ -391,4 +391,17 @@ public class StringUtils {
 			return "'" + v.toString() + "'";
 		}
 	}
+	
+	static String urlEncode(String url) {
+		return DomElement.urlEncodeS(url);
+	}
+
+	static String urlEncode(String url, String allowed) {
+		return DomElement.urlEncodeS(url, allowed);
+	}
+
+	static String EncodeHttpHeaderField(String fieldname, String fieldValue) {
+		// This implements RFC 5987
+		return fieldname + "*=UTF-8''" + StringUtils.urlEncode(fieldValue);
+	}
 }

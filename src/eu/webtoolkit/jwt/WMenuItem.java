@@ -711,10 +711,6 @@ public class WMenuItem extends WObject {
 		}
 	}
 
-	protected void updateSelectionEvent() {
-		this.resetLearnedSlots();
-	}
-
 	private WWidget itemWidget_;
 	private WContainerWidget contentsContainer_;
 	private WWidget contents_;

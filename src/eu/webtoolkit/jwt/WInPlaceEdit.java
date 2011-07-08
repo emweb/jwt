@@ -216,6 +216,16 @@ public class WInPlaceEdit extends WCompositeWidget {
 	}
 
 	/**
+	 * Returns the {@link WText} widget that renders the current string.
+	 * <p>
+	 * You may use this for example to set the text format of the displayed
+	 * string.
+	 */
+	public WText getTextWidget() {
+		return this.text_;
+	}
+
+	/**
 	 * Returns the save button.
 	 * <p>
 	 * This method returns <code>null</code> if the buttons were disabled.
