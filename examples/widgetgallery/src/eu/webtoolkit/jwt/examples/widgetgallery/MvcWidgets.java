@@ -205,7 +205,14 @@ class MvcWidgets extends ControlsWidget {
 
 	private void changeRegexp() {
 		WString regexp = new WString(this.regexpFilter.getText());
-		if (Pattern.compile(regexp).isValid()) {
+		boolean valid;
+		try {
+			Pattern r = Pattern.compile(regexp.toString());
+			valid = true;
+		} catch (RuntimeException e) {
+			valid = false;
+		}
+		if (valid) {
 			this.filteredCocktails.setFilterRegExp(regexp.toString());
 			this.filteredSortedCocktails.setFilterRegExp(regexp.toString());
 			this.regexpFilter.removeStyleClass("Wt-invalid");

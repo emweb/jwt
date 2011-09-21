@@ -227,7 +227,8 @@ class WebRenderer implements SlotLearnerInterface {
 			return true;
 		} else {
 			if (updateId < this.expectedAckId_
-					&& updateId > this.expectedAckId_ - 5) {
+					&& this.expectedAckId_ - updateId < 5
+					|| this.expectedAckId_ - 5 < updateId) {
 				return true;
 			} else {
 				return false;
@@ -359,6 +360,8 @@ class WebRenderer implements SlotLearnerInterface {
 				this.streamRedirectJS(response.out(), redirect);
 				return;
 			}
+		} else {
+			this.expectedAckId_ = this.scriptId_ = MathUtils.randomInt();
 		}
 		WApplication app = this.session_.getApp();
 		final boolean xhtml = this.session_.getEnv().getContentType() == WEnvironment.ContentType.XHTML1;

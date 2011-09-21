@@ -332,8 +332,11 @@ class WebSession {
 							}
 						}
 						if (invalidAckId) {
-							this.log("secure").append(
-									"Missing or invalid ackId");
+							if (!(ackIdE != null)) {
+								this.log("secure").append("Missing ackId");
+							} else {
+								this.log("secure").append("Invalid ackId");
+							}
 							this.serveError(403, handler, "Forbidden");
 							return;
 						}
