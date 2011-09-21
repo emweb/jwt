@@ -38,8 +38,24 @@ import eu.webtoolkit.jwt.WtServlet;
  * @see WebResponse
  */
 public class WebRequest extends HttpServletRequestWrapper {
+	/**
+	 * The type of response that this request will need.
+	 * 
+	 * This is an internal JWt enumeration.
+	 */
 	public enum ResponseType {
-		Page, Script, Update
+		/**
+		 * Renders as an HTML page.
+		 */
+		Page, 
+		/**
+		 * Renders as a JavaScript script resource.
+		 */
+		Script,
+		/**
+		 * Renders as an Ajax (JavaScript) update.
+		 */
+		Update
 	};
 	
 	/**
@@ -307,10 +323,20 @@ public class WebRequest extends HttpServletRequestWrapper {
 		return null;
 	}
 
+	/**
+	 * Returns whether this request is a WebSocket request.
+	 * 
+	 * This is an internal JWt method.
+	 */
 	public boolean isWebSocketRequest() {
 		return false;
 	}
 
+	/**
+	 * Returns whether this request is a WebSocket message.
+	 * 
+	 * This is an internal JWt method.
+	 */
 	public boolean isWebSocketMessage() {
 		return false;
 	}

@@ -168,12 +168,19 @@ public abstract class WAbstractSpinBox extends WLineEdit {
 		if (all || this.changed_) {
 			if (!all) {
 				if (!this.isNativeControl()) {
-					WApplication.getInstance().doJavaScript(
-							"jQuery.data(" + this.getJsRef()
-									+ ", 'obj').update("
-									+ this.getJsMinMaxStep() + ");");
+					WApplication
+							.getInstance()
+							.doJavaScript(
+									"jQuery.data("
+											+ this.getJsRef()
+											+ ", 'obj').update("
+											+ this.getJsMinMaxStep()
+											+ ","
+											+ String
+													.valueOf(this.getDecimals())
+											+ ");");
 				} else {
-					this.setValidator(this.getCreateValidator());
+					this.setValidator(this.createValidator());
 				}
 			}
 		}
@@ -202,15 +209,15 @@ public abstract class WAbstractSpinBox extends WLineEdit {
 		super.propagateRenderOk(deep);
 	}
 
-	protected abstract String getJsMinMaxStep();
+	abstract String getJsMinMaxStep();
 
-	protected abstract int getDecimals();
+	abstract int getDecimals();
 
-	protected abstract boolean parseNumberValue(String text);
+	abstract boolean parseNumberValue(String text);
 
-	protected abstract WString getTextFromValue();
+	abstract WString getTextFromValue();
 
-	protected abstract WValidator getCreateValidator();
+	abstract WValidator createValidator();
 
 	protected int boxPadding(Orientation orientation) {
 		if (!this.isNativeControl() && orientation == Orientation.Horizontal) {
@@ -220,8 +227,8 @@ public abstract class WAbstractSpinBox extends WLineEdit {
 		}
 	}
 
-	protected boolean changed_;
-	protected boolean valueChangedConnection_;
+	boolean changed_;
+	boolean valueChangedConnection_;
 	private boolean preferNative_;
 	private WString prefix_;
 	private WString suffix_;
@@ -229,7 +236,7 @@ public abstract class WAbstractSpinBox extends WLineEdit {
 	private void defineJavaScript() {
 		WApplication app = WApplication.getInstance();
 		app.loadJavaScript("js/WSpinBox.js", wtjs1());
-		String jsObj = "new Wt3_1_10.WSpinBox(" + app.getJavaScriptClass()
+		String jsObj = "new Wt3_1_11.WSpinBox(" + app.getJavaScriptClass()
 				+ "," + this.getJsRef() + ","
 				+ String.valueOf(this.getDecimals()) + ","
 				+ WString.toWString(this.getPrefix()).getJsStringLiteral()
@@ -248,7 +255,7 @@ public abstract class WAbstractSpinBox extends WLineEdit {
 
 	private void setup(boolean useNative) {
 		if (useNative) {
-			this.setValidator(this.getCreateValidator());
+			this.setValidator(this.createValidator());
 		} else {
 			this.defineJavaScript();
 			this.addStyleClass("Wt-spinbox");

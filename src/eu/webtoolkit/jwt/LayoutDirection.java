@@ -24,7 +24,11 @@ public enum LayoutDirection {
 	/**
 	 * Left-to-Right (Western and other languages).
 	 */
-	LeftToRight, RightToLeft;
+	LeftToRight,
+	/**
+	 * Right-to-Left (Many Middle Eastern and Arabic languages).
+	 */
+	RightToLeft;
 
 	/**
 	 * Returns the numerical representation of this enum.

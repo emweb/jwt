@@ -84,7 +84,7 @@ public class WFileUpload extends WWebWidget {
 		this.enableAjax_ = false;
 		this.uploading_ = false;
 		this.multiple_ = false;
-		this.fileTooLarge_ = new Signal1<Integer>(this);
+		this.fileTooLarge_ = new Signal1<Long>(this);
 		this.dataReceived_ = new Signal2<Long, Long>(this);
 		this.progressBar_ = null;
 		this.tooLargeSize_ = 0;
@@ -288,7 +288,7 @@ public class WFileUpload extends WWebWidget {
 	 * @see WFileUpload#uploaded()
 	 * @see WApplication#requestTooLarge()
 	 */
-	public Signal1<Integer> fileTooLarge() {
+	public Signal1<Long> fileTooLarge() {
 		return this.fileTooLarge_;
 	}
 
@@ -399,7 +399,7 @@ public class WFileUpload extends WWebWidget {
 	private boolean enableAjax_;
 	private boolean uploading_;
 	private boolean multiple_;
-	private Signal1<Integer> fileTooLarge_;
+	private Signal1<Long> fileTooLarge_;
 	private Signal2<Long, Long> dataReceived_;
 	private WResource fileUploadTarget_;
 	private WProgressBar progressBar_;
@@ -425,8 +425,8 @@ public class WFileUpload extends WWebWidget {
 				WFileUpload.this.onUploaded();
 			}
 		});
-		this.fileTooLarge().addListener(this, new Signal1.Listener<Integer>() {
-			public void trigger(Integer e1) {
+		this.fileTooLarge().addListener(this, new Signal1.Listener<Long>() {
+			public void trigger(Long e1) {
 				WFileUpload.this.onUploaded();
 			}
 		});
@@ -440,6 +440,7 @@ public class WFileUpload extends WWebWidget {
 		if (dataExceeded != 0) {
 			if (this.uploading_) {
 				this.uploading_ = false;
+				this.tooLargeSize_ = dataExceeded;
 				this.handleFileTooLargeImpl();
 				WApplication app = WApplication.getInstance();
 				app.triggerUpdate();
@@ -455,7 +456,7 @@ public class WFileUpload extends WWebWidget {
 		}
 	}
 
-	void setRequestTooLarge(int size) {
+	private void setRequestTooLarge(long size) {
 		this.fileTooLarge().trigger(size);
 	}
 
@@ -570,7 +571,7 @@ public class WFileUpload extends WWebWidget {
 		}
 	}
 
-	int tooLargeSize_;
+	long tooLargeSize_;
 
 	void setFormData(WObject.FormData formData) {
 		this.setFiles(formData.files);

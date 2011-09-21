@@ -197,22 +197,47 @@ public class WebResponse extends HttpServletResponseWrapper {
 		return ((WebRequest)request).getParameterMap();
 	}
 
+	/**
+	 * Returns whether this request is a WebSocket request.
+	 * 
+	 * This is an internal JWt method.
+	 */
 	public boolean isWebSocketRequest() {
 		return false;
 	}
 
+	/**
+	 * Returns whether this request is a WebSocket message.
+	 * 
+	 * This is an internal JWt method.
+	 */
 	public boolean isWebSocketMessage() {
 		return false;
 	}
 
+	/**
+	 * Returns whether another WebSocket message is pending.
+	 * 
+	 * This is an internal JWt method.
+	 */
 	public boolean isWebSocketMessagePending() {
 		return false;
 	}
 	
+	/**
+	 * Sets the response type.
+	 * 
+	 * This is an internal JWt method.
+	 */
 	public void setResponseType(ResponseType responseType) {
 		this.responseType = responseType;
 	}
 	
+	/**
+	 * Returns the response type.
+	 * 
+	 * This is an internal JWt method.
+	 */
 	public ResponseType getResponseType() { 
 		return this.responseType; 
 	}

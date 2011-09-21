@@ -144,10 +144,12 @@ public class WMessageBox extends WDialog {
 		this.icon_ = icon;
 		if (false && this.icon_ != Icon.NoIcon) {
 			if (!(this.iconImage_ != null)) {
-				this.iconImage_ = new WImage(iconURI[this.icon_.getValue() - 1]);
+				this.iconImage_ = new WImage(new WLink(iconURI[this.icon_
+						.getValue() - 1]));
 				this.getContents().insertBefore(this.iconImage_, this.text_);
 			} else {
-				this.iconImage_.setImageRef(iconURI[this.icon_.getValue() - 1]);
+				this.iconImage_.setImageLink(new WLink(iconURI[this.icon_
+						.getValue() - 1]));
 			}
 		} else {
 			if (this.iconImage_ != null)

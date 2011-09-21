@@ -312,8 +312,14 @@ public abstract class WWidget extends WObject {
 	/**
 	 * Sets a minimum size.
 	 * <p>
-	 * Specify a minimum size for this widget. When the widget is managed using
-	 * a layout manager, these sizes are also taken into account.
+	 * Specify a minimum size for this widget.
+	 * <p>
+	 * The default minimum width and height is 0. The special value
+	 * {@link WLength#Auto} indicates that the initial width is used as minimum
+	 * size.
+	 * <p>
+	 * When the widget size is actively managed (using e.g. a layout manager),
+	 * these sizes are taken into account.
 	 * <p>
 	 * 
 	 * @see WWidget#resize(WLength width, WLength height)
@@ -351,12 +357,14 @@ public abstract class WWidget extends WObject {
 	/**
 	 * Sets a maximum size.
 	 * <p>
-	 * Specify a minimum size for this widget.
+	 * Specifies a maximum size for this widget.
+	 * <p>
+	 * The default maximum width and height are {@link WLength#Auto}, indicating
+	 * no maximum size.
 	 * <p>
 	 * 
 	 * @see WWidget#resize(WLength width, WLength height)
-	 * @see WWidget#getMaximumWidth()
-	 * @see WWidget#getMaximumHeight()
+	 * @see WWidget#setMinimumSize(WLength width, WLength height)
 	 */
 	public abstract void setMaximumSize(WLength width, WLength height);
 
@@ -411,8 +419,8 @@ public abstract class WWidget extends WObject {
 		String side = orientation == Orientation.Horizontal ? ".Horizontal"
 				: ".Vertical";
 		WApplication.getInstance().doJavaScript(
-				"Wt3_1_10.positionAtWidget('" + this.getId() + "','"
-						+ widget.getId() + "',Wt3_1_10" + side + ");");
+				"Wt3_1_11.positionAtWidget('" + this.getId() + "','"
+						+ widget.getId() + "',Wt3_1_11" + side + ");");
 	}
 
 	/**
@@ -824,6 +832,18 @@ public abstract class WWidget extends WObject {
 		removeStyleClass(styleClass, false);
 	}
 
+	public void toggleStyleClass(String styleClass, boolean add, boolean force) {
+		if (add) {
+			this.addStyleClass(styleClass, force);
+		} else {
+			this.removeStyleClass(styleClass, force);
+		}
+	}
+
+	public final void toggleStyleClass(String styleClass, boolean add) {
+		toggleStyleClass(styleClass, add, false);
+	}
+
 	/**
 	 * Sets the vertical alignment.
 	 * <p>
@@ -1212,8 +1232,7 @@ public abstract class WWidget extends WObject {
 	/**
 	 * Hides the widget using an animation.
 	 * <p>
-	 * To hide the widget, the animation is replayed in reverse. A
-	 * <code>duration</code> can be specified in milliseconds.
+	 * To hide the widget, the animation is replayed in reverse.
 	 * <p>
 	 * 
 	 * @see WWidget#setHidden(boolean hidden, WAnimation animation)
@@ -1235,8 +1254,6 @@ public abstract class WWidget extends WObject {
 
 	/**
 	 * Shows the widget using an animation.
-	 * <p>
-	 * A <code>duration</code> can be specified in milliseconds.
 	 * <p>
 	 * 
 	 * @see WWidget#setHidden(boolean hidden, WAnimation animation)

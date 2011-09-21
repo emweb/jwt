@@ -101,8 +101,7 @@ public class WTree extends WCompositeWidget {
 	/**
 	 * Sets the tree root node.
 	 * <p>
-	 * 
-	 * @see WTree#getTreeRoot()
+	 * The initial value is <code>null</code>.
 	 */
 	public void setTreeRoot(WTreeNode node) {
 		if (this.treeRoot_ != null) {

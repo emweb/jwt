@@ -902,6 +902,7 @@ public class WAxis {
 			rc = this.chart_.getModel().getRowCount();
 		}
 		if (this.scale_ == AxisScale.CategoryScale) {
+			rc = Math.max(1, rc);
 			segment.renderMinimum = -0.5;
 			segment.renderMaximum = rc - 0.5;
 		} else {
@@ -949,58 +950,69 @@ public class WAxis {
 				}
 			}
 			double diff = segment.renderMaximum - segment.renderMinimum;
-			if (this.scale_ == AxisScale.LogScale
-					|| this.scale_ == AxisScale.LinearScale) {
-				double resolution = this.resolution_;
-				if (resolution == 0 || this.scale_ == AxisScale.LogScale) {
-					resolution = 1E-10;
-				}
-				if (Math.abs(diff) < resolution) {
-					double average = (segment.renderMaximum + segment.renderMinimum) / 2.0;
-					double d = this.resolution_;
-					if (this.scale_ == AxisScale.LogScale) {
-						d = 0.2;
-					} else {
-						if (d == 0) {
-							d = 2E-4;
-						}
-					}
+			if (this.scale_ == AxisScale.LogScale) {
+				double minLog10 = Math.log10(segment.renderMinimum);
+				double maxLog10 = Math.log10(segment.renderMaximum);
+				double d = 1.0;
+				diff = maxLog10 - minLog10;
+				if (diff < d) {
+					double average = minLog10 + diff / 2.0;
 					if (findMinimum && findMaximum) {
-						segment.renderMaximum = average + d / 2.0;
-						segment.renderMinimum = average - d / 2.0;
+						segment.renderMaximum = Math.pow(10, Math.ceil(average
+								+ d / 2.0));
+						segment.renderMinimum = Math.pow(10, Math.floor(average
+								- d / 2.0));
 					} else {
 						if (findMinimum) {
-							segment.renderMinimum = segment.renderMaximum - d;
+							segment.renderMinimum = Math.pow(10, Math
+									.floor(maxLog10 - d));
 						} else {
 							if (findMaximum) {
-								segment.renderMaximum = segment.renderMinimum
-										+ d;
+								segment.renderMaximum = Math.pow(10, Math
+										.ceil(minLog10 + d));
 							}
 						}
 					}
-					diff = segment.renderMaximum - segment.renderMinimum;
-				}
-			}
-			if (this.scale_ == AxisScale.LinearScale) {
-				if (findMinimum && segment.renderMinimum >= 0
-						&& segment.renderMinimum - 0.50 * diff <= 0) {
-					segment.renderMinimum = 0;
-				}
-				if (findMaximum && segment.renderMaximum <= 0
-						&& segment.renderMaximum + 0.50 * diff >= 0) {
-					segment.renderMaximum = 0;
 				}
 			} else {
-				if (this.scale_ == AxisScale.LogScale) {
-					double minLog10 = Math.floor(Math
-							.log10(segment.renderMinimum));
-					double maxLog10 = Math.ceil(Math
-							.log10(segment.renderMaximum));
-					if (findMinimum) {
-						segment.renderMinimum = Math.pow(10, minLog10);
+				if (this.scale_ == AxisScale.LinearScale) {
+					double resolution = this.resolution_;
+					if (resolution == 0) {
+						resolution = 1E-10;
 					}
-					if (findMinimum) {
-						segment.renderMaximum = Math.pow(10, maxLog10);
+					if (Math.abs(diff) < resolution) {
+						double average = (segment.renderMaximum + segment.renderMinimum) / 2.0;
+						double d = this.resolution_;
+						if (this.scale_ == AxisScale.LogScale) {
+							d = 0.2;
+						} else {
+							if (d == 0) {
+								d = 2E-4;
+							}
+						}
+						if (findMinimum && findMaximum) {
+							segment.renderMaximum = average + d / 2.0;
+							segment.renderMinimum = average - d / 2.0;
+						} else {
+							if (findMinimum) {
+								segment.renderMinimum = segment.renderMaximum
+										- d;
+							} else {
+								if (findMaximum) {
+									segment.renderMaximum = segment.renderMinimum
+											+ d;
+								}
+							}
+						}
+						diff = segment.renderMaximum - segment.renderMinimum;
+					}
+					if (findMinimum && segment.renderMinimum >= 0
+							&& segment.renderMinimum - 0.50 * diff <= 0) {
+						segment.renderMinimum = 0;
+					}
+					if (findMaximum && segment.renderMaximum <= 0
+							&& segment.renderMaximum + 0.50 * diff >= 0) {
+						segment.renderMaximum = 0;
 					}
 				}
 			}

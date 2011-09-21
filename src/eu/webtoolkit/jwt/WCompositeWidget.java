@@ -373,7 +373,7 @@ public class WCompositeWidget extends WWidget {
 		}
 	}
 
-	protected void setHideWithOffsets(boolean hideWithOffsets) {
+	void setHideWithOffsets(boolean hideWithOffsets) {
 		this.impl_.setHideWithOffsets(hideWithOffsets);
 	}
 
@@ -398,7 +398,7 @@ public class WCompositeWidget extends WWidget {
 	protected void setImplementation(WWidget widget) {
 		if (widget.getParent() != null) {
 			throw new WtException(
-					"WCompositeWidget implemnation widget cannot have a parent");
+					"WCompositeWidget implementation widget cannot have a parent");
 		}
 		if (this.impl_ != null)
 			this.impl_.remove();

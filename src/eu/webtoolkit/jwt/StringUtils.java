@@ -342,7 +342,7 @@ public class StringUtils {
 		    return s;
 	}
 
-	public static WString formatFloat(WString format, double value) {
+	static WString formatFloat(WString format, double value) {
 		return new WString(String.format(format.toString(), value));
 	}
 	
@@ -404,4 +404,6 @@ public class StringUtils {
 		// This implements RFC 5987
 		return fieldname + "*=UTF-8''" + StringUtils.urlEncode(fieldValue);
 	}
+	
+	private StringUtils() { }
 }

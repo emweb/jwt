@@ -56,13 +56,9 @@ public class ItemDataRole {
 	 */
 	public final static int ToolTipRole = 5;
 	/**
-	 * Role for an internal path activated when clicked.
+	 * Role for a link.
 	 */
-	public final static int InternalPathRole = 6;
-	/**
-	 * Role for a url activated when clicked.
-	 */
-	public final static int UrlRole = 7;
+	public final static int LinkRole = 6;
 	/**
 	 * Level in aggregation, for header data.
 	 */

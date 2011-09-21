@@ -320,7 +320,7 @@ public abstract class WFormWidget extends WInteractWidget {
 	JSlot removeEmptyText_;
 	WString emptyText_;
 
-	protected void applyEmptyText() {
+	void applyEmptyText() {
 		if (this.isRendered() && !(this.emptyText_.length() == 0)) {
 			this.doJavaScript("jQuery.data(" + this.getJsRef()
 					+ ", 'obj').applyEmptyText();");
@@ -368,10 +368,14 @@ public abstract class WFormWidget extends WInteractWidget {
 			if (!(this.validateJs_ != null)) {
 				this.validateJs_ = new JSlot();
 				this.validateJs_
-						.setJavaScript("function(o){Wt3_1_10.validate(o)}");
+						.setJavaScript("function(o){Wt3_1_11.validate(o)}");
 				this.keyWentUp().addListener(this.validateJs_);
 				this.changed().addListener(this.validateJs_);
 				this.clicked().addListener(this.validateJs_);
+			} else {
+				if (this.isRendered()) {
+					this.validateJs_.exec(this.getJsRef());
+				}
 			}
 		} else {
 			;
@@ -385,7 +389,7 @@ public abstract class WFormWidget extends WInteractWidget {
 			}
 			StringUtils.replace(inputFilter, '/', "\\/");
 			this.filterInput_
-					.setJavaScript("function(o,e){Wt3_1_10.filter(o,e,"
+					.setJavaScript("function(o,e){Wt3_1_11.filter(o,e,"
 							+ jsStringLiteral(inputFilter) + ")}");
 		} else {
 			;
@@ -402,7 +406,7 @@ public abstract class WFormWidget extends WInteractWidget {
 			}
 			WApplication app = WApplication.getInstance();
 			app.loadJavaScript("js/WFormWidget.js", wtjs1());
-			this.doJavaScript("new Wt3_1_10.WFormWidget("
+			this.doJavaScript("new Wt3_1_11.WFormWidget("
 					+ app.getJavaScriptClass() + "," + this.getJsRef() + ","
 					+ WString.toWString(this.emptyText_).getJsStringLiteral()
 					+ ");");
@@ -413,7 +417,7 @@ public abstract class WFormWidget extends WInteractWidget {
 		defineJavaScript(false);
 	}
 
-	void updateEmptyText() {
+	private void updateEmptyText() {
 		if (this.isRendered()) {
 			this.doJavaScript("jQuery.data(" + this.getJsRef()
 					+ ", 'obj').setEmptyText("

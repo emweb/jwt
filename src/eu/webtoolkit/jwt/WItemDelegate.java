@@ -65,8 +65,7 @@ public class WItemDelegate extends WAbstractItemDelegate {
 	 * setTextFormat()}</li>
 	 * <li>a check box depending on the {@link ItemFlag#ItemIsUserCheckable}
 	 * flag and {@link ItemDataRole#CheckStateRole} data</li>
-	 * <li>an anchor depending on {@link ItemDataRole#InternalPathRole} or
-	 * {@link ItemDataRole#UrlRole} values</li>
+	 * <li>an anchor depending on Wt::InternalPathRole or Wt::UrlRole values</li>
 	 * <li>an icon depending on the value of {@link ItemDataRole#DecorationRole}
 	 * </li>
 	 * <li>a tooltip depending on the value of {@link ItemDataRole#ToolTipRole}</li>
@@ -139,16 +138,13 @@ public class WItemDelegate extends WAbstractItemDelegate {
 						this.checkBox(widgetRef, index, false).remove();
 				}
 			}
-			String internalPath = StringUtils.asString(
-					index.getData(ItemDataRole.InternalPathRole)).toString();
-			String url = StringUtils.asString(
-					index.getData(ItemDataRole.UrlRole)).toString();
-			if (internalPath.length() != 0 || url.length() != 0) {
+			Object linkData = index.getData(ItemDataRole.LinkRole);
+			if (!(linkData == null)) {
+				WLink link = (WLink) linkData;
 				WAnchor a = this.anchorWidget(widgetRef);
-				if (internalPath.length() != 0) {
-					a.setRefInternalPath(internalPath);
-				} else {
-					a.setRef(url);
+				a.setLink(link);
+				if (link.getType() == WLink.Type.Resource) {
+					a.setTarget(AnchorTarget.TargetNewWindow);
 				}
 			}
 			WText t = this.textWidget(widgetRef);
@@ -161,7 +157,8 @@ public class WItemDelegate extends WAbstractItemDelegate {
 			String iconUrl = StringUtils.asString(
 					index.getData(ItemDataRole.DecorationRole)).toString();
 			if (iconUrl.length() != 0) {
-				this.iconWidget(widgetRef, true).setImageRef(iconUrl);
+				this.iconWidget(widgetRef, true).setImageLink(
+						new WLink(iconUrl));
 			} else {
 				if (!isNew) {
 					if (this.iconWidget(widgetRef, false) != null)

@@ -456,6 +456,10 @@ public class WTableView extends WAbstractItemView {
 
 	public void resize(WLength width, WLength height) {
 		if (this.isAjaxMode()) {
+			if (height.getUnit() == WLength.Unit.Percentage) {
+				throw new WtException(
+						"WTableView::resize(): height cannot be a Percentage");
+			}
 			if (!height.isAuto()) {
 				this.viewportHeight_ = (int) Math.ceil(height.toPixels()
 						- this.getHeaderHeight().toPixels());
@@ -501,7 +505,7 @@ public class WTableView extends WAbstractItemView {
 					.getValue()) {
 				return;
 			}
-			WWidget hc = this.headerWidget(column);
+			WWidget hc = this.headerWidget(column, false);
 			if (!this.isAjaxMode()) {
 				hc.getParent().setHidden(hidden);
 			} else {
@@ -677,13 +681,13 @@ public class WTableView extends WAbstractItemView {
 				+ String.valueOf((int) this.getRowHeight().toPixels())
 				+ "px.gif";
 		if (this.isAjaxMode()) {
-			this.table_.getDecorationStyle()
-					.setBackgroundImage(backgroundImage);
+			this.table_.getDecorationStyle().setBackgroundImage(
+					new WLink(backgroundImage));
 			this.headerColumnsTable_.getDecorationStyle().setBackgroundImage(
-					backgroundImage);
+					new WLink(backgroundImage));
 		} else {
 			this.plainTable_.getDecorationStyle().setBackgroundImage(
-					backgroundImage);
+					new WLink(backgroundImage));
 		}
 	}
 
@@ -850,15 +854,15 @@ public class WTableView extends WAbstractItemView {
 			int col2 = Math.min(bottomRight.getColumn(), this.getLastColumn());
 			for (int i = row1; i <= row2; ++i) {
 				int renderedRow = i - this.getFirstRow();
-				for (int j = topLeft.getColumn(); j < this.getRowHeaderCount(); ++j) {
+				int rhc = this.isAjaxMode() ? this.getRowHeaderCount() : 0;
+				for (int j = topLeft.getColumn(); j < rhc; ++j) {
 					int renderedColumn = j;
 					WModelIndex index = this.getModel().getIndex(i, j,
 							this.getRootIndex());
 					this.updateItem(index, renderedRow, renderedColumn);
 				}
 				for (int j = col1; j <= col2; ++j) {
-					int renderedColumn = this.getRowHeaderCount() + j
-							- this.getFirstColumn();
+					int renderedColumn = rhc + j - this.getFirstColumn();
 					WModelIndex index = this.getModel().getIndex(i, j,
 							this.getRootIndex());
 					this.updateItem(index, renderedRow, renderedColumn);
@@ -1701,7 +1705,7 @@ public class WTableView extends WAbstractItemView {
 	private void defineJavaScript() {
 		WApplication app = WApplication.getInstance();
 		app.loadJavaScript("js/WTableView.js", wtjs1());
-		app.doJavaScript("new Wt3_1_10.WTableView(" + app.getJavaScriptClass()
+		app.doJavaScript("new Wt3_1_11.WTableView(" + app.getJavaScriptClass()
 				+ "," + this.getJsRef() + ","
 				+ this.contentsContainer_.getJsRef() + ","
 				+ this.headerContainer_.getJsRef() + ","

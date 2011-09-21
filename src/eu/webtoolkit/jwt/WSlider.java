@@ -491,7 +491,7 @@ public class WSlider extends WFormWidget {
 	}
 
 	void setFormData(WObject.FormData formData) {
-		if (this.changed_) {
+		if (this.changed_ || this.isReadOnly()) {
 			return;
 		}
 		if (!(formData.values.length == 0)) {

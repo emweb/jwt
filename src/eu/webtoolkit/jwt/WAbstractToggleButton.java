@@ -327,7 +327,7 @@ public abstract class WAbstractToggleButton extends WFormWidget {
 	}
 
 	void setFormData(WObject.FormData formData) {
-		if (this.stateChanged_) {
+		if (this.stateChanged_ || this.isReadOnly()) {
 			return;
 		}
 		if (!(formData.values.length == 0)) {

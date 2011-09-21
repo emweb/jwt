@@ -71,12 +71,7 @@ public class WSubMenuItem extends WMenuItem {
 	 */
 	public void setSubMenu(WMenu subMenu) {
 		this.subMenu_ = subMenu;
-		this.subMenu_.itemSelected().addListener(this,
-				new Signal1.Listener<WMenuItem>() {
-					public void trigger(WMenuItem e1) {
-						WSubMenuItem.this.subItemSelected();
-					}
-				});
+		this.subMenu_.setSubMenu(true);
 	}
 
 	/**
@@ -142,11 +137,5 @@ public class WSubMenuItem extends WMenuItem {
 	}
 
 	private WMenu subMenu_;
-
-	private void subItemSelected() {
-		if (this.getMenu() != null) {
-			this.getMenu().select(-1);
-			this.renderSelected(true);
-		}
-	}
+	// private void subItemSelected() ;
 }

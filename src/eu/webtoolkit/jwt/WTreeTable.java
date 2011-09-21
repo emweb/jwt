@@ -32,14 +32,15 @@ import eu.webtoolkit.jwt.servlet.*;
  * <p>
  * The actual data is organized and provided by {@link WTreeTableNode} widgets.
  * <p>
- * To use the tree table, you must first use
+ * To use the tree table, you need <b>first</b> to call
  * {@link WTreeTable#addColumn(CharSequence header, WLength width) addColumn()}
- * to specify the additional data columns. Then, you must set the tree root
+ * to specify the additional data columns. Next, you need to set the tree root
  * using {@link WTreeTable#setTreeRoot(WTreeTableNode root, CharSequence h)
  * setTreeRoot()} and bind additional information (text or other widgets) in
  * each node using
  * {@link WTreeTableNode#setColumnWidget(int column, WWidget widget)
- * WTreeTableNode#setColumnWidget()}.
+ * WTreeTableNode#setColumnWidget()}. Thus, you cannot change the number of
+ * columns once the tree root has been set.
  * <p>
  * The table cannot be given a height using CSS style rules, instead you must
  * use layout managers, or use
@@ -140,6 +141,10 @@ public class WTreeTable extends WCompositeWidget {
 	 * width.
 	 */
 	public void addColumn(CharSequence header, WLength width) {
+		if (this.getTreeRoot() != null) {
+			throw new WtException(
+					"WTreeTable::addColumn(): must be called before setTreeRoot()");
+		}
 		WText t = new WText(header);
 		t.resize(width, WLength.Auto);
 		t.setInline(false);
@@ -166,6 +171,8 @@ public class WTreeTable extends WCompositeWidget {
 	 * <p>
 	 * Sets the data for the tree table, and specify the header for the first
 	 * column.
+	 * <p>
+	 * The initial <code>root</code> is <code>null</code>.
 	 * <p>
 	 * 
 	 * @see WTreeTable#getTreeRoot()
@@ -284,7 +291,7 @@ public class WTreeTable extends WCompositeWidget {
 	private void defineJavaScript() {
 		WApplication app = WApplication.getInstance();
 		app.loadJavaScript("js/WTreeTable.js", wtjs1());
-		this.setJavaScriptMember("_a", "0;new Wt3_1_10.WTreeTable("
+		this.setJavaScriptMember("_a", "0;new Wt3_1_11.WTreeTable("
 				+ app.getJavaScriptClass() + "," + this.getJsRef() + ");");
 	}
 

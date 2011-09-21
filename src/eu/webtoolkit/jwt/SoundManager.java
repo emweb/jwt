@@ -17,63 +17,58 @@ import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
 
-class SoundManager extends WObject {
-	public SoundManager(WApplication app) {
-		super(app);
-		this.wApp_ = app;
-		WFlashObject player_ = new WFlashObject(WApplication.getResourcesUrl()
-				+ "WtSoundManager.swf", this.wApp_.getDomRoot());
-		player_.setAlternativeContent((WWidget) null);
-		player_.resize(new WLength(100), new WLength(100));
-		player_.setPositionScheme(PositionScheme.Absolute);
-		player_.setOffsets(new WLength(-900), EnumSet.of(Side.Left, Side.Top));
-		player_.setFlashParameter("allowScriptAccess", "always");
-		player_.setFlashParameter("quality", "high");
-		player_.setFlashParameter("bgcolor", "#aaaaaa");
-		player_.setFlashParameter("wmode", "");
-		this.wApp_
-				.doJavaScript(
-						"WtSoundManager = {};WtSoundManager.initialized = false;WtSoundManager.queue = new Array();WtSoundManager.player = null;WtSoundManager.flashInitializedCB = function() {WtSoundManager.initialized = true;try {WtSoundManager.player = "
-								+ player_.getJsFlashRef()
-								+ ";} catch (e) {} var i, il;for (i = 0, il = WtSoundManager.queue.length; i < il; i++) {var action = WtSoundManager.queue[i].action;if (action == 'add') {WtSoundManager.add(WtSoundManager.queue[i].id, WtSoundManager.queue[i].url);} else if (action == 'remove') {WtSoundManager.remove(WtSoundManager.queue[i].id);} else if (action == 'play') {WtSoundManager.doPlay(WtSoundManager.queue[i].id, WtSoundManager.queue[i].loops);} else if (action == 'stop') {WtSoundManager.doStop(WtSoundManager.queue[i].id);} else {alert('WtSoundManager internal error: action not found: ' + action);}}};WtSoundManager.onerror = function() {alert('WtSoundManager failed to start');};WtSoundManager.add = function(id, url) {if(WtSoundManager.initialized) {try {WtSoundManager.player.WtAdd(id, url);} catch (e) {}} else {WtSoundManager.queue.push({action: 'add', id: id, url: url});}};WtSoundManager.remove = function(id) {if (WtSoundManager.initialized) {try {WtSoundManager.player.WtRemove(id);} catch (e) {}} else {WtSoundManager.queue.push({action: 'remove', id: id});}};\nWtSoundManager.doPlay = function(id, loops) {\nif (WtSoundManager.initialized) {\ntry {WtSoundManager.player.WtPlay(id, loops);\n} catch (e) {}} else {\nWtSoundManager.queue.push({action: 'play', id: id, loops: loops});\n}\n};\nWtSoundManager.doStop = function(id) {if (WtSoundManager.initialized) {try {WtSoundManager.player.WtStop(id);} catch (e) {}} else {WtSoundManager.queue.push({action: 'stop', id: id});}};",
-						false);
+class SoundManager extends WMediaPlayer {
+	public SoundManager(WContainerWidget parent) {
+		super(WMediaPlayer.MediaType.Audio, parent);
+		this.setControlsWidget((WWidget) null);
+		StringBuilder ss = new StringBuilder();
+		ss
+				.append("function() { var s = ")
+				.append(this.getJsRef())
+				.append(
+						", l = s.getAttribute('loops');if (l && l != '0') {s.setAttribute('loops', l - 1);")
+				.append(this.getJsPlayerRef()).append(".jPlayer('play');}}");
+		this.ended().addListener(ss.toString());
+		this.ended().setNotExposed();
+	}
+
+	public SoundManager() {
+		this((WContainerWidget) null);
 	}
 
 	public void add(WSound sound) {
-		StringWriter ss = new StringWriter();
-		ss.append("WtSoundManager.add(\"").append(sound.getId()).append(
-				"\", \"").append(sound.getUrl()).append("\");");
-		this.wApp_.doJavaScript(ss.toString());
+		if (!this.getSource(WMediaPlayer.Encoding.MP3).equals(sound.getUrl())) {
+			this.clearSources();
+			this
+					.addSource(WMediaPlayer.Encoding.MP3, new WLink(sound
+							.getUrl()));
+		}
 	}
 
 	public void remove(WSound sound) {
-		StringWriter ss = new StringWriter();
-		ss.append("WtSoundManager.remove(\"").append(sound.getId()).append(
-				"\", \"").append(sound.getUrl()).append("\");");
-		this.wApp_.doJavaScript(ss.toString());
 	}
 
 	public void play(WSound sound, int loops) {
-		StringWriter ss = new StringWriter();
-		ss.append("WtSoundManager.doPlay(\"").append(sound.getId()).append(
-				"\", ").append(String.valueOf(sound.getLoops())).append(");");
-		this.wApp_.doJavaScript(ss.toString());
+		if (!this.getSource(WMediaPlayer.Encoding.MP3).equals(sound.getUrl())) {
+			this.clearSources();
+			this
+					.addSource(WMediaPlayer.Encoding.MP3, new WLink(sound
+							.getUrl()));
+		}
+		this.setAttributeValue("loops", "");
+		this.setAttributeValue("loops", String.valueOf(loops - 1));
+		super.play();
 	}
 
 	public void stop(WSound sound) {
-		StringWriter ss = new StringWriter();
-		ss.append("WtSoundManager.doStop(\"").append(sound.getId()).append(
-				"\");");
-		this.wApp_.doJavaScript(ss.toString());
+		super.stop();
 	}
 
 	public boolean isFinished(WSound sound) {
-		return true;
+		if (this.getSource(WMediaPlayer.Encoding.MP3).equals(sound.getUrl())) {
+			return !this.isPlaying();
+		} else {
+			return true;
+		}
 	}
-
-	public int loopsRemaining(WSound sound) {
-		return 0;
-	}
-
-	private WApplication wApp_;
 }

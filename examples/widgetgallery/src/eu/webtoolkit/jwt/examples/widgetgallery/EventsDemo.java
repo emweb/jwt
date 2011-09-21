@@ -23,7 +23,7 @@ class EventsDemo extends ControlsWidget {
 		super(ed, true);
 		this.lastKeyType_ = "";
 		this.keyEventRepeatCounter_ = 0;
-		new WText(tr("events-intro"), this);
+		addText(tr("events-intro"), this);
 	}
 
 	public void populateSubMenu(WMenu menu) {
@@ -35,7 +35,7 @@ class EventsDemo extends ControlsWidget {
 	private WWidget wKeyEvent() {
 		WContainerWidget result = new WContainerWidget();
 		this.topic("WKeyEvent", result);
-		new WText(tr("events-WKeyEvent-1"), result);
+		addText(tr("events-WKeyEvent-1"), result);
 		WLineEdit l = new WLineEdit(result);
 		l.setTextSize(50);
 		l.keyWentUp().addListener(this, new Signal1.Listener<WKeyEvent>() {
@@ -48,7 +48,7 @@ class EventsDemo extends ControlsWidget {
 				EventsDemo.this.showKeyWentDown(e1);
 			}
 		});
-		new WText(tr("events-WKeyEvent-2"), result);
+		addText(tr("events-WKeyEvent-2"), result);
 		l = new WLineEdit(result);
 		l.setTextSize(50);
 		l.keyPressed().addListener(this, new Signal1.Listener<WKeyEvent>() {
@@ -56,7 +56,7 @@ class EventsDemo extends ControlsWidget {
 				EventsDemo.this.showKeyPressed(e1);
 			}
 		});
-		new WText(tr("events-WKeyEvent-3"), result);
+		addText(tr("events-WKeyEvent-3"), result);
 		l = new WLineEdit(result);
 		l.setTextSize(50);
 		l.enterPressed().addListener(this, new Signal.Listener() {
@@ -70,7 +70,7 @@ class EventsDemo extends ControlsWidget {
 			}
 		});
 		new WBreak(result);
-		new WText("Last event: ", result);
+		addText("Last event: ", result);
 		this.keyEventType_ = new WText(result);
 		new WBreak(result);
 		this.keyEventDescription_ = new WText(result);
@@ -80,7 +80,7 @@ class EventsDemo extends ControlsWidget {
 	private WWidget wMouseEvent() {
 		WContainerWidget result = new WContainerWidget();
 		this.topic("WMouseEvent", result);
-		new WText(tr("events-WMouseEvent"), result);
+		addText(tr("events-WMouseEvent"), result);
 		WContainerWidget c = new WContainerWidget(result);
 		WHBoxLayout hlayout = new WHBoxLayout();
 		c.setLayout(hlayout);
@@ -154,7 +154,7 @@ class EventsDemo extends ControlsWidget {
 	private WWidget wDropEvent() {
 		WContainerWidget result = new WContainerWidget();
 		this.topic("WDropEvent", result);
-		new WText(tr("events-WDropEvent"), result);
+		addText(tr("events-WDropEvent"), result);
 		new DragExample(result);
 		return result;
 	}

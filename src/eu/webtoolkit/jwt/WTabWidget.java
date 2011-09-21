@@ -306,6 +306,12 @@ public class WTabWidget extends WCompositeWidget {
 	/**
 	 * Make it possible to close a tab interactively or by
 	 * {@link WTabWidget#closeTab(int index) closeTab}.
+	 * <p>
+	 * A tab that has been closed is marked as hidden, but not removed from the
+	 * menu.
+	 * <p>
+	 * 
+	 * @see WTabWidget#removeTab(WWidget child)
 	 */
 	public void setTabCloseable(int index, boolean closeable) {
 		TabWidgetItem item = ((this.menu_.getItems().get(index)) instanceof TabWidgetItem ? (TabWidgetItem) (this.menu_
@@ -316,6 +322,9 @@ public class WTabWidget extends WCompositeWidget {
 
 	/**
 	 * Returns whether a tab is closeable.
+	 * <p>
+	 * 
+	 * @see WTabWidget#setTabCloseable(int index, boolean closeable)
 	 */
 	public boolean isTabCloseable(int index) {
 		TabWidgetItem item = ((this.menu_.getItems().get(index)) instanceof TabWidgetItem ? (TabWidgetItem) (this.menu_
@@ -336,6 +345,9 @@ public class WTabWidget extends WCompositeWidget {
 
 	/**
 	 * Returns the label for a tab.
+	 * <p>
+	 * 
+	 * @see WTabWidget#setTabText(int index, CharSequence label)
 	 */
 	public WString getTabText(int index) {
 		TabWidgetItem item = ((this.menu_.getItems().get(index)) instanceof TabWidgetItem ? (TabWidgetItem) (this.menu_
@@ -358,6 +370,9 @@ public class WTabWidget extends WCompositeWidget {
 
 	/**
 	 * Returns the tooltip for a tab.
+	 * <p>
+	 * 
+	 * @see WTabWidget#setTabToolTip(int index, CharSequence tip)
 	 */
 	public WString getTabToolTip(int index) {
 		TabWidgetItem item = ((this.menu_.getItems().get(index)) instanceof TabWidgetItem ? (TabWidgetItem) (this.menu_
@@ -377,13 +392,11 @@ public class WTabWidget extends WCompositeWidget {
 	 * pages.
 	 * <p>
 	 * For each menu item, {@link WMenuItem#getPathComponent()
-	 * WMenuItem#getPathComponent()} is appended to the internal base path (
-	 * {@link WMenu#getInternalBasePath() WMenu#getInternalBasePath()}), which
-	 * defaults to the internal path ({@link WApplication#getBookmarkUrl()
-	 * WApplication#getBookmarkUrl()}) but may be changed using
-	 * {@link WMenu#setInternalBasePath(String basePath)
-	 * WMenu#setInternalBasePath()}, with a &apos;/&apos; appended to turn it
-	 * into a folder, if needed.
+	 * WMenuItem#getPathComponent()} is appended to the <code>basePath</code>,
+	 * which defaults to the internal path (
+	 * {@link WApplication#getBookmarkUrl() WApplication#getBookmarkUrl()}). A
+	 * &apos;/&apos; is appended to the base path, to turn it into a folder, if
+	 * needed.
 	 * <p>
 	 * By default, menu interaction does not change the application internal
 	 * path.
@@ -462,6 +475,13 @@ public class WTabWidget extends WCompositeWidget {
 
 	/**
 	 * Closes a tab at <code>index</code>.
+	 * <p>
+	 * A tab that has been closed is marked as hidden, but not removed from the
+	 * menu.
+	 * <p>
+	 * 
+	 * @see WTabWidget#removeTab(WWidget child)
+	 * @see WTabWidget#setTabHidden(int index, boolean hidden)
 	 */
 	public void closeTab(int index) {
 		this.setTabHidden(index, true);
@@ -472,11 +492,22 @@ public class WTabWidget extends WCompositeWidget {
 	 * Signal emitted when the user closes a tab.
 	 * <p>
 	 * The index of the closed tab is passed as an argument.
+	 * <p>
+	 * 
+	 * @see WTabWidget#closeTab(int index)
+	 * @see WTabWidget#setTabCloseable(int index, boolean closeable)
 	 */
 	public Signal1<Integer> tabClosed() {
 		return this.tabClosed_;
 	}
 
+	/**
+	 * Returns the contents stack.
+	 * <p>
+	 * The tab widget is implemented as a {@link WMenu} + {@link WStackedWidget}
+	 * which displays the contents. This method returns a reference to this
+	 * contents stack.
+	 */
 	public WStackedWidget getContentsStack() {
 		return this.menu_.getContentsStack();
 	}
@@ -512,6 +543,12 @@ public class WTabWidget extends WCompositeWidget {
 						WTabWidget.this.onItemSelected(e1);
 					}
 				});
+		this.menu_.itemClosed().addListener(this,
+				new Signal1.Listener<WMenuItem>() {
+					public void trigger(WMenuItem e1) {
+						WTabWidget.this.onItemClosed(e1);
+					}
+				});
 	}
 
 	private final void create(AlignmentFlag layoutAlignmen,
@@ -521,6 +558,10 @@ public class WTabWidget extends WCompositeWidget {
 
 	private void onItemSelected(WMenuItem item) {
 		this.currentChanged_.trigger(this.menu_.getCurrentIndex());
+	}
+
+	private void onItemClosed(WMenuItem item) {
+		this.closeTab(this.menu_.getItems().indexOf(item));
 	}
 	// private void setJsSize() ;
 }

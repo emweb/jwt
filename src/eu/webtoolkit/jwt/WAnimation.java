@@ -260,9 +260,13 @@ public class WAnimation {
 	/**
 	 * Sets the animation effects.
 	 * <p>
-	 * A motion effect ({@link SlideInFromLeft}, {@link SlideInFromRight},
-	 * {@link SlideInFromBottom}, {@link SlideInFromTop} or {@link Pop}) can be
-	 * combined with a fade effect ({@link Fade}).
+	 * A motion effect ({@link WAnimation.AnimationEffect#SlideInFromLeft
+	 * SlideInFromLeft}, {@link WAnimation.AnimationEffect#SlideInFromRight
+	 * SlideInFromRight}, {@link WAnimation.AnimationEffect#SlideInFromBottom
+	 * SlideInFromBottom}, {@link WAnimation.AnimationEffect#SlideInFromTop
+	 * SlideInFromTop} or {@link WAnimation.AnimationEffect#Pop Pop}) can be
+	 * combined with a fade effect ({@link WAnimation.AnimationEffect#Fade Fade}
+	 * ).
 	 * <p>
 	 * When effects are 0, the animation does not actually specify an animation,
 	 * but instead an instant transition.
@@ -325,6 +329,12 @@ public class WAnimation {
 	}
 
 	// public void setTimingFunction(WAnimation.TimingFunction function) ;
+	/**
+	 * Returns the timing function.
+	 * <p>
+	 * 
+	 * @see WAnimation#setTimingFunction(WAnimation.TimingFunction function)
+	 */
 	public WAnimation.TimingFunction getTimingFunction() {
 		return this.timing_;
 	}

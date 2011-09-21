@@ -246,6 +246,7 @@ public class WMenu extends WCompositeWidget {
 		this.emitPathChange_ = false;
 		this.basePath_ = "";
 		this.previousInternalPath_ = "";
+		this.subMenu_ = false;
 		this.itemSelected_ = new Signal1<WMenuItem>(this);
 		this.itemSelectRendered_ = new Signal1<WMenuItem>(this);
 		this.itemClosed_ = new Signal1<WMenuItem>(this);
@@ -285,6 +286,7 @@ public class WMenu extends WCompositeWidget {
 		this.emitPathChange_ = false;
 		this.basePath_ = "";
 		this.previousInternalPath_ = "";
+		this.subMenu_ = false;
 		this.itemSelected_ = new Signal1<WMenuItem>(this);
 		this.itemSelectRendered_ = new Signal1<WMenuItem>(this);
 		this.itemClosed_ = new Signal1<WMenuItem>(this);
@@ -409,7 +411,7 @@ public class WMenu extends WCompositeWidget {
 		} else {
 			item.renderSelected(false);
 		}
-		item.renderHidden(item.isHidden());
+		item.getItemWidget().getParent().setHidden(item.isHidden());
 		this.itemPathChanged(item);
 		return item;
 	}
@@ -467,6 +469,9 @@ public class WMenu extends WCompositeWidget {
 	 * <p>
 	 * Select the menu item <code>item</code>.
 	 * <p>
+	 * When <code>item</code> is <code>null</code>, the current selection is
+	 * removed.
+	 * <p>
 	 * 
 	 * @see WMenu#select(int index)
 	 * @see WMenu#getCurrentItem()
@@ -481,6 +486,8 @@ public class WMenu extends WCompositeWidget {
 	 * <p>
 	 * Menu items in a menu with <code>N</code> items are numbered from 0 to
 	 * <code>N</code> - 1.
+	 * <p>
+	 * Using a value of -1 removes the current selection.
 	 * <p>
 	 * 
 	 * @see WMenu#select(WMenuItem item)
@@ -755,12 +762,11 @@ public class WMenu extends WCompositeWidget {
 	 * pages.
 	 * <p>
 	 * For each menu item, {@link WMenuItem#getPathComponent()
-	 * WMenuItem#getPathComponent()} is appended to the internal base path (
-	 * {@link WMenu#getInternalBasePath() getInternalBasePath()}), which
-	 * defaults to the internal path ({@link WApplication#getBookmarkUrl()
-	 * WApplication#getBookmarkUrl()}) but may be changed using
-	 * {@link WMenu#setInternalBasePath(String basePath) setInternalBasePath()},
-	 * with a &apos;/&apos; appended to turn it into a folder, if needed.
+	 * WMenuItem#getPathComponent()} is appended to the <code>basePath</code>,
+	 * which defaults to the internal path (
+	 * {@link WApplication#getBookmarkUrl() WApplication#getBookmarkUrl()}). A
+	 * &apos;/&apos; is appended to the base path, to turn it into a folder, if
+	 * needed.
 	 * <p>
 	 * By default, menu interaction does not change the application internal
 	 * path.
@@ -772,12 +778,14 @@ public class WMenu extends WCompositeWidget {
 		if (!this.internalPathEnabled_) {
 			this.internalPathEnabled_ = true;
 			WApplication app = WApplication.getInstance();
-			this.basePath_ = StringUtils.append(basePath.length() == 0 ? app
-					.getInternalPath() : basePath, '/');
+			this.basePath_ = basePath.length() == 0 ? app.getInternalPath()
+					: basePath;
+			this.basePath_ = StringUtils.append(StringUtils.prepend(
+					this.basePath_, '/'), '/');
 			app.internalPathChanged().addListener(this,
 					new Signal1.Listener<String>() {
 						public void trigger(String e1) {
-							WMenu.this.internalPathChanged(e1);
+							WMenu.this.handleInternalPathChange(e1);
 						}
 					});
 			this.previousInternalPath_ = app.getInternalPath();
@@ -816,7 +824,7 @@ public class WMenu extends WCompositeWidget {
 	 * @see WMenu#getInternalBasePath()
 	 */
 	public void setInternalBasePath(String basePath) {
-		String bp = StringUtils.append(basePath, '/');
+		String bp = StringUtils.append(StringUtils.prepend(basePath, '/'), '/');
 		if (!this.basePath_.equals(bp)) {
 			this.basePath_ = bp;
 			if (this.internalPathEnabled_) {
@@ -902,7 +910,7 @@ public class WMenu extends WCompositeWidget {
 				this.items_.get(bestI).setFromInternalPath(path);
 			} else {
 				if (subPath.length() != 0) {
-					WApplication.getInstance().log("error").append(
+					WApplication.getInstance().log("warn").append(
 							"WMenu: unknown path: '").append(subPath).append(
 							"'");
 				} else {
@@ -952,6 +960,7 @@ public class WMenu extends WCompositeWidget {
 	private boolean emitPathChange_;
 	private String basePath_;
 	private String previousInternalPath_;
+	private boolean subMenu_;
 	private Signal1<WMenuItem> itemSelected_;
 	private Signal1<WMenuItem> itemSelectRendered_;
 	private Signal1<WMenuItem> itemClosed_;
@@ -981,6 +990,12 @@ public class WMenu extends WCompositeWidget {
 		}
 	}
 
+	private void handleInternalPathChange(String path) {
+		if (!this.subMenu_) {
+			this.internalPathChanged(path);
+		}
+	}
+
 	private int current_;
 	private int previousCurrent_;
 	private int previousStackIndex_;
@@ -995,7 +1010,7 @@ public class WMenu extends WCompositeWidget {
 			WApplication app = WApplication.getInstance();
 			if (app.internalPathMatches(this.basePath_
 					+ item.getPathComponent())) {
-				this.select(this.indexOf(item), false);
+				item.setFromInternalPath(app.getInternalPath());
 			}
 		}
 	}
@@ -1050,15 +1065,12 @@ public class WMenu extends WCompositeWidget {
 
 	private void recreateItem(int index) {
 		WMenuItem item = this.items_.get(index);
+		WContainerWidget parent = ((item.getItemWidget().getParent()) instanceof WContainerWidget ? (WContainerWidget) (item
+				.getItemWidget().getParent())
+				: null);
 		if (this.renderAsList_) {
-			WContainerWidget li = ((item.getItemWidget().getParent()) instanceof WContainerWidget ? (WContainerWidget) (item
-					.getItemWidget().getParent())
-					: null);
-			li.addWidget(item.getRecreateItemWidget());
+			parent.addWidget(item.getRecreateItemWidget());
 		} else {
-			WTableCell parent = ((item.getItemWidget().getParent()) instanceof WTableCell ? (WTableCell) (item
-					.getItemWidget().getParent())
-					: null);
 			if (this.orientation_ == Orientation.Horizontal) {
 				final int pos = parent.getIndexOf(item.getItemWidget());
 				WWidget newItemWidget = item.getRecreateItemWidget();
@@ -1069,7 +1081,7 @@ public class WMenu extends WCompositeWidget {
 			}
 		}
 		item.renderSelected(this.current_ == index);
-		item.renderHidden(item.isHidden());
+		parent.setHidden(item.isHidden());
 		this.updateSelectionEvent();
 	}
 
@@ -1084,7 +1096,7 @@ public class WMenu extends WCompositeWidget {
 				this.select(nextItem);
 			}
 		}
-		this.items_.get(index).renderHidden(hidden);
+		this.items_.get(index).getItemWidget().getParent().setHidden(hidden);
 	}
 
 	void doSetHiddenItem(WMenuItem item, boolean hidden) {
@@ -1102,6 +1114,10 @@ public class WMenu extends WCompositeWidget {
 	void updateSelectionEvent() {
 		this.needSelectionEventUpdate_ = true;
 		this.askRerender();
+	}
+
+	void setSubMenu(boolean submenu) {
+		this.subMenu_ = submenu;
 	}
 
 	static int match(String path, String component) {

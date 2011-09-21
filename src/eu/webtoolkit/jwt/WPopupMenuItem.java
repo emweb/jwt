@@ -43,7 +43,8 @@ public class WPopupMenuItem extends WCompositeWidget {
 		this.subMenu_ = null;
 		this.data_ = null;
 		this.separator_ = false;
-		this.triggered_ = new Signal(this);
+		this.selectable_ = true;
+		this.triggered_ = new Signal1<WPopupMenuItem>(this);
 		this.create();
 		this.setText(text);
 	}
@@ -66,7 +67,8 @@ public class WPopupMenuItem extends WCompositeWidget {
 		this.subMenu_ = null;
 		this.data_ = null;
 		this.separator_ = false;
-		this.triggered_ = new Signal(this);
+		this.selectable_ = true;
+		this.triggered_ = new Signal1<WPopupMenuItem>(this);
 		this.create();
 		this.setText(text);
 		if (iconPath.length() != 0) {
@@ -121,7 +123,7 @@ public class WPopupMenuItem extends WCompositeWidget {
 	 * @see WPopupMenuItem#setText(CharSequence text)
 	 */
 	public void setIcon(String path) {
-		this.getDecorationStyle().setBackgroundImage(path,
+		this.getDecorationStyle().setBackgroundImage(new WLink(path),
 				WCssDecorationStyle.Repeat.NoRepeat, EnumSet.of(Side.CenterY));
 		this.setAttributeValue("style", "background-position: 3px center");
 	}
@@ -143,12 +145,12 @@ public class WPopupMenuItem extends WCompositeWidget {
 	 * item text (instead of an icon).
 	 * <p>
 	 * 
-	 * @see WPopupMenuItem#setChecked(boolean how)
+	 * @see WPopupMenuItem#setChecked(boolean checked)
 	 * @see WPopupMenuItem#isChecked()
 	 */
-	public void setCheckable(boolean how) {
-		if (this.isCheckable() != how) {
-			if (how) {
+	public void setCheckable(boolean checkable) {
+		if (this.isCheckable() != checkable) {
+			if (checkable) {
 				this.text_.setMargin(new WLength(ICON_WIDTH - CHECKBOX_WIDTH),
 						EnumSet.of(Side.Left));
 				this.checkBox_ = new WCheckBox();
@@ -168,10 +170,53 @@ public class WPopupMenuItem extends WCompositeWidget {
 	 * Returns whether the item is checkable.
 	 * <p>
 	 * 
-	 * @see WPopupMenuItem#setCheckable(boolean how)
+	 * @see WPopupMenuItem#setCheckable(boolean checkable)
 	 */
 	public boolean isCheckable() {
 		return this.checkBox_ != null;
+	}
+
+	/**
+	 * Associates a link with the item.
+	 * <p>
+	 * You may turn the item into an anchor by specifying an link for it. The
+	 * link may point to a URL, a resource, or an internal path.
+	 * <p>
+	 * The default link is a <code>null</code> link, which disables the
+	 * anchor-like functionality.
+	 */
+	public void setLink(WLink link) {
+		this.impl_.setLink(link);
+	}
+
+	/**
+	 * Returns the associated link.
+	 * <p>
+	 * 
+	 * @see WPopupMenuItem#setLink(WLink link)
+	 */
+	public WLink getLink() {
+		return this.impl_.getLink();
+	}
+
+	/**
+	 * Sets the link target.
+	 * <p>
+	 * 
+	 * @see WPopupMenuItem#setLink(WLink link)
+	 */
+	public void setLinkTarget(AnchorTarget target) {
+		this.impl_.setTarget(target);
+	}
+
+	/**
+	 * Returns the link target.
+	 * <p>
+	 * 
+	 * @see WPopupMenuItem#setLinkTarget(AnchorTarget target)
+	 */
+	public AnchorTarget getLinkTarget() {
+		return this.impl_.getTarget();
 	}
 
 	/**
@@ -187,12 +232,13 @@ public class WPopupMenuItem extends WCompositeWidget {
 		if (this.subMenu_ != null)
 			this.subMenu_.remove();
 		this.subMenu_ = menu;
+		this.selectable_ = !(this.subMenu_ != null);
 		String resources = WApplication.getResourcesUrl();
 		if (this.subMenu_ != null) {
 			this.subMenu_.getWebWidget().setLoadLaterWhenInvisible(false);
 			this.subMenu_.parentItem_ = this;
 			this.text_.getDecorationStyle().setBackgroundImage(
-					resources + "right-arrow.gif",
+					new WLink(resources + "right-arrow.gif"),
 					WCssDecorationStyle.Repeat.NoRepeat,
 					EnumSet.of(Side.Right, Side.CenterY));
 		}
@@ -215,12 +261,12 @@ public class WPopupMenuItem extends WCompositeWidget {
 	 * == <code>true</code>.
 	 * <p>
 	 * 
-	 * @see WPopupMenuItem#setCheckable(boolean how)
+	 * @see WPopupMenuItem#setCheckable(boolean checkable)
 	 * @see WPopupMenuItem#isCheckable()
 	 */
-	public void setChecked(boolean how) {
+	public void setChecked(boolean checked) {
 		if (this.checkBox_ != null) {
-			this.checkBox_.setChecked(how);
+			this.checkBox_.setChecked(checked);
 		}
 	}
 
@@ -231,11 +277,36 @@ public class WPopupMenuItem extends WCompositeWidget {
 	 * == <code>true</code>.
 	 * <p>
 	 * 
-	 * @see WPopupMenuItem#setChecked(boolean how)
+	 * @see WPopupMenuItem#setChecked(boolean checked)
 	 * @see WPopupMenuItem#isCheckable()
 	 */
 	public boolean isChecked() {
 		return this.checkBox_ != null ? this.checkBox_.isChecked() : false;
+	}
+
+	/**
+	 * Sets whether the menu item can be selected.
+	 * <p>
+	 * Only a menu item that can be selected can be the result of a popup menu
+	 * selection.
+	 * <p>
+	 * The default value is <code>true</code> for a normal menu item, and
+	 * <code>false</code> for a menu item that has a submenu.
+	 * <p>
+	 * An item that is selectable but is disabled can still not be selected.
+	 */
+	public void setSelectable(boolean selectable) {
+		this.selectable_ = selectable;
+	}
+
+	/**
+	 * Returns whether the menu item can be selected.
+	 * <p>
+	 * 
+	 * @see WPopupMenuItem#setSelectable(boolean selectable)
+	 */
+	public boolean isSelectable() {
+		return this.selectable_;
 	}
 
 	/**
@@ -258,8 +329,13 @@ public class WPopupMenuItem extends WCompositeWidget {
 
 	/**
 	 * Signal emitted when an item is activated.
+	 * <p>
+	 * Returns this item as argument.
+	 * <p>
+	 * 
+	 * @see WPopupMenu#triggered()
 	 */
-	public Signal triggered() {
+	public Signal1<WPopupMenuItem> triggered() {
 		return this.triggered_;
 	}
 
@@ -284,6 +360,19 @@ public class WPopupMenuItem extends WCompositeWidget {
 		super.setDisabled(disabled);
 	}
 
+	void render(EnumSet<RenderFlag> flags) {
+		super.render(flags);
+		if (!EnumUtils.mask(flags, RenderFlag.RenderFull).isEmpty()
+				&& this.selectable_) {
+			this.impl_.mouseWentUp().addListener(this.getTopLevelMenu(),
+					new Signal1.Listener<WMouseEvent>() {
+						public void trigger(WMouseEvent e1) {
+							WPopupMenuItem.this.getTopLevelMenu().hide();
+						}
+					});
+		}
+	}
+
 	WPopupMenuItem(boolean anon1) {
 		super();
 		this.text_ = null;
@@ -291,22 +380,26 @@ public class WPopupMenuItem extends WCompositeWidget {
 		this.subMenu_ = null;
 		this.data_ = null;
 		this.separator_ = true;
-		this.triggered_ = new Signal(this);
-		this.setImplementation(this.impl_ = new WContainerWidget());
+		this.selectable_ = false;
+		this.triggered_ = new Signal1<WPopupMenuItem>(this);
+		this.setImplementation(this.impl_ = new WAnchor());
 		this.impl_.setLoadLaterWhenInvisible(false);
 		this.setStyleClass("Wt-separator");
+		this.setInline(false);
 	}
 
-	private WContainerWidget impl_;
+	private WAnchor impl_;
 	private WText text_;
 	private WCheckBox checkBox_;
 	private WPopupMenu subMenu_;
 	private Object data_;
 	private boolean separator_;
-	private Signal triggered_;
+	private boolean selectable_;
+	private Signal1<WPopupMenuItem> triggered_;
 
 	private void create() {
-		this.setImplementation(this.impl_ = new WContainerWidget());
+		this.setImplementation(this.impl_ = new WAnchor());
+		this.setInline(false);
 		// this.implementStateless(WPopupMenuItem.renderOver,WPopupMenuItem.renderOut);
 		this.impl_.mouseWentUp().addListener(this,
 				new Signal1.Listener<WMouseEvent>() {
@@ -352,14 +445,14 @@ public class WPopupMenuItem extends WCompositeWidget {
 	}
 
 	private void onMouseUp() {
-		if (this.isDisabled() || this.subMenu_ != null) {
+		if (this.isDisabled() || !this.selectable_) {
 			return;
 		}
 		if (this.checkBox_ != null) {
 			this.checkBox_.setChecked(!this.checkBox_.isChecked());
 		}
 		this.getTopLevelMenu().result_ = this;
-		this.triggered_.trigger();
+		this.triggered_.trigger(this);
 		this.getTopLevelMenu().done(this);
 	}
 

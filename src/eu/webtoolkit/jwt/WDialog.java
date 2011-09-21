@@ -133,6 +133,7 @@ public class WDialog extends WCompositeWidget {
 	public WDialog(CharSequence windowTitle) {
 		super();
 		this.modal_ = true;
+		this.resizable_ = false;
 		this.finished_ = new Signal1<WDialog.DialogCode>(this);
 		this.recursiveEventLoop_ = false;
 		this.initialized_ = false;
@@ -302,10 +303,18 @@ public class WDialog extends WCompositeWidget {
 			throw new WtException(
 					"Server push requires a Servlet 3.0 enabled servlet container and an application with async-supported enabled.");
 		}
+		WApplication app = WApplication.getInstance();
 		this.recursiveEventLoop_ = true;
-		do {
-			WApplication.getInstance().getSession().doRecursiveEventLoop();
-		} while (this.recursiveEventLoop_);
+		if (app.getEnvironment().isTest()) {
+			app.getEnvironment().dialogExecuted().trigger(this);
+			if (this.recursiveEventLoop_) {
+				throw new WtException("Test case must close dialog");
+			}
+		} else {
+			do {
+				app.getSession().doRecursiveEventLoop();
+			} while (this.recursiveEventLoop_);
+		}
 		this.hide();
 		return this.result_;
 	}
@@ -429,6 +438,48 @@ public class WDialog extends WCompositeWidget {
 		return this.modal_;
 	}
 
+	/**
+	 * Adds a resize handle to the dialog.
+	 * <p>
+	 * The resize handle is shown in the bottom right corner of the dialog, and
+	 * allows the user to resize the dialog (but not smaller than the content
+	 * allows).
+	 * <p>
+	 * This also sets the minimum width and height to {@link WLength#Auto} to
+	 * use the initial width and height as minimum sizes. You may want to
+	 * provide other values for minimum width and height.
+	 * <p>
+	 * 
+	 * @see WCompositeWidget#setMinimumSize(WLength width, WLength height)
+	 * @see WCompositeWidget#setMaximumSize(WLength width, WLength height)
+	 */
+	public void setResizable(boolean resizable) {
+		if (resizable != this.resizable_) {
+			this.resizable_ = resizable;
+			this.toggleStyleClass("Wt-resizable", resizable);
+			this.setSelectable(!resizable);
+			if (this.resizable_) {
+				this.setMinimumSize(WLength.Auto, WLength.Auto);
+				Resizable.loadJavaScript(WApplication.getInstance());
+				this.doJavaScript("(new Wt3_1_11.Resizable(Wt3_1_11,"
+						+ this.getJsRef()
+						+ ")).onresize(function(w, h) {var obj = $('#"
+						+ this.getId()
+						+ "').data('obj');if (obj) obj.onresize(w, h); });");
+			}
+		}
+	}
+
+	/**
+	 * Returns whether the dialog has a resize handle.
+	 * <p>
+	 * 
+	 * @see WDialog#setResizable(boolean resizable)
+	 */
+	public boolean isResizable() {
+		return this.resizable_;
+	}
+
 	public void setHidden(boolean hidden, WAnimation animation) {
 		if (this.isHidden() != hidden) {
 			if (this.modal_) {
@@ -469,7 +520,7 @@ public class WDialog extends WCompositeWidget {
 					&& this.getOffset(Side.Right).isAuto();
 			boolean centerY = this.getOffset(Side.Top).isAuto()
 					&& this.getOffset(Side.Bottom).isAuto();
-			this.setJavaScriptMember("_a", "0;new Wt3_1_10.WDialog("
+			this.setJavaScriptMember("_a", "0;new Wt3_1_11.WDialog("
 					+ app.getJavaScriptClass() + "," + this.getJsRef() + ","
 					+ (centerX ? "1" : "0") + "," + (centerY ? "1" : "0")
 					+ ");");
@@ -485,6 +536,7 @@ public class WDialog extends WCompositeWidget {
 	private WContainerWidget titleBar_;
 	private WContainerWidget contents_;
 	private boolean modal_;
+	private boolean resizable_;
 	private WWidget previousExposeConstraint_;
 	private int coverPreviousZIndex_;
 	private boolean coverWasHidden_;
@@ -510,6 +562,6 @@ public class WDialog extends WCompositeWidget {
 				JavaScriptScope.WtClassScope,
 				JavaScriptObjectType.JavaScriptConstructor,
 				"WDialog",
-				"function(g,b,j,k){function m(a){var c=a||window.event;a=d.pageCoordinates(c);c=d.windowCoordinates(c);var e=d.windowSize();if(c.x>0&&c.x<e.x&&c.y>0&&c.y<e.y){j=k=false;b.style.left=d.pxself(b,\"left\")+a.x-h+\"px\";b.style.top=d.pxself(b,\"top\")+a.y-i+\"px\";h=a.x;i=a.y}}function l(a,c,e){e-=2;c-=2;a.style.height=e+\"px\";if(c>0)a.style.width=c+\"px\";a=a.lastChild;e-=a.previousSibling.offsetHeight+8;if(e>0){a.style.height=e+\"px\";g.layouts&&g.layouts.adjust()}} jQuery.data(b,\"obj\",this);var f=$(b).find(\".titlebar\").first().get(0),d=g.WT,h,i;if(f){f.onmousedown=function(a){a=a||window.event;d.capture(f);a=d.pageCoordinates(a);h=a.x;i=a.y;f.onmousemove=m};f.onmouseup=function(){f.onmousemove=null;d.capture(null)}}this.centerDialog=function(){if(b.parentNode==null)b=f=null;else if(b.style.display!=\"none\"&&b.style.visibility!=\"hidden\"){var a=d.windowSize(),c=b.offsetWidth,e=b.offsetHeight;if(j)b.style.left=Math.round((a.x-c)/2+(d.isIE6?document.documentElement.scrollLeft: 0))+\"px\";if(k)b.style.top=Math.round((a.y-e)/2+(d.isIE6?document.documentElement.scrollTop:0))+\"px\";b.style.height!=\"\"&&l(b,-1,e);b.style.visibility=\"visible\"}};b.wtResize=l;b.wtPosition=this.centerDialog}");
+				"function(g,b,h,i){function m(a){var c=a||window.event;a=e.pageCoordinates(c);c=e.windowCoordinates(c);var d=e.windowSize();if(c.x>0&&c.x<d.x&&c.y>0&&c.y<d.y){h=i=false;b.style.left=b.offsetLeft+a.x-j+\"px\";b.style.top=b.offsetTop+a.y-k+\"px\";b.style.right=\"\";b.style.bottom=\"\";j=a.x;k=a.y}}function l(a,c,d){d-=2;c-=2;a.style.height=Math.max(0,d)+\"px\";if(c>0)a.style.width=Math.max(0,c)+\"px\";a=a.lastChild;d-=a.previousSibling.offsetHeight+8;if(d>0){a.style.height= d+\"px\";g.layouts&&g.layouts.adjust()}}jQuery.data(b,\"obj\",this);var f=$(b).find(\".titlebar\").first().get(0),e=g.WT,j,k;if(f){f.onmousedown=function(a){a=a||window.event;e.capture(f);a=e.pageCoordinates(a);j=a.x;k=a.y;f.onmousemove=m};f.onmouseup=function(){f.onmousemove=null;e.capture(null)}}this.centerDialog=function(){if(b.parentNode==null)b=f=null;else if(b.style.display!=\"none\"&&b.style.visibility!=\"hidden\"){var a=e.windowSize(),c=b.offsetWidth,d=b.offsetHeight;if(h)b.style.left=Math.round((a.x- c)/2+(e.isIE6?document.documentElement.scrollLeft:0))+\"px\";if(i)b.style.top=Math.round((a.y-d)/2+(e.isIE6?document.documentElement.scrollTop:0))+\"px\";b.style.height!=\"\"&&l(b,-1,d);b.style.visibility=\"visible\"}};this.onresize=function(a,c){h=i=false;l(b,a,c)};b.wtResize=l;b.wtPosition=this.centerDialog}");
 	}
 }

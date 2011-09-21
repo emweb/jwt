@@ -97,7 +97,7 @@ public class WCssDecorationStyle extends WObject {
 		this.cursorImage_ = "";
 		this.backgroundColor_ = new WColor();
 		this.foregroundColor_ = new WColor();
-		this.backgroundImage_ = "";
+		this.backgroundImage_ = new WLink();
 		this.backgroundImageRepeat_ = WCssDecorationStyle.Repeat.RepeatXY;
 		this.backgroundImageLocation_ = EnumSet.noneOf(Side.class);
 		this.font_ = new WFont();
@@ -137,9 +137,9 @@ public class WCssDecorationStyle extends WObject {
 	}
 
 	/**
-	 * Sets a custom cursor image URI, with optionally a fallback cursor.
+	 * Sets a custom cursor image Url.
 	 * <p>
-	 * The URI should point to a .cur file (this shoul be a real .cur file,
+	 * The Url should point to a .cur file (this shoul be a real .cur file,
 	 * renaming an .ico is not enough for Internet Explorer).
 	 */
 	public void setCursor(String cursorImage, Cursor fallback) {
@@ -154,7 +154,7 @@ public class WCssDecorationStyle extends WObject {
 	}
 
 	/**
-	 * Sets a custom cursor image URI, with optionally a fallback cursor.
+	 * Sets a custom cursor image Url.
 	 * <p>
 	 * Calls {@link #setCursor(String cursorImage, Cursor fallback)
 	 * setCursor(cursorImage, Cursor.ArrowCursor)}
@@ -166,7 +166,8 @@ public class WCssDecorationStyle extends WObject {
 	/**
 	 * Returns the cursor image.
 	 * <p>
-	 * ()
+	 * 
+	 * @see WCssDecorationStyle#setCursor(Cursor c)
 	 */
 	public String getCursorImage() {
 		return this.cursorImage_;
@@ -197,17 +198,27 @@ public class WCssDecorationStyle extends WObject {
 	/**
 	 * Sets a background image.
 	 * <p>
+	 * The <code>link</code> may be a URL or a resource.
+	 * <p>
 	 * The image may be placed in a particular location by specifying sides by
 	 * OR&apos;ing {@link Side} values together, e.g. (Right | Top).
 	 */
-	public void setBackgroundImage(String image,
+	public void setBackgroundImage(WLink image,
 			WCssDecorationStyle.Repeat repeat, EnumSet<Side> sides) {
+		if (image.getType() == WLink.Type.Resource) {
+			image.getResource().dataChanged().addListener(this,
+					new Signal.Listener() {
+						public void trigger() {
+							WCssDecorationStyle.this
+									.backgroundImageResourceChanged();
+						}
+					});
+		}
 		if (!WWebWidget.canOptimizeUpdates()
 				|| !this.backgroundImage_.equals(image)
 				|| this.backgroundImageRepeat_ != repeat
 				|| !this.backgroundImageLocation_.equals(sides)) {
 			this.backgroundImage_ = image;
-			this.backgroundImageResource_ = null;
 			this.backgroundImageRepeat_ = repeat;
 			this.backgroundImageLocation_ = EnumSet.copyOf(sides);
 			this.backgroundImageChanged_ = true;
@@ -219,10 +230,10 @@ public class WCssDecorationStyle extends WObject {
 	 * Sets a background image.
 	 * <p>
 	 * Calls
-	 * {@link #setBackgroundImage(String image, WCssDecorationStyle.Repeat repeat, EnumSet sides)
+	 * {@link #setBackgroundImage(WLink image, WCssDecorationStyle.Repeat repeat, EnumSet sides)
 	 * setBackgroundImage(image, repeat, EnumSet.of(side, sides))}
 	 */
-	public final void setBackgroundImage(String image,
+	public final void setBackgroundImage(WLink image,
 			WCssDecorationStyle.Repeat repeat, Side side, Side... sides) {
 		setBackgroundImage(image, repeat, EnumSet.of(side, sides));
 	}
@@ -231,11 +242,11 @@ public class WCssDecorationStyle extends WObject {
 	 * Sets a background image.
 	 * <p>
 	 * Calls
-	 * {@link #setBackgroundImage(String image, WCssDecorationStyle.Repeat repeat, EnumSet sides)
+	 * {@link #setBackgroundImage(WLink image, WCssDecorationStyle.Repeat repeat, EnumSet sides)
 	 * setBackgroundImage(image, WCssDecorationStyle.Repeat.RepeatXY,
 	 * EnumSet.noneOf(Side.class))}
 	 */
-	public final void setBackgroundImage(String image) {
+	public final void setBackgroundImage(WLink image) {
 		setBackgroundImage(image, WCssDecorationStyle.Repeat.RepeatXY, EnumSet
 				.noneOf(Side.class));
 	}
@@ -244,84 +255,78 @@ public class WCssDecorationStyle extends WObject {
 	 * Sets a background image.
 	 * <p>
 	 * Calls
-	 * {@link #setBackgroundImage(String image, WCssDecorationStyle.Repeat repeat, EnumSet sides)
+	 * {@link #setBackgroundImage(WLink image, WCssDecorationStyle.Repeat repeat, EnumSet sides)
 	 * setBackgroundImage(image, repeat, EnumSet.noneOf(Side.class))}
 	 */
-	public final void setBackgroundImage(String image,
+	public final void setBackgroundImage(WLink image,
 			WCssDecorationStyle.Repeat repeat) {
 		setBackgroundImage(image, repeat, EnumSet.noneOf(Side.class));
 	}
 
 	/**
-	 * Sets a background image (from a resource).
+	 * Sets a background image.
 	 * <p>
 	 * The image may be placed in a particular location by specifying sides by
 	 * OR&apos;ing {@link Side} values together, e.g. (Right | Top).
 	 */
-	public void setBackgroundImage(WResource resource,
+	public void setBackgroundImage(String url,
 			WCssDecorationStyle.Repeat repeat, EnumSet<Side> sides) {
-		resource.dataChanged().addListener(this, new Signal.Listener() {
-			public void trigger() {
-				WCssDecorationStyle.this.backgroundImageResourceChanged();
-			}
-		});
-		this.setBackgroundImage(resource.getUrl(), repeat, sides);
-		this.backgroundImageResource_ = resource;
+		this.setBackgroundImage(new WLink(url), repeat, sides);
 	}
 
 	/**
-	 * Sets a background image (from a resource).
+	 * Sets a background image.
 	 * <p>
 	 * Calls
-	 * {@link #setBackgroundImage(WResource resource, WCssDecorationStyle.Repeat repeat, EnumSet sides)
-	 * setBackgroundImage(resource, repeat, EnumSet.of(side, sides))}
+	 * {@link #setBackgroundImage(String url, WCssDecorationStyle.Repeat repeat, EnumSet sides)
+	 * setBackgroundImage(url, repeat, EnumSet.of(side, sides))}
 	 */
-	public final void setBackgroundImage(WResource resource,
+	public final void setBackgroundImage(String url,
 			WCssDecorationStyle.Repeat repeat, Side side, Side... sides) {
-		setBackgroundImage(resource, repeat, EnumSet.of(side, sides));
+		setBackgroundImage(url, repeat, EnumSet.of(side, sides));
 	}
 
 	/**
-	 * Sets a background image (from a resource).
+	 * Sets a background image.
 	 * <p>
 	 * Calls
-	 * {@link #setBackgroundImage(WResource resource, WCssDecorationStyle.Repeat repeat, EnumSet sides)
-	 * setBackgroundImage(resource, WCssDecorationStyle.Repeat.RepeatXY,
+	 * {@link #setBackgroundImage(String url, WCssDecorationStyle.Repeat repeat, EnumSet sides)
+	 * setBackgroundImage(url, WCssDecorationStyle.Repeat.RepeatXY,
 	 * EnumSet.noneOf(Side.class))}
 	 */
-	public final void setBackgroundImage(WResource resource) {
-		setBackgroundImage(resource, WCssDecorationStyle.Repeat.RepeatXY,
-				EnumSet.noneOf(Side.class));
+	public final void setBackgroundImage(String url) {
+		setBackgroundImage(url, WCssDecorationStyle.Repeat.RepeatXY, EnumSet
+				.noneOf(Side.class));
 	}
 
 	/**
-	 * Sets a background image (from a resource).
+	 * Sets a background image.
 	 * <p>
 	 * Calls
-	 * {@link #setBackgroundImage(WResource resource, WCssDecorationStyle.Repeat repeat, EnumSet sides)
-	 * setBackgroundImage(resource, repeat, EnumSet.noneOf(Side.class))}
+	 * {@link #setBackgroundImage(String url, WCssDecorationStyle.Repeat repeat, EnumSet sides)
+	 * setBackgroundImage(url, repeat, EnumSet.noneOf(Side.class))}
 	 */
-	public final void setBackgroundImage(WResource resource,
+	public final void setBackgroundImage(String url,
 			WCssDecorationStyle.Repeat repeat) {
-		setBackgroundImage(resource, repeat, EnumSet.noneOf(Side.class));
+		setBackgroundImage(url, repeat, EnumSet.noneOf(Side.class));
 	}
 
 	/**
 	 * Returns the background image URL.
 	 * <p>
 	 * 
-	 * @see WCssDecorationStyle#setBackgroundImage(String image,
+	 * @see WCssDecorationStyle#setBackgroundImage(WLink image,
 	 *      WCssDecorationStyle.Repeat repeat, EnumSet sides)
 	 */
 	public String getBackgroundImage() {
-		return this.backgroundImage_;
+		return this.backgroundImage_.getUrl();
 	}
 
 	/**
 	 * Returns the background image repeat.
 	 * <p>
 	 * 
-	 * @see WCssDecorationStyle#setBackgroundImage(String image,
+	 * @see WCssDecorationStyle#setBackgroundImage(WLink image,
 	 *      WCssDecorationStyle.Repeat repeat, EnumSet sides)
 	 */
 	public WCssDecorationStyle.Repeat getBackgroundImageRepeat() {
@@ -544,7 +549,7 @@ public class WCssDecorationStyle extends WObject {
 		if (this.borderChanged_ || all) {
 			for (int i = 0; i < 4; ++i) {
 				if (this.border_[i] != null) {
-					element.setProperty(properties[i], this.border_[0]
+					element.setProperty(properties[i], this.border_[i]
 							.getCssText());
 				} else {
 					if (this.borderChanged_) {
@@ -571,14 +576,13 @@ public class WCssDecorationStyle extends WObject {
 			this.backgroundColorChanged_ = false;
 		}
 		if (this.backgroundImageChanged_ || all) {
-			if (this.backgroundImage_.length() != 0
-					|| this.backgroundImageChanged_) {
+			if (!this.backgroundImage_.isNull() || this.backgroundImageChanged_) {
 				element.setProperty(Property.PropertyStyleBackgroundImage,
-						this.backgroundImage_.length() > 0 ? "url("
+						!this.backgroundImage_.isNull() ? "url("
 								+ WApplication.getInstance()
 										.resolveRelativeUrl(
-												this.backgroundImage_) + ")"
-								: "none");
+												this.backgroundImage_.getUrl())
+								+ ")" : "none");
 				switch (this.backgroundImageRepeat_) {
 				case RepeatXY:
 					element.setProperty(Property.PropertyStyleBackgroundRepeat,
@@ -659,8 +663,7 @@ public class WCssDecorationStyle extends WObject {
 	private WBorder[] border_ = new WBorder[4];
 	private WColor backgroundColor_;
 	private WColor foregroundColor_;
-	private String backgroundImage_;
-	private WResource backgroundImageResource_;
+	private WLink backgroundImage_;
 	private WCssDecorationStyle.Repeat backgroundImageRepeat_;
 	private EnumSet<Side> backgroundImageLocation_;
 	private WFont font_;
@@ -681,11 +684,9 @@ public class WCssDecorationStyle extends WObject {
 	}
 
 	private void backgroundImageResourceChanged() {
-		if (this.backgroundImageResource_ != null) {
-			WResource resource = this.backgroundImageResource_;
-			this.setBackgroundImage(resource.getUrl(),
-					this.backgroundImageRepeat_, this.backgroundImageLocation_);
-			this.backgroundImageResource_ = resource;
+		if (this.backgroundImage_.getType() == WLink.Type.Resource) {
+			this.backgroundImageChanged_ = true;
+			this.changed();
 		}
 	}
 

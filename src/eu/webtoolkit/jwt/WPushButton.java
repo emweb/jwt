@@ -40,8 +40,8 @@ public class WPushButton extends WFormWidget {
 		super(parent);
 		this.text_ = new WString();
 		this.icon_ = "";
-		this.ref_ = "";
-		this.resource_ = null;
+		this.link_ = new WLink();
+		this.linkTarget_ = AnchorTarget.TargetSelf;
 		this.flags_ = new BitSet();
 		this.redirectJS_ = null;
 	}
@@ -63,8 +63,8 @@ public class WPushButton extends WFormWidget {
 		super(parent);
 		this.text_ = WString.toWString(text);
 		this.icon_ = "";
-		this.ref_ = "";
-		this.resource_ = null;
+		this.link_ = new WLink();
+		this.linkTarget_ = AnchorTarget.TargetSelf;
 		this.flags_ = new BitSet();
 		this.redirectJS_ = null;
 	}
@@ -131,31 +131,58 @@ public class WPushButton extends WFormWidget {
 	}
 
 	/**
-	 * Sets a destination URL.
+	 * Sets a destination link.
 	 * <p>
 	 * This method can be used to make the button behave like a {@link WAnchor}
 	 * (or conversely, an anchor look like a button) and redirect to another URL
 	 * when clicked.
 	 * <p>
-	 * By default, a button does not refer to an URL and you should listen to
-	 * the {@link WInteractWidget#clicked() WInteractWidget#clicked()} signal to
-	 * react to a click event.
+	 * The <code>link</code> may be to a URL, a resource, or an internal path.
 	 * <p>
-	 * 
-	 * @see WPushButton#setResource(WResource resource)
+	 * By default, a button does not link to an URL and you should listen to the
+	 * {@link WInteractWidget#clicked() WInteractWidget#clicked()} signal to
+	 * react to a click event.
 	 */
-	public void setRef(String url) {
-		if (!this.flags_.get(BIT_REF_INTERNAL_PATH) && this.ref_.equals(url)) {
+	public void setLink(WLink link) {
+		if (link.equals(this.link_)) {
 			return;
 		}
-		this.flags_.clear(BIT_REF_INTERNAL_PATH);
-		this.ref_ = url;
-		this.flags_.set(BIT_REF_CHANGED);
+		this.link_ = link;
+		this.flags_.set(BIT_LINK_CHANGED);
+		if (link.getType() == WLink.Type.Resource) {
+			link.getResource().dataChanged().addListener(this,
+					new Signal.Listener() {
+						public void trigger() {
+							WPushButton.this.resourceChanged();
+						}
+					});
+		}
 		this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyIEMobile));
 	}
 
 	/**
-	 * Returns the destination URL.
+	 * Returns the destination link.
+	 * <p>
+	 * 
+	 * @see WPushButton#setLink(WLink link)
+	 */
+	public WLink getLink() {
+		return this.link_;
+	}
+
+	/**
+	 * Sets a destination URL (<b>deprecated</b>).
+	 * <p>
+	 * 
+	 * @deprecated Use {@link WPushButton#setLink(WLink link) setLink()}
+	 *             insteadd.
+	 */
+	public void setRef(String url) {
+		this.setLink(new WLink(url));
+	}
+
+	/**
+	 * Returns the destination URL (<b>deprecated</b>).
 	 * <p>
 	 * When the button refers to a resource, the current resource URL is
 	 * returned. Otherwise, the URL is returned that was set using
@@ -164,23 +191,14 @@ public class WPushButton extends WFormWidget {
 	 * 
 	 * @see WPushButton#setRef(String url)
 	 * @see WResource#getUrl()
+	 * @deprecated Use {@link WPushButton#getLink() getLink()} instead.
 	 */
 	public String getRef() {
-		return this.ref_;
-	}
-
-	public void setRefInternalPath(String path) {
-		if (this.flags_.get(BIT_REF_INTERNAL_PATH) && this.ref_.equals(path)) {
-			return;
-		}
-		this.flags_.set(BIT_REF_INTERNAL_PATH);
-		this.ref_ = path;
-		this.flags_.set(BIT_REF_CHANGED);
-		this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyIEMobile));
+		return this.link_.getUrl();
 	}
 
 	/**
-	 * Sets a destination resource.
+	 * Sets a destination resource (<b>deprecated</b>).
 	 * <p>
 	 * This method can be used to make the button behave like a {@link WAnchor}
 	 * (or conversely, an anchor look like a button) and redirect to another
@@ -198,30 +216,44 @@ public class WPushButton extends WFormWidget {
 	 * <p>
 	 * 
 	 * @see WPushButton#setRef(String url)
+	 * @deprecated Use {@link WPushButton#setLink(WLink link) setLink()}
+	 *             instead.
 	 */
 	public void setResource(WResource resource) {
-		this.resource_ = resource;
-		if (this.resource_ != null) {
-			this.resource_.dataChanged().addListener(this,
-					new Signal.Listener() {
-						public void trigger() {
-							WPushButton.this.resourceChanged();
-						}
-					});
-			this.resourceChanged();
-		}
+		this.setLink(new WLink(resource));
 	}
 
 	/**
-	 * Returns the destination resource.
+	 * Returns the destination resource (<b>deprecated</b>).
 	 * <p>
 	 * Returns <code>null</code> if no resource has been set.
 	 * <p>
 	 * 
 	 * @see WPushButton#setResource(WResource resource)
+	 * @deprecated Use {@link WPushButton#getLink() getLink()} instead.
 	 */
 	public WResource getResource() {
-		return this.resource_;
+		return this.link_.getResource();
+	}
+
+	/**
+	 * Sets the link target.
+	 * <p>
+	 * This sets the target where the linked contents should be displayed. The
+	 * default target is TargetSelf.
+	 */
+	public void setLinkTarget(AnchorTarget target) {
+		this.linkTarget_ = target;
+	}
+
+	/**
+	 * Returns the location where the linked content should be displayed.
+	 * <p>
+	 * 
+	 * @see WPushButton#setLinkTarget(AnchorTarget target)
+	 */
+	public AnchorTarget getLinkTarget() {
+		return this.linkTarget_;
 	}
 
 	public void refresh() {
@@ -235,12 +267,11 @@ public class WPushButton extends WFormWidget {
 	private static final int BIT_TEXT_CHANGED = 0;
 	private static final int BIT_ICON_CHANGED = 1;
 	private static final int BIT_ICON_RENDERED = 2;
-	private static final int BIT_REF_CHANGED = 3;
-	private static final int BIT_REF_INTERNAL_PATH = 4;
+	private static final int BIT_LINK_CHANGED = 3;
 	private WString text_;
 	private String icon_;
-	private String ref_;
-	private WResource resource_;
+	private WLink link_;
+	private AnchorTarget linkTarget_;
 	BitSet flags_;
 	private JSlot redirectJS_;
 
@@ -264,8 +295,8 @@ public class WPushButton extends WFormWidget {
 					: this.text_.toString());
 			this.flags_.clear(BIT_TEXT_CHANGED);
 		}
-		if (this.flags_.get(BIT_REF_CHANGED) || all && this.ref_.length() != 0) {
-			if (this.ref_.length() != 0) {
+		if (this.flags_.get(BIT_LINK_CHANGED) || all && !this.link_.isNull()) {
+			if (!this.link_.isNull()) {
 				WApplication app = WApplication.getInstance();
 				if (!(this.redirectJS_ != null)) {
 					this.redirectJS_ = new JSlot();
@@ -279,14 +310,23 @@ public class WPushButton extends WFormWidget {
 								});
 					}
 				}
-				if (this.flags_.get(BIT_REF_INTERNAL_PATH)) {
+				if (this.link_.getType() == WLink.Type.InternalPath) {
 					this.redirectJS_
-							.setJavaScript("function(){Wt3_1_10.history.navigate("
-									+ jsStringLiteral(this.ref_) + ",true);}");
+							.setJavaScript("function(){Wt3_1_11.history.navigate("
+									+ jsStringLiteral(this.link_
+											.getInternalPath()) + ",true);}");
 				} else {
-					this.redirectJS_
-							.setJavaScript("function(){window.location="
-									+ jsStringLiteral(this.ref_) + ";}");
+					if (this.linkTarget_ == AnchorTarget.TargetNewWindow) {
+						this.redirectJS_
+								.setJavaScript("function(){window.open("
+										+ jsStringLiteral(this.link_.getUrl())
+										+ ");}");
+					} else {
+						this.redirectJS_
+								.setJavaScript("function(){window.location="
+										+ jsStringLiteral(this.link_.getUrl())
+										+ ";}");
+					}
 				}
 				this.clicked().senderRepaint();
 			} else {
@@ -326,15 +366,16 @@ public class WPushButton extends WFormWidget {
 	private void doRedirect() {
 		WApplication app = WApplication.getInstance();
 		if (!app.getEnvironment().hasAjax()) {
-			if (this.flags_.get(BIT_REF_INTERNAL_PATH)) {
-				app.setInternalPath(this.ref_, true);
+			if (this.link_.getType() == WLink.Type.InternalPath) {
+				app.setInternalPath(this.link_.getInternalPath(), true);
 			} else {
-				app.redirect(this.ref_);
+				app.redirect(this.link_.getUrl());
 			}
 		}
 	}
 
 	private void resourceChanged() {
-		this.setRef(this.resource_.getUrl());
+		this.flags_.set(BIT_LINK_CHANGED);
+		this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyIEMobile));
 	}
 }

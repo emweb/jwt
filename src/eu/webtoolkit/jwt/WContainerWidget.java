@@ -258,7 +258,7 @@ public class WContainerWidget extends WInteractWidget {
 			if (layout != null) {
 				super.setLayout(layout);
 				this.getLayoutImpl().setContainer(this);
-				if (WApplication.getInstance().getEnvironment().agentIsIE()) {
+				if (WApplication.getInstance().getEnvironment().agentIsIElt(7)) {
 					AlignmentFlag vAlign = EnumUtils.enumFromSet(EnumUtils
 							.mask(alignment, AlignmentFlag.AlignVerticalMask));
 					if (vAlign == null) {
@@ -549,17 +549,13 @@ public class WContainerWidget extends WInteractWidget {
 	/**
 	 * Sets how overflow of contained children must be handled.
 	 * <p>
-	 * This is an alternative (CSS-ish) way to provide scroll bars on a
+	 * This is an alternative (CSS-ish) way to configure scroll bars on a
 	 * container widget, compared to wrapping inside a {@link WScrollArea}.
-	 * <p>
-	 * Note that currently, you cannot separately specify vertical and
-	 * horizontal scroll behaviour, since this is not supported on Opera.
-	 * Therefore, settings will apply automatically to both orientations.
 	 * <p>
 	 * Unlike {@link WScrollArea}, horizontal scrolling does not work reliably
 	 * when the container widget is inserted in a layout manager: the layout
 	 * manager will overflow rather than use scrollbars for this container
-	 * widget. A solution there is to use {@link WScrollArea} instead.
+	 * widget. A solution then is to use {@link WScrollArea} instead.
 	 * <p>
 	 * 
 	 * @see WScrollArea
@@ -720,13 +716,15 @@ public class WContainerWidget extends WInteractWidget {
 		}
 	}
 
-	void rootAsJavaScript(WApplication app, Writer out, boolean all) {
+	void rootAsJavaScript(WApplication app, Writer out, boolean all)
+			throws IOException {
 		List<WWidget> toAdd = all ? this.children_
 				: this.transientImpl_ != null ? this.transientImpl_.addedChildren_
 						: null;
 		if (toAdd != null) {
 			for (int i = 0; i < toAdd.size(); ++i) {
 				DomElement c = toAdd.get(i).createSDomElement(app);
+				app.streamBeforeLoadJavaScript(out, false);
 				c
 						.callMethod("omousemove=function(e) {if (!e) e = window.event;return "
 								+ app.getJavaScriptClass()
@@ -816,7 +814,7 @@ public class WContainerWidget extends WInteractWidget {
 		result.add(e);
 	}
 
-	protected DomElement createDomElement(WApplication app, boolean addChildren) {
+	DomElement createDomElement(WApplication app, boolean addChildren) {
 		if (this.transientImpl_ != null) {
 			this.transientImpl_.addedChildren_.clear();
 		}
@@ -892,7 +890,7 @@ public class WContainerWidget extends WInteractWidget {
 		}
 	}
 
-	protected void updateDomChildren(DomElement parent, WApplication app) {
+	void updateDomChildren(DomElement parent, WApplication app) {
 		if (!app.getSession().getRenderer().isPreLearning()
 				&& !(this.layout_ != null)) {
 			if (parent.getMode() == DomElement.Mode.ModeUpdate) {
@@ -1061,6 +1059,8 @@ public class WContainerWidget extends WInteractWidget {
 				&& !(this.overflow_[0] == WContainerWidget.Overflow.OverflowVisible && this.overflow_[1] == WContainerWidget.Overflow.OverflowVisible)) {
 			element.setProperty(Property.PropertyStyleOverflowX,
 					cssText[this.overflow_[0].getValue()]);
+			element.setProperty(Property.PropertyStyleOverflowY,
+					cssText[this.overflow_[1].getValue()]);
 			this.flags_.clear(BIT_OVERFLOW_CHANGED);
 			WApplication app = WApplication.getInstance();
 			if (app.getEnvironment().agentIsIE()

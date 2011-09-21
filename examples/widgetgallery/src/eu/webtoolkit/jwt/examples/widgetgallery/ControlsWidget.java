@@ -59,6 +59,21 @@ class ControlsWidget extends WContainerWidget {
 	}
 
 	protected EventDisplayer ed_;
+
+	protected static WText addText(CharSequence s, WContainerWidget parent) {
+		WText text = new WText(s, parent);
+		boolean literal;
+		literal = WString.toWString(s).isLiteral();
+		if (literal) {
+			text.setInternalPathEncoding(true);
+		}
+		return text;
+	}
+
+	protected static final WText addText(CharSequence s) {
+		return addText(s, (WContainerWidget) null);
+	}
+
 	private boolean hasSubMenu_;
 
 	private String docAnchor(String classname) {

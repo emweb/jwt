@@ -21,7 +21,7 @@ import eu.webtoolkit.jwt.examples.treeview.*;
 class MvcWidgets extends ControlsWidget {
 	public MvcWidgets(EventDisplayer ed) {
 		super(ed, true);
-		new WText(tr("mvc-intro"), this);
+		addText(tr("mvc-intro"), this);
 		this.stringList_ = new WStringListModel(this);
 		List<WString> strings = new ArrayList<WString>();
 		strings.add(new WString("Alfa"));
@@ -66,16 +66,16 @@ class MvcWidgets extends ControlsWidget {
 
 	private WWidget models() {
 		WContainerWidget result = new WContainerWidget();
-		this.topic("WAbstractItemModel", "WAbstractListModel",
-				"WStandardItemModel", "WStringListModel", result);
-		new WText(tr("mvc-models"), result);
+		this.topic("WAbstractItemModel", "WStandardItemModel",
+				"WStringListModel", result);
+		addText(tr("mvc-models"), result);
 		return result;
 	}
 
 	private WWidget proxyModels() {
 		WContainerWidget result = new WContainerWidget();
 		this.topic("WAbstractProxyModel", "WSortFilterProxyModel", result);
-		new WText(tr("mvc-proxymodels"), result);
+		addText(tr("mvc-proxymodels"), result);
 		WStandardItemModel cocktails = new WStandardItemModel(result);
 		cocktails.appendRow(new WStandardItem("The Last WordLime Rickey"));
 		cocktails.appendRow(new WStandardItem("Gin pahit"));
@@ -101,7 +101,7 @@ class MvcWidgets extends ControlsWidget {
 		cocktails.appendRow(new WStandardItem("20th Century"));
 		cocktails.appendRow(new WStandardItem("My Fair Lady"));
 		cocktails.appendRow(new WStandardItem("Gibson"));
-		new WText("<b>Filter regular expression: </b>", result);
+		addText("<b>Filter regular expression: </b>", result);
 		this.regexpFilter = new WLineEdit(result);
 		this.regexpFilter.setText("Gi.*");
 		this.regexpFilter.enterPressed().addListener(this,
@@ -151,7 +151,7 @@ class MvcWidgets extends ControlsWidget {
 			layout.getElementAt(0, i).setPadding(new WLength(4));
 			layout.getElementAt(0, i).setContentAlignment(
 					EnumSet.of(AlignmentFlag.AlignCenter));
-			new WText(headers.get(i), layout.getElementAt(0, i));
+			addText(headers.get(i), layout.getElementAt(0, i));
 			new WBreak(layout.getElementAt(0, i));
 			WSelectionBox view = new WSelectionBox(layout.getElementAt(0, i));
 			view.setModel(models.get(i));
@@ -164,10 +164,10 @@ class MvcWidgets extends ControlsWidget {
 	private WWidget viewsCombo() {
 		WContainerWidget result = new WContainerWidget();
 		this.topic("WComboBox", "WSelectionBox", result);
-		new WText(tr("mvc-stringlistviews"), result);
-		new WText("<h3>WComboBox</h3>", result);
+		addText(tr("mvc-stringlistviews"), result);
+		addText("<h3>WComboBox</h3>", result);
 		new WComboBox(result).setModel(this.stringList_);
-		new WText("<h3>WSelectionBox</h3>", result);
+		addText("<h3>WSelectionBox</h3>", result);
 		new WSelectionBox(result).setModel(this.stringList_);
 		return result;
 	}
@@ -175,7 +175,7 @@ class MvcWidgets extends ControlsWidget {
 	private WWidget viewsTable() {
 		WContainerWidget result = new WContainerWidget();
 		this.topic("WTableView", result);
-		new WText(tr("mvc-WTableView"), result);
+		addText(tr("mvc-WTableView"), result);
 		return result;
 	}
 
@@ -197,15 +197,20 @@ class MvcWidgets extends ControlsWidget {
 	private WWidget viewsChart() {
 		WContainerWidget result = new WContainerWidget();
 		this.topic("Chart::WCartesianChart", "Chart::WPieChart", result);
-		new WText(tr("mvc-Chart"), result);
+		addText(tr("mvc-Chart"), result);
 		return result;
 	}
 
 	private WStringListModel stringList_;
 
 	private void changeRegexp() {
-		this.filteredCocktails.setFilterRegExp(this.regexpFilter.getText());
-		this.filteredSortedCocktails.setFilterRegExp(this.regexpFilter
-				.getText());
+		WString regexp = new WString(this.regexpFilter.getText());
+		if (Pattern.compile(regexp).isValid()) {
+			this.filteredCocktails.setFilterRegExp(regexp.toString());
+			this.filteredSortedCocktails.setFilterRegExp(regexp.toString());
+			this.regexpFilter.removeStyleClass("Wt-invalid");
+		} else {
+			this.regexpFilter.addStyleClass("Wt-invalid");
+		}
 	}
 }

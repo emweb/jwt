@@ -126,7 +126,7 @@ public class WCheckBox extends WAbstractToggleButton {
 		if (this.triState_) {
 			if (!this.supportsIndeterminate(WApplication.getInstance()
 					.getEnvironment())) {
-				this.clicked().addListener(clearOpacityJS);
+				this.changed().addListener(clearOpacityJS);
 			} else {
 				if (WApplication.getInstance().getEnvironment().agentIsSafari()
 						&& !this.safariWorkaround_) {

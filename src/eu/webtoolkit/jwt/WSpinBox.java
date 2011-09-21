@@ -33,7 +33,10 @@ import eu.webtoolkit.jwt.servlet.*;
  * See {@link WAbstractSpinBox}.
  * <p>
  * 
- * @see WDoubleSpinBox
+ * @see WDoubleSpinBox <p>
+ *      <i><b>Note: </b>A spinbox configures a validator for validating the
+ *      input. Therefore you cannot set a validator yourself. </i>
+ *      </p>
  */
 public class WSpinBox extends WAbstractSpinBox {
 	/**
@@ -197,16 +200,16 @@ public class WSpinBox extends WAbstractSpinBox {
 		}
 	}
 
-	protected String getJsMinMaxStep() {
+	String getJsMinMaxStep() {
 		return String.valueOf(this.min_) + "," + String.valueOf(this.max_)
 				+ "," + String.valueOf(this.step_);
 	}
 
-	protected int getDecimals() {
+	int getDecimals() {
 		return 0;
 	}
 
-	protected boolean parseNumberValue(String text) {
+	boolean parseNumberValue(String text) {
 		try {
 			this.value_ = Integer.parseInt(text);
 			return true;
@@ -215,7 +218,7 @@ public class WSpinBox extends WAbstractSpinBox {
 		}
 	}
 
-	protected WString getTextFromValue() {
+	WString getTextFromValue() {
 		if (this.isNativeControl()) {
 			return new WString(String.valueOf(this.value_));
 		} else {
@@ -225,7 +228,7 @@ public class WSpinBox extends WAbstractSpinBox {
 		}
 	}
 
-	protected WValidator getCreateValidator() {
+	WValidator createValidator() {
 		WIntValidator validator = new WIntValidator();
 		validator.setRange(this.min_, this.max_);
 		return validator;

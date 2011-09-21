@@ -229,7 +229,7 @@ public class WEnvironment {
 	 * Wt&apos;s JavaScript scope.
 	 */
 	public static String getJavaScriptWtScope() {
-		return "Wt3_1_10";
+		return "Wt3_1_11";
 	}
 
 	/**
@@ -591,17 +591,21 @@ public class WEnvironment {
 	 * Example: <code>&quot;1.99.2&quot;</code>
 	 */
 	public static String getLibraryVersion() {
-		return "3.1.10";
+		return "3.1.11";
 	}
 
 	// public void libraryVersion(bad java simple ref int series, bad java
 	// simple ref int major, bad java simple ref int minor) ;
 	/**
-	 * Returns the JWt session id.
+	 * Returns the JWt session id (<b>deprecated</b>).
 	 * <p>
 	 * Retrieves the session id for this session. This is an auto-generated
 	 * random alpha-numerical id, whose length is determined by settings in the
 	 * configuration file.
+	 * <p>
+	 * 
+	 * @deprecated Use {@link WApplication#getSessionId()
+	 *             WApplication#getSessionId()} instead
 	 */
 	public String getSessionId() {
 		return this.session_.getSessionId();
@@ -620,7 +624,11 @@ public class WEnvironment {
 	 * @see WEnvironment#getServerAdmin()
 	 */
 	public String getCgiValue(String varName) {
-		return this.session_.getCgiValue(varName);
+		if (varName.equals("QUERY_STRING")) {
+			return this.queryString_;
+		} else {
+			return this.session_.getCgiValue(varName);
+		}
 	}
 
 	/**
@@ -786,23 +794,36 @@ public class WEnvironment {
 						.getValue();
 	}
 
-	public boolean isHashInternalPaths() {
+	public boolean hashInternalPaths() {
 		return this.hashInternalPaths_;
 	}
 
-	public boolean isSupportsCss3Animations() {
+	public boolean supportsCss3Animations() {
 		return this.agentIsGecko()
 				&& this.agent_.getValue() >= WEnvironment.UserAgent.Firefox5_0
 						.getValue() || this.agentIsWebKit();
 	}
 
+	Signal1<WDialog> dialogExecuted() {
+		throw new WtException("Internal error");
+	}
+
+	Signal1<WPopupMenu> popupExecuted() {
+		throw new WtException("Internal error");
+	}
+
+	public boolean isTest() {
+		return false;
+	}
+
 	WebSession session_;
 	boolean doesAjax_;
 	boolean doesCookies_;
-	protected boolean hashInternalPaths_;
+	boolean hashInternalPaths_;
 	WEnvironment.UserAgent agent_;
 	double dpiScale_;
 	WEnvironment.ContentType contentType_;
+	String queryString_;
 	Map<String, String[]> parameters_;
 	Map<String, String> cookies_;
 	Locale locale_;
@@ -819,6 +840,7 @@ public class WEnvironment {
 	String internalPath_;
 
 	WEnvironment() {
+		this.queryString_ = "";
 		this.parameters_ = new HashMap<String, String[]>();
 		this.cookies_ = new HashMap<String, String>();
 		this.locale_ = new Locale("");
@@ -1009,6 +1031,7 @@ public class WEnvironment {
 		this.hashInternalPaths_ = false;
 		this.dpiScale_ = 1;
 		this.contentType_ = WEnvironment.ContentType.HTML4;
+		this.queryString_ = "";
 		this.parameters_ = new HashMap<String, String[]>();
 		this.cookies_ = new HashMap<String, String>();
 		this.locale_ = new Locale("");
@@ -1027,6 +1050,7 @@ public class WEnvironment {
 
 	void init(WebRequest request) {
 		Configuration conf = this.session_.getController().getConfiguration();
+		this.queryString_ = request.getQueryString();
 		this.parameters_ = request.getParameterMap();
 		this.urlScheme_ = request.getScheme();
 		this.referer_ = request.getHeaderValue("Referer");
@@ -1036,7 +1060,8 @@ public class WEnvironment {
 		this.serverAdmin_ = "";
 		this.pathInfo_ = request.getPathInfo();
 		this.setUserAgent(request.getHeaderValue("User-Agent"));
-		System.err.append(this.userAgent_).append('\n');
+		this.session_.log("notice").append("UserAgent: ").append(
+				this.userAgent_);
 		if (conf.isBehindReverseProxy()) {
 			String forwardedHost = request.getHeaderValue("X-Forwarded-Host");
 			if (forwardedHost.length() != 0) {
@@ -1058,43 +1083,38 @@ public class WEnvironment {
 				this.host_ += ":" + (request.getServerPort() + "");
 			}
 		}
-		String ips = "";
-		ips = request.getHeaderValue("Client-IP") + ","
-				+ request.getHeaderValue("X-Forwarded-For");
-		for (int pos = 0; pos != -1;) {
-			int komma_pos = ips.indexOf(',', pos);
-			if (komma_pos == -1) {
-				break;
-			}
-			this.clientAddress_ = ips.substring(pos, pos + komma_pos);
-			this.clientAddress_ = this.clientAddress_.trim();
-			if (!this.clientAddress_.startsWith("10.")
-					&& !this.clientAddress_.startsWith("172.16.")
-					&& !this.clientAddress_.startsWith("192.168.")) {
-				break;
-			}
-			if (komma_pos != -1) {
-				pos = komma_pos + 1;
-			}
-		}
-		if (this.clientAddress_.length() == 0) {
-			this.clientAddress_ = "";
-		}
+		this.clientAddress_ = getClientAddress(request, conf);
 		String cookie = request.getHeaderValue("Cookie");
 		this.doesCookies_ = cookie.length() != 0;
 		if (this.doesCookies_) {
 			this.parseCookies(cookie);
 		}
 		this.locale_ = request.getLocale();
-		if (this.session_.getController().getConfiguration()
-				.isSendXHTMLMimeType()
+		if (conf.isSendXHTMLMimeType()
 				&& this.accept_.indexOf("application/xhtml+xml") != -1
 				&& !this.agentIsIE()) {
 			this.contentType_ = WEnvironment.ContentType.XHTML1;
 		}
 	}
 
-	// private String parsePreferredAcceptValue(String value) ;
+	void enableAjax(WebRequest request) {
+		this.doesAjax_ = true;
+		this.doesCookies_ = request.getHeaderValue("Cookie").length() != 0;
+		if (!(request.getParameter("htmlHistory") != null)) {
+			this.hashInternalPaths_ = true;
+		}
+		String scaleE = request.getParameter("scale");
+		try {
+			this.dpiScale_ = scaleE != null ? Double.parseDouble(scaleE) : 1;
+		} catch (NumberFormatException e) {
+			this.dpiScale_ = 1;
+		}
+		String hashE = request.getParameter("_");
+		if (hashE != null) {
+			this.setInternalPath(hashE);
+		}
+	}
+
 	private void parseCookies(String str) {
 		List<String> cookies = new ArrayList<String>();
 		cookies = new ArrayList<String>(Arrays.asList(str.split(";")));
@@ -1133,6 +1153,39 @@ public class WEnvironment {
 		} else {
 			return !matches;
 		}
+	}
+
+	static String getClientAddress(WebRequest request, Configuration conf) {
+		String result = "";
+		if (conf.isBehindReverseProxy()) {
+			List<String> ips = new ArrayList<String>();
+			String clientIp = request.getHeaderValue("Client-IP");
+			clientIp = clientIp.trim();
+			if (clientIp.length() != 0) {
+				ips = new ArrayList<String>(Arrays.asList(clientIp.split(",")));
+			}
+			List<String> forwardedIps = new ArrayList<String>();
+			String forwardedFor = request.getHeaderValue("X-Forwarded-For");
+			forwardedFor = forwardedFor.trim();
+			if (forwardedFor.length() != 0) {
+				forwardedIps = new ArrayList<String>(Arrays.asList(forwardedFor
+						.split(",")));
+			}
+			ips.addAll(forwardedIps);
+			for (int i = 0; i < ips.size(); ++i) {
+				result = ips.get(i);
+				result = result.trim();
+				if (result.length() != 0 && !result.startsWith("10.")
+						&& !result.startsWith("172.16.")
+						&& !result.startsWith("192.168.")) {
+					break;
+				}
+			}
+		}
+		if (result.length() == 0) {
+			result = "";
+		}
+		return result;
 	}
 
 	static boolean regexMatchAny(String agent, List<String> regexList) {

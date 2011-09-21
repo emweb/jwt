@@ -21,7 +21,7 @@ import eu.webtoolkit.jwt.servlet.*;
  * A container widget that stacks its widgets on top of each other.
  * <p>
  * 
- * This is a container widgets which at all times has only one item visible. The
+ * This is a container widget which at all times has only one item visible. The
  * widget accomplishes this using setHidden(bool) on the children.
  * <p>
  * Using {@link WStackedWidget#getCurrentIndex() getCurrentIndex()} and
@@ -215,7 +215,7 @@ public class WStackedWidget extends WContainerWidget {
 			this.animation_ = animation;
 			this.autoReverseAnimation_ = autoReverse;
 			this.setJavaScriptMember("wtAnimateChild",
-					"Wt3_1_10.WStackedWidget.animateChild");
+					"Wt3_1_11.WStackedWidget.animateChild");
 			this.setJavaScriptMember("wtAutoReverse",
 					this.autoReverseAnimation_ ? "true" : "false");
 		}
@@ -256,7 +256,7 @@ public class WStackedWidget extends WContainerWidget {
 
 	private boolean isLoadAnimateJS() {
 		WApplication app = WApplication.getInstance();
-		if (app.getEnvironment().isSupportsCss3Animations()) {
+		if (app.getEnvironment().supportsCss3Animations()) {
 			app.loadJavaScript("js/WStackedWidget.js", wtjs1());
 			return true;
 		} else {

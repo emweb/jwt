@@ -148,7 +148,7 @@ public class WTextEdit extends WTextArea {
 	 * </p>
 	 */
 	public void setExtraPlugins(String plugins) {
-		this.setConfigurationSetting("plugings", plugins);
+		this.setConfigurationSetting("plugins", plugins);
 	}
 
 	/**
@@ -238,8 +238,12 @@ public class WTextEdit extends WTextArea {
 	}
 
 	String renderRemoveJs() {
-		return this.getJsRef() + ".ed.remove();Wt3_1_10.remove('"
-				+ this.getId() + "');";
+		if (this.isRendered()) {
+			return this.getJsRef() + ".ed.remove();Wt3_1_11.remove('"
+					+ this.getId() + "');";
+		} else {
+			return super.renderRemoveJs();
+		}
 	}
 
 	void updateDom(DomElement element, boolean all) {
@@ -269,7 +273,7 @@ public class WTextEdit extends WTextArea {
 			DomElement dummy = new DomElement(DomElement.Mode.ModeUpdate,
 					DomElementType.DomElement_TABLE);
 			this.updateDom(dummy, true);
-			element.callMethod("init=function(){var d=Wt3_1_10.getElement('"
+			element.callMethod("init=function(){var d=Wt3_1_11.getElement('"
 					+ this.getId() + "_tbl');d.style.cssText='width:100%;"
 					+ dummy.getCssStyle() + "';};");
 			element.callMethod("ed=new tinymce.Editor('" + this.getId() + "',"
@@ -289,6 +293,10 @@ public class WTextEdit extends WTextArea {
 		this.updateDom(e, false);
 		super.getDomChanges(result, app);
 		result.add(e);
+	}
+
+	protected boolean domCanBeSaved() {
+		return false;
 	}
 
 	protected int boxPadding(Orientation orientation) {
@@ -316,7 +324,7 @@ public class WTextEdit extends WTextArea {
 		this.setInline(false);
 		initTinyMCE();
 		this.setJavaScriptMember(WT_RESIZE_JS,
-				"function(e,w,h){Wt3_1_10.tinyMCEResize(e, w, h); };");
+				"function(e,w,h){Wt3_1_11.tinyMCEResize(e, w, h); };");
 		String direction = app.getLayoutDirection() == LayoutDirection.LeftToRight ? "ltr"
 				: "rtl";
 		this.setConfigurationSetting("directionality", direction);
@@ -354,7 +362,7 @@ public class WTextEdit extends WTextArea {
 			app.getStyleSheet().addRule(".mceEditor", "height: 100%;");
 			app
 					.doJavaScript(
-							"Wt3_1_10.tinyMCEResize=function(e,w,h){e.style.height = (h - 2) + 'px';var iframe = Wt3_1_10.getElement(e.id + '_ifr');if (iframe) {var row=iframe.parentNode.parentNode,tbl=row.parentNode.parentNode,i, il;for (i=0, il=tbl.rows.length; i<il; i++) {if (tbl.rows[i] != row)h -= Math.max(28, tbl.rows[i].offsetHeight);}h = (h - 2) + 'px';if (iframe.style.height != h) iframe.style.height=h;}};",
+							"Wt3_1_11.tinyMCEResize=function(e,w,h){e.style.height = (h - 2) + 'px';var iframe = Wt3_1_11.getElement(e.id + '_ifr');if (iframe) {var row=iframe.parentNode.parentNode,tbl=row.parentNode.parentNode,i, il;for (i=0, il=tbl.rows.length; i<il; i++) {if (tbl.rows[i] != row)h -= Math.max(28, tbl.rows[i].offsetHeight);}h = (h - 2) + 'px';if (iframe.style.height != h) iframe.style.height=h;}};",
 							false);
 		}
 	}

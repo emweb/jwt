@@ -53,8 +53,7 @@ public class WImage extends WInteractWidget {
 	public WImage(WContainerWidget parent) {
 		super(parent);
 		this.altText_ = new WString();
-		this.imageRef_ = "";
-		this.resource_ = null;
+		this.imageLink_ = new WLink();
 		this.map_ = null;
 		this.flags_ = new BitSet();
 		this.setLoadLaterWhenInvisible(false);
@@ -71,20 +70,74 @@ public class WImage extends WInteractWidget {
 	}
 
 	/**
-	 * Creates an image widget with given image URL.
+	 * Creates an image widget with a given image link.
+	 * <p>
+	 * The <code>imageLink</code> may link to a URL or resource.
+	 */
+	public WImage(WLink link, WContainerWidget parent) {
+		super(parent);
+		this.altText_ = new WString();
+		this.imageLink_ = new WLink();
+		this.map_ = null;
+		this.flags_ = new BitSet();
+		this.setLoadLaterWhenInvisible(false);
+		this.setImageLink(link);
+	}
+
+	/**
+	 * Creates an image widget with a given image link.
+	 * <p>
+	 * Calls {@link #WImage(WLink link, WContainerWidget parent) this(link,
+	 * (WContainerWidget)null)}
+	 */
+	public WImage(WLink link) {
+		this(link, (WContainerWidget) null);
+	}
+
+	/**
+	 * Creates an image widget with a given image link and alternate text.
+	 * <p>
+	 * The <code>imageLink</code> may link to a URL or resource.
+	 */
+	public WImage(WLink link, CharSequence altText, WContainerWidget parent) {
+		super(parent);
+		this.altText_ = WString.toWString(altText);
+		this.imageLink_ = new WLink();
+		this.map_ = null;
+		this.flags_ = new BitSet();
+		this.setLoadLaterWhenInvisible(false);
+		this.setImageLink(link);
+	}
+
+	/**
+	 * Creates an image widget with a given image link and alternate text.
+	 * <p>
+	 * Calls
+	 * {@link #WImage(WLink link, CharSequence altText, WContainerWidget parent)
+	 * this(link, altText, (WContainerWidget)null)}
+	 */
+	public WImage(WLink link, CharSequence altText) {
+		this(link, altText, (WContainerWidget) null);
+	}
+
+	/**
+	 * Creates an image widget with given image URL (<b>deprecated</b>).
+	 * <p>
+	 * 
+	 * @deprecated Use {@link WImage#WImage(WLink link, WContainerWidget parent)
+	 *             WImage()} instead.
 	 */
 	public WImage(String imageRef, WContainerWidget parent) {
 		super(parent);
 		this.altText_ = new WString();
-		this.imageRef_ = imageRef;
-		this.resource_ = null;
+		this.imageLink_ = new WLink(WLink.Type.Url, imageRef);
 		this.map_ = null;
 		this.flags_ = new BitSet();
 		this.setLoadLaterWhenInvisible(false);
 	}
 
 	/**
-	 * Creates an image widget with given image URL.
+	 * Creates an image widget with given image URL (<b>deprecated</b>).
 	 * <p>
 	 * Calls {@link #WImage(String imageRef, WContainerWidget parent)
 	 * this(imageRef, (WContainerWidget)null)}
@@ -94,20 +147,26 @@ public class WImage extends WInteractWidget {
 	}
 
 	/**
-	 * Creates an image widget with given image URL and alternate text.
+	 * Creates an image widget with given image URL and alternate text
+	 * (<b>deprecated</b>).
+	 * <p>
+	 * 
+	 * @deprecated Use
+	 *             {@link WImage#WImage(WLink link, CharSequence altText, WContainerWidget parent)
+	 *             WImage()} instead.
 	 */
 	public WImage(String imageRef, CharSequence altText, WContainerWidget parent) {
 		super(parent);
 		this.altText_ = WString.toWString(altText);
-		this.imageRef_ = imageRef;
-		this.resource_ = null;
+		this.imageLink_ = new WLink(WLink.Type.Url, imageRef);
 		this.map_ = null;
 		this.flags_ = new BitSet();
 		this.setLoadLaterWhenInvisible(false);
 	}
 
 	/**
-	 * Creates an image widget with given image URL and alternate text.
+	 * Creates an image widget with given image URL and alternate text
+	 * (<b>deprecated</b>).
 	 * <p>
 	 * Calls
 	 * {@link #WImage(String imageRef, CharSequence altText, WContainerWidget parent)
@@ -118,30 +177,28 @@ public class WImage extends WInteractWidget {
 	}
 
 	/**
-	 * Creates an image widget with given image resource and alternate text.
+	 * Creates an image widget with given image resource and alternate text
+	 * (<b>deprecated</b>).
 	 * <p>
-	 * Use this constructor if you want to present a dynamically generated
-	 * image.
+	 * 
+	 * @deprecated Use
+	 *             {@link WImage#WImage(WLink link, CharSequence altText, WContainerWidget parent)
+	 *             WImage()} instead.
 	 */
 	public WImage(WResource resource, CharSequence altText,
 			WContainerWidget parent) {
 		super(parent);
 		this.altText_ = WString.toWString(altText);
-		this.imageRef_ = "";
-		this.resource_ = resource;
+		this.imageLink_ = new WLink();
 		this.map_ = null;
 		this.flags_ = new BitSet();
-		this.resource_.dataChanged().addListener(this, new Signal.Listener() {
-			public void trigger() {
-				WImage.this.resourceChanged();
-			}
-		});
-		this.imageRef_ = this.resource_.getUrl();
 		this.setLoadLaterWhenInvisible(false);
+		this.setImageLink(new WLink(resource));
 	}
 
 	/**
-	 * Creates an image widget with given image resource and alternate text.
+	 * Creates an image widget with given image resource and alternate text
+	 * (<b>deprecated</b>).
 	 * <p>
 	 * Calls
 	 * {@link #WImage(WResource resource, CharSequence altText, WContainerWidget parent)
@@ -193,70 +250,84 @@ public class WImage extends WInteractWidget {
 	}
 
 	/**
-	 * Sets the image URL.
+	 * Sets the image link.
 	 * <p>
-	 * This should not be used when the image is specified as a resource.
-	 * <p>
-	 * 
-	 * @see WImage#setResource(WResource resource)
+	 * The image may be specified as a URL or as a resource. A resource
+	 * specifies application-dependent content, which may be used to generate an
+	 * image on demand.
 	 */
-	public void setImageRef(String ref) {
-		if (canOptimizeUpdates() && ref.equals(this.imageRef_)) {
+	public void setImageLink(WLink link) {
+		if (link.getType() != WLink.Type.Resource && canOptimizeUpdates()
+				&& link.equals(this.imageLink_)) {
 			return;
 		}
-		this.imageRef_ = ref;
-		this.flags_.set(BIT_IMAGE_REF_CHANGED);
-		this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyIEMobile));
-	}
-
-	/**
-	 * Returns the image URL.
-	 * <p>
-	 * When the image is specified as a resource, this returns the current
-	 * resource URL.
-	 */
-	public String getImageRef() {
-		return this.imageRef_;
-	}
-
-	/**
-	 * Sets the image resource.
-	 * <p>
-	 * A resource specifies application-dependent content, which may be used to
-	 * generate an image on demand.
-	 * <p>
-	 * This sets <code>resource</code> as the contents for the image, as an
-	 * alternative to {@link WImage#setImageRef(String ref) setImageRef()}. The
-	 * resource may be cleared by passing <code>resource</code> =
-	 * <code>null</code>.
-	 * <p>
-	 * The image does not assume ownership of the resource.
-	 * <p>
-	 * 
-	 * @see WImage#setImageRef(String ref)
-	 */
-	public void setResource(WResource resource) {
-		this.resource_ = resource;
-		if (this.resource_ != null) {
-			this.resource_.dataChanged().addListener(this,
+		this.imageLink_ = link;
+		if (link.getType() == WLink.Type.Resource) {
+			link.getResource().dataChanged().addListener(this,
 					new Signal.Listener() {
 						public void trigger() {
 							WImage.this.resourceChanged();
 						}
 					});
-			this.setImageRef(this.resource_.getUrl());
-		} else {
-			this.setImageRef("#");
 		}
+		this.flags_.set(BIT_IMAGE_LINK_CHANGED);
+		this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyIEMobile));
 	}
 
 	/**
-	 * Returns the image resource.
+	 * Returns the image link.
+	 * <p>
+	 */
+	public WLink getImageLink() {
+		return this.imageLink_;
+	}
+
+	/**
+	 * Sets the image URL (<b>deprecated</b>).
+	 * <p>
+	 * 
+	 * @deprecated Use {@link WImage#setImageLink(WLink link) setImageLink()}
+	 *             instead.
+	 */
+	public void setImageRef(String ref) {
+		this.setImageLink(new WLink(ref));
+	}
+
+	/**
+	 * Returns the image URL (<b>deprecated</b>).
+	 * <p>
+	 * When the image is specified as a resource, this returns the current
+	 * resource URL.
+	 * <p>
+	 * 
+	 * @deprecated Use {@link WImage#getImageLink() getImageLink()} instead.
+	 */
+	public String getImageRef() {
+		return this.imageLink_.getUrl();
+	}
+
+	/**
+	 * Sets the image resource (<b>deprecated</b>).
+	 * <p>
+	 * 
+	 * @deprecated Use {@link WImage#setImageLink(WLink link) setImageLink()}
+	 *             instead.
+	 */
+	public void setResource(WResource resource) {
+		this.setImageLink(new WLink(resource));
+	}
+
+	/**
+	 * Returns the image resource (<b>deprecated</b>.
 	 * <p>
 	 * Returns <code>null</code> if no image resource was set.
+	 * <p>
+	 * 
+	 * @deprecated Use {@link WImage#setImageLink(WLink link) setImageLink()}
+	 *             instead.
 	 */
 	public WResource getResource() {
-		return this.resource_;
+		return this.imageLink_.getResource();
 	}
 
 	/**
@@ -356,18 +427,16 @@ public class WImage extends WInteractWidget {
 	}
 
 	private static final int BIT_ALT_TEXT_CHANGED = 0;
-	private static final int BIT_IMAGE_REF_CHANGED = 1;
+	private static final int BIT_IMAGE_LINK_CHANGED = 1;
 	private static final int BIT_MAP_CREATED = 2;
 	private WString altText_;
-	private String imageRef_;
-	private WResource resource_;
+	private WLink imageLink_;
 	private MapWidget map_;
 	BitSet flags_;
 
 	private void resourceChanged() {
-		if (this.resource_ != null) {
-			this.setImageRef(this.resource_.getUrl());
-		}
+		this.flags_.set(BIT_IMAGE_LINK_CHANGED);
+		this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyIEMobile));
 	}
 
 	void getDomChanges(List<DomElement> result, WApplication app) {
@@ -390,12 +459,14 @@ public class WImage extends WInteractWidget {
 			img = DomElement.createNew(DomElementType.DomElement_IMG);
 			img.setId("i" + this.getId());
 		}
-		if (this.flags_.get(BIT_IMAGE_REF_CHANGED) || all) {
-			if (this.imageRef_.length() != 0) {
+		if (this.flags_.get(BIT_IMAGE_LINK_CHANGED) || all) {
+			if (!this.imageLink_.isNull()) {
 				img.setProperty(Property.PropertySrc,
-						resolveRelativeUrl(this.imageRef_));
+						resolveRelativeUrl(this.imageLink_.getUrl()));
+			} else {
+				img.setProperty(Property.PropertySrc, "#");
 			}
-			this.flags_.clear(BIT_IMAGE_REF_CHANGED);
+			this.flags_.clear(BIT_IMAGE_LINK_CHANGED);
 		}
 		if (this.flags_.get(BIT_ALT_TEXT_CHANGED) || all) {
 			img.setAttribute("alt", this.altText_.toString());
@@ -417,7 +488,7 @@ public class WImage extends WInteractWidget {
 	}
 
 	void propagateRenderOk(boolean deep) {
-		this.flags_.clear(BIT_IMAGE_REF_CHANGED);
+		this.flags_.clear(BIT_IMAGE_LINK_CHANGED);
 		this.flags_.clear(BIT_ALT_TEXT_CHANGED);
 		super.propagateRenderOk(deep);
 	}

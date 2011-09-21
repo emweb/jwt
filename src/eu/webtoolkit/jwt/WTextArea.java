@@ -268,7 +268,7 @@ public class WTextArea extends WFormWidget {
 	}
 
 	void setFormData(WObject.FormData formData) {
-		if (this.contentChanged_) {
+		if (this.contentChanged_ || this.isReadOnly()) {
 			return;
 		}
 		if (!(formData.values.length == 0)) {

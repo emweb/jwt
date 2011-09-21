@@ -181,7 +181,7 @@ public class WPainterPath {
 	 * <p>
 	 * 
 	 * @see WPainterPath#closeSubPath()
-	 * @see WPainterPath#moveTo(double x, double y)
+	 * @see WPainterPath#moveTo(WPointF point)
 	 */
 	public void moveTo(double x, double y) {
 		if (!this.segments_.isEmpty()

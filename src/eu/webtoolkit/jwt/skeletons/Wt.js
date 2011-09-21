@@ -299,7 +299,7 @@ this.initAjaxComm = function(url, handler) {
 
       this.setUrl = function(url) {
 	sessionUrl = url;
-      }
+      };
     })();
   } else {
     return new (function() {
@@ -353,7 +353,8 @@ this.initAjaxComm = function(url, handler) {
 
       this.setUrl = function(url) {
 	sessionUrl = url;
-      }
+      };
+
     })();
   }
 };
@@ -456,6 +457,31 @@ this.unstub = function(from, to, methodDisplay) {
     to.style.width = from.style.width;
 };
 
+this.changeTag = function(e, type)
+{
+  var n = document.createElement(type);
+
+   /* For some reason fails on 'a' */
+  if (type == 'img' && n.mergeAttributes) {
+    n.mergeAttributes(e, false);
+    n.src = e.src;
+  } else {
+    if (e.attributes && e.attributes.length > 0) {
+      var i, il;
+      for (i = 0, il = e.attributes.length; i < il; i++) {
+	var nn = e.attributes[i].nodeName;
+	if (nn != 'type' && nn != 'name')
+	  n.setAttribute(nn, e.getAttribute(nn));
+      }
+    }
+  }
+
+  while (e.firstChild)
+    n.appendChild(e.removeChild(e.firstChild));
+
+  e.parentNode.replaceChild(n, e);
+};
+
 this.unwrap = function(e) {
   e = WT.getElement(e);
   if (!e.parentNode.className.indexOf('Wt-wrap')) {
@@ -463,32 +489,20 @@ this.unwrap = function(e) {
     e = e.parentNode;
     if (e.className.length >= 8)
       wrapped.className = e.className.substring(8);
-    if (WT.isIE)
-      wrapped.style.setAttribute('cssText', e.getAttribute('style'));
-    else
-      wrapped.setAttribute('style', e.getAttribute('style'));
+    var style = e.getAttribute('style');
+    if (style) {
+      if (WT.isIE)
+	wrapped.style.setAttribute('cssText', style);
+      else
+	wrapped.setAttribute('style', style);
+    }
     e.parentNode.replaceChild(wrapped, e);
   } else {
     if (e.getAttribute('type') == 'submit') {
       e.setAttribute('type', 'button');
       e.removeAttribute('name');
     } if (WT.hasTag(e, 'INPUT') && e.getAttribute('type') == 'image') {
-      // change <input> to <image>
-      var img = document.createElement('img');
-      if (img.mergeAttributes) {
-	img.mergeAttributes(e, false);
-	img.src = e.src;
-      } else {
-	if (e.attributes && e.attributes.length > 0) {
-	  var i, il;
-	  for (i = 0, il = e.attributes.length; i < il; i++) {
-	    var n = e.attributes[i].nodeName;
-	    if (n != 'type' && n != 'name')
-	      img.setAttribute(n, e.getAttribute(n));
-	  }
-	}
-      }
-      e.parentNode.replaceChild(img, e);
+      WT.changeTag(e, 'img');
     }
   }
 };
@@ -522,7 +536,7 @@ this.ajaxInternalPaths = function(basePath) {
 	internalPath = href.substr(absBase.length - 1);
       } else
 	internalPath = href.substr(basePath.length);
-	
+
       if (internalPath.substr(0, 3) == "?_=")
 	  internalPath = internalPath.substr(3);
       this.setAttribute('href', href); // computes this.href
@@ -620,7 +634,7 @@ this.widgetPageCoordinates = function(obj) {
     objX += obj.offsetLeft;
     objY += obj.offsetTop;
 
-    var f = css(obj, 'position');
+    var f = WT.css(obj, 'position');
     if (f == 'fixed') {
       objX += document.body.scrollLeft
 	+ document.documentElement.scrollLeft;
@@ -829,7 +843,7 @@ this.stopRepeat = function() {
 
 var cacheC = null, cacheS = null;
 
-function css(c, s) {
+this.css = function(c, s) {
   if (c.style[s])
     return c.style[s];
   else {
@@ -846,7 +860,7 @@ function css(c, s) {
 
     return cacheS ? cacheS[s] : null;
   }
-}
+};
 
 function parseCss(value, regex, defaultvalue) {
   if (value == 'auto' || value == null)
@@ -856,9 +870,9 @@ function parseCss(value, regex, defaultvalue) {
   return v ? parseFloat(v) : defaultvalue;
 }
 
-function parsePx(v) {
+this.parsePx = function(v) {
   return parseCss(v, /^\s*(-?\d+(?:\.\d+)?)\s*px\s*$/i, 0);
-}
+};
 
 function parsePct(v, defaultValue) {
   return parseCss(v, /^\s*(-?\d+(?:\.\d+)?)\s*\%\s*$/i, defaultValue);
@@ -866,12 +880,12 @@ function parsePct(v, defaultValue) {
 
 // Get an element metric in pixels
 this.px = function(c, s) {
-  return parsePx(css(c, s));
+  return WT.parsePx(WT.css(c, s));
 };
 
 // Get a widget style in pixels, when set directly
 this.pxself = function(c, s) {
-  return parsePx(c.style[s]);
+  return WT.parsePx(c.style[s]);
 };
 
 this.pctself = function(c, s) {
@@ -906,6 +920,24 @@ this.isHidden = function(w) {
     else
       return false;
   }
+};
+
+this.innerWidth = function(el) {
+  var result = el.offsetWidth;
+  if (!WT.boxSizing(el)) {
+    result -= WT.px(el, 'paddingLeft') + WT.px(el, 'paddingRight')
+	  + WT.px(el, 'borderLeftWidth') + WT.px(el, 'borderRightWidth');
+  }
+  return result;
+};
+
+this.innerHeight = function(el) {
+  var result = el.offsetHeight;
+  if (!WT.boxSizing(el)) {
+    result -= WT.px(el, 'paddingTop') + WT.px(el, 'paddingBottom')
+	  + WT.px(el, 'borderTopWidth') + WT.px(el, 'borderBottomWidth');
+  }
+  return result;
 };
 
 this.IEwidth = function(c, min, max) {
@@ -1086,9 +1118,33 @@ this.getElementsByClassName = function(className, parentElement) {
 };
 
 /* Firefox, IE9 etc... */
+var inlineStyleSheet = null;
+
+function getInlineStyleSheet() {
+  if (!inlineStyleSheet) {
+    var i, il, ds = document.styleSheets;
+    for (i = 0, il = ds.length; i < il; ++i) {
+      var s = ds[i];
+      if (WT.hasTag(ds[i].ownerNode, 'STYLE')) {
+	inlineStyleSheet = s;
+	break;
+      }
+    }
+
+    if (!inlineStyleSheet) {
+      var s = document.createElement('style');
+      document.getElementsByTagName('head')[0].appendChild(s);
+
+      inlineStyleSheet = s.sheet;
+    }
+  }
+
+  return inlineStyleSheet;
+}
+
 this.addCss = function(selector, style) {
-   // on IE we have the VML too
-  var s = document.styleSheets[WT.isIE ? 1 : 0];
+  var s = getInlineStyleSheet();
+
   // strange error with IE9 when in iframe
   var pos = s.cssRules ? s.cssRules.length : 0;
   s.insertRule(selector + ' { ' + style + ' }', pos);
@@ -1314,6 +1370,18 @@ this.hasFocus = function(el) {
 var html5History = !WT.isMobileWebKit
     && !!(window.history && window.history.pushState);
 
+/*
+ * A less aggressive URL encoding than encodeURIComponent which does
+ * for example not encode '/'
+ */
+function gentleURIEncode(s) {
+  return s.replace(/%/g, '%25')
+    .replace(/\+/g, '%2b')
+    .replace(/ /g, '%20')
+    .replace(/#/g, '%23')
+    .replace(/&/g, '%26');
+}
+
 if (html5History) {
   this.history = (function()
 {
@@ -1390,7 +1458,7 @@ _$_$endif_$_();
 
       currentState = state;
 
-      var url = baseUrl + state;
+      var url = baseUrl + gentleURIEncode(state);
 
       if (baseUrl.length < 3 || baseUrl.substr(baseUrl.length - 3) != "?_=")
 	url += window.location.search;
@@ -1399,7 +1467,8 @@ _$_$endif_$_();
 	  if (q.length > 1)
 	    q = q.substr(1);
 
-	  var qp = q.split("&"), i, il, q="";
+	  var qp = q.split("&"), i, il;
+	  q = "";
 
 	  for (i=0, il = qp.length; i<il; ++i)
 	    if (qp[i].split("=")[0] != '_')
@@ -1422,6 +1491,8 @@ _$_$endif_$_();
 	 */
 	console.log(error.toString());
       }
+
+      WT.scrollIntoView(state);
 
       if (generateEvent)
 	cb(state);
@@ -1637,6 +1708,8 @@ _$_$endif_$_();
     }
   },
   navigate: function (state, generateEvent) {
+    state = gentleURIEncode(state);
+
     if (!_initialized) {
       return;
     }
@@ -1657,7 +1730,7 @@ _$_$endif_$_();
     if (!_initialized) {
       return "";
     }
-    return _currentState;
+    return unescape(_currentState);
   }
   };
 })();
@@ -1690,7 +1763,7 @@ function saveDownPos(e) {
 var currentHash = null;
 
 function onHashChange() {
-  var newLocation = WT.history.getCurrentState();
+  var newLocation = _$_WT_CLASS_$_.history.getCurrentState();
   if (currentHash == newLocation) {
     return;
   } else {
@@ -1705,7 +1778,7 @@ function setHash(newLocation) {
 
   currentHash = newLocation;
 
-  WT.history.navigate(escape(newLocation), false);
+  WT.history.navigate(newLocation, false);
 };
 
 var dragState = {
@@ -1754,6 +1827,7 @@ function dragStart(obj, e) {
   ds.object.parentNode.removeChild(ds.object);
   ds.object.style["position"] = 'absolute';
   ds.object.className = '';
+  ds.object.style["z-index"] = '1000';
   document.body.appendChild(ds.object);
 
   WT.capture(null);
@@ -1908,7 +1982,9 @@ function encodeEvent(event, i) {
     if (el == null)
       continue;
 
-    if (el.type == 'select-multiple') {
+    if (el.wtEncodeValue)
+      v = el.wtEncodeValue(el);
+    else if (el.type == 'select-multiple') {
       for (j = 0, jl = el.options.length; j < jl; j++)
 	if (el.options[j].selected) {
 	  result += se + formObjects[x] + '='
@@ -1919,24 +1995,6 @@ function encodeEvent(event, i) {
 	v = 'i';
       else if (el.checked)
 	v = el.value;
-    } else if (WT.hasTag(el, "VIDEO") || WT.hasTag(el, "AUDIO")) {
-      v = '' + el.volume + ';'
-	+ el.currentTime + ';'
-	+ el.duration + ';'
-	+ (el.paused ? '1' : '0') + ';'
-	+ (el.ended ? ' 1' : '0') + ';'
-	+ el.readyState;
-    } else if (WT.hasTag(el, "DIV") && el.childNodes.length == 1) {
-      // When in Layout, media elements sits in a surrounding DIV
-      var m = el.childNodes[0];
-      if (WT.hasTag(m, "VIDEO") || WT.hasTag(m, "AUDIO")) {
-        v = '' + m.volume + ';'
-	  + m.currentTime + ';'
-	  + m.duration + ';'
-	  + (m.paused ? '1' : '0') + ';'
-	  + (m.ended ? '1' : '0') + ';'
-	  + m.readyState;
-      }
     } else if (el.type != 'file') {
       if ($(el).hasClass('Wt-edit-emptyText'))
 	v = '';
@@ -1965,7 +2023,7 @@ function encodeEvent(event, i) {
   } catch (e) { }
 
   if (currentHash != null)
-    result += se + '_=' + encodeURIComponent(unescape(currentHash));
+    result += se + '_=' + encodeURIComponent(currentHash);
 
   if (!e) {
     event.data = result;
@@ -2349,8 +2407,6 @@ _$_$if_WEB_SOCKETS_$_();
 	     + location.port + _$_DEPLOY_PATH_$_ + query;
 	  }
 
-	  // console.log("Url: " + wsurl);
-
 	  websocket.socket = ws = new WebSocket(wsurl);
 	  if (websocket.keepAlive)
 	    clearInterval(websocket.keepAlive);
@@ -2416,7 +2472,7 @@ _$_$endif_$_();
   }
 }
 
-var ackUpdateId = 0;
+var ackUpdateId = _$_ACK_UPDATE_ID_$_;
 
 function responseReceived(updateId) {
   ackUpdateId = updateId;

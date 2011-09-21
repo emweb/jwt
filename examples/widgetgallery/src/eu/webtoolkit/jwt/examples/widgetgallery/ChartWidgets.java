@@ -21,8 +21,8 @@ import eu.webtoolkit.jwt.examples.charts.*;
 class ChartWidgets extends ControlsWidget {
 	public ChartWidgets(EventDisplayer ed) {
 		super(ed, true);
-		new WText(tr("charts-intro"), this);
-		new WText(tr("charts-introduction"), this);
+		addText(tr("charts-intro"), this);
+		addText(tr("charts-introduction"), this);
 	}
 
 	public void populateSubMenu(WMenu menu) {

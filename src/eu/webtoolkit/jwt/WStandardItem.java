@@ -258,59 +258,86 @@ public class WStandardItem {
 	}
 
 	/**
-	 * Sets an anchor to an internal path.
+	 * Sets a link.
 	 * <p>
-	 * The internal path is stored as {@link ItemDataRole#InternalPathRole
-	 * InternalPathRole} data.
+	 * The link is stored as {@link ItemDataRole#LinkRole LinkRole} data.
 	 * <p>
 	 * 
-	 * @see WStandardItem#getInternalPath()
 	 * @see WStandardItem#setData(Object d, int role)
 	 */
-	public void setInternalPath(String internalpath) {
-		this.setData(internalpath, ItemDataRole.InternalPathRole);
+	public void setLink(WLink link) {
+		this.setData(link, ItemDataRole.LinkRole);
 	}
 
 	/**
-	 * Returns the anchor to an internal path.
+	 * Returns a link.
+	 * <p>
+	 * 
+	 * @see WStandardItem#setLink(WLink link)
+	 */
+	public WLink getLink() {
+		Object d = this.getData(ItemDataRole.LinkRole);
+		if (!(d == null) && d.getClass().equals(WLink.class)) {
+			return (WLink) d;
+		} else {
+			return new WLink("");
+		}
+	}
+
+	/**
+	 * Sets a link to an internal path (<b>deprecated</b>).
+	 * <p>
+	 * The internal path is stored as {@link ItemDataRole#LinkRole LinkRole}
+	 * data..
+	 * <p>
+	 * 
+	 * @deprecated Use {@link WStandardItem#setLink(WLink link) setLink()}
+	 *             instead.
+	 */
+	public void setInternalPath(String internalpath) {
+		this.setLink(new WLink(WLink.Type.InternalPath, internalpath));
+	}
+
+	/**
+	 * Returns the link to an internal path (<b>deprecated</b>).
 	 * <p>
 	 * 
 	 * @see WStandardItem#setInternalPath(String internalpath)
-	 * @see WStandardItem#setData(Object d, int role)
+	 * @deprecated Use {@link WStandardItem#getLink() getLink()} instead.
 	 */
 	public String getInternalPath() {
-		Object d = this.getData(ItemDataRole.InternalPathRole);
-		if (!(d == null) && d.getClass().equals(String.class)) {
-			return (String) d;
+		WLink l = this.getLink();
+		if (!l.isNull()) {
+			return l.getInternalPath();
 		} else {
 			return "";
 		}
 	}
 
 	/**
-	 * Sets an anchor to an external URL.
+	 * Sets a link to a URL (<b>deprecated</b>).
 	 * <p>
-	 * The anchor Url is stored as {@link ItemDataRole#UrlRole UrlRole} data.
+	 * The URL is stored as {@link ItemDataRole#LinkRole LinkRole} data.
 	 * <p>
 	 * 
-	 * @see WStandardItem#setInternalPath(String internalpath)
-	 * @see WStandardItem#setData(Object d, int role)
+	 * @deprecated Use {@link WStandardItem#setLink(WLink link) setLink()}
+	 *             instead.
 	 */
 	public void setUrl(String url) {
-		this.setData(url, ItemDataRole.UrlRole);
+		this.setLink(new WLink(url));
 	}
 
 	/**
-	 * Returns the url referenced by this item.
+	 * Returns the linked URL (<b>deprecated</b>).
 	 * <p>
 	 * 
 	 * @see WStandardItem#setUrl(String url)
-	 * @see WStandardItem#setData(Object d, int role)
+	 * @deprecated Use {@link WStandardItem#getLink() getLink()} instead.
 	 */
 	public String getUrl() {
-		Object d = this.getData(ItemDataRole.UrlRole);
-		if (!(d == null) && d.getClass().equals(String.class)) {
-			return (String) d;
+		WLink l = this.getLink();
+		if (!l.isNull()) {
+			return l.getUrl();
 		} else {
 			return "";
 		}
@@ -691,29 +718,35 @@ public class WStandardItem {
 	public void insertColumn(int column, List<WStandardItem> items) {
 		int rc = this.getRowCount();
 		if (!(this.columns_ != null)) {
-			this.columns_ = new ArrayList<List<WStandardItem>>();
+			this.setRowCount(items.size());
+			this.columns_.set(0, items);
+			for (int i = 0; i < items.size(); ++i) {
+				if (items.get(i) != null) {
+					this.adoptChild(i, column, items.get(i));
+				}
+			}
 		} else {
 			if (rc < items.size()) {
 				this.setRowCount(items.size());
 				rc = items.size();
 			}
-		}
-		if (this.model_ != null) {
-			this.model_.beginInsertColumns(this.getIndex(), column, column);
-		}
-		this.columns_.add(0 + column, items);
-		for (int i = 0; i < items.size(); ++i) {
-			if (items.get(i) != null) {
-				this.adoptChild(i, column, items.get(i));
+			if (this.model_ != null) {
+				this.model_.beginInsertColumns(this.getIndex(), column, column);
 			}
-		}
-		if (items.size() < rc) {
-			List<WStandardItem> inserted = this.columns_.get(column);
-			CollectionUtils.resize(inserted, rc);
-		}
-		this.renumberColumns(column + 1);
-		if (this.model_ != null) {
-			this.model_.endInsertColumns();
+			this.columns_.add(0 + column, items);
+			for (int i = 0; i < items.size(); ++i) {
+				if (items.get(i) != null) {
+					this.adoptChild(i, column, items.get(i));
+				}
+			}
+			if (items.size() < rc) {
+				List<WStandardItem> inserted = this.columns_.get(column);
+				CollectionUtils.resize(inserted, rc);
+			}
+			this.renumberColumns(column + 1);
+			if (this.model_ != null) {
+				this.model_.endInsertColumns();
+			}
 		}
 	}
 
@@ -956,7 +989,6 @@ public class WStandardItem {
 		if (this.model_ != null) {
 			WModelIndex self = item.getIndex();
 			this.model_.dataChanged().trigger(self, self);
-			this.model_.itemChanged().trigger(this);
 		}
 	}
 

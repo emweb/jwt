@@ -22,7 +22,6 @@ class WidgetGallery extends WContainerWidget {
 		super();
 		this.contentsStack_ = new WStackedWidget();
 		this.contentsStack_.setOverflow(WContainerWidget.Overflow.OverflowAuto);
-		this.contentsStack_.setPositionScheme(PositionScheme.Relative);
 		this.contentsStack_.setStyleClass("contents");
 		EventDisplayer eventDisplayer = new EventDisplayer(
 				(WContainerWidget) null);

@@ -259,6 +259,13 @@ public abstract class WAbstractItemModel extends WObject {
 	 * <p>
 	 * Return data for a given role at a given index.
 	 * <p>
+	 * You should check the <code>role</code> to decide what data to return.
+	 * Usually a View class will ask for data for several roles which affect not
+	 * only the contents ({@link ItemDataRole#DisplayRole}) but also icons (
+	 * {@link ItemDataRole#DecorationRole}), URLs ({@link ItemDataRole#LinkRole}
+	 * ), and other visual aspects. If your item does not specify data for a
+	 * particular role, it should simply return a boost::any().
+	 * <p>
 	 * 
 	 * @see WAbstractItemModel#getFlags(WModelIndex index)
 	 * @see WAbstractItemModel#getHeaderData(int section, Orientation
@@ -290,7 +297,7 @@ public abstract class WAbstractItemModel extends WObject {
 	public SortedMap<Integer, Object> getItemData(WModelIndex index) {
 		SortedMap<Integer, Object> result = new TreeMap<Integer, Object>();
 		if ((index != null)) {
-			for (int i = 0; i <= ItemDataRole.UrlRole; ++i) {
+			for (int i = 0; i <= ItemDataRole.BarBrushColorRole; ++i) {
 				result.put(i, this.getData(index, i));
 			}
 			result.put(ItemDataRole.UserRole, this.getData(index,

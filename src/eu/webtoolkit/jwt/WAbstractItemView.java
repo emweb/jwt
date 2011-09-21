@@ -171,6 +171,7 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 		this.selectionModel_ = new WItemSelectionModel(model, this);
 		this.selectionModel_.setSelectionBehavior(oldSelectionModel
 				.getSelectionBehavior());
+		;
 		this.editedItems_.clear();
 		this.configureModelDragDrop();
 		this.setRootIndex(null);
@@ -998,6 +999,11 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	 * Scrolls the view to ensure that the item which represents the provided
 	 * <code>index</code> is visible. A <code>hint</code> may indicate how the
 	 * item should appear in the viewport (if possible).
+	 * <p>
+	 * <p>
+	 * <i><b>Note: </b>Currently only implemented to scroll to the correct row,
+	 * not taking into account the column. </i>
+	 * </p>
 	 */
 	public abstract void scrollTo(WModelIndex index,
 			WAbstractItemView.ScrollHint hint);
@@ -1319,8 +1325,8 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	 * Configures the number of columns that are used as row headers.
 	 * <p>
 	 * An item view does not use the vertical header data from the model in any
-	 * way, but instead you can configure data in the first column to be used as
-	 * a row headers.
+	 * way, but instead you can configure data in the first column(s) to be used
+	 * as a row headers.
 	 * <p>
 	 * These columns will not scroll horizontally together with the rest of the
 	 * model.
@@ -1387,7 +1393,6 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 		this.modelConnections_ = new ArrayList<AbstractSignal.Connection>();
 		this.columns_ = new ArrayList<WAbstractItemView.ColumnInfo>();
 		this.currentSortColumn_ = -1;
-		this.rowHeaderCount_ = 0;
 		this.dragEnabled_ = false;
 		this.dropsEnabled_ = false;
 		this.model_ = null;
@@ -1403,6 +1408,7 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 		this.sorting_ = true;
 		this.columnResize_ = true;
 		this.multiLineHeader_ = false;
+		this.rowHeaderCount_ = 0;
 		this.columnWidthChanged_ = new JSignal2<Integer, Integer>(this.impl_,
 				"columnResized") {
 		};
@@ -1637,7 +1643,6 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	WSignalMapper2<WModelIndex, WMouseEvent> clickedMapper_;
 	List<WAbstractItemView.ColumnInfo> columns_;
 	int currentSortColumn_;
-	protected int rowHeaderCount_;
 	boolean dragEnabled_;
 	boolean dropsEnabled_;
 	WWidget dragWidget_;
@@ -1825,8 +1830,8 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 						HeaderFlag.ColumnIsExpandedRight)).isEmpty()) {
 			WImage collapseIcon = new WImage(w);
 			collapseIcon.setFloatSide(Side.Left);
-			collapseIcon.setImageRef(WApplication.getResourcesUrl()
-					+ "minus.gif");
+			collapseIcon.setImageLink(new WLink(WApplication.getResourcesUrl()
+					+ "minus.gif"));
 			this.clickedForCollapseMapper_.mapConnect(collapseIcon.clicked(),
 					info.id);
 		} else {
@@ -1834,8 +1839,9 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 					HeaderFlag.ColumnIsCollapsed).isEmpty()) {
 				WImage expandIcon = new WImage(w);
 				expandIcon.setFloatSide(Side.Left);
-				expandIcon.setImageRef(WApplication.getResourcesUrl()
-						+ "plus.gif");
+				expandIcon.setImageLink(new WLink(WApplication
+						.getResourcesUrl()
+						+ "plus.gif"));
 				this.clickedForExpandMapper_.mapConnect(expandIcon.clicked(),
 						info.id);
 			}
@@ -2100,6 +2106,7 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	private boolean sorting_;
 	private boolean columnResize_;
 	private boolean multiLineHeader_;
+	private int rowHeaderCount_;
 	private JSignal2<Integer, Integer> columnWidthChanged_;
 	private Signal2<Integer, WLength> columnResized_;
 	private WCssTemplateRule headerHeightRule_;

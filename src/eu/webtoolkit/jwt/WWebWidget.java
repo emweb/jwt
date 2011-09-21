@@ -175,12 +175,12 @@ public abstract class WWebWidget extends WWidget {
 
 	public WLength getMinimumWidth() {
 		return this.layoutImpl_ != null ? this.layoutImpl_.minimumWidth_
-				: WLength.Auto;
+				: new WLength(0);
 	}
 
 	public WLength getMinimumHeight() {
 		return this.layoutImpl_ != null ? this.layoutImpl_.minimumHeight_
-				: WLength.Auto;
+				: new WLength(0);
 	}
 
 	public void setMaximumSize(WLength width, WLength height) {
@@ -309,7 +309,8 @@ public abstract class WWebWidget extends WWidget {
 		this.flags_.set(BIT_HIDDEN_CHANGED);
 		if (!animation.isEmpty()
 				&& WApplication.getInstance().getEnvironment()
-						.isSupportsCss3Animations()) {
+						.supportsCss3Animations()
+				&& WApplication.getInstance().getEnvironment().hasAjax()) {
 			if (!(this.transientImpl_ != null)) {
 				this.transientImpl_ = new WWebWidget.TransientImpl();
 			}
@@ -892,7 +893,7 @@ public abstract class WWebWidget extends WWidget {
 		return this.otherImpl_.childrenChanged_;
 	}
 
-	public static String resolveRelativeUrl(String url) {
+	static String resolveRelativeUrl(String url) {
 		return WApplication.getInstance().resolveRelativeUrl(url);
 	}
 
@@ -1082,7 +1083,7 @@ public abstract class WWebWidget extends WWidget {
 						app
 								.addAutoJavaScript("{var w = "
 										+ this.getJsRef()
-										+ ";if (w && !Wt3_1_10.isHidden(w)) {var i = Wt3_1_10.getElement('"
+										+ ";if (w && !Wt3_1_11.isHidden(w)) {var i = Wt3_1_11.getElement('"
 										+ i.getId()
 										+ "');i.style.width=w.clientWidth + 'px';i.style.height=w.clientHeight + 'px';}}");
 						element.addChild(i);
@@ -1102,15 +1103,15 @@ public abstract class WWebWidget extends WWidget {
 						}
 					}
 				}
-				if (!this.layoutImpl_.minimumWidth_.isAuto()
-						&& this.layoutImpl_.minimumWidth_.getValue() != 0) {
-					element.setProperty(Property.PropertyStyleMinWidth,
-							this.layoutImpl_.minimumWidth_.getCssText());
+				if (this.layoutImpl_.minimumWidth_.getValue() != 0) {
+					String text = this.layoutImpl_.minimumWidth_.isAuto() ? "0px"
+							: this.layoutImpl_.minimumWidth_.getCssText();
+					element.setProperty(Property.PropertyStyleMinWidth, text);
 				}
-				if (!this.layoutImpl_.minimumHeight_.isAuto()
-						&& this.layoutImpl_.minimumHeight_.getValue() != 0) {
-					element.setProperty(Property.PropertyStyleMinHeight,
-							this.layoutImpl_.minimumHeight_.getCssText());
+				if (this.layoutImpl_.minimumHeight_.getValue() != 0) {
+					String text = this.layoutImpl_.minimumHeight_.isAuto() ? "0px"
+							: this.layoutImpl_.minimumHeight_.getCssText();
+					element.setProperty(Property.PropertyStyleMinHeight, text);
 				}
 				if (!this.layoutImpl_.maximumWidth_.isAuto()) {
 					element.setProperty(Property.PropertyStyleMaxWidth,
@@ -1263,7 +1264,7 @@ public abstract class WWebWidget extends WWidget {
 					if (this.lookImpl_.toolTipTextFormat_ != TextFormat.PlainText
 							&& app.getEnvironment().hasAjax()) {
 						app.loadJavaScript("js/ToolTip.js", wtjs10());
-						element.callJavaScript("Wt3_1_10.toolTip(Wt3_1_10,"
+						element.callJavaScript("Wt3_1_11.toolTip(Wt3_1_11,"
 								+ jsStringLiteral(this.getId())
 								+ ","
 								+ WString.toWString(this.lookImpl_.toolTip_)
@@ -1311,7 +1312,7 @@ public abstract class WWebWidget extends WWidget {
 						String js = this.transientImpl_.childRemoveChanges_
 								.get(i);
 						if (js.charAt(0) == '_') {
-							element.callJavaScript("Wt3_1_10.remove('"
+							element.callJavaScript("Wt3_1_11.remove('"
 									+ js.substring(1) + "');", true);
 						} else {
 							element.callJavaScript(js);
@@ -1490,7 +1491,7 @@ public abstract class WWebWidget extends WWidget {
 				if (!this.flags_.get(BIT_HIDE_WITH_VISIBILITY)) {
 					StringBuilder ss = new StringBuilder();
 					ss
-							.append("Wt3_1_10")
+							.append("Wt3_1_11")
 							.append(".animateDisplay('")
 							.append(this.getId())
 							.append("',")
@@ -1521,7 +1522,7 @@ public abstract class WWebWidget extends WWidget {
 				} else {
 					StringBuilder ss = new StringBuilder();
 					ss
-							.append("Wt3_1_10")
+							.append("Wt3_1_11")
 							.append(".animateVisible('")
 							.append(this.getId())
 							.append("',")
@@ -1578,6 +1579,10 @@ public abstract class WWebWidget extends WWidget {
 		this.renderOk();
 		;
 		this.transientImpl_ = null;
+	}
+
+	protected boolean domCanBeSaved() {
+		return true;
 	}
 
 	void propagateRenderOk(boolean deep) {
@@ -1648,6 +1653,15 @@ public abstract class WWebWidget extends WWidget {
 		}
 	}
 
+	void removeChild(WObject child) {
+		WWidget w = ((child) instanceof WWidget ? (WWidget) (child) : null);
+		if (w != null) {
+			this.removeChild(w);
+		} else {
+			super.removeChild(child);
+		}
+	}
+
 	void addChild(WWidget child) {
 		if (child.getParent() == this) {
 			return;
@@ -1715,7 +1729,7 @@ public abstract class WWebWidget extends WWidget {
 		}
 	}
 
-	protected void childAdded(WWidget child) {
+	void childAdded(WWidget child) {
 		child.setParent(this);
 		WWebWidget ww = child.getWebWidget();
 		if (ww != null) {
@@ -1818,8 +1832,8 @@ public abstract class WWebWidget extends WWidget {
 			this.positionScheme_ = PositionScheme.Static;
 			this.floatSide_ = null;
 			this.clearSides_ = EnumSet.noneOf(Side.class);
-			this.minimumWidth_ = new WLength();
-			this.minimumHeight_ = new WLength();
+			this.minimumWidth_ = new WLength(0);
+			this.minimumHeight_ = new WLength(0);
 			this.maximumWidth_ = new WLength();
 			this.maximumHeight_ = new WLength();
 			this.zIndex_ = 0;

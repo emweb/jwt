@@ -21,7 +21,7 @@ import eu.webtoolkit.jwt.servlet.*;
  * Enumeration that indicates a relative location.
  * <p>
  * Values of CenterX, CenterY, and CenterXY are only valid for
- * {@link WCssDecorationStyle#setBackgroundImage(String image, WCssDecorationStyle.Repeat repeat, EnumSet sides)
+ * {@link WCssDecorationStyle#setBackgroundImage(WLink image, WCssDecorationStyle.Repeat repeat, EnumSet sides)
  * WCssDecorationStyle#setBackgroundImage()}
  * <p>
  * 
@@ -30,7 +30,7 @@ import eu.webtoolkit.jwt.servlet.*;
  * @see WWidget#setFloatSide(Side s)
  * @see WWidget#setClearSides(EnumSet sides)
  * @see WContainerWidget#setPadding(WLength length, EnumSet sides)
- * @see WCssDecorationStyle#setBackgroundImage(String image,
+ * @see WCssDecorationStyle#setBackgroundImage(WLink image,
  *      WCssDecorationStyle.Repeat repeat, EnumSet sides)
  */
 public enum Side {

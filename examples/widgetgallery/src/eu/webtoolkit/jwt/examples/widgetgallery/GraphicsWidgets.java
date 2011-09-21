@@ -22,7 +22,7 @@ class GraphicsWidgets extends ControlsWidget {
 	public GraphicsWidgets(EventDisplayer ed) {
 		super(ed, true);
 		this.topic("WPaintedWidget", this);
-		new WText(tr("graphics-intro"), this);
+		addText(tr("graphics-intro"), this);
 	}
 
 	public void remove() {
@@ -44,12 +44,14 @@ class GraphicsWidgets extends ControlsWidget {
 	private WWidget paintbrush() {
 		WContainerWidget result = new WContainerWidget();
 		this.topic("WPaintedWidget", result);
-		new WText(tr("graphics-paintbrush"), result);
+		addText(tr("graphics-paintbrush"), result);
 		WTable layout = new WTable(result);
 		final PaintBrush canvas = new PaintBrush(710, 400, layout.getElementAt(
 				0, 0));
-		canvas.getDecorationStyle().setBorder(new WBorder(WBorder.Style.Solid));
-		new WText("Color chooser:", layout.getElementAt(0, 1));
+		canvas.getDecorationStyle().setBorder(
+				new WBorder(WBorder.Style.Solid, WBorder.Width.Medium,
+						WColor.black));
+		addText("Color chooser:", layout.getElementAt(0, 1));
 		WTable colorTable = new WTable(layout.getElementAt(0, 1));
 		addColor(canvas, colorTable.getElementAt(0, 0), WColor.black);
 		addColor(canvas, colorTable.getElementAt(0, 1), WColor.red);

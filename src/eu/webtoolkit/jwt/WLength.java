@@ -165,8 +165,8 @@ public class WLength {
 	 */
 	public WLength(double value, WLength.Unit unit) {
 		this.auto_ = false;
-		this.unit_ = unit;
 		this.value_ = value;
+		this.setUnit(unit);
 	}
 
 	/**
@@ -187,8 +187,8 @@ public class WLength {
 	 */
 	public WLength(int value, WLength.Unit unit) {
 		this.auto_ = false;
-		this.unit_ = unit;
 		this.value_ = (double) value;
+		this.setUnit(unit);
 	}
 
 	/**
@@ -209,8 +209,8 @@ public class WLength {
 	 */
 	public WLength(long value, WLength.Unit unit) {
 		this.auto_ = false;
-		this.unit_ = unit;
 		this.value_ = (double) value;
+		this.setUnit(unit);
 	}
 
 	/**
@@ -313,6 +313,11 @@ public class WLength {
 	private boolean auto_;
 	private WLength.Unit unit_;
 	private double value_;
+
+	private void setUnit(WLength.Unit unit) {
+		this.unit_ = unit;
+	}
+
 	private static String[] unitText = { "em", "ex", "px", "in", "cm", "mm",
 			"pt", "pc", "%" };
 	private static final double pxPerPt = 4.0 / 3.0;

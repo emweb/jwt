@@ -146,6 +146,7 @@ public class WApplication extends WObject {
 		this.newInternalPath_ = "";
 		this.internalPathChanged_ = new Signal1<String>(this);
 		this.serverPush_ = 0;
+		this.serverPushChanged_ = true;
 		this.javaScriptClass_ = "Wt";
 		this.dialogCover_ = null;
 		this.quited_ = false;
@@ -227,14 +228,15 @@ public class WApplication extends WObject {
 			this.widgetRoot_ = null;
 		}
 		this.styleSheet_.addRule("table",
-				"border-collapse: collapse; border: 0px;");
+				"border-collapse: collapse; border: 0px;border-spacing: 0px");
 		this.styleSheet_.addRule("div, td, img",
 				"margin: 0px; padding: 0px; border: 0px");
 		this.styleSheet_.addRule("td", "vertical-align: top;");
-		this.styleSheet_.addRule(".Wt-ltr td", "text-align: left;");
+		this.styleSheet_.addRule("td", "text-align: left;");
 		this.styleSheet_.addRule(".Wt-rtl td", "text-align: right;");
 		this.styleSheet_.addRule("button", "white-space: nowrap;");
-		this.styleSheet_.addRule("button img", "vertical-align: middle;");
+		this.styleSheet_.addRule("button img",
+				"vertical-align: middle; padding-right: 10px");
 		this.styleSheet_.addRule("video", "display: block");
 		if (this.getEnvironment().getContentType() == WEnvironment.ContentType.XHTML1) {
 			this.styleSheet_.addRule("button", "display: inline");
@@ -254,7 +256,7 @@ public class WApplication extends WObject {
 				.addRule(
 						".Wt-wrap",
 						"border: 0px;margin: 0px;padding: 0px;font-size: inherit; pointer: hand; cursor: pointer; cursor: hand;background: transparent;text-decoration: none;color: inherit;");
-		this.styleSheet_.addRule(".Wt-ltr .Wt-wrap", "text-align: left;");
+		this.styleSheet_.addRule(".Wt-wrap", "text-align: left;");
 		this.styleSheet_.addRule(".Wt-rtl .Wt-wrap", "text-align: right;");
 		this.styleSheet_.addRule("div.Wt-chwrap", "width: 100%; height: 100%");
 		if (this.getEnvironment().agentIsIE()) {
@@ -304,7 +306,7 @@ public class WApplication extends WObject {
 						"margin: 3px 3px 0px 4px;");
 			}
 		}
-		if (this.getEnvironment().isSupportsCss3Animations()) {
+		if (this.getEnvironment().supportsCss3Animations()) {
 			String prefix = "";
 			if (this.getEnvironment().agentIsWebKit()) {
 				prefix = "webkit-";
@@ -728,6 +730,9 @@ public class WApplication extends WObject {
 
 	/**
 	 * Returns the close message.
+	 * <p>
+	 * 
+	 * @see WApplication#setConfirmCloseMessage(CharSequence message)
 	 */
 	public WString getCloseMessage() {
 		return this.closeMessage_;
@@ -1368,8 +1373,7 @@ public class WApplication extends WObject {
 		}
 		if (enabled && this.serverPush_ == 1 || !enabled
 				&& this.serverPush_ == 0) {
-			this.doJavaScript(this.javaScriptClass_ + "._p_.setServerPush("
-					+ (enabled ? "true" : "false") + ");");
+			this.serverPushChanged_ = true;
 		}
 	}
 
@@ -1656,8 +1660,10 @@ public class WApplication extends WObject {
 	 */
 	public void processEvents() {
 		this.doJavaScript("setTimeout(\"" + this.javaScriptClass_
-				+ "._p_.update(null,'none',null,false);\",0);");
-		this.session_.doRecursiveEventLoop();
+				+ "._p_.update(null,'none',null,true);\",0);");
+		if (!this.getEnvironment().isTest()) {
+			this.session_.doRecursiveEventLoop();
+		}
 	}
 
 	/**
@@ -1962,9 +1968,9 @@ public class WApplication extends WObject {
 		if (this.loadingIndicator_ != null) {
 			this.loadingIndicatorWidget_ = indicator.getWidget();
 			this.domRoot_.addWidget(this.loadingIndicatorWidget_);
-			this.showLoadJS.setJavaScript("function(o,e) {Wt3_1_10.inline('"
+			this.showLoadJS.setJavaScript("function(o,e) {Wt3_1_11.inline('"
 					+ this.loadingIndicatorWidget_.getId() + "');}");
-			this.hideLoadJS.setJavaScript("function(o,e) {Wt3_1_10.hide('"
+			this.hideLoadJS.setJavaScript("function(o,e) {Wt3_1_11.hide('"
 					+ this.loadingIndicatorWidget_.getId() + "');}");
 			this.loadingIndicatorWidget_.hide();
 		}
@@ -2028,12 +2034,14 @@ public class WApplication extends WObject {
 	/**
 	 * Returns the current maximum size of a request to the application.
 	 * <p>
+	 * The returned value is the maximum request size in bytes.
+	 * <p>
 	 * 
 	 * @see WApplication#requestTooLarge()
 	 */
 	public long getMaximumRequestSize() {
 		return this.session_.getController().getConfiguration()
-				.getMaxRequestSize() * 1024;
+				.getMaxRequestSize();
 	}
 
 	/**
@@ -2189,7 +2197,7 @@ public class WApplication extends WObject {
 		}
 	}
 
-	public void enableInternalPaths() {
+	void enableInternalPaths() {
 		if (!this.internalPathsEnabled_) {
 			this.internalPathsEnabled_ = true;
 			this.doJavaScript(this.getJavaScriptClass()
@@ -2308,7 +2316,7 @@ public class WApplication extends WObject {
 		if (this.domRoot2_ != null) {
 			this.domRoot2_.enableAjax();
 		}
-		this.doJavaScript("Wt3_1_10.ajaxInternalPaths("
+		this.doJavaScript("Wt3_1_11.ajaxInternalPaths("
 				+ WWebWidget.jsStringLiteral(this.resolveRelativeUrl(this
 						.getBookmarkUrl("/"))) + ");");
 	}
@@ -2381,6 +2389,7 @@ public class WApplication extends WObject {
 	Signal1<String> internalPathChanged_;
 	boolean internalPathIsChanged_;
 	private int serverPush_;
+	boolean serverPushChanged_;
 	private String javaScriptClass_;
 	private WApplication.AjaxMethod ajaxMethod_;
 	private WContainerWidget dialogCover_;
@@ -2559,7 +2568,7 @@ public class WApplication extends WObject {
 	}
 
 	void changedInternalPath(String path) {
-		if (!this.getEnvironment().isHashInternalPaths()) {
+		if (!this.getEnvironment().hashInternalPaths()) {
 			this.session_.setPagePathInfo(path);
 		}
 		this.changeInternalPath(path);
@@ -2595,7 +2604,7 @@ public class WApplication extends WObject {
 			WJavaScriptPreamble preamble = this.javaScriptPreamble_.get(i);
 			String scope = preamble.scope == JavaScriptScope.ApplicationScope ? this
 					.getJavaScriptClass()
-					: "Wt3_1_10";
+					: "Wt3_1_11";
 			if (preamble.type == JavaScriptObjectType.JavaScriptFunction) {
 				out.append(scope).append('.').append(preamble.name).append(
 						" = function() { (").append(preamble.src).append(
@@ -2659,7 +2668,7 @@ public class WApplication extends WObject {
 
 	SoundManager getSoundManager() {
 		if (!(this.soundManager_ != null)) {
-			this.soundManager_ = new SoundManager(this);
+			this.soundManager_ = new SoundManager(this.getDomRoot());
 		}
 		return this.soundManager_;
 	}

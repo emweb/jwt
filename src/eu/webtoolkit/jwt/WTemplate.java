@@ -470,9 +470,18 @@ public class WTemplate extends WInteractWidget {
 	 */
 	protected void renderTemplate(Writer result) throws IOException {
 		String text = "";
-		if (this.encodeInternalPaths_) {
+		WApplication app = WApplication.getInstance();
+		if (this.encodeInternalPaths_ || app.getSession().hasSessionIdInUrl()) {
+			EnumSet<RefEncoderOption> options = EnumSet
+					.noneOf(RefEncoderOption.class);
+			if (this.encodeInternalPaths_) {
+				options.add(RefEncoderOption.EncodeInternalPaths);
+			}
+			if (app.getSession().hasSessionIdInUrl()) {
+				options.add(RefEncoderOption.EncodeRedirectTrampoline);
+			}
 			WString t = this.text_;
-			InternalPathEncoder.EncodeInternalPathRefs(t);
+			RefEncoder.EncodeRefs(t, options);
 			text = t.toString();
 		} else {
 			text = this.text_.toString();
@@ -525,7 +534,7 @@ public class WTemplate extends WInteractWidget {
 						.entrySet().iterator(); i_it.hasNext();) {
 					Map.Entry<String, WWidget> i = i_it.next();
 					WWidget w = i.getValue();
-					if (w.isRendered()) {
+					if (w.isRendered() && w.getWebWidget().domCanBeSaved()) {
 						previouslyRendered.add(w);
 					}
 				}

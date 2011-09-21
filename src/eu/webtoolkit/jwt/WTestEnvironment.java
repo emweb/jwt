@@ -57,6 +57,8 @@ public class WTestEnvironment extends WEnvironment {
 	public WTestEnvironment(Configuration configuration, EntryPointType type) {
 		super();
 		this.theSession_ = null;
+		this.dialogExecuted_ = new Signal1<WDialog>();
+		this.popupExecuted_ = new Signal1<WPopupMenu>();
 		List<String> dummy = new ArrayList<String>();
 		this.configuration_ = configuration;
 		this.controller_ = new TestController(configuration);
@@ -293,9 +295,45 @@ public class WTestEnvironment extends WEnvironment {
 		this.contentType_ = contentType;
 	}
 
+	/**
+	 * {@link Signal} used to test a dialog/messagebox reentrant event loop.
+	 * <p>
+	 * This signal is emitted when a dialog or message box is being executed
+	 * using {@link WDialog#exec(WAnimation animation) WDialog#exec()} or
+	 * {@link WDialog#exec(WAnimation animation) WDialog#exec()}, and allows you
+	 * to interact with the dialog contents.
+	 * <p>
+	 * In the end, the dialog should be closed while executing this signal,
+	 * (calling done() directly or indirectly) so that the main event loop can
+	 * continue.
+	 */
+	Signal1<WDialog> dialogExecuted() {
+		return this.dialogExecuted_;
+	}
+
+	/**
+	 * {@link Signal} used to test a popup menu reentrant event loop.
+	 * <p>
+	 * This signal is emitted when a popup menu is being executed using
+	 * {@link WPopupMenu#exec(WPoint p) WPopupMenu#exec()}, and allows you to
+	 * interact with the popup menu (i.e. to select an option).
+	 * <p>
+	 * 
+	 * @see WTestEnvironment#dialogExecuted()
+	 */
+	Signal1<WPopupMenu> popupExecuted() {
+		return this.popupExecuted_;
+	}
+
 	private Configuration configuration_;
 	private WebSession theSession_;
 	private WtServlet controller_;
+	private Signal1<WDialog> dialogExecuted_;
+	private Signal1<WPopupMenu> popupExecuted_;
+
+	public boolean isTest() {
+		return true;
+	}
 
 	private void init(EntryPointType type) {
 		this.session_ = new WebSession(this.controller_, "testwtd", type, "",

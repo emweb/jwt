@@ -77,8 +77,6 @@ public class WXmlLocalizedStrings extends WLocalizedStrings {
 		if (url == null)
 			throw new RuntimeException("JWt exception: Could not find resource \"" + bundleName + "\"");
 		
-		File xmlFile = new File(url.getFile());
-		
 		TransformerFactory tf = TransformerFactory.newInstance();        
         Transformer t = null;
 		try {
@@ -87,44 +85,42 @@ public class WXmlLocalizedStrings extends WLocalizedStrings {
 			throw new RuntimeException(e1);
 		}
 
-		if (xmlFile != null) {
-			DocumentBuilder docBuilder = null;
-			Document doc = null;
-			DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory
-					.newInstance();
-			docBuilderFactory.setIgnoringElementContentWhitespace(true);
-			try {
-				docBuilder = docBuilderFactory.newDocumentBuilder();
-			} catch (ParserConfigurationException e) {
-				e.printStackTrace();
-			}
-			try {
-				doc = docBuilder.parse(xmlFile);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
+		DocumentBuilder docBuilder = null;
+		Document doc = null;
+		DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
+		docBuilderFactory.setIgnoringElementContentWhitespace(true);
+		try {
+			docBuilder = docBuilderFactory.newDocumentBuilder();
+		} catch (ParserConfigurationException e) {
+			e.printStackTrace();
+		}
+		try {
+			doc = docBuilder.parse(url.openStream());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 
-			NodeList nl = doc.getElementsByTagName("message");
-			if(nl.getLength()>0) {
-				Node node;
-				for (int i = 0; i < nl.getLength(); i++) {
-					node = nl.item(i);
-					if (node.getNodeName().equals("message")) {				        
-						String id = node.getAttributes().getNamedItem("id").getNodeValue();
-						StringWriter writer = new StringWriter();
-				        try {
-							t.transform(new DOMSource(node), new StreamResult(writer));
-						} catch (TransformerException e) {
-							throw new RuntimeException(e);
-						}
-
-						// Remove leading <?xml version="1.0" encoding="UTF-8"?><message id=""> ...
-						String xml = writer.toString().substring(53 + id.length());
-						// ... and trailing </message>
-						xml = xml.substring(0, xml.length() - 10);
-
-						keyValues.put(id, xml);
+		NodeList nl = doc.getElementsByTagName("message");
+		if (nl.getLength() > 0) {
+			Node node;
+			for (int i = 0; i < nl.getLength(); i++) {
+				node = nl.item(i);
+				if (node.getNodeName().equals("message")) {
+					String id = node.getAttributes().getNamedItem("id").getNodeValue();
+					StringWriter writer = new StringWriter();
+					try {
+						t.transform(new DOMSource(node), new StreamResult(writer));
+					} catch (TransformerException e) {
+						throw new RuntimeException(e);
 					}
+
+					// Remove leading <?xml version="1.0"
+					// encoding="UTF-8"?><message id=""> ...
+					String xml = writer.toString().substring(53 + id.length());
+					// ... and trailing </message>
+					xml = xml.substring(0, xml.length() - 10);
+
+					keyValues.put(id, xml);
 				}
 			}
 		}

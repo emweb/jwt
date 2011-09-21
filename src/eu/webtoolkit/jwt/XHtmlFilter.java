@@ -12,7 +12,7 @@ import net.n3.nanoxml.IXMLReader;
 import net.n3.nanoxml.XMLParseException;
 import net.n3.nanoxml.XMLUtil;
 
-public class XHtmlFilter implements IXMLBuilder, IXMLEntityResolver {
+class XHtmlFilter implements IXMLBuilder, IXMLEntityResolver {
 	static {
 		XMLUtil.convertNumericalCharacterEntities = false;
 	}

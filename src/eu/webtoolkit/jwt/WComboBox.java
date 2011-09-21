@@ -431,7 +431,7 @@ public class WComboBox extends WFormWidget {
 	}
 
 	void setFormData(WObject.FormData formData) {
-		if (this.selectionChanged_) {
+		if (this.selectionChanged_ || this.isReadOnly()) {
 			return;
 		}
 		if (!(formData.values.length == 0)) {

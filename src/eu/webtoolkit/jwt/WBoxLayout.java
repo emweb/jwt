@@ -251,7 +251,7 @@ public class WBoxLayout extends WLayout {
 	 * for example if the widget is
 	 * {@link WWidget#setLayoutSizeAware(boolean aware) layout size aware}).
 	 * <p>
-	 * The <code>alignemnt</code> parameter is a combination of a horizontal
+	 * The <code>alignment</code> parameter is a combination of a horizontal
 	 * and/or a vertical AlignmentFlag OR&apos;ed together.
 	 * <p>
 	 * The <code>alignment</code> specifies the vertical and horizontal
@@ -674,6 +674,7 @@ public class WBoxLayout extends WLayout {
 		case TopToBottom:
 			if (this.grid_.columns_.isEmpty()) {
 				this.grid_.columns_.add(new Grid.Column());
+				this.grid_.columns_.get(0).stretch_ = -1;
 			}
 			this.grid_.rows_.add(0 + index, new Grid.Row(stretch));
 			this.grid_.items_.add(0 + index, new ArrayList<Grid.Item>());
@@ -707,11 +708,13 @@ public class WBoxLayout extends WLayout {
 
 	private WWidget createSpacer(WLength size) {
 		Spacer spacer = new Spacer();
-		if (this.direction_ == WBoxLayout.Direction.LeftToRight
-				|| this.direction_ == WBoxLayout.Direction.RightToLeft) {
-			spacer.setMinimumSize(size, WLength.Auto);
-		} else {
-			spacer.setMinimumSize(WLength.Auto, size);
+		if (size.toPixels() > 0) {
+			if (this.direction_ == WBoxLayout.Direction.LeftToRight
+					|| this.direction_ == WBoxLayout.Direction.RightToLeft) {
+				spacer.setMinimumSize(size, WLength.Auto);
+			} else {
+				spacer.setMinimumSize(WLength.Auto, size);
+			}
 		}
 		return spacer;
 	}

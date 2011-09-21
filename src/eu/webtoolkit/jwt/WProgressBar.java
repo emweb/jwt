@@ -54,6 +54,7 @@ public class WProgressBar extends WInteractWidget {
 		this.value_ = 0;
 		this.format_ = new WString();
 		this.changed_ = false;
+		this.valueStyleClass_ = "";
 		this.valueChanged_ = new Signal1<Double>();
 		this.progressCompleted_ = new Signal();
 		this.format_ = new WString("%.0f %%");
@@ -224,13 +225,29 @@ public class WProgressBar extends WInteractWidget {
 		}
 	}
 
+	public void setValueStyleClass(String valueStyleClass) {
+		this.valueStyleClass_ = valueStyleClass;
+	}
+
+	public void setState(double minimum, double maximum, double value) {
+		this.min_ = minimum;
+		this.max_ = maximum;
+		if (this.value_ != value) {
+			this.value_ = value;
+			if (this.value_ == this.max_) {
+				this.progressCompleted_.trigger();
+			}
+		}
+	}
+
 	void updateDom(DomElement element, boolean all) {
 		DomElement bar = null;
 		DomElement label = null;
 		if (all) {
 			bar = DomElement.createNew(DomElementType.DomElement_DIV);
 			bar.setId("bar" + this.getId());
-			bar.setProperty(Property.PropertyClass, "Wt-pgb-bar");
+			bar.setProperty(Property.PropertyClass, "Wt-pgb-bar "
+					+ this.valueStyleClass_);
 			label = DomElement.createNew(DomElementType.DomElement_DIV);
 			label.setId("lbl" + this.getId());
 			label.setProperty(Property.PropertyClass, "Wt-pgb-label");
@@ -275,12 +292,18 @@ public class WProgressBar extends WInteractWidget {
 	private double value_;
 	private WString format_;
 	private boolean changed_;
+	private String valueStyleClass_;
 	// private void onChange() ;
 	private Signal1<Double> valueChanged_;
 	private Signal progressCompleted_;
 
 	private double getPercentage() {
-		return (this.getValue() - this.getMinimum()) * 100
-				/ (this.getMaximum() - this.getMinimum());
+		double max = this.getMaximum();
+		double min = this.getMinimum();
+		if (max - min != 0) {
+			return (this.getValue() - min) * 100 / (max - min);
+		} else {
+			return 0;
+		}
 	}
 }

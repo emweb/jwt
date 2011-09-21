@@ -111,8 +111,8 @@ public class AttachmentEdit extends WContainerWidget {
 
 		// React to a fileupload problem.
 		upload_.fileTooLarge().addListener(this,
-				new Signal1.Listener<Integer>() {
-					public void trigger(Integer size) {
+				new Signal1.Listener<Long>() {
+					public void trigger(Long size) {
 						fileTooLarge(size);
 					}
 				});
@@ -287,7 +287,7 @@ public class AttachmentEdit extends WContainerWidget {
 	 * 
 	 * @param size
 	 */
-	private void fileTooLarge(int size) {
+	private void fileTooLarge(long size) {
 		error_.setText(tr("msg.file-too-large"));
 		uploadFailed_ = true;
 

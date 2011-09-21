@@ -127,9 +127,12 @@ public class WPopupMenu extends WCompositeWidget {
 		this.parentItem_ = null;
 		this.result_ = null;
 		this.aboutToHide_ = new Signal(this);
+		this.triggered_ = new Signal1<WPopupMenuItem>(this);
+		this.cancel_ = new JSignal(this, "cancel");
 		this.globalClickConnection_ = new AbstractSignal.Connection();
 		this.globalEscapeConnection_ = new AbstractSignal.Connection();
 		this.recursiveEventLoop_ = false;
+		this.autoHideDelay_ = -1;
 		String TEMPLATE = "${shadow-x1-x2}${contents}";
 		this
 				.setImplementation(this.impl_ = new WTemplate(new WString(
@@ -252,7 +255,7 @@ public class WPopupMenu extends WCompositeWidget {
 		this.setOffsets(new WLength(42), EnumSet.of(Side.Left, Side.Top));
 		this.setOffsets(new WLength(-10000), EnumSet.of(Side.Left, Side.Top));
 		WApplication.getInstance().doJavaScript(
-				"Wt3_1_10.positionXY('" + this.getId() + "',"
+				"Wt3_1_11.positionXY('" + this.getId() + "',"
 						+ String.valueOf(p.getX()) + ","
 						+ String.valueOf(p.getY()) + ");");
 	}
@@ -310,12 +313,19 @@ public class WPopupMenu extends WCompositeWidget {
 			throw new WtException(
 					"WPopupMenu::exec(): already in recursive event loop.");
 		}
-		WebSession session = WApplication.getInstance().getSession();
+		WApplication app = WApplication.getInstance();
 		this.recursiveEventLoop_ = true;
 		this.popup(p);
-		do {
-			session.doRecursiveEventLoop();
-		} while (this.recursiveEventLoop_);
+		if (app.getEnvironment().isTest()) {
+			app.getEnvironment().popupExecuted().trigger(this);
+			if (this.recursiveEventLoop_) {
+				throw new WtException("Test case must close popup menu.");
+			}
+		} else {
+			do {
+				app.getSession().doRecursiveEventLoop();
+			} while (this.recursiveEventLoop_);
+		}
 		return this.result_;
 	}
 
@@ -401,13 +411,57 @@ public class WPopupMenu extends WCompositeWidget {
 		return this.aboutToHide_;
 	}
 
+	/**
+	 * Signal emitted when an item is activated.
+	 * <p>
+	 * Passes the activated item as argument. This signal is only emitted for
+	 * the toplevel menu.
+	 * <p>
+	 * 
+	 * @see WPopupMenuItem#triggered()
+	 */
+	public Signal1<WPopupMenuItem> triggered() {
+		return this.triggered_;
+	}
+
+	/**
+	 * Configure auto-hide when the mouse leaves the menu.
+	 * <p>
+	 * If <code>enabled</code>, The popup menu will be hidden when the mouse
+	 * leaves the menu for longer than <code>autoHideDelay</code>
+	 * (milliseconds). The popup menu result will be 0, as if the user
+	 * cancelled.
+	 * <p>
+	 * By default, this option is disabled.
+	 */
+	public void setAutoHide(boolean enabled, int autoHideDelay) {
+		if (enabled) {
+			this.autoHideDelay_ = autoHideDelay;
+		} else {
+			this.autoHideDelay_ = -1;
+		}
+	}
+
+	/**
+	 * Configure auto-hide when the mouse leaves the menu.
+	 * <p>
+	 * Calls {@link #setAutoHide(boolean enabled, int autoHideDelay)
+	 * setAutoHide(enabled, 0)}
+	 */
+	public final void setAutoHide(boolean enabled) {
+		setAutoHide(enabled, 0);
+	}
+
 	private WTemplate impl_;
 	WPopupMenuItem parentItem_;
 	WPopupMenuItem result_;
 	private Signal aboutToHide_;
+	private Signal1<WPopupMenuItem> triggered_;
+	private JSignal cancel_;
 	private AbstractSignal.Connection globalClickConnection_;
 	private AbstractSignal.Connection globalEscapeConnection_;
 	private boolean recursiveEventLoop_;
+	private int autoHideDelay_;
 
 	private WContainerWidget getContents() {
 		return ((this.impl_.resolveWidget("contents")) instanceof WContainerWidget ? (WContainerWidget) (this.impl_
@@ -432,6 +486,7 @@ public class WPopupMenu extends WCompositeWidget {
 		WApplication.getInstance().globalEscapePressed().disconnect(
 				this.globalEscapeConnection_);
 		this.recursiveEventLoop_ = false;
+		this.triggered_.trigger(this.result_);
 		this.aboutToHide_.trigger();
 	}
 
@@ -468,6 +523,19 @@ public class WPopupMenu extends WCompositeWidget {
 			app.doJavaScript(this.getJsRef() + ".lastChild.style.width="
 					+ this.getJsRef() + ".lastChild.offsetWidth+'px';");
 		}
+		if (this.autoHideDelay_ >= 0) {
+			app.loadJavaScript("js/WPopupMenu.js", wtjs1());
+			if (!this.cancel_.isConnected()) {
+				this.doJavaScript("new Wt3_1_11.WPopupMenu("
+						+ app.getJavaScriptClass() + "," + this.getJsRef()
+						+ "," + String.valueOf(this.autoHideDelay_) + ");");
+				this.cancel_.addListener(this, new Signal.Listener() {
+					public void trigger() {
+						WPopupMenu.this.done();
+					}
+				});
+			}
+		}
 	}
 
 	void renderOutAll() {
@@ -478,5 +546,13 @@ public class WPopupMenu extends WCompositeWidget {
 					: null);
 			item.renderOut();
 		}
+	}
+
+	static WJavaScriptPreamble wtjs1() {
+		return new WJavaScriptPreamble(
+				JavaScriptScope.WtClassScope,
+				JavaScriptObjectType.JavaScriptConstructor,
+				"WPopupMenu",
+				"function(e,b,c){function f(){e.emit(b,\"cancel\")}jQuery.data(b,\"obj\",this);var a=null,d=false;c>=0&&$(document).find(\".Wt-popupmenu\").mouseleave(function(){if(d){clearTimeout(a);a=setTimeout(f,c)}}).mouseenter(function(){d=true;clearTimeout(a)})}");
 	}
 }

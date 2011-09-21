@@ -59,9 +59,10 @@ public class WFlashObject extends WWebWidget {
 		this.setInline(false);
 		this
 				.setAlternativeContent(new WAnchor(
-						"http://www.adobe.com/go/getflashplayer",
+						new WLink("http://www.adobe.com/go/getflashplayer"),
 						new WImage(
-								"http://www.adobe.com/images/shared/download_buttons/get_flash_player.gif")));
+								new WLink(
+										"http://www.adobe.com/images/shared/download_buttons/get_flash_player.gif"))));
 		this.ieRendersAlternative_.addListener(this, new Signal.Listener() {
 			public void trigger() {
 				WFlashObject.this.renderIeAltnerative();
@@ -147,7 +148,7 @@ public class WFlashObject extends WWebWidget {
 	 * installed.
 	 */
 	public String getJsFlashRef() {
-		return "Wt3_1_10.getElement('" + this.getId() + "_flash')";
+		return "Wt3_1_11.getElement('" + this.getId() + "_flash')";
 	}
 
 	/**

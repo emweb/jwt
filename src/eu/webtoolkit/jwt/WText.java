@@ -427,9 +427,19 @@ public class WText extends WInteractWidget {
 		if (this.textFormat_ == TextFormat.PlainText) {
 			return escapeText(this.text_, true).toString();
 		} else {
-			if (this.flags_.get(BIT_ENCODE_INTERNAL_PATHS)) {
+			WApplication app = WApplication.getInstance();
+			if (this.flags_.get(BIT_ENCODE_INTERNAL_PATHS)
+					|| app.getSession().hasSessionIdInUrl()) {
+				EnumSet<RefEncoderOption> options = EnumSet
+						.noneOf(RefEncoderOption.class);
+				if (this.flags_.get(BIT_ENCODE_INTERNAL_PATHS)) {
+					options.add(RefEncoderOption.EncodeInternalPaths);
+				}
+				if (app.getSession().hasSessionIdInUrl()) {
+					options.add(RefEncoderOption.EncodeRedirectTrampoline);
+				}
 				WString result = this.text_;
-				InternalPathEncoder.EncodeInternalPathRefs(result);
+				RefEncoder.EncodeRefs(result, options);
 				return result.toString();
 			} else {
 				return this.text_.toString();

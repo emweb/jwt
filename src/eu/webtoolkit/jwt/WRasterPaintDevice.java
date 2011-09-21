@@ -371,6 +371,9 @@ public class WRasterPaintDevice extends WResource implements WPaintDevice {
 		g2.setTransform(new AffineTransform(t.getM11(), t.getM12(), t.getM21(), t.getM22(), t.getM31(), t.getM32()));
 	}
 	
+	/**
+	 * Clears the image (resets the background to solid white).
+	 */
 	public void clear() {
 		if (g2 != null) {
 			g2.setBackground(new Color(255, 255, 255, 0));

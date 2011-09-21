@@ -22,4 +22,24 @@ public class MathUtils {
 	}
 
 	private static double e[] = new double[] { 1.0, 10.0, 100.0, 1000.0, 10000.0, 100000.0, 1000000.0 };
+
+	public static String randomId() {
+		return randomId(16);
+	}
+	
+	public static String randomId(int length) {
+		StringBuilder result = new StringBuilder();
+		
+		for (int i = 0; i < length; ++i) {
+		    int d = randomInt() % (26 + 26 + 10);
+
+		    int c = (d < 10 ? ('0' + d)
+			      : (d < 36 ? ('A' + d - 10)
+				 : 'a' + d - 36));
+
+		    result.append((char) c);
+		}
+		
+		return new String(result);
+	}
 }

@@ -52,9 +52,6 @@ import eu.webtoolkit.jwt.servlet.*;
  * <li>optionally, {@link WMenuItem#renderSelected(boolean selected)
  * renderSelected()}: if you need to do additional styling to reflect a
  * selection, other than changing style classes.</li>
- * <li>optionally, {@link WMenuItem#renderHidden(boolean hidden) renderHidden()}
- * : if you need to do additionanl styling to reflect a hide, other than hiding
- * (see WWebWidget::setHidden(bool)).</li>
  * </ul>
  * <p>
  * To provide another look for the close icon you can override
@@ -444,14 +441,13 @@ public class WMenuItem extends WObject {
 		WWidget result = this.contents_;
 		if (!this.isContentsLoaded()) {
 			this.removeChild(this.contents_);
+		} else {
+			if (this.contentsContainer_ != null) {
+				this.contentsContainer_.removeWidget(this.contents_);
+			}
 		}
 		this.contents_ = null;
 		return result;
-	}
-
-	public void purgeContents() {
-		this.contentsContainer_ = null;
-		this.contents_ = null;
 	}
 
 	/**
@@ -576,17 +572,13 @@ public class WMenuItem extends WObject {
 			if (this.menu_ != null && this.menu_.isInternalPathEnabled()) {
 				String internalPath = this.menu_.getInternalBasePath()
 						+ this.getPathComponent();
+				WLink link = new WLink(WLink.Type.InternalPath, internalPath);
 				WApplication app = WApplication.getInstance();
-				if (app.getEnvironment().hasAjax()
-						|| app.getEnvironment().agentIsSpiderBot()) {
-					url = app.getBookmarkUrl(internalPath);
-				} else {
-					url = app.getSession().getMostRelativeUrl(internalPath);
-				}
+				url = link.resolveUrl(app);
 			} else {
 				url = "#";
 			}
-			enabledLabel.setRef(url);
+			enabledLabel.setLink(new WLink(url));
 			enabledLabel.setToolTip(this.getToolTip());
 			enabledLabel.clicked().preventDefaultAction();
 		} else {
@@ -615,16 +607,6 @@ public class WMenuItem extends WObject {
 			this.getItemWidget().setStyleClass(
 					selected ? "itemselected" : "item");
 		}
-	}
-
-	/**
-	 * Renders the item as hidden or closed.
-	 * <p>
-	 * The default implementation hides the item widget (including all its
-	 * descendant widgets).
-	 */
-	protected void renderHidden(boolean hidden) {
-		this.getItemWidget().setHidden(hidden);
 	}
 
 	/**
@@ -722,6 +704,11 @@ public class WMenuItem extends WObject {
 	private boolean closeable_;
 	private boolean disabled_;
 	private boolean hidden_;
+
+	void purgeContents() {
+		this.contentsContainer_ = null;
+		this.contents_ = null;
+	}
 
 	private boolean isContentsLoaded() {
 		return !(this.contentsContainer_ != null)

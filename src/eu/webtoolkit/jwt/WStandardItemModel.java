@@ -365,7 +365,7 @@ public class WStandardItemModel extends WAbstractItemModel {
 	}
 
 	/**
-	 * Returns the item prototype.
+	 * Sets the item prototype.
 	 * <p>
 	 * Set the item that is cloned when an item needs to be created because the
 	 * model is manipulated through its {@link WAbstractItemModel} API. For
@@ -631,7 +631,7 @@ public class WStandardItemModel extends WAbstractItemModel {
 	/**
 	 * Signal emitted when an item is changed.
 	 * <p>
-	 * This signal is emitted whenever date of an item has changed. The item
+	 * This signal is emitted whenever data for an item has changed. The item
 	 * that has changed is passed as the first parameter.
 	 * <p>
 	 * 

@@ -25,7 +25,7 @@ class EmwebLoadingIndicator extends WContainerWidget implements
 		WApplication app = WApplication.getInstance();
 		this.cover_ = new WContainerWidget(this);
 		this.center_ = new WContainerWidget(this);
-		WImage img = new WImage("icons/emweb.jpg", this.center_);
+		WImage img = new WImage(new WLink("icons/emweb.jpg"), this.center_);
 		img.setMargin(new WLength(7), EnumSet.of(Side.Top, Side.Bottom));
 		this.text_ = new WText("Loading...", this.center_);
 		this.text_.setInline(false);

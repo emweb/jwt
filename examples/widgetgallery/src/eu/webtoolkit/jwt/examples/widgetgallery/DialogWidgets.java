@@ -20,7 +20,7 @@ import eu.webtoolkit.jwt.servlet.*;
 class DialogWidgets extends ControlsWidget {
 	public DialogWidgets(EventDisplayer ed) {
 		super(ed, true);
-		new WText(tr("dialogs-intro"), this);
+		addText(tr("dialogs-intro"), this);
 	}
 
 	public void populateSubMenu(WMenu menu) {
@@ -31,7 +31,7 @@ class DialogWidgets extends ControlsWidget {
 	private WWidget wDialog() {
 		WContainerWidget result = new WContainerWidget();
 		this.topic("WDialog", result);
-		new WText(tr("dialogs-WDialog"), result);
+		addText(tr("dialogs-WDialog"), result);
 		WPushButton button = new WPushButton("Modal dialog", result);
 		button.clicked().addListener(this, new Signal1.Listener<WMouseEvent>() {
 			public void trigger(WMouseEvent e1) {
@@ -50,7 +50,7 @@ class DialogWidgets extends ControlsWidget {
 	private WWidget wMessageBox() {
 		WContainerWidget result = new WContainerWidget();
 		this.topic("WMessageBox", result);
-		new WText(tr("dialogs-WMessageBox"), result);
+		addText(tr("dialogs-WMessageBox"), result);
 		WContainerWidget ex = new WContainerWidget(result);
 		WVBoxLayout vLayout = new WVBoxLayout();
 		ex.setLayout(vLayout, EnumSet.of(AlignmentFlag.AlignTop,
@@ -140,11 +140,11 @@ class DialogWidgets extends ControlsWidget {
 
 	private void customModal() {
 		final WDialog dialog = new WDialog("Personalia (modal)");
-		new WText(
+		addText(
 				"You can freely format the contents of a WDialog by adding any widget you want to it.<br/>Here, we added WText, WLineEdit and WPushButton to a dialog",
 				dialog.getContents());
 		new WBreak(dialog.getContents());
-		new WText("Enter your name: ", dialog.getContents());
+		addText("Enter your name: ", dialog.getContents());
 		final WLineEdit edit = new WLineEdit(dialog.getContents());
 		new WBreak(dialog.getContents());
 		final WPushButton ok = new WPushButton("Ok", dialog.getContents());

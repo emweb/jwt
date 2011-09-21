@@ -123,6 +123,12 @@ public class WTreeTableNode extends WTreeNode {
 				.get(column).widget : null;
 	}
 
+	/**
+	 * Returns the table for this node.
+	 * <p>
+	 * 
+	 * @see WTreeTableNode#setTable(WTreeTable table)
+	 */
 	WTreeTable getTable() {
 		return this.table_;
 	}
@@ -145,6 +151,9 @@ public class WTreeTableNode extends WTreeNode {
 	 * behaviour of the node depending on table properties. For example to only
 	 * associate data with the node when the tree list is actually used inside a
 	 * table.
+	 * <p>
+	 * 
+	 * @see WTreeTableNode#getTable()
 	 */
 	protected void setTable(WTreeTable table) {
 		if (this.table_ != table) {
