@@ -18,7 +18,7 @@ import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
 
 /**
- * A style class for the border of a widget.
+ * A value class that defines the CSS border style of a widget.
  */
 public class WBorder {
 	/**

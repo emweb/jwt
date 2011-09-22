@@ -18,7 +18,7 @@ import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
 
 /**
- * Class that defines a shadow style.
+ * A value class that defines a shadow style.
  * <p>
  * 
  * @see WPainter#setShadow(WShadow shadow)

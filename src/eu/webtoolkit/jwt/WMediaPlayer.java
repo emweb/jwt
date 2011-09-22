@@ -48,7 +48,7 @@ import eu.webtoolkit.jwt.servlet.*;
  * text widgets) are bound directly to the video player component (client-side).
  * <p>
  * This widget relies on a third-party JavaScript component <a
- * href="http://www.jplayer.org/">jPlayer</a>), which is distributed together
+ * href="http://www.jplayer.org/">jPlayer</a>, which is distributed together
  * with Wt.
  * <p>
  * The default user-interface can be themed using jPlayer themes. The theme is
@@ -443,6 +443,8 @@ public class WMediaPlayer extends WCompositeWidget {
 	/**
 	 * Returns the video height.
 	 * <p>
+	 * 
+	 * @see WMediaPlayer#setVideoSize(int width, int height)
 	 */
 	public int getVideoHeight() {
 		return this.videoHeight_;
@@ -924,6 +926,7 @@ public class WMediaPlayer extends WCompositeWidget {
 								WWebWidget
 										.jsStringLiteral(this.media_.get(i).link
 												.getUrl()));
+				first = false;
 			}
 			ss.append("}");
 			if (!!EnumUtils.mask(flags, RenderFlag.RenderFull).isEmpty()) {

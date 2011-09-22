@@ -18,7 +18,7 @@ import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
 
 /**
- * Utility class to play a sound.
+ * A value class to play a sound effect.
  * <p>
  * 
  * This class provides a way to play an MP3 sound asynchonously (if the browser

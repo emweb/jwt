@@ -1021,7 +1021,11 @@ public class WEnvironment {
 	}
 
 	void setInternalPath(String path) {
-		this.internalPath_ = StringUtils.prepend(path, '/');
+		if (path.length() == 0) {
+			this.internalPath_ = path;
+		} else {
+			this.internalPath_ = StringUtils.prepend(path, '/');
+		}
 	}
 
 	WEnvironment(WebSession session) {

@@ -296,10 +296,11 @@ class WebRenderer implements SlotLearnerInterface {
 			}
 			if (this.cookiesToSet_.get(i).path.length() != 0) {
 				cookies += " Path=" + this.cookiesToSet_.get(i).path + ";";
+			} else {
+				cookies += " Path=" + this.session_.getDeploymentPath() + ";";
 			}
-			if (cookies.length() != 0) {
-				response.addHeader("Set-Cookie", cookies);
-			}
+			cookies += " httponly;";
+			response.addHeader("Set-Cookie", cookies);
 		}
 		this.cookiesToSet_.clear();
 		response.setContentType(mimeType);
@@ -413,6 +414,8 @@ class WebRenderer implements SlotLearnerInterface {
 							WebSession.BootstrapOption.ClearInternalPath)));
 			script.setVar("DEPLOY_PATH", WWebWidget
 					.jsStringLiteral(this.session_.getDeploymentPath()));
+			script.setVar("PATH_INFO", WWebWidget.jsStringLiteral(this.session_
+					.getEnv().pathInfo_));
 			int keepAlive;
 			if (conf.getSessionTimeout() == -1) {
 				keepAlive = 1000000;

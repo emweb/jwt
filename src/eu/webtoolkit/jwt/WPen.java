@@ -18,7 +18,7 @@ import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
 
 /**
- * Class that defines the style for pen strokes.
+ * A value class that defines the style for pen strokes.
  * <p>
  * 
  * A pen defines the properties of how lines (that may surround shapes) are

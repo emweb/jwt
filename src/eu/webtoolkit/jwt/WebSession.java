@@ -479,6 +479,7 @@ class WebSession {
 				throw new WtException(
 						"doRecursiveEventLoop(): session was killed");
 			}
+			this.setLoaded();
 			this.app_.notify(new WEvent(new WEvent.Impl(handler)));
 			this.recursiveEventLoop_ = null;
 		} catch (IOException ioe) {
@@ -561,7 +562,9 @@ class WebSession {
 	}
 
 	public void setPagePathInfo(String path) {
-		this.pagePathInfo_ = path;
+		if (!this.isUseUglyInternalPaths()) {
+			this.pagePathInfo_ = path;
+		}
 	}
 
 	public String getPagePathInfo() {

@@ -18,7 +18,7 @@ import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
 
 /**
- * A class that specifies a CSS length.
+ * A value class that describes a CSS length.
  * <p>
  * 
  * The class combines a value with a unit. There is a special value <i>auto</i>

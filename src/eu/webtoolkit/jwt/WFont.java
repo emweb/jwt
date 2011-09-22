@@ -18,7 +18,7 @@ import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
 
 /**
- * A style class describing a font.
+ * A value class that describes a font.
  */
 public class WFont {
 	/**

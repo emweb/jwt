@@ -18,10 +18,10 @@ import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
 
 /**
- * Class that defines a transition effect.
+ * A value class that defines a transition effect.
  * <p>
  * 
- * A class which defines an animation used as a transition to show or hide a
+ * This class defines an animation used as a transition to show or hide a
  * widget.
  * <p>
  * The animation can be defined as a motion effect (e.g. sliding in or out),

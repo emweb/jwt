@@ -18,7 +18,7 @@ import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
 
 /**
- * Utility class that defines a rectangle.
+ * A value class that defines a rectangle.
  * <p>
  * 
  * The rectangle is defined by a top-left point and a width and height.

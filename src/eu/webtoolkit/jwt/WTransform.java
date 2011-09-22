@@ -18,7 +18,7 @@ import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
 
 /**
- * A 2D affine transformation matrix.
+ * A value class that defines a 2D affine transformation matrix.
  * <p>
  * 
  * The matrix is encoded using 6 parameters: <blockquote>

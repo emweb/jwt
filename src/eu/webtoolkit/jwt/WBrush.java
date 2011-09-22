@@ -18,7 +18,7 @@ import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
 
 /**
- * Class that defines the style for filling areas.
+ * A value class that defines the style for filling a path.
  * <p>
  * 
  * A brush defines the properties of how areas (the interior of shapes) are

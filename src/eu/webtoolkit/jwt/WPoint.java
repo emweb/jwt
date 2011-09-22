@@ -18,7 +18,7 @@ import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
 
 /**
- * Utility class that defines a 2D point with integer coordinates.
+ * A value class that defines a 2D point with integer coordinates.
  * <p>
  * 
  * @see WPolygonArea

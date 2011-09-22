@@ -18,11 +18,12 @@ import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
 
 /**
- * A utility class that defines a hyperlink target.
+ * A value class that defines a hyperlink target.
  * <p>
  * 
- * This class abstracts a link target, which may be a plain static URL, a
- * dynamic {@link WResource resource}, or (for certain usages) an internal path.
+ * This class abstracts a link target. Depending on the context, it may
+ * reference a URL, a dynamic {@link WResource resource}, or (for certain
+ * usages) an internal path.
  * <p>
  * 
  * @see WAnchor
