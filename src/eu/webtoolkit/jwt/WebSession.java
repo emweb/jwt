@@ -84,8 +84,8 @@ class WebSession {
 			this.applicationName_ = this.applicationUrl_;
 		}
 		this.log("notice").append("Session created");
-		this.getRenderer().setCookie("Wt" + this.sessionId_,
-				this.sessionIdCookie_, -1, "", "");
+		this.getRenderer().setCookie("Wt" + this.sessionIdCookie_, "1", -1, "",
+				"");
 	}
 
 	public WebSession(WtServlet controller, String sessionId,
@@ -207,7 +207,7 @@ class WebSession {
 					boolean isInvalid = this.sessionIdCookie_.length() == 0;
 					if (!isInvalid) {
 						String cookie = request.getHeaderValue("Cookie");
-						if (cookie.indexOf(this.sessionIdCookie_) == -1) {
+						if (cookie.indexOf("Wt" + this.sessionIdCookie_) == -1) {
 							isInvalid = true;
 						}
 					}
@@ -223,7 +223,7 @@ class WebSession {
 			}
 			if (this.sessionIdCookieChanged_) {
 				String cookie = request.getHeaderValue("Cookie");
-				if (cookie.indexOf(this.sessionIdCookie_) == -1) {
+				if (cookie.indexOf("Wt" + this.sessionIdCookie_) == -1) {
 					this.sessionIdCookie_ = "";
 					this.log("info").append("Session id cookie not working");
 				}

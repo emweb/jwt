@@ -29,7 +29,7 @@ class XSSFilter extends XHtmlFilter {
 			parser.setReader(reader);
 			parser.parse();
 
-			StringBuilder filtered = filter.result();
+			String filtered = filter.result();
 
 			// 6 and 7 correct for respectively <span> and </span>
 			wText.set(filtered.substring(6, filtered.length() - 7));
