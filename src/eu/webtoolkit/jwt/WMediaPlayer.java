@@ -906,6 +906,7 @@ public class WMediaPlayer extends WCompositeWidget {
 	}
 
 	void render(EnumSet<RenderFlag> flags) {
+		WApplication app = WApplication.getInstance();
 		if (this.mediaUpdated_) {
 			StringBuilder ss = new StringBuilder();
 			ss.append("{");
@@ -917,15 +918,10 @@ public class WMediaPlayer extends WCompositeWidget {
 				if (!first) {
 					ss.append(",");
 				}
-				ss
-						.append(
-								mediaNames[this.media_.get(i).encoding
-										.getValue()])
-						.append(": ")
-						.append(
-								WWebWidget
-										.jsStringLiteral(this.media_.get(i).link
-												.getUrl()));
+				String url = app.resolveRelativeUrl(this.media_.get(i).link
+						.getUrl());
+				ss.append(mediaNames[this.media_.get(i).encoding.getValue()])
+						.append(": ").append(WWebWidget.jsStringLiteral(url));
 				first = false;
 			}
 			ss.append("}");
@@ -941,7 +937,6 @@ public class WMediaPlayer extends WCompositeWidget {
 			if (this.gui_ == this) {
 				this.createDefaultGui();
 			}
-			WApplication app = WApplication.getInstance();
 			StringBuilder ss = new StringBuilder();
 			ss.append(this.getJsPlayerRef()).append(".jPlayer({").append(
 					"ready: function () {");

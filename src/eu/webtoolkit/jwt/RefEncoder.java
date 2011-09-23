@@ -56,6 +56,7 @@ class RefEncoder extends XHtmlFilter {
 		if (currentTag.equals("a")) {
 			if (key.equals("class")) {
 				aClass = StringUtils.addWord(aClass, value);
+				return;
 			} else if (key.equals("href")) {
 				String path = value;
 
