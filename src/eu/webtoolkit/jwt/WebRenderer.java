@@ -769,7 +769,7 @@ class WebRenderer implements SlotLearnerInterface {
 				response.out().append("Wt3_1_11").append(
 						".history.initialize('").append(historyE.charAt(0))
 						.append("-field', '").append(historyE.charAt(0))
-						.append("-iframe');\n");
+						.append("-iframe', '');\n");
 			}
 		}
 		app.streamAfterLoadJavaScript(response.out());
