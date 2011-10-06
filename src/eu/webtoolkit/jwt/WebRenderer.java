@@ -409,10 +409,13 @@ class WebRenderer implements SlotLearnerInterface {
 			script.setVar("ACK_UPDATE_ID", this.expectedAckId_);
 			script.setVar("SESSION_URL", WWebWidget.jsStringLiteral(this
 					.getSessionUrl()));
-			script.setVar("DEPLOY_PATH", WWebWidget
-					.jsStringLiteral(this.session_.getDeploymentPath()));
-			script.setVar("PATH_INFO", WWebWidget.jsStringLiteral(this.session_
-					.getEnv().pathInfo_));
+			String deployPath = this.session_.getEnv().publicDeploymentPath_;
+			if (deployPath.length() == 0) {
+				deployPath = this.session_.getDeploymentPath();
+			}
+			script
+					.setVar("DEPLOY_PATH", WWebWidget
+							.jsStringLiteral(deployPath));
 			int keepAlive;
 			if (conf.getSessionTimeout() == -1) {
 				keepAlive = 1000000;
@@ -1105,7 +1108,8 @@ class WebRenderer implements SlotLearnerInterface {
 			if (app.internalPathIsChanged_) {
 				js.append(app.getJavaScriptClass()).append("._p_.setHash('")
 						.append(app.newInternalPath_).append("');\n");
-				if (!app.getEnvironment().hashInternalPaths()) {
+				if (!this.isPreLearning()
+						&& !app.getEnvironment().hashInternalPaths()) {
 					this.session_.setPagePathInfo(app.newInternalPath_);
 				}
 			}
@@ -1177,6 +1181,8 @@ class WebRenderer implements SlotLearnerInterface {
 		bootJs.setVar("AJAX_CANONICAL_URL", this
 				.safeJsStringLiteral(this.session_.ajaxCanonicalUrl(response)));
 		bootJs.setVar("APP_CLASS", "Wt");
+		bootJs.setVar("PATH_INFO", WWebWidget.jsStringLiteral(this.session_
+				.getEnv().pathInfo_));
 		bootJs.setCondition("SPLIT_SCRIPT", conf.isSplitScript());
 		bootJs.setCondition("HYBRID", hybrid);
 		boolean xhtml = this.session_.getEnv().getContentType() == WEnvironment.ContentType.XHTML1;

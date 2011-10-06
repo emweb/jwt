@@ -175,7 +175,7 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 		this.editedItems_.clear();
 		this.configureModelDragDrop();
 		this.setRootIndex(null);
-		this.setHeaderHeight(this.headerLineHeight_, this.multiLineHeader_);
+		this.setHeaderHeight(this.headerLineHeight_);
 	}
 
 	/**
@@ -330,11 +330,10 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	/**
 	 * Sets the content alignment for a column.
 	 * <p>
-	 * The default value is {@link AlignmentFlag#AlignLeft AlignLeft}.
+	 * The default value is {@link AlignmentFlag#AlignLeft}.
 	 * <p>
 	 * 
-	 * @see WAbstractItemView#setHeaderAlignment(int column, AlignmentFlag
-	 *      alignment)
+	 * @see WAbstractItemView#setHeaderAlignment(int column, EnumSet alignment)
 	 */
 	public void setColumnAlignment(int column, AlignmentFlag alignment) {
 		this.columnInfo(column).alignment = alignment;
@@ -365,28 +364,6 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	}
 
 	/**
-	 * Sets the header alignment for a column.
-	 * <p>
-	 * The default value is {@link AlignmentFlag#AlignLeft AlignLeft}.
-	 * <p>
-	 * 
-	 * @see WAbstractItemView#setColumnAlignment(int column, AlignmentFlag
-	 *      alignment)
-	 */
-	public void setHeaderAlignment(int column, AlignmentFlag alignment) {
-		this.columnInfo(column).headerAlignment = alignment;
-		if (this.columnInfo(column).hidden
-				|| this.renderState_.getValue() >= WAbstractItemView.RenderState.NeedRerenderHeader
-						.getValue()) {
-			return;
-		}
-		WContainerWidget wc = ((this.headerWidget(column)) instanceof WContainerWidget ? (WContainerWidget) (this
-				.headerWidget(column))
-				: null);
-		wc.setContentAlignment(EnumSet.of(alignment));
-	}
-
-	/**
 	 * Returns the content alignment for a column.
 	 * <p>
 	 * 
@@ -398,16 +375,119 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	}
 
 	/**
-	 * Returns the header alignment for a column.
+	 * Sets the header alignment for a column.
+	 * <p>
+	 * The default alignemnt is horizontally left, and vertically centered. (
+	 * {@link AlignmentFlag#AlignLeft} | {@link AlignmentFlag#AlignMiddle}).
+	 * <p>
+	 * Valid options for horizontal alignment are
+	 * {@link AlignmentFlag#AlignLeft}, {@link AlignmentFlag#AlignCenter} or
+	 * {@link AlignmentFlag#AlignRight}.
+	 * <p>
+	 * Valid options for vertical alignment are
+	 * {@link AlignmentFlag#AlignMiddle} or {@link AlignmentFlag#AlignTop}. In
+	 * the latter case, other contents may be added below the label in
+	 * {@link WAbstractItemView#createExtraHeaderWidget(int column)
+	 * createExtraHeaderWidget()}.
 	 * <p>
 	 * 
-	 * @see WAbstractItemView#setHeaderAlignment(int column, AlignmentFlag
+	 * @see WAbstractItemView#setColumnAlignment(int column, AlignmentFlag
 	 *      alignment)
 	 */
-	public AlignmentFlag getHeaderAlignment(int column) {
-		return this.columnInfo(column).headerAlignment;
+	public void setHeaderAlignment(int column, EnumSet<AlignmentFlag> alignment) {
+		this.columnInfo(column).headerHAlignment = EnumUtils
+				.enumFromSet(EnumUtils.mask(alignment,
+						AlignmentFlag.AlignHorizontalMask));
+		if (!EnumUtils.mask(alignment, AlignmentFlag.AlignVerticalMask)
+				.isEmpty()) {
+			this.columnInfo(column).headerVAlignment = EnumUtils
+					.enumFromSet(EnumUtils.mask(alignment,
+							AlignmentFlag.AlignVerticalMask));
+		}
+		if (this.columnInfo(column).hidden
+				|| this.renderState_.getValue() >= WAbstractItemView.RenderState.NeedRerenderHeader
+						.getValue()) {
+			return;
+		}
+		WContainerWidget wc = ((this.headerWidget(column)) instanceof WContainerWidget ? (WContainerWidget) (this
+				.headerWidget(column))
+				: null);
+		wc.setContentAlignment(alignment);
+		if (this.columnInfo(column).headerVAlignment == AlignmentFlag.AlignMiddle) {
+			wc.setLineHeight(this.headerLineHeight_);
+		} else {
+			wc.setLineHeight(WLength.Auto);
+		}
 	}
 
+	/**
+	 * Sets the header alignment for a column.
+	 * <p>
+	 * Calls {@link #setHeaderAlignment(int column, EnumSet alignment)
+	 * setHeaderAlignment(column, EnumSet.of(alignmen, alignment))}
+	 */
+	public final void setHeaderAlignment(int column, AlignmentFlag alignmen,
+			AlignmentFlag... alignment) {
+		setHeaderAlignment(column, EnumSet.of(alignmen, alignment));
+	}
+
+	/**
+	 * Returns the horizontal header alignment for a column (<b>deprecated</b>).
+	 * <p>
+	 * 
+	 * @see WAbstractItemView#setHeaderAlignment(int column, EnumSet alignment)
+	 * @deprecated use
+	 *             {@link WAbstractItemView#horizontalHeaderAlignment(int column)
+	 *             horizontalHeaderAlignment()} instead.
+	 */
+	public AlignmentFlag getHeaderAlignment(int column) {
+		return this.horizontalHeaderAlignment(column);
+	}
+
+	/**
+	 * Returns the horizontal header alignment for a column.
+	 * <p>
+	 * 
+	 * @see WAbstractItemView#setHeaderAlignment(int column, EnumSet alignment)
+	 */
+	public AlignmentFlag horizontalHeaderAlignment(int column) {
+		return this.columnInfo(column).headerHAlignment;
+	}
+
+	/**
+	 * Returns the vertical header alignment for a column.
+	 * <p>
+	 * 
+	 * @see WAbstractItemView#setHeaderAlignment(int column, EnumSet alignment)
+	 */
+	public AlignmentFlag verticalHeaderAlignment(int column) {
+		return this.columnInfo(column).headerVAlignment;
+	}
+
+	/**
+	 * Configures header text wrapping.
+	 * <p>
+	 * This setting only affects a multiline header, and the default value is
+	 * <code>true</code>. When set to <code>false</code>, the header itself will
+	 * not wrap (as with a vertically centered header), and thus extra widgets
+	 * will not shift down when there is a long header label.
+	 */
+	public void setHeaderWordWrap(int column, boolean enabled) {
+		this.columnInfo(column).headerWordWrap = enabled;
+		if (this.columnInfo(column).hidden
+				|| this.renderState_.getValue() >= WAbstractItemView.RenderState.NeedRerenderHeader
+						.getValue()) {
+			return;
+		}
+		if (this.columnInfo(column).headerVAlignment == AlignmentFlag.AlignTop) {
+			WContainerWidget wc = ((this.headerWidget(column)) instanceof WContainerWidget ? (WContainerWidget) (this
+					.headerWidget(column))
+					: null);
+			wc.toggleStyleClass("Wt-wwrap", enabled);
+		}
+	}
+
+	// public boolean isHeaderWordWrap(int column) ;
 	/**
 	 * Sets if alternating row colors are to be used.
 	 * <p>
@@ -886,20 +966,10 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	/**
 	 * Sets the header height.
 	 * <p>
-	 * Use this method to change the header height. By default, the header text
-	 * is a single line that is centered vertically.
-	 * <p>
-	 * By enabling multi-line headers, the header text will be aligned to the
-	 * top and wrap as needed. In that case, additional contents may be
-	 * displayed in the header, provided by
-	 * {@link WAbstractItemView#createExtraHeaderWidget(int column)
-	 * createExtraHeaderWidget()}.
-	 * <p>
-	 * The default value is a single line of 20 pixels.
+	 * The default value is 20 pixels.
 	 */
-	public void setHeaderHeight(WLength height, boolean multiLine) {
+	public void setHeaderHeight(WLength height) {
 		this.headerLineHeight_ = height;
-		this.multiLineHeader_ = multiLine;
 		int lineCount = this.getHeaderLevelCount();
 		WLength headerHeight = WLength.multiply(this.headerLineHeight_,
 				lineCount);
@@ -911,30 +981,56 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 		}
 		this.headerHeightRule_.getTemplateWidget().resize(WLength.Auto,
 				headerHeight);
-		if (!this.multiLineHeader_) {
-			this.headerHeightRule_.getTemplateWidget().setLineHeight(
-					this.headerLineHeight_);
-		} else {
-			this.headerHeightRule_.getTemplateWidget().setLineHeight(
-					WLength.Auto);
-		}
 	}
 
 	/**
-	 * Sets the header height.
+	 * Sets the header height, and vertical alignment (<b>deprecated</b>). By
+	 * default, the header text is a single line that is centered vertically.
 	 * <p>
-	 * Calls {@link #setHeaderHeight(WLength height, boolean multiLine)
-	 * setHeaderHeight(height, false)}
+	 * Along with setting the header height, this also configures vertical
+	 * aligment and header label word wrapping. This has been deprecated in
+	 * favour of the more fine grained control using
+	 * {@link WAbstractItemView#setHeaderAlignment(int column, EnumSet alignment)
+	 * setHeaderAlignment()} and
+	 * {@link WAbstractItemView#setHeaderWordWrap(int column, boolean enabled)
+	 * setHeaderWordWrap()}.
+	 * <p>
+	 * When <code>multiLine</code> is <code>false</code>, the header alignment
+	 * is set to {@link AlignmentFlag#AlignMiddle}. When <code>multiLine</code>
+	 * is <code>true</code>, the header alignment is set to
+	 * {@link AlignmentFlag#AlignTop} and header word wrap is set to
+	 * <code>true</code>.
+	 * <p>
+	 * 
+	 * @deprecated use {@link WAbstractItemView#setHeaderHeight(WLength height)
+	 *             setHeaderHeight()},
+	 *             {@link WAbstractItemView#setHeaderAlignment(int column, EnumSet alignment)
+	 *             setHeaderAlignment()} and
+	 *             {@link WAbstractItemView#setHeaderWordWrap(int column, boolean enabled)
+	 *             setHeaderWordWrap()} instead.
 	 */
-	public final void setHeaderHeight(WLength height) {
-		setHeaderHeight(height, false);
+	public void setHeaderHeight(WLength height, boolean multiLine) {
+		this.setHeaderHeight(height);
+		if (multiLine) {
+			this.defaultHeaderVAlignment_ = AlignmentFlag.AlignTop;
+			this.defaultHeaderWordWrap_ = true;
+		} else {
+			this.defaultHeaderVAlignment_ = AlignmentFlag.AlignMiddle;
+			this.defaultHeaderWordWrap_ = false;
+		}
+		for (int i = 0; i < this.columns_.size(); ++i) {
+			this.setHeaderAlignment(i, EnumSet.of(
+					this.columns_.get(i).headerHAlignment,
+					this.defaultHeaderVAlignment_));
+			this.setHeaderWordWrap(i, this.defaultHeaderWordWrap_);
+		}
 	}
 
 	/**
 	 * Returns the header height.
 	 * <p>
 	 * 
-	 * @see WAbstractItemView#setHeaderHeight(WLength height, boolean multiLine)
+	 * @see WAbstractItemView#setHeaderHeight(WLength height)
 	 */
 	public WLength getHeaderHeight() {
 		return this.headerLineHeight_;
@@ -1407,7 +1503,8 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 		this.selectionMode_ = SelectionMode.NoSelection;
 		this.sorting_ = true;
 		this.columnResize_ = true;
-		this.multiLineHeader_ = false;
+		this.defaultHeaderVAlignment_ = AlignmentFlag.AlignMiddle;
+		this.defaultHeaderWordWrap_ = true;
 		this.rowHeaderCount_ = 0;
 		this.columnWidthChanged_ = new JSignal2<Integer, Integer>(this.impl_,
 				"columnResized") {
@@ -1532,7 +1629,7 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	 * You may reimplement this method to provide an extra widget to be placed
 	 * below the header label. The extra widget will be visible only if a
 	 * multi-line header is configured using
-	 * {@link WAbstractItemView#setHeaderHeight(WLength height, boolean multiLine)
+	 * {@link WAbstractItemView#setHeaderHeight(WLength height)
 	 * setHeaderHeight()}.
 	 * <p>
 	 * The widget is created only once, but this method may be called repeatedly
@@ -1542,7 +1639,7 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	 * The default implementation returns <code>null</code>.
 	 * <p>
 	 * 
-	 * @see WAbstractItemView#setHeaderHeight(WLength height, boolean multiLine)
+	 * @see WAbstractItemView#setHeaderHeight(WLength height)
 	 * @see WAbstractItemView#extraHeaderWidget(int column)
 	 */
 	protected WWidget createExtraHeaderWidget(int column) {
@@ -1589,7 +1686,9 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 		public int id;
 		public SortOrder sortOrder;
 		public AlignmentFlag alignment;
-		public AlignmentFlag headerAlignment;
+		public AlignmentFlag headerHAlignment;
+		public AlignmentFlag headerVAlignment;
+		public boolean headerWordWrap;
 		public WLength width;
 		public WWidget extraHeaderWidget;
 		public boolean sorting;
@@ -1604,7 +1703,9 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 			this.id = anId;
 			this.sortOrder = SortOrder.AscendingOrder;
 			this.alignment = AlignmentFlag.AlignLeft;
-			this.headerAlignment = AlignmentFlag.AlignLeft;
+			this.headerHAlignment = AlignmentFlag.AlignLeft;
+			this.headerVAlignment = view.defaultHeaderVAlignment_;
+			this.headerWordWrap = view.defaultHeaderWordWrap_;
 			this.width = new WLength();
 			this.extraHeaderWidget = null;
 			this.sorting = view.sorting_;
@@ -1882,7 +1983,15 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 		}
 		result.addWidget(w);
 		result.setStyleClass(info.getStyleClass() + " Wt-tv-c headerrh");
-		result.setContentAlignment(info.headerAlignment);
+		result.setContentAlignment(info.headerHAlignment);
+		if (info.headerVAlignment == AlignmentFlag.AlignMiddle) {
+			result.setLineHeight(this.headerLineHeight_);
+		} else {
+			result.setLineHeight(WLength.Auto);
+			if (info.headerWordWrap) {
+				result.addStyleClass("Wt-wwrap");
+			}
+		}
 		WWidget extraW = this.columnInfo(column).extraHeaderWidget;
 		if (extraW != null) {
 			result.addWidget(extraW);
@@ -2105,7 +2214,8 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	private SelectionMode selectionMode_;
 	private boolean sorting_;
 	private boolean columnResize_;
-	private boolean multiLineHeader_;
+	private AlignmentFlag defaultHeaderVAlignment_;
+	private boolean defaultHeaderWordWrap_;
 	private int rowHeaderCount_;
 	private JSignal2<Integer, Integer> columnWidthChanged_;
 	private Signal2<Integer, WLength> columnResized_;
@@ -2335,13 +2445,13 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	private void expandColumn(int columnid) {
 		this.model_.expandColumn(this.columnById(columnid));
 		this.scheduleRerender(WAbstractItemView.RenderState.NeedRerenderHeader);
-		this.setHeaderHeight(this.headerLineHeight_, this.multiLineHeader_);
+		this.setHeaderHeight(this.headerLineHeight_);
 	}
 
 	private void collapseColumn(int columnid) {
 		this.model_.collapseColumn(this.columnById(columnid));
 		this.scheduleRerender(WAbstractItemView.RenderState.NeedRerenderHeader);
-		this.setHeaderHeight(this.headerLineHeight_, this.multiLineHeader_);
+		this.setHeaderHeight(this.headerLineHeight_);
 	}
 
 	private void initDragDrop() {

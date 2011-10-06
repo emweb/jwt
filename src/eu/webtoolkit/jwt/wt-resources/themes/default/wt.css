@@ -637,15 +637,12 @@ body.Wt-rtl .Wt-itemview .Wt-tv-sh {
     font-weight: bold;
     text-overflow: ellipsis;
     overflow: hidden; /* needed for IE only */
-}
-
-.Wt-itemview .Wt-multiline div.Wt-label {
-    white-space: normal;
-}
-
-.Wt-itemview .Wt-singleline div.Wt-label {
     white-space: nowrap;
-    overflow: hidden;
+}
+
+.Wt-itemview .Wt-header .Wt-wwrap .Wt-label {
+    overflow: visible;
+    white-space: normal;
 }
 
 .Wt-itemview .Wt-tv-rh:hover {

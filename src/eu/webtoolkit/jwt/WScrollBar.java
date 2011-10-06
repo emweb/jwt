@@ -68,7 +68,7 @@ public class WScrollBar extends WObject {
 	}
 
 	/**
-	 * Sets the scrollbar value.
+	 * Sets the scrollbar value (in pixels).
 	 * <p>
 	 * This will move the scrollbar to the given value.
 	 */
@@ -95,6 +95,13 @@ public class WScrollBar extends WObject {
 	private boolean valueSet_;
 
 	void updateDom(DomElement element, boolean all) {
+		if (this.valueSet_) {
+			String side = this.orientation_ == Orientation.Horizontal ? "Left"
+					: "Top";
+			element.callMethod("scroll" + side + " = "
+					+ String.valueOf(this.value_) + ";");
+			this.valueSet_ = false;
+		}
 		if (this.tiesChanged_ || all) {
 			String jsCode = "";
 			for (int i = 0; i < this.ties_.size(); ++i) {

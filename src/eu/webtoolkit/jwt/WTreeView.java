@@ -554,13 +554,8 @@ public class WTreeView extends WAbstractItemView {
 		}
 	}
 
-	public void setHeaderHeight(WLength height, boolean multiLine) {
-		super.setHeaderHeight(height, multiLine);
-		if (this.headerContainer_ != null) {
-			this.headerContainer_.setStyleClass("Wt-header Wt-"
-					+ (multiLine ? "multiline" : "singleline")
-					+ " headerrh cwidth");
-		}
+	public void setHeaderHeight(WLength height) {
+		super.setHeaderHeight(height);
 	}
 
 	public void setColumnBorder(WColor color) {

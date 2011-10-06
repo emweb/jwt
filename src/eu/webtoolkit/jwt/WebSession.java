@@ -634,7 +634,7 @@ class WebSession {
 				&& hashE.length() > 1) {
 			String url = "";
 			if (this.applicationName_.length() == 0) {
-				url = this.fixRelativeUrl(".");
+				url = this.fixRelativeUrl("?");
 				url = url.substring(0, 0 + url.length() - 1);
 			} else {
 				url = this.fixRelativeUrl(this.applicationName_);
@@ -729,17 +729,26 @@ class WebSession {
 			if (url.length() == 0 || url.charAt(0) == '/') {
 				return url;
 			} else {
-				if (this.env_.hashInternalPaths()) {
-					return url;
-				} else {
-					String rel = "";
-					String pi = this.pagePathInfo_;
-					for (int i = 0; i < pi.length(); ++i) {
-						if (pi.charAt(i) == '/') {
-							rel += "../";
-						}
+				if (this.env_.publicDeploymentPath_.length() != 0) {
+					String dp = this.env_.publicDeploymentPath_;
+					if (url.charAt(0) != '?') {
+						int s = dp.lastIndexOf('/');
+						dp = dp.substring(0, 0 + s + 1);
 					}
-					return rel + url;
+					return dp + url;
+				} else {
+					if (this.env_.hashInternalPaths()) {
+						return url;
+					} else {
+						String rel = "";
+						String pi = this.pagePathInfo_;
+						for (int i = 0; i < pi.length(); ++i) {
+							if (pi.charAt(i) == '/') {
+								rel += "../";
+							}
+						}
+						return rel + url;
+					}
 				}
 			}
 		} else {

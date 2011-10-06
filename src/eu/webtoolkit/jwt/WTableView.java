@@ -227,6 +227,8 @@ public class WTableView extends WAbstractItemView {
 						}
 					});
 			this.headerColumnsHeaderContainer_ = new WContainerWidget();
+			this.headerColumnsHeaderContainer_
+					.setStyleClass("Wt-header headerrh cwidth Wt-headerdiv");
 			this.headerColumnsTable_ = new WContainerWidget();
 			this.headerColumnsTable_.setStyleClass("Wt-tv-contents");
 			this.headerColumnsTable_.setPositionScheme(PositionScheme.Absolute);
@@ -436,16 +438,8 @@ public class WTableView extends WAbstractItemView {
 		this.scheduleRerender(WAbstractItemView.RenderState.NeedRerenderData);
 	}
 
-	public void setHeaderHeight(WLength height, boolean multiLine) {
-		super.setHeaderHeight(height, multiLine);
-		if (this.headerContainer_ != null) {
-			String headerClass = "Wt-header Wt-"
-					+ (multiLine ? "multiline" : "singleline")
-					+ " headerrh cwidth";
-			this.headerContainer_.setStyleClass(headerClass);
-			this.headerColumnsHeaderContainer_.setStyleClass(headerClass
-					+ " Wt-headerdiv");
-		}
+	public void setHeaderHeight(WLength height) {
+		super.setHeaderHeight(height);
 		if (!this.isAjaxMode()) {
 			this.resize(this.getWidth(), this.getHeight());
 		}
