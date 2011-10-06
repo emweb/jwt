@@ -254,20 +254,25 @@ public class WTextEdit extends WTextArea {
 		if (all && element.getType() == DomElementType.DomElement_TEXTAREA) {
 			StringWriter config = new StringWriter();
 			config.append("{");
+			boolean first = true;
 			for (Iterator<Map.Entry<String, Object>> it_it = this.configurationSettings_
 					.entrySet().iterator(); it_it.hasNext();) {
 				Map.Entry<String, Object> it = it_it.next();
 				if (it.getKey().equals("plugins")) {
 					continue;
 				}
-				if (it != this.configurationSettings_.entrySet().iterator()) {
-					config.append(",");
+				if (!first) {
+					config.append(',');
 				}
+				first = false;
 				config.append(it.getKey()).append(": ").append(
 						StringUtils.asJSLiteral(it.getValue(),
 								TextFormat.XHTMLUnsafeText));
 			}
-			config.append(",plugins: '").append(this.getPlugins()).append("'");
+			if (!first) {
+				config.append(',');
+			}
+			config.append("plugins: '").append(this.getPlugins()).append("'");
 			config.append(",init_instance_callback: ").append(this.getJsRef())
 					.append(".init").append("}");
 			DomElement dummy = new DomElement(DomElement.Mode.ModeUpdate,

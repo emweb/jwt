@@ -838,6 +838,7 @@ public class WEnvironment {
 	String clientAddress_;
 	String pathInfo_;
 	String internalPath_;
+	protected String publicDeploymentPath_;
 
 	WEnvironment() {
 		this.queryString_ = "";
@@ -855,6 +856,7 @@ public class WEnvironment {
 		this.clientAddress_ = "";
 		this.pathInfo_ = "";
 		this.internalPath_ = "";
+		this.publicDeploymentPath_ = "";
 	}
 
 	void setUserAgent(String userAgent) {
@@ -1050,6 +1052,7 @@ public class WEnvironment {
 		this.clientAddress_ = "";
 		this.pathInfo_ = "";
 		this.internalPath_ = "";
+		this.publicDeploymentPath_ = "";
 	}
 
 	void init(WebRequest request) {
@@ -1116,6 +1119,14 @@ public class WEnvironment {
 		String hashE = request.getParameter("_");
 		if (hashE != null) {
 			this.setInternalPath(hashE);
+		}
+		String deployPathE = request.getParameter("deployPath");
+		if (deployPathE != null) {
+			this.publicDeploymentPath_ = deployPathE;
+			int s = this.publicDeploymentPath_.indexOf('/');
+			if (s != 0) {
+				this.publicDeploymentPath_ = "";
+			}
 		}
 	}
 

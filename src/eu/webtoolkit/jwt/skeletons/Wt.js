@@ -1367,10 +1367,6 @@ this.hasFocus = function(el) {
   return el == document.activeElement;
 };
 
-var deployUrl = window.location.pathname;
-deployUrl = deployUrl.substr(0, deployUrl.length - _$_PATH_INFO_$_.length);
-this.deployUrl = deployUrl;
-
 var html5History = !WT.isMobileWebKit
     && !!(window.history && window.history.pushState);
 
@@ -1441,10 +1437,10 @@ if (html5History) {
       window.addEventListener("hashchange", onHashChange, false);
     },
 
-    initialize: function (stateField, histFrame) {
+    initialize: function (stateField, histFrame, deployUrl) {
       WT.resolveRelativeAnchors();
 
-      baseUrl = WT.deployUrl;
+      baseUrl = deployUrl;
       if (baseUrl.length >= 1 && baseUrl[baseUrl.length - 1] == '/') {
 _$_$if_UGLY_INTERNAL_PATHS_$_();
 	baseUrl += "?_=";
@@ -1755,6 +1751,8 @@ var WT = _$_WT_CLASS_$_;
 
 var downX = 0;
 var downY = 0;
+
+var deployUrl = _$_DEPLOY_PATH_$_;
 
 function saveDownPos(e) {
   var coords = WT.pageCoordinates(e);
@@ -2132,7 +2130,7 @@ function encodePendingEvents() {
   return { feedback: feedback, result: result };
 }
 
-var sessionUrl = _$_RELATIVE_URL_$_,
+var sessionUrl,
   quited = false,
   norestart = false,
   loaded = false,
@@ -2177,7 +2175,7 @@ function load(fullapp) {
     if (!window._$_APP_CLASS_$_LoadWidgetTree)
       return; // That's too soon baby.
 
-    WT.history.initialize("Wt-history-field", "Wt-history-iframe");
+    WT.history.initialize("Wt-history-field", "Wt-history-iframe", deployUrl);
   }
 
   if (!("activeElement" in document)) {
@@ -2273,6 +2271,7 @@ function handleResponse(status, msg, timer) {
     return;
 
   if (status == 0) {
+    WT.resolveRelativeAnchors();
 _$_$if_CATCH_ERROR_$_();
     try {
 _$_$endif_$_();
@@ -2322,12 +2321,19 @@ _$_$endif_$_();
   }
 };
 
-var comm = WT.initAjaxComm(sessionUrl, handleResponse);
-
 function setSessionUrl(url) {
-  sessionUrl = url;
-  comm.setUrl(url);
+  if (url.indexOf("://") != -1 || url[0] == '/')
+    sessionUrl = url;
+  else
+    sessionUrl = deployUrl + url;
+
+  if (comm)
+    comm.setUrl(url);
 }
+
+setSessionUrl(_$_SESSION_URL_$_);
+
+var comm = WT.initAjaxComm(sessionUrl, handleResponse);
 
 function doPollTimeout() {
   responsePending.abort();
@@ -2403,9 +2409,10 @@ _$_$if_WEB_SOCKETS_$_();
 	    wsurl = "ws" + sessionUrl.substr(4);
 	  } else {
 	    var query = sessionUrl.substr(sessionUrl.indexOf('?'));
+
 	    wsurl = "ws" + location.protocol.substr(4)
 	      + "//" + location.hostname + ":"
-	     + location.port + _$_DEPLOY_PATH_$_ + query;
+	     + location.port + deployUrl + query;
 	  }
 
 	  websocket.socket = ws = new WebSocket(wsurl);

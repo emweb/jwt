@@ -34,7 +34,7 @@ class RefEncoder extends XHtmlFilter {
 			parser.setReader(reader);
 			parser.parse();
 
-			StringBuilder filtered = encoder.result();
+			String filtered = encoder.result();
 
 			// 6 and 7 correct for respectively <span> and </span>
 			wText.set(filtered.substring(6, filtered.length() - 7));
@@ -56,6 +56,7 @@ class RefEncoder extends XHtmlFilter {
 		if (currentTag.equals("a")) {
 			if (key.equals("class")) {
 				aClass = StringUtils.addWord(aClass, value);
+				return;
 			} else if (key.equals("href")) {
 				String path = value;
 

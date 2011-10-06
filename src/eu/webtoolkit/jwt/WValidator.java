@@ -223,7 +223,7 @@ public class WValidator extends WObject {
 					+ WString.toWString(this.getInvalidBlankText())
 							.getJsStringLiteral() + "}};})();";
 		} else {
-			return "";
+			return "new (function() {this.validate = function(text) {return { valid: true }};})();";
 		}
 	}
 

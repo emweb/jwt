@@ -324,10 +324,8 @@ class WebRenderer implements SlotLearnerInterface {
 			this.collectedJS1_.append(
 					this.session_.getApp().getJavaScriptClass()).append(
 					"._p_.setSessionUrl(").append(
-					WWebWidget.jsStringLiteral(this.session_.getBootstrapUrl(
-							response,
-							WebSession.BootstrapOption.ClearInternalPath)))
-					.append(");");
+					WWebWidget.jsStringLiteral(this.getSessionUrl())).append(
+					");");
 			this.session_.sessionIdChanged_ = false;
 		}
 		if (!this.rendered_) {
@@ -409,13 +407,15 @@ class WebRenderer implements SlotLearnerInterface {
 			script.setCondition("WEB_SOCKETS", conf.isWebSockets());
 			script.setVar("INNER_HTML", innerHtml);
 			script.setVar("ACK_UPDATE_ID", this.expectedAckId_);
-			script.setVar("RELATIVE_URL", WWebWidget
-					.jsStringLiteral(this.session_.getBootstrapUrl(response,
-							WebSession.BootstrapOption.ClearInternalPath)));
-			script.setVar("DEPLOY_PATH", WWebWidget
-					.jsStringLiteral(this.session_.getDeploymentPath()));
-			script.setVar("PATH_INFO", WWebWidget.jsStringLiteral(this.session_
-					.getEnv().pathInfo_));
+			script.setVar("SESSION_URL", WWebWidget.jsStringLiteral(this
+					.getSessionUrl()));
+			String deployPath = this.session_.getEnv().publicDeploymentPath_;
+			if (deployPath.length() == 0) {
+				deployPath = this.session_.getDeploymentPath();
+			}
+			script
+					.setVar("DEPLOY_PATH", WWebWidget
+							.jsStringLiteral(deployPath));
 			int keepAlive;
 			if (conf.getSessionTimeout() == -1) {
 				keepAlive = 1000000;
@@ -772,7 +772,7 @@ class WebRenderer implements SlotLearnerInterface {
 				response.out().append("Wt3_1_11").append(
 						".history.initialize('").append(historyE.charAt(0))
 						.append("-field', '").append(historyE.charAt(0))
-						.append("-iframe');\n");
+						.append("-iframe', '');\n");
 			}
 		}
 		app.streamAfterLoadJavaScript(response.out());
@@ -1108,7 +1108,8 @@ class WebRenderer implements SlotLearnerInterface {
 			if (app.internalPathIsChanged_) {
 				js.append(app.getJavaScriptClass()).append("._p_.setHash('")
 						.append(app.newInternalPath_).append("');\n");
-				if (!app.getEnvironment().hashInternalPaths()) {
+				if (!this.isPreLearning()
+						&& !app.getEnvironment().hashInternalPaths()) {
 					this.session_.setPagePathInfo(app.newInternalPath_);
 				}
 			}
@@ -1180,6 +1181,8 @@ class WebRenderer implements SlotLearnerInterface {
 		bootJs.setVar("AJAX_CANONICAL_URL", this
 				.safeJsStringLiteral(this.session_.ajaxCanonicalUrl(response)));
 		bootJs.setVar("APP_CLASS", "Wt");
+		bootJs.setVar("PATH_INFO", WWebWidget.jsStringLiteral(this.session_
+				.getEnv().pathInfo_));
 		bootJs.setCondition("SPLIT_SCRIPT", conf.isSplitScript());
 		bootJs.setCondition("HYBRID", hybrid);
 		boolean xhtml = this.session_.getEnv().getContentType() == WEnvironment.ContentType.XHTML1;
@@ -1268,6 +1271,15 @@ class WebRenderer implements SlotLearnerInterface {
 		}
 	}
 
+	private String getSessionUrl() {
+		String result = this.session_.getApplicationUrl();
+		if (isAbsoluteUrl(result)) {
+			return result;
+		} else {
+			return this.session_.appendSessionQuery(".").substring(1);
+		}
+	}
+
 	private Set<WWidget> updateMap_;
 	private boolean learning_;
 	private boolean learningIncomplete_;
@@ -1300,5 +1312,9 @@ class WebRenderer implements SlotLearnerInterface {
 		}
 		this.collectJS(this.statelessJS_);
 		return result;
+	}
+
+	static boolean isAbsoluteUrl(String url) {
+		return url.indexOf("://") != -1;
 	}
 }

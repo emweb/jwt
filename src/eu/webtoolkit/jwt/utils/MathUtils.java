@@ -31,7 +31,7 @@ public class MathUtils {
 		StringBuilder result = new StringBuilder();
 		
 		for (int i = 0; i < length; ++i) {
-		    int d = randomInt() % (26 + 26 + 10);
+		    int d = Math.abs(randomInt()) % (26 + 26 + 10);
 
 		    int c = (d < 10 ? ('0' + d)
 			      : (d < 36 ? ('A' + d - 10)

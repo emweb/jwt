@@ -2,6 +2,8 @@ package eu.webtoolkit.jwt;
 
 import java.io.Reader;
 import java.io.StringReader;
+import java.io.StringWriter;
+import java.io.Writer;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
@@ -272,8 +274,9 @@ class XHtmlFilter implements IXMLBuilder, IXMLEntityResolver {
 				"hearts",
 				"diams"
 		}));
-	protected StringBuilder textBuffer = new StringBuilder();
-	protected boolean emptyTag;
+	
+	protected EscapeOStream writer = new EscapeOStream();
+	protected boolean tagOpen = false;
 
 	public XHtmlFilter() {
 		super();
@@ -296,8 +299,9 @@ class XHtmlFilter implements IXMLBuilder, IXMLEntityResolver {
 		return false;
 	}
 
-	public StringBuilder result() {
-		return textBuffer;
+	public String result() {
+		writer.flush();
+		return writer.toString();
 	}
 
 	public void newProcessingInstruction(String target, Reader reader) throws Exception {
@@ -307,10 +311,11 @@ class XHtmlFilter implements IXMLBuilder, IXMLEntityResolver {
 	}
 
 	public void addAttribute(String key, String nsPrefix, String nsURI, String value, String type) throws Exception {
-		textBuffer.append(' ');
-		
-		// FIXME attribute encoding
-		textBuffer.append(key + "=\"" + value + "\"");
+		writer.append(' ' + key + "=\"");
+		writer.pushEscape(EscapeOStream.RuleSet.HtmlAttribute);
+		writer.append(value);
+		writer.popEscape();
+		writer.append('"');
 	}
 
 	public void addPCData(Reader reader, String systemID, int lineNr) throws Exception {
@@ -321,34 +326,43 @@ class XHtmlFilter implements IXMLBuilder, IXMLEntityResolver {
 	            break;
 	        }
 
-			// FIXME xhtml value encoding
-	        textBuffer.append(buf, 0, size);
+	        if (tagOpen) {
+	        	writer.append('>');
+	        	tagOpen = false;
+	        }
+
+	        // writer.pushEscape(EscapeOStream.RuleSet.PlainText);
+	        writer.append(new String(buf, 0, size));
+	        // writer.popEscape();
 	    }
-		emptyTag = false;
 	}
 
 	public void elementAttributesProcessed(String name, String nsPrefix, String nsURI) throws Exception {
-		textBuffer.append('>');
+		tagOpen = true;
 	}
 
 	public void startElement(String name, String nsPrefix, String nsURI, String systemID, int lineNr) throws Exception {
-		textBuffer.append('<');
-		textBuffer.append(name);
-	
-		emptyTag = true;
+		if (tagOpen) {
+			writer.append('>');
+			tagOpen = false;
+		}
+
+		writer.append('<');
+		writer.append(name);	
 	}
 
 	public void endElement(String name, String nsPrefix, String nsURI) throws Exception {
-		if (emptyTag && DomElement.isSelfClosingTag(name)) {
-			textBuffer.deleteCharAt(textBuffer.length() - 1);
-			textBuffer.append("/>");
+		if (tagOpen && DomElement.isSelfClosingTag(name)) {
+			writer.append("/>");
 		} else {
-			textBuffer.append("</");
-			textBuffer.append(name);
-			textBuffer.append('>');
+			if (tagOpen)
+				writer.append('>');
+			writer.append("</");
+			writer.append(name);
+			writer.append('>');
 		}
-	
-		emptyTag = false;
+
+		tagOpen = false;
 	}
 
 	@Override

@@ -64,7 +64,7 @@ class ControlsWidget extends WContainerWidget {
 		WText text = new WText(s, parent);
 		boolean literal;
 		literal = WString.toWString(s).isLiteral();
-		if (literal) {
+		if (!literal) {
 			text.setInternalPathEncoding(true);
 		}
 		return text;
