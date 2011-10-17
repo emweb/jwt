@@ -557,8 +557,8 @@
     height: 16px;
 }
 
-body.Wt-rtl .Wt-tabs .item, .Wt-tabs .itemselected,
-body.Wt-rtl .Wt-tabs .citem, .Wt-tabs .citemselected {
+body.Wt-rtl .Wt-tabs .item, body.Wt-rtl .Wt-tabs .itemselected,
+body.Wt-rtl .Wt-tabs .citem, body.Wt-rtl .Wt-tabs .citemselected {
     float: right;
 }
 
