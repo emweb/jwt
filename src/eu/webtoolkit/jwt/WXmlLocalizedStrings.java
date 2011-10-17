@@ -61,7 +61,7 @@ public class WXmlLocalizedStrings extends WLocalizedStrings {
 	
 	private void readXmlResource(String bundleName) {
 		WApplication app = WApplication.getInstance();
-		
+
 		URL url = null;
 		for (String path : StringUtils.expandLocales(bundleName, WApplication.getInstance().getLocale().toString())) {
 			url = app.getClass().getResource(path + ".xml");
@@ -74,8 +74,10 @@ public class WXmlLocalizedStrings extends WLocalizedStrings {
 			}
 		}
 		
-		if (url == null)
-			throw new RuntimeException("JWt exception: Could not find resource \"" + bundleName + "\"");
+		if (url == null) {
+			System.err.println("Warning: Could not find resource \"" + bundleName + "\"");
+			return;
+		}
 		
 		TransformerFactory tf = TransformerFactory.newInstance();        
         Transformer t = null;
@@ -117,10 +119,11 @@ public class WXmlLocalizedStrings extends WLocalizedStrings {
 					// Remove leading <?xml version="1.0"
 					// encoding="UTF-8"?><message id=""> ...
 					String xml = writer.toString().substring(53 + id.length());
-					// ... and trailing </message>
-					xml = xml.substring(0, xml.length() - 10);
-
-					keyValues.put(id, xml);
+					// ... and trailing </message> or />
+					if (xml.length() > 10) {
+						xml = xml.substring(0, xml.length() - 10);
+						keyValues.put(id, xml);
+					}
 				}
 			}
 		}
