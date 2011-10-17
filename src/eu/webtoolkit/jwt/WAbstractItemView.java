@@ -2009,8 +2009,8 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 							: null);
 			parent.insertWidget(0, resizeHandle);
 			if (ie) {
-				parent.setAttributeValue("style", "zoom: 1");
 				if (info.headerVAlignment == AlignmentFlag.AlignMiddle) {
+					parent.setAttributeValue("style", "zoom: 1");
 					parent.resize(WLength.Auto, this.headerLineHeight_);
 				}
 			}
