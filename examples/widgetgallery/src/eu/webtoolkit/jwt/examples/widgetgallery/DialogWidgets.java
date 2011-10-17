@@ -140,6 +140,7 @@ class DialogWidgets extends ControlsWidget {
 
 	private void customModal() {
 		final WDialog dialog = new WDialog("Personalia (modal)");
+		dialog.setClosable(true);
 		addText(
 				"You can freely format the contents of a WDialog by adding any widget you want to it.<br/>Here, we added WText, WLineEdit and WPushButton to a dialog",
 				dialog.getContents());

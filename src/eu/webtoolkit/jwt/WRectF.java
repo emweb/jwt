@@ -27,8 +27,7 @@ public class WRectF {
 	/**
 	 * Default constructor.
 	 * <p>
-	 * Constructs a rectangle from top left point (<i>x=0</i>, <code>y=0</code>)
-	 * and size <i>width=0</i> x <code>height=0</code>.
+	 * Constructs an empty rectangle at point (0, 0).
 	 */
 	public WRectF() {
 		this.x_ = 0;
@@ -40,8 +39,8 @@ public class WRectF {
 	/**
 	 * Creates a rectangle.
 	 * <p>
-	 * Constructs a rectangle with top left point (<i>x</i>, <code>y</code>) and
-	 * size <i>width</i> x <code>height</code>.
+	 * Constructs a rectangle with top left point (<code>x</code>,
+	 * <code>y</code>) and size <code>width</code> x <code>height</code>.
 	 */
 	public WRectF(double x, double y, double width, double height) {
 		this.x_ = x;
@@ -90,11 +89,10 @@ public class WRectF {
 	/**
 	 * Determines whether or not this rectangle is empty.
 	 * <p>
-	 * A rectangle is empty if its width or its height is less than or equal to
-	 * zero.
+	 * A rectangle is empty if its width and height are zero.
 	 */
 	public boolean isEmpty() {
-		return this.width_ <= 0 || this.height_ <= 0;
+		return this.width_ == 0 && this.height_ == 0;
 	}
 
 	/**
@@ -122,8 +120,8 @@ public class WRectF {
 	/**
 	 * Sets the width.
 	 * <p>
-	 * The right side of the rectangle may move, but does not change the X
-	 * position of the left side.
+	 * The right side of the rectangle may move, but this does not affect the
+	 * left side.
 	 */
 	public void setWidth(double width) {
 		this.width_ = width;
@@ -132,7 +130,7 @@ public class WRectF {
 	/**
 	 * Sets the Y-position of the top side.
 	 * <p>
-	 * The bottom side of the rectangle may move, but does not change the Y
+	 * The bottom side of the rectangle may move, but this does not affect the Y
 	 * position of the top side.
 	 */
 	public void setHeight(double height) {
@@ -140,7 +138,7 @@ public class WRectF {
 	}
 
 	/**
-	 * Returns the X-position of the left side.
+	 * Returns the X-position (left side offset).
 	 * <p>
 	 * This is equivalent to {@link WRectF#getLeft() getLeft()}.
 	 * <p>
@@ -153,7 +151,7 @@ public class WRectF {
 	}
 
 	/**
-	 * Returns the Y-position of the top side.
+	 * Returns the Y-position (top side offset).
 	 * <p>
 	 * This is equivalent to {@link WRectF#getTop() getTop()}.
 	 * <p>
@@ -186,7 +184,7 @@ public class WRectF {
 	}
 
 	/**
-	 * Returns the X position of the left side.
+	 * Returns the X position (left side offset).
 	 * <p>
 	 * 
 	 * @see WRectF#getX()
@@ -197,7 +195,7 @@ public class WRectF {
 	}
 
 	/**
-	 * Returns the Y position of the top side.
+	 * Returns the Y position (top side offset).
 	 * <p>
 	 * 
 	 * @see WRectF#getY()
@@ -208,7 +206,7 @@ public class WRectF {
 	}
 
 	/**
-	 * Returns the X position of the right side.
+	 * Returns the the right side offset.
 	 * <p>
 	 * 
 	 * @see WRectF#getLeft()
@@ -218,7 +216,7 @@ public class WRectF {
 	}
 
 	/**
-	 * Returns the Y position of the bottom side.
+	 * Returns the bottom side offset.
 	 * <p>
 	 * 
 	 * @see WRectF#getTop()

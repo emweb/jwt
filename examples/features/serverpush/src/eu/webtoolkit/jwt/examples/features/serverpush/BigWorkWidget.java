@@ -14,24 +14,22 @@ import eu.webtoolkit.jwt.WText;
 public class BigWorkWidget extends WContainerWidget {
 	public BigWorkWidget(WContainerWidget parent) {
 		super(parent);
-		startButton_ = new WPushButton("Start", this);
-		startButton_.clicked().addListener(this,
+		startButton = new WPushButton("Start", this);
+		startButton.clicked().addListener(this,
 				new Signal1.Listener<WMouseEvent>() {
 					@Override
 					public void trigger(WMouseEvent me) {
-						startButton_.disable();
+						startButton.disable();
 						startBigWork();
 					}
 				});
 
-		resultText_ = new WText(this);
-		resultText_.setInline(false);
+		resultText = new WText(this);
+		resultText.setInline(false);
 	}
 
-	private WPushButton startButton_;
-	private WText resultText_;
-
-	private Thread workThread_;
+	private WPushButton startButton;
+	private WText resultText;
 
 	private void startBigWork() {
 		final WApplication app = WApplication.getInstance();
@@ -39,16 +37,15 @@ public class BigWorkWidget extends WContainerWidget {
 		// Enable server push
 		app.enableUpdates(true);
 
-		workThread_ = new Thread(new Runnable() {
+		(new Thread(new Runnable() {
 			@Override
 			public void run() {
 				doBigWork(app);
 			}
-		});
-		workThread_.start();
+		})).start();
 
-		resultText_.setText("");
-		startButton_.setText("Busy...");
+		resultText.setText("");
+		startButton.setText("Busy...");
 	}
 
 	/*
@@ -71,24 +68,26 @@ public class BigWorkWidget extends WContainerWidget {
 			// with a progress indication.
 			WApplication.UpdateLock uiLock = app.getUpdateLock();
 
-			resultText_.setText(resultText_.getText() + ".");
-
-			app.triggerUpdate();
-			
-			uiLock.release();
+			try {
+				resultText.setText(resultText.getText() + ".");
+				app.triggerUpdate();
+			} finally {
+				uiLock.release();
+			}
 		}
 
 		WApplication.UpdateLock uiLock = app.getUpdateLock();
 
-		resultText_.setText("That was hefty!");
-		startButton_.enable();
-		startButton_.setText("Again!");
+		try {
+			resultText.setText("That was hefty!");
+			startButton.enable();
+			startButton.setText("Again!");
 
-		app.triggerUpdate();
+			app.triggerUpdate();
 
-		// Disable server push
-		app.enableUpdates(false);
-		
-		uiLock.release();
+			app.enableUpdates(false);
+		} finally {
+			uiLock.release();
+		}
 	}
 }

@@ -132,6 +132,7 @@ public class WDialog extends WCompositeWidget {
 	 */
 	public WDialog(CharSequence windowTitle) {
 		super();
+		this.closeIcon_ = null;
 		this.modal_ = true;
 		this.resizable_ = false;
 		this.finished_ = new Signal1<WDialog.DialogCode>(this);
@@ -447,7 +448,8 @@ public class WDialog extends WCompositeWidget {
 	 * <p>
 	 * This also sets the minimum width and height to {@link WLength#Auto} to
 	 * use the initial width and height as minimum sizes. You may want to
-	 * provide other values for minimum width and height.
+	 * provide other values for minimum width and height to allow the dialog to
+	 * be reduced in size.
 	 * <p>
 	 * 
 	 * @see WCompositeWidget#setMinimumSize(WLength width, WLength height)
@@ -478,6 +480,38 @@ public class WDialog extends WCompositeWidget {
 	 */
 	public boolean isResizable() {
 		return this.resizable_;
+	}
+
+	/**
+	 * Adds a close button to the titlebar.
+	 * <p>
+	 * The close button is shown in the title bar. Clicking the close button
+	 * will reject the dialog.
+	 */
+	public void setClosable(boolean closable) {
+		if (closable) {
+			if (!(this.closeIcon_ != null)) {
+				this.closeIcon_ = new WText(this.titleBar_);
+				this.closeIcon_.setStyleClass("closeicon");
+				this.closeIcon_.clicked().addListener(this,
+						new Signal1.Listener<WMouseEvent>() {
+							public void trigger(WMouseEvent e1) {
+								WDialog.this.reject();
+							}
+						});
+			}
+		} else {
+			if (this.closeIcon_ != null)
+				this.closeIcon_.remove();
+			this.closeIcon_ = null;
+		}
+	}
+
+	/**
+	 * Returns whether the dialog can be closed.
+	 */
+	public boolean isClosable() {
+		return this.closeIcon_ != null;
 	}
 
 	public void setHidden(boolean hidden, WAnimation animation) {
@@ -524,7 +558,7 @@ public class WDialog extends WCompositeWidget {
 					+ app.getJavaScriptClass() + "," + this.getJsRef() + ","
 					+ (centerX ? "1" : "0") + "," + (centerY ? "1" : "0")
 					+ ");");
-			this.setJavaScriptMember(WT_RESIZE_JS, "0");
+			this.setJavaScriptMember(WT_RESIZE_JS, "(dummy)");
 			app.addAutoJavaScript("{var obj = $('#" + this.getId()
 					+ "').data('obj');if (obj) obj.centerDialog();}");
 		}
@@ -533,6 +567,7 @@ public class WDialog extends WCompositeWidget {
 
 	private WTemplate impl_;
 	private WText caption_;
+	private WText closeIcon_;
 	private WContainerWidget titleBar_;
 	private WContainerWidget contents_;
 	private boolean modal_;

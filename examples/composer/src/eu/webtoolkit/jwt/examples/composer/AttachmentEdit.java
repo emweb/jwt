@@ -102,7 +102,7 @@ public class AttachmentEdit extends WContainerWidget {
 			}
 		});
 
-		// React to a succesfull upload.
+		// React to a successful upload.
 		upload_.uploaded().addListener(this, new Signal.Listener() {
 			public void trigger() {
 				uploaded();

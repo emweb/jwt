@@ -524,8 +524,8 @@ public class WPopupMenu extends WCompositeWidget {
 					+ this.getJsRef() + ".lastChild.offsetWidth+'px';");
 		}
 		if (this.autoHideDelay_ >= 0) {
-			app.loadJavaScript("js/WPopupMenu.js", wtjs1());
 			if (!this.cancel_.isConnected()) {
+				app.loadJavaScript("js/WPopupMenu.js", wtjs1());
 				this.doJavaScript("new Wt3_1_11.WPopupMenu("
 						+ app.getJavaScriptClass() + "," + this.getJsRef()
 						+ "," + String.valueOf(this.autoHideDelay_) + ");");

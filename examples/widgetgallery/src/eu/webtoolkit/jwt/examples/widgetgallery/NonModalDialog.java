@@ -21,6 +21,7 @@ class NonModalDialog extends WDialog {
 	public NonModalDialog(CharSequence title, EventDisplayer ed) {
 		super(title);
 		this.setModal(false);
+		this.setClosable(true);
 		new WText(
 				"You can freely format the contents of a WDialog by adding any widget you want to it.<br/>Here, we added WText, WLineEdit and WPushButton to a dialog",
 				this.getContents());

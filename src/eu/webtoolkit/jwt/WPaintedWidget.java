@@ -149,11 +149,8 @@ public abstract class WPaintedWidget extends WInteractWidget {
 		}
 		this.setLayoutSizeAware(true);
 		this
-				.setJavaScriptMember(
-						WT_RESIZE_JS,
-						"function(self,w,h) {var lsaJs = "
-								+ this.getJavaScriptMember(WT_RESIZE_JS)
-								+ "lsaJs(self,w,h);$(self).find('canvas, img').width(w).height(h);}");
+				.setJavaScriptMember(WT_RESIZE_JS,
+						"function(self,w,h) {$(self).find('canvas, img').width(w).height(h);}");
 		this.setInline(false);
 	}
 
@@ -330,7 +327,6 @@ public abstract class WPaintedWidget extends WInteractWidget {
 	}
 
 	protected void layoutSizeChanged(int width, int height) {
-		this.resize(WLength.Auto, WLength.Auto);
 		this.resizeCanvas(width, height);
 	}
 

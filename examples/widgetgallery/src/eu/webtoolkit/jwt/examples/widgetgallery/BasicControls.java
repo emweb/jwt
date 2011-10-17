@@ -274,10 +274,11 @@ class BasicControls extends ControlsWidget {
 				.addTab(
 						addText("This is yet another pre-loaded tab. Look how good this works."),
 						"Victoria", WTabWidget.LoadPolicy.PreLoading);
-		tw
+		WMenuItem tab = tw
 				.addTab(
-						addText("The colors of the tab widget can be changed by modifying some images."),
+						addText("The colors of the tab widget can be changed by modifying some images.You can close this tab by clicking on the close icon"),
 						"Tottenham");
+		tab.setCloseable(true);
 		tw.setStyleClass("tabwidget");
 		addText(tr("basics-WTabWidget-more"), result);
 		return result;

@@ -44,6 +44,7 @@ public class WPopupMenuItem extends WCompositeWidget {
 		this.data_ = null;
 		this.separator_ = false;
 		this.selectable_ = true;
+		this.rendered_ = false;
 		this.triggered_ = new Signal1<WPopupMenuItem>(this);
 		this.create();
 		this.setText(text);
@@ -68,6 +69,7 @@ public class WPopupMenuItem extends WCompositeWidget {
 		this.data_ = null;
 		this.separator_ = false;
 		this.selectable_ = true;
+		this.rendered_ = false;
 		this.triggered_ = new Signal1<WPopupMenuItem>(this);
 		this.create();
 		this.setText(text);
@@ -361,9 +363,9 @@ public class WPopupMenuItem extends WCompositeWidget {
 	}
 
 	void render(EnumSet<RenderFlag> flags) {
-		super.render(flags);
 		if (!EnumUtils.mask(flags, RenderFlag.RenderFull).isEmpty()
-				&& this.selectable_) {
+				&& this.selectable_ && !this.rendered_) {
+			this.rendered_ = true;
 			this.impl_.mouseWentUp().addListener(this.getTopLevelMenu(),
 					new Signal1.Listener<WMouseEvent>() {
 						public void trigger(WMouseEvent e1) {
@@ -371,6 +373,7 @@ public class WPopupMenuItem extends WCompositeWidget {
 						}
 					});
 		}
+		super.render(flags);
 	}
 
 	WPopupMenuItem(boolean anon1) {
@@ -381,6 +384,7 @@ public class WPopupMenuItem extends WCompositeWidget {
 		this.data_ = null;
 		this.separator_ = true;
 		this.selectable_ = false;
+		this.rendered_ = false;
 		this.triggered_ = new Signal1<WPopupMenuItem>(this);
 		this.setImplementation(this.impl_ = new WAnchor());
 		this.impl_.setLoadLaterWhenInvisible(false);
@@ -395,6 +399,7 @@ public class WPopupMenuItem extends WCompositeWidget {
 	private Object data_;
 	private boolean separator_;
 	private boolean selectable_;
+	private boolean rendered_;
 	private Signal1<WPopupMenuItem> triggered_;
 
 	private void create() {

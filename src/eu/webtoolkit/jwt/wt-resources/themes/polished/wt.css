@@ -220,6 +220,22 @@
     padding: 3px 6px;
 }
 
+.Wt-dialog .closeicon {
+    background: transparent url(closeicons-dialog.png) no-repeat scroll right top;
+    width: 13px;
+    height: 13px;
+    background-position: right 0px;
+    cursor: default;
+    vertical-align: center;
+    position: absolute;
+    right: 5px;
+    top: 5px;
+}
+
+.Wt-dialog .closeicon:hover {
+    background-position: right -13px;
+}
+
 .Wt-dialog .body {
     padding: 4px 6px;
 }
@@ -538,11 +554,17 @@
     border-bottom: none;
     background: #6880A0 url(title-gradient.png) repeat-x scroll 0 -20px;
     color: #FFFFFF;
+    height: 16px;
+}
+
+body.Wt-rtl .Wt-tabs .item, .Wt-tabs .itemselected,
+body.Wt-rtl .Wt-tabs .citem, .Wt-tabs .citemselected {
+    float: right;
 }
 
 .Wt-tabs li a, .Wt-tabs li button {
-   text-decoration: none;
-   color: inherit;
+    text-decoration: none;
+    color: inherit;
 }
 
 .Wt-tabs li button a {
@@ -568,7 +590,9 @@
 }
 
 .Wt-tabs .Wt-closeicon, .Wt-tabs span.citemselected .Wt-closeicon {
-    background: transparent url(../../closeicons-tab.png) no-repeat scroll right top;
+    background: transparent url(closeicons-tab.png) no-repeat scroll right top;
+    height: 16px;
+    display: inline-block;
     background-position: right 3px;
     border-width: 3px 0px 0px 0px;
     padding: 0px 6px 0px 7px;

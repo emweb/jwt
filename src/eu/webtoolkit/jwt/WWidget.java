@@ -55,8 +55,6 @@ public abstract class WWidget extends WObject {
 			this.eventSignals_.removeFirst();
 			;
 		}
-		;
-		this.resized_ = null;
 		this.renderOk();
 		super.remove();
 	}
@@ -1291,7 +1289,7 @@ public abstract class WWidget extends WObject {
 	 * @see WWidget#setLayoutSizeAware(boolean aware)
 	 */
 	public boolean isLayoutSizeAware() {
-		return this.resized_ != null;
+		return this.flags_.get(BIT_RESIZE_AWARE);
 	}
 
 	DomElement createSDomElement(WApplication app) {
@@ -1337,30 +1335,27 @@ public abstract class WWidget extends WObject {
 	 * @see WWidget#layoutSizeChanged(int width, int height)
 	 */
 	protected void setLayoutSizeAware(boolean aware) {
-		if (aware == (this.resized_ != null)) {
+		if (aware == this.flags_.get(BIT_RESIZE_AWARE)) {
 			return;
 		}
-		if (aware && WApplication.getInstance() != null) {
-			this.resized_ = new JSignal2<Integer, Integer>(this, "resized") {
-			};
-			this.resized_.addListener(this,
-					new Signal2.Listener<Integer, Integer>() {
-						public void trigger(Integer e1, Integer e2) {
-							WWidget.this.layoutSizeChanged(e1, e2);
-						}
-					});
-			this
-					.setJavaScriptMember(
-							WT_RESIZE_JS,
-							"function(self, w, h) {if (!self.wtWidth || self.wtWidth!=w || !self.wtHeight || self.wtHeight!=h) {self.wtWidth=w; self.wtHeight=h;self.style.height=h + 'px';"
-									+ this.resized_.createCall("Math.round(w)",
-											"Math.round(h)") + "}};");
-		} else {
-			if (this.getJavaScriptMember(WT_RESIZE_JS).length() != 0) {
-				this.setJavaScriptMember(WT_RESIZE_JS, "");
+		this.flags_.set(BIT_RESIZE_AWARE, aware);
+		if (aware) {
+			if (!(WApplication.getInstance() != null)) {
+				return;
 			}
-			;
-			this.resized_ = null;
+			WWebWidget w = this.getWebWidget();
+			if (w == this) {
+				this.getWebWidget().resized();
+			} else {
+				this.getWebWidget().resized().addListener(this,
+						new Signal2.Listener<Integer, Integer>() {
+							public void trigger(Integer e1, Integer e2) {
+								WWidget.this.layoutSizeChanged(e1, e2);
+							}
+						});
+			}
+		} else {
+			this.getWebWidget().setImplementLayoutSizeAware(false);
 		}
 	}
 
@@ -1387,7 +1382,6 @@ public abstract class WWidget extends WObject {
 	protected WWidget(WContainerWidget parent) {
 		super((WObject) null);
 		this.flags_ = new BitSet();
-		this.resized_ = null;
 		this.eventSignals_ = new LinkedList<AbstractEventSignal>();
 		this.flags_.set(BIT_NEED_RERENDER);
 	}
@@ -1654,8 +1648,8 @@ public abstract class WWidget extends WObject {
 	private static final int BIT_WAS_DISABLED = 1;
 	private static final int BIT_NEED_RERENDER = 2;
 	private static final int BIT_HAS_PARENT = 3;
+	private static final int BIT_RESIZE_AWARE = 4;
 	private BitSet flags_;
-	private JSignal2<Integer, Integer> resized_;
 	private LinkedList<AbstractEventSignal> eventSignals_;
 
 	void setHasParent(boolean hasParent) {

@@ -1381,7 +1381,29 @@ public abstract class WWebWidget extends WWidget {
 					for (int i = 0; i < this.otherImpl_.jsMembers_.size(); i++) {
 						WWebWidget.OtherImpl.Member member = this.otherImpl_.jsMembers_
 								.get(i);
-						element.callMethod(member.name + "=" + member.value);
+						if (member.name.equals(WT_RESIZE_JS)
+								&& this.otherImpl_.resized_ != null) {
+							StringBuilder combined = new StringBuilder();
+							combined.append(member.name).append(
+									"=function(s,w,h) {").append(
+									"if (!s.wtWidth||s.wtWidth!=w").append(
+									"||!s.wtHeight||s.wtHeight!=h) {").append(
+									"s.wtWidth=w;s.wtHeight=h;").append(
+									"s.style.height=h+'px';").append(
+									this.otherImpl_.resized_.createCall(
+											"Math.round(w)", "Math.round(h)"))
+									.append('}');
+							if (member.value.length() > 1) {
+								combined.append('(').append(member.value)
+										.append(")(s,w,h);");
+							}
+							combined.append('}');
+							element.callMethod(combined.toString());
+						} else {
+							element
+									.callMethod(member.name + "="
+											+ member.value);
+						}
 					}
 				} else {
 					if (this.otherImpl_.jsMembersSet_ != null) {
@@ -1389,10 +1411,35 @@ public abstract class WWebWidget extends WWidget {
 								.size(); ++i) {
 							String m = this.otherImpl_.jsMembersSet_.get(i);
 							String value = this.getJavaScriptMember(m);
-							if (value.length() != 0) {
-								element.callMethod(m + "=" + value);
+							if (m.equals(WT_RESIZE_JS)
+									&& this.otherImpl_.resized_ != null) {
+								StringBuilder combined = new StringBuilder();
+								combined
+										.append(m)
+										.append("=function(s,w,h) {")
+										.append("if (!s.wtWidth||s.wtWidth!=w")
+										.append(
+												"||!s.wtHeight||s.wtHeight!=h) {")
+										.append("s.wtWidth=w;s.wtHeight=h;")
+										.append("s.style.height=h+'px';")
+										.append(
+												this.otherImpl_.resized_
+														.createCall(
+																"Math.round(w)",
+																"Math.round(h)"))
+										.append('}');
+								if (value.length() > 1) {
+									combined.append('(').append(value).append(
+											")(s,w,h);");
+								}
+								combined.append('}');
+								element.callMethod(combined.toString());
 							} else {
-								element.callMethod(m + "= null");
+								if (value.length() > 1) {
+									element.callMethod(m + "=" + value);
+								} else {
+									element.callMethod(m + "= null");
+								}
 							}
 						}
 					}
@@ -1888,6 +1935,7 @@ public abstract class WWebWidget extends WWidget {
 		public List<WWebWidget.OtherImpl.Member> jsMembers_;
 		public List<String> jsMembersSet_;
 		public List<String> jsMemberCalls_;
+		public JSignal2<Integer, Integer> resized_;
 		public JSignal3<String, String, WMouseEvent> dropSignal_;
 		public Map<String, WWebWidget.DropMimeType> acceptedDropMimeTypes_;
 		public StringBuilder delayedDoJavaScript_;
@@ -1900,6 +1948,7 @@ public abstract class WWebWidget extends WWidget {
 			this.jsMembers_ = null;
 			this.jsMembersSet_ = null;
 			this.jsMemberCalls_ = null;
+			this.resized_ = null;
 			this.dropSignal_ = null;
 			this.acceptedDropMimeTypes_ = null;
 			this.delayedDoJavaScript_ = null;
@@ -2072,6 +2121,53 @@ public abstract class WWebWidget extends WWidget {
 	private void beingDeleted() {
 		this.flags_.set(BIT_BEING_DELETED);
 		this.flags_.set(BIT_IGNORE_CHILD_REMOVES);
+	}
+
+	void setImplementLayoutSizeAware(boolean aware) {
+		if (!aware) {
+			if (this.otherImpl_ != null) {
+				if (this.otherImpl_.resized_ != null) {
+					;
+					this.otherImpl_.resized_ = null;
+					String v = this.getJavaScriptMember(WT_RESIZE_JS);
+					if (v.length() == 1) {
+						this.setJavaScriptMember(WT_RESIZE_JS, "");
+					} else {
+						if (!(this.otherImpl_.jsMembersSet_ != null)) {
+							this.otherImpl_.jsMembersSet_ = new ArrayList<String>();
+						}
+						this.otherImpl_.jsMembersSet_.add(WT_RESIZE_JS);
+					}
+				}
+			}
+		}
+	}
+
+	JSignal2<Integer, Integer> resized() {
+		if (!(this.otherImpl_ != null)) {
+			this.otherImpl_ = new WWebWidget.OtherImpl(this);
+		}
+		if (!(this.otherImpl_.resized_ != null)) {
+			this.otherImpl_.resized_ = new JSignal2<Integer, Integer>(this,
+					"resized") {
+			};
+			this.otherImpl_.resized_.addListener(this,
+					new Signal2.Listener<Integer, Integer>() {
+						public void trigger(Integer e1, Integer e2) {
+							WWebWidget.this.layoutSizeChanged(e1, e2);
+						}
+					});
+			String v = this.getJavaScriptMember(WT_RESIZE_JS);
+			if (v.length() == 0) {
+				this.setJavaScriptMember(WT_RESIZE_JS, "0");
+			} else {
+				if (!(this.otherImpl_.jsMembersSet_ != null)) {
+					this.otherImpl_.jsMembersSet_ = new ArrayList<String>();
+				}
+				this.otherImpl_.jsMembersSet_.add(WT_RESIZE_JS);
+			}
+		}
+		return this.otherImpl_.resized_;
 	}
 
 	private int indexOfJavaScriptMember(String name) {
