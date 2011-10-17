@@ -558,7 +558,7 @@ public class WDialog extends WCompositeWidget {
 					+ app.getJavaScriptClass() + "," + this.getJsRef() + ","
 					+ (centerX ? "1" : "0") + "," + (centerY ? "1" : "0")
 					+ ");");
-			this.setJavaScriptMember(WT_RESIZE_JS, "(dummy)");
+			this.setJavaScriptMember(WT_RESIZE_JS, "\"dummy\"");
 			app.addAutoJavaScript("{var obj = $('#" + this.getId()
 					+ "').data('obj');if (obj) obj.centerDialog();}");
 		}
