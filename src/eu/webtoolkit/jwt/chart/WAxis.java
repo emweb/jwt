@@ -1164,11 +1164,11 @@ public class WAxis {
 			}
 			double numLabels = this.calcAutoNumLabels(s);
 			double days = daysRange / numLabels;
-			final int Days = 0;
-			final int Months = 1;
-			final int Years = 2;
-			final int Hours = 3;
-			final int Minutes = 4;
+			final int Minutes = 0;
+			final int Hours = 1;
+			final int Days = 2;
+			final int Months = 3;
+			final int Years = 4;
 			int unit;
 			int interval;
 			if (days > 200) {

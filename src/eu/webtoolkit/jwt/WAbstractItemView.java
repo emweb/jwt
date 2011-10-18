@@ -1880,8 +1880,71 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 		return new WAbstractItemView.ColumnInfo(this, this.nextColumnId_++);
 	}
 
+	protected void saveExtraHeaderWidgets() {
+		for (int i = 0; i < this.getColumnCount(); ++i) {
+			WWidget w = this.columnInfo(i).extraHeaderWidget;
+			if (w != null && w.getParent() != null) {
+				(((w.getParent()) instanceof WContainerWidget ? (WContainerWidget) (w
+						.getParent())
+						: null)).removeWidget(w);
+			}
+		}
+	}
+
 	WWidget createHeaderWidget(WApplication app, int column) {
+		WAbstractItemView.ColumnInfo info = this.columnInfo(column);
+		WContainerWidget contents = new WContainerWidget();
+		contents.setObjectName("contents");
+		if (info.sorting) {
+			WText sortIcon = new WText(contents);
+			sortIcon.setObjectName("sort");
+			sortIcon.setInline(false);
+			sortIcon.setStyleClass("Wt-tv-sh Wt-tv-sh-none");
+			this.clickedForSortMapper_.mapConnect(sortIcon.clicked(), info.id);
+			if (this.currentSortColumn_ == column) {
+				sortIcon
+						.setStyleClass(info.sortOrder == SortOrder.AscendingOrder ? "Wt-tv-sh Wt-tv-sh-up"
+								: "Wt-tv-sh Wt-tv-sh-down");
+			}
+		}
+		if (!EnumUtils.mask(
+				this.model_.getHeaderFlags(column),
+				EnumSet.of(HeaderFlag.ColumnIsExpandedLeft,
+						HeaderFlag.ColumnIsExpandedRight)).isEmpty()) {
+			WImage collapseIcon = new WImage(contents);
+			collapseIcon.setFloatSide(Side.Left);
+			collapseIcon.setImageLink(new WLink(WApplication.getResourcesUrl()
+					+ "minus.gif"));
+			this.clickedForCollapseMapper_.mapConnect(collapseIcon.clicked(),
+					info.id);
+		} else {
+			if (!EnumUtils.mask(this.model_.getHeaderFlags(column),
+					HeaderFlag.ColumnIsCollapsed).isEmpty()) {
+				WImage expandIcon = new WImage(contents);
+				expandIcon.setFloatSide(Side.Left);
+				expandIcon.setImageLink(new WLink(WApplication
+						.getResourcesUrl()
+						+ "plus.gif"));
+				this.clickedForExpandMapper_.mapConnect(expandIcon.clicked(),
+						info.id);
+			}
+		}
+		WWidget i = this.headerItemDelegate_.update((WWidget) null,
+				this.headerModel_.getIndex(0, column), EnumSet
+						.noneOf(ViewItemRenderFlag.class));
+		i.setInline(false);
+		i.addStyleClass("Wt-label");
+		contents.addWidget(i);
+		if (info.sorting) {
+			WInteractWidget ww = ((i) instanceof WInteractWidget ? (WInteractWidget) (i)
+					: null);
+			if (ww != null) {
+				this.clickedForSortMapper_.mapConnect(ww.clicked(), info.id);
+			}
+		}
 		int headerLevel = this.model_ != null ? this.headerLevel(column) : 0;
+		contents.setMargin(new WLength(headerLevel
+				* this.headerLineHeight_.toPixels()), EnumSet.of(Side.Top));
 		int rightBorderLevel = headerLevel;
 		if (this.model_ != null) {
 			int rightColumn = this.modelColumnIndex(this
@@ -1907,118 +1970,39 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 				}
 			}
 		}
-		WAbstractItemView.ColumnInfo info = this.columnInfo(column);
-		WContainerWidget w = new WContainerWidget();
-		w.setObjectName("contents");
-		if (info.sorting) {
-			WText sortIcon = new WText(w);
-			sortIcon.setObjectName("sort");
-			sortIcon.setInline(false);
-			if (!this.columnResize_) {
-				sortIcon.setMargin(new WLength(4), EnumSet.of(Side.Right));
-			}
-			sortIcon.setStyleClass("Wt-tv-sh Wt-tv-sh-none");
-			this.clickedForSortMapper_.mapConnect(sortIcon.clicked(), info.id);
-			if (this.currentSortColumn_ == column) {
-				sortIcon
-						.setStyleClass(info.sortOrder == SortOrder.AscendingOrder ? "Wt-tv-sh Wt-tv-sh-up"
-								: "Wt-tv-sh Wt-tv-sh-down");
-			}
+		boolean activeRH = this.columnResize_;
+		WContainerWidget resizeHandle = new WContainerWidget();
+		resizeHandle.setStyleClass("Wt-tv-rh"
+				+ (activeRH ? "" : " Wt-tv-no-rh") + " Wt-tv-br headerrh");
+		if (activeRH) {
+			resizeHandle.mouseWentDown().addListener(this.resizeHandleMDownJS_);
 		}
-		if (!EnumUtils.mask(
-				this.model_.getHeaderFlags(column),
-				EnumSet.of(HeaderFlag.ColumnIsExpandedLeft,
-						HeaderFlag.ColumnIsExpandedRight)).isEmpty()) {
-			WImage collapseIcon = new WImage(w);
-			collapseIcon.setFloatSide(Side.Left);
-			collapseIcon.setImageLink(new WLink(WApplication.getResourcesUrl()
-					+ "minus.gif"));
-			this.clickedForCollapseMapper_.mapConnect(collapseIcon.clicked(),
-					info.id);
-		} else {
-			if (!EnumUtils.mask(this.model_.getHeaderFlags(column),
-					HeaderFlag.ColumnIsCollapsed).isEmpty()) {
-				WImage expandIcon = new WImage(w);
-				expandIcon.setFloatSide(Side.Left);
-				expandIcon.setImageLink(new WLink(WApplication
-						.getResourcesUrl()
-						+ "plus.gif"));
-				this.clickedForExpandMapper_.mapConnect(expandIcon.clicked(),
-						info.id);
-			}
-		}
-		WWidget i = this.headerItemDelegate_.update((WWidget) null,
-				this.headerModel_.getIndex(0, column), EnumSet
-						.noneOf(ViewItemRenderFlag.class));
-		i.setInline(false);
-		i.addStyleClass("Wt-label");
-		w.addWidget(i);
-		if (info.sorting) {
-			WInteractWidget ww = ((i) instanceof WInteractWidget ? (WInteractWidget) (i)
-					: null);
-			if (ww != null) {
-				this.clickedForSortMapper_.mapConnect(ww.clicked(), info.id);
-			}
-		}
-		WContainerWidget result = new WContainerWidget();
-		if (headerLevel != 0) {
-			WContainerWidget spacer = new WContainerWidget(result);
-			WText t = new WText(spacer);
-			t.setInline(false);
-			if (rightBorderLevel < headerLevel) {
-				if (rightBorderLevel != 0) {
-					t.setText(repeat(OneLine, rightBorderLevel));
-					spacer = new WContainerWidget(result);
-					t = new WText(spacer);
-					t.setInline(false);
-				}
-				t.setText(repeat(OneLine, headerLevel - rightBorderLevel));
-				spacer.setStyleClass("Wt-tv-br");
-			} else {
-				t.setText(repeat(OneLine, headerLevel));
-			}
-		}
-		if (rightBorderLevel <= headerLevel) {
-			w.addStyleClass("Wt-tv-br");
-		}
-		result.addWidget(w);
-		result.setStyleClass(info.getStyleClass() + " Wt-tv-c headerrh");
-		result.setContentAlignment(info.headerHAlignment);
-		if (info.headerVAlignment == AlignmentFlag.AlignMiddle) {
-			result.setLineHeight(this.headerLineHeight_);
-		} else {
-			result.setLineHeight(WLength.Auto);
-			if (info.headerWordWrap) {
-				result.addStyleClass("Wt-wwrap");
-			}
+		resizeHandle.setMargin(new WLength(rightBorderLevel
+				* this.headerLineHeight_.toPixels()), EnumSet.of(Side.Top));
+		if (!(this.columnInfo(column).extraHeaderWidget != null)) {
+			this.columnInfo(column).extraHeaderWidget = this
+					.createExtraHeaderWidget(column);
 		}
 		WWidget extraW = this.columnInfo(column).extraHeaderWidget;
-		if (extraW != null) {
-			result.addWidget(extraW);
-			extraW.addStyleClass("Wt-tv-br");
-		}
-		if (this.columnResize_ && app.getEnvironment().hasAjax()) {
-			WContainerWidget resizeHandle = new WContainerWidget();
-			resizeHandle.setStyleClass("Wt-tv-rh headerrh");
-			resizeHandle.mouseWentDown().addListener(this.resizeHandleMDownJS_);
-			boolean ie = WApplication.getInstance().getEnvironment()
-					.agentIsIE();
-			WContainerWidget parent = ie ? w
-					: ((result.getWidget(0)) instanceof WContainerWidget ? (WContainerWidget) (result
-							.getWidget(0))
-							: null);
-			parent.insertWidget(0, resizeHandle);
-			if (ie) {
-				if (info.headerVAlignment == AlignmentFlag.AlignMiddle) {
-					parent.setAttributeValue("style", "zoom: 1");
-					parent.resize(WLength.Auto, this.headerLineHeight_);
-				}
+		WContainerWidget result = new WContainerWidget();
+		result.setStyleClass(info.getStyleClass() + " Wt-tv-c headerrh");
+		result.addWidget(resizeHandle);
+		WContainerWidget main = new WContainerWidget();
+		main.setOverflow(WContainerWidget.Overflow.OverflowHidden);
+		main.setContentAlignment(info.headerHAlignment);
+		result.addWidget(main);
+		main.addWidget(contents);
+		if (info.headerVAlignment == AlignmentFlag.AlignMiddle) {
+			main.setLineHeight(this.headerLineHeight_);
+		} else {
+			main.setLineHeight(WLength.Auto);
+			if (info.headerWordWrap) {
+				main.addStyleClass("Wt-wwrap");
 			}
 		}
-		WText spacer = new WText();
-		spacer.setInline(false);
-		spacer.setStyleClass("Wt-tv-br headerrh");
-		result.addWidget(spacer);
+		if (extraW != null) {
+			main.addWidget(extraW);
+		}
 		return result;
 	}
 
@@ -2471,8 +2455,6 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 			}
 		});
 	}
-
-	private static String OneLine = "<div>&nbsp;</div>";
 
 	static String repeat(String s, int times) {
 		String result = "";
