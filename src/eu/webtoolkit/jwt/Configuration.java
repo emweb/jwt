@@ -577,8 +577,8 @@ public class Configuration {
 	/**
 	 * Set the error reporting mode.
 	 */
-	public ErrorReporting setErrorReporting() { 
-		return errorReporting; 
+	public void setErrorReporting(ErrorReporting err) { 
+		errorReporting = err;
 	}
 
 	boolean isSplitScript() {

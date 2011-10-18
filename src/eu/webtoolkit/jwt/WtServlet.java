@@ -9,7 +9,9 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import javax.servlet.ServletConfig;
@@ -40,6 +42,8 @@ public abstract class WtServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
 	static final String WT_WEBSESSION_ID = "wt-websession";
+	
+	static final Map<String, String> mimeTypes = new HashMap<String, String>();
 
 	static final String Boot_html;
 	static final String Plain_html;
@@ -60,6 +64,19 @@ public abstract class WtServlet extends HttpServlet {
 		JQuery_js = readFile("/eu/webtoolkit/jwt/skeletons/jquery.min.js");
 		
 		servletApi = null;
+		
+		String[][] mimeTypes = {
+				{ "css", "text/css" },
+				{ "gif", "image/gif" },
+				{ "htm", "text/html" },
+				{ "html", "text/html" },
+				{ "jpg", "image/jpeg" },
+				{ "png", "image/png" },
+				{ "js", "text/javascript" } 
+			};
+
+		for (String[] s : mimeTypes)
+			WtServlet.mimeTypes.put(s[0], s[1]);
 	}
 
 	private InputStream getResourceStream(final String fileName) throws FileNotFoundException {
@@ -148,6 +165,12 @@ public abstract class WtServlet extends HttpServlet {
 			try {
 				InputStream s = getResourceStream(fileName);
 				if (s != null) {
+					String suffix = fileName.substring(fileName.lastIndexOf('.') + 1);
+					String mimeType = mimeTypes.get(suffix);
+					if (mimeType != null)
+						response.setContentType(mimeType);
+					else
+						response.setContentType("application/octet-stream");
 					StreamUtils.copy(s, response.getOutputStream());
 					response.getOutputStream().flush();
 				} else {
@@ -164,8 +187,6 @@ public abstract class WtServlet extends HttpServlet {
 		}
 
 		servletApi.doHandleRequest(this, request, response);
-		
-		// System.err.println(request.getMethod() + " " + request.getParameter("request") + ": done");
 	}
 
 
