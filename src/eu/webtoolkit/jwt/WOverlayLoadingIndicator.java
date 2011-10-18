@@ -125,16 +125,20 @@ public class WOverlayLoadingIndicator extends WContainerWidget implements
 		if (backgroundStyleClass.length() != 0) {
 			this.cover_.setStyleClass(backgroundStyleClass);
 		}
-		if (app.getEnvironment().agentIsIE()) {
+		if (app.getEnvironment().getAgent() == WEnvironment.UserAgent.IE6) {
 			app.getStyleSheet().addRule("body", "height: 100%; margin: 0;");
 		}
+		String position = app.getEnvironment().getAgent() == WEnvironment.UserAgent.IE6 ? "absolute"
+				: "fixed";
 		if (backgroundStyleClass.length() == 0) {
 			app
 					.getStyleSheet()
 					.addRule(
 							"div#" + this.cover_.getId(),
 							""
-									+ "background: #DDDDDD;height: 100%; width: 100%;top: 0px; left: 0px;position: absolute;z-index: 10000;"
+									+ "background: #DDDDDD;height: 100%; width: 100%;top: 0px; left: 0px;position: "
+									+ position
+									+ ";z-index: 10000;"
 									+ (app.getEnvironment().agentIsIE() ? "filter: alpha(opacity=50);"
 											: "opacity: 0.5;"));
 		}
@@ -143,7 +147,9 @@ public class WOverlayLoadingIndicator extends WContainerWidget implements
 					.getStyleSheet()
 					.addRule(
 							"div#" + this.center_.getId(),
-							"background: white;border: 3px solid #333333;z-index: 10001; visibility: visible;position: absolute; left: 50%; top: 50%;margin-left: -50px; margin-top: -40px;width: 100px; height: 80px;font-family: arial,sans-serif;text-align: center");
+							"background: white;border: 3px solid #333333;z-index: 10001; visibility: visible;position: "
+									+ position
+									+ "; left: 50%; top: 50%;margin-left: -50px; margin-top: -40px;width: 100px; height: 80px;font-family: arial,sans-serif;text-align: center");
 		}
 	}
 
