@@ -8,10 +8,12 @@ package eu.webtoolkit.jwt;
 import java.util.ArrayList;
 
 /**
- * A signal passing 5 arguments.
+ * A signal that propagates events to listeners, and is capable of passing 5 argument.
  * <p>
- * A signal implements the Observable pattern, allowing one or more listeners to listen for
+ * A signal implements the Observer pattern, allowing one or more listeners to listen for
  * events generated on the signal. The event may propagate 5 arguments to the listeners.
+ * <p>
+ * For a usage example take a look the documentation of {@link Signal2}.
  */
 public class Signal5<A1, A2, A3, A4, A5> extends AbstractSignal {
 

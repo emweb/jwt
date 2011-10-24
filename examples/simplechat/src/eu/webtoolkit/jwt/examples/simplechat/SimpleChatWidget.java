@@ -61,7 +61,7 @@ public class SimpleChatWidget extends WContainerWidget {
 		setLayout(vLayout, AlignmentFlag.AlignLeft, AlignmentFlag.AlignTop);
 
 		WHBoxLayout hLayout = new WHBoxLayout();
-		vLayout.addLayout(hLayout);
+		vLayout.addLayout(hLayout, 0, AlignmentFlag.AlignLeft, AlignmentFlag.AlignTop);
 
 		hLayout.addWidget(new WLabel("User name:"), 0,
 				AlignmentFlag.AlignMiddle);
@@ -156,11 +156,8 @@ public class SimpleChatWidget extends WContainerWidget {
 			// Add button to horizontal layout with stretch = 0
 			hLayout.addWidget(b);
 
-			// Add stretching spacer to horizontal layout
-			hLayout.addStretch(1);
-
 			// Add nested layout to vertical layout with stretch = 0
-			vLayout.addLayout(hLayout);
+			vLayout.addLayout(hLayout, 0, AlignmentFlag.AlignLeft, AlignmentFlag.AlignTop);
 
 			setLayout(vLayout);
 
@@ -175,8 +172,9 @@ public class SimpleChatWidget extends WContainerWidget {
 			// takes
 			// 2 arguments: the originator of the event (in our case the
 			// button or text area), and the JavaScript event object.
-			clearInput_.setJavaScript("function(o, e) {"
-					+ messageEdit_.getJsRef() + ".value='';}");
+			clearInput_.setJavaScript("function(o, e) { setTimeout(function() {"
+					+ messageEdit_.getJsRef() + ".value='';"
+					+ "}, 0); }");
 
 			// Bind the C++ and JavaScript event handlers.
 			sendButton_.clicked().addListener(this,

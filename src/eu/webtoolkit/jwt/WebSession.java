@@ -37,9 +37,9 @@ class WebSession {
 		this.favicon_ = favicon;
 		this.state_ = WebSession.State.JustCreated;
 		this.sessionId_ = sessionId;
-		this.sessionIdCookie_ = MathUtils.randomId();
+		this.sessionIdCookie_ = "";
 		this.sessionIdChanged_ = false;
-		this.sessionIdCookieChanged_ = true;
+		this.sessionIdCookieChanged_ = false;
 		this.sessionIdInUrl_ = false;
 		this.controller_ = controller;
 		this.renderer_ = new WebRenderer(this);
@@ -84,8 +84,12 @@ class WebSession {
 			this.applicationName_ = this.applicationUrl_;
 		}
 		this.log("notice").append("Session created");
-		this.getRenderer().setCookie("Wt" + this.sessionIdCookie_, "1", -1, "",
-				"");
+		if (this.controller_.getConfiguration().isSessionIdCookie()) {
+			this.sessionIdCookie_ = MathUtils.randomId();
+			this.sessionIdCookieChanged_ = true;
+			this.getRenderer().setCookie("Wt" + this.sessionIdCookie_, "1", -1,
+					"", "");
+		}
 	}
 
 	public WebSession(WtServlet controller, String sessionId,

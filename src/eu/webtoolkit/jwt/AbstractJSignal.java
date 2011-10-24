@@ -41,12 +41,24 @@ public abstract class AbstractJSignal extends AbstractEventSignal {
 		try {
 			if (toClass == String.class)
 				return jse.userEventArgs.get(index);
-			else if (toClass == Integer.class)
-				return Integer.valueOf(jse.userEventArgs.get(index));
 			else if (toClass == WString.class)
 				return new WString(jse.userEventArgs.get(index));
+			else if (toClass == Integer.class)
+				return Integer.valueOf(jse.userEventArgs.get(index));
+			else if (toClass == Long.class)
+				return Long.valueOf(jse.userEventArgs.get(index));
+			else if (toClass == Short.class)
+				return Short.valueOf(jse.userEventArgs.get(index));
+			else if (toClass == Byte.class)
+				return Byte.valueOf(jse.userEventArgs.get(index));
 			else if (toClass == Double.class)
 				return Double.valueOf(jse.userEventArgs.get(index));
+			else if (toClass == Float.class)
+				return Float.valueOf(jse.userEventArgs.get(index));
+			else if (toClass == Character.class && jse.userEventArgs.get(index).length() > 0)
+				return jse.userEventArgs.get(index).charAt(0);
+			else if (toClass == Boolean.class)
+				return Boolean.valueOf(jse.userEventArgs.get(index));
 			else if (toClass == WMouseEvent.class)
 				return new WMouseEvent(jse);
 			else if (toClass == WKeyEvent.class)

@@ -461,8 +461,14 @@ public class WImage extends WInteractWidget {
 		}
 		if (this.flags_.get(BIT_IMAGE_LINK_CHANGED) || all) {
 			if (!this.imageLink_.isNull()) {
-				img.setProperty(Property.PropertySrc,
-						resolveRelativeUrl(this.imageLink_.getUrl()));
+				String url = resolveRelativeUrl(this.imageLink_.getUrl());
+				WApplication app = WApplication.getInstance();
+				boolean needRedirect = url.indexOf("://") != -1
+						&& app.getSession().hasSessionIdInUrl();
+				if (needRedirect) {
+					url = "?request=redirect&url=" + DomElement.urlEncodeS(url);
+				}
+				img.setProperty(Property.PropertySrc, url);
 			} else {
 				img.setProperty(Property.PropertySrc, "#");
 			}

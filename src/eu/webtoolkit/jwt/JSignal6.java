@@ -12,19 +12,21 @@ import eu.webtoolkit.jwt.Signal.Listener;
 /**
  * A signal that may be triggered from the browser with a JavaScript call, passing 6 arguments.
  * <p>
- * The argument types A1 to A6 must be a {@link String}, {@link WString}, {@link Integer} or
- * {@link Double}. Values of the corresponding JavaScript types can be passed to the JavaScript
- * call.
+ * The argument types A1 to A6 must be a {@link String}, {@link WString} or a wrapper class
+ * of one of the Java primitive types. Values of the corresponding JavaScript types can be 
+ * passed to the JavaScript call.
  * <p>
  * Note that this is an abstract class. To create a JSignal, you should specialize this class, but
  * you do not need to reimplement any method. The reason for this is to circumvent limitations in
- * Java to obtain introspection in the types of the arguments, and provide suitable marshalling
+ * Java to obtain introspection in the types of the arguments, and provide suitable marshaling
  * of data from JavaScript to Java. The easiest way to instantiate an object of this class is:
  * 
  * <code>
  *   JSignal6<String, Integer, Double, Integer, WString, Integer> pingSignal
  *      = new JSignal6<String, Integer, Double, Integer, WString, Integer>(this, "pingSignal") { };
  * </code>
+ * 
+ * For a usage example take a look the documentation of {@link JSignal2}.
  */
 public abstract class JSignal6<A1, A2, A3, A4, A5, A6> extends AbstractJSignal {
 	private Signal6<A1, A2, A3, A4, A5, A6> dynamic_;

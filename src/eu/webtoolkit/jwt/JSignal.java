@@ -7,6 +7,8 @@ package eu.webtoolkit.jwt;
 
 /**
  * A signal that may be triggered from the browser with a JavaScript call.
+ * 
+ * For a usage example take a look the documentation of {@link JSignal2}.
  */
 public class JSignal extends AbstractJSignal {
 	private Signal dynamic_;

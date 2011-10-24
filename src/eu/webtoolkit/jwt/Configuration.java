@@ -46,7 +46,7 @@ public class Configuration {
 	private HashMap<String, String> properties_ = new HashMap<String, String>();
 	private WLogger logger = new WLogger(System.err);
 	private String redirectMessage_ = "Plain HTML version";
-	private boolean sendXHTMLMimeType = true;
+	private boolean sendXHTMLMimeType = false;
 	private boolean inlineCss_ = true;
 	private ArrayList<String> botList = new ArrayList<String>();
 	private ArrayList<String> ajaxAgentList = new ArrayList<String>();
@@ -83,6 +83,8 @@ public class Configuration {
 	 * @param configurationFile
 	 */
 	public Configuration(File configurationFile) {
+		System.err.println("Reading configuration file: " + configurationFile.getAbsolutePath());
+		
 		properties_.put(WApplication.RESOURCES_URL, "/wt-resources/");
 		
 		final String errorMessage = "Error parsing configuration file: ";
@@ -563,9 +565,6 @@ public class Configuration {
 		this.indicatorTimeout = timeout;
 	}
 
-	boolean isWebSockets() {
-		return false;
-	}
 	
 	/**
 	 * Returns the error reporting mode.
@@ -581,7 +580,18 @@ public class Configuration {
 		errorReporting = err;
 	}
 
+	/*
+	 * The following are not yet enabled for JWt
+	 */
+	boolean isWebSockets() {
+		return false;
+	}
+
 	boolean isSplitScript() {
+		return false;
+	}
+
+	boolean isSessionIdCookie() {
 		return false;
 	}
 }

@@ -8,10 +8,12 @@ package eu.webtoolkit.jwt;
 import java.util.ArrayList;
 
 /**
- * A signal.
+ * A signal that propagates events to listeners.
  * <p>
- * A signal implements the Observable pattern, allowing one or more listeners to listen for
+ * A signal implements the Observer pattern, allowing one or more listeners to listen for
  * events generated on the signal.
+ * <p>
+ * For a usage example take a look the documentation of {@link Signal2}.
  */
 public class Signal extends AbstractSignal {
 	/**

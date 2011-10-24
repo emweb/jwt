@@ -8,10 +8,60 @@ package eu.webtoolkit.jwt;
 import java.util.ArrayList;
 
 /**
- * A signal passing 2 arguments.
+ * A signal that propagates events to listeners, and is capable of passing 2 argument.
  * <p>
- * A signal implements the Observable pattern, allowing one or more listeners to listen for
+ * A signal implements the Observer pattern, allowing one or more listeners to listen for
  * events generated on the signal. The event may propagate 2 arguments to the listeners.
+ * <p>
+ * A usage example:
+ * <code>
+ *  class MyWidget extends WContainerWidget
+ *  {
+ *    public MyWidget(WContainerWidget parent)
+ *    {
+ *      super(parent);
+ *  	
+ *      this.done = new Signal2<Integer, String>();
+ *      ...
+ *      WPushButton button = new WPushButton("Okay");
+ *      button.clicked().addListener(this, new Signal.Listener() {
+ *        public void trigger() {
+ *          process();
+ *        }
+ *      });
+ *    }
+ *
+ *    // provide an accessor for the signal
+ *    Signal2<Integer, String> done() { return done; }
+ *
+ *    private Signal2<Integer, String> done;
+ *
+ *    void process() {
+ *      ...
+ *      done.trigger(42, "Totally done"); // trigger the signal
+ *    }
+ *  };
+ * </code> 
+ *  This widget could then be used form another class:
+ * <code> 
+ *  class GUIClass extends WContainerWidget
+ *  {
+ *    ...
+ *
+ *    private void init() {
+ *      MyWidget widget = new MyWidget(this);
+ *      widget.done().addListener(this, new Signal2.Listener<Integer, String>() {
+ *        public void trigger(Integer i, String s) {
+ *          whenDone(i, s);
+ *        }
+ *      });
+ *    }
+ *   
+ *    void whenDone(int result, String description) {
+ *      ...
+ *    }
+ *  };
+ * </code>
  */
 public class Signal2<A1, A2> extends AbstractSignal {
 	/**
