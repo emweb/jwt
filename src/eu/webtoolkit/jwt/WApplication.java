@@ -218,6 +218,7 @@ public class WApplication extends WObject {
 			this.ajaxMethod_ = WApplication.AjaxMethod.XMLHttpRequest;
 			this.domRoot2_ = null;
 			this.widgetRoot_ = new WContainerWidget(this.domRoot_);
+			;
 			this.widgetRoot_.resize(WLength.Auto, new WLength(100,
 					WLength.Unit.Percentage));
 		} else {
@@ -2060,7 +2061,7 @@ public class WApplication extends WObject {
 			String cookieName = this.getEnvironment().getDeploymentPath();
 			this.setCookie(cookieName, newSessionId, -1);
 		} else {
-			redirectUrl += "?wtd=" + newSessionId;
+			redirectUrl += "?wtd=" + DomElement.urlEncodeS(newSessionId);
 		}
 		this.redirect(redirectUrl);
 	}

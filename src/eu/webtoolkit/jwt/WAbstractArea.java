@@ -86,7 +86,20 @@ public class WAbstractArea extends WObject {
 		this.repaint();
 	}
 
-	// public WLink getLink() ;
+	/**
+	 * Returns the link.
+	 * <p>
+	 * 
+	 * @see WAbstractArea#setLink(WLink link)
+	 */
+	public WLink getLink() {
+		if (!(this.anchor_ != null)) {
+			return new WLink();
+		} else {
+			return this.anchor_.link_;
+		}
+	}
+
 	/**
 	 * Sets the destination URL (<b>deprecated</b>).
 	 * <p>

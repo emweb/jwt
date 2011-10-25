@@ -1743,7 +1743,7 @@ class WebSession {
 	}
 
 	private String getSessionQuery() {
-		return "?wtd=" + this.sessionId_;
+		return "?wtd=" + DomElement.urlEncodeS(this.sessionId_);
 	}
 
 	private void flushBootStyleResponse() {

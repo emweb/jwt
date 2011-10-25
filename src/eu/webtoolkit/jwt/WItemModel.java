@@ -1,7 +1,6 @@
 package eu.webtoolkit.jwt;
 
 import java.util.ArrayList;
-import java.util.EnumSet;
 import java.util.List;
 
 /**
@@ -12,11 +11,12 @@ import java.util.List;
  * hierarchical data (i.e. a model with a tree-like data structure and one or more columns).
  * <p>
  * It cannot be used directly but must be subclassed. Subclassed models must at
- * least implement {@link List<Item> getChildItems(Item parent, int from, int count)
- * WItemModel#getChildItems()} to return a list of items for a parent,
+ * least implement {@link WItemModel#getChildItems(Object, int, int) getChildItems() } 
+ * to return a list of items for a parent,
  * {@link WAbstractItemModel#getData(WModelIndex index, int role)
- * WAbstractItemModel#getData()} to return data and 
- * {@link int getColumnCount(WModelIndex parent) WItemModel#getChildItems(Object, int, int)}
+ * getData()} to return data and 
+ * {@link WAbstractItemModel#getColumnCount(WModelIndex parent)
+ * getColumnCount()}
  * to return the number of columns.
  * 
  * When providing a value for fetchSize, 
@@ -26,26 +26,23 @@ import java.util.List;
 public abstract class WItemModel<Item extends Object> extends WAbstractItemModel {
 	private class Node {
 		private List<Item> childItems;
-		WModelIndex index;
-		List<Node> childNodes;
+		private WModelIndex index;
+		private List<Node> childNodes;
 		
-		int childCount;
+		private int childCount;
 
 		public Node(WModelIndex index) {
 			this.childItems = new ArrayList<Item>();
 			this.index = index;
 			this.childNodes = new ArrayList<Node>();
 		}
-		
-		@SuppressWarnings("unchecked")
+
 		public Item getItem(WModelIndex index) {
 			int row = index.getRow();
 			if (row >= childItems.size()) {
-				Object parent = null;
-				if (index.getParent() != null) {
-					Node parentParentNode = (Node)index.getParent().getInternalPointer();
-					parent = parentParentNode.childItems.get(index.getParent().getRow());
-				}
+				Item parent = null;
+				if (index.getParent() != null)
+					parent = getParentItem(index);
 				
 				List<Item> children;
 				if (fetchSize > 0) {
@@ -64,10 +61,16 @@ public abstract class WItemModel<Item extends Object> extends WAbstractItemModel
 		}
 		
 		public WModelIndex getIndex(int row, int column) {
-			if (childNodes.size() > 0)
+			if (childNodes.get(row) != null)
 				return childNodes.get(row).index;
 			else
 				return createIndex(row, column, this);
+		}
+		
+		public void setChildCount(int childCount) {
+			this.childCount = childCount;
+			for (int i = 0; i < childCount; i++)
+				this.childNodes.add(null);
 		}
 	};
 
@@ -101,13 +104,13 @@ public abstract class WItemModel<Item extends Object> extends WAbstractItemModel
 	 * this method should return the number of top level items.
 	 * 
 	 * The default implementation returns the size of the list returned,
-	 * by invoking <code>getChildItems(item, 0, 0)</code>.
+	 * by invoking <code>getChildItems(item, 0, -1)</code>.
 	 * When providing a fetchSize to the constructor,
 	 * you need to override this method with a proper implementation.
 	 * <p>
 	 */
 	public int getChildCount(Item item) {
-		return getChildItems(item, 0, 0).size();
+		return getChildItems(item, 0, -1).size();
 	}
 
 	@Override
@@ -118,10 +121,10 @@ public abstract class WItemModel<Item extends Object> extends WAbstractItemModel
 	}
 
 	/**
-	 * Returns the Item for the WModelIndex <code>index</code>.
+	 * Returns the Item for the {@link WModelIndex} <code>index</code>.
 	 * 
 	 * <p>
-	 * This returns the Item for the WModelIndex <code>index</code>.
+	 * This returns the Item for the {@link WModelIndex} <code>index</code>.
 	 * </p>
 	 * */
 	@SuppressWarnings("unchecked")
@@ -133,16 +136,6 @@ public abstract class WItemModel<Item extends Object> extends WAbstractItemModel
 			return (Item) parentNode.getItem(index);
 		}
 	}
-
-	@Override
-	public EnumSet<ItemFlag> getFlags(WModelIndex index) {
-		Item item = getItem(index);
-		
-		if (getChildCount(item) == 0)
-			return EnumSet.of(ItemFlag.ItemIsSelectable);
-		else
-			return EnumSet.noneOf(ItemFlag.class);
-	}
 	
 	@Override
 	public WModelIndex getIndex(int row, int column, WModelIndex parent) {
@@ -151,7 +144,9 @@ public abstract class WItemModel<Item extends Object> extends WAbstractItemModel
 		if (parent == null) {
 			if (rootNode == null) { 
 				rootNode = new Node(null);
-				rootNode.childCount = getChildCount(null);
+				
+				int childCount = getChildCount(null);
+				rootNode.setChildCount(childCount);
 			}
 			parentNode = rootNode;
 		} else {
@@ -164,9 +159,10 @@ public abstract class WItemModel<Item extends Object> extends WAbstractItemModel
 			if (parentNode == null) {
 				parentNode = new Node(null);
 				parentNode.index = parent;
-				parentNode.childCount = getChildCount(parentParentNode.childItems.get(parent.getRow()));
-				for (int i = parentParentNode.childNodes.size(); i <= parent.getRow(); i++) 
-					parentParentNode.childNodes.add(null);
+				
+				int childCount = getChildCount(parentParentNode.childItems.get(parent.getRow()));
+				parentNode.setChildCount(childCount);
+				
 				parentParentNode.childNodes.set(parent.getRow(), parentNode);
 			}
 		}
@@ -190,4 +186,10 @@ public abstract class WItemModel<Item extends Object> extends WAbstractItemModel
 	 * <p>
 	 */
 	public abstract List<Item> getChildItems(Item parent, int from, int count);
+	
+	private Item getParentItem(WModelIndex index) {
+		@SuppressWarnings("unchecked")
+		Node parentParentNode = (Node)index.getParent().getInternalPointer();
+		return parentParentNode.childItems.get(index.getParent().getRow());
+	}
 }
