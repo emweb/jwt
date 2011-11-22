@@ -16,6 +16,8 @@ import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A menu presented in a popup window.
@@ -115,6 +117,8 @@ import eu.webtoolkit.jwt.servlet.*;
  * @see WPopupMenuItem
  */
 public class WPopupMenu extends WCompositeWidget {
+	private static Logger logger = LoggerFactory.getLogger(WPopupMenu.class);
+
 	/**
 	 * Creates a new popup menu.
 	 * <p>
@@ -310,8 +314,7 @@ public class WPopupMenu extends WCompositeWidget {
 	 */
 	public WPopupMenuItem exec(WPoint p) {
 		if (this.recursiveEventLoop_) {
-			throw new WtException(
-					"WPopupMenu::exec(): already in recursive event loop.");
+			throw new WException("WPopupMenu::exec(): already being executed.");
 		}
 		WApplication app = WApplication.getInstance();
 		this.recursiveEventLoop_ = true;
@@ -319,7 +322,7 @@ public class WPopupMenu extends WCompositeWidget {
 		if (app.getEnvironment().isTest()) {
 			app.getEnvironment().popupExecuted().trigger(this);
 			if (this.recursiveEventLoop_) {
-				throw new WtException("Test case must close popup menu.");
+				throw new WException("Test case must close popup menu.");
 			}
 		} else {
 			do {
@@ -350,8 +353,7 @@ public class WPopupMenu extends WCompositeWidget {
 	 */
 	public WPopupMenuItem exec(WWidget location, Orientation orientation) {
 		if (this.recursiveEventLoop_) {
-			throw new WtException(
-					"WPopupMenu::exec(): already in recursive event loop.");
+			throw new WException("WPopupMenu::exec(): already being executed.");
 		}
 		WebSession session = WApplication.getInstance().getSession();
 		this.recursiveEventLoop_ = true;

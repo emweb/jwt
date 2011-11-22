@@ -16,6 +16,8 @@ import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A standard data model, which stores its data in memory.
@@ -60,6 +62,9 @@ import eu.webtoolkit.jwt.servlet.*;
  * and standard items.
  */
 public class WStandardItemModel extends WAbstractItemModel {
+	private static Logger logger = LoggerFactory
+			.getLogger(WStandardItemModel.class);
+
 	/**
 	 * Creates a new standard item model.
 	 */

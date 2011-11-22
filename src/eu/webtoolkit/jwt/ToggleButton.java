@@ -16,8 +16,12 @@ import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 class ToggleButton extends WText {
+	private static Logger logger = LoggerFactory.getLogger(ToggleButton.class);
+
 	public ToggleButton(ToggleButtonConfig config, WContainerWidget parent) {
 		super(parent);
 		this.signals_ = new ArrayList<AbstractSignal>();

@@ -16,6 +16,8 @@ import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A widget that renders a Flash object (also known as Flash movie).
@@ -44,6 +46,8 @@ import eu.webtoolkit.jwt.servlet.*;
  * Styling through CSS is not applicable.
  */
 public class WFlashObject extends WWebWidget {
+	private static Logger logger = LoggerFactory.getLogger(WFlashObject.class);
+
 	/**
 	 * Constructs a Flash widget.
 	 */

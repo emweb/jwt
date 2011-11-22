@@ -16,6 +16,8 @@ import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A validator for validating floating point user input.
@@ -33,6 +35,9 @@ import eu.webtoolkit.jwt.servlet.*;
  * Wt.WDoubleValidator.TooLarge: The number must be smaller than {1}
  */
 public class WDoubleValidator extends WValidator {
+	private static Logger logger = LoggerFactory
+			.getLogger(WDoubleValidator.class);
+
 	/**
 	 * Creates a new double validator that accepts any double.
 	 */
@@ -130,26 +135,27 @@ public class WDoubleValidator extends WValidator {
 	 * The input is considered valid only when it is blank for a non-mandatory
 	 * field, or represents a double within the valid range.
 	 */
-	public WValidator.State validate(String input) {
-		String text = input;
-		if (this.isMandatory()) {
-			if (text.length() == 0) {
-				return WValidator.State.InvalidEmpty;
-			}
-		} else {
-			if (text.length() == 0) {
-				return WValidator.State.Valid;
-			}
+	public WValidator.Result validate(String input) {
+		if (input.length() == 0) {
+			return super.validate(input);
 		}
+		String text = input;
 		try {
 			double i = Double.parseDouble(text);
-			if (i >= this.bottom_ && i <= this.top_) {
-				return WValidator.State.Valid;
+			if (i < this.bottom_) {
+				return new WValidator.Result(WValidator.State.Invalid, this
+						.getInvalidTooSmallText());
 			} else {
-				return WValidator.State.Invalid;
+				if (i > this.top_) {
+					return new WValidator.Result(WValidator.State.Invalid, this
+							.getInvalidTooLargeText());
+				} else {
+					return new WValidator.Result(WValidator.State.Valid);
+				}
 			}
 		} catch (NumberFormatException e) {
-			return WValidator.State.Invalid;
+			return new WValidator.Result(WValidator.State.Invalid, this
+					.getInvalidNotANumberText());
 		}
 	}
 

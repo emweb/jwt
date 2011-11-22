@@ -16,6 +16,8 @@ import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A widget that shows one of two icons depending on its state.
@@ -33,6 +35,8 @@ import eu.webtoolkit.jwt.servlet.*;
  * <code>&lt;img&gt;</code> elements.
  */
 public class WIconPair extends WCompositeWidget {
+	private static Logger logger = LoggerFactory.getLogger(WIconPair.class);
+
 	/**
 	 * Construct an icon pair from the two icons.
 	 * <p>

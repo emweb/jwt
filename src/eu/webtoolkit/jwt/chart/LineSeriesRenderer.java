@@ -16,8 +16,13 @@ import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 class LineSeriesRenderer extends SeriesRenderer {
+	private static Logger logger = LoggerFactory
+			.getLogger(LineSeriesRenderer.class);
+
 	public LineSeriesRenderer(WChart2DRenderer renderer, WDataSeries series,
 			SeriesRenderIterator it) {
 		super(renderer, series, it);

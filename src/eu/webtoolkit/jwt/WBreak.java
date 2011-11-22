@@ -16,6 +16,8 @@ import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A widget that provides a line break between inline widgets.
@@ -30,6 +32,8 @@ import eu.webtoolkit.jwt.servlet.*;
  * provide styling. Styling through CSS is not applicable.
  */
 public class WBreak extends WWebWidget {
+	private static Logger logger = LoggerFactory.getLogger(WBreak.class);
+
 	/**
 	 * Construct a line break.
 	 */

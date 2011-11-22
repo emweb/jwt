@@ -16,6 +16,8 @@ import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A horizontal or vertical slider control.
@@ -55,6 +57,8 @@ import eu.webtoolkit.jwt.servlet.*;
  * </div>
  */
 public class WSlider extends WFormWidget {
+	private static Logger logger = LoggerFactory.getLogger(WSlider.class);
+
 	/**
 	 * Enumeration that specifies the location of ticks.
 	 */
@@ -421,6 +425,17 @@ public class WSlider extends WFormWidget {
 		super.resize(width, height);
 		if (this.paintedSlider_ != null) {
 			this.paintedSlider_.sliderResized(width, height);
+		}
+	}
+
+	public String getValueText() {
+		return String.valueOf(this.value_);
+	}
+
+	public void setValueText(String value) {
+		try {
+			this.value_ = Integer.parseInt(value);
+		} catch (NumberFormatException e) {
 		}
 	}
 

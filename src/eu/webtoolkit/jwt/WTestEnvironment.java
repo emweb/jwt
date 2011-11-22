@@ -16,6 +16,8 @@ import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * An environment for testing purposes.
@@ -44,6 +46,9 @@ import eu.webtoolkit.jwt.servlet.*;
  * @see WApplication#WApplication(WEnvironment env)
  */
 public class WTestEnvironment extends WEnvironment {
+	private static Logger logger = LoggerFactory
+			.getLogger(WTestEnvironment.class);
+
 	/**
 	 * Default constructor.
 	 * <p>
@@ -325,8 +330,16 @@ public class WTestEnvironment extends WEnvironment {
 		return this.popupExecuted_;
 	}
 
-	private Configuration configuration_;
+	public void endRequest() {
+		;
+	}
+
+	public void startRequest() {
+		new WebSession.Handler(this.theSession_, true);
+	}
+
 	private WebSession theSession_;
+	private Configuration configuration_;
 	private WtServlet controller_;
 	private Signal1<WDialog> dialogExecuted_;
 	private Signal1<WPopupMenu> popupExecuted_;

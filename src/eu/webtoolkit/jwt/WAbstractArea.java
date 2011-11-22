@@ -16,6 +16,8 @@ import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Abstract base class for interactive areas in a widget.
@@ -31,6 +33,8 @@ import eu.webtoolkit.jwt.servlet.*;
  * @see WPaintedWidget#addArea(WAbstractArea area)
  */
 public class WAbstractArea extends WObject {
+	private static Logger logger = LoggerFactory.getLogger(WAbstractArea.class);
+
 	/**
 	 * Specifies that this area specifies a hole for another area.
 	 * <p>
@@ -567,6 +571,9 @@ public class WAbstractArea extends WObject {
 	}
 
 	static class AnchorImpl {
+		private static Logger logger = LoggerFactory
+				.getLogger(AnchorImpl.class);
+
 		public WLink link_;
 		public AnchorTarget target_;
 		public WString altText_;
@@ -642,7 +649,7 @@ public class WAbstractArea extends WObject {
 	static WAbstractArea areaForImpl(WWidget w) {
 		AreaWidget aw = ((w) instanceof AreaWidget ? (AreaWidget) (w) : null);
 		if (!(aw != null)) {
-			throw new WtException(
+			throw new WException(
 					"WAbstractArea::areaForImpl could not dynamic_cast?");
 		}
 		return aw.getFacade();

@@ -16,11 +16,15 @@ import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A value class that describes a font.
  */
 public class WFont {
+	private static Logger logger = LoggerFactory.getLogger(WFont.class);
+
 	/**
 	 * The generic font family.
 	 */

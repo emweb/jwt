@@ -16,6 +16,8 @@ import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A single item in a menu.
@@ -62,6 +64,8 @@ import eu.webtoolkit.jwt.servlet.*;
  * @see WMenu#addItem(WMenuItem item)
  */
 public class WMenuItem extends WObject {
+	private static Logger logger = LoggerFactory.getLogger(WMenuItem.class);
+
 	/**
 	 * Enumeration that determines when contents should be loaded.
 	 */
@@ -633,7 +637,7 @@ public class WMenuItem extends WObject {
 		if (wi != null) {
 			return wi.clicked();
 		} else {
-			throw new WtException(
+			throw new WException(
 					"WMenuItem::activateSignal(): could not dynamic_cast itemWidget() or itemWidget()->children()[0] to a WInteractWidget");
 		}
 	}
@@ -656,7 +660,7 @@ public class WMenuItem extends WObject {
 		if (ci != null) {
 			return ci.clicked();
 		} else {
-			throw new WtException(
+			throw new WException(
 					"WMenuItem::closeSignal(): could not dynamic_cast itemWidget()->children()[1] to a WInteractWidget");
 		}
 	}

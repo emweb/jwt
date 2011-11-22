@@ -16,9 +16,14 @@ import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import eu.webtoolkit.jwt.examples.painting.*;
 
 class GraphicsWidgets extends ControlsWidget {
+	private static Logger logger = LoggerFactory
+			.getLogger(GraphicsWidgets.class);
+
 	public GraphicsWidgets(EventDisplayer ed) {
 		super(ed, true);
 		this.topic("WPaintedWidget", this);

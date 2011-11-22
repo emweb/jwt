@@ -16,6 +16,8 @@ import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A validator is used to validate user input according to pre-defined rules.
@@ -57,6 +59,8 @@ import eu.webtoolkit.jwt.servlet.*;
  * @see WFormWidget
  */
 public class WValidator extends WObject {
+	private static Logger logger = LoggerFactory.getLogger(WValidator.class);
+
 	/**
 	 * The state in which validated input can exist.
 	 */
@@ -66,7 +70,7 @@ public class WValidator extends WObject {
 		 */
 		Invalid,
 		/**
-		 * The input is invalid (emtpy and mandatory).
+		 * The input is invalid (empty and mandatory).
 		 */
 		InvalidEmpty,
 		/**
@@ -80,6 +84,38 @@ public class WValidator extends WObject {
 		public int getValue() {
 			return ordinal();
 		}
+	}
+
+	/**
+	 * A class that holds a validation result.
+	 */
+	public static class Result {
+		private static Logger logger = LoggerFactory.getLogger(Result.class);
+
+		public Result() {
+			this.state_ = WValidator.State.Invalid;
+			this.message_ = new WString();
+		}
+
+		public Result(WValidator.State state, CharSequence message) {
+			this.state_ = state;
+			this.message_ = WString.toWString(message);
+		}
+
+		public Result(WValidator.State state) {
+			this(state, WString.Empty);
+		}
+
+		public WValidator.State getState() {
+			return this.state_;
+		}
+
+		public WString getMessage() {
+			return this.message_;
+		}
+
+		private WValidator.State state_;
+		private WString message_;
 	}
 
 	/**
@@ -183,17 +219,18 @@ public class WValidator extends WObject {
 	/**
 	 * Validates the given input.
 	 * <p>
-	 * This function returns the current validation state of the input. The
-	 * default implementation only checks whether a mandatory field is not left
-	 * blank.
+	 * <p>
+	 * <i><b>Note: </b>The signature for this method changed in JWt 3.2.0. </i>
+	 * </p>
 	 */
-	public WValidator.State validate(String input) {
+	public WValidator.Result validate(String input) {
 		if (this.isMandatory()) {
 			if (input.length() == 0) {
-				return WValidator.State.InvalidEmpty;
+				return new WValidator.Result(WValidator.State.InvalidEmpty,
+						this.getInvalidBlankText());
 			}
 		}
-		return WValidator.State.Valid;
+		return new WValidator.Result(WValidator.State.Valid);
 	}
 
 	// public void createExtConfig(Writer config) throws IOException;
@@ -208,7 +245,8 @@ public class WValidator extends WObject {
 	 * <li>a <code>message</code> that indicates the problem if not valid.</li>
 	 * </ul>
 	 * <p>
-	 * Return an empty string if you are not provide the client-side validation.
+	 * Returns an empty string if the validator does not provide a client-side
+	 * validation implementationq.
 	 * <p>
 	 * <p>
 	 * <i><b>Note: </b>The signature and contract changed changed in JWt

@@ -16,6 +16,8 @@ import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Helper class for rendering a cartesian chart.
@@ -45,6 +47,9 @@ import eu.webtoolkit.jwt.servlet.*;
  * of changes and refactorings.</i>
  */
 public class WChart2DRenderer {
+	private static Logger logger = LoggerFactory
+			.getLogger(WChart2DRenderer.class);
+
 	/**
 	 * Creates a renderer.
 	 * <p>

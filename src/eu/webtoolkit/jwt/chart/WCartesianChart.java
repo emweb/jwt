@@ -16,6 +16,8 @@ import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A cartesian chart.
@@ -93,6 +95,9 @@ import eu.webtoolkit.jwt.servlet.*;
  * @see WPieChart
  */
 public class WCartesianChart extends WAbstractChart {
+	private static Logger logger = LoggerFactory
+			.getLogger(WCartesianChart.class);
+
 	/**
 	 * Creates a new cartesian chart.
 	 * <p>
@@ -330,7 +335,7 @@ public class WCartesianChart extends WAbstractChart {
 		if (index != -1) {
 			return this.series_.get(index);
 		}
-		throw new PlotException("Column " + String.valueOf(modelColumn)
+		throw new WException("Column " + String.valueOf(modelColumn)
 				+ " not in plot");
 	}
 
@@ -584,7 +589,7 @@ public class WCartesianChart extends WAbstractChart {
 
 	public void paint(WPainter painter, WRectF rectangle) {
 		if (!painter.isActive()) {
-			throw new WtException(
+			throw new WException(
 					"WCartesianChart::paint(): painter is not active.");
 		}
 		WRectF rect = rectangle;
@@ -1034,6 +1039,9 @@ public class WCartesianChart extends WAbstractChart {
 	}
 
 	static class IconWidget extends WPaintedWidget {
+		private static Logger logger = LoggerFactory
+				.getLogger(IconWidget.class);
+
 		public IconWidget(WCartesianChart chart, int index,
 				WContainerWidget parent) {
 			super(parent);

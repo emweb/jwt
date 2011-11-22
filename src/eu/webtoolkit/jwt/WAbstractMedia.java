@@ -16,6 +16,8 @@ import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Abstract baseclass for native media elements.
@@ -25,6 +27,9 @@ import eu.webtoolkit.jwt.servlet.*;
  * &lt;video&gt;).
  */
 public abstract class WAbstractMedia extends WInteractWidget {
+	private static Logger logger = LoggerFactory
+			.getLogger(WAbstractMedia.class);
+
 	/**
 	 * Enumeration for playback options.
 	 */
@@ -595,18 +600,19 @@ public abstract class WAbstractMedia extends WInteractWidget {
 					this.readyState_ = intToReadyState(Integer
 							.parseInt(attributes.get(5)));
 				} catch (RuntimeException e) {
-					throw new RuntimeException(
-							"WAbstractMedia: error parsing: "
-									+ formData.values[0] + ": " + e.toString());
+					throw new WException("WAbstractMedia: error parsing: "
+							+ formData.values[0] + ": " + e.toString());
 				}
 			} else {
-				throw new RuntimeException("WAbstractMedia: error parsing: "
+				throw new WException("WAbstractMedia: error parsing: "
 						+ formData.values[0]);
 			}
 		}
 	}
 
 	static class Source extends WObject {
+		private static Logger logger = LoggerFactory.getLogger(Source.class);
+
 		public Source(WAbstractMedia parent, WLink link, String type,
 				String media) {
 			super();
@@ -694,7 +700,7 @@ public abstract class WAbstractMedia extends WInteractWidget {
 		case 4:
 			return WAbstractMedia.ReadyState.HaveEnoughData;
 		default:
-			throw new RuntimeException("Invalid readystate");
+			throw new WException("Invalid readystate");
 		}
 	}
 

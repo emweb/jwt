@@ -16,6 +16,8 @@ import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Standard styling for rendering series in charts.
@@ -92,6 +94,9 @@ import eu.webtoolkit.jwt.servlet.*;
  * a line of width 2 in the background color.
  */
 public class WStandardPalette implements WChartPalette {
+	private static Logger logger = LoggerFactory
+			.getLogger(WStandardPalette.class);
+
 	/**
 	 * Enumeration that indicates the palette flavour.
 	 */

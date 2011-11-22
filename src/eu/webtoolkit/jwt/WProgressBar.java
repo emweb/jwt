@@ -16,6 +16,8 @@ import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A progress bar.
@@ -44,6 +46,8 @@ import eu.webtoolkit.jwt.servlet.*;
  * </p>
  */
 public class WProgressBar extends WInteractWidget {
+	private static Logger logger = LoggerFactory.getLogger(WProgressBar.class);
+
 	/**
 	 * Creates a progress bar.
 	 */

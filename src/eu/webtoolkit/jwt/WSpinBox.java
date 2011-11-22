@@ -16,6 +16,8 @@ import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * An input control for integer numbers.
@@ -39,6 +41,8 @@ import eu.webtoolkit.jwt.servlet.*;
  *      </p>
  */
 public class WSpinBox extends WAbstractSpinBox {
+	private static Logger logger = LoggerFactory.getLogger(WSpinBox.class);
+
 	/**
 	 * Creates a spin-box.
 	 * <p>

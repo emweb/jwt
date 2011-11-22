@@ -16,6 +16,8 @@ import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A CSS rule specified directly using CSS declarations.
@@ -24,6 +26,8 @@ import eu.webtoolkit.jwt.servlet.*;
  * @see WCssStyleSheet
  */
 public class WCssTextRule extends WCssRule {
+	private static Logger logger = LoggerFactory.getLogger(WCssTextRule.class);
+
 	/**
 	 * Creates a CSS rule with a given selector and declarations.
 	 */

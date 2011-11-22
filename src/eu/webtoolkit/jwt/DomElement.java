@@ -16,8 +16,12 @@ import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 class DomElement {
+	private static Logger logger = LoggerFactory.getLogger(DomElement.class);
+
 	enum Mode {
 		ModeCreate, ModeUpdate;
 
@@ -101,7 +105,7 @@ class DomElement {
 
 	public static DomElement getForUpdate(String id, DomElementType type) {
 		if (id.length() == 0) {
-			throw new WtException("Cannot update widget without id");
+			throw new WException("Cannot update widget without id");
 		}
 		DomElement e = new DomElement(DomElement.Mode.ModeUpdate, type);
 		e.id_ = id;
@@ -261,6 +265,9 @@ class DomElement {
 	}
 
 	static class EventAction {
+		private static Logger logger = LoggerFactory
+				.getLogger(EventAction.class);
+
 		public String jsCondition;
 		public String jsCode;
 		public String updateCmd;
@@ -389,6 +396,9 @@ class DomElement {
 	}
 
 	static class TimeoutEvent {
+		private static Logger logger = LoggerFactory
+				.getLogger(TimeoutEvent.class);
+
 		public int msec;
 		public String event;
 		public boolean repeat;
@@ -552,7 +562,7 @@ class DomElement {
 	public void asHTML(EscapeOStream out, EscapeOStream javaScript,
 			List<DomElement.TimeoutEvent> timeouts, boolean openingTagOnly) {
 		if (this.mode_ != DomElement.Mode.ModeCreate) {
-			throw new WtException("DomElement::asHTML() called with ModeUpdate");
+			throw new WException("DomElement::asHTML() called with ModeUpdate");
 		}
 		WApplication app = WApplication.getInstance();
 		this.processEvents(app);
@@ -1043,6 +1053,9 @@ class DomElement {
 	}
 
 	static class EventHandler {
+		private static Logger logger = LoggerFactory
+				.getLogger(EventHandler.class);
+
 		public String jsCode;
 		public String signalName;
 
@@ -1462,6 +1475,9 @@ class DomElement {
 	private Map<String, DomElement.EventHandler> eventHandlers_;
 
 	static class ChildInsertion {
+		private static Logger logger = LoggerFactory
+				.getLogger(ChildInsertion.class);
+
 		public int pos;
 		public DomElement child;
 

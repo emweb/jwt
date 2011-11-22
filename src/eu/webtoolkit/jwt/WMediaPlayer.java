@@ -16,6 +16,8 @@ import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A media player.
@@ -84,6 +86,8 @@ import eu.webtoolkit.jwt.servlet.*;
  * should not be used since there is no way to restore the original size.
  */
 public class WMediaPlayer extends WCompositeWidget {
+	private static Logger logger = LoggerFactory.getLogger(WMediaPlayer.class);
+
 	/**
 	 * An enumeration for a media encoding.
 	 * <p>
@@ -722,7 +726,6 @@ public class WMediaPlayer extends WCompositeWidget {
 			double pct = time
 					/ (this.status_.seekPercent * this.status_.duration / 100);
 			pct = Math.min(1.0, pct);
-			System.err.append(String.valueOf(pct)).append('\n');
 			this.playerDo("playHead", String.valueOf(pct * 100));
 		}
 	}
@@ -895,11 +898,11 @@ public class WMediaPlayer extends WCompositeWidget {
 					this
 							.updateProgressBarState(WMediaPlayer.BarControlId.Volume);
 				} catch (RuntimeException e) {
-					throw new RuntimeException("WMediaPlayer: error parsing: "
+					throw new WException("WMediaPlayer: error parsing: "
 							+ formData.values[0] + ": " + e.toString());
 				}
 			} else {
-				throw new RuntimeException("WMediaPlayer: error parsing: "
+				throw new WException("WMediaPlayer: error parsing: "
 						+ formData.values[0]);
 			}
 		}
@@ -1044,6 +1047,8 @@ public class WMediaPlayer extends WCompositeWidget {
 	}
 
 	static class Source {
+		private static Logger logger = LoggerFactory.getLogger(Source.class);
+
 		public WMediaPlayer.Encoding encoding;
 		public WLink link;
 	}
@@ -1063,6 +1068,8 @@ public class WMediaPlayer extends WCompositeWidget {
 	private boolean mediaUpdated_;
 
 	static class State {
+		private static Logger logger = LoggerFactory.getLogger(State.class);
+
 		public boolean playing;
 		public boolean ended;
 		public WMediaPlayer.ReadyState readyState;
@@ -1271,7 +1278,7 @@ public class WMediaPlayer extends WCompositeWidget {
 		case 4:
 			return WMediaPlayer.ReadyState.HaveEnoughData;
 		default:
-			throw new RuntimeException("Invalid readystate");
+			throw new WException("Invalid readystate");
 		}
 	}
 

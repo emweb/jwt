@@ -16,8 +16,12 @@ import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 class Resizable {
+	private static Logger logger = LoggerFactory.getLogger(Resizable.class);
+
 	public static void loadJavaScript(WApplication app) {
 		app.loadJavaScript("js/Resizable.js", wtjs1());
 	}

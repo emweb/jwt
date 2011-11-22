@@ -16,6 +16,8 @@ import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A widget that represents a navigatable tree.
@@ -76,6 +78,8 @@ import eu.webtoolkit.jwt.servlet.*;
  * @see WTreeView
  */
 public class WTree extends WCompositeWidget {
+	private static Logger logger = LoggerFactory.getLogger(WTree.class);
+
 	/**
 	 * Creates a new tree.
 	 */

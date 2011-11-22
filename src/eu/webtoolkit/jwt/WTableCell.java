@@ -16,6 +16,8 @@ import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A container widget that represents a cell in a table.
@@ -44,13 +46,15 @@ import eu.webtoolkit.jwt.servlet.*;
  * @see WTable
  */
 public class WTableCell extends WContainerWidget {
+	private static Logger logger = LoggerFactory.getLogger(WTableCell.class);
+
 	/**
 	 * Sets the row span.
 	 * <p>
 	 * The row span indicates how many table rows this {@link WTableCell}
 	 * overspans. By default, a {@link WTableCell} has a row span of 1, only
 	 * occupying its own grid cell. A row span greater than 1 indicates that
-	 * table cells to the right of this one are overspanned.
+	 * table cells below this one are overspanned.
 	 */
 	public void setRowSpan(int rowSpan) {
 		if (this.rowSpan_ != rowSpan) {
@@ -79,7 +83,7 @@ public class WTableCell extends WContainerWidget {
 	 * The column span indicates how many table columns this {@link WTableCell}
 	 * overspans. By default, a {@link WTableCell} has a column span of 1, only
 	 * occupying its own grid cell. A column span greater than 1 indicates that
-	 * table cells below this one are overspanned.
+	 * table cells to the right of this one are overspanned.
 	 */
 	public void setColumnSpan(int colSpan) {
 		if (this.columnSpan_ != colSpan) {

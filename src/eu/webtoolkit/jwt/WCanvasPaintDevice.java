@@ -16,6 +16,8 @@ import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A paint device for rendering using the HTML 5 &lt;canvas&gt; element.
@@ -36,6 +38,9 @@ import eu.webtoolkit.jwt.servlet.*;
  * </p>
  */
 public class WCanvasPaintDevice extends WObject implements WPaintDevice {
+	private static Logger logger = LoggerFactory
+			.getLogger(WCanvasPaintDevice.class);
+
 	/**
 	 * Create a canvas paint device.
 	 */
@@ -218,7 +223,7 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 	public void drawText(WRectF rect, EnumSet<AlignmentFlag> flags,
 			TextFlag textFlag, CharSequence text) {
 		if (textFlag == TextFlag.TextWordWrap) {
-			throw new UnsupportedOperationException(
+			throw new WException(
 					"WCanvasPaintDevice::drawText() TextWordWrap is not supported");
 		}
 		AlignmentFlag horizontalAlign = EnumUtils.enumFromSet(EnumUtils.mask(
@@ -427,8 +432,7 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 
 	public WTextItem measureText(CharSequence text, double maxWidth,
 			boolean wordWrap) {
-		throw new UnsupportedOperationException(
-				"WCanvasPaintDevice::measureText() not supported");
+		throw new WException("WCanvasPaintDevice::measureText() not supported");
 	}
 
 	public final WTextItem measureText(CharSequence text) {
@@ -440,7 +444,7 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 	}
 
 	public WFontMetrics getFontMetrics() {
-		throw new UnsupportedOperationException(
+		throw new WException(
 				"WCanvasPaintDevice::fontMetrics() not (yet?) supported");
 	}
 

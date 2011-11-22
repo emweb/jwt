@@ -16,6 +16,8 @@ import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A widget that hides the implementation of composite widgets.
@@ -36,6 +38,9 @@ import eu.webtoolkit.jwt.servlet.*;
  * Styling through CSS is propagated to its implementation.
  */
 public class WCompositeWidget extends WWidget {
+	private static Logger logger = LoggerFactory
+			.getLogger(WCompositeWidget.class);
+
 	/**
 	 * Creates a WCompositeWidget.
 	 * <p>
@@ -262,10 +267,10 @@ public class WCompositeWidget extends WWidget {
 	public void setVerticalAlignment(AlignmentFlag alignment, WLength length) {
 		if (!EnumUtils.mask(AlignmentFlag.AlignHorizontalMask, alignment)
 				.isEmpty()) {
-			WApplication.getInstance().log("warning").append(
-					"WCompositeWidget::setVerticalAlignment: alignment ")
-					.append(alignment.toString()).append(
-							"is horizontal, expected vertical");
+			logger.error(new StringWriter().append(
+					"setVerticalAlignment(): alignment ").append(
+					String.valueOf(alignment.getValue())).append(
+					"is not vertical").toString());
 		}
 		this.impl_.setVerticalAlignment(alignment, length);
 	}
@@ -397,7 +402,7 @@ public class WCompositeWidget extends WWidget {
 	 */
 	protected void setImplementation(WWidget widget) {
 		if (widget.getParent() != null) {
-			throw new WtException(
+			throw new WException(
 					"WCompositeWidget implementation widget cannot have a parent");
 		}
 		if (this.impl_ != null)

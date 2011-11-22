@@ -16,6 +16,8 @@ import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A user control that represents a check box.
@@ -73,6 +75,8 @@ import eu.webtoolkit.jwt.servlet.*;
  * @see WAbstractToggleButton
  */
 public class WCheckBox extends WAbstractToggleButton {
+	private static Logger logger = LoggerFactory.getLogger(WCheckBox.class);
+
 	/**
 	 * Creates a checkbox with empty label.
 	 */

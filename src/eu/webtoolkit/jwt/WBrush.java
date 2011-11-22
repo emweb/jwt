@@ -16,6 +16,8 @@ import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A value class that defines the style for filling a path.
@@ -30,6 +32,8 @@ import eu.webtoolkit.jwt.servlet.*;
  * @see WPen
  */
 public class WBrush {
+	private static Logger logger = LoggerFactory.getLogger(WBrush.class);
+
 	/**
 	 * Creates a brush.
 	 * <p>

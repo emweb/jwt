@@ -16,6 +16,8 @@ import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A widget that represents a push button.
@@ -33,13 +35,15 @@ import eu.webtoolkit.jwt.servlet.*;
  * you can override the style using internal or external CSS as appropriate.
  */
 public class WPushButton extends WFormWidget {
+	private static Logger logger = LoggerFactory.getLogger(WPushButton.class);
+
 	/**
 	 * Creates a push button.
 	 */
 	public WPushButton(WContainerWidget parent) {
 		super(parent);
 		this.text_ = new WString();
-		this.icon_ = "";
+		this.icon_ = new WLink();
 		this.link_ = new WLink();
 		this.linkTarget_ = AnchorTarget.TargetSelf;
 		this.flags_ = new BitSet();
@@ -62,7 +66,7 @@ public class WPushButton extends WFormWidget {
 	public WPushButton(CharSequence text, WContainerWidget parent) {
 		super(parent);
 		this.text_ = WString.toWString(text);
-		this.icon_ = "";
+		this.icon_ = new WLink();
 		this.link_ = new WLink();
 		this.linkTarget_ = AnchorTarget.TargetSelf;
 		this.flags_ = new BitSet();
@@ -111,11 +115,11 @@ public class WPushButton extends WFormWidget {
 	 * <p>
 	 * The icon is placed to the left of the text.
 	 */
-	public void setIcon(String url) {
-		if (canOptimizeUpdates() && url.equals(this.icon_)) {
+	public void setIcon(WLink link) {
+		if (canOptimizeUpdates() && link.equals(this.icon_)) {
 			return;
 		}
-		this.icon_ = url;
+		this.icon_ = link;
 		this.flags_.set(BIT_ICON_CHANGED);
 		this.repaint(EnumSet.of(RepaintFlag.RepaintInnerHtml));
 	}
@@ -124,9 +128,9 @@ public class WPushButton extends WFormWidget {
 	 * Returns the icon.
 	 * <p>
 	 * 
-	 * @see WPushButton#setIcon(String url)
+	 * @see WPushButton#setIcon(WLink link)
 	 */
-	public String getIcon() {
+	public WLink getIcon() {
 		return this.icon_;
 	}
 
@@ -237,6 +241,23 @@ public class WPushButton extends WFormWidget {
 	}
 
 	/**
+	 * Returns the current value.
+	 * <p>
+	 * Returns an empty string, since a button has no value.
+	 */
+	public String getValueText() {
+		return "";
+	}
+
+	/**
+	 * Sets the current value.
+	 * <p>
+	 * Has no effect, since a button has not value.
+	 */
+	public void setValueText(String value) {
+	}
+
+	/**
 	 * Sets the link target.
 	 * <p>
 	 * This sets the target where the linked contents should be displayed. The
@@ -269,7 +290,7 @@ public class WPushButton extends WFormWidget {
 	private static final int BIT_ICON_RENDERED = 2;
 	private static final int BIT_LINK_CHANGED = 3;
 	private WString text_;
-	private String icon_;
+	private WLink icon_;
 	private WLink link_;
 	private AnchorTarget linkTarget_;
 	BitSet flags_;
@@ -280,11 +301,10 @@ public class WPushButton extends WFormWidget {
 			element.setAttribute("type", "button");
 			element.setProperty(Property.PropertyClass, "Wt-btn");
 		}
-		if (this.flags_.get(BIT_ICON_CHANGED) || all
-				&& this.icon_.length() != 0) {
+		if (this.flags_.get(BIT_ICON_CHANGED) || all && !this.icon_.isNull()) {
 			DomElement image = DomElement
 					.createNew(DomElementType.DomElement_IMG);
-			image.setProperty(Property.PropertySrc, this.icon_);
+			image.setProperty(Property.PropertySrc, this.icon_.getUrl());
 			image.setId("im" + this.getFormName());
 			element.insertChildAt(image, 0);
 			this.flags_.set(BIT_ICON_RENDERED);
@@ -351,11 +371,11 @@ public class WPushButton extends WFormWidget {
 				&& this.flags_.get(BIT_ICON_RENDERED)) {
 			DomElement image = DomElement.getForUpdate("im"
 					+ this.getFormName(), DomElementType.DomElement_IMG);
-			if (this.icon_.length() == 0) {
+			if (this.icon_.isNull()) {
 				image.removeFromParent();
 				this.flags_.clear(BIT_ICON_RENDERED);
 			} else {
-				image.setProperty(Property.PropertySrc, this.icon_);
+				image.setProperty(Property.PropertySrc, this.icon_.getUrl());
 			}
 			result.add(image);
 			this.flags_.clear(BIT_ICON_CHANGED);

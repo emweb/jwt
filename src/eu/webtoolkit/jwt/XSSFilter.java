@@ -14,7 +14,12 @@ import net.n3.nanoxml.StdXMLReader;
 import net.n3.nanoxml.XMLException;
 import net.n3.nanoxml.XMLParserFactory;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 class XSSFilter extends XHtmlFilter {
+        private static Logger logger = LoggerFactory.getLogger(XSSFilter.class);
+
 	protected int discarding = 0;
 
 	static boolean removeScript(CharSequence text) {
@@ -54,7 +59,7 @@ class XSSFilter extends XHtmlFilter {
 			return;
 	
 		if (XSSUtils.isBadAttribute(key) || XSSUtils.isBadAttributeValue(key, value)) {
-			WApplication.getInstance().log("warn").append("(XSS) discarding invalid attribute: " + key + ": " + value);
+		        logger.warn("(XSS) discarding invalid attribute: " + key + ": " + value);
 			return;
 		}
 
@@ -81,7 +86,7 @@ class XSSFilter extends XHtmlFilter {
 	public void startElement(String name, String nsPrefix, String nsURI, String systemID, int lineNr) throws Exception {
 		if (discarding == 0 && XSSUtils.isBadTag(name)) {
 			discarding = 1;
-			WApplication.getInstance().log("warn").append("(XSS) discarding invalid tag: " + name);
+			logger.warn("(XSS) discarding invalid tag: " + name);
 			return;
 		}
 	

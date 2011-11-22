@@ -16,6 +16,8 @@ import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A value class that describes font metrics for a font.
@@ -31,6 +33,8 @@ import eu.webtoolkit.jwt.servlet.*;
  * @see WPaintDevice
  */
 public class WFontMetrics {
+	private static Logger logger = LoggerFactory.getLogger(WFontMetrics.class);
+
 	/**
 	 * Creates a font metrics information object.
 	 */

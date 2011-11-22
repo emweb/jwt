@@ -16,6 +16,8 @@ import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Standard delegate class for rendering a view item.
@@ -37,6 +39,8 @@ import eu.webtoolkit.jwt.servlet.*;
  * setEditState()}.
  */
 public class WItemDelegate extends WAbstractItemDelegate {
+	private static Logger logger = LoggerFactory.getLogger(WItemDelegate.class);
+
 	/**
 	 * Create an item delegate.
 	 */
@@ -434,6 +438,8 @@ public class WItemDelegate extends WAbstractItemDelegate {
 	private String textFormat_;
 
 	static class WidgetRef {
+		private static Logger logger = LoggerFactory.getLogger(WidgetRef.class);
+
 		public WWidget w;
 
 		public WidgetRef(WWidget widget) {

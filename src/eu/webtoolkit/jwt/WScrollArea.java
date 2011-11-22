@@ -16,6 +16,8 @@ import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A widget that adds scrolling capabilities to its content.
@@ -43,6 +45,8 @@ import eu.webtoolkit.jwt.servlet.*;
  * styled using inline or external CSS as appropriate.
  */
 public class WScrollArea extends WWebWidget {
+	private static Logger logger = LoggerFactory.getLogger(WScrollArea.class);
+
 	/**
 	 * <p>
 	 * brief Policy for showing a scrollbar.
@@ -231,8 +235,9 @@ public class WScrollArea extends WWebWidget {
 			if (this.isInLayout()
 					&& WApplication.getInstance().getEnvironment().hasAjax()) {
 				this
-						.setJavaScriptMember("wtResize",
-								"function(s, w, h) {s.style.width=w+'px';s.style.height=h+'px';}");
+						.setJavaScriptMember(
+								"wtResize",
+								"function(s, w, h) {s.style.position='absolute';s.style.width=w+'px';s.style.height=h+'px';}");
 			}
 		}
 		if (this.widgetChanged_ || all) {

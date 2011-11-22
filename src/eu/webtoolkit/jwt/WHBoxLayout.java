@@ -16,6 +16,8 @@ import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A layout manager which arranges widgets horizontally.
@@ -52,6 +54,8 @@ import eu.webtoolkit.jwt.servlet.*;
  * @see WVBoxLayout
  */
 public class WHBoxLayout extends WBoxLayout {
+	private static Logger logger = LoggerFactory.getLogger(WHBoxLayout.class);
+
 	/**
 	 * Creates a new horizontal box layout.
 	 * <p>

@@ -16,6 +16,8 @@ import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A widget that organizes contents in tab panes.
@@ -84,6 +86,8 @@ import eu.webtoolkit.jwt.servlet.*;
  * </table>
  */
 public class WTabWidget extends WCompositeWidget {
+	private static Logger logger = LoggerFactory.getLogger(WTabWidget.class);
+
 	/**
 	 * When should the contents be loaded ?
 	 */
@@ -535,7 +539,7 @@ public class WTabWidget extends WCompositeWidget {
 				.setJavaScriptMember(
 						WT_RESIZE_JS,
 						""
-								+ "function(self, w, h) {self.style.height= h + 'px';var c = self.firstChild;var t = self.lastChild;h -= c.offsetHeight;if (h > 0)t."
+								+ "function(self, w, h) {self.style.height= h + 'px';var c = self.firstChild;var t = self.lastChild;h -= Wt3_1_11.px(c, 'height') + Wt3_1_11.px(c, 'marginTop') + Wt3_1_11.px(c, 'marginBottom');if (h > 0)t."
 								+ WT_RESIZE_JS + "(t, w, h);};");
 		this.menu_.itemSelected().addListener(this,
 				new Signal1.Listener<WMenuItem>() {

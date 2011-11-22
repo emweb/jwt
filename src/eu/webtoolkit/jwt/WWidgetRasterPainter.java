@@ -16,8 +16,13 @@ import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 class WWidgetRasterPainter extends WWidgetPainter {
+	private static Logger logger = LoggerFactory
+			.getLogger(WWidgetRasterPainter.class);
+
 	public WWidgetRasterPainter(WPaintedWidget widget) {
 		super(widget);
 		this.device_ = null;

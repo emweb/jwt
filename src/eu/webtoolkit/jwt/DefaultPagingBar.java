@@ -16,8 +16,13 @@ import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 class DefaultPagingBar extends WContainerWidget {
+	private static Logger logger = LoggerFactory
+			.getLogger(DefaultPagingBar.class);
+
 	public DefaultPagingBar(WAbstractItemView view) {
 		super();
 		this.view_ = view;

@@ -16,6 +16,8 @@ import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A calendar.
@@ -88,6 +90,8 @@ import eu.webtoolkit.jwt.servlet.*;
  * </div>
  */
 public class WCalendar extends WCompositeWidget {
+	private static Logger logger = LoggerFactory.getLogger(WCalendar.class);
+
 	/**
 	 * The format of the horizontal header.
 	 */
@@ -331,8 +335,13 @@ public class WCalendar extends WCompositeWidget {
 			d = "dlong";
 			break;
 		default:
-			throw new WtException(
-					"WCalendar: Invalid horizontal header format.");
+			logger
+					.error(new StringWriter()
+							.append(
+									"setHorizontalHeaderFormat(): improper horizontal header format.")
+							.toString());
+			format = WCalendar.HorizontalHeaderFormat.SingleLetterDayNames;
+			d = "d1";
 		}
 		this.horizontalHeaderFormat_ = format;
 		this.impl_.bindString("table-class", d, TextFormat.XHTMLUnsafeText);
@@ -678,6 +687,9 @@ public class WCalendar extends WCompositeWidget {
 	private WDate top_;
 
 	static class Coordinate {
+		private static Logger logger = LoggerFactory
+				.getLogger(Coordinate.class);
+
 		public int i;
 		public int j;
 

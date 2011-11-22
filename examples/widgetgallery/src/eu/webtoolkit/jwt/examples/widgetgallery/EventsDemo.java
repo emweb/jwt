@@ -16,9 +16,13 @@ import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import eu.webtoolkit.jwt.examples.dragdrop.*;
 
 class EventsDemo extends ControlsWidget {
+	private static Logger logger = LoggerFactory.getLogger(EventsDemo.class);
+
 	public EventsDemo(EventDisplayer ed) {
 		super(ed, true);
 		this.lastKeyType_ = "";

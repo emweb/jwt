@@ -16,6 +16,8 @@ import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A value class that defines a rectangle.
@@ -24,6 +26,8 @@ import eu.webtoolkit.jwt.servlet.*;
  * The rectangle is defined by a top-left point and a width and height.
  */
 public class WRectF {
+	private static Logger logger = LoggerFactory.getLogger(WRectF.class);
+
 	/**
 	 * Default constructor.
 	 * <p>

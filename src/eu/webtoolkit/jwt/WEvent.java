@@ -16,6 +16,8 @@ import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * An application event.
@@ -29,6 +31,8 @@ import eu.webtoolkit.jwt.servlet.*;
  * getEventType()}.
  */
 public class WEvent {
+	private static Logger logger = LoggerFactory.getLogger(WEvent.class);
+
 	/**
 	 * Returns the event type.
 	 */
@@ -46,6 +50,8 @@ public class WEvent {
 	WEvent.Impl impl_;
 
 	static class Impl {
+		private static Logger logger = LoggerFactory.getLogger(Impl.class);
+
 		WebSession.Handler handler;
 		boolean renderOnly;
 
@@ -77,9 +83,9 @@ public class WEvent {
 			try {
 				return asInt(p);
 			} catch (NumberFormatException ee) {
-				WApplication.getInstance().log("error").append(
+				logger.error(new StringWriter().append(
 						"Could not cast event property '").append(name).append(
-						": ").append(p).append("' to int");
+						": ").append(p).append("' to int").toString());
 				return ifMissing;
 			}
 		} else {
@@ -103,8 +109,9 @@ public class WEvent {
 		List<String> s = new ArrayList<String>();
 		s = new ArrayList<String>(Arrays.asList(str.split(";")));
 		if (s.size() % 9 != 0) {
-			WApplication.getInstance().log("error").append(
-					"Could not parse touches array '").append(str).append("'");
+			logger.error(new StringWriter().append(
+					"Could not parse touches array '").append(str).append("'")
+					.toString());
 			return;
 		}
 		try {
@@ -116,14 +123,17 @@ public class WEvent {
 								.get(i + 8))));
 			}
 		} catch (NumberFormatException ee) {
-			WApplication.getInstance().log("error").append(
-					"Could not parse touches array '").append(str).append("'");
+			logger.error(new StringWriter().append(
+					"Could not parse touches array '").append(str).append("'")
+					.toString());
 			return;
 		}
 	}
 }
 
 class Impl {
+	private static Logger logger = LoggerFactory.getLogger(Impl.class);
+
 	public WebSession.Handler handler;
 	public boolean renderOnly;
 

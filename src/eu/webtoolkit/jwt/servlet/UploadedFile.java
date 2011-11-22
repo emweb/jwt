@@ -16,11 +16,18 @@ import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
- * Details about a file uploaded with a (POST) request.
+ * Details about a file uploaded with a request to a resource.
+ * <p>
+ * 
+ * @see WResource#handleRequest(WebRequest request, WebResponse response)
  */
 public class UploadedFile {
+	private static Logger logger = LoggerFactory.getLogger(UploadedFile.class);
+
 	UploadedFile(String spoolName, String clientFileName, String contentType) {
 		this.fileInfo_ = null;
 		this.fileInfo_ = new UploadedFile.Impl();
@@ -72,6 +79,8 @@ public class UploadedFile {
 	}
 
 	static class Impl {
+		private static Logger logger = LoggerFactory.getLogger(Impl.class);
+
 		public String spoolFileName;
 		public String clientFileName;
 		public String contentType;

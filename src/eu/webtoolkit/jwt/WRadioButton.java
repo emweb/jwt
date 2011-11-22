@@ -16,6 +16,8 @@ import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A user control that represents a radio button.
@@ -69,6 +71,8 @@ import eu.webtoolkit.jwt.servlet.*;
  * @see WButtonGroup
  */
 public class WRadioButton extends WAbstractToggleButton {
+	private static Logger logger = LoggerFactory.getLogger(WRadioButton.class);
+
 	/**
 	 * Creates an unchecked radio button with empty label and optional parent.
 	 */

@@ -16,6 +16,8 @@ import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A interactive area in a widget, specified by a circle.
@@ -32,6 +34,8 @@ import eu.webtoolkit.jwt.servlet.*;
  * @see WPolygonArea
  */
 public class WCircleArea extends WAbstractArea {
+	private static Logger logger = LoggerFactory.getLogger(WCircleArea.class);
+
 	/**
 	 * Default constructor.
 	 * <p>

@@ -16,6 +16,8 @@ import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A proxy model for Wt&apos;s item models that provides column aggregation.
@@ -47,6 +49,9 @@ import eu.webtoolkit.jwt.servlet.*;
  * </p>
  */
 public class WAggregateProxyModel extends WAbstractProxyModel {
+	private static Logger logger = LoggerFactory
+			.getLogger(WAggregateProxyModel.class);
+
 	/**
 	 * Constructor.
 	 * <p>
@@ -348,6 +353,8 @@ public class WAggregateProxyModel extends WAbstractProxyModel {
 	}
 
 	static class Aggregate {
+		private static Logger logger = LoggerFactory.getLogger(Aggregate.class);
+
 		public int parentSrc_;
 		public int firstChildSrc_;
 		public int lastChildSrc_;
@@ -373,7 +380,7 @@ public class WAggregateProxyModel extends WAbstractProxyModel {
 			this.nestedAggregates_ = new ArrayList<WAggregateProxyModel.Aggregate>();
 			if (this.parentSrc_ != this.firstChildSrc_ - 1
 					&& this.parentSrc_ != this.lastChildSrc_ + 1) {
-				throw new WtException(
+				throw new WException(
 						"WAggregateProxyModel::addAggregate: parent column must border children range");
 			}
 		}
@@ -387,12 +394,12 @@ public class WAggregateProxyModel extends WAbstractProxyModel {
 			int b2 = other.lastChildSrc_;
 			if (pb >= a1 && pb <= a2) {
 				if (!contains2(a1, a2, b1, b2)) {
-					throw new WtException(nestingError(pa, a1, a2, pb, b1, b2));
+					throw new WException(nestingError(pa, a1, a2, pb, b1, b2));
 				}
 				return true;
 			} else {
 				if (overlaps(a1, a2, b1, b2)) {
-					throw new WtException(nestingError(pa, a1, a2, pb, b1, b2));
+					throw new WException(nestingError(pa, a1, a2, pb, b1, b2));
 				}
 				return false;
 			}
@@ -651,23 +658,23 @@ public class WAggregateProxyModel extends WAbstractProxyModel {
 
 	private void sourceColumnsAboutToBeInserted(WModelIndex parent, int start,
 			int end) {
-		throw new WtException(
+		throw new WException(
 				"WAggregateProxyModel does not support source model column insertion");
 	}
 
 	private void sourceColumnsInserted(WModelIndex parent, int start, int end) {
-		throw new WtException(
+		throw new WException(
 				"WAggregateProxyModel does not support source model column insertion");
 	}
 
 	private void sourceColumnsAboutToBeRemoved(WModelIndex parent, int start,
 			int end) {
-		throw new WtException(
+		throw new WException(
 				"WAggregateProxyModel does not support source model column removal");
 	}
 
 	private void sourceColumnsRemoved(WModelIndex parent, int start, int end) {
-		throw new WtException(
+		throw new WException(
 				"WAggregateProxyModel does not support source model column removal");
 	}
 

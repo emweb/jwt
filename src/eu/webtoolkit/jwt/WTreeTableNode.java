@@ -16,6 +16,8 @@ import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A specialized tree node which allows additional data to be associated with
@@ -36,6 +38,9 @@ import eu.webtoolkit.jwt.servlet.*;
  * @see WTreeTable
  */
 public class WTreeTableNode extends WTreeNode {
+	private static Logger logger = LoggerFactory
+			.getLogger(WTreeTableNode.class);
+
 	/**
 	 * Creates a new tree table node.
 	 * <p>
@@ -175,6 +180,9 @@ public class WTreeTableNode extends WTreeNode {
 	private WContainerWidget row_;
 
 	static class ColumnWidget {
+		private static Logger logger = LoggerFactory
+				.getLogger(ColumnWidget.class);
+
 		public WWidget widget;
 		public boolean isSet;
 

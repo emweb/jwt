@@ -148,6 +148,16 @@
     </copy>
   </target>
 
+  <target name="mvn" depends="dist">
+    <jar jarfile="dist/${proj.name}-${proj.version}-javadoc.jar">
+      <fileset dir="${javadoc.dir}" />
+    </jar>
+
+    <jar jarfile="dist/${proj.name}-${proj.version}-sources.jar">
+      <fileset dir="${src.java.dir}" />
+    </jar>
+  </target>
+
   <target name="archive" >
     <delete dir="${build.dir}" />
     <mkdir dir="${archives.dir}" />

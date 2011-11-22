@@ -16,11 +16,15 @@ import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A value class that defines the CSS border style of a widget.
  */
 public class WBorder {
+	private static Logger logger = LoggerFactory.getLogger(WBorder.class);
+
 	/**
 	 * Enumeration for border width.
 	 */

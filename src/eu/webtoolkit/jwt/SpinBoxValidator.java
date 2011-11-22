@@ -16,16 +16,22 @@ import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 class SpinBoxValidator extends WValidator {
+	private static Logger logger = LoggerFactory
+			.getLogger(SpinBoxValidator.class);
+
 	public SpinBoxValidator(WAbstractSpinBox spinBox) {
 		super();
 		this.spinBox_ = spinBox;
 	}
 
-	public WValidator.State validate(String input) {
-		return this.spinBox_.parseValue(input) ? WValidator.State.Valid
-				: WValidator.State.Invalid;
+	public WValidator.Result validate(String input) {
+		return this.spinBox_.parseValue(input) ? new WValidator.Result(
+				WValidator.State.Valid) : new WValidator.Result(
+				WValidator.State.Invalid);
 	}
 
 	public String getJavaScriptValidate() {

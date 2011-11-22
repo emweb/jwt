@@ -16,6 +16,8 @@ import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A widget which popups to assist in editing a textarea or lineedit.
@@ -185,6 +187,9 @@ import eu.webtoolkit.jwt.servlet.*;
  * </p>
  */
 public class WSuggestionPopup extends WCompositeWidget {
+	private static Logger logger = LoggerFactory
+			.getLogger(WSuggestionPopup.class);
+
 	/**
 	 * Enumeration that defines a trigger for showing the popup.
 	 * <p>
@@ -224,6 +229,8 @@ public class WSuggestionPopup extends WCompositeWidget {
 	 * @see WSuggestionPopup
 	 */
 	public static class Options {
+		private static Logger logger = LoggerFactory.getLogger(Options.class);
+
 		/**
 		 * Open tag to highlight a match in a suggestion.
 		 * <p>
@@ -363,7 +370,7 @@ public class WSuggestionPopup extends WCompositeWidget {
 	}
 
 	/**
-	 * Lets this suggestion popup assist in editing the given edit field.
+	 * Lets this suggestion popup assist in editing an edit field.
 	 * <p>
 	 * A single suggestion popup may assist in several edits by repeated calls
 	 * of this method.
@@ -397,7 +404,7 @@ public class WSuggestionPopup extends WCompositeWidget {
 	}
 
 	/**
-	 * Lets this suggestion popup assist in editing the given edit field.
+	 * Lets this suggestion popup assist in editing an edit field.
 	 * <p>
 	 * Calls {@link #forEdit(WFormWidget edit, EnumSet triggers) forEdit(edit,
 	 * EnumSet.of(trigger, triggers))}
@@ -409,7 +416,7 @@ public class WSuggestionPopup extends WCompositeWidget {
 	}
 
 	/**
-	 * Lets this suggestion popup assist in editing the given edit field.
+	 * Lets this suggestion popup assist in editing an edit field.
 	 * <p>
 	 * Calls {@link #forEdit(WFormWidget edit, EnumSet triggers) forEdit(edit,
 	 * EnumSet.of(WSuggestionPopup.PopupTrigger.Editing))}
@@ -431,6 +438,17 @@ public class WSuggestionPopup extends WCompositeWidget {
 			edit.removeStyleClass("Wt-suggest-onedit");
 			edit.removeStyleClass("Wt-suggest-dropdown");
 		}
+	}
+
+	/**
+	 * Shows the suggestion popup at an edit field.
+	 * <p>
+	 * This is equivalent to the user triggering the suggestion popup to be
+	 * shown.
+	 */
+	public void showAt(WFormWidget edit) {
+		this.doJavaScript("jQuery.data(" + this.getJsRef() + ", 'obj').showAt("
+				+ edit.getJsRef() + ")");
 	}
 
 	/**
@@ -569,8 +587,7 @@ public class WSuggestionPopup extends WCompositeWidget {
 		if (this.defaultValue_ != row) {
 			this.defaultValue_ = row;
 			if (this.isRendered()) {
-				WApplication app = WApplication.getInstance();
-				app.doJavaScript("jQuery.data(" + this.getJsRef()
+				this.doJavaScript("jQuery.data(" + this.getJsRef()
 						+ ", 'obj').defaultValue = "
 						+ String.valueOf(this.defaultValue_) + ';');
 			}
@@ -747,8 +764,7 @@ public class WSuggestionPopup extends WCompositeWidget {
 		this.filtering_ = true;
 		this.filterModel_.trigger(input);
 		this.filtering_ = false;
-		WApplication app = WApplication.getInstance();
-		app.doJavaScript("jQuery.data(" + this.getJsRef()
+		this.doJavaScript("jQuery.data(" + this.getJsRef()
 				+ ", 'obj').filtered(" + WWebWidget.jsStringLiteral(input)
 				+ ")");
 	}
@@ -762,8 +778,8 @@ public class WSuggestionPopup extends WCompositeWidget {
 			}
 		}
 		if (edit == null) {
-			WApplication.getInstance().log("error").append(
-					"WSuggestionPopup activate from bogus editor");
+			logger.error(new StringWriter()
+					.append("activate from bogus editor").toString());
 		}
 		for (int i = 0; i < this.content_.getCount(); ++i) {
 			if (this.content_.getWidget(i).getId().equals(itemId)) {
@@ -771,8 +787,8 @@ public class WSuggestionPopup extends WCompositeWidget {
 				return;
 			}
 		}
-		WApplication.getInstance().log("error").append(
-				"WSuggestionPopup activate for bogus item");
+		logger.error(new StringWriter().append("activate for bogus item")
+				.toString());
 	}
 
 	private void connectObjJS(AbstractEventSignal s, String methodName) {
@@ -857,7 +873,7 @@ public class WSuggestionPopup extends WCompositeWidget {
 		String THIS_JS = "js/WSuggestionPopup.js";
 		app.loadJavaScript(THIS_JS, wtjs1());
 		app.loadJavaScript(THIS_JS, wtjs2());
-		app.doJavaScript("new Wt3_1_11.WSuggestionPopup("
+		this.doJavaScript("new Wt3_1_11.WSuggestionPopup("
 				+ app.getJavaScriptClass() + "," + this.getJsRef() + ","
 				+ this.replacerJS_ + "," + this.matcherJS_ + ","
 				+ String.valueOf(this.filterLength_) + ","
@@ -877,7 +893,7 @@ public class WSuggestionPopup extends WCompositeWidget {
 				JavaScriptScope.WtClassScope,
 				JavaScriptObjectType.JavaScriptConstructor,
 				"WSuggestionPopup",
-				"function(s,f,w,C,p,x,y){function c(a){return $(a).hasClass(\"Wt-suggest-onedit\")||$(a).hasClass(\"Wt-suggest-dropdown\")}function g(){return f.style.display!=\"none\"}function d(){f.style.display=\"none\"}function m(a){e.positionAtWidget(f.id,a.id,e.Vertical,y,true)}function q(a){a=e.target(a||window.event);if(a.className!=\"content\"){for(;a&&!e.hasTag(a,\"DIV\");)a=a.parentNode;a&&t(a)}}function t(a){var b=a.firstChild,k=e.getElement(i),l=b.innerHTML; b=b.getAttribute(\"sug\");k.focus();s.emit(f,\"select\",a.id,k.id);w(k,l,b);d();i=null}function z(a,b){for(a=b?a.nextSibling:a.previousSibling;a;a=b?a.nextSibling:a.previousSibling)if(e.hasTag(a,\"DIV\"))if(a.style.display!=\"none\")return a;return null}function F(a){var b=a.parentNode;if(a.offsetTop+a.offsetHeight>b.scrollTop+b.clientHeight)b.scrollTop=a.offsetTop+a.offsetHeight-b.clientHeight;else if(a.offsetTop<b.scrollTop)b.scrollTop=a.offsetTop}$(\".Wt-domRoot\").add(f);jQuery.data(f,\"obj\",this);var A= this,e=s.WT,n=null,i=null,G=false,H=null,I=null,B=null,D=null,r=false;this.defaultValue=x;this.showPopup=function(){f.style.display=\"\";D=n=null};this.editMouseMove=function(a,b){if(c(a))a.style.cursor=e.widgetCoordinates(a,b).x>a.offsetWidth-16?\"default\":\"\"};this.editClick=function(a,b){if(c(a))if(e.widgetCoordinates(a,b).x>a.offsetWidth-16)if(i!=a.id||!g()){d();i=a.id;r=true;A.refilter()}else{i=null;d()}};this.editKeyDown=function(a,b){if(!c(a))return true;if(i!=a.id)if($(a).hasClass(\"Wt-suggest-onedit\")){i= a.id;r=false}else if($(a).hasClass(\"Wt-suggest-dropdown\")&&b.keyCode==40){i=a.id;r=true}else{i=null;return true}var k=n?e.getElement(n):null;if(g()&&k)if(b.keyCode==13||b.keyCode==9){t(k);e.cancelEvent(b);setTimeout(function(){a.focus()},0);return false}else if(b.keyCode==40||b.keyCode==38||b.keyCode==34||b.keyCode==33){if(b.type.toUpperCase()==\"KEYDOWN\"){G=true;e.cancelEvent(b,e.CancelDefaultAction)}if(b.type.toUpperCase()==\"KEYPRESS\"&&G==true){e.cancelEvent(b);return false}var l=k,o=b.keyCode== 40||b.keyCode==34;b=b.keyCode==34||b.keyCode==33?f.clientHeight/k.offsetHeight:1;var j;for(j=0;l&&j<b;++j){var u=z(l,o);if(!u)break;l=u}if(l&&e.hasTag(l,\"DIV\")){k.className=\"\";l.className=\"sel\";n=l.id}return false}return b.keyCode!=13&&b.keyCode!=9};this.filtered=function(a){H=a;A.refilter()};this.refilter=function(){var a=n?e.getElement(n):null,b=e.getElement(i),k=C(b),l=f.lastChild.childNodes,o=k(null);D=b.value;if(p!=0)if(o.length<p&&!r){d();return}else{var j=p==-1?o:o.substring(0,p);if(j!=H){if(j!= I){I=j;s.emit(f,\"filter\",j)}if(!r){d();return}}}var u=j=null;o=r&&o.length==0;var v,J;v=0;for(J=l.length;v<J;++v){var h=l[v];if(e.hasTag(h,\"DIV\")){if(h.orig==null)h.orig=h.firstChild.innerHTML;var E=k(h.orig),K=o||E.match;if(E.suggestion!=h.firstChild.innerHTML)h.firstChild.innerHTML=E.suggestion;if(K){if(h.style.display!=\"\")h.style.display=\"\";if(j==null)j=h;if(v==this.defaultValue)u=h}else if(h.style.display!=\"none\")h.style.display=\"none\";if(h.className!=\"\")h.className=\"\"}}if(j==null)d();else{if(!g()){m(b); A.showPopup();a=null}if(!a||a.style.display==\"none\"){a=u||j;a.parentNode.scrollTop=0;n=a.id}a.className=\"sel\";F(a)}};this.editKeyUp=function(a,b){if(i!=null)if(c(a))if(!((b.keyCode==13||b.keyCode==9)&&f.style.display==\"none\"))if(b.keyCode==27||b.keyCode==37||b.keyCode==39){f.style.display=\"none\";if(b.keyCode==27){i=null;$(a).hasClass(\"Wt-suggest-dropdown\")?d():a.blur()}}else if(a.value!=D)A.refilter();else(a=n?e.getElement(n):null)&&F(a)};f.lastChild.onclick=q;f.lastChild.onscroll=function(){if(B){clearTimeout(B); var a=e.getElement(i);a&&a.focus()}};this.delayHide=function(a){B=setTimeout(function(){B=null;if(f&&(a==null||i==a.id))d()},300)}}");
+				"function(s,f,x,C,p,y,z){function c(a){return $(a).hasClass(\"Wt-suggest-onedit\")||$(a).hasClass(\"Wt-suggest-dropdown\")}function g(){return f.style.display!=\"none\"}function d(){f.style.display=\"none\"}function m(a){e.positionAtWidget(f.id,a.id,e.Vertical,z,true)}function q(a){a=e.target(a||window.event);if(a.className!=\"content\"){for(;a&&!e.hasTag(a,\"DIV\");)a=a.parentNode;a&&t(a)}}function t(a){var b=a.firstChild,k=e.getElement(i),l=b.innerHTML; b=b.getAttribute(\"sug\");k.focus();s.emit(f,\"select\",a.id,k.id);x(k,l,b);d();i=null}function A(a,b){for(a=b?a.nextSibling:a.previousSibling;a;a=b?a.nextSibling:a.previousSibling)if(e.hasTag(a,\"DIV\"))if(a.style.display!=\"none\")return a;return null}function F(a){var b=a.parentNode;if(a.offsetTop+a.offsetHeight>b.scrollTop+b.clientHeight)b.scrollTop=a.offsetTop+a.offsetHeight-b.clientHeight;else if(a.offsetTop<b.scrollTop)b.scrollTop=a.offsetTop}$(\".Wt-domRoot\").add(f);jQuery.data(f,\"obj\",this);var u= this,e=s.WT,n=null,i=null,G=false,H=null,I=null,B=null,D=null,r=false;this.defaultValue=y;this.showPopup=function(){f.style.display=\"\";D=n=null};this.editMouseMove=function(a,b){if(c(a))a.style.cursor=e.widgetCoordinates(a,b).x>a.offsetWidth-16?\"default\":\"\"};this.showAt=function(a){d();i=a.id;r=true;u.refilter()};this.editClick=function(a,b){if(c(a))if(e.widgetCoordinates(a,b).x>a.offsetWidth-16)if(i!=a.id||!g())u.showAt(a);else{i=null;d()}};this.editKeyDown=function(a,b){if(!c(a))return true;if(i!= a.id)if($(a).hasClass(\"Wt-suggest-onedit\")){i=a.id;r=false}else if($(a).hasClass(\"Wt-suggest-dropdown\")&&b.keyCode==40){i=a.id;r=true}else{i=null;return true}var k=n?e.getElement(n):null;if(g()&&k)if(b.keyCode==13||b.keyCode==9){t(k);e.cancelEvent(b);setTimeout(function(){a.focus()},0);return false}else if(b.keyCode==40||b.keyCode==38||b.keyCode==34||b.keyCode==33){if(b.type.toUpperCase()==\"KEYDOWN\"){G=true;e.cancelEvent(b,e.CancelDefaultAction)}if(b.type.toUpperCase()==\"KEYPRESS\"&&G==true){e.cancelEvent(b); return false}var l=k,o=b.keyCode==40||b.keyCode==34;b=b.keyCode==34||b.keyCode==33?f.clientHeight/k.offsetHeight:1;var j;for(j=0;l&&j<b;++j){var v=A(l,o);if(!v)break;l=v}if(l&&e.hasTag(l,\"DIV\")){k.className=\"\";l.className=\"sel\";n=l.id}return false}return b.keyCode!=13&&b.keyCode!=9};this.filtered=function(a){H=a;u.refilter()};this.refilter=function(){var a=n?e.getElement(n):null,b=e.getElement(i),k=C(b),l=f.lastChild.childNodes,o=k(null);D=b.value;if(p!=0)if(o.length<p&&!r){d();return}else{var j= p==-1?o:o.substring(0,p);if(j!=H){if(j!=I){I=j;s.emit(f,\"filter\",j)}if(!r){d();return}}}var v=j=null;o=r&&o.length==0;var w,J;w=0;for(J=l.length;w<J;++w){var h=l[w];if(e.hasTag(h,\"DIV\")){if(h.orig==null)h.orig=h.firstChild.innerHTML;var E=k(h.orig),K=o||E.match;if(E.suggestion!=h.firstChild.innerHTML)h.firstChild.innerHTML=E.suggestion;if(K){if(h.style.display!=\"\")h.style.display=\"\";if(j==null)j=h;if(w==this.defaultValue)v=h}else if(h.style.display!=\"none\")h.style.display=\"none\";if(h.className!=\"\")h.className= \"\"}}if(j==null)d();else{if(!g()){m(b);u.showPopup();a=null}if(!a||a.style.display==\"none\"){a=v||j;a.parentNode.scrollTop=0;n=a.id}a.className=\"sel\";F(a)}};this.editKeyUp=function(a,b){if(i!=null)if(c(a))if(!((b.keyCode==13||b.keyCode==9)&&f.style.display==\"none\"))if(b.keyCode==27||b.keyCode==37||b.keyCode==39){f.style.display=\"none\";if(b.keyCode==27){i=null;$(a).hasClass(\"Wt-suggest-dropdown\")?d():a.blur()}}else if(a.value!=D)u.refilter();else(a=n?e.getElement(n):null)&&F(a)};f.lastChild.onclick= q;f.lastChild.onscroll=function(){if(B){clearTimeout(B);var a=e.getElement(i);a&&a.focus()}};this.delayHide=function(a){B=setTimeout(function(){B=null;if(f&&(a==null||i==a.id))d()},300)}}");
 	}
 
 	static WJavaScriptPreamble wtjs2() {
@@ -885,7 +901,7 @@ public class WSuggestionPopup extends WCompositeWidget {
 				JavaScriptScope.WtClassScope,
 				JavaScriptObjectType.JavaScriptConstructor,
 				"WSuggestionPopupStdMatcher",
-				"function(s,f,w,C,p,x){function y(c){var g=c.value;c=c.selectionStart?c.selectionStart:g.length;for(var d=w?g.lastIndexOf(w,c-1)+1:0;d<c&&C.indexOf(g.charAt(d))!=-1;)++d;return{start:d,end:c}}this.match=function(c){var g=y(c),d=c.value.substring(g.start,g.end),m=\"^\";if(p.length!=0)m=\"(^|(?:[\"+p+\"]))\";m+=\"(\"+d.replace(new RegExp(\"([\\\\^\\\\\\\\\\\\][\\\\-.$*+?()|{}])\",\"g\"),\"\\\\$1\")+\")\";m=new RegExp(m,\"gi\");return function(q){if(!q)return d; var t=false;if(d.length){var z=q.replace(m,\"$1\"+s+\"$2\"+f);if(z!=q){t=true;q=z}}return{match:t,suggestion:q}}};this.replace=function(c,g,d){g=y(c);var m=c.value.substring(0,g.start)+d+x;if(g.end<c.value.length)m+=c.value.substring(g.end,c.value.length);c.value=m;if(c.selectionStart){c.selectionStart=g.start+d.length+x.length;c.selectionEnd=c.selectionStart}}}");
+				"function(s,f,x,C,p,y){function z(c){var g=c.value;c=c.selectionStart?c.selectionStart:g.length;for(var d=x?g.lastIndexOf(x,c-1)+1:0;d<c&&C.indexOf(g.charAt(d))!=-1;)++d;return{start:d,end:c}}this.match=function(c){var g=z(c),d=c.value.substring(g.start,g.end),m=\"^\";if(p.length!=0)m=\"(^|(?:[\"+p+\"]))\";m+=\"(\"+d.replace(new RegExp(\"([\\\\^\\\\\\\\\\\\][\\\\-.$*+?()|{}])\",\"g\"),\"\\\\$1\")+\")\";m=new RegExp(m,\"gi\");return function(q){if(!q)return d; var t=false;if(d.length){var A=q.replace(m,\"$1\"+s+\"$2\"+f);if(A!=q){t=true;q=A}}return{match:t,suggestion:q}}};this.replace=function(c,g,d){g=z(c);var m=c.value.substring(0,g.start)+d+y;if(g.end<c.value.length)m+=c.value.substring(g.end,c.value.length);c.value=m;if(c.selectionStart){c.selectionStart=g.start+d.length+y.length;c.selectionEnd=c.selectionStart}}}");
 	}
 
 	static String instantiateStdMatcher(WSuggestionPopup.Options options) {

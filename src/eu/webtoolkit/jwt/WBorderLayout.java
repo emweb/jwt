@@ -16,6 +16,8 @@ import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A layout manager which divides the container region in five regions.
@@ -73,6 +75,8 @@ import eu.webtoolkit.jwt.servlet.*;
  * </p>
  */
 public class WBorderLayout extends WLayout {
+	private static Logger logger = LoggerFactory.getLogger(WBorderLayout.class);
+
 	/**
 	 * Enumeration of possible positions in the layout.
 	 */
@@ -239,8 +243,9 @@ public class WBorderLayout extends WLayout {
 	 */
 	public void add(WLayoutItem item, WBorderLayout.Position position) {
 		if (this.itemAtPosition(position).item_ != null) {
-			throw new WtException(
-					"WBorderLayout supports only one widget per position");
+			logger.error(new StringWriter().append(
+					"supports only one widget per position").toString());
+			return;
 		}
 		this.itemAtPosition(position).item_ = item;
 		this.updateAddItem(item);
@@ -281,7 +286,9 @@ public class WBorderLayout extends WLayout {
 				return WBorderLayout.Position.values()[i];
 			}
 		}
-		throw new WtException("WBorderLayout::position(): invalid item");
+		logger.error(new StringWriter().append("position(): item not found")
+				.toString());
+		return WBorderLayout.Position.Center;
 	}
 
 	Grid getGrid() {
@@ -303,8 +310,10 @@ public class WBorderLayout extends WLayout {
 		case Center:
 			return this.grid_.items_.get(1).get(1);
 		default:
-			throw new WtException(
-					"WBorderLayout::itemAtPosition(): invalid position");
+			logger.error(new StringWriter().append(
+					"itemAtPosition(): invalid position:").append(
+					String.valueOf((int) position.getValue())).toString());
+			return this.grid_.items_.get(1).get(1);
 		}
 	}
 }

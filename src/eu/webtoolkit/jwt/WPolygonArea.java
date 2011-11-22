@@ -16,6 +16,8 @@ import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * An interactive area in a widget, specified by a polygon.
@@ -36,6 +38,8 @@ import eu.webtoolkit.jwt.servlet.*;
  * @see WRectArea
  */
 public class WPolygonArea extends WAbstractArea {
+	private static Logger logger = LoggerFactory.getLogger(WPolygonArea.class);
+
 	/**
 	 * Creates an empty polygon.
 	 * <p>

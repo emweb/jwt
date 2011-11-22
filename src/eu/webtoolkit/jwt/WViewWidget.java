@@ -16,6 +16,8 @@ import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * An abstract base class for an MVC view that is rendered using a widget.
@@ -65,6 +67,8 @@ import eu.webtoolkit.jwt.servlet.*;
  * external CSS as appropriate.
  */
 public abstract class WViewWidget extends WWebWidget {
+	private static Logger logger = LoggerFactory.getLogger(WViewWidget.class);
+
 	/**
 	 * Creates a new view widget.
 	 */

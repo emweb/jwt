@@ -16,6 +16,8 @@ import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A value class that describes a CSS length.
@@ -25,6 +27,8 @@ import eu.webtoolkit.jwt.servlet.*;
  * which has a different meaning depending on the context.
  */
 public class WLength {
+	private static Logger logger = LoggerFactory.getLogger(WLength.class);
+
 	/**
 	 * The unit.
 	 */
@@ -91,11 +95,12 @@ public class WLength {
 	/**
 	 * Creates a length by parsing the argument as a css length string.
 	 * <p>
-	 * Only a combination of a value and a unit is supported. If the string is
-	 * an illegal css length an exception is thrown.
+	 * This supports all CSS length formats that have an API counterpart.
 	 */
 	public WLength(String s) {
 		this.auto_ = false;
+		this.unit_ = WLength.Unit.Pixel;
+		this.value_ = -1;
 		String end = null;
 		{
 			Matcher matcher = StringUtils.FLOAT_PATTERN.matcher(s);
@@ -109,9 +114,11 @@ public class WLength {
 		}
 		;
 		if (s == end) {
-			throw new WtException(
-					"WLength: Missing value in the css length string '" + s
-							+ "'.");
+			logger.error(new StringWriter()
+					.append("cannot parse CSS length: '").append(s).append("'")
+					.toString());
+			this.auto_ = true;
+			return;
 		}
 		String unit = end;
 		unit = unit.trim();
@@ -142,10 +149,16 @@ public class WLength {
 										if (unit.equals("%")) {
 											this.unit_ = WLength.Unit.Percentage;
 										} else {
-											throw new WtException(
-													"WLength: Illegal unit '"
-															+ unit
-															+ "' in the css length string.");
+											logger
+													.error(new StringWriter()
+															.append(
+																	"unrecognized unit in '")
+															.append(s).append(
+																	"'")
+															.toString());
+											this.auto_ = true;
+											this.value_ = -1;
+											this.unit_ = WLength.Unit.Pixel;
 										}
 									}
 								}
@@ -160,8 +173,8 @@ public class WLength {
 	/**
 	 * Creates a length with value and unit.
 	 * <p>
-	 * This constructor will also provide the implicit conversion between a
-	 * double and {@link WLength}, using a pixel unit.
+	 * This constructor is also used for the implicit conversion of a double to
+	 * a {@link WLength}, assuming a pixel unit.
 	 */
 	public WLength(double value, WLength.Unit unit) {
 		this.auto_ = false;
@@ -182,8 +195,8 @@ public class WLength {
 	/**
 	 * Creates a length with value and unit.
 	 * <p>
-	 * This constructor will also provide the implicit conversion between an int
-	 * and {@link WLength}, using a pixel unit.
+	 * This constructor is also used for the implicit conversion of a int to a
+	 * {@link WLength}, assuming a pixel unit.
 	 */
 	public WLength(int value, WLength.Unit unit) {
 		this.auto_ = false;
@@ -204,8 +217,8 @@ public class WLength {
 	/**
 	 * Creates a length with value and unit.
 	 * <p>
-	 * This constructor will also provide the implicit conversion between a long
-	 * and {@link WLength}, using a pixel unit.
+	 * This constructor is also used for the implicit conversion of a long to a
+	 * {@link WLength}, assuming a pixel unit.
 	 */
 	public WLength(long value, WLength.Unit unit) {
 		this.auto_ = false;

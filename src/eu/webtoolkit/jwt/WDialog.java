@@ -16,6 +16,8 @@ import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A WDialog shows a dialog.
@@ -103,6 +105,8 @@ import eu.webtoolkit.jwt.servlet.*;
  * </p>
  */
 public class WDialog extends WCompositeWidget {
+	private static Logger logger = LoggerFactory.getLogger(WDialog.class);
+
 	/**
 	 * The result of a modal dialog execution.
 	 */
@@ -296,12 +300,11 @@ public class WDialog extends WCompositeWidget {
 	 */
 	public WDialog.DialogCode exec(WAnimation animation) {
 		if (this.recursiveEventLoop_) {
-			throw new WtException(
-					"WDialog::exec(): already in recursive event loop.");
+			throw new WException("WDialog::exec(): already being executed.");
 		}
 		this.animateShow(animation);
 		if (!WtServlet.isAsyncSupported()) {
-			throw new WtException(
+			throw new WException(
 					"Server push requires a Servlet 3.0 enabled servlet container and an application with async-supported enabled.");
 		}
 		WApplication app = WApplication.getInstance();
@@ -309,7 +312,7 @@ public class WDialog extends WCompositeWidget {
 		if (app.getEnvironment().isTest()) {
 			app.getEnvironment().dialogExecuted().trigger(this);
 			if (this.recursiveEventLoop_) {
-				throw new WtException("Test case must close dialog");
+				throw new WException("Test case must close dialog");
 			}
 		} else {
 			do {
@@ -597,6 +600,6 @@ public class WDialog extends WCompositeWidget {
 				JavaScriptScope.WtClassScope,
 				JavaScriptObjectType.JavaScriptConstructor,
 				"WDialog",
-				"function(g,b,h,i){function m(a){var c=a||window.event;a=d.pageCoordinates(c);c=d.windowCoordinates(c);var e=d.windowSize();if(c.x>0&&c.x<e.x&&c.y>0&&c.y<e.y){h=i=false;b.style.left=d.px(b,\"left\")+a.x-j+\"px\";b.style.top=d.px(b,\"top\")+a.y-k+\"px\";b.style.right=\"\";b.style.bottom=\"\";j=a.x;k=a.y}}function l(a,c,e){e-=2;c-=2;a.style.height=Math.max(0,e)+\"px\";if(c>0)a.style.width=Math.max(0,c)+\"px\";a=a.lastChild;e-=a.previousSibling.offsetHeight+8;if(e> 0){a.style.height=e+\"px\";g.layouts&&g.layouts.adjust()}}jQuery.data(b,\"obj\",this);var f=$(b).find(\".titlebar\").first().get(0),d=g.WT,j,k;if(f){f.onmousedown=function(a){a=a||window.event;d.capture(f);a=d.pageCoordinates(a);j=a.x;k=a.y;f.onmousemove=m};f.onmouseup=function(){f.onmousemove=null;d.capture(null)}}this.centerDialog=function(){if(b.parentNode==null)b=f=null;else if(b.style.display!=\"none\"&&b.style.visibility!=\"hidden\"){var a=d.windowSize(),c=b.offsetWidth,e=b.offsetHeight;if(h)b.style.left= Math.round((a.x-c)/2+(d.isIE6?document.documentElement.scrollLeft:0))+\"px\";if(i)b.style.top=Math.round((a.y-e)/2+(d.isIE6?document.documentElement.scrollTop:0))+\"px\";b.style.height!=\"\"&&l(b,-1,e);b.style.visibility=\"visible\"}};this.onresize=function(a,c){h=i=false;l(b,a,c)};b.wtResize=l;b.wtPosition=this.centerDialog}");
+				"function(g,b,h,i){function m(a){var c=a||window.event;a=d.pageCoordinates(c);c=d.windowCoordinates(c);var e=d.windowSize();if(c.x>0&&c.x<e.x&&c.y>0&&c.y<e.y){h=i=false;b.style.left=d.px(b,\"left\")+a.x-j+\"px\";b.style.top=d.px(b,\"top\")+a.y-k+\"px\";b.style.right=\"\";b.style.bottom=\"\";j=a.x;k=a.y}}function l(a,c,e){e-=2;c-=2;a.style.height=Math.max(0,e)+\"px\";if(c>0)a.style.width=Math.max(0,c)+\"px\";a=a.lastChild;e-=a.previousSibling.offsetHeight+8;if(e> 0){a.style.height=e+\"px\";g.layouts&&g.layouts.adjust()}}jQuery.data(b,\"obj\",this);var f=$(b).find(\".titlebar\").first().get(0),d=g.WT,j,k;if(f){f.onmousedown=function(a){a=a||window.event;d.capture(f);a=d.pageCoordinates(a);j=a.x;k=a.y;f.onmousemove=m};f.onmouseup=function(){f.onmousemove=null;d.capture(null)}}this.centerDialog=function(){if(b.parentNode==null)b=f=null;else if(b.style.display!=\"none\"&&b.style.visibility!=\"hidden\"){var a=d.windowSize(),c=b.offsetWidth,e=b.offsetHeight;if(h){b.style.left= Math.round((a.x-c)/2+(d.isIE6?document.documentElement.scrollLeft:0))+\"px\";b.style.marginLeft=\"0px\"}if(i){b.style.top=Math.round((a.y-e)/2+(d.isIE6?document.documentElement.scrollTop:0))+\"px\";b.style.marginTop=\"0px\"}b.style.height!=\"\"&&l(b,-1,e);b.style.visibility=\"visible\"}};this.onresize=function(a,c){h=i=false;l(b,a,c)};b.wtResize=l;b.wtPosition=this.centerDialog}");
 	}
 }

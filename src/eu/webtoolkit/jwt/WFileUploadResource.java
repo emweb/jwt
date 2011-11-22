@@ -16,8 +16,13 @@ import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 class WFileUploadResource extends WResource {
+	private static Logger logger = LoggerFactory
+			.getLogger(WFileUploadResource.class);
+
 	public WFileUploadResource(WFileUpload fileUpload) {
 		super(fileUpload);
 		this.fileUpload_ = fileUpload;
@@ -39,7 +44,7 @@ class WFileUploadResource extends WResource {
 		response.addHeader("Cache-Control", "max-age=315360000");
 		Writer o = response.out();
 		o
-				.append("<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\"><html lang=\"en\" dir=\"ltr\">\n<head><title></title>\n<script type=\"text/javascript\">\nfunction load() { ");
+				.append("<!DOCTYPE html><html>\n<head><script type=\"text/javascript\">\nfunction load() { ");
 		if (triggerUpdate || 0 != 0) {
 			o.append("if (window.parent.").append(
 					WApplication.getInstance().getJavaScriptClass()).append(
@@ -61,9 +66,7 @@ class WFileUploadResource extends WResource {
 				}
 			}
 		}
-		o
-				.append("}\n</script></head><body onload=\"load();\"style=\"margin:0;padding:0;\">");
-		o.append("</body></html>");
+		o.append("}\n</script></head><body onload=\"load();\"></body></html>");
 		if (0 != 0) {
 			this.fileUpload_.tooLargeSize_ = 0;
 		} else {

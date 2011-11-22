@@ -16,8 +16,13 @@ import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 class HeaderProxyModel extends WAbstractTableModel {
+	private static Logger logger = LoggerFactory
+			.getLogger(HeaderProxyModel.class);
+
 	public HeaderProxyModel(WAbstractItemModel model, WObject parent) {
 		super(parent);
 		this.model_ = model;

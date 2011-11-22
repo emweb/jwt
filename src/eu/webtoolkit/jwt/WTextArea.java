@@ -16,6 +16,8 @@ import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A widget that provides a multi-line edit.
@@ -43,6 +45,8 @@ import eu.webtoolkit.jwt.servlet.*;
  * @see WLineEdit
  */
 public class WTextArea extends WFormWidget {
+	private static Logger logger = LoggerFactory.getLogger(WTextArea.class);
+
 	/**
 	 * Creates a text area with empty content and optional parent.
 	 */
@@ -216,19 +220,22 @@ public class WTextArea extends WFormWidget {
 		}
 	}
 
-	public WValidator.State validate() {
-		if (this.getValidator() != null) {
-			WValidator.State result = this.getValidator().validate(
-					this.content_);
-			if (result == WValidator.State.Valid) {
-				this.removeStyleClass("Wt-invalid", true);
-			} else {
-				this.addStyleClass("Wt-invalid", true);
-			}
-			return result;
-		} else {
-			return WValidator.State.Valid;
-		}
+	/**
+	 * Returns the current value.
+	 * <p>
+	 * Returns {@link WTextArea#getText() getText()}.
+	 */
+	public String getValueText() {
+		return this.getText();
+	}
+
+	/**
+	 * Sets the current value.
+	 * <p>
+	 * Calls {@link WTextArea#setText(String text) setText()}.
+	 */
+	public void setValueText(String value) {
+		this.setText(value);
 	}
 
 	private String content_;

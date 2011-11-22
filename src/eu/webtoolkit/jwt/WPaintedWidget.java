@@ -16,6 +16,8 @@ import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A widget that is painted using vector graphics.
@@ -100,6 +102,9 @@ import eu.webtoolkit.jwt.servlet.*;
  * @see WImage
  */
 public abstract class WPaintedWidget extends WInteractWidget {
+	private static Logger logger = LoggerFactory
+			.getLogger(WPaintedWidget.class);
+
 	/**
 	 * Enumeration that indicates a rendering method.
 	 */
@@ -331,6 +336,53 @@ public abstract class WPaintedWidget extends WInteractWidget {
 	}
 
 	/**
+	 * Returns the actual method used for rendering.
+	 * <p>
+	 * The default method considers browser capabilites and the preferred method
+	 * to make an actual choice for the implementation.
+	 * <p>
+	 * You may want to reimplement this method to override this choice.
+	 */
+	protected WPaintedWidget.Method getMethod() {
+		WPaintedWidget.Method method;
+		WEnvironment env = WApplication.getInstance().getEnvironment();
+		if (env.getContentType() != WEnvironment.ContentType.XHTML1
+				&& !(env.agentIsChrome()
+						&& env.getAgent().getValue() >= WEnvironment.UserAgent.Chrome5
+								.getValue()
+						|| env.agentIsIE()
+						&& env.getAgent().getValue() >= WEnvironment.UserAgent.IE9
+								.getValue() || env.agentIsGecko()
+						&& env.getAgent().getValue() >= WEnvironment.UserAgent.Firefox4_0
+								.getValue())) {
+			method = WPaintedWidget.Method.HtmlCanvas;
+		} else {
+			if (!env.hasJavaScript()) {
+				method = WPaintedWidget.Method.InlineSvgVml;
+			} else {
+				boolean oldFirefoxMac = (env.getUserAgent().indexOf(
+						"Firefox/1.5") != -1 || env.getUserAgent().indexOf(
+						"Firefox/2.0") != -1)
+						&& env.getUserAgent().indexOf("Macintosh") != -1;
+				if (oldFirefoxMac) {
+					method = WPaintedWidget.Method.HtmlCanvas;
+				} else {
+					method = this.preferredMethod_;
+				}
+				boolean nokia810 = env.getUserAgent().indexOf("Linux arm") != -1
+						&& env.getUserAgent().indexOf("Tablet browser") != -1
+						&& env.getUserAgent().indexOf("Gecko") != -1;
+				if (nokia810) {
+					method = WPaintedWidget.Method.HtmlCanvas;
+				} else {
+					method = this.preferredMethod_;
+				}
+			}
+		}
+		return method;
+	}
+
+	/**
 	 * Paints the widget.
 	 * <p>
 	 * You should reimplement this method to paint the contents of the widget,
@@ -474,40 +526,7 @@ public abstract class WPaintedWidget extends WInteractWidget {
 					WWidgetPainter.RenderType.InlineVml);
 			return true;
 		}
-		WPaintedWidget.Method method;
-		if (env.getContentType() != WEnvironment.ContentType.XHTML1
-				&& !(env.agentIsChrome()
-						&& env.getAgent().getValue() >= WEnvironment.UserAgent.Chrome5
-								.getValue()
-						|| env.agentIsIE()
-						&& env.getAgent().getValue() >= WEnvironment.UserAgent.IE9
-								.getValue() || env.agentIsGecko()
-						&& env.getAgent().getValue() >= WEnvironment.UserAgent.Firefox4_0
-								.getValue())) {
-			method = WPaintedWidget.Method.HtmlCanvas;
-		} else {
-			if (!env.hasJavaScript()) {
-				method = WPaintedWidget.Method.InlineSvgVml;
-			} else {
-				boolean oldFirefoxMac = (env.getUserAgent().indexOf(
-						"Firefox/1.5") != -1 || env.getUserAgent().indexOf(
-						"Firefox/2.0") != -1)
-						&& env.getUserAgent().indexOf("Macintosh") != -1;
-				if (oldFirefoxMac) {
-					method = WPaintedWidget.Method.HtmlCanvas;
-				} else {
-					method = this.preferredMethod_;
-				}
-				boolean nokia810 = env.getUserAgent().indexOf("Linux arm") != -1
-						&& env.getUserAgent().indexOf("Tablet browser") != -1
-						&& env.getUserAgent().indexOf("Gecko") != -1;
-				if (nokia810) {
-					method = WPaintedWidget.Method.HtmlCanvas;
-				} else {
-					method = this.preferredMethod_;
-				}
-			}
-		}
+		WPaintedWidget.Method method = this.getMethod();
 		if (method == WPaintedWidget.Method.InlineSvgVml) {
 			this.painter_ = new WWidgetVectorPainter(this,
 					WWidgetPainter.RenderType.InlineSvg);

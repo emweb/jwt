@@ -16,6 +16,8 @@ import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A selection box allows selection from a list of options.
@@ -59,6 +61,8 @@ import eu.webtoolkit.jwt.servlet.*;
  * appropriate.
  */
 public class WSelectionBox extends WComboBox {
+	private static Logger logger = LoggerFactory.getLogger(WSelectionBox.class);
+
 	/**
 	 * Constructor.
 	 */
@@ -164,7 +168,7 @@ public class WSelectionBox extends WComboBox {
 	 */
 	public void setSelectedIndexes(Set<Integer> selection) {
 		if (this.selectionMode_ != SelectionMode.ExtendedSelection) {
-			throw new WtException(
+			throw new WException(
 					"WSelectionBox::setSelectedIndexes() can only be used for an ExtendedSelection mode");
 		}
 		this.selection_ = selection;
@@ -193,6 +197,10 @@ public class WSelectionBox extends WComboBox {
 	private SelectionMode selectionMode_;
 	private Set<Integer> selection_;
 	private boolean configChanged_;
+
+	private boolean isSupportsNoSelection() {
+		return true;
+	}
 
 	void updateDom(DomElement element, boolean all) {
 		if (this.configChanged_ || all) {
@@ -237,9 +245,9 @@ public class WSelectionBox extends WComboBox {
 						int i = Integer.parseInt(v);
 						this.selection_.add(i);
 					} catch (NumberFormatException error) {
-						WApplication.getInstance().log("error").append(
-								"WSelectionBox received illegal form value: '")
-								.append(v).append("'");
+						logger.error(new StringWriter().append(
+								"received illegal form value: '").append(v)
+								.append("'").toString());
 					}
 				}
 			}

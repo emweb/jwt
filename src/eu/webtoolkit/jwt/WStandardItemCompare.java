@@ -16,8 +16,13 @@ import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 class WStandardItemCompare implements Comparator<Integer> {
+	private static Logger logger = LoggerFactory
+			.getLogger(WStandardItemCompare.class);
+
 	public WStandardItemCompare(WStandardItem anItem, int aColumn,
 			SortOrder anOrder) {
 		super();

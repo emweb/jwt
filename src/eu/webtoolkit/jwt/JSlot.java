@@ -16,6 +16,8 @@ import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A slot that is only implemented in client side JavaScript code.
@@ -73,6 +75,8 @@ import eu.webtoolkit.jwt.servlet.*;
  * declare a {@link JSlot} on the stack.
  */
 public class JSlot {
+	private static Logger logger = LoggerFactory.getLogger(JSlot.class);
+
 	/**
 	 * Constructs a JavaScript-only slot within the parent scope.
 	 * <p>

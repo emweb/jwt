@@ -16,10 +16,14 @@ import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 class WebSession {
+	private static Logger logger = LoggerFactory.getLogger(WebSession.class);
+
 	enum State {
-		JustCreated, Loaded, Dead;
+		JustCreated, ExpectLoad, Loaded, Dead;
 
 		/**
 		 * Returns the numerical representation of this enum.
@@ -56,6 +60,9 @@ class WebSession {
 		this.canWriteAsyncResponse_ = false;
 		this.noBootStyleResponse_ = false;
 		this.progressiveBoot_ = false;
+		this.deferredRequest_ = null;
+		this.deferredResponse_ = null;
+		this.deferCount_ = 0;
 		this.recursiveEvent_ = this.mutex_.newCondition();
 		this.newRecursiveEvent_ = false;
 		this.updatesPendingEvent_ = this.mutex_.newCondition();
@@ -83,12 +90,12 @@ class WebSession {
 			this.basePath_ = "";
 			this.applicationName_ = this.applicationUrl_;
 		}
-		this.log("notice").append("Session created");
-		if (this.controller_.getConfiguration().isSessionIdCookie()) {
+		logger.info(new StringWriter().append("Session created").toString());
+		if (this.controller_.getConfiguration().sessionIdCookie()) {
 			this.sessionIdCookie_ = MathUtils.randomId();
 			this.sessionIdCookieChanged_ = true;
-			this.getRenderer().setCookie("Wt" + this.sessionIdCookie_, "1", -1,
-					"", "");
+			this.getRenderer().setCookie("Wt" + this.sessionIdCookie_, "1",
+					null, "", "", false);
 		}
 	}
 
@@ -160,12 +167,6 @@ class WebSession {
 		this.app_ = app;
 	}
 
-	public WLogEntry log(String type) {
-		Configuration conf = this.controller_.getConfiguration();
-		WLogEntry e = conf.getLogger().getEntry();
-		return e;
-	}
-
 	public void notify(WEvent event) throws IOException {
 		WebSession.Handler handler = event.impl_.handler;
 		WebRequest request = handler.getRequest();
@@ -188,22 +189,29 @@ class WebSession {
 			handler.setRequest((WebRequest) null, (WebResponse) null);
 			return;
 		}
-		if (!this.app_.initialized_) {
-			this.app_.initialize();
-			this.app_.initialized_ = true;
-		}
 		switch (this.state_) {
 		case JustCreated:
 			this.render(handler);
 			break;
+		case ExpectLoad:
 		case Loaded:
 			if (handler.getResponse().getResponseType() == WebRequest.ResponseType.Page) {
-				if (!handler.getRequest().getHeaderValue("User-Agent").equals(
-						this.env_.getUserAgent())) {
-					this.log("secure").append(
-							"Change of user-agent not allowed.");
-					this.serveError(403, handler, "Forbidden");
-					return;
+				if (!this.env_.agentIsIE()) {
+					if (!handler.getRequest().getHeaderValue("User-Agent")
+							.equals(this.env_.getUserAgent())) {
+						logger.warn(new StringWriter().append("secure:")
+								.append("Change of user-agent not allowed.")
+								.toString());
+						logger.info(new StringWriter().append(
+								"Old user agent: ").append(
+								this.env_.getUserAgent()).toString());
+						logger.info(new StringWriter().append(
+								"New user agent: ").append(
+								handler.getRequest().getHeaderValue(
+										"User-Agent")).toString());
+						this.serveError(403, handler, "Forbidden");
+						return;
+					}
 				}
 				String ca = WEnvironment.getClientAddress(handler.getRequest(),
 						this.controller_.getConfiguration());
@@ -216,10 +224,11 @@ class WebSession {
 						}
 					}
 					if (isInvalid) {
-						this.log("secure").append("Change of IP address (")
-								.append(this.env_.getClientAddress()).append(
+						logger.warn(new StringWriter().append("secure:")
+								.append("Change of IP address (").append(
+										this.env_.getClientAddress()).append(
 										" -> ").append(ca).append(
-										") not allowed.");
+										") not allowed.").toString());
 						this.serveError(403, handler, "Forbidden");
 						return;
 					}
@@ -229,7 +238,8 @@ class WebSession {
 				String cookie = request.getHeaderValue("Cookie");
 				if (cookie.indexOf("Wt" + this.sessionIdCookie_) == -1) {
 					this.sessionIdCookie_ = "";
-					this.log("info").append("Session id cookie not working");
+					logger.info(new StringWriter().append(
+							"Session id cookie not working").toString());
 				}
 				this.sessionIdCookieChanged_ = false;
 			}
@@ -238,7 +248,7 @@ class WebSession {
 				if (!(sidE != null)
 						|| !sidE.equals(String.valueOf(this.renderer_
 								.getScriptId()))) {
-					throw new WtException("Script id mismatch");
+					throw new WException("Script id mismatch");
 				}
 				if (!(request.getParameter("skeleton") != null)) {
 					if (!this.env_.hasAjax()) {
@@ -262,15 +272,23 @@ class WebSession {
 						this.app_.requestTooLarge().trigger(0);
 					}
 				} catch (RuntimeException e) {
-					this.log("error").append(
+					logger.error(new StringWriter().append(
 							"Exception in WApplication::requestTooLarge")
-							.append(e.toString());
+							.append(e.toString()).toString());
 					throw e;
 				}
+				String hashE = request.getParameter("_");
 				WResource resource = null;
-				if (!(requestE != null) && request.getPathInfo().length() != 0) {
-					resource = this.app_.decodeExposedResource("/path/"
-							+ request.getPathInfo());
+				if (!(requestE != null)) {
+					if (request.getPathInfo().length() != 0) {
+						resource = this.app_.decodeExposedResource("/path/"
+								+ StringUtils.prepend(request.getPathInfo(),
+										'/'));
+					}
+					if (!(resource != null) && hashE != null) {
+						resource = this.app_.decodeExposedResource("/path/"
+								+ hashE);
+					}
 				}
 				String resourceE = request.getParameter("resource");
 				String signalE = this.getSignal(request, "");
@@ -300,15 +318,16 @@ class WebSession {
 								handler.setRequest((WebRequest) null,
 										(WebResponse) null);
 							} catch (RuntimeException e) {
-								this.log("error").append(
+								logger.error(new StringWriter().append(
 										"Exception while streaming resource")
-										.append(e.toString());
+										.append(e.toString()).toString());
 								throw e;
 							}
 						} else {
-							this.log("error").append(
+							logger.error(new StringWriter().append(
 									"decodeResource(): resource '").append(
-									resourceE).append("' not exposed");
+									resourceE).append("' not exposed")
+									.toString());
 							handler.getResponse().setContentType("text/html");
 							handler
 									.getResponse()
@@ -337,9 +356,13 @@ class WebSession {
 						}
 						if (invalidAckId) {
 							if (!(ackIdE != null)) {
-								this.log("secure").append("Missing ackId");
+								logger.warn(new StringWriter()
+										.append("secure:").append(
+												"Missing ackId").toString());
 							} else {
-								this.log("secure").append("Invalid ackId");
+								logger.warn(new StringWriter()
+										.append("secure:").append(
+												"Invalid ackId").toString());
 							}
 							this.serveError(403, handler, "Forbidden");
 							return;
@@ -376,13 +399,15 @@ class WebSession {
 							}
 						}
 						if (handler.getRequest() != null) {
+							logger.debug(new StringWriter().append("signal: ")
+									.append(signalE).toString());
 							try {
 								handler.nextSignal = -1;
 								this.notifySignal(event);
 							} catch (RuntimeException e) {
-								this.log("error").append(
+								logger.error(new StringWriter().append(
 										"Error during event handling: ")
-										.append(e.toString());
+										.append(e.toString()).toString());
 								throw e;
 							}
 						}
@@ -390,7 +415,8 @@ class WebSession {
 					if (handler.getResponse() != null
 							&& handler.getResponse().getResponseType() == WebRequest.ResponseType.Page
 							&& !this.env_.hasAjax()) {
-						String hashE = request.getParameter("_");
+						this.env_.parameters_ = handler.getRequest()
+								.getParameterMap();
 						if (hashE != null) {
 							this.app_.changedInternalPath(hashE);
 						} else {
@@ -403,10 +429,13 @@ class WebSession {
 						}
 					}
 					if (!(signalE != null)) {
-						this.log("notice").append("Refreshing session");
+						logger.info(new StringWriter().append(
+								"Refreshing session").toString());
 						this.flushBootStyleResponse();
-						this.env_.parameters_ = handler.getRequest()
-								.getParameterMap();
+						if (handler.getRequest() != null) {
+							this.env_.parameters_ = handler.getRequest()
+									.getParameterMap();
+						}
 						this.app_.refresh();
 					}
 					if (handler.getResponse() != null
@@ -456,7 +485,7 @@ class WebSession {
 		try {
 			WebSession.Handler handler = WebSession.Handler.getInstance();
 			if (handler.getRequest() != null && !WtServlet.isAsyncSupported()) {
-				throw new WtException(
+				throw new WException(
 						"Recursive eventloop requires a Servlet 3.0 enabled servlet container and an application with async-supported enabled.");
 			}
 			if (handler.getRequest() != null) {
@@ -470,7 +499,7 @@ class WebSession {
 			}
 			if (this.state_ == WebSession.State.Dead) {
 				this.recursiveEventLoop_ = null;
-				throw new WtException(
+				throw new WException(
 						"doRecursiveEventLoop(): session was killed");
 			}
 			this.recursiveEventLoop_ = handler;
@@ -480,7 +509,7 @@ class WebSession {
 			}
 			if (this.state_ == WebSession.State.Dead) {
 				this.recursiveEventLoop_ = null;
-				throw new WtException(
+				throw new WException(
 						"doRecursiveEventLoop(): session was killed");
 			}
 			this.setLoaded();
@@ -493,6 +522,25 @@ class WebSession {
 
 	public boolean isBootStyleResponse() {
 		return !this.noBootStyleResponse_;
+	}
+
+	public void deferRendering() {
+		if (!(this.deferredRequest_ != null)) {
+			WebSession.Handler handler = WebSession.Handler.getInstance();
+			this.deferredRequest_ = handler.getRequest();
+			this.deferredResponse_ = handler.getResponse();
+			handler.setRequest((WebRequest) null, (WebResponse) null);
+		}
+		++this.deferCount_;
+	}
+
+	public void resumeRendering() {
+		if (--this.deferCount_ == 0) {
+			WebSession.Handler handler = WebSession.Handler.getInstance();
+			handler.setRequest(this.deferredRequest_, this.deferredResponse_);
+			this.deferredRequest_ = null;
+			this.deferredResponse_ = null;
+		}
 	}
 
 	public void expire() {
@@ -727,7 +775,11 @@ class WebSession {
 			return url;
 		}
 		if (url.length() > 0 && url.charAt(0) == '#') {
-			return url;
+			if (!isAbsoluteUrl(this.applicationUrl_)) {
+				return url;
+			} else {
+				return this.applicationName_ + url;
+			}
 		}
 		if (!isAbsoluteUrl(this.applicationUrl_)) {
 			if (url.length() == 0 || url.charAt(0) == '/') {
@@ -819,6 +871,7 @@ class WebSession {
 			return EventType.OtherEvent;
 		}
 		switch (this.state_) {
+		case ExpectLoad:
 		case Loaded:
 			if (handler.getResponse().getResponseType() == WebRequest.ResponseType.Script) {
 				return EventType.OtherEvent;
@@ -888,6 +941,8 @@ class WebSession {
 	}
 
 	static class Handler {
+		private static Logger logger = LoggerFactory.getLogger(Handler.class);
+
 		public Handler() {
 			this.nextSignal = -1;
 			this.signalOrder = new ArrayList<Integer>();
@@ -895,6 +950,7 @@ class WebSession {
 			this.session_ = null;
 			this.request_ = null;
 			this.response_ = null;
+			this.killed_ = false;
 			this.init();
 		}
 
@@ -906,6 +962,7 @@ class WebSession {
 			this.session_ = session;
 			this.request_ = request;
 			this.response_ = response;
+			this.killed_ = false;
 			session.getMutex().lock();
 			this.init();
 		}
@@ -917,6 +974,7 @@ class WebSession {
 			this.session_ = session;
 			this.request_ = null;
 			this.response_ = null;
+			this.killed_ = false;
 			if (takeLock) {
 				session.getMutex().lock();
 			}
@@ -930,6 +988,7 @@ class WebSession {
 			this.session_ = session;
 			this.request_ = null;
 			this.response_ = null;
+			this.killed_ = false;
 			this.init();
 		}
 
@@ -974,7 +1033,8 @@ class WebSession {
 				return;
 			}
 			if (session.state_ == WebSession.State.Dead) {
-				session.log("warn").append("Attaching to dead session?");
+				logger.warn(new StringWriter().append(
+						"Attaching to dead session?").toString());
 				attachThreadToHandler(new WebSession.Handler(session, false));
 				return;
 			}
@@ -1055,7 +1115,8 @@ class WebSession {
 					&& this.state_ != WebSession.State.JustCreated
 					&& (requestE != null && (requestE.equals("jsupdate") || requestE
 							.equals("resource")))) {
-				this.log("secure").append("CSRF prevention kicked in.");
+				logger.warn(new StringWriter().append("secure:").append(
+						"CSRF prevention kicked in.").toString());
 				this.serveError(403, handler, "Forbidden");
 			} else {
 				try {
@@ -1069,18 +1130,22 @@ class WebSession {
 										|| requestE.equals("script")) {
 									handler.getResponse().setResponseType(
 											WebRequest.ResponseType.Update);
-									this
-											.log("notice")
-											.append(
-													"Signal from dead session, sending reload.");
+									logger
+											.info(new StringWriter()
+													.append(
+															"Signal from dead session, sending reload.")
+													.toString());
 									this.renderer_.letReloadJS(handler
 											.getResponse(), true);
 									this.kill();
 									break;
 								} else {
 									if (!requestE.equals("page")) {
-										this.log("notice").append(
-												"Not serving this.");
+										logger
+												.info(new StringWriter()
+														.append(
+																"Not serving this.")
+														.toString());
 										handler.getResponse().setContentType(
 												"text/html");
 										handler
@@ -1105,18 +1170,37 @@ class WebSession {
 								} catch (RuntimeException e) {
 								}
 								if (!this.start()) {
-									throw new WtException(
+									throw new WException(
 											"Could not start application.");
 								}
 								this.app_.notify(new WEvent(new WEvent.Impl(
 										handler)));
-								this.setLoaded();
 								if (this.env_.agentIsSpiderBot()) {
 									this.kill();
+								} else {
+									if (this.controller_
+											.limitPlainHtmlSessions()) {
+										logger
+												.warn(new StringWriter()
+														.append("secure:")
+														.append(
+																"DoS: plain HTML sessions being limited")
+														.toString());
+										if (forcePlain) {
+											this.kill();
+										} else {
+											this.setState(
+													WebSession.State.Loaded,
+													conf.getBootstrapTimeout());
+										}
+									} else {
+										this.setLoaded();
+									}
 								}
 							} else {
 								this.serveResponse(handler);
-								this.setState(WebSession.State.Loaded, 10);
+								this.setState(WebSession.State.Loaded, conf
+										.getBootstrapTimeout());
 							}
 							break;
 						}
@@ -1134,10 +1218,11 @@ class WebSession {
 											.append(
 													"<html><head><title>bhm</title></head><body>&#160;</body></html>");
 								} else {
-									this
-											.log("notice")
-											.append(
-													"Not starting session for resource.");
+									logger
+											.info(new StringWriter()
+													.append(
+															"Not starting session for resource.")
+													.toString());
 									handler.getResponse().setContentType(
 											"text/html");
 									handler
@@ -1153,12 +1238,13 @@ class WebSession {
 								this.init(request);
 								this.env_.enableAjax(request);
 								if (!this.start()) {
-									throw new WtException(
+									throw new WException(
 											"Could not start application.");
 								}
 								this.app_.notify(new WEvent(new WEvent.Impl(
 										handler)));
-								this.setLoaded();
+								this.setState(WebSession.State.ExpectLoad, conf
+										.getBootstrapTimeout());
 							}
 							break;
 						default:
@@ -1166,6 +1252,7 @@ class WebSession {
 						}
 						break;
 					}
+					case ExpectLoad:
 					case Loaded: {
 						if (requestE != null) {
 							if (requestE.equals("jsupdate")) {
@@ -1175,6 +1262,11 @@ class WebSession {
 								if (requestE.equals("script")) {
 									handler.getResponse().setResponseType(
 											WebRequest.ResponseType.Script);
+									if (this.state_ == WebSession.State.Loaded) {
+										this.setState(
+												WebSession.State.ExpectLoad,
+												conf.getBootstrapTimeout());
+									}
 								} else {
 									if (requestE.equals("style")) {
 										this.flushBootStyleResponse();
@@ -1226,7 +1318,7 @@ class WebSession {
 								if (!(request.getParameter("skeleton") != null)) {
 									this.env_.enableAjax(request);
 									if (!this.start()) {
-										throw new WtException(
+										throw new WException(
 												"Could not start application.");
 									}
 								} else {
@@ -1248,18 +1340,27 @@ class WebSession {
 									String jsE = request.getParameter("js");
 									if (jsE != null && jsE.equals("no")) {
 										if (!this.start()) {
-											throw new WtException(
+											throw new WException(
 													"Could not start application.");
 										}
+										if (this.controller_
+												.limitPlainHtmlSessions()) {
+											logger
+													.warn(new StringWriter()
+															.append("secure:")
+															.append(
+																	"DoS: plain HTML sessions being limited")
+															.toString());
+											this.kill();
+										}
 									} else {
-										if (!conf.isReloadIsNewSession()
+										if (!conf.reloadIsNewSession()
 												&& wtdE != null
 												&& wtdE.equals(this.sessionId_)) {
 											this.serveResponse(handler);
-											this
-													.setState(
-															WebSession.State.Loaded,
-															10);
+											this.setState(
+													WebSession.State.Loaded,
+													conf.getBootstrapTimeout());
 										} else {
 											handler
 													.getResponse()
@@ -1284,7 +1385,19 @@ class WebSession {
 								&& signalE.equals("poll");
 						if (requestForResource || isPoll
 								|| !this.isUnlockRecursiveEventLoop()) {
-							this.setLoaded();
+							if (this.env_.hasAjax()) {
+								if (this.state_ != WebSession.State.ExpectLoad
+										&& handler.getResponse()
+												.getResponseType() == WebRequest.ResponseType.Update) {
+									this.setLoaded();
+								}
+							} else {
+								if (this.state_ != WebSession.State.ExpectLoad
+										&& !this.controller_
+												.limitPlainHtmlSessions()) {
+									this.setLoaded();
+								}
+							}
 							this.app_.notify(new WEvent(
 									new WEvent.Impl(handler)));
 							if (handler.getResponse() != null
@@ -1296,18 +1409,20 @@ class WebSession {
 						break;
 					}
 					case Dead:
-						throw new WtException(
+						throw new WException(
 								"Internal error: WebSession is dead?");
 					}
-				} catch (WtException e) {
-					this.log("fatal").append(e.toString());
+				} catch (WException e) {
+					logger.error(new StringWriter().append("Fatal error: ")
+							.append(e.getWhat()).toString());
 					e.printStackTrace();
 					this.kill();
 					if (handler.getResponse() != null) {
-						this.serveError(500, handler, e.toString());
+						this.serveError(500, handler, e.getWhat());
 					}
 				} catch (RuntimeException e) {
-					this.log("fatal").append(e.toString());
+					logger.error(new StringWriter().append("Fatal error: ")
+							.append(e.toString()).toString());
 					e.printStackTrace();
 					this.kill();
 					if (handler.getResponse() != null) {
@@ -1390,6 +1505,9 @@ class WebSession {
 	private boolean canWriteAsyncResponse_;
 	private boolean noBootStyleResponse_;
 	private boolean progressiveBoot_;
+	private WebRequest deferredRequest_;
+	private WebResponse deferredResponse_;
+	private int deferCount_;
 	private java.util.concurrent.locks.Condition recursiveEvent_;
 	private boolean newRecursiveEvent_;
 	private java.util.concurrent.locks.Condition updatesPendingEvent_;
@@ -1408,8 +1526,8 @@ class WebSession {
 		if (result != null) {
 			return result;
 		} else {
-			this.log("error").append("decodeSignal(): signal '").append(
-					signalId).append("' not exposed");
+			logger.error(new StringWriter().append("decodeSignal(): signal '")
+					.append(signalId).append("' not exposed").toString());
 			return null;
 		}
 	}
@@ -1420,8 +1538,9 @@ class WebSession {
 		if (result != null) {
 			return result;
 		} else {
-			this.log("error").append("decodeSignal(): signal '").append(
-					objectId).append('.').append(name).append("' not exposed");
+			logger.error(new StringWriter().append("decodeSignal(): signal '")
+					.append(objectId).append('.').append(name).append(
+							"' not exposed").toString());
 			return null;
 		}
 	}
@@ -1438,9 +1557,9 @@ class WebSession {
 				try {
 					this.checkTimers();
 				} catch (RuntimeException e) {
-					this.log("error").append(
+					logger.error(new StringWriter().append(
 							"Exception while triggering timers").append(
-							e.toString());
+							e.toString()).toString());
 					throw e;
 				}
 			}
@@ -1573,9 +1692,15 @@ class WebSession {
 			}
 			this.renderer_.setRendered(true);
 			if (signalE.equals("none") || signalE.equals("load")) {
-				if (signalE.equals("load")
-						&& this.getType() == EntryPointType.WidgetSet) {
-					this.renderer_.setRendered(false);
+				if (signalE.equals("load")) {
+					if (this.getType() == EntryPointType.WidgetSet) {
+						this.renderer_.setRendered(false);
+					}
+					if (!this.renderer_.checkResponsePuzzle(request)) {
+						this.app_.quit();
+					} else {
+						this.setLoaded();
+					}
 				}
 				this.renderer_.setVisibleOnly(false);
 			} else {
@@ -1645,8 +1770,8 @@ class WebSession {
 					selectionEnd = Integer.parseInt(selEnd);
 				}
 			} catch (NumberFormatException ee) {
-				this.log("error").append(
-						"Could not lexical cast selection range");
+				logger.error(new StringWriter().append(
+						"Could not lexical cast selection range").toString());
 			}
 			this.app_.setFocus(focus, selectionStart, selectionEnd);
 		} else {

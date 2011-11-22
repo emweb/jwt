@@ -16,6 +16,8 @@ import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A proxy model for Wt&apos;s item models that provides batch editing.
@@ -56,6 +58,9 @@ import eu.webtoolkit.jwt.servlet.*;
  * setNewRowFlags()}.
  */
 public class WBatchEditProxyModel extends WAbstractProxyModel {
+	private static Logger logger = LoggerFactory
+			.getLogger(WBatchEditProxyModel.class);
+
 	/**
 	 * Constructor.
 	 */
@@ -600,6 +605,8 @@ public class WBatchEditProxyModel extends WAbstractProxyModel {
 	}
 
 	static class Cell {
+		private static Logger logger = LoggerFactory.getLogger(Cell.class);
+
 		public int row;
 		public int column;
 
@@ -610,6 +617,8 @@ public class WBatchEditProxyModel extends WAbstractProxyModel {
 	}
 
 	static class Item extends WAbstractProxyModel.BaseItem {
+		private static Logger logger = LoggerFactory.getLogger(Item.class);
+
 		public WBatchEditProxyModel.Item insertedParent_;
 		public Map<WBatchEditProxyModel.Cell, SortedMap<Integer, Object>> editedValues_;
 		public List<Integer> removedRows_;
@@ -897,7 +906,7 @@ public class WBatchEditProxyModel extends WAbstractProxyModel {
 							autoCreate);
 				} else {
 					if (autoCreate) {
-						throw new WtException(
+						throw new WException(
 								"WBatchEditProxyModel does not support children in column > 0");
 					} else {
 						return null;

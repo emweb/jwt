@@ -16,12 +16,18 @@ import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 class Grid {
+	private static Logger logger = LoggerFactory.getLogger(Grid.class);
+
 	public int horizontalSpacing_;
 	public int verticalSpacing_;
 
 	static class Row {
+		private static Logger logger = LoggerFactory.getLogger(Row.class);
+
 		public int stretch_;
 		public boolean resizable_;
 
@@ -36,6 +42,8 @@ class Grid {
 	}
 
 	static class Column {
+		private static Logger logger = LoggerFactory.getLogger(Column.class);
+
 		public int stretch_;
 		public boolean resizable_;
 
@@ -50,6 +58,8 @@ class Grid {
 	}
 
 	static class Item {
+		private static Logger logger = LoggerFactory.getLogger(Item.class);
+
 		public WLayoutItem item_;
 		public int rowSpan_;
 		public int colSpan_;

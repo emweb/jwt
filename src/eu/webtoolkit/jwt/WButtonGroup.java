@@ -16,6 +16,8 @@ import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A class for grouping radio buttons logically together.
@@ -37,6 +39,8 @@ import eu.webtoolkit.jwt.servlet.*;
  * @see WRadioButton
  */
 public class WButtonGroup extends WObject {
+	private static Logger logger = LoggerFactory.getLogger(WButtonGroup.class);
+
 	/**
 	 * Creates a new empty button group.
 	 */
@@ -263,6 +267,8 @@ public class WButtonGroup extends WObject {
 	}
 
 	static class Button {
+		private static Logger logger = LoggerFactory.getLogger(Button.class);
+
 		public WRadioButton button;
 		public int id;
 	}

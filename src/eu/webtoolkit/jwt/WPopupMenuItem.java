@@ -16,6 +16,8 @@ import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * An item in a popup menu.
@@ -30,6 +32,9 @@ import eu.webtoolkit.jwt.servlet.*;
  * @see WPopupMenu
  */
 public class WPopupMenuItem extends WCompositeWidget {
+	private static Logger logger = LoggerFactory
+			.getLogger(WPopupMenuItem.class);
+
 	/**
 	 * Creates a new item with given text.
 	 * <p>

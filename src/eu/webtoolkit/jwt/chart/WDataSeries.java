@@ -16,6 +16,8 @@ import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A single data series in a cartesian chart.
@@ -55,6 +57,8 @@ import eu.webtoolkit.jwt.servlet.*;
  * @see WCartesianChart#addSeries(WDataSeries series)
  */
 public class WDataSeries {
+	private static Logger logger = LoggerFactory.getLogger(WDataSeries.class);
+
 	/**
 	 * Enumeration that indicates an aspect of the look.
 	 * <p>

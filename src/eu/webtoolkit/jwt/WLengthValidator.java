@@ -16,6 +16,8 @@ import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A validator that checks the string length of user input.
@@ -40,6 +42,9 @@ import eu.webtoolkit.jwt.servlet.*;
  * </ul>
  */
 public class WLengthValidator extends WValidator {
+	private static Logger logger = LoggerFactory
+			.getLogger(WLengthValidator.class);
+
 	/**
 	 * Creates a length validator that accepts input of any length.
 	 */
@@ -132,22 +137,21 @@ public class WLengthValidator extends WValidator {
 	 * The input is considered valid only when it is blank for a non-mandatory
 	 * field, or has a length within the valid range.
 	 */
-	public WValidator.State validate(String input) {
-		String text = input;
-		if (this.isMandatory()) {
-			if (text.length() == 0) {
-				return WValidator.State.InvalidEmpty;
-			}
-		} else {
-			if (text.length() == 0) {
-				return WValidator.State.Valid;
-			}
+	public WValidator.Result validate(String input) {
+		if (input.length() == 0) {
+			return super.validate(input);
 		}
-		if ((int) text.length() >= this.minLength_
-				&& (int) text.length() <= this.maxLength_) {
-			return WValidator.State.Valid;
+		String text = input;
+		if ((int) text.length() < this.minLength_) {
+			return new WValidator.Result(WValidator.State.Invalid, this
+					.getInvalidTooShortText());
 		} else {
-			return WValidator.State.Invalid;
+			if ((int) text.length() > this.maxLength_) {
+				return new WValidator.Result(WValidator.State.Invalid, this
+						.getInvalidTooLongText());
+			} else {
+				return new WValidator.Result(WValidator.State.Valid);
+			}
 		}
 	}
 

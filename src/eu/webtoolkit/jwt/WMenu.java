@@ -16,6 +16,8 @@ import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A widget that shows a menu of options.
@@ -230,6 +232,8 @@ import eu.webtoolkit.jwt.servlet.*;
  * @see WMenuItem
  */
 public class WMenu extends WCompositeWidget {
+	private static Logger logger = LoggerFactory.getLogger(WMenu.class);
+
 	/**
 	 * Creates a new menu.
 	 * <p>
@@ -910,9 +914,8 @@ public class WMenu extends WCompositeWidget {
 				this.items_.get(bestI).setFromInternalPath(path);
 			} else {
 				if (subPath.length() != 0) {
-					WApplication.getInstance().log("warn").append(
-							"WMenu: unknown path: '").append(subPath).append(
-							"'");
+					logger.warn(new StringWriter().append("unknown path: '")
+							.append(subPath).append("'").toString());
 				} else {
 					this.select(-1, false);
 				}

@@ -16,6 +16,8 @@ import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * An model that manages a list of strings.
@@ -44,6 +46,9 @@ import eu.webtoolkit.jwt.servlet.*;
  * @see WSelectionBox
  */
 public class WStringListModel extends WAbstractListModel {
+	private static Logger logger = LoggerFactory
+			.getLogger(WStringListModel.class);
+
 	/**
 	 * Creates a new empty string list model.
 	 */

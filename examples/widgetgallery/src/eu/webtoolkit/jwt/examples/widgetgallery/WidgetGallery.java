@@ -16,8 +16,12 @@ import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 class WidgetGallery extends WContainerWidget {
+	private static Logger logger = LoggerFactory.getLogger(WidgetGallery.class);
+
 	public WidgetGallery() {
 		super();
 		this.contentsStack_ = new WStackedWidget();

@@ -16,8 +16,13 @@ import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 abstract class StdLayoutItemImpl extends WObject implements WLayoutItemImpl {
+	private static Logger logger = LoggerFactory
+			.getLogger(StdLayoutItemImpl.class);
+
 	public StdLayoutItemImpl() {
 		super();
 	}

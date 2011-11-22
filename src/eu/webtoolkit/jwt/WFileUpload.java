@@ -16,6 +16,8 @@ import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A widget that allows a file to be uploaded.
@@ -73,6 +75,8 @@ import eu.webtoolkit.jwt.servlet.*;
  * styling through CSS is not well supported across browsers.
  */
 public class WFileUpload extends WWebWidget {
+	private static Logger logger = LoggerFactory.getLogger(WFileUpload.class);
+
 	/**
 	 * Creates a file upload widget.
 	 */

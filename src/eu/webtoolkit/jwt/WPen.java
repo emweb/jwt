@@ -16,6 +16,8 @@ import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A value class that defines the style for pen strokes.
@@ -34,6 +36,8 @@ import eu.webtoolkit.jwt.servlet.*;
  * @see WBrush
  */
 public class WPen {
+	private static Logger logger = LoggerFactory.getLogger(WPen.class);
+
 	/**
 	 * Creates a black cosmetic pen.
 	 * <p>

@@ -16,6 +16,8 @@ import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A proxy model for Wt&apos;s item models that provides filtering and/or
@@ -84,6 +86,9 @@ import eu.webtoolkit.jwt.servlet.*;
  * </blockquote>
  */
 public class WSortFilterProxyModel extends WAbstractProxyModel {
+	private static Logger logger = LoggerFactory
+			.getLogger(WSortFilterProxyModel.class);
+
 	/**
 	 * Constructor.
 	 */
@@ -592,6 +597,8 @@ public class WSortFilterProxyModel extends WAbstractProxyModel {
 	}
 
 	static class Item extends WAbstractProxyModel.BaseItem {
+		private static Logger logger = LoggerFactory.getLogger(Item.class);
+
 		public List<Integer> sourceRowMap_;
 		public List<Integer> proxyRowMap_;
 
@@ -603,6 +610,8 @@ public class WSortFilterProxyModel extends WAbstractProxyModel {
 	}
 
 	static class Compare implements Comparator<Integer> {
+		private static Logger logger = LoggerFactory.getLogger(Compare.class);
+
 		public Compare(WSortFilterProxyModel aModel,
 				WSortFilterProxyModel.Item anItem) {
 			super();

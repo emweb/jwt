@@ -16,6 +16,8 @@ import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * An item in a {@link WStandardItemModel}.
@@ -47,6 +49,8 @@ import eu.webtoolkit.jwt.servlet.*;
  * {@link WStandardItem#compare(WStandardItem other) compare()}.
  */
 public class WStandardItem {
+	private static Logger logger = LoggerFactory.getLogger(WStandardItem.class);
+
 	/**
 	 * Creates an empty standard item.
 	 */

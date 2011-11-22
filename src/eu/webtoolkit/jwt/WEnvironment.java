@@ -16,6 +16,8 @@ import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A class that captures information on the application environment.
@@ -50,6 +52,8 @@ import eu.webtoolkit.jwt.servlet.*;
  * </blockquote>
  */
 public class WEnvironment {
+	private static Logger logger = LoggerFactory.getLogger(WEnvironment.class);
+
 	/**
 	 * An enumeration type for specific user agent.
 	 * <p>
@@ -290,27 +294,34 @@ public class WEnvironment {
 	}
 
 	/**
-	 * Cookies set in the initial call to the application.
+	 * Returns the cookies from the environment.
 	 * <p>
-	 * Note that cookies set with
-	 * {@link WApplication#setCookie(String name, String value, int maxAge, String domain, String path)
-	 * WApplication#setCookie()} are not made available in the environment.
+	 * This returns all cookies that were present in initial request for the
+	 * application. Cookies set with
+	 * {@link WApplication#setCookie(String name, String value, int maxAge, String domain, String path, boolean secure)
+	 * WApplication#setCookie()} are not taken into considerations.
+	 * <p>
+	 * Cookies allow you to persist information across sessions.
 	 * <p>
 	 * Not all clients may support cookies or have cookies enabled.
 	 * <p>
 	 * 
 	 * @see WEnvironment#supportsCookies()
 	 * @see WEnvironment#getCookie(String cookieNname)
+	 * @see WEnvironment#getCookieValue(String cookieName)
 	 */
 	public Map<String, String> getCookies() {
 		return this.cookies_;
 	}
 
 	/**
-	 * Checks for existence and returns specified argument.
+	 * Returns a cookie value.
 	 * <p>
 	 * Throws a <code>RuntimeException(&quot;Missing cookie: ...&quot;)</code>
 	 * when the cookie is missing, or returns cookie value otherwise.
+	 * <p>
+	 * 
+	 * @see WEnvironment#getCookieValue(String cookieName)
 	 */
 	public String getCookie(String cookieNname) {
 		String i = this.cookies_.get(cookieNname);
@@ -321,6 +332,7 @@ public class WEnvironment {
 		}
 	}
 
+	// public String getCookieValue(String cookieName) ;
 	/**
 	 * Returns a header value.
 	 * <p>
@@ -582,7 +594,11 @@ public class WEnvironment {
 	 * @see WEnvironment#getInternalPath()
 	 */
 	public String getDeploymentPath() {
-		return this.session_.getDeploymentPath();
+		if (this.publicDeploymentPath_.length() != 0) {
+			return this.publicDeploymentPath_;
+		} else {
+			return this.session_.getDeploymentPath();
+		}
 	}
 
 	/**
@@ -794,6 +810,15 @@ public class WEnvironment {
 						.getValue();
 	}
 
+	/**
+	 * Returns the servlet.
+	 * <p>
+	 * This returns the servlet environment of this session.
+	 */
+	public WtServlet getServer() {
+		return this.session_.getController();
+	}
+
 	public boolean hashInternalPaths() {
 		return this.hashInternalPaths_;
 	}
@@ -805,11 +830,11 @@ public class WEnvironment {
 	}
 
 	Signal1<WDialog> dialogExecuted() {
-		throw new WtException("Internal error");
+		throw new WException("Internal error");
 	}
 
 	Signal1<WPopupMenu> popupExecuted() {
-		throw new WtException("Internal error");
+		throw new WException("Internal error");
 	}
 
 	public boolean isTest() {
@@ -1067,8 +1092,8 @@ public class WEnvironment {
 		this.serverAdmin_ = "";
 		this.pathInfo_ = request.getPathInfo();
 		this.setUserAgent(request.getHeaderValue("User-Agent"));
-		this.session_.log("notice").append("UserAgent: ").append(
-				this.userAgent_);
+		logger.info(new StringWriter().append("UserAgent: ").append(
+				this.userAgent_).toString());
 		if (conf.isBehindReverseProxy()) {
 			String forwardedHost = request.getHeaderValue("X-Forwarded-Host");
 			if (forwardedHost.length() != 0) {
@@ -1094,10 +1119,10 @@ public class WEnvironment {
 		String cookie = request.getHeaderValue("Cookie");
 		this.doesCookies_ = cookie.length() != 0;
 		if (this.doesCookies_) {
-			this.parseCookies(cookie);
+			parseCookies(cookie, this.cookies_);
 		}
 		this.locale_ = request.getLocale();
-		if (conf.isSendXHTMLMimeType()
+		if (conf.sendXHTMLMimeType()
 				&& this.accept_.indexOf("application/xhtml+xml") != -1
 				&& !this.agentIsIE()) {
 			this.contentType_ = WEnvironment.ContentType.XHTML1;
@@ -1106,6 +1131,7 @@ public class WEnvironment {
 
 	void enableAjax(WebRequest request) {
 		this.doesAjax_ = true;
+		this.session_.getController().newAjaxSession();
 		this.doesCookies_ = request.getHeaderValue("Cookie").length() != 0;
 		if (!(request.getParameter("htmlHistory") != null)) {
 			this.hashInternalPaths_ = true;
@@ -1130,35 +1156,6 @@ public class WEnvironment {
 		}
 	}
 
-	private void parseCookies(String str) {
-		List<String> cookies = new ArrayList<String>();
-		cookies = new ArrayList<String>(Arrays.asList(str.split(";")));
-		for (int i = 0; i < cookies.size(); ++i) {
-			int e = cookies.get(i).indexOf('=');
-			String cookieName = cookies.get(i).substring(0, 0 + e);
-			String cookieValue = e != -1 && cookies.get(i).length() > e + 1 ? cookies
-					.get(i).substring(e + 1)
-					: "";
-			cookieName = cookieName.trim();
-			cookieValue = cookieValue.trim();
-			try {
-				cookieName = java.net.URLDecoder.decode(cookieName, "UTF-8");
-			} catch (UnsupportedEncodingException eee) {
-				// I don't think so
-			}
-			;
-			try {
-				cookieValue = java.net.URLDecoder.decode(cookieValue, "UTF-8");
-			} catch (UnsupportedEncodingException eee) {
-				// I don't think so
-			}
-			;
-			if (!cookieName.equals("")) {
-				this.cookies_.put(cookieName, cookieValue);
-			}
-		}
-	}
-
 	boolean agentSupportsAjax() {
 		Configuration conf = this.session_.getController().getConfiguration();
 		boolean matches = regexMatchAny(this.userAgent_, conf
@@ -1173,15 +1170,15 @@ public class WEnvironment {
 	static String getClientAddress(WebRequest request, Configuration conf) {
 		String result = "";
 		if (conf.isBehindReverseProxy()) {
-			List<String> ips = new ArrayList<String>();
 			String clientIp = request.getHeaderValue("Client-IP");
 			clientIp = clientIp.trim();
+			List<String> ips = new ArrayList<String>();
 			if (clientIp.length() != 0) {
 				ips = new ArrayList<String>(Arrays.asList(clientIp.split(",")));
 			}
-			List<String> forwardedIps = new ArrayList<String>();
 			String forwardedFor = request.getHeaderValue("X-Forwarded-For");
 			forwardedFor = forwardedFor.trim();
+			List<String> forwardedIps = new ArrayList<String>();
 			if (forwardedFor.length() != 0) {
 				forwardedIps = new ArrayList<String>(Arrays.asList(forwardedFor
 						.split(",")));
@@ -1201,6 +1198,34 @@ public class WEnvironment {
 			result = "";
 		}
 		return result;
+	}
+
+	private static void parseCookies(String cookie, Map<String, String> result) {
+		List<String> list = new ArrayList<String>();
+		list = new ArrayList<String>(Arrays.asList(cookie.split(";")));
+		for (int i = 0; i < list.size(); ++i) {
+			int e = list.get(i).indexOf('=');
+			String cookieName = list.get(i).substring(0, 0 + e);
+			String cookieValue = e != -1 && list.get(i).length() > e + 1 ? list
+					.get(i).substring(e + 1) : "";
+			cookieName = cookieName.trim();
+			cookieValue = cookieValue.trim();
+			try {
+				cookieName = java.net.URLDecoder.decode(cookieName, "UTF-8");
+			} catch (UnsupportedEncodingException eee) {
+				// I don't think so
+			}
+			;
+			try {
+				cookieValue = java.net.URLDecoder.decode(cookieValue, "UTF-8");
+			} catch (UnsupportedEncodingException eee) {
+				// I don't think so
+			}
+			;
+			if (!cookieName.equals("")) {
+				result.put(cookieName, cookieValue);
+			}
+		}
 	}
 
 	static boolean regexMatchAny(String agent, List<String> regexList) {

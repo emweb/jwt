@@ -16,8 +16,12 @@ import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 class PaintBrush extends WPaintedWidget {
+	private static Logger logger = LoggerFactory.getLogger(PaintBrush.class);
+
 	public PaintBrush(int width, int height, WContainerWidget parent) {
 		super(parent);
 		this.path_ = new WPainterPath();

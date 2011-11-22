@@ -16,8 +16,12 @@ import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 class Validators extends ControlsWidget {
+	private static Logger logger = LoggerFactory.getLogger(Validators.class);
+
 	public Validators(EventDisplayer ed) {
 		super(ed, false);
 		this.fields_ = new ArrayList<Pair<WFormWidget, WText>>();

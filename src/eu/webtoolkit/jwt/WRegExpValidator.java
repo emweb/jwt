@@ -16,6 +16,8 @@ import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A validator that checks user input against a regular expression.
@@ -63,6 +65,9 @@ import eu.webtoolkit.jwt.servlet.*;
  * </ul>
  */
 public class WRegExpValidator extends WValidator {
+	private static Logger logger = LoggerFactory
+			.getLogger(WRegExpValidator.class);
+
 	/**
 	 * Sets a new regular expression validator.
 	 */
@@ -155,20 +160,15 @@ public class WRegExpValidator extends WValidator {
 	 * The input is considered valid only when it is blank for a non-mandatory
 	 * field, or matches the regular expression.
 	 */
-	public WValidator.State validate(String input) {
-		if (this.isMandatory()) {
-			if (input.length() == 0) {
-				return WValidator.State.InvalidEmpty;
-			}
-		} else {
-			if (input.length() == 0) {
-				return WValidator.State.Valid;
-			}
+	public WValidator.Result validate(String input) {
+		if (input.length() == 0) {
+			return super.validate(input);
 		}
 		if (!(this.regexp_ != null) || this.regexp_.matcher(input).matches()) {
-			return WValidator.State.Valid;
+			return new WValidator.Result(WValidator.State.Valid);
 		} else {
-			return WValidator.State.Invalid;
+			return new WValidator.Result(WValidator.State.Invalid, this
+					.getInvalidNoMatchText());
 		}
 	}
 

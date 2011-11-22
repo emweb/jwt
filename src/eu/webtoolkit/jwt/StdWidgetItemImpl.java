@@ -16,8 +16,13 @@ import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 class StdWidgetItemImpl extends StdLayoutItemImpl {
+	private static Logger logger = LoggerFactory
+			.getLogger(StdWidgetItemImpl.class);
+
 	public StdWidgetItemImpl(WWidgetItem item) {
 		super();
 		this.item_ = item;
@@ -128,8 +133,8 @@ class StdWidgetItemImpl extends StdLayoutItemImpl {
 	}
 
 	public void setHint(String name, String value) {
-		WApplication.getInstance().log("error").append(
-				"WWidgetItem: unrecognized hint '").append(name).append("'");
+		logger.error(new StringWriter().append("unrecognized hint '").append(
+				name).append("'").toString());
 	}
 
 	private WWidgetItem item_;

@@ -16,8 +16,13 @@ import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 abstract class WWidgetPainter {
+	private static Logger logger = LoggerFactory
+			.getLogger(WWidgetPainter.class);
+
 	enum RenderType {
 		InlineVml, InlineSvg, HtmlCanvas, PngImage;
 

@@ -16,6 +16,8 @@ import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A widget that plays audio.
@@ -49,6 +51,8 @@ import eu.webtoolkit.jwt.servlet.*;
  * @see WMediaPlayer
  */
 public class WAudio extends WAbstractMedia {
+	private static Logger logger = LoggerFactory.getLogger(WAudio.class);
+
 	/**
 	 * Creates a audio widget.
 	 * <p>

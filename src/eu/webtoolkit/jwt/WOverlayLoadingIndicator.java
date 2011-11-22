@@ -16,6 +16,8 @@ import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A more obvious loading indicator that grays the window.
@@ -56,6 +58,9 @@ import eu.webtoolkit.jwt.servlet.*;
  */
 public class WOverlayLoadingIndicator extends WContainerWidget implements
 		WLoadingIndicator {
+	private static Logger logger = LoggerFactory
+			.getLogger(WOverlayLoadingIndicator.class);
+
 	/**
 	 * Construct the loading indicator.
 	 * <p>

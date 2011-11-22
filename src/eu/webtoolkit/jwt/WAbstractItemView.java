@@ -16,6 +16,8 @@ import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * An abstract base class for item Views.
@@ -29,13 +31,16 @@ import eu.webtoolkit.jwt.servlet.*;
  * values for the following localization keys:
  * <ul>
  * <li>Wt.WAbstractItemView.PageIOfN: <b>{1}</b> of <b>{2}</b></li>
- * <li>Wt.WAbstractItemView.PageBar.First: &amp;xc2ab; First</li>
- * <li>Wt.WAbstractItemView.PageBar.Previous: &amp;xe280b9; Previous</li>
- * <li>Wt.WAbstractItemView.PageBar.Next: Next &amp;xe280ba;</li>
- * <li>Wt.WAbstractItemView.PageBar.Last: Last &amp;xc2bb;</li>
+ * <li>Wt.WAbstractItemView.PageBar.First: &amp;#xc2ab; First</li>
+ * <li>Wt.WAbstractItemView.PageBar.Previous: &amp;#xe280b9; Previous</li>
+ * <li>Wt.WAbstractItemView.PageBar.Next: Next &amp;#xe280ba;</li>
+ * <li>Wt.WAbstractItemView.PageBar.Last: Last &amp;#xc2bb;</li>
  * </ul>
  */
 public abstract class WAbstractItemView extends WCompositeWidget {
+	private static Logger logger = LoggerFactory
+			.getLogger(WAbstractItemView.class);
+
 	/**
 	 * Enumeration that specifies the user action that triggers editing.
 	 * <p>
@@ -1682,6 +1687,9 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	}
 
 	static class ColumnInfo {
+		private static Logger logger = LoggerFactory
+				.getLogger(ColumnInfo.class);
+
 		public WCssTemplateRule styleRule;
 		public int id;
 		public SortOrder sortOrder;
@@ -1929,9 +1937,9 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 						info.id);
 			}
 		}
-		WWidget i = this.headerItemDelegate_.update((WWidget) null,
-				this.headerModel_.getIndex(0, column), EnumSet
-						.noneOf(ViewItemRenderFlag.class));
+		WModelIndex index = this.headerModel_.getIndex(0, column);
+		WWidget i = this.headerItemDelegate_.update((WWidget) null, index,
+				EnumSet.noneOf(ViewItemRenderFlag.class));
 		i.setInline(false);
 		i.addStyleClass("Wt-label");
 		contents.addWidget(i);
@@ -2002,6 +2010,11 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 		}
 		if (extraW != null) {
 			main.addWidget(extraW);
+		}
+		String sc = StringUtils.asString(
+				index.getData(ItemDataRole.StyleClassRole)).toString();
+		if (sc.length() != 0) {
+			result.addStyleClass(sc);
 		}
 		return result;
 	}
@@ -2175,6 +2188,8 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	}
 
 	static class Editor {
+		private static Logger logger = LoggerFactory.getLogger(Editor.class);
+
 		public Editor() {
 			this.widget = null;
 			this.editState = new Object();

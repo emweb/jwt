@@ -16,8 +16,12 @@ import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 class SizeHandle {
+	private static Logger logger = LoggerFactory.getLogger(SizeHandle.class);
+
 	public static void loadJavaScript(WApplication app) {
 		app.loadJavaScript("js/SizeHandle.js", wtjs1());
 	}

@@ -16,6 +16,8 @@ import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A value class that defines a hyperlink target.
@@ -33,6 +35,8 @@ import eu.webtoolkit.jwt.servlet.*;
  * @see WPushButton
  */
 public class WLink {
+	private static Logger logger = LoggerFactory.getLogger(WLink.class);
+
 	/**
 	 * An enumeration for a link type.
 	 * <p>
@@ -106,7 +110,7 @@ public class WLink {
 			this.setInternalPath(new WString(value).toString());
 			break;
 		default:
-			throw new RuntimeException(
+			throw new WException(
 					"WLink::WLink(type) cannot be used for a Resource");
 		}
 	}

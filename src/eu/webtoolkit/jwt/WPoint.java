@@ -16,6 +16,8 @@ import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A value class that defines a 2D point with integer coordinates.
@@ -24,6 +26,8 @@ import eu.webtoolkit.jwt.servlet.*;
  * @see WPolygonArea
  */
 public class WPoint {
+	private static Logger logger = LoggerFactory.getLogger(WPoint.class);
+
 	/**
 	 * Creates a point (0, 0).
 	 */

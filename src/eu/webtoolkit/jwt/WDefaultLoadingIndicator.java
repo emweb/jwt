@@ -16,6 +16,8 @@ import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A default loading indicator.
@@ -42,6 +44,9 @@ import eu.webtoolkit.jwt.servlet.*;
  */
 public class WDefaultLoadingIndicator extends WText implements
 		WLoadingIndicator {
+	private static Logger logger = LoggerFactory
+			.getLogger(WDefaultLoadingIndicator.class);
+
 	/**
 	 * Constructor.
 	 */

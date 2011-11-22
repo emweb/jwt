@@ -16,6 +16,8 @@ import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A style class for a single widget or style sheet rule.
@@ -29,6 +31,9 @@ import eu.webtoolkit.jwt.servlet.*;
  * WCssStyleSheet#addRule()}.
  */
 public class WCssDecorationStyle extends WObject {
+	private static Logger logger = LoggerFactory
+			.getLogger(WCssDecorationStyle.class);
+
 	/**
 	 * How a background image must be repeated.
 	 */

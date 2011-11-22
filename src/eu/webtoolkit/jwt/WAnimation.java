@@ -16,6 +16,8 @@ import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A value class that defines a transition effect.
@@ -34,6 +36,8 @@ import eu.webtoolkit.jwt.servlet.*;
  * @see WWidget#setHidden(boolean hidden, WAnimation animation)
  */
 public class WAnimation {
+	private static Logger logger = LoggerFactory.getLogger(WAnimation.class);
+
 	/**
 	 * An enumeration describing an animation effect.
 	 * <p>

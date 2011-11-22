@@ -16,8 +16,13 @@ import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 class WJavaScriptPreamble {
+	private static Logger logger = LoggerFactory
+			.getLogger(WJavaScriptPreamble.class);
+
 	public WJavaScriptPreamble(JavaScriptScope scope,
 			JavaScriptObjectType type, String name, String src) {
 		this.scope = scope;

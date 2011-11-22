@@ -2399,7 +2399,8 @@ function scheduleUpdate() {
 
 _$_$if_WEB_SOCKETS_$_();
   if (websocket.state != WebSocketsUnavailable) {
-    if (typeof window.WebSocket === 'undefined')
+    if (typeof window.WebSocket === 'undefined'
+        && typeof window.MozWebSocket === 'undefined')
       websocket.state = WebSocketsUnavailable;
     else {
       var ws = websocket.socket;
@@ -2425,7 +2426,11 @@ _$_$if_WEB_SOCKETS_$_();
 	     + location.port + deployUrl + query;
 	  }
 
-	  websocket.socket = ws = new WebSocket(wsurl);
+	  if (typeof window.WebSocket !== 'undefined')
+	    websocket.socket = ws = new WebSocket(wsurl);
+	  else
+	    websocket.socket = ws = new MozWebSocket(wsurl);
+
 	  if (websocket.keepAlive)
 	    clearInterval(websocket.keepAlive);
 	  websocket.keepAlive = null;
@@ -2490,15 +2495,14 @@ _$_$endif_$_();
   }
 }
 
-var ackUpdateId = _$_ACK_UPDATE_ID_$_;
-
-function responseReceived(updateId) {
+var ackUpdateId = _$_ACK_UPDATE_ID_$_, ackPuzzle = null;
+function responseReceived(updateId, puzzle) {
+  ackPuzzle = puzzle;
   ackUpdateId = updateId;
   comm.responseReceived(updateId);
 }
 
 var pageId = 0;
-
 function setPage(id)
 {
   pageId = id;
@@ -2545,6 +2549,24 @@ function sendUpdate() {
   }
 
   data.result += '&ackId=' + ackUpdateId + '&pageId=' + pageId;
+
+  if (ackPuzzle) {
+    var solution = '';
+    var d = $('#' + ackPuzzle).get(0);
+    if (d) {
+      d = d.parentNode;
+
+      for (; !WT.hasTag(d, 'BODY'); d = d.parentNode) {
+	if (d.id) {
+	  if (solution != '') solution += ',';
+	  solution += d.id;
+	}
+      }
+    }
+
+    data.result += '&ackPuzzle=' + encodeURIComponent(solution);
+  }
+
   var params = "_$_PARAMS_$_";
   if (params.length > 0)
     data.result += '&' + params;

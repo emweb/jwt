@@ -16,6 +16,8 @@ import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A layout item that holds a single widget.
@@ -24,6 +26,8 @@ import eu.webtoolkit.jwt.servlet.*;
  * @see WLayout#addWidget(WWidget w)
  */
 public class WWidgetItem implements WLayoutItem {
+	private static Logger logger = LoggerFactory.getLogger(WWidgetItem.class);
+
 	/**
 	 * Creates a new item for the given <i>widget</i>.
 	 */

@@ -16,8 +16,12 @@ import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 class WTimerWidget extends WInteractWidget {
+	private static Logger logger = LoggerFactory.getLogger(WTimerWidget.class);
+
 	public WTimerWidget(WTimer timer) {
 		super();
 		this.timer_ = timer;

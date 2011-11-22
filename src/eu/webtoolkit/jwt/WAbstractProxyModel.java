@@ -16,6 +16,8 @@ import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * An abstract proxy model for Wt&apos;s item models.
@@ -34,6 +36,9 @@ import eu.webtoolkit.jwt.servlet.*;
  * {@link WAbstractProxyModel#getSourceModel() getSourceModel()}.
  */
 public abstract class WAbstractProxyModel extends WAbstractItemModel {
+	private static Logger logger = LoggerFactory
+			.getLogger(WAbstractProxyModel.class);
+
 	/**
 	 * Constructor.
 	 */
@@ -182,6 +187,8 @@ public abstract class WAbstractProxyModel extends WAbstractItemModel {
 	 * @see WAbstractItemModel#createIndex(int row, int column, Object ptr)
 	 */
 	protected static class BaseItem {
+		private static Logger logger = LoggerFactory.getLogger(BaseItem.class);
+
 		/**
 		 * The source model index.
 		 * <p>

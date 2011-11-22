@@ -16,6 +16,8 @@ import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A localized string resolver that bundles multiple string resolvers.
@@ -31,6 +33,9 @@ import eu.webtoolkit.jwt.servlet.*;
  * @see WApplication#setLocalizedStrings(WLocalizedStrings translator)
  */
 public class WCombinedLocalizedStrings extends WLocalizedStrings {
+	private static Logger logger = LoggerFactory
+			.getLogger(WCombinedLocalizedStrings.class);
+
 	/**
 	 * Constructor.
 	 */
@@ -42,19 +47,35 @@ public class WCombinedLocalizedStrings extends WLocalizedStrings {
 	/**
 	 * Adds a string resolver.
 	 * <p>
+	 * The order in which string resolvers are added is significant:
 	 * {@link WCombinedLocalizedStrings#resolveKey(String key) resolveKey()}
-	 * will consult each string resolver in the order they have been added.
+	 * will consult each string resolver in the order they have been added,
+	 * until a match is found.
 	 */
-	public void add(WLocalizedStrings localizedStrings) {
-		this.localizedStrings_.add(localizedStrings);
+	public void add(WLocalizedStrings resolver) {
+		this.localizedStrings_.add(resolver);
+	}
+
+	public void insert(int index, WLocalizedStrings resolver) {
+		this.localizedStrings_.add(0 + index, resolver);
 	}
 
 	/**
-	 * Returns all string resolver.
+	 * Removes a string resolver.
 	 * <p>
-	 * Returns the list of all string resolvers that were added by a call to
-	 * {@link WCombinedLocalizedStrings#add(WLocalizedStrings localizedStrings)
-	 * add()}.
+	 * 
+	 * @see WCombinedLocalizedStrings#add(WLocalizedStrings resolver)
+	 */
+	public void remove(WLocalizedStrings resolver) {
+		this.localizedStrings_.remove(resolver);
+	}
+
+	/**
+	 * Returns the list of resolvers.
+	 * <p>
+	 * 
+	 * @see WCombinedLocalizedStrings#add(WLocalizedStrings resolver)
+	 * @see WCombinedLocalizedStrings#remove(WLocalizedStrings resolver)
 	 */
 	public List<WLocalizedStrings> getItems() {
 		return this.localizedStrings_;

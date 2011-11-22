@@ -16,9 +16,14 @@ import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 class EmwebLoadingIndicator extends WContainerWidget implements
 		WLoadingIndicator {
+	private static Logger logger = LoggerFactory
+			.getLogger(EmwebLoadingIndicator.class);
+
 	public EmwebLoadingIndicator() {
 		super();
 		this.setInline(false);

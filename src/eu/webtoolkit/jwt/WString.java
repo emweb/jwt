@@ -33,7 +33,7 @@ public class WString implements Comparable<WString>, CharSequence {
 
 	private String key;
 	private String value;
-	private ArrayList<String> arguments;
+	private ArrayList<WString> arguments;
 
 	/**
 	 * Creates an empty string.
@@ -143,10 +143,8 @@ public class WString implements Comparable<WString>, CharSequence {
 		if (arguments != null) {
 			for (int i = 0; i < arguments.size(); ++i) {
 				String key = '{' + String.valueOf(i + 1) + '}';
-				String arg = arguments.get(i);
-				if (arg == null)
-					arg = "null";
-				result = result.replace(key, arg);
+				WString arg = arguments.get(i);
+				result = result.replace(key, arg != null ? arg.toString() : "null");
 			}
 		}
 
@@ -209,8 +207,8 @@ public class WString implements Comparable<WString>, CharSequence {
 	 */
 	public WString arg(CharSequence value) {
 		if (arguments == null)
-			arguments = new ArrayList<String>();
-		arguments.add(value == null ? "" : value.toString());
+			arguments = new ArrayList<WString>();
+		arguments.add(value == null ? WString.Empty : new WString(value.toString()));
 
 		return this;
 	}
@@ -227,8 +225,8 @@ public class WString implements Comparable<WString>, CharSequence {
 	 */
 	public WString arg(int value) {
 		if (arguments == null)
-			arguments = new ArrayList<String>();
-		arguments.add(String.valueOf(value));
+			arguments = new ArrayList<WString>();
+		arguments.add(new WString(String.valueOf(value)));
 
 		return this;
 	}
@@ -245,8 +243,8 @@ public class WString implements Comparable<WString>, CharSequence {
 	 */
 	public WString arg(double value) {
 		if (arguments == null)
-			arguments = new ArrayList<String>();
-		arguments.add(String.valueOf(value));
+			arguments = new ArrayList<WString>();
+		arguments.add(new WString(String.valueOf(value)));
 
 		return this;
 	}
@@ -256,7 +254,7 @@ public class WString implements Comparable<WString>, CharSequence {
 	 * 
 	 * @see WString#arg(CharSequence)
 	 */
-	public List<String> getArgs() {
+	public List<WString> getArgs() {
 		return arguments == null ? stArguments : arguments;
 	}
 
@@ -308,7 +306,7 @@ public class WString implements Comparable<WString>, CharSequence {
 	 * Change the WString 's argument at position argIndex.
 	 */
 	public void changeArg(int argIndex, String value) {
-		arguments.set(argIndex, value);
+		arguments.set(argIndex, new WString(value));
 	}
 
 	/**
@@ -334,7 +332,7 @@ public class WString implements Comparable<WString>, CharSequence {
 		return getValue();
 	}
 
-	private static List<String> stArguments;
+	private static List<WString> stArguments;
 
 	/**
 	 * Converts a CharSequence to a WString.

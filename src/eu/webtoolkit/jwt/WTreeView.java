@@ -16,6 +16,8 @@ import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A view class that displays a model as a tree or tree table.
@@ -167,6 +169,8 @@ import eu.webtoolkit.jwt.servlet.*;
  * </div>
  */
 public class WTreeView extends WAbstractItemView {
+	private static Logger logger = LoggerFactory.getLogger(WTreeView.class);
+
 	/**
 	 * Creates a new tree view.
 	 */
@@ -585,7 +589,7 @@ public class WTreeView extends WAbstractItemView {
 		}
 		int oldCount = this.getRowHeaderCount();
 		if (count != 0 && count != 1) {
-			throw new UnsupportedOperationException(
+			throw new WException(
 					"WTreeView::setRowHeaderCount: count must be 0 or 1");
 		}
 		super.setRowHeaderCount(count);
@@ -1325,9 +1329,8 @@ public class WTreeView extends WAbstractItemView {
 			}
 		}
 		if (!(c0index != null)) {
-			System.err.append(
-					"Warning (error?): illegal id in WTreeView::onItemEvent()")
-					.append('\n');
+			logger.error(new StringWriter().append(
+					"illegal id in WTreeView::onItemEvent()").toString());
 			return;
 		}
 		WModelIndex index = this.getModel().getIndex(c0index.getRow(), column,

@@ -16,8 +16,13 @@ import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 abstract class SeriesRenderer {
+	private static Logger logger = LoggerFactory
+			.getLogger(SeriesRenderer.class);
+
 	public abstract void addValue(double x, double y, double stacky,
 			WModelIndex xIndex, WModelIndex yIndex);
 

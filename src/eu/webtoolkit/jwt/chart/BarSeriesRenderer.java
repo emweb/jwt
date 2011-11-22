@@ -16,8 +16,13 @@ import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 class BarSeriesRenderer extends SeriesRenderer {
+	private static Logger logger = LoggerFactory
+			.getLogger(BarSeriesRenderer.class);
+
 	public BarSeriesRenderer(WChart2DRenderer renderer, WDataSeries series,
 			SeriesRenderIterator it, double groupWidth, int numGroups, int group) {
 		super(renderer, series, it);

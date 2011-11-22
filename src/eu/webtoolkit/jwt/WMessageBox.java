@@ -16,6 +16,8 @@ import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A standard dialog for confirmation or to get simple user input.
@@ -74,6 +76,8 @@ import eu.webtoolkit.jwt.servlet.*;
  * <code>Wt-msgbox-buttons</code> style class.
  */
 public class WMessageBox extends WDialog {
+	private static Logger logger = LoggerFactory.getLogger(WMessageBox.class);
+
 	/**
 	 * Creates an empty message box.
 	 */

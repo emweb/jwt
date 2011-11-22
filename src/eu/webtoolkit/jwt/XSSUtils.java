@@ -16,8 +16,12 @@ import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 class XSSUtils {
+	private static Logger logger = LoggerFactory.getLogger(XSSUtils.class);
+
 	static boolean isBadTag(String name) {
 		return name.equalsIgnoreCase("script")
 				|| name.equalsIgnoreCase("applet")

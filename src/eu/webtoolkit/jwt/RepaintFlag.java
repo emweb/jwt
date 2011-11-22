@@ -16,6 +16,8 @@ import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 enum RepaintFlag {
 	RepaintPropertyIEMobile(0x1 << 12), RepaintPropertyAttribute(0x1 << 13), RepaintInnerHtml(

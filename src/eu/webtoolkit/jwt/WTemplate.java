@@ -16,6 +16,8 @@ import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A widget that renders an XHTML template.
@@ -28,16 +30,38 @@ import eu.webtoolkit.jwt.servlet.*;
  * conveniently store the string in a message resource bundle, and make it
  * localized by using {@link WString#tr(String key) WString#tr()}.
  * <p>
- * Variable references use a <code>${<i>varName</i>}</code> syntax to reference
- * the variable <code>&quot;varName&quot;</code>. To use a literal
- * <code>&quot;${&quot;</code>, use <code>&quot;$${&quot;</code>.
+ * Placeholders (for variables and functions) are delimited by:
+ * <code>${...}</code>. To use a literal <code>&quot;${&quot;</code>, use
+ * <code>&quot;$${&quot;</code>.
  * <p>
+ * There are currently two syntactic constructs defined.
  * <p>
- * <i><b>Note: </b>The use of XML comments (<code>&lt;!-- ... -.</code>) around
- * variables that are bound to widgets will result in bad behaviour since the
- * template parser is ignorant about these comments and the corresponding
- * widgets will believe that they are rendered but aren&apos;t actually.</i>
- * </p>
+ * <h3>A. Variable placeholders</h3>
+ * <p>
+ * <code>${var}</code> defines a placeholder for the variable &quot;var&quot;,
+ * and gets replaced with whatever is bound to that variable:
+ * <ul>
+ * <li>a widget, using
+ * {@link WTemplate#bindWidget(String varName, WWidget widget) bindWidget()}</li>
+ * <li>a string value, using
+ * {@link WTemplate#bindString(String varName, CharSequence value, TextFormat textFormat)
+ * bindString()} or {@link WTemplate#bindInt(String varName, int value)
+ * bindInt()}</li>
+ * <li>or in general, the result of
+ * {@link WTemplate#resolveString(String varName, List args, Writer result)
+ * resolveString()} and {@link WTemplate#resolveWidget(String varName)
+ * resolveWidget()} methods.</li>
+ * </ul>
+ * <p>
+ * Optionally, additional arguments can be specified using the following syntax:
+ * <p>
+ * <code>${var arg1=value1 arg2=&quot;A second value&quot; arg3=&apos;A third value&apos;}</code>
+ * <p>
+ * The arguments can thus be simple simple strings or quoted strings (single or
+ * double quoted). These arguments are applied to a resolved widget in
+ * {@link WTemplate#applyArguments(WWidget w, List args) applyArguments()} and
+ * currently supports only style classes.
+ * <p>
  * You can bind widgets and values to variables using
  * {@link WTemplate#bindWidget(String varName, WWidget widget) bindWidget()},
  * {@link WTemplate#bindString(String varName, CharSequence value, TextFormat textFormat)
@@ -47,7 +71,45 @@ import eu.webtoolkit.jwt.servlet.*;
  * resolveString()} and {@link WTemplate#resolveWidget(String varName)
  * resolveWidget()} methods.
  * <p>
- * Usage example: <blockquote>
+ * <p>
+ * <i><b>Note: </b>The use of XML comments (<code>&lt;!-- ... -.</code>) around
+ * variables that are bound to widgets will result in bad behaviour since the
+ * template parser is ignorant about these comments and the corresponding
+ * widgets will believe that they are rendered but aren&apos;t actually. We are
+ * planning to add a syntax for conditional sections</i>
+ * </p>
+ * <h3>B. Functions</h3>
+ * <p>
+ * <code>${fun:arg}</code> defines a placeholder for applying a function
+ * &quot;fun&quot; to an argument &quot;arg&quot;.
+ * <p>
+ * Optionally, additional arguments can be specified as with a variable
+ * placeholder.
+ * <p>
+ * Functions are resolved by
+ * {@link WTemplate#resolveFunction(String name, List args, Writer result)
+ * resolveFunction()}, and the default implementation considers functions bound
+ * with bindFunction(). There are currently two functions that are generally
+ * useful:
+ * <ul>
+ * <li>Functions::tr() resolves a localized strings. This is convenient to
+ * create a language neutral template, which contains translated strings</li>
+ * <li>{@link } resolves the id of a bound widget. This is convenient to bind
+ * &lt;label&gt; elements to a form widget using its for attribute.</li>
+ * </ul>
+ * <p>
+ * <h3>C. Conditional blocks</h3>
+ * <p>
+ * <code>${&lt;cond&gt;}</code> starts a conditional block with a condition name
+ * &quot;cond&quot;, and must be closed by a balanced
+ * <code>${&lt;/cond&gt;}</code>.
+ * <p>
+ * Conditions are set using
+ * {@link WTemplate#setCondition(String name, boolean value) setCondition()}.
+ * <p>
+ * <h3>Usage example</h3>
+ * <p>
+ * <blockquote>
  * 
  * <pre>
  * WString userName = ...;
@@ -55,7 +117,7 @@ import eu.webtoolkit.jwt.servlet.*;
  *  WTemplate *t = new WTemplate();
  *  t.setTemplateText("<div> How old are you, ${friend} ? ${age-input} </div>");
  * 
- *  t.bindString("friend", userName);
+ *  t.bindString("friend", userName, PlainText);
  *  t.bindWidget("age-input", ageEdit_ = new WLineEdit());
  * </pre>
  * 
@@ -67,13 +129,21 @@ import eu.webtoolkit.jwt.servlet.*;
  * external CSS as appropriate.
  */
 public class WTemplate extends WInteractWidget {
+	private static Logger logger = LoggerFactory.getLogger(WTemplate.class);
+
+	static interface Function {
+		public boolean evaluate(WTemplate t, List<WString> args, Writer result);
+	}
+
 	/**
 	 * Creates a template widget.
 	 */
 	public WTemplate(WContainerWidget parent) {
 		super(parent);
-		this.widgets_ = new HashMap<String, WWidget>();
+		this.functions_ = new HashMap<String, Function>();
 		this.strings_ = new HashMap<String, String>();
+		this.widgets_ = new HashMap<String, WWidget>();
+		this.conditions_ = new HashSet<String>();
 		this.text_ = new WString();
 		this.encodeInternalPaths_ = false;
 		this.changed_ = false;
@@ -100,8 +170,10 @@ public class WTemplate extends WInteractWidget {
 	 */
 	public WTemplate(CharSequence text, WContainerWidget parent) {
 		super(parent);
-		this.widgets_ = new HashMap<String, WWidget>();
+		this.functions_ = new HashMap<String, Function>();
 		this.strings_ = new HashMap<String, String>();
+		this.widgets_ = new HashMap<String, WWidget>();
+		this.conditions_ = new HashSet<String>();
 		this.text_ = new WString();
 		this.encodeInternalPaths_ = false;
 		this.changed_ = false;
@@ -168,48 +240,7 @@ public class WTemplate extends WInteractWidget {
 	}
 
 	/**
-	 * Binds a widget to a variable name.
-	 * <p>
-	 * The corresponding variable reference within the template will be replaced
-	 * with the widget (rendered as XHTML). Since a single widget may be
-	 * instantiated only once in a template, the variable <code>varName</code>
-	 * may occur at most once in the template.
-	 * <p>
-	 * If a widget was already bound to the variable, it is deleted first. If
-	 * previously a string or other value was bound to the variable, it is
-	 * removed.
-	 * <p>
-	 * You may also pass a <code>null</code> <code>widget</code>, which will
-	 * resolve to an empty string.
-	 * <p>
-	 * 
-	 * @see WTemplate#bindString(String varName, CharSequence value, TextFormat
-	 *      textFormat)
-	 * @see WTemplate#resolveWidget(String varName)
-	 */
-	public void bindWidget(String varName, WWidget widget) {
-		WWidget i = this.widgets_.get(varName);
-		if (i != null) {
-			if (i == widget) {
-				return;
-			} else {
-				if (i != null)
-					i.remove();
-			}
-		}
-		if (widget != null) {
-			widget.setParentWidget(this);
-			this.widgets_.put(varName, widget);
-			this.strings_.remove(varName);
-		} else {
-			this.strings_.put(varName, "");
-		}
-		this.changed_ = true;
-		this.repaint(EnumSet.of(RepaintFlag.RepaintInnerHtml));
-	}
-
-	/**
-	 * Binds a string value to a variable name.
+	 * Binds a string value to a variable.
 	 * <p>
 	 * Each occurrence of the variable within the template will be substituted
 	 * by its value.
@@ -243,7 +274,7 @@ public class WTemplate extends WInteractWidget {
 	}
 
 	/**
-	 * Binds a string value to a variable name.
+	 * Binds a string value to a variable.
 	 * <p>
 	 * Calls
 	 * {@link #bindString(String varName, CharSequence value, TextFormat textFormat)
@@ -254,7 +285,7 @@ public class WTemplate extends WInteractWidget {
 	}
 
 	/**
-	 * Binds an integer value to a variable name.
+	 * Binds an integer value to a variable.
 	 * <p>
 	 * 
 	 * @see WTemplate#bindString(String varName, CharSequence value, TextFormat
@@ -263,6 +294,117 @@ public class WTemplate extends WInteractWidget {
 	public void bindInt(String varName, int value) {
 		this.bindString(varName, String.valueOf(value),
 				TextFormat.XHTMLUnsafeText);
+	}
+
+	/**
+	 * Binds a widget to a variable.
+	 * <p>
+	 * The corresponding variable reference within the template will be replaced
+	 * with the widget (rendered as XHTML). Since a single widget may be
+	 * instantiated only once in a template, the variable <code>varName</code>
+	 * may occur at most once in the template.
+	 * <p>
+	 * If a widget was already bound to the variable, it is deleted first. If
+	 * previously a string or other value was bound to the variable, it is
+	 * removed.
+	 * <p>
+	 * You may also pass a <code>null</code> <code>widget</code>, which will
+	 * resolve to an empty string.
+	 * <p>
+	 * 
+	 * @see WTemplate#bindString(String varName, CharSequence value, TextFormat
+	 *      textFormat)
+	 * @see WTemplate#resolveWidget(String varName)
+	 */
+	public void bindWidget(String varName, WWidget widget) {
+		WWidget i = this.widgets_.get(varName);
+		if (i != null) {
+			if (i == widget) {
+				return;
+			} else {
+				if (i != null)
+					i.remove();
+				this.widgets_.remove(varName);
+			}
+		}
+		if (widget != null) {
+			widget.setParentWidget(this);
+			this.widgets_.put(varName, widget);
+			this.strings_.remove(varName);
+		} else {
+			String j = this.strings_.get(varName);
+			if (j != null && j.length() == 0) {
+				return;
+			}
+			this.strings_.put(varName, "");
+		}
+		this.changed_ = true;
+		this.repaint(EnumSet.of(RepaintFlag.RepaintInnerHtml));
+	}
+
+	/**
+	 * Binds an empty string to a variable.
+	 * <p>
+	 * 
+	 * @see WTemplate#bindString(String varName, CharSequence value, TextFormat
+	 *      textFormat)
+	 */
+	public void bindEmpty(String varName) {
+		this.bindWidget(varName, (WWidget) null);
+	}
+
+	/**
+	 * Binds a function.
+	 * <p>
+	 * Functions are useful to automatically resolve placeholders.
+	 * <p>
+	 * The syntax for a function &apos;fun&apos; applied to a single argument
+	 * &apos;bla&apos; is:
+	 * <p>
+	 * <code>${fun:bla}</code>
+	 * <p>
+	 * There are two predefined functions, which can be bound using:
+	 * <blockquote>
+	 * 
+	 * <pre>
+	 * WTemplate *t = ...;
+	 *    t.bindFunction("id", &WTemplate::Functions::id);
+	 *    t.bindFunction("tr", &WTemplate::Functions::tr);
+	 * </pre>
+	 * 
+	 * </blockquote>
+	 */
+	public void addFunction(String name, Function function) {
+		this.functions_.put(name, function);
+	}
+
+	/**
+	 * Sets a condition.
+	 * <p>
+	 * This enables or disables the inclusion of a conditional block.
+	 * <p>
+	 * The default value of all conditions is <code>false</code>.
+	 */
+	public void setCondition(String name, boolean value) {
+		if (this.conditionValue(name) != value) {
+			if (value) {
+				this.conditions_.add(name);
+			} else {
+				this.conditions_.remove(name);
+			}
+			this.changed_ = true;
+			this.repaint(EnumSet.of(RepaintFlag.RepaintInnerHtml));
+		}
+	}
+
+	/**
+	 * Returns a condition value.
+	 * <p>
+	 * 
+	 * @see WTemplate#setCondition(String name, boolean value)
+	 */
+	public boolean conditionValue(String name) {
+		return this.conditions_.contains(name) != false;
 	}
 
 	/**
@@ -310,6 +452,7 @@ public class WTemplate extends WInteractWidget {
 					result.append("<span id=\"").append(w.getId()).append(
 							"\"> </span>");
 				} else {
+					this.applyArguments(w, args);
 					w.htmlText(result);
 				}
 				this.newlyRendered_.add(w);
@@ -386,6 +529,31 @@ public class WTemplate extends WInteractWidget {
 		}
 	}
 
+	/**
+	 * Resolves a function call.
+	 * <p>
+	 * This resolves a function with name <code>name</code>, and one or more
+	 * arguments <code>args</code>, and writes the result into the stream
+	 * <code>result</code>. The method returns whether a function was matched
+	 * and applied.
+	 * <p>
+	 * The default implementation considers functions that were bound using
+	 * bindFunction().
+	 * <p>
+	 */
+	public boolean resolveFunction(String name, List<WString> args,
+			Writer result) throws IOException {
+		Function i = this.functions_.get(name);
+		if (i != null) {
+			boolean ok = i.evaluate(this, args, result);
+			if (!ok) {
+				result.append("??").append(name).append(":??");
+			}
+			return true;
+		}
+		return false;
+	}
+
 	// public T resolve(String varName) ;
 	/**
 	 * Erases all variable bindings.
@@ -395,6 +563,12 @@ public class WTemplate extends WInteractWidget {
 	 * {@link WTemplate#bindString(String varName, CharSequence value, TextFormat textFormat)
 	 * bindString()} and
 	 * {@link WTemplate#bindWidget(String varName, WWidget widget) bindWidget()}.
+	 * <p>
+	 * This also resets all conditions set using
+	 * {@link WTemplate#setCondition(String name, boolean value) setCondition()}
+	 * , but does not remove functions added with
+	 * {@link WTemplate#addFunction(String name, Function function)
+	 * addFunction()}
 	 */
 	public void clear() {
 		this.setIgnoreChildRemoves(true);
@@ -407,6 +581,7 @@ public class WTemplate extends WInteractWidget {
 		this.setIgnoreChildRemoves(false);
 		this.widgets_.clear();
 		this.strings_.clear();
+		this.conditions_.clear();
 		this.changed_ = true;
 		this.repaint(EnumSet.of(RepaintFlag.RepaintInnerHtml));
 	}
@@ -487,42 +662,118 @@ public class WTemplate extends WInteractWidget {
 			text = this.text_.toString();
 		}
 		int lastPos = 0;
+		List<WString> args = new ArrayList<WString>();
+		List<String> conditions = new ArrayList<String>();
+		int suppressing = 0;
 		for (int pos = text.indexOf('$'); pos != -1; pos = text.indexOf('$',
 				pos)) {
-			result.append(text.substring(lastPos, lastPos + pos - lastPos));
+			if (!(suppressing != 0)) {
+				result.append(text.substring(lastPos, lastPos + pos - lastPos));
+			}
 			lastPos = pos;
 			if (pos + 1 < text.length()) {
 				if (text.charAt(pos + 1) == '$') {
-					result.append('$');
+					if (!(suppressing != 0)) {
+						result.append('$');
+					}
 					lastPos += 2;
 				} else {
 					if (text.charAt(pos + 1) == '{') {
 						int startName = pos + 2;
 						int endName = StringUtils.findFirstOf(text, " \r\n\t}",
 								startName);
-						int endVar = text.indexOf('}', endName);
-						if (endName == -1 || endVar == -1) {
-							throw new RuntimeException(
-									"WTemplate syntax error at pos "
-											+ String.valueOf(pos));
+						args.clear();
+						int endVar = parseArgs(text, endName, args);
+						if (endVar == -1) {
+							logger.error(new StringWriter().append(
+									"variable syntax error near \"").append(
+									text.substring(pos)).append("\"")
+									.toString());
+							return;
 						}
 						String name = text.substring(startName, startName
 								+ endName - startName);
-						List<WString> args = new ArrayList<WString>();
-						this.resolveString(name, args, result);
+						int nl = name.length();
+						if (nl > 2 && name.charAt(0) == '<'
+								&& name.charAt(nl - 1) == '>') {
+							if (name.charAt(1) != '/') {
+								String cond = name.substring(1, 1 + nl - 2);
+								conditions.add(cond);
+								if (suppressing != 0
+										|| !this.conditionValue(cond)) {
+									++suppressing;
+								}
+							} else {
+								String cond = name.substring(2, 2 + nl - 3);
+								if (!conditions.get(conditions.size() - 1)
+										.equals(cond)) {
+									logger
+											.error(new StringWriter()
+													.append(
+															"mismatching condition block end: ")
+													.append(cond).toString());
+									return;
+								}
+								conditions.remove(conditions.size() - 1);
+								if (suppressing != 0) {
+									--suppressing;
+								}
+							}
+						} else {
+							if (!(suppressing != 0)) {
+								int colonPos = name.indexOf(':');
+								boolean handled = false;
+								if (colonPos != -1) {
+									String fname = name.substring(0,
+											0 + colonPos);
+									String arg0 = name.substring(colonPos + 1);
+									args.add(0, new WString(arg0));
+									if (this.resolveFunction(fname, args,
+											result)) {
+										handled = true;
+									} else {
+										args.remove(0);
+									}
+								}
+								if (!handled) {
+									this.resolveString(name, args, result);
+								}
+							}
+						}
 						lastPos = endVar + 1;
 					} else {
-						result.append('$');
+						if (!(suppressing != 0)) {
+							result.append('$');
+						}
 						lastPos += 1;
 					}
 				}
 			} else {
-				result.append('$');
+				if (!(suppressing != 0)) {
+					result.append('$');
+				}
 				lastPos += 1;
 			}
 			pos = lastPos;
 		}
 		result.append(text.substring(lastPos));
+	}
+
+	/**
+	 * Applies arguments to a resolved widget.
+	 * <p>
+	 * Currently only a <code>class</code> argument is handled, which adds one
+	 * or more style classes to the widget <code>w</code>, using
+	 * {@link WWidget#addStyleClass(String styleClass, boolean force)
+	 * WWidget#addStyleClass()}.
+	 */
+	protected void applyArguments(WWidget w, List<WString> args) {
+		for (int i = 0; i < args.size(); ++i) {
+			String s = args.get(i).toString();
+			if (s.startsWith("class=")) {
+				w.addStyleClass(new WString(s.substring(6)).toString());
+			}
+		}
 	}
 
 	void updateDom(DomElement element, boolean all) {
@@ -647,10 +898,108 @@ public class WTemplate extends WInteractWidget {
 
 	private Set<WWidget> previouslyRendered_;
 	private List<WWidget> newlyRendered_;
-	private Map<String, WWidget> widgets_;
+	private Map<String, Function> functions_;
 	private Map<String, String> strings_;
+	private Map<String, WWidget> widgets_;
+	private Set<String> conditions_;
 	private WString text_;
 	private boolean encodeInternalPaths_;
 	private boolean changed_;
+
+	private static int parseArgs(String text, int pos, List<WString> result) {
+		int Error = -1;
+		if (pos == -1) {
+			return Error;
+		}
+		final int Next = 0;
+		final int Name = 1;
+		final int Value = 2;
+		final int SValue = 3;
+		final int DValue = 4;
+		int state = Next;
+		StringBuilder v = new StringBuilder();
+		for (; pos < text.length(); ++pos) {
+			char c = text.charAt(pos);
+			switch (state) {
+			case Next:
+				if (!Character.isWhitespace(c)) {
+					if (c == '}') {
+						return pos;
+					} else {
+						if (Character.isLetter(c) || c == '_') {
+							state = Name;
+							v.setLength(0);
+							v.append(c);
+						} else {
+							if (c == '\'') {
+								state = SValue;
+								v.setLength(0);
+							} else {
+								if (c == '"') {
+									state = DValue;
+									v.setLength(0);
+								} else {
+									return Error;
+								}
+							}
+						}
+					}
+				}
+				break;
+			case Name:
+				if (c == '=') {
+					state = Value;
+					v.append('=');
+				} else {
+					if (Character.isWhitespace(c)) {
+						result.add(new WString(v.toString()));
+						state = Next;
+					} else {
+						if (c == '}') {
+							result.add(new WString(v.toString()));
+							return pos;
+						} else {
+							if (Character.isLetterOrDigit(c) || c == '_'
+									|| c == '-') {
+								v.append(c);
+							} else {
+								return Error;
+							}
+						}
+					}
+				}
+				break;
+			case Value:
+				if (c == '\'') {
+					state = SValue;
+				} else {
+					if (c == '"') {
+						state = DValue;
+					} else {
+						return Error;
+					}
+				}
+				break;
+			case SValue:
+			case DValue:
+				char quote = state == SValue ? '\'' : '"';
+				int end = text.indexOf(quote, pos);
+				if (end == -1) {
+					return Error;
+				}
+				if (text.charAt(end - 1) == '\\') {
+					v.append(text.substring(pos, pos + end - pos - 1)).append(
+							quote);
+				} else {
+					v.append(text.substring(pos, pos + end - pos));
+					result.add(new WString(v.toString()));
+					state = Next;
+				}
+				pos = end;
+			}
+		}
+		return pos == text.length() ? -1 : pos;
+	}
+
 	static String DropShadow_x1_x2 = "<span class=\"Wt-x1\"><span class=\"Wt-x1a\"></span></span><span class=\"Wt-x2\"><span class=\"Wt-x2a\"></span></span>";
 }

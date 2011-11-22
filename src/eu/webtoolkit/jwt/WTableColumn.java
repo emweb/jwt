@@ -16,6 +16,8 @@ import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A table column.
@@ -36,6 +38,8 @@ import eu.webtoolkit.jwt.servlet.*;
  * @see WTableRow
  */
 public class WTableColumn extends WObject {
+	private static Logger logger = LoggerFactory.getLogger(WTableColumn.class);
+
 	/**
 	 * Returns the table to which this column belongs.
 	 * <p>

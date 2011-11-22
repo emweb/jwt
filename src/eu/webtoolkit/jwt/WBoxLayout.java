@@ -16,6 +16,8 @@ import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A layout manager which arranges widgets horizontally or vertically.
@@ -97,6 +99,8 @@ import eu.webtoolkit.jwt.servlet.*;
  * </p>
  */
 public class WBoxLayout extends WLayout {
+	private static Logger logger = LoggerFactory.getLogger(WBoxLayout.class);
+
 	/**
 	 * Enumeration of the direction in which widgets are layed out.
 	 */

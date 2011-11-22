@@ -16,6 +16,8 @@ import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A class that represents a selection for a {@link WAbstractItemView}.
@@ -43,6 +45,9 @@ import eu.webtoolkit.jwt.servlet.*;
  * @see WAbstractItemModel
  */
 public class WItemSelectionModel extends WObject {
+	private static Logger logger = LoggerFactory
+			.getLogger(WItemSelectionModel.class);
+
 	/**
 	 * Returns the {@link WAbstractItemModel}.
 	 */

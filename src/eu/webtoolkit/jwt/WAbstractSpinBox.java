@@ -16,6 +16,8 @@ import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * An abstract spin box.
@@ -29,6 +31,9 @@ import eu.webtoolkit.jwt.servlet.*;
  * you can override the style using internal or external CSS as appropriate.
  */
 public abstract class WAbstractSpinBox extends WLineEdit {
+	private static Logger logger = LoggerFactory
+			.getLogger(WAbstractSpinBox.class);
+
 	/**
 	 * Configures whether a native HTML5 control should be used.
 	 * <p>

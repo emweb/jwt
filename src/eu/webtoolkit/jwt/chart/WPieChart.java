@@ -16,6 +16,8 @@ import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A pie chart.
@@ -56,6 +58,8 @@ import eu.webtoolkit.jwt.servlet.*;
  * @see eu.webtoolkit.jwt.chart.WCartesianChart
  */
 public class WPieChart extends WAbstractChart {
+	private static Logger logger = LoggerFactory.getLogger(WPieChart.class);
+
 	/**
 	 * Creates a new pie chart.
 	 */
@@ -402,7 +406,7 @@ public class WPieChart extends WAbstractChart {
 			}
 		}
 		if (!painter.isActive()) {
-			throw new WtException("WPieChart::paint(): painter is not active.");
+			throw new WException("WPieChart::paint(): painter is not active.");
 		}
 		WRectF rect = rectangle;
 		if (rect.isEmpty()) {
@@ -554,6 +558,8 @@ public class WPieChart extends WAbstractChart {
 	private boolean shadow_;
 
 	static class PieData {
+		private static Logger logger = LoggerFactory.getLogger(PieData.class);
+
 		public boolean customBrush;
 		public WBrush brush;
 		public double explode;

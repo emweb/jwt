@@ -16,6 +16,8 @@ import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * An abstract widget that can receive user-interface interaction.
@@ -32,6 +34,9 @@ import eu.webtoolkit.jwt.servlet.*;
  * Styling through CSS is not applicable.
  */
 public abstract class WInteractWidget extends WWebWidget {
+	private static Logger logger = LoggerFactory
+			.getLogger(WInteractWidget.class);
+
 	/**
 	 * Create an InteractWidget with optional parent.
 	 */

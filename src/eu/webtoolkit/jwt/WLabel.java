@@ -16,6 +16,8 @@ import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A label for a form field.
@@ -53,6 +55,8 @@ import eu.webtoolkit.jwt.servlet.*;
  * nested <code>&lt;img&gt;</code> element.
  */
 public class WLabel extends WInteractWidget {
+	private static Logger logger = LoggerFactory.getLogger(WLabel.class);
+
 	/**
 	 * Creates a label with empty text and optional parent.
 	 */

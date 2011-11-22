@@ -16,6 +16,8 @@ import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A path defining a shape.
@@ -66,6 +68,8 @@ import eu.webtoolkit.jwt.servlet.*;
  * @see WPainter#drawPath(WPainterPath path)
  */
 public class WPainterPath {
+	private static Logger logger = LoggerFactory.getLogger(WPainterPath.class);
+
 	/**
 	 * Default constructor.
 	 * <p>
@@ -458,6 +462,8 @@ public class WPainterPath {
 	 * A segment.
 	 */
 	public static class Segment {
+		private static Logger logger = LoggerFactory.getLogger(Segment.class);
+
 		enum Type {
 			MoveTo, LineTo, CubicC1, CubicC2, CubicEnd, QuadC, QuadEnd, ArcC, ArcR, ArcAngleSweep;
 

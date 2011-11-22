@@ -16,6 +16,8 @@ import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Abstract base class for iterating over series data in
@@ -29,6 +31,9 @@ import eu.webtoolkit.jwt.servlet.*;
  *      reverseStacked)
  */
 public class SeriesIterator {
+	private static Logger logger = LoggerFactory
+			.getLogger(SeriesIterator.class);
+
 	/**
 	 * Start handling a new segment.
 	 * <p>

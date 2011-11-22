@@ -16,6 +16,8 @@ import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A value class that defines a 2D affine transformation matrix.
@@ -61,6 +63,8 @@ import eu.webtoolkit.jwt.servlet.*;
  * <i>Sxy</i> a skew component.
  */
 public class WTransform {
+	private static Logger logger = LoggerFactory.getLogger(WTransform.class);
+
 	/**
 	 * Default constructor.
 	 * <p>
@@ -403,8 +407,8 @@ public class WTransform {
 					/ det, adj.getM22() / det, adj.getM31() / det, adj.getM32()
 					/ det);
 		} else {
-			WApplication.getInstance().log("error").append(
-					"WTransform::inverted(): determinant == 0");
+			logger.error(new StringWriter().append(
+					"inverted(): oops, determinant == 0").toString());
 			return this;
 		}
 	}
@@ -417,6 +421,9 @@ public class WTransform {
 	 *      result)
 	 */
 	public static class TRSSDecomposition {
+		private static Logger logger = LoggerFactory
+				.getLogger(TRSSDecomposition.class);
+
 		/**
 		 * X component of translation.
 		 */
@@ -483,6 +490,9 @@ public class WTransform {
 	 *      result)
 	 */
 	public static class TRSRDecomposition {
+		private static Logger logger = LoggerFactory
+				.getLogger(TRSRDecomposition.class);
+
 		/**
 		 * X component of translation.
 		 */
@@ -524,6 +534,11 @@ public class WTransform {
 	public void decomposeTranslateRotateScaleRotate(
 			WTransform.TRSRDecomposition result) {
 		double[] mtm = new double[4];
+		logger.debug(new StringWriter().append("M: \n").append(
+				String.valueOf(this.m_[M11])).append(" ").append(
+				String.valueOf(this.m_[M12])).append("\n   ").append(
+				String.valueOf(this.m_[M21])).append(" ").append(
+				String.valueOf(this.m_[M22])).toString());
 		matrixMultiply(this.m_[M11], this.m_[M21], this.m_[M12], this.m_[M22],
 				this.m_[M11], this.m_[M12], this.m_[M21], this.m_[M22], mtm);
 		double[] e = new double[2];
@@ -531,6 +546,11 @@ public class WTransform {
 		eigenValues(mtm, e, V);
 		result.sx = Math.sqrt(e[0]);
 		result.sy = Math.sqrt(e[1]);
+		logger.debug(new StringWriter().append("V: \n").append(
+				String.valueOf(V[M11])).append(" ").append(
+				String.valueOf(V[M12])).append("\n   ").append(
+				String.valueOf(V[M21])).append(" ").append(
+				String.valueOf(V[M22])).toString());
 		if (V[0] * V[3] - V[1] * V[2] < 0) {
 			result.sx = -result.sx;
 			V[0] = -V[0];
@@ -543,6 +563,11 @@ public class WTransform {
 		U[2] /= result.sx;
 		U[1] /= result.sy;
 		U[3] /= result.sy;
+		logger.debug(new StringWriter().append("U: \n").append(
+				String.valueOf(U[M11])).append(" ").append(
+				String.valueOf(U[M12])).append("\n   ").append(
+				String.valueOf(U[M21])).append(" ").append(
+				String.valueOf(U[M22])).toString());
 		if (U[0] * U[3] - U[1] * U[2] < 0) {
 			result.sx = -result.sx;
 			U[0] = -U[0];
@@ -550,6 +575,11 @@ public class WTransform {
 		}
 		result.alpha1 = Math.atan2(U[2], U[0]);
 		result.alpha2 = Math.atan2(V[1], V[0]);
+		logger.debug(new StringWriter().append("alpha1: ").append(
+				String.valueOf(result.alpha1)).append(", alpha2: ").append(
+				String.valueOf(result.alpha2)).append(", sx: ").append(
+				String.valueOf(result.sx)).append(", sy: ").append(
+				String.valueOf(result.sy)).toString());
 		result.dx = this.m_[DX];
 		result.dy = this.m_[DY];
 	}

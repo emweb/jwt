@@ -16,6 +16,8 @@ import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A validator for date input.
@@ -40,6 +42,9 @@ import eu.webtoolkit.jwt.servlet.*;
  * </ul>
  */
 public class WDateValidator extends WValidator {
+	private static Logger logger = LoggerFactory
+			.getLogger(WDateValidator.class);
+
 	/**
 	 * Creates a date validator.
 	 * <p>
@@ -235,10 +240,9 @@ public class WDateValidator extends WValidator {
 	 * field, or represents a date in the given format, and within the valid
 	 * range.
 	 */
-	public WValidator.State validate(String input) {
+	public WValidator.Result validate(String input) {
 		if (input.length() == 0) {
-			return this.isMandatory() ? WValidator.State.InvalidEmpty
-					: WValidator.State.Valid;
+			return super.validate(input);
 		}
 		for (int i = 0; i < this.formats_.size(); ++i) {
 			try {
@@ -246,22 +250,27 @@ public class WDateValidator extends WValidator {
 				if ((d != null)) {
 					if (!(this.bottom_ == null)) {
 						if (d.before(this.bottom_)) {
-							return WValidator.State.Invalid;
+							return new WValidator.Result(
+									WValidator.State.Invalid, this
+											.getInvalidTooEarlyText());
 						}
 					}
 					if (!(this.top_ == null)) {
 						if (d.after(this.top_)) {
-							return WValidator.State.Invalid;
+							return new WValidator.Result(
+									WValidator.State.Invalid, this
+											.getInvalidTooLateText());
 						}
 					}
-					return WValidator.State.Valid;
+					return new WValidator.Result(WValidator.State.Valid);
 				}
 			} catch (RuntimeException e) {
-				WApplication.getInstance().log("warn").append(
-						"WDateValidator::validate(): ").append(e.toString());
+				logger.warn(new StringWriter().append("validate(): ").append(
+						e.toString()).toString());
 			}
 		}
-		return WValidator.State.Invalid;
+		return new WValidator.Result(WValidator.State.Invalid, this
+				.getInvalidNotADateText());
 	}
 
 	// public void createExtConfig(Writer config) throws IOException;

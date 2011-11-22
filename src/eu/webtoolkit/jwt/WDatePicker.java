@@ -16,6 +16,8 @@ import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A date picker.
@@ -70,6 +72,8 @@ import eu.webtoolkit.jwt.servlet.*;
  * </table>
  */
 public class WDatePicker extends WCompositeWidget {
+	private static Logger logger = LoggerFactory.getLogger(WDatePicker.class);
+
 	/**
 	 * Create a new date picker.
 	 * <p>

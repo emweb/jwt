@@ -16,6 +16,8 @@ import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A widget that holds and manages child widgets.
@@ -115,6 +117,9 @@ import eu.webtoolkit.jwt.servlet.*;
  * external CSS as appropriate.
  */
 public class WContainerWidget extends WInteractWidget {
+	private static Logger logger = LoggerFactory
+			.getLogger(WContainerWidget.class);
+
 	/**
 	 * How to handle overflow of inner content.
 	 */
@@ -304,8 +309,8 @@ public class WContainerWidget extends WInteractWidget {
 	public void addWidget(WWidget widget) {
 		if (widget.getParent() != null) {
 			if (widget.getParent() != this) {
-				WApplication.getInstance().log("warn").append(
-						"WContainerWidget::addWidget(): reparenting widget");
+				logger.warn(new StringWriter().append(
+						"addWidget(): reparenting widget").toString());
 				widget.setParentWidget((WWidget) null);
 			} else {
 				return;
@@ -314,7 +319,7 @@ public class WContainerWidget extends WInteractWidget {
 		if (!(this.transientImpl_ != null)) {
 			this.transientImpl_ = new WWebWidget.TransientImpl();
 			if (this.getDomElementType() != DomElementType.DomElement_TD
-					|| !WApplication.getInstance().getEnvironment().agentIsIE()) {
+					&& this.getDomElementType() != DomElementType.DomElement_TH) {
 				this.setLoadLaterWhenInvisible(true);
 			}
 		}
@@ -335,17 +340,15 @@ public class WContainerWidget extends WInteractWidget {
 	 */
 	public void insertBefore(WWidget widget, WWidget before) {
 		if (before.getParent() != this) {
-			WApplication
-					.getInstance()
-					.log("error")
-					.append(
-							"WContainerWidget::insertBefore(): 'before' not in this container");
+			logger.error(new StringWriter().append(
+					"insertBefore(): 'before' not in this container")
+					.toString());
 			return;
 		}
 		if (widget.getParent() != null) {
 			if (widget.getParent() != this) {
-				WApplication.getInstance().log("warn").append(
-						"WContainerWidget::insertWidget(): reparenting widget");
+				logger.warn(new StringWriter().append(
+						"insertWidget(): reparenting widget").toString());
 				widget.setParentWidget((WWidget) null);
 			} else {
 				return;
@@ -531,8 +534,9 @@ public class WContainerWidget extends WInteractWidget {
 		case Left:
 			return this.padding_[3];
 		default:
-			throw new WtException(
-					"WContainerWidget::padding(Side) with invalid side.");
+			logger.error(new StringWriter().append("padding(): improper side.")
+					.toString());
+			return new WLength();
 		}
 	}
 

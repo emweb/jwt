@@ -16,6 +16,8 @@ import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * An abstract widget that corresponds to an HTML form element.
@@ -35,6 +37,8 @@ import eu.webtoolkit.jwt.servlet.*;
  * validate the content using a validator previously set.
  */
 public abstract class WFormWidget extends WInteractWidget {
+	private static Logger logger = LoggerFactory.getLogger(WFormWidget.class);
+
 	/**
 	 * Creates a WFormWidget with an optional parent.
 	 */
@@ -48,6 +52,7 @@ public abstract class WFormWidget extends WInteractWidget {
 		this.emptyText_ = new WString();
 		this.flags_ = new BitSet();
 		this.tabIndex_ = 0;
+		this.validated_ = new Signal1<WValidator.Result>();
 	}
 
 	/**
@@ -105,6 +110,20 @@ public abstract class WFormWidget extends WInteractWidget {
 	}
 
 	/**
+	 * Returns the current value.
+	 * <p>
+	 * This returns the current value as a string.
+	 */
+	public abstract String getValueText();
+
+	/**
+	 * Sets the value text.
+	 * <p>
+	 * This sets the current value from a string value.
+	 */
+	public abstract void setValueText(String value);
+
+	/**
 	 * Sets a validator for this field.
 	 * <p>
 	 * The validator is used to validate the current input.
@@ -144,9 +163,20 @@ public abstract class WFormWidget extends WInteractWidget {
 
 	/**
 	 * Validates the field.
+	 * <p>
 	 */
 	public WValidator.State validate() {
-		return WValidator.State.Valid;
+		if (this.getValidator() != null) {
+			WValidator.Result result = this.getValidator().validate(
+					this.getValueText());
+			this.toggleStyleClass("Wt-invalid",
+					result.getState() != WValidator.State.Valid, true);
+			this.setToolTip(result.getMessage());
+			this.validated_.trigger(result);
+			return result.getState();
+		} else {
+			return WValidator.State.Valid;
+		}
 	}
 
 	/**
@@ -306,6 +336,10 @@ public abstract class WFormWidget extends WInteractWidget {
 		return this.voidEventSignal(FOCUS_SIGNAL, true);
 	}
 
+	public Signal1<WValidator.Result> validated() {
+		return this.validated_;
+	}
+
 	public void refresh() {
 		if (this.emptyText_.refresh()) {
 			this.updateEmptyText();
@@ -345,6 +379,7 @@ public abstract class WFormWidget extends WInteractWidget {
 	private static final int BIT_JS_OBJECT = 6;
 	BitSet flags_;
 	private int tabIndex_;
+	private Signal1<WValidator.Result> validated_;
 
 	private void undoSetFocus() {
 	}
@@ -440,6 +475,8 @@ public abstract class WFormWidget extends WInteractWidget {
 			if (!all || !this.isEnabled()) {
 				element.setProperty(Property.PropertyDisabled,
 						this.isEnabled() ? "false" : "true");
+			}
+			if (!all && this.isEnabled() && env.agentIsIE()) {
 			}
 			this.flags_.clear(BIT_ENABLED_CHANGED);
 		}

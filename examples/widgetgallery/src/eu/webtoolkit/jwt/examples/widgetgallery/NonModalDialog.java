@@ -16,8 +16,13 @@ import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 class NonModalDialog extends WDialog {
+	private static Logger logger = LoggerFactory
+			.getLogger(NonModalDialog.class);
+
 	public NonModalDialog(CharSequence title, EventDisplayer ed) {
 		super(title);
 		this.setModal(false);

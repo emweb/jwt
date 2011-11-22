@@ -16,6 +16,8 @@ import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A WPanel provides a container with a title bar.
@@ -52,6 +54,8 @@ import eu.webtoolkit.jwt.servlet.*;
  * </div>
  */
 public class WPanel extends WCompositeWidget {
+	private static Logger logger = LoggerFactory.getLogger(WPanel.class);
+
 	/**
 	 * Creates a panel.
 	 */

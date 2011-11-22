@@ -16,6 +16,8 @@ import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * An abstract model for use with Wt&apos;s view classes.
@@ -103,6 +105,9 @@ import eu.webtoolkit.jwt.servlet.*;
  * themselves to the new geometry.
  */
 public abstract class WAbstractItemModel extends WObject {
+	private static Logger logger = LoggerFactory
+			.getLogger(WAbstractItemModel.class);
+
 	/**
 	 * Creates a new data model.
 	 */

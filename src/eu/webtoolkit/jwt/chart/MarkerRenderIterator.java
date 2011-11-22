@@ -16,8 +16,13 @@ import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 class MarkerRenderIterator extends SeriesIterator {
+	private static Logger logger = LoggerFactory
+			.getLogger(MarkerRenderIterator.class);
+
 	public MarkerRenderIterator(WChart2DRenderer renderer) {
 		super();
 		this.renderer_ = renderer;

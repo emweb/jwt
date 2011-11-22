@@ -16,6 +16,8 @@ import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A CSS style sheet.
@@ -24,6 +26,9 @@ import eu.webtoolkit.jwt.servlet.*;
  * @see WApplication#getStyleSheet()
  */
 public class WCssStyleSheet {
+	private static Logger logger = LoggerFactory
+			.getLogger(WCssStyleSheet.class);
+
 	/**
 	 * Creates a new empty style sheet.
 	 */

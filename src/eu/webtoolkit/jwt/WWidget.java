@@ -16,6 +16,8 @@ import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The abstract base class for a user-interface component.
@@ -40,6 +42,8 @@ import eu.webtoolkit.jwt.servlet.*;
  * not inserted into a layout manager.
  */
 public abstract class WWidget extends WObject {
+	private static Logger logger = LoggerFactory.getLogger(WWidget.class);
+
 	/**
 	 * Destructor.
 	 * <p>
@@ -1240,7 +1244,7 @@ public abstract class WWidget extends WObject {
 	}
 
 	/**
-	 * Hides the widget.
+	 * Shows the widget.
 	 * <p>
 	 * 
 	 * @see WWidget#setHidden(boolean hidden, WAnimation animation)
@@ -1678,7 +1682,7 @@ public abstract class WWidget extends WObject {
 	abstract WWebWidget getWebWidget();
 
 	WLayoutItemImpl createLayoutItemImpl(WLayoutItem item) {
-		throw new WtException(
+		throw new WException(
 				"WWidget::setLayout(): widget does not support layout managers");
 	}
 

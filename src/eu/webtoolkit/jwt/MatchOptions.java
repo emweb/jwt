@@ -53,6 +53,14 @@ public class MatchOptions {
 	/**
 	 * Constructor.
 	 */
+	public MatchOptions(MatchType type) {
+		this.type = type;
+		this.flags = EnumSet.noneOf(MatchFlag.class);
+	}
+
+	/**
+	 * Constructor.
+	 */
 	public MatchOptions(MatchType type, MatchFlag flag) {
 		this.type = type;
 		this.flags = EnumSet.of(flag);

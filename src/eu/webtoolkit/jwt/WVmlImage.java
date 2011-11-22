@@ -16,6 +16,8 @@ import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A paint device for rendering using the VML pseudo-standard.
@@ -32,6 +34,8 @@ import eu.webtoolkit.jwt.servlet.*;
  * </p>
  */
 public class WVmlImage implements WVectorImage {
+	private static Logger logger = LoggerFactory.getLogger(WVmlImage.class);
+
 	/**
 	 * Create a VML paint device.
 	 * <p>
@@ -283,8 +287,8 @@ public class WVmlImage implements WVectorImage {
 	public void drawText(WRectF rect, EnumSet<AlignmentFlag> flags,
 			TextFlag textFlag, CharSequence text) {
 		if (textFlag == TextFlag.TextWordWrap) {
-			throw new UnsupportedOperationException(
-					"WVmlImage::drawText() TextWordWrap is not supported");
+			throw new WException(
+					"WVmlImage::drawText(): TextWordWrap is not supported");
 		}
 		this.finishPaths();
 		EnumSet<AlignmentFlag> horizontalAlign = EnumUtils.mask(flags,
@@ -358,8 +362,7 @@ public class WVmlImage implements WVectorImage {
 
 	public WTextItem measureText(CharSequence text, double maxWidth,
 			boolean wordWrap) {
-		throw new UnsupportedOperationException(
-				"WVmlImage::measureText() not supported");
+		throw new WException("WVmlImage::measureText() not supported");
 	}
 
 	public final WTextItem measureText(CharSequence text) {
@@ -371,8 +374,7 @@ public class WVmlImage implements WVectorImage {
 	}
 
 	public WFontMetrics getFontMetrics() {
-		throw new UnsupportedOperationException(
-				"WVmlImage::fontMetrics() not (yet?) supported");
+		throw new WException("WVmlImage::fontMetrics() not supported");
 	}
 
 	public void init() {
@@ -434,6 +436,9 @@ public class WVmlImage implements WVectorImage {
 	private WShadow currentShadow_;
 
 	static class ActivePath {
+		private static Logger logger = LoggerFactory
+				.getLogger(ActivePath.class);
+
 		public String path;
 		public WRectF bbox;
 
@@ -504,15 +509,17 @@ public class WVmlImage implements WVectorImage {
 						this.startClip(new WRectF(tlx, tly, brx - tlx, bry
 								- tly));
 					} else {
-						WApplication
-								.getInstance()
-								.log("warn")
-								.append(
-										"VML only supports rectangle clipping with rectangles aligned to the window");
+						logger
+								.warn(new StringWriter()
+										.append(
+												"VML only supports rectangle clipping ")
+										.append(
+												"with rectangles aligned to the window")
+										.toString());
 					}
 				} else {
-					WApplication.getInstance().log("warn").append(
-							"VML only supports rectangle clipping");
+					logger.warn(new StringWriter().append(
+							"VML only supports rectangle clipping").toString());
 				}
 			} else {
 				this.stopClip();

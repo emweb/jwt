@@ -16,8 +16,12 @@ import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 class TabWidgetItem extends WMenuItem {
+	private static Logger logger = LoggerFactory.getLogger(TabWidgetItem.class);
+
 	public TabWidgetItem(CharSequence text, WWidget contents,
 			WMenuItem.LoadPolicy loadPolicy) {
 		super(text, contents, loadPolicy);

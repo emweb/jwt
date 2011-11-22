@@ -16,6 +16,8 @@ import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * An abstract widget that shows a viewport to a virtually large image.
@@ -49,6 +51,8 @@ import eu.webtoolkit.jwt.servlet.*;
  * Styling through CSS is not applicable.
  */
 public class WVirtualImage extends WCompositeWidget {
+	private static Logger logger = LoggerFactory.getLogger(WVirtualImage.class);
+
 	/**
 	 * Creates a viewport for a virtual image.
 	 * <p>
@@ -362,7 +366,7 @@ public class WVirtualImage extends WCompositeWidget {
 	 * @see WVirtualImage#createImage(long x, long y, int width, int height)
 	 */
 	protected WResource render(long x, long y, int width, int height) {
-		throw new WtException("You should reimplement WVirtualImage::render()");
+		throw new WException("You should reimplement WVirtualImage::render()");
 	}
 
 	private Signal2<Long, Long> viewPortChanged_;
@@ -370,6 +374,8 @@ public class WVirtualImage extends WCompositeWidget {
 	private WContainerWidget contents_;
 
 	static class Rect {
+		private static Logger logger = LoggerFactory.getLogger(Rect.class);
+
 		public long x1;
 		public long y1;
 		public long x2;
@@ -419,6 +425,9 @@ public class WVirtualImage extends WCompositeWidget {
 	}
 
 	static class Coordinate {
+		private static Logger logger = LoggerFactory
+				.getLogger(Coordinate.class);
+
 		public long i;
 		public long j;
 	}

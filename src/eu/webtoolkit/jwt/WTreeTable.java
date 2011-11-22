@@ -16,6 +16,8 @@ import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A table with a navigatable tree in the first column.
@@ -80,6 +82,8 @@ import eu.webtoolkit.jwt.servlet.*;
  * @see WTreeView
  */
 public class WTreeTable extends WCompositeWidget {
+	private static Logger logger = LoggerFactory.getLogger(WTreeTable.class);
+
 	/**
 	 * Creates a new tree table.
 	 * <p>
@@ -142,7 +146,7 @@ public class WTreeTable extends WCompositeWidget {
 	 */
 	public void addColumn(CharSequence header, WLength width) {
 		if (this.getTreeRoot() != null) {
-			throw new WtException(
+			throw new WException(
 					"WTreeTable::addColumn(): must be called before setTreeRoot()");
 		}
 		WText t = new WText(header);

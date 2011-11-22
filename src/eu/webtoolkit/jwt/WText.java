@@ -16,6 +16,8 @@ import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A widget that renders (XHTML) text.
@@ -65,6 +67,8 @@ import eu.webtoolkit.jwt.servlet.*;
  * @see WApplication#setLocale(Locale locale)
  */
 public class WText extends WInteractWidget {
+	private static Logger logger = LoggerFactory.getLogger(WText.class);
+
 	/**
 	 * Creates a text widget with an empty text.
 	 */
@@ -303,17 +307,19 @@ public class WText extends WInteractWidget {
 			this.padding_ = new WLength[2];
 			this.padding_[0] = this.padding_[1] = WLength.Auto;
 		}
-		if (sides.contains(Side.Right)) {
+		if (!EnumUtils.mask(sides, Side.Right).isEmpty()) {
 			this.padding_[0] = length;
 		}
-		if (sides.contains(Side.Left)) {
+		if (!EnumUtils.mask(sides, Side.Left).isEmpty()) {
 			this.padding_[1] = length;
 		}
-		if (sides.contains(Side.Top)) {
-			throw new WtException("WText::padding on Top is not supported.");
+		if (!EnumUtils.mask(sides, Side.Top).isEmpty()) {
+			logger.error(new StringWriter().append(
+					"setPadding(..., Top) is not supported.").toString());
 		}
-		if (sides.contains(Side.Bottom)) {
-			throw new WtException("WText::padding on Bottom is not supported.");
+		if (!EnumUtils.mask(sides, Side.Bottom).isEmpty()) {
+			logger.error(new StringWriter().append(
+					"setPadding(..., Bottom) is not supported.").toString());
 		}
 		this.flags_.set(BIT_PADDINGS_CHANGED);
 		this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyAttribute));
@@ -351,15 +357,21 @@ public class WText extends WInteractWidget {
 		}
 		switch (side) {
 		case Top:
-			throw new WtException("WText::padding on Top is not supported.");
+			logger.error(new StringWriter().append(
+					"padding(Top) is not supported.").toString());
+			return new WLength();
 		case Right:
 			return this.padding_[1];
 		case Bottom:
-			throw new WtException("WText::padding on Bottom is not supported.");
+			logger.error(new StringWriter().append(
+					"padding(Bottom) is not supported.").toString());
 		case Left:
 			return this.padding_[3];
 		default:
-			throw new WtException("WText::padding(Side) with invalid side.");
+			logger.error(new StringWriter().append(
+					"padding(Side) with invalid side: ").append(
+					String.valueOf((int) side.getValue())).toString());
+			return new WLength();
 		}
 	}
 

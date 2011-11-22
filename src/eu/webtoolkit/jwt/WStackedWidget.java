@@ -16,6 +16,8 @@ import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A container widget that stacks its widgets on top of each other.
@@ -40,6 +42,9 @@ import eu.webtoolkit.jwt.servlet.*;
  * @see WMenu
  */
 public class WStackedWidget extends WContainerWidget {
+	private static Logger logger = LoggerFactory
+			.getLogger(WStackedWidget.class);
+
 	/**
 	 * Creates a new stack.
 	 */

@@ -16,6 +16,8 @@ import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A value class to play a sound effect.
@@ -29,6 +31,8 @@ import eu.webtoolkit.jwt.servlet.*;
  * &lt;audio&gt; or a flash player).
  */
 public class WSound extends WObject {
+	private static Logger logger = LoggerFactory.getLogger(WSound.class);
+
 	/**
 	 * Constructs a sound object that will play the given URL.
 	 * <p>

@@ -16,6 +16,8 @@ import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * An abstract base class for layout managers.
@@ -39,6 +41,8 @@ import eu.webtoolkit.jwt.servlet.*;
  * </p>
  */
 public abstract class WLayout extends WObject implements WLayoutItem {
+	private static Logger logger = LoggerFactory.getLogger(WLayout.class);
+
 	/**
 	 * Adds a layout <i>item</i>.
 	 * <p>
@@ -306,7 +310,7 @@ public abstract class WLayout extends WObject implements WLayoutItem {
 	 */
 	protected void updateAddItem(WLayoutItem item) {
 		if (item.getParentLayout() != null) {
-			throw new WtException("Cannot add item to two Layouts");
+			throw new WException("Cannot add item to two Layouts");
 		}
 		item.setParentLayout(this);
 		if (this.impl_ != null) {
@@ -340,6 +344,8 @@ public abstract class WLayout extends WObject implements WLayoutItem {
 	}
 
 	static class Hint {
+		private static Logger logger = LoggerFactory.getLogger(Hint.class);
+
 		public Hint(String aName, String aValue) {
 			this.name = aName;
 			this.value = aValue;

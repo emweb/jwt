@@ -16,6 +16,8 @@ import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A menu item that contains a nested sub menu.
@@ -31,6 +33,8 @@ import eu.webtoolkit.jwt.servlet.*;
  * @see WMenu
  */
 public class WSubMenuItem extends WMenuItem {
+	private static Logger logger = LoggerFactory.getLogger(WSubMenuItem.class);
+
 	/**
 	 * Creates a new item.
 	 * <p>

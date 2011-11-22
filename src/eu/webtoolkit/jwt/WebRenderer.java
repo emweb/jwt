@@ -16,8 +16,12 @@ import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 class WebRenderer implements SlotLearnerInterface {
+	private static Logger logger = LoggerFactory.getLogger(WebRenderer.class);
+
 	public WebRenderer(WebSession session) {
 		super();
 		this.session_ = session;
@@ -27,7 +31,8 @@ class WebRenderer implements SlotLearnerInterface {
 		this.pageId_ = 0;
 		this.expectedAckId_ = 0;
 		this.scriptId_ = 0;
-		this.cookiesToSet_ = new ArrayList<WebRenderer.Cookie>();
+		this.solution_ = "";
+		this.cookiesToSet_ = new HashMap<String, WebRenderer.CookieValue>();
 		this.currentFormObjects_ = new HashMap<String, WObject>();
 		this.currentFormObjectsList_ = "";
 		this.collectedJS1_ = new StringWriter();
@@ -56,6 +61,9 @@ class WebRenderer implements SlotLearnerInterface {
 	}
 
 	public void needUpdate(WWidget w, boolean laterOnly) {
+		logger.debug(new StringWriter().append("needUpdate: ")
+				.append(w.getId()).append(" (").append("(fixme)").append(")")
+				.toString());
 		this.updateMap_.add(w);
 		if (!laterOnly) {
 			this.moreUpdates_ = true;
@@ -63,6 +71,9 @@ class WebRenderer implements SlotLearnerInterface {
 	}
 
 	public void doneUpdate(WWidget w) {
+		logger.debug(new StringWriter().append("doneUpdate: ")
+				.append(w.getId()).append(" (").append("(fixme)").append(")")
+				.toString());
 		this.updateMap_.remove(w);
 	}
 
@@ -206,10 +217,10 @@ class WebRenderer implements SlotLearnerInterface {
 		app.styleSheetsAdded_ = 0;
 	}
 
-	public void setCookie(final String name, final String value, int maxAge,
-			final String domain, final String path) {
-		this.cookiesToSet_.add(new WebRenderer.Cookie(name, value, path,
-				domain, maxAge));
+	public void setCookie(final String name, final String value, WDate expires,
+			final String domain, final String path, boolean secure) {
+		this.cookiesToSet_.put(name, new WebRenderer.CookieValue(value, path,
+				domain, expires, secure));
 	}
 
 	public boolean isPreLearning() {
@@ -252,19 +263,76 @@ class WebRenderer implements SlotLearnerInterface {
 				.append(redirect).append("';\n");
 	}
 
-	static class Cookie {
-		public String name;
+	public boolean checkResponsePuzzle(WebRequest request) {
+		if (this.solution_.length() != 0) {
+			String ackPuzzleE = request.getParameter("ackPuzzle");
+			if (!(ackPuzzleE != null)) {
+				logger.warn(new StringWriter().append("secure:").append(
+						"Ajax puzzle fail: solution missing").toString());
+				return false;
+			}
+			String ackPuzzle = ackPuzzleE;
+			List<String> answer = new ArrayList<String>();
+			List<String> solution = new ArrayList<String>();
+			solution = new ArrayList<String>(Arrays.asList(this.solution_
+					.split(",")));
+			answer = new ArrayList<String>(Arrays.asList(ackPuzzle.split(",")));
+			int j = 0;
+			boolean fail = false;
+			for (int i = 0; i < solution.size(); ++i) {
+				for (; j < answer.size(); ++j) {
+					if (solution.get(i).equals(answer.get(j))) {
+						break;
+					}
+				}
+				if (j == answer.size()) {
+					fail = true;
+					break;
+				}
+			}
+			if (j < answer.size() - 1) {
+				fail = true;
+			}
+			if (fail) {
+				logger.warn(new StringWriter().append("secure:").append(
+						"Ajax puzzle fail: '").append(ackPuzzle).append(
+						"' vs '").append(this.solution_).append('\'')
+						.toString());
+				this.solution_ = "";
+				return false;
+			} else {
+				this.solution_ = "";
+				return true;
+			}
+		} else {
+			return true;
+		}
+	}
+
+	static class CookieValue {
+		private static Logger logger = LoggerFactory
+				.getLogger(CookieValue.class);
+
 		public String value;
 		public String path;
 		public String domain;
-		public int maxAge;
+		public WDate expires;
+		public boolean secure;
 
-		public Cookie(String n, String v, String p, String d, int m) {
-			this.name = n;
+		public CookieValue() {
+			this.value = "";
+			this.path = "";
+			this.domain = "";
+			this.expires = null;
+			this.secure = false;
+		}
+
+		public CookieValue(String v, String p, String d, WDate e, boolean s) {
 			this.value = v;
 			this.path = p;
 			this.domain = d;
-			this.maxAge = m;
+			this.expires = e;
+			this.secure = s;
 		}
 	}
 
@@ -275,32 +343,44 @@ class WebRenderer implements SlotLearnerInterface {
 	private int pageId_;
 	private int expectedAckId_;
 	private int scriptId_;
-	private List<WebRenderer.Cookie> cookiesToSet_;
+	private String solution_;
+	private Map<String, WebRenderer.CookieValue> cookiesToSet_;
 	private Map<String, WObject> currentFormObjects_;
 	private String currentFormObjectsList_;
 	private boolean formObjectsChanged_;
 
 	private void setHeaders(WebResponse response, final String mimeType) {
-		for (int i = 0; i < this.cookiesToSet_.size(); ++i) {
-			String cookies = "";
-			String value = this.cookiesToSet_.get(i).value;
-			cookies += DomElement.urlEncodeS(this.cookiesToSet_.get(i).name)
-					+ "=" + DomElement.urlEncodeS(value) + "; Version=1;";
-			if (this.cookiesToSet_.get(i).maxAge != -1) {
-				cookies += " Max-Age="
-						+ String.valueOf(this.cookiesToSet_.get(i).maxAge)
-						+ ";";
+		for (Iterator<Map.Entry<String, WebRenderer.CookieValue>> i_it = this.cookiesToSet_
+				.entrySet().iterator(); i_it.hasNext();) {
+			Map.Entry<String, WebRenderer.CookieValue> i = i_it.next();
+			WebRenderer.CookieValue cookie = i.getValue();
+			StringBuilder header = new StringBuilder();
+			String value = cookie.value;
+			if (value.length() == 0) {
+				value = "deleted";
 			}
-			if (this.cookiesToSet_.get(i).domain.length() != 0) {
-				cookies += " Domain=" + this.cookiesToSet_.get(i).domain + ";";
+			header.append(DomElement.urlEncodeS(i.getKey())).append('=')
+					.append(DomElement.urlEncodeS(value))
+					.append("; Version=1;");
+			if (!(cookie.expires == null)) {
+				String d = cookie.expires.toString(new WString(
+						"ddd, dd MMM yyyy hh:mm:ss 'GMT'").toString());
+				header.append(" Expires=").append(d).append(';');
 			}
-			if (this.cookiesToSet_.get(i).path.length() != 0) {
-				cookies += " Path=" + this.cookiesToSet_.get(i).path + ";";
+			if (cookie.domain.length() != 0) {
+				header.append(" Domain=").append(cookie.domain).append(';');
+			}
+			if (cookie.path.length() == 0) {
+				header.append(" Path=").append(
+						this.session_.getEnv().getDeploymentPath()).append(';');
 			} else {
-				cookies += " Path=" + this.session_.getDeploymentPath() + ";";
+				header.append(" Path=").append(cookie.path).append(';');
 			}
-			cookies += " httponly;";
-			response.addHeader("Set-Cookie", cookies);
+			header.append(" httponly;");
+			if (cookie.secure) {
+				header.append(" secure;");
+			}
+			response.addHeader("Set-Cookie", header.toString());
 		}
 		this.cookiesToSet_.clear();
 		response.setContentType(mimeType);
@@ -332,9 +412,10 @@ class WebRenderer implements SlotLearnerInterface {
 			this.serveMainAjax(response);
 		} else {
 			this.collectJavaScript();
-			response.out().append(this.session_.getApp().getJavaScriptClass())
-					.append("._p_.response(").append(
-							String.valueOf(this.expectedAckId_)).append(");");
+			logger.debug(new StringWriter().append("js: ").append(
+					this.collectedJS1_.toString()).append(
+					this.collectedJS2_.toString()).toString());
+			this.addResponseAckPuzzle(response.out());
 			this.renderSetServerPush(response.out());
 			response.out().append(this.collectedJS1_.toString()).append(
 					this.collectedJS2_.toString());
@@ -347,11 +428,11 @@ class WebRenderer implements SlotLearnerInterface {
 	private void serveMainscript(WebResponse response) throws IOException {
 		Configuration conf = this.session_.getController().getConfiguration();
 		boolean widgetset = this.session_.getType() == EntryPointType.WidgetSet;
-		boolean serveSkeletons = !conf.isSplitScript()
+		boolean serveSkeletons = !conf.splitScript()
 				|| response.getParameter("skeleton") != null;
-		boolean serveRest = !conf.isSplitScript() || !serveSkeletons;
+		boolean serveRest = !conf.splitScript() || !serveSkeletons;
 		this.session_.sessionIdChanged_ = false;
-		this.setCaching(response, conf.isSplitScript() && serveSkeletons);
+		this.setCaching(response, conf.splitScript() && serveSkeletons);
 		this.setHeaders(response, "text/javascript; charset=UTF-8");
 		if (!widgetset) {
 			String redirect = this.session_.getRedirect();
@@ -403,8 +484,8 @@ class WebRenderer implements SlotLearnerInterface {
 			script.setVar("WT_CLASS", "Wt3_1_11");
 			script.setVar("APP_CLASS", app.getJavaScriptClass());
 			script.setCondition("STRICTLY_SERIALIZED_EVENTS", conf
-					.isSerializedEvents());
-			script.setCondition("WEB_SOCKETS", conf.isWebSockets());
+					.serializedEvents());
+			script.setCondition("WEB_SOCKETS", conf.webSockets());
 			script.setVar("INNER_HTML", innerHtml);
 			script.setVar("ACK_UPDATE_ID", this.expectedAckId_);
 			script.setVar("SESSION_URL", WWebWidget.jsStringLiteral(this
@@ -426,14 +507,7 @@ class WebRenderer implements SlotLearnerInterface {
 			script.setVar("INDICATOR_TIMEOUT", conf.getIndicatorTimeout());
 			script.setVar("SERVER_PUSH_TIMEOUT",
 					conf.getServerPushTimeout() * 1000);
-			script
-					.setVar(
-							"CLOSE_CONNECTION",
-							conf.getServerType() == Configuration.ServerType.WtHttpdServer
-									&& this.session_.getEnv().agentIsGecko()
-									&& this.session_.getEnv().getAgent()
-											.getValue() < WEnvironment.UserAgent.Firefox3_0
-											.getValue());
+			script.setVar("CLOSE_CONNECTION", false);
 			String params = "";
 			if (this.session_.getType() == EntryPointType.WidgetSet) {
 				Map<String, String[]> m = this.session_.getEnv()
@@ -500,12 +574,14 @@ class WebRenderer implements SlotLearnerInterface {
 				this.currentFormObjectsList_ = "";
 				this.collectJavaScript();
 				this.updateLoadIndicator(this.collectedJS1_, app, true);
-				response.out().append(this.collectedJS1_.toString()).append(
-						app.getJavaScriptClass()).append("._p_.response(")
-						.append(String.valueOf(this.expectedAckId_)).append(
-								");").append(app.getJavaScriptClass()).append(
-								"._p_.setHash('").append(app.newInternalPath_)
-						.append("');\n");
+				logger.debug(new StringWriter().append("js: ").append(
+						this.collectedJS1_.toString()).append(
+						this.collectedJS2_.toString()).toString());
+				response.out().append(this.collectedJS1_.toString());
+				this.addResponseAckPuzzle(response.out());
+				response.out().append(app.getJavaScriptClass()).append(
+						"._p_.setHash('").append(app.newInternalPath_).append(
+						"');\n");
 				if (!app.getEnvironment().hashInternalPaths()) {
 					this.session_.setPagePathInfo(app.newInternalPath_);
 				}
@@ -752,17 +828,23 @@ class WebRenderer implements SlotLearnerInterface {
 							app.getLayoutDirection() == LayoutDirection.LeftToRight ? "LTR"
 									: "RTL").append("');");
 		}
-		Writer s = response.out();
+		StringWriter s = new StringWriter();
 		mainElement.addToParent(s, "document.body", widgetset ? 0 : -1, app);
 		;
+		this.addResponseAckPuzzle(s);
 		if (app.isQuited()) {
 			s.append(app.getJavaScriptClass()).append("._p_.quit();");
 		}
 		if (widgetset) {
 			app.domRoot2_.rootAsJavaScript(app, s, true);
 		}
+		logger.debug(new StringWriter().append("js: ").append(s.toString())
+				.toString());
+		response.out().append(s.toString());
 		this.setJSSynced(true);
 		this.preLearnStateless(app, this.collectedJS1_);
+		logger.debug(new StringWriter().append("js: ").append(
+				this.collectedJS1_.toString()).toString());
 		response.out().append(this.collectedJS1_.toString());
 		this.collectedJS1_ = new StringWriter();
 		this.updateLoadIndicator(response.out(), app, true);
@@ -876,6 +958,10 @@ class WebRenderer implements SlotLearnerInterface {
 					w = w.getParent();
 				}
 				if (w != app.domRoot_ && w != app.domRoot2_) {
+					logger.debug(new StringWriter().append("ignoring: ")
+							.append(ww.getId()).append(" (").append("(fixme)")
+							.append(") ").append(w.getId()).append(" (")
+							.append("(fixme)").append(")").toString());
 					depth = 0;
 				}
 				depthOrder.put(depth, ww);
@@ -890,9 +976,16 @@ class WebRenderer implements SlotLearnerInterface {
 						w.getWebWidget().propagateRenderOk();
 						continue;
 					}
+					logger.debug(new StringWriter().append("updating: ")
+							.append(w.getId()).append(" (").append("(fixme)")
+							.append(")").toString());
 					if (!this.learning_ && this.visibleOnly_) {
 						if (w.isRendered()) {
 							w.getSDomChanges(changes, app);
+						} else {
+							logger.debug(new StringWriter()
+									.append("Ignoring: ").append(w.getId())
+									.toString());
 						}
 					} else {
 						w.getSDomChanges(changes, app);
@@ -1173,7 +1266,7 @@ class WebRenderer implements SlotLearnerInterface {
 		this.expectedAckId_ = this.scriptId_ = MathUtils.randomInt();
 		bootJs.setVar("SCRIPT_ID", this.scriptId_);
 		bootJs.setVar("RANDOMSEED", MathUtils.randomInt());
-		bootJs.setVar("RELOAD_IS_NEWSESSION", conf.isReloadIsNewSession());
+		bootJs.setVar("RELOAD_IS_NEWSESSION", conf.reloadIsNewSession());
 		bootJs
 				.setVar(
 						"USE_COOKIES",
@@ -1183,7 +1276,7 @@ class WebRenderer implements SlotLearnerInterface {
 		bootJs.setVar("APP_CLASS", "Wt");
 		bootJs.setVar("PATH_INFO", WWebWidget.jsStringLiteral(this.session_
 				.getEnv().pathInfo_));
-		bootJs.setCondition("SPLIT_SCRIPT", conf.isSplitScript());
+		bootJs.setCondition("SPLIT_SCRIPT", conf.splitScript());
 		bootJs.setCondition("HYBRID", hybrid);
 		boolean xhtml = this.session_.getEnv().getContentType() == WEnvironment.ContentType.XHTML1;
 		bootJs.setCondition("DEFER_SCRIPT", !xhtml);
@@ -1192,6 +1285,59 @@ class WebRenderer implements SlotLearnerInterface {
 		bootJs.setVar("INTERNAL_PATH", internalPath);
 		boot.streamUntil(response.out(), "BOOT_JS");
 		bootJs.stream(response.out());
+	}
+
+	private void addResponseAckPuzzle(Writer out) throws IOException {
+		String puzzle = "";
+		Configuration conf = this.session_.getController().getConfiguration();
+		if (conf.ajaxPuzzle() && this.expectedAckId_ == this.scriptId_) {
+			List<WContainerWidget> widgets = new ArrayList<WContainerWidget>();
+			WApplication app = this.session_.getApp();
+			this.addContainerWidgets(app.domRoot_, widgets);
+			if (app.domRoot2_ != null) {
+				this.addContainerWidgets(app.domRoot2_, widgets);
+			}
+			int r = MathUtils.randomInt() % widgets.size();
+			WContainerWidget wc = widgets.get(r);
+			puzzle = '"' + wc.getId() + '"';
+			String l = "";
+			for (WWidget w = wc.getParent(); w != null; w = w.getParent()) {
+				if (w.getId().length() == 0) {
+					continue;
+				}
+				if (w.getId().equals(l)) {
+					continue;
+				}
+				l = w.getId();
+				if (this.solution_.length() != 0) {
+					this.solution_ += ',';
+				}
+				this.solution_ += l;
+			}
+		}
+		out.append(this.session_.getApp().getJavaScriptClass()).append(
+				"._p_.response(").append(String.valueOf(this.expectedAckId_));
+		if (puzzle.length() != 0) {
+			out.append(",").append(puzzle);
+		}
+		out.append(");");
+	}
+
+	private void addContainerWidgets(WWebWidget w, List<WContainerWidget> result) {
+		for (int i = 0; i < w.getChildren().size(); ++i) {
+			WWidget c = w.getChildren().get(i);
+			if (!c.isRendered()) {
+				return;
+			}
+			if (!c.isHidden()) {
+				this.addContainerWidgets(c.getWebWidget(), result);
+			}
+			WContainerWidget wc = ((c) instanceof WContainerWidget ? (WContainerWidget) (c)
+					: null);
+			if (wc != null) {
+				result.add(wc);
+			}
+		}
 	}
 
 	private String getHeadDeclarations() {

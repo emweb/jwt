@@ -16,9 +16,13 @@ import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import eu.webtoolkit.jwt.examples.treeview.*;
 
 class MvcWidgets extends ControlsWidget {
+	private static Logger logger = LoggerFactory.getLogger(MvcWidgets.class);
+
 	public MvcWidgets(EventDisplayer ed) {
 		super(ed, true);
 		addText(tr("mvc-intro"), this);

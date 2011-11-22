@@ -16,8 +16,13 @@ import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 class StdGridLayoutImpl extends StdLayoutImpl {
+	private static Logger logger = LoggerFactory
+			.getLogger(StdGridLayoutImpl.class);
+
 	public StdGridLayoutImpl(WLayout layout, Grid grid) {
 		super(layout);
 		this.grid_ = grid;
@@ -580,15 +585,14 @@ class StdGridLayoutImpl extends StdLayoutImpl {
 				if (value.equals("auto")) {
 					this.useFixedLayout_ = false;
 				} else {
-					WApplication.getInstance().log("error").append(
-							"WGridLayout: unrecognized hint value '").append(
-							value).append("' for '").append(name).append("'");
+					logger.error(new StringWriter().append(
+							"unrecognized hint value '").append(value).append(
+							"' for '").append(name).append("'").toString());
 				}
 			}
 		} else {
-			WApplication.getInstance().log("error").append(
-					"WGridLayout: unrecognized hint '").append(name)
-					.append("'");
+			logger.error(new StringWriter().append("unrecognized hint '")
+					.append(name).append("'").toString());
 		}
 	}
 
@@ -704,6 +708,6 @@ class StdGridLayoutImpl extends StdLayoutImpl {
 				JavaScriptScope.WtClassScope,
 				JavaScriptObjectType.JavaScriptFunction,
 				"ChildrenResize",
-				"function(b,d,c){var a,f,e;a=this;b.style.height=c+\"px\";if(a.boxSizing(b)){c-=a.px(b,\"marginTop\");c-=a.px(b,\"marginBottom\");c-=a.px(b,\"borderTopWidth\");c-=a.px(b,\"borderBottomWidth\");c-=a.px(b,\"paddingTop\");c-=a.px(b,\"paddingBottom\");d-=a.px(b,\"marginLeft\");d-=a.px(b,\"marginRight\");d-=a.px(b,\"borderLeftWidth\");d-=a.px(b,\"borderRightWidth\");d-=a.px(b,\"paddingLeft\");d-=a.px(b,\"paddingRight\")}var g=c+\"px\";a=0;for(f=b.childNodes.length;a<f;++a){e= b.childNodes[a];if(e.nodeType==1)if(e.wtResize)e.wtResize(e,d,c);else if(e.style.height!=g)e.style.height=g}}");
+				"function(b,e,c){function k(f){var g=a.px(f,\"marginTop\");g+=a.px(f,\"marginBottom\");if(!a.boxSizing(f)){g+=a.px(f,\"borderTopWidth\");g+=a.px(f,\"borderBottomWidth\");g+=a.px(f,\"paddingTop\");g+=a.px(f,\"paddingBottom\")}return g}var i,j,d,a=this;b.style.height=c+\"px\";if(a.boxSizing(b)){c-=a.px(b,\"marginTop\");c-=a.px(b,\"marginBottom\");c-=a.px(b,\"borderTopWidth\");c-=a.px(b,\"borderBottomWidth\");c-=a.px(b,\"paddingTop\");c-=a.px(b,\"paddingBottom\");e-= a.px(b,\"marginLeft\");e-=a.px(b,\"marginRight\");e-=a.px(b,\"borderLeftWidth\");e-=a.px(b,\"borderRightWidth\");e-=a.px(b,\"paddingLeft\");e-=a.px(b,\"paddingRight\")}i=0;for(j=b.childNodes.length;i<j;++i){d=b.childNodes[i];if(d.nodeType==1){var h=c-k(d);if(h>0)if(d.wtResize)d.wtResize(d,e,h);else{h=h+\"px\";if(d.style.height!=h)d.style.height=h}}}}");
 	}
 }

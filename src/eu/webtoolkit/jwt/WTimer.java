@@ -16,6 +16,8 @@ import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A utility class which provides timer signals and single-shot timers.
@@ -45,6 +47,8 @@ import eu.webtoolkit.jwt.servlet.*;
  * {@link java.util.Timer}.
  */
 public class WTimer extends WObject {
+	private static Logger logger = LoggerFactory.getLogger(WTimer.class);
+
 	/**
 	 * Construct a new timer with the given parent.
 	 */

@@ -16,6 +16,8 @@ import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Vector graphics painting class.
@@ -92,6 +94,8 @@ import eu.webtoolkit.jwt.servlet.*;
  * @see WPaintedWidget#paintEvent(WPaintDevice paintDevice)
  */
 public class WPainter {
+	private static Logger logger = LoggerFactory.getLogger(WPainter.class);
+
 	/**
 	 * Enumeration for render hints.
 	 */
@@ -376,6 +380,8 @@ public class WPainter {
 	 * @see WPainter#drawImage(WPointF point, WPainter.Image image)
 	 */
 	public static class Image {
+		private static Logger logger = LoggerFactory.getLogger(Image.class);
+
 		/**
 		 * Creates an image.
 		 * <p>
@@ -885,7 +891,7 @@ public class WPainter {
 				if (!EnumUtils.mask(this.device_.getFeatures(),
 						WPaintDevice.FeatureFlag.HasFontMetrics).isEmpty()) {
 				} else {
-					throw new UnsupportedOperationException(
+					throw new WException(
 							"WPainter::drawText(): device does not support TextWordWrap or FontMetrics");
 				}
 			}
@@ -1556,6 +1562,8 @@ public class WPainter {
 	private WTransform viewTransform_;
 
 	static class State {
+		private static Logger logger = LoggerFactory.getLogger(State.class);
+
 		public WTransform worldTransform_;
 		public WBrush currentBrush_;
 		public WFont currentFont_;

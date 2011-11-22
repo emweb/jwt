@@ -16,8 +16,12 @@ import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 class FormWidgets extends ControlsWidget {
+	private static Logger logger = LoggerFactory.getLogger(FormWidgets.class);
+
 	public FormWidgets(EventDisplayer ed) {
 		super(ed, true);
 		addText(tr("formwidgets-intro"), this);

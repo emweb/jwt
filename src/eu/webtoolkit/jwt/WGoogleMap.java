@@ -16,6 +16,8 @@ import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A widget that displays a google map.
@@ -40,6 +42,8 @@ import eu.webtoolkit.jwt.servlet.*;
  * Contributed by: Richard Ulrich.
  */
 public class WGoogleMap extends WCompositeWidget {
+	private static Logger logger = LoggerFactory.getLogger(WGoogleMap.class);
+
 	/**
 	 * ApiVersion.
 	 */
@@ -98,6 +102,9 @@ public class WGoogleMap extends WCompositeWidget {
 	 * A geographical coordinate (latitude/longitude).
 	 */
 	public static class Coordinate {
+		private static Logger logger = LoggerFactory
+				.getLogger(Coordinate.class);
+
 		/**
 		 * Default constructor.
 		 */
@@ -261,7 +268,7 @@ public class WGoogleMap extends WCompositeWidget {
 					this.getJsRef()).append(".map").append("});").append(
 					this.getJsRef()).append(".map.overlays.push(marker);");
 		}
-		this.doGmJavaScript(strm.toString(), false);
+		this.doGmJavaScript(strm.toString());
 	}
 
 	/**
@@ -303,7 +310,7 @@ public class WGoogleMap extends WCompositeWidget {
 							".map);").append(this.getJsRef()).append(
 							".map.overlays.push(poly);");
 		}
-		this.doGmJavaScript(strm.toString(), true);
+		this.doGmJavaScript(strm.toString());
 	}
 
 	/**
@@ -378,7 +385,7 @@ public class WGoogleMap extends WCompositeWidget {
 							strokeColor.getCssText()).append(
 							"\",  strokeOpacity: ").append(
 							String.valueOf(strokeOpacity)).append("} );");
-			this.doGmJavaScript(strm.toString(), false);
+			this.doGmJavaScript(strm.toString());
 		}
 	}
 
@@ -399,8 +406,7 @@ public class WGoogleMap extends WCompositeWidget {
 	 */
 	public void clearOverlays() {
 		if (this.apiVersion_ == WGoogleMap.ApiVersion.Version2) {
-			this.doGmJavaScript(this.getJsRef() + ".map.clearOverlays();",
-					false);
+			this.doGmJavaScript(this.getJsRef() + ".map.clearOverlays();");
 		} else {
 			StringWriter strm = new StringWriter();
 			strm.append("var mapLocal = ").append(
@@ -415,7 +421,7 @@ public class WGoogleMap extends WCompositeWidget {
 							"  }\n").append(
 							"  mapLocal.infowindows.length = 0;\n").append(
 							"}\n");
-			this.doGmJavaScript(strm.toString(), false);
+			this.doGmJavaScript(strm.toString());
 		}
 	}
 
@@ -439,7 +445,7 @@ public class WGoogleMap extends WCompositeWidget {
 							this.getJsRef()).append(
 							".map.infowindows.push(infowindow);");
 		}
-		this.doGmJavaScript(strm.toString(), false);
+		this.doGmJavaScript(strm.toString());
 	}
 
 	/**
@@ -451,7 +457,7 @@ public class WGoogleMap extends WCompositeWidget {
 				".map.setCenter(new google.maps.LatLng(").append(
 				String.valueOf(center.getLatitude())).append(", ").append(
 				String.valueOf(center.getLongitude())).append("));");
-		this.doGmJavaScript(strm.toString(), false);
+		this.doGmJavaScript(strm.toString());
 	}
 
 	/**
@@ -465,7 +471,7 @@ public class WGoogleMap extends WCompositeWidget {
 				String.valueOf(center.getLongitude())).append(")); ").append(
 				this.getJsRef()).append(".map.setZoom(").append(
 				String.valueOf(zoom)).append(");");
-		this.doGmJavaScript(strm.toString(), false);
+		this.doGmJavaScript(strm.toString());
 	}
 
 	/**
@@ -480,7 +486,7 @@ public class WGoogleMap extends WCompositeWidget {
 				".map.panTo(new google.maps.LatLng(").append(
 				String.valueOf(center.getLatitude())).append(", ").append(
 				String.valueOf(center.getLongitude())).append("));");
-		this.doGmJavaScript(strm.toString(), false);
+		this.doGmJavaScript(strm.toString());
 	}
 
 	/**
@@ -520,7 +526,7 @@ public class WGoogleMap extends WCompositeWidget {
 		} else {
 			strm.append(this.getJsRef()).append(".map.fitBounds(bbox);");
 		}
-		this.doGmJavaScript(strm.toString(), true);
+		this.doGmJavaScript(strm.toString());
 	}
 
 	/**
@@ -528,7 +534,7 @@ public class WGoogleMap extends WCompositeWidget {
 	 */
 	public void setZoom(int level) {
 		this.doGmJavaScript(this.getJsRef() + ".map.setZoom("
-				+ String.valueOf(level) + ");", false);
+				+ String.valueOf(level) + ");");
 	}
 
 	/**
@@ -539,7 +545,7 @@ public class WGoogleMap extends WCompositeWidget {
 		strm.append("var zoom = ").append(this.getJsRef()).append(
 				".map.getZoom();").append(this.getJsRef()).append(
 				".map.setZoom(zoom + 1);");
-		this.doGmJavaScript(strm.toString(), false);
+		this.doGmJavaScript(strm.toString());
 	}
 
 	/**
@@ -550,7 +556,7 @@ public class WGoogleMap extends WCompositeWidget {
 		strm.append("var zoom = ").append(this.getJsRef()).append(
 				".map.getZoom();").append(this.getJsRef()).append(
 				".map.setZoom(zoom - 1);");
-		this.doGmJavaScript(strm.toString(), false);
+		this.doGmJavaScript(strm.toString());
 	}
 
 	/**
@@ -561,16 +567,14 @@ public class WGoogleMap extends WCompositeWidget {
 	 */
 	public void savePosition() {
 		if (this.apiVersion_ == WGoogleMap.ApiVersion.Version2) {
-			this
-					.doGmJavaScript(this.getJsRef() + ".map.savePosition();",
-							false);
+			this.doGmJavaScript(this.getJsRef() + ".map.savePosition();");
 		} else {
 			StringWriter strm = new StringWriter();
 			strm.append(this.getJsRef()).append(".map.savedZoom = ").append(
 					this.getJsRef()).append(".map.getZoom();").append(
 					this.getJsRef()).append(".map.savedPosition = ").append(
 					this.getJsRef()).append(".map.getCenter();");
-			this.doGmJavaScript(strm.toString(), false);
+			this.doGmJavaScript(strm.toString());
 		}
 	}
 
@@ -581,14 +585,14 @@ public class WGoogleMap extends WCompositeWidget {
 	public void returnToSavedPosition() {
 		if (this.apiVersion_ == WGoogleMap.ApiVersion.Version2) {
 			this.doGmJavaScript(this.getJsRef()
-					+ ".map.returnToSavedPosition();", false);
+					+ ".map.returnToSavedPosition();");
 		} else {
 			StringWriter strm = new StringWriter();
 			strm.append(this.getJsRef()).append(".map.setZoom(").append(
 					this.getJsRef()).append(".map.savedZoom);").append(
 					this.getJsRef()).append(".map.setCenter(").append(
 					this.getJsRef()).append(".map.savedPosition);");
-			this.doGmJavaScript(strm.toString(), false);
+			this.doGmJavaScript(strm.toString());
 		}
 	}
 
@@ -602,7 +606,7 @@ public class WGoogleMap extends WCompositeWidget {
 	 * @deprecated the map is resized automatically when necessary
 	 */
 	public void checkResize() {
-		this.doGmJavaScript(this.getJsRef() + ".map.checkResize();", false);
+		this.doGmJavaScript(this.getJsRef() + ".map.checkResize();");
 	}
 
 	/**
@@ -610,8 +614,7 @@ public class WGoogleMap extends WCompositeWidget {
 	 */
 	public void enableDragging() {
 		if (this.apiVersion_ == WGoogleMap.ApiVersion.Version2) {
-			this.doGmJavaScript(this.getJsRef() + ".map.enableDragging();",
-					false);
+			this.doGmJavaScript(this.getJsRef() + ".map.enableDragging();");
 		} else {
 			this.setMapOption("draggable", "true");
 		}
@@ -622,8 +625,7 @@ public class WGoogleMap extends WCompositeWidget {
 	 */
 	public void disableDragging() {
 		if (this.apiVersion_ == WGoogleMap.ApiVersion.Version2) {
-			this.doGmJavaScript(this.getJsRef() + ".map.disableDragging();",
-					false);
+			this.doGmJavaScript(this.getJsRef() + ".map.disableDragging();");
 		} else {
 			this.setMapOption("draggable", "false");
 		}
@@ -635,7 +637,7 @@ public class WGoogleMap extends WCompositeWidget {
 	public void enableDoubleClickZoom() {
 		if (this.apiVersion_ == WGoogleMap.ApiVersion.Version2) {
 			this.doGmJavaScript(this.getJsRef()
-					+ ".map.enableDoubleClickZoom();", false);
+					+ ".map.enableDoubleClickZoom();");
 		} else {
 			this.setMapOption("disableDoubleClickZoom", "false");
 		}
@@ -647,7 +649,7 @@ public class WGoogleMap extends WCompositeWidget {
 	public void disableDoubleClickZoom() {
 		if (this.apiVersion_ == WGoogleMap.ApiVersion.Version2) {
 			this.doGmJavaScript(this.getJsRef()
-					+ ".map.disableDoubleClickZoom();", false);
+					+ ".map.disableDoubleClickZoom();");
 		} else {
 			this.setMapOption("disableDoubleClickZoom", "true");
 		}
@@ -668,8 +670,7 @@ public class WGoogleMap extends WCompositeWidget {
 	 */
 	public void enableGoogleBar() {
 		if (this.apiVersion_ == WGoogleMap.ApiVersion.Version2) {
-			this.doGmJavaScript(this.getJsRef() + ".map.enableGoogleBar();",
-					false);
+			this.doGmJavaScript(this.getJsRef() + ".map.enableGoogleBar();");
 		} else {
 			throw new UnsupportedOperationException(
 					"WGoogleMap::enableGoogleBar is not supported in the Google Maps API v3.");
@@ -690,8 +691,7 @@ public class WGoogleMap extends WCompositeWidget {
 	 */
 	public void disableGoogleBar() {
 		if (this.apiVersion_ == WGoogleMap.ApiVersion.Version2) {
-			this.doGmJavaScript(this.getJsRef() + ".map.disableGoogleBar();",
-					false);
+			this.doGmJavaScript(this.getJsRef() + ".map.disableGoogleBar();");
 		} else {
 			throw new UnsupportedOperationException(
 					"WGoogleMap::disableGoogleBar is not supported in the Google Maps API v3.");
@@ -706,7 +706,7 @@ public class WGoogleMap extends WCompositeWidget {
 	public void enableScrollWheelZoom() {
 		if (this.apiVersion_ == WGoogleMap.ApiVersion.Version2) {
 			this.doGmJavaScript(this.getJsRef()
-					+ ".map.enableScrollWheelZoom();", false);
+					+ ".map.enableScrollWheelZoom();");
 		} else {
 			this.setMapOption("scrollwheel", "true");
 		}
@@ -720,7 +720,7 @@ public class WGoogleMap extends WCompositeWidget {
 	public void disableScrollWheelZoom() {
 		if (this.apiVersion_ == WGoogleMap.ApiVersion.Version2) {
 			this.doGmJavaScript(this.getJsRef()
-					+ ".map.disableScrollWheelZoom();", false);
+					+ ".map.disableScrollWheelZoom();");
 		} else {
 			this.setMapOption("scrollwheel", "false");
 		}
@@ -788,7 +788,7 @@ public class WGoogleMap extends WCompositeWidget {
 			strm.append("  }").append("};").append(this.getJsRef()).append(
 					".map.setOptions(options);");
 		}
-		this.doGmJavaScript(strm.toString(), false);
+		this.doGmJavaScript(strm.toString());
 	}
 
 	/**
@@ -901,19 +901,22 @@ public class WGoogleMap extends WCompositeWidget {
 		}
 	}
 
-	private List<String> additions_;
-
-	private void doGmJavaScript(String jscode, boolean sepScope) {
-		String js = jscode;
-		if (sepScope) {
-			js = "{" + js + "}";
-		}
+	/**
+	 * Execute a piece of JavaScript that manipulates the map.
+	 * <p>
+	 * This is like {@link WCompositeWidget#doJavaScript(String js)
+	 * WCompositeWidget#doJavaScript()} but delays the javascript until the map
+	 * has been loaded.
+	 */
+	protected void doGmJavaScript(String jscode) {
 		if (this.isRendered()) {
-			WApplication.getInstance().doJavaScript(js);
+			WApplication.getInstance().doJavaScript(jscode);
 		} else {
-			this.additions_.add(js);
+			this.additions_.add(jscode);
 		}
 	}
+
+	private List<String> additions_;
 
 	private void streamJSListener(JSignal1<WGoogleMap.Coordinate> signal,
 			String signalName, Writer strm) throws IOException {
@@ -940,7 +943,7 @@ public class WGoogleMap extends WCompositeWidget {
 		strm.append("var option = {").append(option).append(" :").append(value)
 				.append("};").append(this.getJsRef()).append(
 						".map.setOptions(option);");
-		this.doGmJavaScript(strm.toString(), false);
+		this.doGmJavaScript(strm.toString());
 	}
 
 	private WGoogleMap.ApiVersion apiVersion_;

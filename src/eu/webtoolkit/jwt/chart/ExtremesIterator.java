@@ -16,8 +16,13 @@ import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 class ExtremesIterator extends SeriesIterator {
+	private static Logger logger = LoggerFactory
+			.getLogger(ExtremesIterator.class);
+
 	public ExtremesIterator(Axis axis, AxisScale scale) {
 		super();
 		this.axis_ = axis;

@@ -16,6 +16,8 @@ import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A class providing details for a touch event.
@@ -26,6 +28,8 @@ import eu.webtoolkit.jwt.servlet.*;
  * @see WInteractWidget#touchEnded()
  */
 public class WTouchEvent implements WAbstractEvent {
+	private static Logger logger = LoggerFactory.getLogger(WTouchEvent.class);
+
 	/**
 	 * Default constructor.
 	 */
@@ -83,9 +87,9 @@ public class WTouchEvent implements WAbstractEvent {
 			try {
 				return asInt(p);
 			} catch (NumberFormatException ee) {
-				WApplication.getInstance().log("error").append(
+				logger.error(new StringWriter().append(
 						"Could not cast event property '").append(name).append(
-						": ").append(p).append("' to int");
+						": ").append(p).append("' to int").toString());
 				return ifMissing;
 			}
 		} else {
@@ -109,8 +113,9 @@ public class WTouchEvent implements WAbstractEvent {
 		List<String> s = new ArrayList<String>();
 		s = new ArrayList<String>(Arrays.asList(str.split(";")));
 		if (s.size() % 9 != 0) {
-			WApplication.getInstance().log("error").append(
-					"Could not parse touches array '").append(str).append("'");
+			logger.error(new StringWriter().append(
+					"Could not parse touches array '").append(str).append("'")
+					.toString());
 			return;
 		}
 		try {
@@ -122,8 +127,9 @@ public class WTouchEvent implements WAbstractEvent {
 								.get(i + 8))));
 			}
 		} catch (NumberFormatException ee) {
-			WApplication.getInstance().log("error").append(
-					"Could not parse touches array '").append(str).append("'");
+			logger.error(new StringWriter().append(
+					"Could not parse touches array '").append(str).append("'")
+					.toString());
 			return;
 		}
 	}

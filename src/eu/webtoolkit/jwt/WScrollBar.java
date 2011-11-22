@@ -16,6 +16,8 @@ import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A scrollbar attached to a scroll area.
@@ -31,6 +33,8 @@ import eu.webtoolkit.jwt.servlet.*;
  * @see WScrollArea
  */
 public class WScrollBar extends WObject {
+	private static Logger logger = LoggerFactory.getLogger(WScrollBar.class);
+
 	/**
 	 * Returns the orientation of this scrollbar.
 	 */

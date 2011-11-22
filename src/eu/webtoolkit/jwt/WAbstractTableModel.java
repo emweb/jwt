@@ -16,6 +16,8 @@ import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * An abstract table model for use with Wt&apos;s view classes.
@@ -34,6 +36,9 @@ import eu.webtoolkit.jwt.servlet.*;
  * WAbstractItemModel#getData()}.
  */
 public abstract class WAbstractTableModel extends WAbstractItemModel {
+	private static Logger logger = LoggerFactory
+			.getLogger(WAbstractTableModel.class);
+
 	/**
 	 * Creates a new abstract list model.
 	 */

@@ -16,8 +16,13 @@ import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 class WWidgetCanvasPainter extends WWidgetPainter {
+	private static Logger logger = LoggerFactory
+			.getLogger(WWidgetCanvasPainter.class);
+
 	public WWidgetCanvasPainter(WPaintedWidget widget) {
 		super(widget);
 	}

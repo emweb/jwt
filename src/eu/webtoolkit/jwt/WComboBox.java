@@ -16,6 +16,8 @@ import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A widget that provides a drop-down combo-box control.
@@ -54,6 +56,8 @@ import eu.webtoolkit.jwt.servlet.*;
  * appropriate.
  */
 public class WComboBox extends WFormWidget {
+	private static Logger logger = LoggerFactory.getLogger(WComboBox.class);
+
 	/**
 	 * Creates an empty combo-box with optional <i>parent</i>.
 	 */
@@ -297,13 +301,21 @@ public class WComboBox extends WFormWidget {
 		}
 	}
 
-	public WValidator.State validate() {
-		if (this.getValidator() != null) {
-			String text = this.getCurrentText().toString();
-			return this.getValidator().validate(text);
-		} else {
-			return WValidator.State.Valid;
-		}
+	/**
+	 * Returns the current value.
+	 * <p>
+	 * Returns {@link WComboBox#getCurrentText() getCurrentText()}.
+	 */
+	public String getValueText() {
+		return this.getCurrentText().toString();
+	}
+
+	/**
+	 * Sets the current value.
+	 * <p>
+	 * Sets the current index to the item corresponding to <code>value</code>.
+	 */
+	public void setValueText(String value) {
 	}
 
 	public void refresh() {
@@ -375,9 +387,14 @@ public class WComboBox extends WFormWidget {
 		}
 	}
 
+	private boolean isSupportsNoSelection() {
+		return false;
+	}
+
 	void updateDom(DomElement element, boolean all) {
 		if (this.itemsChanged_ || all) {
-			if (all && this.getCount() > 0 && this.currentIndex_ == -1) {
+			if (all && this.getCount() > 0 && this.currentIndex_ == -1
+					&& !this.isSupportsNoSelection()) {
 				this.currentIndex_ = 0;
 			}
 			if (!all) {
@@ -440,9 +457,9 @@ public class WComboBox extends WFormWidget {
 				try {
 					this.currentIndex_ = Integer.parseInt(value);
 				} catch (NumberFormatException e) {
-					WApplication.getInstance().log("error").append(
-							"WComboBox received illegal form value: '").append(
-							value).append("'");
+					logger.error(new StringWriter().append(
+							"received illegal form value: '").append(value)
+							.append("'").toString());
 				}
 			} else {
 				this.currentIndex_ = -1;

@@ -16,6 +16,8 @@ import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * An abstract base class for radio buttons and check boxes.
@@ -33,6 +35,9 @@ import eu.webtoolkit.jwt.servlet.*;
  * {@link WAbstractToggleButton#isChecked() isChecked()} method.
  */
 public abstract class WAbstractToggleButton extends WFormWidget {
+	private static Logger logger = LoggerFactory
+			.getLogger(WAbstractToggleButton.class);
+
 	/**
 	 * Creates an unchecked toggle button without label.
 	 */
@@ -164,6 +169,43 @@ public abstract class WAbstractToggleButton extends WFormWidget {
 	public void setUnChecked() {
 		this.prevState_ = this.state_;
 		this.setChecked(false);
+	}
+
+	/**
+	 * Returns the current value.
+	 * <p>
+	 * Returns &quot;yes&quot; when checked, &quot;maybe&quot; when partially
+	 * checked, and &quot;no&quot; when unchecked.
+	 */
+	public String getValueText() {
+		switch (this.state_) {
+		case Unchecked:
+			return "no";
+		case PartiallyChecked:
+			return "maybe";
+		default:
+			return "yes";
+		}
+	}
+
+	/**
+	 * Sets the current value.
+	 * <p>
+	 * This interprets text values of &quot;yes&quot;, &quot;maybe&quot; or
+	 * &quot;no&quot;.
+	 */
+	public void setValueText(String text) {
+		if (text.equals("yes")) {
+			this.setCheckState(CheckState.Checked);
+		} else {
+			if (text.equals("no")) {
+				this.setCheckState(CheckState.Unchecked);
+			} else {
+				if (text.equals("maybe")) {
+					this.setCheckState(CheckState.PartiallyChecked);
+				}
+			}
+		}
 	}
 
 	/**

@@ -16,6 +16,8 @@ import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * An abstract class that provides support for localized strings.
@@ -29,6 +31,9 @@ import eu.webtoolkit.jwt.servlet.*;
  * @see WApplication#setLocalizedStrings(WLocalizedStrings translator)
  */
 public abstract class WLocalizedStrings {
+	private static Logger logger = LoggerFactory
+			.getLogger(WLocalizedStrings.class);
+
 	/**
 	 * Rereads the message resources.
 	 * <p>

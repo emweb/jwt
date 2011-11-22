@@ -16,6 +16,8 @@ import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A rich-text XHTML editor.
@@ -44,6 +46,8 @@ import eu.webtoolkit.jwt.servlet.*;
  * </div>
  */
 public class WTextEdit extends WTextArea {
+	private static Logger logger = LoggerFactory.getLogger(WTextEdit.class);
+
 	/**
 	 * Creates a new text editor.
 	 */

@@ -16,11 +16,15 @@ import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A coordinate.
  */
 public class Coordinates {
+	private static Logger logger = LoggerFactory.getLogger(Coordinates.class);
+
 	/**
 	 * X coordinate.
 	 */
@@ -53,9 +57,9 @@ public class Coordinates {
 			try {
 				return asInt(p);
 			} catch (NumberFormatException ee) {
-				WApplication.getInstance().log("error").append(
+				logger.error(new StringWriter().append(
 						"Could not cast event property '").append(name).append(
-						": ").append(p).append("' to int");
+						": ").append(p).append("' to int").toString());
 				return ifMissing;
 			}
 		} else {
@@ -79,8 +83,9 @@ public class Coordinates {
 		List<String> s = new ArrayList<String>();
 		s = new ArrayList<String>(Arrays.asList(str.split(";")));
 		if (s.size() % 9 != 0) {
-			WApplication.getInstance().log("error").append(
-					"Could not parse touches array '").append(str).append("'");
+			logger.error(new StringWriter().append(
+					"Could not parse touches array '").append(str).append("'")
+					.toString());
 			return;
 		}
 		try {
@@ -92,8 +97,9 @@ public class Coordinates {
 								.get(i + 8))));
 			}
 		} catch (NumberFormatException ee) {
-			WApplication.getInstance().log("error").append(
-					"Could not parse touches array '").append(str).append("'");
+			logger.error(new StringWriter().append(
+					"Could not parse touches array '").append(str).append("'")
+					.toString());
 			return;
 		}
 	}

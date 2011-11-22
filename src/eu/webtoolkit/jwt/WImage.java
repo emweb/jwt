@@ -16,6 +16,8 @@ import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A widget that displays an image.
@@ -47,6 +49,8 @@ import eu.webtoolkit.jwt.servlet.*;
  * @see WPaintedWidget
  */
 public class WImage extends WInteractWidget {
+	private static Logger logger = LoggerFactory.getLogger(WImage.class);
+
 	/**
 	 * Creates an empty image widget.
 	 */
@@ -380,8 +384,8 @@ public class WImage extends WInteractWidget {
 	 */
 	public void removeArea(WAbstractArea area) {
 		if (!(this.map_ != null)) {
-			WApplication.getInstance().log("error").append(
-					"WImage::removeArea(): no such area");
+			logger.error(new StringWriter()
+					.append("removeArea(): no such area").toString());
 			return;
 		}
 		this.map_.removeWidget(area.getImpl());

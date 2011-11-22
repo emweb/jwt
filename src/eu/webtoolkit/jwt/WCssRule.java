@@ -16,6 +16,8 @@ import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Abstract rule in a CSS style sheet.
@@ -33,6 +35,8 @@ import eu.webtoolkit.jwt.servlet.*;
  * @see WCssStyleSheet
  */
 public abstract class WCssRule extends WObject {
+	private static Logger logger = LoggerFactory.getLogger(WCssRule.class);
+
 	/**
 	 * Destructor.
 	 */

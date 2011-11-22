@@ -16,6 +16,8 @@ import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.apache.commons.io.*;
 
 /**
@@ -81,7 +83,7 @@ import org.apache.commons.io.*;
  * when deployed in WidgetSet mode to manage a number of widgets within a 3rd
  * party page.</li>
  * <li>definition of cookies using
- * {@link WApplication#setCookie(String name, String value, int maxAge, String domain, String path)
+ * {@link WApplication#setCookie(String name, String value, int maxAge, String domain, String path, boolean secure)
  * setCookie()} to persist information across sessions, which may be read using
  * {@link WEnvironment#getCookie(String cookieNname) WEnvironment#getCookie()}
  * in a future session.</li>
@@ -100,6 +102,8 @@ import org.apache.commons.io.*;
  * </ul>
  */
 public class WApplication extends WObject {
+	private static Logger logger = LoggerFactory.getLogger(WApplication.class);
+
 	/**
 	 * Enumeration that indicates the method for dynamic (AJAX-alike) updates
 	 * ((<b>deprecated</b>).
@@ -159,7 +163,6 @@ public class WApplication extends WObject {
 		this.bodyClass_ = "";
 		this.bodyHtmlClassChanged_ = true;
 		this.enableAjax_ = false;
-		this.initialized_ = false;
 		this.focusId_ = "";
 		this.selectionStart_ = -1;
 		this.selectionEnd_ = -1;
@@ -255,14 +258,13 @@ public class WApplication extends WObject {
 		this.styleSheet_
 				.addRule(
 						".Wt-wrap",
-						"border: 0px;margin: 0px;padding: 0px;font-size: inherit; pointer: hand; cursor: pointer; cursor: hand;background: transparent;text-decoration: none;color: inherit;");
+						"border: 0px;margin: 0px;padding: 0px;font: inherit; cursor: pointer; cursor: hand;background: transparent;text-decoration: none;color: inherit;");
 		this.styleSheet_.addRule(".Wt-wrap", "text-align: left;");
 		this.styleSheet_.addRule(".Wt-rtl .Wt-wrap", "text-align: right;");
 		this.styleSheet_.addRule("div.Wt-chwrap", "width: 100%; height: 100%");
 		if (this.getEnvironment().agentIsIE()) {
 			this.styleSheet_.addRule(".Wt-wrap", "margin: -1px 0px -3px;");
 		}
-		this.styleSheet_.addRule(".Wt-invalid", "background-color: #f79a9a;");
 		this.styleSheet_.addRule("span.Wt-disabled", "color: gray;");
 		this.styleSheet_.addRule("fieldset.Wt-disabled legend", "color: gray;");
 		this.styleSheet_
@@ -344,7 +346,7 @@ public class WApplication extends WObject {
 	 * initial request, user agent, and deployment-related information.
 	 * <p>
 	 * 
-	 * @see WApplication#getUrl()
+	 * @see WApplication#url(String internalPath)
 	 * @see WApplication#getSessionId()
 	 */
 	public WEnvironment getEnvironment() {
@@ -548,12 +550,14 @@ public class WApplication extends WObject {
 													display = !display;
 												}
 											} catch (RuntimeException e) {
-												this
-														.log("error")
-														.append(
-																"Could not parse condition: '")
-														.append(condition)
-														.append("'");
+												logger
+														.error(new StringWriter()
+																.append(
+																		"Could not parse condition: '")
+																.append(
+																		condition)
+																.append("'")
+																.toString());
 											}
 											r = "";
 										}
@@ -753,7 +757,18 @@ public class WApplication extends WObject {
 	 * @see WString#tr(String key)
 	 */
 	public WLocalizedStrings getLocalizedStrings() {
-		return this.localizedStrings_.getItems().get(0);
+		if (this.localizedStrings_.getItems().size() > 1) {
+			return this.localizedStrings_.getItems().get(0);
+		} else {
+			return null;
+		}
+	}
+
+	public WStdLocalizedStrings getBuiltinLocalizedStrings() {
+		return (((this.localizedStrings_.getItems().get(this.localizedStrings_
+				.getItems().size() - 1)) instanceof WStdLocalizedStrings ? (WStdLocalizedStrings) (this.localizedStrings_
+				.getItems().get(this.localizedStrings_.getItems().size() - 1))
+				: null));
 	}
 
 	/**
@@ -767,14 +782,21 @@ public class WApplication extends WObject {
 	 * @see WString#tr(String key)
 	 */
 	public void setLocalizedStrings(WLocalizedStrings translator) {
-		;
-		this.localizedStrings_ = new WCombinedLocalizedStrings();
-		if (translator != null) {
-			this.localizedStrings_.add(translator);
+		if (!(this.localizedStrings_ != null)) {
+			this.localizedStrings_ = new WCombinedLocalizedStrings();
+			WStdLocalizedStrings defaultMessages = new WStdLocalizedStrings();
+			defaultMessages.useBuiltin(WtServlet.Wt_xml);
+			this.localizedStrings_.add(defaultMessages);
 		}
-		WStdLocalizedStrings defaultMessages = new WStdLocalizedStrings();
-		defaultMessages.useBuiltin(WtServlet.WtMessages_xml);
-		this.localizedStrings_.add(defaultMessages);
+		if (this.localizedStrings_.getItems().size() > 1) {
+			WLocalizedStrings previous = this.localizedStrings_.getItems().get(
+					0);
+			this.localizedStrings_.remove(previous);
+			;
+		}
+		if (translator != null) {
+			this.localizedStrings_.insert(0, translator);
+		}
 	}
 
 	/**
@@ -858,8 +880,8 @@ public class WApplication extends WObject {
 	 */
 	public void bindWidget(WWidget widget, String domId) {
 		if (this.session_.getType() != EntryPointType.WidgetSet) {
-			throw new WtException(
-					"WApplication::bind() can be used only in WidgetSet mode.");
+			throw new WException(
+					"WApplication::bindWidget() can be used only in WidgetSet mode.");
 		}
 		widget.setId(domId);
 		this.domRoot2_.addWidget(widget);
@@ -878,7 +900,7 @@ public class WApplication extends WObject {
 	 * http://www.mydomain.com/stuff/app.wt
 	 * </pre>
 	 * 
-	 * </blockquote> this method would return
+	 * </blockquote> this method might return
 	 * <code>&quot;/stuff/app.wt?wtd=AbCdEf&quot;</code>. Additional query
 	 * parameters can be appended in the form of
 	 * <code>&quot;&amp;param1=value&amp;param2=value&quot;</code>.
@@ -893,8 +915,18 @@ public class WApplication extends WObject {
 	 * @see WEnvironment#getUrlScheme()
 	 * @see WApplication#getBookmarkUrl()
 	 */
-	public String getUrl() {
-		return this.resolveRelativeUrl(this.session_.getApplicationName());
+	public String url(String internalPath) {
+		return this.resolveRelativeUrl(this.session_
+				.getMostRelativeUrl(internalPath));
+	}
+
+	/**
+	 * Returns a URL for the current session.
+	 * <p>
+	 * Returns {@link #url(String internalPath) url("")}
+	 */
+	public final String url() {
+		return url("");
 	}
 
 	/**
@@ -906,6 +938,12 @@ public class WApplication extends WObject {
 	 * If <code>url</code> is &quot;&quot;, then the absolute base URL is
 	 * returned. This is the absolute URL at which the application is deployed,
 	 * up to the last &apos;/&apos;.
+	 * <p>
+	 * This is not used in the library, except when a public URL is needed, e.g.
+	 * for inclusion in an email.
+	 * <p>
+	 * You may want to reimplement this method when the application is hosted
+	 * behind a reverse proxy or when in general the returned URL is wrong.
 	 */
 	public String makeAbsoluteUrl(String url) {
 		return this.session_.makeAbsoluteUrl(url);
@@ -953,7 +991,7 @@ public class WApplication extends WObject {
 	 * http://www.mydomain.com/stuff/app.wt
 	 * </pre>
 	 * 
-	 * </blockquote> this method would return
+	 * </blockquote> this method might return
 	 * <code>&quot;/stuff/app.wt?wtd=AbCdEf&quot;</code>. Additional query
 	 * parameters can be appended in the form of
 	 * <code>&quot;&amp;param1=value&amp;param2=value&quot;</code>.
@@ -985,7 +1023,7 @@ public class WApplication extends WObject {
 	 * http://www.mydomain.com/stuff/app.wt
 	 * </pre>
 	 * 
-	 * </blockquote> this method would return
+	 * </blockquote> this method might return
 	 * <code>&quot;/stuff/app.wt?wtd=AbCdEf&quot;</code>. Additional query
 	 * parameters can be appended in the form of
 	 * <code>&quot;&amp;param1=value&amp;param2=value&quot;</code>.
@@ -1113,7 +1151,7 @@ public class WApplication extends WObject {
 	 * http://www.mydomain.com/stuff/app.wt
 	 * </pre>
 	 * 
-	 * </blockquote> this method would return
+	 * </blockquote> this method might return
 	 * <code>&quot;/stuff/app.wt?wtd=AbCdEf&quot;</code>. Additional query
 	 * parameters can be appended in the form of
 	 * <code>&quot;&amp;param1=value&amp;param2=value&quot;</code>.
@@ -1145,7 +1183,7 @@ public class WApplication extends WObject {
 	 * http://www.mydomain.com/stuff/app.wt
 	 * </pre>
 	 * 
-	 * </blockquote> this method would return
+	 * </blockquote> this method might return
 	 * <code>&quot;/stuff/app.wt?wtd=AbCdEf&quot;</code>. Additional query
 	 * parameters can be appended in the form of
 	 * <code>&quot;&amp;param1=value&amp;param2=value&quot;</code>.
@@ -1183,7 +1221,7 @@ public class WApplication extends WObject {
 	 * http://www.mydomain.com/stuff/app.wt
 	 * </pre>
 	 * 
-	 * </blockquote> this method would return
+	 * </blockquote> this method might return
 	 * <code>&quot;/stuff/app.wt?wtd=AbCdEf&quot;</code>. Additional query
 	 * parameters can be appended in the form of
 	 * <code>&quot;&amp;param1=value&amp;param2=value&quot;</code>.
@@ -1201,9 +1239,9 @@ public class WApplication extends WObject {
 	public String internalSubPath(String path) {
 		String current = StringUtils.append(this.newInternalPath_, '/');
 		if (!pathMatches(current, path)) {
-			this.log("warn").append("WApplication::internalPath(): path '")
+			logger.warn(new StringWriter().append("internalPath(): path '")
 					.append(path).append("' not within current path '").append(
-							this.newInternalPath_).append("'");
+							this.newInternalPath_).append("'").toString());
 			return "";
 		}
 		return current.substring(path.length());
@@ -1272,11 +1310,12 @@ public class WApplication extends WObject {
 	 * Returns the URL at which the resources are deployed.
 	 */
 	public static String getResourcesUrl() {
-		String path = WebSession.getInstance().getController()
-				.getConfiguration().getProperty(WApplication.RESOURCES_URL);
+		WApplication app = WApplication.getInstance();
+		Configuration conf = app.getEnvironment().getServer()
+				.getConfiguration();
+		String path = conf.getProperty(WApplication.RESOURCES_URL);
 		if (path == "/wt-resources/") {
-			String result = WApplication.getInstance().getEnvironment()
-					.getDeploymentPath();
+			String result = app.getEnvironment().getDeploymentPath();
 			if (result.length() != 0
 					&& result.charAt(result.length() - 1) == '/') {
 				return result + path.substring(1);
@@ -1356,7 +1395,7 @@ public class WApplication extends WObject {
 	 * <p>
 	 * This works only if your servlet container supports the Servlet 3.0 API.
 	 * If you try to invoke this function on a servlet container with no such
-	 * support, and exception will be thrown.
+	 * support, an exception will be thrown.
 	 * <p>
 	 * <p>
 	 * <i><b>Note: </b>This works only if JavaScript is available on the
@@ -1430,6 +1469,9 @@ public class WApplication extends WObject {
 	 * @see WApplication#getUpdateLock()
 	 */
 	public static class UpdateLock {
+		private static Logger logger = LoggerFactory
+				.getLogger(UpdateLock.class);
+
 		/**
 		 * Releases the lock.
 		 */
@@ -1673,10 +1715,10 @@ public class WApplication extends WObject {
 	 * no value was configured, the default <code>value</code> is returned.
 	 */
 	public static String readConfigurationProperty(String name, String value) {
-		String property = WebSession.getInstance().getController()
-				.getConfiguration().getProperty(name);
-		if (property != null) {
-			return property;
+		WebSession session = WebSession.getInstance();
+		if (session != null) {
+			return session.getEnv().getServer().readConfigurationProperty(name,
+					value);
 		} else {
 			return value;
 		}
@@ -1731,14 +1773,14 @@ public class WApplication extends WObject {
 	}
 
 	/**
-	 * Initializes the application, post-construction.
+	 * Destroys the application session.
 	 * <p>
-	 * This method is invoked by the JWt library after construction of a new
-	 * application. You may reimplement this method to do additional
-	 * initialization that is not possible from the constructor (e.g. which uses
-	 * virtual methods).
+	 * The application is destroyed when the session is invalidated. You should
+	 * put here any logic which is needed to cleanup the application session.
+	 * <p>
+	 * The default implementation does nothing.
 	 */
-	public void initialize() {
+	public void destroy() {
 	}
 
 	/**
@@ -1775,40 +1817,89 @@ public class WApplication extends WObject {
 	 * must discard the cookie. To delete a cookie, use a value of
 	 * &apos;0&apos;.
 	 * <p>
-	 * By default the cookie only applies to the current path on the current
-	 * domain. To set a proper value for domain, see also RFC2109.
+	 * By default the cookie only applies to the application deployment path (
+	 * {@link WEnvironment#getDeploymentPath() WEnvironment#getDeploymentPath()}
+	 * ) in the current domain. To set a proper value for domain, see also
+	 * RFC2109.
 	 * <p>
 	 * 
 	 * @see WEnvironment#supportsCookies()
 	 * @see WEnvironment#getCookie(String cookieNname)
 	 */
 	public void setCookie(String name, String value, int maxAge, String domain,
-			String path) {
-		this.session_.getRenderer()
-				.setCookie(name, value, maxAge, domain, path);
+			String path, boolean secure) {
+		WDate expires = new WDate(new Date());
+		expires = expires.addSeconds(maxAge);
+		this.session_.getRenderer().setCookie(name, value, expires, domain,
+				path, secure);
 	}
 
 	/**
 	 * Sets a new cookie.
 	 * <p>
 	 * Calls
-	 * {@link #setCookie(String name, String value, int maxAge, String domain, String path)
-	 * setCookie(name, value, maxAge, "", "")}
+	 * {@link #setCookie(String name, String value, int maxAge, String domain, String path, boolean secure)
+	 * setCookie(name, value, maxAge, "", "", false)}
 	 */
 	public final void setCookie(String name, String value, int maxAge) {
-		setCookie(name, value, maxAge, "", "");
+		setCookie(name, value, maxAge, "", "", false);
 	}
 
 	/**
 	 * Sets a new cookie.
 	 * <p>
 	 * Calls
-	 * {@link #setCookie(String name, String value, int maxAge, String domain, String path)
-	 * setCookie(name, value, maxAge, domain, "")}
+	 * {@link #setCookie(String name, String value, int maxAge, String domain, String path, boolean secure)
+	 * setCookie(name, value, maxAge, domain, "", false)}
 	 */
 	public final void setCookie(String name, String value, int maxAge,
 			String domain) {
-		setCookie(name, value, maxAge, domain, "");
+		setCookie(name, value, maxAge, domain, "", false);
+	}
+
+	/**
+	 * Sets a new cookie.
+	 * <p>
+	 * Calls
+	 * {@link #setCookie(String name, String value, int maxAge, String domain, String path, boolean secure)
+	 * setCookie(name, value, maxAge, domain, path, false)}
+	 */
+	public final void setCookie(String name, String value, int maxAge,
+			String domain, String path) {
+		setCookie(name, value, maxAge, domain, path, false);
+	}
+
+	public void setCookie(String name, String value, WDate expires,
+			String domain, String path, boolean secure) {
+		this.session_.getRenderer().setCookie(name, value, expires, domain,
+				path, secure);
+	}
+
+	public final void setCookie(String name, String value, WDate expires) {
+		setCookie(name, value, expires, "", "", false);
+	}
+
+	public final void setCookie(String name, String value, WDate expires,
+			String domain) {
+		setCookie(name, value, expires, domain, "", false);
+	}
+
+	public final void setCookie(String name, String value, WDate expires,
+			String domain, String path) {
+		setCookie(name, value, expires, domain, path, false);
+	}
+
+	public void removeCookie(String name, String domain, String path) {
+		this.session_.getRenderer().setCookie(name, "", new WDate(1970, 1, 1),
+				domain, path, false);
+	}
+
+	public final void removeCookie(String name) {
+		removeCookie(name, "", "");
+	}
+
+	public final void removeCookie(String name, String domain) {
+		removeCookie(name, domain, "");
 	}
 
 	/**
@@ -1867,8 +1958,8 @@ public class WApplication extends WObject {
 	public void addMetaHeader(MetaHeaderType type, String name,
 			CharSequence content, String lang) {
 		if (this.getEnvironment().hasJavaScript()) {
-			this.log("warn").append(
-					"WApplication::addMetaHeader() with no effect");
+			logger.warn(new StringWriter().append(
+					"WApplication::addMetaHeader() with no effect").toString());
 		}
 		for (int i = 0; i < this.metaHeaders_.size(); ++i) {
 			WApplication.MetaHeader m = this.metaHeaders_.get(i);
@@ -1911,8 +2002,8 @@ public class WApplication extends WObject {
 	 */
 	public void removeMetaHeader(MetaHeaderType type, String name) {
 		if (this.getEnvironment().hasJavaScript()) {
-			this.log("warn").append(
-					"WApplication::removeMetaHeader() with no effect");
+			logger.warn(new StringWriter().append(
+					"removeMetaHeader() with no effect").toString());
 		}
 		for (int i = 0; i < this.metaHeaders_.size(); ++i) {
 			WApplication.MetaHeader m = this.metaHeaders_.get(i);
@@ -1935,17 +2026,6 @@ public class WApplication extends WObject {
 	 */
 	public final void removeMetaHeader(MetaHeaderType type) {
 		removeMetaHeader(type, "");
-	}
-
-	/**
-	 * Adds an entry to the application log.
-	 * <p>
-	 * Starts a new log entry of the given <code>type</code> in the JWt
-	 * application log file. This method returns a stream-like object to which
-	 * the message may be streamed.
-	 */
-	public WLogEntry log(String type) {
-		return this.session_.log(type);
 	}
 
 	/**
@@ -2040,7 +2120,7 @@ public class WApplication extends WObject {
 	 * @see WApplication#requestTooLarge()
 	 */
 	public long getMaximumRequestSize() {
-		return this.session_.getController().getConfiguration()
+		return this.getEnvironment().getServer().getConfiguration()
 				.getMaxRequestSize();
 	}
 
@@ -2054,7 +2134,8 @@ public class WApplication extends WObject {
 	}
 
 	void redirectToSession(String newSessionId) {
-		Configuration conf = this.session_.getController().getConfiguration();
+		Configuration conf = this.getEnvironment().getServer()
+				.getConfiguration();
 		String redirectUrl = this.getBookmarkUrl();
 		if (conf.getSessionTracking() == Configuration.SessionTracking.CookiesURL
 				&& this.getEnvironment().supportsCookies()) {
@@ -2184,19 +2265,6 @@ public class WApplication extends WObject {
 		}
 	}
 
-	public void storeObject(String key, Object value) {
-		this.objectStore_.put(key, value);
-	}
-
-	public Object getObject(String key) {
-		Object i = this.objectStore_.get(key);
-		if (i != null) {
-			return i;
-		} else {
-			return null;
-		}
-	}
-
 	void enableInternalPaths() {
 		if (!this.internalPathsEnabled_) {
 			this.internalPathsEnabled_ = true;
@@ -2205,11 +2273,24 @@ public class WApplication extends WObject {
 					+ WWebWidget.jsStringLiteral(this.newInternalPath_) + ");",
 					false);
 			if (this.session_.isUseUglyInternalPaths()) {
-				this
-						.log("warn")
-						.append(
-								"Deploy-path ends with '/', using /?_= for internal paths");
+				logger
+						.warn(new StringWriter()
+								.append(
+										"Deploy-path ends with '/', using /?_= for internal paths")
+								.toString());
 			}
+		}
+	}
+
+	public static boolean pathMatches(String path, String query) {
+		if (query.equals(path)
+				|| path.length() > query.length()
+				&& path.substring(0, 0 + query.length()).equals(query)
+				&& (query.charAt(query.length() - 1) == '/' || path
+						.charAt(query.length()) == '/')) {
+			return true;
+		} else {
+			return false;
 		}
 	}
 
@@ -2342,6 +2423,9 @@ public class WApplication extends WObject {
 	private Signal1<Integer> requestTooLarge_;
 
 	static class ScriptLibrary {
+		private static Logger logger = LoggerFactory
+				.getLogger(ScriptLibrary.class);
+
 		public ScriptLibrary(String anUri, String aSymbol) {
 			this.uri = anUri;
 			this.symbol = aSymbol;
@@ -2358,6 +2442,9 @@ public class WApplication extends WObject {
 	}
 
 	static class MetaHeader {
+		private static Logger logger = LoggerFactory
+				.getLogger(MetaHeader.class);
+
 		public MetaHeader(MetaHeaderType aType, String aName,
 				CharSequence aContent, String aLang) {
 			this.type = aType;
@@ -2404,7 +2491,6 @@ public class WApplication extends WObject {
 	String bodyClass_;
 	boolean bodyHtmlClassChanged_;
 	boolean enableAjax_;
-	boolean initialized_;
 	private String focusId_;
 	private int selectionStart_;
 	private int selectionEnd_;
@@ -2413,6 +2499,9 @@ public class WApplication extends WObject {
 	int scriptLibrariesAdded_;
 
 	static class StyleSheet {
+		private static Logger logger = LoggerFactory
+				.getLogger(StyleSheet.class);
+
 		public String uri;
 		public String media;
 
@@ -2468,15 +2557,19 @@ public class WApplication extends WObject {
 		String s = signal.encodeCmd();
 		this.exposedSignals_.put(s, new WeakReference<AbstractEventSignal>(
 				signal));
+		logger.debug(new StringWriter().append("addExposedSignal: ").append(s)
+				.toString());
 	}
 
 	void removeExposedSignal(AbstractEventSignal signal) {
 		String s = signal.encodeCmd();
 		if (this.exposedSignals_.remove(s) != null) {
+			logger.debug(new StringWriter().append("removeExposedSignal: ")
+					.append(s).toString());
 		} else {
-			System.err.append(
-					" WApplication::removeExposedSignal of non-exposed ")
-					.append(s).append("??").append('\n');
+			logger.debug(new StringWriter().append(
+					"removeExposedSignal of non-exposed ").append(s).append(
+					"??").toString());
 		}
 	}
 
@@ -2539,7 +2632,11 @@ public class WApplication extends WObject {
 	}
 
 	void removeExposedResource(WResource resource) {
-		this.exposedResources_.remove(this.resourceMapKey(resource));
+		String key = this.resourceMapKey(resource);
+		WResource i = this.exposedResources_.get(key);
+		if (i != null && i == resource) {
+			this.exposedResources_.remove(key);
+		}
 	}
 
 	WResource decodeExposedResource(String resourceKey) {
@@ -2626,8 +2723,9 @@ public class WApplication extends WObject {
 	}
 
 	private void doUnload() {
-		Configuration conf = this.session_.getController().getConfiguration();
-		if (conf.isReloadIsNewSession()) {
+		Configuration conf = this.getEnvironment().getServer()
+				.getConfiguration();
+		if (conf.reloadIsNewSession()) {
 			this.unload();
 		} else {
 			this.session_.setState(WebSession.State.Loaded, 5);
@@ -2640,18 +2738,6 @@ public class WApplication extends WObject {
 
 	WWidget getExposeConstraint() {
 		return this.exposedOnly_;
-	}
-
-	private static boolean pathMatches(String path, String query) {
-		if (query.equals(path)
-				|| path.length() > query.length()
-				&& path.substring(0, 0 + query.length()).equals(query)
-				&& (query.charAt(query.length() - 1) == '/' || path
-						.charAt(query.length()) == '/')) {
-			return true;
-		} else {
-			return false;
-		}
 	}
 
 	String getFocus() {

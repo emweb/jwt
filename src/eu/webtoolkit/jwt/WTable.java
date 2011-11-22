@@ -16,6 +16,8 @@ import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A container widget which provides layout of children in a table grid.
@@ -54,6 +56,8 @@ import eu.webtoolkit.jwt.servlet.*;
  * @see WTableColumn
  */
 public class WTable extends WInteractWidget {
+	private static Logger logger = LoggerFactory.getLogger(WTable.class);
+
 	/**
 	 * Creates an empty table.
 	 */
@@ -328,8 +332,10 @@ public class WTable extends WInteractWidget {
 	 */
 	public void moveRow(int from, int to) {
 		if (from < 0 || from >= (int) this.rows_.size()) {
-			throw new UnsupportedOperationException(
-					"WTable::moveRow: the from index is not within the current table dimensions.");
+			logger.error(new StringWriter().append(
+					"moveRow: the from index is not a valid row index.")
+					.toString());
+			return;
 		}
 		WTableRow from_tr = this.getRowAt(from);
 		this.rows_.remove(from_tr);
@@ -352,8 +358,10 @@ public class WTable extends WInteractWidget {
 	 */
 	public void moveColumn(int from, int to) {
 		if (from < 0 || from >= (int) this.columns_.size()) {
-			throw new UnsupportedOperationException(
-					"WTable::moveColumn: the from index is not within the current table dimensions.");
+			logger.error(new StringWriter().append(
+					"moveColumn: the from index is not a valid column index.")
+					.toString());
+			return;
 		}
 		WTableColumn from_tc = this.getColumnAt(from);
 		this.columns_.remove(from_tc);

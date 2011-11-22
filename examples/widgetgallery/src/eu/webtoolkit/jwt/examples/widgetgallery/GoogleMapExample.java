@@ -16,8 +16,13 @@ import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 class GoogleMapExample extends WContainerWidget {
+	private static Logger logger = LoggerFactory
+			.getLogger(GoogleMapExample.class);
+
 	public GoogleMapExample(WContainerWidget parent,
 			ControlsWidget controlsWidget) {
 		super(parent);

@@ -16,6 +16,8 @@ import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Abstract base class for MVC-based charts.
@@ -44,6 +46,9 @@ import eu.webtoolkit.jwt.servlet.*;
  * @see WPieChart
  */
 public abstract class WAbstractChart extends WPaintedWidget {
+	private static Logger logger = LoggerFactory
+			.getLogger(WAbstractChart.class);
+
 	/**
 	 * Destructor.
 	 */
@@ -242,8 +247,9 @@ public abstract class WAbstractChart extends WPaintedWidget {
 		case Left:
 			return this.padding_[3];
 		default:
-			throw new WtException(
-					"WAbstractChart::plotAreaPadding(Side) with invalid side.");
+			logger.error(new StringWriter().append(
+					"plotAreaPadding(): improper side.").toString());
+			return 0;
 		}
 	}
 

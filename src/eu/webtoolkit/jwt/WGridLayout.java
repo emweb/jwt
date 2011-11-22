@@ -16,6 +16,8 @@ import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A layout manager which arranges widgets in a grid.
@@ -126,6 +128,8 @@ import eu.webtoolkit.jwt.servlet.*;
  * </p>
  */
 public class WGridLayout extends WLayout {
+	private static Logger logger = LoggerFactory.getLogger(WGridLayout.class);
+
 	/**
 	 * Create a new grid layout.
 	 * <p>

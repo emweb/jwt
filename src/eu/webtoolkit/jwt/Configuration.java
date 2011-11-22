@@ -33,10 +33,6 @@ public class Configuration {
 		CookiesURL, Auto
 	}
 
-	enum ServerType {
-		WtHttpdServer
-	}
-	
 	enum ErrorReporting {
 		NoErrors,
 		ErrorMessage,
@@ -44,7 +40,6 @@ public class Configuration {
 	}
 
 	private HashMap<String, String> properties_ = new HashMap<String, String>();
-	private WLogger logger = new WLogger(System.err);
 	private String redirectMessage_ = "Plain HTML version";
 	private boolean sendXHTMLMimeType = false;
 	private boolean inlineCss_ = true;
@@ -58,6 +53,7 @@ public class Configuration {
 	
 	private int sessionTimeout = 600;
 	private int indicatorTimeout = 500;
+	private int bootstrapTimeout = 10;
 
 	/**
 	 * Creates a default configuration.
@@ -123,12 +119,6 @@ public class Configuration {
 								if (propertyName != null)
 									properties_.put(propertyName.getTextContent().trim(), n.getTextContent().trim());
 							}
-						}
-					} else if (node.getNodeName().equalsIgnoreCase("log-file")) {
-						try {
-							setLogger(new WLogger(new FileOutputStream(node.getTextContent().trim())));
-						} catch (FileNotFoundException e) {
-							throw new RuntimeException(errorMessage + "log-file file not found (" + node.getTextContent().trim() + ")");
 						}
 					} else if (node.getNodeName().equalsIgnoreCase("progressive-bootstrap")) {
 						setProgressiveBootstrap(parseBoolean(errorMessage, node));
@@ -242,30 +232,6 @@ public class Configuration {
 		return redirectMessage_;
 	}
 
-	int getMaxRequestSize() {
-		return 0;
-	}
-
-	WLogger getLogger() {
-		return logger;
-	}
-
-	SessionTracking getSessionTracking() {
-		return SessionTracking.Auto;
-	}
-
-	ServerType getServerType() {
-		return ServerType.WtHttpdServer;
-	}
-
-	boolean isReloadIsNewSession() {
-		return true;
-	}
-
-	boolean isBehindReverseProxy() {
-		return false;
-	}
-
 	/**
 	 * Sets whether XHTML should be used (if supported by the client).
 	 * <p>
@@ -287,11 +253,11 @@ public class Configuration {
 	 * 
 	 * @see #setSendXHTMLMimeType(boolean)
 	 */
-	public boolean isSendXHTMLMimeType() {
+	public boolean sendXHTMLMimeType() {
 		return sendXHTMLMimeType;
 	}
 
-	boolean isSerializedEvents() {
+	boolean serializedEvents() {
 		return false;
 	}
 
@@ -355,10 +321,6 @@ public class Configuration {
 	 */
 	public boolean isInlineCss() {
 		return inlineCss_;
-	}
-
-	void setLogger(WLogger logger) {
-		this.logger = logger;
 	}
 
 	/**
@@ -566,6 +528,10 @@ public class Configuration {
 	}
 
 	
+	public int getBootstrapTimeout() {
+		return bootstrapTimeout;
+	}
+
 	/**
 	 * Returns the error reporting mode.
 	 */
@@ -583,15 +549,35 @@ public class Configuration {
 	/*
 	 * The following are not yet enabled for JWt
 	 */
-	boolean isWebSockets() {
+	boolean webSockets() {
 		return false;
 	}
 
-	boolean isSplitScript() {
+	boolean splitScript() {
 		return false;
 	}
 
-	boolean isSessionIdCookie() {
+	boolean sessionIdCookie() {
+		return false;
+	}
+
+	boolean ajaxPuzzle() {
+		return false;
+	}
+	
+	int getMaxRequestSize() {
+		return 0;
+	}
+
+	SessionTracking getSessionTracking() {
+		return SessionTracking.Auto;
+	}
+
+	boolean reloadIsNewSession() {
+		return true;
+	}
+
+	boolean isBehindReverseProxy() {
 		return false;
 	}
 }

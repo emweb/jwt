@@ -16,6 +16,8 @@ import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A widget that keeps track of the validation status of a form widget.
@@ -46,6 +48,9 @@ import eu.webtoolkit.jwt.servlet.*;
  *             {@link WFormWidget} subclasses.
  */
 public class WValidationStatus extends WCompositeWidget {
+	private static Logger logger = LoggerFactory
+			.getLogger(WValidationStatus.class);
+
 	/**
 	 * Construct a {@link WValidationStatus} widget for another widget.
 	 * <p>

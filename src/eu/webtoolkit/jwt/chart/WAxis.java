@@ -16,6 +16,8 @@ import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Class which represents an axis of a cartesian chart.
@@ -63,6 +65,8 @@ import eu.webtoolkit.jwt.servlet.*;
  * @see eu.webtoolkit.jwt.chart.WCartesianChart
  */
 public class WAxis {
+	private static Logger logger = LoggerFactory.getLogger(WAxis.class);
+
 	/**
 	 * Returns the axis id.
 	 * <p>
@@ -751,6 +755,8 @@ public class WAxis {
 	private WFont labelFont_;
 
 	static class Segment {
+		private static Logger logger = LoggerFactory.getLogger(Segment.class);
+
 		public double minimum;
 		public double maximum;
 		public double renderMinimum;
@@ -1045,6 +1051,8 @@ public class WAxis {
 	}
 
 	static class TickLabel {
+		private static Logger logger = LoggerFactory.getLogger(TickLabel.class);
+
 		enum TickLength {
 			Zero, Short, Long;
 
@@ -1152,7 +1160,7 @@ public class WAxis {
 				if (!(dt != null)) {
 					String exception = "Invalid julian day: ";
 					exception += String.valueOf(s.renderMinimum);
-					throw new WtException(exception);
+					throw new WException(exception);
 				}
 				break;
 			case DateTimeScale:

@@ -16,6 +16,8 @@ import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A widget that provides in-place-editable text.
@@ -74,6 +76,8 @@ import eu.webtoolkit.jwt.servlet.*;
  * </blockquote>
  */
 public class WInPlaceEdit extends WCompositeWidget {
+	private static Logger logger = LoggerFactory.getLogger(WInPlaceEdit.class);
+
 	/**
 	 * Creates an in-place edit with the given text.
 	 */

@@ -16,6 +16,8 @@ import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Abstract delegate class for rendering an item in an item view.
@@ -46,6 +48,9 @@ import eu.webtoolkit.jwt.servlet.*;
  *      WAbstractItemDelegate delegate)
  */
 public abstract class WAbstractItemDelegate extends WObject {
+	private static Logger logger = LoggerFactory
+			.getLogger(WAbstractItemDelegate.class);
+
 	/**
 	 * Constructor.
 	 */

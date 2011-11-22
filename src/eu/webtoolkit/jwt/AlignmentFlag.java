@@ -16,6 +16,8 @@ import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Enumeration that specifies a horizontal or a vertical alignment.
@@ -23,8 +25,7 @@ import eu.webtoolkit.jwt.servlet.*;
  * The vertical alignment flags are AlignBaseline, AlignSub, AlignSuper,
  * AlignTop, AlignTextTop, AlignMiddle, AlignBottom and AlignTextBottom. The
  * horizontal alignment flags are AlignLeft, AlignRight, AlignCenter and
- * AlignJustify. Functions expecting either horizontal or vertical alignment
- * flags throw an exception when they are called with the wrong alignment flag.
+ * AlignJustify.
  * <p>
  * When used with setVerticalAlignment(), this applies only to inline widgets
  * and determines how to position itself on the current line, with respect to
