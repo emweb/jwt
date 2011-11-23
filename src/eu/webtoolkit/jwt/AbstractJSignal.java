@@ -5,11 +5,15 @@
  */
 package eu.webtoolkit.jwt;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * Abstract base class for signals that may be triggered from the browser with
  * a JavaScript call.
  */
 public abstract class AbstractJSignal extends AbstractEventSignal {
+	private static Logger logger = LoggerFactory.getLogger(AbstractJSignal.class);
 
 	private String name;
 
@@ -67,7 +71,7 @@ public abstract class AbstractJSignal extends AbstractEventSignal {
 				String [] coordinate = jse.userEventArgs.get(index).split(" ");
 				return new WGoogleMap.Coordinate(Double.parseDouble(coordinate[0]), Double.parseDouble(coordinate[1]));
 			} else
-				System.err.println("Unsupported JSignal type: " + toClass.getName());
+				logger.error("Unsupported JSignal type: " + toClass.getName());
 		} catch (NumberFormatException e) {
 			throw new WtException("JSignal: " + this.name + ": could not interpret argument " + index + " ('" + jse.userEventArgs.get(index) + "') as type " + toClass.getName(),
 					e);

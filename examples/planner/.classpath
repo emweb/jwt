@@ -2,7 +2,7 @@
 <classpath>
         <classpathentry excluding="eu/webtoolkit/jwt/examples/planner/resources/|resources/|resources/|resources/" kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="lib/servlet-api-2.5-6.0.2.jar"/>
+        <classpathentry kind="lib" path="lib/servlet-api-3.0.jar"/>
 	<classpathentry kind="lib" path="lib/jwt-3.1.11.jar"/>
 	<classpathentry kind="lib" path="lib/commons-fileupload-1.2.1.jar"/>
 	<classpathentry kind="lib" path="lib/commons-io-1.4.jar"/>

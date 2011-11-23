@@ -2,12 +2,22 @@
 <!DOCTYPE web-app PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN" "http://java.sun.com/dtd/web-app_2_3.dtd">
 
 <web-app>
+  <listener>
+    <listener-class>eu.webtoolkit.jwt.ServletInit</listener-class>
+  </listener>
+
+  <!-- This applies only to servlet 3.0 -->
+   <session-config>
+    <tracking-mode>URL</tracking-mode>
+  </session-config>
+
   <servlet>
     <servlet-name>DragDrop</servlet-name>
     <display-name>JWt DragDrop example</display-name>
     <description>JWt DragDrop example</description>
     <servlet-class>eu.webtoolkit.jwt.examples.dragdrop.DragMain</servlet-class>
   </servlet>
+
   <servlet-mapping>
     <servlet-name>DragDrop</servlet-name>
     <url-pattern>/dragdrop/*</url-pattern>

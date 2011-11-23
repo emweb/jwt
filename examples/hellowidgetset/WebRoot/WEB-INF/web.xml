@@ -2,13 +2,22 @@
 <!DOCTYPE web-app PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN" "http://java.sun.com/dtd/web-app_2_3.dtd">
 
 <web-app>
+  <listener>
+    <listener-class>eu.webtoolkit.jwt.ServletInit</listener-class>
+  </listener>
+
+  <!-- This applies only to servlet 3.0 -->
+   <session-config>
+    <tracking-mode>URL</tracking-mode>
+  </session-config>
+
   <servlet>
     <servlet-name>Hello</servlet-name>
     <display-name>JWt Hello WidgetSet example (stand alone)</display-name>
     <description>JWt Hello WidgetSet example</description>
     <servlet-class>eu.webtoolkit.jwt.examples.hellowidgetset.HelloMain</servlet-class>
-
   </servlet>
+
   <servlet-mapping>
     <servlet-name>Hello</servlet-name>
     <url-pattern>/Hello/*</url-pattern>
@@ -24,6 +33,7 @@
       <param-value>WidgetSet</param-value>
     </init-param>
   </servlet>
+
   <servlet-mapping>
     <servlet-name>HelloWidgetSet</servlet-name>
     <url-pattern>/HelloWidgetSet/*</url-pattern>

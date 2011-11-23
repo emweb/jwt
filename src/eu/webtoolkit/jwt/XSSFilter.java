@@ -18,7 +18,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 class XSSFilter extends XHtmlFilter {
-        private static Logger logger = LoggerFactory.getLogger(XSSFilter.class);
+    private static Logger logger = LoggerFactory.getLogger(XSSFilter.class);
 
 	protected int discarding = 0;
 
@@ -47,7 +47,7 @@ class XSSFilter extends XHtmlFilter {
 		} catch (IllegalAccessException e) {
 			e.printStackTrace();
 		} catch (XMLException e) {
-			System.err.println("Error reading XHTML string: " + e.getMessage());
+			logger.error("Error reading XHTML string: " + e.getMessage());
 		}
 
 		return false;
@@ -59,7 +59,7 @@ class XSSFilter extends XHtmlFilter {
 			return;
 	
 		if (XSSUtils.isBadAttribute(key) || XSSUtils.isBadAttributeValue(key, value)) {
-		        logger.warn("(XSS) discarding invalid attribute: " + key + ": " + value);
+		    logger.warn("(XSS) discarding invalid attribute: " + key + ": " + value);
 			return;
 		}
 

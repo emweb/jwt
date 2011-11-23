@@ -16,7 +16,6 @@
     <fileset dir=".">
       <include name="lib/*.jar"/>
       <include name="dist/*.jar"/>
-      <include name="servlet-lib/servlet-api-3.0.jar"/>
     </fileset>
   </path>
 
@@ -37,28 +36,8 @@
     </not>
   </condition>
 
-  <target name="build-servlet3" if="jdk6">
-    <mkdir dir="${build.dir}"/>
-    <javac
-       srcdir="${src.java.dir}"
-       destdir="${build.dir}"
-       debug="on"
-       source="1.5"
-       target="1.5">
-      <classpath >
-        <path id="project.classpath">
-          <fileset dir=".">
-            <include name="lib/*.jar"/>
-            <include name="servlet-lib/servlet-api-3.0.jar"/>
-          </fileset>
-        </path>
-      </classpath>
-      <include name="eu/webtoolkit/jwt/ServletApi3.java"/>
-    </javac>
-  </target>
-
   <!-- Compile Java source -->
-  <target name="build" depends="build-servlet3">
+  <target name="build">
     <mkdir dir="${build.dir}"/>
     <javac
        srcdir="${src.java.dir}"
@@ -70,11 +49,9 @@
         <path id="project.classpath">
           <fileset dir=".">
             <include name="lib/*.jar"/>
-            <include name="servlet-lib/servlet-api-2.5-6.0.2.jar"/>
           </fileset>
         </path>
       </classpath>
-      <exclude name="eu/webtoolkit/jwt/ServletApi3.java"/>
     </javac>
 
     <copy todir="${build.dir}/eu/webtoolkit/jwt/skeletons">

@@ -16,6 +16,8 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -29,6 +31,8 @@ import org.w3c.dom.NodeList;
  * @see WtServlet#getConfiguration()
  */
 public class Configuration {
+	private static Logger logger = LoggerFactory.getLogger(AbstractJSignal.class);
+
 	enum SessionTracking {
 		CookiesURL, Auto
 	}
@@ -79,7 +83,7 @@ public class Configuration {
 	 * @param configurationFile
 	 */
 	public Configuration(File configurationFile) {
-		System.err.println("Reading configuration file: " + configurationFile.getAbsolutePath());
+		logger.info("Reading configuration file: " + configurationFile.getAbsolutePath());
 		
 		properties_.put(WApplication.RESOURCES_URL, "/wt-resources/");
 		

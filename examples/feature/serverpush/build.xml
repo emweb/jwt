@@ -38,7 +38,6 @@
     <copy todir="${lib.dir}">
       <fileset dir="${jwt.dir}/dist" />
     </copy>
-    <copy file="${jwt.dir}/servlet-lib/servlet-api-3.0.jar" todir="${lib.dir}"/>
 
     <mkdir dir="${build.dir}"/>
     

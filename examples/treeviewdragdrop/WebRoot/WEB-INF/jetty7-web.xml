@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE Configure PUBLIC "-//Jetty//Configure//EN" "http://www.eclipse.org/jetty/configure.dtd">
+<Configure class="org.eclipse.jetty.webapp.WebAppContext">
+    <Get name="sessionHandler">
+        <Get name="sessionManager">
+            <Set name="usingCookies" type="boolean">false</Set>
+        </Get>
+    </Get>
+</Configure>

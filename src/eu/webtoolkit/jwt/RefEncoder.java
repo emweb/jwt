@@ -7,6 +7,9 @@ package eu.webtoolkit.jwt;
 
 import java.util.EnumSet;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import net.n3.nanoxml.IXMLParser;
 import net.n3.nanoxml.IXMLReader;
 import net.n3.nanoxml.StdXMLReader;
@@ -14,6 +17,7 @@ import net.n3.nanoxml.XMLException;
 import net.n3.nanoxml.XMLParserFactory;
 
 class RefEncoder extends XHtmlFilter {
+	private static Logger logger = LoggerFactory.getLogger(RefEncoder.class);
 
 	private EnumSet<RefEncoderOption> options;
 
@@ -45,7 +49,7 @@ class RefEncoder extends XHtmlFilter {
 		} catch (IllegalAccessException e) {
 			e.printStackTrace();
 		} catch (XMLException e) {
-			System.err.println("Error reading XHTML string: " + e.getMessage());
+			logger.error("Error reading XHTML string: " + e.getMessage());
 		}
 	}
 

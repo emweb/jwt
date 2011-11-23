@@ -24,6 +24,8 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -32,6 +34,8 @@ import org.w3c.dom.NodeList;
  * WXmlLocalizedStrings is a {@link WLocalizedStrings} implementation which uses an XML file as input resource.
  */
 public class WXmlLocalizedStrings extends WLocalizedStrings {
+	private static Logger logger = LoggerFactory.getLogger(WXmlLocalizedStrings.class);
+
 	private List<String> bundleNames = new ArrayList<String>();
 	private Map<String, String> keyValues = new HashMap<String, String>();
 
@@ -75,7 +79,7 @@ public class WXmlLocalizedStrings extends WLocalizedStrings {
 		}
 		
 		if (url == null) {
-			System.err.println("Warning: Could not find resource \"" + bundleName + "\"");
+			logger.warn("Could not find resource \"" + bundleName + "\"");
 			return;
 		}
 		
