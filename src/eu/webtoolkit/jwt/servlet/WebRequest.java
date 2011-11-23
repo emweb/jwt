@@ -70,6 +70,8 @@ public class WebRequest extends HttpServletRequestWrapper {
 	
 	private Map<String, String[]> parameters_;
 	private Map<String, List<UploadedFile>> files_;
+	private String scriptName;
+	private String pathInfo;
 
 	/**
 	 * Creates a WebRequest by wrapping an HttpServletRequest
@@ -77,11 +79,43 @@ public class WebRequest extends HttpServletRequestWrapper {
 	 */
 	public WebRequest(HttpServletRequest request) {
 		super(request);
+
+		computePaths();
+		
 		try {
 			parse(null);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+
+	private void computePaths() {
+		/*
+		 * We compute this here since sometimes when reposted through async (servlet 3), the context and everything
+		 * gets messed up (You, JETTY 8!)
+		 */
+		scriptName = super.getServletPath();
+
+		if (getContextPath() != null)
+			scriptName = getContextPath() + scriptName;
+		if (!scriptName.startsWith("/"))
+			scriptName = "/" + scriptName;
+
+		// Jetty will auto-redirect in this case to .../
+		// I am not sure if this is according to the servlet spec ?
+		if (getServletPath().length() == 0 && !scriptName.endsWith("/"))
+			scriptName += "/"; 
+
+		pathInfo = super.getPathInfo();
+		
+		// Jetty will report "/" as an internal path. Which totally makes no sense but is according
+		// to the spec
+		if (getServletPath().length() == 0)
+			if (pathInfo != null && pathInfo.equals("/"))
+				pathInfo = "";
+
+		if (pathInfo == null)
+			pathInfo = "";
 	}
 	
 	/**
@@ -91,6 +125,9 @@ public class WebRequest extends HttpServletRequestWrapper {
 	 */
 	public WebRequest(HttpServletRequest request, ProgressListener progressListener) {
 		super(request);
+		
+		computePaths();
+
 		try {
 			parse(progressListener);
 		} catch (IOException e) {
@@ -126,16 +163,7 @@ public class WebRequest extends HttpServletRequestWrapper {
 	 * @return the url at which the application is deployed
 	 */
 	public String getScriptName() {
-		String result = getContextPath() + getServletPath();
-		if (!result.startsWith("/"))
-			result = "/" + result;
-
-		// Jetty will auto-redirect in this case to .../
-		// I am not sure if this is according to the servlet spec ?
-		if (getServletPath().length() == 0 && !result.endsWith("/"))
-			result += "/"; 
-
-		return result;
+		return scriptName;
 	}
 
 	/**
@@ -159,8 +187,7 @@ public class WebRequest extends HttpServletRequestWrapper {
 	/**
 	  * Accesses to specific header fields (calls getHeaderValue()).
 	  */
-	public String getUserAgent()
-	{
+	public String getUserAgent() {
 		return getHeaderValue("User-Agent");
 	}
 
@@ -174,15 +201,7 @@ public class WebRequest extends HttpServletRequestWrapper {
 	 * @return the internal path information, or an empty string if there is no internal path.
 	 */
 	public String getPathInfo() {
-		String result = super.getPathInfo();
-		
-		// Jetty will report "/" as an internal path. Which totally makes no sense but is according
-		// to the spec
-		if (getServletPath().length() == 0)
-			if (result != null && result.equals("/"))
-				return "";
-
-		return result == null ? "" : result;
+		return pathInfo;
 	}
 
 	@SuppressWarnings({ "unchecked", "deprecation" })
@@ -207,7 +226,7 @@ public class WebRequest extends HttpServletRequestWrapper {
 		    }
 		}
 
-		if (FileUploadBase.isMultipartContent(this)) {
+		if (paramContentType != null && FileUploadBase.isMultipartContent(this)) {
 			try {
 				// Create a factory for disk-based file items
 				DiskFileItemFactory factory = new DiskFileItemFactory();

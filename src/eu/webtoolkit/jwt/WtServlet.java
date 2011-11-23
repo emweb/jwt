@@ -16,6 +16,8 @@ import java.util.Set;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
+import javax.servlet.ServletContextEvent;
+import javax.servlet.ServletContextListener;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -70,6 +72,8 @@ public abstract class WtServlet extends HttpServlet {
 	
 	private static final long serialVersionUID = 1L;
 
+	private static ServletApi servletApi = null;
+
 	private Configuration configuration;
 	private ProgressListener progressListener;
 	private Set<String> uploadProgressUrls_ = new HashSet<String>();
@@ -77,7 +81,6 @@ public abstract class WtServlet extends HttpServlet {
 	private int sessions = 0;
 
 	private static final String WT_WEBSESSION_ID = "wt-websession";
-	
 	private static final Map<String, String> mimeTypes = new HashMap<String, String>();
 
 	static final String Boot_html;
@@ -88,8 +91,6 @@ public abstract class WtServlet extends HttpServlet {
 	static final String JQuery_js;
 	static final String Wt_xml = "eu.webtoolkit.jwt.wt";
 
-	private static ServletApi servletApi;
-
 	static {
 		Boot_html = readFile("/eu/webtoolkit/jwt/skeletons/Boot.html");
 		Plain_html = readFile("/eu/webtoolkit/jwt/skeletons/Plain.html");
@@ -97,8 +98,6 @@ public abstract class WtServlet extends HttpServlet {
 		Wt_js = readFile("/eu/webtoolkit/jwt/skeletons/Wt.min.js");
 		Boot_js = readFile("/eu/webtoolkit/jwt/skeletons/Boot.min.js");
 		JQuery_js = readFile("/eu/webtoolkit/jwt/skeletons/jquery.min.js");
-		
-		servletApi = null;
 		
 		String[][] mimeTypes = {
 				{ "css", "text/css" },
@@ -154,35 +153,15 @@ public abstract class WtServlet extends HttpServlet {
 		if (configFile != null)
 			this.configuration = new Configuration(new File(configFile));
 		
-		initServletApi(config.getServletContext());
-	}
-
-	private void initServletApi(ServletContext context) {
-		if (servletApi == null) {
-			try {
-				if (context.getMajorVersion() == 3) {
-					logger.info("Using servlet API 3");
-					servletApi = (ServletApi)Class.forName("eu.webtoolkit.jwt.ServletApi3").newInstance();
-				} else {
-					logger.info("Using servlet API 2.5");
-					servletApi = (ServletApi)Class.forName("eu.webtoolkit.jwt.ServletApi25").newInstance();
-				}
-			} catch (InstantiationException e) {
-				e.printStackTrace();
-			} catch (IllegalAccessException e) {
-				e.printStackTrace();
-			} catch (ClassNotFoundException e) {
-				e.printStackTrace();
-			}
-		}
+		servletApi = ServletInit.getInstance(config.getServletContext()).getServletApi();
 	}
 
 	void handleRequest(final HttpServletRequest request, final HttpServletResponse response) {
 		String pathInfo = request.getPathInfo();
 		String resourcePath = configuration.getProperty(WApplication.RESOURCES_URL);
 
-		if (pathInfo != null && (pathInfo.startsWith(resourcePath) || pathInfo.startsWith("/favicon.ico"))) {
-			logger.debug("handleRequest: " + pathInfo);
+		if (pathInfo != null && (pathInfo.startsWith(resourcePath) || pathInfo.equals(configuration.getFavicon()))) {
+			logger.debug("serving static file: " + pathInfo);
 
 			String fileName = "wt-resources/";
 
@@ -218,9 +197,11 @@ public abstract class WtServlet extends HttpServlet {
 			return;
 		}
 
-		servletApi.doHandleRequest(this, request, response);
-	}
+		WebRequest webRequest = new WebRequest(request, progressListener);
+		WebResponse webResponse = new WebResponse(response, webRequest);
 
+		servletApi.doHandleRequest(this, webRequest, webResponse);
+	}
 
 	/**
 	 * Implement the GET request.
@@ -273,54 +254,63 @@ public abstract class WtServlet extends HttpServlet {
 	 */
 	public abstract WApplication createApplication(WEnvironment env);
 
+	synchronized int addSession() {
+		++sessions;
+		return sessions;
+	}
+
+	synchronized void newAjaxSession() {
+		++ajaxSessions;
+	}
+
+	synchronized int removeSession(WebSession session) {
+		if (session.getEnv().hasAjax())
+			--ajaxSessions;
+		--sessions;
+		return sessions;
+	}
+
 	/*
 	 * Actual request handling, may be within an async call depending on the servlet API.
 	 */
-	void doHandleRequest(HttpServletRequest request, HttpServletResponse response) {		
+	void doHandleRequest(WebRequest request, WebResponse response) {		
 		HttpSession jsession = request.getSession();
 		BoundSession bsession = (BoundSession) jsession.getAttribute(WtServlet.WT_WEBSESSION_ID);
 		WebSession wsession = null;
 
 		if (bsession != null)
 			wsession = bsession.getSession();
-		
+
 		getConfiguration().setSessionTimeout(jsession.getMaxInactiveInterval());
 
-		if (wsession == null) {
-			String applicationTypeS = getServletConfig().getInitParameter("ApplicationType");
-			
-			EntryPointType applicationType;
-			if (applicationTypeS == null || applicationTypeS.equals("") || applicationTypeS.equals("Application")) {
-				applicationType = EntryPointType.Application; 
-			} else if (applicationTypeS.equals("WidgetSet")) {
-				applicationType = EntryPointType.WidgetSet; 
-			} else {
-				throw new WtException("Illegal application type: " + applicationTypeS);
-			}
-			
-			wsession = new WebSession(this, jsession.getId(), applicationType, getConfiguration().getFavicon(), new WebRequest(request, progressListener));
-			++sessions;
-			logger.info("Session created: " + jsession.getId() + " (#sessions = " + sessions + ")");
-			jsession.setAttribute(WtServlet.WT_WEBSESSION_ID, new BoundSession(wsession));
-		}
-	
 		try {
-			logger.info("Handling: (" + jsession.getId() + "): " + request.getMethod() + " " + request.getPathInfo() + " ");
+			if (wsession == null) {
+				String applicationTypeS = getServletConfig().getInitParameter("ApplicationType");
+				
+				EntryPointType applicationType;
+				if (applicationTypeS == null || applicationTypeS.equals("") || applicationTypeS.equals("Application")) {
+					applicationType = EntryPointType.Application; 
+				} else if (applicationTypeS.equals("WidgetSet")) {
+					applicationType = EntryPointType.WidgetSet; 
+				} else {
+					throw new WtException("Illegal application type: " + applicationTypeS);
+				}
+				
+				wsession = new WebSession(this, jsession.getId(), applicationType, getConfiguration().getFavicon(), request);
+				logger.info("Session created: " + jsession.getId() + " (#sessions = " + addSession() + ")");
+				jsession.setAttribute(WtServlet.WT_WEBSESSION_ID, new BoundSession(wsession));
+			}
+	
+			logger.debug("Handling: (" + jsession.getId() + "): " + request.getMethod() + " " + request.getScriptName() + " " + request.getPathInfo());
 			
-			WebRequest webRequest = new WebRequest(request, progressListener);
-			WebResponse webResponse = new WebResponse(response, webRequest);
-
-			WebSession.Handler handler = new WebSession.Handler(wsession, webRequest, webResponse);
+			WebSession.Handler handler = new WebSession.Handler(wsession, request, response);
 			wsession.handleRequest(handler);
 			handler.release();
 			if (handler.getSession().isDead()) {
 				try {
 					jsession.setAttribute(WtServlet.WT_WEBSESSION_ID, null);
 					jsession.invalidate();
-					--sessions;
-					if (handler.getSession().getEnv().hasAjax())
-						--ajaxSessions;
-					logger.info("Session exiting: " + jsession.getId() + " (#sessions = " + sessions + ")");
+					logger.info("Session exiting: " + jsession.getId() + " (#sessions = " + removeSession(handler.getSession()) + ")");
 				} catch (IllegalStateException e) {
 					// If session was invalidated by another request...
 				}
@@ -398,11 +388,8 @@ public abstract class WtServlet extends HttpServlet {
 	 */
 	public static boolean isAsyncSupported() {
 		WebSession.Handler handler = WebSession.Handler.getInstance();
-		return servletApi.isAsyncSupported(handler != null ? handler.getRequest() : null);
-	}
 
-	public void newAjaxSession() {
-		++ajaxSessions;
+		return servletApi.isAsyncSupported(handler != null ? handler.getRequest() : null);
 	}
 
     public boolean limitPlainHtmlSessions() {

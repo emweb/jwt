@@ -4,6 +4,7 @@ import eu.webtoolkit.jwt.Signal1;
 import eu.webtoolkit.jwt.WApplication;
 import eu.webtoolkit.jwt.WContainerWidget;
 import eu.webtoolkit.jwt.WMouseEvent;
+import eu.webtoolkit.jwt.WProgressBar;
 import eu.webtoolkit.jwt.WPushButton;
 import eu.webtoolkit.jwt.WText;
 
@@ -24,12 +25,15 @@ public class BigWorkWidget extends WContainerWidget {
 					}
 				});
 
-		resultText = new WText(this);
-		resultText.setInline(false);
+		progress = new WProgressBar(this);
+	    progress.setInline(false);
+	    progress.setMinimum(0);
+	    progress.setMaximum(20);
+	    progress.setMargin(2);
 	}
 
 	private WPushButton startButton;
-	private WText resultText;
+	private WProgressBar progress;
 
 	private void startBigWork() {
 		final WApplication app = WApplication.getInstance();
@@ -44,7 +48,7 @@ public class BigWorkWidget extends WContainerWidget {
 			}
 		})).start();
 
-		resultText.setText("");
+		progress.setValue(0);
 		startButton.setText("Busy...");
 	}
 
@@ -69,7 +73,7 @@ public class BigWorkWidget extends WContainerWidget {
 			WApplication.UpdateLock uiLock = app.getUpdateLock();
 
 			try {
-				resultText.setText(resultText.getText() + ".");
+				progress.setValue(i + 1);
 				app.triggerUpdate();
 			} finally {
 				uiLock.release();
@@ -79,7 +83,6 @@ public class BigWorkWidget extends WContainerWidget {
 		WApplication.UpdateLock uiLock = app.getUpdateLock();
 
 		try {
-			resultText.setText("That was hefty!");
 			startButton.enable();
 			startButton.setText("Again!");
 

@@ -7,8 +7,10 @@ import java.io.UnsupportedEncodingException;
 import java.security.Principal;
 import java.util.Collection;
 import java.util.Enumeration;
+import java.util.HashSet;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.AsyncContext;
 import javax.servlet.DispatcherType;
@@ -19,21 +21,69 @@ import javax.servlet.ServletInputStream;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
+import javax.servlet.SessionTrackingMode;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.servlet.http.Part;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import eu.webtoolkit.jwt.servlet.WebRequest;
+import eu.webtoolkit.jwt.servlet.WebResponse;
+
 class ServletApi3 extends ServletApi{
+	private static Logger logger = LoggerFactory.getLogger(ServletApi3.class);
+
+	@Override
+	public void init(ServletContext context, boolean contextIsInitializing) {
+		if (contextIsInitializing) {
+			Set<SessionTrackingMode> modes = new HashSet<SessionTrackingMode>();
+			modes.add(SessionTrackingMode.URL);
+			context.setSessionTrackingModes(modes);
+			logger.info("Configured URL tracking");
+		} else {
+			Set<SessionTrackingMode> modes = context.getDefaultSessionTrackingModes();
+			boolean urlTracking = false;
+			for (SessionTrackingMode m : modes) {
+				if (m == SessionTrackingMode.COOKIE) {
+					urlTracking = false;
+					break;
+				} else if (m == SessionTrackingMode.URL)
+					urlTracking = true;
+			}
+			
+			if (urlTracking)
+				logger.info("Detected URL tracking: excellent!");
+			else
+				logger.error("Detected cookies configured for session tracking, this will not work well:\n" +
+					" - either configure tracking directly in your web.xml:\n" +
+					"\n" +
+					"  <session-config>\n" +
+					"    <tracking-mode>URL</tracking-mode>\n" +
+					"  </session-config>\n" +
+					"\n" +
+					"  (but this is not supported by e.g. Jetty8)\n" +
+					"\n" +
+					" - OR, configure eu.webtoolkit.jwt.ServletInit as a listener in your web.xml:\n" +
+					"\n" +
+					"  <listener>\n" +
+					"    <listener-class>eu.webtoolkit.jwt.ServletInit</listener-class>\n" +
+					"  </listener>\n");
+		}
+	}
+	
+	@Override
 	public void completeAsyncContext(HttpServletRequest request) {
 		if (request.isAsyncStarted()) {
 			request.getAsyncContext().complete();
 		}
 	}
 
-	public void doHandleRequest(final WtServlet servlet, final HttpServletRequest request, 
-			final HttpServletResponse response) {
+	@Override
+	public void doHandleRequest(final WtServlet servlet, final WebRequest request, final WebResponse response) {
 		if (request.isAsyncSupported()) {
 			request.startAsync();
 			
@@ -48,6 +98,7 @@ class ServletApi3 extends ServletApi{
 			handleRequest(servlet, request, response);
 	}
 
+	@Override
 	public HttpServletRequest getMockupHttpServletRequest() {
 		return new HttpServletRequest() {
 
@@ -677,11 +728,6 @@ class ServletApi3 extends ServletApi{
 		};
 	}
 
-	public void startAsync(HttpServletRequest request) {
-		request.startAsync();
-	}
-
-  
 	@Override
 	public boolean isAsyncSupported(HttpServletRequest request) {
           if (request != null)

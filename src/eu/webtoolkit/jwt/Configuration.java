@@ -48,7 +48,7 @@ public class Configuration {
 	private boolean ajaxAgentWhiteList = false;
 	private ErrorReporting errorReporting = ErrorReporting.ErrorMessage;
 
-	private String favicon = "";
+	private String favicon = "/favicon.ico";
 	private boolean progressiveBootstrap = false;
 	
 	private int sessionTimeout = 600;

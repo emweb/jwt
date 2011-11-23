@@ -27,5 +27,6 @@
         <classpathentry kind="lib" path="hibernate-lib/log4j.jar"/>
 	<classpathentry kind="lib" path="hibernate-lib/postgresql-8.2-505.jdbc3.jar"/>
 	<classpathentry kind="lib" path="lib/slf4j-api-1.6.4.jar"/>
+	<classpathentry kind="lib" path="lib/slf4j-simple-1.6.4.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

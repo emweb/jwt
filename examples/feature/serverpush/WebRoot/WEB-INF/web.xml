@@ -3,15 +3,21 @@
           xmlns="http://java.sun.com/xml/ns/javaee"
           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
  xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"> 
- 	<session-config>
-    	<session-timeout>1</session-timeout>
-	</session-config>
+  <listener>
+    <listener-class>eu.webtoolkit.jwt.ServletInit</listener-class>
+  </listener>
+
+  <!-- This applies only to servlet 3.0 -->
+   <session-config>
+    <tracking-mode>URL</tracking-mode>
+  </session-config>
  
   <servlet>
     <servlet-name>ServerPush</servlet-name>
     <servlet-class>eu.webtoolkit.jwt.examples.features.serverpush.ServerPush</servlet-class>
     <async-supported>true</async-supported>
   </servlet>
+
   <servlet-mapping>
     <servlet-name>ServerPush</servlet-name>
     <url-pattern>/serverpush/*</url-pattern>

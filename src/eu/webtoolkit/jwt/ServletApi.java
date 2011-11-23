@@ -1,7 +1,11 @@
 package eu.webtoolkit.jwt;
 
+import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import eu.webtoolkit.jwt.servlet.WebRequest;
+import eu.webtoolkit.jwt.servlet.WebResponse;
 
 
 /**
@@ -11,16 +15,15 @@ import javax.servlet.http.HttpServletResponse;
  * @author pieter
  */
 public abstract class ServletApi {
+	public abstract void init(ServletContext context, boolean contextIsInitializing);
+	public abstract boolean isAsyncSupported(HttpServletRequest request);
+	public abstract void completeAsyncContext(HttpServletRequest request);
+	public abstract void doHandleRequest(WtServlet servlet, WebRequest request, WebResponse response);
+	
 	public abstract HttpServletRequest getMockupHttpServletRequest();
 	public abstract HttpServletResponse getMockupHttpServletResponse();
-	
-	public abstract void completeAsyncContext(HttpServletRequest request);
-	
-	public abstract void doHandleRequest(WtServlet servlet, HttpServletRequest request, HttpServletResponse response);
 
-	public abstract boolean isAsyncSupported(HttpServletRequest request);
-	
-	protected void handleRequest(WtServlet servlet, HttpServletRequest request, HttpServletResponse response) {
+	protected void handleRequest(WtServlet servlet, WebRequest request, WebResponse response) {
 		servlet.doHandleRequest(request, response);
-	}
+	}	
 }

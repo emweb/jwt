@@ -10,6 +10,7 @@ import java.util.Locale;
 import java.util.Map;
 
 import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletContext;
 import javax.servlet.ServletInputStream;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.Cookie;
@@ -17,13 +18,14 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import eu.webtoolkit.jwt.servlet.WebRequest;
+import eu.webtoolkit.jwt.servlet.WebResponse;
+
 class ServletApi25 extends ServletApi {
 	public void completeAsyncContext(HttpServletRequest request) {
-
 	}
 
-	public void doHandleRequest(WtServlet servlet, HttpServletRequest request,
-			HttpServletResponse response) {
+	public void doHandleRequest(WtServlet servlet, WebRequest request, WebResponse response) {
 		handleRequest(servlet, request, response);
 	}
 
@@ -557,5 +559,9 @@ class ServletApi25 extends ServletApi {
 	@Override
 	public boolean isAsyncSupported(HttpServletRequest request) {
 		return false;
+	}
+
+	@Override
+	public void init(ServletContext context, boolean contextIsInitializing) {
 	}
 }

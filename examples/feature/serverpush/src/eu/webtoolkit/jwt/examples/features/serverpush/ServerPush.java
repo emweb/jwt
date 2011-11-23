@@ -8,6 +8,7 @@ public class ServerPush extends WtServlet {
 	@Override
 	public WApplication createApplication(WEnvironment env) {
 		WApplication app = new WApplication(env);
+		app.setCssTheme("polished");
 		new BigWorkWidget(app.getRoot());
 		
 		return app;
