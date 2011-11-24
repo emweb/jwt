@@ -1,14 +1,12 @@
-JWt, Java Web Toolkit
-===================
-
 What is JWt ?
 ------------
 
-Wt is a Java library for developing web applications. It provides a pure
+JWt is a Java library for developing web applications. It provides a pure
 Java component-driven approach to building web applications,
-and renders either using Ajax or plain HTML. Unlike JSF, there is no concept
-of a page and no split between "views" and "components". Instead, everything
-is a widget.
+and renders either using Ajax or plain HTML.
+
+Unlike JSF, there is no concept of a page and no split between "views" 
+and "components". Instead, everything is a widget.
 
 For more information, see [the homepage](http://www.webtoolkit.eu/jwt
 "JWt homepage").
@@ -23,10 +21,11 @@ to improve scalability when using server push features.
 Building
 --------
 
+It can be as simple as:
+
     ant
 
 Demos, examples
 ---------------
 
-[The homepage](http://www.webtoolkit.eu/jwt) contains
-[various examples](http://www.webtoolkit.eu/wt/examples).
+The homepage contains [various examples](http://www.webtoolkit.eu/wt/examples).
