@@ -28,4 +28,4 @@ It can be as simple as:
 Demos, examples
 ---------------
 
-The homepage contains [various examples](http://www.webtoolkit.eu/wt/examples).
+The homepage contains [various examples](http://www.webtoolkit.eu/jwt/examples).
