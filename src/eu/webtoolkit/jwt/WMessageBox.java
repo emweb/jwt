@@ -255,6 +255,9 @@ public class WMessageBox extends WDialog {
 	 * <p>
 	 * Show a message box, blocking the current thread until the message box is
 	 * closed, and return the result.
+	 * <p>
+	 * <i>This functionality is only available on Servlet 3.0 compatible servlet
+	 * containers.</i>
 	 */
 	public static StandardButton show(CharSequence caption, CharSequence text,
 			EnumSet<StandardButton> buttons, WAnimation animation) {

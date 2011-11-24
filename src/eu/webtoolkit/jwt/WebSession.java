@@ -40,6 +40,7 @@ class WebSession {
 		this.type_ = type;
 		this.favicon_ = favicon;
 		this.state_ = WebSession.State.JustCreated;
+		this.useUrlRewriting_ = true;
 		this.sessionId_ = sessionId;
 		this.sessionIdCookie_ = "";
 		this.sessionIdChanged_ = false;
@@ -69,7 +70,7 @@ class WebSession {
 		this.updatesPending_ = false;
 		this.embeddedEnv_ = new WEnvironment(this);
 		this.app_ = null;
-		this.debug_ = this.controller_.getConfiguration().getErrorReporting() != Configuration.ErrorReporting.ErrorMessage;
+		this.debug_ = this.controller_.getConfiguration().debug();
 		this.handlers_ = new ArrayList<WebSession.Handler>();
 		this.emitStack_ = new ArrayList<WObject>();
 		this.recursiveEventLoop_ = null;
@@ -144,6 +145,10 @@ class WebSession {
 
 	public WebRenderer getRenderer() {
 		return this.renderer_;
+	}
+
+	public boolean isUseUrlRewriting() {
+		return this.useUrlRewriting_;
 	}
 
 	public boolean isDebug() {
@@ -1485,6 +1490,7 @@ class WebSession {
 	private EntryPointType type_;
 	private String favicon_;
 	private WebSession.State state_;
+	private boolean useUrlRewriting_;
 	private String sessionId_;
 	private String sessionIdCookie_;
 	boolean sessionIdChanged_;
@@ -1819,6 +1825,11 @@ class WebSession {
 
 	private void init(WebRequest request) {
 		this.env_.init(request);
+		Configuration conf = this.controller_.getConfiguration();
+		if (conf.getSessionTracking() == Configuration.SessionTracking.CookiesURL
+				&& this.env_.supportsCookies()) {
+			this.useUrlRewriting_ = false;
+		}
 		String hashE = request.getParameter("_");
 		this.absoluteBaseUrl_ = this.env_.getUrlScheme() + "://"
 				+ this.env_.getHostName() + this.basePath_;

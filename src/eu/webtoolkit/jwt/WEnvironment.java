@@ -1042,7 +1042,7 @@ public class WEnvironment {
 				}
 			}
 		}
-		if (regexMatchAny(this.userAgent_, conf.getBotList())) {
+		if (conf.agentIsBot(this.userAgent_)) {
 			this.agent_ = WEnvironment.UserAgent.BotAgent;
 		}
 	}
@@ -1158,13 +1158,7 @@ public class WEnvironment {
 
 	boolean agentSupportsAjax() {
 		Configuration conf = this.session_.getController().getConfiguration();
-		boolean matches = regexMatchAny(this.userAgent_, conf
-				.getAjaxAgentList());
-		if (conf.isAjaxAgentWhiteList()) {
-			return matches;
-		} else {
-			return !matches;
-		}
+		return conf.agentSupportsAjax(this.userAgent_);
 	}
 
 	static String getClientAddress(WebRequest request, Configuration conf) {
@@ -1226,16 +1220,5 @@ public class WEnvironment {
 				result.put(cookieName, cookieValue);
 			}
 		}
-	}
-
-	static boolean regexMatchAny(String agent, List<String> regexList) {
-		String s = agent;
-		for (int i = 0; i < regexList.size(); ++i) {
-			Pattern expr = Pattern.compile(regexList.get(i));
-			if (expr.matcher(s).matches()) {
-				return true;
-			}
-		}
-		return false;
 	}
 }

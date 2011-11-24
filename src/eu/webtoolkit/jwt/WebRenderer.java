@@ -706,8 +706,7 @@ class WebRenderer implements SlotLearnerInterface {
 		this.setPageVars(page);
 		page.setVar("SESSION_ID", this.session_.getSessionId());
 		String url = app.getEnvironment().agentIsSpiderBot()
-				|| conf.getSessionTracking() == Configuration.SessionTracking.CookiesURL
-				&& this.session_.getEnv().supportsCookies() ? this.session_
+				|| !this.session_.isUseUrlRewriting() ? this.session_
 				.getBookmarkUrl(app.newInternalPath_) : this.session_
 				.getMostRelativeUrl(app.newInternalPath_);
 		url = this.session_.fixRelativeUrl(url);

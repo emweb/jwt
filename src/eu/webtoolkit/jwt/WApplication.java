@@ -2134,11 +2134,8 @@ public class WApplication extends WObject {
 	}
 
 	void redirectToSession(String newSessionId) {
-		Configuration conf = this.getEnvironment().getServer()
-				.getConfiguration();
 		String redirectUrl = this.getBookmarkUrl();
-		if (conf.getSessionTracking() == Configuration.SessionTracking.CookiesURL
-				&& this.getEnvironment().supportsCookies()) {
+		if (!this.session_.isUseUrlRewriting()) {
 			String cookieName = this.getEnvironment().getDeploymentPath();
 			this.setCookie(cookieName, newSessionId, -1);
 		} else {
@@ -2356,6 +2353,9 @@ public class WApplication extends WObject {
 	 * from certain widgets even when they are inserted in the widget hierachy.
 	 */
 	protected boolean isExposed(WWidget w) {
+		if (!w.isVisible()) {
+			return false;
+		}
 		if (w != this.domRoot_ && this.exposedOnly_ != null) {
 			for (WWidget p = w; p != null; p = p.getParent()) {
 				if (p == this.exposedOnly_ || p == this.timerRoot_) {

@@ -305,7 +305,7 @@ public class WDialog extends WCompositeWidget {
 		this.animateShow(animation);
 		if (!WtServlet.isAsyncSupported()) {
 			throw new WException(
-					"Server push requires a Servlet 3.0 enabled servlet container and an application with async-supported enabled.");
+					"WDialog#exec() requires a Servlet 3.0 enabled servlet container and an application with async-supported enabled.");
 		}
 		WApplication app = WApplication.getInstance();
 		this.recursiveEventLoop_ = true;

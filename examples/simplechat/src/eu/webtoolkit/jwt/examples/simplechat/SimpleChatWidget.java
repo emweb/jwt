@@ -244,20 +244,26 @@ public class SimpleChatWidget extends WContainerWidget {
 	}
 
 	private void logout() {
-		StandardButton result = WMessageBox.show("Please Confirm", "Do you really want to logout?",
-				EnumSet.of(StandardButton.Yes, StandardButton.No));
-		
-		if (result == StandardButton.No)
-			return;
-		
-		if (listener_ != null) {
-			server_.chatEvent().removeListener(listener_); // do not listen for more events
-			listener_ = null;
-			
-			server_.logout(user_);
+		final WMessageBox box = new WMessageBox("Please Confirm", "Do you really want to logout?", 
+                Icon.NoIcon, EnumSet.of(StandardButton.Yes, StandardButton.No));
+		box.show();
+		box.buttonClicked().addListener(this,
+				new Signal1.Listener<StandardButton>() {
+					public void trigger(StandardButton result) {
+						box.remove();
+						if (result == StandardButton.No)
+                            return;
+						
+						if (listener_ != null) {
+							server_.chatEvent().removeListener(listener_); // do not listen for more events
+							listener_ = null;
+							
+							server_.logout(user_);
 
-			letLogin();
-		}
+							letLogin();
+						}
+					}
+				});
 	}
 
 	private void send() {

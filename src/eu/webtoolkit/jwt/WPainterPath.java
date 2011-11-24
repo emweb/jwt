@@ -563,11 +563,14 @@ public class WPainterPath {
 	 * <p>
 	 * Returns the bounding box of all control points. This is guaranteed to be
 	 * a superset of the actual bounding box.
+	 * <p>
+	 * The <code>transform</code> is applied to the path first.
 	 */
-	public WRectF getControlPointRect() {
+	public WRectF getControlPointRect(WTransform transform) {
 		if (this.isEmpty()) {
 			return new WRectF();
 		} else {
+			boolean identity = transform.isIdentity();
 			double minX;
 			double minY;
 			double maxX;
@@ -584,22 +587,48 @@ public class WPainterPath {
 				case CubicEnd:
 				case QuadC:
 				case QuadEnd: {
-					minX = Math.min(s.getX(), minX);
-					minY = Math.min(s.getY(), minY);
-					maxX = Math.max(s.getX(), maxX);
-					maxY = Math.max(s.getY(), maxY);
+					if (identity) {
+						minX = Math.min(s.getX(), minX);
+						minY = Math.min(s.getY(), minY);
+						maxX = Math.max(s.getX(), maxX);
+						maxY = Math.max(s.getY(), maxY);
+					} else {
+						WPointF p = transform.map(new WPointF(s.getX(), s
+								.getY()));
+						minX = Math.min(p.getX(), minX);
+						minY = Math.min(p.getY(), minY);
+						maxX = Math.max(p.getX(), maxX);
+						maxY = Math.max(p.getY(), maxY);
+					}
 					break;
 				}
 				case ArcC: {
 					WPainterPath.Segment s2 = this.segments_.get(i + 1);
-					WPointF tl = new WPointF(s.getX() - s2.getX(), s.getY()
-							- s2.getY());
-					minX = Math.min(tl.getX(), minX);
-					minY = Math.min(tl.getY(), minY);
-					WPointF br = new WPointF(s.getX() + s2.getX(), s.getY()
-							+ s2.getY());
-					maxX = Math.max(br.getX(), maxX);
-					maxY = Math.max(br.getY(), maxY);
+					if (identity) {
+						WPointF tl = new WPointF(s.getX() - s2.getX(), s.getY()
+								- s2.getY());
+						minX = Math.min(tl.getX(), minX);
+						minY = Math.min(tl.getY(), minY);
+						WPointF br = new WPointF(s.getX() + s2.getX(), s.getY()
+								+ s2.getY());
+						maxX = Math.max(br.getX(), maxX);
+						maxY = Math.max(br.getY(), maxY);
+					} else {
+						WPointF p1 = transform.map(new WPointF(s.getX(), s
+								.getY()));
+						WPointF p2 = transform.map(new WPointF(s2.getX(), s2
+								.getY()));
+						WPointF tl = new WPointF(p1.getX() - p2.getX(), p1
+								.getY()
+								- p2.getY());
+						minX = Math.min(tl.getX(), minX);
+						minY = Math.min(tl.getY(), minY);
+						WPointF br = new WPointF(p1.getX() + p2.getX(), p1
+								.getY()
+								+ p2.getY());
+						maxX = Math.max(br.getX(), maxX);
+						maxY = Math.max(br.getY(), maxY);
+					}
 					i += 2;
 					break;
 				}
@@ -609,6 +638,16 @@ public class WPainterPath {
 			}
 			return new WRectF(minX, minY, maxX - minX, maxY - minY);
 		}
+	}
+
+	/**
+	 * Returns the bounding box of the control points.
+	 * <p>
+	 * Returns {@link #getControlPointRect(WTransform transform)
+	 * getControlPointRect(WTransform.Identity)}
+	 */
+	public final WRectF getControlPointRect() {
+		return getControlPointRect(WTransform.Identity);
 	}
 
 	private boolean isRect_;

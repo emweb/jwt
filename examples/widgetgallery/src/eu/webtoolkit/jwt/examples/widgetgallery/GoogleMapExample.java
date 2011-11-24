@@ -172,8 +172,9 @@ class GoogleMapExample extends WContainerWidget {
 		this.map_.addMarker(new WGoogleMap.Coordinate(50.885069, 4.71958));
 		this.map_.setCenter(road.get(road.size() - 1));
 		this.map_
-				.openInfoWindow(road.get(0),
-						"<img src=\"http://emweb.be/img/emweb_small.jpg\" /><br/><b>Emweb office</b>");
+				.openInfoWindow(
+						road.get(0),
+						"<img src=\"http://www.emweb.be/css/emweb_small.jpg\" /><br/><b>Emweb office</b>");
 		this.map_.clicked().addListener(this,
 				new Signal1.Listener<WGoogleMap.Coordinate>() {
 					public void trigger(WGoogleMap.Coordinate e1) {

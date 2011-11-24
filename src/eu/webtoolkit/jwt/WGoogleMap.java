@@ -187,9 +187,7 @@ public class WGoogleMap extends WCompositeWidget {
 		this.doubleClicked_ = new JSignal1<WGoogleMap.Coordinate>(this,
 				"dblclick") {
 		};
-		this.mouseMoved_ = new JSignal1<WGoogleMap.Coordinate>(this,
-				"mousemove") {
-		};
+		this.mouseMoved_ = null;
 		this.additions_ = new ArrayList<String>();
 		this.apiVersion_ = version;
 		this.setImplementation(new WContainerWidget());
@@ -219,9 +217,7 @@ public class WGoogleMap extends WCompositeWidget {
 		this.doubleClicked_ = new JSignal1<WGoogleMap.Coordinate>(this,
 				"dblclick") {
 		};
-		this.mouseMoved_ = new JSignal1<WGoogleMap.Coordinate>(this,
-				"mousemove") {
-		};
+		this.mouseMoved_ = null;
 		this.additions_ = new ArrayList<String>();
 		this.apiVersion_ = WGoogleMap.ApiVersion.Version2;
 		this.setImplementation(new WContainerWidget());
@@ -244,6 +240,7 @@ public class WGoogleMap extends WCompositeWidget {
 	 * Destructor.
 	 */
 	public void remove() {
+		;
 		super.remove();
 	}
 
@@ -813,6 +810,11 @@ public class WGoogleMap extends WCompositeWidget {
 	 * This event is fired when the user moves the mouse inside the map.
 	 */
 	public JSignal1<WGoogleMap.Coordinate> mouseMoved() {
+		if (!(this.mouseMoved_ != null)) {
+			this.mouseMoved_ = new JSignal1<WGoogleMap.Coordinate>(this,
+					"mousemove") {
+			};
+		}
 		return this.mouseMoved_;
 	}
 
@@ -864,7 +866,9 @@ public class WGoogleMap extends WCompositeWidget {
 				strm.append("self.map = map;");
 				this.streamJSListener(this.clicked_, "click", strm);
 				this.streamJSListener(this.doubleClicked_, "dblclick", strm);
-				this.streamJSListener(this.mouseMoved_, "mousemove", strm);
+				if (this.mouseMoved_ != null) {
+					this.streamJSListener(this.mouseMoved_, "mousemove", strm);
+				}
 				for (int i = 0; i < this.additions_.size(); i++) {
 					strm.append(this.additions_.get(i));
 				}

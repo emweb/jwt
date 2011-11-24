@@ -288,10 +288,8 @@ public class Configuration {
 	 * @return whether debugging is enabled.
 	 * 
 	 * @see #setDebug(boolean)
-	 * 
-	 * @deprecated
 	 */
-	public boolean isDebug() {
+	public boolean debug() {
 		return errorReporting == ErrorReporting.NoErrors;
 	}
 
@@ -355,7 +353,7 @@ public class Configuration {
 	 * @return the list of user agents that are (not) considered for AJAX sessions.
 	 * 
 	 * @see #setAjaxAgentList(ArrayList, boolean)
-	 * @see #isAjaxAgentWhiteList()
+	 * @see #agentSupportsAjax(String)
 	 */
 	public ArrayList<String> getAjaxAgentList() {
 		return ajaxAgentList;
@@ -367,10 +365,34 @@ public class Configuration {
 	 * @return whether the {@link #getAjaxAgentList()} is a white list or black list.
 	 * 
 	 * @see #setAjaxAgentList(ArrayList, boolean)
-	 * @see #getAjaxAgentList()
+	 * @see #agentSupportsAjax(String)
 	 */
 	public boolean isAjaxAgentWhiteList() {
 		return ajaxAgentWhiteList;
+	}
+
+
+	/**
+	 * Returns whether the user agent should be considered as one with Ajax support.
+	 * 
+	 * @return whether the user agent should be considered as one with Ajax support.
+	 * 
+	 * @see #setAjaxAgentList(ArrayList, boolean)
+	 */
+	public boolean agentSupportsAjax(String userAgent) {
+		boolean inList = false;
+		
+		for (String regex : ajaxAgentList) {
+			if (userAgent.matches(regex)) {
+				inList = true;
+				break;
+			}
+		}
+		
+		if (ajaxAgentWhiteList)
+			return inList;
+		else
+			return !inList;
 	}
 
 	/**
@@ -417,6 +439,20 @@ public class Configuration {
 		return botList;
 	}
 
+	/**
+	 * Returns whether the user agent is a bot.
+	 * 
+	 * @see #setBotList(ArrayList)
+	 */
+	public boolean agentIsBot(String userAgent) {
+		for (String regex : botList) {
+			if (userAgent.matches(regex))
+				return true;
+		}
+		
+		return false;
+	}
+	
 	/**
 	 * Configures a path to a favicon.
 	 * 
