@@ -538,7 +538,7 @@ public class WDialog extends WCompositeWidget {
 						}
 					}
 					cover.setZIndex(this.impl_.getZIndex() - 1);
-					app.constrainExposed(this);
+					app.pushExposedConstraint(this);
 					app
 							.doJavaScript("try {if (document.activeElement && document.activeElement.blur)document.activeElement.blur();} catch (e) { }");
 				} else {
@@ -575,7 +575,6 @@ public class WDialog extends WCompositeWidget {
 	private WContainerWidget contents_;
 	private boolean modal_;
 	private boolean resizable_;
-	private WWidget previousExposeConstraint_;
 	private int coverPreviousZIndex_;
 	private boolean coverWasHidden_;
 	private Signal1<WDialog.DialogCode> finished_;
@@ -586,13 +585,12 @@ public class WDialog extends WCompositeWidget {
 	private void saveCoverState(WApplication app, WContainerWidget cover) {
 		this.coverWasHidden_ = cover.isHidden();
 		this.coverPreviousZIndex_ = cover.getZIndex();
-		this.previousExposeConstraint_ = app.getExposeConstraint();
 	}
 
 	private void restoreCoverState(WApplication app, WContainerWidget cover) {
 		cover.setHidden(this.coverWasHidden_);
 		cover.setZIndex(this.coverPreviousZIndex_);
-		app.constrainExposed(this.previousExposeConstraint_);
+		app.popExposedConstraint(this);
 	}
 
 	static WJavaScriptPreamble wtjs1() {

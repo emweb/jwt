@@ -454,6 +454,27 @@ public class WPopupMenu extends WCompositeWidget {
 		setAutoHide(enabled, 0);
 	}
 
+	protected boolean containsExposed(WWidget w) {
+		if (super.containsExposed(w)) {
+			return true;
+		}
+		if (w == WApplication.getInstance().getRoot()) {
+			return true;
+		}
+		WContainerWidget c = this.getContents();
+		for (int i = 0; i < c.getCount(); ++i) {
+			WPopupMenuItem item = ((c.getWidget(i)) instanceof WPopupMenuItem ? (WPopupMenuItem) (c
+					.getWidget(i))
+					: null);
+			if (item.getPopupMenu() != null) {
+				if (item.getPopupMenu().containsExposed(w)) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
 	private WTemplate impl_;
 	WPopupMenuItem parentItem_;
 	WPopupMenuItem result_;
@@ -483,10 +504,10 @@ public class WPopupMenu extends WCompositeWidget {
 	void done(WPopupMenuItem result) {
 		this.result_ = result;
 		this.hide();
-		WApplication.getInstance().getRoot().clicked().disconnect(
-				this.globalClickConnection_);
-		WApplication.getInstance().globalEscapePressed().disconnect(
-				this.globalEscapeConnection_);
+		WApplication app = WApplication.getInstance();
+		app.getRoot().clicked().disconnect(this.globalClickConnection_);
+		app.globalEscapePressed().disconnect(this.globalEscapeConnection_);
+		app.popExposedConstraint(this);
 		this.recursiveEventLoop_ = false;
 		this.triggered_.trigger(this.result_);
 		this.aboutToHide_.trigger();
@@ -511,6 +532,7 @@ public class WPopupMenu extends WCompositeWidget {
 						WPopupMenu.this.done();
 					}
 				});
+		app.pushExposedConstraint(this);
 		this.prepareRender(app);
 		this.show();
 	}

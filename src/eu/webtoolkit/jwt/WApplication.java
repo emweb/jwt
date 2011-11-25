@@ -156,7 +156,7 @@ public class WApplication extends WObject {
 		this.quited_ = false;
 		this.onePixelGifUrl_ = "";
 		this.internalPathsEnabled_ = false;
-		this.exposedOnly_ = null;
+		this.exposedOnly_ = new ArrayList<WWidget>();
 		this.loadingIndicator_ = null;
 		this.connected_ = true;
 		this.htmlClass_ = "";
@@ -2356,13 +2356,16 @@ public class WApplication extends WObject {
 		if (!w.isVisible()) {
 			return false;
 		}
-		if (w != this.domRoot_ && this.exposedOnly_ != null) {
-			for (WWidget p = w; p != null; p = p.getParent()) {
-				if (p == this.exposedOnly_ || p == this.timerRoot_) {
-					return true;
-				}
-			}
-			return false;
+		if (w == this.domRoot_) {
+			return true;
+		}
+		if (w.getParent() == this.timerRoot_) {
+			return true;
+		}
+		WWidget exposedOnly = this.exposedOnly_.isEmpty() ? null
+				: this.exposedOnly_.get(this.exposedOnly_.size() - 1);
+		if (exposedOnly != null) {
+			return exposedOnly.containsExposed(w);
 		} else {
 			WWidget p = w.getAdam();
 			return p == this.domRoot_ || p == this.domRoot2_;
@@ -2483,7 +2486,7 @@ public class WApplication extends WObject {
 	private boolean quited_;
 	private String onePixelGifUrl_;
 	private boolean internalPathsEnabled_;
-	private WWidget exposedOnly_;
+	private List<WWidget> exposedOnly_;
 	private WLoadingIndicator loadingIndicator_;
 	WWidget loadingIndicatorWidget_;
 	private boolean connected_;
@@ -2577,19 +2580,7 @@ public class WApplication extends WObject {
 		WeakReference<AbstractEventSignal> i = this.exposedSignals_
 				.get(signalName);
 		if (i != null) {
-			AbstractEventSignal esb = i.get();
-			if (!(esb != null)) {
-				return null;
-			}
-			WWidget w = ((i.get().getSender()) instanceof WWidget ? (WWidget) (i
-					.get().getSender())
-					: null);
-			if (!(w != null) || this.isExposed(w)
-					|| signalName.endsWith(".resized")) {
-				return i.get();
-			} else {
-				return null;
-			}
+			return i.get();
 		} else {
 			return null;
 		}
@@ -2732,12 +2723,20 @@ public class WApplication extends WObject {
 		}
 	}
 
-	void constrainExposed(WWidget w) {
-		this.exposedOnly_ = w;
+	void pushExposedConstraint(WWidget w) {
+		this.exposedOnly_.add(w);
 	}
 
-	WWidget getExposeConstraint() {
-		return this.exposedOnly_;
+	void popExposedConstraint(WWidget w) {
+		for (int i = this.exposedOnly_.size(); i > 0; --i) {
+			int j = i - 1;
+			if (this.exposedOnly_.get(j) == w) {
+				while (this.exposedOnly_.size() > j) {
+					this.exposedOnly_.remove(this.exposedOnly_.size() - 1);
+				}
+				break;
+			}
+		}
 	}
 
 	String getFocus() {

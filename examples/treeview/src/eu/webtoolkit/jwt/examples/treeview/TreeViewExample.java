@@ -133,7 +133,9 @@ public class TreeViewExample extends WContainerWidget {
 	private WTreeView treeView_;
 
 	private static WStandardItem continentItem(String continent) {
-		return new WStandardItem(continent);
+		WStandardItem continentItem = new WStandardItem(continent);
+		continentItem.setColumnCount(4);
+		return continentItem;
 	}
 
 	private static WStandardItem countryItem(String country, String code) {
@@ -178,9 +180,7 @@ public class TreeViewExample extends WContainerWidget {
 	}
 
 	private void toggleRoot() {
-		if ((this.treeView_.getRootIndex() == null || (this.treeView_
-				.getRootIndex() != null && this.treeView_.getRootIndex()
-				.equals(null)))) {
+		if (this.treeView_.getRootIndex() == null) {
 			this.treeView_.setRootIndex(this.model_.getIndex(0, 0));
 		} else {
 			this.treeView_.setRootIndex(null);

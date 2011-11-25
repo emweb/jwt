@@ -1499,6 +1499,18 @@ public abstract class WWidget extends WObject {
 	 */
 	protected abstract void propagateSetEnabled(boolean enabled);
 
+	protected boolean containsExposed(WWidget w) {
+		if (w == this) {
+			return true;
+		}
+		for (WWidget p = w; p != null; p = p.getParent()) {
+			if (p == this) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	protected void getDrop(final String sourceId, final String mimeType,
 			WMouseEvent event) {
 		WDropEvent e = new WDropEvent(WApplication.getInstance().decodeObject(

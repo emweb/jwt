@@ -913,7 +913,7 @@ class WebSession {
 										return EventType.UserEvent;
 									} else {
 										AbstractEventSignal esb = this
-												.decodeSignal(s);
+												.decodeSignal(s, false);
 										WTimerWidget t = ((esb.getSender()) instanceof WTimerWidget ? (WTimerWidget) (esb
 												.getSender())
 												: null);
@@ -1527,28 +1527,42 @@ class WebSession {
 	private WebSession.Handler recursiveEventLoop_;
 
 	// private WResource decodeResource(String resourceId) ;
-	private AbstractEventSignal decodeSignal(String signalId) {
+	private AbstractEventSignal decodeSignal(String signalId,
+			boolean checkExposed) {
 		AbstractEventSignal result = this.app_.decodeExposedSignal(signalId);
-		if (result != null) {
-			return result;
-		} else {
+		if (result != null && checkExposed) {
+			WWidget w = ((result.getSender()) instanceof WWidget ? (WWidget) (result
+					.getSender())
+					: null);
+			if (w != null && !this.app_.isExposed(w)) {
+				result = null;
+			}
+		}
+		if (!(result != null) && checkExposed) {
 			logger.error(new StringWriter().append("decodeSignal(): signal '")
 					.append(signalId).append("' not exposed").toString());
-			return null;
 		}
+		return result;
 	}
 
-	private AbstractEventSignal decodeSignal(String objectId, String name) {
+	private AbstractEventSignal decodeSignal(String objectId, String name,
+			boolean checkExposed) {
 		AbstractEventSignal result = this.app_.decodeExposedSignal(objectId,
 				name);
-		if (result != null) {
-			return result;
-		} else {
+		if (result != null && checkExposed) {
+			WWidget w = ((result.getSender()) instanceof WWidget ? (WWidget) (result
+					.getSender())
+					: null);
+			if (w != null && !this.app_.isExposed(w) && !name.equals("resized")) {
+				result = null;
+			}
+		}
+		if (!(result != null) && checkExposed) {
 			logger.error(new StringWriter().append("decodeSignal(): signal '")
 					.append(objectId).append('.').append(name).append(
 							"' not exposed").toString());
-			return null;
 		}
+		return result;
 	}
 
 	private static WObject.FormData getFormData(WebRequest request, String name) {
@@ -1662,7 +1676,7 @@ class WebSession {
 			if (!signalE.equals("user") && !signalE.equals("hash")
 					&& !signalE.equals("none") && !signalE.equals("poll")
 					&& !signalE.equals("load")) {
-				AbstractEventSignal signal = this.decodeSignal(signalE);
+				AbstractEventSignal signal = this.decodeSignal(signalE, true);
 				if (!(signal != null)) {
 				} else {
 					if (signal.getName() == WFormWidget.CHANGE_SIGNAL) {
@@ -1733,6 +1747,7 @@ class WebSession {
 									&& 0 != 0) {
 								break;
 							}
+							AbstractEventSignal s;
 							if (signalE.equals("user")) {
 								String idE = request.getParameter(se + "id");
 								String nameE = request
@@ -1740,13 +1755,11 @@ class WebSession {
 								if (!(idE != null) || !(nameE != null)) {
 									break;
 								}
-								this.processSignal(this
-										.decodeSignal(idE, nameE), se, request,
-										kind);
+								s = this.decodeSignal(idE, nameE, k == 0);
 							} else {
-								this.processSignal(this.decodeSignal(signalE),
-										se, request, kind);
+								s = this.decodeSignal(signalE, k == 0);
 							}
+							this.processSignal(s, se, request, kind);
 							if (kind == WebSession.SignalKind.LearnedStateless
 									&& i == 0) {
 								this.renderer_.discardChanges();

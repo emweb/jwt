@@ -301,7 +301,7 @@ public class WTestEnvironment extends WEnvironment {
 	}
 
 	/**
-	 * {@link Signal} used to test a dialog/messagebox reentrant event loop.
+	 * Signal used to test a dialog/messagebox reentrant event loop.
 	 * <p>
 	 * This signal is emitted when a dialog or message box is being executed
 	 * using {@link WDialog#exec(WAnimation animation) WDialog#exec()} or
@@ -317,7 +317,7 @@ public class WTestEnvironment extends WEnvironment {
 	}
 
 	/**
-	 * {@link Signal} used to test a popup menu reentrant event loop.
+	 * Signal used to test a popup menu reentrant event loop.
 	 * <p>
 	 * This signal is emitted when a popup menu is being executed using
 	 * {@link WPopupMenu#exec(WPoint p) WPopupMenu#exec()}, and allows you to
@@ -330,10 +330,27 @@ public class WTestEnvironment extends WEnvironment {
 		return this.popupExecuted_;
 	}
 
+	/**
+	 * Simulates the end of a request by the main event loop.
+	 * <p>
+	 * The environemnt (and application is) started from within the main event
+	 * loop. To simulate the delivery of events posted to the
+	 * application-under-test, by WServer::post(), you need to simulate the
+	 * release of the session lock.
+	 * <p>
+	 * 
+	 * @see WTestEnvironment#startRequest()
+	 */
 	public void endRequest() {
 		;
 	}
 
+	/**
+	 * Simulates the start of a new request by the main event loop.
+	 * <p>
+	 * 
+	 * @see WTestEnvironment#endRequest()
+	 */
 	public void startRequest() {
 		new WebSession.Handler(this.theSession_, true);
 	}
