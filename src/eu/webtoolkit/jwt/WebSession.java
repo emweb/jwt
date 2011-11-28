@@ -1414,8 +1414,11 @@ class WebSession {
 						break;
 					}
 					case Dead:
-						throw new WException(
-								"Internal error: WebSession is dead?");
+						logger
+								.info(new StringWriter().append(
+										"Request to dead session, ignoring")
+										.toString());
+						break;
 					}
 				} catch (WException e) {
 					logger.error(new StringWriter().append("Fatal error: ")

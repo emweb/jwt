@@ -399,6 +399,11 @@ public class WCompositeWidget extends WWidget {
 	 * <p>
 	 * This sets the widget that implements this compositeWidget. Ownership of
 	 * the widget is completely transferred (including deletion).
+	 * <p>
+	 * <p>
+	 * <i><b>Note: </b>You cannot change the implementation of a composite
+	 * widget after it has been rendered. </i>
+	 * </p>
 	 */
 	protected void setImplementation(WWidget widget) {
 		if (widget.getParent() != null) {

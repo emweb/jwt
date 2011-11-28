@@ -39,11 +39,4 @@
       <version>2.5</version>
     </dependency>
   </dependencies>
-
-  <repositories>
-    <repository>
-      <id>webtoolkit</id>
-      <url>https://oss.sonatype.org/content/repositories/euwebtoolkit-424/</url>
-    </repository>
-  </repositories>
 </project>

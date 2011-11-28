@@ -7,21 +7,20 @@ import java.util.List;
  * An item model for use with Wt&apos;s view classes.
  * <p>
  * 
- * An item model specializes {@link WAbstractItemModel} for
+ * The item model specializes {@link WAbstractItemModel} for
  * hierarchical data (i.e. a model with a tree-like data structure and one or more columns).
  * <p>
  * It cannot be used directly but must be subclassed. Subclassed models must at
- * least implement {@link WItemModel#getChildItems(Object, int, int) getChildItems() } 
+ * least implement {@link WItemModel#getChildItems(Object, int, int) getChildItems()} 
  * to return a list of items for a parent,
  * {@link WAbstractItemModel#getData(WModelIndex index, int role)
  * getData()} to return data and 
  * {@link WAbstractItemModel#getColumnCount(WModelIndex parent)
- * getColumnCount()}
- * to return the number of columns.
+ * getColumnCount()} to return the number of columns.
  * 
  * When providing a value for fetchSize, 
  * the model will attempt to fetch a node's children in blocks minimally the size of the provided value, 
- * if not provided or the value is -1, all the node's children are fetched at once.
+ * if this value is not provided or the value is -1, all the node's children are fetched at once.
  */
 public abstract class WItemModel<Item extends Object> extends WAbstractItemModel {
 	private class Node {
@@ -77,10 +76,22 @@ public abstract class WItemModel<Item extends Object> extends WAbstractItemModel
 	private Node rootNode = null;
 	private int fetchSize;
 	
+	/**
+	 * Creates a new WItemModel.
+	 * 
+	 * Calls {@link #WItemModel(int fetchSize) this(-1)}
+	 */
 	public WItemModel() {
 		this(-1);
 	}
 	
+	/**
+	 * Creates a new WItemModel.
+	 * 
+	 * The model will attempt to fetch a node's children in blocks minimally 
+	 * the size of the provided value, if this value is -1, all the node's 
+	 * children are fetched at once.
+	 */
 	public WItemModel(int fetchSize) {
 		this.fetchSize = fetchSize;
 		this.rootNode = null;
@@ -177,12 +188,12 @@ public abstract class WItemModel<Item extends Object> extends WAbstractItemModel
 	 * This returns the list of child items for a <code>parent</code> item.
 	 * When the <code>parent</code> item is <code>null</code>,
 	 * this method should return all top level items.
-	 * When you provided a fetchSize, 
+	 * When you provided a fetchSize value, 
 	 * this method should only return a slice specified 
 	 * by <code>from</code> and <code>count</code> of the total list of items,
 	 * if not <code>count</code> will be -1 and all items should be returned at once.
 	 * 
-	 * When the item has no children, you should return an empty List<Item>.
+	 * When the item has no children, you should return an empty {@link java.util.List<Item>}.
 	 * <p>
 	 */
 	public abstract List<Item> getChildItems(Item parent, int from, int count);

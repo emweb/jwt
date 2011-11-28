@@ -89,8 +89,8 @@ import org.slf4j.LoggerFactory;
  * Functions are resolved by
  * {@link WTemplate#resolveFunction(String name, List args, Writer result)
  * resolveFunction()}, and the default implementation considers functions bound
- * with bindFunction(). There are currently two functions that are generally
- * useful:
+ * with {@link WTemplate#addFunction(String name, Function function)
+ * addFunction()}. There are currently two functions that are generally useful:
  * <ul>
  * <li>Functions::tr() resolves a localized strings. This is convenient to
  * create a language neutral template, which contains translated strings</li>
@@ -194,6 +194,8 @@ public class WTemplate extends WInteractWidget {
 	/**
 	 * Returns the template.
 	 * <p>
+	 * 
+	 * @see WTemplate#setTemplateText(CharSequence text, TextFormat textFormat)
 	 */
 	public WString getTemplateText() {
 		return this.text_;
@@ -368,8 +370,8 @@ public class WTemplate extends WInteractWidget {
 	 * 
 	 * <pre>
 	 * WTemplate *t = ...;
-	 *    t.bindFunction("id", &WTemplate::Functions::id);
-	 *    t.bindFunction("tr", &WTemplate::Functions::tr);
+	 *    t.addFunction("id", &WTemplate::Functions::id);
+	 *    t.addFunction("tr", &WTemplate::Functions::tr);
 	 * </pre>
 	 * 
 	 * </blockquote>
@@ -538,8 +540,11 @@ public class WTemplate extends WInteractWidget {
 	 * and applied.
 	 * <p>
 	 * The default implementation considers functions that were bound using
-	 * bindFunction().
+	 * {@link WTemplate#addFunction(String name, Function function)
+	 * addFunction()}.
 	 * <p>
+	 * 
+	 * @see WTemplate#addFunction(String name, Function function)
 	 */
 	public boolean resolveFunction(String name, List<WString> args,
 			Writer result) throws IOException {

@@ -448,7 +448,7 @@ public class WSuggestionPopup extends WCompositeWidget {
 	 */
 	public void showAt(WFormWidget edit) {
 		this.doJavaScript("jQuery.data(" + this.getJsRef() + ", 'obj').showAt("
-				+ edit.getJsRef() + ")");
+				+ edit.getJsRef() + ");");
 	}
 
 	/**
@@ -743,9 +743,8 @@ public class WSuggestionPopup extends WCompositeWidget {
 		this.impl_.bindWidget("contents",
 				this.content_ = new WContainerWidget());
 		this.content_.setStyleClass("content");
-		this.setAttributeValue("style", "z-index: 10000");
+		this.setAttributeValue("style", "z-index: 10000; display: none");
 		this.setPositionScheme(PositionScheme.Absolute);
-		this.hide();
 		this.setModel(new WStringListModel(this));
 		this.filter_.addListener(this, new Signal1.Listener<String>() {
 			public void trigger(String e1) {
@@ -766,7 +765,7 @@ public class WSuggestionPopup extends WCompositeWidget {
 		this.filtering_ = false;
 		this.doJavaScript("jQuery.data(" + this.getJsRef()
 				+ ", 'obj').filtered(" + WWebWidget.jsStringLiteral(input)
-				+ ")");
+				+ ");");
 	}
 
 	private void doActivate(String itemId, String editId) {
