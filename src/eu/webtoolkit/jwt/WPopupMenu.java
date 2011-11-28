@@ -259,7 +259,7 @@ public class WPopupMenu extends WCompositeWidget {
 		this.setOffsets(new WLength(42), EnumSet.of(Side.Left, Side.Top));
 		this.setOffsets(new WLength(-10000), EnumSet.of(Side.Left, Side.Top));
 		WApplication.getInstance().doJavaScript(
-				"Wt3_1_11.positionXY('" + this.getId() + "',"
+				"Wt3_2_0.positionXY('" + this.getId() + "',"
 						+ String.valueOf(p.getX()) + ","
 						+ String.valueOf(p.getY()) + ");");
 	}
@@ -550,7 +550,7 @@ public class WPopupMenu extends WCompositeWidget {
 		if (this.autoHideDelay_ >= 0) {
 			if (!this.cancel_.isConnected()) {
 				app.loadJavaScript("js/WPopupMenu.js", wtjs1());
-				this.doJavaScript("new Wt3_1_11.WPopupMenu("
+				this.doJavaScript("new Wt3_2_0.WPopupMenu("
 						+ app.getJavaScriptClass() + "," + this.getJsRef()
 						+ "," + String.valueOf(this.autoHideDelay_) + ");");
 				this.cancel_.addListener(this, new Signal.Listener() {

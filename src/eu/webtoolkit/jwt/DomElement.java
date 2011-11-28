@@ -234,7 +234,7 @@ class DomElement {
 			js.append("o=this;");
 			if (anchorClick) {
 				js
-						.append("if(e.ctrlKey||e.metaKey||(Wt3_1_11.button(e) > 1))return true;else{");
+						.append("if(e.ctrlKey||e.metaKey||(Wt3_2_0.button(e) > 1))return true;else{");
 			}
 			js.append(jsCode);
 			if (isExposed) {
@@ -352,7 +352,7 @@ class DomElement {
 	}
 
 	public void removeFromParent() {
-		this.callJavaScript("Wt3_1_11.remove('" + this.getId() + "');", true);
+		this.callJavaScript("Wt3_2_0.remove('" + this.getId() + "');", true);
 	}
 
 	public void replaceWith(DomElement newElement) {
@@ -467,22 +467,22 @@ class DomElement {
 					String style = this.properties_
 							.get(Property.PropertyStyleDisplay);
 					if (style.equals("none")) {
-						out.append("Wt3_1_11.hide('").append(this.id_).append(
+						out.append("Wt3_2_0.hide('").append(this.id_).append(
 								"');\n");
 						return this.var_;
 					} else {
 						if (style.length() == 0) {
-							out.append("Wt3_1_11.show('").append(this.id_)
+							out.append("Wt3_2_0.show('").append(this.id_)
 									.append("');\n");
 							return this.var_;
 						} else {
 							if (style.equals("inline")) {
-								out.append("Wt3_1_11.inline('" + this.id_
+								out.append("Wt3_2_0.inline('" + this.id_
 										+ "');\n");
 								return this.var_;
 							} else {
 								if (style.equals("block")) {
-									out.append("Wt3_1_11.block('" + this.id_
+									out.append("Wt3_2_0.block('" + this.id_
 											+ "');\n");
 									return this.var_;
 								}
@@ -492,8 +492,7 @@ class DomElement {
 				}
 			}
 			if (this.unwrapped_) {
-				out.append("Wt3_1_11.unwrap('").append(this.id_)
-						.append("');\n");
+				out.append("Wt3_2_0.unwrap('").append(this.id_).append("');\n");
 			}
 			this.processEvents(app);
 			this.processProperties(app);
@@ -506,8 +505,8 @@ class DomElement {
 								");\n");
 				this.replaced_.createElement(out, app, insertJs.toString());
 				if (this.unstubbed_) {
-					out.append("Wt3_1_11.unstub(").append(this.var_)
-							.append(',').append(varr).append(',').append(
+					out.append("Wt3_2_0.unstub(").append(this.var_).append(',')
+							.append(varr).append(',').append(
 									this.hideWithDisplay_ ? 1 : 0).append(
 									");\n");
 				}
@@ -1093,7 +1092,7 @@ class DomElement {
 		DomElement.EventHandler keypress = this.eventHandlers_.get(S_keypress);
 		if (keypress != null && keypress.jsCode.length() != 0) {
 			MapUtils.access(self.eventHandlers_, S_keypress,
-					DomElement.EventHandler.class).jsCode = "if (Wt3_1_11.isKeyPress(event)){"
+					DomElement.EventHandler.class).jsCode = "if (Wt3_2_0.isKeyPress(event)){"
 					+ MapUtils.access(self.eventHandlers_, S_keypress,
 							DomElement.EventHandler.class).jsCode + '}';
 		}
@@ -1109,7 +1108,7 @@ class DomElement {
 			if (minw != null || maxw != null) {
 				if (w == null) {
 					StringBuilder expr = new StringBuilder();
-					expr.append("Wt3_1_11.IEwidth(this,");
+					expr.append("Wt3_2_0.IEwidth(this,");
 					if (minw != null) {
 						expr.append('\'').append(minw).append('\'');
 						self.properties_.remove(Property.PropertyStyleMinWidth);
@@ -1146,7 +1145,7 @@ class DomElement {
 			switch (i.getKey()) {
 			case PropertyInnerHTML:
 			case PropertyAddedInnerHTML:
-				out.append("Wt3_1_11.setHtml(").append(this.var_).append(',');
+				out.append("Wt3_2_0.setHtml(").append(this.var_).append(',');
 				if (!pushed) {
 					escaped
 							.pushEscape(EscapeOStream.RuleSet.JsStringLiteralSQuote);
@@ -1310,7 +1309,7 @@ class DomElement {
 		String extra1 = "";
 		String extra2 = "";
 		if (globalUnfocused) {
-			extra1 = "var g = event||window.event; var t = g.target||g.srcElement;if ((!t||Wt3_1_11.hasTag(t,'DIV') ||Wt3_1_11.hasTag(t,'BODY') ||Wt3_1_11.hasTag(t,'HTML'))) { ";
+			extra1 = "var g = event||window.event; var t = g.target||g.srcElement;if ((!t||Wt3_2_0.hasTag(t,'DIV') ||Wt3_2_0.hasTag(t,'BODY') ||Wt3_2_0.hasTag(t,'HTML'))) { ";
 			extra2 = "}";
 		}
 		int fid = nextId_++;
@@ -1377,7 +1376,7 @@ class DomElement {
 		} else {
 			StringBuilder insertJS = new StringBuilder();
 			if (pos != -1) {
-				insertJS.append("Wt3_1_11.insertAt(").append(parentVar).append(
+				insertJS.append("Wt3_2_0.insertAt(").append(parentVar).append(
 						",").append(this.var_).append(",").append(pos).append(
 						");");
 			} else {
@@ -1399,7 +1398,7 @@ class DomElement {
 					|| !this.childrenToAdd_.isEmpty()
 					|| !this.childrenHtml_.isEmpty()) {
 				this.declare(out);
-				out.append("Wt3_1_11.setHtml(").append(this.var_).append(",'");
+				out.append("Wt3_2_0.setHtml(").append(this.var_).append(",'");
 				out.pushEscape(EscapeOStream.RuleSet.JsStringLiteralSQuote);
 				out.append(this.childrenHtml_.toString());
 				List<DomElement.TimeoutEvent> timeouts = new ArrayList<DomElement.TimeoutEvent>();

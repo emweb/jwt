@@ -509,7 +509,7 @@ class StdGridLayoutImpl extends StdLayoutImpl {
 		if (fitHeight) {
 			StringWriter layoutAdd = new StringWriter();
 			layoutAdd.append(app.getJavaScriptClass()).append(
-					".layouts.add(new Wt3_1_11.StdLayout( Wt3_1_11, '").append(
+					".layouts.add(new Wt3_2_0.StdLayout( Wt3_2_0, '").append(
 					div.getId()).append("', { stretch: [");
 			for (int i = 0; i < rowCount; ++i) {
 				if (i != 0) {
@@ -599,7 +599,7 @@ class StdGridLayoutImpl extends StdLayoutImpl {
 	public static String getChildrenResizeJS() {
 		WApplication app = WApplication.getInstance();
 		app.loadJavaScript("js/WtResize.js", wtjs10());
-		return "Wt3_1_11.ChildrenResize";
+		return "Wt3_2_0.ChildrenResize";
 	}
 
 	public boolean itemResized(WLayoutItem item) {

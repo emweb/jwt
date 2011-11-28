@@ -1025,7 +1025,7 @@ public class WMediaPlayer extends WCompositeWidget {
 				first = false;
 			}
 			ss.append("}").append("});");
-			ss.append("new Wt3_1_11.WMediaPlayer(").append(
+			ss.append("new Wt3_2_0.WMediaPlayer(").append(
 					app.getJavaScriptClass()).append(",").append(
 					this.getJsRef()).append(");");
 			this.doJavaScript(ss.toString());

@@ -654,7 +654,7 @@ public class WAnchor extends WContainerWidget {
 		}
 		if (this.flags_.get(BIT_CHANGE_TAG)) {
 			if (!all) {
-				element.callJavaScript("Wt3_1_11.changeTag(" + this.getJsRef()
+				element.callJavaScript("Wt3_2_0.changeTag(" + this.getJsRef()
 						+ ",'a');");
 			}
 			this.flags_.clear(BIT_CHANGE_TAG);

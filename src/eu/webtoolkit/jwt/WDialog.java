@@ -466,7 +466,7 @@ public class WDialog extends WCompositeWidget {
 			if (this.resizable_) {
 				this.setMinimumSize(WLength.Auto, WLength.Auto);
 				Resizable.loadJavaScript(WApplication.getInstance());
-				this.doJavaScript("(new Wt3_1_11.Resizable(Wt3_1_11,"
+				this.doJavaScript("(new Wt3_2_0.Resizable(Wt3_2_0,"
 						+ this.getJsRef()
 						+ ")).onresize(function(w, h) {var obj = $('#"
 						+ this.getId()
@@ -557,7 +557,7 @@ public class WDialog extends WCompositeWidget {
 					&& this.getOffset(Side.Right).isAuto();
 			boolean centerY = this.getOffset(Side.Top).isAuto()
 					&& this.getOffset(Side.Bottom).isAuto();
-			this.setJavaScriptMember("_a", "0;new Wt3_1_11.WDialog("
+			this.setJavaScriptMember("_a", "0;new Wt3_2_0.WDialog("
 					+ app.getJavaScriptClass() + "," + this.getJsRef() + ","
 					+ (centerX ? "1" : "0") + "," + (centerY ? "1" : "0")
 					+ ");");

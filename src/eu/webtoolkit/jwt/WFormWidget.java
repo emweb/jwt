@@ -403,7 +403,7 @@ public abstract class WFormWidget extends WInteractWidget {
 			if (!(this.validateJs_ != null)) {
 				this.validateJs_ = new JSlot();
 				this.validateJs_
-						.setJavaScript("function(o){Wt3_1_11.validate(o)}");
+						.setJavaScript("function(o){Wt3_2_0.validate(o)}");
 				this.keyWentUp().addListener(this.validateJs_);
 				this.changed().addListener(this.validateJs_);
 				this.clicked().addListener(this.validateJs_);
@@ -423,9 +423,8 @@ public abstract class WFormWidget extends WInteractWidget {
 				this.keyPressed().addListener(this.filterInput_);
 			}
 			StringUtils.replace(inputFilter, '/', "\\/");
-			this.filterInput_
-					.setJavaScript("function(o,e){Wt3_1_11.filter(o,e,"
-							+ jsStringLiteral(inputFilter) + ")}");
+			this.filterInput_.setJavaScript("function(o,e){Wt3_2_0.filter(o,e,"
+					+ jsStringLiteral(inputFilter) + ")}");
 		} else {
 			;
 			this.filterInput_ = null;
@@ -441,7 +440,7 @@ public abstract class WFormWidget extends WInteractWidget {
 			}
 			WApplication app = WApplication.getInstance();
 			app.loadJavaScript("js/WFormWidget.js", wtjs1());
-			this.doJavaScript("new Wt3_1_11.WFormWidget("
+			this.doJavaScript("new Wt3_2_0.WFormWidget("
 					+ app.getJavaScriptClass() + "," + this.getJsRef() + ","
 					+ WString.toWString(this.emptyText_).getJsStringLiteral()
 					+ ");");

@@ -5,8 +5,9 @@ JWt is a Java library for developing web applications. It provides a pure
 Java component-driven approach to building web applications,
 and renders either using Ajax or plain HTML.
 
-Unlike JSF, there is no concept of a page and no split between "views" 
-and "components". Instead, everything is a widget.
+Unlike JSF, there is no concept of a page and no split between page
+"views" and reusable "components", making reuse unpractical. Instead,
+everything is a widget that can be resued in other widgets.
 
 For more information, see [the homepage](http://www.webtoolkit.eu/jwt
 "JWt homepage").

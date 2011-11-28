@@ -872,7 +872,7 @@ public class WSuggestionPopup extends WCompositeWidget {
 		String THIS_JS = "js/WSuggestionPopup.js";
 		app.loadJavaScript(THIS_JS, wtjs1());
 		app.loadJavaScript(THIS_JS, wtjs2());
-		this.doJavaScript("new Wt3_1_11.WSuggestionPopup("
+		this.doJavaScript("new Wt3_2_0.WSuggestionPopup("
 				+ app.getJavaScriptClass() + "," + this.getJsRef() + ","
 				+ this.replacerJS_ + "," + this.matcherJS_ + ","
 				+ String.valueOf(this.filterLength_) + ","
@@ -905,7 +905,7 @@ public class WSuggestionPopup extends WCompositeWidget {
 
 	static String instantiateStdMatcher(WSuggestionPopup.Options options) {
 		StringBuilder s = new StringBuilder();
-		s.append("new Wt3_1_11.WSuggestionPopupStdMatcher(").append(
+		s.append("new Wt3_2_0.WSuggestionPopupStdMatcher(").append(
 				WWebWidget.jsStringLiteral(options.highlightBeginTag)).append(
 				", ").append(
 				WWebWidget.jsStringLiteral(options.highlightEndTag)).append(

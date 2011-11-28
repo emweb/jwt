@@ -278,7 +278,7 @@ public class WLink {
 					widget.clicked().addListener(slot);
 					widget.clicked().preventDefaultAction();
 				}
-				slot.setJavaScript("function(){Wt3_1_11.history.navigate("
+				slot.setJavaScript("function(){Wt3_2_0.history.navigate("
 						+ WWebWidget.jsStringLiteral(this.getInternalPath())
 						+ ",true);}");
 				widget.clicked().senderRepaint();
