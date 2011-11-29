@@ -350,7 +350,7 @@ class WebSession {
 						String ackIdE = request.getParameter("ackId");
 						boolean invalidAckId = this.env_.hasAjax()
 								&& !request.isWebSocketMessage();
-						if (ackIdE != null) {
+						if (invalidAckId && ackIdE != null) {
 							try {
 								if (this.renderer_.ackUpdate(Integer
 										.parseInt(ackIdE))) {
@@ -458,6 +458,8 @@ class WebSession {
 		try {
 			if (!this.renderer_.isDirty()
 					|| this.state_ == WebSession.State.Dead) {
+				logger.debug(new StringWriter().append(
+						"pushUpdates(): nothing to do").toString());
 				return;
 			}
 			this.updatesPending_ = true;
@@ -1120,6 +1122,10 @@ class WebSession {
 					&& this.state_ != WebSession.State.JustCreated
 					&& (requestE != null && (requestE.equals("jsupdate") || requestE
 							.equals("resource")))) {
+				logger.debug(new StringWriter().append("CSRF: ").append(
+						wtdE != null ? wtdE : "no wtd").append(" != ").append(
+						this.sessionId_).append(", requestE: ").append(
+						requestE != null ? requestE : "none").toString());
 				logger.warn(new StringWriter().append("secure:").append(
 						"CSRF prevention kicked in.").toString());
 				this.serveError(403, handler, "Forbidden");

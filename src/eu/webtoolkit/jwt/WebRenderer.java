@@ -641,8 +641,8 @@ class WebRenderer implements SlotLearnerInterface {
 				&& (app.internalPathIsChanged_ && !app.oldInternalPath_
 						.equals(app.newInternalPath_))) {
 			app.oldInternalPath_ = app.newInternalPath_;
-			this.session_.redirect(this.session_
-					.getMostRelativeUrl(app.newInternalPath_));
+			this.session_.redirect(this.session_.fixRelativeUrl(this.session_
+					.getMostRelativeUrl(app.newInternalPath_)));
 		}
 		String redirect = this.session_.getRedirect();
 		if (redirect.length() != 0) {
