@@ -549,6 +549,12 @@ public class WDialog extends WCompositeWidget {
 		super.setHidden(hidden, animation);
 	}
 
+	public void positionAt(WWidget widget, Orientation orientation) {
+		this.setPositionScheme(PositionScheme.Absolute);
+		this.setOffsets(new WLength(0), EnumSet.of(Side.Left, Side.Top));
+		super.positionAt(widget, orientation);
+	}
+
 	void render(EnumSet<RenderFlag> flags) {
 		if (!this.initialized_) {
 			this.initialized_ = true;

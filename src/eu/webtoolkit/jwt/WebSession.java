@@ -60,6 +60,7 @@ class WebSession {
 		this.bootStyleResponse_ = null;
 		this.canWriteAsyncResponse_ = false;
 		this.noBootStyleResponse_ = false;
+		this.pollRequestsIgnored_ = 0;
 		this.progressiveBoot_ = false;
 		this.deferredRequest_ = null;
 		this.deferredResponse_ = null;
@@ -91,7 +92,6 @@ class WebSession {
 			this.basePath_ = "";
 			this.applicationName_ = this.applicationUrl_;
 		}
-		logger.info(new StringWriter().append("Session created").toString());
 		if (this.controller_.getConfiguration().sessionIdCookie()) {
 			this.sessionIdCookie_ = MathUtils.randomId();
 			this.sessionIdCookieChanged_ = true;
@@ -205,13 +205,13 @@ class WebSession {
 					if (!handler.getRequest().getHeaderValue("User-Agent")
 							.equals(this.env_.getUserAgent())) {
 						logger.warn(new StringWriter().append("secure:")
-								.append("Change of user-agent not allowed.")
+								.append("change of user-agent not allowed.")
 								.toString());
 						logger.info(new StringWriter().append(
-								"Old user agent: ").append(
+								"old user agent: ").append(
 								this.env_.getUserAgent()).toString());
 						logger.info(new StringWriter().append(
-								"New user agent: ").append(
+								"new user agent: ").append(
 								handler.getRequest().getHeaderValue(
 										"User-Agent")).toString());
 						this.serveError(403, handler, "Forbidden");
@@ -230,7 +230,7 @@ class WebSession {
 					}
 					if (isInvalid) {
 						logger.warn(new StringWriter().append("secure:")
-								.append("Change of IP address (").append(
+								.append("change of IP address (").append(
 										this.env_.getClientAddress()).append(
 										" -> ").append(ca).append(
 										") not allowed.").toString());
@@ -244,7 +244,7 @@ class WebSession {
 				if (cookie.indexOf("Wt" + this.sessionIdCookie_) == -1) {
 					this.sessionIdCookie_ = "";
 					logger.info(new StringWriter().append(
-							"Session id cookie not working").toString());
+							"session id cookie not working").toString());
 				}
 				this.sessionIdCookieChanged_ = false;
 			}
@@ -363,11 +363,11 @@ class WebSession {
 							if (!(ackIdE != null)) {
 								logger.warn(new StringWriter()
 										.append("secure:").append(
-												"Missing ackId").toString());
+												"missing ackId").toString());
 							} else {
 								logger.warn(new StringWriter()
 										.append("secure:").append(
-												"Invalid ackId").toString());
+												"invalid ackId").toString());
 							}
 							this.serveError(403, handler, "Forbidden");
 							return;
@@ -395,12 +395,40 @@ class WebSession {
 									return;
 								}
 							}
-							if (!this.updatesPending_
-									&& !(this.asyncResponse_ != null)) {
-								this.asyncResponse_ = handler.getResponse();
-								this.canWriteAsyncResponse_ = true;
-								handler.setRequest((WebRequest) null,
-										(WebResponse) null);
+							if (!this.updatesPending_) {
+								if (!(this.asyncResponse_ != null)
+										|| this.pollRequestsIgnored_ == 5) {
+									if (this.asyncResponse_ != null) {
+										logger
+												.info(new StringWriter()
+														.append(
+																"discarding broken asyncResponse, (ws: ")
+														.append(
+																String
+																		.valueOf(this.asyncResponse_
+																				.isWebSocketRequest()))
+														.toString());
+										this.asyncResponse_.flush();
+										this.asyncResponse_ = null;
+									}
+									this.pollRequestsIgnored_ = 0;
+									this.asyncResponse_ = handler.getResponse();
+									this.canWriteAsyncResponse_ = true;
+									handler.setRequest((WebRequest) null,
+											(WebResponse) null);
+								} else {
+									++this.pollRequestsIgnored_;
+									logger
+											.debug(new StringWriter()
+													.append(
+															"ignored poll request (#")
+													.append(
+															String
+																	.valueOf(this.pollRequestsIgnored_))
+													.append(")").toString());
+								}
+							} else {
+								this.pollRequestsIgnored_ = 0;
 							}
 						}
 						if (handler.getRequest() != null) {
@@ -411,7 +439,7 @@ class WebSession {
 								this.notifySignal(event);
 							} catch (RuntimeException e) {
 								logger.error(new StringWriter().append(
-										"Error during event handling: ")
+										"error during event handling: ")
 										.append(e.toString()).toString());
 								throw e;
 							}
@@ -434,8 +462,19 @@ class WebSession {
 						}
 					}
 					if (!(signalE != null)) {
+						if (this.getType() == EntryPointType.WidgetSet) {
+							logger
+									.error(new StringWriter()
+											.append(
+													"bogus request: missing signal, discarding")
+											.toString());
+							handler.getResponse().flush();
+							handler.setRequest((WebRequest) null,
+									(WebResponse) null);
+							return;
+						}
 						logger.info(new StringWriter().append(
-								"Refreshing session").toString());
+								"refreshing session").toString());
 						this.flushBootStyleResponse();
 						if (handler.getRequest() != null) {
 							this.env_.parameters_ = handler.getRequest()
@@ -1041,7 +1080,7 @@ class WebSession {
 			}
 			if (session.state_ == WebSession.State.Dead) {
 				logger.warn(new StringWriter().append(
-						"Attaching to dead session?").toString());
+						"attaching to dead session?").toString());
 				attachThreadToHandler(new WebSession.Handler(session, false));
 				return;
 			}
@@ -1098,6 +1137,25 @@ class WebSession {
 					}
 				}
 			}
+			String requestE = request.getParameter("request");
+			if (requestE != null && requestE.equals("ws")
+					&& !request.isWebSocketRequest()) {
+				logger.error(new StringWriter().append(
+						"invalid WebSocket request, ignoring").toString());
+				logger.info(new StringWriter().append("Connection: ").append(
+						request.getHeaderValue("Connection")).toString());
+				logger.info(new StringWriter().append("Upgrade: ").append(
+						request.getHeaderValue("Upgrade")).toString());
+				logger
+						.info(new StringWriter()
+								.append("Sec-WebSocket-Version: ")
+								.append(
+										request
+												.getHeaderValue("Sec-WebSocket-Version"))
+								.toString());
+				handler.getResponse().flush();
+				return;
+			}
 			if (request.isWebSocketRequest()) {
 				if (this.state_ != WebSession.State.JustCreated) {
 					this.handleWebSocketRequest(handler);
@@ -1109,7 +1167,6 @@ class WebSession {
 				}
 			}
 			Configuration conf = this.controller_.getConfiguration();
-			String requestE = request.getParameter("request");
 			handler.getResponse().setResponseType(WebRequest.ResponseType.Page);
 			if (!(requestE != null && requestE.equals("resource")
 					|| request.getRequestMethod().equals("POST") || request
@@ -1144,7 +1201,7 @@ class WebSession {
 									logger
 											.info(new StringWriter()
 													.append(
-															"Signal from dead session, sending reload.")
+															"signal from dead session, sending reload.")
 													.toString());
 									this.renderer_.letReloadJS(handler
 											.getResponse(), true);
@@ -1155,7 +1212,7 @@ class WebSession {
 										logger
 												.info(new StringWriter()
 														.append(
-																"Not serving this.")
+																"not serving this.")
 														.toString());
 										handler.getResponse().setContentType(
 												"text/html");
@@ -1232,7 +1289,7 @@ class WebSession {
 									logger
 											.info(new StringWriter()
 													.append(
-															"Not starting session for resource.")
+															"not starting session for resource.")
 													.toString());
 									handler.getResponse().setContentType(
 											"text/html");
@@ -1422,12 +1479,12 @@ class WebSession {
 					case Dead:
 						logger
 								.info(new StringWriter().append(
-										"Request to dead session, ignoring")
+										"request to dead session, ignoring")
 										.toString());
 						break;
 					}
 				} catch (WException e) {
-					logger.error(new StringWriter().append("Fatal error: ")
+					logger.error(new StringWriter().append("fatal error: ")
 							.append(e.getWhat()).toString());
 					e.printStackTrace();
 					this.kill();
@@ -1435,7 +1492,7 @@ class WebSession {
 						this.serveError(500, handler, e.getWhat());
 					}
 				} catch (RuntimeException e) {
-					logger.error(new StringWriter().append("Fatal error: ")
+					logger.error(new StringWriter().append("fatal error: ")
 							.append(e.toString()).toString());
 					e.printStackTrace();
 					this.kill();
@@ -1519,6 +1576,7 @@ class WebSession {
 	private WebResponse bootStyleResponse_;
 	private boolean canWriteAsyncResponse_;
 	private boolean noBootStyleResponse_;
+	private int pollRequestsIgnored_;
 	private boolean progressiveBoot_;
 	private WebRequest deferredRequest_;
 	private WebResponse deferredResponse_;
