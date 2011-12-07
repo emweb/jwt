@@ -35,7 +35,9 @@ class PaintedSlider extends WPaintedWidget {
 				.setStyleClass("Wt-slider-"
 						+ (this.slider_.getOrientation() == Orientation.Horizontal ? "h"
 								: "v"));
-		this.slider_.setPositionScheme(PositionScheme.Relative);
+		if (this.slider_.getPositionScheme() == PositionScheme.Static) {
+			this.slider_.setPositionScheme(PositionScheme.Relative);
+		}
 		this.addChild(this.handle_ = new WContainerWidget());
 		this.handle_.setPopup(true);
 		this.handle_.setPositionScheme(PositionScheme.Absolute);

@@ -830,79 +830,58 @@ public class WGoogleMap extends WCompositeWidget {
 	private JSignal1<WGoogleMap.Coordinate> mouseMoved_;
 
 	void render(EnumSet<RenderFlag> flags) {
-		try {
-			if (!EnumUtils.mask(flags, RenderFlag.RenderFull).isEmpty()) {
-				WApplication app = WApplication.getInstance();
-				if (this.apiVersion_ == WGoogleMap.ApiVersion.Version2) {
-					String googlekey = localhost_key;
-					googlekey = WApplication.readConfigurationProperty(
-							"google_api_key", googlekey);
-					final String gmuri = "http://www.google.com/jsapi?key="
-							+ googlekey;
-					app.require(gmuri, "google");
-				}
-				String initFunction = app.getJavaScriptClass()
-						+ ".init_google_maps_" + this.getId();
-				StringWriter strm = new StringWriter();
-				strm.append("{ ").append(initFunction).append(
-						" = function() {var self = ").append(this.getJsRef())
-						.append(";if (!self) { setTimeout(").append(
-								initFunction).append(", 0);return;}");
-				if (this.apiVersion_ == WGoogleMap.ApiVersion.Version2) {
-					strm
-							.append("var map = new google.maps.Map(self);map.setCenter(new google.maps.LatLng(47.01887777, 8.651888), 13);");
-					this
-							.setJavaScriptMember(
-									"wtResize",
-									"function(self, w, h) {self.style.width=w + 'px';self.style.height=h + 'px';if (self.map)  self.map.checkResize();}");
-				} else {
-					strm
-							.append("var latlng = new google.maps.LatLng(47.01887777, 8.651888);var myOptions = {zoom: 13,center: latlng,mapTypeId: google.maps.MapTypeId.ROADMAP};var map = new google.maps.Map(self, myOptions);map.overlays = [];map.infowindows = [];");
-					this
-							.setJavaScriptMember(
-									"wtResize",
-									"function(self, w, h) {self.style.width=w + 'px';self.style.height=h + 'px';if (self.map) google.maps.event.trigger(self.map, 'resize');}");
-				}
-				strm.append("self.map = map;");
-				this.streamJSListener(this.clicked_, "click", strm);
-				this.streamJSListener(this.doubleClicked_, "dblclick", strm);
-				if (this.mouseMoved_ != null) {
-					this.streamJSListener(this.mouseMoved_, "mousemove", strm);
-				}
-				for (int i = 0; i < this.additions_.size(); i++) {
-					strm.append(this.additions_.get(i));
-				}
-				strm.append("setTimeout(function(){ delete ").append(
-						initFunction).append(";}, 0)").append("};");
-				if (this.apiVersion_ == WGoogleMap.ApiVersion.Version2) {
-					strm
-							.append(
-									"google.load(\"maps\", \"2\", {other_params:\"sensor=false\", callback: ")
-							.append(
-									app.getJavaScriptClass()
-											+ ".init_google_maps_"
-											+ this.getId()).append("});");
-				}
-				strm.append("}");
-				this.additions_.clear();
-				app.doJavaScript(strm.toString(),
-						this.apiVersion_ == WGoogleMap.ApiVersion.Version2);
-				if (this.apiVersion_ == WGoogleMap.ApiVersion.Version3) {
-					String uri = "";
-					if (app.getEnvironment().hasAjax()) {
-						uri = "http://maps.google.com/maps/api/js?sensor=false&callback=";
-						uri += app.getJavaScriptClass() + ".init_google_maps_"
-								+ this.getId();
-					} else {
-						uri = "http://maps.google.com/maps/api/js?sensor=false";
-					}
-					app.require(uri);
-				}
+		if (!EnumUtils.mask(flags, RenderFlag.RenderFull).isEmpty()) {
+			WApplication app = WApplication.getInstance();
+			String googlekey = localhost_key;
+			googlekey = WApplication.readConfigurationProperty(
+					"google_api_key", googlekey);
+			final String gmuri = "http://www.google.com/jsapi?key=" + googlekey;
+			app.require(gmuri, "google");
+			String initFunction = app.getJavaScriptClass()
+					+ ".init_google_maps_" + this.getId();
+			StringBuilder strm = new StringBuilder();
+			strm.append("{ ").append(initFunction).append(
+					" = function() {var self = ").append(this.getJsRef())
+					.append(";if (!self) { setTimeout(").append(initFunction)
+					.append(", 0);return;}");
+			if (this.apiVersion_ == WGoogleMap.ApiVersion.Version2) {
+				strm
+						.append("var map = new google.maps.Map(self);map.setCenter(new google.maps.LatLng(47.01887777, 8.651888), 13);");
+				this
+						.setJavaScriptMember(
+								"wtResize",
+								"function(self, w, h) {self.style.width=w + 'px';self.style.height=h + 'px';if (self.map) self.map.checkResize();}");
+			} else {
+				strm
+						.append("var latlng = new google.maps.LatLng(47.01887777, 8.651888);var myOptions = {zoom: 13,center: latlng,mapTypeId: google.maps.MapTypeId.ROADMAP};var map = new google.maps.Map(self, myOptions);map.overlays = [];map.infowindows = [];");
+				this
+						.setJavaScriptMember(
+								"wtResize",
+								"function(self, w, h) {self.style.width=w + 'px';self.style.height=h + 'px';if (self.map) google.maps.event.trigger(self.map, 'resize');}");
 			}
-			super.render(flags);
-		} catch (IOException ioe) {
-			ioe.printStackTrace();
+			strm.append("self.map = map;");
+			this.streamJSListener(this.clicked_, "click", strm);
+			this.streamJSListener(this.doubleClicked_, "dblclick", strm);
+			if (this.mouseMoved_ != null) {
+				this.streamJSListener(this.mouseMoved_, "mousemove", strm);
+			}
+			for (int i = 0; i < this.additions_.size(); i++) {
+				strm.append(this.additions_.get(i));
+			}
+			strm
+					.append("setTimeout(function(){ delete ")
+					.append(initFunction)
+					.append(";}, 0)};")
+					.append("google.load(\"maps\", \"")
+					.append(
+							this.apiVersion_ == WGoogleMap.ApiVersion.Version2 ? "2"
+									: "3").append(
+							"\", {other_params:\"sensor=false\", callback: ")
+					.append(initFunction).append("});").append("}");
+			this.additions_.clear();
+			app.doJavaScript(strm.toString(), true);
 		}
+		super.render(flags);
 	}
 
 	/**
@@ -914,7 +893,7 @@ public class WGoogleMap extends WCompositeWidget {
 	 */
 	protected void doGmJavaScript(String jscode) {
 		if (this.isRendered()) {
-			WApplication.getInstance().doJavaScript(jscode);
+			this.doJavaScript(jscode);
 		} else {
 			this.additions_.add(jscode);
 		}
@@ -923,7 +902,7 @@ public class WGoogleMap extends WCompositeWidget {
 	private List<String> additions_;
 
 	private void streamJSListener(JSignal1<WGoogleMap.Coordinate> signal,
-			String signalName, Writer strm) throws IOException {
+			String signalName, StringBuilder strm) {
 		if (this.apiVersion_ == WGoogleMap.ApiVersion.Version2) {
 			strm.append("google.maps.Event.addListener(map, \"").append(
 					signalName).append(

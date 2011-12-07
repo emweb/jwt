@@ -588,6 +588,7 @@ class WebRenderer implements SlotLearnerInterface {
 				response.out().append(app.getJavaScriptClass()).append(
 						"._p_.update(null, 'load', null, false);").append(
 						this.collectedJS2_.toString()).append("};");
+				this.session_.getApp().serverPushChanged_ = true;
 				this.renderSetServerPush(response.out());
 				response.out().append("$(document).ready(function() { ")
 						.append(app.getJavaScriptClass()).append(

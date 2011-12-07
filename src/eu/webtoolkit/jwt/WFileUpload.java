@@ -465,20 +465,20 @@ public class WFileUpload extends WWebWidget {
 	}
 
 	void updateDom(DomElement element, boolean all) {
+		boolean containsProgress = this.progressBar_ != null
+				&& this.progressBar_.getParent() == this;
 		if (this.fileUploadTarget_ != null && this.doUpload_) {
 			element.callMethod("submit()");
 			this.doUpload_ = false;
-			if (this.progressBar_ != null) {
-				if (this.progressBar_.getParent() == this) {
-					DomElement inputE = DomElement.getForUpdate("in"
-							+ this.getId(), DomElementType.DomElement_INPUT);
-					inputE.setProperty(Property.PropertyStyleDisplay, "none");
-					element.addChild(inputE);
-				}
+			if (containsProgress) {
+				DomElement inputE = DomElement.getForUpdate(
+						"in" + this.getId(), DomElementType.DomElement_INPUT);
+				inputE.setProperty(Property.PropertyStyleDisplay, "none");
+				element.addChild(inputE);
 			}
 		}
 		if (element.getType() != DomElementType.DomElement_INPUT
-				&& this.progressBar_ != null && !this.progressBar_.isRendered()) {
+				&& containsProgress && !this.progressBar_.isRendered()) {
 			element.addChild(this.progressBar_.createSDomElement(WApplication
 					.getInstance()));
 		}

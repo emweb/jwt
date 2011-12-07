@@ -439,8 +439,8 @@ class DomElement {
 					} else {
 						out.append("$(").append(this.var_).append(
 								").children(':gt(").append(
-								this.removeAllChildren_)
-								.append(")').remove();");
+								this.removeAllChildren_ - 1).append(
+								")').remove();");
 					}
 				}
 			}

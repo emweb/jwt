@@ -2353,9 +2353,6 @@ public class WApplication extends WObject {
 	 * from certain widgets even when they are inserted in the widget hierachy.
 	 */
 	protected boolean isExposed(WWidget w) {
-		if (!w.isVisible()) {
-			return false;
-		}
 		if (w == this.domRoot_) {
 			return true;
 		}

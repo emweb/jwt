@@ -91,9 +91,10 @@ abstract class StdLayoutImpl extends StdLayoutItemImpl {
 	private WContainerWidget container_;
 
 	void setContainer(WContainerWidget c) {
-		if (c.getCount() != 0) {
-			while (c.getCount() != 0) {
-				c.removeWidget(c.getWidget(0));
+		for (int i = c.getCount(); i > 0; --i) {
+			WWidget w = c.getWidget(i - 1);
+			if (!(this.layout_.findWidgetItem(w) != null)) {
+				c.removeWidget(w);
 			}
 		}
 		this.container_ = c;
