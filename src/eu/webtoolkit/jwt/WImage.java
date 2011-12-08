@@ -467,11 +467,7 @@ public class WImage extends WInteractWidget {
 			if (!this.imageLink_.isNull()) {
 				String url = resolveRelativeUrl(this.imageLink_.getUrl());
 				WApplication app = WApplication.getInstance();
-				boolean needRedirect = url.indexOf("://") != -1
-						&& app.getSession().hasSessionIdInUrl();
-				if (needRedirect) {
-					url = "?request=redirect&url=" + DomElement.urlEncodeS(url);
-				}
+				url = app.encodeUntrustedUrl(url);
 				img.setProperty(Property.PropertySrc, url);
 			} else {
 				img.setProperty(Property.PropertySrc, "#");

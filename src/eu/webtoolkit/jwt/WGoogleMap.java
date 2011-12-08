@@ -409,15 +409,13 @@ public class WGoogleMap extends WCompositeWidget {
 			strm.append("var mapLocal = ").append(
 					this.getJsRef() + ".map, i;\n").append(
 					"if (mapLocal.overlays) {\n").append(
-					"  for (i in mapLocal.overlays) {\n").append(
-					"    mapLocal.overlays[i].setMap(null);\n").append("  }\n")
-					.append("  mapLocal.overlays.length = 0;\n").append("}\n")
+					"for (i in mapLocal.overlays) {\n").append(
+					"mapLocal.overlays[i].setMap(null);\n").append("}\n")
+					.append("mapLocal.overlays.length = 0;\n").append("}\n")
 					.append("if (mapLocal.infowindows) {\n").append(
-							"  for (i in mapLocal.infowindows) {\n").append(
-							"    mapLocal.infowindows[i].close();\n").append(
-							"  }\n").append(
-							"  mapLocal.infowindows.length = 0;\n").append(
-							"}\n");
+							"for (i in mapLocal.infowindows) {\n").append(
+							"mapLocal.infowindows[i].close();\n").append("}\n")
+					.append("mapLocal.infowindows.length = 0;\n").append("}\n");
 			this.doGmJavaScript(strm.toString());
 		}
 	}
@@ -777,12 +775,12 @@ public class WGoogleMap extends WCompositeWidget {
 			}
 			strm.append("var options = {").append("disableDefaultUI: ").append(
 					control.equals("") ? "true" : "false").append(",").append(
-					"  mapTypeControlOptions: {");
+					"mapTypeControlOptions: {");
 			if (!control.equals("")) {
 				strm.append("style: google.maps.MapTypeControlStyle.").append(
 						control);
 			}
-			strm.append("  }").append("};").append(this.getJsRef()).append(
+			strm.append("}").append("};").append(this.getJsRef()).append(
 					".map.setOptions(options);");
 		}
 		this.doGmJavaScript(strm.toString());

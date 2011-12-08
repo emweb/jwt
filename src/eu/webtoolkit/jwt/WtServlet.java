@@ -9,15 +9,15 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
 import javax.servlet.ServletConfig;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletContextEvent;
-import javax.servlet.ServletContextListener;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -30,9 +30,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import eu.webtoolkit.jwt.servlet.WebRequest;
-import eu.webtoolkit.jwt.servlet.WebRequest.ProgressListener;
 import eu.webtoolkit.jwt.servlet.WebResponse;
+import eu.webtoolkit.jwt.servlet.WebRequest.ProgressListener;
 import eu.webtoolkit.jwt.utils.JarUtils;
+import eu.webtoolkit.jwt.utils.MathUtils;
 import eu.webtoolkit.jwt.utils.StreamUtils;
 
 /**
@@ -79,6 +80,8 @@ public abstract class WtServlet extends HttpServlet {
 	private Set<String> uploadProgressUrls_ = new HashSet<String>();
 	private int ajaxSessions = 0;
 	private int sessions = 0;
+
+	private String redirectSecret_;
 
 	private static final String WT_WEBSESSION_ID = "wt-websession";
 	private static final Map<String, String> mimeTypes = new HashMap<String, String>();
@@ -137,6 +140,8 @@ public abstract class WtServlet extends HttpServlet {
 		};
 		
 		this.configuration = new Configuration();
+		
+		this.redirectSecret_ = MathUtils.randomId(32);
 	}
 	
 	/**
@@ -379,12 +384,15 @@ public abstract class WtServlet extends HttpServlet {
 	}
 
 	/**
-	 * Returns whether asynchronous processing is supported,
-	 * which is only the case when the servlet container implements the Servlet 3.0 API,
-	 * and when this application is configured to support asynchronous processing.
-	 * Asynchronous processing is required for both server push and the recursive event loop.
+	 * Returns whether asynchronous I/O is supported.
 	 * 
-	 * @return whether asynchronous processing is supported
+	 * This is only the case when the servlet container implements the Servlet 3.0 API,
+	 * and when this application is configured to support asynchronous processing.
+	 * 
+	 * Asynchronous I/O is required recursive event loops, and encouraged for scalable
+	 * server push (although JWt doesn't strictly require it).
+	 * 
+	 * @return whether asynchronous I/O is supported.
 	 */
 	public static boolean isAsyncSupported() {
 		WebSession.Handler handler = WebSession.Handler.getInstance();
@@ -410,5 +418,20 @@ public abstract class WtServlet extends HttpServlet {
 
 	private static String readFile(final String fileName) {
 		return JarUtils.getInstance().readTextFromJar(fileName);
+	}
+
+	String computeRedirectHash(String url) {
+		try {
+			MessageDigest d = MessageDigest.getInstance("MD5");
+			d.update(redirectSecret_.getBytes("UTF-8"));
+			d.update(url.getBytes("UTF-8"));
+			return StringUtils.encodeBase64(d.digest());
+		} catch (NoSuchAlgorithmException e) {
+			e.printStackTrace();
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
+
+		return "";
 	}
 }

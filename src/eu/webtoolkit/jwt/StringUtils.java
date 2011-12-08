@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.regex.Pattern;
 
+
 /**
  * String utility class.
  */
@@ -139,13 +140,12 @@ public class StringUtils {
 		return result.toString();
 	}
 	
-	// !! maybe we also need to make a function which only replaces 1 char by a
-	// string, making this specific will make it a bit faster
-	static String replaceAll(final String string,
-			final String charsToChange, String[] newSubstrings) {
+	static String replaceAll(final String string, final String charsToChange, String[] newSubstrings) {
 		boolean changed = false;
 		StringBuffer sb = new StringBuffer(string.length());
+
 		assert charsToChange.length() == newSubstrings.length;
+		
 		for (int i = 0; i < string.length(); i++) {
 			for (int j = 0; j < charsToChange.length(); j++) {
 				if (string.charAt(i) == charsToChange.charAt(j)) {
@@ -154,11 +154,11 @@ public class StringUtils {
 					break;
 				}
 			}
-			if (!changed) {
+
+			if (!changed)
 				sb.append(string.charAt(i));
-			} else {
+			else
 				changed = false;
-			}
 		}
 
 		return sb.toString();
@@ -400,10 +400,65 @@ public class StringUtils {
 		return DomElement.urlEncodeS(url, allowed);
 	}
 
-	static String EncodeHttpHeaderField(String fieldname, String fieldValue) {
+	static String encodeHttpHeaderField(String fieldname, String fieldValue) {
 		// This implements RFC 5987
 		return fieldname + "*=UTF-8''" + StringUtils.urlEncode(fieldValue);
 	}
 	
-	private StringUtils() { }
+	private final static char base64Array [] = {
+	      'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H',
+	      'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P',
+	      'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X',
+	      'Y', 'Z', 'a', 'b', 'c', 'd', 'e', 'f',
+	      'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n',
+	      'o', 'p', 'q', 'r', 's', 't', 'u', 'v',
+	      'w', 'x', 'y', 'z', '0', '1', '2', '3',
+	      '4', '5', '6', '7', '8', '9', '+', '/'
+	};
+
+	static String encodeBase64 (byte[] bytes) {
+	    String encodedString = "";
+	    int i = 0;
+	    int pad = 0;
+	    while (i < bytes.length) {
+	      byte b1 = bytes [i++];
+	      byte b2;
+	      byte b3;
+	      if (i >= bytes.length) {
+	         b2 = 0;
+	         b3 = 0;
+	         pad = 2;
+	         }
+	      else {
+	         b2 = bytes [i++];
+	         if (i >= bytes.length) {
+	            b3 = 0;
+	            pad = 1;
+	            }
+	         else
+	            b3 = bytes [i++];
+	         }
+	      byte c1 = (byte)(b1 >> 2);
+	      byte c2 = (byte)(((b1 & 0x3) << 4) | (b2 >> 4));
+	      byte c3 = (byte)(((b2 & 0xf) << 2) | (b3 >> 6));
+	      byte c4 = (byte)(b3 & 0x3f);
+	      encodedString += base64Array [c1];
+	      encodedString += base64Array [c2];
+	      switch (pad) {
+	       case 0:
+	         encodedString += base64Array [c3];
+	         encodedString += base64Array [c4];
+	         break;
+	       case 1:
+	         encodedString += base64Array [c3];
+	         encodedString += "=";
+	         break;
+	       case 2:
+	         encodedString += "==";
+	         break;
+	       }
+	    }
+	    
+	    return encodedString;
+	}
 }

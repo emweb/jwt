@@ -180,7 +180,7 @@ public abstract class WResource extends WObject {
 				}
 				// Next will be picked by RFC 5987 in favour of the
 				// one without specified encoding (Chrome9,
-				fileField += StringUtils.EncodeHttpHeaderField("filename",
+				fileField += StringUtils.encodeHttpHeaderField("filename",
 						suggestedFileName_);
 				response.addHeader("Content-Disposition", theDisposition + ";"
 						+ fileField);

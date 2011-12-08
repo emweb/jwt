@@ -671,11 +671,7 @@ public class WAnchor extends WContainerWidget {
 				;
 				this.changeInternalPathJS_ = null;
 			}
-			boolean needRedirect = url.indexOf("://") != -1
-					&& app.getSession().hasSessionIdInUrl();
-			if (needRedirect) {
-				url = "?request=redirect&url=" + DomElement.urlEncodeS(url);
-			}
+			url = app.encodeUntrustedUrl(url);
 			String href = resolveRelativeUrl(url);
 			element.setAttribute("href", href);
 			needsUrlResolution = !app.getEnvironment().hashInternalPaths()

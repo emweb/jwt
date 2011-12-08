@@ -2291,6 +2291,19 @@ public class WApplication extends WObject {
 		}
 	}
 
+	public String encodeUntrustedUrl(String url) {
+		boolean needRedirect = url.indexOf("://") != -1
+				&& this.session_.hasSessionIdInUrl();
+		if (needRedirect) {
+			WtServlet c = this.session_.getController();
+			return "?request=redirect&url=" + DomElement.urlEncodeS(url)
+					+ "&hash="
+					+ DomElement.urlEncodeS(c.computeRedirectHash(url));
+		} else {
+			return url;
+		}
+	}
+
 	/**
 	 * Notifies an event to the application.
 	 * <p>
