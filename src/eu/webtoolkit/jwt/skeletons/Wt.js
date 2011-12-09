@@ -1239,14 +1239,14 @@ this.addStyleSheet = function(uri, media) {
     setTimeout(function() { document.createStyleSheet(uri); }, 15);
   } else {
     var s = document.createElement('link');
-    s.setAttribute('type', 'text/css');
     s.setAttribute('href', uri);
     s.setAttribute('type','text/css');
     s.setAttribute('rel','stylesheet');
     if (media != '' && media != 'all')
       s.setAttribute('media', media);
-    var h = document.getElementsByTagName('head')[0];
-    h.appendChild(s);
+    var ll = document.getElementsByTagName('link');
+    var l = ll[ll.length - 1];
+    l.parentNode.insertBefore(s, l.nextSibling);
   }
 };
 
@@ -1760,7 +1760,7 @@ var currentHash = null;
 function onHashChange() {
   var newLocation = _$_WT_CLASS_$_.history.getCurrentState();
 
-  if (newLocation.length > 0 && newLocation[0] != '/')
+  if (newLocation.length > 0 && newLocation.substr(0, 1) != '/')
     return;
 
   if (currentHash == newLocation)

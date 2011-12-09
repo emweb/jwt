@@ -133,6 +133,7 @@ class WebRenderer implements SlotLearnerInterface {
 		return !this.updateMap_.isEmpty() || this.formObjectsChanged_
 				|| this.session_.getApp().afterLoadJavaScript_.length() != 0
 				|| this.session_.getApp().serverPushChanged_
+				|| this.session_.getApp().styleSheetsAdded_ != 0
 				|| this.collectedJS1_.getBuffer().length() > 0
 				|| this.collectedJS2_.getBuffer().length() > 0
 				|| this.invisibleJS_.getBuffer().length() > 0;

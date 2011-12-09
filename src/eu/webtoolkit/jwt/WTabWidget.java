@@ -527,19 +527,16 @@ public class WTabWidget extends WCompositeWidget {
 		;
 		this.menu_ = new WMenu(new WStackedWidget(), Orientation.Horizontal);
 		this.menu_.setRenderAsList(true);
-		WBreak clear = new WBreak();
-		clear.setStyleClass("Wt-tabs-clear");
 		WContainerWidget menuDiv = new WContainerWidget();
 		menuDiv.setStyleClass("Wt-tabs");
 		menuDiv.addWidget(this.menu_);
-		menuDiv.addWidget(clear);
 		this.layout_.addWidget(menuDiv);
 		this.layout_.addWidget(this.menu_.getContentsStack());
 		this
 				.setJavaScriptMember(
 						WT_RESIZE_JS,
 						""
-								+ "function(self, w, h) {self.style.height= h + 'px';var c = self.firstChild;var t = self.lastChild;h -= Wt3_2_0.px(c, 'height') + Wt3_2_0.px(c, 'marginTop') + Wt3_2_0.px(c, 'marginBottom');if (h > 0)t."
+								+ "function(self, w, h) {self.style.height= h + 'px';var c = self.firstChild;var t = self.lastChild;h -= c.offsetHeight + Wt3_2_0.px(c, 'marginTop') + Wt3_2_0.px(c, 'marginBottom');if (h > 0)t."
 								+ WT_RESIZE_JS + "(t, w, h);};");
 		this.menu_.itemSelected().addListener(this,
 				new Signal1.Listener<WMenuItem>() {
