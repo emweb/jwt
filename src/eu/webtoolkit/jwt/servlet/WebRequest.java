@@ -226,7 +226,7 @@ public class WebRequest extends HttpServletRequestWrapper {
 		    }
 		}
 
-		if (paramContentType != null && FileUploadBase.isMultipartContent(this)) {
+		if (FileUploadBase.isMultipartContent(this)) {
 			try {
 				// Create a factory for disk-based file items
 				DiskFileItemFactory factory = new DiskFileItemFactory();
