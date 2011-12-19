@@ -318,6 +318,17 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	}
 
 	/**
+	 * Returns the widget that renders an item.
+	 * <p>
+	 * This returns the widget that renders the given item. This may return 0 if
+	 * the item is currently not rendered.
+	 * <p>
+	 * This widget has been created by an item delegate, and usually an item
+	 * delegate is involved when updating it.
+	 */
+	public abstract WWidget itemWidget(WModelIndex index);
+
+	/**
 	 * Sets the header item delegate.
 	 * <p>
 	 * This item delegate is used for rendering items in the header.

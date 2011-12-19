@@ -415,6 +415,18 @@ public class WTreeView extends WAbstractItemView {
 		return this.expanded_;
 	}
 
+	public WWidget itemWidget(WModelIndex index) {
+		if (!(index != null)) {
+			return null;
+		}
+		WTreeViewNode n = this.nodeForIndex(index);
+		if (n != null) {
+			return n.getWidget(index.getColumn());
+		} else {
+			return null;
+		}
+	}
+
 	public void setModel(WAbstractItemModel model) {
 		super.setModel(model);
 		this.modelConnections_.add(model.columnsInserted().addListener(this,

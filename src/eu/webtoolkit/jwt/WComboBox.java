@@ -156,6 +156,7 @@ public class WComboBox extends WFormWidget {
 		int newIndex = Math.min(index, this.getCount() - 1);
 		if (this.currentIndex_ != newIndex) {
 			this.currentIndex_ = newIndex;
+			this.validate();
 			this.selectionChanged_ = true;
 			this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyIEMobile));
 		}

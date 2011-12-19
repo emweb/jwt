@@ -290,6 +290,12 @@ public class WAbstractArea extends WObject {
 
 	/**
 	 * Defines a style class.
+	 * <p>
+	 * <p>
+	 * <i><b>Note: </b>Only few CSS declarations are known to affect the look of
+	 * a image area, the most notable one being the &apos;cursor&apos;. Other
+	 * things will simply be ignored. </i>
+	 * </p>
 	 */
 	public void setStyleClass(String styleClass) {
 		this.impl_.setStyleClass(styleClass);
@@ -307,6 +313,12 @@ public class WAbstractArea extends WObject {
 
 	/**
 	 * Adds a style class.
+	 * <p>
+	 * <p>
+	 * <i><b>Note: </b>Only few CSS declarations are known to affect the look of
+	 * a image area, the most notable one being the &apos;cursor&apos;. Other
+	 * things will simply be ignored. </i>
+	 * </p>
 	 */
 	public void addStyleClass(String styleClass, boolean force) {
 		this.impl_.addStyleClass(styleClass, force);

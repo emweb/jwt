@@ -308,6 +308,24 @@ public class WTableView extends WAbstractItemView {
 		super.remove();
 	}
 
+	public WWidget itemWidget(WModelIndex index) {
+		if (this.isRowRendered(index.getRow())
+				&& this.isColumnRendered(index.getColumn())) {
+			int renderedRow = index.getRow() - this.getFirstRow();
+			int renderedCol = index.getColumn() - this.getFirstColumn();
+			if (this.isAjaxMode()) {
+				WTableView.ColumnWidget column = this
+						.columnContainer(renderedCol);
+				return column.getWidget(renderedRow);
+			} else {
+				return this.plainTable_.getElementAt(renderedRow + 1,
+						renderedCol);
+			}
+		} else {
+			return null;
+		}
+	}
+
 	public void setModel(WAbstractItemModel model) {
 		super.setModel(model);
 		this.modelConnections_.add(model.columnsInserted().addListener(this,
@@ -1693,19 +1711,8 @@ public class WTableView extends WAbstractItemView {
 				}
 			}
 		} else {
-			if (this.isRowRendered(index.getRow())
-					&& this.isColumnRendered(index.getColumn())) {
-				int renderedRow = index.getRow() - this.getFirstRow();
-				int renderedCol = index.getColumn() - this.getFirstColumn();
-				WWidget w = null;
-				if (this.isAjaxMode()) {
-					WTableView.ColumnWidget column = this
-							.columnContainer(renderedCol);
-					w = column.getWidget(renderedRow);
-				} else {
-					w = this.plainTable_.getElementAt(renderedRow + 1,
-							renderedCol);
-				}
+			WWidget w = this.itemWidget(index);
+			if (w != null) {
 				if (selected) {
 					w.addStyleClass("Wt-selected");
 				} else {

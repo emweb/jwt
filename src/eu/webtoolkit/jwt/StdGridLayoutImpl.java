@@ -143,10 +143,13 @@ class StdGridLayoutImpl extends StdLayoutImpl {
 				int stretch = Math
 						.max(0, this.grid_.columns_.get(col).stretch_);
 				if (stretch != 0 || fitWidth && totalColStretch == 0) {
-					int pct = totalColStretch == 0 ? 100 / colCount : 100
-							* stretch / totalColStretch;
-					c.setProperty(Property.PropertyStyle, "width:"
-							+ String.valueOf(pct) + "%;");
+					char[] buf = new char[30];
+					double pct = totalColStretch == 0 ? 100.0 / colCount
+							: 100.0 * stretch / totalColStretch;
+					StringBuilder ss = new StringBuilder();
+					ss.append("width:").append(MathUtils.round(pct, 2)).append(
+							"%;");
+					c.setProperty(Property.PropertyStyle, ss.toString());
 				}
 				table.addChild(c);
 				boolean resizeHandleRight = col < colCount - 1
@@ -408,9 +411,9 @@ class StdGridLayoutImpl extends StdLayoutImpl {
 						}
 					}
 					{
-						String style = "";
+						StringBuilder style = new StringBuilder();
 						if (vAlign == null) {
-							style += heightPct;
+							style.append(heightPct);
 						}
 						if (app.getLayoutDirection() == LayoutDirection.RightToLeft) {
 							int tmp = padding[1];
@@ -422,33 +425,32 @@ class StdGridLayoutImpl extends StdLayoutImpl {
 								&& padding[0] == padding[2]
 								&& padding[0] == padding[3]) {
 							if (padding[0] != 0) {
-								style += "padding:"
-										+ String.valueOf(padding[0]) + "px;";
+								style.append("padding:").append(padding[0])
+										.append("px;");
 							}
 						} else {
-							style += "padding:" + String.valueOf(padding[0])
-									+ "px " + String.valueOf(padding[1])
-									+ "px " + String.valueOf(padding[2])
-									+ "px " + String.valueOf(padding[3])
-									+ "px;";
+							style.append("padding:").append(padding[0]).append(
+									"px ").append(padding[1]).append("px ")
+									.append(padding[2]).append("px ").append(
+											padding[3]).append("px;");
 						}
 						if (vAlign != null) {
 							switch (vAlign) {
 							case AlignTop:
-								style += "vertical-align:top;";
+								style.append("vertical-align:top;");
 								break;
 							case AlignMiddle:
-								style += "vertical-align:middle;";
+								style.append("vertical-align:middle;");
 								break;
 							case AlignBottom:
-								style += "vertical-align:bottom;";
+								style.append("vertical-align:bottom;");
 							default:
 								break;
 							}
 						}
-						if (style.length() != 0) {
-							td.setProperty(Property.PropertyStyle, style);
-						}
+						td
+								.setProperty(Property.PropertyStyle, style
+										.toString());
 					}
 					if (item.rowSpan_ != 1) {
 						td.setProperty(Property.PropertyRowSpan, String
@@ -462,9 +464,12 @@ class StdGridLayoutImpl extends StdLayoutImpl {
 					if (itemVisible && resizeHandleRight) {
 						td = DomElement.createNew(DomElementType.DomElement_TD);
 						td.setProperty(Property.PropertyClass, "Wt-vrh");
-						String style = "padding:" + String.valueOf(padding[0])
-								+ "px 0px" + String.valueOf(padding[2]) + "px;";
-						td.setProperty(Property.PropertyStyle, style);
+						StringBuilder style = new StringBuilder();
+						style.append("padding:").append(padding[0]).append(
+								"px 0px ").append(padding[2]).append("px;");
+						td
+								.setProperty(Property.PropertyStyle, style
+										.toString());
 						DomElement div2 = DomElement
 								.createNew(DomElementType.DomElement_DIV);
 						div2.setProperty(Property.PropertyStyleWidth, String
@@ -491,9 +496,11 @@ class StdGridLayoutImpl extends StdLayoutImpl {
 							.createNew(DomElementType.DomElement_TD);
 					td.setProperty(Property.PropertyColSpan, String
 							.valueOf(colCount));
-					String style2 = "padding: 0px" + String.valueOf(margin[1])
-							+ "px 0px" + String.valueOf(margin[3]) + "px;";
-					td.setProperty(Property.PropertyStyleHeight, style2);
+					StringBuilder style2 = new StringBuilder();
+					style2.append("padding: 0px").append(margin[1]).append(
+							"px 0px").append(margin[3]).append("px;");
+					td.setProperty(Property.PropertyStyleHeight, style2
+							.toString());
 					DomElement div2 = DomElement
 							.createNew(DomElementType.DomElement_DIV);
 					div2.setProperty(Property.PropertyStyleHeight, height);

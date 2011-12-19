@@ -981,45 +981,48 @@ public class WAxis {
 					}
 				}
 			} else {
-				if (this.scale_ == AxisScale.LinearScale) {
-					double resolution = this.resolution_;
-					if (resolution == 0) {
+				double resolution = this.resolution_;
+				if (resolution == 0) {
+					if (this.scale_ == AxisScale.LinearScale) {
 						resolution = 1E-10;
-					}
-					if (Math.abs(diff) < resolution) {
-						double average = (segment.renderMaximum + segment.renderMinimum) / 2.0;
-						double d = this.resolution_;
-						if (this.scale_ == AxisScale.LogScale) {
-							d = 0.2;
+					} else {
+						if (this.scale_ == AxisScale.DateScale) {
+							resolution = 1;
 						} else {
-							if (d == 0) {
-								d = 2E-4;
+							if (this.scale_ == AxisScale.DateTimeScale) {
+								resolution = 120;
 							}
 						}
-						if (findMinimum && findMaximum) {
-							segment.renderMaximum = average + d / 2.0;
-							segment.renderMinimum = average - d / 2.0;
+					}
+				}
+				if (Math.abs(diff) < resolution) {
+					double average = (segment.renderMaximum + segment.renderMinimum) / 2.0;
+					double d = resolution;
+					if (d == 0) {
+						d = 2E-4;
+					}
+					if (findMinimum && findMaximum) {
+						segment.renderMaximum = average + d / 2.0;
+						segment.renderMinimum = average - d / 2.0;
+					} else {
+						if (findMinimum) {
+							segment.renderMinimum = segment.renderMaximum - d;
 						} else {
-							if (findMinimum) {
-								segment.renderMinimum = segment.renderMaximum
-										- d;
-							} else {
-								if (findMaximum) {
-									segment.renderMaximum = segment.renderMinimum
-											+ d;
-								}
+							if (findMaximum) {
+								segment.renderMaximum = segment.renderMinimum
+										+ d;
 							}
 						}
-						diff = segment.renderMaximum - segment.renderMinimum;
 					}
-					if (findMinimum && segment.renderMinimum >= 0
-							&& segment.renderMinimum - 0.50 * diff <= 0) {
-						segment.renderMinimum = 0;
-					}
-					if (findMaximum && segment.renderMaximum <= 0
-							&& segment.renderMaximum + 0.50 * diff >= 0) {
-						segment.renderMaximum = 0;
-					}
+					diff = segment.renderMaximum - segment.renderMinimum;
+				}
+				if (findMinimum && segment.renderMinimum >= 0
+						&& segment.renderMinimum - 0.50 * diff <= 0) {
+					segment.renderMinimum = 0;
+				}
+				if (findMaximum && segment.renderMaximum <= 0
+						&& segment.renderMaximum + 0.50 * diff >= 0) {
+					segment.renderMaximum = 0;
 				}
 			}
 		}

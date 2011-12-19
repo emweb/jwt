@@ -52,6 +52,13 @@ import org.slf4j.LoggerFactory;
  * {@link WWidget#getDecorationStyle() WWidget#getDecorationStyle()}), the
  * result will be wrong behaviour like widgets that keep growing in size.
  * <p>
+ * Another caveat with a layout manager is that the size of contained images may
+ * change when the image is being loaded (which happens in the background by the
+ * browser). This may result in a wrong layout since the layout manager should
+ * relayout. Therefore, you should avoid images inside a layout, or make sure
+ * that the image size does not change when the image is being loaded (this will
+ * also improve the user experience), by setting its size.
+ * <p>
  * A layout manager may provide resize handles between items which allow the
  * user to change the automatic layout provided by the layout manager (see
  * {@link WBoxLayout#setResizable(int index, boolean enabled) setResizable()}).
