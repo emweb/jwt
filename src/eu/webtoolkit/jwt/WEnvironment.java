@@ -323,16 +323,32 @@ public class WEnvironment {
 	 * 
 	 * @see WEnvironment#getCookieValue(String cookieName)
 	 */
-	public String getCookie(String cookieNname) {
-		String i = this.cookies_.get(cookieNname);
+	public String getCookie(String cookieName) {
+		String i = this.cookies_.get(cookieName);
 		if (i == null) {
-			throw new RuntimeException("Missing cookie: " + cookieNname);
+			throw new RuntimeException("Missing cookie: " + cookieName);
 		} else {
 			return i;
 		}
 	}
 
-	// public String getCookieValue(String cookieName) ;
+	/**
+	 * Returns a cookie value.
+	 * <p>
+	 * Returns 0 if no value was set for the given cookie.
+	 * <p>
+	 * 
+	 * @see WEnvironment#getCookie(String cookieNname)
+	 */
+	public String getCookieValue(String cookieName) {
+		String i = this.cookies_.get(cookieName);
+		if (i == null) {
+			return null;
+		} else {
+			return i;
+		}
+	}
+
 	/**
 	 * Returns a header value.
 	 * <p>
