@@ -307,7 +307,7 @@ public class WEnvironment {
 	 * <p>
 	 * 
 	 * @see WEnvironment#supportsCookies()
-	 * @see WEnvironment#getCookie(String cookieNname)
+	 * @see WEnvironment#getCookie(String cookieName)
 	 * @see WEnvironment#getCookieValue(String cookieName)
 	 */
 	public Map<String, String> getCookies() {
@@ -338,7 +338,7 @@ public class WEnvironment {
 	 * Returns 0 if no value was set for the given cookie.
 	 * <p>
 	 * 
-	 * @see WEnvironment#getCookie(String cookieNname)
+	 * @see WEnvironment#getCookie(String cookieName)
 	 */
 	public String getCookieValue(String cookieName) {
 		String i = this.cookies_.get(cookieName);
@@ -371,7 +371,7 @@ public class WEnvironment {
 	 * <p>
 	 * 
 	 * @see WEnvironment#getCookies()
-	 * @see WEnvironment#getCookie(String cookieNname)
+	 * @see WEnvironment#getCookie(String cookieName)
 	 */
 	public boolean supportsCookies() {
 		return this.doesCookies_;

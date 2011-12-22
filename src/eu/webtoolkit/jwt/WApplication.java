@@ -85,8 +85,8 @@ import org.apache.commons.io.*;
  * <li>definition of cookies using
  * {@link WApplication#setCookie(String name, String value, int maxAge, String domain, String path, boolean secure)
  * setCookie()} to persist information across sessions, which may be read using
- * {@link WEnvironment#getCookie(String cookieNname) WEnvironment#getCookie()}
- * in a future session.</li>
+ * {@link WEnvironment#getCookie(String cookieName) WEnvironment#getCookie()} in
+ * a future session.</li>
  * <li>management of the internal path (that enables browser history and
  * bookmarks) using {@link WApplication#getBookmarkUrl() getBookmarkUrl()} and
  * related methods.</li>
@@ -1807,7 +1807,7 @@ public class WApplication extends WObject {
 	 * <p>
 	 * Use cookies to transfer information across different sessions (e.g. a
 	 * user name). In a subsequent session you will be able to read this cookie
-	 * using {@link WEnvironment#getCookie(String cookieNname)
+	 * using {@link WEnvironment#getCookie(String cookieName)
 	 * WEnvironment#getCookie()}. You cannot use a cookie to store information
 	 * in the current session.
 	 * <p>
@@ -1824,7 +1824,7 @@ public class WApplication extends WObject {
 	 * <p>
 	 * 
 	 * @see WEnvironment#supportsCookies()
-	 * @see WEnvironment#getCookie(String cookieNname)
+	 * @see WEnvironment#getCookie(String cookieName)
 	 */
 	public void setCookie(String name, String value, int maxAge, String domain,
 			String path, boolean secure) {
