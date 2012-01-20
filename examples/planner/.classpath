@@ -1,32 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-        <classpathentry excluding="eu/webtoolkit/jwt/examples/planner/resources/|resources/|resources/|resources/" kind="src" path="src"/>
+	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-        <classpathentry kind="lib" path="lib/servlet-api-3.0.jar"/>
-	<classpathentry kind="lib" path="lib/jwt-3.2.0.jar"/>
-	<classpathentry kind="lib" path="lib/commons-fileupload-1.2.1.jar"/>
-	<classpathentry kind="lib" path="lib/commons-io-1.4.jar"/>
-	<classpathentry kind="lib" path="hibernate-lib/antlr-2.7.6.jar"/>
-        <classpathentry kind="lib" path="hibernate-lib/commons-collections-3.1.jar"/>
-        <classpathentry kind="lib" path="hibernate-lib/dom4j-1.6.1.jar"/>
-        <classpathentry kind="lib" path="hibernate-lib/hibernate-commons-annotations.jar"/>
-        <classpathentry kind="lib" path="hibernate-lib/hibernate3.jar"/>
-        <classpathentry kind="lib" path="hibernate-lib/javassist-3.9.0.GA.jar"/>
-        <classpathentry kind="lib" path="hibernate-lib/jta-1.1.jar"/>
-        <classpathentry kind="lib" path="hibernate-lib/slf4j-api-1.5.8.jar"/>
-        <classpathentry kind="lib" path="hibernate-lib/dom4j.jar"/>
-        <classpathentry kind="lib" path="hibernate-lib/ejb3-persistence.jar"/>
-        <classpathentry kind="lib" path="hibernate-lib/hibernate-core.jar"/>
-        <classpathentry kind="lib" path="hibernate-lib/slf4j-api.jar"/>
-        <classpathentry kind="lib" path="hibernate-lib/hibernate-entitymanager.jar"/>
-        <classpathentry kind="lib" path="hibernate-lib/hsqldb.jar"/>
-        <classpathentry kind="lib" path="hibernate-lib/hibernate-annotations.jar"/>
-        <classpathentry kind="lib" path="hibernate-lib/javassist.jar"/>
-        <classpathentry kind="lib" path="hibernate-lib/jta.jar"/>
-        <classpathentry kind="lib" path="hibernate-lib/slf4j-log4j12.jar"/>
-        <classpathentry kind="lib" path="hibernate-lib/log4j.jar"/>
-	<classpathentry kind="lib" path="hibernate-lib/postgresql-8.2-505.jdbc3.jar"/>
-	<classpathentry kind="lib" path="lib/slf4j-api-1.6.4.jar"/>
-	<classpathentry kind="lib" path="lib/slf4j-simple-1.6.4.jar"/>
+	<classpathentry kind="lib" path="lib/jwt-lib/servlet-api/servlet-api-3.0.jar"/>
+	<classpathentry kind="lib" path="lib/jwt-lib/jwt-3.2.0.jar"/>
+	<classpathentry kind="lib" path="lib/jwt-lib/commons-fileupload-1.2.1.jar"/>
+	<classpathentry kind="lib" path="lib/jwt-lib/commons-io-1.4.jar"/>
+	<classpathentry kind="lib" path="lib/jwt-lib/slf4j-api-1.6.4.jar"/>
+	<classpathentry kind="lib" path="lib/jwt-lib/slf4j-simple-1.6.4.jar"/>
+	<classpathentry kind="lib" path="lib/hibernate/antlr-2.7.6.jar"/>
+	<classpathentry kind="lib" path="lib/hibernate/commons-collections-3.1.jar"/>
+	<classpathentry kind="lib" path="lib/hibernate/dom4j-1.6.1.jar"/>
+	<classpathentry kind="lib" path="lib/hibernate/dom4j.jar"/>
+	<classpathentry kind="lib" path="lib/hibernate/ejb3-persistence.jar"/>
+	<classpathentry kind="lib" path="lib/hibernate/hibernate-annotations.jar"/>
+	<classpathentry kind="lib" path="lib/hibernate/hibernate-commons-annotations.jar"/>
+	<classpathentry kind="lib" path="lib/hibernate/hibernate-core.jar"/>
+	<classpathentry kind="lib" path="lib/hibernate/hibernate-entitymanager.jar"/>
+	<classpathentry kind="lib" path="lib/hibernate/hibernate3.jar"/>
+	<classpathentry kind="lib" path="lib/hibernate/hsqldb.jar"/>
+	<classpathentry kind="lib" path="lib/hibernate/javassist-3.9.0.GA.jar"/>
+	<classpathentry kind="lib" path="lib/hibernate/javassist.jar"/>
+	<classpathentry kind="lib" path="lib/hibernate/jta-1.1.jar"/>
+	<classpathentry kind="lib" path="lib/hibernate/jta.jar"/>
+	<classpathentry kind="lib" path="lib/hibernate/postgresql-8.2-505.jdbc3.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

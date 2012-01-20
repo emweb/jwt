@@ -1716,7 +1716,8 @@ _$_$endif_$_();
     if (_UAie) {
       _updateIFrame(fqstate);
     } else {
-      location.hash = fqstate;
+      if (fqstate.length > 0)
+	location.hash = fqstate;
       if (_UAwebkit) {
 	_fqstates[history.length] = fqstate;
 	_storeStates();

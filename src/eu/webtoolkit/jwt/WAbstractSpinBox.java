@@ -196,7 +196,7 @@ public abstract class WAbstractSpinBox extends WLineEdit {
 		}
 	}
 
-	void render(EnumSet<RenderFlag> flags) {
+	protected void render(EnumSet<RenderFlag> flags) {
 		if (!EnumUtils.mask(flags, RenderFlag.RenderFull).isEmpty()) {
 			boolean useNative = this.isNativeControl();
 			this.setup(useNative);

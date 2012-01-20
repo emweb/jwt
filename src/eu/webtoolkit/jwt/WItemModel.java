@@ -193,7 +193,7 @@ public abstract class WItemModel<Item extends Object> extends WAbstractItemModel
 	 * by <code>from</code> and <code>count</code> of the total list of items,
 	 * if not <code>count</code> will be -1 and all items should be returned at once.
 	 * 
-	 * When the item has no children, you should return an empty {@link java.util.List<Item>}.
+	 * When the item has no children, you should return an empty {@link java.util.List}.
 	 * <p>
 	 */
 	public abstract List<Item> getChildItems(Item parent, int from, int count);

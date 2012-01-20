@@ -439,7 +439,7 @@ public class WFileUpload extends WWebWidget {
 	private void onData(long current, long total) {
 		this.dataReceived_.trigger(current, total);
 		WebSession.Handler h = WebSession.Handler.getInstance();
-		long dataExceeded = 0;
+		long dataExceeded = 0L;
 		h.setRequest((WebRequest) null, (WebResponse) null);
 		if (dataExceeded != 0) {
 			if (this.uploading_) {
@@ -460,7 +460,7 @@ public class WFileUpload extends WWebWidget {
 		}
 	}
 
-	private void setRequestTooLarge(long size) {
+	void setRequestTooLarge(long size) {
 		this.fileTooLarge().trigger(size);
 	}
 

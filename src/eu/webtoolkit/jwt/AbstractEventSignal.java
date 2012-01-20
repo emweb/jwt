@@ -465,7 +465,7 @@ public abstract class AbstractEventSignal extends AbstractSignal {
 	 * Adds a JavaScript event listener.
 	 * 
 	 * This adds a listener that is implemented solely as a client-side JavaScript function.
-	 * The argument is a JavaScript function which optinally accepts a DOM element and the
+	 * The argument is a JavaScript function which optionally accepts a DOM element and the
 	 * event:
 	 * <pre>
 	 *   function(element, event)

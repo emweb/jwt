@@ -1,0 +1,324 @@
+/*
+ * Copyright (C) 2009 Emweb bvba, Leuven, Belgium.
+ *
+ * See the LICENSE file for terms of use.
+ */
+package eu.webtoolkit.jwt.auth;
+
+import java.util.*;
+import java.util.regex.*;
+import java.io.*;
+import java.lang.ref.*;
+import java.util.concurrent.locks.ReentrantLock;
+import javax.servlet.http.*;
+import javax.servlet.*;
+import eu.webtoolkit.jwt.*;
+import eu.webtoolkit.jwt.chart.*;
+import eu.webtoolkit.jwt.utils.*;
+import eu.webtoolkit.jwt.servlet.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+/**
+ * Model for implementing an authentication view.
+ * <p>
+ * 
+ * This model implements the logic for authenticating a user (the
+ * &quot;login&quot; interface). It implements traditional username/password
+ * registration, and third party identification methods (although for the
+ * latter, it doesn&apos;t really do anything).
+ * <p>
+ * The model exposes three fields:
+ * <ul>
+ * <li>LoginNameField: the login name (used as an identity for the
+ * {@link Identity#LoginName} provider)</li>
+ * <li>PasswordField: the password</li>
+ * <li>RememberMeField: whether the login should be remembered with an
+ * authentication cookie (if that is configured in the {@link AuthService}).</li>
+ * </ul>
+ * <p>
+ * When the model validates correctly ({@link AuthModel#validate() validate()}
+ * returns <code>true</code>), the entered credentials are correct. At that
+ * point you can use the {@link AuthModel#login(Login login) login()} utility
+ * function to login the identified user.
+ * <p>
+ * The model can also be used when the user is already known (e.g. to implement
+ * password confirmation before a critical operation). In that case you can set
+ * a value for the LoginNameField and make this field invisible or read-only.
+ * <p>
+ * The model also provides the client-side JavaScript logic to indicate password
+ * attempt throttling (
+ * {@link AuthModel#configureThrottling(WInteractWidget button)
+ * configureThrottling()} and
+ * {@link AuthModel#updateThrottling(WInteractWidget button) updateThrottling()}
+ * ).
+ * <p>
+ * 
+ * @see AuthWidget
+ */
+public class AuthModel extends FormBaseModel {
+	private static Logger logger = LoggerFactory.getLogger(AuthModel.class);
+
+	/**
+	 * Constructor.
+	 * <p>
+	 * Creates a new authentication model, using a basic authentication service
+	 * and user database.
+	 */
+	public AuthModel(AuthService baseAuth, AbstractUserDatabase users,
+			WObject parent) {
+		super(baseAuth, users, parent);
+		this.throttlingDelay_ = 0;
+		this.reset();
+	}
+
+	/**
+	 * Constructor.
+	 * <p>
+	 * Calls
+	 * {@link #AuthModel(AuthService baseAuth, AbstractUserDatabase users, WObject parent)
+	 * this(baseAuth, users, (WObject)null)}
+	 */
+	public AuthModel(AuthService baseAuth, AbstractUserDatabase users) {
+		this(baseAuth, users, (WObject) null);
+	}
+
+	public void reset() {
+		if (this.getBaseAuth().getIdentityPolicy() == IdentityPolicy.EmailAddressIdentity) {
+			this.addField(LoginNameField, WString.tr("Wt.Auth.email-info"));
+		} else {
+			this.addField(LoginNameField, WString.tr("Wt.Auth.user-name-info"));
+		}
+		this.addField(PasswordField, WString.tr("Wt.Auth.password-info"));
+		int days = this.getBaseAuth().getAuthTokenValidity() / 24 / 60;
+		WString info = WString.tr("Wt.Auth.remember-me-info");
+		if (days % 7 != 0) {
+			info.arg(String.valueOf(days) + " days");
+		} else {
+			info.arg(String.valueOf(days / 7) + " weeks");
+		}
+		this.addField(RememberMeField, info);
+		this.setValidation(RememberMeField, new WValidator.Result(
+				WValidator.State.Valid, info));
+	}
+
+	public boolean isVisible(String field) {
+		if (field == RememberMeField) {
+			return this.getBaseAuth().isAuthTokensEnabled();
+		} else {
+			return true;
+		}
+	}
+
+	public boolean validateField(String field) {
+		if (field == RememberMeField) {
+			return true;
+		}
+		User user = this.getUsers().findWithIdentity(Identity.LoginName,
+				this.valueText(LoginNameField));
+		if (field == LoginNameField) {
+			if (user.isValid()) {
+				this.setValid(LoginNameField);
+			} else {
+				this.setValidation(LoginNameField, new WValidator.Result(
+						WValidator.State.Invalid, WString
+								.tr("Wt.Auth.user-name-invalid")));
+				this.throttlingDelay_ = 0;
+			}
+			return user.isValid();
+		} else {
+			if (field == PasswordField) {
+				if (user.isValid()) {
+					PasswordResult r = this.getPasswordAuth().verifyPassword(
+							user, this.valueText(PasswordField));
+					switch (r) {
+					case PasswordInvalid:
+						this
+								.setValidation(
+										PasswordField,
+										new WValidator.Result(
+												WValidator.State.Invalid,
+												WString
+														.tr("Wt.Auth.password-invalid")));
+						if (this.getPasswordAuth().isAttemptThrottlingEnabled()) {
+							this.throttlingDelay_ = this.getPasswordAuth()
+									.delayForNextAttempt(user);
+						}
+						return false;
+					case LoginThrottling:
+						this.setValidation(PasswordField,
+								new WValidator.Result(WValidator.State.Invalid,
+										WString.tr("Wt.Auth.password-info")));
+						this.setValidated(PasswordField, false);
+						this.throttlingDelay_ = this.getPasswordAuth()
+								.delayForNextAttempt(user);
+						logger.warn(new StringWriter().append("secure:")
+								.append("throttling: ").append(
+										String.valueOf(this.throttlingDelay_))
+								.append(" seconds for ").append(
+										user.identity(Identity.LoginName))
+								.toString());
+						return false;
+					case PasswordValid:
+						this.setValid(PasswordField);
+						return true;
+					}
+					return false;
+				} else {
+					return false;
+				}
+			} else {
+				return false;
+			}
+		}
+	}
+
+	public boolean validate() {
+		AbstractUserDatabase.Transaction t = this.getUsers().startTransaction();
+		boolean result = super.validate();
+		if (t != null) {
+			t.commit();
+		}
+		return result;
+	}
+
+	/**
+	 * Initializes client-side login throttling.
+	 * <p>
+	 * If login attempt throttling is enabled, then this may also be indicated
+	 * client-side using JavaScript by disabling the login button and showing a
+	 * count-down indicator. This method initializes this JavaScript utlity
+	 * function for a login button.
+	 * <p>
+	 * 
+	 * @see AuthModel#updateThrottling(WInteractWidget button)
+	 */
+	public void configureThrottling(WInteractWidget button) {
+		if (this.getPasswordAuth() != null
+				&& this.getPasswordAuth().isAttemptThrottlingEnabled()) {
+			WApplication app = WApplication.getInstance();
+			app.loadJavaScript("js/AuthModel.js", wtjs1());
+			button.doJavaScript("new Wt3_2_0.AuthThrottle(Wt3_2_0,"
+					+ button.getJsRef()
+					+ ","
+					+ WString.toWString(WString.tr("Wt.Auth.throttle-retry"))
+							.getJsStringLiteral() + ");");
+		}
+	}
+
+	/**
+	 * Updates client-side login throttling.
+	 * <p>
+	 * This should be called after a call to attemptPasswordLogin(), if you want
+	 * to reflect throttling using a client-side count-down indicator in the
+	 * button.
+	 * <p>
+	 * You need to call
+	 * {@link AuthModel#configureThrottling(WInteractWidget button)
+	 * configureThrottling()} before you can do this.
+	 */
+	public void updateThrottling(WInteractWidget button) {
+		if (this.getPasswordAuth() != null
+				&& this.getPasswordAuth().isAttemptThrottlingEnabled()) {
+			StringBuilder s = new StringBuilder();
+			s.append("jQuery.data(").append(button.getJsRef()).append(
+					", 'throttle').reset(").append(this.throttlingDelay_)
+					.append(");");
+			button.doJavaScript(s.toString());
+		}
+	}
+
+	/**
+	 * Logs the user in.
+	 * <p>
+	 * Logs in the user after a successful call to {@link AuthModel#validate()
+	 * validate()}. To avoid mishaps, you should call this method immediately
+	 * after a call to {@link AuthModel#validate() validate()}.
+	 * <p>
+	 * Returns whether the user could be logged in.
+	 */
+	public boolean login(Login login) {
+		if (this.isValid()) {
+			User user = this.getUsers().findWithIdentity(Identity.LoginName,
+					this.valueText(LoginNameField));
+			if (user.isValid()) {
+				Object v = this.getValue(RememberMeField);
+				if (!(v == null) && (Boolean) v == true) {
+					WApplication app = WApplication.getInstance();
+					app.setCookie(this.getBaseAuth().getAuthTokenCookieName(),
+							this.getBaseAuth().createAuthToken(user), this
+									.getBaseAuth().getAuthTokenValidity() * 60);
+				}
+				login.login(user);
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * Processes an email token.
+	 * <p>
+	 * This simply calls
+	 * {@link AuthService#processEmailToken(String token, AbstractUserDatabase users)
+	 * AuthService#processEmailToken()}.
+	 */
+	public EmailTokenResult processEmailToken(String token) {
+		return this.getBaseAuth().processEmailToken(token, this.getUsers());
+	}
+
+	/**
+	 * Detects and processes an authentication token.
+	 * <p>
+	 * This returns a user that was identified with an authentication token
+	 * found in the application environment, or an invalid User() if this
+	 * feature is not configured, or no valid cookie was found.
+	 * <p>
+	 * 
+	 * @see AuthService#processAuthToken(String token, AbstractUserDatabase
+	 *      users)
+	 */
+	public User processAuthToken() {
+		WApplication app = WApplication.getInstance();
+		WEnvironment env = app.getEnvironment();
+		if (this.getBaseAuth().isAuthTokensEnabled()) {
+			String token = env.getCookieValue(this.getBaseAuth()
+					.getAuthTokenCookieName());
+			if (token != null) {
+				AuthTokenResult result = this.getBaseAuth().processAuthToken(
+						token, this.getUsers());
+				switch (result.getResult()) {
+				case Valid:
+					app.setCookie(this.getBaseAuth().getAuthTokenCookieName(),
+							result.getNewToken(), this.getBaseAuth()
+									.getAuthTokenValidity() * 60);
+					return result.getUser();
+				case Invalid:
+					app.setCookie(this.getBaseAuth().getAuthTokenCookieName(),
+							"", 0);
+					return new User();
+				}
+			}
+		}
+		return new User();
+	}
+
+	private int throttlingDelay_;
+
+	static WJavaScriptPreamble wtjs1() {
+		return new WJavaScriptPreamble(
+				JavaScriptScope.WtClassScope,
+				JavaScriptObjectType.JavaScriptConstructor,
+				"AuthThrottle",
+				"function(e,a,h){function f(){clearInterval(b);b=null;e.setHtml(a,d);a.disabled=false;d=null}function g(){if(c==0)f();else{e.setHtml(a,h.replace(\"{1}\",c));--c}}jQuery.data(a,\"throttle\",this);var b=null,d=null,c=0;this.reset=function(i){b&&f();d=a.innerHTML;if(c=i){b=setInterval(g,1E3);a.disabled=true;g()}}}");
+	}
+
+	/**
+	 * Password field.
+	 */
+	public static final String PasswordField = "password";
+	/**
+	 * Remember-me field.
+	 */
+	public static final String RememberMeField = "remember-me";
+}

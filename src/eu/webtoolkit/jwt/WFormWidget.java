@@ -518,7 +518,7 @@ public abstract class WFormWidget extends WInteractWidget {
 	// protected AbstractEventSignal.LearningListener
 	// getStateless(<pointertomember or dependentsizedarray>
 	// methodpointertomember or dependentsizedarray>) ;
-	void render(EnumSet<RenderFlag> flags) {
+	protected void render(EnumSet<RenderFlag> flags) {
 		if (!EnumUtils.mask(flags, RenderFlag.RenderFull).isEmpty()
 				&& this.flags_.get(BIT_JS_OBJECT)) {
 			this.defineJavaScript(true);

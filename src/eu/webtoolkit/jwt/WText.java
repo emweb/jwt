@@ -473,7 +473,7 @@ public class WText extends WInteractWidget {
 
 	private WLength[] padding_;
 
-	void render(EnumSet<RenderFlag> flags) {
+	protected void render(EnumSet<RenderFlag> flags) {
 		if (this.flags_.get(BIT_TEXT_CHANGED)) {
 			this.autoAdjustInline();
 		}

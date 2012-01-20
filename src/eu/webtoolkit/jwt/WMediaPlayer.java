@@ -1132,7 +1132,7 @@ public class WMediaPlayer extends WCompositeWidget {
 		ui.bindString("title-display", (this.title_.length() == 0) ? "none"
 				: "");
 		this
-				.setStyleClass(this.mediaType_ == WMediaPlayer.MediaType.Video ? "jp-video"
+				.addStyleClass(this.mediaType_ == WMediaPlayer.MediaType.Video ? "jp-video"
 						: "jp-audio");
 		this.setControlsWidget(ui);
 	}

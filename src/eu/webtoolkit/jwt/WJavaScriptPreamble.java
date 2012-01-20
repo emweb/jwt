@@ -19,7 +19,10 @@ import eu.webtoolkit.jwt.servlet.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-class WJavaScriptPreamble {
+/**
+ * Class for internal use.
+ */
+public class WJavaScriptPreamble {
 	private static Logger logger = LoggerFactory
 			.getLogger(WJavaScriptPreamble.class);
 

@@ -328,14 +328,14 @@ public class StringUtils {
 		return expanded;
 	}
 
-	static String append(String s, char c) {
+	public static String append(String s, char c) {
 		if (s.length() == 0 || s.charAt(s.length() - 1) != c)
 		    return s + c;
 		  else
 		    return s;
 	}
 	
-	static String prepend(String s, char c) {
+	public static String prepend(String s, char c) {
 		if (s.length() == 0 || s.charAt(0) != c)
 		    return c + s;
 		  else

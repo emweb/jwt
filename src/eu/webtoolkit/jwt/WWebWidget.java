@@ -790,7 +790,12 @@ public abstract class WWebWidget extends WWidget {
 	}
 
 	/**
-	 * Escape HTML control characters in the text, to display literally.
+	 * Escape HTML control characters in the text, to display literally
+	 * (<b>deprecated</b>).
+	 * <p>
+	 * 
+	 * @deprecated use Utils::htmlEncode(WString text,
+	 *             EnumSet&lt;HtmlEncodingFlag&gt; flags) instead.
 	 */
 	public static WString escapeText(CharSequence text, boolean newlinestoo) {
 		String result = text.toString();
@@ -799,7 +804,8 @@ public abstract class WWebWidget extends WWidget {
 	}
 
 	/**
-	 * Escape HTML control characters in the text, to display literally.
+	 * Escape HTML control characters in the text, to display literally
+	 * (<b>deprecated</b>).
 	 * <p>
 	 * Returns {@link #escapeText(CharSequence text, boolean newlinestoo)
 	 * escapeText(text, false)}
@@ -809,7 +815,12 @@ public abstract class WWebWidget extends WWidget {
 	}
 
 	/**
-	 * Escape HTML control characters in the text, to display literally.
+	 * Escape HTML control characters in the text, to display literally
+	 * (<b>deprecated</b>).
+	 * <p>
+	 * 
+	 * @deprecated use Utils::htmlEncode(String text,
+	 *             EnumSet&lt;HtmlEncodingFlag&gt; flags) instead.
 	 */
 	public static String escapeText(String text, boolean newlinestoo) {
 		EscapeOStream sout = new EscapeOStream();
@@ -824,7 +835,8 @@ public abstract class WWebWidget extends WWidget {
 	}
 
 	/**
-	 * Escape HTML control characters in the text, to display literally.
+	 * Escape HTML control characters in the text, to display literally
+	 * (<b>deprecated</b>).
 	 * <p>
 	 * Returns {@link #escapeText(String text, boolean newlinestoo)
 	 * escapeText(text, false)}
@@ -834,7 +846,8 @@ public abstract class WWebWidget extends WWidget {
 	}
 
 	/**
-	 * Remove tags/attributes from text that are not passive.
+	 * Remove tags/attributes from text that are not passive
+	 * (<b>deprecated</b>).
 	 * <p>
 	 * This removes tags and attributes from XHTML-formatted text that do not
 	 * simply display something but may trigger scripting, and could have been
@@ -846,6 +859,9 @@ public abstract class WWebWidget extends WWidget {
 	 * <p>
 	 * Modifies the <code>text</code> if needed. When the text is not proper
 	 * XML, returns <code>false</code>.
+	 * <p>
+	 * 
+	 * @deprecated use Utils::removeScript(CharSequence text) instead.
 	 */
 	public static boolean removeScript(CharSequence text) {
 		return XSSFilter.removeScript(text);
@@ -1804,7 +1820,7 @@ public abstract class WWebWidget extends WWidget {
 		}
 	}
 
-	void render(EnumSet<RenderFlag> flags) {
+	protected void render(EnumSet<RenderFlag> flags) {
 		super.render(flags);
 		if (this.otherImpl_ != null
 				&& this.otherImpl_.delayedDoJavaScript_ != null) {

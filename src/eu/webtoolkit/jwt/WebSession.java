@@ -200,7 +200,8 @@ class WebSession {
 			break;
 		case ExpectLoad:
 		case Loaded:
-			if (handler.getResponse().getResponseType() == WebRequest.ResponseType.Page) {
+			if ((!(requestE != null) || !requestE.equals("resource"))
+					&& handler.getResponse().getResponseType() == WebRequest.ResponseType.Page) {
 				if (!this.env_.agentIsIE()) {
 					if (!handler.getRequest().getHeaderValue("User-Agent")
 							.equals(this.env_.getUserAgent())) {
@@ -273,8 +274,8 @@ class WebSession {
 				this.render(handler);
 			} else {
 				try {
-					if (0 != 0) {
-						this.app_.requestTooLarge().trigger(0);
+					if (0L != 0) {
+						this.app_.requestTooLarge().trigger(0L);
 					}
 				} catch (RuntimeException e) {
 					logger.error(new StringWriter().append(
@@ -686,13 +687,12 @@ class WebSession {
 			}
 		} else {
 			if (this.isUseUglyInternalPaths()) {
-				return baseUrl + "?_=" + DomElement.urlEncodeS(internalPath);
+				return baseUrl + "?_=" + Utils.urlEncode(internalPath);
 			} else {
 				if (this.applicationName_.length() == 0) {
-					return baseUrl
-							+ DomElement.urlEncodeS(internalPath.substring(1));
+					return baseUrl + Utils.urlEncode(internalPath.substring(1));
 				} else {
-					return baseUrl + DomElement.urlEncodeS(internalPath);
+					return baseUrl + Utils.urlEncode(internalPath);
 				}
 			}
 		}
@@ -743,8 +743,8 @@ class WebSession {
 				Map.Entry<String, String[]> i = i_it.next();
 				if (!i.getKey().equals("_")) {
 					url += (firstParameter ? '?' : '&')
-							+ DomElement.urlEncodeS(i.getKey()) + '='
-							+ DomElement.urlEncodeS(i.getValue()[0]);
+							+ Utils.urlEncode(i.getKey()) + '='
+							+ Utils.urlEncode(i.getValue()[0]);
 					firstParameter = false;
 				}
 			}
@@ -776,7 +776,7 @@ class WebSession {
 					.getInternalPath() : this.env_.getInternalPath();
 			if (this.isUseUglyInternalPaths()) {
 				if (internalPath.length() > 1) {
-					url = "?_=" + DomElement.urlEncodeS(internalPath);
+					url = "?_=" + Utils.urlEncode(internalPath);
 				}
 				if (isAbsoluteUrl(this.applicationUrl_)) {
 					url = this.applicationUrl_ + url;
@@ -1485,11 +1485,11 @@ class WebSession {
 					}
 				} catch (WException e) {
 					logger.error(new StringWriter().append("fatal error: ")
-							.append(e.getWhat()).toString());
+							.append(e.toString()).toString());
 					e.printStackTrace();
 					this.kill();
 					if (handler.getResponse() != null) {
-						this.serveError(500, handler, e.getWhat());
+						this.serveError(500, handler, e.toString());
 					}
 				} catch (RuntimeException e) {
 					logger.error(new StringWriter().append("fatal error: ")
@@ -1811,7 +1811,7 @@ class WebSession {
 							WebSession.SignalKind kind = WebSession.SignalKind
 									.values()[k];
 							if (kind == WebSession.SignalKind.AutoLearnStateless
-									&& 0 != 0) {
+									&& 0L != 0) {
 								break;
 							}
 							AbstractEventSignal s;
@@ -1868,10 +1868,10 @@ class WebSession {
 			Map.Entry<String, WObject> i = i_it.next();
 			String formName = i.getKey();
 			WObject obj = i.getValue();
-			if (!(0 != 0)) {
+			if (!(0L != 0)) {
 				obj.setFormData(getFormData(request, se + formName));
 			} else {
-				obj.setRequestTooLarge(0);
+				obj.setRequestTooLarge(0L);
 			}
 		}
 	}
@@ -1972,7 +1972,7 @@ class WebSession {
 	static UploadedFile uf;
 
 	static boolean isAbsoluteUrl(String url) {
-		return url.indexOf("://") != -1;
+		return url.indexOf(":") != -1;
 	}
 
 	static String host(String url) {

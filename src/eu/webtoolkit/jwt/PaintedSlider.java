@@ -32,7 +32,7 @@ class PaintedSlider extends WPaintedWidget {
 		this.mouseUpJS_ = new JSlot();
 		this.setStyleClass("Wt-slider-bg");
 		this.slider_
-				.setStyleClass("Wt-slider-"
+				.addStyleClass("Wt-slider-"
 						+ (this.slider_.getOrientation() == Orientation.Horizontal ? "h"
 								: "v"));
 		if (this.slider_.getPositionScheme() == PositionScheme.Static) {
@@ -78,38 +78,42 @@ class PaintedSlider extends WPaintedWidget {
 		String ppU = String.valueOf(pixelsPerUnit);
 		String minimumS = String.valueOf(this.slider_.getMinimum());
 		String maximumS = String.valueOf(this.slider_.getMaximum());
-		this.mouseDownJS_
-				.setJavaScript("function(obj, event) {obj.setAttribute('down', Wt3_2_0.widgetCoordinates(obj, event)."
-						+ u + "); Wt3_2_0.cancelEvent(event);}");
+		String mouseDownJS = "obj.setAttribute('down', Wt3_2_0.widgetCoordinates(obj, event)."
+				+ u + "); Wt3_2_0.cancelEvent(event);";
 		String computeD = "var objh = " + this.handle_.getJsRef() + ",objb = "
 				+ this.getJsRef() + ",u = WT.pageCoordinates(event)." + u
 				+ " - down,w = WT.widgetPageCoordinates(objb)." + u
 				+ ",d = u-w;";
-		this.mouseMovedJS_
-				.setJavaScript("function(obj, event) {var down = obj.getAttribute('down');var WT = Wt3_2_0;if (down != null && down != '') {"
-						+ computeD
-						+ "d = Math.max(0, Math.min(d, "
-						+ maxS
-						+ "));var v = Math.round(d/"
-						+ ppU
-						+ ");var intd = v*"
-						+ ppU
-						+ ";if (Math.abs(WT.pxself(objh, '"
-						+ dir
-						+ "') - intd) > 1) {objh.style."
-						+ dir
-						+ " = intd + 'px';"
-						+ this.slider_.sliderMoved().createCall(
-								o == Orientation.Horizontal ? "v + " + minimumS
-										: maximumS + " - v") + "}}}");
-		this.mouseUpJS_
-				.setJavaScript("function(obj, event) {var down = obj.getAttribute('down');var WT = Wt3_2_0;if (down != null && down != '') {"
-						+ computeD
-						+ "d += "
-						+ String.valueOf(HANDLE_WIDTH / 2)
-						+ ";"
-						+ this.sliderReleased_.createCall("d")
-						+ "obj.removeAttribute('down');}}");
+		String mouseMovedJS = "var down = obj.getAttribute('down');var WT = Wt3_2_0;if (down != null && down != '') {"
+				+ computeD
+				+ "d = Math.max(0, Math.min(d, "
+				+ maxS
+				+ "));var v = Math.round(d/"
+				+ ppU
+				+ ");var intd = v*"
+				+ ppU
+				+ ";if (Math.abs(WT.pxself(objh, '"
+				+ dir
+				+ "') - intd) > 1) {objh.style."
+				+ dir
+				+ " = intd + 'px';"
+				+ this.slider_.sliderMoved().createCall(
+						o == Orientation.Horizontal ? "v + " + minimumS
+								: maximumS + " - v") + "}}";
+		String mouseUpJS = "var down = obj.getAttribute('down');var WT = Wt3_2_0;if (down != null && down != '') {"
+				+ computeD
+				+ "d += "
+				+ String.valueOf(HANDLE_WIDTH / 2)
+				+ ";"
+				+ this.sliderReleased_.createCall("d")
+				+ "obj.removeAttribute('down');}";
+		boolean enabled = !this.slider_.isDisabled();
+		this.mouseDownJS_.setJavaScript("function(obj, event) {"
+				+ (enabled ? mouseDownJS : "") + "}");
+		this.mouseMovedJS_.setJavaScript("function(obj, event) {"
+				+ (enabled ? mouseMovedJS : "") + "}");
+		this.mouseUpJS_.setJavaScript("function(obj, event) {"
+				+ (enabled ? mouseUpJS : "") + "}");
 		this.update();
 		this.updateSliderPosition();
 	}
@@ -164,6 +168,17 @@ class PaintedSlider extends WPaintedWidget {
 			this.resize(width, h);
 		}
 		this.updateState();
+	}
+
+	public void propagateSetEnabled(boolean enabled) {
+		if (enabled) {
+			this.removeStyleClass("Wt-disabled");
+			this.slider_.removeStyleClass("Wt-disabled");
+		} else {
+			this.addStyleClass("Wt-disabled");
+			this.slider_.addStyleClass("Wt-disabled");
+		}
+		super.propagateSetEnabled(enabled);
 	}
 
 	protected void paintEvent(WPaintDevice paintDevice) {

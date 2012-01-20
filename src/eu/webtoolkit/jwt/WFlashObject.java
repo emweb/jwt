@@ -235,10 +235,8 @@ public class WFlashObject extends WWebWidget {
 					if (i != this.variables_.entrySet().iterator()) {
 						ss.append("&");
 					}
-					ss.append(DomElement.urlEncodeS(i.getKey())).append("=")
-							.append(
-									DomElement.urlEncodeS(i.getValue()
-											.toString()));
+					ss.append(Utils.urlEncode(i.getKey())).append("=").append(
+							Utils.urlEncode(i.getValue().toString()));
 				}
 				DomElement param = DomElement
 						.createNew(DomElementType.DomElement_PARAM);

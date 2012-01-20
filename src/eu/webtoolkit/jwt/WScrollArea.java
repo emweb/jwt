@@ -118,6 +118,10 @@ public class WScrollArea extends WWebWidget {
 		this.repaint(EnumSet.of(RepaintFlag.RepaintInnerHtml));
 		if (widget != null) {
 			widget.setParentWidget(this);
+			if (WApplication.getInstance().getEnvironment().agentIsIElt(9)) {
+				this.setPositionScheme(PositionScheme.Relative);
+				widget.setPositionScheme(PositionScheme.Relative);
+			}
 		}
 	}
 

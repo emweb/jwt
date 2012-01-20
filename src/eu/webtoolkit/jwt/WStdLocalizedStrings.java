@@ -56,7 +56,7 @@ public class WStdLocalizedStrings extends WLocalizedStrings {
 		defaultBundles.add(loadResourceBundle(bundleName, new Locale("")));
 	}
 
-	void useBuiltin(String bundleName) {
+	public void useBuiltin(String bundleName) {
 		use(bundleName);
 	}
 

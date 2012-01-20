@@ -332,12 +332,20 @@ public class WAnimation {
 		return this.duration_;
 	}
 
-	// public void setTimingFunction(WAnimation.TimingFunction function) ;
+	/**
+	 * Sets a timing function.
+	 * <p>
+	 * The default timinig function is {@link WAnimation.TimingFunction#Linear}.
+	 */
+	public void setTimingFunction(WAnimation.TimingFunction tf) {
+		this.timing_ = tf;
+	}
+
 	/**
 	 * Returns the timing function.
 	 * <p>
 	 * 
-	 * @see WAnimation#setTimingFunction(WAnimation.TimingFunction function)
+	 * @see WAnimation#setTimingFunction(WAnimation.TimingFunction tf)
 	 */
 	public WAnimation.TimingFunction getTimingFunction() {
 		return this.timing_;

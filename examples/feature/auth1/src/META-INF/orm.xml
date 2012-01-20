@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<entity-mappings xmlns="http://java.sun.com/xml/ns/persistence/orm" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/persistence/orm http://java.sun.com/xml/ns/persistence/orm_2_0.xsd" version="1.0">
+    <persistence-unit-metadata>
+    <xml-mapping-metadata-complete/>
+    </persistence-unit-metadata>
+    
+    <package>eu.webtoolkit.jwt.auth.jpa</package>
+    
+    <entity class="AbstractUser">
+    	<table name="abstract_user"></table>
+    	<attributes>
+			<id name="id">
+				<generated-value strategy="AUTO"/>
+			</id>
+			
+			<version name="version"></version>
+		</attributes>
+    </entity>
+    
+	<entity class="AuthInfo">
+		<table name="auth_info"></table>
+		<attributes>
+			<id name="id">
+				<generated-value strategy="AUTO"/>
+			</id>
+			<basic name="passwordHash" >
+				<column name="password_hash"/>
+			</basic>
+			<basic name="passwordMethod" >
+				<column name="password_method"/>
+			</basic>
+			<basic name="passwordSalt" >
+				<column name="password_salt"/>
+			</basic>
+			<basic name="status" />
+			<basic name="failedLoginAttempts" >
+				<column name="failed_login_attempts"/>
+			</basic>
+			<basic name="lastLoginAttempt" >
+				<column name="last_login_attempt"/>
+				<temporal>DATE</temporal>
+			</basic>
+			<basic name="email" />
+			<basic name="unverifiedEmail" >
+				<column name="unverified_email"/>
+			</basic>
+			<basic name="emailToken" >
+				<column name="email_token"/>
+			</basic>
+			<basic name="emailTokenExpires" >
+				<column name="email_token_expires"/>
+			</basic>
+			<basic name="emailTokenRole" >
+				<column name="email_token_role"/>
+			</basic>
+			
+			<version name="version"></version>
+
+			<one-to-many name="authTokens" mapped-by="authInfo">
+				<cascade>
+					<cascade-all />
+				</cascade>
+			</one-to-many>
+			<one-to-many name="authIdentities" mapped-by="authInfo">
+				<cascade>
+					<cascade-all />
+				</cascade>
+			</one-to-many>
+			
+			<one-to-one name="user" fetch="LAZY">
+				<join-column name="user_id" />
+				<cascade>
+					<cascade-all />
+				</cascade>
+			</one-to-one>
+		</attributes>
+	</entity>
+	
+	<entity class="AuthToken">
+		<table name="auth_token"></table>
+		<attributes>
+			<id name="id">
+				<generated-value strategy="AUTO"/>
+			</id>
+			
+			<basic name="value" />
+			<basic name="expiryDate" >
+				<column name="expiry_date"/>
+				<temporal>DATE</temporal>
+			</basic>
+			
+			<version name="version"></version>
+			
+			<many-to-one name="authInfo" fetch="LAZY">
+				<join-column name="auth_info_id" />
+			</many-to-one>
+		</attributes>
+	</entity>
+	
+	<entity class="AuthIdentity">
+		<table name="auth_identity"></table>
+		<attributes>
+			<id name="id">
+				<generated-value strategy="AUTO"/>
+			</id>
+			
+			<basic name="provide" />
+			<basic name="identity" />
+			
+			<version name="version"></version>
+			
+			<many-to-one name="authInfo" fetch="LAZY">
+				<join-column name="auth_info_id" />
+			</many-to-one>
+		</attributes>
+	</entity>
+</entity-mappings>

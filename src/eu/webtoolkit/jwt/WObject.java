@@ -51,7 +51,7 @@ public class WObject {
 		this(null);
 	}
 
-	WObject(WObject parent) {
+	protected WObject(WObject parent) {
 		id_ = nextObjId_++;
 		parent_ = parent;
 		objectName_ = "";
@@ -73,7 +73,7 @@ public class WObject {
 		return parent_ != null;
 	}
 
-	void addChild(WObject child) {
+	protected void addChild(WObject child) {
 		child.setParent(this);
 	}
 
@@ -129,7 +129,7 @@ public class WObject {
 	void setFormData(FormData formData) {
 	}
 
-	void setRequestTooLarge(int size) {
+	void setRequestTooLarge(long size) {
 	}
 
 	void formDataSet() {

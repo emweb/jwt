@@ -37,7 +37,7 @@ public class Signal extends AbstractSignal {
 	public Signal() {
 	}
 
-	Signal(WObject sender) {
+	public Signal(WObject sender) {
 		this();
 	}
 

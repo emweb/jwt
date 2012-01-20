@@ -137,7 +137,7 @@ public class WApplication extends WObject {
 	 */
 	public WApplication(WEnvironment env) {
 		super();
-		this.requestTooLarge_ = new Signal1<Integer>();
+		this.requestTooLarge_ = new Signal1<Long>();
 		this.session_ = env.session_;
 		this.title_ = new WString();
 		this.closeMessage_ = new WString();
@@ -943,7 +943,8 @@ public class WApplication extends WObject {
 	 * for inclusion in an email.
 	 * <p>
 	 * You may want to reimplement this method when the application is hosted
-	 * behind a reverse proxy or when in general the returned URL is wrong.
+	 * behind a reverse proxy or in general the public URL of the application
+	 * cannot be guessed correctly by the application.
 	 */
 	public String makeAbsoluteUrl(String url) {
 		return this.session_.makeAbsoluteUrl(url);
@@ -1717,8 +1718,8 @@ public class WApplication extends WObject {
 	public static String readConfigurationProperty(String name, String value) {
 		WebSession session = WebSession.getInstance();
 		if (session != null) {
-			return session.getEnv().getServer().readConfigurationProperty(name,
-					value);
+			return (value = session.getEnv().getServer()
+					.readConfigurationProperty(name, value));
 		} else {
 			return value;
 		}
@@ -2129,7 +2130,7 @@ public class WApplication extends WObject {
 	 * <p>
 	 * The integer parameter is the request size that was received in bytes.
 	 */
-	public Signal1<Integer> requestTooLarge() {
+	public Signal1<Long> requestTooLarge() {
 		return this.requestTooLarge_;
 	}
 
@@ -2296,9 +2297,8 @@ public class WApplication extends WObject {
 				&& this.session_.hasSessionIdInUrl();
 		if (needRedirect) {
 			WtServlet c = this.session_.getController();
-			return "?request=redirect&url=" + DomElement.urlEncodeS(url)
-					+ "&hash="
-					+ DomElement.urlEncodeS(c.computeRedirectHash(url));
+			return "?request=redirect&url=" + Utils.urlEncode(url) + "&hash="
+					+ Utils.urlEncode(c.computeRedirectHash(url));
 		} else {
 			return url;
 		}
@@ -2433,7 +2433,7 @@ public class WApplication extends WObject {
 		this.quit();
 	}
 
-	private Signal1<Integer> requestTooLarge_;
+	private Signal1<Long> requestTooLarge_;
 
 	static class ScriptLibrary {
 		private static Logger logger = LoggerFactory
@@ -2620,7 +2620,7 @@ public class WApplication extends WObject {
 		if (resource.getInternalPath().length() == 0) {
 			return this.session_.getMostRelativeUrl(fn)
 					+ "&request=resource&resource="
-					+ DomElement.urlEncodeS(resource.getId()) + "&rand="
+					+ Utils.urlEncode(resource.getId()) + "&rand="
 					+ String.valueOf(seq++);
 		} else {
 			fn = resource.getInternalPath() + fn;

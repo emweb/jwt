@@ -360,12 +360,11 @@ class WebRenderer implements SlotLearnerInterface {
 			if (value.length() == 0) {
 				value = "deleted";
 			}
-			header.append(DomElement.urlEncodeS(i.getKey())).append('=')
-					.append(DomElement.urlEncodeS(value))
-					.append("; Version=1;");
+			header.append(Utils.urlEncode(i.getKey())).append('=').append(
+					Utils.urlEncode(value)).append("; Version=1;");
 			if (!(cookie.expires == null)) {
 				String d = cookie.expires.toString(new WString(
-						"ddd, dd MMM yyyy hh:mm:ss 'GMT'").toString());
+						"ddd, dd-MMM-yyyy hh:mm:ss 'GMT'").toString());
 				header.append(" Expires=").append(d).append(';');
 			}
 			if (cookie.domain.length() != 0) {
@@ -377,7 +376,9 @@ class WebRenderer implements SlotLearnerInterface {
 			} else {
 				header.append(" Path=").append(cookie.path).append(';');
 			}
-			header.append(" httponly;");
+			if (!response.isWebSocketMessage()) {
+				header.append(" httponly;");
+			}
 			if (cookie.secure) {
 				header.append(" secure;");
 			}
@@ -519,8 +520,8 @@ class WebRenderer implements SlotLearnerInterface {
 					if (params.length() != 0) {
 						params += '&';
 					}
-					params += DomElement.urlEncodeS(i.getKey()) + '='
-							+ DomElement.urlEncodeS(i.getValue()[0]);
+					params += Utils.urlEncode(i.getKey()) + '='
+							+ Utils.urlEncode(i.getValue()[0]);
 				}
 			}
 			script.setVar("PARAMS", params);
@@ -541,6 +542,7 @@ class WebRenderer implements SlotLearnerInterface {
 			if (!this.rendered_) {
 				this.serveMainAjax(response);
 			} else {
+				boolean enabledAjax = app.enableAjax_;
 				if (app.enableAjax_) {
 					this.collectedJS1_
 							.append(
@@ -591,6 +593,16 @@ class WebRenderer implements SlotLearnerInterface {
 						this.collectedJS2_.toString()).append("};");
 				this.session_.getApp().serverPushChanged_ = true;
 				this.renderSetServerPush(response.out());
+				if (enabledAjax) {
+					response
+							.out()
+							.append(
+									"\nif (typeof document.readyState === 'undefined')")
+							.append(" setTimeout(function() { ").append(
+									app.getJavaScriptClass()).append(
+									"._p_.load(true);").append("}, 400);")
+							.append("else ");
+				}
 				response.out().append("$(document).ready(function() { ")
 						.append(app.getJavaScriptClass()).append(
 								"._p_.load(true);});\n");

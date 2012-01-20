@@ -421,6 +421,13 @@ public class WSlider extends WFormWidget {
 		return this.sliderMoved_;
 	}
 
+	public void setDisabled(boolean disabled) {
+		if (this.paintedSlider_ != null) {
+			this.paintedSlider_.setDisabled(disabled);
+		}
+		super.setDisabled(disabled);
+	}
+
 	public void resize(WLength width, WLength height) {
 		super.resize(width, height);
 		if (this.paintedSlider_ != null) {
@@ -452,7 +459,7 @@ public class WSlider extends WFormWidget {
 		}
 	}
 
-	void render(EnumSet<RenderFlag> flags) {
+	protected void render(EnumSet<RenderFlag> flags) {
 		if (!EnumUtils.mask(flags, RenderFlag.RenderFull).isEmpty()) {
 			boolean useNative = this.isNativeControl();
 			if (!useNative) {

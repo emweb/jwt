@@ -299,11 +299,11 @@ public class WEnvironment {
 	 * This returns all cookies that were present in initial request for the
 	 * application. Cookies set with
 	 * {@link WApplication#setCookie(String name, String value, int maxAge, String domain, String path, boolean secure)
-	 * WApplication#setCookie()} are not taken into considerations.
+	 * WApplication#setCookie()} are not taken into consideration.
 	 * <p>
-	 * Cookies allow you to persist information across sessions.
-	 * <p>
-	 * Not all clients may support cookies or have cookies enabled.
+	 * Cookies allow you to persist information across sessions, but note that
+	 * not all clients may support cookies or may some clients may be configured
+	 * to block cookies.
 	 * <p>
 	 * 
 	 * @see WEnvironment#supportsCookies()
@@ -1211,30 +1211,27 @@ public class WEnvironment {
 	}
 
 	private static void parseCookies(String cookie, Map<String, String> result) {
-		List<String> list = new ArrayList<String>();
-		list = new ArrayList<String>(Arrays.asList(cookie.split(";")));
-		for (int i = 0; i < list.size(); ++i) {
-			int e = list.get(i).indexOf('=');
-			String cookieName = list.get(i).substring(0, 0 + e);
-			String cookieValue = e != -1 && list.get(i).length() > e + 1 ? list
-					.get(i).substring(e + 1) : "";
-			cookieName = cookieName.trim();
-			cookieValue = cookieValue.trim();
-			try {
+		try {
+			List<String> list = new ArrayList<String>();
+			list = new ArrayList<String>(Arrays.asList(cookie.split(";")));
+			for (int i = 0; i < list.size(); ++i) {
+				int e = list.get(i).indexOf('=');
+				String cookieName = list.get(i).substring(0, 0 + e);
+				String cookieValue = e != -1 && list.get(i).length() > e + 1 ? list
+						.get(i).substring(e + 1)
+						: "";
+				cookieName = cookieName.trim();
+				cookieValue = cookieValue.trim();
 				cookieName = java.net.URLDecoder.decode(cookieName, "UTF-8");
-			} catch (UnsupportedEncodingException eee) {
-				// I don't think so
-			}
-			;
-			try {
+				;
 				cookieValue = java.net.URLDecoder.decode(cookieValue, "UTF-8");
-			} catch (UnsupportedEncodingException eee) {
-				// I don't think so
+				;
+				if (!cookieName.equals("")) {
+					result.put(cookieName, cookieValue);
+				}
 			}
-			;
-			if (!cookieName.equals("")) {
-				result.put(cookieName, cookieValue);
-			}
+		} catch (UnsupportedEncodingException uee) {
+			uee.printStackTrace();
 		}
 	}
 }

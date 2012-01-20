@@ -127,7 +127,7 @@ public class WDate implements Comparable<WDate> {
 	 * @see #getHour()
 	 * @see #getMinute()
 	 * @see #getSecond()
-	 * @see #getMillisecond
+	 * @see #getMillisecond()
 	 */
 	public void setDate(int year, int month, int day, int hour, int minute,
 			int second, int millisecond) {
@@ -170,6 +170,33 @@ public class WDate implements Comparable<WDate> {
 	public void setDate(int year, int month, int day, int hour, int minute,
 			int second) {
 		this.setDate(year, month, day, hour, minute, second, 0);
+	}
+	
+	/**
+	 * Set this date's time by hour (0-23), minute (0-59), second (0 - 59) and millisecond (0 - 999).
+	 * 
+	 * When the new date is invalid, an IllegalArgumentException is thrown.
+	 */
+	public void setTime(int hour, int minute, int second, int millisecond) {
+		this.setDate(getYear(), getMonth(), getDay(), hour, minute, second, millisecond);
+	}
+	
+	/**
+	 * Set this date's time by hour (0-23), minute (0-59) and second (0 - 59).
+	 * 
+	 * When the new date is invalid, an IllegalArgumentException is thrown.
+	 */
+	public void setTime(int hour, int minute, int second) {
+		this.setTime(hour, minute, second, 0);
+	}
+	
+	/**
+	 * Set this date's time by hour (0-23) and minute (0-59).
+	 * 
+	 * When the new date is invalid, an IllegalArgumentException is thrown.
+	 */
+	public void setTime(int hour, int minute) {
+		this.setTime(hour, minute, 0, 0);
 	}
 
 	/**

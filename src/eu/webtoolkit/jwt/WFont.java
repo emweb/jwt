@@ -559,10 +559,6 @@ public class WFont {
 			}
 		} else {
 			String s = "";
-			s = this.cssFamily(false);
-			if (s.length() != 0) {
-				result.append("font-family: ").append(s).append(";");
-			}
 			s = this.cssSize(false);
 			if (s.length() != 0) {
 				result.append("font-size: ").append(s).append(";");
@@ -578,6 +574,10 @@ public class WFont {
 			s = this.cssWeight(false);
 			if (s.length() != 0) {
 				result.append("font-weight: ").append(s).append(";");
+			}
+			s = this.cssFamily(false);
+			if (s.length() != 0) {
+				result.append("font-family: ").append(s).append(";");
 			}
 		}
 		return result.toString();
