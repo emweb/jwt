@@ -91,12 +91,13 @@ public abstract class AbstractUserDatabase {
 	 * Creates a new database transaction.
 	 * <p>
 	 * If the underlying database does not support transactions, you can return
-	 * 0.
+	 * <code>null</code>.
 	 * <p>
 	 * Ownership of the transaction is transferred, and the transaction must be
 	 * deleted after it has been committed or rolled back.
 	 * <p>
-	 * The default implementation returns 0 (no transaction support).
+	 * The default implementation returns <code>null</code> (no transaction
+	 * support).
 	 */
 	public AbstractUserDatabase.Transaction startTransaction() {
 		return null;

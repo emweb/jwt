@@ -56,23 +56,12 @@ import org.slf4j.LoggerFactory;
  * {@link OAuthProcess}. To use OAuth, you need to create such a process and
  * listen for state changes.
  * <p>
- * Usage example: <blockquote>
+ * Usage example:
+ * <p>
+ * <blockquote>
  * 
  * <pre>
- * const OAuthService *oauth = ...;
- * 
- *  // Creates an icon which prompts for authentication using this %OAuth service.
- *  WImage *icon = new WImage(oauth.icon());
- *  icon.setToolTip(oauth.description());
- * 
- *  // Creates a new process for authentication, which is started by a click on the icon
- *  process_ = oauth.createProcess(oauth.authenticationScope());
- *  icon.clicked().connect(process_, &OAuthProcess::startAuthenticate);
- * 
- *  // And capture the result in a method.
- *  process_.authenticated().connect(this, &MyWidget::oauthDone);
- * </pre>
- * 
+ </pre>
  * </blockquote>
  */
 public abstract class OAuthService {

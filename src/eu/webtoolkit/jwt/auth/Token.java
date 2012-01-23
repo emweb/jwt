@@ -24,10 +24,11 @@ import org.slf4j.LoggerFactory;
  * <p>
  * 
  * An authentication token is a surrogate for identification or authentication.
- * When a random authentication token is generated e.g. using {@link }, it is a
- * good practice to hash it using a cryptographic hash function, and only save
- * this hash in the session or database for later verification. This avoids that
- * a compromised database would leak all the authentication tokens.
+ * When a random authentication token is generated,
+ * <p>
+ * it is a good practice to hash it using a cryptographic hash function, and
+ * only save this hash in the session or database for later verification. This
+ * avoids that a compromised database would leak all the authentication tokens.
  * <p>
  * 
  * @see User#addAuthToken(Token token)

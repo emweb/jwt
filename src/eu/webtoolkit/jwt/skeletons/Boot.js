@@ -93,10 +93,7 @@ if (screen.deviceXDPI != screen.logicalXDPI)
 var selfUrl = _$_SELF_URL_$_ + '&sid=' + _$_SCRIPT_ID_$_;
 
 // determine html history support
-var isMobileWebKit
-      = (ua.indexOf("applewebkit") != -1) && (ua.indexOf("mobile") != -1),
-    htmlHistory = !isMobileWebKit
-      && !!(window.history && window.history.pushState),
+var htmlHistory = !!(window.history && window.history.pushState),
     htmlHistoryInfo = htmlHistory ? "&htmlHistory=true" : "";
 
 var needSessionInUrl = !no_replace || !ajax;

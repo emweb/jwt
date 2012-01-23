@@ -794,8 +794,8 @@ public abstract class WWebWidget extends WWidget {
 	 * (<b>deprecated</b>).
 	 * <p>
 	 * 
-	 * @deprecated use Utils::htmlEncode(WString text,
-	 *             EnumSet&lt;HtmlEncodingFlag&gt; flags) instead.
+	 * @deprecated use {@link Utils#htmlEncode(WString text, EnumSet flags)}
+	 *             instead.
 	 */
 	public static WString escapeText(CharSequence text, boolean newlinestoo) {
 		String result = text.toString();
@@ -819,8 +819,8 @@ public abstract class WWebWidget extends WWidget {
 	 * (<b>deprecated</b>).
 	 * <p>
 	 * 
-	 * @deprecated use Utils::htmlEncode(String text,
-	 *             EnumSet&lt;HtmlEncodingFlag&gt; flags) instead.
+	 * @deprecated use {@link Utils#htmlEncode(String text, EnumSet flags)}
+	 *             instead.
 	 */
 	public static String escapeText(String text, boolean newlinestoo) {
 		EscapeOStream sout = new EscapeOStream();
@@ -861,7 +861,7 @@ public abstract class WWebWidget extends WWidget {
 	 * XML, returns <code>false</code>.
 	 * <p>
 	 * 
-	 * @deprecated use Utils::removeScript(CharSequence text) instead.
+	 * @deprecated use {@link Utils#removeScript(CharSequence text)} instead.
 	 */
 	public static boolean removeScript(CharSequence text) {
 		return XSSFilter.removeScript(text);

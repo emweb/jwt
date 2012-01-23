@@ -93,18 +93,15 @@ import org.slf4j.LoggerFactory;
  * addFunction()}. There are currently two functions that are generally useful:
  * <p>
  * <ul>
- * <li>{@link TrFunctionImpl}</li>
+ * <li>{@link TrFunctionImpl} : resolves a localized strings, this is convenient
+ * to create a language neutral template, which contains translated strings</li>
  * </ul>
- * <p>
- * resolves a localized strings. This is convenient to create a language neutral
- * template, which contains translated strings
  * <p>
  * <ul>
- * <li>{@link IdFunctionImpl}</li>
+ * <li>{@link IdFunctionImpl} : resolves the id of a bound widget, this is
+ * convenient to bind &lt;label&gt; elements to a form widget using its for
+ * attribute.</li>
  * </ul>
- * <p>
- * resolves the id of a bound widget. This is convenient to bind &lt;label&gt;
- * elements to a form widget using its for attribute.
  * <p>
  * <h3>C. Conditional blocks</h3>
  * <p>

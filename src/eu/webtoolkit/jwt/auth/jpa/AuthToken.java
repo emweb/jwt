@@ -3,7 +3,7 @@ package eu.webtoolkit.jwt.auth.jpa;
 import java.util.Date;
 
 /**
- * A default JPA implementation for an authentication token.
+ * A JPA implementation for an authentication token.
  * 
  * This class is used by {@link AuthInfo}, and stores authentication tokens.
  * 

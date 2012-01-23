@@ -1,0 +1,23 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<html>
+<head>
+</head>
+<body bgcolor="white">
+JWt Auth package,
+this package contains all widgets and classes related to JWt's authentication module.
+
+This module is packaged as a seperate jar and has several external dependencies:
+<ul>
+  <li>Google gson (http://code.google.com/p/google-gson/)</li>
+  <li>Apache HttpClient (http://hc.apache.org/httpcomponents-client-ga/)</li>
+  <li>JavaMail API (http://www.oracle.com/technetwork/java/javamail/index.html)</li>
+  <li>vtpassword (http://code.google.com/p/vt-middleware/wiki/vtpassword)</li>
+  <li>a JPA implementation, e.g. Hibernate (http://www.hibernate.org/), this only required when using the JPA {@link eu.webtoolkit.jwt.auth.jpa.UserDatabase}</li>
+</ul>
+
+All dependencies are included in the JWt distribution's lib directory.
+
+Please consult the auth1 feature example (examples/feature/auth1), this example demonstrates how to use the Auth API and how to include the correct dependencies. The example also uses the {@link eu.webtoolkit.jwt.auth.jpa.UserDatabase} with Hibernate as the JPA implementation. 
+
+</body>
+</html>

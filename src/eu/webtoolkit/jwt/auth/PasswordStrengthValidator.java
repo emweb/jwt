@@ -6,7 +6,7 @@ import edu.vt.middleware.password.PasswordValidator;
 import edu.vt.middleware.password.RuleResult;
 import eu.webtoolkit.jwt.auth.AbstractPasswordService.StrengthValidatorResult;
 
-/** A default implementation for password strength validation.
+/** The default implementation for password strength validation.
 *
 * This implementation uses http://code.google.com/p/vt-middleware/wiki/vtpassword.
 */

@@ -1,7 +1,7 @@
 package eu.webtoolkit.jwt.auth.jpa;
 
 /**
- * By extending this class, and using the extended implementation, 
+ * By extending this class, and using the extended implementation in {@link AuthInfo}, 
  * extra fields can be added to the {@link AuthInfo} object.
  */
 public class AbstractUser {

@@ -59,6 +59,9 @@ public class RegistrationWidget extends WTemplateFormView {
 		this((AuthWidget) null);
 	}
 
+	/**
+	 * Sets the registration model.
+	 */
 	public void setModel(RegistrationModel model) {
 		if (!(this.model_ != null) && model != null) {
 			model.getLogin().changed().addListener(this, new Signal.Listener() {

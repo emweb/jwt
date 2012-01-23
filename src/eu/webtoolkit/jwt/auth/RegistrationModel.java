@@ -175,7 +175,15 @@ public class RegistrationModel extends FormBaseModel {
 		return this.login_;
 	}
 
-	// public void setMinLoginNameLength(int chars) ;
+	/**
+	 * Configures a minimum length for a login name.
+	 * <p>
+	 * The default value is 4.
+	 */
+	public void setMinLoginNameLength(int chars) {
+		this.minLoginNameLength_ = chars;
+	}
+
 	/**
 	 * Returns the minimum length for a login name.
 	 * <p>

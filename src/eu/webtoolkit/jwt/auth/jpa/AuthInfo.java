@@ -16,20 +16,27 @@ import eu.webtoolkit.jwt.auth.User;
  * <ul>
  * It contains collections to two other types: 
  * <li>
- * - {@link #getAuthTokens()} references
+ * {@link #getAuthTokens()} references
  * a collection of authentication tokens (see
  * {@link AuthService#setAuthTokensEnabled(boolean enabled)})
  * </li> 
  * <li>
- * - {@link #getAuthIdentities()}
+ * {@link #getAuthIdentities()}
  * references a collection of identities, which represent all the authentication
  * identities this user has (e.g. a login name, but also an OAuth identity,
  * etc...)
  * </li>
  * </ul>
- * 
+ *  
  * To use these classes, you need to map them to a database using JPA.
+ * <br/>
+ * <br/>
  * 
+ * The auth1 feature example contains an example mapping file (examples/feature/auth1/src/META-INF/orm.xml),
+ * and a Postgres schema file (examples/feature/auth1/src/META-INF/schema.postgres.sql).
+ * <br/>
+ * <br/>
+ *
  * To add extra fields to a user's profile you need to extend {@link AbstractUser}.
  * 
  * @see UserDatabase

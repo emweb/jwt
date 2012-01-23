@@ -178,6 +178,12 @@ public class Configuration {
 
 	/**
 	 * Sets properties.
+	 * <br/>
+	 * Examples: 
+	 * <ul>
+	 * 	<li>smtp.host: SMTP host used by JWt to send out emails </li>
+	 * 	<li>smtp.port: SMTP port used by JWt to send out emails</li>
+	 * </ul>
 	 * 
 	 * @param properties
 	 * 

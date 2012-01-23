@@ -51,8 +51,7 @@ public abstract class HashFunction {
 	 * The message is usually an ASCII or UTF-8 string.
 	 * <p>
 	 * The <code>salt</code> and the computed hash are encoded in printable
-	 * characters. This is usually ASCII-encoded (as for the UNIX crypt()
-	 * functions) or could be Base64-encoded.
+	 * characters. This is usually ASCII-encoded or could be Base64-encoded.
 	 */
 	public abstract String compute(String msg, String salt);
 

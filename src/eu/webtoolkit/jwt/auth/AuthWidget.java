@@ -408,7 +408,7 @@ public class AuthWidget extends WTemplateFormView {
 		return new PasswordPromptDialog(login, this.model_);
 	}
 
-	public void attemptPasswordLogin() {
+	void attemptPasswordLogin() {
 		this.updateModel(this.model_);
 		if (this.model_.validate()) {
 			this.model_.login(this.login_);
@@ -417,7 +417,7 @@ public class AuthWidget extends WTemplateFormView {
 		}
 	}
 
-	public void displayError(CharSequence m) {
+	void displayError(CharSequence m) {
 		if (this.messageBox_ != null)
 			this.messageBox_.remove();
 		WMessageBox box = new WMessageBox(tr("Wt.Auth.error"), m, Icon.NoIcon,
@@ -432,7 +432,7 @@ public class AuthWidget extends WTemplateFormView {
 		this.messageBox_ = box;
 	}
 
-	public void displayInfo(CharSequence m) {
+	void displayInfo(CharSequence m) {
 		if (this.messageBox_ != null)
 			this.messageBox_.remove();
 		WMessageBox box = new WMessageBox(tr("Wt.Auth.notice"), m, Icon.NoIcon,

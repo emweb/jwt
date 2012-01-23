@@ -18,7 +18,7 @@ import eu.webtoolkit.jwt.auth.User;
 import eu.webtoolkit.jwt.auth.AbstractUserDatabase.Transaction;
 
 /**
- * A default JPA implementation for user authentication data.
+ * A JPA implementation for user authentication data.
  */
 public class UserDatabase extends AbstractUserDatabase {
 	private Set<AuthInfo> preDbAuthInfos = new HashSet<AuthInfo>();

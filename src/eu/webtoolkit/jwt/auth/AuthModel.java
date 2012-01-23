@@ -271,8 +271,8 @@ public class AuthModel extends FormBaseModel {
 	 * Detects and processes an authentication token.
 	 * <p>
 	 * This returns a user that was identified with an authentication token
-	 * found in the application environment, or an invalid User() if this
-	 * feature is not configured, or no valid cookie was found.
+	 * found in the application environment, or an invalid {@link User User}
+	 * object if this feature is not configured, or no valid cookie was found.
 	 * <p>
 	 * 
 	 * @see AuthService#processAuthToken(String token, AbstractUserDatabase

@@ -133,6 +133,7 @@
        >
       <fileset dir="${src.java.dir}" defaultexcludes="yes">
 	<include name="eu/webtoolkit/jwt/auth/*.java"/>
+	<include name="eu/webtoolkit/jwt/auth/jpa/*.java"/>
       </fileset>
     </javadoc>
     <copy todir="${javadoc.jwt-auth.dir}/eu/webtoolkit/jwt/chart/doc-files">

@@ -80,9 +80,9 @@ public class OAuthAccessToken {
 	/**
 	 * Returns the token expires time (if available).
 	 * <p>
-	 * Returns a Null date-time if not available.
+	 * Returns null if not available.
 	 */
-	public WDate getExpires() {
+	public WDate expires() {
 		return this.expires_;
 	}
 

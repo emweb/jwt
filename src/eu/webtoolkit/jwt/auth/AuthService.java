@@ -87,7 +87,19 @@ public class AuthService {
 		this.redirectInternalPath_ = "/auth/mail/";
 	}
 
-	// public void setRandomTokenLength(int length) ;
+	/**
+	 * Sets the token length.
+	 * <p>
+	 * Configures the length used for random tokens. Random tokens are generated
+	 * for authentication tokens, and email tokens.
+	 * <p>
+	 * The default length is 32 characters.
+	 * <p>
+	 */
+	public void setRandomTokenLength(int length) {
+		this.tokenLength_ = length;
+	}
+
 	/**
 	 * Returns the token length.
 	 * <p>
@@ -293,7 +305,15 @@ public class AuthService {
 		}
 	}
 
-	// public void setAuthTokenValidity(int minutes) ;
+	/**
+	 * Configures the duration for an authenticaton to remain valid.
+	 * <p>
+	 * The default duration is two weeks (14 * 24 * 60 minutes).
+	 */
+	public void setAuthTokenValidity(int minutes) {
+		this.authTokenValidity_ = minutes;
+	}
+
 	/**
 	 * Returns the authentication token validity.
 	 * <p>
@@ -481,7 +501,16 @@ public class AuthService {
 		}
 	}
 
-	// public void setEmailTokenValidity(int minutes) ;
+	/**
+	 * Configures the duration for an email token to remain valid.
+	 * <p>
+	 * The default duration is three days (3 * 24 * 60 minutes). Three is a
+	 * divine number.
+	 */
+	public void setEmailTokenValidity(int minutes) {
+		this.emailTokenValidity_ = minutes;
+	}
+
 	/**
 	 * Returns the duration for an email token to remain valid.
 	 * <p>
@@ -506,8 +535,9 @@ public class AuthService {
 	 * default value &quot;noreply-auth@www.webtoolkit.eu&quot;</li>
 	 * </ul>
 	 * <p>
-	 * Then it uses {@link Client} to send the message, using default the
-	 * default client settings.
+	 * Then it uses the JavaMail API to send the message, the SMTP settings are
+	 * configured using the smtp.host and smpt.port JWt configuration variables
+	 * (see {@link Configuration#setProperties(HashMap properties)}).
 	 */
 	public void sendMail(javax.mail.Message message)
 			throws javax.mail.MessagingException, UnsupportedEncodingException,

@@ -112,7 +112,7 @@ public class PasswordService implements AbstractPasswordService {
 	 * password hash stored in the database, and also to create or update a
 	 * user&apos;s password hash.
 	 * <p>
-	 * The default password verifier is 0.
+	 * The default password verifier is <code>null</code>.
 	 * <p>
 	 * The service takes ownership of the verifier.
 	 * <p>
@@ -139,7 +139,7 @@ public class PasswordService implements AbstractPasswordService {
 	/**
 	 * Sets a validator which computes password strenght.
 	 * <p>
-	 * The default password strenght validator is 0.
+	 * The default password strenght validator is <code>null</code>.
 	 * <p>
 	 * The service takes ownership of the validator.
 	 */
