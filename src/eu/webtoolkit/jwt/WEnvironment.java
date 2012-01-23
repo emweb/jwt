@@ -882,6 +882,12 @@ public class WEnvironment {
 	protected String publicDeploymentPath_;
 
 	WEnvironment() {
+		this.session_ = null;
+		this.doesAjax_ = false;
+		this.doesCookies_ = false;
+		this.hashInternalPaths_ = false;
+		this.dpiScale_ = 1;
+		this.contentType_ = WEnvironment.ContentType.HTML4;
 		this.queryString_ = "";
 		this.parameters_ = new HashMap<String, String[]>();
 		this.cookies_ = new HashMap<String, String>();

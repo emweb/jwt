@@ -1929,6 +1929,14 @@ class WebSession {
 				this.absoluteBaseUrl_ = this.absoluteBaseUrl_.substring(0,
 						0 + slashpos + 1);
 			}
+			slashpos = this.absoluteBaseUrl_.indexOf("://");
+			if (slashpos != -1) {
+				slashpos = this.absoluteBaseUrl_.indexOf("/", slashpos + 3);
+				if (slashpos != -1) {
+					this.deploymentPath_ = this.absoluteBaseUrl_
+							.substring(slashpos);
+				}
+			}
 		}
 		this.bookmarkUrl_ = this.applicationName_;
 		if (this.applicationName_.length() == 0) {

@@ -142,10 +142,8 @@ public class WDialog extends WCompositeWidget {
 		this.finished_ = new Signal1<WDialog.DialogCode>(this);
 		this.recursiveEventLoop_ = false;
 		this.initialized_ = false;
-		String TEMPLATE = "${shadow-x1-x2}${titlebar}${contents}";
-		this
-				.setImplementation(this.impl_ = new WTemplate(new WString(
-						TEMPLATE)));
+		this.setImplementation(this.impl_ = new WTemplate(
+				tr("Wt.WDialog.template")));
 		String CSS_RULES_NAME = "Wt::WDialog";
 		WApplication app = WApplication.getInstance();
 		this
@@ -186,9 +184,9 @@ public class WDialog extends WCompositeWidget {
 			}
 		}
 		this.impl_.setStyleClass("Wt-dialog Wt-outset");
-		WContainerWidget parent = app.getDomRoot();
 		this.setPopup(true);
 		app.loadJavaScript("js/WDialog.js", wtjs1());
+		WContainerWidget parent = app.getDomRoot();
 		parent.addWidget(this);
 		this.titleBar_ = new WContainerWidget();
 		this.titleBar_.setStyleClass("titlebar");
@@ -570,6 +568,16 @@ public class WDialog extends WCompositeWidget {
 			this.setJavaScriptMember(WT_RESIZE_JS, "\"dummy\"");
 			app.addAutoJavaScript("{var obj = $('#" + this.getId()
 					+ "').data('obj');if (obj) obj.centerDialog();}");
+			if (!app.getEnvironment().agentIsIElt(9)) {
+				String js = WString.tr("Wt.WDialog.CenterJS").toString();
+				StringUtils.replace(js, "$el", "'" + this.getId() + "'");
+				StringUtils.replace(js, "$centerX", centerX ? "1" : "0");
+				StringUtils.replace(js, "$centerY", centerY ? "1" : "0");
+				this.impl_.bindString("center-script", "<script>" + js
+						+ "</script>", TextFormat.XHTMLUnsafeText);
+			} else {
+				this.impl_.bindEmpty("center-script");
+			}
 		}
 		super.render(flags);
 	}
