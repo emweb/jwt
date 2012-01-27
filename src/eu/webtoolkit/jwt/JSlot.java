@@ -42,10 +42,10 @@ import org.slf4j.LoggerFactory;
  * {@link JSlot#setJavaScript(String js) setJavaScript()} method which takes a
  * string that implements a JavaScript function with the following signature:
  * <p>
- * <blockquote>
  * 
  * <pre>
- * function(sender, event) {
+ * {@code
+ *  function(sender, event) {
  *    // handle the event, and sender is a reference to the DOM element
  *    // which captured the event (and holds the signal). Therefore it
  *    // equivalent to the sender for a normal %Wt slot.
@@ -54,9 +54,8 @@ import org.slf4j.LoggerFactory;
  *    ${WT_CLASS}.cancelEvent(event);
  *    // (where ${WT_CLASS} should be the value of the WT_CLASS define
  *  }
+ * }
  * </pre>
- * 
- * </blockquote>
  * <p>
  * In the JavaScript code, you may use {@link WWidget#getJsRef()
  * WWidget#getJsRef()} to obtain the DOM element corresponding to any
@@ -133,15 +132,14 @@ public class JSlot {
 	 * <code>javaScript</code> is executed.
 	 * <p>
 	 * The JavaScript function takes two parameters and thus should look like:
-	 * <blockquote>
 	 * 
 	 * <pre>
-	 * function(obj, event) {
+	 * {@code
+	 *        function(obj, event) {
 	 *          // ...
 	 *        }
+	 *   }
 	 * </pre>
-	 * 
-	 * </blockquote>
 	 * <p>
 	 * The first parameter <code>obj</code> is a reference to the DOM element
 	 * that generates the event. The <code>event</code> refers to the JavaScript

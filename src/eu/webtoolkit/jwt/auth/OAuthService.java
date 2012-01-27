@@ -46,8 +46,7 @@ import org.slf4j.LoggerFactory;
  * <p>
  * Like all <b>service classes</b>, this class holds only configuration state.
  * Thus, once configured, it can be safely shared between multiple sessions
- * since its state (the configuration) is read-only. A &quot;const
- * OAuthService&quot; object is thus thread-safe.
+ * since its state (the configuration) is read-only.
  * <p>
  * The OAuth authorization protocol, including the subsequent use for
  * authentication, consists of a number of consecutive steps, some of which
@@ -56,24 +55,29 @@ import org.slf4j.LoggerFactory;
  * {@link OAuthProcess}. To use OAuth, you need to create such a process and
  * listen for state changes.
  * <p>
- * Usage example: <blockquote>
+ * Usage example:
+ * <p>
  * 
  * <pre>
- * const OAuthService *oauth = ...;
+ * {@code
+ *  OAuthService oauth = ...;
  * 
  *  // Creates an icon which prompts for authentication using this %OAuth service.
- *  WImage *icon = new WImage(oauth.icon());
- *  icon.setToolTip(oauth.description());
+ *  WImage icon = new WImage("css/oauth-" + auth.getName() + ".png", icons);
+ *  icon.setToolTip(auth.getDescription());
  * 
  *  // Creates a new process for authentication, which is started by a click on the icon
- *  process_ = oauth.createProcess(oauth.authenticationScope());
- *  icon.clicked().connect(process_, &OAuthProcess::startAuthenticate);
+ *  process = oauth.createProcess(oauth.getAuthenticationScope());
+ *  process.connectStartAuthenticate(icon.clicked());
  * 
  *  // And capture the result in a method.
- *  process_.authenticated().connect(this, &MyWidget::oauthDone);
+ *  process.authenticated().addListener(this, new Signal1.Listener<Identity>() {
+ *   public void trigger(Identity id) {
+ *     MyWidget.this.oAuthDone(id);
+ *   }
+ *  });
+ * }
  * </pre>
- * 
- * </blockquote>
  */
 public abstract class OAuthService {
 	private static Logger logger = LoggerFactory.getLogger(OAuthService.class);
@@ -265,8 +269,15 @@ public abstract class OAuthService {
 		WtServlet instance = WtServlet.getInstance();
 		if (instance != null) {
 			String result = "";
-			if (!((result = instance
-					.readConfigurationProperty(property, result)) != null)) {
+			boolean error;
+			String v = instance.readConfigurationProperty(property, result);
+			if (v != result) {
+				error = false;
+				result = v;
+			} else {
+				error = true;
+			}
+			if (error) {
 				throw new WException("OAuth: no '" + property
 						+ "' property configured");
 			}

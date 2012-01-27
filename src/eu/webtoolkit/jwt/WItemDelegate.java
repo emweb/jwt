@@ -240,16 +240,14 @@ public class WItemDelegate extends WAbstractItemDelegate {
 	 * As an example of how to deal with a specialized editor, consider the
 	 * default implementation:
 	 * <p>
-	 * <blockquote>
 	 * 
 	 * <pre>
-	 * public void setModelData(Object editState, WAbstractItemModel model,
-	 * 		WModelIndex index) {
-	 * 	model.setData(index, editState, ItemDataRole.EditRole);
-	 * }
+	 * {@code
+	 *    public void setModelData(Object editState, WAbstractItemModel model, WModelIndex index) {
+	 *      model.setData(index, editState, ItemDataRole.EditRole);
+	 *    }
+	 *   }
 	 * </pre>
-	 * 
-	 * </blockquote>
 	 * <p>
 	 * 
 	 * @see WItemDelegate#createEditor(WModelIndex index, EnumSet flags)
@@ -269,17 +267,16 @@ public class WItemDelegate extends WAbstractItemDelegate {
 	 * As an example of how to deal with a specialized editor, consider the
 	 * default implementation:
 	 * <p>
-	 * <blockquote>
 	 * 
 	 * <pre>
-	 * public Object getEditState(WWidget editor) {
-	 * 	WContainerWidget w = (WContainerWidget) editor;
-	 * 	WLineEdit lineEdit = (WLineEdit) w.getWidget(0);
-	 * 	return lineEdit.getText();
-	 * }
+	 * {@code
+	 *    public Object getEditState(WWidget editor) {
+	 *      WContainerWidget w = (WContainerWidget) editor;
+	 *      WLineEdit lineEdit = (WLineEdit) w.getWidget(0);
+	 *      return lineEdit.getText();
+	 *    }
+	 *   }
 	 * </pre>
-	 * 
-	 * </blockquote>
 	 * <p>
 	 * 
 	 * @see WItemDelegate#createEditor(WModelIndex index, EnumSet flags)
@@ -305,17 +302,16 @@ public class WItemDelegate extends WAbstractItemDelegate {
 	 * As an example of how to deal with a specialized editor, consider the
 	 * default implementation:
 	 * <p>
-	 * <blockquote>
 	 * 
 	 * <pre>
-	 * public void setEditState(WWidget editor, Object value) {
-	 * 	WContainerWidget w = (WContainerWidget) editor;
-	 * 	WLineEdit lineEdit = (WLineEdit) w.getWidget(0);
-	 * 	lineEdit.setText((String) value);
-	 * }
+	 * {@code
+	 *    public void setEditState(WWidget editor, Object value) {
+	 *      WContainerWidget w = (WContainerWidget) editor;
+	 *      WLineEdit lineEdit = (WLineEdit) w.getWidget(0);
+	 *      lineEdit.setText((String) value);
+	 *    }
+	 *   }
 	 * </pre>
-	 * 
-	 * </blockquote>
 	 * <p>
 	 * 
 	 * @see WItemDelegate#createEditor(WModelIndex index, EnumSet flags)
@@ -356,38 +352,35 @@ public class WItemDelegate extends WAbstractItemDelegate {
 	 * As an example of how to provide a specialized editor, consider the
 	 * default implementation, which returns a {@link WLineEdit}:
 	 * <p>
-	 * <blockquote>
 	 * 
 	 * <pre>
-	 * protected WWidget createEditor(WModelIndex index,
-	 * 		EnumSet&lt;ViewItemRenderFlag&gt; flags) {
-	 * 	final WContainerWidget result = new WContainerWidget();
-	 * 	result.setSelectable(true);
-	 * 	WLineEdit lineEdit = new WLineEdit();
-	 * 	lineEdit.setText(StringUtils.asString(index.getData(ItemDataRole.EditRole),
-	 * 			this.textFormat_).toString());
-	 * 	lineEdit.enterPressed().addListener(this, new Signal.Listener() {
-	 * 		public void trigger() {
-	 * 			WItemDelegate.this.closeEditor().trigger(result, true);
-	 * 		}
-	 * 	});
-	 * 	lineEdit.escapePressed().addListener(this, new Signal.Listener() {
-	 * 		public void trigger() {
-	 * 			WItemDelegate.this.closeEditor().trigger(result, false);
-	 * 		}
-	 * 	});
-	 * 
-	 * 	if (flags.contains(ViewItemRenderFlag.RenderFocused))
-	 * 		lineEdit.setFocus();
-	 * 
-	 * 	result.setLayout(new WHBoxLayout());
-	 * 	result.getLayout().setContentsMargins(1, 1, 1, 1);
-	 * 	result.getLayout().addWidget(lineEdit);
-	 * 	return result;
-	 * }
+	 * {@code
+	 *    protected WWidget createEditor(WModelIndex index, EnumSet&lt;ViewItemRenderFlag&gt; flags) {
+	 *     final WContainerWidget result = new WContainerWidget();
+	 *     result.setSelectable(true);
+	 *     WLineEdit lineEdit = new WLineEdit();
+	 *     lineEdit.setText(StringUtils.asString(index.getData(ItemDataRole.EditRole), this.textFormat_).toString());
+	 *     lineEdit.enterPressed().addListener(this, new Signal.Listener() {
+	 *       public void trigger() {
+	 *         WItemDelegate.this.closeEditor().trigger(result, true);
+	 *       }
+	 *     });
+	 *     lineEdit.escapePressed().addListener(this, new Signal.Listener() {
+	 *       public void trigger() {
+	 *         WItemDelegate.this.closeEditor().trigger(result, false);
+	 *       }
+	 *     });
+	 *   
+	 *     if (flags.contains(ViewItemRenderFlag.RenderFocused))
+	 *       lineEdit.setFocus();
+	 *   
+	 *     result.setLayout(new WHBoxLayout());
+	 *     result.getLayout().setContentsMargins(1, 1, 1, 1);
+	 *     result.getLayout().addWidget(lineEdit);
+	 *     return result;
+	 *    }
+	 *   }
 	 * </pre>
-	 * 
-	 * </blockquote>
 	 */
 	protected WWidget createEditor(WModelIndex index,
 			EnumSet<ViewItemRenderFlag> flags) {

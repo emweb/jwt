@@ -42,14 +42,14 @@ public class WAnimation {
 	 * An enumeration describing an animation effect.
 	 * <p>
 	 * An animation effect can be the combination of a motion and an optional
-	 * fade effect, e.g: <blockquote>
+	 * fade effect, e.g:
 	 * 
 	 * <pre>
-	 * SlideInFromRight
+	 * {@code
+	 *     SlideInFromRight
 	 *     SlideInFromTop | Fade
+	 *   }
 	 * </pre>
-	 * 
-	 * </blockquote>
 	 * <p>
 	 * You can specify only one motion effect.
 	 * <p>

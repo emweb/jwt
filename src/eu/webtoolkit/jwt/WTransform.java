@@ -23,15 +23,15 @@ import org.slf4j.LoggerFactory;
  * A value class that defines a 2D affine transformation matrix.
  * <p>
  * 
- * The matrix is encoded using 6 parameters: <blockquote>
+ * The matrix is encoded using 6 parameters:
  * 
  * <pre>
- * m11  m12   0
+ * {@code
+ *  m11  m12   0
  *  m21  m22   0
  *  dx   dy    1
+ * }
  * </pre>
- * 
- * </blockquote>
  * <p>
  * In this representation, {@link WTransform#getDx() getDx()} (=
  * {@link WTransform#getM31() getM31()}) and {@link WTransform#getDy() getDy()}

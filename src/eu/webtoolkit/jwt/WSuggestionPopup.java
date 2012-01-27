@@ -70,10 +70,10 @@ import org.slf4j.LoggerFactory;
  * <p>
  * The matcherJS function must have the following JavaScript signature:
  * <p>
- * <blockquote>
  * 
  * <pre>
- * function (editElement) {
+ * {@code
+ *  function (editElement) {
  *    // fetch the location of cursor and current text in the editElement.
  * 
  *    // return a function that matches a given suggestion with the current value of the editElement.
@@ -88,17 +88,16 @@ import org.slf4j.LoggerFactory;
  *              };
  *    }
  *  }
+ * }
  * </pre>
- * 
- * </blockquote>
  * <p>
  * The replacerJS function that edits the value has the following JavaScript
  * signature.
  * <p>
- * <blockquote>
  * 
  * <pre>
- * function (editElement, suggestionText, suggestionValue) {
+ * {@code
+ *  function (editElement, suggestionText, suggestionValue) {
  *    // editElement is the form element which must be edited.
  *    // suggestionText is the displayed text for the matched suggestion.
  *    // suggestionValue is the stored value for the matched suggestion.
@@ -108,9 +107,8 @@ import org.slf4j.LoggerFactory;
  *    editElement.value = modifiedEditValue;
  *    editElement.selectionStart = edit.selectionEnd = modifiedPos;
  *  }
+ * }
  * </pre>
- * 
- * </blockquote>
  * <p>
  * To style the suggestions, you should style the &lt;span&gt; element inside
  * this widget, and the &lt;span&gt;.&quot;sel&quot; element to style the
@@ -118,30 +116,30 @@ import org.slf4j.LoggerFactory;
  * <p>
  * Usage example:
  * <p>
- * <blockquote>
  * 
  * <pre>
- * // options for email address suggestions
- * WSuggestionPopup.Options contactOptions = new WSuggestionPopup.Options();
- * contactOptions.highlightBeginTag = &quot;&lt;b&gt;&quot;;
- * contactOptions.highlightEndTag = &quot;&lt;/b&gt;&quot;;
- * contactOptions.listSeparator = ','; //for multiple addresses)
- * contactOptions.whitespace = &quot; \\n&quot;;
- * contactOptions.wordSeparators = &quot;-., \&quot;@\\n;&quot;; //within an address
- * contactOptions.appendReplacedText = &quot;, &quot;; //prepare next email address
+ * {
+ * 	&#064;code
+ * 	// options for email address suggestions
+ * 	WSuggestionPopup.Options contactOptions = new WSuggestionPopup.Options();
+ * 	contactOptions.highlightBeginTag = &quot;&lt;b&gt;&quot;;
+ * 	contactOptions.highlightEndTag = &quot;&lt;/b&gt;&quot;;
+ * 	contactOptions.listSeparator = ','; //for multiple addresses)
+ * 	contactOptions.whitespace = &quot; \\n&quot;;
+ * 	contactOptions.wordSeparators = &quot;-., \&quot;@\\n;&quot;; //within an address
+ * 	contactOptions.appendReplacedText = &quot;, &quot;; //prepare next email address
  * 
- * WSuggestionPopup popup = new WSuggestionPopup(contactOptions, this);
+ * 	WSuggestionPopup popup = new WSuggestionPopup(contactOptions, this);
  * 
- * WTextArea textEdit = new WTextArea(this);
- * popup.forEdit(textEdit);
+ * 	WTextArea textEdit = new WTextArea(this);
+ * 	popup.forEdit(textEdit);
  * 
- * // load popup data
- * for (int i = 0; i &lt; contacts.size(); ++i)
- * 	popup.addSuggestion(contacts.get(i).formatted(), contacts.get(i)
- * 			.formatted());
+ * 	// load popup data
+ * 	for (int i = 0; i &lt; contacts.size(); ++i)
+ * 		popup.addSuggestion(contacts.get(i).formatted(), contacts.get(i)
+ * 				.formatted());
+ * }
  * </pre>
- * 
- * </blockquote>
  * <p>
  * A screenshot of this example:
  * <table border="0" align="center" cellspacing="3" cellpadding="3">
@@ -669,15 +667,14 @@ public class WSuggestionPopup extends WCompositeWidget {
 	 * For example, if you are using a {@link WSortFilterProxyModel}, you could
 	 * react to this signal with:
 	 * <p>
-	 * <blockquote>
 	 * 
 	 * <pre>
-	 * public filterSuggestions(String filter) {
-	 * 	proxyModel.setFilterRegExp(filter + &quot;.*&quot;);
-	 * }
+	 * {@code
+	 *    public filterSuggestions(String filter) {
+	 *      proxyModel.setFilterRegExp(filter + ".*");
+	 *    }
+	 *   }
 	 * </pre>
-	 * 
-	 * </blockquote>
 	 */
 	public Signal1<String> filterModel() {
 		return this.filterModel_;

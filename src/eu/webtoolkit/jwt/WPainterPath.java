@@ -47,22 +47,22 @@ import org.slf4j.LoggerFactory;
  * <p>
  * Usage example:
  * <p>
- * <blockquote>
  * 
  * <pre>
- * WPainter painter = new WPainter();
+ * {
+ * 	&#064;code
+ * 	WPainter painter = new WPainter();
  * 
- * WPainterPath path = new WPainterPath(new WPointF(10, 10));
- * path.lineTo(10, 20);
- * path.lineTo(30, 20);
- * path.closeSubPath();
+ * 	WPainterPath path = new WPainterPath(new WPointF(10, 10));
+ * 	path.lineTo(10, 20);
+ * 	path.lineTo(30, 20);
+ * 	path.closeSubPath();
  * 
- * painter.setPen(new WPen(WColor.red));
- * painter.setBrush(new WBrush(WColor.blue));
- * painter.drawPath(path);
+ * 	painter.setPen(new WPen(WColor.red));
+ * 	painter.setBrush(new WBrush(WColor.blue));
+ * 	painter.drawPath(path);
+ * }
  * </pre>
- * 
- * </blockquote>
  * <p>
  * 
  * @see WPainter#drawPath(WPainterPath path)

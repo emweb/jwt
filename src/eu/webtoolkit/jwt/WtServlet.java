@@ -473,9 +473,17 @@ public abstract class WtServlet extends HttpServlet {
 	 * When the path contains the application context's path, the path should start with a '/',
 	 * if not the '/' should be omitted.
 	 */
-	public void addResource(WResource r, String path) {
-		r.setInternalPath(path);
-		staticResources.add(r);
+	public void addResource(WResource staticResource, String path) {
+		for (WResource sr : staticResources) {
+			if (sr.getInternalPath() != null && sr.getInternalPath().equals(path)) {
+				WString error = new WString(
+						"WtServlet#addResource() error: a static resource was already deployed on path '{1}'");
+				throw new RuntimeException(error.arg(path).toString());
+			}
+		}
+		
+		staticResource.setInternalPath(path);
+		staticResources.add(staticResource);
 	}
 	
 	public static WtServlet getInstance() {

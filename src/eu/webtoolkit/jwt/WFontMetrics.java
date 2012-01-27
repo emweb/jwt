@@ -56,13 +56,13 @@ public class WFontMetrics {
 	/**
 	 * Returns the font size.
 	 * <p>
-	 * This is the same as: <blockquote>
+	 * This is the same as:
 	 * 
 	 * <pre>
-	 * font().size().sizeLength()
+	 * {@code
+	 *    font().size().sizeLength()
+	 *   }
 	 * </pre>
-	 * 
-	 * </blockquote>
 	 * <p>
 	 * e.g.~for a font with size set to 16px, this returns 16.
 	 */

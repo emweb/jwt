@@ -373,9 +373,9 @@ public class WTreeView extends WAbstractItemView {
 				}
 				double navigationBarHeight = 25;
 				double headerHeight = this.getHeaderHeight().toPixels();
-				this.contentsContainer_.resize(width, new WLength(height
-						.toPixels()
-						- navigationBarHeight - headerHeight));
+				int h = (int) (height.toPixels() - navigationBarHeight - headerHeight);
+				this.contentsContainer_.resize(width, new WLength(Math.max(h,
+						(int) this.getRowHeight().getValue())));
 				this.viewportHeight_ = (int) (this.contentsContainer_
 						.getHeight().toPixels() / this.getRowHeight()
 						.toPixels());

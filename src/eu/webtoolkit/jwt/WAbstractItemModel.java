@@ -417,13 +417,13 @@ public abstract class WAbstractItemModel extends WObject {
 	/**
 	 * Returns the data item at the given column and row.
 	 * <p>
-	 * This is a convenience method, and is equivalent to: <blockquote>
+	 * This is a convenience method, and is equivalent to:
 	 * 
 	 * <pre>
-	 * index(row, column, parent).data(role)
+	 * {@code
+	 *    index(row, column, parent).data(role)
+	 *   }
 	 * </pre>
-	 * 
-	 * </blockquote>
 	 * <p>
 	 * 
 	 * @see WAbstractItemModel#getIndex(int row, int column, WModelIndex parent)
@@ -457,14 +457,14 @@ public abstract class WAbstractItemModel extends WObject {
 	 * Returns if an index at the given position is valid (i.e. falls within the
 	 * column-row bounds).
 	 * <p>
-	 * Equivalent to: <blockquote>
+	 * Equivalent to:
 	 * 
 	 * <pre>
-	 * return row &gt;= 0 &amp;&amp; column &gt;= 0 &amp;&amp; row &lt; rowCount(parent)
-	 * 		&amp;&amp; column &lt; columnCount(parent);
+	 * {@code
+	 *    return row >= 0 && column >= 0
+	 *           && row < rowCount(parent) && column < columnCount(parent);
+	 *   }
 	 * </pre>
-	 * 
-	 * </blockquote>
 	 * <p>
 	 * 
 	 * @see WAbstractItemModel#getRowCount(WModelIndex parent)
@@ -937,13 +937,13 @@ public abstract class WAbstractItemModel extends WObject {
 	 * Inserts one column.
 	 * <p>
 	 * This is a convenience method that adds a single column, and is equivalent
-	 * to: <blockquote>
+	 * to:
 	 * 
 	 * <pre>
-	 * insertColumns(column, 1, parent);
+	 * {@code
+	 *    insertColumns(column, 1, parent);
+	 *   }
 	 * </pre>
-	 * 
-	 * </blockquote>
 	 * <p>
 	 * Returns <code>true</code> if the operation was successful.
 	 * <p>
@@ -969,13 +969,13 @@ public abstract class WAbstractItemModel extends WObject {
 	 * Inserts one row.
 	 * <p>
 	 * This is a convenience method that adds a single row, and is equivalent
-	 * to: <blockquote>
+	 * to:
 	 * 
 	 * <pre>
-	 * insertRows(row, 1, parent);
+	 * {@code
+	 *    insertRows(row, 1, parent);
+	 *   }
 	 * </pre>
-	 * 
-	 * </blockquote>
 	 * <p>
 	 * Returns <code>true</code> if the operation was successful.
 	 * <p>
@@ -1001,13 +1001,13 @@ public abstract class WAbstractItemModel extends WObject {
 	 * Removes one column.
 	 * <p>
 	 * This is a convenience method that removes a single column, and is
-	 * equivalent to: <blockquote>
+	 * equivalent to:
 	 * 
 	 * <pre>
-	 * removeColumns(column, 1, parent);
+	 * {@code
+	 *    removeColumns(column, 1, parent);
+	 *   }
 	 * </pre>
-	 * 
-	 * </blockquote>
 	 * <p>
 	 * Returns <code>true</code> if the operation was successful.
 	 * <p>
@@ -1033,13 +1033,13 @@ public abstract class WAbstractItemModel extends WObject {
 	 * Removes one row.
 	 * <p>
 	 * This is a convenience method that removes a single row, and is equivalent
-	 * to: <blockquote>
+	 * to:
 	 * 
 	 * <pre>
-	 * removeRows(row, 1, parent);
+	 * {@code
+	 *    removeRows(row, 1, parent);
+	 *   }
 	 * </pre>
-	 * 
-	 * </blockquote>
 	 * <p>
 	 * Returns <code>true</code> if the operation was successful.
 	 * <p>
@@ -1064,13 +1064,13 @@ public abstract class WAbstractItemModel extends WObject {
 	/**
 	 * Sets data at the given row and column.
 	 * <p>
-	 * This is a convience method, and is equivalent to: <blockquote>
+	 * This is a convience method, and is equivalent to:
 	 * 
 	 * <pre>
-	 * setData(index(row, column, parent), value, role);
+	 * {@code
+	 *    setData(index(row, column, parent), value, role);
+	 *   }
 	 * </pre>
-	 * 
-	 * </blockquote>
 	 * <p>
 	 * Returns <code>true</code> if the operation was successful.
 	 * <p>

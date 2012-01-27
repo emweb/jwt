@@ -285,6 +285,8 @@ public class RegistrationModel extends FormBaseModel {
 				}
 				if (this.idpIdentity_.getEmail().length() != 0) {
 					this.setValue(EmailField, this.idpIdentity_.getEmail());
+					this.setValidation(EmailField, new WValidator.Result(
+							WValidator.State.Valid, WString.Empty));
 				}
 				return false;
 			}

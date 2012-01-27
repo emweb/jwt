@@ -28,10 +28,10 @@ import org.slf4j.LoggerFactory;
  * <p>
  * Usage example:
  * <p>
- * <blockquote>
  * 
  * <pre>
- * enum Vote { Republican, Democrate, NoVote };
+ * {@code
+ *  enum Vote { Republican, Democrate, NoVote };
  * 
  *  // use a group box as widget container for 3 radio buttons, with a title
  *  WGroupBox container = new WGroupBox("USA elections vote");
@@ -51,10 +51,9 @@ import org.slf4j.LoggerFactory;
  *  new WBreak(container);
  *  group.addButton(button, Vote.NoVote.ordinal());
  * 		 
- *  group.setCheckedButton(group.button(Vote.NoVote.ordinal()));
+ *  group.setCheckedButton(group.button(Vote.NoVote.ordinal()));	
+ * }
  * </pre>
- * 
- * </blockquote>
  * <p>
  * WRadioButton is an {@link WWidget#setInline(boolean inlined) inline} widget.
  * <p>

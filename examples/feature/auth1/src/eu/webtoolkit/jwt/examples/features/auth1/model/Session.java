@@ -17,6 +17,7 @@ import edu.vt.middleware.password.WhitespaceRule;
 import eu.webtoolkit.jwt.auth.AbstractUserDatabase;
 import eu.webtoolkit.jwt.auth.AuthService;
 import eu.webtoolkit.jwt.auth.BCryptHashFunction;
+import eu.webtoolkit.jwt.auth.FacebookService;
 import eu.webtoolkit.jwt.auth.GoogleService;
 import eu.webtoolkit.jwt.auth.Login;
 import eu.webtoolkit.jwt.auth.OAuthService;
@@ -52,6 +53,9 @@ public class Session {
 		
 		if (GoogleService.configured())
 			myOAuthServices.add(new GoogleService(myAuthService));
+		
+		if (FacebookService.configured())
+			myOAuthServices.add(new FacebookService(myAuthService));
 	}
 	
 	private static PasswordValidator createStrengthValidator() {

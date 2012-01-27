@@ -50,6 +50,10 @@ public class AuthInfo {
 		email = ""; 
 		unverifiedEmail = "";
 		emailToken = "";
+		
+		passwordHash = "";
+		passwordMethod = "";
+		passwordSalt = "";
 	}
 
 	/**

@@ -34,25 +34,25 @@ import org.apache.commons.io.*;
  * {@link WApplication} instances for every user visiting the application is
  * thus:
  * <p>
- * <blockquote>
  * 
  * <pre>
- * public class HelloServlet extends WtServlet {
- * 	public HelloServlet() {
- * 		super();
- * 	}
+ * {
+ * 	&#064;code
+ * 	public class HelloServlet extends WtServlet {
+ * 		public HelloServlet() {
+ * 			super();
+ * 		}
  * 
- * 	public WApplication createApplication(WEnvironment env) {
- * 		// In practice, you will specialize WApplication and simply
- * 		// return a new instance.
- * 		WApplication app = new WApplication(env);
- * 		app.getRoot().addWidget(new WText(&quot;Hello world.&quot;));
- * 		return app;
+ * 		public WApplication createApplication(WEnvironment env) {
+ * 			// In practice, you will specialize WApplication and simply
+ * 			// return a new instance.
+ * 			WApplication app = new WApplication(env);
+ * 			app.getRoot().addWidget(new WText(&quot;Hello world.&quot;));
+ * 			return app;
+ * 		}
  * 	}
  * }
  * </pre>
- * 
- * </blockquote>
  * <p>
  * Throughout the session, the instance is available through the static method
  * {@link WApplication#getInstance() getInstance()}, which uses thread-specific
@@ -631,14 +631,14 @@ public class WApplication extends WObject {
 	 * You may use this if to override certain style rules for a Right-to-Left
 	 * document.
 	 * <p>
-	 * For example: <blockquote>
+	 * For example:
 	 * 
 	 * <pre>
-	 * body        .sidebar { float: right; }
+	 * {@code
+	 *    body        .sidebar { float: right; }
 	 *    body.Wt-rtl .sidebar { float: left; }
+	 *   }
 	 * </pre>
-	 * 
-	 * </blockquote>
 	 * <p>
 	 * <p>
 	 * <i><b>Note: </b>The layout direction can be set only at application
@@ -894,13 +894,15 @@ public class WApplication extends WObject {
 	 * session ID if necessary). The URL includes the full application path, and
 	 * is expanded by the browser into a full URL.
 	 * <p>
-	 * For example, for an application deployed at <blockquote>
+	 * For example, for an application deployed at
 	 * 
 	 * <pre>
-	 * http://www.mydomain.com/stuff/app.wt
+	 * {@code
+	 *    http://www.mydomain.com/stuff/app.wt 
+	 *   }
 	 * </pre>
 	 * 
-	 * </blockquote> this method might return
+	 * this method might return
 	 * <code>&quot;/stuff/app.wt?wtd=AbCdEf&quot;</code>. Additional query
 	 * parameters can be appended in the form of
 	 * <code>&quot;&amp;param1=value&amp;param2=value&quot;</code>.
@@ -986,13 +988,15 @@ public class WApplication extends WObject {
 	 * session ID if necessary). The URL includes the full application path, and
 	 * is expanded by the browser into a full URL.
 	 * <p>
-	 * For example, for an application deployed at <blockquote>
+	 * For example, for an application deployed at
 	 * 
 	 * <pre>
-	 * http://www.mydomain.com/stuff/app.wt
+	 * {@code
+	 *    http://www.mydomain.com/stuff/app.wt 
+	 *   }
 	 * </pre>
 	 * 
-	 * </blockquote> this method might return
+	 * this method might return
 	 * <code>&quot;/stuff/app.wt?wtd=AbCdEf&quot;</code>. Additional query
 	 * parameters can be appended in the form of
 	 * <code>&quot;&amp;param1=value&amp;param2=value&quot;</code>.
@@ -1018,13 +1022,15 @@ public class WApplication extends WObject {
 	 * session ID if necessary). The URL includes the full application path, and
 	 * is expanded by the browser into a full URL.
 	 * <p>
-	 * For example, for an application deployed at <blockquote>
+	 * For example, for an application deployed at
 	 * 
 	 * <pre>
-	 * http://www.mydomain.com/stuff/app.wt
+	 * {@code
+	 *    http://www.mydomain.com/stuff/app.wt 
+	 *   }
 	 * </pre>
 	 * 
-	 * </blockquote> this method might return
+	 * this method might return
 	 * <code>&quot;/stuff/app.wt?wtd=AbCdEf&quot;</code>. Additional query
 	 * parameters can be appended in the form of
 	 * <code>&quot;&amp;param1=value&amp;param2=value&quot;</code>.
@@ -1051,42 +1057,50 @@ public class WApplication extends WObject {
 	 * directly appended to the application URL or it is appended using a name
 	 * anchor (#).
 	 * <p>
-	 * For example, for an application deployed at: <blockquote>
+	 * For example, for an application deployed at:
 	 * 
 	 * <pre>
-	 * http://www.mydomain.com/stuff/app.wt
+	 * {@code
+	 *    http://www.mydomain.com/stuff/app.wt
+	 *   }
 	 * </pre>
 	 * 
-	 * </blockquote> for which an <code>internalPath</code>
+	 * for which an <code>internalPath</code>
 	 * <code>&quot;/project/z3cbc/details/&quot;</code> is set, the two forms
 	 * for the application URL are:
 	 * <ul>
 	 * <li>
-	 * in an AJAX session (HTML5): <blockquote>
+	 * in an AJAX session (HTML5):
 	 * 
 	 * <pre>
-	 * http://www.mydomain.com/stuff/app.wt/project/z3cbc/details/
+	 * {@code
+	 *    http://www.mydomain.com/stuff/app.wt/project/z3cbc/details/
+	 *   }
 	 * </pre>
 	 * 
-	 * </blockquote></li>
+	 * </li>
 	 * <li>
-	 * in an AJAX session (HTML4): <blockquote>
+	 * in an AJAX session (HTML4):
 	 * 
 	 * <pre>
-	 * http://www.mydomain.com/stuff/app.wt#/project/z3cbc/details/
+	 * {@code
+	 *    http://www.mydomain.com/stuff/app.wt#/project/z3cbc/details/
+	 *   }
 	 * </pre>
 	 * 
-	 * </blockquote></li>
+	 * </li>
 	 * <li>
 	 * </li>
 	 * <li>
-	 * in a plain HTML session: <blockquote>
+	 * in a plain HTML session:
 	 * 
 	 * <pre>
-	 * http://www.mydomain.com/stuff/app.wt/project/z3cbc/details/
+	 * {@code
+	 *    http://www.mydomain.com/stuff/app.wt/project/z3cbc/details/
+	 *   }
 	 * </pre>
 	 * 
-	 * </blockquote></li>
+	 * </li>
 	 * </ul>
 	 * <p>
 	 * Note, since JWt 3.1.9, the actual form of the URL no longer affects
@@ -1146,13 +1160,15 @@ public class WApplication extends WObject {
 	 * session ID if necessary). The URL includes the full application path, and
 	 * is expanded by the browser into a full URL.
 	 * <p>
-	 * For example, for an application deployed at <blockquote>
+	 * For example, for an application deployed at
 	 * 
 	 * <pre>
-	 * http://www.mydomain.com/stuff/app.wt
+	 * {@code
+	 *    http://www.mydomain.com/stuff/app.wt 
+	 *   }
 	 * </pre>
 	 * 
-	 * </blockquote> this method might return
+	 * this method might return
 	 * <code>&quot;/stuff/app.wt?wtd=AbCdEf&quot;</code>. Additional query
 	 * parameters can be appended in the form of
 	 * <code>&quot;&amp;param1=value&amp;param2=value&quot;</code>.
@@ -1178,13 +1194,15 @@ public class WApplication extends WObject {
 	 * session ID if necessary). The URL includes the full application path, and
 	 * is expanded by the browser into a full URL.
 	 * <p>
-	 * For example, for an application deployed at <blockquote>
+	 * For example, for an application deployed at
 	 * 
 	 * <pre>
-	 * http://www.mydomain.com/stuff/app.wt
+	 * {@code
+	 *    http://www.mydomain.com/stuff/app.wt 
+	 *   }
 	 * </pre>
 	 * 
-	 * </blockquote> this method might return
+	 * this method might return
 	 * <code>&quot;/stuff/app.wt?wtd=AbCdEf&quot;</code>. Additional query
 	 * parameters can be appended in the form of
 	 * <code>&quot;&amp;param1=value&amp;param2=value&quot;</code>.
@@ -1216,13 +1234,15 @@ public class WApplication extends WObject {
 	 * session ID if necessary). The URL includes the full application path, and
 	 * is expanded by the browser into a full URL.
 	 * <p>
-	 * For example, for an application deployed at <blockquote>
+	 * For example, for an application deployed at
 	 * 
 	 * <pre>
-	 * http://www.mydomain.com/stuff/app.wt
+	 * {@code
+	 *    http://www.mydomain.com/stuff/app.wt 
+	 *   }
 	 * </pre>
 	 * 
-	 * </blockquote> this method might return
+	 * this method might return
 	 * <code>&quot;/stuff/app.wt?wtd=AbCdEf&quot;</code>. Additional query
 	 * parameters can be appended in the form of
 	 * <code>&quot;&amp;param1=value&amp;param2=value&quot;</code>.
@@ -1370,10 +1390,10 @@ public class WApplication extends WObject {
 	 * An example of how to modify the widget tree outside the event loop and
 	 * propagate changes is:
 	 * <p>
-	 * <blockquote>
 	 * 
 	 * <pre>
-	 * // You need to have a reference to the application whose state
+	 * {@code
+	 *    // You need to have a reference to the application whose state
 	 *    // you are about to manipulate.
 	 *    WApplication app = ...;
 	 *   
@@ -1390,9 +1410,8 @@ public class WApplication extends WObject {
 	 *    } finally {
 	 *      lock.release();
 	 *    }
+	 *   }
 	 * </pre>
-	 * 
-	 * </blockquote>
 	 * <p>
 	 * This works only if your servlet container supports the Servlet 3.0 API.
 	 * If you try to invoke this function on a servlet container with no such
@@ -1718,8 +1737,8 @@ public class WApplication extends WObject {
 	public static String readConfigurationProperty(String name, String value) {
 		WebSession session = WebSession.getInstance();
 		if (session != null) {
-			return (value = session.getEnv().getServer()
-					.readConfigurationProperty(name, value));
+			return session.getEnv().getServer().readConfigurationProperty(name,
+					value);
 		} else {
 			return value;
 		}
@@ -2332,21 +2351,20 @@ public class WApplication extends WObject {
 	 * The following shows a generic template for reimplementhing this method
 	 * for both managing request resources and generic exception handling.
 	 * <p>
-	 * <blockquote>
 	 * 
 	 * <pre>
-	 * void notify(WEvent event) {
-	 * 	// Grab resources for during request handling
-	 * 	try {
-	 * 		super.notify(event);
-	 * 	} catch (MyException exception) {
-	 * 		// handle this exception in a central place
-	 * 	}
-	 * 	// Free resources used during request handling
-	 * }
+	 * {@code
+	 *    void notify(WEvent event) {
+	 *        // Grab resources for during request handling
+	 *        try {
+	 *          super.notify(event);
+	 *        }  catch (MyException exception) {
+	 *          // handle this exception in a central place
+	 *        }
+	 *        // Free resources used during request handling
+	 *    }
+	 *   }
 	 * </pre>
-	 * 
-	 * </blockquote>
 	 * <p>
 	 * Note that any uncaught exception throw during event handling terminates
 	 * the session.

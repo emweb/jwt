@@ -63,21 +63,21 @@ import org.slf4j.LoggerFactory;
  * <p>
  * The view is passive: it will not perform any updates by itself of either the
  * View or Model. You will typically bind a method to the Ok button and do:
- * <blockquote>
+ * <p>
  * 
  * <pre>
- * void MyView::okClicked()
+ * {@code
+ *  void okClicked()
  *  {
- *    updateModel(model_);
- *    if (model_.validate()) {
+ *    updateModel(this.model);
+ *    if (this.model.validate()) {
  *      ...
  *    } else {
- *      updateView(model_);
+ *      updateView(this.model);
  *    }
  *  }
+ * }
  * </pre>
- * 
- * </blockquote>
  */
 public class WTemplateFormView extends WTemplate {
 	private static Logger logger = LoggerFactory

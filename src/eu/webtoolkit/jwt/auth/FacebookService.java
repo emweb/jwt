@@ -35,10 +35,11 @@ import org.slf4j.LoggerFactory;
  * <li><code>facebook-oauth2-app-secret</code>: The application secret.</li>
  * </ul>
  * <p>
- * For example: <blockquote>
+ * For example:
  * 
  * <pre>
- * <properties>
+ * {@code
+ *  <properties>
  *    <property name="facebook-oauth2-redirect-endpoint">
  *      http://localhost:8080/oauth2callback
  *    </property>
@@ -49,15 +50,16 @@ import org.slf4j.LoggerFactory;
  *      a3cf1630b1ae415c7260d849efdf444d
  *    </property>
  *  </properties>
+ * }
  * </pre>
- * 
- * </blockquote>
  * <p>
  * Like all <b>service classes</b>, this class holds only configuration state.
  * Thus, once configured, it can be safely shared between multiple sessions
- * since its state (the configuration) is read-only. A &quot;const
- * FacebookService&quot; object is thus thread-safe.
+ * since its state (the configuration) is read-only.
  * <p>
+ * See also: <a
+ * href="http://developers.facebook.com/docs/authentication/">http:/
+ * /developers.facebook.com/docs/authentication/</a>
  */
 public class FacebookService extends OAuthService {
 	private static Logger logger = LoggerFactory

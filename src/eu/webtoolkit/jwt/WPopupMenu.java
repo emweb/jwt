@@ -58,34 +58,34 @@ import org.slf4j.LoggerFactory;
  * <p>
  * Usage example:
  * <p>
- * <blockquote>
  * 
  * <pre>
- * // Create a menu with some items
- * WPopupMenu popup = new WPopupMenu();
- * popup.addItem(&quot;icons/item1.gif&quot;, &quot;Item 1&quot;);
- * popup.addItem(&quot;Item 2&quot;).setCheckable(true);
- * popup.addItem(&quot;Item 3&quot;);
- * popup.addSeparator();
- * popup.addItem(&quot;Item 4&quot;);
- * popup.addSeparator();
- * popup.addItem(&quot;Item 5&quot;);
- * popup.addItem(&quot;Item 6&quot;);
- * popup.addSeparator();
+ * {
+ * 	&#064;code
+ * 	// Create a menu with some items
+ * 	WPopupMenu popup = new WPopupMenu();
+ * 	popup.addItem(&quot;icons/item1.gif&quot;, &quot;Item 1&quot;);
+ * 	popup.addItem(&quot;Item 2&quot;).setCheckable(true);
+ * 	popup.addItem(&quot;Item 3&quot;);
+ * 	popup.addSeparator();
+ * 	popup.addItem(&quot;Item 4&quot;);
+ * 	popup.addSeparator();
+ * 	popup.addItem(&quot;Item 5&quot;);
+ * 	popup.addItem(&quot;Item 6&quot;);
+ * 	popup.addSeparator();
  * 
- * WPopupMenu subMenu = new WPopupMenu();
- * subMenu.addItem(&quot;Sub Item 1&quot;);
- * subMenu.addItem(&quot;Sub Item 2&quot;);
- * popup.addMenu(&quot;Item 7&quot;, subMenu);
+ * 	WPopupMenu subMenu = new WPopupMenu();
+ * 	subMenu.addItem(&quot;Sub Item 1&quot;);
+ * 	subMenu.addItem(&quot;Sub Item 2&quot;);
+ * 	popup.addMenu(&quot;Item 7&quot;, subMenu);
  * 
- * WPopupMenuItem item = popup.exec(event);
+ * 	WPopupMenuItem item = popup.exec(event);
  * 
- * if (item) {
- * 	// ... do associated action.
+ * 	if (item) {
+ * 		// ... do associated action.
+ * 	}
  * }
  * </pre>
- * 
- * </blockquote>
  * <p>
  * <h3>CSS</h3>
  * <p>

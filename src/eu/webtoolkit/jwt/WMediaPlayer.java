@@ -59,13 +59,12 @@ import org.slf4j.LoggerFactory;
  * <p>
  * The following code creates a video using the default controls:
  * <p>
- * <blockquote>
  * 
  * <pre>
- * ...
+ * {@code
+ *  ...
+ * }
  * </pre>
- * 
- * </blockquote>
  * <p>
  * Alternatively, a custom widget may be set which implements the controls,
  * using {@link WMediaPlayer#setControlsWidget(WWidget controlsWidget)

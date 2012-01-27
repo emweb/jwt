@@ -80,13 +80,12 @@ public abstract class WAbstractSpinBox extends WLineEdit {
 	 * <p>
 	 * Option to set a prefix string shown in front of the value, e.g.:
 	 * <p>
-	 * <blockquote>
 	 * 
 	 * <pre>
-	 * spinBox.setPrefix(&quot;$ &quot;);
+	 * {@code
+	 *      spinBox.setPrefix("$ ");
+	 *   }
 	 * </pre>
-	 * 
-	 * </blockquote>
 	 * <p>
 	 * The default prefix is empty.
 	 * <p>
@@ -113,13 +112,12 @@ public abstract class WAbstractSpinBox extends WLineEdit {
 	 * <p>
 	 * Option to set a suffix string shown to the right of the value, e.g.:
 	 * <p>
-	 * <blockquote>
 	 * 
 	 * <pre>
-	 * spinBox.setSuffix(&quot; crates&quot;);
+	 * {@code
+	 *      spinBox.setSuffix(" crates");
+	 *   }
 	 * </pre>
-	 * 
-	 * </blockquote>
 	 * <p>
 	 * The default suffix is empty.
 	 * <p>

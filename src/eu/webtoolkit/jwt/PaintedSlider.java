@@ -57,6 +57,7 @@ class PaintedSlider extends WPaintedWidget {
 	}
 
 	public void updateState() {
+		boolean rtl = WApplication.getInstance().getLayoutDirection() == LayoutDirection.RightToLeft;
 		String resourcesURL = WApplication.getResourcesUrl();
 		Orientation o = this.slider_.getOrientation();
 		this.handle_.setStyleClass("handle");
@@ -71,19 +72,29 @@ class PaintedSlider extends WPaintedWidget {
 		}
 		double l = o == Orientation.Horizontal ? this.getW() : this.getH();
 		double pixelsPerUnit = (l - HANDLE_WIDTH) / this.getRange();
-		String dir = o == Orientation.Horizontal ? "left" : "top";
+		String dir = "";
+		if (o == Orientation.Horizontal) {
+			dir = rtl ? "right" : "left";
+		} else {
+			dir = "top";
+		}
 		String u = o == Orientation.Horizontal ? "x" : "y";
 		String U = o == Orientation.Horizontal ? "X" : "Y";
 		String maxS = String.valueOf(l - HANDLE_WIDTH);
 		String ppU = String.valueOf(pixelsPerUnit);
 		String minimumS = String.valueOf(this.slider_.getMinimum());
 		String maximumS = String.valueOf(this.slider_.getMaximum());
+		String width = String.valueOf(this.getW());
+		String horizontal = String.valueOf(o == Orientation.Horizontal);
 		String mouseDownJS = "obj.setAttribute('down', Wt3_2_0.widgetCoordinates(obj, event)."
 				+ u + "); Wt3_2_0.cancelEvent(event);";
 		String computeD = "var objh = " + this.handle_.getJsRef() + ",objb = "
-				+ this.getJsRef() + ",u = WT.pageCoordinates(event)." + u
-				+ " - down,w = WT.widgetPageCoordinates(objb)." + u
-				+ ",d = u-w;";
+				+ this.getJsRef() + ",page_u = WT.pageCoordinates(event)." + u
+				+ ",widget_page_u = WT.widgetPageCoordinates(objb)." + u
+				+ ",pos = page_u - widget_page_u,rtl = " + String.valueOf(rtl)
+				+ ",horizontal = " + horizontal
+				+ ";if (rtl && horizontal)  pos = " + width
+				+ " - pos;var d = pos - down;";
 		String mouseMovedJS = "var down = obj.getAttribute('down');var WT = Wt3_2_0;if (down != null && down != '') {"
 				+ computeD
 				+ "d = Math.max(0, Math.min(d, "
@@ -252,10 +263,14 @@ class PaintedSlider extends WPaintedWidget {
 	}
 
 	private void onSliderClick(WMouseEvent event) {
+		int x = event.getWidget().x;
+		int y = event.getWidget().y;
+		if (WApplication.getInstance().getLayoutDirection() == LayoutDirection.RightToLeft) {
+			x = (int) (this.getW() - x);
+		}
 		this
-				.onSliderReleased(this.slider_.getOrientation() == Orientation.Horizontal ? event
-						.getWidget().x
-						: event.getWidget().y);
+				.onSliderReleased(this.slider_.getOrientation() == Orientation.Horizontal ? x
+						: y);
 	}
 
 	private void onSliderReleased(int u) {

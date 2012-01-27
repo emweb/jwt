@@ -27,8 +27,7 @@ import org.slf4j.LoggerFactory;
  * <p>
  * Like all <b>service classes</b>, this class holds only configuration state.
  * Thus, once configured, it can be safely shared between multiple sessions
- * since its state (the configuration) is read-only. A &quot;const
- * PasswordService&quot; object is thus thread-safe.
+ * since its state (the configuration) is read-only.
  * <p>
  * Passwords are (usually) saved in the database using salted hash functions.
  * The process of computing new hashes, and verifying them is delegated to an

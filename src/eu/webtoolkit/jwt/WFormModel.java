@@ -42,30 +42,30 @@ import org.slf4j.LoggerFactory;
  * status.
  * <p>
  * Example (a bit contrived since you will usually not use the model directly):
- * <blockquote>
+ * <p>
  * 
  * <pre>
- * const char *NameField = "name";
- *  const char *TelField = "telephone";
+ * {@code
+ *  String NameField = "name";
+ *  String TelField = "telephone";
  * 
- *  Wt::WFormModel *model = new Wt::WFormModel();
+ *  WFormModel model = new WFormModel();
  *  model.addField(NameField, "Enter your name");
- *  model.addField(TelephoneField, "Phone number");
+ *  model.addField(TelField, "Phone number");
  * 
- *  model.setValue(NameField, Wt::WString::fromUTF8("John Doe"));
+ *  model.setValue(NameField, "John Doe");
  * 
  *  if (model.validate()) {
  *    ...
  *  } else {
- *    const Wt::WValidator::Result& rname = model.validation(NameField);
- *    if (rname.state() != Wt::WValidator::Valid) {
- *      std::cerr <<< "Invalid name: " << rname.message();
+ *    WValidator.Result rname = model.getValidation(NameField);
+ *    if (rname.getState() != WValidator.State.Valid) {
+ *      System.err.println("Invalid name: " + rname.getMessage());
  *    }
  *    ...
  *  }
+ * }
  * </pre>
- * 
- * </blockquote>
  */
 public class WFormModel extends WObject {
 	private static Logger logger = LoggerFactory.getLogger(WFormModel.class);

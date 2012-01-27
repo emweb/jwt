@@ -35,10 +35,11 @@ import org.slf4j.LoggerFactory;
  * <li><code>google-oauth2-client-secret</code>: The client secret.</li>
  * </ul>
  * <p>
- * For example: <blockquote>
+ * For example:
  * 
  * <pre>
- * <properties>
+ * {@code
+ *  <properties>
  *    <property name="google-oauth2-redirect-endpoint">
  *      http://localhost:8080/oauth2callback
  *    </property>
@@ -49,15 +50,16 @@ import org.slf4j.LoggerFactory;
  *      abcdefghijk-12312312312
  *    </property>
  *  </properties>
+ * }
  * </pre>
- * 
- * </blockquote>
  * <p>
  * Like all <b>service classes</b>, this class holds only configuration state.
  * Thus, once configured, it can be safely shared between multiple sessions
- * since its state (the configuration) is read-only. A &quot;const
- * GoogleService&quot; object is thus thread-safe.
+ * since its state (the configuration) is read-only.
  * <p>
+ * See also: <a
+ * href="http://code.google.com/apis/accounts/docs/OAuth2.html">http
+ * ://code.google.com/apis/accounts/docs/OAuth2.html</a>
  */
 public class GoogleService extends OAuthService {
 	private static Logger logger = LoggerFactory.getLogger(GoogleService.class);

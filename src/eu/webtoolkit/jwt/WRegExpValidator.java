@@ -39,18 +39,18 @@ import org.slf4j.LoggerFactory;
  * <p>
  * Usage example:
  * <p>
- * <blockquote>
  * 
  * <pre>
- * WLineEdit lineEdit = new WLineEdit(this);
- * // an email address validator
- * WRegExpValidator validator = new WRegExpValidator(
- * 		&quot;[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,4}&quot;);
- * lineEdit.setValidator(validator);
- * lineEdit.setText(&quot;pieter@emweb.be&quot;);
+ * {
+ * 	&#064;code
+ * 	WLineEdit lineEdit = new WLineEdit(this);
+ * 	// an email address validator
+ * 	WRegExpValidator validator = new WRegExpValidator(
+ * 			&quot;[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,4}&quot;);
+ * 	lineEdit.setValidator(validator);
+ * 	lineEdit.setText(&quot;pieter@emweb.be&quot;);
+ * }
  * </pre>
- * 
- * </blockquote>
  * <p>
  * <p>
  * <i><b>Note: </b>This validator does not fully support unicode: it matches on

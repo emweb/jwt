@@ -91,7 +91,7 @@ public class RegistrationWidget extends WTemplateFormView {
 	 * model.
 	 */
 	public void update() {
-		if (this.model_.getPasswordAuth() != null
+		if (!(this.model_.getPasswordAuth() != null)
 				&& !this.model_.getOAuth().isEmpty()) {
 			this.bindString("password-description",
 					tr("Wt.Auth.password-or-oauth-registration"));

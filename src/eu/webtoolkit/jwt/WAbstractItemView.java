@@ -786,13 +786,13 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	/**
 	 * Returns wheter an item is selected.
 	 * <p>
-	 * This is a convenience method for: <blockquote>
+	 * This is a convenience method for:
 	 * 
 	 * <pre>
-	 * selectionModel().isSelected(index)
+	 * {@code
+	 *    selectionModel().isSelected(index)
+	 *   }
 	 * </pre>
-	 * 
-	 * </blockquote>
 	 * <p>
 	 * 
 	 * @see WAbstractItemView#getSelectedIndexes()
@@ -809,13 +809,13 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	 * The model indexes are returned as a set, topologically ordered (in the
 	 * order they appear in the view).
 	 * <p>
-	 * This is a convenience method for: <blockquote>
+	 * This is a convenience method for:
 	 * 
 	 * <pre>
-	 * selectionModel().selectedIndexes()
+	 * {@code
+	 *    selectionModel().selectedIndexes()
+	 *   }
 	 * </pre>
-	 * 
-	 * </blockquote>
 	 * <p>
 	 * 
 	 * @see WAbstractItemView#setSelectedIndexes(SortedSet indexes)

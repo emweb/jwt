@@ -29,16 +29,16 @@ import org.slf4j.LoggerFactory;
  * <p>
  * Usage example:
  * <p>
- * <blockquote>
  * 
  * <pre>
- * WContainerWidget w = new WContainerWidget();
- * WLabel label = new WLabel(&quot;Favourite Actress: &quot;, w);
- * WLineEdit edit = new WLineEdit(&quot;Renee Zellweger&quot;, w);
- * label.setBuddy(edit);
+ * {
+ * 	&#064;code
+ * 	WContainerWidget w = new WContainerWidget();
+ * 	WLabel label = new WLabel(&quot;Favourite Actress: &quot;, w);
+ * 	WLineEdit edit = new WLineEdit(&quot;Renee Zellweger&quot;, w);
+ * 	label.setBuddy(edit);
+ * }
  * </pre>
- * 
- * </blockquote>
  * <p>
  * The widget corresponds to the HTML <code>&lt;label&gt;</code> tag. When no
  * buddy is set, it is rendered using an HTML <code>&lt;span&gt;</code> or

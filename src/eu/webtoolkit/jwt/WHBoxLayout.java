@@ -31,21 +31,21 @@ import org.slf4j.LoggerFactory;
  * <p>
  * Usage example:
  * <p>
- * <blockquote>
  * 
  * <pre>
- * WContainerWidget w = new WContainerWidget(this);
+ * {
+ * 	&#064;code
+ * 	WContainerWidget w = new WContainerWidget(this);
  * 
- * WHBoxLayout layout = new WHBoxLayout();
- * layout.addWidget(new WText(&quot;One&quot;));
- * layout.addWidget(new WText(&quot;Two&quot;));
- * layout.addWidget(new WText(&quot;Three&quot;));
- * layout.addWidget(new WText(&quot;Four&quot;));
+ * 	WHBoxLayout layout = new WHBoxLayout();
+ * 	layout.addWidget(new WText(&quot;One&quot;));
+ * 	layout.addWidget(new WText(&quot;Two&quot;));
+ * 	layout.addWidget(new WText(&quot;Three&quot;));
+ * 	layout.addWidget(new WText(&quot;Four&quot;));
  * 
- * w.setLayout(layout, AlignmentFlag.AlignTop, AlignmentFlag.AlignJustify);
+ * 	w.setLayout(layout, AlignmentFlag.AlignTop, AlignmentFlag.AlignJustify);
+ * }
  * </pre>
- * 
- * </blockquote>
  * <p>
  * <p>
  * <i><b>Note: </b>First consider if you can achieve your layout using CSS !</i>

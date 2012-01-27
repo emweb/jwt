@@ -62,31 +62,31 @@ import org.slf4j.LoggerFactory;
  * <p>
  * Usage example:
  * <p>
- * <blockquote>
  * 
  * <pre>
- * // Example 1:
- * // Instantiate a container widget and add some children whose layout 
- * // is governed based on HTML/CSS rules.
- * WContainerWidget container1 = new WContainerWidget();
- * container1.addWidget(new WText(&quot;Some text&quot;));
- * container1.addWidget(new WImage(&quot;images/img.png&quot;));
- * WContainerWidget child3 = new WContainerWidget(container1);
+ * {
+ * 	&#064;code
+ * 	// Example 1:
+ * 	// Instantiate a container widget and add some children whose layout 
+ * 	// is governed based on HTML/CSS rules.
+ * 	WContainerWidget container1 = new WContainerWidget();
+ * 	container1.addWidget(new WText(&quot;Some text&quot;));
+ * 	container1.addWidget(new WImage(&quot;images/img.png&quot;));
+ * 	WContainerWidget child3 = new WContainerWidget(container1);
  * 
- * // Example 2:
- * // Instantiate a container widget which uses a layout manager
- * WContainerWidget container2 = new WContainerWidget();
- * // give the container a fixed height
- * container2.resize(WLength.Auto, new WLength(600));
+ * 	// Example 2:
+ * 	// Instantiate a container widget which uses a layout manager
+ * 	WContainerWidget container2 = new WContainerWidget();
+ * 	// give the container a fixed height
+ * 	container2.resize(WLength.Auto, new WLength(600));
  * 
- * WVBoxLayout layout = new WVBoxLayout();
- * layout.addWidget(new WText(&quot;Some text&quot;));
- * layout.addWidget(new WImage(&quot;images/img.png&quot;));
+ * 	WVBoxLayout layout = new WVBoxLayout();
+ * 	layout.addWidget(new WText(&quot;Some text&quot;));
+ * 	layout.addWidget(new WImage(&quot;images/img.png&quot;));
  * 
- * container2.setLayout(layout); // set the layout to the container.
+ * 	container2.setLayout(layout); // set the layout to the container.
+ * }
  * </pre>
- * 
- * </blockquote>
  * <p>
  * When using a layout manager, you need to carefully consider the alignment of
  * the layout manager with respect to the container: when the container&apos;s

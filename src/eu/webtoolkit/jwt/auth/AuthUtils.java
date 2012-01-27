@@ -13,7 +13,9 @@ import org.apache.http.entity.StringEntity;
 class AuthUtils {
 	static void parseFormUrlEncoded(HttpMessage response, Map<String, String[]> parameters) {
 		try {
-			List<NameValuePair> valuePairs = URLEncodedUtils.parse(new StringEntity(response.getBody()));
+			StringEntity entity = new StringEntity(response.getBody(), null);
+			entity.setContentType(URLEncodedUtils.CONTENT_TYPE);
+			List<NameValuePair> valuePairs = URLEncodedUtils.parse(entity);
 			for (NameValuePair nvp : valuePairs) {
 				String [] values = new String[1];
 				values[0] = nvp.getValue();

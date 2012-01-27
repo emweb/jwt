@@ -29,8 +29,7 @@ import org.slf4j.LoggerFactory;
  * <p>
  * Like all <b>service classes</b>, this class holds only configuration state.
  * Thus, once configured, it can be safely shared between multiple sessions
- * since its state (the configuration) is read-only. A &quot;const
- * AuthService&quot; object is thus thread-safe.
+ * since its state (the configuration) is read-only.
  * <p>
  * The class provides the following services (and relevant configuration):
  * <p>
@@ -135,9 +134,10 @@ public class AuthService {
 	 * <p>
 	 * When authenticating using a 3rd party {@link Identity} Provider, the
 	 * identity is matched against the existing users, based on the id (with
-	 * AbstractUserDatabase::findOtherId()), or if not matched, based on whether
-	 * there is a user with the same verified email address as the one indicated
-	 * by the identity.
+	 * {@link AbstractUserDatabase#findWithIdentity(String provider, String identity)
+	 * AbstractUserDatabase#findWithIdentity()}), or if not matched, based on
+	 * whether there is a user with the same verified email address as the one
+	 * indicated by the identity.
 	 */
 	public User identifyUser(Identity identity, AbstractUserDatabase users) {
 		AbstractUserDatabase.Transaction t = users.startTransaction();

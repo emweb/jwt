@@ -114,19 +114,18 @@ import org.slf4j.LoggerFactory;
  * <p>
  * <h3>Usage example</h3>
  * <p>
- * <blockquote>
  * 
  * <pre>
- * WString userName = ...;
+ * {@code
+ *  WString userName = ...;
  * 
  *  WTemplate t = new WTemplate();
  *  t.setTemplateText("<div> How old are you, ${friend} ? ${age-input} </div>");
  * 
  *  t.bindString("friend", userName, PlainText);
  *  t.bindWidget("age-input", ageEdit_ = new WLineEdit());
+ * }
  * </pre>
- * 
- * </blockquote>
  * <p>
  * <h3>CSS</h3>
  * <p>
@@ -185,13 +184,13 @@ public class WTemplate extends WInteractWidget {
 	 * ${tr:name}
 	 * </pre>
 	 * 
-	 * will be resolved to the value of: <blockquote>
+	 * will be resolved to the value of:
 	 * 
 	 * <pre>
-	 * WString#tr("name")
+	 * {@code
+	 *      WString#tr("name")
+	 *   }
 	 * </pre>
-	 * 
-	 * </blockquote>
 	 * <p>
 	 * 
 	 * @see WTemplate#addFunction(String name, Function function)
@@ -220,13 +219,13 @@ public class WTemplate extends WInteractWidget {
 	 * ${id:name}
 	 * </pre>
 	 * 
-	 * will be resolved to the value of: <blockquote>
+	 * will be resolved to the value of:
 	 * 
 	 * <pre>
-	 * t.resolveWidget(&quot;name&quot;).id()
+	 * {@code
+	 *      t.resolveWidget("name").id()
+	 *   }
 	 * </pre>
-	 * 
-	 * </blockquote>
 	 * <p>
 	 * This is useful for binding labels to input elements.
 	 * <p>
@@ -496,15 +495,14 @@ public class WTemplate extends WInteractWidget {
 	 * <code>${fun:bla}</code>
 	 * <p>
 	 * There are two predefined functions, which can be bound using:
-	 * <blockquote>
 	 * 
 	 * <pre>
-	 * WTemplate *t = ...;
+	 * {@code
+	 *    WTemplate *t = ...;
 	 *    t.addFunction("id", &WTemplate::Functions::id);
 	 *    t.addFunction("tr", &WTemplate::Functions::tr);
+	 *   }
 	 * </pre>
-	 * 
-	 * </blockquote>
 	 */
 	public void addFunction(String name, Function function) {
 		this.functions_.put(name, function);
@@ -634,10 +632,11 @@ public class WTemplate extends WInteractWidget {
 	 * (unless bind was called on them as in the example below).
 	 * <p>
 	 * This method is typically used for delayed binding of widgets. Usage
-	 * example: <blockquote>
+	 * example:
 	 * 
 	 * <pre>
-	 * {
+	 * {@code
+	 *    {
 	 *      if (Widget *known = WTemplate::resolveWidget(varName)) {
 	 *        return known;
 	 *      } else {
@@ -648,9 +647,8 @@ public class WTemplate extends WInteractWidget {
 	 *        }
 	 *      }
 	 *    }
+	 *   }
 	 * </pre>
-	 * 
-	 * </blockquote>
 	 */
 	public WWidget resolveWidget(String varName) {
 		WWidget j = this.widgets_.get(varName);

@@ -28,28 +28,28 @@ import org.slf4j.LoggerFactory;
  * <p>
  * Usage example:
  * <p>
- * <blockquote>
  * 
  * <pre>
- * WEnvironment env = WApplication.instance().environment();
+ * {
+ * 	&#064;code
+ * 	WEnvironment env = WApplication.instance().environment();
  * 
- * // read an application startup argument 
- * // (passed as argument in the URL or POST'ed to the application).
- * if (!env.getParameterValues(&quot;login&quot;).isEmpty()) {
- * 	String login = env.getParameterValues(&quot;login&quot;).get(0);
- * 	//...
+ * 	// read an application startup argument 
+ * 	// (passed as argument in the URL or POST'ed to the application).
+ * 	if (!env.getParameterValues(&quot;login&quot;).isEmpty()) {
+ * 		String login = env.getParameterValues(&quot;login&quot;).get(0);
+ * 		//...
+ * 	}
+ * 
+ * 	// Check for JavaScript/AJAX availability before using JavaScript-only
+ * 	// widgets
+ * 	WTextArea textEdit;
+ * 	if (!env.isAjax())
+ * 		textEdit = new WTextEdit(); // provide an HTML text editor
+ * 	else
+ * 		textEdit = new WTextArea(); // fall-back to a plain old text area.
  * }
- * 
- * // Check for JavaScript/AJAX availability before using JavaScript-only
- * // widgets
- * WTextArea textEdit;
- * if (!env.isAjax())
- * 	textEdit = new WTextEdit(); // provide an HTML text editor
- * else
- * 	textEdit = new WTextArea(); // fall-back to a plain old text area.
  * </pre>
- * 
- * </blockquote>
  */
 public class WEnvironment {
 	private static Logger logger = LoggerFactory.getLogger(WEnvironment.class);
@@ -584,14 +584,14 @@ public class WEnvironment {
 	 * <p>
 	 * For an application deployed at <code>&quot;/stuff/app.wt&quot;</code>,
 	 * the following two URLs are considered equivalent, and indicate an
-	 * internal path <code>&quot;/this/there&quot;</code>: <blockquote>
+	 * internal path <code>&quot;/this/there&quot;</code>:
 	 * 
 	 * <pre>
-	 * http://www.mydomain.com/stuff/app.wt/this/there
+	 * {@code
 	 *    http://www.mydomain.com/stuff/app.wt/this/there
+	 *    http://www.mydomain.com/stuff/app.wt/this/there
+	 *   }
 	 * </pre>
-	 * 
-	 * </blockquote>
 	 * <p>
 	 * 
 	 * @see WApplication#getBookmarkUrl()

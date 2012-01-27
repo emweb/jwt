@@ -74,10 +74,11 @@ public class WOverlayLoadingIndicator extends WContainerWidget implements
 	 *            the style class for the text that is displayed}
 	 *            <p>
 	 *            <i><b>Note: </b>if styleClass is not set, the central box gets
-	 *            the CSS style elements <blockquote>
+	 *            the CSS style elements
 	 * 
 	 *            <pre>
-	 * background: white;
+	 * {@code
+	 *                background: white;
 	 *                border: 3px solid #333333;
 	 *                z-index: 10001; visibility: visible;
 	 *                position: absolute; left: 50%; top: 50%;
@@ -85,15 +86,15 @@ public class WOverlayLoadingIndicator extends WContainerWidget implements
 	 *                width: 100px; height: 80px;
 	 *                font-family: arial,sans-serif;
 	 *                text-align: center
+	 *   }
 	 * </pre>
-	 * 
-	 *            </blockquote>
 	 *            <p>
 	 *            if backgroundStyleClass is not set, the background gets the
-	 *            CSS style elements <blockquote>
+	 *            CSS style elements
 	 * 
 	 *            <pre>
-	 * background: #DDDDDD;
+	 * {@code
+	 *                background: #DDDDDD;
 	 *                height: 100%; width: 100%;
 	 *                top: 0px; left: 0px;
 	 *                z-index: 10000;
@@ -102,9 +103,10 @@ public class WOverlayLoadingIndicator extends WContainerWidget implements
 	 *                -moz-background-inline-policy: -moz-initial;
 	 *                opacity: 0.5; filter: alpha(opacity=50); -moz-opacity:0.5;
 	 *                position: absolute;
+	 *   }
 	 * </pre>
 	 * 
-	 *            </blockquote> </i>
+	 *            </i>
 	 *            </p>
 	 */
 	public WOverlayLoadingIndicator(String styleClass,
