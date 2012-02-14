@@ -968,7 +968,7 @@ public class WMenu extends WCompositeWidget {
 	private List<WMenuItem> items_;
 
 	void select(int index, boolean changePath) {
-		this.selectVisual(index, changePath);
+		this.selectVisual(index, changePath, true);
 		if (index != -1) {
 			if (this.isItemHidden(index)) {
 				this.setItemHidden(index, false);
@@ -1017,10 +1017,10 @@ public class WMenu extends WCompositeWidget {
 	}
 
 	void selectVisual(WMenuItem item) {
-		this.selectVisual(this.indexOf(item), true);
+		this.selectVisual(this.indexOf(item), true, true);
 	}
 
-	private void selectVisual(int index, boolean changePath) {
+	void selectVisual(int index, boolean changePath, boolean showContents) {
 		this.previousCurrent_ = this.current_;
 		if (this.contentsStack_ != null) {
 			this.previousStackIndex_ = this.contentsStack_.getCurrentIndex();
@@ -1042,7 +1042,7 @@ public class WMenu extends WCompositeWidget {
 		if (index == -1) {
 			return;
 		}
-		if (this.contentsStack_ != null) {
+		if (showContents && this.contentsStack_ != null) {
 			WWidget contents = this.items_.get(this.current_).getContents();
 			if (contents != null) {
 				this.contentsStack_.setCurrentWidget(contents);
@@ -1054,7 +1054,7 @@ public class WMenu extends WCompositeWidget {
 	void undoSelectVisual() {
 		String prevPath = this.previousInternalPath_;
 		int prevStackIndex = this.previousStackIndex_;
-		this.selectVisual(this.previousCurrent_, true);
+		this.selectVisual(this.previousCurrent_, true, true);
 		if (this.internalPathEnabled_) {
 			WApplication app = WApplication.getInstance();
 			app.setInternalPath(prevPath);

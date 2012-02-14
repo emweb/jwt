@@ -454,6 +454,11 @@ public class WSlider extends WFormWidget {
 	protected void layoutSizeChanged(int width, int height) {
 		super.resize(WLength.Auto, WLength.Auto);
 		if (this.paintedSlider_ != null) {
+			WEnvironment env = WApplication.getInstance().getEnvironment();
+			if (env.agentIsChrome()
+					&& this.orientation_ == Orientation.Vertical) {
+				height -= 5;
+			}
 			this.paintedSlider_.sliderResized(new WLength(width), new WLength(
 					height));
 		}

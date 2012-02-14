@@ -60,6 +60,10 @@ public class WItemSelectionModel extends WObject {
 	 * <p>
 	 * The model indexes are returned as a set, topologically ordered (in the
 	 * order they appear in the view).
+	 * <p>
+	 * When selection operates on rows ({@link SelectionBehavior#SelectRows
+	 * SelectRows}), this method only returns the model index of first
+	 * column&apos;s element of the selected rows.
 	 */
 	public SortedSet<WModelIndex> getSelectedIndexes() {
 		return this.selection_;
@@ -68,11 +72,30 @@ public class WItemSelectionModel extends WObject {
 	/**
 	 * Returns wheter an item is selected.
 	 * <p>
+	 * When selection operates on rows ({@link SelectionBehavior#SelectRows
+	 * SelectRows}), this method returns true for each element in a selected
+	 * row.
+	 * <p>
 	 * 
 	 * @see WItemSelectionModel#getSelectedIndexes()
 	 */
 	public boolean isSelected(WModelIndex index) {
-		return this.selection_.contains(index) != false;
+		if (this.selectionBehavior_ == SelectionBehavior.SelectRows) {
+			for (Iterator<WModelIndex> it_it = this.selection_.iterator(); it_it
+					.hasNext();) {
+				WModelIndex it = it_it.next();
+				WModelIndex mi = it;
+				if (mi.getRow() == index.getRow()
+						&& (mi.getParent() == index.getParent() || (mi
+								.getParent() != null && mi.getParent().equals(
+								index.getParent())))) {
+					return true;
+				}
+			}
+			return false;
+		} else {
+			return this.selection_.contains(index) != false;
+		}
 	}
 
 	/**

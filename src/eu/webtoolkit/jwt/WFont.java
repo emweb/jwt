@@ -258,6 +258,20 @@ public class WFont {
 	 * <p>
 	 * The first specific font that can be matched will be used, otherwise a
 	 * generic font will be used.
+	 * <p>
+	 * Careful, for a font family name that contains a space, you need to add
+	 * quotes, to
+	 * {@link WFont#setFamily(WFont.GenericFamily genericFamily, CharSequence specificFamilies)
+	 * setFamily()}, e.g.
+	 * <p>
+	 * 
+	 * <pre>
+	 * {@code
+	 *    WFont mono;
+	 *    mono.setFamily(WFont::Monospace, "'Courier New'");
+	 *    mono.setSize(18);
+	 *   }
+	 * </pre>
 	 */
 	public void setFamily(WFont.GenericFamily genericFamily,
 			CharSequence specificFamilies) {

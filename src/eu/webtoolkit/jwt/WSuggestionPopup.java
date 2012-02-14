@@ -850,8 +850,13 @@ public class WSuggestionPopup extends WCompositeWidget {
 					: null);
 			WText value = ((w.getWidget(0)) instanceof WText ? (WText) (w
 					.getWidget(0)) : null);
-			Object d = this.model_.getData(i, this.modelColumn_);
+			WModelIndex index = this.model_.getIndex(i, this.modelColumn_);
+			Object d = index.getData();
 			value.setText(StringUtils.asString(d));
+			TextFormat format = !EnumUtils.mask(index.getFlags(),
+					ItemFlag.ItemIsXHTMLText).isEmpty() ? TextFormat.XHTMLText
+					: TextFormat.PlainText;
+			value.setTextFormat(format);
 			Object d2 = this.model_.getData(i, this.modelColumn_,
 					ItemDataRole.UserRole);
 			if ((d2 == null)) {

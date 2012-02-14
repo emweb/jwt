@@ -91,11 +91,11 @@ public class AuthModel extends FormBaseModel {
 		}
 		this.addField(PasswordField, WString.tr("Wt.Auth.password-info"));
 		int days = this.getBaseAuth().getAuthTokenValidity() / 24 / 60;
-		WString info = WString.tr("Wt.Auth.remember-me-info");
+		WString info = new WString();
 		if (days % 7 != 0) {
-			info.arg(String.valueOf(days) + " days");
+			info = WString.tr("Wt.Auth.remember-me-info.days").arg(days);
 		} else {
-			info.arg(String.valueOf(days / 7) + " weeks");
+			info = WString.tr("Wt.Auth.remember-me-info.weeks").arg(days / 7);
 		}
 		this.addField(RememberMeField, info);
 		this.setValidation(RememberMeField, new WValidator.Result(

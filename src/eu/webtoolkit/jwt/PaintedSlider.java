@@ -37,6 +37,8 @@ class PaintedSlider extends WPaintedWidget {
 								: "v"));
 		if (this.slider_.getPositionScheme() == PositionScheme.Static) {
 			this.slider_.setPositionScheme(PositionScheme.Relative);
+			this.slider_.setOffsets(new WLength(0), EnumSet.of(Side.Left,
+					Side.Top));
 		}
 		this.addChild(this.handle_ = new WContainerWidget());
 		this.handle_.setPopup(true);

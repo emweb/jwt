@@ -76,6 +76,12 @@ public class WSubMenuItem extends WMenuItem {
 	public void setSubMenu(WMenu subMenu) {
 		this.subMenu_ = subMenu;
 		this.subMenu_.setSubMenu(true);
+		this.subMenu_.itemSelectRendered().addListener(this,
+				new Signal1.Listener<WMenuItem>() {
+					public void trigger(WMenuItem e1) {
+						WSubMenuItem.this.coSelect();
+					}
+				});
 	}
 
 	/**
@@ -141,5 +147,8 @@ public class WSubMenuItem extends WMenuItem {
 	}
 
 	private WMenu subMenu_;
-	// private void subItemSelected() ;
+
+	private void coSelect() {
+		this.getMenu().selectVisual(this.getMenu().indexOf(this), false, false);
+	}
 }

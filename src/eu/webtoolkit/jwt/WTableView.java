@@ -924,11 +924,7 @@ public class WTableView extends WAbstractItemView {
 		EnumSet<ViewItemRenderFlag> renderFlags = EnumSet
 				.noneOf(ViewItemRenderFlag.class);
 		if (this.isAjaxMode()) {
-			if (this.getSelectionBehavior() == SelectionBehavior.SelectItems
-					&& this.isSelected(index)
-					|| this.getSelectionBehavior() == SelectionBehavior.SelectRows
-					&& this.isSelected(this.getModel().getIndex(index.getRow(),
-							0, this.getRootIndex()))) {
+			if (this.isSelected(index)) {
 				renderFlags.add(ViewItemRenderFlag.RenderSelected);
 			}
 		}

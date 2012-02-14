@@ -309,7 +309,7 @@ class WebSession {
 								.getResponse()
 								.out()
 								.append(
-										"<html><head><title>bhm</title></head><body>&#160;</body></html>");
+										"<html><head><title>bhm</title></head><body> </body></html>");
 						handler.getResponse().flush();
 						handler.setRequest((WebRequest) null,
 								(WebResponse) null);
@@ -955,6 +955,9 @@ class WebSession {
 									} else {
 										AbstractEventSignal esb = this
 												.decodeSignal(s, false);
+										if (!(esb != null)) {
+											continue;
+										}
 										WTimerWidget t = ((esb.getSender()) instanceof WTimerWidget ? (WTimerWidget) (esb
 												.getSender())
 												: null);
@@ -1284,7 +1287,7 @@ class WebSession {
 											.getResponse()
 											.out()
 											.append(
-													"<html><head><title>bhm</title></head><body>&#160;</body></html>");
+													"<html><head><title>bhm</title></head><body> </body></html>");
 								} else {
 									logger
 											.info(new StringWriter()
@@ -1402,7 +1405,7 @@ class WebSession {
 											.getResponse()
 											.out()
 											.append(
-													"<html><head><title>bhm</title></head><body>&#160;</body></html>");
+													"<html><head><title>bhm</title></head><body> </body></html>");
 									break;
 								} else {
 									String jsE = request.getParameter("js");
@@ -1934,7 +1937,8 @@ class WebSession {
 				slashpos = this.absoluteBaseUrl_.indexOf("/", slashpos + 3);
 				if (slashpos != -1) {
 					this.deploymentPath_ = this.absoluteBaseUrl_
-							.substring(slashpos);
+							.substring(slashpos)
+							+ this.applicationName_;
 				}
 			}
 		}

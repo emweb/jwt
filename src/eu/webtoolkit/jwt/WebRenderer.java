@@ -1288,9 +1288,9 @@ class WebRenderer implements SlotLearnerInterface {
 		bootJs.setCondition("HYBRID", hybrid);
 		boolean xhtml = this.session_.getEnv().getContentType() == WEnvironment.ContentType.XHTML1;
 		bootJs.setCondition("DEFER_SCRIPT", !xhtml);
-		String internalPath = hybrid ? this.safeJsStringLiteral(this.session_
-				.getApp().getInternalPath()) : "";
-		bootJs.setVar("INTERNAL_PATH", internalPath);
+		String internalPath = hybrid ? this.session_.getApp().getInternalPath()
+				: this.session_.getEnv().getInternalPath();
+		bootJs.setVar("INTERNAL_PATH", this.safeJsStringLiteral(internalPath));
 		boot.streamUntil(response.out(), "BOOT_JS");
 		bootJs.stream(response.out());
 	}

@@ -835,6 +835,13 @@ public class WTreeNode extends WCompositeWidget {
 		}
 	}
 
+	/**
+	 * Accesses the icon pair that allows expansion of the tree node.
+	 */
+	protected WIconPair getExpandIcon() {
+		return this.expandIcon_;
+	}
+
 	WTable getImpl() {
 		return this.layout_;
 	}

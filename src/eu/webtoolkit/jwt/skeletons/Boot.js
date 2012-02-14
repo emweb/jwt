@@ -49,6 +49,51 @@ function hideForm() {
     setTimeout(hideForm, 10);
 }
 
+function getParams() {
+  var queryString = window.location.search;
+  if (queryString.length > 1 && queryString.charAt(0) == '?')
+    queryString = queryString.substr(1);
+
+  return queryString.split("&");
+}
+
+function getParameter(name) {
+  var i, params, tokens, len;
+
+  params = getParams();
+
+  for (i = 0, len = params.length; i < len; i++) {
+    tokens = params[i].split("=");
+    if (tokens.length >= 2)
+      if (tokens[0] === name)
+	return unescape(tokens[1]);
+  }
+
+  return null;
+}
+
+function createUrl(name, value) {
+  var i, params, tokens, len, found = false;
+
+  params = getParams();
+
+  for (i = 0, len = params.length; i < len; i++) {
+    tokens = params[i].split("=");
+    if (tokens.length >= 2)
+      if (tokens[0] === name) {
+	tokens[1] = escape(value);
+	params[i] = tokens.join("=");
+	found = true;
+	break;
+      }
+  }
+
+  if (!found)
+    params.push(name + "=" + escape(value));
+
+  return "?" + params.join("&") + window.location.hash;
+}
+
 if (win.opera)
   win.opera.setOverrideHistoryNavigationMode("compatible");
 
@@ -99,33 +144,24 @@ var htmlHistory = !!(window.history && window.history.pushState),
 var needSessionInUrl = !no_replace || !ajax;
 
 if (needSessionInUrl) {
-  function getSessionFromUrl() {
-    var url, idx, i, queryString, params, tokens, len;
-    url = top.location.href;
-    idx = url.indexOf('?');
-    queryString = idx >= 0 ? url.substr(idx + 1) : url;
-    idx = queryString.lastIndexOf("#");
-    queryString = idx >= 0 ? queryString.substr(0, idx) : queryString;
-    params = queryString.split("&");
-
-    for (i = 0, len = params.length; i < len; i++) {
-      tokens = params[i].split("=");
-      if (tokens.length >= 2)
-        if (tokens[0] === "wtd")
-          return unescape(tokens[1]);
-    }
-
-    return null;
-  }
-
-  if (getSessionFromUrl() === '_$_SESSION_ID_$_')
+  if (getParameter("wtd") === '_$_SESSION_ID_$_')
     needSessionInUrl = false;
 }
 
 if (needSessionInUrl) {
-  if (hash.length > 0)
-    selfUrl += '#' + hash;
-  setUrl(selfUrl);
+  if (htmlHistory)
+    setUrl(createUrl("wtd", '_$_SESSION_ID_$_'));
+  else {
+    var h;
+    if (hash.length > 1 && hash.charAt(0) == '/')
+      h = hash;
+    else
+      h = _$_INTERNAL_PATH_$_;
+
+    if (h.length > 0)
+      selfUrl += '#' + h;
+    setUrl(selfUrl);
+  }
 } else if (ajax) {
   var canonicalUrl = _$_AJAX_CANONICAL_URL_$_,
       hashInfo = '';

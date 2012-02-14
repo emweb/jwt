@@ -695,9 +695,8 @@ public class AuthWidget extends WTemplateFormView {
 			this.createLoggedInView();
 		} else {
 			if (this.model_.getBaseAuth().isAuthTokensEnabled()) {
-				WApplication.getInstance().setCookie(
-						this.model_.getBaseAuth().getAuthTokenCookieName(), "",
-						0);
+				WApplication.getInstance().removeCookie(
+						this.model_.getBaseAuth().getAuthTokenCookieName());
 			}
 			this.model_.reset();
 			this.createLoginView();
