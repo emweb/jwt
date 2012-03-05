@@ -1121,6 +1121,11 @@ public abstract class WWidget extends WObject {
 	 * <p>
 	 * By default, auto-generated id&apos;s are used.
 	 * <p>
+	 * <p>
+	 * <i><b>Note: </b>An id must start with a letter ([A-Za-z]), followed by
+	 * one or more letters, digits ([0-9]), hyphens (&quot;-&quot;), underscores
+	 * (&quot;_&quot;), colons (&quot;:&quot;), and periods (&quot;.&quot;).</i>
+	 * </p>
 	 * 
 	 * @see WObject#getId()
 	 */

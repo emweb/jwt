@@ -148,6 +148,7 @@ class WebRenderer implements SlotLearnerInterface {
 	}
 
 	public void serveResponse(WebResponse response) throws IOException {
+		this.session_.setTriggerUpdate(false);
 		switch (response.getResponseType()) {
 		case Update:
 			this.serveJavaScriptUpdate(response);
@@ -1357,28 +1358,40 @@ class WebRenderer implements SlotLearnerInterface {
 						.get(i);
 				result.append("<meta");
 				if (m.name.length() != 0) {
-					if (m.type == MetaHeaderType.MetaName) {
-						result.append(" name=\"");
-					} else {
-						result.append(" http-equiv=\"");
-					}
-					result.pushEscape(EscapeOStream.RuleSet.HtmlAttribute);
-					result.append(m.name);
-					result.popEscape();
-					result.append('"');
+					appendAttribute(result,
+							m.type == MetaHeaderType.MetaName ? "name"
+									: "http-equiv", m.name);
 				}
 				if (m.lang.length() != 0) {
-					result.append(" lang=\"");
-					result.pushEscape(EscapeOStream.RuleSet.HtmlAttribute);
-					result.append(m.lang);
-					result.popEscape();
-					result.append('"');
+					appendAttribute(result, "lang", m.lang);
 				}
-				result.append(" content=\"");
-				result.pushEscape(EscapeOStream.RuleSet.HtmlAttribute);
-				result.append(m.content.toString());
-				result.popEscape();
-				result.append(xhtml ? "\"/>" : "\">");
+				appendAttribute(result, "content", m.content.toString());
+				result.append(xhtml ? "/>" : ">");
+			}
+			for (int i = 0; i < this.session_.getApp().metaLinks_.size(); ++i) {
+				WApplication.MetaLink ml = this.session_.getApp().metaLinks_
+						.get(i);
+				EscapeOStream link = new EscapeOStream();
+				link.append("<link");
+				appendAttribute(link, "href", ml.href);
+				appendAttribute(link, "rel", ml.rel);
+				if (ml.media.length() != 0) {
+					appendAttribute(link, "media", ml.media);
+				}
+				if (ml.hreflang.length() != 0) {
+					appendAttribute(link, "hreflang", ml.hreflang);
+				}
+				if (ml.type.length() != 0) {
+					appendAttribute(link, "type", ml.type);
+				}
+				if (ml.sizes.length() != 0) {
+					appendAttribute(link, "sizes", ml.sizes);
+				}
+				if (ml.disabled) {
+					appendAttribute(link, "disabled", "");
+				}
+				link.append(xhtml ? "/>" : ">");
+				result.append(link.toString());
 			}
 		} else {
 			if (this.session_.getEnv().agentIsIElt(9)) {
@@ -1470,5 +1483,13 @@ class WebRenderer implements SlotLearnerInterface {
 
 	static boolean isAbsoluteUrl(String url) {
 		return url.indexOf("://") != -1;
+	}
+
+	static void appendAttribute(EscapeOStream eos, String name, String value) {
+		eos.append(" ").append(name).append("=\"");
+		eos.pushEscape(EscapeOStream.RuleSet.HtmlAttribute);
+		eos.append(value);
+		eos.popEscape();
+		eos.append('"');
 	}
 }

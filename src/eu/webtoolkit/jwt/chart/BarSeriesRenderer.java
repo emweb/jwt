@@ -39,6 +39,21 @@ class BarSeriesRenderer extends SeriesRenderer {
 				.getCurrentXSegment(), this.it_.getCurrentYSegment());
 		WPointF bottomMid = this.renderer_.map(x, stacky, yAxis.getId(),
 				this.it_.getCurrentXSegment(), this.it_.getCurrentYSegment());
+		FillRangeType fr = this.series_.getFillRange();
+		switch (fr) {
+		case MinimumValueFill:
+			bottomMid = new WPointF(this.renderer_.map(x, stacky,
+					yAxis.getId(), this.it_.getCurrentXSegment(),
+					this.it_.getCurrentYSegment()).getX(), this.renderer_
+					.getChartArea().getBottom());
+			break;
+		case MaximumValueFill:
+			bottomMid = new WPointF(this.renderer_.map(x, stacky,
+					yAxis.getId(), this.it_.getCurrentXSegment(),
+					this.it_.getCurrentYSegment()).getX(), this.renderer_
+					.getChartArea().getTop());
+			break;
+		}
 		double g = this.numGroups_ + (this.numGroups_ - 1)
 				* this.renderer_.getChart().getBarMargin();
 		double width = this.groupWidth_ / g;

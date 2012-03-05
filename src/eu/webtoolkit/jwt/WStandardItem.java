@@ -1054,8 +1054,17 @@ public class WStandardItem {
 	public WStandardItem takeChild(int row, int column) {
 		WStandardItem result = this.getChild(row, column);
 		if (result != null) {
+			WModelIndex idx = result.getIndex();
+			if (result.hasChildren()) {
+				this.model_.beginRemoveRows(result.getIndex(), 0, result
+						.getRowCount() - 1);
+			}
 			this.orphanChild(result);
 			this.columns_.get(column).set(row, null);
+			if (result.hasChildren()) {
+				this.model_.endRemoveRows();
+			}
+			this.model_.dataChanged().trigger(idx, idx);
 		}
 		return result;
 	}

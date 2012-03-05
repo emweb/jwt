@@ -55,7 +55,7 @@ import org.slf4j.LoggerFactory;
  * <p>
  * Optionally, additional arguments can be specified using the following syntax:
  * <p>
- * <code>${var arg1=value1 arg2=&quot;A second value&quot; arg3=&apos;A third value&apos;}</code>
+ * <code>${var arg1=&quot;A value&quot; arg2=&apos;A second value&apos;}</code>
  * <p>
  * The arguments can thus be simple simple strings or quoted strings (single or
  * double quoted). These arguments are applied to a resolved widget in
@@ -75,8 +75,7 @@ import org.slf4j.LoggerFactory;
  * <i><b>Note: </b>The use of XML comments (<code>&lt;!-- ... -.</code>) around
  * variables that are bound to widgets will result in bad behaviour since the
  * template parser is ignorant about these comments and the corresponding
- * widgets will believe that they are rendered but aren&apos;t actually. We are
- * planning to add a syntax for conditional sections</i>
+ * widgets will believe that they are rendered but aren&apos;t actually.</i>
  * </p>
  * <h3>B. Functions</h3>
  * <p>
@@ -107,7 +106,7 @@ import org.slf4j.LoggerFactory;
  * <p>
  * <code>${&lt;cond&gt;}</code> starts a conditional block with a condition name
  * &quot;cond&quot;, and must be closed by a balanced
- * <code>${&lt;/cond&gt;}</code>.
+ * <code>${&gt;/cond&gt;}</code>.
  * <p>
  * Conditions are set using
  * {@link WTemplate#setCondition(String name, boolean value) setCondition()}.

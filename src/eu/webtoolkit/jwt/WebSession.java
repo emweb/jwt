@@ -69,6 +69,7 @@ class WebSession {
 		this.newRecursiveEvent_ = false;
 		this.updatesPendingEvent_ = this.mutex_.newCondition();
 		this.updatesPending_ = false;
+		this.triggerUpdate_ = false;
 		this.embeddedEnv_ = new WEnvironment(this);
 		this.app_ = null;
 		this.debug_ = this.controller_.getConfiguration().debug();
@@ -496,6 +497,7 @@ class WebSession {
 
 	public void pushUpdates() {
 		try {
+			this.triggerUpdate_ = false;
 			if (!this.renderer_.isDirty()
 					|| this.state_ == WebSession.State.Dead) {
 				logger.debug(new StringWriter().append(
@@ -588,6 +590,10 @@ class WebSession {
 			this.deferredRequest_ = null;
 			this.deferredResponse_ = null;
 		}
+	}
+
+	public void setTriggerUpdate(boolean update) {
+		this.triggerUpdate_ = update;
 	}
 
 	public void expire() {
@@ -1043,6 +1049,9 @@ class WebSession {
 
 		public void release() {
 			if (this.session_.getMutex().isHeldByCurrentThread()) {
+				if (this.session_.triggerUpdate_) {
+					this.session_.pushUpdates();
+				}
 				this.session_.getMutex().unlock();
 			}
 			attachThreadToHandler(this.prevHandler_);
@@ -1588,6 +1597,7 @@ class WebSession {
 	private boolean newRecursiveEvent_;
 	private java.util.concurrent.locks.Condition updatesPendingEvent_;
 	private boolean updatesPending_;
+	private boolean triggerUpdate_;
 	private WEnvironment embeddedEnv_;
 	private WEnvironment env_;
 	private WApplication app_;

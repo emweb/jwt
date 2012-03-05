@@ -173,6 +173,7 @@ public class WApplication extends WObject {
 		this.styleSheets_ = new ArrayList<WApplication.StyleSheet>();
 		this.styleSheetsAdded_ = 0;
 		this.metaHeaders_ = new ArrayList<WApplication.MetaHeader>();
+		this.metaLinks_ = new ArrayList<WApplication.MetaLink>();
 		this.exposedSignals_ = new HashMap<String, WeakReference<AbstractEventSignal>>();
 		this.exposedResources_ = new HashMap<String, WResource>();
 		this.encodedObjects_ = new HashMap<String, WObject>();
@@ -764,9 +765,9 @@ public class WApplication extends WObject {
 		}
 	}
 
-	public WStdLocalizedStrings getBuiltinLocalizedStrings() {
+	public WXmlLocalizedStrings getBuiltinLocalizedStrings() {
 		return (((this.localizedStrings_.getItems().get(this.localizedStrings_
-				.getItems().size() - 1)) instanceof WStdLocalizedStrings ? (WStdLocalizedStrings) (this.localizedStrings_
+				.getItems().size() - 1)) instanceof WXmlLocalizedStrings ? (WXmlLocalizedStrings) (this.localizedStrings_
 				.getItems().get(this.localizedStrings_.getItems().size() - 1))
 				: null));
 	}
@@ -784,7 +785,7 @@ public class WApplication extends WObject {
 	public void setLocalizedStrings(WLocalizedStrings translator) {
 		if (!(this.localizedStrings_ != null)) {
 			this.localizedStrings_ = new WCombinedLocalizedStrings();
-			WStdLocalizedStrings defaultMessages = new WStdLocalizedStrings();
+			WXmlLocalizedStrings defaultMessages = new WXmlLocalizedStrings();
 			defaultMessages.useBuiltin(WtServlet.Wt_xml);
 			this.localizedStrings_.add(defaultMessages);
 		}
@@ -1458,11 +1459,18 @@ public class WApplication extends WObject {
 	/**
 	 * Propagates server-initiated updates.
 	 * <p>
-	 * This propagate changes made to the user interface outside of the main
-	 * event loop, e.g. from another thread or from within WServer::post(). This
-	 * call only has an effect after updates have been enabled (from within the
-	 * normal event loop), using
+	 * When the lock to the application is released, changes will propagate to
+	 * the user interface. This call only has an effect after updates have been
+	 * enabled from within the normal event loop using
 	 * {@link WApplication#enableUpdates(boolean enabled) enableUpdates()}.
+	 * <p>
+	 * This is typically used only outside of the main event loop, e.g. from
+	 * another thread or from within a method posted to an application using
+	 * WServer::post(), since changes always propagate within the event loop at
+	 * the end of the event.
+	 * <p>
+	 * The update is not immediate, and thus changes that happen after this call
+	 * will equally be pushed to the client.
 	 * <p>
 	 * 
 	 * @see WApplication#enableUpdates(boolean enabled)
@@ -1471,9 +1479,7 @@ public class WApplication extends WObject {
 		if (WebSession.Handler.getInstance().getRequest() != null) {
 			return;
 		}
-		if (this.serverPush_ > 0) {
-			this.session_.pushUpdates();
-		}
+		this.session_.setTriggerUpdate(true);
 	}
 
 	/**
@@ -1624,7 +1630,10 @@ public class WApplication extends WObject {
 	/**
 	 * Declares an application-wide JavaScript function.
 	 * <p>
-	 * This is an internal method.
+	 * The function is stored in {@link WApplication#getJavaScriptClass()
+	 * getJavaScriptClass()}.
+	 * <p>
+	 * The next code snippet declares and invokes function foo:
 	 */
 	public void declareJavaScriptFunction(String name, String function) {
 		this.doJavaScript(this.javaScriptClass_ + '.' + name + '=' + function
@@ -1920,6 +1929,65 @@ public class WApplication extends WObject {
 
 	public final void removeCookie(String name, String domain) {
 		removeCookie(name, domain, "");
+	}
+
+	/**
+	 * Adds an HTML meta link.
+	 * <p>
+	 * When a link was previously set for the same <code>href</code>, its
+	 * contents are replaced. When an empty string is used for the arguments
+	 * <code>media</code>, <code>hreflang</code>, <code>type</code> or
+	 * <code>sizes</code>, they will be ignored.
+	 * <p>
+	 * 
+	 * @see WApplication#removeMetaLink(String href)
+	 */
+	public void addMetaLink(String href, String rel, String media,
+			String hreflang, String type, String sizes, boolean disabled) {
+		if (this.getEnvironment().hasJavaScript()) {
+			logger.warn(new StringWriter().append(
+					"WApplication::addMetaLink() with no effect").toString());
+		}
+		if (href.length() == 0) {
+			throw new WException(
+					"WApplication::addMetaLink() href cannot be empty!");
+		}
+		if (rel.length() == 0) {
+			throw new WException(
+					"WApplication::addMetaLink() rel cannot be empty!");
+		}
+		for (int i = 0; i < this.metaLinks_.size(); ++i) {
+			WApplication.MetaLink ml = this.metaLinks_.get(i);
+			if (ml.href.equals(href)) {
+				ml.rel = rel;
+				ml.media = media;
+				ml.hreflang = hreflang;
+				ml.type = type;
+				ml.sizes = sizes;
+				ml.disabled = disabled;
+				return;
+			}
+		}
+		WApplication.MetaLink ml = new WApplication.MetaLink(href, rel, media,
+				hreflang, type, sizes, disabled);
+		this.metaLinks_.add(ml);
+	}
+
+	/**
+	 * Removes the HTML meta link.
+	 * <p>
+	 * 
+	 * @see WApplication#addMetaLink(String href, String rel, String media,
+	 *      String hreflang, String type, String sizes, boolean disabled)
+	 */
+	public void removeMetaLink(String href) {
+		for (int i = 0; i < this.metaLinks_.size(); ++i) {
+			WApplication.MetaLink ml = this.metaLinks_.get(i);
+			if (ml.href.equals(href)) {
+				this.metaLinks_.remove(0 + i);
+				return;
+			}
+		}
 	}
 
 	/**
@@ -2490,6 +2558,29 @@ public class WApplication extends WObject {
 		public WString content;
 	}
 
+	static class MetaLink {
+		private static Logger logger = LoggerFactory.getLogger(MetaLink.class);
+
+		public MetaLink(String aHref, String aRel, String aMedia,
+				String aHreflang, String aType, String aSizes, boolean aDisabled) {
+			this.href = aHref;
+			this.rel = aRel;
+			this.media = aMedia;
+			this.hreflang = aHreflang;
+			this.type = aType;
+			this.sizes = aSizes;
+			this.disabled = aDisabled;
+		}
+
+		public String href;
+		public String rel;
+		public String media;
+		public String hreflang;
+		public String type;
+		public String sizes;
+		public boolean disabled;
+	}
+
 	private WebSession session_;
 	private WString title_;
 	private WString closeMessage_;
@@ -2546,6 +2637,7 @@ public class WApplication extends WObject {
 	List<WApplication.StyleSheet> styleSheets_;
 	int styleSheetsAdded_;
 	List<WApplication.MetaHeader> metaHeaders_;
+	List<WApplication.MetaLink> metaLinks_;
 	private Map<String, WeakReference<AbstractEventSignal>> exposedSignals_;
 	private Map<String, WResource> exposedResources_;
 	private Map<String, WObject> encodedObjects_;

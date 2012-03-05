@@ -270,10 +270,10 @@ public class WFlashObject extends WWebWidget {
 		if (this.sizeChanged_) {
 			StringWriter ss = new StringWriter();
 			ss.append("var v=").append(this.getJsFlashRef()).append(
-					";if(v){v.setAttribute('width', ").append(
+					";if(v){v.setAttribute('width', '").append(
 					toString(this.getWidth())).append(
-					");v.setAttribute('height', ").append(
-					toString(this.getHeight())).append(");}");
+					"');v.setAttribute('height', '").append(
+					toString(this.getHeight())).append("');}");
 			WApplication.getInstance().doJavaScript(ss.toString());
 			this.sizeChanged_ = false;
 		}

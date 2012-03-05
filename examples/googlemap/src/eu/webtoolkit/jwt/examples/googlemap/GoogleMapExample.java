@@ -48,7 +48,7 @@ public class GoogleMapExample extends WContainerWidget {
 		  map.setCenter(road.get(road.size()-1));
 
 		  map.openInfoWindow(road.get(0), 
-		  		      "<img src=\"http://emweb.be/img/emweb_small.jpg\" />" +
+		  		      "<img src=\"http://www.emweb.be/css/emweb_small.jpg\" />" +
 		  		      "<br/>" +
 		  		      "<b>Emweb office</b>");
 	}

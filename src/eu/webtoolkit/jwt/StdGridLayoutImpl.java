@@ -381,6 +381,8 @@ class StdGridLayoutImpl extends StdLayoutImpl {
 						}
 						if (colStretch && itemFitWidth && itemFitHeight) {
 							td.setProperty(Property.PropertyClass, "Wt-chwrap");
+							c.setProperty(Property.PropertyStylePosition,
+									"absolute");
 							if (!app.getEnvironment().agentIsIE()) {
 								DomElement chwrap = DomElement
 										.createNew(DomElementType.DomElement_DIV);

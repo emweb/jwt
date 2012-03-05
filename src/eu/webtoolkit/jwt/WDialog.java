@@ -28,11 +28,12 @@ import org.slf4j.LoggerFactory;
  * user interface until the dialog is closed (this is enforced at the server
  * side, so you may rely on this behavior).
  * <p>
- * There are two distinct ways for using a WDialog window.
+ * A modal dialog can be instantiated synchronously or asynchronously. A
+ * non-modal dialog can only be instantiated asynchronously.
  * <p>
- * A WDialog can be used as any other widget. In this case, the WDialog is
- * simply instantiated as another widget. The dialog may be closed by calling
- * {@link WDialog#accept() accept()}, {@link WDialog#reject() reject()} or
+ * When using a dialog asynchronously, there is no API call that waits for the
+ * dialog to be closed. Then, the usage is similar to instantiating any other
+ * widget. The dialog may be closed by calling {@link WDialog#accept() accept()}, {@link WDialog#reject() reject()} or
  * {@link WDialog#done(WDialog.DialogCode result) done()} (or connecting a
  * signal to one of these methods). This will hide the dialog and emit the
  * {@link WDialog#finished() finished()} signal, which you then can listen for
@@ -41,21 +42,17 @@ import org.slf4j.LoggerFactory;
  * default. You must use the method {@link WWidget#show() WWidget#show()} or
  * setHidden(true) to show the dialog.
  * <p>
- * The easiest way to display a modal dialog is using
- * {@link WDialog#exec(WAnimation animation) exec()}: after creating a WDialog
- * window, a call to {@link WDialog#exec(WAnimation animation) exec()} will
- * block (suspend the thread) until the dialog window is closed, and return the
- * dialog result. Typically, an OK button will be connected to
- * {@link WDialog#accept() accept()}, and in some cases a Cancel button to
- * {@link WDialog#reject() reject()}. This solution has the drawback that it is
- * not scalable to many concurrent sessions, since for every session with a
- * recursive event loop (which is running durring the
- * {@link WDialog#exec(WAnimation animation) exec()} method), a thread is
- * locked. In practical terms, this means it is only suitable for software with
- * restricted access or deployed on an intranet or extranet.
- * <p>
- * This functionality is only available on Servlet 3.0 compatible servlet
- * containers.
+ * The synchronous use of a dialog involves a call to
+ * {@link WDialog#exec(WAnimation animation) exec()} which will block (suspend
+ * the thread) until the dialog window is closed, and return the dialog result.
+ * Events within dialog are handled using a so-called recursive event loop.
+ * Typically, an OK button will be connected to {@link WDialog#accept()
+ * accept()}, and in some cases a Cancel button to {@link WDialog#reject()
+ * reject()}. This solution has the drawback that it is not scalable to many
+ * concurrent sessions, since for every session with a recursive event loop, a
+ * thread is locked. In practical terms, this means it is only suitable for
+ * software with restricted access or deployed on an intranet or extranet. This
+ * functionality is only available on Servlet 3.0 compatible servlet containers.
  * <p>
  * Use setModal(false) to create a non-modal dialog. A non-modal dialog does not
  * block the underlying user interface: the user must not first deal with the
@@ -280,10 +277,10 @@ public class WDialog extends WCompositeWidget {
 	/**
 	 * Executes the dialog in a recursive event loop.
 	 * <p>
-	 * Executes the dialog. This blocks the current thread of execution until
-	 * one of {@link WDialog#done(WDialog.DialogCode result) done()},
-	 * {@link WDialog#accept() accept()} or {@link WDialog#reject() reject()} is
-	 * called.
+	 * Executes the dialog synchronously. This blocks the current thread of
+	 * execution until one of {@link WDialog#done(WDialog.DialogCode result)
+	 * done()}, {@link WDialog#accept() accept()} or {@link WDialog#reject()
+	 * reject()} is called.
 	 * <p>
 	 * <i>Warning: using {@link WDialog#exec(WAnimation animation) exec()} does
 	 * not scale to many concurrent sessions, since the thread is locked.</i>
@@ -422,7 +419,9 @@ public class WDialog extends WCompositeWidget {
 	/**
 	 * Sets whether the dialog is modal.
 	 * <p>
-	 * A modal dialog will block the underlying user interface.
+	 * A modal dialog will block the underlying user interface. A modal dialog
+	 * can be shown synchronously or asynchronously. A non-modal dialog can only
+	 * be shown asynchronously.
 	 * <p>
 	 * By default a dialog is modal.
 	 */

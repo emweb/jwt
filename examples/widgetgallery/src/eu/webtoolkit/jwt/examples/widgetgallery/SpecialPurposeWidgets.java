@@ -95,6 +95,7 @@ class SpecialPurposeWidgets extends ControlsWidget {
 		addText(tr("specialpurposewidgets-WMediaPlayer-audio"), result);
 		player = new WMediaPlayer(WMediaPlayer.MediaType.Audio, result);
 		player.addSource(WMediaPlayer.Encoding.MP3, new WLink(mp3Audio));
+		player.addSource(WMediaPlayer.Encoding.OGA, new WLink(oggAudio));
 		player.setTitle("La Sera - Never Come Around");
 		this.ed_.showEvent(player.playbackStarted(),
 				new WString("Song playing"));
@@ -140,6 +141,7 @@ class SpecialPurposeWidgets extends ControlsWidget {
 		addText(tr("specialpurposewidgets-WAudio"), result);
 		WAudio a1 = new WAudio(result);
 		a1.addSource(new WLink(mp3Audio));
+		a1.addSource(new WLink(oggAudio));
 		a1.setOptions(EnumSet.of(WAbstractMedia.Options.Controls));
 		this.ed_.showEvent(a1.playbackStarted(), new WString("Audio playing"));
 		this.ed_.showEvent(a1.playbackPaused(), new WString("Audio paused"));
@@ -210,5 +212,6 @@ class SpecialPurposeWidgets extends ControlsWidget {
 	static String ogvVideo = "http://www.webtoolkit.eu/videos/sintel_trailer.ogv";
 	static String mp4Video = "http://www.webtoolkit.eu/videos/sintel_trailer.mp4";
 	static String mp3Audio = "http://www.webtoolkit.eu/audio/LaSera-NeverComeAround.mp3";
+	static String oggAudio = "http://www.webtoolkit.eu/audio/LaSera-NeverComeAround.ogg";
 	static String poster = "pics/sintel_trailer.jpg";
 }

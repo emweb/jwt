@@ -128,7 +128,7 @@ public class WTimer extends WObject {
 			boolean jsRepeat = !this.timeout().isExposedSignal()
 					&& !this.singleShot_;
 			this.timerWidget_.timerStart(jsRepeat);
-			if (this.timeout().isExposedSignal() && !this.timeoutConnected_) {
+			if (!this.timeoutConnected_) {
 				this.timeout().addListener(this,
 						new Signal1.Listener<WMouseEvent>() {
 							public void trigger(WMouseEvent e1) {

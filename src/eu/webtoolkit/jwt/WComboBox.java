@@ -130,6 +130,9 @@ public class WComboBox extends WFormWidget {
 	public void insertItem(int index, CharSequence text) {
 		if (this.model_.insertRow(index)) {
 			this.setItemText(index, text);
+			if (this.currentIndex_ == -1 && !this.isSupportsNoSelection()) {
+				this.setCurrentIndex(0);
+			}
 		}
 	}
 
@@ -395,10 +398,6 @@ public class WComboBox extends WFormWidget {
 
 	void updateDom(DomElement element, boolean all) {
 		if (this.itemsChanged_ || all) {
-			if (all && this.getCount() > 0 && this.currentIndex_ == -1
-					&& !this.isSupportsNoSelection()) {
-				this.currentIndex_ = 0;
-			}
 			if (!all) {
 				element.removeAllChildren();
 			}

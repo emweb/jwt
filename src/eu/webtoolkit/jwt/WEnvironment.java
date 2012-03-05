@@ -910,23 +910,23 @@ public class WEnvironment {
 		this.userAgent_ = userAgent;
 		Configuration conf = this.session_.getController().getConfiguration();
 		this.agent_ = WEnvironment.UserAgent.Unknown;
-		if (this.userAgent_.indexOf("MSIE 2") != -1
-				|| this.userAgent_.indexOf("MSIE 3") != -1
-				|| this.userAgent_.indexOf("MSIE 4") != -1
-				|| this.userAgent_.indexOf("MSIE 5") != -1
+		if (this.userAgent_.indexOf("MSIE 2.") != -1
+				|| this.userAgent_.indexOf("MSIE 3.") != -1
+				|| this.userAgent_.indexOf("MSIE 4.") != -1
+				|| this.userAgent_.indexOf("MSIE 5.") != -1
 				|| this.userAgent_.indexOf("IEMobile") != -1) {
 			this.agent_ = WEnvironment.UserAgent.IEMobile;
 		} else {
-			if (this.userAgent_.indexOf("MSIE 6") != -1) {
+			if (this.userAgent_.indexOf("MSIE 6.") != -1) {
 				this.agent_ = WEnvironment.UserAgent.IE6;
 			} else {
 				if (this.userAgent_.indexOf("Trident/5.0") != -1) {
 					this.agent_ = WEnvironment.UserAgent.IE9;
 				} else {
-					if (this.userAgent_.indexOf("MSIE 7") != -1) {
+					if (this.userAgent_.indexOf("MSIE 7.") != -1) {
 						this.agent_ = WEnvironment.UserAgent.IE7;
 					} else {
-						if (this.userAgent_.indexOf("MSIE 8") != -1) {
+						if (this.userAgent_.indexOf("MSIE 8.") != -1) {
 							this.agent_ = WEnvironment.UserAgent.IE8;
 						} else {
 							if (this.userAgent_.indexOf("MSIE") != -1) {
@@ -1024,13 +1024,13 @@ public class WEnvironment {
 			}
 		}
 		if (this.userAgent_.indexOf("Firefox") != -1) {
-			if (this.userAgent_.indexOf("Firefox/0") != -1) {
+			if (this.userAgent_.indexOf("Firefox/0.") != -1) {
 				this.agent_ = WEnvironment.UserAgent.Firefox;
 			} else {
-				if (this.userAgent_.indexOf("Firefox/1") != -1) {
+				if (this.userAgent_.indexOf("Firefox/1.") != -1) {
 					this.agent_ = WEnvironment.UserAgent.Firefox;
 				} else {
-					if (this.userAgent_.indexOf("Firefox/2") != -1) {
+					if (this.userAgent_.indexOf("Firefox/2.") != -1) {
 						this.agent_ = WEnvironment.UserAgent.Firefox;
 					} else {
 						if (this.userAgent_.indexOf("Firefox/3.0") != -1) {

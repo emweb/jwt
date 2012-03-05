@@ -169,7 +169,7 @@ public class WTable extends WInteractWidget {
 	 * Inserts an empty row.
 	 */
 	public WTableRow insertRow(int row) {
-		if (row == this.getRowCount()) {
+		if (row >= this.getRowCount()) {
 			return this.getRowAt(row);
 		} else {
 			WTableRow tableRow = new WTableRow(this, this.getColumnCount());

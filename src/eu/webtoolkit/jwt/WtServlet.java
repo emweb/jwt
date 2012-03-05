@@ -96,8 +96,8 @@ public abstract class WtServlet extends HttpServlet {
 	static final String Boot_js;
 	static final String Hybrid_html;
 	static final String JQuery_js;
-	static final String Wt_xml = "eu.webtoolkit.jwt.wt";
-	public static final String Auth_xml = "eu.webtoolkit.jwt.auth.auth";
+	static final String Wt_xml = "/eu/webtoolkit/jwt/wt";
+	public static final String Auth_xml = "/eu/webtoolkit/jwt/auth/auth";
 	
 	private static WtServlet instance;
 
@@ -121,6 +121,8 @@ public abstract class WtServlet extends HttpServlet {
 
 		for (String[] s : mimeTypes)
 			WtServlet.mimeTypes.put(s[0], s[1]);
+		
+		WObject.seedId(MathUtils.randomInt());
 	}
 
 	/**

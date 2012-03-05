@@ -8,6 +8,7 @@
   <property name="build.dir" value="build"/>
   <property name="dist.dir" value="dist"/>
   <property name="archives.dir" value="archives"/>
+  <property name="mvn.dir" value="mvn"/>
   <property name="javadoc.jwt.dir" value="doc/reference/jwt"/>
   <property name="javadoc.jwt-auth.dir" value="doc/reference/jwt-auth"/>
   <property name="userguide.dir" value="doc/userguide"/>
@@ -34,11 +35,9 @@
     <delete dir="${build.dir}" />
     <delete dir="${dist.dir}" />
     <delete dir="${archives.dir}" />
+    <delete dir="${mvn.dir}" />
     <delete includeemptydirs="true">
       <fileset dir="${javadoc.jwt.dir}" includes="**/*" excludes=".gitignore"/>
-    </delete>
-    <delete includeemptydirs="true">
-      <fileset dir="${javadoc.jwt-auth.dir}" includes="**/*" excludes=".gitignore"/>
     </delete>
   </target>
 
@@ -112,6 +111,8 @@
 	<exclude name="eu/webtoolkit/jwt/XSSFilter.java"/>
 	<exclude name="eu/webtoolkit/jwt/ServletApi25.java"/>
 	<exclude name="eu/webtoolkit/jwt/ServletApi3.java"/>
+	<include name="eu/webtoolkit/jwt/auth/*.java"/>
+	<include name="eu/webtoolkit/jwt/auth/jpa/*.java"/>
       </fileset>
     </javadoc>
     <copy todir="${javadoc.jwt.dir}/eu/webtoolkit/jwt/doc-files">
@@ -120,9 +121,41 @@
     <copy todir="${javadoc.jwt.dir}/eu/webtoolkit/jwt/chart/doc-files">
       <fileset dir="${src.java.dir}/eu/webtoolkit/jwt/chart/doc-files"/>
     </copy>
+  </target>
+  
+  <target name="mvn-javadoc" depends="dist">
+    <mkdir dir="${mvn.dir}"/>
     <javadoc
        access="protected"
-       destdir="${javadoc.jwt-auth.dir}"
+       destdir="${mvn.dir}/${javadoc.jwt.dir}"
+       author="true"
+       version="true"
+       use="true"
+       windowtitle="JWt Javadoc API"
+       classpathref="project.javadoc.classpath"
+       overview="overview.html"
+       >
+      <fileset dir="${src.java.dir}" defaultexcludes="yes">
+	<include name="eu/webtoolkit/jwt/*.java"/>
+	<include name="eu/webtoolkit/jwt/servlet/*.java"/>
+	<include name="eu/webtoolkit/jwt/chart/*.java"/>
+	<include name="eu/webtoolkit/jwt/utils/WebGraphics2D.java"/>
+	<exclude name="eu/webtoolkit/jwt/XSSFilter.java"/>
+	<exclude name="eu/webtoolkit/jwt/ServletApi25.java"/>
+	<exclude name="eu/webtoolkit/jwt/ServletApi3.java"/>
+      </fileset>
+    </javadoc>
+    <copy 
+       todir="${mvn.dir}/${javadoc.jwt.dir}/eu/webtoolkit/jwt/doc-files">
+      <fileset dir="${src.java.dir}/eu/webtoolkit/jwt/doc-files"/>
+    </copy>
+    <copy 
+       todir="${mvn.dir}/${javadoc.jwt.dir}/eu/webtoolkit/jwt/chart/doc-files">
+      <fileset dir="${src.java.dir}/eu/webtoolkit/jwt/chart/doc-files"/>
+    </copy>
+    <javadoc
+       access="protected"
+       destdir="${mvn.dir}/${javadoc.jwt-auth.dir}"
        author="true"
        version="true"
        use="true"
@@ -136,9 +169,6 @@
 	<include name="eu/webtoolkit/jwt/auth/jpa/*.java"/>
       </fileset>
     </javadoc>
-    <copy todir="${javadoc.jwt-auth.dir}/eu/webtoolkit/jwt/chart/doc-files">
-      <fileset dir="${src.java.dir}/eu/webtoolkit/jwt/chart/doc-files"/>
-    </copy>
   </target>
 
   <target name="asciidoc">
@@ -161,12 +191,12 @@
           includes="eu/webtoolkit/jwt/auth/* eu/webtoolkit/jwt/auth/jpa/*" />
   </target>
 
-  <target name="mvn" depends="dist">
+  <target name="mvn" depends="mvn-javadoc">
     <jar jarfile="dist/jwt-${proj.version}-javadoc.jar">
-      <fileset dir="${javadoc.jwt.dir}" />
+      <fileset dir="${mvn.dir}/${javadoc.jwt.dir}" />
     </jar>
     <jar jarfile="dist/jwt-auth-${proj.version}-javadoc.jar">
-      <fileset dir="${javadoc.jwt-auth.dir}" />
+      <fileset dir="${mvn.dir}/${javadoc.jwt-auth.dir}" />
     </jar>
 
     <jar jarfile="dist/jwt-auth-${proj.version}-sources.jar">

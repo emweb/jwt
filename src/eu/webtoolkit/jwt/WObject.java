@@ -40,7 +40,7 @@ public class WObject {
 	private WObject parent_;
 	private int id_;
 	private String objectName_;
-	private static int nextObjId_;
+	private static int nextObjId_ = 0;
 
 	ArrayList<SignalImpl.ListenerSignalPair> listenerSignalsPairs;
 
@@ -166,5 +166,9 @@ public class WObject {
 		if (listenerSignalsPairs != null) 
 			for (SignalImpl.ListenerSignalPair lsp : listenerSignalsPairs)
 				lsp.signal.removeListener(lsp.listener);
+	}
+	
+	static void seedId(int id) {
+	  nextObjId_ = id;
 	}
 }
