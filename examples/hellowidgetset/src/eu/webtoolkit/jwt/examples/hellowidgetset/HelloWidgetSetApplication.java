@@ -50,9 +50,10 @@ public class HelloWidgetSetApplication extends WApplication {
              */
             top = new WContainerWidget();
             final String div = env.getParameter("div");
-            if (div != null)
+            if (div != null) {
+            	setJavaScriptClass(div);
                 bindWidget(top, div);
-            else {
+            } else {
                 System.err.println("Missing: parameter: 'div'");
                 return;
             }

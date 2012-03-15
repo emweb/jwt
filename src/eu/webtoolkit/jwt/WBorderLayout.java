@@ -224,6 +224,15 @@ public class WBorderLayout extends WLayout {
 		return j;
 	}
 
+	public void clear() {
+		for (int i = 0; i < 5; ++i) {
+			Grid.Item item = this.itemAtPosition(WBorderLayout.Position
+					.values()[i]);
+			this.clearLayoutItem(item.item_);
+			item.item_ = null;
+		}
+	}
+
 	/**
 	 * Adds a widget to the given position.
 	 * <p>

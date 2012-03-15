@@ -840,7 +840,7 @@ class WebRenderer implements SlotLearnerInterface {
 							app.getLayoutDirection() == LayoutDirection.LeftToRight ? "LTR"
 									: "RTL").append("');");
 		}
-		Writer s = response.out();
+		StringWriter s = new StringWriter();
 		mainElement.addToParent(s, "document.body", widgetset ? 0 : -1, app);
 		;
 		this.addResponseAckPuzzle(s);
@@ -850,6 +850,9 @@ class WebRenderer implements SlotLearnerInterface {
 		if (widgetset) {
 			app.domRoot2_.rootAsJavaScript(app, s, true);
 		}
+		logger.debug(new StringWriter().append("js: ").append(s.toString())
+				.toString());
+		response.out().append(s.toString());
 		this.setJSSynced(true);
 		this.preLearnStateless(app, this.collectedJS1_);
 		logger.debug(new StringWriter().append("js: ").append(
@@ -1441,7 +1444,7 @@ class WebRenderer implements SlotLearnerInterface {
 	private String getSessionUrl() {
 		String result = this.session_.getApplicationUrl();
 		if (isAbsoluteUrl(result)) {
-			return result;
+			return this.session_.appendSessionQuery(result);
 		} else {
 			return this.session_.appendSessionQuery(".").substring(1);
 		}
@@ -1467,6 +1470,8 @@ class WebRenderer implements SlotLearnerInterface {
 		StringWriter js = new StringWriter();
 		this.collectJS(js);
 		String result = js.toString();
+		logger.debug(new StringWriter().append("learned: ").append(result)
+				.toString());
 		if (slot.getType() == SlotType.PreLearnStateless) {
 			slot.undoTrigger();
 			this.collectJS((Writer) null);

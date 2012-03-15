@@ -171,6 +171,24 @@ public abstract class OAuthService {
 	public abstract String getRedirectEndpoint();
 
 	/**
+	 * Returns the deployment path of the redirection endpoint.
+	 * <p>
+	 * This returns the path at which the static resource is deployed that
+	 * corresponds to the {@link OAuthService#getRedirectEndpoint()
+	 * getRedirectEndpoint()}.
+	 * <p>
+	 * The default implementation will derive this path from the
+	 * {@link OAuthService#getRedirectEndpoint() getRedirectEndpoint()} URL.
+	 */
+	public String getRedirectEndpointPath() {
+		WApplication app = WApplication.getInstance();
+		URL parsedUrl = new URL();
+		HttpClient.parseUrl(this.getRedirectEndpoint(), parsedUrl);
+		String path = parsedUrl.path;
+		return path;
+	}
+
+	/**
 	 * Returns the authorization endpoint URL.
 	 * <p>
 	 * This is a remote URL which hosts the OAuth authorization user interface.
@@ -256,8 +274,8 @@ public abstract class OAuthService {
 	}
 
 	public String getGenerateRedirectEndpoint() {
+		this.configureRedirectEndpoint();
 		String result = this.getRedirectEndpoint();
-		this.configureRedirectEndpoint(result);
 		return result;
 	}
 
@@ -287,18 +305,17 @@ public abstract class OAuthService {
 		}
 	}
 
-	protected void configureRedirectEndpoint(String endpoint) {
+	protected void configureRedirectEndpoint() {
 		if (!(this.impl_.redirectResource_ != null)) {
 			if (!(this.impl_.redirectResource_ != null)) {
-				WApplication app = WApplication.getInstance();
-				WtServlet server = app.getEnvironment().getServer();
 				OAuthService.Impl.RedirectEndpoint r = new OAuthService.Impl.RedirectEndpoint(
 						this);
-				URL parsedUrl = new URL();
-				HttpClient.parseUrl(endpoint, parsedUrl);
+				String path = this.getRedirectEndpointPath();
 				logger.info(new StringWriter().append("deploying endpoint at ")
-						.append(parsedUrl.path).toString());
-				server.addResource(r, parsedUrl.path);
+						.append(path).toString());
+				WApplication app = WApplication.getInstance();
+				WtServlet server = app.getEnvironment().getServer();
+				server.addResource(r, path);
 				this.impl_.redirectResource_ = r;
 			}
 		}

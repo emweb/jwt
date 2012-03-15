@@ -82,6 +82,8 @@ public class XmlMessageParser implements IXMLBuilder {
 
 		if (level.size() > MESSAGE_LEVEL) { 
 			writer.append('<');
+			if (nsPrefix != null) 
+				writer.append(nsPrefix + ":");
 			writer.append(name);
 		}
 	}
@@ -94,6 +96,8 @@ public class XmlMessageParser implements IXMLBuilder {
 				if (tagOpen)
 					writer.append('>');
 				writer.append("</");
+				if (nsPrefix != null)
+					writer.append(nsPrefix + ":");
 				writer.append(name);
 				writer.append('>');
 			}

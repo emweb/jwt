@@ -140,7 +140,7 @@ public class WTemplate extends WInteractWidget {
 			for (int j = 1; j < args.size(); ++j) {
 				s.arg(args.get(j));
 			}
-			result.append(s);
+			result.append(s.toString());
 			return true;
 		} else {
 			logger.error(new StringWriter().append(

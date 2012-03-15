@@ -31,6 +31,9 @@ import org.slf4j.LoggerFactory;
  * redirect endpoint, to which the Facebook OAuth service redirects the user
  * after authentication. See also {@link FacebookService#getRedirectEndpoint()
  * getRedirectEndpoint()}</li>
+ * <li><code>facebook-oauth2-redirect-endpoint-path</code>: optionally, the
+ * deployment path that corresponds to the redirect endpoint. See also
+ * {@link FacebookService#getRedirectEndpointPath() getRedirectEndpointPath()}</li>
  * <li><code>facebook-oauth2-app-id</code>: The application ID</li>
  * <li><code>facebook-oauth2-app-secret</code>: The application secret.</li>
  * </ul>
@@ -115,6 +118,14 @@ public class FacebookService extends OAuthService {
 		return configurationProperty(RedirectEndpointProperty);
 	}
 
+	public String getRedirectEndpointPath() {
+		try {
+			return configurationProperty(RedirectEndpointPathProperty);
+		} catch (RuntimeException e) {
+			return super.getRedirectEndpointPath();
+		}
+	}
+
 	public String getAuthorizationEndpoint() {
 		return AuthUrl;
 	}
@@ -140,6 +151,7 @@ public class FacebookService extends OAuthService {
 	}
 
 	static String RedirectEndpointProperty = "facebook-oauth2-redirect-endpoint";
+	static String RedirectEndpointPathProperty = "facebook-oauth2-redirect-endpoint-path";
 	static String ClientIdProperty = "facebook-oauth2-app-id";
 	static String ClientSecretProperty = "facebook-oauth2-app-secret";
 	static String AuthUrl = "https://www.facebook.com/dialog/oauth";

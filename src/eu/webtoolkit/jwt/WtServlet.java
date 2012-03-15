@@ -150,9 +150,9 @@ public abstract class WtServlet extends HttpServlet {
 		
 		this.configuration = new Configuration();
 		
-		this.redirectSecret_ = MathUtils.randomId(32);
+		redirectSecret_ = MathUtils.randomId(32);
 		
-		this.instance = this;
+		instance = this;
 	}
 	
 	/**
@@ -384,22 +384,26 @@ public abstract class WtServlet extends HttpServlet {
 
 		if (found) {
 			HttpSession jsession = request.getSession();
-			WebSession session = (WebSession) jsession.getAttribute(WtServlet.WT_WEBSESSION_ID);
+			BoundSession bsession = (BoundSession) jsession.getAttribute(WtServlet.WT_WEBSESSION_ID);
+			WebSession wsession = null;
 
-			if (session != null) {
-				WebSession.Handler handler = new WebSession.Handler(session,request, null);
+			if (bsession != null)
+				wsession = bsession.getSession();
 
-				if (!session.isDead() && session.getApp() != null) {
+			if (wsession != null) {
+				WebSession.Handler handler = new WebSession.Handler(wsession,request, null);
+
+				if (!wsession.isDead() && wsession.getApp() != null) {
 					String requestE = request.getParameter("request");
 
 					WResource resource = null;
 					if (requestE == null && request.getPathInfo().length() != 0)
-						resource = session.getApp().
+						resource = wsession.getApp().
 							decodeExposedResource("/path/" + request.getPathInfo());
 
 					if (resource == null) {
 						String resourceE = request.getParameter("resource");
-						resource = session.getApp().
+						resource = wsession.getApp().
 							decodeExposedResource(resourceE);
 					}
 

@@ -81,11 +81,11 @@
     <copy todir="${build.dir}">
       <fileset dir="${src.java.dir}" defaultexcludes="yes">
 	<include name="eu/webtoolkit/jwt/*.java"/>
-	<include name="eu/webtoolkit/jwt/*.properties"/>
+	<include name="eu/webtoolkit/jwt/*.xml"/>
 	<include name="eu/webtoolkit/jwt/servlet/*.java"/>
 	<include name="eu/webtoolkit/jwt/chart/*.java"/>
 	<include name="eu/webtoolkit/jwt/auth/*.java"/>
-	<include name="eu/webtoolkit/jwt/auth/*.properties"/>
+	<include name="eu/webtoolkit/jwt/auth/*.xml"/>
 	<include name="eu/webtoolkit/jwt/auth/jpa/*.java"/>
 	<include name="eu/webtoolkit/jwt/utils/*.java"/>
       </fileset>
@@ -202,7 +202,7 @@
     <jar jarfile="dist/jwt-auth-${proj.version}-sources.jar">
       <fileset dir="${src.java.dir}" defaultexcludes="yes">
 	<include name="eu/webtoolkit/jwt/*.java"/>
-	<include name="eu/webtoolkit/jwt/*.properties"/>
+	<include name="eu/webtoolkit/jwt/*.xml"/>
 	<include name="eu/webtoolkit/jwt/servlet/*.java"/>
 	<include name="eu/webtoolkit/jwt/chart/*.java"/>
 	<include name="eu/webtoolkit/jwt/utils/*.java"/>
@@ -212,7 +212,7 @@
       <fileset dir="${src.java.dir}" defaultexcludes="yes">
 	<include name="eu/webtoolkit/jwt/auth/*.java"/>
 	<include name="eu/webtoolkit/jwt/auth/jpa/*.java"/>
-	<include name="eu/webtoolkit/jwt/auth/*.properties"/>
+	<include name="eu/webtoolkit/jwt/auth/*.xml"/>
       </fileset>
     </jar>
   </target>

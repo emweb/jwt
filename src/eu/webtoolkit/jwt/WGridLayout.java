@@ -180,6 +180,15 @@ public class WGridLayout extends WLayout {
 		return this.grid_.rows_.size() * this.grid_.columns_.size();
 	}
 
+	public void clear() {
+		int c = this.getCount();
+		for (int i = 0; i < c; ++i) {
+			WLayoutItem item = this.getItemAt(i);
+			this.clearLayoutItem(item);
+		}
+		this.grid_.clear();
+	}
+
 	/**
 	 * Adds a layout item to the grid.
 	 * <p>

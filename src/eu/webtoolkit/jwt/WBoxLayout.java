@@ -209,6 +209,14 @@ public class WBoxLayout extends WLayout {
 		return this.grid_.rows_.size() * this.grid_.columns_.size();
 	}
 
+	public void clear() {
+		int c = this.getCount();
+		while (this.getCount() != 0) {
+			WLayoutItem item = this.getItemAt(this.getCount() - 1);
+			this.clearLayoutItem(item);
+		}
+	}
+
 	/**
 	 * Sets the layout direction.
 	 * <p>

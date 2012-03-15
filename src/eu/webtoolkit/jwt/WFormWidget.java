@@ -406,7 +406,9 @@ public abstract class WFormWidget extends WInteractWidget {
 						.setJavaScript("function(o){Wt3_2_0.validate(o)}");
 				this.keyWentUp().addListener(this.validateJs_);
 				this.changed().addListener(this.validateJs_);
-				this.clicked().addListener(this.validateJs_);
+				if (this.getDomElementType() != DomElementType.DomElement_SELECT) {
+					this.clicked().addListener(this.validateJs_);
+				}
 			} else {
 				if (this.isRendered()) {
 					this.validateJs_.exec(this.getJsRef());

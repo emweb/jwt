@@ -489,17 +489,15 @@ public class WGoogleMap extends WCompositeWidget {
 	 */
 	public void zoomWindow(WGoogleMap.Coordinate topLeft,
 			WGoogleMap.Coordinate rightBottom) {
-		WGoogleMap.Coordinate topLeftC = topLeft;
-		WGoogleMap.Coordinate rightBottomC = rightBottom;
-		final WGoogleMap.Coordinate center = new WGoogleMap.Coordinate(
-				(topLeftC.getLatitude() + rightBottomC.getLatitude()) / 2.0,
-				(topLeftC.getLongitude() + rightBottomC.getLongitude()) / 2.0);
-		topLeftC = new WGoogleMap.Coordinate(Math.min(topLeftC.getLatitude(),
-				rightBottomC.getLatitude()), Math.min(topLeftC.getLongitude(),
-				rightBottomC.getLongitude()));
-		rightBottomC = new WGoogleMap.Coordinate(Math.max(topLeftC
-				.getLatitude(), rightBottomC.getLatitude()), Math.max(topLeftC
-				.getLongitude(), rightBottomC.getLongitude()));
+		final WGoogleMap.Coordinate center = new WGoogleMap.Coordinate((topLeft
+				.getLatitude() + rightBottom.getLatitude()) / 2.0, (topLeft
+				.getLongitude() + rightBottom.getLongitude()) / 2.0);
+		WGoogleMap.Coordinate topLeftC = new WGoogleMap.Coordinate(Math.min(
+				topLeft.getLatitude(), rightBottom.getLatitude()), Math.min(
+				topLeft.getLongitude(), rightBottom.getLongitude()));
+		WGoogleMap.Coordinate rightBottomC = new WGoogleMap.Coordinate(Math
+				.max(topLeft.getLatitude(), rightBottom.getLatitude()), Math
+				.max(topLeft.getLongitude(), rightBottom.getLongitude()));
 		StringWriter strm = new StringWriter();
 		strm
 				.append(

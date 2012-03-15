@@ -31,6 +31,9 @@ import org.slf4j.LoggerFactory;
  * redirect endpoint, to which the google OAuth service redirects the user after
  * authentication. See also {@link GoogleService#getRedirectEndpoint()
  * getRedirectEndpoint()}</li>
+ * <li><code>google-oauth2-redirect-endpoint-path</code>: optionally, the
+ * deployment path that corresponds to the redirect endpoint. See also
+ * {@link GoogleService#getRedirectEndpointPath() getRedirectEndpointPath()}</li>
  * <li><code>google-oauth2-client-id</code>: The client ID</li>
  * <li><code>google-oauth2-client-secret</code>: The client secret.</li>
  * </ul>
@@ -114,6 +117,14 @@ public class GoogleService extends OAuthService {
 		return configurationProperty(RedirectEndpointProperty);
 	}
 
+	public String getRedirectEndpointPath() {
+		try {
+			return configurationProperty(RedirectEndpointPathProperty);
+		} catch (RuntimeException e) {
+			return super.getRedirectEndpointPath();
+		}
+	}
+
 	public String getAuthorizationEndpoint() {
 		return AuthUrl;
 	}
@@ -135,6 +146,7 @@ public class GoogleService extends OAuthService {
 	}
 
 	static String RedirectEndpointProperty = "google-oauth2-redirect-endpoint";
+	static String RedirectEndpointPathProperty = "google-oauth2-redirect-endpoint-path";
 	static String ClientIdProperty = "google-oauth2-client-id";
 	static String ClientSecretProperty = "google-oauth2-client-secret";
 	static String AuthUrl = "https://accounts.google.com/o/oauth2/auth";
