@@ -623,6 +623,11 @@ public class AuthWidget extends WTemplateFormView {
 		} else {
 			if (field == AuthModel.PasswordField) {
 				WLineEdit p = new WLineEdit();
+				p.enterPressed().addListener(this, new Signal.Listener() {
+					public void trigger() {
+						AuthWidget.this.attemptPasswordLogin();
+					}
+				});
 				p.setEchoMode(WLineEdit.EchoMode.Password);
 				result = p;
 			} else {

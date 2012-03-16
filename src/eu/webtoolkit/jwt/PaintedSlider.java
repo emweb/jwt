@@ -88,8 +88,8 @@ class PaintedSlider extends WPaintedWidget {
 		String maximumS = String.valueOf(this.slider_.getMaximum());
 		String width = String.valueOf(this.getW());
 		String horizontal = String.valueOf(o == Orientation.Horizontal);
-		String mouseDownJS = "obj.setAttribute('down', Wt3_2_0.widgetCoordinates(obj, event)."
-				+ u + "); Wt3_2_0.cancelEvent(event);";
+		String mouseDownJS = "obj.setAttribute('down', Wt3_2_1.widgetCoordinates(obj, event)."
+				+ u + "); Wt3_2_1.cancelEvent(event);";
 		String computeD = "var objh = " + this.handle_.getJsRef() + ",objb = "
 				+ this.getJsRef() + ",page_u = WT.pageCoordinates(event)." + u
 				+ ",widget_page_u = WT.widgetPageCoordinates(objb)." + u
@@ -97,7 +97,7 @@ class PaintedSlider extends WPaintedWidget {
 				+ ",horizontal = " + horizontal
 				+ ";if (rtl && horizontal)  pos = " + width
 				+ " - pos;var d = pos - down;";
-		String mouseMovedJS = "var down = obj.getAttribute('down');var WT = Wt3_2_0;if (down != null && down != '') {"
+		String mouseMovedJS = "var down = obj.getAttribute('down');var WT = Wt3_2_1;if (down != null && down != '') {"
 				+ computeD
 				+ "d = Math.max(0, Math.min(d, "
 				+ maxS
@@ -113,7 +113,7 @@ class PaintedSlider extends WPaintedWidget {
 				+ this.slider_.sliderMoved().createCall(
 						o == Orientation.Horizontal ? "v + " + minimumS
 								: maximumS + " - v") + "}}";
-		String mouseUpJS = "var down = obj.getAttribute('down');var WT = Wt3_2_0;if (down != null && down != '') {"
+		String mouseUpJS = "var down = obj.getAttribute('down');var WT = Wt3_2_1;if (down != null && down != '') {"
 				+ computeD
 				+ "d += "
 				+ String.valueOf(HANDLE_WIDTH / 2)

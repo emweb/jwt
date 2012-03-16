@@ -421,8 +421,8 @@ public abstract class WWidget extends WObject {
 		String side = orientation == Orientation.Horizontal ? ".Horizontal"
 				: ".Vertical";
 		WApplication.getInstance().doJavaScript(
-				"Wt3_2_0.positionAtWidget('" + this.getId() + "','"
-						+ widget.getId() + "',Wt3_2_0" + side + ");");
+				"Wt3_2_1.positionAtWidget('" + this.getId() + "','"
+						+ widget.getId() + "',Wt3_2_1" + side + ");");
 	}
 
 	/**

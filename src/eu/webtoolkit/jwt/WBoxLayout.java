@@ -210,7 +210,6 @@ public class WBoxLayout extends WLayout {
 	}
 
 	public void clear() {
-		int c = this.getCount();
 		while (this.getCount() != 0) {
 			WLayoutItem item = this.getItemAt(this.getCount() - 1);
 			this.clearLayoutItem(item);

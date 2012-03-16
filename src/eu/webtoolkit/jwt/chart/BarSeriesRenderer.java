@@ -53,6 +53,8 @@ class BarSeriesRenderer extends SeriesRenderer {
 					this.it_.getCurrentYSegment()).getX(), this.renderer_
 					.getChartArea().getTop());
 			break;
+		default:
+			break;
 		}
 		double g = this.numGroups_ + (this.numGroups_ - 1)
 				* this.renderer_.getChart().getBarMargin();

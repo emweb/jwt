@@ -1109,7 +1109,7 @@ public abstract class WWebWidget extends WWidget {
 						app
 								.addAutoJavaScript("{var w = "
 										+ this.getJsRef()
-										+ ";if (w && !Wt3_2_0.isHidden(w)) {var i = Wt3_2_0.getElement('"
+										+ ";if (w && !Wt3_2_1.isHidden(w)) {var i = Wt3_2_1.getElement('"
 										+ i.getId()
 										+ "');i.style.width=w.clientWidth + 'px';i.style.height=w.clientHeight + 'px';}}");
 						element.addChild(i);
@@ -1291,7 +1291,7 @@ public abstract class WWebWidget extends WWidget {
 					if (this.lookImpl_.toolTipTextFormat_ != TextFormat.PlainText
 							&& app.getEnvironment().hasAjax()) {
 						app.loadJavaScript("js/ToolTip.js", wtjs10());
-						element.callJavaScript("Wt3_2_0.toolTip(Wt3_2_0,"
+						element.callJavaScript("Wt3_2_1.toolTip(Wt3_2_1,"
 								+ jsStringLiteral(this.getId())
 								+ ","
 								+ WString.toWString(this.lookImpl_.toolTip_)
@@ -1339,7 +1339,7 @@ public abstract class WWebWidget extends WWidget {
 						String js = this.transientImpl_.childRemoveChanges_
 								.get(i);
 						if (js.charAt(0) == '_') {
-							element.callJavaScript("Wt3_2_0.remove('"
+							element.callJavaScript("Wt3_2_1.remove('"
 									+ js.substring(1) + "');", true);
 						} else {
 							element.callJavaScript(js);
@@ -1565,7 +1565,7 @@ public abstract class WWebWidget extends WWidget {
 				if (!this.flags_.get(BIT_HIDE_WITH_VISIBILITY)) {
 					StringBuilder ss = new StringBuilder();
 					ss
-							.append("Wt3_2_0")
+							.append("Wt3_2_1")
 							.append(".animateDisplay('")
 							.append(this.getId())
 							.append("',")
@@ -1596,7 +1596,7 @@ public abstract class WWebWidget extends WWidget {
 				} else {
 					StringBuilder ss = new StringBuilder();
 					ss
-							.append("Wt3_2_0")
+							.append("Wt3_2_1")
 							.append(".animateVisible('")
 							.append(this.getId())
 							.append("',")

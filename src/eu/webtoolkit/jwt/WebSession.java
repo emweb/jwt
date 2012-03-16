@@ -111,6 +111,11 @@ class WebSession {
 		return handler != null ? handler.getSession() : null;
 	}
 
+	public boolean isAttachThreadToLockedHandler() {
+		Handler.attachThreadToHandler(new WebSession.Handler(this, false));
+		return true;
+	}
+
 	public EntryPointType getType() {
 		return this.type_;
 	}
@@ -1093,10 +1098,17 @@ class WebSession {
 			if (session.state_ == WebSession.State.Dead) {
 				logger.warn(new StringWriter().append(
 						"attaching to dead session?").toString());
-				attachThreadToHandler(new WebSession.Handler(session, false));
-				return;
 			}
-			attachThreadToHandler(new WebSession.Handler(session, false));
+			if (!session.isAttachThreadToLockedHandler()) {
+				logger
+						.warn(new StringWriter()
+								.append(
+										"attachThread(): no thread is holding this application's lock ?")
+								.toString());
+				WebSession.Handler
+						.attachThreadToHandler(new WebSession.Handler(session,
+								false));
+			}
 		}
 
 		public static WebSession.Handler attachThreadToHandler(
@@ -1814,7 +1826,7 @@ class WebSession {
 						String hashE = request.getParameter(se + "_");
 						if (hashE != null) {
 							this.app_.changedInternalPath(hashE);
-							this.app_.doJavaScript("Wt3_2_0.scrollIntoView("
+							this.app_.doJavaScript("Wt3_2_1.scrollIntoView("
 									+ WWebWidget.jsStringLiteral(hashE) + ");");
 						} else {
 							this.app_.changedInternalPath("");

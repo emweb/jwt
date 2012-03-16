@@ -332,7 +332,7 @@ public class WPushButton extends WFormWidget {
 				}
 				if (this.link_.getType() == WLink.Type.InternalPath) {
 					this.redirectJS_
-							.setJavaScript("function(){Wt3_2_0.history.navigate("
+							.setJavaScript("function(){Wt3_2_1.history.navigate("
 									+ jsStringLiteral(this.link_
 											.getInternalPath()) + ",true);}");
 				} else {

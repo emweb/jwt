@@ -243,7 +243,7 @@ public class WTextEdit extends WTextArea {
 
 	String renderRemoveJs() {
 		if (this.isRendered()) {
-			return this.getJsRef() + ".ed.remove();Wt3_2_0.remove('"
+			return this.getJsRef() + ".ed.remove();Wt3_2_1.remove('"
 					+ this.getId() + "');";
 		} else {
 			return super.renderRemoveJs();
@@ -282,7 +282,7 @@ public class WTextEdit extends WTextArea {
 			DomElement dummy = new DomElement(DomElement.Mode.ModeUpdate,
 					DomElementType.DomElement_TABLE);
 			this.updateDom(dummy, true);
-			element.callMethod("init=function(){var d=Wt3_2_0.getElement('"
+			element.callMethod("init=function(){var d=Wt3_2_1.getElement('"
 					+ this.getId() + "_tbl');d.style.cssText='width:100%;"
 					+ dummy.getCssStyle() + "';};");
 			element.callMethod("ed=new tinymce.Editor('" + this.getId() + "',"
@@ -333,7 +333,7 @@ public class WTextEdit extends WTextArea {
 		this.setInline(false);
 		initTinyMCE();
 		this.setJavaScriptMember(WT_RESIZE_JS,
-				"function(e,w,h){Wt3_2_0.tinyMCEResize(e, w, h); };");
+				"function(e,w,h){Wt3_2_1.tinyMCEResize(e, w, h); };");
 		String direction = app.getLayoutDirection() == LayoutDirection.LeftToRight ? "ltr"
 				: "rtl";
 		this.setConfigurationSetting("directionality", direction);
@@ -371,7 +371,7 @@ public class WTextEdit extends WTextArea {
 			app.getStyleSheet().addRule(".mceEditor", "height: 100%;");
 			app
 					.doJavaScript(
-							"Wt3_2_0.tinyMCEResize=function(e,w,h){e.style.height = (h - 2) + 'px';var iframe = Wt3_2_0.getElement(e.id + '_ifr');if (iframe) {var row=iframe.parentNode.parentNode,tbl=row.parentNode.parentNode,i, il;for (i=0, il=tbl.rows.length; i<il; i++) {if (tbl.rows[i] != row)h -= Math.max(28, tbl.rows[i].offsetHeight);}h = (h - 2) + 'px';if (iframe.style.height != h) iframe.style.height=h;}};",
+							"Wt3_2_1.tinyMCEResize=function(e,w,h){e.style.height = (h - 2) + 'px';var iframe = Wt3_2_1.getElement(e.id + '_ifr');if (iframe) {var row=iframe.parentNode.parentNode,tbl=row.parentNode.parentNode,i, il;for (i=0, il=tbl.rows.length; i<il; i++) {if (tbl.rows[i] != row)h -= Math.max(28, tbl.rows[i].offsetHeight);}h = (h - 2) + 'px';if (iframe.style.height != h) iframe.style.height=h;}};",
 							false);
 		}
 	}
