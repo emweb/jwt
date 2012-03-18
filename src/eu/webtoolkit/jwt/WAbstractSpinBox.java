@@ -80,13 +80,12 @@ public abstract class WAbstractSpinBox extends WLineEdit {
 	 * <p>
 	 * Option to set a prefix string shown in front of the value, e.g.:
 	 * <p>
-	 * <blockquote>
 	 * 
 	 * <pre>
-	 * spinBox.setPrefix(&quot;$ &quot;);
+	 * {@code
+	 *      spinBox.setPrefix("$ ");
+	 *   }
 	 * </pre>
-	 * 
-	 * </blockquote>
 	 * <p>
 	 * The default prefix is empty.
 	 * <p>
@@ -113,13 +112,12 @@ public abstract class WAbstractSpinBox extends WLineEdit {
 	 * <p>
 	 * Option to set a suffix string shown to the right of the value, e.g.:
 	 * <p>
-	 * <blockquote>
 	 * 
 	 * <pre>
-	 * spinBox.setSuffix(&quot; crates&quot;);
+	 * {@code
+	 *      spinBox.setSuffix(" crates");
+	 *   }
 	 * </pre>
-	 * 
-	 * </blockquote>
 	 * <p>
 	 * The default suffix is empty.
 	 * <p>
@@ -196,7 +194,7 @@ public abstract class WAbstractSpinBox extends WLineEdit {
 		}
 	}
 
-	void render(EnumSet<RenderFlag> flags) {
+	protected void render(EnumSet<RenderFlag> flags) {
 		if (!EnumUtils.mask(flags, RenderFlag.RenderFull).isEmpty()) {
 			boolean useNative = this.isNativeControl();
 			this.setup(useNative);
@@ -241,7 +239,7 @@ public abstract class WAbstractSpinBox extends WLineEdit {
 	private void defineJavaScript() {
 		WApplication app = WApplication.getInstance();
 		app.loadJavaScript("js/WSpinBox.js", wtjs1());
-		String jsObj = "new Wt3_2_0.WSpinBox(" + app.getJavaScriptClass() + ","
+		String jsObj = "new Wt3_2_1.WSpinBox(" + app.getJavaScriptClass() + ","
 				+ this.getJsRef() + "," + String.valueOf(this.getDecimals())
 				+ ","
 				+ WString.toWString(this.getPrefix()).getJsStringLiteral()

@@ -6,6 +6,7 @@
 package eu.webtoolkit.jwt;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.StringWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -23,6 +24,12 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
+
+import net.n3.nanoxml.IXMLParser;
+import net.n3.nanoxml.IXMLReader;
+import net.n3.nanoxml.StdXMLReader;
+import net.n3.nanoxml.XMLException;
+import net.n3.nanoxml.XMLParserFactory;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -83,53 +90,24 @@ public class WXmlLocalizedStrings extends WLocalizedStrings {
 			return;
 		}
 		
-		TransformerFactory tf = TransformerFactory.newInstance();        
-        Transformer t = null;
 		try {
-			t = tf.newTransformer();
-		} catch (TransformerConfigurationException e1) {
-			throw new RuntimeException(e1);
-		}
-
-		DocumentBuilder docBuilder = null;
-		Document doc = null;
-		DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
-		docBuilderFactory.setIgnoringElementContentWhitespace(true);
-		try {
-			docBuilder = docBuilderFactory.newDocumentBuilder();
-		} catch (ParserConfigurationException e) {
+			XmlMessageParser xmlParser = new XmlMessageParser();
+			IXMLParser parser = XMLParserFactory.createDefaultXMLParser();
+			parser.setBuilder(xmlParser);
+			IXMLReader reader = new StdXMLReader(url.openStream());
+			parser.setReader(reader);
+			parser.parse();
+			keyValues.putAll(xmlParser.getKeyValues());
+		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
-		}
-		try {
-			doc = docBuilder.parse(url.openStream());
-		} catch (Exception e) {
+		} catch (InstantiationException e) {
 			e.printStackTrace();
-		}
-
-		NodeList nl = doc.getElementsByTagName("message");
-		if (nl.getLength() > 0) {
-			Node node;
-			for (int i = 0; i < nl.getLength(); i++) {
-				node = nl.item(i);
-				if (node.getNodeName().equals("message")) {
-					String id = node.getAttributes().getNamedItem("id").getNodeValue();
-					StringWriter writer = new StringWriter();
-					try {
-						t.transform(new DOMSource(node), new StreamResult(writer));
-					} catch (TransformerException e) {
-						throw new RuntimeException(e);
-					}
-
-					// Remove leading <?xml version="1.0"
-					// encoding="UTF-8"?><message id=""> ...
-					String xml = writer.toString().substring(53 + id.length());
-					// ... and trailing </message> or />
-					if (xml.length() > 10) {
-						xml = xml.substring(0, xml.length() - 10);
-						keyValues.put(id, xml);
-					}
-				}
-			}
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (XMLException e) {
+			e.printStackTrace();
 		}
 	}
 
@@ -138,5 +116,9 @@ public class WXmlLocalizedStrings extends WLocalizedStrings {
 			return keyValues.get(key);
 		else
 			return null;
+	}
+
+	public void useBuiltin(String bundle) {
+		use(bundle);
 	}
 }

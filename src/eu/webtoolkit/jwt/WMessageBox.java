@@ -23,15 +23,23 @@ import org.slf4j.LoggerFactory;
  * A standard dialog for confirmation or to get simple user input.
  * <p>
  * 
- * The message box shows a message in a dialog window, with a number of buttons.
+ * The messagebox shows a message in a dialog window, with a number of buttons.
  * These buttons may be standard buttons, or customized.
  * <p>
- * There are two distinct ways for using a WMessageBox, which reflect the two
- * ways of dealing with a {@link WDialog} box.
+ * A messagebox is (usually) modal, and can be instantiated synchronously or
+ * asynchronously.
  * <p>
- * The more elaborate way is by creating a {@link WMessageBox}, and connecting
- * the buttonClicked signal to a method. This method then interpretes the result
- * and deletes the message box.
+ * When using a messagebox asynchronously, there is no API call that waits for
+ * the messagebox to be processed. Then, the usage is similar to instantiating a
+ * {@link WDialog} (or any other widget). You need to connect to the
+ * buttonClicked signal with a method that interpretes the result and deletes
+ * the message box.
+ * <p>
+ * The synchronous use of a messagebox involves the use of the static
+ * {@link WWidget#show() WWidget#show()} method, which blocks the current thread
+ * until the user has processed the messabebox. Since this uses the
+ * {@link WDialog#exec(WAnimation animation) WDialog#exec()}, it suffers from
+ * the same scalability issues.
  * <p>
  * This will show a message box that looks like this:
  * <p>

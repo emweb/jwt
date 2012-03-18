@@ -27,10 +27,11 @@ import org.slf4j.LoggerFactory;
  * may be selected.
  * <p>
  * WComboBox is an MVC view class, using a simple string list model by default.
- * The model may be populated using addItem(const {@link WString}&amp;) or
- * {@link WComboBox#insertItem(int index, CharSequence text) insertItem()} and
- * the contents can be cleared through {@link WComboBox#clear() clear()}. These
- * methods manipulate the underlying {@link WComboBox#getModel() getModel()}.
+ * The model may be populated using {@link WComboBox#addItem(CharSequence text)
+ * addItem()} or {@link WComboBox#insertItem(int index, CharSequence text)
+ * insertItem()} and the contents can be cleared through
+ * {@link WComboBox#clear() clear()}. These methods manipulate the underlying
+ * {@link WComboBox#getModel() getModel()}.
  * <p>
  * To use the combo box with a custom model instead of the default
  * {@link WStringListModel}, use
@@ -129,6 +130,9 @@ public class WComboBox extends WFormWidget {
 	public void insertItem(int index, CharSequence text) {
 		if (this.model_.insertRow(index)) {
 			this.setItemText(index, text);
+			if (this.currentIndex_ == -1 && !this.isSupportsNoSelection()) {
+				this.setCurrentIndex(0);
+			}
 		}
 	}
 
@@ -394,10 +398,6 @@ public class WComboBox extends WFormWidget {
 
 	void updateDom(DomElement element, boolean all) {
 		if (this.itemsChanged_ || all) {
-			if (all && this.getCount() > 0 && this.currentIndex_ == -1
-					&& !this.isSupportsNoSelection()) {
-				this.currentIndex_ = 0;
-			}
 			if (!all) {
 				element.removeAllChildren();
 			}

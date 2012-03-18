@@ -300,7 +300,8 @@ public abstract class WAbstractToggleButton extends WFormWidget {
 			this.stateChanged_ = false;
 		}
 		List<DomElement.EventAction> changeActions = new ArrayList<DomElement.EventAction>();
-		if (needUpdateChangeSignal || all) {
+		if (needUpdateChangeSignal || piggyBackChangeOnClick
+				&& needUpdateClickedSignal || all) {
 			String dom = "o";
 			if (check != null) {
 				if (check.isConnected()) {
@@ -335,11 +336,9 @@ public abstract class WAbstractToggleButton extends WFormWidget {
 		if (needUpdateClickedSignal || all) {
 			if (piggyBackChangeOnClick) {
 				if (click != null) {
-					if (click.needsUpdate(all)) {
-						changeActions.add(new DomElement.EventAction("", click
-								.getJavaScript(), click.encodeCmd(), click
-								.isExposedSignal()));
-					}
+					changeActions.add(new DomElement.EventAction("", click
+							.getJavaScript(), click.encodeCmd(), click
+							.isExposedSignal()));
 					click.updateOk();
 				}
 				if (!(all && changeActions.isEmpty())) {

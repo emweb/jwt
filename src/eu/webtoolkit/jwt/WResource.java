@@ -76,7 +76,7 @@ public abstract class WResource extends WObject {
 	private boolean trackUploadProgress_;
 	private DispositionType dispositionType_;
 
-	WResource(WObject parent) {
+	protected WResource(WObject parent) {
 		super(parent);
 
 		suggestedFileName_ = "";

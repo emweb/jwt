@@ -137,6 +137,9 @@ public class WDataSeries {
 		this.yLabel_ = false;
 		this.barWidth_ = 0.8;
 		this.hidden_ = false;
+		if (this.type_ == SeriesType.BarSeries) {
+			this.fillRange_ = FillRangeType.ZeroValueFill;
+		}
 	}
 
 	/**
@@ -480,7 +483,11 @@ public class WDataSeries {
 	 * <p>
 	 * Line or curve series may be filled under or above the curve, using the
 	 * {@link WDataSeries#getBrush() getBrush()}. This setting specifies the
-	 * range that is filled.
+	 * range that is filled. Bar series may use MinimumValueFill to configure
+	 * the chart to render its bars from the data point to the bottom of the
+	 * chart or MaximumValueFill to render the bars from the data point to the
+	 * top of the chart. The default value is ZeroValueFill, this value
+	 * configures the chart to render the bars from the data point to zero.
 	 */
 	public void setFillRange(FillRangeType fillRange) {
 		if (!ChartUtils.equals(this.fillRange_, fillRange)) {

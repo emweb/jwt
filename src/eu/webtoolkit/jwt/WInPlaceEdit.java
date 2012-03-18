@@ -33,16 +33,16 @@ import org.slf4j.LoggerFactory;
  * <p>
  * Usage example:
  * <p>
- * <blockquote>
  * 
  * <pre>
- * WContainerWidget w = new WContainerWidget();
- * new WText(&quot;Name: &quot;, w);
- * WInPlaceEdit edit = new WInPlaceEdit(&quot;Bob Smith&quot;, w);
- * edit.setStyleClass(&quot;inplace&quot;);
+ * {
+ * 	&#064;code
+ * 	WContainerWidget w = new WContainerWidget();
+ * 	new WText(&quot;Name: &quot;, w);
+ * 	WInPlaceEdit edit = new WInPlaceEdit(&quot;Bob Smith&quot;, w);
+ * 	edit.setStyleClass(&quot;inplace&quot;);
+ * }
  * </pre>
- * 
- * </blockquote>
  * <p>
  * This code will produce an edit that looks like: <div align="center"> <img
  * src="doc-files//WInPlaceEdit-1.png" alt="WInPlaceEdit text mode">
@@ -65,15 +65,15 @@ import org.slf4j.LoggerFactory;
  * In particular, you may want to provide a visual indication that the text is
  * editable e.g. using a hover effect:
  * <p>
- * CSS stylesheet: <blockquote>
+ * CSS stylesheet:
  * 
  * <pre>
- * .inplace span:hover {
+ * {@code
+ *  .inplace span:hover {
  *     background-color: gray;
  *  }
+ * }
  * </pre>
- * 
- * </blockquote>
  */
 public class WInPlaceEdit extends WCompositeWidget {
 	private static Logger logger = LoggerFactory.getLogger(WInPlaceEdit.class);

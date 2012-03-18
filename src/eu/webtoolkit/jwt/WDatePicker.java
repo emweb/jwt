@@ -133,7 +133,7 @@ public class WDatePicker extends WCompositeWidget {
 	 */
 	public void remove() {
 		WApplication.getInstance().doJavaScript(
-				"Wt3_2_0.remove('" + this.popup_.getId() + "');");
+				"Wt3_2_1.remove('" + this.popup_.getId() + "');");
 		super.remove();
 	}
 
@@ -331,11 +331,11 @@ public class WDatePicker extends WCompositeWidget {
 	 * The default is <code>false</code>.
 	 */
 	public void setGlobalPopup(boolean global) {
-		this.positionJS_.setJavaScript("function() { Wt3_2_0.getElement('"
+		this.positionJS_.setJavaScript("function() { Wt3_2_1.getElement('"
 				+ this.popup_.getId()
-				+ "').style.display = '';Wt3_2_0.positionAtWidget('"
+				+ "').style.display = '';Wt3_2_1.positionAtWidget('"
 				+ this.popup_.getId() + "','" + this.displayWidget_.getId()
-				+ "', Wt3_2_0.Horizontal, " + (global ? "true" : "false")
+				+ "', Wt3_2_1.Horizontal, " + (global ? "true" : "false")
 				+ ");}");
 	}
 

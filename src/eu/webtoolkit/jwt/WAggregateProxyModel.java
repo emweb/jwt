@@ -79,13 +79,12 @@ public class WAggregateProxyModel extends WAbstractProxyModel {
 	 * that acts as an aggregate for columns <code>firstColumn</code> to
 	 * <code>lastColumn</code>. <code>parentColumn</code> must border the range
 	 * defined by <code>firstColumn</code> to <code>lastColumn:</code>
-	 * <blockquote>
 	 * 
 	 * <pre>
-	 * parentColumn == firstColumn - 1 || parentColumn == lastColumn + 1
+	 * {@code
+	 *    parentColumn == firstColumn - 1 || parentColumn == lastColumn + 1 
+	 *   }
 	 * </pre>
-	 * 
-	 * </blockquote>
 	 * <p>
 	 * Note that column parameters reference column indexes in the source model.
 	 * <p>

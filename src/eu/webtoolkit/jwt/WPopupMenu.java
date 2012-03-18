@@ -58,34 +58,34 @@ import org.slf4j.LoggerFactory;
  * <p>
  * Usage example:
  * <p>
- * <blockquote>
  * 
  * <pre>
- * // Create a menu with some items
- * WPopupMenu popup = new WPopupMenu();
- * popup.addItem(&quot;icons/item1.gif&quot;, &quot;Item 1&quot;);
- * popup.addItem(&quot;Item 2&quot;).setCheckable(true);
- * popup.addItem(&quot;Item 3&quot;);
- * popup.addSeparator();
- * popup.addItem(&quot;Item 4&quot;);
- * popup.addSeparator();
- * popup.addItem(&quot;Item 5&quot;);
- * popup.addItem(&quot;Item 6&quot;);
- * popup.addSeparator();
+ * {
+ * 	&#064;code
+ * 	// Create a menu with some items
+ * 	WPopupMenu popup = new WPopupMenu();
+ * 	popup.addItem(&quot;icons/item1.gif&quot;, &quot;Item 1&quot;);
+ * 	popup.addItem(&quot;Item 2&quot;).setCheckable(true);
+ * 	popup.addItem(&quot;Item 3&quot;);
+ * 	popup.addSeparator();
+ * 	popup.addItem(&quot;Item 4&quot;);
+ * 	popup.addSeparator();
+ * 	popup.addItem(&quot;Item 5&quot;);
+ * 	popup.addItem(&quot;Item 6&quot;);
+ * 	popup.addSeparator();
  * 
- * WPopupMenu subMenu = new WPopupMenu();
- * subMenu.addItem(&quot;Sub Item 1&quot;);
- * subMenu.addItem(&quot;Sub Item 2&quot;);
- * popup.addMenu(&quot;Item 7&quot;, subMenu);
+ * 	WPopupMenu subMenu = new WPopupMenu();
+ * 	subMenu.addItem(&quot;Sub Item 1&quot;);
+ * 	subMenu.addItem(&quot;Sub Item 2&quot;);
+ * 	popup.addMenu(&quot;Item 7&quot;, subMenu);
  * 
- * WPopupMenuItem item = popup.exec(event);
+ * 	WPopupMenuItem item = popup.exec(event);
  * 
- * if (item) {
- * 	// ... do associated action.
+ * 	if (item) {
+ * 		// ... do associated action.
+ * 	}
  * }
  * </pre>
- * 
- * </blockquote>
  * <p>
  * <h3>CSS</h3>
  * <p>
@@ -259,7 +259,7 @@ public class WPopupMenu extends WCompositeWidget {
 		this.setOffsets(new WLength(42), EnumSet.of(Side.Left, Side.Top));
 		this.setOffsets(new WLength(-10000), EnumSet.of(Side.Left, Side.Top));
 		WApplication.getInstance().doJavaScript(
-				"Wt3_2_0.positionXY('" + this.getId() + "',"
+				"Wt3_2_1.positionXY('" + this.getId() + "',"
 						+ String.valueOf(p.getX()) + ","
 						+ String.valueOf(p.getY()) + ");");
 	}
@@ -550,7 +550,7 @@ public class WPopupMenu extends WCompositeWidget {
 		if (this.autoHideDelay_ >= 0) {
 			if (!this.cancel_.isConnected()) {
 				app.loadJavaScript("js/WPopupMenu.js", wtjs1());
-				this.doJavaScript("new Wt3_2_0.WPopupMenu("
+				this.doJavaScript("new Wt3_2_1.WPopupMenu("
 						+ app.getJavaScriptClass() + "," + this.getJsRef()
 						+ "," + String.valueOf(this.autoHideDelay_) + ");");
 				this.cancel_.addListener(this, new Signal.Listener() {

@@ -152,7 +152,7 @@ public class WFlashObject extends WWebWidget {
 	 * installed.
 	 */
 	public String getJsFlashRef() {
-		return "Wt3_2_0.getElement('" + this.getId() + "_flash')";
+		return "Wt3_2_1.getElement('" + this.getId() + "_flash')";
 	}
 
 	/**
@@ -235,10 +235,8 @@ public class WFlashObject extends WWebWidget {
 					if (i != this.variables_.entrySet().iterator()) {
 						ss.append("&");
 					}
-					ss.append(DomElement.urlEncodeS(i.getKey())).append("=")
-							.append(
-									DomElement.urlEncodeS(i.getValue()
-											.toString()));
+					ss.append(Utils.urlEncode(i.getKey())).append("=").append(
+							Utils.urlEncode(i.getValue().toString()));
 				}
 				DomElement param = DomElement
 						.createNew(DomElementType.DomElement_PARAM);
@@ -272,10 +270,10 @@ public class WFlashObject extends WWebWidget {
 		if (this.sizeChanged_) {
 			StringWriter ss = new StringWriter();
 			ss.append("var v=").append(this.getJsFlashRef()).append(
-					";if(v){v.setAttribute('width', ").append(
+					";if(v){v.setAttribute('width', '").append(
 					toString(this.getWidth())).append(
-					");v.setAttribute('height', ").append(
-					toString(this.getHeight())).append(");}");
+					"');v.setAttribute('height', '").append(
+					toString(this.getHeight())).append("');}");
 			WApplication.getInstance().doJavaScript(ss.toString());
 			this.sizeChanged_ = false;
 		}

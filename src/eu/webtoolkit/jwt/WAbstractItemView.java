@@ -744,6 +744,10 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	 * <p>
 	 * Replaces the current selection with <code>indexes</code>.
 	 * <p>
+	 * When selection operates on rows ({@link SelectionBehavior#SelectRows
+	 * SelectRows}), it is sufficient to pass the first element in a row (column
+	 * <code>null</code> ) to select the entire row.
+	 * <p>
 	 * 
 	 * @see WAbstractItemView#select(WModelIndex index, SelectionFlag option)
 	 * @see WAbstractItemView#getSelectionModel()
@@ -786,13 +790,17 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	/**
 	 * Returns wheter an item is selected.
 	 * <p>
-	 * This is a convenience method for: <blockquote>
+	 * When selection operates on rows ({@link SelectionBehavior#SelectRows
+	 * SelectRows}), this method returns true for each element in a selected
+	 * row.
+	 * <p>
+	 * This is a convenience method for:
 	 * 
 	 * <pre>
-	 * selectionModel().isSelected(index)
+	 * {@code
+	 *    selectionModel().isSelected(index)
+	 *   }
 	 * </pre>
-	 * 
-	 * </blockquote>
 	 * <p>
 	 * 
 	 * @see WAbstractItemView#getSelectedIndexes()
@@ -809,13 +817,17 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	 * The model indexes are returned as a set, topologically ordered (in the
 	 * order they appear in the view).
 	 * <p>
-	 * This is a convenience method for: <blockquote>
+	 * When selection operates on rows ({@link SelectionBehavior#SelectRows
+	 * SelectRows}), this method only returns the model index of first
+	 * column&apos;s element of the selected rows.
+	 * <p>
+	 * This is a convenience method for:
 	 * 
 	 * <pre>
-	 * selectionModel().selectedIndexes()
+	 * {@code
+	 *    selectionModel().selectedIndexes()
+	 *   }
 	 * </pre>
-	 * 
-	 * </blockquote>
 	 * <p>
 	 * 
 	 * @see WAbstractItemView#setSelectedIndexes(SortedSet indexes)

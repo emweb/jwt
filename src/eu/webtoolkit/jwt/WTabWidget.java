@@ -31,25 +31,25 @@ import org.slf4j.LoggerFactory;
  * <p>
  * Usage example:
  * <p>
- * <blockquote>
  * 
  * <pre>
- * WTabWidget examples = new WTabWidget(this);
+ * {
+ * 	&#064;code
+ * 	WTabWidget examples = new WTabWidget(this);
  * 
- * examples.addTab(helloWorldExample(), &quot;Hello World&quot;);
- * examples.addTab(chartExample(), &quot;Charts&quot;);
- * examples.addTab(new WText(&quot;A WText&quot;), &quot;WText&quot;);
+ * 	examples.addTab(helloWorldExample(), &quot;Hello World&quot;);
+ * 	examples.addTab(chartExample(), &quot;Charts&quot;);
+ * 	examples.addTab(new WText(&quot;A WText&quot;), &quot;WText&quot;);
  * 
- * examples.currentChanged().addListener(this, new Signal.Listener() {
- * 	public void trigger() {
- * 		//custom code
- * 	}
- * });
- * examples.setInternalPathEnabled();
- * examples.setInternalBasePath(&quot;/examples&quot;);
+ * 	examples.currentChanged().addListener(this, new Signal.Listener() {
+ * 		public void trigger() {
+ * 			//custom code
+ * 		}
+ * 	});
+ * 	examples.setInternalPathEnabled();
+ * 	examples.setInternalBasePath(&quot;/examples&quot;);
+ * }
  * </pre>
- * 
- * </blockquote>
  * <p>
  * <h3>CSS</h3>
  * <p>
@@ -536,7 +536,7 @@ public class WTabWidget extends WCompositeWidget {
 				.setJavaScriptMember(
 						WT_RESIZE_JS,
 						""
-								+ "function(self, w, h) {self.style.height= h + 'px';var c = self.firstChild;var t = self.lastChild;h -= c.offsetHeight + Wt3_2_0.px(c, 'marginTop') + Wt3_2_0.px(c, 'marginBottom');if (h > 0)t."
+								+ "function(self, w, h) {self.style.height= h + 'px';var c = self.firstChild;var t = self.lastChild;h -= c.offsetHeight + Wt3_2_1.px(c, 'marginTop') + Wt3_2_1.px(c, 'marginBottom');if (h > 0)t."
 								+ WT_RESIZE_JS + "(t, w, h);};");
 		this.menu_.itemSelected().addListener(this,
 				new Signal1.Listener<WMenuItem>() {

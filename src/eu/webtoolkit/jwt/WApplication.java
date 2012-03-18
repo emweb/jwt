@@ -34,25 +34,25 @@ import org.apache.commons.io.*;
  * {@link WApplication} instances for every user visiting the application is
  * thus:
  * <p>
- * <blockquote>
  * 
  * <pre>
- * public class HelloServlet extends WtServlet {
- * 	public HelloServlet() {
- * 		super();
- * 	}
+ * {
+ * 	&#064;code
+ * 	public class HelloServlet extends WtServlet {
+ * 		public HelloServlet() {
+ * 			super();
+ * 		}
  * 
- * 	public WApplication createApplication(WEnvironment env) {
- * 		// In practice, you will specialize WApplication and simply
- * 		// return a new instance.
- * 		WApplication app = new WApplication(env);
- * 		app.getRoot().addWidget(new WText(&quot;Hello world.&quot;));
- * 		return app;
+ * 		public WApplication createApplication(WEnvironment env) {
+ * 			// In practice, you will specialize WApplication and simply
+ * 			// return a new instance.
+ * 			WApplication app = new WApplication(env);
+ * 			app.getRoot().addWidget(new WText(&quot;Hello world.&quot;));
+ * 			return app;
+ * 		}
  * 	}
  * }
  * </pre>
- * 
- * </blockquote>
  * <p>
  * Throughout the session, the instance is available through the static method
  * {@link WApplication#getInstance() getInstance()}, which uses thread-specific
@@ -85,8 +85,8 @@ import org.apache.commons.io.*;
  * <li>definition of cookies using
  * {@link WApplication#setCookie(String name, String value, int maxAge, String domain, String path, boolean secure)
  * setCookie()} to persist information across sessions, which may be read using
- * {@link WEnvironment#getCookie(String cookieNname) WEnvironment#getCookie()}
- * in a future session.</li>
+ * {@link WEnvironment#getCookie(String cookieName) WEnvironment#getCookie()} in
+ * a future session.</li>
  * <li>management of the internal path (that enables browser history and
  * bookmarks) using {@link WApplication#getBookmarkUrl() getBookmarkUrl()} and
  * related methods.</li>
@@ -137,7 +137,7 @@ public class WApplication extends WObject {
 	 */
 	public WApplication(WEnvironment env) {
 		super();
-		this.requestTooLarge_ = new Signal1<Integer>();
+		this.requestTooLarge_ = new Signal1<Long>();
 		this.session_ = env.session_;
 		this.title_ = new WString();
 		this.closeMessage_ = new WString();
@@ -173,6 +173,7 @@ public class WApplication extends WObject {
 		this.styleSheets_ = new ArrayList<WApplication.StyleSheet>();
 		this.styleSheetsAdded_ = 0;
 		this.metaHeaders_ = new ArrayList<WApplication.MetaHeader>();
+		this.metaLinks_ = new ArrayList<WApplication.MetaLink>();
 		this.exposedSignals_ = new HashMap<String, WeakReference<AbstractEventSignal>>();
 		this.exposedResources_ = new HashMap<String, WResource>();
 		this.encodedObjects_ = new HashMap<String, WObject>();
@@ -631,14 +632,14 @@ public class WApplication extends WObject {
 	 * You may use this if to override certain style rules for a Right-to-Left
 	 * document.
 	 * <p>
-	 * For example: <blockquote>
+	 * For example:
 	 * 
 	 * <pre>
-	 * body        .sidebar { float: right; }
+	 * {@code
+	 *    body        .sidebar { float: right; }
 	 *    body.Wt-rtl .sidebar { float: left; }
+	 *   }
 	 * </pre>
-	 * 
-	 * </blockquote>
 	 * <p>
 	 * <p>
 	 * <i><b>Note: </b>The layout direction can be set only at application
@@ -764,9 +765,9 @@ public class WApplication extends WObject {
 		}
 	}
 
-	public WStdLocalizedStrings getBuiltinLocalizedStrings() {
+	public WXmlLocalizedStrings getBuiltinLocalizedStrings() {
 		return (((this.localizedStrings_.getItems().get(this.localizedStrings_
-				.getItems().size() - 1)) instanceof WStdLocalizedStrings ? (WStdLocalizedStrings) (this.localizedStrings_
+				.getItems().size() - 1)) instanceof WXmlLocalizedStrings ? (WXmlLocalizedStrings) (this.localizedStrings_
 				.getItems().get(this.localizedStrings_.getItems().size() - 1))
 				: null));
 	}
@@ -784,7 +785,7 @@ public class WApplication extends WObject {
 	public void setLocalizedStrings(WLocalizedStrings translator) {
 		if (!(this.localizedStrings_ != null)) {
 			this.localizedStrings_ = new WCombinedLocalizedStrings();
-			WStdLocalizedStrings defaultMessages = new WStdLocalizedStrings();
+			WXmlLocalizedStrings defaultMessages = new WXmlLocalizedStrings();
 			defaultMessages.useBuiltin(WtServlet.Wt_xml);
 			this.localizedStrings_.add(defaultMessages);
 		}
@@ -894,13 +895,15 @@ public class WApplication extends WObject {
 	 * session ID if necessary). The URL includes the full application path, and
 	 * is expanded by the browser into a full URL.
 	 * <p>
-	 * For example, for an application deployed at <blockquote>
+	 * For example, for an application deployed at
 	 * 
 	 * <pre>
-	 * http://www.mydomain.com/stuff/app.wt
+	 * {@code
+	 *    http://www.mydomain.com/stuff/app.wt 
+	 *   }
 	 * </pre>
 	 * 
-	 * </blockquote> this method might return
+	 * this method might return
 	 * <code>&quot;/stuff/app.wt?wtd=AbCdEf&quot;</code>. Additional query
 	 * parameters can be appended in the form of
 	 * <code>&quot;&amp;param1=value&amp;param2=value&quot;</code>.
@@ -943,7 +946,8 @@ public class WApplication extends WObject {
 	 * for inclusion in an email.
 	 * <p>
 	 * You may want to reimplement this method when the application is hosted
-	 * behind a reverse proxy or when in general the returned URL is wrong.
+	 * behind a reverse proxy or in general the public URL of the application
+	 * cannot be guessed correctly by the application.
 	 */
 	public String makeAbsoluteUrl(String url) {
 		return this.session_.makeAbsoluteUrl(url);
@@ -985,13 +989,15 @@ public class WApplication extends WObject {
 	 * session ID if necessary). The URL includes the full application path, and
 	 * is expanded by the browser into a full URL.
 	 * <p>
-	 * For example, for an application deployed at <blockquote>
+	 * For example, for an application deployed at
 	 * 
 	 * <pre>
-	 * http://www.mydomain.com/stuff/app.wt
+	 * {@code
+	 *    http://www.mydomain.com/stuff/app.wt 
+	 *   }
 	 * </pre>
 	 * 
-	 * </blockquote> this method might return
+	 * this method might return
 	 * <code>&quot;/stuff/app.wt?wtd=AbCdEf&quot;</code>. Additional query
 	 * parameters can be appended in the form of
 	 * <code>&quot;&amp;param1=value&amp;param2=value&quot;</code>.
@@ -1017,13 +1023,15 @@ public class WApplication extends WObject {
 	 * session ID if necessary). The URL includes the full application path, and
 	 * is expanded by the browser into a full URL.
 	 * <p>
-	 * For example, for an application deployed at <blockquote>
+	 * For example, for an application deployed at
 	 * 
 	 * <pre>
-	 * http://www.mydomain.com/stuff/app.wt
+	 * {@code
+	 *    http://www.mydomain.com/stuff/app.wt 
+	 *   }
 	 * </pre>
 	 * 
-	 * </blockquote> this method might return
+	 * this method might return
 	 * <code>&quot;/stuff/app.wt?wtd=AbCdEf&quot;</code>. Additional query
 	 * parameters can be appended in the form of
 	 * <code>&quot;&amp;param1=value&amp;param2=value&quot;</code>.
@@ -1050,42 +1058,50 @@ public class WApplication extends WObject {
 	 * directly appended to the application URL or it is appended using a name
 	 * anchor (#).
 	 * <p>
-	 * For example, for an application deployed at: <blockquote>
+	 * For example, for an application deployed at:
 	 * 
 	 * <pre>
-	 * http://www.mydomain.com/stuff/app.wt
+	 * {@code
+	 *    http://www.mydomain.com/stuff/app.wt
+	 *   }
 	 * </pre>
 	 * 
-	 * </blockquote> for which an <code>internalPath</code>
+	 * for which an <code>internalPath</code>
 	 * <code>&quot;/project/z3cbc/details/&quot;</code> is set, the two forms
 	 * for the application URL are:
 	 * <ul>
 	 * <li>
-	 * in an AJAX session (HTML5): <blockquote>
+	 * in an AJAX session (HTML5):
 	 * 
 	 * <pre>
-	 * http://www.mydomain.com/stuff/app.wt/project/z3cbc/details/
+	 * {@code
+	 *    http://www.mydomain.com/stuff/app.wt/project/z3cbc/details/
+	 *   }
 	 * </pre>
 	 * 
-	 * </blockquote></li>
+	 * </li>
 	 * <li>
-	 * in an AJAX session (HTML4): <blockquote>
+	 * in an AJAX session (HTML4):
 	 * 
 	 * <pre>
-	 * http://www.mydomain.com/stuff/app.wt#/project/z3cbc/details/
+	 * {@code
+	 *    http://www.mydomain.com/stuff/app.wt#/project/z3cbc/details/
+	 *   }
 	 * </pre>
 	 * 
-	 * </blockquote></li>
+	 * </li>
 	 * <li>
 	 * </li>
 	 * <li>
-	 * in a plain HTML session: <blockquote>
+	 * in a plain HTML session:
 	 * 
 	 * <pre>
-	 * http://www.mydomain.com/stuff/app.wt/project/z3cbc/details/
+	 * {@code
+	 *    http://www.mydomain.com/stuff/app.wt/project/z3cbc/details/
+	 *   }
 	 * </pre>
 	 * 
-	 * </blockquote></li>
+	 * </li>
 	 * </ul>
 	 * <p>
 	 * Note, since JWt 3.1.9, the actual form of the URL no longer affects
@@ -1145,13 +1161,15 @@ public class WApplication extends WObject {
 	 * session ID if necessary). The URL includes the full application path, and
 	 * is expanded by the browser into a full URL.
 	 * <p>
-	 * For example, for an application deployed at <blockquote>
+	 * For example, for an application deployed at
 	 * 
 	 * <pre>
-	 * http://www.mydomain.com/stuff/app.wt
+	 * {@code
+	 *    http://www.mydomain.com/stuff/app.wt 
+	 *   }
 	 * </pre>
 	 * 
-	 * </blockquote> this method might return
+	 * this method might return
 	 * <code>&quot;/stuff/app.wt?wtd=AbCdEf&quot;</code>. Additional query
 	 * parameters can be appended in the form of
 	 * <code>&quot;&amp;param1=value&amp;param2=value&quot;</code>.
@@ -1177,13 +1195,15 @@ public class WApplication extends WObject {
 	 * session ID if necessary). The URL includes the full application path, and
 	 * is expanded by the browser into a full URL.
 	 * <p>
-	 * For example, for an application deployed at <blockquote>
+	 * For example, for an application deployed at
 	 * 
 	 * <pre>
-	 * http://www.mydomain.com/stuff/app.wt
+	 * {@code
+	 *    http://www.mydomain.com/stuff/app.wt 
+	 *   }
 	 * </pre>
 	 * 
-	 * </blockquote> this method might return
+	 * this method might return
 	 * <code>&quot;/stuff/app.wt?wtd=AbCdEf&quot;</code>. Additional query
 	 * parameters can be appended in the form of
 	 * <code>&quot;&amp;param1=value&amp;param2=value&quot;</code>.
@@ -1215,13 +1235,15 @@ public class WApplication extends WObject {
 	 * session ID if necessary). The URL includes the full application path, and
 	 * is expanded by the browser into a full URL.
 	 * <p>
-	 * For example, for an application deployed at <blockquote>
+	 * For example, for an application deployed at
 	 * 
 	 * <pre>
-	 * http://www.mydomain.com/stuff/app.wt
+	 * {@code
+	 *    http://www.mydomain.com/stuff/app.wt 
+	 *   }
 	 * </pre>
 	 * 
-	 * </blockquote> this method might return
+	 * this method might return
 	 * <code>&quot;/stuff/app.wt?wtd=AbCdEf&quot;</code>. Additional query
 	 * parameters can be appended in the form of
 	 * <code>&quot;&amp;param1=value&amp;param2=value&quot;</code>.
@@ -1369,10 +1391,10 @@ public class WApplication extends WObject {
 	 * An example of how to modify the widget tree outside the event loop and
 	 * propagate changes is:
 	 * <p>
-	 * <blockquote>
 	 * 
 	 * <pre>
-	 * // You need to have a reference to the application whose state
+	 * {@code
+	 *    // You need to have a reference to the application whose state
 	 *    // you are about to manipulate.
 	 *    WApplication app = ...;
 	 *   
@@ -1389,9 +1411,8 @@ public class WApplication extends WObject {
 	 *    } finally {
 	 *      lock.release();
 	 *    }
+	 *   }
 	 * </pre>
-	 * 
-	 * </blockquote>
 	 * <p>
 	 * This works only if your servlet container supports the Servlet 3.0 API.
 	 * If you try to invoke this function on a servlet container with no such
@@ -1438,11 +1459,18 @@ public class WApplication extends WObject {
 	/**
 	 * Propagates server-initiated updates.
 	 * <p>
-	 * This propagate changes made to the user interface outside of the main
-	 * event loop, e.g. from another thread or from within WServer::post(). This
-	 * call only has an effect after updates have been enabled (from within the
-	 * normal event loop), using
+	 * When the lock to the application is released, changes will propagate to
+	 * the user interface. This call only has an effect after updates have been
+	 * enabled from within the normal event loop using
 	 * {@link WApplication#enableUpdates(boolean enabled) enableUpdates()}.
+	 * <p>
+	 * This is typically used only outside of the main event loop, e.g. from
+	 * another thread or from within a method posted to an application using
+	 * WServer::post(), since changes always propagate within the event loop at
+	 * the end of the event.
+	 * <p>
+	 * The update is not immediate, and thus changes that happen after this call
+	 * will equally be pushed to the client.
 	 * <p>
 	 * 
 	 * @see WApplication#enableUpdates(boolean enabled)
@@ -1451,9 +1479,7 @@ public class WApplication extends WObject {
 		if (WebSession.Handler.getInstance().getRequest() != null) {
 			return;
 		}
-		if (this.serverPush_ > 0) {
-			this.session_.pushUpdates();
-		}
+		this.session_.setTriggerUpdate(true);
 	}
 
 	/**
@@ -1604,7 +1630,10 @@ public class WApplication extends WObject {
 	/**
 	 * Declares an application-wide JavaScript function.
 	 * <p>
-	 * This is an internal method.
+	 * The function is stored in {@link WApplication#getJavaScriptClass()
+	 * getJavaScriptClass()}.
+	 * <p>
+	 * The next code snippet declares and invokes function foo:
 	 */
 	public void declareJavaScriptFunction(String name, String function) {
 		this.doJavaScript(this.javaScriptClass_ + '.' + name + '=' + function
@@ -1807,7 +1836,7 @@ public class WApplication extends WObject {
 	 * <p>
 	 * Use cookies to transfer information across different sessions (e.g. a
 	 * user name). In a subsequent session you will be able to read this cookie
-	 * using {@link WEnvironment#getCookie(String cookieNname)
+	 * using {@link WEnvironment#getCookie(String cookieName)
 	 * WEnvironment#getCookie()}. You cannot use a cookie to store information
 	 * in the current session.
 	 * <p>
@@ -1824,7 +1853,7 @@ public class WApplication extends WObject {
 	 * <p>
 	 * 
 	 * @see WEnvironment#supportsCookies()
-	 * @see WEnvironment#getCookie(String cookieNname)
+	 * @see WEnvironment#getCookie(String cookieName)
 	 */
 	public void setCookie(String name, String value, int maxAge, String domain,
 			String path, boolean secure) {
@@ -1900,6 +1929,65 @@ public class WApplication extends WObject {
 
 	public final void removeCookie(String name, String domain) {
 		removeCookie(name, domain, "");
+	}
+
+	/**
+	 * Adds an HTML meta link.
+	 * <p>
+	 * When a link was previously set for the same <code>href</code>, its
+	 * contents are replaced. When an empty string is used for the arguments
+	 * <code>media</code>, <code>hreflang</code>, <code>type</code> or
+	 * <code>sizes</code>, they will be ignored.
+	 * <p>
+	 * 
+	 * @see WApplication#removeMetaLink(String href)
+	 */
+	public void addMetaLink(String href, String rel, String media,
+			String hreflang, String type, String sizes, boolean disabled) {
+		if (this.getEnvironment().hasJavaScript()) {
+			logger.warn(new StringWriter().append(
+					"WApplication::addMetaLink() with no effect").toString());
+		}
+		if (href.length() == 0) {
+			throw new WException(
+					"WApplication::addMetaLink() href cannot be empty!");
+		}
+		if (rel.length() == 0) {
+			throw new WException(
+					"WApplication::addMetaLink() rel cannot be empty!");
+		}
+		for (int i = 0; i < this.metaLinks_.size(); ++i) {
+			WApplication.MetaLink ml = this.metaLinks_.get(i);
+			if (ml.href.equals(href)) {
+				ml.rel = rel;
+				ml.media = media;
+				ml.hreflang = hreflang;
+				ml.type = type;
+				ml.sizes = sizes;
+				ml.disabled = disabled;
+				return;
+			}
+		}
+		WApplication.MetaLink ml = new WApplication.MetaLink(href, rel, media,
+				hreflang, type, sizes, disabled);
+		this.metaLinks_.add(ml);
+	}
+
+	/**
+	 * Removes the HTML meta link.
+	 * <p>
+	 * 
+	 * @see WApplication#addMetaLink(String href, String rel, String media,
+	 *      String hreflang, String type, String sizes, boolean disabled)
+	 */
+	public void removeMetaLink(String href) {
+		for (int i = 0; i < this.metaLinks_.size(); ++i) {
+			WApplication.MetaLink ml = this.metaLinks_.get(i);
+			if (ml.href.equals(href)) {
+				this.metaLinks_.remove(0 + i);
+				return;
+			}
+		}
 	}
 
 	/**
@@ -2048,9 +2136,9 @@ public class WApplication extends WObject {
 		if (this.loadingIndicator_ != null) {
 			this.loadingIndicatorWidget_ = indicator.getWidget();
 			this.domRoot_.addWidget(this.loadingIndicatorWidget_);
-			this.showLoadJS.setJavaScript("function(o,e) {Wt3_2_0.inline('"
+			this.showLoadJS.setJavaScript("function(o,e) {Wt3_2_1.inline('"
 					+ this.loadingIndicatorWidget_.getId() + "');}");
-			this.hideLoadJS.setJavaScript("function(o,e) {Wt3_2_0.hide('"
+			this.hideLoadJS.setJavaScript("function(o,e) {Wt3_2_1.hide('"
 					+ this.loadingIndicatorWidget_.getId() + "');}");
 			this.loadingIndicatorWidget_.hide();
 		}
@@ -2129,7 +2217,7 @@ public class WApplication extends WObject {
 	 * <p>
 	 * The integer parameter is the request size that was received in bytes.
 	 */
-	public Signal1<Integer> requestTooLarge() {
+	public Signal1<Long> requestTooLarge() {
 		return this.requestTooLarge_;
 	}
 
@@ -2296,9 +2384,8 @@ public class WApplication extends WObject {
 				&& this.session_.hasSessionIdInUrl();
 		if (needRedirect) {
 			WtServlet c = this.session_.getController();
-			return "?request=redirect&url=" + DomElement.urlEncodeS(url)
-					+ "&hash="
-					+ DomElement.urlEncodeS(c.computeRedirectHash(url));
+			return "?request=redirect&url=" + Utils.urlEncode(url) + "&hash="
+					+ Utils.urlEncode(c.computeRedirectHash(url));
 		} else {
 			return url;
 		}
@@ -2332,21 +2419,20 @@ public class WApplication extends WObject {
 	 * The following shows a generic template for reimplementhing this method
 	 * for both managing request resources and generic exception handling.
 	 * <p>
-	 * <blockquote>
 	 * 
 	 * <pre>
-	 * void notify(WEvent event) {
-	 * 	// Grab resources for during request handling
-	 * 	try {
-	 * 		super.notify(event);
-	 * 	} catch (MyException exception) {
-	 * 		// handle this exception in a central place
-	 * 	}
-	 * 	// Free resources used during request handling
-	 * }
+	 * {@code
+	 *    void notify(WEvent event) {
+	 *        // Grab resources for during request handling
+	 *        try {
+	 *          super.notify(event);
+	 *        }  catch (MyException exception) {
+	 *          // handle this exception in a central place
+	 *        }
+	 *        // Free resources used during request handling
+	 *    }
+	 *   }
 	 * </pre>
-	 * 
-	 * </blockquote>
 	 * <p>
 	 * Note that any uncaught exception throw during event handling terminates
 	 * the session.
@@ -2410,7 +2496,7 @@ public class WApplication extends WObject {
 		if (this.domRoot2_ != null) {
 			this.domRoot2_.enableAjax();
 		}
-		this.doJavaScript("Wt3_2_0.ajaxInternalPaths("
+		this.doJavaScript("Wt3_2_1.ajaxInternalPaths("
 				+ WWebWidget.jsStringLiteral(this.resolveRelativeUrl(this
 						.getBookmarkUrl("/"))) + ");");
 	}
@@ -2433,7 +2519,7 @@ public class WApplication extends WObject {
 		this.quit();
 	}
 
-	private Signal1<Integer> requestTooLarge_;
+	private Signal1<Long> requestTooLarge_;
 
 	static class ScriptLibrary {
 		private static Logger logger = LoggerFactory
@@ -2470,6 +2556,29 @@ public class WApplication extends WObject {
 		public String name;
 		public String lang;
 		public WString content;
+	}
+
+	static class MetaLink {
+		private static Logger logger = LoggerFactory.getLogger(MetaLink.class);
+
+		public MetaLink(String aHref, String aRel, String aMedia,
+				String aHreflang, String aType, String aSizes, boolean aDisabled) {
+			this.href = aHref;
+			this.rel = aRel;
+			this.media = aMedia;
+			this.hreflang = aHreflang;
+			this.type = aType;
+			this.sizes = aSizes;
+			this.disabled = aDisabled;
+		}
+
+		public String href;
+		public String rel;
+		public String media;
+		public String hreflang;
+		public String type;
+		public String sizes;
+		public boolean disabled;
 	}
 
 	private WebSession session_;
@@ -2528,6 +2637,7 @@ public class WApplication extends WObject {
 	List<WApplication.StyleSheet> styleSheets_;
 	int styleSheetsAdded_;
 	List<WApplication.MetaHeader> metaHeaders_;
+	List<WApplication.MetaLink> metaLinks_;
 	private Map<String, WeakReference<AbstractEventSignal>> exposedSignals_;
 	private Map<String, WResource> exposedResources_;
 	private Map<String, WObject> encodedObjects_;
@@ -2620,7 +2730,7 @@ public class WApplication extends WObject {
 		if (resource.getInternalPath().length() == 0) {
 			return this.session_.getMostRelativeUrl(fn)
 					+ "&request=resource&resource="
-					+ DomElement.urlEncodeS(resource.getId()) + "&rand="
+					+ Utils.urlEncode(resource.getId()) + "&rand="
 					+ String.valueOf(seq++);
 		} else {
 			fn = resource.getInternalPath() + fn;
@@ -2702,7 +2812,7 @@ public class WApplication extends WObject {
 			WJavaScriptPreamble preamble = this.javaScriptPreamble_.get(i);
 			String scope = preamble.scope == JavaScriptScope.ApplicationScope ? this
 					.getJavaScriptClass()
-					: "Wt3_2_0";
+					: "Wt3_2_1";
 			if (preamble.type == JavaScriptObjectType.JavaScriptFunction) {
 				out.append(scope).append('.').append(preamble.name).append(
 						" = function() { (").append(preamble.src).append(

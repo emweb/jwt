@@ -347,8 +347,13 @@ public class WVmlImage implements WVectorImage {
 		WFont textFont = this.getPainter().getFont();
 		textFont.setSize(WFont.Size.FixedSize, WLength.multiply(textFont
 				.getSizeLength(), app.getEnvironment().getDpiScale()));
-		render.append(";font:").append(textFont.getCssText()).append(
-				"\"/></v:shape>");
+		String cssFont = textFont.getCssText(false);
+		int i = cssFont.indexOf(',');
+		if (i != -1) {
+			cssFont = cssFont.substring(0, 0 + i);
+			System.err.append(cssFont).append('\n');
+		}
+		render.append(";").append(cssFont).append("\"/></v:shape>");
 		if (!((this.getPainter().getRenderHints() & WPainter.RenderHint.LowQualityShadows
 				.getValue()) != 0)
 				&& !this.currentShadow_.isNone()) {

@@ -32,11 +32,13 @@ class PaintedSlider extends WPaintedWidget {
 		this.mouseUpJS_ = new JSlot();
 		this.setStyleClass("Wt-slider-bg");
 		this.slider_
-				.setStyleClass("Wt-slider-"
+				.addStyleClass("Wt-slider-"
 						+ (this.slider_.getOrientation() == Orientation.Horizontal ? "h"
 								: "v"));
 		if (this.slider_.getPositionScheme() == PositionScheme.Static) {
 			this.slider_.setPositionScheme(PositionScheme.Relative);
+			this.slider_.setOffsets(new WLength(0), EnumSet.of(Side.Left,
+					Side.Top));
 		}
 		this.addChild(this.handle_ = new WContainerWidget());
 		this.handle_.setPopup(true);
@@ -57,6 +59,7 @@ class PaintedSlider extends WPaintedWidget {
 	}
 
 	public void updateState() {
+		boolean rtl = WApplication.getInstance().getLayoutDirection() == LayoutDirection.RightToLeft;
 		String resourcesURL = WApplication.getResourcesUrl();
 		Orientation o = this.slider_.getOrientation();
 		this.handle_.setStyleClass("handle");
@@ -71,45 +74,59 @@ class PaintedSlider extends WPaintedWidget {
 		}
 		double l = o == Orientation.Horizontal ? this.getW() : this.getH();
 		double pixelsPerUnit = (l - HANDLE_WIDTH) / this.getRange();
-		String dir = o == Orientation.Horizontal ? "left" : "top";
+		String dir = "";
+		if (o == Orientation.Horizontal) {
+			dir = rtl ? "right" : "left";
+		} else {
+			dir = "top";
+		}
 		String u = o == Orientation.Horizontal ? "x" : "y";
 		String U = o == Orientation.Horizontal ? "X" : "Y";
 		String maxS = String.valueOf(l - HANDLE_WIDTH);
 		String ppU = String.valueOf(pixelsPerUnit);
 		String minimumS = String.valueOf(this.slider_.getMinimum());
 		String maximumS = String.valueOf(this.slider_.getMaximum());
-		this.mouseDownJS_
-				.setJavaScript("function(obj, event) {obj.setAttribute('down', Wt3_2_0.widgetCoordinates(obj, event)."
-						+ u + "); Wt3_2_0.cancelEvent(event);}");
+		String width = String.valueOf(this.getW());
+		String horizontal = String.valueOf(o == Orientation.Horizontal);
+		String mouseDownJS = "obj.setAttribute('down', Wt3_2_1.widgetCoordinates(obj, event)."
+				+ u + "); Wt3_2_1.cancelEvent(event);";
 		String computeD = "var objh = " + this.handle_.getJsRef() + ",objb = "
-				+ this.getJsRef() + ",u = WT.pageCoordinates(event)." + u
-				+ " - down,w = WT.widgetPageCoordinates(objb)." + u
-				+ ",d = u-w;";
-		this.mouseMovedJS_
-				.setJavaScript("function(obj, event) {var down = obj.getAttribute('down');var WT = Wt3_2_0;if (down != null && down != '') {"
-						+ computeD
-						+ "d = Math.max(0, Math.min(d, "
-						+ maxS
-						+ "));var v = Math.round(d/"
-						+ ppU
-						+ ");var intd = v*"
-						+ ppU
-						+ ";if (Math.abs(WT.pxself(objh, '"
-						+ dir
-						+ "') - intd) > 1) {objh.style."
-						+ dir
-						+ " = intd + 'px';"
-						+ this.slider_.sliderMoved().createCall(
-								o == Orientation.Horizontal ? "v + " + minimumS
-										: maximumS + " - v") + "}}}");
-		this.mouseUpJS_
-				.setJavaScript("function(obj, event) {var down = obj.getAttribute('down');var WT = Wt3_2_0;if (down != null && down != '') {"
-						+ computeD
-						+ "d += "
-						+ String.valueOf(HANDLE_WIDTH / 2)
-						+ ";"
-						+ this.sliderReleased_.createCall("d")
-						+ "obj.removeAttribute('down');}}");
+				+ this.getJsRef() + ",page_u = WT.pageCoordinates(event)." + u
+				+ ",widget_page_u = WT.widgetPageCoordinates(objb)." + u
+				+ ",pos = page_u - widget_page_u,rtl = " + String.valueOf(rtl)
+				+ ",horizontal = " + horizontal
+				+ ";if (rtl && horizontal)  pos = " + width
+				+ " - pos;var d = pos - down;";
+		String mouseMovedJS = "var down = obj.getAttribute('down');var WT = Wt3_2_1;if (down != null && down != '') {"
+				+ computeD
+				+ "d = Math.max(0, Math.min(d, "
+				+ maxS
+				+ "));var v = Math.round(d/"
+				+ ppU
+				+ ");var intd = v*"
+				+ ppU
+				+ ";if (Math.abs(WT.pxself(objh, '"
+				+ dir
+				+ "') - intd) > 1) {objh.style."
+				+ dir
+				+ " = intd + 'px';"
+				+ this.slider_.sliderMoved().createCall(
+						o == Orientation.Horizontal ? "v + " + minimumS
+								: maximumS + " - v") + "}}";
+		String mouseUpJS = "var down = obj.getAttribute('down');var WT = Wt3_2_1;if (down != null && down != '') {"
+				+ computeD
+				+ "d += "
+				+ String.valueOf(HANDLE_WIDTH / 2)
+				+ ";"
+				+ this.sliderReleased_.createCall("d")
+				+ "obj.removeAttribute('down');}";
+		boolean enabled = !this.slider_.isDisabled();
+		this.mouseDownJS_.setJavaScript("function(obj, event) {"
+				+ (enabled ? mouseDownJS : "") + "}");
+		this.mouseMovedJS_.setJavaScript("function(obj, event) {"
+				+ (enabled ? mouseMovedJS : "") + "}");
+		this.mouseUpJS_.setJavaScript("function(obj, event) {"
+				+ (enabled ? mouseUpJS : "") + "}");
 		this.update();
 		this.updateSliderPosition();
 	}
@@ -164,6 +181,17 @@ class PaintedSlider extends WPaintedWidget {
 			this.resize(width, h);
 		}
 		this.updateState();
+	}
+
+	public void propagateSetEnabled(boolean enabled) {
+		if (enabled) {
+			this.removeStyleClass("Wt-disabled");
+			this.slider_.removeStyleClass("Wt-disabled");
+		} else {
+			this.addStyleClass("Wt-disabled");
+			this.slider_.addStyleClass("Wt-disabled");
+		}
+		super.propagateSetEnabled(enabled);
 	}
 
 	protected void paintEvent(WPaintDevice paintDevice) {
@@ -237,10 +265,14 @@ class PaintedSlider extends WPaintedWidget {
 	}
 
 	private void onSliderClick(WMouseEvent event) {
+		int x = event.getWidget().x;
+		int y = event.getWidget().y;
+		if (WApplication.getInstance().getLayoutDirection() == LayoutDirection.RightToLeft) {
+			x = (int) (this.getW() - x);
+		}
 		this
-				.onSliderReleased(this.slider_.getOrientation() == Orientation.Horizontal ? event
-						.getWidget().x
-						: event.getWidget().y);
+				.onSliderReleased(this.slider_.getOrientation() == Orientation.Horizontal ? x
+						: y);
 	}
 
 	private void onSliderReleased(int u) {

@@ -12,8 +12,10 @@ import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -85,6 +87,8 @@ public abstract class WtServlet extends HttpServlet {
 
 	private static final String WT_WEBSESSION_ID = "wt-websession";
 	private static final Map<String, String> mimeTypes = new HashMap<String, String>();
+	
+	private List<WResource> staticResources = new ArrayList<WResource>();
 
 	static final String Boot_html;
 	static final String Plain_html;
@@ -92,7 +96,10 @@ public abstract class WtServlet extends HttpServlet {
 	static final String Boot_js;
 	static final String Hybrid_html;
 	static final String JQuery_js;
-	static final String Wt_xml = "eu.webtoolkit.jwt.wt";
+	static final String Wt_xml = "/eu/webtoolkit/jwt/wt";
+	public static final String Auth_xml = "/eu/webtoolkit/jwt/auth/auth";
+	
+	private static WtServlet instance;
 
 	static {
 		Boot_html = readFile("/eu/webtoolkit/jwt/skeletons/Boot.html");
@@ -114,6 +121,8 @@ public abstract class WtServlet extends HttpServlet {
 
 		for (String[] s : mimeTypes)
 			WtServlet.mimeTypes.put(s[0], s[1]);
+		
+		WObject.seedId(MathUtils.randomInt());
 	}
 
 	/**
@@ -141,7 +150,9 @@ public abstract class WtServlet extends HttpServlet {
 		
 		this.configuration = new Configuration();
 		
-		this.redirectSecret_ = MathUtils.randomId(32);
+		redirectSecret_ = MathUtils.randomId(32);
+		
+		instance = this;
 	}
 	
 	/**
@@ -164,6 +175,28 @@ public abstract class WtServlet extends HttpServlet {
 	void handleRequest(final HttpServletRequest request, final HttpServletResponse response) {
 		String pathInfo = request.getPathInfo();
 		String resourcePath = configuration.getProperty(WApplication.RESOURCES_URL);
+		
+		if (pathInfo !=null) {
+			String servletPath = request.getServletPath();
+			
+			for (WResource staticResource : staticResources) {
+				String staticResourcePath = null;
+				if (!staticResource.getInternalPath().startsWith("/"))
+					staticResourcePath = servletPath + staticResource.getInternalPath();
+				else
+					staticResourcePath = staticResource.getInternalPath();
+				if ((servletPath + pathInfo).equals(staticResourcePath)) {
+					WebRequest webRequest = new WebRequest(request, progressListener);
+					WebResponse webResponse = new WebResponse(response, webRequest);
+					try {
+						staticResource.handle(webRequest, webResponse);
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+					return;
+				}
+			}
+		}
 
 		if (pathInfo != null && (pathInfo.startsWith(resourcePath) || pathInfo.equals(configuration.getFavicon()))) {
 			logger.debug("serving static file: " + pathInfo);
@@ -351,22 +384,26 @@ public abstract class WtServlet extends HttpServlet {
 
 		if (found) {
 			HttpSession jsession = request.getSession();
-			WebSession session = (WebSession) jsession.getAttribute(WtServlet.WT_WEBSESSION_ID);
+			BoundSession bsession = (BoundSession) jsession.getAttribute(WtServlet.WT_WEBSESSION_ID);
+			WebSession wsession = null;
 
-			if (session != null) {
-				WebSession.Handler handler = new WebSession.Handler(session,request, null);
+			if (bsession != null)
+				wsession = bsession.getSession();
 
-				if (!session.isDead() && session.getApp() != null) {
+			if (wsession != null) {
+				WebSession.Handler handler = new WebSession.Handler(wsession,request, null);
+
+				if (!wsession.isDead() && wsession.getApp() != null) {
 					String requestE = request.getParameter("request");
 
 					WResource resource = null;
 					if (requestE == null && request.getPathInfo().length() != 0)
-						resource = session.getApp().
+						resource = wsession.getApp().
 							decodeExposedResource("/path/" + request.getPathInfo());
 
 					if (resource == null) {
 						String resourceE = request.getParameter("resource");
-						resource = session.getApp().
+						resource = wsession.getApp().
 							decodeExposedResource(resourceE);
 					}
 
@@ -433,5 +470,29 @@ public abstract class WtServlet extends HttpServlet {
 		}
 
 		return "";
+	}
+
+	/**
+	 * Binds a resource to a fixed path.
+	 *
+	 * Resources may either be private to a single session or public. Use this method to add a public resource with a fixed path.
+	 * When the path contains the application context's path, the path should start with a '/',
+	 * if not the '/' should be omitted.
+	 */
+	public void addResource(WResource staticResource, String path) {
+		for (WResource sr : staticResources) {
+			if (sr.getInternalPath() != null && sr.getInternalPath().equals(path)) {
+				WString error = new WString(
+						"WtServlet#addResource() error: a static resource was already deployed on path '{1}'");
+				throw new RuntimeException(error.arg(path).toString());
+			}
+		}
+		
+		staticResource.setInternalPath(path);
+		staticResources.add(staticResource);
+	}
+	
+	public static WtServlet getInstance() {
+		return instance;
 	}
 }

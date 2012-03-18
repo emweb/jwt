@@ -152,20 +152,19 @@ public class WChart2DRenderer {
 	 * This method renders the chart. The default implementation does the
 	 * following:
 	 * <p>
-	 * <blockquote>
 	 * 
 	 * <pre>
-	 * calcChartArea(); // sets chartArea_
-	 * prepareAxes(); // provides logical dimensions to the axes
-	 * 
-	 * renderBackground(); // render the background
-	 * renderAxes(Grid); // render the grid
-	 * renderSeries(); // render the data series
-	 * renderAxes(AxisProperty.Line, AxisProperty.Labels); // render the axes (lines &amp; labels) 
-	 * renderLegend(); // render legend and titles
+	 * {@code
+	 *    calcChartArea();           // sets chartArea_
+	 *    prepareAxes();             // provides logical dimensions to the axes
+	 *    
+	 *    renderBackground();        // render the background
+	 *    renderAxes(Grid);          // render the grid
+	 *    renderSeries();            // render the data series
+	 *    renderAxes(AxisProperty.Line, AxisProperty.Labels); // render the axes (lines & labels) 
+	 *    renderLegend();            // render legend and titles
+	 *   }
 	 * </pre>
-	 * 
-	 * </blockquote>
 	 * <p>
 	 * You may want to reimplement this method to change the sequence of steps
 	 * for rendering the chart.

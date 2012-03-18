@@ -17,6 +17,12 @@
     }
   </style>
   <title>Embedded Wt</title>
+
+  <!-- You need this if you want to use Ext widgets:
+    -->
+  <!--[if gte IE 6]>
+  <script id="ie-deferred-loader" defer="defer" src="//:"></script>
+  <![endif]-->
 </head>
 <body>
 
@@ -32,7 +38,7 @@
    make it conditional:
 -->
 <!--[if gte IE 6]>
-<iframe id="Wt-history-iframe" src="/HelloWidgetSet?resource=blank"
+<iframe id="Wt-history-iframe" src="/HelloWidgetSet/hello.js?request=resource&resource=blank"
         class="IE-hidden-iframe">
 </iframe> 
 <![endif]-->
@@ -44,14 +50,13 @@
    We need a place holder for every widget to which we want to bind
    a WContainerWidget in Wt
   -->
-<div id="hello" class="widget"></div>
-
-<i>Note: you will want to edit this html file to enter the full URL of your JWt WidgetSet application.</i> 
+<div id="hello" class="widget">
 
 <!--
    As the last step, we load our application.
   -->
-<script src="HelloWidgetSet?div=hello&amp;Wt-history=Wt-history"></script>
+<script src="/HelloWidgetSet/hello.js?div=hello&Wt-history=Wt-history">
+</script>
 
 </body>
 </html>

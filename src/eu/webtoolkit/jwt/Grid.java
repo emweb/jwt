@@ -97,4 +97,10 @@ class Grid {
 		this.columns_ = new ArrayList<Grid.Column>();
 		this.items_ = new ArrayList<List<Grid.Item>>();
 	}
+
+	public void clear() {
+		this.rows_.clear();
+		this.columns_.clear();
+		this.items_.clear();
+	}
 }

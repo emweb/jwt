@@ -694,13 +694,13 @@ public class WStandardItem {
 	 * Appends a single column of <code>items</code>. If necessary, the row
 	 * count is increased.
 	 * <p>
-	 * Equivalent to: <blockquote>
+	 * Equivalent to:
 	 * 
 	 * <pre>
-	 * insertColumn(columnCount(), items);
+	 * {@code
+	 *    insertColumn(columnCount(), items);
+	 *   }
 	 * </pre>
-	 * 
-	 * </blockquote>
 	 * <p>
 	 * 
 	 * @see WStandardItem#insertColumn(int column, List items)
@@ -760,13 +760,13 @@ public class WStandardItem {
 	 * Appends a single row of <code>items</code>. If necessary, the column
 	 * count is increased.
 	 * <p>
-	 * Equivalent to: <blockquote>
+	 * Equivalent to:
 	 * 
 	 * <pre>
-	 * insertRow(rowCount(), items);
+	 * {@code
+	 *    insertRow(rowCount(), items);
+	 *   }
 	 * </pre>
-	 * 
-	 * </blockquote>
 	 * <p>
 	 * 
 	 * @see WStandardItem#insertRow(int row, List items)
@@ -885,13 +885,12 @@ public class WStandardItem {
 	 * for tree nodes). This adds a row with a single item, and is equivalent
 	 * to:
 	 * <p>
-	 * <blockquote>
 	 * 
 	 * <pre>
-	 * insertRow(rowCount(), item);
+	 * {@code
+	 *    insertRow(rowCount(), item);
+	 *   }
 	 * </pre>
-	 * 
-	 * </blockquote>
 	 * <p>
 	 * 
 	 * @see WStandardItem#insertRow(int row, WStandardItem item)
@@ -907,15 +906,15 @@ public class WStandardItem {
 	 * for tree nodes). This inserts a row with a single item, and is equivalent
 	 * to:
 	 * <p>
-	 * <blockquote>
 	 * 
 	 * <pre>
-	 * List&lt;WStandardItem&gt; r;
-	 * r.add(item);
-	 * insertRow(row, r);
+	 * {
+	 * 	&#064;code
+	 * 	List&lt;WStandardItem&gt; r;
+	 * 	r.add(item);
+	 * 	insertRow(row, r);
+	 * }
 	 * </pre>
-	 * 
-	 * </blockquote>
 	 * <p>
 	 * 
 	 * @see WStandardItem#insertRow(int row, List items)
@@ -933,13 +932,12 @@ public class WStandardItem {
 	 * for tree nodes). This adds a number of rows, each containing a single
 	 * item, and is equivalent to:
 	 * <p>
-	 * <blockquote>
 	 * 
 	 * <pre>
-	 * insertRows(rowCount(), items);
+	 * {@code
+	 *    insertRows(rowCount(), items);
+	 *   }
 	 * </pre>
-	 * 
-	 * </blockquote>
 	 * <p>
 	 * 
 	 * @see WStandardItem#insertRows(int row, List items)
@@ -1000,13 +998,13 @@ public class WStandardItem {
 	 * Sets a child item.
 	 * <p>
 	 * This is a convenience method for nodes with a single column (e.g. tree
-	 * nodes), and is equivalent to: <blockquote>
+	 * nodes), and is equivalent to:
 	 * 
 	 * <pre>
-	 * setChild(row, 0, item);
+	 * {@code
+	 *    setChild(row, 0, item);
+	 *   }
 	 * </pre>
-	 * 
-	 * </blockquote>
 	 * <p>
 	 * 
 	 * @see WStandardItem#setChild(int row, int column, WStandardItem item)
@@ -1056,8 +1054,17 @@ public class WStandardItem {
 	public WStandardItem takeChild(int row, int column) {
 		WStandardItem result = this.getChild(row, column);
 		if (result != null) {
+			WModelIndex idx = result.getIndex();
+			if (result.hasChildren()) {
+				this.model_.beginRemoveRows(result.getIndex(), 0, result
+						.getRowCount() - 1);
+			}
 			this.orphanChild(result);
 			this.columns_.get(column).set(row, null);
+			if (result.hasChildren()) {
+				this.model_.endRemoveRows();
+			}
+			this.model_.dataChanged().trigger(idx, idx);
 		}
 		return result;
 	}
@@ -1132,13 +1139,13 @@ public class WStandardItem {
 	 * Removes a single column.
 	 * <p>
 	 * Removes the column <code>column</code> from the model (reducing the
-	 * column count by one). Is equivalent to: <blockquote>
+	 * column count by one). Is equivalent to:
 	 * 
 	 * <pre>
-	 * removeColumns(column, 1);
+	 * {@code
+	 *    removeColumns(column, 1);
+	 *   }
 	 * </pre>
-	 * 
-	 * </blockquote>
 	 * <p>
 	 * 
 	 * @see WStandardItem#removeColumns(int column, int count)
@@ -1185,13 +1192,13 @@ public class WStandardItem {
 	 * Removes a single row.
 	 * <p>
 	 * Removes the row <code>row</code> from the model (reducing the row count
-	 * by one). Is equivalent to: <blockquote>
+	 * by one). Is equivalent to:
 	 * 
 	 * <pre>
-	 * removeRows(row, 1);
+	 * {@code
+	 *    removeRows(row, 1);
+	 *   }
 	 * </pre>
-	 * 
-	 * </blockquote>
 	 * <p>
 	 * 
 	 * @see WStandardItem#removeRows(int row, int count)

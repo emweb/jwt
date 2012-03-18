@@ -160,8 +160,7 @@ public interface WPaintDevice {
 	 * <p>
 	 * The arc is defined as in
 	 * {@link WPainter#drawArc(WRectF rectangle, int startAngle, int spanAngle)
-	 * WPainter#drawArc()}(const {@link WRectF}&amp;, startAngle, spanAngle),
-	 * but the angle is expressed in degrees.
+	 * WPainter#drawArc()}
 	 * <p>
 	 * The arc must be stroked, filled, and transformed using the current
 	 * painter settings.

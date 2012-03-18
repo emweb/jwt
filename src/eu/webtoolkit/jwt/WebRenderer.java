@@ -148,6 +148,7 @@ class WebRenderer implements SlotLearnerInterface {
 	}
 
 	public void serveResponse(WebResponse response) throws IOException {
+		this.session_.setTriggerUpdate(false);
 		switch (response.getResponseType()) {
 		case Update:
 			this.serveJavaScriptUpdate(response);
@@ -360,12 +361,11 @@ class WebRenderer implements SlotLearnerInterface {
 			if (value.length() == 0) {
 				value = "deleted";
 			}
-			header.append(DomElement.urlEncodeS(i.getKey())).append('=')
-					.append(DomElement.urlEncodeS(value))
-					.append("; Version=1;");
+			header.append(Utils.urlEncode(i.getKey())).append('=').append(
+					Utils.urlEncode(value)).append("; Version=1;");
 			if (!(cookie.expires == null)) {
 				String d = cookie.expires.toString(new WString(
-						"ddd, dd MMM yyyy hh:mm:ss 'GMT'").toString());
+						"ddd, dd-MMM-yyyy hh:mm:ss 'GMT'").toString());
 				header.append(" Expires=").append(d).append(';');
 			}
 			if (cookie.domain.length() != 0) {
@@ -377,7 +377,9 @@ class WebRenderer implements SlotLearnerInterface {
 			} else {
 				header.append(" Path=").append(cookie.path).append(';');
 			}
-			header.append(" httponly;");
+			if (!response.isWebSocketMessage()) {
+				header.append(" httponly;");
+			}
 			if (cookie.secure) {
 				header.append(" secure;");
 			}
@@ -482,7 +484,7 @@ class WebRenderer implements SlotLearnerInterface {
 			script.setCondition("UGLY_INTERNAL_PATHS", this.session_
 					.isUseUglyInternalPaths());
 			script.setCondition("DYNAMIC_JS", false);
-			script.setVar("WT_CLASS", "Wt3_2_0");
+			script.setVar("WT_CLASS", "Wt3_2_1");
 			script.setVar("APP_CLASS", app.getJavaScriptClass());
 			script.setCondition("STRICTLY_SERIALIZED_EVENTS", conf
 					.serializedEvents());
@@ -519,8 +521,8 @@ class WebRenderer implements SlotLearnerInterface {
 					if (params.length() != 0) {
 						params += '&';
 					}
-					params += DomElement.urlEncodeS(i.getKey()) + '='
-							+ DomElement.urlEncodeS(i.getValue()[0]);
+					params += Utils.urlEncode(i.getKey()) + '='
+							+ Utils.urlEncode(i.getValue()[0]);
 				}
 			}
 			script.setVar("PARAMS", params);
@@ -541,10 +543,11 @@ class WebRenderer implements SlotLearnerInterface {
 			if (!this.rendered_) {
 				this.serveMainAjax(response);
 			} else {
+				boolean enabledAjax = app.enableAjax_;
 				if (app.enableAjax_) {
 					this.collectedJS1_
 							.append(
-									"var form = Wt3_2_0.getElement('Wt-form'); if (form) {")
+									"var form = Wt3_2_1.getElement('Wt-form'); if (form) {")
 							.append(this.beforeLoadJS_.toString());
 					this.beforeLoadJS_ = new StringWriter();
 					this.collectedJS1_
@@ -556,7 +559,7 @@ class WebRenderer implements SlotLearnerInterface {
 							this.collectedJS1_, app);
 					app.streamBeforeLoadJavaScript(this.collectedJS1_, false);
 					this.collectedJS2_.append(
-							"Wt3_2_0.resolveRelativeAnchors();").append(
+							"Wt3_2_1.resolveRelativeAnchors();").append(
 							"domRoot.style.visibility = 'visible';").append(
 							app.getJavaScriptClass()).append(
 							"._p_.doAutoJavaScript();");
@@ -591,6 +594,16 @@ class WebRenderer implements SlotLearnerInterface {
 						this.collectedJS2_.toString()).append("};");
 				this.session_.getApp().serverPushChanged_ = true;
 				this.renderSetServerPush(response.out());
+				if (enabledAjax) {
+					response
+							.out()
+							.append(
+									"\nif (typeof document.readyState === 'undefined')")
+							.append(" setTimeout(function() { ").append(
+									app.getJavaScriptClass()).append(
+									"._p_.load(true);").append("}, 400);")
+							.append("else ");
+				}
 				response.out().append("$(document).ready(function() { ")
 						.append(app.getJavaScriptClass()).append(
 								"._p_.load(true);});\n");
@@ -790,18 +803,18 @@ class WebRenderer implements SlotLearnerInterface {
 		}
 		if (widgetset || !this.session_.isBootStyleResponse()) {
 			if (app.getCssTheme().length() != 0) {
-				response.out().append("Wt3_2_0").append(".addStyleSheet('")
+				response.out().append("Wt3_2_1").append(".addStyleSheet('")
 						.append(WApplication.getResourcesUrl()).append(
 								"/themes/").append(app.getCssTheme()).append(
 								"/wt.css', 'all');");
 				if (app.getEnvironment().agentIsIE()) {
-					response.out().append("Wt3_2_0").append(".addStyleSheet('")
+					response.out().append("Wt3_2_1").append(".addStyleSheet('")
 							.append(WApplication.getResourcesUrl()).append(
 									"/themes/").append(app.getCssTheme())
 							.append("/wt_ie.css', 'all');");
 				}
 				if (app.getEnvironment().getAgent() == WEnvironment.UserAgent.IE6) {
-					response.out().append("Wt3_2_0").append(".addStyleSheet('")
+					response.out().append("Wt3_2_1").append(".addStyleSheet('")
 							.append(WApplication.getResourcesUrl()).append(
 									"/themes/").append(app.getCssTheme())
 							.append("/wt_ie6.css', 'all');");
@@ -850,7 +863,7 @@ class WebRenderer implements SlotLearnerInterface {
 		if (widgetset) {
 			String historyE = app.getEnvironment().getParameter("Wt-history");
 			if (historyE != null) {
-				response.out().append("Wt3_2_0")
+				response.out().append("Wt3_2_1")
 						.append(".history.initialize('").append(
 								historyE.charAt(0)).append("-field', '")
 						.append(historyE.charAt(0)).append("-iframe', '');\n");
@@ -1020,7 +1033,7 @@ class WebRenderer implements SlotLearnerInterface {
 			throws IOException {
 		int first = app.styleSheets_.size() - app.styleSheetsAdded_;
 		for (int i = first; i < app.styleSheets_.size(); ++i) {
-			out.append("Wt3_2_0").append(".addStyleSheet('").append(
+			out.append("Wt3_2_1").append(".addStyleSheet('").append(
 					this.session_.fixRelativeUrl(app.styleSheets_.get(i).uri))
 					.append("', '").append(app.styleSheets_.get(i).media)
 					.append("');\n");
@@ -1279,9 +1292,9 @@ class WebRenderer implements SlotLearnerInterface {
 		bootJs.setCondition("HYBRID", hybrid);
 		boolean xhtml = this.session_.getEnv().getContentType() == WEnvironment.ContentType.XHTML1;
 		bootJs.setCondition("DEFER_SCRIPT", !xhtml);
-		String internalPath = hybrid ? this.safeJsStringLiteral(this.session_
-				.getApp().getInternalPath()) : "";
-		bootJs.setVar("INTERNAL_PATH", internalPath);
+		String internalPath = hybrid ? this.session_.getApp().getInternalPath()
+				: this.session_.getEnv().getInternalPath();
+		bootJs.setVar("INTERNAL_PATH", this.safeJsStringLiteral(internalPath));
 		boot.streamUntil(response.out(), "BOOT_JS");
 		bootJs.stream(response.out());
 	}
@@ -1348,28 +1361,40 @@ class WebRenderer implements SlotLearnerInterface {
 						.get(i);
 				result.append("<meta");
 				if (m.name.length() != 0) {
-					if (m.type == MetaHeaderType.MetaName) {
-						result.append(" name=\"");
-					} else {
-						result.append(" http-equiv=\"");
-					}
-					result.pushEscape(EscapeOStream.RuleSet.HtmlAttribute);
-					result.append(m.name);
-					result.popEscape();
-					result.append('"');
+					appendAttribute(result,
+							m.type == MetaHeaderType.MetaName ? "name"
+									: "http-equiv", m.name);
 				}
 				if (m.lang.length() != 0) {
-					result.append(" lang=\"");
-					result.pushEscape(EscapeOStream.RuleSet.HtmlAttribute);
-					result.append(m.lang);
-					result.popEscape();
-					result.append('"');
+					appendAttribute(result, "lang", m.lang);
 				}
-				result.append(" content=\"");
-				result.pushEscape(EscapeOStream.RuleSet.HtmlAttribute);
-				result.append(m.content.toString());
-				result.popEscape();
-				result.append(xhtml ? "\"/>" : "\">");
+				appendAttribute(result, "content", m.content.toString());
+				result.append(xhtml ? "/>" : ">");
+			}
+			for (int i = 0; i < this.session_.getApp().metaLinks_.size(); ++i) {
+				WApplication.MetaLink ml = this.session_.getApp().metaLinks_
+						.get(i);
+				EscapeOStream link = new EscapeOStream();
+				link.append("<link");
+				appendAttribute(link, "href", ml.href);
+				appendAttribute(link, "rel", ml.rel);
+				if (ml.media.length() != 0) {
+					appendAttribute(link, "media", ml.media);
+				}
+				if (ml.hreflang.length() != 0) {
+					appendAttribute(link, "hreflang", ml.hreflang);
+				}
+				if (ml.type.length() != 0) {
+					appendAttribute(link, "type", ml.type);
+				}
+				if (ml.sizes.length() != 0) {
+					appendAttribute(link, "sizes", ml.sizes);
+				}
+				if (ml.disabled) {
+					appendAttribute(link, "disabled", "");
+				}
+				link.append(xhtml ? "/>" : ">");
+				result.append(link.toString());
 			}
 		} else {
 			if (this.session_.getEnv().agentIsIElt(9)) {
@@ -1419,7 +1444,7 @@ class WebRenderer implements SlotLearnerInterface {
 	private String getSessionUrl() {
 		String result = this.session_.getApplicationUrl();
 		if (isAbsoluteUrl(result)) {
-			return result;
+			return this.session_.appendSessionQuery(result);
 		} else {
 			return this.session_.appendSessionQuery(".").substring(1);
 		}
@@ -1445,6 +1470,8 @@ class WebRenderer implements SlotLearnerInterface {
 		StringWriter js = new StringWriter();
 		this.collectJS(js);
 		String result = js.toString();
+		logger.debug(new StringWriter().append("learned: ").append(result)
+				.toString());
 		if (slot.getType() == SlotType.PreLearnStateless) {
 			slot.undoTrigger();
 			this.collectJS((Writer) null);
@@ -1461,5 +1488,13 @@ class WebRenderer implements SlotLearnerInterface {
 
 	static boolean isAbsoluteUrl(String url) {
 		return url.indexOf("://") != -1;
+	}
+
+	static void appendAttribute(EscapeOStream eos, String name, String value) {
+		eos.append(" ").append(name).append("=\"");
+		eos.pushEscape(EscapeOStream.RuleSet.HtmlAttribute);
+		eos.append(value);
+		eos.popEscape();
+		eos.append('"');
 	}
 }

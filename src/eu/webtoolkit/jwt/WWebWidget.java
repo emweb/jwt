@@ -790,7 +790,12 @@ public abstract class WWebWidget extends WWidget {
 	}
 
 	/**
-	 * Escape HTML control characters in the text, to display literally.
+	 * Escape HTML control characters in the text, to display literally
+	 * (<b>deprecated</b>).
+	 * <p>
+	 * 
+	 * @deprecated use {@link Utils#htmlEncode(WString text, EnumSet flags)}
+	 *             instead.
 	 */
 	public static WString escapeText(CharSequence text, boolean newlinestoo) {
 		String result = text.toString();
@@ -799,7 +804,8 @@ public abstract class WWebWidget extends WWidget {
 	}
 
 	/**
-	 * Escape HTML control characters in the text, to display literally.
+	 * Escape HTML control characters in the text, to display literally
+	 * (<b>deprecated</b>).
 	 * <p>
 	 * Returns {@link #escapeText(CharSequence text, boolean newlinestoo)
 	 * escapeText(text, false)}
@@ -809,7 +815,12 @@ public abstract class WWebWidget extends WWidget {
 	}
 
 	/**
-	 * Escape HTML control characters in the text, to display literally.
+	 * Escape HTML control characters in the text, to display literally
+	 * (<b>deprecated</b>).
+	 * <p>
+	 * 
+	 * @deprecated use {@link Utils#htmlEncode(String text, EnumSet flags)}
+	 *             instead.
 	 */
 	public static String escapeText(String text, boolean newlinestoo) {
 		EscapeOStream sout = new EscapeOStream();
@@ -824,7 +835,8 @@ public abstract class WWebWidget extends WWidget {
 	}
 
 	/**
-	 * Escape HTML control characters in the text, to display literally.
+	 * Escape HTML control characters in the text, to display literally
+	 * (<b>deprecated</b>).
 	 * <p>
 	 * Returns {@link #escapeText(String text, boolean newlinestoo)
 	 * escapeText(text, false)}
@@ -834,7 +846,8 @@ public abstract class WWebWidget extends WWidget {
 	}
 
 	/**
-	 * Remove tags/attributes from text that are not passive.
+	 * Remove tags/attributes from text that are not passive
+	 * (<b>deprecated</b>).
 	 * <p>
 	 * This removes tags and attributes from XHTML-formatted text that do not
 	 * simply display something but may trigger scripting, and could have been
@@ -846,6 +859,9 @@ public abstract class WWebWidget extends WWidget {
 	 * <p>
 	 * Modifies the <code>text</code> if needed. When the text is not proper
 	 * XML, returns <code>false</code>.
+	 * <p>
+	 * 
+	 * @deprecated use {@link Utils#removeScript(CharSequence text)} instead.
 	 */
 	public static boolean removeScript(CharSequence text) {
 		return XSSFilter.removeScript(text);
@@ -1093,7 +1109,7 @@ public abstract class WWebWidget extends WWidget {
 						app
 								.addAutoJavaScript("{var w = "
 										+ this.getJsRef()
-										+ ";if (w && !Wt3_2_0.isHidden(w)) {var i = Wt3_2_0.getElement('"
+										+ ";if (w && !Wt3_2_1.isHidden(w)) {var i = Wt3_2_1.getElement('"
 										+ i.getId()
 										+ "');i.style.width=w.clientWidth + 'px';i.style.height=w.clientHeight + 'px';}}");
 						element.addChild(i);
@@ -1147,7 +1163,7 @@ public abstract class WWebWidget extends WWidget {
 							}
 						}
 						if (app.getEnvironment().hasAjax()
-								&& !app.getEnvironment().agentIsIE()
+								&& !app.getEnvironment().agentIsIElt(9)
 								|| !this.layoutImpl_.offsets_[i].isAuto()) {
 							element.setProperty(property,
 									this.layoutImpl_.offsets_[i].getCssText());
@@ -1275,7 +1291,7 @@ public abstract class WWebWidget extends WWidget {
 					if (this.lookImpl_.toolTipTextFormat_ != TextFormat.PlainText
 							&& app.getEnvironment().hasAjax()) {
 						app.loadJavaScript("js/ToolTip.js", wtjs10());
-						element.callJavaScript("Wt3_2_0.toolTip(Wt3_2_0,"
+						element.callJavaScript("Wt3_2_1.toolTip(Wt3_2_1,"
 								+ jsStringLiteral(this.getId())
 								+ ","
 								+ WString.toWString(this.lookImpl_.toolTip_)
@@ -1323,7 +1339,7 @@ public abstract class WWebWidget extends WWidget {
 						String js = this.transientImpl_.childRemoveChanges_
 								.get(i);
 						if (js.charAt(0) == '_') {
-							element.callJavaScript("Wt3_2_0.remove('"
+							element.callJavaScript("Wt3_2_1.remove('"
 									+ js.substring(1) + "');", true);
 						} else {
 							element.callJavaScript(js);
@@ -1549,7 +1565,7 @@ public abstract class WWebWidget extends WWidget {
 				if (!this.flags_.get(BIT_HIDE_WITH_VISIBILITY)) {
 					StringBuilder ss = new StringBuilder();
 					ss
-							.append("Wt3_2_0")
+							.append("Wt3_2_1")
 							.append(".animateDisplay('")
 							.append(this.getId())
 							.append("',")
@@ -1580,7 +1596,7 @@ public abstract class WWebWidget extends WWidget {
 				} else {
 					StringBuilder ss = new StringBuilder();
 					ss
-							.append("Wt3_2_0")
+							.append("Wt3_2_1")
 							.append(".animateVisible('")
 							.append(this.getId())
 							.append("',")
@@ -1804,7 +1820,7 @@ public abstract class WWebWidget extends WWidget {
 		}
 	}
 
-	void render(EnumSet<RenderFlag> flags) {
+	protected void render(EnumSet<RenderFlag> flags) {
 		super.render(flags);
 		if (this.otherImpl_ != null
 				&& this.otherImpl_.delayedDoJavaScript_ != null) {
@@ -2350,7 +2366,7 @@ public abstract class WWebWidget extends WWidget {
 				JavaScriptScope.WtClassScope,
 				JavaScriptObjectType.JavaScriptFunction,
 				"animateDisplay",
-				"function(l,m,r,o,n){var z=[\"ease\",\"linear\",\"ease-in\",\"ease-out\",\"ease-in-out\"],A=[0,1,3,2,4,5],q=this,g=$(\"#\"+l),a=g.get(0),s=q.cssPrefix(\"Transition\"),B=s==\"Moz\"?\"animationend\":\"webkitAnimationEnd\",v=s==\"Moz\"?\"transitionend\":\"webkitTransitionEnd\";if(g.css(\"display\")!==n){var p=g.get(0).parentNode;if(p.wtAnimateChild)p.wtAnimateChild(g.get(0),m,r,o,{display:n});else{function w(){b(a,{animationDuration:o+\"ms\"},f);var e=(k==5?\"pop \":\"\")+(h? \"out\":\"in\");if(m&256)e+=\" fade\";h||t();g.addClass(e);g.one(B,function(){g.removeClass(e);a.style.display=n;b(a,f)})}function C(){x(\"width\",k==1?\"left\":\"right\",k==1,\"X\")}function D(){x(\"height\",k==4?\"top\":\"bottom\",k==4,\"Y\")}function x(e,i,j,c){h||t();e=q.px(a,e);i=(q.px(a,i)+e)*(j?-1:1);var d;if(h){b(a,{transform:\"translate\"+c+\"(0px)\"},f);d=i}else{b(a,{transform:\"translate\"+c+\"(\"+i+\"px)\"},f);d=0}if(m&256)b(a,{opacity:h?1:0},f);setTimeout(function(){b(a,{transition:\"all \"+o+\"ms \"+u,transform:\"translate\"+ c+\"(\"+d+\"px)\"},f);if(m&256)b(a,{opacity:h?0:1});g.one(v,function(){if(h)a.style.display=n;b(a,f)})},0)}function E(){var e,i,j={},c;if(h){i=g.height()+\"px\";b(a,{height:i,overflow:\"hidden\"},f);if(k==4&&a.childNodes.length==1){c=a.firstChild;b(c,{transform:\"translateY(0)\"},j);q.hasTag(c,\"TABLE\")||b(c,{display:\"block\"},j)}e=\"0px\"}else{var d=$(p),y={};b(p,{height:d.height()+\"px\",overflow:\"hidden\"},y);t();e=g.height()+\"px\";b(a,{height:\"0px\",overflow:\"hidden\"},f);b(p,y);if(k==4){b(a,{WebkitBackfaceVisibility:\"visible\"}, f);a.scrollTop=1E3}}if(m&256)b(a,{opacity:h?1:0},f);setTimeout(function(){b(a,{transition:\"all \"+o+\"ms \"+u,height:e},f);if(m&256)b(a,{opacity:h?0:1});c&&b(c,{transition:\"all \"+o+\"ms \"+u,transform:\"translateY(-\"+i+\")\"},j);g.one(v,function(){if(h)a.style.display=n;b(a,f);if(k==4){a.scrollTop=0;c&&b(c,j)}})},0)}function t(){a.style.display=n;a.wtPosition&&a.wtPosition()}function b(e,i,j){var c;for(c in i){var d=c;if(d==\"transform\"||d==\"transition\"||d==\"animationDuration\")d=s+d.substring(0,1).toUpperCase()+ d.substring(1);if(j&&typeof j[d]===\"undefined\")j[d]=e.style[d];e.style[d]=i[c]}}var k=m&255,h=n===\"none\",u=z[h?A[r]:r],f={};l=g.css(\"position\");l=l===\"absolute\"||l===\"fixed\";switch(k){case 4:case 3:l?D():E();break;case 1:case 2:l?C():w();break;case 0:case 5:w();break}}}}");
+				"function(l,m,r,o,n){var z=[\"ease\",\"linear\",\"ease-in\",\"ease-out\",\"ease-in-out\"],A=[0,1,3,2,4,5],q=this,h=$(\"#\"+l),a=h.get(0),s=q.cssPrefix(\"Transition\"),B=s==\"Moz\"?\"animationend\":\"webkitAnimationEnd\",v=s==\"Moz\"?\"transitionend\":\"webkitTransitionEnd\";if(h.css(\"display\")!==n){var p=h.get(0).parentNode;if(p.wtAnimateChild)p.wtAnimateChild(h.get(0),m,r,o,{display:n});else{function w(){b(a,{animationDuration:o+\"ms\"},f);var e=(k==5?\"pop \":\"\")+(g? \"out\":\"in\");if(m&256)e+=\" fade\";g||t();h.addClass(e);h.one(B,function(){h.removeClass(e);if(g)a.style.display=n;b(a,f)})}function C(){x(\"width\",k==1?\"left\":\"right\",k==1,\"X\")}function D(){x(\"height\",k==4?\"top\":\"bottom\",k==4,\"Y\")}function x(e,i,j,c){g||t();e=q.px(a,e);i=(q.px(a,i)+e)*(j?-1:1);var d;if(g){b(a,{transform:\"translate\"+c+\"(0px)\"},f);d=i}else{b(a,{transform:\"translate\"+c+\"(\"+i+\"px)\"},f);d=0}if(m&256)b(a,{opacity:g?1:0},f);setTimeout(function(){b(a,{transition:\"all \"+o+\"ms \"+u,transform:\"translate\"+ c+\"(\"+d+\"px)\"},f);if(m&256)b(a,{opacity:g?0:1});h.one(v,function(){if(g)a.style.display=n;b(a,f)})},0)}function E(){var e,i,j={},c;if(g){i=h.height()+\"px\";b(a,{height:i,overflow:\"hidden\"},f);if(k==4&&a.childNodes.length==1){c=a.firstChild;b(c,{transform:\"translateY(0)\"},j);q.hasTag(c,\"TABLE\")||b(c,{display:\"block\"},j)}e=\"0px\"}else{var d=$(p),y={};b(p,{height:d.height()+\"px\",overflow:\"hidden\"},y);t();e=h.height()+\"px\";b(a,{height:\"0px\",overflow:\"hidden\"},f);b(p,y);if(k==4){b(a,{WebkitBackfaceVisibility:\"visible\"}, f);a.scrollTop=1E3}}if(m&256)b(a,{opacity:g?1:0},f);setTimeout(function(){b(a,{transition:\"all \"+o+\"ms \"+u,height:e},f);if(m&256)b(a,{opacity:g?0:1});c&&b(c,{transition:\"all \"+o+\"ms \"+u,transform:\"translateY(-\"+i+\")\"},j);h.one(v,function(){if(g)a.style.display=n;b(a,f);if(k==4){a.scrollTop=0;c&&b(c,j)}})},0)}function t(){a.style.display=n;a.wtPosition&&a.wtPosition()}function b(e,i,j){var c;for(c in i){var d=c;if(d==\"transform\"||d==\"transition\"||d==\"animationDuration\")d=s+d.substring(0,1).toUpperCase()+ d.substring(1);if(j&&typeof j[d]===\"undefined\")j[d]=e.style[d];e.style[d]=i[c]}}var k=m&255,g=n===\"none\",u=z[g?A[r]:r],f={};l=h.css(\"position\");l=l===\"absolute\"||l===\"fixed\";switch(k){case 4:case 3:l?D():E();break;case 1:case 2:l?C():w();break;case 0:case 5:w();break}}}}");
 	}
 
 	static WJavaScriptPreamble wtjs2() {

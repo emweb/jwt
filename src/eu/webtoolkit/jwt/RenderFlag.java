@@ -19,7 +19,10 @@ import eu.webtoolkit.jwt.servlet.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-enum RenderFlag {
+/**
+ * Enum for internal use.
+ */
+public enum RenderFlag {
 	RenderFull, RenderUpdate;
 
 	/**

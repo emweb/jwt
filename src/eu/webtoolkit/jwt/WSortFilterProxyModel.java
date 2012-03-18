@@ -63,10 +63,10 @@ import org.slf4j.LoggerFactory;
  * <p>
  * Usage example:
  * <p>
- * <blockquote>
  * 
  * <pre>
- * // model is the source model
+ * {@code
+ *  // model is the source model
  *   WAbstractItemModel model = ...
  *  
  *  // we setup a proxy to filter the source model
@@ -81,9 +81,8 @@ import org.slf4j.LoggerFactory;
  *  WTreeView view = new WTreeView(this);
  *  view.setModel(proxy);
  *  ...
+ * }
  * </pre>
- * 
- * </blockquote>
  */
 public class WSortFilterProxyModel extends WAbstractProxyModel {
 	private static Logger logger = LoggerFactory

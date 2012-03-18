@@ -102,7 +102,7 @@ public class WProgressBar extends WInteractWidget {
 	/**
 	 * Sets the maximum value.
 	 * <p>
-	 * The maximum value is the value that corresponds to 0%.
+	 * The maximum value is the value that corresponds to 100%.
 	 * <p>
 	 * The default value is 100.
 	 */

@@ -59,13 +59,12 @@ import org.slf4j.LoggerFactory;
  * <p>
  * The following code creates a video using the default controls:
  * <p>
- * <blockquote>
  * 
  * <pre>
- * ...
+ * {@code
+ *  ...
+ * }
  * </pre>
- * 
- * </blockquote>
  * <p>
  * Alternatively, a custom widget may be set which implements the controls,
  * using {@link WMediaPlayer#setControlsWidget(WWidget controlsWidget)
@@ -1025,7 +1024,7 @@ public class WMediaPlayer extends WCompositeWidget {
 				first = false;
 			}
 			ss.append("}").append("});");
-			ss.append("new Wt3_2_0.WMediaPlayer(").append(
+			ss.append("new Wt3_2_1.WMediaPlayer(").append(
 					app.getJavaScriptClass()).append(",").append(
 					this.getJsRef()).append(");");
 			this.doJavaScript(ss.toString());
@@ -1132,7 +1131,7 @@ public class WMediaPlayer extends WCompositeWidget {
 		ui.bindString("title-display", (this.title_.length() == 0) ? "none"
 				: "");
 		this
-				.setStyleClass(this.mediaType_ == WMediaPlayer.MediaType.Video ? "jp-video"
+				.addStyleClass(this.mediaType_ == WMediaPlayer.MediaType.Video ? "jp-video"
 						: "jp-audio");
 		this.setControlsWidget(ui);
 	}

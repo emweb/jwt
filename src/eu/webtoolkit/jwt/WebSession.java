@@ -69,6 +69,7 @@ class WebSession {
 		this.newRecursiveEvent_ = false;
 		this.updatesPendingEvent_ = this.mutex_.newCondition();
 		this.updatesPending_ = false;
+		this.triggerUpdate_ = false;
 		this.embeddedEnv_ = new WEnvironment(this);
 		this.app_ = null;
 		this.debug_ = this.controller_.getConfiguration().debug();
@@ -108,6 +109,11 @@ class WebSession {
 	public static WebSession getInstance() {
 		WebSession.Handler handler = WebSession.Handler.getInstance();
 		return handler != null ? handler.getSession() : null;
+	}
+
+	public boolean isAttachThreadToLockedHandler() {
+		Handler.attachThreadToHandler(new WebSession.Handler(this, false));
+		return true;
 	}
 
 	public EntryPointType getType() {
@@ -200,7 +206,8 @@ class WebSession {
 			break;
 		case ExpectLoad:
 		case Loaded:
-			if (handler.getResponse().getResponseType() == WebRequest.ResponseType.Page) {
+			if ((!(requestE != null) || !requestE.equals("resource"))
+					&& handler.getResponse().getResponseType() == WebRequest.ResponseType.Page) {
 				if (!this.env_.agentIsIE()) {
 					if (!handler.getRequest().getHeaderValue("User-Agent")
 							.equals(this.env_.getUserAgent())) {
@@ -273,8 +280,8 @@ class WebSession {
 				this.render(handler);
 			} else {
 				try {
-					if (0 != 0) {
-						this.app_.requestTooLarge().trigger(0);
+					if (0L != 0) {
+						this.app_.requestTooLarge().trigger(0L);
 					}
 				} catch (RuntimeException e) {
 					logger.error(new StringWriter().append(
@@ -308,7 +315,7 @@ class WebSession {
 								.getResponse()
 								.out()
 								.append(
-										"<html><head><title>bhm</title></head><body>&#160;</body></html>");
+										"<html><head><title>bhm</title></head><body> </body></html>");
 						handler.getResponse().flush();
 						handler.setRequest((WebRequest) null,
 								(WebResponse) null);
@@ -495,6 +502,7 @@ class WebSession {
 
 	public void pushUpdates() {
 		try {
+			this.triggerUpdate_ = false;
 			if (!this.renderer_.isDirty()
 					|| this.state_ == WebSession.State.Dead) {
 				logger.debug(new StringWriter().append(
@@ -587,6 +595,10 @@ class WebSession {
 			this.deferredRequest_ = null;
 			this.deferredResponse_ = null;
 		}
+	}
+
+	public void setTriggerUpdate(boolean update) {
+		this.triggerUpdate_ = update;
 	}
 
 	public void expire() {
@@ -686,13 +698,12 @@ class WebSession {
 			}
 		} else {
 			if (this.isUseUglyInternalPaths()) {
-				return baseUrl + "?_=" + DomElement.urlEncodeS(internalPath);
+				return baseUrl + "?_=" + Utils.urlEncode(internalPath);
 			} else {
 				if (this.applicationName_.length() == 0) {
-					return baseUrl
-							+ DomElement.urlEncodeS(internalPath.substring(1));
+					return baseUrl + Utils.urlEncode(internalPath.substring(1));
 				} else {
-					return baseUrl + DomElement.urlEncodeS(internalPath);
+					return baseUrl + Utils.urlEncode(internalPath);
 				}
 			}
 		}
@@ -743,8 +754,8 @@ class WebSession {
 				Map.Entry<String, String[]> i = i_it.next();
 				if (!i.getKey().equals("_")) {
 					url += (firstParameter ? '?' : '&')
-							+ DomElement.urlEncodeS(i.getKey()) + '='
-							+ DomElement.urlEncodeS(i.getValue()[0]);
+							+ Utils.urlEncode(i.getKey()) + '='
+							+ Utils.urlEncode(i.getValue()[0]);
 					firstParameter = false;
 				}
 			}
@@ -776,7 +787,7 @@ class WebSession {
 					.getInternalPath() : this.env_.getInternalPath();
 			if (this.isUseUglyInternalPaths()) {
 				if (internalPath.length() > 1) {
-					url = "?_=" + DomElement.urlEncodeS(internalPath);
+					url = "?_=" + Utils.urlEncode(internalPath);
 				}
 				if (isAbsoluteUrl(this.applicationUrl_)) {
 					url = this.applicationUrl_ + url;
@@ -955,6 +966,9 @@ class WebSession {
 									} else {
 										AbstractEventSignal esb = this
 												.decodeSignal(s, false);
+										if (!(esb != null)) {
+											continue;
+										}
 										WTimerWidget t = ((esb.getSender()) instanceof WTimerWidget ? (WTimerWidget) (esb
 												.getSender())
 												: null);
@@ -1040,6 +1054,9 @@ class WebSession {
 
 		public void release() {
 			if (this.session_.getMutex().isHeldByCurrentThread()) {
+				if (this.session_.triggerUpdate_) {
+					this.session_.pushUpdates();
+				}
 				this.session_.getMutex().unlock();
 			}
 			attachThreadToHandler(this.prevHandler_);
@@ -1081,10 +1098,17 @@ class WebSession {
 			if (session.state_ == WebSession.State.Dead) {
 				logger.warn(new StringWriter().append(
 						"attaching to dead session?").toString());
-				attachThreadToHandler(new WebSession.Handler(session, false));
-				return;
 			}
-			attachThreadToHandler(new WebSession.Handler(session, false));
+			if (!session.isAttachThreadToLockedHandler()) {
+				logger
+						.warn(new StringWriter()
+								.append(
+										"attachThread(): no thread is holding this application's lock ?")
+								.toString());
+				WebSession.Handler
+						.attachThreadToHandler(new WebSession.Handler(session,
+								false));
+			}
 		}
 
 		public static WebSession.Handler attachThreadToHandler(
@@ -1284,7 +1308,7 @@ class WebSession {
 											.getResponse()
 											.out()
 											.append(
-													"<html><head><title>bhm</title></head><body>&#160;</body></html>");
+													"<html><head><title>bhm</title></head><body> </body></html>");
 								} else {
 									logger
 											.info(new StringWriter()
@@ -1402,7 +1426,7 @@ class WebSession {
 											.getResponse()
 											.out()
 											.append(
-													"<html><head><title>bhm</title></head><body>&#160;</body></html>");
+													"<html><head><title>bhm</title></head><body> </body></html>");
 									break;
 								} else {
 									String jsE = request.getParameter("js");
@@ -1485,11 +1509,11 @@ class WebSession {
 					}
 				} catch (WException e) {
 					logger.error(new StringWriter().append("fatal error: ")
-							.append(e.getWhat()).toString());
+							.append(e.toString()).toString());
 					e.printStackTrace();
 					this.kill();
 					if (handler.getResponse() != null) {
-						this.serveError(500, handler, e.getWhat());
+						this.serveError(500, handler, e.toString());
 					}
 				} catch (RuntimeException e) {
 					logger.error(new StringWriter().append("fatal error: ")
@@ -1585,6 +1609,7 @@ class WebSession {
 	private boolean newRecursiveEvent_;
 	private java.util.concurrent.locks.Condition updatesPendingEvent_;
 	private boolean updatesPending_;
+	private boolean triggerUpdate_;
 	private WEnvironment embeddedEnv_;
 	private WEnvironment env_;
 	private WApplication app_;
@@ -1801,7 +1826,7 @@ class WebSession {
 						String hashE = request.getParameter(se + "_");
 						if (hashE != null) {
 							this.app_.changedInternalPath(hashE);
-							this.app_.doJavaScript("Wt3_2_0.scrollIntoView("
+							this.app_.doJavaScript("Wt3_2_1.scrollIntoView("
 									+ WWebWidget.jsStringLiteral(hashE) + ");");
 						} else {
 							this.app_.changedInternalPath("");
@@ -1811,7 +1836,7 @@ class WebSession {
 							WebSession.SignalKind kind = WebSession.SignalKind
 									.values()[k];
 							if (kind == WebSession.SignalKind.AutoLearnStateless
-									&& 0 != 0) {
+									&& 0L != 0) {
 								break;
 							}
 							AbstractEventSignal s;
@@ -1868,10 +1893,10 @@ class WebSession {
 			Map.Entry<String, WObject> i = i_it.next();
 			String formName = i.getKey();
 			WObject obj = i.getValue();
-			if (!(0 != 0)) {
+			if (!(0L != 0)) {
 				obj.setFormData(getFormData(request, se + formName));
 			} else {
-				obj.setRequestTooLarge(0);
+				obj.setRequestTooLarge(0L);
 			}
 		}
 	}
@@ -1929,6 +1954,15 @@ class WebSession {
 				this.absoluteBaseUrl_ = this.absoluteBaseUrl_.substring(0,
 						0 + slashpos + 1);
 			}
+			slashpos = this.absoluteBaseUrl_.indexOf("://");
+			if (slashpos != -1) {
+				slashpos = this.absoluteBaseUrl_.indexOf("/", slashpos + 3);
+				if (slashpos != -1) {
+					this.deploymentPath_ = this.absoluteBaseUrl_
+							.substring(slashpos)
+							+ this.applicationName_;
+				}
+			}
 		}
 		this.bookmarkUrl_ = this.applicationName_;
 		if (this.applicationName_.length() == 0) {
@@ -1972,7 +2006,7 @@ class WebSession {
 	static UploadedFile uf;
 
 	static boolean isAbsoluteUrl(String url) {
-		return url.indexOf("://") != -1;
+		return url.indexOf(":") != -1;
 	}
 
 	static String host(String url) {

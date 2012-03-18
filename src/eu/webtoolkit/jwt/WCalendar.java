@@ -746,8 +746,7 @@ public class WCalendar extends WCompositeWidget {
 				TextFormat.XHTMLUnsafeText);
 		this.impl_.setStyleClass("Wt-cal");
 		this.setSelectable(false);
-		WText prevMonth = new WText(tr("Wt.WCalendar.PrevMonth"),
-				TextFormat.PlainText);
+		WText prevMonth = new WText(tr("Wt.WCalendar.PrevMonth"));
 		prevMonth.setStyleClass("Wt-cal-navbutton");
 		prevMonth.clicked().addListener(this,
 				new Signal1.Listener<WMouseEvent>() {
@@ -755,8 +754,7 @@ public class WCalendar extends WCompositeWidget {
 						WCalendar.this.browseToPreviousMonth();
 					}
 				});
-		WText nextMonth = new WText(tr("Wt.WCalendar.NextMonth"),
-				TextFormat.PlainText);
+		WText nextMonth = new WText(tr("Wt.WCalendar.NextMonth"));
 		nextMonth.setStyleClass("Wt-cal-navbutton");
 		nextMonth.clicked().addListener(this,
 				new Signal1.Listener<WMouseEvent>() {

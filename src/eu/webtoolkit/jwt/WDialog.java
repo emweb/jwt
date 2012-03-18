@@ -28,11 +28,12 @@ import org.slf4j.LoggerFactory;
  * user interface until the dialog is closed (this is enforced at the server
  * side, so you may rely on this behavior).
  * <p>
- * There are two distinct ways for using a WDialog window.
+ * A modal dialog can be instantiated synchronously or asynchronously. A
+ * non-modal dialog can only be instantiated asynchronously.
  * <p>
- * A WDialog can be used as any other widget. In this case, the WDialog is
- * simply instantiated as another widget. The dialog may be closed by calling
- * {@link WDialog#accept() accept()}, {@link WDialog#reject() reject()} or
+ * When using a dialog asynchronously, there is no API call that waits for the
+ * dialog to be closed. Then, the usage is similar to instantiating any other
+ * widget. The dialog may be closed by calling {@link WDialog#accept() accept()}, {@link WDialog#reject() reject()} or
  * {@link WDialog#done(WDialog.DialogCode result) done()} (or connecting a
  * signal to one of these methods). This will hide the dialog and emit the
  * {@link WDialog#finished() finished()} signal, which you then can listen for
@@ -41,21 +42,17 @@ import org.slf4j.LoggerFactory;
  * default. You must use the method {@link WWidget#show() WWidget#show()} or
  * setHidden(true) to show the dialog.
  * <p>
- * The easiest way to display a modal dialog is using
- * {@link WDialog#exec(WAnimation animation) exec()}: after creating a WDialog
- * window, a call to {@link WDialog#exec(WAnimation animation) exec()} will
- * block (suspend the thread) until the dialog window is closed, and return the
- * dialog result. Typically, an OK button will be connected to
- * {@link WDialog#accept() accept()}, and in some cases a Cancel button to
- * {@link WDialog#reject() reject()}. This solution has the drawback that it is
- * not scalable to many concurrent sessions, since for every session with a
- * recursive event loop (which is running durring the
- * {@link WDialog#exec(WAnimation animation) exec()} method), a thread is
- * locked. In practical terms, this means it is only suitable for software with
- * restricted access or deployed on an intranet or extranet.
- * <p>
- * This functionality is only available on Servlet 3.0 compatible servlet
- * containers.
+ * The synchronous use of a dialog involves a call to
+ * {@link WDialog#exec(WAnimation animation) exec()} which will block (suspend
+ * the thread) until the dialog window is closed, and return the dialog result.
+ * Events within dialog are handled using a so-called recursive event loop.
+ * Typically, an OK button will be connected to {@link WDialog#accept()
+ * accept()}, and in some cases a Cancel button to {@link WDialog#reject()
+ * reject()}. This solution has the drawback that it is not scalable to many
+ * concurrent sessions, since for every session with a recursive event loop, a
+ * thread is locked. In practical terms, this means it is only suitable for
+ * software with restricted access or deployed on an intranet or extranet. This
+ * functionality is only available on Servlet 3.0 compatible servlet containers.
  * <p>
  * Use setModal(false) to create a non-modal dialog. A non-modal dialog does not
  * block the underlying user interface: the user must not first deal with the
@@ -142,10 +139,8 @@ public class WDialog extends WCompositeWidget {
 		this.finished_ = new Signal1<WDialog.DialogCode>(this);
 		this.recursiveEventLoop_ = false;
 		this.initialized_ = false;
-		String TEMPLATE = "${shadow-x1-x2}${titlebar}${contents}";
-		this
-				.setImplementation(this.impl_ = new WTemplate(new WString(
-						TEMPLATE)));
+		this.setImplementation(this.impl_ = new WTemplate(
+				tr("Wt.WDialog.template")));
 		String CSS_RULES_NAME = "Wt::WDialog";
 		WApplication app = WApplication.getInstance();
 		this
@@ -186,9 +181,9 @@ public class WDialog extends WCompositeWidget {
 			}
 		}
 		this.impl_.setStyleClass("Wt-dialog Wt-outset");
-		WContainerWidget parent = app.getDomRoot();
 		this.setPopup(true);
 		app.loadJavaScript("js/WDialog.js", wtjs1());
+		WContainerWidget parent = app.getDomRoot();
 		parent.addWidget(this);
 		this.titleBar_ = new WContainerWidget();
 		this.titleBar_.setStyleClass("titlebar");
@@ -282,10 +277,10 @@ public class WDialog extends WCompositeWidget {
 	/**
 	 * Executes the dialog in a recursive event loop.
 	 * <p>
-	 * Executes the dialog. This blocks the current thread of execution until
-	 * one of {@link WDialog#done(WDialog.DialogCode result) done()},
-	 * {@link WDialog#accept() accept()} or {@link WDialog#reject() reject()} is
-	 * called.
+	 * Executes the dialog synchronously. This blocks the current thread of
+	 * execution until one of {@link WDialog#done(WDialog.DialogCode result)
+	 * done()}, {@link WDialog#accept() accept()} or {@link WDialog#reject()
+	 * reject()} is called.
 	 * <p>
 	 * <i>Warning: using {@link WDialog#exec(WAnimation animation) exec()} does
 	 * not scale to many concurrent sessions, since the thread is locked.</i>
@@ -424,7 +419,9 @@ public class WDialog extends WCompositeWidget {
 	/**
 	 * Sets whether the dialog is modal.
 	 * <p>
-	 * A modal dialog will block the underlying user interface.
+	 * A modal dialog will block the underlying user interface. A modal dialog
+	 * can be shown synchronously or asynchronously. A non-modal dialog can only
+	 * be shown asynchronously.
 	 * <p>
 	 * By default a dialog is modal.
 	 */
@@ -466,7 +463,7 @@ public class WDialog extends WCompositeWidget {
 			if (this.resizable_) {
 				this.setMinimumSize(WLength.Auto, WLength.Auto);
 				Resizable.loadJavaScript(WApplication.getInstance());
-				this.doJavaScript("(new Wt3_2_0.Resizable(Wt3_2_0,"
+				this.doJavaScript("(new Wt3_2_1.Resizable(Wt3_2_1,"
 						+ this.getJsRef()
 						+ ")).onresize(function(w, h) {var obj = $('#"
 						+ this.getId()
@@ -563,13 +560,23 @@ public class WDialog extends WCompositeWidget {
 					&& this.getOffset(Side.Right).isAuto();
 			boolean centerY = this.getOffset(Side.Top).isAuto()
 					&& this.getOffset(Side.Bottom).isAuto();
-			this.setJavaScriptMember("_a", "0;new Wt3_2_0.WDialog("
+			this.setJavaScriptMember("_a", "0;new Wt3_2_1.WDialog("
 					+ app.getJavaScriptClass() + "," + this.getJsRef() + ","
 					+ (centerX ? "1" : "0") + "," + (centerY ? "1" : "0")
 					+ ");");
 			this.setJavaScriptMember(WT_RESIZE_JS, "\"dummy\"");
 			app.addAutoJavaScript("{var obj = $('#" + this.getId()
 					+ "').data('obj');if (obj) obj.centerDialog();}");
+			if (!app.getEnvironment().agentIsIElt(9)) {
+				String js = WString.tr("Wt.WDialog.CenterJS").toString();
+				StringUtils.replace(js, "$el", "'" + this.getId() + "'");
+				StringUtils.replace(js, "$centerX", centerX ? "1" : "0");
+				StringUtils.replace(js, "$centerY", centerY ? "1" : "0");
+				this.impl_.bindString("center-script", "<script>" + js
+						+ "</script>", TextFormat.XHTMLUnsafeText);
+			} else {
+				this.impl_.bindEmpty("center-script");
+			}
 		}
 		super.render(flags);
 	}
@@ -604,6 +611,6 @@ public class WDialog extends WCompositeWidget {
 				JavaScriptScope.WtClassScope,
 				JavaScriptObjectType.JavaScriptConstructor,
 				"WDialog",
-				"function(g,b,h,i){function m(a){var c=a||window.event;a=d.pageCoordinates(c);c=d.windowCoordinates(c);var e=d.windowSize();if(c.x>0&&c.x<e.x&&c.y>0&&c.y<e.y){h=i=false;b.style.left=d.px(b,\"left\")+a.x-j+\"px\";b.style.top=d.px(b,\"top\")+a.y-k+\"px\";b.style.right=\"\";b.style.bottom=\"\";j=a.x;k=a.y}}function l(a,c,e){e-=2;c-=2;a.style.height=Math.max(0,e)+\"px\";if(c>0)a.style.width=Math.max(0,c)+\"px\";a=a.lastChild;e-=a.previousSibling.offsetHeight+8;if(e> 0){a.style.height=e+\"px\";g.layouts&&g.layouts.adjust()}}jQuery.data(b,\"obj\",this);var f=$(b).find(\".titlebar\").first().get(0),d=g.WT,j,k;if(f){f.onmousedown=function(a){a=a||window.event;d.capture(f);a=d.pageCoordinates(a);j=a.x;k=a.y;f.onmousemove=m};f.onmouseup=function(){f.onmousemove=null;d.capture(null)}}this.centerDialog=function(){if(b.parentNode==null)b=f=null;else if(b.style.display!=\"none\"&&b.style.visibility!=\"hidden\"){var a=d.windowSize(),c=b.offsetWidth,e=b.offsetHeight;if(h){b.style.left= Math.round((a.x-c)/2+(d.isIE6?document.documentElement.scrollLeft:0))+\"px\";b.style.marginLeft=\"0px\"}if(i){b.style.top=Math.round((a.y-e)/2+(d.isIE6?document.documentElement.scrollTop:0))+\"px\";b.style.marginTop=\"0px\"}b.style.height!=\"\"&&l(b,-1,e);b.style.visibility=\"visible\"}};this.onresize=function(a,c){h=i=false;l(b,a,c)};b.wtResize=l;b.wtPosition=this.centerDialog}");
+				"function(g,b,h,i){function m(a){var c=a||window.event;a=d.pageCoordinates(c);c=d.windowCoordinates(c);var e=d.windowSize();if(c.x>0&&c.x<e.x&&c.y>0&&c.y<e.y){h=i=false;b.style.left=d.px(b,\"left\")+a.x-j+\"px\";b.style.top=d.px(b,\"top\")+a.y-k+\"px\";b.style.right=\"\";b.style.bottom=\"\";j=a.x;k=a.y}}function l(a,c,e){e-=2;c-=2;a.style.height=Math.max(0,e)+\"px\";if(c>0)a.style.width=Math.max(0,c)+\"px\";c=$(a).children(\".body\").get(0);if(a=$(a).children(\".titlebar\").get(0))e-= a.offsetHeight+8;if(e>0){c.style.height=e+\"px\";g.layouts&&g.layouts.adjust()}}jQuery.data(b,\"obj\",this);var f=$(b).find(\".titlebar\").first().get(0),d=g.WT,j,k;if(f){f.onmousedown=function(a){a=a||window.event;d.capture(f);a=d.pageCoordinates(a);j=a.x;k=a.y;f.onmousemove=m};f.onmouseup=function(){f.onmousemove=null;d.capture(null)}}this.centerDialog=function(){if(b.parentNode==null)b=f=null;else if(b.style.display!=\"none\"&&b.style.visibility!=\"hidden\"){var a=d.windowSize(),c=b.offsetWidth,e=b.offsetHeight; if(h){b.style.left=Math.round((a.x-c)/2+(d.isIE6?document.documentElement.scrollLeft:0))+\"px\";b.style.marginLeft=\"0px\"}if(i){b.style.top=Math.round((a.y-e)/2+(d.isIE6?document.documentElement.scrollTop:0))+\"px\";b.style.marginTop=\"0px\"}b.style.height!=\"\"&&l(b,-1,e);b.style.visibility=\"visible\"}};this.onresize=function(a,c){h=i=false;l(b,a,c)};b.wtResize=l;b.wtPosition=this.centerDialog}");
 	}
 }

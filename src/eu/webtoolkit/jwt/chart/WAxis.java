@@ -737,6 +737,17 @@ public class WAxis {
 		return (int) this.segments_.size();
 	}
 
+	enum DateTimeUnit {
+		Minutes, Hours, Days, Months, Years;
+
+		/**
+		 * Returns the numerical representation of this enum.
+		 */
+		public int getValue() {
+			return ordinal();
+		}
+	}
+
 	private WCartesianChart chart_;
 	private Axis axis_;
 	private boolean visible_;
@@ -763,6 +774,8 @@ public class WAxis {
 		public double renderMaximum;
 		public double renderLength;
 		public double renderStart;
+		public WAxis.DateTimeUnit dateTimeRenderUnit;
+		public int dateTimeRenderInterval;
 
 		public Segment() {
 			this.minimum = AUTO_MINIMUM;
@@ -872,7 +885,7 @@ public class WAxis {
 							this.renderInterval_ = Math.max(1.0, Math.floor(rc
 									/ numLabels));
 						} else {
-							if (this.scale_ == AxisScale.LinearScale) {
+							if (this.scale_ != AxisScale.LogScale) {
 								double numLabels = this.calcAutoNumLabels(s);
 								this.renderInterval_ = round125(diff
 										/ numLabels);
@@ -889,6 +902,199 @@ public class WAxis {
 						if (s.maximum == AUTO_MAXIMUM) {
 							s.renderMaximum = roundUp125(s.renderMaximum,
 									this.renderInterval_);
+						}
+					}
+				} else {
+					if (this.scale_ == AxisScale.DateScale
+							|| this.scale_ == AxisScale.DateTimeScale) {
+						double daysRange;
+						double daysInterval = 0.0;
+						WDate min = null;
+						WDate max = null;
+						int interval;
+						if (this.scale_ == AxisScale.DateScale) {
+							daysRange = diff;
+							daysInterval = this.renderInterval_;
+							min = WDate.fromJulianDay((int) s.renderMinimum);
+							max = WDate.fromJulianDay((int) s.renderMaximum);
+						} else {
+							if (this.scale_ == AxisScale.DateTimeScale) {
+								daysRange = diff / (60.0 * 60.0 * 24);
+								daysInterval = this.renderInterval_
+										/ (60.0 * 60.0 * 24);
+								min = new WDate(new Date(
+										(long) (long) s.renderMinimum));
+								max = new WDate(new Date(
+										(long) (long) s.renderMaximum));
+							}
+						}
+						if (daysInterval > 200) {
+							s.dateTimeRenderUnit = WAxis.DateTimeUnit.Years;
+							interval = Math.max(1,
+									(int) round125(daysInterval / 365));
+							if (min.getDay() != 1 && min.getMonth() != 1) {
+								min = new WDate(min.getYear(), 1, 1);
+							}
+							if (max.getDay() != 1 && max.getDay() != 1) {
+								max = new WDate(max.getYear() + 1, 1, 1);
+							}
+						} else {
+							if (daysInterval > 20) {
+								s.dateTimeRenderUnit = WAxis.DateTimeUnit.Months;
+								double d = daysInterval / 30;
+								if (d < 1.3) {
+									interval = 1;
+								} else {
+									if (d < 2.3) {
+										interval = 2;
+									} else {
+										if (d < 3.3) {
+											interval = 3;
+										} else {
+											if (d < 4.3) {
+												interval = 4;
+											} else {
+												interval = 6;
+											}
+										}
+									}
+								}
+								if ((min.getMonth() - 1) % interval != 0) {
+									int m = roundDown(min.getMonth() - 1,
+											interval) + 1;
+									min = new WDate(min.getYear(), m, 1);
+								} else {
+									if (min.getDay() != 1) {
+										min = new WDate(min.getYear(), min
+												.getMonth(), 1);
+									}
+								}
+								if (max.getDay() != 1) {
+									max = new WDate(max.getYear(), max
+											.getMonth(), 1).addMonths(1);
+								}
+								if ((max.getMonth() - 1) % interval != 0) {
+									int m = roundDown(max.getMonth() - 1,
+											interval) + 1;
+									max = new WDate(max.getYear(), m, 1)
+											.addMonths(interval);
+								}
+							} else {
+								if (daysInterval > 0.6) {
+									s.dateTimeRenderUnit = WAxis.DateTimeUnit.Days;
+									if (daysInterval < 1.3) {
+										interval = 1;
+									} else {
+										interval = 7 * Math.max(1,
+												(int) ((daysInterval + 5) / 7));
+									}
+								} else {
+									double minutes = daysInterval * 24 * 60;
+									if (minutes > 40) {
+										s.dateTimeRenderUnit = WAxis.DateTimeUnit.Hours;
+										double d = minutes / 60;
+										if (d < 1.3) {
+											interval = 1;
+										} else {
+											if (d < 2.3) {
+												interval = 2;
+											} else {
+												if (d < 3.3) {
+													interval = 3;
+												} else {
+													if (d < 4.3) {
+														interval = 4;
+													} else {
+														if (d < 6.3) {
+															interval = 6;
+														} else {
+															interval = 12;
+														}
+													}
+												}
+											}
+										}
+										if (min.getHour() % interval != 0) {
+											int h = roundDown(min.getHour(),
+													interval);
+											min.setTime(h, 0);
+										} else {
+											if (min.getMinute() != 0) {
+												min.setTime(min.getHour(), 0);
+											}
+										}
+										if (max.getMinute() != 0) {
+											max.setTime(max.getHour(), 0);
+											max = max.addSeconds(60 * 60);
+										}
+										if (max.getHour() % interval != 0) {
+											int h = roundDown(max.getHour(),
+													interval);
+											max.setTime(h, 0);
+											max = max
+													.addSeconds(interval * 60 * 60);
+										}
+									} else {
+										s.dateTimeRenderUnit = WAxis.DateTimeUnit.Minutes;
+										if (minutes < 1.3) {
+											interval = 1;
+										} else {
+											if (minutes < 2.3) {
+												interval = 2;
+											} else {
+												if (minutes < 5.3) {
+													interval = 5;
+												} else {
+													if (minutes < 10.3) {
+														interval = 10;
+													} else {
+														if (minutes < 15.3) {
+															interval = 15;
+														} else {
+															if (minutes < 20.3) {
+																interval = 20;
+															} else {
+																interval = 30;
+															}
+														}
+													}
+												}
+											}
+										}
+										if (min.getMinute() % interval != 0) {
+											int m = roundDown(min.getMinute(),
+													interval);
+											min.setTime(min.getHour(), m);
+										} else {
+											if (min.getSecond() != 0) {
+												min.setTime(min.getHour(), min
+														.getMinute());
+											}
+										}
+										if (max.getSecond() != 0) {
+											max.setTime(max.getHour(), max
+													.getMinute());
+											max = max.addSeconds(60);
+										}
+										if (max.getMinute() % interval != 0) {
+											int m = roundDown(max.getMinute(),
+													interval);
+											max.setTime(max.getHour(), m);
+											max = max.addSeconds(interval * 60);
+										}
+									}
+								}
+							}
+						}
+						s.dateTimeRenderInterval = interval;
+						if (this.scale_ == AxisScale.DateScale) {
+							s.renderMinimum = min.toJulianDay();
+							s.renderMaximum = max.toJulianDay();
+						} else {
+							if (this.scale_ == AxisScale.DateTimeScale) {
+								s.renderMinimum = min.getDate().getTime();
+								s.renderMaximum = max.getDate().getTime();
+							}
 						}
 					}
 				}
@@ -959,23 +1165,28 @@ public class WAxis {
 			if (this.scale_ == AxisScale.LogScale) {
 				double minLog10 = Math.log10(segment.renderMinimum);
 				double maxLog10 = Math.log10(segment.renderMaximum);
-				double d = 1.0;
-				diff = maxLog10 - minLog10;
-				if (diff < d) {
-					double average = minLog10 + diff / 2.0;
-					if (findMinimum && findMaximum) {
-						segment.renderMaximum = Math.pow(10, Math.ceil(average
-								+ d / 2.0));
-						segment.renderMinimum = Math.pow(10, Math.floor(average
-								- d / 2.0));
-					} else {
-						if (findMinimum) {
+				if (findMinimum && findMaximum) {
+					segment.renderMinimum = Math.pow(10, Math.floor(minLog10));
+					segment.renderMaximum = Math.pow(10, Math.ceil(maxLog10));
+					if (segment.renderMinimum == segment.renderMaximum) {
+						segment.renderMaximum = Math.pow(10, Math
+								.ceil(maxLog10) + 1);
+					}
+				} else {
+					if (findMinimum) {
+						segment.renderMinimum = Math.pow(10, Math
+								.floor(minLog10));
+						if (segment.renderMinimum == segment.renderMaximum) {
 							segment.renderMinimum = Math.pow(10, Math
-									.floor(maxLog10 - d));
-						} else {
-							if (findMaximum) {
+									.floor(minLog10) - 1);
+						}
+					} else {
+						if (findMaximum) {
+							segment.renderMaximum = Math.pow(10, Math
+									.ceil(maxLog10));
+							if (segment.renderMinimum == segment.renderMaximum) {
 								segment.renderMaximum = Math.pow(10, Math
-										.ceil(minLog10 + d));
+										.ceil(maxLog10) + 1);
 							}
 						}
 					}
@@ -984,7 +1195,7 @@ public class WAxis {
 				double resolution = this.resolution_;
 				if (resolution == 0) {
 					if (this.scale_ == AxisScale.LinearScale) {
-						resolution = 1E-10;
+						resolution = 1E3 * 1E-10;
 					} else {
 						if (this.scale_ == AxisScale.DateScale) {
 							resolution = 1;
@@ -998,9 +1209,6 @@ public class WAxis {
 				if (Math.abs(diff) < resolution) {
 					double average = (segment.renderMaximum + segment.renderMinimum) / 2.0;
 					double d = resolution;
-					if (d == 0) {
-						d = 2E-4;
-					}
 					if (findMinimum && findMaximum) {
 						segment.renderMaximum = average + d / 2.0;
 						segment.renderMinimum = average - d / 2.0;
@@ -1154,134 +1362,21 @@ public class WAxis {
 		}
 		case DateTimeScale:
 		case DateScale: {
-			double daysRange = 0.0;
 			WDate dt = null;
-			switch (this.scale_) {
-			case DateScale:
-				daysRange = (double) (s.renderMaximum - s.renderMinimum);
+			if (this.scale_ == AxisScale.DateScale) {
 				dt = WDate.fromJulianDay((int) s.renderMinimum);
 				if (!(dt != null)) {
-					String exception = "Invalid julian day: ";
-					exception += String.valueOf(s.renderMinimum);
+					String exception = "Invalid julian day: "
+							+ String.valueOf(s.renderMinimum);
 					throw new WException(exception);
 				}
-				break;
-			case DateTimeScale:
-				daysRange = (double) ((s.renderMaximum - s.renderMinimum) / (60.0 * 60.0 * 24));
-				dt = new WDate(new Date((long) (long) s.renderMinimum));
-				break;
-			default:
-				assert false;
-			}
-			double numLabels = this.calcAutoNumLabels(s);
-			double days = daysRange / numLabels;
-			final int Minutes = 0;
-			final int Hours = 1;
-			final int Days = 2;
-			final int Months = 3;
-			final int Years = 4;
-			int unit;
-			int interval;
-			if (days > 200) {
-				unit = Years;
-				interval = Math.max(1, (int) round125(days / 365));
-				if (dt.getDay() != 1 && dt.getMonth() != 1) {
-					dt.setDate(dt.getYear(), 1, 1);
-				}
 			} else {
-				if (days > 20) {
-					unit = Months;
-					double i = days / 30;
-					if (i < 1.3) {
-						interval = 1;
-					} else {
-						if (i < 2.3) {
-							interval = 2;
-						} else {
-							if (i < 3.3) {
-								interval = 3;
-							} else {
-								if (i < 4.3) {
-									interval = 4;
-								} else {
-									interval = 6;
-								}
-							}
-						}
-					}
-					if (dt.getDay() != 1) {
-						dt.setDate(dt.getYear(), dt.getMonth(), 1);
-					}
-					if ((dt.getMonth() - 1) % interval != 0) {
-						int m = (dt.getMonth() - 1) / interval * interval + 1;
-						dt.setDate(dt.getYear(), m, 1);
-					}
-				} else {
-					if (days > 0.6) {
-						unit = Days;
-						if (days < 1.3) {
-							interval = 1;
-						} else {
-							interval = 7 * Math.max(1, (int) ((days + 5) / 7));
-						}
-					} else {
-						double minutes = days * 24 * 60;
-						if (minutes > 40) {
-							unit = Hours;
-							double i = minutes / 60;
-							if (i < 1.3) {
-								interval = 1;
-							} else {
-								if (i < 2.3) {
-									interval = 2;
-								} else {
-									if (i < 3.3) {
-										interval = 3;
-									} else {
-										if (i < 4.3) {
-											interval = 4;
-										} else {
-											if (i < 6.3) {
-												interval = 6;
-											} else {
-												interval = 12;
-											}
-										}
-									}
-								}
-							}
-						} else {
-							unit = Minutes;
-							if (minutes < 1.3) {
-								interval = 1;
-							} else {
-								if (minutes < 2.3) {
-									interval = 2;
-								} else {
-									if (minutes < 5.3) {
-										interval = 5;
-									} else {
-										if (minutes < 10.3) {
-											interval = 10;
-										} else {
-											if (minutes < 15.3) {
-												interval = 15;
-											} else {
-												if (minutes < 20.3) {
-													interval = 20;
-												} else {
-													interval = 30;
-												}
-											}
-										}
-									}
-								}
-							}
-						}
-					}
-				}
+				dt = new WDate(new Date((long) (long) s.renderMinimum));
 			}
-			boolean atTick = interval > 1 || unit <= Days;
+			int interval = s.dateTimeRenderInterval;
+			WAxis.DateTimeUnit unit = s.dateTimeRenderUnit;
+			boolean atTick = interval > 1
+					|| unit.getValue() <= WAxis.DateTimeUnit.Days.getValue();
 			for (;;) {
 				long dl = this.getDateNumber(dt);
 				if (dl > s.renderMaximum) {
@@ -1497,6 +1592,10 @@ public class WAxis {
 
 	static double roundDown125(double v, double t) {
 		return t * Math.floor((v + 1E-10) / t);
+	}
+
+	static int roundDown(int v, int factor) {
+		return v / factor * factor;
 	}
 
 	/**

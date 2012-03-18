@@ -258,13 +258,13 @@ public abstract class WWidget extends WObject {
 	 * Sets the width.
 	 * <p>
 	 * This is a convenience method to change only the width of a widget, and is
-	 * implemented as: <blockquote>
+	 * implemented as:
 	 * 
 	 * <pre>
-	 * resize(width, height())
+	 * {@code
+	 *    resize(width, height())
+	 *   }
 	 * </pre>
-	 * 
-	 * </blockquote>
 	 * <p>
 	 * 
 	 * @see WWidget#resize(WLength width, WLength height)
@@ -293,13 +293,13 @@ public abstract class WWidget extends WObject {
 	 * Sets the height.
 	 * <p>
 	 * This is a convenience method to change only the width of a widget, and is
-	 * implemented as: <blockquote>
+	 * implemented as:
 	 * 
 	 * <pre>
-	 * resize(width(), height)
+	 * {@code
+	 *    resize(width(), height)
+	 *   }
 	 * </pre>
-	 * 
-	 * </blockquote>
 	 * <p>
 	 * This applies to CSS-based layout.
 	 * <p>
@@ -421,8 +421,8 @@ public abstract class WWidget extends WObject {
 		String side = orientation == Orientation.Horizontal ? ".Horizontal"
 				: ".Vertical";
 		WApplication.getInstance().doJavaScript(
-				"Wt3_2_0.positionAtWidget('" + this.getId() + "','"
-						+ widget.getId() + "',Wt3_2_0" + side + ");");
+				"Wt3_2_1.positionAtWidget('" + this.getId() + "','"
+						+ widget.getId() + "',Wt3_2_1" + side + ");");
 	}
 
 	/**
@@ -1121,6 +1121,11 @@ public abstract class WWidget extends WObject {
 	 * <p>
 	 * By default, auto-generated id&apos;s are used.
 	 * <p>
+	 * <p>
+	 * <i><b>Note: </b>An id must start with a letter ([A-Za-z]), followed by
+	 * one or more letters, digits ([0-9]), hyphens (&quot;-&quot;), underscores
+	 * (&quot;_&quot;), colons (&quot;:&quot;), and periods (&quot;.&quot;).</i>
+	 * </p>
 	 * 
 	 * @see WObject#getId()
 	 */

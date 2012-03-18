@@ -108,7 +108,7 @@ public abstract class WViewWidget extends WWebWidget {
 		super.load();
 	}
 
-	void render(EnumSet<RenderFlag> flags) {
+	protected void render(EnumSet<RenderFlag> flags) {
 		if (this.needContentsUpdate_
 				|| !EnumUtils.mask(flags, RenderFlag.RenderFull).isEmpty()) {
 			if (this.contents_ != null)

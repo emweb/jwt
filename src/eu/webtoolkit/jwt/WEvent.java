@@ -130,23 +130,3 @@ public class WEvent {
 		}
 	}
 }
-
-class Impl {
-	private static Logger logger = LoggerFactory.getLogger(Impl.class);
-
-	public WebSession.Handler handler;
-	public boolean renderOnly;
-
-	public Impl(WebSession.Handler aHandler, boolean doRenderOnly) {
-		this.handler = aHandler;
-		this.renderOnly = doRenderOnly;
-	}
-
-	public Impl(WebSession.Handler aHandler) {
-		this(aHandler, false);
-	}
-
-	public Impl() {
-		this.handler = null;
-	}
-}

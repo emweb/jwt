@@ -69,6 +69,7 @@ public class WPieChart extends WAbstractChart {
 		this.dataColumn_ = -1;
 		this.height_ = 0.0;
 		this.startAngle_ = 45;
+		this.avoidLabelRendering_ = 0.0;
 		this.labelOptions_ = EnumSet.noneOf(LabelOption.class);
 		this.shadow_ = false;
 		this.pie_ = new ArrayList<WPieChart.PieData>();
@@ -285,6 +286,28 @@ public class WPieChart extends WAbstractChart {
 	 */
 	public double getStartAngle() {
 		return this.startAngle_;
+	}
+
+	/**
+	 * Sets the percentage value to avoid rendering of label texts.
+	 * <p>
+	 * The default value is 0 percent.
+	 */
+	public void setAvoidLabelRendering(double avoidLabelRendering) {
+		if (this.avoidLabelRendering_ != avoidLabelRendering) {
+			this.avoidLabelRendering_ = avoidLabelRendering;
+			this.update();
+		}
+	}
+
+	/**
+	 * Returns the percentage to avoid label rendering.
+	 * <p>
+	 * 
+	 * @see WPieChart#setAvoidLabelRendering(double avoidLabelRendering)
+	 */
+	public double getAvoidLabelRendering() {
+		return this.avoidLabelRendering_;
 	}
 
 	/**
@@ -522,10 +545,12 @@ public class WPieChart extends WAbstractChart {
 								AlignmentFlag.AlignMiddle));
 						c = this.getPalette().getFontColor(i);
 					}
-					painter.setPen(new WPen(c));
-					painter.drawText(new WRectF(left, top, width, height),
-							alignment, this.labelText(i, v, total,
-									this.labelOptions_));
+					if (v / total * 100 >= this.avoidLabelRendering_) {
+						painter.setPen(new WPen(c));
+						painter.drawText(new WRectF(left, top, width, height),
+								alignment, this.labelText(i, v, total,
+										this.labelOptions_));
+					}
 					currentAngle = endAngle;
 				}
 			}
@@ -554,6 +579,7 @@ public class WPieChart extends WAbstractChart {
 	private int dataColumn_;
 	private double height_;
 	private double startAngle_;
+	private double avoidLabelRendering_;
 	private EnumSet<LabelOption> labelOptions_;
 	private boolean shadow_;
 

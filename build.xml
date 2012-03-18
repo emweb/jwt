@@ -1,19 +1,27 @@
 <project name="jwt" default="all" basedir=".">
   <!-- Name of project and version -->
   <property name="proj.name" value="jwt"/>
-  <property name="proj.version" value="3.2.0"/>
+  <property name="proj.version" value="3.2.1"/>
 
   <!-- Global properties for this build -->
   <property name="src.java.dir" value="src"/>
   <property name="build.dir" value="build"/>
   <property name="dist.dir" value="dist"/>
   <property name="archives.dir" value="archives"/>
-  <property name="javadoc.dir" value="doc/javadoc"/>
+  <property name="mvn.dir" value="mvn"/>
+  <property name="javadoc.jwt.dir" value="doc/reference/jwt"/>
+  <property name="javadoc.jwt-auth.dir" value="doc/reference/jwt-auth"/>
   <property name="userguide.dir" value="doc/userguide"/>
 
   <!-- Javadoc classpath declaration -->
   <path id="project.javadoc.classpath">
     <fileset dir=".">
+      <include name="lib/javamail/*.jar"/>
+      <include name="lib/gson/*.jar"/>
+      <include name="lib/http/*.jar"/>
+      <include name="lib/jpa/*.jar"/>
+      <include name="lib/servlet-api/*.jar"/>
+      <include name="lib/vt-password/*.jar"/>
       <include name="lib/*.jar"/>
       <include name="dist/*.jar"/>
     </fileset>
@@ -27,6 +35,10 @@
     <delete dir="${build.dir}" />
     <delete dir="${dist.dir}" />
     <delete dir="${archives.dir}" />
+    <delete dir="${mvn.dir}" />
+    <delete includeemptydirs="true">
+      <fileset dir="${javadoc.jwt.dir}" includes="**/*" excludes=".gitignore"/>
+    </delete>
   </target>
 
   <condition property="jdk6">
@@ -49,6 +61,12 @@
         <path id="project.classpath">
           <fileset dir=".">
             <include name="lib/*.jar"/>
+	    <include name="lib/javamail/*.jar"/>
+	    <include name="lib/gson/*.jar"/>
+	    <include name="lib/http/*.jar"/>
+	    <include name="lib/jpa/*.jar"/>
+	    <include name="lib/servlet-api/*.jar"/>
+	    <include name="lib/vt-password/*.jar"/>
           </fileset>
         </path>
       </classpath>
@@ -63,22 +81,21 @@
     <copy todir="${build.dir}">
       <fileset dir="${src.java.dir}" defaultexcludes="yes">
 	<include name="eu/webtoolkit/jwt/*.java"/>
-	<include name="eu/webtoolkit/jwt/*.properties"/>
+	<include name="eu/webtoolkit/jwt/*.xml"/>
 	<include name="eu/webtoolkit/jwt/servlet/*.java"/>
 	<include name="eu/webtoolkit/jwt/chart/*.java"/>
+	<include name="eu/webtoolkit/jwt/auth/*.java"/>
+	<include name="eu/webtoolkit/jwt/auth/*.xml"/>
+	<include name="eu/webtoolkit/jwt/auth/jpa/*.java"/>
 	<include name="eu/webtoolkit/jwt/utils/*.java"/>
       </fileset>
     </copy>
   </target>
   
-  <target name="clean-javadoc">
-    <delete dir="${javadoc.dir}"/>
-  </target>
-
   <target name="javadoc" depends="dist">
     <javadoc
        access="protected"
-       destdir="${javadoc.dir}"
+       destdir="${javadoc.jwt.dir}"
        author="true"
        version="true"
        use="true"
@@ -91,18 +108,67 @@
 	<include name="eu/webtoolkit/jwt/servlet/*.java"/>
 	<include name="eu/webtoolkit/jwt/chart/*.java"/>
 	<include name="eu/webtoolkit/jwt/utils/WebGraphics2D.java"/>
-	<!--<exclude name="eu/webtoolkit/jwt/utils/*.java"/>-->
+	<exclude name="eu/webtoolkit/jwt/XSSFilter.java"/>
+	<exclude name="eu/webtoolkit/jwt/ServletApi25.java"/>
+	<exclude name="eu/webtoolkit/jwt/ServletApi3.java"/>
+	<include name="eu/webtoolkit/jwt/auth/*.java"/>
+	<include name="eu/webtoolkit/jwt/auth/jpa/*.java"/>
+      </fileset>
+    </javadoc>
+    <copy todir="${javadoc.jwt.dir}/eu/webtoolkit/jwt/doc-files">
+      <fileset dir="${src.java.dir}/eu/webtoolkit/jwt/doc-files"/>
+    </copy>
+    <copy todir="${javadoc.jwt.dir}/eu/webtoolkit/jwt/chart/doc-files">
+      <fileset dir="${src.java.dir}/eu/webtoolkit/jwt/chart/doc-files"/>
+    </copy>
+  </target>
+  
+  <target name="mvn-javadoc" depends="dist">
+    <mkdir dir="${mvn.dir}"/>
+    <javadoc
+       access="protected"
+       destdir="${mvn.dir}/${javadoc.jwt.dir}"
+       author="true"
+       version="true"
+       use="true"
+       windowtitle="JWt Javadoc API"
+       classpathref="project.javadoc.classpath"
+       overview="overview.html"
+       >
+      <fileset dir="${src.java.dir}" defaultexcludes="yes">
+	<include name="eu/webtoolkit/jwt/*.java"/>
+	<include name="eu/webtoolkit/jwt/servlet/*.java"/>
+	<include name="eu/webtoolkit/jwt/chart/*.java"/>
+	<include name="eu/webtoolkit/jwt/utils/WebGraphics2D.java"/>
 	<exclude name="eu/webtoolkit/jwt/XSSFilter.java"/>
 	<exclude name="eu/webtoolkit/jwt/ServletApi25.java"/>
 	<exclude name="eu/webtoolkit/jwt/ServletApi3.java"/>
       </fileset>
     </javadoc>
-    <copy todir="${javadoc.dir}/eu/webtoolkit/jwt/doc-files">
+    <copy 
+       todir="${mvn.dir}/${javadoc.jwt.dir}/eu/webtoolkit/jwt/doc-files">
       <fileset dir="${src.java.dir}/eu/webtoolkit/jwt/doc-files"/>
     </copy>
-    <copy todir="${javadoc.dir}/eu/webtoolkit/jwt/chart/doc-files">
+    <copy 
+       todir="${mvn.dir}/${javadoc.jwt.dir}/eu/webtoolkit/jwt/chart/doc-files">
       <fileset dir="${src.java.dir}/eu/webtoolkit/jwt/chart/doc-files"/>
     </copy>
+    <javadoc
+       access="protected"
+       destdir="${mvn.dir}/${javadoc.jwt-auth.dir}"
+       author="true"
+       version="true"
+       use="true"
+       windowtitle="JWt Auth Javadoc API"
+       classpathref="project.javadoc.classpath"
+       overview="overview.html"
+       link="../jwt/"
+       >
+      <fileset dir="${src.java.dir}" defaultexcludes="yes">
+	<include name="eu/webtoolkit/jwt/auth/*.java"/>
+	<include name="eu/webtoolkit/jwt/auth/jpa/*.java"/>
+      </fileset>
+    </javadoc>
   </target>
 
   <target name="asciidoc">
@@ -115,21 +181,39 @@
 
   <target name="dist" depends="build">
     <mkdir dir="${dist.dir}"/>
-    <jar destfile="dist/${proj.name}-${proj.version}.jar" basedir="${build.dir}" />
-    <copy todir="${dist.dir}">
-      <fileset dir="lib">
-        <include name="*.jar"/>
-      </fileset>
-    </copy>
+    <jar  destfile="dist/jwt-${proj.version}.jar" 
+          basedir="${build.dir}" 
+          defaultexcludes="yes" 
+          includes="eu/webtoolkit/jwt/* eu/webtoolkit/jwt/servlet/* eu/webtoolkit/jwt/chart/* eu/webtoolkit/jwt/utils/* net/n3/nanoxml/* eu/webtoolkit/jwt/skeletons/* eu/webtoolkit/jwt/wt-resources/**/*" />
+    <jar  destfile="dist/jwt-auth-${proj.version}.jar" 
+          basedir="${build.dir}" 
+          defaultexcludes="yes" 
+          includes="eu/webtoolkit/jwt/auth/* eu/webtoolkit/jwt/auth/jpa/*" />
   </target>
 
-  <target name="mvn" depends="dist">
-    <jar jarfile="dist/${proj.name}-${proj.version}-javadoc.jar">
-      <fileset dir="${javadoc.dir}" />
+  <target name="mvn" depends="mvn-javadoc">
+    <jar jarfile="dist/jwt-${proj.version}-javadoc.jar">
+      <fileset dir="${mvn.dir}/${javadoc.jwt.dir}" />
+    </jar>
+    <jar jarfile="dist/jwt-auth-${proj.version}-javadoc.jar">
+      <fileset dir="${mvn.dir}/${javadoc.jwt-auth.dir}" />
     </jar>
 
-    <jar jarfile="dist/${proj.name}-${proj.version}-sources.jar">
-      <fileset dir="${src.java.dir}" />
+    <jar jarfile="dist/jwt-auth-${proj.version}-sources.jar">
+      <fileset dir="${src.java.dir}" defaultexcludes="yes">
+	<include name="eu/webtoolkit/jwt/*.java"/>
+	<include name="eu/webtoolkit/jwt/*.xml"/>
+	<include name="eu/webtoolkit/jwt/servlet/*.java"/>
+	<include name="eu/webtoolkit/jwt/chart/*.java"/>
+	<include name="eu/webtoolkit/jwt/utils/*.java"/>
+      </fileset>
+    </jar>
+    <jar jarfile="dist/jwt-auth-${proj.version}-sources.jar">
+      <fileset dir="${src.java.dir}" defaultexcludes="yes">
+	<include name="eu/webtoolkit/jwt/auth/*.java"/>
+	<include name="eu/webtoolkit/jwt/auth/jpa/*.java"/>
+	<include name="eu/webtoolkit/jwt/auth/*.xml"/>
+      </fileset>
     </jar>
   </target>
 

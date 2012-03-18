@@ -90,22 +90,22 @@ import org.slf4j.LoggerFactory;
  * <p>
  * Usage example:
  * <p>
- * <blockquote>
  * 
  * <pre>
- * WContainerWidget w = new WContainerWidget(this);
- * w.resize(WLength.Auto, new WLength(600));
+ * {
+ * 	&#064;code
+ * 	WContainerWidget w = new WContainerWidget(this);
+ * 	w.resize(WLength.Auto, new WLength(600));
  * 
- * WGridLayout layout = new WGridLayout();
- * layout.addWidget(new WText(&quot;Item 0 0&quot;), 0, 0);
- * layout.addWidget(new WText(&quot;Item 0 1&quot;), 0, 1);
- * layout.addWidget(new WText(&quot;Item 1 0&quot;), 1, 0);
- * layout.addWidget(new WText(&quot;Item 1 1&quot;), 1, 1);
+ * 	WGridLayout layout = new WGridLayout();
+ * 	layout.addWidget(new WText(&quot;Item 0 0&quot;), 0, 0);
+ * 	layout.addWidget(new WText(&quot;Item 0 1&quot;), 0, 1);
+ * 	layout.addWidget(new WText(&quot;Item 1 0&quot;), 1, 0);
+ * 	layout.addWidget(new WText(&quot;Item 1 1&quot;), 1, 1);
  * 
- * w.setLayout(layout);
+ * 	w.setLayout(layout);
+ * }
  * </pre>
- * 
- * </blockquote>
  * <p>
  * <p>
  * <i><b>Note: </b>When JavaScript support is not available, only Safari and
@@ -178,6 +178,15 @@ public class WGridLayout extends WLayout {
 
 	public int getCount() {
 		return this.grid_.rows_.size() * this.grid_.columns_.size();
+	}
+
+	public void clear() {
+		int c = this.getCount();
+		for (int i = 0; i < c; ++i) {
+			WLayoutItem item = this.getItemAt(i);
+			this.clearLayoutItem(item);
+		}
+		this.grid_.clear();
 	}
 
 	/**

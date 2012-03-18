@@ -28,28 +28,28 @@ import org.slf4j.LoggerFactory;
  * <p>
  * Usage example:
  * <p>
- * <blockquote>
  * 
  * <pre>
- * WEnvironment env = WApplication.instance().environment();
+ * {
+ * 	&#064;code
+ * 	WEnvironment env = WApplication.instance().environment();
  * 
- * // read an application startup argument 
- * // (passed as argument in the URL or POST'ed to the application).
- * if (!env.getParameterValues(&quot;login&quot;).isEmpty()) {
- * 	String login = env.getParameterValues(&quot;login&quot;).get(0);
- * 	//...
+ * 	// read an application startup argument 
+ * 	// (passed as argument in the URL or POST'ed to the application).
+ * 	if (!env.getParameterValues(&quot;login&quot;).isEmpty()) {
+ * 		String login = env.getParameterValues(&quot;login&quot;).get(0);
+ * 		//...
+ * 	}
+ * 
+ * 	// Check for JavaScript/AJAX availability before using JavaScript-only
+ * 	// widgets
+ * 	WTextArea textEdit;
+ * 	if (!env.isAjax())
+ * 		textEdit = new WTextEdit(); // provide an HTML text editor
+ * 	else
+ * 		textEdit = new WTextArea(); // fall-back to a plain old text area.
  * }
- * 
- * // Check for JavaScript/AJAX availability before using JavaScript-only
- * // widgets
- * WTextArea textEdit;
- * if (!env.isAjax())
- * 	textEdit = new WTextEdit(); // provide an HTML text editor
- * else
- * 	textEdit = new WTextArea(); // fall-back to a plain old text area.
  * </pre>
- * 
- * </blockquote>
  */
 public class WEnvironment {
 	private static Logger logger = LoggerFactory.getLogger(WEnvironment.class);
@@ -233,7 +233,7 @@ public class WEnvironment {
 	 * Wt&apos;s JavaScript scope.
 	 */
 	public static String getJavaScriptWtScope() {
-		return "Wt3_2_0";
+		return "Wt3_2_1";
 	}
 
 	/**
@@ -299,15 +299,15 @@ public class WEnvironment {
 	 * This returns all cookies that were present in initial request for the
 	 * application. Cookies set with
 	 * {@link WApplication#setCookie(String name, String value, int maxAge, String domain, String path, boolean secure)
-	 * WApplication#setCookie()} are not taken into considerations.
+	 * WApplication#setCookie()} are not taken into consideration.
 	 * <p>
-	 * Cookies allow you to persist information across sessions.
-	 * <p>
-	 * Not all clients may support cookies or have cookies enabled.
+	 * Cookies allow you to persist information across sessions, but note that
+	 * not all clients may support cookies or may some clients may be configured
+	 * to block cookies.
 	 * <p>
 	 * 
 	 * @see WEnvironment#supportsCookies()
-	 * @see WEnvironment#getCookie(String cookieNname)
+	 * @see WEnvironment#getCookie(String cookieName)
 	 * @see WEnvironment#getCookieValue(String cookieName)
 	 */
 	public Map<String, String> getCookies() {
@@ -338,7 +338,7 @@ public class WEnvironment {
 	 * Returns 0 if no value was set for the given cookie.
 	 * <p>
 	 * 
-	 * @see WEnvironment#getCookie(String cookieNname)
+	 * @see WEnvironment#getCookie(String cookieName)
 	 */
 	public String getCookieValue(String cookieName) {
 		String i = this.cookies_.get(cookieName);
@@ -371,7 +371,7 @@ public class WEnvironment {
 	 * <p>
 	 * 
 	 * @see WEnvironment#getCookies()
-	 * @see WEnvironment#getCookie(String cookieNname)
+	 * @see WEnvironment#getCookie(String cookieName)
 	 */
 	public boolean supportsCookies() {
 		return this.doesCookies_;
@@ -584,14 +584,14 @@ public class WEnvironment {
 	 * <p>
 	 * For an application deployed at <code>&quot;/stuff/app.wt&quot;</code>,
 	 * the following two URLs are considered equivalent, and indicate an
-	 * internal path <code>&quot;/this/there&quot;</code>: <blockquote>
+	 * internal path <code>&quot;/this/there&quot;</code>:
 	 * 
 	 * <pre>
-	 * http://www.mydomain.com/stuff/app.wt/this/there
+	 * {@code
 	 *    http://www.mydomain.com/stuff/app.wt/this/there
+	 *    http://www.mydomain.com/stuff/app.wt/this/there
+	 *   }
 	 * </pre>
-	 * 
-	 * </blockquote>
 	 * <p>
 	 * 
 	 * @see WApplication#getBookmarkUrl()
@@ -623,7 +623,7 @@ public class WEnvironment {
 	 * Example: <code>&quot;1.99.2&quot;</code>
 	 */
 	public static String getLibraryVersion() {
-		return "3.2.0";
+		return "3.2.1";
 	}
 
 	// public void libraryVersion(bad java simple ref int series, bad java
@@ -882,6 +882,12 @@ public class WEnvironment {
 	protected String publicDeploymentPath_;
 
 	WEnvironment() {
+		this.session_ = null;
+		this.doesAjax_ = false;
+		this.doesCookies_ = false;
+		this.hashInternalPaths_ = false;
+		this.dpiScale_ = 1;
+		this.contentType_ = WEnvironment.ContentType.HTML4;
 		this.queryString_ = "";
 		this.parameters_ = new HashMap<String, String[]>();
 		this.cookies_ = new HashMap<String, String>();
@@ -904,23 +910,23 @@ public class WEnvironment {
 		this.userAgent_ = userAgent;
 		Configuration conf = this.session_.getController().getConfiguration();
 		this.agent_ = WEnvironment.UserAgent.Unknown;
-		if (this.userAgent_.indexOf("MSIE 2") != -1
-				|| this.userAgent_.indexOf("MSIE 3") != -1
-				|| this.userAgent_.indexOf("MSIE 4") != -1
-				|| this.userAgent_.indexOf("MSIE 5") != -1
+		if (this.userAgent_.indexOf("MSIE 2.") != -1
+				|| this.userAgent_.indexOf("MSIE 3.") != -1
+				|| this.userAgent_.indexOf("MSIE 4.") != -1
+				|| this.userAgent_.indexOf("MSIE 5.") != -1
 				|| this.userAgent_.indexOf("IEMobile") != -1) {
 			this.agent_ = WEnvironment.UserAgent.IEMobile;
 		} else {
-			if (this.userAgent_.indexOf("MSIE 6") != -1) {
+			if (this.userAgent_.indexOf("MSIE 6.") != -1) {
 				this.agent_ = WEnvironment.UserAgent.IE6;
 			} else {
 				if (this.userAgent_.indexOf("Trident/5.0") != -1) {
 					this.agent_ = WEnvironment.UserAgent.IE9;
 				} else {
-					if (this.userAgent_.indexOf("MSIE 7") != -1) {
+					if (this.userAgent_.indexOf("MSIE 7.") != -1) {
 						this.agent_ = WEnvironment.UserAgent.IE7;
 					} else {
-						if (this.userAgent_.indexOf("MSIE 8") != -1) {
+						if (this.userAgent_.indexOf("MSIE 8.") != -1) {
 							this.agent_ = WEnvironment.UserAgent.IE8;
 						} else {
 							if (this.userAgent_.indexOf("MSIE") != -1) {
@@ -1018,13 +1024,13 @@ public class WEnvironment {
 			}
 		}
 		if (this.userAgent_.indexOf("Firefox") != -1) {
-			if (this.userAgent_.indexOf("Firefox/0") != -1) {
+			if (this.userAgent_.indexOf("Firefox/0.") != -1) {
 				this.agent_ = WEnvironment.UserAgent.Firefox;
 			} else {
-				if (this.userAgent_.indexOf("Firefox/1") != -1) {
+				if (this.userAgent_.indexOf("Firefox/1.") != -1) {
 					this.agent_ = WEnvironment.UserAgent.Firefox;
 				} else {
-					if (this.userAgent_.indexOf("Firefox/2") != -1) {
+					if (this.userAgent_.indexOf("Firefox/2.") != -1) {
 						this.agent_ = WEnvironment.UserAgent.Firefox;
 					} else {
 						if (this.userAgent_.indexOf("Firefox/3.0") != -1) {
@@ -1211,30 +1217,27 @@ public class WEnvironment {
 	}
 
 	private static void parseCookies(String cookie, Map<String, String> result) {
-		List<String> list = new ArrayList<String>();
-		list = new ArrayList<String>(Arrays.asList(cookie.split(";")));
-		for (int i = 0; i < list.size(); ++i) {
-			int e = list.get(i).indexOf('=');
-			String cookieName = list.get(i).substring(0, 0 + e);
-			String cookieValue = e != -1 && list.get(i).length() > e + 1 ? list
-					.get(i).substring(e + 1) : "";
-			cookieName = cookieName.trim();
-			cookieValue = cookieValue.trim();
-			try {
+		try {
+			List<String> list = new ArrayList<String>();
+			list = new ArrayList<String>(Arrays.asList(cookie.split(";")));
+			for (int i = 0; i < list.size(); ++i) {
+				int e = list.get(i).indexOf('=');
+				String cookieName = list.get(i).substring(0, 0 + e);
+				String cookieValue = e != -1 && list.get(i).length() > e + 1 ? list
+						.get(i).substring(e + 1)
+						: "";
+				cookieName = cookieName.trim();
+				cookieValue = cookieValue.trim();
 				cookieName = java.net.URLDecoder.decode(cookieName, "UTF-8");
-			} catch (UnsupportedEncodingException eee) {
-				// I don't think so
-			}
-			;
-			try {
+				;
 				cookieValue = java.net.URLDecoder.decode(cookieValue, "UTF-8");
-			} catch (UnsupportedEncodingException eee) {
-				// I don't think so
+				;
+				if (!cookieName.equals("")) {
+					result.put(cookieName, cookieValue);
+				}
 			}
-			;
-			if (!cookieName.equals("")) {
-				result.put(cookieName, cookieValue);
-			}
+		} catch (UnsupportedEncodingException uee) {
+			uee.printStackTrace();
 		}
 	}
 }

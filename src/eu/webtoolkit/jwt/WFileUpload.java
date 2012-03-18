@@ -82,12 +82,9 @@ public class WFileUpload extends WWebWidget {
 	 */
 	public WFileUpload(WContainerWidget parent) {
 		super(parent);
+		this.flags_ = new BitSet();
 		this.textSize_ = 20;
 		this.uploadedFiles_ = new ArrayList<UploadedFile>();
-		this.doUpload_ = false;
-		this.enableAjax_ = false;
-		this.uploading_ = false;
-		this.multiple_ = false;
 		this.fileTooLarge_ = new Signal1<Long>(this);
 		this.dataReceived_ = new Signal2<Long, Long>(this);
 		this.progressBar_ = null;
@@ -112,7 +109,7 @@ public class WFileUpload extends WWebWidget {
 	}
 
 	public void remove() {
-		if (this.uploading_) {
+		if (this.flags_.get(BIT_UPLOADING)) {
 			WApplication.getInstance().enableUpdates(false);
 		}
 		super.remove();
@@ -132,7 +129,7 @@ public class WFileUpload extends WWebWidget {
 	 * The default value is <code>false</code>.
 	 */
 	public void setMultiple(boolean multiple) {
-		this.multiple_ = multiple;
+		this.flags_.set(BIT_MULTIPLE, multiple);
 	}
 
 	/**
@@ -142,7 +139,7 @@ public class WFileUpload extends WWebWidget {
 	 * @see WFileUpload#setMultiple(boolean multiple)
 	 */
 	public boolean isMultiple() {
-		return this.multiple_;
+		return this.flags_.get(BIT_MULTIPLE);
 	}
 
 	/**
@@ -323,8 +320,8 @@ public class WFileUpload extends WWebWidget {
 	 * @see WFileUpload#canUpload()
 	 */
 	public void upload() {
-		if (this.fileUploadTarget_ != null && !this.uploading_) {
-			this.doUpload_ = true;
+		if (this.fileUploadTarget_ != null && !this.flags_.get(BIT_UPLOADING)) {
+			this.flags_.set(BIT_DO_UPLOAD);
 			this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyIEMobile));
 			if (this.progressBar_ != null) {
 				if (this.progressBar_.getParent() != this) {
@@ -334,7 +331,7 @@ public class WFileUpload extends WWebWidget {
 				}
 			}
 			WApplication.getInstance().enableUpdates();
-			this.uploading_ = true;
+			this.flags_.set(BIT_UPLOADING);
 		}
 	}
 
@@ -392,17 +389,19 @@ public class WFileUpload extends WWebWidget {
 
 	public void enableAjax() {
 		this.create();
-		this.enableAjax_ = true;
+		this.flags_.set(BIT_ENABLE_AJAX);
 		this.repaint();
 		super.enableAjax();
 	}
 
+	private static final int BIT_DO_UPLOAD = 0;
+	private static final int BIT_ENABLE_AJAX = 1;
+	private static final int BIT_UPLOADING = 2;
+	private static final int BIT_MULTIPLE = 3;
+	private static final int BIT_ENABLED_CHANGED = 4;
+	BitSet flags_;
 	private int textSize_;
 	private List<UploadedFile> uploadedFiles_;
-	private boolean doUpload_;
-	private boolean enableAjax_;
-	private boolean uploading_;
-	private boolean multiple_;
 	private Signal1<Long> fileTooLarge_;
 	private Signal2<Long, Long> dataReceived_;
 	private WResource fileUploadTarget_;
@@ -439,11 +438,11 @@ public class WFileUpload extends WWebWidget {
 	private void onData(long current, long total) {
 		this.dataReceived_.trigger(current, total);
 		WebSession.Handler h = WebSession.Handler.getInstance();
-		long dataExceeded = 0;
+		long dataExceeded = 0L;
 		h.setRequest((WebRequest) null, (WebResponse) null);
 		if (dataExceeded != 0) {
-			if (this.uploading_) {
-				this.uploading_ = false;
+			if (this.flags_.get(BIT_UPLOADING)) {
+				this.flags_.clear(BIT_UPLOADING);
 				this.tooLargeSize_ = dataExceeded;
 				this.handleFileTooLargeImpl();
 				WApplication app = WApplication.getInstance();
@@ -452,7 +451,7 @@ public class WFileUpload extends WWebWidget {
 			}
 			return;
 		}
-		if (this.progressBar_ != null && this.uploading_) {
+		if (this.progressBar_ != null && this.flags_.get(BIT_UPLOADING)) {
 			this.progressBar_.setRange(0, (double) total);
 			this.progressBar_.setValue((double) current);
 			WApplication app = WApplication.getInstance();
@@ -460,27 +459,47 @@ public class WFileUpload extends WWebWidget {
 		}
 	}
 
-	private void setRequestTooLarge(long size) {
+	void setRequestTooLarge(long size) {
 		this.fileTooLarge().trigger(size);
 	}
 
 	void updateDom(DomElement element, boolean all) {
 		boolean containsProgress = this.progressBar_ != null
 				&& this.progressBar_.getParent() == this;
-		if (this.fileUploadTarget_ != null && this.doUpload_) {
-			element.callMethod("submit()");
-			this.doUpload_ = false;
-			if (containsProgress) {
-				DomElement inputE = DomElement.getForUpdate(
-						"in" + this.getId(), DomElementType.DomElement_INPUT);
-				inputE.setProperty(Property.PropertyStyleDisplay, "none");
-				element.addChild(inputE);
-			}
-		}
+		DomElement inputE = null;
 		if (element.getType() != DomElementType.DomElement_INPUT
-				&& containsProgress && !this.progressBar_.isRendered()) {
+				&& this.flags_.get(BIT_DO_UPLOAD) && containsProgress
+				&& !this.progressBar_.isRendered()) {
 			element.addChild(this.progressBar_.createSDomElement(WApplication
 					.getInstance()));
+		}
+		if (this.fileUploadTarget_ != null && this.flags_.get(BIT_DO_UPLOAD)) {
+			element.callMethod("submit()");
+			this.flags_.clear(BIT_DO_UPLOAD);
+			if (containsProgress) {
+				inputE = DomElement.getForUpdate("in" + this.getId(),
+						DomElementType.DomElement_INPUT);
+				inputE.setProperty(Property.PropertyStyleDisplay, "none");
+			}
+		}
+		if (this.flags_.get(BIT_ENABLED_CHANGED)) {
+			if (!(inputE != null)) {
+				inputE = DomElement.getForUpdate("in" + this.getId(),
+						DomElementType.DomElement_INPUT);
+			}
+			inputE.callMethod("disabled=true");
+			this.flags_.clear(BIT_ENABLED_CHANGED);
+		}
+		EventSignal change = this.voidEventSignal(CHANGE_SIGNAL, false);
+		if (change != null && change.needsUpdate(all)) {
+			if (!(inputE != null)) {
+				inputE = DomElement.getForUpdate("in" + this.getId(),
+						DomElementType.DomElement_INPUT);
+			}
+			this.updateSignalConnection(inputE, change, "change", all);
+		}
+		if (inputE != null) {
+			element.addChild(inputE);
 		}
 		super.updateDom(element, all);
 	}
@@ -503,7 +522,7 @@ public class WFileUpload extends WWebWidget {
 			i.setName("if" + this.getId());
 			DomElement form = result;
 			form.setAttribute("method", "post");
-			form.setAttribute("action", this.fileUploadTarget_.generateUrl());
+			form.setAttribute("action", this.fileUploadTarget_.getUrl());
 			form.setAttribute("enctype", "multipart/form-data");
 			form.setProperty(Property.PropertyStyle,
 					"margin:0;padding:0;display:inline");
@@ -514,28 +533,34 @@ public class WFileUpload extends WWebWidget {
 			DomElement input = DomElement
 					.createNew(DomElementType.DomElement_INPUT);
 			input.setAttribute("type", "file");
-			if (this.multiple_) {
+			if (this.flags_.get(BIT_MULTIPLE)) {
 				input.setAttribute("multiple", "multiple");
 			}
 			input.setAttribute("name", "data");
 			input.setAttribute("size", String.valueOf(this.textSize_));
 			input.setId("in" + this.getId());
+			if (!this.isEnabled()) {
+				input.setProperty(Property.PropertyDisabled, "true");
+			}
 			if (change != null) {
 				this.updateSignalConnection(input, change, "change", true);
 			}
 			form.addChild(input);
 		} else {
 			result.setAttribute("type", "file");
-			if (this.multiple_) {
+			if (this.flags_.get(BIT_MULTIPLE)) {
 				result.setAttribute("multiple", "multiple");
 			}
 			result.setAttribute("size", String.valueOf(this.textSize_));
+			if (!this.isEnabled()) {
+				result.setProperty(Property.PropertyDisabled, "true");
+			}
 			if (change != null) {
 				this.updateSignalConnection(result, change, "change", true);
 			}
 		}
 		this.updateDom(result, true);
-		this.enableAjax_ = false;
+		this.flags_.clear(BIT_ENABLE_AJAX);
 		return result;
 	}
 
@@ -549,7 +574,7 @@ public class WFileUpload extends WWebWidget {
 	}
 
 	void getDomChanges(List<DomElement> result, WApplication app) {
-		if (this.enableAjax_) {
+		if (this.flags_.get(BIT_ENABLE_AJAX)) {
 			DomElement plainE = DomElement.getForUpdate(this,
 					DomElementType.DomElement_INPUT);
 			DomElement ajaxE = this.createDomElement(app);
@@ -558,6 +583,12 @@ public class WFileUpload extends WWebWidget {
 		} else {
 			super.getDomChanges(result, app);
 		}
+	}
+
+	protected void propagateSetEnabled(boolean enabled) {
+		this.flags_.set(BIT_ENABLED_CHANGED);
+		this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyAttribute));
+		super.propagateSetEnabled(enabled);
 	}
 
 	EventSignal fileTooLargeImpl() {
@@ -569,9 +600,9 @@ public class WFileUpload extends WWebWidget {
 	}
 
 	private void onUploaded() {
-		if (this.uploading_) {
+		if (this.flags_.get(BIT_UPLOADING)) {
 			WApplication.getInstance().enableUpdates(false);
-			this.uploading_ = false;
+			this.flags_.clear(BIT_UPLOADING);
 		}
 	}
 

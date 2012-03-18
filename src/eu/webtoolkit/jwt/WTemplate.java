@@ -55,7 +55,7 @@ import org.slf4j.LoggerFactory;
  * <p>
  * Optionally, additional arguments can be specified using the following syntax:
  * <p>
- * <code>${var arg1=value1 arg2=&quot;A second value&quot; arg3=&apos;A third value&apos;}</code>
+ * <code>${var arg1=&quot;A value&quot; arg2=&apos;A second value&apos;}</code>
  * <p>
  * The arguments can thus be simple simple strings or quoted strings (single or
  * double quoted). These arguments are applied to a resolved widget in
@@ -75,8 +75,7 @@ import org.slf4j.LoggerFactory;
  * <i><b>Note: </b>The use of XML comments (<code>&lt;!-- ... -.</code>) around
  * variables that are bound to widgets will result in bad behaviour since the
  * template parser is ignorant about these comments and the corresponding
- * widgets will believe that they are rendered but aren&apos;t actually. We are
- * planning to add a syntax for conditional sections</i>
+ * widgets will believe that they are rendered but aren&apos;t actually.</i>
  * </p>
  * <h3>B. Functions</h3>
  * <p>
@@ -91,37 +90,41 @@ import org.slf4j.LoggerFactory;
  * resolveFunction()}, and the default implementation considers functions bound
  * with {@link WTemplate#addFunction(String name, Function function)
  * addFunction()}. There are currently two functions that are generally useful:
+ * <p>
  * <ul>
- * <li>Functions::tr() resolves a localized strings. This is convenient to
- * create a language neutral template, which contains translated strings</li>
- * <li>{@link } resolves the id of a bound widget. This is convenient to bind
- * &lt;label&gt; elements to a form widget using its for attribute.</li>
+ * <li>{@link TrFunctionImpl} : resolves a localized strings, this is convenient
+ * to create a language neutral template, which contains translated strings</li>
+ * </ul>
+ * <p>
+ * <ul>
+ * <li>{@link IdFunctionImpl} : resolves the id of a bound widget, this is
+ * convenient to bind &lt;label&gt; elements to a form widget using its for
+ * attribute.</li>
  * </ul>
  * <p>
  * <h3>C. Conditional blocks</h3>
  * <p>
  * <code>${&lt;cond&gt;}</code> starts a conditional block with a condition name
  * &quot;cond&quot;, and must be closed by a balanced
- * <code>${&lt;/cond&gt;}</code>.
+ * <code>${&gt;/cond&gt;}</code>.
  * <p>
  * Conditions are set using
  * {@link WTemplate#setCondition(String name, boolean value) setCondition()}.
  * <p>
  * <h3>Usage example</h3>
  * <p>
- * <blockquote>
  * 
  * <pre>
- * WString userName = ...;
+ * {@code
+ *  WString userName = ...;
  * 
- *  WTemplate *t = new WTemplate();
+ *  WTemplate t = new WTemplate();
  *  t.setTemplateText("<div> How old are you, ${friend} ? ${age-input} </div>");
  * 
  *  t.bindString("friend", userName, PlainText);
  *  t.bindWidget("age-input", ageEdit_ = new WLineEdit());
+ * }
  * </pre>
- * 
- * </blockquote>
  * <p>
  * <h3>CSS</h3>
  * <p>
@@ -131,8 +134,133 @@ import org.slf4j.LoggerFactory;
 public class WTemplate extends WInteractWidget {
 	private static Logger logger = LoggerFactory.getLogger(WTemplate.class);
 
+	private boolean _tr(List<WString> args, Writer result) throws IOException {
+		if (args.size() >= 1) {
+			WString s = WString.tr(args.get(0).toString());
+			for (int j = 1; j < args.size(); ++j) {
+				s.arg(args.get(j));
+			}
+			result.append(s.toString());
+			return true;
+		} else {
+			logger.error(new StringWriter().append(
+					"Functions::tr(): expects at least one argument")
+					.toString());
+			return false;
+		}
+	}
+
+	private boolean _id(List<WString> args, Writer result) throws IOException {
+		if (args.size() == 1) {
+			WWidget w = this.resolveWidget(args.get(0).toString());
+			if (w != null) {
+				result.append(w.getId());
+				return true;
+			} else {
+				return false;
+			}
+		} else {
+			logger
+					.error(new StringWriter().append(
+							"Functions::tr(): expects exactly one argument")
+							.toString());
+			return false;
+		}
+	}
+
 	static interface Function {
 		public boolean evaluate(WTemplate t, List<WString> args, Writer result);
+	}
+
+	/**
+	 * A function that resolves to a localized string.
+	 * <p>
+	 * 
+	 * For example, when bound to the function <code>&quot;tr&quot;</code>, a
+	 * place-holder
+	 * 
+	 * <pre>
+	 * ${tr:name}
+	 * </pre>
+	 * 
+	 * will be resolved to the value of:
+	 * 
+	 * <pre>
+	 * {@code
+	 *      WString#tr("name")
+	 *   }
+	 * </pre>
+	 * <p>
+	 * 
+	 * @see WTemplate#addFunction(String name, Function function)
+	 */
+	public static class TrFunctionImpl implements Function {
+		private static Logger logger = LoggerFactory
+				.getLogger(TrFunctionImpl.class);
+
+		public boolean evaluate(WTemplate t, List<WString> args, Writer result) {
+			try {
+				return t._tr(args, result);
+			} catch (IOException ioe) {
+				return false;
+			}
+		}
+	}
+
+	/**
+	 * A function that resolves the id of a bound widget.
+	 * <p>
+	 * 
+	 * For example, when bound to the function <code>&quot;id&quot;</code>, a
+	 * place-holder
+	 * 
+	 * <pre>
+	 * ${id:name}
+	 * </pre>
+	 * 
+	 * will be resolved to the value of:
+	 * 
+	 * <pre>
+	 * {@code
+	 *      t.resolveWidget("name").id()
+	 *   }
+	 * </pre>
+	 * <p>
+	 * This is useful for binding labels to input elements.
+	 * <p>
+	 * 
+	 * @see WTemplate#addFunction(String name, Function function)
+	 */
+	public static class IdFunctionImpl implements Function {
+		private static Logger logger = LoggerFactory
+				.getLogger(IdFunctionImpl.class);
+
+		public boolean evaluate(WTemplate t, List<WString> args, Writer result) {
+			try {
+				return t._id(args, result);
+			} catch (IOException ioe) {
+				return false;
+			}
+		}
+	}
+
+	/**
+	 * A collection of predefined functions.
+	 * <p>
+	 * 
+	 * @see WTemplate#addFunction(String name, Function function)
+	 */
+	public static class FunctionsList {
+		private static Logger logger = LoggerFactory
+				.getLogger(FunctionsList.class);
+
+		public FunctionsList() {
+			this.tr = new WTemplate.TrFunctionImpl();
+			this.id = new WTemplate.IdFunctionImpl();
+		}
+
+		public Function tr;
+		public Function id;
 	}
 
 	/**
@@ -366,15 +494,14 @@ public class WTemplate extends WInteractWidget {
 	 * <code>${fun:bla}</code>
 	 * <p>
 	 * There are two predefined functions, which can be bound using:
-	 * <blockquote>
 	 * 
 	 * <pre>
-	 * WTemplate *t = ...;
+	 * {@code
+	 *    WTemplate *t = ...;
 	 *    t.addFunction("id", &WTemplate::Functions::id);
 	 *    t.addFunction("tr", &WTemplate::Functions::tr);
+	 *   }
 	 * </pre>
-	 * 
-	 * </blockquote>
 	 */
 	public void addFunction(String name, Function function) {
 		this.functions_.put(name, function);
@@ -504,10 +631,11 @@ public class WTemplate extends WInteractWidget {
 	 * (unless bind was called on them as in the example below).
 	 * <p>
 	 * This method is typically used for delayed binding of widgets. Usage
-	 * example: <blockquote>
+	 * example:
 	 * 
 	 * <pre>
-	 * {
+	 * {@code
+	 *    {
 	 *      if (Widget *known = WTemplate::resolveWidget(varName)) {
 	 *        return known;
 	 *      } else {
@@ -518,9 +646,8 @@ public class WTemplate extends WInteractWidget {
 	 *        }
 	 *      }
 	 *    }
+	 *   }
 	 * </pre>
-	 * 
-	 * </blockquote>
 	 */
 	public WWidget resolveWidget(String varName) {
 		WWidget j = this.widgets_.get(varName);
@@ -559,7 +686,7 @@ public class WTemplate extends WInteractWidget {
 		return false;
 	}
 
-	// public T resolve(String varName) ;
+	// public T (String varName) ;
 	/**
 	 * Erases all variable bindings.
 	 * <p>
@@ -648,10 +775,12 @@ public class WTemplate extends WInteractWidget {
 	 * needed to load content on-demand (e.g. database objects), or support a
 	 * custom template language.
 	 */
-	protected void renderTemplate(Writer result) throws IOException {
+	public void renderTemplate(Writer result) throws IOException {
 		String text = "";
 		WApplication app = WApplication.getInstance();
-		if (this.encodeInternalPaths_ || app.getSession().hasSessionIdInUrl()) {
+		if (app != null
+				&& (this.encodeInternalPaths_ || app.getSession()
+						.hasSessionIdInUrl())) {
 			EnumSet<RefEncoderOption> options = EnumSet
 					.noneOf(RefEncoderOption.class);
 			if (this.encodeInternalPaths_) {
@@ -1007,4 +1136,5 @@ public class WTemplate extends WInteractWidget {
 	}
 
 	static String DropShadow_x1_x2 = "<span class=\"Wt-x1\"><span class=\"Wt-x1a\"></span></span><span class=\"Wt-x2\"><span class=\"Wt-x2a\"></span></span>";
+	public static WTemplate.FunctionsList Functions = new WTemplate.FunctionsList();
 }

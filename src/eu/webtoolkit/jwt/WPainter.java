@@ -1080,6 +1080,25 @@ public class WPainter {
 	 * that are defined as an explicit size (see {@link WFont.Size#FixedSize})
 	 * will render correctly in all devices (SVG, VML, and HtmlCanvas).
 	 * <p>
+	 * The list of fonts that will render correctly with VML (on IE&lt;9) are
+	 * limited to the following: <a
+	 * href="http://www.ampsoft.net/webdesign-l/WindowsMacFonts.html"
+	 * >http://www.ampsoft.net/webdesign-l/WindowsMacFonts.html</a>
+	 * <p>
+	 * Careful, for a font family that contains a space, you need to add quotes,
+	 * to
+	 * {@link WFont#setFamily(WFont.GenericFamily genericFamily, CharSequence specificFamilies)
+	 * WFont#setFamily()} e.g.
+	 * <p>
+	 * 
+	 * <pre>
+	 * {@code
+	 *    WFont mono;
+	 *    mono.setFamily(WFont::Monospace, "'Courier New'");
+	 *    mono.setSize(18);
+	 *   }
+	 * </pre>
+	 * <p>
 	 * 
 	 * @see WPainter#getFont()
 	 * @see WPainter#drawText(WRectF rectangle, EnumSet alignmentFlags, TextFlag

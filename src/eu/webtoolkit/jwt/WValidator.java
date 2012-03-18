@@ -88,28 +88,55 @@ public class WValidator extends WObject {
 
 	/**
 	 * A class that holds a validation result.
+	 * <p>
+	 * 
+	 * This structure is returned as the result of validation.
 	 */
 	public static class Result {
 		private static Logger logger = LoggerFactory.getLogger(Result.class);
 
+		/**
+		 * Default constructor.
+		 * <p>
+		 * Creates an invalid result.
+		 */
 		public Result() {
 			this.state_ = WValidator.State.Invalid;
 			this.message_ = new WString();
 		}
 
+		/**
+		 * Constructor.
+		 * <p>
+		 * Creates a result with given <code>state</code> and
+		 * <code>message</code>.
+		 */
 		public Result(WValidator.State state, CharSequence message) {
 			this.state_ = state;
 			this.message_ = WString.toWString(message);
 		}
 
+		/**
+		 * Constructor.
+		 * <p>
+		 * Creates a result with given <code>state</code> and initalizes the
+		 * message field to an empty {@link WString}.
+		 */
 		public Result(WValidator.State state) {
-			this(state, WString.Empty);
+			this.state_ = state;
+			this.message_ = WString.Empty;
 		}
 
+		/**
+		 * Returns the validation state.
+		 */
 		public WValidator.State getState() {
 			return this.state_;
 		}
 
+		/**
+		 * Returns the validation message.
+		 */
 		public WString getMessage() {
 			return this.message_;
 		}

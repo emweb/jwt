@@ -421,6 +421,13 @@ public class WSlider extends WFormWidget {
 		return this.sliderMoved_;
 	}
 
+	public void setDisabled(boolean disabled) {
+		if (this.paintedSlider_ != null) {
+			this.paintedSlider_.setDisabled(disabled);
+		}
+		super.setDisabled(disabled);
+	}
+
 	public void resize(WLength width, WLength height) {
 		super.resize(width, height);
 		if (this.paintedSlider_ != null) {
@@ -447,12 +454,17 @@ public class WSlider extends WFormWidget {
 	protected void layoutSizeChanged(int width, int height) {
 		super.resize(WLength.Auto, WLength.Auto);
 		if (this.paintedSlider_ != null) {
+			WEnvironment env = WApplication.getInstance().getEnvironment();
+			if (env.agentIsChrome()
+					&& this.orientation_ == Orientation.Vertical) {
+				height -= 5;
+			}
 			this.paintedSlider_.sliderResized(new WLength(width), new WLength(
 					height));
 		}
 	}
 
-	void render(EnumSet<RenderFlag> flags) {
+	protected void render(EnumSet<RenderFlag> flags) {
 		if (!EnumUtils.mask(flags, RenderFlag.RenderFull).isEmpty()) {
 			boolean useNative = this.isNativeControl();
 			if (!useNative) {

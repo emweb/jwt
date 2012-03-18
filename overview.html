@@ -1,12 +1,106 @@
-<html>
-<head>
+<!DOCTYPE html PUBLIC
+          "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head><meta http-equiv="Content-Type" content="text/html;charset=iso-8859-1" />
+<style type="text/css">
+  dt { font-weight: bold; }
+  h3 { text-decoration: underline; }
+  dd { margin-top: 10px; margin-bottom: 10px; }
+  dd p { margin-top: 0px; }
+  dd div { margin: 10px 0px; }
+</style>
+<title>JWt 3.2.1</title>
 </head>
-<body bgcolor="white">
+<body>
+
+This is the reference documentation
+for <a href="http://jwt.webtoolkit.eu/jwt">JWt</a>.
+
+<h1>Release notes</h1>
+
+This page lists important notes on migrating existing applications to
+newer version of Wt. It lists changes in the library that may break
+the way you build Wt, the way you configure Wt or the Wt API and
+behaviour.
+
+<h2>Release 3.2.1 (March 16, 2012)</h2>
+
 <p>
-This document is the Javadoc documentation of the JWt project.
-<br/>
-JWt is a Java library for developing interactive web applications that may be deployed within standard Java Servlet containers,
-for more details on JWt, visit the <A href="http://www.webtoolkit.eu/jwt/">web site</A>.
+  This release contains next to the usual bug fixes, the addition of new
+  functionality for authentication.
 </p>
+
+<h3>A) New classes:</h3>
+
+<dl>
+  <dt>
+    <a href="eu/webtoolkit/jwt/auth/package-summary.html">eu.webtoolkit.jwt.auth</a>
+  </dt>
+  <dd>
+    <div>This namespace contains model and view classes for
+      authentication. It implements password authentication using best
+      practices, email verifiation, remember-me tokens, and provisions
+      support for federated login with an implementation of OAuth 2.0
+      for authentication using third party identity providers.</div>
+
+    <div>This package has been isolated in a separate jar (jwt-auth.jar)
+      because it has several third-party dependencies (see below).</div>
+  </dd>
+
+  <dt>
+    <a href="eu/webtoolkit/jwt/WFormModel.html">WFormModel</a>
+  </dt>
+  <dd>
+    A model class for forms. These models are used in Wt::Auth as the
+    basis for RegistrationModel and AuthModel, and allow a more
+    straight-forward customization of the underlying behavior of these
+    forms.
+  </dd>
+
+  <dt>
+    <a href="eu/webtoolkit/jwt/WReadOnlyProxyModel.html">WReadOnlyProxyModel</a>
+  </dt>
+  <dd>
+    A proxy model class which allows to share a source model read-only
+    between multiple sessions.
+  </dd>
+
+  <dt>
+    <a href="eu/webtoolkit/jwt/WTemplateFormView.html">WTemplateFormView</a>
+  </dt>
+  <dd>
+    A WTemplate-based standard view implementation that works in conjunction
+    with WFormModel.
+  </dd>
+
+  <dt>
+    <a href="eu/webtoolkit/jwt/Utils.html">Utils</a>
+  </dt>
+  <dd>
+    This class contains a number of utility functions that we found
+    useful in projects using JWt, and were used internally in JWt
+    already. They relate mostly to lower-level encoding and decoding
+    functions: base64-, hex-, html-, and url-encoding/decoding.
+  </dd>
+</dl>
+
+<h3>B) Main improvements:</h3>
+
+<dl>
+  <dt>
+    <a href="eu/webtoolkit/jwt/chart/WAxis.html">chart.WAxis</a>
+  </dt>
+  <dd>
+    DateScale and DateTimeScale axes have improved auto-configuration of
+    limits and timesteps, now taking into account the resolution.
+  </dd>
+
+<h3>C) Build/dependencies</h3>
+
+The auth package has been isolated in a separate jar file because it
+has different dependencies.
+
 </body>
 </html>

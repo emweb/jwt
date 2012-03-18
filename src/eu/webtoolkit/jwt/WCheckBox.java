@@ -42,23 +42,23 @@ import org.slf4j.LoggerFactory;
  * <p>
  * Usage example:
  * <p>
- * <blockquote>
  * 
  * <pre>
- * WGroupBox box = new WGroupBox(&quot;In-flight options&quot;);
+ * {
+ * 	&#064;code
+ * 	WGroupBox box = new WGroupBox(&quot;In-flight options&quot;);
  * 
- * WCheckBox w1 = new WCheckBox(&quot;Vegetarian diet&quot;, box);
- * box.addWidget(new WBreak());
- * WCheckBox w2 = new WCheckBox(&quot;WIFI access&quot;, box);
- * box.addWidget(new WBreak());
- * WCheckBox w3 = new WCheckBox(&quot;AC plug&quot;, box);
+ * 	WCheckBox w1 = new WCheckBox(&quot;Vegetarian diet&quot;, box);
+ * 	box.addWidget(new WBreak());
+ * 	WCheckBox w2 = new WCheckBox(&quot;WIFI access&quot;, box);
+ * 	box.addWidget(new WBreak());
+ * 	WCheckBox w3 = new WCheckBox(&quot;AC plug&quot;, box);
  * 
- * w1.setChecked(false);
- * w2.setChecked(true);
- * w3.setChecked(true);
+ * 	w1.setChecked(false);
+ * 	w2.setChecked(true);
+ * 	w3.setChecked(true);
+ * }
  * </pre>
- * 
- * </blockquote>
  * <p>
  * WCheckBox is an {@link WWidget#setInline(boolean inlined) inline} widget.
  * <p>

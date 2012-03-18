@@ -254,23 +254,7 @@ public abstract class WLayout extends WObject implements WLayoutItem {
 	 * WContainerWidget#clear()}, with the exception that the layout itself is
 	 * not deleted.
 	 */
-	public void clear() {
-		while (this.getCount() != 0) {
-			WLayoutItem item = this.getItemAt(this.getCount() - 1);
-			if (item != null) {
-				WWidget widget = null;
-				if (item.getLayout() != null) {
-					item.getLayout().clear();
-				} else {
-					widget = item.getWidget();
-				}
-				this.removeItem(item);
-				;
-				if (widget != null)
-					widget.remove();
-			}
-		}
-	}
+	public abstract void clear();
 
 	/**
 	 * Create a layout.
@@ -341,6 +325,21 @@ public abstract class WLayout extends WObject implements WLayoutItem {
 	 */
 	protected void setLayoutInParent(WWidget parent) {
 		parent.setLayout(this);
+	}
+
+	protected void clearLayoutItem(WLayoutItem item) {
+		if (item != null) {
+			WWidget widget = null;
+			if (item.getLayout() != null) {
+				item.getLayout().clear();
+			} else {
+				widget = item.getWidget();
+			}
+			this.removeItem(item);
+			;
+			if (widget != null)
+				widget.remove();
+		}
 	}
 
 	static class Hint {

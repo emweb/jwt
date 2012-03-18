@@ -5,6 +5,21 @@
 	<classpathentry kind="lib" path="lib/commons-fileupload-1.2.1.jar"/>
 	<classpathentry kind="lib" path="lib/commons-io-1.4.jar"/>
 	<classpathentry kind="lib" path="lib/slf4j-api-1.6.4.jar"/>
-	<classpathentry kind="lib" path="lib/servlet-api-3.0.jar"/>
+	<classpathentry kind="lib" path="lib/javamail/dsn.jar"/>
+	<classpathentry kind="lib" path="lib/javamail/imap.jar"/>
+	<classpathentry kind="lib" path="lib/javamail/mail.jar"/>
+	<classpathentry kind="lib" path="lib/javamail/pop3.jar"/>
+	<classpathentry kind="lib" path="lib/javamail/smtp.jar"/>
+	<classpathentry kind="lib" path="lib/gson/gson-2.0.jar"/>
+	<classpathentry kind="lib" path="lib/http/httpclient-4.1.2.jar"/>
+	<classpathentry kind="lib" path="lib/http/httpcore-4.1.2.jar"/>
+	<classpathentry kind="lib" path="lib/jpa/geronimo-jpa_2.0_spec-1.1.jar"/>
+	<classpathentry kind="lib" path="lib/servlet-api/servlet-api-3.0.jar"/>
+	<classpathentry kind="lib" path="lib/vt-password/bcprov-jdk15-1.45.jar"/>
+	<classpathentry kind="lib" path="lib/vt-password/commons-cli-1.2.jar"/>
+	<classpathentry kind="lib" path="lib/vt-password/commons-logging-1.1.1.jar"/>
+	<classpathentry kind="lib" path="lib/vt-password/vt-crypt-2.1.4.jar"/>
+	<classpathentry kind="lib" path="lib/vt-password/vt-dictionary-3.0.jar"/>
+	<classpathentry kind="lib" path="lib/vt-password/vt-password-3.1.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

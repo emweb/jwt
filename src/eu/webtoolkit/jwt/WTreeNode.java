@@ -297,13 +297,13 @@ public class WTreeNode extends WCompositeWidget {
 	/**
 	 * Adds a child node.
 	 * <p>
-	 * Equivalent to: <blockquote>
+	 * Equivalent to:
 	 * 
 	 * <pre>
-	 * insertChildNode(childNodes().size(), node);
+	 * {@code
+	 *    insertChildNode(childNodes().size(), node);
+	 *   }
 	 * </pre>
-	 * 
-	 * </blockquote>
 	 * <p>
 	 * 
 	 * @see WTreeNode#insertChildNode(int index, WTreeNode node)
@@ -833,6 +833,13 @@ public class WTreeNode extends WCompositeWidget {
 			}
 			this.collapsed_ = false;
 		}
+	}
+
+	/**
+	 * Accesses the icon pair that allows expansion of the tree node.
+	 */
+	protected WIconPair getExpandIcon() {
+		return this.expandIcon_;
 	}
 
 	WTable getImpl() {

@@ -302,9 +302,9 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 			}
 			if (!this.currentBrush_.getColor().equals(
 					this.currentPen_.getColor())) {
-				this.js_.append("ctx.fillStyle=\"").append(
-						this.currentPen_.getColor().getCssText(true)).append(
-						"\";");
+				this.js_.append("ctx.fillStyle=").append(
+						WWebWidget.jsStringLiteral(this.currentPen_.getColor()
+								.getCssText(true))).append(";");
 			}
 			this.js_.append("ctx.fillText(").append(
 					WString.toWString(text).getJsStringLiteral()).append(',')
@@ -312,9 +312,9 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 							String.valueOf(y)).append(");");
 			if (!this.currentBrush_.getColor().equals(
 					this.currentPen_.getColor())) {
-				this.js_.append("ctx.fillStyle=\"").append(
-						this.currentBrush_.getColor().getCssText(true)).append(
-						"\";");
+				this.js_.append("ctx.fillStyle=").append(
+						WWebWidget.jsStringLiteral(this.currentBrush_
+								.getColor().getCssText(true))).append(";");
 			}
 		}
 			break;
@@ -364,9 +364,9 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 					String.valueOf(y)).append(");");
 			if (!this.currentBrush_.getColor().equals(
 					this.currentPen_.getColor())) {
-				this.js_.append("ctx.fillStyle=\"").append(
-						this.currentPen_.getColor().getCssText(true)).append(
-						"\";");
+				this.js_.append("ctx.fillStyle=").append(
+						WWebWidget.jsStringLiteral(this.currentPen_.getColor()
+								.getCssText(true))).append(";");
 			}
 			this.js_.append("ctx.mozDrawText(").append(
 					WString.toWString(text).getJsStringLiteral()).append(");");
@@ -466,7 +466,7 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 	}
 
 	void render(String canvasId, DomElement text) {
-		String canvasVar = "Wt3_2_0.getElement('" + canvasId + "')";
+		String canvasVar = "Wt3_2_1.getElement('" + canvasId + "')";
 		StringWriter tmp = new StringWriter();
 		tmp.append("if(").append(canvasVar).append(".getContext){");
 		if (!this.images_.isEmpty()) {
@@ -715,9 +715,9 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 		}
 		if (penChanged) {
 			if (penColorChanged) {
-				this.js_.append("ctx.strokeStyle=\"").append(
-						this.getPainter().getPen().getColor().getCssText(true))
-						.append("\";");
+				this.js_.append("ctx.strokeStyle=").append(
+						WWebWidget.jsStringLiteral(this.getPainter().getPen()
+								.getColor().getCssText(true))).append(";");
 			}
 			this.js_.append("ctx.lineWidth=").append(
 					String.valueOf(this.getPainter().normalizedPenWidth(
@@ -753,9 +753,9 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 		}
 		if (brushChanged) {
 			this.currentBrush_ = this.painter_.getBrush();
-			this.js_.append("ctx.fillStyle=\"").append(
-					this.currentBrush_.getColor().getCssText(true)).append(
-					"\";");
+			this.js_.append("ctx.fillStyle=").append(
+					WWebWidget.jsStringLiteral(this.currentBrush_.getColor()
+							.getCssText(true))).append(";");
 		}
 		if (shadowChanged) {
 			this.currentShadow_ = this.painter_.getShadow();
@@ -765,20 +765,22 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 					String.valueOf(this.currentShadow_.getOffsetY())).append(
 					';').append("ctx.shadowBlur=").append(
 					String.valueOf(this.currentShadow_.getBlur())).append(';')
-					.append("ctx.shadowColor=\"").append(
-							this.currentShadow_.getColor().getCssText(true))
-					.append("\";");
+					.append("ctx.shadowColor=").append(
+							WWebWidget.jsStringLiteral(this.currentShadow_
+									.getColor().getCssText(true))).append(";");
 		}
 		if (fontChanged) {
 			this.currentFont_ = this.painter_.getFont();
 			switch (this.textMethod_) {
 			case Html5Text:
-				this.js_.append("ctx.font='").append(
-						this.getPainter().getFont().getCssText()).append("';");
+				this.js_.append("ctx.font=").append(
+						WWebWidget.jsStringLiteral(this.getPainter().getFont()
+								.getCssText())).append(";");
 				break;
 			case MozText:
-				this.js_.append("ctx.mozTextStyle = '").append(
-						this.getPainter().getFont().getCssText()).append("';");
+				this.js_.append("ctx.mozTextStyle = ").append(
+						WWebWidget.jsStringLiteral(this.getPainter().getFont()
+								.getCssText())).append(";");
 				break;
 			case DomText:
 				break;

@@ -38,24 +38,24 @@ import org.slf4j.LoggerFactory;
  * <p>
  * Usage example:
  * <p>
- * <blockquote>
  * 
  * <pre>
- * // create the stack where the contents will be located
- * WStackedWidget contents = new WStackedWidget(contentsParent);
+ * {
+ * 	&#064;code
+ * 	// create the stack where the contents will be located
+ * 	WStackedWidget contents = new WStackedWidget(contentsParent);
  * 
- * // create a menu
- * WMenu menu = new WMenu(contents, Orientation.Vertical, menuParent);
- * menu.setRenderAsList(true);
+ * 	// create a menu
+ * 	WMenu menu = new WMenu(contents, Orientation.Vertical, menuParent);
+ * 	menu.setRenderAsList(true);
  * 
- * // add four items using the default lazy loading policy.
- * menu.addItem(&quot;Introduction&quot;, new WText(&quot;intro&quot;));
- * menu.addItem(&quot;Download&quot;, new WText(&quot;Not yet available&quot;));
- * menu.addItem(&quot;Demo&quot;, new DemoWidget());
- * menu.addItem(new WMenuItem(&quot;Demo2&quot;, new DemoWidget()));
+ * 	// add four items using the default lazy loading policy.
+ * 	menu.addItem(&quot;Introduction&quot;, new WText(&quot;intro&quot;));
+ * 	menu.addItem(&quot;Download&quot;, new WText(&quot;Not yet available&quot;));
+ * 	menu.addItem(&quot;Demo&quot;, new DemoWidget());
+ * 	menu.addItem(new WMenuItem(&quot;Demo2&quot;, new DemoWidget()));
+ * }
  * </pre>
- * 
- * </blockquote>
  * <p>
  * Historically, a menu was implemented as a table, but
  * {@link WMenu#setRenderAsList(boolean enable) rendering as a list} (
@@ -113,9 +113,9 @@ import org.slf4j.LoggerFactory;
  * assuming you set a <code>&quot;menu&quot;</code> style class for your menu,
  * you can style the items using:
  * <p>
- * <blockquote>
  * 
  * <pre>
+ * {@code
  * .menu * .item {
  *   cursor: pointer; cursor: hand;
  *   color: blue;
@@ -127,9 +127,8 @@ import org.slf4j.LoggerFactory;
  *   text-decoration: underline;
  *   font-weight: bold;  
  * }
+ * }
  * </pre>
- * 
- * </blockquote>
  * <p>
  * For menus which supports closing and/or enabling disabling of items, the
  * styling is more complex. The close icon is styled by the current CSS theme
@@ -164,9 +163,9 @@ import org.slf4j.LoggerFactory;
  * <p>
  * Example of styling a menu with closeable items:
  * <p>
- * <blockquote>
  * 
  * <pre>
+ * {@code
  * .menu {
  *   overflow: auto;
  * }
@@ -224,9 +223,8 @@ import org.slf4j.LoggerFactory;
  *   font-weight: bold;
  *   text-decoration: none;
  * }
+ * }
  * </pre>
- * 
- * </blockquote>
  * <p>
  * 
  * @see WMenuItem
@@ -970,7 +968,7 @@ public class WMenu extends WCompositeWidget {
 	private List<WMenuItem> items_;
 
 	void select(int index, boolean changePath) {
-		this.selectVisual(index, changePath);
+		this.selectVisual(index, changePath, true);
 		if (index != -1) {
 			if (this.isItemHidden(index)) {
 				this.setItemHidden(index, false);
@@ -1019,10 +1017,10 @@ public class WMenu extends WCompositeWidget {
 	}
 
 	void selectVisual(WMenuItem item) {
-		this.selectVisual(this.indexOf(item), true);
+		this.selectVisual(this.indexOf(item), true, true);
 	}
 
-	private void selectVisual(int index, boolean changePath) {
+	void selectVisual(int index, boolean changePath, boolean showContents) {
 		this.previousCurrent_ = this.current_;
 		if (this.contentsStack_ != null) {
 			this.previousStackIndex_ = this.contentsStack_.getCurrentIndex();
@@ -1044,7 +1042,7 @@ public class WMenu extends WCompositeWidget {
 		if (index == -1) {
 			return;
 		}
-		if (this.contentsStack_ != null) {
+		if (showContents && this.contentsStack_ != null) {
 			WWidget contents = this.items_.get(this.current_).getContents();
 			if (contents != null) {
 				this.contentsStack_.setCurrentWidget(contents);
@@ -1056,7 +1054,7 @@ public class WMenu extends WCompositeWidget {
 	void undoSelectVisual() {
 		String prevPath = this.previousInternalPath_;
 		int prevStackIndex = this.previousStackIndex_;
-		this.selectVisual(this.previousCurrent_, true);
+		this.selectVisual(this.previousCurrent_, true, true);
 		if (this.internalPathEnabled_) {
 			WApplication app = WApplication.getInstance();
 			app.setInternalPath(prevPath);

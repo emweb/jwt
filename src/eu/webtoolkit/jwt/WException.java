@@ -35,7 +35,7 @@ public class WException extends RuntimeException {
 		this.what_ = what + "\nCaused by exception: " + wrapped.toString();
 	}
 
-	public String getWhat() {
+	public String toString() {
 		return this.what_;
 	}
 

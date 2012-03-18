@@ -29,17 +29,16 @@ import org.slf4j.LoggerFactory;
  * <p>
  * This is useful for automated test-cases:
  * <p>
- * <blockquote>
  * 
  * <pre>
- * void testX() {
+ * {@code
+ *  void testX() {
  *    WTestEnvironment environment(new Configuration());
  *    MyApplication app(environment);
  *    ...
  *  }
+ * }
  * </pre>
- * 
- * </blockquote>
  * <p>
  * 
  * @see WEnvironment
