@@ -47,8 +47,12 @@ public class SimpleChatWidget extends WContainerWidget {
 		app_.enableUpdates();
 	}
 
+	public void destroy() {
+		doLogout();
+	}
+	
 	public void finalize() {
-		logout();
+		doLogout();
 	}
 
 	/**
@@ -254,14 +258,8 @@ public class SimpleChatWidget extends WContainerWidget {
 						if (result == StandardButton.No)
                             return;
 						
-						if (listener_ != null) {
-							server_.chatEvent().removeListener(listener_); // do not listen for more events
-							listener_ = null;
-							
-							server_.logout(user_);
-
-							letLogin();
-						}
+						doLogout();
+						letLogin();
 					}
 				});
 	}
@@ -343,5 +341,14 @@ public class SimpleChatWidget extends WContainerWidget {
 		app_.triggerUpdate();
 		
 		lock.release();
+	}
+
+	private void doLogout() {
+		if (listener_ != null) {
+			server_.chatEvent().removeListener(listener_); // do not listen for more events
+			listener_ = null;
+			
+			server_.logout(user_);
+		}
 	}
 }

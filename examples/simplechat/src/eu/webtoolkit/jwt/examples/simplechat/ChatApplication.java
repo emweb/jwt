@@ -26,7 +26,7 @@ public class ChatApplication extends WApplication {
 
 		getRoot().addWidget(new WText(WString.tr("introduction")));
 
-		SimpleChatWidget chatWidget = new SimpleChatWidget(theServer, getRoot());
+		chatWidget = new SimpleChatWidget(theServer, getRoot());
 		chatWidget.setStyleClass("chat");
 
 		getRoot().addWidget(new WText(WString.tr("details")));
@@ -43,6 +43,12 @@ public class ChatApplication extends WApplication {
 		useStyleSheet("style/simplechat.css");
 	}
 
+	@Override
+	public void destroy() {
+		chatWidget.destroy();
+		super.destroy();
+	}
+
 	private void addChatWidget() {
 		SimpleChatWidget chatWidget2 = new SimpleChatWidget(theServer,
 				WApplication.getInstance().getRoot());
@@ -50,4 +56,5 @@ public class ChatApplication extends WApplication {
 	}
 
 	private static SimpleChatServer theServer = new SimpleChatServer();
+	private SimpleChatWidget chatWidget;
 }
