@@ -348,6 +348,8 @@ class XHtmlFilter implements IXMLBuilder, IXMLEntityResolver {
 		}
 
 		writer.append('<');
+		if (nsPrefix != null) 
+			writer.append(nsPrefix + ":");
 		writer.append(name);	
 	}
 
@@ -358,6 +360,8 @@ class XHtmlFilter implements IXMLBuilder, IXMLEntityResolver {
 			if (tagOpen)
 				writer.append('>');
 			writer.append("</");
+			if (nsPrefix != null)
+				writer.append(nsPrefix + ":");
 			writer.append(name);
 			writer.append('>');
 		}
