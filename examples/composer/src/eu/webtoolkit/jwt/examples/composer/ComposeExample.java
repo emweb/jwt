@@ -76,7 +76,7 @@ public class ComposeExample extends WContainerWidget {
         if (!contacts.isEmpty())
             horiz = new WContainerWidget(feedback);
         for (int i = 0; i < contacts.size(); ++i) {
-            WText t = new WText("To: \"" + contacts.get(i).name + "\" <"
+            new WText("To: \"" + contacts.get(i).name + "\" <"
                     + contacts.get(i).email + ">", TextFormat.PlainText, horiz);
             new WBreak(horiz);
         }
@@ -85,7 +85,7 @@ public class ComposeExample extends WContainerWidget {
         if (!contacts.isEmpty())
             horiz = new WContainerWidget(feedback);
         for (int i = 0; i < contacts.size(); ++i) {
-            WText t = new WText("Cc: \"" + contacts.get(i).name + "\" <"
+            new WText("Cc: \"" + contacts.get(i).name + "\" <"
                     + contacts.get(i).email + ">", TextFormat.PlainText, horiz);
             new WBreak(horiz);
         }
@@ -94,13 +94,13 @@ public class ComposeExample extends WContainerWidget {
         if (!contacts.isEmpty())
             horiz = new WContainerWidget(feedback);
         for (int i = 0; i < contacts.size(); ++i) {
-            WText t = new WText("Bcc: \"" + contacts.get(i).name + "\" <"
+            new WText("Bcc: \"" + contacts.get(i).name + "\" <"
                     + contacts.get(i).email + ">", TextFormat.PlainText, horiz);
             new WBreak(horiz);
         }
 
         horiz = new WContainerWidget(feedback);
-        WText t = new WText("Subject: \"" + composer_.subject() + "\"", TextFormat.PlainText, horiz);
+        new WText("Subject: \"" + composer_.subject() + "\"", TextFormat.PlainText, horiz);
 
         ArrayList<Attachment> attachments = composer_.attachments();
         if (!attachments.isEmpty())
@@ -120,13 +120,13 @@ public class ComposeExample extends WContainerWidget {
         String message = composer_.message();
 
         horiz = new WContainerWidget(feedback);
-        t = new WText("Message body: ", horiz);
+        new WText("Message body: ", horiz);
         new WBreak(horiz);
 
         if (message.length() != 0) {
-            t = new WText(message, TextFormat.PlainText, horiz);
+            new WText(message, TextFormat.PlainText, horiz);
         } else
-            t = new WText("<i>(empty)</i>", horiz);
+            new WText("<i>(empty)</i>", horiz);
 
         composer_.remove();
         details_.remove();

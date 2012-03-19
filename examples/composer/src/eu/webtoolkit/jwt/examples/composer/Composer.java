@@ -20,6 +20,7 @@ import eu.webtoolkit.jwt.WContainerWidget;
 import eu.webtoolkit.jwt.WImage;
 import eu.webtoolkit.jwt.WLength;
 import eu.webtoolkit.jwt.WLineEdit;
+import eu.webtoolkit.jwt.WLink;
 import eu.webtoolkit.jwt.WMouseEvent;
 import eu.webtoolkit.jwt.WPushButton;
 import eu.webtoolkit.jwt.WTable;
@@ -403,7 +404,7 @@ public class Composer extends WCompositeWidget {
         /*
          * Attachments
          */
-        new WImage("pics/paperclip.png", edits_.getElementAt(5, 0));
+        new WImage(new WLink("pics/paperclip.png"), edits_.getElementAt(5, 0));
         edits_.getElementAt(5, 0).setContentAlignment(
                 EnumSet.of(AlignmentFlag.AlignTop, AlignmentFlag.AlignRight));
 

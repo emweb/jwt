@@ -18,13 +18,13 @@ import eu.webtoolkit.jwt.WCheckBox;
 import eu.webtoolkit.jwt.WContainerWidget;
 import eu.webtoolkit.jwt.WFileResource;
 import eu.webtoolkit.jwt.WFileUpload;
-import eu.webtoolkit.jwt.WFont.Size;
 import eu.webtoolkit.jwt.WLength;
+import eu.webtoolkit.jwt.WLink;
 import eu.webtoolkit.jwt.WMouseEvent;
 import eu.webtoolkit.jwt.WProgressBar;
 import eu.webtoolkit.jwt.WString;
 import eu.webtoolkit.jwt.WText;
-import eu.webtoolkit.jwt.WtServlet;
+import eu.webtoolkit.jwt.WFont.Size;
 import eu.webtoolkit.jwt.servlet.UploadedFile;
 
 /**
@@ -55,13 +55,10 @@ public class AttachmentEdit extends WContainerWidget {
 		/*
 		 * A progress bar
 		 */
-		//Only set the progress bar when server push is supported
-		if (WtServlet.isAsyncSupported()) {
-			WProgressBar progress = new WProgressBar();
-			progress.setFormat(WString.Empty);
-			progress.setVerticalAlignment(AlignmentFlag.AlignMiddle);
-			upload_.setProgressBar(progress);
-		}
+		WProgressBar progress = new WProgressBar();
+		progress.setFormat(WString.Empty);
+		progress.setVerticalAlignment(AlignmentFlag.AlignMiddle);
+		upload_.setProgressBar(progress);
 
 		/*
 		 * The 'remove' option.
@@ -215,21 +212,14 @@ public class AttachmentEdit extends WContainerWidget {
 
 			String fn = info_.getClientFileName();
 
-			downloadLink_ = new WAnchor("", fn + " (<i>"
-					+ info_.getContentType() + "</i>) " + size, this);
+            WFileResource res = new WFileResource(info_.getContentType(),
+                    info_.getSpoolFileName(), this);
+            res.suggestFileName(info_.getClientFileName());
 
-			WFileResource res = new WFileResource(info_.getContentType(),
-					info_.getSpoolFileName(), this);
-			res.suggestFileName(info_.getClientFileName());
-			downloadLink_.setResource(res);
+            new WAnchor(new WLink(res), fn + " (<i>" + info_.getContentType() + "</i>) " + size, this);
 		}
 
 		public UploadedFile info_;
-
-		/**
-		 * Anchor referencing the file.
-		 */
-		public WAnchor downloadLink_;
 
 		/**
 		 * The check box to keep or discard the uploaded file.
@@ -292,7 +282,7 @@ public class AttachmentEdit extends WContainerWidget {
 		uploadFailed_ = true;
 
 		/*
-		 * Signal to the Composer that a new asyncrhonous file upload was
+		 * Signal to the Composer that a new asynchronous file upload was
 		 * processed.
 		 */
 		uploadDone_.trigger();
