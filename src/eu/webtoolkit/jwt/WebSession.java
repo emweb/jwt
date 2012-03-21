@@ -1049,6 +1049,7 @@ class WebSession {
 			this.request_ = null;
 			this.response_ = null;
 			this.killed_ = false;
+			session.getMutex().lock();
 			this.init();
 		}
 

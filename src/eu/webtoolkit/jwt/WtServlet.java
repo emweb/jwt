@@ -426,8 +426,8 @@ public abstract class WtServlet extends HttpServlet {
 	 * This is only the case when the servlet container implements the Servlet 3.0 API,
 	 * and when this application is configured to support asynchronous processing.
 	 * 
-	 * Asynchronous I/O is required recursive event loops, and encouraged for scalable
-	 * server push (although JWt doesn't strictly require it).
+	 * Asynchronous I/O is required for recursive event loops, and encouraged for
+	 * scalable server push (although JWt doesn't strictly require it).
 	 * 
 	 * @return whether asynchronous I/O is supported.
 	 */
