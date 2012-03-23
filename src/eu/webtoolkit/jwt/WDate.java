@@ -95,15 +95,7 @@ public class WDate implements Comparable<WDate> {
 	 * @see #getDay()
 	 */
 	public WDate(int year, int month, int day) {
-		Calendar c = Calendar.getInstance();
-		c.set(year, month - 1, day);
-
-		if (c.get(Calendar.YEAR) != year || c.get(Calendar.MONTH) + 1 != month
-				|| c.get(Calendar.DATE) != day) {
-			throw new IllegalArgumentException("Illegal WDate");
-		}
-
-		d = c.getTime();
+		this(year, month, day, 0, 0, 0);
 	}
 
 	/**

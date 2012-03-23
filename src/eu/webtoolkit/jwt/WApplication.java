@@ -1427,6 +1427,13 @@ public class WApplication extends WObject {
 	 */
 	public void enableUpdates(boolean enabled) {
 		if (enabled) {
+			if (!(WebSession.Handler.getInstance().getRequest() != null)) {
+				logger
+						.warn(new StringWriter()
+								.append(
+										"WApplication::enableUpdates(true): should be called from within event loop")
+								.toString());
+			}
 			++this.serverPush_;
 		} else {
 			--this.serverPush_;
@@ -1478,6 +1485,11 @@ public class WApplication extends WObject {
 	public void triggerUpdate() {
 		if (WebSession.Handler.getInstance().getRequest() != null) {
 			return;
+		}
+		if (!(this.serverPush_ != 0)) {
+			logger.warn(new StringWriter().append(
+					"WApplication::triggerUpdate(): updates not enabled?")
+					.toString());
 		}
 		this.session_.setTriggerUpdate(true);
 	}
