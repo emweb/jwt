@@ -624,6 +624,7 @@ public class WTableView extends WAbstractItemView {
 					default:
 						break;
 					}
+					this.viewportTop_ = Math.max(0, this.viewportTop_);
 					if (hint != WAbstractItemView.ScrollHint.EnsureVisible) {
 						this.computeRenderedArea();
 						this
