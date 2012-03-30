@@ -77,6 +77,10 @@ public class WObject {
 		child.setParent(this);
 	}
 
+	void removeChild(WObject child) {
+		child.setParent(null);
+	}
+
 	/**
 	 * Sets an object name.
 	 * <p>
@@ -139,9 +143,6 @@ public class WObject {
 	}
 	
 	void signalConnectionsChanged() {
-	}
-
-	void removeChild(WObject object) {
 	}
 
 	/**

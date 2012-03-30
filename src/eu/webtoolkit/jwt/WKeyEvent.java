@@ -79,8 +79,8 @@ public class WKeyEvent implements WAbstractEvent {
 	 * Returns the unicode character code.
 	 * <p>
 	 * This is only defined for a {@link WInteractWidget#keyPressed()
-	 * keyPressed} event, and returns the unicode character code of a character
-	 * that is entered.
+	 * keyPressed} event, and returns the unicode character code point of a
+	 * character that is entered.
 	 * <p>
 	 * For the {@link WInteractWidget#keyWentDown() keyWentDown} and
 	 * {@link WInteractWidget#keyWentUp() keyWentUp} events, &apos;0&apos; is

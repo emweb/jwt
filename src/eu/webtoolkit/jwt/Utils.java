@@ -107,9 +107,17 @@ public class Utils {
 	 */
 	public static String htmlEncode(String text, EnumSet<HtmlEncodingFlag> flags)
 	{
-	  String result = text;
-	  WWebWidget.escapeText(result, flags.contains(HtmlEncodingFlag.EncodeNewLines) ? true : false);
-	  return result;
+	  return WWebWidget.escapeText(text, flags.contains(HtmlEncodingFlag.EncodeNewLines) ? true : false);
+	}
+	
+	/**
+	 * Performs HTML encoding of text.
+	 * <p>
+	 * Calls {@link Utils#htmlEncode(String text, EnumSet flags)
+	 * Utils.htmlEncode(text, EnumSet.noneOf(HtmlEncodingFlag.class))}
+	 */
+	public static String htmlEncode(String text) {
+		return Utils.htmlEncode(text, EnumSet.noneOf(HtmlEncodingFlag.class));
 	}
 	
 	/** Performs HTML encoding of text.
@@ -123,6 +131,16 @@ public class Utils {
 	public static String htmlEncode(WString text, EnumSet<HtmlEncodingFlag> flags) 
 	{
 		return htmlEncode(text.toString(), flags);
+	}
+	
+	/**
+	 * Performs HTML encoding of text.
+	 * <p>
+	 * Calls {@link Utils#htmlEncode(WString text, EnumSet flags)
+	 * Utils.htmlEncode(text, EnumSet.noneOf(HtmlEncodingFlag.class))}
+	 */
+	public static String htmlEncode(WString text) {
+		return Utils.htmlEncode(text, EnumSet.noneOf(HtmlEncodingFlag.class));
 	}
 	
 	/** Remove tags/attributes from text that are not passive.

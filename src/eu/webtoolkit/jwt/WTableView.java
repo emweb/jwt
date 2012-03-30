@@ -159,7 +159,7 @@ public class WTableView extends WAbstractItemView {
 		this.viewportLeft_ = 0;
 		this.viewportWidth_ = 1000;
 		this.viewportTop_ = 0;
-		this.viewportHeight_ = 600;
+		this.viewportHeight_ = 800;
 		this.setSelectable(false);
 		this.dropEvent_
 				.addListener(
@@ -482,6 +482,8 @@ public class WTableView extends WAbstractItemView {
 			if (!height.isAuto()) {
 				this.viewportHeight_ = (int) Math.ceil(height.toPixels()
 						- this.getHeaderHeight().toPixels());
+			} else {
+				this.viewportHeight_ = 800;
 			}
 		} else {
 			if (!(this.plainTable_ != null)) {
@@ -600,7 +602,7 @@ public class WTableView extends WAbstractItemView {
 			if (this.isAjaxMode()) {
 				int rh = (int) this.getRowHeight().toPixels();
 				int rowY = index.getRow() * rh;
-				if (this.viewportHeight_ != 600) {
+				if (this.viewportHeight_ != 800) {
 					if (hint == WAbstractItemView.ScrollHint.EnsureVisible) {
 						if (this.viewportTop_ + this.viewportHeight_ < rowY) {
 							hint = WAbstractItemView.ScrollHint.PositionAtTop;
@@ -624,6 +626,7 @@ public class WTableView extends WAbstractItemView {
 					default:
 						break;
 					}
+					this.viewportTop_ = Math.max(0, this.viewportTop_);
 					if (hint != WAbstractItemView.ScrollHint.EnsureVisible) {
 						this.computeRenderedArea();
 						this

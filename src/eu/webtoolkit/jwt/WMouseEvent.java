@@ -84,7 +84,16 @@ public class WMouseEvent implements WAbstractEvent {
 	 * returned.
 	 */
 	public WMouseEvent.Button getButton() {
-		return WMouseEvent.Button.values()[this.jsEvent_.button];
+		switch (this.jsEvent_.button) {
+		case 1:
+			return WMouseEvent.Button.LeftButton;
+		case 2:
+			return WMouseEvent.Button.MiddleButton;
+		case 4:
+			return WMouseEvent.Button.RightButton;
+		default:
+			return WMouseEvent.Button.NoButton;
+		}
 	}
 
 	/**

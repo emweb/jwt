@@ -399,6 +399,27 @@ public class WGoogleMap extends WCompositeWidget {
 	}
 
 	/**
+	 * Adds a icon marker overlay to the map.
+	 */
+	public void addIconMarker(WGoogleMap.Coordinate pos, String iconURL) {
+		StringWriter strm = new StringWriter();
+		if (this.apiVersion_ == WGoogleMap.ApiVersion.Version2) {
+			throw new UnsupportedOperationException(
+					"WGoogleMap::addIconMarker is not supported in the Google Maps API v2.");
+		} else {
+			strm.append("var position = new google.maps.LatLng(").append(
+					String.valueOf(pos.getLatitude())).append(", ").append(
+					String.valueOf(pos.getLongitude())).append(");").append(
+					"var marker = new google.maps.Marker({").append(
+					"position: position,").append("icon: \"").append(iconURL)
+					.append("\",").append("map: ").append(this.getJsRef())
+					.append(".map").append("});").append(this.getJsRef())
+					.append(".map.overlays.push(marker);");
+		}
+		this.doGmJavaScript(strm.toString());
+	}
+
+	/**
 	 * Removes all overlays from the map.
 	 */
 	public void clearOverlays() {

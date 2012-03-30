@@ -83,7 +83,7 @@ public class PaintExample extends WContainerWidget {
         this.shapes_ = new ShapesWidget();
         this.shapes_.setAngle(0.0);
         this.shapes_.setRelativeSize(0.5);
-        this.shapes_.setPreferredMethod(WPaintedWidget.Method.InlineSvgVml);
+        this.shapes_.setPreferredMethod(WPaintedWidget.Method.HtmlCanvas);
         layout.addWidget(this.shapes_, 1, 1, EnumSet.of(
                 AlignmentFlag.AlignCenter, AlignmentFlag.AlignMiddle));
     }

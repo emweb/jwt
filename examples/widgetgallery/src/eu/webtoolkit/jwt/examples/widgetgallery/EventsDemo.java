@@ -147,6 +147,12 @@ class EventsDemo extends ControlsWidget {
 			}
 		});
 		r.mouseWheel().preventDefaultAction(true);
+		l
+				.setAttributeValue("oncontextmenu",
+						"event.cancelBubble = true; event.returnValue = false; return false;");
+		r
+				.setAttributeValue("oncontextmenu",
+						"event.cancelBubble = true; event.returnValue = false; return false;");
 		new WBreak(result);
 		new WText("Last event: ", result);
 		this.mouseEventType_ = new WText(result);
@@ -190,8 +196,8 @@ class EventsDemo extends ControlsWidget {
 					"Modifiers: ").append(modifiersToString(e.getModifiers()))
 					.append("<br/>").append("Char code: ").append(
 							String.valueOf((int) e.getCharCode())).append(
-							"<br/>").append("text: ").append(e.getText())
-					.append("<br/>");
+							"<br/>").append("text: ").append(
+							Utils.htmlEncode(e.getText())).append("<br/>");
 			this.keyEventDescription_.setText(ss.toString());
 		} catch (IOException ieo) {
 			ieo.printStackTrace();
@@ -308,12 +314,14 @@ class EventsDemo extends ControlsWidget {
 	static Writer append(Writer o, WMouseEvent.Button b) {
 		try {
 			switch (b) {
+			case NoButton:
+				return o.append("No button");
 			case LeftButton:
 				return o.append("LeftButton");
 			case RightButton:
-				return o.append("LeftButton");
+				return o.append("RightButton");
 			case MiddleButton:
-				return o.append("LeftButton");
+				return o.append("MiddleButton");
 			default:
 				return o.append("Unknown Button");
 			}
