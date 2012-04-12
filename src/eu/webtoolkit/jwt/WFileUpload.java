@@ -487,7 +487,11 @@ public class WFileUpload extends WWebWidget {
 				inputE = DomElement.getForUpdate("in" + this.getId(),
 						DomElementType.DomElement_INPUT);
 			}
-			inputE.callMethod("disabled=true");
+			if (this.isDisabled()) {
+				inputE.callMethod("disabled=true");
+			} else {
+				inputE.callMethod("disabled=false");
+			}
 			this.flags_.clear(BIT_ENABLED_CHANGED);
 		}
 		EventSignal change = this.voidEventSignal(CHANGE_SIGNAL, false);
