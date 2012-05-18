@@ -66,6 +66,10 @@ public class ItemDataRole {
 	 */
 	public final static int LevelRole = 8;
 	/**
+	 * Marker size (for {@link eu.webtoolkit.jwt.chart.WCartesianChart}).
+	 */
+	public final static int MarkerScaleFactorRole = 15;
+	/**
 	 * Marker pen color (for {@link eu.webtoolkit.jwt.chart.WCartesianChart}).
 	 */
 	public final static int MarkerPenColorRole = 16;
@@ -85,4 +89,8 @@ public class ItemDataRole {
 	 * First role reserved for user purposes.
 	 */
 	public final static int UserRole = 32;
+	/**
+	 * Role for mime type.
+	 */
+	public final static int MimeTypeRole = 33;
 }

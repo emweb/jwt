@@ -292,7 +292,7 @@ class DomElement {
 			code.append(actions.get(i).jsCode);
 			if (actions.get(i).exposed) {
 				code.append(WApplication.getInstance().getJavaScriptClass())
-						.append("._p_.update(this,'").append(
+						.append("._p_.update(o,'").append(
 								actions.get(i).updateCmd).append("',e,true);");
 			}
 			if (actions.get(i).jsCondition.length() != 0) {

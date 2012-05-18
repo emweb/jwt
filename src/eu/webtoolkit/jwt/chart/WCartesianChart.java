@@ -120,6 +120,7 @@ public class WCartesianChart extends WAbstractChart {
 		this.legendFont_ = new WFont();
 		this.legendBorder_ = new WPen(PenStyle.NoPen);
 		this.legendBackground_ = new WBrush(BrushStyle.NoBrush);
+		this.axisPadding_ = 5;
 		this.init();
 	}
 
@@ -613,7 +614,7 @@ public class WCartesianChart extends WAbstractChart {
 	 * @see WCartesianChart#setLegendEnabled(boolean enabled)
 	 */
 	public void drawMarker(WDataSeries series, WPainterPath result) {
-		final double size = series.getMarkerSize();
+		final double size = 6.0;
 		final double hsize = size / 2;
 		switch (series.getMarker()) {
 		case CircleMarker:
@@ -635,10 +636,14 @@ public class WCartesianChart extends WAbstractChart {
 			result.lineTo(hsize, -hsize);
 			break;
 		case TriangleMarker:
-			result.moveTo(0, -hsize);
-			result.lineTo(hsize, 0.6 * hsize);
+			result.moveTo(0, 0.6 * hsize);
 			result.lineTo(-hsize, 0.6 * hsize);
+			result.lineTo(0, -hsize);
+			result.lineTo(hsize, 0.6 * hsize);
 			result.closeSubPath();
+			break;
+		case CustomMarker:
+			result.assign(series.getCustomMarker());
 			break;
 		default:
 			;
@@ -847,7 +852,7 @@ public class WCartesianChart extends WAbstractChart {
 		}
 		WPainter painter = new WPainter();
 		WChart2DRenderer renderer = this.createRenderer(painter, rect);
-		renderer.initLayout();
+		renderer.isInitLayout();
 		;
 	}
 
@@ -891,6 +896,26 @@ public class WCartesianChart extends WAbstractChart {
 	public void addDataPointArea(WDataSeries series, WModelIndex xIndex,
 			WAbstractArea area) {
 		this.addArea(area);
+	}
+
+	/**
+	 * Sets the padding between the chart area and the axes.
+	 * <p>
+	 * 
+	 * @see WCartesianChart#getAxisPadding()
+	 */
+	public void setAxisPadding(int padding) {
+		this.axisPadding_ = padding;
+	}
+
+	/**
+	 * Returns the padding between the chart area and the axes.
+	 * <p>
+	 * 
+	 * @see WCartesianChart#setAxisPadding(int padding)
+	 */
+	public int getAxisPadding() {
+		return this.axisPadding_;
 	}
 
 	protected void paintEvent(WPaintDevice paintDevice) {
@@ -937,6 +962,7 @@ public class WCartesianChart extends WAbstractChart {
 	private WFont legendFont_;
 	private WPen legendBorder_;
 	private WBrush legendBackground_;
+	private int axisPadding_;
 
 	private void init() {
 		this.legendFont_.setFamily(WFont.GenericFamily.SansSerif);

@@ -24,6 +24,7 @@ class SoundManager extends WMediaPlayer {
 
 	public SoundManager(WContainerWidget parent) {
 		super(WMediaPlayer.MediaType.Audio, parent);
+		this.resize(new WLength(0), new WLength(0));
 		this.getControlsWidget().hide();
 		this.getDecorationStyle().setBorder(new WBorder());
 		StringBuilder ss = new StringBuilder();

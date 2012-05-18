@@ -63,12 +63,14 @@ class Grid {
 		public WLayoutItem item_;
 		public int rowSpan_;
 		public int colSpan_;
+		public boolean update_;
 		public EnumSet<AlignmentFlag> alignment_;
 
 		public Item(WLayoutItem item, EnumSet<AlignmentFlag> alignment) {
 			this.item_ = item;
 			this.rowSpan_ = 1;
 			this.colSpan_ = 1;
+			this.update_ = false;
 			this.alignment_ = alignment;
 		}
 

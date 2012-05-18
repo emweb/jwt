@@ -28,8 +28,30 @@ class StdWidgetItemImpl extends StdLayoutItemImpl {
 		this.item_ = item;
 	}
 
+	public static String getChildrenResizeJS() {
+		WApplication app = WApplication.getInstance();
+		app.loadJavaScript("js/WtResize.js", wtjs10());
+		return "Wt3_2_1.ChildrenResize";
+	}
+
+	public String getId() {
+		return this.item_.getWidget().getId();
+	}
+
 	public int getMinimumHeight() {
-		return (int) this.item_.getWidget().getMinimumHeight().toPixels();
+		if (this.item_.getWidget().isHidden()) {
+			return 0;
+		} else {
+			return (int) this.item_.getWidget().getMinimumHeight().toPixels();
+		}
+	}
+
+	public int getMinimumWidth() {
+		if (this.item_.getWidget().isHidden()) {
+			return 0;
+		} else {
+			return (int) this.item_.getWidget().getMinimumWidth().toPixels();
+		}
 	}
 
 	public void updateAddItem(WLayoutItem anon1) {
@@ -64,70 +86,15 @@ class StdWidgetItemImpl extends StdLayoutItemImpl {
 	public DomElement createDomElement(boolean fitWidth, boolean fitHeight,
 			WApplication app) {
 		WWidget w = this.item_.getWidget();
+		w.setInline(false);
 		DomElement d = w.createSDomElement(app);
 		DomElement result = d;
-		int marginRight = 0;
-		int marginBottom = 0;
-		boolean boxSizing = !app.getEnvironment().agentIsIE();
-		if (!boxSizing) {
-			if (fitWidth) {
-				marginRight = (w.boxPadding(Orientation.Horizontal) + w
-						.boxBorder(Orientation.Horizontal)) * 2;
-			}
-			if (fitHeight) {
-				marginBottom = (w.boxPadding(Orientation.Vertical) + w
-						.boxBorder(Orientation.Vertical)) * 2;
-			}
-			boolean forceDiv = fitHeight
-					&& d.getType() == DomElementType.DomElement_SELECT
-					&& d.getAttribute("size").length() == 0;
-			if (marginRight != 0 || marginBottom != 0 || forceDiv) {
-				result = DomElement.createNew(DomElementType.DomElement_DIV);
-				result.setProperty(Property.PropertyClass, "Wt-wrapdiv");
-				StringWriter style = new StringWriter();
-				if (app.getEnvironment().agentIsIElt(9) && !forceDiv) {
-					style.append("margin-top:-1px;");
-					marginBottom -= 1;
-				}
-				if (marginRight != 0) {
-					style
-							.append(
-									app.getLayoutDirection() == LayoutDirection.LeftToRight ? "margin-right:"
-											: "margin-left:").append(
-									String.valueOf(marginRight)).append("px;");
-				}
-				if (marginBottom != 0) {
-					style.append("margin-bottom:").append(
-							String.valueOf(marginBottom)).append("px;");
-				}
-				result.setProperty(Property.PropertyStyle, style.toString());
-			}
-		}
-		if (fitHeight
-				&& d.getProperty(Property.PropertyStyleHeight).length() == 0) {
-			if (d.getType() == DomElementType.DomElement_DIV
-					&& !app.getEnvironment().agentIsWebKit()
-					|| d.getType() == DomElementType.DomElement_UL
-					|| d.getType() == DomElementType.DomElement_INPUT
-					|| d.getType() == DomElementType.DomElement_TABLE
-					|| d.getType() == DomElementType.DomElement_TEXTAREA) {
-				d.setProperty(Property.PropertyStyleHeight, "100%");
-			}
-		}
-		if (fitWidth
-				&& d.getProperty(Property.PropertyStyleWidth).length() == 0) {
-			if (d.getType() == DomElementType.DomElement_BUTTON
-					|| d.getType() == DomElementType.DomElement_INPUT
-					&& !d.getAttribute("type").equals("radio")
-					&& !d.getAttribute("type").equals("checkbox")
-					|| d.getType() == DomElementType.DomElement_SELECT
-					&& !app.getEnvironment().agentIsIE()
-					|| d.getType() == DomElementType.DomElement_TEXTAREA) {
-				d.setProperty(Property.PropertyStyleWidth, "100%");
-			}
-		}
-		if (result != d) {
-			result.addChild(d);
+		if (app.getEnvironment().agentIsIElt(9)
+				&& (d.getType() == DomElementType.DomElement_TEXTAREA
+						|| d.getType() == DomElementType.DomElement_SELECT
+						|| d.getType() == DomElementType.DomElement_INPUT || d
+						.getType() == DomElementType.DomElement_BUTTON)) {
+			d.removeProperty(Property.PropertyStyleDisplay);
 		}
 		return result;
 	}
@@ -138,4 +105,12 @@ class StdWidgetItemImpl extends StdLayoutItemImpl {
 	}
 
 	private WWidgetItem item_;
+
+	static WJavaScriptPreamble wtjs10() {
+		return new WJavaScriptPreamble(
+				JavaScriptScope.WtClassScope,
+				JavaScriptObjectType.JavaScriptFunction,
+				"ChildrenResize",
+				"function(b,e,c){function k(f){var g=a.px(f,\"marginTop\");g+=a.px(f,\"marginBottom\");if(!a.boxSizing(f)){g+=a.px(f,\"borderTopWidth\");g+=a.px(f,\"borderBottomWidth\");g+=a.px(f,\"paddingTop\");g+=a.px(f,\"paddingBottom\")}return g}var i,j,d,a=this;b.style.height=c+\"px\";if(a.boxSizing(b)){c-=a.px(b,\"marginTop\");c-=a.px(b,\"marginBottom\");c-=a.px(b,\"borderTopWidth\");c-=a.px(b,\"borderBottomWidth\");c-=a.px(b,\"paddingTop\");c-=a.px(b,\"paddingBottom\");e-= a.px(b,\"marginLeft\");e-=a.px(b,\"marginRight\");e-=a.px(b,\"borderLeftWidth\");e-=a.px(b,\"borderRightWidth\");e-=a.px(b,\"paddingLeft\");e-=a.px(b,\"paddingRight\")}i=0;for(j=b.childNodes.length;i<j;++i){d=b.childNodes[i];if(d.nodeType==1){var h=c-k(d);if(h>0)if(d.wtResize)d.wtResize(d,e,h);else{h=h+\"px\";if(d.style.height!=h)d.style.height=h}}}}");
+	}
 }

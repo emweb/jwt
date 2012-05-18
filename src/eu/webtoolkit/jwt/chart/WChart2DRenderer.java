@@ -141,9 +141,12 @@ public class WChart2DRenderer {
 	 * so that they provide a suitable mapping from logical coordinates to
 	 * device coordinates.
 	 */
-	public void initLayout() {
+	public boolean isInitLayout() {
 		this.calcChartArea();
-		this.prepareAxes();
+		if (!this.isPrepareAxes()) {
+			return false;
+		}
+		return true;
 	}
 
 	/**
@@ -180,7 +183,22 @@ public class WChart2DRenderer {
 		this.tildeEndMarker_.lineTo(0, -(this.segmentMargin_ - 25));
 		this.tildeEndMarker_.moveTo(-15, -(this.segmentMargin_ - 20));
 		this.tildeEndMarker_.lineTo(15, -(this.segmentMargin_ - 10));
-		this.initLayout();
+		if (!this.isInitLayout()) {
+			logger
+					.error(new StringWriter().append(
+							"init layout failed Maybe padding is too large")
+							.toString());
+			return;
+		}
+		System.err.append(String.valueOf(this.chartArea_.getWidth())).append(
+				" ").append(String.valueOf(this.chartArea_.getHeight()))
+				.append('\n');
+		if (this.chartArea_.getWidth() < 5 || this.chartArea_.getHeight() < 5) {
+			logger.error(new StringWriter().append(
+					"Chart area is to small. Maybe padding is too large")
+					.toString());
+			return;
+		}
 		this.renderBackground();
 		this.renderAxes(EnumSet.of(WChart2DRenderer.AxisProperty.Grid));
 		this.renderSeries();
@@ -388,23 +406,22 @@ public class WChart2DRenderer {
 		WAxis xAxis = this.chart_.getAxis(Axis.XAxis);
 		WAxis.Segment xs = xAxis.segments_.get(xSegment);
 		WAxis.Segment ys = yAxis.segments_.get(ySegment);
-		final int CLIP_MARGIN = 5;
 		double x1 = xs.renderStart
-				+ (xSegment == 0 ? xs.renderMinimum == 0 ? 0 : -CLIP_MARGIN
-						: -this.segmentMargin_ / 2);
+				+ (xSegment == 0 ? xs.renderMinimum == 0 ? 0 : -this.chart_
+						.getAxisPadding() : -this.segmentMargin_ / 2);
 		double x2 = xs.renderStart
 				+ xs.renderLength
 				+ (xSegment == xAxis.getSegmentCount() - 1 ? xs.renderMaximum == 0 ? 0
-						: CLIP_MARGIN
+						: this.chart_.getAxisPadding()
 						: this.segmentMargin_ / 2);
 		double y1 = ys.renderStart
 				- ys.renderLength
 				- (ySegment == yAxis.getSegmentCount() - 1 ? ys.renderMaximum == 0 ? 0
-						: CLIP_MARGIN
+						: this.chart_.getAxisPadding()
 						: this.segmentMargin_ / 2);
 		double y2 = ys.renderStart
-				+ (ySegment == 0 ? ys.renderMinimum == 0 ? 0 : CLIP_MARGIN
-						: this.segmentMargin_ / 2);
+				+ (ySegment == 0 ? ys.renderMinimum == 0 ? 0 : this.chart_
+						.getAxisPadding() : this.segmentMargin_ / 2);
 		return new WRectF(Math.floor(x1 + 0.5), Math.floor(y1 + 0.5), Math
 				.floor(x2 - x1 + 0.5), Math.floor(y2 - y1 + 0.5));
 	}
@@ -442,10 +459,16 @@ public class WChart2DRenderer {
 	 * properties are stored within the axes (we may want to change that later
 	 * to allow for reentrant rendering by multiple renderers ?).
 	 */
-	protected void prepareAxes() {
-		this.chart_.getAxis(Axis.XAxis).prepareRender(this);
-		this.chart_.getAxis(Axis.Y1Axis).prepareRender(this);
-		this.chart_.getAxis(Axis.Y2Axis).prepareRender(this);
+	protected boolean isPrepareAxes() {
+		if (!this.chart_.getAxis(Axis.XAxis).prepareRender(this)) {
+			return false;
+		}
+		if (!this.chart_.getAxis(Axis.Y1Axis).prepareRender(this)) {
+			return false;
+		}
+		if (!this.chart_.getAxis(Axis.Y2Axis).prepareRender(this)) {
+			return false;
+		}
 		WAxis xAxis = this.chart_.getAxis(Axis.XAxis);
 		WAxis yAxis = this.chart_.getAxis(Axis.YAxis);
 		WAxis y2Axis = this.chart_.getAxis(Axis.Y2Axis);
@@ -496,6 +519,7 @@ public class WChart2DRenderer {
 		xAxis.setOtherAxisLocation(this.location_[Axis.YAxis.getValue()]);
 		yAxis.setOtherAxisLocation(this.location_[Axis.XAxis.getValue()]);
 		y2Axis.setOtherAxisLocation(this.location_[Axis.XAxis.getValue()]);
+		return true;
 	}
 
 	/**
@@ -730,7 +754,7 @@ public class WChart2DRenderer {
 	 * The computed axis locations.
 	 * <p>
 	 * 
-	 * @see WChart2DRenderer#prepareAxes()
+	 * @see WChart2DRenderer#isPrepareAxes()
 	 */
 	protected AxisValue[] location_ = new AxisValue[3];
 

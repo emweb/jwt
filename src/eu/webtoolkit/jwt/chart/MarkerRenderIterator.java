@@ -36,12 +36,17 @@ class MarkerRenderIterator extends SeriesIterator {
 			this.renderer_.getChart().drawMarker(series, this.marker_);
 			this.renderer_.getPainter().save();
 			this.renderer_.getPainter().setShadow(series.getShadow());
+			this.needRestore_ = true;
+		} else {
+			this.needRestore_ = false;
 		}
 		return true;
 	}
 
 	public void endSeries() {
-		this.renderer_.getPainter().restore();
+		if (this.needRestore_) {
+			this.renderer_.getPainter().restore();
+		}
 	}
 
 	public void newValue(WDataSeries series, double x, double y, double stackY,
@@ -61,6 +66,8 @@ class MarkerRenderIterator extends SeriesIterator {
 				setBrushColor(brush, xIndex, yIndex,
 						ItemDataRole.MarkerBrushColorRole);
 				painter.setBrush(brush);
+				this.setMarkerSize(painter, xIndex, yIndex, series
+						.getMarkerSize());
 				painter.drawPath(this.marker_);
 				painter.restore();
 			}
@@ -90,4 +97,22 @@ class MarkerRenderIterator extends SeriesIterator {
 
 	private WChart2DRenderer renderer_;
 	private WPainterPath marker_;
+	private boolean needRestore_;
+
+	private void setMarkerSize(WPainter painter, WModelIndex xIndex,
+			WModelIndex yIndex, double markerSize) {
+		Object scale = new Object();
+		double dScale = 1;
+		if ((yIndex != null)) {
+			scale = yIndex.getData(ItemDataRole.MarkerScaleFactorRole);
+		}
+		if ((scale == null) && (xIndex != null)) {
+			scale = xIndex.getData(ItemDataRole.MarkerScaleFactorRole);
+		}
+		if (!(scale == null)) {
+			dScale = (Double) scale;
+		}
+		dScale = markerSize / 6 * dScale + 3;
+		painter.scale(dScale, dScale);
+	}
 }

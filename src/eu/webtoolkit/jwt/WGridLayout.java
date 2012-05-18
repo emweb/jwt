@@ -26,67 +26,49 @@ import org.slf4j.LoggerFactory;
  * This is a layout class that arranges widgets in a grid, to span the entire
  * area of the parent container. Each grid location (row, column) may contain
  * one widget or nested layout. Horizontal and vertical space are divided so
- * that each column/row is given its minimum size and the remaining space is
- * dived according to stretch factors among the columns/rows. The minimum width
- * of a column/row is based on the minimum dimensions of contained widgets or
- * nested layouts. The default minimum height and width may be overridden using
+ * that each non-stretchable column/row is given its preferred size (if
+ * possible) and the remaining space is divided according to stretch factors
+ * among the columns/rows.
+ * <p>
+ * The preferred width/height of a column/row is based on the size the widgets
+ * need in order to not require a scrollbar.
+ * <p>
+ * The minimum width/height of a column/row is based on the minimum dimensions
+ * of contained widgets or nested layouts. The default minimum height and width
+ * for a widget is 0. It can be specified using
  * {@link WWidget#setMinimumSize(WLength width, WLength height)
- * WWidget#setMinimumSize()}.
+ * WWidget#setMinimumSize()} or using CSS min-width and min-height properties.
  * <p>
- * If you want to use the layout manager for a container which does not have a
- * height that is constrained somehow, you need to specify AlignTop in the
- * alignment flags of {@link WContainerWidget#setLayout(WLayout layout)
- * WContainerWidget#setLayout()}. Otherwise the behavior is undefined (the
- * parent container will continue to increase in size as it tries to satisfy the
- * constraints assuming a contrained height).
- * <p>
- * You can use
+ * You should use
  * {@link WContainerWidget#setOverflow(WContainerWidget.Overflow value, EnumSet orientation)
  * WContainerWidget::setOverflow(OverflowAuto)} or use a {@link WScrollArea} to
- * automatically show scrollbars on a widget inserted in the layout.
- * <p>
- * A caveat with layout managers is that you cannot reliably use a stylesheet to
- * add borders (or margin) to a widget inserted in a layout: this is broken on
- * Internet Explorer. To provide the layout, the layout manager needs to set
- * sizes on the contained widget but these sizes also need to take into account
- * the border/margin width. Since on IE, this value will be 0 if the border or
- * margin is provided by a stylesheet (as opposed to by inline CSS by using
- * {@link WWidget#getDecorationStyle() WWidget#getDecorationStyle()}), the
- * result will be wrong behaviour like widgets that keep growing in size.
+ * automatically show scrollbars for widgets inserted in the layout to cope with
+ * sizes that are smaller than their preferred size.
  * <p>
  * A layout manager may provide resize handles between columns or rows which
  * allow the user to change the automatic layout provided by the layout manager
  * (see {@link WGridLayout#setRowResizable(int row, boolean enabled)
  * setRowResizable()} and
  * {@link WGridLayout#setColumnResizable(int column, boolean enabled)
- * setColumnResizable()}). Resize handles between rows only work when the layout
- * fills the parent vertical space (i.e. is not aligned to the top). Likewise,
- * resize handles between columns only work when the layout fills the parent
- * horiziontal space (i.e. is not aligned left, right or centered).
+ * setColumnResizable()}).
  * <p>
  * Columns and rows are separated using a constant spacing, which defaults to 6
  * pixels by default, and can be changed using
  * {@link WGridLayout#setHorizontalSpacing(int size) setHorizontalSpacing()} and
  * {@link WGridLayout#setVerticalSpacing(int size) setVerticalSpacing()}. In
  * addition, when this layout is a top-level layout (i.e. is not nested inside
- * another layout), a margin is set around the contents, which thus replaces
- * padding defined for the container. It is not allowed to define padding for
- * the container widget using its CSS &apos;padding&apos; property or the
- * {@link WContainerWidget#setPadding(WLength length, EnumSet sides)
- * WContainerWidget#setPadding()}. This margin also defaults to 9 pixels, and
- * can be changed using
+ * another layout), a margin is set around the contents. This margin defaults to
+ * 9 pixels, and can be changed using
  * {@link WLayout#setContentsMargins(int left, int top, int right, int bottom)
  * WLayout#setContentsMargins()}.
  * <p>
  * For each column or row, a stretch factor may be defined, which controls how
  * remaining horizontal or vertical space is used. Each column and row is
  * stretched using the stretch factor to fill the remaining space. When the
- * stretch factor is 0, the height of the row and its contents is not actively
- * managed. As a consequence, the contents of each cell will not fill the cell.
- * You may use a special stretch factor of -1 to indicate that the height of the
- * row should not stretch but the contents height should be actively managed.
- * This has as draw-back that the height of the row will no longer reduce in
- * size when any of the cell contents reduces in size.
+ * stretch factor is 0, the height of the row and its contents is set to the
+ * preferred size (if possible). When the stretch factor is 1 or higher, these
+ * widgets will be given the remaining size, limited only by their minimum size
+ * (their preferred size is ignored).
  * <p>
  * Usage example:
  * <p>
@@ -108,23 +90,14 @@ import org.slf4j.LoggerFactory;
  * </pre>
  * <p>
  * <p>
- * <i><b>Note: </b>When JavaScript support is not available, only Safari and
- * Firefox properly implement this layout. For other browsers, only the
- * horizontal layout is properly implemented, while vertically all widgets use
- * their minimum size.
+ * <i><b>Note: </b>When JavaScript support is not available, not all
+ * functionality of the layout is available. In particular, vertical size
+ * management is not available.
  * <p>
- * When set on a {@link WContainerWidget}, this layout manager accepts the
- * following hints (see {@link WLayout#setLayoutHint(String name, String value)
- * WLayout#setLayoutHint()}):
- * <ul>
- * <li>
- * &quot;table-layout&quot; with possible values &quot;auto&quot; (default) or
- * &quot;fixed&quot;.<br>
- * Use &quot;fixed&quot; to prevent nested tables from overflowing the layout.
- * In that case, you will need to specify a width (in CSS or otherwise) for at
- * least one item in every column that has no stretch factor.</li>
- * </ul>
- * </i>
+ * When a layout is used on a first page with progressive bootstrap, then the
+ * layout will progress only in a limited way to a full JavaScript-based layout.
+ * You can thus not rely on it to behave properly for example when dynamically
+ * adding or removing widgets. </i>
  * </p>
  */
 public class WGridLayout extends WLayout {
@@ -136,8 +109,9 @@ public class WGridLayout extends WLayout {
 	 * The grid will grow dynamically as items are added.
 	 * <p>
 	 * Use <code>parent</code> = <code>null</code> to create a layout manager
-	 * that can be nested inside other layout managers or to specify a specific
-	 * alignment when setting the layout to a {@link WContainerWidget}.
+	 * that can be nested inside other layout managers or if you use
+	 * {@link WContainerWidget#setLayout(WLayout layout)
+	 * WContainerWidget#setLayout()} to add specify the container later.
 	 */
 	public WGridLayout(WWidget parent) {
 		super();
@@ -588,8 +562,7 @@ public class WGridLayout extends WLayout {
 	/**
 	 * Sets the row stretch.
 	 * <p>
-	 * Sets the <i>stretch</i> factor for row <code>row</code>. See the
-	 * description for the special value of -1.
+	 * Sets the <i>stretch</i> factor for row <code>row</code>.
 	 * <p>
 	 * 
 	 * @see WGridLayout#getRowStretch(int row)

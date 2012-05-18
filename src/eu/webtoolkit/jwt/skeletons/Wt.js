@@ -649,6 +649,9 @@ this.filter = function(edit, event, tokens) {
 this.widgetPageCoordinates = function(obj) {
   var objX = 0, objY = 0, op;
 
+  if (!obj.parentNode)
+    return { x: 0, y: 0 };
+
   // bug in safari, according to W3C, offsetParent for an area element should
   // be the map element, but safari returns null.
   if (WT.hasTag(obj, "AREA"))
@@ -937,7 +940,9 @@ this.cssPrefix = function(prop) {
     if ((prefixes[i] + prop) in elem.style)
       return prefixes[i];
   }
-}
+
+  return null;
+};
 
 this.boxSizing = function(w) {
   return (w.style['boxSizing']
@@ -947,7 +952,7 @@ this.boxSizing = function(w) {
 
 // Return if an element (or one of its ancestors) is hidden
 this.isHidden = function(w) {
-  if (w.style.display == 'none')
+  if (w.style.display == 'none' || w.style.visibility == 'hidden')
     return true;
   else {
     w = w.parentNode;
@@ -1404,7 +1409,11 @@ this.positionAtWidget = function(id, atId, orientation, parentInRoot,
 };
 
 this.hasFocus = function(el) {
-  return el == document.activeElement;
+  try {
+    return el == document.activeElement;
+  } catch(e) {
+    return false;
+  }
 };
 
 var html5History = !!(window.history && window.history.pushState);
@@ -1946,7 +1955,8 @@ function dragDrag(e) {
 	ds.dropTarget.handleDragDrop('drag', ds.object, e, '', mimeType);
       else
 	ds.object.className = 'Wt-valid-drop';
-    }
+    } else
+      ds.object.className = '';
 
     return false;
   }
@@ -2130,8 +2140,15 @@ function encodeEvent(event, i) {
   if (typeof e.keyCode !== 'undefined')
     result += se + 'keyCode=' + e.keyCode;
 
-  if (typeof e.charCode !== 'undefined')
-    result += se + 'charCode=' + e.charCode;
+  var charCode = 0;
+  if (typeof e.charCode !== 'undefined') {
+    if (e.type == 'keypress')
+      charCode = e.charCode;
+  } else {
+    if (e.type == 'keypress')
+      charCode = e.keyCode;
+  }
+  result += se + 'charCode=' + charCode;
 
   if (e.altKey)
     result += se + 'altKey=1';
