@@ -411,7 +411,7 @@ public abstract class WFormWidget extends WInteractWidget {
 				}
 			} else {
 				if (this.isRendered()) {
-					this.validateJs_.exec(this.getJsRef());
+					this.doJavaScript(this.validateJs_.execJs(this.getJsRef()));
 				}
 			}
 		} else {

@@ -840,7 +840,7 @@ class WebRenderer implements SlotLearnerInterface {
 							app.getLayoutDirection() == LayoutDirection.LeftToRight ? "LTR"
 									: "RTL").append("');");
 		}
-		Writer s = response.out();
+		StringWriter s = new StringWriter();
 		mainElement.addToParent(s, "document.body", widgetset ? 0 : -1, app);
 		;
 		this.addResponseAckPuzzle(s);
@@ -850,6 +850,9 @@ class WebRenderer implements SlotLearnerInterface {
 		if (widgetset) {
 			app.domRoot2_.rootAsJavaScript(app, s, true);
 		}
+		logger.debug(new StringWriter().append("js: ").append(s.toString())
+				.toString());
+		response.out().append(s.toString());
 		this.setJSSynced(true);
 		this.preLearnStateless(app, this.collectedJS1_);
 		logger.debug(new StringWriter().append("js: ").append(
