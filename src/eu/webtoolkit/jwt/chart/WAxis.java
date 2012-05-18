@@ -841,7 +841,7 @@ public class WAxis {
 	}
 
 	// private boolean (T m, T v) ;
-	void prepareRender(WChart2DRenderer renderer) {
+	boolean prepareRender(WChart2DRenderer renderer) {
 		double totalRenderRange = 0;
 		for (int i = 0; i < this.segments_.size(); ++i) {
 			WAxis.Segment s = this.segments_.get(i);
@@ -850,9 +850,9 @@ public class WAxis {
 		}
 		boolean vertical = this.axis_ != Axis.XAxis;
 		double clipMin = this.segments_.get(0).renderMinimum == 0 ? 0
-				: CLIP_MARGIN;
+				: this.chart_.getAxisPadding();
 		double clipMax = this.segments_.get(this.segments_.size() - 1).renderMaximum == 0 ? 0
-				: CLIP_MARGIN;
+				: this.chart_.getAxisPadding();
 		double totalRenderLength = vertical ? renderer.getChartArea()
 				.getHeight() : renderer.getChartArea().getWidth();
 		double totalRenderStart = vertical ? renderer.getChartArea()
@@ -862,7 +862,8 @@ public class WAxis {
 		totalRenderLength -= SEGMENT_MARGIN * (this.segments_.size() - 1)
 				+ clipMin + clipMax;
 		if (totalRenderLength <= 0) {
-			return;
+			this.renderInterval_ = 1.0;
+			return false;
 		}
 		int rc = 0;
 		if (this.chart_.getModel() != null) {
@@ -882,8 +883,7 @@ public class WAxis {
 					if (this.renderInterval_ == 0) {
 						if (this.scale_ == AxisScale.CategoryScale) {
 							double numLabels = this.calcAutoNumLabels(s) / 1.5;
-							this.renderInterval_ = Math.max(1.0, Math.floor(rc
-									/ numLabels));
+							this.renderInterval_ = Math.floor(rc / numLabels);
 						} else {
 							if (this.scale_ != AxisScale.LogScale) {
 								double numLabels = this.calcAutoNumLabels(s);
@@ -893,6 +893,7 @@ public class WAxis {
 						}
 					}
 				}
+				this.renderInterval_ = Math.max(1.0, this.renderInterval_);
 				if (this.scale_ == AxisScale.LinearScale) {
 					if (it == 0) {
 						if (s.minimum == AUTO_MINIMUM) {
@@ -1106,6 +1107,7 @@ public class WAxis {
 				}
 			}
 		}
+		return true;
 	}
 
 	private void computeRange(WChart2DRenderer renderer, WAxis.Segment segment) {
@@ -1244,12 +1246,14 @@ public class WAxis {
 				int borderMin;
 				int borderMax;
 				if (this.scale_ == AxisScale.CategoryScale) {
-					borderMin = borderMax = 5;
+					borderMax = borderMin = this.chart_.getAxisPadding();
 				} else {
 					borderMin = s.renderMinimum == 0
-							&& otherLocation == AxisValue.ZeroValue ? 0 : 5;
+							&& otherLocation == AxisValue.ZeroValue ? 0
+							: this.chart_.getAxisPadding();
 					borderMax = s.renderMinimum == 0
-							&& otherLocation == AxisValue.ZeroValue ? 0 : 5;
+							&& otherLocation == AxisValue.ZeroValue ? 0
+							: this.chart_.getAxisPadding();
 				}
 				s.renderLength -= borderMin + borderMax;
 				if (this.axis_ == Axis.XAxis) {
@@ -1562,7 +1566,6 @@ public class WAxis {
 		}
 	}
 
-	private static final int CLIP_MARGIN = 5;
 	private static double EPSILON = 1E-3;
 	static final int AXIS_MARGIN = 4;
 	static final int AUTO_V_LABEL_PIXELS = 25;

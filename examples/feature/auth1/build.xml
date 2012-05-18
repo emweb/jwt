@@ -70,10 +70,11 @@
     <war destfile="${dist.dir}/${proj.name}.war" 
 	 webxml="WebRoot/WEB-INF/web.xml">
       <fileset dir="WebRoot"/>
-      <lib dir="${jwt-lib.dir}" 
-	   includes="**/*.jar" 
-	   excludes="servlet-api-*.jar">
-      </lib>
+      <lib dir="${jwt-lib.dir}" includes="*.jar" />
+      <lib dir="${jwt-lib.dir}/gson" includes="*.jar" />
+      <lib dir="${jwt-lib.dir}/http" includes="*.jar" />
+      <lib dir="${jwt-lib.dir}/vt-password" includes="*.jar" />
+      <lib dir="${lib.dir}/hibernate" includes="*.jar"/>
       <classes dir="${build.dir}"/>
     </war>
   </target>

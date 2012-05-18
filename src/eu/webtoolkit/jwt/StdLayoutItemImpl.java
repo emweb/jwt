@@ -42,6 +42,8 @@ abstract class StdLayoutItemImpl extends WObject implements WLayoutItemImpl {
 		return this.getContainer();
 	}
 
+	public abstract int getMinimumWidth();
+
 	public abstract int getMinimumHeight();
 
 	public StdLayoutImpl getParentLayoutImpl() {

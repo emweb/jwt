@@ -137,9 +137,7 @@ public class WDataSeries {
 		this.yLabel_ = false;
 		this.barWidth_ = 0.8;
 		this.hidden_ = false;
-		if (this.type_ == SeriesType.BarSeries) {
-			this.fillRange_ = FillRangeType.ZeroValueFill;
-		}
+		this.customMarker_ = new WPainterPath();
 	}
 
 	/**
@@ -198,6 +196,10 @@ public class WDataSeries {
 	 * <p>
 	 * The series type specifies how the data is plotted, i.e. using mere point
 	 * markers, lines, curves, or bars.
+	 * <p>
+	 * When changing the series type from BarSeries to another series type, and
+	 * the fill range is ZeroValueFill (the default for bar series), then the
+	 * fill type is changed to
 	 */
 	public void setType(SeriesType type) {
 		if (!ChartUtils.equals(this.type_, type)) {
@@ -411,7 +413,9 @@ public class WDataSeries {
 							this.chart_.getSeriesIndexOf(this.modelColumn_));
 				}
 			} else {
-				return new WPen();
+				WPen defaultPen = new WPen();
+				defaultPen.setCapStyle(PenCapStyle.SquareCap);
+				return defaultPen;
 			}
 		}
 	}
@@ -483,11 +487,13 @@ public class WDataSeries {
 	 * <p>
 	 * Line or curve series may be filled under or above the curve, using the
 	 * {@link WDataSeries#getBrush() getBrush()}. This setting specifies the
-	 * range that is filled. Bar series may use MinimumValueFill to configure
-	 * the chart to render its bars from the data point to the bottom of the
-	 * chart or MaximumValueFill to render the bars from the data point to the
-	 * top of the chart. The default value is ZeroValueFill, this value
-	 * configures the chart to render the bars from the data point to zero.
+	 * range that is filled. The default value for all but BarSeries is NoFill.
+	 * <p>
+	 * Bar series may use MinimumValueFill to configure the chart to render its
+	 * bars from the data point to the bottom of the chart or MaximumValueFill
+	 * to render the bars from the data point to the top of the chart. The
+	 * default value for BarSeries is ZeroValueFill, which render bars from zero
+	 * to the data value.
 	 */
 	public void setFillRange(FillRangeType fillRange) {
 		if (!ChartUtils.equals(this.fillRange_, fillRange)) {
@@ -498,13 +504,18 @@ public class WDataSeries {
 	}
 
 	/**
-	 * Returns the fill range for line or curve series.
+	 * Returns the fill range (for line, curve and bar series).
 	 * <p>
 	 * 
 	 * @see WDataSeries#setFillRange(FillRangeType fillRange)
 	 */
 	public FillRangeType getFillRange() {
-		return this.fillRange_;
+		if (this.type_ == SeriesType.BarSeries
+				&& this.fillRange_ == FillRangeType.NoFill) {
+			return FillRangeType.ZeroValueFill;
+		} else {
+			return this.fillRange_;
+		}
 	}
 
 	/**
@@ -526,6 +537,26 @@ public class WDataSeries {
 			update();
 		}
 		;
+	}
+
+	/**
+	 * Sets the customMarker.
+	 * <p>
+	 * 
+	 * @see WDataSeries#getCustomMarker()
+	 */
+	public void setCustomMarker(WPainterPath path) {
+		this.customMarker_.assign(path);
+	}
+
+	/**
+	 * Returns the custom marker.
+	 * <p>
+	 * 
+	 * @see WDataSeries#setCustomMarker(WPainterPath path)
+	 */
+	public WPainterPath getCustomMarker() {
+		return this.customMarker_;
 	}
 
 	/**
@@ -843,6 +874,7 @@ public class WDataSeries {
 	private boolean yLabel_;
 	private double barWidth_;
 	private boolean hidden_;
+	private WPainterPath customMarker_;
 
 	// private boolean (T m, T v) ;
 	void setChart(WCartesianChart chart) {

@@ -21,16 +21,13 @@
 	<classpathentry kind="lib" path="lib/jwt-lib/gson/gson-2.0.jar"/>
 	<classpathentry kind="lib" path="lib/jwt-lib/http/httpclient-4.1.2.jar"/>
 	<classpathentry kind="lib" path="lib/jwt-lib/http/httpcore-4.1.2.jar"/>
-	<classpathentry kind="lib" path="lib/jwt-lib/javamail/dsn.jar"/>
-	<classpathentry kind="lib" path="lib/jwt-lib/javamail/imap.jar"/>
-	<classpathentry kind="lib" path="lib/jwt-lib/javamail/mail.jar"/>
-	<classpathentry kind="lib" path="lib/jwt-lib/javamail/pop3.jar"/>
-	<classpathentry kind="lib" path="lib/jwt-lib/javamail/smtp.jar"/>
+	<classpathentry kind="lib" path="lib/jwt-lib/javamail/geronimo-javamail_1.4_mail-1.8.1.jar"/>
+	<classpathentry kind="lib" path="lib/jwt-lib/javamail/geronimo-javamail_1.4_provider-1.8.1.jar"/>
 	<classpathentry kind="lib" path="lib/jwt-lib/servlet-api/servlet-api-3.0.jar"/>
 	<classpathentry kind="lib" path="lib/jwt-lib/commons-fileupload-1.2.1.jar"/>
 	<classpathentry kind="lib" path="lib/jwt-lib/commons-io-1.4.jar"/>
-	<classpathentry kind="lib" path="lib/jwt-lib/jwt-3.2.1.jar"/>
-	<classpathentry kind="lib" path="lib/jwt-lib/jwt-auth-3.2.1.jar"/>
+	<classpathentry kind="lib" path="lib/jwt-lib/jwt-3.2.2.jar"/>
+	<classpathentry kind="lib" path="lib/jwt-lib/jwt-auth-3.2.2.jar"/>
 	<classpathentry kind="lib" path="lib/jwt-lib/slf4j-api-1.6.4.jar"/>
 	<classpathentry kind="lib" path="lib/jwt-lib/slf4j-simple-1.6.4.jar"/>
 	<classpathentry kind="lib" path="lib/jwt-lib/vt-password/bcprov-jdk15-1.45.jar"/>

@@ -177,17 +177,19 @@ public abstract class WtServlet extends HttpServlet {
 		String resourcePath = configuration.getProperty(WApplication.RESOURCES_URL);
 		
 		if (pathInfo !=null) {
-			String servletPath = request.getServletPath();
+			WebRequest webRequest = new WebRequest(request, progressListener);
+			WebResponse webResponse = new WebResponse(response, webRequest);
+			
+			String scriptName = webRequest.getScriptName();
 			
 			for (WResource staticResource : staticResources) {
 				String staticResourcePath = null;
 				if (!staticResource.getInternalPath().startsWith("/"))
-					staticResourcePath = servletPath + staticResource.getInternalPath();
+					staticResourcePath = scriptName + staticResource.getInternalPath();
 				else
 					staticResourcePath = staticResource.getInternalPath();
-				if ((servletPath + pathInfo).equals(staticResourcePath)) {
-					WebRequest webRequest = new WebRequest(request, progressListener);
-					WebResponse webResponse = new WebResponse(response, webRequest);
+				
+				if ((scriptName + pathInfo).equals(staticResourcePath)) {
 					try {
 						staticResource.handle(webRequest, webResponse);
 					} catch (IOException e) {

@@ -24,61 +24,36 @@ import org.slf4j.LoggerFactory;
  * <p>
  * 
  * This layout manager arranges widgets horizontally or vertically inside the
- * parent container. The space is divided so that each widgets is given its
- * minimum size, and remaining space is divided according to stretch factors
- * among the widgets. The widget minimum height or width is used for sizing each
- * widget, whose default values may be overridden using
+ * parent container. The space is divided so that each non-stretchable widget is
+ * given its preferred size, and remaining space is divided according to stretch
+ * factors among the other widgets.
+ * <p>
+ * The preferred width or height of a widget is based on the size the widgets
+ * need in order to not require a scrollbar.
+ * <p>
+ * The minimum width or height of a widget is based on the minimum dimensions of
+ * the widget or the nested layout. The default minimum height or width for a
+ * widget is 0. It can be specified using
  * {@link WWidget#setMinimumSize(WLength width, WLength height)
- * WWidget#setMinimumSize()}.
+ * WWidget#setMinimumSize()} or using CSS min-width or min-height properties.
  * <p>
- * If you want to use the layout manager for a container which does not have a
- * height that is constrained somehow, you need to specify AlignTop in the
- * alignment flags of {@link WContainerWidget#setLayout(WLayout layout)
- * WContainerWidget#setLayout()}. Otherwise the behavior is undefined (the
- * parent container will continue to increase in size as it tries to satisfy the
- * constraints assuming a contrained height).
- * <p>
- * You can use
+ * You should use
  * {@link WContainerWidget#setOverflow(WContainerWidget.Overflow value, EnumSet orientation)
  * WContainerWidget::setOverflow(OverflowAuto)} or use a {@link WScrollArea} to
- * automatically show scrollbars on a widget inserted in the layout.
- * <p>
- * A caveat with layout managers is that you cannot reliably use a stylesheet to
- * add borders (or margin) to a widget inserted in a layout: this is broken on
- * Internet Explorer. To provide the layout, the layout manager needs to set
- * sizes on the contained widget but these sizes also need to take into account
- * the border/margin width. Since on IE, this value will be 0 if the border or
- * margin is provided by a stylesheet (as opposed to by inline CSS by using
- * {@link WWidget#getDecorationStyle() WWidget#getDecorationStyle()}), the
- * result will be wrong behaviour like widgets that keep growing in size.
- * <p>
- * Another caveat with a layout manager is that the size of contained images may
- * change when the image is being loaded (which happens in the background by the
- * browser). This may result in a wrong layout since the layout manager should
- * relayout. Therefore, you should avoid images inside a layout, or make sure
- * that the image size does not change when the image is being loaded (this will
- * also improve the user experience), by setting its size.
+ * automatically show scrollbars for widgets inserted in the layout to cope with
+ * sizes that are smaller than their preferred size.
  * <p>
  * A layout manager may provide resize handles between items which allow the
  * user to change the automatic layout provided by the layout manager (see
  * {@link WBoxLayout#setResizable(int index, boolean enabled) setResizable()}).
- * Resize handles between rows for a vertically oriented box layout only work
- * when the layout fills the parent vertical space (i.e. is not aligned to the
- * top). Likewise, resize handles between columns for a horizontally oriented
- * box layout only work when the layout fills the parent horiziontal space (i.e.
- * is not aligned left, right or centered).
  * <p>
  * Each item is separated using a constant spacing, which defaults to 6 pixels,
  * and can be changed using {@link WBoxLayout#setSpacing(int size) setSpacing()}
  * . In addition, when this layout is a top-level layout (i.e. is not nested
- * inside another layout), a margin is set around the contents, which thus
- * replaces padding defined for the container. This margin defaults to 9 pixels,
- * and can be changed using
+ * inside another layout), a margin is set around the contents. This margin
+ * defaults to 9 pixels, and can be changed using
  * {@link WLayout#setContentsMargins(int left, int top, int right, int bottom)
- * WLayout#setContentsMargins()}. It is not allowed to define padding for the
- * container widget using its CSS &apos;padding&apos; property or the
- * {@link WContainerWidget#setPadding(WLength length, EnumSet sides)
- * WContainerWidget#setPadding()}. You can add more space between two widgets
+ * WLayout#setContentsMargins()}. You can add more space between two widgets
  * using {@link WBoxLayout#addSpacing(WLength size) addSpacing()}.
  * <p>
  * For each item a stretch factor may be defined, which controls how remaining
@@ -86,23 +61,14 @@ import org.slf4j.LoggerFactory;
  * remaining space.
  * <p>
  * <p>
- * <i><b>Note: </b>When JavaScript support is not available, only Safari and
- * Firefox properly implement this box layout. For other browsers, only the
- * horizontal layout is properly implemented, while vertically all widgets use
- * their minimum size.
+ * <i><b>Note: </b>When JavaScript support is not available, not all
+ * functionality of the layout is available. In particular, vertical size
+ * management is not available.
  * <p>
- * When set on a {@link WContainerWidget}, this layout manager accepts the
- * following hints (see {@link WLayout#setLayoutHint(String name, String value)
- * WLayout#setLayoutHint()}):
- * <ul>
- * <li>
- * &quot;table-layout&quot; with possible values &quot;auto&quot; (default) or
- * &quot;fixed&quot;.<br>
- * Use &quot;fixed&quot; to prevent nested tables from overflowing the layout.
- * In that case, you will need to specify a width (in CSS or otherwise) for at
- * least one item in every column that has no stretch factor.</li>
- * </ul>
- * </i>
+ * When a layout is used on a first page with progressive bootstrap, then the
+ * layout will progress only in a limited way to a full JavaScript-based layout.
+ * You can thus not rely on it to behave properly for example when dynamically
+ * adding or removing widgets. </i>
  * </p>
  */
 public class WBoxLayout extends WLayout {
@@ -263,11 +229,7 @@ public class WBoxLayout extends WLayout {
 	 * <p>
 	 * Adds a widget to the layout, with given <code>stretch</code> factor. When
 	 * the stretch factor is 0, the widget will not be resized by the layout
-	 * manager (stretched to take excess space). You may use a special stretch
-	 * factor of -1 to indicate that the widget should not take excess space but
-	 * the contents height should still be actively managed. This may make sense
-	 * for example if the widget is
-	 * {@link WWidget#setLayoutSizeAware(boolean aware) layout size aware}).
+	 * manager (stretched to take excess space).
 	 * <p>
 	 * The <code>alignment</code> parameter is a combination of a horizontal
 	 * and/or a vertical AlignmentFlag OR&apos;ed together.
@@ -410,10 +372,7 @@ public class WBoxLayout extends WLayout {
 	 * Inserts a widget in the layout at position <code>index</code>, with given
 	 * <code>stretch</code> factor. When the stretch factor is 0, the widget
 	 * will not be resized by the layout manager (stretched to take excess
-	 * space). You may use a special stretch factor of -1 to indicate that the
-	 * widget should not take excess space but the contents height should still
-	 * be actively managed. This may make sense for example if the widget is
-	 * {@link WWidget#setLayoutSizeAware(boolean aware) layout size aware}).
+	 * space).
 	 * <p>
 	 * The <code>alignment</code> specifies the vertical and horizontal
 	 * alignment of the item. The default value 0 indicates that the item is

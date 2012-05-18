@@ -96,7 +96,7 @@ public enum AlignmentFlag {
 	/**
 	 * Align bottom of widget to the bottom of parent widget&apos;s font.
 	 */
-	AlignTextBottom, AlignLength;
+	AlignTextBottom;
 
 	/**
 	 * Returns the numerical representation of this enum.
@@ -118,6 +118,5 @@ public enum AlignmentFlag {
 			AlignmentFlag.AlignBaseline, AlignmentFlag.AlignSub,
 			AlignmentFlag.AlignSuper, AlignmentFlag.AlignTop,
 			AlignmentFlag.AlignTextTop, AlignmentFlag.AlignMiddle,
-			AlignmentFlag.AlignBottom, AlignmentFlag.AlignTextBottom,
-			AlignmentFlag.AlignLength);
+			AlignmentFlag.AlignBottom, AlignmentFlag.AlignTextBottom);
 }

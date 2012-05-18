@@ -16,7 +16,7 @@ public class ComposerMain extends WtServlet {
     public ComposerMain() {
         super();
  
-        getConfiguration().setProgressiveBootstrap(true);
+        getConfiguration().setProgressiveBootstrap(false);
         getConfiguration().setSendXHTMLMimeType(true);
     }
 

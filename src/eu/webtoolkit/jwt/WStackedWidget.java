@@ -53,7 +53,7 @@ public class WStackedWidget extends WContainerWidget {
 		this.animation_ = new WAnimation();
 		this.currentIndex_ = -1;
 		;
-		this.setJavaScriptMember(WT_RESIZE_JS, StdGridLayoutImpl
+		this.setJavaScriptMember(WT_RESIZE_JS, StdWidgetItemImpl
 				.getChildrenResizeJS());
 		this.addStyleClass("Wt-stack");
 	}

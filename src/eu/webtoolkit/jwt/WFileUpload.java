@@ -487,7 +487,11 @@ public class WFileUpload extends WWebWidget {
 				inputE = DomElement.getForUpdate("in" + this.getId(),
 						DomElementType.DomElement_INPUT);
 			}
-			inputE.callMethod("disabled=true");
+			if (this.isDisabled()) {
+				inputE.callMethod("disabled=true");
+			} else {
+				inputE.callMethod("disabled=false");
+			}
 			this.flags_.clear(BIT_ENABLED_CHANGED);
 		}
 		EventSignal change = this.voidEventSignal(CHANGE_SIGNAL, false);
@@ -520,6 +524,9 @@ public class WFileUpload extends WWebWidget {
 					.setProperty(Property.PropertySrc, this.fileUploadTarget_
 							.getUrl());
 			i.setName("if" + this.getId());
+			if (app.getEnvironment().agentIsIE()) {
+				i.setAttribute("APPLICATION", "yes");
+			}
 			DomElement form = result;
 			form.setAttribute("method", "post");
 			form.setAttribute("action", this.fileUploadTarget_.getUrl());
@@ -610,6 +617,9 @@ public class WFileUpload extends WWebWidget {
 
 	void setFormData(WObject.FormData formData) {
 		this.setFiles(formData.files);
+		logger.debug(new StringWriter().append("setFormData() : ").append(
+				String.valueOf(formData.files.size())).append(" file(s)")
+				.toString());
 		if (!formData.files.isEmpty()) {
 			this.uploaded().trigger();
 		}

@@ -38,7 +38,7 @@ public class WBorder {
 		 */
 		Medium,
 		/**
-		 * Browser-dependent &apos;thin&apos; border.
+		 * Browser-dependent &apos;thick&apos; border.
 		 */
 		Thick,
 		/**

@@ -1201,11 +1201,6 @@ public abstract class WWebWidget extends WWidget {
 					element.setProperty(Property.PropertyStyleVerticalAlign,
 							"text-bottom");
 					break;
-				case AlignLength:
-					element.setProperty(Property.PropertyStyleVerticalAlign,
-							this.layoutImpl_.verticalAlignmentLength_
-									.getCssText());
-					break;
 				default:
 					break;
 				}
