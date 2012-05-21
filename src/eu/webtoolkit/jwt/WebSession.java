@@ -997,7 +997,7 @@ class WebSession {
 	public void setState(WebSession.State state, int timeout) {
 		if (this.state_ != WebSession.State.Dead) {
 			this.state_ = state;
-			logger.info(new StringWriter().append("Setting to expire in ")
+			logger.debug(new StringWriter().append("Setting to expire in ")
 					.append(String.valueOf(timeout)).append("s").toString());
 		}
 	}
@@ -1812,7 +1812,7 @@ class WebSession {
 				return;
 			}
 			this.renderer_.setRendered(true);
-			logger.info(new StringWriter().append("signal: ").append(signalE)
+			logger.debug(new StringWriter().append("signal: ").append(signalE)
 					.toString());
 			if (signalE.equals("none") || signalE.equals("load")) {
 				if (signalE.equals("load")) {
