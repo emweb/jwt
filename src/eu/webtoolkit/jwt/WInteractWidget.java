@@ -186,7 +186,7 @@ public abstract class WInteractWidget extends WWebWidget {
 	 * </p>
 	 */
 	public EventSignal1<WMouseEvent> clicked() {
-		return this.mouseEventSignal(CLICK_SIGNAL, true);
+		return this.mouseEventSignal(M_CLICK_SIGNAL, true);
 	}
 
 	/**
@@ -678,7 +678,7 @@ public abstract class WInteractWidget extends WWebWidget {
 			element.setEvent("mousemove", actions);
 		}
 		EventSignal1<WMouseEvent> mouseClick = this.mouseEventSignal(
-				CLICK_SIGNAL, false);
+				M_CLICK_SIGNAL, false);
 		EventSignal1<WMouseEvent> mouseDblClick = this.mouseEventSignal(
 				DBL_CLICK_SIGNAL, false);
 		boolean updateMouseClick = mouseClick != null
@@ -718,13 +718,13 @@ public abstract class WInteractWidget extends WWebWidget {
 						mouseClick.updateOk();
 					}
 					combined.append("},200);}");
-					element.setEvent("click", combined.toString(), "");
+					element.setEvent(CLICK_SIGNAL, combined.toString(), "");
 				} else {
-					this.updateSignalConnection(element, mouseClick, "click",
-							all);
+					this.updateSignalConnection(element, mouseClick,
+							CLICK_SIGNAL, all);
 				}
 			} else {
-				element.setEvent("click",
+				element.setEvent(CLICK_SIGNAL,
 						"Wt3_2_1.cancelEvent(event||window.event);");
 			}
 		}
@@ -789,7 +789,7 @@ public abstract class WInteractWidget extends WWebWidget {
 	protected void propagateSetEnabled(boolean enabled) {
 		this.flags_.set(BIT_ENABLED, enabled);
 		EventSignal1<WMouseEvent> s;
-		s = this.mouseEventSignal(CLICK_SIGNAL, false);
+		s = this.mouseEventSignal(M_CLICK_SIGNAL, false);
 		if (s != null) {
 			s.senderRepaint();
 		}
@@ -806,7 +806,7 @@ public abstract class WInteractWidget extends WWebWidget {
 				.hasNext();) {
 			AbstractEventSignal i = i_it.next();
 			AbstractEventSignal s = i;
-			if (s.getName() == WInteractWidget.CLICK_SIGNAL
+			if (s.getName() == WInteractWidget.M_CLICK_SIGNAL
 					&& this.flags_.get(BIT_REPAINT_TO_AJAX)) {
 				element.unwrap();
 			}
@@ -821,7 +821,8 @@ public abstract class WInteractWidget extends WWebWidget {
 	private static String KEYUP_SIGNAL = "keyup";
 	private static String ENTER_PRESS_SIGNAL = "M_enterpress";
 	private static String ESCAPE_PRESS_SIGNAL = "M_escapepress";
-	static String CLICK_SIGNAL = "M_click";
+	static String CLICK_SIGNAL = "click";
+	protected static String M_CLICK_SIGNAL = "M_click";
 	private static String DBL_CLICK_SIGNAL = "M_dblclick";
 	static String MOUSE_DOWN_SIGNAL = "M_mousedown";
 	static String MOUSE_UP_SIGNAL = "M_mouseup";

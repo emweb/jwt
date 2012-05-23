@@ -258,7 +258,7 @@ public abstract class WAbstractToggleButton extends WFormWidget {
 		EventSignal check = this.voidEventSignal(CHECKED_SIGNAL, false);
 		EventSignal uncheck = this.voidEventSignal(UNCHECKED_SIGNAL, false);
 		EventSignal change = this.voidEventSignal(CHANGE_SIGNAL, false);
-		EventSignal1<WMouseEvent> click = this.mouseEventSignal(CLICK_SIGNAL,
+		EventSignal1<WMouseEvent> click = this.mouseEventSignal(M_CLICK_SIGNAL,
 				false);
 		boolean piggyBackChangeOnClick = env.agentIsIE();
 		boolean needUpdateChangeSignal = change != null
