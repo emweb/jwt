@@ -34,7 +34,23 @@ import org.slf4j.LoggerFactory;
  * <code>${...}</code>. To use a literal <code>&quot;${&quot;</code>, use
  * <code>&quot;$${&quot;</code>.
  * <p>
- * There are currently two syntactic constructs defined.
+ * Usage example:
+ * <p>
+ * 
+ * <pre>
+ * {@code
+ *  WString userName = ...;
+ * 
+ *  WTemplate t = new WTemplate();
+ *  t.setTemplateText("<div> How old are you, ${friend} ? ${age-input} </div>");
+ * 
+ *  t.bindString("friend", userName, PlainText);
+ *  t.bindWidget("age-input", ageEdit_ = new WLineEdit());
+ * }
+ * </pre>
+ * <p>
+ * There are currently three syntactic constructs defined: variable place
+ * holders, functions and conditional blocks.
  * <p>
  * <h3>A. Variable placeholders</h3>
  * <p>
@@ -88,43 +104,57 @@ import org.slf4j.LoggerFactory;
  * Functions are resolved by
  * {@link WTemplate#resolveFunction(String name, List args, Writer result)
  * resolveFunction()}, and the default implementation considers functions bound
- * with {@link WTemplate#addFunction(String name, Function function)
+ * with {@link WTemplate#addFunction(String name, WTemplate.Function function)
  * addFunction()}. There are currently two functions that are generally useful:
  * <p>
  * <ul>
- * <li>{@link TrFunctionImpl} : resolves a localized strings, this is convenient
- * to create a language neutral template, which contains translated strings</li>
+ * <li>WTemplate::Functions::tr : resolves a localized strings, this is
+ * convenient to create a language neutral template, which contains translated
+ * strings</li>
  * </ul>
  * <p>
  * <ul>
- * <li>{@link IdFunctionImpl} : resolves the id of a bound widget, this is
+ * <li>WTemplate::Function::id : resolves the id of a bound widget, this is
  * convenient to bind &lt;label&gt; elements to a form widget using its for
  * attribute.</li>
  * </ul>
+ * <p>
+ * For example, the following template uses the &quot;tr&quot; function to
+ * translate the age-label using the &quot;age-label&quot; internationalized
+ * key.
+ * <p>
+ * 
+ * <pre>
+ * {
+ * 	&#064;code
+ * 	WTemplate t = new WTemplate();
+ * 	t.setTemplateText(&quot;&lt;div&gt; ${tr:age-label} ${age-input} &lt;/div&gt;&quot;);
+ * 	t.addFunction(&quot;tr&quot;, Template.Functions.tr);
+ * 	t.bindWidget(&quot;age-input&quot;, ageEdit = new WLineEdit());
+ * }
+ * </pre>
  * <p>
  * <h3>C. Conditional blocks</h3>
  * <p>
  * <code>${&lt;cond&gt;}</code> starts a conditional block with a condition name
  * &quot;cond&quot;, and must be closed by a balanced
- * <code>${&gt;/cond&gt;}</code>.
+ * <code>${&lt;/cond&gt;}</code>.
  * <p>
- * Conditions are set using
- * {@link WTemplate#setCondition(String name, boolean value) setCondition()}.
- * <p>
- * <h3>Usage example</h3>
+ * For example:
  * <p>
  * 
  * <pre>
- * {@code
- *  WString userName = ...;
- * 
- *  WTemplate t = new WTemplate();
- *  t.setTemplateText("<div> How old are you, ${friend} ? ${age-input} </div>");
- * 
- *  t.bindString("friend", userName, PlainText);
- *  t.bindWidget("age-input", ageEdit_ = new WLineEdit());
+ * {
+ * 	&#064;code
+ * 	WTemplate t = new WTemplate();
+ * 	t
+ * 			.setTemplateText(&quot;&lt;div&gt; ${&lt;if-register&gt;} Register ... ${&lt;/if-register&gt;}&lt;/div&gt;&quot;);
+ * 	t.setCondition(&quot;if-register&quot;, true);
  * }
  * </pre>
+ * <p>
+ * Conditions are set using
+ * {@link WTemplate#setCondition(String name, boolean value) setCondition()}.
  * <p>
  * <h3>CSS</h3>
  * <p>
@@ -192,11 +222,11 @@ public class WTemplate extends WInteractWidget {
 	 * </pre>
 	 * <p>
 	 * 
-	 * @see WTemplate#addFunction(String name, Function function)
+	 * @see WTemplate#addFunction(String name, WTemplate.Function function)
 	 */
-	public static class TrFunctionImpl implements Function {
+	public static class TrFunction implements WTemplate.Function {
 		private static Logger logger = LoggerFactory
-				.getLogger(TrFunctionImpl.class);
+				.getLogger(TrFunction.class);
 
 		public boolean evaluate(WTemplate t, List<WString> args, Writer result) {
 			try {
@@ -229,11 +259,11 @@ public class WTemplate extends WInteractWidget {
 	 * This is useful for binding labels to input elements.
 	 * <p>
 	 * 
-	 * @see WTemplate#addFunction(String name, Function function)
+	 * @see WTemplate#addFunction(String name, WTemplate.Function function)
 	 */
-	public static class IdFunctionImpl implements Function {
+	public static class IdFunction implements WTemplate.Function {
 		private static Logger logger = LoggerFactory
-				.getLogger(IdFunctionImpl.class);
+				.getLogger(IdFunction.class);
 
 		public boolean evaluate(WTemplate t, List<WString> args, Writer result) {
 			try {
@@ -248,19 +278,19 @@ public class WTemplate extends WInteractWidget {
 	 * A collection of predefined functions.
 	 * <p>
 	 * 
-	 * @see WTemplate#addFunction(String name, Function function)
+	 * @see WTemplate#addFunction(String name, WTemplate.Function function)
 	 */
 	public static class FunctionsList {
 		private static Logger logger = LoggerFactory
 				.getLogger(FunctionsList.class);
 
 		public FunctionsList() {
-			this.tr = new WTemplate.TrFunctionImpl();
-			this.id = new WTemplate.IdFunctionImpl();
+			this.tr = new WTemplate.TrFunction();
+			this.id = new WTemplate.IdFunction();
 		}
 
-		public Function tr;
-		public Function id;
+		public WTemplate.Function tr;
+		public WTemplate.Function id;
 	}
 
 	/**
@@ -268,7 +298,7 @@ public class WTemplate extends WInteractWidget {
 	 */
 	public WTemplate(WContainerWidget parent) {
 		super(parent);
-		this.functions_ = new HashMap<String, Function>();
+		this.functions_ = new HashMap<String, WTemplate.Function>();
 		this.strings_ = new HashMap<String, String>();
 		this.widgets_ = new HashMap<String, WWidget>();
 		this.conditions_ = new HashSet<String>();
@@ -298,7 +328,7 @@ public class WTemplate extends WInteractWidget {
 	 */
 	public WTemplate(CharSequence text, WContainerWidget parent) {
 		super(parent);
-		this.functions_ = new HashMap<String, Function>();
+		this.functions_ = new HashMap<String, WTemplate.Function>();
 		this.strings_ = new HashMap<String, String>();
 		this.widgets_ = new HashMap<String, WWidget>();
 		this.conditions_ = new HashSet<String>();
@@ -494,16 +524,17 @@ public class WTemplate extends WInteractWidget {
 	 * <code>${fun:bla}</code>
 	 * <p>
 	 * There are two predefined functions, which can be bound using:
+	 * <p>
 	 * 
 	 * <pre>
 	 * {@code
-	 *    WTemplate *t = ...;
-	 *    t.addFunction("id", &WTemplate::Functions::id);
-	 *    t.addFunction("tr", &WTemplate::Functions::tr);
+	 *    WTemplate t = ...;
+	 *    t.addFunction("id", WTemplate.Functions.id);
+	 *    t.addFunction("tr", WTemplate.Functions.tr);
 	 *   }
 	 * </pre>
 	 */
-	public void addFunction(String name, Function function) {
+	public void addFunction(String name, WTemplate.Function function) {
 		this.functions_.put(name, function);
 	}
 
@@ -667,15 +698,15 @@ public class WTemplate extends WInteractWidget {
 	 * and applied.
 	 * <p>
 	 * The default implementation considers functions that were bound using
-	 * {@link WTemplate#addFunction(String name, Function function)
+	 * {@link WTemplate#addFunction(String name, WTemplate.Function function)
 	 * addFunction()}.
 	 * <p>
 	 * 
-	 * @see WTemplate#addFunction(String name, Function function)
+	 * @see WTemplate#addFunction(String name, WTemplate.Function function)
 	 */
 	public boolean resolveFunction(String name, List<WString> args,
 			Writer result) throws IOException {
-		Function i = this.functions_.get(name);
+		WTemplate.Function i = this.functions_.get(name);
 		if (i != null) {
 			boolean ok = i.evaluate(this, args, result);
 			if (!ok) {
@@ -699,7 +730,7 @@ public class WTemplate extends WInteractWidget {
 	 * This also resets all conditions set using
 	 * {@link WTemplate#setCondition(String name, boolean value) setCondition()}
 	 * , but does not remove functions added with
-	 * {@link WTemplate#addFunction(String name, Function function)
+	 * {@link WTemplate#addFunction(String name, WTemplate.Function function)
 	 * addFunction()}
 	 */
 	public void clear() {
@@ -1028,7 +1059,7 @@ public class WTemplate extends WInteractWidget {
 
 	private Set<WWidget> previouslyRendered_;
 	private List<WWidget> newlyRendered_;
-	private Map<String, Function> functions_;
+	private Map<String, WTemplate.Function> functions_;
 	private Map<String, String> strings_;
 	private Map<String, WWidget> widgets_;
 	private Set<String> conditions_;

@@ -789,11 +789,7 @@ public class WContainerWidget extends WInteractWidget {
 	}
 
 	void childResized(WWidget child, EnumSet<Orientation> directions) {
-		AlignmentFlag vAlign = EnumUtils.enumFromSet(EnumUtils.mask(
-				this.contentAlignment_, AlignmentFlag.AlignVerticalMask));
-		if (this.layout_ != null
-				&& !EnumUtils.mask(directions, Orientation.Vertical).isEmpty()
-				&& vAlign == null) {
+		if (this.layout_ != null) {
 			boolean setUpdate = true;
 			if (setUpdate) {
 				WWidgetItem item = this.layout_.findWidgetItem(child);

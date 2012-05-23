@@ -56,5 +56,7 @@ class NonModalDialog extends WDialog {
 	private void welcome() {
 		this.ed_.setStatus("Welcome, " + this.edit_.getText());
 		this.setHidden(true);
+		if (this != null)
+			this.remove();
 	}
 }

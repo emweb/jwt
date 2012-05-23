@@ -593,10 +593,22 @@ public abstract class WAbstractMedia extends WInteractWidget {
 			if (attributes.size() == 6) {
 				try {
 					this.volume_ = Double.parseDouble(attributes.get(0));
+				} catch (RuntimeException e) {
+					this.volume_ = -1;
+				}
+				try {
 					this.current_ = Double.parseDouble(attributes.get(1));
+				} catch (RuntimeException e) {
+					this.current_ = -1;
+				}
+				try {
 					this.duration_ = Double.parseDouble(attributes.get(2));
-					this.playing_ = attributes.get(3).equals("0");
-					this.ended_ = attributes.get(4).equals("1");
+				} catch (RuntimeException e) {
+					this.duration_ = -1;
+				}
+				this.playing_ = attributes.get(3).equals("0");
+				this.ended_ = attributes.get(4).equals("1");
+				try {
 					this.readyState_ = intToReadyState(Integer
 							.parseInt(attributes.get(5)));
 				} catch (RuntimeException e) {
