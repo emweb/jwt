@@ -1534,6 +1534,7 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 		this.defaultHeaderVAlignment_ = AlignmentFlag.AlignMiddle;
 		this.defaultHeaderWordWrap_ = true;
 		this.rowHeaderCount_ = 0;
+		this.computedDragMimeType_ = new WString();
 		this.columnWidthChanged_ = new JSignal2<Integer, Integer>(this.impl_,
 				"columnResized") {
 		};
@@ -1556,9 +1557,6 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 		this.setItemDelegate(new WItemDelegate(this));
 		this.setHeaderItemDelegate(new WItemDelegate(this));
 		WApplication app = WApplication.getInstance();
-		if (app.getEnvironment().agentIsChrome()) {
-			this.impl_.setMargin(new WLength(1), EnumSet.of(Side.Right));
-		}
 		this.clickedForSortMapper_ = new WSignalMapper1<Integer>(this);
 		this.clickedForSortMapper_.mapped().addListener(this,
 				new Signal1.Listener<Integer>() {
@@ -2241,6 +2239,7 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	private AlignmentFlag defaultHeaderVAlignment_;
 	private boolean defaultHeaderWordWrap_;
 	private int rowHeaderCount_;
+	private WString computedDragMimeType_;
 	private JSignal2<Integer, Integer> columnWidthChanged_;
 	private Signal2<Integer, WLength> columnResized_;
 	private WCssTemplateRule headerHeightRule_;
@@ -2383,25 +2382,13 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	abstract void selectRange(WModelIndex first, WModelIndex last);
 
 	private void checkDragSelection() {
-		String dragMimeType = this.model_.getMimeType();
-		if (dragMimeType.length() != 0) {
-			SortedSet<WModelIndex> selection = this.selectionModel_
-					.getSelectedIndexes();
-			boolean dragOk = !selection.isEmpty();
-			for (Iterator<WModelIndex> i_it = selection.iterator(); i_it
-					.hasNext();) {
-				WModelIndex i = i_it.next();
-				if (!!EnumUtils.mask(i.getFlags(), ItemFlag.ItemIsDragEnabled)
-						.isEmpty()) {
-					dragOk = false;
-					break;
-				}
-			}
-			if (dragOk) {
-				this.setAttributeValue("drag", "true");
-			} else {
-				this.setAttributeValue("drag", "false");
-			}
+		this.computedDragMimeType_ = new WString(this.selectionModel_
+				.getMimeType());
+		this.setAttributeValue("dmt", this.computedDragMimeType_.toString());
+		if (!(this.computedDragMimeType_.length() == 0)) {
+			this.setAttributeValue("drag", "true");
+		} else {
+			this.setAttributeValue("drag", "false");
 		}
 	}
 
@@ -2411,7 +2398,6 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 			return;
 		}
 		if (this.dragEnabled_) {
-			this.setAttributeValue("dmt", this.model_.getMimeType());
 			this.setAttributeValue("dsid", WApplication.getInstance()
 					.encodeObject(this.selectionModel_));
 			this.checkDragSelection();

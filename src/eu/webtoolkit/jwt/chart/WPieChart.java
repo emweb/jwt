@@ -217,7 +217,7 @@ public class WPieChart extends WAbstractChart {
 	 */
 	public void setPerspectiveEnabled(boolean enabled, double height) {
 		if (!enabled && this.height_ != 0.0 || this.height_ != height) {
-			this.height_ = height;
+			this.height_ = enabled ? height : 0.0;
 			this.update();
 		}
 	}

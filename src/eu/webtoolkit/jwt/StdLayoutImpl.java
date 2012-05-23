@@ -44,14 +44,9 @@ abstract class StdLayoutImpl extends StdLayoutItemImpl {
 		}
 	}
 
-	public void update(WLayoutItem item) {
-		WContainerWidget c = this.getContainer();
-		if (c != null) {
-			c.layoutChanged();
-		}
-	}
+	public abstract void update(WLayoutItem anon1);
 
-	public abstract void updateDom();
+	public abstract void updateDom(DomElement parent);
 
 	public abstract boolean itemResized(WLayoutItem item);
 

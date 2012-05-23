@@ -26,7 +26,7 @@ import org.slf4j.LoggerFactory;
  * The spin box provides a control for entering a fixed point number. It
  * consists of a line edit, and buttons which allow to increase or decrease the
  * value. If you rather need input of an integer number number, use
- * {@link WDoubleSpinBox} instead.
+ * {@link WSpinBox} instead.
  * <p>
  * WDoubleSpinBox is an {@link WWidget#setInline(boolean inlined) inline}
  * widget.

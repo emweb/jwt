@@ -185,14 +185,20 @@ public class WDialog extends WCompositeWidget {
 		app.loadJavaScript("js/WDialog.js", wtjs1());
 		WContainerWidget parent = app.getDomRoot();
 		parent.addWidget(this);
+		WContainerWidget layoutContainer = new WContainerWidget();
+		layoutContainer.setStyleClass("dialog-layout");
+		WVBoxLayout layout = new WVBoxLayout(layoutContainer);
+		layout.setContentsMargins(0, 0, 0, 0);
+		layout.setSpacing(0);
 		this.titleBar_ = new WContainerWidget();
 		this.titleBar_.setStyleClass("titlebar");
 		this.caption_ = new WText(windowTitle, this.titleBar_);
 		this.impl_.bindString("shadow-x1-x2", WTemplate.DropShadow_x1_x2);
-		this.impl_.bindWidget("titlebar", this.titleBar_);
+		this.impl_.bindWidget("layout", layoutContainer);
+		layout.addWidget(this.titleBar_);
 		this.contents_ = new WContainerWidget();
 		this.contents_.setStyleClass("body");
-		this.impl_.bindWidget("contents", this.contents_);
+		layout.addWidget(this.contents_, 1);
 		this.saveCoverState(app, app.getDialogCover());
 		this.hide();
 	}
@@ -453,7 +459,7 @@ public class WDialog extends WCompositeWidget {
 	 * <p>
 	 * 
 	 * @see WCompositeWidget#setMinimumSize(WLength width, WLength height)
-	 * @see WCompositeWidget#setMaximumSize(WLength width, WLength height)
+	 * @see WDialog#setMaximumSize(WLength width, WLength height)
 	 */
 	public void setResizable(boolean resizable) {
 		if (resizable != this.resizable_) {
@@ -552,6 +558,11 @@ public class WDialog extends WCompositeWidget {
 		super.positionAt(widget, orientation);
 	}
 
+	public void setMaximumSize(WLength width, WLength height) {
+		super.setMaximumSize(width, height);
+		this.impl_.resolveWidget("layout").setMaximumSize(width, height);
+	}
+
 	void render(EnumSet<RenderFlag> flags) {
 		if (!this.initialized_) {
 			this.initialized_ = true;
@@ -560,13 +571,9 @@ public class WDialog extends WCompositeWidget {
 					&& this.getOffset(Side.Right).isAuto();
 			boolean centerY = this.getOffset(Side.Top).isAuto()
 					&& this.getOffset(Side.Bottom).isAuto();
-			this.setJavaScriptMember("_a", "0;new Wt3_2_1.WDialog("
-					+ app.getJavaScriptClass() + "," + this.getJsRef() + ","
-					+ (centerX ? "1" : "0") + "," + (centerY ? "1" : "0")
-					+ ");");
-			this.setJavaScriptMember(WT_RESIZE_JS, "\"dummy\"");
-			app.addAutoJavaScript("{var obj = $('#" + this.getId()
-					+ "').data('obj');if (obj) obj.centerDialog();}");
+			this.doJavaScript("new Wt3_2_1.WDialog(" + app.getJavaScriptClass()
+					+ "," + this.getJsRef() + "," + (centerX ? "1" : "0") + ","
+					+ (centerY ? "1" : "0") + ");");
 			if (!app.getEnvironment().agentIsIElt(9)) {
 				String js = WString.tr("Wt.WDialog.CenterJS").toString();
 				StringUtils.replace(js, "$el", "'" + this.getId() + "'");
@@ -611,6 +618,6 @@ public class WDialog extends WCompositeWidget {
 				JavaScriptScope.WtClassScope,
 				JavaScriptObjectType.JavaScriptConstructor,
 				"WDialog",
-				"function(g,b,h,i){function m(a){var c=a||window.event;a=d.pageCoordinates(c);c=d.windowCoordinates(c);var e=d.windowSize();if(c.x>0&&c.x<e.x&&c.y>0&&c.y<e.y){h=i=false;b.style.left=d.px(b,\"left\")+a.x-j+\"px\";b.style.top=d.px(b,\"top\")+a.y-k+\"px\";b.style.right=\"\";b.style.bottom=\"\";j=a.x;k=a.y}}function l(a,c,e){e-=2;c-=2;a.style.height=Math.max(0,e)+\"px\";if(c>0)a.style.width=Math.max(0,c)+\"px\";c=$(a).children(\".body\").get(0);if(a=$(a).children(\".titlebar\").get(0))e-= a.offsetHeight+8;if(e>0){c.style.height=e+\"px\";g.layouts&&g.layouts.adjust()}}jQuery.data(b,\"obj\",this);var f=$(b).find(\".titlebar\").first().get(0),d=g.WT,j,k;if(f){f.onmousedown=function(a){a=a||window.event;d.capture(f);a=d.pageCoordinates(a);j=a.x;k=a.y;f.onmousemove=m};f.onmouseup=function(){f.onmousemove=null;d.capture(null)}}this.centerDialog=function(){if(b.parentNode==null)b=f=null;else if(b.style.display!=\"none\"&&b.style.visibility!=\"hidden\"){var a=d.windowSize(),c=b.offsetWidth,e=b.offsetHeight; if(h){b.style.left=Math.round((a.x-c)/2+(d.isIE6?document.documentElement.scrollLeft:0))+\"px\";b.style.marginLeft=\"0px\"}if(i){b.style.top=Math.round((a.y-e)/2+(d.isIE6?document.documentElement.scrollTop:0))+\"px\";b.style.marginTop=\"0px\"}b.style.height!=\"\"&&l(b,-1,e);b.style.visibility=\"visible\"}};this.onresize=function(a,c){h=i=false;l(b,a,c)};b.wtResize=l;b.wtPosition=this.centerDialog}");
+				"function(m,a,h,i){function n(b){var c=b||window.event;b=d.pageCoordinates(c);c=d.windowCoordinates(c);var e=d.windowSize();if(c.x>0&&c.x<e.x&&c.y>0&&c.y<e.y){h=i=false;a.style.left=d.px(a,\"left\")+b.x-j+\"px\";a.style.top=d.px(a,\"top\")+b.y-k+\"px\";a.style.right=\"\";a.style.bottom=\"\";j=b.x;k=b.y}}function o(b,c,e){a.style.height=Math.max(0,e)+\"px\";a.style.width=Math.max(0,c)+\"px\";l.centerDialog()}function p(b,c,e){if(c>0)g.style.width=c+\"px\";if(e>0)g.style.height= e+\"px\";l.centerDialog()}jQuery.data(a,\"obj\",this);var l=this,f=$(a).find(\".titlebar\").first().get(0),g=$(a).find(\".dialog-layout\").get(0),d=m.WT,j,k;if(f){f.onmousedown=function(b){b=b||window.event;d.capture(f);b=d.pageCoordinates(b);j=b.x;k=b.y;f.onmousemove=n};f.onmouseup=function(){f.onmousemove=null;d.capture(null)}}this.centerDialog=function(){if(a.parentNode==null)a=f=null;else if(a.style.display!=\"none\"&&a.style.visibility!=\"hidden\"){var b=d.windowSize(),c=a.offsetWidth,e=a.offsetHeight;if(h){a.style.left= Math.round((b.x-c)/2+(d.isIE6?document.documentElement.scrollLeft:0))+\"px\";a.style.marginLeft=\"0px\"}if(i){a.style.top=Math.round((b.y-e)/2+(d.isIE6?document.documentElement.scrollTop:0))+\"px\";a.style.marginTop=\"0px\"}a.style.visibility=\"visible\"}};this.onresize=function(b,c){h=i=false;p(a,b,c);m.layouts2.scheduleAdjust()};g.wtResize=o;a.wtPosition=this.centerDialog;if(a.style.width!=\"\")g.style.width=a.offsetWidth+\"px\";if(a.style.height!=\"\")g.style.height=a.offsetHeight+\"px\";l.centerDialog()}");
 	}
 }

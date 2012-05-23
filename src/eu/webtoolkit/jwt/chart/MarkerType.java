@@ -50,7 +50,11 @@ public enum MarkerType {
 	/**
 	 * Mark points using a triangle.
 	 */
-	TriangleMarker;
+	TriangleMarker,
+	/**
+	 * Mark points using a custume icon.
+	 */
+	CustomMarker;
 
 	/**
 	 * Returns the numerical representation of this enum.

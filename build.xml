@@ -1,7 +1,7 @@
 <project name="jwt" default="all" basedir=".">
   <!-- Name of project and version -->
   <property name="proj.name" value="jwt"/>
-  <property name="proj.version" value="3.2.1"/>
+  <property name="proj.version" value="3.2.2"/>
 
   <!-- Global properties for this build -->
   <property name="src.java.dir" value="src"/>
@@ -9,7 +9,7 @@
   <property name="dist.dir" value="dist"/>
   <property name="archives.dir" value="archives"/>
   <property name="mvn.dir" value="mvn"/>
-  <property name="javadoc.jwt.dir" value="doc/reference/jwt"/>
+  <property name="javadoc.jwt.dir" value="doc/javadoc"/>
   <property name="javadoc.jwt-auth.dir" value="doc/reference/jwt-auth"/>
   <property name="userguide.dir" value="doc/userguide"/>
 
@@ -208,7 +208,7 @@
 	<include name="eu/webtoolkit/jwt/utils/*.java"/>
       </fileset>
     </jar>
-    <jar jarfile="dist/jwt-auth-${proj.version}-sources.jar">
+    <jar jarfile="dist/jwt-${proj.version}-sources.jar">
       <fileset dir="${src.java.dir}" defaultexcludes="yes">
 	<include name="eu/webtoolkit/jwt/auth/*.java"/>
 	<include name="eu/webtoolkit/jwt/auth/jpa/*.java"/>

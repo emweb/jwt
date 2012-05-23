@@ -11,6 +11,9 @@ import eu.webtoolkit.jwt.Icon;
 import eu.webtoolkit.jwt.Signal;
 import eu.webtoolkit.jwt.Signal1;
 import eu.webtoolkit.jwt.StandardButton;
+import eu.webtoolkit.jwt.WAnimation;
+import eu.webtoolkit.jwt.WAnimation.AnimationEffect;
+import eu.webtoolkit.jwt.WAnimation.TimingFunction;
 import eu.webtoolkit.jwt.WApplication;
 import eu.webtoolkit.jwt.WBreak;
 import eu.webtoolkit.jwt.WContainerWidget;
@@ -96,8 +99,9 @@ public class DialogApplication extends WApplication {
                         + "margin-top: 4px; display: block");
         getStyleSheet().addRule(".text", "padding: 4px 8px");
 
-        if (getEnvironment().getUserAgent().contains("MSIE"))
-            getStyleSheet().addRule("body", "margin: 0px;"); // avoid scrollbar problems
+        //avoid scrollbar problems
+        getStyleSheet().addRule(".text", "padding: 4px 8px");
+        getStyleSheet().addRule("body", "margin: 0px;");
     }
 
     private WMessageBox show(String caption, String text, StandardButton button) {
@@ -133,8 +137,6 @@ public class DialogApplication extends WApplication {
                         StandardButton.Yes, StandardButton.No,
                         StandardButton.Cancel));
 
-        messageBox_.show();
-
         messageBox_.buttonClicked().addListener(this,
                 new Signal1.Listener<StandardButton>() {
                     public void trigger(StandardButton sb) {
@@ -142,11 +144,14 @@ public class DialogApplication extends WApplication {
                         messageBoxDone(sb);
                     }
                 });
+        
+        messageBox_.animateShow
+        (new WAnimation(EnumSet.of(AnimationEffect.Pop , AnimationEffect.Fade), TimingFunction.Linear, 250));
     }
 
     private void messageBox3() {
-        final WMessageBox box = show("Confirm",
-                "About to wreak havoc... Continue ?", EnumSet.of(
+        final WMessageBox box = new WMessageBox("Confirm",
+                "About to wreak havoc... Continue ?", Icon.NoIcon, EnumSet.of(
                         StandardButton.Ok, StandardButton.Cancel));
 
         box.buttonClicked().addListener(this,
@@ -162,6 +167,8 @@ public class DialogApplication extends WApplication {
                         }
                     }
                 });
+        
+        box.animateShow(new WAnimation(AnimationEffect.SlideInFromTop));
     }
 
     private void messageBox4() {
@@ -171,8 +178,6 @@ public class DialogApplication extends WApplication {
         messageBox_.addButton("Cancel modifications", StandardButton.Cancel);
         messageBox_.addButton("Continue modifying work", StandardButton.Ok);
 
-        messageBox_.show();
-
         messageBox_.buttonClicked().addListener(this,
                 new Signal1.Listener<StandardButton>() {
                     public void trigger(StandardButton sb) {
@@ -180,6 +185,9 @@ public class DialogApplication extends WApplication {
                         messageBoxDone(sb);
                     }
                 });
+        
+        messageBox_.animateShow(new WAnimation(EnumSet.of(AnimationEffect.SlideInFromBottom, 
+        		AnimationEffect.Fade), TimingFunction.Linear, 250));
     }
 
     private void custom() {

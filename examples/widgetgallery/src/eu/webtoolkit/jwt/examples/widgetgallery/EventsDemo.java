@@ -194,10 +194,13 @@ class EventsDemo extends ControlsWidget {
 			StringWriter ss = new StringWriter();
 			append(ss.append("Key: "), e.getKey()).append("<br/>").append(
 					"Modifiers: ").append(modifiersToString(e.getModifiers()))
-					.append("<br/>").append("Char code: ").append(
-							String.valueOf((int) e.getCharCode())).append(
-							"<br/>").append("text: ").append(
-							Utils.htmlEncode(e.getText())).append("<br/>");
+					.append("<br/>");
+			int charCode = (int) e.getCharCode();
+			if (charCode != 0) {
+				ss.append("Char code: ").append(String.valueOf(charCode))
+						.append("<br/>").append("text: ").append(
+								Utils.htmlEncode(e.getText())).append("<br/>");
+			}
 			this.keyEventDescription_.setText(ss.toString());
 		} catch (IOException ieo) {
 			ieo.printStackTrace();

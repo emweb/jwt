@@ -96,8 +96,7 @@ public class WKeyEvent implements WAbstractEvent {
 	 * @see WKeyEvent#getText()
 	 */
 	public int getCharCode() {
-		return this.jsEvent_.charCode != 0 ? this.jsEvent_.charCode
-				: this.jsEvent_.keyCode;
+		return this.jsEvent_.charCode;
 	}
 
 	/**

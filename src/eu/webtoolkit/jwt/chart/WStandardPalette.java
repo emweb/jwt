@@ -145,14 +145,16 @@ public class WStandardPalette implements WChartPalette {
 	}
 
 	public WPen getBorderPen(int index) {
-		return new WPen(new WColor(0x44, 0x44, 0x44));
+		WPen p = new WPen(new WColor(0x44, 0x44, 0x44));
+		p.setCapStyle(PenCapStyle.SquareCap);
+		return p;
 	}
 
 	public WPen getStrokePen(int index) {
 		WPen p = new WPen(this.color(index));
 		p.setWidth(new WLength(2));
 		p.setJoinStyle(PenJoinStyle.BevelJoin);
-		p.setCapStyle(PenCapStyle.FlatCap);
+		p.setCapStyle(PenCapStyle.SquareCap);
 		return p;
 	}
 

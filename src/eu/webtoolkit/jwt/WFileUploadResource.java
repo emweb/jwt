@@ -50,6 +50,9 @@ class WFileUploadResource extends WResource {
 					WApplication.getInstance().getJavaScriptClass()).append(
 					") ");
 			if (triggerUpdate) {
+				logger.debug(new StringWriter().append(
+						"Resource handleRequest(): signaling uploaded")
+						.toString());
 				o.append("window.parent.").append(
 						WApplication.getInstance().getJavaScriptClass())
 						.append("._p_.update(null, '").append(
@@ -57,6 +60,11 @@ class WFileUploadResource extends WResource {
 						.append("', null, true);");
 			} else {
 				if (0 != 0) {
+					logger
+							.debug(new StringWriter()
+									.append(
+											"Resource handleRequest(): signaling file-too-large")
+									.toString());
 					o.append("window.parent.").append(
 							WApplication.getInstance().getJavaScriptClass())
 							.append("._p_.update(null, '").append(
@@ -65,6 +73,9 @@ class WFileUploadResource extends WResource {
 									"', null, true);");
 				}
 			}
+		} else {
+			logger.debug(new StringWriter().append(
+					"Resource handleRequest(): no signal").toString());
 		}
 		o.append("}\n</script></head><body onload=\"load();\"></body></html>");
 		if (0 != 0) {

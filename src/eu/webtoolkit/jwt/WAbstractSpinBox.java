@@ -152,6 +152,7 @@ public abstract class WAbstractSpinBox extends WLineEdit {
 		this.changed_ = false;
 		this.valueChangedConnection_ = false;
 		this.preferNative_ = false;
+		this.setup_ = false;
 		this.prefix_ = new WString();
 		this.suffix_ = new WString();
 		this.setJavaScriptMember("_a", "0");
@@ -195,7 +196,9 @@ public abstract class WAbstractSpinBox extends WLineEdit {
 	}
 
 	protected void render(EnumSet<RenderFlag> flags) {
-		if (!EnumUtils.mask(flags, RenderFlag.RenderFull).isEmpty()) {
+		if (!this.setup_
+				&& !EnumUtils.mask(flags, RenderFlag.RenderFull).isEmpty()) {
+			this.setup_ = true;
 			boolean useNative = this.isNativeControl();
 			this.setup(useNative);
 		}
@@ -233,6 +236,7 @@ public abstract class WAbstractSpinBox extends WLineEdit {
 	boolean changed_;
 	boolean valueChangedConnection_;
 	private boolean preferNative_;
+	private boolean setup_;
 	private WString prefix_;
 	private WString suffix_;
 

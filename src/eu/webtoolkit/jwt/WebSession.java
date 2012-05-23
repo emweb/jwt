@@ -997,6 +997,8 @@ class WebSession {
 	public void setState(WebSession.State state, int timeout) {
 		if (this.state_ != WebSession.State.Dead) {
 			this.state_ = state;
+			logger.debug(new StringWriter().append("Setting to expire in ")
+					.append(String.valueOf(timeout)).append("s").toString());
 		}
 	}
 
@@ -1336,8 +1338,7 @@ class WebSession {
 								}
 								this.app_.notify(new WEvent(new WEvent.Impl(
 										handler)));
-								this.setState(WebSession.State.ExpectLoad, conf
-										.getBootstrapTimeout());
+								this.setExpectLoad();
 							}
 							break;
 						default:
@@ -1356,9 +1357,7 @@ class WebSession {
 									handler.getResponse().setResponseType(
 											WebRequest.ResponseType.Script);
 									if (this.state_ == WebSession.State.Loaded) {
-										this.setState(
-												WebSession.State.ExpectLoad,
-												conf.getBootstrapTimeout());
+										this.setExpectLoad();
 									}
 								} else {
 									if (requestE.equals("style")) {
@@ -1536,6 +1535,15 @@ class WebSession {
 
 	public ReentrantLock getMutex() {
 		return this.mutex_;
+	}
+
+	public void setExpectLoad() {
+		if (this.controller_.getConfiguration().ajaxPuzzle()) {
+			this.setState(WebSession.State.ExpectLoad, this.controller_
+					.getConfiguration().getBootstrapTimeout());
+		} else {
+			this.setLoaded();
+		}
 	}
 
 	public void setLoaded() {
@@ -1804,6 +1812,8 @@ class WebSession {
 				return;
 			}
 			this.renderer_.setRendered(true);
+			logger.debug(new StringWriter().append("signal: ").append(signalE)
+					.toString());
 			if (signalE.equals("none") || signalE.equals("load")) {
 				if (signalE.equals("load")) {
 					if (this.getType() == EntryPointType.WidgetSet) {

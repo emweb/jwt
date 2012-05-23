@@ -256,10 +256,17 @@ public class WContainerWidget extends WInteractWidget {
 		if (this.layout_ != null && layout != this.layout_) {
 			;
 		}
+		if (!alignment.equals(AlignmentFlag.AlignJustify)) {
+			logger
+					.warn(new StringWriter()
+							.append(
+									"setLayout(layout, alignment) is being deprecated (and does no longer have the special meaning it used to have). Use spacers or CSS instead to control alignment")
+							.toString());
+		}
 		this.contentAlignment_ = EnumSet.copyOf(alignment);
 		if (layout != this.layout_) {
 			this.layout_ = layout;
-			this.flags_.set(BIT_LAYOUT_CHANGED);
+			this.flags_.set(BIT_LAYOUT_NEEDS_RERENDER);
 			if (layout != null) {
 				super.setLayout(layout);
 				this.getLayoutImpl().setContainer(this);
@@ -702,7 +709,7 @@ public class WContainerWidget extends WInteractWidget {
 	private static final int BIT_ADJUST_CHILDREN_ALIGN = 3;
 	private static final int BIT_LIST = 4;
 	private static final int BIT_ORDERED_LIST = 5;
-	private static final int BIT_LAYOUT_CHANGED = 6;
+	private static final int BIT_LAYOUT_NEEDS_RERENDER = 6;
 	private static final int BIT_LAYOUT_NEEDS_UPDATE = 7;
 	BitSet flags_;
 	EnumSet<AlignmentFlag> contentAlignment_;
@@ -782,12 +789,9 @@ public class WContainerWidget extends WInteractWidget {
 	}
 
 	void childResized(WWidget child, EnumSet<Orientation> directions) {
-		AlignmentFlag vAlign = EnumUtils.enumFromSet(EnumUtils.mask(
-				this.contentAlignment_, AlignmentFlag.AlignVerticalMask));
-		if (this.layout_ != null
-				&& !EnumUtils.mask(directions, Orientation.Vertical).isEmpty()
-				&& vAlign == null) {
-			if (!this.flags_.get(BIT_LAYOUT_NEEDS_UPDATE)) {
+		if (this.layout_ != null) {
+			boolean setUpdate = true;
+			if (setUpdate) {
 				WWidgetItem item = this.layout_.findWidgetItem(child);
 				if (item != null) {
 					if ((((item.getParentLayout().getImpl()) instanceof StdLayoutImpl ? (StdLayoutImpl) (item
@@ -806,10 +810,10 @@ public class WContainerWidget extends WInteractWidget {
 	void getDomChanges(List<DomElement> result, WApplication app) {
 		DomElement e = DomElement.getForUpdate(this, this.getDomElementType());
 		if (!app.getSession().getRenderer().isPreLearning()) {
-			if (this.flags_.get(BIT_LAYOUT_CHANGED)) {
+			if (this.flags_.get(BIT_LAYOUT_NEEDS_RERENDER)) {
 				e.removeAllChildren(this.getFirstChildIndex());
 				this.createDomChildren(e, app);
-				this.flags_.clear(BIT_LAYOUT_CHANGED);
+				this.flags_.clear(BIT_LAYOUT_NEEDS_RERENDER);
 				this.flags_.clear(BIT_LAYOUT_NEEDS_UPDATE);
 			}
 		}
@@ -883,7 +887,7 @@ public class WContainerWidget extends WInteractWidget {
 				break;
 			}
 			parent.addChild(c);
-			this.flags_.clear(BIT_LAYOUT_CHANGED);
+			this.flags_.clear(BIT_LAYOUT_NEEDS_RERENDER);
 		} else {
 			for (int i = 0; i < this.children_.size(); ++i) {
 				parent.addChild(this.children_.get(i).createSDomElement(app));
@@ -928,7 +932,7 @@ public class WContainerWidget extends WInteractWidget {
 		}
 		if (this.flags_.get(BIT_LAYOUT_NEEDS_UPDATE)) {
 			if (this.layout_ != null) {
-				this.getLayoutImpl().updateDom();
+				this.getLayoutImpl().updateDom(parent);
 			}
 			this.flags_.clear(BIT_LAYOUT_NEEDS_UPDATE);
 		}
@@ -1081,7 +1085,7 @@ public class WContainerWidget extends WInteractWidget {
 		this.flags_.clear(BIT_CONTENT_ALIGNMENT_CHANGED);
 		this.flags_.clear(BIT_PADDINGS_CHANGED);
 		this.flags_.clear(BIT_OVERFLOW_CHANGED);
-		this.flags_.clear(BIT_LAYOUT_CHANGED);
+		this.flags_.clear(BIT_LAYOUT_NEEDS_RERENDER);
 		this.flags_.clear(BIT_LAYOUT_NEEDS_UPDATE);
 		if (this.layout_ != null && deep) {
 			this.propagateLayoutItemsOk(this.getLayout());
@@ -1109,21 +1113,21 @@ public class WContainerWidget extends WInteractWidget {
 			WBorderLayout l = ((item) instanceof WBorderLayout ? (WBorderLayout) (item)
 					: null);
 			if (l != null) {
-				return new StdGridLayoutImpl(l, l.getGrid());
+				return new StdGridLayoutImpl2(l, l.getGrid());
 			}
 		}
 		{
 			WBoxLayout l = ((item) instanceof WBoxLayout ? (WBoxLayout) (item)
 					: null);
 			if (l != null) {
-				return new StdGridLayoutImpl(l, l.getGrid());
+				return new StdGridLayoutImpl2(l, l.getGrid());
 			}
 		}
 		{
 			WGridLayout l = ((item) instanceof WGridLayout ? (WGridLayout) (item)
 					: null);
 			if (l != null) {
-				return new StdGridLayoutImpl(l, l.getGrid());
+				return new StdGridLayoutImpl2(l, l.getGrid());
 			}
 		}
 		assert false;
@@ -1136,16 +1140,16 @@ public class WContainerWidget extends WInteractWidget {
 				: null);
 	}
 
-	void layoutChanged(boolean deleted) {
-		this.flags_.set(BIT_LAYOUT_CHANGED);
+	protected void layoutChanged(boolean rerender, boolean deleted) {
+		if (rerender) {
+			this.flags_.set(BIT_LAYOUT_NEEDS_RERENDER);
+		} else {
+			this.flags_.set(BIT_LAYOUT_NEEDS_UPDATE);
+		}
 		this.repaint(EnumSet.of(RepaintFlag.RepaintInnerHtml));
 		if (deleted) {
 			this.layout_ = null;
 		}
-	}
-
-	final void layoutChanged() {
-		layoutChanged(false);
 	}
 
 	private void propagateLayoutItemsOk(WLayoutItem item) {

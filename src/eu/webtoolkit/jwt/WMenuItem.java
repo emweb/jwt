@@ -125,7 +125,7 @@ public class WMenuItem extends WObject {
 			if (this.contents_ != null) {
 				this.contentsContainer_ = new WContainerWidget();
 				this.contentsContainer_.setJavaScriptMember("wtResize",
-						StdGridLayoutImpl.getChildrenResizeJS());
+						StdWidgetItemImpl.getChildrenResizeJS());
 				this.addChild(this.contents_);
 				;
 				this.contentsContainer_.resize(WLength.Auto, new WLength(100,

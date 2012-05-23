@@ -122,6 +122,51 @@ public class WItemSelectionModel extends WObject {
 		return this.selectionBehavior_;
 	}
 
+	/**
+	 * Returns the selection mime type.
+	 * <p>
+	 * This should return the mime type for the current selection, or an emtpy
+	 * string if the selection cannot be dragged.
+	 * <p>
+	 * The default implementation returns the mime type based on MimeTypeRole
+	 * data if all selected items indicate the same mime type, or the model
+	 * {@link WItemSelectionModel#getMimeType() getMimeType()} otherwise.
+	 * <p>
+	 * If one or more items indicate that they cannot be dragged, then an empty
+	 * string is returned.
+	 */
+	public String getMimeType() {
+		String retval = "";
+		for (Iterator<WModelIndex> i_it = this.selection_.iterator(); i_it
+				.hasNext();) {
+			WModelIndex i = i_it.next();
+			WModelIndex mi = i;
+			if (!!EnumUtils.mask(mi.getFlags(), ItemFlag.ItemIsDragEnabled)
+					.isEmpty()) {
+				return "";
+			}
+			Object mimeTypeData = mi.getData(ItemDataRole.MimeTypeRole);
+			if (!(mimeTypeData == null)) {
+				String currentMimeType = StringUtils.asString(mimeTypeData)
+						.toString();
+				if (currentMimeType.length() != 0) {
+					if (retval.length() == 0) {
+						retval = currentMimeType;
+					} else {
+						if (!currentMimeType.equals(retval)) {
+							return this.model_.getMimeType();
+						}
+					}
+				}
+			}
+		}
+		if (retval.length() == 0) {
+			return this.selection_.isEmpty() ? "" : this.model_.getMimeType();
+		} else {
+			return retval;
+		}
+	}
+
 	SortedSet<WModelIndex> selection_;
 	private WAbstractItemModel model_;
 	private SelectionBehavior selectionBehavior_;
