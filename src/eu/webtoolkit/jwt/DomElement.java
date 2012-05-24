@@ -610,6 +610,12 @@ class DomElement {
 						|| !href.equals("#")) {
 					needButtonWrap = false;
 				}
+			} else {
+				if (this.type_ == DomElementType.DomElement_AREA) {
+					DomElement self = this;
+					self.setAttribute("href", app.url(app.getInternalPath())
+							+ "&signal=" + clickEvent.signalName);
+				}
 			}
 		}
 		final boolean isIEMobile = app.getEnvironment().agentIsIEMobile();

@@ -51,7 +51,7 @@ class AreaWidget extends WInteractWidget {
 		if (element.getProperty(Property.PropertyStyleCursor).length() != 0
 				&& !WApplication.getInstance().getEnvironment().agentIsGecko()
 				&& element.getAttribute("href").length() == 0) {
-			element.setAttribute("href", "#");
+			element.setAttribute("href", "javascript:void(0);");
 		}
 	}
 

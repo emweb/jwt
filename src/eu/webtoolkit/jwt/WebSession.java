@@ -457,14 +457,16 @@ class WebSession {
 							&& !this.env_.hasAjax()) {
 						this.env_.parameters_ = handler.getRequest()
 								.getParameterMap();
-						if (hashE != null) {
-							this.app_.changedInternalPath(hashE);
-						} else {
-							if (request.getPathInfo().length() != 0) {
-								this.app_.changedInternalPath(request
-										.getPathInfo());
+						if (!this.app_.internalPathIsChanged_) {
+							if (hashE != null) {
+								this.app_.changedInternalPath(hashE);
 							} else {
-								this.app_.changedInternalPath("");
+								if (request.getPathInfo().length() != 0) {
+									this.app_.changedInternalPath(request
+											.getPathInfo());
+								} else {
+									this.app_.changedInternalPath("");
+								}
 							}
 						}
 					}
