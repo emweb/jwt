@@ -96,6 +96,10 @@ class StdWidgetItemImpl extends StdLayoutItemImpl {
 						.getType() == DomElementType.DomElement_BUTTON)) {
 			d.removeProperty(Property.PropertyStyleDisplay);
 		}
+		if (!app.getEnvironment().agentIsIE()
+				&& w.getJavaScriptMember(WWidget.WT_RESIZE_JS).length() == 0) {
+			d.setProperty(Property.PropertyStyleBoxSizing, "border-box");
+		}
 		return result;
 	}
 
