@@ -1396,6 +1396,7 @@ public class WTreeView extends WAbstractItemView {
 		this.expandedSet_.remove(index);
 		boolean selectionHasChanged = false;
 		SortedSet<WModelIndex> selection = this.getSelectionModel().selection_;
+		SortedSet<WModelIndex> toDeselect = new TreeSet<WModelIndex>();
 		for (Iterator<WModelIndex> it_it = selection.tailSet(index).iterator(); it_it
 				.hasNext();) {
 			WModelIndex it = it_it.next();
@@ -1403,12 +1404,17 @@ public class WTreeView extends WAbstractItemView {
 			if ((i == index || (i != null && i.equals(index)))) {
 			} else {
 				if (WModelIndex.isAncestor(i, index)) {
-					if (this.internalSelect(i, SelectionFlag.Deselect)) {
-						selectionHasChanged = true;
-					}
+					toDeselect.add(i);
 				} else {
 					break;
 				}
+			}
+		}
+		for (Iterator<WModelIndex> it_it = toDeselect.iterator(); it_it
+				.hasNext();) {
+			WModelIndex it = it_it.next();
+			if (this.internalSelect(it, SelectionFlag.Deselect)) {
+				selectionHasChanged = true;
 			}
 		}
 		if (selectionHasChanged) {
