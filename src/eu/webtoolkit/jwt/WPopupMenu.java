@@ -454,8 +454,8 @@ public class WPopupMenu extends WCompositeWidget {
 		setAutoHide(enabled, 0);
 	}
 
-	protected boolean containsExposed(WWidget w) {
-		if (super.containsExposed(w)) {
+	protected boolean isExposed(WWidget w) {
+		if (super.isExposed(w)) {
 			return true;
 		}
 		if (w == WApplication.getInstance().getRoot()) {
@@ -467,12 +467,17 @@ public class WPopupMenu extends WCompositeWidget {
 					.getWidget(i))
 					: null);
 			if (item.getPopupMenu() != null) {
-				if (item.getPopupMenu().containsExposed(w)) {
+				if (item.getPopupMenu().isExposed(w)) {
 					return true;
 				}
 			}
 		}
-		return false;
+		if (!(this.parentItem_ != null)) {
+			this.done();
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	private WTemplate impl_;

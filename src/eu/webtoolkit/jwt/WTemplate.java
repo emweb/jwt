@@ -952,7 +952,6 @@ public class WTemplate extends WInteractWidget {
 					WWidget w = i.getValue();
 					if (w.isRendered() && w.getWebWidget().domCanBeSaved()) {
 						previouslyRendered.add(w);
-						w.getWebWidget().setRendered(false);
 					}
 				}
 				boolean saveWidgets = element.getMode() == DomElement.Mode.ModeUpdate;
@@ -969,7 +968,6 @@ public class WTemplate extends WInteractWidget {
 						if (saveWidgets) {
 							element.saveChild(w.getId());
 						}
-						w.getWebWidget().setRendered(true);
 						previouslyRendered.remove(w);
 					}
 				}
@@ -977,6 +975,12 @@ public class WTemplate extends WInteractWidget {
 						.setProperty(Property.PropertyInnerHTML, html
 								.toString());
 				this.changed_ = false;
+				for (Iterator<WWidget> i_it = previouslyRendered.iterator(); i_it
+						.hasNext();) {
+					WWidget i = i_it.next();
+					WWidget w = i;
+					w.getWebWidget().setRendered(false);
+				}
 			}
 			super.updateDom(element, all);
 		} catch (IOException ioe) {

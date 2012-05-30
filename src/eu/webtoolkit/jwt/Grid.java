@@ -25,34 +25,20 @@ class Grid {
 	public int horizontalSpacing_;
 	public int verticalSpacing_;
 
-	static class Row {
-		private static Logger logger = LoggerFactory.getLogger(Row.class);
+	static class Section {
+		private static Logger logger = LoggerFactory.getLogger(Section.class);
 
 		public int stretch_;
 		public boolean resizable_;
+		public WLength initialSize_;
 
-		public Row(int stretch) {
+		public Section(int stretch) {
 			this.stretch_ = stretch;
 			this.resizable_ = false;
+			this.initialSize_ = new WLength();
 		}
 
-		public Row() {
-			this(0);
-		}
-	}
-
-	static class Column {
-		private static Logger logger = LoggerFactory.getLogger(Column.class);
-
-		public int stretch_;
-		public boolean resizable_;
-
-		public Column(int stretch) {
-			this.stretch_ = stretch;
-			this.resizable_ = false;
-		}
-
-		public Column() {
+		public Section() {
 			this(0);
 		}
 	}
@@ -88,15 +74,15 @@ class Grid {
 		}
 	}
 
-	public List<Grid.Row> rows_;
-	public List<Grid.Column> columns_;
+	public List<Grid.Section> rows_;
+	public List<Grid.Section> columns_;
 	public List<List<Grid.Item>> items_;
 
 	public Grid() {
 		this.horizontalSpacing_ = 6;
 		this.verticalSpacing_ = 6;
-		this.rows_ = new ArrayList<Grid.Row>();
-		this.columns_ = new ArrayList<Grid.Column>();
+		this.rows_ = new ArrayList<Grid.Section>();
+		this.columns_ = new ArrayList<Grid.Section>();
 		this.items_ = new ArrayList<List<Grid.Item>>();
 	}
 

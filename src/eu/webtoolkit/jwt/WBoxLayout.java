@@ -45,7 +45,8 @@ import org.slf4j.LoggerFactory;
  * <p>
  * A layout manager may provide resize handles between items which allow the
  * user to change the automatic layout provided by the layout manager (see
- * {@link WBoxLayout#setResizable(int index, boolean enabled) setResizable()}).
+ * {@link WBoxLayout#setResizable(int index, boolean enabled, WLength initialSize)
+ * setResizable()}).
  * <p>
  * Each item is separated using a constant spacing, which defaults to 6 pixels,
  * and can be changed using {@link WBoxLayout#setSpacing(int size) setSpacing()}
@@ -580,28 +581,41 @@ public class WBoxLayout extends WLayout {
 	 * <p>
 	 * The default value is <i>false</i>.
 	 */
-	public void setResizable(int index, boolean enabled) {
+	public void setResizable(int index, boolean enabled, WLength initialSize) {
 		switch (this.direction_) {
 		case RightToLeft:
 			index = this.grid_.columns_.size() - 1 - index;
 		case LeftToRight:
 			this.grid_.columns_.get(index).resizable_ = enabled;
+			this.grid_.columns_.get(index).initialSize_ = initialSize;
 			break;
 		case BottomToTop:
 			index = this.grid_.rows_.size() - 1 - index;
 		case TopToBottom:
 			this.grid_.rows_.get(index).resizable_ = enabled;
+			this.grid_.rows_.get(index).initialSize_ = initialSize;
 		}
+		this.update((WLayoutItem) null);
 	}
 
 	/**
 	 * Sets whether the use may drag a particular border.
 	 * <p>
-	 * Calls {@link #setResizable(int index, boolean enabled)
-	 * setResizable(index, true)}
+	 * Calls {@link #setResizable(int index, boolean enabled, WLength initialSize)
+	 * setResizable(index, true, WLength.Auto)}
 	 */
 	public final void setResizable(int index) {
-		setResizable(index, true);
+		setResizable(index, true, WLength.Auto);
+	}
+
+	/**
+	 * Sets whether the use may drag a particular border.
+	 * <p>
+	 * Calls {@link #setResizable(int index, boolean enabled, WLength initialSize)
+	 * setResizable(index, enabled, WLength.Auto)}
+	 */
+	public final void setResizable(int index, boolean enabled) {
+		setResizable(index, enabled, WLength.Auto);
 	}
 
 	/**
@@ -611,7 +625,8 @@ public class WBoxLayout extends WLayout {
 	 * from the next item may be resized by the user.
 	 * <p>
 	 * 
-	 * @see WBoxLayout#setResizable(int index, boolean enabled)
+	 * @see WBoxLayout#setResizable(int index, boolean enabled, WLength
+	 *      initialSize)
 	 */
 	public boolean isResizable(int index) {
 		switch (this.direction_) {
@@ -637,10 +652,10 @@ public class WBoxLayout extends WLayout {
 		case RightToLeft:
 			index = this.grid_.columns_.size() - index;
 		case LeftToRight:
-			this.grid_.columns_.add(0 + index, new Grid.Column(stretch));
+			this.grid_.columns_.add(0 + index, new Grid.Section(stretch));
 			if (this.grid_.items_.isEmpty()) {
 				this.grid_.items_.add(new ArrayList<Grid.Item>());
-				this.grid_.rows_.add(new Grid.Row());
+				this.grid_.rows_.add(new Grid.Section());
 				this.grid_.rows_.get(0).stretch_ = -1;
 			}
 			this.grid_.items_.get(0).add(0 + index,
@@ -650,10 +665,10 @@ public class WBoxLayout extends WLayout {
 			index = this.grid_.rows_.size() - index;
 		case TopToBottom:
 			if (this.grid_.columns_.isEmpty()) {
-				this.grid_.columns_.add(new Grid.Column());
+				this.grid_.columns_.add(new Grid.Section());
 				this.grid_.columns_.get(0).stretch_ = -1;
 			}
-			this.grid_.rows_.add(0 + index, new Grid.Row(stretch));
+			this.grid_.rows_.add(0 + index, new Grid.Section(stretch));
 			this.grid_.items_.add(0 + index, new ArrayList<Grid.Item>());
 			this.grid_.items_.get(index).add(new Grid.Item(item, alignment));
 			break;
