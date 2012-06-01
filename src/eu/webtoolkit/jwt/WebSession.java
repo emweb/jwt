@@ -1367,11 +1367,25 @@ class WebSession {
 										String jsE = request.getParameter("js");
 										boolean nojs = jsE != null
 												&& jsE.equals("no");
+										boolean ios5 = this.env_
+												.agentIsMobileWebKit()
+												&& (this.env_.getUserAgent()
+														.indexOf("OS 5_") != -1
+														|| this.env_
+																.getUserAgent()
+																.indexOf(
+																		"OS 6_") != -1
+														|| this.env_
+																.getUserAgent()
+																.indexOf(
+																		"OS 7_") != -1 || this.env_
+														.getUserAgent()
+														.indexOf("OS 8_") != -1);
 										final boolean xhtml = this.env_
 												.getContentType() == WEnvironment.ContentType.XHTML1;
 										this.noBootStyleResponse_ = this.noBootStyleResponse_
 												|| !(this.app_ != null)
-												&& (xhtml || nojs);
+												&& (ios5 || xhtml || nojs);
 										if (nojs || this.noBootStyleResponse_) {
 											handler.getResponse()
 													.setContentType("text/css");
@@ -2013,6 +2027,7 @@ class WebSession {
 		if (this.bootStyleResponse_ != null) {
 			this.bootStyleResponse_.flush();
 			this.bootStyleResponse_ = null;
+			this.noBootStyleResponse_ = true;
 		}
 	}
 

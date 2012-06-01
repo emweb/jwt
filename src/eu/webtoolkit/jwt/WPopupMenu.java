@@ -130,6 +130,7 @@ public class WPopupMenu extends WCompositeWidget {
 		super();
 		this.parentItem_ = null;
 		this.result_ = null;
+		this.location_ = null;
 		this.aboutToHide_ = new Signal(this);
 		this.triggered_ = new Signal1<WPopupMenuItem>(this);
 		this.cancel_ = new JSignal(this, "cancel");
@@ -285,6 +286,7 @@ public class WPopupMenu extends WCompositeWidget {
 	 * @see WWidget#positionAt(WWidget widget, Orientation orientation)
 	 */
 	public void popup(WWidget location, Orientation orientation) {
+		this.location_ = location;
 		this.popupImpl();
 		this.positionAt(location, orientation);
 	}
@@ -461,6 +463,9 @@ public class WPopupMenu extends WCompositeWidget {
 		if (w == WApplication.getInstance().getRoot()) {
 			return true;
 		}
+		if (w == this.location_) {
+			return false;
+		}
 		WContainerWidget c = this.getContents();
 		for (int i = 0; i < c.getCount(); ++i) {
 			WPopupMenuItem item = ((c.getWidget(i)) instanceof WPopupMenuItem ? (WPopupMenuItem) (c
@@ -483,6 +488,7 @@ public class WPopupMenu extends WCompositeWidget {
 	private WTemplate impl_;
 	WPopupMenuItem parentItem_;
 	WPopupMenuItem result_;
+	private WWidget location_;
 	private Signal aboutToHide_;
 	private Signal1<WPopupMenuItem> triggered_;
 	private JSignal cancel_;
@@ -507,6 +513,7 @@ public class WPopupMenu extends WCompositeWidget {
 	}
 
 	void done(WPopupMenuItem result) {
+		this.location_ = null;
 		this.result_ = result;
 		this.hide();
 		WApplication app = WApplication.getInstance();
