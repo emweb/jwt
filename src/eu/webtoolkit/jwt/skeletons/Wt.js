@@ -614,6 +614,8 @@ this.getElement = function(id) {
   return el;
 };
 
+this.$ = this.getElement;
+
 this.validate = function(edit) {
   var v;
   if (edit.options)
@@ -1008,7 +1010,11 @@ var captureElement = null;
 this.firedTarget = null;
 
 this.target = function(event) {
-  return WT.firedTarget || event.target || event.srcElement;
+  try {
+    return WT.firedTarget || event.target || event.srcElement;
+  } catch (err) {
+    return null;
+  }
 };
 
 function delegateCapture(e) {

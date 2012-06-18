@@ -701,9 +701,8 @@ public abstract class WInteractWidget extends WWebWidget {
 								mouseDblClick.encodeCmd()).append("',e,true);");
 					}
 					mouseDblClick.updateOk();
-					combined.append("}else{").append(
-							"window.wtClickTimeout = setTimeout(function() {")
-							.append("window.wtClickTimeout = null;");
+					combined
+							.append("}else{if (Wt3_2_1.isIElt9 && document.createEventObject) e = document.createEventObject(e);window.wtClickTimeout = setTimeout(function() {window.wtClickTimeout = null;");
 					if (mouseClick != null) {
 						combined.append(mouseClick.getJavaScript());
 						if (mouseClick.isExposedSignal()) {
@@ -719,6 +718,12 @@ public abstract class WInteractWidget extends WWebWidget {
 					}
 					combined.append("},200);}");
 					element.setEvent(CLICK_SIGNAL, combined.toString(), "");
+					if (!(app != null)) {
+						app = WApplication.getInstance();
+					}
+					if (app.getEnvironment().agentIsIElt(9)) {
+						element.setEvent("dblclick", "this.onclick()");
+					}
 				} else {
 					this.updateSignalConnection(element, mouseClick,
 							CLICK_SIGNAL, all);

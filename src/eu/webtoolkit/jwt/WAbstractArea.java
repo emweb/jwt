@@ -346,6 +346,27 @@ public class WAbstractArea extends WObject {
 	}
 
 	/**
+	 * Sets a custom cursor image URL.
+	 * <p>
+	 * The URL should point to a .cur file. For optimal portability, make sure
+	 * that the .cur file is proparly constructed. A renamed .ico file will not
+	 * work on Internet Explorer.
+	 */
+	public void setCursor(String cursorImage, Cursor fallback) {
+		this.impl_.getDecorationStyle().setCursor(cursorImage, fallback);
+	}
+
+	/**
+	 * Sets a custom cursor image URL.
+	 * <p>
+	 * Calls {@link #setCursor(String cursorImage, Cursor fallback)
+	 * setCursor(cursorImage, Cursor.ArrowCursor)}
+	 */
+	public final void setCursor(String cursorImage) {
+		setCursor(cursorImage, Cursor.ArrowCursor);
+	}
+
+	/**
 	 * Returns the cursor.
 	 * <p>
 	 * 

@@ -607,10 +607,8 @@ public abstract class WWebWidget extends WWidget {
 				members.get(index).value = value;
 			}
 		}
-		if (!(this.otherImpl_.jsMembersSet_ != null)) {
-			this.otherImpl_.jsMembersSet_ = new ArrayList<String>();
-		}
-		this.otherImpl_.jsMembersSet_.add(name);
+		this.addJavaScriptStatement(
+				WWebWidget.JavaScriptStatementType.SetMember, name);
 		this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyAttribute));
 	}
 
@@ -624,13 +622,9 @@ public abstract class WWebWidget extends WWidget {
 	}
 
 	public void callJavaScriptMember(String name, String args) {
-		if (!(this.otherImpl_ != null)) {
-			this.otherImpl_ = new WWebWidget.OtherImpl(this);
-		}
-		if (!(this.otherImpl_.jsMemberCalls_ != null)) {
-			this.otherImpl_.jsMemberCalls_ = new ArrayList<String>();
-		}
-		this.otherImpl_.jsMemberCalls_.add(name + "(" + args + ");");
+		this.addJavaScriptStatement(
+				WWebWidget.JavaScriptStatementType.CallMethod, name + "("
+						+ args + ");");
 		this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyAttribute));
 	}
 
@@ -704,13 +698,8 @@ public abstract class WWebWidget extends WWidget {
 	}
 
 	public void doJavaScript(String javascript) {
-		if (!(this.otherImpl_ != null)) {
-			this.otherImpl_ = new WWebWidget.OtherImpl(this);
-		}
-		if (!(this.otherImpl_.delayedDoJavaScript_ != null)) {
-			this.otherImpl_.delayedDoJavaScript_ = new StringBuilder();
-		}
-		this.otherImpl_.delayedDoJavaScript_.append(javascript);
+		this.addJavaScriptStatement(
+				WWebWidget.JavaScriptStatementType.Statement, javascript);
 		this.repaint(RepaintFlag.RepaintAll);
 	}
 
@@ -1398,84 +1387,49 @@ public abstract class WWebWidget extends WWidget {
 				;
 				this.otherImpl_.attributesSet_ = null;
 			}
-			if (this.otherImpl_.jsMembers_ != null) {
-				if (all) {
-					for (int i = 0; i < this.otherImpl_.jsMembers_.size(); i++) {
-						WWebWidget.OtherImpl.Member member = this.otherImpl_.jsMembers_
-								.get(i);
-						if (member.name.equals(WT_RESIZE_JS)
-								&& this.otherImpl_.resized_ != null) {
-							StringBuilder combined = new StringBuilder();
-							combined.append(member.name).append(
-									"=function(s,w,h) {").append(
-									"if (!s.wtWidth||s.wtWidth!=w").append(
-									"||!s.wtHeight||s.wtHeight!=h) {").append(
-									"s.wtWidth=w;s.wtHeight=h;").append(
-									"s.style.height=h+'px';").append(
-									this.otherImpl_.resized_.createCall(
-											"Math.round(w)", "Math.round(h)"))
-									.append('}');
-							if (member.value.length() > 1) {
-								combined.append('(').append(member.value)
-										.append(")(s,w,h);");
-							}
-							combined.append('}');
-							element.callMethod(combined.toString());
-						} else {
-							element
-									.callMethod(member.name + "="
-											+ member.value);
-						}
-					}
-				} else {
-					if (this.otherImpl_.jsMembersSet_ != null) {
-						for (int i = 0; i < this.otherImpl_.jsMembersSet_
-								.size(); ++i) {
-							String m = this.otherImpl_.jsMembersSet_.get(i);
-							String value = this.getJavaScriptMember(m);
-							if (m.equals(WT_RESIZE_JS)
-									&& this.otherImpl_.resized_ != null) {
-								StringBuilder combined = new StringBuilder();
-								combined
-										.append(m)
-										.append("=function(s,w,h) {")
-										.append("if (!s.wtWidth||s.wtWidth!=w")
-										.append(
-												"||!s.wtHeight||s.wtHeight!=h) {")
-										.append("s.wtWidth=w;s.wtHeight=h;")
-										.append("s.style.height=h+'px';")
-										.append(
-												this.otherImpl_.resized_
-														.createCall(
-																"Math.round(w)",
-																"Math.round(h)"))
-										.append('}');
-								if (value.length() > 1) {
-									combined.append('(').append(value).append(
-											")(s,w,h);");
-								}
-								combined.append('}');
-								element.callMethod(combined.toString());
-							} else {
-								if (value.length() > 1) {
-									element.callMethod(m + "=" + value);
-								} else {
-									element.callMethod(m + "= null");
-								}
+			if (all && this.otherImpl_.jsMembers_ != null) {
+				for (int i = 0; i < this.otherImpl_.jsMembers_.size(); i++) {
+					WWebWidget.OtherImpl.Member member = this.otherImpl_.jsMembers_
+							.get(i);
+					boolean notHere = false;
+					if (this.otherImpl_.jsStatements_ != null) {
+						for (int j = 0; j < this.otherImpl_.jsStatements_
+								.size(); ++j) {
+							WWebWidget.OtherImpl.JavaScriptStatement jss = this.otherImpl_.jsStatements_
+									.get(j);
+							if (jss.type == WWebWidget.JavaScriptStatementType.SetMember
+									&& jss.data.equals(member.name)) {
+								notHere = true;
+								break;
 							}
 						}
 					}
+					if (notHere) {
+						continue;
+					}
+					this.declareJavaScriptMember(element, member.name,
+							member.value);
 				}
-				;
-				this.otherImpl_.jsMembersSet_ = null;
 			}
-			if (this.otherImpl_.jsMemberCalls_ != null) {
-				for (int i = 0; i < this.otherImpl_.jsMemberCalls_.size(); ++i) {
-					String m = this.otherImpl_.jsMemberCalls_.get(i);
-					element.callMethod(m);
+			if (this.otherImpl_.jsStatements_ != null) {
+				for (int i = 0; i < this.otherImpl_.jsStatements_.size(); ++i) {
+					WWebWidget.OtherImpl.JavaScriptStatement jss = this.otherImpl_.jsStatements_
+							.get(i);
+					switch (jss.type) {
+					case SetMember:
+						this.declareJavaScriptMember(element, jss.data, this
+								.getJavaScriptMember(jss.data));
+						break;
+					case CallMethod:
+						element.callMethod(jss.data);
+						break;
+					case Statement:
+						element.callJavaScript(jss.data);
+						break;
+					}
 				}
 				;
-				this.otherImpl_.jsMemberCalls_ = null;
+				this.otherImpl_.jsStatements_ = null;
 			}
 		}
 		if (this.flags_.get(BIT_HIDE_WITH_VISIBILITY)) {
@@ -1817,13 +1771,6 @@ public abstract class WWebWidget extends WWidget {
 
 	protected void render(EnumSet<RenderFlag> flags) {
 		super.render(flags);
-		if (this.otherImpl_ != null
-				&& this.otherImpl_.delayedDoJavaScript_ != null) {
-			WApplication.getInstance().doJavaScript(
-					this.otherImpl_.delayedDoJavaScript_.toString());
-			;
-			this.otherImpl_.delayedDoJavaScript_ = null;
-		}
 	}
 
 	void signalConnectionsChanged() {
@@ -1957,6 +1904,17 @@ public abstract class WWebWidget extends WWidget {
 		}
 	}
 
+	enum JavaScriptStatementType {
+		SetMember, CallMethod, Statement;
+
+		/**
+		 * Returns the numerical representation of this enum.
+		 */
+		public int getValue() {
+			return ordinal();
+		}
+	}
+
 	static class OtherImpl {
 		private static Logger logger = LoggerFactory.getLogger(OtherImpl.class);
 
@@ -1968,16 +1926,28 @@ public abstract class WWebWidget extends WWidget {
 			public String value;
 		}
 
+		static class JavaScriptStatement {
+			private static Logger logger = LoggerFactory
+					.getLogger(JavaScriptStatement.class);
+
+			public JavaScriptStatement(
+					WWebWidget.JavaScriptStatementType aType, String aData) {
+				this.type = aType;
+				this.data = aData;
+			}
+
+			public WWebWidget.JavaScriptStatementType type;
+			public String data;
+		}
+
 		public String id_;
 		public Map<String, String> attributes_;
 		public List<String> attributesSet_;
 		public List<WWebWidget.OtherImpl.Member> jsMembers_;
-		public List<String> jsMembersSet_;
-		public List<String> jsMemberCalls_;
+		public List<WWebWidget.OtherImpl.JavaScriptStatement> jsStatements_;
 		public JSignal2<Integer, Integer> resized_;
 		public JSignal3<String, String, WMouseEvent> dropSignal_;
 		public Map<String, WWebWidget.DropMimeType> acceptedDropMimeTypes_;
-		public StringBuilder delayedDoJavaScript_;
 		public Signal childrenChanged_;
 
 		public OtherImpl(WWebWidget self) {
@@ -1985,12 +1955,10 @@ public abstract class WWebWidget extends WWidget {
 			this.attributes_ = null;
 			this.attributesSet_ = null;
 			this.jsMembers_ = null;
-			this.jsMembersSet_ = null;
-			this.jsMemberCalls_ = null;
+			this.jsStatements_ = null;
 			this.resized_ = null;
 			this.dropSignal_ = null;
 			this.acceptedDropMimeTypes_ = null;
-			this.delayedDoJavaScript_ = null;
 			this.childrenChanged_ = new Signal(self);
 		}
 	}
@@ -2172,10 +2140,9 @@ public abstract class WWebWidget extends WWidget {
 					if (v.length() == 1) {
 						this.setJavaScriptMember(WT_RESIZE_JS, "");
 					} else {
-						if (!(this.otherImpl_.jsMembersSet_ != null)) {
-							this.otherImpl_.jsMembersSet_ = new ArrayList<String>();
-						}
-						this.otherImpl_.jsMembersSet_.add(WT_RESIZE_JS);
+						this.addJavaScriptStatement(
+								WWebWidget.JavaScriptStatementType.SetMember,
+								WT_RESIZE_JS);
 					}
 				}
 			}
@@ -2200,13 +2167,24 @@ public abstract class WWebWidget extends WWidget {
 			if (v.length() == 0) {
 				this.setJavaScriptMember(WT_RESIZE_JS, "0");
 			} else {
-				if (!(this.otherImpl_.jsMembersSet_ != null)) {
-					this.otherImpl_.jsMembersSet_ = new ArrayList<String>();
-				}
-				this.otherImpl_.jsMembersSet_.add(WT_RESIZE_JS);
+				this.addJavaScriptStatement(
+						WWebWidget.JavaScriptStatementType.SetMember,
+						WT_RESIZE_JS);
 			}
 		}
 		return this.otherImpl_.resized_;
+	}
+
+	private void addJavaScriptStatement(
+			WWebWidget.JavaScriptStatementType type, String data) {
+		if (!(this.otherImpl_ != null)) {
+			this.otherImpl_ = new WWebWidget.OtherImpl(this);
+		}
+		if (!(this.otherImpl_.jsStatements_ != null)) {
+			this.otherImpl_.jsStatements_ = new ArrayList<WWebWidget.OtherImpl.JavaScriptStatement>();
+		}
+		this.otherImpl_.jsStatements_
+				.add(new WWebWidget.OtherImpl.JavaScriptStatement(type, data));
 	}
 
 	private int indexOfJavaScriptMember(String name) {
@@ -2218,6 +2196,35 @@ public abstract class WWebWidget extends WWidget {
 			}
 		}
 		return -1;
+	}
+
+	private void declareJavaScriptMember(DomElement element, String name,
+			String value) {
+		if (name.charAt(0) != ' ') {
+			if (name.equals(WT_RESIZE_JS) && this.otherImpl_.resized_ != null) {
+				StringBuilder combined = new StringBuilder();
+				combined.append(name).append("=function(s,w,h) {").append(
+						"if (!s.wtWidth||s.wtWidth!=w").append(
+						"||!s.wtHeight||s.wtHeight!=h) {").append(
+						"s.wtWidth=w;s.wtHeight=h;").append(
+						"s.style.height=h+'px';").append(
+						this.otherImpl_.resized_.createCall("Math.round(w)",
+								"Math.round(h)")).append('}');
+				if (value.length() > 1) {
+					combined.append('(').append(value).append(")(s,w,h);");
+				}
+				combined.append('}');
+				element.callMethod(combined.toString());
+			} else {
+				if (value.length() > 1) {
+					element.callMethod(name + "=" + value);
+				} else {
+					element.callMethod(name + "=null");
+				}
+			}
+		} else {
+			element.callJavaScript(value);
+		}
 	}
 
 	void setRendered(boolean rendered) {

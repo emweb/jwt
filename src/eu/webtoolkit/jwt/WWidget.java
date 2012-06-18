@@ -939,7 +939,7 @@ public abstract class WWidget extends WObject {
 	 * @see WWidget#isRendered()
 	 */
 	public String getJsRef() {
-		return "$('#" + this.getId() + "').get(0)";
+		return "Wt3_2_1.$('" + this.getId() + "')";
 	}
 
 	/**

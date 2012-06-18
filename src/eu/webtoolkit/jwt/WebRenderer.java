@@ -452,9 +452,8 @@ class WebRenderer implements SlotLearnerInterface {
 				|| this.session_.getEnv().agentIsGecko();
 		if (serveSkeletons) {
 			boolean haveJQuery = false;
-			for (int i = 0; i < app.scriptLibraries_.size()
-					- app.scriptLibrariesAdded_; ++i) {
-				if (app.scriptLibraries_.get(i).uri.indexOf("jquery-") != -1) {
+			for (int i = 0; i < app.scriptLibraries_.size(); ++i) {
+				if (app.scriptLibraries_.get(i).uri.indexOf("jquery") != -1) {
 					haveJQuery = true;
 					break;
 				}
@@ -627,7 +626,7 @@ class WebRenderer implements SlotLearnerInterface {
 			boot.setVar("NOSCRIPT_TEXT", conf.getRedirectMessage());
 		} else {
 			boot.setVar("AUTO_REDIRECT",
-					"<noscript><meta http-equiv=\"refresh\" content=\"0;url="
+					"<noscript><meta http-equiv=\"refresh\" content=\"0; url="
 							+ noJsRedirectUrl.toString() + "\"></noscript>");
 			boot.setVar("NOSCRIPT_TEXT", conf.getRedirectMessage());
 		}

@@ -760,9 +760,9 @@ public class WSuggestionPopup extends WCompositeWidget {
 		this.filtering_ = true;
 		this.filterModel_.trigger(input);
 		this.filtering_ = false;
-		this.doJavaScript("jQuery.data(" + this.getJsRef()
-				+ ", 'obj').filtered(" + WWebWidget.jsStringLiteral(input)
-				+ ");");
+		WApplication.getInstance().doJavaScript(
+				"jQuery.data(" + this.getJsRef() + ", 'obj').filtered("
+						+ WWebWidget.jsStringLiteral(input) + ");");
 	}
 
 	private void doActivate(String itemId, String editId) {
@@ -876,12 +876,13 @@ public class WSuggestionPopup extends WCompositeWidget {
 		String THIS_JS = "js/WSuggestionPopup.js";
 		app.loadJavaScript(THIS_JS, wtjs1());
 		app.loadJavaScript(THIS_JS, wtjs2());
-		this.doJavaScript("new Wt3_2_1.WSuggestionPopup("
-				+ app.getJavaScriptClass() + "," + this.getJsRef() + ","
-				+ this.replacerJS_ + "," + this.matcherJS_ + ","
-				+ String.valueOf(this.filterLength_) + ","
-				+ String.valueOf(this.defaultValue_) + ","
-				+ (this.global_ ? "true" : "false") + ");");
+		this.setJavaScriptMember(" WSuggestionPopup",
+				"new Wt3_2_1.WSuggestionPopup(" + app.getJavaScriptClass()
+						+ "," + this.getJsRef() + "," + this.replacerJS_ + ","
+						+ this.matcherJS_ + ","
+						+ String.valueOf(this.filterLength_) + ","
+						+ String.valueOf(this.defaultValue_) + ","
+						+ (this.global_ ? "true" : "false") + ");");
 	}
 
 	void render(EnumSet<RenderFlag> flags) {

@@ -215,6 +215,9 @@ class PaintedSlider extends WPaintedWidget {
 			}
 			double tickStep = ((double) w - (HANDLE_WIDTH - 10))
 					/ (r / tickInterval);
+			if (tickStep <= 0) {
+				return;
+			}
 			WPen pen = new WPen();
 			pen.setColor(new WColor(0xd7, 0xd7, 0xd7));
 			pen.setCapStyle(PenCapStyle.FlatCap);

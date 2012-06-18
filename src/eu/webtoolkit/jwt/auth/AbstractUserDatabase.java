@@ -166,6 +166,17 @@ public abstract class AbstractUserDatabase {
 	}
 
 	/**
+	 * Delete a user.
+	 * <p>
+	 * This deletes a user from the database.
+	 */
+	public void deleteUser(User user) {
+		logger.error(new StringWriter().append(
+				new Require("deleteUser()", REGISTRATION).toString())
+				.toString());
+	}
+
+	/**
 	 * Returns the status for a user.
 	 * <p>
 	 * If there is support for suspending accounts, then this method may be

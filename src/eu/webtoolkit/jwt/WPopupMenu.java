@@ -259,10 +259,9 @@ public class WPopupMenu extends WCompositeWidget {
 		this.popupImpl();
 		this.setOffsets(new WLength(42), EnumSet.of(Side.Left, Side.Top));
 		this.setOffsets(new WLength(-10000), EnumSet.of(Side.Left, Side.Top));
-		WApplication.getInstance().doJavaScript(
-				"Wt3_2_1.positionXY('" + this.getId() + "',"
-						+ String.valueOf(p.getX()) + ","
-						+ String.valueOf(p.getY()) + ");");
+		this.doJavaScript("Wt3_2_1.positionXY('" + this.getId() + "',"
+				+ String.valueOf(p.getX()) + "," + String.valueOf(p.getY())
+				+ ");");
 	}
 
 	/**
@@ -387,6 +386,10 @@ public class WPopupMenu extends WCompositeWidget {
 
 	public void setHidden(boolean hidden, WAnimation animation) {
 		super.setHidden(hidden, animation);
+		if (this.autoHideDelay_ >= 0) {
+			this.doJavaScript("jQuery.data(" + this.getJsRef()
+					+ ", 'obj').setHidden(" + (hidden ? "1" : "0") + ");");
+		}
 		if (hidden) {
 			this.renderOutAll();
 		}
@@ -477,6 +480,14 @@ public class WPopupMenu extends WCompositeWidget {
 				}
 			}
 		}
+		if (this.location_ != null) {
+			for (WWidget p = this.location_.getParent(); p != null; p = p
+					.getParent()) {
+				if (w == p) {
+					return false;
+				}
+			}
+		}
 		if (!(this.parentItem_ != null)) {
 			this.done();
 			return true;
@@ -556,15 +567,16 @@ public class WPopupMenu extends WCompositeWidget {
 
 	private void prepareRender(WApplication app) {
 		if (app.getEnvironment().agentIsIE()) {
-			app.doJavaScript(this.getJsRef() + ".lastChild.style.width="
-					+ this.getJsRef() + ".lastChild.offsetWidth+'px';");
+			this.doJavaScript(this.getJsRef() + ".lastChild.style.width="
+					+ this.getJsRef() + ".lastChild.offsetWidth + 'px';");
 		}
 		if (this.autoHideDelay_ >= 0) {
 			if (!this.cancel_.isConnected()) {
 				app.loadJavaScript("js/WPopupMenu.js", wtjs1());
-				this.doJavaScript("new Wt3_2_1.WPopupMenu("
-						+ app.getJavaScriptClass() + "," + this.getJsRef()
-						+ "," + String.valueOf(this.autoHideDelay_) + ");");
+				this.setJavaScriptMember(" WPopupMenu",
+						"new Wt3_2_1.WPopupMenu(" + app.getJavaScriptClass()
+								+ "," + this.getJsRef() + ","
+								+ String.valueOf(this.autoHideDelay_) + ");");
 				this.cancel_.addListener(this, new Signal.Listener() {
 					public void trigger() {
 						WPopupMenu.this.done();
@@ -589,6 +601,6 @@ public class WPopupMenu extends WCompositeWidget {
 				JavaScriptScope.WtClassScope,
 				JavaScriptObjectType.JavaScriptConstructor,
 				"WPopupMenu",
-				"function(e,b,c){function f(){e.emit(b,\"cancel\")}jQuery.data(b,\"obj\",this);var a=null,d=false;c>=0&&$(document).find(\".Wt-popupmenu\").mouseleave(function(){if(d){clearTimeout(a);a=setTimeout(f,c)}}).mouseenter(function(){d=true;clearTimeout(a)})}");
+				"function(e,b,c){function f(){e.emit(b,\"cancel\")}jQuery.data(b,\"obj\",this);var a=null,d=false;this.setHidden=function(){a&&clearTimeout(a);a=null};c>=0&&$(document).find(\".Wt-popupmenu\").mouseleave(function(){if(d){clearTimeout(a);a=setTimeout(f,c)}}).mouseenter(function(){d=true;clearTimeout(a)})}");
 	}
 }

@@ -45,7 +45,6 @@ class DomElement {
 		this.type_ = type;
 		this.id_ = "";
 		this.numManipulations_ = 0;
-		this.methodCalls_ = new ArrayList<String>();
 		this.timeOut_ = -1;
 		this.javaScript_ = new EscapeOStream();
 		this.javaScriptEvenWhenDeleted_ = "";
@@ -320,8 +319,13 @@ class DomElement {
 	}
 
 	public void callMethod(String method) {
-		++this.numManipulations_;
-		this.methodCalls_.add(method);
+		if (this.var_.length() == 0) {
+			this.javaScript_.append("Wt3_2_1").append(".$('").append(this.id_)
+					.append("').");
+		} else {
+			this.javaScript_.append(this.var_).append('.');
+		}
+		this.javaScript_.append(method).append(';');
 	}
 
 	public void callJavaScript(String jsCode, boolean evenWhenDeleted) {
@@ -777,7 +781,7 @@ class DomElement {
 			case PropertyIndeterminate:
 				if (i.getValue().equals("true")) {
 					DomElement self = this;
-					self.methodCalls_.add("indeterminate=" + i.getValue());
+					self.callMethod("indeterminate=" + i.getValue());
 				}
 				break;
 			case PropertyValue:
@@ -852,10 +856,6 @@ class DomElement {
 		}
 		javaScript.append(this.javaScriptEvenWhenDeleted_).append(
 				this.javaScript_);
-		for (int i = 0; i < this.methodCalls_.size(); ++i) {
-			javaScript.append("$('#").append(this.id_).append("').get(0).")
-					.append(this.methodCalls_.get(i)).append(";\n");
-		}
 		if (this.timeOut_ != -1) {
 			timeouts.add(new DomElement.TimeoutEvent(this.timeOut_, this.id_,
 					this.timeOutJSRepeat_));
@@ -886,8 +886,8 @@ class DomElement {
 
 	public void declare(EscapeOStream out) {
 		if (this.var_.length() == 0) {
-			out.append("var ").append(this.getCreateVar()).append("=$('#")
-					.append(this.id_).append("').get(0);\n");
+			out.append("var ").append(this.getCreateVar()).append(
+					"=Wt3_2_1.$('").append(this.id_).append("');\n");
 		}
 	}
 
@@ -1439,11 +1439,6 @@ class DomElement {
 						this.childrenToAdd_.get(i).pos, app);
 			}
 		}
-		for (int i = 0; i < this.methodCalls_.size(); ++i) {
-			this.declare(out);
-			out.append(this.var_).append(".").append(this.methodCalls_.get(i))
-					.append(';').append('\n');
-		}
 		if (!this.javaScript_.isEmpty()) {
 			this.declare(out);
 			out.append(this.javaScript_).append('\n');
@@ -1469,12 +1464,12 @@ class DomElement {
 	private DomElementType type_;
 	private String id_;
 	private int numManipulations_;
-	private List<String> methodCalls_;
 	private int timeOut_;
 	private boolean timeOutJSRepeat_;
 	private EscapeOStream javaScript_;
 	private String javaScriptEvenWhenDeleted_;
 	private String var_;
+	private boolean declared_;
 	private Map<String, String> attributes_;
 	private Map<Property, String> properties_;
 	private Map<String, DomElement.EventHandler> eventHandlers_;

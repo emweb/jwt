@@ -239,7 +239,7 @@ public class WScrollArea extends WWebWidget {
 			if (this.isInLayout()
 					&& WApplication.getInstance().getEnvironment().hasAjax()) {
 				this
-						.setJavaScriptMember("wtResize",
+						.setJavaScriptMember(WT_RESIZE_JS,
 								"function(s, w, h) {s.style.width=w+'px';s.style.height=h+'px';}");
 			}
 		}
