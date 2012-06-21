@@ -752,9 +752,13 @@ public class WSortFilterProxyModel extends WAbstractProxyModel {
 			int oldMappedRow = item.sourceRowMap_.get(row);
 			boolean propagateDataChange = oldMappedRow != -1;
 			if (refilter || resort) {
-				item.proxyRowMap_.remove(0 + oldMappedRow);
+				if (oldMappedRow != -1) {
+					item.proxyRowMap_.remove(0 + oldMappedRow);
+				}
 				int newMappedRow = this.mappedInsertionPoint(row, item);
-				item.proxyRowMap_.add(0 + oldMappedRow, row);
+				if (oldMappedRow != -1) {
+					item.proxyRowMap_.add(0 + oldMappedRow, row);
+				}
 				if (newMappedRow != oldMappedRow) {
 					if (oldMappedRow != -1) {
 						this

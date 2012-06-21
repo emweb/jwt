@@ -2203,17 +2203,16 @@ public abstract class WWebWidget extends WWidget {
 		if (name.charAt(0) != ' ') {
 			if (name.equals(WT_RESIZE_JS) && this.otherImpl_.resized_ != null) {
 				StringBuilder combined = new StringBuilder();
-				combined.append(name).append("=function(s,w,h) {").append(
-						"if (!s.wtWidth||s.wtWidth!=w").append(
-						"||!s.wtHeight||s.wtHeight!=h) {").append(
-						"s.wtWidth=w;s.wtHeight=h;").append(
-						"s.style.height=h+'px';").append(
-						this.otherImpl_.resized_.createCall("Math.round(w)",
-								"Math.round(h)")).append('}');
 				if (value.length() > 1) {
-					combined.append('(').append(value).append(")(s,w,h);");
+					combined.append(name).append("=function(s,w,h) {").append(
+							WApplication.getInstance().getJavaScriptClass())
+							.append("._p_.propagateSize(s,w,h);").append("(")
+							.append(value).append(")(s,w,h);").append("}");
+				} else {
+					combined.append(name).append("=").append(
+							WApplication.getInstance().getJavaScriptClass())
+							.append("._p_.propagateSize");
 				}
-				combined.append('}');
 				element.callMethod(combined.toString());
 			} else {
 				if (value.length() > 1) {

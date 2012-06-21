@@ -52,13 +52,13 @@ public class UpdatePasswordWidget extends WTemplateFormView {
 				.identity(Identity.LoginName));
 		this.registrationModel_.setReadOnly(RegistrationModel.LoginNameField,
 				true);
-		if (this.authModel_.getBaseAuth().isEmailVerificationEnabled()) {
+		if (this.authModel_ != null
+				&& this.authModel_.getBaseAuth().isEmailVerificationEnabled()) {
 			this.registrationModel_.setValue(RegistrationModel.EmailField, user
 					.getEmail()
 					+ " " + user.getUnverifiedEmail());
-			this.registrationModel_.setVisible(RegistrationModel.EmailField,
-					false);
 		}
+		this.registrationModel_.setVisible(RegistrationModel.EmailField, false);
 		WPushButton okButton = new WPushButton(tr("Wt.WMessageBox.Ok"));
 		WPushButton cancelButton = new WPushButton(tr("Wt.WMessageBox.Cancel"));
 		if (this.authModel_ != null) {
@@ -185,6 +185,7 @@ public class UpdatePasswordWidget extends WTemplateFormView {
 		this.registrationModel_.validateField(RegistrationModel.LoginNameField);
 		this.checkPassword();
 		this.checkPassword2();
+		this.registrationModel_.validateField(RegistrationModel.EmailField);
 		if (!this.registrationModel_.isValid()) {
 			valid = false;
 		}

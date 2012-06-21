@@ -319,6 +319,7 @@ class DomElement {
 	}
 
 	public void callMethod(String method) {
+		++this.numManipulations_;
 		if (this.var_.length() == 0) {
 			this.javaScript_.append("Wt3_2_1").append(".$('").append(this.id_)
 					.append("').");
