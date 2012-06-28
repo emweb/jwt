@@ -462,12 +462,12 @@ class DomElement {
 			return this.var_;
 		case Update: {
 			WApplication app = WApplication.getInstance();
-			for (int i = 0; i < this.updatedChildren_.size(); ++i) {
-				DomElement child = this.updatedChildren_.get(i);
-				child.asJavaScript(out, DomElement.Priority.Update);
-			}
 			if (this.mode_ == DomElement.Mode.ModeUpdate
 					&& this.numManipulations_ == 1) {
+				for (int i = 0; i < this.updatedChildren_.size(); ++i) {
+					DomElement child = this.updatedChildren_.get(i);
+					child.asJavaScript(out, DomElement.Priority.Update);
+				}
 				if (this.properties_.get(Property.PropertyStyleDisplay) != null) {
 					String style = this.properties_
 							.get(Property.PropertyStyleDisplay);
@@ -556,6 +556,10 @@ class DomElement {
 				out.append("$('#").append(this.childrenToSave_.get(i)).append(
 						"').replaceWith(c").append(this.var_).append((int) i)
 						.append(");");
+			}
+			for (int i = 0; i < this.updatedChildren_.size(); ++i) {
+				DomElement child = this.updatedChildren_.get(i);
+				child.asJavaScript(out, DomElement.Priority.Update);
 			}
 			return this.var_;
 		}

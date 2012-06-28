@@ -173,7 +173,9 @@ public abstract class WtServlet extends HttpServlet {
 	}
 
 	void handleRequest(final HttpServletRequest request, final HttpServletResponse response) {
-		String pathInfo = request.getPathInfo();
+		WebRequest wRequest = new WebRequest(request);
+		
+		String pathInfo = wRequest.getPathInfo();
 		String resourcePath = configuration.getProperty(WApplication.RESOURCES_URL);
 		
 		if (pathInfo !=null) {
@@ -341,7 +343,7 @@ public abstract class WtServlet extends HttpServlet {
 				jsession.setAttribute(WtServlet.WT_WEBSESSION_ID, new BoundSession(wsession));
 			}
 	
-			logger.debug("Handling: (" + jsession.getId() + "): " + request.getMethod() + " " + request.getScriptName() + " " + request.getPathInfo());
+			logger.debug("Handling: (" + jsession.getId() + "): " + request.getRequestURI() + " " + request.getMethod() + " " + request.getScriptName() + " " + request.getPathInfo() + " " + request.getQueryString());
 			
 			WebSession.Handler handler = new WebSession.Handler(wsession, request, response);
 			wsession.handleRequest(handler);

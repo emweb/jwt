@@ -110,9 +110,9 @@ class MarkerRenderIterator extends SeriesIterator {
 			scale = xIndex.getData(ItemDataRole.MarkerScaleFactorRole);
 		}
 		if (!(scale == null)) {
-			dScale = (Double) scale;
+			dScale = StringUtils.asNumber(scale);
 		}
-		dScale = markerSize / 6 * dScale + 3;
+		dScale = markerSize / 6 * dScale;
 		painter.scale(dScale, dScale);
 	}
 }

@@ -1162,9 +1162,8 @@ public class WTreeView extends WAbstractItemView {
 										.widgetForModelRow(start - 1))
 										: null);
 								if (n != null) {
-									n.updateGraphics(false,
-											this.getModel().getRowCount(
-													n.getModelIndex()) == 0);
+									n.updateGraphics(false, !this.getModel()
+											.hasChildren(n.getModelIndex()));
 								}
 							}
 						}
@@ -1236,8 +1235,8 @@ public class WTreeView extends WAbstractItemView {
 									.widgetForModelRow(start - 1))
 									: null);
 							if (n != null) {
-								n.updateGraphics(true, this.getModel()
-										.getRowCount(n.getModelIndex()) == 0);
+								n.updateGraphics(true, !this.getModel()
+										.hasChildren(n.getModelIndex()));
 							}
 						}
 					}
@@ -1929,7 +1928,7 @@ public class WTreeView extends WAbstractItemView {
 			WModelIndex indexc0 = index.getColumn() == 0 ? index : this
 					.getModel().getIndex(index.getRow(), 0, index.getParent());
 			if (this.isExpanded(indexc0)
-					&& this.getModel().getRowCount(indexc0) > 0) {
+					&& this.getModel().hasChildren(indexc0)) {
 				index = this.getModel().getIndex(0, first.getColumn(), indexc0);
 			} else {
 				for (;;) {
