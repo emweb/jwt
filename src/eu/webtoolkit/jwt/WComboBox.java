@@ -385,6 +385,9 @@ public class WComboBox extends WFormWidget {
 
 	private void itemsChanged() {
 		this.itemsChanged_ = true;
+		if (this.currentIndex_ > this.getCount() - 1) {
+			this.currentIndex_ = this.getCount() - 1;
+		}
 		this.repaint(EnumSet.of(RepaintFlag.RepaintInnerHtml));
 	}
 
