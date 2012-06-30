@@ -1185,7 +1185,7 @@ public class WApplication extends WObject {
 	 * @see WApplication#getBookmarkUrl()
 	 */
 	public String getInternalPath() {
-		return this.newInternalPath_;
+		return StringUtils.prepend(this.newInternalPath_, '/');
 	}
 
 	/**
@@ -1263,7 +1263,7 @@ public class WApplication extends WObject {
 		if (!pathMatches(current, path)) {
 			logger.warn(new StringWriter().append("internalPath(): path '")
 					.append(path).append("' not within current path '").append(
-							this.newInternalPath_).append("'").toString());
+							this.getInternalPath()).append("'").toString());
 			return "";
 		}
 		return current.substring(path.length());
@@ -2473,7 +2473,7 @@ public class WApplication extends WObject {
 		WWidget exposedOnly = this.exposedOnly_.isEmpty() ? null
 				: this.exposedOnly_.get(this.exposedOnly_.size() - 1);
 		if (exposedOnly != null) {
-			return exposedOnly.containsExposed(w);
+			return exposedOnly.isExposed(w);
 		} else {
 			WWidget p = w.getAdam();
 			return p == this.domRoot_ || p == this.domRoot2_;
@@ -2779,11 +2779,9 @@ public class WApplication extends WObject {
 
 	private void changeInternalPath(String aPath) {
 		String path = StringUtils.prepend(aPath, '/');
-		if (path.length() == 0 || path.charAt(0) == '/') {
-			if (!path.equals(this.newInternalPath_)) {
-				this.newInternalPath_ = path;
-				this.internalPathChanged_.trigger(this.newInternalPath_);
-			}
+		if (!path.equals(this.getInternalPath())) {
+			this.newInternalPath_ = path;
+			this.internalPathChanged_.trigger(this.newInternalPath_);
 		}
 	}
 

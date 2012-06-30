@@ -807,6 +807,11 @@ public class AuthWidget extends WTemplateFormView {
 				}
 			}
 			this.model_.updateThrottling(login);
+		} else {
+			this.bindEmpty("lost-password");
+			this.bindEmpty("sep");
+			this.bindEmpty("register");
+			this.bindEmpty("login");
 		}
 	}
 }

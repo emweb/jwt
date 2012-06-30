@@ -266,6 +266,14 @@ public class WComboBox extends WFormWidget {
 						WComboBox.this.itemsChanged();
 					}
 				}));
+		this.modelConnections_.add(this.model_.rowsAboutToBeRemoved()
+				.addListener(this,
+						new Signal3.Listener<WModelIndex, Integer, Integer>() {
+							public void trigger(WModelIndex e1, Integer e2,
+									Integer e3) {
+								WComboBox.this.rowsAboutToBeRemoved(e1, e2, e3);
+							}
+						}));
 		this.refresh();
 	}
 
@@ -377,6 +385,9 @@ public class WComboBox extends WFormWidget {
 
 	private void itemsChanged() {
 		this.itemsChanged_ = true;
+		if (this.currentIndex_ > this.getCount() - 1) {
+			this.currentIndex_ = this.getCount() - 1;
+		}
 		this.repaint(EnumSet.of(RepaintFlag.RepaintInnerHtml));
 	}
 
@@ -389,6 +400,28 @@ public class WComboBox extends WFormWidget {
 		this.activated_.trigger(this.currentIndex_);
 		if (myCurrentIndex != -1) {
 			this.sactivated_.trigger(myCurrentValue);
+		}
+	}
+
+	private void rowsAboutToBeRemoved(WModelIndex index, int from, int to) {
+		if (this.currentIndex_ == -1) {
+			return;
+		}
+		int count = to - from + 1;
+		if (this.currentIndex_ > to) {
+			this.currentIndex_ -= count;
+		} else {
+			if (this.currentIndex_ >= from) {
+				if (from > 0) {
+					this.currentIndex_ = from - 1;
+				} else {
+					if (this.model_.getRowCount(index) - count == 0) {
+						this.currentIndex_ = -1;
+					} else {
+						this.currentIndex_ = 0;
+					}
+				}
+			}
 		}
 	}
 

@@ -939,7 +939,7 @@ public abstract class WWidget extends WObject {
 	 * @see WWidget#isRendered()
 	 */
 	public String getJsRef() {
-		return "$('#" + this.getId() + "').get(0)";
+		return "Wt3_2_1.$('" + this.getId() + "')";
 	}
 
 	/**
@@ -1504,7 +1504,7 @@ public abstract class WWidget extends WObject {
 	 */
 	protected abstract void propagateSetEnabled(boolean enabled);
 
-	protected boolean containsExposed(WWidget w) {
+	protected boolean isExposed(WWidget w) {
 		if (w == this) {
 			return true;
 		}

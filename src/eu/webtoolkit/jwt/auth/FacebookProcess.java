@@ -67,14 +67,17 @@ class FacebookProcess extends OAuthProcess {
 								email, emailVerified));
 			}
 		} else {
-			this.setError(WString.tr("Wt.Auth.FacebookService.badresponse"));
 			if (err == null) {
 				logger.error(new StringWriter().append(
 						"user info request returned: ").append(
 						String.valueOf(response.getStatus())).toString());
 				logger.error(new StringWriter().append("with: ").append(
 						response.getBody()).toString());
+			} else {
+				logger.error(new StringWriter().append("handleMe(): ").append(
+						err.getMessage()).toString());
 			}
+			this.setError(WString.tr("Wt.Auth.FacebookService.badresponse"));
 			this.authenticated().trigger(Identity.Invalid);
 		}
 	}

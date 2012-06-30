@@ -198,11 +198,13 @@ public class AuthModel extends FormBaseModel {
 				&& this.getPasswordAuth().isAttemptThrottlingEnabled()) {
 			WApplication app = WApplication.getInstance();
 			app.loadJavaScript("js/AuthModel.js", wtjs1());
-			button.doJavaScript("new Wt3_2_1.AuthThrottle(Wt3_2_1,"
-					+ button.getJsRef()
-					+ ","
-					+ WString.toWString(WString.tr("Wt.Auth.throttle-retry"))
-							.getJsStringLiteral() + ");");
+			button.setJavaScriptMember(" AuthThrottle",
+					"new Wt3_2_1.AuthThrottle(Wt3_2_1,"
+							+ button.getJsRef()
+							+ ","
+							+ WString.toWString(
+									WString.tr("Wt.Auth.throttle-retry"))
+									.getJsStringLiteral() + ");");
 		}
 	}
 

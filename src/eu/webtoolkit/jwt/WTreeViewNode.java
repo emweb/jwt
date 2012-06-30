@@ -55,8 +55,8 @@ class WTreeViewNode extends WTable {
 		if (!(this.index_ == this.view_.getRootIndex() || (this.index_ != null && this.index_
 				.equals(this.view_.getRootIndex())))) {
 			this.getElementAt(0, 1).setStyleClass("c1 rh");
-			this.updateGraphics(isLast, this.view_.getModel().getRowCount(
-					this.index_) == 0);
+			this.updateGraphics(isLast, !this.view_.getModel().hasChildren(
+					this.index_));
 			this.insertColumns(0, this.view_.getColumnCount());
 			selfHeight = 1;
 			if (this.view_.getSelectionBehavior() == SelectionBehavior.SelectRows

@@ -114,6 +114,18 @@ public class WebRequest extends HttpServletRequestWrapper {
 			if (pathInfo != null && pathInfo.equals("/"))
 				pathInfo = "";
 
+		if (pathInfo == null || pathInfo.length() == 0) {
+			// Work around (jetty) bug where path info is not interpreted correctly for a URL
+			// like /bla/hello;jsessionid=q0f2lqgeivq9uipxwk12gj6s/wt-resources/webkit-transitions.css
+
+			String uri = getRequestURI();
+			if (uri.startsWith(scriptName + ";")) {
+				int pathInfoStart = uri.indexOf('/', scriptName.length() + 1);
+				if (pathInfoStart != -1)
+					pathInfo = uri.substring(pathInfoStart);
+			}
+		}
+
 		if (pathInfo == null)
 			pathInfo = "";
 	}

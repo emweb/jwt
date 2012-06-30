@@ -119,14 +119,14 @@ public class WBorderLayout extends WLayout {
 		{
 			int insertPos = 0;
 			for (int ii = 0; ii < 3; ++ii)
-				this.grid_.columns_.add(insertPos + ii, new Grid.Column(0));
+				this.grid_.columns_.add(insertPos + ii, new Grid.Section(0));
 		}
 		;
 		this.grid_.columns_.get(1).stretch_ = 1;
 		{
 			int insertPos = 0;
 			for (int ii = 0; ii < 3; ++ii)
-				this.grid_.rows_.add(insertPos + ii, new Grid.Row(0));
+				this.grid_.rows_.add(insertPos + ii, new Grid.Section(0));
 		}
 		;
 		this.grid_.rows_.get(1).stretch_ = 1;

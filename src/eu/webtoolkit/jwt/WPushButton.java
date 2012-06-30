@@ -301,7 +301,10 @@ public class WPushButton extends WFormWidget {
 			element.setAttribute("type", "button");
 			element.setProperty(Property.PropertyClass, "Wt-btn");
 		}
-		if (this.flags_.get(BIT_ICON_CHANGED) || all && !this.icon_.isNull()) {
+		boolean updateInnerHtml = !this.icon_.isNull()
+				&& this.flags_.get(BIT_TEXT_CHANGED);
+		if (updateInnerHtml || this.flags_.get(BIT_ICON_CHANGED) || all
+				&& !this.icon_.isNull()) {
 			DomElement image = DomElement
 					.createNew(DomElementType.DomElement_IMG);
 			image.setProperty(Property.PropertySrc, this.icon_.getUrl());

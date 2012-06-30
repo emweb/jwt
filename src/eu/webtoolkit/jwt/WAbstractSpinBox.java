@@ -172,17 +172,9 @@ public abstract class WAbstractSpinBox extends WLineEdit {
 		if (all || this.changed_) {
 			if (!all) {
 				if (!this.isNativeControl()) {
-					WApplication
-							.getInstance()
-							.doJavaScript(
-									"jQuery.data("
-											+ this.getJsRef()
-											+ ", 'obj').update("
-											+ this.getJsMinMaxStep()
-											+ ","
-											+ String
-													.valueOf(this.getDecimals())
-											+ ");");
+					this.doJavaScript("jQuery.data(" + this.getJsRef()
+							+ ", 'obj').update(" + this.getJsMinMaxStep() + ","
+							+ String.valueOf(this.getDecimals()) + ");");
 				} else {
 					this.setValidator(this.createValidator());
 				}

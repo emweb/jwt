@@ -34,7 +34,7 @@ public class FormBaseModel extends WFormModel {
 	 */
 	public FormBaseModel(AuthService baseAuth, AbstractUserDatabase users,
 			WObject parent) {
-		super();
+		super(parent);
 		this.baseAuth_ = baseAuth;
 		this.users_ = users;
 		this.passwordAuth_ = null;

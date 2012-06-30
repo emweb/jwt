@@ -685,47 +685,61 @@ public abstract class WInteractWidget extends WWebWidget {
 				&& mouseClick.needsUpdate(all) || mouseDblClick != null
 				&& mouseDblClick.needsUpdate(all);
 		if (updateMouseClick) {
-			if (this.flags_.get(BIT_ENABLED)) {
-				if (mouseDblClick != null) {
-					StringBuilder combined = new StringBuilder();
-					combined.append("if(window.wtClickTimeout) {").append(
-							"clearTimeout(window.wtClickTimeout);").append(
-							"window.wtClickTimeout = null;");
-					combined.append(mouseDblClick.getJavaScript());
-					if (mouseDblClick.isExposedSignal()) {
+			StringBuilder js = new StringBuilder();
+			js
+					.append("if($(o).hasClass('Wt-disabled')){Wt3_2_1.cancelEvent(e);return;}");
+			if (mouseDblClick != null) {
+				js.append("if(window.wtClickTimeout) {").append(
+						"clearTimeout(window.wtClickTimeout);").append(
+						"window.wtClickTimeout = null;");
+				js.append(mouseDblClick.getJavaScript());
+				if (mouseDblClick.isExposedSignal()) {
+					if (!(app != null)) {
+						app = WApplication.getInstance();
+					}
+					js.append(app.getJavaScriptClass()).append(
+							"._p_.update(o,'")
+							.append(mouseDblClick.encodeCmd()).append(
+									"',e,true);");
+				}
+				mouseDblClick.updateOk();
+				js
+						.append("}else{if (Wt3_2_1.isIElt9 && document.createEventObject) e = document.createEventObject(e);window.wtClickTimeout = setTimeout(function() {window.wtClickTimeout = null;");
+				if (mouseClick != null) {
+					js.append(mouseClick.getJavaScript());
+					if (mouseClick.isExposedSignal()) {
 						if (!(app != null)) {
 							app = WApplication.getInstance();
 						}
-						combined.append(app.getJavaScriptClass()).append(
+						js.append(app.getJavaScriptClass()).append(
 								"._p_.update(o,'").append(
-								mouseDblClick.encodeCmd()).append("',e,true);");
+								mouseClick.encodeCmd()).append("',e,true);");
 					}
-					mouseDblClick.updateOk();
-					combined.append("}else{").append(
-							"window.wtClickTimeout = setTimeout(function() {")
-							.append("window.wtClickTimeout = null;");
-					if (mouseClick != null) {
-						combined.append(mouseClick.getJavaScript());
-						if (mouseClick.isExposedSignal()) {
-							if (!(app != null)) {
-								app = WApplication.getInstance();
-							}
-							combined.append(app.getJavaScriptClass()).append(
-									"._p_.update(o,'").append(
-									mouseClick.encodeCmd())
-									.append("',e,true);");
-						}
-						mouseClick.updateOk();
-					}
-					combined.append("},200);}");
-					element.setEvent(CLICK_SIGNAL, combined.toString(), "");
-				} else {
-					this.updateSignalConnection(element, mouseClick,
-							CLICK_SIGNAL, all);
+					mouseClick.updateOk();
 				}
+				js.append("},200);}");
 			} else {
-				element.setEvent(CLICK_SIGNAL,
-						"Wt3_2_1.cancelEvent(event||window.event);");
+				if (mouseClick != null) {
+					js.append(mouseClick.getJavaScript());
+					if (mouseClick.isExposedSignal()) {
+						if (!(app != null)) {
+							app = WApplication.getInstance();
+						}
+						js.append(app.getJavaScriptClass()).append(
+								"._p_.update(o,'").append(
+								mouseClick.encodeCmd()).append("',e,true);");
+					}
+					mouseClick.updateOk();
+				}
+			}
+			element.setEvent(CLICK_SIGNAL, js.toString(), "");
+			if (mouseDblClick != null) {
+				if (!(app != null)) {
+					app = WApplication.getInstance();
+				}
+				if (app.getEnvironment().agentIsIElt(9)) {
+					element.setEvent("dblclick", "this.onclick()");
+				}
 			}
 		}
 		EventSignal1<WMouseEvent> mouseOver = this.mouseEventSignal(
@@ -788,15 +802,7 @@ public abstract class WInteractWidget extends WWebWidget {
 
 	protected void propagateSetEnabled(boolean enabled) {
 		this.flags_.set(BIT_ENABLED, enabled);
-		EventSignal1<WMouseEvent> s;
-		s = this.mouseEventSignal(M_CLICK_SIGNAL, false);
-		if (s != null) {
-			s.senderRepaint();
-		}
-		s = this.mouseEventSignal(DBL_CLICK_SIGNAL, false);
-		if (s != null) {
-			s.senderRepaint();
-		}
+		this.toggleStyleClass("Wt-disabled", !enabled, true);
 		super.propagateSetEnabled(enabled);
 	}
 

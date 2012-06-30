@@ -614,6 +614,8 @@ this.getElement = function(id) {
   return el;
 };
 
+this.$ = this.getElement;
+
 this.validate = function(edit) {
   var v;
   if (edit.options)
@@ -945,7 +947,7 @@ this.boxSizing = function(w) {
 
 // Return if an element (or one of its ancestors) is hidden
 this.isHidden = function(w) {
-  if (w.style.display == 'none' || w.style.visibility == 'hidden')
+  if (w.style.display == 'none')
     return true;
   else {
     w = w.parentNode;
@@ -1008,7 +1010,11 @@ var captureElement = null;
 this.firedTarget = null;
 
 this.target = function(event) {
-  return WT.firedTarget || event.target || event.srcElement;
+  try {
+    return WT.firedTarget || event.target || event.srcElement;
+  } catch (err) {
+    return null;
+  }
 };
 
 function delegateCapture(e) {
@@ -2658,6 +2664,18 @@ function sendUpdate() {
   }
 }
 
+function propagateSize(element, width, height) {
+  if ((typeof element.wtWidth === 'undefined')
+      || (element.wtWidth != width)
+      || (typeof element.wtHeight === 'undefined')
+      || (element.wtHeight != height)) {
+    element.wtWidth = width;
+    element.wtHeight = height;
+
+    emit(element, 'resized', width, height);
+  }
+}
+
 function emit(object, config) {
   var userEvent = new Object(), ei = pendingEvents.length;
   userEvent.signal = "user";
@@ -2885,7 +2903,9 @@ this._p_ = {
 
   response : responseReceived,
   setPage : setPage,
-  setCloseMessage : setCloseMessage
+  setCloseMessage : setCloseMessage,
+
+  propagateSize : propagateSize
 };
 
 this.WT = _$_WT_CLASS_$_;

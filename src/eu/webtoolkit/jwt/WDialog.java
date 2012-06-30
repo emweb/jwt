@@ -143,9 +143,6 @@ public class WDialog extends WCompositeWidget {
 				tr("Wt.WDialog.template")));
 		String CSS_RULES_NAME = "Wt::WDialog";
 		WApplication app = WApplication.getInstance();
-		this
-				.setPositionScheme(app.getEnvironment().getAgent() == WEnvironment.UserAgent.IE6 ? PositionScheme.Absolute
-						: PositionScheme.Fixed);
 		if (!app.getStyleSheet().isDefined(CSS_RULES_NAME)) {
 			if (app.getEnvironment().agentIsIElt(9)) {
 				app.getStyleSheet().addRule("body", "height: 100%;");
@@ -159,9 +156,6 @@ public class WDialog extends WCompositeWidget {
 							""
 									+ (app.getEnvironment().hasAjax() ? "visibility: hidden;"
 											: "")
-									+ "position: "
-									+ position
-									+ ';'
 									+ (!app.getEnvironment().hasAjax() ? "left: 50%; top: 50%;margin-left: -100px; margin-top: -50px;"
 											: "left: 0px; top: 0px;"),
 							CSS_RULES_NAME);
@@ -200,6 +194,13 @@ public class WDialog extends WCompositeWidget {
 		this.contents_.setStyleClass("body");
 		layout.addWidget(this.contents_, 1);
 		this.saveCoverState(app, app.getDialogCover());
+		if (app.getEnvironment().hasAjax()) {
+			this.setAttributeValue("style", "visibility: hidden");
+		} else {
+			this
+					.setPositionScheme(app.getEnvironment().getAgent() == WEnvironment.UserAgent.IE6 ? PositionScheme.Absolute
+							: PositionScheme.Fixed);
+		}
 		this.hide();
 	}
 
@@ -469,11 +470,14 @@ public class WDialog extends WCompositeWidget {
 			if (this.resizable_) {
 				this.setMinimumSize(WLength.Auto, WLength.Auto);
 				Resizable.loadJavaScript(WApplication.getInstance());
-				this.doJavaScript("(new Wt3_2_1.Resizable(Wt3_2_1,"
-						+ this.getJsRef()
-						+ ")).onresize(function(w, h) {var obj = $('#"
-						+ this.getId()
-						+ "').data('obj');if (obj) obj.onresize(w, h); });");
+				this
+						.setJavaScriptMember(
+								" Resizable",
+								"(new Wt3_2_1.Resizable(Wt3_2_1,"
+										+ this.getJsRef()
+										+ ")).onresize(function(w, h) {var obj = $('#"
+										+ this.getId()
+										+ "').data('obj');if (obj) obj.onresize(w, h); });");
 			}
 		}
 	}
@@ -542,7 +546,7 @@ public class WDialog extends WCompositeWidget {
 					}
 					cover.setZIndex(this.impl_.getZIndex() - 1);
 					app.pushExposedConstraint(this);
-					app
+					this
 							.doJavaScript("try {if (document.activeElement && document.activeElement.blur)document.activeElement.blur();} catch (e) { }");
 				} else {
 					this.restoreCoverState(app, cover);
@@ -571,6 +575,12 @@ public class WDialog extends WCompositeWidget {
 					&& this.getOffset(Side.Right).isAuto();
 			boolean centerY = this.getOffset(Side.Top).isAuto()
 					&& this.getOffset(Side.Bottom).isAuto();
+			if (app.getEnvironment().hasAjax()) {
+				if (this.getWidth().isAuto() && this.getMaximumWidth().isAuto()) {
+					this.impl_.resolveWidget("layout").setMaximumSize(
+							new WLength(999999), this.getMaximumHeight());
+				}
+			}
 			this.doJavaScript("new Wt3_2_1.WDialog(" + app.getJavaScriptClass()
 					+ "," + this.getJsRef() + "," + (centerX ? "1" : "0") + ","
 					+ (centerY ? "1" : "0") + ");");
@@ -618,6 +628,6 @@ public class WDialog extends WCompositeWidget {
 				JavaScriptScope.WtClassScope,
 				JavaScriptObjectType.JavaScriptConstructor,
 				"WDialog",
-				"function(m,a,h,i){function n(b){var c=b||window.event;b=d.pageCoordinates(c);c=d.windowCoordinates(c);var e=d.windowSize();if(c.x>0&&c.x<e.x&&c.y>0&&c.y<e.y){h=i=false;a.style.left=d.px(a,\"left\")+b.x-j+\"px\";a.style.top=d.px(a,\"top\")+b.y-k+\"px\";a.style.right=\"\";a.style.bottom=\"\";j=b.x;k=b.y}}function o(b,c,e){a.style.height=Math.max(0,e)+\"px\";a.style.width=Math.max(0,c)+\"px\";l.centerDialog()}function p(b,c,e){if(c>0)g.style.width=c+\"px\";if(e>0)g.style.height= e+\"px\";l.centerDialog()}jQuery.data(a,\"obj\",this);var l=this,f=$(a).find(\".titlebar\").first().get(0),g=$(a).find(\".dialog-layout\").get(0),d=m.WT,j,k;if(f){f.onmousedown=function(b){b=b||window.event;d.capture(f);b=d.pageCoordinates(b);j=b.x;k=b.y;f.onmousemove=n};f.onmouseup=function(){f.onmousemove=null;d.capture(null)}}this.centerDialog=function(){if(a.parentNode==null)a=f=null;else if(a.style.display!=\"none\"&&a.style.visibility!=\"hidden\"){var b=d.windowSize(),c=a.offsetWidth,e=a.offsetHeight;if(h){a.style.left= Math.round((b.x-c)/2+(d.isIE6?document.documentElement.scrollLeft:0))+\"px\";a.style.marginLeft=\"0px\"}if(i){a.style.top=Math.round((b.y-e)/2+(d.isIE6?document.documentElement.scrollTop:0))+\"px\";a.style.marginTop=\"0px\"}a.style.visibility=\"visible\"}};this.onresize=function(b,c){h=i=false;p(a,b,c);m.layouts2.scheduleAdjust()};g.wtResize=o;a.wtPosition=this.centerDialog;if(a.style.width!=\"\")g.style.width=a.offsetWidth+\"px\";if(a.style.height!=\"\")g.style.height=a.offsetHeight+\"px\";l.centerDialog()}");
+				"function(m,a,h,i){function n(b){var c=b||window.event;b=d.pageCoordinates(c);c=d.windowCoordinates(c);var e=d.windowSize();if(c.x>0&&c.x<e.x&&c.y>0&&c.y<e.y){h=i=false;a.style.left=d.px(a,\"left\")+b.x-j+\"px\";a.style.top=d.px(a,\"top\")+b.y-k+\"px\";a.style.right=\"\";a.style.bottom=\"\";j=b.x;k=b.y}}function o(b,c,e){if(a.style.position==\"\"){a.style.position=d.isIE6?\"absolute\":\"fixed\";a.style.visibility=\"visible\"}a.style.height=Math.max(0,e)+\"px\";a.style.width= Math.max(0,c)+\"px\";l.centerDialog()}function p(b,c,e){if(c>0)g.style.width=c+\"px\";if(e>0)g.style.height=e+\"px\";l.centerDialog()}jQuery.data(a,\"obj\",this);var l=this,f=$(a).find(\".titlebar\").first().get(0),g=$(a).find(\".dialog-layout\").get(0),d=m.WT,j,k;if(f){f.onmousedown=function(b){b=b||window.event;d.capture(f);b=d.pageCoordinates(b);j=b.x;k=b.y;f.onmousemove=n};f.onmouseup=function(){f.onmousemove=null;d.capture(null)}}this.centerDialog=function(){if(a.parentNode==null)a=f=null;else{if(a.style.display!= \"none\"&&a.style.visibility!=\"hidden\"){var b=d.windowSize(),c=a.offsetWidth,e=a.offsetHeight;if(h){a.style.left=Math.round((b.x-c)/2+(d.isIE6?document.documentElement.scrollLeft:0))+\"px\";a.style.marginLeft=\"0px\"}if(i){a.style.top=Math.round((b.y-e)/2+(d.isIE6?document.documentElement.scrollTop:0))+\"px\";a.style.marginTop=\"0px\"}}if(a.style.position!=\"\")a.style.visibility=\"visible\"}};this.onresize=function(b,c){h=i=false;p(a,b,c);m.layouts2.scheduleAdjust()};g.wtResize=o;a.wtPosition=this.centerDialog; if(a.style.width!=\"\")g.style.width=a.offsetWidth+\"px\";if(a.style.height!=\"\")g.style.height=a.offsetHeight+\"px\";l.centerDialog()}");
 	}
 }

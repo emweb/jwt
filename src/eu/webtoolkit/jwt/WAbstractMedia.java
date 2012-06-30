@@ -157,8 +157,9 @@ public abstract class WAbstractMedia extends WInteractWidget {
 		this.setFormObject(true);
 		WApplication app = WApplication.getInstance();
 		app.loadJavaScript("js/WAbstractMedia.js", wtjs1());
-		this.doJavaScript("new Wt3_2_1.WAbstractMedia("
-				+ app.getJavaScriptClass() + "," + this.getJsRef() + ");");
+		this.setJavaScriptMember(" WAbstractMedia",
+				"new Wt3_2_1.WAbstractMedia(" + app.getJavaScriptClass() + ","
+						+ this.getJsRef() + ");");
 	}
 
 	/**

@@ -866,14 +866,14 @@ public class WGoogleMap extends WCompositeWidget {
 						.append("var map = new google.maps.Map(self);map.setCenter(new google.maps.LatLng(47.01887777, 8.651888), 13);");
 				this
 						.setJavaScriptMember(
-								"wtResize",
+								WT_RESIZE_JS,
 								"function(self, w, h) {self.style.width=w + 'px';self.style.height=h + 'px';if (self.map) self.map.checkResize();}");
 			} else {
 				strm
 						.append("var latlng = new google.maps.LatLng(47.01887777, 8.651888);var myOptions = {zoom: 13,center: latlng,mapTypeId: google.maps.MapTypeId.ROADMAP};var map = new google.maps.Map(self, myOptions);map.overlays = [];map.infowindows = [];");
 				this
 						.setJavaScriptMember(
-								"wtResize",
+								WT_RESIZE_JS,
 								"function(self, w, h) {self.style.width=w + 'px';self.style.height=h + 'px';if (self.map) google.maps.event.trigger(self.map, 'resize');}");
 			}
 			strm.append("self.map = map;");

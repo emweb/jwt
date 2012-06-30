@@ -47,9 +47,10 @@ import org.slf4j.LoggerFactory;
  * <p>
  * A layout manager may provide resize handles between columns or rows which
  * allow the user to change the automatic layout provided by the layout manager
- * (see {@link WGridLayout#setRowResizable(int row, boolean enabled)
+ * (see
+ * {@link WGridLayout#setRowResizable(int row, boolean enabled, WLength initialSize)
  * setRowResizable()} and
- * {@link WGridLayout#setColumnResizable(int column, boolean enabled)
+ * {@link WGridLayout#setColumnResizable(int column, boolean enabled, WLength initialSize)
  * setColumnResizable()}).
  * <p>
  * Columns and rows are separated using a constant spacing, which defaults to 6
@@ -592,20 +593,34 @@ public class WGridLayout extends WLayout {
 	 * <p>
 	 * The default value is <i>false</i>.
 	 */
-	public void setColumnResizable(int column, boolean enabled) {
+	public void setColumnResizable(int column, boolean enabled,
+			WLength initialSize) {
 		this.expand(0, column, 0, 1);
 		this.grid_.columns_.get(column).resizable_ = enabled;
+		this.grid_.columns_.get(column).initialSize_ = initialSize;
 		this.update();
 	}
 
 	/**
 	 * Sets whether the user may drag a particular column border.
 	 * <p>
-	 * Calls {@link #setColumnResizable(int column, boolean enabled)
-	 * setColumnResizable(column, true)}
+	 * Calls
+	 * {@link #setColumnResizable(int column, boolean enabled, WLength initialSize)
+	 * setColumnResizable(column, true, WLength.Auto)}
 	 */
 	public final void setColumnResizable(int column) {
-		setColumnResizable(column, true);
+		setColumnResizable(column, true, WLength.Auto);
+	}
+
+	/**
+	 * Sets whether the user may drag a particular column border.
+	 * <p>
+	 * Calls
+	 * {@link #setColumnResizable(int column, boolean enabled, WLength initialSize)
+	 * setColumnResizable(column, enabled, WLength.Auto)}
+	 */
+	public final void setColumnResizable(int column, boolean enabled) {
+		setColumnResizable(column, enabled, WLength.Auto);
 	}
 
 	/**
@@ -615,7 +630,8 @@ public class WGridLayout extends WLayout {
 	 * <i>column</i> from the next column may be resized by the user.
 	 * <p>
 	 * 
-	 * @see WGridLayout#setColumnResizable(int column, boolean enabled)
+	 * @see WGridLayout#setColumnResizable(int column, boolean enabled, WLength
+	 *      initialSize)
 	 */
 	public boolean columnIsResizable(int column) {
 		return this.grid_.columns_.get(column).resizable_;
@@ -630,20 +646,33 @@ public class WGridLayout extends WLayout {
 	 * <p>
 	 * The default value is <i>false</i>.
 	 */
-	public void setRowResizable(int row, boolean enabled) {
+	public void setRowResizable(int row, boolean enabled, WLength initialSize) {
 		this.expand(row, 0, 1, 0);
 		this.grid_.rows_.get(row).resizable_ = enabled;
+		this.grid_.rows_.get(row).initialSize_ = initialSize;
 		this.update();
 	}
 
 	/**
 	 * Sets whether the user may drag a particular row border.
 	 * <p>
-	 * Calls {@link #setRowResizable(int row, boolean enabled)
-	 * setRowResizable(row, true)}
+	 * Calls
+	 * {@link #setRowResizable(int row, boolean enabled, WLength initialSize)
+	 * setRowResizable(row, true, WLength.Auto)}
 	 */
 	public final void setRowResizable(int row) {
-		setRowResizable(row, true);
+		setRowResizable(row, true, WLength.Auto);
+	}
+
+	/**
+	 * Sets whether the user may drag a particular row border.
+	 * <p>
+	 * Calls
+	 * {@link #setRowResizable(int row, boolean enabled, WLength initialSize)
+	 * setRowResizable(row, enabled, WLength.Auto)}
+	 */
+	public final void setRowResizable(int row, boolean enabled) {
+		setRowResizable(row, enabled, WLength.Auto);
 	}
 
 	/**
@@ -653,7 +682,8 @@ public class WGridLayout extends WLayout {
 	 * the next row may be resized by the user.
 	 * <p>
 	 * 
-	 * @see WGridLayout#setRowResizable(int row, boolean enabled)
+	 * @see WGridLayout#setRowResizable(int row, boolean enabled, WLength
+	 *      initialSize)
 	 */
 	public boolean rowIsResizable(int row) {
 		return this.grid_.rows_.get(row).resizable_;
@@ -684,7 +714,7 @@ public class WGridLayout extends WLayout {
 			{
 				int insertPos = this.grid_.columns_.size();
 				for (int ii = 0; ii < extraColumns; ++ii)
-					this.grid_.columns_.add(insertPos + ii, new Grid.Column());
+					this.grid_.columns_.add(insertPos + ii, new Grid.Section());
 			}
 			;
 		}
@@ -710,7 +740,7 @@ public class WGridLayout extends WLayout {
 			{
 				int insertPos = this.grid_.rows_.size();
 				for (int ii = 0; ii < extraRows; ++ii)
-					this.grid_.rows_.add(insertPos + ii, new Grid.Row());
+					this.grid_.rows_.add(insertPos + ii, new Grid.Section());
 			}
 			;
 		}

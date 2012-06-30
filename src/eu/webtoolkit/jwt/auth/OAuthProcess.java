@@ -390,6 +390,8 @@ public class OAuthProcess extends WObject {
 		if (err == null) {
 			this.doParseTokenResponse(response);
 		} else {
+			logger.error(new StringWriter().append("handleToken(): ").append(
+					err.getMessage()).toString());
 			this.setError(new WString(err.getMessage()));
 		}
 		WApplication app = WApplication.getInstance();
@@ -442,7 +444,8 @@ public class OAuthProcess extends WObject {
 		}
 		boolean ok = root != null;
 		if (!ok) {
-			logger.error(new StringWriter().append(pe.toString()).toString());
+			logger.error(new StringWriter().append("parseJsonToken(): ")
+					.append(pe.toString()).toString());
 			throw new OAuthProcess.TokenError(WString
 					.tr("Wt.Auth.OAuthService.badjson"));
 		} else {
@@ -513,9 +516,7 @@ public class OAuthProcess extends WObject {
 						}
 					}
 				}
-				if (!(this.error_.length() == 0)) {
-					this.onOAuthDone();
-				}
+				this.onOAuthDone();
 			}
 		}
 	}
@@ -532,7 +533,7 @@ public class OAuthProcess extends WObject {
 		boolean success = (this.error_.length() == 0);
 		this.authorized().trigger(
 				success ? this.token_ : OAuthAccessToken.Invalid);
-		if (this.authenticate_) {
+		if (success && this.authenticate_) {
 			this.authenticate_ = false;
 			this.getIdentity(this.token_);
 		}
