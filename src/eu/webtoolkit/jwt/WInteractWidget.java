@@ -631,11 +631,11 @@ public abstract class WInteractWidget extends WWebWidget {
 					&& mouseDown.isConnected()
 					&& (mouseUp != null && mouseUp.isConnected() || mouseMove != null
 							&& mouseMove.isConnected())) {
-				js += "Wt3_2_1.capture(this);";
+				js += "Wt3_2_2.capture(this);";
 			}
 			if (mouseMove != null && mouseMove.isConnected()
 					|| mouseDrag != null && mouseDrag.isConnected()) {
-				js += "Wt3_2_1.mouseDown(e);";
+				js += "Wt3_2_2.mouseDown(e);";
 			}
 			if (mouseDown != null) {
 				js += mouseDown.getJavaScript();
@@ -650,7 +650,7 @@ public abstract class WInteractWidget extends WWebWidget {
 			String js = "";
 			if (mouseMove != null && mouseMove.isConnected()
 					|| mouseDrag != null && mouseDrag.isConnected()) {
-				js += "Wt3_2_1.mouseUp(e);";
+				js += "Wt3_2_2.mouseUp(e);";
 			}
 			if (mouseUp != null) {
 				js += mouseUp.getJavaScript();
@@ -670,7 +670,7 @@ public abstract class WInteractWidget extends WWebWidget {
 				mouseMove.updateOk();
 			}
 			if (mouseDrag != null) {
-				actions.add(new DomElement.EventAction("Wt3_2_1.buttons",
+				actions.add(new DomElement.EventAction("Wt3_2_2.buttons",
 						mouseDrag.getJavaScript(), mouseDrag.encodeCmd(),
 						mouseDrag.isExposedSignal()));
 				mouseDrag.updateOk();
@@ -687,7 +687,7 @@ public abstract class WInteractWidget extends WWebWidget {
 		if (updateMouseClick) {
 			StringBuilder js = new StringBuilder();
 			js
-					.append("if($(o).hasClass('Wt-disabled')){Wt3_2_1.cancelEvent(e);return;}");
+					.append("if($(o).hasClass('Wt-disabled')){Wt3_2_2.cancelEvent(e);return;}");
 			if (mouseDblClick != null) {
 				js.append("if(window.wtClickTimeout) {").append(
 						"clearTimeout(window.wtClickTimeout);").append(
@@ -704,7 +704,7 @@ public abstract class WInteractWidget extends WWebWidget {
 				}
 				mouseDblClick.updateOk();
 				js
-						.append("}else{if (Wt3_2_1.isIElt9 && document.createEventObject) e = document.createEventObject(e);window.wtClickTimeout = setTimeout(function() {window.wtClickTimeout = null;");
+						.append("}else{if (Wt3_2_2.isIElt9 && document.createEventObject) e = document.createEventObject(e);window.wtClickTimeout = setTimeout(function() {window.wtClickTimeout = null;");
 				if (mouseClick != null) {
 					js.append(mouseClick.getJavaScript());
 					if (mouseClick.isExposedSignal()) {

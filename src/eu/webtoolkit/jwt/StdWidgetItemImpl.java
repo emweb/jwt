@@ -31,7 +31,7 @@ class StdWidgetItemImpl extends StdLayoutItemImpl {
 	public static String getChildrenResizeJS() {
 		WApplication app = WApplication.getInstance();
 		app.loadJavaScript("js/WtResize.js", wtjs10());
-		return "Wt3_2_1.ChildrenResize";
+		return "Wt3_2_2.ChildrenResize";
 	}
 
 	public String getId() {

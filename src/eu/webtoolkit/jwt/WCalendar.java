@@ -865,6 +865,8 @@ public class WCalendar extends WCompositeWidget {
 
 	private void cellDblClicked(WCalendar.Coordinate weekday) {
 		WDate dt = this.dateForCell(weekday.i, weekday.j);
+		this.clicked().trigger(
+				new WDate(dt.getYear(), dt.getMonth(), dt.getDay()));
 		this.activated().trigger(
 				new WDate(dt.getYear(), dt.getMonth(), dt.getDay()));
 	}

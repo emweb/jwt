@@ -220,7 +220,7 @@ public class WStackedWidget extends WContainerWidget {
 			this.animation_ = animation;
 			this.autoReverseAnimation_ = autoReverse;
 			this.setJavaScriptMember("wtAnimateChild",
-					"Wt3_2_1.WStackedWidget.animateChild");
+					"Wt3_2_2.WStackedWidget.animateChild");
 			this.setJavaScriptMember("wtAutoReverse",
 					this.autoReverseAnimation_ ? "true" : "false");
 		}

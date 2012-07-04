@@ -1853,7 +1853,7 @@ class WebSession {
 						String hashE = request.getParameter(se + "_");
 						if (hashE != null) {
 							this.app_.changedInternalPath(hashE);
-							this.app_.doJavaScript("Wt3_2_1.scrollIntoView("
+							this.app_.doJavaScript("Wt3_2_2.scrollIntoView("
 									+ WWebWidget.jsStringLiteral(hashE) + ");");
 						} else {
 							this.app_.changedInternalPath("");

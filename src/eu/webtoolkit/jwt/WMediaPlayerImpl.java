@@ -32,7 +32,7 @@ class WMediaPlayerImpl extends WTemplate {
 	String renderRemoveJs() {
 		if (this.isRendered()) {
 			return this.player_.getJsPlayerRef()
-					+ ".jPlayer('destroy');Wt3_2_1.remove('" + this.getId()
+					+ ".jPlayer('destroy');Wt3_2_2.remove('" + this.getId()
 					+ "');";
 		} else {
 			return super.renderRemoveJs();
