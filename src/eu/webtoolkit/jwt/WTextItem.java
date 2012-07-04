@@ -72,7 +72,7 @@ public class WTextItem {
 	 * Returns the width for a next line-break boundary.
 	 * <p>
 	 * Returns the width until the next line-break boundary, or -1 if the
-	 * underlying word boundary analysis does not suppor this.
+	 * underlying word boundary analysis does not support this.
 	 */
 	public double getNextWidth() {
 		return this.nextWidth_;

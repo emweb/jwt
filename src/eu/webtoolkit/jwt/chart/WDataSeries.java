@@ -196,10 +196,6 @@ public class WDataSeries {
 	 * <p>
 	 * The series type specifies how the data is plotted, i.e. using mere point
 	 * markers, lines, curves, or bars.
-	 * <p>
-	 * When changing the series type from BarSeries to another series type, and
-	 * the fill range is ZeroValueFill (the default for bar series), then the
-	 * fill type is changed to
 	 */
 	public void setType(SeriesType type) {
 		if (!ChartUtils.equals(this.type_, type)) {
@@ -530,6 +526,7 @@ public class WDataSeries {
 	 * 
 	 * @see WDataSeries#setMarkerPen(WPen pen)
 	 * @see WDataSeries#setMarkerBrush(WBrush brush)
+	 * @see WDataSeries#setCustomMarker(WPainterPath path)
 	 */
 	public void setMarker(MarkerType marker) {
 		if (!ChartUtils.equals(this.marker_, marker)) {
@@ -540,12 +537,19 @@ public class WDataSeries {
 	}
 
 	/**
-	 * Sets the customMarker.
+	 * Sets the custom marker.
+	 * <p>
+	 * This will also changes the marker type to CustomMarker.
 	 * <p>
 	 * 
-	 * @see WDataSeries#getCustomMarker()
+	 * @see WDataSeries#setMarker(MarkerType marker)
 	 */
 	public void setCustomMarker(WPainterPath path) {
+		if (!ChartUtils.equals(this.marker_, MarkerType.CustomMarker)) {
+			this.marker_ = MarkerType.CustomMarker;
+			update();
+		}
+		;
 		this.customMarker_.assign(path);
 	}
 

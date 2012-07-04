@@ -24,24 +24,40 @@ import org.slf4j.LoggerFactory;
  * <p>
  * 
  * This layout manager arranges widgets horizontally or vertically inside the
- * parent container. The space is divided so that each non-stretchable widget is
- * given its preferred size, and remaining space is divided according to stretch
- * factors among the other widgets.
+ * parent container.
  * <p>
- * The preferred width or height of a widget is based on the size the widgets
- * need in order to not require a scrollbar.
+ * The space is divided so that each widget is given its preferred size, and
+ * remaining space is divided according to stretch factors among widgets. If not
+ * all widgets can be given their preferred size (there is not enough room),
+ * then widgets are given a smaller size (down to their minimum size). If
+ * necessary, the container (or parent layout) of this layout is resized to meet
+ * minimum size requirements.
+ * <p>
+ * The preferred width or height of a widget is based on its natural size, where
+ * it presents its contents without overflowing.
+ * {@link WWidget#resize(WLength width, WLength height) WWidget#resize()} or
+ * (CSS <code>width</code>, <code>height</code> properties) can be used to
+ * adjust the preferred size of a widget.
  * <p>
  * The minimum width or height of a widget is based on the minimum dimensions of
  * the widget or the nested layout. The default minimum height or width for a
  * widget is 0. It can be specified using
  * {@link WWidget#setMinimumSize(WLength width, WLength height)
- * WWidget#setMinimumSize()} or using CSS min-width or min-height properties.
+ * WWidget#setMinimumSize()} or using CSS <code>min-width</code> or
+ * <code>min-height</code> properties.
  * <p>
  * You should use
  * {@link WContainerWidget#setOverflow(WContainerWidget.Overflow value, EnumSet orientation)
  * WContainerWidget::setOverflow(OverflowAuto)} or use a {@link WScrollArea} to
  * automatically show scrollbars for widgets inserted in the layout to cope with
- * sizes that are smaller than their preferred size.
+ * a size set by the layout manager that is smaller than the preferred size.
+ * <p>
+ * When the container of a layout manager has a maximum size set using
+ * {@link WWidget#setMaximumSize(WLength width, WLength height)
+ * WWidget#setMaximumSize()}, then the size of the container will be based on
+ * the preferred size of the contents, up to this maximum size, instead of the
+ * default behaviour of constraining the size of the children based on the size
+ * of the container.
  * <p>
  * A layout manager may provide resize handles between items which allow the
  * user to change the automatic layout provided by the layout manager (see
@@ -580,6 +596,10 @@ public class WBoxLayout extends WLayout {
 	 * <i>enabled</i>.
 	 * <p>
 	 * The default value is <i>false</i>.
+	 * <p>
+	 * If an <code>initialSize</code> is given (that is not {@link WLength#Auto}
+	 * ), then this size is used for the size of the item, overriding the size
+	 * it would be given by the layout manager.
 	 */
 	public void setResizable(int index, boolean enabled, WLength initialSize) {
 		switch (this.direction_) {

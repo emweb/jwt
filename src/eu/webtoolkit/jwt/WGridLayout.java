@@ -23,27 +23,42 @@ import org.slf4j.LoggerFactory;
  * A layout manager which arranges widgets in a grid.
  * <p>
  * 
- * This is a layout class that arranges widgets in a grid, to span the entire
- * area of the parent container. Each grid location (row, column) may contain
- * one widget or nested layout. Horizontal and vertical space are divided so
- * that each non-stretchable column/row is given its preferred size (if
- * possible) and the remaining space is divided according to stretch factors
- * among the columns/rows.
+ * This layout manager arranges widgets in a grid.
  * <p>
- * The preferred width/height of a column/row is based on the size the widgets
- * need in order to not require a scrollbar.
+ * Each grid cell (row, column) may contain one widget or nested layout.
+ * Horizontal and vertical space are divided so that each non-stretchable
+ * column/row is given its preferred size (if possible) and the remaining space
+ * is divided according to stretch factors among the columns/rows. If not all
+ * columns/rows can be given their preferred size (there is not enough room),
+ * then columns/rows are given a smaller size (down to a minimum size based on
+ * widget minimum sizes). If necessary, the container (or parent layout) of this
+ * layout is resized to meet minimum size requirements.
+ * <p>
+ * The preferred width/height of a column/row is based on the natural size of
+ * the widgets, where they present their contents without overflowing.
+ * {@link WWidget#resize(WLength width, WLength height) WWidget#resize()} or
+ * (CSS <code>width</code>, <code>height</code> properties) can be used to
+ * adjust the preferred size of a widget.
  * <p>
  * The minimum width/height of a column/row is based on the minimum dimensions
  * of contained widgets or nested layouts. The default minimum height and width
  * for a widget is 0. It can be specified using
  * {@link WWidget#setMinimumSize(WLength width, WLength height)
- * WWidget#setMinimumSize()} or using CSS min-width and min-height properties.
+ * WWidget#setMinimumSize()} or using CSS <code>min-width</code> and
+ * <code>min-height</code> properties.
  * <p>
  * You should use
  * {@link WContainerWidget#setOverflow(WContainerWidget.Overflow value, EnumSet orientation)
  * WContainerWidget::setOverflow(OverflowAuto)} or use a {@link WScrollArea} to
  * automatically show scrollbars for widgets inserted in the layout to cope with
- * sizes that are smaller than their preferred size.
+ * a size set by the layout manager that is smaller than the preferred size.
+ * <p>
+ * When the container of a layout manager has a maximum size set using
+ * {@link WWidget#setMaximumSize(WLength width, WLength height)
+ * WWidget#setMaximumSize()}, then the size of the container will be based on
+ * the preferred size of the contents, up to this maximum size, instead of the
+ * default behaviour of constraining the size of the children based on the size
+ * of the container.
  * <p>
  * A layout manager may provide resize handles between columns or rows which
  * allow the user to change the automatic layout provided by the layout manager
@@ -592,6 +607,10 @@ public class WGridLayout extends WLayout {
 	 * of <i>enabled</i>.
 	 * <p>
 	 * The default value is <i>false</i>.
+	 * <p>
+	 * If an <code>initialSize</code> is given (that is not {@link WLength#Auto}
+	 * ), then this size is used for the width of the column, overriding the
+	 * width it would be given by the layout manager.
 	 */
 	public void setColumnResizable(int column, boolean enabled,
 			WLength initialSize) {
@@ -645,6 +664,10 @@ public class WGridLayout extends WLayout {
 	 * <i>enabled</i>.
 	 * <p>
 	 * The default value is <i>false</i>.
+	 * <p>
+	 * If an <code>initialSize</code> is given (that is not {@link WLength#Auto}
+	 * ), then this size is used for the height of the row, overriding the
+	 * height it would be given by the layout manager.
 	 */
 	public void setRowResizable(int row, boolean enabled, WLength initialSize) {
 		this.expand(row, 0, 1, 0);

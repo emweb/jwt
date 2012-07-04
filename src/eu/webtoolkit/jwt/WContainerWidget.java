@@ -197,28 +197,20 @@ public class WContainerWidget extends WInteractWidget {
 	 * that were part of the previous layout to the new layout, or delete them,
 	 * to avoid memory leaks.
 	 * <p>
-	 * The layout manager arranges children in the entire width and height of
-	 * the container. This is equivalent to
-	 * {@link WContainerWidget#setLayout(WLayout layout, EnumSet alignment)
-	 * setLayout(layout, AlignJustify)}
-	 * <p>
 	 * 
 	 * @see WContainerWidget#getLayout()
-	 * @see WContainerWidget#setLayout(WLayout layout, EnumSet alignment)
 	 */
 	public void setLayout(WLayout layout) {
 		this.setLayout(layout, EnumSet.of(AlignmentFlag.AlignJustify));
 	}
 
 	/**
-	 * Sets a layout manager for the container.
+	 * Sets a layout manager for the container (<b>deprecated</b>).
 	 * <p>
 	 * The <code>alignment</code> argument determines how the layout is aligned
 	 * inside the container. By default, the layout manager arranges children
 	 * over the entire width and height of the container, corresponding to a
-	 * value of AlignJustify. This requires that the container has a specified
-	 * height (either because it is managed by another layout manager, is the
-	 * root container widget, or has a height set).
+	 * value of AlignJustify.
 	 * <p>
 	 * In general, <code>alignment</code> is the logical OR of a horizontal and
 	 * a vertical flag:
@@ -231,7 +223,7 @@ public class WContainerWidget extends WInteractWidget {
 	 * {@link AlignmentFlag#AlignTop}.</li>
 	 * </ul>
 	 * <p>
-	 * When using a horizontal alingment different from
+	 * When using a horizontal alignment different from
 	 * {@link AlignmentFlag#AlignJustify}, and a vertical alignment different
 	 * from &apos;0&apos;, the widget is sized in that direction to fit the
 	 * contents, instead of the contents being adjusted to the widget size. This
@@ -239,17 +231,16 @@ public class WContainerWidget extends WInteractWidget {
 	 * direction and when the layout manager does not contain any widgets that
 	 * wish to consume all remaining space in that direction.
 	 * <p>
-	 * Only a single layout manager may be set. If you want to replace the
-	 * current layout manager, you have to erase all contents first using
-	 * {@link WContainerWidget#clear() clear()}, which also deletes the layout
-	 * manager.
-	 * <p>
-	 * Note that you can nest layout managers inside each other, to create a
-	 * complex layout hierarchy.
-	 * <p>
 	 * The widget will take ownership of <code>layout</code>.
 	 * <p>
 	 * 
+	 * @deprecated using {@link WContainerWidget#setLayout(WLayout layout)
+	 *             setLayout()} instead, use spacers or a nested layout to
+	 *             control the overall alignment of the layout contents within
+	 *             the container, and use
+	 *             {@link WWebWidget#setMaximumSize(WLength width, WLength height)
+	 *             WWebWidget#setMaximumSize()} (if needed) to let the layout
+	 *             contents determine the size of the container.
 	 * @see WContainerWidget#getLayout()
 	 */
 	public void setLayout(WLayout layout, EnumSet<AlignmentFlag> alignment) {
@@ -283,7 +274,7 @@ public class WContainerWidget extends WInteractWidget {
 	}
 
 	/**
-	 * Sets a layout manager for the container.
+	 * Sets a layout manager for the container (<b>deprecated</b>).
 	 * <p>
 	 * Calls {@link #setLayout(WLayout layout, EnumSet alignment)
 	 * setLayout(layout, EnumSet.of(alignmen, alignment))}

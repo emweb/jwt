@@ -62,13 +62,13 @@ public class ItemDataRole {
 	 */
 	public final static int LinkRole = 6;
 	/**
+	 * Role for mime type information.
+	 */
+	public final static int MimeTypeRole = 7;
+	/**
 	 * Level in aggregation, for header data.
 	 */
 	public final static int LevelRole = 8;
-	/**
-	 * Marker size (for {@link eu.webtoolkit.jwt.chart.WCartesianChart}).
-	 */
-	public final static int MarkerScaleFactorRole = 15;
 	/**
 	 * Marker pen color (for {@link eu.webtoolkit.jwt.chart.WCartesianChart}).
 	 */
@@ -77,6 +77,10 @@ public class ItemDataRole {
 	 * Marker brush color (for {@link eu.webtoolkit.jwt.chart.WCartesianChart}).
 	 */
 	public final static int MarkerBrushColorRole = 17;
+	/**
+	 * Marker size (for {@link eu.webtoolkit.jwt.chart.WCartesianChart}).
+	 */
+	public final static int MarkerScaleFactorRole = 20;
 	/**
 	 * Bar pen color (for {@link eu.webtoolkit.jwt.chart.WCartesianChart}).
 	 */
@@ -89,8 +93,4 @@ public class ItemDataRole {
 	 * First role reserved for user purposes.
 	 */
 	public final static int UserRole = 32;
-	/**
-	 * Role for mime type.
-	 */
-	public final static int MimeTypeRole = 33;
 }
