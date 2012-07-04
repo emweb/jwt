@@ -52,7 +52,7 @@ public enum MarkerType {
 	 */
 	TriangleMarker,
 	/**
-	 * Mark points using a custume icon.
+	 * Mark points using a custom marker.
 	 */
 	CustomMarker;
 

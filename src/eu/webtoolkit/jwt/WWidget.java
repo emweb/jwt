@@ -205,19 +205,32 @@ public abstract class WWidget extends WObject {
 	/**
 	 * Resizes the widget.
 	 * <p>
-	 * Specify a new size for this widget, by specifying width and height. By
-	 * default a widget has automatic width and height, see
-	 * {@link WLength#isAuto() WLength#isAuto()}.
+	 * Specifies a fixed size for this widget, setting CSS <code>width</code>
+	 * and <code>height</code> properties. By default a widget has automatic
+	 * width and height, which sets a size for the widget following CSS rules.
 	 * <p>
-	 * This applies to CSS-based layout, and only
-	 * {@link WWidget#setInline(boolean inlined) block} widgets can be given a
-	 * size reliably.
+	 * When the widget is not managed by a layout manager, the automatic
+	 * (natural) size of a widget depends on whether they widget is a
+	 * <i>block</i> or <i>inline</i> widget:
+	 * <ul>
+	 * <li>a <i>block</i> widget takes by default the width of the parent, and
+	 * the height that it needs based on its contents</li>
+	 * <li>an <i>inline</i> widget takes the width and height that it needs
+	 * based on its contents (possibly wrapping over multiple lines). The width
+	 * and height of an inline widget cannot be changed (by the letter of CSS,
+	 * although most browsers will react to it in varying ways).</li>
+	 * </ul>
 	 * <p>
-	 * When inserted in a layout manager, the widget may be informed about its
-	 * current size using {@link WWidget#setLayoutSizeAware(boolean aware)
-	 * setLayoutSizeAware()}. If you have defined a
-	 * <code>&quot;wtResize()&quot;</code> JavaScript method for the widget,
-	 * then this method will also be called. operation.
+	 * When inserted in a layout manager, the size set will be used as a
+	 * widget&apos;s preferred size, but the widget may be given a different
+	 * size by the layout manager based on available space and stretch factors.
+	 * The actual size given by a layout manager may be retrieved by making the
+	 * widget &quot;layout size aware&quot;, using
+	 * {@link WWidget#setLayoutSizeAware(boolean aware) setLayoutSizeAware()}.
+	 * If you have defined a <code>&quot;wtResize()&quot;</code> JavaScript
+	 * method for the widget, then this method will also be called.
+	 * <p>
+	 * The default width and height of a widget is {@link WLength#Auto}.
 	 * <p>
 	 * 
 	 * @see WWidget#getWidth()
@@ -314,14 +327,16 @@ public abstract class WWidget extends WObject {
 	/**
 	 * Sets a minimum size.
 	 * <p>
-	 * Specify a minimum size for this widget.
+	 * Specifies a minimum size for this widget, setting CSS
+	 * <code>min-width</code> and <code>min-height</code> properties.
 	 * <p>
 	 * The default minimum width and height is 0. The special value
 	 * {@link WLength#Auto} indicates that the initial width is used as minimum
-	 * size.
+	 * size. A {@link WLength.Unit#Percentage} size should not be used, as this
+	 * is (in virtually all cases) undefined behaviour.
 	 * <p>
-	 * When the widget size is actively managed (using e.g. a layout manager),
-	 * these sizes are taken into account.
+	 * When the widget is inserted in a layout manager, then the minimum size
+	 * will be taken into account.
 	 * <p>
 	 * 
 	 * @see WWidget#resize(WLength width, WLength height)
@@ -359,10 +374,18 @@ public abstract class WWidget extends WObject {
 	/**
 	 * Sets a maximum size.
 	 * <p>
-	 * Specifies a maximum size for this widget.
+	 * Specifies a maximum size for this widget, setting CSS
+	 * <code>max-width</code> and <code>max-height</code> properties.
 	 * <p>
-	 * The default maximum width and height are {@link WLength#Auto}, indicating
-	 * no maximum size.
+	 * The default the maximum width and height are {@link WLength#Auto},
+	 * indicating no maximum size. A {@link WLength.Unit#Percentage} size should
+	 * not be used, as this is (in virtually all cases) undefined behaviour.
+	 * <p>
+	 * When the widget is a container widget that contains a layout manager,
+	 * then setting a maximum size will have the effect of letting the size of
+	 * the container to reflect the preferred size of the contents (rather than
+	 * constraining the size of the children based on the size of the
+	 * container), up to the specified maximum size.
 	 * <p>
 	 * 
 	 * @see WWidget#resize(WLength width, WLength height)

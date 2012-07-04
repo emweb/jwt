@@ -184,18 +184,14 @@ public class WChart2DRenderer {
 		this.tildeEndMarker_.moveTo(-15, -(this.segmentMargin_ - 20));
 		this.tildeEndMarker_.lineTo(15, -(this.segmentMargin_ - 10));
 		if (!this.isInitLayout()) {
-			logger
-					.error(new StringWriter().append(
-							"init layout failed Maybe padding is too large")
-							.toString());
+			logger.error(new StringWriter().append(
+					"Chart layout failed: chart area is too small ?")
+					.toString());
 			return;
 		}
-		System.err.append(String.valueOf(this.chartArea_.getWidth())).append(
-				" ").append(String.valueOf(this.chartArea_.getHeight()))
-				.append('\n');
 		if (this.chartArea_.getWidth() < 5 || this.chartArea_.getHeight() < 5) {
 			logger.error(new StringWriter().append(
-					"Chart area is to small. Maybe padding is too large")
+					"Chart layout failed: chart area is too small ?")
 					.toString());
 			return;
 		}
