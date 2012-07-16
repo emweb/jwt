@@ -224,7 +224,6 @@ public class RegistrationWidget extends WTemplateFormView {
 		this.updateModel(this.model_);
 		if (this.validate()) {
 			User user = this.model_.doRegister();
-			user = this.model_.getUsers().addUser(user);
 			if (user.isValid()) {
 				this.registerUserDetails(user);
 				this.model_.getLogin().login(user);

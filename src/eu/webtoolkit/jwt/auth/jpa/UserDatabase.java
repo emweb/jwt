@@ -1,8 +1,6 @@
 package eu.webtoolkit.jwt.auth.jpa;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
@@ -15,18 +13,15 @@ import eu.webtoolkit.jwt.auth.AbstractUserDatabase;
 import eu.webtoolkit.jwt.auth.PasswordHash;
 import eu.webtoolkit.jwt.auth.Token;
 import eu.webtoolkit.jwt.auth.User;
-import eu.webtoolkit.jwt.auth.AbstractUserDatabase.Transaction;
 
 /**
  * A JPA implementation for user authentication data.
  */
 public class UserDatabase extends AbstractUserDatabase {
-	private Set<AuthInfo> preDbAuthInfos = new HashSet<AuthInfo>();
 	private int openTransactions = 0;
 	private boolean commitTransaction = true;
 	
 	private static Logger logger = LoggerFactory.getLogger(UserDatabase.class);
-	
 
 	/**
 	 * Constructor
@@ -50,12 +45,6 @@ public class UserDatabase extends AbstractUserDatabase {
 
 	private AuthInfo findAuthInfo(String id) {
 		long id_long = Long.parseLong(id);
-		
-		for (AuthInfo info : preDbAuthInfos) {
-			if (info.getId() == id_long)
-				return info;
-		}
-		
 		return entityManager_.find(AuthInfo.class, id_long);
 	}
 
@@ -126,7 +115,7 @@ public class UserDatabase extends AbstractUserDatabase {
 	@Override
 	public User registerNew() {
 		AuthInfo ai = new AuthInfo();
-		preDbAuthInfos.add(ai);
+		entityManager_.persist(ai);
 
 		return new User(ai.getId() + "", this);
 	}
@@ -163,6 +152,7 @@ public class UserDatabase extends AbstractUserDatabase {
 			AuthIdentity a_id = new AuthIdentity(provider, identity);
 			ai.getAuthIdentities().add(a_id);
 			a_id.setAuthInfo(ai);
+			entityManager_.persist(ai);
 		}
 	}
 
@@ -263,19 +253,9 @@ public class UserDatabase extends AbstractUserDatabase {
 				.getDate());
 		ai.getAuthTokens().add(at);
 		at.setAuthInfo(ai);
+		entityManager_.persist(at);
 	}
 	
-	@Override 
-	public User addUser(User user) {
-		AuthInfo ai = find(user);
-		if (ai != null) {
-			preDbAuthInfos.remove(ai);
-			entityManager_.persist(ai);
-			entityManager_.flush();
-		}
-		return find(ai);
-	}
-
 	@Override
 	public void removeAuthToken(User user, String hash) {
 		String q = "delete from AuthToken a_token"

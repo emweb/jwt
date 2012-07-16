@@ -269,11 +269,13 @@ public class WApplication extends WObject {
 		this.styleSheet_.addRule("span.Wt-disabled", "color: gray;");
 		this.styleSheet_.addRule("fieldset.Wt-disabled legend", "color: gray;");
 		this.styleSheet_
-				.addRule(".unselectable",
-						"-moz-user-select:-moz-none;-khtml-user-select: none;user-select: none;");
+				.addRule(
+						".unselectable",
+						"-moz-user-select:-moz-none;-khtml-user-select: none;-webkit-user-select: none;user-select: none;");
 		this.styleSheet_
-				.addRule(".selectable",
-						"-moz-user-select: text;-khtml-user-select: normal;user-select: text;");
+				.addRule(
+						".selectable",
+						"-moz-user-select: text;-khtml-user-select: normal;-webkit-user-select: text;user-select: text;");
 		this.styleSheet_
 				.addRule(".Wt-sbspacer",
 						"float: right; width: 16px; height: 1px;border: 0px; display: none;");

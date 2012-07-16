@@ -50,7 +50,7 @@ class DomElement {
 		this.javaScriptEvenWhenDeleted_ = "";
 		this.var_ = "";
 		this.attributes_ = new HashMap<String, String>();
-		this.properties_ = new HashMap<Property, String>();
+		this.properties_ = new TreeMap<Property, String>();
 		this.eventHandlers_ = new HashMap<String, DomElement.EventHandler>();
 		this.childrenToAdd_ = new ArrayList<DomElement.ChildInsertion>();
 		this.childrenToSave_ = new ArrayList<String>();
@@ -196,7 +196,7 @@ class DomElement {
 		this.properties_.remove(property);
 	}
 
-	public void setProperties(Map<Property, String> properties) {
+	public void setProperties(SortedMap<Property, String> properties) {
 		for (Iterator<Map.Entry<Property, String>> i_it = properties.entrySet()
 				.iterator(); i_it.hasNext();) {
 			Map.Entry<Property, String> i = i_it.next();
@@ -204,7 +204,7 @@ class DomElement {
 		}
 	}
 
-	public Map<Property, String> getProperties() {
+	public SortedMap<Property, String> getProperties() {
 		return this.properties_;
 	}
 
@@ -462,12 +462,14 @@ class DomElement {
 			return this.var_;
 		case Update: {
 			WApplication app = WApplication.getInstance();
+			boolean childrenUpdated = false;
 			if (this.mode_ == DomElement.Mode.ModeUpdate
 					&& this.numManipulations_ == 1) {
 				for (int i = 0; i < this.updatedChildren_.size(); ++i) {
 					DomElement child = this.updatedChildren_.get(i);
 					child.asJavaScript(out, DomElement.Priority.Update);
 				}
+				childrenUpdated = true;
 				if (this.properties_.get(Property.PropertyStyleDisplay) != null) {
 					String style = this.properties_
 							.get(Property.PropertyStyleDisplay);
@@ -557,9 +559,11 @@ class DomElement {
 						"').replaceWith(c").append(this.var_).append((int) i)
 						.append(");");
 			}
-			for (int i = 0; i < this.updatedChildren_.size(); ++i) {
-				DomElement child = this.updatedChildren_.get(i);
-				child.asJavaScript(out, DomElement.Priority.Update);
+			if (!childrenUpdated) {
+				for (int i = 0; i < this.updatedChildren_.size(); ++i) {
+					DomElement child = this.updatedChildren_.get(i);
+					child.asJavaScript(out, DomElement.Priority.Update);
+				}
 			}
 			return this.var_;
 		}
@@ -661,7 +665,7 @@ class DomElement {
 				String l = this.properties_.get(Property.PropertyClass);
 				if (l != null) {
 					out.append(l);
-					Map<Property, String> map = this.properties_;
+					SortedMap<Property, String> map = this.properties_;
 					map.remove(Property.PropertyClass);
 				}
 				out.append('"');
@@ -1476,7 +1480,7 @@ class DomElement {
 	private String var_;
 	private boolean declared_;
 	private Map<String, String> attributes_;
-	private Map<Property, String> properties_;
+	private SortedMap<Property, String> properties_;
 	private Map<String, DomElement.EventHandler> eventHandlers_;
 
 	static class ChildInsertion {

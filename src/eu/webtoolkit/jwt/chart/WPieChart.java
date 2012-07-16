@@ -385,6 +385,8 @@ public class WPieChart extends WAbstractChart {
 			if (!(label.length() == 0)) {
 				WText l = new WText(label);
 				l.setPadding(new WLength(5), EnumSet.of(Side.Left));
+				l.setToolTip(StringUtils.asString(this.getModel().getData(
+						index, this.dataColumn_, ItemDataRole.ToolTipRole)));
 				legendItem.addWidget(l);
 			}
 		}

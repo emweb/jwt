@@ -118,25 +118,26 @@ public class WTimer extends WObject {
 	 * until {@link WTimer#stop() stop()} is called.
 	 */
 	public void start() {
-		if (!this.active_) {
-			WApplication app = WApplication.getInstance();
-			if (app != null && app.getTimerRoot() != null) {
-				app.getTimerRoot().addWidget(this.timerWidget_);
-			}
-			this.active_ = true;
-			this.timeout_ = new Time().add(this.interval_);
-			boolean jsRepeat = !this.timeout().isExposedSignal()
-					&& !this.singleShot_;
-			this.timerWidget_.timerStart(jsRepeat);
-			if (!this.timeoutConnected_) {
-				this.timeout().addListener(this,
-						new Signal1.Listener<WMouseEvent>() {
-							public void trigger(WMouseEvent e1) {
-								WTimer.this.gotTimeout();
-							}
-						});
-				this.timeoutConnected_ = true;
-			}
+		if (this.active_) {
+			this.stop();
+		}
+		WApplication app = WApplication.getInstance();
+		if (app != null && app.getTimerRoot() != null) {
+			app.getTimerRoot().addWidget(this.timerWidget_);
+		}
+		this.active_ = true;
+		this.timeout_ = new Time().add(this.interval_);
+		boolean jsRepeat = !this.timeout().isExposedSignal()
+				&& !this.singleShot_;
+		this.timerWidget_.timerStart(jsRepeat);
+		if (!this.timeoutConnected_) {
+			this.timeout().addListener(this,
+					new Signal1.Listener<WMouseEvent>() {
+						public void trigger(WMouseEvent e1) {
+							WTimer.this.gotTimeout();
+						}
+					});
+			this.timeoutConnected_ = true;
 		}
 	}
 

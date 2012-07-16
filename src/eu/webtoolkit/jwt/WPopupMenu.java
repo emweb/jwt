@@ -474,11 +474,8 @@ public class WPopupMenu extends WCompositeWidget {
 		if (w == this.location_) {
 			return false;
 		}
-		WContainerWidget c = this.getContents();
-		for (int i = 0; i < c.getCount(); ++i) {
-			WPopupMenuItem item = ((c.getWidget(i)) instanceof WPopupMenuItem ? (WPopupMenuItem) (c
-					.getWidget(i))
-					: null);
+		for (int i = 0; i < this.getCount(); ++i) {
+			WPopupMenuItem item = this.itemAt(i);
 			if (item.getPopupMenu() != null) {
 				if (item.getPopupMenu().isExposed(w)) {
 					return true;
@@ -578,10 +575,22 @@ public class WPopupMenu extends WCompositeWidget {
 		if (this.autoHideDelay_ >= 0) {
 			if (!this.cancel_.isConnected()) {
 				app.loadJavaScript("js/WPopupMenu.js", wtjs1());
-				this.setJavaScriptMember(" WPopupMenu",
-						"new Wt3_2_2.WPopupMenu(" + app.getJavaScriptClass()
-								+ "," + this.getJsRef() + ","
-								+ String.valueOf(this.autoHideDelay_) + ");");
+				List<WPopupMenu> subMenus = new ArrayList<WPopupMenu>();
+				this.getSubMenus(subMenus);
+				StringBuilder s = new StringBuilder();
+				s.append("new Wt3_2_2.WPopupMenu(").append(
+						app.getJavaScriptClass()).append(',').append(
+						this.getJsRef()).append(',')
+						.append(this.autoHideDelay_).append(",[");
+				for (int i = 0; i < subMenus.size(); ++i) {
+					if (i != 0) {
+						s.append(',');
+					}
+					s.append(WWebWidget
+							.jsStringLiteral(subMenus.get(i).getId()));
+				}
+				s.append("]);");
+				this.setJavaScriptMember(" WPopupMenu", s.toString());
 				this.cancel_.addListener(this, new Signal.Listener() {
 					public void trigger() {
 						WPopupMenu.this.done();
@@ -592,12 +601,28 @@ public class WPopupMenu extends WCompositeWidget {
 	}
 
 	void renderOutAll() {
-		WContainerWidget c = this.getContents();
-		for (int i = 0; i < c.getCount(); ++i) {
-			WPopupMenuItem item = ((c.getWidget(i)) instanceof WPopupMenuItem ? (WPopupMenuItem) (c
-					.getWidget(i))
-					: null);
-			item.renderOut();
+		for (int i = 0; i < this.getCount(); ++i) {
+			this.itemAt(i).renderOut();
+		}
+	}
+
+	private int getCount() {
+		return this.getContents().getCount();
+	}
+
+	private WPopupMenuItem itemAt(int index) {
+		return ((this.getContents().getWidget(index)) instanceof WPopupMenuItem ? (WPopupMenuItem) (this
+				.getContents().getWidget(index))
+				: null);
+	}
+
+	private void getSubMenus(List<WPopupMenu> result) {
+		for (int i = 0; i < this.getCount(); ++i) {
+			WPopupMenuItem item = this.itemAt(i);
+			if (item.getPopupMenu() != null) {
+				result.add(item.getPopupMenu());
+				item.getPopupMenu().getSubMenus(result);
+			}
 		}
 	}
 
@@ -606,6 +631,6 @@ public class WPopupMenu extends WCompositeWidget {
 				JavaScriptScope.WtClassScope,
 				JavaScriptObjectType.JavaScriptConstructor,
 				"WPopupMenu",
-				"function(e,b,c){function f(){e.emit(b,\"cancel\")}jQuery.data(b,\"obj\",this);var a=null,d=false;this.setHidden=function(){a&&clearTimeout(a);a=null};c>=0&&$(b).parent().find(\".Wt-popupmenu\").mouseleave(function(){if(d){clearTimeout(a);a=setTimeout(f,c)}}).mouseenter(function(){d=true;clearTimeout(a)})}");
+				"function(g,c,d,h){function k(){g.emit(c.id,\"cancel\")}function i(){--b;if(b==0){clearTimeout(a);a=setTimeout(k,d)}}function l(){++b;clearTimeout(a)}function j(e){$(e).mouseleave(i).mouseenter(l)}jQuery.data(c,\"obj\",this);var m=g.WT,a=null,b=0;this.setHidden=function(e){if(a){clearTimeout(a);a=null}if(d>0&&!e){b=1;i()}b=0};if(d>=0){j(c);for(var f=0,n=h.length;f<n;++f)j(m.$(h[f]))}}");
 	}
 }
