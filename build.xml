@@ -199,7 +199,7 @@
       <fileset dir="${mvn.dir}/${javadoc.jwt-auth.dir}" />
     </jar>
 
-    <jar jarfile="dist/jwt-auth-${proj.version}-sources.jar">
+    <jar jarfile="dist/jwt-${proj.version}-sources.jar">
       <fileset dir="${src.java.dir}" defaultexcludes="yes">
 	<include name="eu/webtoolkit/jwt/*.java"/>
 	<include name="eu/webtoolkit/jwt/*.xml"/>
@@ -208,7 +208,7 @@
 	<include name="eu/webtoolkit/jwt/utils/*.java"/>
       </fileset>
     </jar>
-    <jar jarfile="dist/jwt-${proj.version}-sources.jar">
+    <jar jarfile="dist/jwt-auth-${proj.version}-sources.jar">
       <fileset dir="${src.java.dir}" defaultexcludes="yes">
 	<include name="eu/webtoolkit/jwt/auth/*.java"/>
 	<include name="eu/webtoolkit/jwt/auth/jpa/*.java"/>
