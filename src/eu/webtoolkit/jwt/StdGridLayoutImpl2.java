@@ -659,10 +659,10 @@ class StdGridLayoutImpl2 extends StdLayoutImpl {
 							case AlignTop:
 								align |= 0x10;
 								break;
-							case AlignMiddle:
+							case AlignBottom:
 								align |= 0x20;
 								break;
-							case AlignBottom:
+							case AlignMiddle:
 								align |= 0x40;
 								break;
 							default:
