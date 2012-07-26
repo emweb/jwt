@@ -30,3 +30,45 @@ Demos, examples
 ---------------
 
 The homepage contains [various examples](http://www.webtoolkit.eu/jwt/examples).
+
+Maven
+-----
+
+The ant build file has a separate target to generate maven pom files:
+
+    ant mvn
+
+To install the two artifacts in your local repository, do:
+
+    mvn install:install-file -Dfile=dist/jwt-3.2.2.jar -DpomFile=jwt-3.2.2.pom    
+    mvn install:install-file -Dfile=dist/jwt-auth-3.2.2.jar -DpomFile=jwt-auth-3.2.2.pom
+
+The corresponding dependency blocks are:
+
+    <dependency>
+      <groupId>eu.webtoolkit</groupId>
+      <artifactId>jwt</artifactId>
+      <version>3.2.2</version>
+    </dependency>
+
+    <dependency>
+      <groupId>eu.webtoolkit</groupId>
+      <artifactId>jwt-auth</artifactId>
+      <version>3.2.2</version>
+    </dependency>
+    
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>servlet-api</artifactId>
+      <version>2.5</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.geronimo.javamail</groupId>
+      <artifactId>geronimo-javamail_1.4_mail</artifactId>
+      <version>1.8.1</version>
+      <scope>provided</scope>
+    </dependency>
+
+(Depending on the J2EE container, javax.mail may be included and provided by the container,
+ and then the last dependency for org.apache.geronimo.javamail should be dropped)
