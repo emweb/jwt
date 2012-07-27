@@ -1604,7 +1604,7 @@ public abstract class WWebWidget extends WWidget {
 		this.transientImpl_ = null;
 	}
 
-	protected boolean domCanBeSaved() {
+	boolean domCanBeSaved() {
 		return true;
 	}
 

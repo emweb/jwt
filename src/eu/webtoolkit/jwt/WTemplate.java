@@ -275,7 +275,7 @@ public class WTemplate extends WInteractWidget {
 	}
 
 	/**
-	 * A collection of predefined functions.
+	 * Type that holds predefined functions.
 	 * <p>
 	 * 
 	 * @see WTemplate#addFunction(String name, WTemplate.Function function)
@@ -284,13 +284,19 @@ public class WTemplate extends WInteractWidget {
 		private static Logger logger = LoggerFactory
 				.getLogger(FunctionsList.class);
 
-		public FunctionsList() {
+		/**
+		 * A pre-defined {@link WTemplate.FunctionsList#tr} function.
+		 */
+		public WTemplate.TrFunction tr;
+		/**
+		 * A pre-defined {@link WTemplate.FunctionsList#id} function.
+		 */
+		public WTemplate.IdFunction id;
+
+		private FunctionsList() {
 			this.tr = new WTemplate.TrFunction();
 			this.id = new WTemplate.IdFunction();
 		}
-
-		public WTemplate.Function tr;
-		public WTemplate.Function id;
 	}
 
 	/**
@@ -1167,5 +1173,8 @@ public class WTemplate extends WInteractWidget {
 	}
 
 	static String DropShadow_x1_x2 = "<span class=\"Wt-x1\"><span class=\"Wt-x1a\"></span></span><span class=\"Wt-x2\"><span class=\"Wt-x2a\"></span></span>";
+	/**
+	 * A collection of predefined functions.
+	 */
 	public static WTemplate.FunctionsList Functions = new WTemplate.FunctionsList();
 }

@@ -25,20 +25,32 @@ import org.slf4j.LoggerFactory;
 public class WException extends RuntimeException {
 	private static Logger logger = LoggerFactory.getLogger(WException.class);
 
+	/**
+	 * Creates an exception.
+	 */
 	public WException(String what) {
 		super();
 		this.what_ = what;
 	}
 
+	/**
+	 * Creates an exception.
+	 */
 	public WException(String what, RuntimeException wrapped) {
 		super();
 		this.what_ = what + "\nCaused by exception: " + wrapped.toString();
 	}
 
+	/**
+	 * Returns the message.
+	 */
 	public String toString() {
 		return this.what_;
 	}
 
+	/**
+	 * Sets the message.
+	 */
 	public void setMessage(String message) {
 		this.what_ = message;
 	}

@@ -155,6 +155,7 @@ public class WCartesianChart extends WAbstractChart {
 		this.legendFont_ = new WFont();
 		this.legendBorder_ = new WPen(PenStyle.NoPen);
 		this.legendBackground_ = new WBrush(BrushStyle.NoBrush);
+		this.axisPadding_ = 5;
 		this.init();
 	}
 

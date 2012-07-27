@@ -20,7 +20,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Class for internal use.
+ * Javascript preamble.
+ * <p>
+ * 
+ * This is an internal {@link } type.
  */
 public class WJavaScriptPreamble {
 	private static Logger logger = LoggerFactory

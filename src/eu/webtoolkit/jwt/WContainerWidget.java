@@ -1131,18 +1131,6 @@ public class WContainerWidget extends WInteractWidget {
 				: null);
 	}
 
-	protected void layoutChanged(boolean rerender, boolean deleted) {
-		if (rerender) {
-			this.flags_.set(BIT_LAYOUT_NEEDS_RERENDER);
-		} else {
-			this.flags_.set(BIT_LAYOUT_NEEDS_UPDATE);
-		}
-		this.repaint(EnumSet.of(RepaintFlag.RepaintInnerHtml));
-		if (deleted) {
-			this.layout_ = null;
-		}
-	}
-
 	private void propagateLayoutItemsOk(WLayoutItem item) {
 		if (!(item != null)) {
 			return;
@@ -1158,6 +1146,18 @@ public class WContainerWidget extends WInteractWidget {
 				WWidget w = item.getWidget();
 				w.getWebWidget().propagateRenderOk(true);
 			}
+		}
+	}
+
+	void layoutChanged(boolean rerender, boolean deleted) {
+		if (rerender) {
+			this.flags_.set(BIT_LAYOUT_NEEDS_RERENDER);
+		} else {
+			this.flags_.set(BIT_LAYOUT_NEEDS_UPDATE);
+		}
+		this.repaint(EnumSet.of(RepaintFlag.RepaintInnerHtml));
+		if (deleted) {
+			this.layout_ = null;
 		}
 	}
 

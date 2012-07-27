@@ -266,8 +266,8 @@ public abstract class OAuthService {
 	 * While the current OAuth 2.0 draft mandates the use of POST, some
 	 * implementations (like Facebook) use URL-encoding and a GET request.
 	 * <p>
-	 * The default implementation returns Http::Post (corresponding to the
-	 * current draft).
+	 * The default implementation returns {@link } (corresponding to the current
+	 * draft).
 	 */
 	public Method getTokenRequestMethod() {
 		return Method.Post;

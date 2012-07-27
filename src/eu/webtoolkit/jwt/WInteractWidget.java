@@ -828,7 +828,7 @@ public abstract class WInteractWidget extends WWebWidget {
 	private static String ENTER_PRESS_SIGNAL = "M_enterpress";
 	private static String ESCAPE_PRESS_SIGNAL = "M_escapepress";
 	static String CLICK_SIGNAL = "click";
-	protected static String M_CLICK_SIGNAL = "M_click";
+	static String M_CLICK_SIGNAL = "M_click";
 	private static String DBL_CLICK_SIGNAL = "M_dblclick";
 	static String MOUSE_DOWN_SIGNAL = "M_mousedown";
 	static String MOUSE_UP_SIGNAL = "M_mouseup";

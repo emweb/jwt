@@ -300,7 +300,7 @@ public class WTextEdit extends WTextArea {
 		result.add(e);
 	}
 
-	protected boolean domCanBeSaved() {
+	boolean domCanBeSaved() {
 		return false;
 	}
 

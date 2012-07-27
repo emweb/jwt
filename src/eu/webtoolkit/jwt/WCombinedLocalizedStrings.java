@@ -56,6 +56,12 @@ public class WCombinedLocalizedStrings extends WLocalizedStrings {
 		this.localizedStrings_.add(resolver);
 	}
 
+	/**
+	 * Inserts a string resolver.
+	 * <p>
+	 * 
+	 * @see WCombinedLocalizedStrings#add(WLocalizedStrings resolver)
+	 */
 	public void insert(int index, WLocalizedStrings resolver) {
 		this.localizedStrings_.add(0 + index, resolver);
 	}

@@ -164,6 +164,8 @@ public abstract class WFormWidget extends WInteractWidget {
 	/**
 	 * Validates the field.
 	 * <p>
+	 * 
+	 * @see WFormWidget#validated()
 	 */
 	public WValidator.State validate() {
 		if (this.getValidator() != null) {
@@ -336,6 +338,14 @@ public abstract class WFormWidget extends WInteractWidget {
 		return this.voidEventSignal(FOCUS_SIGNAL, true);
 	}
 
+	/**
+	 * Signal emitted when the widget is being validated.
+	 * <p>
+	 * This signal may be useful to react to a changed validation state.
+	 * <p>
+	 * 
+	 * @see WFormWidget#validate()
+	 */
 	public Signal1<WValidator.Result> validated() {
 		return this.validated_;
 	}

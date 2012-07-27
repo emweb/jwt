@@ -767,6 +767,14 @@ public class WApplication extends WObject {
 		}
 	}
 
+	/**
+	 * Accesses the built-in resource bundle.
+	 * <p>
+	 * This is an internal function and should not be called directly.
+	 * <p>
+	 * 
+	 * @see WApplication#getLocalizedStrings()
+	 */
 	public WXmlLocalizedStrings getBuiltinLocalizedStrings() {
 		return (((this.localizedStrings_.getItems().get(this.localizedStrings_
 				.getItems().size() - 1)) instanceof WXmlLocalizedStrings ? (WXmlLocalizedStrings) (this.localizedStrings_
@@ -1912,35 +1920,34 @@ public class WApplication extends WObject {
 		setCookie(name, value, maxAge, domain, path, false);
 	}
 
-	public void setCookie(String name, String value, WDate expires,
-			String domain, String path, boolean secure) {
-		this.session_.getRenderer().setCookie(name, value, expires, domain,
-				path, secure);
-	}
-
-	public final void setCookie(String name, String value, WDate expires) {
-		setCookie(name, value, expires, "", "", false);
-	}
-
-	public final void setCookie(String name, String value, WDate expires,
-			String domain) {
-		setCookie(name, value, expires, domain, "", false);
-	}
-
-	public final void setCookie(String name, String value, WDate expires,
-			String domain, String path) {
-		setCookie(name, value, expires, domain, path, false);
-	}
-
+	/**
+	 * Removes a cookie.
+	 * <p>
+	 * 
+	 * @see WApplication#setCookie(String name, String value, int maxAge, String
+	 *      domain, String path, boolean secure)
+	 */
 	public void removeCookie(String name, String domain, String path) {
 		this.session_.getRenderer().setCookie(name, "", new WDate(1970, 1, 1),
 				domain, path, false);
 	}
 
+	/**
+	 * Removes a cookie.
+	 * <p>
+	 * Calls {@link #removeCookie(String name, String domain, String path)
+	 * removeCookie(name, "", "")}
+	 */
 	public final void removeCookie(String name) {
 		removeCookie(name, "", "");
 	}
 
+	/**
+	 * Removes a cookie.
+	 * <p>
+	 * Calls {@link #removeCookie(String name, String domain, String path)
+	 * removeCookie(name, domain, "")}
+	 */
 	public final void removeCookie(String name, String domain) {
 		removeCookie(name, domain, "");
 	}
@@ -2330,6 +2337,15 @@ public class WApplication extends WObject {
 		this.selectionEnd_ = selectionEnd;
 	}
 
+	/**
+	 * Loads an internal JavaScript file.
+	 * <p>
+	 * This is an internal function and should not be called directly.
+	 * <p>
+	 * 
+	 * @see WApplication#require(String uri, String symbol)
+	 * @see WApplication#doJavaScript(String javascript, boolean afterLoaded)
+	 */
 	public void loadJavaScript(String jsFile, WJavaScriptPreamble preamble) {
 		if (!this.isJavaScriptLoaded(preamble.name)) {
 			this.javaScriptLoaded_.add(jsFile);
@@ -2381,6 +2397,13 @@ public class WApplication extends WObject {
 		}
 	}
 
+	/**
+	 * Utility function to check if one path falls under another path.
+	 * <p>
+	 * This returns whether the <code>query</code> path matches the given
+	 * <code>path</code>, meaning that it is equal to that path or it specifies
+	 * a more specific sub path of that path.
+	 */
 	public static boolean pathMatches(String path, String query) {
 		if (query.equals(path)
 				|| path.length() > query.length()
@@ -2393,6 +2416,16 @@ public class WApplication extends WObject {
 		}
 	}
 
+	/**
+	 * Encodes an untrusted URL to prevent referer leaks.
+	 * <p>
+	 * This encodes an URL so that in case the session ID is present in the
+	 * current URL, this session ID does not leak to the refenced URL.
+	 * <p>
+	 * {@link } will safely handle URLs in the API (in {@link WImage} and
+	 * {@link WAnchor}) but you may want to use this function to encode URLs
+	 * which you use in {@link WTemplate} texts.
+	 */
 	public String encodeUntrustedUrl(String url) {
 		boolean needRedirect = url.indexOf("://") != -1
 				&& this.session_.hasSessionIdInUrl();

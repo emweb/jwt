@@ -857,6 +857,9 @@ public abstract class WWidget extends WObject {
 		removeStyleClass(styleClass, false);
 	}
 
+	/**
+	 * Toggles a CSS style class.
+	 */
 	public void toggleStyleClass(String styleClass, boolean add, boolean force) {
 		if (add) {
 			this.addStyleClass(styleClass, force);
@@ -865,6 +868,13 @@ public abstract class WWidget extends WObject {
 		}
 	}
 
+	/**
+	 * Toggles a CSS style class.
+	 * <p>
+	 * Calls
+	 * {@link #toggleStyleClass(String styleClass, boolean add, boolean force)
+	 * toggleStyleClass(styleClass, add, false)}
+	 */
 	public final void toggleStyleClass(String styleClass, boolean add) {
 		toggleStyleClass(styleClass, add, false);
 	}
