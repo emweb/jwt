@@ -502,7 +502,6 @@ public abstract class WPaintedWidget extends WInteractWidget {
 	int renderHeight_;
 
 	private void resizeCanvas(int width, int height) {
-		height -= 2;
 		if (this.renderWidth_ == width && this.renderHeight_ == height) {
 			return;
 		}

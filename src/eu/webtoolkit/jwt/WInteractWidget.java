@@ -558,7 +558,7 @@ public abstract class WInteractWidget extends WWebWidget {
 		if (updateKeyDown) {
 			List<DomElement.EventAction> actions = new ArrayList<DomElement.EventAction>();
 			if (enterPress != null) {
-				if (enterPress.isConnected()) {
+				if (enterPress.needsUpdate(all)) {
 					String extraJS = "";
 					if (!(app != null)) {
 						app = WApplication.getInstance();
@@ -578,7 +578,7 @@ public abstract class WInteractWidget extends WWebWidget {
 				enterPress.updateOk();
 			}
 			if (escapePress != null) {
-				if (escapePress.isConnected()) {
+				if (escapePress.needsUpdate(all)) {
 					actions.add(new DomElement.EventAction(
 							"(e.keyCode && e.keyCode == 27)", escapePress
 									.getJavaScript(), escapePress.encodeCmd(),
@@ -587,7 +587,7 @@ public abstract class WInteractWidget extends WWebWidget {
 				escapePress.updateOk();
 			}
 			if (keyDown != null) {
-				if (keyDown.isConnected()) {
+				if (keyDown.needsUpdate(all)) {
 					actions.add(new DomElement.EventAction("", keyDown
 							.getJavaScript(), keyDown.encodeCmd(), keyDown
 							.isExposedSignal()));
@@ -688,7 +688,7 @@ public abstract class WInteractWidget extends WWebWidget {
 			StringBuilder js = new StringBuilder();
 			js
 					.append("if($(o).hasClass('Wt-disabled')){Wt3_2_2.cancelEvent(e);return;}");
-			if (mouseDblClick != null && mouseDblClick.isConnected()) {
+			if (mouseDblClick != null && mouseDblClick.needsUpdate(all)) {
 				js.append("if(window.wtClickTimeout) {").append(
 						"clearTimeout(window.wtClickTimeout);").append(
 						"window.wtClickTimeout = null;");
@@ -719,7 +719,7 @@ public abstract class WInteractWidget extends WWebWidget {
 				}
 				js.append("},200);}");
 			} else {
-				if (mouseClick != null && mouseClick.isConnected()) {
+				if (mouseClick != null && mouseClick.needsUpdate(all)) {
 					js.append(mouseClick.getJavaScript());
 					if (mouseClick.isExposedSignal()) {
 						if (!(app != null)) {
