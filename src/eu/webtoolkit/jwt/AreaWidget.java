@@ -30,7 +30,8 @@ class AreaWidget extends WInteractWidget {
 	public void remove() {
 		if (this.facade_ != null) {
 			this.facade_.impl_ = null;
-			;
+			if (this.facade_ != null)
+				this.facade_.remove();
 		}
 		super.remove();
 	}
@@ -43,7 +44,7 @@ class AreaWidget extends WInteractWidget {
 		return this.facade_;
 	}
 
-	private WAbstractArea facade_;
+	WAbstractArea facade_;
 
 	void updateDom(DomElement element, boolean all) {
 		this.facade_.updateDom(element, all);
