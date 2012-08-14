@@ -222,7 +222,7 @@ public class WDateValidator extends WValidator {
 	 * Sets the date formats used to parse date strings.
 	 */
 	public void setFormats(List<String> formats) {
-		this.formats_ = formats;
+		Utils.copyList(formats, this.formats_);
 		this.repaint();
 	}
 

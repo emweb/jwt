@@ -357,6 +357,7 @@ public class WDatePicker extends WCompositeWidget {
 	private void createDefault() {
 		WImage icon = new WImage(WApplication.getResourcesUrl()
 				+ "calendar_edit.png");
+		icon.resize(new WLength(16), new WLength(16));
 		icon.setVerticalAlignment(AlignmentFlag.AlignMiddle);
 		WLineEdit lineEdit = new WLineEdit();
 		this.create(icon, lineEdit);
@@ -377,6 +378,7 @@ public class WDatePicker extends WCompositeWidget {
 		this.format_ = "dd/MM/yyyy";
 		this.layout_.setInline(true);
 		this.layout_.addWidget(displayWidget);
+		this.layout_.setAttributeValue("style", "white-space: nowrap");
 		String TEMPLATE = "${shadow-x1-x2}${calendar}<div style=\"text-align:center; margin-top:3px\">${close}</div>";
 		this.layout_.addWidget(this.popup_ = new WTemplate(
 				new WString(TEMPLATE)));

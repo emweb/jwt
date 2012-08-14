@@ -135,8 +135,7 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 
 	public void drawArc(WRectF rect, double startAngle, double spanAngle) {
 		this.finishPath();
-		if (rect.getWidth() < MathUtils.EPSILON
-				|| rect.getHeight() < MathUtils.EPSILON) {
+		if (rect.getWidth() < EPSILON || rect.getHeight() < EPSILON) {
 			return;
 		}
 		this.renderStateChanges();
@@ -564,43 +563,41 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 			WTransform.TRSRDecomposition d = new WTransform.TRSRDecomposition();
 			t.decomposeTranslateRotateScaleRotate(d);
 			if (!invert) {
-				if (Math.abs(d.dx) > MathUtils.EPSILON
-						|| Math.abs(d.dy) > MathUtils.EPSILON) {
+				if (Math.abs(d.dx) > EPSILON || Math.abs(d.dy) > EPSILON) {
 					s.append("ctx.translate(").append(MathUtils.round(d.dx, 3))
 							.append(',');
 					s.append(MathUtils.round(d.dy, 3)).append(");");
 				}
-				if (Math.abs(d.alpha1) > MathUtils.EPSILON) {
+				if (Math.abs(d.alpha1) > EPSILON) {
 					s.append("ctx.rotate(").append(String.valueOf(d.alpha1))
 							.append(");");
 				}
-				if (Math.abs(d.sx - 1) > MathUtils.EPSILON
-						|| Math.abs(d.sy - 1) > MathUtils.EPSILON) {
+				if (Math.abs(d.sx - 1) > EPSILON
+						|| Math.abs(d.sy - 1) > EPSILON) {
 					s.append("ctx.scale(").append(MathUtils.round(d.sx, 3))
 							.append(',');
 					s.append(MathUtils.round(d.sy, 3)).append(");");
 				}
-				if (Math.abs(d.alpha2) > MathUtils.EPSILON) {
+				if (Math.abs(d.alpha2) > EPSILON) {
 					s.append("ctx.rotate(").append(String.valueOf(d.alpha2))
 							.append(");");
 				}
 			} else {
-				if (Math.abs(d.alpha2) > MathUtils.EPSILON) {
+				if (Math.abs(d.alpha2) > EPSILON) {
 					s.append("ctx.rotate(").append(String.valueOf(-d.alpha2))
 							.append(");");
 				}
-				if (Math.abs(d.sx - 1) > MathUtils.EPSILON
-						|| Math.abs(d.sy - 1) > MathUtils.EPSILON) {
+				if (Math.abs(d.sx - 1) > EPSILON
+						|| Math.abs(d.sy - 1) > EPSILON) {
 					s.append("ctx.scale(").append(MathUtils.round(1 / d.sx, 3))
 							.append(',');
 					s.append(MathUtils.round(1 / d.sy, 3)).append(");");
 				}
-				if (Math.abs(d.alpha1) > MathUtils.EPSILON) {
+				if (Math.abs(d.alpha1) > EPSILON) {
 					s.append("ctx.rotate(").append(String.valueOf(-d.alpha1))
 							.append(");");
 				}
-				if (Math.abs(d.dx) > MathUtils.EPSILON
-						|| Math.abs(d.dy) > MathUtils.EPSILON) {
+				if (Math.abs(d.dx) > EPSILON || Math.abs(d.dy) > EPSILON) {
 					s.append("ctx.translate(")
 							.append(MathUtils.round(-d.dx, 3)).append(',');
 					s.append(MathUtils.round(-d.dy, 3)).append(");");
@@ -920,6 +917,8 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 	WCanvasPaintDevice.TextMethod getTextMethod() {
 		return this.textMethod_;
 	}
+
+	static final double EPSILON = 1E-5;
 
 	static WPointF normalizedDegreesToRadians(double angle, double sweep) {
 		angle = 360 - angle;

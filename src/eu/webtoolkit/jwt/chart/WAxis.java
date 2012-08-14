@@ -1327,8 +1327,7 @@ public class WAxis {
 		case LinearScale: {
 			for (int i = 0;; ++i) {
 				double v = s.renderMinimum + this.renderInterval_ * i;
-				if (v - s.renderMaximum > MathUtils.EPSILON
-						* this.renderInterval_) {
+				if (v - s.renderMaximum > EPSILON * this.renderInterval_) {
 					break;
 				}
 				WString t = new WString();
@@ -1346,7 +1345,7 @@ public class WAxis {
 			double p = v;
 			int i = 0;
 			for (;; ++i) {
-				if (v - s.renderMaximum > MathUtils.EPSILON * s.renderMaximum) {
+				if (v - s.renderMaximum > EPSILON * s.renderMaximum) {
 					break;
 				}
 				if (i == 9) {

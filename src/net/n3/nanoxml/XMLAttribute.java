@@ -37,7 +37,7 @@ package net.n3.nanoxml;
  * @author Marc De Scheemaecker
  * @version $Name: RELEASE_2_2_1 $, $Revision: 1.4 $
  */
-class XMLAttribute
+public class XMLAttribute
 {
 
    /**
@@ -123,7 +123,7 @@ class XMLAttribute
    /**
     * Returns the value of the attribute.
     */
-   String getValue()
+   public String getValue()
    {
       return this.value;
    }

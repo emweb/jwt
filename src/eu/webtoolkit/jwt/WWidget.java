@@ -1741,4 +1741,5 @@ public abstract class WWidget extends WObject {
 	}
 
 	static String WT_RESIZE_JS = "wtResize";
+	protected static String WT_GETPS_JS = "wtGetPS";
 }

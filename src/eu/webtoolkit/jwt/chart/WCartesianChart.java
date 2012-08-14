@@ -319,7 +319,7 @@ public class WCartesianChart extends WAbstractChart {
 	 * @see WCartesianChart#removeSeries(int modelColumn)
 	 */
 	public void setSeries(List<WDataSeries> series) {
-		this.series_ = series;
+		Utils.copyList(series, this.series_);
 		for (int i = 0; i < this.series_.size(); ++i) {
 			this.series_.get(i).setChart(this);
 		}
@@ -921,7 +921,7 @@ public class WCartesianChart extends WAbstractChart {
 
 	protected void paintEvent(WPaintDevice paintDevice) {
 		while (!this.getAreas().isEmpty()) {
-			;
+			this.removeArea(this.getAreas().get(0));
 		}
 		WPainter painter = new WPainter(paintDevice);
 		painter.setRenderHint(WPainter.RenderHint.Antialiasing);

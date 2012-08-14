@@ -8,9 +8,6 @@ package eu.webtoolkit.jwt.utils;
 import java.util.Random;
 
 public class MathUtils {
-
-	public static final double EPSILON = 1E-5;
-
 	public static int randomInt() {
 		return random.nextInt();
 	}

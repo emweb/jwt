@@ -155,11 +155,10 @@ public class WColor {
 	 */
 	public WColor(CharSequence name) {
 		this.default_ = false;
-		this.red_ = -1;
-		this.green_ = -1;
-		this.blue_ = -1;
-		this.alpha_ = 255;
 		this.name_ = WString.toWString(name);
+		
+		WColor c = ColorUtils.parseCssColor(name.toString());
+		this.setRgb(c.getRed(), c.getGreen(), c.getBlue(), c.getAlpha());
 	}
 
 	/**

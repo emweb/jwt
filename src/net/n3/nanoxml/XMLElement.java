@@ -587,7 +587,7 @@ public class XMLElement implements IXMLElement, Serializable {
      *
      * @return the attribute, or null if the attribute does not exist.
      */
-    private XMLAttribute findAttribute(String fullName) {
+    public XMLAttribute findAttribute(String fullName) {
         Enumeration theEnum = this.attributes.elements();
         while (theEnum.hasMoreElements()) {
             XMLAttribute attr = (XMLAttribute) theEnum.nextElement();

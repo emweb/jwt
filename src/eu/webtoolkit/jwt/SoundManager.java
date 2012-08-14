@@ -43,7 +43,8 @@ class SoundManager extends WMediaPlayer {
 	}
 
 	public void add(WSound sound) {
-		if (!this.getSource(WMediaPlayer.Encoding.MP3).equals(sound.getUrl())) {
+		if (!this.getSource(WMediaPlayer.Encoding.MP3).equals(
+				new WLink(sound.getUrl()))) {
 			this.clearSources();
 			this
 					.addSource(WMediaPlayer.Encoding.MP3, new WLink(sound
@@ -55,7 +56,8 @@ class SoundManager extends WMediaPlayer {
 	}
 
 	public void play(WSound sound, int loops) {
-		if (!this.getSource(WMediaPlayer.Encoding.MP3).equals(sound.getUrl())) {
+		if (!this.getSource(WMediaPlayer.Encoding.MP3).equals(
+				new WLink(sound.getUrl()))) {
 			this.clearSources();
 			this
 					.addSource(WMediaPlayer.Encoding.MP3, new WLink(sound
@@ -71,7 +73,8 @@ class SoundManager extends WMediaPlayer {
 	}
 
 	public boolean isFinished(WSound sound) {
-		if (this.getSource(WMediaPlayer.Encoding.MP3).equals(sound.getUrl())) {
+		if (this.getSource(WMediaPlayer.Encoding.MP3).equals(
+				new WLink(sound.getUrl()))) {
 			return !this.isPlaying();
 		} else {
 			return true;

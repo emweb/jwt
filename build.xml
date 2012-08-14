@@ -17,6 +17,7 @@
   <path id="project.javadoc.classpath">
     <fileset dir=".">
       <include name="lib/javamail/*.jar"/>
+      <include name="lib/pdfjet/*.jar"/>
       <include name="lib/gson/*.jar"/>
       <include name="lib/http/*.jar"/>
       <include name="lib/jpa/*.jar"/>
@@ -62,6 +63,7 @@
           <fileset dir=".">
             <include name="lib/*.jar"/>
 	    <include name="lib/javamail/*.jar"/>
+	    <include name="lib/pdfjet/*.jar"/>
 	    <include name="lib/gson/*.jar"/>
 	    <include name="lib/http/*.jar"/>
 	    <include name="lib/jpa/*.jar"/>

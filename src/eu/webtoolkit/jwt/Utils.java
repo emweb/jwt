@@ -4,6 +4,9 @@ import java.io.IOException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.EnumSet;
+import java.util.List;
+
+import net.n3.nanoxml.XMLElement;
 
 public class Utils {
 	/** Computes an MD5 hash.
@@ -80,7 +83,7 @@ public class Utils {
 	 * @throws IOException 
 	 */
 	public static byte[] base64Decode(String s) throws IOException {
-		return base64Decode(s.getBytes());
+		return base64Decode(s.getBytes("US-ASCII"));
 	}
 	
 	/** Performs Base64-decoding of data.
@@ -159,5 +162,64 @@ public class Utils {
 	 */
 	public static boolean removeScript(CharSequence text) {
 		return WWebWidget.removeScript(text);
+	}
+
+	static int memcmp(List<Integer> header, String string, int size) {
+		for (int i = 0; i < size; i++) {
+			if (header.get(i) != string.charAt(i))
+				return 1;
+		}
+		return 0;
+	}
+
+	private static boolean isWhiteSpace(char c, String whiteSpaces) {
+		for (int i = 0; i < whiteSpaces.length(); i++) { 
+			if (c == whiteSpaces.charAt(i))
+				return true;
+		}
+		return false;
+	}
+	
+	public static String strip(String s, String whiteSpaces) {
+		int start = -1;
+		int end = -1;
+
+		for (int i = 0; i < s.length(); i++) {
+			if (!isWhiteSpace(s.charAt(i), whiteSpaces)) {
+				start = i;
+				break;
+			}
+		}
+		
+		if (start == -1) 
+			return "";
+		else
+			s = s.substring(start);
+		
+		for (int i = s.length() - 1; i >= 0; i--) {
+			if (!isWhiteSpace(s.charAt(i), whiteSpaces)) {
+				end = i + 1;
+				break;
+			}
+		}
+		
+		return s.substring(0, end);
+	}
+
+	public static void assignFontMatch(FontSupport.FontMatch fm1, FontSupport.FontMatch fm2) {
+		fm1.setFileName(fm2.getFileName());
+		fm1.setQuality(fm2.getQuality());
+	}
+
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public static void copyList(List source, List destination) {
+		destination.clear();
+		for (Object o : source) {
+			destination.add(o);
+		}
+	}
+
+	public static int hexToInt(String s) {
+		return Integer.parseInt(s, 16);
 	}
 }

@@ -688,7 +688,7 @@ public abstract class WInteractWidget extends WWebWidget {
 			StringBuilder js = new StringBuilder();
 			js
 					.append("if($(o).hasClass('Wt-disabled')){Wt3_2_2.cancelEvent(e);return;}");
-			if (mouseDblClick != null) {
+			if (mouseDblClick != null && mouseDblClick.isConnected()) {
 				js.append("if(window.wtClickTimeout) {").append(
 						"clearTimeout(window.wtClickTimeout);").append(
 						"window.wtClickTimeout = null;");
@@ -719,7 +719,7 @@ public abstract class WInteractWidget extends WWebWidget {
 				}
 				js.append("},200);}");
 			} else {
-				if (mouseClick != null) {
+				if (mouseClick != null && mouseClick.isConnected()) {
 					js.append(mouseClick.getJavaScript());
 					if (mouseClick.isExposedSignal()) {
 						if (!(app != null)) {
@@ -732,7 +732,8 @@ public abstract class WInteractWidget extends WWebWidget {
 					mouseClick.updateOk();
 				}
 			}
-			element.setEvent(CLICK_SIGNAL, js.toString(), "");
+			element.setEvent(CLICK_SIGNAL, js.toString(),
+					mouseClick != null ? mouseClick.encodeCmd() : "");
 			if (mouseDblClick != null) {
 				if (!(app != null)) {
 					app = WApplication.getInstance();

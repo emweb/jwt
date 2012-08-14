@@ -129,7 +129,7 @@ class WebSession {
 		if (xhtml) {
 			return "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">";
 		} else {
-			return "<!doctype html>";
+			return "<!DOCTYPE html>";
 		}
 	}
 
@@ -1813,7 +1813,8 @@ class WebSession {
 	private void notifySignal(WEvent e) throws IOException {
 		WebSession.Handler handler = e.impl_.handler;
 		if (handler.nextSignal == -1) {
-			handler.signalOrder = this.getSignalProcessingOrder(e);
+			Utils.copyList(this.getSignalProcessingOrder(e),
+					handler.signalOrder);
 			handler.nextSignal = 0;
 		}
 		for (int i = handler.nextSignal; i < handler.signalOrder.size(); ++i) {

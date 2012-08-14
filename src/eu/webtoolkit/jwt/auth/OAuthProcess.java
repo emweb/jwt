@@ -130,7 +130,7 @@ public class OAuthProcess extends WObject {
 		if (WApplication.getInstance().getEnvironment().hasJavaScript()) {
 			StringBuilder js = new StringBuilder();
 			js.append("function(object, event) {").append(
-					"Wt3_2_2.authPopupWindow(Wt3_2_2").append(",").append(
+					"Wt3_2_2.PopupWindow(Wt3_2_2").append(",").append(
 					WWebWidget.jsStringLiteral(this.getAuthorizeUrl())).append(
 					", ").append(this.service_.getPopupWidth()).append(", ")
 					.append(this.service_.getPopupHeight()).append(");")
@@ -247,7 +247,7 @@ public class OAuthProcess extends WObject {
 		this.startInternalPath_ = "";
 		this.redirectEndpoint_ = new OAuthRedirectEndpoint(this);
 		WApplication app = WApplication.getInstance();
-		app.loadJavaScript("js/AuthWidget.js", wtjs1());
+		PopupWindow.loadJavaScript(app);
 		String url = app.makeAbsoluteUrl(this.redirectEndpoint_.getUrl());
 		this.oAuthState_ = this.service_.encodeState(url);
 		this.redirected_.addListener(this, new Signal.Listener() {
@@ -363,6 +363,7 @@ public class OAuthProcess extends WObject {
 									.getGenerateRedirectEndpoint())).append(
 							"&code=").append(authorizationCode);
 			HttpClient client = new HttpClient(this);
+			client.setTimeout(15);
 			client.done().addListener(this,
 					new Signal2.Listener<Exception, HttpMessage>() {
 						public void trigger(Exception event1, HttpMessage event2) {
@@ -537,13 +538,5 @@ public class OAuthProcess extends WObject {
 			this.authenticate_ = false;
 			this.getIdentity(this.token_);
 		}
-	}
-
-	static WJavaScriptPreamble wtjs1() {
-		return new WJavaScriptPreamble(
-				JavaScriptScope.WtClassScope,
-				JavaScriptObjectType.JavaScriptFunction,
-				"authPopupWindow",
-				"function(h,i,c,d){function j(){var a=0,b=0;if(typeof window.screenLeft===\"number\"){a=window.screenLeft;b=window.screenTop}else if(typeof window.screenX===\"number\"){a=window.screenX;b=window.screenY}return{x:a,y:b}}function k(a,b){var e=h.windowSize(),f=j();a=f.x+Math.max(0,Math.floor((e.x-a)/2));b=f.y+Math.max(0,Math.floor((e.y-b)/2));return{x:a,y:b}}var g=k(c,d);window.open(i,\"\",\"width=\"+c+\",height=\"+d+\",status=yes,location=yes,resizable=yes,left=\"+ g.x+\",top=\"+g.y).opener=window}");
 	}
 }

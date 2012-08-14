@@ -19,7 +19,13 @@ import eu.webtoolkit.jwt.servlet.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-class DomElement {
+/**
+ * Class to represent a DOM element.
+ * <p>
+ * 
+ * This class is for internal use only.
+ */
+public class DomElement {
 	private static Logger logger = LoggerFactory.getLogger(DomElement.class);
 
 	enum Mode {

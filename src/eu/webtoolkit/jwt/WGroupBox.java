@@ -80,6 +80,7 @@ public class WGroupBox extends WContainerWidget {
 		super(parent);
 		this.title_ = new WString();
 		this.titleChanged_ = false;
+		this.init();
 	}
 
 	/**
@@ -99,6 +100,7 @@ public class WGroupBox extends WContainerWidget {
 		super(parent);
 		this.title_ = WString.toWString(title);
 		this.titleChanged_ = false;
+		this.init();
 	}
 
 	/**
@@ -134,9 +136,6 @@ public class WGroupBox extends WContainerWidget {
 		}
 		super.refresh();
 	}
-
-	private WString title_;
-	private boolean titleChanged_;
 
 	DomElementType getDomElementType() {
 		return DomElementType.DomElement_FIELDSET;
@@ -176,5 +175,13 @@ public class WGroupBox extends WContainerWidget {
 
 	int getFirstChildIndex() {
 		return 1;
+	}
+
+	private WString title_;
+	private boolean titleChanged_;
+
+	private void init() {
+		this.setJavaScriptMember(WT_GETPS_JS, StdWidgetItemImpl
+				.getSecondGetPSJS());
 	}
 }

@@ -40,9 +40,13 @@ class PaintedSlider extends WPaintedWidget {
 			this.slider_.setOffsets(new WLength(0), EnumSet.of(Side.Left,
 					Side.Top));
 		}
-		this.addChild(this.handle_ = new WContainerWidget());
+		this.addChild(this.handle_ = this.slider_.getCreateHandle());
+		this.addChild(this.fill_ = new WContainerWidget());
+		this.fill_.setPositionScheme(PositionScheme.Absolute);
+		this.fill_.setStyleClass("fill");
 		this.handle_.setPopup(true);
 		this.handle_.setPositionScheme(PositionScheme.Absolute);
+		this.handle_.setStyleClass("handle");
 		this.handle_.mouseWentDown().addListener(this.mouseDownJS_);
 		this.handle_.mouseMoved().addListener(this.mouseMovedJS_);
 		this.handle_.mouseWentUp().addListener(this.mouseUpJS_);
@@ -62,27 +66,30 @@ class PaintedSlider extends WPaintedWidget {
 		boolean rtl = WApplication.getInstance().getLayoutDirection() == LayoutDirection.RightToLeft;
 		String resourcesURL = WApplication.getResourcesUrl();
 		Orientation o = this.slider_.getOrientation();
-		this.handle_.setStyleClass("handle");
 		if (o == Orientation.Horizontal) {
-			this.handle_.resize(new WLength(HANDLE_WIDTH), new WLength(this
-					.getH()));
+			this.handle_.resize(new WLength(this.slider_.getHandleWidth()),
+					new WLength(this.getH()));
 			this.handle_.setOffsets(new WLength(0), EnumSet.of(Side.Top));
 		} else {
 			this.handle_.resize(new WLength(this.getW()), new WLength(
-					HANDLE_WIDTH));
+					this.slider_.getHandleWidth()));
 			this.handle_.setOffsets(new WLength(0), EnumSet.of(Side.Left));
 		}
 		double l = o == Orientation.Horizontal ? this.getW() : this.getH();
-		double pixelsPerUnit = (l - HANDLE_WIDTH) / this.getRange();
+		double pixelsPerUnit = (l - this.slider_.getHandleWidth())
+				/ this.getRange();
 		String dir = "";
+		String size = "";
 		if (o == Orientation.Horizontal) {
 			dir = rtl ? "right" : "left";
+			size = "width";
 		} else {
 			dir = "top";
+			size = "height";
 		}
 		String u = o == Orientation.Horizontal ? "x" : "y";
 		String U = o == Orientation.Horizontal ? "X" : "Y";
-		String maxS = String.valueOf(l - HANDLE_WIDTH);
+		String maxS = String.valueOf(l - this.slider_.getHandleWidth());
 		String ppU = String.valueOf(pixelsPerUnit);
 		String minimumS = String.valueOf(this.slider_.getMinimum());
 		String maximumS = String.valueOf(this.slider_.getMaximum());
@@ -90,8 +97,9 @@ class PaintedSlider extends WPaintedWidget {
 		String horizontal = String.valueOf(o == Orientation.Horizontal);
 		String mouseDownJS = "obj.setAttribute('down', Wt3_2_2.widgetCoordinates(obj, event)."
 				+ u + "); Wt3_2_2.cancelEvent(event);";
-		String computeD = "var objh = " + this.handle_.getJsRef() + ",objb = "
-				+ this.getJsRef() + ",page_u = WT.pageCoordinates(event)." + u
+		String computeD = "var objh = " + this.handle_.getJsRef() + ",objf = "
+				+ this.fill_.getJsRef() + ",objb = " + this.getJsRef()
+				+ ",page_u = WT.pageCoordinates(event)." + u
 				+ ",widget_page_u = WT.widgetPageCoordinates(objb)." + u
 				+ ",pos = page_u - widget_page_u,rtl = " + String.valueOf(rtl)
 				+ ",horizontal = " + horizontal
@@ -107,16 +115,23 @@ class PaintedSlider extends WPaintedWidget {
 				+ ppU
 				+ ";if (Math.abs(WT.pxself(objh, '"
 				+ dir
-				+ "') - intd) > 1) {objh.style."
+				+ "') - intd) > 1) {objf.style."
+				+ size
+				+ " = intd + 'px';"
+				+ "objh.style."
 				+ dir
 				+ " = intd + 'px';"
-				+ this.slider_.sliderMoved().createCall(
-						o == Orientation.Horizontal ? "v + " + minimumS
-								: maximumS + " - v") + "}}";
+				+ "var vs = "
+				+ (o == Orientation.Horizontal ? "v + " + minimumS : maximumS
+						+ " - v")
+				+ ";var f = objb.parentNode.onValueChange;"
+				+ "if (f) f(vs);"
+				+ this.slider_.sliderMoved().createCall("vs")
+				+ "}}";
 		String mouseUpJS = "var down = obj.getAttribute('down');var WT = Wt3_2_2;if (down != null && down != '') {"
 				+ computeD
 				+ "d += "
-				+ String.valueOf(HANDLE_WIDTH / 2)
+				+ String.valueOf(this.slider_.getHandleWidth() / 2)
 				+ ";"
 				+ this.sliderReleased_.createCall("d")
 				+ "obj.removeAttribute('down');}";
@@ -135,16 +150,18 @@ class PaintedSlider extends WPaintedWidget {
 		double l = this.slider_.getOrientation() == Orientation.Horizontal ? this
 				.getW()
 				: this.getH();
-		double pixelsPerUnit = (l - HANDLE_WIDTH) / this.getRange();
+		double pixelsPerUnit = (l - this.slider_.getHandleWidth())
+				/ this.getRange();
 		double u = ((double) this.slider_.getValue() - this.slider_
 				.getMinimum())
 				* pixelsPerUnit;
 		if (this.slider_.getOrientation() == Orientation.Horizontal) {
 			this.handle_.setOffsets(new WLength(u), EnumSet.of(Side.Left));
+			this.fill_.setWidth(new WLength(u));
 		} else {
-			this.handle_.setOffsets(
-					new WLength(this.getH() - HANDLE_WIDTH - u), EnumSet
-							.of(Side.Top));
+			this.handle_.setOffsets(new WLength(this.getH()
+					- this.slider_.getHandleWidth() - u), EnumSet.of(Side.Top));
+			this.fill_.setHeight(new WLength(u));
 		}
 	}
 
@@ -155,6 +172,7 @@ class PaintedSlider extends WPaintedWidget {
 			element
 					.addChild(((WWebWidget) this.handle_)
 							.createSDomElement(app));
+			element.addChild(((WWebWidget) this.fill_).createSDomElement(app));
 			DomElement west = DomElement
 					.createNew(DomElementType.DomElement_DIV);
 			west.setProperty(Property.PropertyClass, "Wt-w");
@@ -195,51 +213,39 @@ class PaintedSlider extends WPaintedWidget {
 	}
 
 	protected void paintEvent(WPaintDevice paintDevice) {
-		if (!this.slider_.getTickPosition().isEmpty()) {
-			WPainter painter = new WPainter(paintDevice);
-			int w;
-			int h;
-			if (this.slider_.getOrientation() == Orientation.Horizontal) {
-				w = (int) this.getWidth().toPixels();
-				h = (int) this.getHeight().toPixels();
-			} else {
-				w = (int) this.getHeight().toPixels();
-				h = (int) this.getWidth().toPixels();
-				painter.translate(0, w);
-				painter.rotate(-90);
-			}
-			int tickInterval = this.slider_.getTickInterval();
-			int r = this.getRange();
-			if (tickInterval == 0) {
-				tickInterval = r / 2;
-			}
-			double tickStep = ((double) w - (HANDLE_WIDTH - 10))
-					/ (r / tickInterval);
-			if (tickStep <= 0) {
-				return;
-			}
-			WPen pen = new WPen();
-			pen.setColor(new WColor(0xd7, 0xd7, 0xd7));
-			pen.setCapStyle(PenCapStyle.FlatCap);
-			pen.setWidth(new WLength(1));
-			painter.setPen(pen);
-			int y1 = h / 4;
-			int y2 = h / 2 - 4;
-			int y3 = h / 2 + 4;
-			int y4 = h - h / 4;
-			for (int i = 0;; ++i) {
-				int x = (HANDLE_WIDTH - 10) / 2 + (int) (i * tickStep);
-				if (x > w - (HANDLE_WIDTH - 10) / 2) {
-					break;
-				}
-				if (!EnumUtils.mask(this.slider_.getTickPosition(),
-						WSlider.TickPosition.TicksAbove).isEmpty()) {
-					painter.drawLine(x + 0.5, y1, x + 0.5, y2);
-				}
-				if (!EnumUtils.mask(this.slider_.getTickPosition(),
-						WSlider.TickPosition.TicksBelow).isEmpty()) {
-					painter.drawLine(x + 0.5, y3, x + 0.5, y4);
-				}
+		int tickInterval = this.slider_.getTickInterval();
+		int r = this.getRange();
+		if (tickInterval == 0) {
+			tickInterval = r / 2;
+		}
+		int numTicks = r / tickInterval + 1;
+		if (numTicks < 1) {
+			return;
+		}
+		int w = 0;
+		int h = 0;
+		switch (this.slider_.getOrientation()) {
+		case Horizontal:
+			w = (int) paintDevice.getWidth().toPixels();
+			h = (int) paintDevice.getHeight().toPixels();
+			break;
+		case Vertical:
+			w = (int) paintDevice.getHeight().toPixels();
+			h = (int) paintDevice.getWidth().toPixels();
+		}
+		double tickStep = ((double) w + 10 - this.slider_.getHandleWidth())
+				/ (numTicks - 1);
+		WPainter painter = new WPainter(paintDevice);
+		for (int i = 0; i < numTicks; ++i) {
+			int v = this.slider_.getMinimum() + i * tickInterval;
+			int x = -5 + this.slider_.getHandleWidth() / 2
+					+ (int) (i * tickStep);
+			switch (this.slider_.getOrientation()) {
+			case Horizontal:
+				this.slider_.paintTick(painter, v, x, h / 2);
+				break;
+			case Vertical:
+				this.slider_.paintTick(painter, v, h / 2, w - x);
 			}
 		}
 	}
@@ -249,7 +255,8 @@ class PaintedSlider extends WPaintedWidget {
 	private JSlot mouseDownJS_;
 	private JSlot mouseMovedJS_;
 	private JSlot mouseUpJS_;
-	private WContainerWidget handle_;
+	private WInteractWidget handle_;
+	private WInteractWidget fill_;
 
 	private int getRange() {
 		return this.slider_.getMaximum() - this.slider_.getMinimum();
@@ -280,14 +287,15 @@ class PaintedSlider extends WPaintedWidget {
 
 	private void onSliderReleased(int u) {
 		if (this.slider_.getOrientation() == Orientation.Horizontal) {
-			u -= HANDLE_WIDTH / 2;
+			u -= this.slider_.getHandleWidth() / 2;
 		} else {
-			u = (int) this.getH() - (u + HANDLE_WIDTH / 2);
+			u = (int) this.getH() - (u + this.slider_.getHandleWidth() / 2);
 		}
 		double l = this.slider_.getOrientation() == Orientation.Horizontal ? this
 				.getW()
 				: this.getH();
-		double pixelsPerUnit = (l - HANDLE_WIDTH) / this.getRange();
+		double pixelsPerUnit = (l - this.slider_.getHandleWidth())
+				/ this.getRange();
 		double v = Math.max(this.slider_.getMinimum(), Math.min(this.slider_
 				.getMaximum(), this.slider_.getMinimum()
 				+ (int) ((double) u / pixelsPerUnit + 0.5)));
@@ -296,6 +304,4 @@ class PaintedSlider extends WPaintedWidget {
 		this.slider_.valueChanged().trigger(this.slider_.getValue());
 		this.updateSliderPosition();
 	}
-
-	private static final int HANDLE_WIDTH = 20;
 }

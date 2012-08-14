@@ -104,7 +104,7 @@ public class WPainterPath {
 	 * Assignment method.
 	 */
 	public WPainterPath assign(WPainterPath path) {
-		this.segments_ = path.segments_;
+		Utils.copyList(path.segments_, this.segments_);
 		this.isRect_ = path.isRect_;
 		return this;
 	}

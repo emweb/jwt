@@ -103,7 +103,7 @@ public class WStringListModel extends WAbstractListModel {
 				this.beginRemoveRows(null, newSize, currentSize - 1);
 			}
 		}
-		this.strings_ = strings;
+		Utils.copyList(strings, this.strings_);
 		if (newSize > currentSize) {
 			this.endInsertRows();
 		} else {

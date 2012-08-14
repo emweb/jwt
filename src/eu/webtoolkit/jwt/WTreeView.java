@@ -871,7 +871,11 @@ public class WTreeView extends WAbstractItemView {
 				new WLength(1));
 		if (WApplication.getInstance().getEnvironment().hasAjax()) {
 			this.connectObjJS(this.rootNode_.clicked(), "click");
-			this.connectObjJS(this.rootNode_.doubleClicked(), "dblClick");
+			if (!EnumUtils.mask(this.getEditTriggers(),
+					WAbstractItemView.EditTrigger.DoubleClicked).isEmpty()
+					|| this.doubleClicked().isConnected()) {
+				this.connectObjJS(this.rootNode_.doubleClicked(), "dblClick");
+			}
 			if (this.mouseWentDown().isConnected() || this.dragEnabled_) {
 				this.connectObjJS(this.rootNode_.mouseWentDown(), "mouseDown");
 			}

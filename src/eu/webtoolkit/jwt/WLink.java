@@ -219,7 +219,11 @@ public class WLink {
 	 */
 	public void setInternalPath(String internalPath) {
 		this.type_ = WLink.Type.InternalPath;
-		this.value_ = internalPath;
+		String path = internalPath;
+		if (path.startsWith("#/")) {
+			path = path.substring(1);
+		}
+		this.value_ = path;
 	}
 
 	/**

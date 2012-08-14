@@ -945,7 +945,7 @@ public abstract class WWebWidget extends WWidget {
 	}
 
 	void repaint(EnumSet<RepaintFlag> flags) {
-		if (!this.flags_.get(BIT_STUBBED) && this.isStubbed()) {
+		if (this.isStubbed()) {
 			WebRenderer renderer = WApplication.getInstance().getSession()
 					.getRenderer();
 			if (renderer.isPreLearning()) {
@@ -1137,25 +1137,31 @@ public abstract class WWebWidget extends WWidget {
 							this.layoutImpl_.maximumHeight_.getCssText());
 				}
 				if (this.layoutImpl_.positionScheme_ != PositionScheme.Static) {
-					for (int i = 0; i < 4; ++i) {
-						Property property = properties[i];
-						if (!(app != null)) {
-							app = WApplication.getInstance();
-						}
-						if (app.getLayoutDirection() == LayoutDirection.RightToLeft) {
-							if (i == 1) {
-								property = properties[3];
-							} else {
-								if (i == 3) {
-									property = properties[1];
+					if (!this.layoutImpl_.offsets_[0].isAuto()
+							|| !this.layoutImpl_.offsets_[1].isAuto()
+							|| !this.layoutImpl_.offsets_[2].isAuto()
+							|| !this.layoutImpl_.offsets_[3].isAuto()) {
+						for (int i = 0; i < 4; ++i) {
+							Property property = properties[i];
+							if (!(app != null)) {
+								app = WApplication.getInstance();
+							}
+							if (app.getLayoutDirection() == LayoutDirection.RightToLeft) {
+								if (i == 1) {
+									property = properties[3];
+								} else {
+									if (i == 3) {
+										property = properties[1];
+									}
 								}
 							}
-						}
-						if (app.getEnvironment().hasAjax()
-								&& !app.getEnvironment().agentIsIElt(9)
-								|| !this.layoutImpl_.offsets_[i].isAuto()) {
-							element.setProperty(property,
-									this.layoutImpl_.offsets_[i].getCssText());
+							if (app.getEnvironment().hasAjax()
+									&& !app.getEnvironment().agentIsIElt(9)
+									|| !this.layoutImpl_.offsets_[i].isAuto()) {
+								element.setProperty(property,
+										this.layoutImpl_.offsets_[i]
+												.getCssText());
+							}
 						}
 					}
 				}

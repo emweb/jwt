@@ -55,6 +55,8 @@ public class WStackedWidget extends WContainerWidget {
 		;
 		this.setJavaScriptMember(WT_RESIZE_JS, StdWidgetItemImpl
 				.getChildrenResizeJS());
+		this.setJavaScriptMember(WT_GETPS_JS, StdWidgetItemImpl
+				.getChildrenGetPSJS());
 		this.addStyleClass("Wt-stack");
 	}
 

@@ -2211,12 +2211,23 @@ public class WApplication extends WObject {
 	}
 
 	/**
-	 * Returns whether the application is quited.
+	 * Returns whether the application has quit. (<b>deprecated</b>).
+	 * <p>
+	 * 
+	 * @see WApplication#quit()
+	 * @deprecated {@link WApplication#hasQuit() hasQuit()} is proper English
+	 */
+	public boolean isQuited() {
+		return this.quited_;
+	}
+
+	/**
+	 * Returns whether the application has quit.
 	 * <p>
 	 * 
 	 * @see WApplication#quit()
 	 */
-	public boolean isQuited() {
+	public boolean hasQuit() {
 		return this.quited_;
 	}
 
@@ -2860,8 +2871,9 @@ public class WApplication extends WObject {
 					: "Wt3_2_2";
 			if (preamble.type == JavaScriptObjectType.JavaScriptFunction) {
 				out.append(scope).append('.').append(preamble.name).append(
-						" = function() { (").append(preamble.src).append(
-						").apply(").append(scope).append(", arguments) };");
+						" = function() { return (").append(preamble.src)
+						.append(").apply(").append(scope).append(
+								", arguments) };");
 			} else {
 				out.append(scope).append('.').append(preamble.name).append(
 						" = ").append(preamble.src).append('\n');

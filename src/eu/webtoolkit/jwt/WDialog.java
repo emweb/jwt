@@ -50,8 +50,14 @@ import org.slf4j.LoggerFactory;
  * accept()}, and in some cases a Cancel button to {@link WDialog#reject()
  * reject()}. This solution has the drawback that it is not scalable to many
  * concurrent sessions, since for every session with a recursive event loop, a
- * thread is locked. In practical terms, this means it is only suitable for
- * software with restricted access or deployed on an intranet or extranet. This
+ * thread is locked until {@link WDialog#exec(WAnimation animation) exec()}
+ * returns. A thread that is locked by a recursive event loop cannot be used to
+ * process requests from another sessions. When all threads in the threadpool
+ * are locked in recursive event loops, the server will be unresponsive to
+ * requests from any other session. In practical terms, this means you must not
+ * use {@link WDialog#exec(WAnimation animation) exec()}, unless your
+ * application will never be used by more concurrent users than the amount of
+ * threads in your threadpool (like on some intranets or extranets). This
  * functionality is only available on Servlet 3.0 compatible servlet containers.
  * <p>
  * Use setModal(false) to create a non-modal dialog. A non-modal dialog does not
@@ -293,7 +299,9 @@ public class WDialog extends WCompositeWidget {
 	 * reject()} is called.
 	 * <p>
 	 * <i>Warning: using {@link WDialog#exec(WAnimation animation) exec()} does
-	 * not scale to many concurrent sessions, since the thread is locked.</i>
+	 * not scale to many concurrent sessions, since the thread is locked until
+	 * exec returns, so the entire server will be unresponsive when the thread
+	 * pool is exhausted.</i>
 	 * <p>
 	 * <i>This functionality is only available on Servlet 3.0 compatible servlet
 	 * containers.</i>

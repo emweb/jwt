@@ -198,12 +198,6 @@ public class WTableView extends WAbstractItemView {
 							WTableView.this.handleSingleClick(false, event);
 						}
 					});
-			this.canvas_.doubleClicked().addListener(this,
-					new Signal1.Listener<WMouseEvent>() {
-						public void trigger(WMouseEvent event) {
-							WTableView.this.handleDoubleClick(false, event);
-						}
-					});
 			this.canvas_.mouseWentDown().addListener(this,
 					new Signal1.Listener<WMouseEvent>() {
 						public void trigger(WMouseEvent event) {
@@ -246,12 +240,6 @@ public class WTableView extends WAbstractItemView {
 					new Signal1.Listener<WMouseEvent>() {
 						public void trigger(WMouseEvent event) {
 							WTableView.this.handleSingleClick(true, event);
-						}
-					});
-			this.headerColumnsCanvas_.doubleClicked().addListener(this,
-					new Signal1.Listener<WMouseEvent>() {
-						public void trigger(WMouseEvent event) {
-							WTableView.this.handleDoubleClick(true, event);
 						}
 					});
 			this.headerColumnsCanvas_.mouseWentDown().addListener(this,
@@ -1278,9 +1266,27 @@ public class WTableView extends WAbstractItemView {
 	}
 
 	void render(EnumSet<RenderFlag> flags) {
-		if (this.isAjaxMode()
-				&& !EnumUtils.mask(flags, RenderFlag.RenderFull).isEmpty()) {
-			this.defineJavaScript();
+		if (this.isAjaxMode()) {
+			if (!EnumUtils.mask(flags, RenderFlag.RenderFull).isEmpty()) {
+				this.defineJavaScript();
+			}
+			if (!this.canvas_.doubleClicked().isConnected()
+					&& (!EnumUtils.mask(this.getEditTriggers(),
+							WAbstractItemView.EditTrigger.DoubleClicked)
+							.isEmpty() || this.doubleClicked().isConnected())) {
+				this.canvas_.doubleClicked().addListener(this,
+						new Signal1.Listener<WMouseEvent>() {
+							public void trigger(WMouseEvent event) {
+								WTableView.this.handleDoubleClick(false, event);
+							}
+						});
+				this.headerColumnsCanvas_.doubleClicked().addListener(this,
+						new Signal1.Listener<WMouseEvent>() {
+							public void trigger(WMouseEvent event) {
+								WTableView.this.handleDoubleClick(true, event);
+							}
+						});
+			}
 		}
 		if (this.getModel() != null) {
 			while (this.renderState_ != WAbstractItemView.RenderState.RenderOk) {
