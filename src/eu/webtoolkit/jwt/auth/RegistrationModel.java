@@ -478,7 +478,7 @@ public class RegistrationModel extends FormBaseModel {
 						}
 					}
 				} else {
-					return false;
+					return true;
 				}
 			}
 		}

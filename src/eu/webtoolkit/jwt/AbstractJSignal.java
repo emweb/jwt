@@ -62,7 +62,7 @@ public abstract class AbstractJSignal extends AbstractEventSignal {
 			else if (toClass == Character.class && jse.userEventArgs.get(index).length() > 0)
 				return jse.userEventArgs.get(index).charAt(0);
 			else if (toClass == Boolean.class)
-				return Boolean.valueOf(jse.userEventArgs.get(index));
+				return !jse.userEventArgs.get(index).equals("0");
 			else if (toClass == WMouseEvent.class)
 				return new WMouseEvent(jse);
 			else if (toClass == WKeyEvent.class)

@@ -212,8 +212,8 @@ public class WTextEdit extends WTextArea {
 	 * Configure a TinyMCE setting.
 	 * <p>
 	 * A list of possible settings can be found at: <a
-	 * href="http://tinymce.moxiecode.com/wiki.php/Configuration."
-	 * >http://tinymce.moxiecode.com/wiki.php/Configuration.</a>
+	 * href="http://tinymce.moxiecode.com/wiki.php/Configuration"
+	 * >http://tinymce.moxiecode.com/wiki.php/Configuration</a>
 	 * <p>
 	 * The widget itself will also define a number of configuration settings and
 	 * these may be overridden using this method.

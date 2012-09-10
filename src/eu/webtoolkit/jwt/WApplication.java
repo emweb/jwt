@@ -1437,7 +1437,8 @@ public class WApplication extends WObject {
 	 */
 	public void enableUpdates(boolean enabled) {
 		if (enabled) {
-			if (!(WebSession.Handler.getInstance().getRequest() != null)) {
+			if (this.serverPush_ == 0
+					&& !(WebSession.Handler.getInstance().getRequest() != null)) {
 				logger
 						.warn(new StringWriter()
 								.append(

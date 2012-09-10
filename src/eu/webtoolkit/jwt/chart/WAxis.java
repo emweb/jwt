@@ -893,7 +893,10 @@ public class WAxis {
 						}
 					}
 				}
-				this.renderInterval_ = Math.max(1.0, this.renderInterval_);
+				if (this.renderInterval_ == 0) {
+					this.renderInterval_ = 1;
+					return false;
+				}
 				if (this.scale_ == AxisScale.LinearScale) {
 					if (it == 0) {
 						if (s.minimum == AUTO_MINIMUM) {

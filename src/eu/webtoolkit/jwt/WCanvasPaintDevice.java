@@ -305,10 +305,11 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 						WWebWidget.jsStringLiteral(this.currentPen_.getColor()
 								.getCssText(true))).append(";");
 			}
+			char[] buf = new char[30];
 			this.js_.append("ctx.fillText(").append(
 					WString.toWString(text).getJsStringLiteral()).append(',')
-					.append(String.valueOf(x)).append(',').append(
-							String.valueOf(y)).append(");");
+					.append(MathUtils.round(x, 3)).append(',');
+			this.js_.append(MathUtils.round(y, 3)).append(");");
 			if (!this.currentBrush_.getColor().equals(
 					this.currentPen_.getColor())) {
 				this.js_.append("ctx.fillStyle=").append(

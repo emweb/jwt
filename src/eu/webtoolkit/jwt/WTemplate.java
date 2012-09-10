@@ -304,8 +304,11 @@ public class WTemplate extends WInteractWidget {
 	 */
 	public WTemplate(WContainerWidget parent) {
 		super(parent);
+		this.previouslyRendered_ = null;
+		this.newlyRendered_ = null;
 		this.functions_ = new HashMap<String, WTemplate.Function>();
 		this.strings_ = new HashMap<String, String>();
+		this.nestedTemplates_ = new HashMap<String, WString>();
 		this.widgets_ = new HashMap<String, WWidget>();
 		this.conditions_ = new HashSet<String>();
 		this.text_ = new WString();
@@ -334,8 +337,11 @@ public class WTemplate extends WInteractWidget {
 	 */
 	public WTemplate(CharSequence text, WContainerWidget parent) {
 		super(parent);
+		this.previouslyRendered_ = null;
+		this.newlyRendered_ = null;
 		this.functions_ = new HashMap<String, WTemplate.Function>();
 		this.strings_ = new HashMap<String, String>();
+		this.nestedTemplates_ = new HashMap<String, WString>();
 		this.widgets_ = new HashMap<String, WWidget>();
 		this.conditions_ = new HashSet<String>();
 		this.text_ = new WString();
@@ -448,6 +454,22 @@ public class WTemplate extends WInteractWidget {
 	 */
 	public final void bindString(String varName, CharSequence value) {
 		bindString(varName, value, TextFormat.XHTMLText);
+	}
+
+	/**
+	 * Binds a nested template text to a variable.
+	 * <p>
+	 * The corresponding variable reference within the template will will be
+	 * replaced by the nested template text (like
+	 * {@link WTemplate#bindString(String varName, CharSequence value, TextFormat textFormat)
+	 * bindString()}), but this nested template text will also be recursively
+	 * interpreted for place holder substitution.
+	 */
+	public void nestTemplate(String varName, CharSequence templateText) {
+		WString t = WString.toWString(templateText);
+		this.nestedTemplates_.put(varName, t);
+		this.changed_ = true;
+		this.repaint(EnumSet.of(RepaintFlag.RepaintInnerHtml));
 	}
 
 	/**
@@ -621,7 +643,9 @@ public class WTemplate extends WInteractWidget {
 					this.applyArguments(w, args);
 					w.htmlText(result);
 				}
-				this.newlyRendered_.add(w);
+				if (this.newlyRendered_ != null) {
+					this.newlyRendered_.add(w);
+				}
 			} else {
 				this.handleUnresolvedVariable(varName, args, result);
 			}
@@ -813,121 +837,7 @@ public class WTemplate extends WInteractWidget {
 	 * custom template language.
 	 */
 	public void renderTemplate(Writer result) throws IOException {
-		String text = "";
-		WApplication app = WApplication.getInstance();
-		if (app != null
-				&& (this.encodeInternalPaths_ || app.getSession()
-						.hasSessionIdInUrl())) {
-			EnumSet<RefEncoderOption> options = EnumSet
-					.noneOf(RefEncoderOption.class);
-			if (this.encodeInternalPaths_) {
-				options.add(RefEncoderOption.EncodeInternalPaths);
-			}
-			if (app.getSession().hasSessionIdInUrl()) {
-				options.add(RefEncoderOption.EncodeRedirectTrampoline);
-			}
-			WString t = this.text_;
-			RefEncoder.EncodeRefs(t, options);
-			text = t.toString();
-		} else {
-			text = this.text_.toString();
-		}
-		int lastPos = 0;
-		List<WString> args = new ArrayList<WString>();
-		List<String> conditions = new ArrayList<String>();
-		int suppressing = 0;
-		for (int pos = text.indexOf('$'); pos != -1; pos = text.indexOf('$',
-				pos)) {
-			if (!(suppressing != 0)) {
-				result.append(text.substring(lastPos, lastPos + pos - lastPos));
-			}
-			lastPos = pos;
-			if (pos + 1 < text.length()) {
-				if (text.charAt(pos + 1) == '$') {
-					if (!(suppressing != 0)) {
-						result.append('$');
-					}
-					lastPos += 2;
-				} else {
-					if (text.charAt(pos + 1) == '{') {
-						int startName = pos + 2;
-						int endName = StringUtils.findFirstOf(text, " \r\n\t}",
-								startName);
-						args.clear();
-						int endVar = parseArgs(text, endName, args);
-						if (endVar == -1) {
-							logger.error(new StringWriter().append(
-									"variable syntax error near \"").append(
-									text.substring(pos)).append("\"")
-									.toString());
-							return;
-						}
-						String name = text.substring(startName, startName
-								+ endName - startName);
-						int nl = name.length();
-						if (nl > 2 && name.charAt(0) == '<'
-								&& name.charAt(nl - 1) == '>') {
-							if (name.charAt(1) != '/') {
-								String cond = name.substring(1, 1 + nl - 2);
-								conditions.add(cond);
-								if (suppressing != 0
-										|| !this.conditionValue(cond)) {
-									++suppressing;
-								}
-							} else {
-								String cond = name.substring(2, 2 + nl - 3);
-								if (!conditions.get(conditions.size() - 1)
-										.equals(cond)) {
-									logger
-											.error(new StringWriter()
-													.append(
-															"mismatching condition block end: ")
-													.append(cond).toString());
-									return;
-								}
-								conditions.remove(conditions.size() - 1);
-								if (suppressing != 0) {
-									--suppressing;
-								}
-							}
-						} else {
-							if (!(suppressing != 0)) {
-								int colonPos = name.indexOf(':');
-								boolean handled = false;
-								if (colonPos != -1) {
-									String fname = name.substring(0,
-											0 + colonPos);
-									String arg0 = name.substring(colonPos + 1);
-									args.add(0, new WString(arg0));
-									if (this.resolveFunction(fname, args,
-											result)) {
-										handled = true;
-									} else {
-										args.remove(0);
-									}
-								}
-								if (!handled) {
-									this.resolveString(name, args, result);
-								}
-							}
-						}
-						lastPos = endVar + 1;
-					} else {
-						if (!(suppressing != 0)) {
-							result.append('$');
-						}
-						lastPos += 1;
-					}
-				}
-			} else {
-				if (!(suppressing != 0)) {
-					result.append('$');
-				}
-				lastPos += 1;
-			}
-			pos = lastPos;
-		}
-		result.append(text.substring(lastPos));
+		this.renderTemplateText(result, this.text_);
 	}
 
 	/**
@@ -1071,6 +981,7 @@ public class WTemplate extends WInteractWidget {
 	private List<WWidget> newlyRendered_;
 	private Map<String, WTemplate.Function> functions_;
 	private Map<String, String> strings_;
+	private Map<String, WString> nestedTemplates_;
 	private Map<String, WWidget> widgets_;
 	private Set<String> conditions_;
 	private WString text_;
@@ -1170,6 +1081,130 @@ public class WTemplate extends WInteractWidget {
 			}
 		}
 		return pos == text.length() ? -1 : pos;
+	}
+
+	private void renderTemplateText(Writer result, CharSequence templateText)
+			throws IOException {
+		String text = "";
+		WApplication app = WApplication.getInstance();
+		if (app != null
+				&& (this.encodeInternalPaths_ || app.getSession()
+						.hasSessionIdInUrl())) {
+			EnumSet<RefEncoderOption> options = EnumSet
+					.noneOf(RefEncoderOption.class);
+			if (this.encodeInternalPaths_) {
+				options.add(RefEncoderOption.EncodeInternalPaths);
+			}
+			if (app.getSession().hasSessionIdInUrl()) {
+				options.add(RefEncoderOption.EncodeRedirectTrampoline);
+			}
+			WString t = WString.toWString(templateText);
+			RefEncoder.EncodeRefs(t, options);
+			text = t.toString();
+		} else {
+			text = templateText.toString();
+		}
+		int lastPos = 0;
+		List<WString> args = new ArrayList<WString>();
+		List<String> conditions = new ArrayList<String>();
+		int suppressing = 0;
+		for (int pos = text.indexOf('$'); pos != -1; pos = text.indexOf('$',
+				pos)) {
+			if (!(suppressing != 0)) {
+				result.append(text.substring(lastPos, lastPos + pos - lastPos));
+			}
+			lastPos = pos;
+			if (pos + 1 < text.length()) {
+				if (text.charAt(pos + 1) == '$') {
+					if (!(suppressing != 0)) {
+						result.append('$');
+					}
+					lastPos += 2;
+				} else {
+					if (text.charAt(pos + 1) == '{') {
+						int startName = pos + 2;
+						int endName = StringUtils.findFirstOf(text, " \r\n\t}",
+								startName);
+						args.clear();
+						int endVar = parseArgs(text, endName, args);
+						if (endVar == -1) {
+							logger.error(new StringWriter().append(
+									"variable syntax error near \"").append(
+									text.substring(pos)).append("\"")
+									.toString());
+							return;
+						}
+						String name = text.substring(startName, startName
+								+ endName - startName);
+						int nl = name.length();
+						if (nl > 2 && name.charAt(0) == '<'
+								&& name.charAt(nl - 1) == '>') {
+							if (name.charAt(1) != '/') {
+								String cond = name.substring(1, 1 + nl - 2);
+								conditions.add(cond);
+								if (suppressing != 0
+										|| !this.conditionValue(cond)) {
+									++suppressing;
+								}
+							} else {
+								String cond = name.substring(2, 2 + nl - 3);
+								if (!conditions.get(conditions.size() - 1)
+										.equals(cond)) {
+									logger
+											.error(new StringWriter()
+													.append(
+															"mismatching condition block end: ")
+													.append(cond).toString());
+									return;
+								}
+								conditions.remove(conditions.size() - 1);
+								if (suppressing != 0) {
+									--suppressing;
+								}
+							}
+						} else {
+							if (!(suppressing != 0)) {
+								int colonPos = name.indexOf(':');
+								boolean handled = false;
+								if (colonPos != -1) {
+									String fname = name.substring(0,
+											0 + colonPos);
+									String arg0 = name.substring(colonPos + 1);
+									args.add(0, new WString(arg0));
+									if (this.resolveFunction(fname, args,
+											result)) {
+										handled = true;
+									} else {
+										args.remove(0);
+									}
+								}
+								if (!handled) {
+									WString i = this.nestedTemplates_.get(name);
+									if (i != null) {
+										this.renderTemplateText(result, i);
+									} else {
+										this.resolveString(name, args, result);
+									}
+								}
+							}
+						}
+						lastPos = endVar + 1;
+					} else {
+						if (!(suppressing != 0)) {
+							result.append('$');
+						}
+						lastPos += 1;
+					}
+				}
+			} else {
+				if (!(suppressing != 0)) {
+					result.append('$');
+				}
+				lastPos += 1;
+			}
+			pos = lastPos;
+		}
+		result.append(text.substring(lastPos));
 	}
 
 	static String DropShadow_x1_x2 = "<span class=\"Wt-x1\"><span class=\"Wt-x1a\"></span></span><span class=\"Wt-x2\"><span class=\"Wt-x2a\"></span></span>";
