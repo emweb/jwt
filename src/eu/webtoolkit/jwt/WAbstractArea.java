@@ -159,7 +159,6 @@ public class WAbstractArea extends WObject {
 	 * <p>
 	 * 
 	 * @see WAbstractArea#setRef(String ref)
-	 * @see WResource#getUrl()
 	 * @deprecated Use {@link WAbstractArea#getLink() getLink()} instead.
 	 */
 	public String getRef() {

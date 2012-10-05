@@ -34,8 +34,8 @@ import org.slf4j.LoggerFactory;
  * {@link WMenu#setInternalPathEnabled(String basePath)
  * WMenu#setInternalPathEnabled()}), the anchor references the bookmark URL
  * corresponding to the {@link WMenuItem#getPathComponent() getPathComponent()}
- * for the item (see {@link WApplication#getBookmarkUrl()
- * WApplication#getBookmarkUrl()}).
+ * for the item (see {@link WApplication#makeAbsoluteUrl(String url)
+ * WApplication#makeAbsoluteUrl()}).
  * <p>
  * To provide another look for the menu items (such as perhaps adding an icon),
  * you can specialize this class, and reimplement the virtual methods:
@@ -200,8 +200,8 @@ public class WMenuItem extends WObject {
 	 * Sets the path component for this item.
 	 * <p>
 	 * The path component is used by the menu item in the application internal
-	 * path (see {@link WApplication#getBookmarkUrl()
-	 * WApplication#getBookmarkUrl()}), when internal paths are enabled (see
+	 * path (see {@link WApplication#makeAbsoluteUrl(String url)
+	 * WApplication#makeAbsoluteUrl()}), when internal paths are enabled (see
 	 * {@link WMenu#setInternalPathEnabled(String basePath)
 	 * WMenu#setInternalPathEnabled()}) for the menu.
 	 * <p>
@@ -215,10 +215,10 @@ public class WMenuItem extends WObject {
 	 * will be <code>&quot;/examples/charts/&quot;</code>.
 	 * <p>
 	 * By default, the path is automatically derived from
-	 * {@link WMenuItem#getText() getText()}. If a {@link WString#isLiteral()
-	 * literal text} is used, the path is based on the text itself, otherwise on
-	 * the {@link WString#getKey() key}. It is converted to lower case, and
-	 * replacing white space and special characters with &apos;_&apos;.
+	 * {@link WMenuItem#getText() getText()}. If a {@link literal text} is used,
+	 * the path is based on the text itself, otherwise on the {@link key}. It is
+	 * converted to lower case, and replacing white space and special characters
+	 * with &apos;_&apos;.
 	 * <p>
 	 * 
 	 * @see WMenuItem#setText(CharSequence text)

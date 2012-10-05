@@ -28,7 +28,7 @@ import org.slf4j.LoggerFactory;
  * <p>
  * Since the template text may be supplied by a {@link WString}, you can
  * conveniently store the string in a message resource bundle, and make it
- * localized by using {@link WString#tr(String key) WString#tr()}.
+ * localized by using {@link }.
  * <p>
  * Placeholders (for variables and functions) are delimited by:
  * <code>${...}</code>. To use a literal <code>&quot;${&quot;</code>, use

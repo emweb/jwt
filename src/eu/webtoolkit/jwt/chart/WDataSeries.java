@@ -39,19 +39,17 @@ import org.slf4j.LoggerFactory;
  * <strong>Different styles of data series</strong>
  * </p>
  * </div> For a category chart, series may be stacked on top of each other. This
- * is controlled by {@link WDataSeries#setStacked(boolean stacked) setStacked()}
- * for a series, which if enabled, will stack that series on top of the
- * preceding data series. This works regardless of whether they are of the same
- * type, but obviously works visually best if these series are of the same type.
- * When not stacked, bar series are rendered next to each other. The margin
- * between bars of different data series is controlled using
+ * is controlled by {@link } for a series, which if enabled, will stack that
+ * series on top of the preceding data series. This works regardless of whether
+ * they are of the same type, but obviously works visually best if these series
+ * are of the same type. When not stacked, bar series are rendered next to each
+ * other. The margin between bars of different data series is controlled using
  * {@link WCartesianChart#setBarMargin(double margin)
  * WCartesianChart#setBarMargin()}.
  * <p>
  * The line and color type are by default based on the
  * {@link WAbstractChart#getPalette() chart palette}, but may be overridden for
- * a series using {@link WDataSeries#setPen(WPen pen) setPen()},
- * {@link WDataSeries#setBrush(WBrush brush) setBrush()}, etc...
+ * a series using {@link }, {@link }, etc...
  * <p>
  * 
  * @see WCartesianChart#addSeries(WDataSeries series)
@@ -66,12 +64,6 @@ public class WDataSeries {
 	 * overridden from the values provided by the chart palette, using one of
 	 * the methods in this class.
 	 * <p>
-	 * 
-	 * @see WDataSeries#setPen(WPen pen)
-	 * @see WDataSeries#setBrush(WBrush brush)
-	 * @see WDataSeries#setMarkerPen(WPen pen)
-	 * @see WDataSeries#setMarkerBrush(WBrush brush)
-	 * @see WDataSeries#setLabelColor(WColor color)
 	 */
 	public enum CustomFlag {
 		/**
@@ -523,10 +515,6 @@ public class WDataSeries {
 	 * The default value is a CircleMarker for a PointSeries, or NoMarker
 	 * otherwise.
 	 * <p>
-	 * 
-	 * @see WDataSeries#setMarkerPen(WPen pen)
-	 * @see WDataSeries#setMarkerBrush(WBrush brush)
-	 * @see WDataSeries#setCustomMarker(WPainterPath path)
 	 */
 	public void setMarker(MarkerType marker) {
 		if (!ChartUtils.equals(this.marker_, marker)) {
@@ -605,7 +593,6 @@ public class WDataSeries {
 	 * <p>
 	 * 
 	 * @see WDataSeries#setPen(WPen pen)
-	 * @see WDataSeries#setMarkerBrush(WBrush brush)
 	 */
 	public void setMarkerPen(WPen pen) {
 		if (!ChartUtils.equals(this.markerPen_, pen)) {
@@ -708,8 +695,6 @@ public class WDataSeries {
 	 * <p>
 	 * The default values are false for both axes (no labels).
 	 * <p>
-	 * 
-	 * @see WDataSeries#isLabelsEnabled(Axis axis)
 	 */
 	public void setLabelsEnabled(Axis axis, boolean enabled) {
 		if (axis == Axis.XAxis) {
@@ -811,8 +796,6 @@ public class WDataSeries {
 	 * {@link WCartesianChart#initLayout(WRectF rectangle)
 	 * WCartesianChart#initLayout()} first.
 	 * <p>
-	 * 
-	 * @see WDataSeries#mapToDevice(Object xValue, Object yValue, int segment)
 	 */
 	public WPointF mapFromDevice(WPointF deviceCoordinates) {
 		if (this.chart_ != null) {

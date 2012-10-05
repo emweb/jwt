@@ -1033,7 +1033,7 @@ public abstract class WWidget extends WObject {
 	public abstract void callJavaScriptMember(String name, String args);
 
 	/**
-	 * Short hand for {@link WString#tr(String key) WString#tr()}.
+	 * Short hand for {@link }.
 	 * <p>
 	 * Creates a localized string with the given key.
 	 */
@@ -1159,16 +1159,12 @@ public abstract class WWidget extends WObject {
 	 * one or more letters, digits ([0-9]), hyphens (&quot;-&quot;), underscores
 	 * (&quot;_&quot;), colons (&quot;:&quot;), and periods (&quot;.&quot;).</i>
 	 * </p>
-	 * 
-	 * @see WObject#getId()
 	 */
 	public abstract void setId(String id);
 
 	/**
 	 * Finds a descendent widget by name.
 	 * <p>
-	 * 
-	 * @see WObject#setObjectName(String name)
 	 */
 	public abstract WWidget find(String name);
 

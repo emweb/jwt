@@ -194,7 +194,6 @@ public class WPushButton extends WFormWidget {
 	 * <p>
 	 * 
 	 * @see WPushButton#setRef(String url)
-	 * @see WResource#getUrl()
 	 * @deprecated Use {@link WPushButton#getLink() getLink()} instead.
 	 */
 	public String getRef() {

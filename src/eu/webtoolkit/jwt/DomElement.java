@@ -332,13 +332,13 @@ public class DomElement {
 		} else {
 			this.javaScript_.append(this.var_).append('.');
 		}
-		this.javaScript_.append(method).append(';');
+		this.javaScript_.append(method).append(";\n");
 	}
 
 	public void callJavaScript(String jsCode, boolean evenWhenDeleted) {
 		++this.numManipulations_;
 		if (!evenWhenDeleted) {
-			this.javaScript_.append(jsCode);
+			this.javaScript_.append(jsCode).append('\n');
 		} else {
 			this.javaScriptEvenWhenDeleted_ += jsCode;
 		}
@@ -800,8 +800,12 @@ public class DomElement {
 				}
 				break;
 			case PropertyValue:
-				out.append(" value=");
-				fastHtmlAttributeValue(out, attributeValues, i.getValue());
+				if (this.type_ != DomElementType.DomElement_TEXTAREA) {
+					out.append(" value=");
+					fastHtmlAttributeValue(out, attributeValues, i.getValue());
+				} else {
+					innerHTML += i.getValue();
+				}
 				break;
 			case PropertySrc:
 				out.append(" src=");
@@ -1360,7 +1364,8 @@ public class DomElement {
 		out.append("var ").append(this.var_).append("=");
 		if (app.getEnvironment().agentIsIE()
 				&& app.getEnvironment().getAgent().getValue() <= WEnvironment.UserAgent.IE8
-						.getValue()) {
+						.getValue()
+				&& this.type_ != DomElementType.DomElement_TEXTAREA) {
 			out.append("document.createElement('");
 			out.pushEscape(EscapeOStream.RuleSet.JsStringLiteralSQuote);
 			List<DomElement.TimeoutEvent> timeouts = new ArrayList<DomElement.TimeoutEvent>();
@@ -1535,8 +1540,9 @@ public class DomElement {
 			"font-style", "font-variant", "font-weight", "font-size",
 			"background-color", "background-image", "background-repeat",
 			"background-attachment", "background-position", "text-decoration",
-			"white-space", "table-layout", "border-spacing", "zoom",
-			"visibility", "display", "box-sizing" };
+			"white-space", "table-layout", "border-spacing",
+			"page-break-before", "page-break-after", "zoom", "visibility",
+			"display", "box-sizing" };
 	static String[] cssCamelNames_ = { "cssText", "width", "position",
 			"zIndex", "cssFloat", "clear", "width", "height", "lineHeight",
 			"minWidth", "minHeight", "maxWidth", "maxHeight", "left", "right",
@@ -1548,8 +1554,8 @@ public class DomElement {
 			"fontVariant", "fontWeight", "fontSize", "backgroundColor",
 			"backgroundImage", "backgroundRepeat", "backgroundAttachment",
 			"backgroundPosition", "textDecoration", "whiteSpace",
-			"tableLayout", "borderSpacing", "zoom", "visibility", "display",
-			"boxSizing" };
+			"tableLayout", "borderSpacing", "pageBreakBefore",
+			"pageBreakAfter", "zoom", "visibility", "display", "boxSizing" };
 	static final String unsafeChars_ = " $&+,:;=?@'\"<>#%{}|\\^~[]`";
 	private static int nextId_ = 0;
 }

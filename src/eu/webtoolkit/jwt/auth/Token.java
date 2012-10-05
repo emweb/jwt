@@ -30,9 +30,6 @@ import org.slf4j.LoggerFactory;
  * only save this hash in the session or database for later verification. This
  * avoids that a compromised database would leak all the authentication tokens.
  * <p>
- * 
- * @see User#addAuthToken(Token token)
- * @see User#setEmailToken(Token token, User.EmailTokenRole role)
  */
 public class Token {
 	private static Logger logger = LoggerFactory.getLogger(Token.class);

@@ -621,11 +621,13 @@ public class WTableView extends WAbstractItemView {
 								.scheduleRerender(WAbstractItemView.RenderState.NeedAdjustViewPort);
 					}
 				}
-				StringBuilder s = new StringBuilder();
-				s.append("jQuery.data(").append(this.getJsRef()).append(
-						", 'obj').scrollTo(-1, ").append(rowY).append(",")
-						.append(hint.getValue()).append(");");
-				this.doJavaScript(s.toString());
+				if (this.isRendered()) {
+					StringBuilder s = new StringBuilder();
+					s.append("jQuery.data(").append(this.getJsRef()).append(
+							", 'obj').scrollTo(-1, ").append(rowY).append(",")
+							.append(hint.getValue()).append(");");
+					this.doJavaScript(s.toString());
+				}
 			} else {
 				this.setCurrentPage(index.getRow() / this.getPageSize());
 			}
@@ -1744,6 +1746,15 @@ public class WTableView extends WAbstractItemView {
 				+ this.contentsContainer_.getJsRef() + ","
 				+ this.headerContainer_.getJsRef() + ","
 				+ this.headerColumnsContainer_.getJsRef() + ");");
+		if (this.viewportTop_ != 0) {
+			StringBuilder s = new StringBuilder();
+			s.append("function(o, w, h) {").append("if (!o.scrollTopSet) {")
+					.append("o.scrollTop = ").append(this.viewportTop_).append(
+							";").append("o.onscroll();").append(
+							"o.scrollTopSet = true;").append("}").append("}");
+			this.contentsContainer_.setJavaScriptMember(WT_RESIZE_JS, s
+					.toString());
+		}
 	}
 
 	private boolean isRowRendered(final int row) {

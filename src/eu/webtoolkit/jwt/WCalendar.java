@@ -41,7 +41,7 @@ import org.slf4j.LoggerFactory;
  * {@link WCalendar#renderCell(WWidget widget, WDate date) renderCell()}.
  * <p>
  * Internationalization is provided by the internationalization features of the
- * {@link eu.webtoolkit.jwt.WDate} class.
+ * {@link WDate} class.
  * <p>
  * Here is a snapshot, taken on 19/01/2010 (shown as today), and 14/01/2010
  * currently selected.
@@ -362,8 +362,7 @@ public class WCalendar extends WCompositeWidget {
 	/**
 	 * Sets the first day of the week.
 	 * <p>
-	 * Possible values or 1 to 7, as accepted by
-	 * {@link WDate#getShortDayName(int weekday) WDate#getShortDayName()}.
+	 * Possible values or 1 to 7, as accepted by {@link }.
 	 * <p>
 	 * The default value is 1 (&quot;Monday&quot;).
 	 */

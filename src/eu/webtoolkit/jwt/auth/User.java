@@ -43,8 +43,6 @@ public class User {
 	/**
 	 * Enumeration for a user&apos;s account status.
 	 * <p>
-	 * 
-	 * @see User#getStatus()
 	 */
 	public enum Status {
 		/**
@@ -90,8 +88,6 @@ public class User {
 	 * <p>
 	 * Creates an invalid user.
 	 * <p>
-	 * 
-	 * @see User#isValid()
 	 */
 	public User() {
 		this.id_ = "";
@@ -316,9 +312,6 @@ public class User {
 	 * This changes the number of failed login attempts, and stores the current
 	 * date as the last login attempt time.
 	 * <p>
-	 * 
-	 * @see User#getFailedLoginAttempts()
-	 * @see User#getLastLoginAttempt()
 	 */
 	public void setAuthenticated(boolean success) {
 		this.checkValid();

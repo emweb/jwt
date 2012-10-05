@@ -70,8 +70,8 @@ public class OAuthProcess extends WObject {
 	 * This starts an authorization process to request an accesstoken to access
 	 * protected information within the process scope.
 	 * <p>
-	 * The authorization process ends with the {@link OAuthProcess#authorized()
-	 * authorized()} signal which signals the obtained token.
+	 * The authorization process ends with the {@link } signal which signals the
+	 * obtained token.
 	 * <p>
 	 * <p>
 	 * <i><b>Note: </b>To be able to use a popup (instead of a page redirect),
@@ -94,16 +94,15 @@ public class OAuthProcess extends WObject {
 	 * Starts an authorization and authentication process.
 	 * <p>
 	 * This is {@link OAuthProcess#startAuthorize() startAuthorize()} followed
-	 * by {@link OAuthProcess#getIdentity(OAuthAccessToken token) getIdentity()}.
+	 * by {@link }.
 	 * <p>
 	 * This requires that the process is created with an authorization scope
 	 * that includes sufficient rights for authentication (at least
 	 * {@link OAuthService#getAuthenticationScope()
 	 * OAuthService#getAuthenticationScope()})
 	 * <p>
-	 * The authentication process ends with the
-	 * {@link OAuthProcess#authenticated() authenticated()} signal which signals
-	 * the obtained identity.
+	 * The authentication process ends with the {@link } signal which signals the
+	 * obtained identity.
 	 * <p>
 	 * <p>
 	 * <i><b>Note: </b>To be able to use a popup (instead of a page redirect),
@@ -152,9 +151,8 @@ public class OAuthProcess extends WObject {
 	 * of the OAuth protocol, since OAuth does not standardize the use of the
 	 * access token to obtain this information.
 	 * <p>
-	 * The authentication process ends with the
-	 * {@link OAuthProcess#authenticated() authenticated()} signal which signals
-	 * the obtained identity.
+	 * The authentication process ends with the {@link } signal which signals the
+	 * obtained identity.
 	 */
 	public void getIdentity(OAuthAccessToken token) {
 		throw new WException("OAuth::Process::Identity(): not specialized");
@@ -163,10 +161,8 @@ public class OAuthProcess extends WObject {
 	/**
 	 * Error information, in case authentication or identification failed.
 	 * <p>
-	 * The error message contains details when the
-	 * {@link OAuthProcess#authorized() authorized()} or
-	 * {@link OAuthProcess#authenticated() authenticated()} signals indicate
-	 * respectively an invalid token or invalid identity.
+	 * The error message contains details when the {@link } or {@link } signals
+	 * indicate respectively an invalid token or invalid identity.
 	 */
 	public WString getError() {
 		return this.error_;
@@ -197,7 +193,6 @@ public class OAuthProcess extends WObject {
 	 * <p>
 	 * 
 	 * @see OAuthProcess#startAuthorize()
-	 * @see OAuthAccessToken#isValid()
 	 */
 	public Signal1<OAuthAccessToken> authorized() {
 		return this.authorized_;
@@ -268,8 +263,6 @@ public class OAuthProcess extends WObject {
 	/**
 	 * Exception thrown while parsing a token response.
 	 * <p>
-	 * 
-	 * @see OAuthProcess#parseTokenResponse(HttpMessage response)
 	 */
 	protected static class TokenError extends RuntimeException {
 		private static Logger logger = LoggerFactory

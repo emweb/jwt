@@ -29,11 +29,9 @@ import org.slf4j.LoggerFactory;
  * <ul>
  * <li><code>facebook-oauth2-redirect-endpoint</code>: the URL of the local
  * redirect endpoint, to which the Facebook OAuth service redirects the user
- * after authentication. See also {@link FacebookService#getRedirectEndpoint()
- * getRedirectEndpoint()}</li>
+ * after authentication. See also {@link }</li>
  * <li><code>facebook-oauth2-redirect-endpoint-path</code>: optionally, the
- * deployment path that corresponds to the redirect endpoint. See also
- * {@link FacebookService#getRedirectEndpointPath() getRedirectEndpointPath()}</li>
+ * deployment path that corresponds to the redirect endpoint. See also {@link }</li>
  * <li><code>facebook-oauth2-app-id</code>: The application ID</li>
  * <li><code>facebook-oauth2-app-secret</code>: The application secret.</li>
  * </ul>

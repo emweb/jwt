@@ -253,12 +253,16 @@ class WebRenderer implements SlotLearnerInterface {
 			throws IOException {
 		if (this.session_.getApp() != null
 				&& this.session_.getApp().internalPathIsChanged_) {
-			out.append("if (window.").append(
-					this.session_.getApp().getJavaScriptClass()).append(") ")
+			out
+					.append("if (window.")
 					.append(this.session_.getApp().getJavaScriptClass())
-					.append("._p_.setHash('").append(
-							this.session_.getApp().getInternalPath()).append(
-							"');\n");
+					.append(") ")
+					.append(this.session_.getApp().getJavaScriptClass())
+					.append("._p_.setHash(")
+					.append(
+							WWebWidget
+									.jsStringLiteral(this.session_.getApp().newInternalPath_))
+					.append(");\n");
 		}
 		out.append("if (window.location.replace) window.location.replace('")
 				.append(redirect).append("');else window.location.href='")
@@ -451,13 +455,7 @@ class WebRenderer implements SlotLearnerInterface {
 		final boolean innerHtml = !xhtml
 				|| this.session_.getEnv().agentIsGecko();
 		if (serveSkeletons) {
-			boolean haveJQuery = false;
-			for (int i = 0; i < app.scriptLibraries_.size(); ++i) {
-				if (app.scriptLibraries_.get(i).uri.indexOf("jquery") != -1) {
-					haveJQuery = true;
-					break;
-				}
-			}
+			boolean haveJQuery = app.isCustomJQuery();
 			if (!haveJQuery) {
 				response.out().append("if (typeof window.$ === 'undefined') {");
 				response.out().append(WtServlet.JQuery_js);
@@ -583,8 +581,9 @@ class WebRenderer implements SlotLearnerInterface {
 				response.out().append(this.collectedJS1_.toString());
 				this.addResponseAckPuzzle(response.out());
 				response.out().append(app.getJavaScriptClass()).append(
-						"._p_.setHash('").append(app.newInternalPath_).append(
-						"');\n");
+						"._p_.setHash(").append(
+						WWebWidget.jsStringLiteral(app.newInternalPath_))
+						.append(");\n");
 				if (!app.getEnvironment().hashInternalPaths()) {
 					this.session_.setPagePathInfo(app.newInternalPath_);
 				}
@@ -1210,8 +1209,11 @@ class WebRenderer implements SlotLearnerInterface {
 			int librariesLoaded = this.loadScriptLibraries(js, app);
 			app.streamAfterLoadJavaScript(js);
 			if (app.internalPathIsChanged_) {
-				js.append(app.getJavaScriptClass()).append("._p_.setHash('")
-						.append(app.newInternalPath_).append("');\n");
+				js.append(app.getJavaScriptClass()).append("._p_.setHash(")
+						.append(
+								WWebWidget
+										.jsStringLiteral(app.newInternalPath_))
+						.append(");\n");
 				if (!this.isPreLearning()
 						&& !app.getEnvironment().hashInternalPaths()) {
 					this.session_.setPagePathInfo(app.newInternalPath_);

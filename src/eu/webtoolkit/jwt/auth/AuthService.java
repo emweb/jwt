@@ -36,32 +36,21 @@ import org.slf4j.LoggerFactory;
  * <ul>
  * <li>settings for generating random tokens:
  * <ul>
- * <li>{@link AuthService#setRandomTokenLength(int length)
- * setRandomTokenLength()}</li>
+ * <li>{@link }</li>
  * </ul>
  * </li>
  * <li>authentication tokens, used by e.g. remember-me functionality:
  * <ul>
- * <li>
- * {@link AuthService#setAuthTokensEnabled(boolean enabled, String cookieName)
- * setAuthTokensEnabled()}</li>
- * <li>
- * {@link AuthService#processAuthToken(String token, AbstractUserDatabase users)
- * processAuthToken()}</li>
+ * <li>{@link }</li>
+ * <li>{@link }</li>
  * </ul>
  * </li>
  * <li>email tokens, for email verification and lost password functions:
  * <ul>
- * <li>{@link AuthService#setEmailVerificationEnabled(boolean enabled)
- * setEmailVerificationEnabled()}</li>
- * <li>
- * {@link AuthService#lostPassword(String emailAddress, AbstractUserDatabase users)
- * lostPassword()}</li>
- * <li>{@link AuthService#verifyEmailAddress(User user, String address)
- * verifyEmailAddress()}</li>
- * <li>
- * {@link AuthService#processEmailToken(String token, AbstractUserDatabase users)
- * processEmailToken()}</li>
+ * <li>{@link }</li>
+ * <li>{@link }</li>
+ * <li>{@link }</li>
+ * <li>{@link }</li>
  * </ul>
  * </li>
  * </ul>
@@ -185,9 +174,6 @@ public class AuthService {
 	 * <p>
 	 * Authentication tokens are disabled by default.
 	 * <p>
-	 * 
-	 * @see AuthService#setTokenHashFunction(HashFunction function)
-	 * @see AuthService#setAuthTokenValidity(int minutes)
 	 */
 	public void setAuthTokensEnabled(boolean enabled, String cookieName) {
 		this.authTokens_ = enabled;
@@ -256,9 +242,7 @@ public class AuthService {
 	 * This creates and stores a new authentication token for the given user.
 	 * <p>
 	 * The returned value is the token that may be used to re-identify the user
-	 * in
-	 * {@link AuthService#processAuthToken(String token, AbstractUserDatabase users)
-	 * processAuthToken()}.
+	 * in {@link }.
 	 */
 	public String createAuthToken(User user) {
 		if (!user.isValid()) {
@@ -391,9 +375,6 @@ public class AuthService {
 	 * Then it sends an email to the user&apos;s unverified email address with
 	 * instructions that redirect him to this site, using sendConfirmEmail().
 	 * <p>
-	 * 
-	 * @see AuthService#processEmailToken(String token, AbstractUserDatabase
-	 *      users)
 	 */
 	public void verifyEmailAddress(User user, String address)
 			throws javax.mail.MessagingException, UnsupportedEncodingException,
@@ -418,9 +399,6 @@ public class AuthService {
 	 * this email address corresponds to a verified email address in the
 	 * database. The current password is not invalidated.
 	 * <p>
-	 * 
-	 * @see AuthService#processEmailToken(String token, AbstractUserDatabase
-	 *      users)
 	 */
 	public void lostPassword(String emailAddress, AbstractUserDatabase users)
 			throws javax.mail.MessagingException, UnsupportedEncodingException,
@@ -445,10 +423,10 @@ public class AuthService {
 	 * <p>
 	 * This may return two successful results:
 	 * <ul>
-	 * <li>{@link EmailTokenResult.Result#EmailConfirmed}: a token was presented
-	 * which proves that the user is tied to the email address.</li>
-	 * <li>{@link EmailTokenResult.Result#UpdatePassword}: a token was presented
-	 * which requires the user to enter a new password.</li>
+	 * <li>{@link }: a token was presented which proves that the user is tied to
+	 * the email address.</li>
+	 * <li>{@link }: a token was presented which requires the user to enter a new
+	 * password.</li>
 	 * </ul>
 	 * <p>
 	 * 

@@ -134,8 +134,6 @@ public class WTableColumn extends WObject {
 	 * Sets a custom Id. Note that the Id must be unique across the whole widget
 	 * tree, can only be set right after construction and cannot be changed.
 	 * <p>
-	 * 
-	 * @see WObject#getId()
 	 */
 	public void setId(String id) {
 		if (!(this.id_ != null)) {

@@ -31,9 +31,8 @@ public enum AxisScale {
 	/**
 	 * <p>
 	 * A category scale is set as the scale for the X axis in a
-	 * {@link ChartType#CategoryChart CategoryChart}, and is only applicable
-	 * there. It lists all values, evenly spaced, and consecutively in the order
-	 * of the model.
+	 * {@link CategoryChart}, and is only applicable there. It lists all values,
+	 * evenly spaced, and consecutively in the order of the model.
 	 */
 	CategoryScale(0),
 	/**
@@ -51,18 +50,17 @@ public enum AxisScale {
 	/**
 	 * <p>
 	 * A date scale is a special linear scale, which is useful for the X axis in
-	 * a ScatterPlot, when the X series contain dates (of type
-	 * {@link eu.webtoolkit.jwt.WDate}). The dates are internally stored in
-	 * julian date format.
+	 * a ScatterPlot, when the X series contain dates (of type {@link WDate}).
+	 * The dates are internally stored in julian date format.
 	 */
 	DateScale(3),
 	/**
 	 * <p>
 	 * A datetime scale is a special linear scale, which is useful for the X
 	 * axis in a ScatterPlot, when the X series contain timedates (of type
-	 * {@link eu.webtoolkit.jwt.WDate}). The dates are internally stored as the
-	 * number of seconds since the Unix Epoch (midnight Coordinated Universal
-	 * Time (UTC) of January 1, 1970).
+	 * {@link WDateTime}). The dates are internally stored as the number of
+	 * seconds since the Unix Epoch (midnight Coordinated Universal Time (UTC)
+	 * of January 1, 1970).
 	 */
 	DateTimeScale(4);
 

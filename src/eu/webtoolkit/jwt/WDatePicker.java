@@ -43,9 +43,9 @@ import org.slf4j.LoggerFactory;
  * <h3>i18n</h3>
  * <p>
  * Internationalization of {@link WDatePicker} is mostly handled through the
- * internationalization mechanism of {@link eu.webtoolkit.jwt.WDate}. The
- * &apos;Close&apos; button can be internationalized by overriding the default
- * value for the localization key Wt.DatePicker.Close.
+ * internationalization mechanism of {@link WDate}. The &apos;Close&apos; button
+ * can be internationalized by overriding the default value for the localization
+ * key Wt.DatePicker.Close.
  * <p>
  * <h3>CSS</h3>
  * <p>
@@ -83,6 +83,8 @@ public class WDatePicker extends WCompositeWidget {
 	public WDatePicker(WContainerWidget parent) {
 		super(parent);
 		this.format_ = "";
+		this.popupClosed_ = new Signal();
+		this.changed_ = new Signal();
 		this.positionJS_ = new JSlot();
 		this.createDefault();
 	}
@@ -112,6 +114,8 @@ public class WDatePicker extends WCompositeWidget {
 			WContainerWidget parent) {
 		super(parent);
 		this.format_ = "";
+		this.popupClosed_ = new Signal();
+		this.changed_ = new Signal();
 		this.positionJS_ = new JSlot();
 		this.create(displayWidget, forEdit);
 	}
@@ -148,7 +152,6 @@ public class WDatePicker extends WCompositeWidget {
 	 * <p>
 	 * 
 	 * @see WDatePicker#getFormat()
-	 * @see WDate#toString()
 	 */
 	public void setFormat(String format) {
 		this.format_ = format;
@@ -208,7 +211,6 @@ public class WDatePicker extends WCompositeWidget {
 	 * <p>
 	 * 
 	 * @see WDatePicker#setDate(WDate date)
-	 * @see WDate#fromString(String s)
 	 * @see WLineEdit#getText()
 	 */
 	public WDate getDate() {
@@ -316,7 +318,7 @@ public class WDatePicker extends WCompositeWidget {
 	 * the line edit, or through the calendar popup).
 	 */
 	public Signal changed() {
-		return this.calendar_.selectionChanged();
+		return this.changed_;
 	}
 
 	/**
@@ -346,12 +348,23 @@ public class WDatePicker extends WCompositeWidget {
 		this.popup_.setHidden(!visible);
 	}
 
+	/**
+	 * A signal which indicates that the popup has been closed.
+	 * <p>
+	 * The signal is only fired when the popup has been closed by the user.
+	 */
+	public Signal popupClosed() {
+		return this.popupClosed_;
+	}
+
 	private String format_;
 	private WInteractWidget displayWidget_;
 	private WLineEdit forEdit_;
 	private WContainerWidget layout_;
 	private WTemplate popup_;
 	private WCalendar calendar_;
+	private Signal popupClosed_;
+	private Signal changed_;
 	private JSlot positionJS_;
 
 	private void createDefault() {
@@ -389,6 +402,12 @@ public class WDatePicker extends WCompositeWidget {
 						WDatePicker.this.popup_.hide();
 					}
 				});
+		this.calendar_.activated().addListener(this,
+				new Signal1.Listener<WDate>() {
+					public void trigger(WDate e1) {
+						WDatePicker.this.onPopupHidden();
+					}
+				});
 		this.calendar_.selectionChanged().addListener(this,
 				new Signal.Listener() {
 					public void trigger() {
@@ -400,6 +419,12 @@ public class WDatePicker extends WCompositeWidget {
 				new Signal1.Listener<WMouseEvent>() {
 					public void trigger(WMouseEvent e1) {
 						WDatePicker.this.popup_.hide();
+					}
+				});
+		closeButton.clicked().addListener(this,
+				new Signal1.Listener<WMouseEvent>() {
+					public void trigger(WMouseEvent e1) {
+						WDatePicker.this.onPopupHidden();
 					}
 				});
 		this.popup_.bindString("shadow-x1-x2", WTemplate.DropShadow_x1_x2);
@@ -437,6 +462,7 @@ public class WDatePicker extends WCompositeWidget {
 			this.forEdit_.setText(calDate.toString(this.format_));
 			this.forEdit_.changed().trigger();
 		}
+		this.changed_.trigger();
 	}
 
 	private void setFromLineEdit() {
@@ -454,5 +480,10 @@ public class WDatePicker extends WCompositeWidget {
 			}
 			this.calendar_.browseTo(d);
 		}
+	}
+
+	private void onPopupHidden() {
+		this.forEdit_.setFocus();
+		this.popupClosed();
 	}
 }

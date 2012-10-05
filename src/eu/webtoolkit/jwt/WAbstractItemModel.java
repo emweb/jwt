@@ -63,13 +63,12 @@ import org.slf4j.LoggerFactory;
  * </ul>
  * <p>
  * A crucial point in implementing a hierarchical model is to decide how to
- * reference an index in terms of an internal pointer (
- * {@link WModelIndex#getInternalPointer() WModelIndex#getInternalPointer()}).
- * Other than the top-level index, which is special since it is referenced using
- * an invalid index, every index with children must be identifiable using this
- * object. For example, in the {@link WStandardItemModel}, the internal pointer
- * points to the parent {@link WStandardItem}. For table models, the internal
- * pointer plays no role, since only the toplevel index has children.
+ * reference an index in terms of an internal pointer ({@link }). Other than the
+ * top-level index, which is special since it is referenced using an invalid
+ * index, every index with children must be identifiable using this object. For
+ * example, in the {@link WStandardItemModel}, the internal pointer points to
+ * the parent {@link WStandardItem}. For table models, the internal pointer
+ * plays no role, since only the toplevel index has children.
  * <p>
  * If you want to support editing of the model, then you need to indicate this
  * support using a {@link ItemFlag#ItemIsEditable} flag, and reimplement
@@ -248,10 +247,9 @@ public abstract class WAbstractItemModel extends WObject {
 	 * <p>
 	 * Note that the index itself may be stale (referencing a row/column within
 	 * the parent that is outside the model geometry), but its parent
-	 * (identified by the {@link WModelIndex#getInternalPointer()
-	 * WModelIndex#getInternalPointer()}) is referencing an existing parent. A
-	 * stale index can only be used while the model geometry is being updated,
-	 * i.e. during the emission of the corresponding
+	 * (identified by the {@link }) is referencing an existing parent. A stale
+	 * index can only be used while the model geometry is being updated, i.e.
+	 * during the emission of the corresponding
 	 * [rows/columns](Being)[Removed/Inserted]() signals.
 	 * <p>
 	 * 
@@ -385,10 +383,9 @@ public abstract class WAbstractItemModel extends WObject {
 	 * Returns an index list for data items that match.
 	 * <p>
 	 * Returns an index list of data items that match, starting at start, and
-	 * searching further in that column. If flags specifies
-	 * {@link MatchOptions.MatchFlag#MatchWrap MatchWrap} then the search wraps
-	 * around from the start. If hits is not -1, then at most that number of
-	 * hits are returned.
+	 * searching further in that column. If flags specifies {@link MatchWrap}
+	 * then the search wraps around from the start. If hits is not -1, then at
+	 * most that number of hits are returned.
 	 */
 	public List<WModelIndex> match(WModelIndex start, int role, Object value,
 			int hits, MatchOptions flags) {
@@ -1319,8 +1316,6 @@ public abstract class WAbstractItemModel extends WObject {
 	 * corresponding item. For a flat table model, <code>ptr</code> can thus
 	 * always be 0.
 	 * <p>
-	 * 
-	 * @see WModelIndex#getInternalPointer()
 	 */
 	protected WModelIndex createIndex(int row, int column, Object ptr) {
 		return new WModelIndex(row, column, this, ptr);

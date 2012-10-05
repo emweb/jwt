@@ -85,6 +85,8 @@ public class WPanel extends WCompositeWidget {
 				.setJavaScriptMember(
 						WT_RESIZE_JS,
 						"function(self, w, h) {if (Wt3_2_2.boxSizing(self)) {h -= Wt3_2_2.px(self, 'borderTopWidth') + Wt3_2_2.px(self, 'borderBottomWidth');}var c = self.lastChild;var t = c.previousSibling;if (t.className == 'titlebar')h -= t.offsetHeight;h -= 8;if (h > 0) {c.style.height = h + 'px';$(c).children().each(function() { var self = $(this), padding = self.outerHeight() - self.height();self.height(h - padding);});}};");
+		this.setJavaScriptMember(WT_GETPS_JS, StdWidgetItemImpl
+				.getSecondGetPSJS());
 	}
 
 	/**

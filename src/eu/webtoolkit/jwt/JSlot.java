@@ -38,9 +38,9 @@ import org.slf4j.LoggerFactory;
  * you simply do not care. For these situations a JSlot can be used to add
  * client-side event handling.
  * <p>
- * The JavaScript code may be set (or changed) using the
- * {@link JSlot#setJavaScript(String js) setJavaScript()} method which takes a
- * string that implements a JavaScript function with the following signature:
+ * The JavaScript code may be set (or changed) using the {@link } method which
+ * takes a string that implements a JavaScript function with the following
+ * signature:
  * <p>
  * 
  * <pre>
@@ -59,11 +59,10 @@ import org.slf4j.LoggerFactory;
  * <p>
  * In the JavaScript code, you may use {@link WWidget#getJsRef()
  * WWidget#getJsRef()} to obtain the DOM element corresponding to any
- * {@link WWidget}, or {@link WObject#getId() WObject#getId()} to obtain the DOM
- * id. In addition you may trigger server-side events using the JavaScript
- * WtSignalEmit function (see {@link JSignal} documentation). That&apos;s how
- * far we can help you. For the rest you are left to yourself, buggy browsers
- * and quirky JavaScript (<a
+ * {@link WWidget}, or {@link } to obtain the DOM id. In addition you may trigger
+ * server-side events using the JavaScript WtSignalEmit function (see
+ * {@link JSignal} documentation). That&apos;s how far we can help you. For the
+ * rest you are left to yourself, buggy browsers and quirky JavaScript (<a
  * href="http://www.quirksmode.org/">http://www.quirksmode.org/</a> was a
  * reliable companion to me) -- good luck.
  * <p>
@@ -106,7 +105,6 @@ public class JSlot {
 	 * <p>
 	 * 
 	 * @see JSlot#JSlot(WWidget parent)
-	 * @see JSlot#setJavaScript(String js)
 	 */
 	public JSlot(String javaScript, WWidget parent) {
 		this.widget_ = parent;

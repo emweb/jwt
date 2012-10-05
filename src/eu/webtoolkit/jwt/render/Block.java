@@ -30,6 +30,8 @@ class Block {
 		this.type_ = DomElementType.DomElement_UNKNOWN;
 		this.inline_ = false;
 		this.children_ = new ArrayList<Block>();
+		this.currentWidth_ = 0;
+		this.contentsHeight_ = 0;
 		this.css_ = new HashMap<String, String>();
 		if (node != null) {
 			if (RenderUtils.isXmlElement(node)) {
@@ -248,7 +250,14 @@ class Block {
 	public double layoutBlock(PageState ps, boolean canIncreaseWidth,
 			WTextRenderer renderer, double collapseMarginTop,
 			double collapseMarginBottom, double cellHeight) {
-		double minX = ps.minX;
+		String pageBreakBefore = this
+				.cssProperty(Property.PropertyStylePageBreakBefore);
+		if (pageBreakBefore.equals("always")) {
+			this.pageBreak(ps);
+			collapseMarginTop = 0;
+		}
+		double origMinX = ps.minX;
+		double origMaxX = ps.maxX;
 		double inCollapseMarginTop = collapseMarginTop;
 		double inY = ps.y;
 		double spacerTop = 0;
@@ -285,19 +294,33 @@ class Block {
 		ps.y += this.cssBorderWidth(Side.Top, renderer.getFontScale());
 		ps.minX += this.cssMargin(Side.Left, renderer.getFontScale());
 		ps.maxX -= this.cssMargin(Side.Right, renderer.getFontScale());
+		double cssSetWidth = this.cssWidth(renderer.getFontScale());
 		if (this.type_ == DomElementType.DomElement_TABLE) {
-			this.layoutTable(ps, canIncreaseWidth, renderer);
-		} else {
-			double width = this.cssWidth(renderer.getFontScale());
-			if (width >= 0) {
-				width += this.cssPadding(Side.Left, renderer.getFontScale())
-						+ this.cssBorderWidth(Side.Left, renderer
-								.getFontScale())
-						+ this.cssPadding(Side.Right, renderer.getFontScale())
+			if (cssSetWidth > 0) {
+				cssSetWidth -= this.cssBorderWidth(Side.Left, renderer
+						.getFontScale())
 						+ this.cssBorderWidth(Side.Right, renderer
 								.getFontScale());
-				if (this.type_ == DomElementType.DomElement_TD
-						|| this.type_ == DomElementType.DomElement_TH) {
+				cssSetWidth = Math.max(0.0, cssSetWidth);
+			}
+			this.layoutTable(ps, canIncreaseWidth, renderer, cssSetWidth);
+		} else {
+			double width = cssSetWidth;
+			boolean paddingBorderWithinWidth = this.isTableCell()
+					&& isPercentageLength(this
+							.cssProperty(Property.PropertyStyleWidth));
+			if (width >= 0) {
+				if (!paddingBorderWithinWidth) {
+					width += this
+							.cssPadding(Side.Left, renderer.getFontScale())
+							+ this.cssBorderWidth(Side.Left, renderer
+									.getFontScale())
+							+ this.cssPadding(Side.Right, renderer
+									.getFontScale())
+							+ this.cssBorderWidth(Side.Right, renderer
+									.getFontScale());
+				}
+				if (this.isTableCell()) {
 					if (width < ps.maxX - ps.minX) {
 						width = ps.maxX - ps.minX;
 					}
@@ -326,13 +349,11 @@ class Block {
 			if (this.type_ == DomElementType.DomElement_IMG) {
 				double height = this.cssHeight(renderer.getFontScale());
 				if (ps.y + height > renderer.textHeight(ps.page)) {
-					clearFloats(ps);
-					startY = 0;
-					++startPage;
-					ps.y = startY
-							+ this.cssBorderWidth(Side.Top, renderer
-									.getFontScale());
-					ps.page = startPage;
+					this.pageBreak(ps);
+					startPage = ps.page;
+					startY = ps.y;
+					ps.y += this.cssBorderWidth(Side.Top, renderer
+							.getFontScale());
 				}
 				ps.y += height;
 			} else {
@@ -344,6 +365,7 @@ class Block {
 						- this.cssPadding(Side.Right, renderer.getFontScale())
 						- this.cssBorderWidth(Side.Right, renderer
 								.getFontScale());
+				this.currentWidth_ = cMaxX - cMinX;
 				ps.y += this.cssPadding(Side.Top, renderer.getFontScale());
 				advance(ps, spacerTop, renderer);
 				if (this.isInlineChildren()) {
@@ -411,8 +433,7 @@ class Block {
 				.getFontScale());
 		ps.y -= collapseMarginBottom;
 		double height = this.cssHeight(renderer.getFontScale());
-		if (this.type_ == DomElementType.DomElement_TD
-				|| this.type_ == DomElementType.DomElement_TH) {
+		if (this.isTableCell()) {
 			this.contentsHeight_ = diff(ps.y, ps.page, startY, startPage,
 					renderer);
 		}
@@ -433,7 +454,12 @@ class Block {
 		}
 		for (int i = startPage; i <= ps.page; ++i) {
 			double boxY = i == startPage ? startY : 0;
-			double boxH = (i == ps.page ? ps.y : renderer.textHeight(i)) - boxY;
+			double boxH;
+			if (i == ps.page) {
+				boxH = ps.y - boxY;
+			} else {
+				boxH = Math.max(0.0, this.maxChildrenLayoutY(i) - boxY);
+			}
 			if (boxH > 0) {
 				this.blockLayout.add(new BlockBox());
 				BlockBox box = this.blockLayout
@@ -447,11 +473,36 @@ class Block {
 		}
 		ps.y += collapseMarginBottom;
 		if (this.blockLayout.isEmpty()) {
+			ps.page = startPage;
 			ps.y = inY;
 			collapseMarginBottom = inCollapseMarginTop;
 		}
-		ps.minX = minX;
-		return collapseMarginBottom;
+		if (!this.isTableCell()
+				&& ps.maxX - ps.minX == cssSetWidth
+				&& isPercentageLength(this
+						.cssProperty(Property.PropertyStyleWidth))) {
+			ps.maxX = origMaxX;
+		} else {
+			if (ps.maxX < origMaxX) {
+				ps.maxX = origMaxX;
+			} else {
+				if (!this.isFloat()) {
+					ps.minX -= this.cssMargin(Side.Left, renderer
+							.getFontScale());
+					ps.maxX += this.cssMargin(Side.Right, renderer
+							.getFontScale());
+				}
+			}
+		}
+		ps.minX = origMinX;
+		String pageBreakAfter = this
+				.cssProperty(Property.PropertyStylePageBreakAfter);
+		if (pageBreakAfter.equals("always")) {
+			this.pageBreak(ps);
+			return 0;
+		} else {
+			return collapseMarginBottom;
+		}
 	}
 
 	public final double layoutBlock(PageState ps, boolean canIncreaseWidth,
@@ -515,10 +566,21 @@ class Block {
 					renderer.getPainter().fillRect(rect, new WBrush(c));
 				}
 				this.renderBorders(bb, renderer, verticals);
+				if (this.type_ == DomElementType.DomElement_THEAD) {
+					for (int j = 0; j < this.children_.size(); ++j) {
+						if (i > 0) {
+							this.children_.get(j).reLayout(
+									this.blockLayout.get(i - 1), lb);
+						}
+						this.children_.get(j).render(renderer, page);
+					}
+				}
 			}
 		}
-		for (int i = 0; i < this.children_.size(); ++i) {
-			this.children_.get(i).render(renderer, page);
+		if (this.type_ != DomElementType.DomElement_THEAD) {
+			for (int i = 0; i < this.children_.size(); ++i) {
+				this.children_.get(i).render(renderer, page);
+			}
 		}
 	}
 
@@ -585,12 +647,24 @@ class Block {
 		public boolean defined;
 	}
 
+	enum PercentageRule {
+		PercentageOfFontSize, PercentageOfParentSize, IgnorePercentage;
+
+		/**
+		 * Returns the numerical representation of this enum.
+		 */
+		public int getValue() {
+			return ordinal();
+		}
+	}
+
 	private net.n3.nanoxml.XMLElement node_;
 	private Block parent_;
 	private DomElementType type_;
 	private Side float_;
 	private boolean inline_;
 	private List<Block> children_;
+	private double currentWidth_;
 	private double contentsHeight_;
 	private Map<String, String> css_;
 
@@ -718,10 +792,16 @@ class Block {
 		if (this.node_ != null) {
 			result = this.cssDecodeLength(this
 					.cssProperty(Property.PropertyStyleWidth), fontScale,
-					result, false);
-			if (this.type_ == DomElementType.DomElement_IMG) {
+					result, Block.PercentageRule.PercentageOfParentSize, this
+							.getCurrentParentWidth());
+			if (this.type_ == DomElementType.DomElement_IMG
+					|| this.type_ == DomElementType.DomElement_TABLE
+					|| this.type_ == DomElementType.DomElement_TD
+					|| this.type_ == DomElementType.DomElement_TH) {
 				result = this.cssDecodeLength(this.attributeValue("width"),
-						fontScale, result, false);
+						fontScale, result,
+						Block.PercentageRule.PercentageOfParentSize, this
+								.getCurrentParentWidth());
 			}
 		}
 		return result;
@@ -732,10 +812,11 @@ class Block {
 		if (this.node_ != null) {
 			result = this.cssDecodeLength(this
 					.cssProperty(Property.PropertyStyleHeight), fontScale,
-					result, false);
+					result, Block.PercentageRule.IgnorePercentage);
 			if (this.type_ == DomElementType.DomElement_IMG) {
 				result = this.cssDecodeLength(this.attributeValue("height"),
-						fontScale, result, false);
+						fontScale, result,
+						Block.PercentageRule.IgnorePercentage);
 			}
 		}
 		return result;
@@ -810,8 +891,7 @@ class Block {
 		Block.CssLength result = this.cssLength(
 				Property.PropertyStylePaddingTop, side, fontScale);
 		if (!result.defined) {
-			if (this.type_ == DomElementType.DomElement_TD
-					|| this.type_ == DomElementType.DomElement_TH) {
+			if (this.isTableCell()) {
 				return 4;
 			} else {
 				if ((this.type_ == DomElementType.DomElement_UL || this.type_ == DomElementType.DomElement_OL)
@@ -843,7 +923,7 @@ class Block {
 			if (this.type_ == DomElementType.DomElement_TABLE) {
 				result = this.attributeValue("border", 0);
 			} else {
-				if (this.type_ == DomElementType.DomElement_TD) {
+				if (this.isTableCell()) {
 					Block table = this.parent_;
 					while (table != null
 							&& table.type_ != DomElementType.DomElement_TABLE) {
@@ -898,10 +978,14 @@ class Block {
 				s = this.attributeValue("align");
 			}
 			if (s.length() == 0 || s.equals("inherit")) {
-				if (this.parent_ != null) {
-					return this.parent_.getCssTextAlign();
+				if (this.type_ == DomElementType.DomElement_TH) {
+					return AlignmentFlag.AlignCenter;
 				} else {
-					return AlignmentFlag.AlignLeft;
+					if (this.parent_ != null) {
+						return this.parent_.getCssTextAlign();
+					} else {
+						return AlignmentFlag.AlignLeft;
+					}
 				}
 			} else {
 				if (s.equals("left")) {
@@ -1087,7 +1171,8 @@ class Block {
 		}
 		String v = this.cssProperty(Property.PropertyStyleFontWeight);
 		if (v.length() == 0
-				&& (this.type_ == DomElementType.DomElement_STRONG || this.type_
+				&& (this.type_ == DomElementType.DomElement_STRONG
+						|| this.type_ == DomElementType.DomElement_TH || this.type_
 						.getValue() >= DomElementType.DomElement_H1.getValue()
 						&& this.type_.getValue() <= DomElementType.DomElement_H6
 								.getValue())) {
@@ -1219,13 +1304,22 @@ class Block {
 	}
 
 	private double cssDecodeLength(String length, double fontScale,
-			double defaultValue, boolean interpretPercentage) {
+			double defaultValue, Block.PercentageRule percentage,
+			double parentSize) {
 		if (length.length() != 0) {
 			WLength l = new WLength(length);
-			if (interpretPercentage || l.getUnit() != WLength.Unit.Percentage) {
-				return l.toPixels(this.cssFontSize(fontScale));
-			} else {
+			if (l.getUnit() == WLength.Unit.Percentage) {
+				switch (percentage) {
+				case PercentageOfFontSize:
+					return l.toPixels(this.cssFontSize(fontScale));
+				case PercentageOfParentSize:
+					return l.getValue() / 100.0 * parentSize;
+				case IgnorePercentage:
+					return defaultValue;
+				}
 				return defaultValue;
+			} else {
+				return l.toPixels(this.cssFontSize(fontScale));
 			}
 		} else {
 			return defaultValue;
@@ -1234,7 +1328,34 @@ class Block {
 
 	private final double cssDecodeLength(String length, double fontScale,
 			double defaultValue) {
-		return cssDecodeLength(length, fontScale, defaultValue, true);
+		return cssDecodeLength(length, fontScale, defaultValue,
+				Block.PercentageRule.PercentageOfFontSize, 0);
+	}
+
+	private final double cssDecodeLength(String length, double fontScale,
+			double defaultValue, Block.PercentageRule percentage) {
+		return cssDecodeLength(length, fontScale, defaultValue, percentage, 0);
+	}
+
+	private static boolean isPercentageLength(String length) {
+		return length.length() != 0
+				&& new WLength(length).getUnit() == WLength.Unit.Percentage;
+	}
+
+	private double getCurrentParentWidth() {
+		if (this.parent_ != null) {
+			switch (this.parent_.type_) {
+			case DomElement_TR:
+			case DomElement_TBODY:
+			case DomElement_THEAD:
+			case DomElement_TFOOT:
+				return this.parent_.getCurrentParentWidth();
+			default:
+				return this.parent_.currentWidth_;
+			}
+		} else {
+			return 0;
+		}
 	}
 
 	private boolean isInside(DomElementType type) {
@@ -1247,6 +1368,12 @@ class Block {
 		} else {
 			return false;
 		}
+	}
+
+	private void pageBreak(PageState ps) {
+		clearFloats(ps);
+		++ps.page;
+		ps.y = 0;
 	}
 
 	private double layoutInline(Line line, List<Block> floats, double minX,
@@ -1334,7 +1461,10 @@ class Block {
 								}
 							}
 						} else {
-							assert utf8Count > 0;
+							if (utf8Count <= 0) {
+								throw new WException(
+										"Internal error: utf8Count <= 0!");
+							}
 							h = fontHeight;
 						}
 					} else {
@@ -1479,21 +1609,26 @@ class Block {
 	}
 
 	private void layoutTable(PageState ps, boolean canIncreaseWidth,
-			WTextRenderer renderer) {
-		int cellSpacing = this.attributeValue("cellspacing", 2);
+			WTextRenderer renderer, double cssSetWidth) {
+		this.currentWidth_ = Math.max(0.0, cssSetWidth);
 		List<Double> minimumColumnWidths = new ArrayList<Double>();
 		List<Double> maximumColumnWidths = new ArrayList<Double>();
 		for (int i = 0; i < this.children_.size(); ++i) {
 			Block c = this.children_.get(i);
 			c.tableComputeColumnWidths(minimumColumnWidths,
-					maximumColumnWidths, renderer);
+					maximumColumnWidths, renderer, this);
 		}
+		this.currentWidth_ = 0;
 		int colCount = minimumColumnWidths.size();
+		int cellSpacing = this.attributeValue("cellspacing", 2);
 		double totalSpacing = (colCount + 1) * cellSpacing;
 		double totalMinWidth = sum(minimumColumnWidths) + totalSpacing;
 		double totalMaxWidth = sum(maximumColumnWidths) + totalSpacing;
-		double width = this.cssWidth(renderer.getFontScale());
-		width = Math.max(totalMinWidth, width);
+		double desiredMinWidth = Math.max(totalMinWidth, cssSetWidth);
+		double desiredMaxWidth = totalMaxWidth;
+		if (cssSetWidth > 0 && cssSetWidth < totalMaxWidth) {
+			desiredMaxWidth = Math.max(desiredMinWidth, cssSetWidth);
+		}
 		double availableWidth;
 		for (;;) {
 			Range rangeX = new Range(ps.minX, ps.maxX);
@@ -1502,43 +1637,52 @@ class Block {
 			availableWidth = rangeX.end - rangeX.start
 					- this.cssBorderWidth(Side.Left, renderer.getFontScale())
 					- this.cssBorderWidth(Side.Right, renderer.getFontScale());
-			if (canIncreaseWidth && availableWidth < totalMaxWidth) {
-				ps.maxX += totalMaxWidth - availableWidth;
-				availableWidth = totalMaxWidth;
+			if (canIncreaseWidth && availableWidth < desiredMaxWidth) {
+				ps.maxX += desiredMaxWidth - availableWidth;
+				availableWidth = desiredMaxWidth;
 			}
-			if (availableWidth >= width) {
+			if (availableWidth >= desiredMinWidth) {
 				break;
 			} else {
-				if (width < ps.maxX - ps.minX) {
-					clearFloats(ps, width);
+				if (desiredMinWidth < ps.maxX - ps.minX) {
+					clearFloats(ps, desiredMinWidth);
 				} else {
-					ps.maxX += width - availableWidth;
-					availableWidth = width;
+					ps.maxX += desiredMinWidth - availableWidth;
+					availableWidth = desiredMinWidth;
 				}
 			}
 		}
+		double width = desiredMinWidth;
 		if (width <= availableWidth) {
-			if (totalMaxWidth > availableWidth) {
+			if (desiredMaxWidth > availableWidth) {
 				width = availableWidth;
 			} else {
-				width = Math.max(totalMaxWidth, width);
+				width = Math.max(desiredMaxWidth, width);
 			}
 		} else {
 			Utils.copyList(minimumColumnWidths, maximumColumnWidths);
 		}
 		List<Double> widths = minimumColumnWidths;
-		if (width > totalMinWidth) {
-			double totalStretch = 0;
+		if (width > totalMaxWidth) {
+			Utils.copyList(maximumColumnWidths, widths);
+			double factor = width / totalMaxWidth;
 			for (int i = 0; i < widths.size(); ++i) {
-				totalStretch += maximumColumnWidths.get(i)
-						- minimumColumnWidths.get(i);
+				widths.set(i, widths.get(i) * factor);
 			}
-			double room = width - totalMinWidth;
-			double factor = room / totalStretch;
-			for (int i = 0; i < widths.size(); ++i) {
-				double stretch = maximumColumnWidths.get(i)
-						- minimumColumnWidths.get(i);
-				widths.set(i, widths.get(i) + factor * stretch);
+		} else {
+			if (width > totalMinWidth) {
+				double totalStretch = 0;
+				for (int i = 0; i < widths.size(); ++i) {
+					totalStretch += maximumColumnWidths.get(i)
+							- minimumColumnWidths.get(i);
+				}
+				double room = width - totalMinWidth;
+				double factor = room / totalStretch;
+				for (int i = 0; i < widths.size(); ++i) {
+					double stretch = maximumColumnWidths.get(i)
+							- minimumColumnWidths.get(i);
+					widths.set(i, widths.get(i) + factor * stretch);
+				}
 			}
 		}
 		width += this.cssBoxMargin(Side.Left, renderer.getFontScale())
@@ -1561,7 +1705,14 @@ class Block {
 		}
 		ps.minX += this.cssBoxMargin(Side.Left, renderer.getFontScale());
 		ps.maxX -= this.cssBoxMargin(Side.Right, renderer.getFontScale());
-		this.tableDoLayout(ps.minX, ps, cellSpacing, widths, renderer);
+		Block repeatHead = null;
+		if (!this.children_.isEmpty()
+				&& this.children_.get(0).type_ == DomElementType.DomElement_THEAD) {
+			repeatHead = this.children_.get(0);
+		}
+		boolean protectRows = repeatHead != null;
+		this.tableDoLayout(ps.minX, ps, cellSpacing, widths, protectRows,
+				repeatHead, renderer);
 		ps.minX -= this.cssBorderWidth(Side.Left, renderer.getFontScale());
 		ps.maxX += this.cssBorderWidth(Side.Right, renderer.getFontScale());
 		ps.y += cellSpacing;
@@ -1578,13 +1729,15 @@ class Block {
 				+ this.cssBoxMargin(Side.Left, renderer.getFontScale())
 				+ this.cssBoxMargin(Side.Right, renderer.getFontScale());
 		PageState floatPs = new PageState();
-		floatPs.minX = minX;
+		Utils.copyList(floats, floatPs.floats);
 		for (;;) {
 			floatPs.page = page;
 			floatPs.y = y;
+			floatPs.minX = minX;
 			floatPs.maxX = maxX;
-			lineX = positionFloat(lineX, floatPs, lineHeight, currentWidth,
-					canIncreaseWidth, renderer, this.getFloatSide());
+			double floatX = positionFloat(lineX, floatPs, lineHeight,
+					currentWidth, canIncreaseWidth, renderer, this
+							.getFloatSide());
 			if (floatPs.maxX > maxX) {
 				return floatPs.maxX;
 			}
@@ -1592,8 +1745,8 @@ class Block {
 			boolean unknownWidth = blockCssWidth < 0
 					&& currentWidth < maxX - minX;
 			double collapseMarginBottom = 0;
-			floatPs.minX = lineX;
-			floatPs.maxX = lineX + currentWidth;
+			floatPs.minX = floatX;
+			floatPs.maxX = floatX + currentWidth;
 			collapseMarginBottom = this.layoutBlock(floatPs, unknownWidth
 					|| canIncreaseWidth, renderer, 0, collapseMarginBottom);
 			double pw = floatPs.maxX - (floatPs.minX + currentWidth);
@@ -1602,7 +1755,10 @@ class Block {
 					currentWidth = Math.min(maxX - minX, currentWidth + pw);
 					continue;
 				} else {
-					assert canIncreaseWidth;
+					if (!canIncreaseWidth) {
+						throw new WException(
+								"Internal error: !canIncreaseWidth");
+					}
 					return maxX + pw;
 				}
 			}
@@ -1612,21 +1768,59 @@ class Block {
 	}
 
 	private void tableDoLayout(double x, PageState ps, int cellSpacing,
-			List<Double> widths, WTextRenderer renderer) {
+			List<Double> widths, boolean protectRows, Block repeatHead,
+			WTextRenderer renderer) {
 		if (this.type_ == DomElementType.DomElement_TABLE
 				|| this.type_ == DomElementType.DomElement_TBODY
 				|| this.type_ == DomElementType.DomElement_THEAD
 				|| this.type_ == DomElementType.DomElement_TFOOT) {
 			for (int i = 0; i < this.children_.size(); ++i) {
 				Block c = this.children_.get(i);
-				c.tableDoLayout(x, ps, cellSpacing, widths, renderer);
+				c
+						.tableDoLayout(
+								x,
+								ps,
+								cellSpacing,
+								widths,
+								protectRows,
+								this.type_ != DomElementType.DomElement_THEAD ? repeatHead
+										: null, renderer);
+			}
+			if (repeatHead != null
+					&& this.type_ == DomElementType.DomElement_THEAD) {
+				this.blockLayout.clear();
+				BlockBox bb = new BlockBox();
+				bb.page = ps.page;
+				bb.y = this.minChildrenLayoutY(ps.page);
+				bb.height = this.childrenLayoutHeight(ps.page);
+				bb.x = x;
+				bb.width = 0;
+				this.blockLayout.add(bb);
 			}
 		} else {
-			if (this.type_ == DomElementType.DomElement_TR
-					|| this.type_ == DomElementType.DomElement_TH) {
+			if (this.type_ == DomElementType.DomElement_TR) {
 				double startY = ps.y;
 				int startPage = ps.page;
 				this.tableRowDoLayout(x, ps, cellSpacing, widths, renderer, -1);
+				if (protectRows && ps.page != startPage) {
+					ps.y = startY;
+					ps.page = startPage;
+					this.pageBreak(ps);
+					if (repeatHead != null) {
+						BlockBox bb = new BlockBox();
+						bb.page = ps.page;
+						bb.y = ps.y;
+						bb.height = repeatHead.blockLayout.get(0).height;
+						bb.x = x;
+						bb.width = 0;
+						repeatHead.blockLayout.add(bb);
+						ps.y += bb.height;
+					}
+					startY = ps.y;
+					startPage = ps.page;
+					this.tableRowDoLayout(x, ps, cellSpacing, widths, renderer,
+							-1);
+				}
 				double rowHeight = (ps.page - startPage)
 						* renderer.textHeight(ps.page) + (ps.y - startY)
 						- cellSpacing;
@@ -1646,7 +1840,7 @@ class Block {
 		x += cellSpacing;
 		for (int i = 0; i < this.children_.size(); ++i) {
 			Block c = this.children_.get(i);
-			if (c.type_ == DomElementType.DomElement_TD) {
+			if (c.isTableCell()) {
 				int colSpan = c.attributeValue("colspan", 1);
 				double width = 0;
 				for (int j = col; j < col + colSpan; ++j) {
@@ -1682,23 +1876,24 @@ class Block {
 	}
 
 	private void tableComputeColumnWidths(List<Double> minima,
-			List<Double> maxima, WTextRenderer renderer) {
+			List<Double> maxima, WTextRenderer renderer, Block table) {
 		if (this.type_ == DomElementType.DomElement_TBODY
 				|| this.type_ == DomElementType.DomElement_THEAD
 				|| this.type_ == DomElementType.DomElement_TFOOT) {
 			for (int i = 0; i < this.children_.size(); ++i) {
 				Block c = this.children_.get(i);
-				c.tableComputeColumnWidths(minima, maxima, renderer);
+				c.tableComputeColumnWidths(minima, maxima, renderer, table);
 			}
 		} else {
 			if (this.type_ == DomElementType.DomElement_TR) {
 				int col = 0;
 				for (int i = 0; i < this.children_.size(); ++i) {
 					Block c = this.children_.get(i);
-					if (c.type_ == DomElementType.DomElement_TD) {
-						c.cellComputeColumnWidths(col, false, minima, renderer);
+					if (c.isTableCell()) {
+						c.cellComputeColumnWidths(col, false, minima, renderer,
+								table);
 						col = c.cellComputeColumnWidths(col, true, maxima,
-								renderer);
+								renderer, table);
 					}
 				}
 			}
@@ -1706,7 +1901,7 @@ class Block {
 	}
 
 	private int cellComputeColumnWidths(int col, boolean maximum,
-			List<Double> values, WTextRenderer renderer) {
+			List<Double> values, WTextRenderer renderer, Block table) {
 		double currentWidth = 0;
 		int colSpan = this.attributeValue("colspan", 1);
 		while (col + colSpan > (int) values.size()) {
@@ -1721,7 +1916,12 @@ class Block {
 		ps.page = 0;
 		ps.minX = 0;
 		ps.maxX = width;
+		double origTableWidth = table.currentWidth_;
+		if (!maximum) {
+			table.currentWidth_ = 0;
+		}
 		this.layoutBlock(ps, maximum, renderer, 0, 0);
+		table.currentWidth_ = origTableWidth;
 		width = ps.maxX;
 		if (width > currentWidth) {
 			double extraPerColumn = (width - currentWidth) / colSpan;
@@ -1743,6 +1943,92 @@ class Block {
 					+ this.cssMargin(Side.Bottom, fontScale);
 		}
 		return result;
+	}
+
+	private double maxLayoutY(int page) {
+		double result = 0;
+		for (int i = 0; i < this.inlineLayout.size(); ++i) {
+			InlineBox ib = this.inlineLayout.get(i);
+			if (page == -1 || ib.page == page) {
+				result = Math.max(result, ib.y + ib.height);
+			}
+		}
+		for (int i = 0; i < this.blockLayout.size(); ++i) {
+			BlockBox lb = this.blockLayout.get(i);
+			if (page == -1 || lb.page == page) {
+				result = Math.max(result, lb.y + lb.height);
+			}
+		}
+		if (this.inlineLayout.isEmpty() && this.blockLayout.isEmpty()) {
+			for (int i = 0; i < this.children_.size(); ++i) {
+				result = Math.max(result, this.children_.get(i)
+						.maxLayoutY(page));
+			}
+		}
+		return result;
+	}
+
+	private double minLayoutY(int page) {
+		double result = 1E9;
+		for (int i = 0; i < this.inlineLayout.size(); ++i) {
+			InlineBox ib = this.inlineLayout.get(i);
+			if (page == -1 || ib.page == page) {
+				result = Math.min(result, ib.y);
+			}
+		}
+		for (int i = 0; i < this.blockLayout.size(); ++i) {
+			BlockBox lb = this.blockLayout.get(i);
+			if (page == -1 || lb.page == page) {
+				result = Math.min(result, lb.y);
+			}
+		}
+		if (this.inlineLayout.isEmpty() && this.blockLayout.isEmpty()) {
+			for (int i = 0; i < this.children_.size(); ++i) {
+				result = Math.min(result, this.children_.get(i)
+						.minLayoutY(page));
+			}
+		}
+		return result;
+	}
+
+	private double maxChildrenLayoutY(int page) {
+		double result = 0;
+		for (int i = 0; i < this.children_.size(); ++i) {
+			result = Math.max(result, this.children_.get(i).maxLayoutY(page));
+		}
+		return result;
+	}
+
+	private double minChildrenLayoutY(int page) {
+		double result = 1E9;
+		for (int i = 0; i < this.children_.size(); ++i) {
+			result = Math.min(result, this.children_.get(i).minLayoutY(page));
+		}
+		return result;
+	}
+
+	private double childrenLayoutHeight(int page) {
+		return this.maxChildrenLayoutY(page) - this.minChildrenLayoutY(page);
+	}
+
+	private void reLayout(BlockBox from, BlockBox to) {
+		System.err.append("Relayout: ").append(String.valueOf(from.y)).append(
+				" -> ").append(String.valueOf(to.y)).append('\n');
+		for (int i = 0; i < this.inlineLayout.size(); ++i) {
+			InlineBox ib = this.inlineLayout.get(i);
+			ib.page = to.page;
+			ib.x += to.x - from.x;
+			ib.y += to.y - from.y;
+		}
+		for (int i = 0; i < this.blockLayout.size(); ++i) {
+			BlockBox bb = this.blockLayout.get(i);
+			bb.page = to.page;
+			bb.x += to.x - from.x;
+			bb.y += to.y - from.y;
+		}
+		for (int i = 0; i < this.children_.size(); ++i) {
+			this.children_.get(i).reLayout(from, to);
+		}
 	}
 
 	private void renderText(String text, WTextRenderer renderer, int page) {
@@ -1902,20 +2188,15 @@ class Block {
 		}
 	}
 
-	private double getLayoutHeight() {
-		double h = 0;
-		for (int i = 0; i < this.blockLayout.size(); ++i) {
-			h += this.blockLayout.get(i).height;
-		}
-		return h;
-	}
-
 	private static void advance(PageState ps, double height,
 			WTextRenderer renderer) {
 		while (ps.y + height > renderer.textHeight(ps.page)) {
 			++ps.page;
 			ps.y = 0;
 			height -= renderer.textHeight(ps.page) - ps.y;
+			if (height < 0) {
+				height = 0;
+			}
 		}
 		ps.y += height;
 	}
@@ -1994,6 +2275,11 @@ class Block {
 	private static boolean isAggregate(String cssProperty) {
 		return cssProperty.equals("margin") || cssProperty.equals("border")
 				|| cssProperty.equals("padding");
+	}
+
+	private boolean isTableCell() {
+		return this.type_ == DomElementType.DomElement_TD
+				|| this.type_ == DomElementType.DomElement_TH;
 	}
 
 	static final double MARGINX = -1;

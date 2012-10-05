@@ -562,10 +562,10 @@ public abstract class WWebWidget extends WWidget {
 			return;
 		}
 		this.otherImpl_.attributes_.put(name, value);
-		if (!(this.otherImpl_.attributesSet_ != null)) {
-			this.otherImpl_.attributesSet_ = new ArrayList<String>();
+		if (!(this.transientImpl_ != null)) {
+			this.transientImpl_ = new WWebWidget.TransientImpl();
 		}
-		this.otherImpl_.attributesSet_.add(name);
+		this.transientImpl_.attributesSet_.add(name);
 		this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyAttribute));
 	}
 
@@ -1079,6 +1079,18 @@ public abstract class WWebWidget extends WWidget {
 				if (this.layoutImpl_.zIndex_ > 0) {
 					element.setProperty(Property.PropertyStyleZIndex, String
 							.valueOf(this.layoutImpl_.zIndex_));
+					element.setProperty(Property.PropertyClass, StringUtils
+							.addWord(element
+									.getProperty(Property.PropertyClass),
+									"Wt-popup"));
+					if (!all && !this.flags_.get(BIT_STYLECLASS_CHANGED)
+							&& this.lookImpl_ != null
+							&& this.lookImpl_.styleClass_.length() != 0) {
+						element.setProperty(Property.PropertyClass, StringUtils
+								.addWord(element
+										.getProperty(Property.PropertyClass),
+										this.lookImpl_.styleClass_));
+					}
 					if (!(app != null)) {
 						app = WApplication.getInstance();
 					}
@@ -1376,10 +1388,11 @@ public abstract class WWebWidget extends WWidget {
 						}
 					}
 				} else {
-					if (this.otherImpl_.attributesSet_ != null) {
-						for (int i = 0; i < this.otherImpl_.attributesSet_
+					if (this.transientImpl_ != null) {
+						for (int i = 0; i < this.transientImpl_.attributesSet_
 								.size(); ++i) {
-							String attr = this.otherImpl_.attributesSet_.get(i);
+							String attr = this.transientImpl_.attributesSet_
+									.get(i);
 							if (attr.equals("style")) {
 								element.setProperty(Property.PropertyStyle,
 										this.otherImpl_.attributes_.get(attr));
@@ -1390,8 +1403,6 @@ public abstract class WWebWidget extends WWidget {
 						}
 					}
 				}
-				;
-				this.otherImpl_.attributesSet_ = null;
 			}
 			if (all && this.otherImpl_.jsMembers_ != null) {
 				for (int i = 0; i < this.otherImpl_.jsMembers_.size(); i++) {
@@ -1669,7 +1680,7 @@ public abstract class WWebWidget extends WWidget {
 					.iterator(); i_it.hasNext();) {
 				AbstractEventSignal i = i_it.next();
 				AbstractEventSignal s = i;
-				if (s.getName() == WInteractWidget.CLICK_SIGNAL) {
+				if (s.getName() == WInteractWidget.M_CLICK_SIGNAL) {
 					this.repaint(EnumSet.of(RepaintFlag.RepaintToAjax));
 				}
 				s.senderRepaint();
@@ -1824,6 +1835,7 @@ public abstract class WWebWidget extends WWidget {
 		public List<WWidget> addedChildren_;
 		public List<String> addedStyleClasses_;
 		public List<String> removedStyleClasses_;
+		public List<String> attributesSet_;
 		public boolean specialChildRemove_;
 		public WAnimation animation_;
 
@@ -1832,6 +1844,7 @@ public abstract class WWebWidget extends WWidget {
 			this.addedChildren_ = new ArrayList<WWidget>();
 			this.addedStyleClasses_ = new ArrayList<String>();
 			this.removedStyleClasses_ = new ArrayList<String>();
+			this.attributesSet_ = new ArrayList<String>();
 			this.specialChildRemove_ = false;
 			this.animation_ = new WAnimation();
 		}
@@ -1948,7 +1961,6 @@ public abstract class WWebWidget extends WWidget {
 
 		public String id_;
 		public Map<String, String> attributes_;
-		public List<String> attributesSet_;
 		public List<WWebWidget.OtherImpl.Member> jsMembers_;
 		public List<WWebWidget.OtherImpl.JavaScriptStatement> jsStatements_;
 		public JSignal2<Integer, Integer> resized_;
@@ -1959,7 +1971,6 @@ public abstract class WWebWidget extends WWidget {
 		public OtherImpl(WWebWidget self) {
 			this.id_ = null;
 			this.attributes_ = null;
-			this.attributesSet_ = null;
 			this.jsMembers_ = null;
 			this.jsStatements_ = null;
 			this.resized_ = null;

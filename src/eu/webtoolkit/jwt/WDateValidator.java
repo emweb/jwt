@@ -27,7 +27,7 @@ import org.slf4j.LoggerFactory;
  * if the date is within a given range.
  * <p>
  * The format string used for validating user input are the same as those used
- * by {@link WDate#fromString(String s) WDate#fromString()}.
+ * by {@link }.
  * <p>
  * <h3>i18n</h3>
  * <p>
@@ -102,8 +102,7 @@ public class WDateValidator extends WValidator {
 	 * <p>
 	 * The validator will accept dates in the date format <code>format</code>.
 	 * <p>
-	 * The syntax for <code>format</code> is as in
-	 * {@link WDate#fromString(String s) WDate#fromString()}
+	 * The syntax for <code>format</code> is as in {@link }
 	 */
 	public WDateValidator(String format, WObject parent) {
 		super(parent);
@@ -132,8 +131,7 @@ public class WDateValidator extends WValidator {
 	 * The validator will accept only dates within the indicated range
 	 * <i>bottom</i> to <i>top</i>, in the date format <code>format</code>.
 	 * <p>
-	 * The syntax for <code>format</code> is as in
-	 * {@link WDate#fromString(String s) WDate#fromString()}
+	 * The syntax for <code>format</code> is as in {@link }
 	 */
 	public WDateValidator(String format, WDate bottom, WDate top, WObject parent) {
 		super(parent);
@@ -199,8 +197,6 @@ public class WDateValidator extends WValidator {
 	/**
 	 * Sets the date format used to parse date strings.
 	 * <p>
-	 * 
-	 * @see WDate#fromString(String s)
 	 */
 	public void setFormat(String format) {
 		this.formats_.clear();

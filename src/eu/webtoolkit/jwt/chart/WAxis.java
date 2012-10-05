@@ -23,43 +23,32 @@ import org.slf4j.LoggerFactory;
  * Class which represents an axis of a cartesian chart.
  * <p>
  * 
- * A cartesian chart has two or three axes: an X axis ({@link Axis#XAxis XAxis}
- * ), a Y axis ({@link Axis#YAxis YAxis}) and optionally a second Y axis (
- * {@link Axis#Y2Axis Y2Axis}). Each of the up to three axes in a cartesian
- * chart has a unique {@link WAxis#getId() getId()} that identifies which of
- * these three axes it is in the enclosing {@link WAxis#getChart() getChart()}.
+ * A cartesian chart has two or three axes: an X axis ({@link XAxis}), a Y axis
+ * ({@link YAxis}) and optionally a second Y axis ({@link Y2Axis}). Each of the
+ * up to three axes in a cartesian chart has a unique {@link } that identifies
+ * which of these three axes it is in the enclosing {@link }.
  * <p>
- * Use {@link WAxis#setVisible(boolean visible) setVisible()} to change the
- * visibility of an axis, {@link WAxis#setGridLinesEnabled(boolean enabled)
- * setGridLinesEnabled()} to show grid lines for an axis. The pen styles for
- * rendering the axis or grid lines may be changed using
- * {@link WAxis#setPen(WPen pen) setPen()} and
- * {@link WAxis#setGridLinesPen(WPen pen) setGridLinesPen()}. A margin between
- * the axis and the main plot area may be configured using
- * {@link WAxis#setMargin(int pixels) setMargin()}.
+ * Use {@link } to change the visibility of an axis, {@link } to show grid lines
+ * for an axis. The pen styles for rendering the axis or grid lines may be
+ * changed using {@link } and {@link }. A margin between the axis and the main
+ * plot area may be configured using {@link }.
  * <p>
  * By default, the axis will automatically adjust its range so that all data
- * will be visible. You may manually specify a range using
- * {@link WAxis#setMinimum(double minimum) setMinimum()}, setMaximum or
- * {@link WAxis#setRange(double minimum, double maximum) setRange()}. The
- * interval between labels is by default automatically adjusted depending on the
- * axis length and the range, but may be manually specified using
- * {@link WAxis#setLabelInterval(double labelInterval) setLabelInterval()}.
+ * will be visible. You may manually specify a range using {@link }, setMaximum
+ * or {@link }. The interval between labels is by default automatically adjusted
+ * depending on the axis length and the range, but may be manually specified
+ * using {@link }.
  * <p>
  * The axis has support for being &quot;broken&quot;, to support displaying data
  * with a few outliers which would otherwise swamp the chart. This is not done
- * automatically, but instead you need to use
- * {@link WAxis#setBreak(double minimum, double maximum) setBreak()} to specify
- * the value range that needs to be omitted from the axis. The omission is
- * rendered in the axis and in bars that cross the break.
+ * automatically, but instead you need to use {@link } to specify the value range
+ * that needs to be omitted from the axis. The omission is rendered in the axis
+ * and in bars that cross the break.
  * <p>
  * The labels are shown using a &quot;%.4g&quot; format string for numbers, and
- * &quot;dd/MM/yyyy&quot; (for {@link AxisScale#DateScale DateScale}). The
- * format may be customized using
- * {@link WAxis#setLabelFormat(CharSequence format) setLabelFormat()}. The angle
- * of the label text may be changed using
- * {@link WAxis#setLabelAngle(double angle) setLabelAngle()}. By default, all
- * labels are printed horizontally.
+ * &quot;dd/MM/yyyy&quot; (for {@link DateScale}). The format may be customized
+ * using {@link }. The angle of the label text may be changed using {@link }. By
+ * default, all labels are printed horizontally.
  * <p>
  * 
  * @see eu.webtoolkit.jwt.chart.WCartesianChart
@@ -71,7 +60,6 @@ public class WAxis {
 	 * Returns the axis id.
 	 * <p>
 	 * 
-	 * @see WAxis#getChart()
 	 * @see WCartesianChart#getAxis(Axis axis)
 	 */
 	public Axis getId() {
@@ -82,14 +70,11 @@ public class WAxis {
 	 * Sets whether this axis is visible.
 	 * <p>
 	 * Changes whether the axis is displayed, including ticks and labels. The
-	 * rendering of the grid lines is controlled seperately by
-	 * {@link WAxis#setGridLinesEnabled(boolean enabled) setGridLinesEnabled()}.
+	 * rendering of the grid lines is controlled seperately by {@link }.
 	 * <p>
 	 * The default value is true for the X axis and first Y axis, but false for
 	 * the second Y axis.
 	 * <p>
-	 * 
-	 * @see WAxis#setGridLinesEnabled(boolean enabled)
 	 */
 	public void setVisible(boolean visible) {
 		if (!ChartUtils.equals(this.visible_, visible)) {
@@ -115,10 +100,8 @@ public class WAxis {
 	 * Configures the location of the axis, relative to values on the other axis
 	 * (i.e. Y values for the X axis, and X values for the Y axis).
 	 * <p>
-	 * The default value is {@link AxisValue#MinimumValue}.
+	 * The default value is {@link }.
 	 * <p>
-	 * 
-	 * @see WAxis#getLocation()
 	 */
 	public void setLocation(AxisValue location) {
 		if (!ChartUtils.equals(this.location_, location)) {
@@ -141,18 +124,14 @@ public class WAxis {
 	/**
 	 * Sets the scale of the axis.
 	 * <p>
-	 * For the X scale in a {@link ChartType#CategoryChart CategoryChart}, the
-	 * scale should be left unchanged to {@link AxisScale#CategoryScale
-	 * CategoryScale}.
+	 * For the X scale in a {@link CategoryChart}, the scale should be left
+	 * unchanged to {@link CategoryScale}.
 	 * <p>
-	 * For all other axes, the default value is {@link AxisScale#LinearScale
-	 * LinearScale}, but this may be changed to {@link AxisScale#LogScale
-	 * LogScale} or {@link AxisScale#DateScale DateScale}.
-	 * {@link AxisScale#DateScale DateScale} is only useful for the X axis in a
-	 * ScatterPlot which contains {@link eu.webtoolkit.jwt.WDate} values.
+	 * For all other axes, the default value is {@link LinearScale}, but this
+	 * may be changed to {@link LogScale} or {@link DateScale}.
+	 * {@link DateScale} is only useful for the X axis in a ScatterPlot which
+	 * contains {@link WDate} values.
 	 * <p>
-	 * 
-	 * @see WAxis#getScale()
 	 */
 	public void setScale(AxisScale scale) {
 		if (!ChartUtils.equals(this.scale_, scale)) {
@@ -182,9 +161,6 @@ public class WAxis {
 	 * The numerical value corresponding to a data point is defined by it&apos;s
 	 * AxisScale type.
 	 * <p>
-	 * 
-	 * @see WAxis#getMinimum()
-	 * @see WAxis#setMaximum(double maximum)
 	 */
 	public void setMinimum(double minimum) {
 		WAxis.Segment s = this.segments_.get(0);
@@ -211,9 +187,7 @@ public class WAxis {
 	 * AxisScale type.
 	 * <p>
 	 * 
-	 * @see WAxis#getMaximum()
 	 * @see WAxis#setMinimum(double minimum)
-	 * @see WAxis#setAutoLimits(EnumSet locations)
 	 */
 	public double getMinimum() {
 		return !EnumUtils.mask(this.getAutoLimits(), AxisValue.MinimumValue)
@@ -298,8 +272,6 @@ public class WAxis {
 	 * <p>
 	 * The default resolution is 0, which uses a built-in epsilon.
 	 * <p>
-	 * 
-	 * @see WAxis#getResolution()
 	 */
 	public void setResolution(final double resolution) {
 		this.resolution_ = resolution;
@@ -324,11 +296,9 @@ public class WAxis {
 	 * {@link WAxis#setMinimum(double minimum) setMinimum()} or
 	 * {@link WAxis#setMaximum(double maximum) setMaximum()}.
 	 * <p>
-	 * <code>locations</code> can be {@link AxisValue#MinimumValue} and/or
-	 * {@link AxisValue#MaximumValue}.
+	 * <code>locations</code> can be {@link } and/or {@link }.
 	 * <p>
-	 * The default value is {@link AxisValue#MinimumValue} |
-	 * {@link AxisValue#MaximumValue}.
+	 * The default value is {@link } | {@link }.
 	 */
 	public void setAutoLimits(EnumSet<AxisValue> locations) {
 		if (!EnumUtils.mask(locations, AxisValue.MinimumValue).isEmpty()) {
@@ -361,9 +331,8 @@ public class WAxis {
 	/**
 	 * Returns the limits that are calculated automatically.
 	 * <p>
-	 * This returns the limits ({@link AxisValue#MinimumValue} and/or
-	 * {@link AxisValue#MaximumValue}) that are calculated automatically from
-	 * the data, rather than being specified manually using
+	 * This returns the limits ({@link } and/or {@link }) that are calculated
+	 * automatically from the data, rather than being specified manually using
 	 * {@link WAxis#setMinimum(double minimum) setMinimum()} and/or
 	 * {@link WAxis#setMaximum(double maximum) setMaximum()}.
 	 * <p>
@@ -386,9 +355,9 @@ public class WAxis {
 	 * <p>
 	 * This is useful to display data with a few outliers which would otherwise
 	 * swamp the chart. This is not done automatically, but instead you need to
-	 * use {@link WAxis#setBreak(double minimum, double maximum) setBreak()} to
-	 * specify the value range that needs to be omitted from the axis. The
-	 * omission is rendered in the axis and in BarSeries that cross the break.
+	 * use {@link } to specify the value range that needs to be omitted from the
+	 * axis. The omission is rendered in the axis and in BarSeries that cross
+	 * the break.
 	 */
 	public void setBreak(double minimum, double maximum) {
 		if (this.segments_.size() != 2) {
@@ -407,8 +376,6 @@ public class WAxis {
 	 * default value is 0.0, and indicates that the interval should be computed
 	 * automatically.
 	 * <p>
-	 * 
-	 * @see WAxis#setLabelFormat(CharSequence format)
 	 */
 	public void setLabelInterval(double labelInterval) {
 		if (!ChartUtils.equals(this.labelInterval_, labelInterval)) {
@@ -432,26 +399,21 @@ public class WAxis {
 	 * Sets the label format.
 	 * <p>
 	 * Sets a format string which is used to format values, both for the axis
-	 * labels as well as data series values (see
-	 * {@link WDataSeries#setLabelsEnabled(Axis axis, boolean enabled)
-	 * WDataSeries#setLabelsEnabled()}).
+	 * labels as well as data series values (see {@link }).
 	 * <p>
-	 * For an axis with a {@link AxisScale#LinearScale LinearScale} or
-	 * {@link AxisScale#LogScale LogScale} scale, the format string must be a
-	 * format string that is accepted by snprintf() and which formats one
-	 * double. If the format string is an empty string, &quot;%.4g&quot; is
-	 * used.
+	 * For an axis with a {@link LinearScale} or {@link LogScale} scale, the
+	 * format string must be a format string that is accepted by snprintf() and
+	 * which formats one double. If the format string is an empty string,
+	 * &quot;%.4g&quot; is used.
 	 * <p>
-	 * For an axis with a {@link AxisScale#DateScale DateScale} scale, the
-	 * format string must be a format string accepted by WDate::toString(const
-	 * WString&amp;), to format a date. If the format string is an empty string,
-	 * &quot;dd/MM/yyyy&quot;, &quot;MMM yy&quot; or &quot;yyyy&quot; is used
-	 * depending on the situation.
+	 * For an axis with a {@link DateScale} scale, the format string must be a
+	 * format string accepted by WDate::toString(const WString&amp;), to format
+	 * a date. If the format string is an empty string, &quot;dd/MM/yyyy&quot;,
+	 * &quot;MMM yy&quot; or &quot;yyyy&quot; is used depending on the
+	 * situation.
 	 * <p>
 	 * The default value is an empty string (&quot;&quot;).
 	 * <p>
-	 * 
-	 * @see WAxis#getLabelFormat()
 	 */
 	public void setLabelFormat(CharSequence format) {
 		if (!ChartUtils.equals(this.labelFormat_, WString.toWString(format))) {
@@ -480,8 +442,6 @@ public class WAxis {
 	 * <p>
 	 * The default value is 0.0 (&quot;horizontal text&quot;).
 	 * <p>
-	 * 
-	 * @see WAxis#getLabelAngle()
 	 */
 	public void setLabelAngle(double angle) {
 		if (!ChartUtils.equals(this.labelAngle_, angle)) {
@@ -505,14 +465,11 @@ public class WAxis {
 	 * Sets whether gridlines are displayed for this axis.
 	 * <p>
 	 * When <i>enabled</i>, gird lines are drawn for each tick on this axis,
-	 * using the {@link WAxis#getGridLinesPen() getGridLinesPen()}.
+	 * using the {@link }.
 	 * <p>
 	 * Unlike all other visual aspects of an axis, rendering of the gridlines is
 	 * not controlled by setDisplayEnabled(bool).
 	 * <p>
-	 * 
-	 * @see WAxis#setGridLinesPen(WPen pen)
-	 * @see WAxis#isGridLinesEnabled()
 	 */
 	public void setGridLinesEnabled(boolean enabled) {
 		if (!ChartUtils.equals(this.gridLines_, enabled)) {
@@ -537,8 +494,6 @@ public class WAxis {
 	 * <p>
 	 * The default value is a black pen of 0 width.
 	 * <p>
-	 * 
-	 * @see WAxis#setGridLinesPen(WPen pen)
 	 */
 	public void setPen(WPen pen) {
 		if (!ChartUtils.equals(this.pen_, pen)) {
@@ -565,7 +520,6 @@ public class WAxis {
 	 * <p>
 	 * 
 	 * @see WAxis#setPen(WPen pen)
-	 * @see WAxis#getGridLinesPen()
 	 */
 	public void setGridLinesPen(WPen pen) {
 		if (!ChartUtils.equals(this.gridLinesPen_, pen)) {
@@ -592,8 +546,6 @@ public class WAxis {
 	 * <p>
 	 * The default value is 0.
 	 * <p>
-	 * 
-	 * @see WAxis#getMargin()
 	 */
 	public void setMargin(int pixels) {
 		if (!ChartUtils.equals(this.margin_, pixels)) {
@@ -618,8 +570,6 @@ public class WAxis {
 	 * <p>
 	 * The default title is empty.
 	 * <p>
-	 * 
-	 * @see WAxis#getTitle()
 	 */
 	public void setTitle(CharSequence title) {
 		if (!ChartUtils.equals(this.title_, WString.toWString(title))) {
@@ -644,8 +594,6 @@ public class WAxis {
 	 * <p>
 	 * The default title font is a 12 point Sans Serif font.
 	 * <p>
-	 * 
-	 * @see WAxis#getTitleFont()
 	 */
 	public void setTitleFont(WFont titleFont) {
 		if (!ChartUtils.equals(this.titleFont_, titleFont)) {
@@ -670,8 +618,6 @@ public class WAxis {
 	 * <p>
 	 * The default label font is a 10 point Sans Serif font.
 	 * <p>
-	 * 
-	 * @see WAxis#getLabelFont()
 	 */
 	public void setLabelFont(WFont labelFont) {
 		if (!ChartUtils.equals(this.labelFont_, labelFont)) {
@@ -883,7 +829,8 @@ public class WAxis {
 					if (this.renderInterval_ == 0) {
 						if (this.scale_ == AxisScale.CategoryScale) {
 							double numLabels = this.calcAutoNumLabels(s) / 1.5;
-							this.renderInterval_ = Math.floor(rc / numLabels);
+							this.renderInterval_ = Math.max(1.0, Math.floor(rc
+									/ numLabels));
 						} else {
 							if (this.scale_ != AxisScale.LogScale) {
 								double numLabels = this.calcAutoNumLabels(s);
@@ -1200,7 +1147,7 @@ public class WAxis {
 				double resolution = this.resolution_;
 				if (resolution == 0) {
 					if (this.scale_ == AxisScale.LinearScale) {
-						resolution = 1E3 * 1E-10;
+						resolution = Math.abs(1E-3 * segment.renderMinimum);
 					} else {
 						if (this.scale_ == AxisScale.DateScale) {
 							resolution = 1;
