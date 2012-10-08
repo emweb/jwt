@@ -22,6 +22,8 @@ import org.slf4j.LoggerFactory;
 /**
  * Flags that indicate data item options.
  * <p>
+ * 
+ * @see WModelIndex#getFlags()
  */
 public enum ItemFlag {
 	/**

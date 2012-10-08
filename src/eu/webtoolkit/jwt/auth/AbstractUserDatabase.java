@@ -66,11 +66,15 @@ public abstract class AbstractUserDatabase {
 	 * 
 	 * An abstract transaction interface.
 	 * <p>
+	 * 
+	 * @see AbstractUserDatabase#startTransaction()
 	 */
 	public static interface Transaction {
 		/**
 		 * Commits the transaction.
 		 * <p>
+		 * 
+		 * @see AbstractUserDatabase.Transaction#rollback()
 		 */
 		public void commit();
 
@@ -178,7 +182,7 @@ public abstract class AbstractUserDatabase {
 	 * If there is support for suspending accounts, then this method may be
 	 * implemented to return whether a user account is disabled.
 	 * <p>
-	 * The default implementation always returns {@link }.
+	 * The default implementation always returns {@link User.Status#Normal}.
 	 * <p>
 	 */
 	public User.Status getStatus(User user) {
@@ -221,6 +225,8 @@ public abstract class AbstractUserDatabase {
 	 * Returns whether the user&apos;s email address could be set. This may fail
 	 * when there is already a user registered that email address.
 	 * <p>
+	 * 
+	 * @see AbstractUserDatabase#findWithEmail(String address)
 	 */
 	public boolean setEmail(User user, String address) {
 		logger.error(new StringWriter().append(

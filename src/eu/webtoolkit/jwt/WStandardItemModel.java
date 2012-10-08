@@ -610,7 +610,7 @@ public class WStandardItemModel extends WAbstractItemModel {
 	/**
 	 * Set the role used to sort the model.
 	 * <p>
-	 * The default role is {@link ItemDataRole#DisplayRole DisplayRole}.
+	 * The default role is {@link DisplayRole}.
 	 * <p>
 	 * 
 	 * @see WStandardItemModel#sort(int column, SortOrder order)

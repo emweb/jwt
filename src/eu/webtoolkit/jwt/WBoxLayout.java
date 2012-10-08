@@ -254,11 +254,9 @@ public class WBoxLayout extends WLayout {
 	 * The <code>alignment</code> specifies the vertical and horizontal
 	 * alignment of the item. The default value 0 indicates that the item is
 	 * stretched to fill the entire column or row. The alignment can be
-	 * specified as a logical combination of a horizontal alignment (
-	 * {@link AlignmentFlag#AlignLeft}, {@link AlignmentFlag#AlignCenter}, or
-	 * {@link AlignmentFlag#AlignRight}) and a vertical alignment (
-	 * {@link AlignmentFlag#AlignTop}, {@link AlignmentFlag#AlignMiddle}, or
-	 * {@link AlignmentFlag#AlignBottom}).
+	 * specified as a logical combination of a horizontal alignment ({@link },
+	 * {@link }, or {@link }) and a vertical alignment ({@link }, {@link }, or
+	 * {@link }).
 	 * <p>
 	 * 
 	 * @see WBoxLayout#addLayout(WLayout layout, int stretch, EnumSet alignment)
@@ -394,11 +392,9 @@ public class WBoxLayout extends WLayout {
 	 * The <code>alignment</code> specifies the vertical and horizontal
 	 * alignment of the item. The default value 0 indicates that the item is
 	 * stretched to fill the entire column or row. The alignment can be
-	 * specified as a logical combination of a horizontal alignment (
-	 * {@link AlignmentFlag#AlignLeft}, {@link AlignmentFlag#AlignCenter}, or
-	 * {@link AlignmentFlag#AlignRight}) and a vertical alignment (
-	 * {@link AlignmentFlag#AlignTop}, {@link AlignmentFlag#AlignMiddle}, or
-	 * {@link AlignmentFlag#AlignBottom}).
+	 * specified as a logical combination of a horizontal alignment ({@link },
+	 * {@link }, or {@link }) and a vertical alignment ({@link }, {@link }, or
+	 * {@link }).
 	 * <p>
 	 * 
 	 * @see WBoxLayout#insertLayout(int index, WLayout layout, int stretch,

@@ -26,9 +26,9 @@ import org.slf4j.LoggerFactory;
  * This model only manages a unidimensional list of strings. It is used as the
  * default model for view classes that show a list.
  * <p>
- * The model only presents {@link ItemDataRole#DisplayRole DisplayRole} data of
- * a single column of data, but otherwise provides support for all standard
- * features of a model, including editing and addition and removal of data rows.
+ * The model only presents {@link DisplayRole} data of a single column of data,
+ * but otherwise provides support for all standard features of a model,
+ * including editing and addition and removal of data rows.
  * <p>
  * You can populate the model by passing a list of strings to its consructor, or
  * by using the {@link WStringListModel#setStringList(List strings)
@@ -152,11 +152,9 @@ public class WStringListModel extends WAbstractListModel {
 	/**
 	 * Returns the flags for an item.
 	 * <p>
-	 * This method is reimplemented to return {@link ItemFlag#ItemIsSelectable
-	 * ItemIsSelectable} | {@link ItemFlag#ItemIsEditable ItemIsEditable}.
+	 * This method is reimplemented to return {@link ItemIsSelectable} |
+	 * {@link ItemIsEditable}.
 	 * <p>
-	 * 
-	 * @see ItemFlag
 	 */
 	public EnumSet<ItemFlag> getFlags(WModelIndex index) {
 		return EnumSet.of(ItemFlag.ItemIsSelectable, ItemFlag.ItemIsEditable);

@@ -105,6 +105,8 @@ public class Identity {
 	 * Returns the user&apos;s email address, or an empty string if not
 	 * provided.
 	 * <p>
+	 * 
+	 * @see Identity#isEmailVerified()
 	 */
 	public String getEmail() {
 		return this.email_;

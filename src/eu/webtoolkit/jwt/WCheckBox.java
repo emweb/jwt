@@ -23,19 +23,17 @@ import org.slf4j.LoggerFactory;
  * A user control that represents a check box.
  * <p>
  * 
- * By default, a checkbox can have two states: {@link CheckState#Checked} or
- * {@link CheckState#Unchecked}, which can be inspected using
- * {@link WAbstractToggleButton#isChecked() WAbstractToggleButton#isChecked()},
- * and set using {@link WAbstractToggleButton#setChecked()
- * WAbstractToggleButton#setChecked()}.
+ * By default, a checkbox can have two states: {@link } or {@link }, which can be
+ * inspected using {@link WAbstractToggleButton#isChecked()
+ * WAbstractToggleButton#isChecked()}, and set using
+ * {@link WAbstractToggleButton#setChecked() WAbstractToggleButton#setChecked()}.
  * <p>
- * A checkbox may also provide a third state,
- * {@link CheckState#PartiallyChecked}, which is useful to indicate that it is
- * neither checked or unchecked. JWt will use native browser support for this
- * HTML5 extension when available (Safari and MS IE), and use an image-based
- * workaround otherwise. You may enable support for the third state using
- * {@link WCheckBox#setTristate(boolean tristate) setTristate()}, and use
- * {@link WCheckBox#setCheckState(CheckState state) setCheckState()} and
+ * A checkbox may also provide a third state, {@link }, which is useful to
+ * indicate that it is neither checked or unchecked. JWt will use native browser
+ * support for this HTML5 extension when available (Safari and MS IE), and use
+ * an image-based workaround otherwise. You may enable support for the third
+ * state using {@link WCheckBox#setTristate(boolean tristate) setTristate()},
+ * and use {@link WCheckBox#setCheckState(CheckState state) setCheckState()} and
  * {@link WCheckBox#getCheckState() getCheckState()} to read all three states.
  * <p>
  * A label is added as a sibling of the checkbox to the same parent.
@@ -163,8 +161,8 @@ public class WCheckBox extends WAbstractToggleButton {
 	/**
 	 * Sets the check state.
 	 * <p>
-	 * Unless it is a tri-state checkbox, only {@link CheckState#Checked} and
-	 * {@link CheckState#Unchecked} are valid states.
+	 * Unless it is a tri-state checkbox, only {@link } and {@link } are valid
+	 * states.
 	 */
 	public void setCheckState(CheckState state) {
 		super.setCheckState(state);

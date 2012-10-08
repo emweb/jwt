@@ -74,7 +74,8 @@ public abstract class WTextRenderer {
 	 * Renders an XHTML fragment.
 	 * <p>
 	 * The text is rendered, starting at position <code>y</code>, and flowing
-	 * down the page. New pages are created using <code>{@link }</code> to
+	 * down the page. New pages are created using
+	 * <code>{@link WTextRenderer#startPage(int page) startPage()}</code> to
 	 * render more contents on a next page. The return value is the position at
 	 * which rendering stopped on the last page on which was rendered.
 	 * <p>
@@ -85,9 +86,13 @@ public abstract class WTextRenderer {
 	 * The function returns the end position. You may call this function
 	 * multiple times.
 	 * <p>
-	 * Each invocation to {@link } has the effect of resetting the logical page
-	 * numbering used by {@link }, {@link } and {@link } so that the current page
-	 * is page 0.
+	 * Each invocation to
+	 * {@link WTextRenderer#render(CharSequence text, double y) render()} has
+	 * the effect of resetting the logical page numbering used by
+	 * {@link WTextRenderer#pageWidth(int page) pageWidth()},
+	 * {@link WTextRenderer#pageHeight(int page) pageHeight()} and
+	 * {@link WTextRenderer#startPage(int page) startPage()} so that the current
+	 * page is page 0.
 	 */
 	public double render(CharSequence text, double y) {
 		String xhtml = text.toString();
@@ -157,6 +162,8 @@ public abstract class WTextRenderer {
 	 * This returns the width of the page in which text needs to be rendered,
 	 * excluding horizontal margins, in pixels.
 	 * <p>
+	 * 
+	 * @see WTextRenderer#textHeight(int page)
 	 */
 	public double textWidth(int page) {
 		return this.pageWidth(page) - this.getMargin(Side.Left)

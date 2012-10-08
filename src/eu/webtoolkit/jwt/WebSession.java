@@ -106,6 +106,21 @@ class WebSession {
 		this(controller, sessionId, type, favicon, request, (WEnvironment) null);
 	}
 
+	public void destruct() {
+		if (this.asyncResponse_ != null) {
+			this.asyncResponse_.flush();
+			this.asyncResponse_ = null;
+		}
+		if (this.deferredResponse_ != null) {
+			this.deferredResponse_.flush();
+			this.deferredResponse_ = null;
+		}
+		this.mutex_.lock();
+		this.updatesPendingEvent_.signal();
+		this.mutex_.unlock();
+		this.flushBootStyleResponse();
+	}
+
 	public static WebSession getInstance() {
 		WebSession.Handler handler = WebSession.Handler.getInstance();
 		return handler != null ? handler.getSession() : null;
@@ -925,7 +940,7 @@ class WebSession {
 		}
 		WebSession.Handler handler = event.impl_.handler;
 		WebRequest request = handler.getRequest();
-		if (event.impl_.renderOnly) {
+		if (event.impl_.renderOnly || !(handler.getRequest() != null)) {
 			return EventType.OtherEvent;
 		}
 		String requestE = request.getParameter("request");
@@ -1860,7 +1875,7 @@ class WebSession {
 						if (hashE != null) {
 							this.changeInternalPath(hashE, handler
 									.getResponse());
-							this.app_.doJavaScript("Wt3_2_2.scrollIntoView("
+							this.app_.doJavaScript("Wt3_2_3.scrollIntoView("
 									+ WWebWidget.jsStringLiteral(hashE) + ");");
 						} else {
 							this.changeInternalPath("", handler.getResponse());

@@ -369,8 +369,8 @@ public class WApplication extends WObject {
 	 * <p>
 	 * The {@link WApplication#getRoot() getRoot()} widget is only defined when
 	 * the application manages the entire window. When deployed as a
-	 * {@link EntryPointType#WidgetSet WidgetSet} application, there is no
-	 * root() container, and <code>null</code> is returned. Instead, use
+	 * {@link WidgetSet} application, there is no root() container, and
+	 * <code>null</code> is returned. Instead, use
 	 * {@link WApplication#bindWidget(WWidget widget, String domId)
 	 * bindWidget()} to bind one or more root widgets to existing HTML
 	 * &lt;div&gt; (or other) elements on the page.
@@ -389,6 +389,7 @@ public class WApplication extends WObject {
 	 * application.
 	 * <p>
 	 * 
+	 * @see WObject#setObjectName(String name)
 	 * @see WWidget#find(String name)
 	 */
 	public WWidget findWidget(String name) {
@@ -755,9 +756,12 @@ public class WApplication extends WObject {
 	 * {@link WApplication#setLocalizedStrings(WLocalizedStrings translator)
 	 * setLocalizedStrings()}.
 	 * <p>
-	 * {@link } is used to create localized strings, whose localized translation
-	 * is looked up through this object, using a key.
+	 * {@link WString#tr(String key) WString#tr()} is used to create localized
+	 * strings, whose localized translation is looked up through this object,
+	 * using a key.
 	 * <p>
+	 * 
+	 * @see WString#tr(String key)
 	 */
 	public WLocalizedStrings getLocalizedStrings() {
 		if (this.localizedStrings_.getItems().size() > 1) {
@@ -790,6 +794,7 @@ public class WApplication extends WObject {
 	 * <p>
 	 * 
 	 * @see WApplication#getLocalizedStrings()
+	 * @see WString#tr(String key)
 	 */
 	public void setLocalizedStrings(WLocalizedStrings translator) {
 		if (!(this.localizedStrings_ != null)) {
@@ -828,6 +833,7 @@ public class WApplication extends WObject {
 	 * <p>
 	 * 
 	 * @see WApplication#getLocalizedStrings()
+	 * @see WString#tr(String key)
 	 */
 	public void setLocale(Locale locale) {
 		this.locale_ = locale;
@@ -885,7 +891,6 @@ public class WApplication extends WObject {
 	 * <p>
 	 * 
 	 * @see WApplication#getRoot()
-	 * @see EntryPointType#WidgetSet
 	 */
 	public void bindWidget(WWidget widget, String domId) {
 		if (this.session_.getType() != EntryPointType.WidgetSet) {
@@ -2249,8 +2254,8 @@ public class WApplication extends WObject {
 	 * </ul>
 	 * <p>
 	 * <ul>
-	 * <li>but never for a {@link EntryPointType#WidgetSet} mode application
-	 * since then the application is hosted within a foreign HTML page.</li>
+	 * <li>but never for a {@link } mode application since then the application
+	 * is hosted within a foreign HTML page.</li>
 	 * </ul>
 	 * <p>
 	 * When a header was previously set for the same <code>name</code>, its
@@ -2377,9 +2382,9 @@ public class WApplication extends WObject {
 		if (this.loadingIndicator_ != null) {
 			this.loadingIndicatorWidget_ = indicator.getWidget();
 			this.domRoot_.addWidget(this.loadingIndicatorWidget_);
-			this.showLoadJS.setJavaScript("function(o,e) {Wt3_2_2.inline('"
+			this.showLoadJS.setJavaScript("function(o,e) {Wt3_2_3.inline('"
 					+ this.loadingIndicatorWidget_.getId() + "');}");
-			this.hideLoadJS.setJavaScript("function(o,e) {Wt3_2_2.hide('"
+			this.hideLoadJS.setJavaScript("function(o,e) {Wt3_2_3.hide('"
 					+ this.loadingIndicatorWidget_.getId() + "');}");
 			this.loadingIndicatorWidget_.hide();
 		}
@@ -2774,7 +2779,7 @@ public class WApplication extends WObject {
 		if (this.domRoot2_ != null) {
 			this.domRoot2_.enableAjax();
 		}
-		this.doJavaScript("Wt3_2_2.ajaxInternalPaths("
+		this.doJavaScript("Wt3_2_3.ajaxInternalPaths("
 				+ WWebWidget.jsStringLiteral(this.resolveRelativeUrl(this
 						.getBookmarkUrl("/"))) + ");");
 	}
@@ -3097,7 +3102,7 @@ public class WApplication extends WObject {
 			WJavaScriptPreamble preamble = this.javaScriptPreamble_.get(i);
 			String scope = preamble.scope == JavaScriptScope.ApplicationScope ? this
 					.getJavaScriptClass()
-					: "Wt3_2_2";
+					: "Wt3_2_3";
 			if (preamble.type == JavaScriptObjectType.JavaScriptFunction) {
 				out.append(scope).append('.').append(preamble.name).append(
 						" = function() { return (").append(preamble.src)

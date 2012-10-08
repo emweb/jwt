@@ -30,23 +30,28 @@ import org.slf4j.LoggerFactory;
  * <p>
  * The model exposes three fields:
  * <ul>
- * <li>LoginNameField: the login name (used as an identity for the {@link }
- * provider)</li>
+ * <li>LoginNameField: the login name (used as an identity for the
+ * {@link Identity#LoginName} provider)</li>
  * <li>PasswordField: the password</li>
  * <li>RememberMeField: whether the login should be remembered with an
  * authentication cookie (if that is configured in the {@link AuthService}).</li>
  * </ul>
  * <p>
- * When the model validates correctly ({@link } returns <code>true</code>), the
- * entered credentials are correct. At that point you can use the {@link }
- * utility function to login the identified user.
+ * When the model validates correctly ({@link AuthModel#validate() validate()}
+ * returns <code>true</code>), the entered credentials are correct. At that
+ * point you can use the {@link AuthModel#login(Login login) login()} utility
+ * function to login the identified user.
  * <p>
  * The model can also be used when the user is already known (e.g. to implement
  * password confirmation before a critical operation). In that case you can set
  * a value for the LoginNameField and make this field invisible or read-only.
  * <p>
  * The model also provides the client-side JavaScript logic to indicate password
- * attempt throttling ({@link } and {@link }).
+ * attempt throttling (
+ * {@link AuthModel#configureThrottling(WInteractWidget button)
+ * configureThrottling()} and
+ * {@link AuthModel#updateThrottling(WInteractWidget button) updateThrottling()}
+ * ).
  * <p>
  * 
  * @see AuthWidget
@@ -185,6 +190,8 @@ public class AuthModel extends FormBaseModel {
 	 * count-down indicator. This method initializes this JavaScript utlity
 	 * function for a login button.
 	 * <p>
+	 * 
+	 * @see AuthModel#updateThrottling(WInteractWidget button)
 	 */
 	public void configureThrottling(WInteractWidget button) {
 		if (this.getPasswordAuth() != null
@@ -192,7 +199,7 @@ public class AuthModel extends FormBaseModel {
 			WApplication app = WApplication.getInstance();
 			app.loadJavaScript("js/AuthModel.js", wtjs1());
 			button.setJavaScriptMember(" AuthThrottle",
-					"new Wt3_2_2.AuthThrottle(Wt3_2_2,"
+					"new Wt3_2_3.AuthThrottle(Wt3_2_3,"
 							+ button.getJsRef()
 							+ ","
 							+ WString.toWString(
@@ -254,7 +261,9 @@ public class AuthModel extends FormBaseModel {
 	/**
 	 * Processes an email token.
 	 * <p>
-	 * This simply calls {@link }.
+	 * This simply calls
+	 * {@link AuthService#processEmailToken(String token, AbstractUserDatabase users)
+	 * AuthService#processEmailToken()}.
 	 */
 	public EmailTokenResult processEmailToken(String token) {
 		return this.getBaseAuth().processEmailToken(token, this.getUsers());
@@ -267,6 +276,9 @@ public class AuthModel extends FormBaseModel {
 	 * found in the application environment, or an invalid {@link User User}
 	 * object if this feature is not configured, or no valid cookie was found.
 	 * <p>
+	 * 
+	 * @see AuthService#processAuthToken(String token, AbstractUserDatabase
+	 *      users)
 	 */
 	public User processAuthToken() {
 		WApplication app = WApplication.getInstance();

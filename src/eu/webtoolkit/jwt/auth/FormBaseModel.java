@@ -76,6 +76,8 @@ public class FormBaseModel extends WFormModel {
 	 * <p>
 	 * Only one password authentication service can be configured.
 	 * <p>
+	 * 
+	 * @see FormBaseModel#addOAuth(OAuthService auth)
 	 */
 	public void addPasswordAuth(AbstractPasswordService auth) {
 		this.passwordAuth_ = auth;

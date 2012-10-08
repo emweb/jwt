@@ -52,6 +52,9 @@ public class PasswordService implements AbstractPasswordService {
 	 * This class defines the interface for verifying a passwords against
 	 * password hashes, or computing a new password hash for a password.
 	 * <p>
+	 * 
+	 * @see PasswordService#setVerifier(PasswordService.AbstractVerifier
+	 *      verifier)
 	 */
 	public static interface AbstractVerifier {
 		/**
@@ -112,6 +115,9 @@ public class PasswordService implements AbstractPasswordService {
 	 * <p>
 	 * The service takes ownership of the verifier.
 	 * <p>
+	 * 
+	 * @see PasswordService#verifyPassword(User user, String password)
+	 * @see PasswordService#updatePassword(User user, String password)
 	 */
 	public void setVerifier(PasswordService.AbstractVerifier verifier) {
 		;
@@ -160,7 +166,9 @@ public class PasswordService implements AbstractPasswordService {
 	 * will be refused when the user has had too many unsuccessful
 	 * authentication attempts in a row.
 	 * <p>
-	 * The exact back-off schema can be customized by specializing {@link }.
+	 * The exact back-off schema can be customized by specializing
+	 * {@link PasswordService#getPasswordThrottle(int failedAttempts)
+	 * getPasswordThrottle()}.
 	 */
 	public void setAttemptThrottlingEnabled(boolean enabled) {
 		this.attemptThrottling_ = enabled;
@@ -187,6 +195,7 @@ public class PasswordService implements AbstractPasswordService {
 	 * @see AbstractPasswordService#isAttemptThrottlingEnabled() <p>
 	 * @see AbstractPasswordService#isAttemptThrottlingEnabled()
 	 * @see PasswordService#setAttemptThrottlingEnabled(boolean enabled)
+	 * @see PasswordService#getPasswordThrottle(int failedAttempts)
 	 */
 	public int delayForNextAttempt(User user) {
 		if (this.attemptThrottling_) {

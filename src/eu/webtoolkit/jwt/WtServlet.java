@@ -68,6 +68,7 @@ public abstract class WtServlet extends HttpServlet {
 			WApplication app = session.getApp();
 			if (app != null)
 				app.destroy();
+			session.destruct();
 		}
 	}
 	

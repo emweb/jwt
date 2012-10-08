@@ -28,7 +28,7 @@ import org.slf4j.LoggerFactory;
  * <p>
  * Since the template text may be supplied by a {@link WString}, you can
  * conveniently store the string in a message resource bundle, and make it
- * localized by using {@link }.
+ * localized by using {@link WString#tr(String key) WString#tr()}.
  * <p>
  * Placeholders (for variables and functions) are delimited by:
  * <code>${...}</code>. To use a literal <code>&quot;${&quot;</code>, use
@@ -332,8 +332,8 @@ public class WTemplate extends WInteractWidget {
 	 * <p>
 	 * The <code>templateText</code> must be proper XHTML, and this is checked
 	 * unless the XHTML is resolved from a message resource bundle. This
-	 * behavior is similar to a {@link WText} when configured with the
-	 * {@link TextFormat#XHTMLText} textformat.
+	 * behavior is similar to a {@link WText} when configured with the {@link }
+	 * textformat.
 	 */
 	public WTemplate(CharSequence text, WContainerWidget parent) {
 		super(parent);
@@ -376,9 +376,8 @@ public class WTemplate extends WInteractWidget {
 	 * <p>
 	 * The <code>text</code> must be proper XHTML, and this is checked unless
 	 * the XHTML is resolved from a message resource bundle or TextFormat is
-	 * {@link TextFormat#XHTMLUnsafeText}. This behavior is similar to a
-	 * {@link WText} when configured with the {@link TextFormat#XHTMLText}
-	 * textformat.
+	 * {@link }. This behavior is similar to a {@link WText} when configured with
+	 * the {@link } textformat.
 	 * <p>
 	 * Changing the template text does not {@link WTemplate#clear() clear()}
 	 * bound widgets or values.

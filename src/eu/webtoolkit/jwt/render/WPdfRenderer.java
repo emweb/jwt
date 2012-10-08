@@ -30,9 +30,11 @@ import org.slf4j.LoggerFactory;
  * The renderer renders to a libharu PDF document. By default it uses a pixel
  * resolution of 72 DPI, which is the default for libharu, but differs from the
  * default used by most browsers (which is 96 DPI and has nothing to do with the
- * actual screen resolution). The resolution can be increased using {@link }.
- * This has the effect of scaling down the rendering. This can be used in
- * conjunction with {@link } to scale the font size differently than other
+ * actual screen resolution). The resolution can be increased using
+ * {@link WPdfRenderer#setDpi(int dpi) setDpi()}. This has the effect of scaling
+ * down the rendering. This can be used in conjunction with
+ * {@link WTextRenderer#setFontScale(double factor)
+ * WTextRenderer#setFontScale()} to scale the font size differently than other
  * content.
  * <p>
  * Usage example:
@@ -134,8 +136,9 @@ public class WPdfRenderer extends WTextRenderer {
 	 * pixels. Instead it has the effect of scaling down or up the rendered
 	 * XHTML on the page.
 	 * <p>
-	 * The dpi setting also affects the {@link }, {@link }, and {@link } pixel
-	 * calculations.
+	 * The dpi setting also affects the {@link WPdfRenderer#pageWidth(int page)
+	 * pageWidth()}, {@link WPdfRenderer#pageHeight(int page) pageHeight()}, and
+	 * {@link WPdfRenderer#getMargin(Side side) getMargin()} pixel calculations.
 	 * <p>
 	 * The default resolution is 72 DPI (this is the default resolution used by
 	 * libharu).
@@ -168,8 +171,9 @@ public class WPdfRenderer extends WTextRenderer {
 	/**
 	 * Returns the current page.
 	 * <p>
-	 * This returns the page last created using {@link }, or the initial page if
-	 * no additional apges have yet been created.
+	 * This returns the page last created using
+	 * {@link WPdfRenderer#createPage(int page) createPage()}, or the initial
+	 * page if no additional apges have yet been created.
 	 */
 	public com.pdfjet.Page getCurrentPage() {
 		return this.page_;

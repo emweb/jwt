@@ -28,15 +28,20 @@ import org.slf4j.LoggerFactory;
  * <p>
  * To use a pie chart, you need to set a model using
  * {@link WAbstractChart#setModel(WAbstractItemModel model)
- * WAbstractChart#setModel()}, and use {@link } and {@link } to specify the model
- * column that contains the category labels and data.
+ * WAbstractChart#setModel()}, and use
+ * {@link WPieChart#setLabelsColumn(int modelColumn) setLabelsColumn()} and
+ * {@link WPieChart#setDataColumn(int modelColumn) setDataColumn()} to specify
+ * the model column that contains the category labels and data.
  * <p>
- * The pie chart may be customized visually by enabling a 3D effect ({@link }),
- * or by specifying the angle of the first segment. One or more segments may be
- * exploded, which seperates the segment from the rest of the pie chart, using
- * {@link }.
+ * The pie chart may be customized visually by enabling a 3D effect (
+ * {@link WPieChart#setPerspectiveEnabled(boolean enabled, double height)
+ * setPerspectiveEnabled()}), or by specifying the angle of the first segment.
+ * One or more segments may be exploded, which seperates the segment from the
+ * rest of the pie chart, using
+ * {@link WPieChart#setExplode(int modelRow, double factor) setExplode()}.
  * <p>
- * The segments may be labeled in various ways using {@link }.
+ * The segments may be labeled in various ways using
+ * {@link WPieChart#setDisplayLabels(EnumSet options) setDisplayLabels()}.
  * <p>
  * <h3>CSS</h3>
  * <p>
@@ -86,13 +91,16 @@ public class WPieChart extends WAbstractChart {
 	/**
 	 * Sets the model column that holds the labels.
 	 * <p>
-	 * The labels are used only when {@link } is called with the
-	 * {@link TextLabel} option.
+	 * The labels are used only when
+	 * {@link WPieChart#setDisplayLabels(EnumSet options) setDisplayLabels()} is
+	 * called with the {@link TextLabel} option.
 	 * <p>
 	 * The default value is -1 (not defined).
 	 * <p>
 	 * 
 	 * @see WAbstractChart#setModel(WAbstractItemModel model)
+	 * @see WPieChart#setDisplayLabels(EnumSet options)
+	 * @see WPieChart#setDataColumn(int modelColumn)
 	 */
 	public void setLabelsColumn(int modelColumn) {
 		if (this.labelsColumn_ != modelColumn) {

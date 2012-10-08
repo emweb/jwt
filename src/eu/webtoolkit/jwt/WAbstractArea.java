@@ -145,8 +145,8 @@ public class WAbstractArea extends WObject {
 	 *      underlying HTML &lt;area&gt; element (see also
 	 *      {@link WAbstractArea#setCursor(Cursor cursor) setCursor()}).</i>
 	 *      </p>
-	 *      @deprecated Use {@link WAbstractArea#setLink(WLink link) setLink()}
-	 *      instead.
+	 * @deprecated Use {@link WAbstractArea#setLink(WLink link) setLink()}
+	 *             instead.
 	 */
 	public void setRef(String ref) {
 		this.setLink(new WLink(ref));
@@ -159,6 +159,7 @@ public class WAbstractArea extends WObject {
 	 * <p>
 	 * 
 	 * @see WAbstractArea#setRef(String ref)
+	 * @see WResource#getUrl()
 	 * @deprecated Use {@link WAbstractArea#getLink() getLink()} instead.
 	 */
 	public String getRef() {
@@ -220,15 +221,14 @@ public class WAbstractArea extends WObject {
 	 * setRef()} or {@link WAbstractArea#setResource(WResource resource)
 	 * setResource()}.
 	 * <p>
-	 * By default, the reference is displayed in the application (
-	 * {@link AnchorTarget#TargetSelf}). When the destination is an HTML
-	 * document, the application is replaced with the new document. When the
-	 * reference is a document that cannot be displayed in the browser, it is
-	 * offered for download or opened using an external program, depending on
-	 * browser settings.
+	 * By default, the reference is displayed in the application ({@link }). When
+	 * the destination is an HTML document, the application is replaced with the
+	 * new document. When the reference is a document that cannot be displayed
+	 * in the browser, it is offered for download or opened using an external
+	 * program, depending on browser settings.
 	 * <p>
-	 * By setting <code>target</code> to {@link AnchorTarget#TargetNewWindow},
-	 * the destination is displayed in a new browser window or tab.
+	 * By setting <code>target</code> to {@link }, the destination is displayed
+	 * in a new browser window or tab.
 	 * <p>
 	 * 
 	 * @see WAbstractArea#setRef(String ref)
@@ -459,7 +459,6 @@ public class WAbstractArea extends WObject {
 	 * <p>
 	 * 
 	 * @see WAbstractArea#keyPressed()
-	 * @see Key#Key_Enter
 	 */
 	public EventSignal enterPressed() {
 		return this.impl_.enterPressed();
@@ -472,7 +471,6 @@ public class WAbstractArea extends WObject {
 	 * <p>
 	 * 
 	 * @see WAbstractArea#keyPressed()
-	 * @see Key#Key_Escape
 	 */
 	public EventSignal escapePressed() {
 		return this.impl_.escapePressed();
@@ -481,12 +479,9 @@ public class WAbstractArea extends WObject {
 	/**
 	 * Event signal emitted when a mouse key was clicked on this widget.
 	 * <p>
-	 * The event details contains information such as the
-	 * {@link WMouseEvent#getButton() button}, optional
-	 * {@link WMouseEvent#getModifiers() keyboard modifiers}, and mouse
-	 * coordinates relative to the {@link WMouseEvent#getWidget() widget}, the
-	 * window {@link WMouseEvent#getWindow() window}, or the
-	 * {@link WMouseEvent#getDocument() document}.
+	 * The event details contains information such as the {@link button},
+	 * optional {@link keyboard modifiers}, and mouse coordinates relative to
+	 * the {@link widget}, the window {@link window}, or the {@link document}.
 	 * <p>
 	 * <p>
 	 * <i><b>Note: </b>When JavaScript is disabled, the event details contain
@@ -500,12 +495,9 @@ public class WAbstractArea extends WObject {
 	/**
 	 * Event signal emitted when a mouse key was double clicked on this widget.
 	 * <p>
-	 * The event details contains information such as the
-	 * {@link WMouseEvent#getButton() button}, optional
-	 * {@link WMouseEvent#getModifiers() keyboard modifiers}, and mouse
-	 * coordinates relative to the {@link WMouseEvent#getWidget() widget}, the
-	 * window {@link WMouseEvent#getWindow() window}, or the
-	 * {@link WMouseEvent#getDocument() document}.
+	 * The event details contains information such as the {@link button},
+	 * optional {@link keyboard modifiers}, and mouse coordinates relative to
+	 * the {@link widget}, the window {@link window}, or the {@link document}.
 	 * <p>
 	 * <p>
 	 * <i><b>Note: </b>When JavaScript is disabled, the signal will never fire.
@@ -519,12 +511,9 @@ public class WAbstractArea extends WObject {
 	/**
 	 * Event signal emitted when a mouse key was pushed down on this widget.
 	 * <p>
-	 * The event details contains information such as the
-	 * {@link WMouseEvent#getButton() button}, optional
-	 * {@link WMouseEvent#getModifiers() keyboard modifiers}, and mouse
-	 * coordinates relative to the {@link WMouseEvent#getWidget() widget}, the
-	 * window {@link WMouseEvent#getWindow() window}, or the
-	 * {@link WMouseEvent#getDocument() document}.
+	 * The event details contains information such as the {@link button},
+	 * optional {@link keyboard modifiers}, and mouse coordinates relative to
+	 * the {@link widget}, the window {@link window}, or the {@link document}.
 	 * <p>
 	 * <p>
 	 * <i><b>Note: </b>When JavaScript is disabled, the signal will never fire.
@@ -538,12 +527,9 @@ public class WAbstractArea extends WObject {
 	/**
 	 * Event signal emitted when a mouse key was released on this widget.
 	 * <p>
-	 * The event details contains information such as the
-	 * {@link WMouseEvent#getButton() button}, optional
-	 * {@link WMouseEvent#getModifiers() keyboard modifiers}, and mouse
-	 * coordinates relative to the {@link WMouseEvent#getWidget() widget}, the
-	 * window {@link WMouseEvent#getWindow() window}, or the
-	 * {@link WMouseEvent#getDocument() document}.
+	 * The event details contains information such as the {@link button},
+	 * optional {@link keyboard modifiers}, and mouse coordinates relative to
+	 * the {@link widget}, the window {@link window}, or the {@link document}.
 	 * <p>
 	 * <p>
 	 * <i><b>Note: </b>When JavaScript is disabled, the signal will never fire.
@@ -609,12 +595,9 @@ public class WAbstractArea extends WObject {
 	/**
 	 * Event signal emitted when the mouse scroll wheel was used.
 	 * <p>
-	 * The event details contains information such as the
-	 * {@link WMouseEvent#getWheelDelta() wheel delta}, optional
-	 * {@link WMouseEvent#getModifiers() keyboard modifiers}, and mouse
-	 * coordinates relative to the {@link WMouseEvent#getWidget() widget}, the
-	 * window {@link WMouseEvent#getWindow() window}, or the
-	 * {@link WMouseEvent#getDocument() document}.
+	 * The event details contains information such as the {@link wheel delta},
+	 * optional {@link keyboard modifiers}, and mouse coordinates relative to
+	 * the {@link widget}, the window {@link window}, or the {@link document}.
 	 * <p>
 	 * <p>
 	 * <i><b>Note: </b>When JavaScript is disabled, the signal will never fire.

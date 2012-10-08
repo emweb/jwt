@@ -27,7 +27,7 @@ import org.slf4j.LoggerFactory;
  * if the date is within a given range.
  * <p>
  * The format string used for validating user input are the same as those used
- * by {@link }.
+ * by {@link WDate#fromString(String s) WDate#fromString()}.
  * <p>
  * <h3>i18n</h3>
  * <p>
@@ -102,7 +102,8 @@ public class WDateValidator extends WValidator {
 	 * <p>
 	 * The validator will accept dates in the date format <code>format</code>.
 	 * <p>
-	 * The syntax for <code>format</code> is as in {@link }
+	 * The syntax for <code>format</code> is as in
+	 * {@link WDate#fromString(String s) WDate#fromString()}
 	 */
 	public WDateValidator(String format, WObject parent) {
 		super(parent);
@@ -131,7 +132,8 @@ public class WDateValidator extends WValidator {
 	 * The validator will accept only dates within the indicated range
 	 * <i>bottom</i> to <i>top</i>, in the date format <code>format</code>.
 	 * <p>
-	 * The syntax for <code>format</code> is as in {@link }
+	 * The syntax for <code>format</code> is as in
+	 * {@link WDate#fromString(String s) WDate#fromString()}
 	 */
 	public WDateValidator(String format, WDate bottom, WDate top, WObject parent) {
 		super(parent);
@@ -197,6 +199,8 @@ public class WDateValidator extends WValidator {
 	/**
 	 * Sets the date format used to parse date strings.
 	 * <p>
+	 * 
+	 * @see WDate#fromString(String s)
 	 */
 	public void setFormat(String format) {
 		this.formats_.clear();
@@ -380,7 +384,7 @@ public class WDateValidator extends WValidator {
 	public String getJavaScriptValidate() {
 		loadJavaScript(WApplication.getInstance());
 		StringBuilder js = new StringBuilder();
-		js.append("new Wt3_2_2.WDateValidator(").append(
+		js.append("new Wt3_2_3.WDateValidator(").append(
 				this.isMandatory() ? "true" : "false").append(",[");
 		for (int i = 0; i < this.formats_.size(); ++i) {
 			WDate.RegExpInfo r = WDate.formatToRegExp(this.formats_.get(i));

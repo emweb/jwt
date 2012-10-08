@@ -41,6 +41,9 @@ public interface AbstractPasswordService {
 	 * not strong enough, a message should be provided which helps the user pick
 	 * a stronger password.
 	 * <p>
+	 * 
+	 * @see AbstractPasswordService.AbstractStrengthValidator#evaluateStrength(String
+	 *      password, String loginName, String email)
 	 */
 	public static class StrengthValidatorResult {
 		private static Logger logger = LoggerFactory
@@ -90,10 +93,14 @@ public interface AbstractPasswordService {
 	 * password strength. The implementation allows to evaluate strength in
 	 * addition to the normal validator functionality of validating a password.
 	 * <p>
-	 * The {@link } computes the strength and returns an instance of
+	 * The
+	 * {@link AbstractPasswordService.AbstractStrengthValidator#evaluateStrength(String password, String loginName, String email)
+	 * evaluateStrength()} computes the strength and returns an instance of
 	 * StrenghtValidatorResult which contains information on the validity and
 	 * the strength of the password together with possible messages.
 	 * <p>
+	 * 
+	 * @see AbstractPasswordService#getStrengthValidator()
 	 */
 	public static abstract class AbstractStrengthValidator extends WValidator {
 		private static Logger logger = LoggerFactory
@@ -132,7 +139,7 @@ public interface AbstractPasswordService {
 		/**
 		 * Validates a password.
 		 * <p>
-		 * Calls validate(password, {@link }, &quot;&quot;);
+		 * Calls validate(password, {@link WString#Empty}, &quot;&quot;);
 		 */
 		public WValidator.Result validate(String password) {
 			return this.validate(password, "", "");

@@ -13,6 +13,7 @@ import eu.webtoolkit.jwt.WShadow;
 import eu.webtoolkit.jwt.WString;
 import eu.webtoolkit.jwt.WTableView;
 import eu.webtoolkit.jwt.WText;
+import eu.webtoolkit.jwt.WPaintedWidget.Method;
 import eu.webtoolkit.jwt.chart.Axis;
 import eu.webtoolkit.jwt.chart.SeriesType;
 import eu.webtoolkit.jwt.chart.WCartesianChart;
@@ -69,6 +70,7 @@ public class CategoryExample extends WContainerWidget {
         chart.setModel(model); // set the model
         chart.setXSeriesColumn(0); // set the column that holds the categories
         chart.setLegendEnabled(true); // enable the legend
+        chart.setPreferredMethod(Method.PngImage);
 
         // Provide space for the X and Y axis and title.
         chart.setPlotAreaPadding(100, Side.Left);

@@ -27,11 +27,13 @@ import org.slf4j.LoggerFactory;
  * for the duration of the session.
  * <p>
  * Widgets that implement authentication (and thus produce authentication
- * changes), will indicate their result in this object using the {@link } or
- * {@link } methods.
+ * changes), will indicate their result in this object using the
+ * {@link Login#login(User user, LoginState state) login()} or
+ * {@link Login#logout() logout()} methods.
  * <p>
  * Widgets that want to react to login state changes (typically, as user logging
- * in or out) should listen to the {@link } signal of this object.
+ * in or out) should listen to the {@link Login#changed() changed()} signal of
+ * this object.
  * <p>
  * 
  * @see AuthWidget
@@ -55,8 +57,12 @@ public class Login extends WObject {
 	 * <p>
 	 * A user can be logged in using either a DisabledLogin, WeakLogin or
 	 * StrongLogin <code>state</code>. The login state is forced to
-	 * DisabledLogin if {@link } returns Disabled.
+	 * DisabledLogin if {@link User#getStatus() User#getStatus()} returns
+	 * Disabled.
 	 * <p>
+	 * 
+	 * @see Login#logout()
+	 * @see Login#isLoggedIn()
 	 */
 	public void login(User user, LoginState state) {
 		boolean weakLogin = state == LoginState.WeakLogin;

@@ -41,7 +41,7 @@ import org.slf4j.LoggerFactory;
  * {@link WCalendar#renderCell(WWidget widget, WDate date) renderCell()}.
  * <p>
  * Internationalization is provided by the internationalization features of the
- * {@link WDate} class.
+ * {@link eu.webtoolkit.jwt.WDate} class.
  * <p>
  * Here is a snapshot, taken on 19/01/2010 (shown as today), and 14/01/2010
  * currently selected.
@@ -148,8 +148,7 @@ public class WCalendar extends WCompositeWidget {
 	/**
 	 * Sets the selection mode.
 	 * <p>
-	 * The default selection mode is {@link SelectionMode#SingleSelection
-	 * SingleSelection}.
+	 * The default selection mode is {@link SingleSelection}.
 	 */
 	public void setSelectionMode(SelectionMode mode) {
 		if (this.selectionMode_ != mode) {
@@ -362,7 +361,8 @@ public class WCalendar extends WCompositeWidget {
 	/**
 	 * Sets the first day of the week.
 	 * <p>
-	 * Possible values or 1 to 7, as accepted by {@link }.
+	 * Possible values or 1 to 7, as accepted by
+	 * {@link WDate#getShortDayName(int weekday) WDate#getShortDayName()}.
 	 * <p>
 	 * The default value is 1 (&quot;Monday&quot;).
 	 */

@@ -259,7 +259,7 @@ public class WPopupMenu extends WCompositeWidget {
 		this.popupImpl();
 		this.setOffsets(new WLength(42), EnumSet.of(Side.Left, Side.Top));
 		this.setOffsets(new WLength(-10000), EnumSet.of(Side.Left, Side.Top));
-		this.doJavaScript("Wt3_2_2.positionXY('" + this.getId() + "',"
+		this.doJavaScript("Wt3_2_3.positionXY('" + this.getId() + "',"
 				+ String.valueOf(p.getX()) + "," + String.valueOf(p.getY())
 				+ ");");
 	}
@@ -272,7 +272,6 @@ public class WPopupMenu extends WCompositeWidget {
 	 * <p>
 	 * 
 	 * @see WPopupMenu#popup(WPoint p)
-	 * @see WMouseEvent#getDocument()
 	 */
 	public void popup(WMouseEvent e) {
 		this.popup(new WPoint(e.getDocument().x, e.getDocument().y));
@@ -579,7 +578,7 @@ public class WPopupMenu extends WCompositeWidget {
 			List<WPopupMenu> subMenus = new ArrayList<WPopupMenu>();
 			this.getSubMenus(subMenus);
 			StringBuilder s = new StringBuilder();
-			s.append("new Wt3_2_2.WPopupMenu(")
+			s.append("new Wt3_2_3.WPopupMenu(")
 					.append(app.getJavaScriptClass()).append(',').append(
 							this.getJsRef()).append(',').append(
 							this.autoHideDelay_).append(",[");

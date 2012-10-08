@@ -255,9 +255,8 @@ public class WBatchEditProxyModel extends WAbstractProxyModel {
 	 * getData()} for an item that is dirty (e.g. because it belongs to a newly
 	 * inserted row/column, or because new data has been set for it.
 	 * <p>
-	 * When <code>role</code> is {@link ItemDataRole#StyleClassRole}, the style
-	 * class is appended to any style already returned by the source model or
-	 * set by
+	 * When <code>role</code> is {@link }, the style class is appended to any
+	 * style already returned by the source model or set by
 	 * {@link WBatchEditProxyModel#setNewRowData(int column, Object data, int role)
 	 * setNewRowData()}.
 	 * <p>
@@ -492,9 +491,9 @@ public class WBatchEditProxyModel extends WAbstractProxyModel {
 	/**
 	 * Sets item data.
 	 * <p>
-	 * The default implementation will copy {@link ItemDataRole#EditRole} data
-	 * to {@link ItemDataRole#DisplayRole}. You may want to specialize the model
-	 * to provide a more specialized editing behaviour.
+	 * The default implementation will copy {@link } data to {@link }. You may
+	 * want to specialize the model to provide a more specialized editing
+	 * behaviour.
 	 */
 	public boolean setData(WModelIndex index, Object value, int role) {
 		WBatchEditProxyModel.Item item = this.itemFromIndex(index.getParent());

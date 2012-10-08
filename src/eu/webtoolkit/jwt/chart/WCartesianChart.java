@@ -52,11 +52,13 @@ import org.slf4j.LoggerFactory;
  * In a <b>ScatterPlot</b>, the X series data are interpreted as numbers on a
  * numerical scale. The scale for the X axis defaults to a {@link LinearScale},
  * but this may be changed to a {@link DateScale} when the X series contains
- * dates (of type {@link WDate}) to create a time series chart, or to a
- * {@link LogScale}. A ScatterPlot supports the same types of data series as a
- * CategoryChart, but does not support stacking. In a scatter plot, the X series
- * do not need to be ordered in increasing values, and may be set differently
- * for each dataseries using {@link }.
+ * dates (of type {@link eu.webtoolkit.jwt.WDate}) to create a time series
+ * chart, or to a {@link LogScale}. A ScatterPlot supports the same types of
+ * data series as a CategoryChart, but does not support stacking. In a scatter
+ * plot, the X series do not need to be ordered in increasing values, and may be
+ * set differently for each dataseries using
+ * {@link WDataSeries#setXSeriesColumn(int modelColumn)
+ * WDataSeries#setXSeriesColumn()}.
  * <p>
  * <div align="center"> <img src="doc-files//ChartWCartesianChart-2.png"
  * alt="A time series scatter plot with line series">
@@ -236,7 +238,8 @@ public class WCartesianChart extends WAbstractChart {
 	 * (1, 2, ...).
 	 * <p>
 	 * Scatterplot dataseries may each individually be given its own X series
-	 * data using {@link }
+	 * data using {@link WDataSeries#setXSeriesColumn(int modelColumn)
+	 * WDataSeries#setXSeriesColumn()}
 	 * <p>
 	 * The default value is -1 (not specified).
 	 * <p>
@@ -394,6 +397,7 @@ public class WCartesianChart extends WAbstractChart {
 	 * The default value is <code>false</code>.
 	 * <p>
 	 * 
+	 * @see WDataSeries#isLegendEnabled()
 	 * @see WCartesianChart#setLegendLocation(LegendLocation location, Side
 	 *      side, AlignmentFlag alignment)
 	 */
@@ -448,6 +452,8 @@ public class WCartesianChart extends WAbstractChart {
 	 * {@link WCartesianChart#renderLegendItem(WPainter painter, WPointF pos, WDataSeries series)
 	 * renderLegendItem()} method repeatedly to render a customized legend.
 	 * <p>
+	 * 
+	 * @see WDataSeries#setLegendEnabled(boolean enabled)
 	 */
 	public void setLegendLocation(LegendLocation location, Side side,
 			AlignmentFlag alignment) {
@@ -930,6 +936,8 @@ public class WCartesianChart extends WAbstractChart {
 	 * <p>
 	 * After rendering, the renderer is deleted.
 	 * <p>
+	 * 
+	 * @see WChart2DRenderer#render()
 	 */
 	protected WChart2DRenderer createRenderer(WPainter painter, WRectF rectangle) {
 		return new WChart2DRenderer(this, painter, rectangle);

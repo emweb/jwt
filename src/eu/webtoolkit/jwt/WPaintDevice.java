@@ -96,7 +96,7 @@ public interface WPaintDevice {
 		/**
 		 * Implements
 		 * {@link WPaintDevice#drawText(WRectF rect, EnumSet alignmentFlags, TextFlag textFlag, CharSequence text)
-		 * drawText()} with {@link TextFlag#TextWordWrap}.
+		 * drawText()} with {@link }.
 		 */
 		CanWordWrap,
 		/**

@@ -59,10 +59,11 @@ import org.slf4j.LoggerFactory;
  * <p>
  * In the JavaScript code, you may use {@link WWidget#getJsRef()
  * WWidget#getJsRef()} to obtain the DOM element corresponding to any
- * {@link WWidget}, or {@link } to obtain the DOM id. In addition you may trigger
- * server-side events using the JavaScript WtSignalEmit function (see
- * {@link JSignal} documentation). That&apos;s how far we can help you. For the
- * rest you are left to yourself, buggy browsers and quirky JavaScript (<a
+ * {@link WWidget}, or {@link WObject#getId() WObject#getId()} to obtain the DOM
+ * id. In addition you may trigger server-side events using the JavaScript
+ * WtSignalEmit function (see {@link JSignal} documentation). That&apos;s how
+ * far we can help you. For the rest you are left to yourself, buggy browsers
+ * and quirky JavaScript (<a
  * href="http://www.quirksmode.org/">http://www.quirksmode.org/</a> was a
  * reliable companion to me) -- good luck.
  * <p>

@@ -104,6 +104,8 @@ public abstract class OAuthService {
 	 * This creates a new authorization process for the indicated scope. Valid
 	 * names for the scope are service provider dependent.
 	 * <p>
+	 * 
+	 * @see OAuthService#getAuthenticationScope()
 	 */
 	public abstract OAuthProcess createProcess(String scope);
 
@@ -112,6 +114,8 @@ public abstract class OAuthService {
 	 * <p>
 	 * This is a short identifier.
 	 * <p>
+	 * 
+	 * @see OAuthService#getDescription()
 	 */
 	public abstract String getName();
 
@@ -128,6 +132,8 @@ public abstract class OAuthService {
 	/**
 	 * Returns the desired width for the popup window.
 	 * <p>
+	 * 
+	 * @see OAuthService#getPopupHeight()
 	 */
 	public abstract int getPopupWidth();
 
@@ -219,7 +225,8 @@ public abstract class OAuthService {
 	 * request.
 	 * <p>
 	 * In the default implementation the state is the <code>sessionId</code>,
-	 * crytpographically signed. This signature is verified in {@link }.
+	 * crytpographically signed. This signature is verified in
+	 * {@link OAuthService#decodeState(String state) decodeState()}.
 	 */
 	public String encodeState(String url) {
 		String msg = this.impl_.secret_ + url;

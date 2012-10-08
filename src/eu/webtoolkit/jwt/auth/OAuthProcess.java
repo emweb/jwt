@@ -129,7 +129,7 @@ public class OAuthProcess extends WObject {
 		if (WApplication.getInstance().getEnvironment().hasJavaScript()) {
 			StringBuilder js = new StringBuilder();
 			js.append("function(object, event) {").append(
-					"Wt3_2_2.PopupWindow(Wt3_2_2").append(",").append(
+					"Wt3_2_3.PopupWindow(Wt3_2_3").append(",").append(
 					WWebWidget.jsStringLiteral(this.getAuthorizeUrl())).append(
 					", ").append(this.service_.getPopupWidth()).append(", ")
 					.append(this.service_.getPopupHeight()).append(");")

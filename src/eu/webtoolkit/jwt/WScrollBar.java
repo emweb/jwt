@@ -27,7 +27,7 @@ import org.slf4j.LoggerFactory;
  * visible, for example when the policy is
  * {@link WScrollArea.ScrollBarPolicy#ScrollBarAlwaysOff}). Using the
  * {@link WScrollBar#tie(WScrollBar one, WScrollBar two) tie()} functions, it is
- * possible to tie to scrollbars together, so that they will scroll together.
+ * possible to tie two scrollbars together, so that they will scroll together.
  * <p>
  * 
  * @see WScrollArea
@@ -109,9 +109,9 @@ public class WScrollBar extends WObject {
 		if (this.tiesChanged_ || all) {
 			String jsCode = "";
 			for (int i = 0; i < this.ties_.size(); ++i) {
-				String tieElement = "Wt3_2_2.getElement('"
+				String tieElement = "Wt3_2_3.getElement('"
 						+ this.ties_.get(i).scrollArea_.getId() + "')";
-				String scrollElement = "Wt3_2_2.getElement('"
+				String scrollElement = "Wt3_2_3.getElement('"
 						+ this.scrollArea_.getId() + "')";
 				String side = this.orientation_ == Orientation.Horizontal ? "Left"
 						: "Top";

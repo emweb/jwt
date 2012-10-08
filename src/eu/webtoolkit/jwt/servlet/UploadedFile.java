@@ -22,6 +22,8 @@ import org.slf4j.LoggerFactory;
 /**
  * Details about a file uploaded with a request to a resource.
  * <p>
+ * 
+ * @see WResource#handleRequest(WebRequest request, WebResponse response)
  */
 public class UploadedFile {
 	private static Logger logger = LoggerFactory.getLogger(UploadedFile.class);

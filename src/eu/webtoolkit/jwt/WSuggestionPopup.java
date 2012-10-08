@@ -41,13 +41,12 @@ import org.slf4j.LoggerFactory;
  * WSuggestionPopup is an MVC view class, using a simple
  * {@link WStringListModel} by default. You can set a custom model using
  * {@link WSuggestionPopup#setModel(WAbstractItemModel model) setModel()}. The
- * model can provide different text for the suggestion text (
- * {@link ItemDataRole#DisplayRole}) and value ({@link ItemDataRole#UserRole}).
- * The member methods {@link WSuggestionPopup#clearSuggestions()
+ * model can provide different text for the suggestion text ({@link }) and value
+ * ({@link }). The member methods {@link WSuggestionPopup#clearSuggestions()
  * clearSuggestions()} and
  * {@link WSuggestionPopup#addSuggestion(CharSequence suggestionText, CharSequence suggestionValue)
  * addSuggestion()} manipulate this model. Note that a {@link WStringListModel}
- * does not support {@link ItemDataRole#UserRole} data, so you may need to use a
+ * does not support {@link } data, so you may need to use a
  * {@link WStandardItemModel} instead.
  * <p>
  * By default, the popup implements all filtering client-side. To support large
@@ -466,9 +465,9 @@ public class WSuggestionPopup extends WCompositeWidget {
 	 * Adds a new suggestion.
 	 * <p>
 	 * This adds an entry to the underlying model. The
-	 * <code>suggestionText</code> is set as {@link ItemDataRole#DisplayRole}
-	 * and the <code>suggestionValue</code> (which is inserted into the edit
-	 * field on selection) is set as {@link ItemDataRole#UserRole}.
+	 * <code>suggestionText</code> is set as {@link } and the
+	 * <code>suggestionValue</code> (which is inserted into the edit field on
+	 * selection) is set as {@link }.
 	 * <p>
 	 * 
 	 * @see WSuggestionPopup#clearSuggestions()
@@ -494,9 +493,9 @@ public class WSuggestionPopup extends WCompositeWidget {
 	 * The default value is a {@link WStringListModel} that is owned by the
 	 * suggestion popup.
 	 * <p>
-	 * The {@link ItemDataRole#DisplayRole} is used for the suggestion text. The
-	 * {@link ItemDataRole#UserRole} is used for the suggestion value, unless
-	 * empty, in which case the suggestion text is used as value.
+	 * The {@link } is used for the suggestion text. The {@link } is used for the
+	 * suggestion value, unless empty, in which case the suggestion text is used
+	 * as value.
 	 * <p>
 	 * Note that since the default WStringListModel does not support UserRole
 	 * data, you will want to change it to a more general model (e.g.
@@ -877,7 +876,7 @@ public class WSuggestionPopup extends WCompositeWidget {
 		app.loadJavaScript(THIS_JS, wtjs1());
 		app.loadJavaScript(THIS_JS, wtjs2());
 		this.setJavaScriptMember(" WSuggestionPopup",
-				"new Wt3_2_2.WSuggestionPopup(" + app.getJavaScriptClass()
+				"new Wt3_2_3.WSuggestionPopup(" + app.getJavaScriptClass()
 						+ "," + this.getJsRef() + "," + this.replacerJS_ + ","
 						+ this.matcherJS_ + ","
 						+ String.valueOf(this.filterLength_) + ","
@@ -910,7 +909,7 @@ public class WSuggestionPopup extends WCompositeWidget {
 
 	static String instantiateStdMatcher(WSuggestionPopup.Options options) {
 		StringBuilder s = new StringBuilder();
-		s.append("new Wt3_2_2.WSuggestionPopupStdMatcher(").append(
+		s.append("new Wt3_2_3.WSuggestionPopupStdMatcher(").append(
 				WWebWidget.jsStringLiteral(options.highlightBeginTag)).append(
 				", ").append(
 				WWebWidget.jsStringLiteral(options.highlightEndTag)).append(

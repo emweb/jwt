@@ -487,7 +487,7 @@ public class WDialog extends WCompositeWidget {
 				this
 						.setJavaScriptMember(
 								" Resizable",
-								"(new Wt3_2_2.Resizable(Wt3_2_2,"
+								"(new Wt3_2_3.Resizable(Wt3_2_3,"
 										+ this.getJsRef()
 										+ ")).onresize(function(w, h) {var obj = $('#"
 										+ this.getId()
@@ -595,7 +595,7 @@ public class WDialog extends WCompositeWidget {
 							new WLength(999999), this.getMaximumHeight());
 				}
 			}
-			this.doJavaScript("new Wt3_2_2.WDialog(" + app.getJavaScriptClass()
+			this.doJavaScript("new Wt3_2_3.WDialog(" + app.getJavaScriptClass()
 					+ "," + this.getJsRef() + "," + (centerX ? "1" : "0") + ","
 					+ (centerY ? "1" : "0") + ");");
 			if (!app.getEnvironment().agentIsIElt(9)) {

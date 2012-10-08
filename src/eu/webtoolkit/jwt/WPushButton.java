@@ -194,6 +194,7 @@ public class WPushButton extends WFormWidget {
 	 * <p>
 	 * 
 	 * @see WPushButton#setRef(String url)
+	 * @see WResource#getUrl()
 	 * @deprecated Use {@link WPushButton#getLink() getLink()} instead.
 	 */
 	public String getRef() {
@@ -334,7 +335,7 @@ public class WPushButton extends WFormWidget {
 				}
 				if (this.link_.getType() == WLink.Type.InternalPath) {
 					this.redirectJS_
-							.setJavaScript("function(){Wt3_2_2.history.navigate("
+							.setJavaScript("function(){Wt3_2_3.history.navigate("
 									+ jsStringLiteral(this.link_
 											.getInternalPath()) + ",true);}");
 				} else {

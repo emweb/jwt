@@ -206,7 +206,7 @@ public class WCssDecorationStyle extends WObject {
 	 * The <code>link</code> may be a URL or a resource.
 	 * <p>
 	 * The image may be placed in a particular location by specifying sides by
-	 * OR&apos;ing {@link Side} values together, e.g. (Right | Top).
+	 * OR&apos;ing {@link } values together, e.g. (Right | Top).
 	 */
 	public void setBackgroundImage(WLink image,
 			WCssDecorationStyle.Repeat repeat, EnumSet<Side> sides) {
@@ -272,7 +272,7 @@ public class WCssDecorationStyle extends WObject {
 	 * Sets a background image.
 	 * <p>
 	 * The image may be placed in a particular location by specifying sides by
-	 * OR&apos;ing {@link Side} values together, e.g. (Right | Top).
+	 * OR&apos;ing {@link } values together, e.g. (Right | Top).
 	 */
 	public void setBackgroundImage(String url,
 			WCssDecorationStyle.Repeat repeat, EnumSet<Side> sides) {

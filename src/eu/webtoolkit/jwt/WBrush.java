@@ -37,7 +37,7 @@ public class WBrush {
 	/**
 	 * Creates a brush.
 	 * <p>
-	 * Creates a brush with a {@link BrushStyle#NoBrush NoBrush} fill style.
+	 * Creates a brush with a {@link NoBrush} fill style.
 	 */
 	public WBrush() {
 		this.style_ = BrushStyle.NoBrush;

@@ -231,8 +231,8 @@ public class WLabel extends WInteractWidget {
 	 * When <code>wordWrap</code> is <code>true</code>, the widget may break
 	 * lines, creating a multi-line text. When <code>wordWrap</code> is
 	 * <code>false</code>, the text will displayed on a single line, unless the
-	 * text contains end-of-lines (for {@link TextFormat#PlainText}) or &lt;br
-	 * /&gt; tags or other block-level tags (for {@link TextFormat#XHTMLText}).
+	 * text contains end-of-lines (for {@link }) or &lt;br /&gt; tags or other
+	 * block-level tags (for {@link }).
 	 * <p>
 	 * The default value is <code>false</code>.
 	 * <p>

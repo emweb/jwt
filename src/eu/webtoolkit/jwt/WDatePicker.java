@@ -43,9 +43,9 @@ import org.slf4j.LoggerFactory;
  * <h3>i18n</h3>
  * <p>
  * Internationalization of {@link WDatePicker} is mostly handled through the
- * internationalization mechanism of {@link WDate}. The &apos;Close&apos; button
- * can be internationalized by overriding the default value for the localization
- * key Wt.DatePicker.Close.
+ * internationalization mechanism of {@link eu.webtoolkit.jwt.WDate}. The
+ * &apos;Close&apos; button can be internationalized by overriding the default
+ * value for the localization key Wt.DatePicker.Close.
  * <p>
  * <h3>CSS</h3>
  * <p>
@@ -137,7 +137,7 @@ public class WDatePicker extends WCompositeWidget {
 	 */
 	public void remove() {
 		WApplication.getInstance().doJavaScript(
-				"Wt3_2_2.remove('" + this.popup_.getId() + "');");
+				"Wt3_2_3.remove('" + this.popup_.getId() + "');");
 		super.remove();
 	}
 
@@ -152,6 +152,7 @@ public class WDatePicker extends WCompositeWidget {
 	 * <p>
 	 * 
 	 * @see WDatePicker#getFormat()
+	 * @see WDate#toString()
 	 */
 	public void setFormat(String format) {
 		this.format_ = format;
@@ -211,6 +212,7 @@ public class WDatePicker extends WCompositeWidget {
 	 * <p>
 	 * 
 	 * @see WDatePicker#setDate(WDate date)
+	 * @see WDate#fromString(String s)
 	 * @see WLineEdit#getText()
 	 */
 	public WDate getDate() {
@@ -333,11 +335,11 @@ public class WDatePicker extends WCompositeWidget {
 	 * The default is <code>false</code>.
 	 */
 	public void setGlobalPopup(boolean global) {
-		this.positionJS_.setJavaScript("function() { Wt3_2_2.getElement('"
+		this.positionJS_.setJavaScript("function() { Wt3_2_3.getElement('"
 				+ this.popup_.getId()
-				+ "').style.display = '';Wt3_2_2.positionAtWidget('"
+				+ "').style.display = '';Wt3_2_3.positionAtWidget('"
 				+ this.popup_.getId() + "','" + this.displayWidget_.getId()
-				+ "', Wt3_2_2.Horizontal, " + (global ? "true" : "false")
+				+ "', Wt3_2_3.Horizontal, " + (global ? "true" : "false")
 				+ ");}");
 	}
 
