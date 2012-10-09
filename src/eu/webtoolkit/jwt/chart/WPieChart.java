@@ -93,7 +93,7 @@ public class WPieChart extends WAbstractChart {
 	 * <p>
 	 * The labels are used only when
 	 * {@link WPieChart#setDisplayLabels(EnumSet options) setDisplayLabels()} is
-	 * called with the {@link TextLabel} option.
+	 * called with the {@link LabelOption#TextLabel TextLabel} option.
 	 * <p>
 	 * The default value is -1 (not defined).
 	 * <p>
@@ -314,12 +314,13 @@ public class WPieChart extends WAbstractChart {
 	 * Configures if and how labels should be displayed.
 	 * <p>
 	 * The <i>options</i> must be the logical OR of a placement option (
-	 * {@link Inside} or {@link Outside}) and {@link TextLabel} and/or
-	 * {@link TextPercentage}. If both TextLabel and TextPercentage are
-	 * specified, then these are combined as &quot;&lt;label&gt;:
-	 * &lt;percentage&gt;&quot;.
+	 * {@link LabelOption#Inside Inside} or {@link LabelOption#Outside Outside})
+	 * and {@link LabelOption#TextLabel TextLabel} and/or
+	 * {@link LabelOption#TextPercentage TextPercentage}. If both TextLabel and
+	 * TextPercentage are specified, then these are combined as
+	 * &quot;&lt;label&gt;: &lt;percentage&gt;&quot;.
 	 * <p>
-	 * The default value is {@link NoLabels}.
+	 * The default value is {@link LabelOption#NoLabels NoLabels}.
 	 */
 	public void setDisplayLabels(EnumSet<LabelOption> options) {
 		this.labelOptions_ = EnumSet.copyOf(options);

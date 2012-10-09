@@ -41,8 +41,9 @@ public class UploadedFile {
 	 * Return the spool file name.
 	 * <p>
 	 * This is the location on the local (server) filesystem where the uploaded
-	 * file is temporarily stored. Unless you call {@link }, this file is deleted
-	 * automatically.
+	 * file is temporarily stored. Unless you call
+	 * {@link UploadedFile#stealSpoolFile() stealSpoolFile()}, this file is
+	 * deleted automatically.
 	 */
 	public String getSpoolFileName() {
 		return this.fileInfo_.spoolFileName;

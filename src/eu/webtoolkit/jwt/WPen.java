@@ -42,8 +42,8 @@ public class WPen {
 	 * Creates a black cosmetic pen.
 	 * <p>
 	 * Constructs a black solid pen of 0 width (i.e. cosmetic single pixel
-	 * width), with {@link SquareCap} line ends and {@link BevelJoin} line join
-	 * style.
+	 * width), with {@link PenCapStyle#SquareCap SquareCap} line ends and
+	 * {@link PenJoinStyle#BevelJoin BevelJoin} line join style.
 	 */
 	public WPen() {
 		this.penStyle_ = PenStyle.SolidLine;
@@ -57,7 +57,8 @@ public class WPen {
 	 * Creates a black pen with a particular style.
 	 * <p>
 	 * Constructs a black pen of 0 width (i.e. cosmetic single pixel width),
-	 * with {@link SquareCap} line ends and {@link BevelJoin} line join style.
+	 * with {@link PenCapStyle#SquareCap SquareCap} line ends and
+	 * {@link PenJoinStyle#BevelJoin BevelJoin} line join style.
 	 * <p>
 	 * The line style is set to <code>style</code>.
 	 */
@@ -73,7 +74,8 @@ public class WPen {
 	 * Creates a solid pen of a particular color.
 	 * <p>
 	 * Constructs a solid pen of 0 width (i.e. cosmetic single pixel width),
-	 * with {@link SquareCap} line ends and {@link BevelJoin} line join style.
+	 * with {@link PenCapStyle#SquareCap SquareCap} line ends and
+	 * {@link PenJoinStyle#BevelJoin BevelJoin} line join style.
 	 * <p>
 	 * The pen color is set to <code>color</code>.
 	 */

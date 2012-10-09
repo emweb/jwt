@@ -332,8 +332,8 @@ public class WTemplate extends WInteractWidget {
 	 * <p>
 	 * The <code>templateText</code> must be proper XHTML, and this is checked
 	 * unless the XHTML is resolved from a message resource bundle. This
-	 * behavior is similar to a {@link WText} when configured with the {@link }
-	 * textformat.
+	 * behavior is similar to a {@link WText} when configured with the
+	 * {@link TextFormat#XHTMLText} textformat.
 	 */
 	public WTemplate(CharSequence text, WContainerWidget parent) {
 		super(parent);
@@ -376,8 +376,9 @@ public class WTemplate extends WInteractWidget {
 	 * <p>
 	 * The <code>text</code> must be proper XHTML, and this is checked unless
 	 * the XHTML is resolved from a message resource bundle or TextFormat is
-	 * {@link }. This behavior is similar to a {@link WText} when configured with
-	 * the {@link } textformat.
+	 * {@link TextFormat#XHTMLUnsafeText}. This behavior is similar to a
+	 * {@link WText} when configured with the {@link TextFormat#XHTMLText}
+	 * textformat.
 	 * <p>
 	 * Changing the template text does not {@link WTemplate#clear() clear()}
 	 * bound widgets or values.

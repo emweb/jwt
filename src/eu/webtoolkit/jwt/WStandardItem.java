@@ -145,7 +145,7 @@ public class WStandardItem {
 	/**
 	 * Sets the text.
 	 * <p>
-	 * The text is stored as {@link DisplayRole} data.
+	 * The text is stored as {@link ItemDataRole#DisplayRole DisplayRole} data.
 	 * <p>
 	 * The default text is empty (&quot;&quot;).
 	 * <p>
@@ -171,7 +171,8 @@ public class WStandardItem {
 	/**
 	 * Sets the icon url.
 	 * <p>
-	 * The icon is stored as {@link DecorationRole} data.
+	 * The icon is stored as {@link ItemDataRole#DecorationRole DecorationRole}
+	 * data.
 	 * <p>
 	 * The default icon url is empty (&quot;&quot;).
 	 * <p>
@@ -201,7 +202,8 @@ public class WStandardItem {
 	/**
 	 * Sets the CSS style class.
 	 * <p>
-	 * The style class is stored as {@link StyleClassRole} data.
+	 * The style class is stored as {@link ItemDataRole#StyleClassRole
+	 * StyleClassRole} data.
 	 * <p>
 	 * The default style class is empty (&quot;&quot;).
 	 * <p>
@@ -231,7 +233,8 @@ public class WStandardItem {
 	/**
 	 * Sets a tool tip.
 	 * <p>
-	 * The tool tip is stored as {@link ToolTipRole} data.
+	 * The tool tip is stored as {@link ItemDataRole#ToolTipRole ToolTipRole}
+	 * data.
 	 * <p>
 	 * The default tool tip is empty (&quot;&quot;).
 	 * <p>
@@ -261,7 +264,7 @@ public class WStandardItem {
 	/**
 	 * Sets a link.
 	 * <p>
-	 * The link is stored as {@link LinkRole} data.
+	 * The link is stored as {@link ItemDataRole#LinkRole LinkRole} data.
 	 * <p>
 	 * 
 	 * @see WStandardItem#setData(Object d, int role)
@@ -288,7 +291,8 @@ public class WStandardItem {
 	/**
 	 * Sets a link to an internal path (<b>deprecated</b>).
 	 * <p>
-	 * The internal path is stored as {@link LinkRole} data..
+	 * The internal path is stored as {@link ItemDataRole#LinkRole LinkRole}
+	 * data..
 	 * <p>
 	 * 
 	 * @deprecated Use {@link WStandardItem#setLink(WLink link) setLink()}
@@ -317,7 +321,7 @@ public class WStandardItem {
 	/**
 	 * Sets a link to a URL (<b>deprecated</b>).
 	 * <p>
-	 * The URL is stored as {@link LinkRole} data.
+	 * The URL is stored as {@link ItemDataRole#LinkRole LinkRole} data.
 	 * <p>
 	 * 
 	 * @deprecated Use {@link WStandardItem#setLink(WLink link) setLink()}
@@ -346,7 +350,8 @@ public class WStandardItem {
 	/**
 	 * Checks or unchecks the item.
 	 * <p>
-	 * The value is stored as {@link CheckStateRole} data.
+	 * The value is stored as {@link ItemDataRole#CheckStateRole CheckStateRole}
+	 * data.
 	 * <p>
 	 * By default, an item is not checked.
 	 * <p>
@@ -355,7 +360,8 @@ public class WStandardItem {
 	 * <p>
 	 * If the item is tri-state, you may consider using
 	 * {@link WStandardItem#setCheckState(CheckState state) setCheckState()}
-	 * instead which supports also setting the third {@link } state.
+	 * instead which supports also setting the third
+	 * {@link CheckState#PartiallyChecked} state.
 	 * <p>
 	 * 
 	 * @see WStandardItem#setCheckable(boolean checkable)
@@ -382,10 +388,12 @@ public class WStandardItem {
 	 * Sets the check state.
 	 * <p>
 	 * Like {@link WStandardItem#setChecked(boolean checked) setChecked()}, this
-	 * sets the check state, but allows also setting the {@link } state when the
-	 * item is tri-state checkable.
+	 * sets the check state, but allows also setting the
+	 * {@link CheckState#PartiallyChecked} state when the item is tri-state
+	 * checkable.
 	 * <p>
-	 * The value is stored as {@link CheckStateRole} data.
+	 * The value is stored as {@link ItemDataRole#CheckStateRole CheckStateRole}
+	 * data.
 	 * <p>
 	 * 
 	 * @see WStandardItem#setCheckable(boolean checkable)
@@ -428,9 +436,11 @@ public class WStandardItem {
 	/**
 	 * Sets the flags.
 	 * <p>
-	 * The default flag value is {@link ItemIsSelectable}.
+	 * The default flag value is {@link ItemFlag#ItemIsSelectable
+	 * ItemIsSelectable}.
 	 * <p>
 	 * 
+	 * @see ItemFlag
 	 * @see WStandardItem#getFlags()
 	 * @see WStandardItem#setCheckable(boolean checkable)
 	 */
@@ -463,7 +473,8 @@ public class WStandardItem {
 	/**
 	 * Makes the item checkable.
 	 * <p>
-	 * Adds {@link ItemIsUserCheckable} to the item&apos;s flags.
+	 * Adds {@link ItemFlag#ItemIsUserCheckable ItemIsUserCheckable} to the
+	 * item&apos;s flags.
 	 * <p>
 	 * 
 	 * @see WStandardItem#setFlags(EnumSet flags)
@@ -495,7 +506,8 @@ public class WStandardItem {
 	 * Makes the item tri-state checkable.
 	 * <p>
 	 * When <code>tristate</code> is <code>true</code>, the item is checkable
-	 * with three states: {@link }, {@link }, and {@link }.
+	 * with three states: {@link CheckState#Unchecked},
+	 * {@link CheckState#Checked}, and {@link CheckState#PartiallyChecked}.
 	 * <p>
 	 * This requires that the item is also checkable (see
 	 * {@link WStandardItem#setCheckable(boolean checkable) setCheckable()})

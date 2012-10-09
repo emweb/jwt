@@ -28,10 +28,11 @@ import org.slf4j.LoggerFactory;
  * dependent XML files (see {@link WString#tr(String key) WString#tr()}).
  * <p>
  * Use {@link WText#setTextFormat(TextFormat textFormat) setTextFormat()} to
- * configure the textFormat of the text. The default textFormat is {@link },
- * which allows XHMTL markup to be included in the text. Tags and attributes
- * that indicate &quot;active&quot; content are not allowed and stripped out, to
- * avoid security risks exposed by JavaScript such as the common web-based <a
+ * configure the textFormat of the text. The default textFormat is
+ * {@link TextFormat#XHTMLText}, which allows XHMTL markup to be included in the
+ * text. Tags and attributes that indicate &quot;active&quot; content are not
+ * allowed and stripped out, to avoid security risks exposed by JavaScript such
+ * as the common web-based <a
  * href="http://en.wikipedia.org/wiki/Cross_site_scriptingCross-Site">Cross-Site
  * Scripting (XSS)</a> malicious attack. XSS is the situation where one user of
  * your web application is able to execute a script in another user&apos;s
@@ -40,13 +41,14 @@ import org.slf4j.LoggerFactory;
  * that content in a WText is intended to be passive, and not contain any
  * scripting elements.
  * <p>
- * The {@link } format will display the text literally (escaping any HTML special
- * characters).
+ * The {@link TextFormat#PlainText} format will display the text literally
+ * (escaping any HTML special characters).
  * <p>
- * In some situations, {@link } may be useful to explicitly allow scripting
- * content. Like XHTMLText, it allows XHTML markup, but it also allows
- * potentially dangerous tags and attributes. Use this if you&apos;re sure that
- * a user cannot interfere with the text set, and XHTMLText is too limiting.
+ * In some situations, {@link TextFormat#XHTMLUnsafeText} may be useful to
+ * explicitly allow scripting content. Like XHTMLText, it allows XHTML markup,
+ * but it also allows potentially dangerous tags and attributes. Use this if
+ * you&apos;re sure that a user cannot interfere with the text set, and
+ * XHTMLText is too limiting.
  * <p>
  * WText is by default {@link WWidget#setInline(boolean inlined) inline}, unless
  * the XHTML contents starts with an element such as <code>&lt;div&gt;</code>,
@@ -93,18 +95,19 @@ public class WText extends WInteractWidget {
 	/**
 	 * Creates a text widget with given text.
 	 * <p>
-	 * The textFormat is set to {@link }, unless the <code>text</code> is literal
-	 * (not created using {@link WString#tr(String key) WString#tr()}) and it
-	 * could not be parsed as valid XML. In that case the textFormat is set to
-	 * {@link }.
+	 * The textFormat is set to {@link TextFormat#XHTMLText}, unless the
+	 * <code>text</code> is literal (not created using
+	 * {@link WString#tr(String key) WString#tr()}) and it could not be parsed
+	 * as valid XML. In that case the textFormat is set to
+	 * {@link TextFormat#PlainText}.
 	 * <p>
-	 * Therefore, if you wish to use {@link }, but cannot be sure about
-	 * <code>text</code> being valid XML, you should verify that the
-	 * {@link WText#getTextFormat() getTextFormat()} is {@link } after
-	 * construction.
+	 * Therefore, if you wish to use {@link TextFormat#XHTMLText}, but cannot be
+	 * sure about <code>text</code> being valid XML, you should verify that the
+	 * {@link WText#getTextFormat() getTextFormat()} is
+	 * {@link TextFormat#XHTMLText} after construction.
 	 * <p>
 	 * The XML parser will silently discard malicious tags and attributes for
-	 * literal {@link } text.
+	 * literal {@link TextFormat#XHTMLText} text.
 	 */
 	public WText(CharSequence text, WContainerWidget parent) {
 		super(parent);
@@ -130,18 +133,19 @@ public class WText extends WInteractWidget {
 	/**
 	 * Creates a text widget with given text and format.
 	 * <p>
-	 * If <i>textFormat</i> is {@link } and <code>text</code> is not literal (not
-	 * created using {@link WString#tr(String key) WString#tr()}), then if the
+	 * If <i>textFormat</i> is {@link TextFormat#XHTMLText} and
+	 * <code>text</code> is not literal (not created using
+	 * {@link WString#tr(String key) WString#tr()}), then if the
 	 * <code>text</code> could not be parsed as valid XML, the textFormat is
-	 * changed to {@link }.
+	 * changed to {@link TextFormat#PlainText}.
 	 * <p>
-	 * Therefore, if you wish to use {@link }, but cannot be sure about
-	 * <code>text</code> being valid XML, you should verify that the
-	 * {@link WText#getTextFormat() getTextFormat()} is {@link } after
-	 * construction.
+	 * Therefore, if you wish to use {@link TextFormat#XHTMLText}, but cannot be
+	 * sure about <code>text</code> being valid XML, you should verify that the
+	 * {@link WText#getTextFormat() getTextFormat()} is
+	 * {@link TextFormat#XHTMLText} after construction.
 	 * <p>
 	 * The XML parser will silently discard malicious tags and attributes for
-	 * literal {@link } text.
+	 * literal {@link TextFormat#XHTMLText} text.
 	 */
 	public WText(CharSequence text, TextFormat format, WContainerWidget parent) {
 		super(parent);
@@ -189,11 +193,12 @@ public class WText extends WInteractWidget {
 	/**
 	 * Sets the text.
 	 * <p>
-	 * When the current format is {@link }, and <code>text</code> is literal (not
-	 * created using {@link WString#tr(String key) WString#tr()}), it is parsed
-	 * using an XML parser which discards malicious tags and attributes
-	 * silently. When the parser encounters an XML parse error, the textFormat
-	 * is changed to {@link }.
+	 * When the current format is {@link TextFormat#XHTMLText}, and
+	 * <code>text</code> is literal (not created using
+	 * {@link WString#tr(String key) WString#tr()}), it is parsed using an XML
+	 * parser which discards malicious tags and attributes silently. When the
+	 * parser encounters an XML parse error, the textFormat is changed to
+	 * {@link TextFormat#PlainText}.
 	 * <p>
 	 * Returns whether the text could be set using the current textFormat. A
 	 * return value of <code>false</code> indicates that the textFormat was
@@ -223,15 +228,16 @@ public class WText extends WInteractWidget {
 	 * The textFormat controls how the string should be interpreted: either as
 	 * plain text, which is displayed literally, or as XHTML-markup.
 	 * <p>
-	 * When changing the textFormat to {@link }, and the current text is literal
-	 * (not created using {@link WString#tr(String key) WString#tr()}), the
-	 * current text is parsed using an XML parser which discards malicious tags
-	 * and attributes silently. When the parser encounters an XML parse error,
-	 * the textFormat is left unchanged, and this method returns false.
+	 * When changing the textFormat to {@link TextFormat#XHTMLText}, and the
+	 * current text is literal (not created using {@link WString#tr(String key)
+	 * WString#tr()}), the current text is parsed using an XML parser which
+	 * discards malicious tags and attributes silently. When the parser
+	 * encounters an XML parse error, the textFormat is left unchanged, and this
+	 * method returns false.
 	 * <p>
 	 * Returns whether the textFormat could be set for the current text.
 	 * <p>
-	 * The default format is {@link }.
+	 * The default format is {@link TextFormat#XHTMLText}.
 	 */
 	public boolean setTextFormat(TextFormat textFormat) {
 		if (this.textFormat_ != textFormat) {
@@ -263,8 +269,8 @@ public class WText extends WInteractWidget {
 	 * When <code>wordWrap</code> is <code>true</code>, the widget may break
 	 * lines, creating a multi-line text. When <code>wordWrap</code> is
 	 * <code>false</code>, the text will displayed on a single line, unless the
-	 * text contains end-of-lines (for {@link }) or &lt;br /&gt; tags or other
-	 * block-level tags (for {@link }).
+	 * text contains end-of-lines (for {@link TextFormat#PlainText}) or &lt;br
+	 * /&gt; tags or other block-level tags (for {@link TextFormat#XHTMLText}).
 	 * <p>
 	 * The default value is <code>true</code>.
 	 * <p>
@@ -378,7 +384,8 @@ public class WText extends WInteractWidget {
 	 * of the form <code>href=&quot;#/...&quot;</code>), are re-encoded to link
 	 * to the internal path.
 	 * <p>
-	 * When using {@link } (or {@link }) formatted text, the text is pasted
+	 * When using {@link TextFormat#XHTMLText} (or
+	 * {@link TextFormat#XHTMLUnsafeText}) formatted text, the text is pasted
 	 * verbatim in the browser (with the exception of XSS filtering if
 	 * applicable). With this option, however, the XHTML text may be transformed
 	 * at the cost of an additional XML parsing step.

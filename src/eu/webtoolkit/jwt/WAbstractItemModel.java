@@ -31,18 +31,18 @@ import org.slf4j.LoggerFactory;
  * data. Every data item is uniquely identified by their row, column and parent
  * index, and items may be referenced using the helper class {@link WModelIndex}.
  * <p>
- * Each item may provide data for one or more {@link roles}, and indicate
- * options using {@link flags}. The different roles can be used to model
- * different aspects of an item (its text value, an icon, style class), or to
- * hold auxiliary custom information. The flags provide information to the View
- * on possible interactivity.
+ * Each item may provide data for one or more {@link ItemDataRole roles}, and
+ * indicate options using {@link ItemFlag flags}. The different roles can be
+ * used to model different aspects of an item (its text value, an icon, style
+ * class), or to hold auxiliary custom information. The flags provide
+ * information to the View on possible interactivity.
  * <p>
  * Top level data have a <code>null</code> parent {@link WModelIndex}.
  * <p>
  * The data itself is of type Object, which can either be <code>null</code>, or
  * be any type of data. Depending on the role however, view classes may expect
  * certain types of data (e.g. numerical types for charts) or will convert the
- * data to a string (e.g. for {@link }).
+ * data to a string (e.g. for {@link ItemDataRole#DisplayRole}).
  * <p>
  * To implement a custom model, you need to reimplement the following methods:
  * <ul>
@@ -72,10 +72,10 @@ import org.slf4j.LoggerFactory;
  * pointer plays no role, since only the toplevel index has children.
  * <p>
  * If you want to support editing of the model, then you need to indicate this
- * support using a {@link } flag, and reimplement
+ * support using a {@link ItemFlag#ItemIsEditable} flag, and reimplement
  * {@link WAbstractItemModel#setData(WModelIndex index, Object value, int role)
- * setData()}. View classes will use the {@link EditRole} to read and update the
- * data for the editor.
+ * setData()}. View classes will use the {@link ItemDataRole#EditRole EditRole}
+ * to read and update the data for the editor.
  * <p>
  * When the model&apos;s data has been changed, the model must emit the
  * {@link WAbstractItemModel#dataChanged() dataChanged()} signal.
@@ -191,8 +191,11 @@ public abstract class WAbstractItemModel extends WObject {
 	/**
 	 * Returns the flags for an item.
 	 * <p>
-	 * The default implementation returns {@link ItemIsSelectable}.
+	 * The default implementation returns {@link ItemFlag#ItemIsSelectable
+	 * ItemIsSelectable}.
 	 * <p>
+	 * 
+	 * @see ItemFlag
 	 */
 	public EnumSet<ItemFlag> getFlags(WModelIndex index) {
 		return EnumSet.of(ItemFlag.ItemIsSelectable);
@@ -203,6 +206,8 @@ public abstract class WAbstractItemModel extends WObject {
 	 * <p>
 	 * The default implementation returns no flags set.
 	 * <p>
+	 * 
+	 * @see HeaderFlag
 	 */
 	public EnumSet<HeaderFlag> getHeaderFlags(int section,
 			Orientation orientation) {
@@ -261,9 +266,10 @@ public abstract class WAbstractItemModel extends WObject {
 	 * <p>
 	 * You should check the <code>role</code> to decide what data to return.
 	 * Usually a View class will ask for data for several roles which affect not
-	 * only the contents ({@link }) but also icons ({@link }), URLs ({@link }), and
-	 * other visual aspects. If your item does not specify data for a particular
-	 * role, it should simply return a boost::any().
+	 * only the contents ({@link ItemDataRole#DisplayRole}) but also icons (
+	 * {@link ItemDataRole#DecorationRole}), URLs ({@link ItemDataRole#LinkRole}
+	 * ), and other visual aspects. If your item does not specify data for a
+	 * particular role, it should simply return a boost::any().
 	 * <p>
 	 * 
 	 * @see WAbstractItemModel#getFlags(WModelIndex index)
@@ -308,8 +314,9 @@ public abstract class WAbstractItemModel extends WObject {
 	/**
 	 * Returns the row or column header data.
 	 * <p>
-	 * When <code>orientation</code> is {@link Horizontal}, <code>section</code>
-	 * is a column number, when <code>orientation</code> is {@link Vertical},
+	 * When <code>orientation</code> is {@link Orientation#Horizontal
+	 * Horizontal}, <code>section</code> is a column number, when
+	 * <code>orientation</code> is {@link Orientation#Vertical Vertical},
 	 * <code>section</code> is a row number.
 	 * <p>
 	 * 
@@ -758,8 +765,8 @@ public abstract class WAbstractItemModel extends WObject {
 	/**
 	 * Expands a column.
 	 * <p>
-	 * Expands a column. This may only be called by a view when the {@link } flag
-	 * is set.
+	 * Expands a column. This may only be called by a view when the
+	 * {@link HeaderFlag#ColumnIsCollapsed} flag is set.
 	 * <p>
 	 * The default implementation does nothing.
 	 * <p>
@@ -772,8 +779,9 @@ public abstract class WAbstractItemModel extends WObject {
 	/**
 	 * Collapses a column.
 	 * <p>
-	 * Collapses a column. This may only be called by a view when the {@link } or
-	 * {@link } flag is set.
+	 * Collapses a column. This may only be called by a view when the
+	 * {@link HeaderFlag#ColumnIsExpandedLeft} or
+	 * {@link HeaderFlag#ColumnIsExpandedRight} flag is set.
 	 * <p>
 	 * The default implementation does nothing.
 	 * <p>
@@ -828,7 +836,8 @@ public abstract class WAbstractItemModel extends WObject {
 	 * items.
 	 * <p>
 	 * The drop event will indicate a {@link WItemSelectionModel selection
-	 * model} for this abstract item model as {@link source}.
+	 * model} for this abstract item model as {@link WDropEvent#getSource()
+	 * source}.
 	 * <p>
 	 * The default implementation returns a mime-type for generic drag&amp;drop
 	 * support between abstract item models.
@@ -867,7 +876,8 @@ public abstract class WAbstractItemModel extends WObject {
 	 * <code>row</code> is -1, then the item is appended to the
 	 * <code>parent</code>. Otherwise, the item is inserted at or copied over
 	 * the indicated item (and subsequent rows). When <code>action</code> is a
-	 * {@link MoveAction}, the original items are deleted from the source model.
+	 * {@link DropAction#MoveAction MoveAction}, the original items are deleted
+	 * from the source model.
 	 * <p>
 	 * You may want to reimplement this method if you want to handle other
 	 * mime-type data, or if you want to refine how the drop event of an item

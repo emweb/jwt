@@ -272,6 +272,7 @@ public class WPopupMenu extends WCompositeWidget {
 	 * <p>
 	 * 
 	 * @see WPopupMenu#popup(WPoint p)
+	 * @see WMouseEvent#getDocument()
 	 */
 	public void popup(WMouseEvent e) {
 		this.popup(new WPoint(e.getDocument().x, e.getDocument().y));

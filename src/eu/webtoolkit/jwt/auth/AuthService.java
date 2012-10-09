@@ -445,10 +445,10 @@ public class AuthService {
 	 * <p>
 	 * This may return two successful results:
 	 * <ul>
-	 * <li>{@link }: a token was presented which proves that the user is tied to
-	 * the email address.</li>
-	 * <li>{@link }: a token was presented which requires the user to enter a new
-	 * password.</li>
+	 * <li>{@link EmailTokenResult.Result#EmailConfirmed}: a token was presented
+	 * which proves that the user is tied to the email address.</li>
+	 * <li>{@link EmailTokenResult.Result#UpdatePassword}: a token was presented
+	 * which requires the user to enter a new password.</li>
 	 * </ul>
 	 * <p>
 	 * 

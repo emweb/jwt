@@ -32,8 +32,9 @@ public enum PositionScheme {
 	/**
 	 * Static position scheme.
 	 * <p>
-	 * The widget is layed-out with other {@link Static} and {@link Relative}
-	 * sibling widgets, one after another.
+	 * The widget is layed-out with other {@link PositionScheme#Static Static}
+	 * and {@link PositionScheme#Relative Relative} sibling widgets, one after
+	 * another.
 	 * <p>
 	 * Inline widgets are layed out in horizontal lines (like text), wrapping
 	 * around at the end of the line to continue on the next line. Block widgets
@@ -65,7 +66,7 @@ public enum PositionScheme {
 	 * a {@link WTableCell}</li>
 	 * <li>
 	 * or has a position scheme that is {@link PositionScheme#Relative Relative}
-	 * or {@link Absolute}.</li>
+	 * or {@link PositionScheme#Absolute Absolute}.</li>
 	 * </ul>
 	 */
 	Absolute,

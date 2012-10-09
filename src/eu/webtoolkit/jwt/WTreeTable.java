@@ -110,8 +110,6 @@ public class WTreeTable extends WCompositeWidget {
 		this.columnWidths_.add(WLength.Auto);
 		WContainerWidget content = new WContainerWidget(this.impl_);
 		content.setStyleClass("Wt-content");
-		content.resize(new WLength(100, WLength.Unit.Percentage), new WLength(
-				100, WLength.Unit.Percentage));
 		if (!WApplication.getInstance().getEnvironment().agentIsIE()) {
 			content.setOverflow(WContainerWidget.Overflow.OverflowAuto);
 		} else {

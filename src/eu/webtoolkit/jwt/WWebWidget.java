@@ -1453,6 +1453,8 @@ public abstract class WWebWidget extends WWidget {
 			if (this.flags_.get(BIT_HIDDEN_CHANGED) || all
 					&& this.flags_.get(BIT_HIDDEN)) {
 				if (this.flags_.get(BIT_HIDDEN)) {
+					element.callJavaScript("$('#" + this.getId()
+							+ "').addClass('Wt-hidden');");
 					element.setProperty(Property.PropertyStyleVisibility,
 							"hidden");
 					if (this.flags_.get(BIT_HIDE_WITH_OFFSETS)) {
@@ -1512,6 +1514,8 @@ public abstract class WWebWidget extends WWidget {
 							element.setProperty(Property.PropertyStyleLeft, "");
 						}
 					}
+					element.callJavaScript("$('#" + this.getId()
+							+ "').removeClass('Wt-hidden');");
 					element.setProperty(Property.PropertyStyleVisibility,
 							"visible");
 					element.setProperty(Property.PropertyStyleDisplay, "");

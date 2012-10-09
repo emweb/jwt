@@ -49,7 +49,7 @@ public enum ItemFlag {
 	/**
 	 * <p>
 	 * Item has tree states. When set, {@link ItemDataRole#CheckStateRole} data
-	 * is of type {@link }
+	 * is of type {@link CheckState}
 	 */
 	ItemIsTristate,
 	/**

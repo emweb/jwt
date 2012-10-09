@@ -35,11 +35,12 @@ import org.slf4j.LoggerFactory;
  * {@link WCartesianChart#addSeries(WDataSeries series) addSeries()}. Each
  * series corresponds to one data column that holds Y data.
  * <p>
- * A cartesian chart is either a {@link CategoryChart} or a {@link ScatterPlot}.
+ * A cartesian chart is either a {@link ChartType#CategoryChart CategoryChart}
+ * or a {@link ChartType#ScatterPlot ScatterPlot}.
  * <p>
  * In a <b>CategoryChart</b>, the X series represent different categories, which
  * are listed consecutively in model row order. The X axis scale is set to
- * {@link CategoryScale}.
+ * {@link AxisScale#CategoryScale CategoryScale}.
  * <p>
  * <div align="center"> <img src="doc-files//ChartWCartesianChart-1.png"
  * alt="A category chart with bar series">
@@ -50,10 +51,11 @@ import org.slf4j.LoggerFactory;
  * data series (see {@link WDataSeries} for more information).
  * <p>
  * In a <b>ScatterPlot</b>, the X series data are interpreted as numbers on a
- * numerical scale. The scale for the X axis defaults to a {@link LinearScale},
- * but this may be changed to a {@link DateScale} when the X series contains
- * dates (of type {@link eu.webtoolkit.jwt.WDate}) to create a time series
- * chart, or to a {@link LogScale}. A ScatterPlot supports the same types of
+ * numerical scale. The scale for the X axis defaults to a
+ * {@link AxisScale#LinearScale LinearScale}, but this may be changed to a
+ * {@link AxisScale#DateScale DateScale} when the X series contains dates (of
+ * type {@link eu.webtoolkit.jwt.WDate}) to create a time series chart, or to a
+ * {@link AxisScale#LogScale LogScale}. A ScatterPlot supports the same types of
  * data series as a CategoryChart, but does not support stacking. In a scatter
  * plot, the X series do not need to be ordered in increasing values, and may be
  * set differently for each dataseries using
@@ -99,7 +101,8 @@ public class WCartesianChart extends WAbstractChart {
 	/**
 	 * Creates a new cartesian chart.
 	 * <p>
-	 * Creates a cartesian chart of type {@link CategoryChart}.
+	 * Creates a cartesian chart of type {@link ChartType#CategoryChart
+	 * CategoryChart}.
 	 */
 	public WCartesianChart(WContainerWidget parent) {
 		super(parent);
@@ -170,11 +173,12 @@ public class WCartesianChart extends WAbstractChart {
 	 * Sets the chart type.
 	 * <p>
 	 * The chart type determines how (x,y) data are interpreted. In a
-	 * {@link CategoryChart}, the X values are categories, and these are plotted
-	 * consecutively, evenly spaced, and in row order. In a {@link ScatterPlot},
-	 * the X values are interpreted numerically (as for Y values).
+	 * {@link ChartType#CategoryChart CategoryChart}, the X values are
+	 * categories, and these are plotted consecutively, evenly spaced, and in
+	 * row order. In a {@link ChartType#ScatterPlot ScatterPlot}, the X values
+	 * are interpreted numerically (as for Y values).
 	 * <p>
-	 * The default chart type is a {@link CategoryChart}.
+	 * The default chart type is a {@link ChartType#CategoryChart CategoryChart}.
 	 * <p>
 	 * 
 	 * @see WCartesianChart#getType()
@@ -233,9 +237,9 @@ public class WCartesianChart extends WAbstractChart {
 	 * Sets the the model column for the X series.
 	 * <p>
 	 * Use this method to specify the data for the X series. For a
-	 * {@link ScatterPlot} this is mandatory, while for a {@link CategoryChart},
-	 * if not specified, an increasing series of integer numbers will be used
-	 * (1, 2, ...).
+	 * {@link ChartType#ScatterPlot ScatterPlot} this is mandatory, while for a
+	 * {@link ChartType#CategoryChart CategoryChart}, if not specified, an
+	 * increasing series of integer numbers will be used (1, 2, ...).
 	 * <p>
 	 * Scatterplot dataseries may each individually be given its own X series
 	 * data using {@link WDataSeries#setXSeriesColumn(int modelColumn)
@@ -422,10 +426,11 @@ public class WCartesianChart extends WAbstractChart {
 	 * Configures the legend location.
 	 * <p>
 	 * The legend can be renderd either inside or outside of the chart area.
-	 * When <code>location</code> is {@link Chart::LegendInside}, the legend
-	 * will be rendered inside the chart. When <code>location</code> is
-	 * {@link Chart::Legendoutside}, the legend is rendered outside the chart,
-	 * in the chart padding area.
+	 * When <code>location</code> is {@link LegendLocation#LegendInside
+	 * Chart::LegendInside}, the legend will be rendered inside the chart. When
+	 * <code>location</code> is {@link LegendLocation#LegendOutside
+	 * Chart::Legendoutside}, the legend is rendered outside the chart, in the
+	 * chart padding area.
 	 * <p>
 	 * The provided <code>side</code> can either be {@link Side#Left},
 	 * {@link Side#Right}, {@link Side#Top}, {@link Side#Bottom} and configures
@@ -439,8 +444,9 @@ public class WCartesianChart extends WAbstractChart {
 	 * {@link AlignmentFlag#AlignBottom}) when the <code>side</code> is Left or
 	 * Right.
 	 * <p>
-	 * The default location is {@link Chart::LegendOutside}, {@link Side#Right}
-	 * and {@link AlignmentFlag#AlignMiddle}.
+	 * The default location is {@link LegendLocation#LegendOutside
+	 * Chart::LegendOutside}, {@link Side#Right} and
+	 * {@link AlignmentFlag#AlignMiddle}.
 	 * <p>
 	 * To have more control over the legend, you could reimplement the
 	 * {@link WCartesianChart#renderLegendItem(WPainter painter, WPointF pos, WDataSeries series)

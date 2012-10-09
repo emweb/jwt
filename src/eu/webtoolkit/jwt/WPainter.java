@@ -726,7 +726,8 @@ public class WPainter {
 	 * Draws a single point using the current pen. This is implemented by
 	 * drawing a very short line, centered around the given
 	 * <code>position</code>. To get the result of a single point, you should
-	 * use a pen with a {@link } or {@link } pen cap style.
+	 * use a pen with a {@link PenCapStyle#SquareCap} or
+	 * {@link PenCapStyle#RoundCap} pen cap style.
 	 * <p>
 	 * 
 	 * @see WPainter#drawPoint(double x, double y)
@@ -977,6 +978,7 @@ public class WPainter {
 	 * @see WPainter#drawText(WRectF rectangle, EnumSet alignmentFlags, TextFlag
 	 *      textFlag, CharSequence text)
 	 * @see WRectF
+	 * @see TextFlag
 	 * @see WString
 	 */
 	public void drawText(double x, double y, double width, double height,

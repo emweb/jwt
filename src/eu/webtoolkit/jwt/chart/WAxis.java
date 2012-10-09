@@ -54,9 +54,10 @@ import org.slf4j.LoggerFactory;
  * rendered in the axis and in bars that cross the break.
  * <p>
  * The labels are shown using a &quot;%.4g&quot; format string for numbers, and
- * &quot;dd/MM/yyyy&quot; (for {@link DateScale}). The format may be customized
- * using {@link WAxis#setLabelFormat(CharSequence format) setLabelFormat()}. The
- * angle of the label text may be changed using
+ * &quot;dd/MM/yyyy&quot; (for {@link AxisScale#DateScale DateScale}). The
+ * format may be customized using
+ * {@link WAxis#setLabelFormat(CharSequence format) setLabelFormat()}. The angle
+ * of the label text may be changed using
  * {@link WAxis#setLabelAngle(double angle) setLabelAngle()}. By default, all
  * labels are printed horizontally.
  * <p>
@@ -114,7 +115,7 @@ public class WAxis {
 	 * Configures the location of the axis, relative to values on the other axis
 	 * (i.e. Y values for the X axis, and X values for the Y axis).
 	 * <p>
-	 * The default value is {@link }.
+	 * The default value is {@link AxisValue#MinimumValue}.
 	 * <p>
 	 * 
 	 * @see WAxis#getLocation()
@@ -140,13 +141,15 @@ public class WAxis {
 	/**
 	 * Sets the scale of the axis.
 	 * <p>
-	 * For the X scale in a {@link CategoryChart}, the scale should be left
-	 * unchanged to {@link CategoryScale}.
+	 * For the X scale in a {@link ChartType#CategoryChart CategoryChart}, the
+	 * scale should be left unchanged to {@link AxisScale#CategoryScale
+	 * CategoryScale}.
 	 * <p>
-	 * For all other axes, the default value is {@link LinearScale}, but this
-	 * may be changed to {@link LogScale} or {@link DateScale}.
-	 * {@link DateScale} is only useful for the X axis in a ScatterPlot which
-	 * contains {@link eu.webtoolkit.jwt.WDate} values.
+	 * For all other axes, the default value is {@link AxisScale#LinearScale
+	 * LinearScale}, but this may be changed to {@link AxisScale#LogScale
+	 * LogScale} or {@link AxisScale#DateScale DateScale}.
+	 * {@link AxisScale#DateScale DateScale} is only useful for the X axis in a
+	 * ScatterPlot which contains {@link eu.webtoolkit.jwt.WDate} values.
 	 * <p>
 	 * 
 	 * @see WAxis#getScale()
@@ -321,9 +324,11 @@ public class WAxis {
 	 * {@link WAxis#setMinimum(double minimum) setMinimum()} or
 	 * {@link WAxis#setMaximum(double maximum) setMaximum()}.
 	 * <p>
-	 * <code>locations</code> can be {@link } and/or {@link }.
+	 * <code>locations</code> can be {@link AxisValue#MinimumValue} and/or
+	 * {@link AxisValue#MaximumValue}.
 	 * <p>
-	 * The default value is {@link } | {@link }.
+	 * The default value is {@link AxisValue#MinimumValue} |
+	 * {@link AxisValue#MaximumValue}.
 	 */
 	public void setAutoLimits(EnumSet<AxisValue> locations) {
 		if (!EnumUtils.mask(locations, AxisValue.MinimumValue).isEmpty()) {
@@ -356,8 +361,9 @@ public class WAxis {
 	/**
 	 * Returns the limits that are calculated automatically.
 	 * <p>
-	 * This returns the limits ({@link } and/or {@link }) that are calculated
-	 * automatically from the data, rather than being specified manually using
+	 * This returns the limits ({@link AxisValue#MinimumValue} and/or
+	 * {@link AxisValue#MaximumValue}) that are calculated automatically from
+	 * the data, rather than being specified manually using
 	 * {@link WAxis#setMinimum(double minimum) setMinimum()} and/or
 	 * {@link WAxis#setMaximum(double maximum) setMaximum()}.
 	 * <p>
@@ -430,16 +436,17 @@ public class WAxis {
 	 * {@link WDataSeries#setLabelsEnabled(Axis axis, boolean enabled)
 	 * WDataSeries#setLabelsEnabled()}).
 	 * <p>
-	 * For an axis with a {@link LinearScale} or {@link LogScale} scale, the
-	 * format string must be a format string that is accepted by snprintf() and
-	 * which formats one double. If the format string is an empty string,
-	 * &quot;%.4g&quot; is used.
+	 * For an axis with a {@link AxisScale#LinearScale LinearScale} or
+	 * {@link AxisScale#LogScale LogScale} scale, the format string must be a
+	 * format string that is accepted by snprintf() and which formats one
+	 * double. If the format string is an empty string, &quot;%.4g&quot; is
+	 * used.
 	 * <p>
-	 * For an axis with a {@link DateScale} scale, the format string must be a
-	 * format string accepted by WDate::toString(const WString&amp;), to format
-	 * a date. If the format string is an empty string, &quot;dd/MM/yyyy&quot;,
-	 * &quot;MMM yy&quot; or &quot;yyyy&quot; is used depending on the
-	 * situation.
+	 * For an axis with a {@link AxisScale#DateScale DateScale} scale, the
+	 * format string must be a format string accepted by WDate::toString(const
+	 * WString&amp;), to format a date. If the format string is an empty string,
+	 * &quot;dd/MM/yyyy&quot;, &quot;MMM yy&quot; or &quot;yyyy&quot; is used
+	 * depending on the situation.
 	 * <p>
 	 * The default value is an empty string (&quot;&quot;).
 	 * <p>

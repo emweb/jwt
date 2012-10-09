@@ -34,9 +34,9 @@ import org.slf4j.LoggerFactory;
  * <p>
  * A delegate may provide editing support by instantiating an editor when
  * {@link WAbstractItemDelegate#update(WWidget widget, WModelIndex index, EnumSet flags)
- * update()} is called with the {@link } flag. In that case, you will also need
- * to implement {@link WAbstractItemDelegate#getEditState(WWidget widget)
- * getEditState()} and
+ * update()} is called with the {@link ViewItemRenderFlag#RenderEditing} flag.
+ * In that case, you will also need to implement
+ * {@link WAbstractItemDelegate#getEditState(WWidget widget) getEditState()} and
  * {@link WAbstractItemDelegate#setEditState(WWidget widget, Object value)
  * setEditState()} to support virtual scrolling and
  * {@link WAbstractItemDelegate#setModelData(Object editState, WAbstractItemModel model, WModelIndex index)

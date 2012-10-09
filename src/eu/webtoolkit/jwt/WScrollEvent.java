@@ -39,6 +39,9 @@ public class WScrollEvent implements WAbstractEvent {
 	/**
 	 * Returns the current horizontal scroll position.
 	 * <p>
+	 * 
+	 * @see WScrollEvent#getScrollY()
+	 * @see WScrollEvent#getViewportWidth()
 	 */
 	public int getScrollX() {
 		return this.jsEvent_.scrollX;
@@ -49,6 +52,7 @@ public class WScrollEvent implements WAbstractEvent {
 	 * <p>
 	 * 
 	 * @see WScrollEvent#getScrollX()
+	 * @see WScrollEvent#getViewportHeight()
 	 */
 	public int getScrollY() {
 		return this.jsEvent_.scrollY;
@@ -60,6 +64,7 @@ public class WScrollEvent implements WAbstractEvent {
 	 * Returns the current viewport width.
 	 * <p>
 	 * 
+	 * @see WScrollEvent#getViewportHeight()
 	 * @see WScrollEvent#getScrollX()
 	 */
 	public int getViewportWidth() {

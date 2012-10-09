@@ -599,14 +599,15 @@ public class WAnchor extends WContainerWidget {
 	/**
 	 * Sets the location where the linked content should be displayed.
 	 * <p>
-	 * By default, the linked content is displayed in the application ({@link }).
-	 * When the destination is an HTML document, the application is replaced
-	 * with the new document. When the link is to a document that cannot be
-	 * displayed in the browser, it is offered for download or opened using an
-	 * external program, depending on browser settings.
+	 * By default, the linked content is displayed in the application (
+	 * {@link AnchorTarget#TargetSelf}). When the destination is an HTML
+	 * document, the application is replaced with the new document. When the
+	 * link is to a document that cannot be displayed in the browser, it is
+	 * offered for download or opened using an external program, depending on
+	 * browser settings.
 	 * <p>
-	 * By setting <code>target</code> to {@link }, the destination is displayed
-	 * in a new browser window or tab.
+	 * By setting <code>target</code> to {@link AnchorTarget#TargetNewWindow},
+	 * the destination is displayed in a new browser window or tab.
 	 * <p>
 	 * 
 	 * @see WAnchor#getTarget()

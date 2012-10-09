@@ -41,7 +41,8 @@ import org.slf4j.LoggerFactory;
  * <p>
  * Because the focus of the WtAuth library is authentication, the OAuth class
  * also contains the implementation for using the access token for
- * authentication ({@link }).
+ * authentication ({@link OAuthProcess#getIdentity(OAuthAccessToken token)
+ * OAuthProcess#getIdentity()}).
  * <p>
  * Like all <b>service classes</b>, this class holds only configuration state.
  * Thus, once configured, it can be safely shared between multiple sessions
@@ -151,6 +152,9 @@ public abstract class OAuthService {
 	 * This returns the scope that is needed (and sufficient) for obtaining
 	 * identity information, and thus to authenticate the user.
 	 * <p>
+	 * 
+	 * @see OAuthProcess#getIdentity(OAuthAccessToken token)
+	 * @see OAuthProcess#startAuthenticate()
 	 */
 	public abstract String getAuthenticationScope();
 

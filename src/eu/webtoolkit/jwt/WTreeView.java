@@ -30,12 +30,13 @@ import org.slf4j.LoggerFactory;
  * <p>
  * The rendering (and editing) of items is handled by a
  * {@link WAbstractItemDelegate}, by default it uses {@link WItemDelegate} which
- * renders data of all predefined roles (see also {@link }), including text,
- * icons, checkboxes, and tooltips.
+ * renders data of all predefined roles (see also {@link ItemDataRole}),
+ * including text, icons, checkboxes, and tooltips.
  * <p>
  * The view may support editing of items, if the model indicates support (see
- * the {@link } flag). You can define triggers that initiate editing of an item
- * using {@link WAbstractItemView#setEditTriggers(EnumSet editTriggers)
+ * the {@link ItemFlag#ItemIsEditable} flag). You can define triggers that
+ * initiate editing of an item using
+ * {@link WAbstractItemView#setEditTriggers(EnumSet editTriggers)
  * WAbstractItemView#setEditTriggers()}. The actual editing is provided by the
  * item delegate (you can set an appropriate delegate for one column using
  * {@link WAbstractItemView#setItemDelegateForColumn(int column, WAbstractItemDelegate delegate)
@@ -78,13 +79,15 @@ import org.slf4j.LoggerFactory;
  * {@link WAbstractItemView#setDragEnabled(boolean enable)
  * WAbstractItemView#setDragEnabled()}), the current selection may be dragged,
  * but only when all items in the selection indicate support for dragging
- * (controlled by the {@link ItemIsDragEnabled} flag), and if the model
- * indicates a mime-type (controlled by {@link WAbstractItemModel#getMimeType()
- * WAbstractItemModel#getMimeType()}). Likewise, by enabling support for
- * dropping (see {@link WAbstractItemView#setDropsEnabled(boolean enable)
+ * (controlled by the {@link ItemFlag#ItemIsDragEnabled ItemIsDragEnabled}
+ * flag), and if the model indicates a mime-type (controlled by
+ * {@link WAbstractItemModel#getMimeType() WAbstractItemModel#getMimeType()}).
+ * Likewise, by enabling support for dropping (see
+ * {@link WAbstractItemView#setDropsEnabled(boolean enable)
  * WAbstractItemView#setDropsEnabled()}), the treeview may receive a drop event
  * on a particular item, at least if the item indicates support for drops
- * (controlled by the {@link ItemIsDropEnabled} flag).
+ * (controlled by the {@link ItemFlag#ItemIsDropEnabled ItemIsDropEnabled}
+ * flag).
  * <p>
  * You may also react to mouse click events on any item, by connecting to one of
  * the {@link WAbstractItemView#clicked() WAbstractItemView#clicked()} or

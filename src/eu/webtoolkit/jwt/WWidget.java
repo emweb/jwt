@@ -86,6 +86,7 @@ public abstract class WWidget extends WObject {
 	 * This applies to CSS-based layout.
 	 * <p>
 	 * 
+	 * @see PositionScheme
 	 * @see WWidget#getPositionScheme()
 	 */
 	public abstract void setPositionScheme(PositionScheme scheme);
@@ -96,6 +97,7 @@ public abstract class WWidget extends WObject {
 	 * This applies to CSS-based layout.
 	 * <p>
 	 * 
+	 * @see PositionScheme
 	 * @see WWidget#setPositionScheme(PositionScheme scheme)
 	 */
 	public abstract PositionScheme getPositionScheme();
@@ -103,31 +105,33 @@ public abstract class WWidget extends WObject {
 	/**
 	 * Sets CSS offsets for a non-statically positioned widget.
 	 * <p>
-	 * The argument <code>sides</code> may be a combination of {@link }, {@link },
-	 * {@link }, and {@link }.
+	 * The argument <code>sides</code> may be a combination of {@link Side#Left}, {@link Side#Right}, {@link Side#Top}, and {@link Side#Bottom}.
 	 * <p>
-	 * This applies only to widgets that have a position scheme that is {@link },
-	 * {@link }, or {@link }, and has a slightly different meaning for these three
-	 * cases.
+	 * This applies only to widgets that have a position scheme that is
+	 * {@link PositionScheme#Relative}, {@link PositionScheme#Absolute}, or
+	 * {@link PositionScheme#Fixed}, and has a slightly different meaning for
+	 * these three cases.
 	 * <p>
-	 * For a {@link relatively positioned} widget, an offset applies relative to
-	 * the position the widget would have when layed-out using a {@link static}
-	 * position scheme. The widget may be shifted to the left or right by
-	 * specifying an offset for the {@link left} or {@link right}) side. The
+	 * For a {@link PositionScheme#Relative relatively positioned} widget, an
+	 * offset applies relative to the position the widget would have when
+	 * layed-out using a {@link PositionScheme#Static static} position scheme.
+	 * The widget may be shifted to the left or right by specifying an offset
+	 * for the {@link Side#Left left} or {@link Side#Right right}) side. The
 	 * widget may be shifted vertically, by specifying an offset for the
-	 * {@link top} or {@link bottom} side.
+	 * {@link AlignmentFlag#AlignTop top} or {@link Side#Bottom bottom} side.
 	 * <p>
-	 * For an {@link absolutely positioned} widget, an offset specifies a
-	 * distance of the corresponding side of the widget with respect to the
-	 * corresponding side of the reference parent widget. Thus, setting all
-	 * offsets to 0 result in a widget that spans the entire reference widget.
-	 * The reference parent widget is the first ancestor widget that is a table
-	 * cell, or a widget with a relative, absolute or fixed position scheme.
+	 * For an {@link PositionScheme#Absolute absolutely positioned} widget, an
+	 * offset specifies a distance of the corresponding side of the widget with
+	 * respect to the corresponding side of the reference parent widget. Thus,
+	 * setting all offsets to 0 result in a widget that spans the entire
+	 * reference widget. The reference parent widget is the first ancestor
+	 * widget that is a table cell, or a widget with a relative, absolute or
+	 * fixed position scheme.
 	 * <p>
-	 * For an {@link fixed positioned} widget, an offset specifies a distance of
-	 * the corresponding side of the widget with respect to the browser window,
-	 * regardless of scrolling. Thus, setting all offsets to 0 result in a
-	 * widget that spans the entire browser window.
+	 * For an {@link PositionScheme#Fixed fixed positioned} widget, an offset
+	 * specifies a distance of the corresponding side of the widget with respect
+	 * to the browser window, regardless of scrolling. Thus, setting all offsets
+	 * to 0 result in a widget that spans the entire browser window.
 	 * <p>
 	 * This applies to CSS-based layout.
 	 * <p>
@@ -421,15 +425,16 @@ public abstract class WWidget extends WObject {
 	 * Positions this absolutely positioned widget next to another
 	 * <code>widget</code>. Both widgets must be visible.
 	 * <p>
-	 * When <code>orientation</code> = {@link }, the widget is displayed below
-	 * the other widget (or above in case there is not enough room below). It is
-	 * aligned so that the left edges align (or the right edges if there is not
-	 * enough room to the right).
+	 * When <code>orientation</code> = {@link Orientation#Vertical}, the widget
+	 * is displayed below the other widget (or above in case there is not enough
+	 * room below). It is aligned so that the left edges align (or the right
+	 * edges if there is not enough room to the right).
 	 * <p>
-	 * Conversely, when <code>orientation</code> = {@link }, the widget is
-	 * displayed to the right of the other widget (or to the left in case there
-	 * is not enough room to the right). It is aligned so that the top edges
-	 * align (or the bottom edges if there is not enough room below).
+	 * Conversely, when <code>orientation</code> =
+	 * {@link Orientation#Horizontal}, the widget is displayed to the right of
+	 * the other widget (or to the left in case there is not enough room to the
+	 * right). It is aligned so that the top edges align (or the bottom edges if
+	 * there is not enough room below).
 	 * <p>
 	 * <p>
 	 * <i><b>Note: </b>This only works if JavaScript is available. </i>
@@ -468,12 +473,13 @@ public abstract class WWidget extends WObject {
 	/**
 	 * Specifies a CSS float side.
 	 * <p>
-	 * This only applies to widgets with a {@link }
+	 * This only applies to widgets with a {@link PositionScheme#Static}
 	 * {@link WWidget#getPositionScheme() getPositionScheme()}.
 	 * <p>
 	 * This lets the widget float to one of the sides of the parent widget, at
 	 * the current line. A typical use is to position images within text. Valid
-	 * values for Side or java {@link Side#None None} , {@link } or {@link }.
+	 * values for Side or java {@link Side#None None} , {@link Side#Left} or
+	 * {@link Side#Right}.
 	 * <p>
 	 * This applies to CSS-based layout.
 	 */
@@ -491,7 +497,8 @@ public abstract class WWidget extends WObject {
 	 * Sets the sides that should be cleared of floats.
 	 * <p>
 	 * This pushes the widget down until it is not surrounded by floats at the
-	 * <code>sides</code> (which may be a combination of {@link } and {@link }).
+	 * <code>sides</code> (which may be a combination of {@link Side#Left} and
+	 * {@link Side#Right}).
 	 * <p>
 	 * This applies to CSS-based layout.
 	 * <p>
@@ -525,7 +532,8 @@ public abstract class WWidget extends WObject {
 	 * surrounding widgets. The default margin (with an automatic length) is
 	 * zero.
 	 * <p>
-	 * Use any combination of {@link }, {@link }, {@link }, or {@link }.
+	 * Use any combination of {@link Side#Left}, {@link Side#Right},
+	 * {@link Side#Bottom}, or {@link Side#Top}.
 	 * <p>
 	 * This applies to CSS-based layout.
 	 * <p>
@@ -723,7 +731,8 @@ public abstract class WWidget extends WObject {
 	 * of any other sibling widget contained within the same parent (including
 	 * other popup widgets previously added to the container).
 	 * <p>
-	 * This will only have an effect when the widgetis either {@link } or {@link }
+	 * This will only have an effect when the widgetis either
+	 * {@link PositionScheme#Absolute} or {@link PositionScheme#Fixed}
 	 * {@link WWidget#getPositionScheme() getPositionScheme()}.
 	 * <p>
 	 * This applies to CSS-based layout, and configures the z-index property.

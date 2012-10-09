@@ -130,7 +130,7 @@ public class WTree extends WCompositeWidget {
 	/**
 	 * Sets the selection mode.
 	 * <p>
-	 * The default selection mode is {@link }.
+	 * The default selection mode is {@link SelectionMode#NoSelection}.
 	 */
 	public void setSelectionMode(SelectionMode mode) {
 		if (mode != this.selectionMode_) {

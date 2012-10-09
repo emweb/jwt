@@ -38,9 +38,9 @@ import org.slf4j.LoggerFactory;
  * you simply do not care. For these situations a JSlot can be used to add
  * client-side event handling.
  * <p>
- * The JavaScript code may be set (or changed) using the {@link } method which
- * takes a string that implements a JavaScript function with the following
- * signature:
+ * The JavaScript code may be set (or changed) using the
+ * {@link JSlot#setJavaScript(String js) setJavaScript()} method which takes a
+ * string that implements a JavaScript function with the following signature:
  * <p>
  * 
  * <pre>
@@ -106,6 +106,7 @@ public class JSlot {
 	 * <p>
 	 * 
 	 * @see JSlot#JSlot(WWidget parent)
+	 * @see JSlot#setJavaScript(String js)
 	 */
 	public JSlot(String javaScript, WWidget parent) {
 		this.widget_ = parent;

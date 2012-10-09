@@ -724,6 +724,10 @@ public class WDate implements Comparable<WDate> {
 		SimpleDateFormat formatter = new SimpleDateFormat(format);
 		return formatter.format(this.d);
 	}
+	
+	public String toString(String format, boolean localized) {
+		return toString(format);
+	}
 
 	static WDate getPreviousWeekday(WDate d, Day gw) {
 		Calendar c = Calendar.getInstance();

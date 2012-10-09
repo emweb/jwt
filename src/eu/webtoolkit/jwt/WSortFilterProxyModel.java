@@ -348,7 +348,7 @@ public class WSortFilterProxyModel extends WAbstractProxyModel {
 	 * This configures the data role used for filtering on
 	 * {@link WSortFilterProxyModel#getFilterKeyColumn() getFilterKeyColumn()}.
 	 * <p>
-	 * The default value is {@link DisplayRole}.
+	 * The default value is {@link ItemDataRole#DisplayRole DisplayRole}.
 	 * <p>
 	 * 
 	 * @see WSortFilterProxyModel#setFilterKeyColumn(int column)
@@ -373,7 +373,7 @@ public class WSortFilterProxyModel extends WAbstractProxyModel {
 	 * <p>
 	 * This configures the data role used for sorting.
 	 * <p>
-	 * The default value is {@link DisplayRole}.
+	 * The default value is {@link ItemDataRole#DisplayRole DisplayRole}.
 	 * <p>
 	 * 
 	 * @see WSortFilterProxyModel#lessThan(WModelIndex lhs, WModelIndex rhs)

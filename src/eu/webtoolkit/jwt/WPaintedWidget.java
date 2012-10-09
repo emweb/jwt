@@ -209,7 +209,8 @@ public abstract class WPaintedWidget extends WInteractWidget {
 	 * Repainting is not immediate, but happens after when the event loop is
 	 * exited.
 	 * <p>
-	 * Unless a {@link } paint flag is set, the widget is first cleared.
+	 * Unless a {@link PaintFlag#PaintUpdate} paint flag is set, the widget is
+	 * first cleared.
 	 */
 	public void update(EnumSet<PaintFlag> flags) {
 		this.needRepaint_ = true;

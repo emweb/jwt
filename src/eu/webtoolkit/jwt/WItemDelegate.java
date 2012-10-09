@@ -64,16 +64,20 @@ public class WItemDelegate extends WAbstractItemDelegate {
 	 * The following properties of an item are rendered:
 	 * <p>
 	 * <ul>
-	 * <li>text using the {@link } data, with the format specified by
-	 * {@link WItemDelegate#setTextFormat(String format) setTextFormat()}</li>
-	 * <li>a check box depending on the {@link } flag and {@link } data</li>
+	 * <li>text using the {@link ItemDataRole#DisplayRole} data, with the format
+	 * specified by {@link WItemDelegate#setTextFormat(String format)
+	 * setTextFormat()}</li>
+	 * <li>a check box depending on the {@link ItemFlag#ItemIsUserCheckable}
+	 * flag and {@link ItemDataRole#CheckStateRole} data</li>
 	 * <li>an anchor depending on Wt::InternalPathRole or Wt::UrlRole values</li>
-	 * <li>an icon depending on the value of {@link }</li>
-	 * <li>a tooltip depending on the value of {@link }</li>
-	 * <li>a custom style class depending on the value of {@link }</li>
+	 * <li>an icon depending on the value of {@link ItemDataRole#DecorationRole}
+	 * </li>
+	 * <li>a tooltip depending on the value of {@link ItemDataRole#ToolTipRole}</li>
+	 * <li>a custom style class depending on the value of
+	 * {@link ItemDataRole#StyleClassRole}</li>
 	 * </ul>
 	 * <p>
-	 * When the flags indicates {@link }, then
+	 * When the flags indicates {@link ViewItemRenderFlag#RenderEditing}, then
 	 * {@link WItemDelegate#createEditor(WModelIndex index, EnumSet flags)
 	 * createEditor()} is called to create a suitable editor for editing the
 	 * item.
@@ -325,7 +329,7 @@ public class WItemDelegate extends WAbstractItemDelegate {
 	 * Creates an editor for a data item.
 	 * <p>
 	 * The default implementation returns a {@link WLineEdit} which edits the
-	 * item&apos;s {@link } value.
+	 * item&apos;s {@link ItemDataRole#EditRole} value.
 	 * <p>
 	 * You may reimplement this method to provide a suitable editor, or to
 	 * attach a custom validator. In that case, you will probably also want to

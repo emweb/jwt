@@ -346,7 +346,7 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	/**
 	 * Sets the content alignment for a column.
 	 * <p>
-	 * The default value is {@link }.
+	 * The default value is {@link AlignmentFlag#AlignLeft}.
 	 * <p>
 	 * 
 	 * @see WAbstractItemView#setHeaderAlignment(int column, EnumSet alignment)
@@ -394,12 +394,15 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	 * Sets the header alignment for a column.
 	 * <p>
 	 * The default alignemnt is horizontally left, and vertically centered. (
-	 * {@link } | {@link }).
+	 * {@link AlignmentFlag#AlignLeft} | {@link AlignmentFlag#AlignMiddle}).
 	 * <p>
-	 * Valid options for horizontal alignment are {@link }, {@link } or {@link }.
+	 * Valid options for horizontal alignment are
+	 * {@link AlignmentFlag#AlignLeft}, {@link AlignmentFlag#AlignCenter} or
+	 * {@link AlignmentFlag#AlignRight}.
 	 * <p>
-	 * Valid options for vertical alignment are {@link } or {@link }. In the
-	 * latter case, other contents may be added below the label in
+	 * Valid options for vertical alignment are
+	 * {@link AlignmentFlag#AlignMiddle} or {@link AlignmentFlag#AlignTop}. In
+	 * the latter case, other contents may be added below the label in
 	 * {@link WAbstractItemView#createExtraHeaderWidget(int column)
 	 * createExtraHeaderWidget()}.
 	 * <p>
@@ -673,12 +676,12 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	 * can be selected. It is a property of the
 	 * {@link WAbstractItemView#getSelectionModel() getSelectionModel()}.
 	 * <p>
-	 * By default, selection operates on rows ({@link SelectRows}), in which
-	 * case model indexes will always be in the first column (column
-	 * <code>null</code>).
+	 * By default, selection operates on rows (
+	 * {@link SelectionBehavior#SelectRows SelectRows}), in which case model
+	 * indexes will always be in the first column (column <code>null</code>).
 	 * <p>
 	 * Alternatively, you can allow selection for individual items (
-	 * {@link SelectItems}).
+	 * {@link SelectionBehavior#SelectItems SelectItems}).
 	 * <p>
 	 * 
 	 * @see WItemSelectionModel#setSelectionBehavior(SelectionBehavior behavior)
@@ -704,7 +707,8 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	/**
 	 * Sets the selection mode.
 	 * <p>
-	 * By default selection is disabled ({@link NoSelection}).
+	 * By default selection is disabled ({@link SelectionMode#NoSelection
+	 * NoSelection}).
 	 * <p>
 	 * 
 	 * @see WAbstractItemView#setSelectionBehavior(SelectionBehavior behavior)
@@ -740,9 +744,9 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	 * <p>
 	 * Replaces the current selection with <code>indexes</code>.
 	 * <p>
-	 * When selection operates on rows ({@link SelectRows}), it is sufficient to
-	 * pass the first element in a row (column <code>null</code> ) to select the
-	 * entire row.
+	 * When selection operates on rows ({@link SelectionBehavior#SelectRows
+	 * SelectRows}), it is sufficient to pass the first element in a row (column
+	 * <code>null</code> ) to select the entire row.
 	 * <p>
 	 * 
 	 * @see WAbstractItemView#select(WModelIndex index, SelectionFlag option)
@@ -786,8 +790,9 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	/**
 	 * Returns wheter an item is selected.
 	 * <p>
-	 * When selection operates on rows ({@link SelectRows}), this method returns
-	 * true for each element in a selected row.
+	 * When selection operates on rows ({@link SelectionBehavior#SelectRows
+	 * SelectRows}), this method returns true for each element in a selected
+	 * row.
 	 * <p>
 	 * This is a convenience method for:
 	 * 
@@ -812,9 +817,9 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	 * The model indexes are returned as a set, topologically ordered (in the
 	 * order they appear in the view).
 	 * <p>
-	 * When selection operates on rows ({@link SelectRows}), this method only
-	 * returns the model index of first column&apos;s element of the selected
-	 * rows.
+	 * When selection operates on rows ({@link SelectionBehavior#SelectRows
+	 * SelectRows}), this method only returns the model index of first
+	 * column&apos;s element of the selected rows.
 	 * <p>
 	 * This is a convenience method for:
 	 * 
@@ -839,8 +844,9 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	 * setSelectionMode()}.
 	 * <p>
 	 * Whether an individual item may be dragged is controlled by the
-	 * item&apos;s {@link ItemIsDragEnabled} flag. The selection can be dragged
-	 * only if all items currently selected can be dragged.
+	 * item&apos;s {@link ItemFlag#ItemIsDragEnabled ItemIsDragEnabled} flag.
+	 * The selection can be dragged only if all items currently selected can be
+	 * dragged.
 	 * <p>
 	 * 
 	 * @see WAbstractItemView#setDropsEnabled(boolean enable)
@@ -870,7 +876,8 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	 * accepted drop mime-types (see
 	 * {@link WWidget#acceptDrops(String mimeType, String hoverStyleClass)
 	 * WWidget#acceptDrops()}), and the target item has drop enabled (which is
-	 * controlled by the item&apos;s {@link ItemIsDropEnabled} flag).
+	 * controlled by the item&apos;s {@link ItemFlag#ItemIsDropEnabled
+	 * ItemIsDropEnabled} flag).
 	 * <p>
 	 * Drop events must be handled in
 	 * {@link WAbstractItemView#dropEvent(WDropEvent e, WModelIndex index)
@@ -1017,8 +1024,9 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	 * setHeaderWordWrap()}.
 	 * <p>
 	 * When <code>multiLine</code> is <code>false</code>, the header alignment
-	 * is set to {@link }. When <code>multiLine</code> is <code>true</code>, the
-	 * header alignment is set to {@link } and header word wrap is set to
+	 * is set to {@link AlignmentFlag#AlignMiddle}. When <code>multiLine</code>
+	 * is <code>true</code>, the header alignment is set to
+	 * {@link AlignmentFlag#AlignTop} and header word wrap is set to
 	 * <code>true</code>.
 	 * <p>
 	 * 
@@ -1616,8 +1624,8 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	 * The default implementation checks if the mime-type is accepted by the
 	 * model, and if so passes the drop event to the model. If the source is the
 	 * view&apos;s own selection model, then the drop event will be handled as a
-	 * {@link MoveAction}, otherwise the drop event will be handled as a
-	 * {@link CopyAction}.
+	 * {@link DropAction#MoveAction MoveAction}, otherwise the drop event will
+	 * be handled as a {@link DropAction#CopyAction CopyAction}.
 	 * <p>
 	 * 
 	 * @see WAbstractItemModel#dropEvent(WDropEvent e, DropAction action, int

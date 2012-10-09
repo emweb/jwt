@@ -54,7 +54,8 @@ public enum HeaderFlag {
 	/**
 	 * Flag that indicates that the item has three states.
 	 * <p>
-	 * When set, {@link ItemDataRole#CheckStateRole} data is of type {@link }
+	 * When set, {@link ItemDataRole#CheckStateRole} data is of type
+	 * {@link CheckState}
 	 */
 	HeaderIsTristate;
 

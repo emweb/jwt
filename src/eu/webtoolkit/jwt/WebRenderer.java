@@ -368,6 +368,9 @@ class WebRenderer implements SlotLearnerInterface {
 			header.append(Utils.urlEncode(i.getKey())).append('=').append(
 					Utils.urlEncode(value)).append("; Version=1;");
 			if (!(cookie.expires == null)) {
+				String d = cookie.expires.toString(new WString(
+						"ddd, dd-MMM-yyyy hh:mm:ss 'GMT'").toString(), false);
+				header.append("Expires=").append(d).append(';');
 			}
 			if (cookie.domain.length() != 0) {
 				header.append(" Domain=").append(cookie.domain).append(';');

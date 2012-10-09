@@ -369,8 +369,8 @@ public class WApplication extends WObject {
 	 * <p>
 	 * The {@link WApplication#getRoot() getRoot()} widget is only defined when
 	 * the application manages the entire window. When deployed as a
-	 * {@link WidgetSet} application, there is no root() container, and
-	 * <code>null</code> is returned. Instead, use
+	 * {@link EntryPointType#WidgetSet WidgetSet} application, there is no
+	 * root() container, and <code>null</code> is returned. Instead, use
 	 * {@link WApplication#bindWidget(WWidget widget, String domId)
 	 * bindWidget()} to bind one or more root widgets to existing HTML
 	 * &lt;div&gt; (or other) elements on the page.
@@ -891,6 +891,7 @@ public class WApplication extends WObject {
 	 * <p>
 	 * 
 	 * @see WApplication#getRoot()
+	 * @see EntryPointType#WidgetSet
 	 */
 	public void bindWidget(WWidget widget, String domId) {
 		if (this.session_.getType() != EntryPointType.WidgetSet) {
@@ -2254,8 +2255,8 @@ public class WApplication extends WObject {
 	 * </ul>
 	 * <p>
 	 * <ul>
-	 * <li>but never for a {@link } mode application since then the application
-	 * is hosted within a foreign HTML page.</li>
+	 * <li>but never for a {@link EntryPointType#WidgetSet} mode application
+	 * since then the application is hosted within a foreign HTML page.</li>
 	 * </ul>
 	 * <p>
 	 * When a header was previously set for the same <code>name</code>, its

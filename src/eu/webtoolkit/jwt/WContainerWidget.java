@@ -215,19 +215,21 @@ public class WContainerWidget extends WInteractWidget {
 	 * In general, <code>alignment</code> is the logical OR of a horizontal and
 	 * a vertical flag:
 	 * <ul>
-	 * <li>The horizontal alignment option may be one of {@link }, {@link },
-	 * {@link }, or {@link }.</li>
+	 * <li>The horizontal alignment option may be one of
+	 * {@link AlignmentFlag#AlignLeft}, {@link AlignmentFlag#AlignCenter},
+	 * {@link AlignmentFlag#AlignRight}, or {@link AlignmentFlag#AlignJustify}.</li>
 	 * <li>The vertical alignment option may be &apos;0&apos; (corresponding to
-	 * vertical justification to the full height), or {@link }.</li>
+	 * vertical justification to the full height), or
+	 * {@link AlignmentFlag#AlignTop}.</li>
 	 * </ul>
 	 * <p>
-	 * When using a horizontal alignment different from {@link }, and a vertical
-	 * alignment different from &apos;0&apos;, the widget is sized in that
-	 * direction to fit the contents, instead of the contents being adjusted to
-	 * the widget size. This is useful when the container does not have a
-	 * specific size in that direction and when the layout manager does not
-	 * contain any widgets that wish to consume all remaining space in that
-	 * direction.
+	 * When using a horizontal alignment different from
+	 * {@link AlignmentFlag#AlignJustify}, and a vertical alignment different
+	 * from &apos;0&apos;, the widget is sized in that direction to fit the
+	 * contents, instead of the contents being adjusted to the widget size. This
+	 * is useful when the container does not have a specific size in that
+	 * direction and when the layout manager does not contain any widgets that
+	 * wish to consume all remaining space in that direction.
 	 * <p>
 	 * The widget will take ownership of <code>layout</code>.
 	 * <p>
@@ -434,7 +436,8 @@ public class WContainerWidget extends WInteractWidget {
 	 * children are always pushed to the top of the container.
 	 * <p>
 	 * For a {@link WTableCell}, this may also specify the vertical alignment.
-	 * The default alignment is ({@link } | {@link }).
+	 * The default alignment is ({@link AlignmentFlag#AlignTop} |
+	 * {@link AlignmentFlag#AlignLeft}).
 	 */
 	public void setContentAlignment(EnumSet<AlignmentFlag> alignment) {
 		this.contentAlignment_ = EnumSet.copyOf(alignment);

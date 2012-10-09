@@ -49,8 +49,8 @@ public class ItemDataRole {
 	/**
 	 * <p>
 	 * Role that indicates the check state. Data for this role should be a
-	 * <code>bool</code>. When the {@link } flag is set for the item, data for
-	 * this role should be of type {@link }.
+	 * <code>bool</code>. When the {@link ItemFlag#ItemIsTristate} flag is set
+	 * for the item, data for this role should be of type {@link CheckState}.
 	 */
 	public final static int CheckStateRole = 4;
 	/**

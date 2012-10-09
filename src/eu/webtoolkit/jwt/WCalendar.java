@@ -148,7 +148,8 @@ public class WCalendar extends WCompositeWidget {
 	/**
 	 * Sets the selection mode.
 	 * <p>
-	 * The default selection mode is {@link SingleSelection}.
+	 * The default selection mode is {@link SelectionMode#SingleSelection
+	 * SingleSelection}.
 	 */
 	public void setSelectionMode(SelectionMode mode) {
 		if (this.selectionMode_ != mode) {
@@ -362,7 +363,8 @@ public class WCalendar extends WCompositeWidget {
 	 * Sets the first day of the week.
 	 * <p>
 	 * Possible values or 1 to 7, as accepted by
-	 * {@link WDate#getShortDayName(int weekday) WDate#getShortDayName()}.
+	 * {@link WDate#getShortDayName(int weekday, boolean localized)
+	 * WDate#getShortDayName()}.
 	 * <p>
 	 * The default value is 1 (&quot;Monday&quot;).
 	 */
