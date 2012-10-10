@@ -886,7 +886,9 @@ public class WAxis {
 							this.renderInterval_ = Math.max(1.0, Math.floor(rc
 									/ numLabels));
 						} else {
-							if (this.scale_ != AxisScale.LogScale) {
+							if (this.scale_ == AxisScale.LogScale) {
+								this.renderInterval_ = 1;
+							} else {
 								double numLabels = this.calcAutoNumLabels(s);
 								this.renderInterval_ = round125(diff
 										/ numLabels);

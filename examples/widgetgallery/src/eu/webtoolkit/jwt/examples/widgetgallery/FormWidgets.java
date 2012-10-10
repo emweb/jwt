@@ -288,6 +288,7 @@ class FormWidgets extends ControlsWidget {
 				"<p>The <tt>WTextEdit</tt> is a full-featured editor for rich textediting. It is based on the TinyMCE editor, which must be downloaded separately from its author's website. The TinyMCE toolbar layout and plugins can be configured through Wt's interface. The default, shown below, covers only a small portion of TinyMCE's capabilities.</p>",
 				result);
 		WTextEdit te = new WTextEdit(result);
+		te.setHeight(new WLength(200));
 		this.ed_.showSignal(te.changed(), "Text edit changed");
 		return result;
 	}

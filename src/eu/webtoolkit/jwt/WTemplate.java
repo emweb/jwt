@@ -443,6 +443,12 @@ public class WTemplate extends WInteractWidget {
 			this.changed_ = true;
 			this.repaint(EnumSet.of(RepaintFlag.RepaintInnerHtml));
 		}
+		WWidget j = this.widgets_.get(varName);
+		if (j != null) {
+			if (j != null)
+				j.remove();
+			this.widgets_.remove(varName);
+		}
 	}
 
 	/**

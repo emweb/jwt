@@ -52,9 +52,10 @@ public class WStackedWidget extends WContainerWidget {
 		super(parent);
 		this.animation_ = new WAnimation();
 		this.currentIndex_ = -1;
+		this.javaScriptDefined_ = false;
+		this.loadAnimateJS_ = false;
 		;
 		this.addStyleClass("Wt-stack");
-		this.javaScriptDefined_ = false;
 	}
 
 	/**
@@ -146,11 +147,14 @@ public class WStackedWidget extends WContainerWidget {
 	 */
 	public void setCurrentIndex(int index, WAnimation animation,
 			boolean autoReverse) {
-		if (!animation.isEmpty() && this.isLoadAnimateJS()
-				&& (this.isRendered() || !canOptimizeUpdates())) {
+		if (!animation.isEmpty()
+				&& WApplication.getInstance().getEnvironment()
+						.supportsCss3Animations()
+				&& (this.isRendered() && this.javaScriptDefined_ || !canOptimizeUpdates())) {
 			if (canOptimizeUpdates() && index == this.currentIndex_) {
 				return;
 			}
+			this.loadAnimateJS();
 			WWidget previous = this.getCurrentWidget();
 			this.setJavaScriptMember("wtAutoReverse", autoReverse ? "true"
 					: "false");
@@ -166,7 +170,7 @@ public class WStackedWidget extends WContainerWidget {
 					this.getWidget(i).setHidden(this.currentIndex_ != i);
 				}
 			}
-			if (this.isRendered()) {
+			if (this.isRendered() && this.javaScriptDefined_) {
 				this.doJavaScript("$('#" + this.getId()
 						+ "').data('obj').setCurrent("
 						+ this.getWidget(this.currentIndex_).getJsRef() + ");");
@@ -219,18 +223,14 @@ public class WStackedWidget extends WContainerWidget {
 	 * @see WStackedWidget#setCurrentIndex(int index)
 	 */
 	public void setTransitionAnimation(WAnimation animation, boolean autoReverse) {
-		if (this.isLoadAnimateJS()) {
+		if (WApplication.getInstance().getEnvironment()
+				.supportsCss3Animations()) {
 			if (!animation.isEmpty()) {
 				this.addStyleClass("Wt-animated");
 			}
+			this.loadAnimateJS();
 			this.animation_ = animation;
 			this.autoReverseAnimation_ = autoReverse;
-			if (this.isRendered()) {
-				this.setJavaScriptMember("wtAnimateChild", "$('#"
-						+ this.getId() + "').data('obj').animateChild");
-				this.setJavaScriptMember("wtAutoReverse",
-						this.autoReverseAnimation_ ? "true" : "false");
-			}
 		}
 	}
 
@@ -274,16 +274,7 @@ public class WStackedWidget extends WContainerWidget {
 	private boolean autoReverseAnimation_;
 	private int currentIndex_;
 	private boolean javaScriptDefined_;
-
-	private boolean isLoadAnimateJS() {
-		WApplication app = WApplication.getInstance();
-		if (app.getEnvironment().supportsCss3Animations()) {
-			app.loadJavaScript("js/WStackedWidget.js", wtjs2());
-			return true;
-		} else {
-			return false;
-		}
-	}
+	private boolean loadAnimateJS_;
 
 	private void defineJavaScript() {
 		if (!this.javaScriptDefined_) {
@@ -297,8 +288,19 @@ public class WStackedWidget extends WContainerWidget {
 					+ "').data('obj').wtResize");
 			this.setJavaScriptMember(WT_GETPS_JS, "$('#" + this.getId()
 					+ "').data('obj').wtGetPs");
-			if (!this.animation_.isEmpty()) {
-				this.isLoadAnimateJS();
+			if (this.loadAnimateJS_) {
+				this.loadAnimateJS_ = false;
+				this.loadAnimateJS();
+			}
+		}
+	}
+
+	private void loadAnimateJS() {
+		if (!this.loadAnimateJS_) {
+			this.loadAnimateJS_ = true;
+			if (this.javaScriptDefined_) {
+				WApplication.getInstance().loadJavaScript(
+						"js/WStackedWidget.js", wtjs2());
 				this.setJavaScriptMember("wtAnimateChild", "$('#"
 						+ this.getId() + "').data('obj').animateChild");
 				this.setJavaScriptMember("wtAutoReverse",
