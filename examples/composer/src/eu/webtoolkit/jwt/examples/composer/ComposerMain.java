@@ -17,7 +17,6 @@ public class ComposerMain extends WtServlet {
         super();
  
         getConfiguration().setProgressiveBootstrap(false);
-        getConfiguration().setSendXHTMLMimeType(true);
     }
 
     public WApplication createApplication(WEnvironment env) {
