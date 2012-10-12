@@ -11,7 +11,7 @@
   dd p { margin-top: 0px; }
   dd div { margin: 10px 0px; }
 </style>
-<title>JWt 3.2.2</title>
+<title>JWt 3.2.3</title>
 </head>
 <body>
 
@@ -24,6 +24,50 @@ This page lists important notes on migrating existing applications to
 newer version of Wt. It lists changes in the library that may break
 the way you build Wt, the way you configure Wt or the Wt API and
 behaviour.
+
+<h2>Release 3.2.3 (October ??, 2012)</h2>
+
+<p>
+  This release contains mostly bug fixes and one new feature: a payment
+  processing API.
+</p>
+
+<h3>A) New classes:</h3>
+
+<dl>
+  <dt>
+    <a href="eu/webtoolkit/jwt/render/package-summary.html">Render library:</a>
+    a library for rendering XHTML to (e.g.) PDF.
+  </dt>
+  <dd>
+    <p>
+      This library contains an XHTML parser and layout engine. It's
+      main purpose is simplifying PDF report generation. The library
+      uses PDFJet for low-level PDF functions. The layout engine does
+      not understand all HTML/CSS concepts, but it does a decent job
+      in static layout (blocks, inline elements, tables and floats) in
+      any arbitrary combination, multi-page rendering, and accurate
+      use of font metrics.
+    </p>
+  </dd>
+</dl>
+
+<h3>B) Main improvements:</h3>
+
+<dl>
+  <dt>
+    Layout improvements
+  </dt>
+  <dd>
+    If you had massive trouble migrating to 3.2.2 because of the
+    layout rewrite, then you'll appreciate the efforts we've made to
+    make the layout algorithms in 3.2.3 much more robust and
+    consistent.
+  </dd>
+
+</dl>
+
+<hr>
 
 <h2>Release 3.2.2 (July 23, 2012)</h2>
 
