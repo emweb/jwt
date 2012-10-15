@@ -343,10 +343,15 @@ public abstract class WtServlet extends HttpServlet {
 	
 			logger.debug("Handling: (" + jsession.getId() + "): " + request.getRequestURI() + " " + request.getMethod() + " " + request.getScriptName() + " " + request.getPathInfo() + " " + request.getQueryString());
 			
-			WebSession.Handler handler = new WebSession.Handler(wsession, request, response);
-			wsession.handleRequest(handler);
-			handler.release();
-			if (handler.getSession().isDead()) {
+			WebSession.Handler handler = null;
+			try {
+				handler = new WebSession.Handler(wsession, request, response);
+				wsession.handleRequest(handler);
+			} finally {
+				handler.release();
+			}
+
+			if (handler != null && handler.getSession().isDead()) {
 				try {
 					jsession.setAttribute(WtServlet.WT_WEBSESSION_ID, null);
 					jsession.invalidate();
@@ -393,29 +398,34 @@ public abstract class WtServlet extends HttpServlet {
 				wsession = bsession.getSession();
 
 			if (wsession != null) {
-				WebSession.Handler handler = new WebSession.Handler(wsession,request, null);
-
-				if (!wsession.isDead() && wsession.getApp() != null) {
-					String requestE = request.getParameter("request");
-
-					WResource resource = null;
-					if (requestE == null && request.getPathInfo().length() != 0)
-						resource = wsession.getApp().
-							decodeExposedResource("/path/" + request.getPathInfo());
-
-					if (resource == null) {
-						String resourceE = request.getParameter("resource");
-						resource = wsession.getApp().
-							decodeExposedResource(resourceE);
-					}
-
-					if (resource != null) {
-						// FIXME, we should do this within app.notify()
-						resource.dataReceived().trigger(current, total);
-					}
-				}
+				WebSession.Handler handler = null;
 				
-				handler.release();
+				try {
+					handler = new WebSession.Handler(wsession,request, null);
+
+					if (!wsession.isDead() && wsession.getApp() != null) {
+						String requestE = request.getParameter("request");
+
+						WResource resource = null;
+						if (requestE == null && request.getPathInfo().length() != 0)
+							resource = wsession.getApp().
+								decodeExposedResource("/path/" + request.getPathInfo());
+
+						if (resource == null) {
+							String resourceE = request.getParameter("resource");
+							resource = wsession.getApp().
+								decodeExposedResource(resourceE);
+						}
+
+						if (resource != null) {
+							// FIXME, we should do this within app.notify()
+							resource.dataReceived().trigger(current, total);
+						}
+					}
+					
+				} finally {
+					handler.release();
+				}
 			}
 		}
 
