@@ -170,7 +170,8 @@ public class WStackedWidget extends WContainerWidget {
 					this.getWidget(i).setHidden(this.currentIndex_ != i);
 				}
 			}
-			if (this.isRendered() && this.javaScriptDefined_) {
+			if (this.currentIndex_ >= 0 && this.isRendered()
+					&& this.javaScriptDefined_) {
 				this.doJavaScript("$('#" + this.getId()
 						+ "').data('obj').setCurrent("
 						+ this.getWidget(this.currentIndex_).getJsRef() + ");");
