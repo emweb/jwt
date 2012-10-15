@@ -266,8 +266,8 @@ public abstract class OAuthService {
 	 * While the current OAuth 2.0 draft mandates the use of POST, some
 	 * implementations (like Facebook) use URL-encoding and a GET request.
 	 * <p>
-	 * The default implementation returns Http::Post (corresponding to the
-	 * current draft).
+	 * The default implementation returns {@link } (corresponding to the current
+	 * draft).
 	 */
 	public Method getTokenRequestMethod() {
 		return Method.Post;
@@ -324,14 +324,6 @@ public abstract class OAuthService {
 	// private OAuthService(OAuthService anon1) ;
 	private AuthService baseAuth_;
 	private OAuthService.Impl impl_;
-
-	static WJavaScriptPreamble wtjs1() {
-		return new WJavaScriptPreamble(
-				JavaScriptScope.WtClassScope,
-				JavaScriptObjectType.JavaScriptFunction,
-				"authPopupWindow",
-				"function(h,i,c,d){function j(){var a=0,b=0;if(typeof window.screenLeft===\"number\"){a=window.screenLeft;b=window.screenTop}else if(typeof window.screenX===\"number\"){a=window.screenX;b=window.screenY}return{x:a,y:b}}function k(a,b){var e=h.windowSize(),f=j();a=f.x+Math.max(0,Math.floor((e.x-a)/2));b=f.y+Math.max(0,Math.floor((e.y-b)/2));return{x:a,y:b}}var g=k(c,d);window.open(i,\"\",\"width=\"+c+\",height=\"+d+\",status=yes,location=yes,resizable=yes,left=\"+ g.x+\",top=\"+g.y).opener=window}");
-	}
 
 	static class Impl {
 		private static Logger logger = LoggerFactory.getLogger(Impl.class);

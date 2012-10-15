@@ -20,7 +20,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Enum for internal use.
+ * Enumeration for a JavaScript object scope.
+ * <p>
+ * This is an internal {@link } type.
  */
 public enum JavaScriptScope {
 	ApplicationScope, WtClassScope;

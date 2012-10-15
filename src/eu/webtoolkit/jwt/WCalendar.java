@@ -363,7 +363,8 @@ public class WCalendar extends WCompositeWidget {
 	 * Sets the first day of the week.
 	 * <p>
 	 * Possible values or 1 to 7, as accepted by
-	 * {@link WDate#getShortDayName(int weekday) WDate#getShortDayName()}.
+	 * {@link WDate#getShortDayName(int weekday, boolean localized)
+	 * WDate#getShortDayName()}.
 	 * <p>
 	 * The default value is 1 (&quot;Monday&quot;).
 	 */
@@ -865,6 +866,8 @@ public class WCalendar extends WCompositeWidget {
 
 	private void cellDblClicked(WCalendar.Coordinate weekday) {
 		WDate dt = this.dateForCell(weekday.i, weekday.j);
+		this.clicked().trigger(
+				new WDate(dt.getYear(), dt.getMonth(), dt.getDay()));
 		this.activated().trigger(
 				new WDate(dt.getYear(), dt.getMonth(), dt.getDay()));
 	}

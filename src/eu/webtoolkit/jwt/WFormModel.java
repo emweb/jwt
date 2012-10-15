@@ -95,7 +95,7 @@ public class WFormModel extends WObject {
 	 * The <code>field</code> is added to the model, with an optional short
 	 * informational message that can be used by views to provide a hint on the
 	 * value that needs to be entered. The message is set as the validation
-	 * message as lo ng as the field has not yet been validated.
+	 * message as long as the field has not yet been validated.
 	 * <p>
 	 * If the <code>field</code> was already in the model, its data is reset.
 	 */

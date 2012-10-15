@@ -68,6 +68,7 @@ public abstract class WtServlet extends HttpServlet {
 			WApplication app = session.getApp();
 			if (app != null)
 				app.destroy();
+			session.destruct();
 		}
 	}
 	
@@ -173,16 +174,11 @@ public abstract class WtServlet extends HttpServlet {
 	}
 
 	void handleRequest(final HttpServletRequest request, final HttpServletResponse response) {
-		WebRequest wRequest = new WebRequest(request);
-		
-		String pathInfo = wRequest.getPathInfo();
+		String pathInfo = WebRequest.computePathInfo(request);
 		String resourcePath = configuration.getProperty(WApplication.RESOURCES_URL);
 		
 		if (pathInfo !=null) {
-			WebRequest webRequest = new WebRequest(request, progressListener);
-			WebResponse webResponse = new WebResponse(response, webRequest);
-			
-			String scriptName = webRequest.getScriptName();
+			String scriptName = WebRequest.computeScriptName(request);
 			
 			for (WResource staticResource : staticResources) {
 				String staticResourcePath = null;
@@ -193,6 +189,8 @@ public abstract class WtServlet extends HttpServlet {
 				
 				if ((scriptName + pathInfo).equals(staticResourcePath)) {
 					try {
+						WebRequest webRequest = new WebRequest(request, progressListener);
+						WebResponse webResponse = new WebResponse(response, webRequest);
 						staticResource.handle(webRequest, webResponse);
 					} catch (IOException e) {
 						e.printStackTrace();

@@ -164,6 +164,8 @@ public abstract class WFormWidget extends WInteractWidget {
 	/**
 	 * Validates the field.
 	 * <p>
+	 * 
+	 * @see WFormWidget#validated()
 	 */
 	public WValidator.State validate() {
 		if (this.getValidator() != null) {
@@ -336,6 +338,14 @@ public abstract class WFormWidget extends WInteractWidget {
 		return this.voidEventSignal(FOCUS_SIGNAL, true);
 	}
 
+	/**
+	 * Signal emitted when the widget is being validated.
+	 * <p>
+	 * This signal may be useful to react to a changed validation state.
+	 * <p>
+	 * 
+	 * @see WFormWidget#validate()
+	 */
 	public Signal1<WValidator.Result> validated() {
 		return this.validated_;
 	}
@@ -403,7 +413,7 @@ public abstract class WFormWidget extends WInteractWidget {
 			if (!(this.validateJs_ != null)) {
 				this.validateJs_ = new JSlot();
 				this.validateJs_
-						.setJavaScript("function(o){Wt3_2_1.validate(o)}");
+						.setJavaScript("function(o){Wt3_2_3.validate(o)}");
 				this.keyWentUp().addListener(this.validateJs_);
 				this.changed().addListener(this.validateJs_);
 				if (this.getDomElementType() != DomElementType.DomElement_SELECT) {
@@ -425,7 +435,7 @@ public abstract class WFormWidget extends WInteractWidget {
 				this.keyPressed().addListener(this.filterInput_);
 			}
 			StringUtils.replace(inputFilter, '/', "\\/");
-			this.filterInput_.setJavaScript("function(o,e){Wt3_2_1.filter(o,e,"
+			this.filterInput_.setJavaScript("function(o,e){Wt3_2_3.filter(o,e,"
 					+ jsStringLiteral(inputFilter) + ")}");
 		} else {
 			;
@@ -442,7 +452,7 @@ public abstract class WFormWidget extends WInteractWidget {
 			}
 			WApplication app = WApplication.getInstance();
 			app.loadJavaScript("js/WFormWidget.js", wtjs1());
-			this.setJavaScriptMember(" WFormWidget", "new Wt3_2_1.WFormWidget("
+			this.setJavaScriptMember(" WFormWidget", "new Wt3_2_3.WFormWidget("
 					+ app.getJavaScriptClass() + "," + this.getJsRef() + ","
 					+ WString.toWString(this.emptyText_).getJsStringLiteral()
 					+ ");");

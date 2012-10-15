@@ -398,9 +398,9 @@ public class WTabWidget extends WCompositeWidget {
 	 * For each menu item, {@link WMenuItem#getPathComponent()
 	 * WMenuItem#getPathComponent()} is appended to the <code>basePath</code>,
 	 * which defaults to the internal path (
-	 * {@link WApplication#getBookmarkUrl() WApplication#getBookmarkUrl()}). A
-	 * &apos;/&apos; is appended to the base path, to turn it into a folder, if
-	 * needed.
+	 * {@link WApplication#isInternalPathValid()
+	 * WApplication#isInternalPathValid()}). A &apos;/&apos; is appended to the
+	 * base path, to turn it into a folder, if needed.
 	 * <p>
 	 * By default, menu interaction does not change the application internal
 	 * path.
@@ -449,8 +449,9 @@ public class WTabWidget extends WCompositeWidget {
 	 * Returns the internal base path.
 	 * <p>
 	 * The default value is the application&apos;s internalPath (
-	 * {@link WApplication#getBookmarkUrl() WApplication#getBookmarkUrl()}) that
-	 * was recorded when {@link WMenu#setInternalPathEnabled(String basePath)
+	 * {@link WApplication#isInternalPathValid()
+	 * WApplication#isInternalPathValid()}) that was recorded when
+	 * {@link WMenu#setInternalPathEnabled(String basePath)
 	 * WMenu#setInternalPathEnabled()} was called, and together with each
 	 * {@link WMenuItem#getPathComponent() WMenuItem#getPathComponent()}
 	 * determines the paths for each item.
@@ -532,12 +533,10 @@ public class WTabWidget extends WCompositeWidget {
 		menuDiv.addWidget(this.menu_);
 		this.layout_.addWidget(menuDiv);
 		this.layout_.addWidget(this.menu_.getContentsStack());
-		this
-				.setJavaScriptMember(
-						WT_RESIZE_JS,
-						""
-								+ "function(self, w, h) {self.style.height= h + 'px';var c = self.firstChild;var t = self.lastChild;h -= c.offsetHeight + Wt3_2_1.px(c, 'marginTop') + Wt3_2_1.px(c, 'marginBottom');if (h > 0)t."
-								+ WT_RESIZE_JS + "(t, w, h);};");
+		this.setJavaScriptMember(WT_RESIZE_JS, StdWidgetItemImpl
+				.getSecondResizeJS());
+		this.setJavaScriptMember(WT_GETPS_JS, StdWidgetItemImpl
+				.getSecondGetPSJS());
 		this.menu_.itemSelected().addListener(this,
 				new Signal1.Listener<WMenuItem>() {
 					public void trigger(WMenuItem e1) {

@@ -36,6 +36,29 @@ public class WAbstractArea extends WObject {
 	private static Logger logger = LoggerFactory.getLogger(WAbstractArea.class);
 
 	/**
+	 * Destructor.
+	 * <p>
+	 * The area is automatically removed from the {@link WImage} or
+	 * {@link WPaintedWidget} to which it was added.
+	 * <p>
+	 * 
+	 * @see WImage#removeArea(WAbstractArea area)
+	 * @see WPaintedWidget#removeArea(WAbstractArea area)
+	 */
+	public void remove() {
+		if (this.impl_ != null) {
+			WImage i = this.getImage();
+			if (i != null) {
+				i.removeArea(this);
+			}
+			this.impl_.facade_ = null;
+			if (this.impl_ != null)
+				this.impl_.remove();
+		}
+		;
+	}
+
+	/**
 	 * Specifies that this area specifies a hole for another area.
 	 * <p>
 	 * When set to <code>true</code>, this area will define an area that does
@@ -122,8 +145,8 @@ public class WAbstractArea extends WObject {
 	 *      underlying HTML &lt;area&gt; element (see also
 	 *      {@link WAbstractArea#setCursor(Cursor cursor) setCursor()}).</i>
 	 *      </p>
-	 *      @deprecated Use {@link WAbstractArea#setLink(WLink link) setLink()}
-	 *      instead.
+	 * @deprecated Use {@link WAbstractArea#setLink(WLink link) setLink()}
+	 *             instead.
 	 */
 	public void setRef(String ref) {
 		this.setLink(new WLink(ref));

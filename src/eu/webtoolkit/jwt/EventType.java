@@ -22,6 +22,8 @@ import org.slf4j.LoggerFactory;
 /**
  * An enumeration describing an event&apos;s type.
  * <p>
+ * 
+ * @see WEvent#getEventType()
  */
 public enum EventType {
 	/**

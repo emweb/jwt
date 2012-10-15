@@ -222,7 +222,7 @@ public class WDateValidator extends WValidator {
 	 * Sets the date formats used to parse date strings.
 	 */
 	public void setFormats(List<String> formats) {
-		this.formats_ = formats;
+		Utils.copyList(formats, this.formats_);
 		this.repaint();
 	}
 
@@ -384,7 +384,7 @@ public class WDateValidator extends WValidator {
 	public String getJavaScriptValidate() {
 		loadJavaScript(WApplication.getInstance());
 		StringBuilder js = new StringBuilder();
-		js.append("new Wt3_2_1.WDateValidator(").append(
+		js.append("new Wt3_2_3.WDateValidator(").append(
 				this.isMandatory() ? "true" : "false").append(",[");
 		for (int i = 0; i < this.formats_.size(); ++i) {
 			WDate.RegExpInfo r = WDate.formatToRegExp(this.formats_.get(i));

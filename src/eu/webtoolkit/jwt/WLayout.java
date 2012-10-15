@@ -327,6 +327,14 @@ public abstract class WLayout extends WObject implements WLayoutItem {
 		parent.setLayout(this);
 	}
 
+	/**
+	 * Clears and deletes an item.
+	 * <p>
+	 * This also deletes nested widgets and layouts.
+	 * <p>
+	 * 
+	 * @see WLayout#clear()
+	 */
 	protected void clearLayoutItem(WLayoutItem item) {
 		if (item != null) {
 			WWidget widget = null;

@@ -444,8 +444,8 @@ public abstract class WWidget extends WObject {
 		String side = orientation == Orientation.Horizontal ? ".Horizontal"
 				: ".Vertical";
 		WApplication.getInstance().doJavaScript(
-				"Wt3_2_1.positionAtWidget('" + this.getId() + "','"
-						+ widget.getId() + "',Wt3_2_1" + side + ");");
+				"Wt3_2_3.positionAtWidget('" + this.getId() + "','"
+						+ widget.getId() + "',Wt3_2_3" + side + ");");
 	}
 
 	/**
@@ -857,6 +857,9 @@ public abstract class WWidget extends WObject {
 		removeStyleClass(styleClass, false);
 	}
 
+	/**
+	 * Toggles a CSS style class.
+	 */
 	public void toggleStyleClass(String styleClass, boolean add, boolean force) {
 		if (add) {
 			this.addStyleClass(styleClass, force);
@@ -865,6 +868,13 @@ public abstract class WWidget extends WObject {
 		}
 	}
 
+	/**
+	 * Toggles a CSS style class.
+	 * <p>
+	 * Calls
+	 * {@link #toggleStyleClass(String styleClass, boolean add, boolean force)
+	 * toggleStyleClass(styleClass, add, false)}
+	 */
 	public final void toggleStyleClass(String styleClass, boolean add) {
 		toggleStyleClass(styleClass, add, false);
 	}
@@ -962,7 +972,7 @@ public abstract class WWidget extends WObject {
 	 * @see WWidget#isRendered()
 	 */
 	public String getJsRef() {
-		return "Wt3_2_1.$('" + this.getId() + "')";
+		return "Wt3_2_3.$('" + this.getId() + "')";
 	}
 
 	/**
@@ -1731,4 +1741,5 @@ public abstract class WWidget extends WObject {
 	}
 
 	static String WT_RESIZE_JS = "wtResize";
+	protected static String WT_GETPS_JS = "wtGetPS";
 }

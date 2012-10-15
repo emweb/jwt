@@ -39,7 +39,8 @@ import org.slf4j.LoggerFactory;
  * {@link WWidget#show() WWidget#show()} method, which blocks the current thread
  * until the user has processed the messabebox. Since this uses the
  * {@link WDialog#exec(WAnimation animation) WDialog#exec()}, it suffers from
- * the same scalability issues.
+ * the same scalability issues. See documentation of {@link WDialog} for more
+ * details.
  * <p>
  * This will show a message box that looks like this:
  * <p>
@@ -236,7 +237,7 @@ public class WMessageBox extends WDialog {
 	 */
 	public WPushButton getButton(StandardButton b) {
 		int index = 0;
-		for (int i = 1; i <= 9; ++i) {
+		for (int i = 0; i <= 9; ++i) {
 			if (!EnumUtils.mask(this.buttons_, order_[i]).isEmpty()) {
 				if (order_[i] == b) {
 					return ((this.buttonContainer_.getChildren().get(index)) instanceof WPushButton ? (WPushButton) (this.buttonContainer_
@@ -262,7 +263,9 @@ public class WMessageBox extends WDialog {
 	 * Convenience method to show a message box, blocking the current thread.
 	 * <p>
 	 * Show a message box, blocking the current thread until the message box is
-	 * closed, and return the result.
+	 * closed, and return the result. The use of this method is not recommended
+	 * since it uses {@link WDialog#exec(WAnimation animation) WDialog#exec()}.
+	 * See documentation of {@link WDialog} for detailed information.
 	 * <p>
 	 * <i>This functionality is only available on Servlet 3.0 compatible servlet
 	 * containers.</i>

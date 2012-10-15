@@ -1,7 +1,7 @@
 <project name="jwt" default="all" basedir=".">
   <!-- Name of project and version -->
   <property name="proj.name" value="jwt"/>
-  <property name="proj.version" value="3.2.2"/>
+  <property name="proj.version" value="3.2.3"/>
 
   <!-- Global properties for this build -->
   <property name="src.java.dir" value="src"/>
@@ -10,13 +10,14 @@
   <property name="archives.dir" value="archives"/>
   <property name="mvn.dir" value="mvn"/>
   <property name="javadoc.jwt.dir" value="doc/javadoc"/>
-  <property name="javadoc.jwt-auth.dir" value="doc/reference/jwt-auth"/>
+  <property name="javadoc.jwt-auth.dir" value="doc/auth/javadoc"/>
   <property name="userguide.dir" value="doc/userguide"/>
 
   <!-- Javadoc classpath declaration -->
   <path id="project.javadoc.classpath">
     <fileset dir=".">
       <include name="lib/javamail/*.jar"/>
+      <include name="lib/pdfjet/*.jar"/>
       <include name="lib/gson/*.jar"/>
       <include name="lib/http/*.jar"/>
       <include name="lib/jpa/*.jar"/>
@@ -62,6 +63,7 @@
           <fileset dir=".">
             <include name="lib/*.jar"/>
 	    <include name="lib/javamail/*.jar"/>
+	    <include name="lib/pdfjet/*.jar"/>
 	    <include name="lib/gson/*.jar"/>
 	    <include name="lib/http/*.jar"/>
 	    <include name="lib/jpa/*.jar"/>
@@ -84,6 +86,7 @@
 	<include name="eu/webtoolkit/jwt/*.xml"/>
 	<include name="eu/webtoolkit/jwt/servlet/*.java"/>
 	<include name="eu/webtoolkit/jwt/chart/*.java"/>
+	<include name="eu/webtoolkit/jwt/render/*.java"/>
 	<include name="eu/webtoolkit/jwt/auth/*.java"/>
 	<include name="eu/webtoolkit/jwt/auth/*.xml"/>
 	<include name="eu/webtoolkit/jwt/auth/jpa/*.java"/>
@@ -107,6 +110,7 @@
 	<include name="eu/webtoolkit/jwt/*.java"/>
 	<include name="eu/webtoolkit/jwt/servlet/*.java"/>
 	<include name="eu/webtoolkit/jwt/chart/*.java"/>
+	<include name="eu/webtoolkit/jwt/render/*.java"/>
 	<include name="eu/webtoolkit/jwt/utils/WebGraphics2D.java"/>
 	<exclude name="eu/webtoolkit/jwt/XSSFilter.java"/>
 	<exclude name="eu/webtoolkit/jwt/ServletApi25.java"/>
@@ -139,6 +143,7 @@
 	<include name="eu/webtoolkit/jwt/*.java"/>
 	<include name="eu/webtoolkit/jwt/servlet/*.java"/>
 	<include name="eu/webtoolkit/jwt/chart/*.java"/>
+	<include name="eu/webtoolkit/jwt/render/*.java"/>
 	<include name="eu/webtoolkit/jwt/utils/WebGraphics2D.java"/>
 	<exclude name="eu/webtoolkit/jwt/XSSFilter.java"/>
 	<exclude name="eu/webtoolkit/jwt/ServletApi25.java"/>
@@ -184,7 +189,7 @@
     <jar  destfile="dist/jwt-${proj.version}.jar" 
           basedir="${build.dir}" 
           defaultexcludes="yes" 
-          includes="eu/webtoolkit/jwt/* eu/webtoolkit/jwt/servlet/* eu/webtoolkit/jwt/chart/* eu/webtoolkit/jwt/utils/* net/n3/nanoxml/* eu/webtoolkit/jwt/skeletons/* eu/webtoolkit/jwt/wt-resources/**/*" />
+          includes="eu/webtoolkit/jwt/* eu/webtoolkit/jwt/servlet/* eu/webtoolkit/jwt/chart/* eu/webtoolkit/jwt/render/* eu/webtoolkit/jwt/utils/* net/n3/nanoxml/* eu/webtoolkit/jwt/skeletons/* eu/webtoolkit/jwt/wt-resources/**/*" />
     <jar  destfile="dist/jwt-auth-${proj.version}.jar" 
           basedir="${build.dir}" 
           defaultexcludes="yes" 
@@ -199,16 +204,17 @@
       <fileset dir="${mvn.dir}/${javadoc.jwt-auth.dir}" />
     </jar>
 
-    <jar jarfile="dist/jwt-auth-${proj.version}-sources.jar">
+    <jar jarfile="dist/jwt-${proj.version}-sources.jar">
       <fileset dir="${src.java.dir}" defaultexcludes="yes">
 	<include name="eu/webtoolkit/jwt/*.java"/>
 	<include name="eu/webtoolkit/jwt/*.xml"/>
 	<include name="eu/webtoolkit/jwt/servlet/*.java"/>
 	<include name="eu/webtoolkit/jwt/chart/*.java"/>
+	<include name="eu/webtoolkit/jwt/render/*.java"/>
 	<include name="eu/webtoolkit/jwt/utils/*.java"/>
       </fileset>
     </jar>
-    <jar jarfile="dist/jwt-${proj.version}-sources.jar">
+    <jar jarfile="dist/jwt-auth-${proj.version}-sources.jar">
       <fileset dir="${src.java.dir}" defaultexcludes="yes">
 	<include name="eu/webtoolkit/jwt/auth/*.java"/>
 	<include name="eu/webtoolkit/jwt/auth/jpa/*.java"/>

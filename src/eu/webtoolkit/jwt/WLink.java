@@ -219,7 +219,11 @@ public class WLink {
 	 */
 	public void setInternalPath(String internalPath) {
 		this.type_ = WLink.Type.InternalPath;
-		this.value_ = internalPath;
+		String path = internalPath;
+		if (path.startsWith("#/")) {
+			path = path.substring(1);
+		}
+		this.value_ = path;
 	}
 
 	/**
@@ -278,7 +282,7 @@ public class WLink {
 					widget.clicked().addListener(slot);
 					widget.clicked().preventDefaultAction();
 				}
-				slot.setJavaScript("function(){Wt3_2_1.history.navigate("
+				slot.setJavaScript("function(){Wt3_2_3.history.navigate("
 						+ WWebWidget.jsStringLiteral(this.getInternalPath())
 						+ ",true);}");
 				widget.clicked().senderRepaint();

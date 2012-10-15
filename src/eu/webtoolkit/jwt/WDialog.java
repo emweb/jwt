@@ -50,8 +50,14 @@ import org.slf4j.LoggerFactory;
  * accept()}, and in some cases a Cancel button to {@link WDialog#reject()
  * reject()}. This solution has the drawback that it is not scalable to many
  * concurrent sessions, since for every session with a recursive event loop, a
- * thread is locked. In practical terms, this means it is only suitable for
- * software with restricted access or deployed on an intranet or extranet. This
+ * thread is locked until {@link WDialog#exec(WAnimation animation) exec()}
+ * returns. A thread that is locked by a recursive event loop cannot be used to
+ * process requests from another sessions. When all threads in the threadpool
+ * are locked in recursive event loops, the server will be unresponsive to
+ * requests from any other session. In practical terms, this means you must not
+ * use {@link WDialog#exec(WAnimation animation) exec()}, unless your
+ * application will never be used by more concurrent users than the amount of
+ * threads in your threadpool (like on some intranets or extranets). This
  * functionality is only available on Servlet 3.0 compatible servlet containers.
  * <p>
  * Use setModal(false) to create a non-modal dialog. A non-modal dialog does not
@@ -293,7 +299,9 @@ public class WDialog extends WCompositeWidget {
 	 * reject()} is called.
 	 * <p>
 	 * <i>Warning: using {@link WDialog#exec(WAnimation animation) exec()} does
-	 * not scale to many concurrent sessions, since the thread is locked.</i>
+	 * not scale to many concurrent sessions, since the thread is locked until
+	 * exec returns, so the entire server will be unresponsive when the thread
+	 * pool is exhausted.</i>
 	 * <p>
 	 * <i>This functionality is only available on Servlet 3.0 compatible servlet
 	 * containers.</i>
@@ -470,13 +478,16 @@ public class WDialog extends WCompositeWidget {
 			this.resizable_ = resizable;
 			this.toggleStyleClass("Wt-resizable", resizable);
 			this.setSelectable(!resizable);
+			if (resizable) {
+				this.contents_.setSelectable(true);
+			}
 			if (this.resizable_) {
 				this.setMinimumSize(WLength.Auto, WLength.Auto);
 				Resizable.loadJavaScript(WApplication.getInstance());
 				this
 						.setJavaScriptMember(
 								" Resizable",
-								"(new Wt3_2_1.Resizable(Wt3_2_1,"
+								"(new Wt3_2_3.Resizable(Wt3_2_3,"
 										+ this.getJsRef()
 										+ ")).onresize(function(w, h) {var obj = $('#"
 										+ this.getId()
@@ -584,7 +595,7 @@ public class WDialog extends WCompositeWidget {
 							new WLength(999999), this.getMaximumHeight());
 				}
 			}
-			this.doJavaScript("new Wt3_2_1.WDialog(" + app.getJavaScriptClass()
+			this.doJavaScript("new Wt3_2_3.WDialog(" + app.getJavaScriptClass()
 					+ "," + this.getJsRef() + "," + (centerX ? "1" : "0") + ","
 					+ (centerY ? "1" : "0") + ");");
 			if (!app.getEnvironment().agentIsIElt(9)) {
@@ -631,6 +642,6 @@ public class WDialog extends WCompositeWidget {
 				JavaScriptScope.WtClassScope,
 				JavaScriptObjectType.JavaScriptConstructor,
 				"WDialog",
-				"function(h,a,i,j){function n(b){var c=b||window.event;b=d.pageCoordinates(c);c=d.windowCoordinates(c);var e=d.windowSize();if(c.x>0&&c.x<e.x&&c.y>0&&c.y<e.y){i=j=false;a.style.left=d.px(a,\"left\")+b.x-k+\"px\";a.style.top=d.px(a,\"top\")+b.y-l+\"px\";a.style.right=\"\";a.style.bottom=\"\";k=b.x;l=b.y}}function o(b,c,e){if(a.style.position==\"\"){a.style.position=d.isIE6?\"absolute\":\"fixed\";a.style.visibility=\"visible\"}a.style.height=Math.max(0,e)+\"px\";a.style.width= Math.max(0,c)+\"px\";m.centerDialog()}function p(b,c,e){if(c>0)g.style.width=c+\"px\";if(e>0)g.style.height=e+\"px\";m.centerDialog()}function q(){h.layouts2.adjust()}jQuery.data(a,\"obj\",this);var m=this,f=$(a).find(\".titlebar\").first().get(0),g=$(a).find(\".dialog-layout\").get(0),d=h.WT,k,l;if(f){f.onmousedown=function(b){b=b||window.event;d.capture(f);b=d.pageCoordinates(b);k=b.x;l=b.y;f.onmousemove=n};f.onmouseup=function(){f.onmousemove=null;d.capture(null)}}this.centerDialog=function(){if(a.parentNode== null)a=f=null;else{if(a.style.display!=\"none\"&&a.style.visibility!=\"hidden\"){var b=d.windowSize(),c=a.offsetWidth,e=a.offsetHeight;if(i){a.style.left=Math.round((b.x-c)/2+(d.isIE6?document.documentElement.scrollLeft:0))+\"px\";a.style.marginLeft=\"0px\"}if(j){a.style.top=Math.round((b.y-e)/2+(d.isIE6?document.documentElement.scrollTop:0))+\"px\";a.style.marginTop=\"0px\"}}if(a.style.position!=\"\")a.style.visibility=\"visible\"}};this.onresize=function(b,c){i=j=false;p(a,b,c);h.layouts2.scheduleAdjust()};g.wtResize= o;a.wtPosition=q;if(a.style.width!=\"\")g.style.width=a.offsetWidth+\"px\";if(a.style.height!=\"\")g.style.height=a.offsetHeight+\"px\";m.centerDialog()}");
+				"function(h,a,i,j){function n(b){var c=b||window.event;b=d.pageCoordinates(c);c=d.windowCoordinates(c);var e=d.windowSize();if(c.x>0&&c.x<e.x&&c.y>0&&c.y<e.y){i=j=false;a.style.left=d.px(a,\"left\")+b.x-k+\"px\";a.style.top=d.px(a,\"top\")+b.y-l+\"px\";a.style.right=\"\";a.style.bottom=\"\";k=b.x;l=b.y}}function o(b,c,e){if(a.style.position==\"\"){a.style.position=d.isIE6?\"absolute\":\"fixed\";a.style.visibility=\"visible\"}a.style.height=Math.max(0,e)+\"px\";a.style.width= Math.max(0,c)+\"px\";m.centerDialog()}function p(b,c,e){if(c>0)g.style.width=c+\"px\";if(e>0)g.style.height=e+\"px\";m.centerDialog()}function q(){h.layouts2.adjust()}jQuery.data(a,\"obj\",this);var m=this,f=$(a).find(\".titlebar\").first().get(0),g=$(a).find(\".dialog-layout\").get(0),d=h.WT,k,l;if(f){f.onmousedown=function(b){b=b||window.event;d.capture(f);b=d.pageCoordinates(b);k=b.x;l=b.y;f.onmousemove=n};f.onmouseup=function(){f.onmousemove=null;d.capture(null)}}this.centerDialog=function(){if(a.parentNode== null)a=f=null;else{if(a.style.display!=\"none\"&&a.style.visibility!=\"hidden\"){var b=d.windowSize(),c=a.offsetWidth,e=a.offsetHeight;if(i){a.style.left=Math.round((b.x-c)/2+(d.isIE6?document.documentElement.scrollLeft:0))+\"px\";a.style.marginLeft=\"0px\"}if(j){a.style.top=Math.round((b.y-e)/2+(d.isIE6?document.documentElement.scrollTop:0))+\"px\";a.style.marginTop=\"0px\"}}if(a.style.position!=\"\")a.style.visibility=\"visible\"}};this.onresize=function(b,c){i=j=false;p(a,b,c);jQuery.data(g.firstChild,\"layout\").setMaxSize(0, 0);h.layouts2.scheduleAdjust()};g.wtResize=o;a.wtPosition=q;if(a.style.width!=\"\")g.style.width=a.offsetWidth+\"px\";if(a.style.height!=\"\")g.style.height=a.offsetHeight+\"px\";m.centerDialog()}");
 	}
 }

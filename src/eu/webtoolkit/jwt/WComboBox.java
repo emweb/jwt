@@ -317,7 +317,8 @@ public class WComboBox extends WFormWidget {
 	/**
 	 * Returns the current value.
 	 * <p>
-	 * Returns {@link WComboBox#getCurrentText() getCurrentText()}.
+	 * Returns {@link WComboBox#getCurrentText() getCurrentText()} converted
+	 * from a {@link WString} to a string.
 	 */
 	public String getValueText() {
 		return this.getCurrentText().toString();

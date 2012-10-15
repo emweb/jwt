@@ -28,7 +28,10 @@ import org.slf4j.LoggerFactory;
  * the content, and subsequently removes the focus from the line edit.
  * <p>
  * To act upon editing, connect a slot to the
- * {@link WInteractWidget#keyWentUp() WInteractWidget#keyWentUp()} signal.
+ * {@link WInteractWidget#keyWentUp() WInteractWidget#keyWentUp()} signal
+ * because the {@link WInteractWidget#keyPressed() WInteractWidget#keyPressed()}
+ * signal is fired before the line edit has interpreted the keypress to change
+ * its text.
  * <p>
  * At all times, the current content may be accessed with the
  * {@link WLineEdit#getText() getText()} method.

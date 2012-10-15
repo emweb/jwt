@@ -31,7 +31,25 @@ class StdWidgetItemImpl extends StdLayoutItemImpl {
 	public static String getChildrenResizeJS() {
 		WApplication app = WApplication.getInstance();
 		app.loadJavaScript("js/WtResize.js", wtjs10());
-		return "Wt3_2_1.ChildrenResize";
+		return "Wt3_2_3.ChildrenResize";
+	}
+
+	public static String getChildrenGetPSJS() {
+		WApplication app = WApplication.getInstance();
+		app.loadJavaScript("js/WtResize.js", wtjs11());
+		return "Wt3_2_3.ChildrenGetPS";
+	}
+
+	public static String getSecondResizeJS() {
+		WApplication app = WApplication.getInstance();
+		app.loadJavaScript("js/WtResize.js", wtjs12());
+		return "Wt3_2_3.LastResize";
+	}
+
+	public static String getSecondGetPSJS() {
+		WApplication app = WApplication.getInstance();
+		app.loadJavaScript("js/WtResize.js", wtjs13());
+		return "Wt3_2_3.LastGetPS";
 	}
 
 	public String getId() {
@@ -115,6 +133,28 @@ class StdWidgetItemImpl extends StdLayoutItemImpl {
 				JavaScriptScope.WtClassScope,
 				JavaScriptObjectType.JavaScriptFunction,
 				"ChildrenResize",
-				"function(b,e,c){function k(f){var g=a.px(f,\"marginTop\");g+=a.px(f,\"marginBottom\");if(!a.boxSizing(f)){g+=a.px(f,\"borderTopWidth\");g+=a.px(f,\"borderBottomWidth\");g+=a.px(f,\"paddingTop\");g+=a.px(f,\"paddingBottom\")}return g}var i,j,d,a=this;b.style.height=c+\"px\";if(a.boxSizing(b)){c-=a.px(b,\"marginTop\");c-=a.px(b,\"marginBottom\");c-=a.px(b,\"borderTopWidth\");c-=a.px(b,\"borderBottomWidth\");c-=a.px(b,\"paddingTop\");c-=a.px(b,\"paddingBottom\");e-= a.px(b,\"marginLeft\");e-=a.px(b,\"marginRight\");e-=a.px(b,\"borderLeftWidth\");e-=a.px(b,\"borderRightWidth\");e-=a.px(b,\"paddingLeft\");e-=a.px(b,\"paddingRight\")}i=0;for(j=b.childNodes.length;i<j;++i){d=b.childNodes[i];if(d.nodeType==1){var h=c-k(d);if(h>0)if(d.wtResize)d.wtResize(d,e,h);else{h=h+\"px\";if(d.style.height!=h)d.style.height=h}}}}");
+				"function(a,e,c){function f(h){var i=b.px(h,\"marginTop\");i+=b.px(h,\"marginBottom\");if(!b.boxSizing(h)){i+=b.px(h,\"borderTopWidth\");i+=b.px(h,\"borderBottomWidth\");i+=b.px(h,\"paddingTop\");i+=b.px(h,\"paddingBottom\")}return i}var b=this;a.style.height=c+\"px\";if(b.boxSizing(a)){c-=b.px(a,\"marginTop\");c-=b.px(a,\"marginBottom\");c-=b.px(a,\"borderTopWidth\");c-=b.px(a,\"borderBottomWidth\");c-=b.px(a,\"paddingTop\");c-=b.px(a,\"paddingBottom\");e-=b.px(a, \"marginLeft\");e-=b.px(a,\"marginRight\");e-=b.px(a,\"borderLeftWidth\");e-=b.px(a,\"borderRightWidth\");e-=b.px(a,\"paddingLeft\");e-=b.px(a,\"paddingRight\")}var g,k,d;g=0;for(k=a.childNodes.length;g<k;++g){d=a.childNodes[g];if(d.nodeType==1){var j=c-f(d);if(j>0)if(d.wtResize)d.wtResize(d,e,j);else{j=j+\"px\";if(d.style.height!=j)d.style.height=j}}}}");
+	}
+
+	static WJavaScriptPreamble wtjs11() {
+		return new WJavaScriptPreamble(JavaScriptScope.WtClassScope,
+				JavaScriptObjectType.JavaScriptFunction, "ChildrenGetPS",
+				"function(a,e,c,f){return f}");
+	}
+
+	static WJavaScriptPreamble wtjs12() {
+		return new WJavaScriptPreamble(
+				JavaScriptScope.WtClassScope,
+				JavaScriptObjectType.JavaScriptFunction,
+				"LastResize",
+				"function(a,e,c){var f=this;a.style.height=c+\"px\";a=a.lastChild;var b=a.previousSibling;c-=b.offsetHeight+f.px(b,\"marginTop\")+f.px(b,\"marginBottom\");if(c>0)if(a.wtResize)a.wtResize(a,e,c);else a.style.height=c+\"px\"}");
+	}
+
+	static WJavaScriptPreamble wtjs13() {
+		return new WJavaScriptPreamble(
+				JavaScriptScope.WtClassScope,
+				JavaScriptObjectType.JavaScriptFunction,
+				"LastGetPS",
+				"function(a,e,c,f){var b=this,g,k;g=0;for(k=a.childNodes.length;g<k;++g){var d=a.childNodes[g];if(d!=e)if(c===0)f=Math.max(f,d.offsetWidth);else f+=d.offsetHeight+b.px(d,\"marginTop\")+b.px(d,\"marginBottom\")}return f}");
 	}
 }

@@ -883,9 +883,12 @@ public class WAxis {
 					if (this.renderInterval_ == 0) {
 						if (this.scale_ == AxisScale.CategoryScale) {
 							double numLabels = this.calcAutoNumLabels(s) / 1.5;
-							this.renderInterval_ = Math.floor(rc / numLabels);
+							this.renderInterval_ = Math.max(1.0, Math.floor(rc
+									/ numLabels));
 						} else {
-							if (this.scale_ != AxisScale.LogScale) {
+							if (this.scale_ == AxisScale.LogScale) {
+								this.renderInterval_ = 1;
+							} else {
 								double numLabels = this.calcAutoNumLabels(s);
 								this.renderInterval_ = round125(diff
 										/ numLabels);
@@ -893,7 +896,10 @@ public class WAxis {
 						}
 					}
 				}
-				this.renderInterval_ = Math.max(1.0, this.renderInterval_);
+				if (this.renderInterval_ == 0) {
+					this.renderInterval_ = 1;
+					return false;
+				}
 				if (this.scale_ == AxisScale.LinearScale) {
 					if (it == 0) {
 						if (s.minimum == AUTO_MINIMUM) {
@@ -1197,7 +1203,7 @@ public class WAxis {
 				double resolution = this.resolution_;
 				if (resolution == 0) {
 					if (this.scale_ == AxisScale.LinearScale) {
-						resolution = 1E3 * 1E-10;
+						resolution = Math.abs(1E-3 * segment.renderMinimum);
 					} else {
 						if (this.scale_ == AxisScale.DateScale) {
 							resolution = 1;
@@ -1327,8 +1333,7 @@ public class WAxis {
 		case LinearScale: {
 			for (int i = 0;; ++i) {
 				double v = s.renderMinimum + this.renderInterval_ * i;
-				if (v - s.renderMaximum > MathUtils.EPSILON
-						* this.renderInterval_) {
+				if (v - s.renderMaximum > EPSILON * this.renderInterval_) {
 					break;
 				}
 				WString t = new WString();
@@ -1346,7 +1351,7 @@ public class WAxis {
 			double p = v;
 			int i = 0;
 			for (;; ++i) {
-				if (v - s.renderMaximum > MathUtils.EPSILON * s.renderMaximum) {
+				if (v - s.renderMaximum > EPSILON * s.renderMaximum) {
 					break;
 				}
 				if (i == 9) {

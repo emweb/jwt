@@ -83,6 +83,8 @@ public class WDatePicker extends WCompositeWidget {
 	public WDatePicker(WContainerWidget parent) {
 		super(parent);
 		this.format_ = "";
+		this.popupClosed_ = new Signal();
+		this.changed_ = new Signal();
 		this.positionJS_ = new JSlot();
 		this.createDefault();
 	}
@@ -112,6 +114,8 @@ public class WDatePicker extends WCompositeWidget {
 			WContainerWidget parent) {
 		super(parent);
 		this.format_ = "";
+		this.popupClosed_ = new Signal();
+		this.changed_ = new Signal();
 		this.positionJS_ = new JSlot();
 		this.create(displayWidget, forEdit);
 	}
@@ -133,7 +137,7 @@ public class WDatePicker extends WCompositeWidget {
 	 */
 	public void remove() {
 		WApplication.getInstance().doJavaScript(
-				"Wt3_2_1.remove('" + this.popup_.getId() + "');");
+				"Wt3_2_3.remove('" + this.popup_.getId() + "');");
 		super.remove();
 	}
 
@@ -316,7 +320,7 @@ public class WDatePicker extends WCompositeWidget {
 	 * the line edit, or through the calendar popup).
 	 */
 	public Signal changed() {
-		return this.calendar_.selectionChanged();
+		return this.changed_;
 	}
 
 	/**
@@ -331,11 +335,11 @@ public class WDatePicker extends WCompositeWidget {
 	 * The default is <code>false</code>.
 	 */
 	public void setGlobalPopup(boolean global) {
-		this.positionJS_.setJavaScript("function() { Wt3_2_1.getElement('"
+		this.positionJS_.setJavaScript("function() { Wt3_2_3.getElement('"
 				+ this.popup_.getId()
-				+ "').style.display = '';Wt3_2_1.positionAtWidget('"
+				+ "').style.display = '';Wt3_2_3.positionAtWidget('"
 				+ this.popup_.getId() + "','" + this.displayWidget_.getId()
-				+ "', Wt3_2_1.Horizontal, " + (global ? "true" : "false")
+				+ "', Wt3_2_3.Horizontal, " + (global ? "true" : "false")
 				+ ");}");
 	}
 
@@ -346,17 +350,29 @@ public class WDatePicker extends WCompositeWidget {
 		this.popup_.setHidden(!visible);
 	}
 
+	/**
+	 * A signal which indicates that the popup has been closed.
+	 * <p>
+	 * The signal is only fired when the popup has been closed by the user.
+	 */
+	public Signal popupClosed() {
+		return this.popupClosed_;
+	}
+
 	private String format_;
 	private WInteractWidget displayWidget_;
 	private WLineEdit forEdit_;
 	private WContainerWidget layout_;
 	private WTemplate popup_;
 	private WCalendar calendar_;
+	private Signal popupClosed_;
+	private Signal changed_;
 	private JSlot positionJS_;
 
 	private void createDefault() {
 		WImage icon = new WImage(WApplication.getResourcesUrl()
 				+ "calendar_edit.png");
+		icon.resize(new WLength(16), new WLength(16));
 		icon.setVerticalAlignment(AlignmentFlag.AlignMiddle);
 		WLineEdit lineEdit = new WLineEdit();
 		this.create(icon, lineEdit);
@@ -377,6 +393,7 @@ public class WDatePicker extends WCompositeWidget {
 		this.format_ = "dd/MM/yyyy";
 		this.layout_.setInline(true);
 		this.layout_.addWidget(displayWidget);
+		this.layout_.setAttributeValue("style", "white-space: nowrap");
 		String TEMPLATE = "${shadow-x1-x2}${calendar}<div style=\"text-align:center; margin-top:3px\">${close}</div>";
 		this.layout_.addWidget(this.popup_ = new WTemplate(
 				new WString(TEMPLATE)));
@@ -385,6 +402,12 @@ public class WDatePicker extends WCompositeWidget {
 				new Signal1.Listener<WDate>() {
 					public void trigger(WDate e1) {
 						WDatePicker.this.popup_.hide();
+					}
+				});
+		this.calendar_.activated().addListener(this,
+				new Signal1.Listener<WDate>() {
+					public void trigger(WDate e1) {
+						WDatePicker.this.onPopupHidden();
 					}
 				});
 		this.calendar_.selectionChanged().addListener(this,
@@ -398,6 +421,12 @@ public class WDatePicker extends WCompositeWidget {
 				new Signal1.Listener<WMouseEvent>() {
 					public void trigger(WMouseEvent e1) {
 						WDatePicker.this.popup_.hide();
+					}
+				});
+		closeButton.clicked().addListener(this,
+				new Signal1.Listener<WMouseEvent>() {
+					public void trigger(WMouseEvent e1) {
+						WDatePicker.this.onPopupHidden();
 					}
 				});
 		this.popup_.bindString("shadow-x1-x2", WTemplate.DropShadow_x1_x2);
@@ -435,6 +464,7 @@ public class WDatePicker extends WCompositeWidget {
 			this.forEdit_.setText(calDate.toString(this.format_));
 			this.forEdit_.changed().trigger();
 		}
+		this.changed_.trigger();
 	}
 
 	private void setFromLineEdit() {
@@ -452,5 +482,10 @@ public class WDatePicker extends WCompositeWidget {
 			}
 			this.calendar_.browseTo(d);
 		}
+	}
+
+	private void onPopupHidden() {
+		this.forEdit_.setFocus();
+		this.popupClosed();
 	}
 }

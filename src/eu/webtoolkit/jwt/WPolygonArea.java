@@ -98,7 +98,7 @@ public class WPolygonArea extends WAbstractArea {
 	 * point.
 	 */
 	public void setPoints(List<WPoint> points) {
-		this.points_ = points;
+		Utils.copyList(points, this.points_);
 	}
 
 	/**

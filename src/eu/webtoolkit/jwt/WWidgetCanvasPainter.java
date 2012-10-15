@@ -38,6 +38,7 @@ class WWidgetCanvasPainter extends WWidgetPainter {
 		String hstr = String.valueOf(this.widget_.renderHeight_);
 		result.setProperty(Property.PropertyStylePosition, "relative");
 		result.setProperty(Property.PropertyStyleOverflowX, "hidden");
+		result.setProperty(Property.PropertyStyleOverflowY, "hidden");
 		DomElement canvas = DomElement
 				.createNew(DomElementType.DomElement_CANVAS);
 		canvas.setId('c' + this.widget_.getId());

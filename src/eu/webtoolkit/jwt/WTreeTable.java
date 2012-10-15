@@ -110,8 +110,6 @@ public class WTreeTable extends WCompositeWidget {
 		this.columnWidths_.add(WLength.Auto);
 		WContainerWidget content = new WContainerWidget(this.impl_);
 		content.setStyleClass("Wt-content");
-		content.resize(new WLength(100, WLength.Unit.Percentage), new WLength(
-				100, WLength.Unit.Percentage));
 		if (!WApplication.getInstance().getEnvironment().agentIsIE()) {
 			content.setOverflow(WContainerWidget.Overflow.OverflowAuto);
 		} else {
@@ -295,7 +293,7 @@ public class WTreeTable extends WCompositeWidget {
 	private void defineJavaScript() {
 		WApplication app = WApplication.getInstance();
 		app.loadJavaScript("js/WTreeTable.js", wtjs1());
-		this.setJavaScriptMember(" WTreeTable", "new Wt3_2_1.WTreeTable("
+		this.setJavaScriptMember(" WTreeTable", "new Wt3_2_3.WTreeTable("
 				+ app.getJavaScriptClass() + "," + this.getJsRef() + ");");
 	}
 

@@ -57,30 +57,33 @@ class DialogWidgets extends ControlsWidget {
 		addText(tr("dialogs-WMessageBox"), result);
 		WContainerWidget ex = new WContainerWidget(result);
 		WVBoxLayout vLayout = new WVBoxLayout();
-		ex.setLayout(vLayout, EnumSet.of(AlignmentFlag.AlignTop,
-				AlignmentFlag.AlignLeft));
+		ex.setLayout(vLayout);
 		vLayout.setContentsMargins(0, 0, 0, 0);
 		vLayout.setSpacing(3);
 		WPushButton button;
-		vLayout.addWidget(button = new WPushButton("One liner"));
+		vLayout.addWidget(button = new WPushButton("One liner"), 0, EnumSet
+				.of(AlignmentFlag.AlignLeft));
 		button.clicked().addListener(this, new Signal1.Listener<WMouseEvent>() {
 			public void trigger(WMouseEvent e1) {
 				DialogWidgets.this.messageBox1();
 			}
 		});
-		vLayout.addWidget(button = new WPushButton("Show some buttons"));
+		vLayout.addWidget(button = new WPushButton("Show some buttons"), 0,
+				EnumSet.of(AlignmentFlag.AlignLeft));
 		button.clicked().addListener(this, new Signal1.Listener<WMouseEvent>() {
 			public void trigger(WMouseEvent e1) {
 				DialogWidgets.this.messageBox2();
 			}
 		});
-		vLayout.addWidget(button = new WPushButton("Need confirmation"));
+		vLayout.addWidget(button = new WPushButton("Need confirmation"), 0,
+				EnumSet.of(AlignmentFlag.AlignLeft));
 		button.clicked().addListener(this, new Signal1.Listener<WMouseEvent>() {
 			public void trigger(WMouseEvent e1) {
 				DialogWidgets.this.messageBox3();
 			}
 		});
-		vLayout.addWidget(button = new WPushButton("Discard"));
+		vLayout.addWidget(button = new WPushButton("Discard"), 0, EnumSet
+				.of(AlignmentFlag.AlignLeft));
 		button.clicked().addListener(this, new Signal1.Listener<WMouseEvent>() {
 			public void trigger(WMouseEvent e1) {
 				DialogWidgets.this.messageBox4();

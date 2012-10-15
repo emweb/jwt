@@ -155,6 +155,7 @@ public class WCartesianChart extends WAbstractChart {
 		this.legendFont_ = new WFont();
 		this.legendBorder_ = new WPen(PenStyle.NoPen);
 		this.legendBackground_ = new WBrush(BrushStyle.NoBrush);
+		this.axisPadding_ = 5;
 		this.init();
 	}
 
@@ -318,7 +319,7 @@ public class WCartesianChart extends WAbstractChart {
 	 * @see WCartesianChart#removeSeries(int modelColumn)
 	 */
 	public void setSeries(List<WDataSeries> series) {
-		this.series_ = series;
+		Utils.copyList(series, this.series_);
 		for (int i = 0; i < this.series_.size(); ++i) {
 			this.series_.get(i).setChart(this);
 		}
@@ -920,7 +921,8 @@ public class WCartesianChart extends WAbstractChart {
 
 	protected void paintEvent(WPaintDevice paintDevice) {
 		while (!this.getAreas().isEmpty()) {
-			;
+			if (this.getAreas().get(0) != null)
+				this.getAreas().get(0).remove();
 		}
 		WPainter painter = new WPainter(paintDevice);
 		painter.setRenderHint(WPainter.RenderHint.Antialiasing);

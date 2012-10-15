@@ -558,7 +558,7 @@ public abstract class WInteractWidget extends WWebWidget {
 		if (updateKeyDown) {
 			List<DomElement.EventAction> actions = new ArrayList<DomElement.EventAction>();
 			if (enterPress != null) {
-				if (enterPress.isConnected()) {
+				if (enterPress.needsUpdate(all)) {
 					String extraJS = "";
 					if (!(app != null)) {
 						app = WApplication.getInstance();
@@ -578,7 +578,7 @@ public abstract class WInteractWidget extends WWebWidget {
 				enterPress.updateOk();
 			}
 			if (escapePress != null) {
-				if (escapePress.isConnected()) {
+				if (escapePress.needsUpdate(all)) {
 					actions.add(new DomElement.EventAction(
 							"(e.keyCode && e.keyCode == 27)", escapePress
 									.getJavaScript(), escapePress.encodeCmd(),
@@ -587,7 +587,7 @@ public abstract class WInteractWidget extends WWebWidget {
 				escapePress.updateOk();
 			}
 			if (keyDown != null) {
-				if (keyDown.isConnected()) {
+				if (keyDown.needsUpdate(all)) {
 					actions.add(new DomElement.EventAction("", keyDown
 							.getJavaScript(), keyDown.encodeCmd(), keyDown
 							.isExposedSignal()));
@@ -631,11 +631,11 @@ public abstract class WInteractWidget extends WWebWidget {
 					&& mouseDown.isConnected()
 					&& (mouseUp != null && mouseUp.isConnected() || mouseMove != null
 							&& mouseMove.isConnected())) {
-				js += "Wt3_2_1.capture(this);";
+				js += "Wt3_2_3.capture(this);";
 			}
 			if (mouseMove != null && mouseMove.isConnected()
 					|| mouseDrag != null && mouseDrag.isConnected()) {
-				js += "Wt3_2_1.mouseDown(e);";
+				js += "Wt3_2_3.mouseDown(e);";
 			}
 			if (mouseDown != null) {
 				js += mouseDown.getJavaScript();
@@ -650,7 +650,7 @@ public abstract class WInteractWidget extends WWebWidget {
 			String js = "";
 			if (mouseMove != null && mouseMove.isConnected()
 					|| mouseDrag != null && mouseDrag.isConnected()) {
-				js += "Wt3_2_1.mouseUp(e);";
+				js += "Wt3_2_3.mouseUp(e);";
 			}
 			if (mouseUp != null) {
 				js += mouseUp.getJavaScript();
@@ -670,7 +670,7 @@ public abstract class WInteractWidget extends WWebWidget {
 				mouseMove.updateOk();
 			}
 			if (mouseDrag != null) {
-				actions.add(new DomElement.EventAction("Wt3_2_1.buttons",
+				actions.add(new DomElement.EventAction("Wt3_2_3.buttons",
 						mouseDrag.getJavaScript(), mouseDrag.encodeCmd(),
 						mouseDrag.isExposedSignal()));
 				mouseDrag.updateOk();
@@ -687,8 +687,8 @@ public abstract class WInteractWidget extends WWebWidget {
 		if (updateMouseClick) {
 			StringBuilder js = new StringBuilder();
 			js
-					.append("if($(o).hasClass('Wt-disabled')){Wt3_2_1.cancelEvent(e);return;}");
-			if (mouseDblClick != null) {
+					.append("if($(o).hasClass('Wt-disabled')){Wt3_2_3.cancelEvent(e);return;}");
+			if (mouseDblClick != null && mouseDblClick.needsUpdate(all)) {
 				js.append("if(window.wtClickTimeout) {").append(
 						"clearTimeout(window.wtClickTimeout);").append(
 						"window.wtClickTimeout = null;");
@@ -704,7 +704,7 @@ public abstract class WInteractWidget extends WWebWidget {
 				}
 				mouseDblClick.updateOk();
 				js
-						.append("}else{if (Wt3_2_1.isIElt9 && document.createEventObject) e = document.createEventObject(e);window.wtClickTimeout = setTimeout(function() {window.wtClickTimeout = null;");
+						.append("}else{if (Wt3_2_3.isIElt9 && document.createEventObject) e = document.createEventObject(e);window.wtClickTimeout = setTimeout(function() {window.wtClickTimeout = null;");
 				if (mouseClick != null) {
 					js.append(mouseClick.getJavaScript());
 					if (mouseClick.isExposedSignal()) {
@@ -719,7 +719,7 @@ public abstract class WInteractWidget extends WWebWidget {
 				}
 				js.append("},200);}");
 			} else {
-				if (mouseClick != null) {
+				if (mouseClick != null && mouseClick.needsUpdate(all)) {
 					js.append(mouseClick.getJavaScript());
 					if (mouseClick.isExposedSignal()) {
 						if (!(app != null)) {
@@ -732,7 +732,8 @@ public abstract class WInteractWidget extends WWebWidget {
 					mouseClick.updateOk();
 				}
 			}
-			element.setEvent(CLICK_SIGNAL, js.toString(), "");
+			element.setEvent(CLICK_SIGNAL, js.toString(),
+					mouseClick != null ? mouseClick.encodeCmd() : "");
 			if (mouseDblClick != null) {
 				if (!(app != null)) {
 					app = WApplication.getInstance();
@@ -828,7 +829,7 @@ public abstract class WInteractWidget extends WWebWidget {
 	private static String ENTER_PRESS_SIGNAL = "M_enterpress";
 	private static String ESCAPE_PRESS_SIGNAL = "M_escapepress";
 	static String CLICK_SIGNAL = "click";
-	protected static String M_CLICK_SIGNAL = "M_click";
+	static String M_CLICK_SIGNAL = "M_click";
 	private static String DBL_CLICK_SIGNAL = "M_dblclick";
 	static String MOUSE_DOWN_SIGNAL = "M_mousedown";
 	static String MOUSE_UP_SIGNAL = "M_mouseup";

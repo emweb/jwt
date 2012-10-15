@@ -397,8 +397,8 @@ public class WAnchor extends WContainerWidget {
 	 * <p>
 	 * When the link points to an {@link WLink.Type#InternalPath internal path},
 	 * activating the anchor will change the
-	 * {@link WApplication#getBookmarkUrl() application&apos;s internal path} or
-	 * open a new session with the given path as
+	 * {@link WApplication#isInternalPathValid() application&apos;s internal
+	 * path} or open a new session with the given path as
 	 * {@link WEnvironment#getInternalPath() initial path}). This is the easiest
 	 * way to let the application participate in browser history, and generate
 	 * URLs that are bookmarkable and search engine friendly.
@@ -407,9 +407,6 @@ public class WAnchor extends WContainerWidget {
 		if (this.link_.getType() != WLink.Type.Resource
 				&& this.link_.equals(link)) {
 			return;
-		}
-		if (this.link_.isNull()) {
-			this.flags_.set(BIT_CHANGE_TAG);
 		}
 		this.link_ = link;
 		this.flags_.set(BIT_LINK_CHANGED);
@@ -634,7 +631,6 @@ public class WAnchor extends WContainerWidget {
 
 	private static final int BIT_LINK_CHANGED = 0;
 	private static final int BIT_TARGET_CHANGED = 1;
-	private static final int BIT_CHANGE_TAG = 2;
 	private WLink link_;
 	private WText text_;
 	private WImage image_;
@@ -648,34 +644,27 @@ public class WAnchor extends WContainerWidget {
 	}
 
 	void updateDom(DomElement element, boolean all) {
-		if (element.getType() != DomElementType.DomElement_A) {
-			super.updateDom(element, all);
-			return;
-		}
-		if (this.flags_.get(BIT_CHANGE_TAG)) {
-			if (!all) {
-				element.callJavaScript("Wt3_2_1.changeTag(" + this.getJsRef()
-						+ ",'a');");
-			}
-			this.flags_.clear(BIT_CHANGE_TAG);
-		}
 		boolean needsUrlResolution = false;
 		if (this.flags_.get(BIT_LINK_CHANGED) || all) {
 			WApplication app = WApplication.getInstance();
-			String url = this.link_.resolveUrl(app);
-			if (this.target_ == AnchorTarget.TargetSelf) {
-				this.changeInternalPathJS_ = this.link_
-						.manageInternalPathChange(app, this,
-								this.changeInternalPathJS_);
+			if (this.link_.isNull()) {
+				element.removeAttribute("href");
 			} else {
-				;
-				this.changeInternalPathJS_ = null;
+				String url = this.link_.resolveUrl(app);
+				if (this.target_ == AnchorTarget.TargetSelf) {
+					this.changeInternalPathJS_ = this.link_
+							.manageInternalPathChange(app, this,
+									this.changeInternalPathJS_);
+				} else {
+					;
+					this.changeInternalPathJS_ = null;
+				}
+				url = app.encodeUntrustedUrl(url);
+				String href = resolveRelativeUrl(url);
+				element.setAttribute("href", href);
+				needsUrlResolution = !app.getEnvironment().hashInternalPaths()
+						&& href.indexOf("://") == -1 && href.charAt(0) != '/';
 			}
-			url = app.encodeUntrustedUrl(url);
-			String href = resolveRelativeUrl(url);
-			element.setAttribute("href", href);
-			needsUrlResolution = !app.getEnvironment().hashInternalPaths()
-					&& href.indexOf("://") == -1 && href.charAt(0) != '/';
 			this.flags_.clear(BIT_LINK_CHANGED);
 		}
 		if (this.flags_.get(BIT_TARGET_CHANGED) || all) {
@@ -706,8 +695,7 @@ public class WAnchor extends WContainerWidget {
 	}
 
 	DomElementType getDomElementType() {
-		return this.link_.isNull() ? super.getDomElementType()
-				: DomElementType.DomElement_A;
+		return DomElementType.DomElement_A;
 	}
 
 	void propagateRenderOk(boolean deep) {

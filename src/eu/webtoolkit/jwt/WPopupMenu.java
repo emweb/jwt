@@ -259,7 +259,7 @@ public class WPopupMenu extends WCompositeWidget {
 		this.popupImpl();
 		this.setOffsets(new WLength(42), EnumSet.of(Side.Left, Side.Top));
 		this.setOffsets(new WLength(-10000), EnumSet.of(Side.Left, Side.Top));
-		this.doJavaScript("Wt3_2_1.positionXY('" + this.getId() + "',"
+		this.doJavaScript("Wt3_2_3.positionXY('" + this.getId() + "',"
 				+ String.valueOf(p.getX()) + "," + String.valueOf(p.getY())
 				+ ");");
 	}
@@ -287,6 +287,8 @@ public class WPopupMenu extends WCompositeWidget {
 	public void popup(WWidget location, Orientation orientation) {
 		this.location_ = location;
 		this.popupImpl();
+		this.doJavaScript("jQuery.data(" + this.getJsRef()
+				+ ", 'obj').popupAt(" + location.getJsRef() + ");");
 		this.positionAt(location, orientation);
 	}
 
@@ -474,11 +476,8 @@ public class WPopupMenu extends WCompositeWidget {
 		if (w == this.location_) {
 			return false;
 		}
-		WContainerWidget c = this.getContents();
-		for (int i = 0; i < c.getCount(); ++i) {
-			WPopupMenuItem item = ((c.getWidget(i)) instanceof WPopupMenuItem ? (WPopupMenuItem) (c
-					.getWidget(i))
-					: null);
+		for (int i = 0; i < this.getCount(); ++i) {
+			WPopupMenuItem item = this.itemAt(i);
 			if (item.getPopupMenu() != null) {
 				if (item.getPopupMenu().isExposed(w)) {
 					return true;
@@ -575,29 +574,54 @@ public class WPopupMenu extends WCompositeWidget {
 			this.doJavaScript(this.getJsRef() + ".lastChild.style.width="
 					+ this.getJsRef() + ".lastChild.offsetWidth + 'px';");
 		}
-		if (this.autoHideDelay_ >= 0) {
-			if (!this.cancel_.isConnected()) {
-				app.loadJavaScript("js/WPopupMenu.js", wtjs1());
-				this.setJavaScriptMember(" WPopupMenu",
-						"new Wt3_2_1.WPopupMenu(" + app.getJavaScriptClass()
-								+ "," + this.getJsRef() + ","
-								+ String.valueOf(this.autoHideDelay_) + ");");
-				this.cancel_.addListener(this, new Signal.Listener() {
-					public void trigger() {
-						WPopupMenu.this.done();
-					}
-				});
+		if (!this.cancel_.isConnected()) {
+			app.loadJavaScript("js/WPopupMenu.js", wtjs1());
+			List<WPopupMenu> subMenus = new ArrayList<WPopupMenu>();
+			this.getSubMenus(subMenus);
+			StringBuilder s = new StringBuilder();
+			s.append("new Wt3_2_3.WPopupMenu(")
+					.append(app.getJavaScriptClass()).append(',').append(
+							this.getJsRef()).append(',').append(
+							this.autoHideDelay_).append(",[");
+			for (int i = 0; i < subMenus.size(); ++i) {
+				if (i != 0) {
+					s.append(',');
+				}
+				s.append(WWebWidget.jsStringLiteral(subMenus.get(i).getId()));
 			}
+			s.append("]);");
+			this.setJavaScriptMember(" WPopupMenu", s.toString());
+			this.cancel_.addListener(this, new Signal.Listener() {
+				public void trigger() {
+					WPopupMenu.this.done();
+				}
+			});
 		}
 	}
 
 	void renderOutAll() {
-		WContainerWidget c = this.getContents();
-		for (int i = 0; i < c.getCount(); ++i) {
-			WPopupMenuItem item = ((c.getWidget(i)) instanceof WPopupMenuItem ? (WPopupMenuItem) (c
-					.getWidget(i))
-					: null);
-			item.renderOut();
+		for (int i = 0; i < this.getCount(); ++i) {
+			this.itemAt(i).renderOut();
+		}
+	}
+
+	private int getCount() {
+		return this.getContents().getCount();
+	}
+
+	private WPopupMenuItem itemAt(int index) {
+		return ((this.getContents().getWidget(index)) instanceof WPopupMenuItem ? (WPopupMenuItem) (this
+				.getContents().getWidget(index))
+				: null);
+	}
+
+	private void getSubMenus(List<WPopupMenu> result) {
+		for (int i = 0; i < this.getCount(); ++i) {
+			WPopupMenuItem item = this.itemAt(i);
+			if (item.getPopupMenu() != null) {
+				result.add(item.getPopupMenu());
+				item.getPopupMenu().getSubMenus(result);
+			}
 		}
 	}
 
@@ -606,6 +630,6 @@ public class WPopupMenu extends WCompositeWidget {
 				JavaScriptScope.WtClassScope,
 				JavaScriptObjectType.JavaScriptConstructor,
 				"WPopupMenu",
-				"function(e,b,c){function f(){e.emit(b,\"cancel\")}jQuery.data(b,\"obj\",this);var a=null,d=false;this.setHidden=function(){a&&clearTimeout(a);a=null};c>=0&&$(b).parent().find(\".Wt-popupmenu\").mouseleave(function(){if(d){clearTimeout(a);a=setTimeout(f,c)}}).mouseenter(function(){d=true;clearTimeout(a)})}");
+				"function(h,f,d,i){function l(){h.emit(f.id,\"cancel\")}function j(){--c;if(c==0){clearTimeout(b);b=setTimeout(l,d)}}function k(){++c;clearTimeout(b)}function g(a){$(a).mouseleave(j).mouseenter(k)}jQuery.data(f,\"obj\",this);var m=h.WT,b=null,e=null,c=0;this.setHidden=function(a){if(b){clearTimeout(b);b=null}c=0;if(d>0&&!a){c=1;e||j()}};this.popupAt=function(a){if(d>=0)if(e!=a){e=a;g(e);k()}};d>=0&&setTimeout(function(){g(f);for(var a=0,n=i.length;a< n;++a)g(m.$(i[a]))},0)}");
 	}
 }

@@ -394,7 +394,41 @@ public class WPainter {
 			this.height_ = height;
 		}
 
-		// public Image(String uri, String file) ;
+		/**
+		 * Creates an image.
+		 * <p>
+		 * Create an image which is located at <i>uri</i> which is available on
+		 * the local filesystem as <i>file</i>. The image dimensions are
+		 * retrieved from the file.
+		 */
+		public Image(String uri, String fileName) {
+			this.uri_ = uri;
+			List<Integer> header = FileUtils.fileHeader(fileName, 25);
+			if (header.size() != 0) {
+				String mimeType = ImageUtils.identifyImageMimeType(header);
+				if (mimeType.equals("image/png")) {
+					this.width_ = (((int) header.get(16) << 8 | (int) header
+							.get(17)) << 8 | (int) header.get(18)) << 8
+							| (int) header.get(19);
+					this.height_ = (((int) header.get(20) << 8 | (int) header
+							.get(21)) << 8 | (int) header.get(22)) << 8
+							| (int) header.get(23);
+				} else {
+					if (mimeType.equals("image/gif")) {
+						this.width_ = (int) header.get(7) << 8
+								| (int) header.get(6);
+						this.height_ = (int) header.get(9) << 8
+								| (int) header.get(8);
+					} else {
+						throw new WException("'" + fileName
+								+ "': unsupported file format");
+					}
+				}
+			} else {
+				throw new WException("'" + fileName + "': could not read");
+			}
+		}
+
 		/**
 		 * Returns the uri.
 		 */

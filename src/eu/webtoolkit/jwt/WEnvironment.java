@@ -233,7 +233,7 @@ public class WEnvironment {
 	 * Wt&apos;s JavaScript scope.
 	 */
 	public static String getJavaScriptWtScope() {
-		return "Wt3_2_1";
+		return "Wt3_2_3";
 	}
 
 	/**
@@ -594,7 +594,7 @@ public class WEnvironment {
 	 * </pre>
 	 * <p>
 	 * 
-	 * @see WApplication#getBookmarkUrl()
+	 * @see WApplication#makeAbsoluteUrl(String url)
 	 * @see WEnvironment#getDeploymentPath()
 	 */
 	public String getInternalPath() {
@@ -623,7 +623,7 @@ public class WEnvironment {
 	 * Example: <code>&quot;1.99.2&quot;</code>
 	 */
 	public static String getLibraryVersion() {
-		return "3.2.1";
+		return "3.2.3";
 	}
 
 	// public void libraryVersion(bad java simple ref int series, bad java
@@ -839,6 +839,9 @@ public class WEnvironment {
 		return this.hashInternalPaths_;
 	}
 
+	/**
+	 * Returns whether this agent supports CSS3 animations.
+	 */
 	public boolean supportsCss3Animations() {
 		return this.agentIsGecko()
 				&& this.agent_.getValue() >= WEnvironment.UserAgent.Firefox5_0
@@ -853,6 +856,9 @@ public class WEnvironment {
 		throw new WException("Internal error");
 	}
 
+	/**
+	 * Returns whether this is a mocked test environment.
+	 */
 	public boolean isTest() {
 		return false;
 	}
@@ -879,7 +885,7 @@ public class WEnvironment {
 	String clientAddress_;
 	String pathInfo_;
 	String internalPath_;
-	protected String publicDeploymentPath_;
+	String publicDeploymentPath_;
 
 	WEnvironment() {
 		this.session_ = null;

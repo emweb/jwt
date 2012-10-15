@@ -40,8 +40,8 @@ import org.slf4j.LoggerFactory;
  * Each region may hold no more than one widget, and for all but the Center
  * region, the widget is optional.
  * <p>
- * Widgets in the North and South regions need to have The Center widget takes
- * all available remaining space.
+ * The North, West, East, and South widgets will take their preferred sizes,
+ * while the Center widget takes all available remaining space.
  * <p>
  * When used with a {@link WContainerWidget}, the widget minimum sizes are used
  * for sizing the border widgets, whose default values may be overridden using

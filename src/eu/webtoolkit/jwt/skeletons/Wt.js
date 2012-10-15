@@ -16,7 +16,9 @@ window.WT_DECLARE_WT_MEMBER = function(i, type, name, fn)
     _$_WT_CLASS_$_[name.substr(0, proto)]
       .prototype[name.substr(proto + '.prototype.'.length)] = fn;
   } else if (type == JavaScriptFunction) {
-    _$_WT_CLASS_$_[name] = function() { fn.apply(_$_WT_CLASS_$_, arguments); };
+    _$_WT_CLASS_$_[name] = function() {
+	return fn.apply(_$_WT_CLASS_$_, arguments);
+    };
   } else {
     _$_WT_CLASS_$_[name] = fn;
   }
@@ -30,7 +32,7 @@ window.WT_DECLARE_APP_MEMBER = function(i, type, name, fn)
     app[name.substr(0, proto)]
       .prototype[name.substr(proto + '.prototype.'.length)] = fn;
   } else if (type == JavaScriptFunction) {
-    app[name] = function() { fn.apply(app, arguments); };
+    app[name] = function() { return fn.apply(app, arguments); };
   } else {
     app[name] = fn;
   }
@@ -1303,46 +1305,50 @@ this.windowSize = function() {
  * bottom of (y) or top from (bottomy)
  */
 this.fitToWindow = function(e, x, y, rightx, bottomy) {
-  var ws = WT.windowSize();
+  var windowSize = WT.windowSize();
 
-  var wx = document.body.scrollLeft + document.documentElement.scrollLeft;
-  var wy = document.body.scrollTop + document.documentElement.scrollTop;
+  var windowX = document.body.scrollLeft + document.documentElement.scrollLeft;
+  var windowY = document.body.scrollTop + document.documentElement.scrollTop;
 
   if (!e.offsetParent)
     return;
 
-  var ow = WT.widgetPageCoordinates(e.offsetParent);
+  var offsetParent = WT.widgetPageCoordinates(e.offsetParent);
 
   var hsides = [ 'left', 'right' ],
       vsides = [ 'top', 'bottom' ],
-      ew = WT.px(e, 'maxWidth') || e.offsetWidth,
-      eh = WT.px(e, 'maxHeight') || e.offsetHeight,
+      elementWidth = WT.px(e, 'maxWidth') || e.offsetWidth,
+      elementHeight = WT.px(e, 'maxHeight') || e.offsetHeight,
       hside, vside;
 
-  if (ew > ws.x) { // wider than window
-    x = wx;
+  if (elementWidth > windowSize.x) {
+    // wider than window
+    x = windowX;
     hside = 0;
-  } else if (x + ew > wx + ws.x) { // too far right, chose other side
-    rightx -= ow.x;
+  } else if (x + elementWidth > windowX + windowSize.x) {
+    // too far right, chose other side
+    rightx -= offsetParent.x;
     x = e.offsetParent.offsetWidth - (rightx + WT.px(e, 'marginRight'));
     hside = 1;
   } else {
-    x -= ow.x;
+    x -= offsetParent.x;
     x = x - WT.px(e, 'marginLeft');
     hside = 0;
   }
 
-  if (ew > ws.y) { // taller than window
-    y = wy;
+  if (elementHeight > windowSize.y) {
+    // taller than window
+    y = windowY;
     vside = 0;
-  } else if (y + eh > wy + ws.y) { // too far below, chose other side
-    if (bottomy > wy + ws.y)
-      bottomy = wy + ws.y;
-    bottomy -= ow.y;
+  } else if (y + elementHeight > windowY + windowSize.y) {
+    // too far below, chose other side
+    if (bottomy > windowY + windowSize.y)
+      bottomy = windowY + windowSize.y;
+    bottomy -= offsetParent.y;
     y = e.offsetParent.offsetHeight - (bottomy + WT.px(e, 'marginBottom'));
     vside = 1;
   } else {
-    y -= ow.y;
+    y -= offsetParent.y;
     y = y - WT.px(e, 'marginTop');
     vside = 0;
   }
@@ -1508,8 +1514,12 @@ _$_$endif_$_();
 	}
 
 	var q = stripHashParameter(window.location.search);
-	if (q.length > 1)
+
+	if (q.length > 1) {
+	  if (q.length > 2 && q[0] == '?' && q[1] == '&')
+	    q = q.substr(1);
 	  url += '&' + q.substr(1);
+	}
       }
 
       try {
@@ -1798,7 +1808,9 @@ var currentHash = null;
 function onHashChange() {
   var newLocation = _$_WT_CLASS_$_.history.getCurrentState();
 
-  if (newLocation.length > 0 && newLocation.substr(0, 1) != '/')
+  if (newLocation != null &&
+      newLocation.length > 0 &&
+      newLocation.substr(0, 1) != '/')
     return;
 
   if (currentHash == newLocation)

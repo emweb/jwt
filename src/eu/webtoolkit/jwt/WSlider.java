@@ -96,6 +96,7 @@ public class WSlider extends WFormWidget {
 		this.preferNative_ = false;
 		this.changed_ = false;
 		this.changedConnected_ = false;
+		this.handleWidth_ = 20;
 		this.minimum_ = 0;
 		this.maximum_ = 99;
 		this.value_ = 0;
@@ -132,6 +133,7 @@ public class WSlider extends WFormWidget {
 		this.preferNative_ = false;
 		this.changed_ = false;
 		this.changedConnected_ = false;
+		this.handleWidth_ = 20;
 		this.minimum_ = 0;
 		this.maximum_ = 99;
 		this.value_ = 0;
@@ -311,7 +313,11 @@ public class WSlider extends WFormWidget {
 	 */
 	public void setValue(int value) {
 		this.value_ = Math.min(this.maximum_, Math.max(this.minimum_, value));
-		this.update();
+		if (this.paintedSlider_ != null) {
+			this.paintedSlider_.updateSliderPosition();
+		} else {
+			this.update();
+		}
 	}
 
 	/**
@@ -421,6 +427,28 @@ public class WSlider extends WFormWidget {
 		return this.sliderMoved_;
 	}
 
+	/**
+	 * Sets the slider handle width.
+	 * <p>
+	 * This sets the width for the handle, which is needed to accurately
+	 * position the handle.
+	 * <p>
+	 * The default value is 20 pixels.
+	 */
+	public void setHandleWidth(int handleWidth) {
+		this.handleWidth_ = handleWidth;
+	}
+
+	/**
+	 * Returns the handle width.
+	 * <p>
+	 * 
+	 * @see WSlider#setHandleWidth(int handleWidth)
+	 */
+	public int getHandleWidth() {
+		return this.handleWidth_;
+	}
+
 	public void setDisabled(boolean disabled) {
 		if (this.paintedSlider_ != null) {
 			this.paintedSlider_.setDisabled(disabled);
@@ -444,6 +472,68 @@ public class WSlider extends WFormWidget {
 			this.value_ = Integer.parseInt(value);
 		} catch (NumberFormatException e) {
 		}
+	}
+
+	/**
+	 * Paints a slider ticks (for a non-native widget).
+	 * <p>
+	 * The default implementation draws ticks taking into account the the
+	 * tickPosition.
+	 * <p>
+	 * The mid point for the tick should be at position (x, y). The
+	 * <code>value</code> that corresponds to the tick is also passed.
+	 */
+	protected void paintTick(WPainter painter, int value, int x, int y) {
+		if (!this.tickPosition_.isEmpty()) {
+			int h = 0;
+			if (this.orientation_ == Orientation.Horizontal) {
+				h = (int) painter.getDevice().getHeight().toPixels();
+			} else {
+				h = (int) painter.getDevice().getWidth().toPixels();
+			}
+			WPen pen = new WPen();
+			pen.setColor(new WColor(0xd7, 0xd7, 0xd7));
+			pen.setCapStyle(PenCapStyle.FlatCap);
+			pen.setWidth(new WLength(1));
+			painter.setPen(pen);
+			int y1 = h / 4;
+			int y2 = h / 2 - 4;
+			int y3 = h / 2 + 4;
+			int y4 = h - h / 4;
+			switch (this.orientation_) {
+			case Horizontal:
+				if (!EnumUtils.mask(this.tickPosition_,
+						WSlider.TickPosition.TicksAbove).isEmpty()) {
+					painter.drawLine(x + 0.5, y1, x + 0.5, y2);
+				}
+				if (!EnumUtils.mask(this.tickPosition_,
+						WSlider.TickPosition.TicksBelow).isEmpty()) {
+					painter.drawLine(x + 0.5, y3, x + 0.5, y4);
+				}
+				break;
+			case Vertical:
+				if (!EnumUtils.mask(this.tickPosition_,
+						WSlider.TickPosition.TicksAbove).isEmpty()) {
+					painter.drawLine(y1, y + 0.5, y2, y + 0.5);
+				}
+				if (!EnumUtils.mask(this.tickPosition_,
+						WSlider.TickPosition.TicksBelow).isEmpty()) {
+					painter.drawLine(y3, y + 0.5, y4, y + 0.5);
+				}
+			}
+		}
+	}
+
+	/**
+	 * Creates the handle (for a non-native widget).
+	 * <p>
+	 * The default implementation creates a container widget. You may want to
+	 * specialize this function if you want to have more control on the handle
+	 * appearance or if you want to associate with the handle a tooltip or other
+	 * information (e.g. a popup balloon).
+	 */
+	protected WInteractWidget getCreateHandle() {
+		return new WContainerWidget();
 	}
 
 	void signalConnectionsChanged() {
@@ -531,6 +621,7 @@ public class WSlider extends WFormWidget {
 	private boolean preferNative_;
 	private boolean changed_;
 	private boolean changedConnected_;
+	private int handleWidth_;
 	private int minimum_;
 	private int maximum_;
 	private int value_;

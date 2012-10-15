@@ -1909,7 +1909,7 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 		return new WAbstractItemView.ColumnInfo(this, this.nextColumnId_++);
 	}
 
-	protected void saveExtraHeaderWidgets() {
+	void saveExtraHeaderWidgets() {
 		for (int i = 0; i < this.getColumnCount(); ++i) {
 			WWidget w = this.columnInfo(i).extraHeaderWidget;
 			if (w != null && w.getParent() != null) {
@@ -2041,6 +2041,16 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	}
 
 	// WText headerTextWidget(int column) ;
+	/**
+	 * Handles a click event.
+	 * <p>
+	 * This processes the event for internal purposes (such as selection or
+	 * editing) and emits the {@link WAbstractItemView#clicked() clicked()}
+	 * signal.
+	 * <p>
+	 * You may want to override this signal to override the built-in selection
+	 * or editing behaviour.
+	 */
 	void handleClick(WModelIndex index, WMouseEvent event) {
 		boolean doEdit = !EnumUtils.mask(this.getEditTriggers(),
 				WAbstractItemView.EditTrigger.SelectedClicked).isEmpty()
@@ -2054,6 +2064,16 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 		this.clicked_.trigger(index, event);
 	}
 
+	/**
+	 * Handles a double click event.
+	 * <p>
+	 * This processes the event for internal purposes (such as editing) and
+	 * emits the {@link WAbstractItemView#doubleClicked() doubleClicked()}
+	 * signal.
+	 * <p>
+	 * You may want to override this signal to override the built-in editing
+	 * behaviour.
+	 */
 	void handleDoubleClick(WModelIndex index, WMouseEvent event) {
 		boolean doEdit = !EnumUtils.mask(this.getEditTriggers(),
 				WAbstractItemView.EditTrigger.DoubleClicked).isEmpty();
@@ -2063,10 +2083,22 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 		this.doubleClicked_.trigger(index, event);
 	}
 
+	/**
+	 * Handles a mouse down event.
+	 * <p>
+	 * This emits the {@link WAbstractItemView#mouseWentDown() mouseWentDown()}
+	 * signal.
+	 */
 	void handleMouseDown(WModelIndex index, WMouseEvent event) {
 		this.mouseWentDown_.trigger(index, event);
 	}
 
+	/**
+	 * Handles a mouse up event.
+	 * <p>
+	 * This emits the {@link WAbstractItemView#mouseWentUp() mouseWentUp()}
+	 * signal.
+	 */
 	void handleMouseUp(WModelIndex index, WMouseEvent event) {
 		this.mouseWentUp_.trigger(index, event);
 	}

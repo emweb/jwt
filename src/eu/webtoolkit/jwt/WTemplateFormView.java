@@ -58,8 +58,8 @@ import org.slf4j.LoggerFactory;
  * <p>
  * The {@link WTemplateFormView#updateView(WFormModel model) updateView()}
  * method updates the view based on a model (e.g. to propagate changed values or
- * validation), while the updateModel() method updates a model with values
- * entered in the View.
+ * validation), while the {@link WTemplateFormView#updateModel(WFormModel model)
+ * updateModel()} method updates a model with values entered in the View.
  * <p>
  * The view is passive: it will not perform any updates by itself of either the
  * View or Model. You will typically bind a method to the Ok button and do:
@@ -212,6 +212,15 @@ public class WTemplateFormView extends WTemplate {
 		}
 	}
 
+	/**
+	 * Updates the Model.
+	 * <p>
+	 * This creates or updates all field values in the model.
+	 * <p>
+	 * 
+	 * @see WTemplateFormView#updateModelField(WFormModel model, String field)
+	 * @see WFormModel#getFields()
+	 */
 	public void updateModel(WFormModel model) {
 		List<String> fields = model.getFields();
 		for (int i = 0; i < fields.size(); ++i) {

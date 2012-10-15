@@ -38,6 +38,8 @@ import eu.webtoolkit.jwt.WtServlet;
  * @see WebResponse
  */
 public class WebRequest extends HttpServletRequestWrapper {
+	private HttpServletRequest httpRequest;
+	
 	/**
 	 * The type of response that this request will need.
 	 * 
@@ -79,6 +81,7 @@ public class WebRequest extends HttpServletRequestWrapper {
 	 */
 	public WebRequest(HttpServletRequest request) {
 		super(request);
+		this.httpRequest  = request;
 
 		computePaths();
 		
@@ -89,28 +92,33 @@ public class WebRequest extends HttpServletRequestWrapper {
 		}
 	}
 
-	private void computePaths() {
-		/*
-		 * We compute this here since sometimes when reposted through async (servlet 3), the context and everything
-		 * gets messed up (You, JETTY 8!)
-		 */
-		scriptName = super.getServletPath();
-
-		if (getContextPath() != null)
-			scriptName = getContextPath() + scriptName;
+	public static String computeScriptName(HttpServletRequest request) {
+		String scriptName = request.getServletPath();
+	
+		if (request.getContextPath() != null)
+			scriptName = request.getContextPath() + scriptName;
 		if (!scriptName.startsWith("/"))
 			scriptName = "/" + scriptName;
-
+	
 		// Jetty will auto-redirect in this case to .../
 		// I am not sure if this is according to the servlet spec ?
-		if (getServletPath().length() == 0 && !scriptName.endsWith("/"))
+		if (request.getServletPath().length() == 0 && !scriptName.endsWith("/"))
 			scriptName += "/"; 
-
-		pathInfo = super.getPathInfo();
+		
+		return scriptName;
+	}
+	
+	public static String computePathInfo(HttpServletRequest request) {
+		String scriptName = computeScriptName(request);
+		return computePathInfo(request, scriptName);
+	}
+	
+	public static String computePathInfo(HttpServletRequest request, String scriptName) {
+		String pathInfo = request.getPathInfo();
 		
 		// Jetty will report "/" as an internal path. Which totally makes no sense but is according
 		// to the spec
-		if (getServletPath().length() == 0)
+		if (request.getServletPath().length() == 0)
 			if (pathInfo != null && pathInfo.equals("/"))
 				pathInfo = "";
 
@@ -118,7 +126,7 @@ public class WebRequest extends HttpServletRequestWrapper {
 			// Work around (jetty) bug where path info is not interpreted correctly for a URL
 			// like /bla/hello;jsessionid=q0f2lqgeivq9uipxwk12gj6s/wt-resources/webkit-transitions.css
 
-			String uri = getRequestURI();
+			String uri = request.getRequestURI();
 			if (uri.startsWith(scriptName + ";")) {
 				int pathInfoStart = uri.indexOf('/', scriptName.length() + 1);
 				if (pathInfoStart != -1)
@@ -128,6 +136,17 @@ public class WebRequest extends HttpServletRequestWrapper {
 
 		if (pathInfo == null)
 			pathInfo = "";
+		
+		return pathInfo;
+	}
+	
+	private void computePaths() {
+		/*
+		 * We compute this here since sometimes when reposted through async (servlet 3), the context and everything
+		 * gets messed up (You, JETTY 8!)
+		 */
+		this.scriptName = computeScriptName(httpRequest);
+		this.pathInfo = computePathInfo(httpRequest, this.scriptName);
 	}
 	
 	/**
@@ -137,6 +156,7 @@ public class WebRequest extends HttpServletRequestWrapper {
 	 */
 	public WebRequest(HttpServletRequest request, ProgressListener progressListener) {
 		super(request);
+		this.httpRequest  = request;
 		
 		computePaths();
 

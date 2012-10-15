@@ -247,7 +247,11 @@ public class WContainerWidget extends WInteractWidget {
 		if (this.layout_ != null && layout != this.layout_) {
 			;
 		}
-		if (!alignment.equals(AlignmentFlag.AlignJustify)) {
+		AlignmentFlag hAlign = EnumUtils.enumFromSet(EnumUtils.mask(alignment,
+				AlignmentFlag.AlignHorizontalMask));
+		AlignmentFlag vAlign = EnumUtils.enumFromSet(EnumUtils.mask(alignment,
+				AlignmentFlag.AlignVerticalMask));
+		if (hAlign != AlignmentFlag.AlignJustify || vAlign != null) {
 			logger
 					.warn(new StringWriter()
 							.append(
@@ -261,14 +265,6 @@ public class WContainerWidget extends WInteractWidget {
 			if (layout != null) {
 				super.setLayout(layout);
 				this.getLayoutImpl().setContainer(this);
-				if (WApplication.getInstance().getEnvironment().agentIsIElt(9)) {
-					AlignmentFlag vAlign = EnumUtils.enumFromSet(EnumUtils
-							.mask(alignment, AlignmentFlag.AlignVerticalMask));
-					if (vAlign == null) {
-						this
-								.setOverflow(WContainerWidget.Overflow.OverflowHidden);
-					}
-				}
 			}
 		}
 	}
@@ -1131,18 +1127,6 @@ public class WContainerWidget extends WInteractWidget {
 				: null);
 	}
 
-	protected void layoutChanged(boolean rerender, boolean deleted) {
-		if (rerender) {
-			this.flags_.set(BIT_LAYOUT_NEEDS_RERENDER);
-		} else {
-			this.flags_.set(BIT_LAYOUT_NEEDS_UPDATE);
-		}
-		this.repaint(EnumSet.of(RepaintFlag.RepaintInnerHtml));
-		if (deleted) {
-			this.layout_ = null;
-		}
-	}
-
 	private void propagateLayoutItemsOk(WLayoutItem item) {
 		if (!(item != null)) {
 			return;
@@ -1158,6 +1142,18 @@ public class WContainerWidget extends WInteractWidget {
 				WWidget w = item.getWidget();
 				w.getWebWidget().propagateRenderOk(true);
 			}
+		}
+	}
+
+	void layoutChanged(boolean rerender, boolean deleted) {
+		if (rerender) {
+			this.flags_.set(BIT_LAYOUT_NEEDS_RERENDER);
+		} else {
+			this.flags_.set(BIT_LAYOUT_NEEDS_UPDATE);
+		}
+		this.repaint(EnumSet.of(RepaintFlag.RepaintInnerHtml));
+		if (deleted) {
+			this.layout_ = null;
 		}
 	}
 

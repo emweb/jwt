@@ -76,6 +76,8 @@ class PaintBrush extends WPaintedWidget {
 		WPen pen = new WPen();
 		pen.setWidth(new WLength(3));
 		pen.setColor(this.color_);
+		pen.setCapStyle(PenCapStyle.FlatCap);
+		pen.setJoinStyle(PenJoinStyle.MiterJoin);
 		painter.setPen(pen);
 		painter.drawPath(this.path_);
 		this.path_.assign(new WPainterPath(this.path_.getCurrentPosition()));

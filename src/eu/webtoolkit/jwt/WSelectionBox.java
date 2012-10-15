@@ -85,16 +85,16 @@ public class WSelectionBox extends WComboBox {
 	}
 
 	/**
-	 * Sets the number of items that are visible.
-	 * <p>
-	 * If more items are available, a scroll-bar is provided.
+	 * Returns the number of items that are visible.
 	 */
 	public int getVerticalSize() {
 		return this.verticalSize_;
 	}
 
 	/**
-	 * Returns the number of items that are visible.
+	 * Sets the number of items that are visible.
+	 * <p>
+	 * If more items are available, a scroll-bar is provided.
 	 */
 	public void setVerticalSize(int items) {
 		this.verticalSize_ = items;

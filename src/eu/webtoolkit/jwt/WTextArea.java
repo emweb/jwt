@@ -247,12 +247,7 @@ public class WTextArea extends WFormWidget {
 	void updateDom(DomElement element, boolean all) {
 		if (element.getType() == DomElementType.DomElement_TEXTAREA) {
 			if (this.contentChanged_ || all) {
-				if (all) {
-					element.setProperty(Property.PropertyInnerHTML,
-							escapeText(this.content_));
-				} else {
-					element.setProperty(Property.PropertyValue, this.content_);
-				}
+				element.setProperty(Property.PropertyValue, this.content_);
 				this.contentChanged_ = false;
 			}
 		}

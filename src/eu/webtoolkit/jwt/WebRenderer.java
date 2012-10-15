@@ -253,12 +253,16 @@ class WebRenderer implements SlotLearnerInterface {
 			throws IOException {
 		if (this.session_.getApp() != null
 				&& this.session_.getApp().internalPathIsChanged_) {
-			out.append("if (window.").append(
-					this.session_.getApp().getJavaScriptClass()).append(") ")
+			out
+					.append("if (window.")
 					.append(this.session_.getApp().getJavaScriptClass())
-					.append("._p_.setHash('").append(
-							this.session_.getApp().getInternalPath()).append(
-							"');\n");
+					.append(") ")
+					.append(this.session_.getApp().getJavaScriptClass())
+					.append("._p_.setHash(")
+					.append(
+							WWebWidget
+									.jsStringLiteral(this.session_.getApp().newInternalPath_))
+					.append(");\n");
 		}
 		out.append("if (window.location.replace) window.location.replace('")
 				.append(redirect).append("');else window.location.href='")
@@ -365,8 +369,8 @@ class WebRenderer implements SlotLearnerInterface {
 					Utils.urlEncode(value)).append("; Version=1;");
 			if (!(cookie.expires == null)) {
 				String d = cookie.expires.toString(new WString(
-						"ddd, dd-MMM-yyyy hh:mm:ss 'GMT'").toString());
-				header.append(" Expires=").append(d).append(';');
+						"ddd, dd-MMM-yyyy hh:mm:ss 'GMT'").toString(), false);
+				header.append("Expires=").append(d).append(';');
 			}
 			if (cookie.domain.length() != 0) {
 				header.append(" Domain=").append(cookie.domain).append(';');
@@ -451,13 +455,7 @@ class WebRenderer implements SlotLearnerInterface {
 		final boolean innerHtml = !xhtml
 				|| this.session_.getEnv().agentIsGecko();
 		if (serveSkeletons) {
-			boolean haveJQuery = false;
-			for (int i = 0; i < app.scriptLibraries_.size(); ++i) {
-				if (app.scriptLibraries_.get(i).uri.indexOf("jquery") != -1) {
-					haveJQuery = true;
-					break;
-				}
-			}
+			boolean haveJQuery = app.isCustomJQuery();
 			if (!haveJQuery) {
 				response.out().append("if (typeof window.$ === 'undefined') {");
 				response.out().append(WtServlet.JQuery_js);
@@ -483,7 +481,7 @@ class WebRenderer implements SlotLearnerInterface {
 			script.setCondition("UGLY_INTERNAL_PATHS", this.session_
 					.isUseUglyInternalPaths());
 			script.setCondition("DYNAMIC_JS", false);
-			script.setVar("WT_CLASS", "Wt3_2_1");
+			script.setVar("WT_CLASS", "Wt3_2_3");
 			script.setVar("APP_CLASS", app.getJavaScriptClass());
 			script.setCondition("STRICTLY_SERIALIZED_EVENTS", conf
 					.serializedEvents());
@@ -546,7 +544,7 @@ class WebRenderer implements SlotLearnerInterface {
 				if (app.enableAjax_) {
 					this.collectedJS1_
 							.append(
-									"var form = Wt3_2_1.getElement('Wt-form'); if (form) {")
+									"var form = Wt3_2_3.getElement('Wt-form'); if (form) {")
 							.append(this.beforeLoadJS_.toString());
 					this.beforeLoadJS_ = new StringWriter();
 					this.collectedJS1_
@@ -558,7 +556,7 @@ class WebRenderer implements SlotLearnerInterface {
 							this.collectedJS1_, app);
 					app.streamBeforeLoadJavaScript(this.collectedJS1_, false);
 					this.collectedJS2_.append(
-							"Wt3_2_1.resolveRelativeAnchors();").append(
+							"Wt3_2_3.resolveRelativeAnchors();").append(
 							"domRoot.style.visibility = 'visible';").append(
 							app.getJavaScriptClass()).append(
 							"._p_.doAutoJavaScript();");
@@ -583,8 +581,9 @@ class WebRenderer implements SlotLearnerInterface {
 				response.out().append(this.collectedJS1_.toString());
 				this.addResponseAckPuzzle(response.out());
 				response.out().append(app.getJavaScriptClass()).append(
-						"._p_.setHash('").append(app.newInternalPath_).append(
-						"');\n");
+						"._p_.setHash(").append(
+						WWebWidget.jsStringLiteral(app.newInternalPath_))
+						.append(");\n");
 				if (!app.getEnvironment().hashInternalPaths()) {
 					this.session_.setPagePathInfo(app.newInternalPath_);
 				}
@@ -802,18 +801,18 @@ class WebRenderer implements SlotLearnerInterface {
 		}
 		if (widgetset || !this.session_.isBootStyleResponse()) {
 			if (app.getCssTheme().length() != 0) {
-				response.out().append("Wt3_2_1").append(".addStyleSheet('")
+				response.out().append("Wt3_2_3").append(".addStyleSheet('")
 						.append(WApplication.getResourcesUrl()).append(
 								"themes/").append(app.getCssTheme()).append(
 								"/wt.css', 'all');");
 				if (app.getEnvironment().agentIsIE()) {
-					response.out().append("Wt3_2_1").append(".addStyleSheet('")
+					response.out().append("Wt3_2_3").append(".addStyleSheet('")
 							.append(WApplication.getResourcesUrl()).append(
 									"themes/").append(app.getCssTheme())
 							.append("/wt_ie.css', 'all');");
 				}
 				if (app.getEnvironment().getAgent() == WEnvironment.UserAgent.IE6) {
-					response.out().append("Wt3_2_1").append(".addStyleSheet('")
+					response.out().append("Wt3_2_3").append(".addStyleSheet('")
 							.append(WApplication.getResourcesUrl()).append(
 									"themes/").append(app.getCssTheme())
 							.append("/wt_ie6.css', 'all');");
@@ -862,7 +861,7 @@ class WebRenderer implements SlotLearnerInterface {
 		if (widgetset) {
 			String historyE = app.getEnvironment().getParameter("Wt-history");
 			if (historyE != null) {
-				response.out().append("Wt3_2_1")
+				response.out().append("Wt3_2_3")
 						.append(".history.initialize('").append(
 								historyE.charAt(0)).append("-field', '")
 						.append(historyE.charAt(0)).append("-iframe', '');\n");
@@ -1032,7 +1031,7 @@ class WebRenderer implements SlotLearnerInterface {
 			throws IOException {
 		int first = app.styleSheets_.size() - app.styleSheetsAdded_;
 		for (int i = first; i < app.styleSheets_.size(); ++i) {
-			out.append("Wt3_2_1").append(".addStyleSheet('").append(
+			out.append("Wt3_2_3").append(".addStyleSheet('").append(
 					this.session_.fixRelativeUrl(app.styleSheets_.get(i).uri))
 					.append("', '").append(app.styleSheets_.get(i).media)
 					.append("');\n");
@@ -1210,8 +1209,11 @@ class WebRenderer implements SlotLearnerInterface {
 			int librariesLoaded = this.loadScriptLibraries(js, app);
 			app.streamAfterLoadJavaScript(js);
 			if (app.internalPathIsChanged_) {
-				js.append(app.getJavaScriptClass()).append("._p_.setHash('")
-						.append(app.newInternalPath_).append("');\n");
+				js.append(app.getJavaScriptClass()).append("._p_.setHash(")
+						.append(
+								WWebWidget
+										.jsStringLiteral(app.newInternalPath_))
+						.append(");\n");
 				if (!this.isPreLearning()
 						&& !app.getEnvironment().hashInternalPaths()) {
 					this.session_.setPagePathInfo(app.newInternalPath_);

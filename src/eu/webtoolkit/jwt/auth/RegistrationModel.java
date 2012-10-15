@@ -127,6 +127,13 @@ public class RegistrationModel extends FormBaseModel {
 		this.emailPolicy_ = RegistrationModel.EmailPolicy.EmailDisabled;
 		this.idpIdentity_ = new Identity();
 		this.existingUser_ = new User();
+		if (baseAuth.getIdentityPolicy() != IdentityPolicy.EmailAddressIdentity) {
+			if (baseAuth.isEmailVerificationEnabled()) {
+				this.emailPolicy_ = RegistrationModel.EmailPolicy.EmailOptional;
+			} else {
+				this.emailPolicy_ = RegistrationModel.EmailPolicy.EmailDisabled;
+			}
+		}
 		this.reset();
 	}
 
@@ -154,11 +161,6 @@ public class RegistrationModel extends FormBaseModel {
 		if (this.getBaseAuth().getIdentityPolicy() == IdentityPolicy.EmailAddressIdentity) {
 			this.addField(LoginNameField, WString.tr("Wt.Auth.email-info"));
 		} else {
-			if (this.getBaseAuth().isEmailVerificationEnabled()) {
-				this.emailPolicy_ = RegistrationModel.EmailPolicy.EmailOptional;
-			} else {
-				this.emailPolicy_ = RegistrationModel.EmailPolicy.EmailDisabled;
-			}
 			this.addField(LoginNameField, WString.tr("Wt.Auth.user-name-info"));
 		}
 		this.addField(ChoosePasswordField, WString
@@ -478,7 +480,7 @@ public class RegistrationModel extends FormBaseModel {
 						}
 					}
 				} else {
-					return false;
+					return true;
 				}
 			}
 		}
@@ -618,11 +620,11 @@ public class RegistrationModel extends FormBaseModel {
 								+ info2.getJsRef()
 								+ ",o1="
 								+ password.getJsRef()
-								+ ";if (!$(o1).hasClass('Wt-invalid')) {if (o.value == o1.value) {$(o).removeClass('Wt-invalid');Wt3_2_1.setHtml(i,"
+								+ ";if (!$(o1).hasClass('Wt-invalid')) {if (o.value == o1.value) {$(o).removeClass('Wt-invalid');Wt3_2_3.setHtml(i,"
 								+ WString
 										.toWString(WString.tr("Wt.Auth.valid"))
 										.getJsStringLiteral()
-								+ ");} else {$(o).removeClass('Wt-valid');Wt3_2_1.setHtml(i,"
+								+ ");} else {$(o).removeClass('Wt-valid');Wt3_2_3.setHtml(i,"
 								+ WString
 										.toWString(
 												WString

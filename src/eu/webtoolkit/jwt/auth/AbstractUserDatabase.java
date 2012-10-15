@@ -440,13 +440,6 @@ public abstract class AbstractUserDatabase {
 		return new WDate(1970, 1, 1);
 	}
 
-	public User addUser(User user) {
-		logger.error(new StringWriter().append(
-				new Require("registerNew()", REGISTRATION).toString())
-				.toString());
-		return new User();
-	}
-
 	protected AbstractUserDatabase() {
 	}
 

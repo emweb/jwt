@@ -19,7 +19,13 @@ import eu.webtoolkit.jwt.servlet.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-class DomElement {
+/**
+ * Class to represent a DOM element.
+ * <p>
+ * 
+ * This class is for internal use only.
+ */
+public class DomElement {
 	private static Logger logger = LoggerFactory.getLogger(DomElement.class);
 
 	enum Mode {
@@ -50,7 +56,7 @@ class DomElement {
 		this.javaScriptEvenWhenDeleted_ = "";
 		this.var_ = "";
 		this.attributes_ = new HashMap<String, String>();
-		this.properties_ = new HashMap<Property, String>();
+		this.properties_ = new TreeMap<Property, String>();
 		this.eventHandlers_ = new HashMap<String, DomElement.EventHandler>();
 		this.childrenToAdd_ = new ArrayList<DomElement.ChildInsertion>();
 		this.childrenToSave_ = new ArrayList<String>();
@@ -196,7 +202,7 @@ class DomElement {
 		this.properties_.remove(property);
 	}
 
-	public void setProperties(Map<Property, String> properties) {
+	public void setProperties(SortedMap<Property, String> properties) {
 		for (Iterator<Map.Entry<Property, String>> i_it = properties.entrySet()
 				.iterator(); i_it.hasNext();) {
 			Map.Entry<Property, String> i = i_it.next();
@@ -204,7 +210,7 @@ class DomElement {
 		}
 	}
 
-	public Map<Property, String> getProperties() {
+	public SortedMap<Property, String> getProperties() {
 		return this.properties_;
 	}
 
@@ -233,7 +239,7 @@ class DomElement {
 			js.append("o=this;");
 			if (anchorClick) {
 				js
-						.append("if(e.ctrlKey||e.metaKey||(Wt3_2_1.button(e) > 1))return true;else{");
+						.append("if(e.ctrlKey||e.metaKey||(Wt3_2_3.button(e) > 1))return true;else{");
 			}
 			js.append(jsCode);
 			if (isExposed) {
@@ -321,18 +327,18 @@ class DomElement {
 	public void callMethod(String method) {
 		++this.numManipulations_;
 		if (this.var_.length() == 0) {
-			this.javaScript_.append("Wt3_2_1").append(".$('").append(this.id_)
+			this.javaScript_.append("Wt3_2_3").append(".$('").append(this.id_)
 					.append("').");
 		} else {
 			this.javaScript_.append(this.var_).append('.');
 		}
-		this.javaScript_.append(method).append(';');
+		this.javaScript_.append(method).append(";\n");
 	}
 
 	public void callJavaScript(String jsCode, boolean evenWhenDeleted) {
 		++this.numManipulations_;
 		if (!evenWhenDeleted) {
-			this.javaScript_.append(jsCode);
+			this.javaScript_.append(jsCode).append('\n');
 		} else {
 			this.javaScriptEvenWhenDeleted_ += jsCode;
 		}
@@ -357,7 +363,7 @@ class DomElement {
 	}
 
 	public void removeFromParent() {
-		this.callJavaScript("Wt3_2_1.remove('" + this.getId() + "');", true);
+		this.callJavaScript("Wt3_2_3.remove('" + this.getId() + "');", true);
 	}
 
 	public void replaceWith(DomElement newElement) {
@@ -462,32 +468,34 @@ class DomElement {
 			return this.var_;
 		case Update: {
 			WApplication app = WApplication.getInstance();
+			boolean childrenUpdated = false;
 			if (this.mode_ == DomElement.Mode.ModeUpdate
 					&& this.numManipulations_ == 1) {
 				for (int i = 0; i < this.updatedChildren_.size(); ++i) {
 					DomElement child = this.updatedChildren_.get(i);
 					child.asJavaScript(out, DomElement.Priority.Update);
 				}
+				childrenUpdated = true;
 				if (this.properties_.get(Property.PropertyStyleDisplay) != null) {
 					String style = this.properties_
 							.get(Property.PropertyStyleDisplay);
 					if (style.equals("none")) {
-						out.append("Wt3_2_1.hide('").append(this.id_).append(
+						out.append("Wt3_2_3.hide('").append(this.id_).append(
 								"');\n");
 						return this.var_;
 					} else {
 						if (style.length() == 0) {
-							out.append("Wt3_2_1.show('").append(this.id_)
+							out.append("Wt3_2_3.show('").append(this.id_)
 									.append("');\n");
 							return this.var_;
 						} else {
 							if (style.equals("inline")) {
-								out.append("Wt3_2_1.inline('" + this.id_
+								out.append("Wt3_2_3.inline('" + this.id_
 										+ "');\n");
 								return this.var_;
 							} else {
 								if (style.equals("block")) {
-									out.append("Wt3_2_1.block('" + this.id_
+									out.append("Wt3_2_3.block('" + this.id_
 											+ "');\n");
 									return this.var_;
 								}
@@ -497,7 +505,7 @@ class DomElement {
 				}
 			}
 			if (this.unwrapped_) {
-				out.append("Wt3_2_1.unwrap('").append(this.id_).append("');\n");
+				out.append("Wt3_2_3.unwrap('").append(this.id_).append("');\n");
 			}
 			this.processEvents(app);
 			this.processProperties(app);
@@ -510,7 +518,7 @@ class DomElement {
 								");\n");
 				this.replaced_.createElement(out, app, insertJs.toString());
 				if (this.unstubbed_) {
-					out.append("Wt3_2_1.unstub(").append(this.var_).append(',')
+					out.append("Wt3_2_3.unstub(").append(this.var_).append(',')
 							.append(varr).append(',').append(
 									this.hideWithDisplay_ ? 1 : 0).append(
 									");\n");
@@ -557,9 +565,11 @@ class DomElement {
 						"').replaceWith(c").append(this.var_).append((int) i)
 						.append(");");
 			}
-			for (int i = 0; i < this.updatedChildren_.size(); ++i) {
-				DomElement child = this.updatedChildren_.get(i);
-				child.asJavaScript(out, DomElement.Priority.Update);
+			if (!childrenUpdated) {
+				for (int i = 0; i < this.updatedChildren_.size(); ++i) {
+					DomElement child = this.updatedChildren_.get(i);
+					child.asJavaScript(out, DomElement.Priority.Update);
+				}
 			}
 			return this.var_;
 		}
@@ -661,7 +671,7 @@ class DomElement {
 				String l = this.properties_.get(Property.PropertyClass);
 				if (l != null) {
 					out.append(l);
-					Map<Property, String> map = this.properties_;
+					SortedMap<Property, String> map = this.properties_;
 					map.remove(Property.PropertyClass);
 				}
 				out.append('"');
@@ -790,8 +800,12 @@ class DomElement {
 				}
 				break;
 			case PropertyValue:
-				out.append(" value=");
-				fastHtmlAttributeValue(out, attributeValues, i.getValue());
+				if (this.type_ != DomElementType.DomElement_TEXTAREA) {
+					out.append(" value=");
+					fastHtmlAttributeValue(out, attributeValues, i.getValue());
+				} else {
+					innerHTML += i.getValue();
+				}
 				break;
 			case PropertySrc:
 				out.append(" src=");
@@ -892,7 +906,7 @@ class DomElement {
 	public void declare(EscapeOStream out) {
 		if (this.var_.length() == 0) {
 			out.append("var ").append(this.getCreateVar()).append(
-					"=Wt3_2_1.$('").append(this.id_).append("');\n");
+					"=Wt3_2_3.$('").append(this.id_).append("');\n");
 		}
 	}
 
@@ -1103,7 +1117,7 @@ class DomElement {
 		DomElement.EventHandler keypress = this.eventHandlers_.get(S_keypress);
 		if (keypress != null && keypress.jsCode.length() != 0) {
 			MapUtils.access(self.eventHandlers_, S_keypress,
-					DomElement.EventHandler.class).jsCode = "if (Wt3_2_1.isKeyPress(event)){"
+					DomElement.EventHandler.class).jsCode = "if (Wt3_2_3.isKeyPress(event)){"
 					+ MapUtils.access(self.eventHandlers_, S_keypress,
 							DomElement.EventHandler.class).jsCode + '}';
 		}
@@ -1119,7 +1133,7 @@ class DomElement {
 			if (minw != null || maxw != null) {
 				if (w == null) {
 					StringBuilder expr = new StringBuilder();
-					expr.append("Wt3_2_1.IEwidth(this,");
+					expr.append("Wt3_2_3.IEwidth(this,");
 					if (minw != null) {
 						expr.append('\'').append(minw).append('\'');
 						self.properties_.remove(Property.PropertyStyleMinWidth);
@@ -1156,7 +1170,7 @@ class DomElement {
 			switch (i.getKey()) {
 			case PropertyInnerHTML:
 			case PropertyAddedInnerHTML:
-				out.append("Wt3_2_1.setHtml(").append(this.var_).append(',');
+				out.append("Wt3_2_3.setHtml(").append(this.var_).append(',');
 				if (!pushed) {
 					escaped
 							.pushEscape(EscapeOStream.RuleSet.JsStringLiteralSQuote);
@@ -1320,7 +1334,7 @@ class DomElement {
 		String extra1 = "";
 		String extra2 = "";
 		if (globalUnfocused) {
-			extra1 = "var g = event||window.event; var t = g.target||g.srcElement;if ((!t||Wt3_2_1.hasTag(t,'DIV') ||Wt3_2_1.hasTag(t,'BODY') ||Wt3_2_1.hasTag(t,'HTML'))) { ";
+			extra1 = "var g = event||window.event; var t = g.target||g.srcElement;if ((!t||Wt3_2_3.hasTag(t,'DIV') ||Wt3_2_3.hasTag(t,'BODY') ||Wt3_2_3.hasTag(t,'HTML'))) { ";
 			extra2 = "}";
 		}
 		int fid = nextId_++;
@@ -1350,7 +1364,8 @@ class DomElement {
 		out.append("var ").append(this.var_).append("=");
 		if (app.getEnvironment().agentIsIE()
 				&& app.getEnvironment().getAgent().getValue() <= WEnvironment.UserAgent.IE8
-						.getValue()) {
+						.getValue()
+				&& this.type_ != DomElementType.DomElement_TEXTAREA) {
 			out.append("document.createElement('");
 			out.pushEscape(EscapeOStream.RuleSet.JsStringLiteralSQuote);
 			List<DomElement.TimeoutEvent> timeouts = new ArrayList<DomElement.TimeoutEvent>();
@@ -1387,7 +1402,7 @@ class DomElement {
 		} else {
 			StringBuilder insertJS = new StringBuilder();
 			if (pos != -1) {
-				insertJS.append("Wt3_2_1.insertAt(").append(parentVar).append(
+				insertJS.append("Wt3_2_3.insertAt(").append(parentVar).append(
 						",").append(this.var_).append(",").append(pos).append(
 						");");
 			} else {
@@ -1409,7 +1424,7 @@ class DomElement {
 					|| !this.childrenToAdd_.isEmpty()
 					|| !this.childrenHtml_.isEmpty()) {
 				this.declare(out);
-				out.append("Wt3_2_1.setHtml(").append(this.var_).append(",'");
+				out.append("Wt3_2_3.setHtml(").append(this.var_).append(",'");
 				out.pushEscape(EscapeOStream.RuleSet.JsStringLiteralSQuote);
 				out.append(this.childrenHtml_.toString());
 				List<DomElement.TimeoutEvent> timeouts = new ArrayList<DomElement.TimeoutEvent>();
@@ -1476,7 +1491,7 @@ class DomElement {
 	private String var_;
 	private boolean declared_;
 	private Map<String, String> attributes_;
-	private Map<Property, String> properties_;
+	private SortedMap<Property, String> properties_;
 	private Map<String, DomElement.EventHandler> eventHandlers_;
 
 	static class ChildInsertion {
@@ -1525,8 +1540,9 @@ class DomElement {
 			"font-style", "font-variant", "font-weight", "font-size",
 			"background-color", "background-image", "background-repeat",
 			"background-attachment", "background-position", "text-decoration",
-			"white-space", "table-layout", "border-spacing", "zoom",
-			"visibility", "display", "box-sizing" };
+			"white-space", "table-layout", "border-spacing",
+			"page-break-before", "page-break-after", "zoom", "visibility",
+			"display", "box-sizing" };
 	static String[] cssCamelNames_ = { "cssText", "width", "position",
 			"zIndex", "cssFloat", "clear", "width", "height", "lineHeight",
 			"minWidth", "minHeight", "maxWidth", "maxHeight", "left", "right",
@@ -1538,8 +1554,8 @@ class DomElement {
 			"fontVariant", "fontWeight", "fontSize", "backgroundColor",
 			"backgroundImage", "backgroundRepeat", "backgroundAttachment",
 			"backgroundPosition", "textDecoration", "whiteSpace",
-			"tableLayout", "borderSpacing", "zoom", "visibility", "display",
-			"boxSizing" };
+			"tableLayout", "borderSpacing", "pageBreakBefore",
+			"pageBreakAfter", "zoom", "visibility", "display", "boxSizing" };
 	static final String unsafeChars_ = " $&+,:;=?@'\"<>#%{}|\\^~[]`";
 	private static int nextId_ = 0;
 }

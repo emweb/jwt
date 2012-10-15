@@ -106,6 +106,21 @@ class WebSession {
 		this(controller, sessionId, type, favicon, request, (WEnvironment) null);
 	}
 
+	public void destruct() {
+		if (this.asyncResponse_ != null) {
+			this.asyncResponse_.flush();
+			this.asyncResponse_ = null;
+		}
+		if (this.deferredResponse_ != null) {
+			this.deferredResponse_.flush();
+			this.deferredResponse_ = null;
+		}
+		this.mutex_.lock();
+		this.updatesPendingEvent_.signal();
+		this.mutex_.unlock();
+		this.flushBootStyleResponse();
+	}
+
 	public static WebSession getInstance() {
 		WebSession.Handler handler = WebSession.Handler.getInstance();
 		return handler != null ? handler.getSession() : null;
@@ -129,7 +144,7 @@ class WebSession {
 		if (xhtml) {
 			return "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">";
 		} else {
-			return "<!doctype html>";
+			return "<!DOCTYPE html>";
 		}
 	}
 
@@ -267,13 +282,15 @@ class WebSession {
 						this.env_.enableAjax(request);
 						this.app_.enableAjax();
 						if (this.env_.getInternalPath().length() > 1) {
-							this.app_.changedInternalPath(this.env_
-									.getInternalPath());
+							this.changeInternalPath(
+									this.env_.getInternalPath(), handler
+											.getResponse());
 						}
 					} else {
 						String hashE = request.getParameter("_");
 						if (hashE != null) {
-							this.app_.changedInternalPath(hashE);
+							this.changeInternalPath(hashE, handler
+									.getResponse());
 						}
 					}
 				}
@@ -459,13 +476,16 @@ class WebSession {
 								.getParameterMap();
 						if (!this.app_.internalPathIsChanged_) {
 							if (hashE != null) {
-								this.app_.changedInternalPath(hashE);
+								this.changeInternalPath(hashE, handler
+										.getResponse());
 							} else {
 								if (request.getPathInfo().length() != 0) {
-									this.app_.changedInternalPath(request
-											.getPathInfo());
+									this.changeInternalPath(request
+											.getPathInfo(), handler
+											.getResponse());
 								} else {
-									this.app_.changedInternalPath("");
+									this.changeInternalPath("", handler
+											.getResponse());
 								}
 							}
 						}
@@ -920,7 +940,7 @@ class WebSession {
 		}
 		WebSession.Handler handler = event.impl_.handler;
 		WebRequest request = handler.getRequest();
-		if (event.impl_.renderOnly) {
+		if (event.impl_.renderOnly || !(handler.getRequest() != null)) {
 			return EventType.OtherEvent;
 		}
 		String requestE = request.getParameter("request");
@@ -1266,7 +1286,7 @@ class WebSession {
 									this.env_.setInternalPath(internalPath);
 								} catch (RuntimeException e) {
 								}
-								if (!this.start()) {
+								if (!this.start(handler.getResponse())) {
 									throw new WException(
 											"Could not start application.");
 								}
@@ -1334,7 +1354,7 @@ class WebSession {
 										WebRequest.ResponseType.Script);
 								this.init(request);
 								this.env_.enableAjax(request);
-								if (!this.start()) {
+								if (!this.start(handler.getResponse())) {
 									throw new WException(
 											"Could not start application.");
 								}
@@ -1425,7 +1445,7 @@ class WebSession {
 							if (handler.getResponse().getResponseType() == WebRequest.ResponseType.Script) {
 								if (!(request.getParameter("skeleton") != null)) {
 									this.env_.enableAjax(request);
-									if (!this.start()) {
+									if (!this.start(handler.getResponse())) {
 										throw new WException(
 												"Could not start application.");
 									}
@@ -1447,7 +1467,7 @@ class WebSession {
 								} else {
 									String jsE = request.getParameter("js");
 									if (jsE != null && jsE.equals("no")) {
-										if (!this.start()) {
+										if (!this.start(handler.getResponse())) {
 											throw new WException(
 													"Could not start application.");
 										}
@@ -1813,7 +1833,8 @@ class WebSession {
 	private void notifySignal(WEvent e) throws IOException {
 		WebSession.Handler handler = e.impl_.handler;
 		if (handler.nextSignal == -1) {
-			handler.signalOrder = this.getSignalProcessingOrder(e);
+			Utils.copyList(this.getSignalProcessingOrder(e),
+					handler.signalOrder);
 			handler.nextSignal = 0;
 		}
 		for (int i = handler.nextSignal; i < handler.signalOrder.size(); ++i) {
@@ -1852,11 +1873,12 @@ class WebSession {
 					if (signalE.equals("hash")) {
 						String hashE = request.getParameter(se + "_");
 						if (hashE != null) {
-							this.app_.changedInternalPath(hashE);
-							this.app_.doJavaScript("Wt3_2_1.scrollIntoView("
+							this.changeInternalPath(hashE, handler
+									.getResponse());
+							this.app_.doJavaScript("Wt3_2_3.scrollIntoView("
 									+ WWebWidget.jsStringLiteral(hashE) + ");");
 						} else {
-							this.app_.changedInternalPath("");
+							this.changeInternalPath("", handler.getResponse());
 						}
 					} else {
 						for (int k = 0; k < 3; ++k) {
@@ -2008,9 +2030,14 @@ class WebSession {
 		this.pagePathInfo_ = request.getPathInfo();
 	}
 
-	private boolean start() {
+	private boolean start(WebResponse response) {
 		try {
 			this.app_ = this.controller_.doCreateApplication(this);
+			if (!this.app_.internalPathValid_) {
+				if (response.getResponseType() == WebRequest.ResponseType.Page) {
+					response.setStatus(404);
+				}
+			}
 		} catch (RuntimeException e) {
 			this.app_ = null;
 			this.kill();
@@ -2028,6 +2055,14 @@ class WebSession {
 			this.bootStyleResponse_.flush();
 			this.bootStyleResponse_ = null;
 			this.noBootStyleResponse_ = true;
+		}
+	}
+
+	private void changeInternalPath(String path, WebResponse response) {
+		if (!this.app_.changedInternalPath(path)) {
+			if (response.getResponseType() == WebRequest.ResponseType.Page) {
+				response.setStatus(404);
+			}
 		}
 	}
 
