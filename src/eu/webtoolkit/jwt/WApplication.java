@@ -1713,7 +1713,6 @@ public class WApplication extends WObject {
 					&& handler.getSession() == app.session_) {
 				return;
 			}
-
 			new WebSession.Handler(app.session_, true);
 			this.createdHandler_ = true;
 		}

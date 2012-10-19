@@ -1078,7 +1078,7 @@ class WebSession {
 		}
 
 		public void release() {
-			if (this.session_.getMutex().isHeldByCurrentThread()) {
+			if (this.isHaveLock()) {
 				if (this.session_.triggerUpdate_) {
 					this.session_.pushUpdates();
 				}

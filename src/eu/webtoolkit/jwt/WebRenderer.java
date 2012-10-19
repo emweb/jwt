@@ -533,9 +533,8 @@ class WebRenderer implements SlotLearnerInterface {
 		this.formObjectsChanged_ = true;
 		app.autoJavaScriptChanged_ = true;
 		if (this.session_.getType() == EntryPointType.WidgetSet) {
-			response.out().append("$(document).ready(function() { ").append(
-					app.getJavaScriptClass()).append(
-					"._p_.update(null, 'load', null, false);});\n");
+			response.out().append(app.getJavaScriptClass()).append(
+					"._p_.update(null, 'load', null, false);");
 		} else {
 			if (!this.rendered_) {
 				this.serveMainAjax(response);

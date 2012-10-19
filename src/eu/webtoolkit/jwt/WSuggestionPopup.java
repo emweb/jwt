@@ -819,6 +819,11 @@ public class WSuggestionPopup extends WCompositeWidget {
 			}
 			line.addWidget(value);
 			value.setAttributeValue("sug", StringUtils.asString(d2).toString());
+			Object styleclass = index.getData(ItemDataRole.StyleClassRole);
+			if (!(styleclass == null)) {
+				value.setAttributeValue("class", StringUtils.asString(
+						styleclass).toString());
+			}
 		}
 	}
 
