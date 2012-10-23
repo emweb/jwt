@@ -50,6 +50,7 @@ public abstract class WFormWidget extends WInteractWidget {
 		this.filterInput_ = null;
 		this.removeEmptyText_ = null;
 		this.emptyText_ = new WString();
+		this.settingErrorToolTip_ = false;
 		this.flags_ = new BitSet();
 		this.tabIndex_ = 0;
 		this.validated_ = new Signal1<WValidator.Result>();
@@ -138,12 +139,16 @@ public abstract class WFormWidget extends WInteractWidget {
 	 * @see WFormWidget#validate()
 	 */
 	public void setValidator(WValidator validator) {
+		boolean firstValidator = !(this.validator_ != null);
 		if (this.validator_ != null) {
 			this.validator_.removeFormWidget(this);
 		}
 		this.validator_ = validator;
 		if (this.validator_ != null) {
 			this.validator_.addFormWidget(this);
+			if (firstValidator && !(this.getToolTip().length() == 0)) {
+				this.setToolTip(this.getToolTip());
+			}
 			this.validatorChanged();
 		} else {
 			this.removeStyleClass("Wt-invalid", true);
@@ -173,7 +178,9 @@ public abstract class WFormWidget extends WInteractWidget {
 					this.getValueText());
 			this.toggleStyleClass("Wt-invalid",
 					result.getState() != WValidator.State.Valid, true);
+			this.settingErrorToolTip_ = true;
 			this.setToolTip(result.getMessage());
+			this.settingErrorToolTip_ = false;
 			this.validated_.trigger(result);
 			return result.getState();
 		} else {
@@ -357,12 +364,22 @@ public abstract class WFormWidget extends WInteractWidget {
 		super.refresh();
 	}
 
+	public void setToolTip(CharSequence text, TextFormat textFormat) {
+		super.setToolTip(text, textFormat);
+		if (this.validator_ != null && !this.settingErrorToolTip_
+				&& textFormat == TextFormat.PlainText) {
+			this.setJavaScriptMember("defaultTT", WString.toWString(text)
+					.getJsStringLiteral());
+		}
+	}
+
 	WLabel label_;
 	WValidator validator_;
 	JSlot validateJs_;
 	JSlot filterInput_;
 	JSlot removeEmptyText_;
 	WString emptyText_;
+	protected boolean settingErrorToolTip_;
 
 	void applyEmptyText() {
 		if (this.isRendered() && !(this.emptyText_.length() == 0)) {

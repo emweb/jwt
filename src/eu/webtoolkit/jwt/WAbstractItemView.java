@@ -2171,7 +2171,7 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 				+ ", 'obj')." + jsMethod + "(obj, event);}");
 	}
 
-	protected boolean shiftEditors(WModelIndex parent, int start, int count,
+	protected boolean shiftEditorRows(WModelIndex parent, int start, int count,
 			boolean persistWhenShifted) {
 		boolean result = false;
 		if (!this.editedItems_.isEmpty()) {
@@ -2214,6 +2214,67 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 										.getParent().equals(parent)))
 										&& p.getRow() >= start
 										&& p.getRow() < start - count) {
+									toClose.add(c);
+									break;
+								} else {
+									p = p.getParent();
+								}
+							} while (!(p == parent || (p != null && p
+									.equals(parent))));
+						}
+					}
+				}
+			}
+			for (int i = 0; i < toClose.size(); ++i) {
+				this.closeEditor(toClose.get(i));
+			}
+			this.editedItems_ = newMap;
+		}
+		return result;
+	}
+
+	protected boolean shiftEditorColumns(WModelIndex parent, int start,
+			int count, boolean persistWhenShifted) {
+		boolean result = false;
+		if (!this.editedItems_.isEmpty()) {
+			List<WModelIndex> toClose = new ArrayList<WModelIndex>();
+			Map<WModelIndex, WAbstractItemView.Editor> newMap = new HashMap<WModelIndex, WAbstractItemView.Editor>();
+			for (Iterator<Map.Entry<WModelIndex, WAbstractItemView.Editor>> i_it = this.editedItems_
+					.entrySet().iterator(); i_it.hasNext();) {
+				Map.Entry<WModelIndex, WAbstractItemView.Editor> i = i_it
+						.next();
+				WModelIndex c = i.getKey();
+				WModelIndex p = c.getParent();
+				if (!(p == parent || (p != null && p.equals(parent)))
+						&& !WModelIndex.isAncestor(p, parent)) {
+					newMap.put(c, i.getValue());
+				} else {
+					if ((p == parent || (p != null && p.equals(parent)))) {
+						if (c.getColumn() >= start) {
+							if (c.getColumn() < start - count) {
+								toClose.add(c);
+							} else {
+								WModelIndex shifted = this.model_.getIndex(c
+										.getRow(), c.getColumn() + count, p);
+								newMap.put(shifted, i.getValue());
+								if (i.getValue().widget != null) {
+									if (persistWhenShifted) {
+										this.persistEditor(shifted, i
+												.getValue());
+									}
+									result = true;
+								}
+							}
+						} else {
+							newMap.put(c, i.getValue());
+						}
+					} else {
+						if (count < 0) {
+							do {
+								if ((p.getParent() == parent || (p.getParent() != null && p
+										.getParent().equals(parent)))
+										&& p.getColumn() >= start
+										&& p.getColumn() < start - count) {
 									toClose.add(c);
 									break;
 								} else {

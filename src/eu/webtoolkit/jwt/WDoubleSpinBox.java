@@ -268,6 +268,13 @@ public class WDoubleSpinBox extends WAbstractSpinBox {
 		return validator;
 	}
 
+	protected WValidator.Result getValidateRange() {
+		final WDoubleValidator validator = new WDoubleValidator();
+		validator.setRange(this.min_, this.max_);
+		return validator.validate(new WString("{1}").arg(this.value_)
+				.toString());
+	}
+
 	private double value_;
 	private double min_;
 	private double max_;

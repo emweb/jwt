@@ -217,6 +217,8 @@ public abstract class WAbstractSpinBox extends WLineEdit {
 
 	abstract WValidator createValidator();
 
+	protected abstract WValidator.Result getValidateRange();
+
 	protected int boxPadding(Orientation orientation) {
 		if (!this.isNativeControl() && orientation == Orientation.Horizontal) {
 			return super.boxPadding(orientation) + 8;

@@ -1450,7 +1450,7 @@ public class WTreeView extends WAbstractItemView {
 				this.expandedSet_);
 		int removed = shiftModelIndexes(parent, start, count, this.getModel(),
 				this.getSelectionModel().selection_);
-		this.shiftEditors(parent, start, count, false);
+		this.shiftEditorRows(parent, start, count, false);
 		if (removed != 0) {
 			this.selectionChanged().trigger();
 		}
