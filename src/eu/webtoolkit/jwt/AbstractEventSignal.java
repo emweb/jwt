@@ -489,7 +489,11 @@ public abstract class AbstractEventSignal extends AbstractSignal {
 	 */
 	public void preventDefaultAction(boolean prevent) {
 		if (isDefaultActionPrevented() != prevent) {
-			flags_ |= BIT_PREVENT_DEFAULT;
+			if (prevent)
+				flags_ |= BIT_PREVENT_DEFAULT;
+			else
+				flags_ &= BIT_PREVENT_DEFAULT;
+
 			ownerRepaint();
 		}
 	}
@@ -512,7 +516,11 @@ public abstract class AbstractEventSignal extends AbstractSignal {
 	 */
 	public void preventPropagation(boolean prevent) {
 		if (isPropagationPrevented() != prevent) {
-			flags_ |= BIT_PREVENT_PROPAGATION;
+			if (prevent)
+				flags_ |= BIT_PREVENT_PROPAGATION;
+			else
+				flags_ &= ~BIT_PREVENT_PROPAGATION;
+
 			ownerRepaint();
 		}
 	}
