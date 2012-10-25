@@ -578,7 +578,11 @@ public class WDialog extends WCompositeWidget {
 
 	public void setMaximumSize(WLength width, WLength height) {
 		super.setMaximumSize(width, height);
-		this.impl_.resolveWidget("layout").setMaximumSize(width, height);
+		WLength w = width.getUnit() != WLength.Unit.Percentage ? width
+				: WLength.Auto;
+		WLength h = height.getUnit() != WLength.Unit.Percentage ? height
+				: WLength.Auto;
+		this.impl_.resolveWidget("layout").setMaximumSize(w, h);
 	}
 
 	void render(EnumSet<RenderFlag> flags) {
@@ -590,9 +594,12 @@ public class WDialog extends WCompositeWidget {
 			boolean centerY = this.getOffset(Side.Top).isAuto()
 					&& this.getOffset(Side.Bottom).isAuto();
 			if (app.getEnvironment().hasAjax()) {
-				if (this.getWidth().isAuto() && this.getMaximumWidth().isAuto()) {
-					this.impl_.resolveWidget("layout").setMaximumSize(
-							new WLength(999999), this.getMaximumHeight());
+				if (this.getWidth().isAuto()) {
+					if (this.getMaximumWidth().getUnit() == WLength.Unit.Percentage
+							|| this.getMaximumWidth().toPixels() == 0) {
+						this.impl_.resolveWidget("layout").setMaximumSize(
+								new WLength(999999), this.getMaximumHeight());
+					}
 				}
 			}
 			this.doJavaScript("new Wt3_2_3.WDialog(" + app.getJavaScriptClass()
@@ -642,6 +649,6 @@ public class WDialog extends WCompositeWidget {
 				JavaScriptScope.WtClassScope,
 				JavaScriptObjectType.JavaScriptConstructor,
 				"WDialog",
-				"function(h,a,i,j){function n(b){var c=b||window.event;b=d.pageCoordinates(c);c=d.windowCoordinates(c);var e=d.windowSize();if(c.x>0&&c.x<e.x&&c.y>0&&c.y<e.y){i=j=false;a.style.left=d.px(a,\"left\")+b.x-k+\"px\";a.style.top=d.px(a,\"top\")+b.y-l+\"px\";a.style.right=\"\";a.style.bottom=\"\";k=b.x;l=b.y}}function o(b,c,e){if(a.style.position==\"\"){a.style.position=d.isIE6?\"absolute\":\"fixed\";a.style.visibility=\"visible\"}a.style.height=Math.max(0,e)+\"px\";a.style.width= Math.max(0,c)+\"px\";m.centerDialog()}function p(b,c,e){if(c>0)g.style.width=c+\"px\";if(e>0)g.style.height=e+\"px\";m.centerDialog()}function q(){h.layouts2.adjust()}jQuery.data(a,\"obj\",this);var m=this,f=$(a).find(\".titlebar\").first().get(0),g=$(a).find(\".dialog-layout\").get(0),d=h.WT,k,l;if(f){f.onmousedown=function(b){b=b||window.event;d.capture(f);b=d.pageCoordinates(b);k=b.x;l=b.y;f.onmousemove=n};f.onmouseup=function(){f.onmousemove=null;d.capture(null)}}this.centerDialog=function(){if(a.parentNode== null)a=f=null;else{if(a.style.display!=\"none\"&&a.style.visibility!=\"hidden\"){var b=d.windowSize(),c=a.offsetWidth,e=a.offsetHeight;if(i){a.style.left=Math.round((b.x-c)/2+(d.isIE6?document.documentElement.scrollLeft:0))+\"px\";a.style.marginLeft=\"0px\"}if(j){a.style.top=Math.round((b.y-e)/2+(d.isIE6?document.documentElement.scrollTop:0))+\"px\";a.style.marginTop=\"0px\"}}if(a.style.position!=\"\")a.style.visibility=\"visible\"}};this.onresize=function(b,c){i=j=false;p(a,b,c);jQuery.data(g.firstChild,\"layout\").setMaxSize(0, 0);h.layouts2.scheduleAdjust()};g.wtResize=o;a.wtPosition=q;if(a.style.width!=\"\")g.style.width=a.offsetWidth+\"px\";if(a.style.height!=\"\")g.style.height=a.offsetHeight+\"px\";m.centerDialog()}");
+				"function(h,a,i,j){function n(b){var c=b||window.event;b=d.pageCoordinates(c);c=d.windowCoordinates(c);var e=d.windowSize();if(c.x>0&&c.x<e.x&&c.y>0&&c.y<e.y){i=j=false;a.style.left=d.px(a,\"left\")+b.x-k+\"px\";a.style.top=d.px(a,\"top\")+b.y-l+\"px\";a.style.right=\"\";a.style.bottom=\"\";k=b.x;l=b.y}}function o(b,c,e){if(a.style.position==\"\")a.style.position=d.isIE6?\"absolute\":\"fixed\";a.style.visibility=\"visible\";a.style.height=Math.max(0,e)+\"px\";a.style.width= Math.max(0,c)+\"px\";m.centerDialog()}function p(b,c,e){if(c>0)g.style.width=c+\"px\";if(e>0)g.style.height=e+\"px\";m.centerDialog()}function q(){h.layouts2.adjust()}jQuery.data(a,\"obj\",this);var m=this,f=$(a).find(\".titlebar\").first().get(0),g=$(a).find(\".dialog-layout\").get(0),d=h.WT,k,l;if(f){f.onmousedown=function(b){b=b||window.event;d.capture(f);b=d.pageCoordinates(b);k=b.x;l=b.y;f.onmousemove=n};f.onmouseup=function(){f.onmousemove=null;d.capture(null)}}this.centerDialog=function(){if(a.parentNode== null)a=f=null;else if(a.style.display!=\"none\"&&a.style.visibility!=\"hidden\"){var b=d.windowSize(),c=a.offsetWidth,e=a.offsetHeight;if(i){a.style.left=Math.round((b.x-c)/2+(d.isIE6?document.documentElement.scrollLeft:0))+\"px\";a.style.marginLeft=\"0px\"}if(j){a.style.top=Math.round((b.y-e)/2+(d.isIE6?document.documentElement.scrollTop:0))+\"px\";a.style.marginTop=\"0px\"}if(a.style.position!=\"\")a.style.visibility=\"visible\"}};this.onresize=function(b,c){i=j=false;p(a,b,c);jQuery.data(g.firstChild,\"layout\").setMaxSize(0, 0);h.layouts2.scheduleAdjust()};g.wtResize=o;a.wtPosition=q;if(a.style.width!=\"\")g.style.width=a.offsetWidth+\"px\";if(a.style.height!=\"\")g.style.height=a.offsetHeight+\"px\";m.centerDialog()}");
 	}
 }
