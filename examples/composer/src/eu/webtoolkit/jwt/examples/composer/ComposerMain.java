@@ -13,13 +13,6 @@ import eu.webtoolkit.jwt.WtServlet;
 public class ComposerMain extends WtServlet {
     private static final long serialVersionUID = 1L;
 
-    public ComposerMain() {
-        super();
- 
-        getConfiguration().setProgressiveBootstrap(false);
-        getConfiguration().setSendXHTMLMimeType(true);
-    }
-
     public WApplication createApplication(WEnvironment env) {
         WApplication app = new WApplication(env);
         //Multiple resources can be used
