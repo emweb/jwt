@@ -155,7 +155,6 @@ public abstract class WAbstractSpinBox extends WLineEdit {
 		this.setup_ = false;
 		this.prefix_ = new WString();
 		this.suffix_ = new WString();
-		this.setJavaScriptMember("_a", "0");
 	}
 
 	/**
@@ -244,7 +243,7 @@ public abstract class WAbstractSpinBox extends WLineEdit {
 				+ ","
 				+ WString.toWString(this.getSuffix()).getJsStringLiteral()
 				+ "," + this.getJsMinMaxStep() + ");";
-		this.setJavaScriptMember("_a", "0;" + jsObj);
+		this.setJavaScriptMember(" WSpinBox", jsObj);
 	}
 
 	private void connectJavaScript(AbstractEventSignal s, String methodName) {

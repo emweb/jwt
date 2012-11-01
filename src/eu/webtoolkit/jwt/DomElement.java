@@ -1290,19 +1290,17 @@ public class DomElement {
 				if (i.getKey().getValue() >= Property.PropertyStyle.getValue()
 						&& i.getKey().getValue() <= Property.PropertyStyleBoxSizing
 								.getValue()) {
-					if (!app.getEnvironment().agentIsIE()
-							|| i.getKey().getValue() < Property.PropertyStylePosition
-									.getValue()) {
-						out.append(this.var_).append(".style.").append(
-								cssCamelNames_[i.getKey().getValue()
-										- Property.PropertyStyle.getValue()])
-								.append("='").append(i.getValue()).append("';");
-					} else {
+					if (app.getEnvironment().getAgent() == WEnvironment.UserAgent.IE6) {
 						out.append(this.var_).append(".style['").append(
 								cssNames_[i.getKey().getValue()
 										- Property.PropertyStylePosition
 												.getValue()]).append("']='")
 								.append(i.getValue()).append("';");
+					} else {
+						out.append(this.var_).append(".style.").append(
+								cssCamelNames_[i.getKey().getValue()
+										- Property.PropertyStyle.getValue()])
+								.append("='").append(i.getValue()).append("';");
 					}
 				}
 			}
