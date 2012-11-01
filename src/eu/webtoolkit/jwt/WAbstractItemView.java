@@ -2529,8 +2529,13 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	abstract WContainerWidget getHeaderContainer();
 
 	private int headerLevel(int column) {
-		return (int) StringUtils.asNumber(this.model_.getHeaderData(column,
-				Orientation.Horizontal, ItemDataRole.LevelRole));
+		Object d = this.model_.getHeaderData(column, Orientation.Horizontal,
+				ItemDataRole.LevelRole);
+		if (!(d == null)) {
+			return (int) StringUtils.asNumber(d);
+		} else {
+			return 0;
+		}
 	}
 
 	private int getHeaderLevelCount() {

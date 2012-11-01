@@ -50,10 +50,10 @@ public abstract class WFormWidget extends WInteractWidget {
 		this.filterInput_ = null;
 		this.removeEmptyText_ = null;
 		this.emptyText_ = new WString();
-		this.settingErrorToolTip_ = false;
 		this.flags_ = new BitSet();
 		this.tabIndex_ = 0;
 		this.validated_ = new Signal1<WValidator.Result>();
+		this.validationToolTip_ = new WString();
 	}
 
 	/**
@@ -178,9 +178,11 @@ public abstract class WFormWidget extends WInteractWidget {
 					this.getValueText());
 			this.toggleStyleClass("Wt-invalid",
 					result.getState() != WValidator.State.Valid, true);
-			this.settingErrorToolTip_ = true;
-			this.setToolTip(result.getMessage());
-			this.settingErrorToolTip_ = false;
+			if (!this.validationToolTip_.equals(result.getMessage())) {
+				this.validationToolTip_ = result.getMessage();
+				this.flags_.set(BIT_VALIDATION_CHANGED);
+				this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyAttribute));
+			}
 			this.validated_.trigger(result);
 			return result.getState();
 		} else {
@@ -366,8 +368,7 @@ public abstract class WFormWidget extends WInteractWidget {
 
 	public void setToolTip(CharSequence text, TextFormat textFormat) {
 		super.setToolTip(text, textFormat);
-		if (this.validator_ != null && !this.settingErrorToolTip_
-				&& textFormat == TextFormat.PlainText) {
+		if (this.validator_ != null && textFormat == TextFormat.PlainText) {
 			this.setJavaScriptMember("defaultTT", WString.toWString(text)
 					.getJsStringLiteral());
 		}
@@ -379,7 +380,6 @@ public abstract class WFormWidget extends WInteractWidget {
 	JSlot filterInput_;
 	JSlot removeEmptyText_;
 	WString emptyText_;
-	protected boolean settingErrorToolTip_;
 
 	void applyEmptyText() {
 		if (this.isRendered() && !(this.emptyText_.length() == 0)) {
@@ -404,9 +404,11 @@ public abstract class WFormWidget extends WInteractWidget {
 	private static final int BIT_READONLY_CHANGED = 4;
 	private static final int BIT_TABINDEX_CHANGED = 5;
 	private static final int BIT_JS_OBJECT = 6;
+	private static final int BIT_VALIDATION_CHANGED = 7;
 	BitSet flags_;
 	private int tabIndex_;
 	private Signal1<WValidator.Result> validated_;
+	private WString validationToolTip_;
 
 	private void undoSetFocus() {
 	}
@@ -536,11 +538,20 @@ public abstract class WFormWidget extends WInteractWidget {
 			}
 		}
 		super.updateDom(element, all);
+		if (this.flags_.get(BIT_VALIDATION_CHANGED)) {
+			if ((this.validationToolTip_.length() == 0)) {
+				element.setAttribute("title", this.getToolTip().toString());
+			} else {
+				element.setAttribute("title", this.validationToolTip_
+						.toString());
+			}
+		}
 	}
 
 	void propagateRenderOk(boolean deep) {
 		this.flags_.clear(BIT_ENABLED_CHANGED);
 		this.flags_.clear(BIT_TABINDEX_CHANGED);
+		this.flags_.clear(BIT_VALIDATION_CHANGED);
 		super.propagateRenderOk(deep);
 	}
 
