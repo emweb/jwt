@@ -195,8 +195,10 @@ public class WRasterPaintDevice extends WResource implements WPaintDevice {
 
 	
 	public void init() {
-		if (image != null)
+		if (image != null) {
 			this.g2 = image.createGraphics();
+			g2.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
+		}
 		
 		changeFlags.add(ChangeFlag.Pen);
 		changeFlags.add(ChangeFlag.Brush);

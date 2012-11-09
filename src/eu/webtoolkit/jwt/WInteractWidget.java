@@ -558,7 +558,7 @@ public abstract class WInteractWidget extends WWebWidget {
 		if (updateKeyDown) {
 			List<DomElement.EventAction> actions = new ArrayList<DomElement.EventAction>();
 			if (enterPress != null) {
-				if (enterPress.needsUpdate(all)) {
+				if (enterPress.isConnected()) {
 					String extraJS = "";
 					if (!(app != null)) {
 						app = WApplication.getInstance();
@@ -570,7 +570,7 @@ public abstract class WInteractWidget extends WWebWidget {
 						extraJS = "var g=this.onchange;this.onchange=function(){this.onchange=g;};";
 					}
 					actions.add(new DomElement.EventAction(
-							"(e.keyCode && e.keyCode == 13)", enterPress
+							"e.keyCode && (e.keyCode == 13)", enterPress
 									.getJavaScript()
 									+ extraJS, enterPress.encodeCmd(),
 							enterPress.isExposedSignal()));
@@ -578,16 +578,16 @@ public abstract class WInteractWidget extends WWebWidget {
 				enterPress.updateOk();
 			}
 			if (escapePress != null) {
-				if (escapePress.needsUpdate(all)) {
+				if (escapePress.isConnected()) {
 					actions.add(new DomElement.EventAction(
-							"(e.keyCode && e.keyCode == 27)", escapePress
+							"e.keyCode && (e.keyCode == 27)", escapePress
 									.getJavaScript(), escapePress.encodeCmd(),
 							escapePress.isExposedSignal()));
 				}
 				escapePress.updateOk();
 			}
 			if (keyDown != null) {
-				if (keyDown.needsUpdate(all)) {
+				if (keyDown.isConnected()) {
 					actions.add(new DomElement.EventAction("", keyDown
 							.getJavaScript(), keyDown.encodeCmd(), keyDown
 							.isExposedSignal()));
@@ -617,6 +617,7 @@ public abstract class WInteractWidget extends WWebWidget {
 				&& mouseDown.needsUpdate(all) || updateMouseMove;
 		boolean updateMouseUp = mouseUp != null && mouseUp.needsUpdate(all)
 				|| updateMouseMove;
+		String CheckDisabled = "if($(o).hasClass('Wt-disabled')){Wt3_2_3.cancelEvent(e);return;}";
 		if (updateMouseDown) {
 			StringBuilder js = new StringBuilder();
 			js.append(CheckDisabled);
@@ -825,7 +826,6 @@ public abstract class WInteractWidget extends WWebWidget {
 
 	JSlot dragSlot_;
 	private int mouseOverDelay_;
-	private static String CheckDisabled = "if($(o).hasClass('Wt-disabled')){Wt3_2_3.cancelEvent(e);return;}";
 	private static String KEYDOWN_SIGNAL = "M_keydown";
 	static String KEYPRESS_SIGNAL = "keypress";
 	private static String KEYUP_SIGNAL = "keyup";

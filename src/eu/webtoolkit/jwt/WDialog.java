@@ -470,7 +470,7 @@ public class WDialog extends WCompositeWidget {
 	 * be reduced in size.
 	 * <p>
 	 * 
-	 * @see WCompositeWidget#setMinimumSize(WLength width, WLength height)
+	 * @see WDialog#setMinimumSize(WLength width, WLength height)
 	 * @see WDialog#setMaximumSize(WLength width, WLength height)
 	 */
 	public void setResizable(boolean resizable) {
@@ -574,6 +574,11 @@ public class WDialog extends WCompositeWidget {
 		this.setPositionScheme(PositionScheme.Absolute);
 		this.setOffsets(new WLength(0), EnumSet.of(Side.Left, Side.Top));
 		super.positionAt(widget, orientation);
+	}
+
+	public void setMinimumSize(WLength width, WLength height) {
+		super.setMinimumSize(width, height);
+		this.impl_.resolveWidget("layout").setMinimumSize(width, height);
 	}
 
 	public void setMaximumSize(WLength width, WLength height) {
