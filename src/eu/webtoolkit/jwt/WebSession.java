@@ -1866,7 +1866,9 @@ class WebSession {
 			} else {
 				if (!signalE.equals("poll")) {
 					this.propagateFormValues(e, se);
-					if (i == 0) {
+					boolean discardStateless = !request.isWebSocketMessage()
+							&& i == 0;
+					if (discardStateless) {
 						this.renderer_.saveChanges();
 					}
 					handler.nextSignal = i + 1;
@@ -1902,7 +1904,7 @@ class WebSession {
 							}
 							this.processSignal(s, se, request, kind);
 							if (kind == WebSession.SignalKind.LearnedStateless
-									&& i == 0) {
+									&& discardStateless) {
 								this.renderer_.discardChanges();
 							}
 						}

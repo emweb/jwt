@@ -223,8 +223,12 @@ public class WVmlImage implements WVectorImage {
 				WPointF b = new WPointF(c.getX() + rx, c.getY() + ry);
 				p1 = transform.map(p1);
 				p2 = transform.map(p2);
-				tmp.append(deltaTheta < 0 ? "at" : "wa").append(
-						myzround(a.getX())).append(",").append(
+				if (deltaTheta < 0) {
+					tmp.append("at");
+				} else {
+					tmp.append("wa");
+				}
+				tmp.append(myzround(a.getX())).append(",").append(
 						myzround(a.getY())).append(",").append(
 						myzround(b.getX())).append(",").append(
 						myzround(b.getY())).append(",").append(

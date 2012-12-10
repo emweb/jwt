@@ -188,7 +188,7 @@ public class WFlashObject extends WWebWidget {
 				ss
 						.append("function(self, w, h) {v="
 								+ this.getJsFlashRef()
-								+ ";if(v){v.setAttribute('width', w);v.setAttribute('height', h);}");
+								+ ";if (v) {if (w >= 0) v.setAttribute('width', w);if (h >= 0) v.setAttribute('height', h);}");
 				if (this.alternative_ != null) {
 					ss
 							.append(

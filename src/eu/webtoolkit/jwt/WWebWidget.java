@@ -1550,7 +1550,7 @@ public abstract class WWebWidget extends WWidget {
 													.getEffects()))
 							.append(",")
 							.append(
-									this.transientImpl_.animation_
+									(int) this.transientImpl_.animation_
 											.getTimingFunction().getValue())
 							.append(",")
 							.append(
@@ -1581,7 +1581,7 @@ public abstract class WWebWidget extends WWidget {
 													.getEffects()))
 							.append(",")
 							.append(
-									this.transientImpl_.animation_
+									(int) this.transientImpl_.animation_
 											.getTimingFunction().getValue())
 							.append(",")
 							.append(

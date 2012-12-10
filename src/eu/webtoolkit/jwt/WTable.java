@@ -460,14 +460,17 @@ public class WTable extends WInteractWidget {
 		if (withIds) {
 			tbody.setId(this.getId() + "tb");
 		}
+		DomElement colgroup = DomElement
+				.createNew(DomElementType.DomElement_COLGROUP);
 		for (int col = 0; col < this.columns_.size(); ++col) {
 			DomElement c = DomElement.createNew(DomElementType.DomElement_COL);
 			if (withIds) {
 				c.setId(this.columns_.get(col).getId());
 			}
 			this.columns_.get(col).updateDom(c, true);
-			table.addChild(c);
+			colgroup.addChild(c);
 		}
+		table.addChild(colgroup);
 		this.flags_.clear(BIT_COLUMNS_CHANGED);
 		for (int row = 0; row < (int) this.getRowCount(); ++row) {
 			for (int col = 0; col < (int) this.getColumnCount(); ++col) {

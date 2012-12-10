@@ -313,11 +313,13 @@ public class WebRequest extends HttpServletRequestWrapper {
 		files_ = new HashMap<String, List<UploadedFile>>();
 		
 		String[] paramContentType = parameters_.get("contentType"); 
+
 		if (paramContentType != null && paramContentType[0].equals("x-www-form-urlencoded") && this.getContentType() == null) {
 			byte[] buf = new byte[this.getContentLength()];
 			this.getInputStream().read(buf);
 			String[] pairs = new String(buf, "UTF-8").split("\\&");
-		    for (int i = 0; i < pairs.length; i++) {
+
+			for (int i = 0; i < pairs.length; i++) {
 		      String[] fields = {"", ""};
 		      String[] pair = pairs[i].split("=");
 		      for (int j = 0; j < pair.length && j < 2; j++)
@@ -325,7 +327,7 @@ public class WebRequest extends HttpServletRequestWrapper {
 		      if (!fields[0].equals(""))
 		    	  parameters_.put(fields[0], new String [] { fields[1] });
 		    }
-		}		
+		}
 	}
 	
 	/**

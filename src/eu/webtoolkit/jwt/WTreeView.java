@@ -712,7 +712,7 @@ public class WTreeView extends WAbstractItemView {
 			s.append("jQuery.data(").append(this.getJsRef()).append(
 					", 'obj').scrollTo(-1, ").append(row).append(",").append(
 					(int) this.getRowHeight().toPixels()).append(",").append(
-					hint.getValue()).append(");");
+					(int) hint.getValue()).append(");");
 			this.doJavaScript(s.toString());
 		} else {
 			this.setCurrentPage(row / this.getPageSize());

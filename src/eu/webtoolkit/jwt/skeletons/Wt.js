@@ -627,7 +627,7 @@ this.validate = function(edit) {
     v = edit.value;
 
   if (typeof edit.defaultTT === 'undefined')
-    edit.defaultTT = edit.getAttribute('title');
+    edit.defaultTT = edit.getAttribute('title') || '';
   else
     edit.defaultTT = '';
 
@@ -2690,7 +2690,8 @@ function propagateSize(element, width, height) {
     element.wtWidth = width;
     element.wtHeight = height;
 
-    emit(element, 'resized', width, height);
+    if (width >= 0 && height >= 0)
+      emit(element, 'resized', width, height);
   }
 }
 

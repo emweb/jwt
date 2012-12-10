@@ -419,8 +419,9 @@ public class WFileUpload extends WWebWidget {
 							WFileUpload.this.onData(e1, e2);
 						}
 					});
-			this.setJavaScriptMember(WT_RESIZE_JS,
-					"function(self,w,h) {$(self).find('input').width(w);}");
+			this
+					.setJavaScriptMember(WT_RESIZE_JS,
+							"function(self, w, h) {if (w >= 0) $(self).find('input').width(w);}");
 		} else {
 			this.fileUploadTarget_ = null;
 		}

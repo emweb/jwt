@@ -1717,7 +1717,8 @@ public abstract class WWidget extends WObject {
 				&& this.getJavaScriptMember(WT_RESIZE_JS).length() != 0) {
 			this.callJavaScriptMember(WT_RESIZE_JS, this.getJsRef() + ","
 					+ String.valueOf(this.getWidth().toPixels()) + ","
-					+ String.valueOf(this.getHeight().toPixels()));
+					+ String.valueOf(this.getHeight().toPixels()) + ","
+					+ "false");
 		}
 	}
 

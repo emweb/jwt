@@ -144,6 +144,13 @@ public abstract class WAbstractSpinBox extends WLineEdit {
 		super.setText(this.getTextFromValue().toString());
 	}
 
+	public WValidator.State validate() {
+		if (!this.setup_) {
+			this.setup();
+		}
+		return super.validate();
+	}
+
 	/**
 	 * Constructor.
 	 */
@@ -189,9 +196,7 @@ public abstract class WAbstractSpinBox extends WLineEdit {
 	protected void render(EnumSet<RenderFlag> flags) {
 		if (!this.setup_
 				&& !EnumUtils.mask(flags, RenderFlag.RenderFull).isEmpty()) {
-			this.setup_ = true;
-			boolean useNative = this.isNativeControl();
-			this.setup(useNative);
+			this.setup();
 		}
 		super.render(flags);
 	}
@@ -253,7 +258,9 @@ public abstract class WAbstractSpinBox extends WLineEdit {
 		s.addListener(jsFunction);
 	}
 
-	private void setup(boolean useNative) {
+	private void setup() {
+		this.setup_ = true;
+		boolean useNative = this.isNativeControl();
 		if (useNative) {
 			this.setValidator(this.createValidator());
 		} else {

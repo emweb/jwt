@@ -43,6 +43,10 @@ public class Coordinates {
 		this.y = Y;
 	}
 
+	static String concat(String prefix, int prefixLength, String s2) {
+		return prefix + s2;
+	}
+
 	static int asInt(String v) {
 		return Integer.parseInt(v);
 	}

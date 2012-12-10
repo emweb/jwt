@@ -209,8 +209,13 @@ public class WRegExpValidator extends WValidator {
 	public String getJavaScriptValidate() {
 		loadJavaScript(WApplication.getInstance());
 		StringBuilder js = new StringBuilder();
-		js.append("new Wt3_2_3.WRegExpValidator(").append(
-				this.isMandatory() ? "true" : "false").append(",");
+		js.append("new Wt3_2_3.WRegExpValidator(");
+		if (this.isMandatory()) {
+			js.append("true");
+		} else {
+			js.append("false");
+		}
+		js.append(',');
 		if (this.regexp_ != null) {
 			js.append(WWebWidget.jsStringLiteral(this.regexp_.pattern()))
 					.append(",'");

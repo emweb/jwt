@@ -911,14 +911,14 @@ public class WMediaPlayer extends WCompositeWidget {
 		WApplication app = WApplication.getInstance();
 		if (this.mediaUpdated_) {
 			StringBuilder ss = new StringBuilder();
-			ss.append("{");
+			ss.append('{');
 			boolean first = true;
 			for (int i = 0; i < this.media_.size(); ++i) {
 				if (this.media_.get(i).link.isNull()) {
 					continue;
 				}
 				if (!first) {
-					ss.append(",");
+					ss.append(',');
 				}
 				String url = app.resolveRelativeUrl(this.media_.get(i).link
 						.getUrl());
@@ -926,11 +926,11 @@ public class WMediaPlayer extends WCompositeWidget {
 						.append(": ").append(WWebWidget.jsStringLiteral(url));
 				first = false;
 			}
-			ss.append("}");
+			ss.append('}');
 			if (!!EnumUtils.mask(flags, RenderFlag.RenderFull).isEmpty()) {
 				this.playerDo("setMedia", ss.toString());
 			} else {
-				this.initialJs_ = ".jPlayer('setMedia', " + ss.toString() + ")"
+				this.initialJs_ = ".jPlayer('setMedia', " + ss.toString() + ')'
 						+ this.initialJs_;
 			}
 			this.mediaUpdated_ = false;
@@ -943,17 +943,17 @@ public class WMediaPlayer extends WCompositeWidget {
 			ss.append(this.getJsPlayerRef()).append(".jPlayer({").append(
 					"ready: function () {");
 			if (this.initialJs_.length() != 0) {
-				ss.append("$(this)").append(this.initialJs_).append(";");
+				ss.append("$(this)").append(this.initialJs_).append(';');
 			}
 			this.initialJs_ = "";
 			ss.append("},").append("swfPath: \"").append(
-					WApplication.getResourcesUrl() + "jPlayer\",").append(
-					"supplied: \"");
+					WApplication.getResourcesUrl()).append("jPlayer\",")
+					.append("supplied: \"");
 			boolean first = true;
 			for (int i = 0; i < this.media_.size(); ++i) {
 				if (this.media_.get(i).encoding != WMediaPlayer.Encoding.PosterImage) {
 					if (!first) {
-						ss.append(",");
+						ss.append(',');
 					}
 					ss
 							.append(mediaNames[this.media_.get(i).encoding
@@ -1023,9 +1023,9 @@ public class WMediaPlayer extends WCompositeWidget {
 								.getValue()].getId()).append(" .Wt-pgb-bar\"");
 				first = false;
 			}
-			ss.append("}").append("});");
+			ss.append('}').append("});");
 			ss.append("new Wt3_2_3.WMediaPlayer(").append(
-					app.getJavaScriptClass()).append(",").append(
+					app.getJavaScriptClass()).append(',').append(
 					this.getJsRef()).append(");");
 			this.doJavaScript(ss.toString());
 			this.boundSignals_ = 0;
@@ -1038,7 +1038,7 @@ public class WMediaPlayer extends WCompositeWidget {
 						.append("', function(o, e) { ").append(
 								this.signals_.get(i).createCall()).append("})");
 			}
-			ss.append(";");
+			ss.append(';');
 			this.doJavaScript(ss.toString());
 			this.boundSignals_ = this.signals_.size();
 		}

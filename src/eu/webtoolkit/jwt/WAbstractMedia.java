@@ -507,10 +507,10 @@ public abstract class WAbstractMedia extends WInteractWidget {
 				ss
 						.append("v="
 								+ this.getJsMediaRef()
-								+ ";if(v){v.setAttribute('width', w);v.setAttribute('height', h);}");
+								+ ";if (v) {if (w >= 0) v.setAttribute('width', w);if (h >= 0) v.setAttribute('height', h);}");
 			}
 			if (this.alternative_ != null) {
-				ss.append("a=" + this.alternative_.getJsRef() + ";if(a && a.")
+				ss.append("a=" + this.alternative_.getJsRef() + ";if (a && a.")
 						.append(WT_RESIZE_JS).append(")a.")
 						.append(WT_RESIZE_JS).append("(a, w, h);");
 			}

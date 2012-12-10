@@ -716,7 +716,7 @@ public class DomElement {
 				fastHtmlAttributeValue(out, attributeValues, clickEvent.jsCode);
 				out.append("><").append(elementNames_[renderedType.getValue()]);
 			} else {
-				out.append("<").append(elementNames_[renderedType.getValue()]);
+				out.append('<').append(elementNames_[renderedType.getValue()]);
 			}
 		}
 		if (this.id_.length() != 0) {
@@ -728,7 +728,7 @@ public class DomElement {
 			Map.Entry<String, String> i = i_it.next();
 			if (!app.getEnvironment().agentIsSpiderBot()
 					|| !i.getKey().equals("name")) {
-				out.append(" ").append(i.getKey()).append("=");
+				out.append(' ').append(i.getKey()).append('=');
 				fastHtmlAttributeValue(out, attributeValues, i.getValue());
 			}
 		}
@@ -743,7 +743,7 @@ public class DomElement {
 						this.setJavaScriptEvent(javaScript, i.getKey(), i
 								.getValue(), app);
 					} else {
-						out.append(" on").append(i.getKey()).append("=");
+						out.append(" on").append(i.getKey()).append('=');
 						fastHtmlAttributeValue(out, attributeValues, i
 								.getValue().jsCode);
 					}
@@ -838,7 +838,7 @@ public class DomElement {
 			out.append(" />");
 		} else {
 			if (openingTagOnly) {
-				out.append(">");
+				out.append('>');
 				if (innerHTML.length() != 0) {
 					DomElement self = this;
 					self.childrenHtml_.append(innerHTML);
@@ -846,7 +846,7 @@ public class DomElement {
 				return;
 			}
 			if (!isSelfClosingTag(renderedType)) {
-				out.append(">");
+				out.append('>');
 				for (int i = 0; i < this.childrenToAdd_.size(); ++i) {
 					this.childrenToAdd_.get(i).child.asHTML(out, javaScript,
 							timeouts);
@@ -1103,6 +1103,7 @@ public class DomElement {
 				&& (this.type_ == DomElementType.DomElement_TBODY
 						|| this.type_ == DomElementType.DomElement_THEAD
 						|| this.type_ == DomElementType.DomElement_TABLE
+						|| this.type_ == DomElementType.DomElement_COLGROUP
 						|| this.type_ == DomElementType.DomElement_TR
 						|| this.type_ == DomElementType.DomElement_SELECT || this.type_ == DomElementType.DomElement_TD)) {
 			return false;
@@ -1177,9 +1178,12 @@ public class DomElement {
 					pushed = true;
 				}
 				fastJsStringLiteral(out, escaped, i.getValue());
-				out.append(
-						i.getKey() == Property.PropertyInnerHTML ? ",false"
-								: ",true").append(");");
+				if (i.getKey() == Property.PropertyInnerHTML) {
+					out.append(",false");
+				} else {
+					out.append(",true");
+				}
+				out.append(");");
 				break;
 			case PropertyScript:
 				out.append(this.var_).append(".innerHTML=");
@@ -1271,10 +1275,13 @@ public class DomElement {
 				out.append(';');
 				break;
 			case PropertyStyleFloat:
-				out.append(this.var_).append(".style.").append(
-						app.getEnvironment().agentIsIE() ? "styleFloat"
-								: "cssFloat").append("=\'")
-						.append(i.getValue()).append("\';");
+				out.append(this.var_).append(".style.");
+				if (app.getEnvironment().agentIsIE()) {
+					out.append("styleFloat");
+				} else {
+					out.append("cssFloat");
+				}
+				out.append("=\'").append(i.getValue()).append("\';");
 				break;
 			case PropertyStyleWidthExpression:
 				out.append(this.var_).append(".style.setExpression('width',");
@@ -1329,15 +1336,17 @@ public class DomElement {
 	private void setJavaScriptEvent(EscapeOStream out, String eventName,
 			DomElement.EventHandler handler, WApplication app) {
 		boolean globalUnfocused = this.id_.equals(app.getDomRoot().getId());
-		String extra1 = "";
-		String extra2 = "";
-		if (globalUnfocused) {
-			extra1 = "var g = event||window.event; var t = g.target||g.srcElement;if ((!t||Wt3_2_3.hasTag(t,'DIV') ||Wt3_2_3.hasTag(t,'BODY') ||Wt3_2_3.hasTag(t,'HTML'))) { ";
-			extra2 = "}";
-		}
 		int fid = nextId_++;
-		out.append("function f").append(fid).append("(event){ ").append(extra1)
-				.append(handler.jsCode).append(extra2).append("}\n");
+		out.append("function f").append(fid).append("(event) { ");
+		if (globalUnfocused) {
+			out
+					.append("var g=event||window.event; var t=g.target||g.srcElement;if ((!t||Wt3_2_3.hasTag(t,'DIV') ||Wt3_2_3.hasTag(t,'BODY') ||Wt3_2_3.hasTag(t,'HTML'))) {");
+		}
+		out.append(handler.jsCode);
+		if (globalUnfocused) {
+			out.append('}');
+		}
+		out.append("}\n");
 		if (globalUnfocused) {
 			out.append("document");
 		} else {
@@ -1443,9 +1452,13 @@ public class DomElement {
 					out.append(app.getJavaScriptClass()).append(
 							"._p_.addTimerEvent('").append(
 							timeouts.get(i).event).append("', ").append(
-							timeouts.get(i).msec).append(",").append(
-							timeouts.get(i).repeat ? "true" : "false").append(
-							");\n");
+							timeouts.get(i).msec).append(',');
+					if (timeouts.get(i).repeat) {
+						out.append("true");
+					} else {
+						out.append("false");
+					}
+					out.append(");\n");
 				}
 				out.append(js);
 			}
@@ -1464,9 +1477,13 @@ public class DomElement {
 		if (this.timeOut_ != -1) {
 			out.append(app.getJavaScriptClass()).append("._p_.addTimerEvent('")
 					.append(this.id_).append("', ").append(this.timeOut_)
-					.append(",").append(
-							this.timeOutJSRepeat_ ? "true" : "false").append(
-							");\n");
+					.append(',');
+			if (this.timeOutJSRepeat_) {
+				out.append("true");
+			} else {
+				out.append("false");
+			}
+			out.append(");\n");
 		}
 	}
 
@@ -1516,17 +1533,18 @@ public class DomElement {
 	private EscapeOStream childrenHtml_;
 	private List<DomElement.TimeoutEvent> timeouts_;
 	private boolean discardWithParent_;
-	static String[] elementNames_ = { "a", "br", "button", "col", "div",
-			"fieldset", "form", "h1", "h2", "h3", "h4", "h5", "h6", "iframe",
-			"img", "input", "label", "legend", "li", "ol", "option", "ul",
-			"script", "select", "span", "table", "tbody", "thead", "tfoot",
-			"th", "td", "textarea", "tr", "p", "canvas", "map", "area",
-			"object", "param", "audio", "video", "source", "strong", "em" };
+	static String[] elementNames_ = { "a", "br", "button", "col", "colgroup",
+			"div", "fieldset", "form", "h1", "h2", "h3", "h4", "h5", "h6",
+			"iframe", "img", "input", "label", "legend", "li", "ol", "option",
+			"ul", "script", "select", "span", "table", "tbody", "thead",
+			"tfoot", "th", "td", "textarea", "tr", "p", "canvas", "map",
+			"area", "object", "param", "audio", "video", "source", "strong",
+			"em" };
 	static boolean[] defaultInline_ = { true, true, true, false, false, false,
-			false, true, false, false, false, false, false, true, true, true,
-			true, true, false, false, true, false, false, true, true, false,
-			false, false, false, false, false, true, false, false, true, false,
-			true, false, false, false, false, false, true, true };
+			false, false, true, false, false, false, false, false, true, true,
+			true, true, true, false, false, true, false, false, true, true,
+			false, false, false, false, false, false, true, false, false, true,
+			false, true, false, false, false, false, false, true, true };
 	static String[] cssNames_ = { "position", "z-index", "float", "clear",
 			"width", "height", "line-height", "min-width", "min-height",
 			"max-width", "max-height", "left", "right", "top", "bottom",

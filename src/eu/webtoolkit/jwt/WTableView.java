@@ -625,7 +625,7 @@ public class WTableView extends WAbstractItemView {
 					StringBuilder s = new StringBuilder();
 					s.append("jQuery.data(").append(this.getJsRef()).append(
 							", 'obj').scrollTo(-1, ").append(rowY).append(",")
-							.append(hint.getValue()).append(");");
+							.append((int) hint.getValue()).append(");");
 					this.doJavaScript(s.toString());
 				}
 			} else {
@@ -1707,9 +1707,7 @@ public class WTableView extends WAbstractItemView {
 		SortedSet<WModelIndex> set = this.getSelectionModel().selection_;
 		List<WModelIndex> toShift = new ArrayList<WModelIndex>();
 		List<WModelIndex> toErase = new ArrayList<WModelIndex>();
-		for (Iterator<WModelIndex> it_it = set.tailSet(
-				this.getModel().getIndex(0, start, this.getRootIndex()))
-				.iterator(); it_it.hasNext();) {
+		for (Iterator<WModelIndex> it_it = set.iterator(); it_it.hasNext();) {
 			WModelIndex it = it_it.next();
 			if (count < 0) {
 				if (it.getColumn() < start - count) {
@@ -1717,8 +1715,10 @@ public class WTableView extends WAbstractItemView {
 					continue;
 				}
 			}
-			toShift.add(it);
-			toErase.add(it);
+			if (it.getColumn() >= start) {
+				toShift.add(it);
+				toErase.add(it);
+			}
 		}
 		for (int i = 0; i < toErase.size(); ++i) {
 			set.remove(toErase.get(i));

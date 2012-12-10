@@ -332,8 +332,8 @@ public class WTextEdit extends WTextArea {
 		this.setJavaScriptMember(" WTextEdit", "new Wt3_2_3.WTextEdit("
 				+ app.getJavaScriptClass() + "," + this.getJsRef() + ");");
 		this.setJavaScriptMember(WT_RESIZE_JS,
-				"function(e,w,h) { var obj = $('#" + this.getId()
-						+ "').data('obj'); obj.wtResize(e,w,h); };");
+				"function(e, w, h) { var obj = $('#" + this.getId()
+						+ "').data('obj'); obj.wtResize(e, w, h); };");
 		String direction = app.getLayoutDirection() == LayoutDirection.LeftToRight ? "ltr"
 				: "rtl";
 		this.setConfigurationSetting("directionality", direction);

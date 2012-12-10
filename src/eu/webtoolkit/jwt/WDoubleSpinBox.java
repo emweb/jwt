@@ -232,6 +232,7 @@ public class WDoubleSpinBox extends WAbstractSpinBox {
 				}
 			});
 		}
+		super.signalConnectionsChanged();
 	}
 
 	String getJsMinMaxStep() {

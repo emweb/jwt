@@ -235,14 +235,6 @@ public class WScrollArea extends WWebWidget {
 	}
 
 	void updateDom(DomElement element, boolean all) {
-		if (all) {
-			if (this.isInLayout()
-					&& WApplication.getInstance().getEnvironment().hasAjax()) {
-				this
-						.setJavaScriptMember(WT_RESIZE_JS,
-								"function(s, w, h) {s.style.width=w+'px';s.style.height=h+'px';}");
-			}
-		}
 		if (this.widgetChanged_ || all) {
 			if (this.widget_ != null) {
 				element.addChild(this.widget_.createSDomElement(WApplication

@@ -202,6 +202,7 @@ public class WSpinBox extends WAbstractSpinBox {
 				}
 			});
 		}
+		super.signalConnectionsChanged();
 	}
 
 	String getJsMinMaxStep() {

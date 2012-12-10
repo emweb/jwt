@@ -1151,11 +1151,11 @@ class WebRenderer implements SlotLearnerInterface {
 			}
 			if (s.getSender() == app) {
 				s.processPreLearnStateless(this);
-			}
-			WWidget ww = ((s.getSender()) instanceof WWidget ? (WWidget) (s
-					.getSender()) : null);
-			if (ww != null && ww.isRendered()) {
-				s.processPreLearnStateless(this);
+			} else {
+				WWidget ww = (WWidget) s.getSender();
+				if (ww != null && ww.isRendered()) {
+					s.processPreLearnStateless(this);
+				}
 			}
 		}
 		out.append(this.statelessJS_.toString());
@@ -1370,44 +1370,59 @@ class WebRenderer implements SlotLearnerInterface {
 					appendAttribute(result, "lang", m.lang);
 				}
 				appendAttribute(result, "content", m.content.toString());
-				result.append(xhtml ? "/>" : ">");
+				if (xhtml) {
+					result.append("/>");
+				} else {
+					result.append('>');
+				}
 			}
 			for (int i = 0; i < this.session_.getApp().metaLinks_.size(); ++i) {
 				WApplication.MetaLink ml = this.session_.getApp().metaLinks_
 						.get(i);
-				EscapeOStream link = new EscapeOStream();
-				link.append("<link");
-				appendAttribute(link, "href", ml.href);
-				appendAttribute(link, "rel", ml.rel);
+				result.append("<link");
+				appendAttribute(result, "href", ml.href);
+				appendAttribute(result, "rel", ml.rel);
 				if (ml.media.length() != 0) {
-					appendAttribute(link, "media", ml.media);
+					appendAttribute(result, "media", ml.media);
 				}
 				if (ml.hreflang.length() != 0) {
-					appendAttribute(link, "hreflang", ml.hreflang);
+					appendAttribute(result, "hreflang", ml.hreflang);
 				}
 				if (ml.type.length() != 0) {
-					appendAttribute(link, "type", ml.type);
+					appendAttribute(result, "type", ml.type);
 				}
 				if (ml.sizes.length() != 0) {
-					appendAttribute(link, "sizes", ml.sizes);
+					appendAttribute(result, "sizes", ml.sizes);
 				}
 				if (ml.disabled) {
-					appendAttribute(link, "disabled", "");
+					appendAttribute(result, "disabled", "");
 				}
-				link.append(xhtml ? "/>" : ">");
-				result.append(link.toString());
+				if (xhtml) {
+					result.append("/>");
+				} else {
+					result.append('>');
+				}
 			}
 		} else {
 			if (this.session_.getEnv().agentIsIElt(9)) {
-				result.append(
-						"<meta http-equiv=\"X-UA-Compatible\" content=\"IE=7")
-						.append(xhtml ? "\"/>" : "\">").append('\n');
+				result
+						.append("<meta http-equiv=\"X-UA-Compatible\" content=\"IE=7");
+				if (xhtml) {
+					result.append("\"/>");
+				} else {
+					result.append("\">");
+				}
+				result.append('\n');
 			} else {
 				if (this.session_.getEnv().getAgent() == WEnvironment.UserAgent.IE9) {
 					result
-							.append(
-									"<meta http-equiv=\"X-UA-Compatible\" content=\"IE=9")
-							.append(xhtml ? "\"/>" : "\">").append('\n');
+							.append("<meta http-equiv=\"X-UA-Compatible\" content=\"IE=9");
+					if (xhtml) {
+						result.append("\"/>");
+					} else {
+						result.append("\">");
+					}
+					result.append('\n');
 				}
 			}
 		}
@@ -1415,14 +1430,22 @@ class WebRenderer implements SlotLearnerInterface {
 			result
 					.append(
 							"<link rel=\"icon\" type=\"image/vnd.microsoft.icon\" href=\"")
-					.append(this.session_.getFavicon()).append(
-							xhtml ? "\"/>" : "\">");
+					.append(this.session_.getFavicon());
+			if (xhtml) {
+				result.append("\"/>");
+			} else {
+				result.append("\">");
+			}
 		}
 		String baseUrl = "";
 		baseUrl = WApplication.readConfigurationProperty("baseURL", baseUrl);
 		if (baseUrl.length() != 0) {
-			result.append("<base href=\"").append(baseUrl).append(
-					xhtml ? "\"/>" : "\">");
+			result.append("<base href=\"").append(baseUrl);
+			if (xhtml) {
+				result.append("\"/>");
+			} else {
+				result.append("\">");
+			}
 		}
 		return result.toString();
 	}
@@ -1492,7 +1515,7 @@ class WebRenderer implements SlotLearnerInterface {
 	}
 
 	static void appendAttribute(EscapeOStream eos, String name, String value) {
-		eos.append(" ").append(name).append("=\"");
+		eos.append(' ').append(name).append("=\"");
 		eos.pushEscape(EscapeOStream.RuleSet.HtmlAttribute);
 		eos.append(value);
 		eos.popEscape();
