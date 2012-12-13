@@ -766,6 +766,7 @@ public class WTableView extends WAbstractItemView {
 			this.columns_.add(0 + i, this.createColumnInfo(i));
 			width += (int) this.columnInfo(i).width.toPixels() + 7;
 		}
+		this.shiftModelIndexColumns(start, end - start + 1);
 		if (this.isAjaxMode()) {
 			this.canvas_.setWidth(new WLength(this.canvas_.getWidth()
 					.toPixels()
@@ -795,6 +796,7 @@ public class WTableView extends WAbstractItemView {
 				this.closeEditor(this.getModel().getIndex(r, c), false);
 			}
 		}
+		this.shiftModelIndexColumns(start, -(end - start + 1));
 		int count = end - start + 1;
 		int width = 0;
 		for (int i = start; i < start + count; ++i) {
@@ -831,7 +833,7 @@ public class WTableView extends WAbstractItemView {
 				.equals(this.getRootIndex())))) {
 			return;
 		}
-		this.shiftModelIndexes(start, end - start + 1);
+		this.shiftModelIndexRows(start, end - start + 1);
 		if (this.isAjaxMode()) {
 			this.canvas_.setHeight(new WLength(this.getCanvasHeight()));
 			this.headerColumnsCanvas_.setHeight(new WLength(this
@@ -857,7 +859,7 @@ public class WTableView extends WAbstractItemView {
 				this.closeEditor(this.getModel().getIndex(r, c), false);
 			}
 		}
-		this.shiftModelIndexes(start, -(end - start + 1));
+		this.shiftModelIndexRows(start, -(end - start + 1));
 	}
 
 	private void modelRowsRemoved(WModelIndex parent, int start, int end) {
@@ -1669,7 +1671,7 @@ public class WTableView extends WAbstractItemView {
 		}
 	}
 
-	private void shiftModelIndexes(int start, int count) {
+	private void shiftModelIndexRows(int start, int count) {
 		SortedSet<WModelIndex> set = this.getSelectionModel().selection_;
 		List<WModelIndex> toShift = new ArrayList<WModelIndex>();
 		List<WModelIndex> toErase = new ArrayList<WModelIndex>();
@@ -1695,7 +1697,40 @@ public class WTableView extends WAbstractItemView {
 					toShift.get(i).getColumn(), toShift.get(i).getParent());
 			set.add(newIndex);
 		}
-		this.shiftEditors(this.getRootIndex(), start, count, true);
+		this.shiftEditorRows(this.getRootIndex(), start, count, true);
+		if (!toErase.isEmpty()) {
+			this.selectionChanged().trigger();
+		}
+	}
+
+	private void shiftModelIndexColumns(int start, int count) {
+		SortedSet<WModelIndex> set = this.getSelectionModel().selection_;
+		List<WModelIndex> toShift = new ArrayList<WModelIndex>();
+		List<WModelIndex> toErase = new ArrayList<WModelIndex>();
+		for (Iterator<WModelIndex> it_it = set.tailSet(
+				this.getModel().getIndex(0, start, this.getRootIndex()))
+				.iterator(); it_it.hasNext();) {
+			WModelIndex it = it_it.next();
+			if (count < 0) {
+				if (it.getColumn() < start - count) {
+					toErase.add(it);
+					continue;
+				}
+			}
+			toShift.add(it);
+			toErase.add(it);
+		}
+		for (int i = 0; i < toErase.size(); ++i) {
+			set.remove(toErase.get(i));
+		}
+		for (int i = 0; i < toShift.size(); ++i) {
+			WModelIndex newIndex = this.getModel().getIndex(
+					toShift.get(i).getRow(),
+					toShift.get(i).getColumn() + count,
+					toShift.get(i).getParent());
+			set.add(newIndex);
+		}
+		this.shiftEditorColumns(this.getRootIndex(), start, count, true);
 		if (!toErase.isEmpty()) {
 			this.selectionChanged().trigger();
 		}
@@ -1852,6 +1887,6 @@ public class WTableView extends WAbstractItemView {
 				JavaScriptScope.WtClassScope,
 				JavaScriptObjectType.JavaScriptConstructor,
 				"WTableView",
-				"function(o,i,d,p,q){function u(a){var b=-1,c=-1,e=false,k=false,h=null;for(a=f.target(a);a;){var g=$(a);if(g.hasClass(\"Wt-tv-contents\"))break;else if(g.hasClass(\"Wt-tv-c\")){if(a.getAttribute(\"drop\")===\"true\")k=true;if(g.hasClass(\"Wt-selected\"))e=true;h=a;a=a.parentNode;b=a.className.split(\" \")[0].substring(7)*1;c=g.index();break}a=a.parentNode}return{columnId:b,rowIdx:c,selected:e,drop:k,el:h}}function x(){return f.pxself(d.firstChild,\"lineHeight\")} function v(a){var b,c,e=a.parentNode.childNodes;b=0;for(c=e.length;b<c;++b)if(e[b]==a)return b;return-1}function D(a,b){var c=$(document.body).hasClass(\"Wt-rtl\");if(c)b=-b;var e=a.className.split(\" \")[0],k=e.substring(7)*1,h=a.parentNode,g=h.parentNode!==p,j=g?q.firstChild:d.firstChild,l=j.firstChild;e=$(j).find(\".\"+e).get(0);var m=a.nextSibling,r=e.nextSibling,w=f.pxself(a,\"width\")-1+b,y=f.pxself(h,\"width\")+b+\"px\";h.style.width=j.style.width=l.style.width=y;if(g){q.style.width=y;o.layouts2.adjust(i.children[0].id, [[1,0]])}a.style.width=w+1+\"px\";for(e.style.width=w+7+\"px\";m;m=m.nextSibling)if(r){if(c)r.style.right=f.pxself(r,\"right\")+b+\"px\";else r.style.left=f.pxself(r,\"left\")+b+\"px\";r=r.nextSibling}o.emit(i,\"columnResized\",k,parseInt(w));E.autoJavaScript()}jQuery.data(i,\"obj\",this);var E=this,f=o.WT,z=0,A=0,B=0,C=0,s=0,t=0;d.onscroll=function(){t=p.scrollLeft=d.scrollLeft;s=q.scrollTop=d.scrollTop;if(!(d.scrollTop==0&&f.isAndroid))if(d.clientWidth&&d.clientHeight&&(d.scrollTop<B||d.scrollTop>C||d.scrollLeft< z||d.scrollLeft>A))o.emit(i,\"scrolled\",d.scrollLeft,d.scrollTop,d.clientWidth,d.clientHeight)};this.mouseDown=function(a,b){f.capture(null);a=u(b);i.getAttribute(\"drag\")===\"true\"&&a.selected&&o._p_.dragStart(i,b)};this.resizeHandleMDown=function(a,b){var c=a.parentNode,e=-(f.pxself(c,\"width\")-1),k=1E4;if($(document.body).hasClass(\"Wt-rtl\")){var h=e;e=-k;k=-h}new f.SizeHandle(f,\"h\",a.offsetWidth,i.offsetHeight,e,k,\"Wt-hsh\",function(g){D(c,g)},a,i,b,-2,-1)};this.scrolled=function(a,b,c,e){z=a;A=b;B= c;C=e};this.resetScroll=function(){p.scrollLeft=t;d.scrollLeft=t;d.scrollTop=s;q.scrollTop=s};this.scrollTo=function(a,b,c){if(b!=-1){a=d.scrollTop;var e=d.clientHeight;if(c==0)if(a+e<b)c=1;else if(b<a)c=2;switch(c){case 1:d.scrollTop=b;break;case 2:d.scrollTop=b-(e-x());break;case 3:d.scrollTop=b-(e-x())/2;break}d.onscroll()}};var n=null;i.handleDragDrop=function(a,b,c,e,k){if(n){n.className=n.classNameOrig;n=null}if(a!=\"end\"){var h=u(c);if(!h.selected&&h.drop)if(a==\"drop\")o.emit(i,{name:\"dropEvent\", eventObject:b,event:c},h.rowIdx,h.columnId,e,k);else{b.className=\"Wt-valid-drop\";n=h.el;n.classNameOrig=n.className;n.className+=\" Wt-drop-site\"}else b.className=\"\"}};i.onkeydown=function(a){var b=a||window.event;if(b.keyCode==9){f.cancelEvent(b);var c=u(b);if(c.el){a=c.el.parentNode;c=v(c.el);var e=v(a),k=a.parentNode.childNodes.length,h=a.childNodes.length;b=b.shiftKey;for(var g=false,j=c,l;;){for(;b?j>=0:j<h;j=b?j-1:j+1)for(l=j==c&&!g?b?e-1:e+1:b?k-1:0;b?l>=0:l<k;l=b?l-1:l+1){if(j==c&&l==e)return; a=a.parentNode.childNodes[l];var m=$(a.childNodes[j]).find(\":input\");if(m.size()>0){setTimeout(function(){m.focus()},0);return}}j=b?h-1:0;g=true}}}else if(b.keyCode>=37&&b.keyCode<=40){g=f.target(b);if(g.nodeName!=\"select\"){c=u(b);if(c.el){a=c.el.parentNode;c=v(c.el);e=v(a);k=a.parentNode.childNodes.length;h=a.childNodes.length;switch(b.keyCode){case 39:if(f.hasTag(g,\"INPUT\")&&g.type==\"text\"){j=f.getSelectionRange(g);if(j.start!=g.value.length)return}e++;break;case 38:c--;break;case 37:if(f.hasTag(g, \"INPUT\")&&g.type==\"text\"){j=f.getSelectionRange(g);if(j.start!=0)return}e--;break;case 40:c++;break;default:return}f.cancelEvent(b);if(c>-1&&c<h&&e>-1&&e<k){a=a.parentNode.childNodes[e];m=$(a.childNodes[c]).find(\":input\");m.size()>0&&setTimeout(function(){m.focus()},0)}}}}};this.autoJavaScript=function(){if(i.parentNode==null){i=d=p=null;this.autoJavaScript=function(){}}else if(!f.isHidden(i)){if(!f.isIE&&(s!=d.scrollTop||t!=d.scrollLeft)){p.scrollLeft=d.scrollLeft=t;q.scrollTop=d.scrollTop=s}var a= i.offsetWidth-f.px(i,\"borderLeftWidth\")-f.px(i,\"borderRightWidth\"),b=d.offsetWidth-d.clientWidth;a-=b;a-=q.clientWidth;if(a>200&&a!=d.tw){d.tw=a;d.style.width=a+b+\"px\";p.style.width=a+\"px\";if(!f.isIE)p.style.marginRight=b+\"px\"}a=d.offsetHeight-d.clientHeight;if((b=q.style)&&b.marginBottom!==a+\"px\"){b.marginBottom=a+\"px\";o.layouts2.adjust(i.children[0].id,[[1,0]])}}}}");
+				"function(n,h,d,p,q){function u(a){var b=-1,c=-1,e=false,k=false,i=null;for(a=f.target(a);a;){var g=$(a);if(g.hasClass(\"Wt-tv-contents\"))break;else if(g.hasClass(\"Wt-tv-c\")){if(a.getAttribute(\"drop\")===\"true\")k=true;if(g.hasClass(\"Wt-selected\"))e=true;i=a;a=a.parentNode;b=a.className.split(\" \")[0].substring(7)*1;c=g.index();break}a=a.parentNode}return{columnId:b,rowIdx:c,selected:e,drop:k,el:i}}function B(){return f.pxself(d.firstChild,\"lineHeight\")} function v(a){var b,c,e=a.parentNode.childNodes;b=0;for(c=e.length;b<c;++b)if(e[b]==a)return b;return-1}function F(a,b){var c=$(document.body).hasClass(\"Wt-rtl\");if(c)b=-b;var e=a.className.split(\" \")[0],k=e.substring(7)*1,i=a.parentNode,g=i.parentNode!==p,j=g?q.firstChild:d.firstChild,l=j.firstChild;e=$(j).find(\".\"+e).get(0);var m=a.nextSibling,r=e.nextSibling,w=f.pxself(a,\"width\")-1+b,C=f.pxself(i,\"width\")+b+\"px\";i.style.width=j.style.width=l.style.width=C;if(g){q.style.width=C;n.layouts2.adjust(h.children[0].id, [[1,0]])}a.style.width=w+1+\"px\";for(e.style.width=w+7+\"px\";m;m=m.nextSibling)if(r){if(c)r.style.right=f.pxself(r,\"right\")+b+\"px\";else r.style.left=f.pxself(r,\"left\")+b+\"px\";r=r.nextSibling}n.emit(h,\"columnResized\",k,parseInt(w));G.autoJavaScript()}jQuery.data(h,\"obj\",this);var G=this,f=n.WT,x=0,y=0,z=0,A=0,s=0,t=0,D=0,E=0;d.onscroll=function(){t=p.scrollLeft=d.scrollLeft;s=q.scrollTop=d.scrollTop;if(!(d.scrollTop==0&&f.isAndroid))if(d.clientWidth&&d.clientHeight&&(d.scrollTop<z||d.scrollTop>A||d.scrollLeft< x||d.scrollLeft>y))n.emit(h,\"scrolled\",d.scrollLeft,d.scrollTop,d.clientWidth,d.clientHeight)};d.wtResize=function(a,b,c){if(b-D>(y-x)/2||c-E>(A-z)/2){D=b;E=c;n.emit(h,\"scrolled\",a.scrollLeft,a.scrollTop,a.clientWidth,a.clientHeight)}};this.mouseDown=function(a,b){f.capture(null);a=u(b);h.getAttribute(\"drag\")===\"true\"&&a.selected&&n._p_.dragStart(h,b)};this.resizeHandleMDown=function(a,b){var c=a.parentNode,e=-(f.pxself(c,\"width\")-1),k=1E4;if($(document.body).hasClass(\"Wt-rtl\")){var i=e;e=-k;k=-i}new f.SizeHandle(f, \"h\",a.offsetWidth,h.offsetHeight,e,k,\"Wt-hsh\",function(g){F(c,g)},a,h,b,-2,-1)};this.scrolled=function(a,b,c,e){x=a;y=b;z=c;A=e};this.resetScroll=function(){p.scrollLeft=t;d.scrollLeft=t;d.scrollTop=s;q.scrollTop=s};this.scrollTo=function(a,b,c){if(b!=-1){a=d.scrollTop;var e=d.clientHeight;if(c==0)if(a+e<b)c=1;else if(b<a)c=2;switch(c){case 1:d.scrollTop=b;break;case 2:d.scrollTop=b-(e-B());break;case 3:d.scrollTop=b-(e-B())/2;break}d.onscroll()}};var o=null;h.handleDragDrop=function(a,b,c,e,k){if(o){o.className= o.classNameOrig;o=null}if(a!=\"end\"){var i=u(c);if(!i.selected&&i.drop)if(a==\"drop\")n.emit(h,{name:\"dropEvent\",eventObject:b,event:c},i.rowIdx,i.columnId,e,k);else{b.className=\"Wt-valid-drop\";o=i.el;o.classNameOrig=o.className;o.className+=\" Wt-drop-site\"}else b.className=\"\"}};h.onkeydown=function(a){var b=a||window.event;if(b.keyCode==9){f.cancelEvent(b);var c=u(b);if(c.el){a=c.el.parentNode;c=v(c.el);var e=v(a),k=a.parentNode.childNodes.length,i=a.childNodes.length;b=b.shiftKey;for(var g=false,j= c,l;;){for(;b?j>=0:j<i;j=b?j-1:j+1)for(l=j==c&&!g?b?e-1:e+1:b?k-1:0;b?l>=0:l<k;l=b?l-1:l+1){if(j==c&&l==e)return;a=a.parentNode.childNodes[l];var m=$(a.childNodes[j]).find(\":input\");if(m.size()>0){setTimeout(function(){m.focus()},0);return}}j=b?i-1:0;g=true}}}else if(b.keyCode>=37&&b.keyCode<=40){g=f.target(b);if(g.nodeName!=\"select\"){c=u(b);if(c.el){a=c.el.parentNode;c=v(c.el);e=v(a);k=a.parentNode.childNodes.length;i=a.childNodes.length;switch(b.keyCode){case 39:if(f.hasTag(g,\"INPUT\")&&g.type== \"text\"){j=f.getSelectionRange(g);if(j.start!=g.value.length)return}e++;break;case 38:c--;break;case 37:if(f.hasTag(g,\"INPUT\")&&g.type==\"text\"){j=f.getSelectionRange(g);if(j.start!=0)return}e--;break;case 40:c++;break;default:return}f.cancelEvent(b);if(c>-1&&c<i&&e>-1&&e<k){a=a.parentNode.childNodes[e];m=$(a.childNodes[c]).find(\":input\");m.size()>0&&setTimeout(function(){m.focus()},0)}}}}};this.autoJavaScript=function(){if(h.parentNode==null){h=d=p=null;this.autoJavaScript=function(){}}else if(!f.isHidden(h)){if(!f.isIE&& (s!=d.scrollTop||t!=d.scrollLeft)){p.scrollLeft=d.scrollLeft=t;q.scrollTop=d.scrollTop=s}var a=h.offsetWidth-f.px(h,\"borderLeftWidth\")-f.px(h,\"borderRightWidth\"),b=d.offsetWidth-d.clientWidth;a-=b;a-=q.clientWidth;if(a>200&&a!=d.tw){d.tw=a;d.style.width=a+b+\"px\";p.style.width=a+\"px\";if(!f.isIE)p.style.marginRight=b+\"px\"}a=d.offsetHeight-d.clientHeight;if((b=q.style)&&b.marginBottom!==a+\"px\"){b.marginBottom=a+\"px\";n.layouts2.adjust(h.children[0].id,[[1,0]])}}}}");
 	}
 }

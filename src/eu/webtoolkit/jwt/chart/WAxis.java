@@ -914,19 +914,16 @@ public class WAxis {
 				} else {
 					if (this.scale_ == AxisScale.DateScale
 							|| this.scale_ == AxisScale.DateTimeScale) {
-						double daysRange;
 						double daysInterval = 0.0;
 						WDate min = null;
 						WDate max = null;
 						int interval;
 						if (this.scale_ == AxisScale.DateScale) {
-							daysRange = diff;
 							daysInterval = this.renderInterval_;
 							min = WDate.fromJulianDay((int) s.renderMinimum);
 							max = WDate.fromJulianDay((int) s.renderMaximum);
 						} else {
 							if (this.scale_ == AxisScale.DateTimeScale) {
-								daysRange = diff / (60.0 * 60.0 * 24);
 								daysInterval = this.renderInterval_
 										/ (60.0 * 60.0 * 24);
 								min = new WDate(new Date(

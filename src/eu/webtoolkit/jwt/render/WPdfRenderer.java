@@ -36,31 +36,6 @@ import org.slf4j.LoggerFactory;
  * {@link WTextRenderer#setFontScale(double factor)
  * WTextRenderer#setFontScale()} to scale the font size differently than other
  * content.
- * <p>
- * Usage example:
- * <p>
- * 
- * <pre>
- * {@code
- *  extern "C" {
- *    HPDF_STATUS HPDF_UseUTFEncodings(HPDF_Doc pdf);
- *  }
- * 	
- *  HPDF_Doc pdf = HPDF_New(error_handler, 0);
- *  HPDF_UseUTFEncodings(pdf); // enables UTF-8 encoding with true type fonts
- *  HPDF_Page page = HPDF_AddPage(pdf);
- *  HPDF_Page_SetSize(page, HPDF_PAGE_SIZE_A4, HPDF_PAGE_PORTRAIT);
- * 
- *  Render::WPdfRenderer renderer(pdf, page);
- *  renderer.setMargin(2.54);
- *  renderer.setDpi(96);
- * 
- *  renderer.render("<p style=\"background-color: #c11\">Hello, world !</p>");
- * 
- *  HPDF_SaveToFile(pdf, "hello.pdf");
- *  HPDF_Free(pdf);
- * }
- * </pre>
  */
 public class WPdfRenderer extends WTextRenderer {
 	private static Logger logger = LoggerFactory.getLogger(WPdfRenderer.class);

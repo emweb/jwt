@@ -102,6 +102,7 @@ public class WMemoryResource extends WResource {
 	@Override
 	protected void handleRequest(WebRequest request, WebResponse response) throws IOException {
 		response.setContentType(mimeType_);
-		response.getOutputStream().write(data_);
+		if (data_ != null)
+			response.getOutputStream().write(data_);
 	}
 }

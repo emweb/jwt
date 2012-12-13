@@ -155,6 +155,7 @@ public class WDatePicker extends WCompositeWidget {
 	 * @see WDate#toString()
 	 */
 	public void setFormat(String format) {
+		WDate d = this.getDate();
 		this.format_ = format;
 		WDateValidator dv = ((this.forEdit_.getValidator()) instanceof WDateValidator ? (WDateValidator) (this.forEdit_
 				.getValidator())
@@ -162,6 +163,7 @@ public class WDatePicker extends WCompositeWidget {
 		if (dv != null) {
 			dv.setFormat(format);
 		}
+		this.setDate(d);
 	}
 
 	/**

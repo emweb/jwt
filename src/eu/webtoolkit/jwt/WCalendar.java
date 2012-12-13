@@ -638,8 +638,7 @@ public class WCalendar extends WCompositeWidget {
 		buf = String.valueOf(date.getDay());
 		t.setText(new WString(buf));
 		String styleClass = "";
-		if (!(this.bottom_ == null) && date.before(this.bottom_)
-				|| !(this.top_ == null) && date.after(this.top_)) {
+		if (this.isInvalid(date)) {
 			styleClass += " Wt-cal-oor";
 		} else {
 			if (date.getMonth() != this.getCurrentMonth()) {
@@ -853,22 +852,31 @@ public class WCalendar extends WCompositeWidget {
 		}
 	}
 
+	private boolean isInvalid(WDate dt) {
+		return !(this.bottom_ == null) && dt.before(this.bottom_)
+				|| !(this.top_ == null) && dt.after(this.top_);
+	}
+
 	private void cellClicked(WCalendar.Coordinate weekday) {
 		WDate dt = this.dateForCell(weekday.i, weekday.j);
-		this.clicked().trigger(
-				new WDate(dt.getYear(), dt.getMonth(), dt.getDay()));
+		WDate d = new WDate(dt.getYear(), dt.getMonth(), dt.getDay());
+		if (this.isInvalid(d)) {
+			return;
+		}
+		this.clicked().trigger(d);
 		if (this.selectionMode_ != SelectionMode.ExtendedSelection
 				&& this.singleClickSelect_) {
-			this.activated().trigger(
-					new WDate(dt.getYear(), dt.getMonth(), dt.getDay()));
+			this.activated().trigger(d);
 		}
 	}
 
 	private void cellDblClicked(WCalendar.Coordinate weekday) {
 		WDate dt = this.dateForCell(weekday.i, weekday.j);
-		this.clicked().trigger(
-				new WDate(dt.getYear(), dt.getMonth(), dt.getDay()));
-		this.activated().trigger(
-				new WDate(dt.getYear(), dt.getMonth(), dt.getDay()));
+		WDate d = new WDate(dt.getYear(), dt.getMonth(), dt.getDay());
+		if (this.isInvalid(d)) {
+			return;
+		}
+		this.clicked().trigger(d);
+		this.activated().trigger(d);
 	}
 }

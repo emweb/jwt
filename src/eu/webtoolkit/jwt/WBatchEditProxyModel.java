@@ -803,7 +803,6 @@ public class WBatchEditProxyModel extends WAbstractProxyModel {
 		if (this.isRemoved(topLeft.getParent())) {
 			return;
 		}
-		WModelIndex parent = this.mapFromSource(topLeft.getParent());
 		for (int row = topLeft.getRow(); row <= bottomRight.getRow(); ++row) {
 			for (int col = topLeft.getColumn(); col <= bottomRight.getColumn(); ++col) {
 				WModelIndex l = this.getSourceModel().getIndex(row, col,

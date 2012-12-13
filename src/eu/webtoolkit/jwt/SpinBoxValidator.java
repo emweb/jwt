@@ -29,9 +29,12 @@ class SpinBoxValidator extends WValidator {
 	}
 
 	public WValidator.Result validate(String input) {
-		return this.spinBox_.parseValue(input) ? new WValidator.Result(
-				WValidator.State.Valid) : new WValidator.Result(
-				WValidator.State.Invalid);
+		boolean valid = this.spinBox_.parseValue(input);
+		if (valid) {
+			return this.spinBox_.getValidateRange();
+		} else {
+			return new WValidator.Result(WValidator.State.Invalid);
+		}
 	}
 
 	public String getJavaScriptValidate() {

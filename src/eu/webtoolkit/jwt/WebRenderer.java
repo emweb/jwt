@@ -368,8 +368,9 @@ class WebRenderer implements SlotLearnerInterface {
 			header.append(Utils.urlEncode(i.getKey())).append('=').append(
 					Utils.urlEncode(value)).append("; Version=1;");
 			if (!(cookie.expires == null)) {
-				String d = cookie.expires.toString(new WString(
-						"ddd, dd-MMM-yyyy hh:mm:ss 'GMT'").toString(), false);
+				String formatString = "EEE, dd-MMM-yyyy hh:mm:ss 'GMT'";
+				String d = cookie.expires.toString(new WString(formatString)
+						.toString(), false);
 				header.append("Expires=").append(d).append(';');
 			}
 			if (cookie.domain.length() != 0) {
@@ -533,9 +534,8 @@ class WebRenderer implements SlotLearnerInterface {
 		this.formObjectsChanged_ = true;
 		app.autoJavaScriptChanged_ = true;
 		if (this.session_.getType() == EntryPointType.WidgetSet) {
-			response.out().append("$(document).ready(function() { ").append(
-					app.getJavaScriptClass()).append(
-					"._p_.update(null, 'load', null, false);});\n");
+			response.out().append(app.getJavaScriptClass()).append(
+					"._p_.update(null, 'load', null, false);");
 		} else {
 			if (!this.rendered_) {
 				this.serveMainAjax(response);
