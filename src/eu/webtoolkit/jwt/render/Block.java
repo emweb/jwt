@@ -604,7 +604,7 @@ class Block {
 			ps.floats.remove(0);
 			Range rangeX = new Range(ps.minX, ps.maxX);
 			adjustAvailableWidth(ps.y, ps.page, ps.floats, rangeX);
-			if (rangeX.end - rangeX.start >= minWidth) {
+			if (!isEpsilonMore(minWidth, rangeX.end - rangeX.start)) {
 				break;
 			}
 		}
@@ -1434,8 +1434,8 @@ class Block {
 							rangeX.end += whitespaceWidth;
 						}
 						if (canIncreaseWidth
-								&& item.getWidth() - EPSILON > rangeX.end
-										- line.getX()) {
+								&& isEpsilonMore(item.getWidth(), rangeX.end
+										- line.getX())) {
 							maxX += w - (rangeX.end - line.getX());
 							rangeX.end += w - (rangeX.end - line.getX());
 						}
@@ -1513,7 +1513,7 @@ class Block {
 						}
 					}
 				}
-				if (lineBreak || w - EPSILON > rangeX.end - line.getX()) {
+				if (lineBreak || isEpsilonMore(w, rangeX.end - line.getX())) {
 					line
 							.setLineBreak(this.type_ == DomElementType.DomElement_BR);
 					line.finish(this.getCssTextAlign(), floats, minX, maxX,
@@ -1527,7 +1527,7 @@ class Block {
 								.getPage());
 						h = 0;
 					} else {
-						if (w - EPSILON > maxX - minX) {
+						if (isEpsilonMore(w, maxX - minX)) {
 							maxX += w - (maxX - minX);
 							rangeX.end += w - (maxX - minX);
 						} else {
@@ -1626,7 +1626,7 @@ class Block {
 		double totalMaxWidth = sum(maximumColumnWidths) + totalSpacing;
 		double desiredMinWidth = Math.max(totalMinWidth, cssSetWidth);
 		double desiredMaxWidth = totalMaxWidth;
-		if (cssSetWidth > 0 && cssSetWidth < totalMaxWidth) {
+		if (cssSetWidth > 0 && cssSetWidth < desiredMaxWidth) {
 			desiredMaxWidth = Math.max(desiredMinWidth, cssSetWidth);
 		}
 		double availableWidth;
@@ -1637,14 +1637,15 @@ class Block {
 			availableWidth = rangeX.end - rangeX.start
 					- this.cssBorderWidth(Side.Left, renderer.getFontScale())
 					- this.cssBorderWidth(Side.Right, renderer.getFontScale());
-			if (canIncreaseWidth && availableWidth < desiredMaxWidth) {
+			if (canIncreaseWidth
+					&& isEpsilonLess(availableWidth, desiredMaxWidth)) {
 				ps.maxX += desiredMaxWidth - availableWidth;
 				availableWidth = desiredMaxWidth;
 			}
-			if (availableWidth >= desiredMinWidth) {
+			if (!isEpsilonLess(availableWidth, desiredMinWidth)) {
 				break;
 			} else {
-				if (desiredMinWidth < ps.maxX - ps.minX) {
+				if (isEpsilonLess(desiredMinWidth, ps.maxX - ps.minX)) {
 					clearFloats(ps, desiredMinWidth);
 				} else {
 					ps.maxX += desiredMinWidth - availableWidth;
@@ -1706,9 +1707,14 @@ class Block {
 		ps.minX += this.cssBoxMargin(Side.Left, renderer.getFontScale());
 		ps.maxX -= this.cssBoxMargin(Side.Right, renderer.getFontScale());
 		Block repeatHead = null;
-		if (!this.children_.isEmpty()
-				&& this.children_.get(0).type_ == DomElementType.DomElement_THEAD) {
-			repeatHead = this.children_.get(0);
+		for (int i = 0; i < this.children_.size(); ++i) {
+			if (this.children_.get(i).type_ == DomElementType.DomElement_THEAD) {
+				repeatHead = this.children_.get(i);
+			} else {
+				if (this.children_.get(i).type_ != DomElementType.DomElement_UNKNOWN) {
+					break;
+				}
+			}
 		}
 		boolean protectRows = repeatHead != null;
 		this.tableDoLayout(ps.minX, ps, cellSpacing, widths, protectRows,
@@ -1743,7 +1749,7 @@ class Block {
 			}
 			List<Block> innerFloats = new ArrayList<Block>();
 			boolean unknownWidth = blockCssWidth < 0
-					&& currentWidth < maxX - minX;
+					&& isEpsilonLess(currentWidth, maxX - minX);
 			double collapseMarginBottom = 0;
 			floatPs.minX = floatX;
 			floatPs.maxX = floatX + currentWidth;
@@ -2012,8 +2018,6 @@ class Block {
 	}
 
 	private void reLayout(BlockBox from, BlockBox to) {
-		System.err.append("Relayout: ").append(String.valueOf(from.y)).append(
-				" -> ").append(String.valueOf(to.y)).append('\n');
 		for (int i = 0; i < this.inlineLayout.size(); ++i) {
 			InlineBox ib = this.inlineLayout.get(i);
 			ib.page = to.page;
@@ -2232,7 +2236,7 @@ class Block {
 			adjustAvailableWidth(ps.y, ps.page, ps.floats, rangeX);
 			ps.maxX = rangeX.end;
 			double availableWidth = rangeX.end - Math.max(x, rangeX.start);
-			if (availableWidth >= width) {
+			if (!isEpsilonLess(availableWidth, width)) {
 				break;
 			} else {
 				if (canIncreaseWidth) {
@@ -2284,6 +2288,14 @@ class Block {
 
 	static final double MARGINX = -1;
 	static final double EPSILON = 1e-4;
+
+	static boolean isEpsilonMore(double x, double limit) {
+		return x - EPSILON > limit;
+	}
+
+	static boolean isEpsilonLess(double x, double limit) {
+		return x + EPSILON < limit;
+	}
 
 	static int sideToIndex(Side side) {
 		switch (side) {

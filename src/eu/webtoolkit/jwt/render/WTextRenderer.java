@@ -120,7 +120,7 @@ public abstract class WTextRenderer {
 				currentPs.maxX = maxX;
 				collapseMarginBottom = docBlock.layoutBlock(currentPs, false,
 						this, Double.MAX_VALUE, collapseMarginBottom);
-				if (currentPs.maxX > maxX) {
+				if (isEpsilonMore(currentPs.maxX, maxX)) {
 					if (!tooWide) {
 						logger.warn(new StringWriter().append(
 								"contents too wide for page.").toString());
@@ -263,5 +263,11 @@ public abstract class WTextRenderer {
 
 	WPainter getPainter() {
 		return this.painter_;
+	}
+
+	static final double EPSILON = 1e-4;
+
+	static boolean isEpsilonMore(double x, double limit) {
+		return x - EPSILON > limit;
 	}
 }

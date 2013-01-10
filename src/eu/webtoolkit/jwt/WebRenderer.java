@@ -547,11 +547,9 @@ class WebRenderer implements SlotLearnerInterface {
 									"var form = Wt3_2_3.getElement('Wt-form'); if (form) {")
 							.append(this.beforeLoadJS_.toString());
 					this.beforeLoadJS_ = new StringWriter();
-					this.collectedJS1_
-							.append("var domRoot = ")
-							.append(app.domRoot_.getJsRef())
-							.append(
-									";domRoot.style.display = form.style.display;document.body.replaceChild(domRoot, form);");
+					this.collectedJS1_.append("var domRoot=").append(
+							app.domRoot_.getJsRef()).append(';').append(
+							"Wt3_2_3.progressed(domRoot);");
 					int librariesLoaded = this.loadScriptLibraries(
 							this.collectedJS1_, app);
 					app.streamBeforeLoadJavaScript(this.collectedJS1_, false);

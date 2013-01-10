@@ -363,11 +363,7 @@ public class AuthWidget extends WTemplateFormView {
 	 * @see AuthWidget#registerNewUser()
 	 */
 	public WWidget createRegistrationView(Identity id) {
-		if (!(this.registrationModel_ != null)) {
-			this.registrationModel_ = this.getCreateRegistrationModel();
-		} else {
-			this.registrationModel_.reset();
-		}
+		this.registrationModel_ = this.getCreateRegistrationModel();
 		if (id.isValid()) {
 			this.registrationModel_.registerIdentified(id);
 		}
@@ -606,13 +602,18 @@ public class AuthWidget extends WTemplateFormView {
 	 * @see AuthWidget#registerNewUser()
 	 */
 	protected RegistrationModel getCreateRegistrationModel() {
-		RegistrationModel result = new RegistrationModel(this.model_
-				.getBaseAuth(), this.model_.getUsers(), this.login_, this);
-		if (this.model_.getPasswordAuth() != null) {
-			result.addPasswordAuth(this.model_.getPasswordAuth());
+		if (!(this.registrationModel_ != null)) {
+			this.registrationModel_ = new RegistrationModel(this.model_
+					.getBaseAuth(), this.model_.getUsers(), this.login_, this);
+			if (this.model_.getPasswordAuth() != null) {
+				this.registrationModel_.addPasswordAuth(this.model_
+						.getPasswordAuth());
+			}
+			this.registrationModel_.addOAuth(this.model_.getOAuth());
+		} else {
+			this.registrationModel_.reset();
 		}
-		result.addOAuth(this.model_.getOAuth());
-		return result;
+		return this.registrationModel_;
 	}
 
 	protected WFormWidget createFormWidget(String field) {

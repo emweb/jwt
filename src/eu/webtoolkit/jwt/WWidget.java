@@ -55,7 +55,7 @@ public abstract class WWidget extends WObject {
 	 */
 	public void remove() {
 		while (!this.eventSignals_.isEmpty()) {
-			AbstractEventSignal s = this.eventSignals_.peek();
+			AbstractEventSignal s = this.eventSignals_.getFirst();
 			this.eventSignals_.removeFirst();
 			;
 		}
@@ -1609,7 +1609,7 @@ public abstract class WWidget extends WObject {
 	}
 
 	void addEventSignal(AbstractEventSignal s) {
-		this.eventSignals_.offer(s);
+		this.eventSignals_.addLast(s);
 	}
 
 	AbstractEventSignal getEventSignal(String name) {

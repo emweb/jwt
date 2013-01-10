@@ -543,7 +543,7 @@ public class DomElement {
 						'=').append("$('#").append(this.childrenToSave_.get(i))
 						.append("')");
 				if (app.getEnvironment().agentIsIE()) {
-					out.append(".remove()");
+					out.append(".detach()");
 				}
 				out.append(";");
 			}

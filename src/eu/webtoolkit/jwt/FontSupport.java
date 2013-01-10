@@ -62,7 +62,11 @@ class FontSupport {
 	public FontSupport(WPaintDevice device) {
 		this.device_ = device;
 		this.fontCollections_ = new ArrayList<FontSupport.FontCollection>();
+		this.cache_ = new LinkedList<FontSupport.Matched>();
 		this.font_ = null;
+		for (int i = 0; i < 5; ++i) {
+			this.cache_.addLast(new FontSupport.Matched());
+		}
 	}
 
 	public void setDevice(WPaintDevice device) {
@@ -70,6 +74,19 @@ class FontSupport {
 	}
 
 	public FontMatch matchFont(WFont font) {
+		for (Iterator<FontSupport.Matched> i_it = this.cache_.iterator(); i_it
+				.hasNext();) {
+			FontSupport.Matched i = i_it.next();
+			if (i.font.getGenericFamily() == font.getGenericFamily()
+					&& i.font.getSpecificFamilies().equals(
+							font.getSpecificFamilies())
+					&& i.font.getWeight() == font.getWeight()
+					&& i.font.getStyle() == font.getStyle()) {
+				CollectionUtils.splice(this.cache_, this.cache_.iterator(),
+						this.cache_, i);
+				return this.cache_.getFirst().match;
+			}
+		}
 		FontMatch match = new FontMatch();
 		for (int i = 0; i < this.fontCollections_.size(); ++i) {
 			FontMatch m = this.matchFont(font,
@@ -79,6 +96,10 @@ class FontSupport {
 				Utils.assignFontMatch(match, m);
 			}
 		}
+		this.cache_.removeLast();
+		this.cache_.addFirst(new FontSupport.Matched());
+		this.cache_.getFirst().font = font;
+		Utils.assignFontMatch(this.cache_.getFirst().match, match);
 		return match;
 	}
 
@@ -138,6 +159,20 @@ class FontSupport {
 	}
 
 	private List<FontSupport.FontCollection> fontCollections_;
+
+	static class Matched {
+		private static Logger logger = LoggerFactory.getLogger(Matched.class);
+
+		public WFont font;
+		public FontMatch match;
+
+		public Matched() {
+			this.font = new WFont();
+			this.match = new FontMatch();
+		}
+	}
+
+	private LinkedList<FontSupport.Matched> cache_;
 	private WFont font_;
 
 	private FontMatch matchFont(WFont font, String directory, boolean recursive) {

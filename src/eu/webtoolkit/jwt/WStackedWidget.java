@@ -52,6 +52,7 @@ public class WStackedWidget extends WContainerWidget {
 		super(parent);
 		this.animation_ = new WAnimation();
 		this.currentIndex_ = -1;
+		this.widgetsAdded_ = false;
 		this.javaScriptDefined_ = false;
 		this.loadAnimateJS_ = false;
 		;
@@ -72,9 +73,8 @@ public class WStackedWidget extends WContainerWidget {
 		super.addWidget(widget);
 		if (this.currentIndex_ == -1) {
 			this.currentIndex_ = 0;
-		} else {
-			widget.hide();
 		}
+		this.widgetsAdded_ = true;
 	}
 
 	/**
@@ -110,9 +110,8 @@ public class WStackedWidget extends WContainerWidget {
 		super.insertWidget(index, widget);
 		if (this.currentIndex_ == -1) {
 			this.currentIndex_ = 0;
-		} else {
-			widget.hide();
 		}
+		this.widgetsAdded_ = true;
 	}
 
 	/**
@@ -265,6 +264,14 @@ public class WStackedWidget extends WContainerWidget {
 	}
 
 	protected void render(EnumSet<RenderFlag> flags) {
+		if (this.widgetsAdded_) {
+			for (int i = 0; i < this.getCount(); ++i) {
+				if (this.getWidget(i).isHidden() != (this.currentIndex_ != i)) {
+					this.getWidget(i).setHidden(this.currentIndex_ != i);
+				}
+			}
+			this.widgetsAdded_ = false;
+		}
 		if (!EnumUtils.mask(flags, RenderFlag.RenderFull).isEmpty()) {
 			this.defineJavaScript();
 		}
@@ -274,6 +281,7 @@ public class WStackedWidget extends WContainerWidget {
 	private WAnimation animation_;
 	private boolean autoReverseAnimation_;
 	private int currentIndex_;
+	private boolean widgetsAdded_;
 	private boolean javaScriptDefined_;
 	private boolean loadAnimateJS_;
 

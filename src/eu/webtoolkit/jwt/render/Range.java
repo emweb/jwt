@@ -31,4 +31,12 @@ class Range {
 	public double end;
 	static final double MARGINX = -1;
 	static final double EPSILON = 1e-4;
+
+	static boolean isEpsilonMore(double x, double limit) {
+		return x - EPSILON > limit;
+	}
+
+	static boolean isEpsilonLess(double x, double limit) {
+		return x + EPSILON < limit;
+	}
 }
