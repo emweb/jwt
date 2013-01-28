@@ -151,7 +151,9 @@ public abstract class WFormWidget extends WInteractWidget {
 			}
 			this.validatorChanged();
 		} else {
-			this.removeStyleClass("Wt-invalid", true);
+			WApplication.getInstance().getTheme().applyValidationStyle(this,
+					new WValidator.Result(),
+					ValidationStyleFlag.ValidationNoStyle);
 			;
 			this.validateJs_ = null;
 			;
@@ -176,8 +178,9 @@ public abstract class WFormWidget extends WInteractWidget {
 		if (this.getValidator() != null) {
 			WValidator.Result result = this.getValidator().validate(
 					this.getValueText());
-			this.toggleStyleClass("Wt-invalid",
-					result.getState() != WValidator.State.Valid, true);
+			WApplication.getInstance().getTheme().applyValidationStyle(this,
+					result,
+					EnumSet.of(ValidationStyleFlag.ValidationInvalidStyle));
 			if (!this.validationToolTip_.equals(result.getMessage())) {
 				this.validationToolTip_ = result.getMessage();
 				this.flags_.set(BIT_VALIDATION_CHANGED);
@@ -380,6 +383,7 @@ public abstract class WFormWidget extends WInteractWidget {
 	JSlot filterInput_;
 	JSlot removeEmptyText_;
 	WString emptyText_;
+	static String CHANGE_SIGNAL = "M_change";
 
 	void applyEmptyText() {
 		if (this.isRendered() && !(this.emptyText_.length() == 0)) {
@@ -397,6 +401,9 @@ public abstract class WFormWidget extends WInteractWidget {
 		super.enableAjax();
 	}
 
+	private static String SELECT_SIGNAL = "select";
+	private static String FOCUS_SIGNAL = "focus";
+	private static String BLUR_SIGNAL = "blur";
 	private static final int BIT_ENABLED_CHANGED = 0;
 	private static final int BIT_GOT_FOCUS = 1;
 	private static final int BIT_INITIAL_FOCUS = 2;
@@ -432,15 +439,11 @@ public abstract class WFormWidget extends WInteractWidget {
 			if (!(this.validateJs_ != null)) {
 				this.validateJs_ = new JSlot();
 				this.validateJs_
-						.setJavaScript("function(o){Wt3_2_3.validate(o)}");
+						.setJavaScript("function(o){Wt3_3_0.validate(o)}");
 				this.keyWentUp().addListener(this.validateJs_);
 				this.changed().addListener(this.validateJs_);
 				if (this.getDomElementType() != DomElementType.DomElement_SELECT) {
 					this.clicked().addListener(this.validateJs_);
-				}
-			} else {
-				if (this.isRendered()) {
-					this.doJavaScript(this.validateJs_.execJs(this.getJsRef()));
 				}
 			}
 		} else {
@@ -454,7 +457,7 @@ public abstract class WFormWidget extends WInteractWidget {
 				this.keyPressed().addListener(this.filterInput_);
 			}
 			StringUtils.replace(inputFilter, '/', "\\/");
-			this.filterInput_.setJavaScript("function(o,e){Wt3_2_3.filter(o,e,"
+			this.filterInput_.setJavaScript("function(o,e){Wt3_3_0.filter(o,e,"
 					+ jsStringLiteral(inputFilter) + ")}");
 		} else {
 			;
@@ -471,7 +474,7 @@ public abstract class WFormWidget extends WInteractWidget {
 			}
 			WApplication app = WApplication.getInstance();
 			app.loadJavaScript("js/WFormWidget.js", wtjs1());
-			this.setJavaScriptMember(" WFormWidget", "new Wt3_2_3.WFormWidget("
+			this.setJavaScriptMember(" WFormWidget", "new Wt3_3_0.WFormWidget("
 					+ app.getJavaScriptClass() + "," + this.getJsRef() + ","
 					+ WString.toWString(this.emptyText_).getJsStringLiteral()
 					+ ");");
@@ -583,9 +586,4 @@ public abstract class WFormWidget extends WInteractWidget {
 				"WFormWidget",
 				"function(d,a,b){jQuery.data(a,\"obj\",this);var c=d.WT;this.applyEmptyText=function(){if(c.hasFocus(a)){if($(a).hasClass(\"Wt-edit-emptyText\")){if(!c.isIE&&a.oldtype)a.type=a.oldtype;$(a).removeClass(\"Wt-edit-emptyText\");a.value=\"\"}}else if(a.value==\"\"){if(a.type==\"password\")if(c.isIE)return;else{a.oldtype=\"password\";a.type=\"text\"}$(a).addClass(\"Wt-edit-emptyText\");a.value=b}};this.setEmptyText=function(e){b=e;if($(a).hasClass(\"Wt-edit-emptyText\"))a.value= b};this.applyEmptyText()}");
 	}
-
-	static String CHANGE_SIGNAL = "M_change";
-	private static String SELECT_SIGNAL = "select";
-	private static String FOCUS_SIGNAL = "focus";
-	private static String BLUR_SIGNAL = "blur";
 }

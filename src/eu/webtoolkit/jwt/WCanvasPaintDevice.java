@@ -467,7 +467,7 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 	}
 
 	void render(String canvasId, DomElement text) {
-		String canvasVar = "Wt3_2_3.getElement('" + canvasId + "')";
+		String canvasVar = "Wt3_3_0.getElement('" + canvasId + "')";
 		StringWriter tmp = new StringWriter();
 		tmp.append("if(").append(canvasVar).append(".getContext){");
 		if (!this.images_.isEmpty()) {
@@ -919,7 +919,7 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 		return this.textMethod_;
 	}
 
-	static final double EPSILON = 1E-5;
+	private static final double EPSILON = 1E-5;
 
 	static WPointF normalizedDegreesToRadians(double angle, double sweep) {
 		angle = 360 - angle;

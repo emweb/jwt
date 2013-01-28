@@ -30,14 +30,46 @@ public class WCssStyleSheet {
 			.getLogger(WCssStyleSheet.class);
 
 	/**
-	 * Creates a new empty style sheet.
+	 * Creates a new (internal) style sheet.
 	 */
 	public WCssStyleSheet() {
+		this.link_ = new WLink();
+		this.media_ = "";
 		this.rules_ = new ArrayList<WCssRule>();
 		this.rulesAdded_ = new ArrayList<WCssRule>();
 		this.rulesModified_ = new HashSet<WCssRule>();
 		this.rulesRemoved_ = new ArrayList<String>();
 		this.defined_ = new HashSet<String>();
+	}
+
+	/**
+	 * Creates a new (external) style sheet reference.
+	 */
+	public WCssStyleSheet(WLink link, String media) {
+		this.link_ = link;
+		this.media_ = media;
+		this.rules_ = new ArrayList<WCssRule>();
+		this.rulesAdded_ = new ArrayList<WCssRule>();
+		this.rulesModified_ = new HashSet<WCssRule>();
+		this.rulesRemoved_ = new ArrayList<String>();
+		this.defined_ = new HashSet<String>();
+	}
+
+	/**
+	 * Creates a new (external) style sheet reference.
+	 * <p>
+	 * Calls {@link #WCssStyleSheet(WLink link, String media) this(link, "all")}
+	 */
+	public WCssStyleSheet(WLink link) {
+		this(link, "all");
+	}
+
+	public WLink getLink() {
+		return this.link_;
+	}
+
+	public String getMedia() {
+		return this.media_;
 	}
 
 	/**
@@ -162,26 +194,33 @@ public class WCssStyleSheet {
 		this.rulesModified_.add(rule);
 	}
 
-	String getCssText(boolean all) {
-		String result = "";
-		List<WCssRule> toProcess = all ? this.rules_ : this.rulesAdded_;
-		for (int i = 0; i < toProcess.size(); ++i) {
-			WCssRule rule = toProcess.get(i);
-			result += rule.getSelector() + " { " + rule.getDeclarations()
-					+ " }\n";
+	public void cssText(StringBuilder out, boolean all) {
+		if (this.link_.isNull()) {
+			List<WCssRule> toProcess = all ? this.rules_ : this.rulesAdded_;
+			for (int i = 0; i < toProcess.size(); ++i) {
+				WCssRule rule = toProcess.get(i);
+				out.append(rule.getSelector()).append(" { ").append(
+						rule.getDeclarations()).append(" }\n");
+			}
+			this.rulesAdded_.clear();
+			if (all) {
+				this.rulesModified_.clear();
+			}
+		} else {
+			WApplication app = WApplication.getInstance();
+			out.append("@import url(\"").append(this.link_.resolveUrl(app))
+					.append("\")");
+			if (this.media_.length() != 0 && !this.media_.equals("all")) {
+				out.append(" ").append(this.media_);
+			}
+			out.append(";\n");
 		}
-		this.rulesAdded_.clear();
-		if (all) {
-			this.rulesModified_.clear();
-		}
-		return result;
 	}
 
-	public void javaScriptUpdate(WApplication app, Writer js, boolean all)
-			throws IOException {
+	public void javaScriptUpdate(WApplication app, StringBuilder js, boolean all) {
 		if (!all) {
 			for (int i = 0; i < this.rulesRemoved_.size(); ++i) {
-				js.append("Wt3_2_3.removeCssRule(");
+				js.append("Wt3_3_0.removeCssRule(");
 				DomElement.jsStringLiteral(js, this.rulesRemoved_.get(i), '\'');
 				js.append(");");
 			}
@@ -189,7 +228,7 @@ public class WCssStyleSheet {
 			for (Iterator<WCssRule> i_it = this.rulesModified_.iterator(); i_it
 					.hasNext();) {
 				WCssRule i = i_it.next();
-				js.append("{ var d= Wt3_2_3.getCssRule(");
+				js.append("{ var d= Wt3_3_0.getCssRule(");
 				DomElement.jsStringLiteral(js, i.getSelector(), '\'');
 				js.append(");if(d){");
 				DomElement d = DomElement.updateGiven("d",
@@ -208,21 +247,22 @@ public class WCssStyleSheet {
 			List<WCssRule> toProcess = all ? this.rules_ : this.rulesAdded_;
 			for (int i = 0; i < toProcess.size(); ++i) {
 				WCssRule rule = toProcess.get(i);
-				js.append("Wt3_2_3.addCss('").append(rule.getSelector())
+				js.append("Wt3_3_0.addCss('").append(rule.getSelector())
 						.append("',");
 				DomElement.jsStringLiteral(js, rule.getDeclarations(), '\'');
-				js.append(");").append('\n');
+				js.append(");\n");
 			}
 			this.rulesAdded_.clear();
 			if (all) {
 				this.rulesModified_.clear();
 			}
 		} else {
-			String text = this.getCssText(all);
-			if (text.length() != 0) {
-				js.append("Wt3_2_3.addCssText(");
-				DomElement.jsStringLiteral(js, text, '\'');
-				js.append(");").append('\n');
+			StringBuilder css = new StringBuilder();
+			this.cssText(css, all);
+			if (!(css.length() == 0)) {
+				js.append("Wt3_3_0.addCssText(");
+				DomElement.jsStringLiteral(js, css.toString(), '\'');
+				js.append(");\n");
 			}
 		}
 	}
@@ -234,6 +274,8 @@ public class WCssStyleSheet {
 		}
 	}
 
+	private WLink link_;
+	private String media_;
 	private List<WCssRule> rules_;
 	private List<WCssRule> rulesAdded_;
 	private Set<WCssRule> rulesModified_;

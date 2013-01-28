@@ -18,71 +18,245 @@ import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import eu.webtoolkit.jwt.examples.painting.*;
 
-class GraphicsWidgets extends ControlsWidget {
+class GraphicsWidgets extends TopicWidget {
 	private static Logger logger = LoggerFactory
 			.getLogger(GraphicsWidgets.class);
 
-	public GraphicsWidgets(EventDisplayer ed) {
-		super(ed, true);
-		this.topic("WPaintedWidget", this);
+	public GraphicsWidgets() {
+		super();
 		addText(tr("graphics-intro"), this);
 	}
 
-	public void remove() {
-		super.remove();
-	}
-
 	public void populateSubMenu(WMenu menu) {
-		menu.addItem("Emweb logo example", this.emwebLogo());
-		menu.addItem("Paintbrush example", this.paintbrush());
+		menu.setInternalBasePath("/graphics-charts");
+		menu.addItem("2D painting", this.painting2d()).setPathComponent("");
+		menu.addItem("Paintbrush", DeferredWidget
+				.deferCreate(new WidgetCreator() {
+					public WWidget create() {
+						return GraphicsWidgets.this.paintbrush();
+					}
+				}));
+		menu.addItem("Category chart", DeferredWidget
+				.deferCreate(new WidgetCreator() {
+					public WWidget create() {
+						return GraphicsWidgets.this.categoryChart();
+					}
+				}));
+		menu.addItem("Scatter plot", DeferredWidget
+				.deferCreate(new WidgetCreator() {
+					public WWidget create() {
+						return GraphicsWidgets.this.scatterPlot();
+					}
+				}));
+		menu.addItem("Pie chart", DeferredWidget
+				.deferCreate(new WidgetCreator() {
+					public WWidget create() {
+						return GraphicsWidgets.this.pieChart();
+					}
+				}));
+		menu.addItem("Maps", DeferredWidget.deferCreate(new WidgetCreator() {
+			public WWidget create() {
+				return GraphicsWidgets.this.googleMap();
+			}
+		}));
+		menu.addItem("3D painting", DeferredWidget
+				.deferCreate(new WidgetCreator() {
+					public WWidget create() {
+						return GraphicsWidgets.this.painting3d();
+					}
+				}));
 	}
 
-	private WWidget emwebLogo() {
-		WContainerWidget result = new WContainerWidget();
-		this.topic("WPaintedWidget", result);
-		new PaintExample(result, false);
+	private WWidget painting2d() {
+		WTemplate result = new TopicTemplate("graphics-Painting2D");
+		result.bindWidget("PaintingEvent", PaintingEvent());
+		result.bindWidget("PaintingShapes", PaintingShapes());
+		result.bindWidget("PaintingTransformations", PaintingTransformations());
+		result.bindWidget("PaintingClipping", PaintingClipping());
+		result.bindWidget("PaintingStyle", PaintingStyle());
+		result.bindWidget("PaintingImages", PaintingImages());
 		return result;
 	}
 
 	private WWidget paintbrush() {
-		WContainerWidget result = new WContainerWidget();
-		this.topic("WPaintedWidget", result);
-		addText(tr("graphics-paintbrush"), result);
-		WTable layout = new WTable(result);
-		final PaintBrush canvas = new PaintBrush(710, 400, layout.getElementAt(
-				0, 0));
-		canvas.getDecorationStyle().setBorder(
-				new WBorder(WBorder.Style.Solid, WBorder.Width.Medium,
-						WColor.black));
-		addText("Color chooser:", layout.getElementAt(0, 1));
-		WTable colorTable = new WTable(layout.getElementAt(0, 1));
-		addColor(canvas, colorTable.getElementAt(0, 0), WColor.black);
-		addColor(canvas, colorTable.getElementAt(0, 1), WColor.red);
-		addColor(canvas, colorTable.getElementAt(1, 0), WColor.green);
-		addColor(canvas, colorTable.getElementAt(1, 1), WColor.blue);
-		new WBreak(layout.getElementAt(0, 1));
-		WPushButton clearButton = new WPushButton("Clear", layout.getElementAt(
-				0, 1));
-		clearButton.clicked().addListener(canvas,
-				new Signal1.Listener<WMouseEvent>() {
-					public void trigger(WMouseEvent e1) {
-						canvas.clear();
-					}
-				});
-		layout.getElementAt(0, 1).setPadding(new WLength(3));
+		WTemplate result = new TopicTemplate("graphics-Paintbrush");
+		result.bindWidget("Paintbrush", Paintbrush());
 		return result;
 	}
 
-	static void addColor(final PaintBrush canvas, WTableCell cell, WColor color) {
-		cell.getDecorationStyle().setBackgroundColor(color);
-		cell.resize(new WLength(15), new WLength(15));
-		final WColor javaColor = color;
-		cell.clicked().addListener(canvas, new Signal.Listener() {
+	private WWidget categoryChart() {
+		WTemplate result = new TopicTemplate("graphics-CategoryChart");
+		result.bindWidget("CategoryChart", CategoryChart());
+		return result;
+	}
+
+	private WWidget scatterPlot() {
+		WTemplate result = new TopicTemplate("graphics-ScatterPlot");
+		result.bindWidget("ScatterPlotData", ScatterPlotData());
+		result.bindWidget("ScatterPlotCurve", ScatterPlotCurve());
+		return result;
+	}
+
+	private WWidget pieChart() {
+		WTemplate result = new TopicTemplate("graphics-PieChart");
+		result.bindWidget("PieChart", PieChart());
+		return result;
+	}
+
+	private WWidget googleMap() {
+		WTemplate result = new TopicTemplate("graphics-GoogleMap");
+		result.bindWidget("GoogleMap", GoogleMap());
+		result.bindString("GoogleMap-controls",
+				reindent(tr("graphics-GoogleMap-controls")),
+				TextFormat.PlainText);
+		return result;
+	}
+
+	private WWidget painting3d() {
+		WTemplate result = new TopicTemplate("graphics-Painting3D");
+		result.bindWidget("Painting3D", Painting3D());
+		return result;
+	}
+
+	// private WAbstractItemModel readCsvFile(String fname, WContainerWidget
+	// parent) ;
+	WWidget PaintingEvent() {
+		WContainerWidget container = new WContainerWidget();
+		final MyPaintedWidget painting = new MyPaintedWidget(container);
+		final WSpinBox sb = new WSpinBox(container);
+		sb.setRange(10, 200);
+		sb.setValue(100);
+		sb.changed().addListener(this, new Signal.Listener() {
 			public void trigger() {
-				canvas.setColor(javaColor);
+				painting.setEnd(sb.getValue());
 			}
 		});
+		return container;
+	}
+
+	WWidget PaintingShapes() {
+		WContainerWidget container = new WContainerWidget();
+		new ShapesWidget(container);
+		return container;
+	}
+
+	WWidget PaintingTransformations() {
+		WContainerWidget container = new WContainerWidget();
+		new TransformationsWidget(container);
+		return container;
+	}
+
+	WWidget PaintingClipping() {
+		WContainerWidget container = new WContainerWidget();
+		new ClippingWidget(container);
+		return container;
+	}
+
+	WWidget PaintingStyle() {
+		WContainerWidget container = new WContainerWidget();
+		new StyleWidget(container);
+		return container;
+	}
+
+	WWidget PaintingImages() {
+		WContainerWidget container = new WContainerWidget();
+		new PaintingImagesWidget(container);
+		return container;
+	}
+
+	WPushButton createColorToggle(String className, final WColor color,
+			final PaintBrush canvas) {
+		WPushButton button = new WPushButton();
+		button.setTextFormat(TextFormat.XHTMLText);
+		button.setText("&nbsp;");
+		button.setCheckable(true);
+		button.addStyleClass(className);
+		button.setWidth(new WLength(30));
+		button.checked().addListener(this, new Signal.Listener() {
+			public void trigger() {
+				canvas.setColor(color);
+			}
+		});
+		return button;
+	}
+
+	WWidget Paintbrush() {
+		final WColor blue = new WColor(0, 110, 204);
+		final WColor red = new WColor(218, 81, 76);
+		final WColor green = new WColor(59, 195, 95);
+		final WColor orange = new WColor(250, 168, 52);
+		final WColor black = WColor.black;
+		final WColor gray = new WColor(210, 210, 210);
+		WContainerWidget result = new WContainerWidget();
+		final PaintBrush canvas = new PaintBrush(710, 400);
+		canvas.setColor(blue);
+		canvas.getDecorationStyle().setBorder(
+				new WBorder(WBorder.Style.Solid, WBorder.Width.Medium,
+						WColor.black));
+		List<WPushButton> colorButtons = new ArrayList<WPushButton>();
+		colorButtons.add(createColorToggle("btn-primary", blue, canvas));
+		colorButtons.add(createColorToggle("btn-danger", red, canvas));
+		colorButtons.add(createColorToggle("btn-success", green, canvas));
+		colorButtons.add(createColorToggle("btn-warning", orange, canvas));
+		colorButtons.add(createColorToggle("btn-inverse", black, canvas));
+		colorButtons.add(createColorToggle("", gray, canvas));
+		WToolBar toolBar = new WToolBar();
+		for (int i = 0; i < colorButtons.size(); ++i) {
+			WPushButton button = colorButtons.get(i);
+			button.setChecked(i == 0);
+			toolBar.addButton(button);
+			for (int j = 0; j < colorButtons.size(); ++j) {
+				if (i != j) {
+					final WPushButton other = colorButtons.get(j);
+					button.checked().addListener(other, new Signal.Listener() {
+						public void trigger() {
+							other.setUnChecked();
+						}
+					});
+				}
+			}
+		}
+		WPushButton clearButton = new WPushButton("Clear");
+		clearButton.clicked().addListener(this, new Signal.Listener() {
+			public void trigger() {
+				canvas.clear();
+			}
+		});
+		toolBar.addSeparator();
+		toolBar.addButton(clearButton);
+		result.addWidget(toolBar);
+		result.addWidget(canvas);
+		return result;
+	}
+
+	WWidget CategoryChart() {
+		WContainerWidget container = new WContainerWidget();
+		return container;
+	}
+
+	WWidget ScatterPlotData() {
+		WContainerWidget container = new WContainerWidget();
+		return container;
+	}
+
+	WWidget ScatterPlotCurve() {
+		WContainerWidget container = new WContainerWidget();
+		return container;
+	}
+
+	WWidget PieChart() {
+		WContainerWidget container = new WContainerWidget();
+		return container;
+	}
+
+	WWidget GoogleMap() {
+		GoogleMapExample map = new GoogleMapExample();
+		return map;
+	}
+
+	WWidget Painting3D() {
+		WContainerWidget container = new WContainerWidget();
+		return container;
 	}
 }

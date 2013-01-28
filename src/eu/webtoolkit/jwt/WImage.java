@@ -430,6 +430,7 @@ public class WImage extends WInteractWidget {
 		return this.voidEventSignal(LOAD_SIGNAL, true);
 	}
 
+	private static String LOAD_SIGNAL = "load";
 	private static final int BIT_ALT_TEXT_CHANGED = 0;
 	private static final int BIT_IMAGE_LINK_CHANGED = 1;
 	private static final int BIT_MAP_CREATED = 2;
@@ -498,6 +499,4 @@ public class WImage extends WInteractWidget {
 		this.flags_.clear(BIT_ALT_TEXT_CHANGED);
 		super.propagateRenderOk(deep);
 	}
-
-	private static String LOAD_SIGNAL = "load";
 }

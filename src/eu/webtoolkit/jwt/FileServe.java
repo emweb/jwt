@@ -33,11 +33,11 @@ class FileServe {
 		setVar(name, String.valueOf(i));
 	}
 
-	public void stream(Writer out) throws IOException {
+	public void stream(StringBuilder out) throws IOException {
 		this.streamUntil(out, "");
 	}
 
-	public void streamUntil(Writer out, String until) throws IOException {
+	public void streamUntil(StringBuilder out, String until) throws IOException {
 		String currentVar = "";
 		boolean readingVar = false;
 		int start = currentPos_;

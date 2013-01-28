@@ -588,50 +588,58 @@ public class WCssDecorationStyle extends WObject {
 										.resolveRelativeUrl(
 												this.backgroundImage_.getUrl())
 								+ ")" : "none");
-				switch (this.backgroundImageRepeat_) {
-				case RepeatXY:
-					element.setProperty(Property.PropertyStyleBackgroundRepeat,
-							"repeat");
-					break;
-				case RepeatX:
-					element.setProperty(Property.PropertyStyleBackgroundRepeat,
-							"repeat-x");
-					break;
-				case RepeatY:
-					element.setProperty(Property.PropertyStyleBackgroundRepeat,
-							"repeat-y");
-					break;
-				case NoRepeat:
-					element.setProperty(Property.PropertyStyleBackgroundRepeat,
-							"no-repeat");
-					break;
-				}
-				if (!this.backgroundImageLocation_.isEmpty()) {
-					String location = "";
-					if (!EnumUtils.mask(this.backgroundImageLocation_,
-							Side.CenterY).isEmpty()) {
-						location += " center";
-					} else {
-						if (!EnumUtils.mask(this.backgroundImageLocation_,
-								Side.Bottom).isEmpty()) {
-							location += " bottom";
-						} else {
-							location += " top";
-						}
+				if (this.backgroundImageRepeat_ != WCssDecorationStyle.Repeat.RepeatXY
+						|| !this.backgroundImageLocation_.equals(0)) {
+					switch (this.backgroundImageRepeat_) {
+					case RepeatXY:
+						element.setProperty(
+								Property.PropertyStyleBackgroundRepeat,
+								"repeat");
+						break;
+					case RepeatX:
+						element.setProperty(
+								Property.PropertyStyleBackgroundRepeat,
+								"repeat-x");
+						break;
+					case RepeatY:
+						element.setProperty(
+								Property.PropertyStyleBackgroundRepeat,
+								"repeat-y");
+						break;
+					case NoRepeat:
+						element.setProperty(
+								Property.PropertyStyleBackgroundRepeat,
+								"no-repeat");
+						break;
 					}
-					if (!EnumUtils.mask(this.backgroundImageLocation_,
-							Side.CenterX).isEmpty()) {
-						location += " center";
-					} else {
+					if (!this.backgroundImageLocation_.isEmpty()) {
+						String location = "";
 						if (!EnumUtils.mask(this.backgroundImageLocation_,
-								Side.Right).isEmpty()) {
-							location += " right";
+								Side.CenterY).isEmpty()) {
+							location += " center";
 						} else {
-							location += " left";
+							if (!EnumUtils.mask(this.backgroundImageLocation_,
+									Side.Bottom).isEmpty()) {
+								location += " bottom";
+							} else {
+								location += " top";
+							}
 						}
+						if (!EnumUtils.mask(this.backgroundImageLocation_,
+								Side.CenterX).isEmpty()) {
+							location += " center";
+						} else {
+							if (!EnumUtils.mask(this.backgroundImageLocation_,
+									Side.Right).isEmpty()) {
+								location += " right";
+							} else {
+								location += " left";
+							}
+						}
+						element.setProperty(
+								Property.PropertyStyleBackgroundPosition,
+								location);
 					}
-					element.setProperty(
-							Property.PropertyStyleBackgroundPosition, location);
 				}
 			}
 			this.backgroundImageChanged_ = false;

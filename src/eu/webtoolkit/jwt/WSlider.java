@@ -81,6 +81,18 @@ public class WSlider extends WFormWidget {
 	}
 
 	/**
+	 * Do not render ticks.
+	 */
+	public static final EnumSet<WSlider.TickPosition> NoTicks = EnumSet
+			.noneOf(WSlider.TickPosition.class);
+	/**
+	 * Render ticks on both sides.
+	 */
+	public static final EnumSet<WSlider.TickPosition> TicksBothSides = EnumSet
+			.of(WSlider.TickPosition.TicksAbove,
+					WSlider.TickPosition.TicksBelow);
+
+	/**
 	 * Creates a default horizontal slider.
 	 * <p>
 	 * The slider shows no ticks, has a range from 0 to 99, and has tickInterval
@@ -642,16 +654,4 @@ public class WSlider extends WFormWidget {
 		this.valueChanged_.trigger(this.value_);
 		this.sliderMoved_.trigger(this.value_);
 	}
-
-	/**
-	 * Do not render ticks.
-	 */
-	public static final EnumSet<WSlider.TickPosition> NoTicks = EnumSet
-			.noneOf(WSlider.TickPosition.class);
-	/**
-	 * Render ticks on both sides.
-	 */
-	public static final EnumSet<WSlider.TickPosition> TicksBothSides = EnumSet
-			.of(WSlider.TickPosition.TicksAbove,
-					WSlider.TickPosition.TicksBelow);
 }

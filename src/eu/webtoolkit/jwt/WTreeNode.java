@@ -256,10 +256,10 @@ public class WTreeNode extends WCompositeWidget {
 		this.labelIcon_ = labelIcon;
 		if (this.labelIcon_ != null) {
 			if (this.labelText_ != null) {
-				this.layout_.getElementAt(0, 1).insertBefore(this.labelIcon_,
+				this.getLabelArea().insertBefore(this.labelIcon_,
 						this.labelText_);
 			} else {
-				this.layout_.getElementAt(0, 1).addWidget(this.labelIcon_);
+				this.getLabelArea().addWidget(this.labelIcon_);
 			}
 			this.labelIcon_.setState(this.isExpanded() ? 1 : 0);
 		}
@@ -274,7 +274,7 @@ public class WTreeNode extends WCompositeWidget {
 		this.childNodes_.add(0 + index, node);
 		node.parentNode_ = this;
 		if (this.childrenLoaded_) {
-			this.layout_.getElementAt(1, 1).insertWidget(index, node);
+			this.getChildContainer().insertWidget(index, node);
 		} else {
 			node.setParent((WObject) null);
 		}
@@ -319,7 +319,7 @@ public class WTreeNode extends WCompositeWidget {
 		this.childNodes_.remove(node);
 		node.parentNode_ = null;
 		if (this.childrenLoaded_) {
-			this.layout_.getElementAt(1, 1).removeWidget(node);
+			this.getChildContainer().removeWidget(node);
 		}
 		this.descendantRemoved(node);
 		this.updateChildren();
@@ -357,9 +357,8 @@ public class WTreeNode extends WCompositeWidget {
 			this.childCountLabel_ = new WText();
 			this.childCountLabel_.setMargin(new WLength(7), EnumSet
 					.of(Side.Left));
-			this.childCountLabel_
-					.setStyleClass("Wt-childcount treenodechildcount");
-			this.layout_.getElementAt(0, 1).addWidget(this.childCountLabel_);
+			this.childCountLabel_.setStyleClass("Wt-childcount");
+			this.getLabelArea().addWidget(this.childCountLabel_);
 		}
 		this.childCountPolicy_ = policy;
 		if (this.childCountPolicy_ == WTreeNode.ChildCountPolicy.Enabled) {
@@ -645,8 +644,8 @@ public class WTreeNode extends WCompositeWidget {
 	 * <p>
 	 * Use this to customize how the label should look like.
 	 */
-	protected WTableCell getLabelArea() {
-		return this.layout_.getElementAt(0, 1);
+	protected WContainerWidget getLabelArea() {
+		return (WContainerWidget) this.layout_.resolveWidget("label-area");
 	}
 
 	/**
@@ -699,8 +698,8 @@ public class WTreeNode extends WCompositeWidget {
 	 * {@link WTreeNode#getLabelArea() getLabelArea()} to &quot;selected&quot;.
 	 */
 	protected void renderSelected(boolean isSelected) {
-		this.layout_.getRowAt(0).setStyleClass(
-				isSelected ? "Wt-selected selected" : "");
+		this.layout_.bindString("selected", isSelected ? WApplication
+				.getInstance().getTheme().getActiveClass() : "");
 		this.selected().trigger(isSelected);
 	}
 
@@ -762,7 +761,7 @@ public class WTreeNode extends WCompositeWidget {
 		this.collapsed_ = false;
 		if (!this.childNodes_.isEmpty()) {
 			this.expandIcon_.setState(1);
-			this.layout_.getRowAt(1).show();
+			this.getChildContainer().show();
 			if (this.labelIcon_ != null) {
 				this.labelIcon_.setState(1);
 			}
@@ -790,7 +789,7 @@ public class WTreeNode extends WCompositeWidget {
 		this.wasCollapsed_ = !this.isExpanded();
 		this.collapsed_ = true;
 		this.expandIcon_.setState(0);
-		this.layout_.getRowAt(1).hide();
+		this.getChildContainer().hide();
 		if (this.labelIcon_ != null) {
 			this.labelIcon_.setState(0);
 		}
@@ -806,7 +805,7 @@ public class WTreeNode extends WCompositeWidget {
 	protected void undoDoExpand() {
 		if (this.wasCollapsed_) {
 			this.expandIcon_.setState(0);
-			this.layout_.getRowAt(1).hide();
+			this.getChildContainer().hide();
 			if (this.labelIcon_ != null) {
 				this.labelIcon_.setState(0);
 			}
@@ -827,7 +826,7 @@ public class WTreeNode extends WCompositeWidget {
 	protected void undoDoCollapse() {
 		if (!this.wasCollapsed_) {
 			this.expandIcon_.setState(1);
-			this.layout_.getRowAt(1).show();
+			this.getChildContainer().show();
 			if (this.labelIcon_ != null) {
 				this.labelIcon_.setState(1);
 			}
@@ -842,7 +841,7 @@ public class WTreeNode extends WCompositeWidget {
 		return this.expandIcon_;
 	}
 
-	WTable getImpl() {
+	protected WTemplate getImpl() {
 		return this.layout_;
 	}
 
@@ -854,7 +853,7 @@ public class WTreeNode extends WCompositeWidget {
 	private WTreeNode parentNode_;
 	private WTreeNode.LoadPolicy loadPolicy_;
 	private WTreeNode.ChildCountPolicy childCountPolicy_;
-	private WTable layout_;
+	private WTemplate layout_;
 	private WIconPair expandIcon_;
 	private WText noExpandIcon_;
 	private WIconPair labelIcon_;
@@ -865,12 +864,15 @@ public class WTreeNode extends WCompositeWidget {
 	private boolean interactive_;
 	private Signal1<Boolean> selected_;
 
+	private WContainerWidget getChildContainer() {
+		return (WContainerWidget) this.layout_.resolveWidget("children");
+	}
+
 	private void loadChildren() {
 		if (!this.childrenLoaded_) {
 			this.isDoPopulate();
 			for (int i = 0; i < this.childNodes_.size(); ++i) {
-				this.layout_.getElementAt(1, 1).addWidget(
-						this.childNodes_.get(i));
+				this.getChildContainer().addWidget(this.childNodes_.get(i));
 			}
 			this.expandIcon_.icon1Clicked().addListener(this,
 					new Signal1.Listener<WMouseEvent>() {
@@ -896,40 +898,38 @@ public class WTreeNode extends WCompositeWidget {
 	}
 
 	private void create() {
-		this.setImplementation(this.layout_ = new WTable());
+		this.setImplementation(this.layout_ = new WTemplate(
+				tr("Wt.WTreeNode.template")));
 		this.setStyleClass("Wt-tree");
 		this.layout_.setSelectable(false);
-		if (WApplication.getInstance().getEnvironment().agentIsOpera()) {
-			this.layout_.setAttributeValue("style", "table-layout: auto");
-		}
+		this.layout_.bindEmpty("cols-row");
+		this.layout_.bindEmpty("trunk-class");
 		// this.implementStateless(WTreeNode.doExpand,WTreeNode.undoDoExpand);
 		// this.implementStateless(WTreeNode.doCollapse,WTreeNode.undoDoCollapse);
 		WApplication app = WApplication.getInstance();
-		this.expandIcon_ = new WIconPair(WApplication.getResourcesUrl()
-				+ "themes/" + app.getCssTheme() + "/" + imagePlus_,
-				WApplication.getResourcesUrl() + "themes/" + app.getCssTheme()
-						+ "/" + imageMin_);
+		WContainerWidget children = new WContainerWidget();
+		children.setList(true);
+		children.hide();
+		this.layout_.bindWidget("children", children);
+		this.expandIcon_ = new WIconPair(app.getTheme().getResourcesUrl()
+				+ imagePlus_, app.getTheme().getResourcesUrl() + imageMin_);
+		this.expandIcon_.setStyleClass("Wt-ctrl Wt-expand");
 		this.noExpandIcon_ = new WText();
-		this.noExpandIcon_.setStyleClass("Wt-noexpand");
-		this.layout_.getRowAt(1).hide();
+		this.noExpandIcon_.setStyleClass("Wt-ctrl Wt-noexpand");
+		this.layout_.bindWidget("expand", this.noExpandIcon_);
+		this.addStyleClass("Wt-trunk");
+		this.layout_.bindWidget("label-area", new WContainerWidget());
 		if (this.labelText_ != null) {
-			this.labelText_.setStyleClass("Wt-label treenodelabel");
+			this.labelText_.setStyleClass("Wt-label");
 		}
 		this.childCountLabel_ = null;
-		this.layout_.getElementAt(0, 0).setStyleClass("Wt-trunk");
-		this.layout_.getElementAt(0, 0).addWidget(this.noExpandIcon_);
 		if (this.labelIcon_ != null) {
-			this.layout_.getElementAt(0, 1).addWidget(this.labelIcon_);
+			this.getLabelArea().addWidget(this.labelIcon_);
 			this.labelIcon_.setVerticalAlignment(AlignmentFlag.AlignMiddle);
 		}
 		if (this.labelText_ != null) {
-			this.layout_.getElementAt(0, 1).addWidget(this.labelText_);
+			this.getLabelArea().addWidget(this.labelText_);
 		}
-		this.layout_.getElementAt(0, 0).setContentAlignment(
-				EnumSet.of(AlignmentFlag.AlignLeft, AlignmentFlag.AlignTop));
-		this.layout_.getElementAt(0, 1).setContentAlignment(
-				EnumSet.of(AlignmentFlag.AlignLeft, AlignmentFlag.AlignMiddle));
-		this.layout_.getRowAt(0).setStyleClass("Wt-node");
 		this.childrenLoaded_ = false;
 		this.setLoadPolicy(WTreeNode.LoadPolicy.LazyLoading);
 	}
@@ -937,40 +937,27 @@ public class WTreeNode extends WCompositeWidget {
 	private void update() {
 		boolean isLast = this.isLastChildNode();
 		if (!this.visible_) {
-			this.layout_.getRowAt(0).hide();
-			this.expandIcon_.hide();
-			this.layout_.getElementAt(0, 0)
-					.resize(new WLength(0), WLength.Auto);
-			this.layout_.getElementAt(1, 0)
-					.resize(new WLength(0), WLength.Auto);
+			this.layout_.bindString("selected", "Wt-root");
+			this.getChildContainer().addStyleClass("Wt-root");
 		} else {
-			this.layout_.getRowAt(0).show();
-			this.expandIcon_.show();
-			this.layout_.getElementAt(0, 0).resize(WLength.Auto, WLength.Auto);
-			this.layout_.getElementAt(1, 0).resize(WLength.Auto, WLength.Auto);
+			this.layout_.bindEmpty("selected");
+			this.getChildContainer().removeStyleClass("Wt-root");
 		}
 		WTreeNode parent = this.getParentNode();
 		if (parent != null && !parent.childrenDecorated_) {
-			this.layout_.getElementAt(0, 0).hide();
-			this.layout_.getElementAt(1, 0).hide();
 		}
 		if (this.expandIcon_.getState() != (this.isExpanded() ? 1 : 0)) {
 			this.expandIcon_.setState(this.isExpanded() ? 1 : 0);
 		}
-		if (this.layout_.getRowAt(1).isHidden() != !this.isExpanded()) {
-			this.layout_.getRowAt(1).setHidden(!this.isExpanded());
+		if (this.getChildContainer().isHidden() != !this.isExpanded()) {
+			this.getChildContainer().setHidden(!this.isExpanded());
 		}
 		if (this.labelIcon_ != null
 				&& this.labelIcon_.getState() != (this.isExpanded() ? 1 : 0)) {
 			this.labelIcon_.setState(this.isExpanded() ? 1 : 0);
 		}
-		if (isLast) {
-			this.layout_.getElementAt(0, 0).setStyleClass("Wt-end");
-			this.layout_.getElementAt(1, 0).setStyleClass("");
-		} else {
-			this.layout_.getElementAt(0, 0).setStyleClass("Wt-trunk");
-			this.layout_.getElementAt(1, 0).setStyleClass("Wt-trunk");
-		}
+		this.toggleStyleClass("Wt-trunk", !isLast);
+		this.layout_.bindString("trunk-class", isLast ? "Wt-end" : "Wt-trunk");
 		if (!(this.getParentNode() != null)
 				|| this.getParentNode().isExpanded()) {
 			if (this.childCountPolicy_ == WTreeNode.ChildCountPolicy.Enabled
@@ -979,16 +966,13 @@ public class WTreeNode extends WCompositeWidget {
 			}
 			if (!this.isExpandable()) {
 				if (this.noExpandIcon_.getParent() == null) {
-					this.layout_.getElementAt(0, 0).addWidget(
-							this.noExpandIcon_);
-					this.layout_.getElementAt(0, 0).removeWidget(
-							this.expandIcon_);
+					this.layout_.takeWidget("expand");
+					this.layout_.bindWidget("expand", this.noExpandIcon_);
 				}
 			} else {
 				if (this.expandIcon_.getParent() == null) {
-					this.layout_.getElementAt(0, 0).addWidget(this.expandIcon_);
-					this.layout_.getElementAt(0, 0).removeWidget(
-							this.noExpandIcon_);
+					this.layout_.takeWidget("expand");
+					this.layout_.bindWidget("expand", this.expandIcon_);
 				}
 			}
 		}
@@ -1041,7 +1025,7 @@ public class WTreeNode extends WCompositeWidget {
 		}
 	}
 
-	AbstractSignal.Connection clickedConnection_;
 	private static String imagePlus_ = "nav-plus.gif";
 	private static String imageMin_ = "nav-minus.gif";
+	AbstractSignal.Connection clickedConnection_;
 }

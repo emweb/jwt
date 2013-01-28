@@ -117,7 +117,7 @@ public class WTabWidget extends WCompositeWidget {
 		this.currentChanged_ = new Signal1<Integer>(this);
 		this.tabClosed_ = new Signal1<Integer>();
 		this.contentsWidgets_ = new ArrayList<WWidget>();
-		this.create(EnumSet.of(AlignmentFlag.AlignJustify));
+		this.create();
 	}
 
 	/**
@@ -128,34 +128,6 @@ public class WTabWidget extends WCompositeWidget {
 	 */
 	public WTabWidget() {
 		this((WContainerWidget) null);
-	}
-
-	/**
-	 * Creates a new tab widget (indicating layout alignment)
-	 * (<b>deprecated</b>).
-	 * <p>
-	 * 
-	 * @deprecated Since JWt 3.1.1, the <code>layoutAlignment</code> is no
-	 *             longer needed and its value is ignored
-	 */
-	public WTabWidget(EnumSet<AlignmentFlag> layoutAlignment,
-			WContainerWidget parent) {
-		super(parent);
-		this.currentChanged_ = new Signal1<Integer>(this);
-		this.tabClosed_ = new Signal1<Integer>();
-		this.contentsWidgets_ = new ArrayList<WWidget>();
-		this.create(layoutAlignment);
-	}
-
-	/**
-	 * Creates a new tab widget (indicating layout alignment)
-	 * (<b>deprecated</b>).
-	 * <p>
-	 * Calls {@link #WTabWidget(EnumSet layoutAlignment, WContainerWidget parent)
-	 * this(layoutAlignment, (WContainerWidget)null)}
-	 */
-	public WTabWidget(EnumSet<AlignmentFlag> layoutAlignment) {
-		this(layoutAlignment, (WContainerWidget) null);
 	}
 
 	/**
@@ -174,7 +146,7 @@ public class WTabWidget extends WCompositeWidget {
 			policy = WMenuItem.LoadPolicy.LazyLoading;
 			break;
 		}
-		WMenuItem result = new TabWidgetItem(label, child, policy);
+		WMenuItem result = new WMenuItem(label, child, policy);
 		this.menu_.addItem(result);
 		this.contentsWidgets_.add(child);
 		return result;
@@ -203,10 +175,11 @@ public class WTabWidget extends WCompositeWidget {
 		int tabIndex = this.getIndexOf(child);
 		if (tabIndex != -1) {
 			this.contentsWidgets_.remove(0 + tabIndex);
-			WMenuItem item = this.menu_.getItems().get(tabIndex);
+			WMenuItem item = this.menu_.itemAt(tabIndex);
 			this.menu_.removeItem(item);
 			item.getTakeContents();
-			;
+			if (item != null)
+				item.remove();
 		}
 	}
 
@@ -268,10 +241,7 @@ public class WTabWidget extends WCompositeWidget {
 	 * be activated.
 	 */
 	public void setTabEnabled(int index, boolean enable) {
-		TabWidgetItem item = ((this.menu_.getItems().get(index)) instanceof TabWidgetItem ? (TabWidgetItem) (this.menu_
-				.getItems().get(index))
-				: null);
-		item.setDisabled(!enable);
+		this.menu_.setItemDisabled(index, !enable);
 	}
 
 	/**
@@ -279,10 +249,7 @@ public class WTabWidget extends WCompositeWidget {
 	 * <p>
 	 */
 	public boolean isTabEnabled(int index) {
-		TabWidgetItem item = ((this.menu_.getItems().get(index)) instanceof TabWidgetItem ? (TabWidgetItem) (this.menu_
-				.getItems().get(index))
-				: null);
-		return !item.isDisabled();
+		return !this.menu_.isItemDisabled(index);
 	}
 
 	/**
@@ -291,20 +258,14 @@ public class WTabWidget extends WCompositeWidget {
 	 * Hides or shows the tab at <code>index</code>.
 	 */
 	public void setTabHidden(int index, boolean hidden) {
-		TabWidgetItem item = ((this.menu_.getItems().get(index)) instanceof TabWidgetItem ? (TabWidgetItem) (this.menu_
-				.getItems().get(index))
-				: null);
-		item.setHidden(hidden);
+		this.menu_.setItemHidden(index, hidden);
 	}
 
 	/**
 	 * Returns whether a tab is hidden.
 	 */
 	public boolean isTabHidden(int index) {
-		TabWidgetItem item = ((this.menu_.getItems().get(index)) instanceof TabWidgetItem ? (TabWidgetItem) (this.menu_
-				.getItems().get(index))
-				: null);
-		return item.isHidden();
+		return this.menu_.isItemHidden(index);
 	}
 
 	/**
@@ -318,10 +279,7 @@ public class WTabWidget extends WCompositeWidget {
 	 * @see WTabWidget#removeTab(WWidget child)
 	 */
 	public void setTabCloseable(int index, boolean closeable) {
-		TabWidgetItem item = ((this.menu_.getItems().get(index)) instanceof TabWidgetItem ? (TabWidgetItem) (this.menu_
-				.getItems().get(index))
-				: null);
-		item.setCloseable(closeable);
+		this.menu_.itemAt(index).setCloseable(closeable);
 	}
 
 	/**
@@ -331,19 +289,14 @@ public class WTabWidget extends WCompositeWidget {
 	 * @see WTabWidget#setTabCloseable(int index, boolean closeable)
 	 */
 	public boolean isTabCloseable(int index) {
-		TabWidgetItem item = ((this.menu_.getItems().get(index)) instanceof TabWidgetItem ? (TabWidgetItem) (this.menu_
-				.getItems().get(index))
-				: null);
-		return item.isCloseable();
+		return this.menu_.itemAt(index).isCloseable();
 	}
 
 	/**
 	 * Changes the label for a tab.
 	 */
 	public void setTabText(int index, CharSequence label) {
-		TabWidgetItem item = ((this.menu_.getItems().get(index)) instanceof TabWidgetItem ? (TabWidgetItem) (this.menu_
-				.getItems().get(index))
-				: null);
+		WMenuItem item = this.menu_.itemAt(index);
 		item.setText(label);
 	}
 
@@ -354,9 +307,7 @@ public class WTabWidget extends WCompositeWidget {
 	 * @see WTabWidget#setTabText(int index, CharSequence label)
 	 */
 	public WString getTabText(int index) {
-		TabWidgetItem item = ((this.menu_.getItems().get(index)) instanceof TabWidgetItem ? (TabWidgetItem) (this.menu_
-				.getItems().get(index))
-				: null);
+		WMenuItem item = this.menu_.itemAt(index);
 		return item.getText();
 	}
 
@@ -366,9 +317,7 @@ public class WTabWidget extends WCompositeWidget {
 	 * The tooltip is shown when the user hovers over the label.
 	 */
 	public void setTabToolTip(int index, CharSequence tip) {
-		TabWidgetItem item = ((this.menu_.getItems().get(index)) instanceof TabWidgetItem ? (TabWidgetItem) (this.menu_
-				.getItems().get(index))
-				: null);
+		WMenuItem item = this.menu_.itemAt(index);
 		item.setToolTip(tip);
 	}
 
@@ -379,9 +328,7 @@ public class WTabWidget extends WCompositeWidget {
 	 * @see WTabWidget#setTabToolTip(int index, CharSequence tip)
 	 */
 	public WString getTabToolTip(int index) {
-		TabWidgetItem item = ((this.menu_.getItems().get(index)) instanceof TabWidgetItem ? (TabWidgetItem) (this.menu_
-				.getItems().get(index))
-				: null);
+		WMenuItem item = this.menu_.itemAt(index);
 		return item.getToolTip();
 	}
 
@@ -523,15 +470,11 @@ public class WTabWidget extends WCompositeWidget {
 	private WMenu menu_;
 	private List<WWidget> contentsWidgets_;
 
-	private void create(EnumSet<AlignmentFlag> layoutAlignment) {
+	private void create() {
 		this.setImplementation(this.layout_ = new WContainerWidget());
 		;
-		this.menu_ = new WMenu(new WStackedWidget(), Orientation.Horizontal);
-		this.menu_.setRenderAsList(true);
-		WContainerWidget menuDiv = new WContainerWidget();
-		menuDiv.setStyleClass("Wt-tabs");
-		menuDiv.addWidget(this.menu_);
-		this.layout_.addWidget(menuDiv);
+		this.menu_ = new WMenu(new WStackedWidget());
+		this.layout_.addWidget(this.menu_);
 		this.layout_.addWidget(this.menu_.getContentsStack());
 		this.setJavaScriptMember(WT_RESIZE_JS, StdWidgetItemImpl
 				.getSecondResizeJS());
@@ -551,17 +494,12 @@ public class WTabWidget extends WCompositeWidget {
 				});
 	}
 
-	private final void create(AlignmentFlag layoutAlignmen,
-			AlignmentFlag... layoutAlignment) {
-		create(EnumSet.of(layoutAlignmen, layoutAlignment));
-	}
-
 	private void onItemSelected(WMenuItem item) {
 		this.currentChanged_.trigger(this.menu_.getCurrentIndex());
 	}
 
 	private void onItemClosed(WMenuItem item) {
-		this.closeTab(this.menu_.getItems().indexOf(item));
+		this.closeTab(this.menu_.indexOf(item));
 	}
 	// private void setJsSize() ;
 }

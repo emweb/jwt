@@ -663,17 +663,15 @@ public class AuthWidget extends WTemplateFormView {
 		this.created_ = false;
 		this.dialog_ = null;
 		this.messageBox_ = null;
-		this.addFunction("id", WTemplate.Functions.id);
-		this.addFunction("tr", WTemplate.Functions.tr);
 		WApplication app = WApplication.getInstance();
-		app.useStyleSheet(WApplication.getResourcesUrl() + "form.css");
 		app.internalPathChanged().addListener(this,
 				new Signal1.Listener<String>() {
 					public void trigger(String e1) {
 						AuthWidget.this.onPathChange(e1);
 					}
 				});
-		app.getBuiltinLocalizedStrings().useBuiltin(WtServlet.Auth_xml);
+		app.getBuiltinLocalizedStrings().useBuiltin(WtServlet.AuthStrings_xml);
+		app.getTheme().apply(this, this, WidgetThemeRole.AuthWidgets);
 	}
 
 	private void logout() {

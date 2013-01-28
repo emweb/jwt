@@ -588,6 +588,13 @@ public class WTransform {
 		return angle / 180. * 3.14159265358979323846;
 	}
 
+	/**
+	 * A constant that represents the identity transform.
+	 * <p>
+	 * 
+	 * @see WTransform#isIdentity()
+	 */
+	public static final WTransform Identity = new WTransform();
 	private static final int M11 = 0;
 	private static final int M12 = 1;
 	private static final int M21 = 2;
@@ -597,13 +604,6 @@ public class WTransform {
 	private static final int M23 = 5;
 	private static final int DY = 5;
 	private double[] m_ = new double[6];
-	/**
-	 * A constant that represents the identity transform.
-	 * <p>
-	 * 
-	 * @see WTransform#isIdentity()
-	 */
-	public static final WTransform Identity = new WTransform();
 
 	static double norm(double x1, double x2) {
 		return Math.sqrt(x1 * x1 + x2 * x2);

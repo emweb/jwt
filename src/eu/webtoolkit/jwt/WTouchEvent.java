@@ -66,6 +66,8 @@ public class WTouchEvent implements WAbstractEvent {
 		return new WTouchEvent(jsEvent);
 	}
 
+	static WTouchEvent templateEvent = new WTouchEvent();
+
 	WTouchEvent(JavaScriptEvent jsEvent) {
 		super();
 		this.jsEvent_ = jsEvent;
@@ -137,6 +139,4 @@ public class WTouchEvent implements WAbstractEvent {
 			return;
 		}
 	}
-
-	static WTouchEvent templateEvent = new WTouchEvent();
 }

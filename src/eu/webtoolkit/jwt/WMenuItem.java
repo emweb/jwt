@@ -21,49 +21,8 @@ import org.slf4j.LoggerFactory;
 
 /**
  * A single item in a menu.
- * <p>
- * 
- * The item determines the look and behaviour of a single item in a
- * {@link WMenu}.
- * <p>
- * By default, for enabled menu items a {@link WMenuItem} uses a {@link WAnchor}
- * widget. For disabled menu items it uses a {@link WText} widget. If item is
- * closeable, {@link WMenuItem} puts these widgets and extra {@link WText}
- * widget (for a close icon) in a {@link WContainerWidget}. When the menu
- * participates in application internal paths (see
- * {@link WMenu#setInternalPathEnabled(String basePath)
- * WMenu#setInternalPathEnabled()}), the anchor references the bookmark URL
- * corresponding to the {@link WMenuItem#getPathComponent() getPathComponent()}
- * for the item (see {@link WApplication#makeAbsoluteUrl(String url)
- * WApplication#makeAbsoluteUrl()}).
- * <p>
- * To provide another look for the menu items (such as perhaps adding an icon),
- * you can specialize this class, and reimplement the virtual methods:
- * <p>
- * <ul>
- * <li>{@link WMenuItem#createItemWidget() createItemWidget()}: to provide
- * another widget to represent the item.</li>
- * <li>{@link WMenuItem#updateItemWidget(WWidget itemWidget) updateItemWidget()}
- * : to update the widget to reflect item changes, triggered by for example
- * {@link WMenuItem#setText(CharSequence text) setText()} and
- * {@link WMenuItem#setPathComponent(String path) setPathComponent()}.</li>
- * <li>optionally, {@link WMenuItem#activateSignal() activateSignal()}: to bind
- * the event for activating the item to something else than the clicked event.</li>
- * <li>optionally, {@link WMenuItem#closeSignal() closeSignal()}: to bind the
- * event for closing the item to something else than the clicked event.</li>
- * <li>optionally, {@link WMenuItem#renderSelected(boolean selected)
- * renderSelected()}: if you need to do additional styling to reflect a
- * selection, other than changing style classes.</li>
- * </ul>
- * <p>
- * To provide another look for the close icon you can override
- * <code>Wt-closeicon</code> CSS class (see {@link WMenu} for more details).
- * <p>
- * 
- * @see WMenu
- * @see WMenu#addItem(WMenuItem item)
  */
-public class WMenuItem extends WObject {
+public class WMenuItem extends WContainerWidget {
 	private static Logger logger = LoggerFactory.getLogger(WMenuItem.class);
 
 	/**
@@ -88,54 +47,41 @@ public class WMenuItem extends WObject {
 	}
 
 	/**
-	 * Creates a new item.
+	 * Creates a new item with given label.
 	 * <p>
-	 * The text specifies the item text. The contents is the widget that must be
-	 * shown in the {@link WMenu} contents stack when the item is selected.
+	 * The optional contents is a widget that will be shown in the {@link WMenu}
+	 * contents stack when the item is selected. For this widget, a load
+	 * <code>policy</code> can be indicated which specifies whether the contents
+	 * widgets is transmitted only when it the item is activated for the first
+	 * time (LazyLoading) or transmitted prior to first rendering.
 	 * <p>
-	 * The load policy specifies whether the contents widgets is transmitted
-	 * only when it the item is activated for the first time (LazyLoading) or
-	 * transmitted prior to first rendering.
-	 * <p>
-	 * The {@link WMenuItem#getPathComponent() getPathComponent()} is derived
-	 * from <code>text</code>, and can be customized using
+	 * If the menu supports internal path navigation, then a default
+	 * {@link WMenuItem#getPathComponent() getPathComponent()} will be derived
+	 * from the <code>label</code>, and can be customized using
 	 * {@link WMenuItem#setPathComponent(String path) setPathComponent()}.
-	 * <p>
-	 * <code>contents</code> may be 0, in which case no contents is associated
-	 * with the item in the contents stack.
 	 */
 	public WMenuItem(CharSequence text, WWidget contents,
 			WMenuItem.LoadPolicy policy) {
 		super();
-		this.itemWidget_ = null;
-		this.contentsContainer_ = null;
-		this.contents_ = contents;
-		this.menu_ = null;
-		this.text_ = new WString();
-		this.tip_ = new WString();
+		this.separator_ = false;
+		this.triggered_ = new Signal1<WMenuItem>(this);
 		this.pathComponent_ = "";
-		this.customPathComponent_ = false;
-		this.closeable_ = false;
-		this.disabled_ = false;
-		this.hidden_ = false;
-		this.setText(text);
-		if (policy == WMenuItem.LoadPolicy.PreLoading) {
-			// this.implementStateless(WMenuItem.selectVisual,WMenuItem.undoSelectVisual);
-		} else {
-			if (this.contents_ != null) {
-				this.contentsContainer_ = new WContainerWidget();
-				this.contentsContainer_.setJavaScriptMember("wtResize",
-						StdWidgetItemImpl.getChildrenResizeJS());
-				this.addChild(this.contents_);
-				;
-				this.contentsContainer_.resize(WLength.Auto, new WLength(100,
-						WLength.Unit.Percentage));
-			}
-		}
+		this.create("", text, contents, policy);
 	}
 
 	/**
-	 * Creates a new item.
+	 * Creates a new item with given label.
+	 * <p>
+	 * Calls
+	 * {@link #WMenuItem(CharSequence text, WWidget contents, WMenuItem.LoadPolicy policy)
+	 * this(text, (WWidget)null, WMenuItem.LoadPolicy.LazyLoading)}
+	 */
+	public WMenuItem(CharSequence text) {
+		this(text, (WWidget) null, WMenuItem.LoadPolicy.LazyLoading);
+	}
+
+	/**
+	 * Creates a new item with given label.
 	 * <p>
 	 * Calls
 	 * {@link #WMenuItem(CharSequence text, WWidget contents, WMenuItem.LoadPolicy policy)
@@ -145,6 +91,33 @@ public class WMenuItem extends WObject {
 		this(text, contents, WMenuItem.LoadPolicy.LazyLoading);
 	}
 
+	public WMenuItem(String iconPath, CharSequence text, WWidget contents,
+			WMenuItem.LoadPolicy policy) {
+		super();
+		this.separator_ = false;
+		this.triggered_ = new Signal1<WMenuItem>(this);
+		this.pathComponent_ = "";
+		this.create(iconPath, text, contents, policy);
+	}
+
+	public WMenuItem(String iconPath, CharSequence text) {
+		this(iconPath, text, (WWidget) null, WMenuItem.LoadPolicy.LazyLoading);
+	}
+
+	public WMenuItem(String iconPath, CharSequence text, WWidget contents) {
+		this(iconPath, text, contents, WMenuItem.LoadPolicy.LazyLoading);
+	}
+
+	public void remove() {
+		if (!this.isContentsLoaded()) {
+			if (this.contents_ != null)
+				this.contents_.remove();
+		}
+		if (this.subMenu_ != null)
+			this.subMenu_.remove();
+		super.remove();
+	}
+
 	/**
 	 * Sets the text for this item.
 	 * <p>
@@ -152,20 +125,24 @@ public class WMenuItem extends WObject {
 	 * {@link WMenuItem#getPathComponent() getPathComponent()} is also updated
 	 * based on the new text.
 	 * <p>
-	 * The item widget is updated using
-	 * {@link WMenuItem#updateItemWidget(WWidget itemWidget) updateItemWidget()}.
+	 * The item widget is updated using updateItemWidget().
 	 * <p>
 	 * 
 	 * @see WMenuItem#setPathComponent(String path)
 	 */
 	public void setText(CharSequence text) {
-		this.text_ = WString.toWString(text);
+		if (!(this.text_ != null)) {
+			this.text_ = new WText(this.getAnchor());
+			this.text_.setTextFormat(TextFormat.PlainText);
+		}
+		this.text_.setText(text);
 		if (!this.customPathComponent_) {
 			String result = "";
-			if (this.text_.isLiteral()) {
-				result = this.text_.toString();
+			WString t = WString.toWString(text);
+			if (t.isLiteral()) {
+				result = t.toString();
 			} else {
-				result = this.text_.getKey();
+				result = t.getKey();
 			}
 			for (int i = 0; i < result.length(); ++i) {
 				if (Character.isWhitespace((char) result.charAt(i))) {
@@ -179,10 +156,8 @@ public class WMenuItem extends WObject {
 					}
 				}
 			}
-			this.pathComponent_ = result;
-		}
-		if (this.itemWidget_ != null) {
-			this.updateItemWidget(this.itemWidget_);
+			this.setPathComponent(result);
+			this.customPathComponent_ = false;
 		}
 	}
 
@@ -193,7 +168,83 @@ public class WMenuItem extends WObject {
 	 * @see WMenuItem#setText(CharSequence text)
 	 */
 	public WString getText() {
-		return this.text_;
+		if (this.text_ != null) {
+			return this.text_.getText();
+		} else {
+			return WString.Empty;
+		}
+	}
+
+	/**
+	 * Sets the item icon path.
+	 * <p>
+	 * The icon should have a width of 16 pixels.
+	 * <p>
+	 * 
+	 * @see WMenuItem#setText(CharSequence text)
+	 */
+	public void setIcon(String path) {
+		if (!(this.icon_ != null)) {
+			WAnchor a = this.getAnchor();
+			if (!(a != null)) {
+				return;
+			}
+			this.icon_ = new WText(" ");
+			a.insertWidget(0, this.icon_);
+			WApplication app = WApplication.getInstance();
+			app.getTheme().apply(this, this.icon_,
+					WidgetThemeRole.MenuItemIconRole);
+		}
+		this.icon_.getDecorationStyle().setBackgroundImage(new WLink(path));
+	}
+
+	/**
+	 * Returns the item icon path.
+	 * <p>
+	 * 
+	 * @see WMenuItem#setIcon(String path)
+	 */
+	public String getIcon() {
+		if (this.icon_ != null) {
+			return this.icon_.getDecorationStyle().getBackgroundImage();
+		} else {
+			return "";
+		}
+	}
+
+	/**
+	 * Sets if the item is checkable.
+	 * <p>
+	 * When an item is checkable, a checkbox is displayed to the left of the
+	 * item text (instead of an icon).
+	 * <p>
+	 * 
+	 * @see WMenuItem#setChecked(boolean checked)
+	 * @see WMenuItem#isChecked()
+	 */
+	public void setCheckable(boolean checkable) {
+		if (this.isCheckable() != checkable) {
+			if (checkable) {
+				this.checkBox_ = new WCheckBox();
+				this.getAnchor().insertWidget(0, this.checkBox_);
+				WApplication app = WApplication.getInstance();
+				app.getTheme().apply(this, this.checkBox_,
+						WidgetThemeRole.MenuItemCheckBoxRole);
+			} else {
+				if (this.checkBox_ != null)
+					this.checkBox_.remove();
+			}
+		}
+	}
+
+	/**
+	 * Returns whether the item is checkable.
+	 * <p>
+	 * 
+	 * @see WMenuItem#setCheckable(boolean checkable)
+	 */
+	public boolean isCheckable() {
+		return this.checkBox_ != null;
 	}
 
 	/**
@@ -227,9 +278,7 @@ public class WMenuItem extends WObject {
 	public void setPathComponent(String path) {
 		this.customPathComponent_ = true;
 		this.pathComponent_ = path;
-		if (this.itemWidget_ != null) {
-			this.updateItemWidget(this.itemWidget_);
-		}
+		this.updateInternalPath();
 		if (this.menu_ != null) {
 			this.menu_.itemPathChanged(this);
 		}
@@ -249,6 +298,180 @@ public class WMenuItem extends WObject {
 	}
 
 	/**
+	 * Sets the associated link.
+	 * <p>
+	 */
+	public void setLink(WLink link) {
+		WAnchor a = this.getAnchor();
+		if (a != null) {
+			a.setLink(link);
+		}
+	}
+
+	/**
+	 * Returns the associated link.
+	 * <p>
+	 * 
+	 * @see WMenuItem#setLink(WLink link)
+	 */
+	public WLink getLink() {
+		WAnchor a = this.getAnchor();
+		if (a != null) {
+			return a.getLink();
+		} else {
+			return new WLink("");
+		}
+	}
+
+	/**
+	 * Sets the link target.
+	 * <p>
+	 * 
+	 * @see WMenuItem#setLink(WLink link)
+	 */
+	public void setLinkTarget(AnchorTarget target) {
+		WAnchor a = this.getAnchor();
+		if (a != null) {
+			a.setTarget(target);
+		}
+	}
+
+	/**
+	 * Returns the link target.
+	 * <p>
+	 * 
+	 * @see WMenuItem#setLinkTarget(AnchorTarget target)
+	 */
+	public AnchorTarget getLinkTarget() {
+		WAnchor a = this.getAnchor();
+		if (a != null) {
+			return this.getAnchor().getTarget();
+		} else {
+			return AnchorTarget.TargetSelf;
+		}
+	}
+
+	/**
+	 * Sets a sub menu.
+	 * <p>
+	 * Ownership of the <code>subMenu</code> is transferred to the item. In most
+	 * cases, the sub menu would use the same contents stack as the parent menu.
+	 */
+	public void setMenu(WMenu menu) {
+		this.subMenu_ = menu;
+		this.subMenu_.parentItem_ = this;
+		this.addWidget(this.subMenu_);
+		WPopupMenu popup = ((this.getMenu()) instanceof WPopupMenu ? (WPopupMenu) (this
+				.getMenu())
+				: null);
+		if (popup != null) {
+			popup.setJavaScriptMember("wtNoReparent", "true");
+			this.setSelectable(false);
+			popup.setButton(this.getAnchor());
+			this.updateInternalPath();
+		}
+		this.addStyleClass("submenu");
+	}
+
+	/**
+	 * Returns the menu.
+	 * <p>
+	 * 
+	 * @see WMenuItem#setMenu(WMenu menu)
+	 */
+	public WMenu getMenu() {
+		return this.subMenu_;
+	}
+
+	/**
+	 * Sets the checked state.
+	 * <p>
+	 * This is only used when {@link WMenuItem#isCheckable() isCheckable()} ==
+	 * <code>true</code>.
+	 * <p>
+	 * 
+	 * @see WMenuItem#setCheckable(boolean checkable)
+	 * @see WMenuItem#isCheckable()
+	 */
+	public void setChecked(boolean checked) {
+		if (this.isCheckable()) {
+			WCheckBox cb = ((this.getAnchor().getWidget(0)) instanceof WCheckBox ? (WCheckBox) (this
+					.getAnchor().getWidget(0))
+					: null);
+			cb.setChecked(checked);
+		}
+	}
+
+	/**
+	 * Returns the checked state.
+	 * <p>
+	 * This is only used when {@link WMenuItem#isCheckable() isCheckable()} ==
+	 * <code>true</code>.
+	 * <p>
+	 * 
+	 * @see WMenuItem#setChecked(boolean checked)
+	 * @see WMenuItem#isCheckable()
+	 */
+	public boolean isChecked() {
+		if (this.isCheckable()) {
+			WCheckBox cb = ((this.getAnchor().getWidget(0)) instanceof WCheckBox ? (WCheckBox) (this
+					.getAnchor().getWidget(0))
+					: null);
+			return cb.isChecked();
+		} else {
+			return false;
+		}
+	}
+
+	/**
+	 * Sets whether the menu item can be selected.
+	 * <p>
+	 * Only a menu item that can be selected can be the result of a popup menu
+	 * selection.
+	 * <p>
+	 * The default value is <code>true</code> for a normal menu item, and
+	 * <code>false</code> for a menu item that has a submenu.
+	 * <p>
+	 * An item that is selectable but is disabled can still not be selected.
+	 */
+	public void setSelectable(boolean selectable) {
+		this.selectable_ = selectable;
+	}
+
+	/**
+	 * Returns whether the menu item can be selected.
+	 * <p>
+	 * 
+	 * @see WMenuItem#setSelectable(boolean selectable)
+	 */
+	public boolean isSelectable() {
+		return this.selectable_;
+	}
+
+	/**
+	 * Sets associated additional data with the item.
+	 * <p>
+	 * You can use this to associate model information with a menu item.
+	 */
+	public void setData(Object data) {
+		this.data_ = data;
+	}
+
+	/**
+	 * Returns additional data of the item.
+	 * <p>
+	 * 
+	 * @see WMenuItem#setData(Object data)
+	 */
+	public Object getData() {
+		return this.data_;
+	}
+
+	public WCheckBox getCheckBox() {
+		return this.checkBox_;
+	}
+
+	/**
 	 * Make it possible to close this item interactively or by
 	 * {@link WMenuItem#close() close()}.
 	 * <p>
@@ -257,9 +480,24 @@ public class WMenuItem extends WObject {
 	 * @see WMenuItem#isCloseable()
 	 */
 	public void setCloseable(boolean closeable) {
-		this.closeable_ = closeable;
-		if (this.menu_ != null) {
-			this.menu_.recreateItem(this);
+		if (this.closeable_ != closeable) {
+			this.closeable_ = closeable;
+			if (this.closeable_) {
+				WText closeIcon = new WText("");
+				this.insertWidget(0, closeIcon);
+				WApplication app = WApplication.getInstance();
+				app.getTheme().apply(this, closeIcon,
+						WidgetThemeRole.MenuItemCloseRole);
+				closeIcon.clicked().addListener(this,
+						new Signal1.Listener<WMouseEvent>() {
+							public void trigger(WMouseEvent e1) {
+								WMenuItem.this.close();
+							}
+						});
+			} else {
+				if (this.getWidget(0) != null)
+					this.getWidget(0).remove();
+			}
 		}
 	}
 
@@ -281,150 +519,12 @@ public class WMenuItem extends WObject {
 	 * <p>
 	 * 
 	 * @see WMenuItem#setCloseable(boolean closeable)
-	 * @see WMenuItem#hide()
+	 * @see WWidget#hide()
 	 */
 	public void close() {
 		if (this.menu_ != null) {
 			this.menu_.close(this);
 		}
-	}
-
-	/**
-	 * Sets whether the item widget is hidden.
-	 * <p>
-	 * Hides or show the item widget.
-	 * <p>
-	 * 
-	 * @see WMenuItem#hide()
-	 * @see WMenuItem#show()
-	 * @see WMenuItem#isHidden()
-	 */
-	public void setHidden(boolean hidden) {
-		this.hidden_ = hidden;
-		if (this.menu_ != null) {
-			this.menu_.doSetHiddenItem(this, this.hidden_);
-		}
-	}
-
-	/**
-	 * Returns whether the item widget is hidden.
-	 * <p>
-	 * 
-	 * @see WMenuItem#setHidden(boolean hidden)
-	 */
-	public boolean isHidden() {
-		return this.hidden_;
-	}
-
-	/**
-	 * Hides the item widget.
-	 * <p>
-	 * This calls {@link WMenuItem#setHidden(boolean hidden) setHidden(true)}.
-	 * <p>
-	 * 
-	 * @see WMenuItem#show()
-	 */
-	public void hide() {
-		this.setHidden(true);
-	}
-
-	/**
-	 * Shows the item widget.
-	 * <p>
-	 * If the item was previously closed it will be shown.
-	 * <p>
-	 * This calls {@link WMenuItem#setHidden(boolean hidden) setHidden(false)}.
-	 * <p>
-	 * 
-	 * @see WMenuItem#hide()
-	 * @see WMenuItem#select()
-	 */
-	public void show() {
-		this.setHidden(false);
-	}
-
-	/**
-	 * Enables or disables an item.
-	 * <p>
-	 * A disabled item cannot be activated.
-	 * <p>
-	 * 
-	 * @see WMenuItem#enable()
-	 * @see WMenuItem#disable()
-	 */
-	public void setDisabled(boolean disabled) {
-		this.disabled_ = disabled;
-		if (this.menu_ != null) {
-			this.menu_.recreateItem(this);
-		}
-	}
-
-	/**
-	 * Returns whether an item is enabled.
-	 * <p>
-	 * 
-	 * @see WMenuItem#setDisabled(boolean disabled)
-	 */
-	public boolean isDisabled() {
-		return this.disabled_;
-	}
-
-	/**
-	 * Enables the item.
-	 * <p>
-	 * This calls {@link WMenuItem#setDisabled(boolean disabled)
-	 * setDisabled(false)}.
-	 * <p>
-	 * 
-	 * @see WMenuItem#disable()
-	 */
-	public void enable() {
-		this.setDisabled(false);
-	}
-
-	/**
-	 * Disables the item.
-	 * <p>
-	 * This calls {@link WMenuItem#setDisabled(boolean disabled)
-	 * setDisabled(true)}.
-	 * <p>
-	 * 
-	 * @see WMenuItem#enable()
-	 */
-	public void disable() {
-		this.setDisabled(true);
-	}
-
-	/**
-	 * Sets a tooltip.
-	 * <p>
-	 * The tooltip is displayed when the cursor hovers over the label of the
-	 * item, i.e. {@link WAnchor} or {@link WText}, depending on whether the
-	 * item is enabled or not (see {@link WMenuItem#createItemWidget()
-	 * createItemWidget()}).
-	 * <p>
-	 * 
-	 * @see WMenuItem#getToolTip()
-	 */
-	public void setToolTip(CharSequence tip) {
-		this.tip_ = WString.toWString(tip);
-		if (this.itemWidget_ != null) {
-			this.updateItemWidget(this.itemWidget_);
-		}
-	}
-
-	/**
-	 * Returns the tooltip.
-	 */
-	public WString getToolTip() {
-		return this.tip_;
-	}
-
-	/**
-	 * Returns the menu.
-	 */
-	public WMenu getMenu() {
-		return this.menu_;
 	}
 
 	/**
@@ -443,9 +543,7 @@ public class WMenuItem extends WObject {
 
 	WWidget getTakeContents() {
 		WWidget result = this.contents_;
-		if (!this.isContentsLoaded()) {
-			this.removeChild(this.contents_);
-		} else {
+		if (this.isContentsLoaded()) {
 			if (this.contentsContainer_ != null) {
 				this.contentsContainer_.removeWidget(this.contents_);
 			}
@@ -454,21 +552,7 @@ public class WMenuItem extends WObject {
 		return result;
 	}
 
-	/**
-	 * Returns the widget that represents the item.
-	 * <p>
-	 * This returns the item widget, creating it using
-	 * {@link WMenuItem#createItemWidget() createItemWidget()} if necessary.
-	 */
-	public WWidget getItemWidget() {
-		if (!(this.itemWidget_ != null)) {
-			this.itemWidget_ = this.createItemWidget();
-			this.updateItemWidget(this.itemWidget_);
-			this.connectSignals();
-		}
-		return this.itemWidget_;
-	}
-
+	// public WWidget getItemWidget() ;
 	/**
 	 * Selects this item.
 	 * <p>
@@ -478,117 +562,41 @@ public class WMenuItem extends WObject {
 	 * @see WMenuItem#close()
 	 */
 	public void select() {
-		if (this.menu_ != null) {
+		if (this.menu_ != null && this.selectable_) {
 			this.menu_.select(this);
 		}
 	}
 
 	/**
-	 * Creates the widget that represents the item.
+	 * Signal emitted when an item is activated.
 	 * <p>
-	 * The default implementation will return:
-	 * <ul>
-	 * <li>a {@link WAnchor} if item is not closeable and enabled;</li>
-	 * <li>a {@link WText} if item is not closeable and disabled;</li>
-	 * <li>a {@link WContainerWidget} with {@link WAnchor} or {@link WText} (the
-	 * label of enabled or disabled item accordingly) and {@link WText} (the
-	 * close icon) inside if item is closeable.</li>
-	 * </ul>
+	 * Returns this item as argument.
 	 * <p>
-	 * A call to {@link WMenuItem#createItemWidget() createItemWidget()} is
-	 * immediately followed by
-	 * {@link WMenuItem#updateItemWidget(WWidget itemWidget) updateItemWidget()}.
-	 * <p>
-	 * If you reimplement this method, you should probably also reimplement
-	 * {@link WMenuItem#updateItemWidget(WWidget itemWidget) updateItemWidget()}.
 	 */
-	protected WWidget createItemWidget() {
-		WAnchor enabledLabel = null;
-		WText disabledLabel = null;
-		if (!this.disabled_) {
-			enabledLabel = new WAnchor();
-			enabledLabel.setWordWrap(false);
-		} else {
-			disabledLabel = new WText("");
-			disabledLabel.setWordWrap(false);
-		}
-		if (this.closeable_) {
-			WText closeIcon = new WText("");
-			closeIcon.setStyleClass("Wt-closeicon");
-			WContainerWidget c = new WContainerWidget();
-			c.setInline(true);
-			if (enabledLabel != null) {
-				enabledLabel.setStyleClass("label");
-				c.addWidget(enabledLabel);
-			} else {
-				disabledLabel.setStyleClass("label");
-				c.addWidget(disabledLabel);
-			}
-			c.addWidget(closeIcon);
-			return c;
-		} else {
-			if (enabledLabel != null) {
-				return enabledLabel;
-			} else {
-				return disabledLabel;
-			}
-		}
+	public Signal1<WMenuItem> triggered() {
+		return this.triggered_;
 	}
 
 	/**
-	 * Updates the widget that represents the item.
-	 * <p>
-	 * The default implementation will cast the <code>itemWidget</code> to a
-	 * {@link WAnchor}, and set the anchor&apos;s text and destination according
-	 * to {@link WMenuItem#getText() getText()} and
-	 * {@link WMenuItem#getPathComponent() getPathComponent()}.
+	 * Returns whether this item is a separator.
 	 * <p>
 	 * 
-	 * @see WMenuItem#createItemWidget()
+	 * @see WMenu#addSeparator()
 	 */
-	protected void updateItemWidget(WWidget itemWidget) {
-		WAnchor enabledLabel = null;
-		WText disabledLabel = null;
-		if (this.closeable_) {
-			WContainerWidget c = ((itemWidget) instanceof WContainerWidget ? (WContainerWidget) (itemWidget)
-					: null);
-			if (!this.disabled_) {
-				enabledLabel = ((c.getChildren().get(0)) instanceof WAnchor ? (WAnchor) (c
-						.getChildren().get(0))
-						: null);
-			} else {
-				disabledLabel = ((c.getChildren().get(0)) instanceof WText ? (WText) (c
-						.getChildren().get(0))
-						: null);
-			}
-		} else {
-			if (!this.disabled_) {
-				enabledLabel = ((itemWidget) instanceof WAnchor ? (WAnchor) (itemWidget)
-						: null);
-			} else {
-				disabledLabel = ((itemWidget) instanceof WText ? (WText) (itemWidget)
-						: null);
-			}
-		}
-		if (enabledLabel != null) {
-			enabledLabel.setText(this.getText());
-			String url = "";
-			if (this.menu_ != null && this.menu_.isInternalPathEnabled()) {
-				String internalPath = this.menu_.getInternalBasePath()
-						+ this.getPathComponent();
-				WLink link = new WLink(WLink.Type.InternalPath, internalPath);
-				WApplication app = WApplication.getInstance();
-				url = link.resolveUrl(app);
-			} else {
-				url = "#";
-			}
-			enabledLabel.setLink(new WLink(url));
-			enabledLabel.setToolTip(this.getToolTip());
-			enabledLabel.clicked().preventDefaultAction();
-		} else {
-			disabledLabel.setText(this.getText());
-			disabledLabel.setToolTip(this.getToolTip());
-		}
+	public boolean isSeparator() {
+		return this.separator_;
+	}
+
+	/**
+	 * Returns whether this item is a section header.
+	 * <p>
+	 * 
+	 * @see WMenu#addSectionHeader(CharSequence text)
+	 */
+	public boolean isSectionHeader() {
+		WAnchor a = this.getAnchor();
+		return !this.separator_ && !(a != null) && !(this.subMenu_ != null)
+				&& this.text_ != null;
 	}
 
 	/**
@@ -603,65 +611,13 @@ public class WMenuItem extends WObject {
 	 * Note that this method is called from within a stateless slot
 	 * implementation, and thus should be stateless as well.
 	 */
-	protected void renderSelected(boolean selected) {
-		if (this.closeable_) {
-			this.getItemWidget().setStyleClass(
-					selected ? "citemselected" : "citem");
+	public void renderSelected(boolean selected) {
+		WApplication app = WApplication.getInstance();
+		String active = app.getTheme().getActiveClass();
+		if (active.equals("Wt-selected")) {
+			this.setStyleClass(selected ? "itemselected" : "item");
 		} else {
-			this.getItemWidget().setStyleClass(
-					selected ? "itemselected" : "item");
-		}
-	}
-
-	/**
-	 * Returns the signal used to activate the item.
-	 * <p>
-	 * The default implementation will tries to cast the
-	 * {@link WMenuItem#getItemWidget() getItemWidget()} or its first child if
-	 * item is {@link WMenuItem#setCloseable(boolean closeable) closeable} to a
-	 * {@link WInteractWidget} and returns the {@link WInteractWidget#clicked()
-	 * clicked signal}.
-	 */
-	protected AbstractSignal activateSignal() {
-		WWidget w = null;
-		if (this.closeable_) {
-			WContainerWidget c = ((this.itemWidget_) instanceof WContainerWidget ? (WContainerWidget) (this.itemWidget_)
-					: null);
-			w = c.getChildren().get(0);
-		} else {
-			w = this.itemWidget_;
-		}
-		WInteractWidget wi = ((w.getWebWidget()) instanceof WInteractWidget ? (WInteractWidget) (w
-				.getWebWidget())
-				: null);
-		if (wi != null) {
-			return wi.clicked();
-		} else {
-			throw new WException(
-					"WMenuItem::activateSignal(): could not dynamic_cast itemWidget() or itemWidget()->children()[0] to a WInteractWidget");
-		}
-	}
-
-	/**
-	 * Returns the signal used to close the item.
-	 * <p>
-	 * The default implementation will tries to cast the
-	 * {@link WMenuItem#getItemWidget() getItemWidget()} (or its second child if
-	 * item is {@link WMenuItem#setCloseable(boolean closeable) closeable}) to a
-	 * {@link WInteractWidget} and returns the {@link WInteractWidget#clicked()
-	 * clicked signal}.
-	 */
-	protected AbstractSignal closeSignal() {
-		WContainerWidget c = ((this.itemWidget_) instanceof WContainerWidget ? (WContainerWidget) (this.itemWidget_)
-				: null);
-		WInteractWidget ci = ((c.getChildren().get(1)) instanceof WInteractWidget ? (WInteractWidget) (c
-				.getChildren().get(1))
-				: null);
-		if (ci != null) {
-			return ci.clicked();
-		} else {
-			throw new WException(
-					"WMenuItem::closeSignal(): could not dynamic_cast itemWidget()->children()[1] to a WInteractWidget");
+			this.toggleStyleClass(active, selected, true);
 		}
 	}
 
@@ -671,47 +627,129 @@ public class WMenuItem extends WObject {
 						.getContents()) {
 			this.menu_.select(this.menu_.indexOf(this), false);
 		}
+		if (this.subMenu_ != null && this.subMenu_.isInternalPathEnabled()) {
+			this.subMenu_.internalPathChanged(path);
+		}
 	}
 
-	/**
-	 * Progresses to an Ajax-enabled widget.
-	 * <p>
-	 * This method is called when the progressive bootstrap method is used, and
-	 * support for AJAX has been detected. The default behavior will upgrade the
-	 * menu and the contents event handling to use AJAX instead of full page
-	 * reloads.
-	 * <p>
-	 * You may want to reimplement this method if you want to make changes to
-	 * widget when AJAX is enabled.
-	 * <p>
-	 * 
-	 * @see WMenu#enableAjax()
-	 */
-	protected void enableAjax() {
-		if (!this.isContentsLoaded()) {
-			this.contents_.enableAjax();
-		}
+	public void enableAjax() {
 		if (this.menu_.isInternalPathEnabled()) {
-			this.updateItemWidget(this.getItemWidget());
 			this.resetLearnedSlots();
 		}
+		super.enableAjax();
 	}
 
-	private WWidget itemWidget_;
+	protected void render(EnumSet<RenderFlag> flags) {
+		this.connectSignals();
+		super.render(flags);
+	}
+
+	WMenuItem(boolean separator, CharSequence text) {
+		super();
+		this.separator_ = true;
+		this.triggered_ = new Signal1<WMenuItem>(this);
+		this.pathComponent_ = "";
+		this.create("", WString.Empty, (WWidget) null,
+				WMenuItem.LoadPolicy.LazyLoading);
+		this.separator_ = separator;
+		this.selectable_ = false;
+		if (!(text.length() == 0)) {
+			this.text_ = new WText(text, TextFormat.PlainText, this);
+		}
+	}
+
 	private WContainerWidget contentsContainer_;
 	private WWidget contents_;
 	private WMenu menu_;
-	private WString text_;
-	private WString tip_;
+	private WMenu subMenu_;
+	private WText icon_;
+	private WText text_;
+	private WCheckBox checkBox_;
+	private Object data_;
+	private boolean separator_;
+	private boolean selectable_;
+	private boolean signalsConnected_;
+	private Signal1<WMenuItem> triggered_;
 	private String pathComponent_;
 	private boolean customPathComponent_;
 	private boolean closeable_;
-	private boolean disabled_;
-	private boolean hidden_;
+
+	private void create(String iconPath, CharSequence text, WWidget contents,
+			WMenuItem.LoadPolicy policy) {
+		this.contentsContainer_ = null;
+		this.contents_ = contents;
+		this.menu_ = null;
+		this.customPathComponent_ = false;
+		this.closeable_ = false;
+		this.selectable_ = true;
+		this.text_ = null;
+		this.icon_ = null;
+		this.checkBox_ = null;
+		this.subMenu_ = null;
+		this.data_ = null;
+		if (this.contents_ != null && policy != WMenuItem.LoadPolicy.PreLoading) {
+			this.contentsContainer_ = new WContainerWidget();
+			this.contentsContainer_.setJavaScriptMember("wtResize",
+					StdWidgetItemImpl.getChildrenResizeJS());
+			this.contentsContainer_.resize(WLength.Auto, new WLength(100,
+					WLength.Unit.Percentage));
+		}
+		if (!this.separator_) {
+			WAnchor a = new WAnchor(this);
+			WApplication app = WApplication.getInstance();
+			if (app.getEnvironment().getAgent() == WEnvironment.UserAgent.IE6) {
+				a.setLink(new WLink("javascript:false"));
+			}
+		}
+		this.signalsConnected_ = false;
+		if (iconPath.length() != 0) {
+			this.setIcon(iconPath);
+		}
+		if (!this.separator_) {
+			this.setText(text);
+		}
+	}
+
+	private WAnchor getAnchor() {
+		for (int i = 0; i < this.getCount(); ++i) {
+			WAnchor result = ((this.getWidget(i)) instanceof WAnchor ? (WAnchor) (this
+					.getWidget(i))
+					: null);
+			if (result != null) {
+				return result;
+			}
+		}
+		return null;
+	}
 
 	void purgeContents() {
 		this.contentsContainer_ = null;
 		this.contents_ = null;
+	}
+
+	void updateInternalPath() {
+		if (this.menu_ != null
+				&& this.menu_.isInternalPathEnabled()
+				&& !(((this.getMenu()) instanceof WPopupMenu ? (WPopupMenu) (this
+						.getMenu())
+						: null) != null)) {
+			String internalPath = this.menu_.getInternalBasePath()
+					+ this.getPathComponent();
+			WLink link = new WLink(WLink.Type.InternalPath, internalPath);
+			WAnchor a = this.getAnchor();
+			if (a != null) {
+				a.setLink(link);
+			}
+		} else {
+			WAnchor a = this.getAnchor();
+			if (a != null) {
+				if (WApplication.getInstance().getEnvironment().getAgent() == WEnvironment.UserAgent.IE6) {
+					a.setLink(new WLink("#"));
+				} else {
+					a.setLink(new WLink());
+				}
+			}
+		}
 	}
 
 	private boolean isContentsLoaded() {
@@ -721,15 +759,15 @@ public class WMenuItem extends WObject {
 
 	void loadContents() {
 		if (!this.isContentsLoaded()) {
-			this.removeChild(this.contents_);
 			this.contentsContainer_.addWidget(this.contents_);
-			// this.implementStateless(WMenuItem.selectVisual,WMenuItem.undoSelectVisual);
-			this.connectActivate();
+			this.signalsConnected_ = false;
+			this.connectSignals();
 		}
 	}
 
-	void setMenu(WMenu menu) {
+	void setParentMenu(WMenu menu) {
 		this.menu_ = menu;
+		this.updateInternalPath();
 	}
 
 	private void selectNotLoaded() {
@@ -739,65 +777,62 @@ public class WMenuItem extends WObject {
 	}
 
 	private void selectVisual() {
-		if (this.menu_ != null) {
+		if (this.menu_ != null && this.selectable_) {
 			this.menu_.selectVisual(this);
 		}
 	}
 
 	private void undoSelectVisual() {
-		if (this.menu_ != null) {
+		if (this.menu_ != null && this.selectable_) {
 			this.menu_.undoSelectVisual();
 		}
 	}
 
-	private void connectActivate() {
-		AbstractSignal as = this.activateSignal();
-		if (this.contentsContainer_ != null
-				&& this.contentsContainer_.getCount() == 0) {
-			as.addListener(this, new Signal.Listener() {
-				public void trigger() {
-					WMenuItem.this.selectNotLoaded();
-				}
-			});
-		} else {
-			as.addListener(this, new Signal.Listener() {
-				public void trigger() {
-					WMenuItem.this.selectVisual();
-				}
-			});
-			as.addListener(this, new Signal.Listener() {
-				public void trigger() {
-					WMenuItem.this.select();
-				}
-			});
-		}
-	}
-
-	private void connectClose() {
-		AbstractSignal cs = this.closeSignal();
-		cs.addListener(this, new Signal.Listener() {
-			public void trigger() {
-				WMenuItem.this.close();
-			}
-		});
-	}
-
+	// private void connectClose() ;
 	private void connectSignals() {
-		if (!this.disabled_) {
+		if (!this.signalsConnected_) {
+			this.signalsConnected_ = true;
 			if (this.isContentsLoaded()) {
 				// this.implementStateless(WMenuItem.selectVisual,WMenuItem.undoSelectVisual);
 			}
-			this.connectActivate();
-		}
-		if (this.closeable_) {
-			this.connectClose();
+			WAnchor a = this.getAnchor();
+			if (a != null) {
+				AbstractSignal as;
+				if (this.checkBox_ != null) {
+					as = a.mouseWentUp();
+					a.setLink(new WLink());
+				} else {
+					as = a.clicked();
+				}
+				if (this.contentsContainer_ != null
+						&& this.contentsContainer_.getCount() == 0) {
+					as.addListener(this, new Signal.Listener() {
+						public void trigger() {
+							WMenuItem.this.selectNotLoaded();
+						}
+					});
+				} else {
+					as.addListener(this, new Signal.Listener() {
+						public void trigger() {
+							WMenuItem.this.selectVisual();
+						}
+					});
+					as.addListener(this, new Signal.Listener() {
+						public void trigger() {
+							WMenuItem.this.select();
+						}
+					});
+				}
+			}
 		}
 	}
 
-	WWidget getRecreateItemWidget() {
-		if (this.itemWidget_ != null)
-			this.itemWidget_.remove();
-		this.itemWidget_ = null;
-		return this.getItemWidget();
+	void setItemPadding(boolean padding) {
+		if (!(this.checkBox_ != null) && !(this.icon_ != null)) {
+			WAnchor a = this.getAnchor();
+			if (a != null) {
+				a.toggleStyleClass("Wt-padded", padding);
+			}
+		}
 	}
 }

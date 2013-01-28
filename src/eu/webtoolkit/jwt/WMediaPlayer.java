@@ -375,7 +375,7 @@ public class WMediaPlayer extends WCompositeWidget {
 			app.require(res + "jquery.min.js");
 		}
 		if (app.require(res + "jquery.jplayer.min.js")) {
-			app.useStyleSheet(res + "skin/jplayer.blue.monday.css");
+			app.useStyleSheet(new WLink(res + "skin/jplayer.blue.monday.css"));
 		}
 		if (this.mediaType_ == WMediaPlayer.MediaType.Video) {
 			this.setVideoSize(480, 270);
@@ -540,7 +540,7 @@ public class WMediaPlayer extends WCompositeWidget {
 		this.media_.get(this.media_.size() - 1).link = link;
 		this.media_.get(this.media_.size() - 1).encoding = encoding;
 		this.mediaUpdated_ = true;
-		this.askRerender();
+		this.scheduleRender();
 	}
 
 	/**
@@ -569,7 +569,7 @@ public class WMediaPlayer extends WCompositeWidget {
 	public void clearSources() {
 		this.media_.clear();
 		this.mediaUpdated_ = true;
-		this.askRerender();
+		this.scheduleRender();
 	}
 
 	/**
@@ -1006,9 +1006,9 @@ public class WMediaPlayer extends WCompositeWidget {
 				ss.append("seekBar:\"#").append(
 						this.progressBar_[WMediaPlayer.BarControlId.Time
 								.getValue()].getId()).append("\", ").append(
-						"playBar:\"#").append(
+						"playBar:\"#bar").append(
 						this.progressBar_[WMediaPlayer.BarControlId.Time
-								.getValue()].getId()).append(" .Wt-pgb-bar\"");
+								.getValue()].getId()).append("\"");
 				first = false;
 			}
 			if (this.progressBar_[WMediaPlayer.BarControlId.Volume.getValue()] != null) {
@@ -1018,13 +1018,13 @@ public class WMediaPlayer extends WCompositeWidget {
 				ss.append("volumeBar:\"#").append(
 						this.progressBar_[WMediaPlayer.BarControlId.Volume
 								.getValue()].getId()).append("\", ").append(
-						"volumeBarValue:\"#").append(
+						"volumeBarValue:\"#bar").append(
 						this.progressBar_[WMediaPlayer.BarControlId.Volume
-								.getValue()].getId()).append(" .Wt-pgb-bar\"");
+								.getValue()].getId()).append("\"");
 				first = false;
 			}
 			ss.append('}').append("});");
-			ss.append("new Wt3_2_3.WMediaPlayer(").append(
+			ss.append("new Wt3_3_0.WMediaPlayer(").append(
 					app.getJavaScriptClass()).append(',').append(
 					this.getJsRef()).append(");");
 			this.doJavaScript(ss.toString());
@@ -1189,7 +1189,7 @@ public class WMediaPlayer extends WCompositeWidget {
 		}
 		JSignal result;
 		this.signals_.add(result = new JSignal(this, name, true));
-		this.askRerender();
+		this.scheduleRender();
 		return result;
 	}
 
@@ -1252,6 +1252,12 @@ public class WMediaPlayer extends WCompositeWidget {
 		}
 	}
 
+	private static String LOAD_STARTED_SIGNAL = "jPlayer_loadstart.Wt";
+	private static String TIME_UPDATED_SIGNAL = "jPlayer_timeupdate.Wt";
+	private static String PLAYBACK_STARTED_SIGNAL = "jPlayer_play.Wt";
+	private static String PLAYBACK_PAUSED_SIGNAL = "jPlayer_pause.Wt";
+	private static String ENDED_SIGNAL = "jPlayer_ended.Wt";
+	private static String VOLUME_CHANGED_SIGNAL = "jPlayer_volumechange.Wt";
 	private static String[] mediaNames = { "poster", "mp3", "m4a", "oga",
 			"wav", "webma", "fla", "m4v", "ogv", "webmv", "flv" };
 	private static String[] media = { "audio", "video" };
@@ -1280,11 +1286,4 @@ public class WMediaPlayer extends WCompositeWidget {
 			throw new WException("Invalid readystate");
 		}
 	}
-
-	private static String LOAD_STARTED_SIGNAL = "jPlayer_loadstart.Wt";
-	private static String TIME_UPDATED_SIGNAL = "jPlayer_timeupdate.Wt";
-	private static String PLAYBACK_STARTED_SIGNAL = "jPlayer_play.Wt";
-	private static String PLAYBACK_PAUSED_SIGNAL = "jPlayer_pause.Wt";
-	private static String ENDED_SIGNAL = "jPlayer_ended.Wt";
-	private static String VOLUME_CHANGED_SIGNAL = "jPlayer_volumechange.Wt";
 }

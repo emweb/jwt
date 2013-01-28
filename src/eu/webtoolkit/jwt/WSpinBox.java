@@ -57,6 +57,7 @@ public class WSpinBox extends WAbstractSpinBox {
 		this.max_ = 99;
 		this.step_ = 1;
 		this.valueChanged_ = new Signal1<Integer>();
+		this.setValidator(this.createValidator());
 		this.setValue(0);
 	}
 
@@ -216,7 +217,8 @@ public class WSpinBox extends WAbstractSpinBox {
 
 	boolean parseNumberValue(String text) {
 		try {
-			this.value_ = Integer.parseInt(text);
+			this.value_ = LocaleUtils.toInt(LocaleUtils.getCurrentLocale(),
+					text);
 			return true;
 		} catch (NumberFormatException e) {
 			return false;
@@ -225,10 +227,12 @@ public class WSpinBox extends WAbstractSpinBox {
 
 	WString getTextFromValue() {
 		if (this.isNativeControl()) {
-			return new WString(String.valueOf(this.value_));
+			return new WString(LocaleUtils.toString(LocaleUtils
+					.getCurrentLocale(), this.value_));
 		} else {
 			String text = this.getPrefix().toString()
-					+ String.valueOf(this.value_) + this.getSuffix().toString();
+					+ LocaleUtils.toString(LocaleUtils.getCurrentLocale(),
+							this.value_) + this.getSuffix().toString();
 			return new WString(text);
 		}
 	}

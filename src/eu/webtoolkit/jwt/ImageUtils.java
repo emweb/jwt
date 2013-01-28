@@ -22,20 +22,22 @@ import org.slf4j.LoggerFactory;
 class ImageUtils {
 	private static Logger logger = LoggerFactory.getLogger(ImageUtils.class);
 
-	static final int mimeTypeCount = 10;
-	static String[] imageMimeTypes = { "image/png", "image/jpeg", "image/gif",
-			"image/gif", "image/bmp", "image/bmp", "image/bmp", "image/bmp",
-			"image/bmp", "image/bmp" };
-	static String[] imageHeaders = { "\211PNG\r\n\032\n", "\377\330\377",
-			"GIF87a", "GIF89a", "BA", "BM", "CI", "CP", "IC", "PI" };
-	static int[] imageHeaderSize = { 8, 3, 6, 6, 2, 2, 2, 2, 2, 2 };
+	private static final int mimeTypeCount = 10;
+	private static String[] imageMimeTypes = { "image/png", "image/jpeg",
+			"image/gif", "image/gif", "image/bmp", "image/bmp", "image/bmp",
+			"image/bmp", "image/bmp", "image/bmp" };
+	private static String[] imageHeaders = { "\211PNG\r\n\032\n",
+			"\377\330\377", "GIF87a", "GIF89a", "BA", "BM", "CI", "CP", "IC",
+			"PI" };
+	private static int[] imageHeaderSize = { 8, 3, 6, 6, 2, 2, 2, 2, 2, 2 };
 
 	public static String identifyImageFileMimeType(String fileName) {
 		List<Integer> header = FileUtils.fileHeader(fileName, 25);
 		if (header.size() == 0) {
 			return "";
+		} else {
+			return identifyImageMimeType(header);
 		}
-		return identifyImageMimeType(header);
 	}
 
 	public static String identifyImageMimeType(List<Integer> header) {

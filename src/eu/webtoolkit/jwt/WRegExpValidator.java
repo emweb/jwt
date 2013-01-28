@@ -23,8 +23,9 @@ import org.slf4j.LoggerFactory;
  * A validator that checks user input against a regular expression.
  * <p>
  * 
- * This validator checks whether user input is matched by the given (perl-like)
- * regular expression.
+ * This validator checks whether user input matches the given (perl-like)
+ * regular expression. It checks the complete input; prefix ^ and suffix $ are
+ * not needed.
  * <p>
  * The following perl features are not supported (since client-side validation
  * cannot handle them):
@@ -209,13 +210,8 @@ public class WRegExpValidator extends WValidator {
 	public String getJavaScriptValidate() {
 		loadJavaScript(WApplication.getInstance());
 		StringBuilder js = new StringBuilder();
-		js.append("new Wt3_2_3.WRegExpValidator(");
-		if (this.isMandatory()) {
-			js.append("true");
-		} else {
-			js.append("false");
-		}
-		js.append(',');
+		js.append("new Wt3_3_0.WRegExpValidator(").append(this.isMandatory())
+				.append(',');
 		if (this.regexp_ != null) {
 			js.append(WWebWidget.jsStringLiteral(this.regexp_.pattern()))
 					.append(",'");
@@ -247,6 +243,6 @@ public class WRegExpValidator extends WValidator {
 				JavaScriptScope.WtClassScope,
 				JavaScriptObjectType.JavaScriptConstructor,
 				"WRegExpValidator",
-				"function(d,a,e,f,g){var b=a?new RegExp(\"^\"+a+\"$\",e):null;this.validate=function(c){if(c.length==0)return d?{valid:false,message:f}:{valid:true};return b?{valid:b.test(c),message:g}:{valid:true}}}");
+				"function(d,a,e,f,g){var b=a?new RegExp(\"^(\"+a+\")$\",e):null;this.validate=function(c){if(c.length==0)return d?{valid:false,message:f}:{valid:true};return b?b.test(c)?{valid:true}:{valid:false,message:g}:{valid:true}}}");
 	}
 }

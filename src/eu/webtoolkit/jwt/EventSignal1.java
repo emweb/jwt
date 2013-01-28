@@ -16,7 +16,7 @@ public final class EventSignal1<E extends WAbstractEvent> extends AbstractEventS
 	private E instance_;
 
 	EventSignal1(String name, WObject sender, E instance) {
-		super(name, sender);
+		super(name, sender, true);
 
 		dynamic_ = null;
 		instance_ = instance;

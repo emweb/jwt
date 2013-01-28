@@ -362,9 +362,7 @@ public class WCalendar extends WCompositeWidget {
 	/**
 	 * Sets the first day of the week.
 	 * <p>
-	 * Possible values or 1 to 7, as accepted by
-	 * {@link WDate#getShortDayName(int weekday, boolean localized)
-	 * WDate#getShortDayName()}.
+	 * Possible values or 1 to 7, as accepted by {@link }.
 	 * <p>
 	 * The default value is 1 (&quot;Monday&quot;).
 	 */
@@ -603,10 +601,20 @@ public class WCalendar extends WCompositeWidget {
 							.getWebWidget())
 							: null);
 					if (iw != null && iw != w) {
-						this.cellClickMapper_.mapConnect(iw.clicked(),
-								new WCalendar.Coordinate(i, j));
-						this.cellDblClickMapper_.mapConnect(iw.doubleClicked(),
-								new WCalendar.Coordinate(i, j));
+						if (this.clicked().isConnected()
+								|| this.selectionMode_ != SelectionMode.ExtendedSelection
+								&& this.singleClickSelect_
+								&& this.activated().isConnected()) {
+							this.cellClickMapper_.mapConnect(iw.clicked(),
+									new WCalendar.Coordinate(i, j));
+						}
+						if (this.selectionMode_ != SelectionMode.ExtendedSelection
+								&& !this.singleClickSelect_
+								&& this.activated().isConnected()) {
+							this.cellDblClickMapper_.mapConnect(iw
+									.doubleClicked(), new WCalendar.Coordinate(
+									i, j));
+						}
 					}
 					d = d.addDays(1);
 				}
@@ -727,7 +735,7 @@ public class WCalendar extends WCompositeWidget {
 		this.currentMonth_ = currentDay.getMonth();
 		StringBuilder text = new StringBuilder();
 		text
-				.append("<table class=\"${table-class}\" cellspacing=\"0\" cellpadding=\"0\"><caption>${nav-prev} ${month} ${year} ${nav-next}</caption><tr>");
+				.append("<table class=\"days ${table-class}\" cellspacing=\"0\" cellpadding=\"0\"><tr><th>${nav-prev}</th><th colspan=\"5\">${month} ${year}</th><th>${nav-next}</th></tr><tr>");
 		for (int j = 0; j < 7; ++j) {
 			text.append("<th title=\"${t").append(j).append(
 					"}\" scope=\"col\">${d").append(j).append("}</th>");
@@ -793,7 +801,7 @@ public class WCalendar extends WCompositeWidget {
 	private void renderMonth() {
 		this.needRenderMonth_ = true;
 		if (this.isRendered()) {
-			this.askRerender();
+			this.scheduleRender();
 		}
 	}
 
@@ -876,7 +884,10 @@ public class WCalendar extends WCompositeWidget {
 		if (this.isInvalid(d)) {
 			return;
 		}
-		this.clicked().trigger(d);
-		this.activated().trigger(d);
+		this.selectInCurrentMonth(d);
+		if (this.selectionMode_ != SelectionMode.ExtendedSelection
+				&& !this.singleClickSelect_) {
+			this.activated().trigger(d);
+		}
 	}
 }

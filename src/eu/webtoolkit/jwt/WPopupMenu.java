@@ -49,11 +49,11 @@ import org.slf4j.LoggerFactory;
  * <p>
  * You have several options to react to the selection of an item:
  * <ul>
- * <li>Either you use the {@link WPopupMenuItem} itself to identify the action,
- * perhaps by specialization or simply by binding custom data using
- * {@link WPopupMenuItem#setData(Object data) WPopupMenuItem#setData()}.</li>
+ * <li>Either you use the WPopupMenuItem itself to identify the action, perhaps
+ * by specialization or simply by binding custom data using
+ * {@link WMenuItem#setData(Object data) WMenuItem#setData()}.</li>
  * <li>You can bind a separate method to each item&apos;s
- * {@link WPopupMenuItem#triggered() WPopupMenuItem#triggered()} signal.</li>
+ * {@link WMenuItem#triggered() WMenuItem#triggered()} signal.</li>
  * </ul>
  * <p>
  * Usage example:
@@ -113,10 +113,8 @@ import org.slf4j.LoggerFactory;
  * <strong>WPopupMenu example (polished)</strong>
  * </p>
  * </div>
- * 
- * @see WPopupMenuItem
  */
-public class WPopupMenu extends WCompositeWidget {
+public class WPopupMenu extends WMenu {
 	private static Logger logger = LoggerFactory.getLogger(WPopupMenu.class);
 
 	/**
@@ -126,29 +124,16 @@ public class WPopupMenu extends WCompositeWidget {
 	 * {@link WPopupMenu#popup(WPoint p) popup()} or
 	 * {@link WPopupMenu#exec(WPoint p) exec()}.
 	 */
-	public WPopupMenu() {
-		super();
-		this.parentItem_ = null;
+	public WPopupMenu(WStackedWidget contentsStack) {
+		super(contentsStack);
 		this.result_ = null;
 		this.location_ = null;
 		this.aboutToHide_ = new Signal(this);
-		this.triggered_ = new Signal1<WPopupMenuItem>(this);
 		this.cancel_ = new JSignal(this, "cancel");
 		this.globalClickConnection_ = new AbstractSignal.Connection();
 		this.globalEscapeConnection_ = new AbstractSignal.Connection();
 		this.recursiveEventLoop_ = false;
 		this.autoHideDelay_ = -1;
-		String TEMPLATE = "${shadow-x1-x2}${contents}";
-		this
-				.setImplementation(this.impl_ = new WTemplate(new WString(
-						TEMPLATE)));
-		this.impl_.setLoadLaterWhenInvisible(false);
-		this.setPositionScheme(PositionScheme.Absolute);
-		this.setStyleClass("Wt-popupmenu Wt-outset");
-		this.impl_.bindString("shadow-x1-x2", WTemplate.DropShadow_x1_x2);
-		WContainerWidget content = new WContainerWidget();
-		content.setStyleClass("content");
-		this.impl_.bindWidget("contents", content);
 		String CSS_RULES_NAME = "Wt::WPopupMenu";
 		WApplication app = WApplication.getInstance();
 		if (!app.getStyleSheet().isDefined(CSS_RULES_NAME)) {
@@ -156,92 +141,16 @@ public class WPopupMenu extends WCompositeWidget {
 					"visibility: hidden;", CSS_RULES_NAME);
 		}
 		app.getDomRoot().addWidget(this);
-		this.hide();
 	}
 
 	/**
-	 * Adds an item with given text.
+	 * Creates a new popup menu.
 	 * <p>
-	 * Adds an item to the menu with given text, and returns the corresponding
-	 * item object.
-	 * <p>
-	 * 
-	 * @see WPopupMenu#add(WPopupMenuItem item)
+	 * Calls {@link #WPopupMenu(WStackedWidget contentsStack)
+	 * this((WStackedWidget)null)}
 	 */
-	public WPopupMenuItem addItem(CharSequence text) {
-		return this.addItem("", text);
-	}
-
-	/**
-	 * Adds an item with given icon and text.
-	 * <p>
-	 * Adds an item to the menu with given text and icon, and returns the
-	 * corresponding item object.
-	 * <p>
-	 * <p>
-	 * <i><b>Note: </b>The icon should have a width of 16 pixels.</i>
-	 * </p>
-	 * 
-	 * @see WPopupMenu#add(WPopupMenuItem item)
-	 */
-	public WPopupMenuItem addItem(String iconPath, CharSequence text) {
-		WPopupMenuItem item = new WPopupMenuItem(iconPath, text);
-		this.add(item);
-		return item;
-	}
-
-	// public WPopupMenuItem addItem(CharSequence text, T target,
-	// <pointertomember or dependentsizedarray> methodpointertomember or
-	// dependentsizedarray>) ;
-	// public WPopupMenuItem addItem(String iconPath, CharSequence text, T
-	// target, <pointertomember or dependentsizedarray> methodpointertomember or
-	// dependentsizedarray>) ;
-	/**
-	 * Adds a submenu, with given text.
-	 * <p>
-	 * Adds an item with text <code>text</code>, that leads to a submenu
-	 * <code>menu</code>.
-	 * <p>
-	 * 
-	 * @see WPopupMenu#add(WPopupMenuItem item)
-	 */
-	public WPopupMenuItem addMenu(CharSequence text, WPopupMenu menu) {
-		return this.addMenu("", text, menu);
-	}
-
-	/**
-	 * Adds a submenu, with given icon and text.
-	 * <p>
-	 * Adds an item with given text and icon, that leads to a submenu
-	 * <code>menu</code>.
-	 * <p>
-	 * 
-	 * @see WPopupMenu#add(WPopupMenuItem item)
-	 */
-	public WPopupMenuItem addMenu(String iconPath, CharSequence text,
-			WPopupMenu menu) {
-		WPopupMenuItem item = this.addItem(iconPath, text);
-		item.setPopupMenu(menu);
-		return item;
-	}
-
-	/**
-	 * Adds a menu item.
-	 * <p>
-	 * Adds an item to the popup menu.
-	 */
-	public void add(WPopupMenuItem item) {
-		this.getContents().addWidget(item);
-	}
-
-	/**
-	 * Adds a separator to the menu.
-	 * <p>
-	 * Adds a separator the popup menu. The separator is an empty div with
-	 * style-class &quot;separator&quot;.
-	 */
-	public void addSeparator() {
-		this.add(new WPopupMenuItem(true));
+	public WPopupMenu() {
+		this((WStackedWidget) null);
 	}
 
 	/**
@@ -259,7 +168,7 @@ public class WPopupMenu extends WCompositeWidget {
 		this.popupImpl();
 		this.setOffsets(new WLength(42), EnumSet.of(Side.Left, Side.Top));
 		this.setOffsets(new WLength(-10000), EnumSet.of(Side.Left, Side.Top));
-		this.doJavaScript("Wt3_2_3.positionXY('" + this.getId() + "',"
+		this.doJavaScript("Wt3_3_0.positionXY('" + this.getId() + "',"
 				+ String.valueOf(p.getX()) + "," + String.valueOf(p.getY())
 				+ ");");
 	}
@@ -276,6 +185,18 @@ public class WPopupMenu extends WCompositeWidget {
 	 */
 	public void popup(WMouseEvent e) {
 		this.popup(new WPoint(e.getDocument().x, e.getDocument().y));
+	}
+
+	public void setButton(WInteractWidget button) {
+		this.button_ = button;
+		if (this.button_ != null) {
+			this.button_.clicked().addListener(this,
+					new Signal1.Listener<WMouseEvent>() {
+						public void trigger(WMouseEvent e1) {
+							WPopupMenu.this.popupAtButton();
+						}
+					});
+		}
 	}
 
 	/**
@@ -315,7 +236,7 @@ public class WPopupMenu extends WCompositeWidget {
 	 * 
 	 * @see WPopupMenu#popup(WPoint p)
 	 */
-	public WPopupMenuItem exec(WPoint p) {
+	public WMenuItem exec(WPoint p) {
 		if (this.recursiveEventLoop_) {
 			throw new WException("WPopupMenu::exec(): already being executed.");
 		}
@@ -344,7 +265,7 @@ public class WPopupMenu extends WCompositeWidget {
 	 * 
 	 * @see WPopupMenu#exec(WPoint p)
 	 */
-	public WPopupMenuItem exec(WMouseEvent e) {
+	public WMenuItem exec(WMouseEvent e) {
 		return this.exec(new WPoint(e.getDocument().x, e.getDocument().y));
 	}
 
@@ -354,7 +275,7 @@ public class WPopupMenu extends WCompositeWidget {
 	 * 
 	 * @see WWidget#positionAt(WWidget widget, Orientation orientation)
 	 */
-	public WPopupMenuItem exec(WWidget location, Orientation orientation) {
+	public WMenuItem exec(WWidget location, Orientation orientation) {
 		if (this.recursiveEventLoop_) {
 			throw new WException("WPopupMenu::exec(): already being executed.");
 		}
@@ -373,7 +294,7 @@ public class WPopupMenu extends WCompositeWidget {
 	 * Returns {@link #exec(WWidget location, Orientation orientation)
 	 * exec(location, Orientation.Vertical)}
 	 */
-	public final WPopupMenuItem exec(WWidget location) {
+	public final WMenuItem exec(WWidget location) {
 		return exec(location, Orientation.Vertical);
 	}
 
@@ -382,34 +303,26 @@ public class WPopupMenu extends WCompositeWidget {
 	 * <p>
 	 * The result is <code>null</code> when the user cancelled the popup menu.
 	 */
-	public WPopupMenuItem getResult() {
+	public WMenuItem getResult() {
 		return this.result_;
 	}
 
 	public void setHidden(boolean hidden, WAnimation animation) {
-		if (!WApplication.getInstance().getSession().getRenderer()
-				.isPreLearning()
-				&& (animation.isEmpty() && hidden == this.isHidden())) {
-			return;
-		}
 		super.setHidden(hidden, animation);
-		if (this.autoHideDelay_ >= 0 && this.cancel_.isConnected()) {
+		if (this.cancel_.isConnected()) {
 			this.doJavaScript("jQuery.data(" + this.getJsRef()
 					+ ", 'obj').setHidden(" + (hidden ? "1" : "0") + ");");
-		}
-		if (hidden) {
-			this.renderOutAll();
 		}
 	}
 
 	public void setMaximumSize(WLength width, WLength height) {
 		super.setMaximumSize(width, height);
-		this.getContents().setMaximumSize(width, height);
+		this.getUl().setMaximumSize(width, height);
 	}
 
 	public void setMinimumSize(WLength width, WLength height) {
 		super.setMinimumSize(width, height);
-		this.getContents().setMinimumSize(width, height);
+		this.getUl().setMinimumSize(width, height);
 	}
 
 	/**
@@ -423,19 +336,6 @@ public class WPopupMenu extends WCompositeWidget {
 	 */
 	public Signal aboutToHide() {
 		return this.aboutToHide_;
-	}
-
-	/**
-	 * Signal emitted when an item is activated.
-	 * <p>
-	 * Passes the activated item as argument. This signal is only emitted for
-	 * the toplevel menu.
-	 * <p>
-	 * 
-	 * @see WPopupMenuItem#triggered()
-	 */
-	public Signal1<WPopupMenuItem> triggered() {
-		return this.triggered_;
 	}
 
 	/**
@@ -477,9 +377,12 @@ public class WPopupMenu extends WCompositeWidget {
 			return false;
 		}
 		for (int i = 0; i < this.getCount(); ++i) {
-			WPopupMenuItem item = this.itemAt(i);
-			if (item.getPopupMenu() != null) {
-				if (item.getPopupMenu().isExposed(w)) {
+			WMenuItem item = this.itemAt(i);
+			WPopupMenu popup = ((item.getMenu()) instanceof WPopupMenu ? (WPopupMenu) (item
+					.getMenu())
+					: null);
+			if (popup != null) {
+				if (popup.isExposed(w)) {
 					return true;
 				}
 			}
@@ -492,42 +395,35 @@ public class WPopupMenu extends WCompositeWidget {
 				}
 			}
 		}
-		if (!(this.parentItem_ != null)) {
-			this.done();
+		if (!(this.getParentItem() != null)) {
+			this.cancel();
 			return true;
 		} else {
 			return false;
 		}
 	}
 
-	private WTemplate impl_;
-	WPopupMenuItem parentItem_;
-	WPopupMenuItem result_;
+	protected void renderSelected(WMenuItem item, boolean selected) {
+	}
+
+	WMenuItem result_;
 	private WWidget location_;
+	private WInteractWidget button_;
 	private Signal aboutToHide_;
-	private Signal1<WPopupMenuItem> triggered_;
 	private JSignal cancel_;
 	private AbstractSignal.Connection globalClickConnection_;
 	private AbstractSignal.Connection globalEscapeConnection_;
 	private boolean recursiveEventLoop_;
 	private int autoHideDelay_;
 
-	private WContainerWidget getContents() {
-		return ((this.impl_.resolveWidget("contents")) instanceof WContainerWidget ? (WContainerWidget) (this.impl_
-				.resolveWidget("contents"))
-				: null);
+	private void cancel() {
+		this.done((WMenuItem) null);
 	}
 
-	WPopupMenu getTopLevelMenu() {
-		return this.parentItem_ != null ? this.parentItem_.getTopLevelMenu()
-				: this;
-	}
-
-	private void done() {
-		this.done((WPopupMenuItem) null);
-	}
-
-	void done(WPopupMenuItem result) {
+	private void done(WMenuItem result) {
+		if (this.location_ != null && this.location_ == this.button_) {
+			this.button_.removeStyleClass("active", true);
+		}
 		this.location_ = null;
 		this.result_ = result;
 		this.hide();
@@ -536,12 +432,10 @@ public class WPopupMenu extends WCompositeWidget {
 		app.globalEscapePressed().disconnect(this.globalEscapeConnection_);
 		app.popExposedConstraint(this);
 		this.recursiveEventLoop_ = false;
-		this.triggered_.trigger(this.result_);
 		this.aboutToHide_.trigger();
 	}
 
 	private void popupImpl() {
-		this.renderOutAll();
 		this.result_ = null;
 		WApplication app = WApplication.getInstance();
 		if (app.globalEscapePressed().isConnected()) {
@@ -550,23 +444,18 @@ public class WPopupMenu extends WCompositeWidget {
 		this.globalClickConnection_ = app.getRoot().clicked().addListener(this,
 				new Signal1.Listener<WMouseEvent>() {
 					public void trigger(WMouseEvent e1) {
-						WPopupMenu.this.done();
+						WPopupMenu.this.cancel();
 					}
 				});
 		this.globalEscapeConnection_ = app.globalEscapePressed().addListener(
 				this, new Signal.Listener() {
 					public void trigger() {
-						WPopupMenu.this.done();
+						WPopupMenu.this.cancel();
 					}
 				});
 		app.pushExposedConstraint(this);
 		this.prepareRender(app);
 		this.show();
-	}
-
-	void popupToo(WWidget location) {
-		this.show();
-		this.positionAt(location, Orientation.Horizontal);
 	}
 
 	private void prepareRender(WApplication app) {
@@ -576,51 +465,62 @@ public class WPopupMenu extends WCompositeWidget {
 		}
 		if (!this.cancel_.isConnected()) {
 			app.loadJavaScript("js/WPopupMenu.js", wtjs1());
-			List<WPopupMenu> subMenus = new ArrayList<WPopupMenu>();
-			this.getSubMenus(subMenus);
 			StringBuilder s = new StringBuilder();
-			s.append("new Wt3_2_3.WPopupMenu(")
+			s.append("new Wt3_3_0.WPopupMenu(")
 					.append(app.getJavaScriptClass()).append(',').append(
 							this.getJsRef()).append(',').append(
-							this.autoHideDelay_).append(",[");
-			for (int i = 0; i < subMenus.size(); ++i) {
-				if (i != 0) {
-					s.append(',');
-				}
-				s.append(WWebWidget.jsStringLiteral(subMenus.get(i).getId()));
-			}
-			s.append("]);");
+							this.autoHideDelay_).append(");");
 			this.setJavaScriptMember(" WPopupMenu", s.toString());
 			this.cancel_.addListener(this, new Signal.Listener() {
 				public void trigger() {
-					WPopupMenu.this.done();
+					WPopupMenu.this.cancel();
 				}
 			});
+			this.connectSignals(this);
+		}
+		this.adjustPadding();
+	}
+
+	private void adjustPadding() {
+		boolean needPadding = false;
+		for (int i = 0; i < this.getCount(); ++i) {
+			WMenuItem item = this.itemAt(i);
+			if (item.getIcon().length() != 0 || item.isCheckable()) {
+				needPadding = true;
+				break;
+			}
+		}
+		for (int i = 0; i < this.getCount(); ++i) {
+			WMenuItem item = this.itemAt(i);
+			item.setItemPadding(needPadding);
+			WPopupMenu subMenu = ((item.getMenu()) instanceof WPopupMenu ? (WPopupMenu) (item
+					.getMenu())
+					: null);
+			if (subMenu != null) {
+				subMenu.adjustPadding();
+			}
 		}
 	}
 
-	void renderOutAll() {
+	private void popupAtButton() {
+		this.button_.addStyleClass("active", true);
+		this.popup(this.button_);
+	}
+
+	private void connectSignals(final WPopupMenu topLevel) {
+		this.triggered().addListener(topLevel,
+				new Signal1.Listener<WMenuItem>() {
+					public void trigger(WMenuItem e1) {
+						topLevel.done(e1);
+					}
+				});
 		for (int i = 0; i < this.getCount(); ++i) {
-			this.itemAt(i).renderOut();
-		}
-	}
-
-	private int getCount() {
-		return this.getContents().getCount();
-	}
-
-	private WPopupMenuItem itemAt(int index) {
-		return ((this.getContents().getWidget(index)) instanceof WPopupMenuItem ? (WPopupMenuItem) (this
-				.getContents().getWidget(index))
-				: null);
-	}
-
-	private void getSubMenus(List<WPopupMenu> result) {
-		for (int i = 0; i < this.getCount(); ++i) {
-			WPopupMenuItem item = this.itemAt(i);
-			if (item.getPopupMenu() != null) {
-				result.add(item.getPopupMenu());
-				item.getPopupMenu().getSubMenus(result);
+			WMenuItem item = this.itemAt(i);
+			WPopupMenu subMenu = ((item.getMenu()) instanceof WPopupMenu ? (WPopupMenu) (item
+					.getMenu())
+					: null);
+			if (subMenu != null) {
+				subMenu.connectSignals(topLevel);
 			}
 		}
 	}
@@ -630,6 +530,6 @@ public class WPopupMenu extends WCompositeWidget {
 				JavaScriptScope.WtClassScope,
 				JavaScriptObjectType.JavaScriptConstructor,
 				"WPopupMenu",
-				"function(h,f,d,i){function l(){h.emit(f.id,\"cancel\")}function j(){--c;if(c==0){clearTimeout(b);b=setTimeout(l,d)}}function k(){++c;clearTimeout(b)}function g(a){$(a).mouseleave(j).mouseenter(k)}jQuery.data(f,\"obj\",this);var m=h.WT,b=null,e=null,c=0;this.setHidden=function(a){if(b){clearTimeout(b);b=null}c=0;if(d>0&&!a){c=1;e||j()}};this.popupAt=function(a){if(d>=0)if(e!=a){e=a;g(e);k()}};d>=0&&setTimeout(function(){g(f);for(var a=0,n=i.length;a< n;++a)g(m.$(i[a]))},0)}");
+				"function(p,c,h){function x(){p.emit(c.id,\"cancel\")}function q(a,b){$(a).toggleClass(\"active\",b)}function l(a){if(a.subMenu)return a.subMenu;else{var b=a.lastChild;if(b&&f.hasTag(b,\"UL\")){a.subMenu=b;b.parentItem=a;$(b).mousemove(r);h>=0&&m(b);return b}}}function y(a){a.style.display=\"block\";if(a.parentNode==a.parentItem){a.parentNode.removeChild(a);c.parentNode.appendChild(a)}f.positionAtWidget(a.id,a.parentItem.id,f.Horizontal,-f.px(a,\"paddingTop\")); n(a,null)}function n(a,b){function s(i,d){if(i==d)return true;else if(d)return(d=d.parentNode.parentItem)?s(i,d):false;else return false}function t(i){var d,u;d=0;for(u=i.childNodes.length;d<u;++d){var e=i.childNodes[d];if(s(e,b)){if(e!==b)(e=l(e))&&t(e)}else{q(e,false);if(e=l(e))e.style.display=\"none\"}}}t(a)}function r(a){for(a=f.target(a);a&&!f.hasTag(a,\"LI\")&&!f.hasTag(a,\"UL\");)a=a.parentNode;if(f.hasTag(a,\"LI\"))if(a!==o){o=a;q(a,true);var b=l(a);b&&y(b);n(c,a)}}function v(){--j;if(j==0){clearTimeout(g); g=setTimeout(x,h)}}function w(){++j;clearTimeout(g)}function m(a){$(a).mouseleave(v).mouseenter(w)}jQuery.data(c,\"obj\",this);var z=this,f=p.WT,g=null,k=null,j=0,o=null;this.setHidden=function(a){if(g){clearTimeout(g);g=null}j=0;o=null;if(h>0&&!a){j=1;k||v()}if(a){c.style.position=\"\";c.style.display=\"\";c.style.left=\"\";c.style.top=\"\"}else c.style.display=\"block\";n(c,null)};this.popupAt=function(a){if(h>=0)if(k!==a){k=a;m(k);w()}z.setHidden(false)};h>=0&&setTimeout(function(){m(c)},0);$(c).mousemove(r)}");
 	}
 }

@@ -154,7 +154,7 @@ public class WTestEnvironment extends WEnvironment {
 	/**
 	 * Sets the locale.
 	 * <p>
-	 * The default value is &quot;en&quot;.
+	 * The default value is {@link WLocale}(&quot;en&quot;).
 	 * <p>
 	 * 
 	 * @see WEnvironment#getLocale()

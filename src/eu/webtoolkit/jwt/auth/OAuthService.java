@@ -380,7 +380,7 @@ public abstract class OAuthService {
 			private OAuthService service_;
 		}
 
-		OAuthService.Impl.RedirectEndpoint redirectResource_;
-		String secret_;
+		public OAuthService.Impl.RedirectEndpoint redirectResource_;
+		public String secret_;
 	}
 }

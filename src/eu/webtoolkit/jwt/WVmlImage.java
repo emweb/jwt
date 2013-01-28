@@ -705,7 +705,7 @@ public class WVmlImage implements WVectorImage {
 	}
 
 	private WRectF currentRect_;
-	static final int Z = 10;
+	private static final int Z = 10;
 
 	static int myzround(double a, boolean doScale) {
 		WApplication app = WApplication.getInstance();

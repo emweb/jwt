@@ -72,7 +72,8 @@ import org.apache.commons.io.*;
  * {@link WApplication#setTitle(CharSequence title) setTitle()}.</li>
  * <li>inline and external style sheets using
  * {@link WApplication#getStyleSheet() getStyleSheet()} and
- * {@link WApplication#useStyleSheet(String uri) useStyleSheet()}.</li>
+ * {@link WApplication#useStyleSheet(WLink link, String media) useStyleSheet()}.
+ * </li>
  * <li>inline and external JavaScript using
  * {@link WApplication#doJavaScript(String javascript, boolean afterLoaded)
  * doJavaScript()} and {@link WApplication#addAutoJavaScript(String javascript)
@@ -170,8 +171,8 @@ public class WApplication extends WObject {
 		this.layoutDirection_ = LayoutDirection.LeftToRight;
 		this.scriptLibraries_ = new ArrayList<WApplication.ScriptLibrary>();
 		this.scriptLibrariesAdded_ = 0;
-		this.theme_ = "default";
-		this.styleSheets_ = new ArrayList<WApplication.StyleSheet>();
+		this.theme_ = null;
+		this.styleSheets_ = new ArrayList<WCssStyleSheet>();
 		this.styleSheetsAdded_ = 0;
 		this.metaHeaders_ = new ArrayList<WApplication.MetaHeader>();
 		this.metaLinks_ = new ArrayList<WApplication.MetaLink>();
@@ -201,6 +202,7 @@ public class WApplication extends WObject {
 		this.internalPathIsChanged_ = false;
 		this.internalPathDefaultValid_ = true;
 		this.internalPathValid_ = true;
+		this.theme_ = new WCssTheme("default", this);
 		this.setLocalizedStrings((WLocalizedStrings) null);
 		if (this.getEnvironment().agentIsIElt(9)) {
 			this.addMetaHeader(MetaHeaderType.MetaHttpHeader,
@@ -270,8 +272,6 @@ public class WApplication extends WObject {
 		if (this.getEnvironment().agentIsIE()) {
 			this.styleSheet_.addRule(".Wt-wrap", "margin: -1px 0px -3px;");
 		}
-		this.styleSheet_.addRule("span.Wt-disabled", "color: gray;");
-		this.styleSheet_.addRule("fieldset.Wt-disabled legend", "color: gray;");
 		this.styleSheet_
 				.addRule(
 						".unselectable",
@@ -324,8 +324,8 @@ public class WApplication extends WObject {
 					prefix = "moz-";
 				}
 			}
-			this.useStyleSheet(WApplication.getResourcesUrl() + prefix
-					+ "transitions.css");
+			this.useStyleSheet(new WLink(WApplication.getResourcesUrl()
+					+ prefix + "transitions.css"));
 		}
 		this.setLoadingIndicator(new WDefaultLoadingIndicator());
 		this.unloaded_.addListener(this, new Signal.Listener() {
@@ -413,7 +413,7 @@ public class WApplication extends WObject {
 	 * logistically.
 	 * <p>
 	 * 
-	 * @see WApplication#useStyleSheet(String uri)
+	 * @see WApplication#useStyleSheet(WLink link, String media)
 	 * @see WWidget#setStyleClass(String styleClass)
 	 */
 	public WCssStyleSheet getStyleSheet() {
@@ -423,33 +423,59 @@ public class WApplication extends WObject {
 	/**
 	 * Adds an external style sheet.
 	 * <p>
+	 * The <code>link</code> is a link to a stylesheet.
+	 * <p>
+	 * The <code>media</code> indicates the CSS media to which this stylesheet
+	 * applies. This may be a comma separated list of media. The default value
+	 * is &quot;all&quot; indicating all media.
+	 * <p>
+	 * This is an overloaded method for convenience, equivalent to:
+	 * 
+	 * <pre>
+	 * {@code
+	 *    useStyleSheet(Wt::WCssStyleSheet(link, media))
+	 *   }
+	 * </pre>
+	 */
+	public void useStyleSheet(WLink link, String media) {
+		this.useStyleSheet(new WCssStyleSheet(link, media));
+	}
+
+	/**
+	 * Adds an external style sheet.
+	 * <p>
+	 * Calls {@link #useStyleSheet(WLink link, String media) useStyleSheet(link,
+	 * "all")}
+	 */
+	public final void useStyleSheet(WLink link) {
+		useStyleSheet(link, "all");
+	}
+
+	/**
+	 * Conditionally adds an external style sheet.
+	 * <p>
+	 * This is an overloaded method for convenience, equivalent to:
+	 * 
+	 * <pre>
+	 * {@code
+	 *    useStyleSheet(Wt::WCssStyleSheet(link, media), condition)
+	 *   }
+	 * </pre>
+	 */
+	public void useStyleSheet(WLink link, String condition, String media) {
+		this.useStyleSheet(new WCssStyleSheet(link, media), condition);
+	}
+
+	/**
+	 * Adds an external stylesheet.
+	 * <p>
 	 * Widgets may allow configuration of their look and feel through style
 	 * classes. These may be defined in an inline stylesheet, or in external
 	 * style sheets.
 	 * <p>
-	 * The <code>url</code> indicates a relative or absolute URL to the
-	 * stylesheet.
-	 * <p>
 	 * External stylesheets are inserted after the internal style sheet, and can
 	 * therefore override default styles set by widgets in the internal style
 	 * sheet.
-	 * <p>
-	 * 
-	 * @see WApplication#getStyleSheet()
-	 * @see WWidget#setStyleClass(String styleClass)
-	 */
-	public void useStyleSheet(String uri) {
-		for (int i = 0; i < this.styleSheets_.size(); ++i) {
-			if (this.styleSheets_.get(i).uri.equals(uri)) {
-				return;
-			}
-		}
-		this.styleSheets_.add(new WApplication.StyleSheet(uri, ""));
-		++this.styleSheetsAdded_;
-	}
-
-	/**
-	 * Adds an external style sheet, constrained with conditions.
 	 * <p>
 	 * If not empty, <code>condition</code> is a string that is used to apply
 	 * the stylesheet to specific versions of IE. Only a limited subset of the
@@ -462,17 +488,11 @@ public class WApplication extends WObject {
 	 * <li>&quot;IE lte 7&quot;: only for IE versions prior to IE7.</li>
 	 * </ul>
 	 * <p>
-	 * The <code>media</code> indicates the CSS media to which this stylesheet
-	 * applies. This may be a comma separated list of media. The default value
-	 * is &quot;all&quot; indicating all media.
-	 * <p>
-	 * The <code>url</code> indicates a relative or absolute URL to the
-	 * stylesheet.
-	 * <p>
 	 * 
-	 * @see WApplication#useStyleSheet(String uri)
+	 * @see WApplication#getStyleSheet()
+	 * @see WWidget#setStyleClass(String styleClass)
 	 */
-	public void useStyleSheet(String uri, String condition, String media) {
+	public void useStyleSheet(WCssStyleSheet styleSheet, String condition) {
 		boolean display = true;
 		if (condition.length() != 0) {
 			display = false;
@@ -577,19 +597,27 @@ public class WApplication extends WObject {
 			}
 		}
 		if (display) {
-			this.styleSheets_.add(new WApplication.StyleSheet(uri, media));
+			for (int i = 0; i < this.styleSheets_.size(); ++i) {
+				if (this.styleSheets_.get(i).getLink().equals(
+						styleSheet.getLink())
+						&& this.styleSheets_.get(i).getMedia().equals(
+								styleSheet.getMedia())) {
+					return;
+				}
+			}
+			this.styleSheets_.add(styleSheet);
 			++this.styleSheetsAdded_;
 		}
 	}
 
 	/**
-	 * Adds an external style sheet, constrained with conditions.
+	 * Adds an external stylesheet.
 	 * <p>
-	 * Calls {@link #useStyleSheet(String uri, String condition, String media)
-	 * useStyleSheet(uri, condition, "all")}
+	 * Calls {@link #useStyleSheet(WCssStyleSheet styleSheet, String condition)
+	 * useStyleSheet(styleSheet, "")}
 	 */
-	public final void useStyleSheet(String uri, String condition) {
-		useStyleSheet(uri, condition, "all");
+	public final void useStyleSheet(WCssStyleSheet styleSheet) {
+		useStyleSheet(styleSheet, "");
 	}
 
 	/**
@@ -599,21 +627,34 @@ public class WApplication extends WObject {
 	 * CSS style rules. Rules for each theme are defined in the
 	 * <code>resources/themes/</code><i>theme</i><code>/</code> folder.
 	 * <p>
-	 * The default theme is &quot;default&quot;. When setting &quot;&quot;, the
-	 * external style sheets related to the theme are not loaded.
+	 * The default theme is &quot;default&quot; CSS theme.
 	 */
-	public void setCssTheme(String theme) {
+	public void setTheme(WTheme theme) {
 		this.theme_ = theme;
 	}
 
 	/**
 	 * Returns the theme.
-	 * <p>
-	 * 
-	 * @see WApplication#setCssTheme(String theme)
 	 */
-	public String getCssTheme() {
+	public WTheme getTheme() {
 		return this.theme_;
+	}
+
+	/**
+	 * Sets a CSS theme.
+	 * <p>
+	 * This sets a {@link WCssTheme} as theme.
+	 * <p>
+	 * The theme provides the look and feel of several built-in widgets, using
+	 * CSS style rules. Rules for each CSS theme are defined in the
+	 * <code>resources/themes/</code><i>name</i><code>/</code> folder.
+	 * <p>
+	 * The default theme is &quot;default&quot;. Setting an empty theme
+	 * &quot;&quot; will result in a stub CSS theme that does not load any
+	 * stylesheets.
+	 */
+	public void setCssTheme(String theme) {
+		this.setTheme(new WCssTheme(theme, this));
 	}
 
 	/**
@@ -756,12 +797,9 @@ public class WApplication extends WObject {
 	 * {@link WApplication#setLocalizedStrings(WLocalizedStrings translator)
 	 * setLocalizedStrings()}.
 	 * <p>
-	 * {@link WString#tr(String key) WString#tr()} is used to create localized
-	 * strings, whose localized translation is looked up through this object,
-	 * using a key.
+	 * {@link } is used to create localized strings, whose localized translation
+	 * is looked up through this object, using a key.
 	 * <p>
-	 * 
-	 * @see WString#tr(String key)
 	 */
 	public WLocalizedStrings getLocalizedStrings() {
 		if (this.localizedStrings_.getItems().size() > 1) {
@@ -794,7 +832,6 @@ public class WApplication extends WObject {
 	 * <p>
 	 * 
 	 * @see WApplication#getLocalizedStrings()
-	 * @see WString#tr(String key)
 	 */
 	public void setLocalizedStrings(WLocalizedStrings translator) {
 		if (!(this.localizedStrings_ != null)) {
@@ -833,7 +870,6 @@ public class WApplication extends WObject {
 	 * <p>
 	 * 
 	 * @see WApplication#getLocalizedStrings()
-	 * @see WString#tr(String key)
 	 */
 	public void setLocale(Locale locale) {
 		this.locale_ = locale;
@@ -1872,13 +1908,9 @@ public class WApplication extends WObject {
 		WApplication.ScriptLibrary sl = new WApplication.ScriptLibrary(uri,
 				symbol);
 		if (this.scriptLibraries_.indexOf(sl) == -1) {
-			try {
-				StringWriter ss = new StringWriter();
-				this.streamBeforeLoadJavaScript(ss, false);
-				sl.beforeLoadJS = ss.toString();
-			} catch (IOException e) {
-				return false;
-			}
+			StringBuilder ss = new StringBuilder();
+			this.streamBeforeLoadJavaScript(ss, false);
+			sl.beforeLoadJS = ss.toString();
 			this.scriptLibraries_.add(sl);
 			++this.scriptLibrariesAdded_;
 			return true;
@@ -2105,7 +2137,7 @@ public class WApplication extends WObject {
 	 */
 	public void setCookie(String name, String value, int maxAge, String domain,
 			String path, boolean secure) {
-		WDate expires = new WDate(new Date());
+		WDate expires = WDate.getCurrentDate();
 		expires = expires.addSeconds(maxAge);
 		this.session_.getRenderer().setCookie(name, value, expires, domain,
 				path, secure);
@@ -2383,9 +2415,9 @@ public class WApplication extends WObject {
 		if (this.loadingIndicator_ != null) {
 			this.loadingIndicatorWidget_ = indicator.getWidget();
 			this.domRoot_.addWidget(this.loadingIndicatorWidget_);
-			this.showLoadJS.setJavaScript("function(o,e) {Wt3_2_3.inline('"
+			this.showLoadJS.setJavaScript("function(o,e) {Wt3_3_0.inline('"
 					+ this.loadingIndicatorWidget_.getId() + "');}");
-			this.hideLoadJS.setJavaScript("function(o,e) {Wt3_2_3.hide('"
+			this.hideLoadJS.setJavaScript("function(o,e) {Wt3_3_0.hide('"
 					+ this.loadingIndicatorWidget_.getId() + "');}");
 			this.loadingIndicatorWidget_.hide();
 		}
@@ -2769,18 +2801,15 @@ public class WApplication extends WObject {
 	 */
 	protected void enableAjax() {
 		this.enableAjax_ = true;
-		try {
-			this.streamBeforeLoadJavaScript(
-					this.session_.getRenderer().beforeLoadJS_, false);
-			this
-					.streamAfterLoadJavaScript(this.session_.getRenderer().beforeLoadJS_);
-		} catch (IOException e) {
-		}
+		this.streamBeforeLoadJavaScript(
+				this.session_.getRenderer().beforeLoadJS_, false);
+		this
+				.streamAfterLoadJavaScript(this.session_.getRenderer().beforeLoadJS_);
 		this.domRoot_.enableAjax();
 		if (this.domRoot2_ != null) {
 			this.domRoot2_.enableAjax();
 		}
-		this.doJavaScript("Wt3_2_3.ajaxInternalPaths("
+		this.doJavaScript("Wt3_3_0.ajaxInternalPaths("
 				+ WWebWidget.jsStringLiteral(this.resolveRelativeUrl(this
 						.getBookmarkUrl("/"))) + ");");
 	}
@@ -2906,22 +2935,8 @@ public class WApplication extends WObject {
 	private LayoutDirection layoutDirection_;
 	List<WApplication.ScriptLibrary> scriptLibraries_;
 	int scriptLibrariesAdded_;
-
-	static class StyleSheet {
-		private static Logger logger = LoggerFactory
-				.getLogger(StyleSheet.class);
-
-		public String uri;
-		public String media;
-
-		public StyleSheet(String anUri, String aMedia) {
-			this.uri = anUri;
-			this.media = aMedia;
-		}
-	}
-
-	private String theme_;
-	List<WApplication.StyleSheet> styleSheets_;
+	private WTheme theme_;
+	List<WCssStyleSheet> styleSheets_;
 	int styleSheetsAdded_;
 	List<WApplication.MetaHeader> metaHeaders_;
 	List<WApplication.MetaLink> metaLinks_;
@@ -2950,7 +2965,8 @@ public class WApplication extends WObject {
 	WContainerWidget getDialogCover(boolean create) {
 		if (this.dialogCover_ == null && create && this.timerRoot_ != null) {
 			this.dialogCover_ = new WContainerWidget(this.domRoot_);
-			this.dialogCover_.setStyleClass("Wt-dialogcover");
+			this.getTheme().apply(this.domRoot_, this.dialogCover_,
+					WidgetThemeRole.DialogCoverRole);
 			this.dialogCover_.hide();
 		}
 		return this.dialogCover_;
@@ -3073,12 +3089,12 @@ public class WApplication extends WObject {
 		return this.changeInternalPath(path);
 	}
 
-	void streamAfterLoadJavaScript(Writer out) throws IOException {
+	void streamAfterLoadJavaScript(StringBuilder out) {
 		out.append(this.afterLoadJavaScript_);
 		this.afterLoadJavaScript_ = "";
 	}
 
-	void streamBeforeLoadJavaScript(Writer out, boolean all) throws IOException {
+	void streamBeforeLoadJavaScript(StringBuilder out, boolean all) {
 		this.streamJavaScriptPreamble(out, all);
 		if (!all) {
 			if (this.newBeforeLoadJavaScript_ != 0) {
@@ -3092,8 +3108,7 @@ public class WApplication extends WObject {
 		this.newBeforeLoadJavaScript_ = 0;
 	}
 
-	private void streamJavaScriptPreamble(Writer out, boolean all)
-			throws IOException {
+	private void streamJavaScriptPreamble(StringBuilder out, boolean all) {
 		if (all) {
 			this.newJavaScriptPreamble_ = this.javaScriptPreamble_.size();
 		}
@@ -3103,7 +3118,7 @@ public class WApplication extends WObject {
 			WJavaScriptPreamble preamble = this.javaScriptPreamble_.get(i);
 			String scope = preamble.scope == JavaScriptScope.ApplicationScope ? this
 					.getJavaScriptClass()
-					: "Wt3_2_3";
+					: "Wt3_3_0";
 			if (preamble.type == JavaScriptObjectType.JavaScriptFunction) {
 				out.append(scope).append('.').append(preamble.name).append(
 						" = function() { return (").append(preamble.src)
@@ -3171,6 +3186,7 @@ public class WApplication extends WObject {
 	}
 
 	private SoundManager soundManager_;
+	static String RESOURCES_URL = "resourcesURL";
 	private JSlot showLoadJS;
 	private JSlot hideLoadJS;
 	private static char[] gifData = { 0x47, 0x49, 0x46, 0x38, 0x39, 0x61, 0x01,
@@ -3179,5 +3195,4 @@ public class WApplication extends WObject {
 			0x00, 0x00, 0x00, 0x01, 0x00, 0x01, 0x00, 0x00, 0x02, 0x02, 0x44,
 			0x01, 0x00, 0x3b };
 	private static int seq = 0;
-	static String RESOURCES_URL = "resourcesURL";
 }

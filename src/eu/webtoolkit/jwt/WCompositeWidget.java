@@ -264,6 +264,10 @@ public class WCompositeWidget extends WWidget {
 		this.impl_.removeStyleClass(styleClass, force);
 	}
 
+	public boolean hasStyleClass(String styleClass) {
+		return this.impl_.hasStyleClass(styleClass);
+	}
+
 	public void setVerticalAlignment(AlignmentFlag alignment, WLength length) {
 		if (!EnumUtils.mask(AlignmentFlag.AlignHorizontalMask, alignment)
 				.isEmpty()) {
@@ -350,6 +354,14 @@ public class WCompositeWidget extends WWidget {
 		}
 	}
 
+	public WWidget findById(String id) {
+		if (this.getId().equals(id)) {
+			return this;
+		} else {
+			return this.impl_.findById(id);
+		}
+	}
+
 	public void setSelectable(boolean selectable) {
 		this.impl_.setSelectable(selectable);
 	}
@@ -432,6 +444,15 @@ public class WCompositeWidget extends WWidget {
 	 */
 	protected WWidget getImplementation() {
 		return this.impl_;
+	}
+
+	protected WWidget getTakeImplementation() {
+		WWidget result = this.impl_;
+		if (result != null) {
+			this.removeChild(result);
+			this.impl_ = null;
+		}
+		return result;
 	}
 
 	void getSDomChanges(List<DomElement> result, WApplication app) {

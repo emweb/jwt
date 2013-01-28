@@ -61,6 +61,7 @@ public class WDoubleSpinBox extends WAbstractSpinBox {
 		this.step_ = 1.0;
 		this.precision_ = 2;
 		this.valueChanged_ = new Signal1<Double>();
+		this.setValidator(this.createValidator());
 		this.setValue(0.0);
 	}
 
@@ -245,7 +246,8 @@ public class WDoubleSpinBox extends WAbstractSpinBox {
 			char[] buf = new char[30];
 			String currentV = MathUtils.round(this.value_, this.precision_);
 			if (!currentV.equals(text)) {
-				this.value_ = Double.parseDouble(text);
+				this.value_ = LocaleUtils.toDouble(LocaleUtils
+						.getCurrentLocale(), text);
 			}
 			return true;
 		} catch (NumberFormatException e) {

@@ -59,7 +59,6 @@ class WebSession {
 		this.asyncResponse_ = null;
 		this.bootStyleResponse_ = null;
 		this.canWriteAsyncResponse_ = false;
-		this.noBootStyleResponse_ = false;
 		this.pollRequestsIgnored_ = 0;
 		this.progressiveBoot_ = false;
 		this.deferredRequest_ = null;
@@ -596,10 +595,6 @@ class WebSession {
 		}
 	}
 
-	public boolean isBootStyleResponse() {
-		return !this.noBootStyleResponse_;
-	}
-
 	public void deferRendering() {
 		if (!(this.deferredRequest_ != null)) {
 			WebSession.Handler handler = WebSession.Handler.getInstance();
@@ -720,12 +715,15 @@ class WebSession {
 			}
 		} else {
 			if (this.isUseUglyInternalPaths()) {
-				return baseUrl + "?_=" + Utils.urlEncode(internalPath);
+				return baseUrl + "?_="
+						+ DomElement.urlEncodeS(internalPath, "#");
 			} else {
 				if (this.applicationName_.length() == 0) {
-					return baseUrl + Utils.urlEncode(internalPath.substring(1));
+					return baseUrl
+							+ DomElement.urlEncodeS(internalPath.substring(1),
+									"#");
 				} else {
-					return baseUrl + Utils.urlEncode(internalPath);
+					return baseUrl + DomElement.urlEncodeS(internalPath, "#");
 				}
 			}
 		}
@@ -809,7 +807,7 @@ class WebSession {
 					.getInternalPath() : this.env_.getInternalPath();
 			if (this.isUseUglyInternalPaths()) {
 				if (internalPath.length() > 1) {
-					url = "?_=" + Utils.urlEncode(internalPath);
+					url = "?_=" + DomElement.urlEncodeS(internalPath, "#");
 				}
 				if (isAbsoluteUrl(this.applicationUrl_)) {
 					url = this.applicationUrl_ + url;
@@ -1403,10 +1401,9 @@ class WebSession {
 														.indexOf("OS 8_") != -1);
 										final boolean xhtml = this.env_
 												.getContentType() == WEnvironment.ContentType.XHTML1;
-										this.noBootStyleResponse_ = this.noBootStyleResponse_
-												|| !(this.app_ != null)
+										boolean noBootStyleResponse = !(this.app_ != null)
 												&& (ios5 || xhtml || nojs);
-										if (nojs || this.noBootStyleResponse_) {
+										if (nojs || noBootStyleResponse) {
 											handler.getResponse()
 													.setContentType("text/css");
 											handler.getResponse().flush();
@@ -1622,6 +1619,7 @@ class WebSession {
 	}
 
 	private ReentrantLock mutex_;
+	private static ThreadLocal<WebSession.Handler> threadHandler_ = new ThreadLocal<WebSession.Handler>();
 	private EntryPointType type_;
 	private String favicon_;
 	private WebSession.State state_;
@@ -1644,7 +1642,6 @@ class WebSession {
 	private WebResponse asyncResponse_;
 	private WebResponse bootStyleResponse_;
 	private boolean canWriteAsyncResponse_;
-	private boolean noBootStyleResponse_;
 	private int pollRequestsIgnored_;
 	private boolean progressiveBoot_;
 	private WebRequest deferredRequest_;
@@ -1877,7 +1874,7 @@ class WebSession {
 						if (hashE != null) {
 							this.changeInternalPath(hashE, handler
 									.getResponse());
-							this.app_.doJavaScript("Wt3_2_3.scrollIntoView("
+							this.app_.doJavaScript("Wt3_3_0.scrollIntoView("
 									+ WWebWidget.jsStringLiteral(hashE) + ");");
 						} else {
 							this.changeInternalPath("", handler.getResponse());
@@ -2056,7 +2053,6 @@ class WebSession {
 		if (this.bootStyleResponse_ != null) {
 			this.bootStyleResponse_.flush();
 			this.bootStyleResponse_ = null;
-			this.noBootStyleResponse_ = true;
 		}
 	}
 
@@ -2068,7 +2064,7 @@ class WebSession {
 		}
 	}
 
-	static UploadedFile uf;
+	private static UploadedFile uf;
 
 	static boolean isAbsoluteUrl(String url) {
 		return url.indexOf(":") != -1;
@@ -2086,6 +2082,4 @@ class WebSession {
 		}
 		return url.substring(0, 0 + pos - 1);
 	}
-
-	private static ThreadLocal<WebSession.Handler> threadHandler_ = new ThreadLocal<WebSession.Handler>();
 }

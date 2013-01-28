@@ -62,7 +62,6 @@ public class WProgressBar extends WInteractWidget {
 		this.valueChanged_ = new Signal1<Double>();
 		this.progressCompleted_ = new Signal();
 		this.format_ = new WString("%.0f %%");
-		this.setStyleClass("Wt-progressbar");
 		this.setInline(true);
 	}
 
@@ -248,13 +247,16 @@ public class WProgressBar extends WInteractWidget {
 		DomElement bar = null;
 		DomElement label = null;
 		if (all) {
+			WApplication app = WApplication.getInstance();
 			bar = DomElement.createNew(DomElementType.DomElement_DIV);
 			bar.setId("bar" + this.getId());
-			bar.setProperty(Property.PropertyClass, "Wt-pgb-bar "
-					+ this.valueStyleClass_);
+			bar.setProperty(Property.PropertyClass, this.valueStyleClass_);
+			app.getTheme()
+					.apply(this, bar, ElementThemeRole.ProgressBarBarRole);
 			label = DomElement.createNew(DomElementType.DomElement_DIV);
 			label.setId("lbl" + this.getId());
-			label.setProperty(Property.PropertyClass, "Wt-pgb-label");
+			app.getTheme().apply(this, label,
+					ElementThemeRole.ProgressBarLabelRole);
 		}
 		if (this.changed_ || all) {
 			if (!(bar != null)) {

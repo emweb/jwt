@@ -365,6 +365,7 @@ public class WSvgImage extends WResource implements WVectorImage {
 	private boolean newClipPath_;
 	private boolean busyWithPath_;
 	private int currentClipId_;
+	private static int nextClipId_ = 0;
 	private WTransform currentTransform_;
 	private WBrush currentBrush_;
 	private WFont currentFont_;
@@ -793,6 +794,4 @@ public class WSvgImage extends WResource implements WVectorImage {
 	static boolean fequal(double d1, double d2) {
 		return Math.abs(d1 - d2) < 1E-5;
 	}
-
-	private static int nextClipId_ = 0;
 }

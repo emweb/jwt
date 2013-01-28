@@ -57,6 +57,8 @@ public class WGestureEvent implements WAbstractEvent {
 		return new WGestureEvent(jsEvent);
 	}
 
+	static WGestureEvent templateEvent = new WGestureEvent();
+
 	WGestureEvent(JavaScriptEvent jsEvent) {
 		super();
 		this.jsEvent_ = jsEvent;
@@ -128,6 +130,4 @@ public class WGestureEvent implements WAbstractEvent {
 			return;
 		}
 	}
-
-	static WGestureEvent templateEvent = new WGestureEvent();
 }

@@ -40,6 +40,9 @@ public class WDoubleValidator extends WValidator {
 
 	/**
 	 * Creates a new double validator that accepts any double.
+	 * <p>
+	 * The validator will accept numbers using the current locale&apos;s format.
+	 * <p>
 	 */
 	public WDoubleValidator(WObject parent) {
 		super(parent);
@@ -62,6 +65,9 @@ public class WDoubleValidator extends WValidator {
 	/**
 	 * Creates a new double validator that accepts double within the given
 	 * range.
+	 * <p>
+	 * The validator will accept numbers using the current locale&apos;s format.
+	 * <p>
 	 */
 	public WDoubleValidator(double bottom, double top, WObject parent) {
 		super(parent);
@@ -141,7 +147,8 @@ public class WDoubleValidator extends WValidator {
 		}
 		String text = input;
 		try {
-			double i = Double.parseDouble(text);
+			double i = LocaleUtils.toDouble(LocaleUtils.getCurrentLocale(),
+					text);
 			if (i < this.bottom_) {
 				return new WValidator.Result(WValidator.State.Invalid, this
 						.getInvalidTooSmallText());
@@ -265,13 +272,8 @@ public class WDoubleValidator extends WValidator {
 	public String getJavaScriptValidate() {
 		loadJavaScript(WApplication.getInstance());
 		StringBuilder js = new StringBuilder();
-		js.append("new Wt3_2_3.WDoubleValidator(");
-		if (this.isMandatory()) {
-			js.append("true");
-		} else {
-			js.append("false");
-		}
-		js.append(',');
+		js.append("new Wt3_3_0.WDoubleValidator(").append(this.isMandatory())
+				.append(',');
 		if (this.bottom_ != -Double.MAX_VALUE) {
 			js.append(this.bottom_);
 		} else {
@@ -283,15 +285,22 @@ public class WDoubleValidator extends WValidator {
 		} else {
 			js.append("null");
 		}
-		js.append(',').append(
-				WString.toWString(this.getInvalidBlankText())
-						.getJsStringLiteral()).append(',').append(
-				WString.toWString(this.getInvalidNotANumberText())
-						.getJsStringLiteral()).append(',').append(
-				WString.toWString(this.getInvalidTooSmallText())
-						.getJsStringLiteral()).append(',').append(
-				WString.toWString(this.getInvalidTooLargeText())
-						.getJsStringLiteral()).append(");");
+		js.append(",").append(
+				WWebWidget.jsStringLiteral(LocaleUtils
+						.getDecimalPoint(LocaleUtils.getCurrentLocale())))
+				.append(",").append(
+						WWebWidget.jsStringLiteral(LocaleUtils
+								.getGroupSeparator(LocaleUtils
+										.getCurrentLocale()))).append(',')
+				.append(
+						WString.toWString(this.getInvalidBlankText())
+								.getJsStringLiteral()).append(',').append(
+						WString.toWString(this.getInvalidNotANumberText())
+								.getJsStringLiteral()).append(',').append(
+						WString.toWString(this.getInvalidTooSmallText())
+								.getJsStringLiteral()).append(',').append(
+						WString.toWString(this.getInvalidTooLargeText())
+								.getJsStringLiteral()).append(");");
 		return js.toString();
 	}
 
@@ -310,6 +319,6 @@ public class WDoubleValidator extends WValidator {
 				JavaScriptScope.WtClassScope,
 				JavaScriptObjectType.JavaScriptConstructor,
 				"WDoubleValidator",
-				"function(d,b,c,e,f,g,h){this.validate=function(a){if(a.length==0)return d?{valid:false,message:e}:{valid:true};a=Number(a);if(isNaN(a))return{valid:false,message:f};if(b!==null)if(a<b)return{valid:false,message:g};if(c!==null)if(a>c)return{valid:false,message:h};return{valid:true}}}");
+				"function(f,b,c,d,e,g,h,i,j){this.validate=function(a){a=String(a);if(a.length==0)return f?{valid:false,message:g}:{valid:true};if(e!=\"\")a=a.replace(e,\"\");if(d!=\".\")a=a.replace(d,\".\");a=Number(a);if(isNaN(a))return{valid:false,message:h};if(b!==null)if(a<b)return{valid:false,message:i};if(c!==null)if(a>c)return{valid:false,message:j};return{valid:true}}}");
 	}
 }

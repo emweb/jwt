@@ -88,6 +88,7 @@ public class WScrollEvent implements WAbstractEvent {
 		return new WScrollEvent(jsEvent);
 	}
 
+	static WScrollEvent templateEvent = new WScrollEvent();
 	private JavaScriptEvent jsEvent_;
 
 	private WScrollEvent(JavaScriptEvent jsEvent) {
@@ -159,6 +160,4 @@ public class WScrollEvent implements WAbstractEvent {
 			return;
 		}
 	}
-
-	static WScrollEvent templateEvent = new WScrollEvent();
 }

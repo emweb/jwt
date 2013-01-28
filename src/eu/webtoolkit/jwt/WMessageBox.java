@@ -90,8 +90,8 @@ public class WMessageBox extends WDialog {
 	/**
 	 * Creates an empty message box.
 	 */
-	public WMessageBox() {
-		super();
+	public WMessageBox(WObject parent) {
+		super(parent);
 		this.buttons_ = EnumSet.noneOf(StandardButton.class);
 		this.icon_ = Icon.NoIcon;
 		this.result_ = StandardButton.NoButton;
@@ -100,11 +100,20 @@ public class WMessageBox extends WDialog {
 	}
 
 	/**
+	 * Creates an empty message box.
+	 * <p>
+	 * Calls {@link #WMessageBox(WObject parent) this((WObject)null)}
+	 */
+	public WMessageBox() {
+		this((WObject) null);
+	}
+
+	/**
 	 * Creates a message box with given caption, text, icon, and buttons.
 	 */
 	public WMessageBox(CharSequence caption, CharSequence text, Icon icon,
-			EnumSet<StandardButton> buttons) {
-		super(caption);
+			EnumSet<StandardButton> buttons, WObject parent) {
+		super(caption, parent);
 		this.buttons_ = EnumSet.noneOf(StandardButton.class);
 		this.icon_ = Icon.NoIcon;
 		this.buttonClicked_ = new Signal1<StandardButton>(this);
@@ -118,12 +127,12 @@ public class WMessageBox extends WDialog {
 	 * Creates a message box with given caption, text, icon, and buttons.
 	 * <p>
 	 * Calls
-	 * {@link #WMessageBox(CharSequence caption, CharSequence text, Icon icon, EnumSet buttons)
-	 * this(caption, text, icon, EnumSet.of(button, buttons))}
+	 * {@link #WMessageBox(CharSequence caption, CharSequence text, Icon icon, EnumSet buttons, WObject parent)
+	 * this(caption, text, icon, buttons, (WObject)null)}
 	 */
 	public WMessageBox(CharSequence caption, CharSequence text, Icon icon,
-			StandardButton button, StandardButton... buttons) {
-		this(caption, text, icon, EnumSet.of(button, buttons));
+			EnumSet<StandardButton> buttons) {
+		this(caption, text, icon, buttons, (WObject) null);
 	}
 
 	/**
@@ -188,7 +197,7 @@ public class WMessageBox extends WDialog {
 	 * When the button is clicked, the associated result will be returned.
 	 */
 	public WPushButton addButton(CharSequence text, StandardButton result) {
-		WPushButton b = new WPushButton(text, this.buttonContainer_);
+		WPushButton b = new WPushButton(text, this.getFooter());
 		this.buttonMapper_.mapConnect(b.clicked(), result);
 		return b;
 	}
@@ -198,11 +207,11 @@ public class WMessageBox extends WDialog {
 	 */
 	public void setButtons(EnumSet<StandardButton> buttons) {
 		this.buttons_ = EnumSet.copyOf(buttons);
-		this.buttonContainer_.clear();
+		this.getFooter().clear();
 		for (int i = 0; i < 9; ++i) {
 			if (!EnumUtils.mask(this.buttons_, order_[i]).isEmpty()) {
-				WPushButton b = new WPushButton(tr(buttonText_[i]),
-						this.buttonContainer_);
+				WPushButton b = new WPushButton(tr(buttonText_[i]), this
+						.getFooter());
 				this.buttonMapper_.mapConnect(b.clicked(), order_[i]);
 				if (order_[i] == StandardButton.Ok
 						|| order_[i] == StandardButton.Yes) {
@@ -240,8 +249,8 @@ public class WMessageBox extends WDialog {
 		for (int i = 0; i <= 9; ++i) {
 			if (!EnumUtils.mask(this.buttons_, order_[i]).isEmpty()) {
 				if (order_[i] == b) {
-					return ((this.buttonContainer_.getChildren().get(index)) instanceof WPushButton ? (WPushButton) (this.buttonContainer_
-							.getChildren().get(index))
+					return ((this.getFooter().getChildren().get(index)) instanceof WPushButton ? (WPushButton) (this
+							.getFooter().getChildren().get(index))
 							: null);
 				}
 				++index;
@@ -307,7 +316,6 @@ public class WMessageBox extends WDialog {
 	private Icon icon_;
 	private StandardButton result_;
 	private Signal1<StandardButton> buttonClicked_;
-	private WContainerWidget buttonContainer_;
 	private WText text_;
 	private WImage iconImage_;
 	private WSignalMapper1<StandardButton> buttonMapper_;
@@ -318,7 +326,6 @@ public class WMessageBox extends WDialog {
 		WContainerWidget buttons = new WContainerWidget(this.getContents());
 		buttons.setMargin(new WLength(3), EnumSet.of(Side.Top));
 		buttons.setPadding(new WLength(5), EnumSet.of(Side.Left, Side.Right));
-		this.buttonContainer_ = new WContainerWidget(buttons);
 		this.buttonMapper_ = new WSignalMapper1<StandardButton>(this);
 		this.buttonMapper_.mapped().addListener(this,
 				new Signal1.Listener<StandardButton>() {
@@ -326,7 +333,6 @@ public class WMessageBox extends WDialog {
 						WMessageBox.this.onButtonClick(e1);
 					}
 				});
-		this.buttonContainer_.setStyleClass("Wt-msgbox-buttons");
 		this.rejectWhenEscapePressed();
 	}
 

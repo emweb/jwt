@@ -87,8 +87,8 @@ import org.slf4j.LoggerFactory;
  * defined how current local coordinates map onto logical coordinates.
  * <p>
  * The painter provides support for clipping using an arbitrary
- * {@link WPainterPath path}, but not that the VmlImage only has limited support
- * for clipping.
+ * {@link WPainterPath path}, but not that the WVmlImage paint device only has
+ * limited support for clipping.
  * <p>
  * 
  * @see WPaintedWidget#paintEvent(WPaintDevice paintDevice)
@@ -275,11 +275,8 @@ public class WPainter {
 	 *      int startAngle, int spanAngle)
 	 */
 	public void drawArc(WRectF rectangle, int startAngle, int spanAngle) {
-		WBrush oldBrush = this.getBrush().clone();
-		this.setBrush(new WBrush(BrushStyle.NoBrush));
 		this.device_.drawArc(rectangle.getNormalized(), startAngle / 16.,
 				spanAngle / 16.);
-		this.setBrush(oldBrush);
 	}
 
 	/**
@@ -1205,8 +1202,13 @@ public class WPainter {
 	 * clip path set using {@link WPainter#setClipPath(WPainterPath clipPath)
 	 * setClipPath()}.
 	 * <p>
-	 * <code>Note:</code> Clipping is not supported for the VML renderer.
 	 * <p>
+	 * <i><b>Note: </b>Clipping support is limited for the VML renderer. Only
+	 * clipping with a rectangle is supported for the VML renderer (see
+	 * {@link WPainterPath#addRect(WRectF rectangle) WPainterPath#addRect()}).
+	 * The rectangle must, after applying the combined transformation system, be
+	 * aligned with the window.</i>
+	 * </p>
 	 * 
 	 * @see WPainter#hasClipping()
 	 * @see WPainter#setClipPath(WPainterPath clipPath)
@@ -1224,8 +1226,9 @@ public class WPainter {
 	/**
 	 * Returns whether clipping is enabled.
 	 * <p>
-	 * <code>Note:</code> Clipping is not supported for the VML renderer.
 	 * <p>
+	 * <i><b>Note: </b>Clipping support is limited for the VML renderer.</i>
+	 * </p>
 	 * 
 	 * @see WPainter#setClipping(boolean enable)
 	 * @see WPainter#setClipPath(WPainterPath clipPath)
@@ -1242,11 +1245,9 @@ public class WPainter {
 	 * {@link WPainter#setClipping(boolean enable) setClipping()}. The path is
 	 * specified in local coordinates.
 	 * <p>
-	 * <i>Note: Only clipping with a rectangle is supported for the VML renderer
-	 * (see {@link WPainterPath#addRect(WRectF rectangle)
-	 * WPainterPath#addRect()}). The rectangle must, after applying the combined
-	 * transformation system, be aligned with the window.</i>
 	 * <p>
+	 * <i><b>Note: </b>Clipping support is limited for the VML renderer.</i>
+	 * </p>
 	 * 
 	 * @see WPainter#getClipPath()
 	 * @see WPainter#setClipping(boolean enable)
@@ -1609,6 +1610,7 @@ public class WPainter {
 		}
 	}
 
+	// private WPainter(WPainter anon1) ;
 	private WPaintDevice device_;
 	private WRectF viewPort_;
 	private WRectF window_;

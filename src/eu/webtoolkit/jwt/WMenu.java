@@ -46,8 +46,7 @@ import org.slf4j.LoggerFactory;
  * 	WStackedWidget contents = new WStackedWidget(contentsParent);
  * 
  * 	// create a menu
- * 	WMenu menu = new WMenu(contents, Orientation.Vertical, menuParent);
- * 	menu.setRenderAsList(true);
+ * 	WMenu menu = new WMenu(contents, menuParent);
  * 
  * 	// add four items using the default lazy loading policy.
  * 	menu.addItem(&quot;Introduction&quot;, new WText(&quot;intro&quot;));
@@ -56,11 +55,6 @@ import org.slf4j.LoggerFactory;
  * 	menu.addItem(new WMenuItem(&quot;Demo2&quot;, new DemoWidget()));
  * }
  * </pre>
- * <p>
- * Historically, a menu was implemented as a table, but
- * {@link WMenu#setRenderAsList(boolean enable) rendering as a list} (
- * <code>&lt;ul&gt;</code>) is preferred, as it is the norm form
- * implementations.
  * <p>
  * After contruction, the first entry will be selected. At any time, it is
  * possible to select a particular item using
@@ -98,10 +92,6 @@ import org.slf4j.LoggerFactory;
  * {@link WMenuItem}.
  * <p>
  * <h3>CSS</h3>
- * <p>
- * Styling a menu will be different depending of the rendering mode (table,
- * list). Conventionally, menus like this are styled as a list (
- * {@link WMenu#setRenderAsList(boolean enable) setRenderAsList()}).
  * <p>
  * You will want to differentiate between unselected and selected items based on
  * the <code>&quot;item&quot;</code> and <code>&quot;itemselected&quot;</code>
@@ -233,34 +223,33 @@ public class WMenu extends WCompositeWidget {
 	private static Logger logger = LoggerFactory.getLogger(WMenu.class);
 
 	/**
-	 * Creates a new menu.
+	 * Creates a new menu (<b>deprecated</b>).
 	 * <p>
 	 * Construct a menu with given <code>orientation</code>. The menu is not
 	 * associated with a contents stack, and thus you will want to react to the
 	 * {@link WMenu#itemSelected() itemSelected()} signal to react to menu
 	 * changes.
+	 * <p>
+	 * 
+	 * @deprecated the <code>orientation</code> parameter is ignored, since
+	 *             menus are now always rendered using &lt;ul&gt; elements, and
+	 *             CSS will determine the orientation. Use
+	 *             {@link WMenu#WMenu(WContainerWidget parent) WMenu()} instead.
 	 */
 	public WMenu(Orientation orientation, WContainerWidget parent) {
 		super(parent);
 		this.contentsStack_ = null;
-		this.orientation_ = orientation;
-		this.internalPathEnabled_ = false;
-		this.emitPathChange_ = false;
 		this.basePath_ = "";
 		this.previousInternalPath_ = "";
-		this.subMenu_ = false;
 		this.itemSelected_ = new Signal1<WMenuItem>(this);
 		this.itemSelectRendered_ = new Signal1<WMenuItem>(this);
 		this.itemClosed_ = new Signal1<WMenuItem>(this);
-		this.items_ = new ArrayList<WMenuItem>();
 		this.contentsStackConnection_ = new AbstractSignal.Connection();
-		this.current_ = -1;
-		this.needSelectionEventUpdate_ = false;
-		this.setRenderAsList(false);
+		this.init();
 	}
 
 	/**
-	 * Creates a new menu.
+	 * Creates a new menu (<b>deprecated</b>).
 	 * <p>
 	 * Calls {@link #WMenu(Orientation orientation, WContainerWidget parent)
 	 * this(orientation, (WContainerWidget)null)}
@@ -272,41 +261,64 @@ public class WMenu extends WCompositeWidget {
 	/**
 	 * Creates a new menu.
 	 * <p>
+	 * The menu is not associated with a contents stack, and thus you will want
+	 * to react to the {@link WMenu#itemSelected() itemSelected()} signal to
+	 * react to menu changes.
+	 */
+	public WMenu(WContainerWidget parent) {
+		super(parent);
+		this.contentsStack_ = null;
+		this.basePath_ = "";
+		this.previousInternalPath_ = "";
+		this.itemSelected_ = new Signal1<WMenuItem>(this);
+		this.itemSelectRendered_ = new Signal1<WMenuItem>(this);
+		this.itemClosed_ = new Signal1<WMenuItem>(this);
+		this.contentsStackConnection_ = new AbstractSignal.Connection();
+		this.init();
+	}
+
+	/**
+	 * Creates a new menu.
+	 * <p>
+	 * Calls {@link #WMenu(WContainerWidget parent)
+	 * this((WContainerWidget)null)}
+	 */
+	public WMenu() {
+		this((WContainerWidget) null);
+	}
+
+	/**
+	 * Creates a new menu (<b>deprecated</b>).
+	 * <p>
 	 * Construct a menu to manage the widgets in <code>contentsStack</code>, and
 	 * sets the menu <code>orientation</code>.
 	 * <p>
 	 * Each menu item will manage a single widget in the
 	 * <code>contentsStack</code>, making it the current widget when the menu
 	 * item is activated.
+	 * <p>
+	 * 
+	 * @deprecated the <code>orientation</code> parameter is ignored, since
+	 *             menus are now always rendered using &lt;ul&gt; elements, and
+	 *             CSS will determine the orientation. Use
+	 *             {@link WMenu#WMenu(WStackedWidget contentsStack, WContainerWidget parent)
+	 *             WMenu()} instead.
 	 */
 	public WMenu(WStackedWidget contentsStack, Orientation orientation,
 			WContainerWidget parent) {
 		super(parent);
 		this.contentsStack_ = contentsStack;
-		this.orientation_ = orientation;
-		this.internalPathEnabled_ = false;
-		this.emitPathChange_ = false;
 		this.basePath_ = "";
 		this.previousInternalPath_ = "";
-		this.subMenu_ = false;
 		this.itemSelected_ = new Signal1<WMenuItem>(this);
 		this.itemSelectRendered_ = new Signal1<WMenuItem>(this);
 		this.itemClosed_ = new Signal1<WMenuItem>(this);
-		this.items_ = new ArrayList<WMenuItem>();
 		this.contentsStackConnection_ = new AbstractSignal.Connection();
-		this.current_ = -1;
-		this.needSelectionEventUpdate_ = false;
-		this.setRenderAsList(false);
-		contentsStack.childrenChanged().addListener(this,
-				new Signal.Listener() {
-					public void trigger() {
-						WMenu.this.updateSelectionEvent();
-					}
-				});
+		this.init();
 	}
 
 	/**
-	 * Creates a new menu.
+	 * Creates a new menu (<b>deprecated</b>).
 	 * <p>
 	 * Calls
 	 * {@link #WMenu(WStackedWidget contentsStack, Orientation orientation, WContainerWidget parent)
@@ -317,14 +329,41 @@ public class WMenu extends WCompositeWidget {
 	}
 
 	/**
+	 * Creates a new menu (<b>deprecated</b>).
+	 * <p>
+	 * Construct a menu to manage the widgets in <code>contentsStack</code>.
+	 * <p>
+	 * Each menu item will manage a single widget in the
+	 * <code>contentsStack</code>, making it the current widget when the menu
+	 * item is activated.
+	 */
+	public WMenu(WStackedWidget contentsStack, WContainerWidget parent) {
+		super(parent);
+		this.contentsStack_ = contentsStack;
+		this.basePath_ = "";
+		this.previousInternalPath_ = "";
+		this.itemSelected_ = new Signal1<WMenuItem>(this);
+		this.itemSelectRendered_ = new Signal1<WMenuItem>(this);
+		this.itemClosed_ = new Signal1<WMenuItem>(this);
+		this.contentsStackConnection_ = new AbstractSignal.Connection();
+		this.init();
+	}
+
+	/**
+	 * Creates a new menu (<b>deprecated</b>).
+	 * <p>
+	 * Calls {@link #WMenu(WStackedWidget contentsStack, WContainerWidget parent)
+	 * this(contentsStack, (WContainerWidget)null)}
+	 */
+	public WMenu(WStackedWidget contentsStack) {
+		this(contentsStack, (WContainerWidget) null);
+	}
+
+	/**
 	 * Destructor.
 	 */
 	public void remove() {
 		this.contentsStackConnection_.disconnect();
-		for (int i = 0; i < this.items_.size(); ++i) {
-			this.items_.get(i).setMenu((WMenu) null);
-			;
-		}
 		super.remove();
 	}
 
@@ -349,7 +388,18 @@ public class WMenu extends WCompositeWidget {
 	 */
 	public WMenuItem addItem(CharSequence name, WWidget contents,
 			WMenuItem.LoadPolicy policy) {
-		return this.addItem(new WMenuItem(name, contents, policy));
+		return this.addItem("", name, contents, policy);
+	}
+
+	/**
+	 * Adds an item.
+	 * <p>
+	 * Returns
+	 * {@link #addItem(CharSequence name, WWidget contents, WMenuItem.LoadPolicy policy)
+	 * addItem(name, (WWidget)null, WMenuItem.LoadPolicy.LazyLoading)}
+	 */
+	public final WMenuItem addItem(CharSequence name) {
+		return addItem(name, (WWidget) null, WMenuItem.LoadPolicy.LazyLoading);
 	}
 
 	/**
@@ -363,6 +413,53 @@ public class WMenu extends WCompositeWidget {
 		return addItem(name, contents, WMenuItem.LoadPolicy.LazyLoading);
 	}
 
+	public WMenuItem addItem(String iconPath, CharSequence name,
+			WWidget contents, WMenuItem.LoadPolicy policy) {
+		WMenuItem item = new WMenuItem(iconPath, name, contents, policy);
+		this.addItem(item);
+		return item;
+	}
+
+	public final WMenuItem addItem(String iconPath, CharSequence name) {
+		return addItem(iconPath, name, (WWidget) null,
+				WMenuItem.LoadPolicy.LazyLoading);
+	}
+
+	public final WMenuItem addItem(String iconPath, CharSequence name,
+			WWidget contents) {
+		return addItem(iconPath, name, contents,
+				WMenuItem.LoadPolicy.LazyLoading);
+	}
+
+	// public WMenuItem addItem(CharSequence text, T target, <pointertomember or
+	// dependentsizedarray> methodpointertomember or dependentsizedarray>) ;
+	// public WMenuItem addItem(String iconPath, CharSequence text, T target,
+	// <pointertomember or dependentsizedarray> methodpointertomember or
+	// dependentsizedarray>) ;
+	/**
+	 * Adds a submenu, with given text.
+	 * <p>
+	 * Adds an item with text <code>text</code>, that leads to a submenu
+	 * <code>menu</code>.
+	 * <p>
+	 */
+	public WMenuItem addMenu(CharSequence text, WMenu menu) {
+		return this.addMenu("", text, menu);
+	}
+
+	/**
+	 * Adds a submenu, with given icon and text.
+	 * <p>
+	 * Adds an item with given text and icon, that leads to a submenu
+	 * <code>menu</code>.
+	 * <p>
+	 */
+	public WMenuItem addMenu(String iconPath, CharSequence text, WMenu menu) {
+		WMenuItem item = this.addItem(iconPath, text);
+		item.setMenu(menu);
+		return item;
+	}
+
 	/**
 	 * Adds an item.
 	 * <p>
@@ -373,28 +470,9 @@ public class WMenu extends WCompositeWidget {
 	 * @see WMenu#addItem(CharSequence name, WWidget contents,
 	 *      WMenuItem.LoadPolicy policy)
 	 */
-	public WMenuItem addItem(WMenuItem item) {
-		item.setMenu(this);
-		this.items_.add(item);
-		if (this.renderAsList_) {
-			WContainerWidget p = ((this.impl_) instanceof WContainerWidget ? (WContainerWidget) (this.impl_)
-					: null);
-			WContainerWidget li = new WContainerWidget();
-			p.insertWidget(p.getCount(), li);
-			li.addWidget(item.getItemWidget());
-		} else {
-			WTable layout = ((this.impl_) instanceof WTable ? (WTable) (this.impl_)
-					: null);
-			WTableCell parent = layout.getElementAt(
-					this.orientation_ == Orientation.Vertical ? this.items_
-							.size() - 1 : 0, 0);
-			WWidget w = item.getItemWidget();
-			parent.addWidget(w);
-			if (this.orientation_ == Orientation.Horizontal) {
-				w.setInline(true);
-				new WText(" ", parent);
-			}
-		}
+	public void addItem(WMenuItem item) {
+		item.setParentMenu(this);
+		this.getUl().addWidget(item);
 		if (this.contentsStack_ != null) {
 			WWidget contents = item.getContents();
 			if (contents != null) {
@@ -405,17 +483,32 @@ public class WMenu extends WCompositeWidget {
 				if (contents != null) {
 					this.contentsStack_.setCurrentWidget(contents);
 				}
-				this.items_.get(0).renderSelected(true);
-				this.items_.get(0).loadContents();
+				this.renderSelected(item, true);
+				item.loadContents();
 			} else {
-				item.renderSelected(false);
+				this.renderSelected(item, false);
 			}
 		} else {
-			item.renderSelected(false);
+			this.renderSelected(item, false);
 		}
-		item.getItemWidget().getParent().setHidden(item.isHidden());
 		this.itemPathChanged(item);
-		return item;
+	}
+
+	/**
+	 * Adds a separator to the menu.
+	 * <p>
+	 * Adds a separator the menu. The separator is an empty div with style-class
+	 * &quot;separator&quot;.
+	 */
+	public void addSeparator() {
+		this.addItem(new WMenuItem(true, WString.Empty));
+	}
+
+	/**
+	 * Adds a section header to the menu.
+	 */
+	public void addSectionHeader(CharSequence text) {
+		this.addItem(new WMenuItem(false, text));
 	}
 
 	/**
@@ -428,37 +521,14 @@ public class WMenu extends WCompositeWidget {
 	 *      WMenuItem.LoadPolicy policy)
 	 */
 	public void removeItem(WMenuItem item) {
-		int itemIndex = this.indexOf(item);
-		if (itemIndex != -1) {
-			this.items_.remove(0 + itemIndex);
-			if (this.renderAsList_) {
-				WContainerWidget li = ((item.getItemWidget().getParent()) instanceof WContainerWidget ? (WContainerWidget) (item
-						.getItemWidget().getParent())
-						: null);
-				li.removeWidget(item.getItemWidget());
-				if (li != null)
-					li.remove();
-			} else {
-				WTableCell parent = ((item.getItemWidget().getParent()) instanceof WTableCell ? (WTableCell) (item
-						.getItemWidget().getParent())
-						: null);
-				if (this.orientation_ == Orientation.Horizontal) {
-					WWidget itemWidget = item.getItemWidget();
-					WWidget separator = parent.getWidget(parent
-							.getIndexOf(itemWidget) + 1);
-					parent.removeWidget(itemWidget);
-					if (separator != null)
-						separator.remove();
-				} else {
-					WTable table = parent.getTable();
-					parent.removeWidget(item.getItemWidget());
-					table.deleteRow(parent.getRow());
-				}
-			}
+		WContainerWidget items = this.getUl();
+		if (item.getParent() == items) {
+			int itemIndex = items.getIndexOf(item);
+			items.removeWidget(item);
 			if (this.contentsStack_ != null && item.getContents() != null) {
 				this.contentsStack_.removeWidget(item.getContents());
 			}
-			item.setMenu((WMenu) null);
+			item.setParentMenu((WMenu) null);
 			if (itemIndex <= this.current_ && this.current_ >= 0) {
 				--this.current_;
 			}
@@ -506,10 +576,17 @@ public class WMenu extends WCompositeWidget {
 	 * the user activated an item, or when {@link WMenu#select(WMenuItem item)
 	 * select()} was invoked.
 	 * <p>
+	 * For a popup menu, the provided item may also be <code>null</code> in case
+	 * the menu was cancelled.
+	 * <p>
 	 * 
 	 * @see WMenu#itemSelectRendered()
 	 */
 	public Signal1<WMenuItem> itemSelected() {
+		return this.itemSelected_;
+	}
+
+	public Signal1<WMenuItem> triggered() {
 		return this.itemSelected_;
 	}
 
@@ -544,7 +621,10 @@ public class WMenu extends WCompositeWidget {
 	 * @see WMenuItem#close()
 	 */
 	public void close(WMenuItem item) {
-		this.close(this.indexOf(item));
+		if (item.isCloseable()) {
+			item.hide();
+			this.itemClosed_.trigger(item);
+		}
 	}
 
 	/**
@@ -557,22 +637,10 @@ public class WMenu extends WCompositeWidget {
 	 * @see WMenu#close(WMenuItem item)
 	 */
 	public void close(int index) {
-		WMenuItem item = this.items_.get(index);
-		if (item.isCloseable()) {
-			item.hide();
-			this.itemClosed_.trigger(item);
-		}
+		this.close(this.itemAt(index));
 	}
 
-	/**
-	 * Returns the items.
-	 * <p>
-	 * Returns the list of menu items in this menu.
-	 */
-	public List<WMenuItem> getItems() {
-		return this.items_;
-	}
-
+	// public List<WMenuItem> getItems() ;
 	/**
 	 * Signal which indicates that an item was closed.
 	 * <p>
@@ -595,10 +663,10 @@ public class WMenu extends WCompositeWidget {
 	 * <p>
 	 * 
 	 * @see WMenu#setItemHidden(int index, boolean hidden)
-	 * @see WMenuItem#hide()
+	 * @see WWidget#hide()
 	 */
 	public void setItemHidden(WMenuItem item, boolean hidden) {
-		this.setItemHidden(this.indexOf(item), hidden);
+		item.setHidden(hidden);
 	}
 
 	/**
@@ -611,7 +679,7 @@ public class WMenu extends WCompositeWidget {
 	 * @see WMenu#setItemHidden(WMenuItem item, boolean hidden)
 	 */
 	public void setItemHidden(int index, boolean hidden) {
-		this.items_.get(index).setHidden(hidden);
+		this.itemAt(index).setHidden(hidden);
 	}
 
 	/**
@@ -621,7 +689,7 @@ public class WMenu extends WCompositeWidget {
 	 * @see WMenu#setItemHidden(WMenuItem item, boolean hidden)
 	 */
 	public boolean isItemHidden(WMenuItem item) {
-		return this.isItemHidden(this.indexOf(item));
+		return item.isHidden();
 	}
 
 	/**
@@ -634,7 +702,7 @@ public class WMenu extends WCompositeWidget {
 	 * @see WMenu#setItemHidden(WMenuItem item, boolean hidden)
 	 */
 	public boolean isItemHidden(int index) {
-		return this.items_.get(index).isHidden();
+		return this.isItemHidden(this.itemAt(index));
 	}
 
 	/**
@@ -645,10 +713,10 @@ public class WMenu extends WCompositeWidget {
 	 * <p>
 	 * 
 	 * @see WMenu#setItemDisabled(int index, boolean disabled)
-	 * @see WMenuItem#setDisabled(boolean disabled)
+	 * @see WWebWidget#setDisabled(boolean disabled)
 	 */
 	public void setItemDisabled(WMenuItem item, boolean disabled) {
-		this.setItemDisabled(this.indexOf(item), disabled);
+		item.setDisabled(disabled);
 	}
 
 	/**
@@ -661,7 +729,7 @@ public class WMenu extends WCompositeWidget {
 	 * @see WMenu#setItemDisabled(WMenuItem item, boolean disabled)
 	 */
 	public void setItemDisabled(int index, boolean disabled) {
-		this.items_.get(index).setDisabled(disabled);
+		this.setItemDisabled(this.itemAt(index), disabled);
 	}
 
 	/**
@@ -671,7 +739,7 @@ public class WMenu extends WCompositeWidget {
 	 * @see WMenu#setItemDisabled(WMenuItem item, boolean disabled)
 	 */
 	public boolean isItemDisabled(WMenuItem item) {
-		return this.isItemDisabled(this.indexOf(item));
+		return item.isDisabled();
 	}
 
 	/**
@@ -684,7 +752,7 @@ public class WMenu extends WCompositeWidget {
 	 * @see WMenu#setItemDisabled(WMenuItem item, boolean disabled)
 	 */
 	public boolean isItemDisabled(int index) {
-		return this.items_.get(index).isDisabled();
+		return this.isItemDisabled(this.itemAt(index));
 	}
 
 	/**
@@ -695,7 +763,7 @@ public class WMenu extends WCompositeWidget {
 	 * @see WMenu#select(WMenuItem item)
 	 */
 	public WMenuItem getCurrentItem() {
-		return this.current_ >= 0 ? this.items_.get(this.current_) : null;
+		return this.current_ >= 0 ? this.itemAt(this.current_) : null;
 	}
 
 	/**
@@ -710,47 +778,39 @@ public class WMenu extends WCompositeWidget {
 	}
 
 	/**
-	 * Returns the orientation.
+	 * Returns the orientation (<b>deprecated</b>).
 	 * <p>
 	 * The orientation is set at time of construction.
-	 */
-	public Orientation getOrientation() {
-		return this.orientation_;
-	}
-
-	/**
-	 * Renders using an HTML list.
-	 * <p>
-	 * By default, the the menu is rendered using an HTML
-	 * <code>&lt;table&gt;</code> element for layout. Setting this option
-	 * enables rendering using <code>&lt;ul&gt;</code> and
-	 * <code>&lt;il&gt;</code> elements, as is commonly done for CSS-based
-	 * designs.
-	 * <p>
-	 * <p>
-	 * <i><b>Note: </b>You cannot use this method after items have been added to
-	 * the menu. </i>
-	 * </p>
-	 */
-	public void setRenderAsList(boolean enable) {
-		if (enable) {
-			WContainerWidget c = new WContainerWidget();
-			c.setList(true);
-			this.setImplementation(this.impl_ = c);
-		} else {
-			this.setImplementation(this.impl_ = new WTable());
-		}
-		this.renderAsList_ = enable;
-	}
-
-	/**
-	 * Returns whether the menu is rendered as an HTML list.
 	 * <p>
 	 * 
-	 * @see WMenu#setRenderAsList(boolean enable)
+	 * @deprecated this function no longer has any use and will be removed.
+	 */
+	public Orientation getOrientation() {
+		return Orientation.Horizontal;
+	}
+
+	/**
+	 * Renders using an HTML list (<b>deprecated</b>).
+	 * <p>
+	 * This function no longer has an effect, as a menu is now always rendered
+	 * as a list.
+	 * <p>
+	 * 
+	 * @deprecated this function no longer has any use and will be removed.
+	 */
+	public void setRenderAsList(boolean enable) {
+		logger.error(new StringWriter().append(
+				"WMenu::setRenderAsList() has been deprecated.").toString());
+	}
+
+	/**
+	 * Returns whether the menu is rendered as an HTML list (<b>deprecated</b>).
+	 * <p>
+	 * 
+	 * @deprecated this function no longer has any use and will be removed.
 	 */
 	public boolean renderAsList() {
-		return this.renderAsList_;
+		return true;
 	}
 
 	/**
@@ -777,23 +837,23 @@ public class WMenu extends WCompositeWidget {
 	 * @see WMenuItem#setPathComponent(String path)
 	 */
 	public void setInternalPathEnabled(String basePath) {
+		WApplication app = WApplication.getInstance();
+		this.basePath_ = basePath.length() == 0 ? app.getInternalPath()
+				: basePath;
+		this.basePath_ = StringUtils.append(StringUtils.prepend(this.basePath_,
+				'/'), '/');
 		if (!this.internalPathEnabled_) {
 			this.internalPathEnabled_ = true;
-			WApplication app = WApplication.getInstance();
-			this.basePath_ = basePath.length() == 0 ? app.getInternalPath()
-					: basePath;
-			this.basePath_ = StringUtils.append(StringUtils.prepend(
-					this.basePath_, '/'), '/');
 			app.internalPathChanged().addListener(this,
 					new Signal1.Listener<String>() {
 						public void trigger(String e1) {
 							WMenu.this.handleInternalPathChange(e1);
 						}
 					});
-			this.previousInternalPath_ = app.getInternalPath();
-			this.internalPathChanged(app.getInternalPath());
-			this.updateItems();
 		}
+		this.previousInternalPath_ = app.getInternalPath();
+		this.internalPathChanged(app.getInternalPath());
+		this.updateItemsInternalPath();
 	}
 
 	/**
@@ -826,16 +886,7 @@ public class WMenu extends WCompositeWidget {
 	 * @see WMenu#getInternalBasePath()
 	 */
 	public void setInternalBasePath(String basePath) {
-		String bp = StringUtils.append(StringUtils.prepend(basePath, '/'), '/');
-		if (!this.basePath_.equals(bp)) {
-			this.basePath_ = bp;
-			if (this.internalPathEnabled_) {
-				WApplication app = WApplication.getInstance();
-				this.previousInternalPath_ = app.getInternalPath();
-				this.internalPathChanged(app.getInternalPath());
-				this.updateItems();
-			}
-		}
+		this.setInternalPathEnabled(basePath);
 	}
 
 	/**
@@ -868,18 +919,24 @@ public class WMenu extends WCompositeWidget {
 		return this.contentsStack_;
 	}
 
-	protected void enableAjax() {
-		for (int i = 0; i < this.items_.size(); ++i) {
-			WMenuItem item = this.items_.get(i);
-			item.enableAjax();
-		}
-		super.enableAjax();
+	public int getCount() {
+		return this.getUl().getCount();
+	}
+
+	public WMenuItem itemAt(int index) {
+		return ((this.getUl().getWidget(index)) instanceof WMenuItem ? (WMenuItem) (this
+				.getUl().getWidget(index))
+				: null);
+	}
+
+	int indexOf(WMenuItem item) {
+		return this.getUl().getIndexOf(item);
 	}
 
 	void render(EnumSet<RenderFlag> flags) {
 		if (this.needSelectionEventUpdate_) {
-			for (int i = 0; i < this.items_.size(); ++i) {
-				this.items_.get(i).resetLearnedSlots();
+			for (int i = 0; i < this.getCount(); ++i) {
+				this.itemAt(i).resetLearnedSlots();
 			}
 			this.needSelectionEventUpdate_ = false;
 		}
@@ -901,8 +958,8 @@ public class WMenu extends WCompositeWidget {
 			String subPath = app.internalSubPath(this.basePath_);
 			int bestI = -1;
 			int bestMatchLength = -1;
-			for (int i = 0; i < this.items_.size(); ++i) {
-				int matchLength = match(subPath, this.items_.get(i)
+			for (int i = 0; i < this.getCount(); ++i) {
+				int matchLength = match(subPath, this.itemAt(i)
 						.getPathComponent());
 				if (matchLength > bestMatchLength) {
 					bestMatchLength = matchLength;
@@ -910,7 +967,7 @@ public class WMenu extends WCompositeWidget {
 				}
 			}
 			if (bestI != -1) {
-				this.items_.get(bestI).setFromInternalPath(path);
+				this.itemAt(bestI).setFromInternalPath(path);
 			} else {
 				if (subPath.length() != 0) {
 					logger.warn(new StringWriter().append("unknown path: '")
@@ -940,7 +997,7 @@ public class WMenu extends WCompositeWidget {
 	 */
 	protected int nextAfterHide(int index) {
 		if (this.current_ == index) {
-			for (int i = this.current_ + 1; i < this.items_.size(); ++i) {
+			for (int i = this.current_ + 1; i < this.getCount(); ++i) {
 				if (!this.isItemHidden(i)) {
 					return i;
 				}
@@ -954,28 +1011,37 @@ public class WMenu extends WCompositeWidget {
 		return this.current_;
 	}
 
-	private WWidget impl_;
+	protected WMenuItem getParentItem() {
+		return this.parentItem_;
+	}
+
+	protected WContainerWidget getUl() {
+		return this.ul_;
+	}
+
+	protected void renderSelected(WMenuItem item, boolean selected) {
+		item.renderSelected(selected);
+	}
+
+	private WContainerWidget ul_;
 	WStackedWidget contentsStack_;
-	private Orientation orientation_;
-	private boolean renderAsList_;
 	private boolean internalPathEnabled_;
 	private boolean emitPathChange_;
 	private String basePath_;
 	private String previousInternalPath_;
-	private boolean subMenu_;
+	WMenuItem parentItem_;
 	private Signal1<WMenuItem> itemSelected_;
 	private Signal1<WMenuItem> itemSelectRendered_;
 	private Signal1<WMenuItem> itemClosed_;
-	private List<WMenuItem> items_;
 
 	void select(int index, boolean changePath) {
 		this.selectVisual(index, changePath, true);
 		if (index != -1) {
-			if (this.isItemHidden(index)) {
-				this.setItemHidden(index, false);
-			}
-			this.items_.get(index).loadContents();
-			this.itemSelected_.trigger(this.items_.get(this.current_));
+			WMenuItem item = this.itemAt(index);
+			item.show();
+			item.loadContents();
+			item.triggered().trigger(item);
+			this.itemSelected_.trigger(item);
 			if (changePath && this.emitPathChange_) {
 				WApplication app = WApplication.getInstance();
 				app.internalPathChanged().trigger(app.getInternalPath());
@@ -987,13 +1053,13 @@ public class WMenu extends WCompositeWidget {
 	private AbstractSignal.Connection contentsStackConnection_;
 
 	private void contentsDestroyed() {
-		for (int i = 0; i < this.items_.size(); ++i) {
-			this.items_.get(i).purgeContents();
+		for (int i = 0; i < this.getCount(); ++i) {
+			this.itemAt(i).purgeContents();
 		}
 	}
 
 	private void handleInternalPathChange(String path) {
-		if (!this.subMenu_) {
+		if (!(this.parentItem_ != null)) {
 			this.internalPathChanged(path);
 		}
 	}
@@ -1003,8 +1069,30 @@ public class WMenu extends WCompositeWidget {
 	private int previousStackIndex_;
 	private boolean needSelectionEventUpdate_;
 
-	int indexOf(WMenuItem item) {
-		return this.items_.indexOf(item);
+	private void init() {
+		this.internalPathEnabled_ = false;
+		this.emitPathChange_ = false;
+		this.parentItem_ = null;
+		this.needSelectionEventUpdate_ = false;
+		this.current_ = -1;
+		if (this.contentsStack_ != null) {
+			this.contentsStack_.childrenChanged().addListener(this,
+					new Signal.Listener() {
+						public void trigger() {
+							WMenu.this.updateSelectionEvent();
+						}
+					});
+		}
+		this.setImplementation(this.ul_ = new WContainerWidget());
+		this.ul_.setList(true);
+	}
+
+	private void updateItemsInternalPath() {
+		for (int i = 0; i < this.getCount(); ++i) {
+			WMenuItem item = this.itemAt(i);
+			item.updateInternalPath();
+		}
+		this.updateSelectionEvent();
 	}
 
 	void itemPathChanged(WMenuItem item) {
@@ -1021,37 +1109,6 @@ public class WMenu extends WCompositeWidget {
 		this.selectVisual(this.indexOf(item), true, true);
 	}
 
-	void selectVisual(int index, boolean changePath, boolean showContents) {
-		this.previousCurrent_ = this.current_;
-		if (this.contentsStack_ != null) {
-			this.previousStackIndex_ = this.contentsStack_.getCurrentIndex();
-		}
-		this.current_ = index;
-		if (changePath && this.internalPathEnabled_ && this.current_ != -1) {
-			WApplication app = WApplication.getInstance();
-			this.previousInternalPath_ = app.getInternalPath();
-			String newPath = this.basePath_
-					+ this.items_.get(this.current_).getPathComponent();
-			if (!newPath.equals(app.getInternalPath())) {
-				this.emitPathChange_ = true;
-			}
-			app.setInternalPath(newPath);
-		}
-		for (int i = 0; i < this.items_.size(); ++i) {
-			this.items_.get(i).renderSelected((int) i == this.current_);
-		}
-		if (index == -1) {
-			return;
-		}
-		if (showContents && this.contentsStack_ != null) {
-			WWidget contents = this.items_.get(this.current_).getContents();
-			if (contents != null) {
-				this.contentsStack_.setCurrentWidget(contents);
-			}
-		}
-		this.itemSelectRendered_.trigger(this.items_.get(this.current_));
-	}
-
 	void undoSelectVisual() {
 		String prevPath = this.previousInternalPath_;
 		int prevStackIndex = this.previousStackIndex_;
@@ -1065,61 +1122,49 @@ public class WMenu extends WCompositeWidget {
 		}
 	}
 
-	private void recreateItem(int index) {
-		WMenuItem item = this.items_.get(index);
-		WContainerWidget parent = ((item.getItemWidget().getParent()) instanceof WContainerWidget ? (WContainerWidget) (item
-				.getItemWidget().getParent())
-				: null);
-		if (this.renderAsList_) {
-			parent.addWidget(item.getRecreateItemWidget());
-		} else {
-			if (this.orientation_ == Orientation.Horizontal) {
-				final int pos = parent.getIndexOf(item.getItemWidget());
-				WWidget newItemWidget = item.getRecreateItemWidget();
-				parent.insertWidget(pos, newItemWidget);
-				newItemWidget.setInline(true);
-			} else {
-				parent.addWidget(item.getRecreateItemWidget());
+	void selectVisual(int index, boolean changePath, boolean showContents) {
+		this.previousCurrent_ = this.current_;
+		if (this.contentsStack_ != null) {
+			this.previousStackIndex_ = this.contentsStack_.getCurrentIndex();
+		}
+		this.current_ = index;
+		WMenuItem item = this.current_ >= 0 ? this.itemAt(this.current_) : null;
+		if (changePath && this.internalPathEnabled_ && this.current_ != -1) {
+			WApplication app = WApplication.getInstance();
+			this.previousInternalPath_ = app.getInternalPath();
+			String newPath = this.basePath_ + item.getPathComponent();
+			if (!newPath.equals(app.getInternalPath())) {
+				this.emitPathChange_ = true;
+			}
+			app.setInternalPath(newPath);
+		}
+		for (int i = 0; i < this.getCount(); ++i) {
+			this.renderSelected(this.itemAt(i), (int) i == this.current_);
+		}
+		if (index == -1) {
+			return;
+		}
+		if (showContents && this.contentsStack_ != null) {
+			WWidget contents = item.getContents();
+			if (contents != null) {
+				this.contentsStack_.setCurrentWidget(contents);
 			}
 		}
-		item.renderSelected(this.current_ == index);
-		parent.setHidden(item.isHidden());
-		this.updateSelectionEvent();
+		this.itemSelectRendered_.trigger(item);
 	}
 
-	void recreateItem(WMenuItem item) {
-		this.recreateItem(this.indexOf(item));
-	}
-
-	private void doSetHiddenItem(int index, boolean hidden) {
+	private void onItemHidden(int index, boolean hidden) {
 		if (hidden) {
 			int nextItem = this.nextAfterHide(index);
 			if (nextItem != this.current_) {
 				this.select(nextItem);
 			}
 		}
-		this.items_.get(index).getItemWidget().getParent().setHidden(hidden);
-	}
-
-	void doSetHiddenItem(WMenuItem item, boolean hidden) {
-		this.doSetHiddenItem(this.indexOf(item), hidden);
-	}
-
-	private void updateItems() {
-		for (int i = 0; i < this.items_.size(); ++i) {
-			WMenuItem item = this.items_.get(i);
-			item.updateItemWidget(item.getItemWidget());
-		}
-		this.updateSelectionEvent();
 	}
 
 	void updateSelectionEvent() {
 		this.needSelectionEventUpdate_ = true;
-		this.askRerender();
-	}
-
-	void setSubMenu(boolean submenu) {
-		this.subMenu_ = submenu;
+		this.scheduleRender();
 	}
 
 	static int match(String path, String component) {

@@ -423,6 +423,29 @@ public class WPainterPath {
 	}
 
 	/**
+	 * Adds a polygon.
+	 * <p>
+	 * If the first point is different from the current position, the last sub
+	 * path is first closed, otherwise the last sub path is extended with the
+	 * polygon.
+	 * <p>
+	 * 
+	 * @see WPainterPath#moveTo(WPointF point)
+	 * @see WPainterPath#lineTo(WPointF point)
+	 */
+	public void addPolygon(List<WPointF> points) {
+		if (!points.isEmpty()) {
+			int i = 0;
+			if (!this.getCurrentPosition().equals(points.get(0))) {
+				this.moveTo(points.get(i++));
+			}
+			for (; i < points.size(); ++i) {
+				this.lineTo(points.get(i));
+			}
+		}
+	}
+
+	/**
 	 * Adds a path.
 	 * <p>
 	 * Adds an entire <code>path</code> to the current path. If the path&apos;s

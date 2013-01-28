@@ -23,10 +23,8 @@ class GoogleMapExample extends WContainerWidget {
 	private static Logger logger = LoggerFactory
 			.getLogger(GoogleMapExample.class);
 
-	public GoogleMapExample(WContainerWidget parent,
-			ControlsWidget controlsWidget) {
+	public GoogleMapExample(WContainerWidget parent) {
 		super(parent);
-		this.controlsWidget_ = controlsWidget;
 		WHBoxLayout layout = new WHBoxLayout();
 		this.setLayout(layout);
 		this.setHeight(new WLength(400));
@@ -34,63 +32,65 @@ class GoogleMapExample extends WContainerWidget {
 		layout.addWidget(this.map_, 1);
 		this.map_.setMapTypeControl(WGoogleMap.MapTypeControl.DefaultControl);
 		this.map_.enableScrollWheelZoom();
-		WTemplate controls = new WTemplate(
-				tr("specialpurposewidgets-WGoogleMap-controls"));
+		WTemplate controls = new WTemplate(tr("graphics-GoogleMap-controls"));
 		layout.addWidget(controls);
 		WPushButton zoomIn = new WPushButton("+");
 		zoomIn.addStyleClass("zoom");
 		controls.bindWidget("zoom-in", zoomIn);
-		zoomIn.clicked().addListener(this.map_,
-				new Signal1.Listener<WMouseEvent>() {
-					public void trigger(WMouseEvent e1) {
-						GoogleMapExample.this.map_.zoomIn();
-					}
-				});
+		zoomIn.clicked().addListener(this, new Signal.Listener() {
+			public void trigger() {
+				GoogleMapExample.this.map_.zoomIn();
+			}
+		});
 		WPushButton zoomOut = new WPushButton("-");
 		zoomOut.addStyleClass("zoom");
 		controls.bindWidget("zoom-out", zoomOut);
-		zoomOut.clicked().addListener(this.map_,
-				new Signal1.Listener<WMouseEvent>() {
-					public void trigger(WMouseEvent e1) {
-						GoogleMapExample.this.map_.zoomOut();
-					}
-				});
+		zoomOut.clicked().addListener(this, new Signal.Listener() {
+			public void trigger() {
+				GoogleMapExample.this.map_.zoomOut();
+			}
+		});
 		WPushButton brussels = new WPushButton("Brussels");
 		controls.bindWidget("brussels", brussels);
-		brussels.clicked().addListener(this,
-				new Signal1.Listener<WMouseEvent>() {
-					public void trigger(WMouseEvent e1) {
-						GoogleMapExample.this.panToBrussels();
-					}
-				});
+		brussels.clicked().addListener(this, new Signal.Listener() {
+			public void trigger() {
+				GoogleMapExample.this.panToBrussels();
+			}
+		});
 		WPushButton lisbon = new WPushButton("Lisbon");
 		controls.bindWidget("lisbon", lisbon);
-		lisbon.clicked().addListener(this, new Signal1.Listener<WMouseEvent>() {
-			public void trigger(WMouseEvent e1) {
+		lisbon.clicked().addListener(this, new Signal.Listener() {
+			public void trigger() {
 				GoogleMapExample.this.panToLisbon();
 			}
 		});
 		WPushButton paris = new WPushButton("Paris");
 		controls.bindWidget("paris", paris);
-		paris.clicked().addListener(this, new Signal1.Listener<WMouseEvent>() {
-			public void trigger(WMouseEvent e1) {
+		paris.clicked().addListener(this, new Signal.Listener() {
+			public void trigger() {
 				GoogleMapExample.this.panToParis();
+			}
+		});
+		WPushButton reset = new WPushButton("Reset");
+		controls.bindWidget("emweb", reset);
+		reset.clicked().addListener(this, new Signal.Listener() {
+			public void trigger() {
+				GoogleMapExample.this.panToEmWeb();
 			}
 		});
 		WPushButton savePosition = new WPushButton("Save current position");
 		controls.bindWidget("save-position", savePosition);
-		savePosition.clicked().addListener(this,
-				new Signal1.Listener<WMouseEvent>() {
-					public void trigger(WMouseEvent e1) {
-						GoogleMapExample.this.savePosition();
-					}
-				});
+		savePosition.clicked().addListener(this, new Signal.Listener() {
+			public void trigger() {
+				GoogleMapExample.this.savePosition();
+			}
+		});
 		this.returnToPosition_ = new WPushButton("Return to saved position");
 		controls.bindWidget("return-to-saved-position", this.returnToPosition_);
 		this.returnToPosition_.setEnabled(false);
-		this.returnToPosition_.clicked().addListener(this.map_,
-				new Signal1.Listener<WMouseEvent>() {
-					public void trigger(WMouseEvent e1) {
+		this.returnToPosition_.clicked().addListener(this,
+				new Signal.Listener() {
+					public void trigger() {
 						GoogleMapExample.this.map_.returnToSavedPosition();
 					}
 				});
@@ -110,83 +110,86 @@ class GoogleMapExample extends WContainerWidget {
 		}
 		WComboBox menuControls = new WComboBox();
 		menuControls.setModel(this.mapTypeModel_);
+		menuControls.setCurrentIndex(1);
 		controls.bindWidget("control-menu-combo", menuControls);
 		menuControls.activated().addListener(this,
 				new Signal1.Listener<Integer>() {
-					public void trigger(Integer e1) {
-						GoogleMapExample.this.setMapTypeControl(e1);
+					public void trigger(Integer mapType) {
+						GoogleMapExample.this.setMapTypeControl(mapType);
 					}
 				});
-		menuControls.setCurrentIndex(1);
-		WCheckBox draggingCB = new WCheckBox("Enable dragging ");
+		WCheckBox draggingCB = new WCheckBox("Enable dragging");
 		controls.bindWidget("dragging-cb", draggingCB);
 		draggingCB.setChecked(true);
 		this.map_.enableDragging();
-		draggingCB.checked().addListener(this.map_, new Signal.Listener() {
+		draggingCB.checked().addListener(this, new Signal.Listener() {
 			public void trigger() {
 				GoogleMapExample.this.map_.enableDragging();
 			}
 		});
-		draggingCB.unChecked().addListener(this.map_, new Signal.Listener() {
+		draggingCB.unChecked().addListener(this, new Signal.Listener() {
 			public void trigger() {
 				GoogleMapExample.this.map_.disableDragging();
 			}
 		});
 		WCheckBox enableDoubleClickZoomCB = new WCheckBox(
-				"Enable double click zoom ");
+				"Enable double click zoom");
 		controls.bindWidget("double-click-zoom-cb", enableDoubleClickZoomCB);
 		enableDoubleClickZoomCB.setChecked(false);
 		this.map_.disableDoubleClickZoom();
-		enableDoubleClickZoomCB.checked().addListener(this.map_,
+		enableDoubleClickZoomCB.checked().addListener(this,
 				new Signal.Listener() {
 					public void trigger() {
 						GoogleMapExample.this.map_.enableDoubleClickZoom();
 					}
 				});
-		enableDoubleClickZoomCB.unChecked().addListener(this.map_,
+		enableDoubleClickZoomCB.unChecked().addListener(this,
 				new Signal.Listener() {
 					public void trigger() {
 						GoogleMapExample.this.map_.disableDoubleClickZoom();
 					}
 				});
 		WCheckBox enableScrollWheelZoomCB = new WCheckBox(
-				"Enable scroll wheel zoom ");
+				"Enable scroll wheel zoom");
 		controls.bindWidget("scroll-wheel-zoom-cb", enableScrollWheelZoomCB);
 		enableScrollWheelZoomCB.setChecked(true);
 		this.map_.enableScrollWheelZoom();
-		enableScrollWheelZoomCB.checked().addListener(this.map_,
+		enableScrollWheelZoomCB.checked().addListener(this,
 				new Signal.Listener() {
 					public void trigger() {
 						GoogleMapExample.this.map_.enableScrollWheelZoom();
 					}
 				});
-		enableScrollWheelZoomCB.unChecked().addListener(this.map_,
+		enableScrollWheelZoomCB.unChecked().addListener(this,
 				new Signal.Listener() {
 					public void trigger() {
 						GoogleMapExample.this.map_.disableScrollWheelZoom();
 					}
 				});
-		List<WGoogleMap.Coordinate> road = new ArrayList<WGoogleMap.Coordinate>();
-		this.roadDescription(road);
+		List<WGoogleMap.Coordinate> road = this.getRoadDescription();
 		this.map_.addPolyline(road, new WColor(0, 191, 255));
 		this.map_.addMarker(new WGoogleMap.Coordinate(50.885069, 4.71958));
 		this.map_.setCenter(road.get(road.size() - 1));
 		this.map_
 				.openInfoWindow(
 						road.get(0),
-						"<img src=\"http://www.emweb.be/css/emweb_small.jpg\" /><br/><b>Emweb office</b>");
+						"<img src=\"http://www.emweb.be/css/emweb_small.jpg\" /><p><strong>Emweb office</strong></p>");
 		this.map_.clicked().addListener(this,
 				new Signal1.Listener<WGoogleMap.Coordinate>() {
-					public void trigger(WGoogleMap.Coordinate e1) {
-						GoogleMapExample.this.googleMapClicked(e1);
+					public void trigger(WGoogleMap.Coordinate c) {
+						GoogleMapExample.this.googleMapClicked(c);
 					}
 				});
 		this.map_.doubleClicked().addListener(this,
 				new Signal1.Listener<WGoogleMap.Coordinate>() {
-					public void trigger(WGoogleMap.Coordinate e1) {
-						GoogleMapExample.this.googleMapDoubleClicked(e1);
+					public void trigger(WGoogleMap.Coordinate c) {
+						GoogleMapExample.this.googleMapDoubleClicked(c);
 					}
 				});
+	}
+
+	public GoogleMapExample() {
+		this((WContainerWidget) null);
 	}
 
 	private void panToBrussels() {
@@ -199,6 +202,10 @@ class GoogleMapExample extends WContainerWidget {
 
 	private void panToParis() {
 		this.map_.panTo(new WGoogleMap.Coordinate(48.877474, 2.312579));
+	}
+
+	private void panToEmWeb() {
+		this.map_.panTo(new WGoogleMap.Coordinate(50.9082, 4.66056));
 	}
 
 	private void savePosition() {
@@ -219,76 +226,71 @@ class GoogleMapExample extends WContainerWidget {
 		this.map_.setMapTypeControl((WGoogleMap.MapTypeControl) mtc);
 	}
 
-	private void roadDescription(List<WGoogleMap.Coordinate> roadDescription) {
-		roadDescription.add(new WGoogleMap.Coordinate(50.85342, 4.7281));
-		roadDescription.add(new WGoogleMap.Coordinate(50.85377, 4.72573));
-		roadDescription.add(new WGoogleMap.Coordinate(50.85393, 4.72496));
-		roadDescription.add(new WGoogleMap.Coordinate(50.85393, 4.72496));
-		roadDescription.add(new WGoogleMap.Coordinate(50.85372, 4.72482));
-		roadDescription.add(new WGoogleMap.Coordinate(50.85304, 4.72421));
-		roadDescription.add(new WGoogleMap.Coordinate(50.8519, 4.72297));
-		roadDescription.add(new WGoogleMap.Coordinate(50.85154, 4.72251));
-		roadDescription.add(new WGoogleMap.Coordinate(50.85154, 4.72251));
-		roadDescription.add(new WGoogleMap.Coordinate(50.85153, 4.72205));
-		roadDescription.add(new WGoogleMap.Coordinate(50.85153, 4.72205));
-		roadDescription.add(new WGoogleMap.Coordinate(50.85752, 4.7186));
-		roadDescription.add(new WGoogleMap.Coordinate(50.85847, 4.71798));
-		roadDescription.add(new WGoogleMap.Coordinate(50.859, 4.71753));
-		roadDescription.add(new WGoogleMap.Coordinate(50.8593, 4.71709));
-		roadDescription.add(new WGoogleMap.Coordinate(50.8598699, 4.71589));
-		roadDescription.add(new WGoogleMap.Coordinate(50.8606, 4.7147));
-		roadDescription.add(new WGoogleMap.Coordinate(50.8611, 4.71327));
-		roadDescription.add(new WGoogleMap.Coordinate(50.8612599, 4.71293));
-		roadDescription.add(new WGoogleMap.Coordinate(50.86184, 4.71217));
-		roadDescription.add(new WGoogleMap.Coordinate(50.86219, 4.71202));
-		roadDescription.add(new WGoogleMap.Coordinate(50.86346, 4.71178));
-		roadDescription.add(new WGoogleMap.Coordinate(50.86406, 4.71146));
-		roadDescription.add(new WGoogleMap.Coordinate(50.86478, 4.71126));
-		roadDescription.add(new WGoogleMap.Coordinate(50.86623, 4.71111));
-		roadDescription.add(new WGoogleMap.Coordinate(50.866599, 4.71101));
-		roadDescription.add(new WGoogleMap.Coordinate(50.8668, 4.71072));
-		roadDescription.add(new WGoogleMap.Coordinate(50.86709, 4.71018));
-		roadDescription.add(new WGoogleMap.Coordinate(50.86739, 4.70941));
-		roadDescription.add(new WGoogleMap.Coordinate(50.86751, 4.70921));
-		roadDescription.add(new WGoogleMap.Coordinate(50.86869, 4.70843));
-		roadDescription.add(new WGoogleMap.Coordinate(50.8691, 4.70798));
-		roadDescription.add(new WGoogleMap.Coordinate(50.8691, 4.70798));
-		roadDescription.add(new WGoogleMap.Coordinate(50.86936, 4.70763));
-		roadDescription.add(new WGoogleMap.Coordinate(50.86936, 4.70763));
-		roadDescription.add(new WGoogleMap.Coordinate(50.86874, 4.70469));
-		roadDescription.add(new WGoogleMap.Coordinate(50.86858, 4.70365));
-		roadDescription.add(new WGoogleMap.Coordinate(50.8684599, 4.70269));
-		roadDescription.add(new WGoogleMap.Coordinate(50.86839, 4.70152));
-		roadDescription.add(new WGoogleMap.Coordinate(50.86843, 4.70043));
-		roadDescription.add(new WGoogleMap.Coordinate(50.86851, 4.69987));
-		roadDescription.add(new WGoogleMap.Coordinate(50.8688199, 4.69869));
-		roadDescription.add(new WGoogleMap.Coordinate(50.8689, 4.69827));
-		roadDescription.add(new WGoogleMap.Coordinate(50.87006, 4.6941));
-		roadDescription.add(new WGoogleMap.Coordinate(50.87006, 4.6941));
-		roadDescription.add(new WGoogleMap.Coordinate(50.8704599, 4.69348));
-		roadDescription.add(new WGoogleMap.Coordinate(50.87172, 4.69233));
-		roadDescription.add(new WGoogleMap.Coordinate(50.87229, 4.69167));
-		roadDescription.add(new WGoogleMap.Coordinate(50.87229, 4.69167));
-		roadDescription.add(new WGoogleMap.Coordinate(50.8725, 4.69123));
-		roadDescription.add(new WGoogleMap.Coordinate(50.8725, 4.69123));
-		roadDescription.add(new WGoogleMap.Coordinate(50.87408, 4.69142));
-		roadDescription.add(new WGoogleMap.Coordinate(50.87423, 4.69125));
-		roadDescription.add(new WGoogleMap.Coordinate(50.87464, 4.69116));
-		roadDescription.add(new WGoogleMap.Coordinate(50.875799, 4.69061));
-		roadDescription.add(new WGoogleMap.Coordinate(50.87595, 4.69061));
-		roadDescription.add(new WGoogleMap.Coordinate(50.87733, 4.69073));
-		roadDescription.add(new WGoogleMap.Coordinate(50.87742, 4.69078));
-		roadDescription.add(new WGoogleMap.Coordinate(50.87784, 4.69131));
-		roadDescription.add(new WGoogleMap.Coordinate(50.87784, 4.69131));
-		roadDescription.add(new WGoogleMap.Coordinate(50.87759, 4.69267));
-		roadDescription.add(new WGoogleMap.Coordinate(50.8775, 4.6935));
-		roadDescription.add(new WGoogleMap.Coordinate(50.87751, 4.69395));
-		roadDescription.add(new WGoogleMap.Coordinate(50.87768, 4.69545));
-		roadDescription.add(new WGoogleMap.Coordinate(50.87769, 4.69666));
-		roadDescription.add(new WGoogleMap.Coordinate(50.87759, 4.69742));
-		roadDescription.add(new WGoogleMap.Coordinate(50.87734, 4.69823));
-		roadDescription.add(new WGoogleMap.Coordinate(50.87734, 4.69823));
-		roadDescription.add(new WGoogleMap.Coordinate(50.877909, 4.69861));
+	private List<WGoogleMap.Coordinate> getRoadDescription() {
+		List<WGoogleMap.Coordinate> result = new ArrayList<WGoogleMap.Coordinate>();
+		result.add(new WGoogleMap.Coordinate(50.9082, 4.66056));
+		result.add(new WGoogleMap.Coordinate(50.90901, 4.66426));
+		result.add(new WGoogleMap.Coordinate(50.90944, 4.66514));
+		result.add(new WGoogleMap.Coordinate(50.90968, 4.66574));
+		result.add(new WGoogleMap.Coordinate(50.91021, 4.66541));
+		result.add(new WGoogleMap.Coordinate(50.9111, 4.66508));
+		result.add(new WGoogleMap.Coordinate(50.9119, 4.66469));
+		result.add(new WGoogleMap.Coordinate(50.91224, 4.66463));
+		result.add(new WGoogleMap.Coordinate(50.91227, 4.66598));
+		result.add(new WGoogleMap.Coordinate(50.9122, 4.66786));
+		result.add(new WGoogleMap.Coordinate(50.91199, 4.66962));
+		result.add(new WGoogleMap.Coordinate(50.91169, 4.67117));
+		result.add(new WGoogleMap.Coordinate(50.91107, 4.67365));
+		result.add(new WGoogleMap.Coordinate(50.91061, 4.67515));
+		result.add(new WGoogleMap.Coordinate(50.91023, 4.67596));
+		result.add(new WGoogleMap.Coordinate(50.9098, 4.67666));
+		result.add(new WGoogleMap.Coordinate(50.90953, 4.67691));
+		result.add(new WGoogleMap.Coordinate(50.90912, 4.67746));
+		result.add(new WGoogleMap.Coordinate(50.90882, 4.67772));
+		result.add(new WGoogleMap.Coordinate(50.90838, 4.67801));
+		result.add(new WGoogleMap.Coordinate(50.9083, 4.67798));
+		result.add(new WGoogleMap.Coordinate(50.90803, 4.67814));
+		result.add(new WGoogleMap.Coordinate(50.90742, 4.67836));
+		result.add(new WGoogleMap.Coordinate(50.90681, 4.67845));
+		result.add(new WGoogleMap.Coordinate(50.90209, 4.67871));
+		result.add(new WGoogleMap.Coordinate(50.90134, 4.67893));
+		result.add(new WGoogleMap.Coordinate(50.90066, 4.6793));
+		result.add(new WGoogleMap.Coordinate(50.90015, 4.67972));
+		result.add(new WGoogleMap.Coordinate(50.89945, 4.68059));
+		result.add(new WGoogleMap.Coordinate(50.89613, 4.68582));
+		result.add(new WGoogleMap.Coordinate(50.8952, 4.68719));
+		result.add(new WGoogleMap.Coordinate(50.89464, 4.68764));
+		result.add(new WGoogleMap.Coordinate(50.89183, 4.69032));
+		result.add(new WGoogleMap.Coordinate(50.89131, 4.69076));
+		result.add(new WGoogleMap.Coordinate(50.88916, 4.69189));
+		result.add(new WGoogleMap.Coordinate(50.88897, 4.69195));
+		result.add(new WGoogleMap.Coordinate(50.88859, 4.69195));
+		result.add(new WGoogleMap.Coordinate(50.88813, 4.69193));
+		result.add(new WGoogleMap.Coordinate(50.88697, 4.69135));
+		result.add(new WGoogleMap.Coordinate(50.88669, 4.6913));
+		result.add(new WGoogleMap.Coordinate(50.88531, 4.69155));
+		result.add(new WGoogleMap.Coordinate(50.88425, 4.69196));
+		result.add(new WGoogleMap.Coordinate(50.88398, 4.69219));
+		result.add(new WGoogleMap.Coordinate(50.88391, 4.69226));
+		result.add(new WGoogleMap.Coordinate(50.88356, 4.69292));
+		result.add(new WGoogleMap.Coordinate(50.88323, 4.69361));
+		result.add(new WGoogleMap.Coordinate(50.88067, 4.6934));
+		result.add(new WGoogleMap.Coordinate(50.88055, 4.69491));
+		result.add(new WGoogleMap.Coordinate(50.88036, 4.69616));
+		result.add(new WGoogleMap.Coordinate(50.88009, 4.69755));
+		result.add(new WGoogleMap.Coordinate(50.87973, 4.69877));
+		result.add(new WGoogleMap.Coordinate(50.87951, 4.69856));
+		result.add(new WGoogleMap.Coordinate(50.87933, 4.69831));
+		result.add(new WGoogleMap.Coordinate(50.87905, 4.69811));
+		result.add(new WGoogleMap.Coordinate(50.879, 4.69793));
+		result.add(new WGoogleMap.Coordinate(50.87856, 4.69745));
+		result.add(new WGoogleMap.Coordinate(50.87849, 4.69746));
+		result.add(new WGoogleMap.Coordinate(50.87843, 4.69758));
+		result.add(new WGoogleMap.Coordinate(50.87822, 4.69758));
+		result.add(new WGoogleMap.Coordinate(50.87814, 4.69766));
+		result.add(new WGoogleMap.Coordinate(50.87813, 4.69788));
+		result.add(new WGoogleMap.Coordinate(50.87789, 4.69862));
+		return result;
 	}
 
 	private void googleMapDoubleClicked(WGoogleMap.Coordinate c) {
@@ -296,7 +298,6 @@ class GoogleMapExample extends WContainerWidget {
 		strm.append("Double clicked at coordinate (").append(
 				String.valueOf(c.getLatitude())).append(",").append(
 				String.valueOf(c.getLongitude())).append(")");
-		this.controlsWidget_.eventDisplayer().setStatus(strm.toString());
 	}
 
 	private void googleMapClicked(WGoogleMap.Coordinate c) {
@@ -304,11 +305,9 @@ class GoogleMapExample extends WContainerWidget {
 		strm.append("Clicked at coordinate (").append(
 				String.valueOf(c.getLatitude())).append(",").append(
 				String.valueOf(c.getLongitude())).append(")");
-		this.controlsWidget_.eventDisplayer().setStatus(strm.toString());
 	}
 
 	private WGoogleMap map_;
 	private WAbstractItemModel mapTypeModel_;
 	private WPushButton returnToPosition_;
-	private ControlsWidget controlsWidget_;
 }

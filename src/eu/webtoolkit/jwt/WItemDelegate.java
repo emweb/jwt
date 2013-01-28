@@ -178,7 +178,7 @@ public class WItemDelegate extends WAbstractItemDelegate {
 		String sc = StringUtils.asString(
 				index.getData(ItemDataRole.StyleClassRole)).toString();
 		if (!EnumUtils.mask(flags, ViewItemRenderFlag.RenderSelected).isEmpty()) {
-			sc += " Wt-selected";
+			sc += " " + WApplication.getInstance().getTheme().getActiveClass();
 		}
 		if (!EnumUtils.mask(flags, ViewItemRenderFlag.RenderEditing).isEmpty()) {
 			sc += " Wt-delegate-edit";

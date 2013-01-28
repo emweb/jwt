@@ -313,7 +313,9 @@ public class WFormModel extends WObject {
 	 * @see WFormModel#getValue(String field)
 	 */
 	public String valueText(String field) {
-		return StringUtils.asString(this.getValue(field)).toString();
+		WValidator v = this.getValidator(field);
+		return StringUtils.asString(this.getValue(field),
+				v != null ? v.getFormat() : "").toString();
 	}
 
 	/**
@@ -340,6 +342,20 @@ public class WFormModel extends WObject {
 	}
 
 	/**
+	 * Returns a validator.
+	 * <p>
+	 * Returns the validator for the field.
+	 */
+	public WValidator getValidator(String field) {
+		WFormModel.FieldData i = this.fields_.get(field);
+		if (i != null) {
+			WFormModel.FieldData d = i;
+			return d.validator;
+		}
+		return null;
+	}
+
+	/**
 	 * Validates a field.
 	 * <p>
 	 * The default implementation uses the validator configured for the field to
@@ -361,7 +377,7 @@ public class WFormModel extends WObject {
 			WFormModel.FieldData d = i;
 			if (d.validator != null) {
 				this.setValidation(field, d.validator.validate(StringUtils
-						.asString(d.value).toString()));
+						.asString(this.valueText(field)).toString()));
 			} else {
 				this.setValidation(field, Valid);
 			}

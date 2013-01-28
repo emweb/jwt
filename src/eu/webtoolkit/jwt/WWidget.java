@@ -444,8 +444,8 @@ public abstract class WWidget extends WObject {
 		String side = orientation == Orientation.Horizontal ? ".Horizontal"
 				: ".Vertical";
 		WApplication.getInstance().doJavaScript(
-				"Wt3_2_3.positionAtWidget('" + this.getId() + "','"
-						+ widget.getId() + "',Wt3_2_3" + side + ");");
+				"Wt3_3_0.positionAtWidget('" + this.getId() + "','"
+						+ widget.getId() + "',Wt3_3_0" + side + ");");
 	}
 
 	/**
@@ -880,6 +880,11 @@ public abstract class WWidget extends WObject {
 	}
 
 	/**
+	 * Returns whether the widget has a style class.
+	 */
+	public abstract boolean hasStyleClass(String styleClass);
+
+	/**
 	 * Sets the vertical alignment.
 	 * <p>
 	 * This only applies to inline widgets, and determines how to position
@@ -972,7 +977,7 @@ public abstract class WWidget extends WObject {
 	 * @see WWidget#isRendered()
 	 */
 	public String getJsRef() {
-		return "Wt3_2_3.$('" + this.getId() + "')";
+		return "Wt3_3_0.$('" + this.getId() + "')";
 	}
 
 	/**
@@ -1033,7 +1038,7 @@ public abstract class WWidget extends WObject {
 	public abstract void callJavaScriptMember(String name, String args);
 
 	/**
-	 * Short hand for {@link WString#tr(String key) WString#tr()}.
+	 * Short hand for {@link }.
 	 * <p>
 	 * Creates a localized string with the given key.
 	 */
@@ -1172,6 +1177,8 @@ public abstract class WWidget extends WObject {
 	 */
 	public abstract WWidget find(String name);
 
+	public abstract WWidget findById(String id);
+
 	/**
 	 * Streams the (X)HTML representation.
 	 * <p>
@@ -1246,7 +1253,7 @@ public abstract class WWidget extends WObject {
 		return result;
 	}
 
-	String createJavaScript(StringWriter js, String insertJS) {
+	public String createJavaScript(StringBuilder js, String insertJS) {
 		WApplication app = WApplication.getInstance();
 		DomElement de = this.createSDomElement(app);
 		String var = de.getCreateVar();
@@ -1338,18 +1345,21 @@ public abstract class WWidget extends WObject {
 		if (!this.needsToBeRendered()) {
 			DomElement result = this.getWebWidget().createStubElement(app);
 			this.renderOk();
-			this.askRerender(true);
+			this.scheduleRerender(true);
 			return result;
 		} else {
 			this.getWebWidget().setRendered(true);
 			this.render(EnumSet.of(RenderFlag.RenderFull));
-			return this.getWebWidget().createActualElement(app);
+			return this.getWebWidget().createActualElement(this, app);
 		}
 	}
 
 	static void setTabOrder(WWidget first, WWidget second) {
 		second.setTabIndex(first.getTabIndex() + 1);
 	}
+
+	static String WT_RESIZE_JS = "wtResize";
+	protected static String WT_GETPS_JS = "wtGetPS";
 
 	/**
 	 * Sets the widget to be aware of its size set by a layout manager.
@@ -1580,9 +1590,43 @@ public abstract class WWidget extends WObject {
 
 	abstract boolean isStubbed();
 
+	/**
+	 * Schedules rerendering of the widget.
+	 * <p>
+	 * This schedules a rendering phase after all events have been processed.
+	 * This method is used internally whenever a property of a widget has been
+	 * changed. But you may want to use this if you are deferring actual changes
+	 * to a widget in response to an event, and instead postpone this until all
+	 * events have been received.
+	 * <p>
+	 * 
+	 * @see WWidget#render(EnumSet flags)
+	 */
+	protected void scheduleRender() {
+		this.scheduleRerender(false);
+	}
+
+	/**
+	 * Renders the widget.
+	 * <p>
+	 * This function renders the widget (or an update for the widget), after
+	 * this has been scheduled using {@link WWidget#scheduleRender()
+	 * scheduleRender()}.
+	 * <p>
+	 * The default implementation will render the widget by serializing changes
+	 * to JavaScript and HTML. You may want to reimplement this widget if you
+	 * have been postponing some of the layout / rendering implementation until
+	 * the latest moment possible. In that case you should make sure you call
+	 * the base implementation however.
+	 */
 	void render(EnumSet<RenderFlag> flags) {
 	}
 
+	/**
+	 * Renders the widget.
+	 * <p>
+	 * Calls {@link #render(EnumSet flags) render(EnumSet.of(flag, flags))}
+	 */
 	final void render(RenderFlag flag, RenderFlag... flags) {
 		render(EnumSet.of(flag, flags));
 	}
@@ -1641,7 +1685,7 @@ public abstract class WWidget extends WObject {
 		}
 	}
 
-	void askRerender(boolean laterOnly) {
+	protected void scheduleRerender(boolean laterOnly) {
 		if (!this.flags_.get(BIT_NEED_RERENDER)) {
 			this.flags_.set(BIT_NEED_RERENDER);
 			WApplication.getInstance().getSession().getRenderer().needUpdate(
@@ -1651,10 +1695,6 @@ public abstract class WWidget extends WObject {
 				p.childResized(this, EnumSet.of(Orientation.Vertical));
 			}
 		}
-	}
-
-	final void askRerender() {
-		askRerender(false);
 	}
 
 	boolean needsRerender() {
@@ -1740,7 +1780,4 @@ public abstract class WWidget extends WObject {
 	WLayout getLayout() {
 		return null;
 	}
-
-	static String WT_RESIZE_JS = "wtResize";
-	protected static String WT_GETPS_JS = "wtGetPS";
 }

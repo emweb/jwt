@@ -26,9 +26,11 @@ class ToggleButton extends WText {
 		super(parent);
 		this.signals_ = new ArrayList<AbstractSignal>();
 		this.config_ = config;
+		this.setStyleClass(this.config_.getStyleClass());
 		this.setInline(false);
 		if (WApplication.getInstance().getEnvironment().hasAjax()) {
 			this.clicked().addListener(this.config_.toggleJS_);
+			this.clicked().preventPropagation();
 			for (int i = 0; i < this.config_.getStates().size(); ++i) {
 				this.signals_.add(new JSignal(this, "t-"
 						+ this.config_.getStates().get(i)));
@@ -62,7 +64,8 @@ class ToggleButton extends WText {
 	}
 
 	public void setState(int i) {
-		this.setStyleClass(this.config_.getStates().get(i));
+		this.setStyleClass(this.config_.getStyleClass()
+				+ this.config_.getStates().get(i));
 	}
 
 	private List<AbstractSignal> signals_;

@@ -690,6 +690,7 @@ public class WContainerWidget extends WInteractWidget {
 		return this.scrollEventSignal(SCROLL_SIGNAL, true);
 	}
 
+	private static String SCROLL_SIGNAL = "scroll";
 	private static final int BIT_CONTENT_ALIGNMENT_CHANGED = 0;
 	private static final int BIT_PADDINGS_CHANGED = 1;
 	private static final int BIT_OVERFLOW_CHANGED = 2;
@@ -714,8 +715,7 @@ public class WContainerWidget extends WInteractWidget {
 		}
 	}
 
-	void rootAsJavaScript(WApplication app, Writer out, boolean all)
-			throws IOException {
+	void rootAsJavaScript(WApplication app, StringBuilder out, boolean all) {
 		List<WWidget> toAdd = all ? this.children_
 				: this.transientImpl_ != null ? this.transientImpl_.addedChildren_
 						: null;
@@ -928,8 +928,8 @@ public class WContainerWidget extends WInteractWidget {
 	DomElementType getDomElementType() {
 		DomElementType type = this.isInline() ? DomElementType.DomElement_SPAN
 				: DomElementType.DomElement_DIV;
-		WContainerWidget p = ((this.getParent()) instanceof WContainerWidget ? (WContainerWidget) (this
-				.getParent())
+		WContainerWidget p = ((this.getParentWebWidget()) instanceof WContainerWidget ? (WContainerWidget) (this
+				.getParentWebWidget())
 				: null);
 		if (p != null && p.isList()) {
 			type = DomElementType.DomElement_LI;
@@ -1164,5 +1164,4 @@ public class WContainerWidget extends WInteractWidget {
 	}
 
 	private static String[] cssText = { "visible", "auto", "hidden", "scroll" };
-	private static String SCROLL_SIGNAL = "scroll";
 }

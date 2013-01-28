@@ -17,8 +17,8 @@ public abstract class AbstractJSignal extends AbstractEventSignal {
 
 	private String name;
 
-	AbstractJSignal(WObject sender, String name) {
-		super(name, sender);
+	AbstractJSignal(WObject sender, String name, boolean collectSlotJavaScript) {
+		super(name, sender, collectSlotJavaScript);
 
 		this.name = name;
 	}

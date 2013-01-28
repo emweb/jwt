@@ -26,7 +26,7 @@ class RowSpacer extends WWebWidget {
 		super();
 		this.node_ = node;
 		this.height_ = 0;
-		this.resize(WLength.Auto, new WLength(0));
+		this.setHeight(new WLength(0));
 		this.setInline(false);
 		this.setStyleClass("Wt-spacer");
 	}
@@ -38,7 +38,7 @@ class RowSpacer extends WWebWidget {
 		} else {
 			if (force || height != this.height_) {
 				this.height_ = height;
-				this.resize(WLength.Auto, WLength.multiply(this.node_.getView()
+				this.setHeight(WLength.multiply(this.node_.getView()
 						.getRowHeight(), height));
 			}
 		}

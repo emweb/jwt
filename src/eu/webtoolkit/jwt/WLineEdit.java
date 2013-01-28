@@ -370,6 +370,7 @@ public class WLineEdit extends WFormWidget {
 			DomElement e = DomElement.getForUpdate(this, this
 					.getDomElementType());
 			DomElement d = this.createDomElement(app);
+			app.getTheme().apply(this.getSelfWidget(), d, 0);
 			e.replaceWith(d);
 			result.add(e);
 		} else {

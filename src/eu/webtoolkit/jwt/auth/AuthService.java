@@ -268,8 +268,8 @@ public class AuthService {
 				.startTransaction();
 		String random = MathUtils.randomId(this.tokenLength_);
 		String hash = this.getTokenHashFunction().compute(random, "");
-		Token token = new Token(hash, new WDate(new Date())
-				.addSeconds(this.authTokenValidity_ * 60));
+		Token token = new Token(hash, WDate.getCurrentDate().addSeconds(
+				this.authTokenValidity_ * 60));
 		user.addAuthToken(token);
 		if (t != null) {
 			t.commit();
@@ -401,8 +401,8 @@ public class AuthService {
 		user.setUnverifiedEmail(address);
 		String random = MathUtils.randomId(this.tokenLength_);
 		String hash = this.getTokenHashFunction().compute(random, "");
-		Token t = new Token(hash, new WDate(new Date())
-				.addSeconds(this.emailTokenValidity_ * 60));
+		Token t = new Token(hash, WDate.getCurrentDate().addSeconds(
+				this.emailTokenValidity_ * 60));
 		user.setEmailToken(t, User.EmailTokenRole.VerifyEmail);
 		this.sendConfirmMail(address, user, random);
 	}
@@ -429,7 +429,7 @@ public class AuthService {
 		if (user.isValid()) {
 			String random = MathUtils.randomId(this.getRandomTokenLength());
 			String hash = this.getTokenHashFunction().compute(random, "");
-			WDate expires = new WDate(new Date());
+			WDate expires = WDate.getCurrentDate();
 			expires = expires.addSeconds(this.getEmailTokenValidity() * 60);
 			Token t = new Token(hash, expires);
 			user.setEmailToken(t, User.EmailTokenRole.LostPassword);
@@ -463,7 +463,7 @@ public class AuthService {
 		User user = users.findWithEmailToken(hash);
 		if (user.isValid()) {
 			Token t = user.getEmailToken();
-			if (t.getExpirationTime().before(new WDate(new Date()))) {
+			if (t.getExpirationTime().before(WDate.getCurrentDate())) {
 				user.clearEmailToken();
 				if (tr != null) {
 					tr.commit();

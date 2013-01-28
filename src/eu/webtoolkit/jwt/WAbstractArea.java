@@ -101,10 +101,10 @@ public class WAbstractArea extends WObject {
 	 */
 	public void setLink(WLink link) {
 		this.createAnchorImpl();
-		this.anchor_.link_ = link;
-		if (this.anchor_.link_.getType() == WLink.Type.Resource) {
-			this.anchor_.link_.getResource().dataChanged().addListener(this,
-					new Signal.Listener() {
+		this.anchor_.linkState.link = link;
+		if (this.anchor_.linkState.link.getType() == WLink.Type.Resource) {
+			this.anchor_.linkState.link.getResource().dataChanged()
+					.addListener(this, new Signal.Listener() {
 						public void trigger() {
 							WAbstractArea.this.resourceChanged();
 						}
@@ -123,7 +123,7 @@ public class WAbstractArea extends WObject {
 		if (!(this.anchor_ != null)) {
 			return new WLink();
 		} else {
-			return this.anchor_.link_;
+			return this.anchor_.linkState.link;
 		}
 	}
 
@@ -164,11 +164,11 @@ public class WAbstractArea extends WObject {
 	 */
 	public String getRef() {
 		if (this.anchor_ != null) {
-			switch (this.anchor_.link_.getType()) {
+			switch (this.anchor_.linkState.link.getType()) {
 			case InternalPath:
-				return this.anchor_.link_.getInternalPath();
+				return this.anchor_.linkState.link.getInternalPath();
 			default:
-				return this.anchor_.link_.getUrl();
+				return this.anchor_.linkState.link.getUrl();
 			}
 		} else {
 			return "";
@@ -207,7 +207,7 @@ public class WAbstractArea extends WObject {
 	 */
 	public WResource getResource() {
 		if (this.anchor_ != null) {
-			return this.anchor_.link_.getResource();
+			return this.anchor_.linkState.link.getResource();
 		} else {
 			return null;
 		}
@@ -238,7 +238,7 @@ public class WAbstractArea extends WObject {
 	 */
 	public void setTarget(AnchorTarget target) {
 		this.createAnchorImpl();
-		this.anchor_.target_ = target;
+		this.anchor_.linkState.target = target;
 		this.repaint();
 	}
 
@@ -250,7 +250,7 @@ public class WAbstractArea extends WObject {
 	 */
 	public AnchorTarget getTarget() {
 		if (this.anchor_ != null) {
-			return this.anchor_.target_;
+			return this.anchor_.linkState.target;
 		} else {
 			return AnchorTarget.TargetSelf;
 		}
@@ -274,7 +274,7 @@ public class WAbstractArea extends WObject {
 	 */
 	public void setAlternateText(CharSequence text) {
 		this.createAnchorImpl();
-		this.anchor_.altText_ = WString.toWString(text);
+		this.anchor_.altText = WString.toWString(text);
 		this.repaint();
 	}
 
@@ -286,7 +286,7 @@ public class WAbstractArea extends WObject {
 	 */
 	public WString getAlternateText() {
 		if (this.anchor_ != null) {
-			return this.anchor_.altText_;
+			return this.anchor_.altText;
 		} else {
 			return new WString();
 		}
@@ -630,17 +630,8 @@ public class WAbstractArea extends WObject {
 		private static Logger logger = LoggerFactory
 				.getLogger(AnchorImpl.class);
 
-		public WLink link_;
-		public AnchorTarget target_;
-		public WString altText_;
-		public JSlot changeInternalPathJS_;
-
-		public AnchorImpl() {
-			this.link_ = new WLink();
-			this.target_ = AnchorTarget.TargetSelf;
-			this.altText_ = new WString();
-			this.changeInternalPathJS_ = null;
-		}
+		public WAnchor.LinkState linkState;
+		public WString altText;
 	}
 
 	private boolean hole_;
@@ -649,7 +640,6 @@ public class WAbstractArea extends WObject {
 	private void createAnchorImpl() {
 		if (!(this.anchor_ != null)) {
 			this.anchor_ = new WAbstractArea.AnchorImpl();
-			this.anchor_.target_ = AnchorTarget.TargetSelf;
 		}
 	}
 
@@ -664,30 +654,20 @@ public class WAbstractArea extends WObject {
 		this.anchor_ = null;
 	}
 
-	void updateDom(DomElement element, boolean all) {
+	protected boolean updateDom(DomElement element, boolean all) {
+		boolean needsUrlResolution = false;
 		if (!this.hole_ && this.anchor_ != null) {
-			WApplication app = WApplication.getInstance();
-			String url = this.anchor_.link_.resolveUrl(app);
-			element.setAttribute("href", WWebWidget.resolveRelativeUrl(url));
-			switch (this.anchor_.target_) {
-			case TargetSelf:
-				this.anchor_.changeInternalPathJS_ = this.anchor_.link_
-						.manageInternalPathChange(app, this.impl_,
-								this.anchor_.changeInternalPathJS_);
-				break;
-			case TargetThisWindow:
-				element.setProperty(Property.PropertyTarget, "_top");
-				break;
-			case TargetNewWindow:
-				element.setProperty(Property.PropertyTarget, "_blank");
-			}
-			element.setAttribute("alt", this.anchor_.altText_.toString());
+			needsUrlResolution = WAnchor.renderHRef(this.getImpl(),
+					this.anchor_.linkState, element);
+			WAnchor.renderHTarget(this.anchor_.linkState, element, all);
+			element.setAttribute("alt", this.anchor_.altText.toString());
 		} else {
 			element.setAttribute("alt", "");
 			if (this.hole_) {
 				element.setAttribute("nohref", "nohref");
 			}
 		}
+		return needsUrlResolution;
 	}
 
 	void repaint() {

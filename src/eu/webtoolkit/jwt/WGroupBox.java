@@ -159,15 +159,6 @@ public class WGroupBox extends WContainerWidget {
 		super.updateDom(element, all);
 	}
 
-	protected void propagateSetEnabled(boolean enabled) {
-		if (enabled) {
-			this.removeStyleClass("Wt-disabled");
-		} else {
-			this.addStyleClass("Wt-disabled");
-		}
-		super.propagateSetEnabled(enabled);
-	}
-
 	void propagateRenderOk(boolean deep) {
 		this.titleChanged_ = false;
 		super.propagateRenderOk(deep);

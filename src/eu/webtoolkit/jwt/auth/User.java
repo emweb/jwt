@@ -328,7 +328,7 @@ public class User {
 			this.db_.setFailedLoginAttempts(this, this.db_
 					.getFailedLoginAttempts(this) + 1);
 		}
-		this.db_.setLastLoginAttempt(this, new WDate(new Date()));
+		this.db_.setLastLoginAttempt(this, WDate.getCurrentDate());
 	}
 
 	/**

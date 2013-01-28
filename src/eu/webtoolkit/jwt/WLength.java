@@ -79,6 +79,14 @@ public class WLength {
 	}
 
 	/**
+	 * An &apos;auto&apos; length.
+	 * <p>
+	 * 
+	 * @see WLength#WLength()
+	 */
+	public static WLength Auto = new WLength();
+
+	/**
 	 * Creates an &apos;auto&apos; length.
 	 * <p>
 	 * Specifies an &apos;auto&apos; length.
@@ -348,12 +356,4 @@ public class WLength {
 	static WLength divide(WLength l, double s) {
 		return WLength.multiply(l, 1 / s);
 	}
-
-	/**
-	 * An &apos;auto&apos; length.
-	 * <p>
-	 * 
-	 * @see WLength#WLength()
-	 */
-	public static WLength Auto = new WLength();
 }

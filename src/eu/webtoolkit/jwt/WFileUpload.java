@@ -394,6 +394,9 @@ public class WFileUpload extends WWebWidget {
 		super.enableAjax();
 	}
 
+	private static String CHANGE_SIGNAL = "M_change";
+	private static String UPLOADED_SIGNAL = "M_uploaded";
+	private static String FILETOOLARGE_SIGNAL = "M_filetoolarge";
 	private static final int BIT_DO_UPLOAD = 0;
 	private static final int BIT_ENABLE_AJAX = 1;
 	private static final int BIT_UPLOADING = 2;
@@ -636,8 +639,4 @@ public class WFileUpload extends WWebWidget {
 			}
 		}
 	}
-
-	private static String CHANGE_SIGNAL = "M_change";
-	private static String UPLOADED_SIGNAL = "M_uploaded";
-	private static String FILETOOLARGE_SIGNAL = "M_filetoolarge";
 }

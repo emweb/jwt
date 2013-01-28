@@ -68,6 +68,21 @@ public class WAxis {
 	private static Logger logger = LoggerFactory.getLogger(WAxis.class);
 
 	/**
+	 * Constant which indicates automatic minimum calculation.
+	 * <p>
+	 * 
+	 * @see WAxis#setMinimum(double minimum)
+	 */
+	public static final double AUTO_MINIMUM = -Double.MAX_VALUE;
+	/**
+	 * Constant which indicates automatic maximum calculation.
+	 * <p>
+	 * 
+	 * @see WAxis#setMaximum(double maximum)
+	 */
+	public static final double AUTO_MAXIMUM = Double.MAX_VALUE;
+
+	/**
 	 * Returns the axis id.
 	 * <p>
 	 * 
@@ -1569,9 +1584,9 @@ public class WAxis {
 	}
 
 	private static double EPSILON = 1E-3;
-	static final int AXIS_MARGIN = 4;
-	static final int AUTO_V_LABEL_PIXELS = 25;
-	static final int AUTO_H_LABEL_PIXELS = 60;
+	private static final int AXIS_MARGIN = 4;
+	private static final int AUTO_V_LABEL_PIXELS = 25;
+	private static final int AUTO_H_LABEL_PIXELS = 60;
 
 	static double round125(double v) {
 		double n = Math.pow(10, Math.floor(Math.log10(v)));
@@ -1602,19 +1617,4 @@ public class WAxis {
 	static int roundDown(int v, int factor) {
 		return v / factor * factor;
 	}
-
-	/**
-	 * Constant which indicates automatic minimum calculation.
-	 * <p>
-	 * 
-	 * @see WAxis#setMinimum(double minimum)
-	 */
-	public static final double AUTO_MINIMUM = -Double.MAX_VALUE;
-	/**
-	 * Constant which indicates automatic maximum calculation.
-	 * <p>
-	 * 
-	 * @see WAxis#setMaximum(double maximum)
-	 */
-	public static final double AUTO_MAXIMUM = Double.MAX_VALUE;
 }

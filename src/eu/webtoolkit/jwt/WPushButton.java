@@ -42,12 +42,12 @@ public class WPushButton extends WFormWidget {
 	 */
 	public WPushButton(WContainerWidget parent) {
 		super(parent);
-		this.text_ = new WString();
+		this.linkState_ = new WAnchor.LinkState();
+		this.text_ = new WText.RichText();
 		this.icon_ = new WLink();
-		this.link_ = new WLink();
-		this.linkTarget_ = AnchorTarget.TargetSelf;
 		this.flags_ = new BitSet();
-		this.redirectJS_ = null;
+		this.popupMenu_ = null;
+		this.text_.format = TextFormat.PlainText;
 	}
 
 	/**
@@ -62,15 +62,18 @@ public class WPushButton extends WFormWidget {
 
 	/**
 	 * Creates a push button with given label text.
+	 * <p>
+	 * The default text format is PlainText.
 	 */
 	public WPushButton(CharSequence text, WContainerWidget parent) {
 		super(parent);
-		this.text_ = WString.toWString(text);
+		this.linkState_ = new WAnchor.LinkState();
+		this.text_ = new WText.RichText();
 		this.icon_ = new WLink();
-		this.link_ = new WLink();
-		this.linkTarget_ = AnchorTarget.TargetSelf;
 		this.flags_ = new BitSet();
-		this.redirectJS_ = null;
+		this.popupMenu_ = null;
+		this.text_.format = TextFormat.PlainText;
+		this.text_.text = WString.toWString(text);
 	}
 
 	/**
@@ -83,21 +86,140 @@ public class WPushButton extends WFormWidget {
 		this(text, (WContainerWidget) null);
 	}
 
-	public void remove() {
-		;
-		super.remove();
+	/**
+	 * Sets the default property.
+	 * <p>
+	 * The only effect of a default button is that it is may be rendered in a
+	 * different style, depending on the theme.
+	 */
+	public void setDefault(boolean enabled) {
+		this.flags_.set(BIT_DEFAULT);
+	}
+
+	/**
+	 * Returns whether the button is a default button.
+	 * <p>
+	 * 
+	 * @see WPushButton#setDefault(boolean enabled)
+	 */
+	public boolean isDefault() {
+		return this.flags_.get(BIT_DEFAULT);
+	}
+
+	/**
+	 * Sets whether the button is checkable.
+	 * <p>
+	 * A checkable button can be checked and unchecked, and clicking will toggle
+	 * between these two states.
+	 * <p>
+	 * 
+	 * @see WPushButton#setChecked(boolean checked)
+	 */
+	public void setCheckable(boolean checkable) {
+		this.flags_.set(BIT_IS_CHECKABLE, checkable);
+		if (checkable) {
+			this.clicked().addListener(
+					"function(o,e) { $(o).toggleClass('active'); }");
+			this.clicked().addListener(this,
+					new Signal1.Listener<WMouseEvent>() {
+						public void trigger(WMouseEvent e1) {
+							WPushButton.this.toggled();
+						}
+					});
+		}
+	}
+
+	/**
+	 * Returns whether a button is checkable.
+	 * <p>
+	 * 
+	 * @see WPushButton#setCheckable(boolean checkable)
+	 */
+	public boolean isCheckable() {
+		return this.flags_.get(BIT_IS_CHECKABLE);
+	}
+
+	/**
+	 * Sets the button state.
+	 * <p>
+	 * This is ignored for a button which is not checkable.
+	 * <p>
+	 * This method does not emit one of the {@link WPushButton#checked()
+	 * checked()} or {@link WPushButton#unChecked() unChecked()} signals.
+	 * <p>
+	 * 
+	 * @see WPushButton#setCheckable(boolean checkable)
+	 * @see WPushButton#setChecked()
+	 * @see WPushButton#setUnChecked()
+	 */
+	public void setChecked(boolean checked) {
+		if (this.isCheckable()) {
+			this.flags_.set(BIT_IS_CHECKED, checked);
+			this.flags_.set(BIT_CHECKED_CHANGED, true);
+			this.repaint(EnumSet.of(RepaintFlag.RepaintInnerHtml));
+		}
+	}
+
+	/**
+	 * Checks the button.
+	 * <p>
+	 * Does not emit the {@link WPushButton#checked() checked()} signal.
+	 * <p>
+	 * 
+	 * @see WPushButton#setChecked(boolean checked)
+	 */
+	public void setChecked() {
+		this.setChecked(true);
+	}
+
+	/**
+	 * Unchecks the button.
+	 * <p>
+	 * Does not emit the {@link WPushButton#unChecked() unChecked()} signal.
+	 * <p>
+	 * 
+	 * @see WPushButton#setChecked(boolean checked)
+	 */
+	public void setUnChecked() {
+		this.setChecked(false);
+	}
+
+	/**
+	 * Returns the button state.
+	 * <p>
+	 * 
+	 * @see WPushButton#setChecked()
+	 */
+	public boolean isChecked() {
+		return this.flags_.get(BIT_IS_CHECKED);
 	}
 
 	/**
 	 * Sets the button text.
+	 * <p>
+	 * The default text format is {@link TextFormat#PlainText}.
+	 * <p>
+	 * When the current text format is {@link TextFormat#XHTMLText}, and
+	 * <code>text</code> is literal (not created using {@link }), it is parsed
+	 * using an XML parser which discards malicious tags and attributes
+	 * silently. When the parser encounters an XML parse error, the textFormat
+	 * is changed to {@link TextFormat#PlainText}.
+	 * <p>
+	 * Returns whether the text could be set using the current textFormat. A
+	 * return value of <code>false</code> indicates that the text format was
+	 * changed in order to be able to accept the new text.
+	 * <p>
+	 * 
+	 * @see WPushButton#setTextFormat(TextFormat textFormat)
 	 */
-	public void setText(CharSequence text) {
-		if (canOptimizeUpdates() && text.equals(this.text_)) {
-			return;
+	public boolean setText(CharSequence text) {
+		if (canOptimizeUpdates() && text.equals(this.text_.text)) {
+			return true;
 		}
-		this.text_ = WString.toWString(text);
+		boolean ok = this.text_.setText(text);
 		this.flags_.set(BIT_TEXT_CHANGED);
 		this.repaint(EnumSet.of(RepaintFlag.RepaintInnerHtml));
+		return ok;
 	}
 
 	/**
@@ -107,7 +229,37 @@ public class WPushButton extends WFormWidget {
 	 * @see WPushButton#setText(CharSequence text)
 	 */
 	public WString getText() {
-		return this.text_;
+		return this.text_.text;
+	}
+
+	/**
+	 * Sets the text format.
+	 * <p>
+	 * The textFormat controls how the string should be interpreted: either as
+	 * plain text, which is displayed literally, or as XHTML-markup.
+	 * <p>
+	 * When changing the textFormat to {@link TextFormat#XHTMLText}, and the
+	 * current text is literal (not created using {@link }), the current text is
+	 * parsed using an XML parser which discards malicious tags and attributes
+	 * silently. When the parser encounters an XML parse error, the textFormat
+	 * is left unchanged, and this method returns false.
+	 * <p>
+	 * Returns whether the textFormat could be set for the current text.
+	 * <p>
+	 * The default format is {@link TextFormat#PlainText}.
+	 */
+	public boolean setTextFormat(TextFormat textFormat) {
+		return this.text_.setFormat(textFormat);
+	}
+
+	/**
+	 * Returns the text format.
+	 * <p>
+	 * 
+	 * @see WPushButton#setTextFormat(TextFormat textFormat)
+	 */
+	public TextFormat getTextFormat() {
+		return this.text_.format;
 	}
 
 	/**
@@ -148,13 +300,13 @@ public class WPushButton extends WFormWidget {
 	 * react to a click event.
 	 */
 	public void setLink(WLink link) {
-		if (link.equals(this.link_)) {
+		if (link.equals(this.linkState_.link)) {
 			return;
 		}
-		this.link_ = link;
+		this.linkState_.link = link;
 		this.flags_.set(BIT_LINK_CHANGED);
-		if (link.getType() == WLink.Type.Resource) {
-			link.getResource().dataChanged().addListener(this,
+		if (this.linkState_.link.getType() == WLink.Type.Resource) {
+			this.linkState_.link.getResource().dataChanged().addListener(this,
 					new Signal.Listener() {
 						public void trigger() {
 							WPushButton.this.resourceChanged();
@@ -171,7 +323,7 @@ public class WPushButton extends WFormWidget {
 	 * @see WPushButton#setLink(WLink link)
 	 */
 	public WLink getLink() {
-		return this.link_;
+		return this.linkState_.link;
 	}
 
 	/**
@@ -198,7 +350,7 @@ public class WPushButton extends WFormWidget {
 	 * @deprecated Use {@link WPushButton#getLink() getLink()} instead.
 	 */
 	public String getRef() {
-		return this.link_.getUrl();
+		return this.linkState_.link.getUrl();
 	}
 
 	/**
@@ -237,7 +389,7 @@ public class WPushButton extends WFormWidget {
 	 * @deprecated Use {@link WPushButton#getLink() getLink()} instead.
 	 */
 	public WResource getResource() {
-		return this.link_.getResource();
+		return this.linkState_.link.getResource();
 	}
 
 	/**
@@ -264,7 +416,7 @@ public class WPushButton extends WFormWidget {
 	 * default target is TargetSelf.
 	 */
 	public void setLinkTarget(AnchorTarget target) {
-		this.linkTarget_ = target;
+		this.linkState_.target = target;
 	}
 
 	/**
@@ -274,32 +426,79 @@ public class WPushButton extends WFormWidget {
 	 * @see WPushButton#setLinkTarget(AnchorTarget target)
 	 */
 	public AnchorTarget getLinkTarget() {
-		return this.linkTarget_;
+		return this.linkState_.target;
+	}
+
+	public void setMenu(WPopupMenu popupMenu) {
+		this.popupMenu_ = popupMenu;
+		if (this.popupMenu_ != null) {
+			this.popupMenu_.setButton(this);
+		}
+	}
+
+	public WPopupMenu getMenu() {
+		return this.popupMenu_;
 	}
 
 	public void refresh() {
-		if (this.text_.refresh()) {
+		if (this.text_.text.refresh()) {
 			this.flags_.set(BIT_TEXT_CHANGED);
 			this.repaint(EnumSet.of(RepaintFlag.RepaintInnerHtml));
 		}
 		super.refresh();
 	}
 
+	/**
+	 * Signal emitted when the button gets checked.
+	 * <p>
+	 * This signal is emitted when the user checks the button.
+	 * <p>
+	 * You can use the {@link WInteractWidget#clicked()
+	 * WInteractWidget#clicked()} signal to react to any change of the button
+	 * state.
+	 * <p>
+	 * 
+	 * @see WPushButton#setCheckable(boolean checkable)
+	 */
+	public EventSignal checked() {
+		return this.voidEventSignal(CHECKED_SIGNAL, true);
+	}
+
+	/**
+	 * Signal emitted when the button gets unchecked.
+	 * <p>
+	 * This signal is emitted when the user unchecks the button.
+	 * <p>
+	 * You can use the {@link WInteractWidget#clicked()
+	 * WInteractWidget#clicked()} signal to react to any change of the button
+	 * state.
+	 * <p>
+	 * 
+	 * @see WPushButton#setCheckable(boolean checkable)
+	 */
+	public EventSignal unChecked() {
+		return this.voidEventSignal(UNCHECKED_SIGNAL, true);
+	}
+
+	private static String CHECKED_SIGNAL = "M_checked";
+	private static String UNCHECKED_SIGNAL = "M_unchecked";
 	private static final int BIT_TEXT_CHANGED = 0;
 	private static final int BIT_ICON_CHANGED = 1;
 	private static final int BIT_ICON_RENDERED = 2;
 	private static final int BIT_LINK_CHANGED = 3;
-	private WString text_;
+	private static final int BIT_DEFAULT = 4;
+	private static final int BIT_IS_CHECKABLE = 5;
+	private static final int BIT_IS_CHECKED = 6;
+	private static final int BIT_CHECKED_CHANGED = 7;
+	private WAnchor.LinkState linkState_;
+	private WText.RichText text_;
 	private WLink icon_;
-	private WLink link_;
-	private AnchorTarget linkTarget_;
 	BitSet flags_;
-	private JSlot redirectJS_;
+	private WPopupMenu popupMenu_;
 
 	void updateDom(DomElement element, boolean all) {
-		if (all) {
+		if (all && element.getType() == DomElementType.DomElement_BUTTON) {
 			element.setAttribute("type", "button");
-			element.setProperty(Property.PropertyClass, "Wt-btn");
 		}
 		boolean updateInnerHtml = !this.icon_.isNull()
 				&& this.flags_.get(BIT_TEXT_CHANGED);
@@ -314,53 +513,39 @@ public class WPushButton extends WFormWidget {
 		}
 		if (this.flags_.get(BIT_TEXT_CHANGED) || all) {
 			element.setProperty(Property.PropertyInnerHTML, this.text_
-					.isLiteral() ? escapeText(this.text_, true).toString()
-					: this.text_.toString());
+					.getFormattedText());
 			this.flags_.clear(BIT_TEXT_CHANGED);
 		}
-		if (this.flags_.get(BIT_LINK_CHANGED) || all && !this.link_.isNull()) {
-			if (!this.link_.isNull()) {
-				WApplication app = WApplication.getInstance();
-				if (!(this.redirectJS_ != null)) {
-					this.redirectJS_ = new JSlot();
-					this.clicked().addListener(this.redirectJS_);
-					if (!app.getEnvironment().hasAjax()) {
-						this.clicked().addListener(this,
-								new Signal1.Listener<WMouseEvent>() {
-									public void trigger(WMouseEvent e1) {
-										WPushButton.this.doRedirect();
-									}
-								});
-					}
-				}
-				if (this.link_.getType() == WLink.Type.InternalPath) {
-					this.redirectJS_
-							.setJavaScript("function(){Wt3_2_3.history.navigate("
-									+ jsStringLiteral(this.link_
-											.getInternalPath()) + ",true);}");
-				} else {
-					if (this.linkTarget_ == AnchorTarget.TargetNewWindow) {
-						this.redirectJS_
-								.setJavaScript("function(){window.open("
-										+ jsStringLiteral(this.link_.getUrl())
-										+ ");}");
-					} else {
-						this.redirectJS_
-								.setJavaScript("function(){window.location="
-										+ jsStringLiteral(this.link_.getUrl())
-										+ ";}");
-					}
-				}
-				this.clicked().senderRepaint();
+		boolean needsUrlResolution = false;
+		if (this.flags_.get(BIT_LINK_CHANGED) || all) {
+			if (element.getType() == DomElementType.DomElement_A) {
+				needsUrlResolution = WAnchor.renderHRef(this, this.linkState_,
+						element);
+				WAnchor.renderHTarget(this.linkState_, element, all);
 			} else {
-				;
-				this.redirectJS_ = null;
+				this.renderHRef(element);
+			}
+			this.flags_.clear(BIT_LINK_CHANGED);
+		}
+		if (this.isCheckable()) {
+			if (this.flags_.get(BIT_CHECKED_CHANGED) || all) {
+				if (!all || this.flags_.get(BIT_IS_CHECKED)) {
+					this.toggleStyleClass("active", this.flags_
+							.get(BIT_IS_CHECKED), true);
+				}
+				this.flags_.clear(BIT_CHECKED_CHANGED);
 			}
 		}
 		super.updateDom(element, all);
 	}
 
 	DomElementType getDomElementType() {
+		if (!this.linkState_.link.isNull()) {
+			WApplication app = WApplication.getInstance();
+			if (app.getTheme().isCanStyleAnchorAsButton()) {
+				return DomElementType.DomElement_A;
+			}
+		}
 		return DomElementType.DomElement_BUTTON;
 	}
 
@@ -389,10 +574,11 @@ public class WPushButton extends WFormWidget {
 	private void doRedirect() {
 		WApplication app = WApplication.getInstance();
 		if (!app.getEnvironment().hasAjax()) {
-			if (this.link_.getType() == WLink.Type.InternalPath) {
-				app.setInternalPath(this.link_.getInternalPath(), true);
+			if (this.linkState_.link.getType() == WLink.Type.InternalPath) {
+				app.setInternalPath(this.linkState_.link.getInternalPath(),
+						true);
 			} else {
-				app.redirect(this.link_.getUrl());
+				app.redirect(this.linkState_.link.getUrl());
 			}
 		}
 	}
@@ -400,5 +586,55 @@ public class WPushButton extends WFormWidget {
 	private void resourceChanged() {
 		this.flags_.set(BIT_LINK_CHANGED);
 		this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyIEMobile));
+	}
+
+	private void renderHRef(DomElement element) {
+		if (!this.linkState_.link.isNull()) {
+			WApplication app = WApplication.getInstance();
+			if (!(this.linkState_.clickJS != null)) {
+				this.linkState_.clickJS = new JSlot();
+				this.clicked().addListener(this.linkState_.clickJS);
+				if (!app.getEnvironment().hasAjax()) {
+					this.clicked().addListener(this,
+							new Signal1.Listener<WMouseEvent>() {
+								public void trigger(WMouseEvent e1) {
+									WPushButton.this.doRedirect();
+								}
+							});
+				}
+			}
+			if (this.linkState_.link.getType() == WLink.Type.InternalPath) {
+				this.linkState_.clickJS.setJavaScript("function(){"
+						+ app.getJavaScriptClass()
+						+ "_p_.setHash("
+						+ jsStringLiteral(this.linkState_.link
+								.getInternalPath()) + ",true);}");
+			} else {
+				if (this.linkState_.target == AnchorTarget.TargetNewWindow) {
+					this.linkState_.clickJS
+							.setJavaScript("function(){window.open("
+									+ jsStringLiteral(this.linkState_.link
+											.getUrl()) + ");}");
+				} else {
+					this.linkState_.clickJS
+							.setJavaScript("function(){window.location="
+									+ jsStringLiteral(this.linkState_.link
+											.getUrl()) + ";}");
+				}
+			}
+			this.clicked().senderRepaint();
+		} else {
+			;
+			this.linkState_.clickJS = null;
+		}
+	}
+
+	private void toggled() {
+		this.flags_.set(BIT_IS_CHECKED, !this.isChecked());
+		if (this.isChecked()) {
+			this.checked().trigger();
+		} else {
+			this.unChecked().trigger();
+		}
 	}
 }

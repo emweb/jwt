@@ -197,13 +197,8 @@ public class WTreeTableNode extends WTreeNode {
 	private void createExtraColumns(int numColumns) {
 		if (!(this.row_ != null)) {
 			this.row_ = new WContainerWidget();
-			this.getLabelArea().insertBefore(this.row_,
-					this.getLabelArea().getChildren().get(0));
-			this.row_.setFloatSide(Side.Right);
-			this.getLabelArea().resize(
-					new WLength(100, WLength.Unit.Percentage), WLength.Auto);
-			this.getLabelArea().getTable().resize(
-					new WLength(100, WLength.Unit.Percentage), WLength.Auto);
+			this.row_.addStyleClass("cols-row");
+			this.getImpl().bindWidget("cols-row", this.row_);
 		}
 		while ((int) this.columnWidgets_.size() < numColumns) {
 			WText w = new WText(new WString(" "), this.row_);

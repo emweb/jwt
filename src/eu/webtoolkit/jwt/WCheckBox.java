@@ -31,12 +31,14 @@ import org.slf4j.LoggerFactory;
  * <p>
  * A checkbox may also provide a third state,
  * {@link CheckState#PartiallyChecked}, which is useful to indicate that it is
- * neither checked or unchecked. JWt will use native browser support for this
+ * neither checked nor unchecked. JWt will use native browser support for this
  * HTML5 extension when available (Safari and MS IE), and use an image-based
  * workaround otherwise. You may enable support for the third state using
  * {@link WCheckBox#setTristate(boolean tristate) setTristate()}, and use
  * {@link WCheckBox#setCheckState(CheckState state) setCheckState()} and
  * {@link WCheckBox#getCheckState() getCheckState()} to read all three states.
+ * Once a tri-state checkbox is clicked, it cycles through the states
+ * {@link CheckState#Checked} and {@link CheckState#Unchecked}.
  * <p>
  * A label is added as a sibling of the checkbox to the same parent.
  * <p>
@@ -130,11 +132,13 @@ public class WCheckBox extends WAbstractToggleButton {
 		if (this.triState_) {
 			if (!this.supportsIndeterminate(WApplication.getInstance()
 					.getEnvironment())) {
-				this.changed().addListener(clearOpacityJS);
+				this.changed().addListener(
+						"function(obj, e) { obj.style.opacity=''; }");
 			} else {
 				if (WApplication.getInstance().getEnvironment().agentIsSafari()
 						&& !this.safariWorkaround_) {
-					this.clicked().addListener(safariWorkaroundJS);
+					this.clicked().addListener(
+							"function(obj, e) { obj.onchange(); }");
 					this.safariWorkaround_ = true;
 				}
 			}
@@ -189,8 +193,4 @@ public class WCheckBox extends WAbstractToggleButton {
 
 	private boolean triState_;
 	private boolean safariWorkaround_;
-	static JSlot safariWorkaroundJS = new JSlot(
-			"function(obj, e) { obj.onchange(); }");
-	static JSlot clearOpacityJS = new JSlot(
-			"function(obj, e) { obj.style.opacity=''; }");
 }

@@ -166,10 +166,12 @@ public abstract class AbstractEventSignal extends AbstractSignal {
 	}
 
 	static final int BIT_NEED_UPDATE = 0x1;
-	static final int BIT_EXPOSED = 0x2;
-	static final int BIT_NEEDS_AUTOLEARN = 0x4;
-	static final int BIT_PREVENT_DEFAULT = 0x8;
-	static final int BIT_PREVENT_PROPAGATION = 0x10;
+	static final int BIT_SERVER_EVENT = 0x2;
+	static final int BIT_EXPOSED = 0x4;
+	static final int BIT_CAN_AUTOLEARN = 0x8;
+	static final int BIT_PREVENT_DEFAULT = 0x10;
+	static final int BIT_PREVENT_PROPAGATION = 0x20;
+	static final int BIT_SIGNAL_SERVER_ANYWAY = 0x40;
 
 	private ArrayList<LearningListener> learningListeners;
 	private byte flags_;
@@ -178,12 +180,18 @@ public abstract class AbstractEventSignal extends AbstractSignal {
 	private static int nextId_ = 0;
 	private WObject sender_;
 
-	AbstractEventSignal(String name, WObject sender) {
+	AbstractEventSignal(String name, WObject sender, boolean autoLearn) {
 		sender_ = sender;
 		name_ = name;
 		learningListeners = null;
 		flags_ = 0;
 		id_ = nextId_++;
+		
+		if (name_ == null)
+			flags_ |= BIT_SIGNAL_SERVER_ANYWAY;
+		
+		if (autoLearn)
+			flags_ |= BIT_CAN_AUTOLEARN; // requires sender is a WWidget !
 	}
 
 	/**
@@ -262,27 +270,27 @@ public abstract class AbstractEventSignal extends AbstractSignal {
 	}
 	
 	void listenerAdded() {
-		if ((flags_ & BIT_EXPOSED) != 0)
+		if ((flags_ & BIT_SERVER_EVENT) != 0)
 			return;
 
 		WApplication app = WApplication.getInstance();
 		
 		app.addExposedSignal(this);
 
-		flags_ |= BIT_NEEDS_AUTOLEARN;
+		flags_ |= BIT_EXPOSED;
 
 		if (app.isExposeSignals())
-			flags_ |= BIT_EXPOSED;
+			flags_ |= BIT_SERVER_EVENT;
 
 		ownerRepaint();
 	}
 
 	void listenerRemoved() {
 		if (getListenerCount() == 0) {
-			if ((flags_ & BIT_NEEDS_AUTOLEARN) != 0) {
+			if ((flags_ & BIT_EXPOSED) != 0) {
 				WApplication.getInstance().removeExposedSignal(this);
+				flags_ &= ~BIT_SERVER_EVENT;
 				flags_ &= ~BIT_EXPOSED;
-				flags_ &= ~BIT_NEEDS_AUTOLEARN;
 			}
 
 			ownerRepaint();
@@ -310,7 +318,11 @@ public abstract class AbstractEventSignal extends AbstractSignal {
 	}
 
 	boolean isExposedSignal() {
-		return (flags_ & BIT_EXPOSED) != 0;
+		return (flags_ & BIT_SERVER_EVENT) != 0;
+	}
+	
+	public boolean isCanAutoLearn() {
+		return (flags_ & BIT_CAN_AUTOLEARN) != 0;
 	}
 
 	@Override
@@ -536,16 +548,16 @@ public abstract class AbstractEventSignal extends AbstractSignal {
 	}
 
 	void setNotExposed() {
-		flags_ &= ~BIT_EXPOSED;
+		flags_ &= ~BIT_SERVER_EVENT;
 	}
 
 
 	public void disconnect(Connection connection) {
 		connection.disconnect();
-		if ((flags_ & BIT_EXPOSED) != 0)
+		if ((flags_ & BIT_SERVER_EVENT) != 0)
 			if (!isConnected()) {
 				WApplication.getInstance().removeExposedSignal(this);
-				flags_ &= ~BIT_EXPOSED;
+				flags_ &= ~BIT_SERVER_EVENT;
 			}
 		
 		ownerRepaint();

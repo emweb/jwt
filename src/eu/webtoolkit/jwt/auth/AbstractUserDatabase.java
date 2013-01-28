@@ -444,9 +444,9 @@ public abstract class AbstractUserDatabase {
 	}
 
 	// private AbstractUserDatabase(AbstractUserDatabase anon1) ;
-	static String EMAIL_VERIFICATION = "email verification";
-	static String AUTH_TOKEN = "authentication tokens";
-	static String PASSWORDS = "password handling";
-	static String THROTTLING = "password attempt throttling";
-	static String REGISTRATION = "user registration";
+	private static String EMAIL_VERIFICATION = "email verification";
+	private static String AUTH_TOKEN = "authentication tokens";
+	private static String PASSWORDS = "password handling";
+	private static String THROTTLING = "password attempt throttling";
+	private static String REGISTRATION = "user registration";
 }

@@ -289,5 +289,5 @@ class FontSupport {
 		}
 	}
 
-	static Map<String, String> fontRegistry_ = new HashMap<String, String>();
+	private static Map<String, String> fontRegistry_ = new HashMap<String, String>();
 }

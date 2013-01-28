@@ -902,8 +902,12 @@ public abstract class WAbstractItemModel extends WObject {
 				if (row == -1) {
 					row = this.getRowCount(parent);
 				}
-				this.insertRows(row,
-						selectionModel.getSelectedIndexes().size(), parent);
+				if (!this.insertRows(row, selectionModel.getSelectedIndexes()
+						.size(), parent)) {
+					logger.error(new StringWriter().append(
+							"dropEvent(): could not insertRows()").toString());
+					return;
+				}
 			}
 			SortedSet<WModelIndex> selection = selectionModel
 					.getSelectedIndexes();
@@ -927,7 +931,12 @@ public abstract class WAbstractItemModel extends WObject {
 			if (action == DropAction.MoveAction) {
 				while (!selectionModel.getSelectedIndexes().isEmpty()) {
 					WModelIndex i = selectionModel.getSelectedIndexes().last();
-					sourceModel.removeRow(i.getRow(), i.getParent());
+					if (!sourceModel.removeRow(i.getRow(), i.getParent())) {
+						logger.error(new StringWriter().append(
+								"dropEvent(): could not removeRows()")
+								.toString());
+						return;
+					}
 				}
 			}
 		}
@@ -1259,9 +1268,9 @@ public abstract class WAbstractItemModel extends WObject {
 	/**
 	 * Signal emitted when the layout is about to be changed.
 	 * <p>
-	 * A layout change reorders the data in the model, but columns are
-	 * preserved. Model indexes are invalidated by a layout change, but indexes
-	 * may be ported across a layout change by using the
+	 * A layout change may reorder or add/remove rows in the model, but columns
+	 * are preserved. Model indexes are invalidated by a layout change, but
+	 * indexes may be ported across a layout change by using the
 	 * {@link WAbstractItemModel#toRawIndex(WModelIndex index) toRawIndex()} and
 	 * {@link WAbstractItemModel#fromRawIndex(Object rawIndex) fromRawIndex()}
 	 * methods.
@@ -1324,6 +1333,20 @@ public abstract class WAbstractItemModel extends WObject {
 	 */
 	protected WModelIndex createIndex(int row, int column, Object ptr) {
 		return new WModelIndex(row, column, this, ptr);
+	}
+
+	/**
+	 * Creates a model index for the given row and column.
+	 * <p>
+	 * Use this method to create a model index. <code>id</code> is an internal
+	 * id that may be used to identify the <b>parent</b> of the corresponding
+	 * item. For a flat table model, <code>ptr</code> can thus always be 0.
+	 * <p>
+	 * 
+	 * @see WModelIndex#getInternalId()
+	 */
+	protected WModelIndex createIndex(int row, int column, long id) {
+		return new WModelIndex(row, column, this, id);
 	}
 
 	/**
@@ -1486,5 +1509,5 @@ public abstract class WAbstractItemModel extends WObject {
 		destination.setItemData(dIndex, source.getItemData(sIndex));
 	}
 
-	static String DRAG_DROP_MIME_TYPE = "application/x-wabstractitemmodelselection";
+	private static String DRAG_DROP_MIME_TYPE = "application/x-wabstractitemmodelselection";
 }

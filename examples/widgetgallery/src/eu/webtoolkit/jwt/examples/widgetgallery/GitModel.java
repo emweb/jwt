@@ -1,0 +1,271 @@
+/*
+ * Copyright (C) 2009 Emweb bvba, Leuven, Belgium.
+ *
+ * See the LICENSE file for terms of use.
+ */
+package eu.webtoolkit.jwt.examples.widgetgallery;
+
+import java.util.*;
+import java.util.regex.*;
+import java.io.*;
+import java.lang.ref.*;
+import java.util.concurrent.locks.ReentrantLock;
+import javax.servlet.http.*;
+import javax.servlet.*;
+import eu.webtoolkit.jwt.*;
+import eu.webtoolkit.jwt.chart.*;
+import eu.webtoolkit.jwt.utils.*;
+import eu.webtoolkit.jwt.servlet.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+class GitModel extends WAbstractItemModel {
+	private static Logger logger = LoggerFactory.getLogger(GitModel.class);
+
+	public static final int ContentsRole = ItemDataRole.UserRole + 1;
+
+	public GitModel(String repository, WObject parent) {
+		super(parent);
+		this.git_ = new Git();
+		this.treeData_ = new ArrayList<GitModel.Tree>();
+		this.childPointer_ = new HashMap<GitModel.ChildIndex, Integer>();
+		this.git_.setRepositoryPath(repository);
+		this.loadRevision("master");
+	}
+
+	public GitModel(String repository) {
+		this(repository, (WObject) null);
+	}
+
+	public void loadRevision(String revName) {
+		Git.ObjectId treeRoot = this.git_.getCommitTree(revName);
+		this.layoutAboutToBeChanged().trigger();
+		this.treeData_.clear();
+		this.childPointer_.clear();
+		this.treeData_.add(new GitModel.Tree(-1, -1, treeRoot, this.git_
+				.treeSize(treeRoot)));
+		this.layoutChanged().trigger();
+	}
+
+	public WModelIndex getParent(WModelIndex index) {
+		if (!(index != null) || index.getInternalId() == 0) {
+			return null;
+		} else {
+			GitModel.Tree item = this.treeData_.get(index.getInternalId());
+			return this.createIndex(item.getIndex(), 0, item.getParentId());
+		}
+	}
+
+	public WModelIndex getIndex(int row, int column, WModelIndex parent) {
+		int parentId;
+		if (!(parent != null)) {
+			parentId = 0;
+		} else {
+			int grandParentId = parent.getInternalId();
+			parentId = this.getTreeId(grandParentId, parent.getRow());
+		}
+		return this.createIndex(row, column, parentId);
+	}
+
+	public int getColumnCount(WModelIndex parent) {
+		return 2;
+	}
+
+	public int getRowCount(WModelIndex parent) {
+		int treeId;
+		if ((parent != null)) {
+			if (parent.getColumn() != 0) {
+				return 0;
+			}
+			Git.Object o = this.getObject(parent);
+			if (o.type == Git.ObjectType.Tree) {
+				treeId = this
+						.getTreeId(parent.getInternalId(), parent.getRow());
+			} else {
+				return 0;
+			}
+		} else {
+			treeId = 0;
+		}
+		return this.treeData_.get(treeId).getRowCount();
+	}
+
+	public Object getData(WModelIndex index, int role) {
+		if (!(index != null)) {
+			return null;
+		}
+		Git.Object object = this.getObject(index);
+		switch (index.getColumn()) {
+		case 0:
+			if (role == ItemDataRole.DisplayRole) {
+				if (object.type == Git.ObjectType.Tree) {
+					return object.name + '/';
+				} else {
+					return object.name;
+				}
+			} else {
+				if (role == ItemDataRole.DecorationRole) {
+					if (object.type == Git.ObjectType.Blob) {
+						return "icons/git-blob.png";
+					} else {
+						if (object.type == Git.ObjectType.Tree) {
+							return "icons/git-tree.png";
+						}
+					}
+				} else {
+					if (role == ContentsRole) {
+						if (object.type == Git.ObjectType.Blob) {
+							return this.git_.catFile(object.id);
+						}
+					}
+				}
+			}
+			break;
+		case 1:
+			if (role == ItemDataRole.DisplayRole) {
+				if (object.type == Git.ObjectType.Tree) {
+					return "Folder";
+				} else {
+					String suffix = getSuffix(object.name);
+					if (suffix.equals("C") || suffix.equals("cpp")) {
+						return "C++ Source";
+					} else {
+						if (suffix.equals("h") || suffix.equals("")
+								&& !this.topLevel(index)) {
+							return "C++ Header";
+						} else {
+							if (suffix.equals("css")) {
+								return "CSS Stylesheet";
+							} else {
+								if (suffix.equals("js")) {
+									return "JavaScript Source";
+								} else {
+									if (suffix.equals("md")) {
+										return "Markdown";
+									} else {
+										if (suffix.equals("png")
+												|| suffix.equals("gif")) {
+											return "Image";
+										} else {
+											if (suffix.equals("txt")) {
+												return "Text";
+											} else {
+												return null;
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		return null;
+	}
+
+	public Object getHeaderData(int section, Orientation orientation, int role) {
+		if (orientation == Orientation.Horizontal
+				&& role == ItemDataRole.DisplayRole) {
+			switch (section) {
+			case 0:
+				return "File";
+			case 1:
+				return "Type";
+			default:
+				return null;
+			}
+		} else {
+			return null;
+		}
+	}
+
+	private Git git_;
+
+	static class ChildIndex {
+		private static Logger logger = LoggerFactory
+				.getLogger(ChildIndex.class);
+
+		public int parentId;
+		public int index;
+
+		public ChildIndex(int aParent, int anIndex) {
+			this.parentId = aParent;
+			this.index = anIndex;
+		}
+	}
+
+	static class Tree {
+		private static Logger logger = LoggerFactory.getLogger(Tree.class);
+
+		public Tree(int parentId, int index, Git.ObjectId object, int rowCount) {
+			this.index_ = new GitModel.ChildIndex(parentId, index);
+			this.treeObject_ = object;
+			this.rowCount_ = rowCount;
+		}
+
+		public int getParentId() {
+			return this.index_.parentId;
+		}
+
+		public int getIndex() {
+			return this.index_.index;
+		}
+
+		public Git.ObjectId getTreeObject() {
+			return this.treeObject_;
+		}
+
+		public int getRowCount() {
+			return this.rowCount_;
+		}
+
+		private GitModel.ChildIndex index_;
+		private Git.ObjectId treeObject_;
+		private int rowCount_;
+	}
+
+	private List<GitModel.Tree> treeData_;
+	private Map<GitModel.ChildIndex, Integer> childPointer_;
+
+	private int getTreeId(int parentId, int childIndex) {
+		GitModel.ChildIndex index = new GitModel.ChildIndex(parentId,
+				childIndex);
+		Integer i = this.childPointer_.get(index);
+		if (i == null) {
+			GitModel.Tree parentItem = this.treeData_.get(parentId);
+			Git.Object o = this.git_.treeGetObject(parentItem.getTreeObject(),
+					childIndex);
+			this.treeData_.add(new GitModel.Tree(parentId, childIndex, o.id,
+					this.git_.treeSize(o.id)));
+			int result = this.treeData_.size() - 1;
+			this.childPointer_.put(index, result);
+			return result;
+		} else {
+			return i;
+		}
+	}
+
+	private Git.Object getObject(WModelIndex index) {
+		int parentId = index.getInternalId();
+		GitModel.Tree parentItem = this.treeData_.get(parentId);
+		return this.git_.treeGetObject(parentItem.getTreeObject(), index
+				.getRow());
+	}
+
+	private static String getSuffix(String fileName) {
+		int dot = fileName.lastIndexOf('.');
+		if (dot == -1) {
+			return "";
+		} else {
+			return fileName.substring(dot + 1);
+		}
+	}
+
+	private boolean topLevel(WModelIndex index) {
+		return !(this.getParent(index) != null);
+	}
+
+	static void gitModel() {
+	}
+}

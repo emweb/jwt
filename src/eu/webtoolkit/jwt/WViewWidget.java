@@ -99,7 +99,7 @@ public abstract class WViewWidget extends WWebWidget {
 	public void update() {
 		this.needContentsUpdate_ = true;
 		if (this.isRendered()) {
-			this.askRerender();
+			this.scheduleRender();
 		}
 	}
 

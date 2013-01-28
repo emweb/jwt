@@ -31,7 +31,6 @@ import org.slf4j.LoggerFactory;
  * @see WAnchor
  * @see WImage
  * @see WMediaPlayer
- * @see WPopupMenuItem
  * @see WPushButton
  */
 public class WLink {
@@ -282,7 +281,8 @@ public class WLink {
 					widget.clicked().addListener(slot);
 					widget.clicked().preventDefaultAction();
 				}
-				slot.setJavaScript("function(){Wt3_2_3.history.navigate("
+				slot.setJavaScript("function(){" + app.getJavaScriptClass()
+						+ "._p_.setHash("
 						+ WWebWidget.jsStringLiteral(this.getInternalPath())
 						+ ",true);}");
 				widget.clicked().senderRepaint();

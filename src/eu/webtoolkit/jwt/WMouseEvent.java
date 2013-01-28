@@ -163,6 +163,8 @@ public class WMouseEvent implements WAbstractEvent {
 		return new WMouseEvent(jsEvent);
 	}
 
+	static WMouseEvent templateEvent = new WMouseEvent();
+
 	WMouseEvent(JavaScriptEvent jsEvent) {
 		super();
 		this.jsEvent_ = jsEvent;
@@ -234,6 +236,4 @@ public class WMouseEvent implements WAbstractEvent {
 			return;
 		}
 	}
-
-	static WMouseEvent templateEvent = new WMouseEvent();
 }

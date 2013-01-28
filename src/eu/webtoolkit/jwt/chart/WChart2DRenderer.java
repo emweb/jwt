@@ -1240,5 +1240,5 @@ public class WChart2DRenderer {
 		iterateSeries(iterator, false);
 	}
 
-	static final int TICK_LENGTH = 5;
+	private static final int TICK_LENGTH = 5;
 }

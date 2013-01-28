@@ -265,7 +265,7 @@ public abstract class WTextRenderer {
 		return this.painter_;
 	}
 
-	static final double EPSILON = 1e-4;
+	private static final double EPSILON = 1e-4;
 
 	static boolean isEpsilonMore(double x, double limit) {
 		return x - EPSILON > limit;

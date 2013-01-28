@@ -69,22 +69,21 @@ public class WPanel extends WCompositeWidget {
 		this.expanded_ = new Signal(this);
 		this.collapsedSS_ = new Signal1<Boolean>(this);
 		this.expandedSS_ = new Signal1<Boolean>(this);
-		String TEMPLATE = "${shadow-x1-x2}${titlebar}${contents}";
+		String TEMPLATE = "${titlebar}${contents}";
 		this
 				.setImplementation(this.impl_ = new WTemplate(new WString(
 						TEMPLATE)));
-		this.impl_.setStyleClass("Wt-panel Wt-outset");
 		// this.implementStateless(WPanel.doExpand,WPanel.undoExpand);
 		// this.implementStateless(WPanel.doCollapse,WPanel.undoCollapse);
+		WApplication app = WApplication.getInstance();
 		WContainerWidget centralArea = new WContainerWidget();
-		centralArea.setStyleClass("body");
-		this.impl_.bindString("shadow-x1-x2", WTemplate.DropShadow_x1_x2);
+		app.getTheme().apply(this, centralArea, WidgetThemeRole.PanelBodyRole);
 		this.impl_.bindWidget("titlebar", (WWidget) null);
 		this.impl_.bindWidget("contents", centralArea);
 		this
 				.setJavaScriptMember(
 						WT_RESIZE_JS,
-						"function(self, w, h, l) {var defined = h >= 0;if (Wt3_2_3.boxSizing(self)) {h -= Wt3_2_3.px(self, 'borderTopWidth') + Wt3_2_3.px(self, 'borderBottomWidth');}var c = self.lastChild;var t = c.previousSibling;if (t.className == 'titlebar')h -= t.offsetHeight;h -= 8;if (defined && h > 0) {c.lh = l;c.style.height = h + 'px';$(c).children().each(function() { var self = $(this), padding = self.outerHeight() - self.height();self.height(h - padding);this.lh = l;});} else {c.lh = false;c.style.height = '';$(c).children().each(function() { this.style.height = '';this.lh = false;});}};");
+						"function(self, w, h, l) {var defined = h >= 0;if (Wt3_3_0.boxSizing(self)) {h -= Wt3_3_0.px(self, 'borderTopWidth') + Wt3_3_0.px(self, 'borderBottomWidth');}var c = self.lastChild;var t = c.previousSibling;if (t && t.className == 'titlebar')h -= t.offsetHeight;h -= 8;if (defined && h > 0) {c.lh = l;c.style.height = h + 'px';$(c).children().each(function() { var self = $(this), padding = self.outerHeight() - self.height();self.height(h - padding);this.lh = l;});} else {c.lh = false;c.style.height = '';$(c).children().each(function() { this.style.height = '';this.lh = false;});}};");
 		this.setJavaScriptMember(WT_GETPS_JS, StdWidgetItemImpl
 				.getSecondGetPSJS());
 	}
@@ -115,8 +114,11 @@ public class WPanel extends WCompositeWidget {
 		this.setTitleBar(true);
 		if (!(this.title_ != null)) {
 			this.title_ = new WText();
+			WApplication app = WApplication.getInstance();
+			app.getTheme().apply(this, this.title_,
+					WidgetThemeRole.PanelTitleRole);
 			this.getTitleBarWidget().insertWidget(
-					this.getTitleBarWidget().getCount() - 1, this.title_);
+					this.getTitleBarWidget().getCount(), this.title_);
 		}
 		this.title_.setText(title);
 	}
@@ -151,10 +153,9 @@ public class WPanel extends WCompositeWidget {
 		if (enable && !(this.getTitleBarWidget() != null)) {
 			WContainerWidget titleBar = new WContainerWidget();
 			this.impl_.bindWidget("titlebar", titleBar);
-			titleBar.setStyleClass("titlebar");
-			WBreak br;
-			titleBar.addWidget(br = new WBreak());
-			br.setClearSides(Side.Horizontals);
+			WApplication app = WApplication.getInstance();
+			app.getTheme().apply(this, titleBar,
+					WidgetThemeRole.PanelTitleBarRole);
 		} else {
 			if (!enable && this.isTitleBar()) {
 				this.impl_.bindWidget("titlebar", (WWidget) null);
@@ -216,8 +217,10 @@ public class WPanel extends WCompositeWidget {
 			this.setTitleBar(true);
 			this.collapseIcon_ = new WIconPair(resources + "collapse.gif",
 					resources + "expand.gif");
-			this.collapseIcon_.setInline(false);
 			this.collapseIcon_.setFloatSide(Side.Left);
+			WApplication app = WApplication.getInstance();
+			app.getTheme().apply(this, this.collapseIcon_,
+					WidgetThemeRole.PanelCollapseButtonRole);
 			this.getTitleBarWidget().insertWidget(0, this.collapseIcon_);
 			this.collapseIcon_.icon1Clicked().addListener(this,
 					new Signal1.Listener<WMouseEvent>() {

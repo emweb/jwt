@@ -122,6 +122,8 @@ public class WKeyEvent implements WAbstractEvent {
 		return new WKeyEvent(jsEvent);
 	}
 
+	static WKeyEvent templateEvent = new WKeyEvent();
+
 	WKeyEvent(JavaScriptEvent jsEvent) {
 		super();
 		this.jsEvent_ = jsEvent;
@@ -193,6 +195,4 @@ public class WKeyEvent implements WAbstractEvent {
 			return;
 		}
 	}
-
-	static WKeyEvent templateEvent = new WKeyEvent();
 }

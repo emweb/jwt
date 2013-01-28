@@ -23,12 +23,11 @@ import org.slf4j.LoggerFactory;
  * An model that manages a list of strings.
  * <p>
  * 
- * This model only manages a unidimensional list of strings. It is used as the
- * default model for view classes that show a list.
+ * This model only manages a unidimensional list of items and is optimized for
+ * usage by view widgets such as combo-boxes.
  * <p>
- * The model only presents {@link ItemDataRole#DisplayRole DisplayRole} data of
- * a single column of data, but otherwise provides support for all standard
- * features of a model, including editing and addition and removal of data rows.
+ * It supports all features of a typical item model, including data for multiple
+ * roles, editing and addition and removal of data rows.
  * <p>
  * You can populate the model by passing a list of strings to its consructor, or
  * by using the {@link WStringListModel#setStringList(List strings)
@@ -54,7 +53,8 @@ public class WStringListModel extends WAbstractListModel {
 	 */
 	public WStringListModel(WObject parent) {
 		super(parent);
-		this.strings_ = new ArrayList<WString>();
+		this.displayData_ = new ArrayList<WString>();
+		this.otherData_ = null;
 	}
 
 	/**
@@ -71,7 +71,8 @@ public class WStringListModel extends WAbstractListModel {
 	 */
 	public WStringListModel(List<WString> strings, WObject parent) {
 		super(parent);
-		this.strings_ = strings;
+		this.displayData_ = strings;
+		this.otherData_ = null;
 	}
 
 	/**
@@ -94,7 +95,7 @@ public class WStringListModel extends WAbstractListModel {
 	 * @see WStringListModel#addString(CharSequence string)
 	 */
 	public void setStringList(List<WString> strings) {
-		int currentSize = this.strings_.size();
+		int currentSize = this.displayData_.size();
 		int newSize = strings.size();
 		if (newSize > currentSize) {
 			this.beginInsertRows(null, currentSize, newSize - 1);
@@ -103,7 +104,9 @@ public class WStringListModel extends WAbstractListModel {
 				this.beginRemoveRows(null, newSize, currentSize - 1);
 			}
 		}
-		Utils.copyList(strings, this.strings_);
+		Utils.copyList(strings, this.displayData_);
+		;
+		this.otherData_ = null;
 		if (newSize > currentSize) {
 			this.endInsertRows();
 		} else {
@@ -146,7 +149,7 @@ public class WStringListModel extends WAbstractListModel {
 	 * @see WStringListModel#setStringList(List strings)
 	 */
 	public List<WString> getStringList() {
-		return this.strings_;
+		return this.displayData_;
 	}
 
 	/**
@@ -167,21 +170,34 @@ public class WStringListModel extends WAbstractListModel {
 			role = ItemDataRole.DisplayRole;
 		}
 		if (role == ItemDataRole.DisplayRole) {
-			this.strings_.set(index.getRow(), StringUtils.asString(value));
-			this.dataChanged().trigger(index, index);
-			return true;
+			this.displayData_.set(index.getRow(), StringUtils.asString(value));
 		} else {
-			return false;
+			if (!(this.otherData_ != null)) {
+				this.otherData_ = new ArrayList<SortedMap<Integer, Object>>();
+				for (int i = 0; i < this.displayData_.size(); ++i) {
+					this.otherData_.add(new TreeMap<Integer, Object>());
+				}
+			}
+			this.otherData_.get(index.getRow()).put(role, value);
 		}
+		this.dataChanged().trigger(index, index);
+		return true;
 	}
 
 	public Object getData(WModelIndex index, int role) {
-		return role == ItemDataRole.DisplayRole ? this.strings_.get(index
-				.getRow()) : null;
+		if (role == ItemDataRole.DisplayRole) {
+			return this.displayData_.get(index.getRow());
+		} else {
+			if (this.otherData_ != null) {
+				return this.otherData_.get(index.getRow()).get(role);
+			} else {
+				return null;
+			}
+		}
 	}
 
 	public int getRowCount(WModelIndex parent) {
-		return (parent != null) ? 0 : this.strings_.size();
+		return (parent != null) ? 0 : this.displayData_.size();
 	}
 
 	public boolean insertRows(int row, int count, WModelIndex parent) {
@@ -190,9 +206,18 @@ public class WStringListModel extends WAbstractListModel {
 			{
 				int insertPos = 0 + row;
 				for (int ii = 0; ii < count; ++ii)
-					this.strings_.add(insertPos + ii, new WString());
+					this.displayData_.add(insertPos + ii, new WString());
 			}
 			;
+			if (this.otherData_ != null) {
+				{
+					int insertPos = 0 + row;
+					for (int ii = 0; ii < count; ++ii)
+						this.otherData_.add(insertPos + ii,
+								new TreeMap<Integer, Object>());
+				}
+				;
+			}
 			this.endInsertRows();
 			return true;
 		} else {
@@ -204,7 +229,10 @@ public class WStringListModel extends WAbstractListModel {
 		if (!(parent != null)) {
 			this.beginRemoveRows(parent, row, row + count - 1);
 			for (int ii = 0; ii < (0 + row + count) - (0 + row); ++ii)
-				this.strings_.remove(0 + row);
+				this.displayData_.remove(0 + row);
+			;
+			for (int ii = 0; ii < (0 + row + count) - (0 + row); ++ii)
+				this.otherData_.remove(0 + row);
 			;
 			this.endRemoveRows();
 			return true;
@@ -215,13 +243,35 @@ public class WStringListModel extends WAbstractListModel {
 
 	public void sort(int column, SortOrder order) {
 		this.layoutAboutToBeChanged().trigger();
-		if (order == SortOrder.AscendingOrder) {
-			Collections.sort(this.strings_);
+		if (!(this.otherData_ != null)) {
+			if (order == SortOrder.AscendingOrder) {
+				Collections.sort(this.displayData_);
+			} else {
+				Collections
+						.sort(this.displayData_, new ReverseOrder<WString>());
+			}
 		} else {
-			Collections.sort(this.strings_, new ReverseOrder<WString>());
+			List<Integer> permutation = new ArrayList<Integer>();
+			for (int i = 0; i < this.getRowCount(); ++i) {
+				permutation.add(i);
+			}
+			Collections.sort(permutation, new StringListModelCompare(this,
+					order));
+			List<WString> displayData = new ArrayList<WString>();
+			CollectionUtils.resize(displayData, this.getRowCount());
+			List<SortedMap<Integer, Object>> otherData = new ArrayList<SortedMap<Integer, Object>>();
+			CollectionUtils.resize(otherData, this.getRowCount());
+			for (int i = 0; i < permutation.size(); ++i) {
+				displayData.set(i, this.displayData_.get(permutation.get(i)));
+				otherData.set(i, this.otherData_.get(permutation.get(i)));
+			}
+			Utils.copyList(displayData, this.displayData_);
+			;
+			this.otherData_ = otherData;
 		}
 		this.layoutChanged().trigger();
 	}
 
-	private List<WString> strings_;
+	private List<WString> displayData_;
+	private List<SortedMap<Integer, Object>> otherData_;
 }

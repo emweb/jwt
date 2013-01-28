@@ -29,8 +29,8 @@ class Range {
 
 	public double start;
 	public double end;
-	static final double MARGINX = -1;
-	static final double EPSILON = 1e-4;
+	private static final double MARGINX = -1;
+	private static final double EPSILON = 1e-4;
 
 	static boolean isEpsilonMore(double x, double limit) {
 		return x - EPSILON > limit;

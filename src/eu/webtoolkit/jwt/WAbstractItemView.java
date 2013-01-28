@@ -1004,7 +1004,7 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 		if (this.columns_.size() > 0) {
 			WWidget w = this.headerWidget(0);
 			if (w != null) {
-				w.askRerender();
+				w.scheduleRender();
 			}
 		}
 		this.headerHeightRule_.getTemplateWidget().resize(WLength.Auto,
@@ -1789,7 +1789,7 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 		if (!this.isRendered()) {
 			return;
 		}
-		this.askRerender();
+		this.scheduleRender();
 	}
 
 	abstract void modelDataChanged(WModelIndex topLeft, WModelIndex bottomRight);

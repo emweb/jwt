@@ -150,11 +150,11 @@ public class FacebookService extends OAuthService {
 		return new FacebookProcess(this, scope);
 	}
 
-	static String RedirectEndpointProperty = "facebook-oauth2-redirect-endpoint";
-	static String RedirectEndpointPathProperty = "facebook-oauth2-redirect-endpoint-path";
-	static String ClientIdProperty = "facebook-oauth2-app-id";
-	static String ClientSecretProperty = "facebook-oauth2-app-secret";
-	static String AuthUrl = "https://www.facebook.com/dialog/oauth";
-	static String TokenUrl = "https://graph.facebook.com/oauth/access_token";
-	static String EmailScope = "email";
+	private static String RedirectEndpointProperty = "facebook-oauth2-redirect-endpoint";
+	private static String RedirectEndpointPathProperty = "facebook-oauth2-redirect-endpoint-path";
+	private static String ClientIdProperty = "facebook-oauth2-app-id";
+	private static String ClientSecretProperty = "facebook-oauth2-app-secret";
+	private static String AuthUrl = "https://www.facebook.com/dialog/oauth";
+	private static String TokenUrl = "https://graph.facebook.com/oauth/access_token";
+	private static String EmailScope = "email";
 }

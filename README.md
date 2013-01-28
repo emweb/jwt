@@ -44,21 +44,21 @@ The ant build file has a separate target to generate maven pom files:
 
 To install the two artifacts in your local repository, do:
 
-    mvn install:install-file -Dfile=dist/jwt-3.2.3.jar -DpomFile=jwt-3.2.3.pom
-    mvn install:install-file -Dfile=dist/jwt-auth-3.2.3.jar -DpomFile=jwt-auth-3.2.3.pom
+    mvn install:install-file -Dfile=dist/jwt-3.3.0.jar -DpomFile=jwt-3.3.0.pom
+    mvn install:install-file -Dfile=dist/jwt-auth-3.3.0.jar -DpomFile=jwt-auth-3.3.0.pom
 
 The corresponding dependency blocks are:
 
     <dependency>
       <groupId>eu.webtoolkit</groupId>
       <artifactId>jwt</artifactId>
-      <version>3.2.3</version>
+      <version>3.3.0</version>
     </dependency>
 
     <dependency>
       <groupId>eu.webtoolkit</groupId>
       <artifactId>jwt-auth</artifactId>
-      <version>3.2.3</version>
+      <version>3.3.0</version>
     </dependency>
     
     <dependency>

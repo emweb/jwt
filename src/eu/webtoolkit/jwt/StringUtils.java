@@ -6,10 +6,13 @@
 package eu.webtoolkit.jwt;
 
 import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.regex.Pattern;
+
+import eu.webtoolkit.jwt.utils.LocaleUtils;
 
 
 /**
@@ -70,6 +73,8 @@ public class StringUtils {
 			return (WString) data;
 		else if (data == null)
 			return WString.Empty;
+		else if (data instanceof Number)
+			return new WString(NumberFormat.getInstance(LocaleUtils.getCurrentLocale()).format(data));
 		else
 			return new WString(data.toString());
 	}
@@ -100,13 +105,13 @@ public class StringUtils {
 			return Double.NaN;
 		else if (data instanceof WString)
 			try {
-				return Double.parseDouble(((WString) data).getValue());
+				return LocaleUtils.toDouble(LocaleUtils.getCurrentLocale(), ((WString) data).getValue());
 			} catch (NumberFormatException e) {
 				return Double.NaN;
 			}
 		else if (data instanceof String)
 			try {
-				return Double.parseDouble((String) data);
+				return LocaleUtils.toDouble(LocaleUtils.getCurrentLocale(), (String) data);
 			} catch (NumberFormatException e) {
 				return Double.NaN;
 			}
@@ -252,10 +257,13 @@ public class StringUtils {
 
 	static String eraseWord(String s, String w) {
 		int i = s.indexOf(w);
+
 		if (i != -1) {
 			String result = s.substring(0, Math.max(0, i - 1));
+
 			if (i + w.length() + 1 < s.length())
-				result += s.substring(i + w.length() + 1);
+				result += " " + s.substring(i + w.length() + 1);
+
 			return result;
 		} else
 			return s;

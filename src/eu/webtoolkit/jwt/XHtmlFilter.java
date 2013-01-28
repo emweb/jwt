@@ -331,9 +331,7 @@ class XHtmlFilter implements IXMLBuilder, IXMLEntityResolver {
 	        	tagOpen = false;
 	        }
 
-	        // writer.pushEscape(EscapeOStream.RuleSet.PlainText);
 	        writer.append(new String(buf, 0, size));
-	        // writer.popEscape();
 	    }
 	}
 

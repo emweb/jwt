@@ -123,6 +123,34 @@ public class WTableRow extends WObject {
 		return this.styleClass_;
 	}
 
+	public void addStyleClass(String style) {
+		String currentClass = this.styleClass_;
+		Set<String> classes = new HashSet<String>();
+		StringUtils.split(classes, currentClass, " ", true);
+		if (classes.contains(style) == false) {
+			this.styleClass_ = StringUtils.addWord(this.styleClass_, style);
+			this.table_.repaintRow(this);
+		}
+	}
+
+	public void removeStyleClass(String style) {
+		String currentClass = this.styleClass_;
+		Set<String> classes = new HashSet<String>();
+		StringUtils.split(classes, currentClass, " ", true);
+		if (classes.contains(style) != false) {
+			this.styleClass_ = StringUtils.eraseWord(this.styleClass_, style);
+			this.table_.repaintRow(this);
+		}
+	}
+
+	public void toggleStyleClass(String style, boolean add) {
+		if (add) {
+			this.addStyleClass(style);
+		} else {
+			this.removeStyleClass(style);
+		}
+	}
+
 	/**
 	 * Sets whether the row must be hidden.
 	 * <p>

@@ -42,6 +42,9 @@ public class WIntValidator extends WValidator {
 
 	/**
 	 * Creates a new integer validator that accepts any integer.
+	 * <p>
+	 * The validator will accept numbers using the current locale&apos;s format.
+	 * <p>
 	 */
 	public WIntValidator(WObject parent) {
 		super(parent);
@@ -64,6 +67,7 @@ public class WIntValidator extends WValidator {
 	/**
 	 * Creates a new integer validator that accepts integer input within the
 	 * given range.
+	 * <p>
 	 */
 	public WIntValidator(int bottom, int top, WObject parent) {
 		super(parent);
@@ -143,7 +147,7 @@ public class WIntValidator extends WValidator {
 		}
 		String text = input;
 		try {
-			int i = Integer.parseInt(text);
+			int i = LocaleUtils.toInt(LocaleUtils.getCurrentLocale(), text);
 			if (i < this.bottom_) {
 				return new WValidator.Result(WValidator.State.Invalid, this
 						.getInvalidTooSmallText());
@@ -267,13 +271,8 @@ public class WIntValidator extends WValidator {
 	public String getJavaScriptValidate() {
 		loadJavaScript(WApplication.getInstance());
 		StringBuilder js = new StringBuilder();
-		js.append("new Wt3_2_3.WIntValidator(");
-		if (this.isMandatory()) {
-			js.append("true");
-		} else {
-			js.append("false");
-		}
-		js.append(',');
+		js.append("new Wt3_3_0.WIntValidator(").append(this.isMandatory())
+				.append(',');
 		if (this.bottom_ != Integer.MIN_VALUE) {
 			js.append(this.bottom_);
 		} else {
@@ -285,15 +284,18 @@ public class WIntValidator extends WValidator {
 		} else {
 			js.append("null");
 		}
-		js.append(',').append(
-				WString.toWString(this.getInvalidBlankText())
-						.getJsStringLiteral()).append(',').append(
-				WString.toWString(this.getInvalidNotANumberText())
-						.getJsStringLiteral()).append(',').append(
-				WString.toWString(this.getInvalidTooSmallText())
-						.getJsStringLiteral()).append(',').append(
-				WString.toWString(this.getInvalidTooLargeText())
-						.getJsStringLiteral()).append(");");
+		js.append(",").append(
+				WWebWidget.jsStringLiteral(LocaleUtils
+						.getGroupSeparator(LocaleUtils.getCurrentLocale())))
+				.append(',').append(
+						WString.toWString(this.getInvalidBlankText())
+								.getJsStringLiteral()).append(',').append(
+						WString.toWString(this.getInvalidNotANumberText())
+								.getJsStringLiteral()).append(',').append(
+						WString.toWString(this.getInvalidTooSmallText())
+								.getJsStringLiteral()).append(',').append(
+						WString.toWString(this.getInvalidTooLargeText())
+								.getJsStringLiteral()).append(");");
 		return js.toString();
 	}
 
@@ -316,6 +318,6 @@ public class WIntValidator extends WValidator {
 				JavaScriptScope.WtClassScope,
 				JavaScriptObjectType.JavaScriptConstructor,
 				"WIntValidator",
-				"function(d,b,c,e,f,g,h){this.validate=function(a){if(a.length==0)return d?{valid:false,message:e}:{valid:true};a=Number(a);if(isNaN(a)||Math.round(a)!=a)return{valid:false,message:f};if(b!==null)if(a<b)return{valid:false,message:g};if(c!==null)if(a>c)return{valid:false,message:h};return{valid:true}}}");
+				"function(e,b,c,d,f,g,h,i){this.validate=function(a){a=String(a);if(a.length==0)return e?{valid:false,message:f}:{valid:true};if(d!=\"\")a=a.replace(d,\"\");a=Number(a);if(isNaN(a)||Math.round(a)!=a)return{valid:false,message:g};if(b!==null)if(a<b)return{valid:false,message:h};if(c!==null)if(a>c)return{valid:false,message:i};return{valid:true}}}");
 	}
 }

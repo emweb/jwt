@@ -126,11 +126,6 @@ public class Identity {
 		return this.emailVerified_;
 	}
 
-	private String provider_;
-	private String id_;
-	private String email_;
-	private String name_;
-	private boolean emailVerified_;
 	/**
 	 * An invalid identity constant.
 	 * <p>
@@ -144,4 +139,9 @@ public class Identity {
 	 * for example for password-based authentication.
 	 */
 	public static final String LoginName = "loginname";
+	private String provider_;
+	private String id_;
+	private String email_;
+	private String name_;
+	private boolean emailVerified_;
 }

@@ -8,6 +8,7 @@ package eu.webtoolkit.jwt.examples.charts;
 import eu.webtoolkit.jwt.WApplication;
 import eu.webtoolkit.jwt.WEnvironment;
 import eu.webtoolkit.jwt.WLength;
+import eu.webtoolkit.jwt.WLink;
 import eu.webtoolkit.jwt.WXmlLocalizedStrings;
 import eu.webtoolkit.jwt.WtServlet;
 
@@ -35,7 +36,7 @@ public class ChartsMain extends WtServlet {
         
         new ChartsExample(app.getRoot());
 
-        app.useStyleSheet("style/charts.css");
+        app.useStyleSheet(new WLink("style/charts.css"));
 
         return app;
     }

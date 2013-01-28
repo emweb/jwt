@@ -77,12 +77,12 @@ public class WXmlLocalizedStrings extends WLocalizedStrings {
 		for (String path : StringUtils.expandLocales(bundleName, WApplication.getInstance().getLocale().toString())) {
 			url = app.getClass().getResource(path + ".xml");
 			try {
-				if(url == null)
+				if (url == null)
 					url = new URL(path);
-				else 
-					break;
 			} catch (MalformedURLException e) {
 			}
+			if (url != null)
+				break;
 		}
 		
 		if (url == null) {

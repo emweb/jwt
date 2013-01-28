@@ -190,14 +190,14 @@ public class WTreeView extends WAbstractItemView {
 		this.headerContainer_ = null;
 		this.contentsContainer_ = null;
 		this.scrollBarC_ = null;
-		this.itemEvent_ = new JSignal6<String, Integer, String, String, String, WMouseEvent>(
+		this.itemEvent_ = new JSignal5<String, String, String, String, WMouseEvent>(
 				this.impl_, "itemEvent") {
 		};
 		this.tieRowsScrollJS_ = new JSlot();
 		this.setSelectable(false);
-		this.expandConfig_ = new ToggleButtonConfig(this);
-		this.expandConfig_.addState("Wt-expand");
-		this.expandConfig_.addState("Wt-collapse");
+		this.expandConfig_ = new ToggleButtonConfig(this, "Wt-ctrl rh ");
+		this.expandConfig_.addState("expand");
+		this.expandConfig_.addState("collapse");
 		this.expandConfig_.generate();
 		this.setStyleClass("Wt-itemview Wt-treeview");
 		String CSS_RULES_NAME = "Wt::WTreeView";
@@ -360,9 +360,9 @@ public class WTreeView extends WAbstractItemView {
 	public void resize(WLength width, WLength height) {
 		WApplication app = WApplication.getInstance();
 		WLength w = app.getEnvironment().hasAjax() ? WLength.Auto : width;
-		this.contentsContainer_.resize(w, WLength.Auto);
+		this.contentsContainer_.setWidth(w);
 		if (this.headerContainer_ != null) {
-			this.headerContainer_.resize(w, WLength.Auto);
+			this.headerContainer_.setWidth(w);
 		}
 		if (!height.isAuto()) {
 			if (!app.getEnvironment().hasAjax()) {
@@ -419,7 +419,7 @@ public class WTreeView extends WAbstractItemView {
 		}
 		WTreeViewNode n = this.nodeForIndex(index);
 		if (n != null) {
-			return n.getWidget(index.getColumn());
+			return n.getCellWidget(index.getColumn());
 		} else {
 			return null;
 		}
@@ -522,8 +522,8 @@ public class WTreeView extends WAbstractItemView {
 		this.columnInfo(column).width = width;
 		WWidget toResize = this.columnInfo(column).styleRule
 				.getTemplateWidget();
-		toResize.resize(new WLength(0), WLength.Auto);
-		toResize.resize(new WLength(width.toPixels()), WLength.Auto);
+		toResize.setWidth(new WLength(0));
+		toResize.setWidth(new WLength(width.toPixels()));
 		WApplication app = WApplication.getInstance();
 		if (app.getEnvironment().hasAjax()
 				&& this.renderState_.getValue() < WAbstractItemView.RenderState.NeedRerenderHeader
@@ -549,7 +549,7 @@ public class WTreeView extends WAbstractItemView {
 
 	public void setRowHeight(WLength rowHeight) {
 		super.setRowHeight(rowHeight);
-		this.rowHeightRule_.getTemplateWidget().resize(WLength.Auto, rowHeight);
+		this.rowHeightRule_.getTemplateWidget().setHeight(rowHeight);
 		this.rowHeightRule_.getTemplateWidget().setLineHeight(rowHeight);
 		if (!WApplication.getInstance().getEnvironment().hasAjax()
 				&& !this.getHeight().isAuto()) {
@@ -576,7 +576,7 @@ public class WTreeView extends WAbstractItemView {
 		if (this.borderColorRule_ != null)
 			this.borderColorRule_.remove();
 		this.borderColorRule_ = new WCssTextRule(
-				".Wt-treeview .Wt-tv-br, .Wt-treeview .header .Wt-tv-row, .Wt-treeview .Wt-tv-node .Wt-tv-row .Wt-tv-c, .Wt-treeview .Wt-tv-node .Wt-tv-row",
+				".Wt-treeview .Wt-tv-br, .Wt-treeview .header .Wt-tv-row, .Wt-treeview .Wt-tv-node .Wt-tv-c",
 				"border-color: " + color.getCssText(), this);
 		WApplication.getInstance().getStyleSheet().addRule(
 				this.borderColorRule_);
@@ -608,8 +608,7 @@ public class WTreeView extends WAbstractItemView {
 			WContainerWidget rootWrap = ((this.contents_.getWidget(0)) instanceof WContainerWidget ? (WContainerWidget) (this.contents_
 					.getWidget(0))
 					: null);
-			rootWrap.resize(new WLength(100, WLength.Unit.Percentage),
-					WLength.Auto);
+			rootWrap.setWidth(new WLength(100, WLength.Unit.Percentage));
 			rootWrap.setOverflow(WContainerWidget.Overflow.OverflowHidden);
 			this.contents_.setPositionScheme(PositionScheme.Relative);
 			rootWrap.setPositionScheme(PositionScheme.Absolute);
@@ -618,7 +617,7 @@ public class WTreeView extends WAbstractItemView {
 			if (useStyleLeft) {
 				boolean rtl = app.getLayoutDirection() == LayoutDirection.RightToLeft;
 				this.tieRowsScrollJS_
-						.setJavaScript("function(obj, event) {Wt3_2_3.getCssRule('#"
+						.setJavaScript("function(obj, event) {Wt3_3_0.getCssRule('#"
 								+ this.getId()
 								+ " .Wt-tv-rowc').style.left= -obj.scrollLeft "
 								+ (rtl ? "+ (obj.firstChild.offsetWidth - obj.offsetWidth)"
@@ -631,7 +630,7 @@ public class WTreeView extends WAbstractItemView {
 			}
 			WContainerWidget scrollBarContainer = new WContainerWidget();
 			scrollBarContainer.setStyleClass("cwidth");
-			scrollBarContainer.resize(WLength.Auto, new WLength(22));
+			scrollBarContainer.setHeight(new WLength(22));
 			this.scrollBarC_ = new WContainerWidget(scrollBarContainer);
 			this.scrollBarC_.setStyleClass("Wt-tv-row Wt-scroll");
 			this.scrollBarC_.scrolled().addListener(this.tieRowsScrollJS_);
@@ -726,12 +725,11 @@ public class WTreeView extends WAbstractItemView {
 				this.itemEvent_
 						.addListener(
 								this,
-								new Signal6.Listener<String, Integer, String, String, String, WMouseEvent>() {
-									public void trigger(String e1, Integer e2,
-											String e3, String e4, String e5,
-											WMouseEvent e6) {
+								new Signal5.Listener<String, String, String, String, WMouseEvent>() {
+									public void trigger(String e1, String e2,
+											String e3, String e4, WMouseEvent e5) {
 										WTreeView.this.onItemEvent(e1, e2, e3,
-												e4, e5, e6);
+												e4, e5);
 									}
 								});
 			}
@@ -799,7 +797,7 @@ public class WTreeView extends WAbstractItemView {
 	private WContainerWidget scrollBarC_;
 	private int firstRemovedRow_;
 	private int removedHeight_;
-	private JSignal6<String, Integer, String, String, String, WMouseEvent> itemEvent_;
+	private JSignal5<String, String, String, String, WMouseEvent> itemEvent_;
 	ToggleButtonConfig expandConfig_;
 	private JSlot tieRowsScrollJS_;
 
@@ -821,7 +819,7 @@ public class WTreeView extends WAbstractItemView {
 			return;
 		}
 		app.loadJavaScript("js/WTreeView.js", wtjs1());
-		this.setJavaScriptMember(" WTreeView", "new Wt3_2_3.WTreeView("
+		this.setJavaScriptMember(" WTreeView", "new Wt3_3_0.WTreeView("
 				+ app.getJavaScriptClass() + "," + this.getJsRef() + ","
 				+ this.contentsContainer_.getJsRef() + ","
 				+ this.headerContainer_.getJsRef() + ","
@@ -867,8 +865,6 @@ public class WTreeView extends WAbstractItemView {
 		this.validRowCount_ = 0;
 		this.rootNode_ = new WTreeViewNode(this, this.getRootIndex(), -1, true,
 				(WTreeViewNode) null);
-		this.rootNode_.resize(new WLength(100, WLength.Unit.Percentage),
-				new WLength(1));
 		if (WApplication.getInstance().getEnvironment().hasAjax()) {
 			this.connectObjJS(this.rootNode_.clicked(), "click");
 			if (!EnumUtils.mask(this.getEditTriggers(),
@@ -1325,8 +1321,23 @@ public class WTreeView extends WAbstractItemView {
 		this.scheduleRerender(WAbstractItemView.RenderState.NeedAdjustViewPort);
 	}
 
-	private void onItemEvent(String nodeId, int columnId, String type,
+	private void onItemEvent(String nodeAndColumnId, String type,
 			String extra1, String extra2, WMouseEvent event) {
+		List<String> nodeAndColumnSplit = new ArrayList<String>();
+		nodeAndColumnSplit = new ArrayList<String>(Arrays
+				.asList(nodeAndColumnId.split(":")));
+		if (nodeAndColumnSplit.size() != 2) {
+			throw new WException(
+					"WTreeview::onEventItem: unexpected value for param 1");
+		}
+		String nodeId = nodeAndColumnSplit.get(0);
+		int columnId;
+		try {
+			columnId = Integer.parseInt(nodeAndColumnSplit.get(1));
+		} catch (NumberFormatException e) {
+			throw new WException(
+					"WTreeview::onEventItem: bad format for param 1");
+		}
 		int column = columnId == 0 ? 0 : -1;
 		for (int i = 0; i < this.columns_.size(); ++i) {
 			if (this.columns_.get(i).id == columnId) {
@@ -1386,10 +1397,9 @@ public class WTreeView extends WAbstractItemView {
 		}
 		if (this.hasAlternatingRowColors()) {
 			this.rootNode_.getDecorationStyle().setBackgroundImage(
-					new WLink(WApplication.getResourcesUrl()
-							+ "themes/"
-							+ WApplication.getInstance().getCssTheme()
-							+ "/stripes/stripe-"
+					new WLink(WApplication.getInstance().getTheme()
+							.getResourcesUrl()
+							+ "stripes/stripe-"
 							+ String.valueOf((int) this.getRowHeight()
 									.toPixels()) + "px.gif"));
 		} else {
@@ -1990,6 +2000,6 @@ public class WTreeView extends WAbstractItemView {
 				JavaScriptScope.WtClassScope,
 				JavaScriptObjectType.JavaScriptConstructor,
 				"WTreeView",
-				"function(l,d,i,v,r){function p(c){var a=-1,b=null,e=false,g=false,h=null;for(c=f.target(c);c;){if(c.className.indexOf(\"c1 rh\")==0){if(a==-1)a=0}else if(c.className.indexOf(\"Wt-tv-c\")==0){if(c.className.indexOf(\"Wt-tv-c\")==0)a=c.className.split(\" \")[0].substring(7)*1;else if(a==-1)a=0;if(c.getAttribute(\"drop\")===\"true\")g=true;h=c}else if(c.className==\"Wt-tv-node\"){b=c.id;break}if(c.className===\"Wt-selected\")e=true;c=c.parentNode;if(f.hasTag(c, \"BODY\"))break}return{columnId:a,nodeId:b,selected:e,drop:g,el:h}}function w(){if(s&&x)if(!f.isHidden(d)){s=false;var c=y.firstChild,a=o.firstChild,b=0,e=0,g=o.lastChild.className.split(\" \")[0];e=f.getCssRule(\"#\"+d.id+\" .\"+g);if(r)a=a.firstChild;for(var h=0,k=a.childNodes.length;h<k;++h)if(a.childNodes[h].className){var j=a.childNodes[h].className.split(\" \")[0];j=f.getCssRule(\"#\"+d.id+\" .\"+j);if(j.style.display!=\"none\")b+=f.pxself(j,\"width\")+7}if(!r){if(f.isIE&&$(document.body).hasClass(\"Wt-rtl\"))if(h= f.getCssRule(\"#\"+d.id+\" .Wt-tv-row\"))h.style.width=b+\"px\";if(e.style.width)$(d).find(\".Wt-headerdiv .\"+g).css(\"width\",e.style.width);else{g=d.scrollWidth-a.offsetWidth-9;if(g>0)e.style.width=g+\"px\"}}e=b+f.pxself(e,\"width\")+(f.isIE6?10:7);if(r){j=f.getCssRule(\"#\"+d.id+\" .Wt-tv-rowc\");j.style.width=b+\"px\";l.layouts2.adjust();f.isIE&&setTimeout(function(){$(d).find(\".Wt-tv-rowc\").css(\"width\",b+\"px\").css(\"width\",\"\")},0);d.changed=true}else{o.style.width=c.style.width=e+\"px\";a.style.width=b+\"px\"}}}jQuery.data(d, \"obj\",this);var y=i.firstChild,o=v.firstChild,t=this,f=l.WT,x=false;this.click=function(c,a){var b=p(a);b.columnId!=-1&&l.emit(d,{name:\"itemEvent\",eventObject:c,event:a},b.nodeId,b.columnId,\"clicked\",\"\",\"\")};this.dblClick=function(c,a){var b=p(a);b.columnId!=-1&&l.emit(d,{name:\"itemEvent\",eventObject:c,event:a},b.nodeId,b.columnId,\"dblclicked\",\"\",\"\")};this.mouseDown=function(c,a){f.capture(null);var b=p(a);if(b.columnId!=-1){l.emit(d,{name:\"itemEvent\",eventObject:c,event:a},b.nodeId,b.columnId,\"mousedown\", \"\",\"\");d.getAttribute(\"drag\")===\"true\"&&b.selected&&l._p_.dragStart(d,a)}};this.mouseUp=function(c,a){var b=p(a);b.columnId!=-1&&l.emit(d,{name:\"itemEvent\",eventObject:c,event:a},b.nodeId,b.columnId,\"mouseup\",\"\",\"\")};this.resizeHandleMDown=function(c,a){var b=c.parentNode.className.split(\" \")[0];if(b){var e=f.getCssRule(\"#\"+d.id+\" .\"+b),g=f.pxself(e,\"width\"),h=-g,k=1E4,j=$(document.body).hasClass(\"Wt-rtl\");if(j){var u=h;h=-k;k=-u}new f.SizeHandle(f,\"h\",c.offsetWidth,d.offsetHeight,h,k,\"Wt-hsh\",function(m){m= g+(j?-m:m);var q=b.substring(7)*1;e.style.width=m+\"px\";t.adjustColumns();l.emit(d,\"columnResized\",q,parseInt(m))},c,d,a,-2,-1)}};var s=false;this.adjustColumns=function(){if(!s){s=true;setTimeout(w,0)}};var n=null;d.handleDragDrop=function(c,a,b,e,g){if(n){n.className=n.classNameOrig;n=null}if(c!=\"end\"){var h=p(b);if(!h.selected&&h.drop&&h.columnId!=-1)if(c==\"drop\")l.emit(d,{name:\"itemEvent\",eventObject:a,event:b},h.nodeId,h.columnId,\"drop\",e,g);else{a.className=\"Wt-valid-drop\";n=h.el;n.classNameOrig= n.className;n.className+=\" Wt-drop-site\"}else a.className=\"\"}};this.wtResize=function(){x=true;w();var c=$(d),a,b=null,e=f.pxself(d,\"width\");if(e==0)e=d.clientWidth;else if(f.boxSizing(d)){e-=f.px(d,\"borderLeftWidth\");e-=f.px(d,\"borderRightWidth\")}var g=i.offsetWidth-i.clientWidth;if(g>50)g=0;if(i.clientWidth>0)e-=g;if(c.hasClass(\"column1\")){a=c.find(\".Wt-headerdiv\").get(0).lastChild.className.split(\" \")[0];a=f.getCssRule(\"#\"+d.id+\" .\"+a);b=f.pxself(a,\"width\")}if((!f.isIE||e>100)&&(e!=i.tw||b!=i.c0w|| d.changed)){var h=!d.changed;i.tw=e;i.c0w=b;a=c.find(\".Wt-headerdiv\").get(0).lastChild.className.split(\" \")[0];a=f.getCssRule(\"#\"+d.id+\" .\"+a);var k=y.firstChild,j=f.getCssRule(\"#\"+d.id+\" .cwidth\"),u=j.style.width==k.offsetWidth+1+\"px\",m=o.firstChild;j.style.width=e+\"px\";i.style.width=e+g+\"px\";if(!$(document.body).hasClass(\"Wt-rtl\")||!f.isIElt9){v.style.marginRight=g+\"px\";$(\"#\"+d.id+\" .Wt-scroll\").css(\"marginRight\",g+\"px\")}if(b!=null){b=e-b-(f.isIE6?10:7);if(b>0){var q=Math.min(b,f.pxself(f.getCssRule(\"#\"+ d.id+\" .Wt-tv-rowc\"),\"width\"));e-=b-q;o.style.width=e+\"px\";k.style.width=e+\"px\";f.getCssRule(\"#\"+d.id+\" .Wt-tv-row\").style.width=q+\"px\";f.isIE&&setTimeout(function(){c.find(\" .Wt-tv-row\").css(\"width\",q+\"px\").css(\"width\",\"\")},0)}}else if(u){o.style.width=j.style.width;k.style.width=j.style.width}else o.style.width=k.offsetWidth+\"px\";if(!r&&k.offsetWidth-m.offsetWidth>=7)a.style.width=k.offsetWidth-m.offsetWidth-7+\"px\";d.changed=false;h&&t.adjustColumns()}};this.scrollTo=function(c,a,b,e){if(a!=-1){a*= b;c=i.scrollTop;var g=i.clientHeight;if(e==0)if(c+g<a)e=1;else if(a<c)e=2;switch(e){case 1:i.scrollTop=a;break;case 2:i.scrollTop=a-(g-b);break;case 3:i.scrollTop=a-(g-b)/2;break}window.fakeEvent={object:i};i.onscroll(window.fakeEvent);window.fakeEvent=null}};t.adjustColumns()}");
+				"function(l,d,i,v,r){function p(c){var a=-1,b=null,e=false,g=false,h=null;for(c=f.target(c);c;){if(f.hasTag(c,\"LI\")){if(a==-1)a=0;b=c.id;break}else if(c.className.indexOf(\"Wt-tv-c\")==0){if(c.className.indexOf(\"Wt-tv-c\")==0)a=c.className.split(\" \")[0].substring(7)*1;else if(a==-1)a=0;if(c.getAttribute(\"drop\")===\"true\")g=true;h=c}if($(c).hasClass(\"Wt-selected\"))e=true;c=c.parentNode}return{columnId:a,nodeId:b,selected:e,drop:g,el:h}}function w(){if(s&& x)if(!f.isHidden(d)){s=false;var c=y.firstChild,a=o.firstChild,b=0,e=0,g=o.lastChild.className.split(\" \")[0];e=f.getCssRule(\"#\"+d.id+\" .\"+g);if(r)a=a.firstChild;for(var h=0,k=a.childNodes.length;h<k;++h)if(a.childNodes[h].className){var j=a.childNodes[h].className.split(\" \")[0];j=f.getCssRule(\"#\"+d.id+\" .\"+j);if(j.style.display!=\"none\")b+=f.pxself(j,\"width\")+7}if(!r){if(f.isIE&&$(document.body).hasClass(\"Wt-rtl\"))if(h=f.getCssRule(\"#\"+d.id+\" .Wt-tv-row\"))h.style.width=b+\"px\";if(e.style.width)$(d).find(\".Wt-headerdiv .\"+ g).css(\"width\",e.style.width);else{g=d.scrollWidth-a.offsetWidth-9-15;if(g>0)e.style.width=g+\"px\"}}e=b+f.pxself(e,\"width\")+(f.isIE6?10:7);if(r){j=f.getCssRule(\"#\"+d.id+\" .Wt-tv-rowc\");j.style.width=b+\"px\";l.layouts2.adjust();f.isIE&&setTimeout(function(){$(d).find(\".Wt-tv-rowc\").css(\"width\",b+\"px\").css(\"width\",\"\")},0);d.changed=true}else{o.style.width=c.style.width=e+\"px\";a.style.width=b+\"px\"}}}jQuery.data(d,\"obj\",this);var y=i.firstChild,o=v.firstChild,t=this,f=l.WT,x=false;this.click=function(c, a){var b=p(a);b.columnId!=-1&&l.emit(d,{name:\"itemEvent\",eventObject:c,event:a},b.nodeId+\":\"+b.columnId,\"clicked\",\"\",\"\")};this.dblClick=function(c,a){var b=p(a);b.columnId!=-1&&l.emit(d,{name:\"itemEvent\",eventObject:c,event:a},b.nodeId+\":\"+b.columnId,\"dblclicked\",\"\",\"\")};this.mouseDown=function(c,a){f.capture(null);var b=p(a);if(b.columnId!=-1){l.emit(d,{name:\"itemEvent\",eventObject:c,event:a},b.nodeId+\":\"+b.columnId,\"mousedown\",\"\",\"\");d.getAttribute(\"drag\")===\"true\"&&b.selected&&l._p_.dragStart(d, a)}};this.mouseUp=function(c,a){var b=p(a);b.columnId!=-1&&l.emit(d,{name:\"itemEvent\",eventObject:c,event:a},b.nodeId+\":\"+b.columnId,\"mouseup\",\"\",\"\")};this.resizeHandleMDown=function(c,a){var b=c.parentNode.className.split(\" \")[0];if(b){var e=f.getCssRule(\"#\"+d.id+\" .\"+b),g=f.pxself(e,\"width\"),h=-g,k=1E4,j=$(document.body).hasClass(\"Wt-rtl\");if(j){var u=h;h=-k;k=-u}new f.SizeHandle(f,\"h\",c.offsetWidth,d.offsetHeight,h,k,\"Wt-hsh\",function(m){m=g+(j?-m:m);var q=b.substring(7)*1;e.style.width=m+\"px\"; t.adjustColumns();l.emit(d,\"columnResized\",q,parseInt(m))},c,d,a,-2,-1)}};var s=false;this.adjustColumns=function(){if(!s){s=true;setTimeout(w,0)}};var n=null;d.handleDragDrop=function(c,a,b,e,g){if(n){n.className=n.classNameOrig;n=null}if(c!=\"end\"){var h=p(b);if(!h.selected&&h.drop&&h.columnId!=-1)if(c==\"drop\")l.emit(d,{name:\"itemEvent\",eventObject:a,event:b},h.nodeId+\":\"+h.columnId,\"drop\",e,g);else{a.className=\"Wt-valid-drop\";n=h.el;n.classNameOrig=n.className;n.className+=\" Wt-drop-site\"}else a.className= \"\"}};this.wtResize=function(){x=true;w();var c=$(d),a,b=null,e=f.pxself(d,\"width\");if(e==0)e=d.clientWidth;else if(f.boxSizing(d)){e-=f.px(d,\"borderLeftWidth\");e-=f.px(d,\"borderRightWidth\")}var g=i.offsetWidth-i.clientWidth;if(g>50)g=0;if(i.clientWidth>0)e-=g;if(c.hasClass(\"column1\")){a=c.find(\".Wt-headerdiv\").get(0).lastChild.className.split(\" \")[0];a=f.getCssRule(\"#\"+d.id+\" .\"+a);b=f.pxself(a,\"width\")}if((!f.isIE||e>100)&&(e!=i.tw||b!=i.c0w||d.changed)){var h=!d.changed;i.tw=e;i.c0w=b;a=c.find(\".Wt-headerdiv\").get(0).lastChild.className.split(\" \")[0]; a=f.getCssRule(\"#\"+d.id+\" .\"+a);var k=y.firstChild,j=f.getCssRule(\"#\"+d.id+\" .cwidth\"),u=j.style.width==k.offsetWidth+1+\"px\",m=o.firstChild;j.style.width=e+\"px\";i.style.width=e+g+\"px\";if(!$(document.body).hasClass(\"Wt-rtl\")||!f.isIElt9){v.style.marginRight=g+\"px\";$(\"#\"+d.id+\" .Wt-scroll\").css(\"marginRight\",g+\"px\")}if(b!=null){b=e-b-(f.isIE6?10:7);if(b>0){var q=Math.min(b,f.pxself(f.getCssRule(\"#\"+d.id+\" .Wt-tv-rowc\"),\"width\"));e-=b-q;o.style.width=e+\"px\";k.style.width=e+\"px\";f.getCssRule(\"#\"+d.id+ \" .Wt-tv-row\").style.width=q+\"px\";f.isIE&&setTimeout(function(){c.find(\" .Wt-tv-row\").css(\"width\",q+\"px\").css(\"width\",\"\")},0)}}else if(u){o.style.width=j.style.width;k.style.width=j.style.width}else o.style.width=k.offsetWidth+\"px\";if(!r&&k.offsetWidth-m.offsetWidth>=7)a.style.width=k.offsetWidth-m.offsetWidth-7+\"px\";d.changed=false;h&&t.adjustColumns()}};this.scrollTo=function(c,a,b,e){if(a!=-1){a*=b;c=i.scrollTop;var g=i.clientHeight;if(e==0)if(c+g<a)e=1;else if(a<c)e=2;switch(e){case 1:i.scrollTop= a;break;case 2:i.scrollTop=a-(g-b);break;case 3:i.scrollTop=a-(g-b)/2;break}window.fakeEvent={object:i};i.onscroll(window.fakeEvent);window.fakeEvent=null}};t.adjustColumns()}");
 	}
 }

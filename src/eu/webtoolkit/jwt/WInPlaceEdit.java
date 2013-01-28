@@ -91,21 +91,24 @@ public class WInPlaceEdit extends WCompositeWidget {
 		this.setInline(true);
 		this.text_ = new WText(WString.Empty, TextFormat.PlainText, this.impl_);
 		this.text_.getDecorationStyle().setCursor(Cursor.ArrowCursor);
-		this.edit_ = new WLineEdit(this.impl_);
+		this.editing_ = new WContainerWidget(this.impl_);
+		this.editing_.setInline(true);
+		this.editing_.hide();
+		this.editing_.addStyleClass("input-append");
+		this.edit_ = new WLineEdit(this.editing_);
 		this.edit_.setTextSize(20);
 		this.save_ = null;
 		this.cancel_ = null;
-		this.edit_.hide();
 		this.text_.clicked().addListener(this.text_,
 				new Signal1.Listener<WMouseEvent>() {
 					public void trigger(WMouseEvent e1) {
 						WInPlaceEdit.this.text_.hide();
 					}
 				});
-		this.text_.clicked().addListener(this.edit_,
+		this.text_.clicked().addListener(this.editing_,
 				new Signal1.Listener<WMouseEvent>() {
 					public void trigger(WMouseEvent e1) {
-						WInPlaceEdit.this.edit_.show();
+						WInPlaceEdit.this.editing_.show();
 					}
 				});
 		this.text_.clicked().addListener(this.edit_,
@@ -126,10 +129,10 @@ public class WInPlaceEdit extends WCompositeWidget {
 			}
 		});
 		this.edit_.enterPressed().preventDefaultAction();
-		this.edit_.escapePressed().addListener(this.edit_,
+		this.edit_.escapePressed().addListener(this.editing_,
 				new Signal.Listener() {
 					public void trigger() {
-						WInPlaceEdit.this.edit_.hide();
+						WInPlaceEdit.this.editing_.hide();
 					}
 				});
 		this.edit_.escapePressed().addListener(this.text_,
@@ -281,63 +284,26 @@ public class WInPlaceEdit extends WCompositeWidget {
 			this.c2_.disconnect();
 		}
 		if (enabled) {
-			this.save_ = new WPushButton(tr("Wt.WInPlaceEdit.Save"), this.impl_);
+			this.save_ = new WPushButton(tr("Wt.WInPlaceEdit.Save"),
+					this.editing_);
 			this.cancel_ = new WPushButton(tr("Wt.WInPlaceEdit.Cancel"),
-					this.impl_);
-			this.save_.hide();
-			this.cancel_.hide();
-			this.text_.clicked().addListener(this.save_,
+					this.editing_);
+			this.save_.clicked().addListener(this.edit_,
 					new Signal1.Listener<WMouseEvent>() {
 						public void trigger(WMouseEvent e1) {
-							WInPlaceEdit.this.save_.show();
-						}
-					});
-			this.text_.clicked().addListener(this.cancel_,
-					new Signal1.Listener<WMouseEvent>() {
-						public void trigger(WMouseEvent e1) {
-							WInPlaceEdit.this.cancel_.show();
-						}
-					});
-			this.edit_.enterPressed().addListener(this.save_,
-					new Signal.Listener() {
-						public void trigger() {
-							WInPlaceEdit.this.save_.hide();
-						}
-					});
-			this.edit_.enterPressed().addListener(this.cancel_,
-					new Signal.Listener() {
-						public void trigger() {
-							WInPlaceEdit.this.cancel_.hide();
-						}
-					});
-			this.edit_.escapePressed().addListener(this.save_,
-					new Signal.Listener() {
-						public void trigger() {
-							WInPlaceEdit.this.save_.hide();
-						}
-					});
-			this.edit_.escapePressed().addListener(this.cancel_,
-					new Signal.Listener() {
-						public void trigger() {
-							WInPlaceEdit.this.cancel_.hide();
+							WInPlaceEdit.this.edit_.disable();
 						}
 					});
 			this.save_.clicked().addListener(this.save_,
 					new Signal1.Listener<WMouseEvent>() {
 						public void trigger(WMouseEvent e1) {
-							WInPlaceEdit.this.save_.hide();
+							WInPlaceEdit.this.save_.disable();
 						}
 					});
 			this.save_.clicked().addListener(this.cancel_,
 					new Signal1.Listener<WMouseEvent>() {
 						public void trigger(WMouseEvent e1) {
-							WInPlaceEdit.this.cancel_.hide();
-						}
-					});
-			this.save_.clicked().addListener(this.edit_,
-					new Signal1.Listener<WMouseEvent>() {
-						public void trigger(WMouseEvent e1) {
-							WInPlaceEdit.this.edit_.disable();
+							WInPlaceEdit.this.cancel_.disable();
 						}
 					});
 			this.save_.clicked().addListener(this,
@@ -346,22 +312,10 @@ public class WInPlaceEdit extends WCompositeWidget {
 							WInPlaceEdit.this.save();
 						}
 					});
-			this.cancel_.clicked().addListener(this.save_,
+			this.cancel_.clicked().addListener(this.editing_,
 					new Signal1.Listener<WMouseEvent>() {
 						public void trigger(WMouseEvent e1) {
-							WInPlaceEdit.this.save_.hide();
-						}
-					});
-			this.cancel_.clicked().addListener(this.cancel_,
-					new Signal1.Listener<WMouseEvent>() {
-						public void trigger(WMouseEvent e1) {
-							WInPlaceEdit.this.cancel_.hide();
-						}
-					});
-			this.cancel_.clicked().addListener(this.edit_,
-					new Signal1.Listener<WMouseEvent>() {
-						public void trigger(WMouseEvent e1) {
-							WInPlaceEdit.this.edit_.hide();
+							WInPlaceEdit.this.editing_.hide();
 						}
 					});
 			this.cancel_.clicked().addListener(this.text_,
@@ -408,9 +362,15 @@ public class WInPlaceEdit extends WCompositeWidget {
 	}
 
 	private void save() {
-		this.edit_.hide();
+		this.editing_.hide();
 		this.text_.show();
 		this.edit_.enable();
+		if (this.save_ != null) {
+			this.save_.enable();
+		}
+		if (this.cancel_ != null) {
+			this.cancel_.enable();
+		}
 		boolean changed = this.empty_ ? this.edit_.getText().length() != 0
 				: !this.edit_.getText().equals(this.text_.getText().toString());
 		if (changed) {
@@ -426,6 +386,7 @@ public class WInPlaceEdit extends WCompositeWidget {
 
 	private Signal1<WString> valueChanged_;
 	private WContainerWidget impl_;
+	private WContainerWidget editing_;
 	private WText text_;
 	private WString emptyText_;
 	private WLineEdit edit_;

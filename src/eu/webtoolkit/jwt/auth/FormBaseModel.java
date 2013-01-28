@@ -30,6 +30,11 @@ public class FormBaseModel extends WFormModel {
 	private static Logger logger = LoggerFactory.getLogger(FormBaseModel.class);
 
 	/**
+	 * {@link Login} name field.
+	 */
+	public static final String LoginNameField = "user-name";
+
+	/**
 	 * Constructor.
 	 */
 	public FormBaseModel(AuthService baseAuth, AbstractUserDatabase users,
@@ -144,8 +149,4 @@ public class FormBaseModel extends WFormModel {
 	private AbstractUserDatabase users_;
 	private AbstractPasswordService passwordAuth_;
 	private List<OAuthService> oAuth_;
-	/**
-	 * {@link Login} name field.
-	 */
-	public static final String LoginNameField = "user-name";
 }

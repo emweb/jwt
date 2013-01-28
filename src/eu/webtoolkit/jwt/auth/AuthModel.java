@@ -60,6 +60,15 @@ public class AuthModel extends FormBaseModel {
 	private static Logger logger = LoggerFactory.getLogger(AuthModel.class);
 
 	/**
+	 * Password field.
+	 */
+	public static final String PasswordField = "password";
+	/**
+	 * Remember-me field.
+	 */
+	public static final String RememberMeField = "remember-me";
+
+	/**
 	 * Constructor.
 	 * <p>
 	 * Creates a new authentication model, using a basic authentication service
@@ -199,7 +208,7 @@ public class AuthModel extends FormBaseModel {
 			WApplication app = WApplication.getInstance();
 			app.loadJavaScript("js/AuthModel.js", wtjs1());
 			button.setJavaScriptMember(" AuthThrottle",
-					"new Wt3_2_3.AuthThrottle(Wt3_2_3,"
+					"new Wt3_3_0.AuthThrottle(Wt3_3_0,"
 							+ button.getJsRef()
 							+ ","
 							+ WString.toWString(
@@ -314,13 +323,4 @@ public class AuthModel extends FormBaseModel {
 				"AuthThrottle",
 				"function(e,a,h){function f(){clearInterval(b);b=null;e.setHtml(a,d);a.disabled=false;d=null}function g(){if(c==0)f();else{e.setHtml(a,h.replace(\"{1}\",c));--c}}jQuery.data(a,\"throttle\",this);var b=null,d=null,c=0;this.reset=function(i){b&&f();d=a.innerHTML;if(c=i){b=setInterval(g,1E3);a.disabled=true;g()}}}");
 	}
-
-	/**
-	 * Password field.
-	 */
-	public static final String PasswordField = "password";
-	/**
-	 * Remember-me field.
-	 */
-	public static final String RememberMeField = "remember-me";
 }
