@@ -140,7 +140,8 @@ public class WPopupMenu extends WMenu {
 			app.getStyleSheet().addRule(".Wt-notselected .Wt-popupmenu",
 					"visibility: hidden;", CSS_RULES_NAME);
 		}
-		app.getDomRoot().addWidget(this);
+		app.addGlobalWidget(this);
+		this.hide();
 	}
 
 	/**
@@ -387,20 +388,7 @@ public class WPopupMenu extends WMenu {
 				}
 			}
 		}
-		if (this.location_ != null) {
-			for (WWidget p = this.location_.getParent(); p != null; p = p
-					.getParent()) {
-				if (w == p) {
-					return false;
-				}
-			}
-		}
-		if (!(this.getParentItem() != null)) {
-			this.cancel();
-			return true;
-		} else {
-			return false;
-		}
+		return false;
 	}
 
 	protected void renderSelected(WMenuItem item, boolean selected) {
@@ -530,6 +518,6 @@ public class WPopupMenu extends WMenu {
 				JavaScriptScope.WtClassScope,
 				JavaScriptObjectType.JavaScriptConstructor,
 				"WPopupMenu",
-				"function(p,c,h){function x(){p.emit(c.id,\"cancel\")}function q(a,b){$(a).toggleClass(\"active\",b)}function l(a){if(a.subMenu)return a.subMenu;else{var b=a.lastChild;if(b&&f.hasTag(b,\"UL\")){a.subMenu=b;b.parentItem=a;$(b).mousemove(r);h>=0&&m(b);return b}}}function y(a){a.style.display=\"block\";if(a.parentNode==a.parentItem){a.parentNode.removeChild(a);c.parentNode.appendChild(a)}f.positionAtWidget(a.id,a.parentItem.id,f.Horizontal,-f.px(a,\"paddingTop\")); n(a,null)}function n(a,b){function s(i,d){if(i==d)return true;else if(d)return(d=d.parentNode.parentItem)?s(i,d):false;else return false}function t(i){var d,u;d=0;for(u=i.childNodes.length;d<u;++d){var e=i.childNodes[d];if(s(e,b)){if(e!==b)(e=l(e))&&t(e)}else{q(e,false);if(e=l(e))e.style.display=\"none\"}}}t(a)}function r(a){for(a=f.target(a);a&&!f.hasTag(a,\"LI\")&&!f.hasTag(a,\"UL\");)a=a.parentNode;if(f.hasTag(a,\"LI\"))if(a!==o){o=a;q(a,true);var b=l(a);b&&y(b);n(c,a)}}function v(){--j;if(j==0){clearTimeout(g); g=setTimeout(x,h)}}function w(){++j;clearTimeout(g)}function m(a){$(a).mouseleave(v).mouseenter(w)}jQuery.data(c,\"obj\",this);var z=this,f=p.WT,g=null,k=null,j=0,o=null;this.setHidden=function(a){if(g){clearTimeout(g);g=null}j=0;o=null;if(h>0&&!a){j=1;k||v()}if(a){c.style.position=\"\";c.style.display=\"\";c.style.left=\"\";c.style.top=\"\"}else c.style.display=\"block\";n(c,null)};this.popupAt=function(a){if(h>=0)if(k!==a){k=a;m(k);w()}z.setHidden(false)};h>=0&&setTimeout(function(){m(c)},0);$(c).mousemove(r)}");
+				"function(p,c,k){function q(){p.emit(c.id,\"cancel\")}function r(a,b){$(a).toggleClass(\"active\",b)}function l(a){if(a.subMenu)return a.subMenu;else{var b=a.lastChild;if(b&&f.hasTag(b,\"UL\")){a.subMenu=b;b.parentItem=a;$(b).mousemove(s);m(b);return b}}}function z(a){a.style.display=\"block\";if(a.parentNode==a.parentItem){a.parentNode.removeChild(a);c.parentNode.appendChild(a)}f.positionAtWidget(a.id,a.parentItem.id,f.Horizontal,-f.px(a,\"paddingTop\")); n(a,null)}function n(a,b){function t(i,d){if(i==d)return true;else if(d)return(d=d.parentNode.parentItem)?t(i,d):false;else return false}function u(i){var d,v;d=0;for(v=i.childNodes.length;d<v;++d){var e=i.childNodes[d];if(t(e,b)){if(e!==b)(e=l(e))&&u(e)}else{r(e,false);if(e=l(e))e.style.display=\"none\"}}}u(a)}function s(a){for(a=f.target(a);a&&!f.hasTag(a,\"LI\")&&!f.hasTag(a,\"UL\");)a=a.parentNode;if(f.hasTag(a,\"LI\"))if(a!==o){o=a;r(a,true);var b=l(a);b&&z(b);n(c,a)}}function w(){--g;if(g==0){clearTimeout(h); if(k>=0)h=setTimeout(q,k)}}function x(){++g;clearTimeout(h)}function m(a){$(a).mouseleave(w).mouseenter(x)}function y(){g||q()}jQuery.data(c,\"obj\",this);var A=this,f=p.WT,h=null,j=null,g=0,o=null;this.setHidden=function(a){if(h){clearTimeout(h);h=null}g=0;o=null;if(k>0&&!a){g=1;j||w()}if(a){c.style.position=\"\";c.style.display=\"\";c.style.left=\"\";c.style.top=\"\";$(document).unbind(\"click\",y)}else{setTimeout(function(){$(document).bind(\"click\",y)},0);c.style.display=\"block\"}n(c,null)};this.popupAt=function(a){if(j!== a){j=a;m(j);x()}A.setHidden(false)};setTimeout(function(){m(c)},0);$(c).mousemove(s)}");
 	}
 }

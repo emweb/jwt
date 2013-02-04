@@ -135,7 +135,17 @@ class ContentReader
             char ch;
 
             if (this.bufferIndex >= bufferLength) {
-               str = XMLUtil.read(this.reader, '&');
+               if (lastWasEntity) {
+            	   ch = this.reader.read();
+            	   if (ch == '&') {
+            		   str = "&";
+            	   } else {
+            		   this.reader.unread(ch);
+            		   str = XMLUtil.read(this.reader, '&');
+            	   }
+               } else {
+        		   str = XMLUtil.read(this.reader, '&');
+               }
                ch = str.charAt(0);
             } else {
                ch = this.buffer.charAt(this.bufferIndex);

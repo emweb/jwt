@@ -81,7 +81,8 @@ class TopicWidget extends WContainerWidget {
 
 	private String docAnchor(String classname) {
 		StringWriter ss = new StringWriter();
-		String cn = StringUtils.replaceAll(classname, "Chart::", "chart/");
+		String cn = classname = StringUtils.replaceAll(classname, "Chart::",
+				"chart/");
 		ss.append("<a href=\"http://www.webtoolkit.eu/").append(
 				"jwt/latest/doc/javadoc/eu/webtoolkit/jwt/").append(classname)
 				.append(".html\" target=\"_blank\">doc</a>");

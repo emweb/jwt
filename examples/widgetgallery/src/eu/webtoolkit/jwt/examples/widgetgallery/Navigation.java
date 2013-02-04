@@ -189,12 +189,6 @@ class Navigation extends TopicWidget {
 						"Stacked widget contents"));
 		menu.addItem("Tab widget", new WTextArea("Tab widget contents"));
 		menu.addItem("Menu", new WTextArea("Menu contents"));
-		menu
-				.addItem("Navigation bar", new WTextArea(
-						"Navigation bar contents"));
-		menu.addItem("Popup menu", new WTextArea("Popup menu contents"));
-		menu.addItem("Split button", new WTextArea("Split button contents"));
-		menu.addItem("Tool bar", new WTextArea("Tool bar contents"));
 		container.addWidget(contents);
 		return container;
 	}
@@ -229,12 +223,12 @@ class Navigation extends TopicWidget {
 		navigation.setTitle("Corpy Inc.", new WLink(
 				"http://www.google.com/search?q=corpy+inc"));
 		navigation.setResponsive(true);
-		WStackedWidget contentsStack = new WStackedWidget();
+		WStackedWidget contentsStack = new WStackedWidget(container);
 		contentsStack.addStyleClass("contents");
 		final WMenu leftMenu = new WMenu(contentsStack, container);
 		navigation.addMenu(leftMenu);
-		final WText searchResult = new WText("Buy. Sell. Bye !");
-		leftMenu.addItem("Home", new WText("There is no better place !"));
+		final WText searchResult = new WText("Buy or Sell... Bye!");
+		leftMenu.addItem("Home", new WText("There is no better place!"));
 		leftMenu.addItem("Layout", new WText("Layout contents")).setLink(
 				new WLink(WLink.Type.InternalPath, "/layout"));
 		leftMenu.addItem("Sales", searchResult);

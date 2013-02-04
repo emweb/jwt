@@ -708,7 +708,7 @@ class Block {
 						if (isAggregate(n)) {
 							List<String> allvalues = new ArrayList<String>();
 							allvalues = new ArrayList<String>(Arrays.asList(v
-									.split(" \t\n")));
+									.split(" ")));
 							int count = 0;
 							for (int j = 0; j < allvalues.size(); ++j) {
 								String vj = allvalues.get(j);
@@ -726,25 +726,28 @@ class Block {
 												.toString());
 							} else {
 								if (count == 1) {
-									this.css_.put(n + "-top", this.css_.put(n
-											+ "-right", this.css_.put(n
-											+ "-bottom", this.css_.put(n
-											+ "-left", allvalues.get(0)))));
+									this.css_.put(n + "-top", v);
+									this.css_.put(n + "-right", v);
+									this.css_.put(n + "-bottom", v);
+									this.css_.put(n + "-left", v);
 								} else {
 									if (count == 2) {
-										this.css_.put(n + "-top", this.css_
-												.put(n + "-bottom", allvalues
-														.get(0)));
-										this.css_.put(n + "-right", this.css_
-												.put(n + "-left", allvalues
-														.get(1)));
+										this.css_.put(n + "-top", allvalues
+												.get(0));
+										this.css_.put(n + "-bottom", allvalues
+												.get(0));
+										this.css_.put(n + "-right", allvalues
+												.get(1));
+										this.css_.put(n + "-left", allvalues
+												.get(1));
 									} else {
 										if (count == 3) {
 											this.css_.put(n + "-top", allvalues
 													.get(0));
 											this.css_.put(n + "-right",
-													this.css_.put(n + "-left",
-															allvalues.get(1)));
+													allvalues.get(1));
+											this.css_.put(n + "-left",
+													allvalues.get(1));
 											this.css_.put(n + "-bottom",
 													allvalues.get(2));
 										} else {

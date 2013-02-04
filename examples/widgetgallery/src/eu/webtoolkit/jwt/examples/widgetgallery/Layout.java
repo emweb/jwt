@@ -146,7 +146,7 @@ class Layout extends TopicWidget {
 
 	private WWidget themes() {
 		WTemplate result = new TopicTemplate("layout-Themes");
-		result.bindWidget("Theme", Theme());
+		result.bindString("Theme", reindent(tr("theme")), TextFormat.PlainText);
 		return result;
 	}
 
@@ -716,13 +716,6 @@ class Layout extends TopicWidget {
 				}
 			}
 		});
-		return container;
-	}
-
-	WWidget Theme() {
-		WContainerWidget container = new WContainerWidget();
-		WText out = new WText(container);
-		out.setText("some text");
 		return container;
 	}
 }

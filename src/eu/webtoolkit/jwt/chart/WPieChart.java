@@ -994,6 +994,7 @@ public class WPieChart extends WAbstractChart {
 			}
 		}
 		if (!EnumUtils.mask(options, LabelOption.TextPercentage).isEmpty()) {
+			text = new WString(text.toString());
 			String buf = null;
 			buf = String.format("%.3g%%", v / total * 100);
 			if (!(text.length() == 0)) {

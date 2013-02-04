@@ -188,6 +188,13 @@ public class WBootstrapTheme extends WTheme {
 				element.addPropertyWord(Property.PropertyClass, "Wt-googlemap");
 				return;
 			}
+			WAbstractItemView itemView = ((widget) instanceof WAbstractItemView ? (WAbstractItemView) (widget)
+					: null);
+			if (itemView != null) {
+				element.addPropertyWord(Property.PropertyClass,
+						"form-horizontal");
+				return;
+			}
 		}
 			break;
 		case DomElement_LABEL: {

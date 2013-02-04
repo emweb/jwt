@@ -255,6 +255,7 @@ class TreesTables extends TopicWidget {
 	WWidget LargeTableView() {
 		WTableView tableView = new WTableView();
 		tableView.setModel(new VirtualModel(10000, 50));
+		tableView.setRowHeaderCount(1);
 		tableView.setSortingEnabled(false);
 		tableView.setAlternatingRowColors(true);
 		tableView.setRowHeight(new WLength(28));

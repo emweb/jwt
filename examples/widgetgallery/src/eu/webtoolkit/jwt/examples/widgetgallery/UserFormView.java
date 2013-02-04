@@ -103,6 +103,7 @@ class UserFormView extends WTemplateFormView {
 					.resolveWidget(UserFormModel.FirstNameField);
 			viewField.setFocus();
 		} else {
+			this.bindEmpty("submit-info");
 			this.updateView(this.model_);
 		}
 	}

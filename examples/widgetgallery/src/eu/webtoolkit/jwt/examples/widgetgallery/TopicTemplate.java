@@ -25,6 +25,8 @@ class TopicTemplate extends WTemplate {
 	public TopicTemplate(String trKey) {
 		super(tr(trKey));
 		this.setInternalPathEncoding(true);
+		this.setCondition("if:cpp", false);
+		this.setCondition("if:java", true);
 		this
 				.bindString("doc-url",
 						"http://www.webtoolkit.eu/jwt/latest/doc/javadoc/eu/webtoolkit/jwt/");
@@ -34,9 +36,11 @@ class TopicTemplate extends WTemplate {
 			throws IOException {
 		if (varName.equals("doc-link")) {
 			String className = args.get(0).toString();
-			StringUtils.replaceAll(className, "-", "::");
+			className = StringUtils.replaceAll(className, "Render-", "render.");
 			result.append("<a href=\"").append(this.docUrl(className)).append(
-					"\" target=\"_blank\">").append(className).append("</a>");
+					"\" target=\"_blank\">");
+			className = StringUtils.replaceAll(className, "render.", "");
+			result.append(className).append("</a>");
 		} else {
 			if (varName.equals("src")) {
 				String exampleName = args.get(0).toString();
@@ -52,6 +56,7 @@ class TopicTemplate extends WTemplate {
 
 	private String docUrl(String className) {
 		StringBuilder ss = new StringBuilder();
+		className = StringUtils.replaceAll(className, ".", "/");
 		ss.append(this.getString("doc-url")).append(className).append(".html");
 		return ss.toString();
 	}

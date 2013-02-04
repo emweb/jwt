@@ -434,11 +434,12 @@ public class WDatePicker extends WCompositeWidget {
 		this.layout_.setInline(true);
 		this.layout_.addWidget(displayWidget);
 		this.layout_.setAttributeValue("style", "white-space: nowrap");
-		String TEMPLATE = "${calendar}<div style=\"text-align:center; margin-top:3px\">${close}</div>";
+		String TEMPLATE = "${calendar}";
 		WTemplate t = new WTemplate(new WString(TEMPLATE));
 		this.popup_ = new WPopupWidget(t, this);
 		this.popup_
 				.setAnchorWidget(this.displayWidget_, Orientation.Horizontal);
+		this.popup_.setTransient(true);
 		this.calendar_ = new WCalendar();
 		this.calendar_.activated().addListener(this.popup_,
 				new Signal1.Listener<WDate>() {
@@ -458,21 +459,7 @@ public class WDatePicker extends WCompositeWidget {
 						WDatePicker.this.setFromCalendar();
 					}
 				});
-		WPushButton closeButton = new WPushButton(tr("Wt.WDatePicker.Close"));
-		closeButton.clicked().addListener(this.popup_,
-				new Signal1.Listener<WMouseEvent>() {
-					public void trigger(WMouseEvent e1) {
-						WDatePicker.this.popup_.hide();
-					}
-				});
-		closeButton.clicked().addListener(this,
-				new Signal1.Listener<WMouseEvent>() {
-					public void trigger(WMouseEvent e1) {
-						WDatePicker.this.onPopupHidden();
-					}
-				});
 		t.bindWidget("calendar", this.calendar_);
-		t.bindWidget("close", closeButton);
 		WApplication.getInstance().getTheme().apply(this, this.popup_,
 				WidgetThemeRole.DatePickerPopupRole);
 		displayWidget.clicked().addListener(this.popup_,
@@ -487,7 +474,6 @@ public class WDatePicker extends WCompositeWidget {
 						WDatePicker.this.setFromLineEdit();
 					}
 				});
-		this.setGlobalPopup(false);
 		if (!(this.forEdit_.getValidator() != null)) {
 			this.forEdit_.setValidator(new WDateValidator(this.format_, this));
 		}

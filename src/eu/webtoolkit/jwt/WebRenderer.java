@@ -1378,26 +1378,17 @@ class WebRenderer implements SlotLearnerInterface {
 				}
 			}
 		} else {
-			if (this.session_.getEnv().agentIsIElt(9)) {
+			if (this.session_.getEnv().agentIsIE()
+					&& this.session_.getEnv().getAgent().getValue() >= WEnvironment.UserAgent.IE9
+							.getValue()) {
 				result
-						.append("<meta http-equiv=\"X-UA-Compatible\" content=\"IE=7");
+						.append("<meta http-equiv=\"X-UA-Compatible\" content=\"IE=9");
 				if (xhtml) {
 					result.append("\"/>");
 				} else {
 					result.append("\">");
 				}
 				result.append('\n');
-			} else {
-				if (this.session_.getEnv().getAgent() == WEnvironment.UserAgent.IE9) {
-					result
-							.append("<meta http-equiv=\"X-UA-Compatible\" content=\"IE=9");
-					if (xhtml) {
-						result.append("\"/>");
-					} else {
-						result.append("\">");
-					}
-					result.append('\n');
-				}
 			}
 		}
 		if (this.session_.getFavicon().length() != 0) {

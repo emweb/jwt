@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 
 import eu.webtoolkit.jwt.Signal;
 import eu.webtoolkit.jwt.WApplication;
+import eu.webtoolkit.jwt.WBootstrapTheme;
 import eu.webtoolkit.jwt.WEnvironment;
 import eu.webtoolkit.jwt.WLink;
 import eu.webtoolkit.jwt.auth.AuthWidget;
@@ -17,6 +18,8 @@ public class AuthApplication extends WApplication {
 
 	public AuthApplication(WEnvironment env) {
 		super(env);
+		
+		setTheme(new WBootstrapTheme());
 		
 		Session.configureAuth();
 		

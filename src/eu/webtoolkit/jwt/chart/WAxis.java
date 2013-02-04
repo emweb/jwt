@@ -1586,7 +1586,7 @@ public class WAxis {
 	private static double EPSILON = 1E-3;
 	private static final int AXIS_MARGIN = 4;
 	private static final int AUTO_V_LABEL_PIXELS = 25;
-	private static final int AUTO_H_LABEL_PIXELS = 60;
+	private static final int AUTO_H_LABEL_PIXELS = 80;
 
 	static double round125(double v) {
 		double n = Math.pow(10, Math.floor(Math.log10(v)));

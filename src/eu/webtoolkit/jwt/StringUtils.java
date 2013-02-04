@@ -75,7 +75,10 @@ public class StringUtils {
 			return WString.Empty;
 		else if (data instanceof Number)
 			return new WString(NumberFormat.getInstance(LocaleUtils.getCurrentLocale()).format(data));
-		else
+		else if (data instanceof WDate) {
+			WDate d = (WDate) data;
+			return new WString(d.toString("dd/MM/yyyy"));
+		} else
 			return new WString(data.toString());
 	}
 

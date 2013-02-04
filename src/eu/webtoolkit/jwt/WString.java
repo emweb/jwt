@@ -80,13 +80,11 @@ public class WString implements Comparable<WString>, CharSequence {
 		this(new String(buf));
 	}
 
-	/**	
-	 * Indicates whether some other object is "equal to" this one.
-	 */
-	public boolean equals(WString other) {
-		return toString().equals(other.toString());
+	@Override
+	public boolean equals(Object obj) {
+		return toString().equals(obj.toString());
 	}
-
+	
 	/**
 	 * Appends a string, converting the string to a literal string if necessary.
 	 * 

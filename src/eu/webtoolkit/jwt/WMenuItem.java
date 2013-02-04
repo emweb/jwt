@@ -360,6 +360,12 @@ public class WMenuItem extends WContainerWidget {
 	public void setMenu(WMenu menu) {
 		this.subMenu_ = menu;
 		this.subMenu_.parentItem_ = this;
+		WContainerWidget sparent = ((this.subMenu_.getParent()) instanceof WContainerWidget ? (WContainerWidget) (this.subMenu_
+				.getParent())
+				: null);
+		if (sparent != null) {
+			sparent.removeWidget(this.subMenu_);
+		}
 		this.addWidget(this.subMenu_);
 		WPopupMenu popup = ((this.getMenu()) instanceof WPopupMenu ? (WPopupMenu) (this
 				.getMenu())

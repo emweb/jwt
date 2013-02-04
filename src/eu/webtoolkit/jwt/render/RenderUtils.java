@@ -11,6 +11,7 @@ import net.n3.nanoxml.XMLException;
 import net.n3.nanoxml.XMLParserFactory;
 import net.n3.nanoxml.XMLUtil;
 import eu.webtoolkit.jwt.WWebWidget;
+import eu.webtoolkit.jwt.XHtmlFilter;
 
 public class RenderUtils {
 	static boolean isXmlElement(XMLElement node) {
@@ -77,28 +78,16 @@ public class RenderUtils {
 				printXmlTree(c, level + 1);
 		}
 	}
-	
-	static String converXHTMLEntitiesToUnicode(String xhtml) throws ClassNotFoundException, InstantiationException, IllegalAccessException, XMLException
-	{
-		XHtmlEntitiesToUnicodeFilter filter = new XHtmlEntitiesToUnicodeFilter();
-		IXMLParser parser = XMLParserFactory.createDefaultXMLParser();
-		parser.setBuilder(filter);
-		parser.setResolver(filter);
-		IXMLReader reader = StdXMLReader.stringReader(xhtml);
-		parser.setReader(reader);
-		parser.parse();
 
-		return filter.result();			
-	}
-	
 	static XMLElement parseXHTML(String xhtml) {
 		IXMLParser parser;
 		try {
-			xhtml = converXHTMLEntitiesToUnicode("<div>" + xhtml + "</div>");
+			xhtml = "<div>" + xhtml + "</div>";
 			
 			parser = XMLParserFactory.createDefaultXMLParser();
 			IXMLReader reader = StdXMLReader.stringReader(xhtml); 
 			parser.setReader(reader);
+			parser.setResolver(new XHtmlFilter(true));
 			XMLElement xml = (XMLElement) parser.parse();
 			extractTextNodes(xml);
 						

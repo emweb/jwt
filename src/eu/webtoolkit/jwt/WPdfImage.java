@@ -555,7 +555,6 @@ public class WPdfImage extends WResource implements WPaintDevice {
 
 	@Override
 	public void done() {
-		
 	}
 
 	@Override
@@ -577,13 +576,7 @@ public class WPdfImage extends WResource implements WPaintDevice {
 	protected void handleRequest(WebRequest request, WebResponse response) throws IOException {
 		response.setContentType("application/pdf");
 
-		try {
-			this.pdf.flush();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		response.out().write(bos.toString());
-		response.out().flush();
+		write(response.getOutputStream());
 	}
 	
 	public void write(OutputStream os) throws IOException {

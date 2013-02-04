@@ -9,14 +9,16 @@ import eu.webtoolkit.jwt.WXmlLocalizedStrings;
 import eu.webtoolkit.jwt.WtServlet;
 
 public class WidgetGalleryServlet extends WtServlet {
+	public WidgetGalleryServlet() {
+		this.getConfiguration().setDebug(true);
+	}
+	
 	@Override
 	public WApplication createApplication(WEnvironment env) {
 		WApplication app = new WApplication(env);
 		  
 		app.setTheme(new WBootstrapTheme());
-		 
-		// app.addMetaHeader("viewport", "width=700, height=1200");
-				
+
 		WXmlLocalizedStrings resourceBundle = new WXmlLocalizedStrings();
 		resourceBundle.use("/eu/webtoolkit/jwt/examples/widgetgallery/text");
 		resourceBundle.use("/eu/webtoolkit/jwt/examples/widgetgallery/src");

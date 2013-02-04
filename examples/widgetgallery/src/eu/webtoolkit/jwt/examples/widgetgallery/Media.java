@@ -110,10 +110,8 @@ class Media extends TopicWidget {
 
 	private WWidget pdf() {
 		WTemplate result = new TopicTemplate("media-PDF");
-		result.bindString("PdfImage",
-				"This example requires Wt built with PDF support.");
-		result.bindString("PdfImage",
-				"This example requires Wt built with PDF support.");
+		result.bindWidget("PdfImage", PdfImage());
+		result.bindWidget("PdfRenderer", PdfRenderer());
 		result.bindString("PdfImageWrite", reindent(tr("media-PdfImageWrite")),
 				TextFormat.PlainText);
 		return result;
@@ -338,11 +336,33 @@ class Media extends TopicWidget {
 
 	WWidget ResourceCustom() {
 		WContainerWidget container = new WContainerWidget();
+		WResource textResource = new MyResource(container);
+		WAnchor anchor = new WAnchor(new WLink(textResource), "Download file",
+				container);
+		anchor.setTarget(AnchorTarget.TargetNewWindow);
 		return container;
 	}
 
 	WWidget ResourceStatic() {
 		WContainerWidget container = new WContainerWidget();
+		return container;
+	}
+
+	WWidget PdfImage() {
+		WContainerWidget container = new WContainerWidget();
+		WResource pdf = new SamplePdfResource(container);
+		WPushButton button = new WPushButton("Create pdf", container);
+		button.setLink(new WLink(pdf));
+		return container;
+	}
+
+	WWidget PdfRenderer() {
+		WContainerWidget container = new WContainerWidget();
+		WText text = new WText(WString.tr("report.example"), container);
+		text.setStyleClass("reset");
+		WPushButton button = new WPushButton("Create pdf", container);
+		WResource pdf = new ReportResource(container);
+		button.setLink(new WLink(pdf));
 		return container;
 	}
 }

@@ -94,6 +94,7 @@ public class WXmlLocalizedStrings extends WLocalizedStrings {
 			XmlMessageParser xmlParser = new XmlMessageParser();
 			IXMLParser parser = XMLParserFactory.createDefaultXMLParser();
 			parser.setBuilder(xmlParser);
+			parser.setResolver(xmlParser);
 			IXMLReader reader = new StdXMLReader(url.openStream());
 			parser.setReader(reader);
 			parser.parse();

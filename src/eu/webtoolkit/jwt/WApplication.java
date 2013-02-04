@@ -204,14 +204,11 @@ public class WApplication extends WObject {
 		this.internalPathValid_ = true;
 		this.theme_ = new WCssTheme("default", this);
 		this.setLocalizedStrings((WLocalizedStrings) null);
-		if (this.getEnvironment().agentIsIElt(9)) {
+		if (this.getEnvironment().agentIsIE()
+				&& this.getEnvironment().getAgent().getValue() >= WEnvironment.UserAgent.IE9
+						.getValue()) {
 			this.addMetaHeader(MetaHeaderType.MetaHttpHeader,
-					"X-UA-Compatible", "IE=7");
-		} else {
-			if (this.getEnvironment().getAgent() == WEnvironment.UserAgent.IE9) {
-				this.addMetaHeader(MetaHeaderType.MetaHttpHeader,
-						"X-UA-Compatible", "IE=9");
-			}
+					"X-UA-Compatible", "IE=9");
 		}
 		this.domRoot_ = new WContainerWidget();
 		this.domRoot_.setStyleClass("Wt-domRoot");
@@ -2708,6 +2705,34 @@ public class WApplication extends WObject {
 	}
 
 	/**
+	 * Pushes a (modal) widget onto the expose stack.
+	 * <p>
+	 * This defines a new context of widgets that are currently visible.
+	 */
+	void pushExposedConstraint(WWidget w) {
+		this.exposedOnly_.add(w);
+	}
+
+	void popExposedConstraint(WWidget w) {
+		for (int i = this.exposedOnly_.size(); i > 0; --i) {
+			int j = i - 1;
+			if (this.exposedOnly_.get(j) == w) {
+				while (this.exposedOnly_.size() > j) {
+					this.exposedOnly_.remove(this.exposedOnly_.size() - 1);
+				}
+				break;
+			}
+		}
+	}
+
+	public void addGlobalWidget(WWidget w) {
+		this.domRoot_.addWidget(w);
+	}
+
+	public void removeGlobalWidget(WWidget w) {
+	}
+
+	/**
 	 * Notifies an event to the application.
 	 * <p>
 	 * This method is called by the event loop for propagating an event to the
@@ -2774,10 +2799,18 @@ public class WApplication extends WObject {
 		if (w.getParent() == this.timerRoot_) {
 			return true;
 		}
-		WWidget exposedOnly = this.exposedOnly_.isEmpty() ? null
-				: this.exposedOnly_.get(this.exposedOnly_.size() - 1);
-		if (exposedOnly != null) {
-			return exposedOnly.isExposed(w);
+		if (!this.exposedOnly_.isEmpty()) {
+			WWidget top = this.exposedOnly_.get(this.exposedOnly_.size() - 1);
+			if (top.isExposed(w)) {
+				return true;
+			}
+			for (WWidget p = w.getParent(); p != null; p = p.getParent()) {
+				if (p == this.domRoot_) {
+					return w != this.getRoot();
+				}
+				w = p;
+			}
+			return false;
 		} else {
 			WWidget p = w.getAdam();
 			return p == this.domRoot_ || p == this.domRoot2_;
@@ -3147,22 +3180,6 @@ public class WApplication extends WObject {
 			this.unload();
 		} else {
 			this.session_.setState(WebSession.State.Loaded, 5);
-		}
-	}
-
-	void pushExposedConstraint(WWidget w) {
-		this.exposedOnly_.add(w);
-	}
-
-	void popExposedConstraint(WWidget w) {
-		for (int i = this.exposedOnly_.size(); i > 0; --i) {
-			int j = i - 1;
-			if (this.exposedOnly_.get(j) == w) {
-				while (this.exposedOnly_.size() > j) {
-					this.exposedOnly_.remove(this.exposedOnly_.size() - 1);
-				}
-				break;
-			}
 		}
 	}
 

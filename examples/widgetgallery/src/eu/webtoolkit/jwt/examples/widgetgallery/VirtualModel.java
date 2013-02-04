@@ -51,8 +51,12 @@ class VirtualModel extends WAbstractTableModel {
 	public Object getData(WModelIndex index, int role) {
 		switch (role) {
 		case ItemDataRole.DisplayRole:
-			return new WString("Item row {1}, col {2}").arg(index.getRow())
-					.arg(index.getColumn());
+			if (index.getColumn() == 0) {
+				return new WString("Row {1}").arg(index.getRow());
+			} else {
+				return new WString("Item row {1}, col {2}").arg(index.getRow())
+						.arg(index.getColumn());
+			}
 		default:
 			return null;
 		}

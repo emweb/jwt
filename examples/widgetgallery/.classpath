@@ -8,6 +8,7 @@
 	<classpathentry kind="lib" path="lib/jwt-lib/commons-io-1.4.jar"/>
 	<classpathentry kind="lib" path="lib/jwt-lib/slf4j-api-1.6.4.jar"/>
 	<classpathentry kind="lib" path="lib/jwt-lib/slf4j-simple-1.6.4.jar"/>
+	<classpathentry kind="lib" path="lib/PDFjet-3.07.jar"/>
 	<classpathentry kind="lib" path="lib/org.eclipse.jgit-2.2.0.201212191850-r.jar"/>
-		<classpathentry kind="output" path="bin"/>
+	<classpathentry kind="output" path="bin"/>
 </classpath>

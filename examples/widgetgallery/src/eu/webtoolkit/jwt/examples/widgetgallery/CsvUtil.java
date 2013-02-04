@@ -20,10 +20,9 @@ import eu.webtoolkit.jwt.WString;
 import eu.webtoolkit.jwt.WText;
 
 public class CsvUtil {
-    public static void readFromCsv(BufferedReader reader,
-            WAbstractItemModel model) {
+    public static void readFromCsv(BufferedReader reader, WAbstractItemModel model) {
         try {
-            Pattern pat = Pattern.compile(",(\".+?\")");
+            Pattern pat = Pattern.compile(",\"(.+?)\"");
             String line = null;
             int row = 0;
             while ((line = reader.readLine()) != null) {
@@ -37,15 +36,12 @@ public class CsvUtil {
                 String[] fields = sb.toString().split(",");
                 String text;
 
-                if (row != 0) {
+                if (row != 0)
                     model.insertRow(model.getRowCount());
-                }
-                // if (row != 0) {
-                // model.insertRows(row, 1);
-                // }
+
                 for (int col = 0; col < fields.length; col++) {
-                    text = fields[col] != null ? fields[col].replaceAll(
-                            "&comm", ",") : "".replaceAll("\"", "");
+                    text = (fields[col] != null ? fields[col].replaceAll(
+                            "&comm", ",") : "").replaceAll("\"", "");
 
                     if (col >= model.getColumnCount())
                         model.insertColumn(col);
@@ -70,7 +66,7 @@ public class CsvUtil {
         }
     }
 
- 	public static WAbstractItemModel csvToModel(String resourceName) {
+ 	public static WStandardItemModel csvToModel(String resourceName) {
         InputStream is = CsvUtil.class.getResourceAsStream("/eu/webtoolkit/jwt/examples/widgetgallery/data/" + resourceName);
 
         WStandardItemModel model = new WStandardItemModel();
