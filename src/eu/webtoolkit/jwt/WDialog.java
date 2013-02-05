@@ -459,7 +459,6 @@ public class WDialog extends WPopupWidget {
 				this.contents_.setSelectable(true);
 			}
 			if (this.resizable_) {
-				this.setMinimumSize(WLength.Auto, WLength.Auto);
 				Resizable.loadJavaScript(WApplication.getInstance());
 				this
 						.setJavaScriptMember(

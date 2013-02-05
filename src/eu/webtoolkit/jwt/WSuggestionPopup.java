@@ -300,6 +300,7 @@ public class WSuggestionPopup extends WPopupWidget {
 		this.modelColumn_ = 0;
 		this.filterLength_ = 0;
 		this.filtering_ = false;
+		this.defaultValue_ = -1;
 		this.matcherJS_ = generateMatcherJS(options);
 		this.replacerJS_ = generateReplacerJS(options);
 		this.filterModel_ = new Signal1<String>(this);

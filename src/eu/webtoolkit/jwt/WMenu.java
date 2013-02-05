@@ -1035,13 +1035,17 @@ public class WMenu extends WCompositeWidget {
 	private Signal1<WMenuItem> itemClosed_;
 
 	void select(int index, boolean changePath) {
+		int last = this.current_;
+		this.current_ = index;
 		this.selectVisual(index, changePath, true);
 		if (index != -1) {
 			WMenuItem item = this.itemAt(index);
 			item.show();
 			item.loadContents();
-			item.triggered().trigger(item);
-			this.itemSelected_.trigger(item);
+			if (last != index) {
+				item.triggered().trigger(item);
+				this.itemSelected_.trigger(item);
+			}
 			if (changePath && this.emitPathChange_) {
 				WApplication app = WApplication.getInstance();
 				app.internalPathChanged().trigger(app.getInternalPath());
@@ -1065,7 +1069,6 @@ public class WMenu extends WCompositeWidget {
 	}
 
 	private int current_;
-	private int previousCurrent_;
 	private int previousStackIndex_;
 	private boolean needSelectionEventUpdate_;
 
@@ -1112,7 +1115,7 @@ public class WMenu extends WCompositeWidget {
 	void undoSelectVisual() {
 		String prevPath = this.previousInternalPath_;
 		int prevStackIndex = this.previousStackIndex_;
-		this.selectVisual(this.previousCurrent_, true, true);
+		this.selectVisual(this.current_, true, true);
 		if (this.internalPathEnabled_) {
 			WApplication app = WApplication.getInstance();
 			app.setInternalPath(prevPath);
@@ -1123,13 +1126,11 @@ public class WMenu extends WCompositeWidget {
 	}
 
 	void selectVisual(int index, boolean changePath, boolean showContents) {
-		this.previousCurrent_ = this.current_;
 		if (this.contentsStack_ != null) {
 			this.previousStackIndex_ = this.contentsStack_.getCurrentIndex();
 		}
-		this.current_ = index;
-		WMenuItem item = this.current_ >= 0 ? this.itemAt(this.current_) : null;
-		if (changePath && this.internalPathEnabled_ && this.current_ != -1) {
+		WMenuItem item = index >= 0 ? this.itemAt(index) : null;
+		if (changePath && this.internalPathEnabled_ && index != -1) {
 			WApplication app = WApplication.getInstance();
 			this.previousInternalPath_ = app.getInternalPath();
 			String newPath = this.basePath_ + item.getPathComponent();
@@ -1139,7 +1140,7 @@ public class WMenu extends WCompositeWidget {
 			app.setInternalPath(newPath);
 		}
 		for (int i = 0; i < this.getCount(); ++i) {
-			this.renderSelected(this.itemAt(i), (int) i == this.current_);
+			this.renderSelected(this.itemAt(i), (int) i == index);
 		}
 		if (index == -1) {
 			return;

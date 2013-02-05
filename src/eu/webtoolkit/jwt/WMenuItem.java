@@ -380,6 +380,15 @@ public class WMenuItem extends WContainerWidget {
 	}
 
 	/**
+	 * Sets a sub menu (<b>deprecated</b>).
+	 * <p>
+	 * use {@link WMenuItem#setMenu(WMenu menu) setMenu()} instead
+	 */
+	public void setSubMenu(WMenu menu) {
+		this.setMenu(menu);
+	}
+
+	/**
 	 * Returns the menu.
 	 * <p>
 	 * 

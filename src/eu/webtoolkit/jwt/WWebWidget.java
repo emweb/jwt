@@ -1352,7 +1352,7 @@ public abstract class WWebWidget extends WWidget {
 			}
 			this.flags_.clear(BIT_STYLECLASS_CHANGED);
 		}
-		if (this.transientImpl_ != null) {
+		if (!all && this.transientImpl_ != null) {
 			for (int i = 0; i < this.transientImpl_.addedStyleClasses_.size(); ++i) {
 				element
 						.callJavaScript("$('#" + this.getId() + "').addClass('"

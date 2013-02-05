@@ -1264,6 +1264,8 @@ class WebRenderer implements SlotLearnerInterface {
 				.getEnv().pathInfo_));
 		bootJs.setCondition("SPLIT_SCRIPT", conf.splitScript());
 		bootJs.setCondition("HYBRID", hybrid);
+		bootJs.setCondition("PROGRESS", hybrid
+				&& !this.session_.getEnv().hasAjax());
 		boolean xhtml = this.session_.getEnv().getContentType() == WEnvironment.ContentType.XHTML1;
 		bootJs.setCondition("DEFER_SCRIPT", !xhtml);
 		String internalPath = hybrid ? this.session_.getApp().getInternalPath()
@@ -1336,9 +1338,19 @@ class WebRenderer implements SlotLearnerInterface {
 						.get(i);
 				result.append("<meta");
 				if (m.name.length() != 0) {
-					appendAttribute(result,
-							m.type == MetaHeaderType.MetaName ? "name"
-									: "http-equiv", m.name);
+					String attribute = "";
+					switch (m.type) {
+					case MetaName:
+						attribute = "name";
+						break;
+					case MetaProperty:
+						attribute = "property";
+						break;
+					case MetaHttpHeader:
+						attribute = "http-equiv";
+						break;
+					}
+					appendAttribute(result, attribute, m.name);
 				}
 				if (m.lang.length() != 0) {
 					appendAttribute(result, "lang", m.lang);

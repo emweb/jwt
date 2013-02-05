@@ -400,7 +400,8 @@ public class WStandardItem {
 	 * @see WStandardItem#setData(Object d, int role)
 	 */
 	public void setCheckState(CheckState state) {
-		if (this.getCheckState() != state) {
+		if (this.getCheckState() != state
+				|| (this.getData(ItemDataRole.CheckStateRole) == null)) {
 			if (this.isTristate()) {
 				this.setData(state, ItemDataRole.CheckStateRole);
 			} else {
