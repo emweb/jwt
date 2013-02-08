@@ -2651,8 +2651,7 @@ public class WApplication extends WObject {
 			this.internalPathsEnabled_ = true;
 			this.doJavaScript(this.getJavaScriptClass()
 					+ "._p_.enableInternalPaths("
-					+ WWebWidget.jsStringLiteral(this.newInternalPath_) + ");",
-					false);
+					+ WWebWidget.jsStringLiteral(this.newInternalPath_) + ");");
 			if (this.session_.isUseUglyInternalPaths()) {
 				logger
 						.warn(new StringWriter()
@@ -2953,7 +2952,7 @@ public class WApplication extends WObject {
 	private WContainerWidget dialogCover_;
 	private boolean quited_;
 	private String onePixelGifUrl_;
-	private boolean internalPathsEnabled_;
+	boolean internalPathsEnabled_;
 	private List<WWidget> exposedOnly_;
 	private WLoadingIndicator loadingIndicator_;
 	WWidget loadingIndicatorWidget_;

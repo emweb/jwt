@@ -379,7 +379,7 @@ class FormWidgets extends TopicWidget {
 		edit.setWidth(new WLength(200));
 		edit.setHeight(new WLength(200));
 		edit
-				.setText("<p><span style=\"font-family: 'courier new', courier; font-size: medium;\"><strong>WTextEdit</strong></span></p><p>Hey, I'm a&nbsp;<strong>WTextEdit</strong>&nbsp;and you can make me&nbsp;<span style=\"text-decoration: underline;\"><em>rich</em></span>&nbsp;by adding your&nbsp;<span style=\"color: #ff0000;\"><em>style</em></span>!</p><p>Other widgets like...</p><ul style=\"padding: 0px; margin: 0px 0px 10px 25px;\"><li>WLineEdit</li><li>WTextArea</li><li>WSpinBox</li></ul><p>don't have style.</p>");
+				.setText("<p><span style=\"font-family: 'courier new', courier; font-size: medium;\"><strong>WTextEdit</strong></span></p><p>Hey, I'm a <strong>WTextEdit</strong> and you can make me <span style=\"text-decoration: underline;\"><em>rich</em></span> by adding your <span style=\"color: #ff0000;\"><em>style</em></span>!</p><p>Other widgets like...</p><ul style=\"padding: 0px; margin: 0px 0px 10px 25px;\"><li>WLineEdit</li><li>WTextArea</li><li>WSpinBox</li></ul><p>don't have style.</p>");
 		WPushButton button = new WPushButton("Get text", container);
 		button.setMargin(new WLength(10), EnumSet.of(Side.Top));
 		final WText out = new WText(container);

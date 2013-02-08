@@ -80,6 +80,7 @@ class Navigation extends TopicWidget {
 	private WWidget internalPaths() {
 		WTemplate result = new TopicTemplate("navigation-internalPaths");
 		result.bindWidget("Path", Path());
+		result.bindWidget("PathChange", PathChange());
 		return result;
 	}
 
@@ -138,6 +139,38 @@ class Navigation extends TopicWidget {
 				.setLink(new WLink(WLink.Type.InternalPath,
 						"/navigation/anchor"));
 		return button;
+	}
+
+	static final void handlePathChange(WText out) {
+		WApplication app = WApplication.getInstance();
+		if (app.getInternalPath().equals("/navigation/shop")) {
+			out.setText("<p>Currently shopping.</p>");
+		} else {
+			if (app.getInternalPath().equals("/navigation/eat")) {
+				out.setText("<p>Needed some food, eating now!</p>");
+			} else {
+				out.setText("<p><i>Idle.</i></p>");
+			}
+		}
+	}
+
+	WWidget PathChange() {
+		WContainerWidget container = new WContainerWidget();
+		new WAnchor(new WLink(WLink.Type.InternalPath, "/navigation/shop"),
+				"Shop", container);
+		new WText(" ", container);
+		new WAnchor(new WLink(WLink.Type.InternalPath, "/navigation/eat"),
+				"Eat", container);
+		final WText out = new WText(container);
+		out.setInline(false);
+		WApplication app = WApplication.getInstance();
+		app.internalPathChanged().addListener(this, new Signal.Listener() {
+			public void trigger() {
+				handlePathChange(out);
+			}
+		});
+		handlePathChange(out);
+		return container;
 	}
 
 	WWidget Anchor() {

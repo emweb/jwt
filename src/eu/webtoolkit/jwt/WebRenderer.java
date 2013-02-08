@@ -422,13 +422,13 @@ class WebRenderer implements SlotLearnerInterface {
 	private void serveMainscript(WebResponse response) throws IOException {
 		Configuration conf = this.session_.getController().getConfiguration();
 		boolean widgetset = this.session_.getType() == EntryPointType.WidgetSet;
-		StringBuilder out = new StringBuilder();
 		boolean serveSkeletons = !conf.splitScript()
 				|| response.getParameter("skeleton") != null;
 		boolean serveRest = !conf.splitScript() || !serveSkeletons;
 		this.session_.sessionIdChanged_ = false;
 		this.setCaching(response, conf.splitScript() && serveSkeletons);
 		this.setHeaders(response, "text/javascript; charset=UTF-8");
+		StringBuilder out = new StringBuilder();
 		if (!widgetset) {
 			String redirect = this.session_.getRedirect();
 			if (redirect.length() != 0) {
@@ -560,6 +560,12 @@ class WebRenderer implements SlotLearnerInterface {
 				this.currentFormObjectsList_ = "";
 				this.collectJavaScript();
 				this.updateLoadIndicator(this.collectedJS1_, app, true);
+				if (app.internalPathsEnabled_) {
+					out.append(app.getJavaScriptClass()).append(
+							"._p_.enableInternalPaths(").append(
+							WWebWidget.jsStringLiteral(app.getInternalPath()))
+							.append(");\n");
+				}
 				logger.debug(new StringWriter().append("js: ").append(
 						this.collectedJS1_.toString()).append(
 						this.collectedJS2_.toString()).toString());
@@ -598,7 +604,6 @@ class WebRenderer implements SlotLearnerInterface {
 	private void serveBootstrap(WebResponse response) throws IOException {
 		boolean xhtml = this.session_.getEnv().getContentType() == WEnvironment.ContentType.XHTML1;
 		Configuration conf = this.session_.getController().getConfiguration();
-		StringBuilder out = new StringBuilder();
 		FileServe boot = new FileServe(WtServlet.Boot_html);
 		this.setPageVars(boot);
 		StringBuilder noJsRedirectUrl = new StringBuilder();
@@ -626,6 +631,7 @@ class WebRenderer implements SlotLearnerInterface {
 		String contentType = xhtml ? "application/xhtml+xml" : "text/html";
 		contentType += "; charset=UTF-8";
 		this.setHeaders(response, contentType);
+		StringBuilder out = new StringBuilder();
 		this.streamBootContent(response, boot, false);
 		boot.stream(out);
 		this.rendered_ = false;
@@ -763,9 +769,8 @@ class WebRenderer implements SlotLearnerInterface {
 		app.autoJavaScriptChanged_ = false;
 		this.currentFormObjectsList_ = this.createFormObjectsList(app);
 		out.append(app.getJavaScriptClass()).append("._p_.setFormObjects([")
-				.append(this.currentFormObjectsList_).append("]);");
+				.append(this.currentFormObjectsList_).append("]);\n");
 		this.formObjectsChanged_ = false;
-		out.append('\n');
 		app.streamBeforeLoadJavaScript(out, true);
 		if (!widgetset) {
 			out.append("window.").append(app.getJavaScriptClass()).append(

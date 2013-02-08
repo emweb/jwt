@@ -50,27 +50,21 @@ class GoogleMapExample extends WContainerWidget {
 				GoogleMapExample.this.map_.zoomOut();
 			}
 		});
-		WPushButton brussels = new WPushButton("Brussels");
-		controls.bindWidget("brussels", brussels);
-		brussels.clicked().addListener(this, new Signal.Listener() {
-			public void trigger() {
-				GoogleMapExample.this.panToBrussels();
-			}
-		});
-		WPushButton lisbon = new WPushButton("Lisbon");
-		controls.bindWidget("lisbon", lisbon);
-		lisbon.clicked().addListener(this, new Signal.Listener() {
-			public void trigger() {
-				GoogleMapExample.this.panToLisbon();
-			}
-		});
-		WPushButton paris = new WPushButton("Paris");
-		controls.bindWidget("paris", paris);
-		paris.clicked().addListener(this, new Signal.Listener() {
-			public void trigger() {
-				GoogleMapExample.this.panToParis();
-			}
-		});
+		String[] cityNames = { "Brussels", "Lisbon", "Paris" };
+		WGoogleMap.Coordinate[] cityCoords = {
+				new WGoogleMap.Coordinate(50.85034, 4.35171),
+				new WGoogleMap.Coordinate(38.703731, -9.135475),
+				new WGoogleMap.Coordinate(48.877474, 2.312579) };
+		for (int i = 0; i < 3; ++i) {
+			WPushButton city = new WPushButton(cityNames[i]);
+			controls.bindWidget(cityNames[i], city);
+			final WGoogleMap.Coordinate coord = cityCoords[i];
+			city.clicked().addListener(this, new Signal.Listener() {
+				public void trigger() {
+					GoogleMapExample.this.map_.panTo(coord);
+				}
+			});
+		}
 		WPushButton reset = new WPushButton("Reset");
 		controls.bindWidget("emweb", reset);
 		reset.clicked().addListener(this, new Signal.Listener() {
@@ -192,18 +186,6 @@ class GoogleMapExample extends WContainerWidget {
 		this((WContainerWidget) null);
 	}
 
-	private void panToBrussels() {
-		this.map_.panTo(new WGoogleMap.Coordinate(50.85034, 4.35171));
-	}
-
-	private void panToLisbon() {
-		this.map_.panTo(new WGoogleMap.Coordinate(38.703731, -9.135475));
-	}
-
-	private void panToParis() {
-		this.map_.panTo(new WGoogleMap.Coordinate(48.877474, 2.312579));
-	}
-
 	private void panToEmWeb() {
 		this.map_.panTo(new WGoogleMap.Coordinate(50.9082, 4.66056));
 	}
@@ -294,15 +276,13 @@ class GoogleMapExample extends WContainerWidget {
 	}
 
 	private void googleMapDoubleClicked(WGoogleMap.Coordinate c) {
-		StringWriter strm = new StringWriter();
-		strm.append("Double clicked at coordinate (").append(
+		System.err.append("Double clicked at coordinate (").append(
 				String.valueOf(c.getLatitude())).append(",").append(
 				String.valueOf(c.getLongitude())).append(")");
 	}
 
 	private void googleMapClicked(WGoogleMap.Coordinate c) {
-		StringWriter strm = new StringWriter();
-		strm.append("Clicked at coordinate (").append(
+		System.err.append("Clicked at coordinate (").append(
 				String.valueOf(c.getLatitude())).append(",").append(
 				String.valueOf(c.getLongitude())).append(")");
 	}

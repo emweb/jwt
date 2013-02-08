@@ -1192,27 +1192,21 @@
                 <span class="n">GoogleMapExample</span><span class="o">.</span><span class="na">this</span><span class="o">.</span><span class="na">map_</span><span class="o">.</span><span class="na">zoomOut</span><span class="o">();</span>
             <span class="o">}</span>
         <span class="o">});</span>
-        <span class="n">WPushButton</span> <span class="n">brussels</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WPushButton</span><span class="o">(</span><span class="s">&quot;Brussels&quot;</span><span class="o">);</span>
-        <span class="n">controls</span><span class="o">.</span><span class="na">bindWidget</span><span class="o">(</span><span class="s">&quot;brussels&quot;</span><span class="o">,</span> <span class="n">brussels</span><span class="o">);</span>
-        <span class="n">brussels</span><span class="o">.</span><span class="na">clicked</span><span class="o">().</span><span class="na">addListener</span><span class="o">(</span><span class="k">this</span><span class="o">,</span> <span class="k">new</span> <span class="n">Signal</span><span class="o">.</span><span class="na">Listener</span><span class="o">()</span> <span class="o">{</span>
-            <span class="kd">public</span> <span class="kt">void</span> <span class="nf">trigger</span><span class="o">()</span> <span class="o">{</span>
-                <span class="n">GoogleMapExample</span><span class="o">.</span><span class="na">this</span><span class="o">.</span><span class="na">panToBrussels</span><span class="o">();</span>
-            <span class="o">}</span>
-        <span class="o">});</span>
-        <span class="n">WPushButton</span> <span class="n">lisbon</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WPushButton</span><span class="o">(</span><span class="s">&quot;Lisbon&quot;</span><span class="o">);</span>
-        <span class="n">controls</span><span class="o">.</span><span class="na">bindWidget</span><span class="o">(</span><span class="s">&quot;lisbon&quot;</span><span class="o">,</span> <span class="n">lisbon</span><span class="o">);</span>
-        <span class="n">lisbon</span><span class="o">.</span><span class="na">clicked</span><span class="o">().</span><span class="na">addListener</span><span class="o">(</span><span class="k">this</span><span class="o">,</span> <span class="k">new</span> <span class="n">Signal</span><span class="o">.</span><span class="na">Listener</span><span class="o">()</span> <span class="o">{</span>
-            <span class="kd">public</span> <span class="kt">void</span> <span class="nf">trigger</span><span class="o">()</span> <span class="o">{</span>
-                <span class="n">GoogleMapExample</span><span class="o">.</span><span class="na">this</span><span class="o">.</span><span class="na">panToLisbon</span><span class="o">();</span>
-            <span class="o">}</span>
-        <span class="o">});</span>
-        <span class="n">WPushButton</span> <span class="n">paris</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WPushButton</span><span class="o">(</span><span class="s">&quot;Paris&quot;</span><span class="o">);</span>
-        <span class="n">controls</span><span class="o">.</span><span class="na">bindWidget</span><span class="o">(</span><span class="s">&quot;paris&quot;</span><span class="o">,</span> <span class="n">paris</span><span class="o">);</span>
-        <span class="n">paris</span><span class="o">.</span><span class="na">clicked</span><span class="o">().</span><span class="na">addListener</span><span class="o">(</span><span class="k">this</span><span class="o">,</span> <span class="k">new</span> <span class="n">Signal</span><span class="o">.</span><span class="na">Listener</span><span class="o">()</span> <span class="o">{</span>
-            <span class="kd">public</span> <span class="kt">void</span> <span class="nf">trigger</span><span class="o">()</span> <span class="o">{</span>
-                <span class="n">GoogleMapExample</span><span class="o">.</span><span class="na">this</span><span class="o">.</span><span class="na">panToParis</span><span class="o">();</span>
-            <span class="o">}</span>
-        <span class="o">});</span>
+        <span class="n">String</span><span class="o">[]</span> <span class="n">cityNames</span> <span class="o">=</span> <span class="o">{</span> <span class="s">&quot;Brussels&quot;</span><span class="o">,</span> <span class="s">&quot;Lisbon&quot;</span><span class="o">,</span> <span class="s">&quot;Paris&quot;</span> <span class="o">};</span>
+        <span class="n">WGoogleMap</span><span class="o">.</span><span class="na">Coordinate</span><span class="o">[]</span> <span class="n">cityCoords</span> <span class="o">=</span> <span class="o">{</span>
+                <span class="k">new</span> <span class="n">WGoogleMap</span><span class="o">.</span><span class="na">Coordinate</span><span class="o">(</span><span class="mf">50.85034</span><span class="o">,</span> <span class="mf">4.35171</span><span class="o">),</span>
+                <span class="k">new</span> <span class="n">WGoogleMap</span><span class="o">.</span><span class="na">Coordinate</span><span class="o">(</span><span class="mf">38.703731</span><span class="o">,</span> <span class="o">-</span><span class="mf">9.135475</span><span class="o">),</span>
+                <span class="k">new</span> <span class="n">WGoogleMap</span><span class="o">.</span><span class="na">Coordinate</span><span class="o">(</span><span class="mf">48.877474</span><span class="o">,</span> <span class="mf">2.312579</span><span class="o">)</span> <span class="o">};</span>
+        <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="mi">3</span><span class="o">;</span> <span class="o">++</span><span class="n">i</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">WPushButton</span> <span class="n">city</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WPushButton</span><span class="o">(</span><span class="n">cityNames</span><span class="o">[</span><span class="n">i</span><span class="o">]);</span>
+            <span class="n">controls</span><span class="o">.</span><span class="na">bindWidget</span><span class="o">(</span><span class="n">cityNames</span><span class="o">[</span><span class="n">i</span><span class="o">],</span> <span class="n">city</span><span class="o">);</span>
+            <span class="kd">final</span> <span class="n">WGoogleMap</span><span class="o">.</span><span class="na">Coordinate</span> <span class="n">coord</span> <span class="o">=</span> <span class="n">cityCoords</span><span class="o">[</span><span class="n">i</span><span class="o">];</span>
+            <span class="n">city</span><span class="o">.</span><span class="na">clicked</span><span class="o">().</span><span class="na">addListener</span><span class="o">(</span><span class="k">this</span><span class="o">,</span> <span class="k">new</span> <span class="n">Signal</span><span class="o">.</span><span class="na">Listener</span><span class="o">()</span> <span class="o">{</span>
+                <span class="kd">public</span> <span class="kt">void</span> <span class="nf">trigger</span><span class="o">()</span> <span class="o">{</span>
+                    <span class="n">GoogleMapExample</span><span class="o">.</span><span class="na">this</span><span class="o">.</span><span class="na">map_</span><span class="o">.</span><span class="na">panTo</span><span class="o">(</span><span class="n">coord</span><span class="o">);</span>
+                <span class="o">}</span>
+            <span class="o">});</span>
+        <span class="o">}</span>
         <span class="n">WPushButton</span> <span class="n">reset</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WPushButton</span><span class="o">(</span><span class="s">&quot;Reset&quot;</span><span class="o">);</span>
         <span class="n">controls</span><span class="o">.</span><span class="na">bindWidget</span><span class="o">(</span><span class="s">&quot;emweb&quot;</span><span class="o">,</span> <span class="n">reset</span><span class="o">);</span>
         <span class="n">reset</span><span class="o">.</span><span class="na">clicked</span><span class="o">().</span><span class="na">addListener</span><span class="o">(</span><span class="k">this</span><span class="o">,</span> <span class="k">new</span> <span class="n">Signal</span><span class="o">.</span><span class="na">Listener</span><span class="o">()</span> <span class="o">{</span>
@@ -1338,18 +1332,6 @@
         <span class="k">this</span><span class="o">((</span><span class="n">WContainerWidget</span><span class="o">)</span> <span class="kc">null</span><span class="o">);</span>
     <span class="o">}</span>
 
-    <span class="kt">void</span> <span class="nf">panToBrussels</span><span class="o">()</span> <span class="o">{</span>
-        <span class="k">this</span><span class="o">.</span><span class="na">map_</span><span class="o">.</span><span class="na">panTo</span><span class="o">(</span><span class="k">new</span> <span class="n">WGoogleMap</span><span class="o">.</span><span class="na">Coordinate</span><span class="o">(</span><span class="mf">50.85034</span><span class="o">,</span> <span class="mf">4.35171</span><span class="o">));</span>
-    <span class="o">}</span>
-
-    <span class="kt">void</span> <span class="nf">panToLisbon</span><span class="o">()</span> <span class="o">{</span>
-        <span class="k">this</span><span class="o">.</span><span class="na">map_</span><span class="o">.</span><span class="na">panTo</span><span class="o">(</span><span class="k">new</span> <span class="n">WGoogleMap</span><span class="o">.</span><span class="na">Coordinate</span><span class="o">(</span><span class="mf">38.703731</span><span class="o">,</span> <span class="o">-</span><span class="mf">9.135475</span><span class="o">));</span>
-    <span class="o">}</span>
-
-    <span class="kt">void</span> <span class="nf">panToParis</span><span class="o">()</span> <span class="o">{</span>
-        <span class="k">this</span><span class="o">.</span><span class="na">map_</span><span class="o">.</span><span class="na">panTo</span><span class="o">(</span><span class="k">new</span> <span class="n">WGoogleMap</span><span class="o">.</span><span class="na">Coordinate</span><span class="o">(</span><span class="mf">48.877474</span><span class="o">,</span> <span class="mf">2.312579</span><span class="o">));</span>
-    <span class="o">}</span>
-
     <span class="kt">void</span> <span class="nf">panToEmWeb</span><span class="o">()</span> <span class="o">{</span>
         <span class="k">this</span><span class="o">.</span><span class="na">map_</span><span class="o">.</span><span class="na">panTo</span><span class="o">(</span><span class="k">new</span> <span class="n">WGoogleMap</span><span class="o">.</span><span class="na">Coordinate</span><span class="o">(</span><span class="mf">50.9082</span><span class="o">,</span> <span class="mf">4.66056</span><span class="o">));</span>
     <span class="o">}</span>
@@ -1441,15 +1423,13 @@
     <span class="o">}</span>
 
     <span class="kt">void</span> <span class="nf">googleMapDoubleClicked</span><span class="o">(</span><span class="n">WGoogleMap</span><span class="o">.</span><span class="na">Coordinate</span> <span class="n">c</span><span class="o">)</span> <span class="o">{</span>
-        <span class="n">StringWriter</span> <span class="n">strm</span> <span class="o">=</span> <span class="k">new</span> <span class="n">StringWriter</span><span class="o">();</span>
-        <span class="n">strm</span><span class="o">.</span><span class="na">append</span><span class="o">(</span><span class="s">&quot;Double clicked at coordinate (&quot;</span><span class="o">).</span><span class="na">append</span><span class="o">(</span>
+        <span class="n">System</span><span class="o">.</span><span class="na">err</span><span class="o">.</span><span class="na">append</span><span class="o">(</span><span class="s">&quot;Double clicked at coordinate (&quot;</span><span class="o">).</span><span class="na">append</span><span class="o">(</span>
                 <span class="n">String</span><span class="o">.</span><span class="na">valueOf</span><span class="o">(</span><span class="n">c</span><span class="o">.</span><span class="na">getLatitude</span><span class="o">())).</span><span class="na">append</span><span class="o">(</span><span class="s">&quot;,&quot;</span><span class="o">).</span><span class="na">append</span><span class="o">(</span>
                 <span class="n">String</span><span class="o">.</span><span class="na">valueOf</span><span class="o">(</span><span class="n">c</span><span class="o">.</span><span class="na">getLongitude</span><span class="o">())).</span><span class="na">append</span><span class="o">(</span><span class="s">&quot;)&quot;</span><span class="o">);</span>
     <span class="o">}</span>
 
     <span class="kt">void</span> <span class="nf">googleMapClicked</span><span class="o">(</span><span class="n">WGoogleMap</span><span class="o">.</span><span class="na">Coordinate</span> <span class="n">c</span><span class="o">)</span> <span class="o">{</span>
-        <span class="n">StringWriter</span> <span class="n">strm</span> <span class="o">=</span> <span class="k">new</span> <span class="n">StringWriter</span><span class="o">();</span>
-        <span class="n">strm</span><span class="o">.</span><span class="na">append</span><span class="o">(</span><span class="s">&quot;Clicked at coordinate (&quot;</span><span class="o">).</span><span class="na">append</span><span class="o">(</span>
+        <span class="n">System</span><span class="o">.</span><span class="na">err</span><span class="o">.</span><span class="na">append</span><span class="o">(</span><span class="s">&quot;Clicked at coordinate (&quot;</span><span class="o">).</span><span class="na">append</span><span class="o">(</span>
                 <span class="n">String</span><span class="o">.</span><span class="na">valueOf</span><span class="o">(</span><span class="n">c</span><span class="o">.</span><span class="na">getLatitude</span><span class="o">())).</span><span class="na">append</span><span class="o">(</span><span class="s">&quot;,&quot;</span><span class="o">).</span><span class="na">append</span><span class="o">(</span>
                 <span class="n">String</span><span class="o">.</span><span class="na">valueOf</span><span class="o">(</span><span class="n">c</span><span class="o">.</span><span class="na">getLongitude</span><span class="o">())).</span><span class="na">append</span><span class="o">(</span><span class="s">&quot;)&quot;</span><span class="o">);</span>
     <span class="o">}</span>
@@ -2585,6 +2565,39 @@
 <span class="o">}</span>
 </pre></div>
   ]]></message>
+  <message id="src-PathChange"><![CDATA[
+<div class="highlight"><pre><span class="kd">final</span> <span class="kt">void</span> <span class="nf">handlePathChange</span><span class="o">(</span><span class="n">WText</span> <span class="n">out</span><span class="o">)</span> <span class="o">{</span>
+    <span class="n">WApplication</span> <span class="n">app</span> <span class="o">=</span> <span class="n">WApplication</span><span class="o">.</span><span class="na">getInstance</span><span class="o">();</span>
+    <span class="k">if</span> <span class="o">(</span><span class="n">app</span><span class="o">.</span><span class="na">getInternalPath</span><span class="o">().</span><span class="na">equals</span><span class="o">(</span><span class="s">&quot;/navigation/shop&quot;</span><span class="o">))</span> <span class="o">{</span>
+        <span class="n">out</span><span class="o">.</span><span class="na">setText</span><span class="o">(</span><span class="s">&quot;&lt;p&gt;Currently shopping.&lt;/p&gt;&quot;</span><span class="o">);</span>
+    <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">app</span><span class="o">.</span><span class="na">getInternalPath</span><span class="o">().</span><span class="na">equals</span><span class="o">(</span><span class="s">&quot;/navigation/eat&quot;</span><span class="o">))</span> <span class="o">{</span>
+            <span class="n">out</span><span class="o">.</span><span class="na">setText</span><span class="o">(</span><span class="s">&quot;&lt;p&gt;Needed some food, eating now!&lt;/p&gt;&quot;</span><span class="o">);</span>
+        <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+            <span class="n">out</span><span class="o">.</span><span class="na">setText</span><span class="o">(</span><span class="s">&quot;&lt;p&gt;&lt;i&gt;Idle.&lt;/i&gt;&lt;/p&gt;&quot;</span><span class="o">);</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+
+<span class="kt">void</span> <span class="nf">PathChange</span><span class="o">()</span> <span class="o">{</span>
+    <span class="n">WContainerWidget</span> <span class="n">container</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WContainerWidget</span><span class="o">();</span>
+    <span class="k">new</span> <span class="nf">WAnchor</span><span class="o">(</span><span class="k">new</span> <span class="n">WLink</span><span class="o">(</span><span class="n">WLink</span><span class="o">.</span><span class="na">Type</span><span class="o">.</span><span class="na">InternalPath</span><span class="o">,</span> <span class="s">&quot;/navigation/shop&quot;</span><span class="o">),</span>
+            <span class="s">&quot;Shop&quot;</span><span class="o">,</span> <span class="n">container</span><span class="o">);</span>
+    <span class="k">new</span> <span class="nf">WText</span><span class="o">(</span><span class="s">&quot; &quot;</span><span class="o">,</span> <span class="n">container</span><span class="o">);</span>
+    <span class="k">new</span> <span class="nf">WAnchor</span><span class="o">(</span><span class="k">new</span> <span class="n">WLink</span><span class="o">(</span><span class="n">WLink</span><span class="o">.</span><span class="na">Type</span><span class="o">.</span><span class="na">InternalPath</span><span class="o">,</span> <span class="s">&quot;/navigation/eat&quot;</span><span class="o">),</span>
+            <span class="s">&quot;Eat&quot;</span><span class="o">,</span> <span class="n">container</span><span class="o">);</span>
+    <span class="kd">final</span> <span class="n">WText</span> <span class="n">out</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WText</span><span class="o">(</span><span class="n">container</span><span class="o">);</span>
+    <span class="n">out</span><span class="o">.</span><span class="na">setInline</span><span class="o">(</span><span class="kc">false</span><span class="o">);</span>
+    <span class="n">WApplication</span> <span class="n">app</span> <span class="o">=</span> <span class="n">WApplication</span><span class="o">.</span><span class="na">getInstance</span><span class="o">();</span>
+    <span class="n">app</span><span class="o">.</span><span class="na">internalPathChanged</span><span class="o">().</span><span class="na">addListener</span><span class="o">(</span><span class="k">this</span><span class="o">,</span> <span class="k">new</span> <span class="n">Signal</span><span class="o">.</span><span class="na">Listener</span><span class="o">()</span> <span class="o">{</span>
+        <span class="kd">public</span> <span class="kt">void</span> <span class="nf">trigger</span><span class="o">()</span> <span class="o">{</span>
+            <span class="n">handlePathChange</span><span class="o">(</span><span class="n">out</span><span class="o">);</span>
+        <span class="o">}</span>
+    <span class="o">});</span>
+    <span class="n">handlePathChange</span><span class="o">(</span><span class="n">out</span><span class="o">);</span>
+<span class="o">}</span>
+</pre></div>
+  ]]></message>
   <message id="src-PdfImage"><![CDATA[
 <div class="highlight"><pre><span class="kd">class</span> <span class="nc">SamplePdfResource</span> <span class="kd">extends</span> <span class="n">WPdfImage</span> <span class="o">{</span>
     <span class="kd">private</span> <span class="kd">static</span> <span class="n">Logger</span> <span class="n">logger</span> <span class="o">=</span> <span class="n">LoggerFactory</span>
@@ -2622,7 +2635,41 @@
 </pre></div>
   ]]></message>
   <message id="src-PdfRenderer"><![CDATA[
-<div class="highlight"><pre><span class="kt">void</span> <span class="nf">PdfRenderer</span><span class="o">()</span> <span class="o">{</span>
+<div class="highlight"><pre><span class="kd">public</span> <span class="kd">class</span> <span class="nc">ReportResource</span> <span class="kd">extends</span> <span class="n">WResource</span> <span class="o">{</span>
+
+    <span class="kd">public</span> <span class="nf">ReportResource</span><span class="o">(</span><span class="n">WObject</span> <span class="n">parent</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">suggestFileName</span><span class="o">(</span><span class="s">&quot;report.pdf&quot;</span><span class="o">);</span>
+    <span class="o">}</span>
+    
+    <span class="nd">@Override</span>
+    <span class="kd">protected</span> <span class="kt">void</span> <span class="nf">handleRequest</span><span class="o">(</span><span class="n">WebRequest</span> <span class="n">request</span><span class="o">,</span> <span class="n">WebResponse</span> <span class="n">response</span><span class="o">)</span>
+            <span class="kd">throws</span> <span class="n">IOException</span> <span class="o">{</span>
+        <span class="n">response</span><span class="o">.</span><span class="na">setContentType</span><span class="o">(</span><span class="s">&quot;application/pdf&quot;</span><span class="o">);</span>
+
+        <span class="k">try</span> <span class="o">{</span>
+            <span class="n">PDF</span> <span class="n">pdf</span> <span class="o">=</span> <span class="k">new</span> <span class="n">PDF</span><span class="o">(</span><span class="n">response</span><span class="o">.</span><span class="na">getOutputStream</span><span class="o">());</span>            
+            <span class="n">renderReport</span><span class="o">(</span><span class="n">pdf</span><span class="o">);</span>
+            <span class="n">pdf</span><span class="o">.</span><span class="na">flush</span><span class="o">();</span>
+        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">Exception</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">throw</span> <span class="k">new</span> <span class="nf">IOException</span><span class="o">(</span><span class="n">e</span><span class="o">);</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+
+    <span class="kd">private</span> <span class="kt">void</span> <span class="nf">renderReport</span><span class="o">(</span><span class="n">PDF</span> <span class="n">pdf</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+        <span class="n">renderPdf</span><span class="o">(</span><span class="n">WString</span><span class="o">.</span><span class="na">tr</span><span class="o">(</span><span class="s">&quot;report.example&quot;</span><span class="o">),</span> <span class="n">pdf</span><span class="o">);</span>
+    <span class="o">}</span>
+
+    <span class="kd">private</span> <span class="kt">void</span> <span class="nf">renderPdf</span><span class="o">(</span><span class="n">WString</span> <span class="n">html</span><span class="o">,</span> <span class="n">PDF</span> <span class="n">pdf</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span>
+    <span class="o">{</span>
+        <span class="n">Page</span> <span class="n">page</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Page</span><span class="o">(</span><span class="n">pdf</span><span class="o">,</span> <span class="n">A4</span><span class="o">.</span><span class="na">PORTRAIT</span><span class="o">);</span>
+        <span class="n">WPdfRenderer</span> <span class="n">renderer</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WPdfRenderer</span><span class="o">(</span><span class="n">pdf</span><span class="o">,</span> <span class="n">page</span><span class="o">);</span>        
+        <span class="n">renderer</span><span class="o">.</span><span class="na">setMargin</span><span class="o">(</span><span class="mf">2.54</span><span class="o">);</span>
+        <span class="n">renderer</span><span class="o">.</span><span class="na">setDpi</span><span class="o">(</span><span class="mi">96</span><span class="o">);</span>
+        <span class="n">renderer</span><span class="o">.</span><span class="na">render</span><span class="o">(</span><span class="n">html</span><span class="o">);</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+
+<span class="kt">void</span> <span class="nf">PdfRenderer</span><span class="o">()</span> <span class="o">{</span>
     <span class="n">WContainerWidget</span> <span class="n">container</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WContainerWidget</span><span class="o">();</span>
     <span class="n">WText</span> <span class="n">text</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WText</span><span class="o">(</span><span class="n">WString</span><span class="o">.</span><span class="na">tr</span><span class="o">(</span><span class="s">&quot;report.example&quot;</span><span class="o">),</span> <span class="n">container</span><span class="o">);</span>
     <span class="n">text</span><span class="o">.</span><span class="na">setStyleClass</span><span class="o">(</span><span class="s">&quot;reset&quot;</span><span class="o">);</span>
@@ -3655,7 +3702,7 @@
     <span class="n">edit</span><span class="o">.</span><span class="na">setWidth</span><span class="o">(</span><span class="k">new</span> <span class="n">WLength</span><span class="o">(</span><span class="mi">200</span><span class="o">));</span>
     <span class="n">edit</span><span class="o">.</span><span class="na">setHeight</span><span class="o">(</span><span class="k">new</span> <span class="n">WLength</span><span class="o">(</span><span class="mi">200</span><span class="o">));</span>
     <span class="n">edit</span>
-            <span class="o">.</span><span class="na">setText</span><span class="o">(</span><span class="s">&quot;&lt;p&gt;&lt;span style=\&quot;font-family: &#39;courier new&#39;, courier; font-size: medium;\&quot;&gt;&lt;strong&gt;WTextEdit&lt;/strong&gt;&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Hey, I&#39;m a&amp;nbsp;&lt;strong&gt;WTextEdit&lt;/strong&gt;&amp;nbsp;and you can make me&amp;nbsp;&lt;span style=\&quot;text-decoration: underline;\&quot;&gt;&lt;em&gt;rich&lt;/em&gt;&lt;/span&gt;&amp;nbsp;by adding your&amp;nbsp;&lt;span style=\&quot;color: #ff0000;\&quot;&gt;&lt;em&gt;style&lt;/em&gt;&lt;/span&gt;!&lt;/p&gt;&lt;p&gt;Other widgets like...&lt;/p&gt;&lt;ul style=\&quot;padding: 0px; margin: 0px 0px 10px 25px;\&quot;&gt;&lt;li&gt;WLineEdit&lt;/li&gt;&lt;li&gt;WTextArea&lt;/li&gt;&lt;li&gt;WSpinBox&lt;/li&gt;&lt;/ul&gt;&lt;p&gt;don&#39;t have style.&lt;/p&gt;&quot;</span><span class="o">);</span>
+            <span class="o">.</span><span class="na">setText</span><span class="o">(</span><span class="s">&quot;&lt;p&gt;&lt;span style=\&quot;font-family: &#39;courier new&#39;, courier; font-size: medium;\&quot;&gt;&lt;strong&gt;WTextEdit&lt;/strong&gt;&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Hey, I&#39;m a &lt;strong&gt;WTextEdit&lt;/strong&gt; and you can make me &lt;span style=\&quot;text-decoration: underline;\&quot;&gt;&lt;em&gt;rich&lt;/em&gt;&lt;/span&gt; by adding your &lt;span style=\&quot;color: #ff0000;\&quot;&gt;&lt;em&gt;style&lt;/em&gt;&lt;/span&gt;!&lt;/p&gt;&lt;p&gt;Other widgets like...&lt;/p&gt;&lt;ul style=\&quot;padding: 0px; margin: 0px 0px 10px 25px;\&quot;&gt;&lt;li&gt;WLineEdit&lt;/li&gt;&lt;li&gt;WTextArea&lt;/li&gt;&lt;li&gt;WSpinBox&lt;/li&gt;&lt;/ul&gt;&lt;p&gt;don&#39;t have style.&lt;/p&gt;&quot;</span><span class="o">);</span>
     <span class="n">WPushButton</span> <span class="n">button</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WPushButton</span><span class="o">(</span><span class="s">&quot;Get text&quot;</span><span class="o">,</span> <span class="n">container</span><span class="o">);</span>
     <span class="n">button</span><span class="o">.</span><span class="na">setMargin</span><span class="o">(</span><span class="k">new</span> <span class="n">WLength</span><span class="o">(</span><span class="mi">10</span><span class="o">),</span> <span class="n">EnumSet</span><span class="o">.</span><span class="na">of</span><span class="o">(</span><span class="n">Side</span><span class="o">.</span><span class="na">Top</span><span class="o">));</span>
     <span class="kd">final</span> <span class="n">WText</span> <span class="n">out</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WText</span><span class="o">(</span><span class="n">container</span><span class="o">);</span>
@@ -4225,33 +4272,33 @@
   ]]></message>
   <message id="src-matcher"><![CDATA[
 <div class="highlight"><pre><span class="kd">function</span> <span class="p">(</span><span class="nx">editElement</span><span class="p">)</span> <span class="p">{</span>
-  <span class="c1">// fetch the location of cursor and current text in the editElement.</span>
+    <span class="c1">// fetch the location of cursor and current text in the editElement.</span>
 
-  <span class="c1">// return a function that matches a given suggestion with the current</span>
-  <span class="c1">// value of the editElement.</span>
-  <span class="k">return</span> <span class="kd">function</span><span class="p">(</span><span class="nx">suggestion</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// return a function that matches a given suggestion with the current</span>
+    <span class="c1">// value of the editElement.</span>
+    <span class="k">return</span> <span class="kd">function</span><span class="p">(</span><span class="nx">suggestion</span><span class="p">)</span> <span class="p">{</span>
 
-    <span class="c1">// 1) if suggestion is null, simply return the current text &#39;value&#39;</span>
-    <span class="c1">// 2) check suggestion if it matches</span>
-    <span class="c1">// 3) add highlighting markup to suggestion if necessary</span>
+	<span class="c1">// 1) if suggestion is null, simply return the current text &#39;value&#39;</span>
+	<span class="c1">// 2) check suggestion if it matches</span>
+	<span class="c1">// 3) add highlighting markup to suggestion if necessary</span>
 
-    <span class="k">return</span> <span class="p">{</span> <span class="nx">match</span> <span class="o">:</span> <span class="p">...,</span>      <span class="c1">// does the suggestion match ? (boolean)</span>
-              <span class="nx">suggestion</span> <span class="o">:</span> <span class="p">...</span>  <span class="c1">// modified suggestion with highlighting</span>
-    <span class="p">};</span>
-  <span class="p">}</span>
+	<span class="k">return</span> <span class="p">{</span> <span class="nx">match</span> <span class="o">:</span> <span class="p">...,</span>      <span class="c1">// does the suggestion match ? (boolean)</span>
+		 <span class="nx">suggestion</span> <span class="o">:</span> <span class="p">...</span>  <span class="c1">// modified suggestion with highlighting</span>
+	       <span class="p">};</span>
+    <span class="p">}</span>
 <span class="p">}</span>
 </pre></div>
   ]]></message>
   <message id="src-replacer"><![CDATA[
 <div class="highlight"><pre><span class="kd">function</span> <span class="p">(</span><span class="nx">editElement</span><span class="p">,</span> <span class="nx">suggestionText</span><span class="p">,</span> <span class="nx">suggestionValue</span><span class="p">)</span> <span class="p">{</span>
-  <span class="c1">// editElement is the form element which must be edited.</span>
-  <span class="c1">// suggestionText is the displayed text for the matched suggestion.</span>
-  <span class="c1">// suggestionValue is the stored value for the matched suggestion.</span>
+    <span class="c1">// editElement is the form element which must be edited.</span>
+    <span class="c1">// suggestionText is the displayed text for the matched suggestion.</span>
+    <span class="c1">// suggestionValue is the stored value for the matched suggestion.</span>
 
-  <span class="c1">// computed modifiedEditValue and modifiedPos ...</span>
+    <span class="c1">// computed modifiedEditValue and modifiedPos ...</span>
 
-  <span class="nx">editElement</span><span class="p">.</span><span class="nx">value</span> <span class="o">=</span> <span class="nx">modifiedEditValue</span><span class="p">;</span>
-  <span class="nx">editElement</span><span class="p">.</span><span class="nx">selectionStart</span> <span class="o">=</span> <span class="nx">edit</span><span class="p">.</span><span class="nx">selectionEnd</span> <span class="o">=</span> <span class="nx">modifiedPos</span><span class="p">;</span>
+    <span class="nx">editElement</span><span class="p">.</span><span class="nx">value</span> <span class="o">=</span> <span class="nx">modifiedEditValue</span><span class="p">;</span>
+    <span class="nx">editElement</span><span class="p">.</span><span class="nx">selectionStart</span> <span class="o">=</span> <span class="nx">edit</span><span class="p">.</span><span class="nx">selectionEnd</span> <span class="o">=</span> <span class="nx">modifiedPos</span><span class="p">;</span>
 <span class="p">}</span>
 </pre></div>
   ]]></message>
