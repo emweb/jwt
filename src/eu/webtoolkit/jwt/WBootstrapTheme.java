@@ -124,9 +124,12 @@ public class WBootstrapTheme extends WTheme {
 			WPopupWidget popup = ((widget) instanceof WPopupWidget ? (WPopupWidget) (widget)
 					: null);
 			if (popup != null) {
-				element
-						.addPropertyWord(Property.PropertyClass,
-								"dropdown-menu");
+				WDialog dialog = ((widget) instanceof WDialog ? (WDialog) (widget)
+						: null);
+				if (!(dialog != null)) {
+					element.addPropertyWord(Property.PropertyClass,
+							"dropdown-menu");
+				}
 			}
 		}
 		switch (element.getType()) {
