@@ -99,7 +99,7 @@ public class WBootstrapTheme extends WTheme {
 			break;
 		}
 		case WidgetThemeRole.DatePickerPopupRole:
-			child.addStyleClass("dropdown-menu Wt-datepicker");
+			child.addStyleClass("Wt-datepicker");
 			break;
 		case WidgetThemeRole.PanelTitleBarRole:
 			child.addStyleClass("accordion-heading");
@@ -120,6 +120,15 @@ public class WBootstrapTheme extends WTheme {
 	}
 
 	public void apply(WWidget widget, DomElement element, int elementRole) {
+		{
+			WPopupWidget popup = ((widget) instanceof WPopupWidget ? (WPopupWidget) (widget)
+					: null);
+			if (popup != null) {
+				element
+						.addPropertyWord(Property.PropertyClass,
+								"dropdown-menu");
+			}
+		}
 		switch (element.getType()) {
 		case DomElement_A:
 			if (((widget) instanceof WPushButton ? (WPushButton) (widget)
@@ -148,14 +157,6 @@ public class WBootstrapTheme extends WTheme {
 					: null);
 			if (dialog != null) {
 				element.addPropertyWord(Property.PropertyClass, "modal");
-				return;
-			}
-			WDatePicker picker = ((widget) instanceof WDatePicker ? (WDatePicker) (widget)
-					: null);
-			if (picker != null) {
-				element
-						.addPropertyWord(Property.PropertyClass,
-								"dropdown-menu");
 				return;
 			}
 			WPanel panel = ((widget) instanceof WPanel ? (WPanel) (widget)
@@ -271,7 +272,7 @@ public class WBootstrapTheme extends WTheme {
 							: null);
 					if (suggestions != null) {
 						element.addPropertyWord(Property.PropertyClass,
-								"typeahead dropdown-menu");
+								"typeahead");
 					}
 				}
 			}

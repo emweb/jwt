@@ -231,9 +231,11 @@ public class WStringListModel extends WAbstractListModel {
 			for (int ii = 0; ii < (0 + row + count) - (0 + row); ++ii)
 				this.displayData_.remove(0 + row);
 			;
-			for (int ii = 0; ii < (0 + row + count) - (0 + row); ++ii)
-				this.otherData_.remove(0 + row);
-			;
+			if (this.otherData_ != null) {
+				for (int ii = 0; ii < (0 + row + count) - (0 + row); ++ii)
+					this.otherData_.remove(0 + row);
+				;
+			}
 			this.endRemoveRows();
 			return true;
 		} else {

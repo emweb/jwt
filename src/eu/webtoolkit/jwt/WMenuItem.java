@@ -21,6 +21,14 @@ import org.slf4j.LoggerFactory;
 
 /**
  * A single item in a menu.
+ * <p>
+ * 
+ * Since JWt 3.3.0, this item is now a proper widget, which renders a single
+ * item in a menu.
+ * <p>
+ * An optional contents item can be associated with a menu item, which is
+ * inserted and shown in the widget stack of the menu to which this menu item
+ * belongs.
  */
 public class WMenuItem extends WContainerWidget {
 	private static Logger logger = LoggerFactory.getLogger(WMenuItem.class);

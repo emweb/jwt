@@ -990,8 +990,10 @@ public class WTemplate extends WInteractWidget {
 								}
 							} else {
 								String cond = name.substring(2, 2 + nl - 3);
-								if (!conditions.get(conditions.size() - 1)
-										.equals(cond)) {
+								if (conditions.isEmpty()
+										|| !conditions.get(
+												conditions.size() - 1).equals(
+												cond)) {
 									logger
 											.error(new StringWriter()
 													.append(

@@ -434,8 +434,8 @@ class Block {
 		ps.y -= collapseMarginBottom;
 		double height = this.cssHeight(renderer.getFontScale());
 		if (this.isTableCell()) {
-			this.contentsHeight_ = diff(ps.y, ps.page, startY, startPage,
-					renderer);
+			this.contentsHeight_ = Math.max(0.0, diff(ps.y, ps.page, startY,
+					startPage, renderer));
 		}
 		if (height >= 0) {
 			ps.page = startPage;

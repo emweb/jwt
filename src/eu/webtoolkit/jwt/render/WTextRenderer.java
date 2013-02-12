@@ -115,7 +115,7 @@ public abstract class WTextRenderer {
 			double minX = 0;
 			double maxX = this.textWidth(currentPs.page);
 			boolean tooWide = false;
-			for (;;) {
+			for (int i = 0; i < 2; ++i) {
 				currentPs.minX = minX;
 				currentPs.maxX = maxX;
 				collapseMarginBottom = docBlock.layoutBlock(currentPs, false,

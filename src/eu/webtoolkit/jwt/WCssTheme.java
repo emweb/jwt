@@ -120,7 +120,7 @@ public class WCssTheme extends WTheme {
 			break;
 		}
 		case WidgetThemeRole.DatePickerPopupRole:
-			child.addStyleClass("Wt-outset Wt-datepicker");
+			child.addStyleClass("Wt-datepicker");
 			break;
 		case WidgetThemeRole.PanelTitleBarRole:
 			child.addStyleClass("titlebar");
@@ -139,6 +139,13 @@ public class WCssTheme extends WTheme {
 	}
 
 	public void apply(WWidget widget, DomElement element, int elementRole) {
+		{
+			WPopupWidget popup = ((widget) instanceof WPopupWidget ? (WPopupWidget) (widget)
+					: null);
+			if (popup != null) {
+				element.addPropertyWord(Property.PropertyClass, "Wt-outset");
+			}
+		}
 		switch (element.getType()) {
 		case DomElement_BUTTON:
 			element.addPropertyWord(Property.PropertyClass, "Wt-btn");
@@ -158,7 +165,7 @@ public class WCssTheme extends WTheme {
 							: null);
 					if (suggestions != null) {
 						element.addPropertyWord(Property.PropertyClass,
-								"Wt-suggest Wt-outset");
+								"Wt-suggest");
 					}
 				}
 			}
@@ -182,8 +189,7 @@ public class WCssTheme extends WTheme {
 			WDialog dialog = ((widget) instanceof WDialog ? (WDialog) (widget)
 					: null);
 			if (dialog != null) {
-				element.addPropertyWord(Property.PropertyClass,
-						"Wt-dialog Wt-outset");
+				element.addPropertyWord(Property.PropertyClass, "Wt-dialog");
 				return;
 			}
 			WPanel panel = ((widget) instanceof WPanel ? (WPanel) (widget)
