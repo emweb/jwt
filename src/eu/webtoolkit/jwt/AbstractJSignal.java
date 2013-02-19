@@ -32,7 +32,7 @@ public abstract class AbstractJSignal extends AbstractEventSignal {
 
 	@Override
 	String encodeCmd() {
-		return getSender().getUniqueId() + "." + name;
+		return getSender().getId() + "." + name;
 	}
 
 	protected String createUserEventCall(String jsObject, String jsEvent, String arg1, String arg2, String arg3, String arg4, String arg5, String arg6) {
