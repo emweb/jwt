@@ -208,7 +208,11 @@ public class WDialog extends WPopupWidget {
 	 */
 	public WString getWindowTitle() {
 		String text = this.caption_.getText().toString();
-		return new WString(text.substring(4, 4 + text.length() - 9));
+		if (text.length() > 9) {
+			return new WString(text.substring(4, 4 + text.length() - 9));
+		} else {
+			return WString.Empty;
+		}
 	}
 
 	/**
@@ -568,8 +572,7 @@ public class WDialog extends WPopupWidget {
 	}
 
 	void render(EnumSet<RenderFlag> flags) {
-		if (!this.initialized_) {
-			this.initialized_ = true;
+		if (!EnumUtils.mask(flags, RenderFlag.RenderFull).isEmpty()) {
 			WApplication app = WApplication.getInstance();
 			boolean centerX = this.getOffset(Side.Left).isAuto()
 					&& this.getOffset(Side.Right).isAuto();
@@ -623,7 +626,6 @@ public class WDialog extends WPopupWidget {
 		this.modal_ = true;
 		this.resizable_ = false;
 		this.recursiveEventLoop_ = false;
-		this.initialized_ = false;
 		this.impl_ = ((this.getImplementation()) instanceof WTemplate ? (WTemplate) (this
 				.getImplementation())
 				: null);

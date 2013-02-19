@@ -582,12 +582,21 @@ public class WCssDecorationStyle extends WObject {
 		}
 		if (this.backgroundImageChanged_ || all) {
 			if (!this.backgroundImage_.isNull() || this.backgroundImageChanged_) {
-				element.setProperty(Property.PropertyStyleBackgroundImage,
-						!this.backgroundImage_.isNull() ? "url("
-								+ WApplication.getInstance()
-										.resolveRelativeUrl(
-												this.backgroundImage_.getUrl())
-								+ ")" : "none");
+				if (this.backgroundImage_.isNull()) {
+					element.setProperty(Property.PropertyStyleBackgroundImage,
+							"none");
+				} else {
+					WApplication app = WApplication.getInstance();
+					String url = app
+							.encodeUntrustedUrl(app
+									.resolveRelativeUrl(this.backgroundImage_
+											.getUrl()));
+					element
+							.setProperty(Property.PropertyStyleBackgroundImage,
+									"url("
+											+ WWebWidget.jsStringLiteral(url,
+													'"') + ")");
+				}
 				if (this.backgroundImageRepeat_ != WCssDecorationStyle.Repeat.RepeatXY
 						|| !this.backgroundImageLocation_.equals(0)) {
 					switch (this.backgroundImageRepeat_) {

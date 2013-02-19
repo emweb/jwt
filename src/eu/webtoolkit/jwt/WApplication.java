@@ -2692,7 +2692,8 @@ public class WApplication extends WObject {
 	 * which you use in {@link WTemplate} texts.
 	 */
 	public String encodeUntrustedUrl(String url) {
-		boolean needRedirect = url.indexOf("://") != -1
+		boolean needRedirect = (url.indexOf("://") != -1 || url
+				.startsWith("//"))
 				&& this.session_.hasSessionIdInUrl();
 		if (needRedirect) {
 			WtServlet c = this.session_.getController();

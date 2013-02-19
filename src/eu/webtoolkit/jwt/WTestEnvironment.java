@@ -354,6 +354,18 @@ public class WTestEnvironment extends WEnvironment {
 		new WebSession.Handler(this.theSession_, true);
 	}
 
+	/**
+	 * Simulates the presence of the session ID in the URL.
+	 * <p>
+	 * A session ID in the URL should cause a trampoline to be used for
+	 * references to external servers.
+	 * <p>
+	 * The default value is <code>false</code>.
+	 */
+	public void setSessionIdInUrl(boolean sessionIdInUrl) {
+		this.theSession_.setSessionIdInUrl(sessionIdInUrl);
+	}
+
 	private WebSession theSession_;
 	private Configuration configuration_;
 	private WtServlet controller_;

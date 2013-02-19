@@ -60,6 +60,9 @@ public class Git {
 	}
 
 	public int treeSize(ObjectId treeId) {
+		if (treeId.id == null)
+			return 0;
+		
 		try {
 			RevWalk walk = new RevWalk(repository, 0);
 			RevTree tree = walk.parseTree(treeId.id);

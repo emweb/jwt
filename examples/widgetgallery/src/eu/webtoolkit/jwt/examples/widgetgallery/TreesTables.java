@@ -271,7 +271,7 @@ class TreesTables extends TopicWidget {
 	WWidget TreeView() {
 		WTreeView treeView = new WTreeView();
 		treeView.resize(new WLength(600), new WLength(400));
-		WAbstractItemModel model = new GitModel("../../.git", treeView);
+		WAbstractItemModel model = new GitModel("/home/koen/git/jwt", treeView);
 		treeView.setModel(model);
 		treeView.setRowHeight(new WLength(24));
 		treeView.setHeaderHeight(new WLength(24));

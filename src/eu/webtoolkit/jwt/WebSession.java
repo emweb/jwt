@@ -397,6 +397,7 @@ class WebSession {
 						}
 						if (this.asyncResponse_ != null
 								&& !this.asyncResponse_.isWebSocketRequest()) {
+							this.asyncResponse_.flush();
 							this.asyncResponse_ = null;
 							this.canWriteAsyncResponse_ = false;
 						}
@@ -452,6 +453,11 @@ class WebSession {
 								}
 							} else {
 								this.pollRequestsIgnored_ = 0;
+							}
+						} else {
+							if (!WtServlet.isAsyncSupported()) {
+								this.updatesPending_ = false;
+								this.updatesPendingEvent_.signal();
 							}
 						}
 						if (handler.getRequest() != null) {
@@ -567,7 +573,9 @@ class WebSession {
 				handler.getSession().notifySignal(
 						new WEvent(new WEvent.Impl(handler)));
 			} else {
-				this.app_.triggerUpdate();
+				if (this.app_.isUpdatesEnabled()) {
+					this.app_.triggerUpdate();
+				}
 			}
 			if (handler.getResponse() != null) {
 				handler.getSession().render(handler);
@@ -577,6 +585,7 @@ class WebSession {
 				throw new WException(
 						"doRecursiveEventLoop(): session was killed");
 			}
+			WebSession.Handler prevRecursiveEventLoop = this.recursiveEventLoop_;
 			this.recursiveEventLoop_ = handler;
 			this.newRecursiveEvent_ = false;
 			while (!this.newRecursiveEvent_) {
@@ -589,7 +598,7 @@ class WebSession {
 			}
 			this.setLoaded();
 			this.app_.notify(new WEvent(new WEvent.Impl(handler)));
-			this.recursiveEventLoop_ = null;
+			this.recursiveEventLoop_ = prevRecursiveEventLoop;
 		} catch (IOException ioe) {
 			ioe.printStackTrace();
 		}
@@ -682,6 +691,10 @@ class WebSession {
 
 	public boolean hasSessionIdInUrl() {
 		return this.sessionIdInUrl_;
+	}
+
+	public void setSessionIdInUrl(boolean value) {
+		this.sessionIdInUrl_ = value;
 	}
 
 	public boolean isUseUglyInternalPaths() {

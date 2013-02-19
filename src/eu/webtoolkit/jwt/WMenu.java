@@ -329,7 +329,7 @@ public class WMenu extends WCompositeWidget {
 	}
 
 	/**
-	 * Creates a new menu (<b>deprecated</b>).
+	 * Creates a new menu.
 	 * <p>
 	 * Construct a menu to manage the widgets in <code>contentsStack</code>.
 	 * <p>
@@ -350,7 +350,7 @@ public class WMenu extends WCompositeWidget {
 	}
 
 	/**
-	 * Creates a new menu (<b>deprecated</b>).
+	 * Creates a new menu.
 	 * <p>
 	 * Calls {@link #WMenu(WStackedWidget contentsStack, WContainerWidget parent)
 	 * this(contentsStack, (WContainerWidget)null)}
@@ -576,17 +576,10 @@ public class WMenu extends WCompositeWidget {
 	 * the user activated an item, or when {@link WMenu#select(WMenuItem item)
 	 * select()} was invoked.
 	 * <p>
-	 * For a popup menu, the provided item may also be <code>null</code> in case
-	 * the menu was cancelled.
-	 * <p>
 	 * 
 	 * @see WMenu#itemSelectRendered()
 	 */
 	public Signal1<WMenuItem> itemSelected() {
-		return this.itemSelected_;
-	}
-
-	public Signal1<WMenuItem> triggered() {
 		return this.itemSelected_;
 	}
 
@@ -1023,17 +1016,6 @@ public class WMenu extends WCompositeWidget {
 		item.renderSelected(selected);
 	}
 
-	private WContainerWidget ul_;
-	WStackedWidget contentsStack_;
-	private boolean internalPathEnabled_;
-	private boolean emitPathChange_;
-	private String basePath_;
-	private String previousInternalPath_;
-	WMenuItem parentItem_;
-	private Signal1<WMenuItem> itemSelected_;
-	private Signal1<WMenuItem> itemSelectRendered_;
-	private Signal1<WMenuItem> itemClosed_;
-
 	void select(int index, boolean changePath) {
 		int last = this.current_;
 		this.current_ = index;
@@ -1054,6 +1036,16 @@ public class WMenu extends WCompositeWidget {
 		}
 	}
 
+	private WContainerWidget ul_;
+	WStackedWidget contentsStack_;
+	private boolean internalPathEnabled_;
+	private boolean emitPathChange_;
+	private String basePath_;
+	private String previousInternalPath_;
+	WMenuItem parentItem_;
+	private Signal1<WMenuItem> itemSelected_;
+	private Signal1<WMenuItem> itemSelectRendered_;
+	private Signal1<WMenuItem> itemClosed_;
 	private AbstractSignal.Connection contentsStackConnection_;
 
 	private void contentsDestroyed() {

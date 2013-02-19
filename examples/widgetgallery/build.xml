@@ -33,28 +33,15 @@
 
   <!-- Compile Java source -->
   <target name="build">
-    <!-- build dependent examples -->
-    <ant dir="../charts/" target="all" inheritAll="false"/>
-    <ant dir="../treeview/" target="all" inheritAll="false"/>
-    <ant dir="../dragdrop/" target="all" inheritAll="false"/>
-    <ant dir="../painting/" target="all" inheritAll="false"/>
     <ant dir="${jwt.dir}" target="all" inheritAll="false"/>
     
     <mkdir dir="${jwt-lib.dir}"/>
     <copy todir="${jwt-lib.dir}">
+      <fileset dir="${lib.dir}" />
       <fileset dir="${jwt.dir}/dist" />
       <fileset dir="${jwt.dir}/lib" 
 	       includes="*.jar servlet-api/*.jar"/>
     </copy>
-
-    <copy file="../charts/dist/jwt-charts.jar"
-	  todir="${jwt-lib.dir}"/>
-    <copy file="../treeview/dist/jwt-treeview.jar"
-	  todir="${jwt-lib.dir}"/>
-    <copy file="../dragdrop/dist/jwt-dragdrop.jar"
-	  todir="${jwt-lib.dir}"/>
-    <copy file="../painting/dist/jwt-painting.jar"
-	  todir="${jwt-lib.dir}"/>
 
     <mkdir dir="${build.dir}"/>
     

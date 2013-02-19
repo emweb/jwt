@@ -539,10 +539,18 @@ class Block {
 				double width = this.cssWidth(renderer.getFontScale());
 				double height = this.cssHeight(renderer.getFontScale());
 				WRectF rect = new WRectF(left, top, width, height);
-				renderer.getPainter().drawImage(
-						rect,
-						new WPainter.Image(this.attributeValue("src"),
-								(int) width, (int) height));
+				if (width > 0 && height > 0) {
+					renderer.getPainter().drawImage(
+							rect,
+							new WPainter.Image(this.attributeValue("src"),
+									(int) width, (int) height));
+				} else {
+					logger.error(new StringWriter().append(
+							"Cannot paint image '").append(
+							this.attributeValue("src")).append("', ").append(
+							"need (CSS) width and height explicitly set")
+							.toString());
+				}
 			}
 		}
 		for (int i = 0; i < this.blockLayout.size(); ++i) {

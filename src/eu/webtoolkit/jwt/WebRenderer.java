@@ -57,6 +57,10 @@ class WebRenderer implements SlotLearnerInterface {
 		this.visibleOnly_ = how;
 	}
 
+	public boolean isRendered() {
+		return this.rendered_;
+	}
+
 	public void setRendered(boolean how) {
 		this.rendered_ = how;
 	}

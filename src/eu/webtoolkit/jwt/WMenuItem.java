@@ -575,7 +575,19 @@ public class WMenuItem extends WContainerWidget {
 		return result;
 	}
 
-	// public WWidget getItemWidget() ;
+	/**
+	 * Returns the widget that represents the item (<b>deprecated</b>).
+	 * <p>
+	 * This returns this.
+	 * <p>
+	 * 
+	 * @deprecated This is a pre-Wt 3.3.0 artifact which has lost its value
+	 *             since {@link WMenuItem} is now a widget.
+	 */
+	public WWidget getItemWidget() {
+		return this;
+	}
+
 	/**
 	 * Selects this item.
 	 * <p>

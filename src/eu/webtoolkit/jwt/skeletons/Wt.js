@@ -180,8 +180,9 @@ function host(url) {
 }
 
 this.initAjaxComm = function(url, handler) {
-  var crossDomain = url.indexOf("://") != -1
-                    && host(url) != window.location.host;
+  var crossDomain = 
+    (url.indexOf("://") != -1 || url.indexOf("//") == 0) &&
+    host(url) != window.location.host;
 
   function createRequest(method, url) {
     var request = null;
@@ -1414,13 +1415,20 @@ this.positionAtWidget = function(id, atId, orientation, delta) {
    *  an ancestor of w which isn't overflowing
    */
   if (!w.wtNoReparent) {
-    var p, domRoot = $('.Wt-domRoot').get(0);
+    var p, pp = atw, domRoot = $('.Wt-domRoot').get(0);
     w.parentNode.removeChild(w);
   
-    for (p = atw.parentNode; p != domRoot; p = p.parentNode) {
+    for (p = pp.parentNode; p != domRoot; p = p.parentNode) {
+      if (p.wtResize) {
+	p = pp;
+	break;
+      }
+
       if (p.scrollHeight > p.clientHeight || p.scrollWidth > p.clientWidth) {
 	break;
       }
+
+      pp = p;
     }
 
     var posP = WT.css(p, 'position');
@@ -2808,8 +2816,10 @@ function addTimerEvent(timerid, msec, repeat) {
 	obj.onclick();
     }
   };
-
+  
   var obj = WT.getElement(timerid);
+  if (obj.timer)
+    clearTimeout(obj.timer);
   obj.timer = setTimeout(tm, msec);
   obj.tm = tm;
 }

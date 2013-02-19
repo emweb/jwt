@@ -1215,7 +1215,8 @@ public class WAxis {
 				double resolution = this.resolution_;
 				if (resolution == 0) {
 					if (this.scale_ == AxisScale.LinearScale) {
-						resolution = Math.abs(1E-3 * segment.renderMinimum);
+						resolution = Math.max(1E-3, Math
+								.abs(1E-3 * segment.renderMinimum));
 					} else {
 						if (this.scale_ == AxisScale.DateScale) {
 							resolution = 1;
