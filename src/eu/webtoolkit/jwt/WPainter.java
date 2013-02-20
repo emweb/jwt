@@ -385,10 +385,11 @@ public class WPainter {
 		 * Create an image which is located at the <i>uri</i>, and which has
 		 * dimensions <i>width</i> x <i>height</i>.
 		 */
-		public Image(String uri, int width, int height) {
-			this.uri_ = uri;
+		public Image(String url, int width, int height) {
+			this.url_ = "";
 			this.width_ = width;
 			this.height_ = height;
+			this.setUrl(url);
 		}
 
 		/**
@@ -398,8 +399,9 @@ public class WPainter {
 		 * the local filesystem as <i>file</i>. The image dimensions are
 		 * retrieved from the file.
 		 */
-		public Image(String uri, String fileName) {
-			this.uri_ = uri;
+		public Image(String url, String fileName) {
+			this.url_ = "";
+			this.setUrl(url);
 			List<Integer> header = FileUtils.fileHeader(fileName, 25);
 			if (header.size() != 0) {
 				String mimeType = ImageUtils.identifyImageMimeType(header);
@@ -427,10 +429,10 @@ public class WPainter {
 		}
 
 		/**
-		 * Returns the uri.
+		 * Returns the url.
 		 */
 		public String getUri() {
-			return this.uri_;
+			return this.url_;
 		}
 
 		/**
@@ -447,9 +449,18 @@ public class WPainter {
 			return this.height_;
 		}
 
-		private String uri_;
+		private String url_;
 		private int width_;
 		private int height_;
+
+		private void setUrl(String url) {
+			WApplication app = WApplication.getInstance();
+			if (app != null) {
+				this.url_ = app.resolveRelativeUrl(url);
+			} else {
+				this.url_ = url;
+			}
+		}
 	}
 
 	/**

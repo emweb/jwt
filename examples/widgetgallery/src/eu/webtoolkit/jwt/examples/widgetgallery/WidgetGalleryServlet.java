@@ -7,10 +7,12 @@ import eu.webtoolkit.jwt.WHBoxLayout;
 import eu.webtoolkit.jwt.WLink;
 import eu.webtoolkit.jwt.WXmlLocalizedStrings;
 import eu.webtoolkit.jwt.WtServlet;
+import eu.webtoolkit.jwt.Configuration.ErrorReporting;
 
 public class WidgetGalleryServlet extends WtServlet {
 	public WidgetGalleryServlet() {
-		this.getConfiguration().setDebug(true);
+		this.getConfiguration().setErrorReporting(ErrorReporting.NoErrors);
+		this.getConfiguration().setUaCompatible("IE8=IE7");
 	}
 	
 	@Override

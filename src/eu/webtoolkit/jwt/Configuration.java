@@ -31,13 +31,29 @@ import org.w3c.dom.NodeList;
 public class Configuration {
 	private static Logger logger = LoggerFactory.getLogger(AbstractJSignal.class);
 
-	enum SessionTracking {
+	public enum SessionTracking {
 		CookiesURL, Auto
 	}
 
-	enum ErrorReporting {
+	/**
+	 * An enumeration for the level of error reporting in case of client-side (JavaScript) errors.
+	 */
+	public enum ErrorReporting {
+		/**
+		 * The application silently dies, and this allows the use of standard debugging
+		 * capabilities of the browser to diagnose the problem (convenient during development).
+		 */
 		NoErrors,
+		
+		/**
+		 * The application dies with a message to the user indicating an internal error.
+		 * This is the default behaviour.
+		 */
 		ErrorMessage,
+
+		/**
+		 * The application dies with a message and if possible a stack trace of the problem.
+		 */
 		ErrorMessageWithStack
 	}
 
@@ -56,6 +72,7 @@ public class Configuration {
 	private int sessionTimeout = 600;
 	private int indicatorTimeout = 500;
 	private int bootstrapTimeout = 10;
+	private String uaCompatible = "";
 
 	/**
 	 * Creates a default configuration.
@@ -124,6 +141,8 @@ public class Configuration {
 						}
 					} else if (node.getNodeName().equalsIgnoreCase("progressive-bootstrap")) {
 						setProgressiveBootstrap(parseBoolean(errorMessage, node));
+					} else if (node.getNodeName().equalsIgnoreCase("ua-compatible")) {
+						setUaCompatible(node.getTextContent().trim());
 					} else if (node.getNodeName().equalsIgnoreCase("send-xhtml-mime-type")) {
 						setSendXHTMLMimeType(parseBoolean(errorMessage, node));
 					} else if (node.getNodeName().equalsIgnoreCase("redirect-message")) {
@@ -277,7 +296,7 @@ public class Configuration {
 	 * <p>
 	 * Debugging is off by default.
 	 * 
-	 * @deprecated
+	 * @deprecated use {@link #setErrorReporting(ErrorReporting)} instead.
 	 */
 	public void setDebug(boolean how) {
 		if (how)
@@ -292,6 +311,7 @@ public class Configuration {
 	 * @return whether debugging is enabled.
 	 * 
 	 * @see #setDebug(boolean)
+	 * @deprecated use {@link #getErrorReporting()} instead.
 	 */
 	public boolean debug() {
 		return errorReporting == ErrorReporting.NoErrors;
@@ -584,10 +604,35 @@ public class Configuration {
 	}
 	
 	/**
-	 * Set the error reporting mode.
+	 * Sets the error reporting mode.
 	 */
 	public void setErrorReporting(ErrorReporting err) { 
 		errorReporting = err;
+	}
+
+	/**
+	 * Configures different rendering engines for certain browsers.
+	 * 
+	 * Currently this is only used to select IE7 compatible rendering
+	 * engine for IE8, which solves problems of unreliable and slow
+	 * rendering performance for VML which Microsoft broke in IE8.
+	 *
+     * Before 3.3.0, the default value was IE8=IE7, but since 3.3.0
+	 * this has been changed to an empty string (i.e. let IE8 use the
+	 * standard IE8 rendering engine) to take advantage of IE8's
+	 * improved CSS support. 
+	 */
+	public void setUaCompatible(String uaCompatible) {
+		this.uaCompatible = uaCompatible;
+	}
+
+	/**
+	 * Returns UA compatibility selection
+	 * 
+	 * @see #setUaCompatible(String)
+	 */
+	public String getUaCompatible() {
+		return uaCompatible;
 	}
 
 	/*

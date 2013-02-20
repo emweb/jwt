@@ -479,7 +479,7 @@ public class WMenu extends WCompositeWidget {
 				this.contentsStack_.addWidget(contents);
 			}
 			if (this.contentsStack_.getCount() == 1) {
-				this.current_ = 0;
+				this.setCurrent(0);
 				if (contents != null) {
 					this.contentsStack_.setCurrentWidget(contents);
 				}
@@ -1016,24 +1016,8 @@ public class WMenu extends WCompositeWidget {
 		item.renderSelected(selected);
 	}
 
-	void select(int index, boolean changePath) {
-		int last = this.current_;
+	protected void setCurrent(int index) {
 		this.current_ = index;
-		this.selectVisual(index, changePath, true);
-		if (index != -1) {
-			WMenuItem item = this.itemAt(index);
-			item.show();
-			item.loadContents();
-			if (last != index) {
-				item.triggered().trigger(item);
-				this.itemSelected_.trigger(item);
-			}
-			if (changePath && this.emitPathChange_) {
-				WApplication app = WApplication.getInstance();
-				app.internalPathChanged().trigger(app.getInternalPath());
-				this.emitPathChange_ = false;
-			}
-		}
 	}
 
 	private WContainerWidget ul_;
@@ -1151,6 +1135,26 @@ public class WMenu extends WCompositeWidget {
 			int nextItem = this.nextAfterHide(index);
 			if (nextItem != this.current_) {
 				this.select(nextItem);
+			}
+		}
+	}
+
+	void select(int index, boolean changePath) {
+		int last = this.current_;
+		this.setCurrent(index);
+		this.selectVisual(this.current_, changePath, true);
+		if (index != -1) {
+			WMenuItem item = this.itemAt(index);
+			item.show();
+			item.loadContents();
+			if (changePath && this.emitPathChange_) {
+				WApplication app = WApplication.getInstance();
+				app.internalPathChanged().trigger(app.getInternalPath());
+				this.emitPathChange_ = false;
+			}
+			if (last != index) {
+				item.triggered().trigger(item);
+				this.itemSelected_.trigger(item);
 			}
 		}
 	}

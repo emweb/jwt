@@ -204,11 +204,20 @@ public class WApplication extends WObject {
 		this.internalPathValid_ = true;
 		this.theme_ = new WCssTheme("default", this);
 		this.setLocalizedStrings((WLocalizedStrings) null);
-		if (this.getEnvironment().agentIsIE()
-				&& this.getEnvironment().getAgent().getValue() >= WEnvironment.UserAgent.IE9
-						.getValue()) {
-			this.addMetaHeader(MetaHeaderType.MetaHttpHeader,
-					"X-UA-Compatible", "IE=9");
+		if (this.getEnvironment().agentIsIE()) {
+			if (this.getEnvironment().getAgent().getValue() < WEnvironment.UserAgent.IE9
+					.getValue()) {
+				Configuration conf = this.getEnvironment().getServer()
+						.getConfiguration();
+				boolean selectIE7 = conf.getUaCompatible().indexOf("IE8=IE7") != -1;
+				if (selectIE7) {
+					this.addMetaHeader(MetaHeaderType.MetaHttpHeader,
+							"X-UA-Compatible", "IE=7");
+				}
+			} else {
+				this.addMetaHeader(MetaHeaderType.MetaHttpHeader,
+						"X-UA-Compatible", "IE=9");
+			}
 		}
 		this.domRoot_ = new WContainerWidget();
 		this.domRoot_.setStyleClass("Wt-domRoot");

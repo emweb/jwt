@@ -1088,12 +1088,7 @@ class WebRenderer implements SlotLearnerInterface {
 		if (sheet.getMedia().length() != 0 && !sheet.getMedia().equals("all")) {
 			out.append(" media=\"").append(sheet.getMedia()).append('"');
 		}
-		if (xhtml) {
-			out.append("/>");
-		} else {
-			out.append('>');
-		}
-		out.append("\n");
+		closeSpecial(out, xhtml);
 	}
 
 	private String createFormObjectsList(WApplication app) {
@@ -1365,11 +1360,7 @@ class WebRenderer implements SlotLearnerInterface {
 					appendAttribute(result, "lang", m.lang);
 				}
 				appendAttribute(result, "content", m.content.toString());
-				if (xhtml) {
-					result.append("/>");
-				} else {
-					result.append('>');
-				}
+				closeSpecial(result, xhtml);
 			}
 			for (int i = 0; i < this.session_.getApp().metaLinks_.size(); ++i) {
 				WApplication.MetaLink ml = this.session_.getApp().metaLinks_
@@ -1392,46 +1383,40 @@ class WebRenderer implements SlotLearnerInterface {
 				if (ml.disabled) {
 					appendAttribute(result, "disabled", "");
 				}
-				if (xhtml) {
-					result.append("/>");
-				} else {
-					result.append('>');
-				}
+				closeSpecial(result, xhtml);
 			}
 		} else {
-			if (this.session_.getEnv().agentIsIE()
-					&& this.session_.getEnv().getAgent().getValue() >= WEnvironment.UserAgent.IE9
-							.getValue()) {
-				result
-						.append("<meta http-equiv=\"X-UA-Compatible\" content=\"IE=9");
-				if (xhtml) {
-					result.append("\"/>");
+			if (this.session_.getEnv().agentIsIE()) {
+				if (this.session_.getEnv().getAgent().getValue() < WEnvironment.UserAgent.IE9
+						.getValue()) {
+					Configuration conf = this.session_.getEnv().getServer()
+							.getConfiguration();
+					boolean selectIE7 = conf.getUaCompatible().indexOf(
+							"IE8=IE7") != -1;
+					if (selectIE7) {
+						result
+								.append("<meta http-equiv=\"X-UA-Compatible\" content=\"IE=7\"");
+						closeSpecial(result, xhtml);
+					}
 				} else {
-					result.append("\">");
+					result
+							.append("<meta http-equiv=\"X-UA-Compatible\" content=\"IE=9\"");
+					closeSpecial(result, xhtml);
 				}
-				result.append('\n');
 			}
 		}
 		if (this.session_.getFavicon().length() != 0) {
 			result
 					.append(
 							"<link rel=\"icon\" type=\"image/vnd.microsoft.icon\" href=\"")
-					.append(this.session_.getFavicon());
-			if (xhtml) {
-				result.append("\"/>");
-			} else {
-				result.append("\">");
-			}
+					.append(this.session_.getFavicon()).append('"');
+			closeSpecial(result, xhtml);
 		}
 		String baseUrl = "";
 		baseUrl = WApplication.readConfigurationProperty("baseURL", baseUrl);
 		if (baseUrl.length() != 0) {
-			result.append("<base href=\"").append(baseUrl);
-			if (xhtml) {
-				result.append("\"/>");
-			} else {
-				result.append("\">");
-			}
+			result.append("<base href=\"").append(baseUrl).append('"');
+			closeSpecial(result, xhtml);
 		}
 		return result.toString();
 	}
@@ -1506,5 +1491,21 @@ class WebRenderer implements SlotLearnerInterface {
 		eos.append(value);
 		eos.popEscape();
 		eos.append('"');
+	}
+
+	static void closeSpecial(StringBuilder s, boolean xhtml) {
+		if (xhtml) {
+			s.append("/>\n");
+		} else {
+			s.append(">\n");
+		}
+	}
+
+	static void closeSpecial(EscapeOStream s, boolean xhtml) {
+		if (xhtml) {
+			s.append("/>\n");
+		} else {
+			s.append(">\n");
+		}
 	}
 }

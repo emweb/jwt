@@ -416,9 +416,7 @@ public class WPopupMenu extends WMenu {
 	protected void renderSelected(WMenuItem item, boolean selected) {
 	}
 
-	void select(int index, boolean changePath) {
-		super.select(index, changePath);
-		super.select(-1, false);
+	protected void setCurrent(int index) {
 	}
 
 	WMenuItem result_;
