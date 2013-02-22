@@ -407,7 +407,7 @@ public class WDatePicker extends WCompositeWidget {
 	private JSlot positionJS_;
 
 	private void createDefault(WLineEdit forEdit) {
-		WImage icon = new WImage(WApplication.getResourcesUrl()
+		WImage icon = new WImage(WApplication.getRelativeResourcesUrl()
 				+ "calendar_edit.png");
 		icon.resize(new WLength(16), new WLength(16));
 		icon.setVerticalAlignment(AlignmentFlag.AlignMiddle);

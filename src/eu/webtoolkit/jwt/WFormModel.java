@@ -115,7 +115,15 @@ public class WFormModel extends WObject {
 		addField(field, WString.Empty);
 	}
 
-	// public void removeField(String field) ;
+	/**
+	 * Removes a field.
+	 * <p>
+	 * The <code>field</code> is removed from the model.
+	 */
+	public void removeField(String field) {
+		this.fields_.remove(field);
+	}
+
 	/**
 	 * Returns the fields.
 	 * <p>

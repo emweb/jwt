@@ -370,7 +370,7 @@ public class WMediaPlayer extends WCompositeWidget {
 		this.setImplementation(impl);
 		WApplication app = WApplication.getInstance();
 		app.loadJavaScript("js/WMediaPlayer.js", wtjs1());
-		String res = WApplication.getResourcesUrl() + "jPlayer/";
+		String res = WApplication.getRelativeResourcesUrl() + "jPlayer/";
 		if (!app.getEnvironment().hasAjax()) {
 			app.require(res + "jquery.min.js");
 		}
@@ -756,10 +756,20 @@ public class WMediaPlayer extends WCompositeWidget {
 	 * The default value is 0.8
 	 */
 	public void setVolume(double volume) {
+		this.status_.volume = volume;
 		this.playerDo("volume", String.valueOf(volume));
 	}
 
-	// public double getVolume() ;
+	/**
+	 * Returns the volume.
+	 * <p>
+	 * 
+	 * @see WMediaPlayer#setVolume(double volume)
+	 */
+	public double getVolume() {
+		return this.status_.volume;
+	}
+
 	/**
 	 * Mutes or unmutes the playback volume.
 	 * <p>

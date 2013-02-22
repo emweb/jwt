@@ -55,12 +55,11 @@ public class WBootstrapTheme extends WTheme {
 
 	public List<WCssStyleSheet> getStyleSheets() {
 		List<WCssStyleSheet> result = new ArrayList<WCssStyleSheet>();
-		String themeDir = WApplication.getResourcesUrl() + "themes/"
-				+ this.getName();
-		result.add(new WCssStyleSheet(new WLink(themeDir + "/bootstrap.css")));
+		String themeDir = this.getResourcesUrl();
+		result.add(new WCssStyleSheet(new WLink(themeDir + "bootstrap.css")));
 		result.add(new WCssStyleSheet(new WLink(themeDir
-				+ "/bootstrap-responsive.css")));
-		result.add(new WCssStyleSheet(new WLink(themeDir + "/wt.css")));
+				+ "bootstrap-responsive.css")));
+		result.add(new WCssStyleSheet(new WLink(themeDir + "wt.css")));
 		return result;
 	}
 

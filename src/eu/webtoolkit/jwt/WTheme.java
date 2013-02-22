@@ -62,8 +62,8 @@ public abstract class WTheme extends WObject {
 	 * directory, based on the theme {@link WTheme#getName() getName()}.
 	 */
 	public String getResourcesUrl() {
-		return WApplication.getResourcesUrl() + "themes/" + this.getName()
-				+ "/";
+		return WApplication.getRelativeResourcesUrl() + "themes/"
+				+ this.getName() + "/";
 	}
 
 	/**

@@ -64,7 +64,6 @@ class PaintedSlider extends WPaintedWidget {
 
 	public void updateState() {
 		boolean rtl = WApplication.getInstance().getLayoutDirection() == LayoutDirection.RightToLeft;
-		String resourcesURL = WApplication.getResourcesUrl();
 		Orientation o = this.slider_.getOrientation();
 		if (o == Orientation.Horizontal) {
 			this.handle_.resize(new WLength(this.slider_.getHandleWidth()),

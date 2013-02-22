@@ -360,7 +360,7 @@ public class WTextEdit extends WTextArea {
 						.doJavaScript("window.tinyMCE_GZ = { loaded: true };",
 								false);
 			}
-			String tinyMCEBaseURL = WApplication.getResourcesUrl()
+			String tinyMCEBaseURL = WApplication.getRelativeResourcesUrl()
 					+ "tiny_mce/";
 			tinyMCEBaseURL = WApplication.readConfigurationProperty(
 					"tinyMCEBaseURL", tinyMCEBaseURL);

@@ -60,17 +60,17 @@ public class WCssTheme extends WTheme {
 	public List<WCssStyleSheet> getStyleSheets() {
 		List<WCssStyleSheet> result = new ArrayList<WCssStyleSheet>();
 		if (this.name_.length() != 0) {
-			String themeDir = WApplication.getResourcesUrl() + "themes/"
-					+ this.name_;
+			String themeDir = this.getResourcesUrl();
 			WApplication app = WApplication.getInstance();
-			result.add(new WCssStyleSheet(new WLink(themeDir + "/wt.css")));
+			result.add(new WCssStyleSheet(new WLink(themeDir + "wt.css")));
 			if (app.getEnvironment().agentIsIE()) {
-				result.add(new WCssStyleSheet(
-						new WLink(themeDir + "/wt_ie.css")));
+				result
+						.add(new WCssStyleSheet(new WLink(themeDir
+								+ "wt_ie.css")));
 			}
 			if (app.getEnvironment().getAgent() == WEnvironment.UserAgent.IE6) {
-				result.add(new WCssStyleSheet(new WLink(themeDir
-						+ "/wt_ie6.css")));
+				result.add(new WCssStyleSheet(
+						new WLink(themeDir + "wt_ie6.css")));
 			}
 		}
 		return result;
@@ -130,7 +130,7 @@ public class WCssTheme extends WTheme {
 			break;
 		case WidgetThemeRole.AuthWidgets:
 			WApplication app = WApplication.getInstance();
-			app.useStyleSheet(new WLink(WApplication.getResourcesUrl()
+			app.useStyleSheet(new WLink(WApplication.getRelativeResourcesUrl()
 					+ "form.css"));
 			app.getBuiltinLocalizedStrings().useBuiltin(
 					WtServlet.AuthCssTheme_xml);

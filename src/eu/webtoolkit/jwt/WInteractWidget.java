@@ -525,7 +525,16 @@ public abstract class WInteractWidget extends WWebWidget {
 		}
 	}
 
-	// public int getMouseOverDelay() ;
+	/**
+	 * Returns the mouse over signal delay.
+	 * <p>
+	 * 
+	 * @see WInteractWidget#setMouseOverDelay(int delay)
+	 */
+	public int getMouseOverDelay() {
+		return this.mouseOverDelay_;
+	}
+
 	public void load() {
 		if (!this.isDisabled()) {
 			if (this.getParent() != null) {

@@ -449,7 +449,22 @@ public class WAnchor extends WContainerWidget {
 		this.setLink(new WLink(resource));
 	}
 
-	// public WResource getResource() ;
+	/**
+	 * Returns the destination resource (<b>deprecated</b>).
+	 * <p>
+	 * Returns <code>null</code> if no resource has been set.
+	 * <p>
+	 * 
+	 * @deprecated Use {@link WAnchor#getLink() getLink()} instead.
+	 */
+	public WResource getResource() {
+		if (this.linkState_.link.getType() == WLink.Type.Resource) {
+			return this.linkState_.link.getResource();
+		} else {
+			return null;
+		}
+	}
+
 	/**
 	 * Sets the label text.
 	 * <p>
@@ -649,7 +664,7 @@ public class WAnchor extends WContainerWidget {
 				linkState.clickJS = null;
 			}
 			url = app.encodeUntrustedUrl(url);
-			String href = widget.resolveRelativeUrl(url);
+			String href = url;
 			element.setAttribute("href", href);
 			return !app.getEnvironment().hashInternalPaths()
 					&& href.indexOf("://") == -1 && href.charAt(0) != '/';

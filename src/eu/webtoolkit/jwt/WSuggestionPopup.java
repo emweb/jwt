@@ -700,7 +700,16 @@ public class WSuggestionPopup extends WPopupWidget {
 		return this.activated_;
 	}
 
-	// public void setGlobalPopup(boolean global) ;
+	/**
+	 * Controls how the popup is positioned (<b>deprecated</b>).
+	 * <p>
+	 * 
+	 * @deprecated this option is now ignored, since the popup is automatically
+	 *             positioned to behave properly.
+	 */
+	public void setGlobalPopup(boolean global) {
+	}
+
 	private WContainerWidget impl_;
 	private WAbstractItemModel model_;
 	private int modelColumn_;

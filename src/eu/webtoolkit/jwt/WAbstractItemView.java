@@ -342,7 +342,17 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 		this.headerItemDelegate_ = delegate;
 	}
 
-	// public WAbstractItemDelegate getHeaderItemDelegate() ;
+	/**
+	 * Returns the header item delegate.
+	 * <p>
+	 * 
+	 * @see WAbstractItemView#setHeaderItemDelegate(WAbstractItemDelegate
+	 *      delegate)
+	 */
+	public WAbstractItemDelegate getHeaderItemDelegate() {
+		return this.headerItemDelegate_;
+	}
+
 	/**
 	 * Sets the content alignment for a column.
 	 * <p>
@@ -1942,7 +1952,8 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 						HeaderFlag.ColumnIsExpandedRight)).isEmpty()) {
 			WImage collapseIcon = new WImage(contents);
 			collapseIcon.setFloatSide(Side.Left);
-			collapseIcon.setImageLink(new WLink(WApplication.getResourcesUrl()
+			collapseIcon.setImageLink(new WLink(WApplication
+					.getRelativeResourcesUrl()
 					+ "minus.gif"));
 			this.clickedForCollapseMapper_.mapConnect(collapseIcon.clicked(),
 					info.id);
@@ -1952,7 +1963,7 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 				WImage expandIcon = new WImage(contents);
 				expandIcon.setFloatSide(Side.Left);
 				expandIcon.setImageLink(new WLink(WApplication
-						.getResourcesUrl()
+						.getRelativeResourcesUrl()
 						+ "plus.gif"));
 				this.clickedForExpandMapper_.mapConnect(expandIcon.clicked(),
 						info.id);

@@ -251,22 +251,24 @@ public class WLink {
 	}
 
 	String resolveUrl(WApplication app) {
+		String relativeUrl = "";
 		switch (this.type_) {
 		case InternalPath: {
 			if (app.getEnvironment().hasAjax()) {
-				return app.getBookmarkUrl(this.getInternalPath());
+				relativeUrl = app.getBookmarkUrl(this.getInternalPath());
 			} else {
 				if (app.getEnvironment().agentIsSpiderBot()) {
-					return app.getBookmarkUrl(this.getInternalPath());
+					relativeUrl = app.getBookmarkUrl(this.getInternalPath());
 				} else {
-					return app.getSession().getMostRelativeUrl(
+					relativeUrl = app.getSession().getMostRelativeUrl(
 							this.getInternalPath());
 				}
 			}
 		}
 		default:
-			return this.getUrl();
+			relativeUrl = this.getUrl();
 		}
+		return app.resolveRelativeUrl(relativeUrl);
 	}
 
 	private WLink.Type type_;

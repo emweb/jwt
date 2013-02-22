@@ -330,7 +330,7 @@ public class WApplication extends WObject {
 					prefix = "moz-";
 				}
 			}
-			this.useStyleSheet(new WLink(WApplication.getResourcesUrl()
+			this.useStyleSheet(new WLink(WApplication.getRelativeResourcesUrl()
 					+ prefix + "transitions.css"));
 		}
 		this.setLoadingIndicator(new WDefaultLoadingIndicator());
@@ -1558,8 +1558,22 @@ public class WApplication extends WObject {
 
 	/**
 	 * Returns the URL at which the resources are deployed.
+	 * <p>
+	 * Returns resolveRelativeUrl({@link WApplication#getRelativeResourcesUrl()
+	 * getRelativeResourcesUrl()})
 	 */
 	public static String getResourcesUrl() {
+		return WApplication.getInstance().resolveRelativeUrl(
+				WApplication.getRelativeResourcesUrl());
+	}
+
+	/**
+	 * Returns the URL at which the resources are deployed.
+	 * <p>
+	 * 
+	 * @see WApplication#makeAbsoluteUrl(String url)
+	 */
+	public static String getRelativeResourcesUrl() {
 		WApplication app = WApplication.getInstance();
 		Configuration conf = app.getEnvironment().getServer()
 				.getConfiguration();

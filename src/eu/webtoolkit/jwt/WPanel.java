@@ -213,7 +213,7 @@ public class WPanel extends WCompositeWidget {
 	 */
 	public void setCollapsible(boolean on) {
 		if (on && !(this.collapseIcon_ != null)) {
-			String resources = WApplication.getResourcesUrl();
+			String resources = WApplication.getRelativeResourcesUrl();
 			this.setTitleBar(true);
 			this.collapseIcon_ = new WIconPair(resources + "collapse.gif",
 					resources + "expand.gif");

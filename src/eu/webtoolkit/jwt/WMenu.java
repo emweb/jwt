@@ -370,20 +370,15 @@ public class WMenu extends WCompositeWidget {
 	/**
 	 * Adds an item.
 	 * <p>
-	 * Adds a menu item with given <code>contents</code>, which is added to the
-	 * menu&apos;s associated contents stack.
-	 * <p>
-	 * <code>contents</code> may be <code>null</code> for two reasons:
-	 * <ul>
-	 * <li>if the menu is not associated with a contents stack, then you cannot
-	 * associate a menu item with a contents widget</li>
-	 * <li>or, you may have one or more items which which are not associated
-	 * with a contents widget in the contents stack.</li>
-	 * </ul>
+	 * Use this version of
+	 * {@link WMenu#addItem(CharSequence name, WWidget contents, WMenuItem.LoadPolicy policy)
+	 * addItem()} if you do not want to specify an icon for this menu item.
 	 * <p>
 	 * Returns the corresponding {@link WMenuItem}.
 	 * <p>
 	 * 
+	 * @see WMenu#addItem(String iconPath, CharSequence name, WWidget contents,
+	 *      WMenuItem.LoadPolicy policy)
 	 * @see WMenu#addItem(WMenuItem item)
 	 */
 	public WMenuItem addItem(CharSequence name, WWidget contents,
@@ -413,6 +408,25 @@ public class WMenu extends WCompositeWidget {
 		return addItem(name, contents, WMenuItem.LoadPolicy.LazyLoading);
 	}
 
+	/**
+	 * Adds an item.
+	 * <p>
+	 * Adds a menu item with given <code>contents</code>, which is added to the
+	 * menu&apos;s associated contents stack.
+	 * <p>
+	 * <code>contents</code> may be <code>null</code> for two reasons:
+	 * <ul>
+	 * <li>if the menu is not associated with a contents stack, then you cannot
+	 * associate a menu item with a contents widget</li>
+	 * <li>or, you may have one or more items which which are not associated
+	 * with a contents widget in the contents stack.</li>
+	 * </ul>
+	 * <p>
+	 * Returns the corresponding {@link WMenuItem}.
+	 * <p>
+	 * 
+	 * @see WMenu#addItem(WMenuItem item)
+	 */
 	public WMenuItem addItem(String iconPath, CharSequence name,
 			WWidget contents, WMenuItem.LoadPolicy policy) {
 		WMenuItem item = new WMenuItem(iconPath, name, contents, policy);
@@ -420,11 +434,25 @@ public class WMenu extends WCompositeWidget {
 		return item;
 	}
 
+	/**
+	 * Adds an item.
+	 * <p>
+	 * Returns
+	 * {@link #addItem(String iconPath, CharSequence name, WWidget contents, WMenuItem.LoadPolicy policy)
+	 * addItem(iconPath, name, (WWidget)null, WMenuItem.LoadPolicy.LazyLoading)}
+	 */
 	public final WMenuItem addItem(String iconPath, CharSequence name) {
 		return addItem(iconPath, name, (WWidget) null,
 				WMenuItem.LoadPolicy.LazyLoading);
 	}
 
+	/**
+	 * Adds an item.
+	 * <p>
+	 * Returns
+	 * {@link #addItem(String iconPath, CharSequence name, WWidget contents, WMenuItem.LoadPolicy policy)
+	 * addItem(iconPath, name, contents, WMenuItem.LoadPolicy.LazyLoading)}
+	 */
 	public final WMenuItem addItem(String iconPath, CharSequence name,
 			WWidget contents) {
 		return addItem(iconPath, name, contents,

@@ -459,10 +459,6 @@ public class WPopupMenu extends WMenu {
 	}
 
 	private void prepareRender(WApplication app) {
-		if (app.getEnvironment().agentIsIE()) {
-			this.doJavaScript(this.getJsRef() + ".lastChild.style.width="
-					+ this.getJsRef() + ".lastChild.offsetWidth + 'px';");
-		}
 		if (!this.cancel_.isConnected()) {
 			app.loadJavaScript("js/WPopupMenu.js", wtjs1());
 			StringBuilder s = new StringBuilder();
