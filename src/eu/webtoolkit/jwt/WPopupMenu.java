@@ -168,10 +168,9 @@ public class WPopupMenu extends WMenu {
 		this.popupImpl();
 		this.setOffsets(new WLength(42), EnumSet.of(Side.Left, Side.Top));
 		this.setOffsets(new WLength(-10000), EnumSet.of(Side.Left, Side.Top));
-		this.doJavaScript("jQuery.data(" + this.getJsRef()
-				+ ", 'obj').setHidden(0);Wt3_3_0.positionXY('" + this.getId()
-				+ "'," + String.valueOf(p.getX()) + ","
-				+ String.valueOf(p.getY()) + ");");
+		this.doJavaScript("Wt3_3_0.positionXY('" + this.getId() + "',"
+				+ String.valueOf(p.getX()) + "," + String.valueOf(p.getY())
+				+ ");");
 	}
 
 	/**
@@ -209,8 +208,6 @@ public class WPopupMenu extends WMenu {
 	public void popup(WWidget location, Orientation orientation) {
 		this.location_ = location;
 		this.popupImpl();
-		this.doJavaScript("jQuery.data(" + this.getJsRef()
-				+ ", 'obj').setHidden(0);");
 		this.positionAt(location, orientation);
 	}
 
@@ -310,7 +307,7 @@ public class WPopupMenu extends WMenu {
 
 	public void setHidden(boolean hidden, WAnimation animation) {
 		super.setHidden(hidden, animation);
-		if (this.isRendered()
+		if (this.cancel_.isConnected()
 				|| WApplication.getInstance().getSession().getRenderer()
 						.isPreLearning()) {
 			this.doJavaScript("jQuery.data(" + this.getJsRef()

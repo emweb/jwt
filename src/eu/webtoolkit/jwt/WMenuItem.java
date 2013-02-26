@@ -833,11 +833,9 @@ public class WMenuItem extends WContainerWidget {
 			WAnchor a = this.getAnchor();
 			if (a != null) {
 				AbstractSignal as;
+				as = a.clicked();
 				if (this.checkBox_ != null) {
-					as = a.mouseWentUp();
 					a.setLink(new WLink());
-				} else {
-					as = a.clicked();
 				}
 				if (this.contentsContainer_ != null
 						&& this.contentsContainer_.getCount() == 0) {

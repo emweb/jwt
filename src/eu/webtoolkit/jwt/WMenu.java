@@ -661,7 +661,20 @@ public class WMenu extends WCompositeWidget {
 		this.close(this.itemAt(index));
 	}
 
-	// public List<WMenuItem> getItems() ;
+	/**
+	 * Returns the items.
+	 * <p>
+	 * Returns the list of menu items in this menu.
+	 * <p>
+	 */
+	public List<WMenuItem> getItems() {
+		List<WMenuItem> result = new ArrayList<WMenuItem>();
+		for (int i = 0; i < this.getCount(); ++i) {
+			result.add(this.itemAt(i));
+		}
+		return result;
+	}
+
 	/**
 	 * Signal which indicates that an item was closed.
 	 * <p>
