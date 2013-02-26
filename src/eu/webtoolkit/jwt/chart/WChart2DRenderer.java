@@ -284,8 +284,6 @@ public class WChart2DRenderer {
 		double width = 1000;
 		double height = 20;
 		WPointF pos = this.hv(p);
-		double left = pos.getX();
-		double top = pos.getY();
 		if (this.chart_.getOrientation() == Orientation.Horizontal) {
 			switch (horizontalAlign) {
 			case AlignLeft:
@@ -314,27 +312,29 @@ public class WChart2DRenderer {
 				break;
 			}
 		}
+		double left = pos.getX();
+		double top = pos.getY();
 		switch (rHorizontalAlign) {
 		case AlignLeft:
-			left = pos.getX() + margin;
+			left += margin;
 			break;
 		case AlignCenter:
-			left = pos.getX() - width / 2;
+			left -= width / 2;
 			break;
 		case AlignRight:
-			left = pos.getX() - width - margin;
+			left -= width + margin;
 		default:
 			break;
 		}
 		switch (rVerticalAlign) {
 		case AlignTop:
-			top = pos.getY() + margin;
+			top += margin;
 			break;
 		case AlignMiddle:
-			top = pos.getY() - height / 2;
+			top -= height / 2;
 			break;
 		case AlignBottom:
-			top = pos.getY() - height - margin;
+			top -= height + margin;
 			break;
 		default:
 			break;
@@ -804,6 +804,13 @@ public class WChart2DRenderer {
 			}
 			break;
 		}
+		if (axis.getLabelAngle() != 0) {
+			if (vertical) {
+				labelHFlag = AlignmentFlag.AlignCenter;
+			} else {
+				labelHFlag = AlignmentFlag.AlignMiddle;
+			}
+		}
 		for (int segment = 0; segment < axis.getSegmentCount(); ++segment) {
 			WAxis.Segment s = axis.segments_.get(segment);
 			if (!EnumUtils.mask(properties, WChart2DRenderer.AxisProperty.Line)
@@ -855,36 +862,44 @@ public class WChart2DRenderer {
 				int tickLength = ticks.get(i).tickLength == WAxis.TickLabel.TickLength.Long ? TICK_LENGTH
 						: TICK_LENGTH / 2;
 				WPointF labelPos = new WPointF();
+				int angleDelta = axis.getLabelAngle() != 0 ? vertical ? 10 : 5
+						: 0;
 				switch (this.location_[axis.getId().getValue()]) {
 				case MinimumValue:
 					if (vertical) {
-						labelPos = new WPointF(u - tickLength, dd);
+						labelPos = new WPointF(u - tickLength - angleDelta, dd);
 					} else {
-						labelPos = new WPointF(dd, u + tickLength);
+						labelPos = new WPointF(dd, u + angleDelta + tickLength);
 					}
 					break;
 				case MaximumValue:
 					if (vertical) {
-						labelPos = new WPointF(u + tickLength, dd);
+						labelPos = new WPointF(u + tickLength + angleDelta, dd);
 					} else {
-						labelPos = new WPointF(dd, u - tickLength);
+						labelPos = new WPointF(dd, u - tickLength - angleDelta);
 					}
 					break;
 				case ZeroValue:
 					if (vertical) {
 						if (this.chart_.getType() == ChartType.CategoryChart) {
 							labelPos = new WPointF(this.chartArea_.getLeft()
-									- 0.5 - axis.getMargin() - tickLength, dd);
+									- 0.5 - axis.getMargin() - tickLength
+									- angleDelta, dd);
 						} else {
-							labelPos = new WPointF(u - tickLength, dd);
+							labelPos = new WPointF(u - tickLength - angleDelta,
+									dd);
 						}
 					} else {
 						if (this.chart_.getType() == ChartType.CategoryChart) {
 							labelPos = new WPointF(dd, this.chartArea_
 									.getBottom()
-									+ 0.5 + axis.getMargin() + tickLength);
+									+ 0.5
+									+ axis.getMargin()
+									+ tickLength
+									+ angleDelta);
 						} else {
-							labelPos = new WPointF(dd, u + tickLength);
+							labelPos = new WPointF(dd, u + tickLength
+									+ angleDelta);
 						}
 					}
 				}
@@ -920,15 +935,7 @@ public class WChart2DRenderer {
 						&& axis.isVisible()) {
 					EnumSet<AlignmentFlag> labelFlags = EnumSet.of(labelHFlag);
 					if (vertical) {
-						if (axis.getLabelAngle() == 0) {
-							labelFlags.add(AlignmentFlag.AlignMiddle);
-						} else {
-							if (axis.getLabelAngle() > 0) {
-								labelFlags.add(AlignmentFlag.AlignTop);
-							} else {
-								labelFlags.add(AlignmentFlag.AlignBottom);
-							}
-						}
+						labelFlags.add(AlignmentFlag.AlignMiddle);
 					} else {
 						if (axis.getLabelAngle() == 0) {
 							labelFlags.add(AlignmentFlag.AlignCenter);

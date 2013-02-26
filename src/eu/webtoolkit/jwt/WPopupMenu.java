@@ -168,9 +168,10 @@ public class WPopupMenu extends WMenu {
 		this.popupImpl();
 		this.setOffsets(new WLength(42), EnumSet.of(Side.Left, Side.Top));
 		this.setOffsets(new WLength(-10000), EnumSet.of(Side.Left, Side.Top));
-		this.doJavaScript("Wt3_3_0.positionXY('" + this.getId() + "',"
-				+ String.valueOf(p.getX()) + "," + String.valueOf(p.getY())
-				+ ");");
+		this.doJavaScript("jQuery.data(" + this.getJsRef()
+				+ ", 'obj').setHidden(0);Wt3_3_0.positionXY('" + this.getId()
+				+ "'," + String.valueOf(p.getX()) + ","
+				+ String.valueOf(p.getY()) + ");");
 	}
 
 	/**
@@ -209,7 +210,7 @@ public class WPopupMenu extends WMenu {
 		this.location_ = location;
 		this.popupImpl();
 		this.doJavaScript("jQuery.data(" + this.getJsRef()
-				+ ", 'obj').popupAt(" + location.getJsRef() + ");");
+				+ ", 'obj').setHidden(0);");
 		this.positionAt(location, orientation);
 	}
 
@@ -526,6 +527,6 @@ public class WPopupMenu extends WMenu {
 				JavaScriptScope.WtClassScope,
 				JavaScriptObjectType.JavaScriptConstructor,
 				"WPopupMenu",
-				"function(n,c,o){function i(){n.emit(c.id,\"cancel\")}function p(a,b){$(a).toggleClass(\"active\",b)}function j(a){if(a.subMenu)return a.subMenu;else{var b=a.lastChild;if(b&&f.hasTag(b,\"UL\")){a.subMenu=b;b.parentItem=a;$(b).mousemove(q);r(b);return b}}}function x(a){a.style.display=\"block\";if(a.parentNode==a.parentItem){a.parentNode.removeChild(a);c.parentNode.appendChild(a)}f.positionAtWidget(a.id,a.parentItem.id,f.Horizontal,-f.px(a,\"paddingTop\")); k(a,null)}function k(a,b){function s(h,d){if(h==d)return true;else if(d)return(d=d.parentNode.parentItem)?s(h,d):false;else return false}function t(h){var d,u;d=0;for(u=h.childNodes.length;d<u;++d){var e=h.childNodes[d];if(s(e,b)){if(e!==b)(e=j(e))&&t(e)}else{p(e,false);if(e=j(e))e.style.display=\"none\"}}}t(a)}function q(a){for(a=f.target(a);a&&!f.hasTag(a,\"LI\")&&!f.hasTag(a,\"UL\");)a=a.parentNode;if(f.hasTag(a,\"LI\"))if(a!==l){l=a;p(a,true);var b=j(a);b&&x(b);k(c,a)}}function y(){m=false;clearTimeout(g); if(o>=0)g=setTimeout(i,o)}function z(){m=true;clearTimeout(g)}function r(a){$(a).mouseleave(y).mouseenter(z)}function v(){i()}function w(a){a.keyCode==27&&i()}jQuery.data(c,\"obj\",this);var A=this,f=n.WT,g=null,m=false,l=null;this.setHidden=function(a){if(g){clearTimeout(g);g=null}m=false;l=null;if(a){c.style.position=\"\";c.style.display=\"\";c.style.left=\"\";c.style.top=\"\";$(document).unbind(\"click\",v);$(document).unbind(\"keydown\",w)}else{setTimeout(function(){$(document).bind(\"click\",v);$(document).bind(\"keydown\", w)},0);c.style.display=\"block\"}k(c,null)};this.popupAt=function(){A.setHidden(false)};setTimeout(function(){r(c)},0);$(c).mousemove(q)}");
+				"function(n,c,o){function i(){n.emit(c.id,\"cancel\")}function p(a,b){$(a).toggleClass(\"active\",b)}function j(a){if(a.subMenu)return a.subMenu;else{var b=a.lastChild;if(b&&f.hasTag(b,\"UL\")){a.subMenu=b;b.parentItem=a;$(b).mousemove(q);r(b);return b}}}function x(a){a.style.display=\"block\";if(a.parentNode==a.parentItem){a.parentNode.removeChild(a);c.parentNode.appendChild(a)}f.positionAtWidget(a.id,a.parentItem.id,f.Horizontal,-f.px(a,\"paddingTop\")); k(a,null)}function k(a,b){function s(h,d){if(h==d)return true;else if(d)return(d=d.parentNode.parentItem)?s(h,d):false;else return false}function t(h){var d,u;d=0;for(u=h.childNodes.length;d<u;++d){var e=h.childNodes[d];if(s(e,b)){if(e!==b)(e=j(e))&&t(e)}else{p(e,false);if(e=j(e))e.style.display=\"none\"}}}t(a)}function q(a){for(a=f.target(a);a&&!f.hasTag(a,\"LI\")&&!f.hasTag(a,\"UL\");)a=a.parentNode;if(f.hasTag(a,\"LI\"))if(a!==l){l=a;p(a,true);var b=j(a);b&&x(b);k(c,a)}}function y(){m=false;clearTimeout(g); if(o>=0)g=setTimeout(i,o)}function z(){m=true;clearTimeout(g)}function r(a){$(a).mouseleave(y).mouseenter(z)}function v(){i()}function w(a){a.keyCode==27&&i()}jQuery.data(c,\"obj\",this);var f=n.WT,g=null,m=false,l=null;this.setHidden=function(a){if(g){clearTimeout(g);g=null}m=false;l=null;if(a){c.style.position=\"\";c.style.display=\"\";c.style.left=\"\";c.style.top=\"\";$(document).unbind(\"click\",v);$(document).unbind(\"keydown\",w)}else{setTimeout(function(){$(document).bind(\"click\",v);$(document).bind(\"keydown\", w)},0);c.style.display=\"block\"}k(c,null)};setTimeout(function(){r(c)},0);$(c).mousemove(q)}");
 	}
 }

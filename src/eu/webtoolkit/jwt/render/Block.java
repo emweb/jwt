@@ -1020,7 +1020,11 @@ class Block {
 				}
 			}
 		} else {
-			return this.parent_.getCssTextAlign();
+			if (this.parent_ != null) {
+				return this.parent_.getCssTextAlign();
+			} else {
+				return AlignmentFlag.AlignLeft;
+			}
 		}
 	}
 

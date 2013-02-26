@@ -74,7 +74,6 @@ public class WPieChart extends WAbstractChart {
 		this.shadow_ = false;
 		this.pie_ = new ArrayList<WPieChart.PieData>();
 		this.setPalette(new WStandardPalette(WStandardPalette.Flavour.Neutral));
-		this.setPreferredMethod(WPaintedWidget.Method.InlineSvgVml);
 		this.setPlotAreaPadding(5);
 	}
 
