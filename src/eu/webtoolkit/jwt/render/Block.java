@@ -348,6 +348,16 @@ class Block {
 			}
 			if (this.type_ == DomElementType.DomElement_IMG) {
 				double height = this.cssHeight(renderer.getFontScale());
+				String src = this.attributeValue("src");
+				if (width <= 0 || height <= 0) {
+					WPainter.Image image = new WPainter.Image(src, src);
+					if (height <= 0) {
+						height = image.getHeight();
+					}
+					if (width <= 0) {
+						width = image.getWidth();
+					}
+				}
 				if (ps.y + height > renderer.textHeight(ps.page)) {
 					this.pageBreak(ps);
 					startPage = ps.page;
@@ -356,6 +366,7 @@ class Block {
 							.getFontScale());
 				}
 				ps.y += height;
+				ps.maxX = Math.max(ps.minX + width, ps.maxX);
 			} else {
 				double cMinX = ps.minX
 						+ this.cssPadding(Side.Left, renderer.getFontScale())
@@ -536,21 +547,13 @@ class Block {
 						+ this
 								.cssBorderWidth(Side.Top, renderer
 										.getFontScale());
-				double width = this.cssWidth(renderer.getFontScale());
-				double height = this.cssHeight(renderer.getFontScale());
+				double width = bb.width;
+				double height = bb.height;
 				WRectF rect = new WRectF(left, top, width, height);
-				if (width > 0 && height > 0) {
-					renderer.getPainter().drawImage(
-							rect,
-							new WPainter.Image(this.attributeValue("src"),
-									(int) width, (int) height));
-				} else {
-					logger.error(new StringWriter().append(
-							"Cannot paint image '").append(
-							this.attributeValue("src")).append("', ").append(
-							"need (CSS) width and height explicitly set")
-							.toString());
-				}
+				renderer.getPainter().drawImage(
+						rect,
+						new WPainter.Image(this.attributeValue("src"),
+								(int) width, (int) height));
 			}
 		}
 		for (int i = 0; i < this.blockLayout.size(); ++i) {
@@ -1498,15 +1501,15 @@ class Block {
 					} else {
 						w = this.cssWidth(renderer.getFontScale());
 						h = this.cssHeight(renderer.getFontScale());
-						if (w <= 0) {
-							logger.error(new StringWriter().append(
-									"image with unknown width").toString());
-							w = 10;
-						}
-						if (h <= 0) {
-							logger.error(new StringWriter().append(
-									"image with unknown height").toString());
-							h = 10;
+						String src = this.attributeValue("src");
+						if (w <= 0 || h <= 0) {
+							WPainter.Image image = new WPainter.Image(src, src);
+							if (w <= 0) {
+								w = image.getWidth();
+							}
+							if (h <= 0) {
+								h = image.getHeight();
+							}
 						}
 						w += this.cssBoxMargin(Side.Left, renderer
 								.getFontScale())
@@ -1865,7 +1868,7 @@ class Block {
 				int colSpan = c.attributeValue("colspan", 1);
 				double width = 0;
 				for (int j = col; j < col + colSpan; ++j) {
-					width += widths.get(col);
+					width += widths.get(j);
 				}
 				width += (colSpan - 1) * cellSpacing;
 				PageState cellPs = new PageState();

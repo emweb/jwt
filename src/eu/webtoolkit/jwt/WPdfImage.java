@@ -212,20 +212,24 @@ public class WPdfImage extends WResource implements WPaintDevice {
 	public void drawImage(WRectF rect, String imgUrl, int imgWidth, int imgHeight, WRectF sourceRect) {
 		Image image = null;
 		
-		if (UriUtils.isDataUri(imgUrl)) {
-			Uri uri = UriUtils.parseDataUri(imgUrl);
+		if (DataUri.isDataUri(imgUrl)) {
+			DataUri uri = new DataUri(imgUrl);
 			try {
+				byte[] b = new byte[uri.data.size()];
+				for (int i = 0; i < uri.data.size(); ++i)
+					b[i] = uri.data.get(i);
+				
 				if ("image/png".equals(uri.mimeType))
-					image = new Image(this.pdf, new ByteArrayInputStream(uri.data), ImageType.PNG);
+					image = new Image(this.pdf, new ByteArrayInputStream(b), ImageType.PNG);
 				else if ("image/jpeg".equals(uri.mimeType))
-					image = new Image(this.pdf, new ByteArrayInputStream(uri.data), ImageType.JPEG);
+					image = new Image(this.pdf, new ByteArrayInputStream(b), ImageType.JPEG);
 				else if ("image/bmp".equals(uri.mimeType))
-					image = new Image(this.pdf, new ByteArrayInputStream(uri.data), ImageType.BMP);
+					image = new Image(this.pdf, new ByteArrayInputStream(b), ImageType.BMP);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		} else {
-			String mimeType = ImageUtils.identifyImageFileMimeType(imgUrl);
+			String mimeType = ImageUtils.identifyMimeType(imgUrl);
 			try {
 				if ("image/png".equals(mimeType))
 					image = new Image(this.pdf, new BufferedInputStream(new FileInputStream(imgUrl)), ImageType.PNG);

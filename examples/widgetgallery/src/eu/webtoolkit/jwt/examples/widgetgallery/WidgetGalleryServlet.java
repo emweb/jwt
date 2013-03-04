@@ -23,6 +23,7 @@ public class WidgetGalleryServlet extends WtServlet {
 
 		WXmlLocalizedStrings resourceBundle = new WXmlLocalizedStrings();
 		resourceBundle.use("/eu/webtoolkit/jwt/examples/widgetgallery/text");
+		resourceBundle.use("/eu/webtoolkit/jwt/examples/widgetgallery/report");
 		resourceBundle.use("/eu/webtoolkit/jwt/examples/widgetgallery/src");
 		app.setLocalizedStrings(resourceBundle);
 

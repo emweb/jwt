@@ -912,7 +912,7 @@ class FormWidgets extends TopicWidget {
 		final WPushButton resetButton = new WPushButton("Reset", container);
 		stopButton.disable();
 		resetButton.disable();
-		final WTimer intervalTimer = new WTimer();
+		final WTimer intervalTimer = new WTimer(container);
 		intervalTimer.setInterval(1000);
 		startButton.clicked().addListener(this, new Signal.Listener() {
 			public void trigger() {

@@ -232,7 +232,8 @@ class GraphicsWidgets extends TopicWidget {
 
 	WWidget CategoryChart() {
 		WContainerWidget container = new WContainerWidget();
-		WStandardItemModel model = CsvUtil.csvToModel("" + "category.csv");
+		WStandardItemModel model = CsvUtil.csvToModel("" + "category.csv",
+				container);
 		if (!(model != null)) {
 			return container;
 		}
@@ -264,7 +265,7 @@ class GraphicsWidgets extends TopicWidget {
 			table.setEditTriggers(EnumSet
 					.of(WAbstractItemView.EditTrigger.NoEditTrigger));
 		}
-		WItemDelegate delegate = new WItemDelegate();
+		WItemDelegate delegate = new WItemDelegate(table);
 		delegate.setTextFormat("%.f");
 		table.setItemDelegate(delegate);
 		table.setColumnWidth(0, new WLength(80));
@@ -290,7 +291,8 @@ class GraphicsWidgets extends TopicWidget {
 
 	WWidget ScatterPlotData() {
 		WContainerWidget container = new WContainerWidget();
-		WStandardItemModel model = CsvUtil.csvToModel("" + "timeseries.csv");
+		WStandardItemModel model = CsvUtil.csvToModel("" + "timeseries.csv",
+				container);
 		if (!(model != null)) {
 			return container;
 		}
@@ -313,10 +315,10 @@ class GraphicsWidgets extends TopicWidget {
 		for (int column = 1; column < model.getColumnCount(); ++column) {
 			table.setColumnWidth(column, new WLength(90));
 		}
-		WItemDelegate delegate = new WItemDelegate();
+		WItemDelegate delegate = new WItemDelegate(table);
 		delegate.setTextFormat("%.1f");
 		table.setItemDelegate(delegate);
-		table.setItemDelegateForColumn(0, new WItemDelegate());
+		table.setItemDelegateForColumn(0, new WItemDelegate(table));
 		WCartesianChart chart = new WCartesianChart(container);
 		chart.setBackground(new WBrush(new WColor(220, 220, 220)));
 		chart.setModel(model);
@@ -366,7 +368,8 @@ class GraphicsWidgets extends TopicWidget {
 	}
 
 	WWidget PieChart() {
-		WStandardItemModel model = new WStandardItemModel();
+		WContainerWidget container = new WContainerWidget();
+		WStandardItemModel model = new WStandardItemModel(container);
 		model.insertColumns(model.getColumnCount(), 2);
 		model.setHeaderData(0, new WString("Item"));
 		model.setHeaderData(1, new WString("Sales"));
@@ -392,7 +395,6 @@ class GraphicsWidgets extends TopicWidget {
 						EnumSet.of(ItemFlag.ItemIsEditable));
 			}
 		}
-		WContainerWidget container = new WContainerWidget();
 		WTableView table = new WTableView(container);
 		table.setMargin(new WLength(10), EnumSet.of(Side.Top, Side.Bottom));
 		table.setMargin(WLength.Auto, EnumSet.of(Side.Left, Side.Right));

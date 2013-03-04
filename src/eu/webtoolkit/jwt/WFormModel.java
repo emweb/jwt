@@ -209,7 +209,8 @@ public class WFormModel extends WObject {
 	/**
 	 * Sets whether a field is visible.
 	 * <p>
-	 * Fields are visible by default.
+	 * Fields are visible by default. An invisible field will be ignored during
+	 * validation (i.e. will be considered as valid).
 	 * <p>
 	 * 
 	 * @see WFormModel#isVisible(String field)

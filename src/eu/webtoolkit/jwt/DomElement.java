@@ -1852,11 +1852,12 @@ public class DomElement {
 			"thead", "tfoot", "th", "td", "textarea", "tr", "p", "canvas",
 			"map", "area", "object", "param", "audio", "video", "source",
 			"strong", "em" };
-	private static boolean[] defaultInline_ = { true, true, true, false, false,
-			false, false, false, true, false, false, false, false, false, true,
-			true, true, true, true, false, false, true, false, false, true,
-			true, false, false, false, false, false, false, true, false, false,
-			true, false, true, false, false, false, false, false, true, true };
+	private static boolean[] defaultInline_ = { true, false, true, false,
+			false, false, false, false, true, false, false, false, false,
+			false, true, true, true, true, true, false, false, true, false,
+			false, true, true, false, false, false, false, false, false, true,
+			false, false, true, false, true, false, false, false, false, false,
+			true, true };
 	private static String[] cssNames_ = { "position", "z-index", "float",
 			"clear", "width", "height", "line-height", "min-width",
 			"min-height", "max-width", "max-height", "left", "right", "top",

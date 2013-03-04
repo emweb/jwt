@@ -27,12 +27,14 @@ import org.slf4j.LoggerFactory;
  * only a subset of XHTML. See the documentation of {@link WTextRenderer} for
  * more information.
  * <p>
- * The renderer renders to a libharu PDF document. By default it uses a pixel
- * resolution of 72 DPI, which is the default for libharu, but differs from the
- * default used by most browsers (which is 96 DPI and has nothing to do with the
- * actual screen resolution). The resolution can be increased using
- * {@link WPdfRenderer#setDpi(int dpi) setDpi()}. This has the effect of scaling
- * down the rendering. This can be used in conjunction with
+ * The renderer renders to a PDFJet PDF document (using {@link WPdfImage}).
+ * <p>
+ * By default it uses a pixel resolution of 72 DPI, which is the default for a
+ * {@link WPdfImage}, but differs from the default used by most browsers (which
+ * is 96 DPI and has nothing to do with the actual screen resolution). The pixel
+ * resolution can be configured using {@link WPdfRenderer#setDpi(int dpi)
+ * setDpi()}. Increasing the resolution has the effect of scaling down the
+ * rendering. This can be used in conjunction with
  * {@link WTextRenderer#setFontScale(double factor)
  * WTextRenderer#setFontScale()} to scale the font size differently than other
  * content.
@@ -115,8 +117,7 @@ public class WPdfRenderer extends WTextRenderer {
 	 * pageWidth()}, {@link WPdfRenderer#pageHeight(int page) pageHeight()}, and
 	 * {@link WPdfRenderer#getMargin(Side side) getMargin()} pixel calculations.
 	 * <p>
-	 * The default resolution is 72 DPI (this is the default resolution used by
-	 * libharu).
+	 * The default resolution is 72 DPI.
 	 */
 	public void setDpi(int dpi) {
 		this.dpi_ = dpi;

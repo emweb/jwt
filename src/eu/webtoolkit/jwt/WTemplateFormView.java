@@ -20,7 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * A template-based View class form form models.
+ * A template-based View class form models.
  * <p>
  * 
  * This implements a View to be used in conjunction with {@link WFormModel}
@@ -222,13 +222,13 @@ public class WTemplateFormView extends WTemplate {
 	 * Updates a field in the Model (<b>Deprecated</b>).
 	 * <p>
 	 * Calls
-	 * {@link WTemplateFormView#updateViewValue(WFormModel model, String field, WFormWidget edit)
-	 * updateViewValue()}
+	 * {@link WTemplateFormView#updateModelValue(WFormModel model, String field, WFormWidget edit)
+	 * updateModelValue()}
 	 * <p>
 	 * 
 	 * @deprecated Reimplement
-	 *             {@link WTemplateFormView#updateViewValue(WFormModel model, String field, WFormWidget edit)
-	 *             updateViewValue()} instead.
+	 *             {@link WTemplateFormView#updateModelValue(WFormModel model, String field, WFormWidget edit)
+	 *             updateModelValue()} instead.
 	 */
 	public void updateModelField(WFormModel model, String field) {
 		WFormWidget edit = (WFormWidget) this.resolveWidget(field);

@@ -8,12 +8,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class FileUtils {
-	public static List<Integer> fileHeader(String fileName, int size) {
-		List<Integer> header = new ArrayList<Integer>();
+	public static List<Byte> fileHeader(String fileName, int size) {
+		List<Byte> header = new ArrayList<Byte>();
 		try {
 			InputStream is = new FileInputStream(new File(fileName));
 			for (int i = 0; i < size; i++) {
-				header.add(is.read());
+				header.add((byte) is.read());
 			}
 			is.close();
 		} catch (IOException e) {

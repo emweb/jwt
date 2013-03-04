@@ -402,29 +402,23 @@ public class WPainter {
 		public Image(String url, String fileName) {
 			this.url_ = "";
 			this.setUrl(url);
-			List<Integer> header = FileUtils.fileHeader(fileName, 25);
-			if (header.size() != 0) {
-				String mimeType = ImageUtils.identifyImageMimeType(header);
-				if (mimeType.equals("image/png")) {
-					this.width_ = (((int) header.get(16) << 8 | (int) header
-							.get(17)) << 8 | (int) header.get(18)) << 8
-							| (int) header.get(19);
-					this.height_ = (((int) header.get(20) << 8 | (int) header
-							.get(21)) << 8 | (int) header.get(22)) << 8
-							| (int) header.get(23);
-				} else {
-					if (mimeType.equals("image/gif")) {
-						this.width_ = (int) header.get(7) << 8
-								| (int) header.get(6);
-						this.height_ = (int) header.get(9) << 8
-								| (int) header.get(8);
-					} else {
-						throw new WException("'" + fileName
-								+ "': unsupported file format");
-					}
+			if (DataUri.isDataUri(url)) {
+				DataUri uri = new DataUri(url);
+				WPoint size = ImageUtils.getSize(uri.data);
+				if (size.getX() == 0 || size.getY() == 0) {
+					throw new WException("data url: (" + uri.mimeType
+							+ "): could not determine image size");
 				}
+				this.width_ = size.getX();
+				this.height_ = size.getY();
 			} else {
-				throw new WException("'" + fileName + "': could not read");
+				WPoint size = ImageUtils.getSize(fileName);
+				if (size.getX() == 0 || size.getY() == 0) {
+					throw new WException("'" + fileName
+							+ "': could not determine image size");
+				}
+				this.width_ = size.getX();
+				this.height_ = size.getY();
 			}
 		}
 

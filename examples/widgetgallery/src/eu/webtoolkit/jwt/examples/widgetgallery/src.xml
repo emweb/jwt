@@ -220,7 +220,8 @@
   <message id="src-CategoryChart"><![CDATA[
 <div class="highlight"><pre><span class="kt">void</span> <span class="nf">CategoryChart</span><span class="o">()</span> <span class="o">{</span>
     <span class="n">WContainerWidget</span> <span class="n">container</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WContainerWidget</span><span class="o">();</span>
-    <span class="n">WStandardItemModel</span> <span class="n">model</span> <span class="o">=</span> <span class="n">CsvUtil</span><span class="o">.</span><span class="na">csvToModel</span><span class="o">(</span><span class="s">&quot;&quot;</span> <span class="o">+</span> <span class="s">&quot;category.csv&quot;</span><span class="o">);</span>
+    <span class="n">WStandardItemModel</span> <span class="n">model</span> <span class="o">=</span> <span class="n">CsvUtil</span><span class="o">.</span><span class="na">csvToModel</span><span class="o">(</span><span class="s">&quot;&quot;</span> <span class="o">+</span> <span class="s">&quot;category.csv&quot;</span><span class="o">,</span>
+            <span class="n">container</span><span class="o">);</span>
     <span class="k">if</span> <span class="o">(!(</span><span class="n">model</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">))</span> <span class="o">{</span>
         <span class="k">return</span> <span class="n">container</span><span class="o">;</span>
     <span class="o">}</span>
@@ -252,7 +253,7 @@
         <span class="n">table</span><span class="o">.</span><span class="na">setEditTriggers</span><span class="o">(</span><span class="n">EnumSet</span>
                 <span class="o">.</span><span class="na">of</span><span class="o">(</span><span class="n">WAbstractItemView</span><span class="o">.</span><span class="na">EditTrigger</span><span class="o">.</span><span class="na">NoEditTrigger</span><span class="o">));</span>
     <span class="o">}</span>
-    <span class="n">WItemDelegate</span> <span class="n">delegate</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WItemDelegate</span><span class="o">();</span>
+    <span class="n">WItemDelegate</span> <span class="n">delegate</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WItemDelegate</span><span class="o">(</span><span class="n">table</span><span class="o">);</span>
     <span class="n">delegate</span><span class="o">.</span><span class="na">setTextFormat</span><span class="o">(</span><span class="s">&quot;%.f&quot;</span><span class="o">);</span>
     <span class="n">table</span><span class="o">.</span><span class="na">setItemDelegate</span><span class="o">(</span><span class="n">delegate</span><span class="o">);</span>
     <span class="n">table</span><span class="o">.</span><span class="na">setColumnWidth</span><span class="o">(</span><span class="mi">0</span><span class="o">,</span> <span class="k">new</span> <span class="n">WLength</span><span class="o">(</span><span class="mi">80</span><span class="o">));</span>
@@ -1231,7 +1232,7 @@
                         <span class="n">GoogleMapExample</span><span class="o">.</span><span class="na">this</span><span class="o">.</span><span class="na">map_</span><span class="o">.</span><span class="na">returnToSavedPosition</span><span class="o">();</span>
                     <span class="o">}</span>
                 <span class="o">});</span>
-        <span class="k">this</span><span class="o">.</span><span class="na">mapTypeModel_</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WStandardItemModel</span><span class="o">();</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">mapTypeModel_</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WStringListModel</span><span class="o">(</span><span class="k">this</span><span class="o">);</span>
         <span class="k">this</span><span class="o">.</span><span class="na">addMapTypeControl</span><span class="o">(</span><span class="s">&quot;No control&quot;</span><span class="o">,</span>
                 <span class="n">WGoogleMap</span><span class="o">.</span><span class="na">MapTypeControl</span><span class="o">.</span><span class="na">NoControl</span><span class="o">);</span>
         <span class="k">this</span><span class="o">.</span><span class="na">addMapTypeControl</span><span class="o">(</span><span class="s">&quot;Default&quot;</span><span class="o">,</span>
@@ -1639,7 +1640,7 @@
   <message id="src-LargeTableView"><![CDATA[
 <div class="highlight"><pre><span class="kt">void</span> <span class="nf">LargeTableView</span><span class="o">()</span> <span class="o">{</span>
     <span class="n">WTableView</span> <span class="n">tableView</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WTableView</span><span class="o">();</span>
-    <span class="n">tableView</span><span class="o">.</span><span class="na">setModel</span><span class="o">(</span><span class="k">new</span> <span class="n">VirtualModel</span><span class="o">(</span><span class="mi">10000</span><span class="o">,</span> <span class="mi">50</span><span class="o">));</span>
+    <span class="n">tableView</span><span class="o">.</span><span class="na">setModel</span><span class="o">(</span><span class="k">new</span> <span class="n">VirtualModel</span><span class="o">(</span><span class="mi">10000</span><span class="o">,</span> <span class="mi">50</span><span class="o">,</span> <span class="n">tableView</span><span class="o">));</span>
     <span class="n">tableView</span><span class="o">.</span><span class="na">setRowHeaderCount</span><span class="o">(</span><span class="mi">1</span><span class="o">);</span>
     <span class="n">tableView</span><span class="o">.</span><span class="na">setSortingEnabled</span><span class="o">(</span><span class="kc">false</span><span class="o">);</span>
     <span class="n">tableView</span><span class="o">.</span><span class="na">setAlternatingRowColors</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
@@ -2681,7 +2682,8 @@
   ]]></message>
   <message id="src-PieChart"><![CDATA[
 <div class="highlight"><pre><span class="kt">void</span> <span class="nf">PieChart</span><span class="o">()</span> <span class="o">{</span>
-    <span class="n">WStandardItemModel</span> <span class="n">model</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WStandardItemModel</span><span class="o">();</span>
+    <span class="n">WContainerWidget</span> <span class="n">container</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WContainerWidget</span><span class="o">();</span>
+    <span class="n">WStandardItemModel</span> <span class="n">model</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WStandardItemModel</span><span class="o">(</span><span class="n">container</span><span class="o">);</span>
     <span class="n">model</span><span class="o">.</span><span class="na">insertColumns</span><span class="o">(</span><span class="n">model</span><span class="o">.</span><span class="na">getColumnCount</span><span class="o">(),</span> <span class="mi">2</span><span class="o">);</span>
     <span class="n">model</span><span class="o">.</span><span class="na">setHeaderData</span><span class="o">(</span><span class="mi">0</span><span class="o">,</span> <span class="k">new</span> <span class="n">WString</span><span class="o">(</span><span class="s">&quot;Item&quot;</span><span class="o">));</span>
     <span class="n">model</span><span class="o">.</span><span class="na">setHeaderData</span><span class="o">(</span><span class="mi">1</span><span class="o">,</span> <span class="k">new</span> <span class="n">WString</span><span class="o">(</span><span class="s">&quot;Sales&quot;</span><span class="o">));</span>
@@ -2707,7 +2709,6 @@
                     <span class="n">EnumSet</span><span class="o">.</span><span class="na">of</span><span class="o">(</span><span class="n">ItemFlag</span><span class="o">.</span><span class="na">ItemIsEditable</span><span class="o">));</span>
         <span class="o">}</span>
     <span class="o">}</span>
-    <span class="n">WContainerWidget</span> <span class="n">container</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WContainerWidget</span><span class="o">();</span>
     <span class="n">WTableView</span> <span class="n">table</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WTableView</span><span class="o">(</span><span class="n">container</span><span class="o">);</span>
     <span class="n">table</span><span class="o">.</span><span class="na">setMargin</span><span class="o">(</span><span class="k">new</span> <span class="n">WLength</span><span class="o">(</span><span class="mi">10</span><span class="o">),</span> <span class="n">EnumSet</span><span class="o">.</span><span class="na">of</span><span class="o">(</span><span class="n">Side</span><span class="o">.</span><span class="na">Top</span><span class="o">,</span> <span class="n">Side</span><span class="o">.</span><span class="na">Bottom</span><span class="o">));</span>
     <span class="n">table</span><span class="o">.</span><span class="na">setMargin</span><span class="o">(</span><span class="n">WLength</span><span class="o">.</span><span class="na">Auto</span><span class="o">,</span> <span class="n">EnumSet</span><span class="o">.</span><span class="na">of</span><span class="o">(</span><span class="n">Side</span><span class="o">.</span><span class="na">Left</span><span class="o">,</span> <span class="n">Side</span><span class="o">.</span><span class="na">Right</span><span class="o">));</span>
@@ -2877,7 +2878,7 @@
     <span class="kd">final</span> <span class="n">WPushButton</span> <span class="n">resetButton</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WPushButton</span><span class="o">(</span><span class="s">&quot;Reset&quot;</span><span class="o">,</span> <span class="n">container</span><span class="o">);</span>
     <span class="n">stopButton</span><span class="o">.</span><span class="na">disable</span><span class="o">();</span>
     <span class="n">resetButton</span><span class="o">.</span><span class="na">disable</span><span class="o">();</span>
-    <span class="kd">final</span> <span class="n">WTimer</span> <span class="n">intervalTimer</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WTimer</span><span class="o">();</span>
+    <span class="kd">final</span> <span class="n">WTimer</span> <span class="n">intervalTimer</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WTimer</span><span class="o">(</span><span class="n">container</span><span class="o">);</span>
     <span class="n">intervalTimer</span><span class="o">.</span><span class="na">setInterval</span><span class="o">(</span><span class="mi">1000</span><span class="o">);</span>
     <span class="n">startButton</span><span class="o">.</span><span class="na">clicked</span><span class="o">().</span><span class="na">addListener</span><span class="o">(</span><span class="k">this</span><span class="o">,</span> <span class="k">new</span> <span class="n">Signal</span><span class="o">.</span><span class="na">Listener</span><span class="o">()</span> <span class="o">{</span>
         <span class="kd">public</span> <span class="kt">void</span> <span class="nf">trigger</span><span class="o">()</span> <span class="o">{</span>
@@ -3231,7 +3232,8 @@
   <message id="src-ScatterPlotData"><![CDATA[
 <div class="highlight"><pre><span class="kt">void</span> <span class="nf">ScatterPlotData</span><span class="o">()</span> <span class="o">{</span>
     <span class="n">WContainerWidget</span> <span class="n">container</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WContainerWidget</span><span class="o">();</span>
-    <span class="n">WStandardItemModel</span> <span class="n">model</span> <span class="o">=</span> <span class="n">CsvUtil</span><span class="o">.</span><span class="na">csvToModel</span><span class="o">(</span><span class="s">&quot;&quot;</span> <span class="o">+</span> <span class="s">&quot;timeseries.csv&quot;</span><span class="o">);</span>
+    <span class="n">WStandardItemModel</span> <span class="n">model</span> <span class="o">=</span> <span class="n">CsvUtil</span><span class="o">.</span><span class="na">csvToModel</span><span class="o">(</span><span class="s">&quot;&quot;</span> <span class="o">+</span> <span class="s">&quot;timeseries.csv&quot;</span><span class="o">,</span>
+            <span class="n">container</span><span class="o">);</span>
     <span class="k">if</span> <span class="o">(!(</span><span class="n">model</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">))</span> <span class="o">{</span>
         <span class="k">return</span> <span class="n">container</span><span class="o">;</span>
     <span class="o">}</span>
@@ -3254,10 +3256,10 @@
     <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">column</span> <span class="o">=</span> <span class="mi">1</span><span class="o">;</span> <span class="n">column</span> <span class="o">&lt;</span> <span class="n">model</span><span class="o">.</span><span class="na">getColumnCount</span><span class="o">();</span> <span class="o">++</span><span class="n">column</span><span class="o">)</span> <span class="o">{</span>
         <span class="n">table</span><span class="o">.</span><span class="na">setColumnWidth</span><span class="o">(</span><span class="n">column</span><span class="o">,</span> <span class="k">new</span> <span class="n">WLength</span><span class="o">(</span><span class="mi">90</span><span class="o">));</span>
     <span class="o">}</span>
-    <span class="n">WItemDelegate</span> <span class="n">delegate</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WItemDelegate</span><span class="o">();</span>
+    <span class="n">WItemDelegate</span> <span class="n">delegate</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WItemDelegate</span><span class="o">(</span><span class="n">table</span><span class="o">);</span>
     <span class="n">delegate</span><span class="o">.</span><span class="na">setTextFormat</span><span class="o">(</span><span class="s">&quot;%.1f&quot;</span><span class="o">);</span>
     <span class="n">table</span><span class="o">.</span><span class="na">setItemDelegate</span><span class="o">(</span><span class="n">delegate</span><span class="o">);</span>
-    <span class="n">table</span><span class="o">.</span><span class="na">setItemDelegateForColumn</span><span class="o">(</span><span class="mi">0</span><span class="o">,</span> <span class="k">new</span> <span class="n">WItemDelegate</span><span class="o">());</span>
+    <span class="n">table</span><span class="o">.</span><span class="na">setItemDelegateForColumn</span><span class="o">(</span><span class="mi">0</span><span class="o">,</span> <span class="k">new</span> <span class="n">WItemDelegate</span><span class="o">(</span><span class="n">table</span><span class="o">));</span>
     <span class="n">WCartesianChart</span> <span class="n">chart</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WCartesianChart</span><span class="o">(</span><span class="n">container</span><span class="o">);</span>
     <span class="n">chart</span><span class="o">.</span><span class="na">setBackground</span><span class="o">(</span><span class="k">new</span> <span class="n">WBrush</span><span class="o">(</span><span class="k">new</span> <span class="n">WColor</span><span class="o">(</span><span class="mi">220</span><span class="o">,</span> <span class="mi">220</span><span class="o">,</span> <span class="mi">220</span><span class="o">)));</span>
     <span class="n">chart</span><span class="o">.</span><span class="na">setModel</span><span class="o">(</span><span class="n">model</span><span class="o">);</span>
@@ -3480,7 +3482,7 @@
   <message id="src-SmallTableView"><![CDATA[
 <div class="highlight"><pre><span class="kt">void</span> <span class="nf">SmallTableView</span><span class="o">()</span> <span class="o">{</span>
     <span class="n">WTableView</span> <span class="n">tableView</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WTableView</span><span class="o">();</span>
-    <span class="n">tableView</span><span class="o">.</span><span class="na">setModel</span><span class="o">(</span><span class="n">CsvUtil</span><span class="o">.</span><span class="na">csvToModel</span><span class="o">(</span><span class="s">&quot;&quot;</span> <span class="o">+</span> <span class="s">&quot;table.csv&quot;</span><span class="o">));</span>
+    <span class="n">tableView</span><span class="o">.</span><span class="na">setModel</span><span class="o">(</span><span class="n">CsvUtil</span><span class="o">.</span><span class="na">csvToModel</span><span class="o">(</span><span class="s">&quot;&quot;</span> <span class="o">+</span> <span class="s">&quot;table.csv&quot;</span><span class="o">,</span> <span class="n">tableView</span><span class="o">));</span>
     <span class="n">tableView</span><span class="o">.</span><span class="na">setColumnResizeEnabled</span><span class="o">(</span><span class="kc">false</span><span class="o">);</span>
     <span class="n">tableView</span><span class="o">.</span><span class="na">setColumnAlignment</span><span class="o">(</span><span class="mi">0</span><span class="o">,</span> <span class="n">AlignmentFlag</span><span class="o">.</span><span class="na">AlignCenter</span><span class="o">);</span>
     <span class="n">tableView</span><span class="o">.</span><span class="na">setHeaderAlignment</span><span class="o">(</span><span class="mi">0</span><span class="o">,</span> <span class="n">EnumSet</span><span class="o">.</span><span class="na">of</span><span class="o">(</span><span class="n">AlignmentFlag</span><span class="o">.</span><span class="na">AlignCenter</span><span class="o">));</span>

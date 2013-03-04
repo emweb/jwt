@@ -236,7 +236,7 @@ class TreesTables extends TopicWidget {
 
 	WWidget SmallTableView() {
 		WTableView tableView = new WTableView();
-		tableView.setModel(CsvUtil.csvToModel("" + "table.csv"));
+		tableView.setModel(CsvUtil.csvToModel("" + "table.csv", tableView));
 		tableView.setColumnResizeEnabled(false);
 		tableView.setColumnAlignment(0, AlignmentFlag.AlignCenter);
 		tableView.setHeaderAlignment(0, EnumSet.of(AlignmentFlag.AlignCenter));
@@ -254,7 +254,7 @@ class TreesTables extends TopicWidget {
 
 	WWidget LargeTableView() {
 		WTableView tableView = new WTableView();
-		tableView.setModel(new VirtualModel(10000, 50));
+		tableView.setModel(new VirtualModel(10000, 50, tableView));
 		tableView.setRowHeaderCount(1);
 		tableView.setSortingEnabled(false);
 		tableView.setAlternatingRowColors(true);

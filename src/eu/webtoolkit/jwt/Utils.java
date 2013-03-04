@@ -83,15 +83,7 @@ public class Utils {
 	 * @throws IOException 
 	 */
 	public static byte[] base64Decode(String s) throws IOException {
-		return base64Decode(s.getBytes("US-ASCII"));
-	}
-	
-	/** Performs Base64-decoding of data.
-	 * 
-	 * @throws IOException 
-	 */
-	public static byte[] base64Decode(byte[] bytes) throws IOException {
-		return Base64.decode(bytes);
+		return Base64.decode(s.getBytes("US-ASCII"));
 	}
 	
 	/** An enumeration for HTML encoding flags.
@@ -164,11 +156,12 @@ public class Utils {
 		return WWebWidget.removeScript(text);
 	}
 
-	static int memcmp(List<Integer> header, String string, int size) {
+	static int memcmp(List<Byte> header, String string, int size) {
 		for (int i = 0; i < size; i++) {
-			if (header.get(i) != string.charAt(i))
+			if (header.get(i) != (byte) string.charAt(i))
 				return 1;
 		}
+
 		return 0;
 	}
 
@@ -219,7 +212,15 @@ public class Utils {
 		}
 	}
 
+	public static void copyList(byte[] source, List<Byte> destination) {
+		destination.clear();
+		for (byte o : source) {
+			destination.add(o);
+		}
+	}
+
 	public static int hexToInt(String s) {
 		return Integer.parseInt(s, 16);
 	}
+
 }

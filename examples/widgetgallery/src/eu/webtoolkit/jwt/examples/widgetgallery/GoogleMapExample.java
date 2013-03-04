@@ -88,7 +88,7 @@ class GoogleMapExample extends WContainerWidget {
 						GoogleMapExample.this.map_.returnToSavedPosition();
 					}
 				});
-		this.mapTypeModel_ = new WStandardItemModel();
+		this.mapTypeModel_ = new WStringListModel(this);
 		this.addMapTypeControl("No control",
 				WGoogleMap.MapTypeControl.NoControl);
 		this.addMapTypeControl("Default",
