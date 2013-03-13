@@ -32,10 +32,6 @@ import org.slf4j.LoggerFactory;
  * <p>
  * Using this class you can completely hide the implementation of your composite
  * widget, and provide access to only the standard {@link WWidget} methods.
- * <p>
- * <h3>CSS</h3>
- * <p>
- * Styling through CSS is propagated to its implementation.
  */
 public class WCompositeWidget extends WWidget {
 	private static Logger logger = LoggerFactory

@@ -29,6 +29,12 @@ import org.slf4j.LoggerFactory;
  * An optional contents item can be associated with a menu item, which is
  * inserted and shown in the widget stack of the menu to which this menu item
  * belongs.
+ * <p>
+ * <h3>CSS</h3>
+ * <p>
+ * A menu item renders as a &gt;li&amp;;lt with additional markup/style classes
+ * provided by the theme. Unless you use the bootstrap theme, you will need to
+ * provide appropriate CSS.
  */
 public class WMenuItem extends WContainerWidget {
 	private static Logger logger = LoggerFactory.getLogger(WMenuItem.class);
@@ -384,7 +390,6 @@ public class WMenuItem extends WContainerWidget {
 			popup.setButton(this.getAnchor());
 			this.updateInternalPath();
 		}
-		this.addStyleClass("submenu");
 	}
 
 	/**

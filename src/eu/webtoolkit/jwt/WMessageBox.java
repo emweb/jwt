@@ -76,13 +76,6 @@ import org.slf4j.LoggerFactory;
  * <li>Wt.WMessageBox.Yes: Yes</li>
  * <li>Wt.WMessageBox.YesToAll: Yes to All</li>
  * </ul>
- * <p>
- * <h3>CSS</h3>
- * <p>
- * A {@link WMessageBox} can be styled using the <code>Wt-dialog</code> and
- * <code>Wt-outset</code> style classes from it&apos;s superclass
- * {@link WDialog}. The messagebox&apos; buttons can be styled using
- * <code>Wt-msgbox-buttons</code> style class.
  */
 public class WMessageBox extends WDialog {
 	private static Logger logger = LoggerFactory.getLogger(WMessageBox.class);

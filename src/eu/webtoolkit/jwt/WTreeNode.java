@@ -77,28 +77,6 @@ import org.slf4j.LoggerFactory;
  * <p>
  * See {@link WTree} for a usage example.
  * <p>
- * <h3>CSS</h3>
- * <p>
- * The tree is styled by the current CSS theme. The look can be overridden using
- * the <code>Wt-tree</code> CSS class and the following selectors:
- * <p>
- * <div class="fragment">
- * 
- * <pre class="fragment">
- * .Wt-tree .Wt-trunk          : vertical line, trunk
- * .Wt-tree .Wt-end            : vertical line, last item
- * .Wt-tree .Wt-collapse       : collapse icon (img *)
- * .Wt-tree .Wt-expand         : expand icon (img *)
- * .Wt-tree .Wt-noexpand       : leaf icon
- * 
- * .Wt-tree .Wt-label          : the node label
- * .Wt-tree .Wt-childcount     : the node child count
- * .Wt-tree .Wt-node           : the node&apos;s table row
- * </pre>
- * 
- * </div> * The collapse and expand icons are fetched themselves as images,
- * <code>nav-plus.gif</code> and <code>nav-minus.gif</code>.
- * <p>
  * 
  * @see WTree
  * @see WTreeTableNode

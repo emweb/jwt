@@ -40,21 +40,7 @@ import org.slf4j.LoggerFactory;
  * <p>
  * The non-native slider (HTML4, see
  * {@link WSlider#setNativeControl(boolean nativeControl) setNativeControl()})
- * is styled by the current CSS theme. The look can be overridden using the
- * <code>Wt-slider-[hv]</code> CSS class and the following selectors (shown here
- * for a horizontal slider, the vertical slider is equivalent but using
- * Wt-slider-v instead of Wt-slider-h:
- * <p>
- * <div class="fragment">
- * 
- * <pre class="fragment">
- * .Wt-slider-h .Wt-slider-bg : A background sized with 5px left/right margin
- * .Wt-slider-h .Wt-e         : A west background image (5px width)
- * .Wt-slider-h .Wt-w         : An east background image (5px width)
- * .Wt-slider-h .handle       : The handle (20px width)
- * </pre>
- * 
- * </div>
+ * is styled by the current CSS theme.
  */
 public class WSlider extends WFormWidget {
 	private static Logger logger = LoggerFactory.getLogger(WSlider.class);

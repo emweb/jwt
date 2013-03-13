@@ -30,9 +30,8 @@ import org.slf4j.LoggerFactory;
  * <p>
  * <h3>CSS</h3>
  * <p>
- * The widget corresponds to the HTML <code>&lt;button&gt;</code> tag and has
- * the <code>Wt-btn</code> style. It may be styled through the current theme, or
- * you can override the style using internal or external CSS as appropriate.
+ * The widget corresponds to the HTML <code>&lt;button&gt;</code> tag (with some
+ * exceptions in the bootstrap theme).
  */
 public class WPushButton extends WFormWidget {
 	private static Logger logger = LoggerFactory.getLogger(WPushButton.class);
@@ -606,7 +605,7 @@ public class WPushButton extends WFormWidget {
 			if (this.linkState_.link.getType() == WLink.Type.InternalPath) {
 				this.linkState_.clickJS.setJavaScript("function(){"
 						+ app.getJavaScriptClass()
-						+ "_p_.setHash("
+						+ "._p_.setHash("
 						+ jsStringLiteral(this.linkState_.link
 								.getInternalPath()) + ",true);}");
 			} else {

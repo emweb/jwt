@@ -53,20 +53,7 @@ import org.slf4j.LoggerFactory;
  * <p>
  * <h3>CSS</h3>
  * <p>
- * The tab widget is styled by the current CSS theme. The look (of the header)
- * can be overridden using the <code>Wt-tabs</code> CSS class and the following
- * selectors:
- * <p>
- * <div class="fragment">
- * 
- * <pre class="fragment">
- * .Wt-tabs ul        : the list
- * .Wt-tabs li        : a list item
- * .Wt-tabs span      : outer span of a list item
- * .Wt-span span span : inner span of a list item
- * </pre>
- * 
- * </div>
+ * The tab widget is styled by the current CSS theme.
  * <p>
  * <table border="0" align="center" cellspacing="3" cellpadding="3">
  * <tr>
@@ -89,7 +76,7 @@ public class WTabWidget extends WCompositeWidget {
 	private static Logger logger = LoggerFactory.getLogger(WTabWidget.class);
 
 	/**
-	 * When should the contents be loaded ?
+	 * Enumeration to indicate when the contents should be loaded.
 	 */
 	public enum LoadPolicy {
 		/**

@@ -1152,6 +1152,11 @@ class WebRenderer implements SlotLearnerInterface {
 			if (!this.isPreLearning()) {
 				app.streamBeforeLoadJavaScript(js, false);
 			}
+			Configuration conf = this.session_.getController()
+					.getConfiguration();
+			if (conf.isInlineCss()) {
+				app.getStyleSheet().javaScriptUpdate(app, js, false);
+			}
 			EscapeOStream sout = new EscapeOStream(js);
 			for (int i = 0; i < changes.size(); ++i) {
 				changes.get(i).asJavaScript(sout, DomElement.Priority.Delete);

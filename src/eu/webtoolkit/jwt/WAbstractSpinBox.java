@@ -23,12 +23,10 @@ import org.slf4j.LoggerFactory;
  * An abstract spin box.
  * <p>
  * 
- * <h3>CSS</h3>
- * <p>
- * Using HTML4, the widget is implemented using a &lt;input
- * type=&quot;text&quot;&gt; The element can be styled using the
- * <code>Wt-spinbox</code> style. It may be styled through the current theme, or
- * you can override the style using internal or external CSS as appropriate.
+ * Although the element can be rendered using a native HTML5 control, by default
+ * it is rendered using an HTML4 compatibility workaround which is implemented
+ * using JavaScript and CSS, as most browsers do not yet implement the HTML5
+ * native element.
  */
 public abstract class WAbstractSpinBox extends WLineEdit {
 	private static Logger logger = LoggerFactory

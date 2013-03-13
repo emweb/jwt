@@ -43,33 +43,7 @@ import org.slf4j.LoggerFactory;
  * <h3>i18n</h3>
  * <p>
  * Internationalization of {@link WDatePicker} is mostly handled through the
- * internationalization mechanism of {@link eu.webtoolkit.jwt.WDate}. The
- * &apos;Close&apos; button can be internationalized by overriding the default
- * value for the localization key Wt.DatePicker.Close.
- * <p>
- * <h3>CSS</h3>
- * <p>
- * The date picker is styled by the current CSS theme. The look can be
- * overridden using the <code>Wt-datepicker</code> and <code>Wt-outset</code>
- * CSS class; the calendar itself can be styled as documented in
- * {@link WCalendar}.
- * <p>
- * <table border="0" align="center" cellspacing="3" cellpadding="3">
- * <tr>
- * <td><div align="center"> <img src="doc-files//WDatePicker-default-1.png"
- * alt="Example of a WDatePicker (default theme)">
- * <p>
- * <strong>Example of a WDatePicker (default theme)</strong>
- * </p>
- * </div></td>
- * <td><div align="center"> <img src="doc-files//WDatePicker-polished-1.png"
- * alt="Example of a WDatePicker (polished theme)">
- * <p>
- * <strong>Example of a WDatePicker (polished theme)</strong>
- * </p>
- * </div></td>
- * </tr>
- * </table>
+ * internationalization mechanism of {@link eu.webtoolkit.jwt.WDate}.
  */
 public class WDatePicker extends WCompositeWidget {
 	private static Logger logger = LoggerFactory.getLogger(WDatePicker.class);

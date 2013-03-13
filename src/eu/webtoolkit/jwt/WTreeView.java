@@ -104,58 +104,6 @@ import org.slf4j.LoggerFactory;
  * {@link WTreeView#resize(WLength width, WLength height) resize()} which
  * determines the number of rows that are displayed at a time.
  * <p>
- * <h3>CSS</h3>
- * <p>
- * The treeview is styled by the current CSS theme. The look can be overridden
- * using the <code>Wt-treeview</code> CSS class and the following selectors.
- * <p>
- * Selectors that apply to the body <div class="fragment">
- * 
- * <pre class="fragment">
- * .Wt-treeview .Wt-pagingbar        : paging bar
- * </pre>
- * 
- * </div> Selectors that apply to the header: <div class="fragment">
- * 
- * <pre class="fragment">
- * .Wt-treeview .Wt-headerdiv         : header (background)
- * .Wt-treeview .Wt-header .Wt-label  : header label
- * .Wt-treeview .Wt-tv-rh             : column resize handle
- * .Wt-treeview .Wt-tv-sh-none        : column sort handle, no sorting
- * .Wt-treeview .Wt-tv-sh-up          : column sort handle, sort up
- * .Wt-treeview .Wt-tv-sh-down        : column sort handle, sort down
- * .Wt-treeview .Wt-tv-br             : header border
- * </pre>
- * 
- * </div> Selectors that apply to the tree decoration: <div class="fragment">
- * 
- * <pre class="fragment">
- * .Wt-treeview .Wt-trunk          : vertical line, trunk
- * .Wt-treeview .Wt-end            : vertical line, last item
- * .Wt-treeview .Wt-collapse       : collapse icon
- * .Wt-treeview .Wt-expand         : expand icon
- * .Wt-treeview .Wt-noexpand       : leaf icon
- * </pre>
- * 
- * </div> Selectors that apply to the table contents: <div class="fragment">
- * 
- * <pre class="fragment">
- * .Wt-treeview .Wt-spacer         : spacer for non-loaded content
- * .Wt-treeview .Wt-selected       : selected item
- * .Wt-treeview .Wt-drop-site      : possible drop site
- * </pre>
- * 
- * </div> Selectors that apply to the table borders (which must be 1 pixel wide)
- * <div class="fragment">
- * 
- * <pre class="fragment">
- * .Wt-treeview .Wt-tv-row .Wt-tv-c      : border-right property of cells
- * .Wt-treeview .Wt-header .Wt-tv-row,
- *   .Wt-treeview .Wt-tv-node .Wt-tv-row : border-left property of cells
- * </pre>
- * 
- * </div>
- * <p>
  * A snapshot of the {@link WTreeView}: <div align="center"> <img
  * src="doc-files//WTreeView-default-1.png" alt="WTreeView example (default)">
  * <p>
@@ -576,7 +524,7 @@ public class WTreeView extends WAbstractItemView {
 		if (this.borderColorRule_ != null)
 			this.borderColorRule_.remove();
 		this.borderColorRule_ = new WCssTextRule(
-				".Wt-treeview .Wt-tv-br, .Wt-treeview .header .Wt-tv-row, .Wt-treeview .Wt-tv-node .Wt-tv-c",
+				".Wt-treeview .Wt-tv-br, .Wt-treeview .header .Wt-tv-row, .Wt-treeview li .Wt-tv-c",
 				"border-color: " + color.getCssText(), this);
 		WApplication.getInstance().getStyleSheet().addRule(
 				this.borderColorRule_);
@@ -806,8 +754,8 @@ public class WTreeView extends WAbstractItemView {
 		if (column == 0) {
 			ci.width = WLength.Auto;
 			ci.styleRule.getTemplateWidget().resize(WLength.Auto, WLength.Auto);
-			(this).addCssRule("#" + this.getId() + " .Wt-tv-node ."
-					+ ci.getStyleClass(),
+			(this).addCssRule(
+					"#" + this.getId() + " li ." + ci.getStyleClass(),
 					"width: auto;text-overflow: ellipsis;overflow: hidden");
 		}
 		return ci;

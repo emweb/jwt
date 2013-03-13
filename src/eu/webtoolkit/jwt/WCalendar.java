@@ -61,33 +61,6 @@ import org.slf4j.LoggerFactory;
  * </div></td>
  * </tr>
  * </table>
- * <p>
- * <h3>CSS</h3>
- * <p>
- * The calendar is styled by the current CSS theme. The look can be overridden
- * using the <code>Wt-calendar</code> CSS class and the following selectors:
- * <p>
- * <div class="fragment">
- * 
- * <pre class="fragment">
- * .Wt-cal table       : The table
- * .Wt-cal table.d1    : The table (single letter day headers)
- * .Wt-cal table.d3    : The table (three letter day headers)
- * .Wt-cal table.dlong : The table (long day headers)
- * 
- * .Wt-cal caption	    : The caption (containing the navigation buttons)
- * .Wt-cal-year        : The caption year in-place-edit
- * 
- * .Wt-cal th          : Header cell (week day)
- * 
- * .Wt-cal td          : Day cell
- * .Wt-cal-oom         : Out-of-month day
- * .Wt-cal-oor         : Out-of-range day (day &lt; bottom or day &gt; top)
- * .Wt-cal-sel         : Selected day
- * .Wt-cal-now         : Today day
- * </pre>
- * 
- * </div>
  */
 public class WCalendar extends WCompositeWidget {
 	private static Logger logger = LoggerFactory.getLogger(WCalendar.class);

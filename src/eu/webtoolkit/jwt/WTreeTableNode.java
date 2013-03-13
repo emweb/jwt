@@ -28,11 +28,6 @@ import org.slf4j.LoggerFactory;
  * {@link WTreeTableNode#setColumnWidget(int column, WWidget widget)
  * setColumnWidget()}.
  * <p>
- * <h3>CSS</h3>
- * <p>
- * This widget is styled by the current CSS theme. See {@link WTreeNode} for
- * details.
- * <p>
  * 
  * @see WTreeNode
  * @see WTreeTable

@@ -27,6 +27,10 @@ import org.slf4j.LoggerFactory;
  * calendar).
  * <p>
  * A {@link WDateValidator} is used to validate date entry.
+ * <p>
+ * In many cases, it provides a more convenient implementation of a date picker
+ * compared to {@link WDatePicker} since it is implemented as a line edit. This
+ * also makes the implementation ready for a native HTML5 control.
  */
 public class WDateEdit extends WLineEdit {
 	private static Logger logger = LoggerFactory.getLogger(WDateEdit.class);

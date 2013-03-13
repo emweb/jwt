@@ -37,21 +37,6 @@ import org.slf4j.LoggerFactory;
  * <strong>Two panels: one collapsed and one expanded (polished theme)</strong>
  * </p>
  * </div>
- * <p>
- * <h3>CSS</h3>
- * <p>
- * A panel has the <code>Wt-panel</code> and <code>Wt-outset</code> style
- * classes. The look can be overridden using the following style class
- * selectors:
- * <p>
- * <div class="fragment">
- * 
- * <pre class="fragment">
- * .Wt-panel .titlebar : The title bar
- *  .Wt-panel .body     : The body (requires vertical padding 4px).
- * </pre>
- * 
- * </div>
  */
 public class WPanel extends WCompositeWidget {
 	private static Logger logger = LoggerFactory.getLogger(WPanel.class);

@@ -69,7 +69,7 @@ import org.slf4j.LoggerFactory;
  * Contents for the dialog is defined by adding it to the
  * {@link WDialog#getContents() getContents()} widget.
  * <p>
- * This dialog looks like this (using the standard look):
+ * This dialog looks like this (using the default css themes):
  * <p>
  * <table border="0" align="center" cellspacing="3" cellpadding="3">
  * <tr>
@@ -87,21 +87,6 @@ import org.slf4j.LoggerFactory;
  * </div></td>
  * </tr>
  * </table>
- * <p>
- * <h3>CSS</h3>
- * <p>
- * A dialog has the <code>Wt-dialog</code> and <code>Wt-outset</code> style
- * classes. The look can be overridden using the following style class
- * selectors:
- * <p>
- * <div class="fragment">
- * 
- * <pre class="fragment">
- * .Wt-dialog .titlebar : The title bar
- *  .Wt-dialog .body     : The body (requires vertical padding 4px).
- * </pre>
- * 
- * </div>
  * <p>
  * <p>
  * <i><b>Note: </b>For the dialog (or rather, the silkscreen covering the user

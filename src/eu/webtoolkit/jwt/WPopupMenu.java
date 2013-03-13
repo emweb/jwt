@@ -24,8 +24,7 @@ import org.slf4j.LoggerFactory;
  * <p>
  * 
  * The menu implements a typical context menu, with support for submenu&apos;s.
- * It is not to be confused with {@link WMenu} which implements an
- * always-visible navigation menu for a web application.
+ * It is a specialized {@link WMenu} from which it inherits most of the API.
  * <p>
  * When initially created, the menu is invisible, until
  * {@link WPopupMenu#popup(WPoint p) popup()} or
@@ -37,20 +36,21 @@ import org.slf4j.LoggerFactory;
  * the current mouse position and provide feed-back of the currently selected
  * item.
  * <p>
- * Similar in use as {@link WDialog}, there are two ways of using the menu. The
- * simplest way is to use one of the {@link WPopupMenu#exec(WPoint p) exec()}
- * methods, to use a reentrant event loop and wait until the user cancelled the
- * popup menu (by hitting Escape or clicking elsewhere), or selected an item.
+ * As with {@link WDialog}, there are two ways of using the menu. The simplest
+ * way is to use one of the synchronous {@link WPopupMenu#exec(WPoint p) exec()}
+ * methods, which starts a reentrant event loop and waits until the user
+ * cancelled the popup menu (by hitting Escape or clicking elsewhere), or
+ * selected an item.
  * <p>
  * Alternatively, you can use one of the {@link WPopupMenu#popup(WPoint p)
  * popup()} methods to show the menu and listen to the
- * {@link WPopupMenu#aboutToHide() aboutToHide} signal where you read the
+ * {@link WPopupMenu#triggered() triggered} signal where you read the
  * {@link WPopupMenu#getResult() getResult()}.
  * <p>
  * You have several options to react to the selection of an item:
  * <ul>
- * <li>Either you use the WPopupMenuItem itself to identify the action, perhaps
- * by specialization or simply by binding custom data using
+ * <li>Either you use the {@link WMenuItem} itself to identify the action,
+ * perhaps by specialization or simply by binding custom data using
  * {@link WMenuItem#setData(Object data) WMenuItem#setData()}.</li>
  * <li>You can bind a separate method to each item&apos;s
  * {@link WMenuItem#triggered() WMenuItem#triggered()} signal.</li>
@@ -79,28 +79,13 @@ import org.slf4j.LoggerFactory;
  * 	subMenu.addItem(&quot;Sub Item 2&quot;);
  * 	popup.addMenu(&quot;Item 7&quot;, subMenu);
  * 
- * 	WPopupMenuItem item = popup.exec(event);
+ * 	WMenuItem item = popup.exec(event);
  * 
- * 	if (item) {
+ * 	if (item != null) {
  * 		// ... do associated action.
  * 	}
  * }
  * </pre>
- * <p>
- * <h3>CSS</h3>
- * <p>
- * A {@link WPopupMenu} has the <code>Wt-popupmenu</code> style class. The look
- * can be overridden using the following style class selectors:
- * <p>
- * <div class="fragment">
- * 
- * <pre class="fragment">
- * .Wt-popupmenu .Wt-item, .Wt-popupmenu .Wt-selected : item
- * .Wt-popupmenu .Wt-selected                         : selected item
- * .Wt-popupmenu .Wt-separator                        : separator
- * </pre>
- * 
- * </div>
  * <p>
  * A snapshot of the {@link WPopupMenu}: <div align="center"> <img
  * src="doc-files//WPopupMenu-default-1.png" alt="WPopupMenu example (default)">
@@ -113,6 +98,8 @@ import org.slf4j.LoggerFactory;
  * <strong>WPopupMenu example (polished)</strong>
  * </p>
  * </div>
+ * 
+ * @see WMenuItem
  */
 public class WPopupMenu extends WMenu {
 	private static Logger logger = LoggerFactory.getLogger(WPopupMenu.class);
@@ -208,6 +195,8 @@ public class WPopupMenu extends WMenu {
 	public void popup(WWidget location, Orientation orientation) {
 		this.location_ = location;
 		this.popupImpl();
+		this.doJavaScript("jQuery.data(" + this.getJsRef()
+				+ ", 'obj').popupAt(" + location.getJsRef() + ");");
 		this.positionAt(location, orientation);
 	}
 
@@ -408,7 +397,20 @@ public class WPopupMenu extends WMenu {
 				}
 			}
 		}
-		return false;
+		if (this.location_ != null) {
+			for (WWidget p = this.location_.getParent(); p != null; p = p
+					.getParent()) {
+				if (w == p) {
+					return false;
+				}
+			}
+		}
+		if (!(this.getParentItem() != null)) {
+			this.cancel();
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	protected void renderSelected(WMenuItem item, boolean selected) {
@@ -524,6 +526,6 @@ public class WPopupMenu extends WMenu {
 				JavaScriptScope.WtClassScope,
 				JavaScriptObjectType.JavaScriptConstructor,
 				"WPopupMenu",
-				"function(n,c,o){function i(){n.emit(c.id,\"cancel\")}function p(a,b){$(a).toggleClass(\"active\",b)}function j(a){if(a.subMenu)return a.subMenu;else{var b=a.lastChild;if(b&&f.hasTag(b,\"UL\")){a.subMenu=b;b.parentItem=a;$(b).mousemove(q);r(b);return b}}}function x(a){a.style.display=\"block\";if(a.parentNode==a.parentItem){a.parentNode.removeChild(a);c.parentNode.appendChild(a)}f.positionAtWidget(a.id,a.parentItem.id,f.Horizontal,-f.px(a,\"paddingTop\")); k(a,null)}function k(a,b){function s(h,d){if(h==d)return true;else if(d)return(d=d.parentNode.parentItem)?s(h,d):false;else return false}function t(h){var d,u;d=0;for(u=h.childNodes.length;d<u;++d){var e=h.childNodes[d];if(s(e,b)){if(e!==b)(e=j(e))&&t(e)}else{p(e,false);if(e=j(e))e.style.display=\"none\"}}}t(a)}function q(a){for(a=f.target(a);a&&!f.hasTag(a,\"LI\")&&!f.hasTag(a,\"UL\");)a=a.parentNode;if(f.hasTag(a,\"LI\"))if(a!==l){l=a;p(a,true);var b=j(a);b&&x(b);k(c,a)}}function y(){m=false;clearTimeout(g); if(o>=0)g=setTimeout(i,o)}function z(){m=true;clearTimeout(g)}function r(a){$(a).mouseleave(y).mouseenter(z)}function v(){i()}function w(a){a.keyCode==27&&i()}jQuery.data(c,\"obj\",this);var f=n.WT,g=null,m=false,l=null;this.setHidden=function(a){if(g){clearTimeout(g);g=null}m=false;l=null;if(a){c.style.position=\"\";c.style.display=\"\";c.style.left=\"\";c.style.top=\"\";$(document).unbind(\"click\",v);$(document).unbind(\"keydown\",w)}else{setTimeout(function(){$(document).bind(\"click\",v);$(document).bind(\"keydown\", w)},0);c.style.display=\"block\"}k(c,null)};setTimeout(function(){r(c)},0);$(c).mousemove(q)}");
+				"function(p,c,q){function i(){p.emit(c.id,\"cancel\")}function r(a,b){$(a).toggleClass(\"active\",b)}function j(a){if(a.subMenu)return a.subMenu;else{var b=a.lastChild;if(b&&f.hasTag(b,\"UL\")){a.subMenu=b;b.parentItem=a;$(b).mousemove(s);k(b);return b}else return null}}function x(a){a.style.display=\"block\";if(a.parentNode==a.parentItem){a.parentNode.removeChild(a);c.parentNode.appendChild(a)}f.positionAtWidget(a.id,a.parentItem.id,f.Horizontal,-f.px(a, \"paddingTop\"));l(a,null)}function l(a,b){function t(h,d){if(h==d)return true;else if(d)return(d=d.parentNode.parentItem)?t(h,d):false;else return false}function m(h){var d,u;d=0;for(u=h.childNodes.length;d<u;++d){var e=h.childNodes[d];if(t(e,b)){if(e!==b)(e=j(e))&&m(e)}else{r(e,false);if(e=j(e)){e.style.display=\"none\";m(e)}}}}m(a)}function s(a){for(a=f.target(a);a&&!f.hasTag(a,\"LI\")&&!f.hasTag(a,\"UL\");)a=a.parentNode;if(f.hasTag(a,\"LI\"))if(a!==n){n=a;r(a,true);var b=j(a);b&&x(b);l(c,a)}}function y(){o= false;clearTimeout(g);if(q>=0)g=setTimeout(i,q)}function z(){o=true;clearTimeout(g)}function k(a){$(a).mouseleave(y).mouseenter(z)}function v(){i()}function w(a){a.keyCode==27&&i()}jQuery.data(c,\"obj\",this);var f=p.WT,g=null,o=false,n=null;this.setHidden=function(a){if(g){clearTimeout(g);g=null}o=false;n=null;if(a){c.style.position=\"\";c.style.display=\"\";c.style.left=\"\";c.style.top=\"\";$(document).unbind(\"click\",v);$(document).unbind(\"keydown\",w)}else{setTimeout(function(){$(document).bind(\"click\", v);$(document).bind(\"keydown\",w)},0);c.style.display=\"block\"}l(c,null)};this.popupAt=function(a){k(a)};setTimeout(function(){k(c)},0);$(c).mousemove(s)}");
 	}
 }

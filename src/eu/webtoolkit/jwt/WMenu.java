@@ -93,128 +93,9 @@ import org.slf4j.LoggerFactory;
  * <p>
  * <h3>CSS</h3>
  * <p>
- * You will want to differentiate between unselected and selected items based on
- * the <code>&quot;item&quot;</code> and <code>&quot;itemselected&quot;</code>
- * style classes as well as between unselected and selected closeable items
- * based on the <code>&quot;citem&quot;</code> and
- * <code>&quot;citemselected&quot;</code> style classes.
- * <p>
- * For menus without closeable items a styling is pretty simple. For example,
- * assuming you set a <code>&quot;menu&quot;</code> style class for your menu,
- * you can style the items using:
- * <p>
- * 
- * <pre>
- * {@code
- * .menu * .item {
- *   cursor: pointer; cursor: hand;
- *   color: blue;
- *   text-decoration: underline;
- * }
- * 
- * .menu * .itemselected {
- *   color: blue;
- *   text-decoration: underline;
- *   font-weight: bold;  
- * }
- * }
- * </pre>
- * <p>
- * For menus which supports closing and/or enabling disabling of items, the
- * styling is more complex. The close icon is styled by the current CSS theme
- * and can be overriden by using <code>&quot;Wt-closeicon&quot;</code> CSS
- * class. The look of the menu, assuming the default implementation for
- * {@link WMenuItem}, can be customized by using the following selectors (again
- * assuming a menu with as styleclass <code>&quot;menu&quot;</code>):
- * <p>
- * <div class="fragment">
- * 
- * <pre class="fragment">
- * .Wt-closeicon                     : a close icon
- * 
- * .menu                             : the list (you custom menu class)
- * .menu li                          : a list item
- * .menu span                        : spans of a list item
- * 
- * # not closable items:
- * .menu a.item span                 : the inner span of the label of an enabled item
- * .menu span.item                   : the label of a disabled item
- * .menu a.itemselected span         : the inner span the label of an enabled selected item
- * .menu span.itemselected           : the label of a disabled selected item
- * 
- * # closable items:
- * .menu .citem a.label span         : the inner span of the label of an enabled item
- * .menu .citem span.label           : the label of a disabled item
- * .menu .citemselected a.label span : the inner span the label of an enabled selected item
- * .menu .citemselected span.label   : the label of a disabled selected item
- * </pre>
- * 
- * </div>
- * <p>
- * Example of styling a menu with closeable items:
- * <p>
- * 
- * <pre>
- * {@code
- * .menu {
- *   overflow: auto;
- * }
- * 
- * .menu li {
- *   display: inline;
- * }
- * 
- * .menu span {
- *   display: block; float: left;
- * }
- * 
- * .menu a.item span {
- *   cursor: pointer; cursor: hand;
- *   color: blue;
- *   margin-right: 5px;
- * }
- * 
- * .menu span.item {
- *   color: gray;
- *   margin-right: 5px;
- * }
- * 
- * .menu a.itemselected span {
- *   color: black;
- *   font-weight: bold;
- *   text-decoration: none;
- *   margin-right: 5px;
- * }
- * 
- * .menu span.itemselected {
- *   color: gray;
- *   font-weight: bold;
- *   text-decoration: none;
- *   margin-right: 5px;
- * }
- * 
- * .menu .citem a.label span {
- *   cursor: pointer; cursor: hand;
- *   color: blue;
- * }
- * 
- * .menu .citem span.label {
- *   color: gray;
- * }
- * 
- * .menu .citemselected a.label span {
- *   color: black;
- *   font-weight: bold;
- *   text-decoration: none;
- * }
- * 
- * .menu .citemselected span.label {
- *   color: gray;
- *   font-weight: bold;
- *   text-decoration: none;
- * }
- * }
- * </pre>
+ * The menu is rendered as a &gt;ul&lt;. Unless you use the bootstrap theme, you
+ * will want to customize the menu using inline or external styles to hide the
+ * bullets and provide the appropriate horizontal or vertical layout.
  * <p>
  * 
  * @see WMenuItem
@@ -525,8 +406,7 @@ public class WMenu extends WCompositeWidget {
 	/**
 	 * Adds a separator to the menu.
 	 * <p>
-	 * Adds a separator the menu. The separator is an empty div with style-class
-	 * &quot;separator&quot;.
+	 * Adds a separator the menu.
 	 */
 	public void addSeparator() {
 		this.addItem(new WMenuItem(true, WString.Empty));

@@ -31,10 +31,6 @@ import org.slf4j.LoggerFactory;
  * WDoubleSpinBox is an {@link WWidget#setInline(boolean inlined) inline}
  * widget.
  * <p>
- * <h3>CSS</h3>
- * <p>
- * See {@link WAbstractSpinBox}.
- * <p>
  * 
  * @see WSpinBox <p>
  *      <i><b>Note: </b>A spinbox configures a validator for validating the

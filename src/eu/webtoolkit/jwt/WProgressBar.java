@@ -33,13 +33,6 @@ import org.slf4j.LoggerFactory;
  * <p>
  * WProgressBar is an {@link WWidget#setInline(boolean inlined) inline} widget.
  * <p>
- * <h3>CSS</h3>
- * <p>
- * Using HTML4, the widget is implemented using a set of nested DIVs. The
- * element can be styled using the <code>Wt-progressbar</code> style. It may be
- * styled through the current theme, or you can override the style using
- * internal or external CSS as appropriate.
- * <p>
  * <p>
  * <i><b>Note: </b>With the advent of HTML5, this widget will be implemented
  * using the native HTML5 control when available. </i>

@@ -160,21 +160,6 @@ import org.slf4j.LoggerFactory;
  * </tr>
  * </table>
  * <p>
- * <h3>CSS</h3>
- * <p>
- * The suggestion popup is styled by the current CSS theme. The look can be
- * overridden using the <code>Wt-suggest</code> CSS class and the following
- * selectors:
- * <p>
- * <div class="fragment">
- * 
- * <pre class="fragment">
- * .Wt-suggest .content div : A suggestion element
- * .Wt-suggest .sel :         A selected suggestion element
- * </pre>
- * 
- * </div>
- * <p>
  * When using the DropDownIcon trigger, an additional style class is provided
  * for the edit field: <code>Wt-suggest-dropdown</code>, which renders the icon
  * to the right inside the edit field. This class may be used to customize how

@@ -71,8 +71,9 @@ import org.slf4j.LoggerFactory;
  * <p>
  * The file upload itself corresponds to a
  * <code>&lt;input type=&quot;file&quot;&gt;</code> tag, but may be wrapped in a
- * <code>&lt;form&gt;</code> tag. This widget does not provide styling, and
- * styling through CSS is not well supported across browsers.
+ * <code>&lt;form&gt;</code> tag for an Ajax session to implement the
+ * asynchronous upload action. This widget does not provide styling, and styling
+ * through CSS is not well supported across browsers.
  */
 public class WFileUpload extends WWebWidget {
 	private static Logger logger = LoggerFactory.getLogger(WFileUpload.class);

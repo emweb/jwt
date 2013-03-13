@@ -36,7 +36,6 @@ class WTreeViewNode extends WTemplate {
 		this.bindEmpty("no-expand");
 		this.bindEmpty("col0");
 		this.bindEmpty("children");
-		this.setStyleClass("Wt-tv-node");
 		int selfHeight = 0;
 		boolean needLoad = this.view_.isExpanded(this.index_);
 		if (!(this.index_ == this.view_.getRootIndex() || (this.index_ != null && this.index_

@@ -49,22 +49,6 @@ import org.slf4j.LoggerFactory;
  * {@link WCompositeWidget#resize(WLength width, WLength height)
  * WCompositeWidget#resize()}.
  * <p>
- * <h3>CSS</h3>
- * <p>
- * The treetable is styled by the current CSS theme. The look can be overridden
- * using the <code>Wt-treetable</code> CSS class. The style selectors that
- * affect the rendering of the tree are indicated in the documentation for
- * {@link WTree} (for selection) and {@link WTreeNode} (for decoration). In
- * addition, the following selector may be used to to style the header:
- * <p>
- * <div class="fragment">
- * 
- * <pre class="fragment">
- * .Wt-treetable .Wt-header : header
- * </pre>
- * 
- * </div>
- * <p>
  * A screenshot of the treetable: <div align="center"> <img
  * src="doc-files//WTreeTable-default-1.png"
  * alt="An example WTreeTable (default)">

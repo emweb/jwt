@@ -66,12 +66,12 @@ import org.slf4j.LoggerFactory;
  * <p>
  * <h3>CSS</h3>
  * <p>
- * This widget corresponds to the HTML
- * <code>&lt;input type=&quot;checkbox&quot;&gt;</code> tag. Depending on
- * whether a text is included, it may be nested in a <code>&lt;span&gt;</code>
- * tag which also includes a rendered {@link WLabel}. This widget does not
- * provide styling, and can be styled using inline or external CSS as
- * appropriate.
+ * This widget is rendered using an HTML
+ * <code>&lt;input type=&quot;checkbox&quot;&gt;</code> tag. When a label is
+ * specified, the input element is nested in a <code>&lt;label&gt;</code>.
+ * <p>
+ * This widget does not provide styling, and can be styled using inline or
+ * external CSS as appropriate.
  * <p>
  * 
  * @see WAbstractToggleButton
