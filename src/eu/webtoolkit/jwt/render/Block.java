@@ -137,8 +137,9 @@ class Block {
 					this.inline_ = DomElement.isDefaultInline(this.type_);
 				}
 				if (this.inline_ && !allChildrenInline) {
-					logger.error(new StringWriter().append(
-							"inline element cannot contain block elements")
+					logger.error(new StringWriter().append("inline element ")
+							.append(DomElement.tagName(this.type_)).append(
+									" cannot contain block elements")
 							.toString());
 				}
 			} else {
@@ -1189,7 +1190,8 @@ class Block {
 		}
 		String v = this.cssProperty(Property.PropertyStyleFontWeight);
 		if (v.length() == 0
-				&& (this.type_ == DomElementType.DomElement_STRONG
+				&& (this.type_ == DomElementType.DomElement_B
+						|| this.type_ == DomElementType.DomElement_STRONG
 						|| this.type_ == DomElementType.DomElement_TH || this.type_
 						.getValue() >= DomElementType.DomElement_H1.getValue()
 						&& this.type_.getValue() <= DomElementType.DomElement_H6

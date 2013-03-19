@@ -2120,7 +2120,8 @@ public abstract class WWebWidget extends WWidget {
 	}
 
 	private void getSFormObjects(Map<String, WObject> result) {
-		if (!this.flags_.get(BIT_STUBBED) && !this.flags_.get(BIT_HIDDEN)) {
+		if (!this.flags_.get(BIT_STUBBED) && !this.flags_.get(BIT_HIDDEN)
+				&& this.flags_.get(BIT_RENDERED)) {
 			this.getFormObjects(result);
 		}
 	}

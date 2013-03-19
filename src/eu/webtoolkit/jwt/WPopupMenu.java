@@ -113,6 +113,7 @@ public class WPopupMenu extends WMenu {
 	 */
 	public WPopupMenu(WStackedWidget contentsStack) {
 		super(contentsStack);
+		this.topLevel_ = null;
 		this.result_ = null;
 		this.location_ = null;
 		this.aboutToHide_ = new Signal(this);
@@ -376,49 +377,13 @@ public class WPopupMenu extends WMenu {
 		setAutoHide(enabled, 0);
 	}
 
-	protected boolean isExposed(WWidget w) {
-		if (super.isExposed(w)) {
-			return true;
-		}
-		if (w == WApplication.getInstance().getRoot()) {
-			return true;
-		}
-		if (w == this.location_) {
-			return false;
-		}
-		for (int i = 0; i < this.getCount(); ++i) {
-			WMenuItem item = this.itemAt(i);
-			WPopupMenu popup = ((item.getMenu()) instanceof WPopupMenu ? (WPopupMenu) (item
-					.getMenu())
-					: null);
-			if (popup != null) {
-				if (popup.isExposed(w)) {
-					return true;
-				}
-			}
-		}
-		if (this.location_ != null) {
-			for (WWidget p = this.location_.getParent(); p != null; p = p
-					.getParent()) {
-				if (w == p) {
-					return false;
-				}
-			}
-		}
-		if (!(this.getParentItem() != null)) {
-			this.cancel();
-			return true;
-		} else {
-			return false;
-		}
-	}
-
 	protected void renderSelected(WMenuItem item, boolean selected) {
 	}
 
 	protected void setCurrent(int index) {
 	}
 
+	private WPopupMenu topLevel_;
 	WMenuItem result_;
 	private WWidget location_;
 	private WInteractWidget button_;
@@ -435,14 +400,15 @@ public class WPopupMenu extends WMenu {
 	}
 
 	private void done(WMenuItem result) {
+		if (this.isHidden()) {
+			return;
+		}
 		if (this.location_ != null && this.location_ == this.button_) {
 			this.button_.removeStyleClass("active", true);
 		}
 		this.location_ = null;
 		this.result_ = result;
 		this.hide();
-		WApplication app = WApplication.getInstance();
-		app.popExposedConstraint(this);
 		this.recursiveEventLoop_ = false;
 		if (this.result_ != null) {
 			this.triggered_.trigger(this.result_);
@@ -453,7 +419,6 @@ public class WPopupMenu extends WMenu {
 	private void popupImpl() {
 		this.result_ = null;
 		WApplication app = WApplication.getInstance();
-		app.pushExposedConstraint(this);
 		this.prepareRender(app);
 		this.show();
 	}
@@ -499,11 +464,14 @@ public class WPopupMenu extends WMenu {
 	}
 
 	private void popupAtButton() {
-		this.button_.addStyleClass("active", true);
-		this.popup(this.button_);
+		if (this.topLevel_ == this) {
+			this.button_.addStyleClass("active", true);
+			this.popup(this.button_);
+		}
 	}
 
 	private void connectSignals(final WPopupMenu topLevel) {
+		this.topLevel_ = topLevel;
 		this.itemSelected().addListener(topLevel,
 				new Signal1.Listener<WMenuItem>() {
 					public void trigger(WMenuItem e1) {

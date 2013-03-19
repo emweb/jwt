@@ -1411,10 +1411,8 @@ class WebRenderer implements SlotLearnerInterface {
 			}
 		}
 		if (this.session_.getFavicon().length() != 0) {
-			result
-					.append(
-							"<link rel=\"icon\" type=\"image/vnd.microsoft.icon\" href=\"")
-					.append(this.session_.getFavicon()).append('"');
+			result.append("<link rel=\"shortcut icon\" href=\"").append(
+					this.session_.getFavicon()).append('"');
 			closeSpecial(result, xhtml);
 		}
 		String baseUrl = "";

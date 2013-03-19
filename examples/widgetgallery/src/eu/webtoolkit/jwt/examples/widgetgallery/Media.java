@@ -327,7 +327,7 @@ class Media extends TopicWidget {
 		String poster = "pics/sintel_trailer.jpg";
 		WContainerWidget container = new WContainerWidget();
 		WFlashObject flash = new WFlashObject(
-				"www.youtube.com/watch?v=HOfdboHvshg", container);
+				"http://www.youtube.com/v/HOfdboHvshg", container);
 		flash.setFlashParameter("allowFullScreen", "true");
 		flash.setAlternativeContent(new WImage(poster));
 		flash.resize(new WLength(640), new WLength(360));

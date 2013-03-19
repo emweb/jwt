@@ -217,7 +217,7 @@ public class DomElement {
 	 */
 	public void addChild(DomElement child) {
 		if (child.getMode() == DomElement.Mode.ModeCreate) {
-			++this.numManipulations_;
+			this.numManipulations_ += 2;
 			if (this.wasEmpty_
 					&& this.canWriteInnerHTML(WApplication.getInstance())) {
 				child.asHTML(this.childrenHtml_, this.javaScript_,
@@ -1327,6 +1327,13 @@ public class DomElement {
 	}
 
 	/**
+	 * Returns the tag name for a DOMElement type.
+	 */
+	public static String tagName(DomElementType type) {
+		return elementNames_[type.getValue()];
+	}
+
+	/**
 	 * Returns the name for a CSS property, as a string.
 	 */
 	public static String cssName(Property property) {
@@ -1850,14 +1857,14 @@ public class DomElement {
 			"h5", "h6", "iframe", "img", "input", "label", "legend", "li",
 			"ol", "option", "ul", "script", "select", "span", "table", "tbody",
 			"thead", "tfoot", "th", "td", "textarea", "tr", "p", "canvas",
-			"map", "area", "object", "param", "audio", "video", "source",
+			"map", "area", "object", "param", "audio", "video", "source", "b",
 			"strong", "em" };
 	private static boolean[] defaultInline_ = { true, false, true, false,
-			false, false, false, false, true, false, false, false, false,
+			false, false, false, false, false, false, false, false, false,
 			false, true, true, true, true, true, false, false, true, false,
 			false, true, true, false, false, false, false, false, false, true,
 			false, false, true, false, true, false, false, false, false, false,
-			true, true };
+			true, true, true };
 	private static String[] cssNames_ = { "position", "z-index", "float",
 			"clear", "width", "height", "line-height", "min-width",
 			"min-height", "max-width", "max-height", "left", "right", "top",

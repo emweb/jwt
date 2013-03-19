@@ -146,7 +146,7 @@ public class WMenuItem extends WContainerWidget {
 	 */
 	public void setText(CharSequence text) {
 		if (!(this.text_ != null)) {
-			this.text_ = new WText(this.getAnchor());
+			this.text_ = new WLabel(this.getAnchor());
 			this.text_.setTextFormat(TextFormat.PlainText);
 		}
 		this.text_.setText(text);
@@ -241,6 +241,8 @@ public class WMenuItem extends WContainerWidget {
 			if (checkable) {
 				this.checkBox_ = new WCheckBox();
 				this.getAnchor().insertWidget(0, this.checkBox_);
+				this.setText(this.getText());
+				this.text_.setBuddy(this.checkBox_);
 				WApplication app = WApplication.getInstance();
 				app.getTheme().apply(this, this.checkBox_,
 						WidgetThemeRole.MenuItemCheckBoxRole);
@@ -381,8 +383,7 @@ public class WMenuItem extends WContainerWidget {
 			sparent.removeWidget(this.subMenu_);
 		}
 		this.addWidget(this.subMenu_);
-		WPopupMenu popup = ((this.getMenu()) instanceof WPopupMenu ? (WPopupMenu) (this
-				.getMenu())
+		WPopupMenu popup = ((this.subMenu_) instanceof WPopupMenu ? (WPopupMenu) (this.subMenu_)
 				: null);
 		if (popup != null) {
 			popup.setJavaScriptMember("wtNoReparent", "true");
@@ -694,7 +695,9 @@ public class WMenuItem extends WContainerWidget {
 		this.separator_ = separator;
 		this.selectable_ = false;
 		if (!(text.length() == 0)) {
-			this.text_ = new WText(text, TextFormat.PlainText, this);
+			this.text_ = new WLabel(this);
+			this.text_.setTextFormat(TextFormat.PlainText);
+			this.text_.setText(text);
 		}
 	}
 
@@ -703,7 +706,7 @@ public class WMenuItem extends WContainerWidget {
 	private WMenu menu_;
 	private WMenu subMenu_;
 	private WText icon_;
-	private WText text_;
+	private WLabel text_;
 	private WCheckBox checkBox_;
 	private Object data_;
 	private boolean separator_;

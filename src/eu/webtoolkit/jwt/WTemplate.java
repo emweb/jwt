@@ -1103,6 +1103,8 @@ public class WTemplate extends WInteractWidget {
 					WWidget w = i;
 					w.getWebWidget().setRendered(false);
 				}
+				WApplication.getInstance().getSession().getRenderer()
+						.updateFormObjects(this, true);
 			}
 			super.updateDom(element, all);
 		} catch (IOException ioe) {

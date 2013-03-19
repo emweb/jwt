@@ -695,9 +695,9 @@ public abstract class WInteractWidget extends WWebWidget {
 			StringBuilder js = new StringBuilder();
 			js.append(CheckDisabled);
 			if (mouseDblClick != null && mouseDblClick.needsUpdate(all)) {
-				js.append("if(window.wtClickTimeout) {").append(
-						"clearTimeout(window.wtClickTimeout);").append(
-						"window.wtClickTimeout = null;");
+				js.append("if(o.wtClickTimeout) {").append(
+						"clearTimeout(o.wtClickTimeout);").append(
+						"o.wtClickTimeout = null;");
 				js.append(mouseDblClick.getJavaScript());
 				if (mouseDblClick.isExposedSignal()) {
 					js.append(app.getJavaScriptClass()).append(
@@ -707,7 +707,7 @@ public abstract class WInteractWidget extends WWebWidget {
 				}
 				mouseDblClick.updateOk();
 				js
-						.append("}else{if (Wt3_3_0.isIElt9 && document.createEventObject) e = document.createEventObject(e);window.wtClickTimeout = setTimeout(function() {window.wtClickTimeout = null;");
+						.append("}else{if (Wt3_3_0.isIElt9 && document.createEventObject) e = document.createEventObject(e);o.wtClickTimeout = setTimeout(function() {o.wtClickTimeout = null;");
 				if (mouseClick != null) {
 					js.append(mouseClick.getJavaScript());
 					if (mouseClick.isExposedSignal()) {

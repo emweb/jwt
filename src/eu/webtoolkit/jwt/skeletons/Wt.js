@@ -551,11 +551,16 @@ this.ajaxInternalPaths = function(basePath) {
 	el.innerHTML= '<a href="' + basePath +'">x</a>';
 	var absBase = el.firstChild.href;
 	internalPath = href.substr(absBase.length - 1);
-      } else
+      } else {
+	while (href.substr(0, 3) == "../")
+	  href = href.substr(3);
+	if (href.charAt(0) != '/')
+	  href = '/' + href;
 	internalPath = href.substr(basePath.length);
+      }
 
       if (internalPath.substr(0, 3) == "?_=")
-	  internalPath = internalPath.substr(3);
+	internalPath = internalPath.substr(3);
       this.setAttribute('href', href); // computes this.href
       this.setAttribute('href', this.href);
       this.onclick = function(event) {
@@ -1876,7 +1881,7 @@ _$_$endif_$_();
 
 })();
 
-if (window._$_APP_CLASS_$_) {
+if (window._$_APP_CLASS_$_ && window._$_APP_CLASS_$_._p_) {
   try {
     window._$_APP_CLASS_$_._p_.quit();
   } catch (e) {
@@ -2611,7 +2616,8 @@ _$_$if_WEB_SOCKETS_$_();
 	    /*
 	     * Sometimes, we can connect but cannot send data
 	     */
-	    if (reconnectTries == 3 && websocket.state == WebSocketsUnknown)
+	    if (websocket.reconnectTries == 3 &&
+		websocket.state == WebSocketsUnknown)
 	      websocket.state = WebSocketsUnavailable;
 	    reconnect();
 	  };
@@ -2620,8 +2626,8 @@ _$_$if_WEB_SOCKETS_$_();
 	    /*
 	     * Sometimes, we can connect but cannot send data
 	     */
-	    if (websocket.reconnectTries == 3
-		&& websocket.state == WebSocketsUnknown)
+	    if (websocket.reconnectTries == 3 &&
+		websocket.state == WebSocketsUnknown)
 	      websocket.state = WebSocketsUnavailable;
 	    reconnect();
 	  };

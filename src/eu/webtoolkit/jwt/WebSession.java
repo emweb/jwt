@@ -56,6 +56,7 @@ class WebSession {
 		this.deploymentPath_ = "";
 		this.redirect_ = "";
 		this.pagePathInfo_ = "";
+		this.pongMessage_ = "";
 		this.asyncResponse_ = null;
 		this.bootStyleResponse_ = null;
 		this.canWriteAsyncResponse_ = false;
@@ -1601,7 +1602,8 @@ class WebSession {
 	private void handleWebSocketRequest(WebSession.Handler handler) {
 	}
 
-	private static void handleWebSocketMessage(WebSession session) {
+	private static void handleWebSocketMessage(WebSession session,
+			WebRequest.ReadEvent event) {
 	}
 
 	private static void webSocketReady(WebSession session) {
@@ -1652,6 +1654,7 @@ class WebSession {
 	private String deploymentPath_;
 	private String redirect_;
 	String pagePathInfo_;
+	private String pongMessage_;
 	private WebResponse asyncResponse_;
 	private WebResponse bootStyleResponse_;
 	private boolean canWriteAsyncResponse_;

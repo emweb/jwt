@@ -59,7 +59,13 @@ public class WebRequest extends HttpServletRequestWrapper {
 		 */
 		Update
 	};
-	
+
+	/**
+	 * Enumeration for a WebSocket read event (not yet implemented).
+	 */
+	public enum ReadEvent {
+	}
+
 	/**
 	 * Progress listener interface.
 	 */
