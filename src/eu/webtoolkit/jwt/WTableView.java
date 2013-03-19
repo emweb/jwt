@@ -159,24 +159,45 @@ public class WTableView extends WAbstractItemView {
 							WTableView.this.handleSingleClick(false, event);
 						}
 					});
+			this.canvas_.clicked().preventPropagation();
 			this.canvas_.mouseWentDown().addListener(this,
 					new Signal1.Listener<WMouseEvent>() {
 						public void trigger(WMouseEvent event) {
 							WTableView.this.handleMouseWentDown(false, event);
 						}
 					});
+			this.canvas_.mouseWentDown().preventPropagation();
 			this.canvas_.mouseWentUp().addListener(this,
 					new Signal1.Listener<WMouseEvent>() {
 						public void trigger(WMouseEvent event) {
 							WTableView.this.handleMouseWentUp(false, event);
 						}
 					});
+			this.canvas_.mouseWentUp().preventPropagation();
 			this.canvas_.addWidget(this.table_);
 			this.contentsContainer_ = new WContainerWidget();
 			this.contentsContainer_
 					.setOverflow(WContainerWidget.Overflow.OverflowAuto);
 			this.contentsContainer_.setPositionScheme(PositionScheme.Absolute);
 			this.contentsContainer_.addWidget(this.canvas_);
+			this.contentsContainer_.clicked().addListener(this,
+					new Signal1.Listener<WMouseEvent>() {
+						public void trigger(WMouseEvent event) {
+							WTableView.this.handleRootSingleClick(0, event);
+						}
+					});
+			this.contentsContainer_.mouseWentDown().addListener(this,
+					new Signal1.Listener<WMouseEvent>() {
+						public void trigger(WMouseEvent event) {
+							WTableView.this.handleRootMouseWentDown(0, event);
+						}
+					});
+			this.contentsContainer_.mouseWentUp().addListener(this,
+					new Signal1.Listener<WMouseEvent>() {
+						public void trigger(WMouseEvent event) {
+							WTableView.this.handleRootMouseWentUp(0, event);
+						}
+					});
 			this.scrolled_.addListener(this,
 					new Signal4.Listener<Integer, Integer, Integer, Integer>() {
 						public void trigger(Integer e1, Integer e2, Integer e3,
@@ -222,6 +243,24 @@ public class WTableView extends WAbstractItemView {
 					.setOverflow(WContainerWidget.Overflow.OverflowHidden);
 			this.headerColumnsContainer_.addWidget(this.headerColumnsCanvas_);
 			this.headerColumnsContainer_.hide();
+			this.headerColumnsContainer_.clicked().addListener(this,
+					new Signal1.Listener<WMouseEvent>() {
+						public void trigger(WMouseEvent event) {
+							WTableView.this.handleRootSingleClick(0, event);
+						}
+					});
+			this.headerColumnsContainer_.mouseWentDown().addListener(this,
+					new Signal1.Listener<WMouseEvent>() {
+						public void trigger(WMouseEvent event) {
+							WTableView.this.handleRootMouseWentDown(0, event);
+						}
+					});
+			this.headerColumnsContainer_.mouseWentUp().addListener(this,
+					new Signal1.Listener<WMouseEvent>() {
+						public void trigger(WMouseEvent event) {
+							WTableView.this.handleRootMouseWentUp(0, event);
+						}
+					});
 			layout.addWidget(this.headerColumnsHeaderContainer_, 0, 0);
 			layout.addWidget(this.headerContainer_, 0, 1);
 			layout.addWidget(this.headerColumnsContainer_, 1, 0);
@@ -1254,10 +1293,24 @@ public class WTableView extends WAbstractItemView {
 								WTableView.this.handleDoubleClick(false, event);
 							}
 						});
+				this.canvas_.doubleClicked().preventPropagation();
 				this.headerColumnsCanvas_.doubleClicked().addListener(this,
 						new Signal1.Listener<WMouseEvent>() {
 							public void trigger(WMouseEvent event) {
 								WTableView.this.handleDoubleClick(true, event);
+							}
+						});
+				this.headerColumnsCanvas_.doubleClicked().preventPropagation();
+				this.contentsContainer_.doubleClicked().addListener(this,
+						new Signal1.Listener<WMouseEvent>() {
+							public void trigger(WMouseEvent event) {
+								WTableView.this.handleRootDoubleClick(0, event);
+							}
+						});
+				this.headerColumnsContainer_.doubleClicked().addListener(this,
+						new Signal1.Listener<WMouseEvent>() {
+							public void trigger(WMouseEvent event) {
+								WTableView.this.handleRootDoubleClick(0, event);
 							}
 						});
 			}
@@ -1531,30 +1584,22 @@ public class WTableView extends WAbstractItemView {
 
 	private void handleSingleClick(boolean headerColumns, WMouseEvent event) {
 		WModelIndex index = this.translateModelIndex(headerColumns, event);
-		if ((index != null)) {
-			super.handleClick(index, event);
-		}
+		super.handleClick(index, event);
 	}
 
 	private void handleDoubleClick(boolean headerColumns, WMouseEvent event) {
 		WModelIndex index = this.translateModelIndex(headerColumns, event);
-		if ((index != null)) {
-			super.handleDoubleClick(index, event);
-		}
+		super.handleDoubleClick(index, event);
 	}
 
 	private void handleMouseWentDown(boolean headerColumns, WMouseEvent event) {
 		WModelIndex index = this.translateModelIndex(headerColumns, event);
-		if ((index != null)) {
-			super.handleMouseDown(index, event);
-		}
+		super.handleMouseDown(index, event);
 	}
 
 	private void handleMouseWentUp(boolean headerColumns, WMouseEvent event) {
 		WModelIndex index = this.translateModelIndex(headerColumns, event);
-		if ((index != null)) {
-			super.handleMouseUp(index, event);
-		}
+		super.handleMouseUp(index, event);
 	}
 
 	private WModelIndex translateModelIndex(boolean headerColumns,
@@ -1589,6 +1634,22 @@ public class WTableView extends WAbstractItemView {
 		} else {
 			return null;
 		}
+	}
+
+	private void handleRootSingleClick(int u, WMouseEvent event) {
+		super.handleClick(null, event);
+	}
+
+	private void handleRootDoubleClick(int u, WMouseEvent event) {
+		super.handleDoubleClick(null, event);
+	}
+
+	private void handleRootMouseWentDown(int u, WMouseEvent event) {
+		super.handleMouseDown(null, event);
+	}
+
+	private void handleRootMouseWentUp(int u, WMouseEvent event) {
+		super.handleMouseUp(null, event);
 	}
 
 	private void updateItem(WModelIndex index, int renderedRow,

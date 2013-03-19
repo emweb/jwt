@@ -15,6 +15,7 @@ import java.util.regex.Pattern;
 
 import eu.webtoolkit.jwt.WAbstractItemModel;
 import eu.webtoolkit.jwt.WContainerWidget;
+import eu.webtoolkit.jwt.WObject;
 import eu.webtoolkit.jwt.WStandardItemModel;
 import eu.webtoolkit.jwt.WString;
 import eu.webtoolkit.jwt.WText;
@@ -66,7 +67,7 @@ public class CsvUtil {
         }
     }
 
- 	public static WStandardItemModel csvToModel(String resourceName) {
+ 	public static WStandardItemModel csvToModel(String resourceName, WObject parent) {
         InputStream is = CsvUtil.class.getResourceAsStream("/eu/webtoolkit/jwt/examples/widgetgallery/data/" + resourceName);
 
         WStandardItemModel model = new WStandardItemModel();

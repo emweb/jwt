@@ -1379,7 +1379,10 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	}
 
 	/**
-	 * Signal emitted when an item is clicked.
+	 * Signal emitted when clicked.
+	 * <p>
+	 * When the event happened over an item, the first argument indicates the
+	 * item that was clicked on.
 	 * <p>
 	 * 
 	 * @see WAbstractItemView#doubleClicked()
@@ -1389,7 +1392,10 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	}
 
 	/**
-	 * Signal emitted when an item is double clicked.
+	 * Signal emitted when double clicked.
+	 * <p>
+	 * When the event happened over an item, the first argument indicates the
+	 * item that was double clicked on.
 	 * <p>
 	 * 
 	 * @see WAbstractItemView#clicked()
@@ -1401,6 +1407,9 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	/**
 	 * Signal emitted when a mouse button is pressed down.
 	 * <p>
+	 * When the event happened over an item, the first argument indicates the
+	 * item where the mouse went down.
+	 * <p>
 	 * 
 	 * @see WAbstractItemView#mouseWentUp()
 	 */
@@ -1410,6 +1419,9 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 
 	/**
 	 * Signal emitted when the mouse button is released.
+	 * <p>
+	 * When the event happened over an item, the first argument indicates the
+	 * item where the mouse went up.
 	 * <p>
 	 * 
 	 * @see WAbstractItemView#mouseWentDown()
@@ -2063,12 +2075,16 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	 * or editing behaviour.
 	 */
 	void handleClick(WModelIndex index, WMouseEvent event) {
-		boolean doEdit = !EnumUtils.mask(this.getEditTriggers(),
-				WAbstractItemView.EditTrigger.SelectedClicked).isEmpty()
-				&& this.isSelected(index)
-				|| !EnumUtils.mask(this.getEditTriggers(),
-						WAbstractItemView.EditTrigger.SingleClicked).isEmpty();
-		this.selectionHandleClick(index, event.getModifiers());
+		boolean doEdit = (index != null)
+				&& (!EnumUtils.mask(this.getEditTriggers(),
+						WAbstractItemView.EditTrigger.SelectedClicked)
+						.isEmpty()
+						&& this.isSelected(index) || !EnumUtils.mask(
+						this.getEditTriggers(),
+						WAbstractItemView.EditTrigger.SingleClicked).isEmpty());
+		if ((index != null)) {
+			this.selectionHandleClick(index, event.getModifiers());
+		}
 		if (doEdit) {
 			this.edit(index);
 		}
@@ -2086,8 +2102,9 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	 * behaviour.
 	 */
 	void handleDoubleClick(WModelIndex index, WMouseEvent event) {
-		boolean doEdit = !EnumUtils.mask(this.getEditTriggers(),
-				WAbstractItemView.EditTrigger.DoubleClicked).isEmpty();
+		boolean doEdit = (index != null)
+				&& !EnumUtils.mask(this.getEditTriggers(),
+						WAbstractItemView.EditTrigger.DoubleClicked).isEmpty();
 		if (doEdit) {
 			this.edit(index);
 		}
