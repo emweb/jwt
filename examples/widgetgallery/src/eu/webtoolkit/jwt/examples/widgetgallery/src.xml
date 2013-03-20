@@ -1646,6 +1646,9 @@
     <span class="n">tableView</span><span class="o">.</span><span class="na">setAlternatingRowColors</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
     <span class="n">tableView</span><span class="o">.</span><span class="na">setRowHeight</span><span class="o">(</span><span class="k">new</span> <span class="n">WLength</span><span class="o">(</span><span class="mi">28</span><span class="o">));</span>
     <span class="n">tableView</span><span class="o">.</span><span class="na">setHeaderHeight</span><span class="o">(</span><span class="k">new</span> <span class="n">WLength</span><span class="o">(</span><span class="mi">28</span><span class="o">));</span>
+    <span class="n">tableView</span><span class="o">.</span><span class="na">setSelectionMode</span><span class="o">(</span><span class="n">SelectionMode</span><span class="o">.</span><span class="na">ExtendedSelection</span><span class="o">);</span>
+    <span class="n">tableView</span><span class="o">.</span><span class="na">setEditTriggers</span><span class="o">(</span><span class="n">EnumSet</span>
+            <span class="o">.</span><span class="na">of</span><span class="o">(</span><span class="n">WAbstractItemView</span><span class="o">.</span><span class="na">EditTrigger</span><span class="o">.</span><span class="na">NoEditTrigger</span><span class="o">));</span>
     <span class="n">tableView</span><span class="o">.</span><span class="na">resize</span><span class="o">(</span><span class="k">new</span> <span class="n">WLength</span><span class="o">(</span><span class="mi">650</span><span class="o">),</span> <span class="k">new</span> <span class="n">WLength</span><span class="o">(</span><span class="mi">400</span><span class="o">));</span>
 <span class="o">}</span>
 </pre></div>
@@ -3490,6 +3493,8 @@
     <span class="n">tableView</span><span class="o">.</span><span class="na">setRowHeight</span><span class="o">(</span><span class="k">new</span> <span class="n">WLength</span><span class="o">(</span><span class="mi">28</span><span class="o">));</span>
     <span class="n">tableView</span><span class="o">.</span><span class="na">setHeaderHeight</span><span class="o">(</span><span class="k">new</span> <span class="n">WLength</span><span class="o">(</span><span class="mi">28</span><span class="o">));</span>
     <span class="n">tableView</span><span class="o">.</span><span class="na">setSelectionMode</span><span class="o">(</span><span class="n">SelectionMode</span><span class="o">.</span><span class="na">SingleSelection</span><span class="o">);</span>
+    <span class="n">tableView</span><span class="o">.</span><span class="na">setEditTriggers</span><span class="o">(</span><span class="n">EnumSet</span>
+            <span class="o">.</span><span class="na">of</span><span class="o">(</span><span class="n">WAbstractItemView</span><span class="o">.</span><span class="na">EditTrigger</span><span class="o">.</span><span class="na">NoEditTrigger</span><span class="o">));</span>
     <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">tableView</span><span class="o">.</span><span class="na">getModel</span><span class="o">().</span><span class="na">getColumnCount</span><span class="o">();</span> <span class="o">++</span><span class="n">i</span><span class="o">)</span> <span class="o">{</span>
         <span class="n">tableView</span><span class="o">.</span><span class="na">setColumnWidth</span><span class="o">(</span><span class="n">i</span><span class="o">,</span> <span class="k">new</span> <span class="n">WLength</span><span class="o">(</span><span class="mi">120</span><span class="o">));</span>
     <span class="o">}</span>
@@ -3922,6 +3927,8 @@
     <span class="n">treeView</span><span class="o">.</span><span class="na">setHeaderHeight</span><span class="o">(</span><span class="k">new</span> <span class="n">WLength</span><span class="o">(</span><span class="mi">24</span><span class="o">));</span>
     <span class="n">treeView</span><span class="o">.</span><span class="na">setSortingEnabled</span><span class="o">(</span><span class="kc">false</span><span class="o">);</span>
     <span class="n">treeView</span><span class="o">.</span><span class="na">setSelectionMode</span><span class="o">(</span><span class="n">SelectionMode</span><span class="o">.</span><span class="na">SingleSelection</span><span class="o">);</span>
+    <span class="n">treeView</span><span class="o">.</span><span class="na">setEditTriggers</span><span class="o">(</span><span class="n">EnumSet</span>
+            <span class="o">.</span><span class="na">of</span><span class="o">(</span><span class="n">WAbstractItemView</span><span class="o">.</span><span class="na">EditTrigger</span><span class="o">.</span><span class="na">NoEditTrigger</span><span class="o">));</span>
 <span class="o">}</span>
 </pre></div>
   ]]></message>

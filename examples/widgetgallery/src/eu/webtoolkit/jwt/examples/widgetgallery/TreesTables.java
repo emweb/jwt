@@ -244,6 +244,8 @@ class TreesTables extends TopicWidget {
 		tableView.setRowHeight(new WLength(28));
 		tableView.setHeaderHeight(new WLength(28));
 		tableView.setSelectionMode(SelectionMode.SingleSelection);
+		tableView.setEditTriggers(EnumSet
+				.of(WAbstractItemView.EditTrigger.NoEditTrigger));
 		for (int i = 0; i < tableView.getModel().getColumnCount(); ++i) {
 			tableView.setColumnWidth(i, new WLength(120));
 		}
@@ -260,6 +262,9 @@ class TreesTables extends TopicWidget {
 		tableView.setAlternatingRowColors(true);
 		tableView.setRowHeight(new WLength(28));
 		tableView.setHeaderHeight(new WLength(28));
+		tableView.setSelectionMode(SelectionMode.ExtendedSelection);
+		tableView.setEditTriggers(EnumSet
+				.of(WAbstractItemView.EditTrigger.NoEditTrigger));
 		tableView.resize(new WLength(650), new WLength(400));
 		return tableView;
 	}
@@ -277,6 +282,8 @@ class TreesTables extends TopicWidget {
 		treeView.setHeaderHeight(new WLength(24));
 		treeView.setSortingEnabled(false);
 		treeView.setSelectionMode(SelectionMode.SingleSelection);
+		treeView.setEditTriggers(EnumSet
+				.of(WAbstractItemView.EditTrigger.NoEditTrigger));
 		return treeView;
 	}
 }

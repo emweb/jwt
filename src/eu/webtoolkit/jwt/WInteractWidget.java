@@ -717,7 +717,10 @@ public abstract class WInteractWidget extends WWebWidget {
 					}
 					mouseClick.updateOk();
 				}
-				js.append("},200);}");
+				Configuration conf = app.getEnvironment().getServer()
+						.getConfiguration();
+				js.append("},").append(conf.getDoubleClickTimeout()).append(
+						");}");
 			} else {
 				if (mouseClick != null && mouseClick.needsUpdate(all)) {
 					js.append(mouseClick.getJavaScript());

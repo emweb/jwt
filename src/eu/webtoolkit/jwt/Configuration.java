@@ -71,6 +71,7 @@ public class Configuration {
 	
 	private int sessionTimeout = 600;
 	private int indicatorTimeout = 500;
+	private int doubleClickTimeout = 200;
 	private int bootstrapTimeout = 10;
 	private String uaCompatible = "";
 
@@ -567,6 +568,23 @@ public class Configuration {
 			this.sessionTimeout = 10 * 60;
 		else
 			this.sessionTimeout = sessionTimeout;
+	}
+
+
+	/**
+	 * Returns the double click timeout.
+	 */
+	public int getDoubleClickTimeout() {
+		return doubleClickTimeout;
+	}
+	
+	/**
+	 * Sets the double click timeout.
+	 * 
+	 * The default value is 200 (ms).
+	 */
+	void setDoubleClickTimeout(int doubleClickTimeout) {
+		this.doubleClickTimeout = doubleClickTimeout;
 	}
 
 	/**
