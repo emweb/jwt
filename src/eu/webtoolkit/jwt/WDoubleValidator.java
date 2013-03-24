@@ -258,7 +258,7 @@ public class WDoubleValidator extends WValidator {
 			if (this.top_ == Double.MAX_VALUE) {
 				return new WString();
 			} else {
-				if (this.bottom_ == -Integer.MAX_VALUE) {
+				if (this.bottom_ == -Double.MAX_VALUE) {
 					return WString.tr("Wt.WDoubleValidator.TooLarge").arg(
 							this.top_);
 				} else {

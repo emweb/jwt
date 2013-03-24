@@ -847,6 +847,10 @@ public class WMenu extends WCompositeWidget {
 		return this.getUl().getIndexOf(item);
 	}
 
+	public WMenuItem getParentItem() {
+		return this.parentItem_;
+	}
+
 	void render(EnumSet<RenderFlag> flags) {
 		if (this.needSelectionEventUpdate_) {
 			for (int i = 0; i < this.getCount(); ++i) {
@@ -923,10 +927,6 @@ public class WMenu extends WCompositeWidget {
 			}
 		}
 		return this.current_;
-	}
-
-	protected WMenuItem getParentItem() {
-		return this.parentItem_;
 	}
 
 	protected WContainerWidget getUl() {

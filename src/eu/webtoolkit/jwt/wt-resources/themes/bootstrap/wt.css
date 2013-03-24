@@ -68,11 +68,14 @@
 .dropdown-menu .Wt-padded {
   padding-left: 39px;
 }
-.dropdown-menu .submenu a,
-.dropdown-menu .submenu a:hover {
-  background-image: url(../../right-arrow.gif);
-  background-repeat: no-repeat;
-  background-position: right center;
+.dropdown-menu li label {
+  display: inline;
+}
+/*
+ * Make label in any menu item inline
+ */
+.nav li label {
+  display: inline;
 }
 /*
  * Custom collapse nav support
@@ -95,6 +98,15 @@
   -webkit-box-shadow: inset 0 3px 8px rgba(0, 0, 0, 0.125);
   -moz-box-shadow: inset 0 3px 8px rgba(0, 0, 0, 0.125);
   box-shadow: inset 0 3px 8px rgba(0, 0, 0, 0.125);
+}
+/*
+ * Fix submens in popup menus in navbar
+ */
+.navbar .nav > li > .dropdown-menu.submenu:before {
+  display: none;
+}
+.navbar .nav > li > .dropdown-menu.submenu:after {
+  display: none;
 }
 /*
  * Dialog extensions
@@ -204,7 +216,6 @@
 .Wt-cal .days td .Wt-cal-sel,
 .Wt-cal .days td .Wt-cal-sel:hover {
   color: #ffffff;
-  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
   background-color: #006dcc;
   background-image: -moz-linear-gradient(top, #0088cc, #0044cc);
   background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#0088cc), to(#0044cc));
@@ -716,7 +727,7 @@ body.Wt-rtl .Wt-tableview .Wt-plaintable tbody .Wt-tv-c {
   margin-left: 7px;
 }
 .Wt-treeview .Wt-tv-br,
-.Wt-treeview .Wt-tv-node .Wt-tv-c {
+.Wt-treeview ul .Wt-tv-c {
   /* data */
 
   margin-right: 0px;
@@ -788,7 +799,7 @@ body.Wt-rtl .Wt-treeview .Wt-header .Wt-tv-c {
   margin-right: 7px;
 }
 body.Wt-rtl .Wt-treeview .Wt-tv-br,
-body.Wt-rtl .Wt-treeview .Wt-tv-node .Wt-tv-row .Wt-tv-c {
+body.Wt-rtl .Wt-treeview ul .Wt-tv-row .Wt-tv-c {
   /* data */
 
   margin-right: 1px;

@@ -464,7 +464,7 @@ public class WPopupMenu extends WMenu {
 	}
 
 	private void popupAtButton() {
-		if (this.topLevel_ == this) {
+		if (!(this.topLevel_ != null) || this.topLevel_ == this) {
 			this.button_.addStyleClass("active", true);
 			this.popup(this.button_);
 		}

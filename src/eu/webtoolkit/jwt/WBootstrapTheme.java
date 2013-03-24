@@ -232,6 +232,14 @@ public class WBootstrapTheme extends WTheme {
 					element.addPropertyWord(Property.PropertyClass,
 							"nav-header");
 				}
+				if (item.getMenu() != null) {
+					if (((item.getParentMenu()) instanceof WPopupMenu ? (WPopupMenu) (item
+							.getParentMenu())
+							: null) != null) {
+						element.addPropertyWord(Property.PropertyClass,
+								"dropdown-submenu");
+					}
+				}
 			}
 		}
 			break;
@@ -257,6 +265,12 @@ public class WBootstrapTheme extends WTheme {
 				element
 						.addPropertyWord(Property.PropertyClass,
 								"dropdown-menu");
+				if (popupMenu.getParentItem() != null
+						&& ((popupMenu.getParentItem().getParentMenu()) instanceof WPopupMenu ? (WPopupMenu) (popupMenu
+								.getParentItem().getParentMenu())
+								: null) != null) {
+					element.addPropertyWord(Property.PropertyClass, "submenu");
+				}
 			} else {
 				WMenu menu = ((widget) instanceof WMenu ? (WMenu) (widget)
 						: null);

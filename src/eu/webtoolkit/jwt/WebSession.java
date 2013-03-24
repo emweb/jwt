@@ -485,10 +485,10 @@ class WebSession {
 								this.changeInternalPath(hashE, handler
 										.getResponse());
 							} else {
-								if (request.getPathInfo().length() != 0) {
-									this.changeInternalPath(request
-											.getPathInfo(), handler
-											.getResponse());
+								if (handler.getRequest().getPathInfo().length() != 0) {
+									this.changeInternalPath(handler
+											.getRequest().getPathInfo(),
+											handler.getResponse());
 								} else {
 									this.changeInternalPath("", handler
 											.getResponse());

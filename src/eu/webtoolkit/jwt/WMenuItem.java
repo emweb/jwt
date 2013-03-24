@@ -396,14 +396,15 @@ public class WMenuItem extends WContainerWidget {
 	/**
 	 * Sets a sub menu (<b>deprecated</b>).
 	 * <p>
-	 * use {@link WMenuItem#setMenu(WMenu menu) setMenu()} instead
+	 * 
+	 * @deprecated use {@link WMenuItem#setMenu(WMenu menu) setMenu()} instead
 	 */
 	public void setSubMenu(WMenu menu) {
 		this.setMenu(menu);
 	}
 
 	/**
-	 * Returns the menu.
+	 * Returns the submenu.
 	 * <p>
 	 * 
 	 * @see WMenuItem#setMenu(WMenu menu)
@@ -554,6 +555,10 @@ public class WMenuItem extends WContainerWidget {
 		if (this.menu_ != null) {
 			this.menu_.close(this);
 		}
+	}
+
+	public WMenu getParentMenu() {
+		return this.menu_;
 	}
 
 	/**
@@ -773,8 +778,7 @@ public class WMenuItem extends WContainerWidget {
 	void updateInternalPath() {
 		if (this.menu_ != null
 				&& this.menu_.isInternalPathEnabled()
-				&& !(((this.getMenu()) instanceof WPopupMenu ? (WPopupMenu) (this
-						.getMenu())
+				&& !(((this.menu_) instanceof WPopupMenu ? (WPopupMenu) (this.menu_)
 						: null) != null)) {
 			String internalPath = this.menu_.getInternalBasePath()
 					+ this.getPathComponent();

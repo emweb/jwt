@@ -54,8 +54,9 @@ import org.slf4j.LoggerFactory;
  * rendered in the axis and in bars that cross the break.
  * <p>
  * The labels are shown using a &quot;%.4g&quot; format string for numbers, and
- * &quot;dd/MM/yyyy&quot; (for {@link AxisScale#DateScale DateScale}). The
- * format may be customized using
+ * a suitable format for {@link AxisScale#DateScale DateScale} or
+ * {@link AxisScale#DateTimeScale DateTimeScale} formats, which uses heuristics
+ * to choose a suitable format. The format may be customized using
  * {@link WAxis#setLabelFormat(CharSequence format) setLabelFormat()}. The angle
  * of the label text may be changed using
  * {@link WAxis#setLabelAngle(double angle) setLabelAngle()}. By default, all
@@ -190,16 +191,15 @@ public class WAxis {
 	/**
 	 * Sets the minimum value displayed on the axis.
 	 * <p>
-	 * Specify the minimum value to be displayed on the axis. By default, the
-	 * minimum and maximum values are determined automatically so that all the
-	 * data can be displayed.
+	 * By default, the minimum and maximum values are determined automatically
+	 * so that all the data can be displayed.
 	 * <p>
 	 * The numerical value corresponding to a data point is defined by it&apos;s
 	 * AxisScale type.
 	 * <p>
 	 * 
-	 * @see WAxis#getMinimum()
 	 * @see WAxis#setMaximum(double maximum)
+	 * @see WAxis#setAutoLimits(EnumSet locations)
 	 */
 	public void setMinimum(double minimum) {
 		WAxis.Segment s = this.segments_.get(0);
@@ -213,6 +213,7 @@ public class WAxis {
 			update();
 		}
 		;
+		this.roundLimits_.remove(AxisValue.MinimumValue);
 	}
 
 	/**
@@ -220,15 +221,15 @@ public class WAxis {
 	 * <p>
 	 * This returned the minimum value that was set using
 	 * {@link WAxis#setMinimum(double minimum) setMinimum()}, or otherwise the
-	 * automatically calculated minimum.
+	 * automatically calculated (and rounded) minimum.
 	 * <p>
 	 * The numerical value corresponding to a data point is defined by it&apos;s
 	 * AxisScale type.
 	 * <p>
 	 * 
-	 * @see WAxis#getMaximum()
 	 * @see WAxis#setMinimum(double minimum)
 	 * @see WAxis#setAutoLimits(EnumSet locations)
+	 * @see WAxis#setRoundLimits(EnumSet locations)
 	 */
 	public double getMinimum() {
 		return !EnumUtils.mask(this.getAutoLimits(), AxisValue.MinimumValue)
@@ -239,16 +240,15 @@ public class WAxis {
 	/**
 	 * Sets the maximum value for the axis displayed on the axis.
 	 * <p>
-	 * Specify the maximum value to be displayed on the axis. By default, the
-	 * minimum and maximum values are determined automatically so that all the
-	 * data can be displayed.
+	 * By default, the minimum and maximum values are determined automatically
+	 * so that all the data can be displayed.
 	 * <p>
 	 * The numerical value corresponding to a data point is defined by it&apos;s
 	 * AxisScale type.
 	 * <p>
 	 * 
-	 * @see WAxis#getMinimum()
 	 * @see WAxis#setMinimum(double minimum)
+	 * @see WAxis#setAutoLimits(EnumSet locations)
 	 */
 	public void setMaximum(double maximum) {
 		WAxis.Segment s = this.segments_.get(this.segments_.size() - 1);
@@ -262,6 +262,7 @@ public class WAxis {
 			update();
 		}
 		;
+		this.roundLimits_.remove(AxisValue.MaximumValue);
 	}
 
 	/**
@@ -269,14 +270,15 @@ public class WAxis {
 	 * <p>
 	 * This returned the maximum value that was set using
 	 * {@link WAxis#setMaximum(double maximum) setMaximum()}, or otherwise the
-	 * automatically calculated maximum.
+	 * automatically calculated (and rounded) maximum.
 	 * <p>
 	 * The numerical value corresponding to a data point is defined by it&apos;s
 	 * AxisScale type.
 	 * <p>
 	 * 
-	 * @see WAxis#getMinimum()
 	 * @see WAxis#setMaximum(double maximum)
+	 * @see WAxis#setAutoLimits(EnumSet locations)
+	 * @see WAxis#setRoundLimits(EnumSet locations)
 	 */
 	public double getMaximum() {
 		WAxis.Segment s = this.segments_.get(this.segments_.size() - 1);
@@ -301,6 +303,7 @@ public class WAxis {
 		if (maximum > minimum) {
 			this.segments_.get(0).minimum = minimum;
 			this.segments_.get(this.segments_.size() - 1).maximum = maximum;
+			this.roundLimits_.clear();
 			this.update();
 		}
 	}
@@ -352,6 +355,7 @@ public class WAxis {
 				update();
 			}
 			;
+			this.roundLimits_.add(AxisValue.MinimumValue);
 		}
 		if (!EnumUtils.mask(locations, AxisValue.MaximumValue).isEmpty()) {
 			if (!ChartUtils.equals(this.segments_
@@ -360,6 +364,7 @@ public class WAxis {
 				update();
 			}
 			;
+			this.roundLimits_.add(AxisValue.MaximumValue);
 		}
 	}
 
@@ -397,7 +402,43 @@ public class WAxis {
 	}
 
 	/**
-	 * Specify a range that needs to be omitted from the axis.
+	 * Specifies whether limits should be rounded.
+	 * <p>
+	 * When enabling rounding, this has the effect of rounding down the minimum
+	 * value, or rounding up the maximum value, to the nearest label interval.
+	 * <p>
+	 * By default, rounding is enabled for an auto-calculated limited, and
+	 * disabled for a manually specifed limit.
+	 * <p>
+	 * 
+	 * @see WAxis#setAutoLimits(EnumSet locations)
+	 */
+	public void setRoundLimits(EnumSet<AxisValue> locations) {
+		this.roundLimits_ = EnumSet.copyOf(locations);
+	}
+
+	/**
+	 * Specifies whether limits should be rounded.
+	 * <p>
+	 * Calls {@link #setRoundLimits(EnumSet locations)
+	 * setRoundLimits(EnumSet.of(location, locations))}
+	 */
+	public final void setRoundLimits(AxisValue location, AxisValue... locations) {
+		setRoundLimits(EnumSet.of(location, locations));
+	}
+
+	/**
+	 * Returns whether limits should be rounded.
+	 * <p>
+	 * 
+	 * @see WAxis#setRoundLimits(EnumSet locations)
+	 */
+	public EnumSet<AxisValue> getRoundLimits() {
+		return this.roundLimits_;
+	}
+
+	/**
+	 * Specifies a range that needs to be omitted from the axis.
 	 * <p>
 	 * This is useful to display data with a few outliers which would otherwise
 	 * swamp the chart. This is not done automatically, but instead you need to
@@ -458,10 +499,16 @@ public class WAxis {
 	 * used.
 	 * <p>
 	 * For an axis with a {@link AxisScale#DateScale DateScale} scale, the
-	 * format string must be a format string accepted by WDate::toString(const
-	 * WString&amp;), to format a date. If the format string is an empty string,
-	 * &quot;dd/MM/yyyy&quot;, &quot;MMM yy&quot; or &quot;yyyy&quot; is used
-	 * depending on the situation.
+	 * format string must be a format string accepted by
+	 * {@link WDate#toString() WDate#toString()}, to format a date. If the
+	 * format string is an empty string, a suitable format is chosen based on
+	 * heuristics.
+	 * <p>
+	 * For an axis with a {@link AxisScale#DateTimeScale DateTimeScale} scale,
+	 * the format string must be a format string accepted by
+	 * {@link WDateTime#toString() WDateTime#toString()}, to format a date. If
+	 * the format string is an empty string, a suitable format is chosen based
+	 * on heuristics.
 	 * <p>
 	 * The default value is an empty string (&quot;&quot;).
 	 * <p>
@@ -493,7 +540,7 @@ public class WAxis {
 	 * corresponds to horizontal text. Note that this option is only supported
 	 * by the InlineSvgVml renderers, but not by HtmlCanvas.
 	 * <p>
-	 * The default value is 0.0 (&quot;horizontal text&quot;).
+	 * The default value is 0.0.
 	 * <p>
 	 * 
 	 * @see WAxis#getLabelAngle()
@@ -523,7 +570,7 @@ public class WAxis {
 	 * using the {@link WAxis#getGridLinesPen() getGridLinesPen()}.
 	 * <p>
 	 * Unlike all other visual aspects of an axis, rendering of the gridlines is
-	 * not controlled by setDisplayEnabled(bool).
+	 * not controlled by setDisplayEnabled().
 	 * <p>
 	 * 
 	 * @see WAxis#setGridLinesPen(WPen pen)
@@ -753,7 +800,7 @@ public class WAxis {
 	}
 
 	enum DateTimeUnit {
-		Minutes, Hours, Days, Months, Years;
+		Seconds, Minutes, Hours, Days, Months, Years;
 
 		/**
 		 * Returns the numerical representation of this enum.
@@ -779,6 +826,7 @@ public class WAxis {
 	private WString title_;
 	private WFont titleFont_;
 	private WFont labelFont_;
+	private EnumSet<AxisValue> roundLimits_;
 
 	static class Segment {
 		private static Logger logger = LoggerFactory.getLogger(Segment.class);
@@ -822,6 +870,8 @@ public class WAxis {
 		this.title_ = new WString();
 		this.titleFont_ = new WFont();
 		this.labelFont_ = new WFont();
+		this.roundLimits_ = EnumSet.of(AxisValue.MinimumValue,
+				AxisValue.MaximumValue);
 		this.segments_ = new ArrayList<WAxis.Segment>();
 		this.titleFont_.setFamily(WFont.GenericFamily.SansSerif);
 		this.titleFont_.setSize(WFont.Size.FixedSize, new WLength(12,
@@ -917,11 +967,13 @@ public class WAxis {
 				}
 				if (this.scale_ == AxisScale.LinearScale) {
 					if (it == 0) {
-						if (s.minimum == AUTO_MINIMUM) {
+						if (!EnumUtils.mask(this.roundLimits_,
+								AxisValue.MinimumValue).isEmpty()) {
 							s.renderMinimum = roundDown125(s.renderMinimum,
 									this.renderInterval_);
 						}
-						if (s.maximum == AUTO_MAXIMUM) {
+						if (!EnumUtils.mask(this.roundLimits_,
+								AxisValue.MaximumValue).isEmpty()) {
 							s.renderMaximum = roundUp125(s.renderMaximum,
 									this.renderInterval_);
 						}
@@ -947,15 +999,24 @@ public class WAxis {
 										(long) (long) s.renderMaximum));
 							}
 						}
+						logger.debug(new StringWriter().append("Range: ")
+								.append(min.toString()).append(", ").append(
+										max.toString()).toString());
 						if (daysInterval > 200) {
 							s.dateTimeRenderUnit = WAxis.DateTimeUnit.Years;
 							interval = Math.max(1,
 									(int) round125(daysInterval / 365));
-							if (min.getDay() != 1 && min.getMonth() != 1) {
-								min = new WDate(min.getYear(), 1, 1);
+							if (!EnumUtils.mask(this.roundLimits_,
+									AxisValue.MinimumValue).isEmpty()) {
+								if (min.getDay() != 1 && min.getMonth() != 1) {
+									min = new WDate(min.getYear(), 1, 1);
+								}
 							}
-							if (max.getDay() != 1 && max.getDay() != 1) {
-								max = new WDate(max.getYear() + 1, 1, 1);
+							if (!EnumUtils.mask(this.roundLimits_,
+									AxisValue.MaximumValue).isEmpty()) {
+								if (max.getDay() != 1 && max.getDay() != 1) {
+									max = new WDate(max.getYear() + 1, 1, 1);
+								}
 							}
 						} else {
 							if (daysInterval > 20) {
@@ -978,25 +1039,31 @@ public class WAxis {
 										}
 									}
 								}
-								if ((min.getMonth() - 1) % interval != 0) {
-									int m = roundDown(min.getMonth() - 1,
-											interval) + 1;
-									min = new WDate(min.getYear(), m, 1);
-								} else {
-									if (min.getDay() != 1) {
-										min = new WDate(min.getYear(), min
-												.getMonth(), 1);
+								if (!EnumUtils.mask(this.roundLimits_,
+										AxisValue.MinimumValue).isEmpty()) {
+									if ((min.getMonth() - 1) % interval != 0) {
+										int m = roundDown(min.getMonth() - 1,
+												interval) + 1;
+										min = new WDate(min.getYear(), m, 1);
+									} else {
+										if (min.getDay() != 1) {
+											min = new WDate(min.getYear(), min
+													.getMonth(), 1);
+										}
 									}
 								}
-								if (max.getDay() != 1) {
-									max = new WDate(max.getYear(), max
-											.getMonth(), 1).addMonths(1);
-								}
-								if ((max.getMonth() - 1) % interval != 0) {
-									int m = roundDown(max.getMonth() - 1,
-											interval) + 1;
-									max = new WDate(max.getYear(), m, 1)
-											.addMonths(interval);
+								if (!EnumUtils.mask(this.roundLimits_,
+										AxisValue.MaximumValue).isEmpty()) {
+									if (max.getDay() != 1) {
+										max = new WDate(max.getYear(), max
+												.getMonth(), 1).addMonths(1);
+									}
+									if ((max.getMonth() - 1) % interval != 0) {
+										int m = roundDown(max.getMonth() - 1,
+												interval) + 1;
+										max = new WDate(max.getYear(), m, 1)
+												.addMonths(interval);
+									}
 								}
 							} else {
 								if (daysInterval > 0.6) {
@@ -1033,73 +1100,173 @@ public class WAxis {
 												}
 											}
 										}
-										if (min.getHour() % interval != 0) {
-											int h = roundDown(min.getHour(),
-													interval);
-											min.setTime(h, 0);
-										} else {
-											if (min.getMinute() != 0) {
-												min.setTime(min.getHour(), 0);
+										if (!EnumUtils.mask(this.roundLimits_,
+												AxisValue.MinimumValue)
+												.isEmpty()) {
+											if (min.getHour() % interval != 0) {
+												int h = roundDown(
+														min.getHour(), interval);
+												min.setTime(h, 0);
+											} else {
+												if (min.getMinute() != 0) {
+													min.setTime(min.getHour(),
+															0);
+												}
 											}
 										}
-										if (max.getMinute() != 0) {
-											max.setTime(max.getHour(), 0);
-											max = max.addSeconds(60 * 60);
-										}
-										if (max.getHour() % interval != 0) {
-											int h = roundDown(max.getHour(),
-													interval);
-											max.setTime(h, 0);
-											max = max
-													.addSeconds(interval * 60 * 60);
+										if (!EnumUtils.mask(this.roundLimits_,
+												AxisValue.MaximumValue)
+												.isEmpty()) {
+											if (max.getMinute() != 0) {
+												max.setTime(max.getHour(), 0);
+												max = max.addSeconds(60 * 60);
+											}
+											if (max.getHour() % interval != 0) {
+												int h = roundDown(
+														max.getHour(), interval);
+												max.setTime(h, 0);
+												max = max
+														.addSeconds(interval * 60 * 60);
+											}
 										}
 									} else {
-										s.dateTimeRenderUnit = WAxis.DateTimeUnit.Minutes;
-										if (minutes < 1.3) {
-											interval = 1;
-										} else {
-											if (minutes < 2.3) {
-												interval = 2;
+										if (minutes > 2) {
+											s.dateTimeRenderUnit = WAxis.DateTimeUnit.Minutes;
+											if (minutes < 1.3) {
+												interval = 1;
 											} else {
-												if (minutes < 5.3) {
-													interval = 5;
+												if (minutes < 2.3) {
+													interval = 2;
 												} else {
-													if (minutes < 10.3) {
-														interval = 10;
+													if (minutes < 5.3) {
+														interval = 5;
 													} else {
-														if (minutes < 15.3) {
-															interval = 15;
+														if (minutes < 10.3) {
+															interval = 10;
 														} else {
-															if (minutes < 20.3) {
-																interval = 20;
+															if (minutes < 15.3) {
+																interval = 15;
 															} else {
-																interval = 30;
+																if (minutes < 20.3) {
+																	interval = 20;
+																} else {
+																	interval = 30;
+																}
 															}
 														}
 													}
 												}
 											}
-										}
-										if (min.getMinute() % interval != 0) {
-											int m = roundDown(min.getMinute(),
-													interval);
-											min.setTime(min.getHour(), m);
-										} else {
-											if (min.getSecond() != 0) {
-												min.setTime(min.getHour(), min
-														.getMinute());
+											if (!EnumUtils.mask(
+													this.roundLimits_,
+													AxisValue.MinimumValue)
+													.isEmpty()) {
+												if (min.getMinute() % interval != 0) {
+													int m = roundDown(min
+															.getMinute(),
+															interval);
+													min.setTime(min.getHour(),
+															m);
+												} else {
+													if (min.getSecond() != 0) {
+														min.setTime(min
+																.getHour(), min
+																.getMinute());
+													}
+												}
 											}
-										}
-										if (max.getSecond() != 0) {
-											max.setTime(max.getHour(), max
-													.getMinute());
-											max = max.addSeconds(60);
-										}
-										if (max.getMinute() % interval != 0) {
-											int m = roundDown(max.getMinute(),
-													interval);
-											max.setTime(max.getHour(), m);
-											max = max.addSeconds(interval * 60);
+											if (!EnumUtils.mask(
+													this.roundLimits_,
+													AxisValue.MaximumValue)
+													.isEmpty()) {
+												if (max.getSecond() != 0) {
+													max.setTime(max.getHour(),
+															max.getMinute());
+													max = max.addSeconds(60);
+												}
+												if (max.getMinute() % interval != 0) {
+													int m = roundDown(max
+															.getMinute(),
+															interval);
+													max.setTime(max.getHour(),
+															m);
+													max = max
+															.addSeconds(interval * 60);
+												}
+											}
+										} else {
+											s.dateTimeRenderUnit = WAxis.DateTimeUnit.Seconds;
+											double seconds = minutes * 60;
+											if (seconds < 1.3) {
+												interval = 1;
+											} else {
+												if (seconds < 2.3) {
+													interval = 2;
+												} else {
+													if (seconds < 5.3) {
+														interval = 5;
+													} else {
+														if (seconds < 10.3) {
+															interval = 10;
+														} else {
+															if (seconds < 15.3) {
+																interval = 15;
+															} else {
+																if (seconds < 20.3) {
+																	interval = 20;
+																} else {
+																	interval = 30;
+																}
+															}
+														}
+													}
+												}
+											}
+											if (!EnumUtils.mask(
+													this.roundLimits_,
+													AxisValue.MinimumValue)
+													.isEmpty()) {
+												if (min.getSecond() % interval != 0) {
+													int sec = roundDown(min
+															.getSecond(),
+															interval);
+													min.setTime(min.getHour(),
+															min.getMinute(),
+															sec);
+												} else {
+													if (min.getMillisecond() != 0) {
+														min
+																.setTime(
+																		min
+																				.getHour(),
+																		min
+																				.getMinute(),
+																		min
+																				.getSecond());
+													}
+												}
+											}
+											if (!EnumUtils.mask(
+													this.roundLimits_,
+													AxisValue.MaximumValue)
+													.isEmpty()) {
+												if (max.getMillisecond() != 0) {
+													max.setTime(max.getHour(),
+															max.getMinute(),
+															max.getSecond());
+													max = max.addSeconds(1);
+												}
+												if (max.getSecond() % interval != 0) {
+													int sec = roundDown(max
+															.getSecond(),
+															interval);
+													max.setTime(max.getHour(),
+															max.getMinute(),
+															sec);
+													max = max
+															.addSeconds(interval);
+												}
+											}
 										}
 									}
 								}
@@ -1398,7 +1565,73 @@ public class WAxis {
 			int interval = s.dateTimeRenderInterval;
 			WAxis.DateTimeUnit unit = s.dateTimeRenderUnit;
 			boolean atTick = interval > 1
-					|| unit.getValue() <= WAxis.DateTimeUnit.Days.getValue();
+					|| unit.getValue() <= WAxis.DateTimeUnit.Days.getValue()
+					|| !!EnumUtils.mask(this.roundLimits_,
+							AxisValue.MinimumValue).isEmpty();
+			WString format = this.labelFormat_;
+			if ((format.length() == 0)) {
+				if (atTick) {
+					switch (unit) {
+					case Months:
+					case Years:
+					case Days:
+						if (dt.getSecond() != 0) {
+							format = new WString("dd/MM/yy hh:mm:ss");
+						} else {
+							if (dt.getHour() != 0) {
+								format = new WString("dd/MM/yy hh:mm");
+							} else {
+								format = new WString("dd/MM/yy");
+							}
+						}
+						break;
+					case Hours:
+						if (dt.getSecond() != 0) {
+							format = new WString("dd/MM hh:mm:ss");
+						} else {
+							if (dt.getMinute() != 0) {
+								format = new WString("dd/MM hh:mm");
+							} else {
+								format = new WString("h'h' dd/MM");
+							}
+						}
+						break;
+					case Minutes:
+						if (dt.getSecond() != 0) {
+							format = new WString("hh:mm:ss");
+						} else {
+							format = new WString("hh:mm");
+						}
+						break;
+					case Seconds:
+						format = new WString("hh:mm:ss");
+						break;
+					}
+				} else {
+					switch (unit) {
+					case Years:
+						format = new WString("yyyy");
+						break;
+					case Months:
+						format = new WString("MMM yy");
+						break;
+					case Days:
+						format = new WString("dd/MM/yy");
+						break;
+					case Hours:
+						format = new WString("h'h' dd/MM");
+						break;
+					case Minutes:
+						format = new WString("hh:mm");
+						break;
+					case Seconds:
+						format = new WString("hh:mm:ss");
+						break;
+					default:
+						break;
+					}
+				}
+			}
 			for (;;) {
 				long dl = this.getDateNumber(dt);
 				if (dl > s.renderMaximum) {
@@ -1421,47 +1654,11 @@ public class WAxis {
 				case Minutes:
 					next = dt.addSeconds(interval * 60);
 					break;
+				case Seconds:
+					next = dt.addSeconds(interval);
+					break;
 				}
-				WString text = new WString();
-				if (!(this.labelFormat_.length() == 0)) {
-					text = new WString(dt
-							.toString(this.labelFormat_.toString()));
-				} else {
-					if (atTick) {
-						switch (unit) {
-						case Months:
-						case Years:
-						case Days:
-							text = new WString(dt.toString("dd/MM/yy"));
-							break;
-						case Hours:
-							text = new WString(dt.toString("h'h' dd/MM"));
-							break;
-						case Minutes:
-							text = new WString(dt.toString("hh:mm"));
-							break;
-						default:
-							break;
-						}
-					} else {
-						switch (unit) {
-						case Months:
-							text = new WString(dt.toString("MMM yy"));
-							break;
-						case Years:
-							text = new WString(dt.toString("yyyy"));
-							break;
-						case Hours:
-							text = new WString(dt.toString("h'h' dd/MM"));
-							break;
-						case Minutes:
-							text = new WString(dt.toString("hh:mm"));
-							break;
-						default:
-							break;
-						}
-					}
-				}
+				WString text = new WString(dt.toString(format.toString()));
 				if (dl >= s.renderMinimum) {
 					ticks.add(new WAxis.TickLabel((double) dl,
 							WAxis.TickLabel.TickLength.Long, atTick ? text

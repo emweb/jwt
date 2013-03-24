@@ -236,16 +236,33 @@ public class WComboBox extends WFormWidget {
 						WComboBox.this.itemsChanged();
 					}
 				}));
+		this.modelConnections_.add(this.model_.rowsAboutToBeInserted()
+				.addListener(this,
+						new Signal3.Listener<WModelIndex, Integer, Integer>() {
+							public void trigger(WModelIndex e1, Integer e2,
+									Integer e3) {
+								WComboBox.this
+										.rowsAboutToBeInserted(e1, e2, e3);
+							}
+						}));
 		this.modelConnections_.add(this.model_.rowsInserted().addListener(this,
 				new Signal3.Listener<WModelIndex, Integer, Integer>() {
 					public void trigger(WModelIndex e1, Integer e2, Integer e3) {
-						WComboBox.this.itemsChanged();
+						WComboBox.this.rowsInserted(e1, e2, e3);
 					}
 				}));
+		this.modelConnections_.add(this.model_.rowsAboutToBeRemoved()
+				.addListener(this,
+						new Signal3.Listener<WModelIndex, Integer, Integer>() {
+							public void trigger(WModelIndex e1, Integer e2,
+									Integer e3) {
+								WComboBox.this.rowsAboutToBeRemoved(e1, e2, e3);
+							}
+						}));
 		this.modelConnections_.add(this.model_.rowsRemoved().addListener(this,
 				new Signal3.Listener<WModelIndex, Integer, Integer>() {
 					public void trigger(WModelIndex e1, Integer e2, Integer e3) {
-						WComboBox.this.itemsChanged();
+						WComboBox.this.rowsRemoved(e1, e2, e3);
 					}
 				}));
 		this.modelConnections_.add(this.model_.dataChanged().addListener(this,
@@ -266,14 +283,6 @@ public class WComboBox extends WFormWidget {
 						WComboBox.this.itemsChanged();
 					}
 				}));
-		this.modelConnections_.add(this.model_.rowsAboutToBeRemoved()
-				.addListener(this,
-						new Signal3.Listener<WModelIndex, Integer, Integer>() {
-							public void trigger(WModelIndex e1, Integer e2,
-									Integer e3) {
-								WComboBox.this.rowsAboutToBeRemoved(e1, e2, e3);
-							}
-						}));
 		this.refresh();
 	}
 
@@ -386,10 +395,10 @@ public class WComboBox extends WFormWidget {
 
 	private void itemsChanged() {
 		this.itemsChanged_ = true;
+		this.repaint(EnumSet.of(RepaintFlag.RepaintInnerHtml));
 		if (this.currentIndex_ > this.getCount() - 1) {
 			this.currentIndex_ = this.getCount() - 1;
 		}
-		this.repaint(EnumSet.of(RepaintFlag.RepaintInnerHtml));
 	}
 
 	private void propagateChange() {
@@ -404,8 +413,27 @@ public class WComboBox extends WFormWidget {
 		}
 	}
 
+	private void rowsAboutToBeInserted(WModelIndex index, int from, int to) {
+	}
+
+	private void rowsInserted(WModelIndex index, int from, int to) {
+		this.itemsChanged_ = true;
+		this.repaint(EnumSet.of(RepaintFlag.RepaintInnerHtml));
+		if (this.currentIndex_ < from && this.currentIndex_ != -1) {
+			return;
+		} else {
+			int count = to - from + 1;
+			this.currentIndex_ += count;
+		}
+	}
+
 	private void rowsAboutToBeRemoved(WModelIndex index, int from, int to) {
-		if (this.currentIndex_ == -1) {
+	}
+
+	private void rowsRemoved(WModelIndex index, int from, int to) {
+		this.itemsChanged_ = true;
+		this.repaint(EnumSet.of(RepaintFlag.RepaintInnerHtml));
+		if (this.currentIndex_ < from) {
 			return;
 		}
 		int count = to - from + 1;
@@ -413,15 +441,7 @@ public class WComboBox extends WFormWidget {
 			this.currentIndex_ -= count;
 		} else {
 			if (this.currentIndex_ >= from) {
-				if (from > 0) {
-					this.currentIndex_ = from - 1;
-				} else {
-					if (this.model_.getRowCount(index) - count == 0) {
-						this.currentIndex_ = -1;
-					} else {
-						this.currentIndex_ = 0;
-					}
-				}
+				this.currentIndex_ = this.model_.getRowCount() > 0 ? 0 : -1;
 			}
 		}
 	}
@@ -453,6 +473,7 @@ public class WComboBox extends WFormWidget {
 				element.addChild(item);
 			}
 			this.itemsChanged_ = false;
+			this.selectionChanged_ = false;
 		}
 		if (this.selectionChanged_) {
 			element.setProperty(Property.PropertySelectedIndex, String

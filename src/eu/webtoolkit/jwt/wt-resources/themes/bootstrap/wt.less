@@ -52,11 +52,16 @@
 	padding-left: 39px;
     }
 
-    .submenu a, .submenu a:hover {
-	background-image: url(../../right-arrow.gif);
-	background-repeat: no-repeat;
-	background-position: right center;
+    li label {
+        display: inline;
     }
+}
+
+/*
+ * Make label in any menu item inline
+ */
+.nav li label {
+     display: inline;
 }
 
 /*
@@ -80,6 +85,17 @@
     text-decoration: none;
     background-color: @navbarLinkBackgroundActive;
     .box-shadow(inset 0 3px 8px rgba(0,0,0,.125));
+}
+
+/*
+ * Fix submens in popup menus in navbar
+ */
+.navbar .nav > li > .dropdown-menu.submenu:before {
+  display: none;
+}
+
+.navbar .nav > li > .dropdown-menu.submenu:after {
+  display: none;
 }
 
 /*

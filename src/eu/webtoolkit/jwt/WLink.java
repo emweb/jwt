@@ -265,6 +265,7 @@ public class WLink {
 				}
 			}
 		}
+			break;
 		default:
 			relativeUrl = this.getUrl();
 		}

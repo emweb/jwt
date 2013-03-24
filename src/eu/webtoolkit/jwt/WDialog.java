@@ -239,7 +239,6 @@ public class WDialog extends WPopupWidget {
 	}
 
 	/**
-	 * <p>
 	 * Returns the dialog footer container.
 	 * <p>
 	 * This is an optional section which is typically used for buttons.
