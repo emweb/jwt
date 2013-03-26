@@ -85,6 +85,13 @@ public class WPushButton extends WFormWidget {
 		this(text, (WContainerWidget) null);
 	}
 
+	public void remove() {
+		if (this.popupMenu_ != null) {
+			this.popupMenu_.setButton((WInteractWidget) null);
+		}
+		super.remove();
+	}
+
 	/**
 	 * Sets the default property.
 	 * <p>

@@ -141,6 +141,17 @@ public class WPopupMenu extends WMenu {
 		this((WStackedWidget) null);
 	}
 
+	public void remove() {
+		if (this.button_ != null) {
+			WPushButton b = ((this.button_) instanceof WPushButton ? (WPushButton) (this.button_)
+					: null);
+			if (b != null) {
+				b.setMenu((WPopupMenu) null);
+			}
+		}
+		super.remove();
+	}
+
 	/**
 	 * Shows the the popup at a position.
 	 * <p>

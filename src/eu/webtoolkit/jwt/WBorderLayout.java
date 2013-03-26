@@ -42,37 +42,6 @@ import org.slf4j.LoggerFactory;
  * <p>
  * The North, West, East, and South widgets will take their preferred sizes,
  * while the Center widget takes all available remaining space.
- * <p>
- * When used with a {@link WContainerWidget}, the widget minimum sizes are used
- * for sizing the border widgets, whose default values may be overridden using
- * {@link WWidget#setMinimumSize(WLength width, WLength height)
- * WWidget#setMinimumSize()}. You may not define any padding for the container
- * widget. Instead, use
- * {@link WLayout#setContentsMargins(int left, int top, int right, int bottom)
- * WLayout#setContentsMargins()}.
- * <p>
- * <p>
- * <i><b>Note: </b>When used on a {@link WContainerWidget}, this layout manager
- * accepts the following hints (see
- * {@link WLayout#setLayoutHint(String name, String value)
- * WLayout#setLayoutHint()}):
- * <ul>
- * <li>
- * &quot;table-layout&quot; with possible values &quot;auto&quot; (default) or
- * &quot;fixed&quot;.<br>
- * Use &quot;fixed&quot; to prevent nested tables from overflowing the layout.
- * In that case, you will need to specify a width (in CSS or otherwise) for at
- * least one item in every column that has no stretch factor.</li>
- * </ul>
- * </i>
- * </p>
- * <p>
- * <i><b>Warning:</b>You should specify AlignTop in the alignment flags of
- * {@link WContainerWidget#setLayout(WLayout layout)
- * WContainerWidget#setLayout()} if the container does not have a height that is
- * constrained somehow. Otherwise the behavior is undefined (the parent
- * container will continue to increase in size) </i>
- * </p>
  */
 public class WBorderLayout extends WLayout {
 	private static Logger logger = LoggerFactory.getLogger(WBorderLayout.class);
