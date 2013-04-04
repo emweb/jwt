@@ -89,8 +89,8 @@ import org.apache.commons.io.*;
  * {@link WEnvironment#getCookie(String cookieName) WEnvironment#getCookie()} in
  * a future session.</li>
  * <li>management of the internal path (that enables browser history and
- * bookmarks) using {@link WApplication#makeAbsoluteUrl(String url)
- * makeAbsoluteUrl()} and related methods.</li>
+ * bookmarks) using {@link WApplication#getBookmarkUrl() getBookmarkUrl()} and
+ * related methods.</li>
  * <li>support for server-initiated updates with
  * {@link WApplication#enableUpdates(boolean enabled) enableUpdates()}</li>
  * </ul>
@@ -966,14 +966,13 @@ public class WApplication extends WObject {
 	 * <p>
 	 * To obtain a URL that is suitable for bookmarking the current application
 	 * state, to be used across sessions, use
-	 * {@link WApplication#makeAbsoluteUrl(String url) makeAbsoluteUrl()}
-	 * instead.
+	 * {@link WApplication#getBookmarkUrl() getBookmarkUrl()} instead.
 	 * <p>
 	 * 
 	 * @see WApplication#redirect(String url)
 	 * @see WEnvironment#getHostName()
 	 * @see WEnvironment#getUrlScheme()
-	 * @see WApplication#makeAbsoluteUrl(String url)
+	 * @see WApplication#getBookmarkUrl()
 	 */
 	public String url(String internalPath) {
 		return this.resolveRelativeUrl(this.session_
@@ -990,70 +989,50 @@ public class WApplication extends WObject {
 	}
 
 	/**
-	 * Returns a URL for the current session.
+	 * Makes an absolute URL.
 	 * <p>
-	 * Returns the (relative) URL for this application session (including the
-	 * session ID if necessary). The URL includes the full application path, and
-	 * is expanded by the browser into a full URL.
+	 * Returns an absolute URL for a given (relative url) by including the
+	 * schema, hostname, and deployment path.
 	 * <p>
-	 * For example, for an application deployed at
-	 * 
-	 * <pre>
-	 * {@code
-	 *    http://www.mydomain.com/stuff/app.wt 
-	 *   }
-	 * </pre>
-	 * 
-	 * this method might return
-	 * <code>&quot;/stuff/app.wt?wtd=AbCdEf&quot;</code>. Additional query
-	 * parameters can be appended in the form of
-	 * <code>&quot;&amp;param1=value&amp;param2=value&quot;</code>.
+	 * If <code>url</code> is &quot;&quot;, then the absolute base URL is
+	 * returned. This is the absolute URL at which the application is deployed,
+	 * up to the last &apos;/&apos;.
 	 * <p>
-	 * To obtain a URL that is suitable for bookmarking the current application
-	 * state, to be used across sessions, use
-	 * {@link WApplication#makeAbsoluteUrl(String url) makeAbsoluteUrl()}
-	 * instead.
+	 * This is not used in the library, except when a public URL is needed, e.g.
+	 * for inclusion in an email.
 	 * <p>
-	 * 
-	 * @see WApplication#redirect(String url)
-	 * @see WEnvironment#getHostName()
-	 * @see WEnvironment#getUrlScheme()
-	 * @see WApplication#makeAbsoluteUrl(String url)
+	 * You may want to reimplement this method when the application is hosted
+	 * behind a reverse proxy or in general the public URL of the application
+	 * cannot be guessed correctly by the application.
 	 */
 	public String makeAbsoluteUrl(String url) {
 		return this.session_.makeAbsoluteUrl(url);
 	}
 
 	/**
-	 * Returns a URL for the current session.
+	 * &quot;Resolves&quot; a relative URL taking into account internal paths.
 	 * <p>
-	 * Returns the (relative) URL for this application session (including the
-	 * session ID if necessary). The URL includes the full application path, and
-	 * is expanded by the browser into a full URL.
+	 * Using HTML5 History API or in a plain HTML session (without ugly internal
+	 * paths), the internal path is present as a full part of the URL. This has
+	 * a consequence that relative URLs, if not dealt with, would be resolved
+	 * against the last &apos;folder&apos; name of the internal path, rather
+	 * than against the application deployment path (which is what you probably
+	 * want).
 	 * <p>
-	 * For example, for an application deployed at
-	 * 
-	 * <pre>
-	 * {@code
-	 *    http://www.mydomain.com/stuff/app.wt 
-	 *   }
-	 * </pre>
-	 * 
-	 * this method might return
-	 * <code>&quot;/stuff/app.wt?wtd=AbCdEf&quot;</code>. Additional query
-	 * parameters can be appended in the form of
-	 * <code>&quot;&amp;param1=value&amp;param2=value&quot;</code>.
+	 * When using a widgetset mode deployment, or when configuring a baseURL
+	 * property in the configuration, this method will make an absolute URL so
+	 * that the property is fetched from the right server.
 	 * <p>
-	 * To obtain a URL that is suitable for bookmarking the current application
-	 * state, to be used across sessions, use
-	 * {@link WApplication#makeAbsoluteUrl(String url) makeAbsoluteUrl()}
-	 * instead.
+	 * Otherwise, this method will fixup a relative URL so that it resolves
+	 * correctly against the base path of an application. This does not
+	 * necessarily mean that the URL is resolved into an absolute URL. In fact,
+	 * JWt will simply prepend a sequence of &quot;../&quot; path elements to
+	 * correct for the internal path. When passed an absolute URL (i.e. starting
+	 * with &apos;/&apos;), the url is returned unchanged.
 	 * <p>
-	 * 
-	 * @see WApplication#redirect(String url)
-	 * @see WEnvironment#getHostName()
-	 * @see WEnvironment#getUrlScheme()
-	 * @see WApplication#makeAbsoluteUrl(String url)
+	 * For URLs passed to the JWt API (and of which the library knows it is
+	 * represents a URL) this method is called internally by the library. But it
+	 * may be useful for URLs which are set e.g. inside a {@link WTemplate}.
 	 */
 	public String resolveRelativeUrl(String url) {
 		return this.session_.fixRelativeUrl(url);
@@ -1081,14 +1060,13 @@ public class WApplication extends WObject {
 	 * <p>
 	 * To obtain a URL that is suitable for bookmarking the current application
 	 * state, to be used across sessions, use
-	 * {@link WApplication#makeAbsoluteUrl(String url) makeAbsoluteUrl()}
-	 * instead.
+	 * {@link WApplication#getBookmarkUrl() getBookmarkUrl()} instead.
 	 * <p>
 	 * 
 	 * @see WApplication#redirect(String url)
 	 * @see WEnvironment#getHostName()
 	 * @see WEnvironment#getUrlScheme()
-	 * @see WApplication#makeAbsoluteUrl(String url)
+	 * @see WApplication#getBookmarkUrl()
 	 */
 	public String getBookmarkUrl() {
 		return this.getBookmarkUrl(this.newInternalPath_);
@@ -1116,49 +1094,98 @@ public class WApplication extends WObject {
 	 * <p>
 	 * To obtain a URL that is suitable for bookmarking the current application
 	 * state, to be used across sessions, use
-	 * {@link WApplication#makeAbsoluteUrl(String url) makeAbsoluteUrl()}
-	 * instead.
+	 * {@link WApplication#getBookmarkUrl() getBookmarkUrl()} instead.
 	 * <p>
 	 * 
 	 * @see WApplication#redirect(String url)
 	 * @see WEnvironment#getHostName()
 	 * @see WEnvironment#getUrlScheme()
-	 * @see WApplication#makeAbsoluteUrl(String url)
+	 * @see WApplication#getBookmarkUrl()
 	 */
 	public String getBookmarkUrl(String internalPath) {
 		return this.session_.getBookmarkUrl(internalPath);
 	}
 
 	/**
-	 * Returns a URL for the current session.
+	 * Changes the internal path.
 	 * <p>
-	 * Returns the (relative) URL for this application session (including the
-	 * session ID if necessary). The URL includes the full application path, and
-	 * is expanded by the browser into a full URL.
+	 * A JWt application may manage multiple virtual paths. The virtual path is
+	 * appended to the application URL. Depending on the situation, the path is
+	 * directly appended to the application URL or it is appended using a name
+	 * anchor (#).
 	 * <p>
-	 * For example, for an application deployed at
+	 * For example, for an application deployed at:
 	 * 
 	 * <pre>
 	 * {@code
-	 *    http://www.mydomain.com/stuff/app.wt 
+	 *    http://www.mydomain.com/stuff/app.wt
 	 *   }
 	 * </pre>
 	 * 
-	 * this method might return
-	 * <code>&quot;/stuff/app.wt?wtd=AbCdEf&quot;</code>. Additional query
-	 * parameters can be appended in the form of
-	 * <code>&quot;&amp;param1=value&amp;param2=value&quot;</code>.
+	 * for which an <code>internalPath</code>
+	 * <code>&quot;/project/z3cbc/details/&quot;</code> is set, the two forms
+	 * for the application URL are:
+	 * <ul>
+	 * <li>
+	 * in an AJAX session (HTML5):
+	 * 
+	 * <pre>
+	 * {@code
+	 *    http://www.mydomain.com/stuff/app.wt/project/z3cbc/details/
+	 *   }
+	 * </pre>
+	 * 
+	 * </li>
+	 * <li>
+	 * in an AJAX session (HTML4):
+	 * 
+	 * <pre>
+	 * {@code
+	 *    http://www.mydomain.com/stuff/app.wt#/project/z3cbc/details/
+	 *   }
+	 * </pre>
+	 * 
+	 * </li>
+	 * <li>
+	 * </li>
+	 * <li>
+	 * in a plain HTML session:
+	 * 
+	 * <pre>
+	 * {@code
+	 *    http://www.mydomain.com/stuff/app.wt/project/z3cbc/details/
+	 *   }
+	 * </pre>
+	 * 
+	 * </li>
+	 * </ul>
 	 * <p>
-	 * To obtain a URL that is suitable for bookmarking the current application
-	 * state, to be used across sessions, use
-	 * {@link WApplication#makeAbsoluteUrl(String url) makeAbsoluteUrl()}
-	 * instead.
+	 * Note, since JWt 3.1.9, the actual form of the URL no longer affects
+	 * relative URL resolution, since now JWt includes an HTML
+	 * <code>meta base</code> tag which points to the deployment path,
+	 * regardless of the current internal path. This does break deployments
+	 * behind a reverse proxy which changes paths.
+	 * <p>
+	 * When the internal path is changed, an entry is added to the browser
+	 * history. When the user navigates back and forward through this history
+	 * (using the browser back/forward buttons), an
+	 * {@link WApplication#internalPathChanged() internalPathChanged()} event is
+	 * emitted. You should listen to this signal to switch the application to
+	 * the corresponding state. When <code>emitChange</code> is
+	 * <code>true</code>, this signal is also emitted by setting the path.
+	 * <p>
+	 * A url that includes the internal path may be obtained using
+	 * {@link WApplication#getBookmarkUrl() getBookmarkUrl()}.
+	 * <p>
+	 * The <code>internalPath</code> must start with a &apos;/&apos;. In this
+	 * way, you can still use normal anchors in your HTML. Internal path changes
+	 * initiated in the browser to paths that do not start with a &apos;/&apos;
+	 * are ignored.
 	 * <p>
 	 * 
-	 * @see WApplication#redirect(String url)
-	 * @see WEnvironment#getHostName()
-	 * @see WEnvironment#getUrlScheme()
-	 * @see WApplication#makeAbsoluteUrl(String url)
+	 * @see WApplication#getBookmarkUrl()
+	 * @see WApplication#getBookmarkUrl()
+	 * @see WApplication#internalPathChanged()
 	 */
 	public void setInternalPath(String path, boolean emitChange) {
 		this.enableInternalPaths();
@@ -1175,7 +1202,7 @@ public class WApplication extends WObject {
 	}
 
 	/**
-	 * Returns a URL for the current session.
+	 * Changes the internal path.
 	 * <p>
 	 * Calls {@link #setInternalPath(String path, boolean emitChange)
 	 * setInternalPath(path, false)}
@@ -1185,35 +1212,18 @@ public class WApplication extends WObject {
 	}
 
 	/**
-	 * Returns a URL for the current session.
+	 * Sets whether an internal path is valid by default.
 	 * <p>
-	 * Returns the (relative) URL for this application session (including the
-	 * session ID if necessary). The URL includes the full application path, and
-	 * is expanded by the browser into a full URL.
+	 * This configures how you treat (invalid) internal paths. If an internal
+	 * path is treated valid by default then you need to call
+	 * setInternalPath(false) for an invalid path. If on the other hand you
+	 * treat an internal path as invalid by default, then you need to call
+	 * setInternalPath(true) for a valid path.
 	 * <p>
-	 * For example, for an application deployed at
-	 * 
-	 * <pre>
-	 * {@code
-	 *    http://www.mydomain.com/stuff/app.wt 
-	 *   }
-	 * </pre>
-	 * 
-	 * this method might return
-	 * <code>&quot;/stuff/app.wt?wtd=AbCdEf&quot;</code>. Additional query
-	 * parameters can be appended in the form of
-	 * <code>&quot;&amp;param1=value&amp;param2=value&quot;</code>.
+	 * A user which opens an invalid internal path will receive a HTTP 404-Not
+	 * Found response code (if sent an HTML response).
 	 * <p>
-	 * To obtain a URL that is suitable for bookmarking the current application
-	 * state, to be used across sessions, use
-	 * {@link WApplication#makeAbsoluteUrl(String url) makeAbsoluteUrl()}
-	 * instead.
-	 * <p>
-	 * 
-	 * @see WApplication#redirect(String url)
-	 * @see WEnvironment#getHostName()
-	 * @see WEnvironment#getUrlScheme()
-	 * @see WApplication#makeAbsoluteUrl(String url)
+	 * The default value is <code>true</code>.
 	 */
 	public void setInternalPathDefaultValid(boolean valid) {
 		this.internalPathDefaultValid_ = valid;
@@ -1241,49 +1251,30 @@ public class WApplication extends WObject {
 	 * <p>
 	 * To obtain a URL that is suitable for bookmarking the current application
 	 * state, to be used across sessions, use
-	 * {@link WApplication#makeAbsoluteUrl(String url) makeAbsoluteUrl()}
-	 * instead.
+	 * {@link WApplication#getBookmarkUrl() getBookmarkUrl()} instead.
 	 * <p>
 	 * 
 	 * @see WApplication#redirect(String url)
 	 * @see WEnvironment#getHostName()
 	 * @see WEnvironment#getUrlScheme()
-	 * @see WApplication#makeAbsoluteUrl(String url)
+	 * @see WApplication#getBookmarkUrl()
 	 */
 	public boolean isInternalPathDefaultValid() {
 		return this.internalPathDefaultValid_;
 	}
 
 	/**
-	 * Returns a URL for the current session.
+	 * Sets whether the current internal path is valid.
 	 * <p>
-	 * Returns the (relative) URL for this application session (including the
-	 * session ID if necessary). The URL includes the full application path, and
-	 * is expanded by the browser into a full URL.
-	 * <p>
-	 * For example, for an application deployed at
-	 * 
-	 * <pre>
-	 * {@code
-	 *    http://www.mydomain.com/stuff/app.wt 
-	 *   }
-	 * </pre>
-	 * 
-	 * this method might return
-	 * <code>&quot;/stuff/app.wt?wtd=AbCdEf&quot;</code>. Additional query
-	 * parameters can be appended in the form of
-	 * <code>&quot;&amp;param1=value&amp;param2=value&quot;</code>.
-	 * <p>
-	 * To obtain a URL that is suitable for bookmarking the current application
-	 * state, to be used across sessions, use
-	 * {@link WApplication#makeAbsoluteUrl(String url) makeAbsoluteUrl()}
-	 * instead.
+	 * You can use this function in response to an internal path change event
+	 * (or at application startup) to indicate whether the new (or initial)
+	 * internal path is valid. This has only an effect on plain HTML sessions,
+	 * or on the first response in an application deployed with progressive
+	 * bootstrap settings, as this generates then a 404 Not-Found response.
 	 * <p>
 	 * 
-	 * @see WApplication#redirect(String url)
-	 * @see WEnvironment#getHostName()
-	 * @see WEnvironment#getUrlScheme()
-	 * @see WApplication#makeAbsoluteUrl(String url)
+	 * @see WApplication#internalPathChanged()
+	 * @see WApplication#getBookmarkUrl()
 	 */
 	public void setInternalPathValid(boolean valid) {
 		this.internalPathValid_ = valid;
@@ -1311,14 +1302,13 @@ public class WApplication extends WObject {
 	 * <p>
 	 * To obtain a URL that is suitable for bookmarking the current application
 	 * state, to be used across sessions, use
-	 * {@link WApplication#makeAbsoluteUrl(String url) makeAbsoluteUrl()}
-	 * instead.
+	 * {@link WApplication#getBookmarkUrl() getBookmarkUrl()} instead.
 	 * <p>
 	 * 
 	 * @see WApplication#redirect(String url)
 	 * @see WEnvironment#getHostName()
 	 * @see WEnvironment#getUrlScheme()
-	 * @see WApplication#makeAbsoluteUrl(String url)
+	 * @see WApplication#getBookmarkUrl()
 	 */
 	public boolean isInternalPathValid() {
 		return this.internalPathValid_;
@@ -1346,14 +1336,13 @@ public class WApplication extends WObject {
 	 * <p>
 	 * To obtain a URL that is suitable for bookmarking the current application
 	 * state, to be used across sessions, use
-	 * {@link WApplication#makeAbsoluteUrl(String url) makeAbsoluteUrl()}
-	 * instead.
+	 * {@link WApplication#getBookmarkUrl() getBookmarkUrl()} instead.
 	 * <p>
 	 * 
 	 * @see WApplication#redirect(String url)
 	 * @see WEnvironment#getHostName()
 	 * @see WEnvironment#getUrlScheme()
-	 * @see WApplication#makeAbsoluteUrl(String url)
+	 * @see WApplication#getBookmarkUrl()
 	 */
 	public String getInternalPath() {
 		return StringUtils.prepend(this.newInternalPath_, '/');
@@ -1381,14 +1370,13 @@ public class WApplication extends WObject {
 	 * <p>
 	 * To obtain a URL that is suitable for bookmarking the current application
 	 * state, to be used across sessions, use
-	 * {@link WApplication#makeAbsoluteUrl(String url) makeAbsoluteUrl()}
-	 * instead.
+	 * {@link WApplication#getBookmarkUrl() getBookmarkUrl()} instead.
 	 * <p>
 	 * 
 	 * @see WApplication#redirect(String url)
 	 * @see WEnvironment#getHostName()
 	 * @see WEnvironment#getUrlScheme()
-	 * @see WApplication#makeAbsoluteUrl(String url)
+	 * @see WApplication#getBookmarkUrl()
 	 */
 	public String getInternalPathNextPart(String path) {
 		String subPath = this.internalSubPath(path);
@@ -1422,14 +1410,13 @@ public class WApplication extends WObject {
 	 * <p>
 	 * To obtain a URL that is suitable for bookmarking the current application
 	 * state, to be used across sessions, use
-	 * {@link WApplication#makeAbsoluteUrl(String url) makeAbsoluteUrl()}
-	 * instead.
+	 * {@link WApplication#getBookmarkUrl() getBookmarkUrl()} instead.
 	 * <p>
 	 * 
 	 * @see WApplication#redirect(String url)
 	 * @see WEnvironment#getHostName()
 	 * @see WEnvironment#getUrlScheme()
-	 * @see WApplication#makeAbsoluteUrl(String url)
+	 * @see WApplication#getBookmarkUrl()
 	 */
 	public String internalSubPath(String path) {
 		String current = StringUtils.append(this.newInternalPath_, '/');
@@ -1445,21 +1432,21 @@ public class WApplication extends WObject {
 	/**
 	 * Checks if the internal path matches a given path.
 	 * <p>
-	 * Returns whether the current {@link WApplication#isInternalPathValid()
-	 * isInternalPathValid()} starts with <code>path</code> (or is equal to
+	 * Returns whether the current {@link WApplication#getBookmarkUrl()
+	 * getBookmarkUrl()} starts with <code>path</code> (or is equal to
 	 * <code>path</code>). You will typically use this method within a slot
 	 * conneted to the {@link WApplication#internalPathChanged()
 	 * internalPathChanged()} signal, to check that an internal path change
 	 * affects the widget. It may also be useful before changing
-	 * <code>path</code> using {@link WApplication#makeAbsoluteUrl(String url)
-	 * makeAbsoluteUrl()} if you do not intend to remove sub paths when the
+	 * <code>path</code> using {@link WApplication#getBookmarkUrl()
+	 * getBookmarkUrl()} if you do not intend to remove sub paths when the
 	 * current internal path already matches <code>path</code>.
 	 * <p>
 	 * The <code>path</code> must start with a &apos;/&apos;.
 	 * <p>
 	 * 
-	 * @see WApplication#makeAbsoluteUrl(String url)
-	 * @see WApplication#isInternalPathValid()
+	 * @see WApplication#getBookmarkUrl()
+	 * @see WApplication#getBookmarkUrl()
 	 */
 	public boolean internalPathMatches(String path) {
 		if (this.session_.getRenderer().isPreLearning()) {
@@ -1492,14 +1479,13 @@ public class WApplication extends WObject {
 	 * <p>
 	 * To obtain a URL that is suitable for bookmarking the current application
 	 * state, to be used across sessions, use
-	 * {@link WApplication#makeAbsoluteUrl(String url) makeAbsoluteUrl()}
-	 * instead.
+	 * {@link WApplication#getBookmarkUrl() getBookmarkUrl()} instead.
 	 * <p>
 	 * 
 	 * @see WApplication#redirect(String url)
 	 * @see WEnvironment#getHostName()
 	 * @see WEnvironment#getUrlScheme()
-	 * @see WApplication#makeAbsoluteUrl(String url)
+	 * @see WApplication#getBookmarkUrl()
 	 */
 	public Signal1<String> internalPathChanged() {
 		this.enableInternalPaths();
@@ -1528,14 +1514,13 @@ public class WApplication extends WObject {
 	 * <p>
 	 * To obtain a URL that is suitable for bookmarking the current application
 	 * state, to be used across sessions, use
-	 * {@link WApplication#makeAbsoluteUrl(String url) makeAbsoluteUrl()}
-	 * instead.
+	 * {@link WApplication#getBookmarkUrl() getBookmarkUrl()} instead.
 	 * <p>
 	 * 
 	 * @see WApplication#redirect(String url)
 	 * @see WEnvironment#getHostName()
 	 * @see WEnvironment#getUrlScheme()
-	 * @see WApplication#makeAbsoluteUrl(String url)
+	 * @see WApplication#getBookmarkUrl()
 	 */
 	public Signal1<String> internalPathInvalid() {
 		return this.internalPathInvalid_;
@@ -1571,7 +1556,7 @@ public class WApplication extends WObject {
 	 * Returns the URL at which the resources are deployed.
 	 * <p>
 	 * 
-	 * @see WApplication#makeAbsoluteUrl(String url)
+	 * @see WApplication#resolveRelativeUrl(String url)
 	 */
 	public static String getRelativeResourcesUrl() {
 		WApplication app = WApplication.getInstance();

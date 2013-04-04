@@ -332,9 +332,9 @@ public class WTabWidget extends WCompositeWidget {
 	 * For each menu item, {@link WMenuItem#getPathComponent()
 	 * WMenuItem#getPathComponent()} is appended to the <code>basePath</code>,
 	 * which defaults to the internal path (
-	 * {@link WApplication#isInternalPathValid()
-	 * WApplication#isInternalPathValid()}). A &apos;/&apos; is appended to the
-	 * base path, to turn it into a folder, if needed.
+	 * {@link WApplication#getBookmarkUrl() WApplication#getBookmarkUrl()}). A
+	 * &apos;/&apos; is appended to the base path, to turn it into a folder, if
+	 * needed.
 	 * <p>
 	 * By default, menu interaction does not change the application internal
 	 * path.
@@ -383,9 +383,8 @@ public class WTabWidget extends WCompositeWidget {
 	 * Returns the internal base path.
 	 * <p>
 	 * The default value is the application&apos;s internalPath (
-	 * {@link WApplication#isInternalPathValid()
-	 * WApplication#isInternalPathValid()}) that was recorded when
-	 * {@link WMenu#setInternalPathEnabled(String basePath)
+	 * {@link WApplication#getBookmarkUrl() WApplication#getBookmarkUrl()}) that
+	 * was recorded when {@link WMenu#setInternalPathEnabled(String basePath)
 	 * WMenu#setInternalPathEnabled()} was called, and together with each
 	 * {@link WMenuItem#getPathComponent() WMenuItem#getPathComponent()}
 	 * determines the paths for each item.

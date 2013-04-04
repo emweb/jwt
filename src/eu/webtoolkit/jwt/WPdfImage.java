@@ -210,6 +210,8 @@ public class WPdfImage extends WResource implements WPaintDevice {
 
 	@Override
 	public void drawImage(WRectF rect, String imgUrl, int imgWidth, int imgHeight, WRectF sourceRect) {
+		processChangeFlags();
+		
 		Image image = null;
 		
 		if (DataUri.isDataUri(imgUrl)) {

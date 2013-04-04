@@ -474,6 +474,13 @@ this.unstub = function(from, to, methodDisplay) {
     to.style.width = from.style.width;
 };
 
+this.saveReparented = function(el) {
+  $(el).find('.wt-reparented').each(function() {
+      var domRoot = $('.Wt-domRoot').get(0);
+      domRoot.appendChild(this.parentNode.removeChild(this));
+    });
+};
+
 this.changeTag = function(e, type)
 {
   var n = document.createElement(type);
@@ -1445,6 +1452,7 @@ this.positionAtWidget = function(id, atId, orientation, delta) {
       p.style.position = 'relative';
     
     p.appendChild(w);
+    $(w).addClass('wt-reparented');
   }
 
   WT.fitToWindow(w, x, y, rightx, bottomy);
@@ -2451,6 +2459,11 @@ function handleResponse(status, msg, timer) {
   if (quited)
     return;
 
+  if (waitingForJavaScript) {
+    setTimeout(function() { handleResponse(status, msg, timer); }, 50);
+    return;
+  }
+
   if (status == 0) {
     WT.resolveRelativeAnchors();
 _$_$if_CATCH_ERROR_$_();
@@ -2867,15 +2880,19 @@ function addTimerEvent(timerid, msec, repeat) {
 }
 
 var jsLibsLoaded = {};
+var waitingForJavaScript = false;
 
 function onJsLoad(path, f) {
   // setTimeout needed for Opera
   setTimeout(function() {
     if (jsLibsLoaded[path] === true) {
+      waitingForJavaScript = false;
       f();
     } else
       jsLibsLoaded[path] = f;
     }, 20);
+
+  waitingForJavaScript = true;
 };
 
 function jsLoaded(path)
@@ -2883,8 +2900,10 @@ function jsLoaded(path)
   if (jsLibsLoaded[path] === true)
     return;
   else {
-    if (typeof jsLibsLoaded[path] !== 'undefined')
+    if (typeof jsLibsLoaded[path] !== 'undefined') {
+      waitingForJavaScript = false;
       jsLibsLoaded[path]();
+    }
     jsLibsLoaded[path] = true;
   }
 };

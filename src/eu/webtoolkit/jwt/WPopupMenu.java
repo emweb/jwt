@@ -116,6 +116,7 @@ public class WPopupMenu extends WMenu {
 		this.topLevel_ = null;
 		this.result_ = null;
 		this.location_ = null;
+		this.button_ = null;
 		this.aboutToHide_ = new Signal(this);
 		this.triggered_ = new Signal1<WMenuItem>(this);
 		this.cancel_ = new JSignal(this, "cancel");

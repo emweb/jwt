@@ -231,9 +231,9 @@ public class WStackedWidget extends WContainerWidget {
 			if (!animation.isEmpty()) {
 				this.addStyleClass("Wt-animated");
 			}
-			this.loadAnimateJS();
 			this.animation_ = animation;
 			this.autoReverseAnimation_ = autoReverse;
+			this.loadAnimateJS();
 		}
 	}
 

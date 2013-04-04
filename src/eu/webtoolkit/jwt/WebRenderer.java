@@ -141,7 +141,7 @@ class WebRenderer implements SlotLearnerInterface {
 				|| this.session_.getApp().styleSheetsAdded_ != 0
 				|| !(this.collectedJS1_.length() == 0)
 				|| !(this.collectedJS2_.length() == 0)
-				|| (this.invisibleJS_.length() == 0);
+				|| !(this.invisibleJS_.length() == 0);
 	}
 
 	public int getScriptId() {
@@ -717,6 +717,7 @@ class WebRenderer implements SlotLearnerInterface {
 		String contentType = xhtml ? "application/xhtml+xml" : "text/html";
 		contentType += "; charset=UTF-8";
 		this.setCaching(response, false);
+		response.addHeader("X-Frame-Options", "SAMEORIGIN");
 		this.setHeaders(response, contentType);
 		this.currentFormObjectsList_ = this.createFormObjectsList(app);
 		if (hybridPage) {

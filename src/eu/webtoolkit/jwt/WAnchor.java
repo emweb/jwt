@@ -375,8 +375,8 @@ public class WAnchor extends WContainerWidget {
 	 * <p>
 	 * When the link points to an {@link WLink.Type#InternalPath internal path},
 	 * activating the anchor will change the
-	 * {@link WApplication#isInternalPathValid() application&apos;s internal
-	 * path} or open a new session with the given path as
+	 * {@link WApplication#getBookmarkUrl() application&apos;s internal path} or
+	 * open a new session with the given path as
 	 * {@link WEnvironment#getInternalPath() initial path}). This is the easiest
 	 * way to let the application participate in browser history, and generate
 	 * URLs that are bookmarkable and search engine friendly.

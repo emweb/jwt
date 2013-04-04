@@ -776,8 +776,12 @@ public class DomElement {
 					return this.var_;
 				}
 			}
-			for (int i = 0; i < this.childrenToSave_.size(); ++i) {
+			if (!this.childrenToSave_.isEmpty()) {
 				this.declare(out);
+				out.append("Wt3_3_0").append(".saveReparented(").append(
+						this.var_).append(");");
+			}
+			for (int i = 0; i < this.childrenToSave_.size(); ++i) {
 				out.append("var c").append(this.var_).append((int) i).append(
 						'=').append("$('#").append(this.childrenToSave_.get(i))
 						.append("')");

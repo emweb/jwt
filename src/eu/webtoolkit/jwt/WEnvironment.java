@@ -594,7 +594,7 @@ public class WEnvironment {
 	 * </pre>
 	 * <p>
 	 * 
-	 * @see WApplication#makeAbsoluteUrl(String url)
+	 * @see WApplication#getBookmarkUrl()
 	 * @see WEnvironment#getDeploymentPath()
 	 */
 	public String getInternalPath() {

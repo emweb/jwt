@@ -267,8 +267,8 @@ public class WMenuItem extends WContainerWidget {
 	 * Sets the path component for this item.
 	 * <p>
 	 * The path component is used by the menu item in the application internal
-	 * path (see {@link WApplication#makeAbsoluteUrl(String url)
-	 * WApplication#makeAbsoluteUrl()}), when internal paths are enabled (see
+	 * path (see {@link WApplication#getBookmarkUrl()
+	 * WApplication#getBookmarkUrl()}), when internal paths are enabled (see
 	 * {@link WMenu#setInternalPathEnabled(String basePath)
 	 * WMenu#setInternalPathEnabled()}) for the menu.
 	 * <p>

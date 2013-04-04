@@ -116,6 +116,8 @@ public abstract class WTextRenderer {
 			double maxX = this.textWidth(currentPs.page);
 			boolean tooWide = false;
 			for (int i = 0; i < 2; ++i) {
+				currentPs.y = y;
+				currentPs.page = 0;
 				currentPs.minX = minX;
 				currentPs.maxX = maxX;
 				collapseMarginBottom = docBlock.layoutBlock(currentPs, false,
@@ -123,7 +125,10 @@ public abstract class WTextRenderer {
 				if (isEpsilonMore(currentPs.maxX, maxX)) {
 					if (!tooWide) {
 						logger.warn(new StringWriter().append(
-								"contents too wide for page.").toString());
+								"contents too wide for page. (").append(
+								String.valueOf(currentPs.maxX)).append(" > ")
+								.append(String.valueOf(maxX)).append(")")
+								.toString());
 						tooWide = true;
 					}
 					maxX = currentPs.maxX;

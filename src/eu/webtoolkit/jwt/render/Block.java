@@ -1598,7 +1598,7 @@ class Block {
 						line.moveToNextPage(floats, minX, maxX, renderer);
 					}
 					if (!this.isText() || this.isText()
-							&& utf8Count == s.length()) {
+							&& utf8Pos == s.length()) {
 						break;
 					}
 				}
@@ -1654,9 +1654,10 @@ class Block {
 			Range rangeX = new Range(ps.minX, ps.maxX);
 			adjustAvailableWidth(ps.y, ps.page, ps.floats, rangeX);
 			ps.maxX = rangeX.end;
-			availableWidth = rangeX.end - rangeX.start
-					- this.cssBorderWidth(Side.Left, renderer.getFontScale())
-					- this.cssBorderWidth(Side.Right, renderer.getFontScale());
+			double border = this.cssBorderWidth(Side.Left, renderer
+					.getFontScale())
+					+ this.cssBorderWidth(Side.Right, renderer.getFontScale());
+			availableWidth = rangeX.end - rangeX.start - border;
 			if (canIncreaseWidth
 					&& isEpsilonLess(availableWidth, desiredMaxWidth)) {
 				ps.maxX += desiredMaxWidth - availableWidth;
@@ -1665,7 +1666,7 @@ class Block {
 			if (!isEpsilonLess(availableWidth, desiredMinWidth)) {
 				break;
 			} else {
-				if (isEpsilonLess(desiredMinWidth, ps.maxX - ps.minX)) {
+				if (isEpsilonLess(desiredMinWidth, ps.maxX - ps.minX - border)) {
 					clearFloats(ps, desiredMinWidth);
 				} else {
 					ps.maxX += desiredMinWidth - availableWidth;
@@ -1706,8 +1707,6 @@ class Block {
 				}
 			}
 		}
-		width += this.cssBoxMargin(Side.Left, renderer.getFontScale())
-				+ this.cssBoxMargin(Side.Right, renderer.getFontScale());
 		AlignmentFlag hAlign = this.getHorizontalAlignment();
 		switch (hAlign) {
 		case AlignLeft:
@@ -1724,8 +1723,6 @@ class Block {
 		default:
 			break;
 		}
-		ps.minX += this.cssBoxMargin(Side.Left, renderer.getFontScale());
-		ps.maxX -= this.cssBoxMargin(Side.Right, renderer.getFontScale());
 		Block repeatHead = null;
 		for (int i = 0; i < this.children_.size(); ++i) {
 			if (this.children_.get(i).type_ == DomElementType.DomElement_THEAD) {
