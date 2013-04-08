@@ -422,7 +422,7 @@ class WebSession {
 							}
 							if (!this.updatesPending_) {
 								if (!(this.asyncResponse_ != null)
-										|| this.pollRequestsIgnored_ == 5) {
+										|| this.pollRequestsIgnored_ == 2) {
 									if (this.asyncResponse_ != null) {
 										logger
 												.info(new StringWriter()
@@ -480,19 +480,16 @@ class WebSession {
 							&& !this.env_.hasAjax()) {
 						this.env_.parameters_ = handler.getRequest()
 								.getParameterMap();
-						if (!this.app_.internalPathIsChanged_) {
-							if (hashE != null) {
-								this.changeInternalPath(hashE, handler
-										.getResponse());
+						if (hashE != null) {
+							this.changeInternalPath(hashE, handler
+									.getResponse());
+						} else {
+							if (handler.getRequest().getPathInfo().length() != 0) {
+								this.changeInternalPath(handler.getRequest()
+										.getPathInfo(), handler.getResponse());
 							} else {
-								if (handler.getRequest().getPathInfo().length() != 0) {
-									this.changeInternalPath(handler
-											.getRequest().getPathInfo(),
-											handler.getResponse());
-								} else {
-									this.changeInternalPath("", handler
-											.getResponse());
-								}
+								this.changeInternalPath("", handler
+										.getResponse());
 							}
 						}
 					}
@@ -531,8 +528,7 @@ class WebSession {
 	public void pushUpdates() {
 		try {
 			this.triggerUpdate_ = false;
-			if (!this.renderer_.isDirty()
-					|| this.state_ == WebSession.State.Dead) {
+			if (!this.renderer_.isDirty()) {
 				logger.debug(new StringWriter().append(
 						"pushUpdates(): nothing to do").toString());
 				return;
@@ -1736,7 +1732,9 @@ class WebSession {
 			if (this.app_.isQuited()) {
 				this.kill();
 			}
-			this.serveResponse(handler);
+			if (handler.getResponse() != null) {
+				this.serveResponse(handler);
+			}
 		} catch (RuntimeException e) {
 			handler.getResponse().flush();
 			handler.setRequest((WebRequest) null, (WebResponse) null);
@@ -2073,9 +2071,11 @@ class WebSession {
 	}
 
 	private void changeInternalPath(String path, WebResponse response) {
-		if (!this.app_.changedInternalPath(path)) {
-			if (response.getResponseType() == WebRequest.ResponseType.Page) {
-				response.setStatus(404);
+		if (!this.app_.internalPathIsChanged_) {
+			if (!this.app_.changedInternalPath(path)) {
+				if (response.getResponseType() == WebRequest.ResponseType.Page) {
+					response.setStatus(404);
+				}
 			}
 		}
 	}

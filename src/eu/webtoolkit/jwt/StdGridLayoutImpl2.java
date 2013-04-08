@@ -154,8 +154,8 @@ class StdGridLayoutImpl2 extends StdLayoutImpl {
 					double pct = totalColStretch == 0 ? 100.0 / colCount
 							: 100.0 * stretch / totalColStretch;
 					StringBuilder ss = new StringBuilder();
-					ss.append("width:").append(MathUtils.round(pct, 2)).append(
-							"%;");
+					ss.append("width:").append(MathUtils.roundCss(pct, 2))
+							.append("%;");
 					c.setProperty(Property.PropertyStyle, ss.toString());
 				}
 				table.addChild(c);

@@ -433,6 +433,16 @@ public class WDatePicker extends WCompositeWidget {
 						WDatePicker.this.setFromCalendar();
 					}
 				});
+		t.escapePressed().addListener(this.popup_, new Signal.Listener() {
+			public void trigger() {
+				WDatePicker.this.popup_.hide();
+			}
+		});
+		t.escapePressed().addListener(this.forEdit_, new Signal.Listener() {
+			public void trigger() {
+				WDatePicker.this.forEdit_.setFocus();
+			}
+		});
 		t.bindWidget("calendar", this.calendar_);
 		WApplication.getInstance().getTheme().apply(this, this.popup_,
 				WidgetThemeRole.DatePickerPopupRole);

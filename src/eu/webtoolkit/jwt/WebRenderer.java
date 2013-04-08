@@ -136,6 +136,7 @@ class WebRenderer implements SlotLearnerInterface {
 
 	public boolean isDirty() {
 		return !this.updateMap_.isEmpty() || this.formObjectsChanged_
+				|| this.session_.getApp().isQuited()
 				|| this.session_.getApp().afterLoadJavaScript_.length() != 0
 				|| this.session_.getApp().serverPushChanged_
 				|| this.session_.getApp().styleSheetsAdded_ != 0

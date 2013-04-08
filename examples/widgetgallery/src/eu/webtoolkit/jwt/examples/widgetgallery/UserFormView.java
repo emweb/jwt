@@ -58,19 +58,17 @@ class UserFormView extends WTemplateFormView {
 		WComboBox cityCB = new WComboBox();
 		cityCB.setModel(this.model_.getCityModel());
 		this.setFormWidget(UserFormModel.CityField, cityCB);
-		WLineEdit dateEdit = new WLineEdit();
-		final WDatePicker birthDP = new WDatePicker(dateEdit);
-		this.bindWidget("birth-dp", birthDP);
+		final WDateEdit dateEdit = new WDateEdit();
 		this.setFormWidget(UserFormModel.BirthField, dateEdit,
 				new WTemplateFormView.FieldView() {
 					public void updateViewValue() {
 						WDate date = (WDate) UserFormView.this.model_
 								.getValue(UserFormModel.BirthField);
-						birthDP.setDate(date);
+						dateEdit.setDate(date);
 					}
 
 					public void updateModelValue() {
-						WDate date = birthDP.getDate();
+						WDate date = dateEdit.getDate();
 						UserFormView.this.model_.setValue(
 								UserFormModel.BirthField, date);
 					}

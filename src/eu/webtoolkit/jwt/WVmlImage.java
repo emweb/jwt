@@ -605,18 +605,18 @@ public class WVmlImage implements WVectorImage {
 			char[] buf = new char[30];
 			StringBuilder s = new StringBuilder();
 			s.append("<v:skew on=\"true\" matrix=\"").append(
-					MathUtils.round(t.getM11(), 5)).append(',');
-			s.append(MathUtils.round(t.getM21(), 5)).append(',');
-			s.append(MathUtils.round(t.getM12(), 5)).append(',');
-			s.append(MathUtils.round(t.getM22(), 5)).append(
+					MathUtils.roundJs(t.getM11(), 5)).append(',');
+			s.append(MathUtils.roundJs(t.getM21(), 5)).append(',');
+			s.append(MathUtils.roundJs(t.getM12(), 5)).append(',');
+			s.append(MathUtils.roundJs(t.getM22(), 5)).append(
 					",0,0\" origin=\"-0.5 -0.5\" offset=\"");
 			s
 					.append(
-							MathUtils.round(t.getDx() + Math.abs(t.getM11())
+							MathUtils.roundJs(t.getDx() + Math.abs(t.getM11())
 									* 0.5, 5)).append("px,");
 			s
 					.append(
-							MathUtils.round(t.getDy() + Math.abs(t.getM22())
+							MathUtils.roundJs(t.getDy() + Math.abs(t.getM22())
 									* 0.5, 5)).append("px\"/>");
 			return s.toString();
 		} else {
@@ -633,8 +633,8 @@ public class WVmlImage implements WVectorImage {
 		if (!shadow.isNone()) {
 			StringBuilder result = new StringBuilder();
 			result.append("<v:shadow on=\"true\" offset=\"").append(
-					MathUtils.round(shadow.getOffsetX(), 3)).append("px,");
-			result.append(MathUtils.round(shadow.getOffsetY(), 3)).append(
+					MathUtils.roundJs(shadow.getOffsetX(), 3)).append("px,");
+			result.append(MathUtils.roundJs(shadow.getOffsetY(), 3)).append(
 					"px\" ").append(colorAttributes(shadow.getColor())).append(
 					"/>");
 			return result.toString();
@@ -655,9 +655,9 @@ public class WVmlImage implements WVectorImage {
 				"px;z-index:-10;");
 		filter
 				.append("filter:progid:DXImageTransform.Microsoft.Blur(makeShadow=1,");
-		filter.append("pixelradius=").append(MathUtils.round(r, 2));
+		filter.append("pixelradius=").append(MathUtils.roundCss(r, 2));
 		filter.append(",shadowOpacity=").append(
-				MathUtils.round(
+				MathUtils.roundCss(
 						this.currentShadow_.getColor().getAlpha() / 255., 2))
 				.append(");");
 		return filter.toString();
@@ -673,7 +673,7 @@ public class WVmlImage implements WVectorImage {
 
 	private static String quote(double d) {
 		char[] buf = new char[30];
-		return quote(MathUtils.round(d, 5));
+		return quote(MathUtils.roundJs(d, 5));
 	}
 
 	private static String quote(String s) {

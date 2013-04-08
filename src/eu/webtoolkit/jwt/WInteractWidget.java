@@ -695,6 +695,22 @@ public abstract class WInteractWidget extends WWebWidget {
 			StringBuilder js = new StringBuilder();
 			js.append(CheckDisabled);
 			if (mouseDblClick != null && mouseDblClick.needsUpdate(all)) {
+				if (mouseClick != null) {
+					if (mouseClick.isDefaultActionPrevented()
+							|| mouseClick.isPropagationPrevented()) {
+						js.append("Wt3_3_0.cancelEvent(e");
+						if (mouseClick.isDefaultActionPrevented()
+								&& mouseClick.isPropagationPrevented()) {
+							js.append(");");
+						} else {
+							if (mouseClick.isDefaultActionPrevented()) {
+								js.append(",0x2);");
+							} else {
+								js.append(",0x1);");
+							}
+						}
+					}
+				}
 				js.append("if(o.wtClickTimeout) {").append(
 						"clearTimeout(o.wtClickTimeout);").append(
 						"o.wtClickTimeout = null;");

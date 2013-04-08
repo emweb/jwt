@@ -64,15 +64,6 @@ public class WPopupWidget extends WCompositeWidget {
 		this.hide();
 		this.setPopup(true);
 		this.setPositionScheme(PositionScheme.Absolute);
-		WInteractWidget iw = ((impl) instanceof WInteractWidget ? (WInteractWidget) (impl)
-				: null);
-		if (iw != null) {
-			iw.escapePressed().addListener(this, new Signal.Listener() {
-				public void trigger() {
-					WPopupWidget.this.hide();
-				}
-			});
-		}
 		this.jsHidden_.addListener(this, new Signal.Listener() {
 			public void trigger() {
 				WPopupWidget.this.hide();

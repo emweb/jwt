@@ -44,6 +44,8 @@ public class FormBaseModel extends WFormModel {
 		this.users_ = users;
 		this.passwordAuth_ = null;
 		this.oAuth_ = new ArrayList<OAuthService>();
+		WApplication app = WApplication.getInstance();
+		app.getBuiltinLocalizedStrings().useBuiltin(WtServlet.AuthStrings_xml);
 	}
 
 	/**
@@ -141,8 +143,14 @@ public class FormBaseModel extends WFormModel {
 	}
 
 	protected void setValid(String field) {
-		this.setValidation(field, new WValidator.Result(WValidator.State.Valid,
-				WString.tr("Wt.Auth.valid")));
+		this.setValid(field, WString.Empty);
+	}
+
+	protected void setValid(String field, CharSequence message) {
+		this.setValidation(field,
+				new WValidator.Result(WValidator.State.Valid,
+						(message.length() == 0) ? WString.tr("Wt.Auth.valid")
+								: message));
 	}
 
 	private AuthService baseAuth_;

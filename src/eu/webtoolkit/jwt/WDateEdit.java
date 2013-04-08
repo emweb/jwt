@@ -149,9 +149,18 @@ public class WDateEdit extends WLineEdit {
 	 * @see WDateValidator#setFormat(String format)
 	 */
 	public void setFormat(String format) {
-		WDate d = this.getDate();
-		this.getValidator().setFormat(format);
-		this.setDate(d);
+		WDateValidator dv = this.getValidator();
+		if (dv != null) {
+			WDate d = this.getDate();
+			dv.setFormat(format);
+			this.setDate(d);
+		} else {
+			logger
+					.warn(new StringWriter()
+							.append(
+									"setFormat() ignored since validator is not a WDateValidator")
+							.toString());
+		}
 	}
 
 	/**
@@ -161,7 +170,17 @@ public class WDateEdit extends WLineEdit {
 	 * @see WDateEdit#setFormat(String format)
 	 */
 	public String getFormat() {
-		return this.getValidator().getFormat();
+		WDateValidator dv = this.getValidator();
+		if (dv != null) {
+			return dv.getFormat();
+		} else {
+			logger
+					.warn(new StringWriter()
+							.append(
+									"format() is bogus  since validator is not a WDateValidator")
+							.toString());
+			return "";
+		}
 	}
 
 	/**
@@ -173,7 +192,10 @@ public class WDateEdit extends WLineEdit {
 	 * @see WDateValidator#setBottom(WDate bottom)
 	 */
 	public void setBottom(WDate bottom) {
-		this.getValidator().setBottom(bottom);
+		WDateValidator dv = this.getValidator();
+		if (dv != null) {
+			dv.setBottom(bottom);
+		}
 		this.calendar_.setBottom(bottom);
 	}
 
@@ -184,7 +206,7 @@ public class WDateEdit extends WLineEdit {
 	 * @see WDateEdit#setBottom(WDate bottom)
 	 */
 	public WDate getBottom() {
-		return this.getValidator().getBottom();
+		return this.calendar_.getBottom();
 	}
 
 	/**
@@ -196,7 +218,10 @@ public class WDateEdit extends WLineEdit {
 	 * @see WDateValidator#setTop(WDate top)
 	 */
 	public void setTop(WDate top) {
-		this.getValidator().setTop(top);
+		WDateValidator dv = this.getValidator();
+		if (dv != null) {
+			dv.setTop(top);
+		}
 		this.calendar_.setTop(top);
 	}
 
@@ -207,7 +232,7 @@ public class WDateEdit extends WLineEdit {
 	 * @see WDateEdit#setTop(WDate top)
 	 */
 	public WDate getTop() {
-		return this.getValidator().getTop();
+		return this.calendar_.getTop();
 	}
 
 	/**
@@ -230,9 +255,12 @@ public class WDateEdit extends WLineEdit {
 	protected void render(EnumSet<RenderFlag> flags) {
 		if (!EnumUtils.mask(flags, RenderFlag.RenderFull).isEmpty()) {
 			this.defineJavaScript();
-			this.setTop(this.getValidator().getTop());
-			this.setBottom(this.getValidator().getBottom());
-			this.setFormat(this.getValidator().getFormat());
+			WDateValidator dv = this.getValidator();
+			if (dv != null) {
+				this.setTop(dv.getTop());
+				this.setBottom(dv.getBottom());
+				this.setFormat(dv.getFormat());
+			}
 		}
 		super.render(flags);
 	}

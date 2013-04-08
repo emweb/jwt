@@ -105,7 +105,8 @@ import org.slf4j.LoggerFactory;
  * {@link WTemplate#resolveFunction(String name, List args, Writer result)
  * resolveFunction()}, and the default implementation considers functions bound
  * with {@link WTemplate#addFunction(String name, WTemplate.Function function)
- * addFunction()}. There are currently two functions that are generally useful:
+ * addFunction()}. There are currently three functions that are generally
+ * useful:
  * <ul>
  * <li>{@link WTemplate.Functions#tr Functions::tr} : resolves a localized
  * strings, this is convenient to create a language neutral template, which
@@ -633,7 +634,7 @@ public class WTemplate extends WInteractWidget {
 	 * <p>
 	 * <code>${fun:bla}</code>
 	 * <p>
-	 * There are two predefined functions, which can be bound using:
+	 * There are three predefined functions, which can be bound using:
 	 * <p>
 	 * 
 	 * <pre>

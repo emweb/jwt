@@ -845,19 +845,17 @@
         <span class="n">WComboBox</span> <span class="n">cityCB</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WComboBox</span><span class="o">();</span>
         <span class="n">cityCB</span><span class="o">.</span><span class="na">setModel</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">model_</span><span class="o">.</span><span class="na">getCityModel</span><span class="o">());</span>
         <span class="k">this</span><span class="o">.</span><span class="na">setFormWidget</span><span class="o">(</span><span class="n">UserFormModel</span><span class="o">.</span><span class="na">CityField</span><span class="o">,</span> <span class="n">cityCB</span><span class="o">);</span>
-        <span class="n">WLineEdit</span> <span class="n">dateEdit</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WLineEdit</span><span class="o">();</span>
-        <span class="kd">final</span> <span class="n">WDatePicker</span> <span class="n">birthDP</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WDatePicker</span><span class="o">(</span><span class="n">dateEdit</span><span class="o">);</span>
-        <span class="k">this</span><span class="o">.</span><span class="na">bindWidget</span><span class="o">(</span><span class="s">&quot;birth-dp&quot;</span><span class="o">,</span> <span class="n">birthDP</span><span class="o">);</span>
+        <span class="kd">final</span> <span class="n">WDateEdit</span> <span class="n">dateEdit</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WDateEdit</span><span class="o">();</span>
         <span class="k">this</span><span class="o">.</span><span class="na">setFormWidget</span><span class="o">(</span><span class="n">UserFormModel</span><span class="o">.</span><span class="na">BirthField</span><span class="o">,</span> <span class="n">dateEdit</span><span class="o">,</span>
                 <span class="k">new</span> <span class="n">WTemplateFormView</span><span class="o">.</span><span class="na">FieldView</span><span class="o">()</span> <span class="o">{</span>
                     <span class="kd">public</span> <span class="kt">void</span> <span class="nf">updateViewValue</span><span class="o">()</span> <span class="o">{</span>
                         <span class="n">WDate</span> <span class="n">date</span> <span class="o">=</span> <span class="o">(</span><span class="n">WDate</span><span class="o">)</span> <span class="n">UserFormView</span><span class="o">.</span><span class="na">this</span><span class="o">.</span><span class="na">model_</span>
                                 <span class="o">.</span><span class="na">getValue</span><span class="o">(</span><span class="n">UserFormModel</span><span class="o">.</span><span class="na">BirthField</span><span class="o">);</span>
-                        <span class="n">birthDP</span><span class="o">.</span><span class="na">setDate</span><span class="o">(</span><span class="n">date</span><span class="o">);</span>
+                        <span class="n">dateEdit</span><span class="o">.</span><span class="na">setDate</span><span class="o">(</span><span class="n">date</span><span class="o">);</span>
                     <span class="o">}</span>
 
                     <span class="kd">public</span> <span class="kt">void</span> <span class="nf">updateModelValue</span><span class="o">()</span> <span class="o">{</span>
-                        <span class="n">WDate</span> <span class="n">date</span> <span class="o">=</span> <span class="n">birthDP</span><span class="o">.</span><span class="na">getDate</span><span class="o">();</span>
+                        <span class="n">WDate</span> <span class="n">date</span> <span class="o">=</span> <span class="n">dateEdit</span><span class="o">.</span><span class="na">getDate</span><span class="o">();</span>
                         <span class="n">UserFormView</span><span class="o">.</span><span class="na">this</span><span class="o">.</span><span class="na">model_</span><span class="o">.</span><span class="na">setValue</span><span class="o">(</span>
                                 <span class="n">UserFormModel</span><span class="o">.</span><span class="na">BirthField</span><span class="o">,</span> <span class="n">date</span><span class="o">);</span>
                     <span class="o">}</span>

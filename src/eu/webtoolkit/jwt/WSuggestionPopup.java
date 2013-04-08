@@ -719,6 +719,11 @@ public class WSuggestionPopup extends WPopupWidget {
 		this.setAttributeValue("style",
 				"z-index: 10000; display: none; overflow: auto");
 		this.setModel(new WStringListModel(this));
+		this.impl_.escapePressed().addListener(this, new Signal.Listener() {
+			public void trigger() {
+				WSuggestionPopup.this.hide();
+			}
+		});
 		this.filter_.addListener(this, new Signal1.Listener<String>() {
 			public void trigger(String e1) {
 				WSuggestionPopup.this.doFilter(e1);

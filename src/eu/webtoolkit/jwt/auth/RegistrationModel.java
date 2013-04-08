@@ -592,7 +592,7 @@ public class RegistrationModel extends FormBaseModel {
 			}
 		}
 		if (valid) {
-			this.setValid(field);
+			this.setValid(field, error);
 		} else {
 			this.setValidation(field, new WValidator.Result(
 					WValidator.State.Invalid, error));

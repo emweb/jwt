@@ -670,7 +670,6 @@ public class AuthWidget extends WTemplateFormView {
 						AuthWidget.this.onPathChange(e1);
 					}
 				});
-		app.getBuiltinLocalizedStrings().useBuiltin(WtServlet.AuthStrings_xml);
 		app.getTheme().apply(this, this, WidgetThemeRole.AuthWidgets);
 	}
 

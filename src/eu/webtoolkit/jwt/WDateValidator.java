@@ -203,9 +203,11 @@ public class WDateValidator extends WValidator {
 	 * <p>
 	 */
 	public void setFormat(String format) {
-		this.formats_.clear();
-		this.formats_.add(format);
-		this.repaint();
+		if (this.formats_.isEmpty() || !this.formats_.get(0).equals(format)) {
+			this.formats_.clear();
+			this.formats_.add(format);
+			this.repaint();
+		}
 	}
 
 	/**

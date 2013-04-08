@@ -1378,7 +1378,7 @@ public abstract class WWebWidget extends WWidget {
 							element.callJavaScript("Wt3_3_0.remove('"
 									+ js.substring(1) + "');", true);
 						} else {
-							element.callJavaScript(js);
+							element.callJavaScript(js, true);
 						}
 					}
 				} else {

@@ -301,7 +301,7 @@ public class WColor {
 					tmp.append(',').append(buf = String.valueOf(this.green_));
 					tmp.append(',').append(buf = String.valueOf(this.blue_));
 					tmp.append(',').append(
-							MathUtils.round(this.alpha_ / 255., 2)).append(')');
+							MathUtils.roundCss(this.alpha_ / 255., 2)).append(')');
 				} else {
 					tmp.append("rgb(").append(buf = String.valueOf(this.red_));
 					tmp.append(',').append(buf = String.valueOf(this.green_));

@@ -167,17 +167,17 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 		r = Math.max(0.005, r - lw / 2);
 		char[] buf = new char[30];
 		this.js_.append("ctx.save();").append("ctx.translate(").append(
-				MathUtils.round(rect.getCenter().getX(), 3));
-		this.js_.append(",")
-				.append(MathUtils.round(rect.getCenter().getY(), 3));
+				MathUtils.roundJs(rect.getCenter().getX(), 3));
+		this.js_.append(",").append(
+				MathUtils.roundJs(rect.getCenter().getY(), 3));
 		this.js_.append(");").append("ctx.scale(").append(
-				MathUtils.round(sx, 3));
-		this.js_.append(",").append(MathUtils.round(sy, 3)).append(");");
-		this.js_.append("ctx.lineWidth = ").append(MathUtils.round(lw, 3))
+				MathUtils.roundJs(sx, 3));
+		this.js_.append(",").append(MathUtils.roundJs(sy, 3)).append(");");
+		this.js_.append("ctx.lineWidth = ").append(MathUtils.roundJs(lw, 3))
 				.append(";").append("ctx.beginPath();");
-		this.js_.append("ctx.arc(0,0,").append(MathUtils.round(r, 3));
-		this.js_.append(',').append(MathUtils.round(ra.getX(), 3));
-		this.js_.append(",").append(MathUtils.round(ra.getY(), 3)).append(
+		this.js_.append("ctx.arc(0,0,").append(MathUtils.roundJs(r, 3));
+		this.js_.append(',').append(MathUtils.roundJs(ra.getX(), 3));
+		this.js_.append(",").append(MathUtils.roundJs(ra.getY(), 3)).append(
 				",true);");
 		if (this.currentBrush_.getStyle() != BrushStyle.NoBrush) {
 			this.js_.append("ctx.fill();");
@@ -196,14 +196,16 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 		char[] buf = new char[30];
 		this.js_.append("ctx.drawImage(images[").append(
 				String.valueOf(imageIndex)).append("],").append(
-				MathUtils.round(sourceRect.getX(), 3));
-		this.js_.append(',').append(MathUtils.round(sourceRect.getY(), 3));
-		this.js_.append(',').append(MathUtils.round(sourceRect.getWidth(), 3));
-		this.js_.append(',').append(MathUtils.round(sourceRect.getHeight(), 3));
-		this.js_.append(',').append(MathUtils.round(rect.getX(), 3));
-		this.js_.append(',').append(MathUtils.round(rect.getY(), 3));
-		this.js_.append(',').append(MathUtils.round(rect.getWidth(), 3));
-		this.js_.append(',').append(MathUtils.round(rect.getHeight(), 3))
+				MathUtils.roundJs(sourceRect.getX(), 3));
+		this.js_.append(',').append(MathUtils.roundJs(sourceRect.getY(), 3));
+		this.js_.append(',')
+				.append(MathUtils.roundJs(sourceRect.getWidth(), 3));
+		this.js_.append(',').append(
+				MathUtils.roundJs(sourceRect.getHeight(), 3));
+		this.js_.append(',').append(MathUtils.roundJs(rect.getX(), 3));
+		this.js_.append(',').append(MathUtils.roundJs(rect.getY(), 3));
+		this.js_.append(',').append(MathUtils.roundJs(rect.getWidth(), 3));
+		this.js_.append(',').append(MathUtils.roundJs(rect.getHeight(), 3))
 				.append(");");
 	}
 
@@ -308,8 +310,8 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 			char[] buf = new char[30];
 			this.js_.append("ctx.fillText(").append(
 					WString.toWString(text).getJsStringLiteral()).append(',')
-					.append(MathUtils.round(x, 3)).append(',');
-			this.js_.append(MathUtils.round(y, 3)).append(");");
+					.append(MathUtils.roundJs(x, 3)).append(',');
+			this.js_.append(MathUtils.roundJs(y, 3)).append(");");
 			if (!this.currentBrush_.getColor().equals(
 					this.currentPen_.getColor())) {
 				this.js_.append("ctx.fillStyle=").append(
@@ -565,9 +567,9 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 			t.decomposeTranslateRotateScaleRotate(d);
 			if (!invert) {
 				if (Math.abs(d.dx) > EPSILON || Math.abs(d.dy) > EPSILON) {
-					s.append("ctx.translate(").append(MathUtils.round(d.dx, 3))
-							.append(',');
-					s.append(MathUtils.round(d.dy, 3)).append(");");
+					s.append("ctx.translate(").append(
+							MathUtils.roundJs(d.dx, 3)).append(',');
+					s.append(MathUtils.roundJs(d.dy, 3)).append(");");
 				}
 				if (Math.abs(d.alpha1) > EPSILON) {
 					s.append("ctx.rotate(").append(String.valueOf(d.alpha1))
@@ -575,9 +577,9 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 				}
 				if (Math.abs(d.sx - 1) > EPSILON
 						|| Math.abs(d.sy - 1) > EPSILON) {
-					s.append("ctx.scale(").append(MathUtils.round(d.sx, 3))
+					s.append("ctx.scale(").append(MathUtils.roundJs(d.sx, 3))
 							.append(',');
-					s.append(MathUtils.round(d.sy, 3)).append(");");
+					s.append(MathUtils.roundJs(d.sy, 3)).append(");");
 				}
 				if (Math.abs(d.alpha2) > EPSILON) {
 					s.append("ctx.rotate(").append(String.valueOf(d.alpha2))
@@ -590,18 +592,18 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 				}
 				if (Math.abs(d.sx - 1) > EPSILON
 						|| Math.abs(d.sy - 1) > EPSILON) {
-					s.append("ctx.scale(").append(MathUtils.round(1 / d.sx, 3))
-							.append(',');
-					s.append(MathUtils.round(1 / d.sy, 3)).append(");");
+					s.append("ctx.scale(").append(
+							MathUtils.roundJs(1 / d.sx, 3)).append(',');
+					s.append(MathUtils.roundJs(1 / d.sy, 3)).append(");");
 				}
 				if (Math.abs(d.alpha1) > EPSILON) {
 					s.append("ctx.rotate(").append(String.valueOf(-d.alpha1))
 							.append(");");
 				}
 				if (Math.abs(d.dx) > EPSILON || Math.abs(d.dy) > EPSILON) {
-					s.append("ctx.translate(")
-							.append(MathUtils.round(-d.dx, 3)).append(',');
-					s.append(MathUtils.round(-d.dy, 3)).append(");");
+					s.append("ctx.translate(").append(
+							MathUtils.roundJs(-d.dx, 3)).append(',');
+					s.append(MathUtils.roundJs(-d.dy, 3)).append(");");
 				}
 			}
 		}
@@ -805,63 +807,60 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 			switch (s.getType()) {
 			case MoveTo:
 				out.append("ctx.moveTo(").append(
-						MathUtils.round(
-								s.getX() + this.pathTranslation_.getX(), 3));
+						MathUtils.roundJs(s.getX()
+								+ this.pathTranslation_.getX(), 3));
 				out.append(',').append(
-						MathUtils.round(
-								s.getY() + this.pathTranslation_.getY(), 3))
+						MathUtils.roundJs(s.getY()
+								+ this.pathTranslation_.getY(), 3))
 						.append(");");
 				break;
 			case LineTo:
 				out.append("ctx.lineTo(").append(
-						MathUtils.round(
-								s.getX() + this.pathTranslation_.getX(), 3));
+						MathUtils.roundJs(s.getX()
+								+ this.pathTranslation_.getX(), 3));
 				out.append(',').append(
-						MathUtils.round(
-								s.getY() + this.pathTranslation_.getY(), 3))
+						MathUtils.roundJs(s.getY()
+								+ this.pathTranslation_.getY(), 3))
 						.append(");");
 				break;
 			case CubicC1:
 				out.append("ctx.bezierCurveTo(").append(
-						MathUtils.round(
-								s.getX() + this.pathTranslation_.getX(), 3));
+						MathUtils.roundJs(s.getX()
+								+ this.pathTranslation_.getX(), 3));
 				out.append(',').append(
-						MathUtils.round(
-								s.getY() + this.pathTranslation_.getY(), 3));
+						MathUtils.roundJs(s.getY()
+								+ this.pathTranslation_.getY(), 3));
 				break;
 			case CubicC2:
 				out.append(',').append(
-						MathUtils.round(
-								s.getX() + this.pathTranslation_.getX(), 3))
-						.append(',');
-				out.append(MathUtils.round(s.getY()
+						MathUtils.roundJs(s.getX()
+								+ this.pathTranslation_.getX(), 3)).append(',');
+				out.append(MathUtils.roundJs(s.getY()
 						+ this.pathTranslation_.getY(), 3));
 				break;
 			case CubicEnd:
 				out.append(',').append(
-						MathUtils.round(
-								s.getX() + this.pathTranslation_.getX(), 3))
-						.append(',');
+						MathUtils.roundJs(s.getX()
+								+ this.pathTranslation_.getX(), 3)).append(',');
 				out.append(
-						MathUtils.round(
-								s.getY() + this.pathTranslation_.getY(), 3))
+						MathUtils.roundJs(s.getY()
+								+ this.pathTranslation_.getY(), 3))
 						.append(");");
 				break;
 			case ArcC:
 				out.append("ctx.arc(").append(
-						MathUtils.round(
-								s.getX() + this.pathTranslation_.getX(), 3))
-						.append(',');
-				out.append(MathUtils.round(s.getY()
+						MathUtils.roundJs(s.getX()
+								+ this.pathTranslation_.getX(), 3)).append(',');
+				out.append(MathUtils.roundJs(s.getY()
 						+ this.pathTranslation_.getY(), 3));
 				break;
 			case ArcR:
-				out.append(',').append(MathUtils.round(s.getX(), 3));
+				out.append(',').append(MathUtils.roundJs(s.getX(), 3));
 				break;
 			case ArcAngleSweep: {
 				WPointF r = normalizedDegreesToRadians(s.getX(), s.getY());
-				out.append(',').append(MathUtils.round(r.getX(), 3));
-				out.append(',').append(MathUtils.round(r.getY(), 3));
+				out.append(',').append(MathUtils.roundJs(r.getX(), 3));
+				out.append(',').append(MathUtils.roundJs(r.getY(), 3));
 				out.append(',').append(s.getY() > 0 ? "true" : "false").append(
 						");");
 			}
@@ -878,33 +877,26 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 						* (cpy - current.getY());
 				final double cp2x = cp1x + (x - current.getX()) / 3.0;
 				final double cp2y = cp1y + (y - current.getY()) / 3.0;
-				out.append("ctx.bezierCurveTo(")
-						.append(
-								MathUtils.round(cp1x
-										+ this.pathTranslation_.getX(), 3))
-						.append(',');
-				out
-						.append(
-								MathUtils.round(cp1y
-										+ this.pathTranslation_.getY(), 3))
-						.append(',');
-				out
-						.append(
-								MathUtils.round(cp2x
-										+ this.pathTranslation_.getX(), 3))
-						.append(',');
-				out.append(MathUtils.round(cp2y + this.pathTranslation_.getY(),
-						3));
+				out.append("ctx.bezierCurveTo(").append(
+						MathUtils.roundJs(cp1x + this.pathTranslation_.getX(),
+								3)).append(',');
+				out.append(
+						MathUtils.roundJs(cp1y + this.pathTranslation_.getY(),
+								3)).append(',');
+				out.append(
+						MathUtils.roundJs(cp2x + this.pathTranslation_.getX(),
+								3)).append(',');
+				out.append(MathUtils.roundJs(cp2y
+						+ this.pathTranslation_.getY(), 3));
 				break;
 			}
 			case QuadEnd:
 				out.append(',').append(
-						MathUtils.round(
-								s.getX() + this.pathTranslation_.getX(), 3))
-						.append(',');
+						MathUtils.roundJs(s.getX()
+								+ this.pathTranslation_.getX(), 3)).append(',');
 				out.append(
-						MathUtils.round(
-								s.getY() + this.pathTranslation_.getY(), 3))
+						MathUtils.roundJs(s.getY()
+								+ this.pathTranslation_.getY(), 3))
 						.append(");");
 			}
 		}
