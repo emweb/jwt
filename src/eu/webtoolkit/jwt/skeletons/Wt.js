@@ -566,8 +566,10 @@ this.ajaxInternalPaths = function(basePath) {
 	internalPath = href.substr(basePath.length);
       }
 
-      if (internalPath.substr(0, 3) == "?_=")
-	internalPath = internalPath.substr(3);
+      if (internalPath.length == 0 || internalPath.charAt(0) != '/')
+	internalPath = '/' + internalPath;
+      if (internalPath.substr(0, 4) == "/?_=")
+	internalPath = internalPath.substr(4);
       this.setAttribute('href', href); // computes this.href
       this.setAttribute('href', this.href);
       this.onclick = function(event) {
@@ -1440,7 +1442,9 @@ this.positionAtWidget = function(id, atId, orientation, delta) {
 	break;
       }
 
-      if (p.scrollHeight > p.clientHeight || p.scrollWidth > p.clientWidth) {
+      if (WT.css(p, 'display') != 'inline' &&
+	  (p.scrollHeight > p.offsetHeight ||
+	   p.scrollWidth > p.offsetWidth)) {
 	break;
       }
 

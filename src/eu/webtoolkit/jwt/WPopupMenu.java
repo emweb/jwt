@@ -196,6 +196,7 @@ public class WPopupMenu extends WMenu {
 							WPopupMenu.this.popupAtButton();
 						}
 					});
+			this.button_.addStyleClass("dropdown-toggle");
 		}
 	}
 
@@ -393,6 +394,9 @@ public class WPopupMenu extends WMenu {
 	}
 
 	protected void setCurrent(int index) {
+		if (this.getContentsStack() != null) {
+			super.setCurrent(index);
+		}
 	}
 
 	private WPopupMenu topLevel_;
@@ -476,6 +480,9 @@ public class WPopupMenu extends WMenu {
 	}
 
 	private void popupAtButton() {
+		if (!this.isHidden()) {
+			return;
+		}
 		if (!(this.topLevel_ != null) || this.topLevel_ == this) {
 			this.button_.addStyleClass("active", true);
 			this.popup(this.button_);

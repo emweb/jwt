@@ -586,23 +586,8 @@ public class StdXMLParser
          buffer.setLength(0);
          String str;
 
-         boolean lastWasEntity = false;
-         for (;;) {
-            XMLUtil.skipWhitespace(this.reader, buffer);
-            str = XMLUtil.read(this.reader, '&');
-
-            if ((str.charAt(0) == '&') && (str.charAt(1) != '#')) {
-            	if (lastWasEntity) {
-            		lastWasEntity = false;
-            		buffer.append(str);
-            	} else {
-            		XMLUtil.processEntity(str, this.reader, this.entityResolver);
-            		lastWasEntity = true;
-            	}
-            } else {
-               break;
-            }
-         }
+         XMLUtil.skipWhitespace(this.reader, buffer);
+         str = XMLUtil.read(this.reader, '\0');
 
          if (str.charAt(0) == '<') {
         	if (buffer.length() > 0) {
@@ -646,11 +631,8 @@ public class StdXMLParser
                                 (Properties) namespaces.clone());
             }
          } else { // [^<]
-            if (str.charAt(0) == '&') {
-               buffer.append(XMLUtil.processCharLiteral(str));
-            } else {
-               reader.unread(str.charAt(0));
-            }
+            reader.unread(str.charAt(0));
+
             this.validator.PCDataAdded(this.reader.getSystemID(),
                                        this.reader.getLineNr());
             Reader r = new ContentReader(this.reader,

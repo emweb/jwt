@@ -310,7 +310,7 @@ public class WMenuItem extends WContainerWidget {
 	 * @see WMenuItem#setPathComponent(String path)
 	 */
 	public String getPathComponent() {
-		return this.pathComponent_;
+		return this.isSectionHeader() ? "--none--" : this.pathComponent_;
 	}
 
 	/**
@@ -608,7 +608,7 @@ public class WMenuItem extends WContainerWidget {
 	 * @see WMenuItem#close()
 	 */
 	public void select() {
-		if (this.menu_ != null && this.selectable_) {
+		if (this.menu_ != null && this.selectable_ && !this.isDisabled()) {
 			this.menu_.select(this);
 		}
 	}
@@ -743,11 +743,8 @@ public class WMenuItem extends WContainerWidget {
 					WLength.Unit.Percentage));
 		}
 		if (!this.separator_) {
-			WAnchor a = new WAnchor(this);
-			WApplication app = WApplication.getInstance();
-			if (app.getEnvironment().getAgent() == WEnvironment.UserAgent.IE6) {
-				a.setLink(new WLink("javascript:false"));
-			}
+			new WAnchor(this);
+			this.updateInternalPath();
 		}
 		this.signalsConnected_ = false;
 		if (iconPath.length() != 0) {

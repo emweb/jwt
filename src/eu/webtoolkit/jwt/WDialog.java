@@ -128,6 +128,8 @@ public class WDialog extends WPopupWidget {
 	public WDialog(WObject parent) {
 		super(new WTemplate(tr("Wt.WDialog.template")), parent);
 		this.finished_ = new Signal1<WDialog.DialogCode>(this);
+		this.escapeConnection1_ = new AbstractSignal.Connection();
+		this.escapeConnection2_ = new AbstractSignal.Connection();
 		this.create();
 	}
 
@@ -150,6 +152,8 @@ public class WDialog extends WPopupWidget {
 	public WDialog(CharSequence windowTitle, WObject parent) {
 		super(new WTemplate(tr("Wt.WDialog.template")), parent);
 		this.finished_ = new Signal1<WDialog.DialogCode>(this);
+		this.escapeConnection1_ = new AbstractSignal.Connection();
+		this.escapeConnection2_ = new AbstractSignal.Connection();
 		this.create();
 		this.setWindowTitle(windowTitle);
 	}
@@ -363,18 +367,35 @@ public class WDialog extends WPopupWidget {
 	 * 
 	 * @see WDialog#reject()
 	 */
-	public void rejectWhenEscapePressed() {
-		WApplication.getInstance().globalEscapePressed().addListener(this,
-				new Signal.Listener() {
-					public void trigger() {
-						WDialog.this.reject();
-					}
-				});
-		this.impl_.escapePressed().addListener(this, new Signal.Listener() {
-			public void trigger() {
-				WDialog.this.reject();
-			}
-		});
+	public void rejectWhenEscapePressed(boolean enable) {
+		if (enable) {
+			this.escapeConnection1_ = WApplication.getInstance()
+					.globalEscapePressed().addListener(this,
+							new Signal.Listener() {
+								public void trigger() {
+									WDialog.this.reject();
+								}
+							});
+			this.escapeConnection2_ = this.impl_.escapePressed().addListener(
+					this, new Signal.Listener() {
+						public void trigger() {
+							WDialog.this.reject();
+						}
+					});
+		} else {
+			this.escapeConnection1_.disconnect();
+			this.escapeConnection2_.disconnect();
+		}
+	}
+
+	/**
+	 * Lets pressing the escape key reject the dialog.
+	 * <p>
+	 * Calls {@link #rejectWhenEscapePressed(boolean enable)
+	 * rejectWhenEscapePressed(true)}
+	 */
+	public final void rejectWhenEscapePressed() {
+		rejectWhenEscapePressed(true);
 	}
 
 	/**
@@ -526,7 +547,7 @@ public class WDialog extends WPopupWidget {
 					cover.setZIndex(this.impl_.getZIndex() - 1);
 					app.pushExposedConstraint(this);
 					this
-							.doJavaScript("try {if (document.activeElement && document.activeElement.blur)document.activeElement.blur();} catch (e) { }");
+							.doJavaScript("try {var ae=document.activeElement;if (ae && ae.blur && ae.nodeName != 'BODY') {document.activeElement.blur();}} catch (e) { }");
 				} else {
 					this.restoreCoverState(app, cover);
 				}
@@ -603,6 +624,8 @@ public class WDialog extends WPopupWidget {
 	private WDialog.DialogCode result_;
 	private boolean recursiveEventLoop_;
 	private boolean initialized_;
+	private AbstractSignal.Connection escapeConnection1_;
+	private AbstractSignal.Connection escapeConnection2_;
 
 	private void create() {
 		this.closeIcon_ = null;

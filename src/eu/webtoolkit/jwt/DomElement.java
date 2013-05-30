@@ -376,11 +376,7 @@ public class DomElement {
 				&& eventName == WInteractWidget.CLICK_SIGNAL;
 		StringBuilder js = new StringBuilder();
 		if (isExposed || anchorClick || jsCode.length() != 0) {
-			if (app.getEnvironment().agentIsIEMobile()) {
-				js.append("var e=window.event,");
-			} else {
-				js.append("var e=event||window.event,");
-			}
+			js.append("var e=event||window.event,");
 			js.append("o=this;");
 			if (anchorClick) {
 				js
@@ -808,6 +804,7 @@ public class DomElement {
 						"').replaceWith(c").append(this.var_).append((int) i)
 						.append(");");
 			}
+			this.renderDeferredJavaScript(out);
 			if (!childrenUpdated) {
 				for (int i = 0; i < this.updatedChildren_.size(); ++i) {
 					DomElement child = this.updatedChildren_.get(i);
@@ -873,9 +870,9 @@ public class DomElement {
 			}
 			if (this.type_ == DomElementType.DomElement_A) {
 				String href = this.getAttribute("href");
-				if (app.getEnvironment().agentIsIE()
-						&& app.getEnvironment().getAgent() != WEnvironment.UserAgent.IE6
-						|| !href.equals("#")) {
+				if (app.getEnvironment().getAgent() == WEnvironment.UserAgent.IE7
+						|| app.getEnvironment().getAgent() == WEnvironment.UserAgent.IE8
+						|| href.length() > 1) {
 					needButtonWrap = false;
 				}
 			} else {
@@ -886,19 +883,8 @@ public class DomElement {
 				}
 			}
 		}
-		final boolean isIEMobile = app.getEnvironment().agentIsIEMobile();
-		final boolean supportButton = !isIEMobile;
+		final boolean supportButton = true;
 		boolean needAnchorWrap = false;
-		if (!needButtonWrap) {
-			if (isIEMobile
-					&& app.getEnvironment().hasAjax()
-					&& clickEvent != null
-					&& clickEvent.jsCode.length() != 0
-					&& (this.type_ == DomElementType.DomElement_IMG
-							|| this.type_ == DomElementType.DomElement_SPAN || this.type_ == DomElementType.DomElement_DIV)) {
-				needAnchorWrap = true;
-			}
-		}
 		if (!supportButton && this.type_ == DomElementType.DomElement_BUTTON) {
 			renderedType = DomElementType.DomElement_INPUT;
 			DomElement self = this;
@@ -1429,9 +1415,6 @@ public class DomElement {
 	}
 
 	private boolean canWriteInnerHTML(WApplication app) {
-		if (app.getEnvironment().agentIsIEMobile()) {
-			return true;
-		}
 		if ((app.getEnvironment().agentIsIE() || app.getEnvironment()
 				.getAgent() == WEnvironment.UserAgent.Konqueror)
 				&& (this.type_ == DomElementType.DomElement_TBODY
@@ -1716,6 +1699,7 @@ public class DomElement {
 			out.append("');");
 			out.append(domInsertJS);
 			this.renderInnerHtmlJS(out, app);
+			this.renderDeferredJavaScript(out);
 		} else {
 			out.append("document.createElement('").append(
 					elementNames_[this.type_.getValue()]).append("');");
@@ -1799,14 +1783,17 @@ public class DomElement {
 						this.childrenToAdd_.get(i).pos, app);
 			}
 		}
-		if (!this.javaScript_.isEmpty()) {
-			this.declare(out);
-			out.append(this.javaScript_).append('\n');
-		}
 		if (this.timeOut_ != -1) {
 			out.append(app.getJavaScriptClass()).append("._p_.addTimerEvent('")
 					.append(this.id_).append("', ").append(this.timeOut_)
 					.append(',').append(this.timeOutJSRepeat_).append(");\n");
+		}
+	}
+
+	private void renderDeferredJavaScript(EscapeOStream out) {
+		if (!this.javaScript_.isEmpty()) {
+			this.declare(out);
+			out.append(this.javaScript_).append('\n');
 		}
 	}
 
@@ -1861,14 +1848,14 @@ public class DomElement {
 			"h5", "h6", "iframe", "img", "input", "label", "legend", "li",
 			"ol", "option", "ul", "script", "select", "span", "table", "tbody",
 			"thead", "tfoot", "th", "td", "textarea", "tr", "p", "canvas",
-			"map", "area", "object", "param", "audio", "video", "source", "b",
-			"strong", "em" };
+			"map", "area", "style", "object", "param", "audio", "video",
+			"source", "b", "strong", "em" };
 	private static boolean[] defaultInline_ = { true, false, true, false,
 			false, false, false, false, false, false, false, false, false,
 			false, true, true, true, true, true, false, false, true, false,
 			false, true, true, false, false, false, false, false, false, true,
-			false, false, true, false, true, false, false, false, false, false,
-			true, true, true };
+			false, false, true, false, true, true, false, false, false, false,
+			false, true, true, true };
 	private static String[] cssNames_ = { "position", "z-index", "float",
 			"clear", "width", "height", "line-height", "min-width",
 			"min-height", "max-width", "max-height", "left", "right", "top",

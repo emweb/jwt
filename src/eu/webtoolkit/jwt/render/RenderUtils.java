@@ -47,7 +47,17 @@ public class RenderUtils {
 	}
 
 	static String nodeValueToString(XMLElement node) {
-		return node.getContent();
+		String result = node.getContent();
+
+		if (result == null) {
+			result = "";
+			for (Object o : node.getChildren()) {
+				XMLElement e = (XMLElement) o;
+				result += e.getContent();
+			}
+		}
+		
+		return result;
 	}
 
 	private static void extractTextNodes(XMLElement e) {

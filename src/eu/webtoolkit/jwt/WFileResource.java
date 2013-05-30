@@ -5,7 +5,9 @@
  */
 package eu.webtoolkit.jwt;
 
+import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import eu.webtoolkit.jwt.servlet.WebRequest;
@@ -100,7 +102,8 @@ public class WFileResource extends WResource {
 		response.setContentType(mimeType_);
 
 		try {
-			FileInputStream fis = new FileInputStream(fileName_);
+			File f = new File(fileName_);
+			FileInputStream fis = new FileInputStream(f);
 			try {
 				StreamUtils.copy(fis, response.getOutputStream());
 				response.getOutputStream().flush();
@@ -109,8 +112,9 @@ public class WFileResource extends WResource {
 			} finally {
 				StreamUtils.closeQuietly(fis);
 			}
-		} catch (IOException ioe) {
-			ioe.printStackTrace();
+		} catch (FileNotFoundException e) {
+			System.err.println("Could not find file: " + fileName_);
+			response.setStatus(404);
 		}
 	}
 }

@@ -119,23 +119,19 @@ public class WItemDelegate extends WAbstractItemDelegate {
 				return widgetRef.w;
 			}
 			boolean haveCheckBox = false;
-			if (!EnumUtils.mask(index.getFlags(), ItemFlag.ItemIsUserCheckable)
-					.isEmpty()) {
-				Object checkedData = index.getData(ItemDataRole.CheckStateRole);
-				CheckState state = (checkedData == null) ? CheckState.Unchecked
-						: checkedData.getClass().equals(Boolean.class) ? (Boolean) checkedData ? CheckState.Checked
-								: CheckState.Unchecked
-								: checkedData.getClass().equals(
-										CheckState.class) ? (CheckState) checkedData
-										: CheckState.Unchecked;
-				this.checkBox(
-						widgetRef,
-						index,
-						true,
-						!EnumUtils.mask(index.getFlags(),
-								ItemFlag.ItemIsTristate).isEmpty())
-						.setCheckState(state);
+			Object checkedData = index.getData(ItemDataRole.CheckStateRole);
+			if (!(checkedData == null)) {
 				haveCheckBox = true;
+				CheckState state = checkedData.getClass().equals(Boolean.class) ? (Boolean) checkedData ? CheckState.Checked
+						: CheckState.Unchecked
+						: checkedData.getClass().equals(CheckState.class) ? (CheckState) checkedData
+								: CheckState.Unchecked;
+				IndexCheckBox icb = this.checkBox(widgetRef, index, true,
+						!EnumUtils.mask(index.getFlags(),
+								ItemFlag.ItemIsTristate).isEmpty());
+				icb.setCheckState(state);
+				icb.setEnabled(!EnumUtils.mask(index.getFlags(),
+						ItemFlag.ItemIsUserCheckable).isEmpty());
 			} else {
 				if (!isNew) {
 					if (this.checkBox(widgetRef, index, false) != null)

@@ -35,7 +35,7 @@ public enum ItemFlag {
 	 */
 	ItemIsEditable,
 	/**
-	 * Item can be checked.
+	 * Item can be checked (checkbox is enabled).
 	 */
 	ItemIsUserCheckable,
 	/**

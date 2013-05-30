@@ -394,8 +394,9 @@ public class WCssTheme extends WTheme {
 	/**
 	 * Constructor.
 	 * <p>
-	 * Creates a classic JWt theme (&quot;polished&quot; or
-	 * &quot;default&quot;).
+	 * Creates a classic JWt theme. JWt comes with two CSS themes:
+	 * &quot;polished&quot; and default. For the bootstrap theme, use
+	 * {@link WBootstrapTheme}.
 	 */
 	public WCssTheme(String name, WObject parent) {
 		super(parent);
@@ -416,6 +417,10 @@ public class WCssTheme extends WTheme {
 		return this.name_;
 	}
 
+	/**
+	 * Returns wt.css, plus on IE wt_ie.css, plus on IE6 wt_ie6.css. The style
+	 * sheets are located in the theme directory in the resources folder.
+	 */
 	public List<WCssStyleSheet> getStyleSheets() {
 		List<WCssStyleSheet> result = new ArrayList<WCssStyleSheet>();
 		if (this.name_.length() != 0) {
@@ -601,14 +606,29 @@ public class WCssTheme extends WTheme {
 		}
 	}
 
+	/**
+	 * Returns a generic CSS class name for a disabled element.
+	 * <p>
+	 * The CSS class Wt-disabled is applied to disabled classes.
+	 */
 	public String getDisabledClass() {
 		return "Wt-disabled";
 	}
 
+	/**
+	 * Returns a generic CSS class name for an active element.
+	 * <p>
+	 * The CSS class Wt-selected is applied to active classes.
+	 */
 	public String getActiveClass() {
 		return "Wt-selected";
 	}
 
+	/**
+	 * Returns whether the theme allows for an anchor to be styled as a button.
+	 * <p>
+	 * Returns false.
+	 */
 	public boolean isCanStyleAnchorAsButton() {
 		return false;
 	}

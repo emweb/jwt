@@ -45,8 +45,10 @@ public class WPdfRenderer extends WTextRenderer {
 	/**
 	 * Creates a new PDF renderer.
 	 * <p>
-	 * The PDF renderer will render on the given <code>pdf</code> (starting) on
-	 * the given <code>page</code>.
+	 * The PDF renderer will render on the given <code>pdf</code> (starting). If
+	 * the <code>page</code> is not <code>null</code>, then rendering will
+	 * happen on this first page (and its page sizes will be taken into
+	 * account).
 	 * <p>
 	 * Default margins are 0, and the default DPI is 72.
 	 */
@@ -54,12 +56,22 @@ public class WPdfRenderer extends WTextRenderer {
 		super();
 		this.fontCollections_ = new ArrayList<WPdfRenderer.FontCollection>();
 		this.pdf_ = pdf;
-		this.page_ = page;
 		this.dpi_ = 72;
 		this.painter_ = null;
 		for (int i = 0; i < 4; ++i) {
 			this.margin_[i] = 0;
 		}
+		this.setCurrentPage(page);
+	}
+
+	/**
+	 * Creates a new PDF renderer.
+	 * <p>
+	 * Calls {@link #WPdfRenderer(com.pdfjet.PDF pdf, com.pdfjet.Page page)
+	 * this(pdf, (com.pdfjet.Page)null)}
+	 */
+	public WPdfRenderer(com.pdfjet.PDF pdf) {
+		this(pdf, (com.pdfjet.Page) null);
 	}
 
 	/**
@@ -145,11 +157,19 @@ public class WPdfRenderer extends WTextRenderer {
 	}
 
 	/**
+	 * Sets the current page.
+	 */
+	public void setCurrentPage(com.pdfjet.Page page) {
+		this.page_ = page;
+	}
+
+	/**
 	 * Returns the current page.
 	 * <p>
 	 * This returns the page last created using
-	 * {@link WPdfRenderer#createPage(int page) createPage()}, or the initial
-	 * page if no additional apges have yet been created.
+	 * {@link WPdfRenderer#createPage(int page) createPage()}, or the page set
+	 * with {@link WPdfRenderer#setCurrentPage(com.pdfjet.Page page)
+	 * setCurrentPage()} page.
 	 */
 	public com.pdfjet.Page getCurrentPage() {
 		return this.page_;
@@ -184,7 +204,7 @@ public class WPdfRenderer extends WTextRenderer {
 
 	public WPaintDevice startPage(int page) {
 		if (page > 0) {
-			this.page_ = this.createPage(page);
+			this.setCurrentPage(this.createPage(page));
 		}
 		WPdfImage device = new WPdfImage(this.pdf_, this.page_, 0, 0, this
 				.pageWidth(page), this.pageHeight(page));

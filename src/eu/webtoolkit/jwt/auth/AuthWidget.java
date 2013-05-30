@@ -457,13 +457,13 @@ public class AuthWidget extends WTemplateFormView {
 		if (this.created_) {
 			return;
 		}
-		this.created_ = true;
 		this.login_.changed().addListener(this, new Signal.Listener() {
 			public void trigger() {
 				AuthWidget.this.onLoginChange();
 			}
 		});
 		this.onLoginChange();
+		this.created_ = true;
 	}
 
 	/**

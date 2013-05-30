@@ -5,6 +5,7 @@
 
   <!-- Global properties for this build -->
   <property name="src.java.dir" value="src"/>
+  <property name="test.java.dir" value="test"/>
   <property name="build.dir" value="build"/>
   <property name="dist.dir" value="dist"/>
   <property name="archives.dir" value="archives"/>
@@ -49,8 +50,14 @@
     </not>
   </condition>
 
+  <target name="run">
+    <java jar="lib/antlr-3.5-complete.jar" fork="true">
+      <arg line="src/eu/webtoolkit/jwt/render/Css21.g"/>
+    </java>
+  </target>
+
   <!-- Compile Java source -->
-  <target name="build">
+  <target name="build" depends = "run">
     <mkdir dir="${build.dir}"/>
     <javac
        srcdir="${src.java.dir}"
@@ -58,6 +65,8 @@
        debug="on"
        source="1.5"
        target="1.5">
+      <src path="${src.java.dir}"/>        
+      <src path="${test.java.dir}"/>        
       <classpath >
         <path id="project.classpath">
           <fileset dir=".">

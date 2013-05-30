@@ -109,6 +109,10 @@ public class WLength {
 		this.auto_ = false;
 		this.unit_ = WLength.Unit.Pixel;
 		this.value_ = -1;
+		if ("auto".equals(s)) {
+			this.auto_ = true;
+			return;
+		}
 		String end = null;
 		{
 			Matcher matcher = StringUtils.FLOAT_PATTERN.matcher(s);

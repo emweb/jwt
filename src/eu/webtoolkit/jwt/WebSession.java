@@ -528,7 +528,7 @@ class WebSession {
 	public void pushUpdates() {
 		try {
 			this.triggerUpdate_ = false;
-			if (!this.renderer_.isDirty()) {
+			if (!(this.app_ != null) || !this.renderer_.isDirty()) {
 				logger.debug(new StringWriter().append(
 						"pushUpdates(): nothing to do").toString());
 				return;

@@ -27,12 +27,15 @@ class Block {
 		this.blockLayout = new ArrayList<BlockBox>();
 		this.node_ = node;
 		this.parent_ = parent;
+		this.offsetChildren_ = new ArrayList<Block>();
 		this.type_ = DomElementType.DomElement_UNKNOWN;
 		this.inline_ = false;
 		this.children_ = new ArrayList<Block>();
+		this.currentTheadBlock_ = null;
 		this.currentWidth_ = 0;
 		this.contentsHeight_ = 0;
-		this.css_ = new HashMap<String, String>();
+		this.css_ = new HashMap<String, Block.PropertyValue>();
+		this.styleSheet_ = null;
 		if (node != null) {
 			if (RenderUtils.isXmlElement(node)) {
 				this.type_ = DomElement.parseTagName(node.getName());
@@ -45,6 +48,14 @@ class Block {
 			}
 			RenderUtils.fetchBlockChildren(node, this, this.children_);
 		}
+	}
+
+	public Block getParent() {
+		return this.parent_;
+	}
+
+	public List<Block> getChildren() {
+		return this.children_;
 	}
 
 	public void determineDisplay() {
@@ -415,17 +426,28 @@ class Block {
 									cMinX, 0, cMinX, cMaxX, canIncreaseWidth,
 									renderer);
 						} else {
-							double copyMinX = ps.minX;
-							double copyMaxX = ps.maxX;
-							ps.minX = cMinX;
-							ps.maxX = cMaxX;
-							collapseMarginBottom = c.layoutBlock(ps,
-									canIncreaseWidth, renderer,
-									collapseMarginTop, collapseMarginBottom);
-							collapseMarginTop = collapseMarginBottom;
-							cMaxX = ps.maxX;
-							ps.minX = copyMinX;
-							ps.maxX = copyMaxX;
+							if (c.isPositionedAbsolutely()) {
+								if (!(c.offsetParent_ != null)) {
+									c.setOffsetParent();
+								}
+								PageState absolutePs = ps;
+								c
+										.layoutBlock(absolutePs, false,
+												renderer, 0, 0);
+							} else {
+								double copyMinX = ps.minX;
+								double copyMaxX = ps.maxX;
+								ps.minX = cMinX;
+								ps.maxX = cMaxX;
+								collapseMarginBottom = c
+										.layoutBlock(ps, canIncreaseWidth,
+												renderer, collapseMarginTop,
+												collapseMarginBottom);
+								collapseMarginTop = collapseMarginBottom;
+								cMaxX = ps.maxX;
+								ps.minX = copyMinX;
+								ps.maxX = copyMaxX;
+							}
 						}
 					}
 					if (ps.y < minY && ps.page == minPage) {
@@ -450,12 +472,20 @@ class Block {
 					startPage, renderer));
 		}
 		if (height >= 0) {
+			int prevPage = ps.page;
+			double prevY = ps.y;
 			ps.page = startPage;
 			ps.y = startY;
 			if (this.isFloat()) {
 				ps.y += marginTop;
 			}
 			advance(ps, height, renderer);
+			if (this.type_ == DomElementType.DomElement_TABLE) {
+				if (prevPage > ps.page || prevPage == ps.page && prevY > ps.y) {
+					ps.page = prevPage;
+					ps.y = prevY;
+				}
+			}
 		}
 		collapseMarginBottom = Math.max(marginBottom, collapseMarginBottom);
 		if (this.isFloat()) {
@@ -483,11 +513,25 @@ class Block {
 				box.height = boxH;
 			}
 		}
-		ps.y += collapseMarginBottom;
+		if (ps.y != 0) {
+			ps.y += collapseMarginBottom;
+		} else {
+			collapseMarginBottom = 0;
+		}
 		if (this.blockLayout.isEmpty()) {
 			ps.page = startPage;
 			ps.y = inY;
 			collapseMarginBottom = inCollapseMarginTop;
+			this.blockLayout.add(new BlockBox());
+			BlockBox box = this.blockLayout.get(this.blockLayout.size() - 1);
+			box.page = startPage;
+			box.x = ps.minX;
+			box.width = ps.maxX - ps.minX;
+			box.y = inY;
+			box.height = 0;
+		}
+		for (int i = 0; i < this.offsetChildren_.size(); ++i) {
+			this.offsetChildren_.get(i).layoutAbsolute(renderer);
 		}
 		if (!this.isTableCell()
 				&& ps.maxX - ps.minX == cssSetWidth
@@ -524,75 +568,128 @@ class Block {
 				collapseMarginBottom, -1);
 	}
 
-	public void render(WTextRenderer renderer, int page) {
-		if (this.isText()) {
-			this.renderText(this.getText(), renderer, page);
-		}
-		if (this.type_ == DomElementType.DomElement_IMG) {
-			LayoutBox lb;
-			if (!this.blockLayout.isEmpty()) {
-				lb = this.blockLayout.get(0);
+	public void collectStyles(StringBuilder ss) {
+		for (int i = 0; i < this.children_.size(); ++i) {
+			if (this.children_.get(i).type_ == DomElementType.DomElement_STYLE) {
+				ss.append(RenderUtils
+						.nodeValueToString(this.children_.get(i).node_));
+				this.children_.remove(0 + i);
+				--i;
 			} else {
-				lb = this.inlineLayout.get(0);
-			}
-			if (lb.page == page) {
-				LayoutBox bb = this.toBorderBox(lb, renderer.getFontScale());
-				this.renderBorders(bb, renderer, EnumSet.of(Side.Top,
-						Side.Bottom));
-				double left = renderer.getMargin(Side.Left)
-						+ bb.x
-						+ this.cssBorderWidth(Side.Left, renderer
-								.getFontScale());
-				double top = renderer.getMargin(Side.Top)
-						+ bb.y
-						+ this
-								.cssBorderWidth(Side.Top, renderer
-										.getFontScale());
-				double width = bb.width;
-				double height = bb.height;
-				WRectF rect = new WRectF(left, top, width, height);
-				renderer.getPainter().drawImage(
-						rect,
-						new WPainter.Image(this.attributeValue("src"),
-								(int) width, (int) height));
+				this.children_.get(i).collectStyles(ss);
 			}
 		}
-		for (int i = 0; i < this.blockLayout.size(); ++i) {
-			BlockBox lb = this.blockLayout.get(i);
-			if (lb.page == page) {
-				LayoutBox bb = this.toBorderBox(lb, renderer.getFontScale());
-				EnumSet<Side> verticals = EnumSet.noneOf(Side.class);
-				if (i == 0) {
-					verticals.add(Side.Top);
-				}
-				if (i == this.blockLayout.size() - 1) {
-					verticals.add(Side.Bottom);
-				}
-				WRectF rect = new WRectF(bb.x + renderer.getMargin(Side.Left),
-						bb.y + renderer.getMargin(Side.Top), bb.width,
-						bb.height);
-				String s = this
-						.cssProperty(Property.PropertyStyleBackgroundColor);
-				if (s.length() != 0) {
-					WColor c = new WColor(new WString(s));
-					renderer.getPainter().fillRect(rect, new WBrush(c));
-				}
-				this.renderBorders(bb, renderer, verticals);
-				if (this.type_ == DomElementType.DomElement_THEAD) {
-					for (int j = 0; j < this.children_.size(); ++j) {
-						if (i > 0) {
-							this.children_.get(j).reLayout(
-									this.blockLayout.get(i - 1), lb);
-						}
-						this.children_.get(j).render(renderer, page);
+	}
+
+	public void setStyleSheet(StyleSheet styleSheet) {
+		this.styleSheet_ = styleSheet;
+		this.css_.clear();
+		for (int i = 0; i < this.children_.size(); ++i) {
+			this.children_.get(i).setStyleSheet(styleSheet);
+		}
+	}
+
+	public void actualRender(WTextRenderer renderer, WPainter painter,
+			LayoutBox lb) {
+		if (this.type_ == DomElementType.DomElement_IMG) {
+			LayoutBox bb = this.toBorderBox(lb, renderer.getFontScale());
+			this.renderBorders(bb, renderer, painter, EnumSet.of(Side.Top,
+					Side.Bottom));
+			double left = renderer.getMargin(Side.Left) + bb.x
+					+ this.cssBorderWidth(Side.Left, renderer.getFontScale());
+			double top = renderer.getMargin(Side.Top) + bb.y
+					+ this.cssBorderWidth(Side.Top, renderer.getFontScale());
+			double width = bb.width;
+			double height = bb.height;
+			WRectF rect = new WRectF(left, top, width, height);
+			painter.drawImage(rect, new WPainter.Image(this
+					.attributeValue("src"), (int) width, (int) height));
+		} else {
+			LayoutBox bb = this.toBorderBox(lb, renderer.getFontScale());
+			WRectF rect = new WRectF(bb.x + renderer.getMargin(Side.Left), bb.y
+					+ renderer.getMargin(Side.Top), bb.width, bb.height);
+			String s = this.cssProperty(Property.PropertyStyleBackgroundColor);
+			if (s.length() != 0) {
+				WColor c = new WColor(new WString(s));
+				painter.fillRect(rect, new WBrush(c));
+			}
+			EnumSet<Side> verticals = EnumSet.noneOf(Side.class);
+			if (lb.page == this.getFirstLayoutPage()) {
+				verticals.add(Side.Top);
+			}
+			if (lb.page == this.getLastLayoutPage()) {
+				verticals.add(Side.Bottom);
+			}
+			this.renderBorders(bb, renderer, painter, verticals);
+			if (this.type_ == DomElementType.DomElement_THEAD) {
+				for (int j = 0; j < this.children_.size(); ++j) {
+					if (this.currentTheadBlock_ != lb) {
+						this.children_.get(j).reLayout(this.currentTheadBlock_,
+								lb);
 					}
+					this.children_.get(j).render(renderer, painter, lb.page);
 				}
+				this.currentTheadBlock_ = lb;
 			}
 		}
 		if (this.type_ != DomElementType.DomElement_THEAD) {
 			for (int i = 0; i < this.children_.size(); ++i) {
-				this.children_.get(i).render(renderer, page);
+				this.children_.get(i).render(renderer, painter, lb.page);
 			}
+		}
+	}
+
+	public void render(WTextRenderer renderer, WPainter painter, int page) {
+		boolean painterTranslated = false;
+		if (this.cssProperty(Property.PropertyStylePosition).equals("relative")) {
+			painter.save();
+			painterTranslated = true;
+			LayoutBox box = this.getLayoutTotal();
+			double left = this.cssDecodeLength(this
+					.cssProperty(Property.PropertyStyleLeft), renderer
+					.getFontScale(), 0,
+					Block.PercentageRule.PercentageOfParentSize, box.width);
+			double top = this.cssDecodeLength(this
+					.cssProperty(Property.PropertyStyleTop), renderer
+					.getFontScale(), 0,
+					Block.PercentageRule.PercentageOfParentSize, box.height);
+			painter.translate(left, top);
+		}
+		if (this.isText()) {
+			this.renderText(this.getText(), renderer, painter, page);
+			if (this.type_ != DomElementType.DomElement_LI) {
+				if (painterTranslated) {
+					painter.restore();
+				}
+				return;
+			}
+		}
+		if (this.type_ == DomElementType.DomElement_THEAD) {
+			this.currentTheadBlock_ = this.blockLayout.isEmpty() ? null
+					: this.blockLayout.get(0);
+		}
+		int first = this.type_ == DomElementType.DomElement_LI ? 1 : 0;
+		for (int i = first; i < this.inlineLayout.size(); ++i) {
+			LayoutBox lb = this.inlineLayout.get(i);
+			if (lb.page == page) {
+				renderer.paintNode(painter, new WTextRenderer.Node(this, lb,
+						renderer));
+			}
+		}
+		for (int i = 0; i < this.blockLayout.size(); ++i) {
+			LayoutBox lb = this.blockLayout.get(i);
+			if (lb.page == page) {
+				renderer.paintNode(painter, new WTextRenderer.Node(this, lb,
+						renderer));
+			}
+		}
+		if (this.inlineLayout.isEmpty() && this.blockLayout.isEmpty()) {
+			for (int i = 0; i < this.children_.size(); ++i) {
+				this.children_.get(i).render(renderer, painter, page);
+			}
+		}
+		if (painterTranslated) {
+			painter.restore();
 		}
 	}
 
@@ -652,6 +749,56 @@ class Block {
 		return c == ' ' || c == '\n' || c == '\r' || c == '\t';
 	}
 
+	public String getId() {
+		return this.attributeValue("id");
+	}
+
+	public List<String> getClasses() {
+		String s = this.attributeValue("class");
+		List<String> r = new ArrayList<String>();
+		r = new ArrayList<String>(Arrays.asList(s.split(" ")));
+		return r;
+	}
+
+	String cssProperty(Property property) {
+		if (!(this.node_ != null)) {
+			return "";
+		}
+		if (this.css_.isEmpty()) {
+			if (this.styleSheet_ != null) {
+				for (int i = 0; i < this.styleSheet_.getRulesetSize(); ++i) {
+					Specificity s = Match.isMatch(this, this.styleSheet_
+							.rulesetAt(i).getSelector());
+					if (s.isValid()) {
+						this.fillinStyle(this.styleSheet_.rulesetAt(i)
+								.getDeclarationBlock().getDeclarationString(),
+								s);
+					}
+				}
+			}
+			this.fillinStyle(this.attributeValue("style"), new Specificity(1,
+					0, 0, 0));
+		}
+		Block.PropertyValue i = this.css_.get(DomElement.cssName(property));
+		if (i != null) {
+			return i.value_;
+		} else {
+			return "";
+		}
+	}
+
+	public String attributeValue(String attribute) {
+		if (!(this.node_ != null)) {
+			return "";
+		}
+		net.n3.nanoxml.XMLAttribute attr = this.node_.findAttribute(attribute);
+		if (attr != null) {
+			return attr.getValue();
+		} else {
+			return "";
+		}
+	}
+
 	static class CssLength {
 		private static Logger logger = LoggerFactory.getLogger(CssLength.class);
 
@@ -670,24 +817,37 @@ class Block {
 		}
 	}
 
+	static class PropertyValue {
+		private static Logger logger = LoggerFactory
+				.getLogger(PropertyValue.class);
+
+		public PropertyValue() {
+			this.value_ = "";
+			this.s_ = new Specificity();
+		}
+
+		public PropertyValue(String value, Specificity s) {
+			this.value_ = value;
+			this.s_ = s;
+		}
+
+		public String value_;
+		public Specificity s_;
+	}
+
 	private net.n3.nanoxml.XMLElement node_;
 	private Block parent_;
+	private List<Block> offsetChildren_;
+	private Block offsetParent_;
 	private DomElementType type_;
 	private Side float_;
 	private boolean inline_;
 	private List<Block> children_;
+	private LayoutBox currentTheadBlock_;
 	private double currentWidth_;
 	private double contentsHeight_;
-	private Map<String, String> css_;
-
-	private String attributeValue(String attribute) {
-		net.n3.nanoxml.XMLAttribute attr = this.node_.findAttribute(attribute);
-		if (attr != null) {
-			return attr.getValue();
-		} else {
-			return "";
-		}
-	}
+	private Map<String, Block.PropertyValue> css_;
+	private StyleSheet styleSheet_;
 
 	private int attributeValue(String attribute, int defaultValue) {
 		String valueStr = this.attributeValue(attribute);
@@ -698,81 +858,97 @@ class Block {
 		}
 	}
 
-	String cssProperty(Property property) {
-		if (!(this.node_ != null)) {
-			return "";
+	private void updateAggregateProperty(String property, String aggregate,
+			Specificity spec, String value) {
+		if (this.css_.get(property + aggregate) == null
+				|| this.css_.get(property + aggregate).s_
+						.isSmallerOrEqualThen(spec)) {
+			this.css_.put(property + aggregate, new Block.PropertyValue(value,
+					spec));
 		}
-		if (this.css_.isEmpty()) {
-			String style = this.attributeValue("style");
-			if (style.length() != 0) {
-				List<String> values = new ArrayList<String>();
-				values = new ArrayList<String>(Arrays.asList(style.split(";")));
-				for (int i = 0; i < values.size(); ++i) {
-					List<String> namevalue = new ArrayList<String>();
-					namevalue = new ArrayList<String>(Arrays.asList(values.get(
-							i).split(":")));
-					if (namevalue.size() == 2) {
-						String n = namevalue.get(0);
-						String v = namevalue.get(1);
-						n = n.trim();
-						v = v.trim();
-						this.css_.put(n, v);
-						if (isAggregate(n)) {
-							List<String> allvalues = new ArrayList<String>();
-							allvalues = new ArrayList<String>(Arrays.asList(v
-									.split(" ")));
-							int count = 0;
-							for (int j = 0; j < allvalues.size(); ++j) {
-								String vj = allvalues.get(j);
-								if (vj.charAt(0) < '0' || vj.charAt(0) > '9') {
-									break;
-								}
-								++count;
-							}
-							if (count == 0) {
-								logger
-										.error(new StringWriter()
-												.append(
-														"Strange aggregate CSS length property: '")
-												.append(v).append("'")
-												.toString());
+	}
+
+	private void fillinStyle(String style, Specificity specificity) {
+		if (style.length() == 0) {
+			return;
+		}
+		List<String> values = new ArrayList<String>();
+		values = new ArrayList<String>(Arrays.asList(style.split(";")));
+		for (int i = 0; i < values.size(); ++i) {
+			List<String> namevalue = new ArrayList<String>();
+			namevalue = new ArrayList<String>(Arrays.asList(values.get(i)
+					.split(":")));
+			if (namevalue.size() == 2) {
+				String n = namevalue.get(0);
+				String v = namevalue.get(1);
+				n = n.trim();
+				v = v.trim();
+				this.updateAggregateProperty(n, "", specificity, v);
+				if (isAggregate(n)) {
+					List<String> allvalues = new ArrayList<String>();
+					allvalues = new ArrayList<String>(Arrays.asList(v
+							.split(" ")));
+					int count = 0;
+					for (int j = 0; j < allvalues.size(); ++j) {
+						String vj = allvalues.get(j);
+						if (vj.charAt(0) < '0' || vj.charAt(0) > '9') {
+							break;
+						}
+						++count;
+					}
+					if (count == 0) {
+						logger.error(new StringWriter().append(
+								"Strange aggregate CSS length property: '")
+								.append(v).append("'").toString());
+					} else {
+						if (count == 1) {
+							String v0 = allvalues.get(0);
+							this.updateAggregateProperty(n, "-top",
+									specificity, v0);
+							this.updateAggregateProperty(n, "-right",
+									specificity, v0);
+							this.updateAggregateProperty(n, "-bottom",
+									specificity, v0);
+							this.updateAggregateProperty(n, "-left",
+									specificity, v0);
+						} else {
+							if (count == 2) {
+								String v1 = allvalues.get(0);
+								this.updateAggregateProperty(n, "-top",
+										specificity, v1);
+								this.updateAggregateProperty(n, "-bottom",
+										specificity, v1);
+								String v2 = allvalues.get(1);
+								this.updateAggregateProperty(n, "-right",
+										specificity, v2);
+								this.updateAggregateProperty(n, "-left",
+										specificity, v2);
 							} else {
-								if (count == 1) {
-									this.css_.put(n + "-top", v);
-									this.css_.put(n + "-right", v);
-									this.css_.put(n + "-bottom", v);
-									this.css_.put(n + "-left", v);
+								if (count == 3) {
+									String v1 = allvalues.get(0);
+									this.updateAggregateProperty(n, "-top",
+											specificity, v1);
+									String v2 = allvalues.get(1);
+									this.updateAggregateProperty(n, "-right",
+											specificity, v2);
+									this.updateAggregateProperty(n, "-left",
+											specificity, v2);
+									String v3 = allvalues.get(2);
+									this.updateAggregateProperty(n, "-bottom",
+											specificity, v3);
 								} else {
-									if (count == 2) {
-										this.css_.put(n + "-top", allvalues
-												.get(0));
-										this.css_.put(n + "-bottom", allvalues
-												.get(0));
-										this.css_.put(n + "-right", allvalues
-												.get(1));
-										this.css_.put(n + "-left", allvalues
-												.get(1));
-									} else {
-										if (count == 3) {
-											this.css_.put(n + "-top", allvalues
-													.get(0));
-											this.css_.put(n + "-right",
-													allvalues.get(1));
-											this.css_.put(n + "-left",
-													allvalues.get(1));
-											this.css_.put(n + "-bottom",
-													allvalues.get(2));
-										} else {
-											this.css_.put(n + "-top", allvalues
-													.get(0));
-											this.css_.put(n + "-right",
-													allvalues.get(1));
-											this.css_.put(n + "-bottom",
-													allvalues.get(2));
-											this.css_.put(n + "-left",
-													allvalues.get(3));
-										}
-									}
+									String v1 = allvalues.get(0);
+									this.updateAggregateProperty(n, "-top",
+											specificity, v1);
+									String v2 = allvalues.get(1);
+									this.updateAggregateProperty(n, "-right",
+											specificity, v2);
+									String v3 = allvalues.get(2);
+									this.updateAggregateProperty(n, "-bottom",
+											specificity, v3);
+									String v4 = allvalues.get(3);
+									this.updateAggregateProperty(n, "-left",
+											specificity, v4);
 								}
 							}
 						}
@@ -780,12 +956,11 @@ class Block {
 				}
 			}
 		}
-		String i = this.css_.get(DomElement.cssName(property));
-		if (i != null) {
-			return i;
-		} else {
-			return "";
-		}
+	}
+
+	private boolean isPositionedAbsolutely() {
+		String pos = this.cssProperty(Property.PropertyStylePosition);
+		return pos.equals("absolute") || pos.equals("fixed");
 	}
 
 	private String inheritedCssProperty(Property property) {
@@ -862,6 +1037,9 @@ class Block {
 	private double cssMargin(Side side, double fontScale) {
 		Block.CssLength result = new Block.CssLength();
 		result.length = 0;
+		if (this.type_ == DomElementType.DomElement_TD) {
+			return 0;
+		}
 		try {
 			result = this.cssLength(Property.PropertyStyleMarginTop, side,
 					fontScale);
@@ -970,18 +1148,11 @@ class Block {
 	}
 
 	private WColor getCssColor() {
-		if (!(this.node_ != null)) {
-			return this.parent_.getCssColor();
-		}
-		String colorStr = this.cssProperty(Property.PropertyStyleColor);
-		if (colorStr.length() != 0) {
-			return new WColor(new WString(colorStr));
+		String color = this.inheritedCssProperty(Property.PropertyStyleColor);
+		if (color.length() != 0) {
+			return new WColor(new WString(color));
 		} else {
-			if (this.parent_ != null) {
-				return this.parent_.getCssColor();
-			} else {
-				return WColor.black;
-			}
+			return WColor.black;
 		}
 	}
 
@@ -1039,7 +1210,7 @@ class Block {
 	}
 
 	private double cssLineHeight(double fontLineHeight, double fontScale) {
-		if (!(this.node_ != null)) {
+		if (!(this.node_ != null) && this.parent_ != null) {
 			return this.parent_.cssLineHeight(fontLineHeight, fontScale);
 		}
 		String v = this.cssProperty(Property.PropertyStyleLineHeight);
@@ -1068,7 +1239,7 @@ class Block {
 	}
 
 	private double cssFontSize(double fontScale) {
-		if (!(this.node_ != null)) {
+		if (!(this.node_ != null) && this.parent_ != null) {
 			return fontScale * this.parent_.cssFontSize();
 		}
 		String v = this.cssProperty(Property.PropertyStyleFontSize);
@@ -1156,8 +1327,9 @@ class Block {
 		return cssFontSize(1);
 	}
 
+	// private String getCssPosition() ;
 	private WFont.Style getCssFontStyle() {
-		if (!(this.node_ != null)) {
+		if (!(this.node_ != null) && this.parent_ != null) {
 			return this.parent_.getCssFontStyle();
 		}
 		String v = this.cssProperty(Property.PropertyStyleFontStyle);
@@ -1185,7 +1357,7 @@ class Block {
 	}
 
 	private int getCssFontWeight() {
-		if (!(this.node_ != null)) {
+		if (!(this.node_ != null) && this.parent_ != null) {
 			return this.parent_.getCssFontWeight();
 		}
 		String v = this.cssProperty(Property.PropertyStyleFontWeight);
@@ -1396,9 +1568,37 @@ class Block {
 		ps.y = 0;
 	}
 
+	private void inlinePageBreak(String pageBreak, Line line,
+			List<Block> floats, double minX, double maxX, WTextRenderer renderer) {
+		if (pageBreak.equals("always")) {
+			if (this.inlineLayout.isEmpty()) {
+				this.inlineLayout.add(new InlineBox());
+				InlineBox b = this.inlineLayout
+						.get(this.inlineLayout.size() - 1);
+				b.page = line.getPage();
+				b.x = line.getX();
+				b.width = 1;
+				b.y = line.getY();
+				b.height = 1;
+				b.baseline = 0;
+				b.utf8Count = 0;
+				b.utf8Pos = 0;
+				b.whitespaceWidth = 0;
+				line.adjustHeight(1, 0, 0);
+				line.setX(line.getX() + b.width);
+				line.addBlock(this);
+			}
+			line.newLine(minX, line.getY() + line.getHeight(), line.getPage());
+			line.moveToNextPage(floats, minX, maxX, renderer);
+		}
+	}
+
 	private double layoutInline(Line line, List<Block> floats, double minX,
 			double maxX, boolean canIncreaseWidth, WTextRenderer renderer) {
 		this.inlineLayout.clear();
+		this.inlinePageBreak(this
+				.cssProperty(Property.PropertyStylePageBreakBefore), line,
+				floats, minX, maxX, renderer);
 		if (this.isText() || this.type_ == DomElementType.DomElement_IMG
 				|| this.type_ == DomElementType.DomElement_BR) {
 			String s = "";
@@ -1619,12 +1819,35 @@ class Block {
 						line.reflow(c);
 						line.addBlock(c);
 					} else {
-						maxX = c.layoutInline(line, floats, minX, maxX,
-								canIncreaseWidth, renderer);
+						if (c.isPositionedAbsolutely()) {
+							if (!(c.offsetParent_ != null)) {
+								c.setOffsetParent();
+							}
+							c.inlineLayout.clear();
+							c.inlineLayout.add(new InlineBox());
+							InlineBox box = c.inlineLayout.get(c.inlineLayout
+									.size() - 1);
+							box.page = line.getPage();
+							box.x = line.getX();
+							box.y = line.getY();
+							box.width = 0;
+							box.height = 0;
+						} else {
+							maxX = c.layoutInline(line, floats, minX, maxX,
+									canIncreaseWidth, renderer);
+						}
 					}
 				}
 			}
 		}
+		if (this.isInline()) {
+			for (int i = 0; i < this.offsetChildren_.size(); ++i) {
+				this.offsetChildren_.get(i).layoutAbsolute(renderer);
+			}
+		}
+		this.inlinePageBreak(this
+				.cssProperty(Property.PropertyStylePageBreakAfter), line,
+				floats, minX, maxX, renderer);
 		return maxX;
 	}
 
@@ -1788,6 +2011,155 @@ class Block {
 			floats.add(this);
 			return maxX;
 		}
+	}
+
+	private void layoutAbsolute(WTextRenderer renderer) {
+		LayoutBox staticLayout = this.getLayoutTotal();
+		LayoutBox containingLayout = this.offsetParent_.getLayoutTotal();
+		boolean leftAuto = isOffsetAuto(this
+				.cssProperty(Property.PropertyStyleLeft));
+		boolean widthAuto = isOffsetAuto(this
+				.cssProperty(Property.PropertyStyleWidth));
+		boolean rightAuto = isOffsetAuto(this
+				.cssProperty(Property.PropertyStyleRight));
+		double staticLeft = staticLayout.x - containingLayout.x;
+		PageState ps = new PageState();
+		this.layoutBlock(ps, false, renderer, 0, 0);
+		double preferredMinWidth = ps.maxX;
+		ps = new PageState();
+		this.layoutBlock(ps, true, renderer, 0, 0);
+		double preferredWidth = ps.maxX;
+		double availableWidth = containingLayout.width;
+		double shrinkToFitWidth = Math.min(Math.max(preferredMinWidth,
+				availableWidth), preferredWidth);
+		double left = 0;
+		double width = 0;
+		double right = 0;
+		if (!leftAuto) {
+			left = this.cssDecodeLength(this
+					.cssProperty(Property.PropertyStyleLeft), renderer
+					.getFontScale(), 0,
+					Block.PercentageRule.PercentageOfParentSize,
+					containingLayout.width);
+		}
+		if (!rightAuto) {
+			right = this.cssDecodeLength(this
+					.cssProperty(Property.PropertyStyleRight), renderer
+					.getFontScale(), 0,
+					Block.PercentageRule.PercentageOfParentSize,
+					containingLayout.width);
+		}
+		if (!widthAuto) {
+			width = this.cssWidth(renderer.getFontScale());
+		}
+		if (leftAuto && widthAuto && rightAuto) {
+			left = staticLeft;
+			width = shrinkToFitWidth;
+		} else {
+			if (!leftAuto && !widthAuto && !rightAuto) {
+			} else {
+				if (leftAuto && widthAuto && !rightAuto) {
+					width = shrinkToFitWidth;
+					left = containingLayout.width - right - width;
+				} else {
+					if (leftAuto && !widthAuto && rightAuto) {
+					} else {
+						if (!leftAuto && widthAuto && rightAuto) {
+							width = shrinkToFitWidth;
+						} else {
+							if (leftAuto && !widthAuto && !rightAuto) {
+								left = containingLayout.width - right - width;
+							} else {
+								if (!leftAuto && widthAuto && !rightAuto) {
+									width = Math.max(0.0,
+											containingLayout.width - left
+													- right);
+								} else {
+									if (!leftAuto && !widthAuto && rightAuto) {
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		double staticTop = staticLayout.y - containingLayout.y;
+		staticTop += (staticLayout.page - containingLayout.page)
+				* renderer.textHeight(containingLayout.page);
+		boolean topAuto = isOffsetAuto(this
+				.cssProperty(Property.PropertyStyleTop));
+		boolean heightAuto = isOffsetAuto(this
+				.cssProperty(Property.PropertyStyleHeight));
+		boolean bottomAuto = isOffsetAuto(this
+				.cssProperty(Property.PropertyStyleBottom));
+		double top = 0;
+		double height = 0;
+		double bottom = 0;
+		if (!topAuto) {
+			top = this.cssDecodeLength(this
+					.cssProperty(Property.PropertyStyleTop), renderer
+					.getFontScale(), 0,
+					Block.PercentageRule.PercentageOfParentSize,
+					containingLayout.height);
+		}
+		if (!bottomAuto) {
+			right = this.cssDecodeLength(this
+					.cssProperty(Property.PropertyStyleBottom), renderer
+					.getFontScale(), 0,
+					Block.PercentageRule.PercentageOfParentSize,
+					containingLayout.height);
+		}
+		if (!heightAuto) {
+			height = this.cssWidth(renderer.getFontScale());
+		}
+		ps = new PageState();
+		ps.minX = containingLayout.x + left;
+		ps.maxX = containingLayout.x + left + width;
+		this.layoutBlock(ps, false, renderer, 0, 0);
+		double contentHeight = this.getLayoutTotal().height;
+		if (topAuto && heightAuto && bottomAuto) {
+			top = staticTop;
+			height = contentHeight;
+		} else {
+			if (!topAuto && !heightAuto && !bottomAuto) {
+			} else {
+				if (topAuto && heightAuto && !bottomAuto) {
+					height = contentHeight;
+					top = containingLayout.height - bottom - height;
+				} else {
+					if (topAuto && !heightAuto && bottomAuto) {
+						top = staticTop;
+					} else {
+						if (!topAuto && heightAuto && bottomAuto) {
+							height = contentHeight;
+						} else {
+							if (topAuto && !heightAuto && !bottomAuto) {
+								top = containingLayout.height - bottom - height;
+							} else {
+								if (!topAuto && heightAuto && !bottomAuto) {
+									height = containingLayout.height - top
+											- bottom;
+								} else {
+									if (!topAuto && !heightAuto && bottomAuto) {
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		ps = new PageState();
+		ps.y = containingLayout.y + top;
+		ps.page = containingLayout.page;
+		while (ps.y > renderer.pageHeight(ps.page)) {
+			++ps.page;
+			ps.y -= renderer.pageHeight(ps.page);
+		}
+		ps.minX = containingLayout.x + left;
+		ps.maxX = containingLayout.x + left + width;
+		this.layoutBlock(ps, false, renderer, 0, 0);
 	}
 
 	private void tableDoLayout(double x, PageState ps, int cellSpacing,
@@ -1955,6 +2327,59 @@ class Block {
 		return col + colSpan;
 	}
 
+	private void setOffsetParent() {
+		this.offsetParent_ = this.getFindOffsetParent();
+		this.offsetParent_.offsetChildren_.add(this);
+	}
+
+	private Block getFindOffsetParent() {
+		if (this.parent_ != null) {
+			String pos = this.parent_
+					.cssProperty(Property.PropertyStylePosition);
+			if (pos.equals("absolute") || pos.equals("fixed")
+					|| pos.equals("relative")) {
+				return this.parent_;
+			} else {
+				return this.parent_.getFindOffsetParent();
+			}
+		} else {
+			return this;
+		}
+	}
+
+	private LayoutBox getLayoutTotal() {
+		if (this.isInline()) {
+			return this.getFirstInlineLayoutBox();
+		} else {
+			LayoutBox result = new LayoutBox();
+			LayoutBox first = this.blockLayout.get(0);
+			result.x = first.x;
+			result.y = first.y;
+			result.page = first.page;
+			result.width = first.width;
+			result.height = first.height;
+			for (int i = 1; i < this.blockLayout.size(); ++i) {
+				result.height += this.blockLayout.get(i).height;
+			}
+			return result;
+		}
+	}
+
+	private LayoutBox getFirstInlineLayoutBox() {
+		if (!this.inlineLayout.isEmpty()) {
+			return this.inlineLayout.get(0);
+		} else {
+			for (int i = 0; i < this.children_.size(); ++i) {
+				Block c = this.children_.get(i);
+				LayoutBox b = c.getFirstInlineLayoutBox();
+				if (!b.isNull()) {
+					return b;
+				}
+			}
+			return new LayoutBox();
+		}
+	}
+
 	private LayoutBox toBorderBox(LayoutBox bb, double fontScale) {
 		LayoutBox result = bb;
 		if (this.isFloat()) {
@@ -2034,7 +2459,7 @@ class Block {
 		return this.maxChildrenLayoutY(page) - this.minChildrenLayoutY(page);
 	}
 
-	private void reLayout(BlockBox from, BlockBox to) {
+	private void reLayout(LayoutBox from, LayoutBox to) {
 		for (int i = 0; i < this.inlineLayout.size(); ++i) {
 			InlineBox ib = this.inlineLayout.get(i);
 			ib.page = to.page;
@@ -2052,10 +2477,10 @@ class Block {
 		}
 	}
 
-	private void renderText(String text, WTextRenderer renderer, int page) {
-		WPainter painter = renderer.getPainter();
+	private void renderText(String text, WTextRenderer renderer,
+			WPainter painter, int page) {
 		WPaintDevice device = painter.getDevice();
-		renderer.getPainter().setFont(this.cssFont(renderer.getFontScale()));
+		painter.setFont(this.cssFont(renderer.getFontScale()));
 		WFontMetrics metrics = device.getFontMetrics();
 		double lineHeight = this.cssLineHeight(metrics.getHeight(), renderer
 				.getFontScale());
@@ -2069,7 +2494,7 @@ class Block {
 						/ 2.0;
 				WRectF rect = new WRectF(renderer.getMargin(Side.Left) + ib.x,
 						y, ib.width, ib.height);
-				renderer.getPainter().setPen(new WPen(this.getCssColor()));
+				painter.setPen(new WPen(this.getCssColor()));
 				if (ib.whitespaceWidth == device.measureText(" ").getWidth()) {
 					WString t = new WString(text.substring(ib.utf8Pos,
 							ib.utf8Pos + ib.utf8Count));
@@ -2132,7 +2557,7 @@ class Block {
 	}
 
 	private void renderBorders(LayoutBox bb, WTextRenderer renderer,
-			EnumSet<Side> verticals) {
+			WPainter painter, EnumSet<Side> verticals) {
 		if (!(this.node_ != null)) {
 			return;
 		}
@@ -2148,7 +2573,6 @@ class Block {
 					.getFontScale());
 			borderColor[i] = this.cssBorderColor(sides[i]);
 		}
-		WPainter painter = renderer.getPainter();
 		WPen borderPen = new WPen();
 		borderPen.setCapStyle(PenCapStyle.FlatCap);
 		for (int i = 0; i < 4; ++i) {
@@ -2185,8 +2609,8 @@ class Block {
 	}
 
 	private final void renderBorders(LayoutBox bb, WTextRenderer renderer,
-			Side vertical, Side... verticals) {
-		renderBorders(bb, renderer, EnumSet.of(vertical, verticals));
+			WPainter painter, Side vertical, Side... verticals) {
+		renderBorders(bb, renderer, painter, EnumSet.of(vertical, verticals));
 	}
 
 	private WString getGenerateItem() {
@@ -2209,6 +2633,26 @@ class Block {
 		}
 	}
 
+	private int getFirstLayoutPage() {
+		if (!this.inlineLayout.isEmpty()) {
+			return this.inlineLayout.get(0).page;
+		}
+		if (!this.blockLayout.isEmpty()) {
+			return this.blockLayout.get(0).page;
+		}
+		return -1;
+	}
+
+	private int getLastLayoutPage() {
+		if (!this.inlineLayout.isEmpty()) {
+			return this.inlineLayout.get(this.inlineLayout.size() - 1).page;
+		}
+		if (!this.blockLayout.isEmpty()) {
+			return this.blockLayout.get(this.blockLayout.size() - 1).page;
+		}
+		return -1;
+	}
+
 	private static void advance(PageState ps, double height,
 			WTextRenderer renderer) {
 		while (ps.y + height > renderer.textHeight(ps.page)) {
@@ -2217,6 +2661,9 @@ class Block {
 			height -= renderer.textHeight(ps.page) - ps.y;
 			if (height < 0) {
 				height = 0;
+			}
+			if (renderer.textHeight(ps.page) - ps.y < 0 && height >= 0) {
+				throw new WException("The margin is to large");
 			}
 		}
 		ps.y += height;
@@ -2335,5 +2782,9 @@ class Block {
 			result += v.get(i);
 		}
 		return result;
+	}
+
+	static boolean isOffsetAuto(String s) {
+		return s.length() == 0 || s.equals("auto");
 	}
 }

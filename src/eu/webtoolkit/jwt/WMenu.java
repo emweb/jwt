@@ -415,8 +415,10 @@ public class WMenu extends WCompositeWidget {
 	/**
 	 * Adds a section header to the menu.
 	 */
-	public void addSectionHeader(CharSequence text) {
-		this.addItem(new WMenuItem(false, text));
+	public WMenuItem addSectionHeader(CharSequence text) {
+		WMenuItem result = new WMenuItem(false, text);
+		this.addItem(result);
+		return result;
 	}
 
 	/**
@@ -1067,14 +1069,24 @@ public class WMenu extends WCompositeWidget {
 			WMenuItem item = this.itemAt(index);
 			item.show();
 			item.loadContents();
+			WObject.DeletionTracker guard = new WObject.DeletionTracker(this);
 			if (changePath && this.emitPathChange_) {
 				WApplication app = WApplication.getInstance();
 				app.internalPathChanged().trigger(app.getInternalPath());
+				if (guard.isDeleted()) {
+					return;
+				}
 				this.emitPathChange_ = false;
 			}
 			if (last != index) {
 				item.triggered().trigger(item);
-				this.itemSelected_.trigger(item);
+				if (!guard.isDeleted()) {
+					if (this.getUl().getIndexOf(item) != -1) {
+						this.itemSelected_.trigger(item);
+					} else {
+						this.select(-1);
+					}
+				}
 			}
 		}
 	}

@@ -201,7 +201,9 @@ class Navigation extends TopicWidget {
 						"<strong>Stacked widget-index 2</strong><p>Do you like it?</p>"));
 		sb.changed().addListener(this, new Signal.Listener() {
 			public void trigger() {
-				stack.setCurrentIndex(sb.getValue());
+				if (sb.validate() != null) {
+					stack.setCurrentIndex(sb.getValue());
+				}
 			}
 		});
 		return container;
@@ -377,7 +379,6 @@ class Navigation extends TopicWidget {
 		popup.addMenu("Help", subMenu);
 		WPushButton button = new WPushButton(container);
 		button.setMenu(popup);
-		popup.show();
 		popup.itemSelected().addListener(this,
 				new Signal1.Listener<WMenuItem>() {
 					public void trigger(WMenuItem item) {

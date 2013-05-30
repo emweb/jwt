@@ -2,10 +2,12 @@ package eu.webtoolkit.jwt;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
 public class FileUtils {
 	public static List<Byte> fileHeader(String fileName, int size) {
@@ -43,5 +45,14 @@ public class FileUtils {
 
 	public static String leaf(String path) {
 		return new File(path).getName();
+	}
+
+	public static String fileToString(String fileName) {
+		InputStream is = FileUtils.class.getResourceAsStream(fileName);
+		Scanner s = new Scanner(is).useDelimiter("\\Z");
+		String str = new String();
+		while(s.hasNext())
+			str = str + s.next();
+		return str;
 	}
 }

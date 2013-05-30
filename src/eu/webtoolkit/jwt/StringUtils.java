@@ -5,6 +5,7 @@
  */
 package eu.webtoolkit.jwt;
 
+import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
@@ -130,6 +131,8 @@ public class StringUtils {
 			return ((Long) data).doubleValue();
 		else if (data instanceof Float)
 			return ((Float) data).doubleValue();
+		else if (data instanceof BigDecimal)
+			return ((BigDecimal) data).doubleValue();
 		else
 			throw new WtException("WAbstractItemModel: unsupported type "
 					+ data.getClass().getName());
@@ -179,7 +182,7 @@ public class StringUtils {
 			return s + c;
 	}
 
-	static String put(String s, int pos, char c) {
+	public static String put(String s, int pos, char c) {
 		StringBuilder sb = new StringBuilder(s);
 		sb.setCharAt(pos, c);
 		return sb.toString();

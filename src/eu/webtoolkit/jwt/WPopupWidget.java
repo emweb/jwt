@@ -48,6 +48,7 @@ public class WPopupWidget extends WCompositeWidget {
 	 */
 	public WPopupWidget(WWidget impl, WObject parent) {
 		super();
+		this.fakeParent_ = null;
 		this.anchorWidget_ = null;
 		this.orientation_ = Orientation.Vertical;
 		this.transient_ = false;
@@ -90,6 +91,9 @@ public class WPopupWidget extends WCompositeWidget {
 	 * Destructor.
 	 */
 	public void remove() {
+		if (this.fakeParent_ != null) {
+			this.fakeParent_.removeChild(this);
+		}
 		WApplication.getInstance().removeGlobalWidget(this);
 		super.remove();
 	}
@@ -228,10 +232,18 @@ public class WPopupWidget extends WCompositeWidget {
 
 	protected void setParent(WObject p) {
 		if (!(p != null) || p == WApplication.getInstance().getDomRoot()) {
+			if (!(p != null)) {
+				this.fakeParent_ = null;
+			}
 			super.setParent(p);
+		} else {
+			if (p != null) {
+				this.fakeParent_ = p;
+			}
 		}
 	}
 
+	private WObject fakeParent_;
 	private WWidget anchorWidget_;
 	private Orientation orientation_;
 	private boolean transient_;
@@ -249,7 +261,8 @@ public class WPopupWidget extends WCompositeWidget {
 		jsObj.append("new Wt3_3_0.WPopupWidget(").append(
 				app.getJavaScriptClass()).append(',').append(this.getJsRef())
 				.append(',').append(this.transient_).append(',').append(
-						this.autoHideDelay_).append(");");
+						this.autoHideDelay_).append(',').append(
+						!this.isHidden()).append(");");
 		this.setJavaScriptMember(" WPopupWidget", jsObj.toString());
 	}
 
@@ -258,6 +271,6 @@ public class WPopupWidget extends WCompositeWidget {
 				JavaScriptScope.WtClassScope,
 				JavaScriptObjectType.JavaScriptConstructor,
 				"WPopupWidget",
-				"function(d,a,j,k){function n(){clearTimeout(e);e=setTimeout(function(){f.hide()},k)}function o(){clearTimeout(e)}function l(b){function g(p,c){for(c=c.parentNode;c;c=c.parentNode)if(p==c)return true;return false}g(a,m.target(b))||f.hide()}jQuery.data(a,\"popup\",this);var f=this,m=d.WT,e=null,h=null,i=null;this.bindShow=function(b){h=b};this.bindHide=function(b){i=b};this.shown=function(){j&&setTimeout(function(){$(document).bind(\"click\",l)}, 0);h&&h()};this.show=function(b,g){if(a.style.display!=\"\"){a.style.display=\"\";b&&m.positionAtWidget(a.id,b.id,g);d.emit(a,\"shown\")}};this.hidden=function(){i&&i();j&&$(document).unbind(\"click\",l)};this.hide=function(){if(a.style.display!=\"none\")a.style.display=\"none\";d.emit(a,\"hidden\");f.hidden()};k>0&&$(a).mouseleave(n).mouseenter(o)}");
+				"function(d,a,j,k,n){function o(){clearTimeout(e);e=setTimeout(function(){f.hide()},k)}function p(){clearTimeout(e)}function l(b){function g(q,c){for(c=c.parentNode;c;c=c.parentNode)if(q==c)return true;return false}g(a,m.target(b))||f.hide()}jQuery.data(a,\"popup\",this);var f=this,m=d.WT,e=null,h=null,i=null;this.bindShow=function(b){h=b};this.bindHide=function(b){i=b};this.shown=function(){j&&setTimeout(function(){$(document).bind(\"click\", l)},0);h&&h()};this.show=function(b,g){if(a.style.display!=\"\"){a.style.display=\"\";b&&m.positionAtWidget(a.id,b.id,g);d.emit(a,\"shown\")}};this.hidden=function(){i&&i();j&&$(document).unbind(\"click\",l)};this.hide=function(){if(a.style.display!=\"none\")a.style.display=\"none\";d.emit(a,\"hidden\");f.hidden()};k>0&&$(a).mouseleave(o).mouseenter(p);n&&this.shown()}");
 	}
 }

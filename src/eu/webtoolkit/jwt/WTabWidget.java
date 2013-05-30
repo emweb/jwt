@@ -458,7 +458,6 @@ public class WTabWidget extends WCompositeWidget {
 
 	private void create() {
 		this.setImplementation(this.layout_ = new WContainerWidget());
-		;
 		this.menu_ = new WMenu(new WStackedWidget());
 		this.layout_.addWidget(this.menu_);
 		this.layout_.addWidget(this.menu_.getContentsStack());

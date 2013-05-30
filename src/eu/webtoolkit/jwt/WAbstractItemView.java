@@ -1945,10 +1945,8 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	WWidget createHeaderWidget(WApplication app, int column) {
 		WAbstractItemView.ColumnInfo info = this.columnInfo(column);
 		WContainerWidget contents = new WContainerWidget();
-		contents.setObjectName("contents");
 		if (info.sorting) {
 			WText sortIcon = new WText(contents);
-			sortIcon.setObjectName("sort");
 			sortIcon.setInline(false);
 			sortIcon.setStyleClass("Wt-tv-sh Wt-tv-sh-none");
 			this.clickedForSortMapper_.mapConnect(sortIcon.clicked(), info.id);

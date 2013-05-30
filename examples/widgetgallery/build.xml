@@ -60,7 +60,7 @@
     
     <copy todir="${build.dir}">
       <fileset dir="${src.dir}"
-               includes="**/*.xml,**/*.properties,**/*.csv" />
+               includes="**/*.xml,**/*.properties,**/*.csv,**/*.css" />
     </copy>
 
     <war destfile="${dist.dir}/${proj.name}.war" 

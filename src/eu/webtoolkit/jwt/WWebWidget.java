@@ -2064,7 +2064,6 @@ public abstract class WWebWidget extends WWidget {
 	}
 
 	void getSDomChanges(List<DomElement> result, WApplication app) {
-		boolean isIEMobile = app.getEnvironment().agentIsIEMobile();
 		if (this.flags_.get(BIT_STUBBED)) {
 			if (app.getSession().getRenderer().isPreLearning()) {
 				this.getDomChanges(result, app);
@@ -2072,49 +2071,19 @@ public abstract class WWebWidget extends WWidget {
 			} else {
 				if (!app.getSession().getRenderer().isVisibleOnly()) {
 					this.flags_.clear(BIT_STUBBED);
-					if (!isIEMobile) {
-						DomElement stub = DomElement.getForUpdate(this,
-								DomElementType.DomElement_SPAN);
-						this.setRendered(true);
-						this.render(EnumSet.of(RenderFlag.RenderFull));
-						DomElement realElement = this.createDomElement(app);
-						app.getTheme().apply(this.getSelfWidget(), realElement,
-								0);
-						stub.unstubWith(realElement, !this.flags_
-								.get(BIT_HIDE_WITH_OFFSETS));
-						result.add(stub);
-					} else {
-						this.propagateRenderOk();
-					}
+					DomElement stub = DomElement.getForUpdate(this,
+							DomElementType.DomElement_SPAN);
+					this.setRendered(true);
+					this.render(EnumSet.of(RenderFlag.RenderFull));
+					DomElement realElement = this.createDomElement(app);
+					app.getTheme().apply(this.getSelfWidget(), realElement, 0);
+					stub.unstubWith(realElement, !this.flags_
+							.get(BIT_HIDE_WITH_OFFSETS));
+					result.add(stub);
 				}
 			}
 		} else {
 			this.render(EnumSet.of(RenderFlag.RenderUpdate));
-			if (isIEMobile) {
-				if (this.flags_.get(BIT_REPAINT_PROPERTY_ATTRIBUTE)) {
-					WWidget p = this;
-					WWebWidget w = this;
-					do {
-						p = p.getParent();
-						if (p != null) {
-							w = p.getWebWidget();
-						}
-					} while (p != null && w == this);
-					if (w != this) {
-						w.getSDomChanges(result, app);
-					}
-				} else {
-					if (this.flags_.get(BIT_REPAINT_INNER_HTML)
-							|| !this.flags_.get(BIT_REPAINT_PROPERTY_IEMOBILE)) {
-						DomElement e = this.createDomElement(app);
-						e.updateInnerHtmlOnly();
-						result.add(e);
-					} else {
-						this.getDomChanges(result, app);
-					}
-				}
-				return;
-			}
 			this.getDomChanges(result, app);
 		}
 	}

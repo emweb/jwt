@@ -103,11 +103,11 @@ public class WPdfImage extends WResource implements WPaintDevice {
 	  trueTypeFonts.addFontCollection(directory, recursive);
 	}
 
-	private double[] getSizeArray(WLength width, WLength height)
+	private float[] getSizeArray(WLength width, WLength height)
 	{
-		double [] size = new double[2];
-		size[0] = width.getValue();
-		size[1] = height.getValue();
+		float [] size = new float[2];
+		size[0] = (float)width.getValue();
+		size[1] = (float)height.getValue();
 		return size;
 	}
 
@@ -224,7 +224,7 @@ public class WPdfImage extends WResource implements WPaintDevice {
 				if ("image/png".equals(uri.mimeType))
 					image = new Image(this.pdf, new ByteArrayInputStream(b), ImageType.PNG);
 				else if ("image/jpeg".equals(uri.mimeType))
-					image = new Image(this.pdf, new ByteArrayInputStream(b), ImageType.JPEG);
+					image = new Image(this.pdf, new ByteArrayInputStream(b), ImageType.JPG);
 				else if ("image/bmp".equals(uri.mimeType))
 					image = new Image(this.pdf, new ByteArrayInputStream(b), ImageType.BMP);
 			} catch (Exception e) {
@@ -236,7 +236,7 @@ public class WPdfImage extends WResource implements WPaintDevice {
 				if ("image/png".equals(mimeType))
 					image = new Image(this.pdf, new BufferedInputStream(new FileInputStream(imgUrl)), ImageType.PNG);
 				else if ("image/jpeg".equals(mimeType))
-					image = new Image(this.pdf, new BufferedInputStream(new FileInputStream(imgUrl)), ImageType.JPEG);
+					image = new Image(this.pdf, new BufferedInputStream(new FileInputStream(imgUrl)), ImageType.JPG);
 				else if ("image/bmp".equals(mimeType))
 					image = new Image(this.pdf, new BufferedInputStream(new FileInputStream(imgUrl)), ImageType.BMP);
 			} catch (Exception e) {
@@ -253,8 +253,8 @@ public class WPdfImage extends WResource implements WPaintDevice {
 	        
 			TRSSDecomposition d = new TRSSDecomposition();
 			currentTransform.decomposeTranslateRotateScaleSkew(d);
-	        double xScale  = (rect.getWidth() / w) * d.sx;
-	        double yScale  = (rect.getHeight() / h) * d.sy;
+	        float xScale  = (float) ((rect.getWidth() / w) * d.sx);
+	        float yScale  = (float) ((rect.getHeight() / h) * d.sy);
 	        image.scaleBy(xScale, yScale);
 	        try {
 				image.drawOn(this.page);

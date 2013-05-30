@@ -2855,7 +2855,6 @@
     <span class="n">popup</span><span class="o">.</span><span class="na">addMenu</span><span class="o">(</span><span class="s">&quot;Help&quot;</span><span class="o">,</span> <span class="n">subMenu</span><span class="o">);</span>
     <span class="n">WPushButton</span> <span class="n">button</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WPushButton</span><span class="o">(</span><span class="n">container</span><span class="o">);</span>
     <span class="n">button</span><span class="o">.</span><span class="na">setMenu</span><span class="o">(</span><span class="n">popup</span><span class="o">);</span>
-    <span class="n">popup</span><span class="o">.</span><span class="na">show</span><span class="o">();</span>
     <span class="n">popup</span><span class="o">.</span><span class="na">itemSelected</span><span class="o">().</span><span class="na">addListener</span><span class="o">(</span><span class="k">this</span><span class="o">,</span>
             <span class="k">new</span> <span class="n">Signal1</span><span class="o">.</span><span class="na">Listener</span><span class="o">&lt;</span><span class="n">WMenuItem</span><span class="o">&gt;()</span> <span class="o">{</span>
                 <span class="kd">public</span> <span class="kt">void</span> <span class="nf">trigger</span><span class="o">(</span><span class="n">WMenuItem</span> <span class="n">item</span><span class="o">)</span> <span class="o">{</span>
@@ -2990,7 +2989,6 @@
     <span class="n">WPushButton</span> <span class="n">appendedDropdownButton</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WPushButton</span><span class="o">(</span><span class="s">&quot;Action&quot;</span><span class="o">);</span>
     <span class="n">result</span><span class="o">.</span><span class="na">bindWidget</span><span class="o">(</span><span class="s">&quot;appendedButton&quot;</span><span class="o">,</span> <span class="n">appendedDropdownButton</span><span class="o">);</span>
     <span class="n">appendedDropdownButton</span><span class="o">.</span><span class="na">setMenu</span><span class="o">(</span><span class="n">popup</span><span class="o">);</span>
-    <span class="n">popup</span><span class="o">.</span><span class="na">show</span><span class="o">();</span>
 <span class="o">}</span>
 </pre></div>
   ]]></message>
@@ -3011,7 +3009,6 @@
     <span class="n">WPushButton</span> <span class="n">prependedDropdownButton</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WPushButton</span><span class="o">(</span><span class="s">&quot;Action&quot;</span><span class="o">);</span>
     <span class="n">result</span><span class="o">.</span><span class="na">bindWidget</span><span class="o">(</span><span class="s">&quot;prependedButton&quot;</span><span class="o">,</span> <span class="n">prependedDropdownButton</span><span class="o">);</span>
     <span class="n">prependedDropdownButton</span><span class="o">.</span><span class="na">setMenu</span><span class="o">(</span><span class="n">popup</span><span class="o">);</span>
-    <span class="n">popup</span><span class="o">.</span><span class="na">show</span><span class="o">();</span>
 <span class="o">}</span>
 </pre></div>
   ]]></message>
@@ -3585,7 +3582,9 @@
                     <span class="s">&quot;&lt;strong&gt;Stacked widget-index 2&lt;/strong&gt;&lt;p&gt;Do you like it?&lt;/p&gt;&quot;</span><span class="o">));</span>
     <span class="n">sb</span><span class="o">.</span><span class="na">changed</span><span class="o">().</span><span class="na">addListener</span><span class="o">(</span><span class="k">this</span><span class="o">,</span> <span class="k">new</span> <span class="n">Signal</span><span class="o">.</span><span class="na">Listener</span><span class="o">()</span> <span class="o">{</span>
         <span class="kd">public</span> <span class="kt">void</span> <span class="nf">trigger</span><span class="o">()</span> <span class="o">{</span>
-            <span class="n">stack</span><span class="o">.</span><span class="na">setCurrentIndex</span><span class="o">(</span><span class="n">sb</span><span class="o">.</span><span class="na">getValue</span><span class="o">());</span>
+            <span class="k">if</span> <span class="o">(</span><span class="n">sb</span><span class="o">.</span><span class="na">validate</span><span class="o">()</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+                <span class="n">stack</span><span class="o">.</span><span class="na">setCurrentIndex</span><span class="o">(</span><span class="n">sb</span><span class="o">.</span><span class="na">getValue</span><span class="o">());</span>
+            <span class="o">}</span>
         <span class="o">}</span>
     <span class="o">});</span>
 <span class="o">}</span>

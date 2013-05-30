@@ -3,6 +3,7 @@ package eu.webtoolkit.jwt.utils;
 import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
 import java.text.ParseException;
+import java.text.ParsePosition;
 import java.util.Locale;
 
 import eu.webtoolkit.jwt.WApplication;
@@ -24,19 +25,23 @@ public class LocaleUtils {
 	}
 	
 	public static double toDouble(Locale locale, String value) {
-		try {
-			return NumberFormat.getInstance(locale).parse(value).doubleValue();
-		} catch (ParseException e) {
-			throw new RuntimeException(e);
-		}
+		value = value.trim();
+		ParsePosition pos = new ParsePosition(0);
+		Number result = NumberFormat.getInstance(locale).parse(value, pos);
+		if (pos.getIndex() != value.length())
+			throw new NumberFormatException("Could not parse: " + value);
+		return result.doubleValue();
 	}
 
 	public static int toInt(Locale locale, String value) {
-		try {
-			return NumberFormat.getInstance(locale).parse(value).intValue();
-		} catch (ParseException e) {
-			throw new RuntimeException(e);
-		}
+		value = value.trim();
+		ParsePosition pos = new ParsePosition(0);
+		NumberFormat numberFormatter = NumberFormat.getInstance(locale);
+		numberFormatter.setParseIntegerOnly(true);
+		Number result = numberFormatter.parse(value, pos);
+		if (pos.getIndex() != value.length())
+			throw new NumberFormatException("Could not parse: " + value);
+		return result.intValue();
 	}
 
 	public static Locale getCurrentLocale() {

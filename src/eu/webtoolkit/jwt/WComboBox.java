@@ -407,9 +407,12 @@ public class WComboBox extends WFormWidget {
 		if (this.currentIndex_ != -1) {
 			myCurrentValue = this.getCurrentText();
 		}
+		WObject.DeletionTracker guard = new WObject.DeletionTracker(this);
 		this.activated_.trigger(this.currentIndex_);
-		if (myCurrentIndex != -1) {
-			this.sactivated_.trigger(myCurrentValue);
+		if (!guard.isDeleted()) {
+			if (myCurrentIndex != -1) {
+				this.sactivated_.trigger(myCurrentValue);
+			}
 		}
 	}
 

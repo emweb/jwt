@@ -71,6 +71,13 @@ public class WBootstrapTheme extends WTheme {
 		case WidgetThemeRole.MenuItemCheckBoxRole:
 			child.addStyleClass("Wt-chkbox");
 			break;
+		case WidgetThemeRole.MenuItemCloseRole: {
+			WText txt = ((child) instanceof WText ? (WText) (child) : null);
+			if (txt != null) {
+				txt.setText("<button class='close'>&times;</button>");
+			}
+		}
+			break;
 		case WidgetThemeRole.DialogCoverRole:
 			child.addStyleClass("modal-backdrop");
 			break;

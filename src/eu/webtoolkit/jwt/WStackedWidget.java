@@ -55,7 +55,6 @@ public class WStackedWidget extends WContainerWidget {
 		this.widgetsAdded_ = false;
 		this.javaScriptDefined_ = false;
 		this.loadAnimateJS_ = false;
-		;
 		this.addStyleClass("Wt-stack");
 	}
 

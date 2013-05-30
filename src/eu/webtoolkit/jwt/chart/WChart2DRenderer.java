@@ -847,8 +847,8 @@ public class WChart2DRenderer {
 					this.painter_.restore();
 				}
 			}
-			WPainterPath gridPath = new WPainterPath();
-			WPainterPath ticksPath = new WPainterPath();
+			List<WLineF> gridPath = new ArrayList<WLineF>();
+			List<WLineF> ticksPath = new ArrayList<WLineF>();
 			List<WAxis.TickLabel> ticks = new ArrayList<WAxis.TickLabel>();
 			axis.getLabelTicks(this, ticks, segment);
 			WAxis other = axis.getId() == Axis.XAxis ? this.chart_
@@ -905,27 +905,28 @@ public class WChart2DRenderer {
 				}
 				if (ticks.get(i).tickLength != WAxis.TickLabel.TickLength.Zero) {
 					if (vertical) {
-						ticksPath.moveTo(this
+						ticksPath.add(new WLineF(this
 								.hv(u
 										+ ((tickPos & Left) != 0 ? -tickLength
-												: 0), dd));
-						ticksPath.lineTo(this.hv(u
+												: 0), dd), this.hv(u
 								+ ((tickPos & Right) != 0 ? +tickLength : 0),
-								dd));
+								dd)));
 						if (ticks.get(i).tickLength == WAxis.TickLabel.TickLength.Long) {
-							gridPath.moveTo(this.hv(s0.renderStart, dd));
-							gridPath.lineTo(this.hv(sn.renderStart
-									+ sn.renderLength, dd));
+							gridPath.add(new WLineF(
+									this.hv(s0.renderStart, dd), this.hv(
+											sn.renderStart + sn.renderLength,
+											dd)));
 						}
 					} else {
-						ticksPath.moveTo(this.hv(dd, u
-								+ ((tickPos & Right) != 0 ? -tickLength : 0)));
-						ticksPath.lineTo(this.hv(dd, u
-								+ ((tickPos & Left) != 0 ? +tickLength : 0)));
+						ticksPath.add(new WLineF(this.hv(dd, u
+								+ ((tickPos & Right) != 0 ? -tickLength : 0)),
+								this.hv(dd, u
+										+ ((tickPos & Left) != 0 ? +tickLength
+												: 0))));
 						if (ticks.get(i).tickLength == WAxis.TickLabel.TickLength.Long) {
-							gridPath.moveTo(this.hv(dd, s0.renderStart));
-							gridPath.lineTo(this.hv(dd, sn.renderStart
-									- sn.renderLength));
+							gridPath.add(new WLineF(
+									this.hv(dd, s0.renderStart), this.hv(dd,
+											sn.renderStart - sn.renderLength)));
 						}
 					}
 				}
@@ -954,12 +955,24 @@ public class WChart2DRenderer {
 			if (!EnumUtils.mask(properties, WChart2DRenderer.AxisProperty.Grid)
 					.isEmpty()
 					&& axis.isGridLinesEnabled()) {
-				this.painter_.strokePath(gridPath, axis.getGridLinesPen());
+				WBrush oldBrush = this.painter_.getBrush().clone();
+				WPen oldPen = this.painter_.getPen().clone();
+				this.painter_.setBrush(new WBrush());
+				this.painter_.setPen(axis.getGridLinesPen());
+				this.painter_.drawLinesLine(gridPath);
+				this.painter_.setBrush(oldBrush);
+				this.painter_.setPen(oldPen);
 			}
 			if (!EnumUtils.mask(properties, WChart2DRenderer.AxisProperty.Line)
 					.isEmpty()
 					&& axis.isVisible()) {
-				this.painter_.strokePath(ticksPath, axis.getPen());
+				WBrush oldBrush = this.painter_.getBrush().clone();
+				WPen oldPen = this.painter_.getPen().clone();
+				this.painter_.setBrush(new WBrush());
+				this.painter_.setPen(axis.getPen());
+				this.painter_.drawLinesLine(ticksPath);
+				this.painter_.setBrush(oldBrush);
+				this.painter_.setPen(oldPen);
 			}
 			if (segment == 0
 					&& !EnumUtils.mask(properties,

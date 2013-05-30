@@ -1039,7 +1039,6 @@ class FormWidgets extends TopicWidget {
 		WPushButton appendedDropdownButton = new WPushButton("Action");
 		result.bindWidget("appendedButton", appendedDropdownButton);
 		appendedDropdownButton.setMenu(popup);
-		popup.show();
 		return result;
 	}
 
@@ -1059,7 +1058,6 @@ class FormWidgets extends TopicWidget {
 		WPushButton prependedDropdownButton = new WPushButton("Action");
 		result.bindWidget("prependedButton", prependedDropdownButton);
 		prependedDropdownButton.setMenu(popup);
-		popup.show();
 		return result;
 	}
 

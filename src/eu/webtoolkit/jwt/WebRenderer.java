@@ -403,7 +403,6 @@ class WebRenderer implements SlotLearnerInterface {
 					"._p_.setSessionUrl(").append(
 					WWebWidget.jsStringLiteral(this.getSessionUrl())).append(
 					");");
-			this.session_.sessionIdChanged_ = false;
 		}
 		StringBuilder out = new StringBuilder();
 		if (!this.rendered_) {
@@ -978,6 +977,13 @@ class WebRenderer implements SlotLearnerInterface {
 		WApplication app = this.session_.getApp();
 		out.append('{');
 		this.collectJS(out);
+		if (this.session_.sessionIdChanged_) {
+			out.append(this.session_.getApp().getJavaScriptClass()).append(
+					"._p_.setSessionUrl(").append(
+					WWebWidget.jsStringLiteral(this.getSessionUrl())).append(
+					");");
+			this.session_.sessionIdChanged_ = false;
+		}
 		this.preLearnStateless(app, out);
 		if (this.formObjectsChanged_) {
 			String formObjectsList = this.createFormObjectsList(app);
@@ -1084,9 +1090,9 @@ class WebRenderer implements SlotLearnerInterface {
 
 	private void renderStyleSheet(StringBuilder out, WCssStyleSheet sheet,
 			WApplication app, boolean xhtml) {
-		out.append("<link href=");
+		out.append("<link href=\"");
 		DomElement.htmlAttributeValue(out, sheet.getLink().resolveUrl(app));
-		out.append(" rel=\"stylesheet\" type=\"text/css\"");
+		out.append("\" rel=\"stylesheet\" type=\"text/css\"");
 		if (sheet.getMedia().length() != 0 && !sheet.getMedia().equals("all")) {
 			out.append(" media=\"").append(sheet.getMedia()).append('"');
 		}
@@ -1109,8 +1115,7 @@ class WebRenderer implements SlotLearnerInterface {
 	}
 
 	private void preLearnStateless(WApplication app, StringBuilder out) {
-		boolean isIEMobile = app.getEnvironment().agentIsIEMobile();
-		if (isIEMobile || !this.session_.getEnv().hasAjax()) {
+		if (!this.session_.getEnv().hasAjax()) {
 			return;
 		}
 		this.collectJS(out);

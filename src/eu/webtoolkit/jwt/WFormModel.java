@@ -136,9 +136,7 @@ public class WFormModel extends WObject {
 		for (Iterator<Map.Entry<String, WFormModel.FieldData>> i_it = this.fields_
 				.entrySet().iterator(); i_it.hasNext();) {
 			Map.Entry<String, WFormModel.FieldData> i = i_it.next();
-			if (this.isVisible(i.getKey())) {
-				result.add(i.getKey());
-			}
+			result.add(i.getKey());
 		}
 		return result;
 	}

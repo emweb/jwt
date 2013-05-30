@@ -52,17 +52,19 @@ class ImageUtils {
 	public static WPoint getSize(List<Byte> header) {
 		String mimeType = identifyMimeType(header);
 		if (mimeType.equals("image/png")) {
-			int width = (((int) header.get(16) << 8 | (int) header.get(17)) << 8 | (int) header
-					.get(18)) << 8
-					| (int) header.get(19);
-			int height = (((int) header.get(20) << 8 | (int) header.get(21)) << 8 | (int) header
-					.get(22)) << 8
-					| (int) header.get(23);
+			int width = ((toUnsigned(header.get(16)) << 8 | toUnsigned(header
+					.get(17))) << 8 | toUnsigned(header.get(18))) << 8
+					| toUnsigned(header.get(19));
+			int height = ((toUnsigned(header.get(20)) << 8 | toUnsigned(header
+					.get(21))) << 8 | toUnsigned(header.get(22))) << 8
+					| toUnsigned(header.get(23));
 			return new WPoint(width, height);
 		} else {
 			if (mimeType.equals("image/gif")) {
-				int width = (int) header.get(7) << 8 | (int) header.get(6);
-				int height = (int) header.get(9) << 8 | (int) header.get(8);
+				int width = toUnsigned(header.get(7)) << 8
+						| toUnsigned(header.get(6));
+				int height = toUnsigned(header.get(9)) << 8
+						| toUnsigned(header.get(8));
 				return new WPoint(width, height);
 			} else {
 				return new WPoint();
@@ -78,4 +80,12 @@ class ImageUtils {
 			"\377\330\377", "GIF87a", "GIF89a", "BA", "BM", "CI", "CP", "IC",
 			"PI" };
 	private static int[] imageHeaderSize = { 8, 3, 6, 6, 2, 2, 2, 2, 2, 2 };
+
+	static int toUnsigned(int c) {
+		int result = c;
+		if (result < 0) {
+			result += 256;
+		}
+		return result;
+	}
 }

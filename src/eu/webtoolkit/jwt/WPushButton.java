@@ -512,7 +512,8 @@ public class WPushButton extends WFormWidget {
 				&& !this.icon_.isNull()) {
 			DomElement image = DomElement
 					.createNew(DomElementType.DomElement_IMG);
-			image.setProperty(Property.PropertySrc, this.icon_.getUrl());
+			image.setProperty(Property.PropertySrc, this.icon_
+					.resolveUrl(WApplication.getInstance()));
 			image.setId("im" + this.getFormName());
 			element.insertChildAt(image, 0);
 			this.flags_.set(BIT_ICON_RENDERED);

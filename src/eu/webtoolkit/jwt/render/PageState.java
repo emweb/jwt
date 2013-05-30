@@ -23,7 +23,11 @@ class PageState {
 	private static Logger logger = LoggerFactory.getLogger(PageState.class);
 
 	public PageState() {
+		this.y = 0;
+		this.minX = 0;
+		this.maxX = 0;
 		this.floats = new ArrayList<Block>();
+		this.page = 0;
 	}
 
 	public double y;

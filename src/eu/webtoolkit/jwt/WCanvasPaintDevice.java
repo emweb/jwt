@@ -138,7 +138,7 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 		if (rect.getWidth() < EPSILON || rect.getHeight() < EPSILON) {
 			return;
 		}
-		this.renderStateChanges();
+		this.renderStateChanges(true);
 		WPointF ra = normalizedDegreesToRadians(startAngle, spanAngle);
 		double sx;
 		double sy;
@@ -191,7 +191,7 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 	public void drawImage(WRectF rect, String imgUri, int imgWidth,
 			int imgHeight, WRectF sourceRect) {
 		this.finishPath();
-		this.renderStateChanges();
+		this.renderStateChanges(true);
 		int imageIndex = this.createImage(imgUri);
 		char[] buf = new char[30];
 		this.js_.append("ctx.drawImage(images[").append(
@@ -217,7 +217,7 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 	}
 
 	public void drawPath(WPainterPath path) {
-		this.renderStateChanges();
+		this.renderStateChanges(false);
 		this.drawPlainPath(this.js_, path);
 	}
 
@@ -233,7 +233,7 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 				flags, AlignmentFlag.AlignVerticalMask));
 		if (this.textMethod_ != WCanvasPaintDevice.TextMethod.DomText) {
 			this.finishPath();
-			this.renderStateChanges();
+			this.renderStateChanges(true);
 		}
 		switch (this.textMethod_) {
 		case Html5Text: {
@@ -483,6 +483,7 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 			tmp.append("],function(images)");
 		}
 		tmp.append("{var ctx=").append(canvasVar).append(".getContext('2d');");
+		tmp.append("if (!ctx.setLineDash) {ctx.setLineDash = function(a){};}");
 		if (!this.paintUpdate_) {
 			tmp.append("ctx.clearRect(0,0,").append(
 					String.valueOf(this.getWidth().getValue())).append(",")
@@ -613,7 +614,12 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 		renderTransform(s, t, false);
 	}
 
-	private void renderStateChanges() {
+	private void renderStateChanges(boolean resetPathTranslation) {
+		if (resetPathTranslation
+				&& (!fequal(this.pathTranslation_.getX(), 0) || !fequal(
+						this.pathTranslation_.getY(), 0))) {
+			this.changeFlags_.add(WPaintDevice.ChangeFlag.Transform);
+		}
 		if (!!this.changeFlags_.isEmpty()) {
 			return;
 		}
@@ -687,8 +693,10 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 						}
 					} else {
 						if (!resetTransform) {
-							this.pathTranslation_.setX(0);
-							this.pathTranslation_.setY(0);
+							if (!fequal(this.pathTranslation_.getX(), 0)
+									|| !fequal(this.pathTranslation_.getY(), 0)) {
+								resetTransform = true;
+							}
 						}
 					}
 					if (resetTransform) {
@@ -720,6 +728,25 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 				this.js_.append("ctx.strokeStyle=").append(
 						WWebWidget.jsStringLiteral(this.getPainter().getPen()
 								.getColor().getCssText(true))).append(";");
+			}
+			switch (this.getPainter().getPen().getStyle()) {
+			case SolidLine:
+				this.js_.append("ctx.setLineDash([]);");
+				break;
+			case DashLine:
+				this.js_.append("ctx.setLineDash([4,2]);");
+				break;
+			case DotLine:
+				this.js_.append("ctx.setLineDash([1,2]);");
+				break;
+			case DashDotLine:
+				this.js_.append("ctx.setLineDash([4,2,1,2]);");
+				break;
+			case DashDotDotLine:
+				this.js_.append("ctx.setLineDash([4,2,1,2,1,2]);");
+				break;
+			case NoPen:
+				break;
 			}
 			this.js_.append("ctx.lineWidth=").append(
 					String.valueOf(this.getPainter().normalizedPenWidth(
@@ -791,6 +818,7 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 		this.changeFlags_.clear();
 	}
 
+	// private void resetPathTranslation() ;
 	private void drawPlainPath(StringWriter out, WPainterPath path) {
 		char[] buf = new char[30];
 		if (!this.busyWithPath_) {

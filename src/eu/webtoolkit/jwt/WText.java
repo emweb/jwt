@@ -78,7 +78,6 @@ public class WText extends WInteractWidget {
 		this.flags_ = new BitSet();
 		this.padding_ = null;
 		this.flags_.set(BIT_WORD_WRAP);
-		;
 	}
 
 	/**
@@ -113,7 +112,6 @@ public class WText extends WInteractWidget {
 		this.flags_ = new BitSet();
 		this.padding_ = null;
 		this.flags_.set(BIT_WORD_WRAP);
-		;
 		this.setText(text);
 	}
 
@@ -150,7 +148,6 @@ public class WText extends WInteractWidget {
 		this.padding_ = null;
 		this.text_.format = format;
 		this.flags_.set(BIT_WORD_WRAP);
-		;
 		this.setText(text);
 	}
 
