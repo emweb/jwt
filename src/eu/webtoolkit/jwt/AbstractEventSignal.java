@@ -389,12 +389,7 @@ public abstract class AbstractEventSignal extends AbstractSignal {
 		return (flags_ & BIT_PREVENT_DEFAULT) != 0;
 	}
 
-	/**
-	 * Triggers the signal.
-	 * <p>
-	 * The {@link Listener#trigger()} method of all listeners added to this signal are triggered.
-	 */
-	public void trigger() {
+	void trigger() {
 		if (learningListeners != null)
 			for (LearningListener l : learningListeners) {
 				l.trigger();

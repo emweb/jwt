@@ -652,7 +652,7 @@ public class WAnchor extends WContainerWidget {
 	static boolean renderHRef(WInteractWidget widget,
 			WAnchor.LinkState linkState, DomElement element) {
 		WApplication app = WApplication.getInstance();
-		if (linkState.link.isNull()) {
+		if (linkState.link.isNull() || widget.isDisabled()) {
 			element.removeAttribute("href");
 		} else {
 			String url = linkState.link.resolveUrl(app);
@@ -723,6 +723,11 @@ public class WAnchor extends WContainerWidget {
 		this.flags_.clear(BIT_LINK_CHANGED);
 		this.flags_.clear(BIT_TARGET_CHANGED);
 		super.propagateRenderOk(deep);
+	}
+
+	protected void propagateSetEnabled(boolean enabled) {
+		super.propagateSetEnabled(enabled);
+		this.resourceChanged();
 	}
 
 	protected void enableAjax() {

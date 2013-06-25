@@ -1392,9 +1392,6 @@ class WebSession {
 								} else {
 									if (requestE.equals("style")) {
 										this.flushBootStyleResponse();
-										String jsE = request.getParameter("js");
-										boolean nojs = jsE != null
-												&& jsE.equals("no");
 										boolean ios5 = this.env_
 												.agentIsMobileWebKit()
 												&& (this.env_.getUserAgent()
@@ -1409,11 +1406,9 @@ class WebSession {
 																		"OS 7_") != -1 || this.env_
 														.getUserAgent()
 														.indexOf("OS 8_") != -1);
-										final boolean xhtml = this.env_
-												.getContentType() == WEnvironment.ContentType.XHTML1;
 										boolean noBootStyleResponse = !(this.app_ != null)
-												&& (ios5 || xhtml || nojs);
-										if (nojs || noBootStyleResponse) {
+												&& ios5;
+										if (noBootStyleResponse) {
 											handler.getResponse()
 													.setContentType("text/css");
 											handler.getResponse().flush();

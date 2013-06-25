@@ -77,6 +77,15 @@ public abstract class WWidget extends WObject {
 				.getParent()) : null);
 	}
 
+	public void removeChild(WObject child) {
+		WWidget w = ((child) instanceof WWidget ? (WWidget) (child) : null);
+		if (w != null) {
+			this.removeChild(w);
+		} else {
+			super.removeChild(child);
+		}
+	}
+
 	/**
 	 * Sets the CSS position scheme.
 	 * <p>

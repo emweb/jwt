@@ -59,4 +59,12 @@ public class CollectionUtils {
 
 		list.addFirst(v);
 	}
+
+	public static <V> boolean add(List<V> list, V v) {
+		if (list.indexOf(v) == -1) {
+			list.add(v);
+			return true;
+		} else
+			return false;
+	}
 }

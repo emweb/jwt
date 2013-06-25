@@ -643,7 +643,7 @@ public class Configuration {
 	public void setUaCompatible(String uaCompatible) {
 		this.uaCompatible = uaCompatible;
 	}
-
+	
 	/**
 	 * Returns UA compatibility selection
 	 * 
@@ -651,6 +651,19 @@ public class Configuration {
 	 */
 	public String getUaCompatible() {
 		return uaCompatible;
+	}
+	
+	/**
+	 * Sets the TinyMCE version to be used.
+	 * 
+	 * The default version is 3.
+	 * 
+	 * @param version must be 3 or 4
+	 * 
+	 * @see WTextEdit
+	 */
+	public void setTinyMCEVersion(int version) {
+		this.properties_.put("tinyMCEVersion", "" + version);
 	}
 
 	/*
@@ -686,5 +699,9 @@ public class Configuration {
 
 	boolean isBehindReverseProxy() {
 		return false;
+	}
+
+	public boolean isCookieChecks() {
+		return true;
 	}
 }

@@ -126,6 +126,7 @@ public class WBootstrapTheme extends WTheme {
 	}
 
 	public void apply(WWidget widget, DomElement element, int elementRole) {
+		boolean creating = element.getMode() == DomElement.Mode.ModeCreate;
 		{
 			WPopupWidget popup = ((widget) instanceof WPopupWidget ? (WPopupWidget) (widget)
 					: null);
@@ -140,21 +141,26 @@ public class WBootstrapTheme extends WTheme {
 		}
 		switch (element.getType()) {
 		case DomElement_A:
-			if (((widget) instanceof WPushButton ? (WPushButton) (widget)
-					: null) != null) {
+			if (creating
+					&& ((widget) instanceof WPushButton ? (WPushButton) (widget)
+							: null) != null) {
 				element.addPropertyWord(Property.PropertyClass, "btn");
 			}
 			break;
 		case DomElement_BUTTON: {
-			element.addPropertyWord(Property.PropertyClass, "btn");
+			if (creating) {
+				element.addPropertyWord(Property.PropertyClass, "btn");
+			}
 			WPushButton button = ((widget) instanceof WPushButton ? (WPushButton) (widget)
 					: null);
 			if (button != null) {
-				if (button.isDefault()) {
+				if (creating && button.isDefault()) {
 					element.addPropertyWord(Property.PropertyClass,
 							"btn-primary");
 				}
-				if (button.getMenu() != null) {
+				if (button.getMenu() != null
+						&& element.getProperties().get(
+								Property.PropertyInnerHTML) != null) {
 					element.addPropertyWord(Property.PropertyInnerHTML,
 							"<span class=\"caret\"></span>");
 				}
@@ -352,6 +358,10 @@ public class WBootstrapTheme extends WTheme {
 			widget.toggleStyleClass("Wt-valid", validStyle);
 			widget.toggleStyleClass("Wt-invalid", invalidStyle);
 		}
+	}
+
+	public boolean canBorderBoxElement(DomElement element) {
+		return element.getType() != DomElementType.DomElement_INPUT;
 	}
 
 	static WJavaScriptPreamble wtjs1() {

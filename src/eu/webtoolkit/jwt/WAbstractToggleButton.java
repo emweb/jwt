@@ -231,6 +231,14 @@ public abstract class WAbstractToggleButton extends WFormWidget {
 		return this.voidEventSignal(UNCHECKED_SIGNAL, true);
 	}
 
+	public void refresh() {
+		if (this.text_.text.refresh()) {
+			this.textChanged_ = true;
+			this.repaint(EnumSet.of(RepaintFlag.RepaintInnerHtml));
+		}
+		super.refresh();
+	}
+
 	CheckState state_;
 
 	abstract void updateInput(DomElement input, boolean all);

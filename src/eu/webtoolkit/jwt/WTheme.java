@@ -140,4 +140,6 @@ public abstract class WTheme extends WObject {
 			ValidationStyleFlag... flags) {
 		applyValidationStyle(widget, validation, EnumSet.of(flag, flags));
 	}
+
+	public abstract boolean canBorderBoxElement(DomElement element);
 }

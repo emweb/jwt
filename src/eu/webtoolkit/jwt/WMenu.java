@@ -364,8 +364,10 @@ public class WMenu extends WCompositeWidget {
 	 * <p>
 	 */
 	public WMenuItem addMenu(String iconPath, CharSequence text, WMenu menu) {
-		WMenuItem item = this.addItem(iconPath, text);
+		WMenuItem item = new WMenuItem(iconPath, text, (WWidget) null,
+				WMenuItem.LoadPolicy.LazyLoading);
 		item.setMenu(menu);
+		this.addItem(item);
 		return item;
 	}
 

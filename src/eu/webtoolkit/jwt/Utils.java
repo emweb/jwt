@@ -6,8 +6,6 @@ import java.security.NoSuchAlgorithmException;
 import java.util.EnumSet;
 import java.util.List;
 
-import net.n3.nanoxml.XMLElement;
-
 public class Utils {
 	/** Computes an MD5 hash.
 	 *
@@ -138,6 +136,16 @@ public class Utils {
 		return Utils.htmlEncode(text, EnumSet.noneOf(HtmlEncodingFlag.class));
 	}
 	
+	/**
+	 * Performs HTML encoding of text.
+	 * <p>
+	 * Calls {@link Utils#htmlEncode(WString text, EnumSet flags)
+	 * Utils.htmlEncode(text, flags)}
+	 */
+	public static String htmlEncode(String value, HtmlEncodingFlag flag, HtmlEncodingFlag... flags) {
+		return htmlEncode(value, EnumSet.of(flag, flags));
+	}
+
 	/** Remove tags/attributes from text that are not passive.
 	 *
 	 * This removes tags and attributes from XHTML-formatted text that do
@@ -222,5 +230,4 @@ public class Utils {
 	public static int hexToInt(String s) {
 		return Integer.parseInt(s, 16);
 	}
-
 }

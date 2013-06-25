@@ -675,6 +675,14 @@ public class WPieChart extends WAbstractChart {
 		}
 	}
 
+	protected void modelHeaderDataChanged(Orientation orientation, int start,
+			int end) {
+		if (this.labelsColumn_ >= start && this.labelsColumn_ <= end
+				|| this.dataColumn_ >= start && this.dataColumn_ <= end) {
+			this.update();
+		}
+	}
+
 	private void drawPie(WPainter painter, double cx, double cy, double r,
 			double h, double total) {
 		if (h > 0) {

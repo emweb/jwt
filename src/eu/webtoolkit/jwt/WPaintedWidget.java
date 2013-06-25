@@ -393,7 +393,7 @@ public abstract class WPaintedWidget extends WInteractWidget {
 
 	DomElementType getDomElementType() {
 		if (this.isInline()
-				&& WApplication.getInstance().getEnvironment().agentIsIE()) {
+				&& WApplication.getInstance().getEnvironment().agentIsIElt(9)) {
 			return DomElementType.DomElement_SPAN;
 		} else {
 			return DomElementType.DomElement_DIV;

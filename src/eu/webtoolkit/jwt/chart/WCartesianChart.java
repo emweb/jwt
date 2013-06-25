@@ -1036,6 +1036,25 @@ public class WCartesianChart extends WAbstractChart {
 		}
 	}
 
+	protected void modelHeaderDataChanged(Orientation orientation, int start,
+			int end) {
+		if (orientation == Orientation.Horizontal) {
+			if (this.XSeriesColumn_ >= start && this.XSeriesColumn_ <= end) {
+				this.update();
+				return;
+			}
+			for (int i = 0; i < this.series_.size(); ++i) {
+				if (this.series_.get(i).getModelColumn() >= start
+						&& this.series_.get(i).getModelColumn() <= end
+						|| this.series_.get(i).XSeriesColumn() >= start
+						&& this.series_.get(i).XSeriesColumn() <= end) {
+					this.update();
+					break;
+				}
+			}
+		}
+	}
+
 	protected void modelChanged() {
 		this.XSeriesColumn_ = -1;
 		this.series_.clear();

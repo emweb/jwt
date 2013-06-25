@@ -287,10 +287,12 @@ this.initAjaxComm = function(url, handler) {
 	}
 
 	this.abort = function() {
-	  request.onreadystatechange = new Function;
-	  handled = true;
-	  request.abort();
-	  request = null;
+	  if(request != null){
+	    request.onreadystatechange = new Function;
+	    handled = true;
+	    request.abort();
+	    request = null;
+	  }
 	};
 
 	if (_$_CLOSE_CONNECTION_$_)
@@ -472,6 +474,11 @@ this.unstub = function(from, to, methodDisplay) {
     to.style.height = from.style.height;
   if (from.style.width)
     to.style.width = from.style.width;
+
+  to.style.boxSizing = from.style.boxSizing;
+  var cssPrefix = WT.cssPrefix('BoxSizing');
+  if (cssPrefix)
+    to.style[cssPrefix + 'BoxSizing'] = from.style[cssPrefix + 'BoxSizing'];
 };
 
 this.saveReparented = function(el) {
@@ -1432,7 +1439,7 @@ this.positionAtWidget = function(id, atId, orientation, delta) {
    * Reparent the widget in a suitable parent:
    *  an ancestor of w which isn't overflowing
    */
-  if (!w.wtNoReparent) {
+  if (!w.wtNoReparent && !$(w).hasClass("wt-no-reparent")) {
     var p, pp = atw, domRoot = $('.Wt-domRoot').get(0);
     w.parentNode.removeChild(w);
   

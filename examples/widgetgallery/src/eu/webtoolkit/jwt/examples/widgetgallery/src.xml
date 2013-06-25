@@ -3703,12 +3703,11 @@
 <div class="highlight"><pre><span class="kt">void</span> <span class="nf">TextEdit</span><span class="o">()</span> <span class="o">{</span>
     <span class="n">WContainerWidget</span> <span class="n">container</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WContainerWidget</span><span class="o">();</span>
     <span class="kd">final</span> <span class="n">WTextEdit</span> <span class="n">edit</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WTextEdit</span><span class="o">(</span><span class="n">container</span><span class="o">);</span>
-    <span class="n">edit</span><span class="o">.</span><span class="na">setWidth</span><span class="o">(</span><span class="k">new</span> <span class="n">WLength</span><span class="o">(</span><span class="mi">200</span><span class="o">));</span>
-    <span class="n">edit</span><span class="o">.</span><span class="na">setHeight</span><span class="o">(</span><span class="k">new</span> <span class="n">WLength</span><span class="o">(</span><span class="mi">200</span><span class="o">));</span>
+    <span class="n">edit</span><span class="o">.</span><span class="na">setHeight</span><span class="o">(</span><span class="k">new</span> <span class="n">WLength</span><span class="o">(</span><span class="mi">300</span><span class="o">));</span>
     <span class="n">edit</span>
             <span class="o">.</span><span class="na">setText</span><span class="o">(</span><span class="s">&quot;&lt;p&gt;&lt;span style=\&quot;font-family: &#39;courier new&#39;, courier; font-size: medium;\&quot;&gt;&lt;strong&gt;WTextEdit&lt;/strong&gt;&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Hey, I&#39;m a &lt;strong&gt;WTextEdit&lt;/strong&gt; and you can make me &lt;span style=\&quot;text-decoration: underline;\&quot;&gt;&lt;em&gt;rich&lt;/em&gt;&lt;/span&gt; by adding your &lt;span style=\&quot;color: #ff0000;\&quot;&gt;&lt;em&gt;style&lt;/em&gt;&lt;/span&gt;!&lt;/p&gt;&lt;p&gt;Other widgets like...&lt;/p&gt;&lt;ul style=\&quot;padding: 0px; margin: 0px 0px 10px 25px;\&quot;&gt;&lt;li&gt;WLineEdit&lt;/li&gt;&lt;li&gt;WTextArea&lt;/li&gt;&lt;li&gt;WSpinBox&lt;/li&gt;&lt;/ul&gt;&lt;p&gt;don&#39;t have style.&lt;/p&gt;&quot;</span><span class="o">);</span>
     <span class="n">WPushButton</span> <span class="n">button</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WPushButton</span><span class="o">(</span><span class="s">&quot;Get text&quot;</span><span class="o">,</span> <span class="n">container</span><span class="o">);</span>
-    <span class="n">button</span><span class="o">.</span><span class="na">setMargin</span><span class="o">(</span><span class="k">new</span> <span class="n">WLength</span><span class="o">(</span><span class="mi">10</span><span class="o">),</span> <span class="n">EnumSet</span><span class="o">.</span><span class="na">of</span><span class="o">(</span><span class="n">Side</span><span class="o">.</span><span class="na">Top</span><span class="o">));</span>
+    <span class="n">button</span><span class="o">.</span><span class="na">setMargin</span><span class="o">(</span><span class="k">new</span> <span class="n">WLength</span><span class="o">(</span><span class="mi">10</span><span class="o">),</span> <span class="n">EnumSet</span><span class="o">.</span><span class="na">of</span><span class="o">(</span><span class="n">Side</span><span class="o">.</span><span class="na">Top</span><span class="o">,</span> <span class="n">Side</span><span class="o">.</span><span class="na">Bottom</span><span class="o">));</span>
     <span class="kd">final</span> <span class="n">WText</span> <span class="n">out</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WText</span><span class="o">(</span><span class="n">container</span><span class="o">);</span>
     <span class="n">out</span><span class="o">.</span><span class="na">setStyleClass</span><span class="o">(</span><span class="s">&quot;xhtml-output&quot;</span><span class="o">);</span>
     <span class="n">button</span><span class="o">.</span><span class="na">clicked</span><span class="o">().</span><span class="na">addListener</span><span class="o">(</span><span class="k">this</span><span class="o">,</span> <span class="k">new</span> <span class="n">Signal</span><span class="o">.</span><span class="na">Listener</span><span class="o">()</span> <span class="o">{</span>
@@ -4609,11 +4608,6 @@
 
 <span class="nc">.example</span> <span class="nc">.Wt-tableview</span><span class="o">,</span> <span class="nc">.example</span> <span class="nc">.Wt-treeview</span> <span class="p">{</span>
     <span class="k">margin</span><span class="o">:</span> <span class="m">0px</span> <span class="k">auto</span><span class="p">;</span>
-<span class="p">}</span>
-
-<span class="nc">.example</span> <span class="nc">.text-edit-example</span> <span class="nt">button</span> <span class="p">{</span>
-    <span class="k">margin-top</span><span class="o">:</span> <span class="m">10px</span><span class="p">;</span>
-    <span class="k">margin-bottom</span><span class="o">:</span> <span class="m">10px</span><span class="p">;</span>
 <span class="p">}</span>
 
 <span class="nc">.example</span> <span class="nc">.text-edit-example</span> <span class="nc">.out</span> <span class="p">{</span>

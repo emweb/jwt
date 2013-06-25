@@ -13,6 +13,7 @@ public class WidgetGalleryServlet extends WtServlet {
 	public WidgetGalleryServlet() {
 		this.getConfiguration().setErrorReporting(ErrorReporting.NoErrors);
 		this.getConfiguration().setUaCompatible("IE8=IE7");
+		this.getConfiguration().setTinyMCEVersion(4);
 	}
 	
 	@Override

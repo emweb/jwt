@@ -427,7 +427,7 @@ public class WCssTheme extends WTheme {
 			String themeDir = this.getResourcesUrl();
 			WApplication app = WApplication.getInstance();
 			result.add(new WCssStyleSheet(new WLink(themeDir + "wt.css")));
-			if (app.getEnvironment().agentIsIE()) {
+			if (app.getEnvironment().agentIsIElt(9)) {
 				result
 						.add(new WCssStyleSheet(new WLink(themeDir
 								+ "wt_ie.css")));
@@ -503,6 +503,7 @@ public class WCssTheme extends WTheme {
 	}
 
 	public void apply(WWidget widget, DomElement element, int elementRole) {
+		boolean creating = element.getMode() == DomElement.Mode.ModeCreate;
 		{
 			WPopupWidget popup = ((widget) instanceof WPopupWidget ? (WPopupWidget) (widget)
 					: null);
@@ -512,7 +513,9 @@ public class WCssTheme extends WTheme {
 		}
 		switch (element.getType()) {
 		case DomElement_BUTTON:
-			element.addPropertyWord(Property.PropertyClass, "Wt-btn");
+			if (creating) {
+				element.addPropertyWord(Property.PropertyClass, "Wt-btn");
+			}
 			break;
 		case DomElement_UL:
 			if (((widget) instanceof WPopupMenu ? (WPopupMenu) (widget) : null) != null) {
@@ -659,6 +662,10 @@ public class WCssTheme extends WTheme {
 			widget.toggleStyleClass("Wt-valid", validStyle);
 			widget.toggleStyleClass("Wt-invalid", invalidStyle);
 		}
+	}
+
+	public boolean canBorderBoxElement(DomElement element) {
+		return true;
 	}
 
 	private String name_;

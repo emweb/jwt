@@ -278,13 +278,35 @@ public abstract class WFormWidget extends WInteractWidget {
 	}
 
 	/**
-	 * Sets the empty text to be shown when the field is empty.
+	 * Sets the placeholder text (<b>deprecated</b>).
 	 * <p>
 	 * 
-	 * @see WFormWidget#getEmptyText()
+	 * @deprecated use
+	 *             {@link WFormWidget#setPlaceholderText(CharSequence placeholderText)
+	 *             setPlaceholderText()} instead
 	 */
 	public void setEmptyText(CharSequence emptyText) {
-		this.emptyText_ = WString.toWString(emptyText);
+		this.setPlaceholderText(emptyText);
+	}
+
+	/**
+	 * Returns the placeholder text (<b>deprecated</b>).
+	 * <p>
+	 * 
+	 * @deprecated use {@link WFormWidget#getPlaceholderText()
+	 *             getPlaceholderText()} instead.
+	 */
+	public WString getEmptyText() {
+		return this.getPlaceholderText();
+	}
+
+	/**
+	 * Sets the placeholder text.
+	 * <p>
+	 * This sets the text that is shown when the field is empty.
+	 */
+	public void setPlaceholderText(CharSequence placeholderText) {
+		this.emptyText_ = WString.toWString(placeholderText);
 		WApplication app = WApplication.getInstance();
 		WEnvironment env = app.getEnvironment();
 		if (env.hasAjax()) {
@@ -308,17 +330,17 @@ public abstract class WFormWidget extends WInteractWidget {
 				this.removeEmptyText_ = null;
 			}
 		} else {
-			this.setToolTip(emptyText);
+			this.setToolTip(placeholderText);
 		}
 	}
 
 	/**
-	 * Returns the empty text to be shown when the field is empty.
+	 * Returns the placeholder text.
 	 * <p>
 	 * 
-	 * @see WFormWidget#setEmptyText(CharSequence emptyText)
+	 * @see WFormWidget#setPlaceholderText(CharSequence placeholderText)
 	 */
-	public WString getEmptyText() {
+	public WString getPlaceholderText() {
 		return this.emptyText_;
 	}
 

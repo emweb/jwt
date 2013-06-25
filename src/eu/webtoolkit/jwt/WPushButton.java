@@ -543,6 +543,10 @@ public class WPushButton extends WFormWidget {
 				this.flags_.clear(BIT_CHECKED_CHANGED);
 			}
 		}
+		if (!all) {
+			WApplication.getInstance().getTheme().apply(this, element,
+					ElementThemeRole.MainElementThemeRole);
+		}
 		super.updateDom(element, all);
 	}
 
@@ -578,6 +582,12 @@ public class WPushButton extends WFormWidget {
 		super.getDomChanges(result, app);
 	}
 
+	protected void propagateSetEnabled(boolean enabled) {
+		super.propagateSetEnabled(enabled);
+		this.flags_.set(BIT_LINK_CHANGED);
+		this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyIEMobile));
+	}
+
 	private void doRedirect() {
 		WApplication app = WApplication.getInstance();
 		if (!app.getEnvironment().hasAjax()) {
@@ -596,7 +606,7 @@ public class WPushButton extends WFormWidget {
 	}
 
 	private void renderHRef(DomElement element) {
-		if (!this.linkState_.link.isNull()) {
+		if (!this.linkState_.link.isNull() && !this.isDisabled()) {
 			WApplication app = WApplication.getInstance();
 			if (!(this.linkState_.clickJS != null)) {
 				this.linkState_.clickJS = new JSlot();

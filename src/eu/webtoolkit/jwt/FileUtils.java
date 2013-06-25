@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -47,12 +48,41 @@ public class FileUtils {
 		return new File(path).getName();
 	}
 
-	public static String fileToString(String fileName) {
-		InputStream is = FileUtils.class.getResourceAsStream(fileName);
-		Scanner s = new Scanner(is).useDelimiter("\\Z");
-		String str = new String();
-		while(s.hasNext())
-			str = str + s.next();
-		return str;
+	public static InputStream getResourceAsStream(String path) throws IOException {
+		URL url = FileUtils.class.getResource(path);
+		
+		if (url == null) {
+			try {
+				url = new URL(path);
+			} catch (Exception e) {
+				url = new File(path).toURI().toURL();
+			}
+		}
+
+		return url.openStream();
+	}
+
+	/*
+	 * path can be a:
+	 *  - resource path (within the WAR)
+	 *  - a URL string
+	 *  - a file path
+	 */
+	public static String resourceToString(String path) {
+		try {
+			InputStream is = getResourceAsStream(path);
+			Scanner s = new Scanner(is, "UTF-8").useDelimiter("\\Z");
+			String str = new String();
+			while (s.hasNext())
+				str = str + s.next();
+			return str;
+		} catch (IOException e) {
+			System.err.println("resourceToString: " + e.getMessage());
+			return null;
+		}
+	}
+
+	public static String fileToString(String path) {
+		return resourceToString(path);
 	}
 }

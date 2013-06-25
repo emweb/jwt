@@ -1407,8 +1407,8 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	/**
 	 * Signal emitted when a mouse button is pressed down.
 	 * <p>
-	 * When the event happened over an item, the first argument indicates the
-	 * item where the mouse went down.
+	 * This signal is emitted only when &apos;over&apos; an item (the model
+	 * index is passed as first argument is never invalid).
 	 * <p>
 	 * 
 	 * @see WAbstractItemView#mouseWentUp()

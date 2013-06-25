@@ -77,8 +77,15 @@ public class WXmlLocalizedStrings extends WLocalizedStrings {
 		for (String path : StringUtils.expandLocales(bundleName, WApplication.getInstance().getLocale().toString())) {
 			url = app.getClass().getResource(path + ".xml");
 			try {
-				if (url == null)
-					url = new URL(path);
+				if (url == null) {
+					url = new URL(path + ".xml");
+					try {
+						if (url != null)
+							url.openStream();
+					} catch (IOException e) {
+						url = null;
+					}
+				}
 			} catch (MalformedURLException e) {
 			}
 			if (url != null)

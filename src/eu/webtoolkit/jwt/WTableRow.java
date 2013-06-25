@@ -27,10 +27,6 @@ import org.slf4j.LoggerFactory;
  * and managing various properties of a single row in a table (it is however not
  * a widget).
  * <p>
- * You cannot access table cells through the row. Instead, to access table
- * cells, see {@link WTable#getElementAt(int row, int column)
- * WTable#getElementAt()}.
- * <p>
  * A table row corresponds to the HTML <code>&lt;tr&gt;</code> tag.
  * <p>
  * 
@@ -39,6 +35,26 @@ import org.slf4j.LoggerFactory;
  */
 public class WTableRow extends WObject {
 	private static Logger logger = LoggerFactory.getLogger(WTableRow.class);
+
+	/**
+	 * Creates a new table row.
+	 * <p>
+	 * Table rows must be added to a table using
+	 * {@link WTable#insertRow(int row, WTableRow tableRow) WTable#insertRow()}
+	 * before you can access contents in it using
+	 * {@link WTableRow#elementAt(int column) elementAt()}.
+	 */
+	public WTableRow() {
+		super();
+		this.cells_ = new ArrayList<WTableRow.TableData>();
+		this.height_ = null;
+		this.id_ = null;
+		this.styleClass_ = "";
+		this.hidden_ = false;
+		this.hiddenChanged_ = false;
+		// this.implementStateless(WTableRow.hide,WTableRow.undoHide);
+		// this.implementStateless(WTableRow.show,WTableRow.undoHide);
+	}
 
 	/**
 	 * Returns the table to which this row belongs.
@@ -56,6 +72,8 @@ public class WTableRow extends WObject {
 	 * Like {@link WTable#getElementAt(int row, int column)
 	 * WTable#getElementAt()}, if the column is beyond the current table
 	 * dimensions, then the table is expanded automatically.
+	 * <p>
+	 * The row must be inserted within a table first.
 	 */
 	public WTableCell elementAt(int column) {
 		return this.table_.getElementAt(this.getRowNum(), column);
@@ -63,6 +81,8 @@ public class WTableRow extends WObject {
 
 	/**
 	 * Returns the row number of this row in the table.
+	 * <p>
+	 * Returns -1 if the row is not yet part of a table.
 	 * <p>
 	 * 
 	 * @see WTable#getRowAt(int row)
@@ -226,20 +246,6 @@ public class WTableRow extends WObject {
 		}
 	}
 
-	WTableRow(WTable table, int numCells) {
-		super();
-		this.table_ = table;
-		this.cells_ = new ArrayList<WTableRow.TableData>();
-		this.height_ = null;
-		this.id_ = null;
-		this.styleClass_ = "";
-		this.hidden_ = false;
-		this.hiddenChanged_ = false;
-		this.expand(numCells);
-		// this.implementStateless(WTableRow.hide,WTableRow.undoHide);
-		// this.implementStateless(WTableRow.show,WTableRow.undoHide);
-	}
-
 	void expand(int numCells) {
 		int cursize = this.cells_.size();
 		for (int col = cursize; col < numCells; ++col) {
@@ -261,7 +267,7 @@ public class WTableRow extends WObject {
 		}
 	}
 
-	private WTable table_;
+	WTable table_;
 	List<WTableRow.TableData> cells_;
 	private WLength height_;
 	private String id_;

@@ -31,8 +31,7 @@ import org.slf4j.LoggerFactory;
  * expands automatically to create the indexed (row, column) as necessary.
  * <p>
  * It is possible to insert and delete entire rows or columns from the table
- * using the {@link WTable#insertColumn(int column) insertColumn()},
- * {@link WTable#insertRow(int row) insertRow()},
+ * using the insertColumn(int column), insertRow(int row),
  * {@link WTable#deleteColumn(int column) deleteColumn()}, or
  * {@link WTable#deleteRow(int row) deleteRow()} methods.
  * <p>
@@ -147,6 +146,7 @@ public class WTable extends WInteractWidget {
 	 * Deletes a table cell and its contents.
 	 * <p>
 	 * The table cell at that position is recreated.
+	 * <p>
 	 */
 	public void removeCell(WTableCell item) {
 		this.removeCell(item.getRow(), item.getColumn());
@@ -168,16 +168,31 @@ public class WTable extends WInteractWidget {
 	/**
 	 * Inserts an empty row.
 	 */
-	public WTableRow insertRow(int row) {
-		if (row >= this.getRowCount()) {
-			return this.getRowAt(row);
+	public WTableRow insertRow(int row, WTableRow tableRow) {
+		if (row == this.getRowCount()
+				&& this.getRowCount() >= this.headerRowCount_) {
+			++this.rowsAdded_;
 		} else {
-			WTableRow tableRow = new WTableRow(this, this.getColumnCount());
-			this.rows_.add(0 + row, tableRow);
 			this.flags_.set(BIT_GRID_CHANGED);
-			this.repaint(EnumSet.of(RepaintFlag.RepaintInnerHtml));
-			return tableRow;
 		}
+		if (!(tableRow != null)) {
+			tableRow = new WTableRow();
+		}
+		tableRow.table_ = this;
+		tableRow.expand(this.getColumnCount());
+		this.rows_.add(0 + row, tableRow);
+		this.repaint(EnumSet.of(RepaintFlag.RepaintInnerHtml));
+		return tableRow;
+	}
+
+	/**
+	 * Inserts an empty row.
+	 * <p>
+	 * Returns {@link #insertRow(int row, WTableRow tableRow) insertRow(row,
+	 * (WTableRow)null)}
+	 */
+	public final WTableRow insertRow(int row) {
+		return insertRow(row, (WTableRow) null);
 	}
 
 	/**
@@ -211,18 +226,30 @@ public class WTable extends WInteractWidget {
 	/**
 	 * Inserts an empty column.
 	 */
-	public WTableColumn insertColumn(int column) {
+	public WTableColumn insertColumn(int column, WTableColumn tableColumn) {
 		for (int i = 0; i < this.rows_.size(); ++i) {
 			this.rows_.get(i).insertColumn(column);
 		}
-		WTableColumn tableColumn = null;
 		if ((int) column <= this.columns_.size()) {
-			tableColumn = new WTableColumn(this);
+			if (!(tableColumn != null)) {
+				tableColumn = new WTableColumn();
+				tableColumn.table_ = this;
+			}
 			this.columns_.add(0 + column, tableColumn);
 		}
 		this.flags_.set(BIT_GRID_CHANGED);
 		this.repaint(EnumSet.of(RepaintFlag.RepaintInnerHtml));
 		return tableColumn;
+	}
+
+	/**
+	 * Inserts an empty column.
+	 * <p>
+	 * Returns {@link #insertColumn(int column, WTableColumn tableColumn)
+	 * insertColumn(column, (WTableColumn)null)}
+	 */
+	public final WTableColumn insertColumn(int column) {
+		return insertColumn(column, (WTableColumn) null);
 	}
 
 	/**
@@ -390,29 +417,15 @@ public class WTable extends WInteractWidget {
 	private int headerColumnCount_;
 
 	void expand(int row, int column, int rowSpan, int columnSpan) {
-		int newNumRows = row + rowSpan;
+		int curNumRows = this.getRowCount();
 		int curNumColumns = this.getColumnCount();
+		int newNumRows = row + rowSpan;
 		int newNumColumns = Math.max(curNumColumns, column + columnSpan);
-		if (newNumRows > this.getRowCount() || newNumColumns > curNumColumns) {
-			if (newNumColumns == curNumColumns
-					&& this.getRowCount() >= this.headerRowCount_) {
-				this.rowsAdded_ += newNumRows - this.getRowCount();
-			} else {
-				this.flags_.set(BIT_GRID_CHANGED);
-			}
-			this.repaint(EnumSet.of(RepaintFlag.RepaintInnerHtml));
-			for (int r = this.getRowCount(); r < newNumRows; ++r) {
-				this.rows_.add(new WTableRow(this, newNumColumns));
-			}
-			if (newNumColumns > curNumColumns) {
-				for (int r = 0; r < this.getRowCount(); ++r) {
-					WTableRow tr = this.rows_.get(r);
-					tr.expand(newNumColumns);
-				}
-				for (int c = curNumColumns; c <= column; ++c) {
-					this.columns_.add(new WTableColumn(this));
-				}
-			}
+		for (int r = curNumRows; r < newNumRows; ++r) {
+			this.insertRow(r);
+		}
+		for (int c = curNumColumns; c < newNumColumns; ++c) {
+			this.insertColumn(c);
 		}
 	}
 

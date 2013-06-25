@@ -194,18 +194,20 @@ class WebRenderer implements SlotLearnerInterface {
 	}
 
 	public void serveLinkedCss(WebResponse response) throws IOException {
-		WApplication app = this.session_.getApp();
 		response.setContentType("text/css");
-		StringBuilder out = new StringBuilder();
-		if (app.getTheme() != null) {
-			app.getTheme().serveCss(out);
+		if (!this.initialStyleRendered_) {
+			WApplication app = this.session_.getApp();
+			StringBuilder out = new StringBuilder();
+			if (app.getTheme() != null) {
+				app.getTheme().serveCss(out);
+			}
+			for (int i = 0; i < app.styleSheets_.size(); ++i) {
+				app.styleSheets_.get(i).cssText(out, true);
+			}
+			app.styleSheetsAdded_ = 0;
+			this.initialStyleRendered_ = true;
+			response.out().append(out.toString());
 		}
-		for (int i = 0; i < app.styleSheets_.size(); ++i) {
-			app.styleSheets_.get(i).cssText(out, true);
-		}
-		app.styleSheetsAdded_ = 0;
-		this.initialStyleRendered_ = true;
-		response.out().append(out.toString());
 	}
 
 	public void setCookie(final String name, final String value, WDate expires,
@@ -1249,6 +1251,7 @@ class WebRenderer implements SlotLearnerInterface {
 		page.setVar("HEADDECLARATIONS", this.getHeadDeclarations());
 		page.setCondition("FORM", !this.session_.getEnv().agentIsSpiderBot()
 				&& !this.session_.getEnv().hasAjax());
+		page.setCondition("BOOT_STYLE", !xhtml);
 	}
 
 	private void streamBootContent(WebResponse response, FileServe boot,
@@ -1278,12 +1281,12 @@ class WebRenderer implements SlotLearnerInterface {
 		bootJs.setVar("APP_CLASS", "Wt");
 		bootJs.setVar("PATH_INFO", WWebWidget.jsStringLiteral(this.session_
 				.getEnv().pathInfo_));
+		bootJs.setCondition("COOKIE_CHECKS", false && conf.isCookieChecks());
 		bootJs.setCondition("SPLIT_SCRIPT", conf.splitScript());
 		bootJs.setCondition("HYBRID", hybrid);
 		bootJs.setCondition("PROGRESS", hybrid
 				&& !this.session_.getEnv().hasAjax());
-		boolean xhtml = this.session_.getEnv().getContentType() == WEnvironment.ContentType.XHTML1;
-		bootJs.setCondition("DEFER_SCRIPT", !xhtml);
+		bootJs.setCondition("DEFER_SCRIPT", true);
 		String internalPath = hybrid ? this.session_.getApp().getInternalPath()
 				: this.session_.getEnv().getInternalPath();
 		bootJs.setVar("INTERNAL_PATH", this.safeJsStringLiteral(internalPath));

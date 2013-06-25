@@ -219,6 +219,7 @@ public class WPanel extends WCompositeWidget {
 							WPanel.this.onCollapse();
 						}
 					});
+			this.collapseIcon_.icon1Clicked().preventPropagation();
 			this.collapseIcon_.icon2Clicked().addListener(this,
 					new Signal1.Listener<WMouseEvent>() {
 						public void trigger(WMouseEvent e1) {
@@ -231,7 +232,14 @@ public class WPanel extends WCompositeWidget {
 							WPanel.this.onExpand();
 						}
 					});
-			this.collapseIcon_.setState(0);
+			this.collapseIcon_.icon2Clicked().preventPropagation();
+			this.collapseIcon_.setState(this.isCollapsed() ? 1 : 0);
+			this.getTitleBarWidget().clicked().addListener(this,
+					new Signal1.Listener<WMouseEvent>() {
+						public void trigger(WMouseEvent e1) {
+							WPanel.this.toggleCollapse();
+						}
+					});
 		} else {
 			if (!on && this.collapseIcon_ != null) {
 				if (this.collapseIcon_ != null)
@@ -280,7 +288,7 @@ public class WPanel extends WCompositeWidget {
 	 * @see WPanel#expanded()
 	 */
 	public boolean isCollapsed() {
-		return this.isCollapsible() && this.collapseIcon_.getState() == 1;
+		return this.getCentralArea().isHidden();
 	}
 
 	/**
@@ -411,6 +419,10 @@ public class WPanel extends WCompositeWidget {
 	private boolean wasCollapsed_;
 
 	// private void setJsSize() ;
+	private void toggleCollapse() {
+		this.setCollapsed(!this.isCollapsed());
+	}
+
 	private void doExpand() {
 		this.wasCollapsed_ = this.isCollapsed();
 		this.getCentralArea().animateShow(this.animation_);

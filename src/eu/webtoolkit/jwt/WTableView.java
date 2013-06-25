@@ -186,12 +186,6 @@ public class WTableView extends WAbstractItemView {
 							WTableView.this.handleRootSingleClick(0, event);
 						}
 					});
-			this.contentsContainer_.mouseWentDown().addListener(this,
-					new Signal1.Listener<WMouseEvent>() {
-						public void trigger(WMouseEvent event) {
-							WTableView.this.handleRootMouseWentDown(0, event);
-						}
-					});
 			this.contentsContainer_.mouseWentUp().addListener(this,
 					new Signal1.Listener<WMouseEvent>() {
 						public void trigger(WMouseEvent event) {
@@ -247,12 +241,6 @@ public class WTableView extends WAbstractItemView {
 					new Signal1.Listener<WMouseEvent>() {
 						public void trigger(WMouseEvent event) {
 							WTableView.this.handleRootSingleClick(0, event);
-						}
-					});
-			this.headerColumnsContainer_.mouseWentDown().addListener(this,
-					new Signal1.Listener<WMouseEvent>() {
-						public void trigger(WMouseEvent event) {
-							WTableView.this.handleRootMouseWentDown(0, event);
 						}
 					});
 			this.headerColumnsContainer_.mouseWentUp().addListener(this,
@@ -1291,14 +1279,14 @@ public class WTableView extends WAbstractItemView {
 				this.canvas_.doubleClicked().addListener(this,
 						new Signal1.Listener<WMouseEvent>() {
 							public void trigger(WMouseEvent event) {
-								WTableView.this.handleDoubleClick(false, event);
+								WTableView.this.handleDblClick(false, event);
 							}
 						});
 				this.canvas_.doubleClicked().preventPropagation();
 				this.headerColumnsCanvas_.doubleClicked().addListener(this,
 						new Signal1.Listener<WMouseEvent>() {
 							public void trigger(WMouseEvent event) {
-								WTableView.this.handleDoubleClick(true, event);
+								WTableView.this.handleDblClick(true, event);
 							}
 						});
 				this.headerColumnsCanvas_.doubleClicked().preventPropagation();
@@ -1595,7 +1583,7 @@ public class WTableView extends WAbstractItemView {
 		super.handleClick(index, event);
 	}
 
-	private void handleDoubleClick(boolean headerColumns, WMouseEvent event) {
+	private void handleDblClick(boolean headerColumns, WMouseEvent event) {
 		WModelIndex index = this.translateModelIndex(headerColumns, event);
 		super.handleDoubleClick(index, event);
 	}

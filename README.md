@@ -56,15 +56,30 @@ The corresponding dependency blocks are:
     </dependency>
 
     <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>servlet-api</artifactId>
+      <version>2.5</version>
+    </dependency>
+
+    <!-- optional, for JWT Auth -->
+    <dependency>
       <groupId>eu.webtoolkit</groupId>
       <artifactId>jwt-auth</artifactId>
       <version>3.3.0</version>
     </dependency>
-    
+
+    <!-- optional, for PDF Rendering -->
     <dependency>
-      <groupId>javax.servlet</groupId>
-      <artifactId>servlet-api</artifactId>
-      <version>2.5</version>
+      <groupId>com.pdfjet</groupId>
+      <artifactId>pdfjet</artifactId>
+      <version>4.75</version>
+    </dependency>
+
+    <!-- optional, for CSS stylesheet support in XHTML renderer -->
+    <dependency>
+      <groupId>org.antlr</groupId>
+      <artifactId>antlr-runtime</artifactId>
+      <version>3.2</version>
     </dependency>
 
     <dependency>

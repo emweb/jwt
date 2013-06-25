@@ -661,7 +661,8 @@ public class WMenuItem extends WContainerWidget {
 		WApplication app = WApplication.getInstance();
 		String active = app.getTheme().getActiveClass();
 		if (active.equals("Wt-selected")) {
-			this.setStyleClass(selected ? "itemselected" : "item");
+			this.removeStyleClass(!selected ? "itemselected" : "item", true);
+			this.addStyleClass(selected ? "itemselected" : "item", true);
 		} else {
 			this.toggleStyleClass(active, selected, true);
 		}
