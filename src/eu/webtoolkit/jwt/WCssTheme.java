@@ -683,6 +683,6 @@ public class WCssTheme extends WTheme {
 				JavaScriptScope.WtClassScope,
 				JavaScriptObjectType.JavaScriptFunction,
 				"setValidationState",
-				"function(a,b,d,c){var e=b==1&&(c&2)!=0;c=b!=1&&(c&1)!=0;$(a).toggleClass(\"Wt-valid\",e).toggleClass(\"Wt-invalid\",c);a.defaultTT=typeof a.defaultTT===\"undefined\"?a.getAttribute(\"title\")||\"\":\"\";b?a.setAttribute(\"title\",a.defaultTT):a.setAttribute(\"title\",d)}");
+				"function(a,b,d,c){var e=b==1&&(c&2)!=0;c=b!=1&&(c&1)!=0;$(a).toggleClass(\"Wt-valid\",e).toggleClass(\"Wt-invalid\",c);if(typeof a.defaultTT===\"undefined\")a.defaultTT=a.getAttribute(\"title\")||\"\";b?a.setAttribute(\"title\",a.defaultTT):a.setAttribute(\"title\",d)}");
 	}
 }

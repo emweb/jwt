@@ -1756,12 +1756,14 @@ class WebSession {
 			}
 		}
 		if (!handler.getRequest().isWebSocketMessage()) {
-			if (this.bootStyleResponse_ != null) {
-				if (handler.getResponse().getResponseType() == WebRequest.ResponseType.Script
-						&& !(handler.getRequest().getParameter("skeleton") != null)) {
-					this.renderer_.serveLinkedCss(this.bootStyleResponse_);
+			if (handler.getResponse().getResponseType() == WebRequest.ResponseType.Script
+					&& !(handler.getRequest().getParameter("skeleton") != null)) {
+				this.mutex_.unlock();
+				try {
+					Thread.sleep(1);
+				} catch (InterruptedException e) {
 				}
-				this.flushBootStyleResponse();
+				this.mutex_.lock();
 			}
 			this.renderer_.serveResponse(handler.getResponse());
 		}

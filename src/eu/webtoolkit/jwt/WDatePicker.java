@@ -199,10 +199,19 @@ public class WDatePicker extends WCompositeWidget {
 	/**
 	 * The display widget.
 	 * <p>
-	 * Returns the widget which is displayed to activate the calendar.
+	 * Returns the icon which activates the popup.
 	 */
 	public WInteractWidget getDisplayWidget() {
 		return this.displayWidget_;
+	}
+
+	/**
+	 * The popup widget.
+	 * <p>
+	 * Returns the popup widget that contains the calendar.
+	 */
+	public WPopupWidget getPopupWidget() {
+		return this.popup_;
 	}
 
 	/**
@@ -218,8 +227,8 @@ public class WDatePicker extends WCompositeWidget {
 	 * @see WDatePicker#setDate(WDate date)
 	 * @see WLineEdit#getText()
 	 */
-	public WPopupWidget getPopupWidget() {
-		return this.popup_;
+	public WDate getDate() {
+		return WDate.fromString(this.forEdit_.getText(), this.format_);
 	}
 
 	/**
@@ -230,16 +239,6 @@ public class WDatePicker extends WCompositeWidget {
 	 * 
 	 * @see WDatePicker#getDate()
 	 */
-	public WDate getDate() {
-		return WDate.fromString(this.forEdit_.getText(), this.format_);
-	}
-
-	/**
-	 * Sets whether the widget is enabled.
-	 * <p>
-	 * This is the oppositie of {@link WDatePicker#setDisabled(boolean disabled)
-	 * setDisabled()}.
-	 */
 	public void setDate(WDate date) {
 		if (!(date == null)) {
 			this.forEdit_.setText(date.toString(this.format_));
@@ -249,7 +248,10 @@ public class WDatePicker extends WCompositeWidget {
 	}
 
 	/**
-	 * Hide/unhide the widget.
+	 * Sets whether the widget is enabled.
+	 * <p>
+	 * This is the oppositie of {@link WDatePicker#setDisabled(boolean disabled)
+	 * setDisabled()}.
 	 */
 	public void setEnabled(boolean enabled) {
 		this.setDisabled(!enabled);
@@ -260,6 +262,9 @@ public class WDatePicker extends WCompositeWidget {
 		this.displayWidget_.setHidden(disabled);
 	}
 
+	/**
+	 * Hide/unhide the widget.
+	 */
 	public void setHidden(boolean hidden, WAnimation animation) {
 		super.setHidden(hidden, animation);
 		this.forEdit_.setHidden(hidden, animation);
@@ -267,7 +272,7 @@ public class WDatePicker extends WCompositeWidget {
 	}
 
 	/**
-	 * Sets the top of the valid date range.
+	 * Sets the bottom of the valid date range.
 	 */
 	public void setBottom(WDate bottom) {
 		WDateValidator dv = ((this.forEdit_.getValidator()) instanceof WDateValidator ? (WDateValidator) (this.forEdit_
@@ -280,7 +285,7 @@ public class WDatePicker extends WCompositeWidget {
 	}
 
 	/**
-	 * Returns the top date of the valid range.
+	 * Returns the bottom date of the valid range.
 	 */
 	public WDate getBottom() {
 		WDateValidator dv = ((this.forEdit_.getValidator()) instanceof WDateValidator ? (WDateValidator) (this.forEdit_
@@ -294,10 +299,7 @@ public class WDatePicker extends WCompositeWidget {
 	}
 
 	/**
-	 * Signal emitted when the value has changed.
-	 * <p>
-	 * This signal is emitted when a new date has been entered (either through
-	 * the line edit, or through the calendar popup).
+	 * Sets the top of the valid date range.
 	 */
 	public void setTop(WDate top) {
 		WDateValidator dv = ((this.forEdit_.getValidator()) instanceof WDateValidator ? (WDateValidator) (this.forEdit_
@@ -310,10 +312,7 @@ public class WDatePicker extends WCompositeWidget {
 	}
 
 	/**
-	 * Signal emitted when the value has changed.
-	 * <p>
-	 * This signal is emitted when a new date has been entered (either through
-	 * the line edit, or through the calendar popup).
+	 * Returns the top date of the valid range.
 	 */
 	public WDate getTop() {
 		WDateValidator dv = ((this.forEdit_.getValidator()) instanceof WDateValidator ? (WDateValidator) (this.forEdit_
@@ -327,6 +326,16 @@ public class WDatePicker extends WCompositeWidget {
 	}
 
 	/**
+	 * Signal emitted when the value has changed.
+	 * <p>
+	 * This signal is emitted when a new date has been entered (either through
+	 * the line edit, or through the calendar popup).
+	 */
+	public Signal changed() {
+		return this.changed_;
+	}
+
+	/**
 	 * Controls how the calendar popup is positioned.
 	 * <p>
 	 * When <code>global</code> is <code>true</code>, then the popup will
@@ -337,28 +346,22 @@ public class WDatePicker extends WCompositeWidget {
 	 * <p>
 	 * The default is <code>false</code>.
 	 */
-	public Signal changed() {
-		return this.changed_;
-	}
-
-	/**
-	 * A signal which indicates that the popup has been closed.
-	 * <p>
-	 * The signal is only fired when the popup has been closed by the user.
-	 */
 	public void setGlobalPopup(boolean global) {
 		this.popup_.toggleStyleClass("wt-no-reparent", global);
 	}
 
 	/**
-	 * A signal which indicates that the popup has been closed.
-	 * <p>
-	 * The signal is only fired when the popup has been closed by the user.
+	 * Shows or hides the popup.
 	 */
 	public void setPopupVisible(boolean visible) {
 		this.popup_.setHidden(!visible);
 	}
 
+	/**
+	 * A signal which indicates that the popup has been closed.
+	 * <p>
+	 * The signal is only fired when the popup has been closed by the user.
+	 */
 	public Signal popupClosed() {
 		return this.popupClosed_;
 	}

@@ -146,7 +146,7 @@ public abstract class WFormWidget extends WInteractWidget {
 		this.validator_ = validator;
 		if (this.validator_ != null) {
 			this.validator_.addFormWidget(this);
-			if (firstValidator && !(this.getToolTip().length() == 0)) {
+			if (firstValidator) {
 				this.setToolTip(this.getToolTip());
 			}
 			this.validatorChanged();

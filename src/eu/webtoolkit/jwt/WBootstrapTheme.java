@@ -377,6 +377,6 @@ public class WBootstrapTheme extends WTheme {
 				JavaScriptScope.WtClassScope,
 				JavaScriptObjectType.JavaScriptFunction,
 				"setValidationState",
-				"function(a,b,f,c){var e=b==1&&(c&2)!=0;c=b!=1&&(c&1)!=0;var d=$(a);d.toggleClass(\"Wt-valid\",e).toggleClass(\"Wt-invalid\",c);(d=d.closest(\".control-group\"))&&d.toggleClass(\"success\",e).toggleClass(\"error\",c);a.defaultTT=typeof a.defaultTT===\"undefined\"?a.getAttribute(\"title\")||\"\":\"\";b?a.setAttribute(\"title\",a.defaultTT):a.setAttribute(\"title\",f)}");
+				"function(a,b,f,c){var e=b==1&&(c&2)!=0;c=b!=1&&(c&1)!=0;var d=$(a);d.toggleClass(\"Wt-valid\",e).toggleClass(\"Wt-invalid\",c);(d=d.closest(\".control-group\"))&&d.toggleClass(\"success\",e).toggleClass(\"error\",c);if(typeof a.defaultTT===\"undefined\")a.defaultTT=a.getAttribute(\"title\")||\"\";b?a.setAttribute(\"title\",a.defaultTT):a.setAttribute(\"title\",f)}");
 	}
 }

@@ -152,11 +152,6 @@ public abstract class WPaintedWidget extends WInteractWidget {
 				this.preferredMethod_ = WPaintedWidget.Method.InlineSvgVml;
 			}
 		}
-		this.setLayoutSizeAware(true);
-		this
-				.setJavaScriptMember(
-						WT_RESIZE_JS,
-						"function(self, w, h) {var u = $(self).find('canvas, img');if (w >= 0) u.width(w);if (h >= 0) u.height(h);}");
 		this.setInline(false);
 	}
 
@@ -410,6 +405,11 @@ public abstract class WPaintedWidget extends WInteractWidget {
 	}
 
 	DomElement createDomElement(WApplication app) {
+		this.setLayoutSizeAware(true);
+		this
+				.setJavaScriptMember(
+						WT_RESIZE_JS,
+						"function(self, w, h) {var u = $(self).find('canvas, img');if (w >= 0) u.width(w);if (h >= 0) u.height(h);}");
 		this.isCreatePainter();
 		DomElement result = DomElement.createNew(this.getDomElementType());
 		this.setId(result, app);
