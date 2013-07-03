@@ -162,7 +162,7 @@ public class WLabel extends WInteractWidget {
 			this.buddy_.setLabel(this);
 		}
 		this.buddyChanged_ = true;
-		this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyAttribute));
+		this.repaint();
 	}
 
 	/**
@@ -177,7 +177,7 @@ public class WLabel extends WInteractWidget {
 			this.text_.setWordWrap(false);
 			this.text_.setParentWidget(this);
 			this.newText_ = true;
-			this.repaint(EnumSet.of(RepaintFlag.RepaintInnerHtml));
+			this.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
 		}
 		this.text_.setText(text);
 	}
@@ -243,7 +243,7 @@ public class WLabel extends WInteractWidget {
 			this.imageSide_ = side;
 		}
 		this.newImage_ = true;
-		this.repaint(EnumSet.of(RepaintFlag.RepaintInnerHtml));
+		this.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
 	}
 
 	/**
@@ -282,7 +282,7 @@ public class WLabel extends WInteractWidget {
 			this.text_ = new WText();
 			this.text_.setParentWidget(this);
 			this.newText_ = true;
-			this.repaint(EnumSet.of(RepaintFlag.RepaintInnerHtml));
+			this.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
 		}
 		this.text_.setWordWrap(wordWrap);
 	}

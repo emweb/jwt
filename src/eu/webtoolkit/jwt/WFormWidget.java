@@ -184,7 +184,7 @@ public abstract class WFormWidget extends WInteractWidget {
 			if (!this.validationToolTip_.equals(result.getMessage())) {
 				this.validationToolTip_ = result.getMessage();
 				this.flags_.set(BIT_VALIDATION_CHANGED);
-				this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyAttribute));
+				this.repaint();
 			}
 			this.validated_.trigger(result);
 			return result.getState();
@@ -222,7 +222,7 @@ public abstract class WFormWidget extends WInteractWidget {
 	 */
 	public void setFocus(boolean focus) {
 		this.flags_.set(BIT_GOT_FOCUS, focus);
-		this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyIEMobile));
+		this.repaint();
 		WApplication app = WApplication.getInstance();
 		if (focus) {
 			app.setFocus(this.getId(), -1, -1);
@@ -243,7 +243,7 @@ public abstract class WFormWidget extends WInteractWidget {
 	public void setTabIndex(int index) {
 		this.tabIndex_ = index;
 		this.flags_.set(BIT_TABINDEX_CHANGED);
-		this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyAttribute));
+		this.repaint();
 	}
 
 	public int getTabIndex() {
@@ -264,7 +264,7 @@ public abstract class WFormWidget extends WInteractWidget {
 	public void setReadOnly(boolean readOnly) {
 		this.flags_.set(BIT_READONLY, readOnly);
 		this.flags_.set(BIT_READONLY_CHANGED);
-		this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyAttribute));
+		this.repaint();
 	}
 
 	/**
@@ -593,7 +593,7 @@ public abstract class WFormWidget extends WInteractWidget {
 
 	protected void propagateSetEnabled(boolean enabled) {
 		this.flags_.set(BIT_ENABLED_CHANGED);
-		this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyAttribute));
+		this.repaint();
 		super.propagateSetEnabled(enabled);
 	}
 

@@ -162,7 +162,7 @@ public class WComboBox extends WFormWidget {
 			this.currentIndex_ = newIndex;
 			this.validate();
 			this.selectionChanged_ = true;
-			this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyIEMobile));
+			this.repaint();
 		}
 	}
 
@@ -395,7 +395,7 @@ public class WComboBox extends WFormWidget {
 
 	private void itemsChanged() {
 		this.itemsChanged_ = true;
-		this.repaint(EnumSet.of(RepaintFlag.RepaintInnerHtml));
+		this.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
 		if (this.currentIndex_ > this.getCount() - 1) {
 			this.currentIndex_ = this.getCount() - 1;
 		}
@@ -421,7 +421,7 @@ public class WComboBox extends WFormWidget {
 
 	private void rowsInserted(WModelIndex index, int from, int to) {
 		this.itemsChanged_ = true;
-		this.repaint(EnumSet.of(RepaintFlag.RepaintInnerHtml));
+		this.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
 		if (this.currentIndex_ < from && this.currentIndex_ != -1) {
 			return;
 		} else {
@@ -435,7 +435,7 @@ public class WComboBox extends WFormWidget {
 
 	private void rowsRemoved(WModelIndex index, int from, int to) {
 		this.itemsChanged_ = true;
-		this.repaint(EnumSet.of(RepaintFlag.RepaintInnerHtml));
+		this.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
 		if (this.currentIndex_ < from) {
 			return;
 		}

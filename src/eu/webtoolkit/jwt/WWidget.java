@@ -1612,7 +1612,8 @@ public abstract class WWidget extends WObject {
 	 * @see WWidget#render(EnumSet flags)
 	 */
 	protected void scheduleRender() {
-		this.scheduleRerender(false);
+		this.scheduleRerender(false, EnumSet
+				.of(RepaintFlag.RepaintSizeAffected));
 	}
 
 	/**
@@ -1641,6 +1642,9 @@ public abstract class WWidget extends WObject {
 	}
 
 	void childResized(WWidget child, EnumSet<Orientation> directions) {
+		if (this.getPositionScheme() == PositionScheme.Absolute) {
+			return;
+		}
 		WWidget p = this.getParent();
 		if (p != null) {
 			p.childResized(this, directions);
@@ -1687,6 +1691,7 @@ public abstract class WWidget extends WObject {
 	void renderOk() {
 		if (this.flags_.get(BIT_NEED_RERENDER)) {
 			this.flags_.clear(BIT_NEED_RERENDER);
+			this.flags_.clear(BIT_NEED_RERENDER_SIZE_CHANGE);
 			WApplication app = WApplication.getInstance();
 			if (app != null) {
 				app.getSession().getRenderer().doneUpdate(this);
@@ -1694,16 +1699,33 @@ public abstract class WWidget extends WObject {
 		}
 	}
 
-	protected void scheduleRerender(boolean laterOnly) {
+	protected void scheduleRerender(boolean laterOnly,
+			EnumSet<RepaintFlag> flags) {
 		if (!this.flags_.get(BIT_NEED_RERENDER)) {
 			this.flags_.set(BIT_NEED_RERENDER);
 			WApplication.getInstance().getSession().getRenderer().needUpdate(
 					this, laterOnly);
+		}
+		if (!EnumUtils.mask(flags, RepaintFlag.RepaintSizeAffected).isEmpty()
+				&& !this.flags_.get(BIT_NEED_RERENDER_SIZE_CHANGE)) {
+			this.flags_.set(BIT_NEED_RERENDER_SIZE_CHANGE);
+			if (this.getPositionScheme() == PositionScheme.Absolute) {
+				return;
+			}
 			WWidget p = this.getParent();
 			if (p != null) {
 				p.childResized(this, EnumSet.of(Orientation.Vertical));
 			}
 		}
+	}
+
+	protected final void scheduleRerender(boolean laterOnly, RepaintFlag flag,
+			RepaintFlag... flags) {
+		scheduleRerender(laterOnly, EnumSet.of(flag, flags));
+	}
+
+	protected final void scheduleRerender(boolean laterOnly) {
+		scheduleRerender(laterOnly, EnumSet.noneOf(RepaintFlag.class));
 	}
 
 	boolean needsRerender() {
@@ -1750,8 +1772,9 @@ public abstract class WWidget extends WObject {
 	private static final int BIT_WAS_HIDDEN = 0;
 	private static final int BIT_WAS_DISABLED = 1;
 	private static final int BIT_NEED_RERENDER = 2;
-	private static final int BIT_HAS_PARENT = 3;
-	private static final int BIT_RESIZE_AWARE = 4;
+	private static final int BIT_NEED_RERENDER_SIZE_CHANGE = 3;
+	private static final int BIT_HAS_PARENT = 4;
+	private static final int BIT_RESIZE_AWARE = 5;
 	private BitSet flags_;
 	private LinkedList<AbstractEventSignal> eventSignals_;
 

@@ -388,7 +388,7 @@ public class WAnchor extends WContainerWidget {
 		}
 		this.linkState_.link = link;
 		this.flags_.set(BIT_LINK_CHANGED);
-		this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyIEMobile));
+		this.repaint();
 		switch (this.linkState_.link.getType()) {
 		case Resource:
 			this.linkState_.link.getResource().dataChanged().addListener(this,
@@ -646,7 +646,7 @@ public class WAnchor extends WContainerWidget {
 
 	private void resourceChanged() {
 		this.flags_.set(BIT_LINK_CHANGED);
-		this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyIEMobile));
+		this.repaint();
 	}
 
 	static boolean renderHRef(WInteractWidget widget,
@@ -733,7 +733,7 @@ public class WAnchor extends WContainerWidget {
 	protected void enableAjax() {
 		if (this.linkState_.link.getType() == WLink.Type.InternalPath) {
 			this.flags_.set(BIT_LINK_CHANGED);
-			this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyIEMobile));
+			this.repaint();
 		}
 		super.enableAjax();
 	}

@@ -63,7 +63,8 @@ public class WTableCell extends WContainerWidget {
 					this.rowSpan_, this.columnSpan_);
 			this.spanChanged_ = true;
 			this.getTable().flags_.set(WTable.BIT_GRID_CHANGED);
-			this.getTable().repaint(EnumSet.of(RepaintFlag.RepaintInnerHtml));
+			this.getTable()
+					.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
 		}
 	}
 
@@ -92,7 +93,8 @@ public class WTableCell extends WContainerWidget {
 					this.rowSpan_, this.columnSpan_);
 			this.spanChanged_ = true;
 			this.getTable().flags_.set(WTable.BIT_GRID_CHANGED);
-			this.getTable().repaint(EnumSet.of(RepaintFlag.RepaintInnerHtml));
+			this.getTable()
+					.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
 		}
 	}
 

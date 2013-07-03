@@ -206,7 +206,7 @@ public class WText extends WInteractWidget {
 		}
 		boolean ok = this.text_.setText(text);
 		this.flags_.set(BIT_TEXT_CHANGED);
-		this.repaint(EnumSet.of(RepaintFlag.RepaintInnerHtml));
+		this.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
 		return ok;
 	}
 
@@ -258,7 +258,7 @@ public class WText extends WInteractWidget {
 		if (this.flags_.get(BIT_WORD_WRAP) != wordWrap) {
 			this.flags_.set(BIT_WORD_WRAP, wordWrap);
 			this.flags_.set(BIT_WORD_WRAP_CHANGED);
-			this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyAttribute));
+			this.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
 		}
 	}
 
@@ -299,7 +299,7 @@ public class WText extends WInteractWidget {
 					"setPadding(..., Bottom) is not supported.").toString());
 		}
 		this.flags_.set(BIT_PADDINGS_CHANGED);
-		this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyAttribute));
+		this.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
 	}
 
 	/**
@@ -390,7 +390,7 @@ public class WText extends WInteractWidget {
 	public void refresh() {
 		if (this.text_.text.refresh()) {
 			this.flags_.set(BIT_TEXT_CHANGED);
-			this.repaint(EnumSet.of(RepaintFlag.RepaintInnerHtml));
+			this.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
 		}
 		super.refresh();
 	}

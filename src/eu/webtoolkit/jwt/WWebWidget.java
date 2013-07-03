@@ -94,7 +94,7 @@ public abstract class WWebWidget extends WWidget {
 			this.flags_.clear(BIT_INLINE);
 		}
 		this.flags_.set(BIT_GEOMETRY_CHANGED);
-		this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyAttribute));
+		this.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
 	}
 
 	public PositionScheme getPositionScheme() {
@@ -119,7 +119,7 @@ public abstract class WWebWidget extends WWidget {
 			this.layoutImpl_.offsets_[3] = offset;
 		}
 		this.flags_.set(BIT_GEOMETRY_CHANGED);
-		this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyAttribute));
+		this.repaint();
 	}
 
 	public WLength getOffset(Side s) {
@@ -162,7 +162,7 @@ public abstract class WWebWidget extends WWidget {
 			this.flags_.set(BIT_HEIGHT_CHANGED);
 		}
 		if (changed) {
-			this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyAttribute));
+			this.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
 			super.resize(width, height);
 		}
 	}
@@ -182,7 +182,7 @@ public abstract class WWebWidget extends WWidget {
 		this.layoutImpl_.minimumWidth_ = nonNegative(width);
 		this.layoutImpl_.minimumHeight_ = nonNegative(height);
 		this.flags_.set(BIT_GEOMETRY_CHANGED);
-		this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyAttribute));
+		this.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
 	}
 
 	public WLength getMinimumWidth() {
@@ -202,7 +202,7 @@ public abstract class WWebWidget extends WWidget {
 		this.layoutImpl_.maximumWidth_ = nonNegative(width);
 		this.layoutImpl_.maximumHeight_ = nonNegative(height);
 		this.flags_.set(BIT_GEOMETRY_CHANGED);
-		this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyAttribute));
+		this.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
 	}
 
 	public WLength getMaximumWidth() {
@@ -221,7 +221,7 @@ public abstract class WWebWidget extends WWidget {
 		}
 		this.layoutImpl_.lineHeight_ = height;
 		this.flags_.set(BIT_GEOMETRY_CHANGED);
-		this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyAttribute));
+		this.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
 	}
 
 	public WLength getLineHeight() {
@@ -235,7 +235,7 @@ public abstract class WWebWidget extends WWidget {
 		}
 		this.layoutImpl_.floatSide_ = s;
 		this.flags_.set(BIT_FLOAT_SIDE_CHANGED);
-		this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyAttribute));
+		this.repaint();
 	}
 
 	public Side getFloatSide() {
@@ -252,7 +252,7 @@ public abstract class WWebWidget extends WWidget {
 		}
 		this.layoutImpl_.clearSides_ = EnumSet.copyOf(sides);
 		this.flags_.set(BIT_GEOMETRY_CHANGED);
-		this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyAttribute));
+		this.repaint();
 	}
 
 	public EnumSet<Side> getClearSides() {
@@ -280,7 +280,7 @@ public abstract class WWebWidget extends WWidget {
 			this.layoutImpl_.margin_[3] = margin;
 		}
 		this.flags_.set(BIT_MARGINS_CHANGED);
-		this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyAttribute));
+		this.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
 	}
 
 	public WLength getMargin(Side side) {
@@ -333,7 +333,7 @@ public abstract class WWebWidget extends WWidget {
 		}
 		WApplication.getInstance().getSession().getRenderer()
 				.updateFormObjects(this, true);
-		this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyAttribute));
+		this.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
 	}
 
 	public boolean isHidden() {
@@ -361,7 +361,7 @@ public abstract class WWebWidget extends WWidget {
 		this.propagateSetEnabled(!disabled);
 		WApplication.getInstance().getSession().getRenderer()
 				.updateFormObjects(this, true);
-		this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyAttribute));
+		this.repaint();
 	}
 
 	public boolean isDisabled() {
@@ -389,7 +389,7 @@ public abstract class WWebWidget extends WWidget {
 			this.calcZIndex();
 		}
 		this.flags_.set(BIT_GEOMETRY_CHANGED);
-		this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyAttribute));
+		this.repaint();
 	}
 
 	public boolean isPopup() {
@@ -400,7 +400,7 @@ public abstract class WWebWidget extends WWidget {
 		this.flags_.set(BIT_INLINE, inl);
 		// this.resetLearnedSlot(WWidget.show);
 		this.flags_.set(BIT_GEOMETRY_CHANGED);
-		this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyAttribute));
+		this.repaint();
 	}
 
 	public boolean isInline() {
@@ -434,7 +434,7 @@ public abstract class WWebWidget extends WWidget {
 		}
 		this.lookImpl_.styleClass_ = styleClass;
 		this.flags_.set(BIT_STYLECLASS_CHANGED);
-		this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyAttribute));
+		this.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
 	}
 
 	public String getStyleClass() {
@@ -453,7 +453,7 @@ public abstract class WWebWidget extends WWidget {
 					this.lookImpl_.styleClass_, styleClass);
 			if (!force) {
 				this.flags_.set(BIT_STYLECLASS_CHANGED);
-				this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyAttribute));
+				this.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
 			}
 		}
 		if (force && this.isRendered()) {
@@ -463,7 +463,7 @@ public abstract class WWebWidget extends WWidget {
 			CollectionUtils.add(this.transientImpl_.addedStyleClasses_,
 					styleClass);
 			this.transientImpl_.removedStyleClasses_.remove(styleClass);
-			this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyAttribute));
+			this.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
 		}
 	}
 
@@ -476,7 +476,7 @@ public abstract class WWebWidget extends WWidget {
 					this.lookImpl_.styleClass_, styleClass);
 			if (!force) {
 				this.flags_.set(BIT_STYLECLASS_CHANGED);
-				this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyAttribute));
+				this.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
 			}
 		}
 		if (force && this.isRendered()) {
@@ -486,7 +486,7 @@ public abstract class WWebWidget extends WWidget {
 			CollectionUtils.add(this.transientImpl_.removedStyleClasses_,
 					styleClass);
 			this.transientImpl_.addedStyleClasses_.remove(styleClass);
-			this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyAttribute));
+			this.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
 		}
 	}
 
@@ -514,7 +514,7 @@ public abstract class WWebWidget extends WWidget {
 		this.layoutImpl_.verticalAlignment_ = alignment;
 		this.layoutImpl_.verticalAlignmentLength_ = length;
 		this.flags_.set(BIT_GEOMETRY_CHANGED);
-		this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyAttribute));
+		this.repaint();
 	}
 
 	public AlignmentFlag getVerticalAlignment() {
@@ -540,7 +540,7 @@ public abstract class WWebWidget extends WWidget {
 		this.lookImpl_.toolTip_ = WString.toWString(text);
 		this.lookImpl_.toolTipTextFormat_ = textFormat;
 		this.flags_.set(BIT_TOOLTIP_CHANGED);
-		this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyAttribute));
+		this.repaint();
 	}
 
 	public WString getToolTip() {
@@ -552,7 +552,7 @@ public abstract class WWebWidget extends WWidget {
 		if (this.lookImpl_ != null && this.lookImpl_.toolTip_ != null) {
 			if (this.lookImpl_.toolTip_.refresh()) {
 				this.flags_.set(BIT_TOOLTIP_CHANGED);
-				this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyAttribute));
+				this.repaint();
 			}
 		}
 		if (this.children_ != null) {
@@ -579,7 +579,7 @@ public abstract class WWebWidget extends WWidget {
 			this.transientImpl_ = new WWebWidget.TransientImpl();
 		}
 		this.transientImpl_.attributesSet_.add(name);
-		this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyAttribute));
+		this.repaint();
 	}
 
 	public String getAttributeValue(String name) {
@@ -622,7 +622,7 @@ public abstract class WWebWidget extends WWidget {
 		}
 		this.addJavaScriptStatement(
 				WWebWidget.JavaScriptStatementType.SetMember, name);
-		this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyAttribute));
+		this.repaint();
 	}
 
 	public String getJavaScriptMember(String name) {
@@ -638,7 +638,7 @@ public abstract class WWebWidget extends WWidget {
 		this.addJavaScriptStatement(
 				WWebWidget.JavaScriptStatementType.CallMethod, name + "("
 						+ args + ");");
-		this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyAttribute));
+		this.repaint();
 	}
 
 	public void load() {
@@ -723,13 +723,13 @@ public abstract class WWebWidget extends WWidget {
 		this.flags_.set(BIT_SET_SELECTABLE, selectable);
 		this.flags_.set(BIT_SET_UNSELECTABLE, !selectable);
 		this.flags_.set(BIT_SELECTABLE_CHANGED);
-		this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyAttribute));
+		this.repaint();
 	}
 
 	public void doJavaScript(String javascript) {
 		this.addJavaScriptStatement(
 				WWebWidget.JavaScriptStatementType.Statement, javascript);
-		this.repaint(RepaintFlag.RepaintAll);
+		this.repaint();
 	}
 
 	public String getId() {
@@ -976,7 +976,7 @@ public abstract class WWebWidget extends WWidget {
 		}
 		this.layoutImpl_.zIndex_ = zIndex;
 		this.flags_.set(BIT_GEOMETRY_CHANGED);
-		this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyAttribute));
+		this.repaint();
 	}
 
 	public boolean isRendered() {
@@ -994,18 +994,7 @@ public abstract class WWebWidget extends WWidget {
 		if (!this.flags_.get(BIT_RENDERED)) {
 			return;
 		}
-		super.scheduleRender();
-		if (!EnumUtils.mask(flags, RepaintFlag.RepaintPropertyIEMobile)
-				.isEmpty()) {
-			this.flags_.set(BIT_REPAINT_PROPERTY_IEMOBILE);
-		}
-		if (!EnumUtils.mask(flags, RepaintFlag.RepaintPropertyAttribute)
-				.isEmpty()) {
-			this.flags_.set(BIT_REPAINT_PROPERTY_ATTRIBUTE);
-		}
-		if (!EnumUtils.mask(flags, RepaintFlag.RepaintInnerHtml).isEmpty()) {
-			this.flags_.set(BIT_REPAINT_INNER_HTML);
-		}
+		super.scheduleRerender(false, flags);
 		if (!EnumUtils.mask(flags, RepaintFlag.RepaintToAjax).isEmpty()) {
 			this.flags_.set(BIT_REPAINT_TO_AJAX);
 		}
@@ -1016,7 +1005,7 @@ public abstract class WWebWidget extends WWidget {
 	}
 
 	final void repaint() {
-		repaint(RepaintFlag.RepaintAll);
+		repaint(EnumSet.noneOf(RepaintFlag.class));
 	}
 
 	void getFormObjects(Map<String, WObject> formObjects) {
@@ -1765,7 +1754,7 @@ public abstract class WWebWidget extends WWidget {
 			if (js.charAt(0) != '_') {
 				this.transientImpl_.specialChildRemove_ = true;
 			}
-			this.repaint(EnumSet.of(RepaintFlag.RepaintInnerHtml));
+			this.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
 		}
 		child.setParent((WObject) null);
 		if (!child.getWebWidget().flags_.get(BIT_BEING_DELETED)) {
@@ -1837,7 +1826,7 @@ public abstract class WWebWidget extends WWidget {
 	}
 
 	void signalConnectionsChanged() {
-		this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyAttribute));
+		this.repaint();
 	}
 
 	private static final int BIT_INLINE = 0;
@@ -1852,10 +1841,10 @@ public abstract class WWebWidget extends WWidget {
 	private static final int BIT_BEING_DELETED = 9;
 	private static final int BIT_DONOT_STUB = 10;
 	private static final int BIT_FLOAT_SIDE_CHANGED = 11;
-	private static final int BIT_REPAINT_PROPERTY_IEMOBILE = 12;
-	private static final int BIT_REPAINT_PROPERTY_ATTRIBUTE = 13;
-	private static final int BIT_REPAINT_INNER_HTML = 14;
-	static final int BIT_REPAINT_TO_AJAX = 15;
+	static final int BIT_REPAINT_TO_AJAX = 12;
+	private static final int BIT_HIDE_WITH_VISIBILITY = 13;
+	private static final int BIT_HIDDEN_CHANGED = 14;
+	static final int BIT_ENABLED = 15;
 	private static final int BIT_TOOLTIP_CHANGED = 16;
 	private static final int BIT_MARGINS_CHANGED = 17;
 	private static final int BIT_STYLECLASS_CHANGED = 18;
@@ -1866,9 +1855,6 @@ public abstract class WWebWidget extends WWidget {
 	private static final int BIT_HEIGHT_CHANGED = 23;
 	private static final int BIT_DISABLED = 24;
 	private static final int BIT_DISABLED_CHANGED = 25;
-	private static final int BIT_HIDE_WITH_VISIBILITY = 26;
-	private static final int BIT_HIDDEN_CHANGED = 27;
-	static final int BIT_ENABLED = 28;
 	BitSet flags_;
 	private WLength width_;
 	private WLength height_;
@@ -2032,9 +2018,6 @@ public abstract class WWebWidget extends WWidget {
 
 	void renderOk() {
 		super.renderOk();
-		this.flags_.clear(BIT_REPAINT_PROPERTY_IEMOBILE);
-		this.flags_.clear(BIT_REPAINT_PROPERTY_ATTRIBUTE);
-		this.flags_.clear(BIT_REPAINT_INNER_HTML);
 		this.flags_.clear(BIT_REPAINT_TO_AJAX);
 	}
 

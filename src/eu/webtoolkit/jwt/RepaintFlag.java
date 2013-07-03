@@ -20,23 +20,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 enum RepaintFlag {
-	RepaintPropertyIEMobile(0x1 << 12), RepaintPropertyAttribute(0x1 << 13), RepaintInnerHtml(
-			0x1 << 14), RepaintToAjax(0x1 << 15);
-
-	private int value;
-
-	RepaintFlag(int value) {
-		this.value = value;
-	}
+	RepaintSizeAffected, RepaintToAjax;
 
 	/**
 	 * Returns the numerical representation of this enum.
 	 */
 	public int getValue() {
-		return value;
+		return ordinal();
 	}
-
-	public static final EnumSet<RepaintFlag> RepaintAll = EnumSet.of(
-			RepaintFlag.RepaintPropertyIEMobile,
-			RepaintFlag.RepaintPropertyAttribute, RepaintFlag.RepaintInnerHtml);
 }

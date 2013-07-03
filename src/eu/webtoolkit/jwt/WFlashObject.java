@@ -96,7 +96,6 @@ public class WFlashObject extends WWebWidget {
 	public void resize(WLength width, WLength height) {
 		this.sizeChanged_ = true;
 		super.resize(width, height);
-		this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyAttribute));
 	}
 
 	/**
@@ -300,7 +299,7 @@ public class WFlashObject extends WWebWidget {
 
 	private void renderIeAltnerative() {
 		this.replaceDummyIeContent_ = true;
-		this.repaint(EnumSet.of(RepaintFlag.RepaintInnerHtml));
+		this.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
 	}
 
 	static String toString(WLength length) {

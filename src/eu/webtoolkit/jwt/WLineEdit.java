@@ -147,7 +147,7 @@ public class WLineEdit extends WFormWidget {
 		if (this.textSize_ != chars) {
 			this.textSize_ = chars;
 			this.flags_.set(BIT_TEXT_SIZE_CHANGED);
-			this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyAttribute));
+			this.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
 		}
 	}
 
@@ -173,7 +173,7 @@ public class WLineEdit extends WFormWidget {
 		if (!this.content_.equals(text)) {
 			this.content_ = text;
 			this.flags_.set(BIT_CONTENT_CHANGED);
-			this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyIEMobile));
+			this.repaint();
 			this.validate();
 			this.applyEmptyText();
 		}
@@ -200,7 +200,7 @@ public class WLineEdit extends WFormWidget {
 		if (this.maxLength_ != chars) {
 			this.maxLength_ = chars;
 			this.flags_.set(BIT_MAX_LENGTH_CHANGED);
-			this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyAttribute));
+			this.repaint();
 		}
 	}
 
@@ -223,7 +223,7 @@ public class WLineEdit extends WFormWidget {
 		if (this.echoMode_ != echoMode) {
 			this.echoMode_ = echoMode;
 			this.flags_.set(BIT_ECHO_MODE_CHANGED);
-			this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyAttribute));
+			this.repaint();
 		}
 	}
 

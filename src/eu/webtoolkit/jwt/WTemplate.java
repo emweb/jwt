@@ -468,7 +468,7 @@ public class WTemplate extends WInteractWidget {
 			}
 		}
 		this.changed_ = true;
-		this.repaint(EnumSet.of(RepaintFlag.RepaintInnerHtml));
+		this.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
 	}
 
 	/**
@@ -515,7 +515,7 @@ public class WTemplate extends WInteractWidget {
 		if (i == null || !i.equals(v.toString())) {
 			this.strings_.put(varName, v.toString());
 			this.changed_ = true;
-			this.repaint(EnumSet.of(RepaintFlag.RepaintInnerHtml));
+			this.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
 		}
 	}
 
@@ -586,7 +586,7 @@ public class WTemplate extends WInteractWidget {
 			this.strings_.put(varName, "");
 		}
 		this.changed_ = true;
-		this.repaint(EnumSet.of(RepaintFlag.RepaintInnerHtml));
+		this.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
 	}
 
 	/**
@@ -604,7 +604,7 @@ public class WTemplate extends WInteractWidget {
 			WWidget result = i;
 			this.widgets_.remove(varName);
 			this.changed_ = true;
-			this.repaint(EnumSet.of(RepaintFlag.RepaintInnerHtml));
+			this.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
 			return result;
 		} else {
 			return null;
@@ -665,7 +665,7 @@ public class WTemplate extends WInteractWidget {
 				this.conditions_.remove(name);
 			}
 			this.changed_ = true;
-			this.repaint(EnumSet.of(RepaintFlag.RepaintInnerHtml));
+			this.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
 		}
 	}
 
@@ -859,7 +859,7 @@ public class WTemplate extends WInteractWidget {
 		this.strings_.clear();
 		this.conditions_.clear();
 		this.changed_ = true;
-		this.repaint(EnumSet.of(RepaintFlag.RepaintInnerHtml));
+		this.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
 	}
 
 	/**
@@ -880,7 +880,7 @@ public class WTemplate extends WInteractWidget {
 		if (this.encodeInternalPaths_ != enabled) {
 			this.encodeInternalPaths_ = enabled;
 			this.changed_ = true;
-			this.repaint(EnumSet.of(RepaintFlag.RepaintInnerHtml));
+			this.repaint();
 		}
 	}
 
@@ -897,7 +897,7 @@ public class WTemplate extends WInteractWidget {
 	public void refresh() {
 		if (this.text_.refresh()) {
 			this.changed_ = true;
-			this.repaint(EnumSet.of(RepaintFlag.RepaintInnerHtml));
+			this.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
 		}
 		super.refresh();
 	}

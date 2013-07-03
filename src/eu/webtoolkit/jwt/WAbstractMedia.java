@@ -188,7 +188,7 @@ public abstract class WAbstractMedia extends WInteractWidget {
 	public void setOptions(EnumSet<WAbstractMedia.Options> flags) {
 		this.flags_ = EnumSet.copyOf(flags);
 		this.flagsChanged_ = true;
-		this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyAttribute));
+		this.repaint();
 	}
 
 	/**
@@ -215,7 +215,7 @@ public abstract class WAbstractMedia extends WInteractWidget {
 	public void setPreloadMode(WAbstractMedia.PreloadMode mode) {
 		this.preloadMode_ = mode;
 		this.preloadChanged_ = true;
-		this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyAttribute));
+		this.repaint();
 	}
 
 	/**
@@ -241,7 +241,7 @@ public abstract class WAbstractMedia extends WInteractWidget {
 			;
 		}
 		this.sources_.clear();
-		this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyAttribute));
+		this.repaint();
 	}
 
 	/**
@@ -257,7 +257,7 @@ public abstract class WAbstractMedia extends WInteractWidget {
 	public void addSource(WLink link, String type, String media) {
 		this.sources_.add(new WAbstractMedia.Source(this, link, type, media));
 		this.sourcesChanged_ = true;
-		this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyAttribute));
+		this.repaint();
 	}
 
 	/**
@@ -646,8 +646,7 @@ public abstract class WAbstractMedia extends WInteractWidget {
 
 		public void resourceChanged() {
 			this.parent.sourcesChanged_ = true;
-			this.parent.repaint(EnumSet
-					.of(RepaintFlag.RepaintPropertyAttribute));
+			this.parent.repaint();
 		}
 
 		public WAbstractMedia parent;

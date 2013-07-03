@@ -279,8 +279,7 @@ public class WFont {
 		this.specificFamilies_ = WString.toWString(specificFamilies);
 		this.familyChanged_ = true;
 		if (this.widget_ != null) {
-			this.widget_.repaint(EnumSet
-					.of(RepaintFlag.RepaintPropertyAttribute));
+			this.widget_.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
 		}
 	}
 
@@ -316,8 +315,7 @@ public class WFont {
 		this.style_ = style;
 		this.styleChanged_ = true;
 		if (this.widget_ != null) {
-			this.widget_.repaint(EnumSet
-					.of(RepaintFlag.RepaintPropertyAttribute));
+			this.widget_.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
 		}
 	}
 
@@ -335,8 +333,7 @@ public class WFont {
 		this.variant_ = variant;
 		this.variantChanged_ = true;
 		if (this.widget_ != null) {
-			this.widget_.repaint(EnumSet
-					.of(RepaintFlag.RepaintPropertyAttribute));
+			this.widget_.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
 		}
 	}
 
@@ -360,8 +357,7 @@ public class WFont {
 		this.weightValue_ = value;
 		this.weightChanged_ = true;
 		if (this.widget_ != null) {
-			this.widget_.repaint(EnumSet
-					.of(RepaintFlag.RepaintPropertyAttribute));
+			this.widget_.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
 		}
 	}
 
@@ -429,8 +425,7 @@ public class WFont {
 		this.sizeLength_ = WLength.Auto;
 		this.sizeChanged_ = true;
 		if (this.widget_ != null) {
-			this.widget_.repaint(EnumSet
-					.of(RepaintFlag.RepaintPropertyAttribute));
+			this.widget_.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
 		}
 	}
 
@@ -444,8 +439,7 @@ public class WFont {
 		this.sizeLength_ = size;
 		this.sizeChanged_ = true;
 		if (this.widget_ != null) {
-			this.widget_.repaint(EnumSet
-					.of(RepaintFlag.RepaintPropertyAttribute));
+			this.widget_.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
 		}
 	}
 

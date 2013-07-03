@@ -319,7 +319,7 @@ public class WContainerWidget extends WInteractWidget {
 		}
 		this.transientImpl_.addedChildren_.add(widget);
 		this.flags_.set(BIT_ADJUST_CHILDREN_ALIGN);
-		this.repaint(EnumSet.of(RepaintFlag.RepaintInnerHtml));
+		this.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
 		widget.setParentWidget(this);
 	}
 
@@ -354,7 +354,7 @@ public class WContainerWidget extends WInteractWidget {
 		}
 		this.children_.add(0 + i, widget);
 		this.flags_.set(BIT_ADJUST_CHILDREN_ALIGN);
-		this.repaint(EnumSet.of(RepaintFlag.RepaintInnerHtml));
+		this.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
 		if (!(this.transientImpl_ != null)) {
 			this.transientImpl_ = new WWebWidget.TransientImpl();
 		}
@@ -387,7 +387,7 @@ public class WContainerWidget extends WInteractWidget {
 	 */
 	public void removeWidget(WWidget widget) {
 		widget.setParentWidget((WWidget) null);
-		this.repaint(EnumSet.of(RepaintFlag.RepaintInnerHtml));
+		this.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
 	}
 
 	/**
@@ -447,7 +447,7 @@ public class WContainerWidget extends WInteractWidget {
 			this.contentAlignment_.add(AlignmentFlag.AlignTop);
 		}
 		this.flags_.set(BIT_CONTENT_ALIGNMENT_CHANGED);
-		this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyAttribute));
+		this.repaint();
 	}
 
 	/**
@@ -485,7 +485,7 @@ public class WContainerWidget extends WInteractWidget {
 			this.padding_[3] = length;
 		}
 		this.flags_.set(BIT_PADDINGS_CHANGED);
-		this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyAttribute));
+		this.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
 	}
 
 	/**
@@ -571,7 +571,7 @@ public class WContainerWidget extends WInteractWidget {
 			this.overflow_[1] = value;
 		}
 		this.flags_.set(BIT_OVERFLOW_CHANGED);
-		this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyAttribute));
+		this.repaint();
 	}
 
 	/**
@@ -785,7 +785,7 @@ public class WContainerWidget extends WInteractWidget {
 							.getParentLayout().getImpl())
 							: null)).itemResized(item)) {
 						this.flags_.set(BIT_LAYOUT_NEEDS_UPDATE);
-						this.repaint(EnumSet.of(RepaintFlag.RepaintInnerHtml));
+						this.repaint();
 					}
 				}
 			}
@@ -1151,7 +1151,7 @@ public class WContainerWidget extends WInteractWidget {
 		} else {
 			this.flags_.set(BIT_LAYOUT_NEEDS_UPDATE);
 		}
-		this.repaint(EnumSet.of(RepaintFlag.RepaintInnerHtml));
+		this.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
 		if (deleted) {
 			this.layout_ = null;
 		}

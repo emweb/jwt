@@ -103,7 +103,7 @@ public class WTextArea extends WFormWidget {
 	public void setColumns(int columns) {
 		this.cols_ = columns;
 		this.attributesChanged_ = true;
-		this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyAttribute));
+		this.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
 	}
 
 	/**
@@ -114,7 +114,7 @@ public class WTextArea extends WFormWidget {
 	public void setRows(int rows) {
 		this.rows_ = rows;
 		this.attributesChanged_ = true;
-		this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyAttribute));
+		this.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
 	}
 
 	/**
@@ -152,7 +152,7 @@ public class WTextArea extends WFormWidget {
 	public void setText(String text) {
 		this.content_ = text;
 		this.contentChanged_ = true;
-		this.repaint(EnumSet.of(RepaintFlag.RepaintInnerHtml));
+		this.repaint();
 		this.validate();
 		this.applyEmptyText();
 	}

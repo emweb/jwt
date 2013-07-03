@@ -162,7 +162,7 @@ public class WPushButton extends WFormWidget {
 		if (this.isCheckable()) {
 			this.flags_.set(BIT_IS_CHECKED, checked);
 			this.flags_.set(BIT_CHECKED_CHANGED, true);
-			this.repaint(EnumSet.of(RepaintFlag.RepaintInnerHtml));
+			this.repaint();
 		}
 	}
 
@@ -224,7 +224,7 @@ public class WPushButton extends WFormWidget {
 		}
 		boolean ok = this.text_.setText(text);
 		this.flags_.set(BIT_TEXT_CHANGED);
-		this.repaint(EnumSet.of(RepaintFlag.RepaintInnerHtml));
+		this.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
 		return ok;
 	}
 
@@ -279,7 +279,7 @@ public class WPushButton extends WFormWidget {
 		}
 		this.icon_ = link;
 		this.flags_.set(BIT_ICON_CHANGED);
-		this.repaint(EnumSet.of(RepaintFlag.RepaintInnerHtml));
+		this.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
 	}
 
 	/**
@@ -319,7 +319,7 @@ public class WPushButton extends WFormWidget {
 						}
 					});
 		}
-		this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyIEMobile));
+		this.repaint();
 	}
 
 	/**
@@ -449,7 +449,7 @@ public class WPushButton extends WFormWidget {
 	public void refresh() {
 		if (this.text_.text.refresh()) {
 			this.flags_.set(BIT_TEXT_CHANGED);
-			this.repaint(EnumSet.of(RepaintFlag.RepaintInnerHtml));
+			this.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
 		}
 		super.refresh();
 	}
@@ -585,7 +585,7 @@ public class WPushButton extends WFormWidget {
 	protected void propagateSetEnabled(boolean enabled) {
 		super.propagateSetEnabled(enabled);
 		this.flags_.set(BIT_LINK_CHANGED);
-		this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyIEMobile));
+		this.repaint();
 	}
 
 	private void doRedirect() {
@@ -602,7 +602,7 @@ public class WPushButton extends WFormWidget {
 
 	private void resourceChanged() {
 		this.flags_.set(BIT_LINK_CHANGED);
-		this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyIEMobile));
+		this.repaint();
 	}
 
 	private void renderHRef(DomElement element) {

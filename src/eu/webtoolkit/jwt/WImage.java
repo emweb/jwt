@@ -240,7 +240,7 @@ public class WImage extends WInteractWidget {
 		}
 		this.altText_ = WString.toWString(text);
 		this.flags_.set(BIT_ALT_TEXT_CHANGED);
-		this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyAttribute));
+		this.repaint();
 	}
 
 	/**
@@ -275,7 +275,7 @@ public class WImage extends WInteractWidget {
 					});
 		}
 		this.flags_.set(BIT_IMAGE_LINK_CHANGED);
-		this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyIEMobile));
+		this.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
 	}
 
 	/**
@@ -376,7 +376,7 @@ public class WImage extends WInteractWidget {
 		if (!(this.map_ != null)) {
 			this.addChild(this.map_ = new MapWidget());
 			this.flags_.set(BIT_MAP_CREATED);
-			this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyAttribute));
+			this.repaint();
 		}
 		this.map_.insertWidget(index, area.getImpl());
 	}
@@ -449,7 +449,7 @@ public class WImage extends WInteractWidget {
 
 	private void resourceChanged() {
 		this.flags_.set(BIT_IMAGE_LINK_CHANGED);
-		this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyIEMobile));
+		this.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
 	}
 
 	void getDomChanges(List<DomElement> result, WApplication app) {

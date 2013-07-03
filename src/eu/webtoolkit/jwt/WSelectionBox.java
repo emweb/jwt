@@ -99,7 +99,7 @@ public class WSelectionBox extends WComboBox {
 	public void setVerticalSize(int items) {
 		this.verticalSize_ = items;
 		this.configChanged_ = true;
-		this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyAttribute));
+		this.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
 	}
 
 	/**
@@ -113,7 +113,7 @@ public class WSelectionBox extends WComboBox {
 		if (mode != this.selectionMode_) {
 			this.selectionMode_ = mode;
 			this.configChanged_ = true;
-			this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyAttribute));
+			this.repaint();
 			if (mode == SelectionMode.ExtendedSelection) {
 				this.selection_.clear();
 				if (this.getCurrentIndex() != -1) {
@@ -173,7 +173,7 @@ public class WSelectionBox extends WComboBox {
 		}
 		this.selection_ = selection;
 		this.selectionChanged_ = true;
-		this.repaint(EnumSet.of(RepaintFlag.RepaintInnerHtml));
+		this.repaint();
 	}
 
 	/**

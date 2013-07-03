@@ -36,10 +36,6 @@ class AreaWidget extends WInteractWidget {
 		super.remove();
 	}
 
-	void repaint(EnumSet<RepaintFlag> flags) {
-		super.repaint(EnumSet.of(RepaintFlag.RepaintPropertyAttribute));
-	}
-
 	public WAbstractArea getFacade() {
 		return this.facade_;
 	}

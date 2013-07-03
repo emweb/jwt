@@ -323,7 +323,7 @@ public class WFileUpload extends WWebWidget {
 	public void upload() {
 		if (this.fileUploadTarget_ != null && !this.flags_.get(BIT_UPLOADING)) {
 			this.flags_.set(BIT_DO_UPLOAD);
-			this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyIEMobile));
+			this.repaint();
 			if (this.progressBar_ != null) {
 				if (this.progressBar_.getParent() != this) {
 					this.hide();
@@ -601,7 +601,7 @@ public class WFileUpload extends WWebWidget {
 
 	protected void propagateSetEnabled(boolean enabled) {
 		this.flags_.set(BIT_ENABLED_CHANGED);
-		this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyAttribute));
+		this.repaint();
 		super.propagateSetEnabled(enabled);
 	}
 

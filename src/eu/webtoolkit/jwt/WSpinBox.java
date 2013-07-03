@@ -75,7 +75,7 @@ public class WSpinBox extends WAbstractSpinBox {
 	public void setMinimum(int minimum) {
 		this.min_ = minimum;
 		this.changed_ = true;
-		this.repaint(EnumSet.of(RepaintFlag.RepaintInnerHtml));
+		this.repaint();
 	}
 
 	/**
@@ -96,7 +96,7 @@ public class WSpinBox extends WAbstractSpinBox {
 	public void setMaximum(int maximum) {
 		this.max_ = maximum;
 		this.changed_ = true;
-		this.repaint(EnumSet.of(RepaintFlag.RepaintInnerHtml));
+		this.repaint();
 	}
 
 	/**
@@ -120,7 +120,7 @@ public class WSpinBox extends WAbstractSpinBox {
 		this.min_ = minimum;
 		this.max_ = maximum;
 		this.changed_ = true;
-		this.repaint(EnumSet.of(RepaintFlag.RepaintInnerHtml));
+		this.repaint();
 	}
 
 	/**
@@ -131,7 +131,7 @@ public class WSpinBox extends WAbstractSpinBox {
 	public void setSingleStep(int step) {
 		this.step_ = step;
 		this.changed_ = true;
-		this.repaint(EnumSet.of(RepaintFlag.RepaintInnerHtml));
+		this.repaint();
 	}
 
 	/**

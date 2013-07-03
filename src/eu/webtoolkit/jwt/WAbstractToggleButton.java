@@ -104,7 +104,7 @@ public abstract class WAbstractToggleButton extends WFormWidget {
 		}
 		this.text_.setText(text);
 		this.textChanged_ = true;
-		this.repaint(EnumSet.of(RepaintFlag.RepaintInnerHtml));
+		this.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
 	}
 
 	/**
@@ -234,7 +234,7 @@ public abstract class WAbstractToggleButton extends WFormWidget {
 	public void refresh() {
 		if (this.text_.text.refresh()) {
 			this.textChanged_ = true;
-			this.repaint(EnumSet.of(RepaintFlag.RepaintInnerHtml));
+			this.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
 		}
 		super.refresh();
 	}
@@ -459,6 +459,6 @@ public abstract class WAbstractToggleButton extends WFormWidget {
 		}
 		this.state_ = state;
 		this.stateChanged_ = true;
-		this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyIEMobile));
+		this.repaint();
 	}
 }

@@ -378,7 +378,7 @@ public class WCssDecorationStyle extends WObject {
 			this.borderChanged_ = true;
 		}
 		if (this.borderChanged_) {
-			this.changed();
+			this.changed(EnumSet.of(RepaintFlag.RepaintSizeAffected));
 		}
 	}
 
@@ -447,7 +447,7 @@ public class WCssDecorationStyle extends WObject {
 		if (!WWebWidget.canOptimizeUpdates() || !this.font_.equals(font)) {
 			this.font_ = font;
 			this.fontChanged_ = true;
-			this.changed();
+			this.changed(EnumSet.of(RepaintFlag.RepaintSizeAffected));
 		}
 	}
 
@@ -698,11 +698,18 @@ public class WCssDecorationStyle extends WObject {
 	private boolean fontChanged_;
 	private boolean textDecorationChanged_;
 
-	private void changed() {
+	private void changed(EnumSet<RepaintFlag> flags) {
 		if (this.widget_ != null) {
-			this.widget_.repaint(EnumSet
-					.of(RepaintFlag.RepaintPropertyAttribute));
+			this.widget_.repaint(flags);
 		}
+	}
+
+	private final void changed(RepaintFlag flag, RepaintFlag... flags) {
+		changed(EnumSet.of(flag, flags));
+	}
+
+	private final void changed() {
+		changed(EnumSet.noneOf(RepaintFlag.class));
 	}
 
 	private void backgroundImageResourceChanged() {

@@ -91,7 +91,7 @@ public class WVideo extends WAbstractMedia {
 	public void setPoster(String url) {
 		this.posterUrl_ = url;
 		this.posterChanged_ = true;
-		this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyAttribute));
+		this.repaint();
 	}
 
 	/**
@@ -111,7 +111,6 @@ public class WVideo extends WAbstractMedia {
 	public void resize(WLength width, WLength height) {
 		this.sizeChanged_ = true;
 		super.resize(width, height);
-		this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyAttribute));
 	}
 
 	DomElement createMediaDomElement() {

@@ -78,7 +78,7 @@ public class WProgressBar extends WInteractWidget {
 	public void setMinimum(double minimum) {
 		this.min_ = minimum;
 		this.changed_ = true;
-		this.repaint(EnumSet.of(RepaintFlag.RepaintInnerHtml));
+		this.repaint();
 	}
 
 	/**
@@ -101,7 +101,7 @@ public class WProgressBar extends WInteractWidget {
 	public void setMaximum(double maximum) {
 		this.max_ = maximum;
 		this.changed_ = true;
-		this.repaint(EnumSet.of(RepaintFlag.RepaintInnerHtml));
+		this.repaint();
 	}
 
 	/**
@@ -125,7 +125,7 @@ public class WProgressBar extends WInteractWidget {
 		this.min_ = minimum;
 		this.max_ = maximum;
 		this.changed_ = true;
-		this.repaint(EnumSet.of(RepaintFlag.RepaintInnerHtml));
+		this.repaint();
 	}
 
 	/**
@@ -142,7 +142,7 @@ public class WProgressBar extends WInteractWidget {
 			this.progressCompleted_.trigger();
 		}
 		this.changed_ = true;
-		this.repaint(EnumSet.of(RepaintFlag.RepaintInnerHtml));
+		this.repaint();
 	}
 
 	/**

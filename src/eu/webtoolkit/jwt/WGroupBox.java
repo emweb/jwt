@@ -126,13 +126,13 @@ public class WGroupBox extends WContainerWidget {
 	public void setTitle(CharSequence title) {
 		this.title_ = WString.toWString(title);
 		this.titleChanged_ = true;
-		this.repaint(EnumSet.of(RepaintFlag.RepaintInnerHtml));
+		this.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
 	}
 
 	public void refresh() {
 		if (this.title_.refresh()) {
 			this.titleChanged_ = true;
-			this.repaint(EnumSet.of(RepaintFlag.RepaintInnerHtml));
+			this.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
 		}
 		super.refresh();
 	}

@@ -115,7 +115,7 @@ public class WScrollArea extends WWebWidget {
 			this.widget_.remove();
 		this.widget_ = widget;
 		this.widgetChanged_ = true;
-		this.repaint(EnumSet.of(RepaintFlag.RepaintInnerHtml));
+		this.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
 		if (widget != null) {
 			widget.setParentWidget(this);
 			if (WApplication.getInstance().getEnvironment().agentIsIElt(9)) {
@@ -171,7 +171,7 @@ public class WScrollArea extends WWebWidget {
 	public void setScrollBarPolicy(WScrollArea.ScrollBarPolicy policy) {
 		this.horizontalScrollBarPolicy_ = this.verticalScrollBarPolicy_ = policy;
 		this.scrollBarPolicyChanged_ = true;
-		this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyAttribute));
+		this.repaint();
 	}
 
 	/**
@@ -183,7 +183,7 @@ public class WScrollArea extends WWebWidget {
 	public void setHorizontalScrollBarPolicy(WScrollArea.ScrollBarPolicy policy) {
 		this.horizontalScrollBarPolicy_ = policy;
 		this.scrollBarPolicyChanged_ = true;
-		this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyAttribute));
+		this.repaint();
 	}
 
 	/**
@@ -195,7 +195,7 @@ public class WScrollArea extends WWebWidget {
 	public void setVerticalScrollBarPolicy(WScrollArea.ScrollBarPolicy policy) {
 		this.verticalScrollBarPolicy_ = policy;
 		this.scrollBarPolicyChanged_ = true;
-		this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyAttribute));
+		this.repaint();
 	}
 
 	/**
@@ -231,7 +231,7 @@ public class WScrollArea extends WWebWidget {
 
 	void scrollBarChanged() {
 		this.scrollBarChanged_ = true;
-		this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyAttribute));
+		this.repaint();
 	}
 
 	void updateDom(DomElement element, boolean all) {

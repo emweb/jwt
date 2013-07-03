@@ -181,7 +181,7 @@ public class WTable extends WInteractWidget {
 		tableRow.table_ = this;
 		tableRow.expand(this.getColumnCount());
 		this.rows_.add(0 + row, tableRow);
-		this.repaint(EnumSet.of(RepaintFlag.RepaintInnerHtml));
+		this.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
 		return tableRow;
 	}
 
@@ -217,7 +217,7 @@ public class WTable extends WInteractWidget {
 			--this.rowsAdded_;
 		} else {
 			this.flags_.set(BIT_GRID_CHANGED);
-			this.repaint(EnumSet.of(RepaintFlag.RepaintInnerHtml));
+			this.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
 		}
 		;
 		this.rows_.remove(0 + row);
@@ -238,7 +238,7 @@ public class WTable extends WInteractWidget {
 			this.columns_.add(0 + column, tableColumn);
 		}
 		this.flags_.set(BIT_GRID_CHANGED);
-		this.repaint(EnumSet.of(RepaintFlag.RepaintInnerHtml));
+		this.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
 		return tableColumn;
 	}
 
@@ -264,7 +264,7 @@ public class WTable extends WInteractWidget {
 			this.columns_.remove(0 + column);
 		}
 		this.flags_.set(BIT_GRID_CHANGED);
-		this.repaint(EnumSet.of(RepaintFlag.RepaintInnerHtml));
+		this.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
 	}
 
 	/**
@@ -371,7 +371,7 @@ public class WTable extends WInteractWidget {
 		}
 		this.rows_.add(0 + to, from_tr);
 		this.flags_.set(BIT_GRID_CHANGED);
-		this.repaint(EnumSet.of(RepaintFlag.RepaintInnerHtml));
+		this.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
 	}
 
 	/**
@@ -403,7 +403,7 @@ public class WTable extends WInteractWidget {
 			cells.add(0 + to, cell);
 		}
 		this.flags_.set(BIT_GRID_CHANGED);
-		this.repaint(EnumSet.of(RepaintFlag.RepaintInnerHtml));
+		this.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
 	}
 
 	static final int BIT_GRID_CHANGED = 0;
@@ -441,12 +441,12 @@ public class WTable extends WInteractWidget {
 			this.rowsChanged_ = new HashSet<WTableRow>();
 		}
 		this.rowsChanged_.add(row);
-		this.repaint(EnumSet.of(RepaintFlag.RepaintInnerHtml));
+		this.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
 	}
 
 	void repaintColumn(WTableColumn column) {
 		this.flags_.set(BIT_COLUMNS_CHANGED);
-		this.repaint(EnumSet.of(RepaintFlag.RepaintInnerHtml));
+		this.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
 	}
 
 	void updateDom(DomElement element, boolean all) {
