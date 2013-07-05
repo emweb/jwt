@@ -109,9 +109,6 @@ public class WTableView extends WAbstractItemView {
 		this.dropEvent_ = new JSignal5<Integer, Integer, String, String, WMouseEvent>(
 				this.impl_, "dropEvent") {
 		};
-		this.columnWidthChanged_ = new JSignal2<Integer, Integer>(this.impl_,
-				"columnResized") {
-		};
 		this.scrolled_ = new JSignal4<Integer, Integer, Integer, Integer>(
 				this.impl_, "scrolled") {
 		};
@@ -701,7 +698,6 @@ public class WTableView extends WAbstractItemView {
 	private WContainerWidget headerColumnsContainer_;
 	private WTable plainTable_;
 	private JSignal5<Integer, Integer, String, String, WMouseEvent> dropEvent_;
-	private JSignal2<Integer, Integer> columnWidthChanged_;
 	private JSignal4<Integer, Integer, Integer, Integer> scrolled_;
 	private int firstColumn_;
 	private int lastColumn_;

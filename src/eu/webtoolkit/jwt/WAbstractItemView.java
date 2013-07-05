@@ -1012,9 +1012,9 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 		WLength headerHeight = WLength.multiply(this.headerLineHeight_,
 				lineCount);
 		if (this.columns_.size() > 0) {
-			WWidget w = this.headerWidget(0);
+			WWidget w = this.headerWidget(0, false);
 			if (w != null) {
-				w.scheduleRender();
+				w.scheduleRender(EnumSet.of(RepaintFlag.RepaintSizeAffected));
 			}
 		}
 		this.headerHeightRule_.getTemplateWidget().resize(WLength.Auto,
@@ -1945,8 +1945,10 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	WWidget createHeaderWidget(WApplication app, int column) {
 		WAbstractItemView.ColumnInfo info = this.columnInfo(column);
 		WContainerWidget contents = new WContainerWidget();
+		contents.setObjectName("contents");
 		if (info.sorting) {
 			WText sortIcon = new WText(contents);
+			sortIcon.setObjectName("sort");
 			sortIcon.setInline(false);
 			sortIcon.setStyleClass("Wt-tv-sh Wt-tv-sh-none");
 			this.clickedForSortMapper_.mapConnect(sortIcon.clicked(), info.id);
@@ -2549,6 +2551,10 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 		if (column >= 0) {
 			this.columnInfo(column).width = new WLength(width);
 			this.columnResized_.trigger(column, this.columnInfo(column).width);
+			WWidget w = this.headerWidget(column, 0 != 0);
+			if (w != null) {
+				w.scheduleRender(EnumSet.of(RepaintFlag.RepaintSizeAffected));
+			}
 		}
 	}
 

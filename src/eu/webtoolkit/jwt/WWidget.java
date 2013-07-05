@@ -1611,17 +1611,36 @@ public abstract class WWidget extends WObject {
 	 * 
 	 * @see WWidget#render(EnumSet flags)
 	 */
-	protected void scheduleRender() {
-		this.scheduleRerender(false, EnumSet
-				.of(RepaintFlag.RepaintSizeAffected));
+	protected void scheduleRender(EnumSet<RepaintFlag> flags) {
+		this.scheduleRerender(false, flags);
+	}
+
+	/**
+	 * Schedules rerendering of the widget.
+	 * <p>
+	 * Calls {@link #scheduleRender(EnumSet flags)
+	 * scheduleRender(EnumSet.of(flag, flags))}
+	 */
+	protected final void scheduleRender(RepaintFlag flag, RepaintFlag... flags) {
+		scheduleRender(EnumSet.of(flag, flags));
+	}
+
+	/**
+	 * Schedules rerendering of the widget.
+	 * <p>
+	 * Calls {@link #scheduleRender(EnumSet flags)
+	 * scheduleRender(EnumSet.noneOf(RepaintFlag.class))}
+	 */
+	protected final void scheduleRender() {
+		scheduleRender(EnumSet.noneOf(RepaintFlag.class));
 	}
 
 	/**
 	 * Renders the widget.
 	 * <p>
 	 * This function renders the widget (or an update for the widget), after
-	 * this has been scheduled using {@link WWidget#scheduleRender()
-	 * scheduleRender()}.
+	 * this has been scheduled using
+	 * {@link WWidget#scheduleRender(EnumSet flags) scheduleRender()}.
 	 * <p>
 	 * The default implementation will render the widget by serializing changes
 	 * to JavaScript and HTML. You may want to reimplement this widget if you

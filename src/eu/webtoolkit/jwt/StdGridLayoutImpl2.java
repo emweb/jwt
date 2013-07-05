@@ -478,7 +478,8 @@ class StdGridLayoutImpl2 extends StdLayoutImpl {
 		final int rowCount = this.grid_.rows_.size();
 		for (int row = 0; row < rowCount; ++row) {
 			for (int col = 0; col < colCount; ++col) {
-				if (this.grid_.items_.get(row).get(col).item_ == item) {
+				if (this.grid_.items_.get(row).get(col).item_ == item
+						&& !this.grid_.items_.get(row).get(col).update_) {
 					this.grid_.items_.get(row).get(col).update_ = true;
 					this.needAdjust_ = true;
 					return true;
