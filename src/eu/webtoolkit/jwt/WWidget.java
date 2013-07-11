@@ -833,6 +833,10 @@ public abstract class WWidget extends WObject {
 	 * used to add the style class to the DOM element (if JavaScript is
 	 * available). This may be necessary when client-side JavaScript manipulates
 	 * the same style class.
+	 * <p>
+	 * The <code>styleClass</code> should be a single class (although multiple
+	 * classes will work for the common case that the additional style classes
+	 * are all not yet present on the element.
 	 */
 	public abstract void addStyleClass(String styleClass, boolean force);
 
@@ -853,6 +857,8 @@ public abstract class WWidget extends WObject {
 	 * used to remove the style class from the DOM element (if JavaScript is
 	 * available). This may be necessary when client-side JavaScript manipulates
 	 * the same style class.
+	 * <p>
+	 * The <code>styleClass</code> should be a single class
 	 */
 	public abstract void removeStyleClass(String styleClass, boolean force);
 

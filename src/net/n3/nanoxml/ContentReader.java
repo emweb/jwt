@@ -155,7 +155,7 @@ class ContentReader
                continue; // don't interprete chars in the buffer
             }
 
-            if (ch == '<') {
+            if (ch == '<' && !lastWasEntity) {
                this.reader.unread(ch);
                break;
             }

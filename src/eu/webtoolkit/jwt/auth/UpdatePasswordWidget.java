@@ -49,7 +49,7 @@ public class UpdatePasswordWidget extends WTemplateFormView {
 		this.registrationModel_ = registrationModel;
 		this.authModel_ = authModel;
 		this.registrationModel_.setValue(RegistrationModel.LoginNameField, user
-				.identity(Identity.LoginName));
+				.getIdentity(Identity.LoginName));
 		this.registrationModel_.setReadOnly(RegistrationModel.LoginNameField,
 				true);
 		if (this.authModel_ != null
@@ -63,7 +63,7 @@ public class UpdatePasswordWidget extends WTemplateFormView {
 		WPushButton cancelButton = new WPushButton(tr("Wt.WMessageBox.Cancel"));
 		if (this.authModel_ != null) {
 			this.authModel_.setValue(AuthModel.LoginNameField, user
-					.identity(Identity.LoginName));
+					.getIdentity(Identity.LoginName));
 			this.updateViewField(this.authModel_, AuthModel.PasswordField);
 			this.authModel_.configureThrottling(okButton);
 			WLineEdit password = (WLineEdit) this

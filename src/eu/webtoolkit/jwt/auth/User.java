@@ -153,19 +153,51 @@ public class User {
 	}
 
 	/**
-	 * Returns the user&apos;s identity.
+	 * Returns an identity.
 	 */
-	public String identity(String provider) {
+	public String getIdentity(String provider) {
 		this.checkValid();
 		return this.db_.getIdentity(this, provider);
 	}
 
 	/**
-	 * Adds (or modifies) a user&apos;s identity.
+	 * Adds an identity.
+	 * <p>
+	 * Depending on whether the database supports multiple identities per
+	 * provider, this may change (like
+	 * {@link User#setIdentity(String provider, String identity) setIdentity()}
+	 * ), or add another identity to the user. For some identity providers (e.g.
+	 * a 3rd party identity provider), it may be sensible to have more than one
+	 * identity of the same provider for a single user (e.g. multiple email
+	 * accounts managed by the same provider, that in fact identify the same
+	 * user).
 	 */
 	public void addIdentity(String provider, String identity) {
 		this.checkValid();
 		this.db_.addIdentity(this, provider, identity);
+	}
+
+	/**
+	 * Sets an identity.
+	 * <p>
+	 * Unlike {@link User#addIdentity(String provider, String identity)
+	 * addIdentity()} this overrides any other identity of the given provider,
+	 * in case the underlying database supports multiple identities per user.
+	 */
+	public void setIdentity(String provider, String identity) {
+		this.checkValid();
+		this.db_.setIdentity(this, provider, identity);
+	}
+
+	/**
+	 * Removes an identity.
+	 * <p>
+	 * 
+	 * @see User#addIdentity(String provider, String identity)
+	 */
+	public void removeIdentity(String provider) {
+		this.checkValid();
+		this.db_.removeIdentity(this, provider);
 	}
 
 	/**

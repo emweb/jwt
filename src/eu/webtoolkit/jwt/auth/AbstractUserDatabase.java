@@ -125,9 +125,9 @@ public abstract class AbstractUserDatabase {
 	public abstract User findWithIdentity(String provider, String identity);
 
 	/**
-	 * Sets an identifier for the user.
+	 * Adds an identify for the user.
 	 * <p>
-	 * This associates an identifier with the user.
+	 * This adds an identity to the user.
 	 * <p>
 	 * You are free to support only one identity per user, e.g. if you only use
 	 * password-based authentication. But you may also want to support more than
@@ -135,6 +135,20 @@ public abstract class AbstractUserDatabase {
 	 * name/password, OAuth from one or more providers, LDAP, ...).
 	 */
 	public abstract void addIdentity(User user, String provider, String id);
+
+	/**
+	 * Changes an identity for a user.
+	 * <p>
+	 * The base implementation calls
+	 * {@link AbstractUserDatabase#removeIdentity(User user, String provider)
+	 * removeIdentity()} followed by
+	 * {@link AbstractUserDatabase#addIdentity(User user, String provider, String id)
+	 * addIdentity()}.
+	 */
+	public void setIdentity(User user, String provider, String id) {
+		this.removeIdentity(user, provider);
+		this.addIdentity(user, provider, id);
+	}
 
 	/**
 	 * Returns a user identity.
@@ -148,6 +162,16 @@ public abstract class AbstractUserDatabase {
 	 */
 	public abstract String getIdentity(User user, String provider);
 
+	/**
+	 * Removes a user identity.
+	 * <p>
+	 * This removes all identities of a <code>provider</code> from the
+	 * <code>user</code>.
+	 * <p>
+	 * 
+	 * @see AbstractUserDatabase#addIdentity(User user, String provider, String
+	 *      id)
+	 */
 	public abstract void removeIdentity(User user, String provider);
 
 	/**

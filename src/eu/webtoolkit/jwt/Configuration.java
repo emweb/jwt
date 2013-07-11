@@ -583,7 +583,7 @@ public class Configuration {
 	 * 
 	 * The default value is 200 (ms).
 	 */
-	void setDoubleClickTimeout(int doubleClickTimeout) {
+	public void setDoubleClickTimeout(int doubleClickTimeout) {
 		this.doubleClickTimeout = doubleClickTimeout;
 	}
 

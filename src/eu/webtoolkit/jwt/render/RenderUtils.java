@@ -9,8 +9,6 @@ import net.n3.nanoxml.StdXMLReader;
 import net.n3.nanoxml.XMLElement;
 import net.n3.nanoxml.XMLException;
 import net.n3.nanoxml.XMLParserFactory;
-import net.n3.nanoxml.XMLUtil;
-import eu.webtoolkit.jwt.WWebWidget;
 import eu.webtoolkit.jwt.XHtmlFilter;
 
 public class RenderUtils {
@@ -30,7 +28,7 @@ public class RenderUtils {
 		StringBuilder s = new StringBuilder(v.length());
 	      
 		for (int i = 0; i < v.length(); ++i) {
-		  if (block.isWhitespace(v.charAt(i))) {
+		  if (Block.isWhitespace(v.charAt(i))) {
 		    if (!haveWhitespace)
 		    	s.append(' ');
 		    haveWhitespace = true;
@@ -38,7 +36,6 @@ public class RenderUtils {
 		    s.append(v.charAt(i));
 		    haveWhitespace = false;
 		  }
-		 //TODO handle nsbp element see cpp
 		}
 		
 		node.setContent(s.toString());
@@ -76,18 +73,18 @@ public class RenderUtils {
 		}
 	}
 	
-	private static void printXmlTree(XMLElement e, int level) {
-		for (Object o : e.getChildren()) {
-			XMLElement c = ((XMLElement)o);
-			for (int i = 0; i < level; ++i)
-				System.err.print("\t");
-			System.err.print(c.getName() + " : " + c.getContent());
-			System.err.print("\n");
-			
-			if (c.getChildren().size() > 0)
-				printXmlTree(c, level + 1);
-		}
-	}
+//	private static void printXmlTree(XMLElement e, int level) {
+//		for (Object o : e.getChildren()) {
+//			XMLElement c = ((XMLElement)o);
+//			for (int i = 0; i < level; ++i)
+//				System.err.print("\t");
+//			System.err.print(c.getName() + " : " + c.getContent());
+//			System.err.print("\n");
+//			
+//			if (c.getChildren().size() > 0)
+//				printXmlTree(c, level + 1);
+//		}
+//	}
 
 	static XMLElement parseXHTML(String xhtml) {
 		IXMLParser parser;

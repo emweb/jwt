@@ -1039,11 +1039,17 @@ public class WContainerWidget extends WInteractWidget {
 				element.setProperty(Property.PropertyStylePadding,
 						this.padding_[0].getCssText());
 			} else {
-				element.setProperty(Property.PropertyStylePadding,
-						this.padding_[0].getCssText() + " "
-								+ this.padding_[1].getCssText() + " "
-								+ this.padding_[2].getCssText() + " "
-								+ this.padding_[3].getCssText());
+				StringBuilder s = new StringBuilder();
+				for (int i = 0; i < 4; ++i) {
+					if (i != 0) {
+						s.append(' ');
+					}
+					s.append(this.padding_[i].isAuto() ? "0" : this.padding_[i]
+							.getCssText());
+				}
+				element
+						.setProperty(Property.PropertyStylePadding, s
+								.toString());
 			}
 			this.flags_.clear(BIT_PADDINGS_CHANGED);
 		}

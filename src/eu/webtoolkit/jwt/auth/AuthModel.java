@@ -165,7 +165,7 @@ public class AuthModel extends FormBaseModel {
 								.append("throttling: ").append(
 										String.valueOf(this.throttlingDelay_))
 								.append(" seconds for ").append(
-										user.identity(Identity.LoginName))
+										user.getIdentity(Identity.LoginName))
 								.toString());
 						return false;
 					case PasswordValid:

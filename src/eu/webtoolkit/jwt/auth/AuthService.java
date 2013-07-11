@@ -584,10 +584,10 @@ public class AuthService {
 				.setSubject(WString.tr("Wt.Auth.confirmmail.subject")
 						.toString());
 		MailUtils.setBody(message, WString.tr("Wt.Auth.confirmmail.body").arg(
-				user.identity(Identity.LoginName)).arg(token).arg(url));
+				user.getIdentity(Identity.LoginName)).arg(token).arg(url));
 		MailUtils.addHtmlBody(message, WString.tr(
 				"Wt.Auth.confirmmail.htmlbody").arg(
-				user.identity(Identity.LoginName)).arg(token).arg(url));
+				user.getIdentity(Identity.LoginName)).arg(token).arg(url));
 		this.sendMail(message);
 	}
 
@@ -620,10 +620,10 @@ public class AuthService {
 		message.setSubject(WString.tr("Wt.Auth.lostpasswordmail.subject")
 				.toString());
 		MailUtils.setBody(message, WString.tr("Wt.Auth.lostpasswordmail.body")
-				.arg(user.identity(Identity.LoginName)).arg(token).arg(url));
+				.arg(user.getIdentity(Identity.LoginName)).arg(token).arg(url));
 		MailUtils.addHtmlBody(message, WString.tr(
 				"Wt.Auth.lostpasswordmail.htmlbody").arg(
-				user.identity(Identity.LoginName)).arg(token).arg(url));
+				user.getIdentity(Identity.LoginName)).arg(token).arg(url));
 		this.sendMail(message);
 	}
 

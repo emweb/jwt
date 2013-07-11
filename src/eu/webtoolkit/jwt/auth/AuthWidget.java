@@ -492,7 +492,7 @@ public class AuthWidget extends WTemplateFormView {
 	 */
 	protected void createLoggedInView() {
 		this.setTemplateText(tr("Wt.Auth.template.logged-in"));
-		this.bindString("user-name", this.login_.getUser().identity(
+		this.bindString("user-name", this.login_.getUser().getIdentity(
 				Identity.LoginName));
 		WPushButton logout = new WPushButton(tr("Wt.Auth.logout"));
 		logout.clicked().addListener(this, new Signal1.Listener<WMouseEvent>() {
