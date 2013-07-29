@@ -537,6 +537,9 @@ class WebSession {
 			if (this.canWriteAsyncResponse_) {
 				if (this.asyncResponse_.isWebSocketRequest()
 						&& this.asyncResponse_.isWebSocketMessagePending()) {
+					logger.debug(new StringWriter().append(
+							"pushUpdates(): web socket message pending")
+							.toString());
 					return;
 				}
 				if (this.asyncResponse_.isWebSocketRequest()) {
@@ -1598,6 +1601,7 @@ class WebSession {
 	}
 
 	private static void webSocketReady(WebSession session) {
+		logger.debug(new StringWriter().append("webSocketReady()").toString());
 	}
 
 	private void checkTimers() {

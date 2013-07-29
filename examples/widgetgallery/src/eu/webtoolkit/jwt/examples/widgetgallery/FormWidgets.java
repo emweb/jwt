@@ -394,18 +394,23 @@ class FormWidgets extends TopicWidget {
 
 	WWidget SpinBox() {
 		WContainerWidget container = new WContainerWidget();
+		container.addStyleClass("control-group");
 		new WText("Enter a number between 0 and 100:", container);
-		WDoubleSpinBox sb = new WDoubleSpinBox(container);
+		final WDoubleSpinBox sb = new WDoubleSpinBox(container);
 		sb.setRange(0, 100);
 		sb.setValue(50);
 		sb.setDecimals(2);
 		sb.setSingleStep(0.1);
 		sb.setMargin(new WLength(10), EnumSet.of(Side.Left, Side.Right));
 		final WText out = new WText("", container);
-		sb.valueChanged().addListener(this, new Signal1.Listener<Double>() {
-			public void trigger(Double d) {
-				out.setText(new WString("Spin box value changed to {1}.")
-						.arg(d));
+		sb.changed().addListener(this, new Signal.Listener() {
+			public void trigger() {
+				if (sb.validate() == WValidator.State.Valid) {
+					out.setText(new WString("Spin box value changed to {1}")
+							.arg(sb.getText()));
+				} else {
+					out.setText(new WString("Invalid spin box value!"));
+				}
 			}
 		});
 		return container;

@@ -97,7 +97,7 @@ class Line {
 		this.y_ = 0;
 		this.x_ = minX;
 		++this.page_;
-		List<Block> blocks = this.blocks_;
+		List<Block> blocks = new ArrayList<Block>(this.blocks_);
 		this.blocks_.clear();
 		Range rangeX = new Range(this.x_, maxX);
 		Block.adjustAvailableWidth(this.y_, this.page_, floats, rangeX);

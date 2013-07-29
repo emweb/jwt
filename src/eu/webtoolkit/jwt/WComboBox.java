@@ -67,6 +67,7 @@ public class WComboBox extends WFormWidget {
 		this.model_ = null;
 		this.modelColumn_ = 0;
 		this.currentIndex_ = -1;
+		this.currentIndexRaw_ = null;
 		this.itemsChanged_ = false;
 		this.selectionChanged_ = false;
 		this.currentlyConnected_ = false;
@@ -236,29 +237,12 @@ public class WComboBox extends WFormWidget {
 						WComboBox.this.itemsChanged();
 					}
 				}));
-		this.modelConnections_.add(this.model_.rowsAboutToBeInserted()
-				.addListener(this,
-						new Signal3.Listener<WModelIndex, Integer, Integer>() {
-							public void trigger(WModelIndex e1, Integer e2,
-									Integer e3) {
-								WComboBox.this
-										.rowsAboutToBeInserted(e1, e2, e3);
-							}
-						}));
 		this.modelConnections_.add(this.model_.rowsInserted().addListener(this,
 				new Signal3.Listener<WModelIndex, Integer, Integer>() {
 					public void trigger(WModelIndex e1, Integer e2, Integer e3) {
 						WComboBox.this.rowsInserted(e1, e2, e3);
 					}
 				}));
-		this.modelConnections_.add(this.model_.rowsAboutToBeRemoved()
-				.addListener(this,
-						new Signal3.Listener<WModelIndex, Integer, Integer>() {
-							public void trigger(WModelIndex e1, Integer e2,
-									Integer e3) {
-								WComboBox.this.rowsAboutToBeRemoved(e1, e2, e3);
-							}
-						}));
 		this.modelConnections_.add(this.model_.rowsRemoved().addListener(this,
 				new Signal3.Listener<WModelIndex, Integer, Integer>() {
 					public void trigger(WModelIndex e1, Integer e2, Integer e3) {
@@ -277,10 +261,16 @@ public class WComboBox extends WFormWidget {
 						WComboBox.this.itemsChanged();
 					}
 				}));
+		this.modelConnections_.add(this.model_.layoutAboutToBeChanged()
+				.addListener(this, new Signal.Listener() {
+					public void trigger() {
+						WComboBox.this.saveSelection();
+					}
+				}));
 		this.modelConnections_.add(this.model_.layoutChanged().addListener(
 				this, new Signal.Listener() {
 					public void trigger() {
-						WComboBox.this.itemsChanged();
+						WComboBox.this.layoutChanged();
 					}
 				}));
 		this.refresh();
@@ -386,12 +376,19 @@ public class WComboBox extends WFormWidget {
 	private WAbstractItemModel model_;
 	private int modelColumn_;
 	private int currentIndex_;
+	private Object currentIndexRaw_;
 	private boolean itemsChanged_;
 	boolean selectionChanged_;
 	private boolean currentlyConnected_;
 	private List<AbstractSignal.Connection> modelConnections_;
 	private Signal1<Integer> activated_;
 	private Signal1<WString> sactivated_;
+
+	private void layoutChanged() {
+		this.itemsChanged_ = true;
+		this.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
+		this.restoreSelection();
+	}
 
 	private void itemsChanged() {
 		this.itemsChanged_ = true;
@@ -416,9 +413,6 @@ public class WComboBox extends WFormWidget {
 		}
 	}
 
-	private void rowsAboutToBeInserted(WModelIndex index, int from, int to) {
-	}
-
 	private void rowsInserted(WModelIndex index, int from, int to) {
 		this.itemsChanged_ = true;
 		this.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
@@ -428,9 +422,6 @@ public class WComboBox extends WFormWidget {
 			int count = to - from + 1;
 			this.currentIndex_ += count;
 		}
-	}
-
-	private void rowsAboutToBeRemoved(WModelIndex index, int from, int to) {
 	}
 
 	private void rowsRemoved(WModelIndex index, int from, int to) {
@@ -444,7 +435,11 @@ public class WComboBox extends WFormWidget {
 			this.currentIndex_ -= count;
 		} else {
 			if (this.currentIndex_ >= from) {
-				this.currentIndex_ = this.model_.getRowCount() > 0 ? 0 : -1;
+				if (this.isSupportsNoSelection()) {
+					this.currentIndex_ = -1;
+				} else {
+					this.currentIndex_ = this.model_.getRowCount() > 0 ? 0 : -1;
+				}
 			}
 		}
 	}
@@ -531,5 +526,28 @@ public class WComboBox extends WFormWidget {
 	}
 
 	void dummy() {
+	}
+
+	protected void saveSelection() {
+		if (this.currentIndex_ >= 0) {
+			this.currentIndexRaw_ = this.model_.toRawIndex(this.model_
+					.getIndex(this.currentIndex_, this.modelColumn_));
+		} else {
+			this.currentIndexRaw_ = null;
+		}
+	}
+
+	protected void restoreSelection() {
+		if (this.currentIndexRaw_ != null) {
+			WModelIndex m = this.model_.fromRawIndex(this.currentIndexRaw_);
+			if ((m != null)) {
+				this.currentIndex_ = m.getRow();
+			} else {
+				this.currentIndex_ = -1;
+			}
+		} else {
+			this.currentIndex_ = -1;
+		}
+		this.currentIndexRaw_ = null;
 	}
 }

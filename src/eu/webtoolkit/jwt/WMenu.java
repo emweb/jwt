@@ -382,8 +382,150 @@ public class WMenu extends WCompositeWidget {
 	 *      WMenuItem.LoadPolicy policy)
 	 */
 	public void addItem(WMenuItem item) {
+		this.insertItem(this.getUl().getCount(), item);
+	}
+
+	/**
+	 * inserts an item.
+	 * <p>
+	 * Use this version of
+	 * {@link WMenu#insertItem(int index, CharSequence name, WWidget contents, WMenuItem.LoadPolicy policy)
+	 * insertItem()} if you do not want to specify an icon for this menu item.
+	 * <p>
+	 * Returns the corresponding {@link WMenuItem}.
+	 * <p>
+	 * 
+	 * @see WMenu#insertItem(int index, String iconPath, CharSequence name,
+	 *      WWidget contents, WMenuItem.LoadPolicy policy)
+	 * @see WMenu#insertItem(int index, WMenuItem item)
+	 */
+	public WMenuItem insertItem(int index, CharSequence name, WWidget contents,
+			WMenuItem.LoadPolicy policy) {
+		return this.insertItem(index, "", name, contents, policy);
+	}
+
+	/**
+	 * inserts an item.
+	 * <p>
+	 * Returns
+	 * {@link #insertItem(int index, CharSequence name, WWidget contents, WMenuItem.LoadPolicy policy)
+	 * insertItem(index, name, (WWidget)null, WMenuItem.LoadPolicy.LazyLoading)}
+	 */
+	public final WMenuItem insertItem(int index, CharSequence name) {
+		return insertItem(index, name, (WWidget) null,
+				WMenuItem.LoadPolicy.LazyLoading);
+	}
+
+	/**
+	 * inserts an item.
+	 * <p>
+	 * Returns
+	 * {@link #insertItem(int index, CharSequence name, WWidget contents, WMenuItem.LoadPolicy policy)
+	 * insertItem(index, name, contents, WMenuItem.LoadPolicy.LazyLoading)}
+	 */
+	public final WMenuItem insertItem(int index, CharSequence name,
+			WWidget contents) {
+		return insertItem(index, name, contents,
+				WMenuItem.LoadPolicy.LazyLoading);
+	}
+
+	/**
+	 * inserts an item.
+	 * <p>
+	 * inserts a menu item with given <code>contents</code>, which is inserted
+	 * to the menu&apos;s associated contents stack.
+	 * <p>
+	 * <code>contents</code> may be <code>null</code> for two reasons:
+	 * <ul>
+	 * <li>if the menu is not associated with a contents stack, then you cannot
+	 * associate a menu item with a contents widget</li>
+	 * <li>or, you may have one or more items which which are not associated
+	 * with a contents widget in the contents stack.</li>
+	 * </ul>
+	 * <p>
+	 * Returns the corresponding {@link WMenuItem}.
+	 * <p>
+	 * 
+	 * @see WMenu#insertItem(int index, WMenuItem item)
+	 */
+	public WMenuItem insertItem(int index, String iconPath, CharSequence name,
+			WWidget contents, WMenuItem.LoadPolicy policy) {
+		WMenuItem item = new WMenuItem(iconPath, name, contents, policy);
+		this.insertItem(index, item);
+		return item;
+	}
+
+	/**
+	 * inserts an item.
+	 * <p>
+	 * Returns
+	 * {@link #insertItem(int index, String iconPath, CharSequence name, WWidget contents, WMenuItem.LoadPolicy policy)
+	 * insertItem(index, iconPath, name, (WWidget)null,
+	 * WMenuItem.LoadPolicy.LazyLoading)}
+	 */
+	public final WMenuItem insertItem(int index, String iconPath,
+			CharSequence name) {
+		return insertItem(index, iconPath, name, (WWidget) null,
+				WMenuItem.LoadPolicy.LazyLoading);
+	}
+
+	/**
+	 * inserts an item.
+	 * <p>
+	 * Returns
+	 * {@link #insertItem(int index, String iconPath, CharSequence name, WWidget contents, WMenuItem.LoadPolicy policy)
+	 * insertItem(index, iconPath, name, contents,
+	 * WMenuItem.LoadPolicy.LazyLoading)}
+	 */
+	public final WMenuItem insertItem(int index, String iconPath,
+			CharSequence name, WWidget contents) {
+		return insertItem(index, iconPath, name, contents,
+				WMenuItem.LoadPolicy.LazyLoading);
+	}
+
+	// public WMenuItem insertItem(int index, CharSequence text, T target,
+	// <pointertomember or dependentsizedarray> methodpointertomember or
+	// dependentsizedarray>) ;
+	// public WMenuItem insertItem(int index, String iconPath, CharSequence
+	// text, T target, <pointertomember or dependentsizedarray>
+	// methodpointertomember or dependentsizedarray>) ;
+	/**
+	 * inserts a submenu, with given text.
+	 * <p>
+	 * inserts an item with text <code>text</code>, that leads to a submenu
+	 * <code>menu</code>.
+	 * <p>
+	 */
+	public WMenuItem insertMenu(int index, CharSequence text, WMenu menu) {
+		return this.insertMenu(index, "", text, menu);
+	}
+
+	/**
+	 * inserts a submenu, with given icon and text.
+	 * <p>
+	 * inserts an item with given text and icon, that leads to a submenu
+	 * <code>menu</code>.
+	 * <p>
+	 */
+	public WMenuItem insertMenu(int index, String iconPath, CharSequence text,
+			WMenu menu) {
+		WMenuItem item = new WMenuItem(iconPath, text, (WWidget) null,
+				WMenuItem.LoadPolicy.LazyLoading);
+		item.setMenu(menu);
+		this.insertItem(index, item);
+		return item;
+	}
+
+	/**
+	 * Inserts an item.
+	 * <p>
+	 * Inserts a menu item. Use this form to insert specialized
+	 * {@link WMenuItem} implementations.
+	 * <p>
+	 */
+	public void insertItem(int index, WMenuItem item) {
 		item.setParentMenu(this);
-		this.getUl().addWidget(item);
+		this.getUl().insertWidget(index, item);
 		if (this.contentsStack_ != null) {
 			WWidget contents = item.getContents();
 			if (contents != null) {

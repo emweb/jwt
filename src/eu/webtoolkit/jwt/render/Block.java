@@ -1333,7 +1333,8 @@ class Block {
 			return this.parent_.getCssFontStyle();
 		}
 		String v = this.cssProperty(Property.PropertyStyleFontStyle);
-		if (v.length() == 0 && this.type_ == DomElementType.DomElement_EM) {
+		if (v.length() == 0
+				&& (this.type_ == DomElementType.DomElement_EM || this.type_ == DomElementType.DomElement_I)) {
 			return WFont.Style.Italic;
 		} else {
 			if (v.equals("normal")) {

@@ -1281,7 +1281,7 @@ class WebRenderer implements SlotLearnerInterface {
 		bootJs.setVar("APP_CLASS", "Wt");
 		bootJs.setVar("PATH_INFO", WWebWidget.jsStringLiteral(this.session_
 				.getEnv().pathInfo_));
-		bootJs.setCondition("COOKIE_CHECKS", false && conf.isCookieChecks());
+		bootJs.setCondition("COOKIE_CHECKS", conf.isCookieChecks());
 		bootJs.setCondition("SPLIT_SCRIPT", conf.splitScript());
 		bootJs.setCondition("HYBRID", hybrid);
 		bootJs.setCondition("PROGRESS", hybrid

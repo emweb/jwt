@@ -396,6 +396,7 @@ public abstract class WFormWidget extends WInteractWidget {
 		if (this.validator_ != null && textFormat == TextFormat.PlainText) {
 			this.setJavaScriptMember("defaultTT", WString.toWString(text)
 					.getJsStringLiteral());
+			this.validate();
 		}
 	}
 
