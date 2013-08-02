@@ -55,6 +55,7 @@ public class WStringListModel extends WAbstractListModel {
 		super(parent);
 		this.displayData_ = new ArrayList<WString>();
 		this.otherData_ = null;
+		this.flags_ = new ArrayList<EnumSet<ItemFlag>>();
 	}
 
 	/**
@@ -73,6 +74,7 @@ public class WStringListModel extends WAbstractListModel {
 		super(parent);
 		this.displayData_ = strings;
 		this.otherData_ = null;
+		this.flags_ = new ArrayList<EnumSet<ItemFlag>>();
 	}
 
 	/**
@@ -105,6 +107,7 @@ public class WStringListModel extends WAbstractListModel {
 			}
 		}
 		Utils.copyList(strings, this.displayData_);
+		this.flags_.clear();
 		;
 		this.otherData_ = null;
 		if (newSize > currentSize) {
@@ -153,16 +156,52 @@ public class WStringListModel extends WAbstractListModel {
 	}
 
 	/**
+	 * Sets model flags for an item.
+	 * <p>
+	 * The default item flags are {@link ItemFlag#ItemIsSelectable
+	 * ItemIsSelectable} | {@link ItemFlag#ItemIsEditable ItemIsEditable}.
+	 */
+	public void setFlags(int row, EnumSet<ItemFlag> flags) {
+		if (this.flags_.isEmpty()) {
+			{
+				int insertPos = 0;
+				for (int ii = 0; ii < this.getRowCount(); ++ii)
+					this.flags_
+							.add(insertPos + ii, EnumSet.of(
+									ItemFlag.ItemIsSelectable,
+									ItemFlag.ItemIsEditable));
+			}
+			;
+		}
+		this.flags_.set(row, flags);
+	}
+
+	/**
+	 * Sets model flags for an item.
+	 * <p>
+	 * Calls {@link #setFlags(int row, EnumSet flags) setFlags(row,
+	 * EnumSet.of(flag, flags))}
+	 */
+	public final void setFlags(int row, ItemFlag flag, ItemFlag... flags) {
+		setFlags(row, EnumSet.of(flag, flags));
+	}
+
+	/**
 	 * Returns the flags for an item.
 	 * <p>
-	 * This method is reimplemented to return {@link ItemFlag#ItemIsSelectable
-	 * ItemIsSelectable} | {@link ItemFlag#ItemIsEditable ItemIsEditable}.
+	 * This method is reimplemented to return flags set in
+	 * {@link WStringListModel#setFlags(int row, EnumSet flags) setFlags()}.
 	 * <p>
 	 * 
-	 * @see ItemFlag
+	 * @see WStringListModel#setFlags(int row, EnumSet flags)
 	 */
 	public EnumSet<ItemFlag> getFlags(WModelIndex index) {
-		return EnumSet.of(ItemFlag.ItemIsSelectable, ItemFlag.ItemIsEditable);
+		if (this.flags_.isEmpty()) {
+			return EnumSet.of(ItemFlag.ItemIsSelectable,
+					ItemFlag.ItemIsEditable);
+		} else {
+			return this.flags_.get(index.getRow());
+		}
 	}
 
 	public boolean setData(WModelIndex index, Object value, int role) {
@@ -209,6 +248,16 @@ public class WStringListModel extends WAbstractListModel {
 					this.displayData_.add(insertPos + ii, new WString());
 			}
 			;
+			if (!this.flags_.isEmpty()) {
+				{
+					int insertPos = 0 + row;
+					for (int ii = 0; ii < count; ++ii)
+						this.flags_.add(insertPos + ii, EnumSet.of(
+								ItemFlag.ItemIsSelectable,
+								ItemFlag.ItemIsEditable));
+				}
+				;
+			}
 			if (this.otherData_ != null) {
 				{
 					int insertPos = 0 + row;
@@ -231,6 +280,11 @@ public class WStringListModel extends WAbstractListModel {
 			for (int ii = 0; ii < (0 + row + count) - (0 + row); ++ii)
 				this.displayData_.remove(0 + row);
 			;
+			if (!this.flags_.isEmpty()) {
+				for (int ii = 0; ii < (0 + row + count) - (0 + row); ++ii)
+					this.flags_.remove(0 + row);
+				;
+			}
 			if (this.otherData_ != null) {
 				for (int ii = 0; ii < (0 + row + count) - (0 + row); ++ii)
 					this.otherData_.remove(0 + row);
@@ -245,7 +299,7 @@ public class WStringListModel extends WAbstractListModel {
 
 	public void sort(int column, SortOrder order) {
 		this.layoutAboutToBeChanged().trigger();
-		if (!(this.otherData_ != null)) {
+		if (!(this.otherData_ != null) && this.flags_.isEmpty()) {
 			if (order == SortOrder.AscendingOrder) {
 				Collections.sort(this.displayData_);
 			} else {
@@ -261,19 +315,33 @@ public class WStringListModel extends WAbstractListModel {
 					order));
 			List<WString> displayData = new ArrayList<WString>();
 			CollectionUtils.resize(displayData, this.getRowCount());
-			List<SortedMap<Integer, Object>> otherData = new ArrayList<SortedMap<Integer, Object>>();
-			CollectionUtils.resize(otherData, this.getRowCount());
+			List<EnumSet<ItemFlag>> flags = new ArrayList<EnumSet<ItemFlag>>();
+			if (!this.flags_.isEmpty()) {
+				CollectionUtils.resize(flags, this.getRowCount());
+			}
+			List<SortedMap<Integer, Object>> otherData = null;
+			if (this.otherData_ != null) {
+				otherData = new ArrayList<SortedMap<Integer, Object>>();
+				CollectionUtils.resize(otherData, this.getRowCount());
+			}
 			for (int i = 0; i < permutation.size(); ++i) {
 				displayData.set(i, this.displayData_.get(permutation.get(i)));
-				otherData.set(i, this.otherData_.get(permutation.get(i)));
+				if (otherData != null) {
+					otherData.set(i, this.otherData_.get(permutation.get(i)));
+				}
+				if (!flags.isEmpty()) {
+					flags.set(i, this.flags_.get(permutation.get(i)));
+				}
 			}
 			Utils.copyList(displayData, this.displayData_);
 			;
 			this.otherData_ = otherData;
+			Utils.copyList(flags, this.flags_);
 		}
 		this.layoutChanged().trigger();
 	}
 
 	private List<WString> displayData_;
 	private List<SortedMap<Integer, Object>> otherData_;
+	private List<EnumSet<ItemFlag>> flags_;
 }

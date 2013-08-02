@@ -576,16 +576,17 @@ class FormWidgets extends TopicWidget {
 		WContainerWidget container = new WContainerWidget();
 		final WComboBox cb = new WComboBox(container);
 		cb.setMargin(new WLength(10), EnumSet.of(Side.Right));
-		final WAbstractItemModel model = cb.getModel();
-		model.insertRows(0, 4);
-		model.setData(0, 0, "Belgium", ItemDataRole.DisplayRole);
+		final WStringListModel model = new WStringListModel(cb);
+		model.addString("Belgium");
 		model.setData(0, 0, "BE", ItemDataRole.UserRole);
-		model.setData(1, 0, "Netherlands", ItemDataRole.DisplayRole);
+		model.addString("Netherlands");
 		model.setData(1, 0, "NL", ItemDataRole.UserRole);
-		model.setData(2, 0, "United Kingdom", ItemDataRole.DisplayRole);
+		model.addString("United Kingdom");
 		model.setData(2, 0, "UK", ItemDataRole.UserRole);
-		model.setData(3, 0, "United States", ItemDataRole.DisplayRole);
+		model.addString("United States");
 		model.setData(3, 0, "US", ItemDataRole.UserRole);
+		model.setFlags(3, EnumSet.noneOf(ItemFlag.class));
+		cb.setModel(model);
 		final WText out = new WText(container);
 		cb.changed().addListener(this, new Signal.Listener() {
 			public void trigger() {

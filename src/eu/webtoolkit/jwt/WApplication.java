@@ -154,11 +154,10 @@ public class WApplication extends WObject {
 		this.serverPush_ = 0;
 		this.serverPushChanged_ = true;
 		this.javaScriptClass_ = "Wt";
-		this.dialogCover_ = null;
 		this.quited_ = false;
 		this.onePixelGifUrl_ = "";
 		this.internalPathsEnabled_ = false;
-		this.exposedOnly_ = new ArrayList<WWidget>();
+		this.exposedOnly_ = null;
 		this.loadingIndicator_ = null;
 		this.connected_ = true;
 		this.htmlClass_ = "";
@@ -2717,19 +2716,12 @@ public class WApplication extends WObject {
 	 * This defines a new context of widgets that are currently visible.
 	 */
 	void pushExposedConstraint(WWidget w) {
-		this.exposedOnly_.add(w);
+		this.exposedOnly_ = w;
 	}
 
 	void popExposedConstraint(WWidget w) {
-		for (int i = this.exposedOnly_.size(); i > 0; --i) {
-			int j = i - 1;
-			if (this.exposedOnly_.get(j) == w) {
-				while (this.exposedOnly_.size() > j) {
-					this.exposedOnly_.remove(this.exposedOnly_.size() - 1);
-				}
-				break;
-			}
-		}
+		assert this.exposedOnly_ == w;
+		this.exposedOnly_ = null;
 	}
 
 	public void addGlobalWidget(WWidget w) {
@@ -2806,18 +2798,8 @@ public class WApplication extends WObject {
 		if (w.getParent() == this.timerRoot_) {
 			return true;
 		}
-		if (!this.exposedOnly_.isEmpty()) {
-			WWidget top = this.exposedOnly_.get(this.exposedOnly_.size() - 1);
-			if (top.isExposed(w)) {
-				return true;
-			}
-			for (WWidget p = w.getParent(); p != null; p = p.getParent()) {
-				if (p == this.domRoot_) {
-					return w != this.getRoot();
-				}
-				w = p;
-			}
-			return false;
+		if (this.exposedOnly_ != null) {
+			return this.exposedOnly_.isExposed(w);
 		} else {
 			WWidget p = w.getAdam();
 			return p == this.domRoot_ || p == this.domRoot2_;
@@ -2957,11 +2939,10 @@ public class WApplication extends WObject {
 	boolean serverPushChanged_;
 	private String javaScriptClass_;
 	private WApplication.AjaxMethod ajaxMethod_;
-	private WContainerWidget dialogCover_;
 	private boolean quited_;
 	private String onePixelGifUrl_;
 	boolean internalPathsEnabled_;
-	private List<WWidget> exposedOnly_;
+	private WWidget exposedOnly_;
 	private WLoadingIndicator loadingIndicator_;
 	WWidget loadingIndicatorWidget_;
 	private boolean connected_;
@@ -3000,20 +2981,6 @@ public class WApplication extends WObject {
 
 	WContainerWidget getTimerRoot() {
 		return this.timerRoot_;
-	}
-
-	WContainerWidget getDialogCover(boolean create) {
-		if (this.dialogCover_ == null && create && this.timerRoot_ != null) {
-			this.dialogCover_ = new WContainerWidget(this.domRoot_);
-			this.getTheme().apply(this.domRoot_, this.dialogCover_,
-					WidgetThemeRole.DialogCoverRole);
-			this.dialogCover_.hide();
-		}
-		return this.dialogCover_;
-	}
-
-	final WContainerWidget getDialogCover() {
-		return getDialogCover(true);
 	}
 
 	WEnvironment getEnv() {

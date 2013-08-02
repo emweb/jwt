@@ -460,6 +460,12 @@ public class WComboBox extends WFormWidget {
 				item.setProperty(Property.PropertyInnerHTML, escapeText(
 						StringUtils.asString(this.model_.getData(i,
 								this.modelColumn_))).toString());
+				if (!!EnumUtils.mask(
+						this.model_.getFlags(this.model_.getIndex(i,
+								this.modelColumn_)), ItemFlag.ItemIsSelectable)
+						.isEmpty()) {
+					item.setProperty(Property.PropertyDisabled, "true");
+				}
 				if (this.isSelected(i)) {
 					item.setProperty(Property.PropertySelected, "true");
 				}

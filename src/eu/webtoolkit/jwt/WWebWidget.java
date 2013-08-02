@@ -677,6 +677,14 @@ public abstract class WWebWidget extends WWidget {
 		}
 	}
 
+	public int getZIndex() {
+		if (this.layoutImpl_ != null) {
+			return this.layoutImpl_.zIndex_;
+		} else {
+			return 0;
+		}
+	}
+
 	public void setId(String id) {
 		if (!(this.otherImpl_ != null)) {
 			this.otherImpl_ = new WWebWidget.OtherImpl(this);
@@ -960,14 +968,6 @@ public abstract class WWebWidget extends WWidget {
 	static boolean canOptimizeUpdates() {
 		return !WApplication.getInstance().getSession().getRenderer()
 				.isPreLearning();
-	}
-
-	int getZIndex() {
-		if (this.layoutImpl_ != null) {
-			return this.layoutImpl_.zIndex_;
-		} else {
-			return 0;
-		}
 	}
 
 	void setZIndex(int zIndex) {
@@ -1855,6 +1855,7 @@ public abstract class WWebWidget extends WWidget {
 	private static final int BIT_HEIGHT_CHANGED = 23;
 	private static final int BIT_DISABLED = 24;
 	private static final int BIT_DISABLED_CHANGED = 25;
+	private static final int BIT_CONTAINS_LAYOUT = 26;
 	BitSet flags_;
 	private WLength width_;
 	private WLength height_;
@@ -2386,6 +2387,34 @@ public abstract class WWebWidget extends WWidget {
 		if (name.charAt(0) != 'M' && signal.needsUpdate(all)) {
 			element.setEventSignal(name, signal);
 			signal.updateOk();
+		}
+	}
+
+	protected void parentResized(WWidget parent, EnumSet<Orientation> directions) {
+		if (this.flags_.get(BIT_CONTAINS_LAYOUT)) {
+			if (this.children_ != null) {
+				for (int i = 0; i < this.children_.size(); ++i) {
+					WWidget c = this.children_.get(i);
+					if (!c.isHidden()) {
+						c.getWebWidget().parentResized(parent, directions);
+					}
+				}
+			}
+		}
+	}
+
+	protected final void parentResized(WWidget parent, Orientation direction,
+			Orientation... directions) {
+		parentResized(parent, EnumSet.of(direction, directions));
+	}
+
+	protected void containsLayout() {
+		if (!this.flags_.get(BIT_CONTAINS_LAYOUT)) {
+			this.flags_.set(BIT_CONTAINS_LAYOUT);
+			WWebWidget p = this.getParentWebWidget();
+			if (p != null) {
+				p.containsLayout();
+			}
 		}
 	}
 

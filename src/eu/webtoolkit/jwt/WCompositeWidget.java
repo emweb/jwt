@@ -338,6 +338,10 @@ public class WCompositeWidget extends WWidget {
 		return this.impl_.getTabIndex();
 	}
 
+	public int getZIndex() {
+		return this.impl_.getZIndex();
+	}
+
 	public void setId(String id) {
 		this.impl_.setId(id);
 	}

@@ -312,9 +312,9 @@ public class WDateEdit extends WLineEdit {
 	}
 
 	private void connectJavaScript(AbstractEventSignal s, String methodName) {
-		String jsFunction = "function(obj, event) {var o = jQuery.data("
-				+ this.getJsRef() + ", 'obj');if (o) o." + methodName
-				+ "(obj, event);}";
+		String jsFunction = "function(dobj, event) {var o = jQuery.data("
+				+ this.getJsRef() + ", 'dobj');if (o) o." + methodName
+				+ "(dobj, event);}";
 		s.addListener(jsFunction);
 	}
 
@@ -323,6 +323,6 @@ public class WDateEdit extends WLineEdit {
 				JavaScriptScope.WtClassScope,
 				JavaScriptObjectType.JavaScriptConstructor,
 				"WDateEdit",
-				"function(g,a,h){function f(){return!!a.getAttribute(\"readonly\")}function i(){var b=$(\"#\"+h.id).get(0);return jQuery.data(b,\"popup\")}function j(){c.removeClass(\"active\")}function k(){var b=i();b.bindHide(j);b.show(a,e.Vertical)}jQuery.data(a,\"obj\",this);var e=g.WT,c=$(a);this.mouseOut=function(){c.removeClass(\"hover\")};this.mouseMove=function(b,d){if(!f())if(e.widgetCoordinates(a,d).x>a.offsetWidth-40)c.addClass(\"hover\");else c.hasClass(\"hover\")&& c.removeClass(\"hover\")};this.mouseDown=function(b,d){if(!f())if(e.widgetCoordinates(a,d).x>a.offsetWidth-40){e.cancelEvent(d);c.addClass(\"unselectable\").addClass(\"active\")}};this.mouseUp=function(b,d){c.removeClass(\"unselectable\");e.widgetCoordinates(a,d).x>a.offsetWidth-40&&k()}}");
+				"function(g,a,h){function f(){return!!a.getAttribute(\"readonly\")}function i(){var b=$(\"#\"+h.id).get(0);return jQuery.data(b,\"popup\")}function j(){c.removeClass(\"active\")}function k(){var b=i();b.bindHide(j);b.show(a,e.Vertical)}jQuery.data(a,\"dobj\",this);var e=g.WT,c=$(a);this.mouseOut=function(){c.removeClass(\"hover\")};this.mouseMove=function(b,d){if(!f())if(e.widgetCoordinates(a,d).x>a.offsetWidth-40)c.addClass(\"hover\");else c.hasClass(\"hover\")&& c.removeClass(\"hover\")};this.mouseDown=function(b,d){if(!f())if(e.widgetCoordinates(a,d).x>a.offsetWidth-40){e.cancelEvent(d);c.addClass(\"unselectable\").addClass(\"active\")}};this.mouseUp=function(b,d){c.removeClass(\"unselectable\");e.widgetCoordinates(a,d).x>a.offsetWidth-40&&k()}}");
 	}
 }

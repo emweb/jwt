@@ -432,7 +432,8 @@ public abstract class WWidget extends WObject {
 	 * Positions a widget next to another widget.
 	 * <p>
 	 * Positions this absolutely positioned widget next to another
-	 * <code>widget</code>. Both widgets must be visible.
+	 * <code>widget</code>. Both widgets must be visible (including all their
+	 * ancestors). The current widget is shown automatically if needed.
 	 * <p>
 	 * When <code>orientation</code> = {@link Orientation#Vertical}, the widget
 	 * is displayed below the other widget (or above in case there is not enough
@@ -450,11 +451,13 @@ public abstract class WWidget extends WObject {
 	 * </p>
 	 */
 	public void positionAt(WWidget widget, Orientation orientation) {
+		if (this.isHidden()) {
+			this.show();
+		}
 		String side = orientation == Orientation.Horizontal ? ".Horizontal"
 				: ".Vertical";
-		WApplication.getInstance().doJavaScript(
-				"Wt3_3_0.positionAtWidget('" + this.getId() + "','"
-						+ widget.getId() + "',Wt3_3_0" + side + ");");
+		this.doJavaScript("Wt3_3_0.positionAtWidget('" + this.getId() + "','"
+				+ widget.getId() + "',Wt3_3_0" + side + ");");
 	}
 
 	/**
@@ -1119,6 +1122,8 @@ public abstract class WWidget extends WObject {
 	 */
 	public abstract int getTabIndex();
 
+	public abstract int getZIndex();
+
 	/**
 	 * Sets a mime type to be accepted for dropping.
 	 * <p>
@@ -1373,6 +1378,18 @@ public abstract class WWidget extends WObject {
 		second.setTabIndex(first.getTabIndex() + 1);
 	}
 
+	public boolean isExposed(WWidget w) {
+		if (w == this) {
+			return true;
+		}
+		for (WWidget p = w; p != null; p = p.getParent()) {
+			if (p == this) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	static String WT_RESIZE_JS = "wtResize";
 	protected static String WT_GETPS_JS = "wtGetPS";
 
@@ -1562,18 +1579,6 @@ public abstract class WWidget extends WObject {
 	 */
 	protected abstract void propagateSetEnabled(boolean enabled);
 
-	protected boolean isExposed(WWidget w) {
-		if (w == this) {
-			return true;
-		}
-		for (WWidget p = w; p != null; p = p.getParent()) {
-			if (p == this) {
-				return true;
-			}
-		}
-		return false;
-	}
-
 	protected void getDrop(final String sourceId, final String mimeType,
 			WMouseEvent event) {
 		WDropEvent e = new WDropEvent(WApplication.getInstance().decodeObject(
@@ -1734,6 +1739,8 @@ public abstract class WWidget extends WObject {
 		if (!EnumUtils.mask(flags, RepaintFlag.RepaintSizeAffected).isEmpty()
 				&& !this.flags_.get(BIT_NEED_RERENDER_SIZE_CHANGE)) {
 			this.flags_.set(BIT_NEED_RERENDER_SIZE_CHANGE);
+			this.getWebWidget().parentResized(this,
+					EnumSet.of(Orientation.Vertical));
 			if (this.getPositionScheme() == PositionScheme.Absolute) {
 				return;
 			}

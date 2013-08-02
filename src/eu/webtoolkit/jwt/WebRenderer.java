@@ -36,6 +36,8 @@ class WebRenderer implements SlotLearnerInterface {
 		this.cookiesToSet_ = new HashMap<String, WebRenderer.CookieValue>();
 		this.currentFormObjects_ = new HashMap<String, WObject>();
 		this.currentFormObjectsList_ = "";
+		this.formObjectsChanged_ = true;
+		this.updateLayout_ = false;
 		this.collectedJS1_ = new StringBuilder();
 		this.collectedJS2_ = new StringBuilder();
 		this.invisibleJS_ = new StringBuilder();
@@ -224,6 +226,10 @@ class WebRenderer implements SlotLearnerInterface {
 		this.learningIncomplete_ = true;
 	}
 
+	public void updateLayout() {
+		this.updateLayout_ = true;
+	}
+
 	public boolean ackUpdate(int updateId) {
 		if (updateId == this.expectedAckId_) {
 			this.setJSSynced(false);
@@ -345,6 +351,7 @@ class WebRenderer implements SlotLearnerInterface {
 	private Map<String, WObject> currentFormObjects_;
 	private String currentFormObjectsList_;
 	private boolean formObjectsChanged_;
+	private boolean updateLayout_;
 
 	private void setHeaders(WebResponse response, final String mimeType) {
 		for (Iterator<Map.Entry<String, WebRenderer.CookieValue>> i_it = this.cookiesToSet_
@@ -445,9 +452,7 @@ class WebRenderer implements SlotLearnerInterface {
 			this.expectedAckId_ = this.scriptId_ = MathUtils.randomInt();
 		}
 		WApplication app = this.session_.getApp();
-		final boolean xhtml = this.session_.getEnv().getContentType() == WEnvironment.ContentType.XHTML1;
-		final boolean innerHtml = !xhtml
-				|| this.session_.getEnv().agentIsGecko();
+		final boolean innerHtml = true;
 		if (serveSkeletons) {
 			boolean haveJQuery = app.isCustomJQuery();
 			if (!haveJQuery) {
@@ -608,7 +613,6 @@ class WebRenderer implements SlotLearnerInterface {
 	}
 
 	private void serveBootstrap(WebResponse response) throws IOException {
-		boolean xhtml = this.session_.getEnv().getContentType() == WEnvironment.ContentType.XHTML1;
 		Configuration conf = this.session_.getController().getConfiguration();
 		FileServe boot = new FileServe(WtServlet.Boot_html);
 		this.setPageVars(boot);
@@ -618,15 +622,10 @@ class WebRenderer implements SlotLearnerInterface {
 						WebSession.BootstrapOption.KeepInternalPath)
 				+ "&js=no");
 		boot.setVar("REDIRECT_URL", noJsRedirectUrl.toString());
-		if (xhtml) {
-			boot.setVar("AUTO_REDIRECT", "");
-			boot.setVar("NOSCRIPT_TEXT", conf.getRedirectMessage());
-		} else {
-			boot.setVar("AUTO_REDIRECT",
-					"<noscript><meta http-equiv=\"refresh\" content=\"0; url="
-							+ noJsRedirectUrl.toString() + "\"></noscript>");
-			boot.setVar("NOSCRIPT_TEXT", conf.getRedirectMessage());
-		}
+		boot.setVar("AUTO_REDIRECT",
+				"<noscript><meta http-equiv=\"refresh\" content=\"0; url="
+						+ noJsRedirectUrl.toString() + "\"></noscript>");
+		boot.setVar("NOSCRIPT_TEXT", conf.getRedirectMessage());
 		StringBuilder bootStyleUrl = new StringBuilder();
 		DomElement.htmlAttributeValue(bootStyleUrl, this.session_
 				.getBootstrapUrl(response,
@@ -634,8 +633,7 @@ class WebRenderer implements SlotLearnerInterface {
 				+ "&request=style");
 		boot.setVar("BOOT_STYLE_URL", bootStyleUrl.toString());
 		this.setCaching(response, false);
-		String contentType = xhtml ? "application/xhtml+xml" : "text/html";
-		contentType += "; charset=UTF-8";
+		String contentType = "text/html; charset=UTF-8";
 		this.setHeaders(response, contentType);
 		StringBuilder out = new StringBuilder();
 		this.streamBootContent(response, boot, false);
@@ -668,17 +666,15 @@ class WebRenderer implements SlotLearnerInterface {
 		DomElement mainElement = mainWebWidget.createSDomElement(app);
 		this.rendered_ = true;
 		this.setJSSynced(true);
-		final boolean xhtml = app.getEnvironment().getContentType() == WEnvironment.ContentType.XHTML1;
 		StringBuilder styleSheets = new StringBuilder();
 		if (app.getTheme() != null) {
 			List<WCssStyleSheet> sheets = app.getTheme().getStyleSheets();
 			for (int i = 0; i < sheets.size(); ++i) {
-				this.renderStyleSheet(styleSheets, sheets.get(i), app, xhtml);
+				this.renderStyleSheet(styleSheets, sheets.get(i), app);
 			}
 		}
 		for (int i = 0; i < app.styleSheets_.size(); ++i) {
-			this.renderStyleSheet(styleSheets, app.styleSheets_.get(i), app,
-					xhtml);
+			this.renderStyleSheet(styleSheets, app.styleSheets_.get(i), app);
 		}
 		app.styleSheetsAdded_ = 0;
 		this.initialStyleRendered_ = true;
@@ -716,8 +712,7 @@ class WebRenderer implements SlotLearnerInterface {
 		page.setVar("STYLESHEETS", styleSheets.toString());
 		page.setVar("TITLE", WWebWidget.escapeText(app.getTitle()).toString());
 		app.titleChanged_ = false;
-		String contentType = xhtml ? "application/xhtml+xml" : "text/html";
-		contentType += "; charset=UTF-8";
+		String contentType = "text/html; charset=UTF-8";
 		this.setCaching(response, false);
 		response.addHeader("X-Frame-Options", "SAMEORIGIN");
 		this.setHeaders(response, contentType);
@@ -1000,6 +995,10 @@ class WebRenderer implements SlotLearnerInterface {
 		if (app.isQuited()) {
 			out.append(app.getJavaScriptClass()).append("._p_.quit();");
 		}
+		if (this.updateLayout_) {
+			out.append("window.onresize();");
+			this.updateLayout_ = false;
+		}
 		this.updateLoadIndicator(out, app, false);
 		out.append('}');
 	}
@@ -1091,14 +1090,14 @@ class WebRenderer implements SlotLearnerInterface {
 	}
 
 	private void renderStyleSheet(StringBuilder out, WCssStyleSheet sheet,
-			WApplication app, boolean xhtml) {
+			WApplication app) {
 		out.append("<link href=\"");
 		DomElement.htmlAttributeValue(out, sheet.getLink().resolveUrl(app));
 		out.append("\" rel=\"stylesheet\" type=\"text/css\"");
 		if (sheet.getMedia().length() != 0 && !sheet.getMedia().equals("all")) {
 			out.append(" media=\"").append(sheet.getMedia()).append('"');
 		}
-		closeSpecial(out, xhtml);
+		closeSpecial(out);
 	}
 
 	private String createFormObjectsList(WApplication app) {
@@ -1217,28 +1216,20 @@ class WebRenderer implements SlotLearnerInterface {
 	}
 
 	private void setPageVars(FileServe page) {
-		boolean xhtml = this.session_.getEnv().getContentType() == WEnvironment.ContentType.XHTML1;
 		WApplication app = this.session_.getApp();
 		page.setVar("DOCTYPE", this.session_.getDocType());
 		String htmlAttr = "";
 		if (app != null && app.htmlClass_.length() != 0) {
 			htmlAttr = " class=\"" + app.htmlClass_ + "\"";
 		}
-		if (xhtml) {
+		if (this.session_.getEnv().agentIsIE()) {
 			page.setVar("HTMLATTRIBUTES",
-					"xmlns=\"http://www.w3.org/1999/xhtml\"" + htmlAttr);
-			page.setVar("METACLOSE", "/>");
+					"xmlns:v=\"urn:schemas-microsoft-com:vml\" lang=\"en\" dir=\"ltr\""
+							+ htmlAttr);
 		} else {
-			if (this.session_.getEnv().agentIsIE()) {
-				page.setVar("HTMLATTRIBUTES",
-						"xmlns:v=\"urn:schemas-microsoft-com:vml\" lang=\"en\" dir=\"ltr\""
-								+ htmlAttr);
-			} else {
-				page.setVar("HTMLATTRIBUTES", "lang=\"en\" dir=\"ltr\""
-						+ htmlAttr);
-			}
-			page.setVar("METACLOSE", ">");
+			page.setVar("HTMLATTRIBUTES", "lang=\"en\" dir=\"ltr\"" + htmlAttr);
 		}
+		page.setVar("METACLOSE", ">");
 		String attr = this.getBodyClassRtl();
 		if (attr.length() != 0) {
 			attr = " class=\"" + attr + "\"";
@@ -1251,7 +1242,7 @@ class WebRenderer implements SlotLearnerInterface {
 		page.setVar("HEADDECLARATIONS", this.getHeadDeclarations());
 		page.setCondition("FORM", !this.session_.getEnv().agentIsSpiderBot()
 				&& !this.session_.getEnv().hasAjax());
-		page.setCondition("BOOT_STYLE", !xhtml);
+		page.setCondition("BOOT_STYLE", true);
 	}
 
 	private void streamBootContent(WebResponse response, FileServe boot,
@@ -1349,7 +1340,6 @@ class WebRenderer implements SlotLearnerInterface {
 	}
 
 	private String getHeadDeclarations() {
-		final boolean xhtml = this.session_.getEnv().getContentType() == WEnvironment.ContentType.XHTML1;
 		EscapeOStream result = new EscapeOStream();
 		if (this.session_.getApp() != null) {
 			for (int i = 0; i < this.session_.getApp().metaHeaders_.size(); ++i) {
@@ -1375,7 +1365,7 @@ class WebRenderer implements SlotLearnerInterface {
 					appendAttribute(result, "lang", m.lang);
 				}
 				appendAttribute(result, "content", m.content.toString());
-				closeSpecial(result, xhtml);
+				closeSpecial(result);
 			}
 			for (int i = 0; i < this.session_.getApp().metaLinks_.size(); ++i) {
 				WApplication.MetaLink ml = this.session_.getApp().metaLinks_
@@ -1398,7 +1388,7 @@ class WebRenderer implements SlotLearnerInterface {
 				if (ml.disabled) {
 					appendAttribute(result, "disabled", "");
 				}
-				closeSpecial(result, xhtml);
+				closeSpecial(result);
 			}
 		} else {
 			if (this.session_.getEnv().agentIsIE()) {
@@ -1411,25 +1401,25 @@ class WebRenderer implements SlotLearnerInterface {
 					if (selectIE7) {
 						result
 								.append("<meta http-equiv=\"X-UA-Compatible\" content=\"IE=7\"");
-						closeSpecial(result, xhtml);
+						closeSpecial(result);
 					}
 				} else {
 					result
 							.append("<meta http-equiv=\"X-UA-Compatible\" content=\"IE=9\"");
-					closeSpecial(result, xhtml);
+					closeSpecial(result);
 				}
 			}
 		}
 		if (this.session_.getFavicon().length() != 0) {
 			result.append("<link rel=\"shortcut icon\" href=\"").append(
 					this.session_.getFavicon()).append('"');
-			closeSpecial(result, xhtml);
+			closeSpecial(result);
 		}
 		String baseUrl = "";
 		baseUrl = WApplication.readConfigurationProperty("baseURL", baseUrl);
 		if (baseUrl.length() != 0) {
 			result.append("<base href=\"").append(baseUrl).append('"');
-			closeSpecial(result, xhtml);
+			closeSpecial(result);
 		}
 		return result.toString();
 	}
@@ -1506,19 +1496,11 @@ class WebRenderer implements SlotLearnerInterface {
 		eos.append('"');
 	}
 
-	static void closeSpecial(StringBuilder s, boolean xhtml) {
-		if (xhtml) {
-			s.append("/>\n");
-		} else {
-			s.append(">\n");
-		}
+	static void closeSpecial(StringBuilder s) {
+		s.append(">\n");
 	}
 
-	static void closeSpecial(EscapeOStream s, boolean xhtml) {
-		if (xhtml) {
-			s.append("/>\n");
-		} else {
-			s.append(">\n");
-		}
+	static void closeSpecial(EscapeOStream s) {
+		s.append(">\n");
 	}
 }

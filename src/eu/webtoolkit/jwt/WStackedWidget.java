@@ -266,7 +266,8 @@ public class WStackedWidget extends WContainerWidget {
 	}
 
 	protected void render(EnumSet<RenderFlag> flags) {
-		if (this.widgetsAdded_) {
+		if (this.widgetsAdded_
+				|| !EnumUtils.mask(flags, RenderFlag.RenderFull).isEmpty()) {
 			for (int i = 0; i < this.getCount(); ++i) {
 				if (this.getWidget(i).isHidden() != (this.currentIndex_ != i)) {
 					this.getWidget(i).setHidden(this.currentIndex_ != i);

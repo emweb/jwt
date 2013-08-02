@@ -325,6 +325,9 @@ public class WDialog extends WPopupWidget {
 	 * @see WDialog#getResult()
 	 */
 	public void done(WDialog.DialogCode result) {
+		if (this.isHidden()) {
+			return;
+		}
 		this.result_ = result;
 		if (this.recursiveEventLoop_) {
 			this.recursiveEventLoop_ = false;
@@ -526,31 +529,14 @@ public class WDialog extends WPopupWidget {
 
 	public void setHidden(boolean hidden, WAnimation animation) {
 		if (this.isHidden() != hidden) {
-			if (this.modal_) {
-				WApplication app = WApplication.getInstance();
-				WContainerWidget cover = app.getDialogCover();
-				if (!(cover != null)) {
-					return;
-				}
-				if (!hidden) {
-					this.saveCoverState(app, cover);
-					if (cover.isHidden()) {
-						if (!animation.isEmpty()) {
-							cover.animateShow(new WAnimation(
-									WAnimation.AnimationEffect.Fade,
-									WAnimation.TimingFunction.Linear, animation
-											.getDuration() * 4));
-						} else {
-							cover.show();
-						}
-					}
-					cover.setZIndex(this.impl_.getZIndex() - 1);
-					app.pushExposedConstraint(this);
+			if (!hidden) {
+				this.getCover().pushDialog(this, animation);
+				if (this.modal_) {
 					this
 							.doJavaScript("try {var ae=document.activeElement;if (ae && ae.blur && ae.nodeName != 'BODY') {document.activeElement.blur();}} catch (e) { }");
-				} else {
-					this.restoreCoverState(app, cover);
 				}
+			} else {
+				this.getCover().popDialog(this, animation);
 			}
 		}
 		super.setHidden(hidden, animation);
@@ -618,8 +604,6 @@ public class WDialog extends WPopupWidget {
 	private WContainerWidget footer_;
 	private boolean modal_;
 	private boolean resizable_;
-	private int coverPreviousZIndex_;
-	private boolean coverWasHidden_;
 	private Signal1<WDialog.DialogCode> finished_;
 	private WDialog.DialogCode result_;
 	private boolean recursiveEventLoop_;
@@ -686,7 +670,6 @@ public class WDialog extends WPopupWidget {
 				WidgetThemeRole.DialogBodyRole);
 		layout.addWidget(this.titleBar_);
 		layout.addWidget(this.contents_, 1);
-		this.saveCoverState(app, app.getDialogCover());
 		if (app.getEnvironment().hasAjax()) {
 			this.setAttributeValue("style", "visibility: hidden");
 			if (!app.getEnvironment().agentIsIElt(9)) {
@@ -699,15 +682,13 @@ public class WDialog extends WPopupWidget {
 		}
 	}
 
-	private void saveCoverState(WApplication app, WContainerWidget cover) {
-		this.coverWasHidden_ = cover.isHidden();
-		this.coverPreviousZIndex_ = cover.getZIndex();
-	}
-
-	private void restoreCoverState(WApplication app, WContainerWidget cover) {
-		cover.setHidden(this.coverWasHidden_);
-		cover.setZIndex(this.coverPreviousZIndex_);
-		app.popExposedConstraint(this);
+	private DialogCover getCover() {
+		WWidget w = WApplication.getInstance().findWidget("dialog-cover");
+		if (w != null) {
+			return ((w) instanceof DialogCover ? (DialogCover) (w) : null);
+		} else {
+			return new DialogCover();
+		}
 	}
 
 	static WJavaScriptPreamble wtjs1() {
@@ -715,6 +696,6 @@ public class WDialog extends WPopupWidget {
 				JavaScriptScope.WtClassScope,
 				JavaScriptObjectType.JavaScriptConstructor,
 				"WDialog",
-				"function(h,a,f,i,j){function n(b){var c=b||window.event;b=d.pageCoordinates(c);c=d.windowCoordinates(c);var e=d.windowSize();if(c.x>0&&c.x<e.x&&c.y>0&&c.y<e.y){i=j=false;a.style.left=d.px(a,\"left\")+b.x-k+\"px\";a.style.top=d.px(a,\"top\")+b.y-l+\"px\";a.style.right=\"\";a.style.bottom=\"\";k=b.x;l=b.y}}function o(b,c,e){if(a.style.position==\"\")a.style.position=d.isIE6?\"absolute\":\"fixed\";a.style.visibility=\"visible\";a.style.height=Math.max(0,e)+\"px\";a.style.width= Math.max(0,c)+\"px\";m.centerDialog()}function p(b,c,e){if(c>0)g.style.width=c+\"px\";if(e>0)g.style.height=e+\"px\";m.centerDialog()}function q(){h.layouts2.adjust()}jQuery.data(a,\"obj\",this);var m=this,g=$(a).find(\".dialog-layout\").get(0),d=h.WT,k,l;if(f){f.onmousedown=function(b){b=b||window.event;d.capture(f);b=d.pageCoordinates(b);k=b.x;l=b.y;f.onmousemove=n};f.onmouseup=function(){f.onmousemove=null;d.capture(null)}}this.centerDialog=function(){if(a.parentNode==null)a=f=null;else if(a.style.display!= \"none\"&&a.style.visibility!=\"hidden\"){var b=d.windowSize(),c=a.offsetWidth,e=a.offsetHeight;if(i){a.style.left=Math.round((b.x-c)/2+(d.isIE6?document.documentElement.scrollLeft:0))+\"px\";a.style.marginLeft=\"0px\"}if(j){a.style.top=Math.round((b.y-e)/2+(d.isIE6?document.documentElement.scrollTop:0))+\"px\";a.style.marginTop=\"0px\"}if(a.style.position!=\"\")a.style.visibility=\"visible\"}};this.onresize=function(b,c){i=j=false;p(a,b,c);jQuery.data(g.firstChild,\"layout\").setMaxSize(0,0);h.layouts2.scheduleAdjust()}; g.wtResize=o;a.wtPosition=q;if(a.style.width!=\"\")g.style.width=d.parsePx(a.style.width)>0?a.style.width:a.offsetWidth+\"px\";if(a.style.height!=\"\")g.style.height=d.parsePx(a.style.height)>0?a.style.height:a.offsetHeight+\"px\";m.centerDialog()}");
+				"function(h,a,f,i,j){function n(b){var c=b||window.event;b=d.pageCoordinates(c);c=d.windowCoordinates(c);var e=d.windowSize();if(c.x>0&&c.x<e.x&&c.y>0&&c.y<e.y){i=j=false;a.style.left=d.px(a,\"left\")+b.x-k+\"px\";a.style.top=d.px(a,\"top\")+b.y-l+\"px\";a.style.right=\"\";a.style.bottom=\"\";k=b.x;l=b.y}}function o(b,c,e){if(a.style.position==\"\")a.style.position=d.isIE6?\"absolute\":\"fixed\";a.style.visibility=\"visible\";a.style.height=Math.max(0,e)+\"px\";a.style.width= Math.max(0,c)+\"px\";m.centerDialog()}function p(b,c,e){if(c>0)g.style.width=c+\"px\";if(e>0)g.style.height=e+\"px\";m.centerDialog();a.wtResize&&a.wtResize(a,c,e)}function q(){h.layouts2.adjust()}jQuery.data(a,\"obj\",this);var m=this,g=$(a).find(\".dialog-layout\").get(0),d=h.WT,k,l;if(f){f.onmousedown=function(b){b=b||window.event;d.capture(f);b=d.pageCoordinates(b);k=b.x;l=b.y;f.onmousemove=n};f.onmouseup=function(){f.onmousemove=null;d.capture(null)}}this.centerDialog=function(){if(a.parentNode==null)a= f=null;else if(a.style.display!=\"none\"&&a.style.visibility!=\"hidden\"){var b=d.windowSize(),c=a.offsetWidth,e=a.offsetHeight;if(i){a.style.left=Math.round((b.x-c)/2+(d.isIE6?document.documentElement.scrollLeft:0))+\"px\";a.style.marginLeft=\"0px\"}if(j){a.style.top=Math.round((b.y-e)/2+(d.isIE6?document.documentElement.scrollTop:0))+\"px\";a.style.marginTop=\"0px\"}if(a.style.position!=\"\")a.style.visibility=\"visible\"}};this.onresize=function(b,c){i=j=false;p(a,b,c);jQuery.data(g.firstChild,\"layout\").setMaxSize(0, 0);h.layouts2.scheduleAdjust()};g.wtResize=o;a.wtPosition=q;if(a.style.width!=\"\")g.style.width=d.parsePx(a.style.width)>0?a.style.width:a.offsetWidth+\"px\";if(a.style.height!=\"\")g.style.height=d.parsePx(a.style.height)>0?a.style.height:a.offsetHeight+\"px\";m.centerDialog()}");
 	}
 }

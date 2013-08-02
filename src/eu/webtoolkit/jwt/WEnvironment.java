@@ -219,7 +219,11 @@ public class WEnvironment {
 		/**
 		 * HTML4.
 		 */
-		HTML4;
+		HTML4,
+		/**
+		 * HTML5.
+		 */
+		HTML5;
 
 		/**
 		 * Returns the numerical representation of this enum.
@@ -446,6 +450,19 @@ public class WEnvironment {
 	}
 
 	/**
+	 * Returns the time zone offset as reported by the client.
+	 * <p>
+	 * This returns the time offset that the client has relative to UTC. A
+	 * positive value thus means that the local time is ahead of UTC.
+	 * <p>
+	 * This requires JavaScript support.
+	 * <p>
+	 */
+	public int getTimeZoneOffset() {
+		return this.timeZoneOffset_;
+	}
+
+	/**
 	 * Returns the server host name that is used by the client.
 	 * <p>
 	 * The hostname is the unresolved host name with optional port number, which
@@ -666,15 +683,11 @@ public class WEnvironment {
 	/**
 	 * The type of the content provided to the browser.
 	 * <p>
-	 * This is determined by listening to the capabilities of the browser.
-	 * Xhtml1 is chosen only if the browser reports support for it, and it is
-	 * allowed in the configuration file (wt_config.xml).
-	 * <p>
-	 * Note that JWt makes also use of common non-standard techniques
-	 * implemented in every major browser.
+	 * This is here for backwards compatibility, but the implementation now
+	 * alwasy returns HTML5.
 	 */
 	public WEnvironment.ContentType getContentType() {
-		return this.contentType_;
+		return WEnvironment.ContentType.HTML5;
 	}
 
 	/**
@@ -869,11 +882,11 @@ public class WEnvironment {
 	boolean hashInternalPaths_;
 	WEnvironment.UserAgent agent_;
 	double dpiScale_;
-	WEnvironment.ContentType contentType_;
 	String queryString_;
 	Map<String, String[]> parameters_;
 	Map<String, String> cookies_;
 	Locale locale_;
+	protected int timeZoneOffset_;
 	String host_;
 	String userAgent_;
 	String urlScheme_;
@@ -893,11 +906,11 @@ public class WEnvironment {
 		this.doesCookies_ = false;
 		this.hashInternalPaths_ = false;
 		this.dpiScale_ = 1;
-		this.contentType_ = WEnvironment.ContentType.HTML4;
 		this.queryString_ = "";
 		this.parameters_ = new HashMap<String, String[]>();
 		this.cookies_ = new HashMap<String, String>();
 		this.locale_ = new Locale("");
+		this.timeZoneOffset_ = 0;
 		this.host_ = "";
 		this.userAgent_ = "";
 		this.urlScheme_ = "";
@@ -1089,11 +1102,11 @@ public class WEnvironment {
 		this.doesCookies_ = false;
 		this.hashInternalPaths_ = false;
 		this.dpiScale_ = 1;
-		this.contentType_ = WEnvironment.ContentType.HTML4;
 		this.queryString_ = "";
 		this.parameters_ = new HashMap<String, String[]>();
 		this.cookies_ = new HashMap<String, String>();
 		this.locale_ = new Locale("");
+		this.timeZoneOffset_ = 0;
 		this.host_ = "";
 		this.userAgent_ = "";
 		this.urlScheme_ = "";
@@ -1150,11 +1163,6 @@ public class WEnvironment {
 			parseCookies(cookie, this.cookies_);
 		}
 		this.locale_ = request.getLocale();
-		if (conf.sendXHTMLMimeType()
-				&& this.accept_.indexOf("application/xhtml+xml") != -1
-				&& !this.agentIsIE()) {
-			this.contentType_ = WEnvironment.ContentType.XHTML1;
-		}
 	}
 
 	void enableAjax(WebRequest request) {
@@ -1169,6 +1177,11 @@ public class WEnvironment {
 			this.dpiScale_ = scaleE != null ? Double.parseDouble(scaleE) : 1;
 		} catch (NumberFormatException e) {
 			this.dpiScale_ = 1;
+		}
+		String tzE = request.getParameter("tz");
+		try {
+			this.timeZoneOffset_ = tzE != null ? Integer.parseInt(tzE) : 0;
+		} catch (NumberFormatException e) {
 		}
 		String hashE = request.getParameter("_");
 		if (hashE != null) {

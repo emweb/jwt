@@ -211,8 +211,7 @@ class WebSession {
 			handler.getResponse().setContentType(
 					"text/javascript; charset=UTF-8");
 			handler.getResponse().out().append("{}");
-			handler.getResponse().flush();
-			handler.setRequest((WebRequest) null, (WebResponse) null);
+			handler.flushResponse();
 			return;
 		}
 		switch (this.state_) {
@@ -333,9 +332,7 @@ class WebSession {
 								.out()
 								.append(
 										"<html><head><title>bhm</title></head><body> </body></html>");
-						handler.getResponse().flush();
-						handler.setRequest((WebRequest) null,
-								(WebResponse) null);
+						handler.flushResponse();
 					} else {
 						if (!(resource != null)) {
 							resource = this.app_
@@ -363,9 +360,7 @@ class WebSession {
 									.out()
 									.append(
 											"<html><body><h1>Nothing to say about that.</h1></body></html>");
-							handler.getResponse().flush();
-							handler.setRequest((WebRequest) null,
-									(WebResponse) null);
+							handler.flushResponse();
 						}
 					}
 				} else {
@@ -477,7 +472,9 @@ class WebSession {
 					}
 					if (handler.getResponse() != null
 							&& handler.getResponse().getResponseType() == WebRequest.ResponseType.Page
-							&& !this.env_.hasAjax()) {
+							&& (!this.env_.hasAjax() || !this.controller_
+									.getConfiguration().reloadIsNewSession())) {
+						this.app_.getDomRoot().setRendered(false);
 						this.env_.parameters_ = handler.getRequest()
 								.getParameterMap();
 						if (hashE != null) {
@@ -500,9 +497,7 @@ class WebSession {
 											.append(
 													"bogus request: missing signal, discarding")
 											.toString());
-							handler.getResponse().flush();
-							handler.setRequest((WebRequest) null,
-									(WebResponse) null);
+							handler.flushResponse();
 							return;
 						}
 						logger.info(new StringWriter().append(
@@ -1106,6 +1101,13 @@ class WebSession {
 			return this.session_.getMutex().isHeldByCurrentThread();
 		}
 
+		public void flushResponse() {
+			if (this.response_ != null) {
+				this.response_.flush();
+				this.setRequest((WebRequest) null, (WebResponse) null);
+			}
+		}
+
 		public WebResponse getResponse() {
 			return this.response_;
 		}
@@ -1192,7 +1194,7 @@ class WebSession {
 					}
 				} else {
 					if (request.isWebSocketRequest()) {
-						handler.getResponse().flush();
+						handler.flushResponse();
 						return;
 					}
 				}
@@ -1213,7 +1215,7 @@ class WebSession {
 										request
 												.getHeaderValue("Sec-WebSocket-Version"))
 								.toString());
-				handler.getResponse().flush();
+				handler.flushResponse();
 				return;
 			}
 			if (request.isWebSocketRequest()) {
@@ -1221,7 +1223,7 @@ class WebSession {
 					this.handleWebSocketRequest(handler);
 					return;
 				} else {
-					handler.getResponse().flush();
+					handler.flushResponse();
 					this.kill();
 					return;
 				}
@@ -1232,7 +1234,7 @@ class WebSession {
 					|| request.getRequestMethod().equals("POST") || request
 					.getRequestMethod().equals("GET"))) {
 				handler.getResponse().setStatus(400);
-				handler.getResponse().flush();
+				handler.flushResponse();
 				return;
 			}
 			if ((!(wtdE != null) || !wtdE.equals(this.sessionId_))
@@ -1414,10 +1416,7 @@ class WebSession {
 										if (noBootStyleResponse) {
 											handler.getResponse()
 													.setContentType("text/css");
-											handler.getResponse().flush();
-											handler.setRequest(
-													(WebRequest) null,
-													(WebResponse) null);
+											handler.flushResponse();
 										} else {
 											int i = 0;
 											final int MAX_TRIES = 1000;
@@ -1433,10 +1432,7 @@ class WebSession {
 														.serveLinkedCss(handler
 																.getResponse());
 											}
-											handler.getResponse().flush();
-											handler.setRequest(
-													(WebRequest) null,
-													(WebResponse) null);
+											handler.flushResponse();
 										}
 										break;
 									}
@@ -1509,28 +1505,33 @@ class WebSession {
 								}
 							}
 						}
-						if (!(handler.getRequest() != null)) {
-							break;
-						}
-						String signalE = handler.getRequest().getParameter(
-								"signal");
-						boolean isPoll = signalE != null
-								&& signalE.equals("poll");
-						if (requestForResource || isPoll
-								|| !this.isUnlockRecursiveEventLoop()) {
-							if (this.env_.hasAjax()) {
-								if (this.state_ != WebSession.State.ExpectLoad
-										&& handler.getResponse()
-												.getResponseType() == WebRequest.ResponseType.Update) {
-									this.setLoaded();
-								}
-							} else {
-								if (this.state_ != WebSession.State.ExpectLoad
-										&& !this.controller_
-												.limitPlainHtmlSessions()) {
-									this.setLoaded();
+						boolean doNotify = false;
+						if (handler.getRequest() != null) {
+							String signalE = handler.getRequest().getParameter(
+									"signal");
+							boolean isPoll = signalE != null
+									&& signalE.equals("poll");
+							if (requestForResource || isPoll
+									|| !this.isUnlockRecursiveEventLoop()) {
+								doNotify = true;
+								if (this.env_.hasAjax()) {
+									if (this.state_ != WebSession.State.ExpectLoad
+											&& handler.getResponse()
+													.getResponseType() == WebRequest.ResponseType.Update) {
+										this.setLoaded();
+									}
+								} else {
+									if (this.state_ != WebSession.State.ExpectLoad
+											&& !this.controller_
+													.limitPlainHtmlSessions()) {
+										this.setLoaded();
+									}
 								}
 							}
+						} else {
+							doNotify = false;
+						}
+						if (doNotify) {
 							this.app_.notify(new WEvent(
 									new WEvent.Impl(handler)));
 							if (handler.getResponse() != null
@@ -1567,7 +1568,7 @@ class WebSession {
 				}
 			}
 			if (handler.getResponse() != null) {
-				handler.getResponse().flush();
+				handler.flushResponse();
 			}
 		} catch (InterruptedException ie) {
 			ie.printStackTrace();
@@ -1735,8 +1736,7 @@ class WebSession {
 				this.serveResponse(handler);
 			}
 		} catch (RuntimeException e) {
-			handler.getResponse().flush();
-			handler.setRequest((WebRequest) null, (WebResponse) null);
+			handler.flushResponse();
 			throw e;
 		}
 		this.updatesPending_ = false;
@@ -1745,8 +1745,7 @@ class WebSession {
 	private void serveError(int status, WebSession.Handler handler, String e)
 			throws IOException {
 		this.renderer_.serveError(status, handler.getResponse(), e);
-		handler.getResponse().flush();
-		handler.setRequest((WebRequest) null, (WebResponse) null);
+		handler.flushResponse();
 	}
 
 	private void serveResponse(WebSession.Handler handler) throws IOException {
@@ -1771,8 +1770,7 @@ class WebSession {
 			}
 			this.renderer_.serveResponse(handler.getResponse());
 		}
-		handler.getResponse().flush();
-		handler.setRequest((WebRequest) null, (WebResponse) null);
+		handler.flushResponse();
 	}
 
 	enum SignalKind {

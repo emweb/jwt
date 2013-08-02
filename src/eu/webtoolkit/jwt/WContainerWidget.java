@@ -777,20 +777,30 @@ public class WContainerWidget extends WInteractWidget {
 
 	void childResized(WWidget child, EnumSet<Orientation> directions) {
 		if (this.layout_ != null) {
-			boolean setUpdate = true;
-			if (setUpdate) {
-				WWidgetItem item = this.layout_.findWidgetItem(child);
-				if (item != null) {
-					if ((((item.getParentLayout().getImpl()) instanceof StdLayoutImpl ? (StdLayoutImpl) (item
-							.getParentLayout().getImpl())
-							: null)).itemResized(item)) {
-						this.flags_.set(BIT_LAYOUT_NEEDS_UPDATE);
-						this.repaint();
-					}
+			WWidgetItem item = this.layout_.findWidgetItem(child);
+			if (item != null) {
+				if ((((item.getParentLayout().getImpl()) instanceof StdLayoutImpl ? (StdLayoutImpl) (item
+						.getParentLayout().getImpl())
+						: null)).itemResized(item)) {
+					this.flags_.set(BIT_LAYOUT_NEEDS_UPDATE);
+					this.repaint();
 				}
 			}
 		} else {
 			super.childResized(child, directions);
+		}
+	}
+
+	protected void parentResized(WWidget parent, EnumSet<Orientation> directions) {
+		if (this.layout_ != null) {
+			if ((((this.layout_.getImpl()) instanceof StdLayoutImpl ? (StdLayoutImpl) (this.layout_
+					.getImpl())
+					: null)).isParentResized()) {
+				this.flags_.set(BIT_LAYOUT_NEEDS_UPDATE);
+				this.repaint();
+			}
+		} else {
+			super.parentResized(parent, directions);
 		}
 	}
 
@@ -822,6 +832,7 @@ public class WContainerWidget extends WInteractWidget {
 
 	void createDomChildren(DomElement parent, WApplication app) {
 		if (this.layout_ != null) {
+			this.containsLayout();
 			boolean fitWidth = !EnumUtils.mask(this.contentAlignment_,
 					AlignmentFlag.AlignJustify).isEmpty();
 			boolean fitHeight = !!EnumUtils.mask(this.contentAlignment_,
