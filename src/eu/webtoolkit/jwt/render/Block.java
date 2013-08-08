@@ -2093,10 +2093,17 @@ class Block {
 					setColumnWidths.set(i, -1.0);
 				}
 			}
-			double factor = rWidth / rTotalMaxWidth;
-			for (int i = 0; i < widths.size(); ++i) {
-				if (setColumnWidths.get(i) == -1) {
-					widths.set(i, widths.get(i) * factor);
+			if (rTotalMaxWidth > 0) {
+				double factor = rWidth / rTotalMaxWidth;
+				for (int i = 0; i < widths.size(); ++i) {
+					if (setColumnWidths.get(i) == -1) {
+						widths.set(i, widths.get(i) * factor);
+					}
+				}
+			} else {
+				double widthPerColumn = rWidth / colCount;
+				for (int i = 0; i < colCount; ++i) {
+					widths.set(i, widthPerColumn);
 				}
 			}
 		} else {
@@ -2106,7 +2113,7 @@ class Block {
 					totalStretch += maximumColumnWidths.get(i)
 							- minimumColumnWidths.get(i);
 				}
-				double room = width - totalStretch - totalMinWidth;
+				double room = width - totalMinWidth;
 				double factor = room / totalStretch;
 				for (int i = 0; i < widths.size(); ++i) {
 					double stretch = maximumColumnWidths.get(i)
