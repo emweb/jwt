@@ -109,6 +109,7 @@ public class WNavigationBar extends WTemplate {
 						});
 			}
 			contents.addStyleClass("nav-collapse");
+			contents.hide();
 			contents
 					.setJavaScriptMember("wtAnimatedHidden",
 							"function(hidden) {if (hidden) this.style.height=''; this.style.display='';}");

@@ -2544,12 +2544,7 @@ class Block {
 			}
 		}
 		if (!(result.block != null)) {
-			boolean tableDefault = t.attributeValue("border", 0) > 0;
-			if (tableDefault) {
-				return new Block.BorderElement(t, side);
-			} else {
-				return elements.get(0);
-			}
+			return elements.get(0);
 		} else {
 			return result;
 		}
@@ -2958,8 +2953,6 @@ class Block {
 					.getFontScale());
 			borderColor[i] = this.cssBorderColor(sides[i]);
 		}
-		WPen borderPen = new WPen();
-		borderPen.setCapStyle(PenCapStyle.FlatCap);
 		double offsetFactor = 1;
 		if (this.isTableCell()) {
 			Block t = this.getTable();
@@ -2988,6 +2981,8 @@ class Block {
 		}
 		for (int i = 0; i < 4; ++i) {
 			if (borderWidth[i] != 0) {
+				WPen borderPen = new WPen();
+				borderPen.setCapStyle(PenCapStyle.FlatCap);
 				borderPen.setWidth(new WLength(borderWidth[i]));
 				borderPen.setColor(borderColor[i]);
 				painter.setPen(borderPen);

@@ -51,14 +51,15 @@ class Match {
 		}
 		Block parent = block.getParent();
 		for (int i = selector.getSize() - 2; i >= 0; --i) {
+			boolean matchFound = false;
 			while (parent != null) {
-				if (isMatch(parent, selector.at(i))) {
+				matchFound = isMatch(parent, selector.at(i));
+				parent = parent.getParent();
+				if (matchFound) {
 					break;
-				} else {
-					parent = parent.getParent();
 				}
 			}
-			if (!(parent != null)) {
+			if (!matchFound && !(parent != null)) {
 				return new Specificity(false);
 			}
 		}
