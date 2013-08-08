@@ -92,7 +92,10 @@ public abstract class WAbstractSpinBox extends WLineEdit {
 	 * </p>
 	 */
 	public void setPrefix(CharSequence prefix) {
-		this.prefix_ = WString.toWString(prefix);
+		if (!this.prefix_.equals(prefix)) {
+			this.prefix_ = WString.toWString(prefix);
+			this.setText(this.getTextFromValue().toString());
+		}
 	}
 
 	/**
@@ -124,7 +127,10 @@ public abstract class WAbstractSpinBox extends WLineEdit {
 	 * </p>
 	 */
 	public void setSuffix(CharSequence suffix) {
-		this.suffix_ = WString.toWString(suffix);
+		if (!this.suffix_.equals(suffix)) {
+			this.suffix_ = WString.toWString(suffix);
+			this.setText(this.getTextFromValue().toString());
+		}
 	}
 
 	/**

@@ -429,7 +429,7 @@ public class WTextEdit extends WTextArea {
 	}
 
 	private static int getTinyMCEVersion() {
-		String version = "4";
+		String version = "3";
 		version = WApplication.readConfigurationProperty("tinyMCEVersion",
 				version);
 		return Integer.parseInt(version);

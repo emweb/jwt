@@ -412,6 +412,23 @@ public abstract class AbstractUserDatabase {
 	}
 
 	/**
+	 * Updates the authentication token with a new hash.
+	 * <p>
+	 * If successful, returns the validity of the updated token in seconds.
+	 * <p>
+	 * Returns 0 if the token could not be updated because it wasn&apos;t found
+	 * or is expired.
+	 * <p>
+	 * Returns -1 if not implemented.
+	 */
+	public int updateAuthToken(User user, String hash, String newHash) {
+		logger.warn(new StringWriter().append(
+				new Require("updateAuthToken()", AUTH_TOKEN).toString())
+				.toString());
+		return -1;
+	}
+
+	/**
 	 * Sets the number of consecutive authentication failures.
 	 * <p>
 	 * This sets the number of consecutive authentication failures since the

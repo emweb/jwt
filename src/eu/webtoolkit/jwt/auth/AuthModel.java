@@ -268,6 +268,21 @@ public class AuthModel extends FormBaseModel {
 	}
 
 	/**
+	 * Logs the user out.
+	 * <p>
+	 * This also removes the remember-me cookie for the user.
+	 */
+	public void logout(Login login) {
+		if (login.isLoggedIn()) {
+			if (this.getBaseAuth().isAuthTokensEnabled()) {
+				WApplication app = WApplication.getInstance();
+				app.removeCookie(this.getBaseAuth().getAuthTokenCookieName());
+			}
+			login.logout();
+		}
+	}
+
+	/**
 	 * Processes an email token.
 	 * <p>
 	 * This simply calls
@@ -301,8 +316,7 @@ public class AuthModel extends FormBaseModel {
 				switch (result.getResult()) {
 				case Valid:
 					app.setCookie(this.getBaseAuth().getAuthTokenCookieName(),
-							result.getNewToken(), this.getBaseAuth()
-									.getAuthTokenValidity() * 60);
+							result.getNewToken(), result.getNewTokenValidity());
 					return result.getUser();
 				case Invalid:
 					app.setCookie(this.getBaseAuth().getAuthTokenCookieName(),

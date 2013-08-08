@@ -142,6 +142,7 @@ class WebRenderer implements SlotLearnerInterface {
 				|| this.session_.getApp().afterLoadJavaScript_.length() != 0
 				|| this.session_.getApp().serverPushChanged_
 				|| this.session_.getApp().styleSheetsAdded_ != 0
+				|| this.session_.getApp().internalPathIsChanged_
 				|| !(this.collectedJS1_.length() == 0)
 				|| !(this.collectedJS2_.length() == 0)
 				|| !(this.invisibleJS_.length() == 0);
@@ -417,6 +418,9 @@ class WebRenderer implements SlotLearnerInterface {
 		if (!this.rendered_) {
 			this.serveMainAjax(out);
 		} else {
+			if (response.isWebSocketRequest() || response.isWebSocketMessage()) {
+				this.setJSSynced(false);
+			}
 			this.collectJavaScript();
 			this.addResponseAckPuzzle(out);
 			this.renderSetServerPush(out);
@@ -652,8 +656,17 @@ class WebRenderer implements SlotLearnerInterface {
 				&& (app.internalPathIsChanged_ && !app.oldInternalPath_
 						.equals(app.newInternalPath_))) {
 			app.oldInternalPath_ = app.newInternalPath_;
-			this.session_.redirect(this.session_.fixRelativeUrl(this.session_
-					.getMostRelativeUrl(app.newInternalPath_)));
+			if (this.session_.getState() == WebSession.State.JustCreated
+					&& conf.progressiveBootstrap()) {
+				this.session_.redirect(this.session_
+						.fixRelativeUrl(this.session_
+								.getBookmarkUrl(app.newInternalPath_)));
+				this.session_.kill();
+			} else {
+				this.session_.redirect(this.session_
+						.fixRelativeUrl(this.session_
+								.getMostRelativeUrl(app.newInternalPath_)));
+			}
 		}
 		String redirect = this.session_.getRedirect();
 		if (redirect.length() != 0) {
@@ -1270,8 +1283,8 @@ class WebRenderer implements SlotLearnerInterface {
 		bootJs.setVar("AJAX_CANONICAL_URL", this
 				.safeJsStringLiteral(this.session_.ajaxCanonicalUrl(response)));
 		bootJs.setVar("APP_CLASS", "Wt");
-		bootJs.setVar("PATH_INFO", WWebWidget.jsStringLiteral(this.session_
-				.getEnv().pathInfo_));
+		bootJs.setVar("PATH_INFO", WWebWidget
+				.jsStringLiteral(this.session_.pagePathInfo_));
 		bootJs.setCondition("COOKIE_CHECKS", conf.isCookieChecks());
 		bootJs.setCondition("SPLIT_SCRIPT", conf.splitScript());
 		bootJs.setCondition("HYBRID", hybrid);

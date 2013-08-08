@@ -290,13 +290,19 @@ public class AuthService {
 		String hash = this.getTokenHashFunction().compute(token, "");
 		User user = users.findWithAuthToken(hash);
 		if (user.isValid()) {
-			user.removeAuthToken(hash);
-			String newToken = this.createAuthToken(user);
+			String newToken = MathUtils.randomId(this.tokenLength_);
+			String newHash = this.getTokenHashFunction().compute(newToken, "");
+			int validity = user.updateAuthToken(hash, newHash);
+			if (validity < 0) {
+				user.removeAuthToken(hash);
+				newToken = this.createAuthToken(user);
+				validity = this.authTokenValidity_ * 60;
+			}
 			if (t != null) {
 				t.commit();
 			}
 			return new AuthTokenResult(AuthTokenResult.Result.Valid, user,
-					newToken);
+					newToken, validity);
 		} else {
 			if (t != null) {
 				t.commit();

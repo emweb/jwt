@@ -674,7 +674,7 @@ public class AuthWidget extends WTemplateFormView {
 	}
 
 	private void logout() {
-		this.login_.logout();
+		this.model_.logout(this.login_);
 	}
 
 	// private void loginThrottle(int delay) ;

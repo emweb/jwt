@@ -736,6 +736,7 @@ class FormWidgets extends TopicWidget {
 		de2.setFormat("dd MM yyyy");
 		de2.getCalendar().setHorizontalHeaderFormat(
 				WCalendar.HorizontalHeaderFormat.SingleLetterDayNames);
+		de2.setBottom(de1.getDate());
 		de2Label.setBuddy(de2);
 		new WText("<p></p>", container);
 		WPushButton button = new WPushButton("Save", container);
@@ -743,14 +744,18 @@ class FormWidgets extends TopicWidget {
 		out.setMargin(new WLength(10), EnumSet.of(Side.Left));
 		de1.changed().addListener(this, new Signal.Listener() {
 			public void trigger() {
-				de2.setBottom(de1.getDate());
-				out.setText("<p>Date picker 1 is changed.</p>");
+				if (de1.validate() == WValidator.State.Valid) {
+					de2.setBottom(de1.getDate());
+					out.setText("<p>Date picker 1 is changed.</p>");
+				}
 			}
 		});
 		de2.changed().addListener(this, new Signal.Listener() {
 			public void trigger() {
-				de1.setTop(de2.getDate());
-				out.setText("<p>Date picker 2 is changed.</p>");
+				if (de1.validate() == WValidator.State.Valid) {
+					de1.setTop(de2.getDate());
+					out.setText("<p>Date picker 2 is changed.</p>");
+				}
 			}
 		});
 		button.clicked().addListener(this, new Signal.Listener() {

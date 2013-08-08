@@ -56,7 +56,7 @@ public class WDoubleSpinBox extends WAbstractSpinBox {
 		this.max_ = 99.99;
 		this.step_ = 1.0;
 		this.precision_ = 2;
-		this.valueChanged_ = new Signal1<Double>();
+		this.valueChanged_ = new Signal1<Double>(this);
 		this.setValidator(this.createValidator());
 		this.setValue(0.0);
 	}

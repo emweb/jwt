@@ -71,8 +71,7 @@ class Block {
 				}
 			}
 		} else {
-			if (this.type_ == DomElementType.DomElement_IMG
-					|| this.type_ == DomElementType.DomElement_TABLE) {
+			if (this.type_ == DomElementType.DomElement_IMG || this.isTable()) {
 				String align = this.attributeValue("align");
 				if (align.length() != 0) {
 					if (align.equals("left")) {
@@ -156,6 +155,16 @@ class Block {
 			} else {
 				this.inline_ = false;
 			}
+		}
+		if (this.type_ == DomElementType.DomElement_TABLE) {
+			List<Integer> rowSpan = new ArrayList<Integer>();
+			int row = this.numberTableCells(0, rowSpan);
+			int maxRowSpan = 0;
+			for (int i = 0; i < rowSpan.size(); ++i) {
+				maxRowSpan = Math.max(maxRowSpan, rowSpan.get(i));
+			}
+			this.tableRowCount_ = row + maxRowSpan;
+			this.tableColCount_ = rowSpan.size();
 		}
 	}
 
@@ -259,6 +268,28 @@ class Block {
 		return this.float_;
 	}
 
+	public boolean isTableCell() {
+		return this.type_ == DomElementType.DomElement_TD
+				|| this.type_ == DomElementType.DomElement_TH;
+	}
+
+	public boolean isTable() {
+		return this.type_ == DomElementType.DomElement_TABLE;
+	}
+
+	public Block getTable() {
+		Block result = this.parent_;
+		while (result != null && !result.isTable()) {
+			result = result.parent_;
+		}
+		return result;
+	}
+
+	public boolean isTableCollapseBorders() {
+		return this.cssProperty(Property.PropertyStyleBorderCollapse).equals(
+				"collapse");
+	}
+
 	public double layoutBlock(PageState ps, boolean canIncreaseWidth,
 			WTextRenderer renderer, double collapseMarginTop,
 			double collapseMarginBottom, double cellHeight) {
@@ -307,7 +338,7 @@ class Block {
 		ps.minX += this.cssMargin(Side.Left, renderer.getFontScale());
 		ps.maxX -= this.cssMargin(Side.Right, renderer.getFontScale());
 		double cssSetWidth = this.cssWidth(renderer.getFontScale());
-		if (this.type_ == DomElementType.DomElement_TABLE) {
+		if (this.isTable()) {
 			if (cssSetWidth > 0) {
 				cssSetWidth -= this.cssBorderWidth(Side.Left, renderer
 						.getFontScale())
@@ -380,14 +411,24 @@ class Block {
 				ps.y += height;
 				ps.maxX = Math.max(ps.minX + width, ps.maxX);
 			} else {
+				double borderFactor = 1.0;
+				if (this.isTableCell()) {
+					Block t = this.getTable();
+					if (t != null && t.isTableCollapseBorders()) {
+						borderFactor = 0.5;
+					}
+				}
 				double cMinX = ps.minX
 						+ this.cssPadding(Side.Left, renderer.getFontScale())
-						+ this.cssBorderWidth(Side.Left, renderer
+						+ borderFactor
+						* this.cssBorderWidth(Side.Left, renderer
 								.getFontScale());
 				double cMaxX = ps.maxX
 						- this.cssPadding(Side.Right, renderer.getFontScale())
-						- this.cssBorderWidth(Side.Right, renderer
+						- borderFactor
+						* this.cssBorderWidth(Side.Right, renderer
 								.getFontScale());
+				cMaxX = Math.max(cMaxX, cMinX);
 				this.currentWidth_ = cMaxX - cMinX;
 				ps.y += this.cssPadding(Side.Top, renderer.getFontScale());
 				advance(ps, spacerTop, renderer);
@@ -456,7 +497,8 @@ class Block {
 				}
 				ps.maxX = cMaxX
 						+ this.cssPadding(Side.Right, renderer.getFontScale())
-						+ this.cssBorderWidth(Side.Right, renderer
+						+ borderFactor
+						* this.cssBorderWidth(Side.Right, renderer
 								.getFontScale());
 				advance(ps, spacerBottom, renderer);
 				ps.y += this.cssPadding(Side.Bottom, renderer.getFontScale());
@@ -480,7 +522,7 @@ class Block {
 				ps.y += marginTop;
 			}
 			advance(ps, height, renderer);
-			if (this.type_ == DomElementType.DomElement_TABLE) {
+			if (this.isTable() || this.isTableCell()) {
 				if (prevPage > ps.page || prevPage == ps.page && prevY > ps.y) {
 					ps.page = prevPage;
 					ps.y = prevY;
@@ -835,6 +877,46 @@ class Block {
 		public Specificity s_;
 	}
 
+	enum Corner {
+		TopLeft, TopRight, BottomLeft, BottomRight;
+
+		/**
+		 * Returns the numerical representation of this enum.
+		 */
+		public int getValue() {
+			return ordinal();
+		}
+	}
+
+	enum WidthType {
+		AsSetWidth, MinimumWidth, MaximumWidth;
+
+		/**
+		 * Returns the numerical representation of this enum.
+		 */
+		public int getValue() {
+			return ordinal();
+		}
+	}
+
+	static class BorderElement {
+		private static Logger logger = LoggerFactory
+				.getLogger(BorderElement.class);
+
+		public Block block;
+		public Side side;
+
+		public BorderElement() {
+			this.block = null;
+			this.side = Side.Left;
+		}
+
+		public BorderElement(Block aBlock, Side aSide) {
+			this.block = aBlock;
+			this.side = aSide;
+		}
+	}
+
 	private net.n3.nanoxml.XMLElement node_;
 	private Block parent_;
 	private List<Block> offsetChildren_;
@@ -848,6 +930,10 @@ class Block {
 	private double contentsHeight_;
 	private Map<String, Block.PropertyValue> css_;
 	private StyleSheet styleSheet_;
+	private int tableRowCount_;
+	private int tableColCount_;
+	private int cellRow_;
+	private int cellCol_;
 
 	private int attributeValue(String attribute, int defaultValue) {
 		String valueStr = this.attributeValue(attribute);
@@ -902,15 +988,14 @@ class Block {
 								.append(v).append("'").toString());
 					} else {
 						if (count == 1) {
-							String v0 = allvalues.get(0);
 							this.updateAggregateProperty(n, "-top",
-									specificity, v0);
+									specificity, v);
 							this.updateAggregateProperty(n, "-right",
-									specificity, v0);
+									specificity, v);
 							this.updateAggregateProperty(n, "-bottom",
-									specificity, v0);
+									specificity, v);
 							this.updateAggregateProperty(n, "-left",
-									specificity, v0);
+									specificity, v);
 						} else {
 							if (count == 2) {
 								String v1 = allvalues.get(0);
@@ -1085,7 +1170,7 @@ class Block {
 				Property.PropertyStylePaddingTop, side, fontScale);
 		if (!result.defined) {
 			if (this.isTableCell()) {
-				return 4;
+				return 1;
 			} else {
 				if ((this.type_ == DomElementType.DomElement_UL || this.type_ == DomElementType.DomElement_OL)
 						&& side == Side.Left) {
@@ -1096,7 +1181,48 @@ class Block {
 		return result.length;
 	}
 
+	private double cssBorderSpacing(double fontScale) {
+		if (this.isTableCollapseBorders()) {
+			return 0;
+		}
+		String spacingStr = this
+				.cssProperty(Property.PropertyStyleBorderSpacing);
+		if (spacingStr.length() != 0) {
+			WLength l = new WLength(spacingStr);
+			return l.toPixels(this.cssFontSize(fontScale));
+		} else {
+			return this.attributeValue("cellspacing", 2);
+		}
+	}
+
 	private double cssBorderWidth(Side side, double fontScale) {
+		if (this.isTableCell()) {
+			Block t = this.getTable();
+			if (t != null && t.isTableCollapseBorders()) {
+				return this.collapsedBorderWidth(side, fontScale);
+			} else {
+				return this.rawCssBorderWidth(side, fontScale);
+			}
+		} else {
+			if (this.isTable() && this.isTableCollapseBorders()) {
+				return this.collapsedBorderWidth(side, fontScale);
+			} else {
+				return this.rawCssBorderWidth(side, fontScale);
+			}
+		}
+	}
+
+	private double collapsedBorderWidth(Side side, double fontScale) {
+		assert this.isTable() || this.isTableCell();
+		if (this.isTable()) {
+			return 0;
+		}
+		Block.BorderElement be = this.collapseCellBorders(side);
+		return be.block.rawCssBorderWidth(be.side, fontScale);
+	}
+
+	private double rawCssBorderWidth(Side side, double fontScale,
+			boolean indicateHidden) {
 		if (!(this.node_ != null)) {
 			return 0;
 		}
@@ -1109,21 +1235,24 @@ class Block {
 		if (borderStr.length() != 0) {
 			List<String> values = new ArrayList<String>();
 			values = new ArrayList<String>(Arrays.asList(borderStr.split(" ")));
+			if (values.size() > 1 && values.get(1).equals("hidden")) {
+				if (indicateHidden) {
+					return -1;
+				} else {
+					return 0;
+				}
+			}
 			WLength l = new WLength(values.get(0));
 			result = l.toPixels(this.cssFontSize(fontScale));
 		}
 		if (result == 0) {
-			if (this.type_ == DomElementType.DomElement_TABLE) {
-				result = this.attributeValue("border", 0);
+			if (this.isTable()) {
+				result = this.attributeValue("border", 0) != 0 ? 1 : 0;
 			} else {
 				if (this.isTableCell()) {
-					Block table = this.parent_;
-					while (table != null
-							&& table.type_ != DomElementType.DomElement_TABLE) {
-						table = table.parent_;
-					}
-					if (table != null) {
-						result = table.attributeValue("border", 0) != 0 ? 1 : 0;
+					Block t = this.getTable();
+					if (t != null && !t.isTableCollapseBorders()) {
+						result = t.attributeValue("border", 0) != 0 ? 1 : 0;
 					}
 				}
 			}
@@ -1131,7 +1260,37 @@ class Block {
 		return result;
 	}
 
+	private final double rawCssBorderWidth(Side side, double fontScale) {
+		return rawCssBorderWidth(side, fontScale, false);
+	}
+
 	private WColor cssBorderColor(Side side) {
+		if (this.isTableCell()) {
+			Block t = this.getTable();
+			if (t != null && t.isTableCollapseBorders()) {
+				return this.collapsedBorderColor(side);
+			} else {
+				return this.rawCssBorderColor(side);
+			}
+		} else {
+			if (this.isTable() && this.isTableCollapseBorders()) {
+				return this.collapsedBorderColor(side);
+			} else {
+				return this.rawCssBorderColor(side);
+			}
+		}
+	}
+
+	private WColor collapsedBorderColor(Side side) {
+		assert this.isTable() || this.isTableCell();
+		if (this.isTable()) {
+			return new WColor();
+		}
+		Block.BorderElement be = this.collapseCellBorders(side);
+		return be.block.rawCssBorderColor(be.side);
+	}
+
+	private WColor rawCssBorderColor(Side side) {
 		int index = sideToIndex(side);
 		Property property = Property.values()[Property.PropertyStyleBorderTop
 				.getValue()
@@ -1159,8 +1318,7 @@ class Block {
 	private AlignmentFlag getCssTextAlign() {
 		if (this.node_ != null && !this.isInline()) {
 			String s = this.cssProperty(Property.PropertyStyleTextAlign);
-			if (s.length() == 0
-					&& this.type_ != DomElementType.DomElement_TABLE) {
+			if (s.length() == 0 && !this.isTable()) {
 				s = this.attributeValue("align");
 			}
 			if (s.length() == 0 || s.equals("inherit")) {
@@ -1857,14 +2015,23 @@ class Block {
 		this.currentWidth_ = Math.max(0.0, cssSetWidth);
 		List<Double> minimumColumnWidths = new ArrayList<Double>();
 		List<Double> maximumColumnWidths = new ArrayList<Double>();
+		List<Double> setColumnWidths = new ArrayList<Double>();
 		for (int i = 0; i < this.children_.size(); ++i) {
 			Block c = this.children_.get(i);
 			c.tableComputeColumnWidths(minimumColumnWidths,
-					maximumColumnWidths, renderer, this);
+					maximumColumnWidths, setColumnWidths, renderer, this);
 		}
 		this.currentWidth_ = 0;
 		int colCount = minimumColumnWidths.size();
-		int cellSpacing = this.attributeValue("cellspacing", 2);
+		for (int i = 0; i < colCount; ++i) {
+			if (setColumnWidths.get(i) >= 0) {
+				setColumnWidths.set(i, Math.max(setColumnWidths.get(i),
+						minimumColumnWidths.get(i)));
+				maximumColumnWidths.set(i, minimumColumnWidths.set(i,
+						setColumnWidths.get(i)));
+			}
+		}
+		double cellSpacing = this.cssBorderSpacing(renderer.getFontScale());
 		double totalSpacing = (colCount + 1) * cellSpacing;
 		double totalMinWidth = sum(minimumColumnWidths) + totalSpacing;
 		double totalMaxWidth = sum(maximumColumnWidths) + totalSpacing;
@@ -1911,9 +2078,26 @@ class Block {
 		List<Double> widths = minimumColumnWidths;
 		if (width > totalMaxWidth) {
 			Utils.copyList(maximumColumnWidths, widths);
-			double factor = width / totalMaxWidth;
+			double rWidth = width - totalSpacing;
+			double rTotalMaxWidth = totalMaxWidth - totalSpacing;
+			for (int i = 0; i < colCount; ++i) {
+				if (setColumnWidths.get(i) >= 0) {
+					rWidth -= widths.get(i);
+					rTotalMaxWidth -= widths.get(i);
+				}
+			}
+			if (rTotalMaxWidth <= 0) {
+				rWidth = width - totalSpacing;
+				rTotalMaxWidth = totalMaxWidth - totalSpacing;
+				for (int i = 0; i < setColumnWidths.get(i); ++i) {
+					setColumnWidths.set(i, -1.0);
+				}
+			}
+			double factor = rWidth / rTotalMaxWidth;
 			for (int i = 0; i < widths.size(); ++i) {
-				widths.set(i, widths.get(i) * factor);
+				if (setColumnWidths.get(i) == -1) {
+					widths.set(i, widths.get(i) * factor);
+				}
 			}
 		} else {
 			if (width > totalMinWidth) {
@@ -1922,7 +2106,7 @@ class Block {
 					totalStretch += maximumColumnWidths.get(i)
 							- minimumColumnWidths.get(i);
 				}
-				double room = width - totalMinWidth;
+				double room = width - totalStretch - totalMinWidth;
 				double factor = room / totalStretch;
 				for (int i = 0; i < widths.size(); ++i) {
 					double stretch = maximumColumnWidths.get(i)
@@ -2163,7 +2347,7 @@ class Block {
 		this.layoutBlock(ps, false, renderer, 0, 0);
 	}
 
-	private void tableDoLayout(double x, PageState ps, int cellSpacing,
+	private void tableDoLayout(double x, PageState ps, double cellSpacing,
 			List<Double> widths, boolean protectRows, Block repeatHead,
 			WTextRenderer renderer) {
 		if (this.type_ == DomElementType.DomElement_TABLE
@@ -2228,7 +2412,7 @@ class Block {
 		}
 	}
 
-	private void tableRowDoLayout(double x, PageState ps, int cellSpacing,
+	private void tableRowDoLayout(double x, PageState ps, double cellSpacing,
 			List<Double> widths, WTextRenderer renderer, double rowHeight) {
 		double endY = ps.y;
 		int endPage = ps.page;
@@ -2250,6 +2434,7 @@ class Block {
 				cellPs.maxX = x + width;
 				double collapseMarginBottom = 0;
 				double collapseMarginTop = Double.MAX_VALUE;
+				String s = c.cssProperty(Property.PropertyStyleBackgroundColor);
 				collapseMarginBottom = c.layoutBlock(cellPs, false, renderer,
 						collapseMarginTop, collapseMarginBottom, rowHeight);
 				if (collapseMarginBottom < collapseMarginTop) {
@@ -2272,13 +2457,15 @@ class Block {
 	}
 
 	private void tableComputeColumnWidths(List<Double> minima,
-			List<Double> maxima, WTextRenderer renderer, Block table) {
+			List<Double> maxima, List<Double> asSet, WTextRenderer renderer,
+			Block table) {
 		if (this.type_ == DomElementType.DomElement_TBODY
 				|| this.type_ == DomElementType.DomElement_THEAD
 				|| this.type_ == DomElementType.DomElement_TFOOT) {
 			for (int i = 0; i < this.children_.size(); ++i) {
 				Block c = this.children_.get(i);
-				c.tableComputeColumnWidths(minima, maxima, renderer, table);
+				c.tableComputeColumnWidths(minima, maxima, asSet, renderer,
+						table);
 			}
 		} else {
 			if (this.type_ == DomElementType.DomElement_TR) {
@@ -2286,39 +2473,236 @@ class Block {
 				for (int i = 0; i < this.children_.size(); ++i) {
 					Block c = this.children_.get(i);
 					if (c.isTableCell()) {
-						c.cellComputeColumnWidths(col, false, minima, renderer,
+						c.cellComputeColumnWidths(col,
+								Block.WidthType.AsSetWidth, asSet, renderer,
 								table);
-						col = c.cellComputeColumnWidths(col, true, maxima,
-								renderer, table);
+						c.cellComputeColumnWidths(col,
+								Block.WidthType.MinimumWidth, minima, renderer,
+								table);
+						col = c.cellComputeColumnWidths(col,
+								Block.WidthType.MaximumWidth, maxima, renderer,
+								table);
 					}
 				}
 			}
 		}
 	}
 
-	private int cellComputeColumnWidths(int col, boolean maximum,
+	private Block.BorderElement collapseCellBorders(Side side) {
+		List<Block.BorderElement> elements = new ArrayList<Block.BorderElement>();
+		;
+		Block s = this.siblingTableCell(side);
+		Block t = this.getTable();
+		switch (side) {
+		case Left:
+			if (s != null) {
+				elements.add(new Block.BorderElement(s, Side.Right));
+				elements.add(new Block.BorderElement(this, Side.Left));
+			} else {
+				elements.add(new Block.BorderElement(this, Side.Left));
+				elements.add(new Block.BorderElement(t, Side.Left));
+			}
+			break;
+		case Top:
+			if (s != null) {
+				elements.add(new Block.BorderElement(s, Side.Bottom));
+				elements.add(new Block.BorderElement(this, Side.Top));
+			} else {
+				elements.add(new Block.BorderElement(this, Side.Top));
+				elements.add(new Block.BorderElement(t, Side.Top));
+			}
+			break;
+		case Right:
+			elements.add(new Block.BorderElement(this, Side.Right));
+			if (s != null) {
+				elements.add(new Block.BorderElement(s, Side.Left));
+			} else {
+				elements.add(new Block.BorderElement(t, Side.Right));
+			}
+			break;
+		case Bottom:
+			elements.add(new Block.BorderElement(this, Side.Bottom));
+			if (s != null) {
+				elements.add(new Block.BorderElement(s, Side.Top));
+			} else {
+				elements.add(new Block.BorderElement(t, Side.Bottom));
+			}
+		default:
+			break;
+		}
+		double borderWidth = 0;
+		Block.BorderElement result = new Block.BorderElement();
+		for (int i = 0; i < elements.size(); ++i) {
+			double c = elements.get(i).block.rawCssBorderWidth(
+					elements.get(i).side, 1, true);
+			if (c == -1) {
+				return elements.get(i);
+			}
+			if (c > borderWidth) {
+				result = elements.get(i);
+				borderWidth = Math.max(borderWidth, c);
+			}
+		}
+		if (!(result.block != null)) {
+			boolean tableDefault = t.attributeValue("border", 0) > 0;
+			if (tableDefault) {
+				return new Block.BorderElement(t, side);
+			} else {
+				return elements.get(0);
+			}
+		} else {
+			return result;
+		}
+	}
+
+	private int numberTableCells(int row, List<Integer> rowSpan) {
+		if (this.type_ == DomElementType.DomElement_TABLE
+				|| this.type_ == DomElementType.DomElement_TBODY
+				|| this.type_ == DomElementType.DomElement_THEAD
+				|| this.type_ == DomElementType.DomElement_TFOOT) {
+			for (int i = 0; i < this.children_.size(); ++i) {
+				Block c = this.children_.get(i);
+				row = c.numberTableCells(row, rowSpan);
+			}
+		} else {
+			if (this.type_ == DomElementType.DomElement_TR) {
+				int col = 0;
+				for (int i = 0; i < this.children_.size(); ++i) {
+					Block c = this.children_.get(i);
+					if (c.isTableCell()) {
+						while (col < (int) rowSpan.size()
+								&& rowSpan.get(col) > 0) {
+							++col;
+						}
+						c.cellCol_ = col;
+						c.cellRow_ = row;
+						int rs = c.attributeValue("rowspan", 1);
+						int cs = c.attributeValue("colspan", 1);
+						while ((int) rowSpan.size() <= col + cs - 1) {
+							rowSpan.add(1);
+						}
+						for (int k = 0; k < cs; ++k) {
+							rowSpan.set(col + k, rs);
+						}
+						col += cs;
+					}
+				}
+				for (int i = 0; i < rowSpan.size(); ++i) {
+					if (rowSpan.get(i) > 0) {
+						rowSpan.set(i, rowSpan.get(i) - 1);
+					}
+				}
+				++row;
+			}
+		}
+		return row;
+	}
+
+	private Block findTableCell(int row, int col) {
+		if (this.type_ == DomElementType.DomElement_TABLE
+				|| this.type_ == DomElementType.DomElement_TBODY
+				|| this.type_ == DomElementType.DomElement_THEAD
+				|| this.type_ == DomElementType.DomElement_TFOOT) {
+			for (int i = 0; i < this.children_.size(); ++i) {
+				Block c = this.children_.get(i);
+				Block result = c.findTableCell(row, col);
+				if (result != null) {
+					return result;
+				}
+			}
+			return null;
+		} else {
+			if (this.type_ == DomElementType.DomElement_TR) {
+				for (int i = 0; i < this.children_.size(); ++i) {
+					Block c = this.children_.get(i);
+					if (c.isTableCell()) {
+						int rs = c.attributeValue("rowspan", 1);
+						int cs = c.attributeValue("colspan", 1);
+						if (row >= c.cellRow_ && row < c.cellRow_ + rs
+								&& col >= c.cellCol_ && col < c.cellCol_ + cs) {
+							return c;
+						}
+					}
+				}
+				return null;
+			}
+		}
+		return null;
+	}
+
+	private Block siblingTableCell(Side side) {
+		Block t = this.getTable();
+		switch (side) {
+		case Left:
+			if (this.cellCol_ == 0) {
+				return null;
+			} else {
+				return t.findTableCell(this.cellRow_, this.cellCol_ - 1);
+			}
+		case Right: {
+			int nextCol = this.cellCol_ + this.attributeValue("colspan", 1);
+			if (nextCol >= t.tableColCount_) {
+				return null;
+			} else {
+				return t.findTableCell(this.cellRow_, nextCol);
+			}
+		}
+		case Top:
+			if (this.cellRow_ == 0) {
+				return null;
+			} else {
+				return t.findTableCell(this.cellRow_ - 1, this.cellCol_);
+			}
+		case Bottom: {
+			int nextRow = this.cellRow_ + this.attributeValue("rowspan", 1);
+			if (nextRow >= t.tableRowCount_) {
+				return null;
+			} else {
+				return t.findTableCell(nextRow, this.cellCol_);
+			}
+		}
+		default:
+			break;
+		}
+		return null;
+	}
+
+	private int cellComputeColumnWidths(int col, Block.WidthType type,
 			List<Double> values, WTextRenderer renderer, Block table) {
 		double currentWidth = 0;
 		int colSpan = this.attributeValue("colspan", 1);
+		double defaultWidth = 0;
+		if (type == Block.WidthType.AsSetWidth) {
+			defaultWidth = -1;
+		}
 		while (col + colSpan > (int) values.size()) {
-			values.add(0.0);
+			values.add(defaultWidth);
 		}
 		for (int i = 0; i < colSpan; ++i) {
 			currentWidth += values.get(col + i);
 		}
 		double width = currentWidth;
-		PageState ps = new PageState();
-		ps.y = 0;
-		ps.page = 0;
-		ps.minX = 0;
-		ps.maxX = width;
-		double origTableWidth = table.currentWidth_;
-		if (!maximum) {
-			table.currentWidth_ = 0;
+		switch (type) {
+		case AsSetWidth:
+			width = this.cssWidth(renderer.getFontScale());
+			break;
+		case MinimumWidth:
+		case MaximumWidth: {
+			PageState ps = new PageState();
+			ps.y = 0;
+			ps.page = 0;
+			ps.minX = 0;
+			ps.maxX = width;
+			double origTableWidth = table.currentWidth_;
+			if (type == Block.WidthType.MinimumWidth) {
+				table.currentWidth_ = 0;
+			}
+			this.layoutBlock(ps, type == Block.WidthType.MaximumWidth,
+					renderer, 0, 0);
+			table.currentWidth_ = origTableWidth;
+			width = ps.maxX;
 		}
-		this.layoutBlock(ps, maximum, renderer, 0, 0);
-		table.currentWidth_ = origTableWidth;
-		width = ps.maxX;
+		}
 		if (width > currentWidth) {
 			double extraPerColumn = (width - currentWidth) / colSpan;
 			for (int i = 0; i < colSpan; ++i) {
@@ -2576,6 +2960,32 @@ class Block {
 		}
 		WPen borderPen = new WPen();
 		borderPen.setCapStyle(PenCapStyle.FlatCap);
+		double offsetFactor = 1;
+		if (this.isTableCell()) {
+			Block t = this.getTable();
+			if (t != null && t.isTableCollapseBorders()) {
+				offsetFactor = 0;
+			}
+		}
+		double[] cornerMaxWidth = { 0, 0, 0, 0 };
+		if (offsetFactor == 0) {
+			Block[] siblings = new Block[4];
+			for (int i = 0; i < 4; ++i) {
+				siblings[i] = this.siblingTableCell(sides[i]);
+			}
+			cornerMaxWidth[Block.Corner.TopLeft.getValue()] = maxBorderWidth(
+					siblings[3], Side.Top, this, Side.Top, siblings[0],
+					Side.Left, this, Side.Left, renderer.getFontScale());
+			cornerMaxWidth[Block.Corner.TopRight.getValue()] = maxBorderWidth(
+					siblings[1], Side.Top, this, Side.Top, siblings[0],
+					Side.Right, this, Side.Right, renderer.getFontScale());
+			cornerMaxWidth[Block.Corner.BottomLeft.getValue()] = maxBorderWidth(
+					siblings[3], Side.Bottom, this, Side.Bottom, siblings[2],
+					Side.Left, this, Side.Left, renderer.getFontScale());
+			cornerMaxWidth[Block.Corner.BottomRight.getValue()] = maxBorderWidth(
+					siblings[1], Side.Bottom, this, Side.Bottom, siblings[2],
+					Side.Right, this, Side.Right, renderer.getFontScale());
+		}
 		for (int i = 0; i < 4; ++i) {
 			if (borderWidth[i] != 0) {
 				borderPen.setWidth(new WLength(borderWidth[i]));
@@ -2584,23 +2994,115 @@ class Block {
 				switch (sides[i]) {
 				case Top:
 					if (!EnumUtils.mask(verticals, Side.Top).isEmpty()) {
-						painter.drawLine(left, top + borderWidth[0] / 2, right,
-								top + borderWidth[0] / 2);
+						double leftOffset = 0;
+						double rightOffset = 0;
+						if (borderWidth[i] < cornerMaxWidth[Block.Corner.TopLeft
+								.getValue()]) {
+							leftOffset = cornerMaxWidth[Block.Corner.TopLeft
+									.getValue()] / 2;
+						} else {
+							if (offsetFactor == 0) {
+								leftOffset = -borderWidth[i] / 2;
+							}
+						}
+						if (borderWidth[i] < cornerMaxWidth[Block.Corner.TopRight
+								.getValue()]) {
+							rightOffset = cornerMaxWidth[Block.Corner.TopRight
+									.getValue()] / 2;
+						} else {
+							if (offsetFactor == 0) {
+								rightOffset = -borderWidth[i] / 2;
+							}
+						}
+						painter.drawLine(left + leftOffset, top + offsetFactor
+								* borderWidth[i] / 2, right - rightOffset, top
+								+ offsetFactor * borderWidth[i] / 2);
 					}
 					break;
-				case Right:
-					painter.drawLine(right - borderWidth[1] / 2, top, right
-							- borderWidth[1] / 2, bottom);
+				case Right: {
+					double topOffset = 0;
+					double bottomOffset = 0;
+					if (borderWidth[i] < cornerMaxWidth[Block.Corner.TopRight
+							.getValue()]) {
+						topOffset = cornerMaxWidth[Block.Corner.TopRight
+								.getValue()] / 2;
+					} else {
+						if (offsetFactor == 0) {
+							topOffset = -borderWidth[i] / 2;
+						}
+					}
+					if (borderWidth[i] < cornerMaxWidth[Block.Corner.BottomRight
+							.getValue()]) {
+						bottomOffset = cornerMaxWidth[Block.Corner.BottomRight
+								.getValue()] / 2;
+					} else {
+						if (offsetFactor == 0) {
+							bottomOffset = -borderWidth[i] / 2;
+						}
+					}
+					painter
+							.drawLine(
+									right - offsetFactor * borderWidth[i] / 2,
+									top + topOffset, right - offsetFactor
+											* borderWidth[i] / 2, bottom
+											- bottomOffset);
+				}
 					break;
 				case Bottom:
 					if (!EnumUtils.mask(verticals, Side.Bottom).isEmpty()) {
-						painter.drawLine(left, bottom - borderWidth[2] / 2,
-								right, bottom - borderWidth[2] / 2);
+						double leftOffset = 0;
+						double rightOffset = 0;
+						if (borderWidth[i] < cornerMaxWidth[Block.Corner.BottomLeft
+								.getValue()]) {
+							leftOffset = cornerMaxWidth[Block.Corner.BottomLeft
+									.getValue()] / 2;
+						} else {
+							if (offsetFactor == 0) {
+								leftOffset = -borderWidth[i] / 2;
+							}
+						}
+						if (borderWidth[i] < cornerMaxWidth[Block.Corner.TopRight
+								.getValue()]) {
+							rightOffset = cornerMaxWidth[Block.Corner.BottomRight
+									.getValue()] / 2;
+						} else {
+							if (offsetFactor == 0) {
+								rightOffset = -borderWidth[i] / 2;
+							}
+						}
+						painter.drawLine(left + leftOffset, bottom
+								- offsetFactor * borderWidth[i] / 2, right
+								- rightOffset, bottom - offsetFactor
+								* borderWidth[i] / 2);
 					}
 					break;
-				case Left:
-					painter.drawLine(left + borderWidth[3] / 2, top, left
-							+ borderWidth[3] / 2, bottom);
+				case Left: {
+					double topOffset = 0;
+					double bottomOffset = 0;
+					if (borderWidth[i] < cornerMaxWidth[Block.Corner.TopLeft
+							.getValue()]) {
+						topOffset = cornerMaxWidth[Block.Corner.TopLeft
+								.getValue()] / 2;
+					} else {
+						if (offsetFactor == 0) {
+							topOffset = -borderWidth[i] / 2;
+						}
+					}
+					if (borderWidth[i] < cornerMaxWidth[Block.Corner.BottomLeft
+							.getValue()]) {
+						bottomOffset = cornerMaxWidth[Block.Corner.BottomLeft
+								.getValue()] / 2;
+					} else {
+						if (offsetFactor == 0) {
+							bottomOffset = -borderWidth[i] / 2;
+						}
+					}
+					painter
+							.drawLine(left + offsetFactor * borderWidth[i] / 2,
+									top + topOffset, left + offsetFactor
+											* borderWidth[i] / 2, bottom
+											- bottomOffset);
+				}
 					break;
 				default:
 					break;
@@ -2746,9 +3248,22 @@ class Block {
 				|| cssProperty.equals("padding");
 	}
 
-	private boolean isTableCell() {
-		return this.type_ == DomElementType.DomElement_TD
-				|| this.type_ == DomElementType.DomElement_TH;
+	private static double maxBorderWidth(Block b1, Side s1, Block b2, Side s2,
+			Block b3, Side s3, Block b4, Side s4, double fontScale) {
+		double result = 0;
+		if (b1 != null) {
+			result = Math.max(result, b1.collapsedBorderWidth(s1, fontScale));
+		}
+		if (b2 != null) {
+			result = Math.max(result, b2.collapsedBorderWidth(s2, fontScale));
+		}
+		if (b3 != null) {
+			result = Math.max(result, b3.collapsedBorderWidth(s3, fontScale));
+		}
+		if (b4 != null) {
+			result = Math.max(result, b4.collapsedBorderWidth(s4, fontScale));
+		}
+		return result;
 	}
 
 	private static final double MARGINX = -1;

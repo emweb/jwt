@@ -35,7 +35,7 @@ public class WNavigationBar extends WTemplate {
 		this.bindEmpty("collapse-button");
 		this.bindEmpty("expand-button");
 		this.bindEmpty("title-link");
-		this.bindWidget("contents", new WContainerWidget());
+		this.bindWidget("contents", new NavContainer());
 		// this.implementStateless(WNavigationBar.collapseContents,WNavigationBar.undoExpandContents);
 		// this.implementStateless(WNavigationBar.expandContents,WNavigationBar.undoExpandContents);
 	}
@@ -233,12 +233,16 @@ public class WNavigationBar extends WTemplate {
 				.resolveWidget("expand-button");
 		collapseButton.show();
 		expandButton.hide();
-		if (canOptimizeUpdates()) {
+		if (!this.isAnimatedResponsive()) {
 			contents.show();
 		} else {
-			contents.animateShow(new WAnimation(
-					WAnimation.AnimationEffect.SlideInFromTop,
-					WAnimation.TimingFunction.Ease));
+			if (canOptimizeUpdates()) {
+				contents.show();
+			} else {
+				contents.animateShow(new WAnimation(
+						WAnimation.AnimationEffect.SlideInFromTop,
+						WAnimation.TimingFunction.Ease));
+			}
 		}
 	}
 
@@ -251,12 +255,16 @@ public class WNavigationBar extends WTemplate {
 				.resolveWidget("expand-button");
 		collapseButton.hide();
 		expandButton.show();
-		if (canOptimizeUpdates()) {
-			contents.show();
+		if (!this.isAnimatedResponsive()) {
+			contents.hide();
 		} else {
-			contents.animateHide(new WAnimation(
-					WAnimation.AnimationEffect.SlideInFromTop,
-					WAnimation.TimingFunction.Ease));
+			if (canOptimizeUpdates()) {
+				contents.show();
+			} else {
+				contents.animateHide(new WAnimation(
+						WAnimation.AnimationEffect.SlideInFromTop,
+						WAnimation.TimingFunction.Ease));
+			}
 		}
 	}
 
@@ -269,7 +277,11 @@ public class WNavigationBar extends WTemplate {
 				.resolveWidget("expand-button");
 		collapseButton.hide();
 		expandButton.show();
-		contents.show();
+		if (!this.isAnimatedResponsive()) {
+			contents.hide();
+		} else {
+			contents.show();
+		}
 	}
 
 	private void addWrapped(WWidget widget, AlignmentFlag alignment,
@@ -295,5 +307,11 @@ public class WNavigationBar extends WTemplate {
 					"addWidget(...): unsupported alignment ").append(
 					String.valueOf(alignment.getValue())).toString());
 		}
+	}
+
+	private boolean isAnimatedResponsive() {
+		return WApplication.getInstance().getEnvironment()
+				.supportsCss3Animations()
+				&& WApplication.getInstance().getEnvironment().hasAjax();
 	}
 }

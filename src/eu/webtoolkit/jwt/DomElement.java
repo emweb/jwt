@@ -1867,7 +1867,7 @@ public class DomElement {
 			"font-style", "font-variant", "font-weight", "font-size",
 			"background-color", "background-image", "background-repeat",
 			"background-attachment", "background-position", "text-decoration",
-			"white-space", "table-layout", "border-spacing",
+			"white-space", "table-layout", "border-spacing", "border-collapse",
 			"page-break-before", "page-break-after", "zoom", "visibility",
 			"display", "box-sizing" };
 	private static String[] cssCamelNames_ = { "cssText", "width", "position",
@@ -1881,7 +1881,8 @@ public class DomElement {
 			"fontVariant", "fontWeight", "fontSize", "backgroundColor",
 			"backgroundImage", "backgroundRepeat", "backgroundAttachment",
 			"backgroundPosition", "textDecoration", "whiteSpace",
-			"tableLayout", "borderSpacing", "pageBreakBefore",
-			"pageBreakAfter", "zoom", "visibility", "display", "boxSizing" };
+			"tableLayout", "borderSpacing", "border-collapse",
+			"pageBreakBefore", "pageBreakAfter", "zoom", "visibility",
+			"display", "boxSizing" };
 	private static final String unsafeChars_ = " $&+,:;=?@'\"<>#%{}|\\^~[]`";
 }

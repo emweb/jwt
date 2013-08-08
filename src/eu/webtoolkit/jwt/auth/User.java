@@ -343,6 +343,18 @@ public class User {
 	}
 
 	/**
+	 * Updates an authentication token.
+	 * <p>
+	 * 
+	 * @see AbstractUserDatabase#updateAuthToken(User user, String hash, String
+	 *      newHash)
+	 */
+	public int updateAuthToken(String hash, String newHash) {
+		this.checkValid();
+		return this.db_.updateAuthToken(this, hash, newHash);
+	}
+
+	/**
 	 * Logs the result of an authentication attempt.
 	 * <p>
 	 * This changes the number of failed login attempts, and stores the current

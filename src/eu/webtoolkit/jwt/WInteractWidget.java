@@ -623,7 +623,9 @@ public abstract class WInteractWidget extends WWebWidget {
 				&& mouseDown.needsUpdate(all) || updateMouseMove;
 		boolean updateMouseUp = mouseUp != null && mouseUp.needsUpdate(all)
 				|| updateMouseMove;
-		String CheckDisabled = "if($(o).hasClass('Wt-disabled')){Wt3_3_0.cancelEvent(e);return;}";
+		String CheckDisabled = "if($(o).hasClass('"
+				+ app.getTheme().getDisabledClass()
+				+ "')){Wt3_3_0.cancelEvent(e);return;}";
 		if (updateMouseDown) {
 			StringBuilder js = new StringBuilder();
 			js.append(CheckDisabled);

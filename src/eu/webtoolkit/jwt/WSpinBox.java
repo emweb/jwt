@@ -52,7 +52,7 @@ public class WSpinBox extends WAbstractSpinBox {
 		this.min_ = 0;
 		this.max_ = 99;
 		this.step_ = 1;
-		this.valueChanged_ = new Signal1<Integer>();
+		this.valueChanged_ = new Signal1<Integer>(this);
 		this.setValidator(this.createValidator());
 		this.setValue(0);
 	}
