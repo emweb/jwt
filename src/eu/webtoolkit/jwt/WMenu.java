@@ -1022,11 +1022,13 @@ public class WMenu extends WCompositeWidget {
 			int bestI = -1;
 			int bestMatchLength = -1;
 			for (int i = 0; i < this.getCount(); ++i) {
-				int matchLength = match(subPath, this.itemAt(i)
-						.getPathComponent());
-				if (matchLength > bestMatchLength) {
-					bestMatchLength = matchLength;
-					bestI = i;
+				if (this.itemAt(i).isInternalPathEnabled()) {
+					int matchLength = match(subPath, this.itemAt(i)
+							.getPathComponent());
+					if (matchLength > bestMatchLength) {
+						bestMatchLength = matchLength;
+						bestI = i;
+					}
 				}
 			}
 			if (bestI != -1) {
@@ -1141,7 +1143,7 @@ public class WMenu extends WCompositeWidget {
 	}
 
 	void itemPathChanged(WMenuItem item) {
-		if (this.internalPathEnabled_) {
+		if (this.internalPathEnabled_ && item.isInternalPathEnabled()) {
 			WApplication app = WApplication.getInstance();
 			if (app.internalPathMatches(this.basePath_
 					+ item.getPathComponent())) {
@@ -1172,7 +1174,8 @@ public class WMenu extends WCompositeWidget {
 			this.previousStackIndex_ = this.contentsStack_.getCurrentIndex();
 		}
 		WMenuItem item = index >= 0 ? this.itemAt(index) : null;
-		if (changePath && this.internalPathEnabled_ && index != -1) {
+		if (changePath && this.internalPathEnabled_ && index != -1
+				&& item.isInternalPathEnabled()) {
 			WApplication app = WApplication.getInstance();
 			this.previousInternalPath_ = app.getInternalPath();
 			String newPath = this.basePath_ + item.getPathComponent();

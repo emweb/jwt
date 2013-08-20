@@ -19,20 +19,20 @@ public class CssParser {
 	
 	static void setSimpleSelectorElementName(String s)
 	{
-		currentSimpleSelector.elementName_ = s;
+		currentSimpleSelector.setElementName(s);
 	}
 	
 	static void setSimpleSelectorHash(String s)
 	{
 		s = s.substring(1);
-		if(currentSimpleSelector.hashid_.isEmpty())
-			currentSimpleSelector.hashid_ = s;
+		if(currentSimpleSelector.getHashId().isEmpty())
+			currentSimpleSelector.setHash(s);
 	}
 	
 	static void addSimpleSelectorClass(String s)
 	{
 		s = s.substring(1);
-		currentSimpleSelector.classes_.add(s);
+		currentSimpleSelector.getClasses().add(s);
 	}
 	
 	static void pushCurrentSimpleSelector()

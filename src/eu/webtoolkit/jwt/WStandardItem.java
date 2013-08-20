@@ -522,7 +522,11 @@ public class WStandardItem {
 	 * @see WStandardItem#setCheckable(boolean checkable)
 	 */
 	public void setTristate(boolean tristate) {
-		this.flags_.add(ItemFlag.ItemIsTristate);
+		if (tristate) {
+			this.flags_.add(ItemFlag.ItemIsTristate);
+		} else {
+			this.flags_.remove(ItemFlag.ItemIsTristate);
+		}
 	}
 
 	/**

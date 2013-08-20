@@ -29,12 +29,14 @@ class Block {
 		this.parent_ = parent;
 		this.offsetChildren_ = new ArrayList<Block>();
 		this.type_ = DomElementType.DomElement_UNKNOWN;
+		this.classes_ = new ArrayList<String>();
 		this.inline_ = false;
 		this.children_ = new ArrayList<Block>();
 		this.currentTheadBlock_ = null;
 		this.currentWidth_ = 0;
 		this.contentsHeight_ = 0;
 		this.css_ = new HashMap<String, Block.PropertyValue>();
+		this.font_ = new WFont();
 		this.styleSheet_ = null;
 		if (node != null) {
 			if (RenderUtils.isXmlElement(node)) {
@@ -45,6 +47,9 @@ class Block {
 							.toString());
 					this.type_ = DomElementType.DomElement_DIV;
 				}
+				String s = this.attributeValue("class");
+				this.classes_ = new ArrayList<String>(Arrays.asList(s
+						.split(" ")));
 			}
 			RenderUtils.fetchBlockChildren(node, this, this.children_);
 		}
@@ -796,10 +801,7 @@ class Block {
 	}
 
 	public List<String> getClasses() {
-		String s = this.attributeValue("class");
-		List<String> r = new ArrayList<String>();
-		r = new ArrayList<String>(Arrays.asList(s.split(" ")));
-		return r;
+		return this.classes_;
 	}
 
 	String cssProperty(Property property) {
@@ -922,6 +924,7 @@ class Block {
 	private List<Block> offsetChildren_;
 	private Block offsetParent_;
 	private DomElementType type_;
+	private List<String> classes_;
 	private Side float_;
 	private boolean inline_;
 	private List<Block> children_;
@@ -929,6 +932,7 @@ class Block {
 	private double currentWidth_;
 	private double contentsHeight_;
 	private Map<String, Block.PropertyValue> css_;
+	private WFont font_;
 	private StyleSheet styleSheet_;
 	private int tableRowCount_;
 	private int tableColCount_;
@@ -1572,6 +1576,9 @@ class Block {
 	}
 
 	private WFont cssFont(double fontScale) {
+		if (this.font_.getGenericFamily() != WFont.GenericFamily.Default) {
+			return this.font_;
+		}
 		WFont.GenericFamily genericFamily = WFont.GenericFamily.SansSerif;
 		WString specificFamilies = new WString();
 		String family = this
@@ -1632,13 +1639,12 @@ class Block {
 				}
 			}
 		}
-		WFont result = new WFont();
-		result.setFamily(genericFamily, specificFamilies);
-		result.setSize(WFont.Size.FixedSize, new WLength(this
+		this.font_.setFamily(genericFamily, specificFamilies);
+		this.font_.setSize(WFont.Size.FixedSize, new WLength(this
 				.cssFontSize(fontScale), WLength.Unit.Pixel));
-		result.setWeight(WFont.Weight.Value, this.getCssFontWeight());
-		result.setStyle(this.getCssFontStyle());
-		return result;
+		this.font_.setWeight(WFont.Weight.Value, this.getCssFontWeight());
+		this.font_.setStyle(this.getCssFontStyle());
+		return this.font_;
 	}
 
 	private String getCssTextDecoration() {
@@ -3168,7 +3174,7 @@ class Block {
 				height = 0;
 			}
 			if (renderer.textHeight(ps.page) - ps.y < 0 && height >= 0) {
-				throw new WException("The margin is to large");
+				throw new WException("The margin is too large");
 			}
 		}
 		ps.y += height;

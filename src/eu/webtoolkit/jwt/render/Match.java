@@ -25,10 +25,10 @@ class Match {
 	public static boolean isMatch(Block block, SimpleSelector s) {
 		final DomElementType tag = block.getType();
 		final String id = block.getId();
-		final List<String> classes = block.getClasses();
-		final List<String> requiredClasses = s.getClasses();
+		List<String> classes = block.getClasses();
+		List<String> requiredClasses = s.getClasses();
 		if (s.getElementName().length() != 0 && !s.getElementName().equals("*")
-				&& tag != DomElement.parseTagName(s.getElementName())) {
+				&& tag != s.getElementType()) {
 			return false;
 		}
 		if (s.getHashId().length() != 0 && !id.equals(s.getHashId())) {

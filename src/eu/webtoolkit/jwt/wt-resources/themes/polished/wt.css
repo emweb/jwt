@@ -182,10 +182,27 @@ span.Wt-disabled, fieldset.Wt-disabled legend {
 }
 
 /*
+ * WDateEdit
+ */
+.Wt-dateedit {
+    background-image: url('../../calendar_edit.png');
+    background-repeat: no-repeat;
+    background-position: right top;
+    padding-right: 40px;
+}
+
+/*
  * WDatePicker
  */
 .Wt-datepicker {
     background-color: white;
+}
+
+/*
+ * Wt-dateedit
+ */
+.Wt-dateedit::-ms-clear {
+    display:none
 }
 
 /*
@@ -224,6 +241,15 @@ span.Wt-disabled, fieldset.Wt-disabled legend {
     padding: 4px 6px;
 }
 
+.Wt-dialog .footer {
+    text-align: right;
+}
+
+.Wt-dialog .footer button {
+    padding: 1px 4px 1px;
+    margin: 2px;
+}
+
 .Wt-dialog .titlebar h3 {
     margin: 0px 2px;
     font-size: 110%;
@@ -232,9 +258,20 @@ span.Wt-disabled, fieldset.Wt-disabled legend {
 /*
  * WMessageBox
  */
-.Wt-msgbox-buttons button {
-    padding: 1px 4px 1px;
-    margin: 2px;
+.Wt-dialog .Wt-msgbox-icon {
+    display: block;
+    float: left;
+    margin: 0px 15px -15px;
+    width: 25px;
+    height: 35px;
+}
+
+.Wt-dialog .Wt-msgbox-body {
+    padding: 10px;
+}
+
+.Wt-dialog .Wt-msgbox-text {
+    padding-left: 40px;
 }
 
 /*
@@ -412,12 +449,12 @@ span.Wt-disabled, fieldset.Wt-disabled legend {
  * WPushButton
  */
 .Wt-btn:hover {
-    border-color:#99CCFF #6699EE #6699EE #77AAFF;
+    border-color:#9CF #69E #69E #7AF;
 }
 
 .Wt-btn {
     background: transparent url(gradient.png) repeat-x scroll 0 0;
-    border: 1px outset #CCCCCC;
+    border: 1px outset #CCC;
     cursor: pointer; cursor: hand;
     font-size: small;
     margin: 0px 2px;
@@ -426,7 +463,12 @@ span.Wt-disabled, fieldset.Wt-disabled legend {
 }
 
 .Wt-btn:active {
-    border: 1px inset #CCCCCC;
+    border: 1px inset #CCC;
+}
+
+.Wt-btn-default {
+    font-weight: bold;
+    border: 1px outset #37E;
 }
 
 /*
@@ -603,6 +645,10 @@ span.Wt-disabled, fieldset.Wt-disabled legend {
 
 .Wt-spinbox.dn {
     background-image: url('../default/spin-buttons-dn.png');
+}
+
+.Wt-spinbox::-ms-clear {
+    display: none
 }
 
 /*

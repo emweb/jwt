@@ -212,7 +212,12 @@ public class WComboBox extends WFormWidget {
 	 * transferred.
 	 * <p>
 	 * The default value is a {@link WStringListModel} that is owned by the
-	 * combo box.
+	 * combo box. Items in the model can be grouped by setting the DOCREF<a
+	 * class="el" href="group__modelview.html#gg0ae864e12320f9f89172735e075ed0684b121c4303b1ab17f6347e950af65c21"
+	 * >LevelRole</a>. The contents is interpreted by DOCREF<a class="el"
+	 * href="group__modelview.html#gcab3e57a168c5e4e76a6884070106d48"
+	 * >Wt::asString</a>, and subsequent items of the same group are rendered as
+	 * children of a HTML <code> &lt;optgroup&gt; </code>element.
 	 * <p>
 	 * 
 	 * @see WComboBox#setModelColumn(int index)
@@ -453,6 +458,8 @@ public class WComboBox extends WFormWidget {
 			if (!all) {
 				element.removeAllChildren();
 			}
+			DomElement currentGroup = null;
+			boolean groupDisabled = true;
 			for (int i = 0; i < this.getCount(); ++i) {
 				DomElement item = DomElement
 						.createNew(DomElementType.DomElement_OPTION);
@@ -474,7 +481,63 @@ public class WComboBox extends WFormWidget {
 				if (!(sc.length() == 0)) {
 					item.setProperty(Property.PropertyClass, sc.toString());
 				}
-				element.addChild(item);
+				WString groupname = StringUtils.asString(this.model_.getData(i,
+						this.modelColumn_, ItemDataRole.LevelRole));
+				boolean isSoloItem = false;
+				if ((groupname.length() == 0)) {
+					isSoloItem = true;
+					if (currentGroup != null) {
+						if (groupDisabled) {
+							currentGroup.setProperty(Property.PropertyDisabled,
+									"true");
+						}
+						element.addChild(currentGroup);
+						currentGroup = null;
+					}
+				} else {
+					isSoloItem = false;
+					if (!(currentGroup != null)
+							|| !currentGroup
+									.getProperty(Property.PropertyLabel)
+									.equals(groupname.toString())) {
+						if (currentGroup != null) {
+							if (groupDisabled) {
+								currentGroup.setProperty(
+										Property.PropertyDisabled, "true");
+							}
+							element.addChild(currentGroup);
+							currentGroup = null;
+						}
+						currentGroup = DomElement
+								.createNew(DomElementType.DomElement_OPTGROUP);
+						currentGroup.setProperty(Property.PropertyLabel,
+								groupname.toString());
+						groupDisabled = !!EnumUtils.mask(
+								this.model_.getFlags(this.model_.getIndex(i,
+										this.modelColumn_)),
+								ItemFlag.ItemIsSelectable).isEmpty();
+					} else {
+						if (!EnumUtils.mask(
+								this.model_.getFlags(this.model_.getIndex(i,
+										this.modelColumn_)),
+								ItemFlag.ItemIsSelectable).isEmpty()) {
+							groupDisabled = false;
+						}
+					}
+				}
+				if (isSoloItem) {
+					element.addChild(item);
+				} else {
+					currentGroup.addChild(item);
+				}
+				if (i == this.getCount() - 1 && currentGroup != null) {
+					if (groupDisabled) {
+						currentGroup.setProperty(Property.PropertyDisabled,
+								"true");
+					}
+					element.addChild(currentGroup);
+					currentGroup = null;
+				}
 			}
 			this.itemsChanged_ = false;
 			this.selectionChanged_ = false;

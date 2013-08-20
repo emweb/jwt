@@ -34,6 +34,10 @@ class SimpleSelectorImpl implements SimpleSelector {
 		return this.elementName_;
 	}
 
+	public DomElementType getElementType() {
+		return this.elementType_;
+	}
+
 	public String getHashId() {
 		return this.hashid_;
 	}
@@ -44,6 +48,7 @@ class SimpleSelectorImpl implements SimpleSelector {
 
 	public void setElementName(String name) {
 		this.elementName_ = name;
+		this.elementType_ = DomElement.parseTagName(this.elementName_);
 	}
 
 	public void addClass(String id) {
@@ -57,6 +62,7 @@ class SimpleSelectorImpl implements SimpleSelector {
 	}
 
 	public String elementName_;
+	public DomElementType elementType_;
 	public List<String> classes_;
 	public String hashid_;
 }

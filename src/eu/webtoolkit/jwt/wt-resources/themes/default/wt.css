@@ -184,10 +184,27 @@ span.Wt-disabled, fieldset.Wt-disabled legend {
 }
 
 /*
+ * WDateEdit
+ */
+.Wt-dateedit {
+    background-image: url('../../calendar_edit.png');
+    background-repeat: no-repeat;
+    background-position: right top;
+    padding-right: 40px;
+}
+
+/*
  * WDatePicker
  */
 .Wt-datepicker {
     background-color: #EEEEEE;
+}
+
+/*
+ * Wt-dateedit
+ */
+.Wt-dateedit::-ms-clear {
+    display:none
 }
 
 /*
@@ -228,6 +245,10 @@ span.Wt-disabled, fieldset.Wt-disabled legend {
     padding: 4px 6px 4px;
 }
 
+.Wt-dialog .footer {
+    text-align: right;
+}
+
 /*
  * WMenuItem
  */
@@ -248,9 +269,20 @@ span.Wt-disabled, fieldset.Wt-disabled legend {
 /* 
  * WMessageBox
  */
-.Wt-msgbox-buttons button {
-    padding: 1px 4px 1px;
-    margin: 2px;
+.Wt-dialog .Wt-msgbox-icon {
+    display: block;
+    float: left;
+    margin: 0px 15px -15px;
+    width: 25px;
+    height: 35px;
+}
+
+.Wt-dialog .Wt-msgbox-body {
+    padding: 10px;
+}
+
+.Wt-dialog .Wt-msgbox-text {
+    padding-left: 40px;
 }
 
 /*
@@ -428,6 +460,13 @@ span.Wt-disabled, fieldset.Wt-disabled legend {
 }
 
 /*
+ * WPushButton
+ */
+.Wt-btn.Wt-btn-default {
+    font-weight: bold;
+}
+
+/*
  * WResizable
  */
 .Wt-resizable {
@@ -499,6 +538,10 @@ span.Wt-disabled, fieldset.Wt-disabled legend {
     background-repeat: no-repeat;
     background-position: right center;
     padding-right: 16px;
+}
+
+.Wt-spinbox::-ms-clear {
+    display: none;
 }
 
 .Wt-spinbox.up {

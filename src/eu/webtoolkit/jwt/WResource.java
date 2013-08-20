@@ -108,7 +108,7 @@ public abstract class WResource extends WObject {
 		if (currentUrl_ == null) {
 			WApplication app = WApplication.getInstance();
 			if (app != null)	
-				currentUrl_ = app.addExposedResource(this, internalPath_);
+				currentUrl_ = app.addExposedResource(this);
 			else
 				currentUrl_ = "";
 		} else {

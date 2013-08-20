@@ -95,11 +95,14 @@ public class WPushButton extends WFormWidget {
 	/**
 	 * Sets the default property.
 	 * <p>
-	 * The only effect of a default button is that it is may be rendered in a
-	 * different style, depending on the theme.
+	 * This has only a functional meaning for a button in a dialog footer, as it
+	 * becomes associated with pressing &apos;enter&apos; in the dialog.
+	 * <p>
+	 * A default button may be rendered in a different style, depending on the
+	 * theme.
 	 */
 	public void setDefault(boolean enabled) {
-		this.flags_.set(BIT_DEFAULT);
+		this.flags_.set(BIT_DEFAULT, enabled);
 	}
 
 	/**
@@ -523,11 +526,9 @@ public class WPushButton extends WFormWidget {
 					.getFormattedText());
 			this.flags_.clear(BIT_TEXT_CHANGED);
 		}
-		boolean needsUrlResolution = false;
 		if (this.flags_.get(BIT_LINK_CHANGED) || all) {
 			if (element.getType() == DomElementType.DomElement_A) {
-				needsUrlResolution = WAnchor.renderHRef(this, this.linkState_,
-						element);
+				WAnchor.renderHRef(this, this.linkState_, element);
 				WAnchor.renderHTarget(this.linkState_, element, all);
 			} else {
 				this.renderHRef(element);
@@ -627,16 +628,15 @@ public class WPushButton extends WFormWidget {
 						+ jsStringLiteral(this.linkState_.link
 								.getInternalPath()) + ",true);}");
 			} else {
+				String url = this.linkState_.link.resolveUrl(app);
 				if (this.linkState_.target == AnchorTarget.TargetNewWindow) {
 					this.linkState_.clickJS
 							.setJavaScript("function(){window.open("
-									+ jsStringLiteral(this.linkState_.link
-											.getUrl()) + ");}");
+									+ jsStringLiteral(url) + ");}");
 				} else {
 					this.linkState_.clickJS
 							.setJavaScript("function(){window.location="
-									+ jsStringLiteral(this.linkState_.link
-											.getUrl()) + ";}");
+									+ jsStringLiteral(url) + ";}");
 				}
 			}
 			this.clicked().senderRepaint();

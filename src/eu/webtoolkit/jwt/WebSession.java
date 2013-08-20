@@ -1887,7 +1887,7 @@ class WebSession {
 						if (hashE != null) {
 							this.changeInternalPath(hashE, handler
 									.getResponse());
-							this.app_.doJavaScript("Wt3_3_0.scrollIntoView("
+							this.app_.doJavaScript("Wt3_3_1.scrollIntoView("
 									+ WWebWidget.jsStringLiteral(hashE) + ");");
 						} else {
 							this.changeInternalPath("", handler.getResponse());

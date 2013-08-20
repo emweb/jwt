@@ -24,52 +24,51 @@ class UserFormView extends WTemplateFormView {
 
 	public UserFormView() {
 		super();
-		this.model_ = new UserFormModel(this);
+		this.model = new UserFormModel(this);
 		this.setTemplateText(tr("userForm-template"));
 		this.addFunction("id", WTemplate.Functions.id);
 		this.setFormWidget(UserFormModel.FirstNameField, new WLineEdit());
 		this.setFormWidget(UserFormModel.LastNameField, new WLineEdit());
 		final WComboBox countryCB = new WComboBox();
-		countryCB.setModel(this.model_.getCountryModel());
+		countryCB.setModel(this.model.getCountryModel());
 		countryCB.activated().addListener(this, new Signal.Listener() {
 			public void trigger() {
-				String code = UserFormView.this.model_.countryCode(countryCB
+				String code = UserFormView.this.model.countryCode(countryCB
 						.getCurrentIndex());
-				UserFormView.this.model_.updateCityModel(code);
+				UserFormView.this.model.updateCityModel(code);
 			}
 		});
 		this.setFormWidget(UserFormModel.CountryField, countryCB,
 				new WTemplateFormView.FieldView() {
 					public void updateViewValue() {
-						String code = (String) UserFormView.this.model_
+						String code = (String) UserFormView.this.model
 								.getValue(UserFormModel.CountryField);
-						int row = UserFormView.this.model_
-								.countryModelRow(code);
+						int row = UserFormView.this.model.countryModelRow(code);
 						countryCB.setCurrentIndex(row);
 					}
 
 					public void updateModelValue() {
-						String code = UserFormView.this.model_
+						String code = UserFormView.this.model
 								.countryCode(countryCB.getCurrentIndex());
-						UserFormView.this.model_.setValue(
+						UserFormView.this.model.setValue(
 								UserFormModel.CountryField, code);
 					}
 				});
 		WComboBox cityCB = new WComboBox();
-		cityCB.setModel(this.model_.getCityModel());
+		cityCB.setModel(this.model.getCityModel());
 		this.setFormWidget(UserFormModel.CityField, cityCB);
 		final WDateEdit dateEdit = new WDateEdit();
 		this.setFormWidget(UserFormModel.BirthField, dateEdit,
 				new WTemplateFormView.FieldView() {
 					public void updateViewValue() {
-						WDate date = (WDate) UserFormView.this.model_
+						WDate date = (WDate) UserFormView.this.model
 								.getValue(UserFormModel.BirthField);
 						dateEdit.setDate(date);
 					}
 
 					public void updateModelValue() {
 						WDate date = dateEdit.getDate();
-						UserFormView.this.model_.setValue(
+						UserFormView.this.model.setValue(
 								UserFormModel.BirthField, date);
 					}
 				});
@@ -88,24 +87,24 @@ class UserFormView extends WTemplateFormView {
 				UserFormView.this.process();
 			}
 		});
-		this.updateView(this.model_);
+		this.updateView(this.model);
 	}
 
 	private void process() {
-		this.updateModel(this.model_);
-		if (this.model_.validate()) {
+		this.updateModel(this.model);
+		if (this.model.validate()) {
 			this.bindString("submit-info", new WString("Saved user data for ")
-					.append(this.model_.getUserData()), TextFormat.PlainText);
-			this.updateView(this.model_);
+					.append(this.model.getUserData()), TextFormat.PlainText);
+			this.updateView(this.model);
 			WLineEdit viewField = (WLineEdit) this
 					.resolveWidget(UserFormModel.FirstNameField);
 			viewField.setFocus();
 		} else {
 			this.bindEmpty("submit-info");
-			this.updateView(this.model_);
+			this.updateView(this.model);
 		}
 	}
 
-	private UserFormModel model_;
+	private UserFormModel model;
 	private WComboBox cityCB;
 }

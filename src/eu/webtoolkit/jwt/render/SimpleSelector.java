@@ -22,6 +22,8 @@ import org.slf4j.LoggerFactory;
 interface SimpleSelector {
 	public String getElementName();
 
+	public DomElementType getElementType();
+
 	public String getHashId();
 
 	public List<String> getClasses();

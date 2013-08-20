@@ -2004,7 +2004,7 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 		}
 	}
 
-	WWidget createHeaderWidget(WApplication app, int column) {
+	protected WWidget createHeaderWidget(int column) {
 		WAbstractItemView.ColumnInfo info = this.columnInfo(column);
 		WContainerWidget contents = new WContainerWidget();
 		contents.setObjectName("contents");

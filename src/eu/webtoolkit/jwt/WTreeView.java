@@ -565,7 +565,7 @@ public class WTreeView extends WAbstractItemView {
 			if (useStyleLeft) {
 				boolean rtl = app.getLayoutDirection() == LayoutDirection.RightToLeft;
 				this.tieRowsScrollJS_
-						.setJavaScript("function(obj, event) {Wt3_3_0.getCssRule('#"
+						.setJavaScript("function(obj, event) {Wt3_3_1.getCssRule('#"
 								+ this.getId()
 								+ " .Wt-tv-rowc').style.left= -obj.scrollLeft "
 								+ (rtl ? "+ (obj.firstChild.offsetWidth - obj.offsetWidth)"
@@ -767,7 +767,7 @@ public class WTreeView extends WAbstractItemView {
 			return;
 		}
 		app.loadJavaScript("js/WTreeView.js", wtjs1());
-		this.setJavaScriptMember(" WTreeView", "new Wt3_3_0.WTreeView("
+		this.setJavaScriptMember(" WTreeView", "new Wt3_3_1.WTreeView("
 				+ app.getJavaScriptClass() + "," + this.getJsRef() + ","
 				+ this.contentsContainer_.getJsRef() + ","
 				+ this.headerContainer_.getJsRef() + ","
@@ -790,7 +790,7 @@ public class WTreeView extends WAbstractItemView {
 			row.setStyleClass("Wt-tv-row");
 		}
 		for (int i = 0; i < this.getColumnCount(); ++i) {
-			WWidget w = this.createHeaderWidget(app, i);
+			WWidget w = this.createHeaderWidget(i);
 			if (i != 0) {
 				w.setFloatSide(Side.Left);
 				row.addWidget(w);
@@ -946,7 +946,7 @@ public class WTreeView extends WAbstractItemView {
 					}
 					WContainerWidget row = this.getHeaderRow();
 					for (int i = start; i < start + count; ++i) {
-						WWidget w = this.createHeaderWidget(app, i);
+						WWidget w = this.createHeaderWidget(i);
 						w.setFloatSide(Side.Left);
 						row.insertWidget(i - 1, w);
 					}
@@ -1158,7 +1158,7 @@ public class WTreeView extends WAbstractItemView {
 			int end) {
 		int count = end - start + 1;
 		if (this.renderState_ != WAbstractItemView.RenderState.NeedRerender
-				|| this.renderState_ != WAbstractItemView.RenderState.NeedRerenderData) {
+				&& this.renderState_ != WAbstractItemView.RenderState.NeedRerenderData) {
 			this.firstRemovedRow_ = -1;
 			this.removedHeight_ = 0;
 			WWidget parentWidget = this.widgetForIndex(parent);

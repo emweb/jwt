@@ -72,12 +72,12 @@ public class WDateEdit extends WLineEdit {
 		t.bindWidget("calendar", this.calendar_);
 		WApplication.getInstance().getTheme().apply(this, this.popup_,
 				WidgetThemeRole.DatePickerPopupRole);
-		t.escapePressed().addListener(this.popup_, new Signal.Listener() {
+		this.escapePressed().addListener(this.popup_, new Signal.Listener() {
 			public void trigger() {
 				WDateEdit.this.popup_.hide();
 			}
 		});
-		t.escapePressed().addListener(this, new Signal.Listener() {
+		this.escapePressed().addListener(this, new Signal.Listener() {
 			public void trigger() {
 				WDateEdit.this.setFocus();
 			}
@@ -275,7 +275,7 @@ public class WDateEdit extends WLineEdit {
 	private void defineJavaScript() {
 		WApplication app = WApplication.getInstance();
 		app.loadJavaScript("js/WDateEdit.js", wtjs1());
-		String jsObj = "new Wt3_3_0.WDateEdit(" + app.getJavaScriptClass()
+		String jsObj = "new Wt3_3_1.WDateEdit(" + app.getJavaScriptClass()
 				+ "," + this.getJsRef() + "," + this.popup_.getJsRef() + ");";
 		this.setJavaScriptMember(" WDateEdit", jsObj);
 		AbstractEventSignal b = this.mouseMoved();
@@ -323,6 +323,6 @@ public class WDateEdit extends WLineEdit {
 				JavaScriptScope.WtClassScope,
 				JavaScriptObjectType.JavaScriptConstructor,
 				"WDateEdit",
-				"function(g,a,h){function f(){return!!a.getAttribute(\"readonly\")}function i(){var b=$(\"#\"+h.id).get(0);return jQuery.data(b,\"popup\")}function j(){c.removeClass(\"active\")}function k(){var b=i();b.bindHide(j);b.show(a,e.Vertical)}jQuery.data(a,\"dobj\",this);var e=g.WT,c=$(a);this.mouseOut=function(){c.removeClass(\"hover\")};this.mouseMove=function(b,d){if(!f())if(e.widgetCoordinates(a,d).x>a.offsetWidth-40)c.addClass(\"hover\");else c.hasClass(\"hover\")&& c.removeClass(\"hover\")};this.mouseDown=function(b,d){if(!f())if(e.widgetCoordinates(a,d).x>a.offsetWidth-40){e.cancelEvent(d);c.addClass(\"unselectable\").addClass(\"active\")}};this.mouseUp=function(b,d){c.removeClass(\"unselectable\");e.widgetCoordinates(a,d).x>a.offsetWidth-40&&k()}}");
+				"function(g,a,h){function f(){return!!a.getAttribute(\"readonly\")}function i(){var b=$(\"#\"+h.id).get(0);return jQuery.data(b,\"popup\")}function j(){c.removeClass(\"active\")}function k(){var b=i();b.bindHide(j);b.show(a,e.Vertical)}jQuery.data(a,\"dobj\",this);var e=g.WT,c=$(a);this.mouseOut=function(){c.removeClass(\"hover\")};this.mouseMove=function(b,d){if(!f())if(e.widgetCoordinates(a,d).x>a.offsetWidth-40)c.addClass(\"hover\");else c.hasClass(\"hover\")&& c.removeClass(\"hover\")};this.mouseDown=function(b,d){f()||e.widgetCoordinates(a,d).x>a.offsetWidth-40&&c.addClass(\"unselectable\").addClass(\"active\")};this.mouseUp=function(b,d){c.removeClass(\"unselectable\");e.widgetCoordinates(a,d).x>a.offsetWidth-40&&k()}}");
 	}
 }

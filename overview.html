@@ -11,7 +11,7 @@
   dd p { margin-top: 0px; }
   dd div { margin: 10px 0px; }
 </style>
-<title>JWt 3.3.0</title>
+<title>JWt 3.3.1</title>
 </head>
 <body>
 
@@ -24,6 +24,79 @@ This page lists important notes on migrating existing applications to
 newer version of Wt. It lists changes in the library that may break
 the way you build Wt, the way you configure Wt or the Wt API and
 behaviour.
+
+<h2>Release 3.3.1 (August ?, 2013)</h2>
+
+<p>
+ This release has a focus on bug fixes and other cleanups after the big
+ changes that went into 3.3.0.
+</p>
+
+<h3>A) Main improvements:</h3>
+
+<dl>
+  <dt>
+    <a href="eu/webtoolkit/jwt/WComboBox.html">WComboBox</a>
+  </dt>
+  <dd>
+    The combo box now interprets LevelRole data to display headers
+    (using HTML &lt;optgroup&lt; elements). Another improvement is
+    that now the combobox saves its single selection while the model
+    is updated.
+  </dd>
+
+  <dt>
+    <a href="eu/webtoolkit/jwt/WDialog.html">WDialog</a>
+  </dt>
+  <dd>
+    Modal dialogs can now be created and destroyed in any order
+    without confusing the 'silk screen'. We now also consistently
+    interpret an enter press in the dialog to invoke the default
+    button added to the dialog footer (if there is one).
+  </dd>
+
+  <dt>
+    <a href="eu/webtoolkit/jwt/WMessageBox.html">WMessageBox</a>
+  </dt>
+  <dd>
+    Several improvements include the ability to indicate what buttons
+    are the default and escape buttons with setDefaultButton() or
+    button.setDefault() and setEscapeButton(), and the (long overdue)
+    implementation of icons!
+  </dd>
+
+  <dt>
+    <a href="eu/webtoolkit/jwt/WTextEdit.html">WTextEdit</a>
+  </dt>
+  <dd>
+    We've added support for TinyMCE 4.
+  </dd>
+
+  <dt>
+  <dt>
+    <a href="eu/webtoolkit/jwt/render/package-summary.html">Render library</a>
+  </dt>
+  <dd>
+    We've added a CSS style sheet parser which will parse and apply
+    style rules in &lt;style&gt; blocks (or loaded through the API),
+    and expanded CSS support to much improvemed table rendering
+    (including border-collapse border model and repeated table
+    headers), relative/absolute positioning, and page-break-before/after
+    support.
+  </dd>
+
+<h3>B) Non-backwards compatible changes</h3>
+
+<dl>
+  <dt>
+    <a href="eu/webtoolkit/jwt/WMessageBox.html">WMessageBox</a>
+  </dt>
+  <dd>
+    The getButtons() method has been renamed to getStandardButtons(), and
+    getButtons() now return the actual list of added buttons.
+  </dd>
+</dl>
+<hr>
 
 <h2>Release 3.3.0 (April 8, 2013)</h2>
 

@@ -1360,11 +1360,10 @@ public class WTableView extends WAbstractItemView {
 
 	private void rerenderHeader() {
 		this.saveExtraHeaderWidgets();
-		WApplication app = WApplication.getInstance();
 		if (this.isAjaxMode()) {
 			this.headers_.clear();
 			for (int i = 0; i < this.getColumnCount(); ++i) {
-				WWidget w = this.createHeaderWidget(app, i);
+				WWidget w = this.createHeaderWidget(i);
 				w.setFloatSide(Side.Left);
 				if (i < this.getRowHeaderCount()) {
 					this.headerColumnsHeaderContainer_.addWidget(w);
@@ -1380,7 +1379,7 @@ public class WTableView extends WAbstractItemView {
 			}
 		} else {
 			for (int i = 0; i < this.getColumnCount(); ++i) {
-				WWidget w = this.createHeaderWidget(app, i);
+				WWidget w = this.createHeaderWidget(i);
 				WTableCell cell = this.plainTable_.getElementAt(0, i);
 				cell.clear();
 				cell.setStyleClass("headerrh");
@@ -1793,7 +1792,7 @@ public class WTableView extends WAbstractItemView {
 	private void defineJavaScript() {
 		WApplication app = WApplication.getInstance();
 		app.loadJavaScript("js/WTableView.js", wtjs1());
-		this.setJavaScriptMember(" WTableView", "new Wt3_3_0.WTableView("
+		this.setJavaScriptMember(" WTableView", "new Wt3_3_1.WTableView("
 				+ app.getJavaScriptClass() + "," + this.getJsRef() + ","
 				+ this.contentsContainer_.getJsRef() + ","
 				+ this.headerContainer_.getJsRef() + ","

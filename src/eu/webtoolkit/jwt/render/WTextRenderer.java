@@ -316,7 +316,7 @@ public abstract class WTextRenderer {
 	 * <ul>
 	 * <li>tag selectors: e.g. span or *</li>
 	 * <li>class name selectors: .class</li>
-	 * <li>id selectors: id</li>
+	 * <li>id selectors: #id</li>
 	 * <li>descendant selectors: h1 h2 h3 {}</li>
 	 * <li>multiples: h1, h2, h3 {}
 	 * 

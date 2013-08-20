@@ -22,13 +22,13 @@ import org.slf4j.LoggerFactory;
 class UserFormModel extends WFormModel {
 	private static Logger logger = LoggerFactory.getLogger(UserFormModel.class);
 
-	public static String FirstNameField = "first-name";
-	public static String LastNameField = "last-name";
+	public static final String FirstNameField = "first-name";
+	public static final String LastNameField = "last-name";
 	public static final String CountryField = "country";
-	public static String CityField = "city";
+	public static final String CityField = "city";
 	public static final String BirthField = "birth";
-	public static String ChildrenField = "children";
-	public static String RemarksField = "remarks";
+	public static final String ChildrenField = "children";
+	public static final String RemarksField = "remarks";
 
 	public UserFormModel(WObject parent) {
 		super(parent);
@@ -75,7 +75,7 @@ class UserFormModel extends WFormModel {
 
 	public void updateCityModel(String countryCode) {
 		this.cityModel_.clear();
-		List<String> i = cities_.get(countryCode);
+		List<String> i = cities.get(countryCode);
 		if (i != null) {
 			List<String> cities = i;
 			this.cityModel_.appendRow(new WStandardItem());
@@ -109,15 +109,15 @@ class UserFormModel extends WFormModel {
 				ItemDataRole.UserRole);
 	}
 
-	private static final Map<String, List<String>> cities_ = getCityMap();
-	private static final Map<String, String> countries_ = getCountryMap();
+	private static final Map<String, List<String>> cities = getCityMap();
+	private static final Map<String, String> countries = getCountryMap();
 	private WStandardItemModel countryModel_;
 	private WStandardItemModel cityModel_;
 	private static final int MAX_LENGTH = 25;
 	private static final int MAX_CHILDREN = 15;
 
 	private void initializeModels() {
-		int countryModelRows = countries_.size() + 1;
+		int countryModelRows = countries.size() + 1;
 		final int countryModelColumns = 1;
 		this.countryModel_ = new WStandardItemModel(countryModelRows,
 				countryModelColumns, this);
@@ -125,12 +125,12 @@ class UserFormModel extends WFormModel {
 		this.countryModel_.setData(row, 0, " ", ItemDataRole.DisplayRole);
 		this.countryModel_.setData(row, 0, "", ItemDataRole.UserRole);
 		row = 1;
-		for (Iterator<Map.Entry<String, String>> i_it = countries_.entrySet()
+		for (Iterator<Map.Entry<String, String>> i_it = countries.entrySet()
 				.iterator(); i_it.hasNext();) {
 			Map.Entry<String, String> i = i_it.next();
 			this.countryModel_.setData(row, 0, i.getValue(),
 					ItemDataRole.DisplayRole);
-			this.countryModel_.setData(row, 0, i.getKey(),
+			this.countryModel_.setData(row++, 0, i.getKey(),
 					ItemDataRole.UserRole);
 		}
 		this.cityModel_ = new WStandardItemModel(this);
@@ -142,23 +142,18 @@ class UserFormModel extends WFormModel {
 		v.setMandatory(true);
 		v.setMinimumLength(1);
 		v.setMaximumLength(MAX_LENGTH);
-		v.setInvalidBlankText("A " + field + " is mandatory!");
-		v.setInvalidTooLongText(new WString("The " + field
-				+ " may not exceed {1} characters!").arg(MAX_LENGTH));
 		return v;
 	}
 
 	private WValidator getCreateCountryValidator() {
 		WLengthValidator v = new WLengthValidator();
 		v.setMandatory(true);
-		v.setInvalidBlankText("A choice for the country is mandatory!");
 		return v;
 	}
 
 	private WValidator getCreateCityValidator() {
 		WLengthValidator v = new WLengthValidator();
 		v.setMandatory(true);
-		v.setInvalidBlankText("A choice for the city is mandatory!");
 		return v;
 	}
 
@@ -174,13 +169,6 @@ class UserFormModel extends WFormModel {
 	private WValidator getCreateChildrenValidator() {
 		WIntValidator v = new WIntValidator(0, MAX_CHILDREN);
 		v.setMandatory(true);
-		v.setInvalidBlankText("Set the number of children!");
-		v
-				.setInvalidTooSmallText(new WString(
-						"Enter a value between 0 and {1}!").arg(MAX_CHILDREN));
-		v
-				.setInvalidTooLargeText(new WString(
-						"Enter a value between 0 and {1}!").arg(MAX_CHILDREN));
 		return v;
 	}
 

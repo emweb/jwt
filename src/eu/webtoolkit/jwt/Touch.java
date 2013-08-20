@@ -37,6 +37,8 @@ public class Touch {
 		this.clientY_ = clientY;
 		this.documentX_ = documentX;
 		this.documentY_ = documentY;
+		this.screenX_ = screenX;
+		this.screenY_ = screenY;
 		this.widgetX_ = widgetX;
 		this.widgetY_ = widgetY;
 		this.identifier_ = identifier;

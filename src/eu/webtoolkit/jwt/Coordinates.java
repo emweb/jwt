@@ -34,7 +34,6 @@ public class Coordinates {
 	 */
 	public int y;
 
-	// public ;
 	/**
 	 * Constructor.
 	 */

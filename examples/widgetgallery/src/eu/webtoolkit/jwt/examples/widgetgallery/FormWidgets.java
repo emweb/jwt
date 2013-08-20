@@ -420,15 +420,12 @@ class FormWidgets extends TopicWidget {
 		WTemplate result = new WTemplate(WString.tr("editSide-template"));
 		WLineEdit edit = new WLineEdit("Username");
 		edit.setStyleClass("span2");
-		edit.setId("prependedInput");
 		result.bindWidget("name", edit);
 		edit = new WLineEdit();
 		edit.setStyleClass("span2");
-		edit.setId("appendedInput");
 		result.bindWidget("amount1", edit);
 		edit = new WLineEdit();
 		edit.setStyleClass("span2");
-		edit.setId("appendedPrependedInput");
 		result.bindWidget("amount2", edit);
 		return result;
 	}

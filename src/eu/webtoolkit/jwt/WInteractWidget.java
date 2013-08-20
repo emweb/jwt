@@ -625,7 +625,7 @@ public abstract class WInteractWidget extends WWebWidget {
 				|| updateMouseMove;
 		String CheckDisabled = "if($(o).hasClass('"
 				+ app.getTheme().getDisabledClass()
-				+ "')){Wt3_3_0.cancelEvent(e);return;}";
+				+ "')){Wt3_3_1.cancelEvent(e);return;}";
 		if (updateMouseDown) {
 			StringBuilder js = new StringBuilder();
 			js.append(CheckDisabled);
@@ -639,11 +639,11 @@ public abstract class WInteractWidget extends WWebWidget {
 					&& mouseDown.isConnected()
 					&& (mouseUp != null && mouseUp.isConnected() || mouseMove != null
 							&& mouseMove.isConnected())) {
-				js.append("Wt3_3_0.capture(this);");
+				js.append("Wt3_3_1.capture(this);");
 			}
 			if (mouseMove != null && mouseMove.isConnected()
 					|| mouseDrag != null && mouseDrag.isConnected()) {
-				js.append("Wt3_3_0.mouseDown(e);");
+				js.append("Wt3_3_1.mouseDown(e);");
 			}
 			if (mouseDown != null) {
 				js.append(mouseDown.getJavaScript());
@@ -659,7 +659,7 @@ public abstract class WInteractWidget extends WWebWidget {
 			js.append(CheckDisabled);
 			if (mouseMove != null && mouseMove.isConnected()
 					|| mouseDrag != null && mouseDrag.isConnected()) {
-				js.append("Wt3_3_0.mouseUp(e);");
+				js.append("Wt3_3_1.mouseUp(e);");
 			}
 			if (mouseUp != null) {
 				js.append(mouseUp.getJavaScript());
@@ -679,7 +679,7 @@ public abstract class WInteractWidget extends WWebWidget {
 				mouseMove.updateOk();
 			}
 			if (mouseDrag != null) {
-				actions.add(new DomElement.EventAction("Wt3_3_0.buttons",
+				actions.add(new DomElement.EventAction("Wt3_3_1.buttons",
 						mouseDrag.getJavaScript(), mouseDrag.encodeCmd(),
 						mouseDrag.isExposedSignal()));
 				mouseDrag.updateOk();
@@ -700,7 +700,7 @@ public abstract class WInteractWidget extends WWebWidget {
 				if (mouseClick != null) {
 					if (mouseClick.isDefaultActionPrevented()
 							|| mouseClick.isPropagationPrevented()) {
-						js.append("Wt3_3_0.cancelEvent(e");
+						js.append("Wt3_3_1.cancelEvent(e");
 						if (mouseClick.isDefaultActionPrevented()
 								&& mouseClick.isPropagationPrevented()) {
 							js.append(");");
@@ -725,7 +725,7 @@ public abstract class WInteractWidget extends WWebWidget {
 				}
 				mouseDblClick.updateOk();
 				js
-						.append("}else{if (Wt3_3_0.isIElt9 && document.createEventObject) e = document.createEventObject(e);o.wtClickTimeout = setTimeout(function() {o.wtClickTimeout = null;");
+						.append("}else{if (Wt3_3_1.isIElt9 && document.createEventObject) e = document.createEventObject(e);o.wtClickTimeout = setTimeout(function() {o.wtClickTimeout = null;");
 				if (mouseClick != null) {
 					js.append(mouseClick.getJavaScript());
 					if (mouseClick.isExposedSignal()) {

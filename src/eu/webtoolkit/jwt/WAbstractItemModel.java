@@ -409,6 +409,9 @@ public abstract class WAbstractItemModel extends WObject {
 			Object v = this.getData(idx, role);
 			if (StringUtils.matchValue(v, value, flags)) {
 				result.add(idx);
+				if (hits != -1 && (int) result.size() == hits) {
+					break;
+				}
 			}
 		}
 		return result;

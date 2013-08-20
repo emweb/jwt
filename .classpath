@@ -23,5 +23,6 @@
 	<classpathentry kind="lib" path="lib/junit-4.11.jar"/>
 	<classpathentry kind="lib" path="lib/pdfjet/pdfjet-4.75.jar"/>
 	<classpathentry kind="lib" path="lib/hamcrest-all-1.1.jar"/>
+	<classpathentry kind="lib" path="lib/slf4j-simple-1.6.4.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

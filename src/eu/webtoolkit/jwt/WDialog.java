@@ -130,6 +130,8 @@ public class WDialog extends WPopupWidget {
 		this.finished_ = new Signal1<WDialog.DialogCode>(this);
 		this.escapeConnection1_ = new AbstractSignal.Connection();
 		this.escapeConnection2_ = new AbstractSignal.Connection();
+		this.enterConnection1_ = new AbstractSignal.Connection();
+		this.enterConnection2_ = new AbstractSignal.Connection();
 		this.create();
 	}
 
@@ -154,6 +156,8 @@ public class WDialog extends WPopupWidget {
 		this.finished_ = new Signal1<WDialog.DialogCode>(this);
 		this.escapeConnection1_ = new AbstractSignal.Connection();
 		this.escapeConnection2_ = new AbstractSignal.Connection();
+		this.enterConnection1_ = new AbstractSignal.Connection();
+		this.enterConnection2_ = new AbstractSignal.Connection();
 		this.create();
 		this.setWindowTitle(windowTitle);
 	}
@@ -371,24 +375,7 @@ public class WDialog extends WPopupWidget {
 	 * @see WDialog#reject()
 	 */
 	public void rejectWhenEscapePressed(boolean enable) {
-		if (enable) {
-			this.escapeConnection1_ = WApplication.getInstance()
-					.globalEscapePressed().addListener(this,
-							new Signal.Listener() {
-								public void trigger() {
-									WDialog.this.reject();
-								}
-							});
-			this.escapeConnection2_ = this.impl_.escapePressed().addListener(
-					this, new Signal.Listener() {
-						public void trigger() {
-							WDialog.this.reject();
-						}
-					});
-		} else {
-			this.escapeConnection1_.disconnect();
-			this.escapeConnection2_.disconnect();
-		}
+		this.escapeIsReject_ = enable;
 	}
 
 	/**
@@ -475,7 +462,7 @@ public class WDialog extends WPopupWidget {
 				this
 						.setJavaScriptMember(
 								" Resizable",
-								"(new Wt3_3_0.Resizable(Wt3_3_0,"
+								"(new Wt3_3_1.Resizable(Wt3_3_1,"
 										+ this.getJsRef()
 										+ ")).onresize(function(w, h) {var obj = $('#"
 										+ this.getId()
@@ -528,7 +515,52 @@ public class WDialog extends WPopupWidget {
 	}
 
 	public void setHidden(boolean hidden, WAnimation animation) {
+		if (!(this.contents_ != null)) {
+			return;
+		}
 		if (this.isHidden() != hidden) {
+			if (!hidden) {
+				WApplication app = WApplication.getInstance();
+				for (int i = 0; i < this.getFooter().getCount(); ++i) {
+					WPushButton b = ((this.getFooter().getWidget(i)) instanceof WPushButton ? (WPushButton) (this
+							.getFooter().getWidget(i))
+							: null);
+					if (b != null && b.isDefault()) {
+						this.enterConnection1_ = app.globalEnterPressed()
+								.addListener(this, new Signal.Listener() {
+									public void trigger() {
+										WDialog.this.onDefaultPressed();
+									}
+								});
+						this.enterConnection2_ = this.impl_.enterPressed()
+								.addListener(this, new Signal.Listener() {
+									public void trigger() {
+										WDialog.this.onDefaultPressed();
+									}
+								});
+						break;
+					}
+				}
+				if (this.escapeIsReject_) {
+					this.escapeConnection1_ = app.globalEscapePressed()
+							.addListener(this, new Signal.Listener() {
+								public void trigger() {
+									WDialog.this.onEscapePressed();
+								}
+							});
+					this.escapeConnection2_ = this.impl_.escapePressed()
+							.addListener(this, new Signal.Listener() {
+								public void trigger() {
+									WDialog.this.onEscapePressed();
+								}
+							});
+				}
+			} else {
+				this.escapeConnection1_.disconnect();
+				this.escapeConnection2_.disconnect();
+				this.enterConnection1_.disconnect();
+				this.enterConnection2_.disconnect();
+			}
 			if (!hidden) {
 				this.getCover().pushDialog(this, animation);
 				if (this.modal_) {
@@ -578,7 +610,7 @@ public class WDialog extends WPopupWidget {
 					}
 				}
 			}
-			this.doJavaScript("new Wt3_3_0.WDialog(" + app.getJavaScriptClass()
+			this.doJavaScript("new Wt3_3_1.WDialog(" + app.getJavaScriptClass()
 					+ "," + this.getJsRef() + "," + this.titleBar_.getJsRef()
 					+ "," + (centerX ? "1" : "0") + "," + (centerY ? "1" : "0")
 					+ ");");
@@ -604,12 +636,15 @@ public class WDialog extends WPopupWidget {
 	private WContainerWidget footer_;
 	private boolean modal_;
 	private boolean resizable_;
+	private boolean escapeIsReject_;
 	private Signal1<WDialog.DialogCode> finished_;
 	private WDialog.DialogCode result_;
 	private boolean recursiveEventLoop_;
 	private boolean initialized_;
 	private AbstractSignal.Connection escapeConnection1_;
 	private AbstractSignal.Connection escapeConnection2_;
+	private AbstractSignal.Connection enterConnection1_;
+	private AbstractSignal.Connection enterConnection2_;
 
 	private void create() {
 		this.closeIcon_ = null;
@@ -617,6 +652,7 @@ public class WDialog extends WPopupWidget {
 		this.modal_ = true;
 		this.resizable_ = false;
 		this.recursiveEventLoop_ = false;
+		this.escapeIsReject_ = false;
 		this.impl_ = ((this.getImplementation()) instanceof WTemplate ? (WTemplate) (this
 				.getImplementation())
 				: null);
@@ -679,6 +715,28 @@ public class WDialog extends WPopupWidget {
 			this
 					.setPositionScheme(app.getEnvironment().getAgent() == WEnvironment.UserAgent.IE6 ? PositionScheme.Absolute
 							: PositionScheme.Fixed);
+		}
+	}
+
+	private void onEscapePressed() {
+		if (this.getCover().isTopDialogRendered(this)) {
+			this.reject();
+		}
+	}
+
+	private void onDefaultPressed() {
+		if (this.getCover().isTopDialogRendered(this)) {
+			for (int i = 0; i < this.getFooter().getCount(); ++i) {
+				WPushButton b = ((this.getFooter().getWidget(i)) instanceof WPushButton ? (WPushButton) (this
+						.getFooter().getWidget(i))
+						: null);
+				if (b != null && b.isDefault()) {
+					if (b.isEnabled()) {
+						b.clicked().trigger(new WMouseEvent());
+					}
+					break;
+				}
+			}
 		}
 	}
 

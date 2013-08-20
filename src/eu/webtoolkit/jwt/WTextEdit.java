@@ -279,7 +279,7 @@ public class WTextEdit extends WTextArea {
 
 	String renderRemoveJs() {
 		if (this.isRendered()) {
-			return this.getJsRef() + ".ed.remove();Wt3_3_0.remove('"
+			return this.getJsRef() + ".ed.remove();Wt3_3_1.remove('"
 					+ this.getId() + "');";
 		} else {
 			return super.renderRemoveJs();
@@ -369,7 +369,7 @@ public class WTextEdit extends WTextArea {
 		this.setInline(false);
 		initTinyMCE();
 		this.version_ = getTinyMCEVersion();
-		this.setJavaScriptMember(" WTextEdit", "new Wt3_3_0.WTextEdit("
+		this.setJavaScriptMember(" WTextEdit", "new Wt3_3_1.WTextEdit("
 				+ app.getJavaScriptClass() + "," + this.getJsRef() + ");");
 		this.setJavaScriptMember(WT_RESIZE_JS,
 				"function(e, w, h) { var obj = $('#" + this.getId()

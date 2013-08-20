@@ -82,9 +82,13 @@ public class WEnvironment {
 		 */
 		IE8(1003),
 		/**
-		 * Internet Explorer 9 or later.
+		 * Internet Explorer 9.
 		 */
 		IE9(1004),
+		/**
+		 * Internet Explorer 10 or later.
+		 */
+		IE10(1005),
 		/**
 		 * Opera.
 		 */
@@ -237,7 +241,7 @@ public class WEnvironment {
 	 * Wt&apos;s JavaScript scope.
 	 */
 	public static String getJavaScriptWtScope() {
-		return "Wt3_3_0";
+		return "Wt3_3_1";
 	}
 
 	/**
@@ -640,7 +644,7 @@ public class WEnvironment {
 	 * Example: <code>&quot;1.99.2&quot;</code>
 	 */
 	public static String getLibraryVersion() {
-		return "3.3.0";
+		return "3.3.1";
 	}
 
 	// public void libraryVersion(bad java simple ref int series, bad java
@@ -858,6 +862,9 @@ public class WEnvironment {
 	public boolean supportsCss3Animations() {
 		return this.agentIsGecko()
 				&& this.agent_.getValue() >= WEnvironment.UserAgent.Firefox5_0
+						.getValue()
+				|| this.agentIsIE()
+				&& this.agent_.getValue() >= WEnvironment.UserAgent.IE10
 						.getValue() || this.agentIsWebKit();
 	}
 
@@ -948,8 +955,12 @@ public class WEnvironment {
 						if (this.userAgent_.indexOf("MSIE 8.") != -1) {
 							this.agent_ = WEnvironment.UserAgent.IE8;
 						} else {
-							if (this.userAgent_.indexOf("MSIE") != -1) {
+							if (this.userAgent_.indexOf("MSIE 9") != -1) {
 								this.agent_ = WEnvironment.UserAgent.IE9;
+							} else {
+								if (this.userAgent_.indexOf("MSIE") != -1) {
+									this.agent_ = WEnvironment.UserAgent.IE10;
+								}
 							}
 						}
 					}

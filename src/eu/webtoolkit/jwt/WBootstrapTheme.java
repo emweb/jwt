@@ -146,6 +146,20 @@ public class WBootstrapTheme extends WTheme {
 							: null) != null) {
 				element.addPropertyWord(Property.PropertyClass, "btn");
 			}
+			if (element.getProperty(Property.PropertyClass).indexOf(
+					"dropdown-toggle") != -1) {
+				WMenuItem item = ((widget.getParent()) instanceof WMenuItem ? (WMenuItem) (widget
+						.getParent())
+						: null);
+				if (!(((item.getParentMenu()) instanceof WPopupMenu ? (WPopupMenu) (item
+						.getParentMenu())
+						: null) != null)) {
+					DomElement b = DomElement
+							.createNew(DomElementType.DomElement_B);
+					b.setProperty(Property.PropertyClass, "caret");
+					element.addChild(b);
+				}
+			}
 			break;
 		case DomElement_BUTTON: {
 			if (creating) {
@@ -251,6 +265,9 @@ public class WBootstrapTheme extends WTheme {
 							: null) != null) {
 						element.addPropertyWord(Property.PropertyClass,
 								"dropdown-submenu");
+					} else {
+						element.addPropertyWord(Property.PropertyClass,
+								"dropdown");
 					}
 				}
 			}
@@ -339,7 +356,7 @@ public class WBootstrapTheme extends WTheme {
 		app.loadJavaScript("js/BootstrapValidate.js", wtjs2());
 		if (app.getEnvironment().hasAjax()) {
 			StringBuilder js = new StringBuilder();
-			js.append("Wt3_3_0.setValidationState(").append(widget.getJsRef())
+			js.append("Wt3_3_1.setValidationState(").append(widget.getJsRef())
 					.append(",").append(
 							validation.getState() == WValidator.State.Valid ? 1
 									: 0).append(",").append(

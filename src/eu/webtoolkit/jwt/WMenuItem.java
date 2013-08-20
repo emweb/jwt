@@ -310,7 +310,33 @@ public class WMenuItem extends WContainerWidget {
 	 * @see WMenuItem#setPathComponent(String path)
 	 */
 	public String getPathComponent() {
-		return this.isSectionHeader() ? "--none--" : this.pathComponent_;
+		return this.pathComponent_;
+	}
+
+	/**
+	 * Configures internal path support for the item.
+	 * <p>
+	 * This configures whether the item supports internal paths (in a menu which
+	 * supports internal paths).
+	 * <p>
+	 * The default value is <code>true</code> for all items but section headers
+	 * and separators.
+	 * <p>
+	 * 
+	 * @see WMenu#setInternalPathEnabled(String basePath)
+	 */
+	public void setInternalPathEnabled(boolean enabled) {
+		this.internalPathEnabled_ = enabled;
+	}
+
+	/**
+	 * Returns whether an item participates in internal paths.
+	 * <p>
+	 * 
+	 * @see WMenuItem#setInternalPathEnabled(boolean enabled)
+	 */
+	public boolean isInternalPathEnabled() {
+		return this.internalPathEnabled_;
 	}
 
 	/**
@@ -700,6 +726,7 @@ public class WMenuItem extends WContainerWidget {
 				WMenuItem.LoadPolicy.LazyLoading);
 		this.separator_ = separator;
 		this.selectable_ = false;
+		this.internalPathEnabled_ = false;
 		if (!(text.length() == 0)) {
 			this.text_ = new WLabel(this);
 			this.text_.setTextFormat(TextFormat.PlainText);
@@ -721,6 +748,7 @@ public class WMenuItem extends WContainerWidget {
 	private Signal1<WMenuItem> triggered_;
 	private String pathComponent_;
 	private boolean customPathComponent_;
+	private boolean internalPathEnabled_;
 	private boolean closeable_;
 
 	private void create(String iconPath, CharSequence text, WWidget contents,
@@ -729,6 +757,7 @@ public class WMenuItem extends WContainerWidget {
 		this.contents_ = contents;
 		this.menu_ = null;
 		this.customPathComponent_ = false;
+		this.internalPathEnabled_ = true;
 		this.closeable_ = false;
 		this.selectable_ = true;
 		this.text_ = null;

@@ -380,7 +380,7 @@ public class DomElement {
 			js.append("o=this;");
 			if (anchorClick) {
 				js
-						.append("if(e.ctrlKey||e.metaKey||(Wt3_3_0.button(e) > 1))return true;else{");
+						.append("if(e.ctrlKey||e.metaKey||(Wt3_3_1.button(e) > 1))return true;else{");
 			}
 			js.append(jsCode);
 			if (isExposed) {
@@ -501,7 +501,7 @@ public class DomElement {
 	public void callMethod(String method) {
 		++this.numManipulations_;
 		if (this.var_.length() == 0) {
-			this.javaScript_.append("Wt3_3_0").append(".$('").append(this.id_)
+			this.javaScript_.append("Wt3_3_1").append(".$('").append(this.id_)
 					.append("').");
 		} else {
 			this.javaScript_.append(this.var_).append('.');
@@ -563,7 +563,7 @@ public class DomElement {
 	 * Removes the element.
 	 */
 	public void removeFromParent() {
-		this.callJavaScript("Wt3_3_0.remove('" + this.getId() + "');", true);
+		this.callJavaScript("Wt3_3_1.remove('" + this.getId() + "');", true);
 	}
 
 	/**
@@ -710,22 +710,22 @@ public class DomElement {
 					String style = this.properties_
 							.get(Property.PropertyStyleDisplay);
 					if (style.equals("none")) {
-						out.append("Wt3_3_0.hide('").append(this.id_).append(
+						out.append("Wt3_3_1.hide('").append(this.id_).append(
 								"');\n");
 						return this.var_;
 					} else {
 						if (style.length() == 0) {
-							out.append("Wt3_3_0.show('").append(this.id_)
+							out.append("Wt3_3_1.show('").append(this.id_)
 									.append("');\n");
 							return this.var_;
 						} else {
 							if (style.equals("inline")) {
-								out.append("Wt3_3_0.inline('" + this.id_
+								out.append("Wt3_3_1.inline('" + this.id_
 										+ "');\n");
 								return this.var_;
 							} else {
 								if (style.equals("block")) {
-									out.append("Wt3_3_0.block('" + this.id_
+									out.append("Wt3_3_1.block('" + this.id_
 											+ "');\n");
 									return this.var_;
 								}
@@ -740,7 +740,7 @@ public class DomElement {
 				}
 			}
 			if (this.unwrapped_) {
-				out.append("Wt3_3_0.unwrap('").append(this.id_).append("');\n");
+				out.append("Wt3_3_1.unwrap('").append(this.id_).append("');\n");
 			}
 			this.processEvents(app);
 			this.processProperties(app);
@@ -753,7 +753,7 @@ public class DomElement {
 								");\n");
 				this.replaced_.createElement(out, app, insertJs.toString());
 				if (this.unstubbed_) {
-					out.append("Wt3_3_0.unstub(").append(this.var_).append(',')
+					out.append("Wt3_3_1.unstub(").append(this.var_).append(',')
 							.append(varr).append(',').append(
 									this.hideWithDisplay_ ? 1 : 0).append(
 									");\n");
@@ -774,7 +774,7 @@ public class DomElement {
 			}
 			if (!this.childrenToSave_.isEmpty()) {
 				this.declare(out);
-				out.append("Wt3_3_0").append(".saveReparented(").append(
+				out.append("Wt3_3_1").append(".saveReparented(").append(
 						this.var_).append(");");
 			}
 			for (int i = 0; i < this.childrenToSave_.size(); ++i) {
@@ -1058,6 +1058,10 @@ public class DomElement {
 				out.append(" class=");
 				fastHtmlAttributeValue(out, attributeValues, i.getValue());
 				break;
+			case PropertyLabel:
+				out.append(" label=");
+				fastHtmlAttributeValue(out, attributeValues, i.getValue());
+				break;
 			default:
 				break;
 			}
@@ -1161,7 +1165,7 @@ public class DomElement {
 	public void declare(EscapeOStream out) {
 		if (this.var_.length() == 0) {
 			out.append("var ").append(this.getCreateVar()).append(
-					"=Wt3_3_0.$('").append(this.id_).append("');\n");
+					"=Wt3_3_1.$('").append(this.id_).append("');\n");
 		}
 	}
 
@@ -1422,7 +1426,8 @@ public class DomElement {
 						|| this.type_ == DomElementType.DomElement_TABLE
 						|| this.type_ == DomElementType.DomElement_COLGROUP
 						|| this.type_ == DomElementType.DomElement_TR
-						|| this.type_ == DomElementType.DomElement_SELECT || this.type_ == DomElementType.DomElement_TD)) {
+						|| this.type_ == DomElementType.DomElement_SELECT
+						|| this.type_ == DomElementType.DomElement_TD || this.type_ == DomElementType.DomElement_OPTGROUP)) {
 			return false;
 		}
 		return true;
@@ -1435,7 +1440,7 @@ public class DomElement {
 		DomElement.EventHandler keypress = this.eventHandlers_.get(S_keypress);
 		if (keypress != null && keypress.jsCode.length() != 0) {
 			MapUtils.access(self.eventHandlers_, S_keypress,
-					DomElement.EventHandler.class).jsCode = "if (Wt3_3_0.isKeyPress(event)){"
+					DomElement.EventHandler.class).jsCode = "if (Wt3_3_1.isKeyPress(event)){"
 					+ MapUtils.access(self.eventHandlers_, S_keypress,
 							DomElement.EventHandler.class).jsCode + '}';
 		}
@@ -1451,7 +1456,7 @@ public class DomElement {
 			if (minw != null || maxw != null) {
 				if (w == null) {
 					StringBuilder expr = new StringBuilder();
-					expr.append("Wt3_3_0.IEwidth(this,");
+					expr.append("Wt3_3_1.IEwidth(this,");
 					if (minw != null) {
 						expr.append('\'').append(minw).append('\'');
 						self.properties_.remove(Property.PropertyStyleMinWidth);
@@ -1488,7 +1493,7 @@ public class DomElement {
 			switch (i.getKey()) {
 			case PropertyInnerHTML:
 			case PropertyAddedInnerHTML:
-				out.append("Wt3_3_0.setHtml(").append(this.var_).append(',');
+				out.append("Wt3_3_1.setHtml(").append(this.var_).append(',');
 				if (!pushed) {
 					escaped
 							.pushEscape(EscapeOStream.RuleSet.JsStringLiteralSQuote);
@@ -1657,7 +1662,7 @@ public class DomElement {
 		out.append("function f").append(fid).append("(event) { ");
 		if (globalUnfocused) {
 			out
-					.append("var g=event||window.event; var t=g.target||g.srcElement;if ((!t||Wt3_3_0.hasTag(t,'DIV') ||Wt3_3_0.hasTag(t,'BODY') ||Wt3_3_0.hasTag(t,'HTML'))) {");
+					.append("var g=event||window.event; var t=g.target||g.srcElement;if ((!t||Wt3_3_1.hasTag(t,'DIV') ||Wt3_3_1.hasTag(t,'BODY') ||Wt3_3_1.hasTag(t,'HTML'))) {");
 		}
 		out.append(handler.jsCode);
 		if (globalUnfocused) {
@@ -1727,7 +1732,7 @@ public class DomElement {
 		} else {
 			StringBuilder insertJS = new StringBuilder();
 			if (pos != -1) {
-				insertJS.append("Wt3_3_0.insertAt(").append(parentVar).append(
+				insertJS.append("Wt3_3_1.insertAt(").append(parentVar).append(
 						",").append(this.var_).append(",").append(pos).append(
 						");");
 			} else {
@@ -1749,7 +1754,7 @@ public class DomElement {
 					|| !this.childrenToAdd_.isEmpty()
 					|| !this.childrenHtml_.isEmpty()) {
 				this.declare(out);
-				out.append("Wt3_3_0.setHtml(").append(this.var_).append(",'");
+				out.append("Wt3_3_1.setHtml(").append(this.var_).append(",'");
 				out.pushEscape(EscapeOStream.RuleSet.JsStringLiteralSQuote);
 				out.append(this.childrenHtml_.toString());
 				List<DomElement.TimeoutEvent> timeouts = new ArrayList<DomElement.TimeoutEvent>();
@@ -1847,15 +1852,15 @@ public class DomElement {
 			"colgroup", "div", "fieldset", "form", "h1", "h2", "h3", "h4",
 			"h5", "h6", "iframe", "img", "input", "label", "legend", "li",
 			"ol", "option", "ul", "script", "select", "span", "table", "tbody",
-			"thead", "tfoot", "th", "td", "textarea", "tr", "p", "canvas",
-			"map", "area", "style", "object", "param", "audio", "video",
-			"source", "b", "strong", "em", "i" };
+			"thead", "tfoot", "th", "td", "textarea", "optgroup", "tr", "p",
+			"canvas", "map", "area", "style", "object", "param", "audio",
+			"video", "source", "b", "strong", "em", "i" };
 	private static boolean[] defaultInline_ = { true, false, true, false,
 			false, false, false, false, false, false, false, false, false,
 			false, true, true, true, true, true, false, false, true, false,
 			false, true, true, false, false, false, false, false, false, true,
-			false, false, true, false, true, true, false, false, false, false,
-			false, true, true, true, true };
+			true, false, false, true, false, true, true, false, false, false,
+			false, false, true, true, true, true };
 	private static String[] cssNames_ = { "position", "z-index", "float",
 			"clear", "width", "height", "line-height", "min-width",
 			"min-height", "max-width", "max-height", "left", "right", "top",

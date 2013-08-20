@@ -418,6 +418,8 @@ public class WCssTheme extends WTheme {
 	}
 
 	/**
+	 * Returns the stylesheets.
+	 * <p>
 	 * Returns wt.css, plus on IE wt_ie.css, plus on IE6 wt_ie6.css. The style
 	 * sheets are located in the theme directory in the resources folder.
 	 */
@@ -515,6 +517,12 @@ public class WCssTheme extends WTheme {
 		case DomElement_BUTTON:
 			if (creating) {
 				element.addPropertyWord(Property.PropertyClass, "Wt-btn");
+				WPushButton b = ((widget) instanceof WPushButton ? (WPushButton) (widget)
+						: null);
+				if (b != null && b.isDefault()) {
+					element.addPropertyWord(Property.PropertyClass,
+							"Wt-btn-default");
+				}
 			}
 			break;
 		case DomElement_UL:
@@ -643,7 +651,7 @@ public class WCssTheme extends WTheme {
 		app.loadJavaScript("js/CssThemeValidate.js", wtjs2());
 		if (app.getEnvironment().hasAjax()) {
 			StringBuilder js = new StringBuilder();
-			js.append("Wt3_3_0.setValidationState(").append(widget.getJsRef())
+			js.append("Wt3_3_1.setValidationState(").append(widget.getJsRef())
 					.append(",").append(
 							validation.getState() == WValidator.State.Valid ? 1
 									: 0).append(",").append(

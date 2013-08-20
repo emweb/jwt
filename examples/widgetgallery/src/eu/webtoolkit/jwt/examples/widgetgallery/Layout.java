@@ -399,23 +399,19 @@ class Layout extends TopicWidget {
 		label.setBuddy(edit);
 		WRegExpValidator validator = new WRegExpValidator(
 				"[A-Za-z][1-9][0-9]{0,2}");
+		validator.setMandatory(true);
 		edit.setValidator(validator);
 		final WPushButton ok = new WPushButton("OK", dialog.getFooter());
-		WPushButton cancel = new WPushButton("Cancel", dialog.getFooter());
+		ok.setDefault(true);
 		ok.disable();
+		WPushButton cancel = new WPushButton("Cancel", dialog.getFooter());
+		dialog.rejectWhenEscapePressed();
 		edit.keyWentUp().addListener(this, new Signal.Listener() {
 			public void trigger() {
 				ok.setDisabled(edit.validate() != WValidator.State.Valid);
 			}
 		});
 		ok.clicked().addListener(this, new Signal.Listener() {
-			public void trigger() {
-				if (edit.validate() != null) {
-					dialog.accept();
-				}
-			}
-		});
-		edit.enterPressed().addListener(this, new Signal.Listener() {
 			public void trigger() {
 				if (edit.validate() != null) {
 					dialog.accept();

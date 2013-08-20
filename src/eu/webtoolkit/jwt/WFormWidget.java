@@ -429,12 +429,11 @@ public abstract class WFormWidget extends WInteractWidget {
 	private static String BLUR_SIGNAL = "blur";
 	private static final int BIT_ENABLED_CHANGED = 0;
 	private static final int BIT_GOT_FOCUS = 1;
-	private static final int BIT_INITIAL_FOCUS = 2;
-	private static final int BIT_READONLY = 3;
-	private static final int BIT_READONLY_CHANGED = 4;
-	private static final int BIT_TABINDEX_CHANGED = 5;
-	private static final int BIT_JS_OBJECT = 6;
-	private static final int BIT_VALIDATION_CHANGED = 7;
+	private static final int BIT_READONLY = 2;
+	private static final int BIT_READONLY_CHANGED = 3;
+	private static final int BIT_TABINDEX_CHANGED = 4;
+	private static final int BIT_JS_OBJECT = 5;
+	private static final int BIT_VALIDATION_CHANGED = 6;
 	BitSet flags_;
 	private int tabIndex_;
 	private Signal1<WValidator.Result> validated_;
@@ -462,7 +461,7 @@ public abstract class WFormWidget extends WInteractWidget {
 			if (!(this.validateJs_ != null)) {
 				this.validateJs_ = new JSlot();
 				this.validateJs_
-						.setJavaScript("function(o){Wt3_3_0.validate(o)}");
+						.setJavaScript("function(o){Wt3_3_1.validate(o)}");
 				this.keyWentUp().addListener(this.validateJs_);
 				this.changed().addListener(this.validateJs_);
 				if (this.getDomElementType() != DomElementType.DomElement_SELECT) {
@@ -480,7 +479,7 @@ public abstract class WFormWidget extends WInteractWidget {
 				this.keyPressed().addListener(this.filterInput_);
 			}
 			StringUtils.replace(inputFilter, '/', "\\/");
-			this.filterInput_.setJavaScript("function(o,e){Wt3_3_0.filter(o,e,"
+			this.filterInput_.setJavaScript("function(o,e){Wt3_3_1.filter(o,e,"
 					+ jsStringLiteral(inputFilter) + ")}");
 		} else {
 			;
@@ -497,7 +496,7 @@ public abstract class WFormWidget extends WInteractWidget {
 			}
 			WApplication app = WApplication.getInstance();
 			app.loadJavaScript("js/WFormWidget.js", wtjs1());
-			this.setJavaScriptMember(" WFormWidget", "new Wt3_3_0.WFormWidget("
+			this.setJavaScriptMember(" WFormWidget", "new Wt3_3_1.WFormWidget("
 					+ app.getJavaScriptClass() + "," + this.getJsRef() + ","
 					+ WString.toWString(this.emptyText_).getJsStringLiteral()
 					+ ");");
@@ -550,18 +549,14 @@ public abstract class WFormWidget extends WInteractWidget {
 			}
 			this.flags_.clear(BIT_TABINDEX_CHANGED);
 		}
-		if (this.isEnabled()) {
-			if (all && this.flags_.get(BIT_GOT_FOCUS)) {
-				this.flags_.set(BIT_INITIAL_FOCUS);
-			}
-			if (this.flags_.get(BIT_GOT_FOCUS) || all
-					&& this.flags_.get(BIT_INITIAL_FOCUS)) {
-				element.callJavaScript("setTimeout(function() {var f = "
-						+ this.getJsRef()
-						+ ";if (f) try { f.focus(); } catch (e) { } }, "
-						+ (env.agentIsIElt(9) ? "500" : "10") + ");");
-				this.flags_.clear(BIT_GOT_FOCUS);
-			}
+		if (this.flags_.get(BIT_GOT_FOCUS)) {
+			WApplication app = WApplication.getInstance();
+			element.callJavaScript("setTimeout(function() {var o = "
+					+ this.getJsRef() + ";if (o) {if (!$(o).hasClass('"
+					+ app.getTheme().getDisabledClass()
+					+ "')) {try { f.focus();} catch (e) {}}}}, "
+					+ (env.agentIsIElt(9) ? "500" : "10") + ");");
+			this.flags_.clear(BIT_GOT_FOCUS);
 		}
 		super.updateDom(element, all);
 		if (this.flags_.get(BIT_VALIDATION_CHANGED)) {

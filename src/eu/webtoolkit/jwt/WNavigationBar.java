@@ -198,6 +198,7 @@ public class WNavigationBar extends WTemplate {
 			WContainerWidget contents = (WContainerWidget) this
 					.resolveWidget("contents");
 			contents.addWidget(widget);
+			contents.setLoadLaterWhenInvisible(false);
 		} else {
 			this.addWrapped(widget, alignment, "navbar-form");
 		}

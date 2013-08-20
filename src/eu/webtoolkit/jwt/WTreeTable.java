@@ -191,8 +191,8 @@ public class WTreeTable extends WCompositeWidget {
 				: null);
 		if (this.tree_ != null)
 			this.tree_.remove();
+		parent.addWidget(this.tree_ = root);
 		this.header(0).setText(h);
-		parent.addWidget(this.tree_ = new WTree());
 		this.tree_.resize(new WLength(100, WLength.Unit.Percentage),
 				WLength.Auto);
 		this.getTreeRoot().setTable(this);
@@ -277,7 +277,7 @@ public class WTreeTable extends WCompositeWidget {
 	private void defineJavaScript() {
 		WApplication app = WApplication.getInstance();
 		app.loadJavaScript("js/WTreeTable.js", wtjs1());
-		this.setJavaScriptMember(" WTreeTable", "new Wt3_3_0.WTreeTable("
+		this.setJavaScriptMember(" WTreeTable", "new Wt3_3_1.WTreeTable("
 				+ app.getJavaScriptClass() + "," + this.getJsRef() + ");");
 	}
 
