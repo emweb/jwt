@@ -48,6 +48,8 @@ public class WSvgImage extends WResource implements WVectorImage {
 		this.newClipPath_ = false;
 		this.busyWithPath_ = false;
 		this.currentClipId_ = -1;
+		this.currentFillGradientId_ = -1;
+		this.currentStrokeGradientId_ = -1;
 		this.currentTransform_ = new WTransform();
 		this.currentBrush_ = new WBrush();
 		this.currentFont_ = new WFont();
@@ -370,6 +372,9 @@ public class WSvgImage extends WResource implements WVectorImage {
 	private boolean busyWithPath_;
 	private int currentClipId_;
 	private static int nextClipId_ = 0;
+	private int currentFillGradientId_;
+	private int currentStrokeGradientId_;
+	private static int nextGradientId_ = 0;
 	private WTransform currentTransform_;
 	private WBrush currentBrush_;
 	private WFont currentFont_;
@@ -512,10 +517,20 @@ public class WSvgImage extends WResource implements WVectorImage {
 		}
 		if (penChanged) {
 			this.currentPen_ = this.getPainter().getPen();
+			if (!this.currentPen_.getGradient().isEmpty()) {
+				this.currentStrokeGradientId_ = nextGradientId_++;
+				this.defineGradient(this.currentPen_.getGradient(),
+						this.currentStrokeGradientId_);
+			}
 			this.strokeStyle_ = this.getStrokeStyle();
 		}
 		if (brushChanged) {
 			this.currentBrush_ = this.getPainter().getBrush();
+			if (!this.currentBrush_.getGradient().isEmpty()) {
+				this.currentFillGradientId_ = nextGradientId_++;
+				this.defineGradient(this.currentBrush_.getGradient(),
+						this.currentFillGradientId_);
+			}
 			this.fillStyle_ = this.getFillStyle();
 		}
 		if (fontChanged) {
@@ -560,6 +575,13 @@ public class WSvgImage extends WResource implements WVectorImage {
 			}
 			break;
 		}
+		case GradientPattern:
+			if (!this.currentBrush_.getGradient().isEmpty()) {
+				result += "fill:";
+				result += "url(#gradient";
+				result += String.valueOf(this.currentFillGradientId_);
+				result += ");";
+			}
 		}
 		return result;
 	}
@@ -574,11 +596,17 @@ public class WSvgImage extends WResource implements WVectorImage {
 		}
 		if (pen.getStyle() != PenStyle.NoPen) {
 			WColor color = pen.getColor();
-			result.append("stroke:").append(color.getCssText()).append(';');
-			if (color.getAlpha() != 255) {
-				result.append("stroke-opacity:").append(
-						MathUtils.roundCss(color.getAlpha() / 255., 2)).append(
-						';');
+			if (!pen.getGradient().isEmpty()) {
+				result.append("stroke:url(#gradient").append(
+						String.valueOf(this.currentStrokeGradientId_)).append(
+						");");
+			} else {
+				result.append("stroke:").append(color.getCssText()).append(';');
+				if (color.getAlpha() != 255) {
+					result.append("stroke-opacity:").append(
+							MathUtils.roundCss(color.getAlpha() / 255., 2))
+							.append(';');
+				}
 			}
 			WLength w = this.getPainter().normalizedPenWidth(pen.getWidth(),
 					true);
@@ -668,6 +696,60 @@ public class WSvgImage extends WResource implements WVectorImage {
 				.append(
 						"\" /><feBlend in=\"SourceGraphic\" in2=\"blurOut\" mode=\"normal\" /></filter>");
 		return result;
+	}
+
+	private void defineGradient(WGradient gradient, int id) {
+		char[] buf = new char[30];
+		this.shapes_.append("<defs>");
+		boolean linear = gradient.getStyle() == GradientStyle.LinearGradient;
+		if (linear) {
+			this.shapes_
+					.append("<linearGradient gradientUnits=\"userSpaceOnUse\" ");
+			this.shapes_.append("x1=\"").append(
+					gradient.getLinearGradientVector().getX1()).append("\" ")
+					.append("y1=\"").append(
+							gradient.getLinearGradientVector().getY1()).append(
+							"\" ").append("x2=\"").append(
+							gradient.getLinearGradientVector().getX2()).append(
+							"\" ").append("y2=\"").append(
+							gradient.getLinearGradientVector().getY2()).append(
+							"\" ");
+		} else {
+			this.shapes_
+					.append("<radialGradient gradientUnits=\"userSpaceOnUse\" ");
+			this.shapes_.append("cx=\"").append(
+					gradient.getRadialCenterPoint().getX()).append("\" ")
+					.append("cy=\"").append(
+							gradient.getRadialCenterPoint().getY()).append(
+							"\" ").append("r=\"").append(
+							gradient.getRadialRadius()).append("\" ").append(
+							"fx=\"").append(
+							gradient.getRadialFocalPoint().getX())
+					.append("\" ").append("fy=\"").append(
+							gradient.getRadialFocalPoint().getY())
+					.append("\" ");
+		}
+		this.shapes_.append("id=\"gradient").append(id).append("\">");
+		for (int i = 0; i < gradient.getColorstops().size(); i++) {
+			this.shapes_.append("<stop ");
+			String offset = String.valueOf((int) (gradient.getColorstops().get(
+					i).getPosition() * 100));
+			offset += '%';
+			this.shapes_.append("offset=\"").append(offset).append("\" ");
+			this.shapes_.append("stop-color=\"").append(
+					gradient.getColorstops().get(i).getColor().getCssText())
+					.append("\" ");
+			this.shapes_.append("stop-opacity=\"").append(
+					MathUtils.roundCss(gradient.getColorstops().get(i)
+							.getColor().getAlpha() / 255., 3)).append("\" ");
+			this.shapes_.append("/>");
+		}
+		if (linear) {
+			this.shapes_.append("</linearGradient>");
+		} else {
+			this.shapes_.append("</radialGradient>");
+		}
+		this.shapes_.append("</defs>");
 	}
 
 	private String fillStyle_;

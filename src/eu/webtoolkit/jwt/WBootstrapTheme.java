@@ -178,6 +178,10 @@ public class WBootstrapTheme extends WTheme {
 					element.addPropertyWord(Property.PropertyInnerHTML,
 							"<span class=\"caret\"></span>");
 				}
+				if (creating && !(button.getText().length() == 0)) {
+					element.addPropertyWord(Property.PropertyClass,
+							"with-label");
+				}
 			}
 			break;
 		}

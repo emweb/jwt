@@ -52,14 +52,43 @@ public class WToolBar extends WCompositeWidget {
 	}
 
 	/**
+	 * Set vertical or horizontal orientation.
+	 * <p>
+	 * Use bootstrap btn-group-vertical style for vertical orientation.
+	 */
+	public void setOrientation(Orientation orientation) {
+		if (orientation == Orientation.Vertical) {
+			this.addStyleClass("btn-group-vertical");
+		} else {
+			this.removeStyleClass("btn-group-vertical");
+		}
+	}
+
+	/**
 	 * Adds a button.
 	 */
-	public void addButton(WPushButton button) {
+	public void addButton(WPushButton button, AlignmentFlag alignmentFlag) {
 		if (this.compact_) {
 			this.impl_.addWidget(button);
+			if (alignmentFlag == AlignmentFlag.AlignRight) {
+				button.setAttributeValue("style", "float:right;");
+			}
 		} else {
+			if (alignmentFlag == AlignmentFlag.AlignRight) {
+				this.getLastGroup().setAttributeValue("style", "float:right;");
+			}
 			this.getLastGroup().addWidget(button);
 		}
+	}
+
+	/**
+	 * Adds a button.
+	 * <p>
+	 * Calls {@link #addButton(WPushButton button, AlignmentFlag alignmentFlag)
+	 * addButton(button, AlignmentFlag.AlignLeft)}
+	 */
+	public final void addButton(WPushButton button) {
+		addButton(button, AlignmentFlag.AlignLeft);
 	}
 
 	/**

@@ -987,58 +987,55 @@ class Block {
 						++count;
 					}
 					if (count == 0) {
-						logger.error(new StringWriter().append(
-								"Strange aggregate CSS length property: '")
-								.append(v).append("'").toString());
+						count = allvalues.size();
+					}
+					if (count == 1) {
+						this.updateAggregateProperty(n, "-top", specificity, v);
+						this.updateAggregateProperty(n, "-right", specificity,
+								v);
+						this.updateAggregateProperty(n, "-bottom", specificity,
+								v);
+						this
+								.updateAggregateProperty(n, "-left",
+										specificity, v);
 					} else {
-						if (count == 1) {
+						if (count == 2) {
+							String v1 = allvalues.get(0);
 							this.updateAggregateProperty(n, "-top",
-									specificity, v);
-							this.updateAggregateProperty(n, "-right",
-									specificity, v);
+									specificity, v1);
 							this.updateAggregateProperty(n, "-bottom",
-									specificity, v);
+									specificity, v1);
+							String v2 = allvalues.get(1);
+							this.updateAggregateProperty(n, "-right",
+									specificity, v2);
 							this.updateAggregateProperty(n, "-left",
-									specificity, v);
+									specificity, v2);
 						} else {
-							if (count == 2) {
+							if (count == 3) {
 								String v1 = allvalues.get(0);
 								this.updateAggregateProperty(n, "-top",
-										specificity, v1);
-								this.updateAggregateProperty(n, "-bottom",
 										specificity, v1);
 								String v2 = allvalues.get(1);
 								this.updateAggregateProperty(n, "-right",
 										specificity, v2);
 								this.updateAggregateProperty(n, "-left",
 										specificity, v2);
+								String v3 = allvalues.get(2);
+								this.updateAggregateProperty(n, "-bottom",
+										specificity, v3);
 							} else {
-								if (count == 3) {
-									String v1 = allvalues.get(0);
-									this.updateAggregateProperty(n, "-top",
-											specificity, v1);
-									String v2 = allvalues.get(1);
-									this.updateAggregateProperty(n, "-right",
-											specificity, v2);
-									this.updateAggregateProperty(n, "-left",
-											specificity, v2);
-									String v3 = allvalues.get(2);
-									this.updateAggregateProperty(n, "-bottom",
-											specificity, v3);
-								} else {
-									String v1 = allvalues.get(0);
-									this.updateAggregateProperty(n, "-top",
-											specificity, v1);
-									String v2 = allvalues.get(1);
-									this.updateAggregateProperty(n, "-right",
-											specificity, v2);
-									String v3 = allvalues.get(2);
-									this.updateAggregateProperty(n, "-bottom",
-											specificity, v3);
-									String v4 = allvalues.get(3);
-									this.updateAggregateProperty(n, "-left",
-											specificity, v4);
-								}
+								String v1 = allvalues.get(0);
+								this.updateAggregateProperty(n, "-top",
+										specificity, v1);
+								String v2 = allvalues.get(1);
+								this.updateAggregateProperty(n, "-right",
+										specificity, v2);
+								String v3 = allvalues.get(2);
+								this.updateAggregateProperty(n, "-bottom",
+										specificity, v3);
+								String v4 = allvalues.get(3);
+								this.updateAggregateProperty(n, "-left",
+										specificity, v4);
 							}
 						}
 					}
@@ -1159,6 +1156,11 @@ class Block {
 							} else {
 								if (this.type_ == DomElementType.DomElement_H3) {
 									return 0.83 * this.cssFontSize(fontScale);
+								} else {
+									if (this.type_ == DomElementType.DomElement_HR) {
+										return 0.5 * this
+												.cssFontSize(fontScale);
+									}
 								}
 							}
 						}
@@ -1235,7 +1237,7 @@ class Block {
 				.getValue()
 				+ index];
 		String borderStr = this.cssProperty(property);
-		double result = 0;
+		String borderWidthStr = "";
 		if (borderStr.length() != 0) {
 			List<String> values = new ArrayList<String>();
 			values = new ArrayList<String>(Arrays.asList(borderStr.split(" ")));
@@ -1246,7 +1248,17 @@ class Block {
 					return 0;
 				}
 			}
-			WLength l = new WLength(values.get(0));
+			borderWidthStr = values.get(0);
+		}
+		if (borderWidthStr.length() == 0) {
+			property = Property.values()[Property.PropertyStyleBorderWidthTop
+					.getValue()
+					+ index];
+			borderWidthStr = this.cssProperty(property);
+		}
+		double result = 0;
+		if (borderWidthStr.length() != 0) {
+			WLength l = new WLength(borderWidthStr);
 			result = l.toPixels(this.cssFontSize(fontScale));
 		}
 		if (result == 0) {
@@ -1257,6 +1269,10 @@ class Block {
 					Block t = this.getTable();
 					if (t != null && !t.isTableCollapseBorders()) {
 						result = t.attributeValue("border", 0) != 0 ? 1 : 0;
+					}
+				} else {
+					if (this.type_ == DomElementType.DomElement_HR) {
+						result = 1;
 					}
 				}
 			}
@@ -1300,12 +1316,22 @@ class Block {
 				.getValue()
 				+ index];
 		String borderStr = this.cssProperty(property);
+		String borderColorStr = "";
 		if (borderStr.length() != 0) {
 			List<String> values = new ArrayList<String>();
 			values = new ArrayList<String>(Arrays.asList(borderStr.split(" ")));
 			if (values.size() > 2) {
-				return new WColor(new WString(values.get(2)));
+				borderColorStr = values.get(2);
 			}
+		}
+		if (borderColorStr.length() == 0) {
+			property = Property.values()[Property.PropertyStyleBorderColorTop
+					.getValue()
+					+ index];
+			borderColorStr = this.cssProperty(property);
+		}
+		if (borderColorStr.length() != 0) {
+			return new WColor(new WString(borderColorStr));
 		}
 		return WColor.black;
 	}
@@ -2102,7 +2128,7 @@ class Block {
 			if (rTotalMaxWidth > 0) {
 				double factor = rWidth / rTotalMaxWidth;
 				for (int i = 0; i < widths.size(); ++i) {
-					if (setColumnWidths.get(i) == -1) {
+					if (setColumnWidths.get(i) < 0) {
 						widths.set(i, widths.get(i) * factor);
 					}
 				}
@@ -2155,8 +2181,9 @@ class Block {
 			}
 		}
 		boolean protectRows = repeatHead != null;
-		this.tableDoLayout(ps.minX, ps, cellSpacing, widths, protectRows,
-				repeatHead, renderer);
+		List<CellState> rowSpanBackLog = new ArrayList<CellState>();
+		this.tableDoLayout(ps.minX, ps, cellSpacing, widths, rowSpanBackLog,
+				protectRows, repeatHead, renderer);
 		ps.minX -= this.cssBorderWidth(Side.Left, renderer.getFontScale());
 		ps.maxX += this.cssBorderWidth(Side.Right, renderer.getFontScale());
 		ps.y += cellSpacing;
@@ -2361,8 +2388,8 @@ class Block {
 	}
 
 	private void tableDoLayout(double x, PageState ps, double cellSpacing,
-			List<Double> widths, boolean protectRows, Block repeatHead,
-			WTextRenderer renderer) {
+			List<Double> widths, List<CellState> rowSpanBackLog,
+			boolean protectRows, Block repeatHead, WTextRenderer renderer) {
 		if (this.type_ == DomElementType.DomElement_TABLE
 				|| this.type_ == DomElementType.DomElement_TBODY
 				|| this.type_ == DomElementType.DomElement_THEAD
@@ -2375,6 +2402,7 @@ class Block {
 								ps,
 								cellSpacing,
 								widths,
+								rowSpanBackLog,
 								protectRows,
 								this.type_ != DomElementType.DomElement_THEAD ? repeatHead
 										: null, renderer);
@@ -2394,7 +2422,8 @@ class Block {
 			if (this.type_ == DomElementType.DomElement_TR) {
 				double startY = ps.y;
 				int startPage = ps.page;
-				this.tableRowDoLayout(x, ps, cellSpacing, widths, renderer, -1);
+				this.tableRowDoLayout(x, ps, cellSpacing, widths,
+						rowSpanBackLog, renderer, -1);
 				if (protectRows && ps.page != startPage) {
 					ps.y = startY;
 					ps.page = startPage;
@@ -2411,62 +2440,105 @@ class Block {
 					}
 					startY = ps.y;
 					startPage = ps.page;
-					this.tableRowDoLayout(x, ps, cellSpacing, widths, renderer,
-							-1);
+					this.tableRowDoLayout(x, ps, cellSpacing, widths,
+							rowSpanBackLog, renderer, -1);
 				}
 				double rowHeight = (ps.page - startPage)
 						* renderer.textHeight(ps.page) + (ps.y - startY)
 						- cellSpacing;
 				ps.y = startY;
 				ps.page = startPage;
-				this.tableRowDoLayout(x, ps, cellSpacing, widths, renderer,
-						rowHeight);
+				this.tableRowDoLayout(x, ps, cellSpacing, widths,
+						rowSpanBackLog, renderer, rowHeight);
 			}
 		}
 	}
 
 	private void tableRowDoLayout(double x, PageState ps, double cellSpacing,
-			List<Double> widths, WTextRenderer renderer, double rowHeight) {
-		double endY = ps.y;
-		int endPage = ps.page;
-		int col = 0;
+			List<Double> widths, List<CellState> rowSpanBackLog,
+			WTextRenderer renderer, double rowHeight) {
+		PageState rowEnd = new PageState();
+		rowEnd.y = ps.y;
+		rowEnd.page = ps.page;
 		x += cellSpacing;
 		for (int i = 0; i < this.children_.size(); ++i) {
 			Block c = this.children_.get(i);
 			if (c.isTableCell()) {
-				int colSpan = c.attributeValue("colspan", 1);
-				double width = 0;
-				for (int j = col; j < col + colSpan; ++j) {
-					width += widths.get(j);
+				int rowSpan = c.attributeValue("rowspan", 1);
+				if (rowSpan > 1) {
+					if (rowHeight == -1) {
+						CellState cs = new CellState();
+						cs.lastRow = c.cellRow_ + rowSpan - 1;
+						cs.y = ps.y;
+						cs.page = ps.page;
+						cs.cell = c;
+						rowSpanBackLog.add(cs);
+					}
+				} else {
+					c.tableCellDoLayout(x, ps, cellSpacing, rowEnd, widths,
+							renderer, rowHeight);
 				}
-				width += (colSpan - 1) * cellSpacing;
-				PageState cellPs = new PageState();
-				cellPs.y = ps.y + cellSpacing;
-				cellPs.page = ps.page;
-				cellPs.minX = x;
-				cellPs.maxX = x + width;
-				double collapseMarginBottom = 0;
-				double collapseMarginTop = Double.MAX_VALUE;
-				String s = c.cssProperty(Property.PropertyStyleBackgroundColor);
-				collapseMarginBottom = c.layoutBlock(cellPs, false, renderer,
-						collapseMarginTop, collapseMarginBottom, rowHeight);
-				if (collapseMarginBottom < collapseMarginTop) {
-					cellPs.y -= collapseMarginBottom;
-				}
-				cellPs.minX = x;
-				cellPs.maxX = x + width;
-				Block.clearFloats(cellPs, width);
-				if (cellPs.page > endPage || cellPs.page == endPage
-						&& cellPs.y > endY) {
-					endPage = cellPs.page;
-					endY = cellPs.y;
-				}
-				col += colSpan;
-				x += width + cellSpacing;
 			}
 		}
-		ps.y = endY;
-		ps.page = endPage;
+		for (int i = 0; i < rowSpanBackLog.size(); ++i) {
+			if (rowSpanBackLog.get(i).lastRow == this.cellRow_) {
+				CellState cs = rowSpanBackLog.get(i);
+				double rh = rowHeight;
+				if (rh >= 0) {
+					rh += (ps.page - cs.page) * renderer.textHeight(cs.page)
+							+ (ps.y - cs.y);
+				}
+				cs.cell.tableCellDoLayout(x, cs, cellSpacing, rowEnd, widths,
+						renderer, rh);
+			}
+		}
+		ps.y = rowEnd.y;
+		ps.page = rowEnd.page;
+	}
+
+	private void tableCellDoLayout(double x, PageState ps, double cellSpacing,
+			PageState rowEnd, List<Double> widths, WTextRenderer renderer,
+			double rowHeight) {
+		x += this.tableCellX(widths, cellSpacing);
+		double width = this.tableCellWidth(widths, cellSpacing);
+		PageState cellPs = new PageState();
+		cellPs.y = ps.y + cellSpacing;
+		cellPs.page = ps.page;
+		cellPs.minX = x;
+		cellPs.maxX = x + width;
+		double collapseMarginBottom = 0;
+		double collapseMarginTop = Double.MAX_VALUE;
+		String s = this.cssProperty(Property.PropertyStyleBackgroundColor);
+		collapseMarginBottom = this.layoutBlock(cellPs, false, renderer,
+				collapseMarginTop, collapseMarginBottom, rowHeight);
+		if (collapseMarginBottom < collapseMarginTop) {
+			cellPs.y -= collapseMarginBottom;
+		}
+		cellPs.minX = x;
+		cellPs.maxX = x + width;
+		Block.clearFloats(cellPs, width);
+		if (cellPs.page > rowEnd.page || cellPs.page == rowEnd.page
+				&& cellPs.y > rowEnd.y) {
+			rowEnd.page = cellPs.page;
+			rowEnd.y = cellPs.y;
+		}
+	}
+
+	private double tableCellX(List<Double> widths, double cellSpacing) {
+		double result = 0;
+		for (int j = 0; j < this.cellCol_; ++j) {
+			result += widths.get(j) + cellSpacing;
+		}
+		return result;
+	}
+
+	private double tableCellWidth(List<Double> widths, double cellSpacing) {
+		int colSpan = this.attributeValue("colspan", 1);
+		double width = 0;
+		for (int j = this.cellCol_; j < this.cellCol_ + colSpan; ++j) {
+			width += widths.get(j);
+		}
+		return width + (colSpan - 1) * cellSpacing;
 	}
 
 	private void tableComputeColumnWidths(List<Double> minima,
@@ -2482,19 +2554,15 @@ class Block {
 			}
 		} else {
 			if (this.type_ == DomElementType.DomElement_TR) {
-				int col = 0;
 				for (int i = 0; i < this.children_.size(); ++i) {
 					Block c = this.children_.get(i);
 					if (c.isTableCell()) {
-						c.cellComputeColumnWidths(col,
-								Block.WidthType.AsSetWidth, asSet, renderer,
-								table);
-						c.cellComputeColumnWidths(col,
-								Block.WidthType.MinimumWidth, minima, renderer,
-								table);
-						col = c.cellComputeColumnWidths(col,
-								Block.WidthType.MaximumWidth, maxima, renderer,
-								table);
+						c.cellComputeColumnWidths(Block.WidthType.AsSetWidth,
+								asSet, renderer, table);
+						c.cellComputeColumnWidths(Block.WidthType.MinimumWidth,
+								minima, renderer, table);
+						c.cellComputeColumnWidths(Block.WidthType.MaximumWidth,
+								maxima, renderer, table);
 					}
 				}
 			}
@@ -2575,6 +2643,7 @@ class Block {
 		} else {
 			if (this.type_ == DomElementType.DomElement_TR) {
 				int col = 0;
+				this.cellRow_ = row;
 				for (int i = 0; i < this.children_.size(); ++i) {
 					Block c = this.children_.get(i);
 					if (c.isTableCell()) {
@@ -2675,9 +2744,10 @@ class Block {
 		return null;
 	}
 
-	private int cellComputeColumnWidths(int col, Block.WidthType type,
+	private void cellComputeColumnWidths(Block.WidthType type,
 			List<Double> values, WTextRenderer renderer, Block table) {
 		double currentWidth = 0;
+		int col = this.cellCol_;
 		int colSpan = this.attributeValue("colspan", 1);
 		double defaultWidth = 0;
 		if (type == Block.WidthType.AsSetWidth) {
@@ -2687,7 +2757,9 @@ class Block {
 			values.add(defaultWidth);
 		}
 		for (int i = 0; i < colSpan; ++i) {
-			currentWidth += values.get(col + i);
+			if (values.get(col + i) > 0) {
+				currentWidth += values.get(col + i);
+			}
 		}
 		double width = currentWidth;
 		switch (type) {
@@ -2717,7 +2789,6 @@ class Block {
 				values.set(col + i, values.get(col + i) + extraPerColumn);
 			}
 		}
-		return col + colSpan;
 	}
 
 	private void setOffsetParent() {
@@ -3253,7 +3324,9 @@ class Block {
 
 	private static boolean isAggregate(String cssProperty) {
 		return cssProperty.equals("margin") || cssProperty.equals("border")
-				|| cssProperty.equals("padding");
+				|| cssProperty.equals("padding")
+				|| cssProperty.equals("border-color")
+				|| cssProperty.equals("border-width");
 	}
 
 	private static double maxBorderWidth(Block b1, Side s1, Block b2, Side s2,

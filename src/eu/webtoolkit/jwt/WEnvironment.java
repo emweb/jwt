@@ -949,17 +949,21 @@ public class WEnvironment {
 				if (this.userAgent_.indexOf("Trident/5.0") != -1) {
 					this.agent_ = WEnvironment.UserAgent.IE9;
 				} else {
-					if (this.userAgent_.indexOf("MSIE 7.") != -1) {
-						this.agent_ = WEnvironment.UserAgent.IE7;
+					if (this.userAgent_.indexOf("Trident/6.0") != -1) {
+						this.agent_ = WEnvironment.UserAgent.IE10;
 					} else {
-						if (this.userAgent_.indexOf("MSIE 8.") != -1) {
-							this.agent_ = WEnvironment.UserAgent.IE8;
+						if (this.userAgent_.indexOf("MSIE 7.") != -1) {
+							this.agent_ = WEnvironment.UserAgent.IE7;
 						} else {
-							if (this.userAgent_.indexOf("MSIE 9") != -1) {
-								this.agent_ = WEnvironment.UserAgent.IE9;
+							if (this.userAgent_.indexOf("MSIE 8.") != -1) {
+								this.agent_ = WEnvironment.UserAgent.IE8;
 							} else {
-								if (this.userAgent_.indexOf("MSIE") != -1) {
-									this.agent_ = WEnvironment.UserAgent.IE10;
+								if (this.userAgent_.indexOf("MSIE 9.") != -1) {
+									this.agent_ = WEnvironment.UserAgent.IE9;
+								} else {
+									if (this.userAgent_.indexOf("MSIE") != -1) {
+										this.agent_ = WEnvironment.UserAgent.IE10;
+									}
 								}
 							}
 						}

@@ -467,11 +467,17 @@ public class WTreeView extends WAbstractItemView {
 	 * @see WTreeView#setRowHeight(WLength rowHeight)
 	 */
 	public void setColumnWidth(int column, WLength width) {
-		this.columnInfo(column).width = width;
+		if (!width.isAuto()) {
+			this.columnInfo(column).width = new WLength(Math.round(width
+					.getValue()), width.getUnit());
+		} else {
+			this.columnInfo(column).width = WLength.Auto;
+		}
 		WWidget toResize = this.columnInfo(column).styleRule
 				.getTemplateWidget();
 		toResize.setWidth(new WLength(0));
-		toResize.setWidth(new WLength(width.toPixels()));
+		toResize
+				.setWidth(new WLength(this.columnInfo(column).width.toPixels()));
 		WApplication app = WApplication.getInstance();
 		if (app.getEnvironment().hasAjax()
 				&& this.renderState_.getValue() < WAbstractItemView.RenderState.NeedRerenderHeader

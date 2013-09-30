@@ -589,6 +589,16 @@ public class WPushButton extends WFormWidget {
 		this.repaint();
 	}
 
+	protected void enableAjax() {
+		if (!this.linkState_.link.isNull()) {
+			WApplication app = WApplication.getInstance();
+			if (app.getTheme().isCanStyleAnchorAsButton()) {
+				this.flags_.set(BIT_LINK_CHANGED);
+			}
+		}
+		super.enableAjax();
+	}
+
 	private void doRedirect() {
 		WApplication app = WApplication.getInstance();
 		if (!app.getEnvironment().hasAjax()) {

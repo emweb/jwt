@@ -273,6 +273,56 @@ public class WText extends WInteractWidget {
 	}
 
 	/**
+	 * Specifies how text is aligned.
+	 * <p>
+	 * Only the horizontal alignment can be specified. Note that there is no way
+	 * to specify vertical alignment. You can put the text in a layout with
+	 * vertical alignment options though, or (misuse) the line-height CSS
+	 * property for single line texts.
+	 */
+	public void setTextAlignment(AlignmentFlag textAlignment) {
+		this.flags_.clear(BIT_TEXT_ALIGN_LEFT);
+		this.flags_.clear(BIT_TEXT_ALIGN_CENTER);
+		this.flags_.clear(BIT_TEXT_ALIGN_RIGHT);
+		switch (textAlignment) {
+		case AlignLeft:
+			this.flags_.set(BIT_TEXT_ALIGN_LEFT);
+			break;
+		case AlignCenter:
+			this.flags_.set(BIT_TEXT_ALIGN_CENTER);
+			break;
+		case AlignRight:
+			this.flags_.set(BIT_TEXT_ALIGN_RIGHT);
+			break;
+		default:
+			logger.error(new StringWriter().append(
+					"setTextAlignment(): illegal value for textAlignment")
+					.toString());
+			return;
+		}
+		this.flags_.set(BIT_TEXT_ALIGN_CHANGED);
+		this.repaint();
+	}
+
+	/**
+	 * Returns the alignment of children.
+	 * <p>
+	 * 
+	 * @see WText#setTextAlignment(AlignmentFlag textAlignment)
+	 */
+	public AlignmentFlag getTextAlignment() {
+		if (this.flags_.get(BIT_TEXT_ALIGN_CENTER)) {
+			return AlignmentFlag.AlignCenter;
+		} else {
+			if (this.flags_.get(BIT_TEXT_ALIGN_RIGHT)) {
+				return AlignmentFlag.AlignRight;
+			} else {
+				return AlignmentFlag.AlignLeft;
+			}
+		}
+	}
+
+	/**
 	 * Sets padding inside the widget.
 	 * <p>
 	 * Setting padding has the effect of adding distance between the widget
@@ -452,6 +502,10 @@ public class WText extends WInteractWidget {
 	private static final int BIT_WORD_WRAP_CHANGED = 2;
 	private static final int BIT_PADDINGS_CHANGED = 3;
 	private static final int BIT_ENCODE_INTERNAL_PATHS = 4;
+	private static final int BIT_TEXT_ALIGN_LEFT = 5;
+	private static final int BIT_TEXT_ALIGN_CENTER = 6;
+	private static final int BIT_TEXT_ALIGN_RIGHT = 7;
+	private static final int BIT_TEXT_ALIGN_CHANGED = 8;
 	BitSet flags_;
 
 	private String getFormattedText() {
@@ -523,6 +577,27 @@ public class WText extends WInteractWidget {
 					this.padding_[1].getCssText());
 			this.flags_.clear(BIT_PADDINGS_CHANGED);
 		}
+		if (this.flags_.get(BIT_TEXT_ALIGN_CHANGED) || all) {
+			if (this.flags_.get(BIT_TEXT_ALIGN_CENTER)) {
+				element.setProperty(Property.PropertyStyleTextAlign, "center");
+			} else {
+				if (this.flags_.get(BIT_TEXT_ALIGN_RIGHT)) {
+					element.setProperty(Property.PropertyStyleTextAlign,
+							"right");
+				} else {
+					if (this.flags_.get(BIT_TEXT_ALIGN_LEFT)) {
+						element.setProperty(Property.PropertyStyleTextAlign,
+								"left");
+					} else {
+						if (!all) {
+							element.setProperty(
+									Property.PropertyStyleTextAlign, "");
+						}
+					}
+				}
+			}
+			this.flags_.clear(BIT_TEXT_ALIGN_CHANGED);
+		}
 		super.updateDom(element, all);
 	}
 
@@ -535,6 +610,7 @@ public class WText extends WInteractWidget {
 		this.flags_.clear(BIT_TEXT_CHANGED);
 		this.flags_.clear(BIT_WORD_WRAP_CHANGED);
 		this.flags_.clear(BIT_PADDINGS_CHANGED);
+		this.flags_.clear(BIT_TEXT_ALIGN_CHANGED);
 		super.propagateRenderOk(deep);
 	}
 }

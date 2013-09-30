@@ -249,12 +249,7 @@ public class WApplication extends WObject {
 		this.styleSheet_.addRule("td", "text-align: left;");
 		this.styleSheet_.addRule(".Wt-rtl td", "text-align: right;");
 		this.styleSheet_.addRule("button", "white-space: nowrap;");
-		this.styleSheet_.addRule("button img",
-				"vertical-align: middle; padding-right: 10px");
 		this.styleSheet_.addRule("video", "display: block");
-		if (this.getEnvironment().getContentType() == WEnvironment.ContentType.XHTML1) {
-			this.styleSheet_.addRule("button", "display: inline");
-		}
 		if (this.getEnvironment().agentIsGecko()) {
 			this.styleSheet_.addRule("html", "overflow: auto;");
 		}
@@ -1170,7 +1165,8 @@ public class WApplication extends WObject {
 	 * {@link WApplication#internalPathChanged() internalPathChanged()} event is
 	 * emitted. You should listen to this signal to switch the application to
 	 * the corresponding state. When <code>emitChange</code> is
-	 * <code>true</code>, this signal is also emitted by setting the path.
+	 * <code>true</code>, this signal is also emitted by setting the path (but
+	 * only if the path is actually changed).
 	 * <p>
 	 * A url that includes the internal path may be obtained using
 	 * {@link WApplication#getBookmarkUrl() getBookmarkUrl()}.

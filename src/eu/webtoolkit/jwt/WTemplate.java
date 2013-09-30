@@ -32,7 +32,8 @@ import org.slf4j.LoggerFactory;
  * <p>
  * Placeholders (for variables and functions) are delimited by:
  * <code>${...}</code>. To use a literal <code>&quot;${&quot;</code>, use
- * <code>&quot;$${&quot;</code>.
+ * <code>&quot;$${&quot;</code>. Place holder names can contain &apos;_&apos;,
+ * &apos;-&apos;, &apos;.&apos; and alfanumeric characters.
  * <p>
  * Usage example:
  * <p>
@@ -1258,7 +1259,7 @@ public class WTemplate extends WInteractWidget {
 							return pos;
 						} else {
 							if (Character.isLetterOrDigit(c) || c == '_'
-									|| c == '-') {
+									|| c == '-' || c == '.') {
 								v.append(c);
 							} else {
 								return Error;

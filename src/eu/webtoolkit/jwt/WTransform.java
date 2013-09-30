@@ -299,8 +299,7 @@ public class WTransform {
 	/**
 	 * Scales the transformation.
 	 * <p>
-	 * Applies a clock-wise rotation to the current transformation matrix, over
-	 * <code>angle</code> radians.
+	 * Scales the current transformation.
 	 * <p>
 	 * 
 	 * @see WTransform#shear(double sh, double sv)

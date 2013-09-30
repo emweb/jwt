@@ -42,7 +42,7 @@ public class WCompositeWidget extends WWidget {
 	 * <p>
 	 * You need to set an implemetation using
 	 * {@link WCompositeWidget#setImplementation(WWidget widget)
-	 * setImplementation()}.
+	 * setImplementation()} directly after construction.
 	 */
 	public WCompositeWidget(WContainerWidget parent) {
 		super(parent);
@@ -64,6 +64,9 @@ public class WCompositeWidget extends WWidget {
 
 	/**
 	 * Creates a WCompositeWidget with given implementation.
+	 * <p>
+	 * 
+	 * @see WCompositeWidget#setImplementation(WWidget widget)
 	 */
 	public WCompositeWidget(WWidget implementation, WContainerWidget parent) {
 		super(parent);

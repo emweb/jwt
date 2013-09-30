@@ -62,6 +62,7 @@ class WebSession {
 		this.canWriteAsyncResponse_ = false;
 		this.pollRequestsIgnored_ = 0;
 		this.progressiveBoot_ = false;
+		this.bootStyle_ = true;
 		this.deferredRequest_ = null;
 		this.deferredResponse_ = null;
 		this.deferCount_ = 0;
@@ -412,6 +413,7 @@ class WebSession {
 									}
 								}
 								if (!this.updatesPending_) {
+									handler.flushResponse();
 									return;
 								}
 							}
@@ -1411,9 +1413,13 @@ class WebSession {
 																		"OS 7_") != -1 || this.env_
 														.getUserAgent()
 														.indexOf("OS 8_") != -1);
-										boolean noBootStyleResponse = !(this.app_ != null)
-												&& ios5;
-										if (noBootStyleResponse) {
+										String jsE = request.getParameter("js");
+										boolean nojs = jsE != null
+												&& jsE.equals("no");
+										this.bootStyle_ = this.bootStyle_
+												&& (this.app_ != null || !ios5
+														&& !nojs);
+										if (!this.bootStyle_) {
 											handler.getResponse()
 													.setContentType("text/css");
 											handler.flushResponse();
@@ -1656,6 +1662,7 @@ class WebSession {
 	private boolean canWriteAsyncResponse_;
 	private int pollRequestsIgnored_;
 	private boolean progressiveBoot_;
+	private boolean bootStyle_;
 	private WebRequest deferredRequest_;
 	private WebResponse deferredResponse_;
 	private int deferCount_;

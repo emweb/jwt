@@ -874,6 +874,14 @@ public class DomElement {
 						|| app.getEnvironment().getAgent() == WEnvironment.UserAgent.IE8
 						|| href.length() > 1) {
 					needButtonWrap = false;
+				} else {
+					if (app.getTheme().isCanStyleAnchorAsButton()) {
+						DomElement self = this;
+						self.setAttribute("href", app
+								.url(app.getInternalPath())
+								+ "&signal=" + clickEvent.signalName);
+						needButtonWrap = false;
+					}
 				}
 			} else {
 				if (this.type_ == DomElementType.DomElement_AREA) {
@@ -1854,13 +1862,13 @@ public class DomElement {
 			"ol", "option", "ul", "script", "select", "span", "table", "tbody",
 			"thead", "tfoot", "th", "td", "textarea", "optgroup", "tr", "p",
 			"canvas", "map", "area", "style", "object", "param", "audio",
-			"video", "source", "b", "strong", "em", "i" };
+			"video", "source", "b", "strong", "em", "i", "hr" };
 	private static boolean[] defaultInline_ = { true, false, true, false,
 			false, false, false, false, false, false, false, false, false,
 			false, true, true, true, true, true, false, false, true, false,
 			false, true, true, false, false, false, false, false, false, true,
 			true, false, false, true, false, true, true, false, false, false,
-			false, false, true, true, true, true };
+			false, false, true, true, true, true, false };
 	private static String[] cssNames_ = { "position", "z-index", "float",
 			"clear", "width", "height", "line-height", "min-width",
 			"min-height", "max-width", "max-height", "left", "right", "top",
@@ -1868,11 +1876,14 @@ public class DomElement {
 			"padding-right", "padding-bottom", "padding-left", "margin-top",
 			"margin-right", "margin-bottom", "margin-left", "cursor",
 			"border-top", "border-right", "border-bottom", "border-left",
-			"color", "overflow-x", "overflow-y", "opacity", "font-family",
-			"font-style", "font-variant", "font-weight", "font-size",
-			"background-color", "background-image", "background-repeat",
-			"background-attachment", "background-position", "text-decoration",
-			"white-space", "table-layout", "border-spacing", "border-collapse",
+			"border-color-top", "border-color-right", "border-color-bottom",
+			"border-color-left", "border-width-top", "border-width-right",
+			"border-width-bottom", "border-width-left", "color", "overflow-x",
+			"overflow-y", "opacity", "font-family", "font-style",
+			"font-variant", "font-weight", "font-size", "background-color",
+			"background-image", "background-repeat", "background-attachment",
+			"background-position", "text-decoration", "white-space",
+			"table-layout", "border-spacing", "border-collapse",
 			"page-break-before", "page-break-after", "zoom", "visibility",
 			"display", "box-sizing" };
 	private static String[] cssCamelNames_ = { "cssText", "width", "position",
@@ -1881,13 +1892,15 @@ public class DomElement {
 			"top", "bottom", "verticalAlign", "textAlign", "padding",
 			"paddingTop", "paddingRight", "paddingBottom", "paddingLeft",
 			"marginTop", "marginRight", "marginBottom", "marginLeft", "cursor",
-			"borderTop", "borderRight", "borderBottom", "borderLeft", "color",
-			"overflowX", "overflowY", "opacity", "fontFamily", "fontStyle",
-			"fontVariant", "fontWeight", "fontSize", "backgroundColor",
-			"backgroundImage", "backgroundRepeat", "backgroundAttachment",
-			"backgroundPosition", "textDecoration", "whiteSpace",
-			"tableLayout", "borderSpacing", "border-collapse",
-			"pageBreakBefore", "pageBreakAfter", "zoom", "visibility",
-			"display", "boxSizing" };
+			"borderTop", "borderRight", "borderBottom", "borderLeft",
+			"borderColorTop", "borderColorRight", "borderColorBottom",
+			"borderColorLeft", "borderWidthTop", "borderWidthRight",
+			"borderWidthBottom", "borderWidthLeft", "color", "overflowX",
+			"overflowY", "opacity", "fontFamily", "fontStyle", "fontVariant",
+			"fontWeight", "fontSize", "backgroundColor", "backgroundImage",
+			"backgroundRepeat", "backgroundAttachment", "backgroundPosition",
+			"textDecoration", "whiteSpace", "tableLayout", "borderSpacing",
+			"border-collapse", "pageBreakBefore", "pageBreakAfter", "zoom",
+			"visibility", "display", "boxSizing" };
 	private static final String unsafeChars_ = " $&+,:;=?@'\"<>#%{}|\\^~[]`";
 }

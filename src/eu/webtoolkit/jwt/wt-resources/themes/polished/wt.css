@@ -271,7 +271,6 @@ span.Wt-disabled, fieldset.Wt-disabled legend {
 }
 
 .Wt-dialog .Wt-msgbox-text {
-    padding-left: 40px;
 }
 
 /*
@@ -460,6 +459,14 @@ span.Wt-disabled, fieldset.Wt-disabled legend {
     margin: 0px 2px;
     padding: 2px 5px;
     text-decoration: none;
+}
+
+.Wt-btn img {
+    vertical-align: middle;
+}
+
+.Wt-btn.with-label img {
+    padding-right: 10px;
 }
 
 .Wt-btn:active {

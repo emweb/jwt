@@ -179,13 +179,13 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 		this.js_.append(',').append(MathUtils.roundJs(ra.getX(), 3));
 		this.js_.append(",").append(MathUtils.roundJs(ra.getY(), 3)).append(
 				",true);");
+		this.js_.append("ctx.restore();");
 		if (this.currentBrush_.getStyle() != BrushStyle.NoBrush) {
 			this.js_.append("ctx.fill();");
 		}
 		if (this.currentPen_.getStyle() != PenStyle.NoPen) {
 			this.js_.append("ctx.stroke();");
 		}
-		this.js_.append("ctx.restore();");
 	}
 
 	public void drawImage(WRectF rect, String imgUri, int imgWidth,
@@ -219,6 +219,10 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 	public void drawPath(WPainterPath path) {
 		this.renderStateChanges(false);
 		this.drawPlainPath(this.js_, path);
+		if (this.currentBrush_.getColor().getAlpha() != 255
+				|| this.currentPen_.getColor().getAlpha() != 255) {
+			this.finishPath();
+		}
 	}
 
 	public void drawText(WRectF rect, EnumSet<AlignmentFlag> flags,
@@ -630,8 +634,10 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 				WPaintDevice.ChangeFlag.Pen).isEmpty()
 				&& !this.currentPen_.equals(this.getPainter().getPen());
 		boolean penColorChanged = penChanged
-				&& !this.currentPen_.getColor().equals(
-						this.getPainter().getPen().getColor());
+				&& (!this.currentPen_.getColor().equals(
+						this.getPainter().getPen().getColor()) || !this.currentPen_
+						.getGradient().equals(
+								this.getPainter().getPen().getGradient()));
 		boolean shadowChanged = !EnumUtils.mask(this.changeFlags_,
 				WPaintDevice.ChangeFlag.Shadow).isEmpty()
 				&& !this.currentShadow_.equals(this.getPainter().getShadow());
@@ -666,30 +672,38 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 					WTransform f = this.getPainter().getCombinedTransform();
 					resetTransform = !this.currentTransform_.equals(f);
 					if (this.busyWithPath_) {
-						if (fequal(f.getM11(), this.currentTransform_.getM11())
-								&& fequal(f.getM12(), this.currentTransform_
-										.getM12())
-								&& fequal(f.getM21(), this.currentTransform_
-										.getM21())
-								&& fequal(f.getM22(), this.currentTransform_
-										.getM22())) {
-							double det = f.getM11() * f.getM22() - f.getM12()
-									* f.getM21();
-							double a11 = f.getM22() / det;
-							double a12 = -f.getM12() / det;
-							double a21 = -f.getM21() / det;
-							double a22 = f.getM11() / det;
-							double fdx = f.getDx() * a11 + f.getDy() * a21;
-							double fdy = f.getDx() * a12 + f.getDy() * a22;
-							WTransform g = this.currentTransform_;
-							double gdx = g.getDx() * a11 + g.getDy() * a21;
-							double gdy = g.getDx() * a12 + g.getDy() * a22;
-							double dx = fdx - gdx;
-							double dy = fdy - gdy;
-							this.pathTranslation_.setX(dx);
-							this.pathTranslation_.setY(dy);
-							this.changeFlags_.clear();
-							resetTransform = false;
+						if (!this.getPainter().getBrush().getGradient()
+								.isEmpty()
+								|| !this.getPainter().getPen().getGradient()
+										.isEmpty()) {
+							resetTransform = true;
+						} else {
+							if (fequal(f.getM11(), this.currentTransform_
+									.getM11())
+									&& fequal(f.getM12(),
+											this.currentTransform_.getM12())
+									&& fequal(f.getM21(),
+											this.currentTransform_.getM21())
+									&& fequal(f.getM22(),
+											this.currentTransform_.getM22())) {
+								double det = f.getM11() * f.getM22()
+										- f.getM12() * f.getM21();
+								double a11 = f.getM22() / det;
+								double a12 = -f.getM12() / det;
+								double a21 = -f.getM21() / det;
+								double a22 = f.getM11() / det;
+								double fdx = f.getDx() * a11 + f.getDy() * a21;
+								double fdy = f.getDx() * a12 + f.getDy() * a22;
+								WTransform g = this.currentTransform_;
+								double gdx = g.getDx() * a11 + g.getDy() * a21;
+								double gdy = g.getDx() * a12 + g.getDy() * a22;
+								double dx = fdx - gdx;
+								double dy = fdy - gdy;
+								this.pathTranslation_.setX(dx);
+								this.pathTranslation_.setY(dy);
+								this.changeFlags_.clear();
+								resetTransform = false;
+							}
 						}
 					} else {
 						if (!resetTransform) {
@@ -725,9 +739,18 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 		}
 		if (penChanged) {
 			if (penColorChanged) {
-				this.js_.append("ctx.strokeStyle=").append(
-						WWebWidget.jsStringLiteral(this.getPainter().getPen()
-								.getColor().getCssText(true))).append(";");
+				if (!this.getPainter().getPen().getGradient().isEmpty()) {
+					String gradientName = defineGradient(this.getPainter()
+							.getPen().getGradient(), this.js_);
+					this.js_.append("ctx.strokeStyle=").append(gradientName)
+							.append(";");
+					this.renderStateChanges(true);
+				} else {
+					this.js_.append("ctx.strokeStyle=").append(
+							WWebWidget.jsStringLiteral(this.getPainter()
+									.getPen().getColor().getCssText(true)))
+							.append(";");
+				}
 			}
 			switch (this.getPainter().getPen().getStyle()) {
 			case SolidLine:
@@ -782,9 +805,17 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 		}
 		if (brushChanged) {
 			this.currentBrush_ = this.painter_.getBrush();
-			this.js_.append("ctx.fillStyle=").append(
-					WWebWidget.jsStringLiteral(this.currentBrush_.getColor()
-							.getCssText(true))).append(";");
+			if (!this.currentBrush_.getGradient().isEmpty()) {
+				String gradientName = defineGradient(this.currentBrush_
+						.getGradient(), this.js_);
+				this.js_.append("ctx.fillStyle=").append(gradientName).append(
+						";");
+				this.renderStateChanges(true);
+			} else {
+				this.js_.append("ctx.fillStyle=").append(
+						WWebWidget.jsStringLiteral(this.currentBrush_
+								.getColor().getCssText(true))).append(";");
+			}
 		}
 		if (shadowChanged) {
 			this.currentShadow_ = this.painter_.getShadow();
@@ -960,5 +991,42 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 
 	static boolean fequal(double d1, double d2) {
 		return Math.abs(d1 - d2) < 1E-5;
+	}
+
+	static String defineGradient(WGradient gradient, StringWriter js) {
+		String jsRef = "grad";
+		if (gradient.getStyle() == GradientStyle.LinearGradient) {
+			WLineF gradVec = gradient.getLinearGradientVector();
+			js.append("var ").append(jsRef).append(
+					" = ctx.createLinearGradient(").append(
+					String.valueOf(gradVec.getX1())).append(", ").append(
+					String.valueOf(gradVec.getY1())).append(", ").append(
+					String.valueOf(gradVec.getX2())).append(", ").append(
+					String.valueOf(gradVec.getY2())).append(");");
+		} else {
+			if (gradient.getStyle() == GradientStyle.RadialGradient) {
+				js.append("var ").append(jsRef).append(
+						" = ctx.createRadialGradient(").append(
+						String.valueOf(gradient.getRadialFocalPoint().getX()))
+						.append(", ").append(
+								String.valueOf(gradient.getRadialFocalPoint()
+										.getY())).append(",").append("0, ")
+						.append(
+								String.valueOf(gradient.getRadialCenterPoint()
+										.getX())).append(", ").append(
+								String.valueOf(gradient.getRadialCenterPoint()
+										.getY())).append(", ").append(
+								String.valueOf(gradient.getRadialRadius()))
+						.append(");");
+			}
+		}
+		for (int i = 0; i < gradient.getColorstops().size(); i++) {
+			js.append(jsRef).append(".addColorStop(").append(
+					String.valueOf(gradient.getColorstops().get(i)
+							.getPosition())).append(",").append(
+					WWebWidget.jsStringLiteral(gradient.getColorstops().get(i)
+							.getColor().getCssText(true))).append(");");
+		}
+		return jsRef;
 	}
 }

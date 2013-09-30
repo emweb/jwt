@@ -189,8 +189,8 @@ public class WDialog extends WPopupWidget {
 	 * @see WDialog#setTitleBarEnabled(boolean enable)
 	 */
 	public void setWindowTitle(CharSequence windowTitle) {
-		this.caption_.setText(new WString("<h3>" + windowTitle.toString()
-				+ "</h3>"));
+		this.caption_.setText(new WString("<h3>"
+				+ Utils.htmlEncode(windowTitle.toString()) + "</h3>"));
 	}
 
 	/**
@@ -515,10 +515,7 @@ public class WDialog extends WPopupWidget {
 	}
 
 	public void setHidden(boolean hidden, WAnimation animation) {
-		if (!(this.contents_ != null)) {
-			return;
-		}
-		if (this.isHidden() != hidden) {
+		if (this.contents_ != null && this.isHidden() != hidden) {
 			if (!hidden) {
 				WApplication app = WApplication.getInstance();
 				for (int i = 0; i < this.getFooter().getCount(); ++i) {

@@ -69,12 +69,30 @@ class StyleWidget extends WPaintedWidget {
 		painter.fillRect(75, 0, 75, 75, new WBrush(WColor.green));
 		painter.fillRect(0, 75, 75, 75, new WBrush(WColor.blue));
 		painter.fillRect(75, 75, 75, 75, new WBrush(WColor.red));
-		for (int i = 0; i > 7; i++) {
+		for (int i = 1; i < 8; i++) {
 			WPainterPath path = new WPainterPath();
 			path.addEllipse(75 - i * 10, 75 - i * 10, i * 20, i * 20);
-			WBrush brush = new WBrush(new WColor(255, 255, 255, 255 / 7 * i));
+			WBrush brush = new WBrush(new WColor(255, 255, 255, 50));
 			painter.fillPath(path, brush);
 		}
+		painter.translate(0, 170);
+		painter.setPen(new WPen(PenStyle.NoPen));
+		WGradient linGrad = new WGradient();
+		linGrad.setLinearGradient(0, 0, 100, 150);
+		linGrad.addColorStop(0, new WColor(255, 0, 0, 255));
+		linGrad.addColorStop(0.5, new WColor(0, 0, 255, 255));
+		linGrad.addColorStop(1, new WColor(0, 255, 0, 255));
+		WBrush linearGradientBrush = new WBrush(linGrad);
+		painter.setBrush(linearGradientBrush);
+		painter.drawRect(0, 0, 100, 150);
+		WGradient radGrad = new WGradient();
+		radGrad.setRadialGradient(170, 100, 50, 130, 130);
+		radGrad.addColorStop(0.2, new WColor(255, 0, 0, 255));
+		radGrad.addColorStop(0.9, new WColor(0, 0, 255, 255));
+		radGrad.addColorStop(1, new WColor(0, 0, 255, 0));
+		WBrush radialGradientBrush = new WBrush(radGrad);
+		painter.setBrush(radialGradientBrush);
+		painter.drawEllipse(120, 50, 100, 100);
 		painter.translate(0, 170);
 		for (int i = 0; i < 11; i++) {
 			WPainterPath path = new WPainterPath();

@@ -872,7 +872,8 @@ public class WMenuItem extends WContainerWidget {
 			WAnchor a = this.getAnchor();
 			if (a != null) {
 				AbstractSignal as;
-				if (this.checkBox_ != null) {
+				if (this.checkBox_ != null
+						&& !this.checkBox_.clicked().isPropagationPrevented()) {
 					as = this.checkBox_.changed();
 				} else {
 					as = a.clicked();

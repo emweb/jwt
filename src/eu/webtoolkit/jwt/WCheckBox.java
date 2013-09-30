@@ -80,7 +80,12 @@ public class WCheckBox extends WAbstractToggleButton {
 	private static Logger logger = LoggerFactory.getLogger(WCheckBox.class);
 
 	/**
-	 * Creates a checkbox with empty label.
+	 * Creates a checkbox without label.
+	 * <p>
+	 * A checkbox created by this constructor will not contain a placeholder for
+	 * a label, and therefore it is not possible to assign a label to it later
+	 * through {@link WAbstractToggleButton#setText(CharSequence text)
+	 * WAbstractToggleButton#setText()}.
 	 */
 	public WCheckBox(WContainerWidget parent) {
 		super(parent);
@@ -90,7 +95,7 @@ public class WCheckBox extends WAbstractToggleButton {
 	}
 
 	/**
-	 * Creates a checkbox with empty label.
+	 * Creates a checkbox without label.
 	 * <p>
 	 * Calls {@link #WCheckBox(WContainerWidget parent)
 	 * this((WContainerWidget)null)}

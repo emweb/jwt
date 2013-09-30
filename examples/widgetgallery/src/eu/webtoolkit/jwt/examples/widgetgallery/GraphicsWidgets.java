@@ -254,14 +254,13 @@ class GraphicsWidgets extends TopicWidget {
 		table.setHeaderHeight(new WLength(28));
 		table.setMargin(new WLength(10), EnumSet.of(Side.Top, Side.Bottom));
 		table.setMargin(WLength.Auto, EnumSet.of(Side.Left, Side.Right));
+		table.setWidth(new WLength(4 * 120 + 80 + 5 * 7));
 		if (WApplication.getInstance().getEnvironment().hasAjax()) {
-			table.resize(new WLength(600), new WLength(6 * 28));
 			table.setEditTriggers(EnumSet
 					.of(WAbstractItemView.EditTrigger.SingleClicked));
 			table.setEditOptions(EnumUtils.or(table.getEditOptions(),
 					WAbstractItemView.EditOption.SaveWhenClosed));
 		} else {
-			table.resize(new WLength(600), WLength.Auto);
 			table.setEditTriggers(EnumSet
 					.of(WAbstractItemView.EditTrigger.NoEditTrigger));
 		}

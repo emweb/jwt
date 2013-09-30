@@ -554,7 +554,7 @@ public abstract class WFormWidget extends WInteractWidget {
 			element.callJavaScript("setTimeout(function() {var o = "
 					+ this.getJsRef() + ";if (o) {if (!$(o).hasClass('"
 					+ app.getTheme().getDisabledClass()
-					+ "')) {try { f.focus();} catch (e) {}}}}, "
+					+ "')) {try { o.focus();} catch (e) {}}}}, "
 					+ (env.agentIsIElt(9) ? "500" : "10") + ");");
 			this.flags_.clear(BIT_GOT_FOCUS);
 		}

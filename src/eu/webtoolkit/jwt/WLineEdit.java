@@ -94,6 +94,7 @@ public class WLineEdit extends WFormWidget {
 		this.textSize_ = 10;
 		this.maxLength_ = -1;
 		this.echoMode_ = WLineEdit.EchoMode.Normal;
+		this.autoComplete_ = true;
 		this.flags_ = new BitSet();
 		this.setInline(true);
 		this.setFormObject(true);
@@ -118,6 +119,7 @@ public class WLineEdit extends WFormWidget {
 		this.textSize_ = 10;
 		this.maxLength_ = -1;
 		this.echoMode_ = WLineEdit.EchoMode.Normal;
+		this.autoComplete_ = true;
 		this.flags_ = new BitSet();
 		this.setInline(true);
 		this.setFormObject(true);
@@ -238,6 +240,33 @@ public class WLineEdit extends WFormWidget {
 	}
 
 	/**
+	 * Sets (built-in browser) autocomplete support.
+	 * <p>
+	 * Depending on the user agent, this may assist the user in filling in text
+	 * for common input fields (e.g. address information) based on some
+	 * heuristics.
+	 * <p>
+	 * The default value is <code>true</code>.
+	 */
+	public void setAutoComplete(boolean enabled) {
+		if (this.autoComplete_ != enabled) {
+			this.autoComplete_ = enabled;
+			this.flags_.set(BIT_AUTOCOMPLETE_CHANGED);
+			this.repaint();
+		}
+	}
+
+	/**
+	 * Returns auto-completion support.
+	 * <p>
+	 * 
+	 * @see WLineEdit#setAutoComplete(boolean enabled)
+	 */
+	public boolean isAutoComplete() {
+		return this.autoComplete_;
+	}
+
+	/**
 	 * Returns the current selection start.
 	 * <p>
 	 * Returns -1 if there is no selected text.
@@ -324,10 +353,12 @@ public class WLineEdit extends WFormWidget {
 	private int textSize_;
 	private int maxLength_;
 	private WLineEdit.EchoMode echoMode_;
+	private boolean autoComplete_;
 	private static final int BIT_CONTENT_CHANGED = 0;
 	private static final int BIT_TEXT_SIZE_CHANGED = 1;
 	private static final int BIT_MAX_LENGTH_CHANGED = 2;
 	private static final int BIT_ECHO_MODE_CHANGED = 3;
+	private static final int BIT_AUTOCOMPLETE_CHANGED = 4;
 	BitSet flags_;
 
 	void updateDom(DomElement element, boolean all) {
@@ -340,6 +371,13 @@ public class WLineEdit extends WFormWidget {
 					this.echoMode_ == WLineEdit.EchoMode.Normal ? "text"
 							: "password");
 			this.flags_.clear(BIT_ECHO_MODE_CHANGED);
+		}
+		if (all || this.flags_.get(BIT_AUTOCOMPLETE_CHANGED)) {
+			if (!all || !this.autoComplete_) {
+				element.setAttribute("autocomplete",
+						this.autoComplete_ == true ? "on" : "off");
+			}
+			this.flags_.clear(BIT_AUTOCOMPLETE_CHANGED);
 		}
 		if (all || this.flags_.get(BIT_TEXT_SIZE_CHANGED)) {
 			element.setAttribute("size", String.valueOf(this.textSize_));

@@ -979,6 +979,13 @@ public abstract class WWidget extends WObject {
 	 * when the user hit the refresh button.
 	 * <p>
 	 * The widget must actualize its contents in response.
+	 * <p>
+	 * <p>
+	 * <i><b>Note: </b>This does *not* rerender the widget! Calling
+	 * {@link WWidget#refresh() refresh()} usually does not have any effect
+	 * (unless you&apos;ve reimplemented {@link WWidget#refresh() refresh()} to
+	 * attach to it an effect). </i>
+	 * </p>
 	 */
 	public void refresh() {
 		this.setJsSize();
@@ -1672,7 +1679,8 @@ public abstract class WWidget extends WObject {
 	}
 
 	void childResized(WWidget child, EnumSet<Orientation> directions) {
-		if (this.getPositionScheme() == PositionScheme.Absolute) {
+		if (this.getPositionScheme() == PositionScheme.Absolute
+				&& !this.isInLayout()) {
 			return;
 		}
 		WWidget p = this.getParent();
@@ -1741,7 +1749,8 @@ public abstract class WWidget extends WObject {
 			this.flags_.set(BIT_NEED_RERENDER_SIZE_CHANGE);
 			this.getWebWidget().parentResized(this,
 					EnumSet.of(Orientation.Vertical));
-			if (this.getPositionScheme() == PositionScheme.Absolute) {
+			if (this.getPositionScheme() == PositionScheme.Absolute
+					&& !this.isInLayout()) {
 				return;
 			}
 			WWidget p = this.getParent();

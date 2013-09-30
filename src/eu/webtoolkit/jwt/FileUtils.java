@@ -1,8 +1,6 @@
 package eu.webtoolkit.jwt;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -10,11 +8,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletContext;
+
 public class FileUtils {
 	public static List<Byte> fileHeader(String fileName, int size) {
 		List<Byte> header = new ArrayList<Byte>();
 		try {
-			InputStream is = new FileInputStream(new File(fileName));
+			InputStream is = getResourceAsStream(fileName);
 			for (int i = 0; i < size; i++) {
 				header.add((byte) is.read());
 			}
@@ -52,10 +53,18 @@ public class FileUtils {
 		URL url = FileUtils.class.getResource(path);
 		
 		if (url == null) {
-			try {
-				url = new URL(path);
-			} catch (Exception e) {
-				url = new File(path).toURI().toURL();
+			WApplication app = WApplication.getInstance();
+			if (app != null) {
+				ServletContext context = app.getEnvironment().getServer().getServletContext();
+				url = context.getResource(path);
+			}
+			
+			if (url == null) {			
+				try {
+					url = new URL(path);
+				} catch (Exception e) {
+					url = new File(path).toURI().toURL();
+				}
 			}
 		}
 

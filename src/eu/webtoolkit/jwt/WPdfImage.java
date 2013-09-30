@@ -234,11 +234,11 @@ public class WPdfImage extends WResource implements WPaintDevice {
 			String mimeType = ImageUtils.identifyMimeType(imgUrl);
 			try {
 				if ("image/png".equals(mimeType))
-					image = new Image(this.pdf, new BufferedInputStream(new FileInputStream(imgUrl)), ImageType.PNG);
+					image = new Image(this.pdf, new BufferedInputStream(FileUtils.getResourceAsStream(imgUrl)), ImageType.PNG);
 				else if ("image/jpeg".equals(mimeType))
-					image = new Image(this.pdf, new BufferedInputStream(new FileInputStream(imgUrl)), ImageType.JPG);
+					image = new Image(this.pdf, new BufferedInputStream(FileUtils.getResourceAsStream(imgUrl)), ImageType.JPG);
 				else if ("image/bmp".equals(mimeType))
-					image = new Image(this.pdf, new BufferedInputStream(new FileInputStream(imgUrl)), ImageType.BMP);
+					image = new Image(this.pdf, new BufferedInputStream(FileUtils.getResourceAsStream(imgUrl)), ImageType.BMP);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}

@@ -582,6 +582,7 @@ public class AuthWidget extends WTemplateFormView {
 							AuthWidget.this.closeDialog();
 						}
 					});
+			this.dialog_.getFooter().hide();
 			if (!WApplication.getInstance().getEnvironment().hasAjax()) {
 				this.dialog_.setMargin(new WLength("-21em"), EnumSet
 						.of(Side.Left));

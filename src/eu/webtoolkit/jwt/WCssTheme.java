@@ -519,9 +519,15 @@ public class WCssTheme extends WTheme {
 				element.addPropertyWord(Property.PropertyClass, "Wt-btn");
 				WPushButton b = ((widget) instanceof WPushButton ? (WPushButton) (widget)
 						: null);
-				if (b != null && b.isDefault()) {
-					element.addPropertyWord(Property.PropertyClass,
-							"Wt-btn-default");
+				if (b != null) {
+					if (b.isDefault()) {
+						element.addPropertyWord(Property.PropertyClass,
+								"Wt-btn-default");
+					}
+					if (!(b.getText().length() == 0)) {
+						element.addPropertyWord(Property.PropertyClass,
+								"with-label");
+					}
 				}
 			}
 			break;

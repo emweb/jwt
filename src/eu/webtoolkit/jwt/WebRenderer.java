@@ -804,10 +804,12 @@ class WebRenderer implements SlotLearnerInterface {
 			app.getStyleSheet().javaScriptUpdate(app, out, true);
 		}
 		if (app.bodyHtmlClassChanged_) {
-			out.append("document.body.parentNode.className='").append(
-					app.htmlClass_).append("';").append(
-					"document.body.className='").append(this.getBodyClassRtl())
-					.append("';").append("document.body.setAttribute('dir', '");
+			String op = widgetset ? "+=" : "=";
+			out.append("document.body.parentNode.className").append(op).append(
+					'\'').append(app.htmlClass_).append("';").append(
+					"document.body.className").append(op).append('\'').append(
+					this.getBodyClassRtl()).append("';").append(
+					"document.body.setAttribute('dir', '");
 			if (app.getLayoutDirection() == LayoutDirection.LeftToRight) {
 				out.append("LTR");
 			} else {
@@ -872,11 +874,13 @@ class WebRenderer implements SlotLearnerInterface {
 		}
 		this.loadStyleSheets(this.collectedJS1_, app);
 		if (app.bodyHtmlClassChanged_) {
-			this.collectedJS1_.append("document.body.parentNode.className='")
-					.append(app.htmlClass_).append("';").append(
-							"document.body.className='").append(
-							this.getBodyClassRtl()).append("';").append(
-							"document.body.setAttribute('dir', '");
+			boolean widgetset = this.session_.getType() == EntryPointType.WidgetSet;
+			String op = widgetset ? "+=" : "=";
+			this.collectedJS1_.append("document.body.parentNode.className")
+					.append(op).append('\'').append(app.htmlClass_)
+					.append("';").append("document.body.className").append(op)
+					.append('\'').append(this.getBodyClassRtl()).append("';")
+					.append("document.body.setAttribute('dir', '");
 			if (app.getLayoutDirection() == LayoutDirection.LeftToRight) {
 				this.collectedJS1_.append("LTR");
 			} else {
@@ -983,14 +987,24 @@ class WebRenderer implements SlotLearnerInterface {
 	private void collectJavaScriptUpdate(StringBuilder out) {
 		WApplication app = this.session_.getApp();
 		out.append('{');
-		this.collectJS(out);
 		if (this.session_.sessionIdChanged_) {
+			if (this.session_.hasSessionIdInUrl()) {
+				if (app.getEnvironment().hasAjax()
+						&& !app.getEnvironment().hashInternalPaths()) {
+					this.streamRedirectJS(out, app.url(app.getInternalPath()));
+				} else {
+					this.streamRedirectJS(out, app.url(app.getInternalPath()));
+				}
+				out.append('}');
+				return;
+			}
 			out.append(this.session_.getApp().getJavaScriptClass()).append(
 					"._p_.setSessionUrl(").append(
 					WWebWidget.jsStringLiteral(this.getSessionUrl())).append(
 					");");
 			this.session_.sessionIdChanged_ = false;
 		}
+		this.collectJS(out);
 		this.preLearnStateless(app, out);
 		if (this.formObjectsChanged_) {
 			String formObjectsList = this.createFormObjectsList(app);

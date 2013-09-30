@@ -340,18 +340,18 @@ public abstract class WPaintedWidget extends WInteractWidget {
 	 * You may want to reimplement this method to override this choice.
 	 */
 	protected WPaintedWidget.Method getMethod() {
-		WPaintedWidget.Method method;
 		WEnvironment env = WApplication.getInstance().getEnvironment();
-		if (env.getContentType() != WEnvironment.ContentType.XHTML1
-				&& !(env.agentIsChrome()
-						&& env.getAgent().getValue() >= WEnvironment.UserAgent.Chrome5
-								.getValue()
-						|| env.agentIsIE()
-						&& env.getAgent().getValue() >= WEnvironment.UserAgent.IE9
-								.getValue() || env.agentIsGecko()
-						&& env.getAgent().getValue() >= WEnvironment.UserAgent.Firefox4_0
-								.getValue())) {
-			method = WPaintedWidget.Method.HtmlCanvas;
+		WPaintedWidget.Method method;
+		if (!(env.agentIsChrome()
+				&& env.getAgent().getValue() >= WEnvironment.UserAgent.Chrome5
+						.getValue()
+				|| env.agentIsIE()
+				&& env.getAgent().getValue() >= WEnvironment.UserAgent.IE9
+						.getValue() || env.agentIsGecko()
+				&& env.getAgent().getValue() >= WEnvironment.UserAgent.Firefox4_0
+						.getValue())) {
+			method = env.hasJavaScript() ? WPaintedWidget.Method.HtmlCanvas
+					: WPaintedWidget.Method.PngImage;
 		} else {
 			if (!env.hasJavaScript()) {
 				method = WPaintedWidget.Method.InlineSvgVml;
@@ -537,7 +537,11 @@ public abstract class WPaintedWidget extends WInteractWidget {
 			this.painter_ = new WWidgetVectorPainter(this,
 					WWidgetPainter.RenderType.InlineSvg);
 		} else {
-			this.painter_ = new WWidgetCanvasPainter(this);
+			if (method == WPaintedWidget.Method.PngImage) {
+				this.painter_ = new WWidgetRasterPainter(this);
+			} else {
+				this.painter_ = new WWidgetCanvasPainter(this);
+			}
 		}
 		return true;
 	}
