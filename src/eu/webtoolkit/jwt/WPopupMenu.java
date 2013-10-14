@@ -129,6 +129,7 @@ public class WPopupMenu extends WMenu {
 					"visibility: hidden;", CSS_RULES_NAME);
 		}
 		app.addGlobalWidget(this);
+		this.setPopup(true);
 		this.hide();
 	}
 
