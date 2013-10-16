@@ -131,9 +131,11 @@ class PaintedSlider extends WPaintedWidget {
 		}
 		mouseMovedJS.append(";").append(
 				"var f = objb.parentNode.onValueChange;").append(
-				"if (f) f(vs);").append(
-				this.slider_.sliderMoved().createCall("vs")).append("}")
-				.append("}");
+				"if (f) f(vs);");
+		if (this.slider_.sliderMoved().needsUpdate(true)) {
+			mouseMovedJS.append(this.slider_.sliderMoved().createCall("vs"));
+		}
+		mouseMovedJS.append("}").append("}");
 		StringBuilder mouseUpJS = new StringBuilder();
 		mouseUpJS.append("var down = obj.getAttribute('down');").append(
 				"var WT = Wt3_3_1;")

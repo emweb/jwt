@@ -334,6 +334,15 @@ public class WComboBox extends WFormWidget {
 	 * Sets the current index to the item corresponding to <code>value</code>.
 	 */
 	public void setValueText(String value) {
+		for (int i = 0; i < this.getCount(); ++i) {
+			if (StringUtils.asString(
+					this.model_.getIndex(i, this.modelColumn_).getData(
+							ItemDataRole.DisplayRole)).equals(value)) {
+				this.setCurrentIndex(i);
+				return;
+			}
+		}
+		this.setCurrentIndex(-1);
 	}
 
 	public void refresh() {

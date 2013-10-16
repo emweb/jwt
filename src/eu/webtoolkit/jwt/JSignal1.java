@@ -70,7 +70,7 @@ public abstract class JSignal1<A1> extends AbstractJSignal {
 
 	@Override
 	protected int getListenerCount() {
-		return super.getListenerCount() + (dynamic_ != null ? dynamic_.getListenerCount() : null);
+		return super.getListenerCount() + (dynamic_ != null ? dynamic_.getListenerCount() : 0);
 	}
 
 	/**
