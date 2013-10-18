@@ -39,6 +39,7 @@ public class WBreak extends WWebWidget {
 	 */
 	public WBreak(WContainerWidget parent) {
 		super(parent);
+		this.setInline(false);
 	}
 
 	/**

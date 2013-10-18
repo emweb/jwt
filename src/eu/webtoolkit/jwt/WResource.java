@@ -105,11 +105,13 @@ public abstract class WResource extends WObject {
 	 * @return the url.
 	 */
 	public String generateUrl() {
-		WApplication app = WApplication.getInstance();
-
-		if (currentUrl_ == null)
-			currentUrl_ = app.addExposedResource(this, internalPath_);
-		else {
+		if (currentUrl_ == null) {
+			WApplication app = WApplication.getInstance();
+			if (app != null)	
+				currentUrl_ = app.addExposedResource(this);
+			else
+				currentUrl_ = "";
+		} else {
 			int randPos = currentUrl_.lastIndexOf('=') + 1;
 			currentUrl_ = currentUrl_.substring(0, randPos)
 				+ (Integer.valueOf(currentUrl_.substring(randPos)) + 1);

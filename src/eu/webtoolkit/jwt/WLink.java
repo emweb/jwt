@@ -31,7 +31,6 @@ import org.slf4j.LoggerFactory;
  * @see WAnchor
  * @see WImage
  * @see WMediaPlayer
- * @see WPopupMenuItem
  * @see WPushButton
  */
 public class WLink {
@@ -252,22 +251,25 @@ public class WLink {
 	}
 
 	String resolveUrl(WApplication app) {
+		String relativeUrl = "";
 		switch (this.type_) {
 		case InternalPath: {
 			if (app.getEnvironment().hasAjax()) {
-				return app.getBookmarkUrl(this.getInternalPath());
+				relativeUrl = app.getBookmarkUrl(this.getInternalPath());
 			} else {
 				if (app.getEnvironment().agentIsSpiderBot()) {
-					return app.getBookmarkUrl(this.getInternalPath());
+					relativeUrl = app.getBookmarkUrl(this.getInternalPath());
 				} else {
-					return app.getSession().getMostRelativeUrl(
+					relativeUrl = app.getSession().getMostRelativeUrl(
 							this.getInternalPath());
 				}
 			}
 		}
+			break;
 		default:
-			return this.getUrl();
+			relativeUrl = this.getUrl();
 		}
+		return app.resolveRelativeUrl(relativeUrl);
 	}
 
 	private WLink.Type type_;
@@ -282,7 +284,8 @@ public class WLink {
 					widget.clicked().addListener(slot);
 					widget.clicked().preventDefaultAction();
 				}
-				slot.setJavaScript("function(){Wt3_2_3.history.navigate("
+				slot.setJavaScript("function(){" + app.getJavaScriptClass()
+						+ "._p_.setHash("
 						+ WWebWidget.jsStringLiteral(this.getInternalPath())
 						+ ",true);}");
 				widget.clicked().senderRepaint();

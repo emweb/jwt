@@ -113,7 +113,7 @@ public class WPolygonArea extends WAbstractArea {
 
 	private List<WPoint> points_;
 
-	void updateDom(DomElement element, boolean all) {
+	protected boolean updateDom(DomElement element, boolean all) {
 		element.setAttribute("shape", "poly");
 		StringWriter coords = new StringWriter();
 		for (int i = 0; i < this.points_.size(); ++i) {
@@ -124,6 +124,6 @@ public class WPolygonArea extends WAbstractArea {
 					',').append(String.valueOf(this.points_.get(i).getY()));
 		}
 		element.setAttribute("coords", coords.toString());
-		super.updateDom(element, all);
+		return super.updateDom(element, all);
 	}
 }

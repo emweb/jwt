@@ -61,6 +61,19 @@ public class RegistrationModel extends FormBaseModel {
 			.getLogger(RegistrationModel.class);
 
 	/**
+	 * Choose Password field.
+	 */
+	public static final String ChoosePasswordField = "choose-password";
+	/**
+	 * Repeat password field.
+	 */
+	public static final String RepeatPasswordField = "repeat-password";
+	/**
+	 * Email field (if login name is not email).
+	 */
+	public static final String EmailField = "email";
+
+	/**
 	 * Enumeration for an email policy.
 	 */
 	public enum EmailPolicy {
@@ -579,7 +592,7 @@ public class RegistrationModel extends FormBaseModel {
 			}
 		}
 		if (valid) {
-			this.setValid(field);
+			this.setValid(field, error);
 		} else {
 			this.setValidation(field, new WValidator.Result(
 					WValidator.State.Invalid, error));
@@ -620,11 +633,11 @@ public class RegistrationModel extends FormBaseModel {
 								+ info2.getJsRef()
 								+ ",o1="
 								+ password.getJsRef()
-								+ ";if (!$(o1).hasClass('Wt-invalid')) {if (o.value == o1.value) {$(o).removeClass('Wt-invalid');Wt3_2_3.setHtml(i,"
+								+ ";if (!$(o1).hasClass('Wt-invalid')) {if (o.value == o1.value) {$(o).removeClass('Wt-invalid');Wt3_3_1.setHtml(i,"
 								+ WString
 										.toWString(WString.tr("Wt.Auth.valid"))
 										.getJsStringLiteral()
-								+ ");} else {$(o).removeClass('Wt-valid');Wt3_2_3.setHtml(i,"
+								+ ");} else {$(o).removeClass('Wt-valid');Wt3_3_1.setHtml(i,"
 								+ WString
 										.toWString(
 												WString
@@ -637,16 +650,4 @@ public class RegistrationModel extends FormBaseModel {
 	private RegistrationModel.EmailPolicy emailPolicy_;
 	private Identity idpIdentity_;
 	private User existingUser_;
-	/**
-	 * Choose Password field.
-	 */
-	public static final String ChoosePasswordField = "choose-password";
-	/**
-	 * Repeat password field.
-	 */
-	public static final String RepeatPasswordField = "repeat-password";
-	/**
-	 * Email field (if login name is not email).
-	 */
-	public static final String EmailField = "email";
 }

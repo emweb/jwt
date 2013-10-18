@@ -31,12 +31,14 @@ import org.slf4j.LoggerFactory;
  * <p>
  * A checkbox may also provide a third state,
  * {@link CheckState#PartiallyChecked}, which is useful to indicate that it is
- * neither checked or unchecked. JWt will use native browser support for this
+ * neither checked nor unchecked. JWt will use native browser support for this
  * HTML5 extension when available (Safari and MS IE), and use an image-based
  * workaround otherwise. You may enable support for the third state using
  * {@link WCheckBox#setTristate(boolean tristate) setTristate()}, and use
  * {@link WCheckBox#setCheckState(CheckState state) setCheckState()} and
  * {@link WCheckBox#getCheckState() getCheckState()} to read all three states.
+ * Once a tri-state checkbox is clicked, it cycles through the states
+ * {@link CheckState#Checked} and {@link CheckState#Unchecked}.
  * <p>
  * A label is added as a sibling of the checkbox to the same parent.
  * <p>
@@ -64,12 +66,12 @@ import org.slf4j.LoggerFactory;
  * <p>
  * <h3>CSS</h3>
  * <p>
- * This widget corresponds to the HTML
- * <code>&lt;input type=&quot;checkbox&quot;&gt;</code> tag. Depending on
- * whether a text is included, it may be nested in a <code>&lt;span&gt;</code>
- * tag which also includes a rendered {@link WLabel}. This widget does not
- * provide styling, and can be styled using inline or external CSS as
- * appropriate.
+ * This widget is rendered using an HTML
+ * <code>&lt;input type=&quot;checkbox&quot;&gt;</code> tag. When a label is
+ * specified, the input element is nested in a <code>&lt;label&gt;</code>.
+ * <p>
+ * This widget does not provide styling, and can be styled using inline or
+ * external CSS as appropriate.
  * <p>
  * 
  * @see WAbstractToggleButton
@@ -78,7 +80,12 @@ public class WCheckBox extends WAbstractToggleButton {
 	private static Logger logger = LoggerFactory.getLogger(WCheckBox.class);
 
 	/**
-	 * Creates a checkbox with empty label.
+	 * Creates a checkbox without label.
+	 * <p>
+	 * A checkbox created by this constructor will not contain a placeholder for
+	 * a label, and therefore it is not possible to assign a label to it later
+	 * through {@link WAbstractToggleButton#setText(CharSequence text)
+	 * WAbstractToggleButton#setText()}.
 	 */
 	public WCheckBox(WContainerWidget parent) {
 		super(parent);
@@ -88,7 +95,7 @@ public class WCheckBox extends WAbstractToggleButton {
 	}
 
 	/**
-	 * Creates a checkbox with empty label.
+	 * Creates a checkbox without label.
 	 * <p>
 	 * Calls {@link #WCheckBox(WContainerWidget parent)
 	 * this((WContainerWidget)null)}
@@ -130,11 +137,13 @@ public class WCheckBox extends WAbstractToggleButton {
 		if (this.triState_) {
 			if (!this.supportsIndeterminate(WApplication.getInstance()
 					.getEnvironment())) {
-				this.changed().addListener(clearOpacityJS);
+				this.changed().addListener(
+						"function(obj, e) { obj.style.opacity=''; }");
 			} else {
 				if (WApplication.getInstance().getEnvironment().agentIsSafari()
 						&& !this.safariWorkaround_) {
-					this.clicked().addListener(safariWorkaroundJS);
+					this.clicked().addListener(
+							"function(obj, e) { obj.onchange(); }");
 					this.safariWorkaround_ = true;
 				}
 			}
@@ -189,8 +198,4 @@ public class WCheckBox extends WAbstractToggleButton {
 
 	private boolean triState_;
 	private boolean safariWorkaround_;
-	static JSlot safariWorkaroundJS = new JSlot(
-			"function(obj, e) { obj.onchange(); }");
-	static JSlot clearOpacityJS = new JSlot(
-			"function(obj, e) { obj.style.opacity=''; }");
 }

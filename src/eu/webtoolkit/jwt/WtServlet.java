@@ -98,7 +98,9 @@ public abstract class WtServlet extends HttpServlet {
 	static final String Hybrid_html;
 	static final String JQuery_js;
 	static final String Wt_xml = "/eu/webtoolkit/jwt/wt";
-	public static final String Auth_xml = "/eu/webtoolkit/jwt/auth/auth";
+	public static final String AuthStrings_xml = "/eu/webtoolkit/jwt/auth/auth_strings";
+	static final String AuthCssTheme_xml = "/eu/webtoolkit/jwt/auth/auth_css_theme";
+	static final String AuthBootstrapTheme_xml = "/eu/webtoolkit/jwt/auth/auth_bootstrap_theme";
 	
 	private static WtServlet instance;
 

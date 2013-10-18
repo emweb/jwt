@@ -14,7 +14,7 @@ public class JSignal extends AbstractJSignal {
 	private Signal dynamic_;
 
 	JSignal(WObject sender, String name, boolean collectSlotJavaScript) {
-		super(sender, name);
+		super(sender, name, collectSlotJavaScript);
 
 		this.dynamic_ = null;
 	}

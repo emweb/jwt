@@ -44,6 +44,8 @@ if (!window._$_WT_CLASS_$_)
   window._$_WT_CLASS_$_ = new (function()
 {
 var WT = this;
+/** @const */ var UNDEFINED = 'undefined';
+/** @const */ var UNKNOWN = 'unknown'; // seen on IE for reasons unknown
 
 this.condCall = function(o, f, a) {
   if (o[f])
@@ -71,7 +73,9 @@ this.button = function(e)
     return 0;
   }
 
-  if (!WT.isGecko && typeof e.which !== 'undefined') {
+  if (!WT.isGecko && 
+      typeof e.which !== UNDEFINED && 
+      typeof e.which !== UNKNOWN) {
     if (e.which == 3)
       return 4;
     else if (e.which == 2)
@@ -80,7 +84,9 @@ this.button = function(e)
       return 1;
     else
       return 0;
-  } else if (WT.isIE && typeof e.button !== 'undefined') {
+  } else if (WT.isIE && 
+	     typeof e.which !== UNDEFINED &&
+	     typeof e.which !== UNKNOWN) {
     if (e.button == 2)
       return 4;
     else if (e.button == 4)
@@ -89,7 +95,8 @@ this.button = function(e)
       return 1;
     else
       return 0;
-  } else if (typeof e.button !== 'undefined') {
+  } else if (typeof e.which !== UNDEFINED &&
+	     typeof e.which !== UNKNOWN) {
     if (e.button == 2)
       return 4;
     else if (e.button == 1)
@@ -143,9 +150,10 @@ var agent = navigator.userAgent.toLowerCase();
 
 this.isIE = ie !== undefined;
 this.isIE6 = ie === 6;
+this.isIE8 = ie === 8;
 this.isIElt9 = ie < 9;
 this.isIEMobile = agent.indexOf("msie 4")!=-1 || agent.indexOf("msie 5")!=-1;
-this.isOpera = typeof window.opera !== 'undefined';
+this.isOpera = typeof window.opera !== UNDEFINED;
 this.isAndroid = (agent.indexOf("safari") != -1)
 		  && (agent.indexOf("android") != -1);
 this.isWebKit = (agent.indexOf("applewebkit") != -1);
@@ -180,8 +188,9 @@ function host(url) {
 }
 
 this.initAjaxComm = function(url, handler) {
-  var crossDomain = url.indexOf("://") != -1
-                    && host(url) != window.location.host;
+  var crossDomain = 
+    (url.indexOf("://") != -1 || url.indexOf("//") == 0) &&
+    host(url) != window.location.host;
 
   function createRequest(method, url) {
     var request = null;
@@ -285,10 +294,12 @@ this.initAjaxComm = function(url, handler) {
 	}
 
 	this.abort = function() {
-	  request.onreadystatechange = new Function;
-	  handled = true;
-	  request.abort();
-	  request = null;
+	  if(request != null){
+	    request.onreadystatechange = new Function;
+	    handled = true;
+	    request.abort();
+	    request = null;
+	  }
 	};
 
 	if (_$_CLOSE_CONNECTION_$_)
@@ -430,11 +441,22 @@ this.hasTag = function(e, s) {
   return e.nodeType == 1 && e.tagName && e.tagName.toUpperCase() === s;
 };
 
-this.insertAt = function(p, c, i) {
+this.insertAt = function(p, c, pos) {
   if (!p.childNodes.length)
     p.appendChild(c);
-  else
-    p.insertBefore(c, p.childNodes[i]);
+  else {
+    var i, j, il;
+    for (i = 0, j = 0, il = p.childNodes.length; i < il; ++i) {
+      if ($(p.childNodes[i]).hasClass("wt-reparented"))
+         continue;
+      if (j === pos) {
+          p.insertBefore(c, p.childNodes[i]);
+          return;
+      }
+      ++j;
+    }
+    p.appendChild(c);
+  }
 };
 
 this.remove = function(id)
@@ -470,6 +492,19 @@ this.unstub = function(from, to, methodDisplay) {
     to.style.height = from.style.height;
   if (from.style.width)
     to.style.width = from.style.width;
+
+  to.style.boxSizing = from.style.boxSizing;
+  var attrName = WT.styleAttribute('box-sizing');
+  var vendorPrefix = WT.vendorPrefix(attrName);
+  if (vendorPrefix)
+    to.style[attrName] = from.style[attrName];
+};
+
+this.saveReparented = function(el) {
+  $(el).find('.wt-reparented').each(function() {
+      var domRoot = $('.Wt-domRoot').get(0);
+      domRoot.appendChild(this.parentNode.removeChild(this));
+    });
 };
 
 this.changeTag = function(e, type)
@@ -516,6 +551,8 @@ this.unwrap = function(e) {
     if (e.getAttribute('type') == 'submit') {
       e.setAttribute('type', 'button');
       e.removeAttribute('name');
+    } else if (WT.hasTag(e, 'A') && e.href.indexOf('&signal=') != -1) {
+        e.href = 'javascript:void(0)';
     } if (WT.hasTag(e, 'INPUT') && e.getAttribute('type') == 'image') {
       WT.changeTag(e, 'img');
     }
@@ -549,11 +586,18 @@ this.ajaxInternalPaths = function(basePath) {
 	el.innerHTML= '<a href="' + basePath +'">x</a>';
 	var absBase = el.firstChild.href;
 	internalPath = href.substr(absBase.length - 1);
-      } else
+      } else {
+	while (href.substr(0, 3) == "../")
+	  href = href.substr(3);
+	if (href.charAt(0) != '/')
+	  href = '/' + href;
 	internalPath = href.substr(basePath.length);
+      }
 
-      if (internalPath.substr(0, 3) == "?_=")
-	  internalPath = internalPath.substr(3);
+      if (internalPath.length == 0 || internalPath.charAt(0) != '/')
+	internalPath = '/' + internalPath;
+      if (internalPath.substr(0, 4) == "/?_=")
+	internalPath = internalPath.substr(4);
       this.setAttribute('href', href); // computes this.href
       this.setAttribute('href', this.href);
       this.onclick = function(event) {
@@ -566,7 +610,11 @@ this.ajaxInternalPaths = function(basePath) {
 this.resolveRelativeAnchors = function() {
   if (window.$)
     $('.Wt-rr').each(function() {
-      this.setAttribute('href', this.href);
+      if (this.href)
+	this.setAttribute('href', this.href);
+      if (this.src)
+	this.setAttribute('src', this.src);
+
       $(this).removeClass("Wt-rr");
     });
 };
@@ -619,37 +667,16 @@ this.getElement = function(id) {
 
 this.$ = this.getElement;
 
-this.validate = function(edit) {
-  var v;
-  if (edit.options)
-    v = edit.options.item(edit.selectedIndex).text;
-  else
-    v = edit.value;
-
-  if (typeof edit.defaultTT === 'undefined')
-    edit.defaultTT = edit.getAttribute('title');
-  else
-    edit.defaultTT = '';
-
-  v = edit.wtValidate.validate(v);
-  if (v.valid) {
-    edit.setAttribute('title', edit.defaultTT);
-    $(edit).removeClass('Wt-invalid');
-  } else {
-    edit.setAttribute('title', v.message);
-    $(edit).addClass('Wt-invalid');
-  }
-};
-
 this.filter = function(edit, event, tokens) {
-  var c = String.fromCharCode((typeof event.charCode !== 'undefined') ?
+  var c = String.fromCharCode((typeof event.charCode !== UNDEFINED) ?
                               event.charCode : event.keyCode);
   if (!new RegExp(tokens).test(c))
     WT.cancelEvent(event);
 };
 
-// Get coordinates of element relative to page origin.
-this.widgetPageCoordinates = function(obj) {
+// Get coordinates of element relative to an ancestor object (or page origin).
+// It computes the location of the left-top corner of the margin-box.
+this.widgetPageCoordinates = function(obj, reference) {
   var objX = 0, objY = 0, op;
 
   if (!obj.parentNode)
@@ -662,7 +689,7 @@ this.widgetPageCoordinates = function(obj) {
 
   var rtl = $(document.body).hasClass('Wt-rtl');
 
-  while (obj) {
+  while (obj && obj !== reference) {
     objX += obj.offsetLeft;
     objY += obj.offsetTop;
 
@@ -715,9 +742,9 @@ this.widgetCoordinates = function(obj, e) {
 this.pageCoordinates = function(e) {
   if (!e) e = window.event;
   var posX = 0, posY = 0;
-  if (e.pageX || e.pageY) {
+  if (typeof e.pageX === 'number') {
     posX = e.pageX; posY = e.pageY;
-  } else if (e.clientX || e.clientY) {
+  } else if (typeof e.clientX === 'number') {
     posX = e.clientX + document.body.scrollLeft
       + document.documentElement.scrollLeft;
     posY = e.clientY + document.body.scrollTop
@@ -748,9 +775,27 @@ this.wheelDelta = function(e) {
 };
 
 this.scrollIntoView = function(id) {
-  var obj = document.getElementById(id);
-  if (obj && obj.scrollIntoView)
-    obj.scrollIntoView(true);
+  setTimeout(function() { 
+      var hashI = id.indexOf('#');
+      if (hashI != -1)
+	id = id.substr(hashI + 1);
+
+      var obj = document.getElementById(id);
+      if (obj) {
+	/* Locate a suitable ancestor to scroll */
+	var p;
+	for (p = obj.parentNode; p != document.body; p = p.parentNode) {
+	  if (p.scrollHeight > p.clientHeight &&
+	      WT.css(p, 'overflow-y') == 'auto') {
+	    var xy = WT.widgetPageCoordinates(obj, p);
+	    p.scrollTop += xy.y;
+	    return;
+	  }
+	}
+
+	obj.scrollIntoView(true);
+      }
+    }, 100);
 };
 
 this.getSelectionRange = function(elem) {
@@ -820,7 +865,7 @@ this.setSelectionRange = function(elem, start, end) {
 
   elem.focus();
 
-  if (typeof elem.selectionStart !== 'undefined') {
+  if (typeof elem.selectionStart !== UNDEFINED) {
     elem.selectionStart = start;
     elem.selectionEnd = end;
   }
@@ -839,7 +884,7 @@ this.isKeyPress = function(e) {
   if (e.altKey || e.ctrlKey || e.metaKey)
     return false;
 
-  var charCode = (typeof e.charCode !== 'undefined') ? e.charCode : 0;
+  var charCode = (typeof e.charCode !== UNDEFINED) ? e.charCode : 0;
 
   if (charCode > 0 || WT.isIE)
     return true;
@@ -934,23 +979,40 @@ this.pctself = function(c, s) {
   return parsePct(c.style[s], 0);
 };
 
-this.cssPrefix = function(prop) {
-  var prefixes = ['Moz', 'Webkit'],
-    elem = document.createElement('div'),
-    i, il;
+// Convert from css property to element attribute (possibly a vendor name)
+this.styleAttribute = function(cssProp) {
+    function toCamelCase(str) {
+	var n=str.search(/-./);
+	while (n != -1) {
+	    var letter = (str.charAt(n+1)).toUpperCase();
+	    str = str.replace(/-./, letter);
+	    n=str.search(/-./);
+	}
+	return str;
+    }
 
-  for (i = 0, il = prefixes.length; i < il; ++i) {
-    if ((prefixes[i] + prop) in elem.style)
-      return prefixes[i];
-  }
+    var prefixes = ['', '-moz-', '-webkit-', '-o-', '-ms-'];
+    var elem = document.createElement('div'), i, il;
 
-  return null;
+    for (i = 0, il = prefixes.length; i < il; ++i) {
+	var attr = toCamelCase(prefixes[i] + cssProp);
+	if (attr in elem.style)
+	    return attr;
+    }
+    return toCamelCase(cssProp);
+};
+
+this.vendorPrefix = function(attr) {
+    var prefixes = ['Moz', 'Webkit', 'O', 'Ms'];
+    for (i = 0, il = prefixes.length; i < il; ++i) {
+	if (attr.search(prefixes[i]) != -1)
+	    return prefixes[i];
+    }
+    return '';
 };
 
 this.boxSizing = function(w) {
-  return (w.style['boxSizing']
-	  || w.style['MozBoxSizing']
-	  || w.style['WebkitBoxSizing']) === 'border-box';
+  return (w.style[WT.styleAttribute('box-sizing')]) === 'border-box';
 };
 
 // Return if an element (or one of its ancestors) is hidden
@@ -1100,8 +1162,8 @@ function initCapture() {
 
   captureInitialized = true;
 
-  if (document.body.addEventListener) {
-    var db = document.body;
+  var db = document.body;
+  if (db.addEventListener) {
     db.addEventListener('mousemove', mouseMove, true);
     db.addEventListener('mouseup', mouseUp, true);
 
@@ -1113,7 +1175,6 @@ function initCapture() {
 			      }, true);
     }
   } else {
-    var db = document.body;
     db.attachEvent('onmousemove', mouseMove);
     db.attachEvent('onmouseup', mouseUp);
   }
@@ -1255,8 +1316,8 @@ this.getCssRule = function(selector, deleteFlag) {
 	  }
 	} catch (err) {
 	  /*
-	     firefox security error 1000 when access a stylesheet.cssRules hosted
-	     from another domain
+	     firefox security error 1000 when access a stylesheet.cssRules
+	     hosted from another domain
 	   */
 	}
 
@@ -1311,50 +1372,75 @@ this.windowSize = function() {
  * bottom of (y) or top from (bottomy)
  */
 this.fitToWindow = function(e, x, y, rightx, bottomy) {
-  var windowSize = WT.windowSize();
+  var hsides = [ 'left', 'right' ],
+      vsides = [ 'top', 'bottom' ];
 
-  var windowX = document.body.scrollLeft + document.documentElement.scrollLeft;
-  var windowY = document.body.scrollTop + document.documentElement.scrollTop;
+  e.style[hsides[0]] = e.style[hsides[1]] = 'auto';
+  e.style[vsides[0]] = e.style[vsides[1]] = 'auto';
 
-  if (!e.offsetParent)
+  var reserveWidth = e.offsetWidth,
+      reserveHeight = e.offsetHeight,
+      hside, vside,
+      windowSize = WT.windowSize(),
+      windowX = document.body.scrollLeft + document.documentElement.scrollLeft,
+      windowY = document.body.scrollTop + document.documentElement.scrollTop;
+
+    /*
+     * Should really distinguish between static versus dynamic: for a
+     * widget that can grow dynamically (e.g. a suggestion popup) we
+     * should prepare ourselves and consider maximum size here
+     */
+  if (!$(e).hasClass('Wt-tooltip')) {
+    reserveWidth = WT.px(e, 'maxWidth') || reserveWidth;
+    reserveHeight = WT.px(e, 'maxHeight') || reserveHeight;
+  }
+
+  var op = e.offsetParent;
+  if (!op)
     return;
 
-  var offsetParent = WT.widgetPageCoordinates(e.offsetParent);
+  var offsetParent = WT.widgetPageCoordinates(op);
 
-  var hsides = [ 'left', 'right' ],
-      vsides = [ 'top', 'bottom' ],
-      elementWidth = WT.px(e, 'maxWidth') || e.offsetWidth,
-      elementHeight = WT.px(e, 'maxHeight') || e.offsetHeight,
-      hside, vside;
-
-  if (elementWidth > windowSize.x) {
+  if (reserveWidth > windowSize.x) {
     // wider than window
     x = windowX;
     hside = 0;
-  } else if (x + elementWidth > windowX + windowSize.x) {
+  } else if (x + reserveWidth > windowX + windowSize.x) {
     // too far right, chose other side
-    rightx = rightx - offsetParent.x + e.offsetParent.scrollLeft;
-    x = e.offsetParent.clientWidth - (rightx + WT.px(e, 'marginRight'));
+    var scrollX = op.scrollLeft;
+    if (op == document.body)
+      scrollX = (op.clientWidth - windowSize.x);
+    rightx = rightx - offsetParent.x + scrollX;
+    x = op.clientWidth - (rightx + WT.px(e, 'marginRight'));
     hside = 1;
   } else {
-    x = x - offsetParent.x + e.offsetParent.scrollLeft;
+    var scrollX = op.scrollLeft;
+    if (op == document.body)
+      scrollX = 0;
+    x = x - offsetParent.x + scrollX;
     x = x - WT.px(e, 'marginLeft');
     hside = 0;
   }
 
-  if (elementHeight > windowSize.y) {
+  if (reserveHeight > windowSize.y) {
     // taller than window
     y = windowY;
     vside = 0;
-  } else if (y + elementHeight > windowY + windowSize.y) {
+  } else if (y + reserveHeight > windowY + windowSize.y) {
     // too far below, chose other side
     if (bottomy > windowY + windowSize.y)
       bottomy = windowY + windowSize.y;
-    bottomy = bottomy - offsetParent.y + e.offsetParent.scrollTop;
-    y = e.offsetParent.clientHeight - (bottomy + WT.px(e, 'marginBottom'));
+    var scrollY = op.scrollTop;
+    if (op == document.body)
+      scrollY = (op.clientHeight - windowSize.y);
+    bottomy = bottomy - offsetParent.y + scrollY;
+    y = op.clientHeight - (bottomy + WT.px(e, 'marginBottom'));
     vside = 1;
   } else {
-    y = y - offsetParent.y + e.offsetParent.scrollTop;
+    var scrollY = op.scrollTop;
+    if (op == document.body)
+      scrollY = 0;
+    y = y - offsetParent.y + scrollY;
     y = y - WT.px(e, 'marginTop');
     vside = 0;
   }
@@ -1367,25 +1453,27 @@ this.fitToWindow = function(e, x, y, rightx, bottomy) {
   */
 
   e.style[hsides[hside]] = x + 'px';
-  e.style[hsides[1 - hside]] = '';
   e.style[vsides[vside]] = y + 'px';
-  e.style[vsides[1 - vside]] = '';
 };
 
 this.positionXY = function(id, x, y) {
   var w = WT.getElement(id);
 
-  if (!WT.isHidden(w))
+  if (!WT.isHidden(w)) {
+    w.style.display = 'block';
     WT.fitToWindow(w, x, y, x, y);
+  }
 };
 
 this.Horizontal = 0x1;
 this.Vertical = 0x2;
 
-this.positionAtWidget = function(id, atId, orientation, parentInRoot,
-				 autoShow) {
+this.positionAtWidget = function(id, atId, orientation, delta) {
   var w = WT.getElement(id),
     atw = WT.getElement(atId);
+
+  if (!delta)
+    delta = 0;
 
   if (!atw || !w)
     return;
@@ -1393,25 +1481,51 @@ this.positionAtWidget = function(id, atId, orientation, parentInRoot,
   var xy = WT.widgetPageCoordinates(atw),
     x, y, rightx, bottomy;
 
-  if (parentInRoot) {
-    w.parentNode.removeChild(w);
-    $('.Wt-domRoot').get(0).appendChild(w);
-  }
-
   w.style.position = 'absolute';
-  if (autoShow)
+  if (WT.css(w, 'display') == 'none')
     w.style.display = 'block';
 
-  if (orientation == WT.Horizontal) {
+  if (orientation === WT.Horizontal) {
     x = xy.x + atw.offsetWidth;
-    y = xy.y;
-    rightx = xy.x,
-    bottomy = xy.y + atw.offsetHeight;
+    y = xy.y + delta;
+    rightx = xy.x;
+    bottomy = xy.y + atw.offsetHeight - delta;
   } else {
     x = xy.x;
     y = xy.y + atw.offsetHeight;
     rightx = xy.x + atw.offsetWidth;
     bottomy = xy.y;
+  }
+
+  /*
+   * Reparent the widget in a suitable parent:
+   *  an ancestor of w which isn't overflowing
+   */
+  if (!w.wtNoReparent && !$(w).hasClass("wt-no-reparent")) {
+    var p, pp = atw, domRoot = $('.Wt-domRoot').get(0);
+    w.parentNode.removeChild(w);
+  
+    for (p = pp.parentNode; p != domRoot; p = p.parentNode) {
+      if (p.wtResize) {
+	p = pp;
+	break;
+      }
+
+      if (WT.css(p, 'display') != 'inline' &&
+	  (p.scrollHeight > p.clientHeight ||
+	   p.scrollWidth > p.clientWidth)) {
+	break;
+      }
+
+      pp = p;
+    }
+
+    var posP = WT.css(p, 'position');
+    if (posP != 'absolute' && posP != 'relative')
+      p.style.position = 'relative';
+    
+    p.appendChild(w);
+    $(w).addClass('wt-reparented');
   }
 
   WT.fitToWindow(w, x, y, rightx, bottomy);
@@ -1421,10 +1535,48 @@ this.positionAtWidget = function(id, atId, orientation, parentInRoot,
 
 this.hasFocus = function(el) {
   try {
-    return el == document.activeElement;
+    return el === document.activeElement;
   } catch(e) {
     return false;
   }
+};
+
+this.progressed = function(domRoot) {
+  var doc = document, db = doc.body;
+  var form = this.getElement('Wt-form');
+
+  domRoot.style.display = form.style.display;
+  form.parentNode.replaceChild(domRoot, form);
+
+  if (db.removeEventListener)
+    db.removeEventListener('click', delayClick, true);
+  else
+    db.detachEvent('click', delayClick);
+
+  setTimeout(function() {
+      var i, il;
+      for (i = 0, il = delayedClicks.length; i < il; ++i) {
+	if (doc.createEvent) {
+	  var e = delayedClicks[i];
+	  var ec = doc.createEvent('MouseEvents');
+	  ec.initMouseEvent('click', e.bubbles, e.cancelable, window,
+			    e.detail, e.screenX, e.screenY,
+			    e.clientX, e.clientY, e.ctrlKey, e.altKey,
+			    e.shiftKey, e.metaKey, e.button, null);
+	  var el = WT.getElement(e.targetId);
+	  if (el)
+	    el.dispatchEvent(ec);
+	} else {
+	  var e = delayedClicks[i];
+	  var ec = doc.createEventObject();
+	  for (i in e)
+	    ec[i] = e[i];
+	  var el = WT.getElement(e.targetId);
+	  if (el)
+	    el.fireEvent('onclick', ec);
+	}
+      }
+    }, 0);
 };
 
 var html5History = !!(window.history && window.history.pushState);
@@ -1437,15 +1589,15 @@ function gentleURIEncode(s) {
   return s.replace(/%/g, '%25')
     .replace(/\+/g, '%2b')
     .replace(/ /g, '%20')
-    .replace(/#/g, '%23')
+    //.replace(/#/g, '%23')
     .replace(/&/g, '%26');
 }
 
 if (html5History) {
   this.history = (function()
 {
-  var currentState = null, baseUrl = null, cb = null, stateMap = { },
-      w = window;
+  var currentState = null, baseUrl = null, ugly = false, cb = null,
+      stateMap = { }, w = window;
 
   function saveState(state) {
     stateMap[w.location.pathname + w.location.search] = state;
@@ -1464,10 +1616,10 @@ if (html5History) {
       function onPopState(event) {
 	var newState = event.state;
 
-	if (newState === null)
+	if (newState == null)
 	  newState = stateMap[w.location.pathname + w.location.search];
 
-	if (newState === null) {
+	if (newState == null) {
 	  saveState(currentState);
 	  return;
 	}
@@ -1478,7 +1630,7 @@ if (html5History) {
 	}
       }
 
-      window.addEventListener("popstate", onPopState, false);
+      w.addEventListener("popstate", onPopState, false);
     },
 
     initialize: function (stateField, histFrame, deployUrl) {
@@ -1487,7 +1639,7 @@ if (html5History) {
       baseUrl = deployUrl;
       if (baseUrl.length >= 1 && baseUrl[baseUrl.length - 1] == '/') {
 _$_$if_UGLY_INTERNAL_PATHS_$_();
-	baseUrl += "?_=";
+	ugly = true;
 _$_$endif_$_();
 _$_$ifnot_UGLY_INTERNAL_PATHS_$_();
 	baseUrl = baseUrl.substr(0, baseUrl.length - 1);
@@ -1500,9 +1652,12 @@ _$_$endif_$_();
 
       currentState = state;
 
-      var url = baseUrl + gentleURIEncode(state);
+      var ip = gentleURIEncode(state), url = baseUrl;
 
-      if (baseUrl.length < 3 || baseUrl.substr(baseUrl.length - 3) != "?_=") {
+      if (ip.length != 0)
+	url += (ugly ? "?_=" : "") + state;
+
+      if (!ugly) {
 	url += window.location.search;
       } else {
 	function stripHashParameter(q) {
@@ -1524,7 +1679,10 @@ _$_$endif_$_();
 	if (q.length > 1) {
 	  if (q.length > 2 && q[0] == '?' && q[1] == '&')
 	    q = q.substr(1);
-	  url += '&' + q.substr(1);
+	  if (url.indexOf('?') == -1)
+	    url += '?' + q.substr(1);
+	  else
+	    url += '&' + q.substr(1);
 	}
       }
 
@@ -1549,7 +1707,49 @@ _$_$endif_$_();
     }
   };
 })();
+} else if (WT.isIE8) {
+  this.history = (function()
+{
+  var currentState = null, cb = null, w = window;
 
+  return {
+    _initialize: function() { },
+
+    _initTimeout: function() { },
+
+    register: function (initialState, onStateChange) {
+      currentState = initialState;
+      cb = onStateChange;
+
+      function onHashChange() {
+	if (currentState != w.location.hash) {
+	  currentState = w.location.hash.substring(1);
+	  cb(currentState);
+	}
+      }
+
+      w.onhashchange = onHashChange;
+    },
+
+    initialize: function (stateField, histFrame, deployUrl) {
+    },
+
+    navigate: function (state, generateEvent) {
+      currentState = state;
+
+      w.location.hash = state;
+
+      WT.scrollIntoView(state);
+
+      if (generateEvent)
+	cb(state);
+    },
+
+    getCurrentState: function () {
+      return currentState;
+    }
+  };
+})();
 } else {
   this.history = (function()
 {
@@ -1561,7 +1761,6 @@ _$_$endif_$_();
    * http://developer.yahoo.net/yui/license.txt
    * version: 2.5.2
    */
-  var _UAwebkit = false;
   var _UAie = WT.isIElt9;
   var _UAopera = false;
   var _onLoadFn = null;
@@ -1580,9 +1779,6 @@ _$_$endif_$_();
   }
   function _storeStates() {
     _stateField.value = _initialState + "|" + _currentState;
-    if (_UAwebkit) {
-      _stateField.value += "|" + _fqstates.join(",");
-    }
   }
   function onStateChange() {
     var i, il;
@@ -1641,7 +1837,9 @@ _$_$endif_$_();
 	  } else {
 	    newHash = fqstate;
 	  }
-	  location.hash = newHash;
+	  if (location.hash != newHash && 
+	      location.hash.substring(1) != newHash)
+	    location.hash = newHash;
 	  hash = newHash;
 	  _storeStates();
 	} else if (newHash !== hash) {
@@ -1670,12 +1868,6 @@ _$_$endif_$_();
 	  hash = newHash;
 	  counter = newCounter;
 	  _handleFQStateChange(hash);
-	  _storeStates();
-	} else if (newCounter !== counter && _UAwebkit) {
-	  hash = newHash;
-	  counter = newCounter;
-	  state = _fqstates[counter - 1];
-	  _handleFQStateChange(state);
 	  _storeStates();
 	}
       }, 50);
@@ -1725,13 +1917,6 @@ _$_$endif_$_();
     if (vendor === "KDE") {
     } else if (typeof window.opera !== "undefined")
       _UAopera = true;
-    else if (!_UAie && vendor.indexOf("Apple Computer, Inc.") > -1)
-      _UAwebkit = true;
-
-    /*
-    if (_UAopera && typeof history.navigationMode !== "undefined")
-      history.navigationMode = "compatible";
-    */
 
     if (typeof stateField === "string")
       stateField = document.getElementById(stateField);
@@ -1763,11 +1948,8 @@ _$_$endif_$_();
     if (_UAie) {
       _updateIFrame(fqstate);
     } else {
-      if (fqstate.length > 0)
+      if (fqstate.length > 0) {
 	location.hash = fqstate;
-      if (_UAwebkit) {
-	_fqstates[history.length] = fqstate;
-	_storeStates();
       }
     }
     if (generateEvent)
@@ -1786,7 +1968,7 @@ _$_$endif_$_();
 
 })();
 
-if (window._$_APP_CLASS_$_) {
+if (window._$_APP_CLASS_$_ && window._$_APP_CLASS_$_._p_) {
   try {
     window._$_APP_CLASS_$_._p_.quit();
   } catch (e) {
@@ -1797,6 +1979,8 @@ window._$_APP_CLASS_$_ = new (function() {
 
 var self = this;
 var WT = _$_WT_CLASS_$_;
+/** @const */ var UNDEFINED = 'undefined';
+/** @const */ var UNKNOWN = 'unknown'; // seen on IE for reasons unknown
 
 var downX = 0;
 var downY = 0;
@@ -1823,16 +2007,18 @@ function onHashChange() {
     return;
 
   currentHash = newLocation;
+
   setTimeout(function() { update(null, 'hash', null, true); }, 1);
 };
 
-function setHash(newLocation) {
-  if (currentHash == newLocation || !currentHash && newLocation == '/')
+function setHash(newLocation, generateEvent) {
+  if (currentHash == newLocation || (!currentHash && newLocation == '/'))
     return;
 
-  currentHash = newLocation;
+  if (!generateEvent)
+    currentHash = newLocation;
 
-  WT.history.navigate(newLocation, false);
+  WT.history.navigate(newLocation, generateEvent);
 };
 
 var dragState = {
@@ -1885,17 +2071,17 @@ function dragStart(obj, e) {
 
   ds.sourceId = obj.getAttribute("dsid");
   ds.objectPrevStyle = {
-    position: ds.object.style["position"],
-    display: ds.object.style["display"],
-    left: ds.object.style["left"],
-    top: ds.object.style["top"],
+    position: ds.object.style.position,
+    display: ds.object.style.display,
+    left: ds.object.style.left,
+    top: ds.object.style.top,
     className: ds.object.className
   };
 
   ds.object.parentNode.removeChild(ds.object);
-  ds.object.style["position"] = 'absolute';
+  ds.object.style.position = 'absolute';
   ds.object.className = '';
-  ds.object.style["z-index"] = '1000';
+  ds.object.style.zIndex = '1000';
   document.body.appendChild(ds.object);
 
   WT.capture(null);
@@ -1916,18 +2102,29 @@ function dragStart(obj, e) {
 };
 
 function dragDrag(e) {
-  if (dragState.object != null) {
+  e = e || window.event;
+  if (dragState.object !== null) {
     var ds = dragState;
     var xy = WT.pageCoordinates(e);
 
-    if (ds.object.style["display"] != '' && ds.xy.x != xy.x && ds.xy.y != xy.y)
-      ds.object.style["display"] = '';
+    if (ds.object.style.display !== '' &&
+	ds.xy.x !== xy.x &&
+	ds.xy.y !== xy.y)
+      ds.object.style.display = '';
 
-    ds.object.style["left"] = (xy.x - ds.offsetX) + 'px';
-    ds.object.style["top"] = (xy.y - ds.offsetY) + 'px';
+    ds.object.style.left = (xy.x - ds.offsetX) + 'px';
+    ds.object.style.top = (xy.y - ds.offsetY) + 'px';
 
     var prevDropTarget = ds.dropTarget;
     var t = WT.target(e);
+    if (t == ds.object) {
+      if (document.elementFromPoint) {
+	ds.object.style['display']='none';
+	t = document.elementFromPoint(e.clientX, e.clientY);
+	ds.object.style['display']='';
+      }
+    }
+
     var mimeType = "{" + ds.mimeType + ":";
     var amts = null;
 
@@ -1981,6 +2178,7 @@ function dragDrag(e) {
 };
 
 function dragEnd(e) {
+  e = e || window.event;
   WT.capture(null);
 
   var ds = dragState;
@@ -2000,10 +2198,10 @@ function dragEnd(e) {
       // could not be dropped, animate it floating back ?
     }
 
-    ds.object.style["position"] = ds.objectPrevStyle.position;
-    ds.object.style["display"] = ds.objectPrevStyle.display;
-    ds.object.style["left"] = ds.objectPrevStyle.left;
-    ds.object.style["top"] = ds.objectPrevStyle.top;
+    ds.object.style.position = ds.objectPrevStyle.position;
+    ds.object.style.display = ds.objectPrevStyle.display;
+    ds.object.style.left = ds.objectPrevStyle.left;
+    ds.object.style.top = ds.objectPrevStyle.top;
     ds.object.className = ds.objectPrevStyle.className;
 
     ds.object = null;
@@ -2107,39 +2305,52 @@ function encodeEvent(event, i) {
     result += se + 'tid=' + t.id;
 
   try {
-    result += se + 'type=' + e.type;
+    if (typeof e.type === 'string')
+      result += se + 'type=' + e.type;
   } catch (e) {
   }
 
-  if (e.clientX || e.clientY)
-    result += se + 'clientX=' + e.clientX + se + 'clientY=' + e.clientY;
+  if (typeof e.clientX !== UNDEFINED && 
+      typeof e.clientX !== UNKNOWN)
+    result += se + 'clientX=' + Math.round(e.clientX) + se
+	+ 'clientY=' + Math.round(e.clientY);
 
   var pageCoords = WT.pageCoordinates(e);
   var posX = pageCoords.x;
   var posY = pageCoords.y;
 
   if (posX || posY) {
-    result += se + 'documentX=' + posX + se + 'documentY=' + posY;
-    result += se + 'dragdX=' + (posX - downX) + se + 'dragdY=' + (posY - downY);
+    result += se + 'documentX=' + Math.round(posX) + se
+	  + 'documentY=' + Math.round(posY);
+    result += se + 'dragdX=' + Math.round(posX - downX) + se
+	  + 'dragdY=' + Math.round(posY - downY);
 
     var delta = WT.wheelDelta(e);
-    result += se + 'wheel=' + delta;
+    result += se + 'wheel=' + Math.round(delta);
   }
 
-  if (e.screenX || e.screenY)
-    result += se + 'screenX=' + e.screenX + se + 'screenY=' + e.screenY;
+  if (typeof e.screenX !== UNDEFINED &&
+      typeof e.screenX !== UNKNOWN)
+    result += se + 'screenX=' + Math.round(e.screenX) + se
+	+ 'screenY=' + Math.round(e.screenY);
 
   var widgetCoords = { x: 0, y: 0 };
+
   if (event.object && event.object.nodeType != 9) {
     widgetCoords = WT.widgetPageCoordinates(event.object);
     var objX = widgetCoords.x;
     var objY = widgetCoords.y;
 
-    result += se + 'scrollX=' + event.object.scrollLeft
-      + se + 'scrollY=' + event.object.scrollTop
-      + se + 'width=' + event.object.clientWidth
-      + se + 'height=' + event.object.clientHeight
-      + se + 'widgetX=' + (posX - objX) + se + 'widgetY=' + (posY - objY);
+    if (typeof event.object.scrollLeft !== UNDEFINED &&
+	typeof event.object.scrollLeft !== UNKNOWN) {
+      result += se + 'scrollX=' + Math.round(event.object.scrollLeft)
+	+ se + 'scrollY=' + Math.round(event.object.scrollTop)
+	+ se + 'width=' + Math.round(event.object.clientWidth)
+	+ se + 'height=' + Math.round(event.object.clientHeight);
+    }
+
+    result += se + 'widgetX=' + Math.round(posX - objX) + se
+	  + 'widgetY=' + Math.round(posY - objY);
   }
 
   var button = WT.button(e);
@@ -2153,38 +2364,53 @@ function encodeEvent(event, i) {
   }
   result += se + 'button=' + button;
 
-  if (typeof e.keyCode !== 'undefined')
+  if (typeof e.keyCode !== UNDEFINED && 
+      typeof e.keyCode !== UNKNOWN)
     result += se + 'keyCode=' + e.keyCode;
 
-  var charCode = 0;
-  if (typeof e.charCode !== 'undefined') {
-    if (e.type == 'keypress')
-      charCode = e.charCode;
-  } else {
-    if (e.type == 'keypress')
-      charCode = e.keyCode;
+  if (typeof e.type === 'string') {
+    var charCode = 0;
+    if (typeof e.charCode !== UNDEFINED) {
+      if (e.type === 'keypress')
+	charCode = e.charCode;
+    } else {
+      if (e.type === 'keypress')
+	charCode = e.keyCode;
+    }
+    result += se + 'charCode=' + charCode;
   }
-  result += se + 'charCode=' + charCode;
 
-  if (e.altKey)
+    
+  if (typeof e.altKey !== UNDEFINED && 
+      typeof e.altKey !== UNKNOWN &&
+      e.altKey)
     result += se + 'altKey=1';
-  if (e.ctrlKey)
+  if (typeof e.ctrlKey !== UNDEFINED &&
+      typeof e.ctrlKey !== UNKNOWN &&
+      e.ctrlKey)
     result += se + 'ctrlKey=1';
-  if (e.metaKey)
+  if (typeof e.metaKey !== UNDEFINED &&
+      typeof e.metaKey !== UNKNOWN &&
+      e.metaKey)
     result += se + 'metaKey=1';
-  if (e.shiftKey)
+  if (typeof e.shiftKey !== UNDEFINED && typeof e.shiftKey !== UNKNOWN &&
+      e.shiftKey)
     result += se + 'shiftKey=1';
 
-  if (typeof e.touches !== 'undefined')
+  if (typeof e.touches !== UNDEFINED)
     result += encodeTouches(se + "touches", e.touches, widgetCoords);
-  if (typeof e.targetTouches !== 'undefined')
+  if (typeof e.targetTouches !== UNDEFINED)
     result += encodeTouches(se + "ttouches", e.targetTouches, widgetCoords);
-  if (typeof e.changedTouches !== 'undefined')
+  if (typeof e.changedTouches !== UNDEFINED)
     result += encodeTouches(se + "ctouches", e.changedTouches, widgetCoords);
 
-  if (e.scale)
+  if (typeof e.scale !== UNDEFINED &&
+      typeof e.scale !== UNKNOWN &&
+      e.scale)
     result += se + "scale=" + e.scale;
-  if (e.rotation)
+  if (typeof e.rotation !== UNDEFINED &&
+      typeof e.rotation !== UNKNOWN &&
+      e.rotation)
     result += se + "rotation=" + e.rotation;
 
   event.data = result;
@@ -2322,15 +2548,8 @@ function setServerPush(how) {
   serverPush = how;
 }
 
-var autoJavaScriptScheduled = false;
 function doAutoJavaScript() {
-  if (autoJavaScriptScheduled)
-    return;
-
-  autoJavaScriptScheduled = true;
-
-  setTimeout(function() { autoJavaScriptScheduled = false;
-			  self._p_.autoJavaScript(); }, 1);
+    self._p_.autoJavaScript();
 }
 
 function doJavaScript(js) {
@@ -2349,6 +2568,11 @@ function doJavaScript(js) {
 function handleResponse(status, msg, timer) {
   if (quited)
     return;
+
+  if (waitingForJavaScript) {
+    setTimeout(function() { handleResponse(status, msg, timer); }, 50);
+    return;
+  }
 
   if (status == 0) {
     WT.resolveRelativeAnchors();
@@ -2469,8 +2693,8 @@ function scheduleUpdate() {
 
 _$_$if_WEB_SOCKETS_$_();
   if (websocket.state != WebSocketsUnavailable) {
-    if (typeof window.WebSocket === 'undefined'
-        && typeof window.MozWebSocket === 'undefined')
+    if (typeof window.WebSocket === UNDEFINED
+        && typeof window.MozWebSocket === UNDEFINED)
       websocket.state = WebSocketsUnavailable;
     else {
       var ws = websocket.socket;
@@ -2491,13 +2715,12 @@ _$_$if_WEB_SOCKETS_$_();
 	  } else {
 	    var query = sessionUrl.substr(sessionUrl.indexOf('?'));
 	    wsurl = "ws" + location.protocol.substr(4)
-	      + "//" + location.hostname + ":"
-	     + location.port + deployUrl + query;
+	      + "//" + location.host + deployUrl + query;
 	  }
 
 	  wsurl += "&request=ws";
 
-	  if (typeof window.WebSocket !== 'undefined')
+	  if (typeof window.WebSocket !== UNDEFINED)
 	    websocket.socket = ws = new WebSocket(wsurl);
 	  else
 	    websocket.socket = ws = new MozWebSocket(wsurl);
@@ -2516,7 +2739,8 @@ _$_$if_WEB_SOCKETS_$_();
 	    /*
 	     * Sometimes, we can connect but cannot send data
 	     */
-	    if (reconnectTries == 3 && websocket.state == WebSocketsUnknown)
+	    if (websocket.reconnectTries == 3 &&
+		websocket.state == WebSocketsUnknown)
 	      websocket.state = WebSocketsUnavailable;
 	    reconnect();
 	  };
@@ -2525,8 +2749,8 @@ _$_$if_WEB_SOCKETS_$_();
 	    /*
 	     * Sometimes, we can connect but cannot send data
 	     */
-	    if (websocket.reconnectTries == 3
-		&& websocket.state == WebSocketsUnknown)
+	    if (websocket.reconnectTries == 3 &&
+		websocket.state == WebSocketsUnknown)
 	      websocket.state = WebSocketsUnavailable;
 	    reconnect();
 	  };
@@ -2542,15 +2766,20 @@ _$_$if_WEB_SOCKETS_$_();
 	     *
 	     * So, we ping pong ourselves. It costs virtually nothing.
 	     */
+	    ws.send('&signal=ping'); // to get our first onmessage
+
+	    if (websocket.keepAlive)
+	      clearInterval(websocket.keepAlive);
+
 	    websocket.keepAlive = setInterval
-	    (function() {
-	       if (ws.readyState == 1)
-		 ws.send('&signal=ping');
-	       else {
-		 clearInterval(websocket.keepAlive);
-		 websocket.keepAlive = null;
-	       }
-	     }, _$_SERVER_PUSH_TIMEOUT_$_);
+	      (function() {
+		if (ws.readyState == 1)
+		  ws.send('&signal=ping');
+		else {
+		  clearInterval(websocket.keepAlive);
+		  websocket.keepAlive = null;
+		}
+	      }, _$_SERVER_PUSH_TIMEOUT_$_);
 	  };
 	}
       }
@@ -2683,14 +2912,23 @@ function sendUpdate() {
 }
 
 function propagateSize(element, width, height) {
-  if ((typeof element.wtWidth === 'undefined')
+  /*
+   * Propagate the size, even if it's the elements unconstrained size.
+   */
+  if (width == -1)
+    width = element.offsetWidth;
+  if (height == -1)
+    height = element.offsetHeight;
+
+  if ((typeof element.wtWidth === UNDEFINED)
       || (element.wtWidth != width)
-      || (typeof element.wtHeight === 'undefined')
+      || (typeof element.wtHeight === UNDEFINED)
       || (element.wtHeight != height)) {
     element.wtWidth = width;
     element.wtHeight = height;
 
-    emit(element, 'resized', width, height);
+    if (width >= 0 && height >= 0)
+      emit(element, 'resized', width, height);
   }
 }
 
@@ -2748,22 +2986,28 @@ function addTimerEvent(timerid, msec, repeat) {
 	obj.onclick();
     }
   };
-
+  
   var obj = WT.getElement(timerid);
+  if (obj.timer)
+    clearTimeout(obj.timer);
   obj.timer = setTimeout(tm, msec);
   obj.tm = tm;
 }
 
 var jsLibsLoaded = {};
+var waitingForJavaScript = false;
 
 function onJsLoad(path, f) {
   // setTimeout needed for Opera
   setTimeout(function() {
     if (jsLibsLoaded[path] === true) {
+      waitingForJavaScript = false;
       f();
     } else
       jsLibsLoaded[path] = f;
     }, 20);
+
+  waitingForJavaScript = true;
 };
 
 function jsLoaded(path)
@@ -2771,8 +3015,10 @@ function jsLoaded(path)
   if (jsLibsLoaded[path] === true)
     return;
   else {
-    if (typeof jsLibsLoaded[path] !== 'undefined')
+    if (typeof jsLibsLoaded[path] !== UNDEFINED) {
+      waitingForJavaScript = false;
       jsLibsLoaded[path]();
+    }
     jsLibsLoaded[path] = true;
   }
 };
@@ -2850,6 +3096,68 @@ ImagePreloader.prototype.onload = function() {
     preloader.callback(preloader.images);
 };
 
+/////////////////////////////////////////////////////////////////////
+// TG: A binary Buffer preloader
+
+// Constructor, preloads the given uris and stores them in arrayBuffers[]
+function ArrayBufferPreloader(uris, callback) {
+  // init members
+  // callback, when everything is loaded
+  this.callback = callback;
+  // number of open requests
+  this.work = uris.length;
+  // resulting buffers
+  this.arrayBuffers = [];
+  
+  // if urls are missing, call callback without buffers
+  if (uris.length == 0)
+    callback(this.arrayBuffers);
+  else 
+  {
+    // if uris are given, load them asynchronously
+    for (var i = 0; i < uris.length; i++)
+      this.preload(uris[i], i);
+  }
+};
+
+// preload function: downloads buffer at the given URI
+ArrayBufferPreloader.prototype.preload = function(uri, index) {
+  var xhr = new XMLHttpRequest();
+  // open the resource, send asynchronously (without waiting for answer)
+  xhr.open("GET", uri, true);
+  xhr.responseType = "arraybuffer"; 
+
+  // give xhr write access to array
+  xhr.arrayBuffers = this.arrayBuffers;
+  xhr.preloader = this;
+  xhr.index = index; // needed to maintain the mapping
+  xhr.uri = uri;
+
+  // behaviour when it was loaded-> redirect to ArrayBufferPreloader
+  xhr.onload = function(e) {
+
+    console.log("XHR load buffer " + this.index + " from uri " + this.uri);
+
+    //this.arrayBuffers[this.index] = new Uint8Array(this.response);
+    this.arrayBuffers[this.index] = this.response;
+    this.preloader.afterLoad();
+  };
+
+  xhr.onerror = ArrayBufferPreloader.prototype.afterload;
+  xhr.onabort = ArrayBufferPreloader.prototype.afterload;
+
+  // actually start the query
+  xhr.send();
+};
+
+ArrayBufferPreloader.prototype.afterLoad = function() {
+  if (--this.work == 0)
+    // last request finished -> call callback
+    this.callback(this.arrayBuffers);
+};
+/////////////////////////////////////////////////////////////////////
+
+
 function enableInternalPaths(initialHash) {
   currentHash = initialHash;
   WT.history.register(initialHash, onHashChange);
@@ -2914,15 +3222,16 @@ this._p_ = {
   enableInternalPaths : enableInternalPaths,
   onHashChange : onHashChange,
   setHash : setHash,
-  ImagePreloader : ImagePreloader,
-
+  ImagePreloader : ImagePreloader,  
+  ArrayBufferPreloader : ArrayBufferPreloader,
+  
   doAutoJavaScript : doAutoJavaScript,
   autoJavaScript : function() { },
 
   response : responseReceived,
   setPage : setPage,
   setCloseMessage : setCloseMessage,
-
+  
   propagateSize : propagateSize
 };
 

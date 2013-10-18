@@ -27,7 +27,7 @@ import org.slf4j.LoggerFactory;
  * if the date is within a given range.
  * <p>
  * The format string used for validating user input are the same as those used
- * by {@link WDate#fromString(String s) WDate#fromString()}.
+ * by {@link }.
  * <p>
  * <h3>i18n</h3>
  * <p>
@@ -48,7 +48,8 @@ public class WDateValidator extends WValidator {
 	/**
 	 * Creates a date validator.
 	 * <p>
-	 * The validator will accept any date of the format &apos;yyyy-MM-dd&apos;.
+	 * The validator will accept dates using the current locale&apos;s format.
+	 * <p>
 	 */
 	public WDateValidator(WObject parent) {
 		super(parent);
@@ -58,7 +59,8 @@ public class WDateValidator extends WValidator {
 		this.tooEarlyText_ = new WString();
 		this.tooLateText_ = new WString();
 		this.notADateText_ = new WString();
-		this.setFormat("yyyy-MM-dd");
+		this.setFormat(LocaleUtils
+				.getDateFormat(LocaleUtils.getCurrentLocale()));
 	}
 
 	/**
@@ -73,8 +75,9 @@ public class WDateValidator extends WValidator {
 	/**
 	 * Creates a date validator.
 	 * <p>
-	 * The validator will accept dates in the indicated range in the format
-	 * &apos;yyyy-MM-dd&apos;.
+	 * The validator will accept dates in the indicated range using the current
+	 * locale&apos;s format.
+	 * <p>
 	 */
 	public WDateValidator(WDate bottom, WDate top, WObject parent) {
 		super(parent);
@@ -84,7 +87,8 @@ public class WDateValidator extends WValidator {
 		this.tooEarlyText_ = new WString();
 		this.tooLateText_ = new WString();
 		this.notADateText_ = new WString();
-		this.setFormat("yyyy-MM-dd");
+		this.setFormat(LocaleUtils
+				.getDateFormat(LocaleUtils.getCurrentLocale()));
 	}
 
 	/**
@@ -102,8 +106,7 @@ public class WDateValidator extends WValidator {
 	 * <p>
 	 * The validator will accept dates in the date format <code>format</code>.
 	 * <p>
-	 * The syntax for <code>format</code> is as in
-	 * {@link WDate#fromString(String s) WDate#fromString()}
+	 * The syntax for <code>format</code> is as in {@link }
 	 */
 	public WDateValidator(String format, WObject parent) {
 		super(parent);
@@ -132,8 +135,7 @@ public class WDateValidator extends WValidator {
 	 * The validator will accept only dates within the indicated range
 	 * <i>bottom</i> to <i>top</i>, in the date format <code>format</code>.
 	 * <p>
-	 * The syntax for <code>format</code> is as in
-	 * {@link WDate#fromString(String s) WDate#fromString()}
+	 * The syntax for <code>format</code> is as in {@link }
 	 */
 	public WDateValidator(String format, WDate bottom, WDate top, WObject parent) {
 		super(parent);
@@ -199,13 +201,13 @@ public class WDateValidator extends WValidator {
 	/**
 	 * Sets the date format used to parse date strings.
 	 * <p>
-	 * 
-	 * @see WDate#fromString(String s)
 	 */
 	public void setFormat(String format) {
-		this.formats_.clear();
-		this.formats_.add(format);
-		this.repaint();
+		if (this.formats_.isEmpty() || !this.formats_.get(0).equals(format)) {
+			this.formats_.clear();
+			this.formats_.add(format);
+			this.repaint();
+		}
 	}
 
 	/**
@@ -384,8 +386,8 @@ public class WDateValidator extends WValidator {
 	public String getJavaScriptValidate() {
 		loadJavaScript(WApplication.getInstance());
 		StringBuilder js = new StringBuilder();
-		js.append("new Wt3_2_3.WDateValidator(").append(
-				this.isMandatory() ? "true" : "false").append(",[");
+		js.append("new Wt3_3_1.WDateValidator(").append(this.isMandatory())
+				.append(",[");
 		for (int i = 0; i < this.formats_.size(); ++i) {
 			WDate.RegExpInfo r = WDate.formatToRegExp(this.formats_.get(i));
 			if (i != 0) {
@@ -443,6 +445,6 @@ public class WDateValidator extends WValidator {
 				JavaScriptScope.WtClassScope,
 				JavaScriptObjectType.JavaScriptConstructor,
 				"WDateValidator",
-				"function(l,i,j,k,m,f,n,o){this.validate=function(a){if(a.length==0)return l?{valid:false,message:m}:{valid:true};for(var b,c=-1,d=-1,g=-1,h=0,p=i.length;h<p;++h){var e=i[h];b=(new RegExp(\"^\"+e.regexp+\"$\")).exec(a);if(b!=null){c=e.getMonth(b);d=e.getDay(b);g=e.getYear(b);break}}if(b==null)return{valid:false,message:f};if(d<=0||d>31||c<=0||c>12)return{valid:false,message:f};a=new Date(g,c-1,d);if(a.getDate()!=d||a.getMonth()!=c-1||a.getFullYear()!= g)return{valid:false,massage:f};if(j)if(a.getTime()<j.getTime())return{valid:false,message:n};if(k)if(a.getTime()>k.getTime())return{valid:false,message:o};return{valid:true}}}");
+				"function(l,i,j,k,m,f,n,o){this.validate=function(a){if(a.length==0)return l?{valid:false,message:m}:{valid:true};for(var b,c=-1,d=-1,g=-1,h=0,p=i.length;h<p;++h){var e=i[h];b=(new RegExp(\"^\"+e.regexp+\"$\")).exec(a);if(b!=null){c=e.getMonth(b);d=e.getDay(b);g=e.getYear(b);break}}if(b==null)return{valid:false,message:f};if(d<=0||d>31||c<=0||c>12)return{valid:false,message:f};a=new Date(g,c-1,d);if(a.getDate()!=d||a.getMonth()!=c-1||a.getFullYear()!= g||a.getFullYear()<1400)return{valid:false,message:f};if(j)if(a.getTime()<j.getTime())return{valid:false,message:n};if(k)if(a.getTime()>k.getTime())return{valid:false,message:o};return{valid:true}}}");
 	}
 }

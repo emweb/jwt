@@ -355,7 +355,7 @@ public class WStandardItem {
 	 * <p>
 	 * By default, an item is not checked.
 	 * <p>
-	 * Note: this requires that the item is checkable (see
+	 * Note: the checkbox will only be enabled if the item is checkable (see
 	 * {@link WStandardItem#setCheckable(boolean checkable) setCheckable()}).
 	 * <p>
 	 * If the item is tri-state, you may consider using
@@ -368,7 +368,8 @@ public class WStandardItem {
 	 * @see WStandardItem#setCheckState(CheckState state)
 	 */
 	public void setChecked(boolean checked) {
-		if (this.isChecked() != checked) {
+		Object d = this.getData(ItemDataRole.CheckStateRole);
+		if ((d == null) || this.isChecked() != checked) {
 			this.setCheckState(checked ? CheckState.Checked
 					: CheckState.Unchecked);
 		}
@@ -400,7 +401,9 @@ public class WStandardItem {
 	 * @see WStandardItem#setData(Object d, int role)
 	 */
 	public void setCheckState(CheckState state) {
-		if (this.getCheckState() != state) {
+		Object d = this.getData(ItemDataRole.CheckStateRole);
+		if ((d == null) || this.getCheckState() != state
+				|| (this.getData(ItemDataRole.CheckStateRole) == null)) {
 			if (this.isTristate()) {
 				this.setData(state, ItemDataRole.CheckStateRole);
 			} else {
@@ -483,6 +486,9 @@ public class WStandardItem {
 	public void setCheckable(boolean checkable) {
 		if (!this.isCheckable() && checkable) {
 			this.flags_.add(ItemFlag.ItemIsUserCheckable);
+			if ((this.getData(ItemDataRole.CheckStateRole) == null)) {
+				this.setChecked(false);
+			}
 			this.signalModelDataChange();
 		}
 		if (this.isCheckable() && !checkable) {
@@ -516,7 +522,11 @@ public class WStandardItem {
 	 * @see WStandardItem#setCheckable(boolean checkable)
 	 */
 	public void setTristate(boolean tristate) {
-		this.flags_.add(ItemFlag.ItemIsTristate);
+		if (tristate) {
+			this.flags_.add(ItemFlag.ItemIsTristate);
+		} else {
+			this.flags_.remove(ItemFlag.ItemIsTristate);
+		}
 	}
 
 	/**

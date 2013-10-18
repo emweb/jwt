@@ -154,7 +154,7 @@ public class WTestEnvironment extends WEnvironment {
 	/**
 	 * Sets the locale.
 	 * <p>
-	 * The default value is &quot;en&quot;.
+	 * The default value is {@link WLocale}(&quot;en&quot;).
 	 * <p>
 	 * 
 	 * @see WEnvironment#getLocale()
@@ -288,15 +288,11 @@ public class WTestEnvironment extends WEnvironment {
 	}
 
 	/**
-	 * Sets the content type.
+	 * Sets the content type (<b>deprecated</b>.
 	 * <p>
-	 * The default value is XHTML1.
-	 * <p>
-	 * 
-	 * @see WEnvironment#getContentType()
+	 * Since contentType is now always HTML5, this setting is ignored.
 	 */
 	public void setContentType(WEnvironment.ContentType contentType) {
-		this.contentType_ = contentType;
 	}
 
 	/**
@@ -354,6 +350,18 @@ public class WTestEnvironment extends WEnvironment {
 		new WebSession.Handler(this.theSession_, true);
 	}
 
+	/**
+	 * Simulates the presence of the session ID in the URL.
+	 * <p>
+	 * A session ID in the URL should cause a trampoline to be used for
+	 * references to external servers.
+	 * <p>
+	 * The default value is <code>false</code>.
+	 */
+	public void setSessionIdInUrl(boolean sessionIdInUrl) {
+		this.theSession_.setSessionIdInUrl(sessionIdInUrl);
+	}
+
 	private WebSession theSession_;
 	private Configuration configuration_;
 	private WtServlet controller_;
@@ -372,7 +380,6 @@ public class WTestEnvironment extends WEnvironment {
 		this.doesAjax_ = true;
 		this.doesCookies_ = true;
 		this.dpiScale_ = 1;
-		this.contentType_ = WEnvironment.ContentType.XHTML1;
 		this.urlScheme_ = "http";
 		this.referer_ = "";
 		this.accept_ = "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8";

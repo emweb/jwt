@@ -145,12 +145,12 @@ public class GoogleService extends OAuthService {
 		return new GoogleProcess(this, scope);
 	}
 
-	static String RedirectEndpointProperty = "google-oauth2-redirect-endpoint";
-	static String RedirectEndpointPathProperty = "google-oauth2-redirect-endpoint-path";
-	static String ClientIdProperty = "google-oauth2-client-id";
-	static String ClientSecretProperty = "google-oauth2-client-secret";
-	static String AuthUrl = "https://accounts.google.com/o/oauth2/auth";
-	static String TokenUrl = "https://accounts.google.com/o/oauth2/token";
-	static String ProfileScope = "https://www.googleapis.com/auth/userinfo.profile";
-	static String EmailScope = "https://www.googleapis.com/auth/userinfo.email";
+	private static String RedirectEndpointProperty = "google-oauth2-redirect-endpoint";
+	private static String RedirectEndpointPathProperty = "google-oauth2-redirect-endpoint-path";
+	private static String ClientIdProperty = "google-oauth2-client-id";
+	private static String ClientSecretProperty = "google-oauth2-client-secret";
+	private static String AuthUrl = "https://accounts.google.com/o/oauth2/auth";
+	private static String TokenUrl = "https://accounts.google.com/o/oauth2/token";
+	private static String ProfileScope = "https://www.googleapis.com/auth/userinfo.profile";
+	private static String EmailScope = "https://www.googleapis.com/auth/userinfo.email";
 }

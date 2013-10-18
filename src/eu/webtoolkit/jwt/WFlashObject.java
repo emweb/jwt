@@ -96,7 +96,6 @@ public class WFlashObject extends WWebWidget {
 	public void resize(WLength width, WLength height) {
 		this.sizeChanged_ = true;
 		super.resize(width, height);
-		this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyAttribute));
 	}
 
 	/**
@@ -152,7 +151,7 @@ public class WFlashObject extends WWebWidget {
 	 * installed.
 	 */
 	public String getJsFlashRef() {
-		return "Wt3_2_3.getElement('" + this.getId() + "_flash')";
+		return "Wt3_3_1.getElement('" + this.getId() + "_flash')";
 	}
 
 	/**
@@ -188,7 +187,7 @@ public class WFlashObject extends WWebWidget {
 				ss
 						.append("function(self, w, h) {v="
 								+ this.getJsFlashRef()
-								+ ";if(v){v.setAttribute('width', w);v.setAttribute('height', h);}");
+								+ ";if (v) {if (w >= 0) v.setAttribute('width', w);if (h >= 0) v.setAttribute('height', h);}");
 				if (this.alternative_ != null) {
 					ss
 							.append(
@@ -300,7 +299,7 @@ public class WFlashObject extends WWebWidget {
 
 	private void renderIeAltnerative() {
 		this.replaceDummyIeContent_ = true;
-		this.repaint(EnumSet.of(RepaintFlag.RepaintInnerHtml));
+		this.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
 	}
 
 	static String toString(WLength length) {

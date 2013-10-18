@@ -342,7 +342,17 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 		this.headerItemDelegate_ = delegate;
 	}
 
-	// public WAbstractItemDelegate getHeaderItemDelegate() ;
+	/**
+	 * Returns the header item delegate.
+	 * <p>
+	 * 
+	 * @see WAbstractItemView#setHeaderItemDelegate(WAbstractItemDelegate
+	 *      delegate)
+	 */
+	public WAbstractItemDelegate getHeaderItemDelegate() {
+		return this.headerItemDelegate_;
+	}
+
 	/**
 	 * Sets the content alignment for a column.
 	 * <p>
@@ -1002,9 +1012,9 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 		WLength headerHeight = WLength.multiply(this.headerLineHeight_,
 				lineCount);
 		if (this.columns_.size() > 0) {
-			WWidget w = this.headerWidget(0);
+			WWidget w = this.headerWidget(0, false);
 			if (w != null) {
-				w.askRerender();
+				w.scheduleRender(EnumSet.of(RepaintFlag.RepaintSizeAffected));
 			}
 		}
 		this.headerHeightRule_.getTemplateWidget().resize(WLength.Auto,
@@ -1369,7 +1379,10 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	}
 
 	/**
-	 * Signal emitted when an item is clicked.
+	 * Signal emitted when clicked.
+	 * <p>
+	 * When the event happened over an item, the first argument indicates the
+	 * item that was clicked on.
 	 * <p>
 	 * 
 	 * @see WAbstractItemView#doubleClicked()
@@ -1379,7 +1392,10 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	}
 
 	/**
-	 * Signal emitted when an item is double clicked.
+	 * Signal emitted when double clicked.
+	 * <p>
+	 * When the event happened over an item, the first argument indicates the
+	 * item that was double clicked on.
 	 * <p>
 	 * 
 	 * @see WAbstractItemView#clicked()
@@ -1391,6 +1407,9 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	/**
 	 * Signal emitted when a mouse button is pressed down.
 	 * <p>
+	 * This signal is emitted only when &apos;over&apos; an item (the model
+	 * index is passed as first argument is never invalid).
+	 * <p>
 	 * 
 	 * @see WAbstractItemView#mouseWentUp()
 	 */
@@ -1400,6 +1419,9 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 
 	/**
 	 * Signal emitted when the mouse button is released.
+	 * <p>
+	 * When the event happened over an item, the first argument indicates the
+	 * item where the mouse went up.
 	 * <p>
 	 * 
 	 * @see WAbstractItemView#mouseWentDown()
@@ -1443,6 +1465,49 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	 */
 	public Signal2<Integer, WLength> columnResized() {
 		return this.columnResized_;
+	}
+
+	/**
+	 * Returns whether the view is sortable.
+	 * <p>
+	 * When enabeld the view can be sorted by clicking on the header.
+	 */
+	public boolean isSortEnabled() {
+		return this.sortEnabled_;
+	}
+
+	/**
+	 * Alow to sort.
+	 * <p>
+	 * When enabeld the view can be sorted by clicking on the header.
+	 */
+	public void setHeaderClickSortEnabled(boolean enabled) {
+		this.sortEnabled_ = enabled;
+	}
+
+	/**
+	 * Signal emitted when a header item is clicked.
+	 * <p>
+	 * The argument that is passed is the column number.
+	 * <p>
+	 * 
+	 * @see WAbstractItemView#clicked()
+	 */
+	public Signal1<Integer> headerClicked() {
+		return this.headerClicked_;
+	}
+
+	/**
+	 * Signal emitted when a header item is double clicked.
+	 * <p>
+	 * The argument that is passed is the column number.
+	 * <p>
+	 * 
+	 * @see WAbstractItemView#doubleClicked()
+	 * @see WAbstractItemView#headerClicked()
+	 */
+	public Signal1<Integer> headerDoubleClicked() {
+		return this.headerDblClicked_;
 	}
 
 	/**
@@ -1535,6 +1600,7 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 		this.defaultHeaderWordWrap_ = true;
 		this.rowHeaderCount_ = 0;
 		this.computedDragMimeType_ = new WString();
+		this.sortEnabled_ = true;
 		this.columnWidthChanged_ = new JSignal2<Integer, Integer>(this.impl_,
 				"columnResized") {
 		};
@@ -1543,6 +1609,8 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 		this.alternatingRowColors_ = false;
 		this.resizeHandleMDownJS_ = new JSlot();
 		this.editedItems_ = new HashMap<WModelIndex, WAbstractItemView.Editor>();
+		this.headerDblClicked_ = new Signal1<Integer>(this);
+		this.headerClicked_ = new Signal1<Integer>(this);
 		this.clicked_ = new Signal2<WModelIndex, WMouseEvent>(this);
 		this.doubleClicked_ = new Signal2<WModelIndex, WMouseEvent>(this);
 		this.mouseWentDown_ = new Signal2<WModelIndex, WMouseEvent>(this);
@@ -1557,11 +1625,18 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 		this.setItemDelegate(new WItemDelegate(this));
 		this.setHeaderItemDelegate(new WItemDelegate(this));
 		WApplication app = WApplication.getInstance();
-		this.clickedForSortMapper_ = new WSignalMapper1<Integer>(this);
-		this.clickedForSortMapper_.mapped().addListener(this,
+		this.headerClickedMapper_ = new WSignalMapper1<Integer>(this);
+		this.headerClickedMapper_.mapped().addListener(this,
 				new Signal1.Listener<Integer>() {
 					public void trigger(Integer e1) {
-						WAbstractItemView.this.toggleSortColumn(e1);
+						WAbstractItemView.this.handleHeaderClicked(e1);
+					}
+				});
+		this.headerDblClickedMapper_ = new WSignalMapper1<Integer>(this);
+		this.headerDblClickedMapper_.mapped().addListener(this,
+				new Signal1.Listener<Integer>() {
+					public void trigger(Integer e1) {
+						WAbstractItemView.this.handleHeaderDblClicked(e1);
 					}
 				});
 		this.clickedForCollapseMapper_ = new WSignalMapper1<Integer>(this);
@@ -1789,7 +1864,7 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 		if (!this.isRendered()) {
 			return;
 		}
-		this.askRerender();
+		this.scheduleRender();
 	}
 
 	abstract void modelDataChanged(WModelIndex topLeft, WModelIndex bottomRight);
@@ -1838,6 +1913,15 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 							.noneOf(ViewItemRenderFlag.class));
 					tw.setInline(false);
 					tw.addStyleClass("Wt-label");
+					WWidget h = this.headerWidget(i, false);
+					WAbstractItemView.ColumnInfo info = this.columnInfo(i);
+					h.setStyleClass(info.getStyleClass() + " Wt-tv-c headerrh");
+					String sc = StringUtils.asString(
+							this.headerModel_.getIndex(0, i).getData(
+									ItemDataRole.StyleClassRole)).toString();
+					if (sc.length() != 0) {
+						h.addStyleClass(sc);
+					}
 				}
 			}
 		}
@@ -1920,7 +2004,7 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 		}
 	}
 
-	WWidget createHeaderWidget(WApplication app, int column) {
+	protected WWidget createHeaderWidget(int column) {
 		WAbstractItemView.ColumnInfo info = this.columnInfo(column);
 		WContainerWidget contents = new WContainerWidget();
 		contents.setObjectName("contents");
@@ -1929,7 +2013,7 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 			sortIcon.setObjectName("sort");
 			sortIcon.setInline(false);
 			sortIcon.setStyleClass("Wt-tv-sh Wt-tv-sh-none");
-			this.clickedForSortMapper_.mapConnect(sortIcon.clicked(), info.id);
+			this.headerClickedMapper_.mapConnect(sortIcon.clicked(), info.id);
 			if (this.currentSortColumn_ == column) {
 				sortIcon
 						.setStyleClass(info.sortOrder == SortOrder.AscendingOrder ? "Wt-tv-sh Wt-tv-sh-up"
@@ -1942,7 +2026,8 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 						HeaderFlag.ColumnIsExpandedRight)).isEmpty()) {
 			WImage collapseIcon = new WImage(contents);
 			collapseIcon.setFloatSide(Side.Left);
-			collapseIcon.setImageLink(new WLink(WApplication.getResourcesUrl()
+			collapseIcon.setImageLink(new WLink(WApplication
+					.getRelativeResourcesUrl()
 					+ "minus.gif"));
 			this.clickedForCollapseMapper_.mapConnect(collapseIcon.clicked(),
 					info.id);
@@ -1952,7 +2037,7 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 				WImage expandIcon = new WImage(contents);
 				expandIcon.setFloatSide(Side.Left);
 				expandIcon.setImageLink(new WLink(WApplication
-						.getResourcesUrl()
+						.getRelativeResourcesUrl()
 						+ "plus.gif"));
 				this.clickedForExpandMapper_.mapConnect(expandIcon.clicked(),
 						info.id);
@@ -1964,12 +2049,12 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 		i.setInline(false);
 		i.addStyleClass("Wt-label");
 		contents.addWidget(i);
-		if (info.sorting) {
-			WInteractWidget ww = ((i) instanceof WInteractWidget ? (WInteractWidget) (i)
-					: null);
-			if (ww != null) {
-				this.clickedForSortMapper_.mapConnect(ww.clicked(), info.id);
-			}
+		WInteractWidget ww = ((i) instanceof WInteractWidget ? (WInteractWidget) (i)
+				: null);
+		if (ww != null) {
+			this.headerClickedMapper_.mapConnect(ww.clicked(), info.id);
+			this.headerDblClickedMapper_
+					.mapConnect(ww.doubleClicked(), info.id);
 		}
 		int headerLevel = this.model_ != null ? this.headerLevel(column) : 0;
 		contents.setMargin(new WLength(headerLevel
@@ -2052,12 +2137,16 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	 * or editing behaviour.
 	 */
 	void handleClick(WModelIndex index, WMouseEvent event) {
-		boolean doEdit = !EnumUtils.mask(this.getEditTriggers(),
-				WAbstractItemView.EditTrigger.SelectedClicked).isEmpty()
-				&& this.isSelected(index)
-				|| !EnumUtils.mask(this.getEditTriggers(),
-						WAbstractItemView.EditTrigger.SingleClicked).isEmpty();
-		this.selectionHandleClick(index, event.getModifiers());
+		boolean doEdit = (index != null)
+				&& (!EnumUtils.mask(this.getEditTriggers(),
+						WAbstractItemView.EditTrigger.SelectedClicked)
+						.isEmpty()
+						&& this.isSelected(index) || !EnumUtils.mask(
+						this.getEditTriggers(),
+						WAbstractItemView.EditTrigger.SingleClicked).isEmpty());
+		if ((index != null)) {
+			this.selectionHandleClick(index, event.getModifiers());
+		}
 		if (doEdit) {
 			this.edit(index);
 		}
@@ -2075,8 +2164,9 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	 * behaviour.
 	 */
 	void handleDoubleClick(WModelIndex index, WMouseEvent event) {
-		boolean doEdit = !EnumUtils.mask(this.getEditTriggers(),
-				WAbstractItemView.EditTrigger.DoubleClicked).isEmpty();
+		boolean doEdit = (index != null)
+				&& !EnumUtils.mask(this.getEditTriggers(),
+						WAbstractItemView.EditTrigger.DoubleClicked).isEmpty();
 		if (doEdit) {
 			this.edit(index);
 		}
@@ -2333,16 +2423,20 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	private boolean defaultHeaderWordWrap_;
 	private int rowHeaderCount_;
 	private WString computedDragMimeType_;
+	private boolean sortEnabled_;
 	private JSignal2<Integer, Integer> columnWidthChanged_;
 	private Signal2<Integer, WLength> columnResized_;
 	private WCssTemplateRule headerHeightRule_;
 	private int nextColumnId_;
-	private WSignalMapper1<Integer> clickedForSortMapper_;
 	private WSignalMapper1<Integer> clickedForExpandMapper_;
 	private WSignalMapper1<Integer> clickedForCollapseMapper_;
+	private WSignalMapper1<Integer> headerDblClickedMapper_;
+	private WSignalMapper1<Integer> headerClickedMapper_;
 	private boolean alternatingRowColors_;
 	private JSlot resizeHandleMDownJS_;
 	private Map<WModelIndex, WAbstractItemView.Editor> editedItems_;
+	private Signal1<Integer> headerDblClicked_;
+	private Signal1<Integer> headerClicked_;
 	private Signal2<WModelIndex, WMouseEvent> clicked_;
 	private Signal2<WModelIndex, WMouseEvent> doubleClicked_;
 	private Signal2<WModelIndex, WMouseEvent> mouseWentDown_;
@@ -2505,6 +2599,19 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 		}
 	}
 
+	private void handleHeaderClicked(int columnid) {
+		int column = this.columnById(columnid);
+		WAbstractItemView.ColumnInfo info = this.columnInfo(column);
+		if (this.sortEnabled_ && info.sorting) {
+			this.toggleSortColumn(columnid);
+		}
+		this.headerClicked_.trigger(column);
+	}
+
+	private void handleHeaderDblClicked(int columnid) {
+		this.headerDblClicked_.trigger(this.columnById(columnid));
+	}
+
 	void toggleSortColumn(int columnid) {
 		int column = this.columnById(columnid);
 		if (column != this.currentSortColumn_) {
@@ -2523,6 +2630,10 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 		if (column >= 0) {
 			this.columnInfo(column).width = new WLength(width);
 			this.columnResized_.trigger(column, this.columnInfo(column).width);
+			WWidget w = this.headerWidget(column, 0 != 0);
+			if (w != null) {
+				w.scheduleRender(EnumSet.of(RepaintFlag.RepaintSizeAffected));
+			}
 		}
 	}
 

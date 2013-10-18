@@ -46,7 +46,7 @@ public class RegistrationWidget extends WTemplateFormView {
 		this.created_ = false;
 		this.confirmPasswordLogin_ = null;
 		WApplication app = WApplication.getInstance();
-		app.getBuiltinLocalizedStrings().useBuiltin(WtServlet.Auth_xml);
+		app.getTheme().apply(this, this, WidgetThemeRole.AuthWidgets);
 	}
 
 	/**
@@ -91,10 +91,9 @@ public class RegistrationWidget extends WTemplateFormView {
 	 * model.
 	 */
 	public void update() {
-		if (!(this.model_.getPasswordAuth() != null)
-				&& !this.model_.getOAuth().isEmpty()) {
+		if (this.model_.getPasswordAuth() != null) {
 			this.bindString("password-description",
-					tr("Wt.Auth.password-or-oauth-registration"));
+					tr("Wt.Auth.password-registration"));
 		} else {
 			this.bindEmpty("password-description");
 		}

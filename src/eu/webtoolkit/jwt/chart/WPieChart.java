@@ -74,7 +74,6 @@ public class WPieChart extends WAbstractChart {
 		this.shadow_ = false;
 		this.pie_ = new ArrayList<WPieChart.PieData>();
 		this.setPalette(new WStandardPalette(WStandardPalette.Flavour.Neutral));
-		this.setPreferredMethod(WPaintedWidget.Method.InlineSvgVml);
 		this.setPlotAreaPadding(5);
 	}
 
@@ -676,6 +675,14 @@ public class WPieChart extends WAbstractChart {
 		}
 	}
 
+	protected void modelHeaderDataChanged(Orientation orientation, int start,
+			int end) {
+		if (this.labelsColumn_ >= start && this.labelsColumn_ <= end
+				|| this.dataColumn_ >= start && this.dataColumn_ <= end) {
+			this.update();
+		}
+	}
+
 	private void drawPie(WPainter painter, double cx, double cy, double r,
 			double h, double total) {
 		if (h > 0) {
@@ -994,6 +1001,7 @@ public class WPieChart extends WAbstractChart {
 			}
 		}
 		if (!EnumUtils.mask(options, LabelOption.TextPercentage).isEmpty()) {
+			text = new WString(text.toString());
 			String buf = null;
 			buf = String.format("%.3g%%", v / total * 100);
 			if (!(text.length() == 0)) {

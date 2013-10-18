@@ -40,7 +40,8 @@ import org.slf4j.LoggerFactory;
  * to process the dialog result and delete the dialog. Unlike other widgets, a
  * dialog does not need to be added to a parent widget, but is hidden by
  * default. You must use the method {@link WWidget#show() WWidget#show()} or
- * setHidden(true) to show the dialog.
+ * {@link WDialog#setHidden(boolean hidden, WAnimation animation)
+ * setHidden(false)} to show the dialog.
  * <p>
  * The synchronous use of a dialog involves a call to
  * {@link WDialog#exec(WAnimation animation) exec()} which will block (suspend
@@ -60,14 +61,15 @@ import org.slf4j.LoggerFactory;
  * threads in your threadpool (like on some intranets or extranets). This
  * functionality is only available on Servlet 3.0 compatible servlet containers.
  * <p>
- * Use setModal(false) to create a non-modal dialog. A non-modal dialog does not
- * block the underlying user interface: the user must not first deal with the
- * dialog before interacting with the rest of the user interface.
+ * Use {@link WDialog#setModal(boolean modal) setModal(false)} to create a
+ * non-modal dialog. A non-modal dialog does not block the underlying user
+ * interface: the user must not first deal with the dialog before interacting
+ * with the rest of the user interface.
  * <p>
  * Contents for the dialog is defined by adding it to the
  * {@link WDialog#getContents() getContents()} widget.
  * <p>
- * This dialog looks like this (using the standard look):
+ * This dialog looks like this (using the default css themes):
  * <p>
  * <table border="0" align="center" cellspacing="3" cellpadding="3">
  * <tr>
@@ -86,28 +88,13 @@ import org.slf4j.LoggerFactory;
  * </tr>
  * </table>
  * <p>
- * <h3>CSS</h3>
- * <p>
- * A dialog has the <code>Wt-dialog</code> and <code>Wt-outset</code> style
- * classes. The look can be overridden using the following style class
- * selectors:
- * <p>
- * <div class="fragment">
- * 
- * <pre class="fragment">
- * .Wt-dialog .titlebar : The title bar
- *  .Wt-dialog .body     : The body (requires vertical padding 4px).
- * </pre>
- * 
- * </div>
- * <p>
  * <p>
  * <i><b>Note: </b>For the dialog (or rather, the silkscreen covering the user
  * interface below) to render properly in IE, the &quot;html body&quot; margin
  * is set to 0 (if it wasn&apos;t already). </i>
  * </p>
  */
-public class WDialog extends WCompositeWidget {
+public class WDialog extends WPopupWidget {
 	private static Logger logger = LoggerFactory.getLogger(WDialog.class);
 
 	/**
@@ -132,98 +119,61 @@ public class WDialog extends WCompositeWidget {
 	}
 
 	/**
-	 * Constructs a WDialog with a given window title.
+	 * Constructs a new dialog.
 	 * <p>
-	 * Only a single Dialog may be constructed at any time. Unlike other
-	 * widgets, a dialog does not need to be added to a container widget.
+	 * Unlike other widgets, the dialog does not require a parent container
+	 * since it is a top-level widget. You may however still provide a parent
+	 * object to let the dialog be deleted together with its parent.
 	 */
-	public WDialog(CharSequence windowTitle) {
-		super();
-		this.closeIcon_ = null;
-		this.modal_ = true;
-		this.resizable_ = false;
+	public WDialog(WObject parent) {
+		super(new WTemplate(tr("Wt.WDialog.template")), parent);
 		this.finished_ = new Signal1<WDialog.DialogCode>(this);
-		this.recursiveEventLoop_ = false;
-		this.initialized_ = false;
-		this.setImplementation(this.impl_ = new WTemplate(
-				tr("Wt.WDialog.template")));
-		String CSS_RULES_NAME = "Wt::WDialog";
-		WApplication app = WApplication.getInstance();
-		if (!app.getStyleSheet().isDefined(CSS_RULES_NAME)) {
-			if (app.getEnvironment().agentIsIElt(9)) {
-				app.getStyleSheet().addRule("body", "height: 100%;");
-			}
-			String position = app.getEnvironment().getAgent() == WEnvironment.UserAgent.IE6 ? "absolute"
-					: "fixed";
-			app
-					.getStyleSheet()
-					.addRule(
-							"div.Wt-dialog",
-							""
-									+ (app.getEnvironment().hasAjax() ? "visibility: hidden;"
-											: "")
-									+ (!app.getEnvironment().hasAjax() ? "left: 50%; top: 50%;margin-left: -100px; margin-top: -50px;"
-											: "left: 0px; top: 0px;"),
-							CSS_RULES_NAME);
-			if (app.getEnvironment().getAgent() == WEnvironment.UserAgent.IE6) {
-				app
-						.getStyleSheet()
-						.addRule(
-								"div.Wt-dialogcover",
-								"position: absolute;left: expression((ignoreMe2 = document.documentElement.scrollLeft) + 'px' );top: expression((ignoreMe = document.documentElement.scrollTop) + 'px' );");
-				if (!app.getEnvironment().hasAjax()) {
-					app
-							.getStyleSheet()
-							.addRule(
-									"div.Wt-dialog",
-									"position: absolute;left: expression((ignoreMe2 = document.documentElement.scrollLeft + document.documentElement.clientWidth/2) + 'px' );top: expression((ignoreMe = document.documentElement.scrollTop + document.documentElement.clientHeight/2) + 'px' );");
-				}
-			}
-		}
-		this.impl_.setStyleClass("Wt-dialog Wt-outset");
-		this.setPopup(true);
-		app.loadJavaScript("js/WDialog.js", wtjs1());
-		WContainerWidget parent = app.getDomRoot();
-		parent.addWidget(this);
-		WContainerWidget layoutContainer = new WContainerWidget();
-		layoutContainer.setStyleClass("dialog-layout");
-		WVBoxLayout layout = new WVBoxLayout(layoutContainer);
-		layout.setContentsMargins(0, 0, 0, 0);
-		layout.setSpacing(0);
-		this.titleBar_ = new WContainerWidget();
-		this.titleBar_.setStyleClass("titlebar");
-		this.caption_ = new WText(windowTitle, this.titleBar_);
-		this.impl_.bindString("shadow-x1-x2", WTemplate.DropShadow_x1_x2);
-		this.impl_.bindWidget("layout", layoutContainer);
-		layout.addWidget(this.titleBar_);
-		this.contents_ = new WContainerWidget();
-		this.contents_.setStyleClass("body");
-		layout.addWidget(this.contents_, 1);
-		this.saveCoverState(app, app.getDialogCover());
-		if (app.getEnvironment().hasAjax()) {
-			this.setAttributeValue("style", "visibility: hidden");
-			if (!app.getEnvironment().agentIsIElt(9)) {
-				this.setPositionScheme(PositionScheme.Fixed);
-			}
-		} else {
-			this
-					.setPositionScheme(app.getEnvironment().getAgent() == WEnvironment.UserAgent.IE6 ? PositionScheme.Absolute
-							: PositionScheme.Fixed);
-		}
-		this.hide();
+		this.escapeConnection1_ = new AbstractSignal.Connection();
+		this.escapeConnection2_ = new AbstractSignal.Connection();
+		this.enterConnection1_ = new AbstractSignal.Connection();
+		this.enterConnection2_ = new AbstractSignal.Connection();
+		this.create();
 	}
 
 	/**
-	 * Constructs a WDialog with a given window title.
+	 * Constructs a new dialog.
 	 * <p>
-	 * Calls {@link #WDialog(CharSequence windowTitle) this(new WString())}
+	 * Calls {@link #WDialog(WObject parent) this((WObject)null)}
 	 */
 	public WDialog() {
-		this(new WString());
+		this((WObject) null);
 	}
 
 	/**
-	 * Destructs a WDialog.
+	 * Constructs a dialog with a given window title.
+	 * <p>
+	 * Unlike other widgets, the dialog does not require a parent container
+	 * since it is a top-level widget. You may however still provide a parent
+	 * object to let the dialog be deleted together with its parent.
+	 */
+	public WDialog(CharSequence windowTitle, WObject parent) {
+		super(new WTemplate(tr("Wt.WDialog.template")), parent);
+		this.finished_ = new Signal1<WDialog.DialogCode>(this);
+		this.escapeConnection1_ = new AbstractSignal.Connection();
+		this.escapeConnection2_ = new AbstractSignal.Connection();
+		this.enterConnection1_ = new AbstractSignal.Connection();
+		this.enterConnection2_ = new AbstractSignal.Connection();
+		this.create();
+		this.setWindowTitle(windowTitle);
+	}
+
+	/**
+	 * Constructs a dialog with a given window title.
+	 * <p>
+	 * Calls {@link #WDialog(CharSequence windowTitle, WObject parent)
+	 * this(windowTitle, (WObject)null)}
+	 */
+	public WDialog(CharSequence windowTitle) {
+		this(windowTitle, (WObject) null);
+	}
+
+	/**
+	 * Deletes a dialog.
 	 */
 	public void remove() {
 		this.hide();
@@ -239,7 +189,8 @@ public class WDialog extends WCompositeWidget {
 	 * @see WDialog#setTitleBarEnabled(boolean enable)
 	 */
 	public void setWindowTitle(CharSequence windowTitle) {
-		this.caption_.setText(windowTitle);
+		this.caption_.setText(new WString("<h3>"
+				+ Utils.htmlEncode(windowTitle.toString()) + "</h3>"));
 	}
 
 	/**
@@ -249,7 +200,12 @@ public class WDialog extends WCompositeWidget {
 	 * @see WDialog#setWindowTitle(CharSequence windowTitle)
 	 */
 	public WString getWindowTitle() {
-		return this.caption_.getText();
+		String text = this.caption_.getText().toString();
+		if (text.length() > 9) {
+			return new WString(text.substring(4, 4 + text.length() - 9));
+		} else {
+			return WString.Empty;
+		}
 	}
 
 	/**
@@ -288,6 +244,23 @@ public class WDialog extends WCompositeWidget {
 	 */
 	public WContainerWidget getContents() {
 		return this.contents_;
+	}
+
+	/**
+	 * Returns the dialog footer container.
+	 * <p>
+	 * This is an optional section which is typically used for buttons.
+	 */
+	public WContainerWidget getFooter() {
+		if (!(this.footer_ != null)) {
+			this.footer_ = new WContainerWidget();
+			WApplication.getInstance().getTheme().apply(this, this.footer_,
+					WidgetThemeRole.DialogFooterRole);
+			WContainerWidget layoutContainer = (WContainerWidget) this.impl_
+					.resolveWidget("layout");
+			layoutContainer.getLayout().addWidget(this.footer_);
+		}
+		return this.footer_;
 	}
 
 	/**
@@ -356,6 +329,9 @@ public class WDialog extends WCompositeWidget {
 	 * @see WDialog#getResult()
 	 */
 	public void done(WDialog.DialogCode result) {
+		if (this.isHidden()) {
+			return;
+		}
 		this.result_ = result;
 		if (this.recursiveEventLoop_) {
 			this.recursiveEventLoop_ = false;
@@ -398,18 +374,18 @@ public class WDialog extends WCompositeWidget {
 	 * 
 	 * @see WDialog#reject()
 	 */
-	public void rejectWhenEscapePressed() {
-		WApplication.getInstance().globalEscapePressed().addListener(this,
-				new Signal.Listener() {
-					public void trigger() {
-						WDialog.this.reject();
-					}
-				});
-		this.impl_.escapePressed().addListener(this, new Signal.Listener() {
-			public void trigger() {
-				WDialog.this.reject();
-			}
-		});
+	public void rejectWhenEscapePressed(boolean enable) {
+		this.escapeIsReject_ = enable;
+	}
+
+	/**
+	 * Lets pressing the escape key reject the dialog.
+	 * <p>
+	 * Calls {@link #rejectWhenEscapePressed(boolean enable)
+	 * rejectWhenEscapePressed(true)}
+	 */
+	public final void rejectWhenEscapePressed() {
+		rejectWhenEscapePressed(true);
 	}
 
 	/**
@@ -482,12 +458,11 @@ public class WDialog extends WCompositeWidget {
 				this.contents_.setSelectable(true);
 			}
 			if (this.resizable_) {
-				this.setMinimumSize(WLength.Auto, WLength.Auto);
 				Resizable.loadJavaScript(WApplication.getInstance());
 				this
 						.setJavaScriptMember(
 								" Resizable",
-								"(new Wt3_2_3.Resizable(Wt3_2_3,"
+								"(new Wt3_3_1.Resizable(Wt3_3_1,"
 										+ this.getJsRef()
 										+ ")).onresize(function(w, h) {var obj = $('#"
 										+ this.getId()
@@ -516,7 +491,8 @@ public class WDialog extends WCompositeWidget {
 		if (closable) {
 			if (!(this.closeIcon_ != null)) {
 				this.closeIcon_ = new WText(this.titleBar_);
-				this.closeIcon_.setStyleClass("closeicon");
+				WApplication.getInstance().getTheme().apply(this,
+						this.closeIcon_, WidgetThemeRole.DialogCloseIconRole);
 				this.closeIcon_.clicked().addListener(this,
 						new Signal1.Listener<WMouseEvent>() {
 							public void trigger(WMouseEvent e1) {
@@ -539,32 +515,57 @@ public class WDialog extends WCompositeWidget {
 	}
 
 	public void setHidden(boolean hidden, WAnimation animation) {
-		if (this.isHidden() != hidden) {
-			if (this.modal_) {
+		if (this.contents_ != null && this.isHidden() != hidden) {
+			if (!hidden) {
 				WApplication app = WApplication.getInstance();
-				WContainerWidget cover = app.getDialogCover();
-				if (!(cover != null)) {
-					return;
-				}
-				if (!hidden) {
-					this.saveCoverState(app, cover);
-					if (cover.isHidden()) {
-						if (!animation.isEmpty()) {
-							cover.animateShow(new WAnimation(
-									WAnimation.AnimationEffect.Fade,
-									WAnimation.TimingFunction.Linear, animation
-											.getDuration() * 4));
-						} else {
-							cover.show();
-						}
+				for (int i = 0; i < this.getFooter().getCount(); ++i) {
+					WPushButton b = ((this.getFooter().getWidget(i)) instanceof WPushButton ? (WPushButton) (this
+							.getFooter().getWidget(i))
+							: null);
+					if (b != null && b.isDefault()) {
+						this.enterConnection1_ = app.globalEnterPressed()
+								.addListener(this, new Signal.Listener() {
+									public void trigger() {
+										WDialog.this.onDefaultPressed();
+									}
+								});
+						this.enterConnection2_ = this.impl_.enterPressed()
+								.addListener(this, new Signal.Listener() {
+									public void trigger() {
+										WDialog.this.onDefaultPressed();
+									}
+								});
+						break;
 					}
-					cover.setZIndex(this.impl_.getZIndex() - 1);
-					app.pushExposedConstraint(this);
-					this
-							.doJavaScript("try {if (document.activeElement && document.activeElement.blur)document.activeElement.blur();} catch (e) { }");
-				} else {
-					this.restoreCoverState(app, cover);
 				}
+				if (this.escapeIsReject_) {
+					this.escapeConnection1_ = app.globalEscapePressed()
+							.addListener(this, new Signal.Listener() {
+								public void trigger() {
+									WDialog.this.onEscapePressed();
+								}
+							});
+					this.escapeConnection2_ = this.impl_.escapePressed()
+							.addListener(this, new Signal.Listener() {
+								public void trigger() {
+									WDialog.this.onEscapePressed();
+								}
+							});
+				}
+			} else {
+				this.escapeConnection1_.disconnect();
+				this.escapeConnection2_.disconnect();
+				this.enterConnection1_.disconnect();
+				this.enterConnection2_.disconnect();
+			}
+			if (!hidden) {
+				this.getCover().pushDialog(this, animation);
+				if (this.modal_) {
+					this
+							.doJavaScript("try {var ae=document.activeElement;if (ae && ae.blur && ae.nodeName != 'BODY') {document.activeElement.blur();}} catch (e) { }");
+				}
+			} else {
+				this.getCover().popDialog(this, animation);
 			}
 		}
 		super.setHidden(hidden, animation);
@@ -591,8 +592,7 @@ public class WDialog extends WCompositeWidget {
 	}
 
 	void render(EnumSet<RenderFlag> flags) {
-		if (!this.initialized_) {
-			this.initialized_ = true;
+		if (!EnumUtils.mask(flags, RenderFlag.RenderFull).isEmpty()) {
 			WApplication app = WApplication.getInstance();
 			boolean centerX = this.getOffset(Side.Left).isAuto()
 					&& this.getOffset(Side.Right).isAuto();
@@ -607,9 +607,10 @@ public class WDialog extends WCompositeWidget {
 					}
 				}
 			}
-			this.doJavaScript("new Wt3_2_3.WDialog(" + app.getJavaScriptClass()
-					+ "," + this.getJsRef() + "," + (centerX ? "1" : "0") + ","
-					+ (centerY ? "1" : "0") + ");");
+			this.doJavaScript("new Wt3_3_1.WDialog(" + app.getJavaScriptClass()
+					+ "," + this.getJsRef() + "," + this.titleBar_.getJsRef()
+					+ "," + (centerX ? "1" : "0") + "," + (centerY ? "1" : "0")
+					+ ");");
 			if (!app.getEnvironment().agentIsIElt(9)) {
 				String js = WString.tr("Wt.WDialog.CenterJS").toString();
 				StringUtils.replace(js, "$el", "'" + this.getId() + "'");
@@ -629,24 +630,120 @@ public class WDialog extends WCompositeWidget {
 	private WText closeIcon_;
 	private WContainerWidget titleBar_;
 	private WContainerWidget contents_;
+	private WContainerWidget footer_;
 	private boolean modal_;
 	private boolean resizable_;
-	private int coverPreviousZIndex_;
-	private boolean coverWasHidden_;
+	private boolean escapeIsReject_;
 	private Signal1<WDialog.DialogCode> finished_;
 	private WDialog.DialogCode result_;
 	private boolean recursiveEventLoop_;
 	private boolean initialized_;
+	private AbstractSignal.Connection escapeConnection1_;
+	private AbstractSignal.Connection escapeConnection2_;
+	private AbstractSignal.Connection enterConnection1_;
+	private AbstractSignal.Connection enterConnection2_;
 
-	private void saveCoverState(WApplication app, WContainerWidget cover) {
-		this.coverWasHidden_ = cover.isHidden();
-		this.coverPreviousZIndex_ = cover.getZIndex();
+	private void create() {
+		this.closeIcon_ = null;
+		this.footer_ = null;
+		this.modal_ = true;
+		this.resizable_ = false;
+		this.recursiveEventLoop_ = false;
+		this.escapeIsReject_ = false;
+		this.impl_ = ((this.getImplementation()) instanceof WTemplate ? (WTemplate) (this
+				.getImplementation())
+				: null);
+		String CSS_RULES_NAME = "Wt::WDialog";
+		WApplication app = WApplication.getInstance();
+		if (!app.getStyleSheet().isDefined(CSS_RULES_NAME)) {
+			if (app.getEnvironment().agentIsIElt(9)) {
+				app.getStyleSheet().addRule("body", "height: 100%;");
+			}
+			String position = app.getEnvironment().getAgent() == WEnvironment.UserAgent.IE6 ? "absolute"
+					: "fixed";
+			app
+					.getStyleSheet()
+					.addRule(
+							"div.Wt-dialog",
+							""
+									+ (app.getEnvironment().hasAjax() ? "visibility: hidden;"
+											: "")
+									+ (!app.getEnvironment().hasAjax() ? "left: 50%; top: 50%;margin-left: -100px; margin-top: -50px;"
+											: "left: 0px; top: 0px;"),
+							CSS_RULES_NAME);
+			if (app.getEnvironment().getAgent() == WEnvironment.UserAgent.IE6) {
+				app
+						.getStyleSheet()
+						.addRule(
+								"div.Wt-dialogcover",
+								"position: absolute;left: expression((ignoreMe2 = document.documentElement.scrollLeft) + 'px' );top: expression((ignoreMe = document.documentElement.scrollTop) + 'px' );");
+				if (!app.getEnvironment().hasAjax()) {
+					app
+							.getStyleSheet()
+							.addRule(
+									"div.Wt-dialog",
+									"position: absolute;left: expression((ignoreMe2 = document.documentElement.scrollLeft + document.documentElement.clientWidth/2) + 'px' );top: expression((ignoreMe = document.documentElement.scrollTop + document.documentElement.clientHeight/2) + 'px' );");
+				}
+			}
+		}
+		app.loadJavaScript("js/WDialog.js", wtjs1());
+		WContainerWidget layoutContainer = new WContainerWidget();
+		layoutContainer.setStyleClass("dialog-layout");
+		WVBoxLayout layout = new WVBoxLayout(layoutContainer);
+		layout.setContentsMargins(0, 0, 0, 0);
+		layout.setSpacing(0);
+		this.impl_.bindWidget("layout", layoutContainer);
+		this.titleBar_ = new WContainerWidget();
+		app.getTheme().apply(this, this.titleBar_,
+				WidgetThemeRole.DialogTitleBarRole);
+		this.caption_ = new WText(this.titleBar_);
+		this.caption_.setInline(false);
+		this.contents_ = new WContainerWidget();
+		app.getTheme().apply(this, this.contents_,
+				WidgetThemeRole.DialogBodyRole);
+		layout.addWidget(this.titleBar_);
+		layout.addWidget(this.contents_, 1);
+		if (app.getEnvironment().hasAjax()) {
+			this.setAttributeValue("style", "visibility: hidden");
+			if (!app.getEnvironment().agentIsIElt(9)) {
+				this.setPositionScheme(PositionScheme.Fixed);
+			}
+		} else {
+			this
+					.setPositionScheme(app.getEnvironment().getAgent() == WEnvironment.UserAgent.IE6 ? PositionScheme.Absolute
+							: PositionScheme.Fixed);
+		}
 	}
 
-	private void restoreCoverState(WApplication app, WContainerWidget cover) {
-		cover.setHidden(this.coverWasHidden_);
-		cover.setZIndex(this.coverPreviousZIndex_);
-		app.popExposedConstraint(this);
+	private void onEscapePressed() {
+		if (this.getCover().isTopDialogRendered(this)) {
+			this.reject();
+		}
+	}
+
+	private void onDefaultPressed() {
+		if (this.getCover().isTopDialogRendered(this)) {
+			for (int i = 0; i < this.getFooter().getCount(); ++i) {
+				WPushButton b = ((this.getFooter().getWidget(i)) instanceof WPushButton ? (WPushButton) (this
+						.getFooter().getWidget(i))
+						: null);
+				if (b != null && b.isDefault()) {
+					if (b.isEnabled()) {
+						b.clicked().trigger(new WMouseEvent());
+					}
+					break;
+				}
+			}
+		}
+	}
+
+	private DialogCover getCover() {
+		WWidget w = WApplication.getInstance().findWidget("dialog-cover");
+		if (w != null) {
+			return ((w) instanceof DialogCover ? (DialogCover) (w) : null);
+		} else {
+			return new DialogCover();
+		}
 	}
 
 	static WJavaScriptPreamble wtjs1() {
@@ -654,6 +751,6 @@ public class WDialog extends WCompositeWidget {
 				JavaScriptScope.WtClassScope,
 				JavaScriptObjectType.JavaScriptConstructor,
 				"WDialog",
-				"function(h,a,i,j){function n(b){var c=b||window.event;b=d.pageCoordinates(c);c=d.windowCoordinates(c);var e=d.windowSize();if(c.x>0&&c.x<e.x&&c.y>0&&c.y<e.y){i=j=false;a.style.left=d.px(a,\"left\")+b.x-k+\"px\";a.style.top=d.px(a,\"top\")+b.y-l+\"px\";a.style.right=\"\";a.style.bottom=\"\";k=b.x;l=b.y}}function o(b,c,e){if(a.style.position==\"\")a.style.position=d.isIE6?\"absolute\":\"fixed\";a.style.visibility=\"visible\";a.style.height=Math.max(0,e)+\"px\";a.style.width= Math.max(0,c)+\"px\";m.centerDialog()}function p(b,c,e){if(c>0)g.style.width=c+\"px\";if(e>0)g.style.height=e+\"px\";m.centerDialog()}function q(){h.layouts2.adjust()}jQuery.data(a,\"obj\",this);var m=this,f=$(a).find(\".titlebar\").first().get(0),g=$(a).find(\".dialog-layout\").get(0),d=h.WT,k,l;if(f){f.onmousedown=function(b){b=b||window.event;d.capture(f);b=d.pageCoordinates(b);k=b.x;l=b.y;f.onmousemove=n};f.onmouseup=function(){f.onmousemove=null;d.capture(null)}}this.centerDialog=function(){if(a.parentNode== null)a=f=null;else if(a.style.display!=\"none\"&&a.style.visibility!=\"hidden\"){var b=d.windowSize(),c=a.offsetWidth,e=a.offsetHeight;if(i){a.style.left=Math.round((b.x-c)/2+(d.isIE6?document.documentElement.scrollLeft:0))+\"px\";a.style.marginLeft=\"0px\"}if(j){a.style.top=Math.round((b.y-e)/2+(d.isIE6?document.documentElement.scrollTop:0))+\"px\";a.style.marginTop=\"0px\"}if(a.style.position!=\"\")a.style.visibility=\"visible\"}};this.onresize=function(b,c){i=j=false;p(a,b,c);jQuery.data(g.firstChild,\"layout\").setMaxSize(0, 0);h.layouts2.scheduleAdjust()};g.wtResize=o;a.wtPosition=q;if(a.style.width!=\"\")g.style.width=a.offsetWidth+\"px\";if(a.style.height!=\"\")g.style.height=a.offsetHeight+\"px\";m.centerDialog()}");
+				"function(h,a,f,i,j){function n(b){var c=b||window.event;b=d.pageCoordinates(c);c=d.windowCoordinates(c);var e=d.windowSize();if(c.x>0&&c.x<e.x&&c.y>0&&c.y<e.y){i=j=false;a.style.left=d.px(a,\"left\")+b.x-k+\"px\";a.style.top=d.px(a,\"top\")+b.y-l+\"px\";a.style.right=\"\";a.style.bottom=\"\";k=b.x;l=b.y}}function o(b,c,e){if(a.style.position==\"\")a.style.position=d.isIE6?\"absolute\":\"fixed\";a.style.visibility=\"visible\";a.style.height=Math.max(0,e)+\"px\";a.style.width= Math.max(0,c)+\"px\";m.centerDialog()}function p(b,c,e){if(c>0)g.style.width=c+\"px\";if(e>0)g.style.height=e+\"px\";m.centerDialog();a.wtResize&&a.wtResize(a,c,e)}function q(){h.layouts2.adjust()}jQuery.data(a,\"obj\",this);var m=this,g=$(a).find(\".dialog-layout\").get(0),d=h.WT,k,l;if(f){f.onmousedown=function(b){b=b||window.event;d.capture(f);b=d.pageCoordinates(b);k=b.x;l=b.y;f.onmousemove=n};f.onmouseup=function(){f.onmousemove=null;d.capture(null)}}this.centerDialog=function(){if(a.parentNode==null)a= f=null;else if(a.style.display!=\"none\"&&a.style.visibility!=\"hidden\"){var b=d.windowSize(),c=a.offsetWidth,e=a.offsetHeight;if(i){a.style.left=Math.round((b.x-c)/2+(d.isIE6?document.documentElement.scrollLeft:0))+\"px\";a.style.marginLeft=\"0px\"}if(j){a.style.top=Math.round((b.y-e)/2+(d.isIE6?document.documentElement.scrollTop:0))+\"px\";a.style.marginTop=\"0px\"}if(a.style.position!=\"\")a.style.visibility=\"visible\"}};this.onresize=function(b,c){i=j=false;p(a,b,c);jQuery.data(g.firstChild,\"layout\").setMaxSize(0, 0);h.layouts2.scheduleAdjust()};g.wtResize=o;a.wtPosition=q;if(a.style.width!=\"\")g.style.width=d.parsePx(a.style.width)>0?a.style.width:a.offsetWidth+\"px\";if(a.style.height!=\"\")g.style.height=d.parsePx(a.style.height)>0?a.style.height:a.offsetHeight+\"px\";m.centerDialog()}");
 	}
 }

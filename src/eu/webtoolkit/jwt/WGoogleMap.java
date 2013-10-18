@@ -867,14 +867,14 @@ public class WGoogleMap extends WCompositeWidget {
 				this
 						.setJavaScriptMember(
 								WT_RESIZE_JS,
-								"function(self, w, h) {self.style.width=w + 'px';self.style.height=h + 'px';if (self.map) self.map.checkResize();}");
+								"function(self, w, h) {if (w >= 0) self.style.width=w + 'px';if (h >= 0) self.style.height=h + 'px';if (self.map) self.map.checkResize();}");
 			} else {
 				strm
 						.append("var latlng = new google.maps.LatLng(47.01887777, 8.651888);var myOptions = {zoom: 13,center: latlng,mapTypeId: google.maps.MapTypeId.ROADMAP};var map = new google.maps.Map(self, myOptions);map.overlays = [];map.infowindows = [];");
 				this
 						.setJavaScriptMember(
 								WT_RESIZE_JS,
-								"function(self, w, h) {self.style.width=w + 'px';self.style.height=h + 'px';if (self.map) google.maps.event.trigger(self.map, 'resize');}");
+								"function(self, w, h) {if (w >= 0) self.style.width=w + 'px';if (h >= 0) self.style.height=h + 'px';if (self.map) google.maps.event.trigger(self.map, 'resize');}");
 			}
 			strm.append("self.map = map;");
 			this.streamJSListener(this.clicked_, "click", strm);
@@ -891,8 +891,8 @@ public class WGoogleMap extends WCompositeWidget {
 					.append(";}, 0)};")
 					.append("google.load(\"maps\", \"")
 					.append(
-							this.apiVersion_ == WGoogleMap.ApiVersion.Version2 ? "2"
-									: "3").append(
+							this.apiVersion_ == WGoogleMap.ApiVersion.Version2 ? '2'
+									: '3').append(
 							"\", {other_params:\"sensor=false\", callback: ")
 					.append(initFunction).append("});").append("}");
 			this.additions_.clear();
@@ -947,5 +947,5 @@ public class WGoogleMap extends WCompositeWidget {
 	}
 
 	private WGoogleMap.ApiVersion apiVersion_;
-	static final String localhost_key = "ABQIAAAAWqrN5o4-ISwj0Up_depYvhTwM0brOpm-All5BF6PoaKBxRWWERS-S9gPtCri-B6BZeXV8KpT4F80DQ";
+	private static final String localhost_key = "ABQIAAAAWqrN5o4-ISwj0Up_depYvhTwM0brOpm-All5BF6PoaKBxRWWERS-S9gPtCri-B6BZeXV8KpT4F80DQ";
 }

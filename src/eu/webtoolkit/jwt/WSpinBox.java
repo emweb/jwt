@@ -30,10 +30,6 @@ import org.slf4j.LoggerFactory;
  * <p>
  * WSpinBox is an {@link WWidget#setInline(boolean inlined) inline} widget.
  * <p>
- * <h3>CSS</h3>
- * <p>
- * See {@link WAbstractSpinBox}.
- * <p>
  * 
  * @see WDoubleSpinBox <p>
  *      <i><b>Note: </b>A spinbox configures a validator for validating the
@@ -56,7 +52,8 @@ public class WSpinBox extends WAbstractSpinBox {
 		this.min_ = 0;
 		this.max_ = 99;
 		this.step_ = 1;
-		this.valueChanged_ = new Signal1<Integer>();
+		this.valueChanged_ = new Signal1<Integer>(this);
+		this.setValidator(this.createValidator());
 		this.setValue(0);
 	}
 
@@ -78,7 +75,7 @@ public class WSpinBox extends WAbstractSpinBox {
 	public void setMinimum(int minimum) {
 		this.min_ = minimum;
 		this.changed_ = true;
-		this.repaint(EnumSet.of(RepaintFlag.RepaintInnerHtml));
+		this.repaint();
 	}
 
 	/**
@@ -99,7 +96,7 @@ public class WSpinBox extends WAbstractSpinBox {
 	public void setMaximum(int maximum) {
 		this.max_ = maximum;
 		this.changed_ = true;
-		this.repaint(EnumSet.of(RepaintFlag.RepaintInnerHtml));
+		this.repaint();
 	}
 
 	/**
@@ -123,7 +120,7 @@ public class WSpinBox extends WAbstractSpinBox {
 		this.min_ = minimum;
 		this.max_ = maximum;
 		this.changed_ = true;
-		this.repaint(EnumSet.of(RepaintFlag.RepaintInnerHtml));
+		this.repaint();
 	}
 
 	/**
@@ -134,7 +131,7 @@ public class WSpinBox extends WAbstractSpinBox {
 	public void setSingleStep(int step) {
 		this.step_ = step;
 		this.changed_ = true;
-		this.repaint(EnumSet.of(RepaintFlag.RepaintInnerHtml));
+		this.repaint();
 	}
 
 	/**
@@ -202,6 +199,7 @@ public class WSpinBox extends WAbstractSpinBox {
 				}
 			});
 		}
+		super.signalConnectionsChanged();
 	}
 
 	String getJsMinMaxStep() {
@@ -215,7 +213,8 @@ public class WSpinBox extends WAbstractSpinBox {
 
 	boolean parseNumberValue(String text) {
 		try {
-			this.value_ = Integer.parseInt(text);
+			this.value_ = LocaleUtils.toInt(LocaleUtils.getCurrentLocale(),
+					text);
 			return true;
 		} catch (NumberFormatException e) {
 			return false;
@@ -224,10 +223,12 @@ public class WSpinBox extends WAbstractSpinBox {
 
 	WString getTextFromValue() {
 		if (this.isNativeControl()) {
-			return new WString(String.valueOf(this.value_));
+			return new WString(LocaleUtils.toString(LocaleUtils
+					.getCurrentLocale(), this.value_));
 		} else {
 			String text = this.getPrefix().toString()
-					+ String.valueOf(this.value_) + this.getSuffix().toString();
+					+ LocaleUtils.toString(LocaleUtils.getCurrentLocale(),
+							this.value_) + this.getSuffix().toString();
 			return new WString(text);
 		}
 	}

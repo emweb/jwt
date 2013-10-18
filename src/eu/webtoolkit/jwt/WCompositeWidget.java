@@ -32,10 +32,6 @@ import org.slf4j.LoggerFactory;
  * <p>
  * Using this class you can completely hide the implementation of your composite
  * widget, and provide access to only the standard {@link WWidget} methods.
- * <p>
- * <h3>CSS</h3>
- * <p>
- * Styling through CSS is propagated to its implementation.
  */
 public class WCompositeWidget extends WWidget {
 	private static Logger logger = LoggerFactory
@@ -46,7 +42,7 @@ public class WCompositeWidget extends WWidget {
 	 * <p>
 	 * You need to set an implemetation using
 	 * {@link WCompositeWidget#setImplementation(WWidget widget)
-	 * setImplementation()}.
+	 * setImplementation()} directly after construction.
 	 */
 	public WCompositeWidget(WContainerWidget parent) {
 		super(parent);
@@ -68,6 +64,9 @@ public class WCompositeWidget extends WWidget {
 
 	/**
 	 * Creates a WCompositeWidget with given implementation.
+	 * <p>
+	 * 
+	 * @see WCompositeWidget#setImplementation(WWidget widget)
 	 */
 	public WCompositeWidget(WWidget implementation, WContainerWidget parent) {
 		super(parent);
@@ -83,6 +82,10 @@ public class WCompositeWidget extends WWidget {
 		if (this.impl_ != null)
 			this.impl_.remove();
 		super.remove();
+	}
+
+	public void setObjectName(String name) {
+		this.impl_.setObjectName(name);
 	}
 
 	public String getId() {
@@ -264,6 +267,10 @@ public class WCompositeWidget extends WWidget {
 		this.impl_.removeStyleClass(styleClass, force);
 	}
 
+	public boolean hasStyleClass(String styleClass) {
+		return this.impl_.hasStyleClass(styleClass);
+	}
+
 	public void setVerticalAlignment(AlignmentFlag alignment, WLength length) {
 		if (!EnumUtils.mask(AlignmentFlag.AlignHorizontalMask, alignment)
 				.isEmpty()) {
@@ -338,6 +345,10 @@ public class WCompositeWidget extends WWidget {
 		return this.impl_.getTabIndex();
 	}
 
+	public int getZIndex() {
+		return this.impl_.getZIndex();
+	}
+
 	public void setId(String id) {
 		this.impl_.setId(id);
 	}
@@ -347,6 +358,14 @@ public class WCompositeWidget extends WWidget {
 			return this;
 		} else {
 			return this.impl_.find(name);
+		}
+	}
+
+	public WWidget findById(String id) {
+		if (this.getId().equals(id)) {
+			return this;
+		} else {
+			return this.impl_.findById(id);
 		}
 	}
 
@@ -432,6 +451,15 @@ public class WCompositeWidget extends WWidget {
 	 */
 	protected WWidget getImplementation() {
 		return this.impl_;
+	}
+
+	protected WWidget getTakeImplementation() {
+		WWidget result = this.impl_;
+		if (result != null) {
+			this.removeChild(result);
+			this.impl_ = null;
+		}
+		return result;
 	}
 
 	void getSDomChanges(List<DomElement> result, WApplication app) {

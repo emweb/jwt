@@ -37,21 +37,6 @@ import org.slf4j.LoggerFactory;
  * <strong>Two panels: one collapsed and one expanded (polished theme)</strong>
  * </p>
  * </div>
- * <p>
- * <h3>CSS</h3>
- * <p>
- * A panel has the <code>Wt-panel</code> and <code>Wt-outset</code> style
- * classes. The look can be overridden using the following style class
- * selectors:
- * <p>
- * <div class="fragment">
- * 
- * <pre class="fragment">
- * .Wt-panel .titlebar : The title bar
- *  .Wt-panel .body     : The body (requires vertical padding 4px).
- * </pre>
- * 
- * </div>
  */
 public class WPanel extends WCompositeWidget {
 	private static Logger logger = LoggerFactory.getLogger(WPanel.class);
@@ -69,22 +54,21 @@ public class WPanel extends WCompositeWidget {
 		this.expanded_ = new Signal(this);
 		this.collapsedSS_ = new Signal1<Boolean>(this);
 		this.expandedSS_ = new Signal1<Boolean>(this);
-		String TEMPLATE = "${shadow-x1-x2}${titlebar}${contents}";
+		String TEMPLATE = "${titlebar}${contents}";
 		this
 				.setImplementation(this.impl_ = new WTemplate(new WString(
 						TEMPLATE)));
-		this.impl_.setStyleClass("Wt-panel Wt-outset");
 		// this.implementStateless(WPanel.doExpand,WPanel.undoExpand);
 		// this.implementStateless(WPanel.doCollapse,WPanel.undoCollapse);
+		WApplication app = WApplication.getInstance();
 		WContainerWidget centralArea = new WContainerWidget();
-		centralArea.setStyleClass("body");
-		this.impl_.bindString("shadow-x1-x2", WTemplate.DropShadow_x1_x2);
+		app.getTheme().apply(this, centralArea, WidgetThemeRole.PanelBodyRole);
 		this.impl_.bindWidget("titlebar", (WWidget) null);
 		this.impl_.bindWidget("contents", centralArea);
 		this
 				.setJavaScriptMember(
 						WT_RESIZE_JS,
-						"function(self, w, h) {if (Wt3_2_3.boxSizing(self)) {h -= Wt3_2_3.px(self, 'borderTopWidth') + Wt3_2_3.px(self, 'borderBottomWidth');}var c = self.lastChild;var t = c.previousSibling;if (t.className == 'titlebar')h -= t.offsetHeight;h -= 8;if (h > 0) {c.style.height = h + 'px';$(c).children().each(function() { var self = $(this), padding = self.outerHeight() - self.height();self.height(h - padding);});}};");
+						"function(self, w, h, l) {var defined = h >= 0;if (defined) {var mh = Wt3_3_1.px(self, 'maxHeight');if (mh > 0) h = Math.min(h, mh);}if (Wt3_3_1.boxSizing(self)) {h -= Wt3_3_1.px(self, 'borderTopWidth') + Wt3_3_1.px(self, 'borderBottomWidth');}var c = self.lastChild;var t = c.previousSibling;if (t && t.className == 'titlebar')h -= t.offsetHeight;h -= 8;if (defined && h > 0) {c.lh = l;c.style.height = h + 'px';$(c).children().each(function() { var self = $(this), padding = self.outerHeight() - self.height();self.height(h - padding);this.lh = l;});} else {c.lh = false;c.style.height = '';$(c).children().each(function() { this.style.height = '';this.lh = false;});}};");
 		this.setJavaScriptMember(WT_GETPS_JS, StdWidgetItemImpl
 				.getSecondGetPSJS());
 	}
@@ -115,8 +99,11 @@ public class WPanel extends WCompositeWidget {
 		this.setTitleBar(true);
 		if (!(this.title_ != null)) {
 			this.title_ = new WText();
+			WApplication app = WApplication.getInstance();
+			app.getTheme().apply(this, this.title_,
+					WidgetThemeRole.PanelTitleRole);
 			this.getTitleBarWidget().insertWidget(
-					this.getTitleBarWidget().getCount() - 1, this.title_);
+					this.getTitleBarWidget().getCount(), this.title_);
 		}
 		this.title_.setText(title);
 	}
@@ -151,10 +138,9 @@ public class WPanel extends WCompositeWidget {
 		if (enable && !(this.getTitleBarWidget() != null)) {
 			WContainerWidget titleBar = new WContainerWidget();
 			this.impl_.bindWidget("titlebar", titleBar);
-			titleBar.setStyleClass("titlebar");
-			WBreak br;
-			titleBar.addWidget(br = new WBreak());
-			br.setClearSides(Side.Horizontals);
+			WApplication app = WApplication.getInstance();
+			app.getTheme().apply(this, titleBar,
+					WidgetThemeRole.PanelTitleBarRole);
 		} else {
 			if (!enable && this.isTitleBar()) {
 				this.impl_.bindWidget("titlebar", (WWidget) null);
@@ -212,12 +198,14 @@ public class WPanel extends WCompositeWidget {
 	 */
 	public void setCollapsible(boolean on) {
 		if (on && !(this.collapseIcon_ != null)) {
-			String resources = WApplication.getResourcesUrl();
+			String resources = WApplication.getRelativeResourcesUrl();
 			this.setTitleBar(true);
 			this.collapseIcon_ = new WIconPair(resources + "collapse.gif",
 					resources + "expand.gif");
-			this.collapseIcon_.setInline(false);
 			this.collapseIcon_.setFloatSide(Side.Left);
+			WApplication app = WApplication.getInstance();
+			app.getTheme().apply(this, this.collapseIcon_,
+					WidgetThemeRole.PanelCollapseButtonRole);
 			this.getTitleBarWidget().insertWidget(0, this.collapseIcon_);
 			this.collapseIcon_.icon1Clicked().addListener(this,
 					new Signal1.Listener<WMouseEvent>() {
@@ -231,6 +219,7 @@ public class WPanel extends WCompositeWidget {
 							WPanel.this.onCollapse();
 						}
 					});
+			this.collapseIcon_.icon1Clicked().preventPropagation();
 			this.collapseIcon_.icon2Clicked().addListener(this,
 					new Signal1.Listener<WMouseEvent>() {
 						public void trigger(WMouseEvent e1) {
@@ -243,7 +232,14 @@ public class WPanel extends WCompositeWidget {
 							WPanel.this.onExpand();
 						}
 					});
-			this.collapseIcon_.setState(0);
+			this.collapseIcon_.icon2Clicked().preventPropagation();
+			this.collapseIcon_.setState(this.isCollapsed() ? 1 : 0);
+			this.getTitleBarWidget().clicked().addListener(this,
+					new Signal1.Listener<WMouseEvent>() {
+						public void trigger(WMouseEvent e1) {
+							WPanel.this.toggleCollapse();
+						}
+					});
 		} else {
 			if (!on && this.collapseIcon_ != null) {
 				if (this.collapseIcon_ != null)
@@ -292,7 +288,7 @@ public class WPanel extends WCompositeWidget {
 	 * @see WPanel#expanded()
 	 */
 	public boolean isCollapsed() {
-		return this.isCollapsible() && this.collapseIcon_.getState() == 1;
+		return this.getCentralArea().isHidden();
 	}
 
 	/**
@@ -423,6 +419,10 @@ public class WPanel extends WCompositeWidget {
 	private boolean wasCollapsed_;
 
 	// private void setJsSize() ;
+	private void toggleCollapse() {
+		this.setCollapsed(!this.isCollapsed());
+	}
+
 	private void doExpand() {
 		this.wasCollapsed_ = this.isCollapsed();
 		this.getCentralArea().animateShow(this.animation_);

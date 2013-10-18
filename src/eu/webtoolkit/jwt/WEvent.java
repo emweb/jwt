@@ -52,8 +52,8 @@ public class WEvent {
 	static class Impl {
 		private static Logger logger = LoggerFactory.getLogger(Impl.class);
 
-		WebSession.Handler handler;
-		boolean renderOnly;
+		public WebSession.Handler handler;
+		public boolean renderOnly;
 
 		Impl(WebSession.Handler aHandler, boolean doRenderOnly) {
 			this.handler = aHandler;
@@ -67,6 +67,10 @@ public class WEvent {
 		Impl() {
 			this.handler = null;
 		}
+	}
+
+	static String concat(String prefix, int prefixLength, String s2) {
+		return prefix + s2;
 	}
 
 	static int asInt(String v) {

@@ -163,12 +163,18 @@ public class WMouseEvent implements WAbstractEvent {
 		return new WMouseEvent(jsEvent);
 	}
 
+	static WMouseEvent templateEvent = new WMouseEvent();
+
 	WMouseEvent(JavaScriptEvent jsEvent) {
 		super();
 		this.jsEvent_ = jsEvent;
 	}
 
 	JavaScriptEvent jsEvent_;
+
+	static String concat(String prefix, int prefixLength, String s2) {
+		return prefix + s2;
+	}
 
 	static int asInt(String v) {
 		return Integer.parseInt(v);
@@ -230,6 +236,4 @@ public class WMouseEvent implements WAbstractEvent {
 			return;
 		}
 	}
-
-	static WMouseEvent templateEvent = new WMouseEvent();
 }

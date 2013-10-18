@@ -575,7 +575,7 @@ public class WBatchEditProxyModel extends WAbstractProxyModel {
 		WBatchEditProxyModel.Item item = this.itemFromIndex(parent);
 		this.removeIndexes(item, item.insertedRows_, item.removedRows_,
 				item.insertedItems_, row, count);
-		this.shiftRows(item.editedValues_, row, count);
+		this.shiftRows(item.editedValues_, row, -count);
 		this.endRemoveRows();
 		return true;
 	}

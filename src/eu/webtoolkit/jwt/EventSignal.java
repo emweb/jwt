@@ -14,7 +14,7 @@ public class EventSignal extends AbstractEventSignal {
 	private Signal dynamic_;
 
 	EventSignal(String name, WObject sender) {
-		super(name, sender);
+		super(name, sender, true);
 
 		dynamic_ = null;
 	}

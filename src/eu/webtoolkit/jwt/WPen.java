@@ -51,6 +51,7 @@ public class WPen {
 		this.penJoinStyle_ = PenJoinStyle.BevelJoin;
 		this.width_ = new WLength(0);
 		this.color_ = WColor.black;
+		this.gradient_ = new WGradient();
 	}
 
 	/**
@@ -68,6 +69,7 @@ public class WPen {
 		this.penJoinStyle_ = PenJoinStyle.BevelJoin;
 		this.width_ = new WLength(0);
 		this.color_ = WColor.black;
+		this.gradient_ = new WGradient();
 	}
 
 	/**
@@ -85,6 +87,25 @@ public class WPen {
 		this.penJoinStyle_ = PenJoinStyle.BevelJoin;
 		this.width_ = new WLength(0);
 		this.color_ = color;
+		this.gradient_ = new WGradient();
+	}
+
+	/**
+	 * Creates a solid pen with a gradient color.
+	 * <p>
+	 * Constructs a solid pen of 0 width (i.e. cosmetic single pixel width),
+	 * with {@link PenCapStyle#SquareCap SquareCap} line ends and
+	 * {@link PenJoinStyle#BevelJoin BevelJoin} line join style.
+	 * <p>
+	 * The pen&apos;s color is defined by the gradient <code>color</code>.
+	 */
+	public WPen(WGradient gradient) {
+		this.penStyle_ = PenStyle.SolidLine;
+		this.penCapStyle_ = PenCapStyle.SquareCap;
+		this.penJoinStyle_ = PenJoinStyle.BevelJoin;
+		this.width_ = new WLength(0);
+		this.color_ = WColor.black;
+		this.gradient_ = gradient;
 	}
 
 	/**
@@ -112,14 +133,14 @@ public class WPen {
 				&& this.penCapStyle_ == other.penCapStyle_
 				&& this.penJoinStyle_ == other.penJoinStyle_
 				&& this.width_.equals(other.width_)
-				&& this.color_.equals(other.color_);
+				&& this.color_.equals(other.color_)
+				&& this.gradient_.equals(other.gradient_);
 	}
 
 	/**
 	 * Sets the pen style.
 	 * <p>
-	 * 
-	 * @see WPen#getStyle()
+	 * The pen style determines the pattern with which the pen is rendered.
 	 */
 	public void setStyle(PenStyle style) {
 		this.penStyle_ = style;
@@ -138,8 +159,7 @@ public class WPen {
 	/**
 	 * Sets the style for rendering line ends.
 	 * <p>
-	 * 
-	 * @see WPen#getCapStyle()
+	 * The cap style configures how line ends are rendered.
 	 */
 	public void setCapStyle(PenCapStyle style) {
 		this.penCapStyle_ = style;
@@ -158,8 +178,8 @@ public class WPen {
 	/**
 	 * Sets the style for rendering line joins.
 	 * <p>
-	 * 
-	 * @see WPen#getJoinStyle()
+	 * The join style configures how corners are rendered between different
+	 * segments of a poly-line, rectange or painter path.
 	 */
 	public void setJoinStyle(PenJoinStyle style) {
 		this.penJoinStyle_ = style;
@@ -180,9 +200,6 @@ public class WPen {
 	 * <p>
 	 * A pen width <code>must</code> be specified using
 	 * {@link WLength.Unit#Pixel} units.
-	 * <p>
-	 * 
-	 * @see WPen#getWidth()
 	 */
 	public void setWidth(WLength width) {
 		this.width_ = width;
@@ -201,21 +218,41 @@ public class WPen {
 	/**
 	 * Sets the pen color.
 	 * <p>
-	 * 
-	 * @see WPen#getColor()
+	 * <i>{@link WPen#setGradient(WGradient gradient) setGradient()}</i>
 	 */
 	public void setColor(WColor color) {
 		this.color_ = color;
+		this.gradient_ = new WGradient();
 	}
 
 	/**
 	 * Returns the pen color.
 	 * <p>
 	 * 
-	 * @see WPen#getColor()
+	 * @see WPen#setColor(WColor color)
 	 */
 	public WColor getColor() {
 		return this.color_;
+	}
+
+	/**
+	 * Sets the pen color as a gradient.
+	 * <p>
+	 * 
+	 * @see WPen#setColor(WColor color)
+	 */
+	public void setGradient(WGradient gradient) {
+		this.gradient_ = gradient;
+	}
+
+	/**
+	 * Returns the pen color gradient.
+	 * <p>
+	 * 
+	 * @see WPen#setGradient(WGradient gradient)
+	 */
+	public WGradient getGradient() {
+		return this.gradient_;
 	}
 
 	private PenStyle penStyle_;
@@ -223,4 +260,5 @@ public class WPen {
 	private PenJoinStyle penJoinStyle_;
 	private WLength width_;
 	private WColor color_;
+	private WGradient gradient_;
 }

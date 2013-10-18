@@ -54,6 +54,11 @@ public class WVirtualImage extends WCompositeWidget {
 	private static Logger logger = LoggerFactory.getLogger(WVirtualImage.class);
 
 	/**
+	 * Special value for imageWidth or imageHeight.
+	 */
+	public static final long Infinite = Long.MAX_VALUE;
+
+	/**
 	 * Creates a viewport for a virtual image.
 	 * <p>
 	 * You must specify the size of the viewport, and the size of the virtual
@@ -161,11 +166,11 @@ public class WVirtualImage extends WCompositeWidget {
 		this.impl_
 				.mouseWentDown()
 				.addListener(
-						"function(obj, event) {  var pc = Wt3_2_3.pageCoordinates(event);  obj.setAttribute('dsx', pc.x);  obj.setAttribute('dsy', pc.y);}");
+						"function(obj, event) {  var pc = Wt3_3_1.pageCoordinates(event);  obj.setAttribute('dsx', pc.x);  obj.setAttribute('dsy', pc.y);}");
 		this.impl_
 				.mouseMoved()
 				.addListener(
-						"function(obj, event) {var WT= Wt3_2_3;var lastx = obj.getAttribute('dsx');var lasty = obj.getAttribute('dsy');if (lastx != null && lastx != '') {var nowxy = WT.pageCoordinates(event);var img = "
+						"function(obj, event) {var WT= Wt3_3_1;var lastx = obj.getAttribute('dsx');var lasty = obj.getAttribute('dsy');if (lastx != null && lastx != '') {var nowxy = WT.pageCoordinates(event);var img = "
 								+ this.contents_.getJsRef()
 								+ ";img.style.left = (WT.pxself(img, 'left')+nowxy.x-lastx) + 'px';img.style.top = (WT.pxself(img, 'top')+nowxy.y-lasty) + 'px';obj.setAttribute('dsx', nowxy.x);obj.setAttribute('dsy', nowxy.y);}}");
 		this.impl_.mouseWentUp().addListener(
@@ -536,9 +541,4 @@ public class WVirtualImage extends WCompositeWidget {
 		this.generateGridItems(newX, newY);
 		this.viewPortChanged_.trigger(this.currentX_, this.currentY_);
 	}
-
-	/**
-	 * Special value for imageWidth or imageHeight.
-	 */
-	public static final long Infinite = Long.MAX_VALUE;
 }

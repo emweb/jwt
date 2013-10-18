@@ -31,10 +31,6 @@ import org.slf4j.LoggerFactory;
  * WDoubleSpinBox is an {@link WWidget#setInline(boolean inlined) inline}
  * widget.
  * <p>
- * <h3>CSS</h3>
- * <p>
- * See {@link WAbstractSpinBox}.
- * <p>
  * 
  * @see WSpinBox <p>
  *      <i><b>Note: </b>A spinbox configures a validator for validating the
@@ -60,7 +56,8 @@ public class WDoubleSpinBox extends WAbstractSpinBox {
 		this.max_ = 99.99;
 		this.step_ = 1.0;
 		this.precision_ = 2;
-		this.valueChanged_ = new Signal1<Double>();
+		this.valueChanged_ = new Signal1<Double>(this);
+		this.setValidator(this.createValidator());
 		this.setValue(0.0);
 	}
 
@@ -82,7 +79,7 @@ public class WDoubleSpinBox extends WAbstractSpinBox {
 	public void setMinimum(double minimum) {
 		this.min_ = minimum;
 		this.changed_ = true;
-		this.repaint(EnumSet.of(RepaintFlag.RepaintInnerHtml));
+		this.repaint();
 	}
 
 	/**
@@ -103,7 +100,7 @@ public class WDoubleSpinBox extends WAbstractSpinBox {
 	public void setMaximum(double maximum) {
 		this.max_ = maximum;
 		this.changed_ = true;
-		this.repaint(EnumSet.of(RepaintFlag.RepaintInnerHtml));
+		this.repaint();
 	}
 
 	/**
@@ -127,7 +124,7 @@ public class WDoubleSpinBox extends WAbstractSpinBox {
 		this.min_ = minimum;
 		this.max_ = maximum;
 		this.changed_ = true;
-		this.repaint(EnumSet.of(RepaintFlag.RepaintInnerHtml));
+		this.repaint();
 	}
 
 	/**
@@ -138,7 +135,7 @@ public class WDoubleSpinBox extends WAbstractSpinBox {
 	public void setSingleStep(double step) {
 		this.step_ = step;
 		this.changed_ = true;
-		this.repaint(EnumSet.of(RepaintFlag.RepaintInnerHtml));
+		this.repaint();
 	}
 
 	/**
@@ -232,6 +229,7 @@ public class WDoubleSpinBox extends WAbstractSpinBox {
 				}
 			});
 		}
+		super.signalConnectionsChanged();
 	}
 
 	String getJsMinMaxStep() {
@@ -242,9 +240,10 @@ public class WDoubleSpinBox extends WAbstractSpinBox {
 	boolean parseNumberValue(String text) {
 		try {
 			char[] buf = new char[30];
-			String currentV = MathUtils.round(this.value_, this.precision_);
+			String currentV = MathUtils.roundCss(this.value_, this.precision_);
 			if (!currentV.equals(text)) {
-				this.value_ = Double.parseDouble(text);
+				this.value_ = LocaleUtils.toDouble(LocaleUtils
+						.getCurrentLocale(), text);
 			}
 			return true;
 		} catch (NumberFormatException e) {
@@ -254,7 +253,7 @@ public class WDoubleSpinBox extends WAbstractSpinBox {
 
 	WString getTextFromValue() {
 		char[] buf = new char[30];
-		String result = MathUtils.round(this.value_, this.precision_);
+		String result = MathUtils.roundJs(this.value_, this.precision_);
 		if (!this.isNativeControl()) {
 			result = this.getPrefix().toString() + result
 					+ this.getSuffix().toString();

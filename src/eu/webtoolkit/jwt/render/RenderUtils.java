@@ -9,8 +9,7 @@ import net.n3.nanoxml.StdXMLReader;
 import net.n3.nanoxml.XMLElement;
 import net.n3.nanoxml.XMLException;
 import net.n3.nanoxml.XMLParserFactory;
-import net.n3.nanoxml.XMLUtil;
-import eu.webtoolkit.jwt.WWebWidget;
+import eu.webtoolkit.jwt.XHtmlFilter;
 
 public class RenderUtils {
 	static boolean isXmlElement(XMLElement node) {
@@ -29,7 +28,7 @@ public class RenderUtils {
 		StringBuilder s = new StringBuilder(v.length());
 	      
 		for (int i = 0; i < v.length(); ++i) {
-		  if (block.isWhitespace(v.charAt(i))) {
+		  if (Block.isWhitespace(v.charAt(i))) {
 		    if (!haveWhitespace)
 		    	s.append(' ');
 		    haveWhitespace = true;
@@ -37,7 +36,6 @@ public class RenderUtils {
 		    s.append(v.charAt(i));
 		    haveWhitespace = false;
 		  }
-		 //TODO handle nsbp element see cpp
 		}
 		
 		node.setContent(s.toString());
@@ -46,7 +44,17 @@ public class RenderUtils {
 	}
 
 	static String nodeValueToString(XMLElement node) {
-		return node.getContent();
+		String result = node.getContent();
+
+		if (result == null) {
+			result = "";
+			for (Object o : node.getChildren()) {
+				XMLElement e = (XMLElement) o;
+				result += e.getContent();
+			}
+		}
+		
+		return result;
 	}
 
 	private static void extractTextNodes(XMLElement e) {
@@ -65,40 +73,28 @@ public class RenderUtils {
 		}
 	}
 	
-	private static void printXmlTree(XMLElement e, int level) {
-		for (Object o : e.getChildren()) {
-			XMLElement c = ((XMLElement)o);
-			for (int i = 0; i < level; ++i)
-				System.err.print("\t");
-			System.err.print(c.getName() + " : " + c.getContent());
-			System.err.print("\n");
-			
-			if (c.getChildren().size() > 0)
-				printXmlTree(c, level + 1);
-		}
-	}
-	
-	static String converXHTMLEntitiesToUnicode(String xhtml) throws ClassNotFoundException, InstantiationException, IllegalAccessException, XMLException
-	{
-		XHtmlEntitiesToUnicodeFilter filter = new XHtmlEntitiesToUnicodeFilter();
-		IXMLParser parser = XMLParserFactory.createDefaultXMLParser();
-		parser.setBuilder(filter);
-		parser.setResolver(filter);
-		IXMLReader reader = StdXMLReader.stringReader(xhtml);
-		parser.setReader(reader);
-		parser.parse();
+//	private static void printXmlTree(XMLElement e, int level) {
+//		for (Object o : e.getChildren()) {
+//			XMLElement c = ((XMLElement)o);
+//			for (int i = 0; i < level; ++i)
+//				System.err.print("\t");
+//			System.err.print(c.getName() + " : " + c.getContent());
+//			System.err.print("\n");
+//			
+//			if (c.getChildren().size() > 0)
+//				printXmlTree(c, level + 1);
+//		}
+//	}
 
-		return filter.result();			
-	}
-	
 	static XMLElement parseXHTML(String xhtml) {
 		IXMLParser parser;
 		try {
-			xhtml = converXHTMLEntitiesToUnicode("<div>" + xhtml + "</div>");
+			xhtml = "<div>" + xhtml + "</div>";
 			
 			parser = XMLParserFactory.createDefaultXMLParser();
 			IXMLReader reader = StdXMLReader.stringReader(xhtml); 
 			parser.setReader(reader);
+			parser.setResolver(new XHtmlFilter(true));
 			XMLElement xml = (XMLElement) parser.parse();
 			extractTextNodes(xml);
 						

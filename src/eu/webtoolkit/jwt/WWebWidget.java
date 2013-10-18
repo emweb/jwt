@@ -94,7 +94,7 @@ public abstract class WWebWidget extends WWidget {
 			this.flags_.clear(BIT_INLINE);
 		}
 		this.flags_.set(BIT_GEOMETRY_CHANGED);
-		this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyAttribute));
+		this.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
 	}
 
 	public PositionScheme getPositionScheme() {
@@ -119,7 +119,7 @@ public abstract class WWebWidget extends WWidget {
 			this.layoutImpl_.offsets_[3] = offset;
 		}
 		this.flags_.set(BIT_GEOMETRY_CHANGED);
-		this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyAttribute));
+		this.repaint();
 	}
 
 	public WLength getOffset(Side s) {
@@ -144,10 +144,12 @@ public abstract class WWebWidget extends WWidget {
 	}
 
 	public void resize(WLength width, WLength height) {
+		boolean changed = false;
 		if (!(this.width_ != null) && !width.isAuto()) {
 			this.width_ = new WLength();
 		}
 		if (this.width_ != null && !this.width_.equals(width)) {
+			changed = true;
 			this.width_ = nonNegative(width);
 			this.flags_.set(BIT_WIDTH_CHANGED);
 		}
@@ -155,11 +157,14 @@ public abstract class WWebWidget extends WWidget {
 			this.height_ = new WLength();
 		}
 		if (this.height_ != null && !this.height_.equals(height)) {
+			changed = true;
 			this.height_ = nonNegative(height);
 			this.flags_.set(BIT_HEIGHT_CHANGED);
 		}
-		this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyAttribute));
-		super.resize(width, height);
+		if (changed) {
+			this.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
+			super.resize(width, height);
+		}
 	}
 
 	public WLength getWidth() {
@@ -177,7 +182,7 @@ public abstract class WWebWidget extends WWidget {
 		this.layoutImpl_.minimumWidth_ = nonNegative(width);
 		this.layoutImpl_.minimumHeight_ = nonNegative(height);
 		this.flags_.set(BIT_GEOMETRY_CHANGED);
-		this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyAttribute));
+		this.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
 	}
 
 	public WLength getMinimumWidth() {
@@ -197,7 +202,7 @@ public abstract class WWebWidget extends WWidget {
 		this.layoutImpl_.maximumWidth_ = nonNegative(width);
 		this.layoutImpl_.maximumHeight_ = nonNegative(height);
 		this.flags_.set(BIT_GEOMETRY_CHANGED);
-		this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyAttribute));
+		this.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
 	}
 
 	public WLength getMaximumWidth() {
@@ -216,7 +221,7 @@ public abstract class WWebWidget extends WWidget {
 		}
 		this.layoutImpl_.lineHeight_ = height;
 		this.flags_.set(BIT_GEOMETRY_CHANGED);
-		this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyAttribute));
+		this.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
 	}
 
 	public WLength getLineHeight() {
@@ -230,7 +235,7 @@ public abstract class WWebWidget extends WWidget {
 		}
 		this.layoutImpl_.floatSide_ = s;
 		this.flags_.set(BIT_FLOAT_SIDE_CHANGED);
-		this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyAttribute));
+		this.repaint();
 	}
 
 	public Side getFloatSide() {
@@ -247,7 +252,7 @@ public abstract class WWebWidget extends WWidget {
 		}
 		this.layoutImpl_.clearSides_ = EnumSet.copyOf(sides);
 		this.flags_.set(BIT_GEOMETRY_CHANGED);
-		this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyAttribute));
+		this.repaint();
 	}
 
 	public EnumSet<Side> getClearSides() {
@@ -275,7 +280,7 @@ public abstract class WWebWidget extends WWidget {
 			this.layoutImpl_.margin_[3] = margin;
 		}
 		this.flags_.set(BIT_MARGINS_CHANGED);
-		this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyAttribute));
+		this.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
 	}
 
 	public WLength getMargin(Side side) {
@@ -328,7 +333,7 @@ public abstract class WWebWidget extends WWidget {
 		}
 		WApplication.getInstance().getSession().getRenderer()
 				.updateFormObjects(this, true);
-		this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyAttribute));
+		this.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
 	}
 
 	public boolean isHidden() {
@@ -356,7 +361,7 @@ public abstract class WWebWidget extends WWidget {
 		this.propagateSetEnabled(!disabled);
 		WApplication.getInstance().getSession().getRenderer()
 				.updateFormObjects(this, true);
-		this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyAttribute));
+		this.repaint();
 	}
 
 	public boolean isDisabled() {
@@ -384,7 +389,7 @@ public abstract class WWebWidget extends WWidget {
 			this.calcZIndex();
 		}
 		this.flags_.set(BIT_GEOMETRY_CHANGED);
-		this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyAttribute));
+		this.repaint();
 	}
 
 	public boolean isPopup() {
@@ -395,7 +400,7 @@ public abstract class WWebWidget extends WWidget {
 		this.flags_.set(BIT_INLINE, inl);
 		// this.resetLearnedSlot(WWidget.show);
 		this.flags_.set(BIT_GEOMETRY_CHANGED);
-		this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyAttribute));
+		this.repaint();
 	}
 
 	public boolean isInline() {
@@ -429,7 +434,7 @@ public abstract class WWebWidget extends WWidget {
 		}
 		this.lookImpl_.styleClass_ = styleClass;
 		this.flags_.set(BIT_STYLECLASS_CHANGED);
-		this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyAttribute));
+		this.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
 	}
 
 	public String getStyleClass() {
@@ -448,16 +453,17 @@ public abstract class WWebWidget extends WWidget {
 					this.lookImpl_.styleClass_, styleClass);
 			if (!force) {
 				this.flags_.set(BIT_STYLECLASS_CHANGED);
-				this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyAttribute));
+				this.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
 			}
 		}
 		if (force && this.isRendered()) {
 			if (!(this.transientImpl_ != null)) {
 				this.transientImpl_ = new WWebWidget.TransientImpl();
 			}
-			this.transientImpl_.addedStyleClasses_.add(styleClass);
+			CollectionUtils.add(this.transientImpl_.addedStyleClasses_,
+					styleClass);
 			this.transientImpl_.removedStyleClasses_.remove(styleClass);
-			this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyAttribute));
+			this.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
 		}
 	}
 
@@ -465,25 +471,33 @@ public abstract class WWebWidget extends WWidget {
 		if (!(this.lookImpl_ != null)) {
 			this.lookImpl_ = new WWebWidget.LookImpl();
 		}
-		String currentClass = this.lookImpl_.styleClass_;
-		Set<String> classes = new HashSet<String>();
-		StringUtils.split(classes, currentClass, " ", true);
-		if (classes.contains(styleClass) != false) {
+		if (this.hasStyleClass(styleClass)) {
 			this.lookImpl_.styleClass_ = StringUtils.eraseWord(
 					this.lookImpl_.styleClass_, styleClass);
 			if (!force) {
 				this.flags_.set(BIT_STYLECLASS_CHANGED);
-				this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyAttribute));
+				this.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
 			}
 		}
 		if (force && this.isRendered()) {
 			if (!(this.transientImpl_ != null)) {
 				this.transientImpl_ = new WWebWidget.TransientImpl();
 			}
-			this.transientImpl_.removedStyleClasses_.add(styleClass);
+			CollectionUtils.add(this.transientImpl_.removedStyleClasses_,
+					styleClass);
 			this.transientImpl_.addedStyleClasses_.remove(styleClass);
-			this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyAttribute));
+			this.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
 		}
+	}
+
+	public boolean hasStyleClass(String styleClass) {
+		if (!(this.lookImpl_ != null)) {
+			return false;
+		}
+		String currentClass = this.lookImpl_.styleClass_;
+		Set<String> classes = new HashSet<String>();
+		StringUtils.split(classes, currentClass, " ", true);
+		return classes.contains(styleClass) != false;
 	}
 
 	public void setVerticalAlignment(AlignmentFlag alignment, WLength length) {
@@ -500,7 +514,7 @@ public abstract class WWebWidget extends WWidget {
 		this.layoutImpl_.verticalAlignment_ = alignment;
 		this.layoutImpl_.verticalAlignmentLength_ = length;
 		this.flags_.set(BIT_GEOMETRY_CHANGED);
-		this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyAttribute));
+		this.repaint();
 	}
 
 	public AlignmentFlag getVerticalAlignment() {
@@ -526,20 +540,19 @@ public abstract class WWebWidget extends WWidget {
 		this.lookImpl_.toolTip_ = WString.toWString(text);
 		this.lookImpl_.toolTipTextFormat_ = textFormat;
 		this.flags_.set(BIT_TOOLTIP_CHANGED);
-		this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyAttribute));
+		this.repaint();
 	}
 
 	public WString getToolTip() {
-		return this.lookImpl_ != null ? this.lookImpl_.toolTip_ != null ? this.lookImpl_.toolTip_
-				: new WString()
-				: new WString();
+		return this.lookImpl_ != null && this.lookImpl_.toolTip_ != null ? this.lookImpl_.toolTip_
+				: WString.Empty;
 	}
 
 	public void refresh() {
 		if (this.lookImpl_ != null && this.lookImpl_.toolTip_ != null) {
 			if (this.lookImpl_.toolTip_.refresh()) {
 				this.flags_.set(BIT_TOOLTIP_CHANGED);
-				this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyAttribute));
+				this.repaint();
 			}
 		}
 		if (this.children_ != null) {
@@ -566,7 +579,7 @@ public abstract class WWebWidget extends WWidget {
 			this.transientImpl_ = new WWebWidget.TransientImpl();
 		}
 		this.transientImpl_.attributesSet_.add(name);
-		this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyAttribute));
+		this.repaint();
 	}
 
 	public String getAttributeValue(String name) {
@@ -609,7 +622,7 @@ public abstract class WWebWidget extends WWidget {
 		}
 		this.addJavaScriptStatement(
 				WWebWidget.JavaScriptStatementType.SetMember, name);
-		this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyAttribute));
+		this.repaint();
 	}
 
 	public String getJavaScriptMember(String name) {
@@ -625,7 +638,7 @@ public abstract class WWebWidget extends WWidget {
 		this.addJavaScriptStatement(
 				WWebWidget.JavaScriptStatementType.CallMethod, name + "("
 						+ args + ");");
-		this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyAttribute));
+		this.repaint();
 	}
 
 	public void load() {
@@ -664,6 +677,14 @@ public abstract class WWebWidget extends WWidget {
 		}
 	}
 
+	public int getZIndex() {
+		if (this.layoutImpl_ != null) {
+			return this.layoutImpl_.zIndex_;
+		} else {
+			return 0;
+		}
+	}
+
 	public void setId(String id) {
 		if (!(this.otherImpl_ != null)) {
 			this.otherImpl_ = new WWebWidget.OtherImpl(this);
@@ -690,17 +711,33 @@ public abstract class WWebWidget extends WWidget {
 		return null;
 	}
 
+	public WWidget findById(String id) {
+		if (this.getId().equals(id)) {
+			return this;
+		} else {
+			if (this.children_ != null) {
+				for (int i = 0; i < this.children_.size(); ++i) {
+					WWidget result = this.children_.get(i).findById(id);
+					if (result != null) {
+						return result;
+					}
+				}
+			}
+		}
+		return null;
+	}
+
 	public void setSelectable(boolean selectable) {
 		this.flags_.set(BIT_SET_SELECTABLE, selectable);
 		this.flags_.set(BIT_SET_UNSELECTABLE, !selectable);
 		this.flags_.set(BIT_SELECTABLE_CHANGED);
-		this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyAttribute));
+		this.repaint();
 	}
 
 	public void doJavaScript(String javascript) {
 		this.addJavaScriptStatement(
 				WWebWidget.JavaScriptStatementType.Statement, javascript);
-		this.repaint(RepaintFlag.RepaintAll);
+		this.repaint();
 	}
 
 	public String getId() {
@@ -749,9 +786,19 @@ public abstract class WWebWidget extends WWidget {
 		return stub;
 	}
 
-	DomElement createActualElement(WApplication app) {
+	public DomElement createActualElement(WWidget self, WApplication app) {
 		this.flags_.clear(BIT_STUBBED);
-		return this.createDomElement(app);
+		DomElement result = this.createDomElement(app);
+		app.getTheme().apply(self, result,
+				ElementThemeRole.MainElementThemeRole);
+		String styleClass = result.getProperty(Property.PropertyClass);
+		if (styleClass.length() != 0) {
+			if (!(this.lookImpl_ != null)) {
+				this.lookImpl_ = new WWebWidget.LookImpl();
+			}
+			this.lookImpl_.styleClass_ = styleClass;
+		}
+		return result;
 	}
 
 	/**
@@ -862,7 +909,7 @@ public abstract class WWebWidget extends WWidget {
 	 * The <code>delimiter</code> may be a single or double quote.
 	 */
 	public static String jsStringLiteral(String value, char delimiter) {
-		StringWriter result = new StringWriter();
+		StringBuilder result = new StringBuilder();
 		DomElement.jsStringLiteral(result, value, delimiter);
 		return result.toString();
 	}
@@ -923,21 +970,13 @@ public abstract class WWebWidget extends WWidget {
 				.isPreLearning();
 	}
 
-	int getZIndex() {
-		if (this.layoutImpl_ != null) {
-			return this.layoutImpl_.zIndex_;
-		} else {
-			return 0;
-		}
-	}
-
 	void setZIndex(int zIndex) {
 		if (!(this.layoutImpl_ != null)) {
 			this.layoutImpl_ = new WWebWidget.LayoutImpl();
 		}
 		this.layoutImpl_.zIndex_ = zIndex;
 		this.flags_.set(BIT_GEOMETRY_CHANGED);
-		this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyAttribute));
+		this.repaint();
 	}
 
 	public boolean isRendered() {
@@ -955,18 +994,7 @@ public abstract class WWebWidget extends WWidget {
 		if (!this.flags_.get(BIT_RENDERED)) {
 			return;
 		}
-		super.askRerender();
-		if (!EnumUtils.mask(flags, RepaintFlag.RepaintPropertyIEMobile)
-				.isEmpty()) {
-			this.flags_.set(BIT_REPAINT_PROPERTY_IEMOBILE);
-		}
-		if (!EnumUtils.mask(flags, RepaintFlag.RepaintPropertyAttribute)
-				.isEmpty()) {
-			this.flags_.set(BIT_REPAINT_PROPERTY_ATTRIBUTE);
-		}
-		if (!EnumUtils.mask(flags, RepaintFlag.RepaintInnerHtml).isEmpty()) {
-			this.flags_.set(BIT_REPAINT_INNER_HTML);
-		}
+		super.scheduleRerender(false, flags);
 		if (!EnumUtils.mask(flags, RepaintFlag.RepaintToAjax).isEmpty()) {
 			this.flags_.set(BIT_REPAINT_TO_AJAX);
 		}
@@ -977,7 +1005,7 @@ public abstract class WWebWidget extends WWidget {
 	}
 
 	final void repaint() {
-		repaint(RepaintFlag.RepaintAll);
+		repaint(EnumSet.noneOf(RepaintFlag.class));
 	}
 
 	void getFormObjects(Map<String, WObject> formObjects) {
@@ -1002,11 +1030,6 @@ public abstract class WWebWidget extends WWidget {
 
 	void updateDom(DomElement element, boolean all) {
 		WApplication app = null;
-		if (!all && this.flags_.get(BIT_HIDDEN_CHANGED)
-				&& !this.flags_.get(BIT_HIDDEN)
-				&& !this.flags_.get(BIT_HIDE_WITH_OFFSETS)) {
-			element.callJavaScript("window.onresize();");
-		}
 		if (this.flags_.get(BIT_GEOMETRY_CHANGED)
 				|| !this.flags_.get(BIT_HIDE_WITH_VISIBILITY)
 				&& this.flags_.get(BIT_HIDDEN_CHANGED) || all) {
@@ -1115,7 +1138,7 @@ public abstract class WWebWidget extends WWidget {
 						app
 								.addAutoJavaScript("{var w = "
 										+ this.getJsRef()
-										+ ";if (w && !Wt3_2_3.isHidden(w)) {var i = Wt3_2_3.getElement('"
+										+ ";if (w && !Wt3_3_1.isHidden(w)) {var i = Wt3_3_1.getElement('"
 										+ i.getId()
 										+ "');i.style.width=w.clientWidth + 'px';i.style.height=w.clientHeight + 'px';}}");
 						element.addChild(i);
@@ -1298,7 +1321,7 @@ public abstract class WWebWidget extends WWidget {
 					if (this.lookImpl_.toolTipTextFormat_ != TextFormat.PlainText
 							&& app.getEnvironment().hasAjax()) {
 						app.loadJavaScript("js/ToolTip.js", wtjs10());
-						element.callJavaScript("Wt3_2_3.toolTip(Wt3_2_3,"
+						element.callJavaScript("Wt3_3_1.toolTip(Wt3_3_1,"
 								+ jsStringLiteral(this.getId())
 								+ ","
 								+ WString.toWString(this.lookImpl_.toolTip_)
@@ -1323,7 +1346,7 @@ public abstract class WWebWidget extends WWidget {
 			}
 			this.flags_.clear(BIT_STYLECLASS_CHANGED);
 		}
-		if (this.transientImpl_ != null) {
+		if (!all && this.transientImpl_ != null) {
 			for (int i = 0; i < this.transientImpl_.addedStyleClasses_.size(); ++i) {
 				element
 						.callJavaScript("$('#" + this.getId() + "').addClass('"
@@ -1346,10 +1369,10 @@ public abstract class WWebWidget extends WWidget {
 						String js = this.transientImpl_.childRemoveChanges_
 								.get(i);
 						if (js.charAt(0) == '_') {
-							element.callJavaScript("Wt3_2_3.remove('"
+							element.callJavaScript("Wt3_3_1.remove('"
 									+ js.substring(1) + "');", true);
 						} else {
-							element.callJavaScript(js);
+							element.callJavaScript(js, true);
 						}
 					}
 				} else {
@@ -1540,7 +1563,7 @@ public abstract class WWebWidget extends WWidget {
 				if (!this.flags_.get(BIT_HIDE_WITH_VISIBILITY)) {
 					StringBuilder ss = new StringBuilder();
 					ss
-							.append("Wt3_2_3")
+							.append("Wt3_3_1")
 							.append(".animateDisplay('")
 							.append(this.getId())
 							.append("',")
@@ -1550,7 +1573,7 @@ public abstract class WWebWidget extends WWidget {
 													.getEffects()))
 							.append(",")
 							.append(
-									this.transientImpl_.animation_
+									(int) this.transientImpl_.animation_
 											.getTimingFunction().getValue())
 							.append(",")
 							.append(
@@ -1571,7 +1594,7 @@ public abstract class WWebWidget extends WWidget {
 				} else {
 					StringBuilder ss = new StringBuilder();
 					ss
-							.append("Wt3_2_3")
+							.append("Wt3_3_1")
 							.append(".animateVisible('")
 							.append(this.getId())
 							.append("',")
@@ -1581,7 +1604,7 @@ public abstract class WWebWidget extends WWidget {
 													.getEffects()))
 							.append(",")
 							.append(
-									this.transientImpl_.animation_
+									(int) this.transientImpl_.animation_
 											.getTimingFunction().getValue())
 							.append(",")
 							.append(
@@ -1702,15 +1725,6 @@ public abstract class WWebWidget extends WWidget {
 		}
 	}
 
-	void removeChild(WObject child) {
-		WWidget w = ((child) instanceof WWidget ? (WWidget) (child) : null);
-		if (w != null) {
-			this.removeChild(w);
-		} else {
-			super.removeChild(child);
-		}
-	}
-
 	void addChild(WWidget child) {
 		if (child.getParent() == this) {
 			return;
@@ -1740,7 +1754,7 @@ public abstract class WWebWidget extends WWidget {
 			if (js.charAt(0) != '_') {
 				this.transientImpl_.specialChildRemove_ = true;
 			}
-			this.repaint(EnumSet.of(RepaintFlag.RepaintInnerHtml));
+			this.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
 		}
 		child.setParent((WObject) null);
 		if (!child.getWebWidget().flags_.get(BIT_BEING_DELETED)) {
@@ -1766,6 +1780,18 @@ public abstract class WWebWidget extends WWidget {
 				}
 			}
 		}
+	}
+
+	protected WWidget getSelfWidget() {
+		WWidget p = null;
+		WWidget p_parent = this;
+		do {
+			p = p_parent;
+			p_parent = p.getParent();
+		} while (p_parent != null
+				&& ((p_parent) instanceof WCompositeWidget ? (WCompositeWidget) (p_parent)
+						: null) != null);
+		return p;
 	}
 
 	void doLoad(WWidget w) {
@@ -1800,7 +1826,7 @@ public abstract class WWebWidget extends WWidget {
 	}
 
 	void signalConnectionsChanged() {
-		this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyAttribute));
+		this.repaint();
 	}
 
 	private static final int BIT_INLINE = 0;
@@ -1815,10 +1841,10 @@ public abstract class WWebWidget extends WWidget {
 	private static final int BIT_BEING_DELETED = 9;
 	private static final int BIT_DONOT_STUB = 10;
 	private static final int BIT_FLOAT_SIDE_CHANGED = 11;
-	private static final int BIT_REPAINT_PROPERTY_IEMOBILE = 12;
-	private static final int BIT_REPAINT_PROPERTY_ATTRIBUTE = 13;
-	private static final int BIT_REPAINT_INNER_HTML = 14;
-	static final int BIT_REPAINT_TO_AJAX = 15;
+	static final int BIT_REPAINT_TO_AJAX = 12;
+	private static final int BIT_HIDE_WITH_VISIBILITY = 13;
+	private static final int BIT_HIDDEN_CHANGED = 14;
+	static final int BIT_ENABLED = 15;
 	private static final int BIT_TOOLTIP_CHANGED = 16;
 	private static final int BIT_MARGINS_CHANGED = 17;
 	private static final int BIT_STYLECLASS_CHANGED = 18;
@@ -1829,9 +1855,7 @@ public abstract class WWebWidget extends WWidget {
 	private static final int BIT_HEIGHT_CHANGED = 23;
 	private static final int BIT_DISABLED = 24;
 	private static final int BIT_DISABLED_CHANGED = 25;
-	private static final int BIT_HIDE_WITH_VISIBILITY = 26;
-	private static final int BIT_HIDDEN_CHANGED = 27;
-	static final int BIT_ENABLED = 28;
+	private static final int BIT_CONTAINS_LAYOUT = 26;
 	BitSet flags_;
 	private WLength width_;
 	private WLength height_;
@@ -1991,27 +2015,16 @@ public abstract class WWebWidget extends WWidget {
 
 	WWebWidget.OtherImpl otherImpl_;
 	List<WWidget> children_;
+	private static List<WWidget> emptyWidgetList_ = new ArrayList<WWidget>();
 
 	void renderOk() {
 		super.renderOk();
-		this.flags_.clear(BIT_REPAINT_PROPERTY_IEMOBILE);
-		this.flags_.clear(BIT_REPAINT_PROPERTY_ATTRIBUTE);
-		this.flags_.clear(BIT_REPAINT_INNER_HTML);
 		this.flags_.clear(BIT_REPAINT_TO_AJAX);
 	}
 
 	private void calcZIndex() {
 		this.layoutImpl_.zIndex_ = -1;
-		WWidget p = this;
-		do {
-			p = p.getParent();
-		} while (p != null
-				&& ((p) instanceof WCompositeWidget ? (WCompositeWidget) (p)
-						: null) != null);
-		if (p == null) {
-			return;
-		}
-		WWebWidget ww = p.getWebWidget();
+		WWebWidget ww = this.getParentWebWidget();
 		if (ww != null) {
 			List<WWidget> children = ww.getChildren();
 			int maxZ = 0;
@@ -2019,7 +2032,7 @@ public abstract class WWebWidget extends WWidget {
 				WWebWidget wi = children.get(i).getWebWidget();
 				maxZ = Math.max(maxZ, wi.getZIndex());
 			}
-			this.layoutImpl_.zIndex_ = maxZ + 5;
+			this.layoutImpl_.zIndex_ = maxZ + 100;
 		}
 	}
 
@@ -2031,63 +2044,45 @@ public abstract class WWebWidget extends WWidget {
 	}
 
 	void getSDomChanges(List<DomElement> result, WApplication app) {
-		boolean isIEMobile = app.getEnvironment().agentIsIEMobile();
 		if (this.flags_.get(BIT_STUBBED)) {
 			if (app.getSession().getRenderer().isPreLearning()) {
 				this.getDomChanges(result, app);
-				this.askRerender(true);
+				this.scheduleRerender(true);
 			} else {
 				if (!app.getSession().getRenderer().isVisibleOnly()) {
 					this.flags_.clear(BIT_STUBBED);
-					if (!isIEMobile) {
-						DomElement stub = DomElement.getForUpdate(this,
-								DomElementType.DomElement_SPAN);
-						this.setRendered(true);
-						this.render(EnumSet.of(RenderFlag.RenderFull));
-						DomElement realElement = this.createDomElement(app);
-						stub.unstubWith(realElement, !this.flags_
-								.get(BIT_HIDE_WITH_OFFSETS));
-						result.add(stub);
-					} else {
-						this.propagateRenderOk();
-					}
+					DomElement stub = DomElement.getForUpdate(this,
+							DomElementType.DomElement_SPAN);
+					this.setRendered(true);
+					this.render(EnumSet.of(RenderFlag.RenderFull));
+					DomElement realElement = this.createDomElement(app);
+					app.getTheme().apply(this.getSelfWidget(), realElement, 0);
+					stub.unstubWith(realElement, !this.flags_
+							.get(BIT_HIDE_WITH_OFFSETS));
+					result.add(stub);
 				}
 			}
 		} else {
 			this.render(EnumSet.of(RenderFlag.RenderUpdate));
-			if (isIEMobile) {
-				if (this.flags_.get(BIT_REPAINT_PROPERTY_ATTRIBUTE)) {
-					WWidget p = this;
-					WWebWidget w = this;
-					do {
-						p = p.getParent();
-						if (p != null) {
-							w = p.getWebWidget();
-						}
-					} while (p != null && w == this);
-					if (w != this) {
-						w.getSDomChanges(result, app);
-					}
-				} else {
-					if (this.flags_.get(BIT_REPAINT_INNER_HTML)
-							|| !this.flags_.get(BIT_REPAINT_PROPERTY_IEMOBILE)) {
-						DomElement e = this.createDomElement(app);
-						e.updateInnerHtmlOnly();
-						result.add(e);
-					} else {
-						this.getDomChanges(result, app);
-					}
-				}
-				return;
-			}
 			this.getDomChanges(result, app);
 		}
 	}
 
 	private void getSFormObjects(Map<String, WObject> result) {
-		if (!this.flags_.get(BIT_STUBBED) && !this.flags_.get(BIT_HIDDEN)) {
+		if (!this.flags_.get(BIT_STUBBED) && !this.flags_.get(BIT_HIDDEN)
+				&& this.flags_.get(BIT_RENDERED)) {
 			this.getFormObjects(result);
 		}
+	}
+
+	WWebWidget getParentWebWidget() {
+		WWidget p = this.getParent();
+		while (p != null
+				&& ((p) instanceof WCompositeWidget ? (WCompositeWidget) (p)
+						: null) != null) {
+			p = p.getParent();
+		}
+		return p != null ? p.getWebWidget() : null;
 	}
 
 	void gotParent() {
@@ -2209,8 +2204,19 @@ public abstract class WWebWidget extends WWidget {
 		if (!(this.otherImpl_.jsStatements_ != null)) {
 			this.otherImpl_.jsStatements_ = new ArrayList<WWebWidget.OtherImpl.JavaScriptStatement>();
 		}
-		this.otherImpl_.jsStatements_
-				.add(new WWebWidget.OtherImpl.JavaScriptStatement(type, data));
+		List<WWebWidget.OtherImpl.JavaScriptStatement> v = this.otherImpl_.jsStatements_;
+		if (type == WWebWidget.JavaScriptStatementType.SetMember) {
+			for (int i = 0; i < v.size(); ++i) {
+				if (v.get(i).type == WWebWidget.JavaScriptStatementType.SetMember
+						&& v.get(i).data.equals(data)) {
+					return;
+				}
+			}
+		}
+		if (v.isEmpty() || v.get(v.size() - 1).type != type
+				|| !v.get(v.size() - 1).data.equals(data)) {
+			v.add(new WWebWidget.OtherImpl.JavaScriptStatement(type, data));
+		}
 	}
 
 	private int indexOfJavaScriptMember(String name) {
@@ -2384,6 +2390,34 @@ public abstract class WWebWidget extends WWidget {
 		}
 	}
 
+	protected void parentResized(WWidget parent, EnumSet<Orientation> directions) {
+		if (this.flags_.get(BIT_CONTAINS_LAYOUT)) {
+			if (this.children_ != null) {
+				for (int i = 0; i < this.children_.size(); ++i) {
+					WWidget c = this.children_.get(i);
+					if (!c.isHidden()) {
+						c.getWebWidget().parentResized(parent, directions);
+					}
+				}
+			}
+		}
+	}
+
+	protected final void parentResized(WWidget parent, Orientation direction,
+			Orientation... directions) {
+		parentResized(parent, EnumSet.of(direction, directions));
+	}
+
+	protected void containsLayout() {
+		if (!this.flags_.get(BIT_CONTAINS_LAYOUT)) {
+			this.flags_.set(BIT_CONTAINS_LAYOUT);
+			WWebWidget p = this.getParentWebWidget();
+			if (p != null) {
+				p.containsLayout();
+			}
+		}
+	}
+
 	static Property[] properties = { Property.PropertyStyleTop,
 			Property.PropertyStyleRight, Property.PropertyStyleBottom,
 			Property.PropertyStyleLeft };
@@ -2393,7 +2427,7 @@ public abstract class WWebWidget extends WWidget {
 				JavaScriptScope.WtClassScope,
 				JavaScriptObjectType.JavaScriptFunction,
 				"animateDisplay",
-				"function(y,l,q,n,m){var z=[\"ease\",\"linear\",\"ease-in\",\"ease-out\",\"ease-in-out\"],A=[0,1,3,2,4,5],p=this,h=$(\"#\"+y),a=h.get(0),r=p.cssPrefix(\"Transition\"),B=r==\"Moz\"?\"animationend\":\"webkitAnimationEnd\",u=r==\"Moz\"?\"transitionend\":\"webkitTransitionEnd\";if(h.css(\"display\")!==m){var o=h.get(0).parentNode;if(o.wtAnimateChild)o.wtAnimateChild(h.get(0),l,q,n,{display:m});else{function v(){b(a,{animationDuration:n+\"ms\"},f);var c=(k==5?\"pop \":\"\")+(g? \"out\":\"in\");if(l&256)c+=\" fade\";g||s();h.addClass(c);h.one(B,function(){h.removeClass(c);if(g)a.style.display=m;b(a,f)})}function C(){w(\"width\",k==1?\"left\":\"right\",k==1,\"X\")}function D(){w(\"height\",k==4?\"top\":\"bottom\",k==4,\"Y\")}function w(c,i,j,d){g||s();c=p.px(a,c);i=(p.px(a,i)+c)*(j?-1:1);var e;if(g){b(a,{transform:\"translate\"+d+\"(0px)\"},f);e=i}else{b(a,{transform:\"translate\"+d+\"(\"+i+\"px)\"},f);e=0}if(l&256)b(a,{opacity:g?1:0},f);setTimeout(function(){b(a,{transition:\"all \"+n+\"ms \"+t,transform:\"translate\"+ d+\"(\"+e+\"px)\"},f);if(l&256)b(a,{opacity:g?0:1});h.one(u,function(){if(g)a.style.display=m;b(a,f)})},0)}function E(){var c,i,j={},d;if(g){i=h.height()+\"px\";b(a,{height:i,overflow:\"hidden\"},f);if(k==4&&a.childNodes.length==1){d=a.firstChild;b(d,{transform:\"translateY(0)\"},j);p.hasTag(d,\"TABLE\")||b(d,{display:\"block\"},j)}c=\"0px\"}else{var e=$(o),x={};b(o,{height:e.height()+\"px\",overflow:\"hidden\"},x);s();c=h.height()+\"px\";b(a,{height:\"0px\",overflow:\"hidden\"},f);b(o,x);if(k==4){b(a,{WebkitBackfaceVisibility:\"visible\"}, f);a.scrollTop=1E3}}if(l&256)b(a,{opacity:g?1:0},f);setTimeout(function(){b(a,{transition:\"all \"+n+\"ms \"+t,height:c},f);if(l&256)b(a,{opacity:g?0:1});d&&b(d,{transition:\"all \"+n+\"ms \"+t,transform:\"translateY(-\"+i+\")\"},j);h.one(u,function(){if(g)a.style.display=m;b(a,f);if(k==4){a.scrollTop=0;d&&b(d,j)}})},0)}function s(){a.style.display=m;a.wtPosition&&a.wtPosition();window.onshow&&window.onshow()}function b(c,i,j){var d;for(d in i){var e=d;if(e==\"transform\"||e==\"transition\"||e==\"animationDuration\")e= r+e.substring(0,1).toUpperCase()+e.substring(1);if(j&&typeof j[e]===\"undefined\")j[e]=c.style[e];c.style[e]=i[d]}}var k=l&255,g=m===\"none\",t=z[g?A[q]:q],f={};setTimeout(function(){var c=h.css(\"position\");c=c===\"absolute\"||c===\"fixed\";switch(k){case 4:case 3:c?D():E();break;case 1:case 2:c?C():v();break;case 0:case 5:v();break}},0)}}}");
+				"function(C,D,E,F,G){var j=this,B=function(v,m,q,o,n){var H=[\"ease\",\"linear\",\"ease-in\",\"ease-out\",\"ease-in-out\"],I=[0,1,3,2,4,5],r=j.vendorPrefix(j.styleAttribute(\"animation\")),s=j.vendorPrefix(j.styleAttribute(\"transition\")),w=j.vendorPrefix(j.styleAttribute(\"transform\")),f=$(\"#\"+v),a=f.get(0),J=r==\"Webkit\"?\"webkitAnimationEnd\":\"animationend\";transitionEventEnd=s==\"Webkit\"?\"webkitTransitionEnd\":\"transitionend\";if(f.css(\"display\")!==n){var p= a.parentNode;if(p.wtAnimateChild)p.wtAnimateChild(j,f.get(0),m,q,o,{display:n});else{function x(){c(a,{animationDuration:o+\"ms\"},h);var d=(l==5?\"pop \":\"\")+(g?\"out\":\"in\");if(m&256)d+=\" fade\";g||t();f.addClass(d);f.one(J,function(){f.removeClass(d);if(g)a.style.display=n;c(a,h)})}function K(){y(\"width\",l==1?\"left\":\"right\",l==1,\"X\")}function L(){y(\"height\",l==4?\"top\":\"bottom\",l==4,\"Y\")}function y(d,i,k,e){g||t();d=j.px(a,d);i=(j.px(a,i)+d)*(k?-1:1);var b;if(g){c(a,{transform:\"translate\"+e+\"(0px)\"},h); b=i}else{c(a,{transform:\"translate\"+e+\"(\"+i+\"px)\"},h);b=0}if(m&256)c(a,{opacity:g?1:0},h);setTimeout(function(){c(a,{transition:\"all \"+o+\"ms \"+u,transform:\"translate\"+e+\"(\"+b+\"px)\"},h);if(m&256)c(a,{opacity:g?0:1});f.one(transitionEventEnd,function(){if(g)a.style.display=n;c(a,h);z()})},0)}function M(){var d,i,k={},e;if(g){i=f.height()+\"px\";c(a,{height:i,overflow:\"hidden\"},h);if(l==4&&a.childNodes.length==1){e=a.firstChild;c(e,{transform:\"translateY(0)\"},k);j.hasTag(e,\"TABLE\")||c(e,{display:\"block\"}, k)}d=\"0px\"}else{var b=$(p),A={};c(p,{height:b.height()+\"px\",overflow:\"hidden\"},A);t();if(f.height()==0)a.style.height=\"auto\";d=f.height()+\"px\";c(a,{height:\"0px\",overflow:\"hidden\"},h);c(p,A);if(l==4){c(a,{WebkitBackfaceVisibility:\"visible\"},h);a.scrollTop=1E3}}if(m&256)c(a,{opacity:g?1:0},h);setTimeout(function(){c(a,{transition:\"all \"+o+\"ms \"+u,height:d},h);if(m&256)c(a,{opacity:g?0:1});e&&c(e,{transition:\"all \"+o+\"ms \"+u,transform:\"translateY(-\"+i+\")\"},k);f.one(transitionEventEnd,function(){if(g)a.style.display= n;c(a,h);if(l==4){a.scrollTop=0;e&&c(e,k)}z()})},0)}function t(){a.style.display=n;a.wtPosition&&a.wtPosition();window.onshow&&window.onshow()}function z(){a.wtAnimatedHidden&&a.wtAnimatedHidden(g);f.removeClass(\"animating\");Wt.layouts2&&Wt.layouts2.setElementDirty(a)}function c(d,i,k){var e;for(e in i){var b=e;if(b==\"animationDuration\"&&r!=\"\")b=r+b.substring(0,1).toUpperCase()+b.substring(1);else if(b==\"transform\"&&w!=\"\")b=w+b.substring(0,1).toUpperCase()+b.substring(1);else if(b==\"transition\"&& s!=\"\")b=s+b.substring(0,1).toUpperCase()+b.substring(1);if(k&&typeof k[b]===\"undefined\")k[b]=d.style[b];d.style[b]=i[e]}}if(f.hasClass(\"animating\"))$(a).one(transitionEventEnd,function(){B(v,m,q,o,n)});else{f.addClass(\"animating\");var l=m&255,g=n===\"none\",u=H[g?I[q]:q],h={};setTimeout(function(){var d=f.css(\"position\");d=d===\"absolute\"||d===\"fixed\";switch(l){case 4:case 3:d?L():M();break;case 1:case 2:d?K():x();break;case 0:case 5:x();break}},0)}}}};B(C,D,E,F,G)}");
 	}
 
 	static WJavaScriptPreamble wtjs2() {
@@ -2407,7 +2441,7 @@ public abstract class WWebWidget extends WWidget {
 				JavaScriptScope.WtClassScope,
 				JavaScriptObjectType.JavaScriptFunction,
 				"toolTip",
-				"function(i,f,l){var b=$(\"#\"+f),g=b.get(0);f=g.toolTip;g.toolTip=l;f||new (function(){function m(){a=document.createElement(\"div\");a.className=\"Wt-tooltip\";a.innerHTML=g.toolTip;document.body.appendChild(a);var c=h.x,j=h.y;i.fitToWindow(a,c+d,j+d,c-d,j-d)}function k(c){clearTimeout(e);h=i.pageCoordinates(c);a||(e=setTimeout(function(){m()},n))}var e=null,h=null,a=null,d=10,n=500;b.mouseenter(k);b.mousemove(k);b.mouseleave(function(){clearTimeout(e); if(a){$(a).remove();a=null}});b.mouseup(function(){clearTimeout(e);if(a){$(a).remove();a=null}})})}");
+				"function(i,j,n){var b=$(\"#\"+j),e=b.get(0),o=e.toolTip;e.toolTip=n;o||new (function(){function p(){$(\"#\"+j+\":hover\").length||k()}function q(){a=document.createElement(\"div\");a.className=\"Wt-tooltip\";a.innerHTML=e.toolTip;document.body.appendChild(a);var c=f.x,l=f.y;i.fitToWindow(a,c+d,l+d,c-d,l-d);g=setInterval(function(){p()},200)}function k(){clearTimeout(h);if(a){$(a).remove();a=null;clearInterval(g);g=null}}function m(c){clearTimeout(h);f=i.pageCoordinates(c); a||(h=setTimeout(function(){q()},r))}var h=null,g=null,f=null,a=null,d=10,r=500;b.mouseenter(m);b.mousemove(m);b.mouseleave(k)})}");
 	}
 
 	static WLength nonNegative(WLength w) {
@@ -2417,6 +2451,4 @@ public abstract class WWebWidget extends WWidget {
 			return new WLength(Math.abs(w.getValue()), w.getUnit());
 		}
 	}
-
-	private static List<WWidget> emptyWidgetList_ = new ArrayList<WWidget>();
 }

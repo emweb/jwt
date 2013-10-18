@@ -60,6 +60,15 @@ public class AuthModel extends FormBaseModel {
 	private static Logger logger = LoggerFactory.getLogger(AuthModel.class);
 
 	/**
+	 * Password field.
+	 */
+	public static final String PasswordField = "password";
+	/**
+	 * Remember-me field.
+	 */
+	public static final String RememberMeField = "remember-me";
+
+	/**
 	 * Constructor.
 	 * <p>
 	 * Creates a new authentication model, using a basic authentication service
@@ -156,7 +165,7 @@ public class AuthModel extends FormBaseModel {
 								.append("throttling: ").append(
 										String.valueOf(this.throttlingDelay_))
 								.append(" seconds for ").append(
-										user.identity(Identity.LoginName))
+										user.getIdentity(Identity.LoginName))
 								.toString());
 						return false;
 					case PasswordValid:
@@ -199,7 +208,7 @@ public class AuthModel extends FormBaseModel {
 			WApplication app = WApplication.getInstance();
 			app.loadJavaScript("js/AuthModel.js", wtjs1());
 			button.setJavaScriptMember(" AuthThrottle",
-					"new Wt3_2_3.AuthThrottle(Wt3_2_3,"
+					"new Wt3_3_1.AuthThrottle(Wt3_3_1,"
 							+ button.getJsRef()
 							+ ","
 							+ WString.toWString(
@@ -259,6 +268,21 @@ public class AuthModel extends FormBaseModel {
 	}
 
 	/**
+	 * Logs the user out.
+	 * <p>
+	 * This also removes the remember-me cookie for the user.
+	 */
+	public void logout(Login login) {
+		if (login.isLoggedIn()) {
+			if (this.getBaseAuth().isAuthTokensEnabled()) {
+				WApplication app = WApplication.getInstance();
+				app.removeCookie(this.getBaseAuth().getAuthTokenCookieName());
+			}
+			login.logout();
+		}
+	}
+
+	/**
 	 * Processes an email token.
 	 * <p>
 	 * This simply calls
@@ -292,8 +316,7 @@ public class AuthModel extends FormBaseModel {
 				switch (result.getResult()) {
 				case Valid:
 					app.setCookie(this.getBaseAuth().getAuthTokenCookieName(),
-							result.getNewToken(), this.getBaseAuth()
-									.getAuthTokenValidity() * 60);
+							result.getNewToken(), result.getNewTokenValidity());
 					return result.getUser();
 				case Invalid:
 					app.setCookie(this.getBaseAuth().getAuthTokenCookieName(),
@@ -314,13 +337,4 @@ public class AuthModel extends FormBaseModel {
 				"AuthThrottle",
 				"function(e,a,h){function f(){clearInterval(b);b=null;e.setHtml(a,d);a.disabled=false;d=null}function g(){if(c==0)f();else{e.setHtml(a,h.replace(\"{1}\",c));--c}}jQuery.data(a,\"throttle\",this);var b=null,d=null,c=0;this.reset=function(i){b&&f();d=a.innerHTML;if(c=i){b=setInterval(g,1E3);a.disabled=true;g()}}}");
 	}
-
-	/**
-	 * Password field.
-	 */
-	public static final String PasswordField = "password";
-	/**
-	 * Remember-me field.
-	 */
-	public static final String RememberMeField = "remember-me";
 }

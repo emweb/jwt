@@ -116,7 +116,7 @@ public class WOverlayLoadingIndicator extends WContainerWidget implements
 		WApplication app = WApplication.getInstance();
 		this.cover_ = new WContainerWidget(this);
 		this.center_ = new WContainerWidget(this);
-		WImage img = new WImage(WApplication.getResourcesUrl()
+		WImage img = new WImage(WApplication.getRelativeResourcesUrl()
 				+ "ajax-loading.gif", this.center_);
 		img.setMargin(new WLength(7), EnumSet.of(Side.Top, Side.Bottom));
 		this.text_ = new WText(tr("Wt.WOverlayLoadingIndicator.Loading"),

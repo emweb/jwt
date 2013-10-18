@@ -71,8 +71,9 @@ import org.slf4j.LoggerFactory;
  * <p>
  * The file upload itself corresponds to a
  * <code>&lt;input type=&quot;file&quot;&gt;</code> tag, but may be wrapped in a
- * <code>&lt;form&gt;</code> tag. This widget does not provide styling, and
- * styling through CSS is not well supported across browsers.
+ * <code>&lt;form&gt;</code> tag for an Ajax session to implement the
+ * asynchronous upload action. This widget does not provide styling, and styling
+ * through CSS is not well supported across browsers.
  */
 public class WFileUpload extends WWebWidget {
 	private static Logger logger = LoggerFactory.getLogger(WFileUpload.class);
@@ -322,7 +323,7 @@ public class WFileUpload extends WWebWidget {
 	public void upload() {
 		if (this.fileUploadTarget_ != null && !this.flags_.get(BIT_UPLOADING)) {
 			this.flags_.set(BIT_DO_UPLOAD);
-			this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyIEMobile));
+			this.repaint();
 			if (this.progressBar_ != null) {
 				if (this.progressBar_.getParent() != this) {
 					this.hide();
@@ -394,6 +395,9 @@ public class WFileUpload extends WWebWidget {
 		super.enableAjax();
 	}
 
+	private static String CHANGE_SIGNAL = "M_change";
+	private static String UPLOADED_SIGNAL = "M_uploaded";
+	private static String FILETOOLARGE_SIGNAL = "M_filetoolarge";
 	private static final int BIT_DO_UPLOAD = 0;
 	private static final int BIT_ENABLE_AJAX = 1;
 	private static final int BIT_UPLOADING = 2;
@@ -419,8 +423,9 @@ public class WFileUpload extends WWebWidget {
 							WFileUpload.this.onData(e1, e2);
 						}
 					});
-			this.setJavaScriptMember(WT_RESIZE_JS,
-					"function(self,w,h) {$(self).find('input').width(w);}");
+			this
+					.setJavaScriptMember(WT_RESIZE_JS,
+							"function(self, w, h) {if (w >= 0) $(self).find('input').width(w);}");
 		} else {
 			this.fileUploadTarget_ = null;
 		}
@@ -596,7 +601,7 @@ public class WFileUpload extends WWebWidget {
 
 	protected void propagateSetEnabled(boolean enabled) {
 		this.flags_.set(BIT_ENABLED_CHANGED);
-		this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyAttribute));
+		this.repaint();
 		super.propagateSetEnabled(enabled);
 	}
 
@@ -635,8 +640,4 @@ public class WFileUpload extends WWebWidget {
 			}
 		}
 	}
-
-	private static String CHANGE_SIGNAL = "M_change";
-	private static String UPLOADED_SIGNAL = "M_uploaded";
-	private static String FILETOOLARGE_SIGNAL = "M_filetoolarge";
 }

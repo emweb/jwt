@@ -32,7 +32,7 @@ public abstract class JSignal6<A1, A2, A3, A4, A5, A6> extends AbstractJSignal {
 	private Signal6<A1, A2, A3, A4, A5, A6> dynamic_;
 
 	JSignal6(WObject sender, String name, boolean collectSlotJavaScript) {
-		super(sender, name);
+		super(sender, name, collectSlotJavaScript);
 
 		dynamic_ = null;
 	}

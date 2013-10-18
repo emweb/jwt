@@ -344,7 +344,9 @@ public class WAggregateProxyModel extends WAbstractProxyModel {
 		int sourceColumn = this.topLevel_.mapToSource(column);
 		WModelIndex sourceIndex = this.getSourceModel().getIndex(sourceRow,
 				sourceColumn, sourceParent);
-		return this.createIndex(row, column, sourceIndex.getInternalPointer());
+		return this
+				.createIndex(row, column, (sourceIndex != null) ? sourceIndex
+						.getInternalPointer() : null);
 	}
 
 	public void sort(int column, SortOrder order) {

@@ -79,6 +79,14 @@ public class WLength {
 	}
 
 	/**
+	 * An &apos;auto&apos; length.
+	 * <p>
+	 * 
+	 * @see WLength#WLength()
+	 */
+	public static WLength Auto = new WLength();
+
+	/**
 	 * Creates an &apos;auto&apos; length.
 	 * <p>
 	 * Specifies an &apos;auto&apos; length.
@@ -101,6 +109,10 @@ public class WLength {
 		this.auto_ = false;
 		this.unit_ = WLength.Unit.Pixel;
 		this.value_ = -1;
+		if ("auto".equals(s)) {
+			this.auto_ = true;
+			return;
+		}
 		String end = null;
 		{
 			Matcher matcher = StringUtils.FLOAT_PATTERN.matcher(s);
@@ -348,12 +360,4 @@ public class WLength {
 	static WLength divide(WLength l, double s) {
 		return WLength.multiply(l, 1 / s);
 	}
-
-	/**
-	 * An &apos;auto&apos; length.
-	 * <p>
-	 * 
-	 * @see WLength#WLength()
-	 */
-	public static WLength Auto = new WLength();
 }

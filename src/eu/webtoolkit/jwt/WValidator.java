@@ -260,6 +260,15 @@ public class WValidator extends WObject {
 		return new WValidator.Result(WValidator.State.Valid);
 	}
 
+	/**
+	 * Returns the validator format.
+	 * <p>
+	 * The default implementation returns an empty string.
+	 */
+	public String getFormat() {
+		return "";
+	}
+
 	// public void createExtConfig(Writer config) throws IOException;
 	/**
 	 * Creates a Javascript object that validates the input.

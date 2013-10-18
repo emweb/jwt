@@ -88,11 +88,16 @@ public class WScrollEvent implements WAbstractEvent {
 		return new WScrollEvent(jsEvent);
 	}
 
+	static WScrollEvent templateEvent = new WScrollEvent();
 	private JavaScriptEvent jsEvent_;
 
 	private WScrollEvent(JavaScriptEvent jsEvent) {
 		super();
 		this.jsEvent_ = jsEvent;
+	}
+
+	static String concat(String prefix, int prefixLength, String s2) {
+		return prefix + s2;
 	}
 
 	static int asInt(String v) {
@@ -155,6 +160,4 @@ public class WScrollEvent implements WAbstractEvent {
 			return;
 		}
 	}
-
-	static WScrollEvent templateEvent = new WScrollEvent();
 }

@@ -6,8 +6,6 @@ import java.security.NoSuchAlgorithmException;
 import java.util.EnumSet;
 import java.util.List;
 
-import net.n3.nanoxml.XMLElement;
-
 public class Utils {
 	/** Computes an MD5 hash.
 	 *
@@ -83,15 +81,7 @@ public class Utils {
 	 * @throws IOException 
 	 */
 	public static byte[] base64Decode(String s) throws IOException {
-		return base64Decode(s.getBytes("US-ASCII"));
-	}
-	
-	/** Performs Base64-decoding of data.
-	 * 
-	 * @throws IOException 
-	 */
-	public static byte[] base64Decode(byte[] bytes) throws IOException {
-		return Base64.decode(bytes);
+		return Base64.decode(s.getBytes("US-ASCII"));
 	}
 	
 	/** An enumeration for HTML encoding flags.
@@ -146,6 +136,16 @@ public class Utils {
 		return Utils.htmlEncode(text, EnumSet.noneOf(HtmlEncodingFlag.class));
 	}
 	
+	/**
+	 * Performs HTML encoding of text.
+	 * <p>
+	 * Calls {@link Utils#htmlEncode(WString text, EnumSet flags)
+	 * Utils.htmlEncode(text, flags)}
+	 */
+	public static String htmlEncode(String value, HtmlEncodingFlag flag, HtmlEncodingFlag... flags) {
+		return htmlEncode(value, EnumSet.of(flag, flags));
+	}
+
 	/** Remove tags/attributes from text that are not passive.
 	 *
 	 * This removes tags and attributes from XHTML-formatted text that do
@@ -164,11 +164,12 @@ public class Utils {
 		return WWebWidget.removeScript(text);
 	}
 
-	static int memcmp(List<Integer> header, String string, int size) {
+	static int memcmp(List<Byte> header, String string, int size) {
 		for (int i = 0; i < size; i++) {
-			if (header.get(i) != string.charAt(i))
+			if (header.get(i) != (byte) string.charAt(i))
 				return 1;
 		}
+
 		return 0;
 	}
 
@@ -215,6 +216,13 @@ public class Utils {
 	public static void copyList(List source, List destination) {
 		destination.clear();
 		for (Object o : source) {
+			destination.add(o);
+		}
+	}
+
+	public static void copyList(byte[] source, List<Byte> destination) {
+		destination.clear();
+		for (byte o : source) {
 			destination.add(o);
 		}
 	}

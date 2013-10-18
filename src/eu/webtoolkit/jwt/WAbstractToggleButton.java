@@ -44,7 +44,10 @@ public abstract class WAbstractToggleButton extends WFormWidget {
 	protected WAbstractToggleButton(WContainerWidget parent) {
 		super(parent);
 		this.state_ = CheckState.Unchecked;
+		this.text_ = new WText.RichText();
 		this.stateChanged_ = false;
+		this.textChanged_ = false;
+		this.text_.format = TextFormat.PlainText;
 	}
 
 	/**
@@ -65,10 +68,11 @@ public abstract class WAbstractToggleButton extends WFormWidget {
 	protected WAbstractToggleButton(CharSequence text, WContainerWidget parent) {
 		super(parent);
 		this.state_ = CheckState.Unchecked;
+		this.text_ = new WText.RichText();
 		this.stateChanged_ = false;
-		WLabel label = new WLabel(text);
-		label.setBuddy(this);
-		this.addChild(label);
+		this.textChanged_ = false;
+		this.text_.format = TextFormat.PlainText;
+		this.text_.text = WString.toWString(text);
 	}
 
 	/**
@@ -92,16 +96,15 @@ public abstract class WAbstractToggleButton extends WFormWidget {
 	/**
 	 * Sets the label text.
 	 * <p>
-	 * The label is rendered to the right fo the button.
+	 * The label is rendered to the right of the button.
 	 */
 	public void setText(CharSequence text) {
-		WLabel l = this.getLabel();
-		if (!(l != null)) {
-			l = new WLabel(text);
-			l.setBuddy(this);
-			this.addChild(l);
+		if (canOptimizeUpdates() && text.equals(this.text_.text)) {
+			return;
 		}
-		l.setText(text);
+		this.text_.setText(text);
+		this.textChanged_ = true;
+		this.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
 	}
 
 	/**
@@ -111,11 +114,7 @@ public abstract class WAbstractToggleButton extends WFormWidget {
 	 * @see WAbstractToggleButton#setText(CharSequence text)
 	 */
 	public WString getText() {
-		if (this.getLabel() != null) {
-			return this.getLabel().getText();
-		} else {
-			return new WString();
-		}
+		return this.text_.text;
 	}
 
 	/**
@@ -221,7 +220,7 @@ public abstract class WAbstractToggleButton extends WFormWidget {
 	}
 
 	/**
-	 * Signal emitted when the button gets unChecked.
+	 * Signal emitted when the button gets un-checked.
 	 * <p>
 	 * This signal is emitted when the user unchecks the button.
 	 * <p>
@@ -232,6 +231,14 @@ public abstract class WAbstractToggleButton extends WFormWidget {
 		return this.voidEventSignal(UNCHECKED_SIGNAL, true);
 	}
 
+	public void refresh() {
+		if (this.text_.text.refresh()) {
+			this.textChanged_ = true;
+			this.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
+		}
+		super.refresh();
+	}
+
 	CheckState state_;
 
 	abstract void updateInput(DomElement input, boolean all);
@@ -240,14 +247,18 @@ public abstract class WAbstractToggleButton extends WFormWidget {
 		WApplication app = WApplication.getInstance();
 		WEnvironment env = app.getEnvironment();
 		DomElement input = null;
-		if (element.getType() == DomElementType.DomElement_SPAN) {
+		DomElement span = null;
+		if (element.getType() == DomElementType.DomElement_LABEL) {
 			if (all) {
 				input = DomElement.createNew(DomElementType.DomElement_INPUT);
 				input.setName("in" + this.getId());
-				element.setProperty(Property.PropertyStyleWhiteSpace, "nowrap");
+				span = DomElement.createNew(DomElementType.DomElement_SPAN);
+				span.setName("l" + this.getId());
 			} else {
 				input = DomElement.getForUpdate("in" + this.getId(),
 						DomElementType.DomElement_INPUT);
+				span = DomElement.getForUpdate("l" + this.getId(),
+						DomElementType.DomElement_SPAN);
 			}
 		} else {
 			input = element;
@@ -352,14 +363,16 @@ public abstract class WAbstractToggleButton extends WFormWidget {
 				}
 			}
 		}
+		if (span != null) {
+			if (all || this.textChanged_) {
+				span.setProperty(Property.PropertyInnerHTML, this.text_
+						.getFormattedText());
+				this.textChanged_ = false;
+			}
+		}
 		if (element != input) {
 			element.addChild(input);
-		}
-		if (all) {
-			WLabel l = this.getLabel();
-			if (l != null && l.getParent() == this) {
-				element.addChild(l.createSDomElement(app));
-			}
+			element.addChild(span);
 		}
 	}
 
@@ -399,9 +412,8 @@ public abstract class WAbstractToggleButton extends WFormWidget {
 	}
 
 	DomElementType getDomElementType() {
-		WLabel l = this.getLabel();
-		if (l != null && l.getParent() == this) {
-			return DomElementType.DomElement_SPAN;
+		if (!(this.text_.text.length() == 0)) {
+			return DomElementType.DomElement_LABEL;
 		} else {
 			return DomElementType.DomElement_INPUT;
 		}
@@ -416,7 +428,7 @@ public abstract class WAbstractToggleButton extends WFormWidget {
 	}
 
 	String getFormName() {
-		if (this.getDomElementType() == DomElementType.DomElement_SPAN) {
+		if (this.getDomElementType() == DomElementType.DomElement_LABEL) {
 			return "in" + this.getId();
 		} else {
 			return super.getFormName();
@@ -426,7 +438,11 @@ public abstract class WAbstractToggleButton extends WFormWidget {
 	// protected AbstractEventSignal.LearningListener
 	// getStateless(<pointertomember or dependentsizedarray>
 	// methodpointertomember or dependentsizedarray>) ;
+	private static String CHECKED_SIGNAL = "M_checked";
+	private static String UNCHECKED_SIGNAL = "M_unchecked";
+	private WText.RichText text_;
 	boolean stateChanged_;
+	private boolean textChanged_;
 	private CheckState prevState_;
 
 	private void undoSetChecked() {
@@ -443,9 +459,6 @@ public abstract class WAbstractToggleButton extends WFormWidget {
 		}
 		this.state_ = state;
 		this.stateChanged_ = true;
-		this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyIEMobile));
+		this.repaint();
 	}
-
-	private static String CHECKED_SIGNAL = "M_checked";
-	private static String UNCHECKED_SIGNAL = "M_unchecked";
 }

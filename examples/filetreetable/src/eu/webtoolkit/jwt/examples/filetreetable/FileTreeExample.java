@@ -13,6 +13,7 @@ import javax.servlet.ServletException;
 import eu.webtoolkit.jwt.SelectionMode;
 import eu.webtoolkit.jwt.WApplication;
 import eu.webtoolkit.jwt.WEnvironment;
+import eu.webtoolkit.jwt.WLink;
 import eu.webtoolkit.jwt.WtServlet;
 import eu.webtoolkit.jwt.WTreeNode.ChildCountPolicy;
 
@@ -27,7 +28,7 @@ public class FileTreeExample extends WtServlet {
     public WApplication createApplication(WEnvironment env) {
         WApplication app = new WApplication(env);
         app.setTitle("File explorer example");
-        app.useStyleSheet("style/filetree.css");
+        app.useStyleSheet(new WLink("style/filetree.css"));
 
         FileTreeTable treeTable = new FileTreeTable(startDir);
 

@@ -5,7 +5,9 @@ import org.slf4j.LoggerFactory;
 
 import eu.webtoolkit.jwt.Signal;
 import eu.webtoolkit.jwt.WApplication;
+import eu.webtoolkit.jwt.WBootstrapTheme;
 import eu.webtoolkit.jwt.WEnvironment;
+import eu.webtoolkit.jwt.WLink;
 import eu.webtoolkit.jwt.auth.AuthWidget;
 import eu.webtoolkit.jwt.examples.features.auth1.jpa.JpaUtil;
 import eu.webtoolkit.jwt.examples.features.auth1.model.Session;
@@ -16,6 +18,8 @@ public class AuthApplication extends WApplication {
 
 	public AuthApplication(WEnvironment env) {
 		super(env);
+		
+		setTheme(new WBootstrapTheme());
 		
 		Session.configureAuth();
 		
@@ -30,7 +34,7 @@ public class AuthApplication extends WApplication {
 			}
 		});
 
-		useStyleSheet("css/style.css");
+		useStyleSheet(new WLink("css/style.css"));
 
 		AuthWidget authWidget = new AuthWidget(Session.getAuth(),
 				session_.getUserDatabase(), session_.getLogin());

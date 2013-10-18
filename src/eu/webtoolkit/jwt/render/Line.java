@@ -22,6 +22,8 @@ import org.slf4j.LoggerFactory;
 class Line {
 	private static Logger logger = LoggerFactory.getLogger(Line.class);
 
+	public static final double LEFT_MARGIN_X = -1;
+
 	public Line(double x, double y, int page) {
 		this.page_ = page;
 		this.x_ = x;
@@ -95,7 +97,7 @@ class Line {
 		this.y_ = 0;
 		this.x_ = minX;
 		++this.page_;
-		List<Block> blocks = this.blocks_;
+		List<Block> blocks = new ArrayList<Block>(this.blocks_);
 		this.blocks_.clear();
 		Range rangeX = new Range(this.x_, maxX);
 		Block.adjustAvailableWidth(this.y_, this.page_, floats, rangeX);
@@ -269,5 +271,4 @@ class Line {
 	private double baseline_;
 	private List<Block> blocks_;
 	private boolean lineBreak_;
-	public static final double LEFT_MARGIN_X = -1;
 }

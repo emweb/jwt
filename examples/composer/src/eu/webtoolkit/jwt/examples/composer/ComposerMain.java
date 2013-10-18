@@ -7,6 +7,7 @@ package eu.webtoolkit.jwt.examples.composer;
 
 import eu.webtoolkit.jwt.WApplication;
 import eu.webtoolkit.jwt.WEnvironment;
+import eu.webtoolkit.jwt.WLink;
 import eu.webtoolkit.jwt.WStdLocalizedStrings;
 import eu.webtoolkit.jwt.WtServlet;
 
@@ -27,7 +28,7 @@ public class ComposerMain extends WtServlet {
         wsls.use("eu.webtoolkit.jwt.examples.composer.composer-buttons");
         app.setLocalizedStrings(wsls);
         app.setTitle("Composer example");
-        app.useStyleSheet("style/composer.css");
+        app.useStyleSheet(new WLink("style/composer.css"));
 
         app.getRoot().addWidget(new ComposeExample());
 

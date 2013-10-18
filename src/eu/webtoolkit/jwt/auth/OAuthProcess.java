@@ -130,7 +130,7 @@ public class OAuthProcess extends WObject {
 		if (WApplication.getInstance().getEnvironment().hasJavaScript()) {
 			StringBuilder js = new StringBuilder();
 			js.append("function(object, event) {").append(
-					"Wt3_2_3.PopupWindow(Wt3_2_3").append(",").append(
+					"Wt3_3_1.PopupWindow(Wt3_3_1").append(",").append(
 					WWebWidget.jsStringLiteral(this.getAuthorizeUrl())).append(
 					", ").append(this.service_.getPopupWidth()).append(", ")
 					.append(this.service_.getPopupHeight()).append(");")
@@ -414,8 +414,8 @@ public class OAuthProcess extends WObject {
 				WDate expires = null;
 				String expiresE = AuthUtils.getParamValue(params, "expires");
 				if (expiresE != null) {
-					expires = new WDate(new Date()).addSeconds(Integer
-							.parseInt(expiresE));
+					expires = WDate.getCurrentDate().addSeconds(
+							Integer.parseInt(expiresE));
 				}
 				return new OAuthAccessToken(accessToken, expires, "");
 			} else {
@@ -457,7 +457,7 @@ public class OAuthProcess extends WObject {
 							.orIfNullInt(root.get("expires_in"), -1);
 					WDate expires = null;
 					if (secs > 0) {
-						expires = new WDate(new Date()).addSeconds(secs);
+						expires = WDate.getCurrentDate().addSeconds(secs);
 					}
 					String refreshToken = JsonUtils.orIfNullString(root
 							.get("refreshToken"), "");

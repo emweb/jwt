@@ -11,7 +11,7 @@
   dd p { margin-top: 0px; }
   dd div { margin: 10px 0px; }
 </style>
-<title>JWt 3.2.3</title>
+<title>JWt 3.3.1</title>
 </head>
 <body>
 
@@ -24,6 +24,298 @@ This page lists important notes on migrating existing applications to
 newer version of Wt. It lists changes in the library that may break
 the way you build Wt, the way you configure Wt or the Wt API and
 behaviour.
+
+<h2>Release 3.3.1 (August ?, 2013)</h2>
+
+<p>
+ This release has a focus on bug fixes and other cleanups after the big
+ changes that went into 3.3.0.
+</p>
+
+<h3>A) Main improvements:</h3>
+
+<dl>
+  <dt>
+    <a href="eu/webtoolkit/jwt/WComboBox.html">WComboBox</a>
+  </dt>
+  <dd>
+    The combo box now interprets LevelRole data to display headers
+    (using HTML &lt;optgroup&lt; elements). Another improvement is
+    that now the combobox saves its single selection while the model
+    is updated.
+  </dd>
+
+  <dt>
+    <a href="eu/webtoolkit/jwt/WDialog.html">WDialog</a>
+  </dt>
+  <dd>
+    Modal dialogs can now be created and destroyed in any order
+    without confusing the 'silk screen'. We now also consistently
+    interpret an enter press in the dialog to invoke the default
+    button added to the dialog footer (if there is one).
+  </dd>
+
+  <dt>
+    <a href="eu/webtoolkit/jwt/WMessageBox.html">WMessageBox</a>
+  </dt>
+  <dd>
+    Several improvements include the ability to indicate what buttons
+    are the default and escape buttons with setDefaultButton() or
+    button.setDefault() and setEscapeButton(), and the (long overdue)
+    implementation of icons!
+  </dd>
+
+  <dt>
+    <a href="eu/webtoolkit/jwt/WTextEdit.html">WTextEdit</a>
+  </dt>
+  <dd>
+    We've added support for TinyMCE 4.
+  </dd>
+
+  <dt>
+  <dt>
+    <a href="eu/webtoolkit/jwt/render/package-summary.html">Render library</a>
+  </dt>
+  <dd>
+    We've added a CSS style sheet parser which will parse and apply
+    style rules in &lt;style&gt; blocks (or loaded through the API),
+    and expanded CSS support to much improvemed table rendering
+    (including border-collapse border model and repeated table
+    headers), relative/absolute positioning, and page-break-before/after
+    support.
+  </dd>
+
+<h3>B) Non-backwards compatible changes</h3>
+
+<dl>
+  <dt>
+    <a href="eu/webtoolkit/jwt/WMessageBox.html">WMessageBox</a>
+  </dt>
+  <dd>
+    The getButtons() method has been renamed to getStandardButtons(), and
+    getButtons() now return the actual list of added buttons.
+  </dd>
+</dl>
+<hr>
+
+<h2>Release 3.3.0 (April 8, 2013)</h2>
+
+<p>
+ This release focusses on a reorganization of JWt's theme
+ infrastructure, with the objective of
+ supporting <a href="http://twitter.github.com/bootstrap/">Twitter's
+ Bootstrap CSS framework</a> as a new theme. At the same time we've
+ added a number of widgets for which Twitter Bootstrap provides
+ styling.
+</p>
+
+<p>It is our intention to support the Bootstrap theme (or more
+ specifically, the Bootstrap class names) alongside the themes we
+ already supported (which are based on our own class names). Ignoring
+ what Bootstrap brings, you should be able to upgrade to this release
+ without too much trouble, although you may need to adapt some CSS
+ stylesheets as we did reorganize a number of things which were
+ required for Bootstrap and were a good idea for our own CSS
+ stlesheets too.</p>
+
+<h3>A) New classes:</h3>
+
+<dl>
+  <dt>
+    <a href="eu/webtoolkit/jwt/WTheme.html">WTheme</a>,
+    <a href="eu/webtoolkit/jwt/WCssTheme.html">WCssTheme</a>,
+    <a href="eu/webtoolkit/jwt/WBootstrapTheme.html">WBootstrapTheme</a>,
+  </dt>
+  <dd>
+    Theme support classes for JWt. The role of a theme is to:
+    <ul>
+      <li>Load the CSS stylesheets for a new session</li>
+      <li>Annotate newly created widgets with appropriate style
+      classes</li>
+    </ul>
+  </dd>
+
+  <dt>
+    <a href="eu/webtoolkit/jwt/WDateEdit.html">WDateEdit</a>
+  </dt>
+  <dd>
+    Functionally almost the same as a WDatePicker, this class
+    specializes WLineEdit and is thus a WFormWidget, making it much
+    easier to use in WTemplateFormView.
+  </dd>
+
+  <dt>
+    <a href="eu/webtoolkit/jwt/WNavigationBar.html">WNavigationBar</a>
+  </dt>
+  <dd>
+    A navigation bar styles a menu as a typical top-level bar
+    (currently only styled in the Bootstrap Theme).
+  </dd>
+
+  <dt>
+    <a href="eu/webtoolkit/jwt/WPopupWidget.html">WPopupWidget</a>
+  </dt>
+  <dd>
+    A base class to simplify the creation of popup widgets that
+    typically assist in editing or provide circumstancial information
+    for another widget.
+  </dd>
+
+  <dt>
+    <a href="eu/webtoolkit/jwt/WSplitButton.html">WSplitButton</a>
+  </dt>
+  <dd>
+    A split button, which combines a button and a popup menu
+    (currently only styled in the Bootstrap Theme).
+  </dd>
+
+  <dt>
+    <a href="eu/webtoolkit/jwt/WToolBar.html">WToolBar</a>
+  </dt>
+  <dd>
+    A button tool bar (currently only styled in the Bootstrap Theme)
+  </dd>
+</dl>
+
+<h3>B) Main improvements:</h3>
+
+<dl>
+  <dt>
+    <a href="eu/webtoolkit/jwt/WDatePicker.html">WDatePicker</a>,
+    <a href="eu/webtoolkit/jwt/WSuggestionPopup.html">WSuggestionPopup</a>
+  </dt>
+  <dd>
+    The setGlobalPopup() functionality has been deprecated and does no
+    longer have any effect, since a new improved algorithm is being
+    used to anchor the popup to the DOM which no longer requires this
+    workaround.
+  </dd>
+
+  <dt>
+    <a href="eu/webtoolkit/jwt/WDialog.html">WDialog</a>
+  </dt>
+  <dd>
+    Addition of a getFooter() method that returns a container for dialog
+    footer elements, typically buttons.
+  </dd>
+
+  <dt>
+    <a href="eu/webtoolkit/jwt/WFormModel.html">WFormModel</a>
+  </dt>
+  <dd>
+    Addition of a getValidator() function that returns the validator for
+    a field set using setValidator(), 
+  </dd>
+
+  <dt>
+    <a href="eu/webtoolkit/jwt/WPushButton.html">WPushButton</a>
+  </dt>
+  <dd>
+    A push button can now act as a toggle button, using setCheckable()
+    and related API (currently only styled in the Bootstrap Theme) and
+    can be linked to a popup menu using setMenu().
+  </dd>
+
+  <dt>
+    <a href="eu/webtoolkit/jwt/WStackedWidget.html">WStackedWidget</a>
+  </dt>
+  <dd>
+    When switching between current widgets, the stacked widget will
+    now record and restore the current scroll position, providing a
+    much improved user experience when using the stacked widget for
+    the 'main' contents of an application.
+  </dd>
+
+  <dt>
+    <a href="eu/webtoolkit/jwt/WStringListModel.html">WStringListModel</a>
+  </dt>
+  <dd>
+    Full support was added for storing data of all roles, lifting the
+    requirement to use another model such as WStandardItemModel for
+    simple MVC widgets like WComboBox or WSuggestionPopup simply to be
+    able to store UserRole data.
+  </dd>
+
+  <dt>
+    <a href="eu/webtoolkit/jwt/WTemplate.html">WTemplate</a>
+  </dt>
+  <dd>
+    Added a new standard function (Functions.block) which allows the
+    definition and use of a macro block inside a placeholder, which is
+    in particular useful for forms which have repetitive formatting
+    for each field.
+  </dd>
+
+  <dt>
+    <a href="eu/webtoolkit/jwt/WTemplateFormView.html">WTemplateFormView</a>
+  </dt>
+  <dd>
+    Several API improvements: A new setFormWidget() allows the
+    definition of the form widget for editing a field which
+    is a more useful alternative compared to reimplement
+    createFormWidget(). It also allows the optional
+    definition of an interface to update the view/model values, which
+    avoids the need for specializing updateViewField() and
+    updateModelField() these latter two functions have been deprecated
+    in favour of two new functions updateViewValue() and
+    updateModelValue() which only update the value but not other
+    aspects such as visibility, validation state, or messages.
+  </dd>
+</dl>
+
+<h3>C) Non-backwards compatible changes</h3>
+
+<dl>
+  <dt>
+    <a href="eu/webtoolkit/jwt/WMenuItem.html">WMenuItem</a>
+  </dt>
+  <dd>
+    While in previous version of JWt, this class was only a data class
+    that held the information related to an item, in 3.3.0 we modified
+    this so that this class represents the widget itself. If you were
+    redefining protected methods to customize the widget
+    (i.e. createItemWidget() and updateItemWidget()), then this will no
+    longer work as expected. The new system should be easier to
+    customize (since you can simply specialize WMenuItem itself).
+    In addition, we've simplified the rendering of a menu item so that
+    a redundant layer of spans (or div's) has been removed. It makes
+    the menu more consistent with the way CSS designers expect a menu
+    to rendered, and this was done (you can guess the theme of this
+    release by now ?) to be compatible with bootstrap's CSS styles.
+  </dd>
+
+  <dt>
+    <a href="eu/webtoolkit/jwt/WCalendar.html">WCalendar</a>
+  </dt>
+  <dd>
+    The markup for this class has changed, and thus customized CSS
+    will need to be updated.
+  </dd>
+
+  <dt>
+    <a href="eu/webtoolkit/jwt/WMenuItem.html">WPopupMenuItem</a>
+  </dt>
+  <dd>
+    The popup menu item class has been merged with WMenuItem (and
+    WPopupMenu is now a specialized WMenu). This should not have
+    noticable API changes, except for the changes in markup and CSS
+    documented above.
+  </dd>
+  
+  <dt>
+    <a href="eu/webtoolkit/jwt/WTreeNode.html">WTreeNode</a>,
+    <a href="eu/webtoolkit/jwt/WTreeTable.html">WTreeTable</a>
+    <a href="eu/webtoolkit/jwt/WTreeView.html">WTreeView</a>
+  </dt>
+  <dd>
+    The markup for tree rendering has been changed (to using nested
+    unordered list instead of nested tables), and thus customized CSS
+    will need to be updated. The only API consequence is that
+    WTreeNode.getLabelArea() is no longer returning a WTableCell but
+    instead a WContainerWidget.
+  </dd>
+</dl>
+<hr>
 
 <h2>Release 3.2.3 (November 1, 2012)</h2>
 

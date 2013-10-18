@@ -46,6 +46,7 @@ class WWidgetCanvasPainter extends WWidgetPainter {
 		canvas.setAttribute("width", wstr);
 		canvas.setAttribute("height", hstr);
 		result.addChild(canvas);
+		this.widget_.sizeChanged_ = false;
 		WCanvasPaintDevice canvasDevice = ((device) instanceof WCanvasPaintDevice ? (WCanvasPaintDevice) (device)
 				: null);
 		DomElement text = null;

@@ -61,33 +61,6 @@ import org.slf4j.LoggerFactory;
  * </div></td>
  * </tr>
  * </table>
- * <p>
- * <h3>CSS</h3>
- * <p>
- * The calendar is styled by the current CSS theme. The look can be overridden
- * using the <code>Wt-calendar</code> CSS class and the following selectors:
- * <p>
- * <div class="fragment">
- * 
- * <pre class="fragment">
- * .Wt-cal table       : The table
- * .Wt-cal table.d1    : The table (single letter day headers)
- * .Wt-cal table.d3    : The table (three letter day headers)
- * .Wt-cal table.dlong : The table (long day headers)
- * 
- * .Wt-cal caption	    : The caption (containing the navigation buttons)
- * .Wt-cal-year        : The caption year in-place-edit
- * 
- * .Wt-cal th          : Header cell (week day)
- * 
- * .Wt-cal td          : Day cell
- * .Wt-cal-oom         : Out-of-month day
- * .Wt-cal-oor         : Out-of-range day (day &lt; bottom or day &gt; top)
- * .Wt-cal-sel         : Selected day
- * .Wt-cal-now         : Today day
- * </pre>
- * 
- * </div>
  */
 public class WCalendar extends WCompositeWidget {
 	private static Logger logger = LoggerFactory.getLogger(WCalendar.class);
@@ -362,9 +335,7 @@ public class WCalendar extends WCompositeWidget {
 	/**
 	 * Sets the first day of the week.
 	 * <p>
-	 * Possible values or 1 to 7, as accepted by
-	 * {@link WDate#getShortDayName(int weekday, boolean localized)
-	 * WDate#getShortDayName()}.
+	 * Possible values or 1 to 7, as accepted by {@link }.
 	 * <p>
 	 * The default value is 1 (&quot;Monday&quot;).
 	 */
@@ -603,10 +574,20 @@ public class WCalendar extends WCompositeWidget {
 							.getWebWidget())
 							: null);
 					if (iw != null && iw != w) {
-						this.cellClickMapper_.mapConnect(iw.clicked(),
-								new WCalendar.Coordinate(i, j));
-						this.cellDblClickMapper_.mapConnect(iw.doubleClicked(),
-								new WCalendar.Coordinate(i, j));
+						if (this.clicked().isConnected()
+								|| this.selectionMode_ != SelectionMode.ExtendedSelection
+								&& this.singleClickSelect_
+								&& this.activated().isConnected()) {
+							this.cellClickMapper_.mapConnect(iw.clicked(),
+									new WCalendar.Coordinate(i, j));
+						}
+						if (this.selectionMode_ != SelectionMode.ExtendedSelection
+								&& !this.singleClickSelect_
+								&& this.activated().isConnected()) {
+							this.cellDblClickMapper_.mapConnect(iw
+									.doubleClicked(), new WCalendar.Coordinate(
+									i, j));
+						}
 					}
 					d = d.addDays(1);
 				}
@@ -727,7 +708,7 @@ public class WCalendar extends WCompositeWidget {
 		this.currentMonth_ = currentDay.getMonth();
 		StringBuilder text = new StringBuilder();
 		text
-				.append("<table class=\"${table-class}\" cellspacing=\"0\" cellpadding=\"0\"><caption>${nav-prev} ${month} ${year} ${nav-next}</caption><tr>");
+				.append("<table class=\"days ${table-class}\" cellspacing=\"0\" cellpadding=\"0\"><tr><th class=\"caption\">${nav-prev}</th><th class=\"caption\"colspan=\"5\">${month} ${year}</th><th class=\"caption\">${nav-next}</th></tr><tr>");
 		for (int j = 0; j < 7; ++j) {
 			text.append("<th title=\"${t").append(j).append(
 					"}\" scope=\"col\">${d").append(j).append("}</th>");
@@ -793,7 +774,7 @@ public class WCalendar extends WCompositeWidget {
 	private void renderMonth() {
 		this.needRenderMonth_ = true;
 		if (this.isRendered()) {
-			this.askRerender();
+			this.scheduleRender();
 		}
 	}
 
@@ -876,7 +857,10 @@ public class WCalendar extends WCompositeWidget {
 		if (this.isInvalid(d)) {
 			return;
 		}
-		this.clicked().trigger(d);
-		this.activated().trigger(d);
+		this.selectInCurrentMonth(d);
+		if (this.selectionMode_ != SelectionMode.ExtendedSelection
+				&& !this.singleClickSelect_) {
+			this.activated().trigger(d);
+		}
 	}
 }

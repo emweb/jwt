@@ -34,13 +34,16 @@ public class Coordinates {
 	 */
 	public int y;
 
-	// public ;
 	/**
 	 * Constructor.
 	 */
 	public Coordinates(int X, int Y) {
 		this.x = X;
 		this.y = Y;
+	}
+
+	static String concat(String prefix, int prefixLength, String s2) {
+		return prefix + s2;
 	}
 
 	static int asInt(String v) {

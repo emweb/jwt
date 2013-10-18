@@ -87,8 +87,8 @@ import org.slf4j.LoggerFactory;
  * defined how current local coordinates map onto logical coordinates.
  * <p>
  * The painter provides support for clipping using an arbitrary
- * {@link WPainterPath path}, but not that the VmlImage only has limited support
- * for clipping.
+ * {@link WPainterPath path}, but not that the WVmlImage paint device only has
+ * limited support for clipping.
  * <p>
  * 
  * @see WPaintedWidget#paintEvent(WPaintDevice paintDevice)
@@ -275,11 +275,8 @@ public class WPainter {
 	 *      int startAngle, int spanAngle)
 	 */
 	public void drawArc(WRectF rectangle, int startAngle, int spanAngle) {
-		WBrush oldBrush = this.getBrush().clone();
-		this.setBrush(new WBrush(BrushStyle.NoBrush));
 		this.device_.drawArc(rectangle.getNormalized(), startAngle / 16.,
 				spanAngle / 16.);
-		this.setBrush(oldBrush);
 	}
 
 	/**
@@ -388,10 +385,11 @@ public class WPainter {
 		 * Create an image which is located at the <i>uri</i>, and which has
 		 * dimensions <i>width</i> x <i>height</i>.
 		 */
-		public Image(String uri, int width, int height) {
-			this.uri_ = uri;
+		public Image(String url, int width, int height) {
+			this.url_ = "";
 			this.width_ = width;
 			this.height_ = height;
+			this.setUrl(url);
 		}
 
 		/**
@@ -401,39 +399,34 @@ public class WPainter {
 		 * the local filesystem as <i>file</i>. The image dimensions are
 		 * retrieved from the file.
 		 */
-		public Image(String uri, String fileName) {
-			this.uri_ = uri;
-			List<Integer> header = FileUtils.fileHeader(fileName, 25);
-			if (header.size() != 0) {
-				String mimeType = ImageUtils.identifyImageMimeType(header);
-				if (mimeType.equals("image/png")) {
-					this.width_ = (((int) header.get(16) << 8 | (int) header
-							.get(17)) << 8 | (int) header.get(18)) << 8
-							| (int) header.get(19);
-					this.height_ = (((int) header.get(20) << 8 | (int) header
-							.get(21)) << 8 | (int) header.get(22)) << 8
-							| (int) header.get(23);
-				} else {
-					if (mimeType.equals("image/gif")) {
-						this.width_ = (int) header.get(7) << 8
-								| (int) header.get(6);
-						this.height_ = (int) header.get(9) << 8
-								| (int) header.get(8);
-					} else {
-						throw new WException("'" + fileName
-								+ "': unsupported file format");
-					}
+		public Image(String url, String fileName) {
+			this.url_ = "";
+			this.setUrl(url);
+			if (DataUri.isDataUri(url)) {
+				DataUri uri = new DataUri(url);
+				WPoint size = ImageUtils.getSize(uri.data);
+				if (size.getX() == 0 || size.getY() == 0) {
+					throw new WException("data url: (" + uri.mimeType
+							+ "): could not determine image size");
 				}
+				this.width_ = size.getX();
+				this.height_ = size.getY();
 			} else {
-				throw new WException("'" + fileName + "': could not read");
+				WPoint size = ImageUtils.getSize(fileName);
+				if (size.getX() == 0 || size.getY() == 0) {
+					throw new WException("'" + fileName
+							+ "': could not determine image size");
+				}
+				this.width_ = size.getX();
+				this.height_ = size.getY();
 			}
 		}
 
 		/**
-		 * Returns the uri.
+		 * Returns the url.
 		 */
 		public String getUri() {
-			return this.uri_;
+			return this.url_;
 		}
 
 		/**
@@ -450,9 +443,18 @@ public class WPainter {
 			return this.height_;
 		}
 
-		private String uri_;
+		private String url_;
 		private int width_;
 		private int height_;
+
+		private void setUrl(String url) {
+			WApplication app = WApplication.getInstance();
+			if (app != null) {
+				this.url_ = app.resolveRelativeUrl(url);
+			} else {
+				this.url_ = url;
+			}
+		}
 	}
 
 	/**
@@ -1205,8 +1207,13 @@ public class WPainter {
 	 * clip path set using {@link WPainter#setClipPath(WPainterPath clipPath)
 	 * setClipPath()}.
 	 * <p>
-	 * <code>Note:</code> Clipping is not supported for the VML renderer.
 	 * <p>
+	 * <i><b>Note: </b>Clipping support is limited for the VML renderer. Only
+	 * clipping with a rectangle is supported for the VML renderer (see
+	 * {@link WPainterPath#addRect(WRectF rectangle) WPainterPath#addRect()}).
+	 * The rectangle must, after applying the combined transformation system, be
+	 * aligned with the window.</i>
+	 * </p>
 	 * 
 	 * @see WPainter#hasClipping()
 	 * @see WPainter#setClipPath(WPainterPath clipPath)
@@ -1224,8 +1231,9 @@ public class WPainter {
 	/**
 	 * Returns whether clipping is enabled.
 	 * <p>
-	 * <code>Note:</code> Clipping is not supported for the VML renderer.
 	 * <p>
+	 * <i><b>Note: </b>Clipping support is limited for the VML renderer.</i>
+	 * </p>
 	 * 
 	 * @see WPainter#setClipping(boolean enable)
 	 * @see WPainter#setClipPath(WPainterPath clipPath)
@@ -1242,11 +1250,9 @@ public class WPainter {
 	 * {@link WPainter#setClipping(boolean enable) setClipping()}. The path is
 	 * specified in local coordinates.
 	 * <p>
-	 * <i>Note: Only clipping with a rectangle is supported for the VML renderer
-	 * (see {@link WPainterPath#addRect(WRectF rectangle)
-	 * WPainterPath#addRect()}). The rectangle must, after applying the combined
-	 * transformation system, be aligned with the window.</i>
 	 * <p>
+	 * <i><b>Note: </b>Clipping support is limited for the VML renderer.</i>
+	 * </p>
 	 * 
 	 * @see WPainter#getClipPath()
 	 * @see WPainter#setClipping(boolean enable)
@@ -1609,6 +1615,7 @@ public class WPainter {
 		}
 	}
 
+	// private WPainter(WPainter anon1) ;
 	private WPaintDevice device_;
 	private WRectF viewPort_;
 	private WRectF window_;

@@ -122,12 +122,18 @@ public class WKeyEvent implements WAbstractEvent {
 		return new WKeyEvent(jsEvent);
 	}
 
+	static WKeyEvent templateEvent = new WKeyEvent();
+
 	WKeyEvent(JavaScriptEvent jsEvent) {
 		super();
 		this.jsEvent_ = jsEvent;
 	}
 
 	private JavaScriptEvent jsEvent_;
+
+	static String concat(String prefix, int prefixLength, String s2) {
+		return prefix + s2;
+	}
 
 	static int asInt(String v) {
 		return Integer.parseInt(v);
@@ -189,6 +195,4 @@ public class WKeyEvent implements WAbstractEvent {
 			return;
 		}
 	}
-
-	static WKeyEvent templateEvent = new WKeyEvent();
 }

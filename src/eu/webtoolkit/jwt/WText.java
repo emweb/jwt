@@ -25,7 +25,7 @@ import org.slf4j.LoggerFactory;
  * 
  * The text is provided through a {@link WString}, which may either hold a
  * literal text, or a key to localized text which is looked up in locale
- * dependent XML files (see {@link WString#tr(String key) WString#tr()}).
+ * dependent XML files (see {@link }).
  * <p>
  * Use {@link WText#setTextFormat(TextFormat textFormat) setTextFormat()} to
  * configure the textFormat of the text. The default textFormat is
@@ -74,12 +74,10 @@ public class WText extends WInteractWidget {
 	 */
 	public WText(WContainerWidget parent) {
 		super(parent);
-		this.text_ = new WString();
-		this.textFormat_ = TextFormat.XHTMLText;
+		this.text_ = new WText.RichText();
 		this.flags_ = new BitSet();
 		this.padding_ = null;
 		this.flags_.set(BIT_WORD_WRAP);
-		;
 	}
 
 	/**
@@ -96,9 +94,8 @@ public class WText extends WInteractWidget {
 	 * Creates a text widget with given text.
 	 * <p>
 	 * The textFormat is set to {@link TextFormat#XHTMLText}, unless the
-	 * <code>text</code> is literal (not created using
-	 * {@link WString#tr(String key) WString#tr()}) and it could not be parsed
-	 * as valid XML. In that case the textFormat is set to
+	 * <code>text</code> is literal (not created using {@link }) and it could not
+	 * be parsed as valid XML. In that case the textFormat is set to
 	 * {@link TextFormat#PlainText}.
 	 * <p>
 	 * Therefore, if you wish to use {@link TextFormat#XHTMLText}, but cannot be
@@ -111,12 +108,10 @@ public class WText extends WInteractWidget {
 	 */
 	public WText(CharSequence text, WContainerWidget parent) {
 		super(parent);
-		this.text_ = new WString();
-		this.textFormat_ = TextFormat.XHTMLText;
+		this.text_ = new WText.RichText();
 		this.flags_ = new BitSet();
 		this.padding_ = null;
 		this.flags_.set(BIT_WORD_WRAP);
-		;
 		this.setText(text);
 	}
 
@@ -134,8 +129,7 @@ public class WText extends WInteractWidget {
 	 * Creates a text widget with given text and format.
 	 * <p>
 	 * If <i>textFormat</i> is {@link TextFormat#XHTMLText} and
-	 * <code>text</code> is not literal (not created using
-	 * {@link WString#tr(String key) WString#tr()}), then if the
+	 * <code>text</code> is not literal (not created using {@link }), then if the
 	 * <code>text</code> could not be parsed as valid XML, the textFormat is
 	 * changed to {@link TextFormat#PlainText}.
 	 * <p>
@@ -149,12 +143,11 @@ public class WText extends WInteractWidget {
 	 */
 	public WText(CharSequence text, TextFormat format, WContainerWidget parent) {
 		super(parent);
-		this.text_ = new WString();
-		this.textFormat_ = format;
+		this.text_ = new WText.RichText();
 		this.flags_ = new BitSet();
 		this.padding_ = null;
+		this.text_.format = format;
 		this.flags_.set(BIT_WORD_WRAP);
-		;
 		this.setText(text);
 	}
 
@@ -187,18 +180,17 @@ public class WText extends WInteractWidget {
 	 * @see WText#setText(CharSequence text)
 	 */
 	public WString getText() {
-		return this.text_;
+		return this.text_.text;
 	}
 
 	/**
 	 * Sets the text.
 	 * <p>
 	 * When the current format is {@link TextFormat#XHTMLText}, and
-	 * <code>text</code> is literal (not created using
-	 * {@link WString#tr(String key) WString#tr()}), it is parsed using an XML
-	 * parser which discards malicious tags and attributes silently. When the
-	 * parser encounters an XML parse error, the textFormat is changed to
-	 * {@link TextFormat#PlainText}.
+	 * <code>text</code> is literal (not created using {@link }), it is parsed
+	 * using an XML parser which discards malicious tags and attributes
+	 * silently. When the parser encounters an XML parse error, the textFormat
+	 * is changed to {@link TextFormat#PlainText}.
 	 * <p>
 	 * Returns whether the text could be set using the current textFormat. A
 	 * return value of <code>false</code> indicates that the textFormat was
@@ -209,17 +201,13 @@ public class WText extends WInteractWidget {
 	 * @see WText#setText(CharSequence text)
 	 */
 	public boolean setText(CharSequence text) {
-		if (canOptimizeUpdates() && text.equals(this.text_)) {
+		if (canOptimizeUpdates() && text.equals(this.text_.text)) {
 			return true;
 		}
-		this.text_ = WString.toWString(text);
-		boolean textok = this.isCheckWellFormed();
-		if (!textok) {
-			this.textFormat_ = TextFormat.PlainText;
-		}
+		boolean ok = this.text_.setText(text);
 		this.flags_.set(BIT_TEXT_CHANGED);
-		this.repaint(EnumSet.of(RepaintFlag.RepaintInnerHtml));
-		return textok;
+		this.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
+		return ok;
 	}
 
 	/**
@@ -229,28 +217,17 @@ public class WText extends WInteractWidget {
 	 * plain text, which is displayed literally, or as XHTML-markup.
 	 * <p>
 	 * When changing the textFormat to {@link TextFormat#XHTMLText}, and the
-	 * current text is literal (not created using {@link WString#tr(String key)
-	 * WString#tr()}), the current text is parsed using an XML parser which
-	 * discards malicious tags and attributes silently. When the parser
-	 * encounters an XML parse error, the textFormat is left unchanged, and this
-	 * method returns false.
+	 * current text is literal (not created using {@link }), the current text is
+	 * parsed using an XML parser which discards malicious tags and attributes
+	 * silently. When the parser encounters an XML parse error, the textFormat
+	 * is left unchanged, and this method returns false.
 	 * <p>
 	 * Returns whether the textFormat could be set for the current text.
 	 * <p>
 	 * The default format is {@link TextFormat#XHTMLText}.
 	 */
 	public boolean setTextFormat(TextFormat textFormat) {
-		if (this.textFormat_ != textFormat) {
-			TextFormat oldTextFormat = this.textFormat_;
-			this.textFormat_ = textFormat;
-			boolean textok = this.isCheckWellFormed();
-			if (!textok) {
-				this.textFormat_ = oldTextFormat;
-			}
-			return textok;
-		} else {
-			return true;
-		}
+		return this.text_.setFormat(textFormat);
 	}
 
 	/**
@@ -260,7 +237,7 @@ public class WText extends WInteractWidget {
 	 * @see WText#setTextFormat(TextFormat textFormat)
 	 */
 	public TextFormat getTextFormat() {
-		return this.textFormat_;
+		return this.text_.format;
 	}
 
 	/**
@@ -281,7 +258,7 @@ public class WText extends WInteractWidget {
 		if (this.flags_.get(BIT_WORD_WRAP) != wordWrap) {
 			this.flags_.set(BIT_WORD_WRAP, wordWrap);
 			this.flags_.set(BIT_WORD_WRAP_CHANGED);
-			this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyAttribute));
+			this.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
 		}
 	}
 
@@ -293,6 +270,56 @@ public class WText extends WInteractWidget {
 	 */
 	public boolean isWordWrap() {
 		return this.flags_.get(BIT_WORD_WRAP);
+	}
+
+	/**
+	 * Specifies how text is aligned.
+	 * <p>
+	 * Only the horizontal alignment can be specified. Note that there is no way
+	 * to specify vertical alignment. You can put the text in a layout with
+	 * vertical alignment options though, or (misuse) the line-height CSS
+	 * property for single line texts.
+	 */
+	public void setTextAlignment(AlignmentFlag textAlignment) {
+		this.flags_.clear(BIT_TEXT_ALIGN_LEFT);
+		this.flags_.clear(BIT_TEXT_ALIGN_CENTER);
+		this.flags_.clear(BIT_TEXT_ALIGN_RIGHT);
+		switch (textAlignment) {
+		case AlignLeft:
+			this.flags_.set(BIT_TEXT_ALIGN_LEFT);
+			break;
+		case AlignCenter:
+			this.flags_.set(BIT_TEXT_ALIGN_CENTER);
+			break;
+		case AlignRight:
+			this.flags_.set(BIT_TEXT_ALIGN_RIGHT);
+			break;
+		default:
+			logger.error(new StringWriter().append(
+					"setTextAlignment(): illegal value for textAlignment")
+					.toString());
+			return;
+		}
+		this.flags_.set(BIT_TEXT_ALIGN_CHANGED);
+		this.repaint();
+	}
+
+	/**
+	 * Returns the alignment of children.
+	 * <p>
+	 * 
+	 * @see WText#setTextAlignment(AlignmentFlag textAlignment)
+	 */
+	public AlignmentFlag getTextAlignment() {
+		if (this.flags_.get(BIT_TEXT_ALIGN_CENTER)) {
+			return AlignmentFlag.AlignCenter;
+		} else {
+			if (this.flags_.get(BIT_TEXT_ALIGN_RIGHT)) {
+				return AlignmentFlag.AlignRight;
+			} else {
+				return AlignmentFlag.AlignLeft;
+			}
+		}
 	}
 
 	/**
@@ -322,7 +349,7 @@ public class WText extends WInteractWidget {
 					"setPadding(..., Bottom) is not supported.").toString());
 		}
 		this.flags_.set(BIT_PADDINGS_CHANGED);
-		this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyAttribute));
+		this.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
 	}
 
 	/**
@@ -411,33 +438,79 @@ public class WText extends WInteractWidget {
 	}
 
 	public void refresh() {
-		if (this.text_.refresh()) {
+		if (this.text_.text.refresh()) {
 			this.flags_.set(BIT_TEXT_CHANGED);
-			this.repaint(EnumSet.of(RepaintFlag.RepaintInnerHtml));
+			this.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
 		}
 		super.refresh();
 	}
 
-	private WString text_;
-	private TextFormat textFormat_;
+	static class RichText {
+		private static Logger logger = LoggerFactory.getLogger(RichText.class);
+
+		public RichText() {
+			this.text = new WString();
+			this.format = TextFormat.XHTMLText;
+		}
+
+		public WString text;
+		public TextFormat format;
+
+		public boolean setText(CharSequence newText) {
+			this.text = WString.toWString(newText);
+			boolean ok = this.isCheckWellFormed();
+			if (!ok) {
+				this.format = TextFormat.PlainText;
+			}
+			return ok;
+		}
+
+		public boolean setFormat(TextFormat newFormat) {
+			if (this.format != newFormat) {
+				TextFormat oldFormat = this.format;
+				this.format = newFormat;
+				boolean ok = this.isCheckWellFormed();
+				if (!ok) {
+					this.format = oldFormat;
+				}
+				return ok;
+			} else {
+				return true;
+			}
+		}
+
+		public boolean isCheckWellFormed() {
+			if (this.format == TextFormat.XHTMLText && this.text.isLiteral()) {
+				return removeScript(this.text);
+			} else {
+				return true;
+			}
+		}
+
+		public String getFormattedText() {
+			if (this.format == TextFormat.PlainText) {
+				return escapeText(this.text, true).toString();
+			} else {
+				return this.text.toString();
+			}
+		}
+	}
+
+	private WText.RichText text_;
 	private static final int BIT_WORD_WRAP = 0;
 	private static final int BIT_TEXT_CHANGED = 1;
 	private static final int BIT_WORD_WRAP_CHANGED = 2;
 	private static final int BIT_PADDINGS_CHANGED = 3;
 	private static final int BIT_ENCODE_INTERNAL_PATHS = 4;
+	private static final int BIT_TEXT_ALIGN_LEFT = 5;
+	private static final int BIT_TEXT_ALIGN_CENTER = 6;
+	private static final int BIT_TEXT_ALIGN_RIGHT = 7;
+	private static final int BIT_TEXT_ALIGN_CHANGED = 8;
 	BitSet flags_;
 
-	private boolean isCheckWellFormed() {
-		if (this.textFormat_ == TextFormat.XHTMLText && this.text_.isLiteral()) {
-			return removeScript(this.text_);
-		} else {
-			return true;
-		}
-	}
-
 	private String getFormattedText() {
-		if (this.textFormat_ == TextFormat.PlainText) {
-			return escapeText(this.text_, true).toString();
+		if (this.text_.format == TextFormat.PlainText) {
+			return escapeText(this.text_.text, true).toString();
 		} else {
 			WApplication app = WApplication.getInstance();
 			if (this.flags_.get(BIT_ENCODE_INTERNAL_PATHS)
@@ -450,18 +523,18 @@ public class WText extends WInteractWidget {
 				if (app.getSession().hasSessionIdInUrl()) {
 					options.add(RefEncoderOption.EncodeRedirectTrampoline);
 				}
-				WString result = this.text_;
+				WString result = this.text_.text;
 				RefEncoder.EncodeRefs(result, options);
 				return result.toString();
 			} else {
-				return this.text_.toString();
+				return this.text_.text.toString();
 			}
 		}
 	}
 
 	private void autoAdjustInline() {
-		if (this.textFormat_ != TextFormat.PlainText && this.isInline()) {
-			String t = this.text_.toString();
+		if (this.text_.format != TextFormat.PlainText && this.isInline()) {
+			String t = this.text_.text.toString();
 			t = StringUtils.trimLeft(t);
 			if (StringUtils.startsWithIgnoreCase(t, "<div")
 					|| StringUtils.startsWithIgnoreCase(t, "<p")
@@ -484,8 +557,7 @@ public class WText extends WInteractWidget {
 		if (this.flags_.get(BIT_TEXT_CHANGED) || all) {
 			String text = this.getFormattedText();
 			if (this.flags_.get(BIT_TEXT_CHANGED) || text.length() != 0) {
-				element.setProperty(Property.PropertyInnerHTML, this
-						.getFormattedText());
+				element.setProperty(Property.PropertyInnerHTML, text);
 			}
 			this.flags_.clear(BIT_TEXT_CHANGED);
 		}
@@ -505,6 +577,27 @@ public class WText extends WInteractWidget {
 					this.padding_[1].getCssText());
 			this.flags_.clear(BIT_PADDINGS_CHANGED);
 		}
+		if (this.flags_.get(BIT_TEXT_ALIGN_CHANGED) || all) {
+			if (this.flags_.get(BIT_TEXT_ALIGN_CENTER)) {
+				element.setProperty(Property.PropertyStyleTextAlign, "center");
+			} else {
+				if (this.flags_.get(BIT_TEXT_ALIGN_RIGHT)) {
+					element.setProperty(Property.PropertyStyleTextAlign,
+							"right");
+				} else {
+					if (this.flags_.get(BIT_TEXT_ALIGN_LEFT)) {
+						element.setProperty(Property.PropertyStyleTextAlign,
+								"left");
+					} else {
+						if (!all) {
+							element.setProperty(
+									Property.PropertyStyleTextAlign, "");
+						}
+					}
+				}
+			}
+			this.flags_.clear(BIT_TEXT_ALIGN_CHANGED);
+		}
 		super.updateDom(element, all);
 	}
 
@@ -517,6 +610,7 @@ public class WText extends WInteractWidget {
 		this.flags_.clear(BIT_TEXT_CHANGED);
 		this.flags_.clear(BIT_WORD_WRAP_CHANGED);
 		this.flags_.clear(BIT_PADDINGS_CHANGED);
+		this.flags_.clear(BIT_TEXT_ALIGN_CHANGED);
 		super.propagateRenderOk(deep);
 	}
 }

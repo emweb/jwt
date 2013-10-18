@@ -23,9 +23,9 @@ class ToggleButtonConfig {
 	private static Logger logger = LoggerFactory
 			.getLogger(ToggleButtonConfig.class);
 
-	public ToggleButtonConfig(WWidget parent) {
+	public ToggleButtonConfig(WWidget parent, String styleClass) {
 		this.states_ = new ArrayList<String>();
-		this.toggleJS_ = null;
+		this.styleClass_ = styleClass;
 		this.toggleJS_ = new JSlot(parent);
 	}
 
@@ -43,13 +43,15 @@ class ToggleButtonConfig {
 			}
 			js.append('\'').append(this.states_.get(i)).append('\'');
 		}
-		js.append("), i, il;for (i=0; i<").append(
-				String.valueOf(this.states_.size())).append(
-				"; ++i) {if (s.className == states[i]) {").append(
-				app.getJavaScriptClass()).append(
-				".emit(s, 't-'+s.className);s.className = states[(i+1) % ")
+		js
+				.append("), i, il;for (i=0; i<")
+				.append(String.valueOf(this.states_.size()))
+				.append("; ++i) {if ($(s).hasClass(states[i])) {")
+				.append(app.getJavaScriptClass())
+				.append(
+						".emit(s, 't-'+states[i]);$(s).removeClass(states[i]).addClass(states[(i+1) % ")
 				.append(String.valueOf(this.states_.size())).append(
-						"];break;}}}");
+						"]);break;}}}");
 		this.toggleJS_.setJavaScript(js.toString());
 	}
 
@@ -57,6 +59,11 @@ class ToggleButtonConfig {
 		return this.states_;
 	}
 
+	public String getStyleClass() {
+		return this.styleClass_;
+	}
+
 	private List<String> states_;
 	JSlot toggleJS_;
+	private String styleClass_;
 }

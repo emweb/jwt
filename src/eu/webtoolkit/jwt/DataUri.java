@@ -1,0 +1,59 @@
+/*
+ * Copyright (C) 2009 Emweb bvba, Leuven, Belgium.
+ *
+ * See the LICENSE file for terms of use.
+ */
+package eu.webtoolkit.jwt;
+
+import java.util.*;
+import java.util.regex.*;
+import java.io.*;
+import java.lang.ref.*;
+import java.util.concurrent.locks.ReentrantLock;
+import javax.servlet.http.*;
+import javax.servlet.*;
+import eu.webtoolkit.jwt.*;
+import eu.webtoolkit.jwt.chart.*;
+import eu.webtoolkit.jwt.utils.*;
+import eu.webtoolkit.jwt.servlet.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+class DataUri {
+	private static Logger logger = LoggerFactory.getLogger(DataUri.class);
+
+	public DataUri(String uriString) {
+		this.mimeType = "";
+		this.data = new ArrayList<Byte>();
+		this.parse(uriString);
+	}
+
+	public String mimeType;
+	public List<Byte> data;
+
+	public static boolean isDataUri(String uriString) {
+		return uriString.startsWith("data:");
+	}
+
+	private void parse(String uriString) {
+		try {
+			int dataEndPos = uriString.indexOf("data:") + 5;
+			int commaPos = uriString.indexOf(",");
+			if (commaPos == -1) {
+				commaPos = dataEndPos;
+			}
+			this.mimeType = uriString.substring(dataEndPos, dataEndPos
+					+ commaPos - dataEndPos);
+			String d = uriString.substring(commaPos + 1);
+			Utils.copyList(Utils.base64Decode(d), this.data);
+			if (!this.mimeType.endsWith(";base64") || this.data.isEmpty()) {
+				throw new WException("Ill formed data URI: " + uriString);
+			} else {
+				this.mimeType = this.mimeType.substring(0, 0 + this.mimeType
+						.indexOf(";"));
+			}
+		} catch (IOException ie) {
+			ie.printStackTrace();
+		}
+	}
+}

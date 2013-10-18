@@ -52,9 +52,9 @@ public class WStackedWidget extends WContainerWidget {
 		super(parent);
 		this.animation_ = new WAnimation();
 		this.currentIndex_ = -1;
+		this.widgetsAdded_ = false;
 		this.javaScriptDefined_ = false;
 		this.loadAnimateJS_ = false;
-		;
 		this.addStyleClass("Wt-stack");
 	}
 
@@ -72,9 +72,8 @@ public class WStackedWidget extends WContainerWidget {
 		super.addWidget(widget);
 		if (this.currentIndex_ == -1) {
 			this.currentIndex_ = 0;
-		} else {
-			widget.hide();
 		}
+		this.widgetsAdded_ = true;
 	}
 
 	/**
@@ -110,9 +109,8 @@ public class WStackedWidget extends WContainerWidget {
 		super.insertWidget(index, widget);
 		if (this.currentIndex_ == -1) {
 			this.currentIndex_ = 0;
-		} else {
-			widget.hide();
 		}
+		this.widgetsAdded_ = true;
 	}
 
 	/**
@@ -156,6 +154,9 @@ public class WStackedWidget extends WContainerWidget {
 			}
 			this.loadAnimateJS();
 			WWidget previous = this.getCurrentWidget();
+			this.doJavaScript("$('#" + this.getId()
+					+ "').data('obj').adjustScroll("
+					+ this.getWidget(this.currentIndex_).getJsRef() + ");");
 			this.setJavaScriptMember("wtAutoReverse", autoReverse ? "true"
 					: "false");
 			if (previous != null) {
@@ -229,9 +230,9 @@ public class WStackedWidget extends WContainerWidget {
 			if (!animation.isEmpty()) {
 				this.addStyleClass("Wt-animated");
 			}
-			this.loadAnimateJS();
 			this.animation_ = animation;
 			this.autoReverseAnimation_ = autoReverse;
+			this.loadAnimateJS();
 		}
 	}
 
@@ -265,6 +266,15 @@ public class WStackedWidget extends WContainerWidget {
 	}
 
 	protected void render(EnumSet<RenderFlag> flags) {
+		if (this.widgetsAdded_
+				|| !EnumUtils.mask(flags, RenderFlag.RenderFull).isEmpty()) {
+			for (int i = 0; i < this.getCount(); ++i) {
+				if (this.getWidget(i).isHidden() != (this.currentIndex_ != i)) {
+					this.getWidget(i).setHidden(this.currentIndex_ != i);
+				}
+			}
+			this.widgetsAdded_ = false;
+		}
 		if (!EnumUtils.mask(flags, RenderFlag.RenderFull).isEmpty()) {
 			this.defineJavaScript();
 		}
@@ -274,6 +284,7 @@ public class WStackedWidget extends WContainerWidget {
 	private WAnimation animation_;
 	private boolean autoReverseAnimation_;
 	private int currentIndex_;
+	private boolean widgetsAdded_;
 	private boolean javaScriptDefined_;
 	private boolean loadAnimateJS_;
 
@@ -283,7 +294,7 @@ public class WStackedWidget extends WContainerWidget {
 			WApplication app = WApplication.getInstance();
 			app.loadJavaScript("js/WStackedWidget.js", wtjs1());
 			this.setJavaScriptMember(" WStackedWidget",
-					"new Wt3_2_3.WStackedWidget(" + app.getJavaScriptClass()
+					"new Wt3_3_1.WStackedWidget(" + app.getJavaScriptClass()
 							+ "," + this.getJsRef() + ");");
 			this.setJavaScriptMember(WT_RESIZE_JS, "$('#" + this.getId()
 					+ "').data('obj').wtResize");
@@ -315,7 +326,7 @@ public class WStackedWidget extends WContainerWidget {
 				JavaScriptScope.WtClassScope,
 				JavaScriptObjectType.JavaScriptConstructor,
 				"WStackedWidget",
-				"function(s,n){jQuery.data(n,\"obj\",this);var a=s.WT,o=false;this.wtResize=function(b,f,h,e){function v(j){var g=a.px(j,\"marginTop\");g+=a.px(j,\"marginBottom\");if(!a.boxSizing(j)){g+=a.px(j,\"borderTopWidth\");g+=a.px(j,\"borderBottomWidth\");g+=a.px(j,\"paddingTop\");g+=a.px(j,\"paddingBottom\")}return g}if(e&&e.set[1]){b.style.height=h+\"px\";o=true}else o=false;if(a.boxSizing(b)){h-=a.px(b,\"marginTop\");h-=a.px(b,\"marginBottom\");h-=a.px(b,\"borderTopWidth\"); h-=a.px(b,\"borderBottomWidth\");h-=a.px(b,\"paddingTop\");h-=a.px(b,\"paddingBottom\");f-=a.px(b,\"marginLeft\");f-=a.px(b,\"marginRight\");f-=a.px(b,\"borderLeftWidth\");f-=a.px(b,\"borderRightWidth\");f-=a.px(b,\"paddingLeft\");f-=a.px(b,\"paddingRight\")}var p,c;e=0;for(p=b.childNodes.length;e<p;++e){c=b.childNodes[e];if(c.nodeType==1)if(!a.isHidden(c)){var i=h-v(c);if(i>0)if(c.wtResize)c.wtResize(c,f,i);else{i=i+\"px\";if(c.style.height!=i)c.style.height=i}}}};this.wtGetPs=function(b,f,h,e){return e};this.setCurrent= function(b){var f,h,e;f=0;for(h=n.childNodes.length;f<h;++f){e=n.childNodes[f];if(e.nodeType==1)if(e!=b)e.style.display=\"none\";else{e.style.display=\"\";if(o){o=false;n.style.height=\"\"}}}}}");
+				"function(z,i){function u(c){return c.nodeType==1}jQuery.data(i,\"obj\",this);var d=z.WT,x=[],v=[];this.wtResize=function(c,a,f,e){function s(k){var g=d.px(k,\"marginTop\");g+=d.px(k,\"marginBottom\");if(!d.boxSizing(k)){g+=d.px(k,\"borderTopWidth\");g+=d.px(k,\"borderBottomWidth\");g+=d.px(k,\"paddingTop\");g+=d.px(k,\"paddingBottom\")}return g}var m=f>=0;c.lh=m&&e;c.style.height=m?f+\"px\":\"\";if(d.boxSizing(c)){f-=d.px(c,\"marginTop\");f-=d.px(c,\"marginBottom\"); f-=d.px(c,\"borderTopWidth\");f-=d.px(c,\"borderBottomWidth\");f-=d.px(c,\"paddingTop\");f-=d.px(c,\"paddingBottom\");a-=d.px(c,\"marginLeft\");a-=d.px(c,\"marginRight\");a-=d.px(c,\"borderLeftWidth\");a-=d.px(c,\"borderRightWidth\");a-=d.px(c,\"paddingLeft\");a-=d.px(c,\"paddingRight\")}var q,y,h;q=0;for(y=c.childNodes.length;q<y;++q){h=c.childNodes[q];if(u(h))if(!d.isHidden(h))if(m){var n=f-s(h);if(n>0)if(h.wtResize)h.wtResize(h,a,n,e);else{n=n+\"px\";if(h.style.height!=n){h.style.height=n;h.lh=e}}}else if(h.wtResize)h.wtResize(h, a,-1,e);else{h.style.height=\"\";h.lh=false}}};this.wtGetPs=function(c,a,f,e){return e};this.adjustScroll=function(c){var a,f,e,s=i.scrollLeft,m=i.scrollTop;a=0;for(f=i.childNodes.length;a<f;++a){e=i.childNodes[a];if(u(e))if(e!=c){if(e.style.display!=\"none\"){v[a]=s;x[a]=m}}else if(typeof v[a]!==\"undefined\"){i.scrollLeft=v[a];i.scrollTop=x[a]}else{i.scrollLeft=0;i.scrollTop=0}}};this.setCurrent=function(c){var a,f,e;this.adjustScroll(c);a=0;for(f=i.childNodes.length;a<f;++a){e=i.childNodes[a];if(u(e))if(e!= c){if(e.style.display!=\"none\")e.style.display=\"none\"}else{e.style.display=\"\";if(i.lh){i.lh=false;i.style.height=\"\"}}}}}");
 	}
 
 	static WJavaScriptPreamble wtjs2() {
@@ -323,6 +334,6 @@ public class WStackedWidget extends WContainerWidget {
 				JavaScriptScope.WtClassScope,
 				JavaScriptObjectType.JavaScriptPrototype,
 				"WStackedWidget.prototype.animateChild",
-				"function(s,n,a,o,b){function f(q){var t=[\"Moz\",\"Webkit\"],u=document.createElement(\"div\"),l,r;l=0;for(r=t.length;l<r;++l)if(t[l]+q in u.style)return t[l];return\"\"}function h(){var q,t=i.childNodes.length,u=-1,l=-1;for(q=0;q<t&&(u==-1||l==-1);++q){var r=i.childNodes[q];if(r==s)l=q;else if(r.style.display!==\"none\"&&!$(r).hasClass(\"out\"))u=q}return{from:u,to:l}}function e(){$(m).removeClass(k+\" out\");m.style.display=\"none\"; m.style[c+\"Duration\"]=\"\";m.style[c+\"TimingFunction\"]=\"\";$(d).removeClass(k+\" in\");d.style.left=\"\";d.style.width=\"\";d.style.top=\"\";d.style.height=\"\";d.style.position=\"\";d.style[c+\"Duration\"]=\"\";d.style[c+\"TimingFunction\"]=\"\"}var v=[\"ease\",\"linear\",\"ease-in\",\"ease-out\",\"ease-in-out\"],p=f(\"AnimationDuration\"),c=p+\"Animation\";p=p==\"Moz\"?\"animationend\":\"webkitAnimationEnd\";if(b.display!==\"none\"){var i=s.parentNode,j=i.wtAutoReverse,g=h();if(!(g.from==-1||g.to==-1||g.from==g.to)){var m=i.childNodes[g.from], d=i.childNodes[g.to],w=i.offsetHeight,x=i.offsetWidth;if($(m).hasClass(\"in\"))$(m).one(p,function(){animateChild(s,n,a,o,b)});else{d.style.left=\"0px\";d.style.top=\"0px\";d.style.width=x+\"px\";d.style.height=w+\"px\";d.style.position=\"absolute\";d.style.display=b.display;j=j&&g.to<g.from;var k=\"\";switch(n&255){case 1:j=!j;case 2:k=\"slide\";break;case 3:k=\"slideup\";break;case 4:k=\"slidedown\";break;case 5:k=\"pop\";break}if(n&256)k+=\" fade\";if(j)k+=\" reverse\";m.style[c+\"Duration\"]=o+\"ms\";d.style[c+\"Duration\"]= o+\"ms\";m.style[c+\"TimingFunction\"]=v[[0,1,3,2,4,5][a]];d.style[c+\"TimingFunction\"]=v[a];$(m).addClass(k+\" out\");$(d).addClass(k+\" in\");$(d).one(p,e)}}}}");
+				"function(z,i,u,d,x,v){var c=function(a,f,e,s,m,q){function y(){var t,D=g.childNodes.length,A=-1,B=-1;for(t=0;t<D&&(A==-1||B==-1);++t){var C=g.childNodes[t];if(C==f)B=t;else if(C.style.display!==\"none\"&&!$(C).hasClass(\"out\"))A=t}return{from:A,to:B}}function h(){$(j).removeClass(l+\" out\");j.style.display=\"none\";j.style[a.styleAttribute(\"animation-duration\")]=\"\";j.style[a.styleAttribute(\"animation-timing-function\")]=\"\"; $(b).removeClass(l+\" in\");b.style.left=\"\";b.style.width=\"\";b.style.top=\"\";b.style.height=\"\";b.style.position=\"\";b.style[a.styleAttribute(\"animation-duration\")]=\"\";b.style[a.styleAttribute(\"animation-timing-function\")]=\"\"}var n=[\"ease\",\"linear\",\"ease-in\",\"ease-out\",\"ease-in-out\"],k=a.vendorPrefix(a.styleAttribute(\"animation-duration\"))==\"Webkit\"?\"webkitAnimationEnd\":\"animationend\";if(q.display!==\"none\"){var g=f.parentNode,w=g.wtAutoReverse,r=y();if(!(r.from==-1||r.to==-1||r.from==r.to)){var j=g.childNodes[r.from], b=g.childNodes[r.to],o=g.scrollHeight,p=g.scrollWidth;if($(j).hasClass(\"in\"))$(j).one(k,function(){c(a,f,e,s,m,q)});else{o-=a.px(g,\"paddingTop\");o-=a.px(g,\"paddingBottom\");o-=a.px(b,\"marginTop\");o-=a.px(b,\"marginBottom\");o-=a.px(b,\"borderTopWidth\");o-=a.px(b,\"borderBottomWidth\");o-=a.px(b,\"paddingTop\");o-=a.px(b,\"paddingBottom\");p-=a.px(g,\"paddingLeft\");p-=a.px(g,\"paddingRight\");p-=a.px(b,\"marginLeft\");p-=a.px(b,\"marginRight\");p-=a.px(b,\"borderLeftWidth\");p-=a.px(b,\"borderRightWidth\");p-=a.px(b,\"paddingLeft\"); p-=a.px(b,\"paddingRight\");b.style.left=j.style.left||a.px(g,\"paddingLeft\");b.style.top=j.style.top||a.px(g,\"paddingTop\");b.style.width=p+\"px\";b.style.height=o+\"px\";b.style.position=\"absolute\";b.style.opacity=\"0\";b.style.display=q.display;w=w&&r.to<r.from;var l=\"\";switch(e&255){case 1:w=!w;case 2:l=\"slide\";break;case 3:l=\"slideup\";break;case 4:l=\"slidedown\";break;case 5:l=\"pop\";break}if(e&256)l+=\" fade\";if(w)l+=\" reverse\";j.style[a.styleAttribute(\"animation-duration\")]=m+\"ms\";b.style[a.styleAttribute(\"animation-duration\")]= m+\"ms\";j.style[a.styleAttribute(\"animation-timing-function\")]=n[[0,1,3,2,4,5][s]];b.style[a.styleAttribute(\"animation-timing-function\")]=n[s];$(j).addClass(l+\" out\");$(b).addClass(l+\" in\");b.style.opacity=\"\";$(b).one(k,h)}}}};c(z,i,u,d,x,v)}");
 	}
 }

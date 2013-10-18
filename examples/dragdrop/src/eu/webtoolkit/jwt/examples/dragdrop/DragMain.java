@@ -7,6 +7,7 @@ package eu.webtoolkit.jwt.examples.dragdrop;
 
 import eu.webtoolkit.jwt.WApplication;
 import eu.webtoolkit.jwt.WEnvironment;
+import eu.webtoolkit.jwt.WLink;
 import eu.webtoolkit.jwt.WText;
 import eu.webtoolkit.jwt.WtServlet;
 
@@ -28,7 +29,7 @@ public class DragMain extends WtServlet {
 
         new DragExample(app.getRoot());
 
-        app.useStyleSheet("style/dragdrop.css");
+        app.useStyleSheet(new WLink("style/dragdrop.css"));
 
         return app;
     }

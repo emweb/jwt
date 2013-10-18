@@ -19,6 +19,7 @@ import eu.webtoolkit.jwt.WCheckBox;
 import eu.webtoolkit.jwt.WColor;
 import eu.webtoolkit.jwt.WComboBox;
 import eu.webtoolkit.jwt.WContainerWidget;
+import eu.webtoolkit.jwt.WDate;
 import eu.webtoolkit.jwt.WDoubleValidator;
 import eu.webtoolkit.jwt.WFormWidget;
 import eu.webtoolkit.jwt.WIntValidator;
@@ -116,7 +117,7 @@ public class ChartConfig extends WContainerWidget {
 
         WPanel p = list.addWidget("Chart properties", chartConfig);
         p.setMargin(WLength.Auto, Side.Left, Side.Right);
-        p.resize(new WLength(750), WLength.Auto);
+        p.resize(new WLength(880), WLength.Auto);
         p.setMargin(20, Side.Top, Side.Bottom);
 
         if (chart_.isLegendEnabled())
@@ -242,7 +243,7 @@ public class ChartConfig extends WContainerWidget {
         p = list.addWidget("Series properties", seriesConfig);
         p.expand();
         p.setMargin(WLength.Auto, Side.Left, Side.Right);
-        p.resize(new WLength(750), WLength.Auto);
+        p.resize(new WLength(880), WLength.Auto);
         p.setMargin(20, Side.Top, Side.Bottom);
 
         // ---- Axis properties ----
@@ -312,13 +313,13 @@ public class ChartConfig extends WContainerWidget {
                     && axis.getMaximum() == WAxis.AUTO_MAXIMUM;
 
             sc.minimumEdit = new WLineEdit(axisConfig.getElementAt(j, 4));
-            sc.minimumEdit.setText(axis.getMinimum() + "");
+            sc.minimumEdit.setText(gregDays(1986) + "");
             sc.minimumEdit.setValidator(anyNumberValidator);
             sc.minimumEdit.setEnabled(!autoValues);
             connectSignals(sc.minimumEdit);
 
             sc.maximumEdit = new WLineEdit(axisConfig.getElementAt(j, 5));
-            sc.maximumEdit.setText(axis.getMaximum() + "");
+            sc.maximumEdit.setText(gregDays(1988) + "");
             sc.maximumEdit.setValidator(anyNumberValidator);
             sc.maximumEdit.setEnabled(!autoValues);
             connectSignals(sc.maximumEdit);
@@ -362,7 +363,7 @@ public class ChartConfig extends WContainerWidget {
 
         p = list.addWidget("Axis properties", axisConfig);
         p.setMargin(WLength.Auto, Side.Left, Side.Right);
-        p.resize(new WLength(750), WLength.Auto);
+        p.resize(new WLength(880), WLength.Auto);
         p.setMargin(20, Side.Top, Side.Bottom);
 
         /*
@@ -571,22 +572,41 @@ public class ChartConfig extends WContainerWidget {
                 }
             }
 
-            if (sc.autoEdit.isChecked())
-                axis.setRange(WAxis.AUTO_MINIMUM, WAxis.AUTO_MAXIMUM);
-            else {
-                if (validate(sc.minimumEdit) && validate(sc.maximumEdit)) {
-                    double min = getDouble(sc.minimumEdit);
-                    double max = getDouble(sc.maximumEdit);
+            if (sc.autoEdit.isChecked()){
+            	if(axis.getScale() == AxisScale.DateScale){
+            		axis.setRange(gregDays(1986), gregDays(1988));
+            	} else{
+            		axis.setRange(WAxis.AUTO_MINIMUM, WAxis.AUTO_MAXIMUM);
+            	}
+            }else {
+            	if (validate(sc.minimumEdit) && validate(sc.maximumEdit)) {
+            		double min = getDouble(sc.minimumEdit);
+            		double max = getDouble(sc.maximumEdit);
 
-                    if (axis.getScale() == AxisScale.LogScale)
-                        if (min <= 0)
-                            min = 0.0001;
+            		if (axis.getScale() == AxisScale.LogScale)
+            			if (min <= 0)
+            				min = 0.0001;
 
-                    max = Math.max(min, max);
+            		max = Math.max(min, max);
 
-                    axis.setRange(min, max);
-                }
+            		if (axis.getScale() == AxisScale.DateScale){
+            			double gregDaysMin = gregDays(1900);
+            			double gregDaysMax = gregDays(3000);
 
+            			boolean greg_year_validation =
+            					(min > gregDaysMin &&
+            							min < gregDaysMax &&
+            							max > gregDaysMin &&
+            							max < gregDaysMax);
+
+            			if(!greg_year_validation){
+            				min = gregDaysMin;
+            				max = gregDaysMax;
+            			}
+            		}
+
+            		axis.setRange(min, max);
+            	}
             }
 
             if (validate(sc.labelAngleEdit)) {
@@ -645,5 +665,11 @@ public class ChartConfig extends WContainerWidget {
         } catch (NumberFormatException nfe) {
             return null;
         }
+    }
+
+    private double gregDays(int year){
+    	//the number of julian days until year
+    	WDate ans = new WDate(year,1,1);
+    	return (double)ans.toJulianDay();
     }
 }

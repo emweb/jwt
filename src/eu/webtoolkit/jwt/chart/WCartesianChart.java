@@ -236,8 +236,9 @@ public class WCartesianChart extends WAbstractChart {
 	/**
 	 * Sets the the model column for the X series.
 	 * <p>
-	 * Use this method to specify the data for the X series. For a
-	 * {@link ChartType#ScatterPlot ScatterPlot} this is mandatory, while for a
+	 * Use this method to specify the default data for the X series. For a
+	 * {@link ChartType#ScatterPlot ScatterPlot} this is mandatory if an X
+	 * series is not specified for every WDataSeries. For a
 	 * {@link ChartType#CategoryChart CategoryChart}, if not specified, an
 	 * increasing series of integer numbers will be used (1, 2, ...).
 	 * <p>
@@ -1016,17 +1017,40 @@ public class WCartesianChart extends WAbstractChart {
 	}
 
 	protected void modelDataChanged(WModelIndex topLeft, WModelIndex bottomRight) {
-		if (this.XSeriesColumn_ <= topLeft.getColumn()
-				&& this.XSeriesColumn_ >= bottomRight.getColumn()) {
+		if (this.XSeriesColumn_ >= topLeft.getColumn()
+				&& this.XSeriesColumn_ <= bottomRight.getColumn()) {
 			this.update();
 			return;
 		}
 		for (int i = 0; i < this.series_.size(); ++i) {
 			if (this.series_.get(i).getModelColumn() >= topLeft.getColumn()
 					&& this.series_.get(i).getModelColumn() <= bottomRight
+							.getColumn()
+					|| this.series_.get(i).XSeriesColumn() >= topLeft
+							.getColumn()
+					&& this.series_.get(i).XSeriesColumn() <= bottomRight
 							.getColumn()) {
 				this.update();
 				break;
+			}
+		}
+	}
+
+	protected void modelHeaderDataChanged(Orientation orientation, int start,
+			int end) {
+		if (orientation == Orientation.Horizontal) {
+			if (this.XSeriesColumn_ >= start && this.XSeriesColumn_ <= end) {
+				this.update();
+				return;
+			}
+			for (int i = 0; i < this.series_.size(); ++i) {
+				if (this.series_.get(i).getModelColumn() >= start
+						&& this.series_.get(i).getModelColumn() <= end
+						|| this.series_.get(i).XSeriesColumn() >= start
+						&& this.series_.get(i).XSeriesColumn() <= end) {
+					this.update();
+					break;
+				}
 			}
 		}
 	}

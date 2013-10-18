@@ -50,6 +50,8 @@ abstract class StdLayoutImpl extends StdLayoutItemImpl {
 
 	public abstract boolean itemResized(WLayoutItem item);
 
+	public abstract boolean isParentResized();
+
 	public WContainerWidget getContainer() {
 		if (this.container_ != null) {
 			return this.container_;

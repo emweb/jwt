@@ -146,12 +146,14 @@ public abstract class WFormWidget extends WInteractWidget {
 		this.validator_ = validator;
 		if (this.validator_ != null) {
 			this.validator_.addFormWidget(this);
-			if (firstValidator && !(this.getToolTip().length() == 0)) {
+			if (firstValidator) {
 				this.setToolTip(this.getToolTip());
 			}
 			this.validatorChanged();
 		} else {
-			this.removeStyleClass("Wt-invalid", true);
+			WApplication.getInstance().getTheme().applyValidationStyle(this,
+					new WValidator.Result(),
+					ValidationStyleFlag.ValidationNoStyle);
 			;
 			this.validateJs_ = null;
 			;
@@ -176,12 +178,13 @@ public abstract class WFormWidget extends WInteractWidget {
 		if (this.getValidator() != null) {
 			WValidator.Result result = this.getValidator().validate(
 					this.getValueText());
-			this.toggleStyleClass("Wt-invalid",
-					result.getState() != WValidator.State.Valid, true);
+			WApplication.getInstance().getTheme().applyValidationStyle(this,
+					result,
+					EnumSet.of(ValidationStyleFlag.ValidationInvalidStyle));
 			if (!this.validationToolTip_.equals(result.getMessage())) {
 				this.validationToolTip_ = result.getMessage();
 				this.flags_.set(BIT_VALIDATION_CHANGED);
-				this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyAttribute));
+				this.repaint();
 			}
 			this.validated_.trigger(result);
 			return result.getState();
@@ -219,7 +222,7 @@ public abstract class WFormWidget extends WInteractWidget {
 	 */
 	public void setFocus(boolean focus) {
 		this.flags_.set(BIT_GOT_FOCUS, focus);
-		this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyIEMobile));
+		this.repaint();
 		WApplication app = WApplication.getInstance();
 		if (focus) {
 			app.setFocus(this.getId(), -1, -1);
@@ -240,7 +243,7 @@ public abstract class WFormWidget extends WInteractWidget {
 	public void setTabIndex(int index) {
 		this.tabIndex_ = index;
 		this.flags_.set(BIT_TABINDEX_CHANGED);
-		this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyAttribute));
+		this.repaint();
 	}
 
 	public int getTabIndex() {
@@ -261,7 +264,7 @@ public abstract class WFormWidget extends WInteractWidget {
 	public void setReadOnly(boolean readOnly) {
 		this.flags_.set(BIT_READONLY, readOnly);
 		this.flags_.set(BIT_READONLY_CHANGED);
-		this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyAttribute));
+		this.repaint();
 	}
 
 	/**
@@ -275,13 +278,35 @@ public abstract class WFormWidget extends WInteractWidget {
 	}
 
 	/**
-	 * Sets the empty text to be shown when the field is empty.
+	 * Sets the placeholder text (<b>deprecated</b>).
 	 * <p>
 	 * 
-	 * @see WFormWidget#getEmptyText()
+	 * @deprecated use
+	 *             {@link WFormWidget#setPlaceholderText(CharSequence placeholderText)
+	 *             setPlaceholderText()} instead
 	 */
 	public void setEmptyText(CharSequence emptyText) {
-		this.emptyText_ = WString.toWString(emptyText);
+		this.setPlaceholderText(emptyText);
+	}
+
+	/**
+	 * Returns the placeholder text (<b>deprecated</b>).
+	 * <p>
+	 * 
+	 * @deprecated use {@link WFormWidget#getPlaceholderText()
+	 *             getPlaceholderText()} instead.
+	 */
+	public WString getEmptyText() {
+		return this.getPlaceholderText();
+	}
+
+	/**
+	 * Sets the placeholder text.
+	 * <p>
+	 * This sets the text that is shown when the field is empty.
+	 */
+	public void setPlaceholderText(CharSequence placeholderText) {
+		this.emptyText_ = WString.toWString(placeholderText);
 		WApplication app = WApplication.getInstance();
 		WEnvironment env = app.getEnvironment();
 		if (env.hasAjax()) {
@@ -305,17 +330,17 @@ public abstract class WFormWidget extends WInteractWidget {
 				this.removeEmptyText_ = null;
 			}
 		} else {
-			this.setToolTip(emptyText);
+			this.setToolTip(placeholderText);
 		}
 	}
 
 	/**
-	 * Returns the empty text to be shown when the field is empty.
+	 * Returns the placeholder text.
 	 * <p>
 	 * 
-	 * @see WFormWidget#setEmptyText(CharSequence emptyText)
+	 * @see WFormWidget#setPlaceholderText(CharSequence placeholderText)
 	 */
-	public WString getEmptyText() {
+	public WString getPlaceholderText() {
 		return this.emptyText_;
 	}
 
@@ -371,6 +396,7 @@ public abstract class WFormWidget extends WInteractWidget {
 		if (this.validator_ != null && textFormat == TextFormat.PlainText) {
 			this.setJavaScriptMember("defaultTT", WString.toWString(text)
 					.getJsStringLiteral());
+			this.validate();
 		}
 	}
 
@@ -380,6 +406,7 @@ public abstract class WFormWidget extends WInteractWidget {
 	JSlot filterInput_;
 	JSlot removeEmptyText_;
 	WString emptyText_;
+	static String CHANGE_SIGNAL = "M_change";
 
 	void applyEmptyText() {
 		if (this.isRendered() && !(this.emptyText_.length() == 0)) {
@@ -397,14 +424,16 @@ public abstract class WFormWidget extends WInteractWidget {
 		super.enableAjax();
 	}
 
+	private static String SELECT_SIGNAL = "select";
+	private static String FOCUS_SIGNAL = "focus";
+	private static String BLUR_SIGNAL = "blur";
 	private static final int BIT_ENABLED_CHANGED = 0;
 	private static final int BIT_GOT_FOCUS = 1;
-	private static final int BIT_INITIAL_FOCUS = 2;
-	private static final int BIT_READONLY = 3;
-	private static final int BIT_READONLY_CHANGED = 4;
-	private static final int BIT_TABINDEX_CHANGED = 5;
-	private static final int BIT_JS_OBJECT = 6;
-	private static final int BIT_VALIDATION_CHANGED = 7;
+	private static final int BIT_READONLY = 2;
+	private static final int BIT_READONLY_CHANGED = 3;
+	private static final int BIT_TABINDEX_CHANGED = 4;
+	private static final int BIT_JS_OBJECT = 5;
+	private static final int BIT_VALIDATION_CHANGED = 6;
 	BitSet flags_;
 	private int tabIndex_;
 	private Signal1<WValidator.Result> validated_;
@@ -432,15 +461,11 @@ public abstract class WFormWidget extends WInteractWidget {
 			if (!(this.validateJs_ != null)) {
 				this.validateJs_ = new JSlot();
 				this.validateJs_
-						.setJavaScript("function(o){Wt3_2_3.validate(o)}");
+						.setJavaScript("function(o){Wt3_3_1.validate(o)}");
 				this.keyWentUp().addListener(this.validateJs_);
 				this.changed().addListener(this.validateJs_);
 				if (this.getDomElementType() != DomElementType.DomElement_SELECT) {
 					this.clicked().addListener(this.validateJs_);
-				}
-			} else {
-				if (this.isRendered()) {
-					this.doJavaScript(this.validateJs_.execJs(this.getJsRef()));
 				}
 			}
 		} else {
@@ -454,7 +479,7 @@ public abstract class WFormWidget extends WInteractWidget {
 				this.keyPressed().addListener(this.filterInput_);
 			}
 			StringUtils.replace(inputFilter, '/', "\\/");
-			this.filterInput_.setJavaScript("function(o,e){Wt3_2_3.filter(o,e,"
+			this.filterInput_.setJavaScript("function(o,e){Wt3_3_1.filter(o,e,"
 					+ jsStringLiteral(inputFilter) + ")}");
 		} else {
 			;
@@ -471,7 +496,7 @@ public abstract class WFormWidget extends WInteractWidget {
 			}
 			WApplication app = WApplication.getInstance();
 			app.loadJavaScript("js/WFormWidget.js", wtjs1());
-			this.setJavaScriptMember(" WFormWidget", "new Wt3_2_3.WFormWidget("
+			this.setJavaScriptMember(" WFormWidget", "new Wt3_3_1.WFormWidget("
 					+ app.getJavaScriptClass() + "," + this.getJsRef() + ","
 					+ WString.toWString(this.emptyText_).getJsStringLiteral()
 					+ ");");
@@ -524,18 +549,14 @@ public abstract class WFormWidget extends WInteractWidget {
 			}
 			this.flags_.clear(BIT_TABINDEX_CHANGED);
 		}
-		if (this.isEnabled()) {
-			if (all && this.flags_.get(BIT_GOT_FOCUS)) {
-				this.flags_.set(BIT_INITIAL_FOCUS);
-			}
-			if (this.flags_.get(BIT_GOT_FOCUS) || all
-					&& this.flags_.get(BIT_INITIAL_FOCUS)) {
-				element.callJavaScript("setTimeout(function() {var f = "
-						+ this.getJsRef()
-						+ ";if (f) try { f.focus(); } catch (e) { } }, "
-						+ (env.agentIsIElt(9) ? "500" : "10") + ");");
-				this.flags_.clear(BIT_GOT_FOCUS);
-			}
+		if (this.flags_.get(BIT_GOT_FOCUS)) {
+			WApplication app = WApplication.getInstance();
+			element.callJavaScript("setTimeout(function() {var o = "
+					+ this.getJsRef() + ";if (o) {if (!$(o).hasClass('"
+					+ app.getTheme().getDisabledClass()
+					+ "')) {try { o.focus();} catch (e) {}}}}, "
+					+ (env.agentIsIElt(9) ? "500" : "10") + ");");
+			this.flags_.clear(BIT_GOT_FOCUS);
 		}
 		super.updateDom(element, all);
 		if (this.flags_.get(BIT_VALIDATION_CHANGED)) {
@@ -568,7 +589,7 @@ public abstract class WFormWidget extends WInteractWidget {
 
 	protected void propagateSetEnabled(boolean enabled) {
 		this.flags_.set(BIT_ENABLED_CHANGED);
-		this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyAttribute));
+		this.repaint();
 		super.propagateSetEnabled(enabled);
 	}
 
@@ -583,9 +604,4 @@ public abstract class WFormWidget extends WInteractWidget {
 				"WFormWidget",
 				"function(d,a,b){jQuery.data(a,\"obj\",this);var c=d.WT;this.applyEmptyText=function(){if(c.hasFocus(a)){if($(a).hasClass(\"Wt-edit-emptyText\")){if(!c.isIE&&a.oldtype)a.type=a.oldtype;$(a).removeClass(\"Wt-edit-emptyText\");a.value=\"\"}}else if(a.value==\"\"){if(a.type==\"password\")if(c.isIE)return;else{a.oldtype=\"password\";a.type=\"text\"}$(a).addClass(\"Wt-edit-emptyText\");a.value=b}};this.setEmptyText=function(e){b=e;if($(a).hasClass(\"Wt-edit-emptyText\"))a.value= b};this.applyEmptyText()}");
 	}
-
-	static String CHANGE_SIGNAL = "M_change";
-	private static String SELECT_SIGNAL = "select";
-	private static String FOCUS_SIGNAL = "focus";
-	private static String BLUR_SIGNAL = "blur";
 }

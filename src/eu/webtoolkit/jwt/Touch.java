@@ -37,6 +37,8 @@ public class Touch {
 		this.clientY_ = clientY;
 		this.documentX_ = documentX;
 		this.documentY_ = documentY;
+		this.screenX_ = screenX;
+		this.screenY_ = screenY;
 		this.widgetX_ = widgetX;
 		this.widgetY_ = widgetY;
 		this.identifier_ = identifier;
@@ -82,6 +84,10 @@ public class Touch {
 	private int widgetX_;
 	private int widgetY_;
 	private int identifier_;
+
+	static String concat(String prefix, int prefixLength, String s2) {
+		return prefix + s2;
+	}
 
 	static int asInt(String v) {
 		return Integer.parseInt(v);

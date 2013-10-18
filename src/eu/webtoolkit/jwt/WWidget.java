@@ -55,7 +55,7 @@ public abstract class WWidget extends WObject {
 	 */
 	public void remove() {
 		while (!this.eventSignals_.isEmpty()) {
-			AbstractEventSignal s = this.eventSignals_.peek();
+			AbstractEventSignal s = this.eventSignals_.getFirst();
 			this.eventSignals_.removeFirst();
 			;
 		}
@@ -75,6 +75,15 @@ public abstract class WWidget extends WObject {
 	public WWidget getParent() {
 		return ((super.getParent()) instanceof WWidget ? (WWidget) (super
 				.getParent()) : null);
+	}
+
+	public void removeChild(WObject child) {
+		WWidget w = ((child) instanceof WWidget ? (WWidget) (child) : null);
+		if (w != null) {
+			this.removeChild(w);
+		} else {
+			super.removeChild(child);
+		}
 	}
 
 	/**
@@ -423,7 +432,8 @@ public abstract class WWidget extends WObject {
 	 * Positions a widget next to another widget.
 	 * <p>
 	 * Positions this absolutely positioned widget next to another
-	 * <code>widget</code>. Both widgets must be visible.
+	 * <code>widget</code>. Both widgets must be visible (including all their
+	 * ancestors). The current widget is shown automatically if needed.
 	 * <p>
 	 * When <code>orientation</code> = {@link Orientation#Vertical}, the widget
 	 * is displayed below the other widget (or above in case there is not enough
@@ -441,11 +451,13 @@ public abstract class WWidget extends WObject {
 	 * </p>
 	 */
 	public void positionAt(WWidget widget, Orientation orientation) {
+		if (this.isHidden()) {
+			this.show();
+		}
 		String side = orientation == Orientation.Horizontal ? ".Horizontal"
 				: ".Vertical";
-		WApplication.getInstance().doJavaScript(
-				"Wt3_2_3.positionAtWidget('" + this.getId() + "','"
-						+ widget.getId() + "',Wt3_2_3" + side + ");");
+		this.doJavaScript("Wt3_3_1.positionAtWidget('" + this.getId() + "','"
+				+ widget.getId() + "',Wt3_3_1" + side + ");");
 	}
 
 	/**
@@ -824,6 +836,10 @@ public abstract class WWidget extends WObject {
 	 * used to add the style class to the DOM element (if JavaScript is
 	 * available). This may be necessary when client-side JavaScript manipulates
 	 * the same style class.
+	 * <p>
+	 * The <code>styleClass</code> should be a single class (although multiple
+	 * classes will work for the common case that the additional style classes
+	 * are all not yet present on the element.
 	 */
 	public abstract void addStyleClass(String styleClass, boolean force);
 
@@ -844,6 +860,8 @@ public abstract class WWidget extends WObject {
 	 * used to remove the style class from the DOM element (if JavaScript is
 	 * available). This may be necessary when client-side JavaScript manipulates
 	 * the same style class.
+	 * <p>
+	 * The <code>styleClass</code> should be a single class
 	 */
 	public abstract void removeStyleClass(String styleClass, boolean force);
 
@@ -878,6 +896,11 @@ public abstract class WWidget extends WObject {
 	public final void toggleStyleClass(String styleClass, boolean add) {
 		toggleStyleClass(styleClass, add, false);
 	}
+
+	/**
+	 * Returns whether the widget has a style class.
+	 */
+	public abstract boolean hasStyleClass(String styleClass);
 
 	/**
 	 * Sets the vertical alignment.
@@ -956,6 +979,13 @@ public abstract class WWidget extends WObject {
 	 * when the user hit the refresh button.
 	 * <p>
 	 * The widget must actualize its contents in response.
+	 * <p>
+	 * <p>
+	 * <i><b>Note: </b>This does *not* rerender the widget! Calling
+	 * {@link WWidget#refresh() refresh()} usually does not have any effect
+	 * (unless you&apos;ve reimplemented {@link WWidget#refresh() refresh()} to
+	 * attach to it an effect). </i>
+	 * </p>
 	 */
 	public void refresh() {
 		this.setJsSize();
@@ -972,7 +1002,7 @@ public abstract class WWidget extends WObject {
 	 * @see WWidget#isRendered()
 	 */
 	public String getJsRef() {
-		return "Wt3_2_3.$('" + this.getId() + "')";
+		return "Wt3_3_1.$('" + this.getId() + "')";
 	}
 
 	/**
@@ -1033,7 +1063,7 @@ public abstract class WWidget extends WObject {
 	public abstract void callJavaScriptMember(String name, String args);
 
 	/**
-	 * Short hand for {@link WString#tr(String key) WString#tr()}.
+	 * Short hand for {@link }.
 	 * <p>
 	 * Creates a localized string with the given key.
 	 */
@@ -1098,6 +1128,8 @@ public abstract class WWidget extends WObject {
 	 * @see WWidget#setTabIndex(int index)
 	 */
 	public abstract int getTabIndex();
+
+	public abstract int getZIndex();
 
 	/**
 	 * Sets a mime type to be accepted for dropping.
@@ -1171,6 +1203,8 @@ public abstract class WWidget extends WObject {
 	 * @see WObject#setObjectName(String name)
 	 */
 	public abstract WWidget find(String name);
+
+	public abstract WWidget findById(String id);
 
 	/**
 	 * Streams the (X)HTML representation.
@@ -1246,7 +1280,7 @@ public abstract class WWidget extends WObject {
 		return result;
 	}
 
-	String createJavaScript(StringWriter js, String insertJS) {
+	public String createJavaScript(StringBuilder js, String insertJS) {
 		WApplication app = WApplication.getInstance();
 		DomElement de = this.createSDomElement(app);
 		String var = de.getCreateVar();
@@ -1338,18 +1372,33 @@ public abstract class WWidget extends WObject {
 		if (!this.needsToBeRendered()) {
 			DomElement result = this.getWebWidget().createStubElement(app);
 			this.renderOk();
-			this.askRerender(true);
+			this.scheduleRerender(true);
 			return result;
 		} else {
 			this.getWebWidget().setRendered(true);
 			this.render(EnumSet.of(RenderFlag.RenderFull));
-			return this.getWebWidget().createActualElement(app);
+			return this.getWebWidget().createActualElement(this, app);
 		}
 	}
 
 	static void setTabOrder(WWidget first, WWidget second) {
 		second.setTabIndex(first.getTabIndex() + 1);
 	}
+
+	public boolean isExposed(WWidget w) {
+		if (w == this) {
+			return true;
+		}
+		for (WWidget p = w; p != null; p = p.getParent()) {
+			if (p == this) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	static String WT_RESIZE_JS = "wtResize";
+	protected static String WT_GETPS_JS = "wtGetPS";
 
 	/**
 	 * Sets the widget to be aware of its size set by a layout manager.
@@ -1537,18 +1586,6 @@ public abstract class WWidget extends WObject {
 	 */
 	protected abstract void propagateSetEnabled(boolean enabled);
 
-	protected boolean isExposed(WWidget w) {
-		if (w == this) {
-			return true;
-		}
-		for (WWidget p = w; p != null; p = p.getParent()) {
-			if (p == this) {
-				return true;
-			}
-		}
-		return false;
-	}
-
 	protected void getDrop(final String sourceId, final String mimeType,
 			WMouseEvent event) {
 		WDropEvent e = new WDropEvent(WApplication.getInstance().decodeObject(
@@ -1580,14 +1617,72 @@ public abstract class WWidget extends WObject {
 
 	abstract boolean isStubbed();
 
+	/**
+	 * Schedules rerendering of the widget.
+	 * <p>
+	 * This schedules a rendering phase after all events have been processed.
+	 * This method is used internally whenever a property of a widget has been
+	 * changed. But you may want to use this if you are deferring actual changes
+	 * to a widget in response to an event, and instead postpone this until all
+	 * events have been received.
+	 * <p>
+	 * 
+	 * @see WWidget#render(EnumSet flags)
+	 */
+	protected void scheduleRender(EnumSet<RepaintFlag> flags) {
+		this.scheduleRerender(false, flags);
+	}
+
+	/**
+	 * Schedules rerendering of the widget.
+	 * <p>
+	 * Calls {@link #scheduleRender(EnumSet flags)
+	 * scheduleRender(EnumSet.of(flag, flags))}
+	 */
+	protected final void scheduleRender(RepaintFlag flag, RepaintFlag... flags) {
+		scheduleRender(EnumSet.of(flag, flags));
+	}
+
+	/**
+	 * Schedules rerendering of the widget.
+	 * <p>
+	 * Calls {@link #scheduleRender(EnumSet flags)
+	 * scheduleRender(EnumSet.noneOf(RepaintFlag.class))}
+	 */
+	protected final void scheduleRender() {
+		scheduleRender(EnumSet.noneOf(RepaintFlag.class));
+	}
+
+	/**
+	 * Renders the widget.
+	 * <p>
+	 * This function renders the widget (or an update for the widget), after
+	 * this has been scheduled using
+	 * {@link WWidget#scheduleRender(EnumSet flags) scheduleRender()}.
+	 * <p>
+	 * The default implementation will render the widget by serializing changes
+	 * to JavaScript and HTML. You may want to reimplement this widget if you
+	 * have been postponing some of the layout / rendering implementation until
+	 * the latest moment possible. In that case you should make sure you call
+	 * the base implementation however.
+	 */
 	void render(EnumSet<RenderFlag> flags) {
 	}
 
+	/**
+	 * Renders the widget.
+	 * <p>
+	 * Calls {@link #render(EnumSet flags) render(EnumSet.of(flag, flags))}
+	 */
 	final void render(RenderFlag flag, RenderFlag... flags) {
 		render(EnumSet.of(flag, flags));
 	}
 
 	void childResized(WWidget child, EnumSet<Orientation> directions) {
+		if (this.getPositionScheme() == PositionScheme.Absolute
+				&& !this.isInLayout()) {
+			return;
+		}
 		WWidget p = this.getParent();
 		if (p != null) {
 			p.childResized(this, directions);
@@ -1609,7 +1704,7 @@ public abstract class WWidget extends WObject {
 	}
 
 	void addEventSignal(AbstractEventSignal s) {
-		this.eventSignals_.offer(s);
+		this.eventSignals_.addLast(s);
 	}
 
 	AbstractEventSignal getEventSignal(String name) {
@@ -1634,6 +1729,7 @@ public abstract class WWidget extends WObject {
 	void renderOk() {
 		if (this.flags_.get(BIT_NEED_RERENDER)) {
 			this.flags_.clear(BIT_NEED_RERENDER);
+			this.flags_.clear(BIT_NEED_RERENDER_SIZE_CHANGE);
 			WApplication app = WApplication.getInstance();
 			if (app != null) {
 				app.getSession().getRenderer().doneUpdate(this);
@@ -1641,11 +1737,22 @@ public abstract class WWidget extends WObject {
 		}
 	}
 
-	void askRerender(boolean laterOnly) {
+	protected void scheduleRerender(boolean laterOnly,
+			EnumSet<RepaintFlag> flags) {
 		if (!this.flags_.get(BIT_NEED_RERENDER)) {
 			this.flags_.set(BIT_NEED_RERENDER);
 			WApplication.getInstance().getSession().getRenderer().needUpdate(
 					this, laterOnly);
+		}
+		if (!EnumUtils.mask(flags, RepaintFlag.RepaintSizeAffected).isEmpty()
+				&& !this.flags_.get(BIT_NEED_RERENDER_SIZE_CHANGE)) {
+			this.flags_.set(BIT_NEED_RERENDER_SIZE_CHANGE);
+			this.getWebWidget().parentResized(this,
+					EnumSet.of(Orientation.Vertical));
+			if (this.getPositionScheme() == PositionScheme.Absolute
+					&& !this.isInLayout()) {
+				return;
+			}
 			WWidget p = this.getParent();
 			if (p != null) {
 				p.childResized(this, EnumSet.of(Orientation.Vertical));
@@ -1653,8 +1760,13 @@ public abstract class WWidget extends WObject {
 		}
 	}
 
-	final void askRerender() {
-		askRerender(false);
+	protected final void scheduleRerender(boolean laterOnly, RepaintFlag flag,
+			RepaintFlag... flags) {
+		scheduleRerender(laterOnly, EnumSet.of(flag, flags));
+	}
+
+	protected final void scheduleRerender(boolean laterOnly) {
+		scheduleRerender(laterOnly, EnumSet.noneOf(RepaintFlag.class));
 	}
 
 	boolean needsRerender() {
@@ -1701,8 +1813,9 @@ public abstract class WWidget extends WObject {
 	private static final int BIT_WAS_HIDDEN = 0;
 	private static final int BIT_WAS_DISABLED = 1;
 	private static final int BIT_NEED_RERENDER = 2;
-	private static final int BIT_HAS_PARENT = 3;
-	private static final int BIT_RESIZE_AWARE = 4;
+	private static final int BIT_NEED_RERENDER_SIZE_CHANGE = 3;
+	private static final int BIT_HAS_PARENT = 4;
+	private static final int BIT_RESIZE_AWARE = 5;
 	private BitSet flags_;
 	private LinkedList<AbstractEventSignal> eventSignals_;
 
@@ -1717,7 +1830,8 @@ public abstract class WWidget extends WObject {
 				&& this.getJavaScriptMember(WT_RESIZE_JS).length() != 0) {
 			this.callJavaScriptMember(WT_RESIZE_JS, this.getJsRef() + ","
 					+ String.valueOf(this.getWidth().toPixels()) + ","
-					+ String.valueOf(this.getHeight().toPixels()));
+					+ String.valueOf(this.getHeight().toPixels()) + ","
+					+ "false");
 		}
 	}
 
@@ -1739,7 +1853,4 @@ public abstract class WWidget extends WObject {
 	WLayout getLayout() {
 		return null;
 	}
-
-	static String WT_RESIZE_JS = "wtResize";
-	protected static String WT_GETPS_JS = "wtGetPS";
 }

@@ -54,7 +54,7 @@ public class PasswordPromptDialog extends WDialog {
 		this.impl_ = new WTemplateFormView(
 				tr("Wt.Auth.template.password-prompt"));
 		this.model_.setValue(AuthModel.LoginNameField, this.login_.getUser()
-				.identity(Identity.LoginName));
+				.getIdentity(Identity.LoginName));
 		this.model_.setReadOnly(AuthModel.LoginNameField, true);
 		WLineEdit nameEdit = new WLineEdit();
 		this.impl_.bindWidget(AuthModel.LoginNameField, nameEdit);

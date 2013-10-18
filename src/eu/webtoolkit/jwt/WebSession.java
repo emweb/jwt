@@ -56,12 +56,13 @@ class WebSession {
 		this.deploymentPath_ = "";
 		this.redirect_ = "";
 		this.pagePathInfo_ = "";
+		this.pongMessage_ = "";
 		this.asyncResponse_ = null;
 		this.bootStyleResponse_ = null;
 		this.canWriteAsyncResponse_ = false;
-		this.noBootStyleResponse_ = false;
 		this.pollRequestsIgnored_ = 0;
 		this.progressiveBoot_ = false;
+		this.bootStyle_ = true;
 		this.deferredRequest_ = null;
 		this.deferredResponse_ = null;
 		this.deferCount_ = 0;
@@ -211,8 +212,7 @@ class WebSession {
 			handler.getResponse().setContentType(
 					"text/javascript; charset=UTF-8");
 			handler.getResponse().out().append("{}");
-			handler.getResponse().flush();
-			handler.setRequest((WebRequest) null, (WebResponse) null);
+			handler.flushResponse();
 			return;
 		}
 		switch (this.state_) {
@@ -333,9 +333,7 @@ class WebSession {
 								.out()
 								.append(
 										"<html><head><title>bhm</title></head><body> </body></html>");
-						handler.getResponse().flush();
-						handler.setRequest((WebRequest) null,
-								(WebResponse) null);
+						handler.flushResponse();
 					} else {
 						if (!(resource != null)) {
 							resource = this.app_
@@ -363,9 +361,7 @@ class WebSession {
 									.out()
 									.append(
 											"<html><body><h1>Nothing to say about that.</h1></body></html>");
-							handler.getResponse().flush();
-							handler.setRequest((WebRequest) null,
-									(WebResponse) null);
+							handler.flushResponse();
 						}
 					}
 				} else {
@@ -398,6 +394,7 @@ class WebSession {
 						}
 						if (this.asyncResponse_ != null
 								&& !this.asyncResponse_.isWebSocketRequest()) {
+							this.asyncResponse_.flush();
 							this.asyncResponse_ = null;
 							this.canWriteAsyncResponse_ = false;
 						}
@@ -416,12 +413,13 @@ class WebSession {
 									}
 								}
 								if (!this.updatesPending_) {
+									handler.flushResponse();
 									return;
 								}
 							}
 							if (!this.updatesPending_) {
 								if (!(this.asyncResponse_ != null)
-										|| this.pollRequestsIgnored_ == 5) {
+										|| this.pollRequestsIgnored_ == 2) {
 									if (this.asyncResponse_ != null) {
 										logger
 												.info(new StringWriter()
@@ -454,6 +452,11 @@ class WebSession {
 							} else {
 								this.pollRequestsIgnored_ = 0;
 							}
+						} else {
+							if (!WtServlet.isAsyncSupported()) {
+								this.updatesPending_ = false;
+								this.updatesPendingEvent_.signal();
+							}
 						}
 						if (handler.getRequest() != null) {
 							logger.debug(new StringWriter().append("signal: ")
@@ -471,22 +474,21 @@ class WebSession {
 					}
 					if (handler.getResponse() != null
 							&& handler.getResponse().getResponseType() == WebRequest.ResponseType.Page
-							&& !this.env_.hasAjax()) {
+							&& (!this.env_.hasAjax() || !this.controller_
+									.getConfiguration().reloadIsNewSession())) {
+						this.app_.getDomRoot().setRendered(false);
 						this.env_.parameters_ = handler.getRequest()
 								.getParameterMap();
-						if (!this.app_.internalPathIsChanged_) {
-							if (hashE != null) {
-								this.changeInternalPath(hashE, handler
-										.getResponse());
+						if (hashE != null) {
+							this.changeInternalPath(hashE, handler
+									.getResponse());
+						} else {
+							if (handler.getRequest().getPathInfo().length() != 0) {
+								this.changeInternalPath(handler.getRequest()
+										.getPathInfo(), handler.getResponse());
 							} else {
-								if (request.getPathInfo().length() != 0) {
-									this.changeInternalPath(request
-											.getPathInfo(), handler
-											.getResponse());
-								} else {
-									this.changeInternalPath("", handler
-											.getResponse());
-								}
+								this.changeInternalPath("", handler
+										.getResponse());
 							}
 						}
 					}
@@ -497,9 +499,7 @@ class WebSession {
 											.append(
 													"bogus request: missing signal, discarding")
 											.toString());
-							handler.getResponse().flush();
-							handler.setRequest((WebRequest) null,
-									(WebResponse) null);
+							handler.flushResponse();
 							return;
 						}
 						logger.info(new StringWriter().append(
@@ -525,8 +525,7 @@ class WebSession {
 	public void pushUpdates() {
 		try {
 			this.triggerUpdate_ = false;
-			if (!this.renderer_.isDirty()
-					|| this.state_ == WebSession.State.Dead) {
+			if (!(this.app_ != null) || !this.renderer_.isDirty()) {
 				logger.debug(new StringWriter().append(
 						"pushUpdates(): nothing to do").toString());
 				return;
@@ -535,6 +534,9 @@ class WebSession {
 			if (this.canWriteAsyncResponse_) {
 				if (this.asyncResponse_.isWebSocketRequest()
 						&& this.asyncResponse_.isWebSocketMessagePending()) {
+					logger.debug(new StringWriter().append(
+							"pushUpdates(): web socket message pending")
+							.toString());
 					return;
 				}
 				if (this.asyncResponse_.isWebSocketRequest()) {
@@ -568,7 +570,9 @@ class WebSession {
 				handler.getSession().notifySignal(
 						new WEvent(new WEvent.Impl(handler)));
 			} else {
-				this.app_.triggerUpdate();
+				if (this.app_.isUpdatesEnabled()) {
+					this.app_.triggerUpdate();
+				}
 			}
 			if (handler.getResponse() != null) {
 				handler.getSession().render(handler);
@@ -578,6 +582,7 @@ class WebSession {
 				throw new WException(
 						"doRecursiveEventLoop(): session was killed");
 			}
+			WebSession.Handler prevRecursiveEventLoop = this.recursiveEventLoop_;
 			this.recursiveEventLoop_ = handler;
 			this.newRecursiveEvent_ = false;
 			while (!this.newRecursiveEvent_) {
@@ -590,14 +595,10 @@ class WebSession {
 			}
 			this.setLoaded();
 			this.app_.notify(new WEvent(new WEvent.Impl(handler)));
-			this.recursiveEventLoop_ = null;
+			this.recursiveEventLoop_ = prevRecursiveEventLoop;
 		} catch (IOException ioe) {
 			ioe.printStackTrace();
 		}
-	}
-
-	public boolean isBootStyleResponse() {
-		return !this.noBootStyleResponse_;
 	}
 
 	public void deferRendering() {
@@ -689,6 +690,10 @@ class WebSession {
 		return this.sessionIdInUrl_;
 	}
 
+	public void setSessionIdInUrl(boolean value) {
+		this.sessionIdInUrl_ = value;
+	}
+
 	public boolean isUseUglyInternalPaths() {
 		return false;
 	}
@@ -720,12 +725,15 @@ class WebSession {
 			}
 		} else {
 			if (this.isUseUglyInternalPaths()) {
-				return baseUrl + "?_=" + Utils.urlEncode(internalPath);
+				return baseUrl + "?_="
+						+ DomElement.urlEncodeS(internalPath, "#");
 			} else {
 				if (this.applicationName_.length() == 0) {
-					return baseUrl + Utils.urlEncode(internalPath.substring(1));
+					return baseUrl
+							+ DomElement.urlEncodeS(internalPath.substring(1),
+									"#");
 				} else {
-					return baseUrl + Utils.urlEncode(internalPath);
+					return baseUrl + DomElement.urlEncodeS(internalPath, "#");
 				}
 			}
 		}
@@ -809,7 +817,7 @@ class WebSession {
 					.getInternalPath() : this.env_.getInternalPath();
 			if (this.isUseUglyInternalPaths()) {
 				if (internalPath.length() > 1) {
-					url = "?_=" + Utils.urlEncode(internalPath);
+					url = "?_=" + DomElement.urlEncodeS(internalPath, "#");
 				}
 				if (isAbsoluteUrl(this.applicationUrl_)) {
 					url = this.applicationUrl_ + url;
@@ -1095,6 +1103,13 @@ class WebSession {
 			return this.session_.getMutex().isHeldByCurrentThread();
 		}
 
+		public void flushResponse() {
+			if (this.response_ != null) {
+				this.response_.flush();
+				this.setRequest((WebRequest) null, (WebResponse) null);
+			}
+		}
+
 		public WebResponse getResponse() {
 			return this.response_;
 		}
@@ -1181,7 +1196,7 @@ class WebSession {
 					}
 				} else {
 					if (request.isWebSocketRequest()) {
-						handler.getResponse().flush();
+						handler.flushResponse();
 						return;
 					}
 				}
@@ -1202,7 +1217,7 @@ class WebSession {
 										request
 												.getHeaderValue("Sec-WebSocket-Version"))
 								.toString());
-				handler.getResponse().flush();
+				handler.flushResponse();
 				return;
 			}
 			if (request.isWebSocketRequest()) {
@@ -1210,7 +1225,7 @@ class WebSession {
 					this.handleWebSocketRequest(handler);
 					return;
 				} else {
-					handler.getResponse().flush();
+					handler.flushResponse();
 					this.kill();
 					return;
 				}
@@ -1221,7 +1236,7 @@ class WebSession {
 					|| request.getRequestMethod().equals("POST") || request
 					.getRequestMethod().equals("GET"))) {
 				handler.getResponse().setStatus(400);
-				handler.getResponse().flush();
+				handler.flushResponse();
 				return;
 			}
 			if ((!(wtdE != null) || !wtdE.equals(this.sessionId_))
@@ -1384,9 +1399,6 @@ class WebSession {
 								} else {
 									if (requestE.equals("style")) {
 										this.flushBootStyleResponse();
-										String jsE = request.getParameter("js");
-										boolean nojs = jsE != null
-												&& jsE.equals("no");
 										boolean ios5 = this.env_
 												.agentIsMobileWebKit()
 												&& (this.env_.getUserAgent()
@@ -1401,18 +1413,16 @@ class WebSession {
 																		"OS 7_") != -1 || this.env_
 														.getUserAgent()
 														.indexOf("OS 8_") != -1);
-										final boolean xhtml = this.env_
-												.getContentType() == WEnvironment.ContentType.XHTML1;
-										this.noBootStyleResponse_ = this.noBootStyleResponse_
-												|| !(this.app_ != null)
-												&& (ios5 || xhtml || nojs);
-										if (nojs || this.noBootStyleResponse_) {
+										String jsE = request.getParameter("js");
+										boolean nojs = jsE != null
+												&& jsE.equals("no");
+										this.bootStyle_ = this.bootStyle_
+												&& (this.app_ != null || !ios5
+														&& !nojs);
+										if (!this.bootStyle_) {
 											handler.getResponse()
 													.setContentType("text/css");
-											handler.getResponse().flush();
-											handler.setRequest(
-													(WebRequest) null,
-													(WebResponse) null);
+											handler.flushResponse();
 										} else {
 											int i = 0;
 											final int MAX_TRIES = 1000;
@@ -1428,10 +1438,7 @@ class WebSession {
 														.serveLinkedCss(handler
 																.getResponse());
 											}
-											handler.getResponse().flush();
-											handler.setRequest(
-													(WebRequest) null,
-													(WebResponse) null);
+											handler.flushResponse();
 										}
 										break;
 									}
@@ -1504,28 +1511,33 @@ class WebSession {
 								}
 							}
 						}
-						if (!(handler.getRequest() != null)) {
-							break;
-						}
-						String signalE = handler.getRequest().getParameter(
-								"signal");
-						boolean isPoll = signalE != null
-								&& signalE.equals("poll");
-						if (requestForResource || isPoll
-								|| !this.isUnlockRecursiveEventLoop()) {
-							if (this.env_.hasAjax()) {
-								if (this.state_ != WebSession.State.ExpectLoad
-										&& handler.getResponse()
-												.getResponseType() == WebRequest.ResponseType.Update) {
-									this.setLoaded();
-								}
-							} else {
-								if (this.state_ != WebSession.State.ExpectLoad
-										&& !this.controller_
-												.limitPlainHtmlSessions()) {
-									this.setLoaded();
+						boolean doNotify = false;
+						if (handler.getRequest() != null) {
+							String signalE = handler.getRequest().getParameter(
+									"signal");
+							boolean isPoll = signalE != null
+									&& signalE.equals("poll");
+							if (requestForResource || isPoll
+									|| !this.isUnlockRecursiveEventLoop()) {
+								doNotify = true;
+								if (this.env_.hasAjax()) {
+									if (this.state_ != WebSession.State.ExpectLoad
+											&& handler.getResponse()
+													.getResponseType() == WebRequest.ResponseType.Update) {
+										this.setLoaded();
+									}
+								} else {
+									if (this.state_ != WebSession.State.ExpectLoad
+											&& !this.controller_
+													.limitPlainHtmlSessions()) {
+										this.setLoaded();
+									}
 								}
 							}
+						} else {
+							doNotify = false;
+						}
+						if (doNotify) {
 							this.app_.notify(new WEvent(
 									new WEvent.Impl(handler)));
 							if (handler.getResponse() != null
@@ -1562,7 +1574,7 @@ class WebSession {
 				}
 			}
 			if (handler.getResponse() != null) {
-				handler.getResponse().flush();
+				handler.flushResponse();
 			}
 		} catch (InterruptedException ie) {
 			ie.printStackTrace();
@@ -1591,10 +1603,12 @@ class WebSession {
 	private void handleWebSocketRequest(WebSession.Handler handler) {
 	}
 
-	private static void handleWebSocketMessage(WebSession session) {
+	private static void handleWebSocketMessage(WebSession session,
+			WebRequest.ReadEvent event) {
 	}
 
 	private static void webSocketReady(WebSession session) {
+		logger.debug(new StringWriter().append("webSocketReady()").toString());
 	}
 
 	private void checkTimers() {
@@ -1622,6 +1636,7 @@ class WebSession {
 	}
 
 	private ReentrantLock mutex_;
+	private static ThreadLocal<WebSession.Handler> threadHandler_ = new ThreadLocal<WebSession.Handler>();
 	private EntryPointType type_;
 	private String favicon_;
 	private WebSession.State state_;
@@ -1641,12 +1656,13 @@ class WebSession {
 	private String deploymentPath_;
 	private String redirect_;
 	String pagePathInfo_;
+	private String pongMessage_;
 	private WebResponse asyncResponse_;
 	private WebResponse bootStyleResponse_;
 	private boolean canWriteAsyncResponse_;
-	private boolean noBootStyleResponse_;
 	private int pollRequestsIgnored_;
 	private boolean progressiveBoot_;
+	private boolean bootStyle_;
 	private WebRequest deferredRequest_;
 	private WebResponse deferredResponse_;
 	private int deferCount_;
@@ -1723,10 +1739,11 @@ class WebSession {
 			if (this.app_.isQuited()) {
 				this.kill();
 			}
-			this.serveResponse(handler);
+			if (handler.getResponse() != null) {
+				this.serveResponse(handler);
+			}
 		} catch (RuntimeException e) {
-			handler.getResponse().flush();
-			handler.setRequest((WebRequest) null, (WebResponse) null);
+			handler.flushResponse();
 			throw e;
 		}
 		this.updatesPending_ = false;
@@ -1735,8 +1752,7 @@ class WebSession {
 	private void serveError(int status, WebSession.Handler handler, String e)
 			throws IOException {
 		this.renderer_.serveError(status, handler.getResponse(), e);
-		handler.getResponse().flush();
-		handler.setRequest((WebRequest) null, (WebResponse) null);
+		handler.flushResponse();
 	}
 
 	private void serveResponse(WebSession.Handler handler) throws IOException {
@@ -1750,17 +1766,18 @@ class WebSession {
 			}
 		}
 		if (!handler.getRequest().isWebSocketMessage()) {
-			if (this.bootStyleResponse_ != null) {
-				if (handler.getResponse().getResponseType() == WebRequest.ResponseType.Script
-						&& !(handler.getRequest().getParameter("skeleton") != null)) {
-					this.renderer_.serveLinkedCss(this.bootStyleResponse_);
+			if (handler.getResponse().getResponseType() == WebRequest.ResponseType.Script
+					&& !(handler.getRequest().getParameter("skeleton") != null)) {
+				this.mutex_.unlock();
+				try {
+					Thread.sleep(1);
+				} catch (InterruptedException e) {
 				}
-				this.flushBootStyleResponse();
+				this.mutex_.lock();
 			}
 			this.renderer_.serveResponse(handler.getResponse());
 		}
-		handler.getResponse().flush();
-		handler.setRequest((WebRequest) null, (WebResponse) null);
+		handler.flushResponse();
 	}
 
 	enum SignalKind {
@@ -1866,7 +1883,9 @@ class WebSession {
 			} else {
 				if (!signalE.equals("poll")) {
 					this.propagateFormValues(e, se);
-					if (i == 0) {
+					boolean discardStateless = !request.isWebSocketMessage()
+							&& i == 0;
+					if (discardStateless) {
 						this.renderer_.saveChanges();
 					}
 					handler.nextSignal = i + 1;
@@ -1875,7 +1894,7 @@ class WebSession {
 						if (hashE != null) {
 							this.changeInternalPath(hashE, handler
 									.getResponse());
-							this.app_.doJavaScript("Wt3_2_3.scrollIntoView("
+							this.app_.doJavaScript("Wt3_3_1.scrollIntoView("
 									+ WWebWidget.jsStringLiteral(hashE) + ");");
 						} else {
 							this.changeInternalPath("", handler.getResponse());
@@ -1902,7 +1921,7 @@ class WebSession {
 							}
 							this.processSignal(s, se, request, kind);
 							if (kind == WebSession.SignalKind.LearnedStateless
-									&& i == 0) {
+									&& discardStateless) {
 								this.renderer_.discardChanges();
 							}
 						}
@@ -2054,19 +2073,20 @@ class WebSession {
 		if (this.bootStyleResponse_ != null) {
 			this.bootStyleResponse_.flush();
 			this.bootStyleResponse_ = null;
-			this.noBootStyleResponse_ = true;
 		}
 	}
 
 	private void changeInternalPath(String path, WebResponse response) {
-		if (!this.app_.changedInternalPath(path)) {
-			if (response.getResponseType() == WebRequest.ResponseType.Page) {
-				response.setStatus(404);
+		if (!this.app_.internalPathIsChanged_) {
+			if (!this.app_.changedInternalPath(path)) {
+				if (response.getResponseType() == WebRequest.ResponseType.Page) {
+					response.setStatus(404);
+				}
 			}
 		}
 	}
 
-	static UploadedFile uf;
+	private static UploadedFile uf;
 
 	static boolean isAbsoluteUrl(String url) {
 		return url.indexOf(":") != -1;
@@ -2084,6 +2104,4 @@ class WebSession {
 		}
 		return url.substring(0, 0 + pos - 1);
 	}
-
-	private static ThreadLocal<WebSession.Handler> threadHandler_ = new ThreadLocal<WebSession.Handler>();
 }

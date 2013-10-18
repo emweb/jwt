@@ -162,7 +162,7 @@ public class WLabel extends WInteractWidget {
 			this.buddy_.setLabel(this);
 		}
 		this.buddyChanged_ = true;
-		this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyAttribute));
+		this.repaint();
 	}
 
 	/**
@@ -177,7 +177,7 @@ public class WLabel extends WInteractWidget {
 			this.text_.setWordWrap(false);
 			this.text_.setParentWidget(this);
 			this.newText_ = true;
-			this.repaint(EnumSet.of(RepaintFlag.RepaintInnerHtml));
+			this.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
 		}
 		this.text_.setText(text);
 	}
@@ -194,6 +194,44 @@ public class WLabel extends WInteractWidget {
 	}
 
 	/**
+	 * Sets the text format.
+	 * <p>
+	 * The textFormat controls how the string should be interpreted: either as
+	 * plain text, which is displayed literally, or as XHTML-markup.
+	 * <p>
+	 * When changing the textFormat to {@link TextFormat#XHTMLText}, and the
+	 * current text is literal (not created using {@link }), the current text is
+	 * parsed using an XML parser which discards malicious tags and attributes
+	 * silently. When the parser encounters an XML parse error, the textFormat
+	 * is left unchanged, and this method returns false.
+	 * <p>
+	 * Returns whether the textFormat could be set for the current text.
+	 * <p>
+	 * The default format is {@link TextFormat#XHTMLText}.
+	 */
+	public boolean setTextFormat(TextFormat format) {
+		if (!(this.text_ != null)) {
+			this.setText("A");
+			this.setText("");
+		}
+		return this.text_.setTextFormat(format);
+	}
+
+	/**
+	 * Returns the text format.
+	 * <p>
+	 * 
+	 * @see WLabel#setTextFormat(TextFormat format)
+	 */
+	public TextFormat getTextFormat() {
+		if (!(this.text_ != null)) {
+			return TextFormat.XHTMLText;
+		} else {
+			return this.text_.getTextFormat();
+		}
+	}
+
+	/**
 	 * Sets the image.
 	 */
 	public void setImage(WImage image, Side side) {
@@ -205,7 +243,7 @@ public class WLabel extends WInteractWidget {
 			this.imageSide_ = side;
 		}
 		this.newImage_ = true;
-		this.repaint(EnumSet.of(RepaintFlag.RepaintInnerHtml));
+		this.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
 	}
 
 	/**
@@ -244,7 +282,7 @@ public class WLabel extends WInteractWidget {
 			this.text_ = new WText();
 			this.text_.setParentWidget(this);
 			this.newText_ = true;
-			this.repaint(EnumSet.of(RepaintFlag.RepaintInnerHtml));
+			this.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
 		}
 		this.text_.setWordWrap(wordWrap);
 	}
@@ -318,11 +356,7 @@ public class WLabel extends WInteractWidget {
 
 	protected void propagateSetEnabled(boolean enabled) {
 		if (this.text_ != null) {
-			if (enabled) {
-				this.text_.removeStyleClass("Wt-disabled");
-			} else {
-				this.text_.addStyleClass("Wt-disabled");
-			}
+			this.text_.propagateSetEnabled(enabled);
 		}
 		super.propagateSetEnabled(enabled);
 	}

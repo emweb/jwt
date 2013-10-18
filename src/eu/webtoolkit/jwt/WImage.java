@@ -240,7 +240,7 @@ public class WImage extends WInteractWidget {
 		}
 		this.altText_ = WString.toWString(text);
 		this.flags_.set(BIT_ALT_TEXT_CHANGED);
-		this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyAttribute));
+		this.repaint();
 	}
 
 	/**
@@ -275,7 +275,7 @@ public class WImage extends WInteractWidget {
 					});
 		}
 		this.flags_.set(BIT_IMAGE_LINK_CHANGED);
-		this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyIEMobile));
+		this.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
 	}
 
 	/**
@@ -345,7 +345,11 @@ public class WImage extends WInteractWidget {
 	 * Ownership of the <code>area</code> is transferred to the image.
 	 * <p>
 	 * 
-	 * @see WImage#insertArea(int index, WAbstractArea area)
+	 * @see WImage#insertArea(int index, WAbstractArea area) <p>
+	 *      <i><b>Note: </b>Currently it is not possible to add a first area
+	 *      after the image has been rendered. If you want to use interactive
+	 *      areas you need to add one immediately. </i>
+	 *      </p>
 	 */
 	public void addArea(WAbstractArea area) {
 		this.insertArea(this.map_ != null ? this.map_.getCount() : 0, area);
@@ -362,13 +366,17 @@ public class WImage extends WInteractWidget {
 	 * Ownership of the <code>area</code> is transferred to the image.
 	 * <p>
 	 * 
-	 * @see WImage#addArea(WAbstractArea area)
+	 * @see WImage#addArea(WAbstractArea area) <p>
+	 *      <i><b>Note: </b>Currently it is not possible to add a first area
+	 *      after the image has been rendered. If you want to use interactive
+	 *      areas you need to add one immediately. </i>
+	 *      </p>
 	 */
 	public void insertArea(int index, WAbstractArea area) {
 		if (!(this.map_ != null)) {
 			this.addChild(this.map_ = new MapWidget());
 			this.flags_.set(BIT_MAP_CREATED);
-			this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyAttribute));
+			this.repaint();
 		}
 		this.map_.insertWidget(index, area.getImpl());
 	}
@@ -430,6 +438,7 @@ public class WImage extends WInteractWidget {
 		return this.voidEventSignal(LOAD_SIGNAL, true);
 	}
 
+	private static String LOAD_SIGNAL = "load";
 	private static final int BIT_ALT_TEXT_CHANGED = 0;
 	private static final int BIT_IMAGE_LINK_CHANGED = 1;
 	private static final int BIT_MAP_CREATED = 2;
@@ -440,7 +449,7 @@ public class WImage extends WInteractWidget {
 
 	private void resourceChanged() {
 		this.flags_.set(BIT_IMAGE_LINK_CHANGED);
-		this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyIEMobile));
+		this.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
 	}
 
 	void getDomChanges(List<DomElement> result, WApplication app) {
@@ -498,6 +507,4 @@ public class WImage extends WInteractWidget {
 		this.flags_.clear(BIT_ALT_TEXT_CHANGED);
 		super.propagateRenderOk(deep);
 	}
-
-	private static String LOAD_SIGNAL = "load";
 }

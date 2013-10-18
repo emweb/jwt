@@ -23,20 +23,28 @@ import org.slf4j.LoggerFactory;
  * An XHTML renderering engine.
  * <p>
  * 
- * This class implements a rendering engine for a (subset of) XHTML. Its
+ * This class implements a rendering engine for a (subset of) XHTML/CSS. Its
  * intended use is to be able to accurately render the output of the
- * {@link WTextEdit} widget (although it handles a more general subset of XHTML
- * than is required to do just that). Its focus is on high-quality rendering of
- * text-like contents.
+ * {@link WTextEdit} widget (although it handles a more general subset of
+ * XHTML/CSS than is required to do just that). Its focus is on high-quality
+ * rendering of text-like contents.
  * <p>
  * The following are the main features:
  * <ul>
- * <li>compliant rendering of inline (text) contents, floats, tables, images,
- * ordered lists, unordered lists, in any arbitrary combination</li>
- * <li>support for fonts, font styles, font sizes and text decorations</li>
+ * <li>decent rendering of inline (text) contents, floats, tables, images,
+ * ordered lists, unordered lists, in any arbitrary combination, with mixtures
+ * of font sizes, etc...</li>
+ * <li>CSS stylesheet support using in-document &lt;style&gt;, inline style
+ * attributes or using
+ * {@link WTextRenderer#setStyleSheetText(CharSequence styleSheetContents)
+ * setStyleSheetText()}.</li>
+ * <li>support for relative and absolute positioned layout contexts</li>
+ * <li>support for (true type) fonts, font styles, font sizes and text
+ * decorations</li>
  * <li>support for text alignment options, padding, margins, borders, background
  * color (only on block elements) and text colors</li>
- * <li>supports automatic page breaks</li>
+ * <li>supports automatic and CSS page breaks (page-break-after or
+ * page-break-before)</li>
  * <li>supports font scaling (rendering text at another DPI than the rest)</li>
  * <li>can be used in conjunction with other drawing instructions to the same
  * paint device.</li>
@@ -44,20 +52,17 @@ import org.slf4j.LoggerFactory;
  * <p>
  * Some of the main limitations are:
  * <ul>
- * <li>there is no CSS style resolution other than inline style definitions: the
- * &quot;class&quot; attribute is ignored entirely.</li>
  * <li>only &quot;display: inline&quot; or &quot;display: block&quot; elements
  * are supported. &quot;display: none&quot; and &quot;display:
  * inline-block&quot; are not (yet) recognized.</li>
- * <li>only normal positioning is supported (absolute positioning and relative
- * positioning is not supported <i>yet</i>).</li>
  * <li>only colors defined in terms of RGB values are supported: CSS named
  * colors (e.g. &apos;blue&apos;) are not allowed.</li>
+ * <li>Bidi (Right-to-Left) text rendering is not supported</li>
  * </ul>
  * <p>
- * The basics are solid though and the hardest part has been implemented
- * (notably handling floats and (nested) tables). Anything else could be easily
- * improved, let us known in the bug tracker.
+ * The renderer is not CSS compliant (simply because it is still lacking alot of
+ * features), but the subset of CSS that is supported is a pragmatic choice. If
+ * things are lacking, let us known in the bug tracker.
  * <p>
  * This class is an abstract class. A concrete class implements the pure virtual
  * methods to create an appropriate {@link WPaintDevice} for each page and to
@@ -65,10 +70,128 @@ import org.slf4j.LoggerFactory;
  * metrics, which currently is only implemented by {@link WPdfImage} or
  * {@link WRasterImage}.
  * <p>
- * All coordinates and dimensions used by this class are pixel coordinates.
+ * All coordinates and dimensions in the API below are pixel coordinates.
  */
 public abstract class WTextRenderer {
 	private static Logger logger = LoggerFactory.getLogger(WTextRenderer.class);
+
+	/**
+	 * A rendering box of a layed out DOM node.
+	 * <p>
+	 * 
+	 * @see WTextRenderer#paintNode(WPainter painter, WTextRenderer.Node node)
+	 */
+	public static class Node {
+		private static Logger logger = LoggerFactory.getLogger(Node.class);
+
+		/**
+		 * Returns the element type.
+		 */
+		public DomElementType getType() {
+			return this.block_.getType();
+		}
+
+		/**
+		 * Returns an attribute value.
+		 * <p>
+		 * This returns an empty string for an undefined attribute.
+		 */
+		public String attributeValue(String attribute) {
+			String a = attribute;
+			String ans = this.block_.attributeValue(a);
+			return ans;
+		}
+
+		/**
+		 * Returns the page.
+		 */
+		public int getPage() {
+			return this.lb_.page;
+		}
+
+		/**
+		 * Returns the x position.
+		 */
+		public double getX() {
+			return this.lb_.x + this.renderer_.getMargin(Side.Left);
+		}
+
+		/**
+		 * Returns the y position.
+		 */
+		public double getY() {
+			return this.lb_.y + this.renderer_.getMargin(Side.Top);
+		}
+
+		/**
+		 * Returns the width.
+		 */
+		public double getWidth() {
+			return this.lb_.width;
+		}
+
+		/**
+		 * Returns the height.
+		 */
+		public double getHeight() {
+			return this.lb_.height;
+		}
+
+		/**
+		 * Returns the fragment number.
+		 * <p>
+		 * A single DOM node can result in multiple layout boxes: e.g. inline
+		 * contents can be split over multiple lines, resulting in a layout box
+		 * for each line, and block layout contents can be split over multiple
+		 * pages, resulting in a layout box per page.
+		 */
+		public int getFragment() {
+			if (!this.block_.blockLayout.isEmpty()) {
+				for (int i = 0; i < this.block_.blockLayout.size(); ++i) {
+					if (this.lb_ == this.block_.blockLayout.get(i)) {
+						return i;
+					}
+				}
+				return -1;
+			} else {
+				for (int i = 0; i < this.block_.inlineLayout.size(); ++i) {
+					if (this.lb_ == this.block_.inlineLayout.get(i)) {
+						return i;
+					}
+				}
+				return -1;
+			}
+		}
+
+		/**
+		 * Returns the fragment count.
+		 * <p>
+		 * 
+		 * @see WTextRenderer.Node#getFragment()
+		 */
+		public int getFragmentCount() {
+			return this.block_.blockLayout.size()
+					+ this.block_.inlineLayout.size();
+		}
+
+		private WTextRenderer renderer_;
+		Block block_;
+		private LayoutBox lb_;
+
+		Node(Block block, LayoutBox lb, WTextRenderer renderer) {
+			this.renderer_ = renderer;
+			this.block_ = block;
+			this.lb_ = lb;
+		}
+
+		Block getBlock() {
+			return this.block_;
+		}
+
+		LayoutBox getLb() {
+			return this.lb_;
+		}
+	}
 
 	/**
 	 * Renders an XHTML fragment.
@@ -99,6 +222,24 @@ public abstract class WTextRenderer {
 		try {
 			net.n3.nanoxml.XMLElement doc = RenderUtils.parseXHTML(xhtml);
 			Block docBlock = new Block(doc, (Block) null);
+			CombinedStyleSheet styles = new CombinedStyleSheet();
+			if (this.styleSheet_ != null) {
+				styles.use(this.styleSheet_);
+			}
+			StringBuilder ss = new StringBuilder();
+			docBlock.collectStyles(ss);
+			if (!(ss.length() == 0)) {
+				CssParser parser = new CssParser();
+				StyleSheet docStyles = parser.parse(ss.toString());
+				if (docStyles != null) {
+					styles.use(docStyles);
+				} else {
+					logger.error(new StringWriter().append(
+							"Error parsing style sheet: ").append(
+							parser.getLastError()).toString());
+				}
+			}
+			docBlock.setStyleSheet(styles);
 			docBlock.determineDisplay();
 			docBlock.normalizeWhitespace(false, doc);
 			PageState currentPs = new PageState();
@@ -115,15 +256,20 @@ public abstract class WTextRenderer {
 			double minX = 0;
 			double maxX = this.textWidth(currentPs.page);
 			boolean tooWide = false;
-			for (;;) {
+			for (int i = 0; i < 2; ++i) {
+				currentPs.y = y;
+				currentPs.page = 0;
 				currentPs.minX = minX;
 				currentPs.maxX = maxX;
 				collapseMarginBottom = docBlock.layoutBlock(currentPs, false,
 						this, Double.MAX_VALUE, collapseMarginBottom);
-				if (currentPs.maxX > maxX) {
+				if (isEpsilonMore(currentPs.maxX, maxX)) {
 					if (!tooWide) {
 						logger.warn(new StringWriter().append(
-								"contents too wide for page.").toString());
+								"contents too wide for page. (").append(
+								String.valueOf(currentPs.maxX)).append(" > ")
+								.append(String.valueOf(maxX)).append(")")
+								.toString());
 						tooWide = true;
 					}
 					maxX = currentPs.maxX;
@@ -138,7 +284,7 @@ public abstract class WTextRenderer {
 					this.painter_ = this.getPainter(this.device_);
 					this.painter_.setFont(defaultFont);
 				}
-				docBlock.render(this, page);
+				docBlock.render(this, this.painter_, page);
 				this.endPage(this.device_);
 			}
 			return currentPs.y;
@@ -154,6 +300,129 @@ public abstract class WTextRenderer {
 	 */
 	public final double render(CharSequence text) {
 		return render(text, 0);
+	}
+
+	/**
+	 * Sets the contents of a cascading style sheet (CSS).
+	 * <p>
+	 * This sets the text <code>contents</code> to be used as CSS. Any previous
+	 * CSS declarations are discarded. Returns true if parsing was successful,
+	 * false if otherwise. If parsing failed, the stylesheet text that was
+	 * already in use will not have been changed. Use getStyleSheetParseErrors
+	 * to access parse error information.
+	 * <p>
+	 * <p>
+	 * <i><b>Warning:</b>Only the following CSS selector features are supported:
+	 * <ul>
+	 * <li>tag selectors: e.g. span or *</li>
+	 * <li>class name selectors: .class</li>
+	 * <li>id selectors: #id</li>
+	 * <li>descendant selectors: h1 h2 h3 {}</li>
+	 * <li>multiples: h1, h2, h3 {}
+	 * 
+	 * <pre>
+	 * {@code
+	 *    h1.a1#one.a2 h3#two.c {}
+	 *   }
+	 * </pre>
+	 * 
+	 * </li>
+	 * </ul>
+	 * </i>
+	 * </p>
+	 * 
+	 * @see WTextRenderer#getStyleSheetParseErrors()
+	 */
+	public boolean setStyleSheetText(CharSequence styleSheetContents) {
+		if ((styleSheetContents.length() == 0)) {
+			this.styleSheetText_ = new WString();
+			;
+			this.styleSheet_ = null;
+			this.error_ = "";
+			return true;
+		} else {
+			CssParser parser = new CssParser();
+			StyleSheet styleSheet = parser.parse(styleSheetContents);
+			if (!(styleSheet != null)) {
+				this.error_ = parser.getLastError();
+				return false;
+			}
+			this.error_ = "";
+			this.styleSheetText_ = WString.toWString(styleSheetContents);
+			;
+			this.styleSheet_ = styleSheet;
+			return true;
+		}
+	}
+
+	/**
+	 * Appends an external cascading style sheet (CSS).
+	 * <p>
+	 * This is an overloaded member, provided for convenience. Equivalent to:
+	 * 
+	 * <pre>
+	 * {@code
+	 *    setStyleSheetText(styleSheetText() + <filename_contents>)
+	 *   }
+	 * </pre>
+	 * <p>
+	 * 
+	 * @see WTextRenderer#setStyleSheetText(CharSequence styleSheetContents)
+	 */
+	public boolean useStyleSheet(CharSequence filename) {
+		String contents = FileUtils.fileToString(filename.toString());
+		if (!(contents != null)) {
+			return false;
+		}
+		boolean b = this.setStyleSheetText(this.getStyleSheetText()
+				.append("\n").append(contents));
+		;
+		return b;
+	}
+
+	/**
+	 * Clears the used stylesheet.
+	 * <p>
+	 * This is an overloaded member, provided for convenience. Equivalent to:
+	 * 
+	 * <pre>
+	 * {@code
+	 *    setStyleSheetText("")
+	 *   }
+	 * </pre>
+	 * <p>
+	 * 
+	 * @see WTextRenderer#setStyleSheetText(CharSequence styleSheetContents)
+	 */
+	public void clearStyleSheet() {
+		this.setStyleSheetText("");
+	}
+
+	/**
+	 * Returns the CSS in use.
+	 * <p>
+	 * This returns all the CSS declarations in use.
+	 * <p>
+	 * 
+	 * @see WTextRenderer#setStyleSheetText(CharSequence styleSheetContents)
+	 */
+	public WString getStyleSheetText() {
+		return this.styleSheetText_;
+	}
+
+	/**
+	 * Returns all parse error information of the last call to
+	 * setStyleSheetText.
+	 * <p>
+	 * setStyleSheetText stores all parse errors inside. Use
+	 * getStyleSheetParseErrors to access information about them. Information is
+	 * newline(\ n) seperated.
+	 * <p>
+	 * 
+	 * @see WTextRenderer#setStyleSheetText(CharSequence styleSheetContents)
+	 */
+	public String getStyleSheetParseErrors() {
+		return this.error_;
 	}
 
 	/**
@@ -250,18 +519,47 @@ public abstract class WTextRenderer {
 	public abstract WPainter getPainter(WPaintDevice device);
 
 	/**
+	 * Paints an XHTML node.
+	 * <p>
+	 * The default implementation paints the node conforming to the XHTML
+	 * specification.
+	 * <p>
+	 * You may want to specialize this method if you wish to customize (or
+	 * ignore) the rendering for certain nodes or node types, or if you want to
+	 * capture the actual layout positions for other processing.
+	 * <p>
+	 * The node information contains the layout position at which the node is
+	 * being painted.
+	 */
+	public void paintNode(WPainter painter, WTextRenderer.Node node) {
+		node.getBlock().actualRender(this, painter, node.getLb());
+	}
+
+	/**
 	 * Constructor.
 	 */
 	protected WTextRenderer() {
 		this.device_ = null;
 		this.fontScale_ = 1;
+		this.styleSheetText_ = new WString();
+		this.styleSheet_ = null;
+		this.error_ = "";
 	}
 
 	private WPainter painter_;
 	private WPaintDevice device_;
 	private double fontScale_;
+	private WString styleSheetText_;
+	private StyleSheet styleSheet_;
+	private String error_;
 
 	WPainter getPainter() {
 		return this.painter_;
+	}
+
+	private static final double EPSILON = 1e-4;
+
+	static boolean isEpsilonMore(double x, double limit) {
+		return x - EPSILON > limit;
 	}
 }

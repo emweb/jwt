@@ -28,11 +28,12 @@ import org.slf4j.LoggerFactory;
  * <p>
  * Since the template text may be supplied by a {@link WString}, you can
  * conveniently store the string in a message resource bundle, and make it
- * localized by using {@link WString#tr(String key) WString#tr()}.
+ * localized by using {@link }.
  * <p>
  * Placeholders (for variables and functions) are delimited by:
  * <code>${...}</code>. To use a literal <code>&quot;${&quot;</code>, use
- * <code>&quot;$${&quot;</code>.
+ * <code>&quot;$${&quot;</code>. Place holder names can contain &apos;_&apos;,
+ * &apos;-&apos;, &apos;.&apos; and alfanumeric characters.
  * <p>
  * Usage example:
  * <p>
@@ -101,22 +102,22 @@ import org.slf4j.LoggerFactory;
  * Optionally, additional arguments can be specified as with a variable
  * placeholder.
  * <p>
- * Functions are resolved by
+ * {@link Functions} are resolved by
  * {@link WTemplate#resolveFunction(String name, List args, Writer result)
  * resolveFunction()}, and the default implementation considers functions bound
  * with {@link WTemplate#addFunction(String name, WTemplate.Function function)
- * addFunction()}. There are currently two functions that are generally useful:
- * <p>
+ * addFunction()}. There are currently three functions that are generally
+ * useful:
  * <ul>
- * <li>WTemplate::Functions::tr : resolves a localized strings, this is
- * convenient to create a language neutral template, which contains translated
- * strings</li>
- * </ul>
- * <p>
- * <ul>
- * <li>WTemplate::Function::id : resolves the id of a bound widget, this is
- * convenient to bind &lt;label&gt; elements to a form widget using its for
- * attribute.</li>
+ * <li>{@link WTemplate.Functions#tr Functions::tr} : resolves a localized
+ * strings, this is convenient to create a language neutral template, which
+ * contains translated strings</li>
+ * <li>{@link WTemplate.Functions#id Functions::id} : resolves the id of a bound
+ * widget, this is convenient to bind &lt;label&gt; elements to a form widget
+ * using its for attribute.</li>
+ * <li>{@link WTemplate.Functions#block Functions::block} : recursively renders
+ * another string as macro block optional arguments substituted before
+ * processing template substitution.</li>
  * </ul>
  * <p>
  * For example, the following template uses the &quot;tr&quot; function to
@@ -129,7 +130,7 @@ import org.slf4j.LoggerFactory;
  * 	&#064;code
  * 	WTemplate t = new WTemplate();
  * 	t.setTemplateText(&quot;&lt;div&gt; ${tr:age-label} ${age-input} &lt;/div&gt;&quot;);
- * 	t.addFunction(&quot;tr&quot;, Template.Functions.tr);
+ * 	t.addFunction(&quot;tr&quot;, WTemplate.Functions.tr);
  * 	t.bindWidget(&quot;age-input&quot;, ageEdit = new WLineEdit());
  * }
  * </pre>
@@ -180,6 +181,19 @@ public class WTemplate extends WInteractWidget {
 		}
 	}
 
+	private boolean _block(List<WString> args, Writer result)
+			throws IOException {
+		if (args.size() < 1) {
+			return false;
+		}
+		WString tblock = WString.tr(args.get(0).toString());
+		for (int i = 1; i < args.size(); ++i) {
+			tblock.arg(args.get(i));
+		}
+		this.renderTemplateText(result, tblock);
+		return true;
+	}
+
 	private boolean _id(List<WString> args, Writer result) throws IOException {
 		if (args.size() == 1) {
 			WWidget w = this.resolveWidget(args.get(0).toString());
@@ -198,33 +212,20 @@ public class WTemplate extends WInteractWidget {
 		}
 	}
 
-	static interface Function {
-		public boolean evaluate(WTemplate t, List<WString> args, Writer result);
-	}
-
 	/**
-	 * A function that resolves to a localized string.
-	 * <p>
-	 * 
-	 * For example, when bound to the function <code>&quot;tr&quot;</code>, a
-	 * place-holder
-	 * 
-	 * <pre>
-	 * ${tr:name}
-	 * </pre>
-	 * 
-	 * will be resolved to the value of:
-	 * 
-	 * <pre>
-	 * {@code
-	 *      WString#tr("name")
-	 *   }
-	 * </pre>
+	 * A function interface type.
 	 * <p>
 	 * 
 	 * @see WTemplate#addFunction(String name, WTemplate.Function function)
+	 * @see WTemplate.Functions#tr
+	 * @see WTemplate.Functions#id
+	 * @see WTemplate.Functions#block
 	 */
-	public static class TrFunction implements WTemplate.Function {
+	public static interface Function {
+		public boolean evaluate(WTemplate t, List<WString> args, Writer result);
+	}
+
+	static class TrFunction implements WTemplate.Function {
 		private static Logger logger = LoggerFactory
 				.getLogger(TrFunction.class);
 
@@ -237,31 +238,20 @@ public class WTemplate extends WInteractWidget {
 		}
 	}
 
-	/**
-	 * A function that resolves the id of a bound widget.
-	 * <p>
-	 * 
-	 * For example, when bound to the function <code>&quot;id&quot;</code>, a
-	 * place-holder
-	 * 
-	 * <pre>
-	 * ${id:name}
-	 * </pre>
-	 * 
-	 * will be resolved to the value of:
-	 * 
-	 * <pre>
-	 * {@code
-	 *      t.resolveWidget("name").id()
-	 *   }
-	 * </pre>
-	 * <p>
-	 * This is useful for binding labels to input elements.
-	 * <p>
-	 * 
-	 * @see WTemplate#addFunction(String name, WTemplate.Function function)
-	 */
-	public static class IdFunction implements WTemplate.Function {
+	static class BlockFunction implements WTemplate.Function {
+		private static Logger logger = LoggerFactory
+				.getLogger(BlockFunction.class);
+
+		public boolean evaluate(WTemplate t, List<WString> args, Writer result) {
+			try {
+				return t._block(args, result);
+			} catch (IOException ioe) {
+				return false;
+			}
+		}
+	}
+
+	static class IdFunction implements WTemplate.Function {
 		private static Logger logger = LoggerFactory
 				.getLogger(IdFunction.class);
 
@@ -275,28 +265,109 @@ public class WTemplate extends WInteractWidget {
 	}
 
 	/**
-	 * Type that holds predefined functions.
+	 * A collection of predefined functions.
 	 * <p>
 	 * 
 	 * @see WTemplate#addFunction(String name, WTemplate.Function function)
 	 */
-	public static class FunctionsList {
-		private static Logger logger = LoggerFactory
-				.getLogger(FunctionsList.class);
+	public static class Functions {
+		private static Logger logger = LoggerFactory.getLogger(Functions.class);
 
 		/**
-		 * A pre-defined {@link WTemplate.FunctionsList#tr} function.
+		 * A function that resolves to a localized string.
+		 * <p>
+		 * For example, when bound to the function <code>&quot;tr&quot;</code>,
+		 * template that contains the placeholder
+		 * 
+		 * <pre>
+		 * {@code
+		 *        ... ${tr:name} ...
+		 *     }
+		 * </pre>
+		 * 
+		 * will be resolved to the value of:
+		 * 
+		 * <pre>
+		 * {@code
+		 *        WString::tr("name")
+		 *     }
+		 * </pre>
+		 * <p>
+		 * 
+		 * @see WTemplate#addFunction(String name, WTemplate.Function function)
 		 */
-		public WTemplate.TrFunction tr;
+		public static WTemplate.Function tr = new WTemplate.TrFunction();
 		/**
-		 * A pre-defined {@link WTemplate.FunctionsList#id} function.
+		 * A function that renders a macro block.
+		 * <p>
+		 * The function will consider the first argument as the key for a
+		 * localized string that is a macro block, and additional arguments as
+		 * positional parameters in that block.
+		 * <p>
+		 * For example, a template that contains:
+		 * 
+		 * <pre>
+		 * {@code
+		 *      ...
+		 *      ${block:form-field category}
+		 *      ...
+		 *     }
+		 * </pre>
+		 * <p>
+		 * would look-up the following message:
+		 * <p>
+		 * 
+		 * <pre>
+		 * {@code
+		 *      <message id="form-field">
+		 *         <div class="control-group">
+		 *            ${{1}-info}
+		 *         </div>
+		 *      </message>
+		 *     }
+		 * </pre>
+		 * <p>
+		 * and render as:
+		 * <p>
+		 * 
+		 * <pre>
+		 * {@code
+		 *      ...
+		 *      <div class="control-group">
+		 *        ${category-info}
+		 *      </div>
+		 *      ...
+		 *     }
+		 * </pre>
 		 */
-		public WTemplate.IdFunction id;
-
-		private FunctionsList() {
-			this.tr = new WTemplate.TrFunction();
-			this.id = new WTemplate.IdFunction();
-		}
+		public static WTemplate.Function block = new WTemplate.BlockFunction();
+		/**
+		 * A function that resolves the id of a bound widget.
+		 * <p>
+		 * For example, when bound to the function <code>&quot;id&quot;</code>,
+		 * template text that contains a place-holder
+		 * 
+		 * <pre>
+		 * {@code
+		 *        ... ${id:name} ...
+		 *     }
+		 * </pre>
+		 * <p>
+		 * will be resolved to the value of:
+		 * <p>
+		 * 
+		 * <pre>
+		 * {@code
+		 *        t.resolveWidget("name").id()
+		 *     }
+		 * </pre>
+		 * <p>
+		 * This is useful for binding labels to input elements.
+		 * <p>
+		 * 
+		 * @see WTemplate#addFunction(String name, WTemplate.Function function)
+		 */
+		public static WTemplate.Function id = new WTemplate.IdFunction();
 	}
 
 	/**
@@ -398,7 +469,7 @@ public class WTemplate extends WInteractWidget {
 			}
 		}
 		this.changed_ = true;
-		this.repaint(EnumSet.of(RepaintFlag.RepaintInnerHtml));
+		this.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
 	}
 
 	/**
@@ -427,6 +498,10 @@ public class WTemplate extends WInteractWidget {
 	 */
 	public void bindString(String varName, CharSequence value,
 			TextFormat textFormat) {
+		WWidget w = this.resolveWidget(varName);
+		if (w != null) {
+			this.bindWidget(varName, (WWidget) null);
+		}
 		WString v = WString.toWString(value);
 		if (textFormat == TextFormat.XHTMLText && v.isLiteral()) {
 			if (!removeScript(v)) {
@@ -441,13 +516,7 @@ public class WTemplate extends WInteractWidget {
 		if (i == null || !i.equals(v.toString())) {
 			this.strings_.put(varName, v.toString());
 			this.changed_ = true;
-			this.repaint(EnumSet.of(RepaintFlag.RepaintInnerHtml));
-		}
-		WWidget j = this.widgets_.get(varName);
-		if (j != null) {
-			if (j != null)
-				j.remove();
-			this.widgets_.remove(varName);
+			this.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
 		}
 	}
 
@@ -460,22 +529,6 @@ public class WTemplate extends WInteractWidget {
 	 */
 	public final void bindString(String varName, CharSequence value) {
 		bindString(varName, value, TextFormat.XHTMLText);
-	}
-
-	/**
-	 * Binds a nested template text to a variable.
-	 * <p>
-	 * The corresponding variable reference within the template will will be
-	 * replaced by the nested template text (like
-	 * {@link WTemplate#bindString(String varName, CharSequence value, TextFormat textFormat)
-	 * bindString()}), but this nested template text will also be recursively
-	 * interpreted for place holder substitution.
-	 */
-	public void nestTemplate(String varName, CharSequence templateText) {
-		WString t = WString.toWString(templateText);
-		this.nestedTemplates_.put(varName, t);
-		this.changed_ = true;
-		this.repaint(EnumSet.of(RepaintFlag.RepaintInnerHtml));
 	}
 
 	/**
@@ -496,7 +549,8 @@ public class WTemplate extends WInteractWidget {
 	 * The corresponding variable reference within the template will be replaced
 	 * with the widget (rendered as XHTML). Since a single widget may be
 	 * instantiated only once in a template, the variable <code>varName</code>
-	 * may occur at most once in the template.
+	 * may occur at most once in the template, and the <code>widget</code> must
+	 * not yet be bound to another variable.
 	 * <p>
 	 * If a widget was already bound to the variable, it is deleted first. If
 	 * previously a string or other value was bound to the variable, it is
@@ -533,11 +587,35 @@ public class WTemplate extends WInteractWidget {
 			this.strings_.put(varName, "");
 		}
 		this.changed_ = true;
-		this.repaint(EnumSet.of(RepaintFlag.RepaintInnerHtml));
+		this.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
+	}
+
+	/**
+	 * Unbinds a widget.
+	 * <p>
+	 * This removes a previously bound widget and unbinds the corresponding
+	 * variable, effectively undoing the effect of
+	 * {@link WTemplate#bindWidget(String varName, WWidget widget) bindWidget()}.
+	 * <p>
+	 * cpp
+	 */
+	public WWidget takeWidget(String varName) {
+		WWidget i = this.widgets_.get(varName);
+		if (i != null) {
+			WWidget result = i;
+			this.widgets_.remove(varName);
+			this.changed_ = true;
+			this.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
+			return result;
+		} else {
+			return null;
+		}
 	}
 
 	/**
 	 * Binds an empty string to a variable.
+	 * <p>
+	 * If a widget was bound to the variable, it is deleted first.
 	 * <p>
 	 * 
 	 * @see WTemplate#bindString(String varName, CharSequence value, TextFormat
@@ -550,14 +628,14 @@ public class WTemplate extends WInteractWidget {
 	/**
 	 * Binds a function.
 	 * <p>
-	 * Functions are useful to automatically resolve placeholders.
+	 * {@link Functions} are useful to automatically resolve placeholders.
 	 * <p>
 	 * The syntax for a function &apos;fun&apos; applied to a single argument
 	 * &apos;bla&apos; is:
 	 * <p>
 	 * <code>${fun:bla}</code>
 	 * <p>
-	 * There are two predefined functions, which can be bound using:
+	 * There are three predefined functions, which can be bound using:
 	 * <p>
 	 * 
 	 * <pre>
@@ -565,6 +643,7 @@ public class WTemplate extends WInteractWidget {
 	 *    WTemplate t = ...;
 	 *    t.addFunction("id", WTemplate.Functions.id);
 	 *    t.addFunction("tr", WTemplate.Functions.tr);
+	 *    t.addFunction("block", WTemplate.Functions.block);
 	 *   }
 	 * </pre>
 	 */
@@ -587,7 +666,7 @@ public class WTemplate extends WInteractWidget {
 				this.conditions_.remove(name);
 			}
 			this.changed_ = true;
-			this.repaint(EnumSet.of(RepaintFlag.RepaintInnerHtml));
+			this.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
 		}
 	}
 
@@ -699,18 +778,17 @@ public class WTemplate extends WInteractWidget {
 	 * <p>
 	 * This method is typically used for delayed binding of widgets. Usage
 	 * example:
+	 * <p>
 	 * 
 	 * <pre>
 	 * {@code
-	 *    {
-	 *      if (Widget *known = WTemplate::resolveWidget(varName)) {
-	 *        return known;
-	 *      } else {
-	 *        if (varName == "age-input") {
-	 *          WWidget *w = new WLineEdit(); // widget only created when used
-	 *          bind(varName, w);
-	 *          return w;
-	 *        }
+	 *    if (Widget known = super.resolveWidget(varName)) {
+	 *      return known;
+	 *    } else {
+	 *      if (varName == "age-input") {
+	 *        WWidget *w = new WLineEdit(); // widget only created when used
+	 *        bind(varName, w);
+	 *        return w;
 	 *      }
 	 *    }
 	 *   }
@@ -782,7 +860,7 @@ public class WTemplate extends WInteractWidget {
 		this.strings_.clear();
 		this.conditions_.clear();
 		this.changed_ = true;
-		this.repaint(EnumSet.of(RepaintFlag.RepaintInnerHtml));
+		this.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
 	}
 
 	/**
@@ -803,7 +881,7 @@ public class WTemplate extends WInteractWidget {
 		if (this.encodeInternalPaths_ != enabled) {
 			this.encodeInternalPaths_ = enabled;
 			this.changed_ = true;
-			this.repaint(EnumSet.of(RepaintFlag.RepaintInnerHtml));
+			this.repaint();
 		}
 	}
 
@@ -817,21 +895,28 @@ public class WTemplate extends WInteractWidget {
 		return this.encodeInternalPaths_;
 	}
 
-	/**
-	 * Refreshes the template.
-	 * <p>
-	 * This rerenders the template.
-	 */
 	public void refresh() {
 		if (this.text_.refresh()) {
 			this.changed_ = true;
-			this.repaint(EnumSet.of(RepaintFlag.RepaintInnerHtml));
+			this.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
 		}
 		super.refresh();
 	}
 
 	/**
 	 * Renders the template into the given result stream.
+	 * <p>
+	 * The default implementation will call
+	 * {@link WTemplate#renderTemplateText(Writer result, CharSequence templateText)
+	 * renderTemplateText()} with the {@link WTemplate#getTemplateText()
+	 * getTemplateText()}.
+	 */
+	public void renderTemplate(Writer result) throws IOException {
+		this.renderTemplateText(result, this.text_);
+	}
+
+	/**
+	 * Renders a template into the given result stream.
 	 * <p>
 	 * The default implementation will parse the template, and resolve variables
 	 * by calling
@@ -842,8 +927,125 @@ public class WTemplate extends WInteractWidget {
 	 * needed to load content on-demand (e.g. database objects), or support a
 	 * custom template language.
 	 */
-	public void renderTemplate(Writer result) throws IOException {
-		this.renderTemplateText(result, this.text_);
+	public void renderTemplateText(Writer result, CharSequence templateText)
+			throws IOException {
+		String text = "";
+		WApplication app = WApplication.getInstance();
+		if (app != null
+				&& (this.encodeInternalPaths_ || app.getSession()
+						.hasSessionIdInUrl())) {
+			EnumSet<RefEncoderOption> options = EnumSet
+					.noneOf(RefEncoderOption.class);
+			if (this.encodeInternalPaths_) {
+				options.add(RefEncoderOption.EncodeInternalPaths);
+			}
+			if (app.getSession().hasSessionIdInUrl()) {
+				options.add(RefEncoderOption.EncodeRedirectTrampoline);
+			}
+			WString t = WString.toWString(templateText);
+			RefEncoder.EncodeRefs(t, options);
+			text = t.toString();
+		} else {
+			text = templateText.toString();
+		}
+		int lastPos = 0;
+		List<WString> args = new ArrayList<WString>();
+		List<String> conditions = new ArrayList<String>();
+		int suppressing = 0;
+		for (int pos = text.indexOf('$'); pos != -1; pos = text.indexOf('$',
+				pos)) {
+			if (!(suppressing != 0)) {
+				result.append(text.substring(lastPos, lastPos + pos - lastPos));
+			}
+			lastPos = pos;
+			if (pos + 1 < text.length()) {
+				if (text.charAt(pos + 1) == '$') {
+					if (!(suppressing != 0)) {
+						result.append('$');
+					}
+					lastPos += 2;
+				} else {
+					if (text.charAt(pos + 1) == '{') {
+						int startName = pos + 2;
+						int endName = StringUtils.findFirstOf(text, " \r\n\t}",
+								startName);
+						args.clear();
+						int endVar = parseArgs(text, endName, args);
+						if (endVar == -1) {
+							logger.error(new StringWriter().append(
+									"variable syntax error near \"").append(
+									text.substring(pos)).append("\"")
+									.toString());
+							return;
+						}
+						String name = text.substring(startName, startName
+								+ endName - startName);
+						int nl = name.length();
+						if (nl > 2 && name.charAt(0) == '<'
+								&& name.charAt(nl - 1) == '>') {
+							if (name.charAt(1) != '/') {
+								String cond = name.substring(1, 1 + nl - 2);
+								conditions.add(cond);
+								if (suppressing != 0
+										|| !this.conditionValue(cond)) {
+									++suppressing;
+								}
+							} else {
+								String cond = name.substring(2, 2 + nl - 3);
+								if (conditions.isEmpty()
+										|| !conditions.get(
+												conditions.size() - 1).equals(
+												cond)) {
+									logger
+											.error(new StringWriter()
+													.append(
+															"mismatching condition block end: ")
+													.append(cond).toString());
+									return;
+								}
+								conditions.remove(conditions.size() - 1);
+								if (suppressing != 0) {
+									--suppressing;
+								}
+							}
+						} else {
+							if (!(suppressing != 0)) {
+								int colonPos = name.indexOf(':');
+								boolean handled = false;
+								if (colonPos != -1) {
+									String fname = name.substring(0,
+											0 + colonPos);
+									String arg0 = name.substring(colonPos + 1);
+									args.add(0, new WString(arg0));
+									if (this.resolveFunction(fname, args,
+											result)) {
+										handled = true;
+									} else {
+										args.remove(0);
+									}
+								}
+								if (!handled) {
+									this.resolveString(name, args, result);
+								}
+							}
+						}
+						lastPos = endVar + 1;
+					} else {
+						if (!(suppressing != 0)) {
+							result.append('$');
+						}
+						lastPos += 1;
+					}
+				}
+			} else {
+				if (!(suppressing != 0)) {
+					result.append('$');
+				}
+				lastPos += 1;
+			}
+			pos = lastPos;
+		}
+		result.append(text.substring(lastPos));
 	}
 
 	/**
@@ -903,6 +1105,8 @@ public class WTemplate extends WInteractWidget {
 					WWidget w = i;
 					w.getWebWidget().setRendered(false);
 				}
+				WApplication.getInstance().getSession().getRenderer()
+						.updateFormObjects(this, true);
 			}
 			super.updateDom(element, all);
 		} catch (IOException ioe) {
@@ -911,8 +1115,15 @@ public class WTemplate extends WInteractWidget {
 	}
 
 	DomElementType getDomElementType() {
-		return this.isInline() ? DomElementType.DomElement_SPAN
+		DomElementType type = this.isInline() ? DomElementType.DomElement_SPAN
 				: DomElementType.DomElement_DIV;
+		WContainerWidget p = ((this.getParentWebWidget()) instanceof WContainerWidget ? (WContainerWidget) (this
+				.getParentWebWidget())
+				: null);
+		if (p != null && p.isList()) {
+			type = DomElementType.DomElement_LI;
+		}
+		return type;
 	}
 
 	void propagateRenderOk(boolean deep) {
@@ -1048,7 +1259,7 @@ public class WTemplate extends WInteractWidget {
 							return pos;
 						} else {
 							if (Character.isLetterOrDigit(c) || c == '_'
-									|| c == '-') {
+									|| c == '-' || c == '.') {
 								v.append(c);
 							} else {
 								return Error;
@@ -1088,134 +1299,4 @@ public class WTemplate extends WInteractWidget {
 		}
 		return pos == text.length() ? -1 : pos;
 	}
-
-	private void renderTemplateText(Writer result, CharSequence templateText)
-			throws IOException {
-		String text = "";
-		WApplication app = WApplication.getInstance();
-		if (app != null
-				&& (this.encodeInternalPaths_ || app.getSession()
-						.hasSessionIdInUrl())) {
-			EnumSet<RefEncoderOption> options = EnumSet
-					.noneOf(RefEncoderOption.class);
-			if (this.encodeInternalPaths_) {
-				options.add(RefEncoderOption.EncodeInternalPaths);
-			}
-			if (app.getSession().hasSessionIdInUrl()) {
-				options.add(RefEncoderOption.EncodeRedirectTrampoline);
-			}
-			WString t = WString.toWString(templateText);
-			RefEncoder.EncodeRefs(t, options);
-			text = t.toString();
-		} else {
-			text = templateText.toString();
-		}
-		int lastPos = 0;
-		List<WString> args = new ArrayList<WString>();
-		List<String> conditions = new ArrayList<String>();
-		int suppressing = 0;
-		for (int pos = text.indexOf('$'); pos != -1; pos = text.indexOf('$',
-				pos)) {
-			if (!(suppressing != 0)) {
-				result.append(text.substring(lastPos, lastPos + pos - lastPos));
-			}
-			lastPos = pos;
-			if (pos + 1 < text.length()) {
-				if (text.charAt(pos + 1) == '$') {
-					if (!(suppressing != 0)) {
-						result.append('$');
-					}
-					lastPos += 2;
-				} else {
-					if (text.charAt(pos + 1) == '{') {
-						int startName = pos + 2;
-						int endName = StringUtils.findFirstOf(text, " \r\n\t}",
-								startName);
-						args.clear();
-						int endVar = parseArgs(text, endName, args);
-						if (endVar == -1) {
-							logger.error(new StringWriter().append(
-									"variable syntax error near \"").append(
-									text.substring(pos)).append("\"")
-									.toString());
-							return;
-						}
-						String name = text.substring(startName, startName
-								+ endName - startName);
-						int nl = name.length();
-						if (nl > 2 && name.charAt(0) == '<'
-								&& name.charAt(nl - 1) == '>') {
-							if (name.charAt(1) != '/') {
-								String cond = name.substring(1, 1 + nl - 2);
-								conditions.add(cond);
-								if (suppressing != 0
-										|| !this.conditionValue(cond)) {
-									++suppressing;
-								}
-							} else {
-								String cond = name.substring(2, 2 + nl - 3);
-								if (!conditions.get(conditions.size() - 1)
-										.equals(cond)) {
-									logger
-											.error(new StringWriter()
-													.append(
-															"mismatching condition block end: ")
-													.append(cond).toString());
-									return;
-								}
-								conditions.remove(conditions.size() - 1);
-								if (suppressing != 0) {
-									--suppressing;
-								}
-							}
-						} else {
-							if (!(suppressing != 0)) {
-								int colonPos = name.indexOf(':');
-								boolean handled = false;
-								if (colonPos != -1) {
-									String fname = name.substring(0,
-											0 + colonPos);
-									String arg0 = name.substring(colonPos + 1);
-									args.add(0, new WString(arg0));
-									if (this.resolveFunction(fname, args,
-											result)) {
-										handled = true;
-									} else {
-										args.remove(0);
-									}
-								}
-								if (!handled) {
-									WString i = this.nestedTemplates_.get(name);
-									if (i != null) {
-										this.renderTemplateText(result, i);
-									} else {
-										this.resolveString(name, args, result);
-									}
-								}
-							}
-						}
-						lastPos = endVar + 1;
-					} else {
-						if (!(suppressing != 0)) {
-							result.append('$');
-						}
-						lastPos += 1;
-					}
-				}
-			} else {
-				if (!(suppressing != 0)) {
-					result.append('$');
-				}
-				lastPos += 1;
-			}
-			pos = lastPos;
-		}
-		result.append(text.substring(lastPos));
-	}
-
-	static String DropShadow_x1_x2 = "<span class=\"Wt-x1\"><span class=\"Wt-x1a\"></span></span><span class=\"Wt-x2\"><span class=\"Wt-x2a\"></span></span>";
-	/**
-	 * A collection of predefined functions.
-	 */
-	public static WTemplate.FunctionsList Functions = new WTemplate.FunctionsList();
 }

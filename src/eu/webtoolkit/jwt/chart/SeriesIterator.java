@@ -139,5 +139,5 @@ public class SeriesIterator {
 
 	private int currentXSegment_;
 	private int currentYSegment_;
-	static final int TICK_LENGTH = 5;
+	private static final int TICK_LENGTH = 5;
 }

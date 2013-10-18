@@ -38,7 +38,8 @@ class SpinBoxValidator extends WValidator {
 	}
 
 	public String getJavaScriptValidate() {
-		return "jQuery.data(" + this.spinBox_.getJsRef() + ", 'obj');";
+		return "new function() { this.validate = function(t) { return jQuery.data("
+				+ this.spinBox_.getJsRef() + ", 'obj').validate(t); }; }";
 	}
 
 	private WAbstractSpinBox spinBox_;

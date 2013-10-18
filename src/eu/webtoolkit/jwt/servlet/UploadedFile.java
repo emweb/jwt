@@ -94,5 +94,5 @@ public class UploadedFile {
 	}
 
 	private UploadedFile.Impl fileInfo_;
-	static StringWriter emptyStream = new StringWriter();
+	private static StringWriter emptyStream = new StringWriter();
 }

@@ -5,11 +5,15 @@
  */
 package eu.webtoolkit.jwt;
 
+import java.math.BigDecimal;
 import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.regex.Pattern;
+
+import eu.webtoolkit.jwt.utils.LocaleUtils;
 
 
 /**
@@ -70,7 +74,12 @@ public class StringUtils {
 			return (WString) data;
 		else if (data == null)
 			return WString.Empty;
-		else
+		else if (data instanceof Number)
+			return new WString(NumberFormat.getInstance(LocaleUtils.getCurrentLocale()).format(data));
+		else if (data instanceof WDate) {
+			WDate d = (WDate) data;
+			return new WString(d.toString("dd/MM/yyyy"));
+		} else
 			return new WString(data.toString());
 	}
 
@@ -100,13 +109,13 @@ public class StringUtils {
 			return Double.NaN;
 		else if (data instanceof WString)
 			try {
-				return Double.parseDouble(((WString) data).getValue());
+				return LocaleUtils.toDouble(LocaleUtils.getCurrentLocale(), ((WString) data).getValue());
 			} catch (NumberFormatException e) {
 				return Double.NaN;
 			}
 		else if (data instanceof String)
 			try {
-				return Double.parseDouble((String) data);
+				return LocaleUtils.toDouble(LocaleUtils.getCurrentLocale(), (String) data);
 			} catch (NumberFormatException e) {
 				return Double.NaN;
 			}
@@ -122,6 +131,8 @@ public class StringUtils {
 			return ((Long) data).doubleValue();
 		else if (data instanceof Float)
 			return ((Float) data).doubleValue();
+		else if (data instanceof BigDecimal)
+			return ((BigDecimal) data).doubleValue();
 		else
 			throw new WtException("WAbstractItemModel: unsupported type "
 					+ data.getClass().getName());
@@ -171,7 +182,7 @@ public class StringUtils {
 			return s + c;
 	}
 
-	static String put(String s, int pos, char c) {
+	public static String put(String s, int pos, char c) {
 		StringBuilder sb = new StringBuilder(s);
 		sb.setCharAt(pos, c);
 		return sb.toString();
@@ -252,10 +263,13 @@ public class StringUtils {
 
 	static String eraseWord(String s, String w) {
 		int i = s.indexOf(w);
+
 		if (i != -1) {
 			String result = s.substring(0, Math.max(0, i - 1));
+
 			if (i + w.length() + 1 < s.length())
-				result += s.substring(i + w.length() + 1);
+				result += " " + s.substring(i + w.length() + 1);
+
 			return result;
 		} else
 			return s;

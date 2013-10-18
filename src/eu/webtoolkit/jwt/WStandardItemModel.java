@@ -523,7 +523,12 @@ public class WStandardItemModel extends WAbstractItemModel {
 				.get(section)
 				: this.rowHeaderData_.get(section);
 		Object i = d.get(role);
-		return i != null ? i : null;
+		if (i != null) {
+			Object result = i;
+			return result;
+		} else {
+			return null;
+		}
 	}
 
 	public WModelIndex getIndex(int row, int column, WModelIndex parent) {

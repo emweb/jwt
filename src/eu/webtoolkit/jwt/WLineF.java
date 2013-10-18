@@ -129,6 +129,11 @@ public class WLineF {
 		return new WPointF(this.x2_, this.y2_);
 	}
 
+	public boolean equals(WLineF other) {
+		return this.x1_ == other.x1_ && this.y1_ == other.y1_
+				&& this.x2_ == other.x2_ && this.y2_ == other.y2_;
+	}
+
 	private double x1_;
 	private double y1_;
 	private double x2_;

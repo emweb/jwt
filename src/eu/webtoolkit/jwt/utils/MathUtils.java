@@ -13,12 +13,15 @@ public class MathUtils {
 	}
 
 	static private Random random = new Random();
+	private static double e[] = new double[] { 1.0, 10.0, 100.0, 1000.0, 10000.0, 100000.0, 1000000.0 };
 
-	public static String round(double v, int n) {
+	public static String roundCss(double v, int n) {
 		return String.valueOf(Math.round(v * e[n]) / e[n]);
 	}
 
-	private static double e[] = new double[] { 1.0, 10.0, 100.0, 1000.0, 10000.0, 100000.0, 1000000.0 };
+	public static String roundJs(double v, int n) {
+		return String.valueOf(v);
+	}
 
 	public static String randomId() {
 		return randomId(16);

@@ -118,6 +118,12 @@ public abstract class WAbstractChart extends WPaintedWidget {
 						WAbstractChart.this.modelReset();
 					}
 				}));
+		this.modelConnections_.add(this.model_.headerDataChanged().addListener(
+				this, new Signal3.Listener<Orientation, Integer, Integer>() {
+					public void trigger(Orientation e1, Integer e2, Integer e3) {
+						WAbstractChart.this.modelHeaderDataChanged(e1, e2, e3);
+					}
+				}));
 		this.modelChanged();
 	}
 
@@ -431,5 +437,14 @@ public abstract class WAbstractChart extends WPaintedWidget {
 	 */
 	protected abstract void modelDataChanged(WModelIndex topLeft,
 			WModelIndex bottomRight);
+
+	/**
+	 * Method called when header data has been changed in the model.
+	 * <p>
+	 * 
+	 * @see WAbstractItemModel#headerDataChanged()
+	 */
+	protected abstract void modelHeaderDataChanged(Orientation orientation,
+			int start, int end);
 	// private void (T m, T v) ;
 }

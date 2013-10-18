@@ -363,11 +363,7 @@ public class AuthWidget extends WTemplateFormView {
 	 * @see AuthWidget#registerNewUser()
 	 */
 	public WWidget createRegistrationView(Identity id) {
-		if (!(this.registrationModel_ != null)) {
-			this.registrationModel_ = this.getCreateRegistrationModel();
-		} else {
-			this.registrationModel_.reset();
-		}
+		this.registrationModel_ = this.getCreateRegistrationModel();
 		if (id.isValid()) {
 			this.registrationModel_.registerIdentified(id);
 		}
@@ -461,13 +457,13 @@ public class AuthWidget extends WTemplateFormView {
 		if (this.created_) {
 			return;
 		}
-		this.created_ = true;
 		this.login_.changed().addListener(this, new Signal.Listener() {
 			public void trigger() {
 				AuthWidget.this.onLoginChange();
 			}
 		});
 		this.onLoginChange();
+		this.created_ = true;
 	}
 
 	/**
@@ -496,7 +492,7 @@ public class AuthWidget extends WTemplateFormView {
 	 */
 	protected void createLoggedInView() {
 		this.setTemplateText(tr("Wt.Auth.template.logged-in"));
-		this.bindString("user-name", this.login_.getUser().identity(
+		this.bindString("user-name", this.login_.getUser().getIdentity(
 				Identity.LoginName));
 		WPushButton logout = new WPushButton(tr("Wt.Auth.logout"));
 		logout.clicked().addListener(this, new Signal1.Listener<WMouseEvent>() {
@@ -586,6 +582,7 @@ public class AuthWidget extends WTemplateFormView {
 							AuthWidget.this.closeDialog();
 						}
 					});
+			this.dialog_.getFooter().hide();
 			if (!WApplication.getInstance().getEnvironment().hasAjax()) {
 				this.dialog_.setMargin(new WLength("-21em"), EnumSet
 						.of(Side.Left));
@@ -606,13 +603,18 @@ public class AuthWidget extends WTemplateFormView {
 	 * @see AuthWidget#registerNewUser()
 	 */
 	protected RegistrationModel getCreateRegistrationModel() {
-		RegistrationModel result = new RegistrationModel(this.model_
-				.getBaseAuth(), this.model_.getUsers(), this.login_, this);
-		if (this.model_.getPasswordAuth() != null) {
-			result.addPasswordAuth(this.model_.getPasswordAuth());
+		if (!(this.registrationModel_ != null)) {
+			this.registrationModel_ = new RegistrationModel(this.model_
+					.getBaseAuth(), this.model_.getUsers(), this.login_, this);
+			if (this.model_.getPasswordAuth() != null) {
+				this.registrationModel_.addPasswordAuth(this.model_
+						.getPasswordAuth());
+			}
+			this.registrationModel_.addOAuth(this.model_.getOAuth());
+		} else {
+			this.registrationModel_.reset();
 		}
-		result.addOAuth(this.model_.getOAuth());
-		return result;
+		return this.registrationModel_;
 	}
 
 	protected WFormWidget createFormWidget(String field) {
@@ -662,21 +664,18 @@ public class AuthWidget extends WTemplateFormView {
 		this.created_ = false;
 		this.dialog_ = null;
 		this.messageBox_ = null;
-		this.addFunction("id", WTemplate.Functions.id);
-		this.addFunction("tr", WTemplate.Functions.tr);
 		WApplication app = WApplication.getInstance();
-		app.useStyleSheet(WApplication.getResourcesUrl() + "form.css");
 		app.internalPathChanged().addListener(this,
 				new Signal1.Listener<String>() {
 					public void trigger(String e1) {
 						AuthWidget.this.onPathChange(e1);
 					}
 				});
-		app.getBuiltinLocalizedStrings().useBuiltin(WtServlet.Auth_xml);
+		app.getTheme().apply(this, this, WidgetThemeRole.AuthWidgets);
 	}
 
 	private void logout() {
-		this.login_.logout();
+		this.model_.logout(this.login_);
 	}
 
 	// private void loginThrottle(int delay) ;

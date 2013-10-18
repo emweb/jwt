@@ -18,7 +18,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 class XSSFilter extends XHtmlFilter {
-    private static Logger logger = LoggerFactory.getLogger(XSSFilter.class);
+	private static Logger logger = LoggerFactory.getLogger(XSSFilter.class);
 
 	protected int discarding = 0;
 
@@ -53,7 +53,11 @@ class XSSFilter extends XHtmlFilter {
 		return false;
 	}
 
-	@Override
+    public XSSFilter() {
+		super(false);
+	}
+
+    @Override
 	public void addAttribute(String key, String nsPrefix, String nsURI, String value, String type) throws Exception {
 		if (discarding != 0)
 			return;

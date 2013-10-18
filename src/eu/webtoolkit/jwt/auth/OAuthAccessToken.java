@@ -98,13 +98,13 @@ public class OAuthAccessToken {
 		return this.refreshToken_;
 	}
 
-	private String accessToken_;
-	private String refreshToken_;
-	private WDate expires_;
 	/**
 	 * An invalid token constant.
 	 * <p>
 	 * This is a token that is not {@link OAuthAccessToken#isValid() isValid()}.
 	 */
 	public static final OAuthAccessToken Invalid = new OAuthAccessToken();
+	private String accessToken_;
+	private String refreshToken_;
+	private WDate expires_;
 }

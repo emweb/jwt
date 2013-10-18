@@ -254,14 +254,16 @@ public class WButtonGroup extends WObject {
 	 * getCheckedButton()}.
 	 */
 	public Signal1<WRadioButton> checkedChanged() {
-		this.checkedChangedConnected_ = true;
-		for (int i = 0; i < this.buttons_.size(); ++i) {
-			this.buttons_.get(i).button.changed().addListener(this,
-					new Signal.Listener() {
-						public void trigger() {
-							WButtonGroup.this.onButtonChange();
-						}
-					});
+		if (!this.checkedChangedConnected_) {
+			this.checkedChangedConnected_ = true;
+			for (int i = 0; i < this.buttons_.size(); ++i) {
+				this.buttons_.get(i).button.changed().addListener(this,
+						new Signal.Listener() {
+							public void trigger() {
+								WButtonGroup.this.onButtonChange();
+							}
+						});
+			}
 		}
 		return this.checkedChanged_;
 	}

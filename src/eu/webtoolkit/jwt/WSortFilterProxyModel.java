@@ -670,7 +670,11 @@ public class WSortFilterProxyModel extends WAbstractProxyModel {
 		if (this.inserting_) {
 			return;
 		}
-		this.itemFromIndex(this.mapFromSource(parent));
+		WModelIndex pparent = this.mapFromSource(parent);
+		if ((parent != null) && !(pparent != null)) {
+			return;
+		}
+		this.itemFromIndex(pparent);
 	}
 
 	private void sourceRowsInserted(WModelIndex parent, int start, int end) {
@@ -681,6 +685,9 @@ public class WSortFilterProxyModel extends WAbstractProxyModel {
 		}
 		int count = end - start + 1;
 		WModelIndex pparent = this.mapFromSource(parent);
+		if ((parent != null) && !(pparent != null)) {
+			return;
+		}
 		WSortFilterProxyModel.Item item = this.itemFromIndex(pparent);
 		for (int i = 0; i < item.proxyRowMap_.size(); ++i) {
 			if (item.proxyRowMap_.get(i) >= start) {
@@ -712,6 +719,9 @@ public class WSortFilterProxyModel extends WAbstractProxyModel {
 	private void sourceRowsAboutToBeRemoved(WModelIndex parent, int start,
 			int end) {
 		WModelIndex pparent = this.mapFromSource(parent);
+		if ((parent != null) && !(pparent != null)) {
+			return;
+		}
 		WSortFilterProxyModel.Item item = this.itemFromIndex(pparent);
 		for (int row = start; row <= end; ++row) {
 			int mappedRow = item.sourceRowMap_.get(row);
@@ -728,6 +738,9 @@ public class WSortFilterProxyModel extends WAbstractProxyModel {
 		int count = end - start + 1;
 		this.shiftModelIndexes(parent, start, -count, this.mappedIndexes_);
 		WModelIndex pparent = this.mapFromSource(parent);
+		if ((parent != null) && !(pparent != null)) {
+			return;
+		}
 		WSortFilterProxyModel.Item item = this.itemFromIndex(pparent);
 		for (int i = 0; i < item.proxyRowMap_.size(); ++i) {
 			if (item.proxyRowMap_.get(i) >= start) {
@@ -747,6 +760,9 @@ public class WSortFilterProxyModel extends WAbstractProxyModel {
 				&& (this.sortKeyColumn_ >= topLeft.getColumn() && this.sortKeyColumn_ <= bottomRight
 						.getColumn());
 		WModelIndex parent = this.mapFromSource(topLeft.getParent());
+		if ((topLeft.getParent() != null) && !(parent != null)) {
+			return;
+		}
 		WSortFilterProxyModel.Item item = this.itemFromIndex(parent);
 		for (int row = topLeft.getRow(); row <= bottomRight.getRow(); ++row) {
 			int oldMappedRow = item.sourceRowMap_.get(row);

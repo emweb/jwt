@@ -115,7 +115,15 @@ public class WFormModel extends WObject {
 		addField(field, WString.Empty);
 	}
 
-	// public void removeField(String field) ;
+	/**
+	 * Removes a field.
+	 * <p>
+	 * The <code>field</code> is removed from the model.
+	 */
+	public void removeField(String field) {
+		this.fields_.remove(field);
+	}
+
 	/**
 	 * Returns the fields.
 	 * <p>
@@ -128,9 +136,7 @@ public class WFormModel extends WObject {
 		for (Iterator<Map.Entry<String, WFormModel.FieldData>> i_it = this.fields_
 				.entrySet().iterator(); i_it.hasNext();) {
 			Map.Entry<String, WFormModel.FieldData> i = i_it.next();
-			if (this.isVisible(i.getKey())) {
-				result.add(i.getKey());
-			}
+			result.add(i.getKey());
 		}
 		return result;
 	}
@@ -201,7 +207,8 @@ public class WFormModel extends WObject {
 	/**
 	 * Sets whether a field is visible.
 	 * <p>
-	 * Fields are visible by default.
+	 * Fields are visible by default. An invisible field will be ignored during
+	 * validation (i.e. will be considered as valid).
 	 * <p>
 	 * 
 	 * @see WFormModel#isVisible(String field)
@@ -313,7 +320,9 @@ public class WFormModel extends WObject {
 	 * @see WFormModel#getValue(String field)
 	 */
 	public String valueText(String field) {
-		return StringUtils.asString(this.getValue(field)).toString();
+		WValidator v = this.getValidator(field);
+		return StringUtils.asString(this.getValue(field),
+				v != null ? v.getFormat() : "").toString();
 	}
 
 	/**
@@ -340,6 +349,20 @@ public class WFormModel extends WObject {
 	}
 
 	/**
+	 * Returns a validator.
+	 * <p>
+	 * Returns the validator for the field.
+	 */
+	public WValidator getValidator(String field) {
+		WFormModel.FieldData i = this.fields_.get(field);
+		if (i != null) {
+			WFormModel.FieldData d = i;
+			return d.validator;
+		}
+		return null;
+	}
+
+	/**
 	 * Validates a field.
 	 * <p>
 	 * The default implementation uses the validator configured for the field to
@@ -361,7 +384,7 @@ public class WFormModel extends WObject {
 			WFormModel.FieldData d = i;
 			if (d.validator != null) {
 				this.setValidation(field, d.validator.validate(StringUtils
-						.asString(d.value).toString()));
+						.asString(this.valueText(field)).toString()));
 			} else {
 				this.setValidation(field, Valid);
 			}
