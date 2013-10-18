@@ -952,7 +952,6 @@ public class WTableView extends WAbstractItemView {
 
 	void modelLayoutChanged() {
 		super.modelLayoutChanged();
-		this.selectionChanged().trigger();
 		this.resetGeometry();
 	}
 
@@ -1798,7 +1797,7 @@ public class WTableView extends WAbstractItemView {
 			set.add(newIndex);
 		}
 		this.shiftEditorColumns(this.getRootIndex(), start, count, true);
-		if (!toErase.isEmpty()) {
+		if (!toShift.isEmpty() || !toErase.isEmpty()) {
 			this.selectionChanged().trigger();
 		}
 	}

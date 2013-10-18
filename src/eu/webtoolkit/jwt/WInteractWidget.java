@@ -567,7 +567,7 @@ public abstract class WInteractWidget extends WWebWidget {
 		if (updateKeyDown) {
 			List<DomElement.EventAction> actions = new ArrayList<DomElement.EventAction>();
 			if (enterPress != null) {
-				if (enterPress.isConnected()) {
+				if (enterPress.needsUpdate(true)) {
 					String extraJS = "";
 					WEnvironment env = app.getEnvironment();
 					if (((this) instanceof WFormWidget ? (WFormWidget) (this)
@@ -584,7 +584,7 @@ public abstract class WInteractWidget extends WWebWidget {
 				enterPress.updateOk();
 			}
 			if (escapePress != null) {
-				if (escapePress.isConnected()) {
+				if (escapePress.needsUpdate(true)) {
 					actions.add(new DomElement.EventAction(
 							"e.keyCode && (e.keyCode == 27)", escapePress
 									.getJavaScript(), escapePress.encodeCmd(),
@@ -593,7 +593,7 @@ public abstract class WInteractWidget extends WWebWidget {
 				escapePress.updateOk();
 			}
 			if (keyDown != null) {
-				if (keyDown.isConnected()) {
+				if (keyDown.needsUpdate(true)) {
 					actions.add(new DomElement.EventAction("", keyDown
 							.getJavaScript(), keyDown.encodeCmd(), keyDown
 							.isExposedSignal()));

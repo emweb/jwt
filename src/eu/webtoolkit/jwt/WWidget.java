@@ -1008,9 +1008,11 @@ public abstract class WWidget extends WObject {
 	/**
 	 * Sets an attribute value.
 	 * <p>
-	 * Associate an extra attribute with this widget, with the given value. This
-	 * is only useful when processing dom nodes associated with widgets in
-	 * custom JavaScript code.
+	 * Sets the value for an HTML attribute.
+	 * <p>
+	 * This is only useful for HTML features that are not supported directly in
+	 * {@link } (and beware that browsers have non-consisten support for many
+	 * more exotic HTML features).
 	 * <p>
 	 * 
 	 * @see JSlot

@@ -558,14 +558,19 @@ public class WDialog extends WPopupWidget {
 				this.enterConnection1_.disconnect();
 				this.enterConnection2_.disconnect();
 			}
+			DialogCover c = this.getCover();
 			if (!hidden) {
-				this.getCover().pushDialog(this, animation);
+				if (c != null) {
+					c.pushDialog(this, animation);
+				}
 				if (this.modal_) {
 					this
 							.doJavaScript("try {var ae=document.activeElement;if (ae && ae.blur && ae.nodeName != 'BODY') {document.activeElement.blur();}} catch (e) { }");
 				}
 			} else {
-				this.getCover().popDialog(this, animation);
+				if (c != null) {
+					c.popDialog(this, animation);
+				}
 			}
 		}
 		super.setHidden(hidden, animation);
@@ -716,13 +721,15 @@ public class WDialog extends WPopupWidget {
 	}
 
 	private void onEscapePressed() {
-		if (this.getCover().isTopDialogRendered(this)) {
+		DialogCover c = this.getCover();
+		if (c != null && c.isTopDialogRendered(this)) {
 			this.reject();
 		}
 	}
 
 	private void onDefaultPressed() {
-		if (this.getCover().isTopDialogRendered(this)) {
+		DialogCover c = this.getCover();
+		if (c != null && c.isTopDialogRendered(this)) {
 			for (int i = 0; i < this.getFooter().getCount(); ++i) {
 				WPushButton b = ((this.getFooter().getWidget(i)) instanceof WPushButton ? (WPushButton) (this
 						.getFooter().getWidget(i))
@@ -738,11 +745,16 @@ public class WDialog extends WPopupWidget {
 	}
 
 	private DialogCover getCover() {
-		WWidget w = WApplication.getInstance().findWidget("dialog-cover");
-		if (w != null) {
-			return ((w) instanceof DialogCover ? (DialogCover) (w) : null);
+		WApplication app = WApplication.getInstance();
+		if (app.getDomRoot() != null) {
+			WWidget w = app.findWidget("dialog-cover");
+			if (w != null) {
+				return ((w) instanceof DialogCover ? (DialogCover) (w) : null);
+			} else {
+				return new DialogCover();
+			}
 		} else {
-			return new DialogCover();
+			return null;
 		}
 	}
 

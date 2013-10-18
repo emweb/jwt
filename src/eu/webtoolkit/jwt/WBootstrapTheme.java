@@ -182,6 +182,13 @@ public class WBootstrapTheme extends WTheme {
 					element.addPropertyWord(Property.PropertyClass,
 							"with-label");
 				}
+				if (!button.getLink().isNull()) {
+					logger
+							.error(new StringWriter()
+									.append(
+											"Cannot use WPushButton::setLink() after the button has been rendered with WBootstrapTheme")
+									.toString());
+				}
 			}
 			break;
 		}

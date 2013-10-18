@@ -779,10 +779,6 @@ class WebRenderer implements SlotLearnerInterface {
 				"._p_.autoJavaScript=function(){").append(app.autoJavaScript_)
 				.append("};\n");
 		app.autoJavaScriptChanged_ = false;
-		this.currentFormObjectsList_ = this.createFormObjectsList(app);
-		out.append(app.getJavaScriptClass()).append("._p_.setFormObjects([")
-				.append(this.currentFormObjectsList_).append("]);\n");
-		this.formObjectsChanged_ = false;
 		app.streamBeforeLoadJavaScript(out, true);
 		if (!widgetset) {
 			out.append("window.").append(app.getJavaScriptClass()).append(
@@ -830,6 +826,10 @@ class WebRenderer implements SlotLearnerInterface {
 		logger.debug(new StringWriter().append("js: ").append(s.toString())
 				.toString());
 		out.append(s.toString());
+		this.currentFormObjectsList_ = this.createFormObjectsList(app);
+		out.append(app.getJavaScriptClass()).append("._p_.setFormObjects([")
+				.append(this.currentFormObjectsList_).append("]);\n");
+		this.formObjectsChanged_ = false;
 		this.setJSSynced(true);
 		this.preLearnStateless(app, this.collectedJS1_);
 		logger.debug(new StringWriter().append("js: ").append(

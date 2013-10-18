@@ -1879,6 +1879,7 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 			this.persistEditor(i.getKey(), i.getValue());
 			i.getKey().encodeAsRawIndex();
 		}
+		this.selectionModel_.modelLayoutAboutToBeChanged();
 	}
 
 	void modelLayoutChanged() {
@@ -1895,7 +1896,9 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 			}
 		}
 		this.editedItems_ = newEditorMap;
+		this.selectionModel_.modelLayoutChanged();
 		this.scheduleRerender(WAbstractItemView.RenderState.NeedRerenderData);
+		this.selectionChanged().trigger();
 	}
 
 	protected void modelHeaderDataChanged(Orientation orientation, int start,

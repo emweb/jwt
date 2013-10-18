@@ -88,6 +88,10 @@ public class WCompositeWidget extends WWidget {
 		this.impl_.setObjectName(name);
 	}
 
+	public String getObjectName() {
+		return this.impl_.getObjectName();
+	}
+
 	public String getId() {
 		return this.impl_.getId();
 	}

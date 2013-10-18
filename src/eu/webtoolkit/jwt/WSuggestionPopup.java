@@ -213,6 +213,19 @@ public class WSuggestionPopup extends WPopupWidget {
 		private static Logger logger = LoggerFactory.getLogger(Options.class);
 
 		/**
+		 * Constructor.
+		 */
+		public Options() {
+			this.highlightBeginTag = "";
+			this.highlightEndTag = "";
+			this.listSeparator = 0;
+			this.whitespace = "";
+			this.wordSeparators = "";
+			this.appendReplacedText = "";
+			this.wordStartRegexp = "";
+		}
+
+		/**
 		 * Open tag to highlight a match in a suggestion.
 		 * <p>
 		 * Must be an opening markup tag, such as &lt;b&gt;.

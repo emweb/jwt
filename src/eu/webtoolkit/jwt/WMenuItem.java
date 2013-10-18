@@ -773,7 +773,8 @@ public class WMenuItem extends WContainerWidget {
 					WLength.Unit.Percentage));
 		}
 		if (!this.separator_) {
-			new WAnchor(this);
+			WAnchor anchor = new WAnchor(this);
+			anchor.clicked().preventPropagation();
 			this.updateInternalPath();
 		}
 		this.signalsConnected_ = false;
