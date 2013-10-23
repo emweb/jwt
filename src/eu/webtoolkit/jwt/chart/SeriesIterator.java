@@ -46,7 +46,7 @@ public class SeriesIterator {
 	 * The <i>currentSegmentArea</i> specifies the clipping area.
 	 */
 	public void startSegment(int currentXSegment, int currentYSegment,
-			WRectF currentSegmentArea) {
+			final WRectF currentSegmentArea) {
 		this.currentXSegment_ = currentXSegment;
 		this.currentYSegment_ = currentYSegment;
 	}
@@ -69,7 +69,7 @@ public class SeriesIterator {
 	 * chart contains <i>numBarGroups</i>, and the current series is in the
 	 * <i>currentBarGroup</i>&apos;th group.
 	 */
-	public boolean startSeries(WDataSeries series, double groupWidth,
+	public boolean startSeries(final WDataSeries series, double groupWidth,
 			int numBarGroups, int currentBarGroup) {
 		return true;
 	}
@@ -91,8 +91,8 @@ public class SeriesIterator {
 	 * The <i>stackY</i> argument is the y value from the previous series (also
 	 * after stacking). It will be 0, unless this series is stacked.
 	 */
-	public void newValue(WDataSeries series, double x, double y, double stackY,
-			WModelIndex xIndex, WModelIndex yIndex) {
+	public void newValue(final WDataSeries series, double x, double y,
+			double stackY, final WModelIndex xIndex, final WModelIndex yIndex) {
 	}
 
 	/**
@@ -109,8 +109,8 @@ public class SeriesIterator {
 		return this.currentYSegment_;
 	}
 
-	public static void setPenColor(WPen pen, WModelIndex xIndex,
-			WModelIndex yIndex, int colorRole) {
+	public static void setPenColor(final WPen pen, final WModelIndex xIndex,
+			final WModelIndex yIndex, int colorRole) {
 		Object color = new Object();
 		if ((yIndex != null)) {
 			color = yIndex.getData(colorRole);
@@ -123,8 +123,8 @@ public class SeriesIterator {
 		}
 	}
 
-	public static void setBrushColor(WBrush brush, WModelIndex xIndex,
-			WModelIndex yIndex, int colorRole) {
+	public static void setBrushColor(final WBrush brush,
+			final WModelIndex xIndex, final WModelIndex yIndex, int colorRole) {
 		Object color = new Object();
 		if ((yIndex != null)) {
 			color = yIndex.getData(colorRole);

@@ -99,7 +99,7 @@ public class WAbstractArea extends WObject {
 	 * {@link WAbstractArea#setCursor(Cursor cursor) setCursor()}). </i>
 	 * </p>
 	 */
-	public void setLink(WLink link) {
+	public void setLink(final WLink link) {
 		this.createAnchorImpl();
 		this.anchor_.linkState.link = link;
 		if (this.anchor_.linkState.link.getType() == WLink.Type.Resource) {
@@ -148,7 +148,7 @@ public class WAbstractArea extends WObject {
 	 * @deprecated Use {@link WAbstractArea#setLink(WLink link) setLink()}
 	 *             instead.
 	 */
-	public void setRef(String ref) {
+	public void setRef(final String ref) {
 		this.setLink(new WLink(ref));
 	}
 
@@ -272,7 +272,7 @@ public class WAbstractArea extends WObject {
 	 * 
 	 * @see WAbstractArea#getAlternateText()
 	 */
-	public void setAlternateText(CharSequence text) {
+	public void setAlternateText(final CharSequence text) {
 		this.createAnchorImpl();
 		this.anchor_.altText = WString.toWString(text);
 		this.repaint();
@@ -297,7 +297,7 @@ public class WAbstractArea extends WObject {
 	 * <p>
 	 * The tooltip is displayed when the cursor hovers over the area.
 	 */
-	public void setToolTip(CharSequence text) {
+	public void setToolTip(final CharSequence text) {
 		this.impl_.setToolTip(text);
 	}
 
@@ -320,7 +320,7 @@ public class WAbstractArea extends WObject {
 	 * things will simply be ignored. </i>
 	 * </p>
 	 */
-	public void setStyleClass(String styleClass) {
+	public void setStyleClass(final String styleClass) {
 		this.impl_.setStyleClass(styleClass);
 	}
 
@@ -343,14 +343,14 @@ public class WAbstractArea extends WObject {
 	 * things will simply be ignored. </i>
 	 * </p>
 	 */
-	public void addStyleClass(String styleClass, boolean force) {
+	public void addStyleClass(final String styleClass, boolean force) {
 		this.impl_.addStyleClass(styleClass, force);
 	}
 
 	/**
 	 * Removes a style class.
 	 */
-	public void removeStyleClass(String styleClass, boolean force) {
+	public void removeStyleClass(final String styleClass, boolean force) {
 		this.impl_.removeStyleClass(styleClass, force);
 	}
 
@@ -654,7 +654,7 @@ public class WAbstractArea extends WObject {
 		this.anchor_ = null;
 	}
 
-	protected boolean updateDom(DomElement element, boolean all) {
+	protected boolean updateDom(final DomElement element, boolean all) {
 		boolean needsUrlResolution = false;
 		if (!this.hole_ && this.anchor_ != null) {
 			needsUrlResolution = WAnchor.renderHRef(this.getImpl(),

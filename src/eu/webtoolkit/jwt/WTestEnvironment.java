@@ -88,7 +88,7 @@ public class WTestEnvironment extends WEnvironment {
 	 * 
 	 * @see WEnvironment#getParameterMap()
 	 */
-	public void setParameterMap(Map<String, String[]> parameters) {
+	public void setParameterMap(final Map<String, String[]> parameters) {
 		this.parameters_ = parameters;
 	}
 
@@ -100,7 +100,7 @@ public class WTestEnvironment extends WEnvironment {
 	 * 
 	 * @see WEnvironment#getCookies()
 	 */
-	public void setCookies(Map<String, String> cookies) {
+	public void setCookies(final Map<String, String> cookies) {
 		this.cookies_ = cookies;
 	}
 
@@ -112,7 +112,7 @@ public class WTestEnvironment extends WEnvironment {
 	 * 
 	 * @see WEnvironment#getHeaderValue(String name)
 	 */
-	public void setHeaderValue(String value) {
+	public void setHeaderValue(final String value) {
 	}
 
 	/**
@@ -159,7 +159,7 @@ public class WTestEnvironment extends WEnvironment {
 	 * 
 	 * @see WEnvironment#getLocale()
 	 */
-	public void setLocale(Locale locale) {
+	public void setLocale(final Locale locale) {
 		this.locale_ = locale;
 	}
 
@@ -171,7 +171,7 @@ public class WTestEnvironment extends WEnvironment {
 	 * 
 	 * @see WEnvironment#getHostName()
 	 */
-	public void setHostName(String hostName) {
+	public void setHostName(final String hostName) {
 		this.host_ = hostName;
 	}
 
@@ -183,7 +183,7 @@ public class WTestEnvironment extends WEnvironment {
 	 * 
 	 * @see WEnvironment#getUrlScheme()
 	 */
-	public void setUrlScheme(String scheme) {
+	public void setUrlScheme(final String scheme) {
 		this.urlScheme_ = scheme;
 	}
 
@@ -196,7 +196,7 @@ public class WTestEnvironment extends WEnvironment {
 	 * 
 	 * @see WEnvironment#getUserAgent()
 	 */
-	void setUserAgent(String userAgent) {
+	void setUserAgent(final String userAgent) {
 		super.setUserAgent(userAgent);
 	}
 
@@ -208,7 +208,7 @@ public class WTestEnvironment extends WEnvironment {
 	 * 
 	 * @see WEnvironment#getReferer()
 	 */
-	public void setReferer(String referer) {
+	public void setReferer(final String referer) {
 		this.referer_ = referer;
 	}
 
@@ -223,7 +223,7 @@ public class WTestEnvironment extends WEnvironment {
 	 * 
 	 * @see WEnvironment#getAccept()
 	 */
-	public void setAccept(String accept) {
+	public void setAccept(final String accept) {
 		this.accept_ = accept;
 	}
 
@@ -235,7 +235,7 @@ public class WTestEnvironment extends WEnvironment {
 	 * 
 	 * @see WEnvironment#getServerSignature()
 	 */
-	public void setServerSignature(String signature) {
+	public void setServerSignature(final String signature) {
 		this.serverSignature_ = signature;
 	}
 
@@ -247,7 +247,7 @@ public class WTestEnvironment extends WEnvironment {
 	 * 
 	 * @see WEnvironment#getServerSoftware()
 	 */
-	public void setServerSoftware(String software) {
+	public void setServerSoftware(final String software) {
 		this.serverSignature_ = software;
 	}
 
@@ -259,7 +259,7 @@ public class WTestEnvironment extends WEnvironment {
 	 * 
 	 * @see WEnvironment#getServerAdmin()
 	 */
-	public void setServerAdmin(String serverAdmin) {
+	public void setServerAdmin(final String serverAdmin) {
 		this.serverAdmin_ = serverAdmin;
 	}
 
@@ -271,7 +271,7 @@ public class WTestEnvironment extends WEnvironment {
 	 * 
 	 * @see WEnvironment#getClientAddress()
 	 */
-	public void setClientAddress(String clientAddress) {
+	public void setClientAddress(final String clientAddress) {
 		this.clientAddress_ = clientAddress;
 	}
 
@@ -283,7 +283,7 @@ public class WTestEnvironment extends WEnvironment {
 	 * 
 	 * @see WEnvironment#getInternalPath()
 	 */
-	public void setInternalPath(String internalPath) {
+	public void setInternalPath(final String internalPath) {
 		super.setInternalPath(internalPath);
 	}
 

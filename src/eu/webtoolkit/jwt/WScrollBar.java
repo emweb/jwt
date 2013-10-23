@@ -98,7 +98,7 @@ public class WScrollBar extends WObject {
 	private int value_;
 	private boolean valueSet_;
 
-	void updateDom(DomElement element, boolean all) {
+	void updateDom(final DomElement element, boolean all) {
 		if (this.valueSet_) {
 			String side = this.orientation_ == Orientation.Horizontal ? "Left"
 					: "Top";

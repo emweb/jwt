@@ -23,18 +23,20 @@ class BarSeriesRenderer extends SeriesRenderer {
 	private static Logger logger = LoggerFactory
 			.getLogger(BarSeriesRenderer.class);
 
-	public BarSeriesRenderer(WChart2DRenderer renderer, WDataSeries series,
-			SeriesRenderIterator it, double groupWidth, int numGroups, int group) {
+	public BarSeriesRenderer(final WChart2DRenderer renderer,
+			final WDataSeries series, final SeriesRenderIterator it,
+			double groupWidth, int numGroups, int group) {
 		super(renderer, series, it);
 		this.groupWidth_ = groupWidth;
 		this.numGroups_ = numGroups;
 		this.group_ = group;
 	}
 
-	public void addValue(double x, double y, double stacky, WModelIndex xIndex,
-			WModelIndex yIndex) {
+	public void addValue(double x, double y, double stacky,
+			final WModelIndex xIndex, final WModelIndex yIndex) {
 		WPainterPath bar = new WPainterPath();
-		WAxis yAxis = this.renderer_.getChart().getAxis(this.series_.getAxis());
+		final WAxis yAxis = this.renderer_.getChart().getAxis(
+				this.series_.getAxis());
 		WPointF topMid = this.renderer_.map(x, y, yAxis.getId(), this.it_
 				.getCurrentXSegment(), this.it_.getCurrentYSegment());
 		WPointF bottomMid = this.renderer_.map(x, stacky, yAxis.getId(),
@@ -155,8 +157,8 @@ class BarSeriesRenderer extends SeriesRenderer {
 	public void paint() {
 	}
 
-	private static WPointF segmentPoint(WPainterPath path, int segment) {
-		WPainterPath.Segment s = path.getSegments().get(segment);
+	private static WPointF segmentPoint(final WPainterPath path, int segment) {
+		final WPainterPath.Segment s = path.getSegments().get(segment);
 		return new WPointF(s.getX(), s.getY());
 	}
 

@@ -256,7 +256,7 @@ public class RegistrationWidget extends WTemplateFormView {
 	 * information to the registration form which needs to be annotated to the
 	 * user.
 	 */
-	protected void registerUserDetails(User user) {
+	protected void registerUserDetails(final User user) {
 	}
 
 	protected void render(EnumSet<RenderFlag> flags) {
@@ -384,7 +384,7 @@ public class RegistrationWidget extends WTemplateFormView {
 		}
 	}
 
-	private void oAuthDone(OAuthProcess oauth, Identity identity) {
+	private void oAuthDone(OAuthProcess oauth, final Identity identity) {
 		if (identity.isValid()) {
 			logger.warn(new StringWriter().append("secure:").append(
 					oauth.getService().getName()).append(": identified: as ")

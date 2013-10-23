@@ -136,7 +136,7 @@ public class WApplication extends WObject {
 	 * The <code>environment</code> provides information on the initial request,
 	 * user agent, and deployment-related information.
 	 */
-	public WApplication(WEnvironment env) {
+	public WApplication(final WEnvironment env) {
 		super();
 		this.requestTooLarge_ = new Signal1<Long>();
 		this.session_ = env.session_;
@@ -206,7 +206,7 @@ public class WApplication extends WObject {
 		if (this.getEnvironment().agentIsIE()) {
 			if (this.getEnvironment().getAgent().getValue() < WEnvironment.UserAgent.IE9
 					.getValue()) {
-				Configuration conf = this.getEnvironment().getServer()
+				final Configuration conf = this.getEnvironment().getServer()
 						.getConfiguration();
 				boolean selectIE7 = conf.getUaCompatible().indexOf("IE8=IE7") != -1;
 				if (selectIE7) {
@@ -391,7 +391,7 @@ public class WApplication extends WObject {
 	 * @see WObject#setObjectName(String name)
 	 * @see WWidget#find(String name)
 	 */
-	public WWidget findWidget(String name) {
+	public WWidget findWidget(final String name) {
 		WWidget result = this.domRoot_.find(name);
 		if (!(result != null) && this.domRoot2_ != null) {
 			result = this.domRoot2_.find(name);
@@ -436,7 +436,7 @@ public class WApplication extends WObject {
 	 *   }
 	 * </pre>
 	 */
-	public void useStyleSheet(WLink link, String media) {
+	public void useStyleSheet(final WLink link, final String media) {
 		this.useStyleSheet(new WCssStyleSheet(link, media));
 	}
 
@@ -446,7 +446,7 @@ public class WApplication extends WObject {
 	 * Calls {@link #useStyleSheet(WLink link, String media) useStyleSheet(link,
 	 * "all")}
 	 */
-	public final void useStyleSheet(WLink link) {
+	public final void useStyleSheet(final WLink link) {
 		useStyleSheet(link, "all");
 	}
 
@@ -461,7 +461,8 @@ public class WApplication extends WObject {
 	 *   }
 	 * </pre>
 	 */
-	public void useStyleSheet(WLink link, String condition, String media) {
+	public void useStyleSheet(final WLink link, final String condition,
+			final String media) {
 		this.useStyleSheet(new WCssStyleSheet(link, media), condition);
 	}
 
@@ -491,7 +492,8 @@ public class WApplication extends WObject {
 	 * @see WApplication#getStyleSheet()
 	 * @see WWidget#setStyleClass(String styleClass)
 	 */
-	public void useStyleSheet(WCssStyleSheet styleSheet, String condition) {
+	public void useStyleSheet(final WCssStyleSheet styleSheet,
+			final String condition) {
 		boolean display = true;
 		if (condition.length() != 0) {
 			display = false;
@@ -575,7 +577,7 @@ public class WApplication extends WObject {
 												if (invert) {
 													display = !display;
 												}
-											} catch (RuntimeException e) {
+											} catch (final RuntimeException e) {
 												logger
 														.error(new StringWriter()
 																.append(
@@ -615,7 +617,7 @@ public class WApplication extends WObject {
 	 * Calls {@link #useStyleSheet(WCssStyleSheet styleSheet, String condition)
 	 * useStyleSheet(styleSheet, "")}
 	 */
-	public final void useStyleSheet(WCssStyleSheet styleSheet) {
+	public final void useStyleSheet(final WCssStyleSheet styleSheet) {
 		useStyleSheet(styleSheet, "");
 	}
 
@@ -652,7 +654,7 @@ public class WApplication extends WObject {
 	 * &quot;&quot; will result in a stub CSS theme that does not load any
 	 * stylesheets.
 	 */
-	public void setCssTheme(String theme) {
+	public void setCssTheme(final String theme) {
 		this.setTheme(new WCssTheme(theme, this));
 	}
 
@@ -715,7 +717,7 @@ public class WApplication extends WObject {
 	 * 
 	 * @see WApplication#setHtmlClass(String styleClass)
 	 */
-	public void setBodyClass(String styleClass) {
+	public void setBodyClass(final String styleClass) {
 		this.bodyClass_ = styleClass;
 		this.bodyHtmlClassChanged_ = true;
 	}
@@ -736,7 +738,7 @@ public class WApplication extends WObject {
 	 * 
 	 * @see WApplication#setBodyClass(String styleClass)
 	 */
-	public void setHtmlClass(String styleClass) {
+	public void setHtmlClass(final String styleClass) {
 		this.htmlClass_ = styleClass;
 		this.bodyHtmlClassChanged_ = true;
 	}
@@ -761,7 +763,7 @@ public class WApplication extends WObject {
 	 * 
 	 * @see WApplication#getTitle()
 	 */
-	public void setTitle(CharSequence title) {
+	public void setTitle(final CharSequence title) {
 		if (this.session_.getRenderer().isPreLearning()
 				|| !this.title_.equals(title)) {
 			this.title_ = WString.toWString(title);
@@ -870,7 +872,7 @@ public class WApplication extends WObject {
 	 * 
 	 * @see WApplication#getLocalizedStrings()
 	 */
-	public void setLocale(Locale locale) {
+	public void setLocale(final Locale locale) {
 		this.locale_ = locale;
 		this.refresh();
 	}
@@ -928,7 +930,7 @@ public class WApplication extends WObject {
 	 * @see WApplication#getRoot()
 	 * @see EntryPointType#WidgetSet
 	 */
-	public void bindWidget(WWidget widget, String domId) {
+	public void bindWidget(WWidget widget, final String domId) {
 		if (this.session_.getType() != EntryPointType.WidgetSet) {
 			throw new WException(
 					"WApplication::bindWidget() can be used only in WidgetSet mode.");
@@ -967,7 +969,7 @@ public class WApplication extends WObject {
 	 * @see WEnvironment#getUrlScheme()
 	 * @see WApplication#getBookmarkUrl()
 	 */
-	public String url(String internalPath) {
+	public String url(final String internalPath) {
 		return this.resolveRelativeUrl(this.session_
 				.getMostRelativeUrl(internalPath));
 	}
@@ -998,7 +1000,7 @@ public class WApplication extends WObject {
 	 * behind a reverse proxy or in general the public URL of the application
 	 * cannot be guessed correctly by the application.
 	 */
-	public String makeAbsoluteUrl(String url) {
+	public String makeAbsoluteUrl(final String url) {
 		return this.session_.makeAbsoluteUrl(url);
 	}
 
@@ -1027,7 +1029,7 @@ public class WApplication extends WObject {
 	 * represents a URL) this method is called internally by the library. But it
 	 * may be useful for URLs which are set e.g. inside a {@link WTemplate}.
 	 */
-	public String resolveRelativeUrl(String url) {
+	public String resolveRelativeUrl(final String url) {
 		return this.session_.fixRelativeUrl(url);
 	}
 
@@ -1095,7 +1097,7 @@ public class WApplication extends WObject {
 	 * @see WEnvironment#getUrlScheme()
 	 * @see WApplication#getBookmarkUrl()
 	 */
-	public String getBookmarkUrl(String internalPath) {
+	public String getBookmarkUrl(final String internalPath) {
 		return this.session_.getBookmarkUrl(internalPath);
 	}
 
@@ -1181,7 +1183,7 @@ public class WApplication extends WObject {
 	 * @see WApplication#getBookmarkUrl()
 	 * @see WApplication#internalPathChanged()
 	 */
-	public void setInternalPath(String path, boolean emitChange) {
+	public void setInternalPath(final String path, boolean emitChange) {
 		this.enableInternalPaths();
 		if (!this.internalPathIsChanged_) {
 			this.oldInternalPath_ = this.newInternalPath_;
@@ -1201,7 +1203,7 @@ public class WApplication extends WObject {
 	 * Calls {@link #setInternalPath(String path, boolean emitChange)
 	 * setInternalPath(path, false)}
 	 */
-	public final void setInternalPath(String path) {
+	public final void setInternalPath(final String path) {
 		setInternalPath(path, false);
 	}
 
@@ -1372,7 +1374,7 @@ public class WApplication extends WObject {
 	 * @see WEnvironment#getUrlScheme()
 	 * @see WApplication#getBookmarkUrl()
 	 */
-	public String getInternalPathNextPart(String path) {
+	public String getInternalPathNextPart(final String path) {
 		String subPath = this.internalSubPath(path);
 		int t = subPath.indexOf('/');
 		if (t == -1) {
@@ -1412,7 +1414,7 @@ public class WApplication extends WObject {
 	 * @see WEnvironment#getUrlScheme()
 	 * @see WApplication#getBookmarkUrl()
 	 */
-	public String internalSubPath(String path) {
+	public String internalSubPath(final String path) {
 		String current = StringUtils.append(this.newInternalPath_, '/');
 		if (!pathMatches(current, path)) {
 			logger.warn(new StringWriter().append("internalPath(): path '")
@@ -1442,7 +1444,7 @@ public class WApplication extends WObject {
 	 * @see WApplication#getBookmarkUrl()
 	 * @see WApplication#getBookmarkUrl()
 	 */
-	public boolean internalPathMatches(String path) {
+	public boolean internalPathMatches(final String path) {
 		if (this.session_.getRenderer().isPreLearning()) {
 			return false;
 		} else {
@@ -1531,7 +1533,7 @@ public class WApplication extends WObject {
 	 * Calling redirect() does not imply quit() since it may be useful to switch
 	 * between a non-secure and secure (SSL) transport connection.
 	 */
-	public void redirect(String url) {
+	public void redirect(final String url) {
 		this.session_.redirect(url);
 	}
 
@@ -1554,7 +1556,7 @@ public class WApplication extends WObject {
 	 */
 	public static String getRelativeResourcesUrl() {
 		WApplication app = WApplication.getInstance();
-		Configuration conf = app.getEnvironment().getServer()
+		final Configuration conf = app.getEnvironment().getServer()
 				.getConfiguration();
 		String path = conf.getProperty(WApplication.RESOURCES_URL);
 		if (path == "/wt-resources/") {
@@ -1824,7 +1826,7 @@ public class WApplication extends WObject {
 	 * @see WApplication#addAutoJavaScript(String javascript)
 	 * @see WApplication#addAutoJavaScript(String javascript)
 	 */
-	public void doJavaScript(String javascript, boolean afterLoaded) {
+	public void doJavaScript(final String javascript, boolean afterLoaded) {
 		if (afterLoaded) {
 			this.afterLoadJavaScript_ += javascript;
 			this.afterLoadJavaScript_ += '\n';
@@ -1841,7 +1843,7 @@ public class WApplication extends WObject {
 	 * Calls {@link #doJavaScript(String javascript, boolean afterLoaded)
 	 * doJavaScript(javascript, true)}
 	 */
-	public final void doJavaScript(String javascript) {
+	public final void doJavaScript(final String javascript) {
 		doJavaScript(javascript, true);
 	}
 
@@ -1859,7 +1861,7 @@ public class WApplication extends WObject {
 	 * @see WApplication#addAutoJavaScript(String javascript)
 	 * @see WApplication#addAutoJavaScript(String javascript)
 	 */
-	public void addAutoJavaScript(String javascript) {
+	public void addAutoJavaScript(final String javascript) {
 		this.autoJavaScript_ += javascript;
 		this.autoJavaScriptChanged_ = true;
 	}
@@ -1872,7 +1874,8 @@ public class WApplication extends WObject {
 	 * <p>
 	 * The next code snippet declares and invokes function foo:
 	 */
-	public void declareJavaScriptFunction(String name, String function) {
+	public void declareJavaScriptFunction(final String name,
+			final String function) {
 		this.doJavaScript(this.javaScriptClass_ + '.' + name + '=' + function
 				+ ';', false);
 	}
@@ -1903,7 +1906,7 @@ public class WApplication extends WObject {
 	 * {@link WApplication#addAutoJavaScript(String javascript)
 	 * addAutoJavaScript()}.
 	 */
-	public boolean require(String uri, String symbol) {
+	public boolean require(final String uri, final String symbol) {
 		WApplication.ScriptLibrary sl = new WApplication.ScriptLibrary(uri,
 				symbol);
 		if (this.scriptLibraries_.indexOf(sl) == -1) {
@@ -1923,7 +1926,7 @@ public class WApplication extends WObject {
 	 * <p>
 	 * Returns {@link #require(String uri, String symbol) require(uri, "")}
 	 */
-	public final boolean require(String uri) {
+	public final boolean require(final String uri) {
 		return require(uri, "");
 	}
 
@@ -1944,7 +1947,7 @@ public class WApplication extends WObject {
 	 *   }
 	 * </pre>
 	 */
-	public boolean requireJQuery(String uri) {
+	public boolean requireJQuery(final String uri) {
 		this.customJQuery_ = true;
 		return this.require(uri);
 	}
@@ -1975,7 +1978,7 @@ public class WApplication extends WObject {
 	 * applications. The <code>className</code> should be a valid JavaScript
 	 * identifier, and should also be unique in a single page.
 	 */
-	public void setJavaScriptClass(String javaScriptClass) {
+	public void setJavaScriptClass(final String javaScriptClass) {
 		if (this.session_.getType() != EntryPointType.Application) {
 			this.javaScriptClass_ = javaScriptClass;
 		}
@@ -2022,7 +2025,8 @@ public class WApplication extends WObject {
 	 * Tries to read a configured value for the property <code>name</code>. If
 	 * no value was configured, the default <code>value</code> is returned.
 	 */
-	public static String readConfigurationProperty(String name, String value) {
+	public static String readConfigurationProperty(final String name,
+			final String value) {
 		WebSession session = WebSession.getInstance();
 		if (session != null) {
 			return session.getEnv().getServer().readConfigurationProperty(name,
@@ -2071,7 +2075,7 @@ public class WApplication extends WObject {
 		return result;
 	}
 
-	WObject decodeObject(String objectId) {
+	WObject decodeObject(final String objectId) {
 		WObject i = this.encodedObjects_.get(objectId);
 		if (i != null) {
 			return i;
@@ -2134,8 +2138,8 @@ public class WApplication extends WObject {
 	 * @see WEnvironment#supportsCookies()
 	 * @see WEnvironment#getCookie(String cookieName)
 	 */
-	public void setCookie(String name, String value, int maxAge, String domain,
-			String path, boolean secure) {
+	public void setCookie(final String name, final String value, int maxAge,
+			final String domain, final String path, boolean secure) {
 		WDate expires = WDate.getCurrentDate();
 		expires = expires.addSeconds(maxAge);
 		this.session_.getRenderer().setCookie(name, value, expires, domain,
@@ -2149,7 +2153,8 @@ public class WApplication extends WObject {
 	 * {@link #setCookie(String name, String value, int maxAge, String domain, String path, boolean secure)
 	 * setCookie(name, value, maxAge, "", "", false)}
 	 */
-	public final void setCookie(String name, String value, int maxAge) {
+	public final void setCookie(final String name, final String value,
+			int maxAge) {
 		setCookie(name, value, maxAge, "", "", false);
 	}
 
@@ -2160,8 +2165,8 @@ public class WApplication extends WObject {
 	 * {@link #setCookie(String name, String value, int maxAge, String domain, String path, boolean secure)
 	 * setCookie(name, value, maxAge, domain, "", false)}
 	 */
-	public final void setCookie(String name, String value, int maxAge,
-			String domain) {
+	public final void setCookie(final String name, final String value,
+			int maxAge, final String domain) {
 		setCookie(name, value, maxAge, domain, "", false);
 	}
 
@@ -2172,8 +2177,8 @@ public class WApplication extends WObject {
 	 * {@link #setCookie(String name, String value, int maxAge, String domain, String path, boolean secure)
 	 * setCookie(name, value, maxAge, domain, path, false)}
 	 */
-	public final void setCookie(String name, String value, int maxAge,
-			String domain, String path) {
+	public final void setCookie(final String name, final String value,
+			int maxAge, final String domain, final String path) {
 		setCookie(name, value, maxAge, domain, path, false);
 	}
 
@@ -2184,7 +2189,8 @@ public class WApplication extends WObject {
 	 * @see WApplication#setCookie(String name, String value, int maxAge, String
 	 *      domain, String path, boolean secure)
 	 */
-	public void removeCookie(String name, String domain, String path) {
+	public void removeCookie(final String name, final String domain,
+			final String path) {
 		this.session_.getRenderer().setCookie(name, "", new WDate(1970, 1, 1),
 				domain, path, false);
 	}
@@ -2195,7 +2201,7 @@ public class WApplication extends WObject {
 	 * Calls {@link #removeCookie(String name, String domain, String path)
 	 * removeCookie(name, "", "")}
 	 */
-	public final void removeCookie(String name) {
+	public final void removeCookie(final String name) {
 		removeCookie(name, "", "");
 	}
 
@@ -2205,7 +2211,7 @@ public class WApplication extends WObject {
 	 * Calls {@link #removeCookie(String name, String domain, String path)
 	 * removeCookie(name, domain, "")}
 	 */
-	public final void removeCookie(String name, String domain) {
+	public final void removeCookie(final String name, final String domain) {
 		removeCookie(name, domain, "");
 	}
 
@@ -2220,8 +2226,9 @@ public class WApplication extends WObject {
 	 * 
 	 * @see WApplication#removeMetaLink(String href)
 	 */
-	public void addMetaLink(String href, String rel, String media,
-			String hreflang, String type, String sizes, boolean disabled) {
+	public void addMetaLink(final String href, final String rel,
+			final String media, final String hreflang, final String type,
+			final String sizes, boolean disabled) {
 		if (this.getEnvironment().hasJavaScript()) {
 			logger.warn(new StringWriter().append(
 					"WApplication::addMetaLink() with no effect").toString());
@@ -2235,7 +2242,7 @@ public class WApplication extends WObject {
 					"WApplication::addMetaLink() rel cannot be empty!");
 		}
 		for (int i = 0; i < this.metaLinks_.size(); ++i) {
-			WApplication.MetaLink ml = this.metaLinks_.get(i);
+			final WApplication.MetaLink ml = this.metaLinks_.get(i);
 			if (ml.href.equals(href)) {
 				ml.rel = rel;
 				ml.media = media;
@@ -2258,9 +2265,9 @@ public class WApplication extends WObject {
 	 * @see WApplication#addMetaLink(String href, String rel, String media,
 	 *      String hreflang, String type, String sizes, boolean disabled)
 	 */
-	public void removeMetaLink(String href) {
+	public void removeMetaLink(final String href) {
 		for (int i = 0; i < this.metaLinks_.size(); ++i) {
-			WApplication.MetaLink ml = this.metaLinks_.get(i);
+			final WApplication.MetaLink ml = this.metaLinks_.get(i);
 			if (ml.href.equals(href)) {
 				this.metaLinks_.remove(0 + i);
 				return;
@@ -2297,7 +2304,8 @@ public class WApplication extends WObject {
 	 * WEnvironment#hasAjax()} returning <code>false</code> (see
 	 * {@link WApplication#getEnvironment() getEnvironment()}).
 	 */
-	public void addMetaHeader(String name, CharSequence content, String lang) {
+	public void addMetaHeader(final String name, final CharSequence content,
+			final String lang) {
 		this.addMetaHeader(MetaHeaderType.MetaName, name, content, lang);
 	}
 
@@ -2307,7 +2315,8 @@ public class WApplication extends WObject {
 	 * Calls {@link #addMetaHeader(String name, CharSequence content, String lang)
 	 * addMetaHeader(name, content, "")}
 	 */
-	public final void addMetaHeader(String name, CharSequence content) {
+	public final void addMetaHeader(final String name,
+			final CharSequence content) {
 		addMetaHeader(name, content, "");
 	}
 
@@ -2321,14 +2330,14 @@ public class WApplication extends WObject {
 	 * 
 	 * @see WApplication#removeMetaHeader(MetaHeaderType type, String name)
 	 */
-	public void addMetaHeader(MetaHeaderType type, String name,
-			CharSequence content, String lang) {
+	public void addMetaHeader(MetaHeaderType type, final String name,
+			final CharSequence content, final String lang) {
 		if (this.getEnvironment().hasJavaScript()) {
 			logger.warn(new StringWriter().append(
 					"WApplication::addMetaHeader() with no effect").toString());
 		}
 		for (int i = 0; i < this.metaHeaders_.size(); ++i) {
-			WApplication.MetaHeader m = this.metaHeaders_.get(i);
+			final WApplication.MetaHeader m = this.metaHeaders_.get(i);
 			if (m.type == type && m.name.equals(name)) {
 				if ((content.length() == 0)) {
 					this.metaHeaders_.remove(0 + i);
@@ -2351,8 +2360,8 @@ public class WApplication extends WObject {
 	 * {@link #addMetaHeader(MetaHeaderType type, String name, CharSequence content, String lang)
 	 * addMetaHeader(type, name, content, "")}
 	 */
-	public final void addMetaHeader(MetaHeaderType type, String name,
-			CharSequence content) {
+	public final void addMetaHeader(MetaHeaderType type, final String name,
+			final CharSequence content) {
 		addMetaHeader(type, name, content, "");
 	}
 
@@ -2366,13 +2375,13 @@ public class WApplication extends WObject {
 	 * @see WApplication#addMetaHeader(String name, CharSequence content, String
 	 *      lang)
 	 */
-	public void removeMetaHeader(MetaHeaderType type, String name) {
+	public void removeMetaHeader(MetaHeaderType type, final String name) {
 		if (this.getEnvironment().hasJavaScript()) {
 			logger.warn(new StringWriter().append(
 					"removeMetaHeader() with no effect").toString());
 		}
 		for (int i = 0; i < this.metaHeaders_.size(); ++i) {
-			WApplication.MetaHeader m = this.metaHeaders_.get(i);
+			final WApplication.MetaHeader m = this.metaHeaders_.get(i);
 			if (m.type == type && (name.length() == 0 || m.name.equals(name))) {
 				this.metaHeaders_.remove(0 + i);
 				if (name.length() == 0) {
@@ -2510,7 +2519,7 @@ public class WApplication extends WObject {
 		return this.requestTooLarge_;
 	}
 
-	void redirectToSession(String newSessionId) {
+	void redirectToSession(final String newSessionId) {
 		String redirectUrl = this.getBookmarkUrl();
 		if (!this.session_.isUseUrlRewriting()) {
 			String cookieName = this.getEnvironment().getDeploymentPath();
@@ -2599,7 +2608,7 @@ public class WApplication extends WObject {
 		return this.session_.isDebug();
 	}
 
-	public void setFocus(String id, int selectionStart, int selectionEnd) {
+	public void setFocus(final String id, int selectionStart, int selectionEnd) {
 		this.focusId_ = id;
 		this.selectionStart_ = selectionStart;
 		this.selectionEnd_ = selectionEnd;
@@ -2614,7 +2623,7 @@ public class WApplication extends WObject {
 	 * @see WApplication#addAutoJavaScript(String javascript)
 	 * @see WApplication#doJavaScript(String javascript, boolean afterLoaded)
 	 */
-	public void loadJavaScript(String jsFile, WJavaScriptPreamble preamble) {
+	public void loadJavaScript(String jsFile, final WJavaScriptPreamble preamble) {
 		if (!this.isJavaScriptLoaded(preamble.name)) {
 			this.javaScriptLoaded_.add(jsFile);
 			this.javaScriptLoaded_.add(preamble.name);
@@ -2641,7 +2650,7 @@ public class WApplication extends WObject {
 	 * 
 	 * @see WApplication#unload()
 	 */
-	public void setConfirmCloseMessage(CharSequence message) {
+	public void setConfirmCloseMessage(final CharSequence message) {
 		if (!message.equals(this.closeMessage_)) {
 			this.closeMessage_ = WString.toWString(message);
 			this.closeMessageChanged_ = true;
@@ -2671,7 +2680,7 @@ public class WApplication extends WObject {
 	 * <code>path</code>, meaning that it is equal to that path or it specifies
 	 * a more specific sub path of that path.
 	 */
-	public static boolean pathMatches(String path, String query) {
+	public static boolean pathMatches(final String path, final String query) {
 		if (query.equals(path)
 				|| path.length() > query.length()
 				&& path.substring(0, 0 + query.length()).equals(query)
@@ -2693,7 +2702,7 @@ public class WApplication extends WObject {
 	 * {@link WAnchor}) but you may want to use this function to encode URLs
 	 * which you use in {@link WTemplate} texts.
 	 */
-	public String encodeUntrustedUrl(String url) {
+	public String encodeUntrustedUrl(final String url) {
 		boolean needRedirect = (url.indexOf("://") != -1 || url
 				.startsWith("//"))
 				&& this.session_.hasSessionIdInUrl();
@@ -2773,7 +2782,7 @@ public class WApplication extends WObject {
 	 * Note that any uncaught exception throw during event handling terminates
 	 * the session.
 	 */
-	protected void notify(WEvent e) throws IOException {
+	protected void notify(final WEvent e) throws IOException {
 		this.session_.notify(e);
 	}
 
@@ -2856,7 +2865,7 @@ public class WApplication extends WObject {
 		private static Logger logger = LoggerFactory
 				.getLogger(ScriptLibrary.class);
 
-		public ScriptLibrary(String anUri, String aSymbol) {
+		public ScriptLibrary(final String anUri, final String aSymbol) {
 			this.uri = anUri;
 			this.symbol = aSymbol;
 			this.beforeLoadJS = "";
@@ -2866,7 +2875,7 @@ public class WApplication extends WObject {
 		public String symbol;
 		public String beforeLoadJS;
 
-		public boolean equals(WApplication.ScriptLibrary other) {
+		public boolean equals(final WApplication.ScriptLibrary other) {
 			return this.uri.equals(other.uri);
 		}
 	}
@@ -2875,8 +2884,8 @@ public class WApplication extends WObject {
 		private static Logger logger = LoggerFactory
 				.getLogger(MetaHeader.class);
 
-		public MetaHeader(MetaHeaderType aType, String aName,
-				CharSequence aContent, String aLang) {
+		public MetaHeader(MetaHeaderType aType, final String aName,
+				final CharSequence aContent, final String aLang) {
 			this.type = aType;
 			this.name = aName;
 			this.lang = aLang;
@@ -2892,8 +2901,9 @@ public class WApplication extends WObject {
 	static class MetaLink {
 		private static Logger logger = LoggerFactory.getLogger(MetaLink.class);
 
-		public MetaLink(String aHref, String aRel, String aMedia,
-				String aHreflang, String aType, String aSizes, boolean aDisabled) {
+		public MetaLink(final String aHref, final String aRel,
+				final String aMedia, final String aHreflang,
+				final String aType, final String aSizes, boolean aDisabled) {
 			this.href = aHref;
 			this.rel = aRel;
 			this.media = aMedia;
@@ -3003,7 +3013,7 @@ public class WApplication extends WObject {
 		}
 	}
 
-	AbstractEventSignal decodeExposedSignal(String signalName) {
+	AbstractEventSignal decodeExposedSignal(final String signalName) {
 		WeakReference<AbstractEventSignal> i = this.exposedSignals_
 				.get(signalName);
 		if (i != null) {
@@ -3013,7 +3023,8 @@ public class WApplication extends WObject {
 		}
 	}
 
-	AbstractEventSignal decodeExposedSignal(String objectId, String name) {
+	AbstractEventSignal decodeExposedSignal(final String objectId,
+			final String name) {
 		String signalName = (objectId.equals("app") ? this.getId() : objectId)
 				+ '.' + name;
 		return this.decodeExposedSignal(signalName);
@@ -3057,7 +3068,7 @@ public class WApplication extends WObject {
 		}
 	}
 
-	WResource decodeExposedResource(String resourceKey) {
+	WResource decodeExposedResource(final String resourceKey) {
 		WResource i = this.exposedResources_.get(resourceKey);
 		if (i != null) {
 			return i;
@@ -3072,7 +3083,7 @@ public class WApplication extends WObject {
 		}
 	}
 
-	private boolean changeInternalPath(String aPath) {
+	private boolean changeInternalPath(final String aPath) {
 		String path = StringUtils.prepend(aPath, '/');
 		if (!path.equals(this.getInternalPath())) {
 			this.newInternalPath_ = path;
@@ -3085,19 +3096,19 @@ public class WApplication extends WObject {
 		return this.internalPathValid_;
 	}
 
-	boolean changedInternalPath(String path) {
+	boolean changedInternalPath(final String path) {
 		if (!this.getEnvironment().hashInternalPaths()) {
 			this.session_.setPagePathInfo(path);
 		}
 		return this.changeInternalPath(path);
 	}
 
-	void streamAfterLoadJavaScript(StringBuilder out) {
+	void streamAfterLoadJavaScript(final StringBuilder out) {
 		out.append(this.afterLoadJavaScript_);
 		this.afterLoadJavaScript_ = "";
 	}
 
-	void streamBeforeLoadJavaScript(StringBuilder out, boolean all) {
+	void streamBeforeLoadJavaScript(final StringBuilder out, boolean all) {
 		this.streamJavaScriptPreamble(out, all);
 		if (!all) {
 			if (this.newBeforeLoadJavaScript_ != 0) {
@@ -3111,14 +3122,15 @@ public class WApplication extends WObject {
 		this.newBeforeLoadJavaScript_ = 0;
 	}
 
-	private void streamJavaScriptPreamble(StringBuilder out, boolean all) {
+	private void streamJavaScriptPreamble(final StringBuilder out, boolean all) {
 		if (all) {
 			this.newJavaScriptPreamble_ = this.javaScriptPreamble_.size();
 		}
 		for (int i = this.javaScriptPreamble_.size()
 				- this.newJavaScriptPreamble_; i < this.javaScriptPreamble_
 				.size(); ++i) {
-			WJavaScriptPreamble preamble = this.javaScriptPreamble_.get(i);
+			final WJavaScriptPreamble preamble = this.javaScriptPreamble_
+					.get(i);
 			String scope = preamble.scope == JavaScriptScope.ApplicationScope ? this
 					.getJavaScriptClass()
 					: "Wt3_3_1";
@@ -3144,7 +3156,7 @@ public class WApplication extends WObject {
 	}
 
 	private void doUnload() {
-		Configuration conf = this.getEnvironment().getServer()
+		final Configuration conf = this.getEnvironment().getServer()
 				.getConfiguration();
 		if (conf.reloadIsNewSession()) {
 			this.unload();

@@ -710,7 +710,7 @@ class FormWidgets extends TopicWidget {
 					if (!(selected.length() == 0)) {
 						selected.append(", ");
 					}
-					WDate d = it;
+					final WDate d = it;
 					selected.append(d.toString("dd/MM/yyyy"));
 				}
 				out.setText(new WString(

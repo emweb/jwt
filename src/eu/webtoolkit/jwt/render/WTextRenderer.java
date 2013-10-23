@@ -96,7 +96,7 @@ public abstract class WTextRenderer {
 		 * <p>
 		 * This returns an empty string for an undefined attribute.
 		 */
-		public String attributeValue(String attribute) {
+		public String attributeValue(final String attribute) {
 			String a = attribute;
 			String ans = this.block_.attributeValue(a);
 			return ans;
@@ -174,11 +174,11 @@ public abstract class WTextRenderer {
 					+ this.block_.inlineLayout.size();
 		}
 
-		private WTextRenderer renderer_;
-		Block block_;
-		private LayoutBox lb_;
+		private final WTextRenderer renderer_;
+		final Block block_;
+		private final LayoutBox lb_;
 
-		Node(Block block, LayoutBox lb, WTextRenderer renderer) {
+		Node(final Block block, final LayoutBox lb, final WTextRenderer renderer) {
 			this.renderer_ = renderer;
 			this.block_ = block;
 			this.lb_ = lb;
@@ -217,7 +217,7 @@ public abstract class WTextRenderer {
 	 * {@link WTextRenderer#startPage(int page) startPage()} so that the current
 	 * page is page 0.
 	 */
-	public double render(CharSequence text, double y) {
+	public double render(final CharSequence text, double y) {
 		String xhtml = text.toString();
 		try {
 			net.n3.nanoxml.XMLElement doc = RenderUtils.parseXHTML(xhtml);
@@ -288,7 +288,7 @@ public abstract class WTextRenderer {
 				this.endPage(this.device_);
 			}
 			return currentPs.y;
-		} catch (RuntimeException e) {
+		} catch (final RuntimeException e) {
 			throw e;
 		}
 	}
@@ -298,7 +298,7 @@ public abstract class WTextRenderer {
 	 * <p>
 	 * Returns {@link #render(CharSequence text, double y) render(text, 0)}
 	 */
-	public final double render(CharSequence text) {
+	public final double render(final CharSequence text) {
 		return render(text, 0);
 	}
 
@@ -333,7 +333,7 @@ public abstract class WTextRenderer {
 	 * 
 	 * @see WTextRenderer#getStyleSheetParseErrors()
 	 */
-	public boolean setStyleSheetText(CharSequence styleSheetContents) {
+	public boolean setStyleSheetText(final CharSequence styleSheetContents) {
 		if ((styleSheetContents.length() == 0)) {
 			this.styleSheetText_ = new WString();
 			;
@@ -369,7 +369,7 @@ public abstract class WTextRenderer {
 	 * 
 	 * @see WTextRenderer#setStyleSheetText(CharSequence styleSheetContents)
 	 */
-	public boolean useStyleSheet(CharSequence filename) {
+	public boolean useStyleSheet(final CharSequence filename) {
 		String contents = FileUtils.fileToString(filename.toString());
 		if (!(contents != null)) {
 			return false;
@@ -531,7 +531,7 @@ public abstract class WTextRenderer {
 	 * The node information contains the layout position at which the node is
 	 * being painted.
 	 */
-	public void paintNode(WPainter painter, WTextRenderer.Node node) {
+	public void paintNode(final WPainter painter, final WTextRenderer.Node node) {
 		node.getBlock().actualRender(this, painter, node.getLb());
 	}
 

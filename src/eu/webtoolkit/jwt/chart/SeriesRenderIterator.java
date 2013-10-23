@@ -23,18 +23,19 @@ class SeriesRenderIterator extends SeriesIterator {
 	private static Logger logger = LoggerFactory
 			.getLogger(SeriesRenderIterator.class);
 
-	public SeriesRenderIterator(WChart2DRenderer renderer) {
+	public SeriesRenderIterator(final WChart2DRenderer renderer) {
 		super();
 		this.renderer_ = renderer;
 		this.series_ = null;
 	}
 
 	public void startSegment(int currentXSegment, int currentYSegment,
-			WRectF currentSegmentArea) {
+			final WRectF currentSegmentArea) {
 		super
 				.startSegment(currentXSegment, currentYSegment,
 						currentSegmentArea);
-		WAxis yAxis = this.renderer_.getChart().getAxis(this.series_.getAxis());
+		final WAxis yAxis = this.renderer_.getChart().getAxis(
+				this.series_.getAxis());
 		if (currentYSegment == 0) {
 			this.maxY_ = Double.MAX_VALUE;
 		} else {
@@ -52,7 +53,7 @@ class SeriesRenderIterator extends SeriesIterator {
 		this.seriesRenderer_.paint();
 	}
 
-	public boolean startSeries(WDataSeries series, double groupWidth,
+	public boolean startSeries(final WDataSeries series, double groupWidth,
 			int numBarGroups, int currentBarGroup) {
 		this.seriesRenderer_ = null;
 		switch (series.getType()) {
@@ -79,8 +80,8 @@ class SeriesRenderIterator extends SeriesIterator {
 		this.series_ = null;
 	}
 
-	public void newValue(WDataSeries series, double x, double y, double stackY,
-			WModelIndex xIndex, WModelIndex yIndex) {
+	public void newValue(final WDataSeries series, double x, double y,
+			double stackY, final WModelIndex xIndex, final WModelIndex yIndex) {
 		if (Double.isNaN(x) || Double.isNaN(y)) {
 			this.seriesRenderer_.paint();
 		} else {
@@ -100,7 +101,7 @@ class SeriesRenderIterator extends SeriesIterator {
 		}
 	}
 
-	private WChart2DRenderer renderer_;
+	private final WChart2DRenderer renderer_;
 	private WDataSeries series_;
 	private SeriesRenderer seriesRenderer_;
 	private double minY_;

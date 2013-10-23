@@ -55,7 +55,7 @@ public class WNavigationBar extends WTemplate {
 	 * <p>
 	 * The title may optionally link to a &apos;homepage&apos;.
 	 */
-	public void setTitle(CharSequence title, WLink link) {
+	public void setTitle(final CharSequence title, final WLink link) {
 		WAnchor titleLink = (WAnchor) this.resolveWidget("title-link");
 		if (!(titleLink != null)) {
 			this.bindWidget("title-link", titleLink = new WAnchor());
@@ -71,7 +71,7 @@ public class WNavigationBar extends WTemplate {
 	 * Calls {@link #setTitle(CharSequence title, WLink link) setTitle(title,
 	 * new WLink())}
 	 */
-	public final void setTitle(CharSequence title) {
+	public final void setTitle(final CharSequence title) {
 		setTitle(title, new WLink());
 	}
 

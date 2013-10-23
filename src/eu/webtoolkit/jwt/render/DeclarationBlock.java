@@ -20,7 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 interface DeclarationBlock {
-	public Term value(String property);
+	public Term value(final String property);
 
 	public String getDeclarationString();
 }

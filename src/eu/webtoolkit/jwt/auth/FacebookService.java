@@ -71,7 +71,7 @@ public class FacebookService extends OAuthService {
 	/**
 	 * Constructor.
 	 */
-	public FacebookService(AuthService baseAuth) {
+	public FacebookService(final AuthService baseAuth) {
 		super(baseAuth);
 	}
 
@@ -87,7 +87,7 @@ public class FacebookService extends OAuthService {
 			configurationProperty(ClientIdProperty);
 			configurationProperty(ClientSecretProperty);
 			return true;
-		} catch (RuntimeException e) {
+		} catch (final RuntimeException e) {
 			logger.info(new StringWriter().append("not configured: ").append(
 					e.toString()).toString());
 			return false;
@@ -121,7 +121,7 @@ public class FacebookService extends OAuthService {
 	public String getRedirectEndpointPath() {
 		try {
 			return configurationProperty(RedirectEndpointPathProperty);
-		} catch (RuntimeException e) {
+		} catch (final RuntimeException e) {
 			return super.getRedirectEndpointPath();
 		}
 	}
@@ -146,7 +146,7 @@ public class FacebookService extends OAuthService {
 		return Method.Get;
 	}
 
-	public OAuthProcess createProcess(String scope) {
+	public OAuthProcess createProcess(final String scope) {
 		return new FacebookProcess(this, scope);
 	}
 

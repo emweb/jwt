@@ -74,7 +74,7 @@ public abstract class WTheme extends WObject {
 	 * The default implementation serves all the {@link WTheme#getStyleSheets()
 	 * getStyleSheets()}.
 	 */
-	public void serveCss(StringBuilder out) {
+	public void serveCss(final StringBuilder out) {
 		List<WCssStyleSheet> sheets = this.getStyleSheets();
 		for (int i = 0; i < sheets.size(); ++i) {
 			sheets.get(i).cssText(out, true);
@@ -104,7 +104,7 @@ public abstract class WTheme extends WObject {
 	 * The <code>element</code> is a rendered representation of the
 	 * <code>widget</code>, and may be further customized to reflect the theme.
 	 */
-	public abstract void apply(WWidget widget, DomElement element,
+	public abstract void apply(WWidget widget, final DomElement element,
 			int elementRole);
 
 	/**
@@ -126,7 +126,8 @@ public abstract class WTheme extends WObject {
 	 * Applies a style that indicates the result of validation.
 	 */
 	public abstract void applyValidationStyle(WWidget widget,
-			WValidator.Result validation, EnumSet<ValidationStyleFlag> flags);
+			final WValidator.Result validation,
+			EnumSet<ValidationStyleFlag> flags);
 
 	/**
 	 * Applies a style that indicates the result of validation.
@@ -136,10 +137,10 @@ public abstract class WTheme extends WObject {
 	 * applyValidationStyle(widget, validation, EnumSet.of(flag, flags))}
 	 */
 	public final void applyValidationStyle(WWidget widget,
-			WValidator.Result validation, ValidationStyleFlag flag,
+			final WValidator.Result validation, ValidationStyleFlag flag,
 			ValidationStyleFlag... flags) {
 		applyValidationStyle(widget, validation, EnumSet.of(flag, flags));
 	}
 
-	public abstract boolean canBorderBoxElement(DomElement element);
+	public abstract boolean canBorderBoxElement(final DomElement element);
 }

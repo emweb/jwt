@@ -74,7 +74,7 @@ public class WMenuItem extends WContainerWidget {
 	 * from the <code>label</code>, and can be customized using
 	 * {@link WMenuItem#setPathComponent(String path) setPathComponent()}.
 	 */
-	public WMenuItem(CharSequence text, WWidget contents,
+	public WMenuItem(final CharSequence text, WWidget contents,
 			WMenuItem.LoadPolicy policy) {
 		super();
 		this.separator_ = false;
@@ -90,7 +90,7 @@ public class WMenuItem extends WContainerWidget {
 	 * {@link #WMenuItem(CharSequence text, WWidget contents, WMenuItem.LoadPolicy policy)
 	 * this(text, (WWidget)null, WMenuItem.LoadPolicy.LazyLoading)}
 	 */
-	public WMenuItem(CharSequence text) {
+	public WMenuItem(final CharSequence text) {
 		this(text, (WWidget) null, WMenuItem.LoadPolicy.LazyLoading);
 	}
 
@@ -101,12 +101,12 @@ public class WMenuItem extends WContainerWidget {
 	 * {@link #WMenuItem(CharSequence text, WWidget contents, WMenuItem.LoadPolicy policy)
 	 * this(text, contents, WMenuItem.LoadPolicy.LazyLoading)}
 	 */
-	public WMenuItem(CharSequence text, WWidget contents) {
+	public WMenuItem(final CharSequence text, WWidget contents) {
 		this(text, contents, WMenuItem.LoadPolicy.LazyLoading);
 	}
 
-	public WMenuItem(String iconPath, CharSequence text, WWidget contents,
-			WMenuItem.LoadPolicy policy) {
+	public WMenuItem(final String iconPath, final CharSequence text,
+			WWidget contents, WMenuItem.LoadPolicy policy) {
 		super();
 		this.separator_ = false;
 		this.triggered_ = new Signal1<WMenuItem>(this);
@@ -114,11 +114,12 @@ public class WMenuItem extends WContainerWidget {
 		this.create(iconPath, text, contents, policy);
 	}
 
-	public WMenuItem(String iconPath, CharSequence text) {
+	public WMenuItem(final String iconPath, final CharSequence text) {
 		this(iconPath, text, (WWidget) null, WMenuItem.LoadPolicy.LazyLoading);
 	}
 
-	public WMenuItem(String iconPath, CharSequence text, WWidget contents) {
+	public WMenuItem(final String iconPath, final CharSequence text,
+			WWidget contents) {
 		this(iconPath, text, contents, WMenuItem.LoadPolicy.LazyLoading);
 	}
 
@@ -144,7 +145,7 @@ public class WMenuItem extends WContainerWidget {
 	 * 
 	 * @see WMenuItem#setPathComponent(String path)
 	 */
-	public void setText(CharSequence text) {
+	public void setText(final CharSequence text) {
 		if (!(this.text_ != null)) {
 			this.text_ = new WLabel(this.getAnchor());
 			this.text_.setTextFormat(TextFormat.PlainText);
@@ -197,7 +198,7 @@ public class WMenuItem extends WContainerWidget {
 	 * 
 	 * @see WMenuItem#setText(CharSequence text)
 	 */
-	public void setIcon(String path) {
+	public void setIcon(final String path) {
 		if (!(this.icon_ != null)) {
 			WAnchor a = this.getAnchor();
 			if (!(a != null)) {
@@ -291,7 +292,7 @@ public class WMenuItem extends WContainerWidget {
 	 * @see WMenuItem#setText(CharSequence text)
 	 * @see WMenu#setInternalPathEnabled(String basePath)
 	 */
-	public void setPathComponent(String path) {
+	public void setPathComponent(final String path) {
 		this.customPathComponent_ = true;
 		this.pathComponent_ = path;
 		this.updateInternalPath();
@@ -343,7 +344,7 @@ public class WMenuItem extends WContainerWidget {
 	 * Sets the associated link.
 	 * <p>
 	 */
-	public void setLink(WLink link) {
+	public void setLink(final WLink link) {
 		WAnchor a = this.getAnchor();
 		if (a != null) {
 			a.setLink(link);
@@ -694,7 +695,7 @@ public class WMenuItem extends WContainerWidget {
 		}
 	}
 
-	void setFromInternalPath(String path) {
+	void setFromInternalPath(final String path) {
 		if (this.menu_.contentsStack_ != null
 				&& this.menu_.contentsStack_.getCurrentWidget() != this
 						.getContents()) {
@@ -717,7 +718,7 @@ public class WMenuItem extends WContainerWidget {
 		super.render(flags);
 	}
 
-	WMenuItem(boolean separator, CharSequence text) {
+	WMenuItem(boolean separator, final CharSequence text) {
 		super();
 		this.separator_ = true;
 		this.triggered_ = new Signal1<WMenuItem>(this);
@@ -751,8 +752,8 @@ public class WMenuItem extends WContainerWidget {
 	private boolean internalPathEnabled_;
 	private boolean closeable_;
 
-	private void create(String iconPath, CharSequence text, WWidget contents,
-			WMenuItem.LoadPolicy policy) {
+	private void create(final String iconPath, final CharSequence text,
+			WWidget contents, WMenuItem.LoadPolicy policy) {
 		this.contentsContainer_ = null;
 		this.contents_ = contents;
 		this.menu_ = null;
@@ -774,7 +775,6 @@ public class WMenuItem extends WContainerWidget {
 		}
 		if (!this.separator_) {
 			WAnchor anchor = new WAnchor(this);
-			anchor.clicked().preventPropagation();
 			this.updateInternalPath();
 		}
 		this.signalsConnected_ = false;

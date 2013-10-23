@@ -398,7 +398,7 @@ public class WCssTheme extends WTheme {
 	 * &quot;polished&quot; and default. For the bootstrap theme, use
 	 * {@link WBootstrapTheme}.
 	 */
-	public WCssTheme(String name, WObject parent) {
+	public WCssTheme(final String name, WObject parent) {
 		super(parent);
 		this.name_ = name;
 	}
@@ -409,7 +409,7 @@ public class WCssTheme extends WTheme {
 	 * Calls {@link #WCssTheme(String name, WObject parent) this(name,
 	 * (WObject)null)}
 	 */
-	public WCssTheme(String name) {
+	public WCssTheme(final String name) {
 		this(name, (WObject) null);
 	}
 
@@ -504,7 +504,7 @@ public class WCssTheme extends WTheme {
 		}
 	}
 
-	public void apply(WWidget widget, DomElement element, int elementRole) {
+	public void apply(WWidget widget, final DomElement element, int elementRole) {
 		boolean creating = element.getMode() == DomElement.Mode.ModeCreate;
 		{
 			WPopupWidget popup = ((widget) instanceof WPopupWidget ? (WPopupWidget) (widget)
@@ -651,7 +651,8 @@ public class WCssTheme extends WTheme {
 	}
 
 	public void applyValidationStyle(WWidget widget,
-			WValidator.Result validation, EnumSet<ValidationStyleFlag> styles) {
+			final WValidator.Result validation,
+			EnumSet<ValidationStyleFlag> styles) {
 		WApplication app = WApplication.getInstance();
 		app.loadJavaScript("js/CssThemeValidate.js", wtjs1());
 		app.loadJavaScript("js/CssThemeValidate.js", wtjs2());
@@ -678,7 +679,7 @@ public class WCssTheme extends WTheme {
 		}
 	}
 
-	public boolean canBorderBoxElement(DomElement element) {
+	public boolean canBorderBoxElement(final DomElement element) {
 		return true;
 	}
 

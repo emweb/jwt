@@ -45,7 +45,7 @@ public class WCssStyleSheet {
 	/**
 	 * Creates a new (external) style sheet reference.
 	 */
-	public WCssStyleSheet(WLink link, String media) {
+	public WCssStyleSheet(final WLink link, final String media) {
 		this.link_ = link;
 		this.media_ = media;
 		this.rules_ = new ArrayList<WCssRule>();
@@ -60,7 +60,7 @@ public class WCssStyleSheet {
 	 * <p>
 	 * Calls {@link #WCssStyleSheet(WLink link, String media) this(link, "all")}
 	 */
-	public WCssStyleSheet(WLink link) {
+	public WCssStyleSheet(final WLink link) {
 		this(link, "all");
 	}
 
@@ -85,8 +85,8 @@ public class WCssStyleSheet {
 	 * 
 	 * @see WCssStyleSheet#isDefined(String ruleName)
 	 */
-	public WCssTextRule addRule(String selector, String declarations,
-			String ruleName) {
+	public WCssTextRule addRule(final String selector,
+			final String declarations, final String ruleName) {
 		WCssTextRule result = new WCssTextRule(selector, declarations);
 		this.addRule(result, ruleName);
 		return result;
@@ -99,7 +99,8 @@ public class WCssStyleSheet {
 	 * {@link #addRule(String selector, String declarations, String ruleName)
 	 * addRule(selector, declarations, "")}
 	 */
-	public final WCssTextRule addRule(String selector, String declarations) {
+	public final WCssTextRule addRule(final String selector,
+			final String declarations) {
 		return addRule(selector, declarations, "");
 	}
 
@@ -115,8 +116,8 @@ public class WCssStyleSheet {
 	 * 
 	 * @see WCssStyleSheet#isDefined(String ruleName)
 	 */
-	public WCssTemplateRule addRule(String selector, WCssDecorationStyle style,
-			String ruleName) {
+	public WCssTemplateRule addRule(final String selector,
+			final WCssDecorationStyle style, final String ruleName) {
 		WCssTemplateRule result = new WCssTemplateRule(selector);
 		result.getTemplateWidget().setDecorationStyle(style);
 		this.addRule(result, ruleName);
@@ -130,8 +131,8 @@ public class WCssStyleSheet {
 	 * {@link #addRule(String selector, WCssDecorationStyle style, String ruleName)
 	 * addRule(selector, style, "")}
 	 */
-	public final WCssTemplateRule addRule(String selector,
-			WCssDecorationStyle style) {
+	public final WCssTemplateRule addRule(final String selector,
+			final WCssDecorationStyle style) {
 		return addRule(selector, style, "");
 	}
 
@@ -144,7 +145,7 @@ public class WCssStyleSheet {
 	 * 
 	 * @see WCssStyleSheet#isDefined(String ruleName)
 	 */
-	public WCssRule addRule(WCssRule rule, String ruleName) {
+	public WCssRule addRule(WCssRule rule, final String ruleName) {
 		this.rules_.add(rule);
 		this.rulesAdded_.add(rule);
 		rule.sheet_ = this;
@@ -173,7 +174,7 @@ public class WCssStyleSheet {
 	 * @see WCssStyleSheet#addRule(String selector, String declarations, String
 	 *      ruleName)
 	 */
-	public boolean isDefined(String ruleName) {
+	public boolean isDefined(final String ruleName) {
 		boolean i = this.defined_.contains(ruleName);
 		return i != false;
 	}
@@ -194,9 +195,10 @@ public class WCssStyleSheet {
 		this.rulesModified_.add(rule);
 	}
 
-	public void cssText(StringBuilder out, boolean all) {
+	public void cssText(final StringBuilder out, boolean all) {
 		if (this.link_.isNull()) {
-			List<WCssRule> toProcess = all ? this.rules_ : this.rulesAdded_;
+			final List<WCssRule> toProcess = all ? this.rules_
+					: this.rulesAdded_;
 			for (int i = 0; i < toProcess.size(); ++i) {
 				WCssRule rule = toProcess.get(i);
 				out.append(rule.getSelector()).append(" { ").append(
@@ -217,7 +219,8 @@ public class WCssStyleSheet {
 		}
 	}
 
-	public void javaScriptUpdate(WApplication app, StringBuilder js, boolean all) {
+	public void javaScriptUpdate(WApplication app, final StringBuilder js,
+			boolean all) {
 		if (!all) {
 			for (int i = 0; i < this.rulesRemoved_.size(); ++i) {
 				js.append("Wt3_3_1.removeCssRule(");
@@ -244,7 +247,8 @@ public class WCssStyleSheet {
 		}
 		if (!app.getEnvironment().agentIsIElt(9)
 				&& app.getEnvironment().getAgent() != WEnvironment.UserAgent.Konqueror) {
-			List<WCssRule> toProcess = all ? this.rules_ : this.rulesAdded_;
+			final List<WCssRule> toProcess = all ? this.rules_
+					: this.rulesAdded_;
 			for (int i = 0; i < toProcess.size(); ++i) {
 				WCssRule rule = toProcess.get(i);
 				js.append("Wt3_3_1.addCss('").append(rule.getSelector())

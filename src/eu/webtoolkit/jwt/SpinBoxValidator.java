@@ -28,7 +28,7 @@ class SpinBoxValidator extends WValidator {
 		this.spinBox_ = spinBox;
 	}
 
-	public WValidator.Result validate(String input) {
+	public WValidator.Result validate(final String input) {
 		boolean valid = this.spinBox_.parseValue(input);
 		if (valid) {
 			return this.spinBox_.getValidateRange();

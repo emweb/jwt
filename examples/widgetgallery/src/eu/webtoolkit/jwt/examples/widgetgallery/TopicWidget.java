@@ -29,14 +29,14 @@ class TopicWidget extends WContainerWidget {
 	public void populateSubMenu(WMenu menu) {
 	}
 
-	// public void topic(String classname, WContainerWidget parent) ;
-	// public void topic(String classname1, String classname2, WContainerWidget
-	// parent) ;
-	// public void topic(String classname1, String classname2, String
-	// classname3, WContainerWidget parent) ;
-	// public void topic(String classname1, String classname2, String
-	// classname3, String classname4, WContainerWidget parent) ;
-	public static WString reindent(CharSequence text) {
+	// public void topic(final String classname, WContainerWidget parent) ;
+	// public void topic(final String classname1, final String classname2,
+	// WContainerWidget parent) ;
+	// public void topic(final String classname1, final String classname2, final
+	// String classname3, WContainerWidget parent) ;
+	// public void topic(final String classname1, final String classname2, final
+	// String classname3, final String classname4, WContainerWidget parent) ;
+	public static WString reindent(final CharSequence text) {
 		List<String> lines = new ArrayList<String>();
 		String s = text.toString();
 		lines = new ArrayList<String>(Arrays.asList(s.split("\n")));
@@ -44,7 +44,7 @@ class TopicWidget extends WContainerWidget {
 		int indent = -1;
 		int newlines = 0;
 		for (int i = 0; i < lines.size(); ++i) {
-			String line = lines.get(i);
+			final String line = lines.get(i);
 			if (line.length() == 0) {
 				++newlines;
 			} else {
@@ -65,7 +65,7 @@ class TopicWidget extends WContainerWidget {
 		return new WString(result);
 	}
 
-	protected static WText addText(CharSequence s, WContainerWidget parent) {
+	protected static WText addText(final CharSequence s, WContainerWidget parent) {
 		WText text = new WText(s, parent);
 		boolean literal;
 		literal = WString.toWString(s).isLiteral();
@@ -75,22 +75,22 @@ class TopicWidget extends WContainerWidget {
 		return text;
 	}
 
-	protected static final WText addText(CharSequence s) {
+	protected static final WText addText(final CharSequence s) {
 		return addText(s, (WContainerWidget) null);
 	}
 
-	private String docAnchor(String classname) {
+	private String docAnchor(final String classname) {
 		StringWriter ss = new StringWriter();
-		String cn = classname = StringUtils.replaceAll(classname, "Chart::",
-				"chart/");
+		String cn = classname;
+		cn = cn = StringUtils.replaceAll(cn, "Chart::", "chart/");
 		ss.append("<a href=\"http://www.webtoolkit.eu/").append(
-				"jwt/latest/doc/javadoc/eu/webtoolkit/jwt/").append(classname)
-				.append(".html\" target=\"_blank\">doc</a>");
+				"jwt/latest/doc/javadoc/eu/webtoolkit/jwt/").append(cn).append(
+				".html\" target=\"_blank\">doc</a>");
 		return ss.toString();
 	}
 
-	// private String title(String classname) ;
-	private String escape(String name) {
+	// private String title(final String classname) ;
+	private String escape(final String name) {
 		StringWriter ss = new StringWriter();
 		for (int i = 0; i < name.length(); ++i) {
 			if (name.charAt(i) != ':') {
@@ -102,7 +102,7 @@ class TopicWidget extends WContainerWidget {
 		return ss.toString();
 	}
 
-	static int countSpaces(String line) {
+	static int countSpaces(final String line) {
 		for (int pos = 0; pos < line.length(); ++pos) {
 			if (line.charAt(pos) != ' ') {
 				return pos;
@@ -111,7 +111,7 @@ class TopicWidget extends WContainerWidget {
 		return line.length();
 	}
 
-	static String skipSpaces(String line, int count) {
+	static String skipSpaces(final String line, int count) {
 		if (line.length() >= count) {
 			return line.substring(count);
 		} else {

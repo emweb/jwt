@@ -140,7 +140,7 @@ public class WTree extends WCompositeWidget {
 	/**
 	 * Sets a selection of tree nodes.
 	 */
-	public void select(Set<WTreeNode> nodes) {
+	public void select(final Set<WTreeNode> nodes) {
 		this.clearSelection();
 		for (Iterator<WTreeNode> i_it = nodes.iterator(); i_it.hasNext();) {
 			WTreeNode i = i_it.next();
@@ -259,7 +259,8 @@ public class WTree extends WCompositeWidget {
 					n = n.getChildNodes().get(0);
 				} else {
 					for (;;) {
-						List<WTreeNode> cs = n.getParentNode().getChildNodes();
+						final List<WTreeNode> cs = n.getParentNode()
+								.getChildNodes();
 						int i = cs.indexOf(n);
 						i++;
 						if (i < (int) cs.size()) {
@@ -345,7 +346,7 @@ public class WTree extends WCompositeWidget {
 		}
 	}
 
-	static boolean getAncestors(WTreeNode n, List<WTreeNode> ancestors) {
+	static boolean getAncestors(WTreeNode n, final List<WTreeNode> ancestors) {
 		WTreeNode p = n.getParentNode();
 		if (p != null) {
 			if (!p.isExpanded()) {

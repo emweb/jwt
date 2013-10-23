@@ -29,7 +29,7 @@ class DeclarationBlockImpl implements DeclarationBlock {
 		this.declarationString_ = "";
 	}
 
-	public Term value(String property) {
+	public Term value(final String property) {
 		Term iter = this.properties_.get(property);
 		return iter != null ? iter : new Term();
 	}

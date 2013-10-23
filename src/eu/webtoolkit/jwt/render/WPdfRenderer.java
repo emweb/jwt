@@ -139,7 +139,7 @@ public class WPdfRenderer extends WTextRenderer {
 	 * Adds a font collection.
 	 * <p>
 	 */
-	public void addFontCollection(String directory, boolean recursive) {
+	public void addFontCollection(final String directory, boolean recursive) {
 		WPdfRenderer.FontCollection c = new WPdfRenderer.FontCollection();
 		c.directory = directory;
 		c.recursive = recursive;
@@ -152,7 +152,7 @@ public class WPdfRenderer extends WTextRenderer {
 	 * Calls {@link #addFontCollection(String directory, boolean recursive)
 	 * addFontCollection(directory, true)}
 	 */
-	public final void addFontCollection(String directory) {
+	public final void addFontCollection(final String directory) {
 		addFontCollection(directory, true);
 	}
 

@@ -85,8 +85,12 @@ public class StringUtils {
 
 	/**
 	 * Convert an object to a {@link WString}.
+	 * 
 	 * If the object is a {@link WDate}, 
 	 * it is formatted with the format String.
+	 * 
+	 * If the object is numeric, then the format string is interpreted as a DecimalFormat
+	 * format.
 	 */
 	public static WString asString(Object data, String format) {
 		if (format == null || format.length() == 0)
@@ -105,7 +109,7 @@ public class StringUtils {
 	 * Convert an object to a double.
 	 */
 	public static double asNumber(Object data) {
-		if (data == null)
+		if (data == null || data.equals(""))
 			return Double.NaN;
 		else if (data instanceof WString)
 			try {

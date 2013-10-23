@@ -162,7 +162,7 @@ public class WGoogleMap extends WCompositeWidget {
 		 * <p>
 		 * The calculation uses a sphere. Results can be out by 0.3%.
 		 */
-		public double distanceTo(WGoogleMap.Coordinate rhs) {
+		public double distanceTo(final WGoogleMap.Coordinate rhs) {
 			final double lat1 = this.lat_ * 3.14159265358979323846 / 180.0;
 			final double lat2 = rhs.getLatitude() * 3.14159265358979323846 / 180.0;
 			final double deltaLong = (rhs.getLongitude() - this.lon_) * 3.14159265358979323846 / 180.0;
@@ -247,7 +247,7 @@ public class WGoogleMap extends WCompositeWidget {
 	/**
 	 * Adds a marker overlay to the map.
 	 */
-	public void addMarker(WGoogleMap.Coordinate pos) {
+	public void addMarker(final WGoogleMap.Coordinate pos) {
 		StringWriter strm = new StringWriter();
 		if (this.apiVersion_ == WGoogleMap.ApiVersion.Version2) {
 			strm
@@ -274,8 +274,8 @@ public class WGoogleMap extends WCompositeWidget {
 	 * Specify a value between 0.0 and 1.0 for the opacity or set the alpha
 	 * value in the color.
 	 */
-	public void addPolyline(List<WGoogleMap.Coordinate> points, WColor color,
-			int width, double opacity) {
+	public void addPolyline(final List<WGoogleMap.Coordinate> points,
+			final WColor color, int width, double opacity) {
 		if (opacity == 1.0) {
 			opacity = color.getAlpha() / 255.0;
 		}
@@ -317,7 +317,7 @@ public class WGoogleMap extends WCompositeWidget {
 	 * {@link #addPolyline(List points, WColor color, int width, double opacity)
 	 * addPolyline(points, WColor.red, 2, 1.0)}
 	 */
-	public final void addPolyline(List<WGoogleMap.Coordinate> points) {
+	public final void addPolyline(final List<WGoogleMap.Coordinate> points) {
 		addPolyline(points, WColor.red, 2, 1.0);
 	}
 
@@ -328,8 +328,8 @@ public class WGoogleMap extends WCompositeWidget {
 	 * {@link #addPolyline(List points, WColor color, int width, double opacity)
 	 * addPolyline(points, color, 2, 1.0)}
 	 */
-	public final void addPolyline(List<WGoogleMap.Coordinate> points,
-			WColor color) {
+	public final void addPolyline(final List<WGoogleMap.Coordinate> points,
+			final WColor color) {
 		addPolyline(points, color, 2, 1.0);
 	}
 
@@ -340,8 +340,8 @@ public class WGoogleMap extends WCompositeWidget {
 	 * {@link #addPolyline(List points, WColor color, int width, double opacity)
 	 * addPolyline(points, color, width, 1.0)}
 	 */
-	public final void addPolyline(List<WGoogleMap.Coordinate> points,
-			WColor color, int width) {
+	public final void addPolyline(final List<WGoogleMap.Coordinate> points,
+			final WColor color, int width) {
 		addPolyline(points, color, width, 1.0);
 	}
 
@@ -352,8 +352,8 @@ public class WGoogleMap extends WCompositeWidget {
 	 * strokeColor and fillColor. This feature is only supported by the Google
 	 * Maps API version 3.
 	 */
-	public void addCircle(WGoogleMap.Coordinate center, double radius,
-			WColor strokeColor, int strokeWidth, WColor fillColor) {
+	public void addCircle(final WGoogleMap.Coordinate center, double radius,
+			final WColor strokeColor, int strokeWidth, final WColor fillColor) {
 		if (this.apiVersion_ == WGoogleMap.ApiVersion.Version2) {
 			throw new UnsupportedOperationException(
 					"WGoogleMap::addCircle is not supported in the Google Maps API v2.");
@@ -393,15 +393,16 @@ public class WGoogleMap extends WCompositeWidget {
 	 * {@link #addCircle(WGoogleMap.Coordinate center, double radius, WColor strokeColor, int strokeWidth, WColor fillColor)
 	 * addCircle(center, radius, strokeColor, strokeWidth, new WColor())}
 	 */
-	public final void addCircle(WGoogleMap.Coordinate center, double radius,
-			WColor strokeColor, int strokeWidth) {
+	public final void addCircle(final WGoogleMap.Coordinate center,
+			double radius, final WColor strokeColor, int strokeWidth) {
 		addCircle(center, radius, strokeColor, strokeWidth, new WColor());
 	}
 
 	/**
 	 * Adds a icon marker overlay to the map.
 	 */
-	public void addIconMarker(WGoogleMap.Coordinate pos, String iconURL) {
+	public void addIconMarker(final WGoogleMap.Coordinate pos,
+			final String iconURL) {
 		StringWriter strm = new StringWriter();
 		if (this.apiVersion_ == WGoogleMap.ApiVersion.Version2) {
 			throw new UnsupportedOperationException(
@@ -444,7 +445,8 @@ public class WGoogleMap extends WCompositeWidget {
 	/**
 	 * Opens a text bubble with html text at a specific location.
 	 */
-	public void openInfoWindow(WGoogleMap.Coordinate pos, CharSequence myHtml) {
+	public void openInfoWindow(final WGoogleMap.Coordinate pos,
+			final CharSequence myHtml) {
 		StringWriter strm = new StringWriter();
 		strm.append("var pos = new google.maps.LatLng(").append(
 				String.valueOf(pos.getLatitude())).append(", ").append(
@@ -467,7 +469,7 @@ public class WGoogleMap extends WCompositeWidget {
 	/**
 	 * Sets the map view to the given center.
 	 */
-	public void setCenter(WGoogleMap.Coordinate center) {
+	public void setCenter(final WGoogleMap.Coordinate center) {
 		StringWriter strm = new StringWriter();
 		strm.append(this.getJsRef()).append(
 				".map.setCenter(new google.maps.LatLng(").append(
@@ -479,7 +481,7 @@ public class WGoogleMap extends WCompositeWidget {
 	/**
 	 * Sets the map view to the given center and zoom level.
 	 */
-	public void setCenter(WGoogleMap.Coordinate center, int zoom) {
+	public void setCenter(final WGoogleMap.Coordinate center, int zoom) {
 		StringWriter strm = new StringWriter();
 		strm.append(this.getJsRef()).append(
 				".map.setCenter(new google.maps.LatLng(").append(
@@ -496,7 +498,7 @@ public class WGoogleMap extends WCompositeWidget {
 	 * If the point is already visible in the current map view, change the
 	 * center in a smooth animation.
 	 */
-	public void panTo(WGoogleMap.Coordinate center) {
+	public void panTo(final WGoogleMap.Coordinate center) {
 		StringWriter strm = new StringWriter();
 		strm.append(this.getJsRef()).append(
 				".map.panTo(new google.maps.LatLng(").append(
@@ -508,8 +510,8 @@ public class WGoogleMap extends WCompositeWidget {
 	/**
 	 * Zooms the map to a region defined by a bounding box.
 	 */
-	public void zoomWindow(WGoogleMap.Coordinate topLeft,
-			WGoogleMap.Coordinate rightBottom) {
+	public void zoomWindow(final WGoogleMap.Coordinate topLeft,
+			final WGoogleMap.Coordinate rightBottom) {
 		final WGoogleMap.Coordinate center = new WGoogleMap.Coordinate((topLeft
 				.getLatitude() + rightBottom.getLatitude()) / 2.0, (topLeft
 				.getLongitude() + rightBottom.getLongitude()) / 2.0);
@@ -908,7 +910,7 @@ public class WGoogleMap extends WCompositeWidget {
 	 * WCompositeWidget#doJavaScript()} but delays the javascript until the map
 	 * has been loaded.
 	 */
-	protected void doGmJavaScript(String jscode) {
+	protected void doGmJavaScript(final String jscode) {
 		if (this.isRendered()) {
 			this.doJavaScript(jscode);
 		} else {
@@ -918,8 +920,8 @@ public class WGoogleMap extends WCompositeWidget {
 
 	private List<String> additions_;
 
-	private void streamJSListener(JSignal1<WGoogleMap.Coordinate> signal,
-			String signalName, StringBuilder strm) {
+	private void streamJSListener(final JSignal1<WGoogleMap.Coordinate> signal,
+			String signalName, final StringBuilder strm) {
 		if (this.apiVersion_ == WGoogleMap.ApiVersion.Version2) {
 			strm.append("google.maps.Event.addListener(map, \"").append(
 					signalName).append(
@@ -938,7 +940,7 @@ public class WGoogleMap extends WCompositeWidget {
 		}
 	}
 
-	private void setMapOption(String option, String value) {
+	private void setMapOption(final String option, final String value) {
 		StringWriter strm = new StringWriter();
 		strm.append("var option = {").append(option).append(" :").append(value)
 				.append("};").append(this.getJsRef()).append(

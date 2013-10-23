@@ -31,7 +31,8 @@ public class WCssTextRule extends WCssRule {
 	/**
 	 * Creates a CSS rule with a given selector and declarations.
 	 */
-	public WCssTextRule(String selector, String declarations, WObject parent) {
+	public WCssTextRule(final String selector, final String declarations,
+			WObject parent) {
 		super(selector, parent);
 		this.declarations_ = declarations;
 	}
@@ -43,7 +44,7 @@ public class WCssTextRule extends WCssRule {
 	 * {@link #WCssTextRule(String selector, String declarations, WObject parent)
 	 * this(selector, declarations, (WObject)null)}
 	 */
-	public WCssTextRule(String selector, String declarations) {
+	public WCssTextRule(final String selector, final String declarations) {
 		this(selector, declarations, (WObject) null);
 	}
 

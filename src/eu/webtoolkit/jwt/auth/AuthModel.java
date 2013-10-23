@@ -74,8 +74,8 @@ public class AuthModel extends FormBaseModel {
 	 * Creates a new authentication model, using a basic authentication service
 	 * and user database.
 	 */
-	public AuthModel(AuthService baseAuth, AbstractUserDatabase users,
-			WObject parent) {
+	public AuthModel(final AuthService baseAuth,
+			final AbstractUserDatabase users, WObject parent) {
 		super(baseAuth, users, parent);
 		this.throttlingDelay_ = 0;
 		this.reset();
@@ -88,7 +88,8 @@ public class AuthModel extends FormBaseModel {
 	 * {@link #AuthModel(AuthService baseAuth, AbstractUserDatabase users, WObject parent)
 	 * this(baseAuth, users, (WObject)null)}
 	 */
-	public AuthModel(AuthService baseAuth, AbstractUserDatabase users) {
+	public AuthModel(final AuthService baseAuth,
+			final AbstractUserDatabase users) {
 		this(baseAuth, users, (WObject) null);
 	}
 
@@ -248,7 +249,7 @@ public class AuthModel extends FormBaseModel {
 	 * <p>
 	 * Returns whether the user could be logged in.
 	 */
-	public boolean login(Login login) {
+	public boolean login(final Login login) {
 		if (this.isValid()) {
 			User user = this.getUsers().findWithIdentity(Identity.LoginName,
 					this.valueText(LoginNameField));
@@ -272,7 +273,7 @@ public class AuthModel extends FormBaseModel {
 	 * <p>
 	 * This also removes the remember-me cookie for the user.
 	 */
-	public void logout(Login login) {
+	public void logout(final Login login) {
 		if (login.isLoggedIn()) {
 			if (this.getBaseAuth().isAuthTokensEnabled()) {
 				WApplication app = WApplication.getInstance();
@@ -289,7 +290,7 @@ public class AuthModel extends FormBaseModel {
 	 * {@link AuthService#processEmailToken(String token, AbstractUserDatabase users)
 	 * AuthService#processEmailToken()}.
 	 */
-	public EmailTokenResult processEmailToken(String token) {
+	public EmailTokenResult processEmailToken(final String token) {
 		return this.getBaseAuth().processEmailToken(token, this.getUsers());
 	}
 
@@ -306,7 +307,7 @@ public class AuthModel extends FormBaseModel {
 	 */
 	public User processAuthToken() {
 		WApplication app = WApplication.getInstance();
-		WEnvironment env = app.getEnvironment();
+		final WEnvironment env = app.getEnvironment();
 		if (this.getBaseAuth().isAuthTokensEnabled()) {
 			String token = env.getCookieValue(this.getBaseAuth()
 					.getAuthTokenCookieName());

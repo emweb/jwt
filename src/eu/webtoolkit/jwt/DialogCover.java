@@ -32,7 +32,7 @@ class DialogCover extends WContainerWidget {
 		this.hide();
 	}
 
-	public void pushDialog(WDialog dialog, WAnimation animation) {
+	public void pushDialog(WDialog dialog, final WAnimation animation) {
 		this.dialogs_.add(dialog);
 		if (dialog.isModal()) {
 			this.coverFor(dialog, animation);
@@ -40,7 +40,7 @@ class DialogCover extends WContainerWidget {
 		this.scheduleRender();
 	}
 
-	public void popDialog(WDialog dialog, WAnimation animation) {
+	public void popDialog(WDialog dialog, final WAnimation animation) {
 		this.dialogs_.remove(dialog);
 		WDialog topModal = null;
 		for (int i = this.dialogs_.size(); i > 0; --i) {
@@ -86,7 +86,7 @@ class DialogCover extends WContainerWidget {
 	private List<WDialog> dialogs_;
 	private String topDialogId_;
 
-	private void coverFor(WDialog dialog, WAnimation animation) {
+	private void coverFor(WDialog dialog, final WAnimation animation) {
 		if (dialog != null) {
 			if (this.isHidden()) {
 				if (!animation.isEmpty()) {

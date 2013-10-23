@@ -56,8 +56,8 @@ public class WChart2DRenderer {
 	 * Creates a renderer for the cartesian chart <i>chart</i>, for rendering in
 	 * the specified <i>rectangle</i> of the <i>painter</i>.
 	 */
-	public WChart2DRenderer(WCartesianChart chart, WPainter painter,
-			WRectF rectangle) {
+	public WChart2DRenderer(WCartesianChart chart, final WPainter painter,
+			final WRectF rectangle) {
 		this.chart_ = chart;
 		this.painter_ = painter;
 		this.chartArea_ = new WRectF();
@@ -222,8 +222,8 @@ public class WChart2DRenderer {
 	 */
 	public WPointF map(double xValue, double yValue, Axis axis,
 			int currentXSegment, int currentYSegment) {
-		WAxis xAxis = this.chart_.getAxis(Axis.XAxis);
-		WAxis yAxis = this.chart_.getAxis(axis);
+		final WAxis xAxis = this.chart_.getAxis(Axis.XAxis);
+		final WAxis yAxis = this.chart_.getAxis(axis);
 		return new WPointF(xAxis.mapToDevice(xValue, currentXSegment), yAxis
 				.mapToDevice(yValue, currentYSegment));
 	}
@@ -273,8 +273,9 @@ public class WChart2DRenderer {
 	 * specified in painter coordinates and thus an angle of 0 always indicates
 	 * horizontal text, regardless of the chart orientation.
 	 */
-	public void renderLabel(CharSequence text, WPointF p, WColor color,
-			EnumSet<AlignmentFlag> flags, double angle, int margin) {
+	public void renderLabel(final CharSequence text, final WPointF p,
+			final WColor color, EnumSet<AlignmentFlag> flags, double angle,
+			int margin) {
 		AlignmentFlag horizontalAlign = EnumUtils.enumFromSet(EnumUtils.mask(
 				flags, AlignmentFlag.AlignHorizontalMask));
 		AlignmentFlag verticalAlign = EnumUtils.enumFromSet(EnumUtils.mask(
@@ -373,7 +374,7 @@ public class WChart2DRenderer {
 	 * Converts from chart coordinates to painter coordinates, taking into
 	 * account the chart orientation.
 	 */
-	public WPointF hv(WPointF p) {
+	public WPointF hv(final WPointF p) {
 		return this.hv(p.getX(), p.getY());
 	}
 
@@ -383,7 +384,7 @@ public class WChart2DRenderer {
 	 * Converts from chart coordinates to painter coordinates, taking into
 	 * account the chart orientation.
 	 */
-	public WRectF hv(WRectF r) {
+	public WRectF hv(final WRectF r) {
 		if (this.chart_.getOrientation() == Orientation.Vertical) {
 			return r;
 		} else {
@@ -399,9 +400,9 @@ public class WChart2DRenderer {
 	 * segment.
 	 */
 	public WRectF chartSegmentArea(WAxis yAxis, int xSegment, int ySegment) {
-		WAxis xAxis = this.chart_.getAxis(Axis.XAxis);
-		WAxis.Segment xs = xAxis.segments_.get(xSegment);
-		WAxis.Segment ys = yAxis.segments_.get(ySegment);
+		final WAxis xAxis = this.chart_.getAxis(Axis.XAxis);
+		final WAxis.Segment xs = xAxis.segments_.get(xSegment);
+		final WAxis.Segment ys = yAxis.segments_.get(ySegment);
 		double x1 = xs.renderStart
 				+ (xSegment == 0 ? xs.renderMinimum == 0 ? 0 : -this.chart_
 						.getAxisPadding() : -this.segmentMargin_ / 2);
@@ -465,9 +466,9 @@ public class WChart2DRenderer {
 		if (!this.chart_.getAxis(Axis.Y2Axis).prepareRender(this)) {
 			return false;
 		}
-		WAxis xAxis = this.chart_.getAxis(Axis.XAxis);
-		WAxis yAxis = this.chart_.getAxis(Axis.YAxis);
-		WAxis y2Axis = this.chart_.getAxis(Axis.Y2Axis);
+		final WAxis xAxis = this.chart_.getAxis(Axis.XAxis);
+		final WAxis yAxis = this.chart_.getAxis(Axis.YAxis);
+		final WAxis y2Axis = this.chart_.getAxis(Axis.Y2Axis);
 		if (xAxis.getScale() == AxisScale.CategoryScale) {
 			switch (xAxis.getLocation()) {
 			case MinimumValue:
@@ -739,7 +740,7 @@ public class WChart2DRenderer {
 	}
 
 	private WCartesianChart chart_;
-	private WPainter painter_;
+	private final WPainter painter_;
 	private int width_;
 	private int height_;
 	private int segmentMargin_;
@@ -760,7 +761,7 @@ public class WChart2DRenderer {
 	 * 
 	 * @see WChart2DRenderer#renderAxes(EnumSet properties)
 	 */
-	protected void renderAxis(WAxis axis,
+	protected void renderAxis(final WAxis axis,
 			EnumSet<WChart2DRenderer.AxisProperty> properties) {
 		boolean vertical = axis.getId() != Axis.XAxis;
 		WFont oldFont1 = this.painter_.getFont();
@@ -812,7 +813,7 @@ public class WChart2DRenderer {
 			}
 		}
 		for (int segment = 0; segment < axis.getSegmentCount(); ++segment) {
-			WAxis.Segment s = axis.segments_.get(segment);
+			final WAxis.Segment s = axis.segments_.get(segment);
 			if (!EnumUtils.mask(properties, WChart2DRenderer.AxisProperty.Line)
 					.isEmpty()
 					&& axis.isVisible()) {
@@ -851,10 +852,11 @@ public class WChart2DRenderer {
 			List<WLineF> ticksPath = new ArrayList<WLineF>();
 			List<WAxis.TickLabel> ticks = new ArrayList<WAxis.TickLabel>();
 			axis.getLabelTicks(this, ticks, segment);
-			WAxis other = axis.getId() == Axis.XAxis ? this.chart_
+			final WAxis other = axis.getId() == Axis.XAxis ? this.chart_
 					.getAxis(Axis.Y1Axis) : this.chart_.getAxis(Axis.XAxis);
-			WAxis.Segment s0 = other.segments_.get(0);
-			WAxis.Segment sn = other.segments_.get(other.segments_.size() - 1);
+			final WAxis.Segment s0 = other.segments_.get(0);
+			final WAxis.Segment sn = other.segments_
+					.get(other.segments_.size() - 1);
 			for (int i = 0; i < ticks.size(); ++i) {
 				double d = ticks.get(i).u;
 				double dd = axis.mapToDevice(d, segment);
@@ -1033,7 +1035,7 @@ public class WChart2DRenderer {
 	 * Calls {@link #renderAxis(WAxis axis, EnumSet properties) renderAxis(axis,
 	 * EnumSet.of(propertie, properties))}
 	 */
-	protected final void renderAxis(WAxis axis,
+	protected final void renderAxis(final WAxis axis,
 			WChart2DRenderer.AxisProperty propertie,
 			WChart2DRenderer.AxisProperty... properties) {
 		renderAxis(axis, EnumSet.of(propertie, properties));
@@ -1043,7 +1045,7 @@ public class WChart2DRenderer {
 	 * Calculates the total number of bar groups.
 	 */
 	protected int getCalcNumBarGroups() {
-		List<WDataSeries> series = this.chart_.getSeries();
+		final List<WDataSeries> series = this.chart_.getSeries();
 		int numBarGroups = 0;
 		boolean newGroup = true;
 		for (int i = 0; i < series.size(); ++i) {
@@ -1063,7 +1065,7 @@ public class WChart2DRenderer {
 	 * Iterates over the series using an iterator.
 	 */
 	protected void iterateSeries(SeriesIterator iterator, boolean reverseStacked) {
-		List<WDataSeries> series = this.chart_.getSeries();
+		final List<WDataSeries> series = this.chart_.getSeries();
 		WAbstractItemModel model = this.chart_.getModel();
 		int rows = model != null ? model.getRowCount() : 0;
 		double groupWidth;

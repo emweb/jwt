@@ -285,7 +285,7 @@ public class WTableView extends WAbstractItemView {
 		super.remove();
 	}
 
-	public WWidget itemWidget(WModelIndex index) {
+	public WWidget itemWidget(final WModelIndex index) {
 		if (this.isRowRendered(index.getRow())
 				&& this.isColumnRendered(index.getColumn())) {
 			int renderedRow = index.getRow() - this.getFirstRow();
@@ -369,7 +369,7 @@ public class WTableView extends WAbstractItemView {
 		this.firstColumn_ = this.lastColumn_ = -1;
 	}
 
-	public void setColumnWidth(int column, WLength width) {
+	public void setColumnWidth(int column, final WLength width) {
 		WLength rWidth = new WLength(Math.round(width.getValue()), width
 				.getUnit());
 		double delta = rWidth.toPixels()
@@ -415,7 +415,7 @@ public class WTableView extends WAbstractItemView {
 		this.updateTableBackground();
 	}
 
-	public void setRowHeight(WLength rowHeight) {
+	public void setRowHeight(final WLength rowHeight) {
 		int renderedRowCount = this.getModel() != null ? this.getLastRow()
 				- this.getFirstRow() + 1 : 0;
 		super.setRowHeight(rowHeight);
@@ -439,17 +439,17 @@ public class WTableView extends WAbstractItemView {
 		this.scheduleRerender(WAbstractItemView.RenderState.NeedRerenderData);
 	}
 
-	public void setHeaderHeight(WLength height) {
+	public void setHeaderHeight(final WLength height) {
 		super.setHeaderHeight(height);
 		if (!this.isAjaxMode()) {
 			this.resize(this.getWidth(), this.getHeight());
 		}
 	}
 
-	public void setColumnBorder(WColor color) {
+	public void setColumnBorder(final WColor color) {
 	}
 
-	public void resize(WLength width, WLength height) {
+	public void resize(final WLength width, final WLength height) {
 		if (this.isAjaxMode()) {
 			if (height.getUnit() == WLength.Unit.Percentage) {
 				logger.error(new StringWriter().append(
@@ -573,7 +573,8 @@ public class WTableView extends WAbstractItemView {
 		this.scheduleRerender(WAbstractItemView.RenderState.NeedRerenderData);
 	}
 
-	public void scrollTo(WModelIndex index, WAbstractItemView.ScrollHint hint) {
+	public void scrollTo(final WModelIndex index,
+			WAbstractItemView.ScrollHint hint) {
 		if ((index.getParent() == this.getRootIndex() || (index.getParent() != null && index
 				.getParent().equals(this.getRootIndex())))) {
 			if (this.isAjaxMode()) {
@@ -623,7 +624,7 @@ public class WTableView extends WAbstractItemView {
 		}
 	}
 
-	public void setHidden(boolean hidden, WAnimation animation) {
+	public void setHidden(boolean hidden, final WAnimation animation) {
 		boolean change = this.isHidden() != hidden;
 		super.setHidden(hidden, animation);
 		if (change && !hidden) {
@@ -679,7 +680,7 @@ public class WTableView extends WAbstractItemView {
 			super();
 			this.column_ = column;
 			assert view.isAjaxMode();
-			WAbstractItemView.ColumnInfo ci = view.columnInfo(column);
+			final WAbstractItemView.ColumnInfo ci = view.columnInfo(column);
 			this.setStyleClass(ci.getStyleClass());
 			this.setPositionScheme(PositionScheme.Absolute);
 			this.setOffsets(new WLength(0), EnumSet.of(Side.Top, Side.Left));
@@ -766,7 +767,8 @@ public class WTableView extends WAbstractItemView {
 		}
 	}
 
-	private void modelColumnsInserted(WModelIndex parent, int start, int end) {
+	private void modelColumnsInserted(final WModelIndex parent, int start,
+			int end) {
 		if (!(parent == this.getRootIndex() || (parent != null && parent
 				.equals(this.getRootIndex())))) {
 			return;
@@ -796,8 +798,8 @@ public class WTableView extends WAbstractItemView {
 		this.scheduleRerender(WAbstractItemView.RenderState.NeedRerenderData);
 	}
 
-	private void modelColumnsAboutToBeRemoved(WModelIndex parent, int start,
-			int end) {
+	private void modelColumnsAboutToBeRemoved(final WModelIndex parent,
+			int start, int end) {
 		if (!(parent == this.getRootIndex() || (parent != null && parent
 				.equals(this.getRootIndex())))) {
 			return;
@@ -814,6 +816,10 @@ public class WTableView extends WAbstractItemView {
 			if (!this.columnInfo(i).hidden) {
 				width += (int) this.columnInfo(i).width.toPixels() + 7;
 			}
+		}
+		for (int i = start; i < start + count; i++) {
+			if (this.columns_.get(i).styleRule != null)
+				this.columns_.get(i).styleRule.remove();
 		}
 		for (int ii = 0; ii < (0 + start + count) - (0 + start); ++ii)
 			this.columns_.remove(0 + start);
@@ -840,7 +846,7 @@ public class WTableView extends WAbstractItemView {
 		this.scheduleRerender(WAbstractItemView.RenderState.NeedRerenderData);
 	}
 
-	private void modelRowsInserted(WModelIndex parent, int start, int end) {
+	private void modelRowsInserted(final WModelIndex parent, int start, int end) {
 		if (!(parent == this.getRootIndex() || (parent != null && parent
 				.equals(this.getRootIndex())))) {
 			return;
@@ -871,7 +877,7 @@ public class WTableView extends WAbstractItemView {
 		}
 	}
 
-	private void modelRowsAboutToBeRemoved(WModelIndex parent, int start,
+	private void modelRowsAboutToBeRemoved(final WModelIndex parent, int start,
 			int end) {
 		if (!(parent == this.getRootIndex() || (parent != null && parent
 				.equals(this.getRootIndex())))) {
@@ -885,7 +891,7 @@ public class WTableView extends WAbstractItemView {
 		this.shiftModelIndexRows(start, -(end - start + 1));
 	}
 
-	private void modelRowsRemoved(WModelIndex parent, int start, int end) {
+	private void modelRowsRemoved(final WModelIndex parent, int start, int end) {
 		if (!(parent == this.getRootIndex() || (parent != null && parent
 				.equals(this.getRootIndex())))) {
 			return;
@@ -919,7 +925,8 @@ public class WTableView extends WAbstractItemView {
 		this.computeRenderedArea();
 	}
 
-	void modelDataChanged(WModelIndex topLeft, WModelIndex bottomRight) {
+	void modelDataChanged(final WModelIndex topLeft,
+			final WModelIndex bottomRight) {
 		if (!(topLeft.getParent() == this.getRootIndex() || (topLeft
 				.getParent() != null && topLeft.getParent().equals(
 				this.getRootIndex())))) {
@@ -955,7 +962,7 @@ public class WTableView extends WAbstractItemView {
 		this.resetGeometry();
 	}
 
-	private WWidget renderWidget(WWidget widget, WModelIndex index) {
+	private WWidget renderWidget(WWidget widget, final WModelIndex index) {
 		WAbstractItemDelegate itemDelegate = this.getItemDelegate(index
 				.getColumn());
 		EnumSet<ViewItemRenderFlag> renderFlags = EnumSet
@@ -1169,7 +1176,7 @@ public class WTableView extends WAbstractItemView {
 		this.doJavaScript(s.toString());
 	}
 
-	private void addSection(final Side side, List<WWidget> items) {
+	private void addSection(final Side side, final List<WWidget> items) {
 		assert this.isAjaxMode();
 		switch (side) {
 		case Top:
@@ -1616,28 +1623,31 @@ public class WTableView extends WAbstractItemView {
 		}
 	}
 
-	private void handleSingleClick(boolean headerColumns, WMouseEvent event) {
+	private void handleSingleClick(boolean headerColumns,
+			final WMouseEvent event) {
 		WModelIndex index = this.translateModelIndex(headerColumns, event);
 		this.handleClick(index, event);
 	}
 
-	private void handleDblClick(boolean headerColumns, WMouseEvent event) {
+	private void handleDblClick(boolean headerColumns, final WMouseEvent event) {
 		WModelIndex index = this.translateModelIndex(headerColumns, event);
 		this.handleDoubleClick(index, event);
 	}
 
-	private void handleMouseWentDown(boolean headerColumns, WMouseEvent event) {
+	private void handleMouseWentDown(boolean headerColumns,
+			final WMouseEvent event) {
 		WModelIndex index = this.translateModelIndex(headerColumns, event);
 		this.handleMouseDown(index, event);
 	}
 
-	private void handleMouseWentUp(boolean headerColumns, WMouseEvent event) {
+	private void handleMouseWentUp(boolean headerColumns,
+			final WMouseEvent event) {
 		WModelIndex index = this.translateModelIndex(headerColumns, event);
 		this.handleMouseUp(index, event);
 	}
 
 	private WModelIndex translateModelIndex(boolean headerColumns,
-			WMouseEvent event) {
+			final WMouseEvent event) {
 		int row = (int) (event.getWidget().y / this.getRowHeight().toPixels());
 		int column = -1;
 		int total = 0;
@@ -1670,23 +1680,23 @@ public class WTableView extends WAbstractItemView {
 		}
 	}
 
-	private void handleRootSingleClick(int u, WMouseEvent event) {
+	private void handleRootSingleClick(int u, final WMouseEvent event) {
 		this.handleClick(null, event);
 	}
 
-	private void handleRootDoubleClick(int u, WMouseEvent event) {
+	private void handleRootDoubleClick(int u, final WMouseEvent event) {
 		this.handleDoubleClick(null, event);
 	}
 
-	private void handleRootMouseWentDown(int u, WMouseEvent event) {
+	private void handleRootMouseWentDown(int u, final WMouseEvent event) {
 		this.handleMouseDown(null, event);
 	}
 
-	private void handleRootMouseWentUp(int u, WMouseEvent event) {
+	private void handleRootMouseWentUp(int u, final WMouseEvent event) {
 		this.handleMouseUp(null, event);
 	}
 
-	private void updateItem(WModelIndex index, int renderedRow,
+	private void updateItem(final WModelIndex index, int renderedRow,
 			int renderedColumn) {
 		WContainerWidget parentWidget;
 		int wIndex;
@@ -1714,7 +1724,7 @@ public class WTableView extends WAbstractItemView {
 		}
 	}
 
-	boolean internalSelect(WModelIndex index, SelectionFlag option) {
+	boolean internalSelect(final WModelIndex index, SelectionFlag option) {
 		if (this.getSelectionBehavior() == SelectionBehavior.SelectRows
 				&& index.getColumn() != 0) {
 			return this.internalSelect(this.getModel().getIndex(index.getRow(),
@@ -1728,7 +1738,7 @@ public class WTableView extends WAbstractItemView {
 		}
 	}
 
-	void selectRange(WModelIndex first, WModelIndex last) {
+	void selectRange(final WModelIndex first, final WModelIndex last) {
 		for (int c = first.getColumn(); c <= last.getColumn(); ++c) {
 			for (int r = first.getRow(); r <= last.getRow(); ++r) {
 				this.internalSelect(this.getModel().getIndex(r, c,
@@ -1738,7 +1748,7 @@ public class WTableView extends WAbstractItemView {
 	}
 
 	private void shiftModelIndexRows(int start, int count) {
-		SortedSet<WModelIndex> set = this.getSelectionModel().selection_;
+		final SortedSet<WModelIndex> set = this.getSelectionModel().selection_;
 		List<WModelIndex> toShift = new ArrayList<WModelIndex>();
 		List<WModelIndex> toErase = new ArrayList<WModelIndex>();
 		for (Iterator<WModelIndex> it_it = set.tailSet(
@@ -1770,7 +1780,7 @@ public class WTableView extends WAbstractItemView {
 	}
 
 	private void shiftModelIndexColumns(int start, int count) {
-		SortedSet<WModelIndex> set = this.getSelectionModel().selection_;
+		final SortedSet<WModelIndex> set = this.getSelectionModel().selection_;
 		List<WModelIndex> toShift = new ArrayList<WModelIndex>();
 		List<WModelIndex> toErase = new ArrayList<WModelIndex>();
 		for (Iterator<WModelIndex> it_it = set.iterator(); it_it.hasNext();) {
@@ -1802,7 +1812,7 @@ public class WTableView extends WAbstractItemView {
 		}
 	}
 
-	private void renderSelected(boolean selected, WModelIndex index) {
+	private void renderSelected(boolean selected, final WModelIndex index) {
 		String cl = WApplication.getInstance().getTheme().getActiveClass();
 		if (this.getSelectionBehavior() == SelectionBehavior.SelectRows) {
 			if (this.isRowRendered(index.getRow())) {

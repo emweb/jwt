@@ -102,7 +102,7 @@ public class WAggregateProxyModel extends WAbstractProxyModel {
 		this.collapse(added);
 	}
 
-	public WModelIndex mapFromSource(WModelIndex sourceIndex) {
+	public WModelIndex mapFromSource(final WModelIndex sourceIndex) {
 		if ((sourceIndex != null)) {
 			int column = this.topLevel_.mapFromSource(sourceIndex.getColumn());
 			if (column >= 0) {
@@ -117,7 +117,7 @@ public class WAggregateProxyModel extends WAbstractProxyModel {
 		}
 	}
 
-	public WModelIndex mapToSource(WModelIndex proxyIndex) {
+	public WModelIndex mapToSource(final WModelIndex proxyIndex) {
 		if ((proxyIndex != null)) {
 			int column = this.topLevel_.mapToSource(proxyIndex.getColumn());
 			int row = proxyIndex.getRow();
@@ -262,7 +262,7 @@ public class WAggregateProxyModel extends WAbstractProxyModel {
 		}
 	}
 
-	public int getColumnCount(WModelIndex parent) {
+	public int getColumnCount(final WModelIndex parent) {
 		int c = this.getSourceModel().getColumnCount(this.mapToSource(parent));
 		if (c > 0) {
 			c = this.lastVisibleSourceNotAfter(c - 1);
@@ -272,7 +272,7 @@ public class WAggregateProxyModel extends WAbstractProxyModel {
 		}
 	}
 
-	public int getRowCount(WModelIndex parent) {
+	public int getRowCount(final WModelIndex parent) {
 		return this.getSourceModel().getRowCount(this.mapToSource(parent));
 	}
 
@@ -305,7 +305,7 @@ public class WAggregateProxyModel extends WAbstractProxyModel {
 	}
 
 	public boolean setHeaderData(int section, Orientation orientation,
-			Object value, int role) {
+			final Object value, int role) {
 		if (orientation == Orientation.Horizontal) {
 			section = this.topLevel_.mapToSource(section);
 		}
@@ -330,7 +330,7 @@ public class WAggregateProxyModel extends WAbstractProxyModel {
 		}
 	}
 
-	public WModelIndex getParent(WModelIndex index) {
+	public WModelIndex getParent(final WModelIndex index) {
 		if ((index != null)) {
 			return this.mapFromSource(this.mapToSource(index).getParent());
 		} else {
@@ -338,7 +338,7 @@ public class WAggregateProxyModel extends WAbstractProxyModel {
 		}
 	}
 
-	public WModelIndex getIndex(int row, int column, WModelIndex parent) {
+	public WModelIndex getIndex(int row, int column, final WModelIndex parent) {
 		WModelIndex sourceParent = this.mapToSource(parent);
 		int sourceRow = row;
 		int sourceColumn = this.topLevel_.mapToSource(column);
@@ -386,7 +386,7 @@ public class WAggregateProxyModel extends WAbstractProxyModel {
 			}
 		}
 
-		public boolean contains(WAggregateProxyModel.Aggregate other) {
+		public boolean contains(final WAggregateProxyModel.Aggregate other) {
 			int pa = this.parentSrc_;
 			int a1 = this.firstChildSrc_;
 			int a2 = this.lastChildSrc_;
@@ -412,9 +412,9 @@ public class WAggregateProxyModel extends WAbstractProxyModel {
 		}
 
 		public WAggregateProxyModel.Aggregate add(
-				WAggregateProxyModel.Aggregate toAdd) {
+				final WAggregateProxyModel.Aggregate toAdd) {
 			for (int i = 0; i < this.nestedAggregates_.size(); ++i) {
-				WAggregateProxyModel.Aggregate a = this.nestedAggregates_
+				final WAggregateProxyModel.Aggregate a = this.nestedAggregates_
 						.get(i);
 				if (a.contains(toAdd)) {
 					return a.add(toAdd);
@@ -434,7 +434,7 @@ public class WAggregateProxyModel extends WAbstractProxyModel {
 		public int mapFromSource(int sourceColumn) {
 			int collapsedCount = 0;
 			for (int i = 0; i < this.nestedAggregates_.size(); ++i) {
-				WAggregateProxyModel.Aggregate a = this.nestedAggregates_
+				final WAggregateProxyModel.Aggregate a = this.nestedAggregates_
 						.get(i);
 				if (a.after(sourceColumn)) {
 					return sourceColumn - collapsedCount;
@@ -457,7 +457,7 @@ public class WAggregateProxyModel extends WAbstractProxyModel {
 		public int mapToSource(int column) {
 			int sourceColumn = column;
 			for (int i = 0; i < this.nestedAggregates_.size(); ++i) {
-				WAggregateProxyModel.Aggregate a = this.nestedAggregates_
+				final WAggregateProxyModel.Aggregate a = this.nestedAggregates_
 						.get(i);
 				if (a.after(sourceColumn)) {
 					return sourceColumn;
@@ -472,7 +472,7 @@ public class WAggregateProxyModel extends WAbstractProxyModel {
 			return sourceColumn;
 		}
 
-		public boolean before(WAggregateProxyModel.Aggregate other) {
+		public boolean before(final WAggregateProxyModel.Aggregate other) {
 			return this.lastChildSrc_ < other.firstChildSrc_;
 		}
 
@@ -490,7 +490,7 @@ public class WAggregateProxyModel extends WAbstractProxyModel {
 			} else {
 				int result = 0;
 				for (int i = 0; i < this.nestedAggregates_.size(); ++i) {
-					WAggregateProxyModel.Aggregate a = this.nestedAggregates_
+					final WAggregateProxyModel.Aggregate a = this.nestedAggregates_
 							.get(i);
 					result += a.getCollapsedCount();
 				}
@@ -506,7 +506,7 @@ public class WAggregateProxyModel extends WAbstractProxyModel {
 					return null;
 				} else {
 					for (int i = 0; i < this.nestedAggregates_.size(); ++i) {
-						WAggregateProxyModel.Aggregate a = this.nestedAggregates_
+						final WAggregateProxyModel.Aggregate a = this.nestedAggregates_
 								.get(i);
 						WAggregateProxyModel.Aggregate result = a
 								.findAggregate(parentColumn);
@@ -521,7 +521,7 @@ public class WAggregateProxyModel extends WAbstractProxyModel {
 
 		public WAggregateProxyModel.Aggregate findEnclosingAggregate(int column) {
 			for (int i = 0; i < this.nestedAggregates_.size(); ++i) {
-				WAggregateProxyModel.Aggregate a = this.nestedAggregates_
+				final WAggregateProxyModel.Aggregate a = this.nestedAggregates_
 						.get(i);
 				if (a.after(column)) {
 					return this;
@@ -538,7 +538,7 @@ public class WAggregateProxyModel extends WAbstractProxyModel {
 				return this.lastChildSrc_ + 1;
 			} else {
 				for (int i = 0; i < this.nestedAggregates_.size(); ++i) {
-					WAggregateProxyModel.Aggregate a = this.nestedAggregates_
+					final WAggregateProxyModel.Aggregate a = this.nestedAggregates_
 							.get(i);
 					if (a.after(column)) {
 						return column;
@@ -559,7 +559,7 @@ public class WAggregateProxyModel extends WAbstractProxyModel {
 				return this.firstChildSrc_ - 1;
 			} else {
 				for (int i = this.nestedAggregates_.size() - 1; i >= 0; --i) {
-					WAggregateProxyModel.Aggregate a = this.nestedAggregates_
+					final WAggregateProxyModel.Aggregate a = this.nestedAggregates_
 							.get(i);
 					if (a.before(column)) {
 						return column;
@@ -579,7 +579,7 @@ public class WAggregateProxyModel extends WAbstractProxyModel {
 	private WAggregateProxyModel.Aggregate topLevel_;
 	private List<AbstractSignal.Connection> modelConnections_;
 
-	private void expand(WAggregateProxyModel.Aggregate aggregate) {
+	private void expand(final WAggregateProxyModel.Aggregate aggregate) {
 		int c = this.topLevel_.mapFromSource(aggregate.parentSrc_);
 		if (c >= 0) {
 			aggregate.collapsed_ = false;
@@ -596,7 +596,7 @@ public class WAggregateProxyModel extends WAbstractProxyModel {
 		}
 	}
 
-	private void collapse(WAggregateProxyModel.Aggregate aggregate) {
+	private void collapse(final WAggregateProxyModel.Aggregate aggregate) {
 		int c = this.topLevel_.mapFromSource(aggregate.parentSrc_);
 		if (c >= 0) {
 			int c1 = this.topLevel_.mapFromSource(this
@@ -611,7 +611,8 @@ public class WAggregateProxyModel extends WAbstractProxyModel {
 		}
 	}
 
-	private void propagateBeginRemove(WModelIndex proxyIndex, int start, int end) {
+	private void propagateBeginRemove(final WModelIndex proxyIndex, int start,
+			int end) {
 		this.columnsAboutToBeRemoved().trigger(proxyIndex, start, end);
 		int rc = this.getRowCount(proxyIndex);
 		for (int i = 0; i < rc; ++i) {
@@ -620,7 +621,8 @@ public class WAggregateProxyModel extends WAbstractProxyModel {
 		}
 	}
 
-	private void propagateEndRemove(WModelIndex proxyIndex, int start, int end) {
+	private void propagateEndRemove(final WModelIndex proxyIndex, int start,
+			int end) {
 		this.columnsRemoved().trigger(proxyIndex, start, end);
 		int rc = this.getRowCount(proxyIndex);
 		for (int i = 0; i < rc; ++i) {
@@ -630,7 +632,8 @@ public class WAggregateProxyModel extends WAbstractProxyModel {
 		}
 	}
 
-	private void propagateBeginInsert(WModelIndex proxyIndex, int start, int end) {
+	private void propagateBeginInsert(final WModelIndex proxyIndex, int start,
+			int end) {
 		this.columnsAboutToBeInserted().trigger(proxyIndex, start, end);
 		int rc = this.getRowCount(proxyIndex);
 		for (int i = 0; i < rc; ++i) {
@@ -639,7 +642,8 @@ public class WAggregateProxyModel extends WAbstractProxyModel {
 		}
 	}
 
-	private void propagateEndInsert(WModelIndex proxyIndex, int start, int end) {
+	private void propagateEndInsert(final WModelIndex proxyIndex, int start,
+			int end) {
 		this.columnsInserted().trigger(proxyIndex, start, end);
 		int rc = this.getRowCount(proxyIndex);
 		for (int i = 0; i < rc; ++i) {
@@ -657,59 +661,62 @@ public class WAggregateProxyModel extends WAbstractProxyModel {
 		return this.topLevel_.firstVisibleNotBefore(column);
 	}
 
-	private void sourceColumnsAboutToBeInserted(WModelIndex parent, int start,
+	private void sourceColumnsAboutToBeInserted(final WModelIndex parent,
+			int start, int end) {
+		throw new WException(
+				"WAggregateProxyModel does not support source model column insertion");
+	}
+
+	private void sourceColumnsInserted(final WModelIndex parent, int start,
 			int end) {
 		throw new WException(
 				"WAggregateProxyModel does not support source model column insertion");
 	}
 
-	private void sourceColumnsInserted(WModelIndex parent, int start, int end) {
+	private void sourceColumnsAboutToBeRemoved(final WModelIndex parent,
+			int start, int end) {
 		throw new WException(
-				"WAggregateProxyModel does not support source model column insertion");
+				"WAggregateProxyModel does not support source model column removal");
 	}
 
-	private void sourceColumnsAboutToBeRemoved(WModelIndex parent, int start,
+	private void sourceColumnsRemoved(final WModelIndex parent, int start,
 			int end) {
 		throw new WException(
 				"WAggregateProxyModel does not support source model column removal");
 	}
 
-	private void sourceColumnsRemoved(WModelIndex parent, int start, int end) {
-		throw new WException(
-				"WAggregateProxyModel does not support source model column removal");
-	}
-
-	private void sourceRowsAboutToBeInserted(WModelIndex parent, int start,
-			int end) {
+	private void sourceRowsAboutToBeInserted(final WModelIndex parent,
+			int start, int end) {
 		WModelIndex proxyParent = this.mapFromSource(parent);
 		if ((proxyParent != null) || !(parent != null)) {
 			this.beginInsertRows(proxyParent, start, end);
 		}
 	}
 
-	private void sourceRowsInserted(WModelIndex parent, int start, int end) {
+	private void sourceRowsInserted(final WModelIndex parent, int start, int end) {
 		WModelIndex proxyParent = this.mapFromSource(parent);
 		if ((proxyParent != null) || !(parent != null)) {
 			this.endInsertRows();
 		}
 	}
 
-	private void sourceRowsAboutToBeRemoved(WModelIndex parent, int start,
-			int end) {
+	private void sourceRowsAboutToBeRemoved(final WModelIndex parent,
+			int start, int end) {
 		WModelIndex proxyParent = this.mapFromSource(parent);
 		if ((proxyParent != null) || !(parent != null)) {
 			this.beginRemoveRows(proxyParent, start, end);
 		}
 	}
 
-	private void sourceRowsRemoved(WModelIndex parent, int start, int end) {
+	private void sourceRowsRemoved(final WModelIndex parent, int start, int end) {
 		WModelIndex proxyParent = this.mapFromSource(parent);
 		if ((proxyParent != null) || !(parent != null)) {
 			this.endRemoveRows();
 		}
 	}
 
-	private void sourceDataChanged(WModelIndex topLeft, WModelIndex bottomRight) {
+	private void sourceDataChanged(final WModelIndex topLeft,
+			final WModelIndex bottomRight) {
 		int l = this.firstVisibleSourceNotBefore(topLeft.getColumn());
 		int r = this.lastVisibleSourceNotAfter(bottomRight.getColumn());
 		if (r >= l) {

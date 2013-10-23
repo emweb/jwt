@@ -126,7 +126,7 @@ public class OAuthProcess extends WObject {
 	 * {@link OAuthProcess#startAuthenticate() startAuthenticate()} is connected
 	 * to <code>signal</code>.
 	 */
-	public void connectStartAuthenticate(AbstractEventSignal s) {
+	public void connectStartAuthenticate(final AbstractEventSignal s) {
 		if (WApplication.getInstance().getEnvironment().hasJavaScript()) {
 			StringBuilder js = new StringBuilder();
 			js.append("function(object, event) {").append(
@@ -156,7 +156,7 @@ public class OAuthProcess extends WObject {
 	 * {@link OAuthProcess#authenticated() authenticated()} signal which signals
 	 * the obtained identity.
 	 */
-	public void getIdentity(OAuthAccessToken token) {
+	public void getIdentity(final OAuthAccessToken token) {
 		throw new WException("OAuth::Process::Identity(): not specialized");
 	}
 
@@ -233,7 +233,7 @@ public class OAuthProcess extends WObject {
 	 * 
 	 * @see OAuthService#createProcess(String scope)
 	 */
-	protected OAuthProcess(OAuthService service, String scope) {
+	protected OAuthProcess(final OAuthService service, final String scope) {
 		super();
 		this.service_ = service;
 		this.scope_ = scope;
@@ -278,7 +278,7 @@ public class OAuthProcess extends WObject {
 		/**
 		 * Constructor.
 		 */
-		public TokenError(CharSequence error) {
+		public TokenError(final CharSequence error) {
 			super();
 			this.error_ = WString.toWString(error);
 		}
@@ -301,7 +301,7 @@ public class OAuthProcess extends WObject {
 	 * <p>
 	 * Some OAuth implementations may uses a non-standard encoding of the token.
 	 */
-	protected OAuthAccessToken parseTokenResponse(HttpMessage response) {
+	protected OAuthAccessToken parseTokenResponse(final HttpMessage response) {
 		if (response.getStatus() == 200 || response.getStatus() == 400) {
 			String type = response.getHeader("Content-Type");
 			if (type != null) {
@@ -334,11 +334,11 @@ public class OAuthProcess extends WObject {
 	 * {@link OAuthProcess#authenticated() authenticated()} with an invalid
 	 * {@link Identity}.
 	 */
-	protected void setError(CharSequence error) {
+	protected void setError(final CharSequence error) {
 		this.error_ = WString.toWString(error);
 	}
 
-	private OAuthService service_;
+	private final OAuthService service_;
 	private String scope_;
 	private boolean authenticate_;
 	private Signal1<OAuthAccessToken> authorized_;
@@ -350,7 +350,7 @@ public class OAuthProcess extends WObject {
 	private String startInternalPath_;
 	private OAuthRedirectEndpoint redirectEndpoint_;
 
-	void requestToken(String authorizationCode) {
+	void requestToken(final String authorizationCode) {
 		try {
 			String url = this.service_.getTokenEndpoint();
 			StringBuilder ss = new StringBuilder();
@@ -387,7 +387,7 @@ public class OAuthProcess extends WObject {
 		}
 	}
 
-	private void handleToken(Exception err, HttpMessage response) {
+	private void handleToken(Exception err, final HttpMessage response) {
 		if (err == null) {
 			this.doParseTokenResponse(response);
 		} else {
@@ -403,7 +403,7 @@ public class OAuthProcess extends WObject {
 		}
 	}
 
-	private OAuthAccessToken parseUrlEncodedToken(HttpMessage response) {
+	private OAuthAccessToken parseUrlEncodedToken(final HttpMessage response) {
 		Map<String, String[]> params = new HashMap<String, String[]>();
 		AuthUtils.parseFormUrlEncoded(response, params);
 		if (response.getStatus() == 200) {
@@ -434,7 +434,7 @@ public class OAuthProcess extends WObject {
 		}
 	}
 
-	private OAuthAccessToken parseJsonToken(HttpMessage response) {
+	private OAuthAccessToken parseJsonToken(final HttpMessage response) {
 		com.google.gson.JsonObject root = new com.google.gson.JsonObject();
 		com.google.gson.JsonParseException pe = null;
 		try {
@@ -463,7 +463,7 @@ public class OAuthProcess extends WObject {
 							.get("refreshToken"), "");
 					return new OAuthAccessToken(accessToken, expires,
 							refreshToken);
-				} catch (RuntimeException e) {
+				} catch (final RuntimeException e) {
 					logger.error(new StringWriter().append(
 							"token response error: ").append(e.toString())
 							.toString());
@@ -493,10 +493,10 @@ public class OAuthProcess extends WObject {
 		return url.toString();
 	}
 
-	private void handleRedirectPath(String internalPath) {
+	private void handleRedirectPath(final String internalPath) {
 		if (internalPath.equals(this.service_.getRedirectInternalPath())) {
 			WApplication app = WApplication.getInstance();
-			WEnvironment env = app.getEnvironment();
+			final WEnvironment env = app.getEnvironment();
 			if (!env.hasAjax()) {
 				String stateE = env.getParameter("state");
 				if (!(stateE != null) || !stateE.equals(this.oAuthState_)) {
@@ -522,10 +522,10 @@ public class OAuthProcess extends WObject {
 		}
 	}
 
-	private void doParseTokenResponse(HttpMessage response) {
+	private void doParseTokenResponse(final HttpMessage response) {
 		try {
 			this.token_ = this.parseTokenResponse(response);
-		} catch (OAuthProcess.TokenError e) {
+		} catch (final OAuthProcess.TokenError e) {
 			this.error_ = e.getError();
 		}
 	}

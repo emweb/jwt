@@ -239,7 +239,7 @@ public class WFont {
 	/**
 	 * Indicates whether some other object is "equal to" this one.
 	 */
-	public boolean equals(WFont other) {
+	public boolean equals(final WFont other) {
 		return this.genericFamily_ == other.genericFamily_
 				&& this.specificFamilies_.equals(other.specificFamilies_)
 				&& this.style_ == other.style_
@@ -274,7 +274,7 @@ public class WFont {
 	 * </pre>
 	 */
 	public void setFamily(WFont.GenericFamily genericFamily,
-			CharSequence specificFamilies) {
+			final CharSequence specificFamilies) {
 		this.genericFamily_ = genericFamily;
 		this.specificFamilies_ = WString.toWString(specificFamilies);
 		this.familyChanged_ = true;
@@ -407,7 +407,7 @@ public class WFont {
 	 * Use {@link WFont#setSize(WFont.Size size) setSize()} or
 	 * {@link WFont#setSize(WLength size) setSize()} instead.
 	 */
-	public void setSize(WFont.Size size, WLength length) {
+	public void setSize(WFont.Size size, final WLength length) {
 		if (size == WFont.Size.FixedSize) {
 			this.setSize(length);
 		} else {
@@ -434,7 +434,7 @@ public class WFont {
 	 * <p>
 	 * Sets the font size.
 	 */
-	public void setSize(WLength size) {
+	public void setSize(final WLength size) {
 		this.size_ = WFont.Size.FixedSize;
 		this.sizeLength_ = size;
 		this.sizeChanged_ = true;
@@ -595,7 +595,7 @@ public class WFont {
 		return getCssText(true);
 	}
 
-	public void updateDomElement(DomElement element, boolean fontall,
+	public void updateDomElement(final DomElement element, boolean fontall,
 			boolean all) {
 		if (this.familyChanged_ || fontall || all) {
 			String family = this.cssFamily(fontall);

@@ -414,7 +414,7 @@ class Navigation extends TopicWidget {
 		return container;
 	}
 
-	WPushButton createColorButton(String className, CharSequence text) {
+	WPushButton createColorButton(String className, final CharSequence text) {
 		WPushButton button = new WPushButton();
 		button.setTextFormat(TextFormat.XHTMLText);
 		button.setText(text);

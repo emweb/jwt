@@ -139,7 +139,8 @@ public class AuthService {
 	 * whether there is a user with the same verified email address as the one
 	 * indicated by the identity.
 	 */
-	public User identifyUser(Identity identity, AbstractUserDatabase users) {
+	public User identifyUser(final Identity identity,
+			final AbstractUserDatabase users) {
 		AbstractUserDatabase.Transaction t = users.startTransaction();
 		User user = users.findWithIdentity(identity.getProvider(), new WString(
 				identity.getId()).toString());
@@ -189,7 +190,7 @@ public class AuthService {
 	 * @see AuthService#setTokenHashFunction(HashFunction function)
 	 * @see AuthService#setAuthTokenValidity(int minutes)
 	 */
-	public void setAuthTokensEnabled(boolean enabled, String cookieName) {
+	public void setAuthTokensEnabled(boolean enabled, final String cookieName) {
 		this.authTokens_ = enabled;
 		this.authTokenCookieName_ = cookieName;
 	}
@@ -260,7 +261,7 @@ public class AuthService {
 	 * {@link AuthService#processAuthToken(String token, AbstractUserDatabase users)
 	 * processAuthToken()}.
 	 */
-	public String createAuthToken(User user) {
+	public String createAuthToken(final User user) {
 		if (!user.isValid()) {
 			throw new WException("Auth: createAuthToken(): user invalid");
 		}
@@ -284,8 +285,8 @@ public class AuthService {
 	 * with a token hash value stored in database. If it matches, the token is
 	 * removed and a new token is created for the identified user.
 	 */
-	public AuthTokenResult processAuthToken(String token,
-			AbstractUserDatabase users) {
+	public AuthTokenResult processAuthToken(final String token,
+			final AbstractUserDatabase users) {
 		AbstractUserDatabase.Transaction t = users.startTransaction();
 		String hash = this.getTokenHashFunction().compute(token, "");
 		User user = users.findWithAuthToken(hash);
@@ -356,7 +357,7 @@ public class AuthService {
 	 * <p>
 	 * The default path is &quot;/auth/mail/&quot;.
 	 */
-	public void setEmailRedirectInternalPath(String internalPath) {
+	public void setEmailRedirectInternalPath(final String internalPath) {
 		this.redirectInternalPath_ = internalPath;
 	}
 
@@ -379,7 +380,7 @@ public class AuthService {
 	 * It returns an empty string if the internal path does not contain an email
 	 * token.
 	 */
-	public String parseEmailToken(String internalPath) {
+	public String parseEmailToken(final String internalPath) {
 		if (this.emailVerification_
 				&& WApplication.pathMatches(internalPath,
 						this.redirectInternalPath_)) {
@@ -401,7 +402,7 @@ public class AuthService {
 	 * @see AuthService#processEmailToken(String token, AbstractUserDatabase
 	 *      users)
 	 */
-	public void verifyEmailAddress(User user, String address)
+	public void verifyEmailAddress(final User user, final String address)
 			throws javax.mail.MessagingException, UnsupportedEncodingException,
 			IOException {
 		user.setUnverifiedEmail(address);
@@ -428,7 +429,8 @@ public class AuthService {
 	 * @see AuthService#processEmailToken(String token, AbstractUserDatabase
 	 *      users)
 	 */
-	public void lostPassword(String emailAddress, AbstractUserDatabase users)
+	public void lostPassword(final String emailAddress,
+			final AbstractUserDatabase users)
 			throws javax.mail.MessagingException, UnsupportedEncodingException,
 			IOException {
 		User user = users.findWithEmail(emailAddress);
@@ -462,8 +464,8 @@ public class AuthService {
 	 * @see AuthService#lostPassword(String emailAddress, AbstractUserDatabase
 	 *      users)
 	 */
-	public EmailTokenResult processEmailToken(String token,
-			AbstractUserDatabase users) {
+	public EmailTokenResult processEmailToken(final String token,
+			final AbstractUserDatabase users) {
 		AbstractUserDatabase.Transaction tr = users.startTransaction();
 		String hash = this.getTokenHashFunction().compute(token, "");
 		User user = users.findWithEmailToken(hash);
@@ -545,7 +547,7 @@ public class AuthService {
 	 * configured using the smtp.host and smpt.port JWt configuration variables
 	 * (see {@link Configuration#setProperties(HashMap properties)}).
 	 */
-	public void sendMail(javax.mail.Message message)
+	public void sendMail(final javax.mail.Message message)
 			throws javax.mail.MessagingException, UnsupportedEncodingException,
 			IOException {
 		javax.mail.Message m = message;
@@ -577,9 +579,9 @@ public class AuthService {
 	 * the same place holders.</li>
 	 * </ul>
 	 */
-	protected void sendConfirmMail(String address, User user, String token)
-			throws javax.mail.MessagingException, UnsupportedEncodingException,
-			IOException {
+	protected void sendConfirmMail(final String address, final User user,
+			final String token) throws javax.mail.MessagingException,
+			UnsupportedEncodingException, IOException {
 		javax.mail.Message message = new javax.mail.internet.MimeMessage(
 				javax.mail.Session.getDefaultInstance(MailUtils
 						.getDefaultProperties()));
@@ -614,9 +616,9 @@ public class AuthService {
 	 * which it passes user.identity() and token as arguments.</li>
 	 * </ul>
 	 */
-	protected void sendLostPasswordMail(String address, User user, String token)
-			throws javax.mail.MessagingException, UnsupportedEncodingException,
-			IOException {
+	protected void sendLostPasswordMail(final String address, final User user,
+			final String token) throws javax.mail.MessagingException,
+			UnsupportedEncodingException, IOException {
 		javax.mail.Message message = new javax.mail.internet.MimeMessage(
 				javax.mail.Session.getDefaultInstance(MailUtils
 						.getDefaultProperties()));
@@ -633,14 +635,14 @@ public class AuthService {
 		this.sendMail(message);
 	}
 
-	protected String createRedirectUrl(String token) {
+	protected String createRedirectUrl(final String token) {
 		WApplication app = WApplication.getInstance();
 		return app.makeAbsoluteUrl(app
 				.getBookmarkUrl(this.redirectInternalPath_))
 				+ token;
 	}
 
-	// private AuthService(AuthService anon1) ;
+	// private AuthService(final AuthService anon1) ;
 	private IdentityPolicy identityPolicy_;
 	private int minimumLoginNameLength_;
 	private HashFunction tokenHashFunction_;

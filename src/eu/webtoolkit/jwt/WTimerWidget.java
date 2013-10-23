@@ -47,7 +47,7 @@ class WTimerWidget extends WInteractWidget {
 	private boolean timerStarted_;
 	private boolean jsRepeat_;
 
-	void updateDom(DomElement element, boolean all) {
+	void updateDom(final DomElement element, boolean all) {
 		if (this.timerStarted_
 				|| (!WApplication.getInstance().getEnvironment()
 						.hasJavaScript() || all) && this.timer_.isActive()) {

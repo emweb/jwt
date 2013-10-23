@@ -60,7 +60,7 @@ class UserFormModel extends WFormModel {
 		return this.countryModel_;
 	}
 
-	public int countryModelRow(String code) {
+	public int countryModelRow(final String code) {
 		for (int i = 0; i < this.countryModel_.getRowCount(); ++i) {
 			if (this.countryCode(i).equals(code)) {
 				return i;
@@ -73,11 +73,11 @@ class UserFormModel extends WFormModel {
 		return this.cityModel_;
 	}
 
-	public void updateCityModel(String countryCode) {
+	public void updateCityModel(final String countryCode) {
 		this.cityModel_.clear();
 		List<String> i = cities.get(countryCode);
 		if (i != null) {
-			List<String> cities = i;
+			final List<String> cities = i;
 			this.cityModel_.appendRow(new WStandardItem());
 			for (int j = 0; j < cities.size(); ++j) {
 				this.cityModel_.appendRow(new WStandardItem(cities.get(j)));
@@ -137,7 +137,7 @@ class UserFormModel extends WFormModel {
 		this.updateCityModel("");
 	}
 
-	private WValidator createNameValidator(String field) {
+	private WValidator createNameValidator(final String field) {
 		WLengthValidator v = new WLengthValidator();
 		v.setMandatory(true);
 		v.setMinimumLength(1);

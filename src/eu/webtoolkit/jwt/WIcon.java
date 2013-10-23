@@ -31,17 +31,17 @@ class WIcon extends WInteractWidget {
 		this((WContainerWidget) null);
 	}
 
-	public WIcon(String name, WContainerWidget parent) {
+	public WIcon(final String name, WContainerWidget parent) {
 		super();
 		this.name_ = "";
 		this.setName(name);
 	}
 
-	public WIcon(String name) {
+	public WIcon(final String name) {
 		this(name, (WContainerWidget) null);
 	}
 
-	public void setName(String name) {
+	public void setName(final String name) {
 		if (!this.name_.equals(name)) {
 			this.name_ = name;
 			this.iconChanged_ = true;
@@ -62,7 +62,7 @@ class WIcon extends WInteractWidget {
 	}
 
 	public double getSize() {
-		WFont f = this.getDecorationStyle().getFont();
+		final WFont f = this.getDecorationStyle().getFont();
 		if (f.getSizeLength().getUnit() == WLength.Unit.FontEm) {
 			return f.getSizeLength().getValue();
 		} else {
@@ -70,7 +70,7 @@ class WIcon extends WInteractWidget {
 		}
 	}
 
-	void updateDom(DomElement element, boolean all) {
+	void updateDom(final DomElement element, boolean all) {
 		if (this.iconChanged_ || all) {
 			String sc = "";
 			if (!all) {

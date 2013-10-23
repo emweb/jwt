@@ -32,8 +32,8 @@ class TopicTemplate extends WTemplate {
 						"http://www.webtoolkit.eu/jwt/latest/doc/javadoc/eu/webtoolkit/jwt/");
 	}
 
-	public void resolveString(String varName, List<WString> args, Writer result)
-			throws IOException {
+	public void resolveString(final String varName, final List<WString> args,
+			final Writer result) throws IOException {
 		if (varName.equals("doc-link")) {
 			String className = args.get(0).toString();
 			className = StringUtils.replaceAll(className, "Render-", "render.");
@@ -54,14 +54,15 @@ class TopicTemplate extends WTemplate {
 		}
 	}
 
-	private String docUrl(String className) {
+	private String docUrl(final String className) {
 		StringBuilder ss = new StringBuilder();
-		className = StringUtils.replaceAll(className, ".", "/");
-		ss.append(this.getString("doc-url")).append(className).append(".html");
+		String cn = className;
+		cn = StringUtils.replaceAll(cn, ".", "/");
+		ss.append(this.getString("doc-url")).append(cn).append(".html");
 		return ss.toString();
 	}
 
-	private String getString(String varName) {
+	private String getString(final String varName) {
 		try {
 			StringWriter ss = new StringWriter();
 			List<WString> args = new ArrayList<WString>();
@@ -73,7 +74,7 @@ class TopicTemplate extends WTemplate {
 		}
 	}
 
-	private static String escape(String name) {
+	private static String escape(final String name) {
 		StringBuilder ss = new StringBuilder();
 		for (int i = 0; i < name.length(); ++i) {
 			if (name.charAt(i) != ':') {

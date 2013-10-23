@@ -106,7 +106,7 @@ public class WTable extends WInteractWidget {
 	 */
 	public WTableCell getElementAt(int row, int column) {
 		this.expand(row, column, 1, 1);
-		WTableRow.TableData d = this.itemAt(row, column);
+		final WTableRow.TableData d = this.itemAt(row, column);
 		return d.cell;
 	}
 
@@ -159,7 +159,7 @@ public class WTable extends WInteractWidget {
 	 * @see WTable#removeCell(WTableCell item)
 	 */
 	public void removeCell(int row, int column) {
-		WTableRow.TableData d = this.itemAt(row, column);
+		final WTableRow.TableData d = this.itemAt(row, column);
 		if (d.cell != null)
 			d.cell.remove();
 		d.cell = new WTableCell(this.rows_.get(row), column);
@@ -397,7 +397,7 @@ public class WTable extends WInteractWidget {
 		}
 		this.columns_.add(0 + to, from_tc);
 		for (int i = 0; i < this.rows_.size(); i++) {
-			List<WTableRow.TableData> cells = this.rows_.get(i).cells_;
+			final List<WTableRow.TableData> cells = this.rows_.get(i).cells_;
 			WTableRow.TableData cell = cells.get(from);
 			cells.remove(0 + from);
 			cells.add(0 + to, cell);
@@ -449,7 +449,7 @@ public class WTable extends WInteractWidget {
 		this.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
 	}
 
-	void updateDom(DomElement element, boolean all) {
+	void updateDom(final DomElement element, boolean all) {
 		super.updateDom(element, all);
 	}
 
@@ -510,7 +510,7 @@ public class WTable extends WInteractWidget {
 		return table;
 	}
 
-	void getDomChanges(List<DomElement> result, WApplication app) {
+	void getDomChanges(final List<DomElement> result, WApplication app) {
 		DomElement e = DomElement.getForUpdate(this, this.getDomElementType());
 		if (!this.isStubbed() && this.flags_.get(BIT_GRID_CHANGED)) {
 			DomElement newE = this.createDomElement(app);
@@ -572,7 +572,7 @@ public class WTable extends WInteractWidget {
 		tr.setWasEmpty(false);
 		int spanCounter = 0;
 		for (int col = 0; col < this.getColumnCount(); ++col) {
-			WTableRow.TableData d = this.itemAt(row, col);
+			final WTableRow.TableData d = this.itemAt(row, col);
 			if (!d.overSpanned) {
 				DomElement td = d.cell.createSDomElement(app);
 				if (col < this.headerColumnCount_ || row < this.headerRowCount_) {

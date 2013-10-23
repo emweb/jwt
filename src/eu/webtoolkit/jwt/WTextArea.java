@@ -74,7 +74,7 @@ public class WTextArea extends WFormWidget {
 	/**
 	 * Creates a text area with given content and optional parent.
 	 */
-	public WTextArea(String text, WContainerWidget parent) {
+	public WTextArea(final String text, WContainerWidget parent) {
 		super(parent);
 		this.content_ = text;
 		this.cols_ = 20;
@@ -91,7 +91,7 @@ public class WTextArea extends WFormWidget {
 	 * Calls {@link #WTextArea(String text, WContainerWidget parent) this(text,
 	 * (WContainerWidget)null)}
 	 */
-	public WTextArea(String text) {
+	public WTextArea(final String text) {
 		this(text, (WContainerWidget) null);
 	}
 
@@ -149,7 +149,7 @@ public class WTextArea extends WFormWidget {
 	 * <p>
 	 * The default text is &quot;&quot;.
 	 */
-	public void setText(String text) {
+	public void setText(final String text) {
 		this.content_ = text;
 		this.contentChanged_ = true;
 		this.repaint();
@@ -234,7 +234,7 @@ public class WTextArea extends WFormWidget {
 	 * <p>
 	 * Calls {@link WTextArea#setText(String text) setText()}.
 	 */
-	public void setValueText(String value) {
+	public void setValueText(final String value) {
 		this.setText(value);
 	}
 
@@ -244,7 +244,7 @@ public class WTextArea extends WFormWidget {
 	private boolean contentChanged_;
 	private boolean attributesChanged_;
 
-	void updateDom(DomElement element, boolean all) {
+	void updateDom(final DomElement element, boolean all) {
 		if (element.getType() == DomElementType.DomElement_TEXTAREA) {
 			if (this.contentChanged_ || all) {
 				element.setProperty(Property.PropertyValue, this.content_);
@@ -269,7 +269,7 @@ public class WTextArea extends WFormWidget {
 		super.propagateRenderOk(deep);
 	}
 
-	void setFormData(WObject.FormData formData) {
+	void setFormData(final WObject.FormData formData) {
 		if (this.contentChanged_ || this.isReadOnly()) {
 			return;
 		}
@@ -281,7 +281,7 @@ public class WTextArea extends WFormWidget {
 	}
 
 	protected int boxPadding(Orientation orientation) {
-		WEnvironment env = WApplication.getInstance().getEnvironment();
+		final WEnvironment env = WApplication.getInstance().getEnvironment();
 		if (env.agentIsIE() || env.agentIsOpera()) {
 			return 1;
 		} else {
@@ -302,7 +302,7 @@ public class WTextArea extends WFormWidget {
 	}
 
 	protected int boxBorder(Orientation orientation) {
-		WEnvironment env = WApplication.getInstance().getEnvironment();
+		final WEnvironment env = WApplication.getInstance().getEnvironment();
 		if (env.agentIsIE() || env.agentIsOpera()) {
 			return 2;
 		} else {

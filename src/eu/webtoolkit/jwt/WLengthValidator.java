@@ -137,7 +137,7 @@ public class WLengthValidator extends WValidator {
 	 * The input is considered valid only when it is blank for a non-mandatory
 	 * field, or has a length within the valid range.
 	 */
-	public WValidator.Result validate(String input) {
+	public WValidator.Result validate(final String input) {
 		if (input.length() == 0) {
 			return super.validate(input);
 		}
@@ -155,7 +155,7 @@ public class WLengthValidator extends WValidator {
 		}
 	}
 
-	// public void createExtConfig(Writer config) throws IOException;
+	// public void createExtConfig(final Writer config) throws IOException;
 	/**
 	 * Sets the message to display when the input is too short.
 	 * <p>
@@ -164,7 +164,7 @@ public class WLengthValidator extends WValidator {
 	 * input must have a length between {1} and {2} characters&quot; or &quot;
 	 * &quot;The input must be at least {1} characters&quot;.
 	 */
-	public void setInvalidTooShortText(CharSequence text) {
+	public void setInvalidTooShortText(final CharSequence text) {
 		this.tooShortText_ = WString.toWString(text);
 		this.repaint();
 	}
@@ -203,7 +203,7 @@ public class WLengthValidator extends WValidator {
 	 * &quot;The input must have a length between {1} and {2} characters&quot;
 	 * or &quot; &quot;The input must be no more than {2} characters&quot;.
 	 */
-	public void setInvalidTooLongText(CharSequence text) {
+	public void setInvalidTooLongText(final CharSequence text) {
 		this.tooLongText_ = WString.toWString(text);
 		this.repaint();
 	}

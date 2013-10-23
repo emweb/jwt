@@ -107,7 +107,7 @@ public class WBorderLayout extends WLayout {
 		}
 		;
 		for (int i = 0; i < 3; ++i) {
-			List<Grid.Item> items = this.grid_.items_.get(i);
+			final List<Grid.Item> items = this.grid_.items_.get(i);
 			{
 				int insertPos = 0;
 				for (int ii = 0; ii < 3; ++ii)
@@ -157,8 +157,8 @@ public class WBorderLayout extends WLayout {
 
 	public void removeItem(WLayoutItem item) {
 		for (int i = 0; i < 5; ++i) {
-			Grid.Item gridItem = this.itemAtPosition(WBorderLayout.Position
-					.values()[i]);
+			final Grid.Item gridItem = this
+					.itemAtPosition(WBorderLayout.Position.values()[i]);
 			if (gridItem.item_ == item) {
 				gridItem.item_ = null;
 				this.updateRemoveItem(item);
@@ -195,7 +195,7 @@ public class WBorderLayout extends WLayout {
 
 	public void clear() {
 		for (int i = 0; i < 5; ++i) {
-			Grid.Item item = this.itemAtPosition(WBorderLayout.Position
+			final Grid.Item item = this.itemAtPosition(WBorderLayout.Position
 					.values()[i]);
 			this.clearLayoutItem(item.item_);
 			item.item_ = null;
@@ -251,7 +251,7 @@ public class WBorderLayout extends WLayout {
 	 * Returns <code>null</code> if no item was set for that position.
 	 */
 	public WLayoutItem getItemAt(WBorderLayout.Position position) {
-		Grid.Item gridItem = this.itemAtPosition(position);
+		final Grid.Item gridItem = this.itemAtPosition(position);
 		return gridItem.item_;
 	}
 

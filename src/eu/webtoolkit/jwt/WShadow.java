@@ -43,7 +43,7 @@ public class WShadow {
 	/**
 	 * Constructs a shadow with given offset and color.
 	 */
-	public WShadow(double dx, double dy, WColor color, double blur) {
+	public WShadow(double dx, double dy, final WColor color, double blur) {
 		this.color_ = color;
 		this.offsetX_ = dx;
 		this.offsetY_ = dy;
@@ -56,7 +56,7 @@ public class WShadow {
 	 * <p>
 	 * Returns <code>true</code> if the shadows are exactly the same.
 	 */
-	public boolean equals(WShadow other) {
+	public boolean equals(final WShadow other) {
 		return this.color_.equals(other.color_)
 				&& this.offsetX_ == other.offsetX_
 				&& this.offsetY_ == other.offsetY_ && this.blur_ == other.blur_;
@@ -103,7 +103,7 @@ public class WShadow {
 	 * 
 	 * @see WShadow#getColor()
 	 */
-	public void setColor(WColor color) {
+	public void setColor(final WColor color) {
 		this.color_ = color;
 	}
 

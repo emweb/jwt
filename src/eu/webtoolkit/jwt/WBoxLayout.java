@@ -356,7 +356,7 @@ public class WBoxLayout extends WLayout {
 	 * @see WBoxLayout#addStretch(int stretch)
 	 * @see WBoxLayout#insertStretch(int index, int stretch)
 	 */
-	public void addSpacing(WLength size) {
+	public void addSpacing(final WLength size) {
 		this.insertSpacing(this.getCount(), size);
 	}
 
@@ -510,7 +510,7 @@ public class WBoxLayout extends WLayout {
 	 * @see WBoxLayout#insertStretch(int index, int stretch)
 	 * @see WBoxLayout#addSpacing(WLength size)
 	 */
-	public void insertSpacing(int index, WLength size) {
+	public void insertSpacing(int index, final WLength size) {
 		WWidget spacer = this.createSpacer(size);
 		this.insertItem(index, new WWidgetItem(spacer), 0, EnumSet
 				.noneOf(AlignmentFlag.class));
@@ -601,7 +601,8 @@ public class WBoxLayout extends WLayout {
 	 * ), then this size is used for the size of the item, overriding the size
 	 * it would be given by the layout manager.
 	 */
-	public void setResizable(int index, boolean enabled, WLength initialSize) {
+	public void setResizable(int index, boolean enabled,
+			final WLength initialSize) {
 		switch (this.direction_) {
 		case RightToLeft:
 			index = this.grid_.columns_.size() - 1 - index;
@@ -718,7 +719,7 @@ public class WBoxLayout extends WLayout {
 		}
 	}
 
-	private WWidget createSpacer(WLength size) {
+	private WWidget createSpacer(final WLength size) {
 		Spacer spacer = new Spacer();
 		if (size.toPixels() > 0) {
 			if (this.direction_ == WBoxLayout.Direction.LeftToRight

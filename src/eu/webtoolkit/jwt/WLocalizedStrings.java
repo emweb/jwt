@@ -67,5 +67,5 @@ public abstract class WLocalizedStrings {
 	 * 
 	 * @see WApplication#getLocale()
 	 */
-	public abstract String resolveKey(String key);
+	public abstract String resolveKey(final String key);
 }

@@ -206,7 +206,7 @@ public class WDoubleSpinBox extends WAbstractSpinBox {
 		return this.valueChanged_;
 	}
 
-	void updateDom(DomElement element, boolean all) {
+	void updateDom(final DomElement element, boolean all) {
 		if (all || this.changed_) {
 			if (this.isNativeControl()) {
 				element.setAttribute("min", String.valueOf(this.min_));
@@ -237,7 +237,7 @@ public class WDoubleSpinBox extends WAbstractSpinBox {
 				+ "," + String.valueOf(this.step_);
 	}
 
-	boolean parseNumberValue(String text) {
+	boolean parseNumberValue(final String text) {
 		try {
 			char[] buf = new char[30];
 			String currentV = MathUtils.roundCss(this.value_, this.precision_);
@@ -246,7 +246,7 @@ public class WDoubleSpinBox extends WAbstractSpinBox {
 						.getCurrentLocale(), text);
 			}
 			return true;
-		} catch (NumberFormatException e) {
+		} catch (final NumberFormatException e) {
 			return false;
 		}
 	}

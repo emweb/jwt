@@ -42,7 +42,7 @@ class AreaWidget extends WInteractWidget {
 
 	WAbstractArea facade_;
 
-	void updateDom(DomElement element, boolean all) {
+	void updateDom(final DomElement element, boolean all) {
 		boolean needsUrlResolution = this.facade_.updateDom(element, all);
 		super.updateDom(element, all);
 		if (element.getProperty(Property.PropertyStyleCursor).length() != 0

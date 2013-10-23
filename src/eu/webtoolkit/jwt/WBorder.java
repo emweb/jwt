@@ -153,7 +153,7 @@ public class WBorder {
 	/**
 	 * Creates a border with an absolute width.
 	 */
-	public WBorder(WBorder.Style style, WLength width, WColor color) {
+	public WBorder(WBorder.Style style, final WLength width, WColor color) {
 		this.width_ = WBorder.Width.Explicit;
 		this.explicitWidth_ = width;
 		this.color_ = color;
@@ -166,14 +166,14 @@ public class WBorder {
 	 * Calls {@link #WBorder(WBorder.Style style, WLength width, WColor color)
 	 * this(style, width, new WColor())}
 	 */
-	public WBorder(WBorder.Style style, WLength width) {
+	public WBorder(WBorder.Style style, final WLength width) {
 		this(style, width, new WColor());
 	}
 
 	/**
 	 * Indicates whether some other object is "equal to" this one.
 	 */
-	public boolean equals(WBorder other) {
+	public boolean equals(final WBorder other) {
 		return this.width_ == other.width_ && this.color_.equals(other.color_)
 				&& this.style_ == other.style_;
 	}
@@ -184,7 +184,7 @@ public class WBorder {
 	 * If width == Explicit, then the width specified in
 	 * <code>explicitWidth</code> is used.
 	 */
-	public void setWidth(WBorder.Width width, WLength explicitWidth) {
+	public void setWidth(WBorder.Width width, final WLength explicitWidth) {
 		this.width_ = width;
 		this.explicitWidth_ = explicitWidth;
 	}

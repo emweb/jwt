@@ -70,7 +70,7 @@ public class WStringListModel extends WAbstractListModel {
 	/**
 	 * Creates a new string list model.
 	 */
-	public WStringListModel(List<WString> strings, WObject parent) {
+	public WStringListModel(final List<WString> strings, WObject parent) {
 		super(parent);
 		this.displayData_ = strings;
 		this.otherData_ = null;
@@ -83,7 +83,7 @@ public class WStringListModel extends WAbstractListModel {
 	 * Calls {@link #WStringListModel(List strings, WObject parent)
 	 * this(strings, (WObject)null)}
 	 */
-	public WStringListModel(List<WString> strings) {
+	public WStringListModel(final List<WString> strings) {
 		this(strings, (WObject) null);
 	}
 
@@ -96,7 +96,7 @@ public class WStringListModel extends WAbstractListModel {
 	 * @see WAbstractItemModel#dataChanged()
 	 * @see WStringListModel#addString(CharSequence string)
 	 */
-	public void setStringList(List<WString> strings) {
+	public void setStringList(final List<WString> strings) {
 		int currentSize = this.displayData_.size();
 		int newSize = strings.size();
 		if (newSize > currentSize) {
@@ -130,7 +130,7 @@ public class WStringListModel extends WAbstractListModel {
 	 * 
 	 * @see WStringListModel#setStringList(List strings)
 	 */
-	public void insertString(int row, CharSequence string) {
+	public void insertString(int row, final CharSequence string) {
 		this.insertRows(row, 1);
 		this.setData(row, 0, string);
 	}
@@ -141,7 +141,7 @@ public class WStringListModel extends WAbstractListModel {
 	 * 
 	 * @see WStringListModel#setStringList(List strings)
 	 */
-	public void addString(CharSequence string) {
+	public void addString(final CharSequence string) {
 		this.insertString(this.getRowCount(), string);
 	}
 
@@ -195,7 +195,7 @@ public class WStringListModel extends WAbstractListModel {
 	 * 
 	 * @see WStringListModel#setFlags(int row, EnumSet flags)
 	 */
-	public EnumSet<ItemFlag> getFlags(WModelIndex index) {
+	public EnumSet<ItemFlag> getFlags(final WModelIndex index) {
 		if (this.flags_.isEmpty()) {
 			return EnumSet.of(ItemFlag.ItemIsSelectable,
 					ItemFlag.ItemIsEditable);
@@ -204,7 +204,7 @@ public class WStringListModel extends WAbstractListModel {
 		}
 	}
 
-	public boolean setData(WModelIndex index, Object value, int role) {
+	public boolean setData(final WModelIndex index, final Object value, int role) {
 		if (role == ItemDataRole.EditRole) {
 			role = ItemDataRole.DisplayRole;
 		}
@@ -223,7 +223,7 @@ public class WStringListModel extends WAbstractListModel {
 		return true;
 	}
 
-	public Object getData(WModelIndex index, int role) {
+	public Object getData(final WModelIndex index, int role) {
 		if (role == ItemDataRole.DisplayRole) {
 			return this.displayData_.get(index.getRow());
 		} else {
@@ -235,11 +235,11 @@ public class WStringListModel extends WAbstractListModel {
 		}
 	}
 
-	public int getRowCount(WModelIndex parent) {
+	public int getRowCount(final WModelIndex parent) {
 		return (parent != null) ? 0 : this.displayData_.size();
 	}
 
-	public boolean insertRows(int row, int count, WModelIndex parent) {
+	public boolean insertRows(int row, int count, final WModelIndex parent) {
 		if (!(parent != null)) {
 			this.beginInsertRows(parent, row, row + count - 1);
 			{
@@ -274,7 +274,7 @@ public class WStringListModel extends WAbstractListModel {
 		}
 	}
 
-	public boolean removeRows(int row, int count, WModelIndex parent) {
+	public boolean removeRows(int row, int count, final WModelIndex parent) {
 		if (!(parent != null)) {
 			this.beginRemoveRows(parent, row, row + count - 1);
 			for (int ii = 0; ii < (0 + row + count) - (0 + row); ++ii)

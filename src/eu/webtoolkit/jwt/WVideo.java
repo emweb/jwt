@@ -88,7 +88,7 @@ public class WVideo extends WAbstractMedia {
 	 * stream once the video stream is loaded; it is therefore a good idea to
 	 * include the poster image as first frame in the video feed too.
 	 */
-	public void setPoster(String url) {
+	public void setPoster(final String url) {
 		this.posterUrl_ = url;
 		this.posterChanged_ = true;
 		this.repaint();
@@ -108,7 +108,7 @@ public class WVideo extends WAbstractMedia {
 		return this.getJsMediaRef();
 	}
 
-	public void resize(WLength width, WLength height) {
+	public void resize(final WLength width, final WLength height) {
 		this.sizeChanged_ = true;
 		super.resize(width, height);
 	}
@@ -121,7 +121,7 @@ public class WVideo extends WAbstractMedia {
 		return DomElementType.DomElement_VIDEO;
 	}
 
-	void updateMediaDom(DomElement element, boolean all) {
+	void updateMediaDom(final DomElement element, boolean all) {
 		super.updateMediaDom(element, all);
 		if (all || this.sizeChanged_) {
 			if (!all || !this.getWidth().isAuto()) {

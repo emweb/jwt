@@ -30,7 +30,7 @@ class FontSupport {
 			this.quality_ = 0.0;
 		}
 
-		public FontMatch(String fileName, double quality) {
+		public FontMatch(final String fileName, double quality) {
 			this.file_ = fileName;
 			this.quality_ = quality;
 		}
@@ -43,7 +43,7 @@ class FontSupport {
 			return this.file_;
 		}
 
-		public void setFileName(String file) {
+		public void setFileName(final String file) {
 			this.file_ = file;
 		}
 
@@ -73,7 +73,7 @@ class FontSupport {
 		assert false;
 	}
 
-	public FontMatch matchFont(WFont font) {
+	public FontMatch matchFont(final WFont font) {
 		for (Iterator<FontSupport.Matched> i_it = this.cache_.iterator(); i_it
 				.hasNext();) {
 			FontSupport.Matched i = i_it.next();
@@ -103,14 +103,14 @@ class FontSupport {
 		return match;
 	}
 
-	public WFontMetrics fontMetrics(WFont font) {
+	public WFontMetrics fontMetrics(final WFont font) {
 		this.font_ = font;
 		WFontMetrics fm = this.device_.getFontMetrics();
 		this.font_ = null;
 		return fm;
 	}
 
-	public WTextItem measureText(WFont font, CharSequence text,
+	public WTextItem measureText(final WFont font, final CharSequence text,
 			double maxWidth, boolean wordWrap) {
 		this.font_ = font;
 		WTextItem ti = this.device_.measureText(text, maxWidth, wordWrap);
@@ -118,8 +118,8 @@ class FontSupport {
 		return ti;
 	}
 
-	public void drawText(WFont font, WRectF rect, EnumSet<AlignmentFlag> flags,
-			CharSequence text) {
+	public void drawText(final WFont font, final WRectF rect,
+			EnumSet<AlignmentFlag> flags, final CharSequence text) {
 		this.font_ = font;
 		this.device_.drawText(rect, flags, TextFlag.TextSingleLine, text);
 		this.font_ = null;
@@ -137,14 +137,14 @@ class FontSupport {
 		return false;
 	}
 
-	public void addFontCollection(String directory, boolean recursive) {
+	public void addFontCollection(final String directory, boolean recursive) {
 		FontSupport.FontCollection c = new FontSupport.FontCollection();
 		c.directory = directory;
 		c.recursive = recursive;
 		this.fontCollections_.add(c);
 	}
 
-	public final void addFontCollection(String directory) {
+	public final void addFontCollection(final String directory) {
 		addFontCollection(directory, true);
 	}
 
@@ -175,7 +175,8 @@ class FontSupport {
 	private LinkedList<FontSupport.Matched> cache_;
 	private WFont font_;
 
-	private FontMatch matchFont(WFont font, String directory, boolean recursive) {
+	private FontMatch matchFont(final WFont font, final String directory,
+			boolean recursive) {
 		if (!FileUtils.exists(directory) || !FileUtils.isDirectory(directory)) {
 			logger.error(new StringWriter().append("cannot read directory '")
 					.append(directory).append("'").toString());
@@ -219,8 +220,8 @@ class FontSupport {
 		return match;
 	}
 
-	private void matchFont(WFont font, List<String> fontNames, String path,
-			boolean recursive, FontMatch match) {
+	private void matchFont(final WFont font, final List<String> fontNames,
+			final String path, boolean recursive, final FontMatch match) {
 		List<String> files = new ArrayList<String>();
 		FileUtils.listFiles(path, files);
 		for (int i = 0; i < files.size(); ++i) {
@@ -241,8 +242,8 @@ class FontSupport {
 		}
 	}
 
-	private void matchFont(WFont font, List<String> fontNames, String path,
-			FontMatch match) {
+	private void matchFont(final WFont font, final List<String> fontNames,
+			final String path, final FontMatch match) {
 		if (path.endsWith(".ttf") || path.endsWith(".ttc")) {
 			String name = FileUtils.leaf(path);
 			name = name.substring(0, 0 + name.length() - 4);

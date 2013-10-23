@@ -23,13 +23,13 @@ class ToggleButtonConfig {
 	private static Logger logger = LoggerFactory
 			.getLogger(ToggleButtonConfig.class);
 
-	public ToggleButtonConfig(WWidget parent, String styleClass) {
+	public ToggleButtonConfig(WWidget parent, final String styleClass) {
 		this.states_ = new ArrayList<String>();
 		this.styleClass_ = styleClass;
 		this.toggleJS_ = new JSlot(parent);
 	}
 
-	public void addState(String className) {
+	public void addState(final String className) {
 		this.states_.add(className);
 	}
 

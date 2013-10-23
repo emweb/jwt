@@ -60,8 +60,8 @@ public class AuthTokenResult {
 	 * <p>
 	 * Creates an authentication token result.
 	 */
-	public AuthTokenResult(AuthTokenResult.Result result, User user,
-			String newToken, int newTokenValidity) {
+	public AuthTokenResult(AuthTokenResult.Result result, final User user,
+			final String newToken, int newTokenValidity) {
 		this.result_ = result;
 		this.user_ = user;
 		this.newToken_ = newToken;
@@ -86,7 +86,7 @@ public class AuthTokenResult {
 	 * {@link #AuthTokenResult(AuthTokenResult.Result result, User user, String newToken, int newTokenValidity)
 	 * this(result, user, "", - 1)}
 	 */
-	public AuthTokenResult(AuthTokenResult.Result result, User user) {
+	public AuthTokenResult(AuthTokenResult.Result result, final User user) {
 		this(result, user, "", -1);
 	}
 
@@ -97,8 +97,8 @@ public class AuthTokenResult {
 	 * {@link #AuthTokenResult(AuthTokenResult.Result result, User user, String newToken, int newTokenValidity)
 	 * this(result, user, newToken, - 1)}
 	 */
-	public AuthTokenResult(AuthTokenResult.Result result, User user,
-			String newToken) {
+	public AuthTokenResult(AuthTokenResult.Result result, final User user,
+			final String newToken) {
 		this(result, user, newToken, -1);
 	}
 

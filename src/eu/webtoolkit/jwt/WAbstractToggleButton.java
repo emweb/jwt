@@ -65,7 +65,8 @@ public abstract class WAbstractToggleButton extends WFormWidget {
 	 * <p>
 	 * The text label is rendered to the right side of the button.
 	 */
-	protected WAbstractToggleButton(CharSequence text, WContainerWidget parent) {
+	protected WAbstractToggleButton(final CharSequence text,
+			WContainerWidget parent) {
 		super(parent);
 		this.state_ = CheckState.Unchecked;
 		this.text_ = new WText.RichText();
@@ -82,7 +83,7 @@ public abstract class WAbstractToggleButton extends WFormWidget {
 	 * {@link #WAbstractToggleButton(CharSequence text, WContainerWidget parent)
 	 * this(text, (WContainerWidget)null)}
 	 */
-	protected WAbstractToggleButton(CharSequence text) {
+	protected WAbstractToggleButton(final CharSequence text) {
 		this(text, (WContainerWidget) null);
 	}
 
@@ -98,7 +99,7 @@ public abstract class WAbstractToggleButton extends WFormWidget {
 	 * <p>
 	 * The label is rendered to the right of the button.
 	 */
-	public void setText(CharSequence text) {
+	public void setText(final CharSequence text) {
 		if (canOptimizeUpdates() && text.equals(this.text_.text)) {
 			return;
 		}
@@ -193,7 +194,7 @@ public abstract class WAbstractToggleButton extends WFormWidget {
 	 * This interprets text values of &quot;yes&quot;, &quot;maybe&quot; or
 	 * &quot;no&quot;.
 	 */
-	public void setValueText(String text) {
+	public void setValueText(final String text) {
 		if (text.equals("yes")) {
 			this.setCheckState(CheckState.Checked);
 		} else {
@@ -241,11 +242,11 @@ public abstract class WAbstractToggleButton extends WFormWidget {
 
 	CheckState state_;
 
-	abstract void updateInput(DomElement input, boolean all);
+	abstract void updateInput(final DomElement input, boolean all);
 
-	void updateDom(DomElement element, boolean all) {
+	void updateDom(final DomElement element, boolean all) {
 		WApplication app = WApplication.getInstance();
-		WEnvironment env = app.getEnvironment();
+		final WEnvironment env = app.getEnvironment();
 		DomElement input = null;
 		DomElement span = null;
 		if (element.getType() == DomElementType.DomElement_LABEL) {
@@ -376,11 +377,11 @@ public abstract class WAbstractToggleButton extends WFormWidget {
 		}
 	}
 
-	void getFormObjects(Map<String, WObject> formObjects) {
+	void getFormObjects(final Map<String, WObject> formObjects) {
 		formObjects.put(this.getFormName(), this);
 	}
 
-	void setFormData(WObject.FormData formData) {
+	void setFormData(final WObject.FormData formData) {
 		if (this.stateChanged_ || this.isReadOnly()) {
 			return;
 		}
@@ -419,7 +420,7 @@ public abstract class WAbstractToggleButton extends WFormWidget {
 		}
 	}
 
-	boolean supportsIndeterminate(WEnvironment env) {
+	boolean supportsIndeterminate(final WEnvironment env) {
 		return env.hasJavaScript()
 				&& (env.agentIsIE() || env.agentIsSafari() || env
 						.agentIsGecko()

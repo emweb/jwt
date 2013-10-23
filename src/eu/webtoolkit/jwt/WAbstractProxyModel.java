@@ -69,7 +69,7 @@ public abstract class WAbstractProxyModel extends WAbstractItemModel {
 	 * 
 	 * @see WAbstractProxyModel#mapToSource(WModelIndex proxyIndex)
 	 */
-	public abstract WModelIndex mapFromSource(WModelIndex sourceIndex);
+	public abstract WModelIndex mapFromSource(final WModelIndex sourceIndex);
 
 	/**
 	 * Maps a proxy model index to the source model.
@@ -80,7 +80,7 @@ public abstract class WAbstractProxyModel extends WAbstractItemModel {
 	 * 
 	 * @see WAbstractProxyModel#mapFromSource(WModelIndex sourceIndex)
 	 */
-	public abstract WModelIndex mapToSource(WModelIndex proxyIndex);
+	public abstract WModelIndex mapToSource(final WModelIndex proxyIndex);
 
 	/**
 	 * Sets the source model.
@@ -103,23 +103,23 @@ public abstract class WAbstractProxyModel extends WAbstractItemModel {
 		return this.sourceModel_;
 	}
 
-	public Object getData(WModelIndex index, int role) {
+	public Object getData(final WModelIndex index, int role) {
 		return this.sourceModel_.getData(this.mapToSource(index), role);
 	}
 
-	public boolean setData(WModelIndex index, Object value, int role) {
+	public boolean setData(final WModelIndex index, final Object value, int role) {
 		return this.sourceModel_.setData(this.mapToSource(index), value, role);
 	}
 
-	public EnumSet<ItemFlag> getFlags(WModelIndex index) {
+	public EnumSet<ItemFlag> getFlags(final WModelIndex index) {
 		return this.sourceModel_.getFlags(this.mapToSource(index));
 	}
 
-	public boolean insertColumns(int column, int count, WModelIndex parent) {
+	public boolean insertColumns(int column, int count, final WModelIndex parent) {
 		return this.sourceModel_.insertColumns(column, count, parent);
 	}
 
-	public boolean removeColumns(int column, int count, WModelIndex parent) {
+	public boolean removeColumns(int column, int count, final WModelIndex parent) {
 		return this.sourceModel_.removeColumns(column, count, parent);
 	}
 
@@ -131,8 +131,8 @@ public abstract class WAbstractProxyModel extends WAbstractItemModel {
 		return this.sourceModel_.getAcceptDropMimeTypes();
 	}
 
-	public void dropEvent(WDropEvent e, DropAction action, int row, int column,
-			WModelIndex parent) {
+	public void dropEvent(final WDropEvent e, DropAction action, int row,
+			int column, final WModelIndex parent) {
 		WModelIndex sourceParent = this.mapToSource(parent);
 		int sourceRow = row;
 		int sourceColumn = column;
@@ -144,7 +144,7 @@ public abstract class WAbstractProxyModel extends WAbstractItemModel {
 				sourceParent);
 	}
 
-	public Object toRawIndex(WModelIndex index) {
+	public Object toRawIndex(final WModelIndex index) {
 		return this.sourceModel_.toRawIndex(this.mapToSource(index));
 	}
 
@@ -199,7 +199,7 @@ public abstract class WAbstractProxyModel extends WAbstractItemModel {
 		/**
 		 * Create a {@link BaseItem}.
 		 */
-		public BaseItem(WModelIndex sourceIndex) {
+		public BaseItem(final WModelIndex sourceIndex) {
 			this.sourceIndex_ = sourceIndex;
 		}
 	}
@@ -211,9 +211,9 @@ public abstract class WAbstractProxyModel extends WAbstractItemModel {
 	 * inserted or removed rows. When removing rows (count &lt; 0), items may
 	 * possibly be removed and deleted.
 	 */
-	protected void shiftModelIndexes(WModelIndex sourceParent, int start,
+	protected void shiftModelIndexes(final WModelIndex sourceParent, int start,
 			int count,
-			SortedMap<WModelIndex, WAbstractProxyModel.BaseItem> items) {
+			final SortedMap<WModelIndex, WAbstractProxyModel.BaseItem> items) {
 		List<WAbstractProxyModel.BaseItem> shifted = new ArrayList<WAbstractProxyModel.BaseItem>();
 		List<WAbstractProxyModel.BaseItem> erased = new ArrayList<WAbstractProxyModel.BaseItem>();
 		for (Iterator<Map.Entry<WModelIndex, WAbstractProxyModel.BaseItem>> it_it = items

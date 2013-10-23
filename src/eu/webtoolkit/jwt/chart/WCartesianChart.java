@@ -285,7 +285,7 @@ public class WCartesianChart extends WAbstractChart {
 	 * @see WCartesianChart#removeSeries(int modelColumn)
 	 * @see WCartesianChart#setSeries(List series)
 	 */
-	public void addSeries(WDataSeries series) {
+	public void addSeries(final WDataSeries series) {
 		this.series_.add(series);
 		this.series_.get(this.series_.size() - 1).setChart(this);
 		this.update();
@@ -319,7 +319,7 @@ public class WCartesianChart extends WAbstractChart {
 	 * @see WCartesianChart#addSeries(WDataSeries series)
 	 * @see WCartesianChart#removeSeries(int modelColumn)
 	 */
-	public void setSeries(List<WDataSeries> series) {
+	public void setSeries(final List<WDataSeries> series) {
 		Utils.copyList(series, this.series_);
 		for (int i = 0; i < this.series_.size(); ++i) {
 			this.series_.get(i).setChart(this);
@@ -483,7 +483,8 @@ public class WCartesianChart extends WAbstractChart {
 	 * 
 	 * @see WCartesianChart#setLegendEnabled(boolean enabled)
 	 */
-	public void setLegendStyle(WFont font, WPen border, WBrush background) {
+	public void setLegendStyle(final WFont font, final WPen border,
+			final WBrush background) {
 		this.legendFont_ = font;
 		this.legendBorder_ = border;
 		this.legendBackground_ = background;
@@ -584,13 +585,13 @@ public class WCartesianChart extends WAbstractChart {
 	 * <p>
 	 * The default value is a single column, 100 pixels wide.
 	 */
-	public void setLegendColumns(int columns, WLength columnWidth) {
+	public void setLegendColumns(int columns, final WLength columnWidth) {
 		this.legendColumns_ = columns;
 		this.legendColumnWidth_ = columnWidth;
 		this.update();
 	}
 
-	public void paint(WPainter painter, WRectF rectangle) {
+	public void paint(final WPainter painter, final WRectF rectangle) {
 		if (!painter.isActive()) {
 			throw new WException(
 					"WCartesianChart::paint(): painter is not active.");
@@ -615,7 +616,7 @@ public class WCartesianChart extends WAbstractChart {
 	 * 
 	 * @see WCartesianChart#setLegendEnabled(boolean enabled)
 	 */
-	public void drawMarker(WDataSeries series, WPainterPath result) {
+	public void drawMarker(final WDataSeries series, final WPainterPath result) {
 		final double size = 6.0;
 		final double hsize = size / 2;
 		switch (series.getMarker()) {
@@ -666,8 +667,8 @@ public class WCartesianChart extends WAbstractChart {
 	 * @see WCartesianChart#renderLegendItem(WPainter painter, WPointF pos,
 	 *      WDataSeries series)
 	 */
-	public void renderLegendIcon(WPainter painter, WPointF pos,
-			WDataSeries series) {
+	public void renderLegendIcon(final WPainter painter, final WPointF pos,
+			final WDataSeries series) {
 		switch (series.getType()) {
 		case BarSeries: {
 			WPainterPath path = new WPainterPath();
@@ -721,8 +722,8 @@ public class WCartesianChart extends WAbstractChart {
 	 * 
 	 * @see WCartesianChart#setLegendEnabled(boolean enabled)
 	 */
-	public void renderLegendItem(WPainter painter, WPointF pos,
-			WDataSeries series) {
+	public void renderLegendItem(final WPainter painter, final WPointF pos,
+			final WDataSeries series) {
 		WPen fontPen = painter.getPen();
 		this.renderLegendIcon(painter, pos, series);
 		painter.setPen(fontPen);
@@ -746,9 +747,9 @@ public class WCartesianChart extends WAbstractChart {
 	 * @see WCartesianChart#mapToDevice(Object xValue, Object yValue, Axis
 	 *      ordinateAxis, int xSegment, int ySegment)
 	 */
-	public WPointF mapFromDevice(WPointF point, Axis ordinateAxis) {
-		WAxis xAxis = this.getAxis(Axis.XAxis);
-		WAxis yAxis = this.getAxis(ordinateAxis);
+	public WPointF mapFromDevice(final WPointF point, Axis ordinateAxis) {
+		final WAxis xAxis = this.getAxis(Axis.XAxis);
+		final WAxis yAxis = this.getAxis(ordinateAxis);
 		WPointF p = this.inverseHv(point.getX(), point.getY(), this.getWidth()
 				.toPixels());
 		return new WPointF(xAxis.mapFromDevice(p.getX()), yAxis.mapFromDevice(p
@@ -761,7 +762,7 @@ public class WCartesianChart extends WAbstractChart {
 	 * Returns {@link #mapFromDevice(WPointF point, Axis ordinateAxis)
 	 * mapFromDevice(point, Axis.OrdinateAxis)}
 	 */
-	public final WPointF mapFromDevice(WPointF point) {
+	public final WPointF mapFromDevice(final WPointF point) {
 		return mapFromDevice(point, Axis.OrdinateAxis);
 	}
 
@@ -785,10 +786,10 @@ public class WCartesianChart extends WAbstractChart {
 	 * 
 	 * @see WCartesianChart#mapFromDevice(WPointF point, Axis ordinateAxis)
 	 */
-	public WPointF mapToDevice(Object xValue, Object yValue, Axis ordinateAxis,
-			int xSegment, int ySegment) {
-		WAxis xAxis = this.getAxis(Axis.XAxis);
-		WAxis yAxis = this.getAxis(ordinateAxis);
+	public WPointF mapToDevice(final Object xValue, final Object yValue,
+			Axis ordinateAxis, int xSegment, int ySegment) {
+		final WAxis xAxis = this.getAxis(Axis.XAxis);
+		final WAxis yAxis = this.getAxis(ordinateAxis);
 		return this.hv(xAxis.mapToDevice(xValue, xSegment), yAxis.mapToDevice(
 				yValue, ySegment), this.getWidth().toPixels());
 	}
@@ -800,7 +801,7 @@ public class WCartesianChart extends WAbstractChart {
 	 * {@link #mapToDevice(Object xValue, Object yValue, Axis ordinateAxis, int xSegment, int ySegment)
 	 * mapToDevice(xValue, yValue, Axis.OrdinateAxis, 0, 0)}
 	 */
-	public final WPointF mapToDevice(Object xValue, Object yValue) {
+	public final WPointF mapToDevice(final Object xValue, final Object yValue) {
 		return mapToDevice(xValue, yValue, Axis.OrdinateAxis, 0, 0);
 	}
 
@@ -811,7 +812,7 @@ public class WCartesianChart extends WAbstractChart {
 	 * {@link #mapToDevice(Object xValue, Object yValue, Axis ordinateAxis, int xSegment, int ySegment)
 	 * mapToDevice(xValue, yValue, ordinateAxis, 0, 0)}
 	 */
-	public final WPointF mapToDevice(Object xValue, Object yValue,
+	public final WPointF mapToDevice(final Object xValue, final Object yValue,
 			Axis ordinateAxis) {
 		return mapToDevice(xValue, yValue, ordinateAxis, 0, 0);
 	}
@@ -823,7 +824,7 @@ public class WCartesianChart extends WAbstractChart {
 	 * {@link #mapToDevice(Object xValue, Object yValue, Axis ordinateAxis, int xSegment, int ySegment)
 	 * mapToDevice(xValue, yValue, ordinateAxis, xSegment, 0)}
 	 */
-	public final WPointF mapToDevice(Object xValue, Object yValue,
+	public final WPointF mapToDevice(final Object xValue, final Object yValue,
 			Axis ordinateAxis, int xSegment) {
 		return mapToDevice(xValue, yValue, ordinateAxis, xSegment, 0);
 	}
@@ -846,7 +847,7 @@ public class WCartesianChart extends WAbstractChart {
 	 * Unless a specific chart rectangle is specified, the entire widget area is
 	 * assumed.
 	 */
-	public void initLayout(WRectF rectangle) {
+	public void initLayout(final WRectF rectangle) {
 		WRectF rect = rectangle;
 		if (rect.isEmpty()) {
 			rect.assign(new WRectF(0, 0, this.getWidth().toPixels(), this
@@ -895,8 +896,8 @@ public class WCartesianChart extends WAbstractChart {
 	 * </i>
 	 * </p>
 	 */
-	public void addDataPointArea(WDataSeries series, WModelIndex xIndex,
-			WAbstractArea area) {
+	public void addDataPointArea(final WDataSeries series,
+			final WModelIndex xIndex, WAbstractArea area) {
 		this.addArea(area);
 	}
 
@@ -946,7 +947,8 @@ public class WCartesianChart extends WAbstractChart {
 	 * 
 	 * @see WChart2DRenderer#render()
 	 */
-	protected WChart2DRenderer createRenderer(WPainter painter, WRectF rectangle) {
+	protected WChart2DRenderer createRenderer(final WPainter painter,
+			final WRectF rectangle) {
 		return new WChart2DRenderer(this, painter, rectangle);
 	}
 
@@ -982,7 +984,8 @@ public class WCartesianChart extends WAbstractChart {
 		this.setPlotAreaPadding(30, EnumSet.of(Side.Top, Side.Bottom));
 	}
 
-	protected void modelColumnsInserted(WModelIndex parent, int start, int end) {
+	protected void modelColumnsInserted(final WModelIndex parent, int start,
+			int end) {
 		for (int i = 0; i < this.series_.size(); ++i) {
 			if (this.series_.get(i).getModelColumn() >= start) {
 				this.series_.get(i).modelColumn_ += end - start + 1;
@@ -990,7 +993,8 @@ public class WCartesianChart extends WAbstractChart {
 		}
 	}
 
-	protected void modelColumnsRemoved(WModelIndex parent, int start, int end) {
+	protected void modelColumnsRemoved(final WModelIndex parent, int start,
+			int end) {
 		boolean needUpdate = false;
 		for (int i = 0; i < this.series_.size(); ++i) {
 			if (this.series_.get(i).getModelColumn() >= start) {
@@ -1008,15 +1012,17 @@ public class WCartesianChart extends WAbstractChart {
 		}
 	}
 
-	protected void modelRowsInserted(WModelIndex parent, int start, int end) {
+	protected void modelRowsInserted(final WModelIndex parent, int start,
+			int end) {
 		this.update();
 	}
 
-	protected void modelRowsRemoved(WModelIndex parent, int start, int end) {
+	protected void modelRowsRemoved(final WModelIndex parent, int start, int end) {
 		this.update();
 	}
 
-	protected void modelDataChanged(WModelIndex topLeft, WModelIndex bottomRight) {
+	protected void modelDataChanged(final WModelIndex topLeft,
+			final WModelIndex bottomRight) {
 		if (this.XSeriesColumn_ >= topLeft.getColumn()
 				&& this.XSeriesColumn_ <= bottomRight.getColumn()) {
 			this.update();

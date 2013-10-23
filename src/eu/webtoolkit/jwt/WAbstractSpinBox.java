@@ -57,7 +57,8 @@ public abstract class WAbstractSpinBox extends WLineEdit {
 	 */
 	public boolean isNativeControl() {
 		if (this.preferNative_) {
-			WEnvironment env = WApplication.getInstance().getEnvironment();
+			final WEnvironment env = WApplication.getInstance()
+					.getEnvironment();
 			if (env.agentIsChrome()
 					&& env.getAgent().getValue() >= WEnvironment.UserAgent.Chrome5
 							.getValue()
@@ -91,7 +92,7 @@ public abstract class WAbstractSpinBox extends WLineEdit {
 	 * <i><b>Note: </b>Not supported by the native controls. </i>
 	 * </p>
 	 */
-	public void setPrefix(CharSequence prefix) {
+	public void setPrefix(final CharSequence prefix) {
 		if (!this.prefix_.equals(prefix)) {
 			this.prefix_ = WString.toWString(prefix);
 			this.setText(this.getTextFromValue().toString());
@@ -126,7 +127,7 @@ public abstract class WAbstractSpinBox extends WLineEdit {
 	 * <i><b>Note: </b>Not supported by the native controls. </i>
 	 * </p>
 	 */
-	public void setSuffix(CharSequence suffix) {
+	public void setSuffix(final CharSequence suffix) {
 		if (!this.suffix_.equals(suffix)) {
 			this.suffix_ = WString.toWString(suffix);
 			this.setText(this.getTextFromValue().toString());
@@ -143,7 +144,7 @@ public abstract class WAbstractSpinBox extends WLineEdit {
 		return this.suffix_;
 	}
 
-	public void setText(String text) {
+	public void setText(final String text) {
 		this.parseValue(text);
 		super.setText(this.getTextFromValue().toString());
 	}
@@ -175,7 +176,7 @@ public abstract class WAbstractSpinBox extends WLineEdit {
 		this((WContainerWidget) null);
 	}
 
-	void updateDom(DomElement element, boolean all) {
+	void updateDom(final DomElement element, boolean all) {
 		if (all || this.changed_) {
 			if (!all) {
 				if (!this.isNativeControl()) {
@@ -202,7 +203,7 @@ public abstract class WAbstractSpinBox extends WLineEdit {
 		super.render(flags);
 	}
 
-	void setFormData(WObject.FormData formData) {
+	void setFormData(final WObject.FormData formData) {
 		super.setFormData(formData);
 		this.parseValue(this.getText());
 	}
@@ -216,7 +217,7 @@ public abstract class WAbstractSpinBox extends WLineEdit {
 
 	abstract int getDecimals();
 
-	abstract boolean parseNumberValue(String text);
+	abstract boolean parseNumberValue(final String text);
 
 	abstract WString getTextFromValue();
 
@@ -252,7 +253,8 @@ public abstract class WAbstractSpinBox extends WLineEdit {
 		this.setJavaScriptMember(" WSpinBox", jsObj);
 	}
 
-	private void connectJavaScript(AbstractEventSignal s, String methodName) {
+	private void connectJavaScript(final AbstractEventSignal s,
+			final String methodName) {
 		String jsFunction = "function(obj, event) {var o = jQuery.data("
 				+ this.getJsRef() + ", 'obj');if (o) o." + methodName
 				+ "(obj, event);}";
@@ -264,8 +266,8 @@ public abstract class WAbstractSpinBox extends WLineEdit {
 		boolean useNative = this.isNativeControl();
 		if (!useNative) {
 			this.defineJavaScript();
-			AbstractEventSignal b = this.mouseMoved();
-			AbstractEventSignal c = this.keyWentDown();
+			final AbstractEventSignal b = this.mouseMoved();
+			final AbstractEventSignal c = this.keyWentDown();
 			this.connectJavaScript(this.mouseMoved(), "mouseMove");
 			this.connectJavaScript(this.mouseWentUp(), "mouseUp");
 			this.connectJavaScript(this.mouseWentDown(), "mouseDown");
@@ -276,7 +278,7 @@ public abstract class WAbstractSpinBox extends WLineEdit {
 		}
 	}
 
-	boolean parseValue(String text) {
+	boolean parseValue(final String text) {
 		String textUtf8 = text;
 		boolean valid = true;
 		if (!this.isNativeControl()) {

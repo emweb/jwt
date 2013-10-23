@@ -467,7 +467,7 @@ public class WContainerWidget extends WInteractWidget {
 	 * Setting padding has the effect of adding distance between the widget
 	 * children and the border.
 	 */
-	public void setPadding(WLength length, EnumSet<Side> sides) {
+	public void setPadding(final WLength length, EnumSet<Side> sides) {
 		if (!(this.padding_ != null)) {
 			this.padding_ = new WLength[4];
 			this.padding_[0] = this.padding_[1] = this.padding_[2] = this.padding_[3] = WLength.Auto;
@@ -494,7 +494,7 @@ public class WContainerWidget extends WInteractWidget {
 	 * Calls {@link #setPadding(WLength length, EnumSet sides)
 	 * setPadding(length, EnumSet.of(side, sides))}
 	 */
-	public final void setPadding(WLength length, Side side, Side... sides) {
+	public final void setPadding(final WLength length, Side side, Side... sides) {
 		setPadding(length, EnumSet.of(side, sides));
 	}
 
@@ -504,7 +504,7 @@ public class WContainerWidget extends WInteractWidget {
 	 * Calls {@link #setPadding(WLength length, EnumSet sides)
 	 * setPadding(length, Side.All)}
 	 */
-	public final void setPadding(WLength length) {
+	public final void setPadding(final WLength length) {
 		setPadding(length, Side.All);
 	}
 
@@ -715,7 +715,7 @@ public class WContainerWidget extends WInteractWidget {
 		}
 	}
 
-	void rootAsJavaScript(WApplication app, StringBuilder out, boolean all) {
+	void rootAsJavaScript(WApplication app, final StringBuilder out, boolean all) {
 		List<WWidget> toAdd = all ? this.children_
 				: this.transientImpl_ != null ? this.transientImpl_.addedChildren_
 						: null;
@@ -804,7 +804,7 @@ public class WContainerWidget extends WInteractWidget {
 		}
 	}
 
-	void getDomChanges(List<DomElement> result, WApplication app) {
+	void getDomChanges(final List<DomElement> result, WApplication app) {
 		DomElement e = DomElement.getForUpdate(this, this.getDomElementType());
 		if (!app.getSession().getRenderer().isPreLearning()) {
 			if (this.flags_.get(BIT_LAYOUT_NEEDS_RERENDER)) {
@@ -830,7 +830,7 @@ public class WContainerWidget extends WInteractWidget {
 		return result;
 	}
 
-	void createDomChildren(DomElement parent, WApplication app) {
+	void createDomChildren(final DomElement parent, WApplication app) {
 		if (this.layout_ != null) {
 			this.containsLayout();
 			boolean fitWidth = !EnumUtils.mask(this.contentAlignment_,
@@ -896,7 +896,7 @@ public class WContainerWidget extends WInteractWidget {
 		}
 	}
 
-	void updateDomChildren(DomElement parent, WApplication app) {
+	void updateDomChildren(final DomElement parent, WApplication app) {
 		if (!app.getSession().getRenderer().isPreLearning()
 				&& !(this.layout_ != null)) {
 			if (parent.getMode() == DomElement.Mode.ModeUpdate) {
@@ -904,7 +904,7 @@ public class WContainerWidget extends WInteractWidget {
 			}
 			if (this.transientImpl_ != null) {
 				List<Integer> orderedInserts = new ArrayList<Integer>();
-				List<WWidget> ac = this.transientImpl_.addedChildren_;
+				final List<WWidget> ac = this.transientImpl_.addedChildren_;
 				for (int i = 0; i < ac.size(); ++i) {
 					orderedInserts.add(this.children_.indexOf(ac.get(i)));
 				}
@@ -952,7 +952,7 @@ public class WContainerWidget extends WInteractWidget {
 		return type;
 	}
 
-	void updateDom(DomElement element, boolean all) {
+	void updateDom(final DomElement element, boolean all) {
 		if (all && element.getType() == DomElementType.DomElement_LI
 				&& this.isInline()) {
 			element.setProperty(Property.PropertyStyleDisplay, "inline");

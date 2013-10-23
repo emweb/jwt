@@ -57,7 +57,7 @@ public class WPolygonArea extends WAbstractArea {
 	 * . The polygon is closed by connecting the last point with the first
 	 * point.
 	 */
-	public WPolygonArea(List<WPoint> points) {
+	public WPolygonArea(final List<WPoint> points) {
 		super();
 		this.points_ = points;
 	}
@@ -79,14 +79,14 @@ public class WPolygonArea extends WAbstractArea {
 	/**
 	 * Adds a point.
 	 */
-	public void addPoint(WPoint point) {
+	public void addPoint(final WPoint point) {
 		this.points_.add(point);
 	}
 
 	/**
 	 * Adds a point.
 	 */
-	public void addPoint(WPointF point) {
+	public void addPoint(final WPointF point) {
 		this.points_.add(new WPoint((int) point.getX(), (int) point.getY()));
 	}
 
@@ -97,7 +97,7 @@ public class WPolygonArea extends WAbstractArea {
 	 * . The polygon is closed by connecting the last point with the first
 	 * point.
 	 */
-	public void setPoints(List<WPoint> points) {
+	public void setPoints(final List<WPoint> points) {
 		Utils.copyList(points, this.points_);
 	}
 
@@ -113,7 +113,7 @@ public class WPolygonArea extends WAbstractArea {
 
 	private List<WPoint> points_;
 
-	protected boolean updateDom(DomElement element, boolean all) {
+	protected boolean updateDom(final DomElement element, boolean all) {
 		element.setAttribute("shape", "poly");
 		StringWriter coords = new StringWriter();
 		for (int i = 0; i < this.points_.size(); ++i) {

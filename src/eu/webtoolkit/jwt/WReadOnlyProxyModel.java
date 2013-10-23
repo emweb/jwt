@@ -47,27 +47,27 @@ public class WReadOnlyProxyModel extends WAbstractProxyModel {
 		this((WObject) null);
 	}
 
-	public WModelIndex mapFromSource(WModelIndex sourceIndex) {
+	public WModelIndex mapFromSource(final WModelIndex sourceIndex) {
 		return sourceIndex;
 	}
 
-	public WModelIndex mapToSource(WModelIndex proxyIndex) {
+	public WModelIndex mapToSource(final WModelIndex proxyIndex) {
 		return proxyIndex;
 	}
 
-	public int getColumnCount(WModelIndex parent) {
+	public int getColumnCount(final WModelIndex parent) {
 		return this.getSourceModel().getColumnCount(parent);
 	}
 
-	public int getRowCount(WModelIndex parent) {
+	public int getRowCount(final WModelIndex parent) {
 		return this.getSourceModel().getRowCount(parent);
 	}
 
-	public WModelIndex getParent(WModelIndex index) {
+	public WModelIndex getParent(final WModelIndex index) {
 		return this.getSourceModel().getParent(index);
 	}
 
-	public WModelIndex getIndex(int row, int column, WModelIndex parent) {
+	public WModelIndex getIndex(int row, int column, final WModelIndex parent) {
 		return this.getSourceModel().getIndex(row, column, parent);
 	}
 }

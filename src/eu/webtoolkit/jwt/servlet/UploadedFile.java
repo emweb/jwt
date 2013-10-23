@@ -28,7 +28,8 @@ import org.slf4j.LoggerFactory;
 public class UploadedFile {
 	private static Logger logger = LoggerFactory.getLogger(UploadedFile.class);
 
-	UploadedFile(String spoolName, String clientFileName, String contentType) {
+	UploadedFile(final String spoolName, final String clientFileName,
+			final String contentType) {
 		this.fileInfo_ = null;
 		this.fileInfo_ = new UploadedFile.Impl();
 		this.fileInfo_.spoolFileName = spoolName;

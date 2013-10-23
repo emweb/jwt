@@ -50,7 +50,8 @@ public class PasswordHash {
 	/**
 	 * Constructor.
 	 */
-	public PasswordHash(String function, String salt, String value) {
+	public PasswordHash(final String function, final String salt,
+			final String value) {
 		this.function_ = function;
 		this.salt_ = salt;
 		this.value_ = value;

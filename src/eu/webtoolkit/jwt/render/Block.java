@@ -174,7 +174,7 @@ class Block {
 	}
 
 	public boolean normalizeWhitespace(boolean haveWhitespace,
-			net.n3.nanoxml.XMLElement doc) {
+			final net.n3.nanoxml.XMLElement doc) {
 		boolean whitespaceIn = haveWhitespace;
 		if (!this.isInline()) {
 			haveWhitespace = true;
@@ -295,8 +295,8 @@ class Block {
 				"collapse");
 	}
 
-	public double layoutBlock(PageState ps, boolean canIncreaseWidth,
-			WTextRenderer renderer, double collapseMarginTop,
+	public double layoutBlock(final PageState ps, boolean canIncreaseWidth,
+			final WTextRenderer renderer, double collapseMarginTop,
 			double collapseMarginBottom, double cellHeight) {
 		String pageBreakBefore = this
 				.cssProperty(Property.PropertyStylePageBreakBefore);
@@ -551,8 +551,8 @@ class Block {
 			}
 			if (boxH > 0) {
 				this.blockLayout.add(new BlockBox());
-				BlockBox box = this.blockLayout
-						.get(this.blockLayout.size() - 1);
+				final BlockBox box = this.blockLayout.get(this.blockLayout
+						.size() - 1);
 				box.page = i;
 				box.x = ps.minX;
 				box.width = ps.maxX - ps.minX;
@@ -570,7 +570,8 @@ class Block {
 			ps.y = inY;
 			collapseMarginBottom = inCollapseMarginTop;
 			this.blockLayout.add(new BlockBox());
-			BlockBox box = this.blockLayout.get(this.blockLayout.size() - 1);
+			final BlockBox box = this.blockLayout
+					.get(this.blockLayout.size() - 1);
 			box.page = startPage;
 			box.x = ps.minX;
 			box.width = ps.maxX - ps.minX;
@@ -608,14 +609,14 @@ class Block {
 		}
 	}
 
-	public final double layoutBlock(PageState ps, boolean canIncreaseWidth,
-			WTextRenderer renderer, double collapseMarginTop,
-			double collapseMarginBottom) {
+	public final double layoutBlock(final PageState ps,
+			boolean canIncreaseWidth, final WTextRenderer renderer,
+			double collapseMarginTop, double collapseMarginBottom) {
 		return layoutBlock(ps, canIncreaseWidth, renderer, collapseMarginTop,
 				collapseMarginBottom, -1);
 	}
 
-	public void collectStyles(StringBuilder ss) {
+	public void collectStyles(final StringBuilder ss) {
 		for (int i = 0; i < this.children_.size(); ++i) {
 			if (this.children_.get(i).type_ == DomElementType.DomElement_STYLE) {
 				ss.append(RenderUtils
@@ -636,8 +637,8 @@ class Block {
 		}
 	}
 
-	public void actualRender(WTextRenderer renderer, WPainter painter,
-			LayoutBox lb) {
+	public void actualRender(final WTextRenderer renderer,
+			final WPainter painter, final LayoutBox lb) {
 		if (this.type_ == DomElementType.DomElement_IMG) {
 			LayoutBox bb = this.toBorderBox(lb, renderer.getFontScale());
 			this.renderBorders(bb, renderer, painter, EnumSet.of(Side.Top,
@@ -686,7 +687,8 @@ class Block {
 		}
 	}
 
-	public void render(WTextRenderer renderer, WPainter painter, int page) {
+	public void render(final WTextRenderer renderer, final WPainter painter,
+			int page) {
 		boolean painterTranslated = false;
 		if (this.cssProperty(Property.PropertyStylePosition).equals("relative")) {
 			painter.save();
@@ -717,14 +719,14 @@ class Block {
 		}
 		int first = this.type_ == DomElementType.DomElement_LI ? 1 : 0;
 		for (int i = first; i < this.inlineLayout.size(); ++i) {
-			LayoutBox lb = this.inlineLayout.get(i);
+			final LayoutBox lb = this.inlineLayout.get(i);
 			if (lb.page == page) {
 				renderer.paintNode(painter, new WTextRenderer.Node(this, lb,
 						renderer));
 			}
 		}
 		for (int i = 0; i < this.blockLayout.size(); ++i) {
-			LayoutBox lb = this.blockLayout.get(i);
+			final LayoutBox lb = this.blockLayout.get(i);
 			if (lb.page == page) {
 				renderer.paintNode(painter, new WTextRenderer.Node(this, lb,
 						renderer));
@@ -740,10 +742,10 @@ class Block {
 		}
 	}
 
-	public static void clearFloats(PageState ps) {
+	public static void clearFloats(final PageState ps) {
 		for (int i = 0; i < ps.floats.size(); ++i) {
 			Block b = ps.floats.get(i);
-			BlockBox bb = b.blockLayout.get(b.blockLayout.size() - 1);
+			final BlockBox bb = b.blockLayout.get(b.blockLayout.size() - 1);
 			if (bb.page <= ps.page) {
 				ps.floats.remove(0 + i);
 				--i;
@@ -751,7 +753,7 @@ class Block {
 		}
 	}
 
-	public static void clearFloats(PageState ps, double minWidth) {
+	public static void clearFloats(final PageState ps, double minWidth) {
 		for (; !ps.floats.isEmpty();) {
 			Block b = ps.floats.get(0);
 			ps.y = b.blockLayout.get(b.blockLayout.size() - 1).y
@@ -770,11 +772,11 @@ class Block {
 	public List<BlockBox> blockLayout;
 
 	public static void adjustAvailableWidth(double y, int page,
-			List<Block> floats, Range rangeX) {
+			final List<Block> floats, final Range rangeX) {
 		for (int i = 0; i < floats.size(); ++i) {
 			Block b = floats.get(i);
 			for (int j = 0; j < b.blockLayout.size(); ++j) {
-				BlockBox block = b.blockLayout.get(j);
+				final BlockBox block = b.blockLayout.get(j);
 				if (block.page == page) {
 					if (block.y <= y && y < block.y + block.height) {
 						if (floats.get(i).getFloatSide() == Side.Left) {
@@ -870,7 +872,7 @@ class Block {
 			this.s_ = new Specificity();
 		}
 
-		public PropertyValue(String value, Specificity s) {
+		public PropertyValue(final String value, final Specificity s) {
 			this.value_ = value;
 			this.s_ = s;
 		}
@@ -948,8 +950,8 @@ class Block {
 		}
 	}
 
-	private void updateAggregateProperty(String property, String aggregate,
-			Specificity spec, String value) {
+	private void updateAggregateProperty(final String property,
+			final String aggregate, final Specificity spec, final String value) {
 		if (this.css_.get(property + aggregate) == null
 				|| this.css_.get(property + aggregate).s_
 						.isSmallerOrEqualThen(spec)) {
@@ -958,7 +960,7 @@ class Block {
 		}
 	}
 
-	private void fillinStyle(String style, Specificity specificity) {
+	private void fillinStyle(final String style, final Specificity specificity) {
 		if (style.length() == 0) {
 			return;
 		}
@@ -1129,7 +1131,7 @@ class Block {
 		try {
 			result = this.cssLength(Property.PropertyStyleMarginTop, side,
 					fontScale);
-		} catch (RuntimeException e) {
+		} catch (final RuntimeException e) {
 		}
 		if (!result.defined) {
 			if (side == Side.Top || side == Side.Bottom) {
@@ -1408,7 +1410,7 @@ class Block {
 			} else {
 				try {
 					return Double.parseDouble(v);
-				} catch (NumberFormatException e) {
+				} catch (final NumberFormatException e) {
 					WLength l = new WLength(v);
 					if (l.getUnit() == WLength.Unit.Percentage) {
 						return this.cssFontSize(fontScale) * l.getValue() / 100;
@@ -1562,7 +1564,7 @@ class Block {
 		if (v.length() != 0) {
 			try {
 				return Integer.parseInt(v);
-			} catch (NumberFormatException blc) {
+			} catch (final NumberFormatException blc) {
 				if (v.equals("normal")) {
 					return 400;
 				} else {
@@ -1686,7 +1688,7 @@ class Block {
 		}
 	}
 
-	private double cssDecodeLength(String length, double fontScale,
+	private double cssDecodeLength(final String length, double fontScale,
 			double defaultValue, Block.PercentageRule percentage,
 			double parentSize) {
 		if (length.length() != 0) {
@@ -1709,18 +1711,18 @@ class Block {
 		}
 	}
 
-	private final double cssDecodeLength(String length, double fontScale,
+	private final double cssDecodeLength(final String length, double fontScale,
 			double defaultValue) {
 		return cssDecodeLength(length, fontScale, defaultValue,
 				Block.PercentageRule.PercentageOfFontSize, 0);
 	}
 
-	private final double cssDecodeLength(String length, double fontScale,
+	private final double cssDecodeLength(final String length, double fontScale,
 			double defaultValue, Block.PercentageRule percentage) {
 		return cssDecodeLength(length, fontScale, defaultValue, percentage, 0);
 	}
 
-	private static boolean isPercentageLength(String length) {
+	private static boolean isPercentageLength(final String length) {
 		return length.length() != 0
 				&& new WLength(length).getUnit() == WLength.Unit.Percentage;
 	}
@@ -1753,19 +1755,20 @@ class Block {
 		}
 	}
 
-	private void pageBreak(PageState ps) {
+	private void pageBreak(final PageState ps) {
 		clearFloats(ps);
 		++ps.page;
 		ps.y = 0;
 	}
 
-	private void inlinePageBreak(String pageBreak, Line line,
-			List<Block> floats, double minX, double maxX, WTextRenderer renderer) {
+	private void inlinePageBreak(final String pageBreak, final Line line,
+			final List<Block> floats, double minX, double maxX,
+			final WTextRenderer renderer) {
 		if (pageBreak.equals("always")) {
 			if (this.inlineLayout.isEmpty()) {
 				this.inlineLayout.add(new InlineBox());
-				InlineBox b = this.inlineLayout
-						.get(this.inlineLayout.size() - 1);
+				final InlineBox b = this.inlineLayout.get(this.inlineLayout
+						.size() - 1);
 				b.page = line.getPage();
 				b.x = line.getX();
 				b.width = 1;
@@ -1784,8 +1787,9 @@ class Block {
 		}
 	}
 
-	private double layoutInline(Line line, List<Block> floats, double minX,
-			double maxX, boolean canIncreaseWidth, WTextRenderer renderer) {
+	private double layoutInline(final Line line, final List<Block> floats,
+			double minX, double maxX, boolean canIncreaseWidth,
+			final WTextRenderer renderer) {
 		this.inlineLayout.clear();
 		this.inlinePageBreak(this
 				.cssProperty(Property.PropertyStylePageBreakBefore), line,
@@ -1956,7 +1960,7 @@ class Block {
 				}
 				if (w > 0 && h > 0) {
 					this.inlineLayout.add(new InlineBox());
-					InlineBox b = this.inlineLayout.get(this.inlineLayout
+					final InlineBox b = this.inlineLayout.get(this.inlineLayout
 							.size() - 1);
 					double marginLeft = 0;
 					double marginRight = 0;
@@ -2016,8 +2020,8 @@ class Block {
 							}
 							c.inlineLayout.clear();
 							c.inlineLayout.add(new InlineBox());
-							InlineBox box = c.inlineLayout.get(c.inlineLayout
-									.size() - 1);
+							final InlineBox box = c.inlineLayout
+									.get(c.inlineLayout.size() - 1);
 							box.page = line.getPage();
 							box.x = line.getX();
 							box.y = line.getY();
@@ -2042,8 +2046,8 @@ class Block {
 		return maxX;
 	}
 
-	private void layoutTable(PageState ps, boolean canIncreaseWidth,
-			WTextRenderer renderer, double cssSetWidth) {
+	private void layoutTable(final PageState ps, boolean canIncreaseWidth,
+			final WTextRenderer renderer, double cssSetWidth) {
 		this.currentWidth_ = Math.max(0.0, cssSetWidth);
 		List<Double> minimumColumnWidths = new ArrayList<Double>();
 		List<Double> maximumColumnWidths = new ArrayList<Double>();
@@ -2189,9 +2193,9 @@ class Block {
 		ps.y += cellSpacing;
 	}
 
-	double layoutFloat(double y, int page, List<Block> floats, double lineX,
-			double lineHeight, double minX, double maxX,
-			boolean canIncreaseWidth, WTextRenderer renderer) {
+	double layoutFloat(double y, int page, final List<Block> floats,
+			double lineX, double lineHeight, double minX, double maxX,
+			boolean canIncreaseWidth, final WTextRenderer renderer) {
 		if (floats.indexOf(this) != -1) {
 			return maxX;
 		}
@@ -2238,7 +2242,7 @@ class Block {
 		}
 	}
 
-	private void layoutAbsolute(WTextRenderer renderer) {
+	private void layoutAbsolute(final WTextRenderer renderer) {
 		LayoutBox staticLayout = this.getLayoutTotal();
 		LayoutBox containingLayout = this.offsetParent_.getLayoutTotal();
 		boolean leftAuto = isOffsetAuto(this
@@ -2387,9 +2391,10 @@ class Block {
 		this.layoutBlock(ps, false, renderer, 0, 0);
 	}
 
-	private void tableDoLayout(double x, PageState ps, double cellSpacing,
-			List<Double> widths, List<CellState> rowSpanBackLog,
-			boolean protectRows, Block repeatHead, WTextRenderer renderer) {
+	private void tableDoLayout(double x, final PageState ps,
+			double cellSpacing, final List<Double> widths,
+			final List<CellState> rowSpanBackLog, boolean protectRows,
+			Block repeatHead, final WTextRenderer renderer) {
 		if (this.type_ == DomElementType.DomElement_TABLE
 				|| this.type_ == DomElementType.DomElement_TBODY
 				|| this.type_ == DomElementType.DomElement_THEAD
@@ -2454,9 +2459,10 @@ class Block {
 		}
 	}
 
-	private void tableRowDoLayout(double x, PageState ps, double cellSpacing,
-			List<Double> widths, List<CellState> rowSpanBackLog,
-			WTextRenderer renderer, double rowHeight) {
+	private void tableRowDoLayout(double x, final PageState ps,
+			double cellSpacing, final List<Double> widths,
+			final List<CellState> rowSpanBackLog, final WTextRenderer renderer,
+			double rowHeight) {
 		PageState rowEnd = new PageState();
 		rowEnd.y = ps.y;
 		rowEnd.page = ps.page;
@@ -2482,7 +2488,7 @@ class Block {
 		}
 		for (int i = 0; i < rowSpanBackLog.size(); ++i) {
 			if (rowSpanBackLog.get(i).lastRow == this.cellRow_) {
-				CellState cs = rowSpanBackLog.get(i);
+				final CellState cs = rowSpanBackLog.get(i);
 				double rh = rowHeight;
 				if (rh >= 0) {
 					rh += (ps.page - cs.page) * renderer.textHeight(cs.page)
@@ -2496,8 +2502,9 @@ class Block {
 		ps.page = rowEnd.page;
 	}
 
-	private void tableCellDoLayout(double x, PageState ps, double cellSpacing,
-			PageState rowEnd, List<Double> widths, WTextRenderer renderer,
+	private void tableCellDoLayout(double x, final PageState ps,
+			double cellSpacing, final PageState rowEnd,
+			final List<Double> widths, final WTextRenderer renderer,
 			double rowHeight) {
 		x += this.tableCellX(widths, cellSpacing);
 		double width = this.tableCellWidth(widths, cellSpacing);
@@ -2524,7 +2531,7 @@ class Block {
 		}
 	}
 
-	private double tableCellX(List<Double> widths, double cellSpacing) {
+	private double tableCellX(final List<Double> widths, double cellSpacing) {
 		double result = 0;
 		for (int j = 0; j < this.cellCol_; ++j) {
 			result += widths.get(j) + cellSpacing;
@@ -2532,7 +2539,7 @@ class Block {
 		return result;
 	}
 
-	private double tableCellWidth(List<Double> widths, double cellSpacing) {
+	private double tableCellWidth(final List<Double> widths, double cellSpacing) {
 		int colSpan = this.attributeValue("colspan", 1);
 		double width = 0;
 		for (int j = this.cellCol_; j < this.cellCol_ + colSpan; ++j) {
@@ -2541,9 +2548,9 @@ class Block {
 		return width + (colSpan - 1) * cellSpacing;
 	}
 
-	private void tableComputeColumnWidths(List<Double> minima,
-			List<Double> maxima, List<Double> asSet, WTextRenderer renderer,
-			Block table) {
+	private void tableComputeColumnWidths(final List<Double> minima,
+			final List<Double> maxima, final List<Double> asSet,
+			final WTextRenderer renderer, Block table) {
 		if (this.type_ == DomElementType.DomElement_TBODY
 				|| this.type_ == DomElementType.DomElement_THEAD
 				|| this.type_ == DomElementType.DomElement_TFOOT) {
@@ -2631,7 +2638,7 @@ class Block {
 		}
 	}
 
-	private int numberTableCells(int row, List<Integer> rowSpan) {
+	private int numberTableCells(int row, final List<Integer> rowSpan) {
 		if (this.type_ == DomElementType.DomElement_TABLE
 				|| this.type_ == DomElementType.DomElement_TBODY
 				|| this.type_ == DomElementType.DomElement_THEAD
@@ -2745,7 +2752,7 @@ class Block {
 	}
 
 	private void cellComputeColumnWidths(Block.WidthType type,
-			List<Double> values, WTextRenderer renderer, Block table) {
+			final List<Double> values, final WTextRenderer renderer, Block table) {
 		double currentWidth = 0;
 		int col = this.cellCol_;
 		int colSpan = this.attributeValue("colspan", 1);
@@ -2816,7 +2823,7 @@ class Block {
 			return this.getFirstInlineLayoutBox();
 		} else {
 			LayoutBox result = new LayoutBox();
-			LayoutBox first = this.blockLayout.get(0);
+			final LayoutBox first = this.blockLayout.get(0);
 			result.x = first.x;
 			result.y = first.y;
 			result.page = first.page;
@@ -2844,7 +2851,7 @@ class Block {
 		}
 	}
 
-	private LayoutBox toBorderBox(LayoutBox bb, double fontScale) {
+	private LayoutBox toBorderBox(final LayoutBox bb, double fontScale) {
 		LayoutBox result = bb;
 		if (this.isFloat()) {
 			result.x += this.cssMargin(Side.Left, fontScale);
@@ -2860,13 +2867,13 @@ class Block {
 	private double maxLayoutY(int page) {
 		double result = 0;
 		for (int i = 0; i < this.inlineLayout.size(); ++i) {
-			InlineBox ib = this.inlineLayout.get(i);
+			final InlineBox ib = this.inlineLayout.get(i);
 			if (page == -1 || ib.page == page) {
 				result = Math.max(result, ib.y + ib.height);
 			}
 		}
 		for (int i = 0; i < this.blockLayout.size(); ++i) {
-			BlockBox lb = this.blockLayout.get(i);
+			final BlockBox lb = this.blockLayout.get(i);
 			if (page == -1 || lb.page == page) {
 				result = Math.max(result, lb.y + lb.height);
 			}
@@ -2883,13 +2890,13 @@ class Block {
 	private double minLayoutY(int page) {
 		double result = 1E9;
 		for (int i = 0; i < this.inlineLayout.size(); ++i) {
-			InlineBox ib = this.inlineLayout.get(i);
+			final InlineBox ib = this.inlineLayout.get(i);
 			if (page == -1 || ib.page == page) {
 				result = Math.min(result, ib.y);
 			}
 		}
 		for (int i = 0; i < this.blockLayout.size(); ++i) {
-			BlockBox lb = this.blockLayout.get(i);
+			final BlockBox lb = this.blockLayout.get(i);
 			if (page == -1 || lb.page == page) {
 				result = Math.min(result, lb.y);
 			}
@@ -2923,15 +2930,15 @@ class Block {
 		return this.maxChildrenLayoutY(page) - this.minChildrenLayoutY(page);
 	}
 
-	private void reLayout(LayoutBox from, LayoutBox to) {
+	private void reLayout(final LayoutBox from, final LayoutBox to) {
 		for (int i = 0; i < this.inlineLayout.size(); ++i) {
-			InlineBox ib = this.inlineLayout.get(i);
+			final InlineBox ib = this.inlineLayout.get(i);
 			ib.page = to.page;
 			ib.x += to.x - from.x;
 			ib.y += to.y - from.y;
 		}
 		for (int i = 0; i < this.blockLayout.size(); ++i) {
-			BlockBox bb = this.blockLayout.get(i);
+			final BlockBox bb = this.blockLayout.get(i);
 			bb.page = to.page;
 			bb.x += to.x - from.x;
 			bb.y += to.y - from.y;
@@ -2941,8 +2948,8 @@ class Block {
 		}
 	}
 
-	private void renderText(String text, WTextRenderer renderer,
-			WPainter painter, int page) {
+	private void renderText(final String text, final WTextRenderer renderer,
+			final WPainter painter, int page) {
 		WPaintDevice device = painter.getDevice();
 		painter.setFont(this.cssFont(renderer.getFontScale()));
 		WFontMetrics metrics = device.getFontMetrics();
@@ -2951,7 +2958,7 @@ class Block {
 		double fontHeight = metrics.getSize();
 		String decoration = this.getCssTextDecoration();
 		for (int i = 0; i < this.inlineLayout.size(); ++i) {
-			InlineBox ib = this.inlineLayout.get(i);
+			final InlineBox ib = this.inlineLayout.get(i);
 			if (ib.page == page) {
 				double y = renderer.getMargin(Side.Top) + ib.y
 						- metrics.getLeading() + (lineHeight - fontHeight)
@@ -3020,8 +3027,9 @@ class Block {
 		}
 	}
 
-	private void renderBorders(LayoutBox bb, WTextRenderer renderer,
-			WPainter painter, EnumSet<Side> verticals) {
+	private void renderBorders(final LayoutBox bb,
+			final WTextRenderer renderer, final WPainter painter,
+			EnumSet<Side> verticals) {
 		if (!(this.node_ != null)) {
 			return;
 		}
@@ -3190,8 +3198,9 @@ class Block {
 		}
 	}
 
-	private final void renderBorders(LayoutBox bb, WTextRenderer renderer,
-			WPainter painter, Side vertical, Side... verticals) {
+	private final void renderBorders(final LayoutBox bb,
+			final WTextRenderer renderer, final WPainter painter,
+			Side vertical, Side... verticals) {
 		renderBorders(bb, renderer, painter, EnumSet.of(vertical, verticals));
 	}
 
@@ -3235,8 +3244,8 @@ class Block {
 		return -1;
 	}
 
-	private static void advance(PageState ps, double height,
-			WTextRenderer renderer) {
+	private static void advance(final PageState ps, double height,
+			final WTextRenderer renderer) {
 		while (ps.y + height > renderer.textHeight(ps.page)) {
 			++ps.page;
 			ps.y = 0;
@@ -3252,7 +3261,7 @@ class Block {
 	}
 
 	private static double diff(double y, int page, double startY,
-			int startPage, WTextRenderer renderer) {
+			int startPage, final WTextRenderer renderer) {
 		double result = y - startY;
 		while (page > startPage) {
 			result += renderer.textHeight(page);
@@ -3261,9 +3270,9 @@ class Block {
 		return result;
 	}
 
-	private static double positionFloat(double x, PageState ps,
+	private static double positionFloat(double x, final PageState ps,
 			double lineHeight, double width, boolean canIncreaseWidth,
-			WTextRenderer renderer, Side floatSide) {
+			final WTextRenderer renderer, Side floatSide) {
 		if (!ps.floats.isEmpty()) {
 			double minY = ps.floats.get(ps.floats.size() - 1).blockLayout
 					.get(0).y;
@@ -3311,18 +3320,20 @@ class Block {
 		return x;
 	}
 
-	private static void unsupportedAttributeValue(String attribute, String value) {
+	private static void unsupportedAttributeValue(String attribute,
+			final String value) {
 		logger.error(new StringWriter().append("unsupported value '").append(
 				value).append("' for attribute ").append(attribute).toString());
 	}
 
-	private static void unsupportedCssValue(Property property, String value) {
+	private static void unsupportedCssValue(Property property,
+			final String value) {
 		logger.error(new StringWriter().append("unsupported value '").append(
 				value).append("'for CSS style property ").append(
 				DomElement.cssName(property)).toString());
 	}
 
-	private static boolean isAggregate(String cssProperty) {
+	private static boolean isAggregate(final String cssProperty) {
 		return cssProperty.equals("margin") || cssProperty.equals("border")
 				|| cssProperty.equals("padding")
 				|| cssProperty.equals("border-color")
@@ -3373,7 +3384,7 @@ class Block {
 		}
 	}
 
-	static double sum(List<Double> v) {
+	static double sum(final List<Double> v) {
 		double result = 0;
 		for (int i = 0; i < v.size(); ++i) {
 			result += v.get(i);
@@ -3381,7 +3392,7 @@ class Block {
 		return result;
 	}
 
-	static boolean isOffsetAuto(String s) {
+	static boolean isOffsetAuto(final String s) {
 		return s.length() == 0 || s.equals("auto");
 	}
 }

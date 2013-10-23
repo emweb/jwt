@@ -211,7 +211,7 @@ public class WBatchEditProxyModel extends WAbstractProxyModel {
 	 * <p>
 	 * You can use this method to initialize data for a newly inserted row.
 	 */
-	public void setNewRowData(int column, Object data, int role) {
+	public void setNewRowData(int column, final Object data, int role) {
 		this.newRowData_.get(column).put(role, data);
 	}
 
@@ -221,7 +221,7 @@ public class WBatchEditProxyModel extends WAbstractProxyModel {
 	 * Calls {@link #setNewRowData(int column, Object data, int role)
 	 * setNewRowData(column, data, ItemDataRole.DisplayRole)}
 	 */
-	public final void setNewRowData(int column, Object data) {
+	public final void setNewRowData(int column, final Object data) {
 		setNewRowData(column, data, ItemDataRole.DisplayRole);
 	}
 
@@ -263,12 +263,12 @@ public class WBatchEditProxyModel extends WAbstractProxyModel {
 	 * <p>
 	 * By default there is no dirty indication.
 	 */
-	public void setDirtyIndication(int role, Object data) {
+	public void setDirtyIndication(int role, final Object data) {
 		this.dirtyIndicationRole_ = role;
 		this.dirtyIndicationData_ = data;
 	}
 
-	public WModelIndex mapFromSource(WModelIndex sourceIndex) {
+	public WModelIndex mapFromSource(final WModelIndex sourceIndex) {
 		if ((sourceIndex != null)) {
 			if (this.isRemoved(sourceIndex.getParent())) {
 				return null;
@@ -289,7 +289,7 @@ public class WBatchEditProxyModel extends WAbstractProxyModel {
 		}
 	}
 
-	public WModelIndex mapToSource(WModelIndex proxyIndex) {
+	public WModelIndex mapToSource(final WModelIndex proxyIndex) {
 		if ((proxyIndex != null)) {
 			WBatchEditProxyModel.Item parentItem = this
 					.parentItemFromIndex(proxyIndex);
@@ -423,7 +423,7 @@ public class WBatchEditProxyModel extends WAbstractProxyModel {
 		this.resetMappings();
 	}
 
-	public int getColumnCount(WModelIndex parent) {
+	public int getColumnCount(final WModelIndex parent) {
 		WBatchEditProxyModel.Item item = this.itemFromIndex(parent, false);
 		if (item != null) {
 			if (item.insertedParent_ != null) {
@@ -439,7 +439,7 @@ public class WBatchEditProxyModel extends WAbstractProxyModel {
 		}
 	}
 
-	public int getRowCount(WModelIndex parent) {
+	public int getRowCount(final WModelIndex parent) {
 		WBatchEditProxyModel.Item item = this.itemFromIndex(parent, false);
 		if (item != null) {
 			if (item.insertedParent_ != null) {
@@ -453,7 +453,7 @@ public class WBatchEditProxyModel extends WAbstractProxyModel {
 		}
 	}
 
-	public WModelIndex getParent(WModelIndex index) {
+	public WModelIndex getParent(final WModelIndex index) {
 		if ((index != null)) {
 			WBatchEditProxyModel.Item parentItem = this
 					.parentItemFromIndex(index);
@@ -463,12 +463,12 @@ public class WBatchEditProxyModel extends WAbstractProxyModel {
 		}
 	}
 
-	public WModelIndex getIndex(int row, int column, WModelIndex parent) {
+	public WModelIndex getIndex(int row, int column, final WModelIndex parent) {
 		WBatchEditProxyModel.Item item = this.itemFromIndex(parent);
 		return this.createIndex(row, column, item);
 	}
 
-	public Object getData(WModelIndex index, int role) {
+	public Object getData(final WModelIndex index, int role) {
 		WBatchEditProxyModel.Item item = this.itemFromIndex(index.getParent());
 		SortedMap<Integer, Object> i = item.editedValues_
 				.get(new WBatchEditProxyModel.Cell(index.getRow(), index
@@ -496,7 +496,7 @@ public class WBatchEditProxyModel extends WAbstractProxyModel {
 	 * to {@link ItemDataRole#DisplayRole}. You may want to specialize the model
 	 * to provide a more specialized editing behaviour.
 	 */
-	public boolean setData(WModelIndex index, Object value, int role) {
+	public boolean setData(final WModelIndex index, final Object value, int role) {
 		WBatchEditProxyModel.Item item = this.itemFromIndex(index.getParent());
 		SortedMap<Integer, Object> i = item.editedValues_
 				.get(new WBatchEditProxyModel.Cell(index.getRow(), index
@@ -523,7 +523,7 @@ public class WBatchEditProxyModel extends WAbstractProxyModel {
 		return true;
 	}
 
-	public EnumSet<ItemFlag> getFlags(WModelIndex index) {
+	public EnumSet<ItemFlag> getFlags(final WModelIndex index) {
 		WModelIndex sourceIndex = this.mapToSource(index);
 		if ((sourceIndex != null)) {
 			return this.getSourceModel().getFlags(index);
@@ -546,7 +546,7 @@ public class WBatchEditProxyModel extends WAbstractProxyModel {
 		}
 	}
 
-	public boolean insertRows(int row, int count, WModelIndex parent) {
+	public boolean insertRows(int row, int count, final WModelIndex parent) {
 		if (this.getColumnCount(parent) == 0) {
 			this.insertColumns(0, 1, parent);
 		}
@@ -570,7 +570,7 @@ public class WBatchEditProxyModel extends WAbstractProxyModel {
 		return true;
 	}
 
-	public boolean removeRows(int row, int count, WModelIndex parent) {
+	public boolean removeRows(int row, int count, final WModelIndex parent) {
 		this.beginRemoveRows(parent, row, row + count - 1);
 		WBatchEditProxyModel.Item item = this.itemFromIndex(parent);
 		this.removeIndexes(item, item.insertedRows_, item.removedRows_,
@@ -580,7 +580,7 @@ public class WBatchEditProxyModel extends WAbstractProxyModel {
 		return true;
 	}
 
-	public boolean insertColumns(int column, int count, WModelIndex parent) {
+	public boolean insertColumns(int column, int count, final WModelIndex parent) {
 		this.beginInsertColumns(parent, column, column + count - 1);
 		WBatchEditProxyModel.Item item = this.itemFromIndex(parent);
 		this.shiftColumns(item, column, count);
@@ -590,7 +590,7 @@ public class WBatchEditProxyModel extends WAbstractProxyModel {
 		return true;
 	}
 
-	public boolean removeColumns(int column, int count, WModelIndex parent) {
+	public boolean removeColumns(int column, int count, final WModelIndex parent) {
 		this.beginRemoveColumns(parent, column, column + count - 1);
 		WBatchEditProxyModel.Item item = this.itemFromIndex(parent);
 		this.removeIndexes(item, item.insertedColumns_, item.removedColumns_,
@@ -627,7 +627,7 @@ public class WBatchEditProxyModel extends WAbstractProxyModel {
 		public List<Integer> removedColumns_;
 		public List<Integer> insertedColumns_;
 
-		public Item(WModelIndex sourceIndex) {
+		public Item(final WModelIndex sourceIndex) {
 			super(sourceIndex);
 			this.insertedParent_ = null;
 			this.editedValues_ = new HashMap<WBatchEditProxyModel.Cell, SortedMap<Integer, Object>>();
@@ -658,15 +658,16 @@ public class WBatchEditProxyModel extends WAbstractProxyModel {
 	private List<AbstractSignal.Connection> modelConnections_;
 	private SortedMap<WModelIndex, WAbstractProxyModel.BaseItem> mappedIndexes_;
 
-	private void sourceColumnsAboutToBeInserted(WModelIndex parent, int start,
-			int end) {
+	private void sourceColumnsAboutToBeInserted(final WModelIndex parent,
+			int start, int end) {
 		if (this.isRemoved(parent)) {
 			return;
 		}
 		this.beginInsertColumns(this.mapFromSource(parent), start, end);
 	}
 
-	private void sourceColumnsInserted(WModelIndex parent, int start, int end) {
+	private void sourceColumnsInserted(final WModelIndex parent, int start,
+			int end) {
 		if (this.isRemoved(parent)) {
 			return;
 		}
@@ -696,8 +697,8 @@ public class WBatchEditProxyModel extends WAbstractProxyModel {
 		}
 	}
 
-	private void sourceColumnsAboutToBeRemoved(WModelIndex parent, int start,
-			int end) {
+	private void sourceColumnsAboutToBeRemoved(final WModelIndex parent,
+			int start, int end) {
 		if (this.isRemoved(parent)) {
 			return;
 		}
@@ -717,18 +718,19 @@ public class WBatchEditProxyModel extends WAbstractProxyModel {
 		}
 	}
 
-	private void sourceColumnsRemoved(WModelIndex parent, int start, int end) {
+	private void sourceColumnsRemoved(final WModelIndex parent, int start,
+			int end) {
 		if (this.isRemoved(parent)) {
 			return;
 		}
 		this.endRemoveColumns();
 	}
 
-	private void sourceRowsAboutToBeInserted(WModelIndex parent, int start,
-			int end) {
+	private void sourceRowsAboutToBeInserted(final WModelIndex parent,
+			int start, int end) {
 	}
 
-	private void sourceRowsInserted(WModelIndex parent, int start, int end) {
+	private void sourceRowsInserted(final WModelIndex parent, int start, int end) {
 		if (this.isRemoved(parent)) {
 			return;
 		}
@@ -769,8 +771,8 @@ public class WBatchEditProxyModel extends WAbstractProxyModel {
 				this.mappedIndexes_);
 	}
 
-	private void sourceRowsAboutToBeRemoved(WModelIndex parent, int start,
-			int end) {
+	private void sourceRowsAboutToBeRemoved(final WModelIndex parent,
+			int start, int end) {
 		if (this.isRemoved(parent)) {
 			return;
 		}
@@ -791,7 +793,7 @@ public class WBatchEditProxyModel extends WAbstractProxyModel {
 		}
 	}
 
-	private void sourceRowsRemoved(WModelIndex parent, int start, int end) {
+	private void sourceRowsRemoved(final WModelIndex parent, int start, int end) {
 		if (this.isRemoved(parent)) {
 			return;
 		}
@@ -799,7 +801,8 @@ public class WBatchEditProxyModel extends WAbstractProxyModel {
 				this.mappedIndexes_);
 	}
 
-	private void sourceDataChanged(WModelIndex topLeft, WModelIndex bottomRight) {
+	private void sourceDataChanged(final WModelIndex topLeft,
+			final WModelIndex bottomRight) {
 		if (this.isRemoved(topLeft.getParent())) {
 			return;
 		}
@@ -841,7 +844,7 @@ public class WBatchEditProxyModel extends WAbstractProxyModel {
 	}
 
 	private WBatchEditProxyModel.Item itemFromSourceIndex(
-			WModelIndex sourceParent, boolean autoCreate) {
+			final WModelIndex sourceParent, boolean autoCreate) {
 		if (this.isRemoved(sourceParent)) {
 			return null;
 		}
@@ -862,12 +865,12 @@ public class WBatchEditProxyModel extends WAbstractProxyModel {
 	}
 
 	private final WBatchEditProxyModel.Item itemFromSourceIndex(
-			WModelIndex sourceParent) {
+			final WModelIndex sourceParent) {
 		return itemFromSourceIndex(sourceParent, true);
 	}
 
 	private WBatchEditProxyModel.Item itemFromInsertedRow(
-			WBatchEditProxyModel.Item parentItem, WModelIndex index,
+			WBatchEditProxyModel.Item parentItem, final WModelIndex index,
 			boolean autoCreate) {
 		int i = parentItem.insertedRows_.indexOf(index.getRow());
 		if (!(parentItem.insertedItems_.get(i) != null) && autoCreate) {
@@ -879,15 +882,16 @@ public class WBatchEditProxyModel extends WAbstractProxyModel {
 	}
 
 	private final WBatchEditProxyModel.Item itemFromInsertedRow(
-			WBatchEditProxyModel.Item parentItem, WModelIndex index) {
+			WBatchEditProxyModel.Item parentItem, final WModelIndex index) {
 		return itemFromInsertedRow(parentItem, index, true);
 	}
 
-	private WBatchEditProxyModel.Item parentItemFromIndex(WModelIndex index) {
+	private WBatchEditProxyModel.Item parentItemFromIndex(
+			final WModelIndex index) {
 		return (WBatchEditProxyModel.Item) index.getInternalPointer();
 	}
 
-	private WBatchEditProxyModel.Item itemFromIndex(WModelIndex index,
+	private WBatchEditProxyModel.Item itemFromIndex(final WModelIndex index,
 			boolean autoCreate) {
 		if ((index != null)) {
 			WBatchEditProxyModel.Item parentItem = this
@@ -917,11 +921,12 @@ public class WBatchEditProxyModel extends WAbstractProxyModel {
 		}
 	}
 
-	private final WBatchEditProxyModel.Item itemFromIndex(WModelIndex index) {
+	private final WBatchEditProxyModel.Item itemFromIndex(
+			final WModelIndex index) {
 		return itemFromIndex(index, true);
 	}
 
-	private boolean isRemoved(WModelIndex sourceIndex) {
+	private boolean isRemoved(final WModelIndex sourceIndex) {
 		if (!(sourceIndex != null)) {
 			return false;
 		}
@@ -963,8 +968,8 @@ public class WBatchEditProxyModel extends WAbstractProxyModel {
 				item.removedColumns_);
 	}
 
-	private int adjustedProxyIndex(int sourceIndex, List<Integer> ins,
-			List<Integer> rem) {
+	private int adjustedProxyIndex(int sourceIndex, final List<Integer> ins,
+			final List<Integer> rem) {
 		if (ins.isEmpty() && rem.isEmpty()) {
 			return sourceIndex;
 		}
@@ -991,8 +996,8 @@ public class WBatchEditProxyModel extends WAbstractProxyModel {
 		return proxyIndex;
 	}
 
-	private int adjustedSourceIndex(int proxyIndex, List<Integer> ins,
-			List<Integer> rem) {
+	private int adjustedSourceIndex(int proxyIndex, final List<Integer> ins,
+			final List<Integer> rem) {
 		int inserted = CollectionUtils.lowerBound(ins, proxyIndex);
 		if (inserted < ins.size() && ins.get(inserted) == proxyIndex) {
 			return -1;
@@ -1002,7 +1007,7 @@ public class WBatchEditProxyModel extends WAbstractProxyModel {
 	}
 
 	private void insertIndexes(WBatchEditProxyModel.Item item,
-			List<Integer> ins, List<WBatchEditProxyModel.Item> rowItems,
+			final List<Integer> ins, List<WBatchEditProxyModel.Item> rowItems,
 			int index, int count) {
 		int insertIndex = CollectionUtils.lowerBound(ins, index);
 		for (int i = 0; i < count; ++i) {
@@ -1015,7 +1020,7 @@ public class WBatchEditProxyModel extends WAbstractProxyModel {
 	}
 
 	private void removeIndexes(WBatchEditProxyModel.Item item,
-			List<Integer> ins, List<Integer> rem,
+			final List<Integer> ins, final List<Integer> rem,
 			List<WBatchEditProxyModel.Item> rowItems, int index, int count) {
 		for (int i = 0; i < count; ++i) {
 			int insi = CollectionUtils.lowerBound(ins, index);
@@ -1052,7 +1057,7 @@ public class WBatchEditProxyModel extends WAbstractProxyModel {
 		}
 	}
 
-	private void shift(List<Integer> v, int index, int count) {
+	private void shift(final List<Integer> v, int index, int count) {
 		int first = CollectionUtils.lowerBound(v, index);
 		for (int i = first; i < v.size(); ++i) {
 			v.set(i, v.get(i) + count);
@@ -1060,14 +1065,14 @@ public class WBatchEditProxyModel extends WAbstractProxyModel {
 	}
 
 	private void shiftRows(
-			Map<WBatchEditProxyModel.Cell, SortedMap<Integer, Object>> v,
+			final Map<WBatchEditProxyModel.Cell, SortedMap<Integer, Object>> v,
 			int row, int count) {
 		for (Iterator<Map.Entry<WBatchEditProxyModel.Cell, SortedMap<Integer, Object>>> i_it = v
 				.entrySet().iterator(); i_it.hasNext();) {
 			Map.Entry<WBatchEditProxyModel.Cell, SortedMap<Integer, Object>> i = i_it
 					.next();
 			if (i.getKey().row >= row) {
-				WBatchEditProxyModel.Cell c = i.getKey();
+				final WBatchEditProxyModel.Cell c = i.getKey();
 				if (count < 0) {
 					if (c.row >= row - count) {
 						c.row += count;
@@ -1090,14 +1095,14 @@ public class WBatchEditProxyModel extends WAbstractProxyModel {
 	}
 
 	private void shiftColumns(
-			Map<WBatchEditProxyModel.Cell, SortedMap<Integer, Object>> v,
+			final Map<WBatchEditProxyModel.Cell, SortedMap<Integer, Object>> v,
 			int column, int count) {
 		for (Iterator<Map.Entry<WBatchEditProxyModel.Cell, SortedMap<Integer, Object>>> i_it = v
 				.entrySet().iterator(); i_it.hasNext();) {
 			Map.Entry<WBatchEditProxyModel.Cell, SortedMap<Integer, Object>> i = i_it
 					.next();
 			if (i.getKey().column >= column) {
-				WBatchEditProxyModel.Cell c = i.getKey();
+				final WBatchEditProxyModel.Cell c = i.getKey();
 				if (count < 0) {
 					if (c.column >= column - count) {
 						c.column += count;
@@ -1129,7 +1134,7 @@ public class WBatchEditProxyModel extends WAbstractProxyModel {
 		this.mappedIndexes_.clear();
 	}
 
-	private Object indicateDirty(int role, Object value) {
+	private Object indicateDirty(int role, final Object value) {
 		if (role == this.dirtyIndicationRole_) {
 			if (role == ItemDataRole.StyleClassRole) {
 				WString s1 = StringUtils.asString(value);
@@ -1147,7 +1152,7 @@ public class WBatchEditProxyModel extends WAbstractProxyModel {
 		}
 	}
 
-	static boolean isAncestor(WModelIndex i1, WModelIndex i2) {
+	static boolean isAncestor(final WModelIndex i1, final WModelIndex i2) {
 		if (!(i1 != null)) {
 			return false;
 		}

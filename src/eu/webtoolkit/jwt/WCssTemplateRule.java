@@ -45,7 +45,7 @@ public class WCssTemplateRule extends WCssRule {
 	 * Microsoft Internet Explorer. </i>
 	 * </p>
 	 */
-	public WCssTemplateRule(String selector, WObject parent) {
+	public WCssTemplateRule(final String selector, WObject parent) {
 		super(selector, parent);
 		this.widget_ = new WCssTemplateWidget(this);
 	}
@@ -56,7 +56,7 @@ public class WCssTemplateRule extends WCssRule {
 	 * Calls {@link #WCssTemplateRule(String selector, WObject parent)
 	 * this(selector, (WObject)null)}
 	 */
-	public WCssTemplateRule(String selector) {
+	public WCssTemplateRule(final String selector) {
 		this(selector, (WObject) null);
 	}
 
@@ -109,7 +109,7 @@ public class WCssTemplateRule extends WCssRule {
 		return e.getCssStyle();
 	}
 
-	boolean updateDomElement(DomElement element, boolean all) {
+	boolean updateDomElement(final DomElement element, boolean all) {
 		this.widget_.updateDom(element, all);
 		return true;
 	}

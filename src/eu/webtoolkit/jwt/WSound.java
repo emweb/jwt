@@ -41,7 +41,7 @@ public class WSound extends WObject {
 	 * MP3 file. </i>
 	 * </p>
 	 */
-	public WSound(String url, WObject parent) {
+	public WSound(final String url, WObject parent) {
 		super(parent);
 		this.url_ = url;
 		this.loops_ = 1;
@@ -55,7 +55,7 @@ public class WSound extends WObject {
 	 * Calls {@link #WSound(String url, WObject parent) this(url,
 	 * (WObject)null)}
 	 */
-	public WSound(String url) {
+	public WSound(final String url) {
 		this(url, (WObject) null);
 	}
 

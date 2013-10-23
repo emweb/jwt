@@ -38,7 +38,7 @@ abstract class WWidgetPainter {
 
 	public abstract void createContents(DomElement element, WPaintDevice device);
 
-	public abstract void updateContents(List<DomElement> result,
+	public abstract void updateContents(final List<DomElement> result,
 			WPaintDevice device);
 
 	public abstract WWidgetPainter.RenderType getRenderType();

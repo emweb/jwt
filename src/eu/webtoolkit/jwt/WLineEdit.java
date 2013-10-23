@@ -113,7 +113,7 @@ public class WLineEdit extends WFormWidget {
 	/**
 	 * Creates a line edit with given content and optional parent.
 	 */
-	public WLineEdit(String text, WContainerWidget parent) {
+	public WLineEdit(final String text, WContainerWidget parent) {
 		super(parent);
 		this.content_ = text;
 		this.textSize_ = 10;
@@ -131,7 +131,7 @@ public class WLineEdit extends WFormWidget {
 	 * Calls {@link #WLineEdit(String text, WContainerWidget parent) this(text,
 	 * (WContainerWidget)null)}
 	 */
-	public WLineEdit(String text) {
+	public WLineEdit(final String text) {
 		this(text, (WContainerWidget) null);
 	}
 
@@ -171,7 +171,7 @@ public class WLineEdit extends WFormWidget {
 	 * 
 	 * @see WLineEdit#getText()
 	 */
-	public void setText(String text) {
+	public void setText(final String text) {
 		if (!this.content_.equals(text)) {
 			this.content_ = text;
 			this.flags_.set(BIT_CONTENT_CHANGED);
@@ -345,7 +345,7 @@ public class WLineEdit extends WFormWidget {
 	 * <p>
 	 * Calls {@link WLineEdit#setText(String text) setText()}.
 	 */
-	public void setValueText(String value) {
+	public void setValueText(final String value) {
 		this.setText(value);
 	}
 
@@ -361,7 +361,7 @@ public class WLineEdit extends WFormWidget {
 	private static final int BIT_AUTOCOMPLETE_CHANGED = 4;
 	BitSet flags_;
 
-	void updateDom(DomElement element, boolean all) {
+	void updateDom(final DomElement element, boolean all) {
 		if (all || this.flags_.get(BIT_CONTENT_CHANGED)) {
 			element.setProperty(Property.PropertyValue, this.content_);
 			this.flags_.clear(BIT_CONTENT_CHANGED);
@@ -402,7 +402,7 @@ public class WLineEdit extends WFormWidget {
 		super.propagateRenderOk(deep);
 	}
 
-	void getDomChanges(List<DomElement> result, WApplication app) {
+	void getDomChanges(final List<DomElement> result, WApplication app) {
 		if (app.getEnvironment().agentIsIE()
 				&& this.flags_.get(BIT_ECHO_MODE_CHANGED)) {
 			DomElement e = DomElement.getForUpdate(this, this
@@ -416,18 +416,18 @@ public class WLineEdit extends WFormWidget {
 		}
 	}
 
-	void setFormData(WObject.FormData formData) {
+	void setFormData(final WObject.FormData formData) {
 		if (this.flags_.get(BIT_CONTENT_CHANGED) || this.isReadOnly()) {
 			return;
 		}
 		if (!(formData.values.length == 0)) {
-			String value = formData.values[0];
+			final String value = formData.values[0];
 			this.content_ = value;
 		}
 	}
 
 	protected int boxPadding(Orientation orientation) {
-		WEnvironment env = WApplication.getInstance().getEnvironment();
+		final WEnvironment env = WApplication.getInstance().getEnvironment();
 		if (env.agentIsIE() || env.agentIsOpera()) {
 			return 1;
 		} else {
@@ -449,7 +449,7 @@ public class WLineEdit extends WFormWidget {
 	}
 
 	protected int boxBorder(Orientation orientation) {
-		WEnvironment env = WApplication.getInstance().getEnvironment();
+		final WEnvironment env = WApplication.getInstance().getEnvironment();
 		if (env.getUserAgent().indexOf("Mac OS X") != -1 && env.agentIsGecko()) {
 			return 3;
 		} else {

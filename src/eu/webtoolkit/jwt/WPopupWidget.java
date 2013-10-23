@@ -182,7 +182,7 @@ public class WPopupWidget extends WCompositeWidget {
 		return this.autoHideDelay_;
 	}
 
-	public void setHidden(boolean hidden, WAnimation animation) {
+	public void setHidden(boolean hidden, final WAnimation animation) {
 		if (WWebWidget.canOptimizeUpdates() && hidden == this.isHidden()) {
 			return;
 		}

@@ -30,7 +30,7 @@ class NavContainer extends WContainerWidget {
 		this((WContainerWidget) null);
 	}
 
-	public void setHidden(boolean hidden, WAnimation animation) {
+	public void setHidden(boolean hidden, final WAnimation animation) {
 		if (animation.isEmpty()) {
 			if (hidden) {
 				this.setHeight(new WLength(0));

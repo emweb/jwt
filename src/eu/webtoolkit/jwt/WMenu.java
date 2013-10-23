@@ -262,7 +262,7 @@ public class WMenu extends WCompositeWidget {
 	 *      WMenuItem.LoadPolicy policy)
 	 * @see WMenu#addItem(WMenuItem item)
 	 */
-	public WMenuItem addItem(CharSequence name, WWidget contents,
+	public WMenuItem addItem(final CharSequence name, WWidget contents,
 			WMenuItem.LoadPolicy policy) {
 		return this.addItem("", name, contents, policy);
 	}
@@ -274,7 +274,7 @@ public class WMenu extends WCompositeWidget {
 	 * {@link #addItem(CharSequence name, WWidget contents, WMenuItem.LoadPolicy policy)
 	 * addItem(name, (WWidget)null, WMenuItem.LoadPolicy.LazyLoading)}
 	 */
-	public final WMenuItem addItem(CharSequence name) {
+	public final WMenuItem addItem(final CharSequence name) {
 		return addItem(name, (WWidget) null, WMenuItem.LoadPolicy.LazyLoading);
 	}
 
@@ -285,7 +285,7 @@ public class WMenu extends WCompositeWidget {
 	 * {@link #addItem(CharSequence name, WWidget contents, WMenuItem.LoadPolicy policy)
 	 * addItem(name, contents, WMenuItem.LoadPolicy.LazyLoading)}
 	 */
-	public final WMenuItem addItem(CharSequence name, WWidget contents) {
+	public final WMenuItem addItem(final CharSequence name, WWidget contents) {
 		return addItem(name, contents, WMenuItem.LoadPolicy.LazyLoading);
 	}
 
@@ -308,7 +308,7 @@ public class WMenu extends WCompositeWidget {
 	 * 
 	 * @see WMenu#addItem(WMenuItem item)
 	 */
-	public WMenuItem addItem(String iconPath, CharSequence name,
+	public WMenuItem addItem(final String iconPath, final CharSequence name,
 			WWidget contents, WMenuItem.LoadPolicy policy) {
 		WMenuItem item = new WMenuItem(iconPath, name, contents, policy);
 		this.addItem(item);
@@ -322,7 +322,8 @@ public class WMenu extends WCompositeWidget {
 	 * {@link #addItem(String iconPath, CharSequence name, WWidget contents, WMenuItem.LoadPolicy policy)
 	 * addItem(iconPath, name, (WWidget)null, WMenuItem.LoadPolicy.LazyLoading)}
 	 */
-	public final WMenuItem addItem(String iconPath, CharSequence name) {
+	public final WMenuItem addItem(final String iconPath,
+			final CharSequence name) {
 		return addItem(iconPath, name, (WWidget) null,
 				WMenuItem.LoadPolicy.LazyLoading);
 	}
@@ -334,17 +335,18 @@ public class WMenu extends WCompositeWidget {
 	 * {@link #addItem(String iconPath, CharSequence name, WWidget contents, WMenuItem.LoadPolicy policy)
 	 * addItem(iconPath, name, contents, WMenuItem.LoadPolicy.LazyLoading)}
 	 */
-	public final WMenuItem addItem(String iconPath, CharSequence name,
-			WWidget contents) {
+	public final WMenuItem addItem(final String iconPath,
+			final CharSequence name, WWidget contents) {
 		return addItem(iconPath, name, contents,
 				WMenuItem.LoadPolicy.LazyLoading);
 	}
 
-	// public WMenuItem addItem(CharSequence text, T target, <pointertomember or
-	// dependentsizedarray> methodpointertomember or dependentsizedarray>) ;
-	// public WMenuItem addItem(String iconPath, CharSequence text, T target,
+	// public WMenuItem addItem(final CharSequence text, T target,
 	// <pointertomember or dependentsizedarray> methodpointertomember or
 	// dependentsizedarray>) ;
+	// public WMenuItem addItem(final String iconPath, final CharSequence text,
+	// T target, <pointertomember or dependentsizedarray> methodpointertomember
+	// or dependentsizedarray>) ;
 	/**
 	 * Adds a submenu, with given text.
 	 * <p>
@@ -352,7 +354,7 @@ public class WMenu extends WCompositeWidget {
 	 * <code>menu</code>.
 	 * <p>
 	 */
-	public WMenuItem addMenu(CharSequence text, WMenu menu) {
+	public WMenuItem addMenu(final CharSequence text, WMenu menu) {
 		return this.addMenu("", text, menu);
 	}
 
@@ -363,7 +365,8 @@ public class WMenu extends WCompositeWidget {
 	 * <code>menu</code>.
 	 * <p>
 	 */
-	public WMenuItem addMenu(String iconPath, CharSequence text, WMenu menu) {
+	public WMenuItem addMenu(final String iconPath, final CharSequence text,
+			WMenu menu) {
 		WMenuItem item = new WMenuItem(iconPath, text, (WWidget) null,
 				WMenuItem.LoadPolicy.LazyLoading);
 		item.setMenu(menu);
@@ -399,8 +402,8 @@ public class WMenu extends WCompositeWidget {
 	 *      WWidget contents, WMenuItem.LoadPolicy policy)
 	 * @see WMenu#insertItem(int index, WMenuItem item)
 	 */
-	public WMenuItem insertItem(int index, CharSequence name, WWidget contents,
-			WMenuItem.LoadPolicy policy) {
+	public WMenuItem insertItem(int index, final CharSequence name,
+			WWidget contents, WMenuItem.LoadPolicy policy) {
 		return this.insertItem(index, "", name, contents, policy);
 	}
 
@@ -411,7 +414,7 @@ public class WMenu extends WCompositeWidget {
 	 * {@link #insertItem(int index, CharSequence name, WWidget contents, WMenuItem.LoadPolicy policy)
 	 * insertItem(index, name, (WWidget)null, WMenuItem.LoadPolicy.LazyLoading)}
 	 */
-	public final WMenuItem insertItem(int index, CharSequence name) {
+	public final WMenuItem insertItem(int index, final CharSequence name) {
 		return insertItem(index, name, (WWidget) null,
 				WMenuItem.LoadPolicy.LazyLoading);
 	}
@@ -423,7 +426,7 @@ public class WMenu extends WCompositeWidget {
 	 * {@link #insertItem(int index, CharSequence name, WWidget contents, WMenuItem.LoadPolicy policy)
 	 * insertItem(index, name, contents, WMenuItem.LoadPolicy.LazyLoading)}
 	 */
-	public final WMenuItem insertItem(int index, CharSequence name,
+	public final WMenuItem insertItem(int index, final CharSequence name,
 			WWidget contents) {
 		return insertItem(index, name, contents,
 				WMenuItem.LoadPolicy.LazyLoading);
@@ -448,8 +451,9 @@ public class WMenu extends WCompositeWidget {
 	 * 
 	 * @see WMenu#insertItem(int index, WMenuItem item)
 	 */
-	public WMenuItem insertItem(int index, String iconPath, CharSequence name,
-			WWidget contents, WMenuItem.LoadPolicy policy) {
+	public WMenuItem insertItem(int index, final String iconPath,
+			final CharSequence name, WWidget contents,
+			WMenuItem.LoadPolicy policy) {
 		WMenuItem item = new WMenuItem(iconPath, name, contents, policy);
 		this.insertItem(index, item);
 		return item;
@@ -463,8 +467,8 @@ public class WMenu extends WCompositeWidget {
 	 * insertItem(index, iconPath, name, (WWidget)null,
 	 * WMenuItem.LoadPolicy.LazyLoading)}
 	 */
-	public final WMenuItem insertItem(int index, String iconPath,
-			CharSequence name) {
+	public final WMenuItem insertItem(int index, final String iconPath,
+			final CharSequence name) {
 		return insertItem(index, iconPath, name, (WWidget) null,
 				WMenuItem.LoadPolicy.LazyLoading);
 	}
@@ -477,17 +481,17 @@ public class WMenu extends WCompositeWidget {
 	 * insertItem(index, iconPath, name, contents,
 	 * WMenuItem.LoadPolicy.LazyLoading)}
 	 */
-	public final WMenuItem insertItem(int index, String iconPath,
-			CharSequence name, WWidget contents) {
+	public final WMenuItem insertItem(int index, final String iconPath,
+			final CharSequence name, WWidget contents) {
 		return insertItem(index, iconPath, name, contents,
 				WMenuItem.LoadPolicy.LazyLoading);
 	}
 
-	// public WMenuItem insertItem(int index, CharSequence text, T target,
+	// public WMenuItem insertItem(int index, final CharSequence text, T target,
 	// <pointertomember or dependentsizedarray> methodpointertomember or
 	// dependentsizedarray>) ;
-	// public WMenuItem insertItem(int index, String iconPath, CharSequence
-	// text, T target, <pointertomember or dependentsizedarray>
+	// public WMenuItem insertItem(int index, final String iconPath, final
+	// CharSequence text, T target, <pointertomember or dependentsizedarray>
 	// methodpointertomember or dependentsizedarray>) ;
 	/**
 	 * inserts a submenu, with given text.
@@ -496,7 +500,7 @@ public class WMenu extends WCompositeWidget {
 	 * <code>menu</code>.
 	 * <p>
 	 */
-	public WMenuItem insertMenu(int index, CharSequence text, WMenu menu) {
+	public WMenuItem insertMenu(int index, final CharSequence text, WMenu menu) {
 		return this.insertMenu(index, "", text, menu);
 	}
 
@@ -507,8 +511,8 @@ public class WMenu extends WCompositeWidget {
 	 * <code>menu</code>.
 	 * <p>
 	 */
-	public WMenuItem insertMenu(int index, String iconPath, CharSequence text,
-			WMenu menu) {
+	public WMenuItem insertMenu(int index, final String iconPath,
+			final CharSequence text, WMenu menu) {
 		WMenuItem item = new WMenuItem(iconPath, text, (WWidget) null,
 				WMenuItem.LoadPolicy.LazyLoading);
 		item.setMenu(menu);
@@ -559,7 +563,7 @@ public class WMenu extends WCompositeWidget {
 	/**
 	 * Adds a section header to the menu.
 	 */
-	public WMenuItem addSectionHeader(CharSequence text) {
+	public WMenuItem addSectionHeader(final CharSequence text) {
 		WMenuItem result = new WMenuItem(false, text);
 		this.addItem(result);
 		return result;
@@ -896,7 +900,7 @@ public class WMenu extends WCompositeWidget {
 	 * 
 	 * @see WMenuItem#setPathComponent(String path)
 	 */
-	public void setInternalPathEnabled(String basePath) {
+	public void setInternalPathEnabled(final String basePath) {
 		WApplication app = WApplication.getInstance();
 		this.basePath_ = basePath.length() == 0 ? app.getInternalPath()
 				: basePath;
@@ -945,7 +949,7 @@ public class WMenu extends WCompositeWidget {
 	 * @see WMenu#setInternalPathEnabled(String basePath)
 	 * @see WMenu#getInternalBasePath()
 	 */
-	public void setInternalBasePath(String basePath) {
+	public void setInternalBasePath(final String basePath) {
 		this.setInternalPathEnabled(basePath);
 	}
 
@@ -1015,7 +1019,7 @@ public class WMenu extends WCompositeWidget {
 	 * You may want to reimplement this if you want to customize the internal
 	 * path handling.
 	 */
-	void internalPathChanged(String path) {
+	void internalPathChanged(final String path) {
 		WApplication app = WApplication.getInstance();
 		if (app.internalPathMatches(this.basePath_)) {
 			String subPath = app.internalSubPath(this.basePath_);
@@ -1106,7 +1110,7 @@ public class WMenu extends WCompositeWidget {
 		}
 	}
 
-	private void handleInternalPathChange(String path) {
+	private void handleInternalPathChange(final String path) {
 		if (!(this.parentItem_ != null)) {
 			this.internalPathChanged(path);
 		}
@@ -1243,7 +1247,7 @@ public class WMenu extends WCompositeWidget {
 		this.scheduleRender();
 	}
 
-	static int match(String path, String component) {
+	static int match(final String path, final String component) {
 		if (component.length() > path.length()) {
 			return -1;
 		}

@@ -294,7 +294,7 @@ public class WLength {
 	/**
 	 * Indicates whether some other object is "equal to" this one.
 	 */
-	public boolean equals(WLength other) {
+	public boolean equals(final WLength other) {
 		return this.auto_ == other.auto_ && this.unit_ == other.unit_
 				&& this.value_ == other.value_;
 	}
@@ -349,15 +349,15 @@ public class WLength {
 	private static double[] unitFactor = { 1, 72 * pxPerPt,
 			72 / 2.54 * pxPerPt, 72 / 25.4 * pxPerPt, pxPerPt, 12 * pxPerPt };
 
-	static WLength multiply(WLength l, double s) {
+	static WLength multiply(final WLength l, double s) {
 		return new WLength(l.getValue() * s, l.getUnit());
 	}
 
-	static WLength multiply(double s, WLength l) {
+	static WLength multiply(double s, final WLength l) {
 		return WLength.multiply(l, s);
 	}
 
-	static WLength divide(WLength l, double s) {
+	static WLength divide(final WLength l, double s) {
 		return WLength.multiply(l, 1 / s);
 	}
 }

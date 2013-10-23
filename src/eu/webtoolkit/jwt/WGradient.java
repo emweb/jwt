@@ -45,7 +45,7 @@ public class WGradient {
 		/**
 		 * Constructor.
 		 */
-		public ColorStop(double position, WColor color) {
+		public ColorStop(double position, final WColor color) {
 			this.position_ = position;
 			this.color_ = color;
 		}
@@ -67,7 +67,7 @@ public class WGradient {
 		/**
 		 * Indicates whether some other object is "equal to" this one.
 		 */
-		public boolean equals(WGradient.ColorStop other) {
+		public boolean equals(final WGradient.ColorStop other) {
 			return this.position_ == other.position_
 					&& this.color_.equals(other.color_);
 		}
@@ -150,7 +150,7 @@ public class WGradient {
 	 * For a radial gradient, the position indicates the distance from the
 	 * center (from 0 to 1 corresponding to center to radius).
 	 */
-	public void addColorStop(double position, WColor color) {
+	public void addColorStop(double position, final WColor color) {
 		this.addColorStop(new WGradient.ColorStop(position, color));
 	}
 
@@ -159,7 +159,7 @@ public class WGradient {
 	 * <p>
 	 * Adds a color stop.
 	 */
-	public void addColorStop(WGradient.ColorStop colorstop) {
+	public void addColorStop(final WGradient.ColorStop colorstop) {
 		for (int i = 0; i < this.colorstops_.size(); ++i) {
 			if (colorstop.getPosition() < this.colorstops_.get(i).getPosition()) {
 				this.colorstops_.add(0 + i, colorstop);
@@ -236,7 +236,7 @@ public class WGradient {
 	/**
 	 * Indicates whether some other object is "equal to" this one.
 	 */
-	public boolean equals(WGradient other) {
+	public boolean equals(final WGradient other) {
 		if (this.style_ != other.style_) {
 			return false;
 		}

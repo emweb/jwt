@@ -55,11 +55,11 @@ public abstract class WAbstractTableModel extends WAbstractItemModel {
 		this((WObject) null);
 	}
 
-	public WModelIndex getParent(WModelIndex index) {
+	public WModelIndex getParent(final WModelIndex index) {
 		return null;
 	}
 
-	public WModelIndex getIndex(int row, int column, WModelIndex parent) {
+	public WModelIndex getIndex(int row, int column, final WModelIndex parent) {
 		return this.createIndex(row, column, null);
 	}
 }

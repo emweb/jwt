@@ -94,7 +94,7 @@ public class WTransform {
 	 * <p>
 	 * Copies the transformation from the <code>rhs</code>.
 	 */
-	public WTransform assign(WTransform rhs) {
+	public WTransform assign(final WTransform rhs) {
 		for (int i = 0; i < 6; ++i) {
 			this.m_[i] = rhs.m_[i];
 		}
@@ -117,7 +117,7 @@ public class WTransform {
 	 * <p>
 	 * Returns <code>true</code> if the transforms are exactly the same.
 	 */
-	public boolean equals(WTransform rhs) {
+	public boolean equals(final WTransform rhs) {
 		for (int i = 0; i < 6; ++i) {
 			if (this.m_[i] != rhs.m_[i]) {
 				return false;
@@ -230,7 +230,7 @@ public class WTransform {
 	 * 
 	 * @see WTransform#map(double x, double y, Double tx, Double ty)
 	 */
-	public WPointF map(WPointF p) {
+	public WPointF map(final WPointF p) {
 		double x;
 		double y;
 		x = this.m_[M11] * p.getX() + this.m_[M12] * p.getY() + this.m_[M13];
@@ -333,8 +333,8 @@ public class WTransform {
 	/**
 	 * Adds a transform that is conceptually applied after this transform.
 	 */
-	public WTransform multiplyAndAssign(WTransform Y) {
-		WTransform X = this;
+	public WTransform multiplyAndAssign(final WTransform Y) {
+		final WTransform X = this;
 		double z11 = X.m_[M11] * Y.m_[M11] + X.m_[M12] * Y.m_[M21];
 		double z12 = X.m_[M11] * Y.m_[M12] + X.m_[M12] * Y.m_[M22];
 		double z13 = X.m_[M11] * Y.m_[M13] + X.m_[M12] * Y.m_[M23] + X.m_[M13];
@@ -353,7 +353,7 @@ public class WTransform {
 	/**
 	 * Multiply 2 transform objects.
 	 */
-	public WTransform multiply(WTransform rhs) {
+	public WTransform multiply(final WTransform rhs) {
 		WTransform result = new WTransform();
 		result.assign(this);
 		return result.multiplyAndAssign(rhs);
@@ -462,7 +462,7 @@ public class WTransform {
 	 * orthonormalization</a>.
 	 */
 	public void decomposeTranslateRotateScaleSkew(
-			WTransform.TRSSDecomposition result) {
+			final WTransform.TRSSDecomposition result) {
 		double[] q1 = new double[2];
 		double r11 = norm(this.m_[M11], this.m_[M21]);
 		q1[0] = this.m_[M11] / r11;
@@ -528,7 +528,7 @@ public class WTransform {
 	 * Value Decomposition (SVD)</a>.
 	 */
 	public void decomposeTranslateRotateScaleRotate(
-			WTransform.TRSRDecomposition result) {
+			final WTransform.TRSRDecomposition result) {
 		double[] mtm = new double[4];
 		logger.debug(new StringWriter().append("M: \n").append(
 				String.valueOf(this.m_[M11])).append(" ").append(

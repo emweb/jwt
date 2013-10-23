@@ -195,7 +195,7 @@ class GoogleMapExample extends WContainerWidget {
 		this.map_.savePosition();
 	}
 
-	private void addMapTypeControl(CharSequence description,
+	private void addMapTypeControl(final CharSequence description,
 			WGoogleMap.MapTypeControl value) {
 		int r = this.mapTypeModel_.getRowCount();
 		this.mapTypeModel_.insertRow(r);

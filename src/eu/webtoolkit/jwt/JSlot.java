@@ -108,7 +108,7 @@ public class JSlot {
 	 * @see JSlot#JSlot(WWidget parent)
 	 * @see JSlot#setJavaScript(String js)
 	 */
-	public JSlot(String javaScript, WWidget parent) {
+	public JSlot(final String javaScript, WWidget parent) {
 		this.widget_ = parent;
 		this.fid_ = nextFid_++;
 		this.create();
@@ -121,7 +121,7 @@ public class JSlot {
 	 * Calls {@link #JSlot(String javaScript, WWidget parent) this(javaScript,
 	 * (WWidget)null)}
 	 */
-	public JSlot(String javaScript) {
+	public JSlot(final String javaScript) {
 		this(javaScript, (WWidget) null);
 	}
 
@@ -148,7 +148,7 @@ public class JSlot {
 	 * 
 	 * @see WWidget#getJsRef()
 	 */
-	public void setJavaScript(String js) {
+	public void setJavaScript(final String js) {
 		if (this.widget_ != null) {
 			WApplication.getInstance().declareJavaScriptFunction(
 					this.getJsFunctionName(), js);
@@ -170,7 +170,7 @@ public class JSlot {
 	 * 
 	 * @see JSlot#setJavaScript(String js)
 	 */
-	public void exec(String object, String event) {
+	public void exec(final String object, final String event) {
 		WApplication.getInstance().doJavaScript(this.execJs(object, event));
 	}
 
@@ -188,7 +188,7 @@ public class JSlot {
 	 * <p>
 	 * Calls {@link #exec(String object, String event) exec(object, "null")}
 	 */
-	public final void exec(String object) {
+	public final void exec(final String object) {
 		exec(object, "null");
 	}
 
@@ -203,7 +203,7 @@ public class JSlot {
 	 * 
 	 * @see JSlot#exec(String object, String event)
 	 */
-	public String execJs(String object, String event) {
+	public String execJs(final String object, final String event) {
 		return "{var o=" + object + ", e=" + event + ";"
 				+ this.imp_.getJavaScript() + "}";
 	}
@@ -224,7 +224,7 @@ public class JSlot {
 	 * Returns {@link #execJs(String object, String event) execJs(object,
 	 * "null")}
 	 */
-	public final String execJs(String object) {
+	public final String execJs(final String object) {
 		return execJs(object, "null");
 	}
 

@@ -22,11 +22,11 @@ import org.slf4j.LoggerFactory;
 class Match {
 	private static Logger logger = LoggerFactory.getLogger(Match.class);
 
-	public static boolean isMatch(Block block, SimpleSelector s) {
+	public static boolean isMatch(Block block, final SimpleSelector s) {
 		final DomElementType tag = block.getType();
 		final String id = block.getId();
-		List<String> classes = block.getClasses();
-		List<String> requiredClasses = s.getClasses();
+		final List<String> classes = block.getClasses();
+		final List<String> requiredClasses = s.getClasses();
 		if (s.getElementName().length() != 0 && !s.getElementName().equals("*")
 				&& tag != s.getElementType()) {
 			return false;
@@ -42,7 +42,7 @@ class Match {
 		return true;
 	}
 
-	public static Specificity isMatch(Block block, Selector selector) {
+	public static Specificity isMatch(Block block, final Selector selector) {
 		if (!(selector.getSize() != 0)) {
 			return new Specificity(false);
 		}

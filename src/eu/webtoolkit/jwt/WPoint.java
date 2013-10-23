@@ -75,11 +75,11 @@ public class WPoint {
 	/**
 	 * Indicates whether some other object is "equal to" this one.
 	 */
-	public boolean equals(WPoint other) {
+	public boolean equals(final WPoint other) {
 		return this.x_ == other.x_ && this.y_ == other.y_;
 	}
 
-	WPoint add(WPoint other) {
+	WPoint add(final WPoint other) {
 		this.x_ += other.x_;
 		this.y_ += other.y_;
 		return this;

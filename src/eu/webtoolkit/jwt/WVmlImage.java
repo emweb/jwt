@@ -43,7 +43,8 @@ public class WVmlImage implements WVectorImage {
 	 * fragment will be rendered that can be used to update the DOM of an
 	 * existing VML image, instead of a full VML image.
 	 */
-	public WVmlImage(WLength width, WLength height, boolean paintUpdate) {
+	public WVmlImage(final WLength width, final WLength height,
+			boolean paintUpdate) {
 		super();
 		this.width_ = width;
 		this.height_ = height;
@@ -80,7 +81,7 @@ public class WVmlImage implements WVectorImage {
 		setChanged(EnumSet.of(flag, flags));
 	}
 
-	public void drawArc(WRectF rect, double startAngle, double spanAngle) {
+	public void drawArc(final WRectF rect, double startAngle, double spanAngle) {
 		this.getPainter().save();
 		this.getPainter().translate(rect.getCenter().getX(),
 				rect.getCenter().getY());
@@ -92,8 +93,8 @@ public class WVmlImage implements WVectorImage {
 		this.getPainter().restore();
 	}
 
-	public void drawImage(WRectF rect, String imgUri, int imgWidth,
-			int imgHeight, WRectF sourceRect) {
+	public void drawImage(final WRectF rect, final String imgUri, int imgWidth,
+			int imgHeight, final WRectF sourceRect) {
 		this.finishPaths();
 		this.processClipping();
 		WTransform t = this.getPainter().getCombinedTransform();
@@ -147,7 +148,7 @@ public class WVmlImage implements WVectorImage {
 		this.getPainter().setBrush(oldBrush);
 	}
 
-	public void drawPath(WPainterPath path) {
+	public void drawPath(final WPainterPath path) {
 		if (this.penBrushShadowChanged_) {
 			if (!this.currentPen_.equals(this.getPainter().getPen())
 					|| !this.currentBrush_.equals(this.getPainter().getBrush())
@@ -180,7 +181,7 @@ public class WVmlImage implements WVectorImage {
 			this.penBrushShadowChanged_ = false;
 		}
 		StringBuilder tmp = new StringBuilder();
-		List<WPainterPath.Segment> segments = path.getSegments();
+		final List<WPainterPath.Segment> segments = path.getSegments();
 		if (thisPath == -1) {
 			tmp.append("<v:shape style=\"width:").append(
 					(int) (Z * this.currentRect_.getWidth())).append(
@@ -288,8 +289,8 @@ public class WVmlImage implements WVectorImage {
 				.get(thisPath).bbox.united(bbox));
 	}
 
-	public void drawText(WRectF rect, EnumSet<AlignmentFlag> flags,
-			TextFlag textFlag, CharSequence text) {
+	public void drawText(final WRectF rect, EnumSet<AlignmentFlag> flags,
+			TextFlag textFlag, final CharSequence text) {
 		if (textFlag == TextFlag.TextWordWrap) {
 			throw new WException(
 					"WVmlImage::drawText(): TextWordWrap is not supported");
@@ -369,16 +370,16 @@ public class WVmlImage implements WVectorImage {
 		this.rendered_.append(render.toString());
 	}
 
-	public WTextItem measureText(CharSequence text, double maxWidth,
+	public WTextItem measureText(final CharSequence text, double maxWidth,
 			boolean wordWrap) {
 		throw new WException("WVmlImage::measureText() not supported");
 	}
 
-	public final WTextItem measureText(CharSequence text) {
+	public final WTextItem measureText(final CharSequence text) {
 		return measureText(text, -1, false);
 	}
 
-	public final WTextItem measureText(CharSequence text, double maxWidth) {
+	public final WTextItem measureText(final CharSequence text, double maxWidth) {
 		return measureText(text, maxWidth, false);
 	}
 
@@ -465,7 +466,7 @@ public class WVmlImage implements WVectorImage {
 			if (!((this.getPainter().getRenderHints() & WPainter.RenderHint.LowQualityShadows
 					.getValue()) != 0)
 					&& !this.currentShadow_.isNone()) {
-				String path = this.activePaths_.get(i).path;
+				final String path = this.activePaths_.get(i).path;
 				int pos = path.indexOf("style=\"") + 7;
 				this.rendered_.append(path.substring(0, 0 + pos)).append(
 						this.getCreateShadowFilter()).append(
@@ -539,7 +540,7 @@ public class WVmlImage implements WVectorImage {
 		}
 	}
 
-	private String fillElement(WBrush brush) {
+	private String fillElement(final WBrush brush) {
 		if (brush.getStyle() != BrushStyle.NoBrush) {
 			return "<v:fill " + colorAttributes(brush.getColor()) + "/>";
 		} else {
@@ -547,7 +548,7 @@ public class WVmlImage implements WVectorImage {
 		}
 	}
 
-	private String strokeElement(WPen pen) {
+	private String strokeElement(final WPen pen) {
 		if (pen.getStyle() != PenStyle.NoPen) {
 			String result = "";
 			result = "<v:stroke " + colorAttributes(pen.getColor());
@@ -600,7 +601,7 @@ public class WVmlImage implements WVectorImage {
 		}
 	}
 
-	private String skewElement(WTransform t) {
+	private String skewElement(final WTransform t) {
 		if (!t.isIdentity()) {
 			char[] buf = new char[30];
 			StringBuilder s = new StringBuilder();
@@ -624,7 +625,7 @@ public class WVmlImage implements WVectorImage {
 		}
 	}
 
-	private String shadowElement(WShadow shadow) {
+	private String shadowElement(final WShadow shadow) {
 		if (!((this.getPainter().getRenderHints() & WPainter.RenderHint.LowQualityShadows
 				.getValue()) != 0)) {
 			return "";
@@ -663,7 +664,7 @@ public class WVmlImage implements WVectorImage {
 		return filter.toString();
 	}
 
-	private static String colorAttributes(WColor color) {
+	private static String colorAttributes(final WColor color) {
 		String result = " color=" + quote(color.getCssText());
 		if (color.getAlpha() != 255) {
 			result += " opacity=" + quote(color.getAlpha() / 255.);
@@ -676,11 +677,11 @@ public class WVmlImage implements WVectorImage {
 		return quote(MathUtils.roundJs(d, 5));
 	}
 
-	private static String quote(String s) {
+	private static String quote(final String s) {
 		return '"' + s + '"';
 	}
 
-	private void startClip(WRectF rect) {
+	private void startClip(final WRectF rect) {
 		this.rendered_.append("<div style=\"position:absolute;left:").append(
 				String.valueOf(rect.getLeft())).append("px;top:").append(
 				String.valueOf(rect.getTop())).append("px;width:").append(
@@ -721,11 +722,11 @@ public class WVmlImage implements WVectorImage {
 		return Math.abs(d1 - d2) < 1E-5;
 	}
 
-	static double norm(WPointF p) {
+	static double norm(final WPointF p) {
 		return Math.sqrt(p.getX() * p.getX() + p.getY() * p.getY());
 	}
 
-	static WRectF transformBbox(WTransform t, WRectF r) {
+	static WRectF transformBbox(final WTransform t, final WRectF r) {
 		double minX;
 		double minY;
 		double maxX;

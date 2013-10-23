@@ -68,19 +68,19 @@ class Specificity {
 		return this.value_.charAt(0) == (char) 1;
 	}
 
-	public boolean isSmallerThen(Specificity other) {
+	public boolean isSmallerThen(final Specificity other) {
 		return this.value_.compareTo(other.value_) < 0;
 	}
 
-	public boolean isGreaterThen(Specificity other) {
+	public boolean isGreaterThen(final Specificity other) {
 		return this.value_.compareTo(other.value_) > 0;
 	}
 
-	public boolean isSmallerOrEqualThen(Specificity other) {
+	public boolean isSmallerOrEqualThen(final Specificity other) {
 		return !this.isGreaterThen(other);
 	}
 
-	public boolean isGreaterOrEqualThen(Specificity other) {
+	public boolean isGreaterOrEqualThen(final Specificity other) {
 		return !this.isSmallerThen(other);
 	}
 

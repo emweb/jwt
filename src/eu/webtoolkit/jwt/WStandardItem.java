@@ -70,7 +70,7 @@ public class WStandardItem {
 	 * 
 	 * @see WStandardItem#setText(CharSequence text)
 	 */
-	public WStandardItem(CharSequence text) {
+	public WStandardItem(final CharSequence text) {
 		this.model_ = null;
 		this.parent_ = null;
 		this.row_ = -1;
@@ -88,7 +88,7 @@ public class WStandardItem {
 	 * @see WStandardItem#setText(CharSequence text)
 	 * @see WStandardItem#setIcon(String uri)
 	 */
-	public WStandardItem(String iconUri, CharSequence text) {
+	public WStandardItem(final String iconUri, final CharSequence text) {
 		this.model_ = null;
 		this.parent_ = null;
 		this.row_ = -1;
@@ -153,7 +153,7 @@ public class WStandardItem {
 	 * @see WStandardItem#getText()
 	 * @see WStandardItem#setData(Object d, int role)
 	 */
-	public void setText(CharSequence text) {
+	public void setText(final CharSequence text) {
 		this.setData(text, ItemDataRole.DisplayRole);
 	}
 
@@ -180,7 +180,7 @@ public class WStandardItem {
 	 * @see WStandardItem#getIcon()
 	 * @see WStandardItem#setData(Object d, int role)
 	 */
-	public void setIcon(String uri) {
+	public void setIcon(final String uri) {
 		this.setData(uri, ItemDataRole.DecorationRole);
 	}
 
@@ -211,7 +211,7 @@ public class WStandardItem {
 	 * @see WStandardItem#getStyleClass()
 	 * @see WStandardItem#setData(Object d, int role)
 	 */
-	public void setStyleClass(CharSequence styleClass) {
+	public void setStyleClass(final CharSequence styleClass) {
 		this.setData(styleClass, ItemDataRole.StyleClassRole);
 	}
 
@@ -242,7 +242,7 @@ public class WStandardItem {
 	 * @see WStandardItem#getToolTip()
 	 * @see WStandardItem#setData(Object d, int role)
 	 */
-	public void setToolTip(CharSequence toolTip) {
+	public void setToolTip(final CharSequence toolTip) {
 		this.setData(toolTip, ItemDataRole.ToolTipRole);
 	}
 
@@ -269,7 +269,7 @@ public class WStandardItem {
 	 * 
 	 * @see WStandardItem#setData(Object d, int role)
 	 */
-	public void setLink(WLink link) {
+	public void setLink(final WLink link) {
 		this.setData(link, ItemDataRole.LinkRole);
 	}
 
@@ -298,7 +298,7 @@ public class WStandardItem {
 	 * @deprecated Use {@link WStandardItem#setLink(WLink link) setLink()}
 	 *             instead.
 	 */
-	public void setInternalPath(String internalpath) {
+	public void setInternalPath(final String internalpath) {
 		this.setLink(new WLink(WLink.Type.InternalPath, internalpath));
 	}
 
@@ -327,7 +327,7 @@ public class WStandardItem {
 	 * @deprecated Use {@link WStandardItem#setLink(WLink link) setLink()}
 	 *             instead.
 	 */
-	public void setUrl(String url) {
+	public void setUrl(final String url) {
 		this.setLink(new WLink(url));
 	}
 
@@ -558,7 +558,7 @@ public class WStandardItem {
 	 * 
 	 * @see WStandardItem#getData(int role)
 	 */
-	public void setData(Object d, int role) {
+	public void setData(final Object d, int role) {
 		if (role == ItemDataRole.EditRole) {
 			role = ItemDataRole.DisplayRole;
 		}
@@ -576,7 +576,7 @@ public class WStandardItem {
 	 * Calls {@link #setData(Object d, int role) setData(d,
 	 * ItemDataRole.UserRole)}
 	 */
-	public final void setData(Object d) {
+	public final void setData(final Object d) {
 		setData(d, ItemDataRole.UserRole);
 	}
 
@@ -716,7 +716,7 @@ public class WStandardItem {
 	 * @see WStandardItem#insertColumn(int column, List items)
 	 * @see WStandardItem#appendRow(List items)
 	 */
-	public void appendColumn(List<WStandardItem> items) {
+	public void appendColumn(final List<WStandardItem> items) {
 		this.insertColumn(this.getColumnCount(), items);
 	}
 
@@ -729,7 +729,7 @@ public class WStandardItem {
 	 * 
 	 * @see WStandardItem#insertRow(int row, List items)
 	 */
-	public void insertColumn(int column, List<WStandardItem> items) {
+	public void insertColumn(int column, final List<WStandardItem> items) {
 		int rc = this.getRowCount();
 		if (!(this.columns_ != null)) {
 			this.setRowCount(items.size());
@@ -754,7 +754,7 @@ public class WStandardItem {
 				}
 			}
 			if (items.size() < rc) {
-				List<WStandardItem> inserted = this.columns_.get(column);
+				final List<WStandardItem> inserted = this.columns_.get(column);
 				CollectionUtils.resize(inserted, rc);
 			}
 			this.renumberColumns(column + 1);
@@ -782,7 +782,7 @@ public class WStandardItem {
 	 * @see WStandardItem#insertRow(int row, List items)
 	 * @see WStandardItem#appendColumn(List items)
 	 */
-	public void appendRow(List<WStandardItem> items) {
+	public void appendRow(final List<WStandardItem> items) {
 		this.insertRow(this.getRowCount(), items);
 	}
 
@@ -795,7 +795,7 @@ public class WStandardItem {
 	 * 
 	 * @see WStandardItem#insertColumn(int column, List items)
 	 */
-	public void insertRow(int row, List<WStandardItem> items) {
+	public void insertRow(int row, final List<WStandardItem> items) {
 		if (!(this.columns_ != null)) {
 			this.setColumnCount(1);
 		}
@@ -808,7 +808,7 @@ public class WStandardItem {
 			this.model_.beginInsertRows(this.getIndex(), row, row);
 		}
 		for (int i = 0; i < cc; ++i) {
-			List<WStandardItem> c = this.columns_.get(i);
+			final List<WStandardItem> c = this.columns_.get(i);
 			WStandardItem item = i < items.size() ? items.get(i) : null;
 			c.add(0 + row, item);
 			this.adoptChild(row, i, item);
@@ -873,7 +873,7 @@ public class WStandardItem {
 			}
 			int cc = this.getColumnCount();
 			for (int i = 0; i < cc; ++i) {
-				List<WStandardItem> c = this.columns_.get(i);
+				final List<WStandardItem> c = this.columns_.get(i);
 				{
 					int insertPos = 0 + row;
 					for (int ii = 0; ii < count; ++ii)
@@ -952,7 +952,7 @@ public class WStandardItem {
 	 * 
 	 * @see WStandardItem#insertRows(int row, List items)
 	 */
-	public void appendRows(List<WStandardItem> items) {
+	public void appendRows(final List<WStandardItem> items) {
 		this.insertRows(this.getRowCount(), items);
 	}
 
@@ -966,7 +966,7 @@ public class WStandardItem {
 	 * 
 	 * @see WStandardItem#insertRow(int row, WStandardItem item)
 	 */
-	public void insertRows(int row, List<WStandardItem> items) {
+	public void insertRows(int row, final List<WStandardItem> items) {
 		List<WStandardItem> r = new ArrayList<WStandardItem>();
 		r.add((WStandardItem) null);
 		for (int i = 0; i < items.size(); ++i) {
@@ -1133,7 +1133,7 @@ public class WStandardItem {
 		}
 		;
 		for (int i = 0; i < result.size(); ++i) {
-			List<WStandardItem> c = this.columns_.get(i);
+			final List<WStandardItem> c = this.columns_.get(i);
 			result.set(i, c.get(row));
 			this.orphanChild(result.get(i));
 			c.remove(0 + row);
@@ -1233,7 +1233,7 @@ public class WStandardItem {
 			this.model_.beginRemoveRows(this.getIndex(), row, row + count - 1);
 		}
 		for (int i = 0; i < this.getColumnCount(); ++i) {
-			List<WStandardItem> c = this.columns_.get(i);
+			final List<WStandardItem> c = this.columns_.get(i);
 			for (int j = 0; j < count; ++j) {
 				;
 			}
@@ -1381,7 +1381,7 @@ public class WStandardItem {
 	 * @see WStandardItem#sortChildren(int column, SortOrder order)
 	 * @see WStandardItemModel#setSortRole(int role)
 	 */
-	int compare(WStandardItem other) {
+	int compare(final WStandardItem other) {
 		int role = this.model_ != null ? this.model_.getSortRole()
 				: ItemDataRole.DisplayRole;
 		Object d1 = this.getData(role);
@@ -1432,7 +1432,7 @@ public class WStandardItem {
 					column, order));
 			for (int c = 0; c < this.getColumnCount(); ++c) {
 				List<WStandardItem> temp = new ArrayList<WStandardItem>();
-				List<WStandardItem> cc = this.columns_.get(c);
+				final List<WStandardItem> cc = this.columns_.get(c);
 				for (int r = 0; r < this.getRowCount(); ++r) {
 					temp.add(cc.get(permutation.get(r)));
 					if (temp.get(r) != null) {

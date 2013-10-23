@@ -174,7 +174,7 @@ class PaintedSlider extends WPaintedWidget {
 		}
 	}
 
-	public void doUpdateDom(DomElement element, boolean all) {
+	public void doUpdateDom(final DomElement element, boolean all) {
 		if (all) {
 			WApplication app = WApplication.getInstance();
 			DomElement west = DomElement
@@ -193,7 +193,7 @@ class PaintedSlider extends WPaintedWidget {
 		}
 	}
 
-	public void sliderResized(WLength width, WLength height) {
+	public void sliderResized(final WLength width, final WLength height) {
 		if (this.slider_.getOrientation() == Orientation.Horizontal) {
 			WLength w = width;
 			if (!w.isAuto()) {
@@ -272,7 +272,7 @@ class PaintedSlider extends WPaintedWidget {
 						: 0);
 	}
 
-	private void onSliderClick(WMouseEvent event) {
+	private void onSliderClick(final WMouseEvent event) {
 		int x = event.getWidget().x;
 		int y = event.getWidget().y;
 		if (WApplication.getInstance().getLayoutDirection() == LayoutDirection.RightToLeft) {

@@ -50,8 +50,8 @@ public class Identity {
 	/**
 	 * Constructor.
 	 */
-	public Identity(String provider, String id, String name, String email,
-			boolean emailVerified) {
+	public Identity(final String provider, final String id, final String name,
+			final String email, boolean emailVerified) {
 		this.provider_ = provider;
 		this.id_ = id;
 		this.email_ = email;

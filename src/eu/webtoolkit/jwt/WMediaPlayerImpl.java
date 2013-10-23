@@ -23,7 +23,7 @@ class WMediaPlayerImpl extends WTemplate {
 	private static Logger logger = LoggerFactory
 			.getLogger(WMediaPlayerImpl.class);
 
-	public WMediaPlayerImpl(WMediaPlayer player, CharSequence text) {
+	public WMediaPlayerImpl(WMediaPlayer player, final CharSequence text) {
 		super(text);
 		this.player_ = player;
 		this.setFormObject(true);
@@ -39,7 +39,7 @@ class WMediaPlayerImpl extends WTemplate {
 		}
 	}
 
-	void setFormData(WObject.FormData formData) {
+	void setFormData(final WObject.FormData formData) {
 		this.player_.setFormData(formData);
 	}
 

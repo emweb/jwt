@@ -22,7 +22,7 @@ import org.slf4j.LoggerFactory;
 class PdfUtils {
 	private static Logger logger = LoggerFactory.getLogger(PdfUtils.class);
 
-	static String toBase14Font(WFont font) {
+	static String toBase14Font(final WFont font) {
 		String base = null;
 		String italic = null;
 		String bold = null;

@@ -161,7 +161,7 @@ public class WTableCell extends WContainerWidget {
 	private int columnSpan_;
 	private boolean spanChanged_;
 
-	void updateDom(DomElement element, boolean all) {
+	void updateDom(final DomElement element, boolean all) {
 		if (all && this.rowSpan_ != 1 || this.spanChanged_) {
 			element.setProperty(Property.PropertyRowSpan, String
 					.valueOf(this.rowSpan_));

@@ -156,7 +156,7 @@ public class WDatePicker extends WCompositeWidget {
 	 * @see WDatePicker#getFormat()
 	 * @see WDate#toString()
 	 */
-	public void setFormat(String format) {
+	public void setFormat(final String format) {
 		WDate d = this.getDate();
 		this.format_ = format;
 		WDateValidator dv = ((this.forEdit_.getValidator()) instanceof WDateValidator ? (WDateValidator) (this.forEdit_
@@ -239,7 +239,7 @@ public class WDatePicker extends WCompositeWidget {
 	 * 
 	 * @see WDatePicker#getDate()
 	 */
-	public void setDate(WDate date) {
+	public void setDate(final WDate date) {
 		if (!(date == null)) {
 			this.forEdit_.setText(date.toString(this.format_));
 			this.calendar_.select(date);
@@ -265,7 +265,7 @@ public class WDatePicker extends WCompositeWidget {
 	/**
 	 * Hide/unhide the widget.
 	 */
-	public void setHidden(boolean hidden, WAnimation animation) {
+	public void setHidden(boolean hidden, final WAnimation animation) {
 		super.setHidden(hidden, animation);
 		this.forEdit_.setHidden(hidden, animation);
 		this.displayWidget_.setHidden(hidden, animation);
@@ -274,7 +274,7 @@ public class WDatePicker extends WCompositeWidget {
 	/**
 	 * Sets the bottom of the valid date range.
 	 */
-	public void setBottom(WDate bottom) {
+	public void setBottom(final WDate bottom) {
 		WDateValidator dv = ((this.forEdit_.getValidator()) instanceof WDateValidator ? (WDateValidator) (this.forEdit_
 				.getValidator())
 				: null);
@@ -301,7 +301,7 @@ public class WDatePicker extends WCompositeWidget {
 	/**
 	 * Sets the top of the valid date range.
 	 */
-	public void setTop(WDate top) {
+	public void setTop(final WDate top) {
 		WDateValidator dv = ((this.forEdit_.getValidator()) instanceof WDateValidator ? (WDateValidator) (this.forEdit_
 				.getValidator())
 				: null);
@@ -476,7 +476,8 @@ public class WDatePicker extends WCompositeWidget {
 
 	private void setFromCalendar() {
 		if (!this.calendar_.getSelection().isEmpty()) {
-			WDate calDate = this.calendar_.getSelection().iterator().next();
+			final WDate calDate = this.calendar_.getSelection().iterator()
+					.next();
 			this.forEdit_.setText(calDate.toString(this.format_));
 			this.forEdit_.changed().trigger();
 		}

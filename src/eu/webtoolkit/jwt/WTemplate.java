@@ -165,7 +165,8 @@ import org.slf4j.LoggerFactory;
 public class WTemplate extends WInteractWidget {
 	private static Logger logger = LoggerFactory.getLogger(WTemplate.class);
 
-	private boolean _tr(List<WString> args, Writer result) throws IOException {
+	private boolean _tr(final List<WString> args, final Writer result)
+			throws IOException {
 		if (args.size() >= 1) {
 			WString s = WString.tr(args.get(0).toString());
 			for (int j = 1; j < args.size(); ++j) {
@@ -181,7 +182,7 @@ public class WTemplate extends WInteractWidget {
 		}
 	}
 
-	private boolean _block(List<WString> args, Writer result)
+	private boolean _block(final List<WString> args, final Writer result)
 			throws IOException {
 		if (args.size() < 1) {
 			return false;
@@ -194,7 +195,8 @@ public class WTemplate extends WInteractWidget {
 		return true;
 	}
 
-	private boolean _id(List<WString> args, Writer result) throws IOException {
+	private boolean _id(final List<WString> args, final Writer result)
+			throws IOException {
 		if (args.size() == 1) {
 			WWidget w = this.resolveWidget(args.get(0).toString());
 			if (w != null) {
@@ -222,14 +224,16 @@ public class WTemplate extends WInteractWidget {
 	 * @see WTemplate.Functions#block
 	 */
 	public static interface Function {
-		public boolean evaluate(WTemplate t, List<WString> args, Writer result);
+		public boolean evaluate(WTemplate t, final List<WString> args,
+				final Writer result);
 	}
 
 	static class TrFunction implements WTemplate.Function {
 		private static Logger logger = LoggerFactory
 				.getLogger(TrFunction.class);
 
-		public boolean evaluate(WTemplate t, List<WString> args, Writer result) {
+		public boolean evaluate(WTemplate t, final List<WString> args,
+				final Writer result) {
 			try {
 				return t._tr(args, result);
 			} catch (IOException ioe) {
@@ -242,7 +246,8 @@ public class WTemplate extends WInteractWidget {
 		private static Logger logger = LoggerFactory
 				.getLogger(BlockFunction.class);
 
-		public boolean evaluate(WTemplate t, List<WString> args, Writer result) {
+		public boolean evaluate(WTemplate t, final List<WString> args,
+				final Writer result) {
 			try {
 				return t._block(args, result);
 			} catch (IOException ioe) {
@@ -255,7 +260,8 @@ public class WTemplate extends WInteractWidget {
 		private static Logger logger = LoggerFactory
 				.getLogger(IdFunction.class);
 
-		public boolean evaluate(WTemplate t, List<WString> args, Writer result) {
+		public boolean evaluate(WTemplate t, final List<WString> args,
+				final Writer result) {
 			try {
 				return t._id(args, result);
 			} catch (IOException ioe) {
@@ -296,7 +302,7 @@ public class WTemplate extends WInteractWidget {
 		 * 
 		 * @see WTemplate#addFunction(String name, WTemplate.Function function)
 		 */
-		public static WTemplate.Function tr = new WTemplate.TrFunction();
+		public static final WTemplate.Function tr = new WTemplate.TrFunction();
 		/**
 		 * A function that renders a macro block.
 		 * <p>
@@ -340,7 +346,7 @@ public class WTemplate extends WInteractWidget {
 		 *     }
 		 * </pre>
 		 */
-		public static WTemplate.Function block = new WTemplate.BlockFunction();
+		public static final WTemplate.Function block = new WTemplate.BlockFunction();
 		/**
 		 * A function that resolves the id of a bound widget.
 		 * <p>
@@ -367,7 +373,7 @@ public class WTemplate extends WInteractWidget {
 		 * 
 		 * @see WTemplate#addFunction(String name, WTemplate.Function function)
 		 */
-		public static WTemplate.Function id = new WTemplate.IdFunction();
+		public static final WTemplate.Function id = new WTemplate.IdFunction();
 	}
 
 	/**
@@ -406,7 +412,7 @@ public class WTemplate extends WInteractWidget {
 	 * behavior is similar to a {@link WText} when configured with the
 	 * {@link TextFormat#XHTMLText} textformat.
 	 */
-	public WTemplate(CharSequence text, WContainerWidget parent) {
+	public WTemplate(final CharSequence text, WContainerWidget parent) {
 		super(parent);
 		this.previouslyRendered_ = null;
 		this.newlyRendered_ = null;
@@ -428,7 +434,7 @@ public class WTemplate extends WInteractWidget {
 	 * Calls {@link #WTemplate(CharSequence text, WContainerWidget parent)
 	 * this(text, (WContainerWidget)null)}
 	 */
-	public WTemplate(CharSequence text) {
+	public WTemplate(final CharSequence text) {
 		this(text, (WContainerWidget) null);
 	}
 
@@ -457,7 +463,7 @@ public class WTemplate extends WInteractWidget {
 	 * 
 	 * @see WTemplate#clear()
 	 */
-	public void setTemplateText(CharSequence text, TextFormat textFormat) {
+	public void setTemplateText(final CharSequence text, TextFormat textFormat) {
 		this.text_ = WString.toWString(text);
 		if (textFormat == TextFormat.XHTMLText && this.text_.isLiteral()) {
 			if (!removeScript(this.text_)) {
@@ -478,7 +484,7 @@ public class WTemplate extends WInteractWidget {
 	 * Calls {@link #setTemplateText(CharSequence text, TextFormat textFormat)
 	 * setTemplateText(text, TextFormat.XHTMLText)}
 	 */
-	public final void setTemplateText(CharSequence text) {
+	public final void setTemplateText(final CharSequence text) {
 		setTemplateText(text, TextFormat.XHTMLText);
 	}
 
@@ -496,7 +502,7 @@ public class WTemplate extends WInteractWidget {
 	 * @see WTemplate#bindInt(String varName, int value)
 	 * @see WTemplate#resolveString(String varName, List args, Writer result)
 	 */
-	public void bindString(String varName, CharSequence value,
+	public void bindString(final String varName, final CharSequence value,
 			TextFormat textFormat) {
 		WWidget w = this.resolveWidget(varName);
 		if (w != null) {
@@ -527,7 +533,7 @@ public class WTemplate extends WInteractWidget {
 	 * {@link #bindString(String varName, CharSequence value, TextFormat textFormat)
 	 * bindString(varName, value, TextFormat.XHTMLText)}
 	 */
-	public final void bindString(String varName, CharSequence value) {
+	public final void bindString(final String varName, final CharSequence value) {
 		bindString(varName, value, TextFormat.XHTMLText);
 	}
 
@@ -538,7 +544,7 @@ public class WTemplate extends WInteractWidget {
 	 * @see WTemplate#bindString(String varName, CharSequence value, TextFormat
 	 *      textFormat)
 	 */
-	public void bindInt(String varName, int value) {
+	public void bindInt(final String varName, int value) {
 		this.bindString(varName, String.valueOf(value),
 				TextFormat.XHTMLUnsafeText);
 	}
@@ -564,7 +570,7 @@ public class WTemplate extends WInteractWidget {
 	 *      textFormat)
 	 * @see WTemplate#resolveWidget(String varName)
 	 */
-	public void bindWidget(String varName, WWidget widget) {
+	public void bindWidget(final String varName, WWidget widget) {
 		WWidget i = this.widgets_.get(varName);
 		if (i != null) {
 			if (i == widget) {
@@ -599,7 +605,7 @@ public class WTemplate extends WInteractWidget {
 	 * <p>
 	 * cpp
 	 */
-	public WWidget takeWidget(String varName) {
+	public WWidget takeWidget(final String varName) {
 		WWidget i = this.widgets_.get(varName);
 		if (i != null) {
 			WWidget result = i;
@@ -621,7 +627,7 @@ public class WTemplate extends WInteractWidget {
 	 * @see WTemplate#bindString(String varName, CharSequence value, TextFormat
 	 *      textFormat)
 	 */
-	public void bindEmpty(String varName) {
+	public void bindEmpty(final String varName) {
 		this.bindWidget(varName, (WWidget) null);
 	}
 
@@ -647,7 +653,7 @@ public class WTemplate extends WInteractWidget {
 	 *   }
 	 * </pre>
 	 */
-	public void addFunction(String name, WTemplate.Function function) {
+	public void addFunction(final String name, WTemplate.Function function) {
 		this.functions_.put(name, function);
 	}
 
@@ -658,7 +664,7 @@ public class WTemplate extends WInteractWidget {
 	 * <p>
 	 * The default value of all conditions is <code>false</code>.
 	 */
-	public void setCondition(String name, boolean value) {
+	public void setCondition(final String name, boolean value) {
 		if (this.conditionValue(name) != value) {
 			if (value) {
 				this.conditions_.add(name);
@@ -676,7 +682,7 @@ public class WTemplate extends WInteractWidget {
 	 * 
 	 * @see WTemplate#setCondition(String name, boolean value)
 	 */
-	public boolean conditionValue(String name) {
+	public boolean conditionValue(final String name) {
 		return this.conditions_.contains(name) != false;
 	}
 
@@ -711,8 +717,8 @@ public class WTemplate extends WInteractWidget {
 	 * 
 	 * @see WTemplate#renderTemplate(Writer result)
 	 */
-	public void resolveString(String varName, List<WString> args, Writer result)
-			throws IOException {
+	public void resolveString(final String varName, final List<WString> args,
+			final Writer result) throws IOException {
 		String i = this.strings_.get(varName);
 		if (i != null) {
 			result.append(i);
@@ -759,8 +765,8 @@ public class WTemplate extends WInteractWidget {
 	 * 
 	 * @see WTemplate#resolveString(String varName, List args, Writer result)
 	 */
-	public void handleUnresolvedVariable(String varName, List<WString> args,
-			Writer result) throws IOException {
+	public void handleUnresolvedVariable(final String varName,
+			final List<WString> args, final Writer result) throws IOException {
 		result.append("??").append(varName).append("??");
 	}
 
@@ -794,7 +800,7 @@ public class WTemplate extends WInteractWidget {
 	 *   }
 	 * </pre>
 	 */
-	public WWidget resolveWidget(String varName) {
+	public WWidget resolveWidget(final String varName) {
 		WWidget j = this.widgets_.get(varName);
 		if (j != null) {
 			return j;
@@ -818,8 +824,8 @@ public class WTemplate extends WInteractWidget {
 	 * 
 	 * @see WTemplate#addFunction(String name, WTemplate.Function function)
 	 */
-	public boolean resolveFunction(String name, List<WString> args,
-			Writer result) throws IOException {
+	public boolean resolveFunction(final String name, final List<WString> args,
+			final Writer result) throws IOException {
 		WTemplate.Function i = this.functions_.get(name);
 		if (i != null) {
 			boolean ok = i.evaluate(this, args, result);
@@ -831,7 +837,7 @@ public class WTemplate extends WInteractWidget {
 		return false;
 	}
 
-	// public T (String varName) ;
+	// public T (final String varName) ;
 	/**
 	 * Erases all variable bindings.
 	 * <p>
@@ -911,7 +917,7 @@ public class WTemplate extends WInteractWidget {
 	 * renderTemplateText()} with the {@link WTemplate#getTemplateText()
 	 * getTemplateText()}.
 	 */
-	public void renderTemplate(Writer result) throws IOException {
+	public void renderTemplate(final Writer result) throws IOException {
 		this.renderTemplateText(result, this.text_);
 	}
 
@@ -927,8 +933,8 @@ public class WTemplate extends WInteractWidget {
 	 * needed to load content on-demand (e.g. database objects), or support a
 	 * custom template language.
 	 */
-	public void renderTemplateText(Writer result, CharSequence templateText)
-			throws IOException {
+	public void renderTemplateText(final Writer result,
+			final CharSequence templateText) throws IOException {
 		String text = "";
 		WApplication app = WApplication.getInstance();
 		if (app != null
@@ -1056,7 +1062,7 @@ public class WTemplate extends WInteractWidget {
 	 * {@link WWidget#addStyleClass(String styleClass, boolean force)
 	 * WWidget#addStyleClass()}.
 	 */
-	protected void applyArguments(WWidget w, List<WString> args) {
+	protected void applyArguments(WWidget w, final List<WString> args) {
 		for (int i = 0; i < args.size(); ++i) {
 			String s = args.get(i).toString();
 			if (s.startsWith("class=")) {
@@ -1065,7 +1071,7 @@ public class WTemplate extends WInteractWidget {
 		}
 	}
 
-	void updateDom(DomElement element, boolean all) {
+	void updateDom(final DomElement element, boolean all) {
 		try {
 			if (this.changed_ || all) {
 				Set<WWidget> previouslyRendered = new HashSet<WWidget>();
@@ -1140,8 +1146,8 @@ public class WTemplate extends WInteractWidget {
 	 * {@link WTemplate#resolveString(String varName, List args, Writer result)
 	 * resolveString()} to avoid security risks.
 	 */
-	protected void format(Writer result, String s, TextFormat textFormat)
-			throws IOException {
+	protected void format(final Writer result, final String s,
+			TextFormat textFormat) throws IOException {
 		this.format(result, new WString(s), textFormat);
 	}
 
@@ -1151,7 +1157,8 @@ public class WTemplate extends WInteractWidget {
 	 * Calls {@link #format(Writer result, String s, TextFormat textFormat)
 	 * format(result, s, TextFormat.PlainText)}
 	 */
-	protected final void format(Writer result, String s) throws IOException {
+	protected final void format(final Writer result, final String s)
+			throws IOException {
 		format(result, s, TextFormat.PlainText);
 	}
 
@@ -1164,8 +1171,8 @@ public class WTemplate extends WInteractWidget {
 	 * {@link WTemplate#resolveString(String varName, List args, Writer result)
 	 * resolveString()} to avoid security risks.
 	 */
-	protected void format(Writer result, CharSequence s, TextFormat textFormat)
-			throws IOException {
+	protected void format(final Writer result, final CharSequence s,
+			TextFormat textFormat) throws IOException {
 		WString v = WString.toWString(s);
 		if (textFormat == TextFormat.XHTMLText) {
 			if (!removeScript(v)) {
@@ -1185,7 +1192,7 @@ public class WTemplate extends WInteractWidget {
 	 * Calls {@link #format(Writer result, CharSequence s, TextFormat textFormat)
 	 * format(result, s, TextFormat.PlainText)}
 	 */
-	protected final void format(Writer result, CharSequence s)
+	protected final void format(final Writer result, final CharSequence s)
 			throws IOException {
 		format(result, s, TextFormat.PlainText);
 	}
@@ -1205,7 +1212,8 @@ public class WTemplate extends WInteractWidget {
 	private boolean encodeInternalPaths_;
 	private boolean changed_;
 
-	private static int parseArgs(String text, int pos, List<WString> result) {
+	private static int parseArgs(final String text, int pos,
+			final List<WString> result) {
 		int Error = -1;
 		if (pos == -1) {
 			return Error;

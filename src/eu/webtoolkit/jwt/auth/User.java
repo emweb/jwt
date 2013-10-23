@@ -104,7 +104,7 @@ public class User {
 	 * Creates a user with id <code>id</code>, and whose information is stored
 	 * in the <code>database</code>.
 	 */
-	public User(String id, AbstractUserDatabase userDatabase) {
+	public User(final String id, final AbstractUserDatabase userDatabase) {
 		this.id_ = id;
 		this.db_ = userDatabase;
 	}
@@ -124,7 +124,7 @@ public class User {
 	 * <p>
 	 * Two users are equal if they have the same identity and the same database.
 	 */
-	public boolean equals(User other) {
+	public boolean equals(final User other) {
 		return this.id_.equals(other.id_) && this.db_ == other.db_;
 	}
 
@@ -155,7 +155,7 @@ public class User {
 	/**
 	 * Returns an identity.
 	 */
-	public String getIdentity(String provider) {
+	public String getIdentity(final String provider) {
 		this.checkValid();
 		return this.db_.getIdentity(this, provider);
 	}
@@ -172,7 +172,7 @@ public class User {
 	 * accounts managed by the same provider, that in fact identify the same
 	 * user).
 	 */
-	public void addIdentity(String provider, String identity) {
+	public void addIdentity(final String provider, final String identity) {
 		this.checkValid();
 		this.db_.addIdentity(this, provider, identity);
 	}
@@ -184,7 +184,7 @@ public class User {
 	 * addIdentity()} this overrides any other identity of the given provider,
 	 * in case the underlying database supports multiple identities per user.
 	 */
-	public void setIdentity(String provider, String identity) {
+	public void setIdentity(final String provider, final String identity) {
 		this.checkValid();
 		this.db_.setIdentity(this, provider, identity);
 	}
@@ -195,7 +195,7 @@ public class User {
 	 * 
 	 * @see User#addIdentity(String provider, String identity)
 	 */
-	public void removeIdentity(String provider) {
+	public void removeIdentity(final String provider) {
 		this.checkValid();
 		this.db_.removeIdentity(this, provider);
 	}
@@ -206,7 +206,7 @@ public class User {
 	 * 
 	 * @see AbstractUserDatabase#setPassword(User user, PasswordHash password)
 	 */
-	public void setPassword(PasswordHash password) {
+	public void setPassword(final PasswordHash password) {
 		this.checkValid();
 		this.db_.setPassword(this, password);
 	}
@@ -228,7 +228,7 @@ public class User {
 	 * 
 	 * @see AbstractUserDatabase#setEmail(User user, String address)
 	 */
-	public void setEmail(String address) {
+	public void setEmail(final String address) {
 		this.checkValid();
 		this.db_.setEmail(this, address);
 	}
@@ -249,7 +249,7 @@ public class User {
 	 * 
 	 * @see AbstractUserDatabase#setUnverifiedEmail(User user, String address)
 	 */
-	public void setUnverifiedEmail(String address) {
+	public void setUnverifiedEmail(final String address) {
 		this.checkValid();
 		this.db_.setUnverifiedEmail(this, address);
 	}
@@ -303,7 +303,7 @@ public class User {
 	 * @see AbstractUserDatabase#setEmailToken(User user, Token token,
 	 *      User.EmailTokenRole role)
 	 */
-	public void setEmailToken(Token token, User.EmailTokenRole role) {
+	public void setEmailToken(final Token token, User.EmailTokenRole role) {
 		this.checkValid();
 		this.db_.setEmailToken(this, token, role);
 	}
@@ -326,7 +326,7 @@ public class User {
 	 * 
 	 * @see AbstractUserDatabase#addAuthToken(User user, Token token)
 	 */
-	public void addAuthToken(Token token) {
+	public void addAuthToken(final Token token) {
 		this.checkValid();
 		this.db_.addAuthToken(this, token);
 	}
@@ -337,7 +337,7 @@ public class User {
 	 * 
 	 * @see AbstractUserDatabase#removeAuthToken(User user, String hash)
 	 */
-	public void removeAuthToken(String token) {
+	public void removeAuthToken(final String token) {
 		this.checkValid();
 		this.db_.removeAuthToken(this, token);
 	}
@@ -349,7 +349,7 @@ public class User {
 	 * @see AbstractUserDatabase#updateAuthToken(User user, String hash, String
 	 *      newHash)
 	 */
-	public int updateAuthToken(String hash, String newHash) {
+	public int updateAuthToken(final String hash, final String newHash) {
 		this.checkValid();
 		return this.db_.updateAuthToken(this, hash, newHash);
 	}

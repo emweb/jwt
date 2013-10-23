@@ -36,7 +36,7 @@ public class WSvgImage extends WResource implements WVectorImage {
 	 * fragment will be rendered that can be used to update the DOM of an
 	 * existing SVG image, instead of a full SVG image.
 	 */
-	public WSvgImage(WLength width, WLength height, WObject parent,
+	public WSvgImage(final WLength width, final WLength height, WObject parent,
 			boolean paintUpdate) {
 		super(parent);
 		this.width_ = width;
@@ -71,7 +71,7 @@ public class WSvgImage extends WResource implements WVectorImage {
 	 * {@link #WSvgImage(WLength width, WLength height, WObject parent, boolean paintUpdate)
 	 * this(width, height, (WObject)null, false)}
 	 */
-	public WSvgImage(WLength width, WLength height) {
+	public WSvgImage(final WLength width, final WLength height) {
 		this(width, height, (WObject) null, false);
 	}
 
@@ -82,7 +82,7 @@ public class WSvgImage extends WResource implements WVectorImage {
 	 * {@link #WSvgImage(WLength width, WLength height, WObject parent, boolean paintUpdate)
 	 * this(width, height, parent, false)}
 	 */
-	public WSvgImage(WLength width, WLength height, WObject parent) {
+	public WSvgImage(final WLength width, final WLength height, WObject parent) {
 		this(width, height, parent, false);
 	}
 
@@ -105,7 +105,7 @@ public class WSvgImage extends WResource implements WVectorImage {
 		setChanged(EnumSet.of(flag, flags));
 	}
 
-	public void drawArc(WRectF rect, double startAngle, double spanAngle) {
+	public void drawArc(final WRectF rect, double startAngle, double spanAngle) {
 		char[] buf = new char[30];
 		if (Math.abs(spanAngle - 360.0) < 0.01) {
 			this.finishPath();
@@ -128,8 +128,8 @@ public class WSvgImage extends WResource implements WVectorImage {
 		}
 	}
 
-	public void drawImage(WRectF rect, String imageUri, int imgWidth,
-			int imgHeight, WRectF srect) {
+	public void drawImage(final WRectF rect, final String imageUri,
+			int imgWidth, int imgHeight, final WRectF srect) {
 		this.finishPath();
 		this.makeNewGroup();
 		WRectF drect = rect;
@@ -198,13 +198,13 @@ public class WSvgImage extends WResource implements WVectorImage {
 		this.drawPath(path);
 	}
 
-	public void drawPath(WPainterPath path) {
+	public void drawPath(final WPainterPath path) {
 		this.makeNewGroup();
 		this.drawPlainPath(this.shapes_, path);
 	}
 
-	public void drawText(WRectF rect, EnumSet<AlignmentFlag> flags,
-			TextFlag textFlag, CharSequence text) {
+	public void drawText(final WRectF rect, EnumSet<AlignmentFlag> flags,
+			TextFlag textFlag, final CharSequence text) {
 		this.finishPath();
 		this.makeNewGroup();
 		char[] buf = new char[30];
@@ -213,7 +213,7 @@ public class WSvgImage extends WResource implements WVectorImage {
 		if (!this.getPainter().getPen().getColor().equals(
 				this.getPainter().getBrush().getColor())
 				|| this.getPainter().getBrush().getStyle() == BrushStyle.NoBrush) {
-			WColor color = this.getPainter().getPen().getColor();
+			final WColor color = this.getPainter().getPen().getColor();
 			style.append("fill:" + color.getCssText()).append(';').append(
 					"fill-opacity:").append(
 					MathUtils.roundCss(color.getAlpha() / 255., 3)).append(';');
@@ -293,16 +293,16 @@ public class WSvgImage extends WResource implements WVectorImage {
 		}
 	}
 
-	public WTextItem measureText(CharSequence text, double maxWidth,
+	public WTextItem measureText(final CharSequence text, double maxWidth,
 			boolean wordWrap) {
 		throw new WException("WSvgImage::measureText() not supported");
 	}
 
-	public final WTextItem measureText(CharSequence text) {
+	public final WTextItem measureText(final CharSequence text) {
 		return measureText(text, -1, false);
 	}
 
-	public final WTextItem measureText(CharSequence text, double maxWidth) {
+	public final WTextItem measureText(final CharSequence text, double maxWidth) {
 		return measureText(text, maxWidth, false);
 	}
 
@@ -347,8 +347,8 @@ public class WSvgImage extends WResource implements WVectorImage {
 		return this.height_;
 	}
 
-	public void handleRequest(WebRequest request, WebResponse response)
-			throws IOException {
+	public void handleRequest(final WebRequest request,
+			final WebResponse response) throws IOException {
 		response.setContentType("image/svg+xml");
 		Writer o = response.out();
 		this.streamResourceData(o);
@@ -439,7 +439,7 @@ public class WSvgImage extends WResource implements WVectorImage {
 						double a22 = f.getM11() / det;
 						double fdx = f.getDx() * a11 + f.getDy() * a21;
 						double fdy = f.getDx() * a12 + f.getDy() * a22;
-						WTransform g = this.currentTransform_;
+						final WTransform g = this.currentTransform_;
 						double gdx = g.getDx() * a11 + g.getDy() * a21;
 						double gdy = g.getDx() * a12 + g.getDy() * a22;
 						double dx = fdx - gdx;
@@ -473,7 +473,7 @@ public class WSvgImage extends WResource implements WVectorImage {
 						.getClipPath());
 				this.shapes_.append('"');
 				this.busyWithPath_ = false;
-				WTransform t = this.getPainter().getClipPathTransform();
+				final WTransform t = this.getPainter().getClipPathTransform();
 				if (!t.isIdentity()) {
 					this.shapes_.append(" transform=\"matrix(").append(
 							MathUtils.roundJs(t.getM11(), 3));
@@ -566,7 +566,7 @@ public class WSvgImage extends WResource implements WVectorImage {
 			result += "fill:none;";
 			break;
 		case SolidPattern: {
-			WColor color = this.getPainter().getBrush().getColor();
+			final WColor color = this.getPainter().getBrush().getColor();
 			result += "fill:" + color.getCssText() + ";";
 			if (color.getAlpha() != 255) {
 				result += "fill-opacity:";
@@ -589,13 +589,13 @@ public class WSvgImage extends WResource implements WVectorImage {
 	private String getStrokeStyle() {
 		StringBuilder result = new StringBuilder();
 		String buf;
-		WPen pen = this.getPainter().getPen();
+		final WPen pen = this.getPainter().getPen();
 		if (!((this.getPainter().getRenderHints() & WPainter.RenderHint.Antialiasing
 				.getValue()) != 0)) {
 			result.append("shape-rendering:optimizeSpeed;");
 		}
 		if (pen.getStyle() != PenStyle.NoPen) {
-			WColor color = pen.getColor();
+			final WColor color = pen.getColor();
 			if (!pen.getGradient().isEmpty()) {
 				result.append("stroke:url(#gradient").append(
 						String.valueOf(this.currentStrokeGradientId_)).append(
@@ -667,7 +667,7 @@ public class WSvgImage extends WResource implements WVectorImage {
 		}
 	}
 
-	private int createShadowFilter(StringBuilder out) {
+	private int createShadowFilter(final StringBuilder out) {
 		char[] buf = new char[30];
 		int result = ++this.nextShadowId_;
 		out.append("<filter id=\"f").append(result).append(
@@ -698,7 +698,7 @@ public class WSvgImage extends WResource implements WVectorImage {
 		return result;
 	}
 
-	private void defineGradient(WGradient gradient, int id) {
+	private void defineGradient(final WGradient gradient, int id) {
 		char[] buf = new char[30];
 		this.shapes_.append("<defs>");
 		boolean linear = gradient.getStyle() == GradientStyle.LinearGradient;
@@ -761,11 +761,11 @@ public class WSvgImage extends WResource implements WVectorImage {
 		return quote(MathUtils.roundJs(d, 3));
 	}
 
-	private static String quote(String s) {
+	private static String quote(final String s) {
 		return '"' + s + '"';
 	}
 
-	private void drawPlainPath(StringBuilder out, WPainterPath path) {
+	private void drawPlainPath(final StringBuilder out, final WPainterPath path) {
 		char[] buf = new char[30];
 		if (!this.busyWithPath_) {
 			out.append("<path d=\"");
@@ -773,7 +773,7 @@ public class WSvgImage extends WResource implements WVectorImage {
 			this.pathTranslation_.setX(0);
 			this.pathTranslation_.setY(0);
 		}
-		List<WPainterPath.Segment> segments = path.getSegments();
+		final List<WPainterPath.Segment> segments = path.getSegments();
 		if (!segments.isEmpty()
 				&& segments.get(0).getType() != WPainterPath.Segment.Type.MoveTo) {
 			out.append("M0,0");
@@ -850,7 +850,7 @@ public class WSvgImage extends WResource implements WVectorImage {
 		}
 	}
 
-	private void streamResourceData(Writer stream) throws IOException {
+	private void streamResourceData(final Writer stream) throws IOException {
 		this.finishPath();
 		if (this.paintUpdate_) {
 			stream

@@ -46,16 +46,16 @@ class SimpleSelectorImpl implements SimpleSelector {
 		return this.classes_;
 	}
 
-	public void setElementName(String name) {
+	public void setElementName(final String name) {
 		this.elementName_ = name;
 		this.elementType_ = DomElement.parseTagName(this.elementName_);
 	}
 
-	public void addClass(String id) {
+	public void addClass(final String id) {
 		this.classes_.add(id);
 	}
 
-	public void setHash(String id) {
+	public void setHash(final String id) {
 		if (!(this.hashid_.length() != 0)) {
 			this.hashid_ = id;
 		}

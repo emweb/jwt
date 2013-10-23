@@ -274,7 +274,7 @@ public class WEnvironment {
 	 * 
 	 * @see WEnvironment#getParameterMap()
 	 */
-	public String[] getParameterValues(String name) {
+	public String[] getParameterValues(final String name) {
 		String[] i = this.parameters_.get(name);
 		if (i != null) {
 			return i;
@@ -292,8 +292,8 @@ public class WEnvironment {
 	 * 
 	 * @see WEnvironment#getParameterValues(String name)
 	 */
-	public String getParameter(String name) {
-		String[] values = this.getParameterValues(name);
+	public String getParameter(final String name) {
+		final String[] values = this.getParameterValues(name);
 		if (!(values.length == 0)) {
 			return values[0];
 		} else {
@@ -331,7 +331,7 @@ public class WEnvironment {
 	 * 
 	 * @see WEnvironment#getCookieValue(String cookieName)
 	 */
-	public String getCookie(String cookieName) {
+	public String getCookie(final String cookieName) {
 		String i = this.cookies_.get(cookieName);
 		if (i == null) {
 			throw new RuntimeException("Missing cookie: " + cookieName);
@@ -348,7 +348,7 @@ public class WEnvironment {
 	 * 
 	 * @see WEnvironment#getCookie(String cookieName)
 	 */
-	public String getCookieValue(String cookieName) {
+	public String getCookieValue(final String cookieName) {
 		String i = this.cookies_.get(cookieName);
 		if (i == null) {
 			return null;
@@ -367,7 +367,7 @@ public class WEnvironment {
 	 * this should not be the case according to RFC2616 </i>
 	 * </p>
 	 */
-	public String getHeaderValue(String name) {
+	public String getHeaderValue(final String name) {
 		return this.session_.getCgiHeader(name);
 	}
 
@@ -647,8 +647,8 @@ public class WEnvironment {
 		return "3.3.1";
 	}
 
-	// public void libraryVersion(bad java simple ref int series, bad java
-	// simple ref int major, bad java simple ref int minor) ;
+	// public void libraryVersion(final bad java simple ref int series, final
+	// bad java simple ref int major, final bad java simple ref int minor) ;
 	/**
 	 * Returns the JWt session id (<b>deprecated</b>).
 	 * <p>
@@ -676,7 +676,7 @@ public class WEnvironment {
 	 * @see WEnvironment#getServerSoftware()
 	 * @see WEnvironment#getServerAdmin()
 	 */
-	public String getCgiValue(String varName) {
+	public String getCgiValue(final String varName) {
 		if (varName.equals("QUERY_STRING")) {
 			return this.queryString_;
 		} else {
@@ -932,9 +932,10 @@ public class WEnvironment {
 		this.publicDeploymentPath_ = "";
 	}
 
-	void setUserAgent(String userAgent) {
+	void setUserAgent(final String userAgent) {
 		this.userAgent_ = userAgent;
-		Configuration conf = this.session_.getController().getConfiguration();
+		final Configuration conf = this.session_.getController()
+				.getConfiguration();
 		this.agent_ = WEnvironment.UserAgent.Unknown;
 		if (this.userAgent_.indexOf("MSIE 2.") != -1
 				|| this.userAgent_.indexOf("MSIE 3.") != -1
@@ -985,7 +986,7 @@ public class WEnvironment {
 					if (v >= 10) {
 						this.agent_ = WEnvironment.UserAgent.Opera10;
 					}
-				} catch (NumberFormatException e) {
+				} catch (final NumberFormatException e) {
 				}
 			}
 		}
@@ -1103,7 +1104,7 @@ public class WEnvironment {
 		}
 	}
 
-	void setInternalPath(String path) {
+	void setInternalPath(final String path) {
 		if (path.length() == 0) {
 			this.internalPath_ = path;
 		} else {
@@ -1136,8 +1137,9 @@ public class WEnvironment {
 		this.publicDeploymentPath_ = "";
 	}
 
-	void init(WebRequest request) {
-		Configuration conf = this.session_.getController().getConfiguration();
+	void init(final WebRequest request) {
+		final Configuration conf = this.session_.getController()
+				.getConfiguration();
 		this.queryString_ = request.getQueryString();
 		this.parameters_ = request.getParameterMap();
 		this.urlScheme_ = request.getScheme();
@@ -1180,7 +1182,7 @@ public class WEnvironment {
 		this.locale_ = request.getLocale();
 	}
 
-	void enableAjax(WebRequest request) {
+	void enableAjax(final WebRequest request) {
 		this.doesAjax_ = true;
 		this.session_.getController().newAjaxSession();
 		this.doesCookies_ = request.getHeaderValue("Cookie").length() != 0;
@@ -1190,13 +1192,13 @@ public class WEnvironment {
 		String scaleE = request.getParameter("scale");
 		try {
 			this.dpiScale_ = scaleE != null ? Double.parseDouble(scaleE) : 1;
-		} catch (NumberFormatException e) {
+		} catch (final NumberFormatException e) {
 			this.dpiScale_ = 1;
 		}
 		String tzE = request.getParameter("tz");
 		try {
 			this.timeZoneOffset_ = tzE != null ? Integer.parseInt(tzE) : 0;
-		} catch (NumberFormatException e) {
+		} catch (final NumberFormatException e) {
 		}
 		String hashE = request.getParameter("_");
 		if (hashE != null) {
@@ -1213,11 +1215,13 @@ public class WEnvironment {
 	}
 
 	boolean agentSupportsAjax() {
-		Configuration conf = this.session_.getController().getConfiguration();
+		final Configuration conf = this.session_.getController()
+				.getConfiguration();
 		return conf.agentSupportsAjax(this.userAgent_);
 	}
 
-	static String getClientAddress(WebRequest request, Configuration conf) {
+	static String getClientAddress(final WebRequest request,
+			final Configuration conf) {
 		String result = "";
 		if (conf.isBehindReverseProxy()) {
 			String clientIp = request.getHeaderValue("Client-IP");
@@ -1250,7 +1254,8 @@ public class WEnvironment {
 		return result;
 	}
 
-	private static void parseCookies(String cookie, Map<String, String> result) {
+	private static void parseCookies(final String cookie,
+			final Map<String, String> result) {
 		try {
 			List<String> list = new ArrayList<String>();
 			list = new ArrayList<String>(Arrays.asList(cookie.split(";")));

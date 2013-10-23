@@ -82,7 +82,7 @@ public class WItemDelegate extends WAbstractItemDelegate {
 	 * createEditor()} is called to create a suitable editor for editing the
 	 * item.
 	 */
-	public WWidget update(WWidget widget, WModelIndex index,
+	public WWidget update(WWidget widget, final WModelIndex index,
 			EnumSet<ViewItemRenderFlag> flags) {
 		boolean editing = widget != null && widget.find("t") == null;
 		if (!EnumUtils.mask(flags, ViewItemRenderFlag.RenderEditing).isEmpty()) {
@@ -193,7 +193,7 @@ public class WItemDelegate extends WAbstractItemDelegate {
 		return widgetRef.w;
 	}
 
-	public void updateModelIndex(WWidget widget, WModelIndex index) {
+	public void updateModelIndex(WWidget widget, final WModelIndex index) {
 		WItemDelegate.WidgetRef w = new WItemDelegate.WidgetRef(widget);
 		if (!EnumUtils.mask(index.getFlags(), ItemFlag.ItemIsUserCheckable)
 				.isEmpty()) {
@@ -213,7 +213,7 @@ public class WItemDelegate extends WAbstractItemDelegate {
 	 * <p>
 	 * The default value is &quot;&quot;.
 	 */
-	public void setTextFormat(String format) {
+	public void setTextFormat(final String format) {
 		this.textFormat_ = format;
 	}
 
@@ -249,8 +249,8 @@ public class WItemDelegate extends WAbstractItemDelegate {
 	 * @see WItemDelegate#createEditor(WModelIndex index, EnumSet flags)
 	 * @see WItemDelegate#getEditState(WWidget editor)
 	 */
-	public void setModelData(Object editState, WAbstractItemModel model,
-			WModelIndex index) {
+	public void setModelData(final Object editState, WAbstractItemModel model,
+			final WModelIndex index) {
 		model.setData(index, editState, ItemDataRole.EditRole);
 	}
 
@@ -312,7 +312,7 @@ public class WItemDelegate extends WAbstractItemDelegate {
 	 * 
 	 * @see WItemDelegate#createEditor(WModelIndex index, EnumSet flags)
 	 */
-	public void setEditState(WWidget editor, Object value) {
+	public void setEditState(WWidget editor, final Object value) {
 		WContainerWidget w = ((editor) instanceof WContainerWidget ? (WContainerWidget) (editor)
 				: null);
 		WLineEdit lineEdit = ((w.getWidget(0)) instanceof WLineEdit ? (WLineEdit) (w
@@ -378,7 +378,7 @@ public class WItemDelegate extends WAbstractItemDelegate {
 	 *   }
 	 * </pre>
 	 */
-	protected WWidget createEditor(WModelIndex index,
+	protected WWidget createEditor(final WModelIndex index,
 			EnumSet<ViewItemRenderFlag> flags) {
 		final WContainerWidget result = new WContainerWidget();
 		result.setSelectable(true);
@@ -419,7 +419,7 @@ public class WItemDelegate extends WAbstractItemDelegate {
 	 * Returns {@link #createEditor(WModelIndex index, EnumSet flags)
 	 * createEditor(index, EnumSet.of(flag, flags))}
 	 */
-	protected final WWidget createEditor(WModelIndex index,
+	protected final WWidget createEditor(final WModelIndex index,
 			ViewItemRenderFlag flag, ViewItemRenderFlag... flags) {
 		return createEditor(index, EnumSet.of(flag, flags));
 	}
@@ -436,8 +436,8 @@ public class WItemDelegate extends WAbstractItemDelegate {
 		}
 	}
 
-	private IndexCheckBox checkBox(WItemDelegate.WidgetRef w,
-			WModelIndex index, boolean autoCreate, boolean triState) {
+	private IndexCheckBox checkBox(final WItemDelegate.WidgetRef w,
+			final WModelIndex index, boolean autoCreate, boolean triState) {
 		IndexCheckBox checkBox = ((w.w.find("c")) instanceof IndexCheckBox ? (IndexCheckBox) (w.w
 				.find("c"))
 				: null);
@@ -477,17 +477,18 @@ public class WItemDelegate extends WAbstractItemDelegate {
 		return checkBox;
 	}
 
-	private final IndexCheckBox checkBox(WItemDelegate.WidgetRef w,
-			WModelIndex index, boolean autoCreate) {
+	private final IndexCheckBox checkBox(final WItemDelegate.WidgetRef w,
+			final WModelIndex index, boolean autoCreate) {
 		return checkBox(w, index, autoCreate, false);
 	}
 
-	private WText textWidget(WItemDelegate.WidgetRef w) {
+	private WText textWidget(final WItemDelegate.WidgetRef w) {
 		return ((w.w.find("t")) instanceof WText ? (WText) (w.w.find("t"))
 				: null);
 	}
 
-	private WImage iconWidget(WItemDelegate.WidgetRef w, boolean autoCreate) {
+	private WImage iconWidget(final WItemDelegate.WidgetRef w,
+			boolean autoCreate) {
 		WImage image = ((w.w.find("i")) instanceof WImage ? (WImage) (w.w
 				.find("i")) : null);
 		if (image != null || !autoCreate) {
@@ -521,11 +522,11 @@ public class WItemDelegate extends WAbstractItemDelegate {
 		return image;
 	}
 
-	private final WImage iconWidget(WItemDelegate.WidgetRef w) {
+	private final WImage iconWidget(final WItemDelegate.WidgetRef w) {
 		return iconWidget(w, false);
 	}
 
-	private WAnchor anchorWidget(WItemDelegate.WidgetRef w) {
+	private WAnchor anchorWidget(final WItemDelegate.WidgetRef w) {
 		WAnchor anchor = ((w.w.find("a")) instanceof WAnchor ? (WAnchor) (w.w
 				.find("a")) : null);
 		if (anchor != null) {

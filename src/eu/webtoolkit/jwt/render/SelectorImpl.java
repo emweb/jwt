@@ -53,7 +53,7 @@ class SelectorImpl implements Selector {
 		return new Specificity(a, b, c, d);
 	}
 
-	public void addSimpleSelector(SimpleSelectorImpl s) {
+	public void addSimpleSelector(final SimpleSelectorImpl s) {
 		this.simpleSelectors_.add(s);
 	}
 

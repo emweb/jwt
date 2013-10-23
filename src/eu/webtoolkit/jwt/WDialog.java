@@ -151,7 +151,7 @@ public class WDialog extends WPopupWidget {
 	 * since it is a top-level widget. You may however still provide a parent
 	 * object to let the dialog be deleted together with its parent.
 	 */
-	public WDialog(CharSequence windowTitle, WObject parent) {
+	public WDialog(final CharSequence windowTitle, WObject parent) {
 		super(new WTemplate(tr("Wt.WDialog.template")), parent);
 		this.finished_ = new Signal1<WDialog.DialogCode>(this);
 		this.escapeConnection1_ = new AbstractSignal.Connection();
@@ -168,7 +168,7 @@ public class WDialog extends WPopupWidget {
 	 * Calls {@link #WDialog(CharSequence windowTitle, WObject parent)
 	 * this(windowTitle, (WObject)null)}
 	 */
-	public WDialog(CharSequence windowTitle) {
+	public WDialog(final CharSequence windowTitle) {
 		this(windowTitle, (WObject) null);
 	}
 
@@ -188,7 +188,7 @@ public class WDialog extends WPopupWidget {
 	 * 
 	 * @see WDialog#setTitleBarEnabled(boolean enable)
 	 */
-	public void setWindowTitle(CharSequence windowTitle) {
+	public void setWindowTitle(final CharSequence windowTitle) {
 		this.caption_.setText(new WString("<h3>"
 				+ Utils.htmlEncode(windowTitle.toString()) + "</h3>"));
 	}
@@ -284,7 +284,7 @@ public class WDialog extends WPopupWidget {
 	 * @see WDialog#accept()
 	 * @see WDialog#reject()
 	 */
-	public WDialog.DialogCode exec(WAnimation animation) {
+	public WDialog.DialogCode exec(final WAnimation animation) {
 		if (this.recursiveEventLoop_) {
 			throw new WException("WDialog::exec(): already being executed.");
 		}
@@ -514,7 +514,7 @@ public class WDialog extends WPopupWidget {
 		return this.closeIcon_ != null;
 	}
 
-	public void setHidden(boolean hidden, WAnimation animation) {
+	public void setHidden(boolean hidden, final WAnimation animation) {
 		if (this.contents_ != null && this.isHidden() != hidden) {
 			if (!hidden) {
 				WApplication app = WApplication.getInstance();
@@ -582,12 +582,12 @@ public class WDialog extends WPopupWidget {
 		super.positionAt(widget, orientation);
 	}
 
-	public void setMinimumSize(WLength width, WLength height) {
+	public void setMinimumSize(final WLength width, final WLength height) {
 		super.setMinimumSize(width, height);
 		this.impl_.resolveWidget("layout").setMinimumSize(width, height);
 	}
 
-	public void setMaximumSize(WLength width, WLength height) {
+	public void setMaximumSize(final WLength width, final WLength height) {
 		super.setMaximumSize(width, height);
 		WLength w = width.getUnit() != WLength.Unit.Percentage ? width
 				: WLength.Auto;

@@ -31,8 +31,8 @@ class MyResource extends WResource {
 		this((WObject) null);
 	}
 
-	public void handleRequest(WebRequest request, WebResponse response)
-			throws IOException {
+	public void handleRequest(final WebRequest request,
+			final WebResponse response) throws IOException {
 		response.setContentType("plain/text");
 		response.out().append("I am a text file.").append('\n');
 	}

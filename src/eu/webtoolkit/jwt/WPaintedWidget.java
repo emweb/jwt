@@ -146,7 +146,8 @@ public abstract class WPaintedWidget extends WInteractWidget {
 		this.renderWidth_ = 0;
 		this.renderHeight_ = 0;
 		if (WApplication.getInstance() != null) {
-			WEnvironment env = WApplication.getInstance().getEnvironment();
+			final WEnvironment env = WApplication.getInstance()
+					.getEnvironment();
 			if (env.agentIsOpera()
 					&& env.getUserAgent().indexOf("Mac OS X") == -1) {
 				this.preferredMethod_ = WPaintedWidget.Method.InlineSvgVml;
@@ -233,7 +234,7 @@ public abstract class WPaintedWidget extends WInteractWidget {
 		update(EnumSet.noneOf(PaintFlag.class));
 	}
 
-	public void resize(WLength width, WLength height) {
+	public void resize(final WLength width, final WLength height) {
 		if (!width.isAuto() && !height.isAuto()) {
 			this.setLayoutSizeAware(false);
 			this.resizeCanvas((int) width.toPixels(), (int) height.toPixels());
@@ -340,7 +341,7 @@ public abstract class WPaintedWidget extends WInteractWidget {
 	 * You may want to reimplement this method to override this choice.
 	 */
 	protected WPaintedWidget.Method getMethod() {
-		WEnvironment env = WApplication.getInstance().getEnvironment();
+		final WEnvironment env = WApplication.getInstance().getEnvironment();
 		WPaintedWidget.Method method;
 		if (!(env.agentIsChrome()
 				&& env.getAgent().getValue() >= WEnvironment.UserAgent.Chrome5
@@ -395,7 +396,7 @@ public abstract class WPaintedWidget extends WInteractWidget {
 		}
 	}
 
-	void updateDom(DomElement element, boolean all) {
+	void updateDom(final DomElement element, boolean all) {
 		if (all && this.areaImage_ != null || this.areaImageAdded_) {
 			element.addChild(this.areaImage_.createSDomElement(WApplication
 					.getInstance()));
@@ -450,7 +451,7 @@ public abstract class WPaintedWidget extends WInteractWidget {
 		return result;
 	}
 
-	void getDomChanges(List<DomElement> result, WApplication app) {
+	void getDomChanges(final List<DomElement> result, WApplication app) {
 		DomElement e = DomElement.getForUpdate(this,
 				DomElementType.DomElement_DIV);
 		this.updateDom(e, false);
@@ -526,7 +527,7 @@ public abstract class WPaintedWidget extends WInteractWidget {
 			this.painter_ = new WWidgetRasterPainter(this);
 			return true;
 		}
-		WEnvironment env = WApplication.getInstance().getEnvironment();
+		final WEnvironment env = WApplication.getInstance().getEnvironment();
 		if (env.agentIsIElt(9)) {
 			this.painter_ = new WWidgetVectorPainter(this,
 					WWidgetPainter.RenderType.InlineVml);

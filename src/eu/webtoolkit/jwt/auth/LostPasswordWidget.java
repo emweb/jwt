@@ -39,8 +39,8 @@ public class LostPasswordWidget extends WTemplate {
 	/**
 	 * Constructor.
 	 */
-	public LostPasswordWidget(AbstractUserDatabase users, AuthService auth,
-			WContainerWidget parent) {
+	public LostPasswordWidget(final AbstractUserDatabase users,
+			final AuthService auth, WContainerWidget parent) {
 		super(tr("Wt.Auth.template.lost-password"), parent);
 		this.users_ = users;
 		this.baseAuth_ = auth;
@@ -75,7 +75,8 @@ public class LostPasswordWidget extends WTemplate {
 	 * {@link #LostPasswordWidget(AbstractUserDatabase users, AuthService auth, WContainerWidget parent)
 	 * this(users, auth, (WContainerWidget)null)}
 	 */
-	public LostPasswordWidget(AbstractUserDatabase users, AuthService auth) {
+	public LostPasswordWidget(final AbstractUserDatabase users,
+			final AuthService auth) {
 		this(users, auth, (WContainerWidget) null);
 	}
 
@@ -103,8 +104,8 @@ public class LostPasswordWidget extends WTemplate {
 			this.remove();
 	}
 
-	private AbstractUserDatabase users_;
-	private AuthService baseAuth_;
+	private final AbstractUserDatabase users_;
+	private final AuthService baseAuth_;
 
 	private void deleteBox(WMessageBox box) {
 		if (box != null)

@@ -95,7 +95,7 @@ public class WPanel extends WCompositeWidget {
 	 * @see WPanel#getTitle()
 	 * @see WPanel#setTitleBar(boolean enable)
 	 */
-	public void setTitle(CharSequence title) {
+	public void setTitle(final CharSequence title) {
 		this.setTitleBar(true);
 		if (!(this.title_ != null)) {
 			this.title_ = new WText();
@@ -330,7 +330,7 @@ public class WPanel extends WCompositeWidget {
 	 * <p>
 	 * The animation is used when collapsing or expanding the panel.
 	 */
-	public void setAnimation(WAnimation transition) {
+	public void setAnimation(final WAnimation transition) {
 		this.animation_ = transition;
 		if (!this.animation_.isEmpty()) {
 			this.addStyleClass("Wt-animated");

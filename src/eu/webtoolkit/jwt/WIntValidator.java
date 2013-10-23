@@ -141,7 +141,7 @@ public class WIntValidator extends WValidator {
 	 * The input is considered valid only when it is blank for a non-mandatory
 	 * field, or represents an integer within the valid range.
 	 */
-	public WValidator.Result validate(String input) {
+	public WValidator.Result validate(final String input) {
 		if (input.length() == 0) {
 			return super.validate(input);
 		}
@@ -159,19 +159,19 @@ public class WIntValidator extends WValidator {
 					return new WValidator.Result(WValidator.State.Valid);
 				}
 			}
-		} catch (NumberFormatException e) {
+		} catch (final NumberFormatException e) {
 			return new WValidator.Result(WValidator.State.Invalid, this
 					.getInvalidNotANumberText());
 		}
 	}
 
-	// public void createExtConfig(Writer config) throws IOException;
+	// public void createExtConfig(final Writer config) throws IOException;
 	/**
 	 * Sets the message to display when the input is not a number.
 	 * <p>
 	 * The default value is &quot;Must be an integer number.&quot;
 	 */
-	public void setInvalidNotANumberText(CharSequence text) {
+	public void setInvalidNotANumberText(final CharSequence text) {
 		this.nanText_ = WString.toWString(text);
 		this.repaint();
 	}
@@ -198,7 +198,7 @@ public class WIntValidator extends WValidator {
 	 * message is &quot;The number must be between {1} and {2}&quot; or
 	 * &quot;The number must be larger than {1}&quot;.
 	 */
-	public void setInvalidTooSmallText(CharSequence text) {
+	public void setInvalidTooSmallText(final CharSequence text) {
 		this.tooSmallText_ = WString.toWString(text);
 		this.repaint();
 	}
@@ -237,7 +237,7 @@ public class WIntValidator extends WValidator {
 	 * message is &quot;The number must be between {1} and {2}&quot; or
 	 * &quot;The number must be smaller than {2}&quot;.
 	 */
-	public void setInvalidTooLargeText(CharSequence text) {
+	public void setInvalidTooLargeText(final CharSequence text) {
 		this.tooLargeText_ = WString.toWString(text);
 		this.repaint();
 	}

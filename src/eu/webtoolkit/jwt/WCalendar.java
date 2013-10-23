@@ -208,7 +208,7 @@ public class WCalendar extends WCompositeWidget {
 	 * This will emit the {@link WCalendar#currentPageChanged()
 	 * currentPageChanged()} signal if another month is displayed.
 	 */
-	public void browseTo(WDate date) {
+	public void browseTo(final WDate date) {
 		boolean rerender = false;
 		if (this.currentYear_ != date.getYear()) {
 			this.currentYear_ = date.getYear();
@@ -260,7 +260,7 @@ public class WCalendar extends WCompositeWidget {
 	 * in a {@link WCalendar#getSelection() getSelection()} that contains
 	 * exactly one date.
 	 */
-	public void select(WDate date) {
+	public void select(final WDate date) {
 		this.selection_.clear();
 		this.selection_.add(date);
 		this.renderMonth();
@@ -273,7 +273,7 @@ public class WCalendar extends WCompositeWidget {
 	 * {@link WCalendar#getSelection() getSelection()} that contains exactly the
 	 * given dates. In single selection mode, at most one date is set.
 	 */
-	public void select(Set<WDate> dates) {
+	public void select(final Set<WDate> dates) {
 		if (this.selectionMode_ == SelectionMode.ExtendedSelection) {
 			this.selection_ = dates;
 			this.renderMonth();
@@ -489,7 +489,7 @@ public class WCalendar extends WCompositeWidget {
 	 * <p>
 	 * The default bottom is null.
 	 */
-	public void setBottom(WDate bottom) {
+	public void setBottom(final WDate bottom) {
 		if (!(this.bottom_ == bottom || (this.bottom_ != null && this.bottom_
 				.equals(bottom)))) {
 			this.bottom_ = bottom;
@@ -509,7 +509,7 @@ public class WCalendar extends WCompositeWidget {
 	 * <p>
 	 * The default top is null.
 	 */
-	public void setTop(WDate top) {
+	public void setTop(final WDate top) {
 		if (!(this.top_ == top || (this.top_ != null && this.top_.equals(top)))) {
 			this.top_ = top;
 			this.renderMonth();
@@ -608,7 +608,7 @@ public class WCalendar extends WCompositeWidget {
 	 * the passed <code>widget</code>, or return a new widget. If you return a
 	 * new widget, the prevoius widget will be deleted.
 	 */
-	protected WWidget renderCell(WWidget widget, WDate date) {
+	protected WWidget renderCell(WWidget widget, final WDate date) {
 		WText t = ((widget) instanceof WText ? (WText) (widget) : null);
 		if (!(t != null)) {
 			t = new WText();
@@ -648,7 +648,7 @@ public class WCalendar extends WCompositeWidget {
 	 * This is a convenience method that can be used when reimplementing
 	 * {@link WCalendar#renderCell(WWidget widget, WDate date) renderCell()}.
 	 */
-	protected boolean isSelected(WDate d) {
+	protected boolean isSelected(final WDate d) {
 		return this.selection_.contains(d) != false;
 	}
 
@@ -800,7 +800,7 @@ public class WCalendar extends WCompositeWidget {
 				this.emitCurrentPageChanged();
 				this.renderMonth();
 			}
-		} catch (NumberFormatException e) {
+		} catch (final NumberFormatException e) {
 		}
 	}
 
@@ -813,7 +813,7 @@ public class WCalendar extends WCompositeWidget {
 		return d;
 	}
 
-	private void selectInCurrentMonth(WDate d) {
+	private void selectInCurrentMonth(final WDate d) {
 		if (d.getMonth() == this.currentMonth_
 				&& this.selectionMode_ != SelectionMode.NoSelection) {
 			if (this.selectionMode_ == SelectionMode.ExtendedSelection) {
@@ -833,7 +833,7 @@ public class WCalendar extends WCompositeWidget {
 		}
 	}
 
-	private boolean isInvalid(WDate dt) {
+	private boolean isInvalid(final WDate dt) {
 		return !(this.bottom_ == null) && dt.before(this.bottom_)
 				|| !(this.top_ == null) && dt.after(this.top_);
 	}

@@ -58,7 +58,8 @@ class WWidgetRasterPainter extends WWidgetPainter {
 		result.addChild(img);
 	}
 
-	public void updateContents(List<DomElement> result, WPaintDevice device) {
+	public void updateContents(final List<DomElement> result,
+			WPaintDevice device) {
 		WResource resource = ((device) instanceof WResource ? (WResource) (device)
 				: null);
 		DomElement img = DomElement.getForUpdate('i' + this.widget_.getId(),

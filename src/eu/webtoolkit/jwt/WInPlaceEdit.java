@@ -81,7 +81,7 @@ public class WInPlaceEdit extends WCompositeWidget {
 	/**
 	 * Creates an in-place edit with the given text.
 	 */
-	public WInPlaceEdit(CharSequence text, WContainerWidget parent) {
+	public WInPlaceEdit(final CharSequence text, WContainerWidget parent) {
 		super(parent);
 		this.valueChanged_ = new Signal1<WString>(this);
 		this.emptyText_ = new WString();
@@ -157,7 +157,7 @@ public class WInPlaceEdit extends WCompositeWidget {
 	 * Calls {@link #WInPlaceEdit(CharSequence text, WContainerWidget parent)
 	 * this(text, (WContainerWidget)null)}
 	 */
-	public WInPlaceEdit(CharSequence text) {
+	public WInPlaceEdit(final CharSequence text) {
 		this(text, (WContainerWidget) null);
 	}
 
@@ -177,7 +177,7 @@ public class WInPlaceEdit extends WCompositeWidget {
 	 * 
 	 * @see WInPlaceEdit#getText()
 	 */
-	public void setText(CharSequence text) {
+	public void setText(final CharSequence text) {
 		if (!(text.length() == 0)) {
 			this.text_.setText(text);
 			this.empty_ = false;
@@ -195,7 +195,7 @@ public class WInPlaceEdit extends WCompositeWidget {
 	 * 
 	 * @see WInPlaceEdit#getEmptyText()
 	 */
-	public void setEmptyText(CharSequence emptyText) {
+	public void setEmptyText(final CharSequence emptyText) {
 		this.emptyText_ = WString.toWString(emptyText);
 		if (this.empty_) {
 			this.text_.setText(this.emptyText_);

@@ -448,7 +448,7 @@ public abstract class WInteractWidget extends WWebWidget {
 	 * @see WWidget#acceptDrops(String mimeType, String hoverStyleClass)
 	 * @see WDropEvent
 	 */
-	public void setDraggable(String mimeType, WWidget dragWidget,
+	public void setDraggable(final String mimeType, WWidget dragWidget,
 			boolean isDragWidgetOnly, WObject sourceObject) {
 		if (dragWidget == null) {
 			dragWidget = this;
@@ -478,7 +478,7 @@ public abstract class WInteractWidget extends WWebWidget {
 	 * {@link #setDraggable(String mimeType, WWidget dragWidget, boolean isDragWidgetOnly, WObject sourceObject)
 	 * setDraggable(mimeType, (WWidget)null, false, (WObject)null)}
 	 */
-	public final void setDraggable(String mimeType) {
+	public final void setDraggable(final String mimeType) {
 		setDraggable(mimeType, (WWidget) null, false, (WObject) null);
 	}
 
@@ -489,7 +489,7 @@ public abstract class WInteractWidget extends WWebWidget {
 	 * {@link #setDraggable(String mimeType, WWidget dragWidget, boolean isDragWidgetOnly, WObject sourceObject)
 	 * setDraggable(mimeType, dragWidget, false, (WObject)null)}
 	 */
-	public final void setDraggable(String mimeType, WWidget dragWidget) {
+	public final void setDraggable(final String mimeType, WWidget dragWidget) {
 		setDraggable(mimeType, dragWidget, false, (WObject) null);
 	}
 
@@ -500,7 +500,7 @@ public abstract class WInteractWidget extends WWebWidget {
 	 * {@link #setDraggable(String mimeType, WWidget dragWidget, boolean isDragWidgetOnly, WObject sourceObject)
 	 * setDraggable(mimeType, dragWidget, isDragWidgetOnly, (WObject)null)}
 	 */
-	public final void setDraggable(String mimeType, WWidget dragWidget,
+	public final void setDraggable(final String mimeType, WWidget dragWidget,
 			boolean isDragWidgetOnly) {
 		setDraggable(mimeType, dragWidget, isDragWidgetOnly, (WObject) null);
 	}
@@ -535,6 +535,15 @@ public abstract class WInteractWidget extends WWebWidget {
 		return this.mouseOverDelay_;
 	}
 
+	public void setPopup(boolean popup) {
+		if (popup) {
+			this.clicked().preventPropagation();
+			this.mouseWentDown().preventPropagation();
+			this.mouseWentUp().preventPropagation();
+		}
+		super.setPopup(popup);
+	}
+
 	public void load() {
 		if (!this.isDisabled()) {
 			if (this.getParent() != null) {
@@ -552,7 +561,7 @@ public abstract class WInteractWidget extends WWebWidget {
 		return !this.isDisabled() && this.flags_.get(BIT_ENABLED);
 	}
 
-	void updateDom(DomElement element, boolean all) {
+	void updateDom(final DomElement element, boolean all) {
 		boolean updateKeyDown = false;
 		WApplication app = WApplication.getInstance();
 		EventSignal enterPress = this
@@ -569,7 +578,7 @@ public abstract class WInteractWidget extends WWebWidget {
 			if (enterPress != null) {
 				if (enterPress.needsUpdate(true)) {
 					String extraJS = "";
-					WEnvironment env = app.getEnvironment();
+					final WEnvironment env = app.getEnvironment();
 					if (((this) instanceof WFormWidget ? (WFormWidget) (this)
 							: null) != null
 							&& !env.agentIsOpera() && !env.agentIsIE()) {
@@ -735,7 +744,7 @@ public abstract class WInteractWidget extends WWebWidget {
 					}
 					mouseClick.updateOk();
 				}
-				Configuration conf = app.getEnvironment().getServer()
+				final Configuration conf = app.getEnvironment().getServer()
 						.getConfiguration();
 				js.append("},").append(conf.getDoubleClickTimeout()).append(
 						");}");
@@ -803,11 +812,11 @@ public abstract class WInteractWidget extends WWebWidget {
 	}
 
 	void propagateRenderOk(boolean deep) {
-		LinkedList<AbstractEventSignal> other = this.eventSignals();
+		final LinkedList<AbstractEventSignal> other = this.eventSignals();
 		for (Iterator<AbstractEventSignal> i_it = other.iterator(); i_it
 				.hasNext();) {
 			AbstractEventSignal i = i_it.next();
-			AbstractEventSignal s = i;
+			final AbstractEventSignal s = i;
 			s.updateOk();
 		}
 		super.propagateRenderOk(deep);
@@ -821,12 +830,12 @@ public abstract class WInteractWidget extends WWebWidget {
 		super.propagateSetEnabled(enabled);
 	}
 
-	void updateEventSignals(DomElement element, boolean all) {
-		LinkedList<AbstractEventSignal> other = this.eventSignals();
+	void updateEventSignals(final DomElement element, boolean all) {
+		final LinkedList<AbstractEventSignal> other = this.eventSignals();
 		for (Iterator<AbstractEventSignal> i_it = other.iterator(); i_it
 				.hasNext();) {
 			AbstractEventSignal i = i_it.next();
-			AbstractEventSignal s = i;
+			final AbstractEventSignal s = i;
 			if (s.getName() == WInteractWidget.M_CLICK_SIGNAL
 					&& this.flags_.get(BIT_REPAINT_TO_AJAX)) {
 				element.unwrap();

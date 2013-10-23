@@ -48,7 +48,8 @@ class WWidgetVectorPainter extends WWidgetPainter {
 		;
 	}
 
-	public void updateContents(List<DomElement> result, WPaintDevice device) {
+	public void updateContents(final List<DomElement> result,
+			WPaintDevice device) {
 		WVectorImage vectorDevice = ((device) instanceof WVectorImage ? (WVectorImage) (device)
 				: null);
 		if (!EnumUtils.mask(this.widget_.repaintFlags_, PaintFlag.PaintUpdate)

@@ -510,7 +510,7 @@ public class WMediaPlayer extends WCompositeWidget {
 	 * 
 	 * @see WMediaPlayer.TextId#Title
 	 */
-	public void setTitle(CharSequence title) {
+	public void setTitle(final CharSequence title) {
 		this.title_ = WString.toWString(title);
 		if (this.display_[WMediaPlayer.TextId.Title.getValue()] != null) {
 			this.display_[WMediaPlayer.TextId.Title.getValue()]
@@ -535,7 +535,7 @@ public class WMediaPlayer extends WCompositeWidget {
 	 * You may pass a null <code>link</code> if you want to indicate the media
 	 * types you will use (later) without already loading data.
 	 */
-	public void addSource(WMediaPlayer.Encoding encoding, WLink link) {
+	public void addSource(WMediaPlayer.Encoding encoding, final WLink link) {
 		this.media_.add(new WMediaPlayer.Source());
 		this.media_.get(this.media_.size() - 1).link = link;
 		this.media_.get(this.media_.size() - 1).encoding = encoding;
@@ -883,7 +883,7 @@ public class WMediaPlayer extends WCompositeWidget {
 		return "$('#" + this.getId() + " .jp-jplayer')";
 	}
 
-	void setFormData(WObject.FormData formData) {
+	void setFormData(final WObject.FormData formData) {
 		if (!(formData.values.length == 0)) {
 			List<String> attributes = new ArrayList<String>();
 			attributes = new ArrayList<String>(Arrays.asList(formData.values[0]
@@ -906,7 +906,7 @@ public class WMediaPlayer extends WCompositeWidget {
 					this.updateProgressBarState(WMediaPlayer.BarControlId.Time);
 					this
 							.updateProgressBarState(WMediaPlayer.BarControlId.Volume);
-				} catch (RuntimeException e) {
+				} catch (final RuntimeException e) {
 					throw new WException("WMediaPlayer: error parsing: "
 							+ formData.values[0] + ": " + e.toString());
 				}
@@ -1147,7 +1147,7 @@ public class WMediaPlayer extends WCompositeWidget {
 	}
 
 	private void addAnchor(WTemplate t, WMediaPlayer.ButtonControlId id,
-			String bindId, String styleClass, String altText) {
+			String bindId, final String styleClass, final String altText) {
 		String text = "";
 		if (altText.length() == 0) {
 			text = styleClass.substring(3);
@@ -1166,12 +1166,12 @@ public class WMediaPlayer extends WCompositeWidget {
 	}
 
 	private final void addAnchor(WTemplate t, WMediaPlayer.ButtonControlId id,
-			String bindId, String styleClass) {
+			String bindId, final String styleClass) {
 		addAnchor(t, id, bindId, styleClass, "");
 	}
 
 	private void addText(WTemplate t, WMediaPlayer.TextId id, String bindId,
-			String styleClass) {
+			final String styleClass) {
 		WText text = new WText();
 		text.setInline(false);
 		if (styleClass.length() != 0) {
@@ -1182,7 +1182,7 @@ public class WMediaPlayer extends WCompositeWidget {
 	}
 
 	private void addProgressBar(WTemplate t, WMediaPlayer.BarControlId id,
-			String bindId, String styleClass, String valueStyleClass) {
+			String bindId, final String styleClass, final String valueStyleClass) {
 		WProgressBar progressBar = new WProgressBar();
 		progressBar.setStyleClass(styleClass);
 		progressBar.setValueStyleClass(valueStyleClass);
@@ -1228,7 +1228,7 @@ public class WMediaPlayer extends WCompositeWidget {
 		}
 	}
 
-	private void playerDo(String method, String args) {
+	private void playerDo(final String method, final String args) {
 		StringBuilder ss = new StringBuilder();
 		ss.append(".jPlayer('").append(method).append('\'');
 		if (args.length() != 0) {
@@ -1238,15 +1238,15 @@ public class WMediaPlayer extends WCompositeWidget {
 		this.playerDoRaw(ss.toString());
 	}
 
-	private final void playerDo(String method) {
+	private final void playerDo(final String method) {
 		playerDo(method, "");
 	}
 
-	private void playerDoData(String method, String args) {
+	private void playerDoData(final String method, final String args) {
 		this.playerDoRaw(".data('jPlayer')." + method + "(" + args + ")");
 	}
 
-	private void playerDoRaw(String jqueryMethod) {
+	private void playerDoRaw(final String jqueryMethod) {
 		StringBuilder ss = new StringBuilder();
 		if (this.isRendered()) {
 			ss.append(this.getJsPlayerRef());

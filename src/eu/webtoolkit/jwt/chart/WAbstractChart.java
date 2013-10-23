@@ -147,7 +147,7 @@ public abstract class WAbstractChart extends WPaintedWidget {
 	 * 
 	 * @see WAbstractChart#getBackground()
 	 */
-	public void setBackground(WBrush background) {
+	public void setBackground(final WBrush background) {
 		if (!ChartUtils.equals(this.background_, background)) {
 			this.background_ = background;
 			update();
@@ -270,7 +270,7 @@ public abstract class WAbstractChart extends WPaintedWidget {
 	 * 
 	 * @see WAbstractChart#getTitle()
 	 */
-	public void setTitle(CharSequence title) {
+	public void setTitle(final CharSequence title) {
 		if (!ChartUtils.equals(this.title_, WString.toWString(title))) {
 			this.title_ = WString.toWString(title);
 			update();
@@ -299,7 +299,7 @@ public abstract class WAbstractChart extends WPaintedWidget {
 	 * @see WAbstractChart#getTitleFont()
 	 * @see WAbstractChart#setTitle(CharSequence title)
 	 */
-	public void setTitleFont(WFont titleFont) {
+	public void setTitleFont(final WFont titleFont) {
 		if (!ChartUtils.equals(this.titleFont_, titleFont)) {
 			this.titleFont_ = titleFont;
 			update();
@@ -317,7 +317,7 @@ public abstract class WAbstractChart extends WPaintedWidget {
 		return this.titleFont_;
 	}
 
-	void setAxisTitleFont(WFont titleFont) {
+	void setAxisTitleFont(final WFont titleFont) {
 		if (!ChartUtils.equals(this.axisTitleFont_, titleFont)) {
 			this.axisTitleFont_ = titleFont;
 			update();
@@ -336,7 +336,7 @@ public abstract class WAbstractChart extends WPaintedWidget {
 	 * <i>rectangle</i>. When <i>rectangle</i> is a null rectangle, the entire
 	 * painter {@link WPainter#getWindow() window} is used.
 	 */
-	public abstract void paint(WPainter painter, WRectF rectangle);
+	public abstract void paint(final WPainter painter, final WRectF rectangle);
 
 	/**
 	 * Paint the chart in a rectangle of the given painter.
@@ -344,7 +344,7 @@ public abstract class WAbstractChart extends WPaintedWidget {
 	 * Calls {@link #paint(WPainter painter, WRectF rectangle) paint(painter,
 	 * new WRectF())}
 	 */
-	public final void paint(WPainter painter) {
+	public final void paint(final WPainter painter) {
 		paint(painter, new WRectF());
 	}
 
@@ -399,8 +399,8 @@ public abstract class WAbstractChart extends WPaintedWidget {
 	 * 
 	 * @see WAbstractItemModel#columnsInserted()
 	 */
-	protected abstract void modelColumnsInserted(WModelIndex parent, int start,
-			int end);
+	protected abstract void modelColumnsInserted(final WModelIndex parent,
+			int start, int end);
 
 	/**
 	 * Method called when colums have been removed from the model.
@@ -408,8 +408,8 @@ public abstract class WAbstractChart extends WPaintedWidget {
 	 * 
 	 * @see WAbstractItemModel#columnsRemoved()
 	 */
-	protected abstract void modelColumnsRemoved(WModelIndex parent, int start,
-			int end);
+	protected abstract void modelColumnsRemoved(final WModelIndex parent,
+			int start, int end);
 
 	/**
 	 * Method called when rows have been inserted from the model.
@@ -417,8 +417,8 @@ public abstract class WAbstractChart extends WPaintedWidget {
 	 * 
 	 * @see WAbstractItemModel#rowsInserted()
 	 */
-	protected abstract void modelRowsInserted(WModelIndex parent, int start,
-			int end);
+	protected abstract void modelRowsInserted(final WModelIndex parent,
+			int start, int end);
 
 	/**
 	 * Method called when rows have been removed from the model.
@@ -426,8 +426,8 @@ public abstract class WAbstractChart extends WPaintedWidget {
 	 * 
 	 * @see WAbstractItemModel#rowsRemoved()
 	 */
-	protected abstract void modelRowsRemoved(WModelIndex parent, int start,
-			int end);
+	protected abstract void modelRowsRemoved(final WModelIndex parent,
+			int start, int end);
 
 	/**
 	 * Method called when data has been changed in the model.
@@ -435,8 +435,8 @@ public abstract class WAbstractChart extends WPaintedWidget {
 	 * 
 	 * @see WAbstractItemModel#dataChanged()
 	 */
-	protected abstract void modelDataChanged(WModelIndex topLeft,
-			WModelIndex bottomRight);
+	protected abstract void modelDataChanged(final WModelIndex topLeft,
+			final WModelIndex bottomRight);
 
 	/**
 	 * Method called when header data has been changed in the model.
@@ -446,5 +446,5 @@ public abstract class WAbstractChart extends WPaintedWidget {
 	 */
 	protected abstract void modelHeaderDataChanged(Orientation orientation,
 			int start, int end);
-	// private void (T m, T v) ;
+	// private void (final T m, final T v) ;
 }

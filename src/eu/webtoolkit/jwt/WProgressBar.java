@@ -160,7 +160,7 @@ public class WProgressBar extends WInteractWidget {
 	 * <p>
 	 * The default value is &quot;%.0f %%&quot;
 	 */
-	public void setFormat(CharSequence format) {
+	public void setFormat(final CharSequence format) {
 		this.format_ = WString.toWString(format);
 	}
 
@@ -213,7 +213,7 @@ public class WProgressBar extends WInteractWidget {
 		return this.progressCompleted_;
 	}
 
-	public void resize(WLength width, WLength height) {
+	public void resize(final WLength width, final WLength height) {
 		super.resize(width, height);
 		if (!height.isAuto()) {
 			this.setAttributeValue("style", "line-height: "
@@ -221,7 +221,7 @@ public class WProgressBar extends WInteractWidget {
 		}
 	}
 
-	public void setValueStyleClass(String valueStyleClass) {
+	public void setValueStyleClass(final String valueStyleClass) {
 		this.valueStyleClass_ = valueStyleClass;
 	}
 
@@ -236,7 +236,7 @@ public class WProgressBar extends WInteractWidget {
 		}
 	}
 
-	void updateDom(DomElement element, boolean all) {
+	void updateDom(final DomElement element, boolean all) {
 		DomElement bar = null;
 		DomElement label = null;
 		if (all) {

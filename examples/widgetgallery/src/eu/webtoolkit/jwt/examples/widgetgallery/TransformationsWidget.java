@@ -80,7 +80,7 @@ class TransformationsWidget extends WPaintedWidget {
 		painter.restore();
 	}
 
-	private void drawFilledPolygon(WPainter painter, WColor color) {
+	private void drawFilledPolygon(final WPainter painter, final WColor color) {
 		painter.setBrush(new WBrush(color));
 		WPointF[] points = { new WPointF(20, 0), new WPointF(60, 0),
 				new WPointF(80, 34.6), new WPointF(60, 69.2),

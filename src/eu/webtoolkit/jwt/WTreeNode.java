@@ -142,7 +142,7 @@ public class WTreeNode extends WCompositeWidget {
 	 * <p>
 	 * The node is initialized to be collapsed.
 	 */
-	public WTreeNode(CharSequence labelText, WIconPair labelIcon,
+	public WTreeNode(final CharSequence labelText, WIconPair labelIcon,
 			WTreeNode parent) {
 		super();
 		this.childNodes_ = new ArrayList<WTreeNode>();
@@ -172,7 +172,7 @@ public class WTreeNode extends WCompositeWidget {
 	 * {@link #WTreeNode(CharSequence labelText, WIconPair labelIcon, WTreeNode parent)
 	 * this(labelText, (WIconPair)null, (WTreeNode)null)}
 	 */
-	public WTreeNode(CharSequence labelText) {
+	public WTreeNode(final CharSequence labelText) {
 		this(labelText, (WIconPair) null, (WTreeNode) null);
 	}
 
@@ -183,7 +183,7 @@ public class WTreeNode extends WCompositeWidget {
 	 * {@link #WTreeNode(CharSequence labelText, WIconPair labelIcon, WTreeNode parent)
 	 * this(labelText, labelIcon, (WTreeNode)null)}
 	 */
-	public WTreeNode(CharSequence labelText, WIconPair labelIcon) {
+	public WTreeNode(final CharSequence labelText, WIconPair labelIcon) {
 		this(labelText, labelIcon, (WTreeNode) null);
 	}
 
@@ -372,7 +372,7 @@ public class WTreeNode extends WCompositeWidget {
 	 * @deprecated This method does not do anything since JWt 3.1.1, as the tree
 	 *             is now styled based on the current CSS theme.
 	 */
-	public void setImagePack(String url) {
+	public void setImagePack(final String url) {
 	}
 
 	/**

@@ -51,7 +51,7 @@ public class WSplitButton extends WCompositeWidget {
 	/**
 	 * Constructor passing the label.
 	 */
-	public WSplitButton(CharSequence label, WContainerWidget parent) {
+	public WSplitButton(final CharSequence label, WContainerWidget parent) {
 		super(parent);
 		this.init(label);
 	}
@@ -62,7 +62,7 @@ public class WSplitButton extends WCompositeWidget {
 	 * Calls {@link #WSplitButton(CharSequence label, WContainerWidget parent)
 	 * this(label, (WContainerWidget)null)}
 	 */
-	public WSplitButton(CharSequence label) {
+	public WSplitButton(final CharSequence label) {
 		this(label, (WContainerWidget) null);
 	}
 
@@ -104,7 +104,7 @@ public class WSplitButton extends WCompositeWidget {
 
 	private WToolBar impl_;
 
-	private void init(CharSequence label) {
+	private void init(final CharSequence label) {
 		this.setImplementation(this.impl_ = new WToolBar());
 		this.impl_.setInline(true);
 		this.impl_.addButton(new WPushButton(label));

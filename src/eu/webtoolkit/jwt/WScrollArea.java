@@ -234,7 +234,7 @@ public class WScrollArea extends WWebWidget {
 		this.repaint();
 	}
 
-	void updateDom(DomElement element, boolean all) {
+	void updateDom(final DomElement element, boolean all) {
 		if (this.widgetChanged_ || all) {
 			if (this.widget_ != null) {
 				element.addChild(this.widget_.createSDomElement(WApplication

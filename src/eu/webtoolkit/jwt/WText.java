@@ -106,7 +106,7 @@ public class WText extends WInteractWidget {
 	 * The XML parser will silently discard malicious tags and attributes for
 	 * literal {@link TextFormat#XHTMLText} text.
 	 */
-	public WText(CharSequence text, WContainerWidget parent) {
+	public WText(final CharSequence text, WContainerWidget parent) {
 		super(parent);
 		this.text_ = new WText.RichText();
 		this.flags_ = new BitSet();
@@ -121,7 +121,7 @@ public class WText extends WInteractWidget {
 	 * Calls {@link #WText(CharSequence text, WContainerWidget parent)
 	 * this(text, (WContainerWidget)null)}
 	 */
-	public WText(CharSequence text) {
+	public WText(final CharSequence text) {
 		this(text, (WContainerWidget) null);
 	}
 
@@ -141,7 +141,8 @@ public class WText extends WInteractWidget {
 	 * The XML parser will silently discard malicious tags and attributes for
 	 * literal {@link TextFormat#XHTMLText} text.
 	 */
-	public WText(CharSequence text, TextFormat format, WContainerWidget parent) {
+	public WText(final CharSequence text, TextFormat format,
+			WContainerWidget parent) {
 		super(parent);
 		this.text_ = new WText.RichText();
 		this.flags_ = new BitSet();
@@ -158,7 +159,7 @@ public class WText extends WInteractWidget {
 	 * {@link #WText(CharSequence text, TextFormat format, WContainerWidget parent)
 	 * this(text, format, (WContainerWidget)null)}
 	 */
-	public WText(CharSequence text, TextFormat format) {
+	public WText(final CharSequence text, TextFormat format) {
 		this(text, format, (WContainerWidget) null);
 	}
 
@@ -200,7 +201,7 @@ public class WText extends WInteractWidget {
 	 * @see WText#getText()
 	 * @see WText#setText(CharSequence text)
 	 */
-	public boolean setText(CharSequence text) {
+	public boolean setText(final CharSequence text) {
 		if (canOptimizeUpdates() && text.equals(this.text_.text)) {
 			return true;
 		}
@@ -329,7 +330,7 @@ public class WText extends WInteractWidget {
 	 * children and the border, for a {@link WText} padding is only supported on
 	 * the left and/or right.
 	 */
-	public void setPadding(WLength length, EnumSet<Side> sides) {
+	public void setPadding(final WLength length, EnumSet<Side> sides) {
 		if (!(this.padding_ != null)) {
 			this.padding_ = new WLength[2];
 			this.padding_[0] = this.padding_[1] = WLength.Auto;
@@ -358,7 +359,7 @@ public class WText extends WInteractWidget {
 	 * Calls {@link #setPadding(WLength length, EnumSet sides)
 	 * setPadding(length, EnumSet.of(side, sides))}
 	 */
-	public final void setPadding(WLength length, Side side, Side... sides) {
+	public final void setPadding(final WLength length, Side side, Side... sides) {
 		setPadding(length, EnumSet.of(side, sides));
 	}
 
@@ -368,7 +369,7 @@ public class WText extends WInteractWidget {
 	 * Calls {@link #setPadding(WLength length, EnumSet sides)
 	 * setPadding(length, EnumSet.of (Side.Left, Side.Right))}
 	 */
-	public final void setPadding(WLength length) {
+	public final void setPadding(final WLength length) {
 		setPadding(length, EnumSet.of(Side.Left, Side.Right));
 	}
 
@@ -456,7 +457,7 @@ public class WText extends WInteractWidget {
 		public WString text;
 		public TextFormat format;
 
-		public boolean setText(CharSequence newText) {
+		public boolean setText(final CharSequence newText) {
 			this.text = WString.toWString(newText);
 			boolean ok = this.isCheckWellFormed();
 			if (!ok) {
@@ -553,7 +554,7 @@ public class WText extends WInteractWidget {
 		super.render(flags);
 	}
 
-	void updateDom(DomElement element, boolean all) {
+	void updateDom(final DomElement element, boolean all) {
 		if (this.flags_.get(BIT_TEXT_CHANGED) || all) {
 			String text = this.getFormattedText();
 			if (this.flags_.get(BIT_TEXT_CHANGED) || text.length() != 0) {

@@ -120,7 +120,7 @@ class TreesTables extends TopicWidget {
 		table.getElementAt(0, 2).addWidget(new WText("Last Name"));
 		table.getElementAt(0, 3).addWidget(new WText("Pay"));
 		for (int i = 0; i < 3; ++i) {
-			Employee employee = employees[i];
+			final Employee employee = employees[i];
 			int row = i + 1;
 			table.getElementAt(row, 0).addWidget(
 					new WText(new WString("{1}").arg(row)));
@@ -152,7 +152,7 @@ class TreesTables extends TopicWidget {
 		table.getElementAt(0, 2).addWidget(new WText("Last Name"));
 		table.getElementAt(0, 3).addWidget(new WText("Pay"));
 		for (int i = 0; i < 3; ++i) {
-			Employee employee = employees[i];
+			final Employee employee = employees[i];
 			int row = i + 1;
 			new WText(new WString("{1}").arg(row), table.getElementAt(row, 0));
 			new WText(employee.firstName, table.getElementAt(row, 1));

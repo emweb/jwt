@@ -132,8 +132,8 @@ public class RegistrationModel extends FormBaseModel {
 	 * The <code>login</code> object is used to indicate that an existing user
 	 * was re-identified, and thus the registration process may be aborted.
 	 */
-	public RegistrationModel(AuthService baseAuth, AbstractUserDatabase users,
-			Login login, WObject parent) {
+	public RegistrationModel(final AuthService baseAuth,
+			final AbstractUserDatabase users, final Login login, WObject parent) {
 		super(baseAuth, users, parent);
 		this.login_ = login;
 		this.minLoginNameLength_ = 4;
@@ -157,8 +157,8 @@ public class RegistrationModel extends FormBaseModel {
 	 * {@link #RegistrationModel(AuthService baseAuth, AbstractUserDatabase users, Login login, WObject parent)
 	 * this(baseAuth, users, login, (WObject)null)}
 	 */
-	public RegistrationModel(AuthService baseAuth, AbstractUserDatabase users,
-			Login login) {
+	public RegistrationModel(final AuthService baseAuth,
+			final AbstractUserDatabase users, final Login login) {
 		this(baseAuth, users, login, (WObject) null);
 	}
 
@@ -263,7 +263,7 @@ public class RegistrationModel extends FormBaseModel {
 	 * Returns <code>true</code> if the given identity was already registered,
 	 * and has been logged in.
 	 */
-	public boolean registerIdentified(Identity identity) {
+	public boolean registerIdentified(final Identity identity) {
 		this.idpIdentity_ = identity;
 		if (this.idpIdentity_.isValid()) {
 			User user = this.getBaseAuth().identifyUser(this.idpIdentity_,
@@ -373,7 +373,7 @@ public class RegistrationModel extends FormBaseModel {
 	 * {@link RegistrationModel#setMinLoginNameLength(int chars)
 	 * setMinLoginNameLength()}).
 	 */
-	public WString validateLoginName(String userName) {
+	public WString validateLoginName(final String userName) {
 		switch (this.getBaseAuth().getIdentityPolicy()) {
 		case LoginNameIdentity:
 			if ((int) userName.length() < this.minLoginNameLength_) {
@@ -401,7 +401,7 @@ public class RegistrationModel extends FormBaseModel {
 	 * identification method). If possible, we allow the user to confirm his
 	 * identity.
 	 */
-	public void checkUserExists(String userName) {
+	public void checkUserExists(final String userName) {
 		this.existingUser_ = this.getUsers().findWithIdentity(
 				Identity.LoginName, userName);
 	}
@@ -645,7 +645,7 @@ public class RegistrationModel extends FormBaseModel {
 										.getJsStringLiteral() + ");}}}");
 	}
 
-	private Login login_;
+	private final Login login_;
 	private int minLoginNameLength_;
 	private RegistrationModel.EmailPolicy emailPolicy_;
 	private Identity idpIdentity_;

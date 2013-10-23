@@ -123,7 +123,7 @@ class StdWidgetItemImpl extends StdLayoutItemImpl {
 		return result;
 	}
 
-	public void setHint(String name, String value) {
+	public void setHint(final String name, final String value) {
 		logger.error(new StringWriter().append("unrecognized hint '").append(
 				name).append("'").toString());
 	}

@@ -208,7 +208,7 @@ public class WCssDecorationStyle extends WObject {
 	 * The image may be placed in a particular location by specifying sides by
 	 * OR&apos;ing {@link Side} values together, e.g. (Right | Top).
 	 */
-	public void setBackgroundImage(WLink image,
+	public void setBackgroundImage(final WLink image,
 			WCssDecorationStyle.Repeat repeat, EnumSet<Side> sides) {
 		if (image.getType() == WLink.Type.Resource) {
 			image.getResource().dataChanged().addListener(this,
@@ -238,7 +238,7 @@ public class WCssDecorationStyle extends WObject {
 	 * {@link #setBackgroundImage(WLink image, WCssDecorationStyle.Repeat repeat, EnumSet sides)
 	 * setBackgroundImage(image, repeat, EnumSet.of(side, sides))}
 	 */
-	public final void setBackgroundImage(WLink image,
+	public final void setBackgroundImage(final WLink image,
 			WCssDecorationStyle.Repeat repeat, Side side, Side... sides) {
 		setBackgroundImage(image, repeat, EnumSet.of(side, sides));
 	}
@@ -251,7 +251,7 @@ public class WCssDecorationStyle extends WObject {
 	 * setBackgroundImage(image, WCssDecorationStyle.Repeat.RepeatXY,
 	 * EnumSet.noneOf(Side.class))}
 	 */
-	public final void setBackgroundImage(WLink image) {
+	public final void setBackgroundImage(final WLink image) {
 		setBackgroundImage(image, WCssDecorationStyle.Repeat.RepeatXY, EnumSet
 				.noneOf(Side.class));
 	}
@@ -263,7 +263,7 @@ public class WCssDecorationStyle extends WObject {
 	 * {@link #setBackgroundImage(WLink image, WCssDecorationStyle.Repeat repeat, EnumSet sides)
 	 * setBackgroundImage(image, repeat, EnumSet.noneOf(Side.class))}
 	 */
-	public final void setBackgroundImage(WLink image,
+	public final void setBackgroundImage(final WLink image,
 			WCssDecorationStyle.Repeat repeat) {
 		setBackgroundImage(image, repeat, EnumSet.noneOf(Side.class));
 	}
@@ -274,7 +274,7 @@ public class WCssDecorationStyle extends WObject {
 	 * The image may be placed in a particular location by specifying sides by
 	 * OR&apos;ing {@link Side} values together, e.g. (Right | Top).
 	 */
-	public void setBackgroundImage(String url,
+	public void setBackgroundImage(final String url,
 			WCssDecorationStyle.Repeat repeat, EnumSet<Side> sides) {
 		this.setBackgroundImage(new WLink(url), repeat, sides);
 	}
@@ -286,7 +286,7 @@ public class WCssDecorationStyle extends WObject {
 	 * {@link #setBackgroundImage(String url, WCssDecorationStyle.Repeat repeat, EnumSet sides)
 	 * setBackgroundImage(url, repeat, EnumSet.of(side, sides))}
 	 */
-	public final void setBackgroundImage(String url,
+	public final void setBackgroundImage(final String url,
 			WCssDecorationStyle.Repeat repeat, Side side, Side... sides) {
 		setBackgroundImage(url, repeat, EnumSet.of(side, sides));
 	}
@@ -299,7 +299,7 @@ public class WCssDecorationStyle extends WObject {
 	 * setBackgroundImage(url, WCssDecorationStyle.Repeat.RepeatXY,
 	 * EnumSet.noneOf(Side.class))}
 	 */
-	public final void setBackgroundImage(String url) {
+	public final void setBackgroundImage(final String url) {
 		setBackgroundImage(url, WCssDecorationStyle.Repeat.RepeatXY, EnumSet
 				.noneOf(Side.class));
 	}
@@ -311,7 +311,7 @@ public class WCssDecorationStyle extends WObject {
 	 * {@link #setBackgroundImage(String url, WCssDecorationStyle.Repeat repeat, EnumSet sides)
 	 * setBackgroundImage(url, repeat, EnumSet.noneOf(Side.class))}
 	 */
-	public final void setBackgroundImage(String url,
+	public final void setBackgroundImage(final String url,
 			WCssDecorationStyle.Repeat repeat) {
 		setBackgroundImage(url, repeat, EnumSet.noneOf(Side.class));
 	}
@@ -443,7 +443,7 @@ public class WCssDecorationStyle extends WObject {
 	/**
 	 * Sets the text font.
 	 */
-	public void setFont(WFont font) {
+	public void setFont(final WFont font) {
 		if (!WWebWidget.canOptimizeUpdates() || !this.font_.equals(font)) {
 			this.font_ = font;
 			this.fontChanged_ = true;
@@ -508,7 +508,7 @@ public class WCssDecorationStyle extends WObject {
 		return e.getCssStyle();
 	}
 
-	void updateDomElement(DomElement element, boolean all) {
+	void updateDomElement(final DomElement element, boolean all) {
 		if (this.cursorChanged_ || all) {
 			switch (this.cursor_) {
 			case AutoCursor:

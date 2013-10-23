@@ -23,7 +23,7 @@ class StdGridLayoutImpl2 extends StdLayoutImpl {
 	private static Logger logger = LoggerFactory
 			.getLogger(StdGridLayoutImpl2.class);
 
-	public StdGridLayoutImpl2(WLayout layout, Grid grid) {
+	public StdGridLayoutImpl2(WLayout layout, final Grid grid) {
 		super(layout);
 		this.grid_ = grid;
 		this.needAdjust_ = false;
@@ -180,7 +180,7 @@ class StdGridLayoutImpl2 extends StdLayoutImpl {
 			boolean rowVisible = false;
 			int prevColumnWithItem = -1;
 			for (int col = 0; col < colCount; ++col) {
-				Grid.Item item = this.grid_.items_.get(row).get(col);
+				final Grid.Item item = this.grid_.items_.get(row).get(col);
 				if (!overSpanned.get(row * colCount + col)) {
 					for (int i = 0; i < item.rowSpan_; ++i) {
 						for (int j = 0; j < item.colSpan_; ++j) {
@@ -402,7 +402,7 @@ class StdGridLayoutImpl2 extends StdLayoutImpl {
 		return div;
 	}
 
-	public void updateDom(DomElement parent) {
+	public void updateDom(final DomElement parent) {
 		WApplication app = WApplication.getInstance();
 		if (this.needConfigUpdate_) {
 			this.needConfigUpdate_ = false;
@@ -476,7 +476,7 @@ class StdGridLayoutImpl2 extends StdLayoutImpl {
 		}
 	}
 
-	public void setHint(String name, String value) {
+	public void setHint(final String name, final String value) {
 		logger.error(new StringWriter().append("unrecognized hint '").append(
 				name).append("'").toString());
 	}
@@ -520,7 +520,7 @@ class StdGridLayoutImpl2 extends StdLayoutImpl {
 		}
 	}
 
-	private Grid grid_;
+	private final Grid grid_;
 	private boolean needAdjust_;
 	private boolean needRemeasure_;
 	private boolean needConfigUpdate_;
@@ -590,7 +590,7 @@ class StdGridLayoutImpl2 extends StdLayoutImpl {
 		return minWidth;
 	}
 
-	private static int pixelSize(WLength size) {
+	private static int pixelSize(final WLength size) {
 		if (size.getUnit() == WLength.Unit.Percentage) {
 			return 0;
 		} else {
@@ -598,8 +598,8 @@ class StdGridLayoutImpl2 extends StdLayoutImpl {
 		}
 	}
 
-	private void streamConfig(StringBuilder js, List<Grid.Section> sections,
-			boolean rows, WApplication app) {
+	private void streamConfig(final StringBuilder js,
+			final List<Grid.Section> sections, boolean rows, WApplication app) {
 		js.append("[");
 		for (int i = 0; i < sections.size(); ++i) {
 			if (i != 0) {
@@ -609,7 +609,7 @@ class StdGridLayoutImpl2 extends StdLayoutImpl {
 			if (sections.get(i).resizable_) {
 				SizeHandle.loadJavaScript(app);
 				js.append("[");
-				WLength size = sections.get(i).initialSize_;
+				final WLength size = sections.get(i).initialSize_;
 				if (size.isAuto()) {
 					js.append("-1");
 				} else {
@@ -633,7 +633,7 @@ class StdGridLayoutImpl2 extends StdLayoutImpl {
 		js.append("]");
 	}
 
-	private void streamConfig(StringBuilder js, WApplication app) {
+	private void streamConfig(final StringBuilder js, WApplication app) {
 		js.append("{ rows:");
 		this.streamConfig(js, this.grid_.rows_, true, app);
 		js.append(", cols:");
@@ -643,7 +643,7 @@ class StdGridLayoutImpl2 extends StdLayoutImpl {
 		final int rowCount = this.grid_.rows_.size();
 		for (int row = 0; row < rowCount; ++row) {
 			for (int col = 0; col < colCount; ++col) {
-				Grid.Item item = this.grid_.items_.get(row).get(col);
+				final Grid.Item item = this.grid_.items_.get(row).get(col);
 				AlignmentFlag hAlign = EnumUtils.enumFromSet(EnumUtils.mask(
 						item.alignment_, AlignmentFlag.AlignHorizontalMask));
 				AlignmentFlag vAlign = EnumUtils.enumFromSet(EnumUtils.mask(

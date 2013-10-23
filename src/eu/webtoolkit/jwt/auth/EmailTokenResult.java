@@ -91,7 +91,7 @@ public class EmailTokenResult {
 	 * <p>
 	 * Creates an email token result.
 	 */
-	public EmailTokenResult(EmailTokenResult.Result result, User user) {
+	public EmailTokenResult(EmailTokenResult.Result result, final User user) {
 		this.result_ = result;
 		this.user_ = user;
 	}

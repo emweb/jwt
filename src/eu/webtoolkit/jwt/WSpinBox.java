@@ -176,7 +176,7 @@ public class WSpinBox extends WAbstractSpinBox {
 		return this.valueChanged_;
 	}
 
-	void updateDom(DomElement element, boolean all) {
+	void updateDom(final DomElement element, boolean all) {
 		if (all || this.changed_) {
 			if (this.isNativeControl()) {
 				element.setAttribute("min", String.valueOf(this.min_));
@@ -211,12 +211,12 @@ public class WSpinBox extends WAbstractSpinBox {
 		return 0;
 	}
 
-	boolean parseNumberValue(String text) {
+	boolean parseNumberValue(final String text) {
 		try {
 			this.value_ = LocaleUtils.toInt(LocaleUtils.getCurrentLocale(),
 					text);
 			return true;
-		} catch (NumberFormatException e) {
+		} catch (final NumberFormatException e) {
 			return false;
 		}
 	}

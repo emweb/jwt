@@ -33,8 +33,8 @@ class WebSession {
 		}
 	}
 
-	public WebSession(WtServlet controller, String sessionId,
-			EntryPointType type, String favicon, WebRequest request,
+	public WebSession(WtServlet controller, final String sessionId,
+			EntryPointType type, final String favicon, WebRequest request,
 			WEnvironment env) {
 		this.mutex_ = new ReentrantLock();
 		this.type_ = type;
@@ -102,8 +102,8 @@ class WebSession {
 		}
 	}
 
-	public WebSession(WtServlet controller, String sessionId,
-			EntryPointType type, String favicon, WebRequest request) {
+	public WebSession(WtServlet controller, final String sessionId,
+			EntryPointType type, final String favicon, WebRequest request) {
 		this(controller, sessionId, type, favicon, request, (WEnvironment) null);
 	}
 
@@ -177,7 +177,7 @@ class WebSession {
 		return this.debug_;
 	}
 
-	public void redirect(String url) {
+	public void redirect(final String url) {
 		this.redirect_ = url;
 		if (this.redirect_.length() == 0) {
 			this.redirect_ = "?";
@@ -194,10 +194,10 @@ class WebSession {
 		this.app_ = app;
 	}
 
-	public void notify(WEvent event) throws IOException {
-		WebSession.Handler handler = event.impl_.handler;
-		WebRequest request = handler.getRequest();
-		WebResponse response = handler.getResponse();
+	public void notify(final WEvent event) throws IOException {
+		final WebSession.Handler handler = event.impl_.handler;
+		final WebRequest request = handler.getRequest();
+		final WebResponse response = handler.getResponse();
 		if (WebSession.Handler.getInstance() != handler) {
 			WebSession.Handler.getInstance().setRequest(request, response);
 		}
@@ -300,7 +300,7 @@ class WebSession {
 					if (0L != 0) {
 						this.app_.requestTooLarge().trigger(0L);
 					}
-				} catch (RuntimeException e) {
+				} catch (final RuntimeException e) {
 					logger.error(new StringWriter().append(
 							"Exception in WApplication::requestTooLarge")
 							.append(e.toString()).toString());
@@ -344,7 +344,7 @@ class WebSession {
 								resource.handle(request, response);
 								handler.setRequest((WebRequest) null,
 										(WebResponse) null);
-							} catch (RuntimeException e) {
+							} catch (final RuntimeException e) {
 								logger.error(new StringWriter().append(
 										"Exception while streaming resource")
 										.append(e.toString()).toString());
@@ -376,7 +376,7 @@ class WebSession {
 										.parseInt(ackIdE))) {
 									invalidAckId = false;
 								}
-							} catch (NumberFormatException e) {
+							} catch (final NumberFormatException e) {
 							}
 						}
 						if (invalidAckId) {
@@ -409,7 +409,7 @@ class WebSession {
 																.getConfiguration()
 																.getServerPushTimeout() * 2,
 														java.util.concurrent.TimeUnit.SECONDS);
-									} catch (InterruptedException e) {
+									} catch (final InterruptedException e) {
 									}
 								}
 								if (!this.updatesPending_) {
@@ -464,7 +464,7 @@ class WebSession {
 							try {
 								handler.nextSignal = -1;
 								this.notifySignal(event);
-							} catch (RuntimeException e) {
+							} catch (final RuntimeException e) {
 								logger.error(new StringWriter().append(
 										"error during event handling: ")
 										.append(e.toString()).toString());
@@ -698,7 +698,7 @@ class WebSession {
 		return false;
 	}
 
-	public void setPagePathInfo(String path) {
+	public void setPagePathInfo(final String path) {
 		if (!this.isUseUglyInternalPaths()) {
 			this.pagePathInfo_ = path;
 		}
@@ -708,7 +708,7 @@ class WebSession {
 		return this.pagePathInfo_;
 	}
 
-	public String getMostRelativeUrl(String internalPath) {
+	public String getMostRelativeUrl(final String internalPath) {
 		return this.appendSessionQuery(this.getBookmarkUrl(internalPath));
 	}
 
@@ -716,7 +716,8 @@ class WebSession {
 		return getMostRelativeUrl("");
 	}
 
-	public String appendInternalPath(String baseUrl, String internalPath) {
+	public String appendInternalPath(final String baseUrl,
+			final String internalPath) {
 		if (internalPath.length() == 0 || internalPath.equals("/")) {
 			if (baseUrl.length() == 0) {
 				return "?";
@@ -739,7 +740,7 @@ class WebSession {
 		}
 	}
 
-	public String appendSessionQuery(String url) {
+	public String appendSessionQuery(final String url) {
 		String result = url;
 		if (this.env_.agentIsSpiderBot()) {
 			return result;
@@ -764,7 +765,7 @@ class WebSession {
 		return url;
 	}
 
-	public String ajaxCanonicalUrl(WebResponse request) {
+	public String ajaxCanonicalUrl(final WebResponse request) {
 		String hashE = null;
 		if (this.applicationName_.length() == 0) {
 			hashE = request.getParameter("_");
@@ -808,7 +809,7 @@ class WebSession {
 		}
 	}
 
-	public String getBootstrapUrl(WebResponse response,
+	public String getBootstrapUrl(final WebResponse response,
 			WebSession.BootstrapOption option) {
 		switch (option) {
 		case KeepInternalPath: {
@@ -857,7 +858,7 @@ class WebSession {
 		return "";
 	}
 
-	public String fixRelativeUrl(String url) {
+	public String fixRelativeUrl(final String url) {
 		if (isAbsoluteUrl(url)) {
 			return url;
 		}
@@ -899,7 +900,7 @@ class WebSession {
 		}
 	}
 
-	public String makeAbsoluteUrl(String url) {
+	public String makeAbsoluteUrl(final String url) {
 		if (isAbsoluteUrl(url)) {
 			return url;
 		} else {
@@ -911,7 +912,7 @@ class WebSession {
 		}
 	}
 
-	public String getBookmarkUrl(String internalPath) {
+	public String getBookmarkUrl(final String internalPath) {
 		String result = this.bookmarkUrl_;
 		return this.appendInternalPath(result, internalPath);
 	}
@@ -924,7 +925,7 @@ class WebSession {
 		}
 	}
 
-	public String getCgiValue(String varName) {
+	public String getCgiValue(final String varName) {
 		WebRequest request = WebSession.Handler.getInstance().getRequest();
 		if (request != null) {
 			return "";
@@ -933,7 +934,7 @@ class WebSession {
 		}
 	}
 
-	public String getCgiHeader(String headerName) {
+	public String getCgiHeader(final String headerName) {
 		WebRequest request = WebSession.Handler.getInstance().getRequest();
 		if (request != null) {
 			return request.getHeaderValue(headerName);
@@ -942,12 +943,12 @@ class WebSession {
 		}
 	}
 
-	public EventType getEventType(WEvent event) {
+	public EventType getEventType(final WEvent event) {
 		if (event.impl_.handler == null) {
 			return EventType.OtherEvent;
 		}
-		WebSession.Handler handler = event.impl_.handler;
-		WebRequest request = handler.getRequest();
+		final WebSession.Handler handler = event.impl_.handler;
+		final WebRequest request = handler.getRequest();
 		if (event.impl_.renderOnly || !(handler.getRequest() != null)) {
 			return EventType.OtherEvent;
 		}
@@ -1046,8 +1047,8 @@ class WebSession {
 			this.init();
 		}
 
-		public Handler(WebSession session, WebRequest request,
-				WebResponse response) {
+		public Handler(WebSession session, final WebRequest request,
+				final WebResponse response) {
 			this.nextSignal = -1;
 			this.signalOrder = new ArrayList<Integer>();
 			this.prevHandler_ = null;
@@ -1170,9 +1171,10 @@ class WebSession {
 		private boolean killed_;
 	}
 
-	public void handleRequest(WebSession.Handler handler) throws IOException {
+	public void handleRequest(final WebSession.Handler handler)
+			throws IOException {
 		try {
-			WebRequest request = handler.getRequest();
+			final WebRequest request = handler.getRequest();
 			String wtdE = request.getParameter("wtd");
 			String origin = request.getHeaderValue("Origin");
 			if (origin.length() != 0) {
@@ -1230,7 +1232,7 @@ class WebSession {
 					return;
 				}
 			}
-			Configuration conf = this.controller_.getConfiguration();
+			final Configuration conf = this.controller_.getConfiguration();
 			handler.getResponse().setResponseType(WebRequest.ResponseType.Page);
 			if (!(requestE != null && requestE.equals("resource")
 					|| request.getRequestMethod().equals("POST") || request
@@ -1299,7 +1301,7 @@ class WebSession {
 									String internalPath = this.env_
 											.getCookie("WtInternalPath");
 									this.env_.setInternalPath(internalPath);
-								} catch (RuntimeException e) {
+								} catch (final RuntimeException e) {
 								}
 								if (!this.start(handler.getResponse())) {
 									throw new WException(
@@ -1555,7 +1557,7 @@ class WebSession {
 										.toString());
 						break;
 					}
-				} catch (WException e) {
+				} catch (final WException e) {
 					logger.error(new StringWriter().append("fatal error: ")
 							.append(e.toString()).toString());
 					e.printStackTrace();
@@ -1563,7 +1565,7 @@ class WebSession {
 					if (handler.getResponse() != null) {
 						this.serveError(500, handler, e.toString());
 					}
-				} catch (RuntimeException e) {
+				} catch (final RuntimeException e) {
 					logger.error(new StringWriter().append("fatal error: ")
 							.append(e.toString()).toString());
 					e.printStackTrace();
@@ -1600,7 +1602,7 @@ class WebSession {
 	}
 
 	// public void generateNewSessionId() ;
-	private void handleWebSocketRequest(WebSession.Handler handler) {
+	private void handleWebSocketRequest(final WebSession.Handler handler) {
 	}
 
 	private static void handleWebSocketMessage(WebSession session,
@@ -1613,7 +1615,7 @@ class WebSession {
 
 	private void checkTimers() {
 		WContainerWidget timers = this.app_.getTimerRoot();
-		List<WWidget> timerWidgets = timers.getChildren();
+		final List<WWidget> timerWidgets = timers.getChildren();
 		List<WTimerWidget> expired = new ArrayList<WTimerWidget>();
 		for (int i = 0; i < timerWidgets.size(); ++i) {
 			WTimerWidget wti = ((timerWidgets.get(i)) instanceof WTimerWidget ? (WTimerWidget) (timerWidgets
@@ -1679,8 +1681,8 @@ class WebSession {
 	private List<WObject> emitStack_;
 	private WebSession.Handler recursiveEventLoop_;
 
-	// private WResource decodeResource(String resourceId) ;
-	private AbstractEventSignal decodeSignal(String signalId,
+	// private WResource decodeResource(final String resourceId) ;
+	private AbstractEventSignal decodeSignal(final String signalId,
 			boolean checkExposed) {
 		AbstractEventSignal result = this.app_.decodeExposedSignal(signalId);
 		if (result != null && checkExposed) {
@@ -1698,8 +1700,8 @@ class WebSession {
 		return result;
 	}
 
-	private AbstractEventSignal decodeSignal(String objectId, String name,
-			boolean checkExposed) {
+	private AbstractEventSignal decodeSignal(final String objectId,
+			final String name, boolean checkExposed) {
 		AbstractEventSignal result = this.app_.decodeExposedSignal(objectId,
 				name);
 		if (result != null && checkExposed) {
@@ -1718,18 +1720,19 @@ class WebSession {
 		return result;
 	}
 
-	private static WObject.FormData getFormData(WebRequest request, String name) {
+	private static WObject.FormData getFormData(final WebRequest request,
+			final String name) {
 		List<UploadedFile> files = new ArrayList<UploadedFile>();
 		CollectionUtils.findInMultimap(request.getUploadedFiles(), name, files);
 		return new WObject.FormData(request.getParameterValues(name), files);
 	}
 
-	private void render(WebSession.Handler handler) throws IOException {
+	private void render(final WebSession.Handler handler) throws IOException {
 		try {
 			if (!this.env_.hasAjax()) {
 				try {
 					this.checkTimers();
-				} catch (RuntimeException e) {
+				} catch (final RuntimeException e) {
 					logger.error(new StringWriter().append(
 							"Exception while triggering timers").append(
 							e.toString()).toString());
@@ -1742,20 +1745,21 @@ class WebSession {
 			if (handler.getResponse() != null) {
 				this.serveResponse(handler);
 			}
-		} catch (RuntimeException e) {
+		} catch (final RuntimeException e) {
 			handler.flushResponse();
 			throw e;
 		}
 		this.updatesPending_ = false;
 	}
 
-	private void serveError(int status, WebSession.Handler handler, String e)
-			throws IOException {
+	private void serveError(int status, final WebSession.Handler handler,
+			final String e) throws IOException {
 		this.renderer_.serveError(status, handler.getResponse(), e);
 		handler.flushResponse();
 	}
 
-	private void serveResponse(WebSession.Handler handler) throws IOException {
+	private void serveResponse(final WebSession.Handler handler)
+			throws IOException {
 		if (handler.getResponse().getResponseType() == WebRequest.ResponseType.Page) {
 			this.pagePathInfo_ = handler.getRequest().getPathInfo();
 			String wtdE = handler.getRequest().getParameter("wtd");
@@ -1771,7 +1775,7 @@ class WebSession {
 				this.mutex_.unlock();
 				try {
 					Thread.sleep(1);
-				} catch (InterruptedException e) {
+				} catch (final InterruptedException e) {
 				}
 				this.mutex_.lock();
 			}
@@ -1797,8 +1801,8 @@ class WebSession {
 		}
 	}
 
-	private void processSignal(AbstractEventSignal s, String se,
-			WebRequest request, WebSession.SignalKind kind) {
+	private void processSignal(AbstractEventSignal s, final String se,
+			final WebRequest request, WebSession.SignalKind kind) {
 		if (!(s != null)) {
 			return;
 		}
@@ -1816,12 +1820,12 @@ class WebSession {
 		}
 	}
 
-	private List<Integer> getSignalProcessingOrder(WEvent e) {
-		WebSession.Handler handler = e.impl_.handler;
+	private List<Integer> getSignalProcessingOrder(final WEvent e) {
+		final WebSession.Handler handler = e.impl_.handler;
 		List<Integer> highPriority = new ArrayList<Integer>();
 		List<Integer> normalPriority = new ArrayList<Integer>();
 		for (int i = 0;; ++i) {
-			WebRequest request = handler.getRequest();
+			final WebRequest request = handler.getRequest();
 			String se = i > 0 ? 'e' + String.valueOf(i) : "";
 			String signalE = this.getSignal(request, se);
 			if (!(signalE != null)) {
@@ -1847,8 +1851,8 @@ class WebSession {
 		return highPriority;
 	}
 
-	private void notifySignal(WEvent e) throws IOException {
-		WebSession.Handler handler = e.impl_.handler;
+	private void notifySignal(final WEvent e) throws IOException {
+		final WebSession.Handler handler = e.impl_.handler;
 		if (handler.nextSignal == -1) {
 			Utils.copyList(this.getSignalProcessingOrder(e),
 					handler.signalOrder);
@@ -1858,7 +1862,7 @@ class WebSession {
 			if (!(handler.getRequest() != null)) {
 				return;
 			}
-			WebRequest request = handler.getRequest();
+			final WebRequest request = handler.getRequest();
 			int signalI = handler.signalOrder.get(i);
 			String se = signalI > 0 ? 'e' + String.valueOf(signalI) : "";
 			String signalE = this.getSignal(request, se);
@@ -1931,8 +1935,8 @@ class WebSession {
 		}
 	}
 
-	private void propagateFormValues(WEvent e, String se) {
-		WebRequest request = e.impl_.handler.getRequest();
+	private void propagateFormValues(final WEvent e, final String se) {
+		final WebRequest request = e.impl_.handler.getRequest();
 		this.renderer_.updateFormObjectsList(this.app_);
 		Map<String, WObject> formObjects = this.renderer_.getFormObjects();
 		String focus = request.getParameter(se + "focus");
@@ -1948,7 +1952,7 @@ class WebSession {
 				if (selEnd != null) {
 					selectionEnd = Integer.parseInt(selEnd);
 				}
-			} catch (NumberFormatException ee) {
+			} catch (final NumberFormatException ee) {
 				logger.error(new StringWriter().append(
 						"Could not lexical cast selection range").toString());
 			}
@@ -1969,11 +1973,11 @@ class WebSession {
 		}
 	}
 
-	private String getSignal(WebRequest request, String se) {
+	private String getSignal(final WebRequest request, final String se) {
 		String signalE = request.getParameter(se + "signal");
 		if (!(signalE != null)) {
 			final int signalLength = 7 + se.length();
-			Map<String, String[]> entries = request.getParameterMap();
+			final Map<String, String[]> entries = request.getParameterMap();
 			for (Iterator<Map.Entry<String, String[]>> i_it = entries
 					.entrySet().iterator(); i_it.hasNext();) {
 				Map.Entry<String, String[]> i = i_it.next();
@@ -1996,9 +2000,9 @@ class WebSession {
 		return signalE;
 	}
 
-	private void init(WebRequest request) {
+	private void init(final WebRequest request) {
 		this.env_.init(request);
-		Configuration conf = this.controller_.getConfiguration();
+		final Configuration conf = this.controller_.getConfiguration();
 		if (conf.getSessionTracking() == Configuration.SessionTracking.CookiesURL
 				&& this.env_.supportsCookies()) {
 			this.useUrlRewriting_ = false;
@@ -2057,7 +2061,7 @@ class WebSession {
 					response.setStatus(404);
 				}
 			}
-		} catch (RuntimeException e) {
+		} catch (final RuntimeException e) {
 			this.app_ = null;
 			this.kill();
 			throw e;
@@ -2076,7 +2080,7 @@ class WebSession {
 		}
 	}
 
-	private void changeInternalPath(String path, WebResponse response) {
+	private void changeInternalPath(final String path, WebResponse response) {
 		if (!this.app_.internalPathIsChanged_) {
 			if (!this.app_.changedInternalPath(path)) {
 				if (response.getResponseType() == WebRequest.ResponseType.Page) {
@@ -2088,11 +2092,11 @@ class WebSession {
 
 	private static UploadedFile uf;
 
-	static boolean isAbsoluteUrl(String url) {
+	static boolean isAbsoluteUrl(final String url) {
 		return url.indexOf(":") != -1;
 	}
 
-	static String host(String url) {
+	static String host(final String url) {
 		int pos = 0;
 		for (int i = 0; i < 3; ++i) {
 			pos = url.indexOf('/', pos);

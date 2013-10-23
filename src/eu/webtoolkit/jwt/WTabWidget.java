@@ -122,7 +122,7 @@ public class WTabWidget extends WCompositeWidget {
 	 * <p>
 	 * Returns the menu item that implements the tab item.
 	 */
-	public WMenuItem addTab(WWidget child, CharSequence label,
+	public WMenuItem addTab(WWidget child, final CharSequence label,
 			WTabWidget.LoadPolicy loadPolicy) {
 		WMenuItem.LoadPolicy policy = WMenuItem.LoadPolicy.PreLoading;
 		switch (loadPolicy) {
@@ -146,7 +146,7 @@ public class WTabWidget extends WCompositeWidget {
 	 * {@link #addTab(WWidget child, CharSequence label, WTabWidget.LoadPolicy loadPolicy)
 	 * addTab(child, label, WTabWidget.LoadPolicy.LazyLoading)}
 	 */
-	public final WMenuItem addTab(WWidget child, CharSequence label) {
+	public final WMenuItem addTab(WWidget child, final CharSequence label) {
 		return addTab(child, label, WTabWidget.LoadPolicy.LazyLoading);
 	}
 
@@ -282,7 +282,7 @@ public class WTabWidget extends WCompositeWidget {
 	/**
 	 * Changes the label for a tab.
 	 */
-	public void setTabText(int index, CharSequence label) {
+	public void setTabText(int index, final CharSequence label) {
 		WMenuItem item = this.menu_.itemAt(index);
 		item.setText(label);
 	}
@@ -303,7 +303,7 @@ public class WTabWidget extends WCompositeWidget {
 	 * <p>
 	 * The tooltip is shown when the user hovers over the label.
 	 */
-	public void setTabToolTip(int index, CharSequence tip) {
+	public void setTabToolTip(int index, final CharSequence tip) {
 		WMenuItem item = this.menu_.itemAt(index);
 		item.setToolTip(tip);
 	}
@@ -342,7 +342,7 @@ public class WTabWidget extends WCompositeWidget {
 	 * 
 	 * @see WMenuItem#setPathComponent(String path)
 	 */
-	public void setInternalPathEnabled(String basePath) {
+	public void setInternalPathEnabled(final String basePath) {
 		this.menu_.setInternalPathEnabled(basePath);
 	}
 
@@ -375,7 +375,7 @@ public class WTabWidget extends WCompositeWidget {
 	 * @see WMenu#setInternalPathEnabled(String basePath)
 	 * @see WMenu#getInternalBasePath()
 	 */
-	public void setInternalBasePath(String path) {
+	public void setInternalBasePath(final String path) {
 		this.menu_.setInternalBasePath(path);
 	}
 

@@ -143,7 +143,7 @@ public class WStackedWidget extends WContainerWidget {
 	 * @see WStackedWidget#getCurrentIndex()
 	 * @see WStackedWidget#setCurrentWidget(WWidget widget)
 	 */
-	public void setCurrentIndex(int index, WAnimation animation,
+	public void setCurrentIndex(int index, final WAnimation animation,
 			boolean autoReverse) {
 		if (!animation.isEmpty()
 				&& WApplication.getInstance().getEnvironment()
@@ -187,7 +187,7 @@ public class WStackedWidget extends WContainerWidget {
 	 * {@link #setCurrentIndex(int index, WAnimation animation, boolean autoReverse)
 	 * setCurrentIndex(index, animation, true)}
 	 */
-	public final void setCurrentIndex(int index, WAnimation animation) {
+	public final void setCurrentIndex(int index, final WAnimation animation) {
 		setCurrentIndex(index, animation, true);
 	}
 
@@ -224,7 +224,8 @@ public class WStackedWidget extends WContainerWidget {
 	 * 
 	 * @see WStackedWidget#setCurrentIndex(int index)
 	 */
-	public void setTransitionAnimation(WAnimation animation, boolean autoReverse) {
+	public void setTransitionAnimation(final WAnimation animation,
+			boolean autoReverse) {
 		if (WApplication.getInstance().getEnvironment()
 				.supportsCss3Animations()) {
 			if (!animation.isEmpty()) {
@@ -243,7 +244,7 @@ public class WStackedWidget extends WContainerWidget {
 	 * {@link #setTransitionAnimation(WAnimation animation, boolean autoReverse)
 	 * setTransitionAnimation(animation, false)}
 	 */
-	public final void setTransitionAnimation(WAnimation animation) {
+	public final void setTransitionAnimation(final WAnimation animation) {
 		setTransitionAnimation(animation, false);
 	}
 
@@ -261,7 +262,7 @@ public class WStackedWidget extends WContainerWidget {
 		return super.createDomElement(app);
 	}
 
-	void getDomChanges(List<DomElement> result, WApplication app) {
+	void getDomChanges(final List<DomElement> result, WApplication app) {
 		super.getDomChanges(result, app);
 	}
 

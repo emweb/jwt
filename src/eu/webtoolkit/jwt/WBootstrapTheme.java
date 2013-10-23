@@ -125,7 +125,7 @@ public class WBootstrapTheme extends WTheme {
 		}
 	}
 
-	public void apply(WWidget widget, DomElement element, int elementRole) {
+	public void apply(WWidget widget, final DomElement element, int elementRole) {
 		boolean creating = element.getMode() == DomElement.Mode.ModeCreate;
 		{
 			WPopupWidget popup = ((widget) instanceof WPopupWidget ? (WPopupWidget) (widget)
@@ -361,7 +361,8 @@ public class WBootstrapTheme extends WTheme {
 	}
 
 	public void applyValidationStyle(WWidget widget,
-			WValidator.Result validation, EnumSet<ValidationStyleFlag> styles) {
+			final WValidator.Result validation,
+			EnumSet<ValidationStyleFlag> styles) {
 		WApplication app = WApplication.getInstance();
 		app.loadJavaScript("js/BootstrapValidate.js", wtjs1());
 		app.loadJavaScript("js/BootstrapValidate.js", wtjs2());
@@ -388,7 +389,7 @@ public class WBootstrapTheme extends WTheme {
 		}
 	}
 
-	public boolean canBorderBoxElement(DomElement element) {
+	public boolean canBorderBoxElement(final DomElement element) {
 		return element.getType() != DomElementType.DomElement_INPUT;
 	}
 

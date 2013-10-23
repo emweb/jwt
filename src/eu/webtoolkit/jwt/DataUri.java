@@ -22,7 +22,7 @@ import org.slf4j.LoggerFactory;
 class DataUri {
 	private static Logger logger = LoggerFactory.getLogger(DataUri.class);
 
-	public DataUri(String uriString) {
+	public DataUri(final String uriString) {
 		this.mimeType = "";
 		this.data = new ArrayList<Byte>();
 		this.parse(uriString);
@@ -31,11 +31,11 @@ class DataUri {
 	public String mimeType;
 	public List<Byte> data;
 
-	public static boolean isDataUri(String uriString) {
+	public static boolean isDataUri(final String uriString) {
 		return uriString.startsWith("data:");
 	}
 
-	private void parse(String uriString) {
+	private void parse(final String uriString) {
 		try {
 			int dataEndPos = uriString.indexOf("data:") + 5;
 			int commaPos = uriString.indexOf(",");

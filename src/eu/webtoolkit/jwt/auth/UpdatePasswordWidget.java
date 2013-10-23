@@ -42,8 +42,9 @@ public class UpdatePasswordWidget extends WTemplateFormView {
 	 * If <code>authModel</code> is not <code>null</code>, the user also has to
 	 * authenticate first using his current password.
 	 */
-	public UpdatePasswordWidget(User user, RegistrationModel registrationModel,
-			AuthModel authModel, WContainerWidget parent) {
+	public UpdatePasswordWidget(final User user,
+			RegistrationModel registrationModel, AuthModel authModel,
+			WContainerWidget parent) {
 		super(tr("Wt.Auth.template.update-password"), parent);
 		this.user_ = user;
 		this.registrationModel_ = registrationModel;
@@ -105,8 +106,8 @@ public class UpdatePasswordWidget extends WTemplateFormView {
 	 * {@link #UpdatePasswordWidget(User user, RegistrationModel registrationModel, AuthModel authModel, WContainerWidget parent)
 	 * this(user, registrationModel, authModel, (WContainerWidget)null)}
 	 */
-	public UpdatePasswordWidget(User user, RegistrationModel registrationModel,
-			AuthModel authModel) {
+	public UpdatePasswordWidget(final User user,
+			RegistrationModel registrationModel, AuthModel authModel) {
 		this(user, registrationModel, authModel, (WContainerWidget) null);
 	}
 

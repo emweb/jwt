@@ -24,7 +24,7 @@ class GitModel extends WAbstractItemModel {
 
 	public static final int ContentsRole = ItemDataRole.UserRole + 1;
 
-	public GitModel(String repository, WObject parent) {
+	public GitModel(final String repository, WObject parent) {
 		super(parent);
 		this.git_ = new Git();
 		this.treeData_ = new ArrayList<GitModel.Tree>();
@@ -33,11 +33,11 @@ class GitModel extends WAbstractItemModel {
 		this.loadRevision("master");
 	}
 
-	public GitModel(String repository) {
+	public GitModel(final String repository) {
 		this(repository, (WObject) null);
 	}
 
-	public void loadRevision(String revName) {
+	public void loadRevision(final String revName) {
 		Git.ObjectId treeRoot = this.git_.getCommitTree(revName);
 		this.layoutAboutToBeChanged().trigger();
 		this.treeData_.clear();
@@ -47,16 +47,17 @@ class GitModel extends WAbstractItemModel {
 		this.layoutChanged().trigger();
 	}
 
-	public WModelIndex getParent(WModelIndex index) {
+	public WModelIndex getParent(final WModelIndex index) {
 		if (!(index != null) || index.getInternalId() == 0) {
 			return null;
 		} else {
-			GitModel.Tree item = this.treeData_.get(index.getInternalId());
+			final GitModel.Tree item = this.treeData_
+					.get(index.getInternalId());
 			return this.createIndex(item.getIndex(), 0, item.getParentId());
 		}
 	}
 
-	public WModelIndex getIndex(int row, int column, WModelIndex parent) {
+	public WModelIndex getIndex(int row, int column, final WModelIndex parent) {
 		int parentId;
 		if (!(parent != null)) {
 			parentId = 0;
@@ -67,11 +68,11 @@ class GitModel extends WAbstractItemModel {
 		return this.createIndex(row, column, parentId);
 	}
 
-	public int getColumnCount(WModelIndex parent) {
+	public int getColumnCount(final WModelIndex parent) {
 		return 2;
 	}
 
-	public int getRowCount(WModelIndex parent) {
+	public int getRowCount(final WModelIndex parent) {
 		int treeId;
 		if ((parent != null)) {
 			if (parent.getColumn() != 0) {
@@ -90,7 +91,7 @@ class GitModel extends WAbstractItemModel {
 		return this.treeData_.get(treeId).getRowCount();
 	}
 
-	public Object getData(WModelIndex index, int role) {
+	public Object getData(final WModelIndex index, int role) {
 		if (!(index != null)) {
 			return null;
 		}
@@ -198,7 +199,8 @@ class GitModel extends WAbstractItemModel {
 	static class Tree {
 		private static Logger logger = LoggerFactory.getLogger(Tree.class);
 
-		public Tree(int parentId, int index, Git.ObjectId object, int rowCount) {
+		public Tree(int parentId, int index, final Git.ObjectId object,
+				int rowCount) {
 			this.index_ = new GitModel.ChildIndex(parentId, index);
 			this.treeObject_ = object;
 			this.rowCount_ = rowCount;
@@ -233,7 +235,7 @@ class GitModel extends WAbstractItemModel {
 				childIndex);
 		Integer i = this.childPointer_.get(index);
 		if (i == null) {
-			GitModel.Tree parentItem = this.treeData_.get(parentId);
+			final GitModel.Tree parentItem = this.treeData_.get(parentId);
 			Git.Object o = this.git_.treeGetObject(parentItem.getTreeObject(),
 					childIndex);
 			this.treeData_.add(new GitModel.Tree(parentId, childIndex, o.id,
@@ -246,14 +248,14 @@ class GitModel extends WAbstractItemModel {
 		}
 	}
 
-	private Git.Object getObject(WModelIndex index) {
+	private Git.Object getObject(final WModelIndex index) {
 		int parentId = index.getInternalId();
-		GitModel.Tree parentItem = this.treeData_.get(parentId);
+		final GitModel.Tree parentItem = this.treeData_.get(parentId);
 		return this.git_.treeGetObject(parentItem.getTreeObject(), index
 				.getRow());
 	}
 
-	private static String getSuffix(String fileName) {
+	private static String getSuffix(final String fileName) {
 		int dot = fileName.lastIndexOf('.');
 		if (dot == -1) {
 			return "";
@@ -262,7 +264,7 @@ class GitModel extends WAbstractItemModel {
 		}
 	}
 
-	private boolean topLevel(WModelIndex index) {
+	private boolean topLevel(final WModelIndex index) {
 		return !(this.getParent(index) != null);
 	}
 

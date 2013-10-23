@@ -22,8 +22,8 @@ import org.slf4j.LoggerFactory;
 class WTreeViewNode extends WTemplate {
 	private static Logger logger = LoggerFactory.getLogger(WTreeViewNode.class);
 
-	public WTreeViewNode(WTreeView view, WModelIndex index, int childrenHeight,
-			boolean isLast, WTreeViewNode parent) {
+	public WTreeViewNode(WTreeView view, final WModelIndex index,
+			int childrenHeight, boolean isLast, WTreeViewNode parent) {
 		super(tr("Wt.WTreeViewNode.template"));
 		this.view_ = view;
 		this.index_ = index;

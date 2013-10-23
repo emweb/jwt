@@ -199,7 +199,7 @@ public class WTreeView extends WAbstractItemView {
 	 * @see WTreeView#expand(WModelIndex index)
 	 * @see WTreeView#collapse(WModelIndex index)
 	 */
-	public void setExpanded(WModelIndex index, boolean expanded) {
+	public void setExpanded(final WModelIndex index, boolean expanded) {
 		if (this.isExpanded(index) != expanded) {
 			WWidget w = this.widgetForIndex(index);
 			WTreeViewNode node = w != null ? ((w) instanceof WTreeViewNode ? (WTreeViewNode) (w)
@@ -238,7 +238,7 @@ public class WTreeView extends WAbstractItemView {
 	 * 
 	 * @see WTreeView#setExpanded(WModelIndex index, boolean expanded)
 	 */
-	public boolean isExpanded(WModelIndex index) {
+	public boolean isExpanded(final WModelIndex index) {
 		return (index == this.getRootIndex() || (index != null && index
 				.equals(this.getRootIndex())))
 				|| this.expandedSet_.contains(index) != false;
@@ -251,7 +251,7 @@ public class WTreeView extends WAbstractItemView {
 	 * @see WTreeView#setExpanded(WModelIndex index, boolean expanded)
 	 * @see WTreeView#expand(WModelIndex index)
 	 */
-	public void collapse(WModelIndex index) {
+	public void collapse(final WModelIndex index) {
 		this.setExpanded(index, false);
 	}
 
@@ -262,7 +262,7 @@ public class WTreeView extends WAbstractItemView {
 	 * @see WTreeView#setExpanded(WModelIndex index, boolean expanded)
 	 * @see WTreeView#collapse(WModelIndex index)
 	 */
-	public void expand(WModelIndex index) {
+	public void expand(final WModelIndex index) {
 		this.setExpanded(index, true);
 	}
 
@@ -305,7 +305,7 @@ public class WTreeView extends WAbstractItemView {
 		return this.rootIsDecorated_;
 	}
 
-	public void resize(WLength width, WLength height) {
+	public void resize(final WLength width, final WLength height) {
 		WApplication app = WApplication.getInstance();
 		WLength w = app.getEnvironment().hasAjax() ? WLength.Auto : width;
 		this.contentsContainer_.setWidth(w);
@@ -361,7 +361,7 @@ public class WTreeView extends WAbstractItemView {
 		return this.expanded_;
 	}
 
-	public WWidget itemWidget(WModelIndex index) {
+	public WWidget itemWidget(final WModelIndex index) {
 		if (!(index != null)) {
 			return null;
 		}
@@ -466,7 +466,7 @@ public class WTreeView extends WAbstractItemView {
 	 * 
 	 * @see WTreeView#setRowHeight(WLength rowHeight)
 	 */
-	public void setColumnWidth(int column, WLength width) {
+	public void setColumnWidth(int column, final WLength width) {
 		if (!width.isAuto()) {
 			this.columnInfo(column).width = new WLength(Math.round(width
 					.getValue()), width.getUnit());
@@ -501,7 +501,7 @@ public class WTreeView extends WAbstractItemView {
 		this.setRootNodeStyle();
 	}
 
-	public void setRowHeight(WLength rowHeight) {
+	public void setRowHeight(final WLength rowHeight) {
 		super.setRowHeight(rowHeight);
 		this.rowHeightRule_.getTemplateWidget().setHeight(rowHeight);
 		this.rowHeightRule_.getTemplateWidget().setLineHeight(rowHeight);
@@ -522,11 +522,11 @@ public class WTreeView extends WAbstractItemView {
 		}
 	}
 
-	public void setHeaderHeight(WLength height) {
+	public void setHeaderHeight(final WLength height) {
 		super.setHeaderHeight(height);
 	}
 
-	public void setColumnBorder(WColor color) {
+	public void setColumnBorder(final WColor color) {
 		if (this.borderColorRule_ != null)
 			this.borderColorRule_.remove();
 		this.borderColorRule_ = new WCssTextRule(
@@ -628,7 +628,8 @@ public class WTreeView extends WAbstractItemView {
 		this.scheduleRerender(WAbstractItemView.RenderState.NeedAdjustViewPort);
 	}
 
-	public void scrollTo(WModelIndex index, WAbstractItemView.ScrollHint hint) {
+	public void scrollTo(final WModelIndex index,
+			WAbstractItemView.ScrollHint hint) {
 		int row = this.getIndexRow(index, this.getRootIndex(), 0,
 				Integer.MAX_VALUE) + 1;
 		WApplication app = WApplication.getInstance();
@@ -933,7 +934,8 @@ public class WTreeView extends WAbstractItemView {
 		super.scheduleRerender(what);
 	}
 
-	private void modelColumnsInserted(WModelIndex parent, int start, int end) {
+	private void modelColumnsInserted(final WModelIndex parent, int start,
+			int end) {
 		int count = end - start + 1;
 		if (!(parent != null)) {
 			WApplication app = WApplication.getInstance();
@@ -977,8 +979,8 @@ public class WTreeView extends WAbstractItemView {
 		}
 	}
 
-	private void modelColumnsAboutToBeRemoved(WModelIndex parent, int start,
-			int end) {
+	private void modelColumnsAboutToBeRemoved(final WModelIndex parent,
+			int start, int end) {
 		int count = end - start + 1;
 		if (!(parent != null)) {
 			if (this.renderState_.getValue() < WAbstractItemView.RenderState.NeedRerenderHeader
@@ -988,6 +990,10 @@ public class WTreeView extends WAbstractItemView {
 					this.doJavaScript("$('#" + this.getId()
 							+ "').data('obj').adjustColumns();");
 				}
+			}
+			for (int i = start; i < start + count; i++) {
+				if (this.columns_.get(i).styleRule != null)
+					this.columns_.get(i).styleRule.remove();
 			}
 			for (int ii = 0; ii < (0 + start + count) - (0 + start); ++ii)
 				this.columns_.remove(0 + start);
@@ -1011,7 +1017,8 @@ public class WTreeView extends WAbstractItemView {
 		}
 	}
 
-	private void modelColumnsRemoved(WModelIndex parent, int start, int end) {
+	private void modelColumnsRemoved(final WModelIndex parent, int start,
+			int end) {
 		if (this.renderState_ == WAbstractItemView.RenderState.NeedRerender
 				|| this.renderState_ == WAbstractItemView.RenderState.NeedRerenderData) {
 			return;
@@ -1031,7 +1038,7 @@ public class WTreeView extends WAbstractItemView {
 		}
 	}
 
-	private void modelRowsInserted(WModelIndex parent, int start, int end) {
+	private void modelRowsInserted(final WModelIndex parent, int start, int end) {
 		int count = end - start + 1;
 		this.shiftModelIndexes(parent, start, count);
 		if (this.renderState_ == WAbstractItemView.RenderState.NeedRerender
@@ -1160,7 +1167,7 @@ public class WTreeView extends WAbstractItemView {
 		}
 	}
 
-	private void modelRowsAboutToBeRemoved(WModelIndex parent, int start,
+	private void modelRowsAboutToBeRemoved(final WModelIndex parent, int start,
 			int end) {
 		int count = end - start + 1;
 		if (this.renderState_ != WAbstractItemView.RenderState.NeedRerender
@@ -1240,11 +1247,12 @@ public class WTreeView extends WAbstractItemView {
 		this.shiftModelIndexes(parent, start, -count);
 	}
 
-	private void modelRowsRemoved(WModelIndex parent, int start, int end) {
+	private void modelRowsRemoved(final WModelIndex parent, int start, int end) {
 		this.renderedRowsChanged(this.firstRemovedRow_, -this.removedHeight_);
 	}
 
-	void modelDataChanged(WModelIndex topLeft, WModelIndex bottomRight) {
+	void modelDataChanged(final WModelIndex topLeft,
+			final WModelIndex bottomRight) {
 		if (this.renderState_ == WAbstractItemView.RenderState.NeedRerender
 				|| this.renderState_ == WAbstractItemView.RenderState.NeedRerenderData) {
 			return;
@@ -1307,7 +1315,7 @@ public class WTreeView extends WAbstractItemView {
 			int columnId = -1;
 			try {
 				columnId = Integer.parseInt(nodeAndColumnSplit.get(1));
-			} catch (NumberFormatException e) {
+			} catch (final NumberFormatException e) {
 				logger.error(new StringWriter().append(
 						"WTreeview::onEventItem: bad value for format 1: ")
 						.append(nodeAndColumnSplit.get(1)).toString());
@@ -1380,10 +1388,10 @@ public class WTreeView extends WAbstractItemView {
 		}
 	}
 
-	void setCollapsed(WModelIndex index) {
+	void setCollapsed(final WModelIndex index) {
 		this.expandedSet_.remove(index);
 		boolean selectionHasChanged = false;
-		SortedSet<WModelIndex> selection = this.getSelectionModel().selection_;
+		final SortedSet<WModelIndex> selection = this.getSelectionModel().selection_;
 		SortedSet<WModelIndex> toDeselect = new TreeSet<WModelIndex>();
 		for (Iterator<WModelIndex> it_it = selection.tailSet(index).iterator(); it_it
 				.hasNext();) {
@@ -1427,7 +1435,8 @@ public class WTreeView extends WAbstractItemView {
 		}
 	}
 
-	private void shiftModelIndexes(WModelIndex parent, int start, int count) {
+	private void shiftModelIndexes(final WModelIndex parent, int start,
+			int count) {
 		shiftModelIndexes(parent, start, count, this.getModel(),
 				this.expandedSet_);
 		int removed = shiftModelIndexes(parent, start, count, this.getModel(),
@@ -1438,8 +1447,9 @@ public class WTreeView extends WAbstractItemView {
 		}
 	}
 
-	private static int shiftModelIndexes(WModelIndex parent, int start,
-			int count, WAbstractItemModel model, SortedSet<WModelIndex> set) {
+	private static int shiftModelIndexes(final WModelIndex parent, int start,
+			int count, WAbstractItemModel model,
+			final SortedSet<WModelIndex> set) {
 		List<WModelIndex> toShift = new ArrayList<WModelIndex>();
 		List<WModelIndex> toErase = new ArrayList<WModelIndex>();
 		for (Iterator<WModelIndex> it_it = set.tailSet(
@@ -1721,7 +1731,7 @@ public class WTreeView extends WAbstractItemView {
 		return this.isExpanded(index) ? nodeRow : theNodeRow;
 	}
 
-	private WWidget widgetForIndex(WModelIndex index) {
+	private WWidget widgetForIndex(final WModelIndex index) {
 		if (!(index != null)) {
 			return this.rootNode_;
 		}
@@ -1746,7 +1756,7 @@ public class WTreeView extends WAbstractItemView {
 		}
 	}
 
-	private WTreeViewNode nodeForIndex(WModelIndex index) {
+	private WTreeViewNode nodeForIndex(final WModelIndex index) {
 		if ((index == this.getRootIndex() || (index != null && index
 				.equals(this.getRootIndex())))) {
 			return this.rootNode_;
@@ -1758,7 +1768,7 @@ public class WTreeView extends WAbstractItemView {
 		}
 	}
 
-	int subTreeHeight(WModelIndex index, int lowerBound, int upperBound) {
+	int subTreeHeight(final WModelIndex index, int lowerBound, int upperBound) {
 		int result = 0;
 		if (!(index == this.getRootIndex() || (index != null && index
 				.equals(this.getRootIndex())))) {
@@ -1780,15 +1790,15 @@ public class WTreeView extends WAbstractItemView {
 		return result;
 	}
 
-	final int subTreeHeight(WModelIndex index) {
+	final int subTreeHeight(final WModelIndex index) {
 		return subTreeHeight(index, 0, Integer.MAX_VALUE);
 	}
 
-	final int subTreeHeight(WModelIndex index, int lowerBound) {
+	final int subTreeHeight(final WModelIndex index, int lowerBound) {
 		return subTreeHeight(index, lowerBound, Integer.MAX_VALUE);
 	}
 
-	private int renderedRow(WModelIndex index, WWidget w, int lowerBound,
+	private int renderedRow(final WModelIndex index, WWidget w, int lowerBound,
 			int upperBound) {
 		WTreeViewNode node = ((w) instanceof WTreeViewNode ? (WTreeViewNode) (w)
 				: null);
@@ -1812,16 +1822,17 @@ public class WTreeView extends WAbstractItemView {
 		}
 	}
 
-	private final int renderedRow(WModelIndex index, WWidget w) {
+	private final int renderedRow(final WModelIndex index, WWidget w) {
 		return renderedRow(index, w, 0, Integer.MAX_VALUE);
 	}
 
-	private final int renderedRow(WModelIndex index, WWidget w, int lowerBound) {
+	private final int renderedRow(final WModelIndex index, WWidget w,
+			int lowerBound) {
 		return renderedRow(index, w, lowerBound, Integer.MAX_VALUE);
 	}
 
-	private int getIndexRow(WModelIndex child, WModelIndex ancestor,
-			int lowerBound, int upperBound) {
+	private int getIndexRow(final WModelIndex child,
+			final WModelIndex ancestor, int lowerBound, int upperBound) {
 		if (!(child != null)
 				|| (child == ancestor || (child != null && child
 						.equals(ancestor)))) {
@@ -1842,12 +1853,13 @@ public class WTreeView extends WAbstractItemView {
 		}
 	}
 
-	private final int getIndexRow(WModelIndex child, WModelIndex ancestor) {
+	private final int getIndexRow(final WModelIndex child,
+			final WModelIndex ancestor) {
 		return getIndexRow(child, ancestor, 0, Integer.MAX_VALUE);
 	}
 
-	private final int getIndexRow(WModelIndex child, WModelIndex ancestor,
-			int lowerBound) {
+	private final int getIndexRow(final WModelIndex child,
+			final WModelIndex ancestor, int lowerBound) {
 		return getIndexRow(child, ancestor, lowerBound, Integer.MAX_VALUE);
 	}
 
@@ -1887,7 +1899,7 @@ public class WTreeView extends WAbstractItemView {
 		return row;
 	}
 
-	boolean internalSelect(WModelIndex index, SelectionFlag option) {
+	boolean internalSelect(final WModelIndex index, SelectionFlag option) {
 		if (this.getSelectionBehavior() == SelectionBehavior.SelectRows
 				&& index.getColumn() != 0) {
 			return this.internalSelect(this.getModel().getIndex(index.getRow(),
@@ -1904,7 +1916,7 @@ public class WTreeView extends WAbstractItemView {
 		}
 	}
 
-	void selectRange(WModelIndex first, WModelIndex last) {
+	void selectRange(final WModelIndex first, final WModelIndex last) {
 		WModelIndex index = first;
 		for (;;) {
 			for (int c = first.getColumn(); c <= last.getColumn(); ++c) {
@@ -1936,7 +1948,7 @@ public class WTreeView extends WAbstractItemView {
 		}
 	}
 
-	private void expandChildrenToDepth(WModelIndex index, int depth) {
+	private void expandChildrenToDepth(final WModelIndex index, int depth) {
 		for (int i = 0; i < this.getModel().getRowCount(index); ++i) {
 			WModelIndex c = this.getModel().getIndex(i, 0, index);
 			this.expand(c);

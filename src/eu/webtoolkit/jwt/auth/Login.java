@@ -64,7 +64,7 @@ public class Login extends WObject {
 	 * @see Login#logout()
 	 * @see Login#isLoggedIn()
 	 */
-	public void login(User user, LoginState state) {
+	public void login(final User user, LoginState state) {
 		boolean weakLogin = state == LoginState.WeakLogin;
 		if (!user.equals(this.user_)) {
 			this.user_ = user;
@@ -84,7 +84,7 @@ public class Login extends WObject {
 	 * Calls {@link #login(User user, LoginState state) login(user,
 	 * LoginState.StrongLogin)}
 	 */
-	public final void login(User user) {
+	public final void login(final User user) {
 		login(user, LoginState.StrongLogin);
 	}
 

@@ -79,7 +79,7 @@ public class WTextEdit extends WTextArea {
 	 * <p>
 	 * The <code>text</code> should be valid XHTML.
 	 */
-	public WTextEdit(String text, WContainerWidget parent) {
+	public WTextEdit(final String text, WContainerWidget parent) {
 		super(text, parent);
 		this.onChange_ = new JSignal(this, "change");
 		this.contentChanged_ = false;
@@ -93,7 +93,7 @@ public class WTextEdit extends WTextArea {
 	 * Calls {@link #WTextEdit(String text, WContainerWidget parent) this(text,
 	 * (WContainerWidget)null)}
 	 */
-	public WTextEdit(String text) {
+	public WTextEdit(final String text) {
 		this(text, (WContainerWidget) null);
 	}
 
@@ -121,7 +121,7 @@ public class WTextEdit extends WTextArea {
 	 * <p>
 	 * The default value is &quot;&quot;.
 	 */
-	public void setText(String text) {
+	public void setText(final String text) {
 		super.setText(text);
 		this.contentChanged_ = true;
 	}
@@ -135,7 +135,7 @@ public class WTextEdit extends WTextArea {
 	 * <p>
 	 * Multiple stylesheets may be specified as a comma separated list.
 	 */
-	public void setStyleSheet(String uri) {
+	public void setStyleSheet(final String uri) {
 		this.setConfigurationSetting("content_css", uri);
 	}
 
@@ -166,7 +166,7 @@ public class WTextEdit extends WTextArea {
 	 * the widget. </i>
 	 * </p>
 	 */
-	public void setExtraPlugins(String plugins) {
+	public void setExtraPlugins(final String plugins) {
 		this.setConfigurationSetting("plugins", plugins);
 	}
 
@@ -218,7 +218,7 @@ public class WTextEdit extends WTextArea {
 	 * initial display of the widget. </i>
 	 * </p>
 	 */
-	public void setToolBar(int i, String config) {
+	public void setToolBar(int i, final String config) {
 		String setting = "";
 		if (this.version_ < 4) {
 			setting = "theme_advanced_buttons";
@@ -256,7 +256,7 @@ public class WTextEdit extends WTextArea {
 	 * The widget itself will also define a number of configuration settings and
 	 * these may be overridden using this method.
 	 */
-	public void setConfigurationSetting(String name, Object value) {
+	public void setConfigurationSetting(final String name, final Object value) {
 		this.configurationSettings_.put(name, value);
 	}
 
@@ -266,7 +266,7 @@ public class WTextEdit extends WTextArea {
 	 * An empty boost::any is returned when no value could be found for the
 	 * provided argument.
 	 */
-	public Object getConfigurationSetting(String name) {
+	public Object getConfigurationSetting(final String name) {
 		Object it = this.configurationSettings_.get(name);
 		if (it != null) {
 			return it;
@@ -275,7 +275,7 @@ public class WTextEdit extends WTextArea {
 		}
 	}
 
-	public void resize(WLength width, WLength height) {
+	public void resize(final WLength width, final WLength height) {
 		super.resize(width, height);
 	}
 
@@ -288,7 +288,7 @@ public class WTextEdit extends WTextArea {
 		}
 	}
 
-	void updateDom(DomElement element, boolean all) {
+	void updateDom(final DomElement element, boolean all) {
 		super.updateDom(element, all);
 		if (element.getType() == DomElementType.DomElement_TEXTAREA) {
 			element.removeProperty(Property.PropertyStyleDisplay);
@@ -333,7 +333,7 @@ public class WTextEdit extends WTextArea {
 		}
 	}
 
-	void getDomChanges(List<DomElement> result, WApplication app) {
+	void getDomChanges(final List<DomElement> result, WApplication app) {
 		DomElement e = DomElement.getForUpdate(this.getFormName() + "_tbl",
 				DomElementType.DomElement_TABLE);
 		this.updateDom(e, false);

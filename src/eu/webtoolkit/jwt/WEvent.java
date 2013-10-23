@@ -43,11 +43,11 @@ public class WEvent {
 		return this.impl_.handler.getSession().getEventType(this);
 	}
 
-	WEvent(WEvent.Impl impl) {
+	WEvent(final WEvent.Impl impl) {
 		this.impl_ = impl;
 	}
 
-	WEvent.Impl impl_;
+	final WEvent.Impl impl_;
 
 	static class Impl {
 		private static Logger logger = LoggerFactory.getLogger(Impl.class);
@@ -69,24 +69,25 @@ public class WEvent {
 		}
 	}
 
-	static String concat(String prefix, int prefixLength, String s2) {
+	static String concat(final String prefix, int prefixLength, String s2) {
 		return prefix + s2;
 	}
 
-	static int asInt(String v) {
+	static int asInt(final String v) {
 		return Integer.parseInt(v);
 	}
 
-	static int asUInt(String v) {
+	static int asUInt(final String v) {
 		return Integer.parseInt(v);
 	}
 
-	static int parseIntParameter(WebRequest request, String name, int ifMissing) {
+	static int parseIntParameter(final WebRequest request, final String name,
+			int ifMissing) {
 		String p;
 		if ((p = request.getParameter(name)) != null) {
 			try {
 				return asInt(p);
-			} catch (NumberFormatException ee) {
+			} catch (final NumberFormatException ee) {
 				logger.error(new StringWriter().append(
 						"Could not cast event property '").append(name).append(
 						": ").append(p).append("' to int").toString());
@@ -97,7 +98,7 @@ public class WEvent {
 		}
 	}
 
-	static String getStringParameter(WebRequest request, String name) {
+	static String getStringParameter(final WebRequest request, final String name) {
 		String p;
 		if ((p = request.getParameter(name)) != null) {
 			return p;
@@ -106,7 +107,7 @@ public class WEvent {
 		}
 	}
 
-	static void decodeTouches(String str, List<Touch> result) {
+	static void decodeTouches(String str, final List<Touch> result) {
 		if (str.length() == 0) {
 			return;
 		}
@@ -126,7 +127,7 @@ public class WEvent {
 								.get(i + 6)), asInt(s.get(i + 7)), asInt(s
 								.get(i + 8))));
 			}
-		} catch (NumberFormatException ee) {
+		} catch (final NumberFormatException ee) {
 			logger.error(new StringWriter().append(
 					"Could not parse touches array '").append(str).append("'")
 					.toString());

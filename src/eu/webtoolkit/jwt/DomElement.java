@@ -95,7 +95,7 @@ public class DomElement {
 	/**
 	 * Low-level URL encoding function.
 	 */
-	public static String urlEncodeS(String url) {
+	public static String urlEncodeS(final String url) {
 		return urlEncodeS(url, "");
 	}
 
@@ -105,7 +105,7 @@ public class DomElement {
 	 * This variant allows the exclusion of certain characters from URL
 	 * encoding.
 	 */
-	public static String urlEncodeS(String url, String allowed) {
+	public static String urlEncodeS(final String url, final String allowed) {
 		StringWriter result = new StringWriter();
 		for (int i = 0; i < url.length(); ++i) {
 			char c = url.charAt(i);
@@ -158,7 +158,7 @@ public class DomElement {
 	/**
 	 * Creates a reference to an existing element, using its ID.
 	 */
-	public static DomElement getForUpdate(String id, DomElementType type) {
+	public static DomElement getForUpdate(final String id, DomElementType type) {
 		if (id.length() == 0) {
 			throw new WException("Cannot update widget without id");
 		}
@@ -181,7 +181,7 @@ public class DomElement {
 	 * Creates a reference to an existing element, using an expression to access
 	 * the element.
 	 */
-	public static DomElement updateGiven(String var, DomElementType type) {
+	public static DomElement updateGiven(final String var, DomElementType type) {
 		DomElement e = new DomElement(DomElement.Mode.ModeUpdate, type);
 		e.var_ = var;
 		return e;
@@ -250,14 +250,14 @@ public class DomElement {
 	 * innerHTML without deleting the child. Stubs in the the new HTML that
 	 * reference the same id will be replaced with the saved child.
 	 */
-	public void saveChild(String id) {
+	public void saveChild(final String id) {
 		this.childrenToSave_.add(id);
 	}
 
 	/**
 	 * Sets an attribute value.
 	 */
-	public void setAttribute(String attribute, String value) {
+	public void setAttribute(final String attribute, final String value) {
 		++this.numManipulations_;
 		this.attributes_.put(attribute, value);
 	}
@@ -268,7 +268,7 @@ public class DomElement {
 	 * 
 	 * @see DomElement#setAttribute(String attribute, String value)
 	 */
-	public String getAttribute(String attribute) {
+	public String getAttribute(final String attribute) {
 		String i = this.attributes_.get(attribute);
 		if (i != null) {
 			return i;
@@ -280,14 +280,14 @@ public class DomElement {
 	/**
 	 * Removes an attribute.
 	 */
-	public void removeAttribute(String attribute) {
+	public void removeAttribute(final String attribute) {
 		this.attributes_.remove(attribute);
 	}
 
 	/**
 	 * Sets a property.
 	 */
-	public void setProperty(Property property, String value) {
+	public void setProperty(Property property, final String value) {
 		++this.numManipulations_;
 		this.properties_.put(property, value);
 		if (property.getValue() >= Property.PropertyStyleMinWidth.getValue()
@@ -302,7 +302,7 @@ public class DomElement {
 	 * <p>
 	 * This adds a word (delimited by a space) to an existing property value.
 	 */
-	public void addPropertyWord(Property property, String value) {
+	public void addPropertyWord(Property property, final String value) {
 		this.setProperty(property, StringUtils.addWord(this
 				.getProperty(property), value));
 	}
@@ -332,7 +332,7 @@ public class DomElement {
 	/**
 	 * Sets a whole map of properties.
 	 */
-	public void setProperties(SortedMap<Property, String> properties) {
+	public void setProperties(final SortedMap<Property, String> properties) {
 		for (Iterator<Map.Entry<Property, String>> i_it = properties.entrySet()
 				.iterator(); i_it.hasNext();) {
 			Map.Entry<Property, String> i = i_it.next();
@@ -358,7 +358,8 @@ public class DomElement {
 	/**
 	 * Sets an event handler based on a signal&apos;s connections.
 	 */
-	public void setEventSignal(String eventName, AbstractEventSignal signal) {
+	public void setEventSignal(String eventName,
+			final AbstractEventSignal signal) {
 		this.setEvent(eventName, signal.getJavaScript(), signal.encodeCmd(),
 				signal.isExposedSignal());
 	}
@@ -369,8 +370,8 @@ public class DomElement {
 	 * This sets an event handler by a combination of client-side JavaScript
 	 * code and a server-side signal to emit.
 	 */
-	public void setEvent(String eventName, String jsCode, String signalName,
-			boolean isExposed) {
+	public void setEvent(String eventName, final String jsCode,
+			final String signalName, boolean isExposed) {
 		WApplication app = WApplication.getInstance();
 		boolean anchorClick = this.getType() == DomElementType.DomElement_A
 				&& eventName == WInteractWidget.CLICK_SIGNAL;
@@ -403,8 +404,8 @@ public class DomElement {
 	 * {@link #setEvent(String eventName, String jsCode, String signalName, boolean isExposed)
 	 * setEvent(eventName, jsCode, signalName, false)}
 	 */
-	public final void setEvent(String eventName, String jsCode,
-			String signalName) {
+	public final void setEvent(String eventName, final String jsCode,
+			final String signalName) {
 		setEvent(eventName, jsCode, signalName, false);
 	}
 
@@ -413,7 +414,7 @@ public class DomElement {
 	 * <p>
 	 * This sets a JavaScript event handler.
 	 */
-	public void setEvent(String eventName, String jsCode) {
+	public void setEvent(String eventName, final String jsCode) {
 		this.eventHandlers_.put(eventName, new DomElement.EventHandler(jsCode,
 				""));
 	}
@@ -421,7 +422,7 @@ public class DomElement {
 	/**
 	 * This adds more JavaScript to an event handler.
 	 */
-	public void addEvent(String eventName, String jsCode) {
+	public void addEvent(String eventName, final String jsCode) {
 		this.eventHandlers_.get(eventName).jsCode += jsCode;
 	}
 
@@ -437,8 +438,8 @@ public class DomElement {
 		public String updateCmd;
 		public boolean exposed;
 
-		public EventAction(String aJsCondition, String aJsCode,
-				String anUpdateCmd, boolean anExposed) {
+		public EventAction(final String aJsCondition, final String aJsCode,
+				final String anUpdateCmd, boolean anExposed) {
 			this.jsCondition = aJsCondition;
 			this.jsCode = aJsCode;
 			this.updateCmd = anUpdateCmd;
@@ -449,7 +450,8 @@ public class DomElement {
 	/**
 	 * Sets an aggregated event handler.
 	 */
-	public void setEvent(String eventName, List<DomElement.EventAction> actions) {
+	public void setEvent(String eventName,
+			final List<DomElement.EventAction> actions) {
 		StringBuilder code = new StringBuilder();
 		for (int i = 0; i < actions.size(); ++i) {
 			if (actions.get(i).jsCondition.length() != 0) {
@@ -472,7 +474,7 @@ public class DomElement {
 	/**
 	 * Sets the DOM element id.
 	 */
-	public void setId(String id) {
+	public void setId(final String id) {
 		++this.numManipulations_;
 		this.id_ = id;
 	}
@@ -480,7 +482,7 @@ public class DomElement {
 	/**
 	 * Sets a DOM element name.
 	 */
-	public void setName(String name) {
+	public void setName(final String name) {
 		++this.numManipulations_;
 		this.id_ = name;
 		this.setAttribute("name", name);
@@ -498,7 +500,7 @@ public class DomElement {
 	/**
 	 * Calls a JavaScript method on the DOM element.
 	 */
-	public void callMethod(String method) {
+	public void callMethod(final String method) {
 		++this.numManipulations_;
 		if (this.var_.length() == 0) {
 			this.javaScript_.append("Wt3_3_1").append(".$('").append(this.id_)
@@ -512,7 +514,7 @@ public class DomElement {
 	/**
 	 * Calls JavaScript (related to the DOM element).
 	 */
-	public void callJavaScript(String jsCode, boolean evenWhenDeleted) {
+	public void callJavaScript(final String jsCode, boolean evenWhenDeleted) {
 		++this.numManipulations_;
 		if (!evenWhenDeleted) {
 			this.javaScript_.append(jsCode).append('\n');
@@ -527,7 +529,7 @@ public class DomElement {
 	 * Calls {@link #callJavaScript(String jsCode, boolean evenWhenDeleted)
 	 * callJavaScript(jsCode, false)}
 	 */
-	public final void callJavaScript(String jsCode) {
+	public final void callJavaScript(final String jsCode) {
 		callJavaScript(jsCode, false);
 	}
 
@@ -637,7 +639,7 @@ public class DomElement {
 			this.event = "";
 		}
 
-		public TimeoutEvent(int m, String e, boolean r) {
+		public TimeoutEvent(int m, final String e, boolean r) {
 			this.msec = m;
 			this.event = e;
 			this.repeat = r;
@@ -647,7 +649,7 @@ public class DomElement {
 	/**
 	 * Renders the element as JavaScript.
 	 */
-	public void asJavaScript(StringBuilder out) {
+	public void asJavaScript(final StringBuilder out) {
 		this.mode_ = DomElement.Mode.ModeUpdate;
 		EscapeOStream eout = new EscapeOStream(out);
 		this.declare(eout);
@@ -667,7 +669,8 @@ public class DomElement {
 	 * existing elements, then creating new elements, and finally updates to
 	 * existing elements.
 	 */
-	public String asJavaScript(EscapeOStream out, DomElement.Priority priority) {
+	public String asJavaScript(final EscapeOStream out,
+			DomElement.Priority priority) {
 		switch (priority) {
 		case Delete:
 			if (this.javaScriptEvenWhenDeleted_.length() != 0
@@ -823,8 +826,8 @@ public class DomElement {
 	 * Anything that cannot be rendered as HTML is rendered as javaScript as a
 	 * by-product.
 	 */
-	public void asHTML(EscapeOStream out, EscapeOStream javaScript,
-			List<DomElement.TimeoutEvent> timeouts, boolean openingTagOnly) {
+	public void asHTML(final EscapeOStream out, final EscapeOStream javaScript,
+			final List<DomElement.TimeoutEvent> timeouts, boolean openingTagOnly) {
 		if (this.mode_ != DomElement.Mode.ModeCreate) {
 			throw new WException("DomElement::asHTML() called with ModeUpdate");
 		}
@@ -914,7 +917,7 @@ public class DomElement {
 				String l = this.properties_.get(Property.PropertyClass);
 				if (l != null) {
 					out.append(l);
-					SortedMap<Property, String> map = this.properties_;
+					final SortedMap<Property, String> map = this.properties_;
 					map.remove(Property.PropertyClass);
 				}
 				out.append('"');
@@ -1136,16 +1139,17 @@ public class DomElement {
 	 * {@link #asHTML(EscapeOStream out, EscapeOStream javaScript, List timeouts, boolean openingTagOnly)
 	 * asHTML(out, javaScript, timeouts, false)}
 	 */
-	public final void asHTML(EscapeOStream out, EscapeOStream javaScript,
-			List<DomElement.TimeoutEvent> timeouts) {
+	public final void asHTML(final EscapeOStream out,
+			final EscapeOStream javaScript,
+			final List<DomElement.TimeoutEvent> timeouts) {
 		asHTML(out, javaScript, timeouts, false);
 	}
 
 	/**
 	 * Creates the JavaScript statements for timer rendering.
 	 */
-	public static void createTimeoutJs(StringBuilder out,
-			List<DomElement.TimeoutEvent> timeouts, WApplication app) {
+	public static void createTimeoutJs(final StringBuilder out,
+			final List<DomElement.TimeoutEvent> timeouts, WApplication app) {
 		for (int i = 0; i < timeouts.size(); ++i) {
 			out.append(app.getJavaScriptClass()).append("._p_.addTimerEvent('")
 					.append(timeouts.get(i).event).append("', ").append(
@@ -1170,7 +1174,7 @@ public class DomElement {
 	 * Only after the element has been declared, {@link DomElement#getVar()
 	 * getVar()} returns a useful JavaScript reference.
 	 */
-	public void declare(EscapeOStream out) {
+	public void declare(final EscapeOStream out) {
 		if (this.var_.length() == 0) {
 			out.append("var ").append(this.getCreateVar()).append(
 					"=Wt3_3_1.$('").append(this.id_).append("');\n");
@@ -1245,8 +1249,8 @@ public class DomElement {
 	 * <p>
 	 * It uses pre-computed mixing rules for escaping of the string.
 	 */
-	public static void fastJsStringLiteral(EscapeOStream outRaw,
-			EscapeOStream outEscaped, String s) {
+	public static void fastJsStringLiteral(final EscapeOStream outRaw,
+			final EscapeOStream outEscaped, final String s) {
 		outRaw.append('\'');
 		outRaw.append(s, outEscaped);
 		outRaw.append('\'');
@@ -1255,7 +1259,7 @@ public class DomElement {
 	/**
 	 * Utility that renders a string as JavaScript literal.
 	 */
-	public static void jsStringLiteral(EscapeOStream out, String s,
+	public static void jsStringLiteral(final EscapeOStream out, final String s,
 			char delimiter) {
 		out.append(delimiter);
 		out
@@ -1269,7 +1273,7 @@ public class DomElement {
 	/**
 	 * Utility that renders a string as JavaScript literal.
 	 */
-	public static void jsStringLiteral(StringBuilder out, String s,
+	public static void jsStringLiteral(final StringBuilder out, final String s,
 			char delimiter) {
 		EscapeOStream sout = new EscapeOStream(out);
 		jsStringLiteral(sout, s, delimiter);
@@ -1280,8 +1284,8 @@ public class DomElement {
 	 * <p>
 	 * It uses pre-computed mixing rules for escaping of the attribute value.
 	 */
-	public static void fastHtmlAttributeValue(EscapeOStream outRaw,
-			EscapeOStream outEscaped, String s) {
+	public static void fastHtmlAttributeValue(final EscapeOStream outRaw,
+			final EscapeOStream outEscaped, final String s) {
 		outRaw.append('"');
 		outRaw.append(s, outEscaped);
 		outRaw.append('"');
@@ -1290,7 +1294,8 @@ public class DomElement {
 	/**
 	 * Utility that renders a string as HTML attribute.
 	 */
-	public static void htmlAttributeValue(StringBuilder out, String s) {
+	public static void htmlAttributeValue(final StringBuilder out,
+			final String s) {
 		EscapeOStream sout = new EscapeOStream(out);
 		sout.pushEscape(EscapeOStream.RuleSet.HtmlAttribute);
 		sout.append(s);
@@ -1299,7 +1304,7 @@ public class DomElement {
 	/**
 	 * Returns whether a tag is self-closing in HTML.
 	 */
-	public static boolean isSelfClosingTag(String tag) {
+	public static boolean isSelfClosingTag(final String tag) {
 		return tag.equals("br") || tag.equals("hr") || tag.equals("img")
 				|| tag.equals("area") || tag.equals("col")
 				|| tag.equals("input");
@@ -1319,7 +1324,7 @@ public class DomElement {
 	/**
 	 * Parses a tag name to a DOMElement type.
 	 */
-	public static DomElementType parseTagName(String tag) {
+	public static DomElementType parseTagName(final String tag) {
 		for (int i = 0; i < DomElementType.DomElement_UNKNOWN.getValue(); ++i) {
 			if (tag.equals(elementNames_[i])) {
 				return DomElementType.values()[i];
@@ -1385,8 +1390,8 @@ public class DomElement {
 	 * for table cells, some browsers require dedicated API instead of generic
 	 * insertAt() or appendChild() functions.
 	 */
-	public String addToParent(StringBuilder out, String parentVar, int pos,
-			WApplication app) {
+	public String addToParent(final StringBuilder out, final String parentVar,
+			int pos, WApplication app) {
 		EscapeOStream sout = new EscapeOStream(out);
 		return this.addToParent(sout, parentVar, pos, app);
 	}
@@ -1394,8 +1399,8 @@ public class DomElement {
 	/**
 	 * Renders the element as JavaScript, and inserts it in the DOM.
 	 */
-	public void createElement(StringBuilder out, WApplication app,
-			String domInsertJS) {
+	public void createElement(final StringBuilder out, WApplication app,
+			final String domInsertJS) {
 		EscapeOStream sout = new EscapeOStream(out);
 		this.createElement(sout, app, domInsertJS);
 	}
@@ -1420,7 +1425,7 @@ public class DomElement {
 			this.signalName = "";
 		}
 
-		public EventHandler(String j, String sn) {
+		public EventHandler(final String j, final String sn) {
 			this.jsCode = j;
 			this.signalName = sn;
 		}
@@ -1491,7 +1496,8 @@ public class DomElement {
 		}
 	}
 
-	private void setJavaScriptProperties(EscapeOStream out, WApplication app) {
+	private void setJavaScriptProperties(final EscapeOStream out,
+			WApplication app) {
 		EscapeOStream escaped = out.push();
 		boolean pushed = false;
 		for (Iterator<Map.Entry<Property, String>> i_it = this.properties_
@@ -1645,7 +1651,7 @@ public class DomElement {
 		}
 	}
 
-	private void setJavaScriptAttributes(EscapeOStream out) {
+	private void setJavaScriptAttributes(final EscapeOStream out) {
 		for (Iterator<Map.Entry<String, String>> i_it = this.attributes_
 				.entrySet().iterator(); i_it.hasNext();) {
 			Map.Entry<String, String> i = i_it.next();
@@ -1663,8 +1669,8 @@ public class DomElement {
 		}
 	}
 
-	private void setJavaScriptEvent(EscapeOStream out, String eventName,
-			DomElement.EventHandler handler, WApplication app) {
+	private void setJavaScriptEvent(final EscapeOStream out, String eventName,
+			final DomElement.EventHandler handler, WApplication app) {
 		boolean globalUnfocused = this.id_.equals(app.getDomRoot().getId());
 		int fid = nextId_++;
 		out.append("function f").append(fid).append("(event) { ");
@@ -1693,8 +1699,8 @@ public class DomElement {
 		}
 	}
 
-	private void createElement(EscapeOStream out, WApplication app,
-			String domInsertJS) {
+	private void createElement(final EscapeOStream out, WApplication app,
+			final String domInsertJS) {
 		if (this.var_.length() == 0) {
 			this.getCreateVar();
 		}
@@ -1722,8 +1728,8 @@ public class DomElement {
 		}
 	}
 
-	private String addToParent(EscapeOStream out, String parentVar, int pos,
-			WApplication app) {
+	private String addToParent(final EscapeOStream out, final String parentVar,
+			int pos, WApplication app) {
 		this.getCreateVar();
 		if (this.type_ == DomElementType.DomElement_TD
 				|| this.type_ == DomElementType.DomElement_TR) {
@@ -1752,9 +1758,9 @@ public class DomElement {
 		return this.var_;
 	}
 
-	// private String createAsJavaScript(EscapeOStream out, String parentVar,
-	// int pos, WApplication app) ;
-	private void renderInnerHtmlJS(EscapeOStream out, WApplication app) {
+	// private String createAsJavaScript(final EscapeOStream out, final String
+	// parentVar, int pos, WApplication app) ;
+	private void renderInnerHtmlJS(final EscapeOStream out, WApplication app) {
 		if (!this.childrenHtml_.isEmpty() || this.wasEmpty_
 				&& this.canWriteInnerHTML(app)) {
 			if (this.type_ == DomElementType.DomElement_DIV
@@ -1803,7 +1809,7 @@ public class DomElement {
 		}
 	}
 
-	private void renderDeferredJavaScript(EscapeOStream out) {
+	private void renderDeferredJavaScript(final EscapeOStream out) {
 		if (!this.javaScript_.isEmpty()) {
 			this.declare(out);
 			out.append(this.javaScript_).append('\n');

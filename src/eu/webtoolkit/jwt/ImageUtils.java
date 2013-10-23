@@ -22,7 +22,7 @@ import org.slf4j.LoggerFactory;
 class ImageUtils {
 	private static Logger logger = LoggerFactory.getLogger(ImageUtils.class);
 
-	public static String identifyMimeType(List<Byte> header) {
+	public static String identifyMimeType(final List<Byte> header) {
 		for (int i = 0; i < mimeTypeCount; ++i) {
 			if (Utils.memcmp(header, imageHeaders[i], imageHeaderSize[i]) == 0) {
 				return imageMimeTypes[i];
@@ -31,7 +31,7 @@ class ImageUtils {
 		return "";
 	}
 
-	public static String identifyMimeType(String fileName) {
+	public static String identifyMimeType(final String fileName) {
 		List<Byte> header = FileUtils.fileHeader(fileName, 25);
 		if (header.isEmpty()) {
 			return "";
@@ -40,7 +40,7 @@ class ImageUtils {
 		}
 	}
 
-	public static WPoint getSize(String fileName) {
+	public static WPoint getSize(final String fileName) {
 		List<Byte> header = FileUtils.fileHeader(fileName, 25);
 		if (header.isEmpty()) {
 			return new WPoint();
@@ -49,7 +49,7 @@ class ImageUtils {
 		}
 	}
 
-	public static WPoint getSize(List<Byte> header) {
+	public static WPoint getSize(final List<Byte> header) {
 		String mimeType = identifyMimeType(header);
 		if (mimeType.equals("image/png")) {
 			int width = ((toUnsigned(header.get(16)) << 8 | toUnsigned(header

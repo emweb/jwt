@@ -66,5 +66,5 @@ public interface WLoadingIndicator {
 	 * If the indicator is capable of displaying a text message, then you should
 	 * reimplement this method to allow this message to be modified.
 	 */
-	public void setMessage(CharSequence text);
+	public void setMessage(final CharSequence text);
 }

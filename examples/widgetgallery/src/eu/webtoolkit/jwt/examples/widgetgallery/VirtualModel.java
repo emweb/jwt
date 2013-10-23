@@ -32,7 +32,7 @@ class VirtualModel extends WAbstractTableModel {
 		this(rows, columns, (WObject) null);
 	}
 
-	public int getRowCount(WModelIndex parent) {
+	public int getRowCount(final WModelIndex parent) {
 		if (!(parent != null)) {
 			return this.rows_;
 		} else {
@@ -40,7 +40,7 @@ class VirtualModel extends WAbstractTableModel {
 		}
 	}
 
-	public int getColumnCount(WModelIndex parent) {
+	public int getColumnCount(final WModelIndex parent) {
 		if (!(parent != null)) {
 			return this.columns_;
 		} else {
@@ -48,7 +48,7 @@ class VirtualModel extends WAbstractTableModel {
 		}
 	}
 
-	public Object getData(WModelIndex index, int role) {
+	public Object getData(final WModelIndex index, int role) {
 		switch (role) {
 		case ItemDataRole.DisplayRole:
 			if (index.getColumn() == 0) {

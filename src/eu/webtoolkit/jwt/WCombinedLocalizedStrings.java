@@ -98,7 +98,7 @@ public class WCombinedLocalizedStrings extends WLocalizedStrings {
 		}
 	}
 
-	public String resolveKey(String key) {
+	public String resolveKey(final String key) {
 		String result = null;
 		for (int i = 0; i < this.localizedStrings_.size(); ++i) {
 			result = this.localizedStrings_.get(i).resolveKey(key);

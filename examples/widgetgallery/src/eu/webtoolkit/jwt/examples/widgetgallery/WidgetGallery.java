@@ -55,7 +55,8 @@ class WidgetGallery extends WContainerWidget {
 	private WNavigationBar navigation_;
 	private WStackedWidget contentsStack_;
 
-	private WMenuItem addToMenu(WMenu menu, CharSequence name, TopicWidget topic) {
+	private WMenuItem addToMenu(WMenu menu, final CharSequence name,
+			TopicWidget topic) {
 		WContainerWidget result = new WContainerWidget();
 		WContainerWidget pane = new WContainerWidget();
 		WVBoxLayout vLayout = new WVBoxLayout(result);

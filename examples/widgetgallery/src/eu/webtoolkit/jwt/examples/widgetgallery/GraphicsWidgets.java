@@ -119,8 +119,8 @@ class GraphicsWidgets extends TopicWidget {
 		return result;
 	}
 
-	// private WAbstractItemModel readCsvFile(String fname, WContainerWidget
-	// parent) ;
+	// private WAbstractItemModel readCsvFile(final String fname,
+	// WContainerWidget parent) ;
 	WWidget PaintingEvent() {
 		WContainerWidget container = new WContainerWidget();
 		final MyPaintedWidget painting = new MyPaintedWidget(container);

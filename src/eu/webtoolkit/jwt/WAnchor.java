@@ -86,7 +86,7 @@ public class WAnchor extends WContainerWidget {
 	 * 
 	 * @see WAnchor#setLink(WLink link)
 	 */
-	public WAnchor(WLink link, WContainerWidget parent) {
+	public WAnchor(final WLink link, WContainerWidget parent) {
 		super(parent);
 		this.linkState_ = new WAnchor.LinkState();
 		this.text_ = null;
@@ -102,7 +102,7 @@ public class WAnchor extends WContainerWidget {
 	 * Calls {@link #WAnchor(WLink link, WContainerWidget parent) this(link,
 	 * (WContainerWidget)null)}
 	 */
-	public WAnchor(WLink link) {
+	public WAnchor(final WLink link) {
 		this(link, (WContainerWidget) null);
 	}
 
@@ -114,7 +114,7 @@ public class WAnchor extends WContainerWidget {
 	 *             {@link WAnchor#WAnchor(WLink link, WContainerWidget parent)
 	 *             WAnchor()} instead.
 	 */
-	public WAnchor(String ref, WContainerWidget parent) {
+	public WAnchor(final String ref, WContainerWidget parent) {
 		super(parent);
 		this.linkState_ = new WAnchor.LinkState();
 		this.text_ = null;
@@ -130,7 +130,7 @@ public class WAnchor extends WContainerWidget {
 	 * Calls {@link #WAnchor(String ref, WContainerWidget parent) this(ref,
 	 * (WContainerWidget)null)}
 	 */
-	public WAnchor(String ref) {
+	public WAnchor(final String ref) {
 		this(ref, (WContainerWidget) null);
 	}
 
@@ -178,7 +178,8 @@ public class WAnchor extends WContainerWidget {
 	 * @see WAnchor#setLink(WLink link)
 	 * @see WAnchor#setText(CharSequence text)
 	 */
-	public WAnchor(WLink link, CharSequence text, WContainerWidget parent) {
+	public WAnchor(final WLink link, final CharSequence text,
+			WContainerWidget parent) {
 		super(parent);
 		this.linkState_ = new WAnchor.LinkState();
 		this.text_ = null;
@@ -196,7 +197,7 @@ public class WAnchor extends WContainerWidget {
 	 * {@link #WAnchor(WLink link, CharSequence text, WContainerWidget parent)
 	 * this(link, text, (WContainerWidget)null)}
 	 */
-	public WAnchor(WLink link, CharSequence text) {
+	public WAnchor(final WLink link, final CharSequence text) {
 		this(link, text, (WContainerWidget) null);
 	}
 
@@ -208,7 +209,8 @@ public class WAnchor extends WContainerWidget {
 	 *             {@link WAnchor#WAnchor(WLink link, CharSequence text, WContainerWidget parent)
 	 *             WAnchor()} instead.
 	 */
-	public WAnchor(String ref, CharSequence text, WContainerWidget parent) {
+	public WAnchor(final String ref, final CharSequence text,
+			WContainerWidget parent) {
 		super(parent);
 		this.linkState_ = new WAnchor.LinkState();
 		this.text_ = null;
@@ -226,7 +228,7 @@ public class WAnchor extends WContainerWidget {
 	 * {@link #WAnchor(String ref, CharSequence text, WContainerWidget parent)
 	 * this(ref, text, (WContainerWidget)null)}
 	 */
-	public WAnchor(String ref, CharSequence text) {
+	public WAnchor(final String ref, final CharSequence text) {
 		this(ref, text, (WContainerWidget) null);
 	}
 
@@ -244,7 +246,7 @@ public class WAnchor extends WContainerWidget {
 	 *             {@link WAnchor#WAnchor(WLink link, CharSequence text, WContainerWidget parent)
 	 *             WAnchor()} instead.
 	 */
-	public WAnchor(WResource resource, CharSequence text,
+	public WAnchor(WResource resource, final CharSequence text,
 			WContainerWidget parent) {
 		super(parent);
 		this.linkState_ = new WAnchor.LinkState();
@@ -263,7 +265,7 @@ public class WAnchor extends WContainerWidget {
 	 * {@link #WAnchor(WResource resource, CharSequence text, WContainerWidget parent)
 	 * this(resource, text, (WContainerWidget)null)}
 	 */
-	public WAnchor(WResource resource, CharSequence text) {
+	public WAnchor(WResource resource, final CharSequence text) {
 		this(resource, text, (WContainerWidget) null);
 	}
 
@@ -274,7 +276,7 @@ public class WAnchor extends WContainerWidget {
 	 * @see WAnchor#setLink(WLink link)
 	 * @see WAnchor#setImage(WImage image)
 	 */
-	public WAnchor(WLink link, WImage image, WContainerWidget parent) {
+	public WAnchor(final WLink link, WImage image, WContainerWidget parent) {
 		super(parent);
 		this.linkState_ = new WAnchor.LinkState();
 		this.text_ = null;
@@ -294,7 +296,7 @@ public class WAnchor extends WContainerWidget {
 	 * Calls {@link #WAnchor(WLink link, WImage image, WContainerWidget parent)
 	 * this(link, image, (WContainerWidget)null)}
 	 */
-	public WAnchor(WLink link, WImage image) {
+	public WAnchor(final WLink link, WImage image) {
 		this(link, image, (WContainerWidget) null);
 	}
 
@@ -306,7 +308,7 @@ public class WAnchor extends WContainerWidget {
 	 *             {@link WAnchor#WAnchor(WLink link, WImage image, WContainerWidget parent)
 	 *             WAnchor()} instead.
 	 */
-	public WAnchor(String ref, WImage image, WContainerWidget parent) {
+	public WAnchor(final String ref, WImage image, WContainerWidget parent) {
 		super(parent);
 		this.linkState_ = new WAnchor.LinkState();
 		this.text_ = null;
@@ -326,7 +328,7 @@ public class WAnchor extends WContainerWidget {
 	 * Calls {@link #WAnchor(String ref, WImage image, WContainerWidget parent)
 	 * this(ref, image, (WContainerWidget)null)}
 	 */
-	public WAnchor(String ref, WImage image) {
+	public WAnchor(final String ref, WImage image) {
 		this(ref, image, (WContainerWidget) null);
 	}
 
@@ -381,7 +383,7 @@ public class WAnchor extends WContainerWidget {
 	 * way to let the application participate in browser history, and generate
 	 * URLs that are bookmarkable and search engine friendly.
 	 */
-	public void setLink(WLink link) {
+	public void setLink(final WLink link) {
 		if (this.linkState_.link.getType() != WLink.Type.Resource
 				&& this.linkState_.link.equals(link)) {
 			return;
@@ -422,7 +424,7 @@ public class WAnchor extends WContainerWidget {
 	 * 
 	 * @deprecated Use {@link WAnchor#setLink(WLink link) setLink()} instead.
 	 */
-	public void setRef(String url) {
+	public void setRef(final String url) {
 		this.setLink(new WLink(WLink.Type.Url, url));
 	}
 
@@ -432,7 +434,7 @@ public class WAnchor extends WContainerWidget {
 	 * 
 	 * @deprecated Use {@link WAnchor#setLink(WLink link) setLink()} instead.
 	 */
-	public void setRefInternalPath(String path) {
+	public void setRefInternalPath(final String path) {
 		this.setLink(new WLink(WLink.Type.InternalPath, path));
 	}
 
@@ -472,7 +474,7 @@ public class WAnchor extends WContainerWidget {
 	 * {@link WContainerWidget#addWidget(WWidget widget)
 	 * WContainerWidget#addWidget()}.
 	 */
-	public void setText(CharSequence text) {
+	public void setText(final CharSequence text) {
 		if (!(this.text_ != null)) {
 			this.text_ = new WText(text, this);
 		} else {
@@ -650,7 +652,7 @@ public class WAnchor extends WContainerWidget {
 	}
 
 	static boolean renderHRef(WInteractWidget widget,
-			WAnchor.LinkState linkState, DomElement element) {
+			final WAnchor.LinkState linkState, final DomElement element) {
 		WApplication app = WApplication.getInstance();
 		if (linkState.link.isNull() || widget.isDisabled()) {
 			element.removeAttribute("href");
@@ -672,8 +674,8 @@ public class WAnchor extends WContainerWidget {
 		return false;
 	}
 
-	static void renderHTarget(WAnchor.LinkState linkState, DomElement element,
-			boolean all) {
+	static void renderHTarget(final WAnchor.LinkState linkState,
+			final DomElement element, boolean all) {
 		switch (linkState.target) {
 		case TargetSelf:
 			if (!all) {
@@ -688,7 +690,7 @@ public class WAnchor extends WContainerWidget {
 		}
 	}
 
-	static void renderUrlResolution(WWidget widget, DomElement element,
+	static void renderUrlResolution(WWidget widget, final DomElement element,
 			boolean all) {
 		if (all) {
 			element.setProperty(Property.PropertyClass, StringUtils.addWord(
@@ -699,7 +701,7 @@ public class WAnchor extends WContainerWidget {
 		}
 	}
 
-	void updateDom(DomElement element, boolean all) {
+	void updateDom(final DomElement element, boolean all) {
 		boolean needsUrlResolution = false;
 		if (this.flags_.get(BIT_LINK_CHANGED) || all) {
 			needsUrlResolution = renderHRef(this, this.linkState_, element);

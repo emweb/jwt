@@ -72,15 +72,15 @@ class Line {
 
 	public void reflow(Block lineFloat) {
 		if (!lineFloat.blockLayout.isEmpty()) {
-			BlockBox bb = lineFloat.blockLayout.get(0);
+			final BlockBox bb = lineFloat.blockLayout.get(0);
 			if (bb.y == this.y_ && bb.page == this.page_ && bb.x <= this.x_) {
 				this.x_ += bb.width;
 			}
 		}
 	}
 
-	public void moveToNextPage(List<Block> floats, double minX, double maxX,
-			WTextRenderer renderer) {
+	public void moveToNextPage(final List<Block> floats, double minX,
+			double maxX, final WTextRenderer renderer) {
 		for (int i = 0; i < this.blocks_.size(); ++i) {
 			Block b = this.blocks_.get(i);
 			if (b.isFloat()) {
@@ -111,7 +111,7 @@ class Line {
 				this.reflow(b);
 			} else {
 				for (int j = 0; j < b.inlineLayout.size(); ++j) {
-					InlineBox ib = b.inlineLayout.get(j);
+					final InlineBox ib = b.inlineLayout.get(j);
 					if (ib.y == oldY && ib.page == this.page_ - 1) {
 						if (ib.x != LEFT_MARGIN_X) {
 							ib.x = this.x_;
@@ -144,15 +144,16 @@ class Line {
 		}
 	}
 
-	public void finish(AlignmentFlag textAlign, List<Block> floats,
-			double minX, double maxX, WTextRenderer renderer) {
+	public void finish(AlignmentFlag textAlign, final List<Block> floats,
+			double minX, double maxX, final WTextRenderer renderer) {
 		for (int i = 0; i < this.blocks_.size(); ++i) {
 			Block b = this.blocks_.get(this.blocks_.size() - 1 - i);
 			if (!b.isFloat()) {
 				if (b.getType() != DomElementType.DomElement_LI && b.isText()) {
 					boolean done = false;
 					for (int j = 0; j < b.inlineLayout.size(); ++j) {
-						InlineBox ib = b.inlineLayout.get(b.inlineLayout.size()
+						final InlineBox ib = b.inlineLayout.get(b.inlineLayout
+								.size()
 								- 1 - j);
 						if (ib.utf8Count > 0) {
 							char lastChar = b.getText().charAt(
@@ -185,7 +186,7 @@ class Line {
 						0, minX, maxX, false, renderer);
 			} else {
 				for (int j = 0; j < b.inlineLayout.size(); ++j) {
-					InlineBox ib = b.inlineLayout.get(j);
+					final InlineBox ib = b.inlineLayout.get(j);
 					if (ib.y == this.y_ && ib.page == this.page_) {
 						String va = b
 								.cssProperty(Property.PropertyStyleVerticalAlign);
@@ -246,7 +247,7 @@ class Line {
 		}
 		double x = rangeX.start;
 		for (int i = 0; i < boxes.size(); ++i) {
-			InlineBox ib = boxes.get(i);
+			final InlineBox ib = boxes.get(i);
 			ib.x = x;
 			double contentWidth = ib.width - ib.whitespaceWidth
 					* ib.whitespaceCount;

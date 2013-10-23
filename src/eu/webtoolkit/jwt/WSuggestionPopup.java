@@ -300,7 +300,8 @@ public class WSuggestionPopup extends WPopupWidget {
 	 * @see WSuggestionPopup#generateReplacerJS(WSuggestionPopup.Options
 	 *      options)
 	 */
-	public WSuggestionPopup(WSuggestionPopup.Options options, WObject parent) {
+	public WSuggestionPopup(final WSuggestionPopup.Options options,
+			WObject parent) {
 		super(new WContainerWidget(), parent);
 		this.model_ = null;
 		this.modelColumn_ = 0;
@@ -328,7 +329,7 @@ public class WSuggestionPopup extends WPopupWidget {
 	 * {@link #WSuggestionPopup(WSuggestionPopup.Options options, WObject parent)
 	 * this(options, (WObject)null)}
 	 */
-	public WSuggestionPopup(WSuggestionPopup.Options options) {
+	public WSuggestionPopup(final WSuggestionPopup.Options options) {
 		this(options, (WObject) null);
 	}
 
@@ -338,7 +339,8 @@ public class WSuggestionPopup extends WPopupWidget {
 	 * See supra for the expected signature of the matcher and replace
 	 * JavaScript functions.
 	 */
-	public WSuggestionPopup(String matcherJS, String replacerJS, WObject parent) {
+	public WSuggestionPopup(final String matcherJS, final String replacerJS,
+			WObject parent) {
 		super(new WContainerWidget(), parent);
 		this.model_ = null;
 		this.modelColumn_ = 0;
@@ -366,7 +368,7 @@ public class WSuggestionPopup extends WPopupWidget {
 	 * {@link #WSuggestionPopup(String matcherJS, String replacerJS, WObject parent)
 	 * this(matcherJS, replacerJS, (WObject)null)}
 	 */
-	public WSuggestionPopup(String matcherJS, String replacerJS) {
+	public WSuggestionPopup(final String matcherJS, final String replacerJS) {
 		this(matcherJS, replacerJS, (WObject) null);
 	}
 
@@ -385,7 +387,7 @@ public class WSuggestionPopup extends WPopupWidget {
 	 */
 	public void forEdit(WFormWidget edit,
 			EnumSet<WSuggestionPopup.PopupTrigger> triggers) {
-		AbstractEventSignal b = edit.keyPressed();
+		final AbstractEventSignal b = edit.keyPressed();
 		this.connectObjJS(b, "editKeyDown");
 		this.connectObjJS(edit.keyWentDown(), "editKeyDown");
 		this.connectObjJS(edit.keyWentUp(), "editKeyUp");
@@ -397,7 +399,7 @@ public class WSuggestionPopup extends WPopupWidget {
 		if (!EnumUtils.mask(triggers,
 				WSuggestionPopup.PopupTrigger.DropDownIcon).isEmpty()) {
 			edit.addStyleClass("Wt-suggest-dropdown");
-			AbstractEventSignal c = edit.clicked();
+			final AbstractEventSignal c = edit.clicked();
 			this.connectObjJS(c, "editClick");
 			this.connectObjJS(edit.mouseMoved(), "editMouseMove");
 		}
@@ -477,8 +479,8 @@ public class WSuggestionPopup extends WPopupWidget {
 	 * @see WSuggestionPopup#clearSuggestions()
 	 * @see WSuggestionPopup#setModel(WAbstractItemModel model)
 	 */
-	public void addSuggestion(CharSequence suggestionText,
-			CharSequence suggestionValue) {
+	public void addSuggestion(final CharSequence suggestionText,
+			final CharSequence suggestionValue) {
 		int row = this.model_.getRowCount();
 		if (this.model_.insertRow(row)) {
 			this.model_.setData(row, this.modelColumn_, suggestionText,
@@ -497,7 +499,7 @@ public class WSuggestionPopup extends WPopupWidget {
 	 * {@link #addSuggestion(CharSequence suggestionText, CharSequence suggestionValue)
 	 * addSuggestion(suggestionText, WString.Empty)}
 	 */
-	public final void addSuggestion(CharSequence suggestionText) {
+	public final void addSuggestion(final CharSequence suggestionText) {
 		addSuggestion(suggestionText, WString.Empty);
 	}
 
@@ -623,7 +625,8 @@ public class WSuggestionPopup extends WPopupWidget {
 	 * implementation for the matching input, based on the given
 	 * <code>options</code>.
 	 */
-	public static String generateMatcherJS(WSuggestionPopup.Options options) {
+	public static String generateMatcherJS(
+			final WSuggestionPopup.Options options) {
 		return instantiateStdMatcher(options) + ".match";
 	}
 
@@ -634,7 +637,8 @@ public class WSuggestionPopup extends WPopupWidget {
 	 * implementation for the matching input, based on the given
 	 * <code>options</code>.
 	 */
-	public static String generateReplacerJS(WSuggestionPopup.Options options) {
+	public static String generateReplacerJS(
+			final WSuggestionPopup.Options options) {
 		return instantiateStdMatcher(options) + ".replace";
 	}
 
@@ -792,14 +796,15 @@ public class WSuggestionPopup extends WPopupWidget {
 				.toString());
 	}
 
-	private void connectObjJS(AbstractEventSignal s, String methodName) {
+	private void connectObjJS(final AbstractEventSignal s,
+			final String methodName) {
 		String jsFunction = "function(obj, event) {var o = jQuery.data("
 				+ this.getJsRef() + ", 'obj');if (o) o." + methodName
 				+ "(obj, event);}";
 		s.addListener(jsFunction);
 	}
 
-	private void modelRowsInserted(WModelIndex parent, int start, int end) {
+	private void modelRowsInserted(final WModelIndex parent, int start, int end) {
 		if (this.filterLength_ != 0 && !this.filtering_) {
 			return;
 		}
@@ -832,7 +837,7 @@ public class WSuggestionPopup extends WPopupWidget {
 		}
 	}
 
-	private void modelRowsRemoved(WModelIndex parent, int start, int end) {
+	private void modelRowsRemoved(final WModelIndex parent, int start, int end) {
 		if ((parent != null)) {
 			return;
 		}
@@ -846,7 +851,8 @@ public class WSuggestionPopup extends WPopupWidget {
 		}
 	}
 
-	private void modelDataChanged(WModelIndex topLeft, WModelIndex bottomRight) {
+	private void modelDataChanged(final WModelIndex topLeft,
+			final WModelIndex bottomRight) {
 		if ((topLeft.getParent() != null)) {
 			return;
 		}
@@ -937,7 +943,7 @@ public class WSuggestionPopup extends WPopupWidget {
 				"function(t,e,z,F,r,u,A){function q(c){var g=c.value;c=c.selectionStart?c.selectionStart:g.length;for(var h=z?g.lastIndexOf(z,c-1)+1:0;h<c&&F.indexOf(g.charAt(h))!=-1;)++h;return{start:h,end:c}}this.match=function(c){var g=q(c),h=c.value.substring(g.start,g.end),n;n=u.length==0?r.length!=0?\"(^|(?:[\"+r+\"]))\":\"(^)\":\"(\"+u+\")\";n+=\"(\"+h.replace(new RegExp(\"([\\\\^\\\\\\\\\\\\][\\\\-.$*+?()|{}])\",\"g\"),\"\\\\$1\")+\")\";n=new RegExp(n,\"gi\");return function(i){if(!i)return h; var C=false;if(h.length){var v=i.replace(n,\"$1\"+t+\"$2\"+e);if(v!=i){C=true;i=v}}return{match:C,suggestion:i}}};this.replace=function(c,g,h){g=q(c);var n=c.value.substring(0,g.start)+h+A;if(g.end<c.value.length)n+=c.value.substring(g.end,c.value.length);c.value=n;if(c.selectionStart){c.selectionStart=g.start+h.length+A.length;c.selectionEnd=c.selectionStart}}}");
 	}
 
-	static String instantiateStdMatcher(WSuggestionPopup.Options options) {
+	static String instantiateStdMatcher(final WSuggestionPopup.Options options) {
 		StringBuilder s = new StringBuilder();
 		s.append("new Wt3_3_1.WSuggestionPopupStdMatcher(").append(
 				WWebWidget.jsStringLiteral(options.highlightBeginTag)).append(

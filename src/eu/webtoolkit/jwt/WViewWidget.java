@@ -138,7 +138,7 @@ public abstract class WViewWidget extends WWebWidget {
 	 */
 	protected abstract WWidget getRenderView();
 
-	void updateDom(DomElement element, boolean all) {
+	void updateDom(final DomElement element, boolean all) {
 		WApplication app = WApplication.getInstance();
 		if (!app.getSession().getRenderer().isPreLearning()) {
 			if (all && !(this.contents_ != null)) {

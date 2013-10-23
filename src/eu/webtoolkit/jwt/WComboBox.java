@@ -95,7 +95,7 @@ public class WComboBox extends WFormWidget {
 	 * Equivalent to {@link WComboBox#insertItem(int index, CharSequence text)
 	 * insertItem} ({@link WComboBox#getCount() getCount()}, <code>text</code>).
 	 */
-	public void addItem(CharSequence text) {
+	public void addItem(final CharSequence text) {
 		this.insertItem(this.getCount(), text);
 	}
 
@@ -128,7 +128,7 @@ public class WComboBox extends WFormWidget {
 	 * @see WComboBox#addItem(CharSequence text)
 	 * @see WComboBox#removeItem(int index)
 	 */
-	public void insertItem(int index, CharSequence text) {
+	public void insertItem(int index, final CharSequence text) {
 		if (this.model_.insertRow(index)) {
 			this.setItemText(index, text);
 			if (this.currentIndex_ == -1 && !this.isSupportsNoSelection()) {
@@ -173,7 +173,7 @@ public class WComboBox extends WFormWidget {
 	 * The text for the item at position <code>index</code> is changed. This
 	 * requires that the {@link WComboBox#getModel() getModel()} is editable.
 	 */
-	public void setItemText(int index, CharSequence text) {
+	public void setItemText(int index, final CharSequence text) {
 		this.model_.setData(index, this.modelColumn_, text);
 	}
 
@@ -308,7 +308,7 @@ public class WComboBox extends WFormWidget {
 	/**
 	 * Returns the index of the first item that matches a text.
 	 */
-	public int findText(CharSequence text, MatchOptions flags) {
+	public int findText(final CharSequence text, MatchOptions flags) {
 		List<WModelIndex> list = this.model_.match(this.model_.getIndex(0,
 				this.modelColumn_), ItemDataRole.DisplayRole, text, 1, flags);
 		if (list.isEmpty()) {
@@ -333,7 +333,7 @@ public class WComboBox extends WFormWidget {
 	 * <p>
 	 * Sets the current index to the item corresponding to <code>value</code>.
 	 */
-	public void setValueText(String value) {
+	public void setValueText(final String value) {
 		for (int i = 0; i < this.getCount(); ++i) {
 			if (StringUtils.asString(
 					this.model_.getIndex(i, this.modelColumn_).getData(
@@ -427,7 +427,7 @@ public class WComboBox extends WFormWidget {
 		}
 	}
 
-	private void rowsInserted(WModelIndex index, int from, int to) {
+	private void rowsInserted(final WModelIndex index, int from, int to) {
 		this.itemsChanged_ = true;
 		this.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
 		if (this.currentIndex_ < from && this.currentIndex_ != -1) {
@@ -438,7 +438,7 @@ public class WComboBox extends WFormWidget {
 		}
 	}
 
-	private void rowsRemoved(WModelIndex index, int from, int to) {
+	private void rowsRemoved(final WModelIndex index, int from, int to) {
 		this.itemsChanged_ = true;
 		this.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
 		if (this.currentIndex_ < from) {
@@ -462,7 +462,7 @@ public class WComboBox extends WFormWidget {
 		return false;
 	}
 
-	void updateDom(DomElement element, boolean all) {
+	void updateDom(final DomElement element, boolean all) {
 		if (this.itemsChanged_ || all) {
 			if (!all) {
 				element.removeAllChildren();
@@ -579,16 +579,16 @@ public class WComboBox extends WFormWidget {
 		super.propagateRenderOk(deep);
 	}
 
-	void setFormData(WObject.FormData formData) {
+	void setFormData(final WObject.FormData formData) {
 		if (this.selectionChanged_ || this.isReadOnly()) {
 			return;
 		}
 		if (!(formData.values.length == 0)) {
-			String value = formData.values[0];
+			final String value = formData.values[0];
 			if (value.length() != 0) {
 				try {
 					this.currentIndex_ = Integer.parseInt(value);
-				} catch (NumberFormatException e) {
+				} catch (final NumberFormatException e) {
 					logger.error(new StringWriter().append(
 							"received illegal form value: '").append(value)
 							.append("'").toString());

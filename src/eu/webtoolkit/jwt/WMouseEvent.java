@@ -159,37 +159,38 @@ public class WMouseEvent implements WAbstractEvent {
 		return this.jsEvent_.wheelDelta;
 	}
 
-	public WAbstractEvent createFromJSEvent(JavaScriptEvent jsEvent) {
+	public WAbstractEvent createFromJSEvent(final JavaScriptEvent jsEvent) {
 		return new WMouseEvent(jsEvent);
 	}
 
 	static WMouseEvent templateEvent = new WMouseEvent();
 
-	WMouseEvent(JavaScriptEvent jsEvent) {
+	WMouseEvent(final JavaScriptEvent jsEvent) {
 		super();
 		this.jsEvent_ = jsEvent;
 	}
 
 	JavaScriptEvent jsEvent_;
 
-	static String concat(String prefix, int prefixLength, String s2) {
+	static String concat(final String prefix, int prefixLength, String s2) {
 		return prefix + s2;
 	}
 
-	static int asInt(String v) {
+	static int asInt(final String v) {
 		return Integer.parseInt(v);
 	}
 
-	static int asUInt(String v) {
+	static int asUInt(final String v) {
 		return Integer.parseInt(v);
 	}
 
-	static int parseIntParameter(WebRequest request, String name, int ifMissing) {
+	static int parseIntParameter(final WebRequest request, final String name,
+			int ifMissing) {
 		String p;
 		if ((p = request.getParameter(name)) != null) {
 			try {
 				return asInt(p);
-			} catch (NumberFormatException ee) {
+			} catch (final NumberFormatException ee) {
 				logger.error(new StringWriter().append(
 						"Could not cast event property '").append(name).append(
 						": ").append(p).append("' to int").toString());
@@ -200,7 +201,7 @@ public class WMouseEvent implements WAbstractEvent {
 		}
 	}
 
-	static String getStringParameter(WebRequest request, String name) {
+	static String getStringParameter(final WebRequest request, final String name) {
 		String p;
 		if ((p = request.getParameter(name)) != null) {
 			return p;
@@ -209,7 +210,7 @@ public class WMouseEvent implements WAbstractEvent {
 		}
 	}
 
-	static void decodeTouches(String str, List<Touch> result) {
+	static void decodeTouches(String str, final List<Touch> result) {
 		if (str.length() == 0) {
 			return;
 		}
@@ -229,7 +230,7 @@ public class WMouseEvent implements WAbstractEvent {
 								.get(i + 6)), asInt(s.get(i + 7)), asInt(s
 								.get(i + 8))));
 			}
-		} catch (NumberFormatException ee) {
+		} catch (final NumberFormatException ee) {
 			logger.error(new StringWriter().append(
 					"Could not parse touches array '").append(str).append("'")
 					.toString());

@@ -46,7 +46,7 @@ class ClippingWidget extends WPaintedWidget {
 		}
 	}
 
-	private void drawStar(WPainter painter, double radius) {
+	private void drawStar(final WPainter painter, double radius) {
 		painter.save();
 		WPainterPath circlePath = new WPainterPath();
 		circlePath.addEllipse(0, 0, radius, radius);
@@ -55,7 +55,7 @@ class ClippingWidget extends WPaintedWidget {
 		painter.restore();
 	}
 
-	private void drawStars(WPainter painter) {
+	private void drawStars(final WPainter painter) {
 		Random random = new Random();
 		random.setSeed(WDate.getCurrentDate().getDate().getTime());
 		painter.save();

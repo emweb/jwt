@@ -52,8 +52,8 @@ public interface AbstractPasswordService {
 		/**
 		 * Constructor.
 		 */
-		public StrengthValidatorResult(boolean valid, CharSequence message,
-				int strength) {
+		public StrengthValidatorResult(boolean valid,
+				final CharSequence message, int strength) {
 			this.valid_ = valid;
 			this.message_ = WString.toWString(message);
 			this.strength_ = strength;
@@ -117,7 +117,8 @@ public interface AbstractPasswordService {
 		 * email address, to exclude passwords that are too similar to these.
 		 */
 		public abstract AbstractPasswordService.StrengthValidatorResult evaluateStrength(
-				String password, String loginName, String email);
+				final String password, final String loginName,
+				final String email);
 
 		/**
 		 * Validates a password.
@@ -127,8 +128,8 @@ public interface AbstractPasswordService {
 		 * evaluateStrength()}, isValid() and message() to return the result of
 		 * password validation.
 		 */
-		public WValidator.Result validate(String password, String loginName,
-				String email) {
+		public WValidator.Result validate(final String password,
+				final String loginName, final String email) {
 			AbstractPasswordService.StrengthValidatorResult result = this
 					.evaluateStrength(password, loginName, email);
 			return new WValidator.Result(
@@ -141,7 +142,7 @@ public interface AbstractPasswordService {
 		 * <p>
 		 * Calls validate(password, {@link }, &quot;&quot;);
 		 */
-		public WValidator.Result validate(String password) {
+		public WValidator.Result validate(final String password) {
 			return this.validate(password, "", "");
 		}
 	}
@@ -171,7 +172,7 @@ public interface AbstractPasswordService {
 	 * 
 	 * @see AbstractPasswordService#isAttemptThrottlingEnabled()
 	 */
-	public int delayForNextAttempt(User user);
+	public int delayForNextAttempt(final User user);
 
 	/**
 	 * Verifies a password for a given user.
@@ -181,12 +182,12 @@ public interface AbstractPasswordService {
 	 * also refuse an authentication attempt.
 	 * <p>
 	 */
-	public PasswordResult verifyPassword(User user, String password);
+	public PasswordResult verifyPassword(final User user, final String password);
 
 	/**
 	 * Sets a new password for the given user.
 	 * <p>
 	 * This stores a new password for the user in the database.
 	 */
-	public void updatePassword(User user, String password);
+	public void updatePassword(final User user, final String password);
 }

@@ -44,8 +44,8 @@ public class WIconPair extends WCompositeWidget {
 	 * <code>clickIsSwitch</code> is set <code>true</code>, clicking on the icon
 	 * will switch state.
 	 */
-	public WIconPair(String icon1URI, String icon2URI, boolean clickIsSwitch,
-			WContainerWidget parent) {
+	public WIconPair(final String icon1URI, final String icon2URI,
+			boolean clickIsSwitch, WContainerWidget parent) {
 		super(parent);
 		this.impl_ = new WContainerWidget();
 		this.icon1_ = new WImage(icon1URI, this.impl_);
@@ -80,7 +80,7 @@ public class WIconPair extends WCompositeWidget {
 	 * {@link #WIconPair(String icon1URI, String icon2URI, boolean clickIsSwitch, WContainerWidget parent)
 	 * this(icon1URI, icon2URI, true, (WContainerWidget)null)}
 	 */
-	public WIconPair(String icon1URI, String icon2URI) {
+	public WIconPair(final String icon1URI, final String icon2URI) {
 		this(icon1URI, icon2URI, true, (WContainerWidget) null);
 	}
 
@@ -91,7 +91,8 @@ public class WIconPair extends WCompositeWidget {
 	 * {@link #WIconPair(String icon1URI, String icon2URI, boolean clickIsSwitch, WContainerWidget parent)
 	 * this(icon1URI, icon2URI, clickIsSwitch, (WContainerWidget)null)}
 	 */
-	public WIconPair(String icon1URI, String icon2URI, boolean clickIsSwitch) {
+	public WIconPair(final String icon1URI, final String icon2URI,
+			boolean clickIsSwitch) {
 		this(icon1URI, icon2URI, clickIsSwitch, (WContainerWidget) null);
 	}
 

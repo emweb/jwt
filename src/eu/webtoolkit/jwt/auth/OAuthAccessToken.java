@@ -51,8 +51,8 @@ public class OAuthAccessToken {
 	/**
 	 * Constructor.
 	 */
-	public OAuthAccessToken(String accessToken, WDate expires,
-			String refreshToken) {
+	public OAuthAccessToken(final String accessToken, final WDate expires,
+			final String refreshToken) {
 		this.accessToken_ = accessToken;
 		this.refreshToken_ = refreshToken;
 		this.expires_ = expires;

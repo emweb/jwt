@@ -76,7 +76,7 @@ public class WDefaultLoadingIndicator extends WText implements
 		return this;
 	}
 
-	public void setMessage(CharSequence text) {
+	public void setMessage(final CharSequence text) {
 		this.setText(text);
 	}
 }

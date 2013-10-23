@@ -103,7 +103,7 @@ public abstract class WFormWidget extends WInteractWidget {
 	 * If the widget has a label, it is hidden and shown together with this
 	 * widget.
 	 */
-	public void setHidden(boolean hidden, WAnimation animation) {
+	public void setHidden(boolean hidden, final WAnimation animation) {
 		if (this.label_ != null) {
 			this.label_.setHidden(hidden, animation);
 		}
@@ -122,7 +122,7 @@ public abstract class WFormWidget extends WInteractWidget {
 	 * <p>
 	 * This sets the current value from a string value.
 	 */
-	public abstract void setValueText(String value);
+	public abstract void setValueText(final String value);
 
 	/**
 	 * Sets a validator for this field.
@@ -285,7 +285,7 @@ public abstract class WFormWidget extends WInteractWidget {
 	 *             {@link WFormWidget#setPlaceholderText(CharSequence placeholderText)
 	 *             setPlaceholderText()} instead
 	 */
-	public void setEmptyText(CharSequence emptyText) {
+	public void setEmptyText(final CharSequence emptyText) {
 		this.setPlaceholderText(emptyText);
 	}
 
@@ -305,10 +305,10 @@ public abstract class WFormWidget extends WInteractWidget {
 	 * <p>
 	 * This sets the text that is shown when the field is empty.
 	 */
-	public void setPlaceholderText(CharSequence placeholderText) {
+	public void setPlaceholderText(final CharSequence placeholderText) {
 		this.emptyText_ = WString.toWString(placeholderText);
 		WApplication app = WApplication.getInstance();
-		WEnvironment env = app.getEnvironment();
+		final WEnvironment env = app.getEnvironment();
 		if (env.hasAjax()) {
 			if (!(this.emptyText_.length() == 0)) {
 				if (!this.flags_.get(BIT_JS_OBJECT)) {
@@ -391,7 +391,7 @@ public abstract class WFormWidget extends WInteractWidget {
 		super.refresh();
 	}
 
-	public void setToolTip(CharSequence text, TextFormat textFormat) {
+	public void setToolTip(final CharSequence text, TextFormat textFormat) {
 		super.setToolTip(text, textFormat);
 		if (this.validator_ != null && textFormat == TextFormat.PlainText) {
 			this.setJavaScriptMember("defaultTT", WString.toWString(text)
@@ -516,8 +516,8 @@ public abstract class WFormWidget extends WInteractWidget {
 		}
 	}
 
-	void updateDom(DomElement element, boolean all) {
-		WEnvironment env = WApplication.getInstance().getEnvironment();
+	void updateDom(final DomElement element, boolean all) {
+		final WEnvironment env = WApplication.getInstance().getEnvironment();
 		boolean onChangeHandledElsewhere = ((this) instanceof WAbstractToggleButton ? (WAbstractToggleButton) (this)
 				: null) != null;
 		if (!onChangeHandledElsewhere) {

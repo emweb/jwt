@@ -22,7 +22,7 @@ import org.slf4j.LoggerFactory;
 class XSSUtils {
 	private static Logger logger = LoggerFactory.getLogger(XSSUtils.class);
 
-	static boolean isBadTag(String name) {
+	static boolean isBadTag(final String name) {
 		return name.equalsIgnoreCase("script")
 				|| name.equalsIgnoreCase("applet")
 				|| name.equalsIgnoreCase("object")
@@ -45,7 +45,7 @@ class XSSUtils {
 				|| name.equalsIgnoreCase("blink");
 	}
 
-	static boolean isBadAttribute(String name) {
+	static boolean isBadAttribute(final String name) {
 		return StringUtils.startsWithIgnoreCase(name, "on")
 				|| StringUtils.startsWithIgnoreCase(name, "data")
 				|| name.equalsIgnoreCase("dynsrc")
@@ -58,7 +58,7 @@ class XSSUtils {
 				|| name.equalsIgnoreCase("pattern");
 	}
 
-	static boolean isBadAttributeValue(String name, String value) {
+	static boolean isBadAttributeValue(final String name, final String value) {
 		if (name.equalsIgnoreCase("action")
 				|| name.equalsIgnoreCase("background")
 				|| name.equalsIgnoreCase("codebase")

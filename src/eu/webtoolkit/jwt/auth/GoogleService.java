@@ -70,7 +70,7 @@ public class GoogleService extends OAuthService {
 	/**
 	 * Constructor.
 	 */
-	public GoogleService(AuthService baseAuth) {
+	public GoogleService(final AuthService baseAuth) {
 		super(baseAuth);
 	}
 
@@ -86,7 +86,7 @@ public class GoogleService extends OAuthService {
 			configurationProperty(ClientIdProperty);
 			configurationProperty(ClientSecretProperty);
 			return true;
-		} catch (RuntimeException e) {
+		} catch (final RuntimeException e) {
 			logger.info(new StringWriter().append("not configured: ").append(
 					e.toString()).toString());
 			return false;
@@ -120,7 +120,7 @@ public class GoogleService extends OAuthService {
 	public String getRedirectEndpointPath() {
 		try {
 			return configurationProperty(RedirectEndpointPathProperty);
-		} catch (RuntimeException e) {
+		} catch (final RuntimeException e) {
 			return super.getRedirectEndpointPath();
 		}
 	}
@@ -141,7 +141,7 @@ public class GoogleService extends OAuthService {
 		return configurationProperty(ClientSecretProperty);
 	}
 
-	public OAuthProcess createProcess(String scope) {
+	public OAuthProcess createProcess(final String scope) {
 		return new GoogleProcess(this, scope);
 	}
 

@@ -126,7 +126,7 @@ public class WTreeTable extends WCompositeWidget {
 	 * setTreeRoot()}, and the width of column 0 takes the remaining available
 	 * width.
 	 */
-	public void addColumn(CharSequence header, WLength width) {
+	public void addColumn(final CharSequence header, final WLength width) {
 		if (this.getTreeRoot() != null) {
 			throw new WException(
 					"WTreeTable::addColumn(): must be called before setTreeRoot()");
@@ -164,7 +164,7 @@ public class WTreeTable extends WCompositeWidget {
 	 * @see WTreeTable#getTreeRoot()
 	 * @see WTreeTable#setTree(WTree root, CharSequence h)
 	 */
-	public void setTreeRoot(WTreeTableNode root, CharSequence h) {
+	public void setTreeRoot(WTreeTableNode root, final CharSequence h) {
 		this.tree_.setTreeRoot(root);
 		this.header(0).setText(h);
 		root.setTable(this);
@@ -185,7 +185,7 @@ public class WTreeTable extends WCompositeWidget {
 	 * 
 	 * @see WTreeTable#setTreeRoot(WTreeTableNode root, CharSequence h)
 	 */
-	public void setTree(WTree root, CharSequence h) {
+	public void setTree(WTree root, final CharSequence h) {
 		WContainerWidget parent = ((this.tree_.getParent()) instanceof WContainerWidget ? (WContainerWidget) (this.tree_
 				.getParent())
 				: null);

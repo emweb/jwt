@@ -133,7 +133,7 @@ public class WTemplateFormView extends WTemplate {
 	 *   }
 	 * </pre>
 	 */
-	public WTemplateFormView(CharSequence text, WContainerWidget parent) {
+	public WTemplateFormView(final CharSequence text, WContainerWidget parent) {
 		super(text, parent);
 		this.fields_ = new HashMap<String, WTemplateFormView.FieldData>();
 		this.init();
@@ -146,7 +146,7 @@ public class WTemplateFormView extends WTemplate {
 	 * {@link #WTemplateFormView(CharSequence text, WContainerWidget parent)
 	 * this(text, (WContainerWidget)null)}
 	 */
-	public WTemplateFormView(CharSequence text) {
+	public WTemplateFormView(final CharSequence text) {
 		this(text, (WContainerWidget) null);
 	}
 
@@ -286,7 +286,7 @@ public class WTemplateFormView extends WTemplate {
 				this.bindWidget(var + "-info", info);
 			}
 			this.bindString(var + "-label", model.label(field));
-			WValidator.Result v = model.getValidation(field);
+			final WValidator.Result v = model.getValidation(field);
 			info.setText(v.getMessage());
 			this.indicateValidation(field, model.isValidated(field), info,
 					edit, v);
@@ -451,7 +451,7 @@ public class WTemplateFormView extends WTemplate {
 	 * </p>
 	 */
 	protected void indicateValidation(String field, boolean validated,
-			WText info, WWidget edit, WValidator.Result validation) {
+			WText info, WWidget edit, final WValidator.Result validation) {
 		info.setText(validation.getMessage());
 		if (validated) {
 			WApplication.getInstance().getTheme().applyValidationStyle(edit,

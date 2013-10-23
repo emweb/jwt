@@ -52,7 +52,7 @@ class JavaScriptEvent {
 	public String response;
 	public List<String> userEventArgs;
 
-	public void get(WebRequest request, String se) {
+	public void get(final WebRequest request, final String se) {
 		String s = se;
 		int seLength = se.length();
 		this.type = getStringParameter(request, concat(s, seLength, "type"));
@@ -133,24 +133,25 @@ class JavaScriptEvent {
 		this.userEventArgs = new ArrayList<String>();
 	}
 
-	static String concat(String prefix, int prefixLength, String s2) {
+	static String concat(final String prefix, int prefixLength, String s2) {
 		return prefix + s2;
 	}
 
-	static int asInt(String v) {
+	static int asInt(final String v) {
 		return Integer.parseInt(v);
 	}
 
-	static int asUInt(String v) {
+	static int asUInt(final String v) {
 		return Integer.parseInt(v);
 	}
 
-	static int parseIntParameter(WebRequest request, String name, int ifMissing) {
+	static int parseIntParameter(final WebRequest request, final String name,
+			int ifMissing) {
 		String p;
 		if ((p = request.getParameter(name)) != null) {
 			try {
 				return asInt(p);
-			} catch (NumberFormatException ee) {
+			} catch (final NumberFormatException ee) {
 				logger.error(new StringWriter().append(
 						"Could not cast event property '").append(name).append(
 						": ").append(p).append("' to int").toString());
@@ -161,7 +162,7 @@ class JavaScriptEvent {
 		}
 	}
 
-	static String getStringParameter(WebRequest request, String name) {
+	static String getStringParameter(final WebRequest request, final String name) {
 		String p;
 		if ((p = request.getParameter(name)) != null) {
 			return p;
@@ -170,7 +171,7 @@ class JavaScriptEvent {
 		}
 	}
 
-	static void decodeTouches(String str, List<Touch> result) {
+	static void decodeTouches(String str, final List<Touch> result) {
 		if (str.length() == 0) {
 			return;
 		}
@@ -190,7 +191,7 @@ class JavaScriptEvent {
 								.get(i + 6)), asInt(s.get(i + 7)), asInt(s
 								.get(i + 8))));
 			}
-		} catch (NumberFormatException ee) {
+		} catch (final NumberFormatException ee) {
 			logger.error(new StringWriter().append(
 					"Could not parse touches array '").append(str).append("'")
 					.toString());

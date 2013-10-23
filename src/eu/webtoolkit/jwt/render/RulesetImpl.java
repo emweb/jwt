@@ -36,7 +36,7 @@ class RulesetImpl implements Ruleset {
 		return this.block_;
 	}
 
-	public void setBlock(DeclarationBlockImpl b) {
+	public void setBlock(final DeclarationBlockImpl b) {
 		this.block_ = b;
 	}
 

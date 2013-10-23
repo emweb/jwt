@@ -47,7 +47,7 @@ public class PasswordPromptDialog extends WDialog {
 	 * if successful, is signalled using
 	 * {@link Login#login(User user, LoginState state) Login#login()}.
 	 */
-	public PasswordPromptDialog(Login login, AuthModel model) {
+	public PasswordPromptDialog(final Login login, AuthModel model) {
 		super(tr("Wt.Auth.enter-password"));
 		this.login_ = login;
 		this.model_ = model;
@@ -88,7 +88,7 @@ public class PasswordPromptDialog extends WDialog {
 		}
 	}
 
-	protected Login login_;
+	protected final Login login_;
 	protected AuthModel model_;
 	protected WTemplateFormView impl_;
 

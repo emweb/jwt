@@ -99,7 +99,7 @@ public class WLink {
 	 * @see WLink#setUrl(String url)
 	 * @see WLink#setInternalPath(String internalPath)
 	 */
-	public WLink(WLink.Type type, String value) {
+	public WLink(WLink.Type type, final String value) {
 		this.value_ = new Object();
 		switch (type) {
 		case Url:
@@ -157,7 +157,7 @@ public class WLink {
 	 * <p>
 	 * This sets the type to {@link WLink.Type#Url}.
 	 */
-	public void setUrl(String url) {
+	public void setUrl(final String url) {
 		this.type_ = WLink.Type.Url;
 		this.value_ = url;
 	}
@@ -216,7 +216,7 @@ public class WLink {
 	 * <p>
 	 * This points the link to the given internal path.
 	 */
-	public void setInternalPath(String internalPath) {
+	public void setInternalPath(final String internalPath) {
 		this.type_ = WLink.Type.InternalPath;
 		String path = internalPath;
 		if (path.startsWith("#/")) {
@@ -246,7 +246,7 @@ public class WLink {
 	/**
 	 * Indicates whether some other object is "equal to" this one.
 	 */
-	public boolean equals(WLink other) {
+	public boolean equals(final WLink other) {
 		return this.type_ == other.type_ && this.value_.equals(other.value_);
 	}
 

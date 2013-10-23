@@ -43,7 +43,7 @@ public class WTreeTableNode extends WTreeNode {
 	 * @see WTreeNode#WTreeNode(CharSequence labelText, WIconPair labelIcon,
 	 *      WTreeNode parent)
 	 */
-	public WTreeTableNode(CharSequence labelText, WIconPair labelIcon,
+	public WTreeTableNode(final CharSequence labelText, WIconPair labelIcon,
 			WTreeTableNode parentNode) {
 		super(labelText, labelIcon);
 		this.table_ = null;
@@ -61,7 +61,7 @@ public class WTreeTableNode extends WTreeNode {
 	 * {@link #WTreeTableNode(CharSequence labelText, WIconPair labelIcon, WTreeTableNode parentNode)
 	 * this(labelText, (WIconPair)null, (WTreeTableNode)null)}
 	 */
-	public WTreeTableNode(CharSequence labelText) {
+	public WTreeTableNode(final CharSequence labelText) {
 		this(labelText, (WIconPair) null, (WTreeTableNode) null);
 	}
 
@@ -72,7 +72,7 @@ public class WTreeTableNode extends WTreeNode {
 	 * {@link #WTreeTableNode(CharSequence labelText, WIconPair labelIcon, WTreeTableNode parentNode)
 	 * this(labelText, labelIcon, (WTreeTableNode)null)}
 	 */
-	public WTreeTableNode(CharSequence labelText, WIconPair labelIcon) {
+	public WTreeTableNode(final CharSequence labelText, WIconPair labelIcon) {
 		this(labelText, labelIcon, (WTreeTableNode) null);
 	}
 

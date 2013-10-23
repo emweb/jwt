@@ -26,7 +26,7 @@ class Term {
 		this.value_ = "";
 	}
 
-	public void setValue(String value) {
+	public void setValue(final String value) {
 		this.value_ = value;
 	}
 

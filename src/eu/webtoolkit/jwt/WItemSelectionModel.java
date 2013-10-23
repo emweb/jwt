@@ -79,7 +79,7 @@ public class WItemSelectionModel extends WObject {
 	 * 
 	 * @see WItemSelectionModel#getSelectedIndexes()
 	 */
-	public boolean isSelected(WModelIndex index) {
+	public boolean isSelected(final WModelIndex index) {
 		if (this.selectionBehavior_ == SelectionBehavior.SelectRows) {
 			for (Iterator<WModelIndex> it_it = this.selection_.iterator(); it_it
 					.hasNext();) {

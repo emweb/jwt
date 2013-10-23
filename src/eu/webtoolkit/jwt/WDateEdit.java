@@ -103,7 +103,7 @@ public class WDateEdit extends WLineEdit {
 	 * 
 	 * @see WDateEdit#getDate()
 	 */
-	public void setDate(WDate date) {
+	public void setDate(final WDate date) {
 		if (!(date == null)) {
 			this.setText(date.toString(this.getFormat()));
 			this.calendar_.select(date);
@@ -148,7 +148,7 @@ public class WDateEdit extends WLineEdit {
 	 * 
 	 * @see WDateValidator#setFormat(String format)
 	 */
-	public void setFormat(String format) {
+	public void setFormat(final String format) {
 		WDateValidator dv = this.getValidator();
 		if (dv != null) {
 			WDate d = this.getDate();
@@ -191,7 +191,7 @@ public class WDateEdit extends WLineEdit {
 	 * 
 	 * @see WDateValidator#setBottom(WDate bottom)
 	 */
-	public void setBottom(WDate bottom) {
+	public void setBottom(final WDate bottom) {
 		WDateValidator dv = this.getValidator();
 		if (dv != null) {
 			dv.setBottom(bottom);
@@ -217,7 +217,7 @@ public class WDateEdit extends WLineEdit {
 	 * 
 	 * @see WDateValidator#setTop(WDate top)
 	 */
-	public void setTop(WDate top) {
+	public void setTop(final WDate top) {
 		WDateValidator dv = this.getValidator();
 		if (dv != null) {
 			dv.setTop(top);
@@ -247,7 +247,7 @@ public class WDateEdit extends WLineEdit {
 	/**
 	 * Hide/unhide the widget.
 	 */
-	public void setHidden(boolean hidden, WAnimation animation) {
+	public void setHidden(boolean hidden, final WAnimation animation) {
 		super.setHidden(hidden, animation);
 		this.popup_.setHidden(hidden, animation);
 	}
@@ -309,15 +309,16 @@ public class WDateEdit extends WLineEdit {
 		String jsObj = "new Wt3_3_1.WDateEdit(" + app.getJavaScriptClass()
 				+ "," + this.getJsRef() + "," + this.popup_.getJsRef() + ");";
 		this.setJavaScriptMember(" WDateEdit", jsObj);
-		AbstractEventSignal b = this.mouseMoved();
-		AbstractEventSignal c = this.keyWentDown();
+		final AbstractEventSignal b = this.mouseMoved();
+		final AbstractEventSignal c = this.keyWentDown();
 		this.connectJavaScript(this.mouseMoved(), "mouseMove");
 		this.connectJavaScript(this.mouseWentUp(), "mouseUp");
 		this.connectJavaScript(this.mouseWentDown(), "mouseDown");
 		this.connectJavaScript(this.mouseWentOut(), "mouseOut");
 	}
 
-	private void connectJavaScript(AbstractEventSignal s, String methodName) {
+	private void connectJavaScript(final AbstractEventSignal s,
+			final String methodName) {
 		String jsFunction = "function(dobj, event) {var o = jQuery.data("
 				+ this.getJsRef() + ", 'dobj');if (o) o." + methodName
 				+ "(dobj, event);}";

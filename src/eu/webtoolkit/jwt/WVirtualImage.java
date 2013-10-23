@@ -403,7 +403,7 @@ public class WVirtualImage extends WCompositeWidget {
 	private long currentX_;
 	private long currentY_;
 
-	private void mouseUp(WMouseEvent e) {
+	private void mouseUp(final WMouseEvent e) {
 		this.internalScrollTo(this.currentX_ - e.getDragDelta().x,
 				this.currentY_ - e.getDragDelta().y, !WApplication
 						.getInstance().getEnvironment().hasAjax());
@@ -437,7 +437,7 @@ public class WVirtualImage extends WCompositeWidget {
 		public long j;
 	}
 
-	private void decodeKey(long key, WVirtualImage.Coordinate coordinate) {
+	private void decodeKey(long key, final WVirtualImage.Coordinate coordinate) {
 		coordinate.i = key / 1000;
 		coordinate.j = key % 1000;
 	}

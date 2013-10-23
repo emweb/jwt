@@ -43,7 +43,7 @@ public class WLineF {
 	 * <p>
 	 * Constructs a line from <i>p1</i> to <code>p2</code>.
 	 */
-	public WLineF(WPointF p1, WPointF p2) {
+	public WLineF(final WPointF p1, final WPointF p2) {
 		this.x1_ = p1.getX();
 		this.y1_ = p1.getY();
 		this.x2_ = p2.getX();
@@ -129,7 +129,7 @@ public class WLineF {
 		return new WPointF(this.x2_, this.y2_);
 	}
 
-	public boolean equals(WLineF other) {
+	public boolean equals(final WLineF other) {
 		return this.x1_ == other.x1_ && this.y1_ == other.y1_
 				&& this.x2_ == other.x2_ && this.y2_ == other.y2_;
 	}

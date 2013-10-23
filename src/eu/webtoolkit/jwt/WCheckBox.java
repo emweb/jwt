@@ -107,7 +107,7 @@ public class WCheckBox extends WAbstractToggleButton {
 	/**
 	 * Creates a checkbox with given label.
 	 */
-	public WCheckBox(CharSequence text, WContainerWidget parent) {
+	public WCheckBox(final CharSequence text, WContainerWidget parent) {
 		super(text, parent);
 		this.triState_ = false;
 		this.safariWorkaround_ = false;
@@ -120,7 +120,7 @@ public class WCheckBox extends WAbstractToggleButton {
 	 * Calls {@link #WCheckBox(CharSequence text, WContainerWidget parent)
 	 * this(text, (WContainerWidget)null)}
 	 */
-	public WCheckBox(CharSequence text) {
+	public WCheckBox(final CharSequence text) {
 		this(text, (WContainerWidget) null);
 	}
 
@@ -190,7 +190,7 @@ public class WCheckBox extends WAbstractToggleButton {
 		return this.state_;
 	}
 
-	void updateInput(DomElement input, boolean all) {
+	void updateInput(final DomElement input, boolean all) {
 		if (all) {
 			input.setAttribute("type", "checkbox");
 		}

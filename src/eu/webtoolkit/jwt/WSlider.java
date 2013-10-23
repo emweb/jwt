@@ -192,7 +192,8 @@ public class WSlider extends WFormWidget {
 	 */
 	public boolean isNativeControl() {
 		if (this.preferNative_) {
-			WEnvironment env = WApplication.getInstance().getEnvironment();
+			final WEnvironment env = WApplication.getInstance()
+					.getEnvironment();
 			if (env.agentIsChrome()
 					&& env.getAgent().getValue() >= WEnvironment.UserAgent.Chrome5
 							.getValue()
@@ -454,7 +455,7 @@ public class WSlider extends WFormWidget {
 		super.setDisabled(disabled);
 	}
 
-	public void resize(WLength width, WLength height) {
+	public void resize(final WLength width, final WLength height) {
 		super.resize(width, height);
 		if (this.paintedSlider_ != null) {
 			this.paintedSlider_.sliderResized(width, height);
@@ -465,10 +466,10 @@ public class WSlider extends WFormWidget {
 		return String.valueOf(this.value_);
 	}
 
-	public void setValueText(String value) {
+	public void setValueText(final String value) {
 		try {
 			this.value_ = Integer.parseInt(value);
-		} catch (NumberFormatException e) {
+		} catch (final NumberFormatException e) {
 		}
 	}
 
@@ -481,7 +482,7 @@ public class WSlider extends WFormWidget {
 	 * The mid point for the tick should be at position (x, y). The
 	 * <code>value</code> that corresponds to the tick is also passed.
 	 */
-	protected void paintTick(WPainter painter, int value, int x, int y) {
+	protected void paintTick(final WPainter painter, int value, int x, int y) {
 		if (!this.tickPosition_.isEmpty()) {
 			int h = 0;
 			if (this.orientation_ == Orientation.Horizontal) {
@@ -569,7 +570,7 @@ public class WSlider extends WFormWidget {
 		super.render(flags);
 	}
 
-	void updateDom(DomElement element, boolean all) {
+	void updateDom(final DomElement element, boolean all) {
 		if (this.paintedSlider_ != null) {
 			this.paintedSlider_.doUpdateDom(element, all);
 		} else {
@@ -600,15 +601,15 @@ public class WSlider extends WFormWidget {
 				: DomElementType.DomElement_INPUT;
 	}
 
-	void setFormData(WObject.FormData formData) {
+	void setFormData(final WObject.FormData formData) {
 		if (this.changed_ || this.isReadOnly()) {
 			return;
 		}
 		if (!(formData.values.length == 0)) {
-			String value = formData.values[0];
+			final String value = formData.values[0];
 			try {
 				this.value_ = Integer.parseInt(value);
-			} catch (NumberFormatException e) {
+			} catch (final NumberFormatException e) {
 			}
 		}
 	}

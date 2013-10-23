@@ -23,12 +23,12 @@ class LabelRenderIterator extends SeriesIterator {
 	private static Logger logger = LoggerFactory
 			.getLogger(LabelRenderIterator.class);
 
-	public LabelRenderIterator(WChart2DRenderer renderer) {
+	public LabelRenderIterator(final WChart2DRenderer renderer) {
 		super();
 		this.renderer_ = renderer;
 	}
 
-	public boolean startSeries(WDataSeries series, double groupWidth,
+	public boolean startSeries(final WDataSeries series, double groupWidth,
 			int numBarGroups, int currentBarGroup) {
 		if (series.isLabelsEnabled(Axis.XAxis)
 				|| series.isLabelsEnabled(Axis.YAxis)) {
@@ -41,8 +41,8 @@ class LabelRenderIterator extends SeriesIterator {
 		}
 	}
 
-	public void newValue(WDataSeries series, double x, double y, double stackY,
-			WModelIndex xIndex, WModelIndex yIndex) {
+	public void newValue(final WDataSeries series, double x, double y,
+			double stackY, final WModelIndex xIndex, final WModelIndex yIndex) {
 		if (Double.isNaN(x) || Double.isNaN(y)) {
 			return;
 		}
@@ -91,7 +91,7 @@ class LabelRenderIterator extends SeriesIterator {
 		}
 	}
 
-	private WChart2DRenderer renderer_;
+	private final WChart2DRenderer renderer_;
 	private double groupWidth_;
 	private int numGroups_;
 	private int group_;

@@ -470,7 +470,7 @@ public class WFileUpload extends WWebWidget {
 		this.fileTooLarge().trigger(size);
 	}
 
-	void updateDom(DomElement element, boolean all) {
+	void updateDom(final DomElement element, boolean all) {
 		boolean containsProgress = this.progressBar_ != null
 				&& this.progressBar_.getParent() == this;
 		DomElement inputE = null;
@@ -587,7 +587,7 @@ public class WFileUpload extends WWebWidget {
 		super.propagateRenderOk(deep);
 	}
 
-	void getDomChanges(List<DomElement> result, WApplication app) {
+	void getDomChanges(final List<DomElement> result, WApplication app) {
 		if (this.flags_.get(BIT_ENABLE_AJAX)) {
 			DomElement plainE = DomElement.getForUpdate(this,
 					DomElementType.DomElement_INPUT);
@@ -622,7 +622,7 @@ public class WFileUpload extends WWebWidget {
 
 	long tooLargeSize_;
 
-	void setFormData(WObject.FormData formData) {
+	void setFormData(final WObject.FormData formData) {
 		this.setFiles(formData.files);
 		logger.debug(new StringWriter().append("setFormData() : ").append(
 				String.valueOf(formData.files.size())).append(" file(s)")
@@ -632,7 +632,7 @@ public class WFileUpload extends WWebWidget {
 		}
 	}
 
-	void setFiles(List<UploadedFile> files) {
+	void setFiles(final List<UploadedFile> files) {
 		this.uploadedFiles_.clear();
 		for (int i = 0; i < files.size(); ++i) {
 			if (files.get(i).getClientFileName().length() != 0) {

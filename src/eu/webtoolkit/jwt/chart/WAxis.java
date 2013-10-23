@@ -202,7 +202,7 @@ public class WAxis {
 	 * @see WAxis#setAutoLimits(EnumSet locations)
 	 */
 	public void setMinimum(double minimum) {
-		WAxis.Segment s = this.segments_.get(0);
+		final WAxis.Segment s = this.segments_.get(0);
 		if (!ChartUtils.equals(s.minimum, minimum)) {
 			s.minimum = minimum;
 			update();
@@ -251,7 +251,7 @@ public class WAxis {
 	 * @see WAxis#setAutoLimits(EnumSet locations)
 	 */
 	public void setMaximum(double maximum) {
-		WAxis.Segment s = this.segments_.get(this.segments_.size() - 1);
+		final WAxis.Segment s = this.segments_.get(this.segments_.size() - 1);
 		if (!ChartUtils.equals(s.maximum, maximum)) {
 			s.maximum = maximum;
 			update();
@@ -281,7 +281,7 @@ public class WAxis {
 	 * @see WAxis#setRoundLimits(EnumSet locations)
 	 */
 	public double getMaximum() {
-		WAxis.Segment s = this.segments_.get(this.segments_.size() - 1);
+		final WAxis.Segment s = this.segments_.get(this.segments_.size() - 1);
 		return !EnumUtils.mask(this.getAutoLimits(), AxisValue.MaximumValue)
 				.isEmpty() ? s.renderMaximum : s.maximum;
 	}
@@ -515,7 +515,7 @@ public class WAxis {
 	 * 
 	 * @see WAxis#getLabelFormat()
 	 */
-	public void setLabelFormat(CharSequence format) {
+	public void setLabelFormat(final CharSequence format) {
 		if (!ChartUtils.equals(this.labelFormat_, WString.toWString(format))) {
 			this.labelFormat_ = WString.toWString(format);
 			update();
@@ -602,7 +602,7 @@ public class WAxis {
 	 * 
 	 * @see WAxis#setGridLinesPen(WPen pen)
 	 */
-	public void setPen(WPen pen) {
+	public void setPen(final WPen pen) {
 		if (!ChartUtils.equals(this.pen_, pen)) {
 			this.pen_ = pen;
 			update();
@@ -629,7 +629,7 @@ public class WAxis {
 	 * @see WAxis#setPen(WPen pen)
 	 * @see WAxis#getGridLinesPen()
 	 */
-	public void setGridLinesPen(WPen pen) {
+	public void setGridLinesPen(final WPen pen) {
 		if (!ChartUtils.equals(this.gridLinesPen_, pen)) {
 			this.gridLinesPen_ = pen;
 			update();
@@ -683,7 +683,7 @@ public class WAxis {
 	 * 
 	 * @see WAxis#getTitle()
 	 */
-	public void setTitle(CharSequence title) {
+	public void setTitle(final CharSequence title) {
 		if (!ChartUtils.equals(this.title_, WString.toWString(title))) {
 			this.title_ = WString.toWString(title);
 			update();
@@ -709,7 +709,7 @@ public class WAxis {
 	 * 
 	 * @see WAxis#getTitleFont()
 	 */
-	public void setTitleFont(WFont titleFont) {
+	public void setTitleFont(final WFont titleFont) {
 		if (!ChartUtils.equals(this.titleFont_, titleFont)) {
 			this.titleFont_ = titleFont;
 			update();
@@ -735,7 +735,7 @@ public class WAxis {
 	 * 
 	 * @see WAxis#getLabelFont()
 	 */
-	public void setLabelFont(WFont labelFont) {
+	public void setLabelFont(final WFont labelFont) {
 		if (!ChartUtils.equals(this.labelFont_, labelFont)) {
 			this.labelFont_ = labelFont;
 			update();
@@ -905,11 +905,11 @@ public class WAxis {
 		}
 	}
 
-	// private boolean (T m, T v) ;
-	boolean prepareRender(WChart2DRenderer renderer) {
+	// private boolean (final T m, final T v) ;
+	boolean prepareRender(final WChart2DRenderer renderer) {
 		double totalRenderRange = 0;
 		for (int i = 0; i < this.segments_.size(); ++i) {
-			WAxis.Segment s = this.segments_.get(i);
+			final WAxis.Segment s = this.segments_.get(i);
 			this.computeRange(renderer, s);
 			totalRenderRange += s.renderMaximum - s.renderMinimum;
 		}
@@ -939,7 +939,7 @@ public class WAxis {
 			double TRR = totalRenderRange;
 			totalRenderRange = 0;
 			for (int i = 0; i < this.segments_.size(); ++i) {
-				WAxis.Segment s = this.segments_.get(i);
+				final WAxis.Segment s = this.segments_.get(i);
 				double diff = s.renderMaximum - s.renderMinimum;
 				s.renderStart = rs;
 				s.renderLength = diff / TRR * totalRenderLength;
@@ -1295,7 +1295,8 @@ public class WAxis {
 		return true;
 	}
 
-	private void computeRange(WChart2DRenderer renderer, WAxis.Segment segment) {
+	private void computeRange(final WChart2DRenderer renderer,
+			final WAxis.Segment segment) {
 		int rc = 0;
 		if (this.chart_.getModel() != null) {
 			rc = this.chart_.getModel().getRowCount();
@@ -1428,7 +1429,7 @@ public class WAxis {
 	void setOtherAxisLocation(AxisValue otherLocation) {
 		if (this.scale_ != AxisScale.LogScale) {
 			for (int i = 0; i < this.segments_.size(); ++i) {
-				WAxis.Segment s = this.segments_.get(i);
+				final WAxis.Segment s = this.segments_.get(i);
 				int borderMin;
 				int borderMax;
 				if (this.scale_ == AxisScale.CategoryScale) {
@@ -1470,7 +1471,7 @@ public class WAxis {
 		public WString label;
 
 		public TickLabel(double v, WAxis.TickLabel.TickLength length,
-				CharSequence l) {
+				final CharSequence l) {
 			this.u = v;
 			this.tickLength = length;
 			this.label = WString.toWString(l);
@@ -1481,9 +1482,9 @@ public class WAxis {
 		}
 	}
 
-	void getLabelTicks(WChart2DRenderer renderer, List<WAxis.TickLabel> ticks,
-			int segment) {
-		WAxis.Segment s = this.segments_.get(segment);
+	void getLabelTicks(final WChart2DRenderer renderer,
+			final List<WAxis.TickLabel> ticks, int segment) {
+		final WAxis.Segment s = this.segments_.get(segment);
 		int rc = 0;
 		if (this.chart_.getModel() != null) {
 			rc = this.chart_.getModel().getRowCount();
@@ -1678,7 +1679,7 @@ public class WAxis {
 		}
 	}
 
-	private double getValue(Object v) {
+	private double getValue(final Object v) {
 		switch (this.scale_) {
 		case LinearScale:
 		case LogScale:
@@ -1704,7 +1705,7 @@ public class WAxis {
 		}
 	}
 
-	private double calcAutoNumLabels(WAxis.Segment s) {
+	private double calcAutoNumLabels(final WAxis.Segment s) {
 		boolean vertical = this.axis_ != Axis.XAxis == (this.chart_
 				.getOrientation() == Orientation.Vertical);
 		return s.renderLength
@@ -1713,7 +1714,7 @@ public class WAxis {
 
 	double mapFromDevice(double d) {
 		for (int i = 0; i < this.segments_.size(); ++i) {
-			WAxis.Segment s = this.segments_.get(i);
+			final WAxis.Segment s = this.segments_.get(i);
 			boolean lastSegment = i == this.segments_.size() - 1;
 			if (lastSegment || d < this.mapToDevice(s.renderMaximum, i)) {
 				if (this.axis_ == Axis.XAxis) {
@@ -1736,11 +1737,11 @@ public class WAxis {
 		return 0;
 	}
 
-	double mapToDevice(Object value, int segment) {
+	double mapToDevice(final Object value, int segment) {
 		return this.mapToDevice(this.getValue(value), segment);
 	}
 
-	final double mapToDevice(Object value) {
+	final double mapToDevice(final Object value) {
 		return mapToDevice(value, 0);
 	}
 
@@ -1748,7 +1749,7 @@ public class WAxis {
 		if (Double.isNaN(u)) {
 			return u;
 		}
-		WAxis.Segment s = this.segments_.get(segment);
+		final WAxis.Segment s = this.segments_.get(segment);
 		double d;
 		if (this.scale_ != AxisScale.LogScale) {
 			d = (u - s.renderMinimum) / (s.renderMaximum - s.renderMinimum)

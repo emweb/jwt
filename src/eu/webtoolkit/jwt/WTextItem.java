@@ -32,7 +32,7 @@ public class WTextItem {
 	/**
 	 * Constructor.
 	 */
-	public WTextItem(CharSequence text, double width, double nextWidth) {
+	public WTextItem(final CharSequence text, double width, double nextWidth) {
 		this.text_ = WString.toWString(text);
 		this.width_ = width;
 		this.nextWidth_ = nextWidth;
@@ -44,7 +44,7 @@ public class WTextItem {
 	 * Calls {@link #WTextItem(CharSequence text, double width, double nextWidth)
 	 * this(text, width, - 1)}
 	 */
-	public WTextItem(CharSequence text, double width) {
+	public WTextItem(final CharSequence text, double width) {
 		this(text, width, -1);
 	}
 

@@ -83,7 +83,7 @@ public class WLabel extends WInteractWidget {
 	/**
 	 * Creates a label with a given text.
 	 */
-	public WLabel(CharSequence text, WContainerWidget parent) {
+	public WLabel(final CharSequence text, WContainerWidget parent) {
 		super(parent);
 		this.buddy_ = null;
 		this.image_ = null;
@@ -101,7 +101,7 @@ public class WLabel extends WInteractWidget {
 	 * Calls {@link #WLabel(CharSequence text, WContainerWidget parent)
 	 * this(text, (WContainerWidget)null)}
 	 */
-	public WLabel(CharSequence text) {
+	public WLabel(final CharSequence text) {
 		this(text, (WContainerWidget) null);
 	}
 
@@ -168,7 +168,7 @@ public class WLabel extends WInteractWidget {
 	/**
 	 * Sets the label text.
 	 */
-	public void setText(CharSequence text) {
+	public void setText(final CharSequence text) {
 		if (this.getText().equals(text)) {
 			return;
 		}
@@ -305,7 +305,7 @@ public class WLabel extends WInteractWidget {
 	private boolean newImage_;
 	private boolean newText_;
 
-	void updateDom(DomElement element, boolean all) {
+	void updateDom(final DomElement element, boolean all) {
 		WApplication app = WApplication.getInstance();
 		if (this.image_ != null && this.text_ != null) {
 			if (this.imageSide_ == Side.Left) {
@@ -337,7 +337,7 @@ public class WLabel extends WInteractWidget {
 		}
 	}
 
-	void getDomChanges(List<DomElement> result, WApplication app) {
+	void getDomChanges(final List<DomElement> result, WApplication app) {
 		super.getDomChanges(result, app);
 		if (this.text_ != null) {
 			((WWebWidget) this.text_).getDomChanges(result, app);
@@ -361,7 +361,7 @@ public class WLabel extends WInteractWidget {
 		super.propagateSetEnabled(enabled);
 	}
 
-	protected void updateImage(DomElement element, boolean all,
+	protected void updateImage(final DomElement element, boolean all,
 			WApplication app, int pos) {
 		if (this.newImage_ || all) {
 			if (this.image_ != null) {
@@ -371,7 +371,7 @@ public class WLabel extends WInteractWidget {
 		}
 	}
 
-	protected void updateText(DomElement element, boolean all,
+	protected void updateText(final DomElement element, boolean all,
 			WApplication app, int pos) {
 		if (this.newText_ || all) {
 			if (this.text_ != null) {

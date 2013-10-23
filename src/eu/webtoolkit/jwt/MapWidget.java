@@ -26,7 +26,7 @@ class MapWidget extends WContainerWidget {
 		super();
 	}
 
-	void updateDom(DomElement element, boolean all) {
+	void updateDom(final DomElement element, boolean all) {
 		if (all) {
 			element.setAttribute("name", this.getId());
 		}

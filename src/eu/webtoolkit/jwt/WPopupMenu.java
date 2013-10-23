@@ -165,7 +165,7 @@ public class WPopupMenu extends WMenu {
 	 * 
 	 * @see WPopupMenu#exec(WPoint p)
 	 */
-	public void popup(WPoint p) {
+	public void popup(final WPoint p) {
 		this.popupImpl();
 		this.setOffsets(new WLength(42), EnumSet.of(Side.Left, Side.Top));
 		this.setOffsets(new WLength(-10000), EnumSet.of(Side.Left, Side.Top));
@@ -184,7 +184,7 @@ public class WPopupMenu extends WMenu {
 	 * @see WPopupMenu#popup(WPoint p)
 	 * @see WMouseEvent#getDocument()
 	 */
-	public void popup(WMouseEvent e) {
+	public void popup(final WMouseEvent e) {
 		this.popup(new WPoint(e.getDocument().x, e.getDocument().y));
 	}
 
@@ -238,7 +238,7 @@ public class WPopupMenu extends WMenu {
 	 * 
 	 * @see WPopupMenu#popup(WPoint p)
 	 */
-	public WMenuItem exec(WPoint p) {
+	public WMenuItem exec(final WPoint p) {
 		if (this.recursiveEventLoop_) {
 			throw new WException("WPopupMenu::exec(): already being executed.");
 		}
@@ -267,7 +267,7 @@ public class WPopupMenu extends WMenu {
 	 * 
 	 * @see WPopupMenu#exec(WPoint p)
 	 */
-	public WMenuItem exec(WMouseEvent e) {
+	public WMenuItem exec(final WMouseEvent e) {
 		return this.exec(new WPoint(e.getDocument().x, e.getDocument().y));
 	}
 
@@ -309,7 +309,7 @@ public class WPopupMenu extends WMenu {
 		return this.result_;
 	}
 
-	public void setHidden(boolean hidden, WAnimation animation) {
+	public void setHidden(boolean hidden, final WAnimation animation) {
 		super.setHidden(hidden, animation);
 		if (this.cancel_.isConnected()
 				|| WApplication.getInstance().getSession().getRenderer()
@@ -319,12 +319,12 @@ public class WPopupMenu extends WMenu {
 		}
 	}
 
-	public void setMaximumSize(WLength width, WLength height) {
+	public void setMaximumSize(final WLength width, final WLength height) {
 		super.setMaximumSize(width, height);
 		this.getUl().setMaximumSize(width, height);
 	}
 
-	public void setMinimumSize(WLength width, WLength height) {
+	public void setMinimumSize(final WLength width, final WLength height) {
 		super.setMinimumSize(width, height);
 		this.getUl().setMinimumSize(width, height);
 	}

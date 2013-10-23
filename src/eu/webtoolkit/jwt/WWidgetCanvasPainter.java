@@ -66,7 +66,8 @@ class WWidgetCanvasPainter extends WWidgetPainter {
 		;
 	}
 
-	public void updateContents(List<DomElement> result, WPaintDevice device) {
+	public void updateContents(final List<DomElement> result,
+			WPaintDevice device) {
 		WCanvasPaintDevice canvasDevice = ((device) instanceof WCanvasPaintDevice ? (WCanvasPaintDevice) (device)
 				: null);
 		if (this.widget_.sizeChanged_) {

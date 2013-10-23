@@ -31,7 +31,8 @@ public class WDropEvent {
 	/**
 	 * Constructor.
 	 */
-	public WDropEvent(WObject source, String mimeType, WMouseEvent mouseEvent) {
+	public WDropEvent(WObject source, final String mimeType,
+			final WMouseEvent mouseEvent) {
 		this.dropSource_ = source;
 		this.dropMimeType_ = mimeType;
 		this.mouseEvent_ = mouseEvent;
@@ -64,26 +65,27 @@ public class WDropEvent {
 
 	private WObject dropSource_;
 	private String dropMimeType_;
-	private WMouseEvent mouseEvent_;
+	private final WMouseEvent mouseEvent_;
 
-	static String concat(String prefix, int prefixLength, String s2) {
+	static String concat(final String prefix, int prefixLength, String s2) {
 		return prefix + s2;
 	}
 
-	static int asInt(String v) {
+	static int asInt(final String v) {
 		return Integer.parseInt(v);
 	}
 
-	static int asUInt(String v) {
+	static int asUInt(final String v) {
 		return Integer.parseInt(v);
 	}
 
-	static int parseIntParameter(WebRequest request, String name, int ifMissing) {
+	static int parseIntParameter(final WebRequest request, final String name,
+			int ifMissing) {
 		String p;
 		if ((p = request.getParameter(name)) != null) {
 			try {
 				return asInt(p);
-			} catch (NumberFormatException ee) {
+			} catch (final NumberFormatException ee) {
 				logger.error(new StringWriter().append(
 						"Could not cast event property '").append(name).append(
 						": ").append(p).append("' to int").toString());
@@ -94,7 +96,7 @@ public class WDropEvent {
 		}
 	}
 
-	static String getStringParameter(WebRequest request, String name) {
+	static String getStringParameter(final WebRequest request, final String name) {
 		String p;
 		if ((p = request.getParameter(name)) != null) {
 			return p;
@@ -103,7 +105,7 @@ public class WDropEvent {
 		}
 	}
 
-	static void decodeTouches(String str, List<Touch> result) {
+	static void decodeTouches(String str, final List<Touch> result) {
 		if (str.length() == 0) {
 			return;
 		}
@@ -123,7 +125,7 @@ public class WDropEvent {
 								.get(i + 6)), asInt(s.get(i + 7)), asInt(s
 								.get(i + 8))));
 			}
-		} catch (NumberFormatException ee) {
+		} catch (final NumberFormatException ee) {
 			logger.error(new StringWriter().append(
 					"Could not parse touches array '").append(str).append("'")
 					.toString());

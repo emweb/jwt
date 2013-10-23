@@ -95,7 +95,7 @@ public class WRadioButton extends WAbstractToggleButton {
 	/**
 	 * Creates an unchecked radio button with given text and optional parent.
 	 */
-	public WRadioButton(CharSequence text, WContainerWidget parent) {
+	public WRadioButton(final CharSequence text, WContainerWidget parent) {
 		super(text, parent);
 		this.buttonGroup_ = null;
 		this.setFormObject(true);
@@ -107,7 +107,7 @@ public class WRadioButton extends WAbstractToggleButton {
 	 * Calls {@link #WRadioButton(CharSequence text, WContainerWidget parent)
 	 * this(text, (WContainerWidget)null)}
 	 */
-	public WRadioButton(CharSequence text) {
+	public WRadioButton(final CharSequence text) {
 		this(text, (WContainerWidget) null);
 	}
 
@@ -139,7 +139,7 @@ public class WRadioButton extends WAbstractToggleButton {
 		this.buttonGroup_ = group;
 	}
 
-	void updateInput(DomElement input, boolean all) {
+	void updateInput(final DomElement input, boolean all) {
 		if (all) {
 			input.setAttribute("type", "radio");
 			if (this.buttonGroup_ != null) {
@@ -149,19 +149,19 @@ public class WRadioButton extends WAbstractToggleButton {
 		}
 	}
 
-	void getFormObjects(Map<String, WObject> formObjects) {
+	void getFormObjects(final Map<String, WObject> formObjects) {
 		if (this.buttonGroup_ != null) {
 			formObjects.put(this.buttonGroup_.getId(), this.buttonGroup_);
 		}
 		super.getFormObjects(formObjects);
 	}
 
-	void setFormData(WObject.FormData formData) {
+	void setFormData(final WObject.FormData formData) {
 		if (this.stateChanged_ || this.isReadOnly()) {
 			return;
 		}
 		if (!(formData.values.length == 0)) {
-			String value = formData.values[0];
+			final String value = formData.values[0];
 			if (value.equals(this.getId())) {
 				if (this.buttonGroup_ != null) {
 					this.buttonGroup_.uncheckOthers(this);

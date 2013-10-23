@@ -23,13 +23,13 @@ class MarkerRenderIterator extends SeriesIterator {
 	private static Logger logger = LoggerFactory
 			.getLogger(MarkerRenderIterator.class);
 
-	public MarkerRenderIterator(WChart2DRenderer renderer) {
+	public MarkerRenderIterator(final WChart2DRenderer renderer) {
 		super();
 		this.renderer_ = renderer;
 		this.marker_ = new WPainterPath();
 	}
 
-	public boolean startSeries(WDataSeries series, double groupWidth,
+	public boolean startSeries(final WDataSeries series, double groupWidth,
 			int numBarGroups, int currentBarGroup) {
 		this.marker_.assign(new WPainterPath());
 		if (series.getMarker() != MarkerType.NoMarker) {
@@ -49,13 +49,13 @@ class MarkerRenderIterator extends SeriesIterator {
 		}
 	}
 
-	public void newValue(WDataSeries series, double x, double y, double stackY,
-			WModelIndex xIndex, WModelIndex yIndex) {
+	public void newValue(final WDataSeries series, double x, double y,
+			double stackY, final WModelIndex xIndex, final WModelIndex yIndex) {
 		if (!Double.isNaN(x) && !Double.isNaN(y)) {
 			WPointF p = this.renderer_.map(x, y, series.getAxis(), this
 					.getCurrentXSegment(), this.getCurrentYSegment());
 			if (!this.marker_.isEmpty()) {
-				WPainter painter = this.renderer_.getPainter();
+				final WPainter painter = this.renderer_.getPainter();
 				painter.save();
 				painter.translate(this.hv(p));
 				WPen pen = series.getMarkerPen().clone();
@@ -87,7 +87,7 @@ class MarkerRenderIterator extends SeriesIterator {
 		}
 	}
 
-	public WPointF hv(WPointF p) {
+	public WPointF hv(final WPointF p) {
 		return this.renderer_.hv(p);
 	}
 
@@ -95,12 +95,13 @@ class MarkerRenderIterator extends SeriesIterator {
 		return this.renderer_.hv(x, y);
 	}
 
-	private WChart2DRenderer renderer_;
+	private final WChart2DRenderer renderer_;
 	private WPainterPath marker_;
 	private boolean needRestore_;
 
-	private void setMarkerSize(WPainter painter, WModelIndex xIndex,
-			WModelIndex yIndex, double markerSize) {
+	private void setMarkerSize(final WPainter painter,
+			final WModelIndex xIndex, final WModelIndex yIndex,
+			double markerSize) {
 		Object scale = new Object();
 		double dScale = 1;
 		if ((yIndex != null)) {

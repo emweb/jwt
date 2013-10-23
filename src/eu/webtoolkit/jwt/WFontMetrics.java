@@ -38,7 +38,7 @@ public class WFontMetrics {
 	/**
 	 * Creates a font metrics information object.
 	 */
-	public WFontMetrics(WFont font, double leading, double ascent,
+	public WFontMetrics(final WFont font, double leading, double ascent,
 			double descent) {
 		this.font_ = font;
 		this.leading_ = leading;

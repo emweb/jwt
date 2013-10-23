@@ -79,7 +79,7 @@ public class WDateValidator extends WValidator {
 	 * locale&apos;s format.
 	 * <p>
 	 */
-	public WDateValidator(WDate bottom, WDate top, WObject parent) {
+	public WDateValidator(final WDate bottom, final WDate top, WObject parent) {
 		super(parent);
 		this.formats_ = new ArrayList<String>();
 		this.bottom_ = bottom;
@@ -97,7 +97,7 @@ public class WDateValidator extends WValidator {
 	 * Calls {@link #WDateValidator(WDate bottom, WDate top, WObject parent)
 	 * this(bottom, top, (WObject)null)}
 	 */
-	public WDateValidator(WDate bottom, WDate top) {
+	public WDateValidator(final WDate bottom, final WDate top) {
 		this(bottom, top, (WObject) null);
 	}
 
@@ -108,7 +108,7 @@ public class WDateValidator extends WValidator {
 	 * <p>
 	 * The syntax for <code>format</code> is as in {@link }
 	 */
-	public WDateValidator(String format, WObject parent) {
+	public WDateValidator(final String format, WObject parent) {
 		super(parent);
 		this.formats_ = new ArrayList<String>();
 		this.bottom_ = null;
@@ -125,7 +125,7 @@ public class WDateValidator extends WValidator {
 	 * Calls {@link #WDateValidator(String format, WObject parent) this(format,
 	 * (WObject)null)}
 	 */
-	public WDateValidator(String format) {
+	public WDateValidator(final String format) {
 		this(format, (WObject) null);
 	}
 
@@ -137,7 +137,8 @@ public class WDateValidator extends WValidator {
 	 * <p>
 	 * The syntax for <code>format</code> is as in {@link }
 	 */
-	public WDateValidator(String format, WDate bottom, WDate top, WObject parent) {
+	public WDateValidator(final String format, final WDate bottom,
+			final WDate top, WObject parent) {
 		super(parent);
 		this.formats_ = new ArrayList<String>();
 		this.bottom_ = bottom;
@@ -155,7 +156,8 @@ public class WDateValidator extends WValidator {
 	 * {@link #WDateValidator(String format, WDate bottom, WDate top, WObject parent)
 	 * this(format, bottom, top, (WObject)null)}
 	 */
-	public WDateValidator(String format, WDate bottom, WDate top) {
+	public WDateValidator(final String format, final WDate bottom,
+			final WDate top) {
 		this(format, bottom, top, (WObject) null);
 	}
 
@@ -164,7 +166,7 @@ public class WDateValidator extends WValidator {
 	 * <p>
 	 * The default is a null date constructed using WDate().
 	 */
-	public void setBottom(WDate bottom) {
+	public void setBottom(final WDate bottom) {
 		if (!(this.bottom_ == bottom || (this.bottom_ != null && this.bottom_
 				.equals(bottom)))) {
 			this.bottom_ = bottom;
@@ -184,7 +186,7 @@ public class WDateValidator extends WValidator {
 	 * <p>
 	 * The default is a null date constructed using WDate().
 	 */
-	public void setTop(WDate top) {
+	public void setTop(final WDate top) {
 		if (!(this.top_ == top || (this.top_ != null && this.top_.equals(top)))) {
 			this.top_ = top;
 			this.repaint();
@@ -202,7 +204,7 @@ public class WDateValidator extends WValidator {
 	 * Sets the date format used to parse date strings.
 	 * <p>
 	 */
-	public void setFormat(String format) {
+	public void setFormat(final String format) {
 		if (this.formats_.isEmpty() || !this.formats_.get(0).equals(format)) {
 			this.formats_.clear();
 			this.formats_.add(format);
@@ -223,7 +225,7 @@ public class WDateValidator extends WValidator {
 	/**
 	 * Sets the date formats used to parse date strings.
 	 */
-	public void setFormats(List<String> formats) {
+	public void setFormats(final List<String> formats) {
 		Utils.copyList(formats, this.formats_);
 		this.repaint();
 	}
@@ -242,7 +244,7 @@ public class WDateValidator extends WValidator {
 	 * field, or represents a date in the given format, and within the valid
 	 * range.
 	 */
-	public WValidator.Result validate(String input) {
+	public WValidator.Result validate(final String input) {
 		if (input.length() == 0) {
 			return super.validate(input);
 		}
@@ -266,7 +268,7 @@ public class WDateValidator extends WValidator {
 					}
 					return new WValidator.Result(WValidator.State.Valid);
 				}
-			} catch (RuntimeException e) {
+			} catch (final RuntimeException e) {
 				logger.warn(new StringWriter().append("validate(): ").append(
 						e.toString()).toString());
 			}
@@ -275,14 +277,14 @@ public class WDateValidator extends WValidator {
 				.getInvalidNotADateText());
 	}
 
-	// public void createExtConfig(Writer config) throws IOException;
+	// public void createExtConfig(final Writer config) throws IOException;
 	/**
 	 * Sets the message to display when the input is not a date.
 	 * <p>
 	 * The default message is &quot;The date must be of the format {1}&quot;,
 	 * with as first argument the format string.
 	 */
-	public void setInvalidNotADateText(CharSequence text) {
+	public void setInvalidNotADateText(final CharSequence text) {
 		this.notADateText_ = WString.toWString(text);
 	}
 
@@ -309,7 +311,7 @@ public class WDateValidator extends WValidator {
 	 * The default message is &quot;The date must be between {1} and {2}&quot;
 	 * or &quot;The date must be after {1}&quot;.
 	 */
-	public void setInvalidTooEarlyText(CharSequence text) {
+	public void setInvalidTooEarlyText(final CharSequence text) {
 		this.tooEarlyText_ = WString.toWString(text);
 		this.repaint();
 	}
@@ -350,7 +352,7 @@ public class WDateValidator extends WValidator {
 	 * is &quot;The date must be between {1} and {2}&quot; or &quot;The date
 	 * must be before {2}&quot;.
 	 */
-	public void setInvalidTooLateText(CharSequence text) {
+	public void setInvalidTooLateText(final CharSequence text) {
 		this.tooLateText_ = WString.toWString(text);
 		this.repaint();
 	}

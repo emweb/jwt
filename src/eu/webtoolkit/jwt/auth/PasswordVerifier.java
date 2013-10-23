@@ -77,7 +77,7 @@ public class PasswordVerifier implements PasswordService.AbstractVerifier {
 		return this.hashFunctions_;
 	}
 
-	public boolean needsUpdate(PasswordHash hash) {
+	public boolean needsUpdate(final PasswordHash hash) {
 		return !hash.getFunction().equals(
 				this.getHashFunctions().get(0).getName());
 	}
@@ -91,11 +91,11 @@ public class PasswordVerifier implements PasswordService.AbstractVerifier {
 	 * 
 	 * @see PasswordVerifier#verify(CharSequence password, PasswordHash hash)
 	 */
-	public PasswordHash hashPassword(CharSequence password) {
+	public PasswordHash hashPassword(final CharSequence password) {
 		String msg = password.toString();
 		String salt = AuthUtils.createSalt(this.saltLength_);
 		salt = Utils.base64Encode(salt);
-		HashFunction f = this.hashFunctions_.get(0);
+		final HashFunction f = this.hashFunctions_.get(0);
 		String hash = f.compute(msg, salt);
 		return new PasswordHash(f.getName(), salt, hash);
 	}
@@ -108,9 +108,9 @@ public class PasswordVerifier implements PasswordService.AbstractVerifier {
 	 * 
 	 * @see PasswordVerifier#hashPassword(CharSequence password)
 	 */
-	public boolean verify(CharSequence password, PasswordHash hash) {
+	public boolean verify(final CharSequence password, final PasswordHash hash) {
 		for (int i = 0; i < this.hashFunctions_.size(); ++i) {
-			HashFunction f = this.hashFunctions_.get(i);
+			final HashFunction f = this.hashFunctions_.get(i);
 			if (f.getName().equals(hash.getFunction())) {
 				return f.verify(password.toString(), hash.getSalt(), hash
 						.getValue());

@@ -81,7 +81,7 @@ public class WPen {
 	 * <p>
 	 * The pen color is set to <code>color</code>.
 	 */
-	public WPen(WColor color) {
+	public WPen(final WColor color) {
 		this.penStyle_ = PenStyle.SolidLine;
 		this.penCapStyle_ = PenCapStyle.SquareCap;
 		this.penJoinStyle_ = PenJoinStyle.BevelJoin;
@@ -99,7 +99,7 @@ public class WPen {
 	 * <p>
 	 * The pen&apos;s color is defined by the gradient <code>color</code>.
 	 */
-	public WPen(WGradient gradient) {
+	public WPen(final WGradient gradient) {
 		this.penStyle_ = PenStyle.SolidLine;
 		this.penCapStyle_ = PenCapStyle.SquareCap;
 		this.penJoinStyle_ = PenJoinStyle.BevelJoin;
@@ -128,7 +128,7 @@ public class WPen {
 	 * <p>
 	 * Returns <code>true</code> if the pens are exactly the same.
 	 */
-	public boolean equals(WPen other) {
+	public boolean equals(final WPen other) {
 		return this.penStyle_ == other.penStyle_
 				&& this.penCapStyle_ == other.penCapStyle_
 				&& this.penJoinStyle_ == other.penJoinStyle_
@@ -201,7 +201,7 @@ public class WPen {
 	 * A pen width <code>must</code> be specified using
 	 * {@link WLength.Unit#Pixel} units.
 	 */
-	public void setWidth(WLength width) {
+	public void setWidth(final WLength width) {
 		this.width_ = width;
 	}
 
@@ -220,7 +220,7 @@ public class WPen {
 	 * <p>
 	 * <i>{@link WPen#setGradient(WGradient gradient) setGradient()}</i>
 	 */
-	public void setColor(WColor color) {
+	public void setColor(final WColor color) {
 		this.color_ = color;
 		this.gradient_ = new WGradient();
 	}
@@ -241,7 +241,7 @@ public class WPen {
 	 * 
 	 * @see WPen#setColor(WColor color)
 	 */
-	public void setGradient(WGradient gradient) {
+	public void setGradient(final WGradient gradient) {
 		this.gradient_ = gradient;
 	}
 

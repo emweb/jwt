@@ -37,8 +37,8 @@ public class FormBaseModel extends WFormModel {
 	/**
 	 * Constructor.
 	 */
-	public FormBaseModel(AuthService baseAuth, AbstractUserDatabase users,
-			WObject parent) {
+	public FormBaseModel(final AuthService baseAuth,
+			final AbstractUserDatabase users, WObject parent) {
 		super(parent);
 		this.baseAuth_ = baseAuth;
 		this.users_ = users;
@@ -55,7 +55,8 @@ public class FormBaseModel extends WFormModel {
 	 * {@link #FormBaseModel(AuthService baseAuth, AbstractUserDatabase users, WObject parent)
 	 * this(baseAuth, users, (WObject)null)}
 	 */
-	public FormBaseModel(AuthService baseAuth, AbstractUserDatabase users) {
+	public FormBaseModel(final AuthService baseAuth,
+			final AbstractUserDatabase users) {
 		this(baseAuth, users, (WObject) null);
 	}
 
@@ -120,7 +121,7 @@ public class FormBaseModel extends WFormModel {
 	 * 
 	 * @see FormBaseModel#addOAuth(OAuthService auth)
 	 */
-	public void addOAuth(List<OAuthService> auth) {
+	public void addOAuth(final List<OAuthService> auth) {
 		this.oAuth_.addAll(auth);
 	}
 
@@ -146,15 +147,15 @@ public class FormBaseModel extends WFormModel {
 		this.setValid(field, WString.Empty);
 	}
 
-	protected void setValid(String field, CharSequence message) {
+	protected void setValid(String field, final CharSequence message) {
 		this.setValidation(field,
 				new WValidator.Result(WValidator.State.Valid,
 						(message.length() == 0) ? WString.tr("Wt.Auth.valid")
 								: message));
 	}
 
-	private AuthService baseAuth_;
-	private AbstractUserDatabase users_;
+	private final AuthService baseAuth_;
+	private final AbstractUserDatabase users_;
 	private AbstractPasswordService passwordAuth_;
 	private List<OAuthService> oAuth_;
 }

@@ -100,7 +100,7 @@ public class WTableRow extends WObject {
 	 * @see WTableRow#getHeight()
 	 * @see WWidget#resize(WLength width, WLength height)
 	 */
-	public void setHeight(WLength height) {
+	public void setHeight(final WLength height) {
 		this.height_ = height;
 		this.table_.repaintRow(this);
 	}
@@ -124,7 +124,7 @@ public class WTableRow extends WObject {
 	 * @see WTableRow#getStyleClass()
 	 * @see WWidget#setStyleClass(String styleClass)
 	 */
-	public void setStyleClass(String style) {
+	public void setStyleClass(final String style) {
 		if (WWebWidget.canOptimizeUpdates() && style.equals(this.styleClass_)) {
 			return;
 		}
@@ -143,7 +143,7 @@ public class WTableRow extends WObject {
 		return this.styleClass_;
 	}
 
-	public void addStyleClass(String style) {
+	public void addStyleClass(final String style) {
 		String currentClass = this.styleClass_;
 		Set<String> classes = new HashSet<String>();
 		StringUtils.split(classes, currentClass, " ", true);
@@ -153,7 +153,7 @@ public class WTableRow extends WObject {
 		}
 	}
 
-	public void removeStyleClass(String style) {
+	public void removeStyleClass(final String style) {
 		String currentClass = this.styleClass_;
 		Set<String> classes = new HashSet<String>();
 		StringUtils.split(classes, currentClass, " ", true);
@@ -163,7 +163,7 @@ public class WTableRow extends WObject {
 		}
 	}
 
-	public void toggleStyleClass(String style, boolean add) {
+	public void toggleStyleClass(final String style, boolean add) {
 		if (add) {
 			this.addStyleClass(style);
 		} else {
@@ -231,7 +231,7 @@ public class WTableRow extends WObject {
 	 * 
 	 * @see WObject#getId()
 	 */
-	public void setId(String id) {
+	public void setId(final String id) {
 		if (!(this.id_ != null)) {
 			this.id_ = "";
 		}
@@ -276,7 +276,7 @@ public class WTableRow extends WObject {
 	private boolean hiddenChanged_;
 	private boolean wasHidden_;
 
-	void updateDom(DomElement element, boolean all) {
+	void updateDom(final DomElement element, boolean all) {
 		if (this.height_ != null) {
 			element.setProperty(Property.PropertyStyleHeight, this.height_
 					.getCssText());

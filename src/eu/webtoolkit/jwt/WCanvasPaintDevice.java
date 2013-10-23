@@ -44,8 +44,8 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 	/**
 	 * Create a canvas paint device.
 	 */
-	public WCanvasPaintDevice(WLength width, WLength height, WObject parent,
-			boolean paintUpdate) {
+	public WCanvasPaintDevice(final WLength width, final WLength height,
+			WObject parent, boolean paintUpdate) {
 		super(parent);
 		this.width_ = width;
 		this.height_ = height;
@@ -105,7 +105,7 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 	 * {@link #WCanvasPaintDevice(WLength width, WLength height, WObject parent, boolean paintUpdate)
 	 * this(width, height, (WObject)null, false)}
 	 */
-	public WCanvasPaintDevice(WLength width, WLength height) {
+	public WCanvasPaintDevice(final WLength width, final WLength height) {
 		this(width, height, (WObject) null, false);
 	}
 
@@ -116,7 +116,8 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 	 * {@link #WCanvasPaintDevice(WLength width, WLength height, WObject parent, boolean paintUpdate)
 	 * this(width, height, parent, false)}
 	 */
-	public WCanvasPaintDevice(WLength width, WLength height, WObject parent) {
+	public WCanvasPaintDevice(final WLength width, final WLength height,
+			WObject parent) {
 		this(width, height, parent, false);
 	}
 
@@ -133,7 +134,7 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 		setChanged(EnumSet.of(flag, flags));
 	}
 
-	public void drawArc(WRectF rect, double startAngle, double spanAngle) {
+	public void drawArc(final WRectF rect, double startAngle, double spanAngle) {
 		this.finishPath();
 		if (rect.getWidth() < EPSILON || rect.getHeight() < EPSILON) {
 			return;
@@ -156,7 +157,7 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 					* 1 / Math.min(sx, sy);
 			r = rect.getHeight() / 2;
 		}
-		WPen pen = this.getPainter().getPen();
+		final WPen pen = this.getPainter().getPen();
 		if (pen.getStyle() != PenStyle.NoPen) {
 			lw = this.getPainter().normalizedPenWidth(pen.getWidth(), true)
 					.getValue()
@@ -188,8 +189,8 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 		}
 	}
 
-	public void drawImage(WRectF rect, String imgUri, int imgWidth,
-			int imgHeight, WRectF sourceRect) {
+	public void drawImage(final WRectF rect, final String imgUri, int imgWidth,
+			int imgHeight, final WRectF sourceRect) {
 		this.finishPath();
 		this.renderStateChanges(true);
 		int imageIndex = this.createImage(imgUri);
@@ -216,7 +217,7 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 		this.drawPath(path);
 	}
 
-	public void drawPath(WPainterPath path) {
+	public void drawPath(final WPainterPath path) {
 		this.renderStateChanges(false);
 		this.drawPlainPath(this.js_, path);
 		if (this.currentBrush_.getColor().getAlpha() != 255
@@ -225,8 +226,8 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 		}
 	}
 
-	public void drawText(WRectF rect, EnumSet<AlignmentFlag> flags,
-			TextFlag textFlag, CharSequence text) {
+	public void drawText(final WRectF rect, EnumSet<AlignmentFlag> flags,
+			TextFlag textFlag, final CharSequence text) {
 		if (textFlag == TextFlag.TextWordWrap) {
 			throw new WException(
 					"WCanvasPaintDevice::drawText() TextWordWrap is not supported");
@@ -436,16 +437,16 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 		}
 	}
 
-	public WTextItem measureText(CharSequence text, double maxWidth,
+	public WTextItem measureText(final CharSequence text, double maxWidth,
 			boolean wordWrap) {
 		throw new WException("WCanvasPaintDevice::measureText() not supported");
 	}
 
-	public final WTextItem measureText(CharSequence text) {
+	public final WTextItem measureText(final CharSequence text) {
 		return measureText(text, -1, false);
 	}
 
-	public final WTextItem measureText(CharSequence text, double maxWidth) {
+	public final WTextItem measureText(final CharSequence text, double maxWidth) {
 		return measureText(text, maxWidth, false);
 	}
 
@@ -472,7 +473,7 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 		return this.painter_ != null;
 	}
 
-	void render(String canvasId, DomElement text) {
+	void render(final String canvasId, DomElement text) {
 		String canvasVar = "Wt3_3_1.getElement('" + canvasId + "')";
 		StringWriter tmp = new StringWriter();
 		tmp.append("if(").append(canvasVar).append(".getContext){");
@@ -565,7 +566,8 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 		}
 	}
 
-	private void renderTransform(StringWriter s, WTransform t, boolean invert) {
+	private void renderTransform(final StringWriter s, final WTransform t,
+			boolean invert) {
 		if (!t.isIdentity()) {
 			char[] buf = new char[30];
 			WTransform.TRSRDecomposition d = new WTransform.TRSRDecomposition();
@@ -614,7 +616,7 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 		}
 	}
 
-	private final void renderTransform(StringWriter s, WTransform t) {
+	private final void renderTransform(final StringWriter s, final WTransform t) {
 		renderTransform(s, t, false);
 	}
 
@@ -653,7 +655,7 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 					WPaintDevice.ChangeFlag.Clipping).isEmpty()) {
 				this.finishPath();
 				this.js_.append("ctx.restore();ctx.restore();ctx.save();");
-				WTransform t = this.getPainter().getClipPathTransform();
+				final WTransform t = this.getPainter().getClipPathTransform();
 				this.renderTransform(this.js_, t);
 				if (this.getPainter().hasClipping()) {
 					this.pathTranslation_.setX(0);
@@ -694,7 +696,7 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 								double a22 = f.getM11() / det;
 								double fdx = f.getDx() * a11 + f.getDy() * a21;
 								double fdy = f.getDx() * a12 + f.getDy() * a22;
-								WTransform g = this.currentTransform_;
+								final WTransform g = this.currentTransform_;
 								double gdx = g.getDx() * a11 + g.getDy() * a21;
 								double gdy = g.getDx() * a12 + g.getDy() * a22;
 								double dx = fdx - gdx;
@@ -850,13 +852,13 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 	}
 
 	// private void resetPathTranslation() ;
-	private void drawPlainPath(StringWriter out, WPainterPath path) {
+	private void drawPlainPath(final StringWriter out, final WPainterPath path) {
 		char[] buf = new char[30];
 		if (!this.busyWithPath_) {
 			out.append("ctx.beginPath();");
 			this.busyWithPath_ = true;
 		}
-		List<WPainterPath.Segment> segments = path.getSegments();
+		final List<WPainterPath.Segment> segments = path.getSegments();
 		if (segments.size() > 0
 				&& segments.get(0).getType() != WPainterPath.Segment.Type.MoveTo) {
 			out.append("ctx.moveTo(0,0);");
@@ -961,7 +963,7 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 		}
 	}
 
-	private int createImage(String imgUri) {
+	private int createImage(final String imgUri) {
 		this.images_.add(imgUri);
 		return this.images_.size() - 1;
 	}
@@ -993,10 +995,10 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 		return Math.abs(d1 - d2) < 1E-5;
 	}
 
-	static String defineGradient(WGradient gradient, StringWriter js) {
+	static String defineGradient(final WGradient gradient, final StringWriter js) {
 		String jsRef = "grad";
 		if (gradient.getStyle() == GradientStyle.LinearGradient) {
-			WLineF gradVec = gradient.getLinearGradientVector();
+			final WLineF gradVec = gradient.getLinearGradientVector();
 			js.append("var ").append(jsRef).append(
 					" = ctx.createLinearGradient(").append(
 					String.valueOf(gradVec.getX1())).append(", ").append(

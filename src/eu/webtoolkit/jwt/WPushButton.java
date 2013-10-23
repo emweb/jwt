@@ -64,7 +64,7 @@ public class WPushButton extends WFormWidget {
 	 * <p>
 	 * The default text format is PlainText.
 	 */
-	public WPushButton(CharSequence text, WContainerWidget parent) {
+	public WPushButton(final CharSequence text, WContainerWidget parent) {
 		super(parent);
 		this.linkState_ = new WAnchor.LinkState();
 		this.text_ = new WText.RichText();
@@ -81,7 +81,7 @@ public class WPushButton extends WFormWidget {
 	 * Calls {@link #WPushButton(CharSequence text, WContainerWidget parent)
 	 * this(text, (WContainerWidget)null)}
 	 */
-	public WPushButton(CharSequence text) {
+	public WPushButton(final CharSequence text) {
 		this(text, (WContainerWidget) null);
 	}
 
@@ -221,7 +221,7 @@ public class WPushButton extends WFormWidget {
 	 * 
 	 * @see WPushButton#setTextFormat(TextFormat textFormat)
 	 */
-	public boolean setText(CharSequence text) {
+	public boolean setText(final CharSequence text) {
 		if (canOptimizeUpdates() && text.equals(this.text_.text)) {
 			return true;
 		}
@@ -276,7 +276,7 @@ public class WPushButton extends WFormWidget {
 	 * <p>
 	 * The icon is placed to the left of the text.
 	 */
-	public void setIcon(WLink link) {
+	public void setIcon(final WLink link) {
 		if (canOptimizeUpdates() && link.equals(this.icon_)) {
 			return;
 		}
@@ -308,7 +308,7 @@ public class WPushButton extends WFormWidget {
 	 * {@link WInteractWidget#clicked() WInteractWidget#clicked()} signal to
 	 * react to a click event.
 	 */
-	public void setLink(WLink link) {
+	public void setLink(final WLink link) {
 		if (link.equals(this.linkState_.link)) {
 			return;
 		}
@@ -342,7 +342,7 @@ public class WPushButton extends WFormWidget {
 	 * @deprecated Use {@link WPushButton#setLink(WLink link) setLink()}
 	 *             insteadd.
 	 */
-	public void setRef(String url) {
+	public void setRef(final String url) {
 		this.setLink(new WLink(url));
 	}
 
@@ -415,7 +415,7 @@ public class WPushButton extends WFormWidget {
 	 * <p>
 	 * Has no effect, since a button has not value.
 	 */
-	public void setValueText(String value) {
+	public void setValueText(final String value) {
 	}
 
 	/**
@@ -505,7 +505,7 @@ public class WPushButton extends WFormWidget {
 	BitSet flags_;
 	private WPopupMenu popupMenu_;
 
-	void updateDom(DomElement element, boolean all) {
+	void updateDom(final DomElement element, boolean all) {
 		if (all && element.getType() == DomElementType.DomElement_BUTTON) {
 			element.setAttribute("type", "button");
 		}
@@ -566,7 +566,7 @@ public class WPushButton extends WFormWidget {
 		super.propagateRenderOk(deep);
 	}
 
-	void getDomChanges(List<DomElement> result, WApplication app) {
+	void getDomChanges(final List<DomElement> result, WApplication app) {
 		if (this.flags_.get(BIT_ICON_CHANGED)
 				&& this.flags_.get(BIT_ICON_RENDERED)) {
 			DomElement image = DomElement.getForUpdate("im"
@@ -616,7 +616,7 @@ public class WPushButton extends WFormWidget {
 		this.repaint();
 	}
 
-	private void renderHRef(DomElement element) {
+	private void renderHRef(final DomElement element) {
 		if (!this.linkState_.link.isNull() && !this.isDisabled()) {
 			WApplication app = WApplication.getInstance();
 			if (!(this.linkState_.clickJS != null)) {

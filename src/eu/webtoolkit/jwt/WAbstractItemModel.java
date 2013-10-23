@@ -151,7 +151,7 @@ public abstract class WAbstractItemModel extends WObject {
 	 * 
 	 * @see WAbstractItemModel#getRowCount(WModelIndex parent)
 	 */
-	public abstract int getColumnCount(WModelIndex parent);
+	public abstract int getColumnCount(final WModelIndex parent);
 
 	/**
 	 * Returns the number of columns.
@@ -170,7 +170,7 @@ public abstract class WAbstractItemModel extends WObject {
 	 * 
 	 * @see WAbstractItemModel#getColumnCount(WModelIndex parent)
 	 */
-	public abstract int getRowCount(WModelIndex parent);
+	public abstract int getRowCount(final WModelIndex parent);
 
 	/**
 	 * Returns the number of rows.
@@ -181,11 +181,11 @@ public abstract class WAbstractItemModel extends WObject {
 		return getRowCount(null);
 	}
 
-	boolean canFetchMore(WModelIndex parent) {
+	boolean canFetchMore(final WModelIndex parent) {
 		return false;
 	}
 
-	void fetchMore(WModelIndex parent) {
+	void fetchMore(final WModelIndex parent) {
 	}
 
 	/**
@@ -197,7 +197,7 @@ public abstract class WAbstractItemModel extends WObject {
 	 * 
 	 * @see ItemFlag
 	 */
-	public EnumSet<ItemFlag> getFlags(WModelIndex index) {
+	public EnumSet<ItemFlag> getFlags(final WModelIndex index) {
 		return EnumSet.of(ItemFlag.ItemIsSelectable);
 	}
 
@@ -234,7 +234,7 @@ public abstract class WAbstractItemModel extends WObject {
 	 * @see WAbstractItemModel#getRowCount(WModelIndex parent)
 	 * @see WAbstractItemModel#getColumnCount(WModelIndex parent)
 	 */
-	public boolean hasChildren(WModelIndex index) {
+	public boolean hasChildren(final WModelIndex index) {
 		return this.getRowCount(index) > 0 && this.getColumnCount(index) > 0;
 	}
 
@@ -257,7 +257,7 @@ public abstract class WAbstractItemModel extends WObject {
 	 * 
 	 * @see WAbstractItemModel#getIndex(int row, int column, WModelIndex parent)
 	 */
-	public abstract WModelIndex getParent(WModelIndex index);
+	public abstract WModelIndex getParent(final WModelIndex index);
 
 	/**
 	 * Returns data at a specific model index.
@@ -278,7 +278,7 @@ public abstract class WAbstractItemModel extends WObject {
 	 * @see WAbstractItemModel#setData(WModelIndex index, Object value, int
 	 *      role)
 	 */
-	public abstract Object getData(WModelIndex index, int role);
+	public abstract Object getData(final WModelIndex index, int role);
 
 	/**
 	 * Returns data at a specific model index.
@@ -286,7 +286,7 @@ public abstract class WAbstractItemModel extends WObject {
 	 * Returns {@link #getData(WModelIndex index, int role) getData(index,
 	 * ItemDataRole.DisplayRole)}
 	 */
-	public final Object getData(WModelIndex index) {
+	public final Object getData(final WModelIndex index) {
 		return getData(index, ItemDataRole.DisplayRole);
 	}
 
@@ -299,7 +299,7 @@ public abstract class WAbstractItemModel extends WObject {
 	 * 
 	 * @see WAbstractItemModel#getData(WModelIndex index, int role)
 	 */
-	public SortedMap<Integer, Object> getItemData(WModelIndex index) {
+	public SortedMap<Integer, Object> getItemData(final WModelIndex index) {
 		SortedMap<Integer, Object> result = new TreeMap<Integer, Object>();
 		if ((index != null)) {
 			for (int i = 0; i <= ItemDataRole.BarBrushColorRole; ++i) {
@@ -369,7 +369,8 @@ public abstract class WAbstractItemModel extends WObject {
 	 * 
 	 * @see WAbstractItemModel#getParent(WModelIndex index)
 	 */
-	public abstract WModelIndex getIndex(int row, int column, WModelIndex parent);
+	public abstract WModelIndex getIndex(int row, int column,
+			final WModelIndex parent);
 
 	/**
 	 * Returns the child index for the given row and column.
@@ -390,8 +391,8 @@ public abstract class WAbstractItemModel extends WObject {
 	 * around from the start. If hits is not -1, then at most that number of
 	 * hits are returned.
 	 */
-	public List<WModelIndex> match(WModelIndex start, int role, Object value,
-			int hits, MatchOptions flags) {
+	public List<WModelIndex> match(final WModelIndex start, int role,
+			final Object value, int hits, MatchOptions flags) {
 		List<WModelIndex> result = new ArrayList<WModelIndex>();
 		final int rc = this.getRowCount(start.getParent());
 		for (int i = 0; i < rc; ++i) {
@@ -432,7 +433,8 @@ public abstract class WAbstractItemModel extends WObject {
 	 * @see WAbstractItemModel#getIndex(int row, int column, WModelIndex parent)
 	 * @see WAbstractItemModel#getData(WModelIndex index, int role)
 	 */
-	public Object getData(int row, int column, int role, WModelIndex parent) {
+	public Object getData(int row, int column, int role,
+			final WModelIndex parent) {
 		return this.getData(this.getIndex(row, column, parent), role);
 	}
 
@@ -473,7 +475,7 @@ public abstract class WAbstractItemModel extends WObject {
 	 * @see WAbstractItemModel#getRowCount(WModelIndex parent)
 	 * @see WAbstractItemModel#getColumnCount(WModelIndex parent)
 	 */
-	public boolean hasIndex(int row, int column, WModelIndex parent) {
+	public boolean hasIndex(int row, int column, final WModelIndex parent) {
 		return row >= 0 && column >= 0 && row < this.getRowCount(parent)
 				&& column < this.getColumnCount(parent);
 	}
@@ -515,7 +517,7 @@ public abstract class WAbstractItemModel extends WObject {
 	 *      int last)
 	 * @see WAbstractItemModel#endInsertColumns()
 	 */
-	public boolean insertColumns(int column, int count, WModelIndex parent) {
+	public boolean insertColumns(int column, int count, final WModelIndex parent) {
 		return false;
 	}
 
@@ -558,7 +560,7 @@ public abstract class WAbstractItemModel extends WObject {
 	 *      int last)
 	 * @see WAbstractItemModel#endInsertRows()
 	 */
-	public boolean insertRows(int row, int count, WModelIndex parent) {
+	public boolean insertRows(int row, int count, final WModelIndex parent) {
 		return false;
 	}
 
@@ -595,7 +597,7 @@ public abstract class WAbstractItemModel extends WObject {
 	 *      int last)
 	 * @see WAbstractItemModel#endRemoveColumns()
 	 */
-	public boolean removeColumns(int column, int count, WModelIndex parent) {
+	public boolean removeColumns(int column, int count, final WModelIndex parent) {
 		return false;
 	}
 
@@ -632,7 +634,7 @@ public abstract class WAbstractItemModel extends WObject {
 	 *      int last)
 	 * @see WAbstractItemModel#endRemoveRows()
 	 */
-	public boolean removeRows(int row, int count, WModelIndex parent) {
+	public boolean removeRows(int row, int count, final WModelIndex parent) {
 		return false;
 	}
 
@@ -660,7 +662,7 @@ public abstract class WAbstractItemModel extends WObject {
 	 * 
 	 * @see WAbstractItemModel#getData(WModelIndex index, int role)
 	 */
-	public boolean setData(WModelIndex index, Object value, int role) {
+	public boolean setData(final WModelIndex index, final Object value, int role) {
 		return false;
 	}
 
@@ -670,7 +672,7 @@ public abstract class WAbstractItemModel extends WObject {
 	 * Returns {@link #setData(WModelIndex index, Object value, int role)
 	 * setData(index, value, ItemDataRole.EditRole)}
 	 */
-	public final boolean setData(WModelIndex index, Object value) {
+	public final boolean setData(final WModelIndex index, final Object value) {
 		return setData(index, value, ItemDataRole.EditRole);
 	}
 
@@ -683,8 +685,8 @@ public abstract class WAbstractItemModel extends WObject {
 	 * @see WAbstractItemModel#setData(WModelIndex index, Object value, int
 	 *      role)
 	 */
-	public boolean setItemData(WModelIndex index,
-			SortedMap<Integer, Object> values) {
+	public boolean setItemData(final WModelIndex index,
+			final SortedMap<Integer, Object> values) {
 		boolean result = true;
 		boolean wasBlocked = this.dataChanged().isBlocked();
 		this.dataChanged().setBlocked(true);
@@ -710,7 +712,7 @@ public abstract class WAbstractItemModel extends WObject {
 	 *      orientation, int role)
 	 */
 	public boolean setHeaderData(int section, Orientation orientation,
-			Object value, int role) {
+			final Object value, int role) {
 		return false;
 	}
 
@@ -722,7 +724,7 @@ public abstract class WAbstractItemModel extends WObject {
 	 * setHeaderData(section, orientation, value, ItemDataRole.EditRole)}
 	 */
 	public final boolean setHeaderData(int section, Orientation orientation,
-			Object value) {
+			final Object value) {
 		return setHeaderData(section, orientation, value, ItemDataRole.EditRole);
 	}
 
@@ -735,7 +737,7 @@ public abstract class WAbstractItemModel extends WObject {
 	 * @see WAbstractItemModel#setHeaderData(int section, Orientation
 	 *      orientation, Object value, int role)
 	 */
-	public boolean setHeaderData(int section, Object value) {
+	public boolean setHeaderData(int section, final Object value) {
 		return this.setHeaderData(section, Orientation.Horizontal, value);
 	}
 
@@ -811,7 +813,7 @@ public abstract class WAbstractItemModel extends WObject {
 	 * @see WAbstractItemModel#sort(int column, SortOrder order)
 	 * @see WAbstractItemModel#fromRawIndex(Object rawIndex)
 	 */
-	public Object toRawIndex(WModelIndex index) {
+	public Object toRawIndex(final WModelIndex index) {
 		return null;
 	}
 
@@ -894,8 +896,8 @@ public abstract class WAbstractItemModel extends WObject {
 	 * @see WAbstractItemModel#getMimeType()
 	 * @see WItemSelectionModel
 	 */
-	public void dropEvent(WDropEvent e, DropAction action, int row, int column,
-			WModelIndex parent) {
+	public void dropEvent(final WDropEvent e, DropAction action, int row,
+			int column, final WModelIndex parent) {
 		WItemSelectionModel selectionModel = ((e.getSource()) instanceof WItemSelectionModel ? (WItemSelectionModel) (e
 				.getSource())
 				: null);
@@ -963,7 +965,7 @@ public abstract class WAbstractItemModel extends WObject {
 	 * @see WAbstractItemModel#insertColumns(int column, int count, WModelIndex
 	 *      parent)
 	 */
-	public boolean insertColumn(int column, WModelIndex parent) {
+	public boolean insertColumn(int column, final WModelIndex parent) {
 		return this.insertColumns(column, 1, parent);
 	}
 
@@ -995,7 +997,7 @@ public abstract class WAbstractItemModel extends WObject {
 	 * @see WAbstractItemModel#insertRows(int row, int count, WModelIndex
 	 *      parent)
 	 */
-	public boolean insertRow(int row, WModelIndex parent) {
+	public boolean insertRow(int row, final WModelIndex parent) {
 		return this.insertRows(row, 1, parent);
 	}
 
@@ -1027,7 +1029,7 @@ public abstract class WAbstractItemModel extends WObject {
 	 * @see WAbstractItemModel#removeColumns(int column, int count, WModelIndex
 	 *      parent)
 	 */
-	public boolean removeColumn(int column, WModelIndex parent) {
+	public boolean removeColumn(int column, final WModelIndex parent) {
 		return this.removeColumns(column, 1, parent);
 	}
 
@@ -1059,7 +1061,7 @@ public abstract class WAbstractItemModel extends WObject {
 	 * @see WAbstractItemModel#removeRows(int row, int count, WModelIndex
 	 *      parent)
 	 */
-	public boolean removeRow(int row, WModelIndex parent) {
+	public boolean removeRow(int row, final WModelIndex parent) {
 		return this.removeRows(row, 1, parent);
 	}
 
@@ -1091,8 +1093,8 @@ public abstract class WAbstractItemModel extends WObject {
 	 *      role)
 	 * @see WAbstractItemModel#getIndex(int row, int column, WModelIndex parent)
 	 */
-	public boolean setData(int row, int column, Object value, int role,
-			WModelIndex parent) {
+	public boolean setData(int row, int column, final Object value, int role,
+			final WModelIndex parent) {
 		WModelIndex i = this.getIndex(row, column, parent);
 		if ((i != null)) {
 			return this.setData(i, value, role);
@@ -1108,7 +1110,7 @@ public abstract class WAbstractItemModel extends WObject {
 	 * {@link #setData(int row, int column, Object value, int role, WModelIndex parent)
 	 * setData(row, column, value, ItemDataRole.EditRole, null)}
 	 */
-	public final boolean setData(int row, int column, Object value) {
+	public final boolean setData(int row, int column, final Object value) {
 		return setData(row, column, value, ItemDataRole.EditRole, null);
 	}
 
@@ -1119,7 +1121,8 @@ public abstract class WAbstractItemModel extends WObject {
 	 * {@link #setData(int row, int column, Object value, int role, WModelIndex parent)
 	 * setData(row, column, value, role, null)}
 	 */
-	public final boolean setData(int row, int column, Object value, int role) {
+	public final boolean setData(int row, int column, final Object value,
+			int role) {
 		return setData(row, column, value, role, null);
 	}
 
@@ -1367,7 +1370,8 @@ public abstract class WAbstractItemModel extends WObject {
 	 *      parent)
 	 * @see WAbstractItemModel#columnsAboutToBeInserted()
 	 */
-	protected void beginInsertColumns(WModelIndex parent, int first, int last) {
+	protected void beginInsertColumns(final WModelIndex parent, int first,
+			int last) {
 		this.first_ = first;
 		this.last_ = last;
 		this.parent_ = parent;
@@ -1389,7 +1393,7 @@ public abstract class WAbstractItemModel extends WObject {
 	 *      parent)
 	 * @see WAbstractItemModel#rowsAboutToBeInserted()
 	 */
-	protected void beginInsertRows(WModelIndex parent, int first, int last) {
+	protected void beginInsertRows(final WModelIndex parent, int first, int last) {
 		this.first_ = first;
 		this.last_ = last;
 		this.parent_ = parent;
@@ -1411,7 +1415,8 @@ public abstract class WAbstractItemModel extends WObject {
 	 *      parent)
 	 * @see WAbstractItemModel#columnsAboutToBeRemoved()
 	 */
-	protected void beginRemoveColumns(WModelIndex parent, int first, int last) {
+	protected void beginRemoveColumns(final WModelIndex parent, int first,
+			int last) {
 		this.first_ = first;
 		this.last_ = last;
 		this.parent_ = parent;
@@ -1433,7 +1438,7 @@ public abstract class WAbstractItemModel extends WObject {
 	 *      parent)
 	 * @see WAbstractItemModel#rowsAboutToBeRemoved()
 	 */
-	protected void beginRemoveRows(WModelIndex parent, int first, int last) {
+	protected void beginRemoveRows(final WModelIndex parent, int first, int last) {
 		this.first_ = first;
 		this.last_ = last;
 		this.parent_ = parent;
@@ -1501,8 +1506,9 @@ public abstract class WAbstractItemModel extends WObject {
 	private Signal layoutChanged_;
 	private Signal modelReset_;
 
-	private static void copyData(WAbstractItemModel source, WModelIndex sIndex,
-			WAbstractItemModel destination, WModelIndex dIndex) {
+	private static void copyData(WAbstractItemModel source,
+			final WModelIndex sIndex, WAbstractItemModel destination,
+			final WModelIndex dIndex) {
 		SortedMap<Integer, Object> values = destination.getItemData(dIndex);
 		for (Iterator<Map.Entry<Integer, Object>> i_it = values.entrySet()
 				.iterator(); i_it.hasNext();) {

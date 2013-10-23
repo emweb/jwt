@@ -106,8 +106,8 @@ public class WMessageBox extends WDialog {
 	/**
 	 * Creates a message box with given caption, text, icon, and buttons.
 	 */
-	public WMessageBox(CharSequence caption, CharSequence text, Icon icon,
-			EnumSet<StandardButton> buttons, WObject parent) {
+	public WMessageBox(final CharSequence caption, final CharSequence text,
+			Icon icon, EnumSet<StandardButton> buttons, WObject parent) {
 		super(caption, parent);
 		this.buttons_ = new ArrayList<WMessageBox.Button>();
 		this.icon_ = Icon.NoIcon;
@@ -127,15 +127,15 @@ public class WMessageBox extends WDialog {
 	 * {@link #WMessageBox(CharSequence caption, CharSequence text, Icon icon, EnumSet buttons, WObject parent)
 	 * this(caption, text, icon, buttons, (WObject)null)}
 	 */
-	public WMessageBox(CharSequence caption, CharSequence text, Icon icon,
-			EnumSet<StandardButton> buttons) {
+	public WMessageBox(final CharSequence caption, final CharSequence text,
+			Icon icon, EnumSet<StandardButton> buttons) {
 		this(caption, text, icon, buttons, (WObject) null);
 	}
 
 	/**
 	 * Sets the text for the message box.
 	 */
-	public void setText(CharSequence text) {
+	public void setText(final CharSequence text) {
 		this.text_.setText(text);
 	}
 
@@ -212,7 +212,7 @@ public class WMessageBox extends WDialog {
 	 * <p>
 	 * When the button is clicked, the associated result will be returned.
 	 */
-	public WPushButton addButton(CharSequence text, StandardButton result) {
+	public WPushButton addButton(final CharSequence text, StandardButton result) {
 		WPushButton b = new WPushButton(text);
 		this.addButton(b, result);
 		return b;
@@ -398,8 +398,9 @@ public class WMessageBox extends WDialog {
 	 * <i>This functionality is only available on Servlet 3.0 compatible servlet
 	 * containers.</i>
 	 */
-	public static StandardButton show(CharSequence caption, CharSequence text,
-			EnumSet<StandardButton> buttons, WAnimation animation) {
+	public static StandardButton show(final CharSequence caption,
+			final CharSequence text, EnumSet<StandardButton> buttons,
+			final WAnimation animation) {
 		final WMessageBox box = new WMessageBox(caption, text,
 				Icon.Information, buttons);
 		box.buttonClicked().addListener(box,
@@ -419,8 +420,8 @@ public class WMessageBox extends WDialog {
 	 * {@link #show(CharSequence caption, CharSequence text, EnumSet buttons, WAnimation animation)
 	 * show(caption, text, buttons, new WAnimation())}
 	 */
-	public static final StandardButton show(CharSequence caption,
-			CharSequence text, EnumSet<StandardButton> buttons) {
+	public static final StandardButton show(final CharSequence caption,
+			final CharSequence text, EnumSet<StandardButton> buttons) {
 		return show(caption, text, buttons, new WAnimation());
 	}
 
@@ -431,7 +432,7 @@ public class WMessageBox extends WDialog {
 		return this.buttonClicked_;
 	}
 
-	public void setHidden(boolean hidden, WAnimation animation) {
+	public void setHidden(boolean hidden, final WAnimation animation) {
 		if (!hidden) {
 			if (!(this.defaultButton_ != null)) {
 				for (int i = 0; i < this.buttons_.size(); ++i) {

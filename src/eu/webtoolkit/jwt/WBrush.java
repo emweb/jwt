@@ -58,7 +58,7 @@ public class WBrush {
 	 * <p>
 	 * Creates a solid brush with the indicated <code>color</code>.
 	 */
-	public WBrush(WColor color) {
+	public WBrush(final WColor color) {
 		this.style_ = BrushStyle.SolidPattern;
 		this.color_ = color;
 		this.gradient_ = new WGradient();
@@ -67,7 +67,7 @@ public class WBrush {
 	/**
 	 * Creates a gradient brush.
 	 */
-	public WBrush(WGradient gradient) {
+	public WBrush(final WGradient gradient) {
 		this.style_ = BrushStyle.GradientPattern;
 		this.color_ = new WColor();
 		this.gradient_ = gradient;
@@ -91,7 +91,7 @@ public class WBrush {
 	 * <p>
 	 * Returns <code>true</code> if the brushes are exactly the same.
 	 */
-	public boolean equals(WBrush other) {
+	public boolean equals(final WBrush other) {
 		return this.color_.equals(other.color_) && this.style_ == other.style_
 				&& this.gradient_.equals(other.gradient_);
 	}
@@ -125,7 +125,7 @@ public class WBrush {
 	 * 
 	 * @see WBrush#getColor()
 	 */
-	public void setColor(WColor color) {
+	public void setColor(final WColor color) {
 		this.color_ = color;
 		if (this.style_ == BrushStyle.GradientPattern) {
 			this.style_ = BrushStyle.SolidPattern;
@@ -148,7 +148,7 @@ public class WBrush {
 	 * This also sets the style to {@link BrushStyle#GradientPattern
 	 * GradientPattern}.
 	 */
-	public void setGradient(WGradient gradient) {
+	public void setGradient(final WGradient gradient) {
 		if (!this.gradient_.isEmpty()) {
 			this.gradient_ = gradient;
 			this.style_ = BrushStyle.GradientPattern;

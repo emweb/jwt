@@ -44,7 +44,7 @@ public class WPointF {
 	/**
 	 * Copy constructor.
 	 */
-	public WPointF(WPointF other) {
+	public WPointF(final WPointF other) {
 		this.x_ = other.getX();
 		this.y_ = other.getY();
 	}
@@ -52,7 +52,7 @@ public class WPointF {
 	/**
 	 * Creates a point from mouse coordinates.
 	 */
-	public WPointF(Coordinates other) {
+	public WPointF(final Coordinates other) {
 		this.x_ = other.x;
 		this.y_ = other.y;
 	}
@@ -88,11 +88,11 @@ public class WPointF {
 	/**
 	 * Indicates whether some other object is "equal to" this one.
 	 */
-	public boolean equals(WPointF other) {
+	public boolean equals(final WPointF other) {
 		return this.x_ == other.x_ && this.y_ == other.y_;
 	}
 
-	WPointF add(WPointF other) {
+	WPointF add(final WPointF other) {
 		this.x_ += other.x_;
 		this.y_ += other.y_;
 		return this;

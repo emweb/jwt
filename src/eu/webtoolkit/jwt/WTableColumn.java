@@ -100,7 +100,7 @@ public class WTableColumn extends WObject {
 	 * @see WTableColumn#getWidth()
 	 * @see WWidget#resize(WLength width, WLength height)
 	 */
-	public void setWidth(WLength width) {
+	public void setWidth(final WLength width) {
 		this.width_ = width;
 		this.table_.repaintColumn(this);
 	}
@@ -124,7 +124,7 @@ public class WTableColumn extends WObject {
 	 * @see WTableColumn#getStyleClass()
 	 * @see WWidget#setStyleClass(String styleClass)
 	 */
-	public void setStyleClass(String style) {
+	public void setStyleClass(final String style) {
 		if (WWebWidget.canOptimizeUpdates() && style.equals(this.styleClass_)) {
 			return;
 		}
@@ -152,7 +152,7 @@ public class WTableColumn extends WObject {
 	 * 
 	 * @see WObject#getId()
 	 */
-	public void setId(String id) {
+	public void setId(final String id) {
 		if (!(this.id_ != null)) {
 			this.id_ = "";
 		}
@@ -172,7 +172,7 @@ public class WTableColumn extends WObject {
 	private String id_;
 	private String styleClass_;
 
-	void updateDom(DomElement element, boolean all) {
+	void updateDom(final DomElement element, boolean all) {
 		if (this.width_ != null) {
 			element.setProperty(Property.PropertyStyleWidth, this.width_
 					.getCssText());
