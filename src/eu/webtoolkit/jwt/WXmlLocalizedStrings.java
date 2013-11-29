@@ -7,6 +7,7 @@ package eu.webtoolkit.jwt;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.StringWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -73,26 +74,17 @@ public class WXmlLocalizedStrings extends WLocalizedStrings {
 	private void readXmlResource(String bundleName) {
 		WApplication app = WApplication.getInstance();
 
-		URL url = null;
-		for (String path : StringUtils.expandLocales(bundleName, WApplication.getInstance().getLocale().toString())) {
-			url = app.getClass().getResource(path + ".xml");
+		InputStream stream = null;
+		for (String path : StringUtils.expandLocales(bundleName, app.getLocale().toString())) {
 			try {
-				if (url == null) {
-					url = new URL(path + ".xml");
-					try {
-						if (url != null)
-							url.openStream();
-					} catch (IOException e) {
-						url = null;
-					}
-				}
-			} catch (MalformedURLException e) {
+				stream = FileUtils.getResourceAsStream(path + ".xml");
+			} catch (IOException e) {
 			}
-			if (url != null)
+			if (stream != null)
 				break;
 		}
 		
-		if (url == null) {
+		if (stream == null) {
 			logger.warn("Could not find resource \"" + bundleName + "\"");
 			return;
 		}
@@ -102,7 +94,7 @@ public class WXmlLocalizedStrings extends WLocalizedStrings {
 			IXMLParser parser = XMLParserFactory.createDefaultXMLParser();
 			parser.setBuilder(xmlParser);
 			parser.setResolver(xmlParser);
-			IXMLReader reader = new StdXMLReader(url.openStream());
+			IXMLReader reader = new StdXMLReader(stream);
 			parser.setReader(reader);
 			parser.parse();
 			keyValues.putAll(xmlParser.getKeyValues());

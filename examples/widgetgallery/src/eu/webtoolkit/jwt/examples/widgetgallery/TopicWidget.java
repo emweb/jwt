@@ -29,13 +29,6 @@ class TopicWidget extends WContainerWidget {
 	public void populateSubMenu(WMenu menu) {
 	}
 
-	// public void topic(final String classname, WContainerWidget parent) ;
-	// public void topic(final String classname1, final String classname2,
-	// WContainerWidget parent) ;
-	// public void topic(final String classname1, final String classname2, final
-	// String classname3, WContainerWidget parent) ;
-	// public void topic(final String classname1, final String classname2, final
-	// String classname3, final String classname4, WContainerWidget parent) ;
 	public static WString reindent(final CharSequence text) {
 		List<String> lines = new ArrayList<String>();
 		String s = text.toString();

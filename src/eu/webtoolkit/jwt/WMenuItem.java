@@ -328,6 +328,7 @@ public class WMenuItem extends WContainerWidget {
 	 */
 	public void setInternalPathEnabled(boolean enabled) {
 		this.internalPathEnabled_ = enabled;
+		this.updateInternalPath();
 	}
 
 	/**
@@ -696,7 +697,8 @@ public class WMenuItem extends WContainerWidget {
 	}
 
 	void setFromInternalPath(final String path) {
-		if (this.menu_.contentsStack_ != null
+		if (this.isInternalPathEnabled()
+				&& this.menu_.contentsStack_ != null
 				&& this.menu_.contentsStack_.getCurrentWidget() != this
 						.getContents()) {
 			this.menu_.select(this.menu_.indexOf(this), false);
@@ -804,10 +806,8 @@ public class WMenuItem extends WContainerWidget {
 	}
 
 	void updateInternalPath() {
-		if (this.menu_ != null
-				&& this.menu_.isInternalPathEnabled()
-				&& !(((this.menu_) instanceof WPopupMenu ? (WPopupMenu) (this.menu_)
-						: null) != null)) {
+		if (this.menu_ != null && this.menu_.isInternalPathEnabled()
+				&& this.isInternalPathEnabled()) {
 			String internalPath = this.menu_.getInternalBasePath()
 					+ this.getPathComponent();
 			WLink link = new WLink(WLink.Type.InternalPath, internalPath);

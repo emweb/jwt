@@ -537,9 +537,9 @@ public abstract class WInteractWidget extends WWebWidget {
 
 	public void setPopup(boolean popup) {
 		if (popup) {
+			this.clicked().addListener(
+					"function(o,e) { $(document).trigger('click', e); }");
 			this.clicked().preventPropagation();
-			this.mouseWentDown().preventPropagation();
-			this.mouseWentUp().preventPropagation();
 		}
 		super.setPopup(popup);
 	}

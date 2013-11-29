@@ -1026,13 +1026,11 @@ public class WMenu extends WCompositeWidget {
 			int bestI = -1;
 			int bestMatchLength = -1;
 			for (int i = 0; i < this.getCount(); ++i) {
-				if (this.itemAt(i).isInternalPathEnabled()) {
-					int matchLength = match(subPath, this.itemAt(i)
-							.getPathComponent());
-					if (matchLength > bestMatchLength) {
-						bestMatchLength = matchLength;
-						bestI = i;
-					}
+				int matchLength = match(subPath, this.itemAt(i)
+						.getPathComponent());
+				if (matchLength > bestMatchLength) {
+					bestMatchLength = matchLength;
+					bestI = i;
 				}
 			}
 			if (bestI != -1) {

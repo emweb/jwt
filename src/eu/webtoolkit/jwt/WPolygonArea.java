@@ -67,6 +67,7 @@ public class WPolygonArea extends WAbstractArea {
 	 */
 	public void addPoint(int x, int y) {
 		this.points_.add(new WPoint(x, y));
+		this.repaint();
 	}
 
 	/**
@@ -74,6 +75,7 @@ public class WPolygonArea extends WAbstractArea {
 	 */
 	public void addPoint(double x, double y) {
 		this.points_.add(new WPoint((int) x, (int) y));
+		this.repaint();
 	}
 
 	/**
@@ -81,6 +83,7 @@ public class WPolygonArea extends WAbstractArea {
 	 */
 	public void addPoint(final WPoint point) {
 		this.points_.add(point);
+		this.repaint();
 	}
 
 	/**
@@ -88,6 +91,7 @@ public class WPolygonArea extends WAbstractArea {
 	 */
 	public void addPoint(final WPointF point) {
 		this.points_.add(new WPoint((int) point.getX(), (int) point.getY()));
+		this.repaint();
 	}
 
 	/**
@@ -99,6 +103,7 @@ public class WPolygonArea extends WAbstractArea {
 	 */
 	public void setPoints(final List<WPoint> points) {
 		Utils.copyList(points, this.points_);
+		this.repaint();
 	}
 
 	/**
