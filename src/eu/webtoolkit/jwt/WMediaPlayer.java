@@ -917,7 +917,7 @@ public class WMediaPlayer extends WCompositeWidget {
 		}
 	}
 
-	void render(EnumSet<RenderFlag> flags) {
+	protected void render(EnumSet<RenderFlag> flags) {
 		WApplication app = WApplication.getInstance();
 		if (this.mediaUpdated_) {
 			StringBuilder ss = new StringBuilder();

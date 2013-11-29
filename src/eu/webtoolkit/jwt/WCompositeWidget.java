@@ -487,7 +487,7 @@ public class WCompositeWidget extends WWidget {
 		return this.impl_.boxBorder(orientation);
 	}
 
-	void render(EnumSet<RenderFlag> flags) {
+	protected void render(EnumSet<RenderFlag> flags) {
 		this.impl_.render(flags);
 		this.renderOk();
 	}

@@ -596,7 +596,7 @@ public class WDialog extends WPopupWidget {
 		this.impl_.resolveWidget("layout").setMaximumSize(w, h);
 	}
 
-	void render(EnumSet<RenderFlag> flags) {
+	protected void render(EnumSet<RenderFlag> flags) {
 		if (!EnumUtils.mask(flags, RenderFlag.RenderFull).isEmpty()) {
 			WApplication app = WApplication.getInstance();
 			boolean centerX = this.getOffset(Side.Left).isAuto()

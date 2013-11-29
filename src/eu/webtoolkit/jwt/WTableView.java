@@ -672,6 +672,70 @@ public class WTableView extends WAbstractItemView {
 		throw new WException("Scrolled signal existes only with ajax.");
 	}
 
+	protected void render(EnumSet<RenderFlag> flags) {
+		if (this.isAjaxMode()) {
+			if (!EnumUtils.mask(flags, RenderFlag.RenderFull).isEmpty()) {
+				this.defineJavaScript();
+			}
+			if (!this.canvas_.doubleClicked().isConnected()
+					&& (!EnumUtils.mask(this.getEditTriggers(),
+							WAbstractItemView.EditTrigger.DoubleClicked)
+							.isEmpty() || this.doubleClicked().isConnected())) {
+				this.canvas_.doubleClicked().addListener(this,
+						new Signal1.Listener<WMouseEvent>() {
+							public void trigger(WMouseEvent event) {
+								WTableView.this.handleDblClick(false, event);
+							}
+						});
+				this.canvas_.doubleClicked().preventPropagation();
+				this.headerColumnsCanvas_.doubleClicked().addListener(this,
+						new Signal1.Listener<WMouseEvent>() {
+							public void trigger(WMouseEvent event) {
+								WTableView.this.handleDblClick(true, event);
+							}
+						});
+				this.headerColumnsCanvas_.doubleClicked().preventPropagation();
+				this.contentsContainer_.doubleClicked().addListener(this,
+						new Signal1.Listener<WMouseEvent>() {
+							public void trigger(WMouseEvent event) {
+								WTableView.this.handleRootDoubleClick(0, event);
+							}
+						});
+				this.headerColumnsContainer_.doubleClicked().addListener(this,
+						new Signal1.Listener<WMouseEvent>() {
+							public void trigger(WMouseEvent event) {
+								WTableView.this.handleRootDoubleClick(0, event);
+							}
+						});
+			}
+		}
+		if (this.getModel() != null) {
+			while (this.renderState_ != WAbstractItemView.RenderState.RenderOk) {
+				WAbstractItemView.RenderState s = this.renderState_;
+				this.renderState_ = WAbstractItemView.RenderState.RenderOk;
+				switch (s) {
+				case NeedRerender:
+					this.resetGeometry();
+					this.rerenderHeader();
+					this.rerenderData();
+					break;
+				case NeedRerenderHeader:
+					this.rerenderHeader();
+					break;
+				case NeedRerenderData:
+					this.rerenderData();
+					break;
+				case NeedAdjustViewPort:
+					this.adjustToViewport();
+					break;
+				default:
+					break;
+				}
+			}
+		}
+		super.render(flags);
+	}
+
 	static class ColumnWidget extends WContainerWidget {
 		private static Logger logger = LoggerFactory
 				.getLogger(ColumnWidget.class);
@@ -1311,70 +1375,6 @@ public class WTableView extends WAbstractItemView {
 		} else {
 			return this.getColumnCount() - 1;
 		}
-	}
-
-	void render(EnumSet<RenderFlag> flags) {
-		if (this.isAjaxMode()) {
-			if (!EnumUtils.mask(flags, RenderFlag.RenderFull).isEmpty()) {
-				this.defineJavaScript();
-			}
-			if (!this.canvas_.doubleClicked().isConnected()
-					&& (!EnumUtils.mask(this.getEditTriggers(),
-							WAbstractItemView.EditTrigger.DoubleClicked)
-							.isEmpty() || this.doubleClicked().isConnected())) {
-				this.canvas_.doubleClicked().addListener(this,
-						new Signal1.Listener<WMouseEvent>() {
-							public void trigger(WMouseEvent event) {
-								WTableView.this.handleDblClick(false, event);
-							}
-						});
-				this.canvas_.doubleClicked().preventPropagation();
-				this.headerColumnsCanvas_.doubleClicked().addListener(this,
-						new Signal1.Listener<WMouseEvent>() {
-							public void trigger(WMouseEvent event) {
-								WTableView.this.handleDblClick(true, event);
-							}
-						});
-				this.headerColumnsCanvas_.doubleClicked().preventPropagation();
-				this.contentsContainer_.doubleClicked().addListener(this,
-						new Signal1.Listener<WMouseEvent>() {
-							public void trigger(WMouseEvent event) {
-								WTableView.this.handleRootDoubleClick(0, event);
-							}
-						});
-				this.headerColumnsContainer_.doubleClicked().addListener(this,
-						new Signal1.Listener<WMouseEvent>() {
-							public void trigger(WMouseEvent event) {
-								WTableView.this.handleRootDoubleClick(0, event);
-							}
-						});
-			}
-		}
-		if (this.getModel() != null) {
-			while (this.renderState_ != WAbstractItemView.RenderState.RenderOk) {
-				WAbstractItemView.RenderState s = this.renderState_;
-				this.renderState_ = WAbstractItemView.RenderState.RenderOk;
-				switch (s) {
-				case NeedRerender:
-					this.resetGeometry();
-					this.rerenderHeader();
-					this.rerenderData();
-					break;
-				case NeedRerenderHeader:
-					this.rerenderHeader();
-					break;
-				case NeedRerenderData:
-					this.rerenderData();
-					break;
-				case NeedAdjustViewPort:
-					this.adjustToViewport();
-					break;
-				default:
-					break;
-				}
-			}
-		}
-		super.render(flags);
 	}
 
 	private void reset() {

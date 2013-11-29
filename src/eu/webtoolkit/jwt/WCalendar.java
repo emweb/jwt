@@ -523,7 +523,7 @@ public class WCalendar extends WCompositeWidget {
 		return this.top_;
 	}
 
-	void render(EnumSet<RenderFlag> flags) {
+	protected void render(EnumSet<RenderFlag> flags) {
 		if (this.needRenderMonth_) {
 			boolean create = this.cellClickMapper_ == null;
 			String buf;

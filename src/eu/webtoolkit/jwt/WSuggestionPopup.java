@@ -920,7 +920,7 @@ public class WSuggestionPopup extends WPopupWidget {
 						+ String.valueOf(this.defaultValue_) + ");");
 	}
 
-	void render(EnumSet<RenderFlag> flags) {
+	protected void render(EnumSet<RenderFlag> flags) {
 		if (!EnumUtils.mask(flags, RenderFlag.RenderFull).isEmpty()) {
 			this.defineJavaScript();
 		}

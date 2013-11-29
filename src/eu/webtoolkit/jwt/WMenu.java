@@ -1000,7 +1000,7 @@ public class WMenu extends WCompositeWidget {
 		return this.parentItem_;
 	}
 
-	void render(EnumSet<RenderFlag> flags) {
+	protected void render(EnumSet<RenderFlag> flags) {
 		if (this.needSelectionEventUpdate_) {
 			for (int i = 0; i < this.getCount(); ++i) {
 				this.itemAt(i).resetLearnedSlots();

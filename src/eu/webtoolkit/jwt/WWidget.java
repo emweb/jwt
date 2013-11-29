@@ -1673,7 +1673,7 @@ public abstract class WWidget extends WObject {
 	 * the latest moment possible. In that case you should make sure you call
 	 * the base implementation however.
 	 */
-	void render(EnumSet<RenderFlag> flags) {
+	protected void render(EnumSet<RenderFlag> flags) {
 	}
 
 	/**
@@ -1681,7 +1681,7 @@ public abstract class WWidget extends WObject {
 	 * <p>
 	 * Calls {@link #render(EnumSet flags) render(EnumSet.of(flag, flags))}
 	 */
-	final void render(RenderFlag flag, RenderFlag... flags) {
+	protected final void render(RenderFlag flag, RenderFlag... flags) {
 		render(EnumSet.of(flag, flags));
 	}
 

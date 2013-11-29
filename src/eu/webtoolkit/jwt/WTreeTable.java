@@ -255,7 +255,7 @@ public class WTreeTable extends WCompositeWidget {
 		return this.headers_;
 	}
 
-	void render(EnumSet<RenderFlag> flags) {
+	protected void render(EnumSet<RenderFlag> flags) {
 		if (!EnumUtils.mask(flags, RenderFlag.RenderFull).isEmpty()) {
 			this.defineJavaScript();
 			this.setJavaScriptMember(WT_RESIZE_JS, "$('#" + this.getId()
