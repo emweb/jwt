@@ -249,7 +249,9 @@ public class WDateEdit extends WLineEdit {
 	 */
 	public void setHidden(boolean hidden, final WAnimation animation) {
 		super.setHidden(hidden, animation);
-		this.popup_.setHidden(hidden, animation);
+		if (hidden) {
+			this.popup_.setHidden(hidden, animation);
+		}
 	}
 
 	protected void render(EnumSet<RenderFlag> flags) {

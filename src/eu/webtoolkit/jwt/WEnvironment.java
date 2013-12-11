@@ -86,9 +86,13 @@ public class WEnvironment {
 		 */
 		IE9(1004),
 		/**
-		 * Internet Explorer 10 or later.
+		 * Internet Explorer 10.
 		 */
 		IE10(1005),
+		/**
+		 * Internet Explorer 11.
+		 */
+		IE11(1006),
 		/**
 		 * Opera.
 		 */
@@ -947,23 +951,29 @@ public class WEnvironment {
 			if (this.userAgent_.indexOf("MSIE 6.") != -1) {
 				this.agent_ = WEnvironment.UserAgent.IE6;
 			} else {
-				if (this.userAgent_.indexOf("Trident/5.0") != -1) {
-					this.agent_ = WEnvironment.UserAgent.IE9;
+				if (this.userAgent_.indexOf("MSIE 7.") != -1) {
+					this.agent_ = WEnvironment.UserAgent.IE7;
 				} else {
-					if (this.userAgent_.indexOf("Trident/6.0") != -1) {
-						this.agent_ = WEnvironment.UserAgent.IE10;
+					if (this.userAgent_.indexOf("MSIE 8.") != -1) {
+						this.agent_ = WEnvironment.UserAgent.IE8;
 					} else {
-						if (this.userAgent_.indexOf("MSIE 7.") != -1) {
-							this.agent_ = WEnvironment.UserAgent.IE7;
+						if (this.userAgent_.indexOf("MSIE 9.") != -1) {
+							this.agent_ = WEnvironment.UserAgent.IE9;
 						} else {
-							if (this.userAgent_.indexOf("MSIE 8.") != -1) {
-								this.agent_ = WEnvironment.UserAgent.IE8;
+							if (this.userAgent_.indexOf("MSIE") != -1) {
+								this.agent_ = WEnvironment.UserAgent.IE10;
 							} else {
-								if (this.userAgent_.indexOf("MSIE 9.") != -1) {
+								if (this.userAgent_.indexOf("Trident/5.0") != -1) {
 									this.agent_ = WEnvironment.UserAgent.IE9;
 								} else {
-									if (this.userAgent_.indexOf("MSIE") != -1) {
+									if (this.userAgent_.indexOf("Trident/6.0") != -1) {
 										this.agent_ = WEnvironment.UserAgent.IE10;
+									} else {
+										if (this.userAgent_
+												.indexOf("Trident/7.0") != -1) {
+											this.agent_ = WEnvironment.UserAgent.IE11;
+											return;
+										}
 									}
 								}
 							}

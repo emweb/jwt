@@ -1551,8 +1551,18 @@ public class DomElement {
 						i.getValue()).append(";");
 				break;
 			case PropertyDisabled:
-				out.append(this.var_).append(".disabled=").append(i.getValue())
-						.append(';');
+				if (this.type_ == DomElementType.DomElement_A) {
+					if (i.getValue().equals("true")) {
+						out.append(this.var_).append(
+								".setAttribute('disabled', 'disabled');");
+					} else {
+						out.append(this.var_).append(
+								".removeAttribute('disabled', 'disabled');");
+					}
+				} else {
+					out.append(this.var_).append(".disabled=").append(
+							i.getValue()).append(';');
+				}
 				break;
 			case PropertyReadOnly:
 				out.append(this.var_).append(".readOnly=").append(i.getValue())

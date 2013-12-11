@@ -114,7 +114,7 @@ class StdWidgetItemImpl extends StdLayoutItemImpl {
 						.getType() == DomElementType.DomElement_BUTTON)) {
 			d.removeProperty(Property.PropertyStyleDisplay);
 		}
-		if (!app.getEnvironment().agentIsIE()
+		if (!app.getEnvironment().agentIsIElt(9)
 				&& w.getJavaScriptMember(WWidget.WT_RESIZE_JS).length() == 0
 				&& d.getType() != DomElementType.DomElement_TABLE
 				&& app.getTheme().canBorderBoxElement(d)) {

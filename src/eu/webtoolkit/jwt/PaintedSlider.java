@@ -48,8 +48,11 @@ class PaintedSlider extends WPaintedWidget {
 		this.handle_.setPositionScheme(PositionScheme.Absolute);
 		this.handle_.setStyleClass("handle");
 		this.handle_.mouseWentDown().addListener(this.mouseDownJS_);
+		this.handle_.touchStarted().addListener(this.mouseDownJS_);
 		this.handle_.mouseMoved().addListener(this.mouseMovedJS_);
+		this.handle_.touchMoved().addListener(this.mouseMovedJS_);
 		this.handle_.mouseWentUp().addListener(this.mouseUpJS_);
+		this.handle_.touchEnded().addListener(this.mouseUpJS_);
 		slider.clicked().addListener(this, new Signal1.Listener<WMouseEvent>() {
 			public void trigger(WMouseEvent e1) {
 				PaintedSlider.this.onSliderClick(e1);

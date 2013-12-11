@@ -1445,9 +1445,11 @@ class WebRenderer implements SlotLearnerInterface {
 								.append("<meta http-equiv=\"X-UA-Compatible\" content=\"IE=9\"");
 						closeSpecial(result);
 					} else {
-						result
-								.append("<meta http-equiv=\"X-UA-Compatible\" content=\"IE=10\"");
-						closeSpecial(result);
+						if (this.session_.getEnv().getAgent() == WEnvironment.UserAgent.IE10) {
+							result
+									.append("<meta http-equiv=\"X-UA-Compatible\" content=\"IE=10\"");
+							closeSpecial(result);
+						}
 					}
 				}
 			}

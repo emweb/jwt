@@ -151,9 +151,11 @@ public abstract class WFormWidget extends WInteractWidget {
 			}
 			this.validatorChanged();
 		} else {
-			WApplication.getInstance().getTheme().applyValidationStyle(this,
-					new WValidator.Result(),
-					ValidationStyleFlag.ValidationNoStyle);
+			if (this.isRendered()) {
+				WApplication.getInstance().getTheme().applyValidationStyle(
+						this, new WValidator.Result(),
+						ValidationStyleFlag.ValidationNoStyle);
+			}
 			;
 			this.validateJs_ = null;
 			;
@@ -178,9 +180,11 @@ public abstract class WFormWidget extends WInteractWidget {
 		if (this.getValidator() != null) {
 			WValidator.Result result = this.getValidator().validate(
 					this.getValueText());
-			WApplication.getInstance().getTheme().applyValidationStyle(this,
-					result,
-					EnumSet.of(ValidationStyleFlag.ValidationInvalidStyle));
+			if (this.isRendered()) {
+				WApplication.getInstance().getTheme().applyValidationStyle(
+						this, result,
+						EnumSet.of(ValidationStyleFlag.ValidationInvalidStyle));
+			}
 			if (!this.validationToolTip_.equals(result.getMessage())) {
 				this.validationToolTip_ = result.getMessage();
 				this.flags_.set(BIT_VALIDATION_CHANGED);
@@ -580,9 +584,17 @@ public abstract class WFormWidget extends WInteractWidget {
 	// getStateless(<pointertomember or dependentsizedarray>
 	// methodpointertomember or dependentsizedarray>) ;
 	protected void render(EnumSet<RenderFlag> flags) {
-		if (!EnumUtils.mask(flags, RenderFlag.RenderFull).isEmpty()
-				&& this.flags_.get(BIT_JS_OBJECT)) {
-			this.defineJavaScript(true);
+		if (!EnumUtils.mask(flags, RenderFlag.RenderFull).isEmpty()) {
+			if (this.flags_.get(BIT_JS_OBJECT)) {
+				this.defineJavaScript(true);
+			}
+			if (this.getValidator() != null) {
+				WValidator.Result result = this.getValidator().validate(
+						this.getValueText());
+				WApplication.getInstance().getTheme().applyValidationStyle(
+						this, result,
+						EnumSet.of(ValidationStyleFlag.ValidationInvalidStyle));
+			}
 		}
 		super.render(flags);
 	}

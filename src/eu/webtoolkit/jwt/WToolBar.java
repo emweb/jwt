@@ -101,10 +101,47 @@ public class WToolBar extends WCompositeWidget {
 	 * 
 	 * @see WToolBar#setCompact(boolean compact)
 	 */
-	public void addButton(WSplitButton button) {
+	public void addButton(WSplitButton button, AlignmentFlag alignmentFlag) {
 		this.setCompact(false);
 		this.lastGroup_ = null;
+		if (alignmentFlag == AlignmentFlag.AlignRight) {
+			button.setAttributeValue("style", "float:right;");
+		}
 		this.impl_.addWidget(button);
+	}
+
+	/**
+	 * Adds a split button.
+	 * <p>
+	 * Calls {@link #addButton(WSplitButton button, AlignmentFlag alignmentFlag)
+	 * addButton(button, AlignmentFlag.AlignLeft)}
+	 */
+	public final void addButton(WSplitButton button) {
+		addButton(button, AlignmentFlag.AlignLeft);
+	}
+
+	/**
+	 * Adds a widget.
+	 * <p>
+	 * The toolbar automatically becomes non-compact.
+	 */
+	public void addWidget(WWidget widget, AlignmentFlag alignmentFlag) {
+		this.setCompact(false);
+		this.lastGroup_ = null;
+		if (alignmentFlag == AlignmentFlag.AlignRight) {
+			widget.setAttributeValue("style", "float:right;");
+		}
+		this.impl_.addWidget(widget);
+	}
+
+	/**
+	 * Adds a widget.
+	 * <p>
+	 * Calls {@link #addWidget(WWidget widget, AlignmentFlag alignmentFlag)
+	 * addWidget(widget, AlignmentFlag.AlignLeft)}
+	 */
+	public final void addWidget(WWidget widget) {
+		addWidget(widget, AlignmentFlag.AlignLeft);
 	}
 
 	/**
@@ -148,7 +185,12 @@ public class WToolBar extends WCompositeWidget {
 	/**
 	 * Returns a button.
 	 * <p>
-	 * The returned button is a {@link WPushButton} or {@link WSplitButton}.
+	 * The returned widget is a {@link WPushButton} or {@link WSplitButton}
+	 * added by
+	 * {@link WToolBar#addButton(WPushButton button, AlignmentFlag alignmentFlag)
+	 * addButton()} or a widget added by
+	 * {@link WToolBar#addWidget(WWidget widget, AlignmentFlag alignmentFlag)
+	 * addWidget()}.
 	 */
 	public WWidget widget(int index) {
 		if (this.compact_) {
@@ -179,8 +221,7 @@ public class WToolBar extends WCompositeWidget {
 	 * Sets the toolbar to be rendered compact.
 	 * <p>
 	 * The default value is <code>true</code>, but <code>setCompact(true)</code>
-	 * is called automatically when calling
-	 * {@link WToolBar#addButton(WSplitButton button) addButton()} or
+	 * is called automatically when calling addButton(WSplitButton *) or
 	 * {@link WToolBar#addSeparator() addSeparator()}.
 	 */
 	public void setCompact(boolean compact) {

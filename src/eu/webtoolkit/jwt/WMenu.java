@@ -534,14 +534,16 @@ public class WMenu extends WCompositeWidget {
 			WWidget contents = item.getContents();
 			if (contents != null) {
 				this.contentsStack_.addWidget(contents);
-			}
-			if (this.contentsStack_.getCount() == 1) {
-				this.setCurrent(0);
-				if (contents != null) {
-					this.contentsStack_.setCurrentWidget(contents);
+				if (this.contentsStack_.getCount() == 1) {
+					this.setCurrent(0);
+					if (contents != null) {
+						this.contentsStack_.setCurrentWidget(contents);
+					}
+					this.renderSelected(item, true);
+					item.loadContents();
+				} else {
+					this.renderSelected(item, false);
 				}
-				this.renderSelected(item, true);
-				item.loadContents();
 			} else {
 				this.renderSelected(item, false);
 			}
