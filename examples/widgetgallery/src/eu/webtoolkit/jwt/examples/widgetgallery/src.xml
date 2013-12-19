@@ -294,8 +294,8 @@
             <span class="s">&quot;&quot;</span> <span class="o">+</span> <span class="s">&quot;isotope_decay.csv&quot;</span><span class="o">,</span> <span class="n">container</span><span class="o">,</span> <span class="kc">false</span><span class="o">);</span>
     <span class="n">WGridData</span> <span class="n">isotopes</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WGridData</span><span class="o">(</span><span class="n">model2</span><span class="o">);</span>
     <span class="n">isotopes</span><span class="o">.</span><span class="na">setType</span><span class="o">(</span><span class="n">Series3DType</span><span class="o">.</span><span class="na">BarSeries3D</span><span class="o">);</span>
-    <span class="n">chart</span><span class="o">.</span><span class="na">addDataSeries</span><span class="o">(</span><span class="n">horPlane</span><span class="o">);</span>
     <span class="n">chart</span><span class="o">.</span><span class="na">addDataSeries</span><span class="o">(</span><span class="n">isotopes</span><span class="o">);</span>
+    <span class="n">chart</span><span class="o">.</span><span class="na">addDataSeries</span><span class="o">(</span><span class="n">horPlane</span><span class="o">);</span>
     <span class="n">CategoryDataSettings</span> <span class="n">settings1</span> <span class="o">=</span> <span class="k">new</span> <span class="n">CategoryDataSettings</span><span class="o">(</span><span class="n">horPlane</span><span class="o">,</span>
             <span class="n">container</span><span class="o">);</span>
     <span class="n">CategoryDataSettings</span> <span class="n">settings2</span> <span class="o">=</span> <span class="k">new</span> <span class="n">CategoryDataSettings</span><span class="o">(</span><span class="n">isotopes</span><span class="o">,</span>
@@ -422,19 +422,19 @@
     <span class="k">this</span><span class="o">(</span><span class="n">nbXPts</span><span class="o">,</span> <span class="n">nbYPts</span><span class="o">,</span> <span class="n">xStart</span><span class="o">,</span> <span class="n">xEnd</span><span class="o">,</span> <span class="n">yStart</span><span class="o">,</span> <span class="n">yEnd</span><span class="o">,</span> <span class="o">(</span><span class="n">WObject</span><span class="o">)</span> <span class="kc">null</span><span class="o">);</span>
 <span class="o">}</span>
 
-<span class="kt">int</span> <span class="nf">getRowCount</span><span class="o">(</span><span class="n">WModelIndex</span> <span class="n">parent</span><span class="o">)</span> <span class="o">{</span>
+<span class="kt">int</span> <span class="nf">getRowCount</span><span class="o">(</span><span class="kd">final</span> <span class="n">WModelIndex</span> <span class="n">parent</span><span class="o">)</span> <span class="o">{</span>
     <span class="k">return</span> <span class="k">this</span><span class="o">.</span><span class="na">nbXPts_</span> <span class="o">+</span> <span class="mi">1</span><span class="o">;</span>
 <span class="o">}</span>
 
-<span class="kt">int</span> <span class="nf">getColumnCount</span><span class="o">(</span><span class="n">WModelIndex</span> <span class="n">parent</span><span class="o">)</span> <span class="o">{</span>
+<span class="kt">int</span> <span class="nf">getColumnCount</span><span class="o">(</span><span class="kd">final</span> <span class="n">WModelIndex</span> <span class="n">parent</span><span class="o">)</span> <span class="o">{</span>
     <span class="k">return</span> <span class="k">this</span><span class="o">.</span><span class="na">nbYPts_</span> <span class="o">+</span> <span class="mi">1</span><span class="o">;</span>
 <span class="o">}</span>
 
-<span class="n">Object</span> <span class="nf">getData</span><span class="o">(</span><span class="kt">int</span> <span class="n">row</span><span class="o">,</span> <span class="kt">int</span> <span class="n">column</span><span class="o">,</span> <span class="kt">int</span> <span class="n">role</span><span class="o">,</span> <span class="n">WModelIndex</span> <span class="n">parent</span><span class="o">)</span> <span class="o">{</span>
+<span class="n">Object</span> <span class="nf">getData</span><span class="o">(</span><span class="kt">int</span> <span class="n">row</span><span class="o">,</span> <span class="kt">int</span> <span class="n">column</span><span class="o">,</span> <span class="kt">int</span> <span class="n">role</span><span class="o">,</span> <span class="kd">final</span> <span class="n">WModelIndex</span> <span class="n">parent</span><span class="o">)</span> <span class="o">{</span>
     <span class="k">return</span> <span class="k">this</span><span class="o">.</span><span class="na">getData</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">createIndex</span><span class="o">(</span><span class="n">row</span><span class="o">,</span> <span class="n">column</span><span class="o">,</span> <span class="kc">null</span><span class="o">),</span> <span class="n">role</span><span class="o">);</span>
 <span class="o">}</span>
 
-<span class="n">Object</span> <span class="nf">getData</span><span class="o">(</span><span class="n">WModelIndex</span> <span class="n">index</span><span class="o">,</span> <span class="kt">int</span> <span class="n">role</span><span class="o">)</span> <span class="o">{</span>
+<span class="n">Object</span> <span class="nf">getData</span><span class="o">(</span><span class="kd">final</span> <span class="n">WModelIndex</span> <span class="n">index</span><span class="o">,</span> <span class="kt">int</span> <span class="n">role</span><span class="o">)</span> <span class="o">{</span>
     <span class="k">if</span> <span class="o">(</span><span class="n">role</span> <span class="o">!=</span> <span class="n">ItemDataRole</span><span class="o">.</span><span class="na">DisplayRole</span><span class="o">)</span> <span class="o">{</span>
         <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
     <span class="o">}</span>
@@ -2354,11 +2354,11 @@
         <span class="n">painter</span><span class="o">.</span><span class="na">drawImage</span><span class="o">(</span><span class="n">location</span><span class="o">,</span> <span class="n">image</span><span class="o">,</span> <span class="n">sourceRect</span><span class="o">);</span>
         <span class="n">WRectF</span> <span class="n">destinationRect</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WRectF</span><span class="o">(</span><span class="mf">0.0</span><span class="o">,</span> <span class="mf">604.0</span><span class="o">,</span> <span class="mf">130.0</span><span class="o">,</span> <span class="mf">110.0</span><span class="o">);</span>
         <span class="n">painter</span><span class="o">.</span><span class="na">drawImage</span><span class="o">(</span><span class="n">destinationRect</span><span class="o">,</span> <span class="n">image</span><span class="o">);</span>
-        <span class="n">sourceRect</span><span class="o">.</span><span class="na">assign</span><span class="o">(</span><span class="k">new</span> <span class="n">WRectF</span><span class="o">(</span><span class="mf">60.0</span><span class="o">,</span> <span class="mf">80.0</span><span class="o">,</span> <span class="mf">220.0</span><span class="o">,</span> <span class="mf">180.0</span><span class="o">));</span>
-        <span class="n">destinationRect</span><span class="o">.</span><span class="na">assign</span><span class="o">(</span><span class="k">new</span> <span class="n">WRectF</span><span class="o">(</span><span class="mf">0.0</span><span class="o">,</span> <span class="mf">724.0</span><span class="o">,</span> <span class="mf">130.0</span><span class="o">,</span> <span class="mf">110.0</span><span class="o">));</span>
+        <span class="n">sourceRect</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WRectF</span><span class="o">(</span><span class="mf">60.0</span><span class="o">,</span> <span class="mf">80.0</span><span class="o">,</span> <span class="mf">220.0</span><span class="o">,</span> <span class="mf">180.0</span><span class="o">);</span>
+        <span class="n">destinationRect</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WRectF</span><span class="o">(</span><span class="mf">0.0</span><span class="o">,</span> <span class="mf">724.0</span><span class="o">,</span> <span class="mf">130.0</span><span class="o">,</span> <span class="mf">110.0</span><span class="o">);</span>
         <span class="n">painter</span><span class="o">.</span><span class="na">drawImage</span><span class="o">(</span><span class="n">destinationRect</span><span class="o">,</span> <span class="n">image</span><span class="o">,</span> <span class="n">sourceRect</span><span class="o">);</span>
-        <span class="n">sourceRect</span><span class="o">.</span><span class="na">assign</span><span class="o">(</span><span class="k">new</span> <span class="n">WRectF</span><span class="o">(</span><span class="mf">294.0</span><span class="o">,</span> <span class="mf">226.0</span><span class="o">,</span> <span class="mf">265.0</span><span class="o">,</span> <span class="mf">41.0</span><span class="o">));</span>
-        <span class="n">destinationRect</span><span class="o">.</span><span class="na">assign</span><span class="o">(</span><span class="k">new</span> <span class="n">WRectF</span><span class="o">(</span><span class="mf">0.0</span><span class="o">,</span> <span class="mf">844.0</span><span class="o">,</span> <span class="mf">639.0</span><span class="o">,</span> <span class="mf">110.0</span><span class="o">));</span>
+        <span class="n">sourceRect</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WRectF</span><span class="o">(</span><span class="mf">294.0</span><span class="o">,</span> <span class="mf">226.0</span><span class="o">,</span> <span class="mf">265.0</span><span class="o">,</span> <span class="mf">41.0</span><span class="o">);</span>
+        <span class="n">destinationRect</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WRectF</span><span class="o">(</span><span class="mf">0.0</span><span class="o">,</span> <span class="mf">844.0</span><span class="o">,</span> <span class="mf">639.0</span><span class="o">,</span> <span class="mf">110.0</span><span class="o">);</span>
         <span class="n">painter</span><span class="o">.</span><span class="na">drawImage</span><span class="o">(</span><span class="n">destinationRect</span><span class="o">,</span> <span class="n">image</span><span class="o">,</span> <span class="n">sourceRect</span><span class="o">);</span>
         <span class="n">painter</span><span class="o">.</span><span class="na">translate</span><span class="o">(</span><span class="mi">0</span><span class="o">,</span> <span class="mi">964</span><span class="o">);</span>
         <span class="n">painter</span><span class="o">.</span><span class="na">drawImage</span><span class="o">(</span><span class="mf">0.0</span><span class="o">,</span> <span class="mf">0.0</span><span class="o">,</span> <span class="n">image</span><span class="o">);</span>
@@ -3924,6 +3924,8 @@
                         <span class="n">EnumSet</span><span class="o">.</span><span class="na">of</span><span class="o">(</span><span class="n">AxisValue</span><span class="o">.</span><span class="na">MinimumValue</span><span class="o">,</span>
                                 <span class="n">AxisValue</span><span class="o">.</span><span class="na">MaximumValue</span><span class="o">));</span>
                 <span class="k">break</span><span class="o">;</span>
+            <span class="k">default</span><span class="o">:</span>
+                <span class="k">break</span><span class="o">;</span>
             <span class="o">}</span>
         <span class="o">}</span>
     <span class="o">});</span>
@@ -3944,6 +3946,8 @@
                 <span class="n">chart</span><span class="o">.</span><span class="na">axis</span><span class="o">(</span><span class="n">Axis</span><span class="o">.</span><span class="na">XAxis_3D</span><span class="o">).</span><span class="na">setAutoLimits</span><span class="o">(</span>
                         <span class="n">EnumSet</span><span class="o">.</span><span class="na">of</span><span class="o">(</span><span class="n">AxisValue</span><span class="o">.</span><span class="na">MinimumValue</span><span class="o">,</span>
                                 <span class="n">AxisValue</span><span class="o">.</span><span class="na">MaximumValue</span><span class="o">));</span>
+                <span class="k">break</span><span class="o">;</span>
+            <span class="k">default</span><span class="o">:</span>
                 <span class="k">break</span><span class="o">;</span>
             <span class="o">}</span>
         <span class="o">}</span>
@@ -3966,6 +3970,8 @@
                         <span class="n">EnumSet</span><span class="o">.</span><span class="na">of</span><span class="o">(</span><span class="n">AxisValue</span><span class="o">.</span><span class="na">MinimumValue</span><span class="o">,</span>
                                 <span class="n">AxisValue</span><span class="o">.</span><span class="na">MaximumValue</span><span class="o">));</span>
                 <span class="k">break</span><span class="o">;</span>
+            <span class="k">default</span><span class="o">:</span>
+                <span class="k">break</span><span class="o">;</span>
             <span class="o">}</span>
         <span class="o">}</span>
     <span class="o">});</span>
@@ -3986,6 +3992,8 @@
                 <span class="n">chart</span><span class="o">.</span><span class="na">axis</span><span class="o">(</span><span class="n">Axis</span><span class="o">.</span><span class="na">YAxis_3D</span><span class="o">).</span><span class="na">setAutoLimits</span><span class="o">(</span>
                         <span class="n">EnumSet</span><span class="o">.</span><span class="na">of</span><span class="o">(</span><span class="n">AxisValue</span><span class="o">.</span><span class="na">MinimumValue</span><span class="o">,</span>
                                 <span class="n">AxisValue</span><span class="o">.</span><span class="na">MaximumValue</span><span class="o">));</span>
+                <span class="k">break</span><span class="o">;</span>
+            <span class="k">default</span><span class="o">:</span>
                 <span class="k">break</span><span class="o">;</span>
             <span class="o">}</span>
         <span class="o">}</span>
@@ -4008,6 +4016,8 @@
                         <span class="n">EnumSet</span><span class="o">.</span><span class="na">of</span><span class="o">(</span><span class="n">AxisValue</span><span class="o">.</span><span class="na">MinimumValue</span><span class="o">,</span>
                                 <span class="n">AxisValue</span><span class="o">.</span><span class="na">MaximumValue</span><span class="o">));</span>
                 <span class="k">break</span><span class="o">;</span>
+            <span class="k">default</span><span class="o">:</span>
+                <span class="k">break</span><span class="o">;</span>
             <span class="o">}</span>
         <span class="o">}</span>
     <span class="o">});</span>
@@ -4028,6 +4038,8 @@
                 <span class="n">chart</span><span class="o">.</span><span class="na">axis</span><span class="o">(</span><span class="n">Axis</span><span class="o">.</span><span class="na">ZAxis_3D</span><span class="o">).</span><span class="na">setAutoLimits</span><span class="o">(</span>
                         <span class="n">EnumSet</span><span class="o">.</span><span class="na">of</span><span class="o">(</span><span class="n">AxisValue</span><span class="o">.</span><span class="na">MinimumValue</span><span class="o">,</span>
                                 <span class="n">AxisValue</span><span class="o">.</span><span class="na">MaximumValue</span><span class="o">));</span>
+                <span class="k">break</span><span class="o">;</span>
+            <span class="k">default</span><span class="o">:</span>
                 <span class="k">break</span><span class="o">;</span>
             <span class="o">}</span>
         <span class="o">}</span>
@@ -4111,11 +4123,11 @@
    <span class="k">this</span><span class="o">.</span><span class="na">template_</span><span class="o">.</span><span class="na">bindWidget</span> <span class="o">(</span><span class="s">&quot;y-axisMax&quot;</span><span class="o">,</span>   <span class="k">this</span><span class="o">.</span><span class="na">yMax_</span><span class="o">);</span> 
    <span class="k">this</span><span class="o">.</span><span class="na">yMax_</span><span class="o">.</span><span class="na">setValidator</span> <span class="o">(</span><span class="k">new</span> <span class="n">WDoubleValidator</span><span class="o">(-</span> <span class="n">Double</span><span class="o">.</span><span class="na">MAX_VALUE</span><span class="o">,</span> <span class="n">Double</span><span class="o">.</span><span class="na">MAX_VALUE</span><span class="o">));</span>  
 <span class="k">this</span><span class="o">.</span><span class="na">nbPtsX_</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WLineEdit</span><span class="o">(</span><span class="k">this</span><span class="o">);</span> 
-   <span class="k">this</span><span class="o">.</span><span class="na">template_</span><span class="o">.</span><span class="na">bindWidget</span> <span class="o">(</span><span class="s">&quot;nbXPoints&quot;</span><span class="o">,</span>   <span class="k">this</span><span class="o">.</span><span class="na">nbPtsX_</span><span class="o">);</span> 
-   <span class="k">this</span><span class="o">.</span><span class="na">nbPtsX_</span><span class="o">.</span><span class="na">setValidator</span> <span class="o">(</span><span class="k">new</span> <span class="n">WIntValidator</span><span class="o">(</span><span class="mi">0</span><span class="o">,</span> <span class="mi">1000</span><span class="o">));</span>  
+   <span class="k">this</span><span class="o">.</span><span class="na">nbPtsX_</span><span class="o">.</span><span class="na">setValidator</span> <span class="o">(</span><span class="k">new</span> <span class="n">WIntValidator</span><span class="o">(</span><span class="mi">0</span><span class="o">,</span> <span class="mi">50</span><span class="o">));</span> 
+   <span class="k">this</span><span class="o">.</span><span class="na">template_</span><span class="o">.</span><span class="na">bindWidget</span> <span class="o">(</span><span class="s">&quot;nbXPoints&quot;</span><span class="o">,</span>   <span class="k">this</span><span class="o">.</span><span class="na">nbPtsX_</span><span class="o">);</span>  
 <span class="k">this</span><span class="o">.</span><span class="na">nbPtsY_</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WLineEdit</span><span class="o">(</span><span class="k">this</span><span class="o">);</span> 
-   <span class="k">this</span><span class="o">.</span><span class="na">template_</span><span class="o">.</span><span class="na">bindWidget</span> <span class="o">(</span><span class="s">&quot;nbYPoints&quot;</span><span class="o">,</span>   <span class="k">this</span><span class="o">.</span><span class="na">nbPtsY_</span><span class="o">);</span> 
-   <span class="k">this</span><span class="o">.</span><span class="na">nbPtsY_</span><span class="o">.</span><span class="na">setValidator</span> <span class="o">(</span><span class="k">new</span> <span class="n">WIntValidator</span><span class="o">(</span><span class="mi">0</span><span class="o">,</span> <span class="mi">1000</span><span class="o">));</span>
+   <span class="k">this</span><span class="o">.</span><span class="na">nbPtsY_</span><span class="o">.</span><span class="na">setValidator</span> <span class="o">(</span><span class="k">new</span> <span class="n">WIntValidator</span><span class="o">(</span><span class="mi">0</span><span class="o">,</span> <span class="mi">50</span><span class="o">));</span> 
+   <span class="k">this</span><span class="o">.</span><span class="na">template_</span><span class="o">.</span><span class="na">bindWidget</span> <span class="o">(</span><span class="s">&quot;nbYPoints&quot;</span><span class="o">,</span>   <span class="k">this</span><span class="o">.</span><span class="na">nbPtsY_</span><span class="o">);</span>
  <span class="kd">final</span> <span class="n">WLineEdit</span>  <span class="n">ptSize_</span> <span class="o">=</span><span class="k">new</span> <span class="n">WLineEdit</span><span class="o">(</span><span class="k">this</span><span class="o">);</span> 
  <span class="n">ptSize_</span><span class="o">.</span><span class="na">setValidator</span> <span class="o">(</span><span class="k">new</span> <span class="n">WDoubleValidator</span><span class="o">(</span><span class="mf">0.0</span><span class="o">,</span> <span class="n">Double</span><span class="o">.</span><span class="na">MAX_VALUE</span><span class="o">));</span> 
    <span class="k">this</span><span class="o">.</span><span class="na">template_</span><span class="o">.</span><span class="na">bindWidget</span> <span class="o">(</span><span class="s">&quot;pointSize&quot;</span><span class="o">,</span> <span class="n">ptSize_</span><span class="o">);</span> 
@@ -4190,6 +4202,10 @@
 <span class="o">}</span>
 
 <span class="kt">void</span> <span class="nf">updateData</span><span class="o">()</span> <span class="o">{</span>
+    <span class="k">if</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">nbPtsX_</span><span class="o">.</span><span class="na">validate</span><span class="o">()</span> <span class="o">!=</span> <span class="n">WValidator</span><span class="o">.</span><span class="na">State</span><span class="o">.</span><span class="na">Valid</span>
+            <span class="o">||</span> <span class="k">this</span><span class="o">.</span><span class="na">nbPtsY_</span><span class="o">.</span><span class="na">validate</span><span class="o">()</span> <span class="o">!=</span> <span class="n">WValidator</span><span class="o">.</span><span class="na">State</span><span class="o">.</span><span class="na">Valid</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">return</span><span class="o">;</span>
+    <span class="o">}</span>
     <span class="n">WAbstractItemModel</span> <span class="n">model</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">data_</span><span class="o">.</span><span class="na">getModel</span><span class="o">();</span>
     <span class="n">SombreroData</span> <span class="n">sombreroModel</span> <span class="o">=</span> <span class="o">((</span><span class="n">model</span><span class="o">)</span> <span class="k">instanceof</span> <span class="n">SombreroData</span> <span class="o">?</span> <span class="o">(</span><span class="n">SombreroData</span><span class="o">)</span> <span class="o">(</span><span class="n">model</span><span class="o">)</span>
             <span class="o">:</span> <span class="kc">null</span><span class="o">);</span>
@@ -4223,9 +4239,6 @@
                     <span class="o">.</span><span class="na">getText</span><span class="o">()),</span> <span class="n">yDelta</span><span class="o">);</span>
         <span class="o">}</span>
     <span class="o">}</span>
-    <span class="k">this</span><span class="o">.</span><span class="na">chart_</span><span class="o">.</span><span class="na">repaintGL</span><span class="o">(</span><span class="n">EnumSet</span><span class="o">.</span><span class="na">of</span><span class="o">(</span>
-            <span class="n">WGLWidget</span><span class="o">.</span><span class="na">ClientSideRenderer</span><span class="o">.</span><span class="na">UPDATE_GL</span><span class="o">,</span>
-            <span class="n">WGLWidget</span><span class="o">.</span><span class="na">ClientSideRenderer</span><span class="o">.</span><span class="na">PAINT_GL</span><span class="o">));</span>
 <span class="o">}</span>
 
 <span class="kt">void</span> <span class="nf">enableMesh</span><span class="o">()</span> <span class="o">{</span>

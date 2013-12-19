@@ -560,18 +560,20 @@ public class WPainterPath {
 	boolean asRect(final WRectF result) {
 		if (this.isRect_) {
 			if (this.segments_.size() == 4) {
-				result.assign(new WRectF(0, 0, this.segments_.get(0).getX(),
-						this.segments_.get(1).getY()));
+				result.setX(0);
+				result.setY(0);
+				result.setWidth(this.segments_.get(0).getX());
+				result.setHeight(this.segments_.get(1).getY());
 				return true;
 			} else {
 				if (this.segments_.size() == 5
 						&& this.segments_.get(0).getType() == WPainterPath.Segment.Type.MoveTo) {
-					result.assign(new WRectF(this.segments_.get(0).getX(),
-							this.segments_.get(0).getY(), this.segments_.get(1)
-									.getX()
-									- this.segments_.get(0).getX(),
-							this.segments_.get(2).getY()
-									- this.segments_.get(0).getY()));
+					result.setX(this.segments_.get(0).getX());
+					result.setY(this.segments_.get(0).getY());
+					result.setWidth(this.segments_.get(1).getX()
+							- this.segments_.get(0).getX());
+					result.setHeight(this.segments_.get(2).getY()
+							- this.segments_.get(0).getY());
 					return true;
 				} else {
 					return false;
@@ -592,7 +594,7 @@ public class WPainterPath {
 	 */
 	public WRectF getControlPointRect(final WTransform transform) {
 		if (this.isEmpty()) {
-			return new WRectF();
+			return null;
 		} else {
 			boolean identity = transform.isIdentity();
 			double minX;

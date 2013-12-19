@@ -576,9 +576,10 @@ public class WTemplate extends WInteractWidget {
 			if (i == widget) {
 				return;
 			} else {
-				if (i != null)
-					i.remove();
+				WWidget toDelete = i;
 				this.widgets_.remove(varName);
+				if (toDelete != null)
+					toDelete.remove();
 			}
 		}
 		if (widget != null) {
@@ -609,9 +610,7 @@ public class WTemplate extends WInteractWidget {
 		WWidget i = this.widgets_.get(varName);
 		if (i != null) {
 			WWidget result = i;
-			this.widgets_.remove(varName);
-			this.changed_ = true;
-			this.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
+			result.setParentWidget((WWidget) null);
 			return result;
 		} else {
 			return null;
@@ -855,14 +854,15 @@ public class WTemplate extends WInteractWidget {
 	 */
 	public void clear() {
 		this.setIgnoreChildRemoves(true);
-		for (Iterator<Map.Entry<String, WWidget>> i_it = this.widgets_
-				.entrySet().iterator(); i_it.hasNext();) {
+		Map<String, WWidget> toDelete = this.widgets_;
+		this.widgets_ = new HashMap<String, WWidget>();
+		for (Iterator<Map.Entry<String, WWidget>> i_it = toDelete.entrySet()
+				.iterator(); i_it.hasNext();) {
 			Map.Entry<String, WWidget> i = i_it.next();
 			if (i.getValue() != null)
 				i.getValue().remove();
 		}
 		this.setIgnoreChildRemoves(false);
-		this.widgets_.clear();
 		this.strings_.clear();
 		this.conditions_.clear();
 		this.changed_ = true;
@@ -1069,6 +1069,20 @@ public class WTemplate extends WInteractWidget {
 				w.addStyleClass(new WString(s.substring(6)).toString());
 			}
 		}
+	}
+
+	void removeChild(WWidget child) {
+		for (Iterator<Map.Entry<String, WWidget>> i_it = this.widgets_
+				.entrySet().iterator(); i_it.hasNext();) {
+			Map.Entry<String, WWidget> i = i_it.next();
+			if (i.getValue() == child) {
+				i_it.remove();
+				this.changed_ = true;
+				this.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
+				break;
+			}
+		}
+		super.removeChild(child);
 	}
 
 	void updateDom(final DomElement element, boolean all) {

@@ -28,12 +28,16 @@ abstract class SeriesRenderer {
 
 	public abstract void paint();
 
-	protected final WChart2DRenderer renderer_;
+	protected final WCartesianChart chart_;
+	protected final WPainter painter_;
 	protected final WDataSeries series_;
+	protected final SeriesRenderIterator it_;
 
-	protected SeriesRenderer(final WChart2DRenderer renderer,
-			final WDataSeries series, final SeriesRenderIterator it) {
-		this.renderer_ = renderer;
+	protected SeriesRenderer(final WCartesianChart chart,
+			final WPainter painter, final WDataSeries series,
+			final SeriesRenderIterator it) {
+		this.chart_ = chart;
+		this.painter_ = painter;
 		this.series_ = series;
 		this.it_ = it;
 	}
@@ -43,12 +47,10 @@ abstract class SeriesRenderer {
 	}
 
 	protected WPointF hv(final WPointF p) {
-		return this.renderer_.hv(p);
+		return this.chart_.hv(p);
 	}
 
 	protected WPointF hv(double x, double y) {
-		return this.renderer_.hv(x, y);
+		return this.chart_.hv(x, y);
 	}
-
-	protected final SeriesRenderIterator it_;
 }

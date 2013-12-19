@@ -128,10 +128,15 @@ public class WSvgImage extends WResource implements WVectorImage {
 		}
 	}
 
-	public void drawImage(final WRectF rect, final String imageUri,
-			int imgWidth, int imgHeight, final WRectF srect) {
+	public void drawImage(final WRectF rect, final String imgUri, int imgWidth,
+			int imgHeight, final WRectF srect) {
 		this.finishPath();
 		this.makeNewGroup();
+		WApplication app = WApplication.getInstance();
+		String imageUri = "";
+		if (app != null) {
+			imageUri = app.resolveRelativeUrl(imgUri);
+		}
 		WRectF drect = rect;
 		char[] buf = new char[30];
 		boolean transformed = false;
@@ -146,7 +151,7 @@ public class WSvgImage extends WResource implements WVectorImage {
 			this.shapes_.append(' ').append(MathUtils.roundJs(drect.getX(), 3));
 			this.shapes_.append(' ').append(MathUtils.roundJs(drect.getY(), 3))
 					.append(")\">");
-			drect.assign(new WRectF(0, 0, srect.getWidth(), srect.getHeight()));
+			drect = new WRectF(0, 0, srect.getWidth(), srect.getHeight());
 			transformed = true;
 		}
 		double scaleX = drect.getWidth() / srect.getWidth();

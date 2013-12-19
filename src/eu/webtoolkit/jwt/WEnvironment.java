@@ -423,6 +423,10 @@ public class WEnvironment {
 		return this.doesAjax_;
 	}
 
+	public boolean isWebGL() {
+		return this.webGLsupported_;
+	}
+
 	/**
 	 * Returns the browser-side DPI scaling factor.
 	 * <p>
@@ -894,6 +898,7 @@ public class WEnvironment {
 	WEnvironment.UserAgent agent_;
 	double dpiScale_;
 	String queryString_;
+	protected boolean webGLsupported_;
 	Map<String, String[]> parameters_;
 	Map<String, String> cookies_;
 	Locale locale_;
@@ -918,6 +923,7 @@ public class WEnvironment {
 		this.hashInternalPaths_ = false;
 		this.dpiScale_ = 1;
 		this.queryString_ = "";
+		this.webGLsupported_ = false;
 		this.parameters_ = new HashMap<String, String[]>();
 		this.cookies_ = new HashMap<String, String>();
 		this.locale_ = new Locale("");
@@ -1129,6 +1135,7 @@ public class WEnvironment {
 		this.hashInternalPaths_ = false;
 		this.dpiScale_ = 1;
 		this.queryString_ = "";
+		this.webGLsupported_ = false;
 		this.parameters_ = new HashMap<String, String[]>();
 		this.cookies_ = new HashMap<String, String>();
 		this.locale_ = new Locale("");
@@ -1205,6 +1212,8 @@ public class WEnvironment {
 		} catch (final NumberFormatException e) {
 			this.dpiScale_ = 1;
 		}
+		String webGLE = request.getParameter("webGL");
+		this.webGLsupported_ = webGLE != null ? webGLE.equals("true") : false;
 		String tzE = request.getParameter("tz");
 		try {
 			this.timeZoneOffset_ = tzE != null ? Integer.parseInt(tzE) : 0;

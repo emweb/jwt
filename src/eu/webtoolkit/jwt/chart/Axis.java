@@ -27,9 +27,16 @@ public enum Axis {
 	/**
 	 * Ordinate axis (== Y1Axis for a 2D plot).
 	 */
-	OrdinateAxis(Axis.YAxis.getValue());
-
+	OrdinateAxis(Axis.YAxis.getValue()),
+	
+	YAxis_3D(3);
+	
+	public static Axis XAxis_3D = Axis.XAxis;
+	
+	public static Axis ZAxis_3D = Axis.YAxis;
+	
 	static Axis Y1Axis = YAxis;
+	
 
 	private int value;
 

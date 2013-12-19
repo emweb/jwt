@@ -27,7 +27,7 @@ import org.slf4j.LoggerFactory;
  * ), a Y axis ({@link Axis#YAxis YAxis}) and optionally a second Y axis (
  * {@link Axis#Y2Axis Y2Axis}). Each of the up to three axes in a cartesian
  * chart has a unique {@link WAxis#getId() getId()} that identifies which of
- * these three axes it is in the enclosing {@link WAxis#getChart() getChart()}.
+ * these three axes it is in the enclosing chart().
  * <p>
  * Use {@link WAxis#setVisible(boolean visible) setVisible()} to change the
  * visibility of an axis, {@link WAxis#setGridLinesEnabled(boolean enabled)
@@ -87,7 +87,6 @@ public class WAxis {
 	 * Returns the axis id.
 	 * <p>
 	 * 
-	 * @see WAxis#getChart()
 	 * @see WCartesianChart#getAxis(Axis axis)
 	 */
 	public Axis getId() {
@@ -214,6 +213,7 @@ public class WAxis {
 		}
 		;
 		this.roundLimits_.remove(AxisValue.MinimumValue);
+		this.update();
 	}
 
 	/**
@@ -263,6 +263,7 @@ public class WAxis {
 		}
 		;
 		this.roundLimits_.remove(AxisValue.MaximumValue);
+		this.update();
 	}
 
 	/**
@@ -546,11 +547,15 @@ public class WAxis {
 	 * @see WAxis#getLabelAngle()
 	 */
 	public void setLabelAngle(double angle) {
-		if (!ChartUtils.equals(this.labelAngle_, angle)) {
+		if (this.renderingMirror_) {
 			this.labelAngle_ = angle;
-			update();
+		} else {
+			if (!ChartUtils.equals(this.labelAngle_, angle)) {
+				this.labelAngle_ = angle;
+				update();
+			}
+			;
 		}
-		;
 	}
 
 	/**
@@ -727,6 +732,14 @@ public class WAxis {
 		return this.titleFont_;
 	}
 
+	public void setTitleOffset(double offset) {
+		this.titleOffset_ = offset;
+	}
+
+	public double getTitleOffset() {
+		return this.titleOffset_;
+	}
+
 	/**
 	 * Sets the axis label font.
 	 * <p>
@@ -753,14 +766,12 @@ public class WAxis {
 		return this.labelFont_;
 	}
 
-	WString getLabel(double u) {
+	public WString getLabel(double u) {
 		String buf = null;
 		WString text = new WString();
 		if (this.scale_ == AxisScale.CategoryScale) {
-			if (this.chart_.XSeriesColumn() != -1) {
-				text = StringUtils.asString(this.chart_.getModel().getData(
-						(int) u, this.chart_.XSeriesColumn()));
-			} else {
+			text = this.chart_.categoryLabel((int) u, this.axis_);
+			if ((text.length() == 0)) {
 				buf = String.format("%.4g", u + 1);
 				text = new WString(buf);
 			}
@@ -791,148 +802,33 @@ public class WAxis {
 	 * 
 	 * @see WCartesianChart#getAxis(Axis axis)
 	 */
-	public WCartesianChart getChart() {
-		return this.chart_;
-	}
-
-	int getSegmentCount() {
+	public int getSegmentCount() {
 		return (int) this.segments_.size();
 	}
 
-	enum DateTimeUnit {
-		Seconds, Minutes, Hours, Days, Months, Years;
-
-		/**
-		 * Returns the numerical representation of this enum.
-		 */
-		public int getValue() {
-			return ordinal();
-		}
+	public double getSegmentMargin() {
+		return this.segmentMargin_;
 	}
 
-	private WCartesianChart chart_;
-	private Axis axis_;
-	private boolean visible_;
-	private AxisValue location_;
-	private AxisScale scale_;
-	private double resolution_;
-	private double labelInterval_;
-	private WString labelFormat_;
-	private boolean gridLines_;
-	private WPen pen_;
-	private WPen gridLinesPen_;
-	private int margin_;
-	private double labelAngle_;
-	private WString title_;
-	private WFont titleFont_;
-	private WFont labelFont_;
-	private EnumSet<AxisValue> roundLimits_;
-
-	static class Segment {
-		private static Logger logger = LoggerFactory.getLogger(Segment.class);
-
-		public double minimum;
-		public double maximum;
-		public double renderMinimum;
-		public double renderMaximum;
-		public double renderLength;
-		public double renderStart;
-		public WAxis.DateTimeUnit dateTimeRenderUnit;
-		public int dateTimeRenderInterval;
-
-		public Segment() {
-			this.minimum = AUTO_MINIMUM;
-			this.maximum = AUTO_MAXIMUM;
-			this.renderMinimum = AUTO_MINIMUM;
-			this.renderMaximum = AUTO_MAXIMUM;
-			this.renderLength = AUTO_MAXIMUM;
-			this.renderStart = AUTO_MAXIMUM;
-		}
-	}
-
-	List<WAxis.Segment> segments_;
-	private double renderInterval_;
-
-	WAxis() {
-		this.chart_ = null;
-		this.axis_ = Axis.XAxis;
-		this.visible_ = true;
-		this.location_ = AxisValue.MinimumValue;
-		this.scale_ = AxisScale.LinearScale;
-		this.resolution_ = 0.0;
-		this.labelInterval_ = 0;
-		this.labelFormat_ = new WString();
-		this.gridLines_ = false;
-		this.pen_ = new WPen();
-		this.gridLinesPen_ = new WPen(WColor.gray);
-		this.margin_ = 0;
-		this.labelAngle_ = 0;
-		this.title_ = new WString();
-		this.titleFont_ = new WFont();
-		this.labelFont_ = new WFont();
-		this.roundLimits_ = EnumSet.of(AxisValue.MinimumValue,
-				AxisValue.MaximumValue);
-		this.segments_ = new ArrayList<WAxis.Segment>();
-		this.titleFont_.setFamily(WFont.GenericFamily.SansSerif);
-		this.titleFont_.setSize(WFont.Size.FixedSize, new WLength(12,
-				WLength.Unit.Point));
-		this.labelFont_.setFamily(WFont.GenericFamily.SansSerif);
-		this.labelFont_.setSize(WFont.Size.FixedSize, new WLength(10,
-				WLength.Unit.Point));
-		this.segments_.add(new WAxis.Segment());
-	}
-
-	void init(WCartesianChart chart, Axis axis) {
-		this.chart_ = chart;
-		this.axis_ = axis;
-		if (axis == Axis.XAxis) {
-			if (chart.getType() == ChartType.CategoryChart) {
-				this.scale_ = AxisScale.CategoryScale;
-			} else {
-				if (this.scale_ != AxisScale.DateScale) {
-					this.scale_ = AxisScale.LinearScale;
-				}
-			}
-		}
-		if (axis == Axis.Y2Axis) {
-			this.visible_ = false;
-		}
-	}
-
-	private void update() {
-		if (this.chart_ != null) {
-			this.chart_.update();
-		}
-	}
-
-	// private boolean (final T m, final T v) ;
-	boolean prepareRender(final WChart2DRenderer renderer) {
+	public boolean prepareRender(Orientation orientation, double length) {
 		double totalRenderRange = 0;
 		for (int i = 0; i < this.segments_.size(); ++i) {
 			final WAxis.Segment s = this.segments_.get(i);
-			this.computeRange(renderer, s);
+			this.computeRange(s);
 			totalRenderRange += s.renderMaximum - s.renderMinimum;
 		}
-		boolean vertical = this.axis_ != Axis.XAxis;
 		double clipMin = this.segments_.get(0).renderMinimum == 0 ? 0
 				: this.chart_.getAxisPadding();
 		double clipMax = this.segments_.get(this.segments_.size() - 1).renderMaximum == 0 ? 0
 				: this.chart_.getAxisPadding();
-		double totalRenderLength = vertical ? renderer.getChartArea()
-				.getHeight() : renderer.getChartArea().getWidth();
-		double totalRenderStart = vertical ? renderer.getChartArea()
-				.getBottom()
-				- clipMin : renderer.getChartArea().getLeft() + clipMin;
+		double totalRenderLength = length;
+		double totalRenderStart = clipMin;
 		final double SEGMENT_MARGIN = 40;
 		totalRenderLength -= SEGMENT_MARGIN * (this.segments_.size() - 1)
 				+ clipMin + clipMax;
 		if (totalRenderLength <= 0) {
 			this.renderInterval_ = 1.0;
 			return false;
-		}
-		int rc = 0;
-		if (this.chart_.getModel() != null) {
-			rc = this.chart_.getModel().getRowCount();
 		}
 		for (int it = 0; it < 2; ++it) {
 			double rs = totalRenderStart;
@@ -947,14 +843,17 @@ public class WAxis {
 					this.renderInterval_ = this.labelInterval_;
 					if (this.renderInterval_ == 0) {
 						if (this.scale_ == AxisScale.CategoryScale) {
-							double numLabels = this.calcAutoNumLabels(s) / 1.5;
+							double numLabels = this.calcAutoNumLabels(
+									orientation, s) / 1.5;
+							int rc = this.chart_.numberOfCategories(this.axis_);
 							this.renderInterval_ = Math.max(1.0, Math.floor(rc
 									/ numLabels));
 						} else {
 							if (this.scale_ == AxisScale.LogScale) {
 								this.renderInterval_ = 1;
 							} else {
-								double numLabels = this.calcAutoNumLabels(s);
+								double numLabels = this.calcAutoNumLabels(
+										orientation, s);
 								this.renderInterval_ = round125(diff
 										/ numLabels);
 							}
@@ -1285,171 +1184,170 @@ public class WAxis {
 					}
 				}
 				totalRenderRange += s.renderMaximum - s.renderMinimum;
-				if (this.axis_ == Axis.XAxis) {
-					rs += s.renderLength + SEGMENT_MARGIN;
-				} else {
-					rs -= s.renderLength + SEGMENT_MARGIN;
-				}
+				rs += s.renderLength + SEGMENT_MARGIN;
 			}
 		}
 		return true;
 	}
 
-	private void computeRange(final WChart2DRenderer renderer,
-			final WAxis.Segment segment) {
-		int rc = 0;
-		if (this.chart_.getModel() != null) {
-			rc = this.chart_.getModel().getRowCount();
-		}
-		if (this.scale_ == AxisScale.CategoryScale) {
-			rc = Math.max(1, rc);
-			segment.renderMinimum = -0.5;
-			segment.renderMaximum = rc - 0.5;
-		} else {
-			segment.renderMinimum = segment.minimum;
-			segment.renderMaximum = segment.maximum;
-			final boolean findMinimum = segment.renderMinimum == AUTO_MINIMUM;
-			final boolean findMaximum = segment.renderMaximum == AUTO_MAXIMUM;
-			if (findMinimum || findMaximum) {
-				double minimum = Double.MAX_VALUE;
-				double maximum = -Double.MAX_VALUE;
-				ExtremesIterator iterator = new ExtremesIterator(this.axis_,
-						this.scale_);
-				renderer.iterateSeries(iterator);
-				minimum = iterator.getMinimum();
-				maximum = iterator.getMaximum();
-				if (minimum == Double.MAX_VALUE) {
-					if (this.scale_ == AxisScale.LogScale) {
-						minimum = 1;
-					} else {
-						if (this.scale_ == AxisScale.DateScale) {
-							minimum = WDate.getCurrentDate().toJulianDay() - 10;
-						} else {
-							minimum = 0;
-						}
+	public void render(final WPainter painter,
+			EnumSet<AxisProperty> properties, final WPointF axisStart,
+			final WPointF axisEnd, double tickStart, double tickEnd,
+			double labelPos, EnumSet<AlignmentFlag> labelFlags) {
+		WFont oldFont1 = painter.getFont();
+		painter.setFont(this.labelFont_);
+		boolean vertical = axisStart.getX() == axisEnd.getX();
+		for (int segment = 0; segment < this.getSegmentCount(); ++segment) {
+			final WAxis.Segment s = this.segments_.get(segment);
+			if (!EnumUtils.mask(properties, AxisProperty.Line).isEmpty()) {
+				painter.setPen(this.getPen());
+				WPointF begin = interpolate(axisStart, axisEnd, s.renderStart);
+				WPointF end = interpolate(axisStart, axisEnd, s.renderStart
+						+ s.renderLength);
+				painter.drawLine(begin, end);
+				boolean rotate = vertical;
+				if (segment != 0) {
+					painter.save();
+					painter.translate(begin);
+					if (rotate) {
+						painter.rotate(90);
 					}
+					painter.drawPath(new TildeStartMarker(
+							(int) this.segmentMargin_));
+					painter.restore();
 				}
-				if (maximum == -Double.MAX_VALUE) {
-					if (this.scale_ == AxisScale.LogScale) {
-						maximum = 10;
-					} else {
-						if (this.scale_ == AxisScale.DateScale) {
-							maximum = WDate.getCurrentDate().toJulianDay();
-						} else {
-							maximum = 100;
-						}
+				if (segment != this.getSegmentCount() - 1) {
+					painter.save();
+					painter.translate(end);
+					if (rotate) {
+						painter.rotate(90);
 					}
-				}
-				if (findMinimum) {
-					segment.renderMinimum = Math.min(minimum,
-							findMaximum ? maximum : segment.maximum);
-				}
-				if (findMaximum) {
-					segment.renderMaximum = Math.max(maximum,
-							findMinimum ? minimum : segment.minimum);
+					painter.drawPath(new TildeEndMarker(
+							(int) this.segmentMargin_));
+					painter.restore();
 				}
 			}
-			double diff = segment.renderMaximum - segment.renderMinimum;
-			if (this.scale_ == AxisScale.LogScale) {
-				double minLog10 = Math.log10(segment.renderMinimum);
-				double maxLog10 = Math.log10(segment.renderMaximum);
-				if (findMinimum && findMaximum) {
-					segment.renderMinimum = Math.pow(10, Math.floor(minLog10));
-					segment.renderMaximum = Math.pow(10, Math.ceil(maxLog10));
-					if (segment.renderMinimum == segment.renderMaximum) {
-						segment.renderMaximum = Math.pow(10, Math
-								.ceil(maxLog10) + 1);
+			WPainterPath ticksPath = new WPainterPath();
+			List<WAxis.TickLabel> ticks = new ArrayList<WAxis.TickLabel>();
+			this.getLabelTicks(ticks, segment);
+			for (int i = 0; i < ticks.size(); ++i) {
+				double u = this.mapToDevice(ticks.get(i).u, segment);
+				WPointF p = interpolate(axisStart, axisEnd, Math.floor(u));
+				if (!EnumUtils.mask(properties, AxisProperty.Line).isEmpty()
+						&& ticks.get(i).tickLength != WAxis.TickLabel.TickLength.Zero) {
+					double ts = tickStart;
+					double te = tickEnd;
+					if (ticks.get(i).tickLength == WAxis.TickLabel.TickLength.Short) {
+						ts = tickStart / 2;
+						te = tickEnd / 2;
 					}
-				} else {
-					if (findMinimum) {
-						segment.renderMinimum = Math.pow(10, Math
-								.floor(minLog10));
-						if (segment.renderMinimum == segment.renderMaximum) {
-							segment.renderMinimum = Math.pow(10, Math
-									.floor(minLog10) - 1);
-						}
+					if (vertical) {
+						ticksPath.moveTo(new WPointF(p.getX() + ts, p.getY()));
+						ticksPath.lineTo(new WPointF(p.getX() + te, p.getY()));
 					} else {
-						if (findMaximum) {
-							segment.renderMaximum = Math.pow(10, Math
-									.ceil(maxLog10));
-							if (segment.renderMinimum == segment.renderMaximum) {
-								segment.renderMaximum = Math.pow(10, Math
-										.ceil(maxLog10) + 1);
-							}
-						}
+						ticksPath.moveTo(new WPointF(p.getX(), p.getY() + ts));
+						ticksPath.lineTo(new WPointF(p.getX(), p.getY() + te));
 					}
 				}
-			} else {
-				double resolution = this.resolution_;
-				if (resolution == 0) {
-					if (this.scale_ == AxisScale.LinearScale) {
-						resolution = Math.max(1E-3, Math
-								.abs(1E-3 * segment.renderMinimum));
+				if (!EnumUtils.mask(properties, AxisProperty.Labels).isEmpty()
+						&& !(ticks.get(i).label.length() == 0)) {
+					WPointF labelP = new WPointF();
+					if (vertical) {
+						labelP = new WPointF(p.getX() + labelPos, p.getY());
 					} else {
-						if (this.scale_ == AxisScale.DateScale) {
-							resolution = 1;
-						} else {
-							if (this.scale_ == AxisScale.DateTimeScale) {
-								resolution = 120;
-							}
-						}
+						labelP = new WPointF(p.getX(), p.getY() + labelPos);
 					}
-				}
-				if (Math.abs(diff) < resolution) {
-					double average = (segment.renderMaximum + segment.renderMinimum) / 2.0;
-					double d = resolution;
-					if (findMinimum && findMaximum) {
-						segment.renderMaximum = average + d / 2.0;
-						segment.renderMinimum = average - d / 2.0;
-					} else {
-						if (findMinimum) {
-							segment.renderMinimum = segment.renderMaximum - d;
-						} else {
-							if (findMaximum) {
-								segment.renderMaximum = segment.renderMinimum
-										+ d;
-							}
-						}
-					}
-					diff = segment.renderMaximum - segment.renderMinimum;
-				}
-				if (findMinimum && segment.renderMinimum >= 0
-						&& segment.renderMinimum - 0.50 * diff <= 0) {
-					segment.renderMinimum = 0;
-				}
-				if (findMaximum && segment.renderMaximum <= 0
-						&& segment.renderMaximum + 0.50 * diff >= 0) {
-					segment.renderMaximum = 0;
+					this.renderLabel(painter, ticks.get(i).label, labelP,
+							WColor.black, labelFlags, this.getLabelAngle(), 3);
 				}
 			}
+			if (!ticksPath.isEmpty()) {
+				painter.strokePath(ticksPath, this.getPen());
+			}
 		}
-		assert segment.renderMinimum < segment.renderMaximum;
+		painter.setFont(oldFont1);
 	}
 
-	void setOtherAxisLocation(AxisValue otherLocation) {
-		if (this.scale_ != AxisScale.LogScale) {
-			for (int i = 0; i < this.segments_.size(); ++i) {
-				final WAxis.Segment s = this.segments_.get(i);
-				int borderMin;
-				int borderMax;
-				if (this.scale_ == AxisScale.CategoryScale) {
-					borderMax = borderMin = this.chart_.getAxisPadding();
-				} else {
-					borderMin = s.renderMinimum == 0
-							&& otherLocation == AxisValue.ZeroValue ? 0
-							: this.chart_.getAxisPadding();
-					borderMax = s.renderMinimum == 0
-							&& otherLocation == AxisValue.ZeroValue ? 0
-							: this.chart_.getAxisPadding();
-				}
-				s.renderLength -= borderMin + borderMax;
-				if (this.axis_ == Axis.XAxis) {
-					s.renderStart += borderMin;
-				} else {
-					s.renderStart -= borderMin;
+	public final void render(final WPainter painter,
+			EnumSet<AxisProperty> properties, final WPointF axisStart,
+			final WPointF axisEnd, double tickStart, double tickEnd,
+			double labelPos, AlignmentFlag labelFlag,
+			AlignmentFlag... labelFlags) {
+		render(painter, properties, axisStart, axisEnd, tickStart, tickEnd,
+				labelPos, EnumSet.of(labelFlag, labelFlags));
+	}
+
+	public List<Double> getGridLinePositions() {
+		List<Double> pos = new ArrayList<Double>();
+		for (int segment = 0; segment < this.segments_.size(); ++segment) {
+			List<WAxis.TickLabel> ticks = new ArrayList<WAxis.TickLabel>();
+			this.getLabelTicks(ticks, segment);
+			for (int i = 0; i < ticks.size(); ++i) {
+				if (ticks.get(i).tickLength == WAxis.TickLabel.TickLength.Long) {
+					pos.add(this.mapToDevice(ticks.get(i).u, segment));
 				}
 			}
 		}
+		return pos;
+	}
+
+	public void renderLabel(final WPainter painter, final CharSequence text,
+			final WPointF p, final WColor color, EnumSet<AlignmentFlag> flags,
+			double angle, int margin) {
+		AlignmentFlag horizontalAlign = EnumUtils.enumFromSet(EnumUtils.mask(
+				flags, AlignmentFlag.AlignHorizontalMask));
+		AlignmentFlag verticalAlign = EnumUtils.enumFromSet(EnumUtils.mask(
+				flags, AlignmentFlag.AlignVerticalMask));
+		double width = 1000;
+		double height = 20;
+		WPointF pos = p;
+		double left = pos.getX();
+		double top = pos.getY();
+		switch (horizontalAlign) {
+		case AlignLeft:
+			left += margin;
+			break;
+		case AlignCenter:
+			left -= width / 2;
+			break;
+		case AlignRight:
+			left -= width + margin;
+		default:
+			break;
+		}
+		switch (verticalAlign) {
+		case AlignTop:
+			top += margin;
+			break;
+		case AlignMiddle:
+			top -= height / 2;
+			break;
+		case AlignBottom:
+			top -= height + margin;
+			break;
+		default:
+			break;
+		}
+		WPen pen = new WPen(color);
+		WPen oldPen = painter.getPen();
+		painter.setPen(pen);
+		if (angle == 0) {
+			painter.drawText(new WRectF(left, top, width, height), EnumSet.of(
+					horizontalAlign, verticalAlign), text);
+		} else {
+			painter.save();
+			painter.translate(pos);
+			painter.rotate(-angle);
+			painter.drawText(new WRectF(left - pos.getX(), top - pos.getY(),
+					width, height), EnumSet.of(horizontalAlign, verticalAlign),
+					text);
+			painter.restore();
+		}
+		painter.setPen(oldPen);
+	}
+
+	public void setRenderMirror(boolean enable) {
+		this.renderingMirror_ = enable;
 	}
 
 	static class TickLabel {
@@ -1482,15 +1380,12 @@ public class WAxis {
 		}
 	}
 
-	void getLabelTicks(final WChart2DRenderer renderer,
-			final List<WAxis.TickLabel> ticks, int segment) {
+	protected void getLabelTicks(final List<WAxis.TickLabel> ticks, int segment) {
 		final WAxis.Segment s = this.segments_.get(segment);
-		int rc = 0;
-		if (this.chart_.getModel() != null) {
-			rc = this.chart_.getModel().getRowCount();
-		}
+		int rc;
 		switch (this.scale_) {
 		case CategoryScale: {
+			rc = this.chart_.numberOfCategories(this.axis_);
 			int renderInterval = Math.max(1, (int) this.renderInterval_);
 			if (renderInterval == 1) {
 				ticks.add(new WAxis.TickLabel(-0.5,
@@ -1679,6 +1574,267 @@ public class WAxis {
 		}
 	}
 
+	enum DateTimeUnit {
+		Seconds, Minutes, Hours, Days, Months, Years;
+
+		/**
+		 * Returns the numerical representation of this enum.
+		 */
+		public int getValue() {
+			return ordinal();
+		}
+	}
+
+	private WAbstractChartImplementation chart_;
+	private Axis axis_;
+	private boolean visible_;
+	private AxisValue location_;
+	private AxisScale scale_;
+	private double resolution_;
+	private double labelInterval_;
+	private WString labelFormat_;
+	private boolean gridLines_;
+	private WPen pen_;
+	private WPen gridLinesPen_;
+	private int margin_;
+	private double labelAngle_;
+	private WString title_;
+	private WFont titleFont_;
+	private WFont labelFont_;
+	private EnumSet<AxisValue> roundLimits_;
+	private double segmentMargin_;
+	private double titleOffset_;
+	private boolean renderingMirror_;
+
+	static class Segment {
+		private static Logger logger = LoggerFactory.getLogger(Segment.class);
+
+		public double minimum;
+		public double maximum;
+		public double renderMinimum;
+		public double renderMaximum;
+		public double renderLength;
+		public double renderStart;
+		public WAxis.DateTimeUnit dateTimeRenderUnit;
+		public int dateTimeRenderInterval;
+
+		public Segment() {
+			this.minimum = AUTO_MINIMUM;
+			this.maximum = AUTO_MAXIMUM;
+			this.renderMinimum = AUTO_MINIMUM;
+			this.renderMaximum = AUTO_MAXIMUM;
+			this.renderLength = AUTO_MAXIMUM;
+			this.renderStart = AUTO_MAXIMUM;
+		}
+	}
+
+	List<WAxis.Segment> segments_;
+	private double renderInterval_;
+
+	WAxis() {
+		this.chart_ = null;
+		this.axis_ = Axis.XAxis;
+		this.visible_ = true;
+		this.location_ = AxisValue.MinimumValue;
+		this.scale_ = AxisScale.LinearScale;
+		this.resolution_ = 0.0;
+		this.labelInterval_ = 0;
+		this.labelFormat_ = new WString();
+		this.gridLines_ = false;
+		this.pen_ = new WPen();
+		this.gridLinesPen_ = new WPen(WColor.gray);
+		this.margin_ = 0;
+		this.labelAngle_ = 0;
+		this.title_ = new WString();
+		this.titleFont_ = new WFont();
+		this.labelFont_ = new WFont();
+		this.roundLimits_ = EnumSet.of(AxisValue.MinimumValue,
+				AxisValue.MaximumValue);
+		this.segmentMargin_ = 40;
+		this.titleOffset_ = 0;
+		this.segments_ = new ArrayList<WAxis.Segment>();
+		this.titleFont_.setFamily(WFont.GenericFamily.SansSerif);
+		this.titleFont_.setSize(WFont.Size.FixedSize, new WLength(12,
+				WLength.Unit.Point));
+		this.labelFont_.setFamily(WFont.GenericFamily.SansSerif);
+		this.labelFont_.setSize(WFont.Size.FixedSize, new WLength(10,
+				WLength.Unit.Point));
+		this.segments_.add(new WAxis.Segment());
+	}
+
+	void init(WAbstractChartImplementation chart, Axis axis) {
+		this.chart_ = chart;
+		this.axis_ = axis;
+		if (axis == Axis.XAxis || this.axis_ == Axis.XAxis_3D
+				|| this.axis_ == Axis.YAxis_3D) {
+			if (this.chart_.getChartType() == ChartType.CategoryChart) {
+				this.scale_ = AxisScale.CategoryScale;
+			} else {
+				if (this.scale_ != AxisScale.DateScale) {
+					this.scale_ = AxisScale.LinearScale;
+				}
+			}
+		}
+		if (axis == Axis.Y2Axis) {
+			this.visible_ = false;
+		}
+	}
+
+	private void update() {
+		if (this.chart_ != null) {
+			this.chart_.update();
+		}
+	}
+
+	// private boolean (final T m, final T v) ;
+	private void computeRange(final WAxis.Segment segment) {
+		if (this.scale_ == AxisScale.CategoryScale) {
+			int rc = this.chart_.numberOfCategories(this.axis_);
+			rc = Math.max(1, rc);
+			segment.renderMinimum = -0.5;
+			segment.renderMaximum = rc - 0.5;
+		} else {
+			segment.renderMinimum = segment.minimum;
+			segment.renderMaximum = segment.maximum;
+			final boolean findMinimum = segment.renderMinimum == AUTO_MINIMUM;
+			final boolean findMaximum = segment.renderMaximum == AUTO_MAXIMUM;
+			if (findMinimum || findMaximum) {
+				double minimum = Double.MAX_VALUE;
+				double maximum = -Double.MAX_VALUE;
+				WAbstractChartImplementation.RenderRange rr = this.chart_
+						.computeRenderRange(this.axis_, this.scale_);
+				minimum = rr.minimum;
+				maximum = rr.maximum;
+				if (minimum == Double.MAX_VALUE) {
+					if (this.scale_ == AxisScale.LogScale) {
+						minimum = 1;
+					} else {
+						if (this.scale_ == AxisScale.DateScale) {
+							minimum = WDate.getCurrentDate().toJulianDay() - 10;
+						} else {
+							minimum = 0;
+						}
+					}
+				}
+				if (maximum == -Double.MAX_VALUE) {
+					if (this.scale_ == AxisScale.LogScale) {
+						maximum = 10;
+					} else {
+						if (this.scale_ == AxisScale.DateScale) {
+							maximum = WDate.getCurrentDate().toJulianDay();
+						} else {
+							maximum = 100;
+						}
+					}
+				}
+				if (findMinimum) {
+					segment.renderMinimum = Math.min(minimum,
+							findMaximum ? maximum : segment.maximum);
+				}
+				if (findMaximum) {
+					segment.renderMaximum = Math.max(maximum,
+							findMinimum ? minimum : segment.minimum);
+				}
+			}
+			double diff = segment.renderMaximum - segment.renderMinimum;
+			if (this.scale_ == AxisScale.LogScale) {
+				double minLog10 = Math.log10(segment.renderMinimum);
+				double maxLog10 = Math.log10(segment.renderMaximum);
+				if (findMinimum && findMaximum) {
+					segment.renderMinimum = Math.pow(10, Math.floor(minLog10));
+					segment.renderMaximum = Math.pow(10, Math.ceil(maxLog10));
+					if (segment.renderMinimum == segment.renderMaximum) {
+						segment.renderMaximum = Math.pow(10, Math
+								.ceil(maxLog10) + 1);
+					}
+				} else {
+					if (findMinimum) {
+						segment.renderMinimum = Math.pow(10, Math
+								.floor(minLog10));
+						if (segment.renderMinimum == segment.renderMaximum) {
+							segment.renderMinimum = Math.pow(10, Math
+									.floor(minLog10) - 1);
+						}
+					} else {
+						if (findMaximum) {
+							segment.renderMaximum = Math.pow(10, Math
+									.ceil(maxLog10));
+							if (segment.renderMinimum == segment.renderMaximum) {
+								segment.renderMaximum = Math.pow(10, Math
+										.ceil(maxLog10) + 1);
+							}
+						}
+					}
+				}
+			} else {
+				double resolution = this.resolution_;
+				if (resolution == 0) {
+					if (this.scale_ == AxisScale.LinearScale) {
+						resolution = Math.max(1E-3, Math
+								.abs(1E-3 * segment.renderMinimum));
+					} else {
+						if (this.scale_ == AxisScale.DateScale) {
+							resolution = 1;
+						} else {
+							if (this.scale_ == AxisScale.DateTimeScale) {
+								resolution = 120;
+							}
+						}
+					}
+				}
+				if (Math.abs(diff) < resolution) {
+					double average = (segment.renderMaximum + segment.renderMinimum) / 2.0;
+					double d = resolution;
+					if (findMinimum && findMaximum) {
+						segment.renderMaximum = average + d / 2.0;
+						segment.renderMinimum = average - d / 2.0;
+					} else {
+						if (findMinimum) {
+							segment.renderMinimum = segment.renderMaximum - d;
+						} else {
+							if (findMaximum) {
+								segment.renderMaximum = segment.renderMinimum
+										+ d;
+							}
+						}
+					}
+					diff = segment.renderMaximum - segment.renderMinimum;
+				}
+				if (findMinimum && segment.renderMinimum >= 0
+						&& segment.renderMinimum - 0.50 * diff <= 0) {
+					segment.renderMinimum = 0;
+				}
+				if (findMaximum && segment.renderMaximum <= 0
+						&& segment.renderMaximum + 0.50 * diff >= 0) {
+					segment.renderMaximum = 0;
+				}
+			}
+		}
+		assert segment.renderMinimum < segment.renderMaximum;
+	}
+
+	void setOtherAxisLocation(AxisValue otherLocation) {
+		if (this.scale_ != AxisScale.LogScale) {
+			for (int i = 0; i < this.segments_.size(); ++i) {
+				final WAxis.Segment s = this.segments_.get(i);
+				int borderMin;
+				int borderMax;
+				if (this.scale_ == AxisScale.CategoryScale) {
+					borderMax = borderMin = this.chart_.getAxisPadding();
+				} else {
+					borderMin = s.renderMinimum == 0
+							&& otherLocation == AxisValue.ZeroValue ? 0
+							: this.chart_.getAxisPadding();
+					borderMax = s.renderMinimum == 0
+							&& otherLocation == AxisValue.ZeroValue ? 0
+							: this.chart_.getAxisPadding();
+				}
+				s.renderLength -= borderMin + borderMax;
+				s.renderStart += borderMin;
+			}
+		}
+	}
+
 	private double getValue(final Object v) {
 		switch (this.scale_) {
 		case LinearScale:
@@ -1705,11 +1861,11 @@ public class WAxis {
 		}
 	}
 
-	private double calcAutoNumLabels(final WAxis.Segment s) {
-		boolean vertical = this.axis_ != Axis.XAxis == (this.chart_
-				.getOrientation() == Orientation.Vertical);
+	private double calcAutoNumLabels(Orientation orientation,
+			final WAxis.Segment s) {
 		return s.renderLength
-				/ (vertical ? AUTO_V_LABEL_PIXELS : AUTO_H_LABEL_PIXELS);
+				/ (orientation == Orientation.Vertical ? AUTO_V_LABEL_PIXELS
+						: AUTO_H_LABEL_PIXELS);
 	}
 
 	double mapFromDevice(double d) {
@@ -1717,11 +1873,7 @@ public class WAxis {
 			final WAxis.Segment s = this.segments_.get(i);
 			boolean lastSegment = i == this.segments_.size() - 1;
 			if (lastSegment || d < this.mapToDevice(s.renderMaximum, i)) {
-				if (this.axis_ == Axis.XAxis) {
-					d = d - s.renderStart;
-				} else {
-					d = s.renderStart - d;
-				}
+				d = d - s.renderStart;
 				if (this.scale_ != AxisScale.LogScale) {
 					return s.renderMinimum + d
 							* (s.renderMaximum - s.renderMinimum)
@@ -1760,11 +1912,7 @@ public class WAxis {
 					/ (Math.log(s.renderMaximum) - Math.log(s.renderMinimum))
 					* s.renderLength;
 		}
-		if (this.axis_ == Axis.XAxis) {
-			return s.renderStart + d;
-		} else {
-			return s.renderStart - d;
-		}
+		return s.renderStart + d;
 	}
 
 	final double mapToDevice(double u) {
@@ -1783,6 +1931,7 @@ public class WAxis {
 	}
 
 	private static double EPSILON = 1E-3;
+	private static final int TICK_LENGTH = 5;
 	private static final int AXIS_MARGIN = 4;
 	private static final int AUTO_V_LABEL_PIXELS = 25;
 	private static final int AUTO_H_LABEL_PIXELS = 80;
@@ -1815,5 +1964,25 @@ public class WAxis {
 
 	static int roundDown(int v, int factor) {
 		return v / factor * factor;
+	}
+
+	static WPointF interpolate(final WPointF p1, final WPointF p2, double u) {
+		double x = p1.getX();
+		if (p2.getX() - p1.getX() > 0) {
+			x += u;
+		} else {
+			if (p2.getX() - p1.getX() < 0) {
+				x -= u;
+			}
+		}
+		double y = p1.getY();
+		if (p2.getY() - p1.getY() > 0) {
+			y += u;
+		} else {
+			if (p2.getY() - p1.getY() < 0) {
+				y -= u;
+			}
+		}
+		return new WPointF(x, y);
 	}
 }

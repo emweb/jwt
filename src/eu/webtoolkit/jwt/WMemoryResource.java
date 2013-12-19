@@ -31,7 +31,7 @@ public class WMemoryResource extends WResource {
 		this("", (WObject) null);
 	}
 
-	WMemoryResource(String mimeType, WObject parent) {
+	public WMemoryResource(String mimeType, WObject parent) {
 		super(parent);
 		this.data_ = null;
 		this.mimeType_ = mimeType;

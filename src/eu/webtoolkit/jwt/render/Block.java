@@ -670,6 +670,10 @@ class Block {
 			}
 			this.renderBorders(bb, renderer, painter, verticals);
 			if (this.type_ == DomElementType.DomElement_THEAD) {
+				if (this.currentTheadBlock_ == null
+						&& !this.blockLayout.isEmpty()) {
+					this.currentTheadBlock_ = this.blockLayout.get(0);
+				}
 				for (int j = 0; j < this.children_.size(); ++j) {
 					if (this.currentTheadBlock_ != lb) {
 						this.children_.get(j).reLayout(this.currentTheadBlock_,
@@ -712,10 +716,6 @@ class Block {
 				}
 				return;
 			}
-		}
-		if (this.type_ == DomElementType.DomElement_THEAD) {
-			this.currentTheadBlock_ = this.blockLayout.isEmpty() ? null
-					: this.blockLayout.get(0);
 		}
 		int first = this.type_ == DomElementType.DomElement_LI ? 1 : 0;
 		for (int i = first; i < this.inlineLayout.size(); ++i) {

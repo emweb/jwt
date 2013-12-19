@@ -23,9 +23,11 @@ class MarkerRenderIterator extends SeriesIterator {
 	private static Logger logger = LoggerFactory
 			.getLogger(MarkerRenderIterator.class);
 
-	public MarkerRenderIterator(final WChart2DRenderer renderer) {
+	public MarkerRenderIterator(final WCartesianChart chart,
+			final WPainter painter) {
 		super();
-		this.renderer_ = renderer;
+		this.chart_ = chart;
+		this.painter_ = painter;
 		this.marker_ = new WPainterPath();
 	}
 
@@ -33,9 +35,9 @@ class MarkerRenderIterator extends SeriesIterator {
 			int numBarGroups, int currentBarGroup) {
 		this.marker_.assign(new WPainterPath());
 		if (series.getMarker() != MarkerType.NoMarker) {
-			this.renderer_.getChart().drawMarker(series, this.marker_);
-			this.renderer_.getPainter().save();
-			this.renderer_.getPainter().setShadow(series.getShadow());
+			this.chart_.drawMarker(series, this.marker_);
+			this.painter_.save();
+			this.painter_.setShadow(series.getShadow());
 			this.needRestore_ = true;
 		} else {
 			this.needRestore_ = false;
@@ -45,57 +47,55 @@ class MarkerRenderIterator extends SeriesIterator {
 
 	public void endSeries() {
 		if (this.needRestore_) {
-			this.renderer_.getPainter().restore();
+			this.painter_.restore();
 		}
 	}
 
 	public void newValue(final WDataSeries series, double x, double y,
 			double stackY, final WModelIndex xIndex, final WModelIndex yIndex) {
 		if (!Double.isNaN(x) && !Double.isNaN(y)) {
-			WPointF p = this.renderer_.map(x, y, series.getAxis(), this
+			WPointF p = this.chart_.map(x, y, series.getAxis(), this
 					.getCurrentXSegment(), this.getCurrentYSegment());
 			if (!this.marker_.isEmpty()) {
-				final WPainter painter = this.renderer_.getPainter();
-				painter.save();
-				painter.translate(this.hv(p));
+				this.painter_.save();
+				this.painter_.translate(this.hv(p));
 				WPen pen = series.getMarkerPen().clone();
 				setPenColor(pen, xIndex, yIndex,
 						ItemDataRole.MarkerPenColorRole);
-				painter.setPen(pen);
+				this.painter_.setPen(pen);
 				WBrush brush = series.getMarkerBrush().clone();
 				setBrushColor(brush, xIndex, yIndex,
 						ItemDataRole.MarkerBrushColorRole);
-				painter.setBrush(brush);
-				this.setMarkerSize(painter, xIndex, yIndex, series
+				this.painter_.setBrush(brush);
+				this.setMarkerSize(this.painter_, xIndex, yIndex, series
 						.getMarkerSize());
-				painter.drawPath(this.marker_);
-				painter.restore();
+				this.painter_.drawPath(this.marker_);
+				this.painter_.restore();
 			}
 			if (series.getType() != SeriesType.BarSeries) {
 				Object toolTip = yIndex.getData(ItemDataRole.ToolTipRole);
 				if (!(toolTip == null)) {
-					WTransform t = this.renderer_.getPainter()
-							.getWorldTransform();
+					WTransform t = this.painter_.getWorldTransform();
 					p = t.map(this.hv(p));
 					WCircleArea circleArea = new WCircleArea((int) p.getX(),
 							(int) p.getY(), 5);
 					circleArea.setToolTip(StringUtils.asString(toolTip));
-					this.renderer_.getChart().addDataPointArea(series, xIndex,
-							circleArea);
+					this.chart_.addDataPointArea(series, xIndex, circleArea);
 				}
 			}
 		}
 	}
 
 	public WPointF hv(final WPointF p) {
-		return this.renderer_.hv(p);
+		return this.chart_.hv(p);
 	}
 
 	public WPointF hv(double x, double y) {
-		return this.renderer_.hv(x, y);
+		return this.chart_.hv(x, y);
 	}
 
-	private final WChart2DRenderer renderer_;
+	private final WCartesianChart chart_;
+	private final WPainter painter_;
 	private WPainterPath marker_;
 	private boolean needRestore_;
 

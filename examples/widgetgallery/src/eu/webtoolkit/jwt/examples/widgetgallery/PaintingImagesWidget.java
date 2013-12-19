@@ -43,11 +43,11 @@ class PaintingImagesWidget extends WPaintedWidget {
 		painter.drawImage(location, image, sourceRect);
 		WRectF destinationRect = new WRectF(0.0, 604.0, 130.0, 110.0);
 		painter.drawImage(destinationRect, image);
-		sourceRect.assign(new WRectF(60.0, 80.0, 220.0, 180.0));
-		destinationRect.assign(new WRectF(0.0, 724.0, 130.0, 110.0));
+		sourceRect = new WRectF(60.0, 80.0, 220.0, 180.0);
+		destinationRect = new WRectF(0.0, 724.0, 130.0, 110.0);
 		painter.drawImage(destinationRect, image, sourceRect);
-		sourceRect.assign(new WRectF(294.0, 226.0, 265.0, 41.0));
-		destinationRect.assign(new WRectF(0.0, 844.0, 639.0, 110.0));
+		sourceRect = new WRectF(294.0, 226.0, 265.0, 41.0);
+		destinationRect = new WRectF(0.0, 844.0, 639.0, 110.0);
 		painter.drawImage(destinationRect, image, sourceRect);
 		painter.translate(0, 964);
 		painter.drawImage(0.0, 0.0, image);

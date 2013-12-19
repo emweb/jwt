@@ -61,6 +61,7 @@ public class Configuration {
 	private String redirectMessage_ = "Plain HTML version";
 	private boolean sendXHTMLMimeType = false;
 	private boolean inlineCss_ = true;
+	private boolean webGLDetect_ = true;
 	private ArrayList<String> botList = new ArrayList<String>();
 	private ArrayList<String> ajaxAgentList = new ArrayList<String>();
 	private boolean ajaxAgentWhiteList = false;
@@ -348,6 +349,10 @@ public class Configuration {
 	 */
 	public boolean isInlineCss() {
 		return inlineCss_;
+	}
+
+	public boolean isWebglDetect() {
+		return webGLDetect_;
 	}
 
 	/**

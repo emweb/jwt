@@ -23,9 +23,10 @@ class LineSeriesRenderer extends SeriesRenderer {
 	private static Logger logger = LoggerFactory
 			.getLogger(LineSeriesRenderer.class);
 
-	public LineSeriesRenderer(final WChart2DRenderer renderer,
-			final WDataSeries series, final SeriesRenderIterator it) {
-		super(renderer, series, it);
+	public LineSeriesRenderer(final WCartesianChart chart,
+			final WPainter painter, final WDataSeries series,
+			final SeriesRenderIterator it) {
+		super(chart, painter, series, it);
 		this.curveLength_ = 0;
 		this.curve_ = new WPainterPath();
 		this.fill_ = new WPainterPath();
@@ -36,7 +37,7 @@ class LineSeriesRenderer extends SeriesRenderer {
 
 	public void addValue(double x, double y, double stacky,
 			final WModelIndex xIndex, final WModelIndex yIndex) {
-		WPointF p = this.renderer_.map(x, y, this.series_.getAxis(), this.it_
+		WPointF p = this.chart_.map(x, y, this.series_.getAxis(), this.it_
 				.getCurrentXSegment(), this.it_.getCurrentYSegment());
 		if (this.curveLength_ == 0) {
 			this.curve_.moveTo(this.hv(p));
@@ -86,17 +87,15 @@ class LineSeriesRenderer extends SeriesRenderer {
 							new WBrush(BrushStyle.NoBrush))) {
 				this.fill_.lineTo(this.hv(this.fillOtherPoint(this.lastX_)));
 				this.fill_.closeSubPath();
-				this.renderer_.getPainter().setShadow(this.series_.getShadow());
-				this.renderer_.getPainter().fillPath(this.fill_,
-						this.series_.getBrush());
+				this.painter_.setShadow(this.series_.getShadow());
+				this.painter_.fillPath(this.fill_, this.series_.getBrush());
 			}
 			if (this.series_.getFillRange() == FillRangeType.NoFill) {
-				this.renderer_.getPainter().setShadow(this.series_.getShadow());
+				this.painter_.setShadow(this.series_.getShadow());
 			} else {
-				this.renderer_.getPainter().setShadow(new WShadow());
+				this.painter_.setShadow(new WShadow());
 			}
-			this.renderer_.getPainter().strokePath(this.curve_,
-					this.series_.getPen());
+			this.painter_.strokePath(this.curve_, this.series_.getPen());
 		}
 		this.curveLength_ = 0;
 		this.curve_.assign(new WPainterPath());
@@ -143,17 +142,17 @@ class LineSeriesRenderer extends SeriesRenderer {
 		FillRangeType fr = this.series_.getFillRange();
 		switch (fr) {
 		case MinimumValueFill:
-			return new WPointF(this.renderer_.map(x, 0, this.series_.getAxis(),
+			return new WPointF(this.chart_.map(x, 0, this.series_.getAxis(),
 					this.it_.getCurrentXSegment(),
-					this.it_.getCurrentYSegment()).getX(), this.renderer_
-					.getChartArea().getBottom());
+					this.it_.getCurrentYSegment()).getX(),
+					this.chart_.chartArea_.getBottom());
 		case MaximumValueFill:
-			return new WPointF(this.renderer_.map(x, 0, this.series_.getAxis(),
+			return new WPointF(this.chart_.map(x, 0, this.series_.getAxis(),
 					this.it_.getCurrentXSegment(),
-					this.it_.getCurrentYSegment()).getX(), this.renderer_
-					.getChartArea().getTop());
+					this.it_.getCurrentYSegment()).getX(),
+					this.chart_.chartArea_.getTop());
 		case ZeroValueFill:
-			return new WPointF(this.renderer_.map(x, 0, this.series_.getAxis(),
+			return new WPointF(this.chart_.map(x, 0, this.series_.getAxis(),
 					this.it_.getCurrentXSegment(), this.it_
 							.getCurrentYSegment()));
 		default:

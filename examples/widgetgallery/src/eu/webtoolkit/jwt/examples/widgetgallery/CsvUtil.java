@@ -21,7 +21,8 @@ import eu.webtoolkit.jwt.WString;
 import eu.webtoolkit.jwt.WText;
 
 public class CsvUtil {
-    public static void readFromCsv(BufferedReader reader, WAbstractItemModel model) {
+	
+    public static void readFromCsv(BufferedReader reader, WAbstractItemModel model, boolean firstLineIsHeaders) {
         try {
             Pattern pat = Pattern.compile(",\"(.+?)\"");
             String line = null;
@@ -37,7 +38,7 @@ public class CsvUtil {
                 String[] fields = sb.toString().split(",");
                 String text;
 
-                if (row != 0)
+                if (row != 0 || !firstLineIsHeaders)
                     model.insertRow(model.getRowCount());
 
                 for (int col = 0; col < fields.length; col++) {
@@ -47,14 +48,14 @@ public class CsvUtil {
                     if (col >= model.getColumnCount())
                         model.insertColumn(col);
 
-                    if (row == 0) {
+                    if (firstLineIsHeaders && row == 0) {
                         model.setHeaderData(col, text);
                     } else {
                         try {
                             Integer i = Integer.valueOf(text);
-                            model.setData(row - 1, col, i);
+                            model.setData(firstLineIsHeaders ? row - 1 : row, col, i);
                         } catch (NumberFormatException e) {
-                            model.setData(row - 1, col, text);
+                            model.setData(firstLineIsHeaders ? row - 1 : row, col, text);
                         }
                     }
                 }
@@ -71,7 +72,15 @@ public class CsvUtil {
         InputStream is = CsvUtil.class.getResourceAsStream("/eu/webtoolkit/jwt/examples/widgetgallery/data/" + resourceName);
 
         WStandardItemModel model = new WStandardItemModel();
-        CsvUtil.readFromCsv(new BufferedReader(new InputStreamReader(is)), model);
+        CsvUtil.readFromCsv(new BufferedReader(new InputStreamReader(is)), model, true);
+        return model;
+	}
+ 	
+ 	public static WStandardItemModel csvToModel(String resourceName, WObject parent, boolean firstLineIsHeaders) {
+        InputStream is = CsvUtil.class.getResourceAsStream("/eu/webtoolkit/jwt/examples/widgetgallery/data/" + resourceName);
+
+        WStandardItemModel model = new WStandardItemModel();
+        CsvUtil.readFromCsv(new BufferedReader(new InputStreamReader(is)), model, firstLineIsHeaders);
         return model;
 	}
 }

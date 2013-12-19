@@ -14,10 +14,8 @@
 
   <!-- Classpath declaration -->
   <path id="project.classpath">
-    <fileset dir="." />
-    <fileset dir="${jwt.dir}/dist" />
-    <fileset dir="${jwt.dir}/lib" />
-    <fileset dir="${jwt.dir}/lib/servlet-api" />
+    <fileset dir="${lib.dir}" />
+    <fileset dir="${jwt-lib.dir}" />
   </path>
 
   <target name="all" depends="dist">
@@ -37,10 +35,9 @@
     
     <mkdir dir="${jwt-lib.dir}"/>
     <copy todir="${jwt-lib.dir}">
-      <fileset dir="${lib.dir}" />
       <fileset dir="${jwt.dir}/dist" />
       <fileset dir="${jwt.dir}/lib" 
-	       includes="*.jar servlet-api/*.jar"/>
+	       includes="*.jar servlet-api/*.jar pdfjet/*.jar jogl/*.jar"/>
     </copy>
 
     <mkdir dir="${build.dir}"/>

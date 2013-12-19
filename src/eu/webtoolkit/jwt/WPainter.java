@@ -134,8 +134,8 @@ public class WPainter {
 	 */
 	public WPainter() {
 		this.device_ = null;
-		this.viewPort_ = new WRectF();
-		this.window_ = new WRectF();
+		this.viewPort_ = null;
+		this.window_ = null;
 		this.viewTransform_ = new WTransform();
 		this.stateStack_ = new ArrayList<WPainter.State>();
 		this.stateStack_.add(new WPainter.State());
@@ -146,8 +146,8 @@ public class WPainter {
 	 */
 	public WPainter(WPaintDevice device) {
 		this.device_ = null;
-		this.viewPort_ = new WRectF();
-		this.window_ = new WRectF();
+		this.viewPort_ = null;
+		this.window_ = null;
 		this.viewTransform_ = new WTransform();
 		this.stateStack_ = new ArrayList<WPainter.State>();
 		this.begin(device);
@@ -172,11 +172,9 @@ public class WPainter {
 		this.device_ = device;
 		this.device_.setPainter(this);
 		this.device_.init();
-		this.viewPort_.setX(0);
-		this.viewPort_.setY(0);
-		this.viewPort_.setWidth(this.device_.getWidth().getValue());
-		this.viewPort_.setHeight(this.device_.getHeight().getValue());
-		this.window_.assign(this.viewPort_);
+		this.viewPort_ = new WRectF(0, 0, this.device_.getWidth().getValue(),
+				this.device_.getHeight().getValue());
+		this.window_ = this.viewPort_;
 		this.recalculateViewTransform();
 		return true;
 	}
@@ -448,12 +446,7 @@ public class WPainter {
 		private int height_;
 
 		private void setUrl(final String url) {
-			WApplication app = WApplication.getInstance();
-			if (app != null) {
-				this.url_ = app.resolveRelativeUrl(url);
-			} else {
-				this.url_ = url;
-			}
+			this.url_ = url;
 		}
 	}
 
@@ -1501,7 +1494,7 @@ public class WPainter {
 	 * @see WPainter#setWindow(WRectF window)
 	 */
 	public void setViewPort(final WRectF viewPort) {
-		this.viewPort_.assign(viewPort);
+		this.viewPort_ = viewPort;
 		this.recalculateViewTransform();
 	}
 
@@ -1542,7 +1535,7 @@ public class WPainter {
 	 * @see WPainter#setViewPort(WRectF viewPort)
 	 */
 	public void setWindow(final WRectF window) {
-		this.window_.assign(window);
+		this.window_ = window;
 		this.recalculateViewTransform();
 	}
 

@@ -342,10 +342,10 @@ public abstract class WAbstractChart extends WPaintedWidget {
 	 * Paint the chart in a rectangle of the given painter.
 	 * <p>
 	 * Calls {@link #paint(WPainter painter, WRectF rectangle) paint(painter,
-	 * new WRectF())}
+	 * null)}
 	 */
 	public final void paint(final WPainter painter) {
-		paint(painter, new WRectF());
+		paint(painter, null);
 	}
 
 	WAbstractChart(WContainerWidget parent) {

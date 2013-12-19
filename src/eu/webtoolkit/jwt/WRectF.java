@@ -71,17 +71,6 @@ public class WRectF {
 	}
 
 	/**
-	 * Internal assign method.
-	 */
-	public WRectF assign(final WRectF rhs) {
-		this.x_ = rhs.x_;
-		this.y_ = rhs.y_;
-		this.width_ = rhs.width_;
-		this.height_ = rhs.height_;
-		return this;
-	}
-
-	/**
 	 * Indicates whether some other object is "equal to" this one.
 	 */
 	public boolean equals(final WRectF rhs) {
@@ -89,7 +78,7 @@ public class WRectF {
 				&& this.width_ == rhs.width_ && this.height_ == rhs.height_;
 	}
 
-	// public boolean isNull() ;
+	// public boolean () ;
 	/**
 	 * Determines whether or not this rectangle is empty.
 	 * <p>

@@ -56,7 +56,7 @@ public class WVmlImage implements WVectorImage {
 		this.currentShadow_ = new WShadow();
 		this.activePaths_ = new ArrayList<WVmlImage.ActivePath>();
 		this.rendered_ = new StringWriter();
-		this.currentRect_ = new WRectF();
+		this.currentRect_ = null;
 	}
 
 	public EnumSet<WPaintDevice.FeatureFlag> getFeatures() {
@@ -93,10 +93,15 @@ public class WVmlImage implements WVectorImage {
 		this.getPainter().restore();
 	}
 
-	public void drawImage(final WRectF rect, final String imgUri, int imgWidth,
-			int imgHeight, final WRectF sourceRect) {
+	public void drawImage(final WRectF rect, final String imageUri,
+			int imgWidth, int imgHeight, final WRectF sourceRect) {
 		this.finishPaths();
 		this.processClipping();
+		WApplication app = WApplication.getInstance();
+		String imgUri = "";
+		if (app != null) {
+			imgUri = app.resolveRelativeUrl(imageUri);
+		}
 		WTransform t = this.getPainter().getCombinedTransform();
 		WPointF tl = t.map(rect.getTopLeft());
 		this.rendered_.append("<v:group style=\"width:").append(
@@ -285,8 +290,8 @@ public class WVmlImage implements WVectorImage {
 			}
 		}
 		this.activePaths_.get(thisPath).path += tmp.toString();
-		this.activePaths_.get(thisPath).bbox.assign(this.activePaths_
-				.get(thisPath).bbox.united(bbox));
+		this.activePaths_.get(thisPath).bbox = this.activePaths_.get(thisPath).bbox
+				.united(bbox);
 	}
 
 	public void drawText(final WRectF rect, EnumSet<AlignmentFlag> flags,
@@ -454,7 +459,7 @@ public class WVmlImage implements WVectorImage {
 
 		public ActivePath() {
 			this.path = "";
-			this.bbox = new WRectF();
+			this.bbox = null;
 		}
 	}
 
@@ -487,7 +492,7 @@ public class WVmlImage implements WVectorImage {
 	private void processClipping() {
 		if (this.clippingChanged_) {
 			if (this.getPainter().hasClipping()) {
-				WRectF rect = new WRectF();
+				WRectF rect = null;
 				if (this.getPainter().getClipPath().asRect(rect)) {
 					WTransform t = this.getPainter().getClipPathTransform();
 					WPointF tl = t.map(rect.getTopLeft());
@@ -698,7 +703,7 @@ public class WVmlImage implements WVectorImage {
 						"\" coordsize=\"").append(
 						String.valueOf(rect.getWidth() * Z)).append(",")
 				.append(String.valueOf(rect.getHeight() * Z)).append("\">");
-		this.currentRect_.assign(rect);
+		this.currentRect_ = rect;
 	}
 
 	private void stopClip() {

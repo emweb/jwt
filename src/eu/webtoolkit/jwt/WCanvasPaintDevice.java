@@ -189,10 +189,15 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 		}
 	}
 
-	public void drawImage(final WRectF rect, final String imgUri, int imgWidth,
-			int imgHeight, final WRectF sourceRect) {
+	public void drawImage(final WRectF rect, final String imageUri,
+			int imgWidth, int imgHeight, final WRectF sourceRect) {
 		this.finishPath();
 		this.renderStateChanges(true);
+		WApplication app = WApplication.getInstance();
+		String imgUri = "";
+		if (app != null) {
+			imgUri = app.resolveRelativeUrl(imageUri);
+		}
 		int imageIndex = this.createImage(imgUri);
 		char[] buf = new char[30];
 		this.js_.append("ctx.drawImage(images[").append(
@@ -505,6 +510,16 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 		for (int i = 0; i < this.textElements_.size(); ++i) {
 			text.addChild(this.textElements_.get(i));
 		}
+	}
+
+	public void renderPaintCommands(final StringWriter js_target,
+			final String canvasElement) {
+		js_target.append("var ctx=").append(canvasElement).append(
+				".getContext('2d');");
+		js_target
+				.append("if (!ctx.setLineDash) {ctx.setLineDash = function(a){};}");
+		js_target.append("ctx.save();ctx.save();").append(this.js_.toString())
+				.append("ctx.restore();ctx.restore();");
 	}
 
 	public WLength getWidth() {

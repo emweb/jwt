@@ -1312,6 +1312,7 @@ class WebRenderer implements SlotLearnerInterface {
 		bootJs.setCondition("PROGRESS", hybrid
 				&& !this.session_.getEnv().hasAjax());
 		bootJs.setCondition("DEFER_SCRIPT", true);
+		bootJs.setCondition("WEBGL_DETECT", conf.isWebglDetect());
 		String internalPath = hybrid ? this.session_.getApp().getInternalPath()
 				: this.session_.getEnv().getInternalPath();
 		bootJs.setVar("INTERNAL_PATH", this.safeJsStringLiteral(internalPath));
@@ -1448,6 +1449,10 @@ class WebRenderer implements SlotLearnerInterface {
 						if (this.session_.getEnv().getAgent() == WEnvironment.UserAgent.IE10) {
 							result
 									.append("<meta http-equiv=\"X-UA-Compatible\" content=\"IE=10\"");
+							closeSpecial(result);
+						} else {
+							result
+									.append("<meta http-equiv=\"X-UA-Compatible\" content=\"IE=11\"");
 							closeSpecial(result);
 						}
 					}

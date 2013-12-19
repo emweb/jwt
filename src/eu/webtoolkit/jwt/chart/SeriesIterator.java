@@ -20,15 +20,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Abstract base class for iterating over series data in
- * {@link WChart2DRenderer}.
+ * Abstract base class for iterating over series data in a chart.
  * <p>
  * 
  * This class is specialized for rendering series data.
  * <p>
- * 
- * @see WChart2DRenderer#iterateSeries(SeriesIterator iterator, boolean
- *      reverseStacked)
  */
 public class SeriesIterator {
 	private static Logger logger = LoggerFactory

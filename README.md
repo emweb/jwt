@@ -61,6 +61,9 @@ The corresponding dependency blocks are:
       <version>2.5</version>
     </dependency>
 
+There are a number of optional dependencies for JWt, needed only depending on what
+features you use
+
     <!-- optional, for JWT Auth -->
     <dependency>
       <groupId>eu.webtoolkit</groupId>
@@ -82,14 +85,24 @@ The corresponding dependency blocks are:
       <version>3.2</version>
     </dependency>
 
+    <!-- optional, for server-side WebGL fallback -->
+    <dependency>
+      <groupId>org.jogamp.jogl</groupId>
+      <artifactId>jogl-all</artifactId>
+      <version>2.0-rc11</version>
+    </dependency>
+
+    <!-- optional, for server-side WebGL fallback -->
+    <dependency>
+      <groupId>org.jogamp.gluegen</groupId>
+      <artifactId>gluegen-rt-main</artifactId>
+      <version>2.0-rc11</version>
+    </dependency>
+
+    <!-- may be needed if your J2EE container doesn't provide this -->
     <dependency>
       <groupId>org.apache.geronimo.javamail</groupId>
       <artifactId>geronimo-javamail_1.4_mail</artifactId>
       <version>1.8.1</version>
       <scope>provided</scope>
     </dependency>
-
-(Depending on the J2EE container, javax.mail may be included and provided
-by the container, and then the last dependency for
-org.apache.geronimo.javamail should be dropped)
-

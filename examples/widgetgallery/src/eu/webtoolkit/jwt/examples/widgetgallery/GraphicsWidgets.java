@@ -66,6 +66,18 @@ class GraphicsWidgets extends TopicWidget {
 						return GraphicsWidgets.this.painting3d();
 					}
 				}));
+		menu.addItem("3D numerical chart", DeferredWidget
+				.deferCreate(new WidgetCreator() {
+					public WWidget create() {
+						return GraphicsWidgets.this.numCharts3d();
+					}
+				}));
+		menu.addItem("3D category chart", DeferredWidget
+				.deferCreate(new WidgetCreator() {
+					public WWidget create() {
+						return GraphicsWidgets.this.catCharts3d();
+					}
+				}));
 	}
 
 	private WWidget painting2d() {
@@ -116,6 +128,18 @@ class GraphicsWidgets extends TopicWidget {
 	private WWidget painting3d() {
 		WTemplate result = new TopicTemplate("graphics-Painting3D");
 		result.bindWidget("Painting3D", Painting3D());
+		return result;
+	}
+
+	private WWidget numCharts3d() {
+		WTemplate result = new TopicTemplate("graphics-NumCharts3D");
+		result.bindWidget("NumericalCharts3D", NumChart3d());
+		return result;
+	}
+
+	private WWidget catCharts3d() {
+		WTemplate result = new TopicTemplate("graphics-CatCharts3D");
+		result.bindWidget("CategoryCharts3D", CatChart3d());
 		return result;
 	}
 
@@ -433,6 +457,86 @@ class GraphicsWidgets extends TopicWidget {
 
 	WWidget Painting3D() {
 		WContainerWidget container = new WContainerWidget();
+		return container;
+	}
+
+	WWidget NumChart3d() {
+		WContainerWidget container = new WContainerWidget();
+		WCartesian3DChart chart = new WCartesian3DChart(container);
+		chart.setType(ChartType.ScatterPlot);
+		final WCssDecorationStyle style = new WCssDecorationStyle();
+		style.setBorder(new WBorder(WBorder.Style.Solid, WBorder.Width.Medium,
+				WColor.black));
+		chart.setDecorationStyle(style);
+		chart.resize(new WLength(600), new WLength(600));
+		chart.setGridEnabled(Plane.XY_Plane, Axis.XAxis_3D, true);
+		chart.setGridEnabled(Plane.XY_Plane, Axis.YAxis_3D, true);
+		chart.setGridEnabled(Plane.XZ_Plane, Axis.XAxis_3D, true);
+		chart.setGridEnabled(Plane.XZ_Plane, Axis.ZAxis_3D, true);
+		chart.setGridEnabled(Plane.YZ_Plane, Axis.YAxis_3D, true);
+		chart.setGridEnabled(Plane.YZ_Plane, Axis.ZAxis_3D, true);
+		WAbstractTableModel model1 = new SombreroData(40, 40, -10, 10, -10, 10,
+				container);
+		WGridData dataset1 = new WGridData(model1);
+		dataset1
+				.setColorMap(new WStandardColorMap(dataset1
+						.minimum(Axis.ZAxis_3D), dataset1
+						.maximum(Axis.ZAxis_3D), true));
+		GridDataSettings datasettings1 = new GridDataSettings(chart, dataset1,
+				container);
+		WAbstractTableModel model2 = new PlaneData(40, 40, -10, 0.5f, -10,
+				0.5f, container);
+		WEquidistantGridData dataset2 = new WEquidistantGridData(model2, -10,
+				0.5f, -10, 0.5f);
+		GridDataSettings datasettings2 = new GridDataSettings(chart, dataset2,
+				container);
+		WAbstractTableModel model3 = new PointsData(100, container);
+		WScatterData dataset3 = new WScatterData(model3);
+		ScatterDataSettings datasettings3 = new ScatterDataSettings(dataset3,
+				container);
+		chart.addDataSeries(dataset1);
+		chart.addDataSeries(dataset2);
+		chart.addDataSeries(dataset3);
+		WTabWidget configuration = new WTabWidget(container);
+		configuration.addTab(new ChartSettings(chart),
+				"General Chart Settings", WTabWidget.LoadPolicy.PreLoading);
+		configuration.addTab(datasettings1, "Dataset 1",
+				WTabWidget.LoadPolicy.PreLoading);
+		configuration.addTab(datasettings2, "Dataset 2",
+				WTabWidget.LoadPolicy.PreLoading);
+		configuration.addTab(datasettings3, "Dataset 3",
+				WTabWidget.LoadPolicy.PreLoading);
+		return container;
+	}
+
+	WWidget CatChart3d() {
+		WContainerWidget container = new WContainerWidget();
+		WCartesian3DChart chart = new WCartesian3DChart(container);
+		chart.setType(ChartType.CategoryChart);
+		final WCssDecorationStyle style = new WCssDecorationStyle();
+		style.setBorder(new WBorder(WBorder.Style.Solid, WBorder.Width.Medium,
+				WColor.black));
+		chart.setDecorationStyle(style);
+		chart.resize(new WLength(600), new WLength(600));
+		WStandardItemModel model1 = CsvUtil.csvToModel("" + "hor_plane.csv",
+				container, false);
+		WGridData horPlane = new WGridData(model1);
+		horPlane.setType(Series3DType.BarSeries3D);
+		WStandardItemModel model2 = CsvUtil.csvToModel(
+				"" + "isotope_decay.csv", container, false);
+		WGridData isotopes = new WGridData(model2);
+		isotopes.setType(Series3DType.BarSeries3D);
+		chart.addDataSeries(isotopes);
+		chart.addDataSeries(horPlane);
+		CategoryDataSettings settings1 = new CategoryDataSettings(horPlane,
+				container);
+		CategoryDataSettings settings2 = new CategoryDataSettings(isotopes,
+				container);
+		WTabWidget configuration = new WTabWidget(container);
+		configuration.addTab(settings1, "horizontal plane",
+				WTabWidget.LoadPolicy.PreLoading);
+		configuration.addTab(settings2, "isotope data",
+				WTabWidget.LoadPolicy.PreLoading);
 		return container;
 	}
 }
