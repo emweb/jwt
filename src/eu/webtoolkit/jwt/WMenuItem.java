@@ -79,6 +79,7 @@ public class WMenuItem extends WContainerWidget {
 		super();
 		this.separator_ = false;
 		this.triggered_ = new Signal1<WMenuItem>(this);
+		this.contentsDestroyedConnection_ = new AbstractSignal.Connection();
 		this.pathComponent_ = "";
 		this.create("", text, contents, policy);
 	}
@@ -110,6 +111,7 @@ public class WMenuItem extends WContainerWidget {
 		super();
 		this.separator_ = false;
 		this.triggered_ = new Signal1<WMenuItem>(this);
+		this.contentsDestroyedConnection_ = new AbstractSignal.Connection();
 		this.pathComponent_ = "";
 		this.create(iconPath, text, contents, policy);
 	}
@@ -604,11 +606,17 @@ public class WMenuItem extends WContainerWidget {
 	}
 
 	WWidget getTakeContents() {
+		if (this.contents_ == null) {
+			return null;
+		}
 		WWidget result = this.contents_;
 		if (this.isContentsLoaded()) {
 			if (this.contentsContainer_ != null) {
 				this.contentsContainer_.removeWidget(this.contents_);
 			}
+		}
+		if (this.contentsDestroyedConnection_.isConnected()) {
+			this.contentsDestroyedConnection_.disconnect();
 		}
 		this.contents_ = null;
 		return result;
@@ -724,6 +732,7 @@ public class WMenuItem extends WContainerWidget {
 		super();
 		this.separator_ = true;
 		this.triggered_ = new Signal1<WMenuItem>(this);
+		this.contentsDestroyedConnection_ = new AbstractSignal.Connection();
 		this.pathComponent_ = "";
 		this.create("", WString.Empty, (WWidget) null,
 				WMenuItem.LoadPolicy.LazyLoading);
@@ -749,6 +758,7 @@ public class WMenuItem extends WContainerWidget {
 	private boolean selectable_;
 	private boolean signalsConnected_;
 	private Signal1<WMenuItem> triggered_;
+	private AbstractSignal.Connection contentsDestroyedConnection_;
 	private String pathComponent_;
 	private boolean customPathComponent_;
 	private boolean internalPathEnabled_;
@@ -802,6 +812,8 @@ public class WMenuItem extends WContainerWidget {
 
 	void purgeContents() {
 		this.contentsContainer_ = null;
+		if (this.contents_ != null)
+			this.contents_.remove();
 		this.contents_ = null;
 	}
 
@@ -833,6 +845,9 @@ public class WMenuItem extends WContainerWidget {
 	}
 
 	void loadContents() {
+		if (!(this.contents_ != null)) {
+			return;
+		}
 		if (!this.isContentsLoaded()) {
 			this.contentsContainer_.addWidget(this.contents_);
 			this.signalsConnected_ = false;
@@ -912,5 +927,10 @@ public class WMenuItem extends WContainerWidget {
 				a.toggleStyleClass("Wt-padded", padding);
 			}
 		}
+	}
+
+	private void contentsDestroyed() {
+		this.contentsContainer_ = null;
+		this.contents_ = null;
 	}
 }

@@ -48,12 +48,14 @@ public enum ItemFlag {
 	ItemIsDropEnabled,
 	/**
 	 * <p>
-	 * Item has tree states. When set, {@link ItemDataRole#CheckStateRole} data
-	 * is of type {@link CheckState}
+	 * Item has tree states.
+	 * <p>
+	 * When set, {@link ItemDataRole#CheckStateRole} data is of type
+	 * {@link CheckState}
 	 */
 	ItemIsTristate,
 	/**
-	 * Item&apos;s textual is HTML.
+	 * Item&apos;s text (DisplayRole, ToolTipRole) is HTML.
 	 */
 	ItemIsXHTMLText,
 	/**

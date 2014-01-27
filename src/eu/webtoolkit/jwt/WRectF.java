@@ -31,7 +31,10 @@ public class WRectF {
 	/**
 	 * Default constructor.
 	 * <p>
-	 * Constructs an empty rectangle at point (0, 0).
+	 * Constructs a <code>null</code> rectangle.
+	 * <p>
+	 * 
+	 * @see WRectF#()
 	 */
 	public WRectF() {
 		this.x_ = 0;

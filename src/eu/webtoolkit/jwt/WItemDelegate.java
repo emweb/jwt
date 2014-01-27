@@ -169,7 +169,9 @@ public class WItemDelegate extends WAbstractItemDelegate {
 		WString tooltip = StringUtils.asString(index
 				.getData(ItemDataRole.ToolTipRole));
 		if (!(tooltip.length() == 0) || !isNew) {
-			widgetRef.w.setToolTip(tooltip);
+			widgetRef.w.setToolTip(tooltip, !EnumUtils.mask(index.getFlags(),
+					ItemFlag.ItemIsXHTMLText).isEmpty() ? TextFormat.XHTMLText
+					: TextFormat.PlainText);
 		}
 		String sc = StringUtils.asString(
 				index.getData(ItemDataRole.StyleClassRole)).toString();

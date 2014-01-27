@@ -571,7 +571,7 @@ public class WTreeView extends WAbstractItemView {
 			if (useStyleLeft) {
 				boolean rtl = app.getLayoutDirection() == LayoutDirection.RightToLeft;
 				this.tieRowsScrollJS_
-						.setJavaScript("function(obj, event) {Wt3_3_1.getCssRule('#"
+						.setJavaScript("function(obj, event) {Wt3_3_2.getCssRule('#"
 								+ this.getId()
 								+ " .Wt-tv-rowc').style.left= -obj.scrollLeft "
 								+ (rtl ? "+ (obj.firstChild.offsetWidth - obj.offsetWidth)"
@@ -671,6 +671,14 @@ public class WTreeView extends WAbstractItemView {
 		} else {
 			this.setCurrentPage(row / this.getPageSize());
 		}
+	}
+
+	public EventSignal1<WScrollEvent> scrolled() {
+		if (WApplication.getInstance().getEnvironment().hasAjax()
+				&& this.contentsContainer_ != null) {
+			return this.contentsContainer_.scrolled();
+		}
+		throw new WException("Scrolled signal existes only with ajax.");
 	}
 
 	protected void render(EnumSet<RenderFlag> flags) {
@@ -774,7 +782,7 @@ public class WTreeView extends WAbstractItemView {
 			return;
 		}
 		app.loadJavaScript("js/WTreeView.js", wtjs1());
-		this.setJavaScriptMember(" WTreeView", "new Wt3_3_1.WTreeView("
+		this.setJavaScriptMember(" WTreeView", "new Wt3_3_2.WTreeView("
 				+ app.getJavaScriptClass() + "," + this.getJsRef() + ","
 				+ this.contentsContainer_.getJsRef() + ","
 				+ this.headerContainer_.getJsRef() + ","

@@ -578,7 +578,7 @@ public class WCartesianChart extends WAbstractChart {
 					"WCartesianChart::paint(): painter is not active.");
 		}
 		WRectF rect = rectangle;
-		if (rect.isEmpty()) {
+		if ((rect == null) || rect.isEmpty()) {
 			rect = painter.getWindow();
 		}
 		this.render(painter, rect);
@@ -829,7 +829,7 @@ public class WCartesianChart extends WAbstractChart {
 	 */
 	public boolean initLayout(final WRectF rectangle) {
 		WRectF rect = rectangle;
-		if (rect.isEmpty()) {
+		if ((rect == null) || rect.isEmpty()) {
 			rect = new WRectF(0.0, 0.0, this.getWidth().toPixels(), this
 					.getHeight().toPixels());
 		}

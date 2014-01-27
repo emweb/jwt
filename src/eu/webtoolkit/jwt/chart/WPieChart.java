@@ -433,7 +433,7 @@ public class WPieChart extends WAbstractChart {
 			throw new WException("WPieChart::paint(): painter is not active.");
 		}
 		WRectF rect = rectangle;
-		if (rect.isEmpty()) {
+		if ((rect == null) || rect.isEmpty()) {
 			rect = painter.getWindow();
 		}
 		rect.setX(rect.getX() + this.getPlotAreaPadding(Side.Left));

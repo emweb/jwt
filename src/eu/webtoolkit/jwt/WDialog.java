@@ -462,7 +462,7 @@ public class WDialog extends WPopupWidget {
 				this
 						.setJavaScriptMember(
 								" Resizable",
-								"(new Wt3_3_1.Resizable(Wt3_3_1,"
+								"(new Wt3_3_2.Resizable(Wt3_3_2,"
 										+ this.getJsRef()
 										+ ")).onresize(function(w, h) {var obj = $('#"
 										+ this.getId()
@@ -612,7 +612,7 @@ public class WDialog extends WPopupWidget {
 					}
 				}
 			}
-			this.doJavaScript("new Wt3_3_1.WDialog(" + app.getJavaScriptClass()
+			this.doJavaScript("new Wt3_3_2.WDialog(" + app.getJavaScriptClass()
 					+ "," + this.getJsRef() + "," + this.titleBar_.getJsRef()
 					+ "," + (centerX ? "1" : "0") + "," + (centerY ? "1" : "0")
 					+ ");");

@@ -540,9 +540,14 @@ public class WStandardItem {
 	}
 
 	void setEditable(boolean editable) {
-		if (!this.isEditable()) {
+		if (!this.isEditable() && editable) {
 			this.flags_.add(ItemFlag.ItemIsEditable);
 			this.signalModelDataChange();
+		} else {
+			if (this.isEditable() && !editable) {
+				this.flags_.remove(ItemFlag.ItemIsEditable);
+				this.signalModelDataChange();
+			}
 		}
 	}
 

@@ -485,7 +485,7 @@ class WebRenderer implements SlotLearnerInterface {
 			script.setCondition("UGLY_INTERNAL_PATHS", this.session_
 					.isUseUglyInternalPaths());
 			script.setCondition("DYNAMIC_JS", false);
-			script.setVar("WT_CLASS", "Wt3_3_1");
+			script.setVar("WT_CLASS", "Wt3_3_2");
 			script.setVar("APP_CLASS", app.getJavaScriptClass());
 			script.setCondition("STRICTLY_SERIALIZED_EVENTS", conf
 					.serializedEvents());
@@ -548,17 +548,17 @@ class WebRenderer implements SlotLearnerInterface {
 				if (app.enableAjax_) {
 					this.collectedJS1_
 							.append(
-									"var form = Wt3_3_1.getElement('Wt-form'); if (form) {")
+									"var form = Wt3_3_2.getElement('Wt-form'); if (form) {")
 							.append(this.beforeLoadJS_.toString());
 					this.beforeLoadJS_.setLength(0);
 					this.collectedJS1_.append("var domRoot=").append(
 							app.domRoot_.getJsRef()).append(';').append(
-							"Wt3_3_1.progressed(domRoot);");
+							"Wt3_3_2.progressed(domRoot);");
 					int librariesLoaded = this.loadScriptLibraries(
 							this.collectedJS1_, app);
 					app.streamBeforeLoadJavaScript(this.collectedJS1_, false);
 					this.collectedJS2_.append(
-							"Wt3_3_1.resolveRelativeAnchors();").append(
+							"Wt3_3_2.resolveRelativeAnchors();").append(
 							"domRoot.style.visibility = 'visible';").append(
 							app.getJavaScriptClass()).append(
 							"._p_.doAutoJavaScript();");
@@ -847,7 +847,7 @@ class WebRenderer implements SlotLearnerInterface {
 		if (widgetset) {
 			String historyE = app.getEnvironment().getParameter("Wt-history");
 			if (historyE != null) {
-				out.append("Wt3_3_1").append(".history.initialize('").append(
+				out.append("Wt3_3_2").append(".history.initialize('").append(
 						historyE.charAt(0)).append("-field', '").append(
 						historyE.charAt(0)).append("-iframe', '');\n");
 			}
@@ -1037,7 +1037,7 @@ class WebRenderer implements SlotLearnerInterface {
 
 	private void loadStyleSheet(final StringBuilder out, WApplication app,
 			final WCssStyleSheet sheet) {
-		out.append("Wt3_3_1").append(".addStyleSheet('").append(
+		out.append("Wt3_3_2").append(".addStyleSheet('").append(
 				sheet.getLink().resolveUrl(app)).append("', '").append(
 				sheet.getMedia()).append("');\n");
 	}

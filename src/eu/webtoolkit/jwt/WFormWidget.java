@@ -465,7 +465,7 @@ public abstract class WFormWidget extends WInteractWidget {
 			if (!(this.validateJs_ != null)) {
 				this.validateJs_ = new JSlot();
 				this.validateJs_
-						.setJavaScript("function(o){Wt3_3_1.validate(o)}");
+						.setJavaScript("function(o){Wt3_3_2.validate(o)}");
 				this.keyWentUp().addListener(this.validateJs_);
 				this.changed().addListener(this.validateJs_);
 				if (this.getDomElementType() != DomElementType.DomElement_SELECT) {
@@ -483,7 +483,7 @@ public abstract class WFormWidget extends WInteractWidget {
 				this.keyPressed().addListener(this.filterInput_);
 			}
 			StringUtils.replace(inputFilter, '/', "\\/");
-			this.filterInput_.setJavaScript("function(o,e){Wt3_3_1.filter(o,e,"
+			this.filterInput_.setJavaScript("function(o,e){Wt3_3_2.filter(o,e,"
 					+ jsStringLiteral(inputFilter) + ")}");
 		} else {
 			;
@@ -500,7 +500,7 @@ public abstract class WFormWidget extends WInteractWidget {
 			}
 			WApplication app = WApplication.getInstance();
 			app.loadJavaScript("js/WFormWidget.js", wtjs1());
-			this.setJavaScriptMember(" WFormWidget", "new Wt3_3_1.WFormWidget("
+			this.setJavaScriptMember(" WFormWidget", "new Wt3_3_2.WFormWidget("
 					+ app.getJavaScriptClass() + "," + this.getJsRef() + ","
 					+ WString.toWString(this.emptyText_).getJsStringLiteral()
 					+ ");");

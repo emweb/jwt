@@ -633,11 +633,11 @@ public class RegistrationModel extends FormBaseModel {
 								+ info2.getJsRef()
 								+ ",o1="
 								+ password.getJsRef()
-								+ ";if (!$(o1).hasClass('Wt-invalid')) {if (o.value == o1.value) {$(o).removeClass('Wt-invalid');Wt3_3_1.setHtml(i,"
+								+ ";if (!$(o1).hasClass('Wt-invalid')) {if (o.value == o1.value) {$(o).removeClass('Wt-invalid');Wt3_3_2.setHtml(i,"
 								+ WString
 										.toWString(WString.tr("Wt.Auth.valid"))
 										.getJsStringLiteral()
-								+ ");} else {$(o).removeClass('Wt-valid');Wt3_3_1.setHtml(i,"
+								+ ");} else {$(o).removeClass('Wt-valid');Wt3_3_2.setHtml(i,"
 								+ WString
 										.toWString(
 												WString

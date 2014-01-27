@@ -459,7 +459,7 @@ public class WVmlImage implements WVectorImage {
 
 		public ActivePath() {
 			this.path = "";
-			this.bbox = null;
+			this.bbox = new WRectF(0, 0, 0, 0);
 		}
 	}
 

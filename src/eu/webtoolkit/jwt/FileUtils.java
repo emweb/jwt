@@ -55,10 +55,11 @@ public class FileUtils {
 		if (url == null) {
 			WApplication app = WApplication.getInstance();
 			if (app != null) {
-				ServletContext context = app.getEnvironment().getServer().getServletContext();
 				try {
+					ServletContext context = app.getEnvironment().getServer().getServletContext();
 					url = context.getResource(path);
-				} catch (IOException e) {
+				} catch (Exception e) {
+					url = null;
 				}
 			}
 			

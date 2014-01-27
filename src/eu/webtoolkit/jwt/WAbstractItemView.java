@@ -1516,6 +1516,15 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	}
 
 	/**
+	 * {@link } when scrolling.
+	 * <p>
+	 * <p>
+	 * <i><b>Note: </b>Works only if ajax is available. </i>
+	 * </p>
+	 */
+	public abstract EventSignal1<WScrollEvent> scrolled();
+
+	/**
 	 * Configures the number of columns that are used as row headers.
 	 * <p>
 	 * An item view does not use the vertical header data from the model in any
