@@ -1159,18 +1159,19 @@ public class WEnvironment {
 				.getConfiguration();
 		this.queryString_ = request.getQueryString();
 		this.parameters_ = request.getParameterMap();
-		this.urlScheme_ = request.getScheme();
-		this.referer_ = request.getHeaderValue("Referer");
-		this.accept_ = request.getHeaderValue("Accept");
-		this.serverSignature_ = "";
-		this.serverSoftware_ = "";
-		this.serverAdmin_ = "";
+		this.urlScheme_ = str(request.getScheme());
+		this.referer_ = str(request.getHeaderValue("Referer"));
+		this.accept_ = str(request.getHeaderValue("Accept"));
+		this.serverSignature_ = str("");
+		this.serverSoftware_ = str("");
+		this.serverAdmin_ = str("");
 		this.pathInfo_ = request.getPathInfo();
-		this.setUserAgent(request.getHeaderValue("User-Agent"));
+		this.setUserAgent(str(request.getHeaderValue("User-Agent")));
 		logger.info(new StringWriter().append("UserAgent: ").append(
 				this.userAgent_).toString());
 		if (conf.isBehindReverseProxy()) {
-			String forwardedHost = request.getHeaderValue("X-Forwarded-Host");
+			String forwardedHost = str(request
+					.getHeaderValue("X-Forwarded-Host"));
 			if (forwardedHost.length() != 0) {
 				int i = forwardedHost.lastIndexOf(',');
 				if (i == -1) {
@@ -1179,10 +1180,10 @@ public class WEnvironment {
 					this.host_ = forwardedHost.substring(i + 1);
 				}
 			} else {
-				this.host_ = request.getHeaderValue("Host");
+				this.host_ = str(request.getHeaderValue("Host"));
 			}
 		} else {
-			this.host_ = request.getHeaderValue("Host");
+			this.host_ = str(request.getHeaderValue("Host"));
 		}
 		if (this.host_.length() == 0) {
 			this.host_ = request.getServerName();
@@ -1192,8 +1193,8 @@ public class WEnvironment {
 		}
 		this.clientAddress_ = getClientAddress(request, conf);
 		String cookie = request.getHeaderValue("Cookie");
-		this.doesCookies_ = cookie.length() != 0;
-		if (this.doesCookies_) {
+		this.doesCookies_ = cookie != null;
+		if (cookie != null) {
 			parseCookies(cookie, this.cookies_);
 		}
 		this.locale_ = request.getLocale();
@@ -1202,7 +1203,7 @@ public class WEnvironment {
 	void enableAjax(final WebRequest request) {
 		this.doesAjax_ = true;
 		this.session_.getController().newAjaxSession();
-		this.doesCookies_ = request.getHeaderValue("Cookie").length() != 0;
+		this.doesCookies_ = request.getHeaderValue("Cookie") != null;
 		if (!(request.getParameter("htmlHistory") != null)) {
 			this.hashInternalPaths_ = true;
 		}
@@ -1243,13 +1244,13 @@ public class WEnvironment {
 			final Configuration conf) {
 		String result = "";
 		if (conf.isBehindReverseProxy()) {
-			String clientIp = request.getHeaderValue("Client-IP");
+			String clientIp = str(request.getHeaderValue("Client-IP"));
 			clientIp = clientIp.trim();
 			List<String> ips = new ArrayList<String>();
 			if (clientIp.length() != 0) {
 				ips = new ArrayList<String>(Arrays.asList(clientIp.split(",")));
 			}
-			String forwardedFor = request.getHeaderValue("X-Forwarded-For");
+			String forwardedFor = str(request.getHeaderValue("X-Forwarded-For"));
 			forwardedFor = forwardedFor.trim();
 			List<String> forwardedIps = new ArrayList<String>();
 			if (forwardedFor.length() != 0) {
@@ -1268,7 +1269,7 @@ public class WEnvironment {
 			}
 		}
 		if (result.length() == 0) {
-			result = "";
+			result = str("");
 		}
 		return result;
 	}
@@ -1297,5 +1298,9 @@ public class WEnvironment {
 		} catch (UnsupportedEncodingException uee) {
 			uee.printStackTrace();
 		}
+	}
+
+	static String str(String s) {
+		return s != null ? s : "";
 	}
 }

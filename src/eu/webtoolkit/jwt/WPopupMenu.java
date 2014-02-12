@@ -27,20 +27,18 @@ import org.slf4j.LoggerFactory;
  * It is a specialized {@link WMenu} from which it inherits most of the API.
  * <p>
  * When initially created, the menu is invisible, until
- * {@link WPopupMenu#popup(WPoint p) popup()} or
- * {@link WPopupMenu#exec(WPoint p) exec()} is called. Then, the menu will
- * remain visible until an item is selected, or the user cancels the menu (by
- * hitting Escape or clicking elsewhere).
+ * {@link WPopupMenu#popup(WPoint p) popup()} or exec() is called. Then, the
+ * menu will remain visible until an item is selected, or the user cancels the
+ * menu (by hitting Escape or clicking elsewhere).
  * <p>
  * The implementation assumes availability of JavaScript to position the menu at
  * the current mouse position and provide feed-back of the currently selected
  * item.
  * <p>
  * As with {@link WDialog}, there are two ways of using the menu. The simplest
- * way is to use one of the synchronous {@link WPopupMenu#exec(WPoint p) exec()}
- * methods, which starts a reentrant event loop and waits until the user
- * cancelled the popup menu (by hitting Escape or clicking elsewhere), or
- * selected an item.
+ * way is to use one of the synchronous exec() methods, which starts a reentrant
+ * event loop and waits until the user cancelled the popup menu (by hitting
+ * Escape or clicking elsewhere), or selected an item.
  * <p>
  * Alternatively, you can use one of the {@link WPopupMenu#popup(WPoint p)
  * popup()} methods to show the menu and listen to the
@@ -108,8 +106,7 @@ public class WPopupMenu extends WMenu {
 	 * Creates a new popup menu.
 	 * <p>
 	 * The menu is hidden, by default, and must be shown using
-	 * {@link WPopupMenu#popup(WPoint p) popup()} or
-	 * {@link WPopupMenu#exec(WPoint p) exec()}.
+	 * {@link WPopupMenu#popup(WPoint p) popup()} or exec().
 	 */
 	public WPopupMenu(WStackedWidget contentsStack) {
 		super(contentsStack);
@@ -162,8 +159,6 @@ public class WPopupMenu extends WMenu {
 	 * four menu corners to correspond to this point so that the popup menu is
 	 * completely visible within the window.
 	 * <p>
-	 * 
-	 * @see WPopupMenu#exec(WPoint p)
 	 */
 	public void popup(final WPoint p) {
 		this.popupImpl();
@@ -242,19 +237,8 @@ public class WPopupMenu extends WMenu {
 		if (this.recursiveEventLoop_) {
 			throw new WException("WPopupMenu::exec(): already being executed.");
 		}
-		WApplication app = WApplication.getInstance();
-		this.recursiveEventLoop_ = true;
 		this.popup(p);
-		if (app.getEnvironment().isTest()) {
-			app.getEnvironment().popupExecuted().trigger(this);
-			if (this.recursiveEventLoop_) {
-				throw new WException("Test case must close popup menu.");
-			}
-		} else {
-			do {
-				app.getSession().doRecursiveEventLoop();
-			} while (this.recursiveEventLoop_);
-		}
+		this.exec();
 		return this.result_;
 	}
 
@@ -281,12 +265,8 @@ public class WPopupMenu extends WMenu {
 		if (this.recursiveEventLoop_) {
 			throw new WException("WPopupMenu::exec(): already being executed.");
 		}
-		WebSession session = WApplication.getInstance().getSession();
-		this.recursiveEventLoop_ = true;
 		this.popup(location, orientation);
-		do {
-			session.doRecursiveEventLoop();
-		} while (this.recursiveEventLoop_);
+		this.exec();
 		return this.result_;
 	}
 
@@ -410,6 +390,21 @@ public class WPopupMenu extends WMenu {
 	private boolean recursiveEventLoop_;
 	private int autoHideDelay_;
 
+	private void exec() {
+		WApplication app = WApplication.getInstance();
+		this.recursiveEventLoop_ = true;
+		if (app.getEnvironment().isTest()) {
+			app.getEnvironment().popupExecuted().trigger(this);
+			if (this.recursiveEventLoop_) {
+				throw new WException("Test case must close popup menu.");
+			}
+		} else {
+			do {
+				app.waitForEvent();
+			} while (this.recursiveEventLoop_);
+		}
+	}
+
 	private void cancel() {
 		if (!this.isHidden()) {
 			this.done((WMenuItem) null);
@@ -514,6 +509,6 @@ public class WPopupMenu extends WMenu {
 				JavaScriptScope.WtClassScope,
 				JavaScriptObjectType.JavaScriptConstructor,
 				"WPopupMenu",
-				"function(p,c,q){function i(){p.emit(c.id,\"cancel\")}function r(a,b){$(a).toggleClass(\"active\",b)}function j(a){if(a.subMenu)return a.subMenu;else{var b=a.lastChild;if(b&&f.hasTag(b,\"UL\")){a.subMenu=b;b.parentItem=a;$(b).mousemove(s);k(b);return b}else return null}}function y(a){a.style.display=\"block\";if(a.parentNode==a.parentItem){a.parentNode.removeChild(a);c.parentNode.appendChild(a)}f.positionAtWidget(a.id,a.parentItem.id,f.Horizontal,-f.px(a, \"paddingTop\"));l(a,null)}function l(a,b){function t(h,d){if(h==d)return true;else if(d)return(d=d.parentNode.parentItem)?t(h,d):false;else return false}function m(h){var d,u;d=0;for(u=h.childNodes.length;d<u;++d){var e=h.childNodes[d];if(t(e,b)){if(e!==b)(e=j(e))&&m(e)}else{r(e,false);if(e=j(e)){e.style.display=\"none\";m(e)}}}}m(a)}function s(a){for(a=f.target(a);a&&!f.hasTag(a,\"LI\")&&!f.hasTag(a,\"UL\");)a=a.parentNode;if(f.hasTag(a,\"LI\"))if(a!==n){n=a;r(a,true);var b=j(a);b&&y(b);l(c,a)}}function z(){o= false;clearTimeout(g);if(q>=0)g=setTimeout(i,q)}function A(){o=true;clearTimeout(g)}function k(a){$(a).mouseleave(z).mouseenter(A)}function v(a){f.button(a)!=1&&i()}function w(){i()}function x(a){a.keyCode==27&&i()}jQuery.data(c,\"obj\",this);var f=p.WT,g=null,o=false,n=null;this.setHidden=function(a){if(g){clearTimeout(g);g=null}o=false;n=null;if(a){c.style.position=\"\";c.style.display=\"\";c.style.left=\"\";c.style.top=\"\";$(document).unbind(\"mousedown\",v);$(document).unbind(\"click\",w);$(document).unbind(\"keydown\", x)}else{setTimeout(function(){$(document).bind(\"mousedown\",v);$(document).bind(\"click\",w);$(document).bind(\"keydown\",x)},0);c.style.display=\"block\"}l(c,null)};this.popupAt=function(a){k(a)};setTimeout(function(){k(c)},0);$(c).mousemove(s)}");
+				"function(p,c,q){function i(){p.emit(c.id,\"cancel\")}function r(a,b){$(a).toggleClass(\"active\",b)}function j(a){if(a.subMenu)return a.subMenu;else{var b=a.lastChild;if(b&&d.hasTag(b,\"UL\")){a.subMenu=b;b.parentItem=a;$(b).mousemove(s);k(b);return b}else return null}}function y(a){a.style.display=\"block\";if(a.parentNode==a.parentItem){a.parentNode.removeChild(a);c.parentNode.appendChild(a)}var b=d.px(a,\"paddingTop\")+d.px(a,\"borderTopWidth\");d.positionAtWidget(a.id, a.parentItem.id,d.Horizontal,-b);l(a,null)}function l(a,b){function t(h,e){if(h==e)return true;else if(e)return(e=e.parentNode.parentItem)?t(h,e):false;else return false}function m(h){var e,u;e=0;for(u=h.childNodes.length;e<u;++e){var f=h.childNodes[e];if(t(f,b)){if(f!==b)(f=j(f))&&m(f)}else{r(f,false);if(f=j(f)){f.style.display=\"none\";m(f)}}}}m(a)}function s(a){for(a=d.target(a);a&&!d.hasTag(a,\"LI\")&&!d.hasTag(a,\"UL\");)a=a.parentNode;if(d.hasTag(a,\"LI\"))if(a!==n){n=a;r(a,true);var b=j(a);b&&y(b); l(c,a)}}function z(){o=false;clearTimeout(g);if(q>=0)g=setTimeout(i,q)}function A(){o=true;clearTimeout(g)}function k(a){$(a).mouseleave(z).mouseenter(A)}function v(a){d.button(a)!=1&&i()}function w(){i()}function x(a){a.keyCode==27&&i()}jQuery.data(c,\"obj\",this);var d=p.WT,g=null,o=false,n=null;this.setHidden=function(a){if(g){clearTimeout(g);g=null}o=false;n=null;if(a){c.style.position=\"\";c.style.display=\"\";c.style.left=\"\";c.style.top=\"\";$(document).unbind(\"mousedown\",v);$(document).unbind(\"click\", w);$(document).unbind(\"keydown\",x)}else{setTimeout(function(){$(document).bind(\"mousedown\",v);$(document).bind(\"click\",w);$(document).bind(\"keydown\",x)},0);c.style.display=\"block\"}l(c,null)};this.popupAt=function(a){k(a)};setTimeout(function(){k(c)},0);$(c).mousemove(s)}");
 	}
 }

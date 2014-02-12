@@ -2544,7 +2544,15 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 				}
 			}
 		} else {
-			this.select(index, SelectionFlag.Select);
+			if (!EnumUtils.mask(
+					modifiers,
+					EnumSet.of(KeyboardModifier.ControlModifier,
+							KeyboardModifier.MetaModifier)).isEmpty()
+					&& this.isSelected(index)) {
+				this.clearSelection();
+			} else {
+				this.select(index, SelectionFlag.Select);
+			}
 		}
 	}
 

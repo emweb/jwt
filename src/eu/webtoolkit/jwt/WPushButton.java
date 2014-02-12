@@ -307,6 +307,14 @@ public class WPushButton extends WFormWidget {
 	 * By default, a button does not link to an URL and you should listen to the
 	 * {@link WInteractWidget#clicked() WInteractWidget#clicked()} signal to
 	 * react to a click event.
+	 * <p>
+	 * <p>
+	 * <i><b>Warning:</b>In Bootstrap theme, you should set a link before
+	 * it&apos;s rendered since it commit&apos;s the button to be rendered as an
+	 * anchor. (see also <a
+	 * href="http://redmine.emweb.be/issues/1802">http://redmine
+	 * .emweb.be/issues/1802</a>). </i>
+	 * </p>
 	 */
 	public void setLink(final WLink link) {
 		if (link.equals(this.linkState_.link)) {
@@ -520,6 +528,7 @@ public class WPushButton extends WFormWidget {
 			image.setId("im" + this.getFormName());
 			element.insertChildAt(image, 0);
 			this.flags_.set(BIT_ICON_RENDERED);
+			this.flags_.clear(BIT_ICON_CHANGED);
 		}
 		if (this.flags_.get(BIT_TEXT_CHANGED) || all) {
 			element.setProperty(Property.PropertyInnerHTML, this.text_
@@ -575,7 +584,8 @@ public class WPushButton extends WFormWidget {
 				image.removeFromParent();
 				this.flags_.clear(BIT_ICON_RENDERED);
 			} else {
-				image.setProperty(Property.PropertySrc, this.icon_.getUrl());
+				image.setProperty(Property.PropertySrc, this.icon_
+						.resolveUrl(app));
 			}
 			result.add(image);
 			this.flags_.clear(BIT_ICON_CHANGED);
@@ -594,6 +604,7 @@ public class WPushButton extends WFormWidget {
 			WApplication app = WApplication.getInstance();
 			if (app.getTheme().isCanStyleAnchorAsButton()) {
 				this.flags_.set(BIT_LINK_CHANGED);
+				this.repaint();
 			}
 		}
 		super.enableAjax();

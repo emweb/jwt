@@ -288,7 +288,9 @@ public class AuthWidget extends WTemplateFormView {
 				this.displayInfo(tr("Wt.Auth.info-email-confirmed"));
 				this.login_.login(result.getUser());
 			}
-			WApplication.getInstance().setInternalPath("/");
+			if (WApplication.getInstance().getEnvironment().hasAjax()) {
+				WApplication.getInstance().setInternalPath("/");
+			}
 			return;
 		}
 		User user = this.model_.processAuthToken();

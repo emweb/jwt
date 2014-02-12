@@ -319,6 +319,6 @@ public class WDoubleValidator extends WValidator {
 				JavaScriptScope.WtClassScope,
 				JavaScriptObjectType.JavaScriptConstructor,
 				"WDoubleValidator",
-				"function(f,b,c,d,e,g,h,i,j){this.validate=function(a){a=String(a);if(a.length==0)return f?{valid:false,message:g}:{valid:true};if(e!=\"\")a=a.replace(e,\"\");if(d!=\".\")a=a.replace(d,\".\");a=Number(a);if(isNaN(a))return{valid:false,message:h};if(b!==null)if(a<b)return{valid:false,message:i};if(c!==null)if(a>c)return{valid:false,message:j};return{valid:true}}}");
+				"function(f,b,c,d,e,g,h,i,j){this.validate=function(a){a=String(a);if(a.length==0)return f?{valid:false,message:g}:{valid:true};if(e!=\"\")a=a.replace(e,\"\",\"g\");if(d!=\".\")a=a.replace(d,\".\");a=Number(a);if(isNaN(a))return{valid:false,message:h};if(b!==null)if(a<b)return{valid:false,message:i};if(c!==null)if(a>c)return{valid:false,message:j};return{valid:true}}}");
 	}
 }

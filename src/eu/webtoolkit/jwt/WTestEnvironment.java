@@ -315,8 +315,8 @@ public class WTestEnvironment extends WEnvironment {
 	 * Signal used to test a popup menu reentrant event loop.
 	 * <p>
 	 * This signal is emitted when a popup menu is being executed using
-	 * {@link WPopupMenu#exec(WPoint p) WPopupMenu#exec()}, and allows you to
-	 * interact with the popup menu (i.e. to select an option).
+	 * WPopupMenu::exec(), and allows you to interact with the popup menu (i.e.
+	 * to select an option).
 	 * <p>
 	 * 
 	 * @see WTestEnvironment#dialogExecuted()

@@ -27,6 +27,7 @@ class UserFormView extends WTemplateFormView {
 		this.model = new UserFormModel(this);
 		this.setTemplateText(tr("userForm-template"));
 		this.addFunction("id", WTemplate.Functions.id);
+		this.addFunction("block", WTemplate.Functions.id);
 		this.setFormWidget(UserFormModel.FirstNameField, new WLineEdit());
 		this.setFormWidget(UserFormModel.LastNameField, new WLineEdit());
 		final WComboBox countryCB = new WComboBox();

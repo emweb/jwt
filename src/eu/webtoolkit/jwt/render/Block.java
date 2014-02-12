@@ -476,7 +476,12 @@ class Block {
 								if (!(c.offsetParent_ != null)) {
 									c.setOffsetParent();
 								}
-								PageState absolutePs = ps;
+								PageState absolutePs = new PageState();
+								absolutePs.y = ps.y;
+								absolutePs.page = ps.page;
+								absolutePs.minX = ps.minX;
+								absolutePs.maxX = ps.maxX;
+								Utils.copyList(ps.floats, absolutePs.floats);
 								c
 										.layoutBlock(absolutePs, false,
 												renderer, 0, 0);
@@ -2125,7 +2130,7 @@ class Block {
 			if (rTotalMaxWidth <= 0) {
 				rWidth = width - totalSpacing;
 				rTotalMaxWidth = totalMaxWidth - totalSpacing;
-				for (int i = 0; i < setColumnWidths.get(i); ++i) {
+				for (int i = 0; i < widths.size(); ++i) {
 					setColumnWidths.set(i, -1.0);
 				}
 			}
@@ -2178,8 +2183,10 @@ class Block {
 		for (int i = 0; i < this.children_.size(); ++i) {
 			if (this.children_.get(i).type_ == DomElementType.DomElement_THEAD) {
 				repeatHead = this.children_.get(i);
+				break;
 			} else {
-				if (this.children_.get(i).type_ != DomElementType.DomElement_UNKNOWN) {
+				if (this.children_.get(i).type_ == DomElementType.DomElement_TBODY
+						|| this.children_.get(i).type_ == DomElementType.DomElement_TR) {
 					break;
 				}
 			}

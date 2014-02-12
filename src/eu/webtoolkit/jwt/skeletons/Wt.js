@@ -1012,7 +1012,7 @@ this.vendorPrefix = function(attr) {
 };
 
 this.boxSizing = function(w) {
-  return (w.style[WT.styleAttribute('box-sizing')]) === 'border-box';
+  return (WT.css(w, WT.styleAttribute('box-sizing'))) === 'border-box';
 };
 
 // Return if an element (or one of its ancestors) is hidden
@@ -1434,14 +1434,15 @@ this.fitToWindow = function(e, x, y, rightx, bottomy) {
     if (op == document.body)
       scrollY = (op.clientHeight - windowSize.y);
     bottomy = bottomy - offsetParent.y + scrollY;
-    y = op.clientHeight - (bottomy + WT.px(e, 'marginBottom'));
+    y = op.clientHeight - 
+	  (bottomy + WT.px(e, 'marginBottom') + WT.px(e, 'borderBottomWidth'));
     vside = 1;
   } else {
     var scrollY = op.scrollTop;
     if (op == document.body)
       scrollY = 0;
     y = y - offsetParent.y + scrollY;
-    y = y - WT.px(e, 'marginTop');
+    y = y - WT.px(e, 'marginTop') + WT.px(e, 'borderTopWidth');
     vside = 0;
   }
 
@@ -2696,8 +2697,18 @@ _$_$endif_$_();
 var updateTimeoutStart;
 
 function scheduleUpdate() {
-  if (quited)
-    return;
+  if (quited) {
+    if (norestart)
+      return;
+    if (confirm("The application was quited, do you want to restart?")) {
+      document.location = document.location;
+      norestart = true;
+      return;
+    } else {
+      norestart = true;
+      return;
+    }
+  }
 
 _$_$if_WEB_SOCKETS_$_();
   if (websocket.state != WebSocketsUnavailable) {
@@ -2712,9 +2723,12 @@ _$_$if_WEB_SOCKETS_$_();
 	  websocket.state = WebSocketsUnavailable;
 	else {
 	  function reconnect() {
-	    ++websocket.reconnectTries;
-	    var ms = Math.min(120000, Math.exp(websocket.reconnectTries) * 500);
-	    setTimeout(function() { scheduleUpdate(); }, ms);
+	    if (!quited) {
+	      ++websocket.reconnectTries;
+	      var ms = Math.min(120000, Math.exp(websocket.reconnectTries)
+				* 500);
+	      setTimeout(function() { scheduleUpdate(); }, ms);
+	    }
 	  }
 
 	  var protocolEnd = sessionUrl.indexOf("://"), wsurl;
@@ -2850,18 +2864,8 @@ function sendUpdate() {
 
   if (WT.isIEMobile) feedback = false;
 
-  if (quited) {
-    if (norestart)
-      return;
-    if (confirm("The application was quited, do you want to restart?")) {
-      document.location = document.location;
-      norestart = true;
-      return;
-    } else {
-      norestart = true;
-      return;
-    }
-  }
+  if (quited)
+    return;
 
   var data, tm, poll;
 

@@ -136,9 +136,6 @@ class Layout extends TopicWidget {
 	private WWidget css() {
 		WTemplate result = new TopicTemplate("layout-CSS");
 		result.bindWidget("CSS", CSS());
-		result.bindWidget("SizingBlock", SizingBlock());
-		result.bindWidget("SizingRelative", SizingRelative());
-		result.bindWidget("SizingGrid", SizingGrid());
 		result.bindString("CSS-example-style",
 				reindent(tr("CSS-example-style")), TextFormat.PlainText);
 		return result;
@@ -442,7 +439,7 @@ class Layout extends TopicWidget {
 		WContainerWidget container = new WContainerWidget();
 		WPushButton button = new WPushButton("Jump", container);
 		final WText out = new WText(container);
-		out.setStyleClass("help-inline");
+		out.setStyleClass("help-block");
 		button.clicked().addListener(this, new Signal.Listener() {
 			public void trigger() {
 				showDialog(out);
@@ -577,77 +574,6 @@ class Layout extends TopicWidget {
 		return container;
 	}
 
-	WWidget SizingBlock() {
-		WContainerWidget container = new WContainerWidget();
-		WLineEdit edit = new WLineEdit(container);
-		edit.setStyleClass("input-block-level");
-		edit
-				.setEmptyText("This is a line edit with style class .input-block-level applied to it.");
-		WComboBox combo = new WComboBox(container);
-		combo.setStyleClass("input-block-level");
-		for (int i = 1; i < 5; ++i) {
-			combo
-					.addItem("Combo box with style class .input-block-level - item"
-							+ String.valueOf(i));
-		}
-		WTextArea area = new WTextArea(container);
-		area.setStyleClass("input-block-level");
-		area
-				.setEmptyText("This is a text area with style class .input-block-level applied to it.");
-		return container;
-	}
-
-	WWidget SizingRelative() {
-		WContainerWidget container = new WContainerWidget();
-		WLineEdit edit = new WLineEdit(container);
-		edit.setEmptyText(".input-mini");
-		edit.setStyleClass("input-mini");
-		new WBreak(container);
-		edit = new WLineEdit(container);
-		edit.setEmptyText(".input-small");
-		edit.setStyleClass("input-small");
-		new WBreak(container);
-		edit = new WLineEdit(container);
-		edit.setEmptyText(".input-medium");
-		edit.setStyleClass("input-medium");
-		new WBreak(container);
-		edit = new WLineEdit(container);
-		edit.setEmptyText(".input-large");
-		edit.setStyleClass("input-large");
-		new WBreak(container);
-		edit = new WLineEdit(container);
-		edit.setEmptyText(".input-xlarge");
-		edit.setStyleClass("input-xlarge");
-		new WBreak(container);
-		edit = new WLineEdit(container);
-		edit.setEmptyText(".input-xxlarge");
-		edit.setStyleClass("input-xxlarge");
-		return container;
-	}
-
-	WWidget SizingGrid() {
-		WContainerWidget parentContainer = new WContainerWidget();
-		WLineEdit edit = new WLineEdit(parentContainer);
-		edit.setEmptyText(".span8");
-		edit.setStyleClass("span8");
-		WContainerWidget childContainer = new WContainerWidget();
-		childContainer.setStyleClass("controls-row");
-		edit = new WLineEdit(childContainer);
-		edit.setEmptyText(".span1");
-		edit.setStyleClass("span1");
-		edit = new WLineEdit(childContainer);
-		edit.setEmptyText(".span2");
-		edit.setStyleClass("span2");
-		edit = new WLineEdit(childContainer);
-		edit.setEmptyText(".span3");
-		edit.setStyleClass("span3");
-		edit = new WLineEdit(childContainer);
-		edit.setEmptyText(".span2");
-		edit.setStyleClass("span2");
-		parentContainer.addWidget(childContainer);
-		return parentContainer;
-	}
-
 	WWidget CSS() {
 		WApplication.getInstance().useStyleSheet(
 				new WLink("style/CSSexample.css"));
@@ -695,9 +621,9 @@ class Layout extends TopicWidget {
 				toggleB.enable();
 			}
 		});
+		table.getRowAt(1).removeStyleClass("info");
 		removeB.clicked().addListener(this, new Signal.Listener() {
 			public void trigger() {
-				table.getRowAt(1).removeStyleClass("info");
 				removeB.disable();
 			}
 		});

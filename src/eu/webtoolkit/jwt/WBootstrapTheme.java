@@ -23,8 +23,29 @@ import org.slf4j.LoggerFactory;
  * Theme based on the Twitter Bootstrap CSS framework.
  * <p>
  * 
+ * This theme implements support for building a JWt web application that uses
+ * Twitter Bootstrap as a theme for its (layout and) styling. The theme comes
+ * with CSS from Bootstrap version 2.2.2 or version 3.1. Only the CSS components
+ * of twitter bootstrap or used, but not the JavaScript (i.e. the functional
+ * parts), since the functionality is already built-in to the widgets from the
+ * library.
+ * <p>
+ * Using this theme, various widgets provided by the library are rendered using
+ * markup that is compatible with Twitter Bootstrap. The bootstrap theme is also
+ * extended with a proper (compatible) styling of widgets for which bootstrap
+ * does not provide styling (table views, tree views, sliders, etc...).
+ * <p>
  * By default, the theme will use CSS resources that are shipped together with
- * the JWt distribution.
+ * the JWt distribution, but since the Twitter Bootstrap CSS API is a popular
+ * API for custom themes, you can easily replace the CSS with custom-built CSS
+ * (by reimplementing {@link WBootstrapTheme#getStyleSheets() getStyleSheets()}
+ * ).
+ * <p>
+ * Although this theme facilitates the use of Twitter Bootstrap with Wt, it is
+ * still important to understand how Bootstrap expects markup to be, especially
+ * related to layout using its grid system, for which we refer to the official
+ * bootstrap documentation, see <a
+ * href="http://getbootstrap.com">http://getbootstrap.com</a>
  * <p>
  * 
  * @see WApplication#setTheme(WTheme theme)
@@ -34,10 +55,41 @@ public class WBootstrapTheme extends WTheme {
 			.getLogger(WBootstrapTheme.class);
 
 	/**
+	 * Enumeration to select a bootstrap version.
+	 * <p>
+	 * 
+	 * @see WBootstrapTheme#setVersion(WBootstrapTheme.Version version)
+	 */
+	public enum Version {
+		Version2(2), Version3(3);
+
+		private int value;
+
+		Version(int value) {
+			this.value = value;
+		}
+
+		/**
+		 * Returns the numerical representation of this enum.
+		 */
+		public int getValue() {
+			return value;
+		}
+	}
+
+	/**
 	 * Constructor.
 	 */
 	public WBootstrapTheme(WObject parent) {
 		super(parent);
+		this.version_ = WBootstrapTheme.Version.Version2;
+		this.responsive_ = false;
+		this.formControlStyle_ = true;
+		WApplication app = WApplication.getInstance();
+		if (app != null) {
+			app.getBuiltinLocalizedStrings().useBuiltin(
+					WtServlet.BootstrapTheme_xml);
+		}
 	}
 
 	/**
@@ -49,6 +101,68 @@ public class WBootstrapTheme extends WTheme {
 		this((WObject) null);
 	}
 
+	// public void setResponsive(boolean responsive) ;
+	/**
+	 * Returns whether responsive features are enabled.
+	 * <p>
+	 * 
+	 * @see WBootstrapTheme#setResponsive(boolean responsive)
+	 */
+	public boolean isResponsive() {
+		return this.responsive_;
+	}
+
+	/**
+	 * Sets the bootstrap version.
+	 * <p>
+	 * The default bootstrap version is 2 (but this may change in the future and
+	 * thus we recommend setting the version).
+	 * <p>
+	 * Since Twitter Bootstrap breaks its API with a major version change, the
+	 * version has a big impact on how how the markup is done for various
+	 * widgets.
+	 * <p>
+	 * Note that the two Bootstrap versions have a different license: Apache 2.0
+	 * for Bootstrap version 2.2.2, and MIT for version 3.1. See these licenses
+	 * for details.
+	 */
+	public void setVersion(WBootstrapTheme.Version version) {
+		this.version_ = version;
+		if (this.version_.getValue() >= WBootstrapTheme.Version.Version3
+				.getValue()) {
+			WApplication app = WApplication.getInstance();
+			if (app != null) {
+				app.getBuiltinLocalizedStrings().useBuiltin(
+						WtServlet.Bootstrap3Theme_xml);
+			}
+		}
+	}
+
+	/**
+	 * Returns the bootstrap version.
+	 * <p>
+	 * 
+	 * @see WBootstrapTheme#setVersion(WBootstrapTheme.Version version)
+	 */
+	public WBootstrapTheme.Version getVersion() {
+		return this.version_;
+	}
+
+	/**
+	 * Enables form-control on all applicable form widgets.
+	 * <p>
+	 * This is relevant only for bootstrap 3.
+	 * <p>
+	 * By applying &quot;form-control&quot; on form widgets, they will become
+	 * block level elements that take the size of the parent (which is in
+	 * bootstrap&apos;s philosphy a grid layout).
+	 * <p>
+	 * The default value is <code>true</code>.
+	 */
+	public void setFormControlStyleEnabled(boolean enabled) {
+		this.formControlStyle_ = enabled;
+	}
+
 	public String getName() {
 		return "bootstrap";
 	}
@@ -56,10 +170,27 @@ public class WBootstrapTheme extends WTheme {
 	public List<WCssStyleSheet> getStyleSheets() {
 		List<WCssStyleSheet> result = new ArrayList<WCssStyleSheet>();
 		String themeDir = this.getResourcesUrl();
-		result.add(new WCssStyleSheet(new WLink(themeDir + "bootstrap.css")));
-		result.add(new WCssStyleSheet(new WLink(themeDir
-				+ "bootstrap-responsive.css")));
-		result.add(new WCssStyleSheet(new WLink(themeDir + "wt.css")));
+		StringWriter themeVersionDir = new StringWriter();
+		themeVersionDir.append(themeDir).append(
+				String.valueOf(this.version_.getValue())).append("/");
+		result.add(new WCssStyleSheet(new WLink(themeVersionDir.toString()
+				+ "bootstrap.css")));
+		WApplication app = WApplication.getInstance();
+		if (this.responsive_) {
+			if (this.version_.getValue() < WBootstrapTheme.Version.Version3
+					.getValue()) {
+				result.add(new WCssStyleSheet(new WLink(themeVersionDir
+						.toString()
+						+ "bootstrap-responsive.css")));
+			} else {
+				if (app != null) {
+					app.addMetaHeader("viewport",
+							"width=device-width, initial-scale=1");
+				}
+			}
+		}
+		result.add(new WCssStyleSheet(new WLink(themeVersionDir.toString()
+				+ "wt.css")));
 		return result;
 	}
 
@@ -69,7 +200,8 @@ public class WBootstrapTheme extends WTheme {
 			child.addStyleClass("Wt-icon");
 			break;
 		case WidgetThemeRole.MenuItemCheckBoxRole:
-			child.addStyleClass("Wt-chkbox");
+			child.setStyleClass("Wt-chkbox");
+			((WFormWidget) child).getLabel().addStyleClass("checkbox-inline");
 			break;
 		case WidgetThemeRole.MenuItemCloseRole: {
 			WText txt = ((child) instanceof WText ? (WText) (child) : null);
@@ -78,8 +210,17 @@ public class WBootstrapTheme extends WTheme {
 			}
 		}
 			break;
+		case WidgetThemeRole.DialogContent:
+			if (this.version_ == WBootstrapTheme.Version.Version3) {
+				child.addStyleClass("modal-content");
+			}
+			break;
 		case WidgetThemeRole.DialogCoverRole:
-			child.addStyleClass("modal-backdrop");
+			if (this.version_ == WBootstrapTheme.Version.Version3) {
+				child.addStyleClass("modal-backdrop in");
+			} else {
+				child.addStyleClass("modal-backdrop");
+			}
 			break;
 		case WidgetThemeRole.DialogTitleBarRole:
 			child.addStyleClass("modal-header");
@@ -108,19 +249,36 @@ public class WBootstrapTheme extends WTheme {
 			child.addStyleClass("Wt-datepicker");
 			break;
 		case WidgetThemeRole.PanelTitleBarRole:
-			child.addStyleClass("accordion-heading");
+			child.addStyleClass(this.getClassAccordionHeading());
 			break;
 		case WidgetThemeRole.PanelCollapseButtonRole:
 		case WidgetThemeRole.PanelTitleRole:
 			child.addStyleClass("accordion-toggle");
 			break;
 		case WidgetThemeRole.PanelBodyRole:
-			child.addStyleClass("accordion-inner");
+			child.addStyleClass(this.getClassAccordionInner());
 			break;
-		case WidgetThemeRole.AuthWidgets:
-			WApplication app = WApplication.getInstance();
-			app.getBuiltinLocalizedStrings().useBuiltin(
-					WtServlet.AuthBootstrapTheme_xml);
+		case WidgetThemeRole.InPlaceEditingRole:
+			if (this.version_ == WBootstrapTheme.Version.Version2) {
+				child.addStyleClass("input-append");
+			} else {
+				child.addStyleClass("input-group");
+			}
+			break;
+		case WidgetThemeRole.NavCollapseRole:
+			child.addStyleClass(this.getClassNavCollapse());
+			break;
+		case WidgetThemeRole.NavBrandRole:
+			child.addStyleClass(this.getClassBrand());
+			break;
+		case WidgetThemeRole.NavbarSearchRole:
+			child.addStyleClass(this.getClassNavbarSearch());
+			break;
+		case WidgetThemeRole.NavbarMenuRole:
+			child.addStyleClass(this.getClassNavbarMenu());
+			break;
+		case WidgetThemeRole.NavbarBtn:
+			child.addStyleClass(this.getClassNavbarBtn());
 			break;
 		}
 	}
@@ -144,7 +302,8 @@ public class WBootstrapTheme extends WTheme {
 			if (creating
 					&& ((widget) instanceof WPushButton ? (WPushButton) (widget)
 							: null) != null) {
-				element.addPropertyWord(Property.PropertyClass, "btn");
+				element.addPropertyWord(Property.PropertyClass, this
+						.getClassBtn());
 			}
 			if (element.getProperty(Property.PropertyClass).indexOf(
 					"dropdown-toggle") != -1) {
@@ -163,7 +322,8 @@ public class WBootstrapTheme extends WTheme {
 			break;
 		case DomElement_BUTTON: {
 			if (creating) {
-				element.addPropertyWord(Property.PropertyClass, "btn");
+				element.addPropertyWord(Property.PropertyClass, this
+						.getClassBtn());
 			}
 			WPushButton button = ((widget) instanceof WPushButton ? (WPushButton) (widget)
 					: null);
@@ -196,14 +356,19 @@ public class WBootstrapTheme extends WTheme {
 			WDialog dialog = ((widget) instanceof WDialog ? (WDialog) (widget)
 					: null);
 			if (dialog != null) {
-				element.addPropertyWord(Property.PropertyClass, "modal");
+				if (this.version_ == WBootstrapTheme.Version.Version2) {
+					element.addPropertyWord(Property.PropertyClass, "modal");
+				} else {
+					element.addPropertyWord(Property.PropertyClass,
+							"modal-dialog");
+				}
 				return;
 			}
 			WPanel panel = ((widget) instanceof WPanel ? (WPanel) (widget)
 					: null);
 			if (panel != null) {
-				element.addPropertyWord(Property.PropertyClass,
-						"accordion-group");
+				element.addPropertyWord(Property.PropertyClass, this
+						.getClassAccordionGroup());
 				return;
 			}
 			WProgressBar bar = ((widget) instanceof WProgressBar ? (WProgressBar) (widget)
@@ -214,7 +379,8 @@ public class WBootstrapTheme extends WTheme {
 					element.addPropertyWord(Property.PropertyClass, "progress");
 					break;
 				case ElementThemeRole.ProgressBarBarRole:
-					element.addPropertyWord(Property.PropertyClass, "bar");
+					element.addPropertyWord(Property.PropertyClass, this
+							.getClassBar());
 					break;
 				case ElementThemeRole.ProgressBarLabelRole:
 					element
@@ -236,22 +402,52 @@ public class WBootstrapTheme extends WTheme {
 						"form-horizontal");
 				return;
 			}
+			WNavigationBar navBar = ((widget) instanceof WNavigationBar ? (WNavigationBar) (widget)
+					: null);
+			if (navBar != null) {
+				element.addPropertyWord(Property.PropertyClass, this
+						.getClassNavbar());
+				return;
+			}
 		}
 			break;
 		case DomElement_LABEL: {
-			WCheckBox cb = ((widget) instanceof WCheckBox ? (WCheckBox) (widget)
-					: null);
-			if (cb != null) {
-				element.addPropertyWord(Property.PropertyClass, "checkbox");
-				if (cb.isInline()) {
-					element.addPropertyWord(Property.PropertyClass, "inline");
-				}
-			} else {
-				WRadioButton rb = ((widget) instanceof WRadioButton ? (WRadioButton) (widget)
-						: null);
-				if (rb != null) {
-					element.addPropertyWord(Property.PropertyClass, "radio");
-					if (rb.isInline()) {
+			if (elementRole == 1) {
+				if (this.version_ == WBootstrapTheme.Version.Version3) {
+					WCheckBox cb = ((widget) instanceof WCheckBox ? (WCheckBox) (widget)
+							: null);
+					WRadioButton rb = null;
+					if (cb != null) {
+						element.addPropertyWord(Property.PropertyClass, widget
+								.isInline() ? "checkbox-inline" : "checkbox");
+					} else {
+						rb = ((widget) instanceof WRadioButton ? (WRadioButton) (widget)
+								: null);
+						if (rb != null) {
+							element.addPropertyWord(Property.PropertyClass,
+									widget.isInline() ? "radio-inline"
+											: "radio");
+						}
+					}
+					if ((cb != null || rb != null) && !widget.isInline()) {
+						element.setType(DomElementType.DomElement_DIV);
+					}
+				} else {
+					WCheckBox cb = ((widget) instanceof WCheckBox ? (WCheckBox) (widget)
+							: null);
+					WRadioButton rb = null;
+					if (cb != null) {
+						element.addPropertyWord(Property.PropertyClass,
+								"checkbox");
+					} else {
+						rb = ((widget) instanceof WRadioButton ? (WRadioButton) (widget)
+								: null);
+						if (rb != null) {
+							element.addPropertyWord(Property.PropertyClass,
+									"radio");
+						}
+					}
+					if ((cb != null || rb != null) && widget.isInline()) {
 						element.addPropertyWord(Property.PropertyClass,
 								"inline");
 					}
@@ -285,6 +481,15 @@ public class WBootstrapTheme extends WTheme {
 		}
 			break;
 		case DomElement_INPUT: {
+			if (this.version_ == WBootstrapTheme.Version.Version3
+					&& this.formControlStyle_) {
+				WAbstractToggleButton tb = ((widget) instanceof WAbstractToggleButton ? (WAbstractToggleButton) (widget)
+						: null);
+				if (!(tb != null)) {
+					element.addPropertyWord(Property.PropertyClass,
+							"form-control");
+				}
+			}
 			WAbstractSpinBox spinBox = ((widget) instanceof WAbstractSpinBox ? (WAbstractSpinBox) (widget)
 					: null);
 			if (spinBox != null) {
@@ -298,6 +503,13 @@ public class WBootstrapTheme extends WTheme {
 				return;
 			}
 		}
+			break;
+		case DomElement_TEXTAREA:
+		case DomElement_SELECT:
+			if (this.version_ == WBootstrapTheme.Version.Version3
+					&& this.formControlStyle_) {
+				element.addPropertyWord(Property.PropertyClass, "form-control");
+			}
 			break;
 		case DomElement_UL: {
 			WPopupMenu popupMenu = ((widget) instanceof WPopupMenu ? (WPopupMenu) (widget)
@@ -340,6 +552,13 @@ public class WBootstrapTheme extends WTheme {
 			if (inPlaceEdit != null) {
 				element.addPropertyWord(Property.PropertyClass,
 						"Wt-in-place-edit");
+			} else {
+				WDatePicker picker = ((widget) instanceof WDatePicker ? (WDatePicker) (widget)
+						: null);
+				if (picker != null) {
+					element.addPropertyWord(Property.PropertyClass,
+							"Wt-datepicker");
+				}
 			}
 		}
 			break;
@@ -367,6 +586,7 @@ public class WBootstrapTheme extends WTheme {
 		app.loadJavaScript("js/BootstrapValidate.js", wtjs1());
 		app.loadJavaScript("js/BootstrapValidate.js", wtjs2());
 		if (app.getEnvironment().hasAjax()) {
+			int version = this.version_.getValue();
 			StringBuilder js = new StringBuilder();
 			js.append("Wt3_3_2.setValidationState(").append(widget.getJsRef())
 					.append(",").append(
@@ -374,7 +594,8 @@ public class WBootstrapTheme extends WTheme {
 									: 0).append(",").append(
 							WString.toWString(validation.getMessage())
 									.getJsStringLiteral()).append(",").append(
-							EnumUtils.valueOf(styles)).append(");");
+							EnumUtils.valueOf(styles)).append(",").append(
+							version).append(");");
 			widget.doJavaScript(js.toString());
 		} else {
 			boolean validStyle = validation.getState() == WValidator.State.Valid
@@ -393,6 +614,75 @@ public class WBootstrapTheme extends WTheme {
 		return true;
 	}
 
+	private WBootstrapTheme.Version version_;
+	private boolean responsive_;
+	private boolean formControlStyle_;
+
+	private String getClassBtn() {
+		return this.version_ == WBootstrapTheme.Version.Version2 ? "btn"
+				: "btn btn-default";
+	}
+
+	private String getClassBar() {
+		return this.version_ == WBootstrapTheme.Version.Version2 ? "bar"
+				: "progress-bar";
+	}
+
+	private String getClassAccordion() {
+		return this.version_ == WBootstrapTheme.Version.Version2 ? "accordion"
+				: "panel-group";
+	}
+
+	private String getClassAccordionGroup() {
+		return this.version_ == WBootstrapTheme.Version.Version2 ? "accordion-group"
+				: "panel panel-default";
+	}
+
+	private String getClassAccordionHeading() {
+		return this.version_ == WBootstrapTheme.Version.Version2 ? "accordion-heading"
+				: "panel-heading";
+	}
+
+	private String getClassAccordionBody() {
+		return this.version_ == WBootstrapTheme.Version.Version2 ? "accordion-body"
+				: "panel-collapse";
+	}
+
+	private String getClassAccordionInner() {
+		return this.version_ == WBootstrapTheme.Version.Version2 ? "accordion-inner"
+				: "panel-body";
+	}
+
+	private String getClassNavCollapse() {
+		return this.version_ == WBootstrapTheme.Version.Version2 ? "nav-collapse"
+				: "navbar-collapse";
+	}
+
+	private String getClassNavbar() {
+		return this.version_ == WBootstrapTheme.Version.Version2 ? "navbar"
+				: "navbar navbar-default";
+	}
+
+	private String getClassBrand() {
+		return this.version_ == WBootstrapTheme.Version.Version2 ? "brand"
+				: "navbar-brand";
+	}
+
+	private String getClassNavbarSearch() {
+		return this.version_ == WBootstrapTheme.Version.Version2 ? "search-query"
+				: "navbar-search";
+	}
+
+	private String getClassNavbarMenu() {
+		return this.version_ == WBootstrapTheme.Version.Version2 ? "navbar-nav"
+				: "navbar-nav";
+	}
+
+	private String getClassNavbarBtn() {
+		return this.version_ == WBootstrapTheme.Version.Version2 ? "btn-navbar"
+				: "navbar-toggle";
+	}
+
 	static WJavaScriptPreamble wtjs1() {
 		return new WJavaScriptPreamble(
 				JavaScriptScope.WtClassScope,
@@ -406,6 +696,6 @@ public class WBootstrapTheme extends WTheme {
 				JavaScriptScope.WtClassScope,
 				JavaScriptObjectType.JavaScriptFunction,
 				"setValidationState",
-				"function(a,b,f,c){var e=b==1&&(c&2)!=0;c=b!=1&&(c&1)!=0;var d=$(a);d.toggleClass(\"Wt-valid\",e).toggleClass(\"Wt-invalid\",c);(d=d.closest(\".control-group\"))&&d.toggleClass(\"success\",e).toggleClass(\"error\",c);if(typeof a.defaultTT===\"undefined\")a.defaultTT=a.getAttribute(\"title\")||\"\";b?a.setAttribute(\"title\",a.defaultTT):a.setAttribute(\"title\",f)}");
+				"function(a,b,h,d,e){var g=b==1&&(d&2)!=0;d=b!=1&&(d&1)!=0;var c=$(a);c.toggleClass(\"Wt-valid\",g).toggleClass(\"Wt-invalid\",d);var f;if(e===2){e=c.closest(\".control-group\");c=\"success\";f=\"error\"}else{e=c.closest(\".form-group\");c=\"has-success\";f=\"has-error\"}e&&e.toggleClass(c,g).toggleClass(f,d);if(typeof a.defaultTT===\"undefined\")a.defaultTT=a.getAttribute(\"title\")||\"\";b?a.setAttribute(\"title\",a.defaultTT):a.setAttribute(\"title\",h)}");
 	}
 }

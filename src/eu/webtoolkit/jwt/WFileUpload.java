@@ -89,6 +89,7 @@ public class WFileUpload extends WWebWidget {
 		this.fileTooLarge_ = new Signal1<Long>(this);
 		this.dataReceived_ = new Signal2<Long, Long>(this);
 		this.progressBar_ = null;
+		this.acceptAttributes_ = "";
 		this.tooLargeSize_ = 0;
 		this.setInline(true);
 		this.fileTooLargeImpl().addListener(this, new Signal.Listener() {
@@ -395,6 +396,16 @@ public class WFileUpload extends WWebWidget {
 		super.enableAjax();
 	}
 
+	/**
+	 * setFilters set input accept attributes
+	 * <p>
+	 * The accept attribute may be specified to provide user agents with a hint
+	 * of what file types will be accepted.
+	 */
+	public void setFilters(String acceptAttributes) {
+		this.acceptAttributes_ = acceptAttributes;
+	}
+
 	private static String CHANGE_SIGNAL = "M_change";
 	private static String UPLOADED_SIGNAL = "M_uploaded";
 	private static String FILETOOLARGE_SIGNAL = "M_filetoolarge";
@@ -410,6 +421,7 @@ public class WFileUpload extends WWebWidget {
 	private Signal2<Long, Long> dataReceived_;
 	private WResource fileUploadTarget_;
 	private WProgressBar progressBar_;
+	private String acceptAttributes_;
 
 	private void create() {
 		boolean methodIframe = WApplication.getInstance().getEnvironment()
@@ -499,6 +511,7 @@ public class WFileUpload extends WWebWidget {
 			} else {
 				inputE.callMethod("disabled=false");
 			}
+			inputE.setAttribute("accept", this.acceptAttributes_);
 			this.flags_.clear(BIT_ENABLED_CHANGED);
 		}
 		EventSignal change = this.voidEventSignal(CHANGE_SIGNAL, false);
@@ -552,6 +565,7 @@ public class WFileUpload extends WWebWidget {
 			}
 			input.setAttribute("name", "data");
 			input.setAttribute("size", String.valueOf(this.textSize_));
+			input.setAttribute("accept", this.acceptAttributes_);
 			input.setId("in" + this.getId());
 			if (!this.isEnabled()) {
 				input.setProperty(Property.PropertyDisabled, "true");

@@ -106,6 +106,7 @@ public class WCalendar extends WCompositeWidget {
 		this.bottom_ = null;
 		this.top_ = null;
 		this.create();
+		this.impl_.addStyleClass("Wt-calendar");
 	}
 
 	/**
@@ -454,11 +455,10 @@ public class WCalendar extends WCompositeWidget {
 	 * {@link WCalendar#selected() selected()} method). This only applies to a
 	 * single-selection calendar.
 	 * <p>
+	 * Instead of enabling single click, you can also listen to the
+	 * {@link WCalendar#clicked() clicked()} signal to process a single click.
+	 * <p>
 	 * 
-	 * @deprecated listen to the {@link WCalendar#clicked() clicked()} signal if
-	 *             you want to react to a single click, or
-	 *             {@link WCalendar#activated() activated()} signal if you want
-	 *             to react to a double click.
 	 * @see WCalendar#setMultipleSelection(boolean multiple)
 	 */
 	public void setSingleClickSelect(boolean single) {
@@ -744,6 +744,7 @@ public class WCalendar extends WCompositeWidget {
 					}
 				});
 		this.monthEdit_ = new WComboBox();
+		this.monthEdit_.setInline(true);
 		for (int i = 0; i < 12; ++i) {
 			this.monthEdit_.addItem(WDate.getLongMonthName(i + 1));
 		}

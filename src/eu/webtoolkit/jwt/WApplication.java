@@ -279,9 +279,6 @@ public class WApplication extends WObject {
 				.addRule(
 						".selectable",
 						"-moz-user-select: text;-khtml-user-select: normal;-webkit-user-select: text;user-select: text;");
-		this.styleSheet_
-				.addRule(".Wt-sbspacer",
-						"float: right; width: 16px; height: 1px;border: 0px; display: none;");
 		this.styleSheet_.addRule(".Wt-domRoot", "position: relative;");
 		this.styleSheet_
 				.addRule(
@@ -2014,6 +2011,21 @@ public class WApplication extends WObject {
 	public void processEvents() {
 		this.doJavaScript("setTimeout(\"" + this.javaScriptClass_
 				+ "._p_.update(null,'none',null,true);\",0);");
+		this.waitForEvent();
+	}
+
+	/**
+	 * Blocks the thread, waiting for an UI event.
+	 * <p>
+	 * This function is used by functions like
+	 * {@link WDialog#exec(WAnimation animation) WDialog#exec()} or
+	 * WPopupMenu::exec(), to block the current thread waiting for a new event.
+	 * <p>
+	 * This requires that at least one additional thread is available to process
+	 * incoming requests, and is not scalable when working with a fixed size
+	 * thread pools.
+	 */
+	public void waitForEvent() {
 		if (!this.getEnvironment().isTest()) {
 			this.session_.doRecursiveEventLoop();
 		}

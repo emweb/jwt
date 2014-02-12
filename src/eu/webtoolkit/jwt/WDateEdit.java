@@ -51,6 +51,7 @@ public class WDateEdit extends WLineEdit {
 		this.popup_.setAnchorWidget(this);
 		this.popup_.setTransient(true);
 		this.calendar_ = new WCalendar();
+		this.calendar_.setSingleClickSelect(true);
 		this.calendar_.activated().addListener(this.popup_,
 				new Signal1.Listener<WDate>() {
 					public void trigger(WDate e1) {

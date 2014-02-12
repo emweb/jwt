@@ -37,7 +37,11 @@ public enum EventType {
 	/**
 	 * A timer-initiated event.
 	 */
-	TimerEvent;
+	TimerEvent,
+	/**
+	 * An event which is a resource request.
+	 */
+	ResourceEvent;
 
 	/**
 	 * Returns the numerical representation of this enum.

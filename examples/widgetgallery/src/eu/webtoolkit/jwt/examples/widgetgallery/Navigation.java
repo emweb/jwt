@@ -213,7 +213,7 @@ class Navigation extends TopicWidget {
 		WContainerWidget container = new WContainerWidget();
 		WStackedWidget contents = new WStackedWidget();
 		WMenu menu = new WMenu(contents, Orientation.Vertical, container);
-		menu.setStyleClass("nav-tabs nav-stacked");
+		menu.setStyleClass("nav nav-pills nav-stacked");
 		menu.setWidth(new WLength(150));
 		menu
 				.addItem("Internal paths", new WTextArea(

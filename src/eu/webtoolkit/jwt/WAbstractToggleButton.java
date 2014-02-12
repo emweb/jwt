@@ -249,20 +249,29 @@ public abstract class WAbstractToggleButton extends WFormWidget {
 		final WEnvironment env = app.getEnvironment();
 		DomElement input = null;
 		DomElement span = null;
-		if (element.getType() == DomElementType.DomElement_LABEL) {
+		DomElement label = null;
+		if (all) {
+			app.getTheme().apply(this, element, 1);
+		}
+		if (element.getType() == DomElementType.DomElement_INPUT) {
+			input = element;
+		} else {
 			if (all) {
 				input = DomElement.createNew(DomElementType.DomElement_INPUT);
 				input.setName("in" + this.getId());
 				span = DomElement.createNew(DomElementType.DomElement_SPAN);
-				span.setName("l" + this.getId());
+				span.setName("t" + this.getId());
+				if (element.getType() != DomElementType.DomElement_LABEL) {
+					label = DomElement
+							.createNew(DomElementType.DomElement_LABEL);
+					label.setName("l" + this.getId());
+				}
 			} else {
 				input = DomElement.getForUpdate("in" + this.getId(),
 						DomElementType.DomElement_INPUT);
-				span = DomElement.getForUpdate("l" + this.getId(),
+				span = DomElement.getForUpdate("t" + this.getId(),
 						DomElementType.DomElement_SPAN);
 			}
-		} else {
-			input = element;
 		}
 		if (all) {
 			this.updateInput(input, all);
@@ -332,7 +341,7 @@ public abstract class WAbstractToggleButton extends WFormWidget {
 				uncheck.updateOk();
 			}
 			if (change != null) {
-				if (change.needsUpdate(all)) {
+				if (change.isConnected()) {
 					changeActions.add(new DomElement.EventAction("", change
 							.getJavaScript(), change.encodeCmd(), change
 							.isExposedSignal()));
@@ -372,8 +381,14 @@ public abstract class WAbstractToggleButton extends WFormWidget {
 			}
 		}
 		if (element != input) {
-			element.addChild(input);
-			element.addChild(span);
+			if (label != null) {
+				label.addChild(input);
+				label.addChild(span);
+				element.addChild(label);
+			} else {
+				element.addChild(input);
+				element.addChild(span);
+			}
 		}
 	}
 

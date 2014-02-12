@@ -134,6 +134,7 @@ class WTreeViewNode extends WTemplate {
 				&& !this.view_.isRootDecorated()) {
 			this.bindEmpty("expand");
 			this.bindEmpty("no-expand");
+			this.bindEmpty("trunk-class");
 			return;
 		}
 		if (!isEmpty) {

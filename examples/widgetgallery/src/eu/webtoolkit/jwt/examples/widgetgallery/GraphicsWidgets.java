@@ -278,7 +278,7 @@ class GraphicsWidgets extends TopicWidget {
 		table.setHeaderHeight(new WLength(28));
 		table.setMargin(new WLength(10), EnumSet.of(Side.Top, Side.Bottom));
 		table.setMargin(WLength.Auto, EnumSet.of(Side.Left, Side.Right));
-		table.setWidth(new WLength(4 * 120 + 80 + 5 * 7));
+		table.setWidth(new WLength(4 * 120 + 80 + 5 * 7 + 2));
 		if (WApplication.getInstance().getEnvironment().hasAjax()) {
 			table.setEditTriggers(EnumSet
 					.of(WAbstractItemView.EditTrigger.SingleClicked));
@@ -333,11 +333,11 @@ class GraphicsWidgets extends TopicWidget {
 		table.setHeaderAlignment(0, EnumSet.of(AlignmentFlag.AlignCenter));
 		table.setRowHeight(new WLength(28));
 		table.setHeaderHeight(new WLength(28));
-		table.resize(new WLength(800), new WLength(200));
 		table.setColumnWidth(0, new WLength(80));
 		for (int column = 1; column < model.getColumnCount(); ++column) {
 			table.setColumnWidth(column, new WLength(90));
 		}
+		table.resize(new WLength(780), new WLength(200));
 		WItemDelegate delegate = new WItemDelegate(table);
 		delegate.setTextFormat("%.1f");
 		table.setItemDelegate(delegate);
@@ -426,12 +426,11 @@ class GraphicsWidgets extends TopicWidget {
 		table.setColumnWidth(1, new WLength(100));
 		table.setRowHeight(new WLength(28));
 		table.setHeaderHeight(new WLength(28));
+		table.setWidth(new WLength(150 + 100 + 14 + 2));
 		if (WApplication.getInstance().getEnvironment().hasAjax()) {
-			table.resize(new WLength(150 + 100 + 14), new WLength(7 * 28));
 			table.setEditTriggers(EnumSet
 					.of(WAbstractItemView.EditTrigger.SingleClicked));
 		} else {
-			table.resize(new WLength(150 + 100 + 14), WLength.Auto);
 			table.setEditTriggers(EnumSet
 					.of(WAbstractItemView.EditTrigger.NoEditTrigger));
 		}
@@ -475,37 +474,47 @@ class GraphicsWidgets extends TopicWidget {
 		chart.setGridEnabled(Plane.XZ_Plane, Axis.ZAxis_3D, true);
 		chart.setGridEnabled(Plane.YZ_Plane, Axis.YAxis_3D, true);
 		chart.setGridEnabled(Plane.YZ_Plane, Axis.ZAxis_3D, true);
-		WAbstractTableModel model1 = new SombreroData(40, 40, -10, 10, -10, 10,
-				container);
+		chart.axis(Axis.XAxis_3D).setTitle("X");
+		chart.axis(Axis.YAxis_3D).setTitle("Y");
+		chart.axis(Axis.ZAxis_3D).setTitle("Z");
+		WStandardItemModel model1 = new SombreroData(40, 40, container);
 		WGridData dataset1 = new WGridData(model1);
-		dataset1
-				.setColorMap(new WStandardColorMap(dataset1
-						.minimum(Axis.ZAxis_3D), dataset1
-						.maximum(Axis.ZAxis_3D), true));
-		GridDataSettings datasettings1 = new GridDataSettings(chart, dataset1,
-				container);
-		WAbstractTableModel model2 = new PlaneData(40, 40, -10, 0.5f, -10,
-				0.5f, container);
+		dataset1.setType(Series3DType.SurfaceSeries3D);
+		dataset1.setSurfaceMeshEnabled(true);
+		WStandardColorMap colormap = new WStandardColorMap(dataset1
+				.minimum(Axis.ZAxis_3D), dataset1.maximum(Axis.ZAxis_3D), true);
+		dataset1.setColorMap(colormap);
+		WStandardItemModel model2 = new PlaneData(40, 40, container);
+		for (int i = 0; i < model2.getRowCount(); i++) {
+			model2.setData(i, 0, 5, ItemDataRole.MarkerScaleFactorRole);
+			model2.setData(i, model2.getColumnCount() - 1, 5,
+					ItemDataRole.MarkerScaleFactorRole);
+		}
+		for (int i = 0; i < model2.getColumnCount(); i++) {
+			model2.setData(0, i, 5, ItemDataRole.MarkerScaleFactorRole);
+			model2.setData(model2.getRowCount() - 1, i, 5,
+					ItemDataRole.MarkerScaleFactorRole);
+		}
+		for (int i = 0; i < model2.getRowCount(); i++) {
+			model2.setData(i, 5, new WColor(0, 255, 0),
+					ItemDataRole.MarkerBrushColorRole);
+			model2.setData(i, 6, new WColor(0, 0, 255),
+					ItemDataRole.MarkerBrushColorRole);
+			model2.setData(i, 7, new WColor(0, 255, 0),
+					ItemDataRole.MarkerBrushColorRole);
+			model2.setData(i, 8, new WColor(0, 0, 255),
+					ItemDataRole.MarkerBrushColorRole);
+		}
 		WEquidistantGridData dataset2 = new WEquidistantGridData(model2, -10,
 				0.5f, -10, 0.5f);
-		GridDataSettings datasettings2 = new GridDataSettings(chart, dataset2,
-				container);
-		WAbstractTableModel model3 = new PointsData(100, container);
+		WStandardItemModel model3 = new SpiralData(100, container);
 		WScatterData dataset3 = new WScatterData(model3);
-		ScatterDataSettings datasettings3 = new ScatterDataSettings(dataset3,
-				container);
+		dataset3.setPointSize(5);
 		chart.addDataSeries(dataset1);
 		chart.addDataSeries(dataset2);
 		chart.addDataSeries(dataset3);
-		WTabWidget configuration = new WTabWidget(container);
-		configuration.addTab(new ChartSettings(chart),
-				"General Chart Settings", WTabWidget.LoadPolicy.PreLoading);
-		configuration.addTab(datasettings1, "Dataset 1",
-				WTabWidget.LoadPolicy.PreLoading);
-		configuration.addTab(datasettings2, "Dataset 2",
-				WTabWidget.LoadPolicy.PreLoading);
-		configuration.addTab(datasettings3, "Dataset 3",
-				WTabWidget.LoadPolicy.PreLoading);
+		chart.setAlternativeContent(new WImage(new WLink(
+				"pics/numericalChartScreenshot.png"), container));
 		return container;
 	}
 
@@ -517,26 +526,33 @@ class GraphicsWidgets extends TopicWidget {
 		style.setBorder(new WBorder(WBorder.Style.Solid, WBorder.Width.Medium,
 				WColor.black));
 		chart.setDecorationStyle(style);
-		chart.resize(new WLength(600), new WLength(600));
-		WStandardItemModel model1 = CsvUtil.csvToModel("" + "hor_plane.csv",
-				container, false);
-		WGridData horPlane = new WGridData(model1);
-		horPlane.setType(Series3DType.BarSeries3D);
-		WStandardItemModel model2 = CsvUtil.csvToModel(
-				"" + "isotope_decay.csv", container, false);
-		WGridData isotopes = new WGridData(model2);
+		chart.resize(new WLength(800), new WLength(600));
+		chart.setTitle("Fish consumption in western Europe");
+		chart.axis(Axis.ZAxis_3D).setTitle("Consumption (pcs/year)");
+		chart.setLegendStyle(new WFont(), new WPen(), new WBrush(
+				WColor.lightGray));
+		chart.setLegendEnabled(true);
+		chart.setGridEnabled(Plane.XZ_Plane, Axis.ZAxis_3D, true);
+		chart.setGridEnabled(Plane.YZ_Plane, Axis.ZAxis_3D, true);
+		WStandardItemModel model = CsvUtil.csvToModel(""
+				+ "fish_consumption.csv", container, false);
+		for (int i = 0; i < model.getRowCount(); i++) {
+			for (int j = 0; j < model.getColumnCount(); j++) {
+				if (StringUtils.asString(model.getData(0, j)).equals(
+						new WString("codfish"))
+						&& StringUtils.asString(model.getData(i, 0)).equals(
+								new WString("Belgium"))) {
+					model.setData(i, j, WColor.cyan,
+							ItemDataRole.MarkerBrushColorRole);
+				}
+			}
+		}
+		WGridData isotopes = new WGridData(model);
+		isotopes.setTitle("made-up data");
 		isotopes.setType(Series3DType.BarSeries3D);
 		chart.addDataSeries(isotopes);
-		chart.addDataSeries(horPlane);
-		CategoryDataSettings settings1 = new CategoryDataSettings(horPlane,
-				container);
-		CategoryDataSettings settings2 = new CategoryDataSettings(isotopes,
-				container);
-		WTabWidget configuration = new WTabWidget(container);
-		configuration.addTab(settings1, "horizontal plane",
-				WTabWidget.LoadPolicy.PreLoading);
-		configuration.addTab(settings2, "isotope data",
-				WTabWidget.LoadPolicy.PreLoading);
+		chart.setAlternativeContent(new WImage(new WLink(
+				"pics/categoricalChartScreenshot.png"), container));
 		return container;
 	}
 }

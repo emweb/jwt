@@ -182,7 +182,6 @@ public class WStandardPalette implements WChartPalette {
 	}
 
 	private WStandardPalette.Flavour flavour_;
-	private boolean filled_;
 	private static int[][] standardColors = {
 			{ 0xC3D9FF, 0xEEEEEE, 0xFFFF88, 0xCDEB8B, 0x356AA0, 0x36393D,
 					0xF9F7ED, 0xFF7400 },

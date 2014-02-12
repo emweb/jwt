@@ -106,21 +106,19 @@ public class DomElement {
 	 * encoding.
 	 */
 	public static String urlEncodeS(final String url, final String allowed) {
-		StringWriter result = new StringWriter();
+		StringBuilder result = new StringBuilder();
 		for (int i = 0; i < url.length(); ++i) {
 			char c = url.charAt(i);
 			if (c <= 31 || c >= 127 || unsafeChars_.indexOf(c) != -1) {
 				if (allowed.indexOf(c) != -1) {
-					result.write(c);
+					result.append((char) c);
 				} else {
 					result.append('%');
-					if ((int) c < 16) {
-						result.append('0');
-					}
-					result.append(Integer.toHexString(c));
+					result.append(hexLookup(c >> 4));
+					result.append(hexLookup(c));
 				}
 			} else {
-				result.write(c);
+				result.append((char) c);
 			}
 		}
 		return result.toString();
@@ -1919,4 +1917,8 @@ public class DomElement {
 			"border-collapse", "pageBreakBefore", "pageBreakAfter", "zoom",
 			"visibility", "display", "boxSizing" };
 	private static final String unsafeChars_ = " $&+,:;=?@'\"<>#%{}|\\^~[]`";
+
+	static char hexLookup(int n) {
+		return "0123456789abcdef".charAt(n & 0xF);
+	}
 }

@@ -327,7 +327,7 @@ public abstract class WAbstractMedia extends WInteractWidget {
 	 */
 	public void pause() {
 		this.doJavaScript("jQuery.data(" + this.getJsRef()
-				+ ", 'obj').pause();}");
+				+ ", 'obj').pause();");
 	}
 
 	/**

@@ -889,8 +889,14 @@ public class WTreeNode extends WCompositeWidget {
 		children.setList(true);
 		children.hide();
 		this.layout_.bindWidget("children", children);
-		this.expandIcon_ = new WIconPair(app.getTheme().getResourcesUrl()
-				+ imagePlus_, app.getTheme().getResourcesUrl() + imageMin_);
+		if (WApplication.getInstance().getLayoutDirection() == LayoutDirection.RightToLeft) {
+			this.expandIcon_ = new WIconPair(app.getTheme().getResourcesUrl()
+					+ imagePlusRtl_, app.getTheme().getResourcesUrl()
+					+ imageMinRtl_);
+		} else {
+			this.expandIcon_ = new WIconPair(app.getTheme().getResourcesUrl()
+					+ imagePlus_, app.getTheme().getResourcesUrl() + imageMin_);
+		}
 		this.expandIcon_.setStyleClass("Wt-ctrl Wt-expand");
 		this.noExpandIcon_ = new WText();
 		this.noExpandIcon_.setStyleClass("Wt-ctrl Wt-noexpand");
@@ -1005,5 +1011,7 @@ public class WTreeNode extends WCompositeWidget {
 
 	private static String imagePlus_ = "nav-plus.gif";
 	private static String imageMin_ = "nav-minus.gif";
+	private static String imagePlusRtl_ = "nav-plus-rtl.gif";
+	private static String imageMinRtl_ = "nav-minus-rtl.gif";
 	AbstractSignal.Connection clickedConnection_;
 }

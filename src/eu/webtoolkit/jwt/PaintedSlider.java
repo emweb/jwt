@@ -44,7 +44,6 @@ class PaintedSlider extends WPaintedWidget {
 		this.addChild(this.fill_ = new WContainerWidget());
 		this.fill_.setPositionScheme(PositionScheme.Absolute);
 		this.fill_.setStyleClass("fill");
-		this.handle_.setPopup(true);
 		this.handle_.setPositionScheme(PositionScheme.Absolute);
 		this.handle_.setStyleClass("handle");
 		this.handle_.mouseWentDown().addListener(this.mouseDownJS_);
@@ -121,9 +120,11 @@ class PaintedSlider extends WPaintedWidget {
 						"') - intd) > 1) {").append("objf.style.").append(size)
 				.append(" = ");
 		if (o == Orientation.Vertical) {
-			mouseMovedJS.append('(').append(max).append(" - intd)");
+			mouseMovedJS.append('(').append(max).append(" - intd + ").append(
+					this.slider_.getHandleWidth() / 2).append(")");
 		} else {
-			mouseMovedJS.append("intd");
+			mouseMovedJS.append("intd + ").append(
+					this.slider_.getHandleWidth() / 2);
 		}
 		mouseMovedJS.append(" + 'px';").append("objh.style.").append(dir)
 				.append(" = intd + 'px';").append("var vs = ");
@@ -169,11 +170,13 @@ class PaintedSlider extends WPaintedWidget {
 				* pixelsPerUnit;
 		if (this.slider_.getOrientation() == Orientation.Horizontal) {
 			this.handle_.setOffsets(new WLength(u), EnumSet.of(Side.Left));
-			this.fill_.setWidth(new WLength(u));
+			this.fill_.setWidth(new WLength(u + this.slider_.getHandleWidth()
+					/ 2));
 		} else {
 			this.handle_.setOffsets(new WLength(this.getH()
 					- this.slider_.getHandleWidth() - u), EnumSet.of(Side.Top));
-			this.fill_.setHeight(new WLength(u));
+			this.fill_.setHeight(new WLength(u + this.slider_.getHandleWidth()
+					/ 2));
 		}
 	}
 

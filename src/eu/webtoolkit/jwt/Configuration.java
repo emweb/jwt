@@ -551,11 +551,16 @@ public class Configuration {
 	/**
 	 * Returns whether the progressive bootstrap method is used.
 	 * 
+	 * The method may take into account the internalPath to differentiate between
+	 * certain deep links which display widgets that do not progress well (such 
+	 * as table views or tree views).
+	 * 
+	 * @param internalPath the initial internal path  
 	 * @return whether the progressive bootstrap method is used.
 	 * 
 	 * @see #setProgressiveBootstrap(boolean).
 	 */
-	public boolean progressiveBootstrap() {
+	public boolean progressiveBootstrap(String internalPath) {
 		return this.progressiveBootstrap ;
 	}
 	

@@ -464,6 +464,9 @@ public class WAxis {
 	 * default value is 0.0, and indicates that the interval should be computed
 	 * automatically.
 	 * <p>
+	 * The unit for the label interval is in logical units (i.e. the same as
+	 * minimum or maximum).
+	 * <p>
 	 * 
 	 * @see WAxis#setLabelFormat(CharSequence format)
 	 */
@@ -1029,7 +1032,7 @@ public class WAxis {
 											}
 										}
 									} else {
-										if (minutes > 2) {
+										if (minutes > 0.8) {
 											s.dateTimeRenderUnit = WAxis.DateTimeUnit.Minutes;
 											if (minutes < 1.3) {
 												interval = 1;

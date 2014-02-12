@@ -143,7 +143,6 @@ public class WVideo extends WAbstractMedia {
 	}
 
 	private String posterUrl_;
-	private WAbstractMedia.PreloadMode preloadMode_;
 	private boolean sizeChanged_;
 	private boolean posterChanged_;
 }

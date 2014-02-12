@@ -79,75 +79,35 @@ public class WInPlaceEdit extends WCompositeWidget {
 	private static Logger logger = LoggerFactory.getLogger(WInPlaceEdit.class);
 
 	/**
+	 * Creates an in-place edit.
+	 */
+	public WInPlaceEdit(WContainerWidget parent) {
+		super(parent);
+		this.valueChanged_ = new Signal1<WString>(this);
+		this.c1_ = new AbstractSignal.Connection();
+		this.c2_ = new AbstractSignal.Connection();
+		this.create();
+	}
+
+	/**
+	 * Creates an in-place edit.
+	 * <p>
+	 * Calls {@link #WInPlaceEdit(WContainerWidget parent)
+	 * this((WContainerWidget)null)}
+	 */
+	public WInPlaceEdit() {
+		this((WContainerWidget) null);
+	}
+
+	/**
 	 * Creates an in-place edit with the given text.
 	 */
 	public WInPlaceEdit(final CharSequence text, WContainerWidget parent) {
 		super(parent);
 		this.valueChanged_ = new Signal1<WString>(this);
-		this.emptyText_ = new WString();
 		this.c1_ = new AbstractSignal.Connection();
 		this.c2_ = new AbstractSignal.Connection();
-		this.setImplementation(this.impl_ = new WContainerWidget());
-		this.setInline(true);
-		this.text_ = new WText(WString.Empty, TextFormat.PlainText, this.impl_);
-		this.text_.getDecorationStyle().setCursor(Cursor.ArrowCursor);
-		this.editing_ = new WContainerWidget(this.impl_);
-		this.editing_.setInline(true);
-		this.editing_.hide();
-		this.editing_.addStyleClass("input-append");
-		this.edit_ = new WLineEdit(this.editing_);
-		this.edit_.setTextSize(20);
-		this.save_ = null;
-		this.cancel_ = null;
-		this.text_.clicked().addListener(this.text_,
-				new Signal1.Listener<WMouseEvent>() {
-					public void trigger(WMouseEvent e1) {
-						WInPlaceEdit.this.text_.hide();
-					}
-				});
-		this.text_.clicked().addListener(this.editing_,
-				new Signal1.Listener<WMouseEvent>() {
-					public void trigger(WMouseEvent e1) {
-						WInPlaceEdit.this.editing_.show();
-					}
-				});
-		this.text_.clicked().addListener(this.edit_,
-				new Signal1.Listener<WMouseEvent>() {
-					public void trigger(WMouseEvent e1) {
-						WInPlaceEdit.this.edit_.setFocus();
-					}
-				});
-		this.edit_.enterPressed().addListener(this.edit_,
-				new Signal.Listener() {
-					public void trigger() {
-						WInPlaceEdit.this.edit_.disable();
-					}
-				});
-		this.edit_.enterPressed().addListener(this, new Signal.Listener() {
-			public void trigger() {
-				WInPlaceEdit.this.save();
-			}
-		});
-		this.edit_.enterPressed().preventPropagation();
-		this.edit_.escapePressed().addListener(this.editing_,
-				new Signal.Listener() {
-					public void trigger() {
-						WInPlaceEdit.this.editing_.hide();
-					}
-				});
-		this.edit_.escapePressed().addListener(this.text_,
-				new Signal.Listener() {
-					public void trigger() {
-						WInPlaceEdit.this.text_.show();
-					}
-				});
-		this.edit_.escapePressed().addListener(this, new Signal.Listener() {
-			public void trigger() {
-				WInPlaceEdit.this.cancel();
-			}
-		});
-		this.edit_.escapePressed().preventPropagation();
-		this.setButtonsEnabled();
+		this.create();
 		this.setText(text);
 	}
 
@@ -178,39 +138,57 @@ public class WInPlaceEdit extends WCompositeWidget {
 	 * @see WInPlaceEdit#getText()
 	 */
 	public void setText(final CharSequence text) {
-		if (!(text.length() == 0)) {
+		this.empty_ = (text.length() == 0);
+		if (!this.empty_) {
 			this.text_.setText(text);
-			this.empty_ = false;
 		} else {
-			this.text_.setText(this.emptyText_);
-			this.empty_ = true;
+			this.text_.setText(this.getPlaceholderText());
 		}
 		this.edit_.setText(text.toString());
 	}
 
 	/**
-	 * Sets the empty text to be shown when the field is empty and not being
-	 * edited.
+	 * Sets the placeholder text (<b>deprecated</b>).
 	 * <p>
 	 * 
-	 * @see WInPlaceEdit#getEmptyText()
+	 * @deprecated use {@link WInPlaceEdit#setPlaceholderText(CharSequence text)
+	 *             setPlaceholderText()}x instead
 	 */
-	public void setEmptyText(final CharSequence emptyText) {
-		this.emptyText_ = WString.toWString(emptyText);
+	public void setEmptyText(final CharSequence text) {
+		this.setPlaceholderText(text);
+	}
+
+	/**
+	 * Returns the placeholder text (<b>deprecated</b>).
+	 * <p>
+	 * 
+	 * @deprecated use {@link WInPlaceEdit#getPlaceholderText()
+	 *             getPlaceholderText()} instead.
+	 */
+	public WString getEmptyText() {
+		return this.getPlaceholderText();
+	}
+
+	/**
+	 * Sets the placeholder text.
+	 * <p>
+	 * This sets the text that is shown when the field is empty.
+	 */
+	public void setPlaceholderText(final CharSequence text) {
+		this.edit_.setPlaceholderText(text);
 		if (this.empty_) {
-			this.text_.setText(this.emptyText_);
+			this.text_.setText(text);
 		}
 	}
 
 	/**
-	 * Returns the empty text to be shown when the field is empty and not being
-	 * edited.
+	 * Returns the placeholder text.
 	 * <p>
 	 * 
-	 * @see WInPlaceEdit#setEmptyText(CharSequence emptyText)
+	 * @see WInPlaceEdit#setPlaceholderText(CharSequence text)
 	 */
-	public WString getEmptyText() {
-		return this.emptyText_;
+	public WString getPlaceholderText() {
+		return this.edit_.getPlaceholderText();
 	}
 
 	/**
@@ -285,9 +263,9 @@ public class WInPlaceEdit extends WCompositeWidget {
 		}
 		if (enabled) {
 			this.save_ = new WPushButton(tr("Wt.WInPlaceEdit.Save"),
-					this.editing_);
+					this.buttons_);
 			this.cancel_ = new WPushButton(tr("Wt.WInPlaceEdit.Cancel"),
-					this.editing_);
+					this.buttons_);
 			this.save_.clicked().addListener(this.edit_,
 					new Signal1.Listener<WMouseEvent>() {
 						public void trigger(WMouseEvent e1) {
@@ -361,6 +339,81 @@ public class WInPlaceEdit extends WCompositeWidget {
 		setButtonsEnabled(true);
 	}
 
+	protected void render(EnumSet<RenderFlag> flags) {
+		if (this.save_ != null
+				&& !EnumUtils.mask(flags, RenderFlag.RenderFull).isEmpty()) {
+			WApplication.getInstance().getTheme().apply(this, this.editing_,
+					WidgetThemeRole.InPlaceEditingRole);
+		}
+		super.render(flags);
+	}
+
+	private void create() {
+		this.setImplementation(this.impl_ = new WContainerWidget());
+		this.setInline(true);
+		this.text_ = new WText(WString.Empty, TextFormat.PlainText, this.impl_);
+		this.text_.getDecorationStyle().setCursor(Cursor.ArrowCursor);
+		this.editing_ = new WContainerWidget(this.impl_);
+		this.editing_.setInline(true);
+		this.editing_.hide();
+		this.edit_ = new WLineEdit(this.editing_);
+		this.edit_.setTextSize(20);
+		this.save_ = null;
+		this.cancel_ = null;
+		this.text_.clicked().addListener(this.text_,
+				new Signal1.Listener<WMouseEvent>() {
+					public void trigger(WMouseEvent e1) {
+						WInPlaceEdit.this.text_.hide();
+					}
+				});
+		this.text_.clicked().addListener(this.editing_,
+				new Signal1.Listener<WMouseEvent>() {
+					public void trigger(WMouseEvent e1) {
+						WInPlaceEdit.this.editing_.show();
+					}
+				});
+		this.text_.clicked().addListener(this.edit_,
+				new Signal1.Listener<WMouseEvent>() {
+					public void trigger(WMouseEvent e1) {
+						WInPlaceEdit.this.edit_.setFocus();
+					}
+				});
+		this.edit_.enterPressed().addListener(this.edit_,
+				new Signal.Listener() {
+					public void trigger() {
+						WInPlaceEdit.this.edit_.disable();
+					}
+				});
+		this.edit_.enterPressed().addListener(this, new Signal.Listener() {
+			public void trigger() {
+				WInPlaceEdit.this.save();
+			}
+		});
+		this.edit_.enterPressed().preventPropagation();
+		this.edit_.escapePressed().addListener(this.editing_,
+				new Signal.Listener() {
+					public void trigger() {
+						WInPlaceEdit.this.editing_.hide();
+					}
+				});
+		this.edit_.escapePressed().addListener(this.text_,
+				new Signal.Listener() {
+					public void trigger() {
+						WInPlaceEdit.this.text_.show();
+					}
+				});
+		this.edit_.escapePressed().addListener(this, new Signal.Listener() {
+			public void trigger() {
+				WInPlaceEdit.this.cancel();
+			}
+		});
+		this.edit_.escapePressed().preventPropagation();
+		this.buttons_ = new WContainerWidget(this.editing_);
+		this.buttons_.setInline(true);
+		this.buttons_.addStyleClass("input-group-btn");
+		this.setButtonsEnabled();
+	}
+
 	private void save() {
 		this.editing_.hide();
 		this.text_.show();
@@ -387,8 +440,8 @@ public class WInPlaceEdit extends WCompositeWidget {
 	private Signal1<WString> valueChanged_;
 	private WContainerWidget impl_;
 	private WContainerWidget editing_;
+	private WContainerWidget buttons_;
 	private WText text_;
-	private WString emptyText_;
 	private WLineEdit edit_;
 	private WPushButton save_;
 	private WPushButton cancel_;

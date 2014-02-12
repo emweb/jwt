@@ -1,5 +1,6 @@
 package eu.webtoolkit.jwt.examples.widgetgallery;
 
+import eu.webtoolkit.jwt.Configuration;
 import eu.webtoolkit.jwt.WApplication;
 import eu.webtoolkit.jwt.WBootstrapTheme;
 import eu.webtoolkit.jwt.WEnvironment;
@@ -8,19 +9,42 @@ import eu.webtoolkit.jwt.WLink;
 import eu.webtoolkit.jwt.WXmlLocalizedStrings;
 import eu.webtoolkit.jwt.WtServlet;
 import eu.webtoolkit.jwt.Configuration.ErrorReporting;
+import eu.webtoolkit.jwt.WBootstrapTheme.Version;
 
 public class WidgetGalleryServlet extends WtServlet {
 	public WidgetGalleryServlet() {
-		this.getConfiguration().setErrorReporting(ErrorReporting.NoErrors);
-		this.getConfiguration().setUaCompatible("IE8=IE7");
-		this.getConfiguration().setTinyMCEVersion(4);
+		setConfiguration(new Configuration() {
+			{
+				setErrorReporting(ErrorReporting.NoErrors);
+				setUaCompatible("IE8=IE7");
+				setTinyMCEVersion(4);
+			}
+
+			@Override
+			public boolean progressiveBootstrap(String internalPath) {
+				if (internalPath.equals("/trees-tables/mvc-table-views") ||
+					internalPath.equals("/trees-tables/mvc-tree-views") ||
+					internalPath.equals("/trees-tables/mvc-item-models") ||
+					internalPath.equals("/layout/layout-managers") ||
+					internalPath.startsWith("/graphics-charts"))
+					return false;
+				else
+					return true;
+			}
+		});
+		
 	}
 	
 	@Override
 	public WApplication createApplication(WEnvironment env) {
 		WApplication app = new WApplication(env);
 		  
-		app.setTheme(new WBootstrapTheme());
+		WBootstrapTheme theme = new WBootstrapTheme();
+		theme.setVersion(Version.Version3);
+		// load the default bootstrap3 (sub-)theme
+	    app.useStyleSheet(new WLink(WApplication.getRelativeResourcesUrl() + "/themes/bootstrap/3/bootstrap-theme.min.css"));
+
+		app.setTheme(theme);
 
 		WXmlLocalizedStrings resourceBundle = new WXmlLocalizedStrings();
 		resourceBundle.use("/eu/webtoolkit/jwt/examples/widgetgallery/text");

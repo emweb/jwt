@@ -96,4 +96,8 @@ public class UploadedFile {
 
 	private UploadedFile.Impl fileInfo_;
 	private static StringWriter emptyStream = new StringWriter();
+
+	static String str(String s) {
+		return s != null ? s : "";
+	}
 }

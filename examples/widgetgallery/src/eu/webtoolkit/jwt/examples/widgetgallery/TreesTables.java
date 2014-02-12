@@ -246,11 +246,12 @@ class TreesTables extends TopicWidget {
 		tableView.setSelectionMode(SelectionMode.SingleSelection);
 		tableView.setEditTriggers(EnumSet
 				.of(WAbstractItemView.EditTrigger.NoEditTrigger));
+		final int WIDTH = 120;
 		for (int i = 0; i < tableView.getModel().getColumnCount(); ++i) {
 			tableView.setColumnWidth(i, new WLength(120));
 		}
-		tableView.setWidth(new WLength(127 * tableView.getModel()
-				.getColumnCount()));
+		tableView.setWidth(new WLength((WIDTH + 7)
+				* tableView.getModel().getColumnCount() + 2));
 		return tableView;
 	}
 

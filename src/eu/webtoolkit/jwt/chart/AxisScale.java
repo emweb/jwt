@@ -33,7 +33,8 @@ public enum AxisScale {
 	 * A category scale is set as the scale for the X axis in a
 	 * {@link ChartType#CategoryChart CategoryChart}, and is only applicable
 	 * there. It lists all values, evenly spaced, and consecutively in the order
-	 * of the model.
+	 * of the model. The categories are converted to numbers using their ordinal
+	 * (first category = 0, second = 1, ...).
 	 */
 	CategoryScale(0),
 	/**

@@ -195,6 +195,18 @@ public class WTemplate extends WInteractWidget {
 		return true;
 	}
 
+	private boolean _while(final List<WString> args, final Writer result)
+			throws IOException {
+		if (args.size() < 2) {
+			return false;
+		}
+		WString tblock = WString.tr(args.get(1).toString());
+		while (this.conditionValue(args.get(0).toString())) {
+			this.renderTemplateText(result, tblock);
+		}
+		return true;
+	}
+
 	private boolean _id(final List<WString> args, final Writer result)
 			throws IOException {
 		if (args.size() == 1) {
@@ -222,6 +234,7 @@ public class WTemplate extends WInteractWidget {
 	 * @see WTemplate.Functions#tr
 	 * @see WTemplate.Functions#id
 	 * @see WTemplate.Functions#block
+	 * @see WTemplate.Functions#while_f
 	 */
 	public static interface Function {
 		public boolean evaluate(WTemplate t, final List<WString> args,
@@ -250,6 +263,20 @@ public class WTemplate extends WInteractWidget {
 				final Writer result) {
 			try {
 				return t._block(args, result);
+			} catch (IOException ioe) {
+				return false;
+			}
+		}
+	}
+
+	static class WhileFunction implements WTemplate.Function {
+		private static Logger logger = LoggerFactory
+				.getLogger(WhileFunction.class);
+
+		public boolean evaluate(WTemplate t, final List<WString> args,
+				final Writer result) {
+			try {
+				return t._while(args, result);
 			} catch (IOException ioe) {
 				return false;
 			}
@@ -348,6 +375,15 @@ public class WTemplate extends WInteractWidget {
 		 */
 		public static final WTemplate.Function block = new WTemplate.BlockFunction();
 		/**
+		 * A function that renders a macro block as long as the given condition
+		 * is true.
+		 * <p>
+		 * The function will consider the first argument as the condition, and
+		 * the second argument as the key for a localized string that is a macro
+		 * block.
+		 */
+		public static final WTemplate.Function while_f = new WTemplate.WhileFunction();
+		/**
 		 * A function that resolves the id of a bound widget.
 		 * <p>
 		 * For example, when bound to the function <code>&quot;id&quot;</code>,
@@ -391,6 +427,9 @@ public class WTemplate extends WInteractWidget {
 		this.text_ = new WString();
 		this.encodeInternalPaths_ = false;
 		this.changed_ = false;
+		this.plainTextNewLineEscStream_ = new EscapeOStream();
+		this.plainTextNewLineEscStream_
+				.pushEscape(EscapeOStream.RuleSet.PlainTextNewLines);
 		this.setInline(false);
 	}
 
@@ -424,6 +463,9 @@ public class WTemplate extends WInteractWidget {
 		this.text_ = new WString();
 		this.encodeInternalPaths_ = false;
 		this.changed_ = false;
+		this.plainTextNewLineEscStream_ = new EscapeOStream();
+		this.plainTextNewLineEscStream_
+				.pushEscape(EscapeOStream.RuleSet.PlainTextNewLines);
 		this.setInline(false);
 		this.setTemplateText(text);
 	}
@@ -436,6 +478,11 @@ public class WTemplate extends WInteractWidget {
 	 */
 	public WTemplate(final CharSequence text) {
 		this(text, (WContainerWidget) null);
+	}
+
+	public void remove() {
+		;
+		super.remove();
 	}
 
 	/**
@@ -1187,17 +1234,24 @@ public class WTemplate extends WInteractWidget {
 	 */
 	protected void format(final Writer result, final CharSequence s,
 			TextFormat textFormat) throws IOException {
-		WString v = WString.toWString(s);
 		if (textFormat == TextFormat.XHTMLText) {
-			if (!removeScript(v)) {
-				v = escapeText(v, true);
+			WString v = WString.toWString(s);
+			if (removeScript(v)) {
+				result.append(v.toString());
+				return;
+			} else {
+				EscapeOStream sout = new EscapeOStream(result);
+				sout.append(v.toString(), this.plainTextNewLineEscStream_);
+				return;
 			}
 		} else {
 			if (textFormat == TextFormat.PlainText) {
-				v = escapeText(v, true);
+				EscapeOStream sout = new EscapeOStream(result);
+				sout.append(s.toString(), this.plainTextNewLineEscStream_);
+				return;
 			}
 		}
-		result.append(v.toString());
+		result.append(s.toString());
 	}
 
 	/**
@@ -1321,4 +1375,6 @@ public class WTemplate extends WInteractWidget {
 		}
 		return pos == text.length() ? -1 : pos;
 	}
+
+	private EscapeOStream plainTextNewLineEscStream_;
 }

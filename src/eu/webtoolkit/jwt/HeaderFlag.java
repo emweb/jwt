@@ -57,7 +57,12 @@ public enum HeaderFlag {
 	 * When set, {@link ItemDataRole#CheckStateRole} data is of type
 	 * {@link CheckState}
 	 */
-	HeaderIsTristate;
+	HeaderIsTristate,
+	/**
+	 * Flag that indicates that the item text (DisplayRole, ToolTipRole) is
+	 * HTML.
+	 */
+	HeaderIsXHTMLText;
 
 	/**
 	 * Returns the numerical representation of this enum.

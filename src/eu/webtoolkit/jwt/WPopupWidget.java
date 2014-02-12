@@ -53,6 +53,7 @@ public class WPopupWidget extends WCompositeWidget {
 		this.orientation_ = Orientation.Vertical;
 		this.transient_ = false;
 		this.autoHideDelay_ = 0;
+		this.deleteWhenHidden_ = false;
 		this.hidden_ = new Signal(this);
 		this.shown_ = new Signal(this);
 		this.jsHidden_ = new JSignal(impl, "hidden");
@@ -182,6 +183,32 @@ public class WPopupWidget extends WCompositeWidget {
 		return this.autoHideDelay_;
 	}
 
+	/**
+	 * Lets the popup delete itself when hidden.
+	 * <p>
+	 * When this is enabled, the popup will delete itself when hidden. You need
+	 * to take care that when overriding
+	 * {@link WPopupWidget#setHidden(boolean hidden, WAnimation animation)
+	 * setHidden()}, the popup may thus be deleted from within
+	 * {@link WPopupWidget#setHidden(boolean hidden, WAnimation animation)
+	 * setHidden()}.
+	 * <p>
+	 * The default value is <code>false</code>.
+	 */
+	public void setDeleteWhenHidden(boolean enable) {
+		this.deleteWhenHidden_ = enable;
+	}
+
+	/**
+	 * Returns whether auto delete is enabled.
+	 * <p>
+	 * 
+	 * @see WPopupWidget#setDeleteWhenHidden(boolean enable)
+	 */
+	public boolean isDeleteWhenHidden() {
+		return this.deleteWhenHidden_;
+	}
+
 	public void setHidden(boolean hidden, final WAnimation animation) {
 		if (WWebWidget.canOptimizeUpdates() && hidden == this.isHidden()) {
 			return;
@@ -203,6 +230,11 @@ public class WPopupWidget extends WCompositeWidget {
 				this.doJavaScript("var o = jQuery.data(" + this.getJsRef()
 						+ ", 'popup');if (o) o.shown();");
 			}
+		}
+		if (!WWebWidget.canOptimizeUpdates() && hidden
+				&& this.deleteWhenHidden_) {
+			if (this != null)
+				this.remove();
 		}
 	}
 
@@ -255,6 +287,7 @@ public class WPopupWidget extends WCompositeWidget {
 	private Orientation orientation_;
 	private boolean transient_;
 	private int autoHideDelay_;
+	private boolean deleteWhenHidden_;
 	private Signal hidden_;
 	private Signal shown_;
 	private JSignal jsHidden_;

@@ -34,6 +34,7 @@ public class WidgetThemeRole {
 	public final static int DialogBodyRole = 202;
 	public final static int DialogFooterRole = 203;
 	public final static int DialogCloseIconRole = 204;
+	public final static int DialogContent = 205;
 	public final static int TableViewRowContainerRole = 300;
 	public final static int DatePickerPopupRole = 400;
 	public final static int PanelTitleBarRole = 500;
@@ -41,4 +42,11 @@ public class WidgetThemeRole {
 	public final static int PanelTitleRole = 502;
 	public final static int PanelBodyRole = 503;
 	public final static int AuthWidgets = 600;
+	public final static int InPlaceEditingRole = 700;
+	public final static int NavbarRole = 800;
+	public final static int NavCollapseRole = 801;
+	public final static int NavBrandRole = 802;
+	public final static int NavbarSearchRole = 803;
+	public final static int NavbarMenuRole = 804;
+	public final static int NavbarBtn = 805;
 }

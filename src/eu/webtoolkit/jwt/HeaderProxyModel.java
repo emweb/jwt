@@ -57,6 +57,10 @@ class HeaderProxyModel extends WAbstractTableModel {
 		if (!EnumUtils.mask(headerFlags, HeaderFlag.HeaderIsTristate).isEmpty()) {
 			result.add(ItemFlag.ItemIsTristate);
 		}
+		if (!EnumUtils.mask(headerFlags, HeaderFlag.HeaderIsXHTMLText)
+				.isEmpty()) {
+			result.add(ItemFlag.ItemIsXHTMLText);
+		}
 		return result;
 	}
 

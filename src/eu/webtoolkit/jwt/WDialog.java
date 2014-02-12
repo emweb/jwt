@@ -189,8 +189,8 @@ public class WDialog extends WPopupWidget {
 	 * @see WDialog#setTitleBarEnabled(boolean enable)
 	 */
 	public void setWindowTitle(final CharSequence windowTitle) {
-		this.caption_.setText(new WString("<h3>"
-				+ Utils.htmlEncode(windowTitle.toString()) + "</h3>"));
+		this.caption_.setText(new WString("<h4>"
+				+ Utils.htmlEncode(windowTitle.toString()) + "</h4>"));
 	}
 
 	/**
@@ -302,7 +302,7 @@ public class WDialog extends WPopupWidget {
 			}
 		} else {
 			do {
-				app.getSession().doRecursiveEventLoop();
+				app.waitForEvent();
 			} while (this.recursiveEventLoop_);
 		}
 		this.hide();
@@ -490,7 +490,8 @@ public class WDialog extends WPopupWidget {
 	public void setClosable(boolean closable) {
 		if (closable) {
 			if (!(this.closeIcon_ != null)) {
-				this.closeIcon_ = new WText(this.titleBar_);
+				this.closeIcon_ = new WText();
+				this.titleBar_.insertWidget(0, this.closeIcon_);
 				WApplication.getInstance().getTheme().apply(this,
 						this.closeIcon_, WidgetThemeRole.DialogCloseIconRole);
 				this.closeIcon_.clicked().addListener(this,
@@ -518,24 +519,26 @@ public class WDialog extends WPopupWidget {
 		if (this.contents_ != null && this.isHidden() != hidden) {
 			if (!hidden) {
 				WApplication app = WApplication.getInstance();
-				for (int i = 0; i < this.getFooter().getCount(); ++i) {
-					WPushButton b = ((this.getFooter().getWidget(i)) instanceof WPushButton ? (WPushButton) (this
-							.getFooter().getWidget(i))
-							: null);
-					if (b != null && b.isDefault()) {
-						this.enterConnection1_ = app.globalEnterPressed()
-								.addListener(this, new Signal.Listener() {
-									public void trigger() {
-										WDialog.this.onDefaultPressed();
-									}
-								});
-						this.enterConnection2_ = this.impl_.enterPressed()
-								.addListener(this, new Signal.Listener() {
-									public void trigger() {
-										WDialog.this.onDefaultPressed();
-									}
-								});
-						break;
+				if (this.footer_ != null) {
+					for (int i = 0; i < this.getFooter().getCount(); ++i) {
+						WPushButton b = ((this.getFooter().getWidget(i)) instanceof WPushButton ? (WPushButton) (this
+								.getFooter().getWidget(i))
+								: null);
+						if (b != null && b.isDefault()) {
+							this.enterConnection1_ = app.globalEnterPressed()
+									.addListener(this, new Signal.Listener() {
+										public void trigger() {
+											WDialog.this.onDefaultPressed();
+										}
+									});
+							this.enterConnection2_ = this.impl_.enterPressed()
+									.addListener(this, new Signal.Listener() {
+										public void trigger() {
+											WDialog.this.onDefaultPressed();
+										}
+									});
+							break;
+						}
 					}
 				}
 				if (this.escapeIsReject_) {
@@ -642,7 +645,6 @@ public class WDialog extends WPopupWidget {
 	private Signal1<WDialog.DialogCode> finished_;
 	private WDialog.DialogCode result_;
 	private boolean recursiveEventLoop_;
-	private boolean initialized_;
 	private AbstractSignal.Connection escapeConnection1_;
 	private AbstractSignal.Connection escapeConnection2_;
 	private AbstractSignal.Connection enterConnection1_;
@@ -693,7 +695,9 @@ public class WDialog extends WPopupWidget {
 		}
 		app.loadJavaScript("js/WDialog.js", wtjs1());
 		WContainerWidget layoutContainer = new WContainerWidget();
-		layoutContainer.setStyleClass("dialog-layout");
+		WApplication.getInstance().getTheme().apply(this, layoutContainer,
+				WidgetThemeRole.DialogContent);
+		layoutContainer.addStyleClass("dialog-layout");
 		WVBoxLayout layout = new WVBoxLayout(layoutContainer);
 		layout.setContentsMargins(0, 0, 0, 0);
 		layout.setSpacing(0);
@@ -729,7 +733,7 @@ public class WDialog extends WPopupWidget {
 
 	private void onDefaultPressed() {
 		DialogCover c = this.getCover();
-		if (c != null && c.isTopDialogRendered(this)) {
+		if (this.footer_ != null && c != null && c.isTopDialogRendered(this)) {
 			for (int i = 0; i < this.getFooter().getCount(); ++i) {
 				WPushButton b = ((this.getFooter().getWidget(i)) instanceof WPushButton ? (WPushButton) (this
 						.getFooter().getWidget(i))

@@ -660,7 +660,8 @@ class WebRenderer implements SlotLearnerInterface {
 						.equals(app.newInternalPath_))) {
 			app.oldInternalPath_ = app.newInternalPath_;
 			if (this.session_.getState() == WebSession.State.JustCreated
-					&& conf.progressiveBootstrap()) {
+					&& conf.progressiveBootstrap(app.getEnvironment()
+							.getInternalPath())) {
 				this.session_.redirect(this.session_
 						.fixRelativeUrl(this.session_
 								.getBookmarkUrl(app.newInternalPath_)));

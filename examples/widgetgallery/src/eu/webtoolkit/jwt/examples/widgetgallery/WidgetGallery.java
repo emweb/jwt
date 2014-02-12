@@ -70,7 +70,7 @@ class WidgetGallery extends WContainerWidget {
 		subStack.addStyleClass("contents");
 		subStack.setOverflow(WContainerWidget.Overflow.OverflowAuto);
 		WMenu subMenu = new WMenu(subStack);
-		subMenu.addStyleClass("nav-pills nav-stacked");
+		subMenu.addStyleClass("nav-pills nav-stacked submenu");
 		subMenu.setWidth(new WLength(200));
 		hLayout.addWidget(subMenu);
 		hLayout.addWidget(subStack, 1);

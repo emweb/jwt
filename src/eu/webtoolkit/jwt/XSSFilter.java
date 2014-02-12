@@ -6,6 +6,7 @@
 package eu.webtoolkit.jwt;
 
 
+import java.io.PrintStream;
 import java.io.Reader;
 
 import net.n3.nanoxml.IXMLParser;
@@ -47,7 +48,7 @@ class XSSFilter extends XHtmlFilter {
 		} catch (IllegalAccessException e) {
 			e.printStackTrace();
 		} catch (XMLException e) {
-			logger.error("Error reading XHTML string: " + e.getMessage());
+			logger.error("Error reading XHTML string: " + e.getMessage() + ": line " + e.getLineNr() + " in '" + text + "'");
 		}
 
 		return false;

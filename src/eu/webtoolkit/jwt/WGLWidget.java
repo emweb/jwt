@@ -581,6 +581,56 @@ public class WGLWidget extends WInteractWidget {
 		List<javax.vecmath.Matrix4f> matrices_;
 	}
 
+	enum RenderOption {
+		ClientSideRendering, ServerSideRendering;
+
+		/**
+		 * Returns the numerical representation of this enum.
+		 */
+		public int getValue() {
+			return ordinal();
+		}
+	}
+
+	/**
+	 * Construct a WebGL widget.
+	 * <p>
+	 * Before the first rendering, you must apply a size to the
+	 * {@link WGLWidget}.
+	 * <p>
+	 * /code /endcode
+	 */
+	public WGLWidget(EnumSet<WGLWidget.RenderOption> options,
+			WContainerWidget parent) {
+		super(parent);
+		this.pImpl_ = null;
+		this.jsMatrixList_ = new ArrayList<WGLWidget.jsMatrixMap>();
+		this.repaintSignal_ = new JSignal(this, "repaintSignal");
+		this.alternative_ = null;
+		this.webglNotAvailable_ = new JSignal(this, "webglNotAvailable");
+		this.webGlNotAvailable_ = false;
+		this.mouseWentDownSlot_ = new JSlot("function(){}", this);
+		this.mouseWentUpSlot_ = new JSlot("function(){}", this);
+		this.mouseDraggedSlot_ = new JSlot("function(){}", this);
+		this.mouseWheelSlot_ = new JSlot("function(){}", this);
+		this.touchStarted_ = new JSlot("function(){}", this);
+		this.touchEnded_ = new JSlot("function(){}", this);
+		this.touchMoved_ = new JSlot("function(){}", this);
+		this.repaintSlot_ = new JSlot("function() {var o = "
+				+ this.getGlObjJsRef() + ";if(o.ctx) o.paintGL();}", this);
+		this.init(options);
+	}
+
+	/**
+	 * Construct a WebGL widget.
+	 * <p>
+	 * Calls {@link #WGLWidget(EnumSet options, WContainerWidget parent)
+	 * this(options, (WContainerWidget)null)}
+	 */
+	public WGLWidget(EnumSet<WGLWidget.RenderOption> options) {
+		this(options, (WContainerWidget) null);
+	}
+
 	/**
 	 * Construct a WebGL widget.
 	 * <p>
@@ -606,33 +656,18 @@ public class WGLWidget extends WInteractWidget {
 		this.touchMoved_ = new JSlot("function(){}", this);
 		this.repaintSlot_ = new JSlot("function() {var o = "
 				+ this.getGlObjJsRef() + ";if(o.ctx) o.paintGL();}", this);
-		if (WApplication.getInstance().getEnvironment().isWebGL()) {
-			this.pImpl_ = new WClientGLWidget(this);
-		} else {
-			this.pImpl_ = new WServerGLWidget(this);
-		}
-		this.setInline(false);
-		this.setLayoutSizeAware(true);
-		this.webglNotAvailable_.addListener(this, new Signal.Listener() {
-			public void trigger() {
-				WGLWidget.this.webglNotAvailable();
-			}
-		});
-		this.repaintSignal_.addListener(this, new Signal.Listener() {
-			public void trigger() {
-				WGLWidget.this.repaintGL(WGLWidget.ClientSideRenderer.PAINT_GL);
-			}
-		});
-		this.mouseWentDown().addListener(this.mouseWentDownSlot_);
-		this.mouseWentUp().addListener(this.mouseWentUpSlot_);
-		this.mouseDragged().addListener(this.mouseDraggedSlot_);
-		this.mouseWheel().addListener(this.mouseWheelSlot_);
-		this.touchStarted().addListener(this.touchStarted_);
-		this.touchEnded().addListener(this.touchEnded_);
-		this.touchMoved().addListener(this.touchMoved_);
-		this.setAlternativeContent(new WText(
-				"Your browser does not support WebGL"));
-		this.setFormObject(true);
+		this.init(EnumSet.of(WGLWidget.RenderOption.ClientSideRendering,
+				WGLWidget.RenderOption.ServerSideRendering));
+	}
+
+	/**
+	 * Construct a WebGL widget.
+	 * <p>
+	 * Calls {@link #WGLWidget(WContainerWidget parent)
+	 * this((WContainerWidget)null)}
+	 */
+	public WGLWidget() {
+		this((WContainerWidget) null);
 	}
 
 	/**
@@ -2497,6 +2532,18 @@ public class WGLWidget extends WInteractWidget {
 	}
 
 	/**
+	 * Return whether the alternative content is shown.
+	 * <p>
+	 * If the alternative content is being rendered on the user&apos;s screen,
+	 * this function will return true. This is the case is the browser does not
+	 * have WebGL support and the server-side fallback failed (or is not
+	 * present).
+	 */
+	public boolean isAlternative() {
+		return this.pImpl_ == null;
+	}
+
+	/**
 	 * A JavaScript slot that repaints the widget when triggered.
 	 * <p>
 	 * This is useful for client-side initiated repaints. You may e.g. use this
@@ -2651,6 +2698,49 @@ public class WGLWidget extends WInteractWidget {
 				}
 			}
 		}
+	}
+
+	private void init(EnumSet<WGLWidget.RenderOption> options) {
+		if (!EnumUtils
+				.mask(options, WGLWidget.RenderOption.ClientSideRendering)
+				.isEmpty()
+				&& WApplication.getInstance().getEnvironment().isWebGL()) {
+			this.pImpl_ = new WClientGLWidget(this);
+		} else {
+			if (!EnumUtils.mask(options,
+					WGLWidget.RenderOption.ServerSideRendering).isEmpty()) {
+				this.pImpl_ = new WServerGLWidget(this);
+			} else {
+				this.pImpl_ = null;
+			}
+		}
+		this.setInline(false);
+		this.setLayoutSizeAware(true);
+		this.webglNotAvailable_.addListener(this, new Signal.Listener() {
+			public void trigger() {
+				WGLWidget.this.webglNotAvailable();
+			}
+		});
+		this.repaintSignal_.addListener(this, new Signal.Listener() {
+			public void trigger() {
+				WGLWidget.this.repaintGL(WGLWidget.ClientSideRenderer.PAINT_GL);
+			}
+		});
+		this.mouseWentDown().addListener(this.mouseWentDownSlot_);
+		this.mouseWentUp().addListener(this.mouseWentUpSlot_);
+		this.mouseDragged().addListener(this.mouseDraggedSlot_);
+		this.mouseWheel().addListener(this.mouseWheelSlot_);
+		this.touchStarted().addListener(this.touchStarted_);
+		this.touchEnded().addListener(this.touchEnded_);
+		this.touchMoved().addListener(this.touchMoved_);
+		this.setAlternativeContent(new WText(
+				"Your browser does not support WebGL"));
+		this.setFormObject(true);
+	}
+
+	private final void init(WGLWidget.RenderOption option,
+			WGLWidget.RenderOption... options) {
+		init(EnumSet.of(option, options));
 	}
 
 	private WAbstractGLImplementation pImpl_;

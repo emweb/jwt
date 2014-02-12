@@ -318,6 +318,6 @@ public class WIntValidator extends WValidator {
 				JavaScriptScope.WtClassScope,
 				JavaScriptObjectType.JavaScriptConstructor,
 				"WIntValidator",
-				"function(e,b,c,d,f,g,h,i){this.validate=function(a){a=String(a);if(a.length==0)return e?{valid:false,message:f}:{valid:true};if(d!=\"\")a=a.replace(d,\"\");a=Number(a);if(isNaN(a)||Math.round(a)!=a)return{valid:false,message:g};if(b!==null)if(a<b)return{valid:false,message:h};if(c!==null)if(a>c)return{valid:false,message:i};return{valid:true}}}");
+				"function(e,b,c,d,f,g,h,i){this.validate=function(a){a=String(a);if(a.length==0)return e?{valid:false,message:f}:{valid:true};if(d!=\"\")a=a.replace(d,\"\",\"g\");a=Number(a);if(isNaN(a)||Math.round(a)!=a)return{valid:false,message:g};if(b!==null)if(a<b)return{valid:false,message:h};if(c!==null)if(a>c)return{valid:false,message:i};return{valid:true}}}");
 	}
 }

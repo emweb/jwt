@@ -224,7 +224,7 @@ class WebSession {
 			if ((!(requestE != null) || !requestE.equals("resource"))
 					&& handler.getResponse().getResponseType() == WebRequest.ResponseType.Page) {
 				if (!this.env_.agentIsIE()) {
-					if (!handler.getRequest().getHeaderValue("User-Agent")
+					if (!str(handler.getRequest().getHeaderValue("User-Agent"))
 							.equals(this.env_.getUserAgent())) {
 						logger.warn(new StringWriter().append("secure:")
 								.append("change of user-agent not allowed.")
@@ -234,8 +234,8 @@ class WebSession {
 								this.env_.getUserAgent()).toString());
 						logger.info(new StringWriter().append(
 								"new user agent: ").append(
-								handler.getRequest().getHeaderValue(
-										"User-Agent")).toString());
+								str(handler.getRequest().getHeaderValue(
+										"User-Agent"))).toString());
 						this.serveError(403, handler, "Forbidden");
 						return;
 					}
@@ -245,7 +245,7 @@ class WebSession {
 				if (!ca.equals(this.env_.getClientAddress())) {
 					boolean isInvalid = this.sessionIdCookie_.length() == 0;
 					if (!isInvalid) {
-						String cookie = request.getHeaderValue("Cookie");
+						String cookie = str(request.getHeaderValue("Cookie"));
 						if (cookie.indexOf("Wt" + this.sessionIdCookie_) == -1) {
 							isInvalid = true;
 						}
@@ -262,7 +262,7 @@ class WebSession {
 				}
 			}
 			if (this.sessionIdCookieChanged_) {
-				String cookie = request.getHeaderValue("Cookie");
+				String cookie = str(request.getHeaderValue("Cookie"));
 				if (cookie.indexOf("Wt" + this.sessionIdCookie_) == -1) {
 					this.sessionIdCookie_ = "";
 					logger.info(new StringWriter().append(
@@ -365,7 +365,7 @@ class WebSession {
 						}
 					}
 				} else {
-					this.env_.urlScheme_ = request.getScheme();
+					this.env_.urlScheme_ = str(request.getScheme());
 					if (signalE != null) {
 						String ackIdE = request.getParameter("ackId");
 						boolean invalidAckId = this.env_.hasAjax()
@@ -928,7 +928,7 @@ class WebSession {
 	public String getCgiValue(final String varName) {
 		WebRequest request = WebSession.Handler.getInstance().getRequest();
 		if (request != null) {
-			return "";
+			return str("");
 		} else {
 			return "";
 		}
@@ -937,7 +937,7 @@ class WebSession {
 	public String getCgiHeader(final String headerName) {
 		WebRequest request = WebSession.Handler.getInstance().getRequest();
 		if (request != null) {
-			return request.getHeaderValue(headerName);
+			return str(request.getHeaderValue(headerName));
 		} else {
 			return "";
 		}
@@ -973,7 +973,7 @@ class WebSession {
 				String signalE = this.getSignal(request, "");
 				if (resource != null || requestE != null
 						&& requestE.equals("resource") && resourceE != null) {
-					return EventType.OtherEvent;
+					return EventType.ResourceEvent;
 				} else {
 					if (signalE != null) {
 						if (signalE.equals("none") || signalE.equals("load")
@@ -1177,17 +1177,17 @@ class WebSession {
 			final WebRequest request = handler.getRequest();
 			String wtdE = request.getParameter("wtd");
 			String origin = request.getHeaderValue("Origin");
-			if (origin.length() != 0) {
+			if (origin != null) {
 				if (wtdE != null && wtdE.equals(this.sessionId_)
 						|| this.state_ == WebSession.State.JustCreated) {
-					if (origin.equals("null")) {
+					if (isEqual(origin, "null")) {
 						origin = "*";
 					}
 					handler.getResponse().addHeader(
 							"Access-Control-Allow-Origin", origin);
 					handler.getResponse().addHeader(
 							"Access-Control-Allow-Credentials", "true");
-					if (request.getRequestMethod().equals("OPTIONS")) {
+					if (isEqual(request.getRequestMethod(), "OPTIONS")) {
 						WebResponse response = handler.getResponse();
 						response.setStatus(200);
 						response.addHeader("Access-Control-Allow-Methods",
@@ -1209,15 +1209,15 @@ class WebSession {
 				logger.error(new StringWriter().append(
 						"invalid WebSocket request, ignoring").toString());
 				logger.info(new StringWriter().append("Connection: ").append(
-						request.getHeaderValue("Connection")).toString());
+						str(request.getHeaderValue("Connection"))).toString());
 				logger.info(new StringWriter().append("Upgrade: ").append(
-						request.getHeaderValue("Upgrade")).toString());
+						str(request.getHeaderValue("Upgrade"))).toString());
 				logger
 						.info(new StringWriter()
 								.append("Sec-WebSocket-Version: ")
 								.append(
-										request
-												.getHeaderValue("Sec-WebSocket-Version"))
+										str(request
+												.getHeaderValue("Sec-WebSocket-Version")))
 								.toString());
 				handler.flushResponse();
 				return;
@@ -1235,8 +1235,8 @@ class WebSession {
 			final Configuration conf = this.controller_.getConfiguration();
 			handler.getResponse().setResponseType(WebRequest.ResponseType.Page);
 			if (!(requestE != null && requestE.equals("resource")
-					|| request.getRequestMethod().equals("POST") || request
-					.getRequestMethod().equals("GET"))) {
+					|| isEqual(request.getRequestMethod(), "POST") || isEqual(
+					request.getRequestMethod(), "GET"))) {
 				handler.getResponse().setStatus(400);
 				handler.flushResponse();
 				return;
@@ -1292,17 +1292,18 @@ class WebSession {
 									}
 								}
 							}
+							try {
+								String internalPath = this.env_
+										.getCookie("WtInternalPath");
+								this.env_.setInternalPath(internalPath);
+							} catch (final RuntimeException e) {
+							}
 							boolean forcePlain = this.env_.agentIsSpiderBot()
 									|| !this.env_.agentSupportsAjax();
 							this.progressiveBoot_ = !forcePlain
-									&& conf.progressiveBootstrap();
+									&& conf.progressiveBootstrap(this.env_
+											.getInternalPath());
 							if (forcePlain || this.progressiveBoot_) {
-								try {
-									String internalPath = this.env_
-											.getCookie("WtInternalPath");
-									this.env_.setInternalPath(internalPath);
-								} catch (final RuntimeException e) {
-								}
 								if (!this.start(handler.getResponse())) {
 									throw new WException(
 											"Could not start application.");
@@ -1606,10 +1607,10 @@ class WebSession {
 	}
 
 	private static void handleWebSocketMessage(WebSession session,
-			WebRequest.ReadEvent event) {
+			WebReadEvent event) {
 	}
 
-	private static void webSocketReady(WebSession session) {
+	private static void webSocketReady(WebSession session, WebWriteEvent event) {
 		logger.debug(new StringWriter().append("webSocketReady()").toString());
 	}
 
@@ -1739,7 +1740,7 @@ class WebSession {
 					throw e;
 				}
 			}
-			if (this.app_.isQuited()) {
+			if (this.app_ != null && this.app_.isQuited()) {
 				this.kill();
 			}
 			if (handler.getResponse() != null) {
@@ -2037,9 +2038,6 @@ class WebSession {
 			}
 		}
 		this.bookmarkUrl_ = this.applicationName_;
-		if (this.applicationName_.length() == 0) {
-			this.bookmarkUrl_ = this.applicationUrl_;
-		}
 		if (this.getType() == EntryPointType.WidgetSet || useAbsoluteUrls) {
 			this.applicationUrl_ = this.absoluteBaseUrl_
 					+ this.applicationName_;
@@ -2107,5 +2105,13 @@ class WebSession {
 			}
 		}
 		return url.substring(0, 0 + pos - 1);
+	}
+
+	static String str(String v) {
+		return v != null ? v : "";
+	}
+
+	static boolean isEqual(String s1, String s2) {
+		return s1 == s2;
 	}
 }

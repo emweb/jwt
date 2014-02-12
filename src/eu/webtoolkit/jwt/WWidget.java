@@ -992,7 +992,6 @@ public abstract class WWidget extends WObject {
 	 * </p>
 	 */
 	public void refresh() {
-		this.setJsSize();
 	}
 
 	/**

@@ -2225,9 +2225,8 @@ class WClientGLWidget extends WAbstractGLImplementation {
 							tmp.append(',');
 						}
 						tmp.append('\'').append(
-								WApplication.getInstance().makeAbsoluteUrl(
-										this.preloadArrayBuffers_.get(i).url))
-								.append('\'');
+								this.preloadArrayBuffers_.get(i).url).append(
+								'\'');
 					}
 					tmp
 							.append("],function(bufferResources){\nvar o=")

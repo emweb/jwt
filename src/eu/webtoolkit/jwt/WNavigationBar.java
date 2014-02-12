@@ -31,7 +31,6 @@ public class WNavigationBar extends WTemplate {
 	 */
 	public WNavigationBar(WContainerWidget parent) {
 		super(tr("Wt.WNavigationBar.template"), parent);
-		this.setStyleClass("navbar");
 		this.bindEmpty("collapse-button");
 		this.bindEmpty("expand-button");
 		this.bindEmpty("title-link");
@@ -59,7 +58,8 @@ public class WNavigationBar extends WTemplate {
 		WAnchor titleLink = (WAnchor) this.resolveWidget("title-link");
 		if (!(titleLink != null)) {
 			this.bindWidget("title-link", titleLink = new WAnchor());
-			titleLink.addStyleClass("brand");
+			WApplication.getInstance().getTheme().apply(this, titleLink,
+					WidgetThemeRole.NavBrandRole);
 		}
 		titleLink.setText(title);
 		titleLink.setLink(link);
@@ -108,14 +108,14 @@ public class WNavigationBar extends WTemplate {
 							}
 						});
 			}
-			contents.addStyleClass("nav-collapse");
+			WApplication.getInstance().getTheme().apply(this, contents,
+					WidgetThemeRole.NavCollapseRole);
 			contents.hide();
 			contents
 					.setJavaScriptMember("wtAnimatedHidden",
 							"function(hidden) {if (hidden) this.style.height=''; this.style.display='';}");
 		} else {
 			this.bindEmpty("collapse-button");
-			contents.removeStyleClass("nav-collapse");
 		}
 	}
 
@@ -131,6 +131,8 @@ public class WNavigationBar extends WTemplate {
 	 */
 	public void addMenu(WMenu menu, AlignmentFlag alignment) {
 		this.addWidget((WWidget) menu, alignment);
+		WApplication.getInstance().getTheme().apply(this, menu,
+				WidgetThemeRole.NavbarMenuRole);
 	}
 
 	/**
@@ -172,8 +174,9 @@ public class WNavigationBar extends WTemplate {
 	 * indicate a search function.
 	 */
 	public void addSearch(WLineEdit field, AlignmentFlag alignment) {
-		field.addStyleClass("search-query");
-		this.addWrapped(field, alignment, "navbar-search");
+		WApplication.getInstance().getTheme().apply(this, field,
+				WidgetThemeRole.NavbarSearchRole);
+		this.addWrapped(field, alignment, "navbar-form");
 	}
 
 	/**
@@ -222,7 +225,8 @@ public class WNavigationBar extends WTemplate {
 		WPushButton result = new WPushButton(
 				tr("Wt.WNavigationBar.expand-button"));
 		result.setTextFormat(TextFormat.XHTMLText);
-		result.setStyleClass("btn-navbar");
+		WApplication.getInstance().getTheme().apply(this, result,
+				WidgetThemeRole.NavbarBtn);
 		return result;
 	}
 
@@ -292,6 +296,16 @@ public class WNavigationBar extends WTemplate {
 				.resolveWidget("contents");
 		WContainerWidget wrap = new WContainerWidget(contents);
 		wrap.setStyleClass(wrapClass);
+		this.align(wrap, alignment);
+		wrap.addWidget(widget);
+	}
+
+	private void addWrapped(WWidget widget, WWidget parent, int role,
+			AlignmentFlag alignment) {
+		WContainerWidget contents = (WContainerWidget) this
+				.resolveWidget("contents");
+		WContainerWidget wrap = new WContainerWidget(contents);
+		WApplication.getInstance().getTheme().apply(widget, parent, role);
 		this.align(wrap, alignment);
 		wrap.addWidget(widget);
 	}

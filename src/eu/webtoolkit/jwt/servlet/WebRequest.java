@@ -207,26 +207,25 @@ public class WebRequest extends HttpServletRequestWrapper {
 	/**
 	 * Returns a header value.
 	 * <p>
-	 * Returns the corresponding header value, using {@link #getHeader(String)}, or
-	 * the empty string (""), if the header is not present.
+	 * Returns the corresponding header value, using {@link #getHeader(String)} or 
+	 * <code>null</code> if the header value is not present
 	 * 
 	 * @param header the header name
-	 * @return the header value, or an empty string if the header is not present.
+	 * @return the header value, or <code>null</code>.
 	 */
 	public String getHeaderValue(String header) {
 		if (header.equals("Client-IP"))
 			return getRemoteAddr();
 
-		String result = getHeader(header);
-
-		return result == null ? "" : result;
+		return getHeader(header);
 	}
 	  
 	/**
 	  * Accesses to specific header fields (calls getHeaderValue()).
 	  */
 	public String getUserAgent() {
-		return getHeaderValue("User-Agent");
+		String v = getHeaderValue("User-Agent");
+		return v != null ? v : "";
 	}
 
 	/**

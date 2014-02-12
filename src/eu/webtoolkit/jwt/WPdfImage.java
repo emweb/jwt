@@ -610,7 +610,7 @@ public class WPdfImage extends WResource implements WPaintDevice {
 				page.setDefaultLinePattern();
 			page.setLineCapStyle(stroke.cap);
 			page.setLineJoinStyle(stroke.join);
-			page.setPenWidth(stroke.width);
+			page.setPenWidth(stroke.width * 0.75); // pixel to point
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
