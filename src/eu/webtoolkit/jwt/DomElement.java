@@ -858,12 +858,6 @@ public class DomElement {
 			}
 		}
 		if (needButtonWrap) {
-			String i = this.properties_.get(Property.PropertyStyleDisplay);
-			if (i != null && i.equals("none")) {
-				return;
-			}
-		}
-		if (needButtonWrap) {
 			if (this.type_ == DomElementType.DomElement_AREA
 					|| this.type_ == DomElementType.DomElement_INPUT
 					|| this.type_ == DomElementType.DomElement_SELECT) {

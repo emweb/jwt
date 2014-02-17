@@ -40,8 +40,8 @@ class PaintedSlider extends WPaintedWidget {
 			this.slider_.setOffsets(new WLength(0), EnumSet.of(Side.Left,
 					Side.Top));
 		}
-		this.addChild(this.handle_ = this.slider_.getCreateHandle());
 		this.addChild(this.fill_ = new WContainerWidget());
+		this.addChild(this.handle_ = this.slider_.getCreateHandle());
 		this.fill_.setPositionScheme(PositionScheme.Absolute);
 		this.fill_.setStyleClass("fill");
 		this.handle_.setPositionScheme(PositionScheme.Absolute);
@@ -192,10 +192,10 @@ class PaintedSlider extends WPaintedWidget {
 			east.setProperty(Property.PropertyClass, "Wt-e");
 			element.addChild(east);
 			element.addChild(this.createSDomElement(app));
+			element.addChild(((WWebWidget) this.fill_).createSDomElement(app));
 			element
 					.addChild(((WWebWidget) this.handle_)
 							.createSDomElement(app));
-			element.addChild(((WWebWidget) this.fill_).createSDomElement(app));
 		}
 	}
 

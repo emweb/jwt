@@ -203,7 +203,8 @@ public class WApplication extends WObject {
 		this.internalPathValid_ = true;
 		this.theme_ = new WCssTheme("default", this);
 		this.setLocalizedStrings((WLocalizedStrings) null);
-		if (this.getEnvironment().agentIsIE()) {
+		if (!this.getEnvironment().hasJavaScript()
+				&& this.getEnvironment().agentIsIE()) {
 			if (this.getEnvironment().getAgent().getValue() < WEnvironment.UserAgent.IE9
 					.getValue()) {
 				final Configuration conf = this.getEnvironment().getServer()
@@ -214,8 +215,18 @@ public class WApplication extends WObject {
 							"X-UA-Compatible", "IE=7");
 				}
 			} else {
-				this.addMetaHeader(MetaHeaderType.MetaHttpHeader,
-						"X-UA-Compatible", "IE=9");
+				if (this.getEnvironment().getAgent() == WEnvironment.UserAgent.IE9) {
+					this.addMetaHeader(MetaHeaderType.MetaHttpHeader,
+							"X-UA-Compatible", "IE=9");
+				} else {
+					if (this.getEnvironment().getAgent() == WEnvironment.UserAgent.IE10) {
+						this.addMetaHeader(MetaHeaderType.MetaHttpHeader,
+								"X-UA-Compatible", "IE=10");
+					} else {
+						this.addMetaHeader(MetaHeaderType.MetaHttpHeader,
+								"X-UA-Compatible", "IE=11");
+					}
+				}
 			}
 		}
 		this.domRoot_ = new WContainerWidget();

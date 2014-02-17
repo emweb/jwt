@@ -264,7 +264,7 @@ public class WPopupWidget extends WCompositeWidget {
 
 	protected void render(EnumSet<RenderFlag> flags) {
 		if (!EnumUtils.mask(flags, RenderFlag.RenderFull).isEmpty()) {
-			this.defineJavaScript();
+			this.defineJS();
 		}
 		super.render(flags);
 	}
@@ -294,7 +294,7 @@ public class WPopupWidget extends WCompositeWidget {
 	private JSignal jsShown_;
 
 	// private void create(WWidget parent) ;
-	private void defineJavaScript() {
+	private void defineJS() {
 		WApplication app = WApplication.getInstance();
 		app.loadJavaScript("js/WPopupWidget.js", wtjs1());
 		StringBuilder jsObj = new StringBuilder();

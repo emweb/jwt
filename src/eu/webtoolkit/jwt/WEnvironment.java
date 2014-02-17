@@ -971,12 +971,13 @@ public class WEnvironment {
 							} else {
 								if (this.userAgent_.indexOf("Trident/5.0") != -1) {
 									this.agent_ = WEnvironment.UserAgent.IE9;
+									return;
 								} else {
 									if (this.userAgent_.indexOf("Trident/6.0") != -1) {
 										this.agent_ = WEnvironment.UserAgent.IE10;
+										return;
 									} else {
-										if (this.userAgent_
-												.indexOf("Trident/7.0") != -1) {
+										if (this.userAgent_.indexOf("Trident/") != -1) {
 											this.agent_ = WEnvironment.UserAgent.IE11;
 											return;
 										}

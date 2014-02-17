@@ -957,7 +957,7 @@ public class WCartesian3DChart extends WGLWidget {
 			WebGLUtils.rotate(this.worldTransform_, 45.0, 0.0, 1.0, 0.0);
 			WebGLUtils.rotate(this.worldTransform_, 20.0, 1.0, 0.0, 1.0);
 			WebGLUtils.rotate(this.worldTransform_, 5.0, 0.0, 1.0, 0.0);
-			this.worldTransform_.setScale((float) 1.8);
+			WebGLUtils.scale(this.worldTransform_, (float) 1.8);
 			WebGLUtils.translate(this.worldTransform_, -0.5, -0.5, -0.5);
 		}
 		this.jsMatrix_ = this.createJavaScriptMatrix4();

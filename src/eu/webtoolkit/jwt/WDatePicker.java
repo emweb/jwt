@@ -383,7 +383,7 @@ public class WDatePicker extends WCompositeWidget {
 	private String format_;
 	private WInteractWidget displayWidget_;
 	private WLineEdit forEdit_;
-	private WTemplate layout_;
+	private WContainerWidget layout_;
 	private WPopupWidget popup_;
 	private WCalendar calendar_;
 	private Signal popupClosed_;
@@ -398,16 +398,14 @@ public class WDatePicker extends WCompositeWidget {
 		if (!(forEdit != null)) {
 			forEdit = new WLineEdit();
 			this.create(icon, forEdit);
-			this.layout_.bindWidget("edit", forEdit);
+			this.layout_.insertWidget(0, forEdit);
 		} else {
 			this.create(icon, forEdit);
 		}
 	}
 
 	private void create(WInteractWidget displayWidget, WLineEdit forEdit) {
-		this.setImplementation(this.layout_ = new WTemplate(
-				tr("Wt.DatePicker.template")));
-		this.layout_.addFunction("id", WTemplate.Functions.id);
+		this.setImplementation(this.layout_ = new WContainerWidget());
 		this.displayWidget_ = displayWidget;
 		this.forEdit_ = forEdit;
 		this.forEdit_.setVerticalAlignment(AlignmentFlag.AlignMiddle);
@@ -418,7 +416,7 @@ public class WDatePicker extends WCompositeWidget {
 		});
 		this.format_ = "dd/MM/yyyy";
 		this.layout_.setInline(true);
-		this.layout_.bindWidget("img", displayWidget);
+		this.layout_.addWidget(displayWidget);
 		this.layout_.setAttributeValue("style", "white-space: nowrap");
 		String TEMPLATE = "${calendar}";
 		WTemplate t = new WTemplate(new WString(TEMPLATE));

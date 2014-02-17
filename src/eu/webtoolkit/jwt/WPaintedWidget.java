@@ -561,7 +561,6 @@ public abstract class WPaintedWidget extends WInteractWidget {
 			this.areaImage_.setMargin(new WLength(0), EnumSet.of(Side.Top));
 			this.areaImage_.resize(new WLength(this.renderWidth_), new WLength(
 					this.renderHeight_));
-			this.areaImage_.setPopup(true);
 			this.areaImageAdded_ = true;
 		}
 	}

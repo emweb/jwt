@@ -167,6 +167,12 @@ public class WebGLUtils {
 		t.setRotation(new AxisAngle4f((float)x, (float)y, (float)z, (float)(angle/180.0*3.141592)));
 		m.mul(m, t);
 	}
+
+	public static void scale(Matrix4f m, float scaling) {
+		Matrix4f t = new Matrix4f(); t.setIdentity();
+		t.setScale(scaling);
+		m.mul(m, t);
+	}
 	
 	 /** Apply a transformation to position a camera
 	   *
