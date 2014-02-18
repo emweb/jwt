@@ -26,6 +26,7 @@ public class WidgetGalleryServlet extends WtServlet {
 					internalPath.equals("/trees-tables/mvc-tree-views") ||
 					internalPath.equals("/trees-tables/mvc-item-models") ||
 					internalPath.equals("/layout/layout-managers") ||
+					internalPath.equals("/forms/line_text-editor") ||
 					internalPath.startsWith("/graphics-charts"))
 					return false;
 				else

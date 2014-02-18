@@ -26,10 +26,11 @@ import org.slf4j.LoggerFactory;
  * General information can be found at {@link WAbstractDataSeries3D}.
  * Information on how the model is structured is provided in the subclasses.
  * GridData can be represented in three ways. This is indicated by DOCREF<a
- * class="el" href="namespaceWt_1_1Chart.html#cca4e123c9e4b212050bcfac488fceee">
- * Series3DType</a> and can be either PointSeries3D, SurfaceSeries3D or
- * BarSeries3D. Note that points and surfaces can only be added to charts of
- * type DOCREF<a class="el" href="group__charts.html#gg8d63464f873580c77508e1c0c26cbfea6ddab43d32242eb28831938a1e469a1f"
+ * class="el"
+ * href="group__charts.html#gcca4e123c9e4b212050bcfac488fceee">Series3DType</a>
+ * and can be either PointSeries3D, SurfaceSeries3D or BarSeries3D. Note that
+ * points and surfaces can only be added to charts of type DOCREF<a class="el"
+ * href="group__charts.html#gg8d63464f873580c77508e1c0c26cbfea6ddab43d32242eb28831938a1e469a1f"
  * >ScatterPlot</a>, while bars can only be added to charts of type DOCREF<a
  * class="el" href="group__charts.html#gg8d63464f873580c77508e1c0c26cbfeaebfd9bd11d1126f2db7ff891c04c29f9"
  * >CategoryChart</a>.
@@ -120,13 +121,13 @@ public abstract class WAbstractGridData extends WAbstractDataSeries3D {
 	 * Sets the type of representation that will be used for the data.
 	 * <p>
 	 * All representations in DOCREF<a class="el"
-	 * href="namespaceWt_1_1Chart.html#cca4e123c9e4b212050bcfac488fceee"
+	 * href="group__charts.html#gcca4e123c9e4b212050bcfac488fceee"
 	 * >Series3DType</a> are possible for the data. Note that DOCREF<a
-	 * class="el" href="namespaceWt_1_1Chart.html#cca4e123c9e4b212050bcfac488fceee8a491a3e05d49b93cb2b22c3fd06881c"
-	 * >PointSeries3D</a> and DOCREF<a class="el" href="namespaceWt_1_1Chart.html#cca4e123c9e4b212050bcfac488fceeed47a9568df4bd41a9ac06562ac31ecc2"
+	 * class="el" href="group__charts.html#ggcca4e123c9e4b212050bcfac488fceee8a491a3e05d49b93cb2b22c3fd06881c"
+	 * >PointSeries3D</a> and DOCREF<a class="el" href="group__charts.html#ggcca4e123c9e4b212050bcfac488fceeed47a9568df4bd41a9ac06562ac31ecc2"
 	 * >SurfaceSeries3D</a> can only be used on a chart that is configured as a
 	 * DOCREF<a class="el" href="group__charts.html#gg8d63464f873580c77508e1c0c26cbfea6ddab43d32242eb28831938a1e469a1f"
-	 * >ScatterPlot</a> and DOCREF<a class="el" href="namespaceWt_1_1Chart.html#cca4e123c9e4b212050bcfac488fceee3c5fa7e4aed74f126086c1877c4acbfa"
+	 * >ScatterPlot</a> and DOCREF<a class="el" href="group__charts.html#ggcca4e123c9e4b212050bcfac488fceee3c5fa7e4aed74f126086c1877c4acbfa"
 	 * >BarSeries3D</a> can only be used on a chart that is configured to be a
 	 * DOCREF<a class="el" href="group__charts.html#gg8d63464f873580c77508e1c0c26cbfeaebfd9bd11d1126f2db7ff891c04c29f9"
 	 * >CategoryChart</a>.
@@ -157,7 +158,7 @@ public abstract class WAbstractGridData extends WAbstractDataSeries3D {
 	 * Enables or disables a mesh for when a surface is drawn.
 	 * <p>
 	 * The default value is false. This option only takes effect when the type
-	 * of this {@link WGridData} is DOCREF<a class="el" href="namespaceWt_1_1Chart.html#cca4e123c9e4b212050bcfac488fceeed47a9568df4bd41a9ac06562ac31ecc2"
+	 * of this {@link WGridData} is DOCREF<a class="el" href="group__charts.html#ggcca4e123c9e4b212050bcfac488fceeed47a9568df4bd41a9ac06562ac31ecc2"
 	 * >SurfaceSeries3D</a>. The mesh is drawn at the position of the x-axis and
 	 * y-axis values.
 	 */

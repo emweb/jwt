@@ -597,50 +597,12 @@ public class WGLWidget extends WInteractWidget {
 	 * <p>
 	 * Before the first rendering, you must apply a size to the
 	 * {@link WGLWidget}.
-	 * <p>
-	 * /code /endcode
-	 */
-	public WGLWidget(EnumSet<WGLWidget.RenderOption> options,
-			WContainerWidget parent) {
-		super(parent);
-		this.pImpl_ = null;
-		this.jsMatrixList_ = new ArrayList<WGLWidget.jsMatrixMap>();
-		this.repaintSignal_ = new JSignal(this, "repaintSignal");
-		this.alternative_ = null;
-		this.webglNotAvailable_ = new JSignal(this, "webglNotAvailable");
-		this.webGlNotAvailable_ = false;
-		this.mouseWentDownSlot_ = new JSlot("function(){}", this);
-		this.mouseWentUpSlot_ = new JSlot("function(){}", this);
-		this.mouseDraggedSlot_ = new JSlot("function(){}", this);
-		this.mouseWheelSlot_ = new JSlot("function(){}", this);
-		this.touchStarted_ = new JSlot("function(){}", this);
-		this.touchEnded_ = new JSlot("function(){}", this);
-		this.touchMoved_ = new JSlot("function(){}", this);
-		this.repaintSlot_ = new JSlot("function() {var o = "
-				+ this.getGlObjJsRef() + ";if(o.ctx) o.paintGL();}", this);
-		this.init(options);
-	}
-
-	/**
-	 * Construct a WebGL widget.
-	 * <p>
-	 * Calls {@link #WGLWidget(EnumSet options, WContainerWidget parent)
-	 * this(options, (WContainerWidget)null)}
-	 */
-	public WGLWidget(EnumSet<WGLWidget.RenderOption> options) {
-		this(options, (WContainerWidget) null);
-	}
-
-	/**
-	 * Construct a WebGL widget.
-	 * <p>
-	 * Before the first rendering, you must apply a size to the
-	 * {@link WGLWidget}.
-	 * <p>
-	 * /code /endcode
 	 */
 	public WGLWidget(WContainerWidget parent) {
 		super(parent);
+		this.renderOptions_ = EnumSet.of(
+				WGLWidget.RenderOption.ClientSideRendering,
+				WGLWidget.RenderOption.ServerSideRendering);
 		this.pImpl_ = null;
 		this.jsMatrixList_ = new ArrayList<WGLWidget.jsMatrixMap>();
 		this.repaintSignal_ = new JSignal(this, "repaintSignal");
@@ -656,8 +618,28 @@ public class WGLWidget extends WInteractWidget {
 		this.touchMoved_ = new JSlot("function(){}", this);
 		this.repaintSlot_ = new JSlot("function() {var o = "
 				+ this.getGlObjJsRef() + ";if(o.ctx) o.paintGL();}", this);
-		this.init(EnumSet.of(WGLWidget.RenderOption.ClientSideRendering,
-				WGLWidget.RenderOption.ServerSideRendering));
+		this.setInline(false);
+		this.setLayoutSizeAware(true);
+		this.webglNotAvailable_.addListener(this, new Signal.Listener() {
+			public void trigger() {
+				WGLWidget.this.webglNotAvailable();
+			}
+		});
+		this.repaintSignal_.addListener(this, new Signal.Listener() {
+			public void trigger() {
+				WGLWidget.this.repaintGL(WGLWidget.ClientSideRenderer.PAINT_GL);
+			}
+		});
+		this.mouseWentDown().addListener(this.mouseWentDownSlot_);
+		this.mouseWentUp().addListener(this.mouseWentUpSlot_);
+		this.mouseDragged().addListener(this.mouseDraggedSlot_);
+		this.mouseWheel().addListener(this.mouseWheelSlot_);
+		this.touchStarted().addListener(this.touchStarted_);
+		this.touchEnded().addListener(this.touchEnded_);
+		this.touchMoved().addListener(this.touchMoved_);
+		this.setAlternativeContent(new WText(
+				"Your browser does not support WebGL"));
+		this.setFormObject(true);
 	}
 
 	/**
@@ -676,6 +658,35 @@ public class WGLWidget extends WInteractWidget {
 	public void remove() {
 		;
 		super.remove();
+	}
+
+	/**
+	 * Sets the rendering option.
+	 * <p>
+	 * Use this method to configure whether client-side and/or server-side
+	 * rendering can be used. The actual choice is also based on availability
+	 * (respectively client-side or server-side).
+	 * <p>
+	 * The default value is to try both ClientSide or ServerSide rendering.
+	 * <p>
+	 * <p>
+	 * <i><b>Note: </b>Options must be set before the widget is being rendered.
+	 * </i>
+	 * </p>
+	 */
+	public void setRenderOptions(EnumSet<WGLWidget.RenderOption> options) {
+		this.renderOptions_ = EnumSet.copyOf(options);
+	}
+
+	/**
+	 * Sets the rendering option.
+	 * <p>
+	 * Calls {@link #setRenderOptions(EnumSet options)
+	 * setRenderOptions(EnumSet.of(option, options))}
+	 */
+	public final void setRenderOptions(WGLWidget.RenderOption option,
+			WGLWidget.RenderOption... options) {
+		setRenderOptions(EnumSet.of(option, options));
 	}
 
 	/**
@@ -2639,6 +2650,22 @@ public class WGLWidget extends WInteractWidget {
 
 	protected void render(EnumSet<RenderFlag> flags) {
 		if (!EnumUtils.mask(flags, RenderFlag.RenderFull).isEmpty()) {
+			if (!(this.pImpl_ != null)) {
+				if (!EnumUtils.mask(this.renderOptions_,
+						WGLWidget.RenderOption.ClientSideRendering).isEmpty()
+						&& WApplication.getInstance().getEnvironment()
+								.isWebGL()) {
+					this.pImpl_ = new WClientGLWidget(this);
+				} else {
+					if (!EnumUtils.mask(this.renderOptions_,
+							WGLWidget.RenderOption.ServerSideRendering)
+							.isEmpty()) {
+						this.pImpl_ = new WServerGLWidget(this);
+					} else {
+						this.pImpl_ = null;
+					}
+				}
+			}
 			this.defineJavaScript();
 		}
 		if (this.pImpl_ != null) {
@@ -2700,49 +2727,7 @@ public class WGLWidget extends WInteractWidget {
 		}
 	}
 
-	private void init(EnumSet<WGLWidget.RenderOption> options) {
-		if (!EnumUtils
-				.mask(options, WGLWidget.RenderOption.ClientSideRendering)
-				.isEmpty()
-				&& WApplication.getInstance().getEnvironment().isWebGL()) {
-			this.pImpl_ = new WClientGLWidget(this);
-		} else {
-			if (!EnumUtils.mask(options,
-					WGLWidget.RenderOption.ServerSideRendering).isEmpty()) {
-				this.pImpl_ = new WServerGLWidget(this);
-			} else {
-				this.pImpl_ = null;
-			}
-		}
-		this.setInline(false);
-		this.setLayoutSizeAware(true);
-		this.webglNotAvailable_.addListener(this, new Signal.Listener() {
-			public void trigger() {
-				WGLWidget.this.webglNotAvailable();
-			}
-		});
-		this.repaintSignal_.addListener(this, new Signal.Listener() {
-			public void trigger() {
-				WGLWidget.this.repaintGL(WGLWidget.ClientSideRenderer.PAINT_GL);
-			}
-		});
-		this.mouseWentDown().addListener(this.mouseWentDownSlot_);
-		this.mouseWentUp().addListener(this.mouseWentUpSlot_);
-		this.mouseDragged().addListener(this.mouseDraggedSlot_);
-		this.mouseWheel().addListener(this.mouseWheelSlot_);
-		this.touchStarted().addListener(this.touchStarted_);
-		this.touchEnded().addListener(this.touchEnded_);
-		this.touchMoved().addListener(this.touchMoved_);
-		this.setAlternativeContent(new WText(
-				"Your browser does not support WebGL"));
-		this.setFormObject(true);
-	}
-
-	private final void init(WGLWidget.RenderOption option,
-			WGLWidget.RenderOption... options) {
-		init(EnumSet.of(option, options));
-	}
-
+	private EnumSet<WGLWidget.RenderOption> renderOptions_;
 	private WAbstractGLImplementation pImpl_;
 
 	static class jsMatrixMap {

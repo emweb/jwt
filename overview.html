@@ -11,7 +11,7 @@
   dd p { margin-top: 0px; }
   dd div { margin: 10px 0px; }
 </style>
-<title>JWt 3.3.1</title>
+<title>JWt 3.3.2</title>
 </head>
 <body>
 
@@ -23,7 +23,66 @@ for <a href="http://jwt.webtoolkit.eu/jwt">JWt</a>.
 This page lists important notes on migrating existing applications to
 newer version of Wt. It lists changes in the library that may break
 the way you build Wt, the way you configure Wt or the Wt API and
-behaviour.
+behaviour. It also indicates the main changes from version to verison.
+
+<h2>Release 3.3.2 (February, 2013)</h2>
+
+<p>
+ This release brings a few big new features, as well the usual
+ small improvements and bug fixes.
+</p>
+
+<h3>A) New classes:</h3>
+
+<dl>
+  <dt>
+    <a href="eu/webtoolkit/jwt/WGLWidget.html">WGLWidget</a>
+  </dt>
+  <dd>
+    WGLWidget provides support for 3D graphics. It provides a single
+    API to either client-side WebGL or server-side OpenGL rendering,
+    all hardware-accelerated. For server-side support, you will need
+    to get and install the applicable Jogl JNI libraries for your system.
+  </dd>
+
+  <dt>
+    <a
+    href="eu/webtoolkit/jwt/chart/WCartesian3DChart.html">3D Charts
+    (WCartesian3DChart, ...)
+    </a>
+  </dt>
+  <dd>
+    A 3D charting library was added, based on WGLWidget, and
+    integrated with the existing 2D charting framework.
+  </dd>
+</dl>
+
+<h3>B) Main improvements:</h3>
+
+<dl>
+  <dt>
+    <a href="eu/webtoolkit/jwt/WBootstrapTheme.html">WBootstrapTheme</a>
+  </dt>
+  <dd>
+    Support for bootstrap version 3 was added, so now you have the
+    choice between bootstrap version 2 or 3. Needless to say, you
+    should probably target version 3 for new development work if you
+    can live with its restricted browser support.
+  </dd>
+
+<h3>C) Non-backwards compatible changes</h3>
+
+<dl>
+  <dt>
+    <a href="eu/webtoolkit/jwt/WDatePicker.html">WDatePicker, WDateEdit</a>
+  </dt>
+  <dd>
+    The date pickers will now default to interpreting a single click
+    as a date selection and also closing the calendar.
+  </dd>
+</dl>
+
+<hr>
 
 <h2>Release 3.3.1 (October 15, 2013)</h2>
 
