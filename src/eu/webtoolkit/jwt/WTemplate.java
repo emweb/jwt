@@ -425,6 +425,7 @@ public class WTemplate extends WInteractWidget {
 		this.widgets_ = new HashMap<String, WWidget>();
 		this.conditions_ = new HashSet<String>();
 		this.text_ = new WString();
+		this.errorText_ = "";
 		this.encodeInternalPaths_ = false;
 		this.changed_ = false;
 		this.plainTextNewLineEscStream_ = new EscapeOStream();
@@ -461,6 +462,7 @@ public class WTemplate extends WInteractWidget {
 		this.widgets_ = new HashMap<String, WWidget>();
 		this.conditions_ = new HashSet<String>();
 		this.text_ = new WString();
+		this.errorText_ = "";
 		this.encodeInternalPaths_ = false;
 		this.changed_ = false;
 		this.plainTextNewLineEscStream_ = new EscapeOStream();
@@ -979,9 +981,14 @@ public class WTemplate extends WInteractWidget {
 	 * You may want to reimplement this method to manage resources that are
 	 * needed to load content on-demand (e.g. database objects), or support a
 	 * custom template language.
+	 * <p>
+	 * Return: true if rendered successfully.
+	 * 
+	 * @see WTemplate#getErrorText()
 	 */
-	public void renderTemplateText(final Writer result,
+	public boolean renderTemplateText(final Writer result,
 			final CharSequence templateText) throws IOException {
+		this.errorText_ = "";
 		String text = "";
 		WApplication app = WApplication.getInstance();
 		if (app != null
@@ -1025,11 +1032,13 @@ public class WTemplate extends WInteractWidget {
 						args.clear();
 						int endVar = parseArgs(text, endName, args);
 						if (endVar == -1) {
+							StringWriter errorStream = new StringWriter();
+							errorStream.append("variable syntax error near \"")
+									.append(text.substring(pos)).append("\"");
+							this.errorText_ = errorStream.toString();
 							logger.error(new StringWriter().append(
-									"variable syntax error near \"").append(
-									text.substring(pos)).append("\"")
-									.toString());
-							return;
+									this.errorText_).toString());
+							return false;
 						}
 						String name = text.substring(startName, startName
 								+ endName - startName);
@@ -1049,12 +1058,15 @@ public class WTemplate extends WInteractWidget {
 										|| !conditions.get(
 												conditions.size() - 1).equals(
 												cond)) {
-									logger
-											.error(new StringWriter()
-													.append(
-															"mismatching condition block end: ")
-													.append(cond).toString());
-									return;
+									StringWriter errorStream = new StringWriter();
+									errorStream
+											.append(
+													"mismatching condition block end: ")
+											.append(cond);
+									this.errorText_ = errorStream.toString();
+									logger.error(new StringWriter().append(
+											this.errorText_).toString());
+									return false;
 								}
 								conditions.remove(conditions.size() - 1);
 								if (suppressing != 0) {
@@ -1099,6 +1111,18 @@ public class WTemplate extends WInteractWidget {
 			pos = lastPos;
 		}
 		result.append(text.substring(lastPos));
+		return true;
+	}
+
+	/**
+	 * Renders the errors during renderring.
+	 * <p>
+	 * 
+	 * @see WTemplate#renderTemplateText(Writer result, CharSequence
+	 *      templateText)
+	 */
+	public String getErrorText() {
+		return this.errorText_;
 	}
 
 	/**
@@ -1277,6 +1301,7 @@ public class WTemplate extends WInteractWidget {
 	private Map<String, WWidget> widgets_;
 	private Set<String> conditions_;
 	private WString text_;
+	private String errorText_;
 	private boolean encodeInternalPaths_;
 	private boolean changed_;
 

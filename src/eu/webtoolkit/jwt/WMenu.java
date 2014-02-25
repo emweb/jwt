@@ -1092,6 +1092,44 @@ public class WMenu extends WCompositeWidget {
 		this.current_ = index;
 	}
 
+	/**
+	 * Selects an item.
+	 * <p>
+	 * This is the internal function that implements the selection logic,
+	 * including optional internal path change (if <code>changePath</code> is
+	 * <code>true</code>). The latter may be <code>false</code> in case an
+	 * internal path change itself is the reason for selection.
+	 */
+	void select(int index, boolean changePath) {
+		int last = this.current_;
+		this.setCurrent(index);
+		this.selectVisual(this.current_, changePath, true);
+		if (index != -1) {
+			WMenuItem item = this.itemAt(index);
+			item.show();
+			item.loadContents();
+			WObject.DeletionTracker guard = new WObject.DeletionTracker(this);
+			if (changePath && this.emitPathChange_) {
+				WApplication app = WApplication.getInstance();
+				app.internalPathChanged().trigger(app.getInternalPath());
+				if (guard.isDeleted()) {
+					return;
+				}
+				this.emitPathChange_ = false;
+			}
+			if (last != index) {
+				item.triggered().trigger(item);
+				if (!guard.isDeleted()) {
+					if (this.getUl().getIndexOf(item) != -1) {
+						this.itemSelected_.trigger(item);
+					} else {
+						this.select(-1);
+					}
+				}
+			}
+		}
+	}
+
 	private WContainerWidget ul_;
 	WStackedWidget contentsStack_;
 	private boolean internalPathEnabled_;
@@ -1111,7 +1149,8 @@ public class WMenu extends WCompositeWidget {
 	}
 
 	private void handleInternalPathChange(final String path) {
-		if (!(this.parentItem_ != null)) {
+		if (!(this.parentItem_ != null)
+				|| !this.parentItem_.isInternalPathEnabled()) {
 			this.internalPathChanged(path);
 		}
 	}
@@ -1208,36 +1247,6 @@ public class WMenu extends WCompositeWidget {
 			int nextItem = this.nextAfterHide(index);
 			if (nextItem != this.current_) {
 				this.select(nextItem);
-			}
-		}
-	}
-
-	void select(int index, boolean changePath) {
-		int last = this.current_;
-		this.setCurrent(index);
-		this.selectVisual(this.current_, changePath, true);
-		if (index != -1) {
-			WMenuItem item = this.itemAt(index);
-			item.show();
-			item.loadContents();
-			WObject.DeletionTracker guard = new WObject.DeletionTracker(this);
-			if (changePath && this.emitPathChange_) {
-				WApplication app = WApplication.getInstance();
-				app.internalPathChanged().trigger(app.getInternalPath());
-				if (guard.isDeleted()) {
-					return;
-				}
-				this.emitPathChange_ = false;
-			}
-			if (last != index) {
-				item.triggered().trigger(item);
-				if (!guard.isDeleted()) {
-					if (this.getUl().getIndexOf(item) != -1) {
-						this.itemSelected_.trigger(item);
-					} else {
-						this.select(-1);
-					}
-				}
 			}
 		}
 	}

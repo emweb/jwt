@@ -90,7 +90,6 @@ public class WCheckBox extends WAbstractToggleButton {
 	public WCheckBox(WContainerWidget parent) {
 		super(parent);
 		this.triState_ = false;
-		this.safariWorkaround_ = false;
 		this.setFormObject(true);
 	}
 
@@ -110,7 +109,6 @@ public class WCheckBox extends WAbstractToggleButton {
 	public WCheckBox(final CharSequence text, WContainerWidget parent) {
 		super(text, parent);
 		this.triState_ = false;
-		this.safariWorkaround_ = false;
 		this.setFormObject(true);
 	}
 
@@ -139,13 +137,6 @@ public class WCheckBox extends WAbstractToggleButton {
 					.getEnvironment())) {
 				this.changed().addListener(
 						"function(obj, e) { obj.style.opacity=''; }");
-			} else {
-				if (WApplication.getInstance().getEnvironment().agentIsSafari()
-						&& !this.safariWorkaround_) {
-					this.clicked().addListener(
-							"function(obj, e) { obj.onchange(); }");
-					this.safariWorkaround_ = true;
-				}
 			}
 		}
 	}
@@ -197,5 +188,4 @@ public class WCheckBox extends WAbstractToggleButton {
 	}
 
 	private boolean triState_;
-	private boolean safariWorkaround_;
 }

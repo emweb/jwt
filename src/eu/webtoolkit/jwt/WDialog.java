@@ -515,6 +515,13 @@ public class WDialog extends WPopupWidget {
 		return this.closeIcon_ != null;
 	}
 
+	/**
+	 * Set focus on the first widget in the dialog.
+	 */
+	public void setAutoFocus(boolean enable) {
+		this.autoFocus_ = enable;
+	}
+
 	public void setHidden(boolean hidden, final WAnimation animation) {
 		if (this.contents_ != null && this.isHidden() != hidden) {
 			if (!hidden) {
@@ -631,6 +638,9 @@ public class WDialog extends WPopupWidget {
 			}
 		}
 		super.render(flags);
+		if (this.autoFocus_) {
+			this.impl_.isSetFirstFocous();
+		}
 	}
 
 	private WTemplate impl_;
@@ -642,6 +652,7 @@ public class WDialog extends WPopupWidget {
 	private boolean modal_;
 	private boolean resizable_;
 	private boolean escapeIsReject_;
+	private boolean autoFocus_;
 	private Signal1<WDialog.DialogCode> finished_;
 	private WDialog.DialogCode result_;
 	private boolean recursiveEventLoop_;
@@ -657,6 +668,7 @@ public class WDialog extends WPopupWidget {
 		this.resizable_ = false;
 		this.recursiveEventLoop_ = false;
 		this.escapeIsReject_ = false;
+		this.autoFocus_ = true;
 		this.impl_ = ((this.getImplementation()) instanceof WTemplate ? (WTemplate) (this
 				.getImplementation())
 				: null);

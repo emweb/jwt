@@ -426,6 +426,8 @@ abstract class WAbstractGLImplementation extends WObject {
 		this.updateGL_ = false;
 		this.updateResizeGL_ = false;
 		this.updatePaintGL_ = false;
+		this.renderWidth_ = 0;
+		this.renderHeight_ = 0;
 		this.webglNotAvailable_ = new JSignal(this, "webglNotAvailable");
 		this.webglNotAvailable_.addListener(this.glInterface_,
 				new Signal.Listener() {

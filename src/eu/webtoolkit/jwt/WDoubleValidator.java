@@ -145,10 +145,9 @@ public class WDoubleValidator extends WValidator {
 		if (input.length() == 0) {
 			return super.validate(input);
 		}
-		String text = input;
 		try {
 			double i = LocaleUtils.toDouble(LocaleUtils.getCurrentLocale(),
-					text);
+					input);
 			if (i < this.bottom_) {
 				return new WValidator.Result(WValidator.State.Invalid, this
 						.getInvalidTooSmallText());

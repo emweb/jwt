@@ -34,8 +34,9 @@
     <ant dir="${jwt.dir}" target="all" inheritAll="false"/>
     
     <mkdir dir="${jwt-lib.dir}"/>
-    <copy todir="${jwt-lib.dir}">
+    <copy todir="${jwt-lib.dir}" flatten="true">
       <fileset dir="${jwt.dir}/dist" />
+      <fileset dir="${lib.dir}/" includes="*.jar" />
       <fileset dir="${jwt.dir}/lib" 
 	       includes="*.jar servlet-api/*.jar pdfjet/*.jar jogl/*.jar"/>
     </copy>
@@ -64,8 +65,8 @@
 	 webxml="WebRoot/WEB-INF/web.xml">
       <fileset dir="WebRoot"/>
       <lib dir="${jwt-lib.dir}" 
-	   includes="**/*.jar" 
-	   excludes="servlet-api-*.jar">
+		includes="*.jar"
+                excludes="servlet-api-*.jar">
       </lib>
       <classes dir="${build.dir}"/>
     </war>

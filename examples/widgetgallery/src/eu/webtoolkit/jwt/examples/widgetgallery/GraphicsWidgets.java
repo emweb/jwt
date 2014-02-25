@@ -393,6 +393,7 @@ class GraphicsWidgets extends TopicWidget {
 	WWidget PieChart() {
 		WContainerWidget container = new WContainerWidget();
 		WStandardItemModel model = new WStandardItemModel(container);
+		model.setItemPrototype(new NumericItem());
 		model.insertColumns(model.getColumnCount(), 2);
 		model.setHeaderData(0, new WString("Item"));
 		model.setHeaderData(1, new WString("Sales"));

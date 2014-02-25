@@ -888,6 +888,8 @@ public class WApplication extends WObject {
 	/**
 	 * Returns the current locale.
 	 * <p>
+	 * 
+	 * @see WApplication#setLocale(Locale locale)
 	 */
 	public Locale getLocale() {
 		return this.locale_;

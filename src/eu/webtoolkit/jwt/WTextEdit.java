@@ -257,7 +257,11 @@ public class WTextEdit extends WTextArea {
 	 * these may be overridden using this method.
 	 */
 	public void setConfigurationSetting(final String name, final Object value) {
-		this.configurationSettings_.put(name, value);
+		if (!(value == null)) {
+			this.configurationSettings_.put(name, value);
+		} else {
+			this.configurationSettings_.remove(name);
+		}
 	}
 
 	/**
@@ -273,6 +277,31 @@ public class WTextEdit extends WTextArea {
 		} else {
 			return null;
 		}
+	}
+
+	/**
+	 * Sets the placeholder text.
+	 * <p>
+	 * This method is not supported on {@link WTextEdit} and will thrown an
+	 * exception instead.
+	 */
+	public void setPlaceholderText(final CharSequence placeholder) {
+		throw new WException(
+				"WTextEdit::setPlaceholderText() is not implemented.");
+	}
+
+	public void setReadOnly(boolean readOnly) {
+		super.setReadOnly(readOnly);
+		if (readOnly) {
+			this.setConfigurationSetting("readonly", "1");
+		} else {
+			this.setConfigurationSetting("readonly", null);
+		}
+	}
+
+	public void propagateSetEnabled(boolean enabled) {
+		super.propagateSetEnabled(enabled);
+		this.setReadOnly(!enabled);
 	}
 
 	public void resize(final WLength width, final WLength height) {
@@ -424,18 +453,24 @@ public class WTextEdit extends WTextArea {
 						.doJavaScript("window.tinyMCE_GZ = { loaded: true };",
 								false);
 			}
-			int version = getTinyMCEVersion();
-			String folder = version == 3 ? "tiny_mce/" : "tinymce/";
-			String jsFile = version == 3 ? "tiny_mce.js" : "tinymce.js";
-			String tinyMCEBaseURL = WApplication.getRelativeResourcesUrl()
-					+ folder;
-			tinyMCEBaseURL = WApplication.readConfigurationProperty(
-					"tinyMCEBaseURL", tinyMCEBaseURL);
-			if (tinyMCEBaseURL.length() != 0
-					&& tinyMCEBaseURL.charAt(tinyMCEBaseURL.length() - 1) != '/') {
-				tinyMCEBaseURL += '/';
+			String tinyMCEURL = "";
+			tinyMCEURL = WApplication.readConfigurationProperty("tinyMCEURL",
+					tinyMCEURL);
+			if (tinyMCEURL.length() == 0) {
+				int version = getTinyMCEVersion();
+				String folder = version == 3 ? "tiny_mce/" : "tinymce/";
+				String jsFile = version == 3 ? "tiny_mce.js" : "tinymce.js";
+				String tinyMCEBaseURL = WApplication.getRelativeResourcesUrl()
+						+ folder;
+				tinyMCEBaseURL = WApplication.readConfigurationProperty(
+						"tinyMCEBaseURL", tinyMCEBaseURL);
+				if (tinyMCEBaseURL.length() != 0
+						&& tinyMCEBaseURL.charAt(tinyMCEBaseURL.length() - 1) != '/') {
+					tinyMCEBaseURL += '/';
+				}
+				tinyMCEURL = tinyMCEBaseURL + jsFile;
 			}
-			app.require(tinyMCEBaseURL + jsFile, "window['tinyMCE']");
+			app.require(tinyMCEURL, "window['tinyMCE']");
 			app.getStyleSheet().addRule(".mceEditor",
 					"display: block; position: absolute;");
 			app.loadJavaScript(THIS_JS, wtjs1());

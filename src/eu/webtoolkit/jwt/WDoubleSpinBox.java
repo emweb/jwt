@@ -206,6 +206,11 @@ public class WDoubleSpinBox extends WAbstractSpinBox {
 		return this.valueChanged_;
 	}
 
+	public void refresh() {
+		this.setText(this.getTextFromValue().toString());
+		super.refresh();
+	}
+
 	void updateDom(final DomElement element, boolean all) {
 		if (all || this.changed_) {
 			if (this.isNativeControl()) {
@@ -240,10 +245,9 @@ public class WDoubleSpinBox extends WAbstractSpinBox {
 	boolean parseNumberValue(final String text) {
 		try {
 			char[] buf = new char[30];
-			String currentV = MathUtils.roundCss(this.value_, this.precision_);
-			if (!currentV.equals(text)) {
+			if (!this.getTextFromValue().toString().equals(text)) {
 				this.value_ = LocaleUtils.toDouble(LocaleUtils
-						.getCurrentLocale(), text);
+						.getCurrentLocale(), new WString(text).toString());
 			}
 			return true;
 		} catch (final NumberFormatException e) {
@@ -252,8 +256,8 @@ public class WDoubleSpinBox extends WAbstractSpinBox {
 	}
 
 	WString getTextFromValue() {
-		char[] buf = new char[30];
-		String result = MathUtils.roundJs(this.value_, this.precision_);
+		String result = LocaleUtils.toFixedString(LocaleUtils
+				.getCurrentLocale(), this.value_, this.precision_);
 		if (!this.isNativeControl()) {
 			result = this.getPrefix().toString() + result
 					+ this.getSuffix().toString();

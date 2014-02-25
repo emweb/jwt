@@ -1,5 +1,6 @@
 package eu.webtoolkit.jwt.utils;
 
+import java.math.RoundingMode;
 import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
 import java.text.ParseException;
@@ -51,6 +52,15 @@ public class LocaleUtils {
 		else
 			return app.getLocale();
 	}
+
+	public static String toFixedString(Locale locale, double value, int precision) {
+		NumberFormat nf = NumberFormat.getInstance(locale);
+		int current = nf.getMaximumFractionDigits();
+		nf.setMaximumFractionDigits(precision);
+		String ans = nf.format(value);
+		nf.setMaximumFractionDigits(current);
+		return ans;
+	}	
 
 	public static String toString(Locale locale, int value) {
 		return NumberFormat.getInstance(locale).format(value);

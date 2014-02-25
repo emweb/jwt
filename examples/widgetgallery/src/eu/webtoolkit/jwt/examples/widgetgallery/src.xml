@@ -2842,9 +2842,32 @@
 </pre></div>
   ]]></message>
   <message id="src-PieChart"><![CDATA[
-<div class="highlight"><pre><span class="kt">void</span> <span class="nf">PieChart</span><span class="o">()</span> <span class="o">{</span>
+<div class="highlight"><pre><span class="kd">class</span> <span class="nc">NumericItem</span> <span class="kd">extends</span> <span class="n">WStandardItem</span> <span class="o">{</span>
+    <span class="kd">private</span> <span class="kd">static</span> <span class="n">Logger</span> <span class="n">logger</span> <span class="o">=</span> <span class="n">LoggerFactory</span>
+            <span class="o">.</span><span class="na">getLogger</span><span class="o">(</span><span class="n">NumericItem</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+
+    <span class="n">NumericItem</span> <span class="nf">clone</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="k">new</span> <span class="nf">NumericItem</span><span class="o">();</span>
+    <span class="o">}</span>
+
+    <span class="kt">void</span> <span class="nf">setData</span><span class="o">(</span><span class="kd">final</span> <span class="n">Object</span> <span class="n">data</span><span class="o">,</span> <span class="kt">int</span> <span class="n">role</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">Object</span> <span class="n">dt</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Object</span><span class="o">();</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">role</span> <span class="o">==</span> <span class="n">ItemDataRole</span><span class="o">.</span><span class="na">EditRole</span><span class="o">)</span> <span class="o">{</span>
+            <span class="kt">double</span> <span class="n">d</span> <span class="o">=</span> <span class="n">StringUtils</span><span class="o">.</span><span class="na">asNumber</span><span class="o">(</span><span class="n">data</span><span class="o">);</span>
+            <span class="k">if</span> <span class="o">(</span><span class="n">d</span> <span class="o">!=</span> <span class="n">d</span><span class="o">)</span> <span class="o">{</span>
+                <span class="n">dt</span> <span class="o">=</span> <span class="n">data</span><span class="o">;</span>
+            <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+                <span class="n">dt</span> <span class="o">=</span> <span class="n">d</span><span class="o">;</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+        <span class="kd">super</span><span class="o">.</span><span class="na">setData</span><span class="o">(</span><span class="n">dt</span><span class="o">,</span> <span class="n">role</span><span class="o">);</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+
+<span class="kt">void</span> <span class="nf">PieChart</span><span class="o">()</span> <span class="o">{</span>
     <span class="n">WContainerWidget</span> <span class="n">container</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WContainerWidget</span><span class="o">();</span>
     <span class="n">WStandardItemModel</span> <span class="n">model</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WStandardItemModel</span><span class="o">(</span><span class="n">container</span><span class="o">);</span>
+    <span class="n">model</span><span class="o">.</span><span class="na">setItemPrototype</span><span class="o">(</span><span class="k">new</span> <span class="n">NumericItem</span><span class="o">());</span>
     <span class="n">model</span><span class="o">.</span><span class="na">insertColumns</span><span class="o">(</span><span class="n">model</span><span class="o">.</span><span class="na">getColumnCount</span><span class="o">(),</span> <span class="mi">2</span><span class="o">);</span>
     <span class="n">model</span><span class="o">.</span><span class="na">setHeaderData</span><span class="o">(</span><span class="mi">0</span><span class="o">,</span> <span class="k">new</span> <span class="n">WString</span><span class="o">(</span><span class="s">&quot;Item&quot;</span><span class="o">));</span>
     <span class="n">model</span><span class="o">.</span><span class="na">setHeaderData</span><span class="o">(</span><span class="mi">1</span><span class="o">,</span> <span class="k">new</span> <span class="n">WString</span><span class="o">(</span><span class="s">&quot;Sales&quot;</span><span class="o">));</span>

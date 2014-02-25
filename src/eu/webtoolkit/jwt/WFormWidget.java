@@ -404,6 +404,11 @@ public abstract class WFormWidget extends WInteractWidget {
 		}
 	}
 
+	public boolean isSetFirstFocous() {
+		this.setFocus();
+		return true;
+	}
+
 	WLabel label_;
 	WValidator validator_;
 	JSlot validateJs_;

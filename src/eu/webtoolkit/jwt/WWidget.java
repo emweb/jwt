@@ -1404,6 +1404,15 @@ public abstract class WWidget extends WObject {
 		return false;
 	}
 
+	/**
+	 * Set focuse on the widget first descendant.
+	 * <p>
+	 * Set focuse on the widget first descendant or itself if possible.
+	 */
+	public boolean isSetFirstFocous() {
+		return false;
+	}
+
 	static String WT_RESIZE_JS = "wtResize";
 	protected static String WT_GETPS_JS = "wtGetPS";
 

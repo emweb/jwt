@@ -581,7 +581,13 @@ public class WGLWidget extends WInteractWidget {
 		List<javax.vecmath.Matrix4f> matrices_;
 	}
 
-	enum RenderOption {
+	/**
+	 * Enumeration for render options.
+	 * <p>
+	 * 
+	 * @see WGLWidget#setRenderOptions(EnumSet options)
+	 */
+	public enum RenderOption {
 		ClientSideRendering, ServerSideRendering;
 
 		/**
@@ -2665,6 +2671,11 @@ public class WGLWidget extends WInteractWidget {
 						this.pImpl_ = null;
 					}
 				}
+			}
+			if (this.pImpl_ != null && !this.getWidth().isAuto()
+					&& !this.getHeight().isAuto()) {
+				this.layoutSizeChanged((int) this.getWidth().toPixels(),
+						(int) this.getHeight().toPixels());
 			}
 			this.defineJavaScript();
 		}

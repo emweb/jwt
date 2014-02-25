@@ -497,6 +497,10 @@ public class WPushButton extends WFormWidget {
 		return this.voidEventSignal(UNCHECKED_SIGNAL, true);
 	}
 
+	public boolean isSetFirstFocous() {
+		return false;
+	}
+
 	private static String CHECKED_SIGNAL = "M_checked";
 	private static String UNCHECKED_SIGNAL = "M_unchecked";
 	private static final int BIT_TEXT_CHANGED = 0;

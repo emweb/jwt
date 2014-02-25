@@ -153,6 +153,18 @@ public abstract class WAbstractSpinBox extends WLineEdit {
 		return super.validate();
 	}
 
+	public void refresh() {
+		this.doJavaScript("jQuery.data("
+				+ this.getJsRef()
+				+ ", 'obj').setLocale("
+				+ jsStringLiteral(LocaleUtils.getDecimalPoint(LocaleUtils
+						.getCurrentLocale()))
+				+ ","
+				+ jsStringLiteral(LocaleUtils.getGroupSeparator(LocaleUtils
+						.getCurrentLocale())) + ");");
+		super.refresh();
+	}
+
 	/**
 	 * Constructor.
 	 */
@@ -243,13 +255,24 @@ public abstract class WAbstractSpinBox extends WLineEdit {
 	private void defineJavaScript() {
 		WApplication app = WApplication.getInstance();
 		app.loadJavaScript("js/WSpinBox.js", wtjs1());
-		String jsObj = "new Wt3_3_2.WSpinBox(" + app.getJavaScriptClass() + ","
-				+ this.getJsRef() + "," + String.valueOf(this.getDecimals())
+		String jsObj = "new Wt3_3_2.WSpinBox("
+				+ app.getJavaScriptClass()
+				+ ","
+				+ this.getJsRef()
+				+ ","
+				+ String.valueOf(this.getDecimals())
 				+ ","
 				+ WString.toWString(this.getPrefix()).getJsStringLiteral()
 				+ ","
 				+ WString.toWString(this.getSuffix()).getJsStringLiteral()
-				+ "," + this.getJsMinMaxStep() + ");";
+				+ ","
+				+ this.getJsMinMaxStep()
+				+ ","
+				+ jsStringLiteral(LocaleUtils.getDecimalPoint(LocaleUtils
+						.getCurrentLocale()))
+				+ ","
+				+ jsStringLiteral(LocaleUtils.getGroupSeparator(LocaleUtils
+						.getCurrentLocale())) + ");";
 		this.setJavaScriptMember(" WSpinBox", jsObj);
 	}
 
@@ -308,6 +331,6 @@ public abstract class WAbstractSpinBox extends WLineEdit {
 				JavaScriptScope.WtClassScope,
 				JavaScriptObjectType.JavaScriptConstructor,
 				"WSpinBox",
-				"function(u,c,l,m,f,g,h,i){function j(){return!!c.getAttribute(\"readonly\")}function n(){var a=c.value;if(a.substr(0,m.length)==m){a=a.substr(m.length);if(a.length>f.length&&a.substr(a.length-f.length,f.length)==f){a=a.substr(0,a.length-f.length);return Number(a)}}return null}function p(a){if(a>h)a=h;else if(a<g)a=g;c.value=m+a.toFixed(l)+f;o=true}function q(){var a=n();if(a!==null){a+=i;p(a)}}function r(){var a=n();if(a!==null){a-=i;p(a)}}jQuery.data(c, \"obj\",this);var d=u.WT,e=$(c),k=null,s,o=false,t=null;this.update=function(a,b,v,w){g=a;h=b;i=v;l=w;t=new (l==0?d.WIntValidator:d.WDoubleValidator)(true,g,h,\"Must be a number\",\"Must be a number\",\"The number must be at least \"+g,\"The number may be at most \"+h)};this.mouseOut=function(){e.removeClass(\"dn\").removeClass(\"up\")};this.mouseMove=function(a,b){if(!j())if(k){a=d.pageCoordinates(b).y-k.y;b=s;if(b!==null){b-=a*i;p(b)}}else{a=d.widgetCoordinates(c,b);if(e.hasClass(\"dn\")||e.hasClass(\"up\"))e.removeClass(\"dn\").removeClass(\"up\"); if(a.x>c.offsetWidth-16){b=c.offsetHeight/2;if(a.y>=b-1&&a.y<=b+1)c.style.cursor=\"crosshair\";else{c.style.cursor=\"default\";a.y<b-1?e.addClass(\"up\"):e.addClass(\"dn\")}}else if(c.style.cursor!=\"\")c.style.cursor=\"\"}};this.mouseDown=function(a,b){d.capture(null);if(!j())if(c.style.cursor==\"crosshair\"){d.capture(null);d.capture(c);e.addClass(\"unselectable\");k=d.pageCoordinates(b);s=n()}else{a=d.widgetCoordinates(c,b);if(a.x>c.offsetWidth-16){d.cancelEvent(b);d.capture(c);e.addClass(\"unselectable\");a.y< c.offsetHeight/2?d.eventRepeat(function(){q()}):d.eventRepeat(function(){r()})}}};this.mouseUp=function(a){e.removeClass(\"unselectable\");if(!j()){if(o||k!=null){k=null;a.onchange()}d.stopRepeat()}};this.keyDown=function(a,b){if(!j())if(b.keyCode==40)d.eventRepeat(function(){r()});else b.keyCode==38&&d.eventRepeat(function(){q()})};this.keyUp=function(a){if(!j()){if(o){o=false;a.onchange()}d.stopRepeat()}};this.validate=function(){var a=n();if(a===null)a=\"a\";return t.validate(a)};this.update(g,h,i, l)}");
+				"function(y,c,n,o,h,i,j,k,p,q){function l(){return!!c.getAttribute(\"readonly\")}function r(){var a=c.value;if(a.substr(0,o.length)==o){a=a.substr(o.length);if(a.length>h.length&&a.substr(a.length-h.length,h.length)==h){a=a.substr(0,a.length-h.length);if(q)a=a.split(q).join(\"\");a=a.replace(p,\".\");return Number(a)}}return null}function t(a){if(a>j)a=j;else if(a<i)a=i;a=a.toFixed(n);a=a.replace(\".\",p);var b=a.indexOf(p),f=\"\";if(b!==-1){for(var g= 0;g<b;g++){f+=a.charAt(g);if(g<b-1&&(b-g-1)%3===0)f+=q}f+=a.substr(b)}else f=a;c.value=o+f+h;s=true}function u(){var a=r();if(a!==null){a+=k;t(a)}}function v(){var a=r();if(a!==null){a-=k;t(a)}}jQuery.data(c,\"obj\",this);var d=y.WT,e=$(c),m=null,w,s=false,x=null;this.update=function(a,b,f,g){i=a;j=b;k=f;n=g;x=new (n==0?d.WIntValidator:d.WDoubleValidator)(true,i,j,\"Must be a number\",\"Must be a number\",\"The number must be at least \"+i,\"The number may be at most \"+j)};this.mouseOut=function(){e.removeClass(\"dn\").removeClass(\"up\")}; this.mouseMove=function(a,b){if(!l())if(m){a=d.pageCoordinates(b).y-m.y;b=w;if(b!==null){b-=a*k;t(b)}}else{a=d.widgetCoordinates(c,b);if(e.hasClass(\"dn\")||e.hasClass(\"up\"))e.removeClass(\"dn\").removeClass(\"up\");if(a.x>c.offsetWidth-16){b=c.offsetHeight/2;if(a.y>=b-1&&a.y<=b+1)c.style.cursor=\"crosshair\";else{c.style.cursor=\"default\";a.y<b-1?e.addClass(\"up\"):e.addClass(\"dn\")}}else if(c.style.cursor!=\"\")c.style.cursor=\"\"}};this.mouseDown=function(a,b){d.capture(null);if(!l())if(c.style.cursor==\"crosshair\"){d.capture(null); d.capture(c);e.addClass(\"unselectable\");m=d.pageCoordinates(b);w=r()}else{a=d.widgetCoordinates(c,b);if(a.x>c.offsetWidth-16){d.cancelEvent(b);d.capture(c);e.addClass(\"unselectable\");a.y<c.offsetHeight/2?d.eventRepeat(function(){u()}):d.eventRepeat(function(){v()})}}};this.mouseUp=function(a){e.removeClass(\"unselectable\");if(!l()){if(s||m!=null){m=null;a.onchange()}d.stopRepeat()}};this.keyDown=function(a,b){if(!l())if(b.keyCode==40)d.eventRepeat(function(){v()});else b.keyCode==38&&d.eventRepeat(function(){u()})}; this.keyUp=function(a){if(!l()){if(s){s=false;a.onchange()}d.stopRepeat()}};this.setLocale=function(a,b){p=a;q=b};this.validate=function(){var a=r();if(a===null)a=\"a\";return x.validate(a)};this.update(i,j,k,n)}");
 	}
 }

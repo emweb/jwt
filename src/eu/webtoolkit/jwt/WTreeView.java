@@ -308,7 +308,9 @@ public class WTreeView extends WAbstractItemView {
 	public void resize(final WLength width, final WLength height) {
 		WApplication app = WApplication.getInstance();
 		WLength w = app.getEnvironment().hasAjax() ? WLength.Auto : width;
-		this.contentsContainer_.setWidth(w);
+		if (app.getEnvironment().hasAjax()) {
+			this.contentsContainer_.setWidth(w);
+		}
 		if (this.headerContainer_ != null) {
 			this.headerContainer_.setWidth(w);
 		}
@@ -317,10 +319,10 @@ public class WTreeView extends WAbstractItemView {
 				if (this.impl_.getCount() < 3) {
 					this.impl_.addWidget(this.getCreatePageNavigationBar());
 				}
-				double navigationBarHeight = 25;
+				double navigationBarHeight = 35;
 				double headerHeight = this.getHeaderHeight().toPixels();
 				int h = (int) (height.toPixels() - navigationBarHeight - headerHeight);
-				this.contentsContainer_.resize(width, new WLength(Math.max(h,
+				this.contentsContainer_.setHeight(new WLength(Math.max(h,
 						(int) this.getRowHeight().getValue())));
 				this.viewportHeight_ = (int) (this.contentsContainer_
 						.getHeight().toPixels() / this.getRowHeight()

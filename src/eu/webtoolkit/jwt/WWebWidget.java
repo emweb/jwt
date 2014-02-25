@@ -984,6 +984,15 @@ public abstract class WWebWidget extends WWidget {
 		return this.flags_.get(WWebWidget.BIT_RENDERED);
 	}
 
+	public boolean isSetFirstFocous() {
+		for (int i = 0; i < this.getChildren().size(); i++) {
+			if (this.getChildren().get(i).isSetFirstFocous()) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	void repaint(EnumSet<RepaintFlag> flags) {
 		if (this.isStubbed()) {
 			final WebRenderer renderer = WApplication.getInstance()
