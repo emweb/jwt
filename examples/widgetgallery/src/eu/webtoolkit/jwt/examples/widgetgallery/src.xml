@@ -1175,6 +1175,19 @@
             <span class="k">this</span><span class="o">.</span><span class="na">parentId</span> <span class="o">=</span> <span class="n">aParent</span><span class="o">;</span>
             <span class="k">this</span><span class="o">.</span><span class="na">index</span> <span class="o">=</span> <span class="n">anIndex</span><span class="o">;</span>
         <span class="o">}</span>
+
+        <span class="kt">boolean</span> <span class="nf">equals</span><span class="o">(</span><span class="n">Object</span> <span class="n">o</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">GitModel</span><span class="o">.</span><span class="na">ChildIndex</span> <span class="n">other</span> <span class="o">=</span> <span class="o">(</span><span class="n">ChildIndex</span><span class="o">)</span> <span class="n">o</span><span class="o">;</span>
+            <span class="k">return</span> <span class="k">this</span><span class="o">.</span><span class="na">parentId</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="na">parentId</span>
+                    <span class="o">&amp;&amp;</span> <span class="k">this</span><span class="o">.</span><span class="na">index</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="na">index</span><span class="o">;</span>
+        <span class="o">}</span>
+
+        <span class="kt">int</span> <span class="nf">hashCode</span><span class="o">()</span> <span class="o">{</span>
+            <span class="kt">int</span> <span class="n">hash</span> <span class="o">=</span> <span class="mi">1</span><span class="o">;</span>
+            <span class="n">hash</span> <span class="o">=</span> <span class="n">hash</span> <span class="o">*</span> <span class="mi">31</span> <span class="o">+</span> <span class="k">this</span><span class="o">.</span><span class="na">parentId</span><span class="o">;</span>
+            <span class="n">hash</span> <span class="o">=</span> <span class="n">hash</span> <span class="o">*</span> <span class="mi">31</span> <span class="o">+</span> <span class="k">this</span><span class="o">.</span><span class="na">index</span><span class="o">;</span>
+            <span class="k">return</span> <span class="n">hash</span><span class="o">;</span>
+        <span class="o">}</span>
     <span class="o">}</span>
 
     <span class="kd">static</span> <span class="kd">class</span> <span class="nc">Tree</span> <span class="o">{</span>

@@ -194,6 +194,18 @@ class GitModel extends WAbstractItemModel {
 			this.parentId = aParent;
 			this.index = anIndex;
 		}
+
+		public boolean equals(Object o) {
+			GitModel.ChildIndex other = (ChildIndex) o;
+			return this.parentId == other.parentId && this.index == other.index;
+		}
+
+		public int hashCode() {
+			int hash = 1;
+			hash = hash * 31 + this.parentId;
+			hash = hash * 31 + this.index;
+			return hash;
+		}
 	}
 
 	static class Tree {
