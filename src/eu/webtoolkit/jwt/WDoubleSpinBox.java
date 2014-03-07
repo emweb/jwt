@@ -225,6 +225,14 @@ public class WDoubleSpinBox extends WAbstractSpinBox {
 		super.updateDom(element, all);
 	}
 
+	protected void render(EnumSet<RenderFlag> flags) {
+		super.render(flags);
+		if (!this.setup_
+				&& !EnumUtils.mask(flags, RenderFlag.RenderFull).isEmpty()) {
+			this.setup();
+		}
+	}
+
 	void signalConnectionsChanged() {
 		if (this.valueChanged_.isConnected() && !this.valueChangedConnection_) {
 			this.valueChangedConnection_ = true;
@@ -278,12 +286,19 @@ public class WDoubleSpinBox extends WAbstractSpinBox {
 				.toString());
 	}
 
+	private boolean setup_;
 	private double value_;
 	private double min_;
 	private double max_;
 	private double step_;
 	private int precision_;
 	private Signal1<Double> valueChanged_;
+
+	private void setup() {
+		this.setup_ = true;
+		this.doJavaScript("jQuery.data(" + this.getJsRef()
+				+ ", 'obj').setIsDoubleSpinBox(true);");
+	}
 
 	private void onChange() {
 		this.valueChanged_.trigger(this.getValue());

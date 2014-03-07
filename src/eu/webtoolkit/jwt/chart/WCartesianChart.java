@@ -157,6 +157,11 @@ public class WCartesianChart extends WAbstractChart {
 		this(type, (WContainerWidget) null);
 	}
 
+	public void remove() {
+		;
+		super.remove();
+	}
+
 	/**
 	 * Sets the chart type.
 	 * <p>

@@ -143,6 +143,15 @@ public class WTableCell extends WContainerWidget {
 		return this.getTable().getColumnAt(this.getColumn());
 	}
 
+	public boolean isVisible() {
+		if (this.row_ != null) {
+			if (this.row_.isHidden()) {
+				return false;
+			}
+		}
+		return super.isVisible();
+	}
+
 	WTableCell(WTableRow row, int column) {
 		super((WContainerWidget) null);
 		this.row_ = row;

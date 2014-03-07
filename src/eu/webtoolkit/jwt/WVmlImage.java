@@ -492,7 +492,7 @@ public class WVmlImage implements WVectorImage {
 	private void processClipping() {
 		if (this.clippingChanged_) {
 			if (this.getPainter().hasClipping()) {
-				WRectF rect = null;
+				WRectF rect = new WRectF(0, 0, 0, 0);
 				if (this.getPainter().getClipPath().asRect(rect)) {
 					WTransform t = this.getPainter().getClipPathTransform();
 					WPointF tl = t.map(rect.getTopLeft());
