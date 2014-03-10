@@ -490,6 +490,8 @@ public class OAuthProcess extends WObject {
 				.append("&scope=").append(Utils.urlEncode(this.scope_)).append(
 						"&response_type=code").append("&state=").append(
 						Utils.urlEncode(this.oAuthState_));
+		logger.info(new StringWriter().append("authorize URL: ").append(
+				url.toString()).toString());
 		return url.toString();
 	}
 

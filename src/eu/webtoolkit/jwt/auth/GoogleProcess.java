@@ -72,6 +72,10 @@ class GoogleProcess extends OAuthProcess {
 								email, emailVerified));
 			}
 		} else {
+			logger
+					.error(new StringWriter().append(
+							WString.tr("Wt.Auth.GoogleService.badresponse"))
+							.toString());
 			this.setError(WString.tr("Wt.Auth.GoogleService.badresponse"));
 			if (err == null) {
 				logger.error(new StringWriter().append(

@@ -181,7 +181,6 @@ public abstract class OAuthService {
 	 * {@link OAuthService#getRedirectEndpoint() getRedirectEndpoint()} URL.
 	 */
 	public String getRedirectEndpointPath() {
-		WApplication app = WApplication.getInstance();
 		URL parsedUrl = new URL();
 		HttpClient.parseUrl(this.getRedirectEndpoint(), parsedUrl);
 		String path = parsedUrl.path;
@@ -283,6 +282,34 @@ public abstract class OAuthService {
 		return "/auth/oauth/" + this.getName() + "/redirect";
 	}
 
+	/**
+	 * Configures the static resource implementing the redirect endpoint.
+	 * <p>
+	 * By default, this endpoint is configured whenever it&apos;s necessary, but
+	 * one may also configure it in advance, for example in a multi-process
+	 * deployment (FastCGI).
+	 */
+	public void configureRedirectEndpoint() {
+		if (!(this.impl_.redirectResource_ != null)) {
+			if (!(this.impl_.redirectResource_ != null)) {
+				OAuthService.Impl.RedirectEndpoint r = new OAuthService.Impl.RedirectEndpoint(
+						this);
+				String path = this.getRedirectEndpointPath();
+				logger.info(new StringWriter().append("deploying endpoint at ")
+						.append(path).toString());
+				WApplication app = WApplication.getInstance();
+				WtServlet server;
+				if (app != null) {
+					server = app.getEnvironment().getServer();
+				} else {
+					server = WtServlet.getInstance();
+				}
+				server.addResource(r, path);
+				this.impl_.redirectResource_ = r;
+			}
+		}
+	}
+
 	protected static String configurationProperty(final String property) {
 		WtServlet instance = WtServlet.getInstance();
 		if (instance != null) {
@@ -305,22 +332,6 @@ public abstract class OAuthService {
 		}
 	}
 
-	protected void configureRedirectEndpoint() {
-		if (!(this.impl_.redirectResource_ != null)) {
-			if (!(this.impl_.redirectResource_ != null)) {
-				OAuthService.Impl.RedirectEndpoint r = new OAuthService.Impl.RedirectEndpoint(
-						this);
-				String path = this.getRedirectEndpointPath();
-				logger.info(new StringWriter().append("deploying endpoint at ")
-						.append(path).toString());
-				WApplication app = WApplication.getInstance();
-				WtServlet server = app.getEnvironment().getServer();
-				server.addResource(r, path);
-				this.impl_.redirectResource_ = r;
-			}
-		}
-	}
-
 	// private OAuthService(final OAuthService anon1) ;
 	private final AuthService baseAuth_;
 	private OAuthService.Impl impl_;
@@ -331,7 +342,11 @@ public abstract class OAuthService {
 		Impl() {
 			this.redirectResource_ = null;
 			this.secret_ = "";
-			this.secret_ = MathUtils.randomId(32);
+			try {
+				this.secret_ = configurationProperty("oauth2-secret");
+			} catch (final RuntimeException e) {
+				this.secret_ = MathUtils.randomId(32);
+			}
 		}
 
 		static class RedirectEndpoint extends WResource {
@@ -366,12 +381,22 @@ public abstract class OAuthService {
 							response.setStatus(302);
 							response.addHeader("Location", redirectUrl);
 							return;
+						} else {
+							logger
+									.error(new StringWriter()
+											.append(
+													"RedirectEndpoint: could not decode state ")
+											.append(stateE).toString());
 						}
+					} else {
+						logger.error(new StringWriter().append(
+								"RedirectEndpoint: missing state").toString());
 					}
 					response.setStatus(400);
 					response.setContentType("text/html");
-					response.out().append(
-							"<html><body><h1>Error</h1></body></html>");
+					response.out().append("<html><body>").append(
+							"<h1>OAuth Authentication error</h1>").append(
+							"</body></html>");
 				} catch (IOException ioe) {
 					ioe.printStackTrace();
 				}
