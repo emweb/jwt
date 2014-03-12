@@ -337,7 +337,7 @@ class GraphicsWidgets extends TopicWidget {
 		for (int column = 1; column < model.getColumnCount(); ++column) {
 			table.setColumnWidth(column, new WLength(90));
 		}
-		table.resize(new WLength(780), new WLength(200));
+		table.resize(new WLength(783), new WLength(200));
 		WItemDelegate delegate = new WItemDelegate(table);
 		delegate.setTextFormat("%.1f");
 		table.setItemDelegate(delegate);

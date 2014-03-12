@@ -1832,8 +1832,11 @@ public class WApplication extends WObject {
 	 * immediately. The JavaScript will be run after the normal event handling,
 	 * unless <code>afterLoaded</code> is set to <code>false</code>.
 	 * <p>
+	 * In most situations, it&apos;s more robust to use
+	 * {@link WWidget#doJavaScript(String js) WWidget#doJavaScript()} however.
+	 * <p>
 	 * 
-	 * @see WApplication#addAutoJavaScript(String javascript)
+	 * @see WWidget#doJavaScript(String js)
 	 * @see WApplication#addAutoJavaScript(String javascript)
 	 */
 	public void doJavaScript(final String javascript, boolean afterLoaded) {
@@ -1867,8 +1870,11 @@ public class WApplication extends WObject {
 	 * immediately. The JavaScript will be run after the normal event handling,
 	 * unless <code>afterLoaded</code> is set to <code>false</code>.
 	 * <p>
+	 * In most situations, it&apos;s more robust to use
+	 * {@link WWidget#doJavaScript(String js) WWidget#doJavaScript()} however.
+	 * <p>
 	 * 
-	 * @see WApplication#addAutoJavaScript(String javascript)
+	 * @see WWidget#doJavaScript(String js)
 	 * @see WApplication#addAutoJavaScript(String javascript)
 	 */
 	public void addAutoJavaScript(final String javascript) {
@@ -1972,8 +1978,11 @@ public class WApplication extends WObject {
 	 * immediately. The JavaScript will be run after the normal event handling,
 	 * unless <code>afterLoaded</code> is set to <code>false</code>.
 	 * <p>
+	 * In most situations, it&apos;s more robust to use
+	 * {@link WWidget#doJavaScript(String js) WWidget#doJavaScript()} however.
+	 * <p>
 	 * 
-	 * @see WApplication#addAutoJavaScript(String javascript)
+	 * @see WWidget#doJavaScript(String js)
 	 * @see WApplication#addAutoJavaScript(String javascript)
 	 */
 	public boolean isCustomJQuery() {

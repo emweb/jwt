@@ -64,5 +64,9 @@ public class LocaleUtils {
 
 	public static String toString(Locale locale, int value) {
 		return NumberFormat.getInstance(locale).format(value);
+	}
+
+	public static String toString(Locale locale, double value) {
+		return NumberFormat.getInstance(locale).format(value);
 	}	
 }

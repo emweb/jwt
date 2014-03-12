@@ -55,8 +55,8 @@ import org.slf4j.LoggerFactory;
  * <p>
  * The labels are shown using a &quot;%.4g&quot; format string for numbers, and
  * a suitable format for {@link AxisScale#DateScale DateScale} or
- * {@link AxisScale#DateTimeScale DateTimeScale} formats, which uses heuristics
- * to choose a suitable format. The format may be customized using
+ * {@link AxisScale#DateTimeScale DateTimeScale} scales, based on heuristics.
+ * The format may be customized using
  * {@link WAxis#setLabelFormat(CharSequence format) setLabelFormat()}. The angle
  * of the label text may be changed using
  * {@link WAxis#setLabelAngle(double angle) setLabelAngle()}. By default, all
@@ -499,8 +499,7 @@ public class WAxis {
 	 * For an axis with a {@link AxisScale#LinearScale LinearScale} or
 	 * {@link AxisScale#LogScale LogScale} scale, the format string must be a
 	 * format string that is accepted by snprintf() and which formats one
-	 * double. If the format string is an empty string, &quot;%.4g&quot; is
-	 * used.
+	 * double. If the format string is an empty string, then {@link } is used.
 	 * <p>
 	 * For an axis with a {@link AxisScale#DateScale DateScale} scale, the
 	 * format string must be a format string accepted by
@@ -514,7 +513,9 @@ public class WAxis {
 	 * the format string is an empty string, a suitable format is chosen based
 	 * on heuristics.
 	 * <p>
-	 * The default value is an empty string (&quot;&quot;).
+	 * The default value is &quot;%.4g&quot; for a numeric axis, and a suitable
+	 * format for date(time) scales based on a heuristic taking into account the
+	 * current axis range.
 	 * <p>
 	 * 
 	 * @see WAxis#getLabelFormat()
@@ -525,6 +526,7 @@ public class WAxis {
 			update();
 		}
 		;
+		this.defaultLabelFormat_ = false;
 	}
 
 	/**
@@ -534,7 +536,25 @@ public class WAxis {
 	 * @see WAxis#setLabelFormat(CharSequence format)
 	 */
 	public WString getLabelFormat() {
-		return this.labelFormat_;
+		switch (this.scale_) {
+		case CategoryScale:
+			return new WString();
+		case DateScale:
+		case DateTimeScale:
+			if (this.defaultLabelFormat_) {
+				if (!this.segments_.isEmpty()) {
+					final WAxis.Segment s = this.segments_.get(0);
+					return this.defaultDateTimeFormat(s);
+				} else {
+					return this.labelFormat_;
+				}
+			} else {
+				return this.labelFormat_;
+			}
+		default:
+			return this.defaultLabelFormat_ ? new WString("%.4g")
+					: this.labelFormat_;
+		}
 	}
 
 	/**
@@ -775,25 +795,23 @@ public class WAxis {
 		if (this.scale_ == AxisScale.CategoryScale) {
 			text = this.chart_.categoryLabel((int) u, this.axis_);
 			if ((text.length() == 0)) {
-				buf = String.format("%.4g", u + 1);
-				text = new WString(buf);
+				text = new WString(LocaleUtils.toString(LocaleUtils
+						.getCurrentLocale(), u));
 			}
 		} else {
 			if (this.scale_ == AxisScale.DateScale) {
 				WDate d = WDate.fromJulianDay((int) u);
-				WString format = this.labelFormat_;
-				if ((format.length() == 0)) {
-					return new WString(d.toString("dd/MM/yyyy"));
-				} else {
-					return new WString(d.toString(format.toString()));
-				}
+				WString format = this.getLabelFormat();
+				return new WString(d.toString(format.toString()));
 			} else {
-				String format = this.labelFormat_.toString();
+				String format = this.getLabelFormat().toString();
 				if (format.length() == 0) {
-					format = "%.4g";
+					text = new WString(LocaleUtils.toString(LocaleUtils
+							.getCurrentLocale(), u));
+				} else {
+					buf = String.format(format, u);
+					text = new WString(buf);
 				}
-				buf = String.format(format, u);
-				text = new WString(buf);
 			}
 		}
 		return text;
@@ -1450,6 +1468,7 @@ public class WAxis {
 		}
 		case DateTimeScale:
 		case DateScale: {
+			WString format = this.getLabelFormat();
 			WDate dt = null;
 			if (this.scale_ == AxisScale.DateScale) {
 				dt = WDate.fromJulianDay((int) s.renderMinimum);
@@ -1467,70 +1486,6 @@ public class WAxis {
 					|| unit.getValue() <= WAxis.DateTimeUnit.Days.getValue()
 					|| !!EnumUtils.mask(this.roundLimits_,
 							AxisValue.MinimumValue).isEmpty();
-			WString format = this.labelFormat_;
-			if ((format.length() == 0)) {
-				if (atTick) {
-					switch (unit) {
-					case Months:
-					case Years:
-					case Days:
-						if (dt.getSecond() != 0) {
-							format = new WString("dd/MM/yy hh:mm:ss");
-						} else {
-							if (dt.getHour() != 0) {
-								format = new WString("dd/MM/yy hh:mm");
-							} else {
-								format = new WString("dd/MM/yy");
-							}
-						}
-						break;
-					case Hours:
-						if (dt.getSecond() != 0) {
-							format = new WString("dd/MM hh:mm:ss");
-						} else {
-							if (dt.getMinute() != 0) {
-								format = new WString("dd/MM hh:mm");
-							} else {
-								format = new WString("h'h' dd/MM");
-							}
-						}
-						break;
-					case Minutes:
-						if (dt.getSecond() != 0) {
-							format = new WString("hh:mm:ss");
-						} else {
-							format = new WString("hh:mm");
-						}
-						break;
-					case Seconds:
-						format = new WString("hh:mm:ss");
-						break;
-					}
-				} else {
-					switch (unit) {
-					case Years:
-						format = new WString("yyyy");
-						break;
-					case Months:
-						format = new WString("MMM yy");
-						break;
-					case Days:
-						format = new WString("dd/MM/yy");
-						break;
-					case Hours:
-						format = new WString("h'h' dd/MM");
-						break;
-					case Minutes:
-						format = new WString("hh:mm");
-						break;
-					case Seconds:
-						format = new WString("hh:mm:ss");
-						break;
-					default:
-						break;
-					}
-				}
-			}
 			for (;;) {
 				long dl = this.getDateNumber(dt);
 				if (dl > s.renderMaximum) {
@@ -1596,6 +1551,7 @@ public class WAxis {
 	private double resolution_;
 	private double labelInterval_;
 	private WString labelFormat_;
+	private boolean defaultLabelFormat_;
 	private boolean gridLines_;
 	private WPen pen_;
 	private WPen gridLinesPen_;
@@ -1643,6 +1599,7 @@ public class WAxis {
 		this.resolution_ = 0.0;
 		this.labelInterval_ = 0;
 		this.labelFormat_ = new WString();
+		this.defaultLabelFormat_ = true;
 		this.gridLines_ = false;
 		this.pen_ = new WPen();
 		this.gridLinesPen_ = new WPen(WColor.gray);
@@ -1869,6 +1826,78 @@ public class WAxis {
 		return s.renderLength
 				/ (orientation == Orientation.Vertical ? AUTO_V_LABEL_PIXELS
 						: AUTO_H_LABEL_PIXELS);
+	}
+
+	private WString defaultDateTimeFormat(final WAxis.Segment s) {
+		WDate dt = null;
+		if (this.scale_ == AxisScale.DateScale) {
+			dt = WDate.fromJulianDay((int) s.renderMinimum);
+			if (!(dt != null)) {
+				String exception = "Invalid julian day: "
+						+ String.valueOf(s.renderMinimum);
+				throw new WException(exception);
+			}
+		} else {
+			dt = new WDate(new Date((long) (long) s.renderMinimum));
+		}
+		int interval = s.dateTimeRenderInterval;
+		WAxis.DateTimeUnit unit = s.dateTimeRenderUnit;
+		boolean atTick = interval > 1
+				|| unit.getValue() <= WAxis.DateTimeUnit.Days.getValue()
+				|| !!EnumUtils.mask(this.roundLimits_, AxisValue.MinimumValue)
+						.isEmpty();
+		if (atTick) {
+			switch (unit) {
+			case Months:
+			case Years:
+			case Days:
+				if (dt.getSecond() != 0) {
+					return new WString("dd/MM/yy hh:mm:ss");
+				} else {
+					if (dt.getHour() != 0) {
+						return new WString("dd/MM/yy hh:mm");
+					} else {
+						return new WString("dd/MM/yy");
+					}
+				}
+			case Hours:
+				if (dt.getSecond() != 0) {
+					return new WString("dd/MM hh:mm:ss");
+				} else {
+					if (dt.getMinute() != 0) {
+						return new WString("dd/MM hh:mm");
+					} else {
+						return new WString("h'h' dd/MM");
+					}
+				}
+			case Minutes:
+				if (dt.getSecond() != 0) {
+					return new WString("hh:mm:ss");
+				} else {
+					return new WString("hh:mm");
+				}
+			case Seconds:
+				return new WString("hh:mm:ss");
+			}
+		} else {
+			switch (unit) {
+			case Years:
+				return new WString("yyyy");
+			case Months:
+				return new WString("MMM yy");
+			case Days:
+				return new WString("dd/MM/yy");
+			case Hours:
+				return new WString("h'h' dd/MM");
+			case Minutes:
+				return new WString("hh:mm");
+			case Seconds:
+				return new WString("hh:mm:ss");
+			default:
+				break;
+			}
+		}
+		return WString.Empty;
 	}
 
 	double mapFromDevice(double d) {
