@@ -82,8 +82,7 @@ public class WNavigationBar extends WTemplate {
 	 * different (more compact and allowing for vertical menu layouts).
 	 */
 	public void setResponsive(boolean responsive) {
-		WContainerWidget contents = (WContainerWidget) this
-				.resolveWidget("contents");
+		NavContainer contents = (NavContainer) this.resolveWidget("contents");
 		if (responsive) {
 			WInteractWidget collapseButton = (WInteractWidget) this
 					.resolveWidget("collapse-button");
@@ -111,9 +110,11 @@ public class WNavigationBar extends WTemplate {
 			WApplication.getInstance().getTheme().apply(this, contents,
 					WidgetThemeRole.NavCollapseRole);
 			contents.hide();
-			contents
-					.setJavaScriptMember("wtAnimatedHidden",
-							"function(hidden) {if (hidden) this.style.height=''; this.style.display='';}");
+			if (contents.isBootstrap2Responsive()) {
+				contents
+						.setJavaScriptMember("wtAnimatedHidden",
+								"function(hidden) {if (hidden) this.style.height=''; this.style.display='';}");
+			}
 		} else {
 			this.bindEmpty("collapse-button");
 		}
@@ -313,10 +314,12 @@ public class WNavigationBar extends WTemplate {
 	private void align(WWidget widget, AlignmentFlag alignment) {
 		switch (alignment) {
 		case AlignLeft:
-			widget.addStyleClass("pull-left");
+			WApplication.getInstance().getTheme().apply(this, widget,
+					WidgetThemeRole.NavbarAlignLeftRole);
 			break;
 		case AlignRight:
-			widget.addStyleClass("pull-right");
+			WApplication.getInstance().getTheme().apply(this, widget,
+					WidgetThemeRole.NavbarAlignRightRole);
 			break;
 		default:
 			logger.error(new StringWriter().append(

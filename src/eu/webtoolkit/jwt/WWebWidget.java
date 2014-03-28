@@ -984,9 +984,9 @@ public abstract class WWebWidget extends WWidget {
 		return this.flags_.get(WWebWidget.BIT_RENDERED);
 	}
 
-	public boolean isSetFirstFocous() {
+	public boolean isSetFirstFocus() {
 		for (int i = 0; i < this.getChildren().size(); i++) {
-			if (this.getChildren().get(i).isSetFirstFocous()) {
+			if (this.getChildren().get(i).isSetFirstFocus()) {
 				return true;
 			}
 		}

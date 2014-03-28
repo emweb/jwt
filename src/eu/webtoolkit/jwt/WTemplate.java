@@ -1194,7 +1194,14 @@ public class WTemplate extends WInteractWidget {
 						.hasNext();) {
 					WWidget i = i_it.next();
 					WWidget w = i;
-					w.getWebWidget().setRendered(false);
+					for (Iterator<Map.Entry<String, WWidget>> j_it = this.widgets_
+							.entrySet().iterator(); j_it.hasNext();) {
+						Map.Entry<String, WWidget> j = j_it.next();
+						if (j.getValue() == w) {
+							w.getWebWidget().setRendered(false);
+							break;
+						}
+					}
 				}
 				WApplication.getInstance().getSession().getRenderer()
 						.updateFormObjects(this, true);

@@ -64,6 +64,11 @@ public class WEvent {
 			this(aHandler, false);
 		}
 
+		Impl(final WEvent.Impl other) {
+			this.handler = other.handler;
+			this.renderOnly = other.renderOnly;
+		}
+
 		Impl() {
 			this.handler = null;
 		}

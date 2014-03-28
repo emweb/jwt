@@ -49,4 +49,6 @@ public class WidgetThemeRole {
 	public final static int NavbarSearchRole = 803;
 	public final static int NavbarMenuRole = 804;
 	public final static int NavbarBtn = 805;
+	public final static int NavbarAlignLeftRole = 806;
+	public final static int NavbarAlignRightRole = 807;
 }

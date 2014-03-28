@@ -497,7 +497,7 @@ public class WPushButton extends WFormWidget {
 		return this.voidEventSignal(UNCHECKED_SIGNAL, true);
 	}
 
-	public boolean isSetFirstFocous() {
+	public boolean isSetFirstFocus() {
 		return false;
 	}
 

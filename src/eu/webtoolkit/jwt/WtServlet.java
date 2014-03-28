@@ -49,7 +49,7 @@ import eu.webtoolkit.jwt.utils.StreamUtils;
  * notifying the application of an event, or serving a {@link WResource}.
  */
 public abstract class WtServlet extends HttpServlet {
-	private static class BoundSession implements HttpSessionBindingListener {
+	private class BoundSession implements HttpSessionBindingListener {
 		private WebSession session;
 
 		BoundSession(WebSession session) {
@@ -65,6 +65,8 @@ public abstract class WtServlet extends HttpServlet {
 
 		@Override
 		public void valueUnbound(HttpSessionBindingEvent arg0) {
+			logger.info("Session exiting: " + session.getSessionId() + " (#sessions = " + removeSession(session) + ")");
+
 			WApplication app = session.getApp();
 			if (app != null)
 				app.destroy();
@@ -359,7 +361,6 @@ public abstract class WtServlet extends HttpServlet {
 				try {
 					jsession.setAttribute(WtServlet.WT_WEBSESSION_ID, null);
 					jsession.invalidate();
-					logger.info("Session exiting: " + jsession.getId() + " (#sessions = " + removeSession(handler.getSession()) + ")");
 				} catch (IllegalStateException e) {
 					// If session was invalidated by another request...
 				}

@@ -233,17 +233,6 @@ public class WValidator extends WObject {
 	}
 
 	/**
-	 * This function attempts to change input to be valid according to the
-	 * validator&apos;s rules.
-	 * <p>
-	 * In general the function needs not to change the input into a valid input.
-	 * The default implementation does nothing. But it may help the user in
-	 * getting its input right.
-	 */
-	public void fixup(final CharSequence input) {
-	}
-
-	/**
 	 * Validates the given input.
 	 * <p>
 	 * <p>

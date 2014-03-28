@@ -639,7 +639,7 @@ public class WDialog extends WPopupWidget {
 		}
 		super.render(flags);
 		if (this.autoFocus_) {
-			this.impl_.isSetFirstFocous();
+			this.impl_.isSetFirstFocus();
 		}
 	}
 

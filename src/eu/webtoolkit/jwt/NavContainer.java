@@ -30,12 +30,18 @@ class NavContainer extends WContainerWidget {
 		this((WContainerWidget) null);
 	}
 
+	public boolean isBootstrap2Responsive() {
+		return this.getStyleClass().indexOf("nav-collapse") != -1;
+	}
+
 	public void setHidden(boolean hidden, final WAnimation animation) {
-		if (animation.isEmpty()) {
-			if (hidden) {
-				this.setHeight(new WLength(0));
-			} else {
-				this.setHeight(WLength.Auto);
+		if (this.isBootstrap2Responsive()) {
+			if (animation.isEmpty()) {
+				if (hidden) {
+					this.setHeight(new WLength(0));
+				} else {
+					this.setHeight(WLength.Auto);
+				}
 			}
 		}
 		super.setHidden(hidden, animation);

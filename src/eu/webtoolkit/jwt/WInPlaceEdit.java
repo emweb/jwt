@@ -84,7 +84,6 @@ public class WInPlaceEdit extends WCompositeWidget {
 	public WInPlaceEdit(WContainerWidget parent) {
 		super(parent);
 		this.valueChanged_ = new Signal1<WString>(this);
-		this.c1_ = new AbstractSignal.Connection();
 		this.c2_ = new AbstractSignal.Connection();
 		this.create();
 	}
@@ -105,7 +104,6 @@ public class WInPlaceEdit extends WCompositeWidget {
 	public WInPlaceEdit(final CharSequence text, WContainerWidget parent) {
 		super(parent);
 		this.valueChanged_ = new Signal1<WString>(this);
-		this.c1_ = new AbstractSignal.Connection();
 		this.c2_ = new AbstractSignal.Connection();
 		this.create();
 		this.setText(text);
@@ -255,13 +253,10 @@ public class WInPlaceEdit extends WCompositeWidget {
 	 * saves the value while the escape key cancels the editing.
 	 */
 	public void setButtonsEnabled(boolean enabled) {
-		if (this.c1_.isConnected()) {
-			this.c1_.disconnect();
-		}
-		if (this.c2_.isConnected()) {
-			this.c2_.disconnect();
-		}
-		if (enabled) {
+		if (enabled && !(this.save_ != null)) {
+			if (this.c2_.isConnected()) {
+				this.c2_.disconnect();
+			}
 			this.save_ = new WPushButton(tr("Wt.WInPlaceEdit.Save"),
 					this.buttons_);
 			this.cancel_ = new WPushButton(tr("Wt.WInPlaceEdit.Cancel"),
@@ -309,24 +304,20 @@ public class WInPlaceEdit extends WCompositeWidget {
 						}
 					});
 		} else {
-			if (this.save_ != null)
-				this.save_.remove();
-			this.save_ = null;
-			if (this.cancel_ != null)
-				this.cancel_.remove();
-			this.cancel_ = null;
-			this.c1_ = this.edit_.blurred().addListener(this.edit_,
-					new Signal.Listener() {
-						public void trigger() {
-							WInPlaceEdit.this.edit_.disable();
-						}
-					});
-			this.c2_ = this.edit_.blurred().addListener(this,
-					new Signal.Listener() {
-						public void trigger() {
-							WInPlaceEdit.this.save();
-						}
-					});
+			if (!enabled && this.save_ != null) {
+				if (this.save_ != null)
+					this.save_.remove();
+				this.save_ = null;
+				if (this.cancel_ != null)
+					this.cancel_.remove();
+				this.cancel_ = null;
+				this.c2_ = this.edit_.blurred().addListener(this,
+						new Signal.Listener() {
+							public void trigger() {
+								WInPlaceEdit.this.save();
+							}
+						});
+			}
 		}
 	}
 
@@ -445,7 +436,6 @@ public class WInPlaceEdit extends WCompositeWidget {
 	private WLineEdit edit_;
 	private WPushButton save_;
 	private WPushButton cancel_;
-	private AbstractSignal.Connection c1_;
 	private AbstractSignal.Connection c2_;
 	private boolean empty_;
 }

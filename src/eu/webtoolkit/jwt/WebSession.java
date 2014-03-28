@@ -67,7 +67,8 @@ class WebSession {
 		this.deferredResponse_ = null;
 		this.deferCount_ = 0;
 		this.recursiveEvent_ = this.mutex_.newCondition();
-		this.newRecursiveEvent_ = false;
+		this.recursiveEventDone_ = this.mutex_.newCondition();
+		this.newRecursiveEvent_ = null;
 		this.updatesPendingEvent_ = this.mutex_.newCondition();
 		this.updatesPending_ = false;
 		this.triggerUpdate_ = false;
@@ -76,7 +77,7 @@ class WebSession {
 		this.debug_ = this.controller_.getConfiguration().debug();
 		this.handlers_ = new ArrayList<WebSession.Handler>();
 		this.emitStack_ = new ArrayList<WObject>();
-		this.recursiveEventLoop_ = null;
+		this.recursiveEventHandler_ = null;
 		this.env_ = env != null ? env : this.embeddedEnv_;
 		if (request != null) {
 			this.applicationUrl_ = request.getScriptName();
@@ -192,6 +193,9 @@ class WebSession {
 
 	public void setApplication(WApplication app) {
 		this.app_ = app;
+	}
+
+	public void externalNotify(final WEvent.Impl event) {
 	}
 
 	public void notify(final WEvent event) throws IOException {
@@ -512,7 +516,7 @@ class WebSession {
 						this.app_.refresh();
 					}
 					if (handler.getResponse() != null
-							&& !(this.recursiveEventLoop_ != null)) {
+							&& !(this.recursiveEventHandler_ != null)) {
 						this.render(handler);
 					}
 				}
@@ -578,24 +582,29 @@ class WebSession {
 				handler.getSession().render(handler);
 			}
 			if (this.state_ == WebSession.State.Dead) {
-				this.recursiveEventLoop_ = null;
+				this.recursiveEventHandler_ = null;
 				throw new WException(
 						"doRecursiveEventLoop(): session was killed");
 			}
-			WebSession.Handler prevRecursiveEventLoop = this.recursiveEventLoop_;
-			this.recursiveEventLoop_ = handler;
-			this.newRecursiveEvent_ = false;
-			while (!this.newRecursiveEvent_) {
+			WebSession.Handler prevRecursiveEventHandler = this.recursiveEventHandler_;
+			this.recursiveEventHandler_ = handler;
+			this.newRecursiveEvent_ = null;
+			while (!(this.newRecursiveEvent_ != null)) {
 				this.recursiveEvent_.awaitUninterruptibly();
 			}
 			if (this.state_ == WebSession.State.Dead) {
-				this.recursiveEventLoop_ = null;
+				this.recursiveEventHandler_ = null;
+				;
+				this.newRecursiveEvent_ = null;
 				throw new WException(
 						"doRecursiveEventLoop(): session was killed");
 			}
 			this.setLoaded();
-			this.app_.notify(new WEvent(new WEvent.Impl(handler)));
-			this.recursiveEventLoop_ = prevRecursiveEventLoop;
+			this.app_.notify(new WEvent(this.newRecursiveEvent_));
+			;
+			this.newRecursiveEvent_ = null;
+			this.recursiveEventDone_.signal();
+			this.recursiveEventHandler_ = prevRecursiveEventHandler;
 		} catch (IOException ioe) {
 			ioe.printStackTrace();
 		}
@@ -629,14 +638,14 @@ class WebSession {
 	}
 
 	public boolean isUnlockRecursiveEventLoop() {
-		if (!(this.recursiveEventLoop_ != null)) {
+		if (!(this.recursiveEventHandler_ != null)) {
 			return false;
 		}
 		WebSession.Handler handler = WebSession.Handler.getInstance();
-		this.recursiveEventLoop_.setRequest(handler.getRequest(), handler
+		this.recursiveEventHandler_.setRequest(handler.getRequest(), handler
 				.getResponse());
 		handler.setRequest((WebRequest) null, (WebResponse) null);
-		this.newRecursiveEvent_ = true;
+		this.newRecursiveEvent_ = new WEvent.Impl(this.recursiveEventHandler_);
 		this.recursiveEvent_.signal();
 		return true;
 	}
@@ -1670,7 +1679,8 @@ class WebSession {
 	private WebResponse deferredResponse_;
 	private int deferCount_;
 	private java.util.concurrent.locks.Condition recursiveEvent_;
-	private boolean newRecursiveEvent_;
+	private java.util.concurrent.locks.Condition recursiveEventDone_;
+	private WEvent.Impl newRecursiveEvent_;
 	private java.util.concurrent.locks.Condition updatesPendingEvent_;
 	private boolean updatesPending_;
 	private boolean triggerUpdate_;
@@ -1680,7 +1690,7 @@ class WebSession {
 	private boolean debug_;
 	private List<WebSession.Handler> handlers_;
 	private List<WObject> emitStack_;
-	private WebSession.Handler recursiveEventLoop_;
+	private WebSession.Handler recursiveEventHandler_;
 
 	// private WResource decodeResource(final String resourceId) ;
 	private AbstractEventSignal decodeSignal(final String signalId,

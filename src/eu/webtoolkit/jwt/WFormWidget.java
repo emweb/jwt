@@ -404,9 +404,13 @@ public abstract class WFormWidget extends WInteractWidget {
 		}
 	}
 
-	public boolean isSetFirstFocous() {
-		this.setFocus();
-		return true;
+	public boolean isSetFirstFocus() {
+		if (this.isVisible() && this.isEnabled()) {
+			this.setFocus();
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	WLabel label_;

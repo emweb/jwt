@@ -304,11 +304,7 @@ public class WSortFilterProxyModel extends WAbstractProxyModel {
 		} else {
 			this.regex_ = Pattern.compile(pattern, this.regex_.flags());
 		}
-		if (this.getSourceModel() != null) {
-			this.layoutAboutToBeChanged().trigger();
-			this.resetMappings();
-			this.layoutChanged().trigger();
-		}
+		this.invalidate();
 	}
 
 	/**
@@ -445,6 +441,24 @@ public class WSortFilterProxyModel extends WAbstractProxyModel {
 		return this.dynamic_;
 	}
 
+	/**
+	 * Invalidates the current filter.
+	 * <p>
+	 * This refilters and resorts the model, and is useful only if you have
+	 * reimplemented
+	 * {@link WSortFilterProxyModel#filterAcceptRow(int sourceRow, WModelIndex sourceParent)
+	 * filterAcceptRow()} and/or
+	 * {@link WSortFilterProxyModel#lessThan(WModelIndex lhs, WModelIndex rhs)
+	 * lessThan()}
+	 */
+	public void invalidate() {
+		if (this.getSourceModel() != null) {
+			this.layoutAboutToBeChanged().trigger();
+			this.resetMappings();
+			this.layoutChanged().trigger();
+		}
+	}
+
 	public int getColumnCount(final WModelIndex parent) {
 		return this.getSourceModel().getColumnCount(this.mapToSource(parent));
 	}
@@ -552,11 +566,7 @@ public class WSortFilterProxyModel extends WAbstractProxyModel {
 	public void sort(int column, SortOrder order) {
 		this.sortKeyColumn_ = column;
 		this.sortOrder_ = order;
-		if (this.getSourceModel() != null) {
-			this.layoutAboutToBeChanged().trigger();
-			this.resetMappings();
-			this.layoutChanged().trigger();
-		}
+		this.invalidate();
 	}
 
 	/**

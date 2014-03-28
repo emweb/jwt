@@ -53,6 +53,9 @@ public class UpdatePasswordWidget extends WTemplateFormView {
 				.getIdentity(Identity.LoginName));
 		this.registrationModel_.setReadOnly(RegistrationModel.LoginNameField,
 				true);
+		if (user.getPassword().isEmpty()) {
+			this.authModel_ = null;
+		}
 		if (this.authModel_ != null
 				&& this.authModel_.getBaseAuth().isEmailVerificationEnabled()) {
 			this.registrationModel_.setValue(RegistrationModel.EmailField, user

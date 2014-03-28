@@ -1405,11 +1405,14 @@ public abstract class WWidget extends WObject {
 	}
 
 	/**
-	 * Set focuse on the widget first descendant.
+	 * Set focus on the widget&apos;s first descendant.
 	 * <p>
-	 * Set focuse on the widget first descendant or itself if possible.
+	 * Set focus on the widget itself, or on a first descendant, which ever is
+	 * applicable.
+	 * <p>
+	 * Returns whether focus could be set.
 	 */
-	public boolean isSetFirstFocous() {
+	public boolean isSetFirstFocus() {
 		return false;
 	}
 

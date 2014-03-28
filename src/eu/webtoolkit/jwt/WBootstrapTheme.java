@@ -101,12 +101,27 @@ public class WBootstrapTheme extends WTheme {
 		this((WObject) null);
 	}
 
-	// public void setResponsive(boolean responsive) ;
+	/**
+	 * <p>
+	 * Enables responsive features.
+	 * <p>
+	 * Responsive features can be enabled only at application startup. For
+	 * bootstrap 3, you need to use the progressive bootstrap feature of JWt
+	 * (see see DOCREF<a class="el" href="overview.html#config_general">10.2
+	 * General application settings (wt_config.xml)</a>) as it requires setting
+	 * HTML meta flags.
+	 * <p>
+	 * Responsive features are disabled by default.
+	 */
+	public void setResponsive(boolean enabled) {
+		this.responsive_ = enabled;
+	}
+
 	/**
 	 * Returns whether responsive features are enabled.
 	 * <p>
 	 * 
-	 * @see WBootstrapTheme#setResponsive(boolean responsive)
+	 * @see WBootstrapTheme#setResponsive(boolean enabled)
 	 */
 	public boolean isResponsive() {
 		return this.responsive_;
@@ -273,6 +288,12 @@ public class WBootstrapTheme extends WTheme {
 			break;
 		case WidgetThemeRole.NavbarSearchRole:
 			child.addStyleClass(this.getClassNavbarSearch());
+			break;
+		case WidgetThemeRole.NavbarAlignLeftRole:
+			child.addStyleClass(this.getClassNavbarLeft());
+			break;
+		case WidgetThemeRole.NavbarAlignRightRole:
+			child.addStyleClass(this.getClassNavbarRight());
 			break;
 		case WidgetThemeRole.NavbarMenuRole:
 			child.addStyleClass(this.getClassNavbarMenu());
@@ -671,6 +692,16 @@ public class WBootstrapTheme extends WTheme {
 	private String getClassNavbarSearch() {
 		return this.version_ == WBootstrapTheme.Version.Version2 ? "search-query"
 				: "navbar-search";
+	}
+
+	private String getClassNavbarLeft() {
+		return this.version_ == WBootstrapTheme.Version.Version2 ? "pull-left"
+				: "navbar-left";
+	}
+
+	private String getClassNavbarRight() {
+		return this.version_ == WBootstrapTheme.Version.Version2 ? "pull-right"
+				: "navbar-right";
 	}
 
 	private String getClassNavbarMenu() {

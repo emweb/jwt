@@ -240,10 +240,6 @@ public abstract class WAbstractToggleButton extends WFormWidget {
 		super.refresh();
 	}
 
-	public boolean isSetFirstFocous() {
-		return false;
-	}
-
 	CheckState state_;
 
 	abstract void updateInput(final DomElement input, boolean all);

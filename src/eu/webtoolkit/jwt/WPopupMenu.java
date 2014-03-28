@@ -417,6 +417,9 @@ public class WPopupMenu extends WMenu {
 		}
 		if (this.location_ != null && this.location_ == this.button_) {
 			this.button_.removeStyleClass("active", true);
+			if (this.getParentItem() != null) {
+				this.getParentItem().removeStyleClass("open");
+			}
 		}
 		this.location_ = null;
 		this.result_ = result;
@@ -481,6 +484,9 @@ public class WPopupMenu extends WMenu {
 		}
 		if (!(this.topLevel_ != null) || this.topLevel_ == this) {
 			this.button_.addStyleClass("active", true);
+			if (this.getParentItem() != null) {
+				this.getParentItem().addStyleClass("open");
+			}
 			this.popup(this.button_);
 		}
 	}
