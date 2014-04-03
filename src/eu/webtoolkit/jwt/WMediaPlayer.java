@@ -696,7 +696,12 @@ public class WMediaPlayer extends WCompositeWidget {
 	 * @see WMediaPlayer#seek(double time)
 	 */
 	public void play() {
-		this.playerDo("play");
+		if (this.isRendered()) {
+			this.doJavaScript("setTimeout(function(){" + this.getJsPlayerRef()
+					+ ".jPlayer('play'); }, 0);");
+		} else {
+			this.playerDo("play");
+		}
 	}
 
 	/**

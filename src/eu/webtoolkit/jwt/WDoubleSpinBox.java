@@ -157,7 +157,7 @@ public class WDoubleSpinBox extends WAbstractSpinBox {
 	 */
 	public void setDecimals(int decimals) {
 		this.precision_ = decimals;
-		this.setText(this.getTextFromValue().toString());
+		this.setText(this.getTextFromValue());
 	}
 
 	/**
@@ -182,7 +182,7 @@ public class WDoubleSpinBox extends WAbstractSpinBox {
 	public void setValue(double value) {
 		if (this.value_ != value) {
 			this.value_ = value;
-			this.setText(this.getTextFromValue().toString());
+			this.setText(this.getTextFromValue());
 		}
 	}
 
@@ -207,7 +207,7 @@ public class WDoubleSpinBox extends WAbstractSpinBox {
 	}
 
 	public void refresh() {
-		this.setText(this.getTextFromValue().toString());
+		this.setText(this.getTextFromValue());
 		super.refresh();
 	}
 
@@ -252,10 +252,9 @@ public class WDoubleSpinBox extends WAbstractSpinBox {
 
 	boolean parseNumberValue(final String text) {
 		try {
-			char[] buf = new char[30];
-			if (!this.getTextFromValue().toString().equals(text)) {
+			if (!this.getTextFromValue().equals(text)) {
 				this.value_ = LocaleUtils.toDouble(LocaleUtils
-						.getCurrentLocale(), new WString(text).toString());
+						.getCurrentLocale(), text);
 			}
 			return true;
 		} catch (final NumberFormatException e) {
@@ -263,14 +262,14 @@ public class WDoubleSpinBox extends WAbstractSpinBox {
 		}
 	}
 
-	WString getTextFromValue() {
+	protected String getTextFromValue() {
 		String result = LocaleUtils.toFixedString(LocaleUtils
 				.getCurrentLocale(), this.value_, this.precision_);
 		if (!this.isNativeControl()) {
 			result = this.getPrefix().toString() + result
 					+ this.getSuffix().toString();
 		}
-		return new WString(result);
+		return result;
 	}
 
 	WValidator createValidator() {

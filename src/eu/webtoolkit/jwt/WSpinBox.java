@@ -152,7 +152,7 @@ public class WSpinBox extends WAbstractSpinBox {
 	public void setValue(int value) {
 		if (this.value_ != value) {
 			this.value_ = value;
-			this.setText(this.getTextFromValue().toString());
+			this.setText(this.getTextFromValue());
 		}
 	}
 
@@ -221,15 +221,15 @@ public class WSpinBox extends WAbstractSpinBox {
 		}
 	}
 
-	WString getTextFromValue() {
+	protected String getTextFromValue() {
 		if (this.isNativeControl()) {
-			return new WString(LocaleUtils.toString(LocaleUtils
-					.getCurrentLocale(), this.value_));
+			return LocaleUtils.toString(LocaleUtils.getCurrentLocale(),
+					this.value_);
 		} else {
 			String text = this.getPrefix().toString()
 					+ LocaleUtils.toString(LocaleUtils.getCurrentLocale(),
 							this.value_) + this.getSuffix().toString();
-			return new WString(text);
+			return text;
 		}
 	}
 

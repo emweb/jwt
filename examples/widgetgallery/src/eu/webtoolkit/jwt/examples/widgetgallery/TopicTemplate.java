@@ -25,6 +25,7 @@ class TopicTemplate extends WTemplate {
 	public TopicTemplate(String trKey) {
 		super(tr(trKey));
 		this.setInternalPathEncoding(true);
+		this.addFunction("tr", Functions.tr);
 		this.setCondition("if:cpp", false);
 		this.setCondition("if:java", true);
 		this

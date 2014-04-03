@@ -135,6 +135,7 @@ class FormWidgets extends TopicWidget {
 		result.bindWidget("TextEdit", TextEdit());
 		result.bindWidget("SpinBox", SpinBox());
 		result.bindWidget("TextSide", TextSide());
+		result.bindWidget("InputMask", InputMask());
 		result.bindString("lineEdit-template",
 				reindent(tr("lineEdit-template")), TextFormat.PlainText);
 		result.bindString("editSide-template",
@@ -329,6 +330,17 @@ class FormWidgets extends TopicWidget {
 		WLineEdit edit = new WLineEdit();
 		edit.setValidator(new WIntValidator(0, 130));
 		result.bindString("label", "Age:");
+		result.bindWidget("edit", edit);
+		return result;
+	}
+
+	WWidget InputMask() {
+		WTemplate result = new WTemplate(WString.tr("lineEdit-template"));
+		result.addFunction("id", WTemplate.Functions.id);
+		WLineEdit edit = new WLineEdit();
+		edit.setTextSize(15);
+		edit.setInputMask("009.009.009.009;_");
+		result.bindString("label", "IP Address:");
 		result.bindWidget("edit", edit);
 		return result;
 	}

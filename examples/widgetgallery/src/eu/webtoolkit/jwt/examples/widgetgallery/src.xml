@@ -1710,6 +1710,18 @@
 <span class="o">}</span>
 </pre></div>
   ]]></message>
+  <message id="src-InputMask"><![CDATA[
+<div class="highlight"><pre><span class="kt">void</span> <span class="nf">InputMask</span><span class="o">()</span> <span class="o">{</span>
+    <span class="n">WTemplate</span> <span class="n">result</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WTemplate</span><span class="o">(</span><span class="n">WString</span><span class="o">.</span><span class="na">tr</span><span class="o">(</span><span class="s">&quot;lineEdit-template&quot;</span><span class="o">));</span>
+    <span class="n">result</span><span class="o">.</span><span class="na">addFunction</span><span class="o">(</span><span class="s">&quot;id&quot;</span><span class="o">,</span> <span class="n">WTemplate</span><span class="o">.</span><span class="na">Functions</span><span class="o">.</span><span class="na">id</span><span class="o">);</span>
+    <span class="n">WLineEdit</span> <span class="n">edit</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WLineEdit</span><span class="o">();</span>
+    <span class="n">edit</span><span class="o">.</span><span class="na">setTextSize</span><span class="o">(</span><span class="mi">15</span><span class="o">);</span>
+    <span class="n">edit</span><span class="o">.</span><span class="na">setInputMask</span><span class="o">(</span><span class="s">&quot;009.009.009.009;_&quot;</span><span class="o">);</span>
+    <span class="n">result</span><span class="o">.</span><span class="na">bindString</span><span class="o">(</span><span class="s">&quot;label&quot;</span><span class="o">,</span> <span class="s">&quot;IP Address:&quot;</span><span class="o">);</span>
+    <span class="n">result</span><span class="o">.</span><span class="na">bindWidget</span><span class="o">(</span><span class="s">&quot;edit&quot;</span><span class="o">,</span> <span class="n">edit</span><span class="o">);</span>
+<span class="o">}</span>
+</pre></div>
+  ]]></message>
   <message id="src-JavaPdfRenderer"><![CDATA[
 <div class="highlight"><pre><span class="kd">abstract</span> <span class="kd">class</span> <span class="nc">ReportResource</span> <span class="kd">extends</span> <span class="n">WResource</span> <span class="o">{</span>
     <span class="kd">private</span> <span class="kd">static</span> <span class="n">Logger</span> <span class="n">logger</span> <span class="o">=</span> <span class="n">LoggerFactory</span>
@@ -5234,27 +5246,6 @@
     <span class="k">margin-right</span><span class="o">:</span> <span class="k">auto</span><span class="p">;</span>
 <span class="p">}</span>
 
-<span class="nc">.yellow-box</span> <span class="p">{</span>
-    <span class="k">background-color</span><span class="o">:</span> <span class="m">#ffffb4</span><span class="p">;</span>
-    <span class="k">border</span><span class="o">:</span> <span class="m">1px</span> <span class="k">solid</span> <span class="nb">black</span><span class="p">;</span>
-    <span class="k">margin-top</span><span class="o">:</span> <span class="m">1ex</span><span class="p">;</span>
-    <span class="k">margin-bottom</span><span class="o">:</span> <span class="m">1ex</span><span class="p">;</span>
-<span class="p">}</span>
-
-<span class="nc">.green-box</span> <span class="p">{</span>
-    <span class="k">background-color</span><span class="o">:</span> <span class="m">#c4ffb4</span><span class="p">;</span>
-    <span class="k">min-height</span><span class="o">:</span> <span class="m">30px</span><span class="p">;</span>
-    <span class="k">text-align</span><span class="o">:</span> <span class="k">center</span><span class="p">;</span>
-    <span class="k">padding</span><span class="o">:</span> <span class="m">3px</span><span class="p">;</span>
-<span class="p">}</span>
-
-<span class="nc">.blue-box</span> <span class="p">{</span>
-    <span class="k">background-color</span><span class="o">:</span> <span class="m">#65dae8</span><span class="p">;</span>
-    <span class="k">min-height</span><span class="o">:</span> <span class="m">30px</span><span class="p">;</span>
-    <span class="k">text-align</span><span class="o">:</span> <span class="k">center</span><span class="p">;</span>
-    <span class="k">padding</span><span class="o">:</span> <span class="m">3px</span><span class="p">;</span>
-<span class="p">}</span>
-
 <span class="nc">.events</span> <span class="p">{</span>
     <span class="k">border</span><span class="o">:</span> <span class="m">4px</span> <span class="k">solid</span> <span class="m">#528B12</span><span class="p">;</span>
     <span class="k">padding</span><span class="o">:</span> <span class="m">5px</span><span class="p">;</span>
@@ -5298,6 +5289,11 @@
     <span class="k">border-bottom</span><span class="o">:</span> <span class="m">0px</span><span class="p">;</span>
     <span class="k">padding</span><span class="o">:</span> <span class="m">0px</span> <span class="m">5px</span><span class="p">;</span>
     <span class="k">margin-bottom</span><span class="o">:</span> <span class="m">-5px</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="nc">.example</span> <span class="o">&gt;</span> <span class="nt">p</span> <span class="p">{</span>
+    <span class="k">margin</span><span class="o">:</span> <span class="m">10px</span> <span class="m">0px</span><span class="p">;</span>
+    <span class="k">padding-top</span><span class="o">:</span> <span class="m">10px</span><span class="p">;</span>
 <span class="p">}</span>
 
 <span class="nc">.src</span> <span class="p">{</span>
@@ -5354,6 +5350,29 @@
 
 <span class="nc">.dl-horizontal.no-clear</span><span class="nd">:after</span> <span class="p">{</span>
   <span class="k">clear</span><span class="o">:</span> <span class="k">none</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+  ]]></message>
+  <message id="src-layout"><![CDATA[
+<div class="highlight"><pre><span class="nc">.yellow-box</span> <span class="p">{</span>
+    <span class="k">background-color</span><span class="o">:</span> <span class="m">#ffffb4</span><span class="p">;</span>
+    <span class="k">border</span><span class="o">:</span> <span class="m">1px</span> <span class="k">solid</span> <span class="nb">black</span><span class="p">;</span>
+    <span class="k">margin-top</span><span class="o">:</span> <span class="m">1ex</span><span class="p">;</span>
+    <span class="k">margin-bottom</span><span class="o">:</span> <span class="m">1ex</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="nc">.green-box</span> <span class="p">{</span>
+    <span class="k">background-color</span><span class="o">:</span> <span class="m">#c4ffb4</span><span class="p">;</span>
+    <span class="k">min-height</span><span class="o">:</span> <span class="m">30px</span><span class="p">;</span>
+    <span class="k">text-align</span><span class="o">:</span> <span class="k">center</span><span class="p">;</span>
+    <span class="k">padding</span><span class="o">:</span> <span class="m">3px</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="nc">.blue-box</span> <span class="p">{</span>
+    <span class="k">background-color</span><span class="o">:</span> <span class="m">#65dae8</span><span class="p">;</span>
+    <span class="k">min-height</span><span class="o">:</span> <span class="m">30px</span><span class="p">;</span>
+    <span class="k">text-align</span><span class="o">:</span> <span class="k">center</span><span class="p">;</span>
+    <span class="k">padding</span><span class="o">:</span> <span class="m">3px</span><span class="p">;</span>
 <span class="p">}</span>
 </pre></div>
   ]]></message>
