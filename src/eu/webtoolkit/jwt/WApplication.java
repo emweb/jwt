@@ -173,7 +173,7 @@ public class WApplication extends WObject {
 		this.theme_ = null;
 		this.styleSheets_ = new ArrayList<WCssStyleSheet>();
 		this.styleSheetsAdded_ = 0;
-		this.metaHeaders_ = new ArrayList<WApplication.MetaHeader>();
+		this.metaHeaders_ = new ArrayList<MetaHeader>();
 		this.metaLinks_ = new ArrayList<WApplication.MetaLink>();
 		this.exposedSignals_ = new HashMap<String, WeakReference<AbstractEventSignal>>();
 		this.exposedResources_ = new HashMap<String, WResource>();
@@ -2312,31 +2312,9 @@ public class WApplication extends WObject {
 	/**
 	 * Adds an HTML meta header.
 	 * <p>
-	 * A meta header can only be added in the following situations:
-	 * <p>
-	 * <ul>
-	 * <li>when a plain HTML session is used (including when the user agent is a
-	 * bot), you can add meta headers at any time.</li>
-	 * </ul>
-	 * <p>
-	 * <ul>
-	 * <li>or, when DOCREF<a class="el"
-	 * href="overview.html#progressive_bootstrap">progressive bootstrap</a> is
-	 * used, you can set meta headers for any type of session, from within the
-	 * application constructor (which corresponds to the initial request).</li>
-	 * </ul>
-	 * <p>
-	 * <ul>
-	 * <li>but never for a {@link EntryPointType#WidgetSet} mode application
-	 * since then the application is hosted within a foreign HTML page.</li>
-	 * </ul>
-	 * <p>
-	 * When a header was previously set for the same <code>name</code>, its
-	 * contents is replaced.
-	 * <p>
-	 * These situations coincide with {@link WEnvironment#hasAjax()
-	 * WEnvironment#hasAjax()} returning <code>false</code> (see
-	 * {@link WApplication#getEnvironment() getEnvironment()}).
+	 * 
+	 * @see WApplication#addMetaHeader(MetaHeaderType type, String name,
+	 *      CharSequence content, String lang)
 	 */
 	public void addMetaHeader(final String name, final CharSequence content,
 			final String lang) {
@@ -2357,9 +2335,32 @@ public class WApplication extends WObject {
 	/**
 	 * Adds an HTML meta header.
 	 * <p>
-	 * This overloaded method allows to define both &quot;name&quot; meta
-	 * headers, relating to document properties as well as
-	 * &quot;http-equiv&quot; meta headers, which define HTTP headers.
+	 * This method sets either a &quot;name&quot; meta headers, which configures
+	 * a document property, or a &quot;http-equiv&quot; meta headers, which
+	 * defines a HTTP headers (but these latter headers are being deprecated).
+	 * <p>
+	 * A meta header can however only be added in the following situations:
+	 * <p>
+	 * <ul>
+	 * <li>when a plain HTML session is used (including when the user agent is a
+	 * bot), you can add meta headers at any time.</li>
+	 * <li>or, when DOCREF<a class="el"
+	 * href="overview.html#progressive_bootstrap">progressive bootstrap</a> is
+	 * used, you can set meta headers for any type of session, from within the
+	 * application constructor (which corresponds to the initial request).</li>
+	 * <li>but never for a {@link EntryPointType#WidgetSet} mode application
+	 * since then the application is hosted within a foreign HTML page.</li>
+	 * </ul>
+	 * <p>
+	 * These situations coincide with {@link WEnvironment#hasAjax()
+	 * WEnvironment#hasAjax()} returning <code>false</code> (see
+	 * {@link WApplication#getEnvironment() getEnvironment()}). The reason that
+	 * it other cases the HTML page has already been rendered, and will not be
+	 * rerendered since all updates are done dynamically.
+	 * <p>
+	 * As an alternative, you can use the &lt;meta-headers&gt; configuration
+	 * property in the configuration file, which will be applied in all
+	 * circumstances.
 	 * <p>
 	 * 
 	 * @see WApplication#removeMetaHeader(MetaHeaderType type, String name)
@@ -2371,7 +2372,7 @@ public class WApplication extends WObject {
 					"WApplication::addMetaHeader() with no effect").toString());
 		}
 		for (int i = 0; i < this.metaHeaders_.size(); ++i) {
-			final WApplication.MetaHeader m = this.metaHeaders_.get(i);
+			final MetaHeader m = this.metaHeaders_.get(i);
 			if (m.type == type && m.name.equals(name)) {
 				if ((content.length() == 0)) {
 					this.metaHeaders_.remove(0 + i);
@@ -2382,8 +2383,8 @@ public class WApplication extends WObject {
 			}
 		}
 		if (!(content.length() == 0)) {
-			this.metaHeaders_.add(new WApplication.MetaHeader(type, name,
-					content, lang));
+			this.metaHeaders_
+					.add(new MetaHeader(type, name, content, lang, ""));
 		}
 	}
 
@@ -2415,7 +2416,7 @@ public class WApplication extends WObject {
 					"removeMetaHeader() with no effect").toString());
 		}
 		for (int i = 0; i < this.metaHeaders_.size(); ++i) {
-			final WApplication.MetaHeader m = this.metaHeaders_.get(i);
+			final MetaHeader m = this.metaHeaders_.get(i);
 			if (m.type == type && (name.length() == 0 || m.name.equals(name))) {
 				this.metaHeaders_.remove(0 + i);
 				if (name.length() == 0) {
@@ -2914,24 +2915,6 @@ public class WApplication extends WObject {
 		}
 	}
 
-	static class MetaHeader {
-		private static Logger logger = LoggerFactory
-				.getLogger(MetaHeader.class);
-
-		public MetaHeader(MetaHeaderType aType, final String aName,
-				final CharSequence aContent, final String aLang) {
-			this.type = aType;
-			this.name = aName;
-			this.lang = aLang;
-			this.content = WString.toWString(aContent);
-		}
-
-		public MetaHeaderType type;
-		public String name;
-		public String lang;
-		public WString content;
-	}
-
 	static class MetaLink {
 		private static Logger logger = LoggerFactory.getLogger(MetaLink.class);
 
@@ -2999,7 +2982,7 @@ public class WApplication extends WObject {
 	private WTheme theme_;
 	List<WCssStyleSheet> styleSheets_;
 	int styleSheetsAdded_;
-	List<WApplication.MetaHeader> metaHeaders_;
+	List<MetaHeader> metaHeaders_;
 	List<WApplication.MetaLink> metaLinks_;
 	private Map<String, WeakReference<AbstractEventSignal>> exposedSignals_;
 	private Map<String, WResource> exposedResources_;

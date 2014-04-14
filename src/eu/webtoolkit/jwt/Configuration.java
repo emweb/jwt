@@ -75,6 +75,7 @@ public class Configuration {
 	private int doubleClickTimeout = 200;
 	private int bootstrapTimeout = 10;
 	private String uaCompatible = "";
+	private List<MetaHeader> metaHeaders = new ArrayList<MetaHeader>();
 
 	/**
 	 * Creates a default configuration.
@@ -713,5 +714,13 @@ public class Configuration {
 
 	public boolean isCookieChecks() {
 		return true;
+	}
+
+	public List<MetaHeader> getMetaHeaders() {
+		return metaHeaders;
+	}
+	
+	public void setMetaHeaders(List<MetaHeader> headers) {
+		this.metaHeaders = headers;
 	}
 }

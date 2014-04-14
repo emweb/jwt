@@ -1379,32 +1379,67 @@ class WebRenderer implements SlotLearnerInterface {
 
 	private String getHeadDeclarations() {
 		EscapeOStream result = new EscapeOStream();
+		final Configuration conf = this.session_.getEnv().getServer()
+				.getConfiguration();
+		final List<MetaHeader> confMetaHeaders = conf.getMetaHeaders();
+		List<MetaHeader> metaHeaders = new ArrayList<MetaHeader>();
+		for (int i = 0; i < confMetaHeaders.size(); ++i) {
+			final MetaHeader m = confMetaHeaders.get(i);
+			boolean add = true;
+			if (m.userAgent.length() != 0) {
+				String s = this.session_.getEnv().getUserAgent();
+				Pattern expr = Pattern.compile(m.userAgent);
+				if (!expr.matcher(s).matches()) {
+					add = false;
+				}
+			}
+			if (add) {
+				metaHeaders.add(confMetaHeaders.get(i));
+			}
+		}
 		if (this.session_.getApp() != null) {
-			for (int i = 0; i < this.session_.getApp().metaHeaders_.size(); ++i) {
-				final WApplication.MetaHeader m = this.session_.getApp().metaHeaders_
-						.get(i);
-				result.append("<meta");
-				if (m.name.length() != 0) {
-					String attribute = "";
-					switch (m.type) {
-					case MetaName:
-						attribute = "name";
-						break;
-					case MetaProperty:
-						attribute = "property";
-						break;
-					case MetaHttpHeader:
-						attribute = "http-equiv";
+			final List<MetaHeader> appMetaHeaders = this.session_.getApp().metaHeaders_;
+			for (int i = 0; i < appMetaHeaders.size(); ++i) {
+				final MetaHeader m = appMetaHeaders.get(i);
+				boolean add = true;
+				for (int j = 0; j < metaHeaders.size(); ++j) {
+					final MetaHeader m2 = metaHeaders.get(j);
+					if (m.type == m2.type && m.name.equals(m2.name)) {
+						m2.content = m.content;
+						add = false;
 						break;
 					}
-					appendAttribute(result, attribute, m.name);
 				}
-				if (m.lang.length() != 0) {
-					appendAttribute(result, "lang", m.lang);
+				if (add) {
+					metaHeaders.add(m);
 				}
-				appendAttribute(result, "content", m.content.toString());
-				closeSpecial(result);
 			}
+		}
+		for (int i = 0; i < metaHeaders.size(); ++i) {
+			final MetaHeader m = metaHeaders.get(i);
+			result.append("<meta");
+			if (m.name.length() != 0) {
+				String attribute = "";
+				switch (m.type) {
+				case MetaName:
+					attribute = "name";
+					break;
+				case MetaProperty:
+					attribute = "property";
+					break;
+				case MetaHttpHeader:
+					attribute = "http-equiv";
+					break;
+				}
+				appendAttribute(result, attribute, m.name);
+			}
+			if (m.lang.length() != 0) {
+				appendAttribute(result, "lang", m.lang);
+			}
+			appendAttribute(result, "content", m.content.toString());
+			closeSpecial(result);
+		}
+		if (this.session_.getApp() != null) {
 			for (int i = 0; i < this.session_.getApp().metaLinks_.size(); ++i) {
 				final WApplication.MetaLink ml = this.session_.getApp().metaLinks_
 						.get(i);
@@ -1432,8 +1467,6 @@ class WebRenderer implements SlotLearnerInterface {
 			if (this.session_.getEnv().agentIsIE()) {
 				if (this.session_.getEnv().getAgent().getValue() < WEnvironment.UserAgent.IE9
 						.getValue()) {
-					final Configuration conf = this.session_.getEnv()
-							.getServer().getConfiguration();
 					boolean selectIE7 = conf.getUaCompatible().indexOf(
 							"IE8=IE7") != -1;
 					if (selectIE7) {
