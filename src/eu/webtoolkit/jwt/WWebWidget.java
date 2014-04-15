@@ -1098,17 +1098,12 @@ public abstract class WWebWidget extends WWidget {
 				if (this.layoutImpl_.zIndex_ > 0) {
 					element.setProperty(Property.PropertyStyleZIndex, String
 							.valueOf(this.layoutImpl_.zIndex_));
-					element.setProperty(Property.PropertyClass, StringUtils
-							.addWord(element
-									.getProperty(Property.PropertyClass),
-									"Wt-popup"));
+					element.addPropertyWord(Property.PropertyClass, "Wt-popup");
 					if (!all && !this.flags_.get(BIT_STYLECLASS_CHANGED)
 							&& this.lookImpl_ != null
 							&& this.lookImpl_.styleClass_.length() != 0) {
-						element.setProperty(Property.PropertyClass, StringUtils
-								.addWord(element
-										.getProperty(Property.PropertyClass),
-										this.lookImpl_.styleClass_));
+						element.addPropertyWord(Property.PropertyClass,
+								this.lookImpl_.styleClass_);
 					}
 					if (!(app != null)) {
 						app = WApplication.getInstance();
@@ -1353,10 +1348,8 @@ public abstract class WWebWidget extends WWidget {
 			}
 			if (all || this.flags_.get(BIT_STYLECLASS_CHANGED)) {
 				if (!all || this.lookImpl_.styleClass_.length() != 0) {
-					element.setProperty(Property.PropertyClass, StringUtils
-							.addWord(element
-									.getProperty(Property.PropertyClass),
-									this.lookImpl_.styleClass_));
+					element.addPropertyWord(Property.PropertyClass,
+							this.lookImpl_.styleClass_);
 				}
 			}
 			this.flags_.clear(BIT_STYLECLASS_CHANGED);
@@ -1399,17 +1392,13 @@ public abstract class WWebWidget extends WWidget {
 		}
 		if (all || this.flags_.get(BIT_SELECTABLE_CHANGED)) {
 			if (this.flags_.get(BIT_SET_UNSELECTABLE)) {
-				element.setProperty(Property.PropertyClass, StringUtils
-						.addWord(element.getProperty(Property.PropertyClass),
-								"unselectable"));
+				element.addPropertyWord(Property.PropertyClass, "unselectable");
 				element.setAttribute("unselectable", "on");
 				element.setAttribute("onselectstart", "return false;");
 			} else {
 				if (this.flags_.get(BIT_SET_SELECTABLE)) {
-					element.setProperty(Property.PropertyClass, StringUtils
-							.addWord(element
-									.getProperty(Property.PropertyClass),
-									"selectable"));
+					element.addPropertyWord(Property.PropertyClass,
+							"selectable");
 					element.setAttribute("unselectable", "off");
 					element.setAttribute("onselectstart",
 							"event.cancelBubble=true; return true;");

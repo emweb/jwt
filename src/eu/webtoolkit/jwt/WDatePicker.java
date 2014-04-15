@@ -469,7 +469,6 @@ public class WDatePicker extends WCompositeWidget {
 						WDatePicker.this.setFromLineEdit();
 					}
 				});
-		displayWidget.clicked().preventPropagation();
 		if (!(this.forEdit_.getValidator() != null)) {
 			this.forEdit_.setValidator(new WDateValidator(this.format_, this));
 		}

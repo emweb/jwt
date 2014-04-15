@@ -51,6 +51,7 @@ public class WDoubleSpinBox extends WAbstractSpinBox {
 	 */
 	public WDoubleSpinBox(WContainerWidget parent) {
 		super(parent);
+		this.setup_ = false;
 		this.value_ = -1;
 		this.min_ = 0.0;
 		this.max_ = 99.99;

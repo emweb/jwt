@@ -291,6 +291,10 @@ public abstract class WAbstractToggleButton extends WFormWidget {
 				&& needUpdateChangeSignal;
 		super.updateDom(input, all);
 		if (element != input) {
+			if (element.getProperties().get(Property.PropertyClass) != null) {
+				input.addPropertyWord(Property.PropertyClass, element
+						.getProperty(Property.PropertyClass));
+			}
 			element.setProperties(input.getProperties());
 			input.clearProperties();
 			String v = element.getProperty(Property.PropertyDisabled);
