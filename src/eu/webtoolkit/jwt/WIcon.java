@@ -77,7 +77,7 @@ class WIcon extends WInteractWidget {
 				sc = this.getStyleClass();
 			}
 			if (this.name_.length() != 0) {
-				sc = StringUtils.addWord(sc, "icon-" + this.name_);
+				sc = StringUtils.addWord(sc, "fa fa-" + this.name_);
 			}
 			element.setProperty(Property.PropertyClass, sc);
 			this.iconChanged_ = false;
@@ -102,9 +102,5 @@ class WIcon extends WInteractWidget {
 		String fontDir = WApplication.getRelativeResourcesUrl()
 				+ "font-awesome/";
 		app.useStyleSheet(new WLink(fontDir + "css/font-awesome.min.css"));
-		if (app.getEnvironment().agentIsIElt(8)) {
-			app.useStyleSheet(new WLink(fontDir
-					+ "css/font-awesome-ie7.min.css"));
-		}
 	}
 }

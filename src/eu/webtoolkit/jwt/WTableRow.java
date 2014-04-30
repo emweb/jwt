@@ -23,9 +23,8 @@ import org.slf4j.LoggerFactory;
  * A table row.
  * <p>
  * 
- * A WTableRow is returned by {@link WTable#getRowAt(int row) WTable#getRowAt()}
- * and managing various properties of a single row in a table (it is however not
- * a widget).
+ * A WTableRow is returned by {@link } and managing various properties of a
+ * single row in a table (it is however not a widget).
  * <p>
  * A table row corresponds to the HTML <code>&lt;tr&gt;</code> tag.
  * <p>
@@ -39,10 +38,8 @@ public class WTableRow extends WObject {
 	/**
 	 * Creates a new table row.
 	 * <p>
-	 * Table rows must be added to a table using
-	 * {@link WTable#insertRow(int row, WTableRow tableRow) WTable#insertRow()}
-	 * before you can access contents in it using
-	 * {@link WTableRow#elementAt(int column) elementAt()}.
+	 * Table rows must be added to a table using {@link } before you can access
+	 * contents in it using {@link WTableRow#elementAt(int column) elementAt()}.
 	 */
 	public WTableRow() {
 		super();
@@ -59,8 +56,6 @@ public class WTableRow extends WObject {
 	/**
 	 * Returns the table to which this row belongs.
 	 * <p>
-	 * 
-	 * @see WTable#getRowAt(int row)
 	 */
 	public WTable getTable() {
 		return this.table_;
@@ -69,9 +64,8 @@ public class WTableRow extends WObject {
 	/**
 	 * Access the row element at the given column.
 	 * <p>
-	 * Like {@link WTable#getElementAt(int row, int column)
-	 * WTable#getElementAt()}, if the column is beyond the current table
-	 * dimensions, then the table is expanded automatically.
+	 * Like {@link }, if the column is beyond the current table dimensions, then
+	 * the table is expanded automatically.
 	 * <p>
 	 * The row must be inserted within a table first.
 	 */
@@ -84,8 +78,6 @@ public class WTableRow extends WObject {
 	 * <p>
 	 * Returns -1 if the row is not yet part of a table.
 	 * <p>
-	 * 
-	 * @see WTable#getRowAt(int row)
 	 */
 	public int getRowNum() {
 		return this.table_.rows_.indexOf(this);
@@ -246,12 +238,19 @@ public class WTableRow extends WObject {
 		}
 	}
 
+	WTableCell createCell(int column) {
+		return this.table_.createCell(this.getRowNum(), column);
+	}
+
 	void expand(int numCells) {
 		int cursize = this.cells_.size();
 		for (int col = cursize; col < numCells; ++col) {
 			this.cells_.add(new WTableRow.TableData());
-			this.cells_.get(this.cells_.size() - 1).cell = new WTableCell(this,
-					col);
+			WTableCell cell = this.createCell(col);
+			cell.row_ = this;
+			cell.column_ = col;
+			cell.setParentWidget(this.table_);
+			this.cells_.get(this.cells_.size() - 1).cell = cell;
 		}
 	}
 
@@ -293,7 +292,11 @@ public class WTableRow extends WObject {
 
 	void insertColumn(int column) {
 		this.cells_.add(0 + column, new WTableRow.TableData());
-		this.cells_.get(column).cell = new WTableCell(this, column);
+		WTableCell cell = this.createCell(column);
+		cell.row_ = this;
+		cell.column_ = column;
+		cell.setParentWidget(this.table_);
+		this.cells_.get(this.cells_.size() - 1).cell = cell;
 		for (int i = column; i < this.cells_.size(); ++i) {
 			this.cells_.get(i).cell.column_ = i;
 		}

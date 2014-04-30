@@ -596,6 +596,17 @@ public class WBootstrapTheme extends WTheme {
 		return "active";
 	}
 
+	public String utilityCssClass(int utilityCssClassRole) {
+		switch (utilityCssClassRole) {
+		case UtilityCssClassRole.ToolTipInner:
+			return "tooltip-inner";
+		case UtilityCssClassRole.ToolTipOuter:
+			return "tooltip fade top in";
+		default:
+			return "";
+		}
+	}
+
 	public boolean isCanStyleAnchorAsButton() {
 		return true;
 	}
@@ -607,7 +618,6 @@ public class WBootstrapTheme extends WTheme {
 		app.loadJavaScript("js/BootstrapValidate.js", wtjs1());
 		app.loadJavaScript("js/BootstrapValidate.js", wtjs2());
 		if (app.getEnvironment().hasAjax()) {
-			int version = this.version_.getValue();
 			StringBuilder js = new StringBuilder();
 			js.append("Wt3_3_2.setValidationState(").append(widget.getJsRef())
 					.append(",").append(
@@ -615,8 +625,7 @@ public class WBootstrapTheme extends WTheme {
 									: 0).append(",").append(
 							WString.toWString(validation.getMessage())
 									.getJsStringLiteral()).append(",").append(
-							EnumUtils.valueOf(styles)).append(",").append(
-							version).append(");");
+							EnumUtils.valueOf(styles)).append(");");
 			widget.doJavaScript(js.toString());
 		} else {
 			boolean validStyle = validation.getState() == WValidator.State.Valid
@@ -727,6 +736,6 @@ public class WBootstrapTheme extends WTheme {
 				JavaScriptScope.WtClassScope,
 				JavaScriptObjectType.JavaScriptFunction,
 				"setValidationState",
-				"function(a,b,h,d,e){var g=b==1&&(d&2)!=0;d=b!=1&&(d&1)!=0;var c=$(a);c.toggleClass(\"Wt-valid\",g).toggleClass(\"Wt-invalid\",d);var f;if(e===2){e=c.closest(\".control-group\");c=\"success\";f=\"error\"}else{e=c.closest(\".form-group\");c=\"has-success\";f=\"has-error\"}e&&e.toggleClass(c,g).toggleClass(f,d);if(typeof a.defaultTT===\"undefined\")a.defaultTT=a.getAttribute(\"title\")||\"\";b?a.setAttribute(\"title\",a.defaultTT):a.setAttribute(\"title\",h)}");
+				"function(a,b,h,e){var i=b==1&&(e&2)!=0;e=b!=1&&(e&1)!=0;var d=$(a);d.toggleClass(\"Wt-valid\",i).toggleClass(\"Wt-invalid\",e);var c,f,g;c=d.closest(\".control-group\");if(c.length>0){f=\"success\";g=\"error\"}else{c=d.closest(\".form-group\");if(c.length>0){f=\"has-success\";g=\"has-error\"}}if(c.length>0){if(d=c.find(\".Wt-validation-message\"))b?d.text(a.defaultTT):d.text(h);c.toggleClass(f,i).toggleClass(g,e)}if(typeof a.defaultTT===\"undefined\")a.defaultTT= a.getAttribute(\"title\")||\"\";b?a.setAttribute(\"title\",a.defaultTT):a.setAttribute(\"title\",h)}");
 	}
 }

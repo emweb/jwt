@@ -174,7 +174,7 @@ public class WMessageBox extends WDialog {
 			this.iconW_.setName("info");
 			break;
 		case Warning:
-			this.iconW_.setName("warning-sign");
+			this.iconW_.setName("warning");
 			break;
 		case Critical:
 			this.iconW_.setName("exclamation");

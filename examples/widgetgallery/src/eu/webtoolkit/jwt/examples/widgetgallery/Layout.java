@@ -94,6 +94,8 @@ class Layout extends TopicWidget {
 		result.bindWidget("TextXHTML", TextXHTML());
 		result.bindWidget("TextXSS", TextXSS());
 		result.bindWidget("TextEvents", TextEvents());
+		result.bindWidget("TextToolTip", TextToolTip());
+		result.bindWidget("TextDeferredToolTip", TextDeferredToolTip());
 		return result;
 	}
 
@@ -222,6 +224,19 @@ class Layout extends TopicWidget {
 			}
 		});
 		return container;
+	}
+
+	WWidget TextToolTip() {
+		WText text = new WText("Some text", TextFormat.PlainText);
+		text.setToolTip("ToolTip", TextFormat.XHTMLText);
+		return text;
+	}
+
+	WWidget TextDeferredToolTip() {
+		Text text = new Text();
+		text.setText("Text");
+		text.setDeferredToolTip(true);
+		return text;
 	}
 
 	WWidget GroupBox() {

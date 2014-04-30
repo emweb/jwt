@@ -991,7 +991,6 @@
     <span class="o">}</span>
 
     <span class="kd">private</span> <span class="n">UserFormModel</span> <span class="n">model</span><span class="o">;</span>
-    <span class="kd">private</span> <span class="n">WComboBox</span> <span class="n">cityCB</span><span class="o">;</span>
 <span class="o">}</span>
 
 <span class="kt">void</span> <span class="nf">FormModel</span><span class="o">()</span> <span class="o">{</span>
@@ -4409,6 +4408,30 @@
 <span class="o">}</span>
 </pre></div>
   ]]></message>
+  <message id="src-TextDeferredToolTip"><![CDATA[
+<div class="highlight"><pre><span class="kd">class</span> <span class="nc">Text</span> <span class="kd">extends</span> <span class="n">WText</span> <span class="o">{</span>
+    <span class="kd">private</span> <span class="kd">static</span> <span class="n">Logger</span> <span class="n">logger</span> <span class="o">=</span> <span class="n">LoggerFactory</span><span class="o">.</span><span class="na">getLogger</span><span class="o">(</span><span class="n">Text</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+
+    <span class="n">Text</span><span class="o">()</span> <span class="o">{</span>
+        <span class="kd">super</span><span class="o">();</span>
+    <span class="o">}</span>
+
+    <span class="n">WString</span> <span class="nf">getCalculateToolTip</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="k">new</span> <span class="nf">WString</span><span class="o">(</span><span class="s">&quot;Deferred tooltip&quot;</span><span class="o">);</span>
+    <span class="o">}</span>
+
+    <span class="n">WString</span> <span class="nf">getToolTip</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="k">this</span><span class="o">.</span><span class="na">getCalculateToolTip</span><span class="o">();</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+
+<span class="kt">void</span> <span class="nf">TextDeferredToolTip</span><span class="o">()</span> <span class="o">{</span>
+    <span class="n">Text</span> <span class="n">text</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Text</span><span class="o">();</span>
+    <span class="n">text</span><span class="o">.</span><span class="na">setText</span><span class="o">(</span><span class="s">&quot;Text&quot;</span><span class="o">);</span>
+    <span class="n">text</span><span class="o">.</span><span class="na">setDeferredToolTip</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
+<span class="o">}</span>
+</pre></div>
+  ]]></message>
   <message id="src-TextEdit"><![CDATA[
 <div class="highlight"><pre><span class="kt">void</span> <span class="nf">TextEdit</span><span class="o">()</span> <span class="o">{</span>
     <span class="n">WContainerWidget</span> <span class="n">container</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WContainerWidget</span><span class="o">();</span>
@@ -4508,6 +4531,13 @@
     <span class="n">edit</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WLineEdit</span><span class="o">();</span>
     <span class="n">edit</span><span class="o">.</span><span class="na">setStyleClass</span><span class="o">(</span><span class="s">&quot;span2&quot;</span><span class="o">);</span>
     <span class="n">result</span><span class="o">.</span><span class="na">bindWidget</span><span class="o">(</span><span class="s">&quot;amount2&quot;</span><span class="o">,</span> <span class="n">edit</span><span class="o">);</span>
+<span class="o">}</span>
+</pre></div>
+  ]]></message>
+  <message id="src-TextToolTip"><![CDATA[
+<div class="highlight"><pre><span class="kt">void</span> <span class="nf">TextToolTip</span><span class="o">()</span> <span class="o">{</span>
+    <span class="n">WText</span> <span class="n">text</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WText</span><span class="o">(</span><span class="s">&quot;Some text&quot;</span><span class="o">,</span> <span class="n">TextFormat</span><span class="o">.</span><span class="na">PlainText</span><span class="o">);</span>
+    <span class="n">text</span><span class="o">.</span><span class="na">setToolTip</span><span class="o">(</span><span class="s">&quot;ToolTip&quot;</span><span class="o">,</span> <span class="n">TextFormat</span><span class="o">.</span><span class="na">XHTMLText</span><span class="o">);</span>
 <span class="o">}</span>
 </pre></div>
   ]]></message>

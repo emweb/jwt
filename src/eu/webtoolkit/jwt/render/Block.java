@@ -1566,15 +1566,16 @@ class Block {
 								.getValue())) {
 			v = "bolder";
 		}
-		if (v.length() != 0) {
-			try {
-				return Integer.parseInt(v);
-			} catch (final NumberFormatException blc) {
-				if (v.equals("normal")) {
-					return 400;
+		if (v.length() != 0 && !v.equals("bolder") && !v.equals("lighter")) {
+			if (v.equals("normal")) {
+				return 400;
+			} else {
+				if (v.equals("bold")) {
+					return 700;
 				} else {
-					if (v.equals("bold")) {
-						return 700;
+					try {
+						return Integer.parseInt(v);
+					} catch (final NumberFormatException blc) {
 					}
 				}
 			}

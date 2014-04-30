@@ -107,5 +107,4 @@ class UserFormView extends WTemplateFormView {
 	}
 
 	private UserFormModel model;
-	private WComboBox cityCB;
 }

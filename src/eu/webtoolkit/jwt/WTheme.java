@@ -118,6 +118,12 @@ public abstract class WTheme extends WObject {
 	public abstract String getActiveClass();
 
 	/**
+	 * Returns a generic CSS class name for the chosen role.
+	 * <p>
+	 */
+	public abstract String utilityCssClass(int utilityCssClassRole);
+
+	/**
 	 * Returns whether the theme allows for an anchor to be styled as a button.
 	 */
 	public abstract boolean isCanStyleAnchorAsButton();

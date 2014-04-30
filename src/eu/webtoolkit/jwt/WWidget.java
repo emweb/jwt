@@ -956,6 +956,9 @@ public abstract class WWidget extends WObject {
 	 * <p>
 	 * When <code>textFormat</code> is XHTMLText, the tooltip may contain any
 	 * valid XHTML snippet. The tooltip will then be rendered using JavaScript.
+	 * <p>
+	 * Note: This will set deferred tooltip to false.
+	 * <p>
 	 */
 	public abstract void setToolTip(final CharSequence text,
 			TextFormat textFormat);
@@ -974,6 +977,35 @@ public abstract class WWidget extends WObject {
 	 * Returns the tooltip.
 	 */
 	public abstract WString getToolTip();
+
+	/**
+	 * Enable deferred tooltip.
+	 * <p>
+	 * You may override {@link WWidget#getToolTip() getToolTip()} to read data
+	 * only when the user hovers over the widget.
+	 * <p>
+	 * When <code>textFormat</code> is XHTMLText, the tooltip may contain any
+	 * valid XHTML snippet. The tooltip will then be rendered using JavaScript.
+	 * <p>
+	 * Note: To change existing toolTip call
+	 * {@link WWidget#setDeferredToolTip(boolean enable, TextFormat textFormat)
+	 * setDeferredToolTip()} again.
+	 * <p>
+	 * 
+	 * @see WWidget#getToolTip()
+	 */
+	public abstract void setDeferredToolTip(boolean enable,
+			TextFormat textFormat);
+
+	/**
+	 * Enable deferred tooltip.
+	 * <p>
+	 * Calls {@link #setDeferredToolTip(boolean enable, TextFormat textFormat)
+	 * setDeferredToolTip(enable, TextFormat.PlainText)}
+	 */
+	public final void setDeferredToolTip(boolean enable) {
+		setDeferredToolTip(enable, TextFormat.PlainText);
+	}
 
 	/**
 	 * Refresh the widget.

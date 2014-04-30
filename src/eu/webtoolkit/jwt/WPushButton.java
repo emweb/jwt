@@ -446,6 +446,11 @@ public class WPushButton extends WFormWidget {
 		return this.linkState_.target;
 	}
 
+	/**
+	 * Links a popup menu to the button.
+	 * <p>
+	 * When the button is clicked, the linked popup menu is shown.
+	 */
 	public void setMenu(WPopupMenu popupMenu) {
 		this.popupMenu_ = popupMenu;
 		if (this.popupMenu_ != null) {
@@ -453,6 +458,12 @@ public class WPushButton extends WFormWidget {
 		}
 	}
 
+	/**
+	 * Returns an associated popup menu.
+	 * <p>
+	 * 
+	 * @see WPushButton#setMenu(WPopupMenu popupMenu)
+	 */
 	public WPopupMenu getMenu() {
 		return this.popupMenu_;
 	}

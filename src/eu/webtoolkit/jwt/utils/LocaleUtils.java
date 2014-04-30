@@ -1,9 +1,7 @@
 package eu.webtoolkit.jwt.utils;
 
-import java.math.RoundingMode;
 import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
-import java.text.ParseException;
 import java.text.ParsePosition;
 import java.util.Locale;
 

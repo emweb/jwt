@@ -43,7 +43,9 @@ import org.slf4j.LoggerFactory;
  * Alternatively, you can use one of the {@link WPopupMenu#popup(WPoint p)
  * popup()} methods to show the menu and listen to the
  * {@link WPopupMenu#triggered() triggered} signal where you read the
- * {@link WPopupMenu#getResult() getResult()}.
+ * {@link WPopupMenu#getResult() getResult()}, or associate the menu with a
+ * button using {@link WPushButton#setMenu(WPopupMenu popupMenu)
+ * WPushButton#setMenu()}.
  * <p>
  * You have several options to react to the selection of an item:
  * <ul>

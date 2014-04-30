@@ -19,42 +19,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * A container widget which provides layout of children in a table grid.
- * <p>
- * 
- * A WTable arranges its children in a table.
- * <p>
- * To insert or access contents, use
- * {@link WTable#getElementAt(int row, int column) getElementAt()} to access the
- * {@link WTableCell cell} at a particular location in the table. The WTable
- * expands automatically to create the indexed (row, column) as necessary.
- * <p>
- * It is possible to insert and delete entire rows or columns from the table
- * using the insertColumn(int column), insertRow(int row),
- * {@link WTable#deleteColumn(int column) deleteColumn()}, or
- * {@link WTable#deleteRow(int row) deleteRow()} methods.
- * <p>
- * You may indicate a number of rows and columns that act as headers using
- * {@link WTable#setHeaderCount(int count, Orientation orientation)
- * setHeaderCount()}. Header cells are rendered as <code>&lt;th&gt;</code>
- * instead of <code>&lt;td&gt;</code> elements. By default, no rows or columns
- * are configured as headers.
- * <p>
- * WTable is displayed as a {@link WWidget#setInline(boolean inlined) block}.
- * <p>
- * <h3>CSS</h3>
- * <p>
- * The widget corresponds to the HTML <code>&lt;table&gt;</code> tag and does
- * not provide styling. It can be styled using inline or external CSS as
- * appropriate.
- * <p>
- * 
- * @see WTableCell
- * @see WTableRow
- * @see WTableColumn
- */
-public class WTable extends WInteractWidget {
+class WTable extends WInteractWidget {
 	private static Logger logger = LoggerFactory.getLogger(WTable.class);
 
 	/**
@@ -113,13 +78,9 @@ public class WTable extends WInteractWidget {
 	/**
 	 * Returns the row object for the given row.
 	 * <p>
-	 * Like with {@link WTable#getElementAt(int row, int column) getElementAt()}
-	 * , the table expands automatically when the row is beyond the current
-	 * table dimensions.
+	 * Like with {@link }, the table expands automatically when the row is beyond
+	 * the current table dimensions.
 	 * <p>
-	 * 
-	 * @see WTable#getElementAt(int row, int column)
-	 * @see WTable#getColumnAt(int column)
 	 */
 	public WTableRow getRowAt(int row) {
 		this.expand(row, 0, 1, 0);
@@ -129,13 +90,9 @@ public class WTable extends WInteractWidget {
 	/**
 	 * Returns the column object for the given column.
 	 * <p>
-	 * Like with {@link WTable#getElementAt(int row, int column) getElementAt()}
-	 * , the table expands automatically when the column is beyond the current
-	 * table dimensions.
+	 * Like with {@link }, the table expands automatically when the column is
+	 * beyond the current table dimensions.
 	 * <p>
-	 * 
-	 * @see WTable#getElementAt(int row, int column)
-	 * @see WTable#getRowAt(int row)
 	 */
 	public WTableColumn getColumnAt(int column) {
 		this.expand(0, column, 0, 1);
@@ -155,14 +112,12 @@ public class WTable extends WInteractWidget {
 	/**
 	 * Deletes the table cell at the given position.
 	 * <p>
-	 * 
-	 * @see WTable#removeCell(WTableCell item)
 	 */
 	public void removeCell(int row, int column) {
 		final WTableRow.TableData d = this.itemAt(row, column);
 		if (d.cell != null)
 			d.cell.remove();
-		d.cell = new WTableCell(this.rows_.get(row), column);
+		d.cell = this.rows_.get(row).createCell(column);
 	}
 
 	/**
@@ -176,7 +131,7 @@ public class WTable extends WInteractWidget {
 			this.flags_.set(BIT_GRID_CHANGED);
 		}
 		if (!(tableRow != null)) {
-			tableRow = new WTableRow();
+			tableRow = this.createRow(row);
 		}
 		tableRow.table_ = this;
 		tableRow.expand(this.getColumnCount());
@@ -232,7 +187,7 @@ public class WTable extends WInteractWidget {
 		}
 		if ((int) column <= this.columns_.size()) {
 			if (!(tableColumn != null)) {
-				tableColumn = new WTableColumn();
+				tableColumn = this.createColumn(column);
 				tableColumn.table_ = this;
 			}
 			this.columns_.add(0 + column, tableColumn);
@@ -327,8 +282,6 @@ public class WTable extends WInteractWidget {
 	/**
 	 * Returns the number of header rows or columns.
 	 * <p>
-	 * 
-	 * @see WTable#setHeaderCount(int count, Orientation orientation)
 	 */
 	public int getHeaderCount(Orientation orientation) {
 		if (orientation == Orientation.Horizontal) {
@@ -354,8 +307,6 @@ public class WTable extends WInteractWidget {
 	 * The table expands automatically when the <code>to</code> row is beyond
 	 * the current table dimensions.
 	 * <p>
-	 * 
-	 * @see WTable#moveColumn(int from, int to)
 	 */
 	public void moveRow(int from, int to) {
 		if (from < 0 || from >= (int) this.rows_.size()) {
@@ -380,8 +331,6 @@ public class WTable extends WInteractWidget {
 	 * The table expands automatically when the <code>to</code> column is beyond
 	 * the current table dimensions.
 	 * <p>
-	 * 
-	 * @see WTable#moveRow(int from, int to)
 	 */
 	public void moveColumn(int from, int to) {
 		if (from < 0 || from >= (int) this.columns_.size()) {
@@ -449,6 +398,18 @@ public class WTable extends WInteractWidget {
 		this.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
 	}
 
+	protected WTableCell createCell(int row, int column) {
+		return new WTableCell();
+	}
+
+	protected WTableRow createRow(int row) {
+		return new WTableRow();
+	}
+
+	protected WTableColumn createColumn(int column) {
+		return new WTableColumn();
+	}
+
 	void updateDom(final DomElement element, boolean all) {
 		super.updateDom(element, all);
 	}
@@ -491,7 +452,7 @@ public class WTable extends WInteractWidget {
 			}
 		}
 		for (int row = 0; row < (int) this.getRowCount(); ++row) {
-			DomElement tr = this.createRow(row, withIds, app);
+			DomElement tr = this.createRowDomElement(row, withIds, app);
 			if (row < (int) this.headerRowCount_) {
 				thead.addChild(tr);
 			} else {
@@ -532,7 +493,7 @@ public class WTable extends WInteractWidget {
 				DomElement etb = DomElement.getForUpdate(this.getId() + "tb",
 						DomElementType.DomElement_TBODY);
 				for (int i = 0; i < (int) this.rowsAdded_; ++i) {
-					DomElement tr = this.createRow(this.getRowCount()
+					DomElement tr = this.createRowDomElement(this.getRowCount()
 							- this.rowsAdded_ + i, true, app);
 					etb.addChild(tr);
 				}
@@ -563,7 +524,8 @@ public class WTable extends WInteractWidget {
 		super.propagateRenderOk(deep);
 	}
 
-	private DomElement createRow(int row, boolean withIds, WApplication app) {
+	private DomElement createRowDomElement(int row, boolean withIds,
+			WApplication app) {
 		DomElement tr = DomElement.createNew(DomElementType.DomElement_TR);
 		if (withIds) {
 			tr.setId(this.rows_.get(row).getId());

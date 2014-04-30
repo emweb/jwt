@@ -59,6 +59,10 @@ public enum ItemFlag {
 	 */
 	ItemIsXHTMLText,
 	/**
+	 * Item&apos;s tooltip is deferred.
+	 */
+	ItemHasDeferredTooltip,
+	/**
 	 * Item&apos;s value has been modified.
 	 */
 	ItemIsDirty;

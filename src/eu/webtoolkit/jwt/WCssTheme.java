@@ -641,6 +641,15 @@ public class WCssTheme extends WTheme {
 		return "Wt-selected";
 	}
 
+	public String utilityCssClass(int utilityCssClassRole) {
+		switch (utilityCssClassRole) {
+		case UtilityCssClassRole.ToolTipInner:
+			return "Wt-tooltip";
+		default:
+			return "";
+		}
+	}
+
 	/**
 	 * Returns whether the theme allows for an anchor to be styled as a button.
 	 * <p>

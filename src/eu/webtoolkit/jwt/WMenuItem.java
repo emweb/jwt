@@ -888,9 +888,23 @@ public class WMenuItem extends WContainerWidget {
 			WAnchor a = this.getAnchor();
 			if (a != null) {
 				AbstractSignal as;
+				boolean selectFromCheckbox = false;
 				if (this.checkBox_ != null
 						&& !this.checkBox_.clicked().isPropagationPrevented()) {
 					as = this.checkBox_.changed();
+					this.checkBox_.checked().addListener(this,
+							new Signal.Listener() {
+								public void trigger() {
+									WMenuItem.this.setCheckBox();
+								}
+							});
+					this.checkBox_.unChecked().addListener(this,
+							new Signal.Listener() {
+								public void trigger() {
+									WMenuItem.this.setUnCheckBox();
+								}
+							});
+					selectFromCheckbox = true;
 				} else {
 					as = a.clicked();
 				}
@@ -910,11 +924,13 @@ public class WMenuItem extends WContainerWidget {
 							WMenuItem.this.selectVisual();
 						}
 					});
-					as.addListener(this, new Signal.Listener() {
-						public void trigger() {
-							WMenuItem.this.select();
-						}
-					});
+					if (!selectFromCheckbox) {
+						as.addListener(this, new Signal.Listener() {
+							public void trigger() {
+								WMenuItem.this.select();
+							}
+						});
+					}
 				}
 			}
 		}
@@ -932,5 +948,15 @@ public class WMenuItem extends WContainerWidget {
 	private void contentsDestroyed() {
 		this.contentsContainer_ = null;
 		this.contents_ = null;
+	}
+
+	private void setCheckBox() {
+		this.setChecked(true);
+		this.select();
+	}
+
+	private void setUnCheckBox() {
+		this.setChecked(false);
+		this.select();
 	}
 }

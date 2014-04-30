@@ -419,8 +419,10 @@ this.setHtml = function (el, html, add) {
   if (WT.isIE || (_$_INNER_HTML_$_ && !add)) {
     if (add)
       el.innerHTML += html;
-    else
+    else {
+      WT.saveReparented(el);
       el.innerHTML = html;
+    }
   } else {
     var d, b;
     d = new DOMParser();
@@ -429,8 +431,10 @@ this.setHtml = function (el, html, add) {
     if (d.nodeType != 1) // element
       d = d.nextSibling;
 
-    if (!add)
+    if (!add) {
+      WT.saveReparented(el);
       el.innerHTML = '';
+    }
 
     for (var i = 0, il = d.childNodes.length; i < il;)
       el.appendChild(myImportNode(d.childNodes[i++], true));
@@ -2093,7 +2097,7 @@ function dragStart(obj, e) {
 
   ds.object.parentNode.removeChild(ds.object);
   ds.object.style.position = 'absolute';
-  ds.object.className = '';
+  ds.object.className = ds.objectPrevStyle.className + '';
   ds.object.style.zIndex = '1000';
   document.body.appendChild(ds.object);
 
@@ -2180,9 +2184,9 @@ function dragDrag(e) {
       if (ds.dropTarget.handleDragDrop)
 	ds.dropTarget.handleDragDrop('drag', ds.object, e, '', mimeType);
       else
-	ds.object.className = 'Wt-valid-drop';
+	ds.object.className = ds.objectPrevStyle.className + ' Wt-valid-drop';
     } else
-      ds.object.className = '';
+      ds.object.className = ds.objectPrevStyle.className + '';
 
     return false;
   }

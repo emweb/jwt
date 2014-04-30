@@ -677,7 +677,8 @@ public class DomElement {
 				if (this.removeAllChildren_ >= 0) {
 					this.declare(out);
 					if (this.removeAllChildren_ == 0) {
-						out.append(this.var_).append(".innerHTML='';\n");
+						out.append("Wt3_3_2").append(".setHtml(").append(
+								this.var_).append(", '');\n");
 					} else {
 						out.append("$(").append(this.var_).append(
 								").children(':gt(").append(

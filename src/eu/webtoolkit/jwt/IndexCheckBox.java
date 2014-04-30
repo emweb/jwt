@@ -14,4 +14,9 @@ class IndexCheckBox extends WCheckBox {
 	public WModelIndex getIndex() {
 		return index;
 	}
+
+	public WString getToolTip(){
+		return StringUtils.asString(
+			  index.getData(ItemDataRole.ToolTipRole));
+	}
 }

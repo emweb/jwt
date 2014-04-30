@@ -99,6 +99,8 @@ public abstract class WAbstractSpinBox extends WLineEdit {
 		if (!this.prefix_.equals(prefix)) {
 			this.prefix_ = WString.toWString(prefix);
 			this.setText(this.getTextFromValue());
+			this.changed_ = true;
+			this.repaint();
 		}
 	}
 
@@ -134,6 +136,8 @@ public abstract class WAbstractSpinBox extends WLineEdit {
 		if (!this.suffix_.equals(suffix)) {
 			this.suffix_ = WString.toWString(suffix);
 			this.setText(this.getTextFromValue());
+			this.changed_ = true;
+			this.repaint();
 		}
 	}
 
@@ -195,9 +199,17 @@ public abstract class WAbstractSpinBox extends WLineEdit {
 		if (all || this.changed_) {
 			if (!all) {
 				if (!this.isNativeControl()) {
-					this.doJavaScript("jQuery.data(" + this.getJsRef()
-							+ ", 'obj').update(" + this.getJsMinMaxStep() + ","
-							+ String.valueOf(this.getDecimals()) + ");");
+					this.doJavaScript("jQuery.data("
+							+ this.getJsRef()
+							+ ", 'obj').configure("
+							+ String.valueOf(this.getDecimals())
+							+ ","
+							+ WString.toWString(this.getPrefix())
+									.getJsStringLiteral()
+							+ ","
+							+ WString.toWString(this.getSuffix())
+									.getJsStringLiteral() + ","
+							+ this.getJsMinMaxStep() + ");");
 				} else {
 					this.setValidator(this.createValidator());
 				}
@@ -334,6 +346,6 @@ public abstract class WAbstractSpinBox extends WLineEdit {
 				JavaScriptScope.WtClassScope,
 				JavaScriptObjectType.JavaScriptConstructor,
 				"WSpinBox",
-				"function(k,t,z,w,c,o,C,g,m,E){var I=0;var y=1;var s=\"Must be a number\";var H=\"The number must be at least \";var x=\"The number may be at most \";var l=\"dn\";var v=\"up\";var j=\"unselectable\";jQuery.data(t,\"obj\",this);var r=this,A=k.WT,i=38,D=40,e=\"crosshair\",B=$(t);var G=null,F,f=false;var d=null;var q=false;function n(){return !!t.getAttribute(\"readonly\")}function u(K){var J=\"\";for(var L=0;L<K.length();L++){J+=K.charAt(L)}}function b(){var K=B.data(\"lobj\");var J=\"\";if(K!==undefined){J=K.getValue();if(J===\"\"){J=w+\"0\"+c}}else{J=t.value}if(J.substr(0,w.length)==w){J=J.substr(w.length);if(J.length>c.length&&J.substr(J.length-c.length,c.length)==c){J=J.substr(0,J.length-c.length);if(E){J=J.split(E).join(\"\")}J=J.replace(m,\".\");return Number(J)}}return null}function a(K){var O=B.data(\"lobj\");if(K>C){K=C}else{if(K<o){K=o}}var N=K.toFixed(z);N=N.replace(\".\",m);var M=N.indexOf(m);var J=\"\";if(M!==-1){for(var L=0;L<M;L++){J+=N.charAt(L);if(L<M-1&&((M-L-1)%3===0)){J+=E}}J+=N.substr(M)}else{J=N}if(O!==undefined){O.setValue(w+J+c)}else{t.value=w+J+c}f=true}function h(){var J=b();if(J!==null){J+=g;a(J)}}function p(){var J=b();if(J!==null){J-=g;a(J)}}this.setIsDoubleSpinBox=function(J){q=J;this.update(o,C,g,z)};this.update=function(N,K,J,L){o=N;C=K;g=J;z=L;var M=q||A.WIntValidator===undefined?A.WDoubleValidator:A.WIntValidator;d=new M(true,o,C,s,s,H+o,x+C)};this.mouseOut=function(K,J){B.removeClass(l).removeClass(v)};this.mouseMove=function(O,M){if(n()){return}if(!G){var N=A.widgetCoordinates(t,M);if(B.hasClass(l)||B.hasClass(v)){B.removeClass(l).removeClass(v)}if(N.x>t.offsetWidth-16){var L=t.offsetHeight/2;if(N.y>=L-1&&N.y<=L+1){t.style.cursor=e}else{t.style.cursor=\"default\";if(N.y<L-1){B.addClass(v)}else{B.addClass(l)}}}else{if(t.style.cursor!=\"\"){t.style.cursor=\"\"}}}else{var J=A.pageCoordinates(M).y-G.y;var K=F;if(K!==null){K=K-J*g;a(K)}}};this.mouseDown=function(M,K){A.capture(null);if(n()){return}if(t.style.cursor==e){A.capture(null);A.capture(t);B.addClass(j);G=A.pageCoordinates(K);F=b()}else{var L=A.widgetCoordinates(t,K);if(L.x>t.offsetWidth-16){A.cancelEvent(K);A.capture(t);B.addClass(j);var J=t.offsetHeight/2;if(L.y<J){A.eventRepeat(function(){h()})}else{A.eventRepeat(function(){p()})}}}};this.mouseUp=function(K,J){B.removeClass(j);if(n()){return}if(f||G!=null){G=null;K.onchange()}A.stopRepeat()};this.keyDown=function(K,J){if(n()){return}if(J.keyCode==D){A.eventRepeat(function(){p()})}else{if(J.keyCode==i){A.eventRepeat(function(){h()})}}};this.keyUp=function(K,J){if(n()){return}if(f){f=false;K.onchange()}A.stopRepeat()};this.setLocale=function(J,K){m=J;E=K};this.validate=function(K){var J=b();if(J===null){J=\"a\"}return d.validate(J)};this.update(o,C,g,z)}");
+				"function(A,c,t,g,f,k,l,m,p,q){function n(){return!!c.getAttribute(\"readonly\")}function r(){var a=e.data(\"lobj\"),b=\"\";if(a!==undefined){b=a.getValue();if(b===\"\")b=g+\"0\"+f}else b=c.value;if(b.substr(0,g.length)==g){b=b.substr(g.length);if(b.length>f.length&&b.substr(b.length-f.length,f.length)==f){b=b.substr(0,b.length-f.length);if(q)b=b.split(q).join(\"\");b=b.replace(p,\".\");return Number(b)}}return null}function u(a){var b=e.data(\"lobj\");if(a> l)a=l;else if(a<k)a=k;a=a.toFixed(t);a=a.replace(\".\",p);var i=a.indexOf(p),h=\"\";if(i!==-1){for(var j=0;j<i;j++){h+=a.charAt(j);if(j<i-1&&(i-j-1)%3===0)h+=q}h+=a.substr(i)}else h=a;if(b!==undefined)b.setValue(g+h+f);else c.value=g+h+f;s=true}function w(){var a=r();if(a!==null){a+=m;u(a)}}function x(){var a=r();if(a!==null){a-=m;u(a)}}jQuery.data(c,\"obj\",this);var d=A.WT,e=$(c),o=null,y,s=false,z=null,v=false;this.setIsDoubleSpinBox=function(a){v=a;this.configure(t,g,f,k,l,m)};this.configure=function(a, b,i,h,j,B){t=a;g=b;f=i;k=h;l=j;m=B;z=new (v||typeof d.WIntValidator===\"undefined\"?d.WDoubleValidator:d.WIntValidator)(true,k,l,\"Must be a number\",\"Must be a number\",\"The number must be at least \"+k,\"The number may be at most \"+l)};this.mouseOut=function(){e.removeClass(\"dn\").removeClass(\"up\")};this.mouseMove=function(a,b){if(!n())if(o){a=d.pageCoordinates(b).y-o.y;b=y;if(b!==null){b-=a*m;u(b)}}else{a=d.widgetCoordinates(c,b);if(e.hasClass(\"dn\")||e.hasClass(\"up\"))e.removeClass(\"dn\").removeClass(\"up\"); if(a.x>c.offsetWidth-16){b=c.offsetHeight/2;if(a.y>=b-1&&a.y<=b+1)c.style.cursor=\"crosshair\";else{c.style.cursor=\"default\";a.y<b-1?e.addClass(\"up\"):e.addClass(\"dn\")}}else if(c.style.cursor!=\"\")c.style.cursor=\"\"}};this.mouseDown=function(a,b){d.capture(null);if(!n())if(c.style.cursor==\"crosshair\"){d.capture(null);d.capture(c);e.addClass(\"unselectable\");o=d.pageCoordinates(b);y=r()}else{a=d.widgetCoordinates(c,b);if(a.x>c.offsetWidth-16){d.cancelEvent(b);d.capture(c);e.addClass(\"unselectable\");a.y< c.offsetHeight/2?d.eventRepeat(function(){w()}):d.eventRepeat(function(){x()})}}};this.mouseUp=function(a){e.removeClass(\"unselectable\");if(!n()){if(s||o!=null){o=null;a.onchange()}d.stopRepeat()}};this.keyDown=function(a,b){if(!n())if(b.keyCode==40)d.eventRepeat(function(){x()});else b.keyCode==38&&d.eventRepeat(function(){w()})};this.keyUp=function(a){if(!n()){if(s){s=false;a.onchange()}d.stopRepeat()}};this.setLocale=function(a,b){p=a;q=b};this.validate=function(){var a=r();if(a===null)a=\"a\";return z.validate(a)}; this.setIsDoubleSpinBox(v)}");
 	}
 }

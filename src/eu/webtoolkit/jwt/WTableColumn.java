@@ -23,9 +23,8 @@ import org.slf4j.LoggerFactory;
  * A table column.
  * <p>
  * 
- * A WTableColumn is returned by {@link WTable#getColumnAt(int column)
- * WTable#getColumnAt()} and managing various properties of a single column in a
- * table (it is however not a widget).
+ * A WTableColumn is returned by {@link } and managing various properties of a
+ * single column in a table (it is however not a widget).
  * <p>
  * A table column corresponds to the HTML <code>&lt;col&gt;</code> tag.
  * <p>
@@ -39,10 +38,9 @@ public class WTableColumn extends WObject {
 	/**
 	 * Creates a new table column.
 	 * <p>
-	 * Table columns must be added to a table using
-	 * {@link WTable#insertColumn(int column, WTableColumn tableColumn)
-	 * WTable#insertColumn()} before you can access contents in it using
-	 * {@link WTableColumn#elementAt(int row) elementAt()}.
+	 * Table columns must be added to a table using {@link } before you can
+	 * access contents in it using {@link WTableColumn#elementAt(int row)
+	 * elementAt()}.
 	 */
 	public WTableColumn() {
 		super();
@@ -54,8 +52,6 @@ public class WTableColumn extends WObject {
 	/**
 	 * Returns the table to which this column belongs.
 	 * <p>
-	 * 
-	 * @see WTable#getRowAt(int row)
 	 */
 	public WTable getTable() {
 		return this.table_;
@@ -64,9 +60,8 @@ public class WTableColumn extends WObject {
 	/**
 	 * Access the column element at the given row.
 	 * <p>
-	 * Like {@link WTable#getElementAt(int row, int column)
-	 * WTable#getElementAt()}, if the row is beyond the current table
-	 * dimensions, then the table is expanded automatically.
+	 * Like {@link }, if the row is beyond the current table dimensions, then the
+	 * table is expanded automatically.
 	 * <p>
 	 * The column must be inserted within a table first.
 	 */
@@ -79,8 +74,6 @@ public class WTableColumn extends WObject {
 	 * <p>
 	 * Returns -1 if the column is not yet part of a table.
 	 * <p>
-	 * 
-	 * @see WTable#getColumnAt(int column)
 	 */
 	public int getColumnNum() {
 		for (int i = 0; i < this.table_.columns_.size(); i++) {

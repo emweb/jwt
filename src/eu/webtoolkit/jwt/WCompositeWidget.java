@@ -307,6 +307,10 @@ public class WCompositeWidget extends WWidget {
 		return this.impl_.getToolTip();
 	}
 
+	public void setDeferredToolTip(boolean enable, TextFormat textFormat) {
+		this.impl_.setDeferredToolTip(enable, textFormat);
+	}
+
 	public void refresh() {
 		this.impl_.refresh();
 		super.refresh();
