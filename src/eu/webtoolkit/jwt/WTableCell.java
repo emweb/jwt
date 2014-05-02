@@ -19,7 +19,33 @@ import eu.webtoolkit.jwt.servlet.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-class WTableCell extends WContainerWidget {
+/**
+ * A container widget that represents a cell in a table.
+ * <p>
+ * 
+ * A {@link WTable} provides a table of WTableCell container widgets. A
+ * WTableCell may overspan more than one grid location in the table, by
+ * specifying a {@link WTableCell#setRowSpan(int rowSpan) rowSpan} and
+ * {@link WTableCell#setColumnSpan(int colSpan) columnSpan}. Table cells at
+ * overspanned positions are hidden. You cannot directly create a WTableCell,
+ * instead, they are created automatically by a table.
+ * <p>
+ * A WTableCell acts as any other {@link WContainerWidget}, except that both the
+ * vertical and horizontal alignment of contents may be specified by
+ * {@link WContainerWidget#setContentAlignment(EnumSet alignment)
+ * WContainerWidget#setContentAlignment()}.
+ * <p>
+ * <h3>CSS</h3>
+ * <p>
+ * The widget corresponds to the HTML <code>&lt;td&gt;</code> or
+ * <code>&lt;th&gt;</code> tag, depending on whether the cell is a plain cell or
+ * a header cell. The widget does not provide styling, and can be styled using
+ * inline or external CSS as appropriate.
+ * <p>
+ * 
+ * @see WTable
+ */
+public class WTableCell extends WContainerWidget {
 	private static Logger logger = LoggerFactory.getLogger(WTableCell.class);
 
 	/**
@@ -59,6 +85,8 @@ class WTableCell extends WContainerWidget {
 	/**
 	 * Returns the row span.
 	 * <p>
+	 * 
+	 * @see WTableCell#setRowSpan(int rowSpan)
 	 */
 	public int getRowSpan() {
 		return this.rowSpan_;
@@ -87,6 +115,8 @@ class WTableCell extends WContainerWidget {
 	/**
 	 * Returns the column span.
 	 * <p>
+	 * 
+	 * @see WTableCell#setColumnSpan(int colSpan)
 	 */
 	public int getColumnSpan() {
 		return this.columnSpan_;

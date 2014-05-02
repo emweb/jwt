@@ -19,7 +19,42 @@ import eu.webtoolkit.jwt.servlet.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-class WTable extends WInteractWidget {
+/**
+ * A container widget which provides layout of children in a table grid.
+ * <p>
+ * 
+ * A WTable arranges its children in a table.
+ * <p>
+ * To insert or access contents, use
+ * {@link WTable#getElementAt(int row, int column) getElementAt()} to access the
+ * {@link WTableCell cell} at a particular location in the table. The WTable
+ * expands automatically to create the indexed (row, column) as necessary.
+ * <p>
+ * It is possible to insert and delete entire rows or columns from the table
+ * using the insertColumn(int column), insertRow(int row),
+ * {@link WTable#deleteColumn(int column) deleteColumn()}, or
+ * {@link WTable#deleteRow(int row) deleteRow()} methods.
+ * <p>
+ * You may indicate a number of rows and columns that act as headers using
+ * {@link WTable#setHeaderCount(int count, Orientation orientation)
+ * setHeaderCount()}. Header cells are rendered as <code>&lt;th&gt;</code>
+ * instead of <code>&lt;td&gt;</code> elements. By default, no rows or columns
+ * are configured as headers.
+ * <p>
+ * WTable is displayed as a {@link WWidget#setInline(boolean inlined) block}.
+ * <p>
+ * <h3>CSS</h3>
+ * <p>
+ * The widget corresponds to the HTML <code>&lt;table&gt;</code> tag and does
+ * not provide styling. It can be styled using inline or external CSS as
+ * appropriate.
+ * <p>
+ * 
+ * @see WTableCell
+ * @see WTableRow
+ * @see WTableColumn
+ */
+public class WTable extends WInteractWidget {
 	private static Logger logger = LoggerFactory.getLogger(WTable.class);
 
 	/**
@@ -78,9 +113,13 @@ class WTable extends WInteractWidget {
 	/**
 	 * Returns the row object for the given row.
 	 * <p>
-	 * Like with {@link }, the table expands automatically when the row is beyond
-	 * the current table dimensions.
+	 * Like with {@link WTable#getElementAt(int row, int column) getElementAt()}
+	 * , the table expands automatically when the row is beyond the current
+	 * table dimensions.
 	 * <p>
+	 * 
+	 * @see WTable#getElementAt(int row, int column)
+	 * @see WTable#getColumnAt(int column)
 	 */
 	public WTableRow getRowAt(int row) {
 		this.expand(row, 0, 1, 0);
@@ -90,9 +129,13 @@ class WTable extends WInteractWidget {
 	/**
 	 * Returns the column object for the given column.
 	 * <p>
-	 * Like with {@link }, the table expands automatically when the column is
-	 * beyond the current table dimensions.
+	 * Like with {@link WTable#getElementAt(int row, int column) getElementAt()}
+	 * , the table expands automatically when the column is beyond the current
+	 * table dimensions.
 	 * <p>
+	 * 
+	 * @see WTable#getElementAt(int row, int column)
+	 * @see WTable#getRowAt(int row)
 	 */
 	public WTableColumn getColumnAt(int column) {
 		this.expand(0, column, 0, 1);
@@ -112,6 +155,8 @@ class WTable extends WInteractWidget {
 	/**
 	 * Deletes the table cell at the given position.
 	 * <p>
+	 * 
+	 * @see WTable#removeCell(WTableCell item)
 	 */
 	public void removeCell(int row, int column) {
 		final WTableRow.TableData d = this.itemAt(row, column);
@@ -282,6 +327,8 @@ class WTable extends WInteractWidget {
 	/**
 	 * Returns the number of header rows or columns.
 	 * <p>
+	 * 
+	 * @see WTable#setHeaderCount(int count, Orientation orientation)
 	 */
 	public int getHeaderCount(Orientation orientation) {
 		if (orientation == Orientation.Horizontal) {
@@ -307,6 +354,8 @@ class WTable extends WInteractWidget {
 	 * The table expands automatically when the <code>to</code> row is beyond
 	 * the current table dimensions.
 	 * <p>
+	 * 
+	 * @see WTable#moveColumn(int from, int to)
 	 */
 	public void moveRow(int from, int to) {
 		if (from < 0 || from >= (int) this.rows_.size()) {
@@ -331,6 +380,8 @@ class WTable extends WInteractWidget {
 	 * The table expands automatically when the <code>to</code> column is beyond
 	 * the current table dimensions.
 	 * <p>
+	 * 
+	 * @see WTable#moveRow(int from, int to)
 	 */
 	public void moveColumn(int from, int to) {
 		if (from < 0 || from >= (int) this.columns_.size()) {
