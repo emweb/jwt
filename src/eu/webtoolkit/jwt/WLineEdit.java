@@ -617,6 +617,7 @@ public class WLineEdit extends WFormWidget {
 				}
 				if (j == this.mask_.length()) {
 					j = previousJ;
+					hadIgnoredChar = true;
 				} else {
 					if (this.raw_.charAt(j) != chr) {
 						if (this.case_.charAt(j) == '>') {
@@ -626,12 +627,9 @@ public class WLineEdit extends WFormWidget {
 								chr = Character.toLowerCase(chr);
 							}
 						}
+						result = StringUtils.put(result, j, chr);
 					}
-				}
-				result = StringUtils.put(result, j, chr);
-				++j;
-				if (j == previousJ) {
-					hadIgnoredChar = true;
+					++j;
 				}
 			}
 			i = 0;
