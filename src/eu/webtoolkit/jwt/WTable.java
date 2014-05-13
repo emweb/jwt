@@ -401,6 +401,9 @@ public class WTable extends WInteractWidget {
 			WTableRow.TableData cell = cells.get(from);
 			cells.remove(0 + from);
 			cells.add(0 + to, cell);
+			for (int j = Math.min(from, to); j < cells.size(); ++j) {
+				cells.get(j).cell.column_ = j;
+			}
 		}
 		this.flags_.set(BIT_GRID_CHANGED);
 		this.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));

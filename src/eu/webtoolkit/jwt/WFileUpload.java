@@ -397,7 +397,7 @@ public class WFileUpload extends WWebWidget {
 	}
 
 	/**
-	 * setFilters set input accept attributes
+	 * Sets input accept attributes.
 	 * <p>
 	 * The accept attribute may be specified to provide user agents with a hint
 	 * of what file types will be accepted. Use html input accept attributes as
@@ -411,7 +411,7 @@ public class WFileUpload extends WWebWidget {
 	 *   }
 	 * </pre>
 	 */
-	public void setFilters(String acceptAttributes) {
+	public void setFilters(final String acceptAttributes) {
 		this.acceptAttributes_ = acceptAttributes;
 	}
 

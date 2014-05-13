@@ -517,7 +517,7 @@ class GraphicsWidgets extends TopicWidget {
 		chart.addDataSeries(dataset2);
 		chart.addDataSeries(dataset3);
 		chart.setAlternativeContent(new WImage(new WLink(
-				"pics/numericalChartScreenshot.png"), container));
+				"pics/numericalChartScreenshot.png")));
 		return container;
 	}
 
@@ -557,7 +557,7 @@ class GraphicsWidgets extends TopicWidget {
 		isotopes.setType(Series3DType.BarSeries3D);
 		chart.addDataSeries(isotopes);
 		chart.setAlternativeContent(new WImage(new WLink(
-				"pics/categoricalChartScreenshot.png"), container));
+				"pics/categoricalChartScreenshot.png")));
 		return container;
 	}
 }

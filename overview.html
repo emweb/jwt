@@ -11,7 +11,7 @@
   dd p { margin-top: 0px; }
   dd div { margin: 10px 0px; }
 </style>
-<title>JWt 3.3.2</title>
+<title>JWt 3.3.3</title>
 </head>
 <body>
 
@@ -24,6 +24,45 @@ This page lists important notes on migrating existing applications to
 newer version of Wt. It lists changes in the library that may break
 the way you build Wt, the way you configure Wt or the Wt API and
 behaviour. It also indicates the main changes from version to verison.
+
+<h2>Release 3.3.3 (May ?, 2014)</h2>
+
+<p>
+ This release has a focus on bug fixes but also one or two new new features:
+</p>
+
+<dl>
+  <dt>
+    Improved Meta header support.
+  </dt>
+  <dd>
+    Because WApplication meta header API was restricted to only work
+    in certain circumstances, we have now added the ability to define
+    meta headers (with the option to apply them to specific user
+    agents) also in the <a href="eu/webtoolkit/jwt/Configuration.html#setMetaHeaders(java.util.List)">Configuration</a> object.
+  </dd>
+
+  <dt>
+    <a href="eu/webtoolkit/jwt/WWidget.html#setDeferredToolTip(boolean, eu.webtoolkit.jwt.TextFormat)">WWidget::setDeferredToolTip()</a>
+    </dt>
+  <dd>
+    This function is an alternative to setToolTip(), useful when a
+    tooltip text is not trivial to fetch or create. Using this
+    function, the tool tip (HTML) text can now be loaded on-demand
+    instead of needing to be preset on (each) widget. This also works
+    for tooltips set from a WAbstractItemModel using the
+    new <a href="ItemFlag.html">ItemHasDeferredTooltip</a> item flag.
+  </dd>
+
+  <dt>
+    <a href="eu/webtoolkit/jwt/WLineEdit.html#setInputMask(java.lang.String)">WLineEdit::setInputMask()</a>
+    </dt>
+  <dd>
+    Support for input masks was added, which guides the user to enter
+    data in the correct format.
+  </dd>
+</dl>
+<hr>
 
 <h2>Release 3.3.2 (March 12, 2014)</h2>
 

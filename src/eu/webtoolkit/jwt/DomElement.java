@@ -1024,6 +1024,12 @@ public class DomElement {
 					out.append(" selected=\"selected\"");
 				}
 				break;
+			case PropertySelectedIndex:
+				if (i.getValue().equals("-1")) {
+					DomElement self = this;
+					self.callMethod("selectedIndex=-1");
+				}
+				break;
 			case PropertyMultiple:
 				if (i.getValue().equals("true")) {
 					out.append(" multiple=\"multiple\"");

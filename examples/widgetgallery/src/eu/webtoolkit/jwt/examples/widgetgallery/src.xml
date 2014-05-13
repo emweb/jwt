@@ -315,7 +315,7 @@
     <span class="n">isotopes</span><span class="o">.</span><span class="na">setType</span><span class="o">(</span><span class="n">Series3DType</span><span class="o">.</span><span class="na">BarSeries3D</span><span class="o">);</span>
     <span class="n">chart</span><span class="o">.</span><span class="na">addDataSeries</span><span class="o">(</span><span class="n">isotopes</span><span class="o">);</span>
     <span class="n">chart</span><span class="o">.</span><span class="na">setAlternativeContent</span><span class="o">(</span><span class="k">new</span> <span class="n">WImage</span><span class="o">(</span><span class="k">new</span> <span class="n">WLink</span><span class="o">(</span>
-            <span class="s">&quot;pics/categoricalChartScreenshot.png&quot;</span><span class="o">),</span> <span class="n">container</span><span class="o">));</span>
+            <span class="s">&quot;pics/categoricalChartScreenshot.png&quot;</span><span class="o">)));</span>
 <span class="o">}</span>
 </pre></div>
   ]]></message>
@@ -2066,7 +2066,7 @@
     <span class="n">chart</span><span class="o">.</span><span class="na">addDataSeries</span><span class="o">(</span><span class="n">dataset2</span><span class="o">);</span>
     <span class="n">chart</span><span class="o">.</span><span class="na">addDataSeries</span><span class="o">(</span><span class="n">dataset3</span><span class="o">);</span>
     <span class="n">chart</span><span class="o">.</span><span class="na">setAlternativeContent</span><span class="o">(</span><span class="k">new</span> <span class="n">WImage</span><span class="o">(</span><span class="k">new</span> <span class="n">WLink</span><span class="o">(</span>
-            <span class="s">&quot;pics/numericalChartScreenshot.png&quot;</span><span class="o">),</span> <span class="n">container</span><span class="o">));</span>
+            <span class="s">&quot;pics/numericalChartScreenshot.png&quot;</span><span class="o">)));</span>
 <span class="o">}</span>
 </pre></div>
   ]]></message>

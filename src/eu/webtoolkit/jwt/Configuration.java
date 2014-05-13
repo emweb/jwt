@@ -716,10 +716,18 @@ public class Configuration {
 		return true;
 	}
 
+	/**
+	 * Returns configured meta headers.
+	 */
 	public List<MetaHeader> getMetaHeaders() {
 		return metaHeaders;
 	}
-	
+
+	/**
+	 * Sets (static) meta headers. This is an alternative to using
+	 * {@link WApplication#addMetaHeader(String, CharSequence)}, but having the
+	 * benefit that they are added to all sessions.
+	 */
 	public void setMetaHeaders(List<MetaHeader> headers) {
 		this.metaHeaders = headers;
 	}

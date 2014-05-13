@@ -69,7 +69,7 @@ public class WComboBox extends WFormWidget {
 		this.currentIndex_ = -1;
 		this.currentIndexRaw_ = null;
 		this.itemsChanged_ = false;
-		this.selectionChanged_ = false;
+		this.selectionChanged_ = true;
 		this.currentlyConnected_ = false;
 		this.modelConnections_ = new ArrayList<AbstractSignal.Connection>();
 		this.activated_ = new Signal1<Integer>(this);
@@ -111,7 +111,9 @@ public class WComboBox extends WFormWidget {
 	 * <p>
 	 * If no item is currently selected, the method returns -1.
 	 * <p>
-	 * The default value is 0, unless the combo box is empty.
+	 * By default, for a combo box, the first item is selected, and thus
+	 * {@link WComboBox#getCurrentIndex() getCurrentIndex()} = 0, while for a
+	 * selection box no item is selected.
 	 */
 	public int getCurrentIndex() {
 		return this.currentIndex_;
@@ -131,7 +133,8 @@ public class WComboBox extends WFormWidget {
 	public void insertItem(int index, final CharSequence text) {
 		if (this.model_.insertRow(index)) {
 			this.setItemText(index, text);
-			if (this.currentIndex_ == -1 && !this.isSupportsNoSelection()) {
+			if (this.model_.getRowCount() == 1 && this.currentIndex_ == -1
+					&& !this.isSupportsNoSelection()) {
 				this.setCurrentIndex(0);
 			}
 		}
@@ -156,6 +159,11 @@ public class WComboBox extends WFormWidget {
 	 * Changes the current selection.
 	 * <p>
 	 * Specify a value of -1 for <code>index</code> to clear the selection.
+	 * <p>
+	 * <p>
+	 * <i><b>Note: </b>Setting a value of -1 works only if JavaScript is
+	 * available. </i>
+	 * </p>
 	 */
 	public void setCurrentIndex(int index) {
 		int newIndex = Math.min(index, this.getCount() - 1);
@@ -430,11 +438,16 @@ public class WComboBox extends WFormWidget {
 	private void rowsInserted(final WModelIndex index, int from, int to) {
 		this.itemsChanged_ = true;
 		this.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
-		if (this.currentIndex_ < from && this.currentIndex_ != -1) {
-			return;
+		int count = to - from + 1;
+		if (this.currentIndex_ == -1) {
+			if (this.model_.getRowCount() == count
+					&& !this.isSupportsNoSelection()) {
+				this.setCurrentIndex(0);
+			}
 		} else {
-			int count = to - from + 1;
-			this.currentIndex_ += count;
+			if (this.currentIndex_ >= from) {
+				this.currentIndex_ += count;
+			}
 		}
 	}
 
@@ -549,7 +562,6 @@ public class WComboBox extends WFormWidget {
 				}
 			}
 			this.itemsChanged_ = false;
-			this.selectionChanged_ = false;
 		}
 		if (this.selectionChanged_) {
 			element.setProperty(Property.PropertySelectedIndex, String
