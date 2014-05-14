@@ -151,7 +151,6 @@ class Layout extends TopicWidget {
 
 	// private WWidget loadingIndicator() ;
 	// private void loadingIndicatorSelected(CharSequence indicator) ;
-	// private void load(WMouseEvent anon1) ;
 	WWidget Container() {
 		WContainerWidget container = new WContainerWidget();
 		container.addWidget(new WText("A first widget"));
