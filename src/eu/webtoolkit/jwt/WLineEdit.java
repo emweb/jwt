@@ -86,11 +86,32 @@ public class WLineEdit extends WFormWidget {
 	}
 
 	/**
+	 * Enumeration that describes options for input masks.
+	 * <p>
+	 * 
+	 * @see WLineEdit#setInputMask(String mask, EnumSet flags)
+	 */
+	public enum InputMaskFlag {
+		/**
+		 * Keep the input mask when blurred.
+		 */
+		KeepMaskWhileBlurred;
+
+		/**
+		 * Returns the numerical representation of this enum.
+		 */
+		public int getValue() {
+			return ordinal();
+		}
+	}
+
+	/**
 	 * Creates a line edit with empty content and optional parent.
 	 */
 	public WLineEdit(WContainerWidget parent) {
 		super(parent);
 		this.content_ = "";
+		this.displayContent_ = "";
 		this.textSize_ = 10;
 		this.maxLength_ = -1;
 		this.echoMode_ = WLineEdit.EchoMode.Normal;
@@ -101,6 +122,7 @@ public class WLineEdit extends WFormWidget {
 		this.inputMask_ = "";
 		this.raw_ = "";
 		this.spaceChar_ = ' ';
+		this.inputMaskFlags_ = EnumSet.noneOf(WLineEdit.InputMaskFlag.class);
 		this.case_ = "";
 		this.javaScriptDefined_ = false;
 		this.setInline(true);
@@ -122,7 +144,8 @@ public class WLineEdit extends WFormWidget {
 	 */
 	public WLineEdit(final String text, WContainerWidget parent) {
 		super(parent);
-		this.content_ = text;
+		this.content_ = "";
+		this.displayContent_ = "";
 		this.textSize_ = 10;
 		this.maxLength_ = -1;
 		this.echoMode_ = WLineEdit.EchoMode.Normal;
@@ -133,10 +156,12 @@ public class WLineEdit extends WFormWidget {
 		this.inputMask_ = "";
 		this.raw_ = "";
 		this.spaceChar_ = ' ';
+		this.inputMaskFlags_ = EnumSet.noneOf(WLineEdit.InputMaskFlag.class);
 		this.case_ = "";
 		this.javaScriptDefined_ = false;
 		this.setInline(true);
 		this.setFormObject(true);
+		this.setText(text);
 	}
 
 	/**
@@ -186,13 +211,16 @@ public class WLineEdit extends WFormWidget {
 	 * @see WLineEdit#getText()
 	 */
 	public void setText(final String text) {
-		String myText = this.inputText(text);
-		if (this.maskChanged_ || !this.content_.equals(myText)) {
-			this.content_ = myText;
+		String newDisplayText = this.inputText(text);
+		String newText = this.removeSpaces(newDisplayText);
+		if (this.maskChanged_ || !this.content_.equals(newText)
+				|| !this.displayContent_.equals(newDisplayText)) {
+			this.content_ = newText;
+			this.displayContent_ = newDisplayText;
 			if (this.isRendered() && this.inputMask_.length() != 0) {
 				this.doJavaScript("jQuery.data(" + this.getJsRef()
 						+ ", 'lobj').setValue("
-						+ WWebWidget.jsStringLiteral(myText) + ");");
+						+ WWebWidget.jsStringLiteral(newDisplayText) + ");");
 			}
 			this.flags_.set(BIT_CONTENT_CHANGED);
 			this.repaint();
@@ -209,6 +237,35 @@ public class WLineEdit extends WFormWidget {
 	 */
 	public String getText() {
 		return this.content_;
+	}
+
+	/**
+	 * Returns the displayed text.
+	 * <p>
+	 * If {@link WLineEdit#getEchoMode() getEchoMode()} is set to Normal, and no
+	 * input mask is defined, this returns the same as
+	 * {@link WLineEdit#getText() getText()}.
+	 * <p>
+	 * If an input mask is defined, then the text is returned including space
+	 * characters.
+	 * <p>
+	 * If {@link WLineEdit#getEchoMode() getEchoMode()} is set to Password, then
+	 * a string of asterisks is returned equal to the length of the text.
+	 * <p>
+	 * 
+	 * @see WLineEdit#setText(String text)
+	 */
+	public String getDisplayText() {
+		if (this.echoMode_ == WLineEdit.EchoMode.Normal) {
+			return this.displayContent_;
+		} else {
+			String text = this.displayContent_;
+			StringWriter result = new StringWriter();
+			for (int i = 0; i < result.toString().length(); i++) {
+				result.append('*');
+			}
+			return result.toString();
+		}
 	}
 
 	/**
@@ -373,7 +430,7 @@ public class WLineEdit extends WFormWidget {
 	 * Returns the input mask.
 	 * <p>
 	 * 
-	 * @see WLineEdit#setInputMask(String mask)
+	 * @see WLineEdit#setInputMask(String mask, EnumSet flags)
 	 */
 	public String getInputMask() {
 		return this.inputMask_;
@@ -533,9 +590,10 @@ public class WLineEdit extends WFormWidget {
 	 * error: any non-compliant characters will be removed from the input and
 	 * this action will be logged.
 	 */
-	public void setInputMask(final String mask) {
+	public void setInputMask(final String mask,
+			EnumSet<WLineEdit.InputMaskFlag> flags) {
+		this.inputMaskFlags_ = EnumSet.copyOf(flags);
 		if (!this.inputMask_.equals(mask)) {
-			this.maskChanged_ = true;
 			this.inputMask_ = mask;
 			this.mask_ = "";
 			this.raw_ = "";
@@ -543,34 +601,57 @@ public class WLineEdit extends WFormWidget {
 			this.spaceChar_ = ' ';
 			String textBefore = "";
 			if (this.inputMask_.length() != 0) {
-				textBefore = this.getText();
+				textBefore = this.getDisplayText();
 				this.processInputMask();
+				this.setText(textBefore);
 			}
-			String space = "";
-			space += this.spaceChar_;
 			if (this.isRendered() && this.javaScriptDefined_) {
+				String space = "";
+				space += this.spaceChar_;
 				this.doJavaScript("jQuery.data(" + this.getJsRef()
 						+ ", 'lobj').setInputMask("
 						+ WWebWidget.jsStringLiteral(this.mask_) + ","
 						+ WWebWidget.jsStringLiteral(this.raw_) + ","
-						+ WWebWidget.jsStringLiteral(this.case_) + ","
+						+ WWebWidget.jsStringLiteral(this.displayContent_)
+						+ "," + WWebWidget.jsStringLiteral(this.case_) + ","
 						+ WWebWidget.jsStringLiteral(space) + ", true);");
+			} else {
+				if (this.inputMask_.length() != 0) {
+					this.repaint();
+				}
 			}
-			if (this.inputMask_.length() != 0) {
-				this.defineJavaScript();
-				this.setText(textBefore);
-			}
-			this.maskChanged_ = false;
 		}
 	}
 
 	/**
 	 * Sets the input mask.
 	 * <p>
-	 * Calls {@link #setInputMask(String mask) setInputMask("")}
+	 * Calls {@link #setInputMask(String mask, EnumSet flags) setInputMask(mask,
+	 * EnumSet.of(flag, flags))}
+	 */
+	public final void setInputMask(final String mask,
+			WLineEdit.InputMaskFlag flag, WLineEdit.InputMaskFlag... flags) {
+		setInputMask(mask, EnumSet.of(flag, flags));
+	}
+
+	/**
+	 * Sets the input mask.
+	 * <p>
+	 * Calls {@link #setInputMask(String mask, EnumSet flags) setInputMask("",
+	 * EnumSet.noneOf(WLineEdit.InputMaskFlag.class))}
 	 */
 	public final void setInputMask() {
-		setInputMask("");
+		setInputMask("", EnumSet.noneOf(WLineEdit.InputMaskFlag.class));
+	}
+
+	/**
+	 * Sets the input mask.
+	 * <p>
+	 * Calls {@link #setInputMask(String mask, EnumSet flags) setInputMask(mask,
+	 * EnumSet.noneOf(WLineEdit.InputMaskFlag.class))}
+	 */
+	public final void setInputMask(final String mask) {
+		setInputMask(mask, EnumSet.noneOf(WLineEdit.InputMaskFlag.class));
 	}
 
 	public WValidator.State validate() {
@@ -582,6 +663,7 @@ public class WLineEdit extends WFormWidget {
 	}
 
 	private String content_;
+	private String displayContent_;
 	private int textSize_;
 	private int maxLength_;
 	private WLineEdit.EchoMode echoMode_;
@@ -598,8 +680,34 @@ public class WLineEdit extends WFormWidget {
 	private String inputMask_;
 	private String raw_;
 	private char spaceChar_;
+	private EnumSet<WLineEdit.InputMaskFlag> inputMaskFlags_;
 	private String case_;
 	private boolean javaScriptDefined_;
+
+	private String removeSpaces(final String text) {
+		if (this.raw_.length() != 0 && text.length() != 0) {
+			String result = text;
+			int i = 0;
+			for (int j = 0; j < this.raw_.length(); ++i, ++j) {
+				while (j < this.raw_.length()
+						&& result.charAt(j) == this.spaceChar_
+						&& this.mask_.charAt(j) != '_') {
+					++j;
+				}
+				if (j < this.raw_.length()) {
+					if (i != j) {
+						result = StringUtils.put(result, i, result.charAt(j));
+					}
+				} else {
+					--i;
+				}
+			}
+			result = result.substring(0, 0 + i);
+			return result;
+		} else {
+			return text;
+		}
+	}
 
 	private String inputText(final String text) {
 		if (this.raw_.length() != 0 && text.length() != 0) {
@@ -632,22 +740,6 @@ public class WLineEdit extends WFormWidget {
 					++j;
 				}
 			}
-			i = 0;
-			for (j = 0; j < this.raw_.length(); ++i, ++j) {
-				while (j < this.raw_.length()
-						&& result.charAt(j) == this.spaceChar_
-						&& this.mask_.charAt(j) != '_') {
-					++j;
-				}
-				if (j < this.raw_.length()) {
-					if (i != j) {
-						result = StringUtils.put(result, i, result.charAt(j));
-					}
-				} else {
-					--i;
-				}
-			}
-			result = result.substring(0, 0 + i);
 			if (hadIgnoredChar) {
 				logger.info(new StringWriter().append(
 						"Input mask: not all characters in input '" + text
@@ -739,12 +831,24 @@ public class WLineEdit extends WFormWidget {
 		app.loadJavaScript("js/WLineEdit.js", wtjs1());
 		String space = "";
 		space += this.spaceChar_;
-		String jsObj = "new Wt3_3_2.WLineEdit(" + app.getJavaScriptClass()
-				+ "," + this.getJsRef() + ","
-				+ WWebWidget.jsStringLiteral(this.mask_) + ","
-				+ WWebWidget.jsStringLiteral(this.raw_) + ","
-				+ WWebWidget.jsStringLiteral(this.case_) + ","
-				+ WWebWidget.jsStringLiteral(space) + ");";
+		String jsObj = "new Wt3_3_2.WLineEdit("
+				+ app.getJavaScriptClass()
+				+ ","
+				+ this.getJsRef()
+				+ ","
+				+ WWebWidget.jsStringLiteral(this.mask_)
+				+ ","
+				+ WWebWidget.jsStringLiteral(this.raw_)
+				+ ","
+				+ WWebWidget.jsStringLiteral(this.displayContent_)
+				+ ","
+				+ WWebWidget.jsStringLiteral(this.case_)
+				+ ","
+				+ WWebWidget.jsStringLiteral(space)
+				+ ","
+				+ (!EnumUtils.mask(this.inputMaskFlags_,
+						WLineEdit.InputMaskFlag.KeepMaskWhileBlurred).isEmpty() ? "0x1"
+						: "0x0") + ");";
 		this.setJavaScriptMember(" WLineEdit", jsObj);
 		final AbstractEventSignal b = this.mouseMoved();
 		final AbstractEventSignal c = this.keyWentDown();
@@ -821,7 +925,14 @@ public class WLineEdit extends WFormWidget {
 
 	void updateDom(final DomElement element, boolean all) {
 		if (all || this.flags_.get(BIT_CONTENT_CHANGED)) {
-			element.setProperty(Property.PropertyValue, this.content_);
+			String t = this.content_;
+			if (this.mask_.length() != 0
+					&& !EnumUtils.mask(this.inputMaskFlags_,
+							WLineEdit.InputMaskFlag.KeepMaskWhileBlurred)
+							.isEmpty()) {
+				t = this.displayContent_;
+			}
+			element.setProperty(Property.PropertyValue, t);
 			this.flags_.clear(BIT_CONTENT_CHANGED);
 		}
 		if (all || this.flags_.get(BIT_ECHO_MODE_CHANGED)) {
@@ -880,7 +991,8 @@ public class WLineEdit extends WFormWidget {
 		}
 		if (!(formData.values.length == 0)) {
 			final String value = formData.values[0];
-			this.content_ = this.inputText(value);
+			this.displayContent_ = this.inputText(value);
+			this.content_ = this.removeSpaces(this.displayContent_);
 		}
 	}
 
@@ -920,10 +1032,8 @@ public class WLineEdit extends WFormWidget {
 	}
 
 	protected void render(EnumSet<RenderFlag> flags) {
-		if (!EnumUtils.mask(flags, RenderFlag.RenderFull).isEmpty()) {
-			if (this.mask_.length() != 0) {
-				this.defineJavaScript();
-			}
+		if (this.mask_.length() != 0 && !this.javaScriptDefined_) {
+			this.defineJavaScript();
 		}
 		super.render(flags);
 	}
@@ -933,6 +1043,6 @@ public class WLineEdit extends WFormWidget {
 				JavaScriptScope.WtClassScope,
 				JavaScriptObjectType.JavaScriptConstructor,
 				"WLineEdit",
-				"function(E,c,f,h,p,i){function q(a){return f.charAt(a)===\"_\"}function j(a){d.setSelectionRange(c,a,a+1)}function l(a){for(;q(a);)a++;j(a);return a}function u(a){for(;a>0&&q(a);)a--;j(a);return a}function v(a,b){if(b>=f.length)return false;switch(f.charAt(b)){case \"a\":case \"A\":return a>=r&&a<=w||a>=s&&a<=x;case \"n\":case \"N\":return a>=r&&a<=w||a>=s&&a<=x||a>=m&&a<=n;case \"X\":case \"x\":return true;case \"0\":case \"9\":return a>=m&&a<=n;case \"d\":case \"D\":return a>= y&&a<=n;case \"#\":return a>=m&&a<=n||a===F||a===G;case \"h\":case \"H\":return a>=s&&a<=H||a>=m&&a<=n||a>=r&&a<=I;case \"b\":case \"B\":return a===m||a===y}return false}function o(a){var b=c.value.substring(0,a.start),e=c.value.substring(a.end),g=h.substring(a.start,a.end);c.value=b+g+e;d.setSelectionRange(c,a.start,a.start)}function t(a,b,e){var g=b=b;if(!e&&h.charAt(b)!==a&&!v(a.charCodeAt(0),b)&&b-1>=0&&h.charAt(b-1)===a)return b;for(;h.charAt(b)!==a&&!v(a.charCodeAt(0),b)&&b<f.length;)b++;if(b===f.length)return g; e=c.value.substring(0,b);g=c.value.substring(b+1);if(h.charAt(b)!==a)if(p.charAt(b)===\">\")a=a.toUpperCase();else if(p.charAt(b)===\"<\")a=a.toLowerCase();c.value=e+a+g;b++;return b}function z(a){if(f!==\"\"){d.cancelEvent(a,d.CancelDefaultAction);var b=d.getSelectionRange(c);b.start!==b.end&&o(b);var e=undefined;if(window.clipboardData&&window.clipboardData.getData)e=window.clipboardData.getData(\"Text\");else if(a.clipboardData&&a.clipboardData.getData)e=a.clipboardData.getData(\"text/plain\");else return; a=\"\";var g=0;for(b=b.start;g<e.length;g++){a=e.charAt(g);b=t(a,b,true)}l(b)}}function A(a){if(f!==\"\"){d.cancelEvent(a,d.CancelDefaultAction);var b=d.getSelectionRange(c);if(b.start!==b.end){var e=c.value.substring(b.start,b.end);if(window.clipboardData&&window.clipboardData.setData)window.clipboardData.setData(\"Text\",e);else a.clipboardData&&a.clipboardData.setData&&a.clipboardData.setData(\"text/plain\",e);o(b)}}}function B(){if(f!==\"\")if(c.value===\"\"){c.value=h;l(0)}}var r=\"a\".charCodeAt(0),I=\"f\".charCodeAt(0), w=\"z\".charCodeAt(0),s=\"A\".charCodeAt(0),H=\"F\".charCodeAt(0),x=\"Z\".charCodeAt(0),F=\"-\".charCodeAt(0),G=\"+\".charCodeAt(0),m=\"0\".charCodeAt(0),y=\"1\".charCodeAt(0),n=\"9\".charCodeAt(0);jQuery.data(c,\"lobj\",this);var J=this,d=E.WT,K=$(c);this.getValue=function(){if(f===\"\")return c.value;var a=c.value,b=\"\",e=\"\",g=0,k=0;for(g=0;g<a.length;g++){e=a.charAt(g);if(e!==i&&f.charAt(g)!==\"_\")k+=1;if(e!==i||f.charAt(g)===\"_\")b+=e}return k>0?b:\"\"};this.setValue=function(a){if(f===\"\"||!d.hasFocus(c))c.value=a;else{var b= d.getSelectionRange(c),e=-1;c.value=h;for(var g=0,k=0,C=\"\";g<a.length;g++){C=a.charAt(g);if(b.start===b.end&&b.start===g)e=k;k=t(C,k,true)}if(e!==-1)j(e);else a.length==0&&j(0)}};this.setInputMask=function(a,b,e,g){f=a;h=b;p=e;i=g};if(f!==\"\"){this.setInputMask(f,h,p,i);this.setValue(this.getValue())}this.keyDown=function(a,b){if(f!==\"\")switch(b.keyCode){case 39:d.cancelEvent(b,d.CancelDefaultAction);a=d.getSelectionRange(c);a.end-a.start<=1?l(a.start+1):d.setSelectionRange(c,a.end,a.end);break;case 37:d.cancelEvent(b, d.CancelDefaultAction);a=d.getSelectionRange(c);a.end-a.start<=1?u(a.start-1):d.setSelectionRange(c,a.start,a.start);break;case 36:d.cancelEvent(b,d.CancelDefaultAction);l(0);break;case 35:d.cancelEvent(b,d.CancelDefaultAction);d.setSelectionRange(c,f.length,f.length);break;case 46:d.cancelEvent(b,d.CancelDefaultAction);a=d.getSelectionRange(c);if(a.end-a.start<=1){a=a.start;if(a<f.length&&!q(a)){b=c.value.substring(0,a);var e=c.value.substring(a+1);c.value=b+i+e;d.setSelectionRange(c,a,a)}}else o(a); break;case 8:d.cancelEvent(b,d.CancelDefaultAction);a=d.getSelectionRange(c);if(a.end-a.start<=1){a=a.start-1;if(a>=0){a=u(a);if(!q(a)){b=c.value.substring(0,a);e=c.value.substring(a+1);c.value=b+i+e;j(a)}}}else o(a);break}};this.keyPressed=function(a,b){if(f!==\"\"){a=b.charCode||b.keyCode;if(!(a===0||a===13||a===10)){d.cancelEvent(b,d.CancelDefaultAction);b=d.getSelectionRange(c);b.start<b.end&&o(b);b=t(String.fromCharCode(a),b.start);l(b)}}};var D=this.getValue();this.focussed=function(){if(f!== \"\"){D=this.getValue();setTimeout(function(){J.setValue(c.value)},0)}};this.blurred=function(){if(f!==\"\"){c.value=this.getValue();c.value!==D&&K.change()}};this.clicked=function(){if(f!==\"\"){var a=d.getSelectionRange(c);a.start===a.end&&j(a.start)}};if(c.addEventListener)c.addEventListener(\"paste\",z,false);else c.attachEvent&&c.attachEvent(\"onpaste\",z);if(c.addEventListener)c.addEventListener(\"cut\",A,false);else c.attachEvent&&c.attachEvent(\"oncut\",A);if(c.addEventListener)c.addEventListener(\"input\", B,false);else c.attachEvent&&c.attachEvent(\"oninput\",B)}");
+				"function(G,c,f,h,l,q,j,s){function r(a){return f.charAt(a)===\"_\"}function k(a){d.setSelectionRange(c,a,a+1)}function m(a){for(;r(a);)a++;k(a);return a}function w(a){for(;a>0&&r(a);)a--;k(a);return a}function x(a,b){if(b>=f.length)return false;switch(f.charAt(b)){case \"a\":case \"A\":return a>=t&&a<=y||a>=u&&a<=z;case \"n\":case \"N\":return a>=t&&a<=y||a>=u&&a<=z||a>=n&&a<=o;case \"X\":case \"x\":return true;case \"0\":case \"9\":return a>=n&&a<=o;case \"d\":case \"D\":return a>= A&&a<=o;case \"#\":return a>=n&&a<=o||a===H||a===I;case \"h\":case \"H\":return a>=u&&a<=J||a>=n&&a<=o||a>=t&&a<=K;case \"b\":case \"B\":return a===n||a===A}return false}function p(a){var b=c.value.substring(0,a.start),e=c.value.substring(a.end),g=h.substring(a.start,a.end);c.value=b+g+e;d.setSelectionRange(c,a.start,a.start)}function v(a,b,e){var g=b=b;if(!e&&h.charAt(b)!==a&&!x(a.charCodeAt(0),b)&&b-1>=0&&h.charAt(b-1)===a)return b;for(;h.charAt(b)!==a&&!x(a.charCodeAt(0),b)&&b<f.length;)b++;if(b===f.length)return g; e=c.value.substring(0,b);g=c.value.substring(b+1);if(h.charAt(b)!==a)if(q.charAt(b)===\">\")a=a.toUpperCase();else if(q.charAt(b)===\"<\")a=a.toLowerCase();c.value=e+a+g;b++;return b}function B(a){if(!(f===\"\"||c.readOnly)){d.cancelEvent(a,d.CancelDefaultAction);var b=d.getSelectionRange(c);b.start!==b.end&&p(b);var e=undefined;if(window.clipboardData&&window.clipboardData.getData)e=window.clipboardData.getData(\"Text\");else if(a.clipboardData&&a.clipboardData.getData)e=a.clipboardData.getData(\"text/plain\"); else return;a=\"\";var g=0;for(b=b.start;g<e.length;g++){a=e.charAt(g);b=v(a,b,true)}m(b)}}function C(a){if(!(f===\"\"||c.readOnly)){d.cancelEvent(a,d.CancelDefaultAction);var b=d.getSelectionRange(c);if(b.start!==b.end){var e=c.value.substring(b.start,b.end);if(window.clipboardData&&window.clipboardData.setData)window.clipboardData.setData(\"Text\",e);else a.clipboardData&&a.clipboardData.setData&&a.clipboardData.setData(\"text/plain\",e);p(b)}}}function D(){if(!(f===\"\"||c.readOnly))if(c.value===\"\"){c.value= h;m(0)}}var t=\"a\".charCodeAt(0),K=\"f\".charCodeAt(0),y=\"z\".charCodeAt(0),u=\"A\".charCodeAt(0),J=\"F\".charCodeAt(0),z=\"Z\".charCodeAt(0),H=\"-\".charCodeAt(0),I=\"+\".charCodeAt(0),n=\"0\".charCodeAt(0),A=\"1\".charCodeAt(0),o=\"9\".charCodeAt(0);jQuery.data(c,\"lobj\",this);var M=this,d=G.WT,N=$(c);this.getValue=function(){if(f===\"\")return c.value;var a=c.value,b=\"\",e=\"\",g=0,i=0;for(g=0;g<a.length;g++){e=a.charAt(g);if(e!==j&&f.charAt(g)!==\"_\")i+=1;if(e!==j||f.charAt(g)===\"_\")b+=e}return i>0?b:\"\"};this.setValue= function(a){l=a;if(f===\"\"||!(s&1)&&!d.hasFocus(c))c.value=a;else{var b=d.getSelectionRange(c),e=-1;c.value=h;for(var g=0,i=0,E=\"\";g<a.length;g++){E=a.charAt(g);if(b.start===b.end&&b.start===g)e=i;i=v(E,i,true)}if(d.hasFocus(c))if(e!==-1)k(e);else a.length==0&&k(0)}};this.setInputMask=function(a,b,e,g,i){f=a;h=b;q=g;j=i;l=e};if(f!==\"\"){this.setInputMask(f,h,l,q,j);this.setValue(this.getValue())}this.keyDown=function(a,b){if(!(f===\"\"||c.readOnly))switch(b.keyCode){case 39:d.cancelEvent(b,d.CancelDefaultAction); a=d.getSelectionRange(c);a.end-a.start<=1?m(a.start+1):d.setSelectionRange(c,a.end,a.end);break;case 37:d.cancelEvent(b,d.CancelDefaultAction);a=d.getSelectionRange(c);a.end-a.start<=1?w(a.start-1):d.setSelectionRange(c,a.start,a.start);break;case 36:d.cancelEvent(b,d.CancelDefaultAction);m(0);break;case 35:d.cancelEvent(b,d.CancelDefaultAction);d.setSelectionRange(c,f.length,f.length);break;case 46:d.cancelEvent(b,d.CancelDefaultAction);a=d.getSelectionRange(c);if(a.end-a.start<=1){a=a.start;if(a< f.length&&!r(a)){b=c.value.substring(0,a);var e=c.value.substring(a+1);c.value=b+j+e;d.setSelectionRange(c,a,a)}}else p(a);break;case 8:d.cancelEvent(b,d.CancelDefaultAction);a=d.getSelectionRange(c);if(a.end-a.start<=1){a=a.start-1;if(a>=0){a=w(a);if(!r(a)){b=c.value.substring(0,a);e=c.value.substring(a+1);c.value=b+j+e;k(a)}}}else p(a);break}};this.keyPressed=function(a,b){if(!(f===\"\"||c.readOnly)){a=b.charCode||b.keyCode;if(!(a===0||a===13||a===10)){d.cancelEvent(b,d.CancelDefaultAction);b=d.getSelectionRange(c); b.start<b.end&&p(b);b=v(String.fromCharCode(a),b.start);m(b)}}};var F=this.getValue();this.focussed=function(){if(!(f===\"\"||c.readOnly||s&1)){F=this.getValue();setTimeout(function(){M.setValue(l)},0)}};this.blurred=function(){if(!(f===\"\"||c.readOnly||s&1)){l=c.value;c.value=this.getValue();c.value!==F&&N.change()}};this.clicked=function(){if(!(f===\"\"||c.readOnly)){var a=d.getSelectionRange(c);a.start===a.end&&k(a.start)}};if(c.addEventListener)c.addEventListener(\"paste\",B,false);else c.attachEvent&& c.attachEvent(\"onpaste\",B);if(c.addEventListener)c.addEventListener(\"cut\",C,false);else c.attachEvent&&c.attachEvent(\"oncut\",C);if(c.addEventListener)c.addEventListener(\"input\",D,false);else c.attachEvent&&c.attachEvent(\"oninput\",D)}");
 	}
 }

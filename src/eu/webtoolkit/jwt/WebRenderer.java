@@ -119,7 +119,7 @@ class WebRenderer implements SlotLearnerInterface {
 		response
 				.out()
 				.append(
-						"if (window.Wt) window.Wt._p_.quit(); window.location.reload(true);");
+						"if (window.Wt) window.Wt._p_.quit(null); window.location.reload(true);");
 	}
 
 	public final void letReloadJS(final WebResponse response, boolean newSession)
@@ -189,7 +189,7 @@ class WebRenderer implements SlotLearnerInterface {
 							.toString()).append('\n');
 		} else {
 			response.out().append(app.getJavaScriptClass()).append(
-					"._p_.quit();").append(
+					"._p_.quit(null);").append(
 					"document.title = 'Error occurred.';").append(
 					"document.body.innerHtml='<h2>Error occurred.</h2>' +")
 					.append(WWebWidget.jsStringLiteral(message)).append(';');
@@ -494,6 +494,8 @@ class WebRenderer implements SlotLearnerInterface {
 			script.setVar("ACK_UPDATE_ID", this.expectedAckId_);
 			script.setVar("SESSION_URL", WWebWidget.jsStringLiteral(this
 					.getSessionUrl()));
+			script.setVar("QUITTED_STR", WString.toWString(
+					WString.tr("Wt.QuittedMessage")).getJsStringLiteral());
 			String deployPath = this.session_.getEnv().publicDeploymentPath_;
 			if (deployPath.length() == 0) {
 				deployPath = this.session_.getDeploymentPath();
@@ -825,8 +827,12 @@ class WebRenderer implements SlotLearnerInterface {
 		mainElement.addToParent(s, "document.body", widgetset ? 0 : -1, app);
 		;
 		this.addResponseAckPuzzle(s);
-		if (app.isQuited()) {
-			s.append(app.getJavaScriptClass()).append("._p_.quit();");
+		if (app.hasQuit()) {
+			s.append(app.getJavaScriptClass()).append("._p_.quit(").append(
+					((app.quittedMessage_.length() == 0) ? "null" : WString
+							.toWString(app.quittedMessage_)
+							.getJsStringLiteral())
+							+ ");");
 		}
 		if (widgetset) {
 			app.domRoot2_.rootAsJavaScript(app, s, true);
@@ -1026,7 +1032,11 @@ class WebRenderer implements SlotLearnerInterface {
 		}
 		app.streamAfterLoadJavaScript(out);
 		if (app.isQuited()) {
-			out.append(app.getJavaScriptClass()).append("._p_.quit();");
+			out.append(app.getJavaScriptClass()).append("._p_.quit(").append(
+					((app.quittedMessage_.length() == 0) ? "null" : WString
+							.toWString(app.quittedMessage_)
+							.getJsStringLiteral())
+							+ ");");
 		}
 		if (this.updateLayout_) {
 			out.append("window.onresize();");

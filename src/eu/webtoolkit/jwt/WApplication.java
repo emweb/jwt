@@ -56,7 +56,7 @@ import org.apache.commons.io.*;
  * <p>
  * Throughout the session, the instance is available through the static method
  * {@link WApplication#getInstance() getInstance()}, which uses thread-specific
- * storage to keep track of the current session. The application may be quited
+ * storage to keep track of the current session. The application may be exited
  * either using the method {@link WApplication#quit() quit()}, or because of a
  * timeout after the user has closed the window, but not because the user does
  * not interact: keep-alive messages in the background will keep the session
@@ -154,7 +154,8 @@ public class WApplication extends WObject {
 		this.serverPush_ = 0;
 		this.serverPushChanged_ = true;
 		this.javaScriptClass_ = "Wt";
-		this.quited_ = false;
+		this.quitted_ = false;
+		this.quittedMessage_ = new WString();
 		this.onePixelGifUrl_ = "";
 		this.internalPathsEnabled_ = false;
 		this.exposedOnly_ = null;
@@ -918,7 +919,7 @@ public class WApplication extends WObject {
 		if (this.domRoot2_ != null) {
 			this.domRoot2_.refresh();
 		} else {
-			this.widgetRoot_.refresh();
+			this.domRoot_.refresh();
 		}
 		if (this.title_.refresh()) {
 			this.titleChanged_ = true;
@@ -2492,6 +2493,19 @@ public class WApplication extends WObject {
 	/**
 	 * Quits the application.
 	 * <p>
+	 * This quits the application with a default restart message resolved as
+	 * {@link }(&quot;Wt.QuittedMessage&quot;).
+	 * <p>
+	 * 
+	 * @see WApplication#quit(CharSequence restartMessage)
+	 */
+	public void quit() {
+		this.quit(WString.tr("Wt.QuittedMessage"));
+	}
+
+	/**
+	 * Quits the application.
+	 * <p>
 	 * The method returns immediately, but has as effect that the application
 	 * will be terminated after the current event is completed.
 	 * <p>
@@ -2499,16 +2513,16 @@ public class WApplication extends WObject {
 	 * applied during the current event handling) will still be rendered, after
 	 * which the application is terminated.
 	 * <p>
-	 * You might want to make sure no more events can be received from the user,
-	 * by not having anything clickable, for example by displaying only text.
-	 * Even better is to {@link WApplication#redirect(String url) redirect()}
-	 * the user to another, static, page in conjunction with quit().
+	 * If the restart message is not empty, then the user will be offered to
+	 * restart the application (using the provided message) when further
+	 * interacting with the application.
 	 * <p>
 	 * 
 	 * @see WApplication#redirect(String url)
 	 */
-	public void quit() {
-		this.quited_ = true;
+	public void quit(final CharSequence restartMessage) {
+		this.quitted_ = true;
+		this.quittedMessage_ = WString.toWString(restartMessage);
 	}
 
 	/**
@@ -2519,7 +2533,7 @@ public class WApplication extends WObject {
 	 * @deprecated {@link WApplication#hasQuit() hasQuit()} is proper English
 	 */
 	public boolean isQuited() {
-		return this.quited_;
+		return this.quitted_;
 	}
 
 	/**
@@ -2529,7 +2543,7 @@ public class WApplication extends WObject {
 	 * @see WApplication#quit()
 	 */
 	public boolean hasQuit() {
-		return this.quited_;
+		return this.quitted_;
 	}
 
 	/**
@@ -2692,6 +2706,9 @@ public class WApplication extends WObject {
 		}
 	}
 
+	/**
+	 * Sets the message for the user when the application was .
+	 */
 	void enableInternalPaths() {
 		if (!this.internalPathsEnabled_) {
 			this.internalPathsEnabled_ = true;
@@ -2962,7 +2979,8 @@ public class WApplication extends WObject {
 	boolean serverPushChanged_;
 	private String javaScriptClass_;
 	private WApplication.AjaxMethod ajaxMethod_;
-	private boolean quited_;
+	private boolean quitted_;
+	WString quittedMessage_;
 	private String onePixelGifUrl_;
 	boolean internalPathsEnabled_;
 	private WWidget exposedOnly_;

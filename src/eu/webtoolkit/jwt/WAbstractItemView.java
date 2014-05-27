@@ -941,8 +941,11 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	 * The default column width is 150 pixels.
 	 * <p>
 	 * <p>
-	 * <i><b>Note: </b>The actual space occupied by each column is the column
-	 * width augmented by 7 pixels for internal padding and a border. </i>
+	 * <i><b>Note: </b>The height must be specified in
+	 * {@link WLength.Unit#Pixel} units.
+	 * <p>
+	 * The actual space occupied by each column is the column width augmented by
+	 * 7 pixels for internal padding and a border. </i>
 	 * </p>
 	 */
 	public abstract void setColumnWidth(int column, final WLength width);
@@ -2222,23 +2225,28 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 		if (option == SelectionFlag.ToggleSelect) {
 			option = this.isSelected(index) ? SelectionFlag.Deselect
 					: SelectionFlag.Select;
+		}
+		if (this.getSelectionMode() == SelectionMode.SingleSelection
+				&& option == SelectionFlag.Select) {
+			option = SelectionFlag.ClearAndSelect;
+		}
+		if ((option == SelectionFlag.ClearAndSelect || option == SelectionFlag.Select)
+				&& this.getSelectionModel().selection_.size() == 1
+				&& this.isSelected(index)) {
+			return false;
 		} else {
-			if (option == SelectionFlag.ClearAndSelect) {
-				this.clearSelection();
-				option = SelectionFlag.Select;
-			} else {
-				if (this.getSelectionMode() == SelectionMode.SingleSelection
-						&& option == SelectionFlag.Select) {
-					this.clearSelection();
-				}
+			if (option == SelectionFlag.Deselect && !this.isSelected(index)) {
+				return false;
 			}
+		}
+		if (option == SelectionFlag.ClearAndSelect) {
+			this.clearSelection();
+			option = SelectionFlag.Select;
 		}
 		if (option == SelectionFlag.Select) {
 			this.getSelectionModel().selection_.add(index);
 		} else {
-			if (!this.getSelectionModel().selection_.remove(index)) {
-				return false;
-			}
+			this.getSelectionModel().selection_.remove(index);
 		}
 		return true;
 	}
@@ -2550,6 +2558,7 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 							KeyboardModifier.MetaModifier)).isEmpty()
 					&& this.isSelected(index)) {
 				this.clearSelection();
+				this.selectionChanged_.trigger();
 			} else {
 				this.select(index, SelectionFlag.Select);
 			}

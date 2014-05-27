@@ -115,7 +115,7 @@ public abstract class WtServlet extends HttpServlet {
 		Wt_js = readFile("/eu/webtoolkit/jwt/skeletons/Wt.min.js");
 		Boot_js = readFile("/eu/webtoolkit/jwt/skeletons/Boot.min.js");
 		JQuery_js = readFile("/eu/webtoolkit/jwt/skeletons/jquery.min.js");
-		
+
 		String[][] mimeTypes = {
 				{ "css", "text/css" },
 				{ "gif", "image/gif" },
@@ -183,9 +183,15 @@ public abstract class WtServlet extends HttpServlet {
 		String pathInfo = WebRequest.computePathInfo(request);
 		String resourcePath = configuration.getProperty(WApplication.RESOURCES_URL);
 		
-		if (pathInfo !=null) {
+		if (pathInfo != null) {
 			String scriptName = WebRequest.computeScriptName(request);
-			
+
+			String requestPath = scriptName;
+			if (requestPath.endsWith("/") && pathInfo.startsWith("/"))
+				requestPath += pathInfo.substring(1);
+			else
+				requestPath += pathInfo;
+
 			for (WResource staticResource : staticResources) {
 				String staticResourcePath = null;
 				if (!staticResource.getInternalPath().startsWith("/"))
@@ -193,7 +199,7 @@ public abstract class WtServlet extends HttpServlet {
 				else
 					staticResourcePath = staticResource.getInternalPath();
 				
-				if ((scriptName + pathInfo).equals(staticResourcePath)) {
+				if (requestPath.equals(staticResourcePath)) {
 					try {
 						WebRequest webRequest = new WebRequest(request, progressListener);
 						WebResponse webResponse = new WebResponse(response, webRequest);

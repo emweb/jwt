@@ -347,7 +347,7 @@ public abstract class WWebWidget extends WWidget {
 			if (this.getParent() != null) {
 				return this.getParent().isVisible();
 			} else {
-				return true;
+				return this.isRendered();
 			}
 		}
 	}
@@ -2009,6 +2009,7 @@ public abstract class WWebWidget extends WWidget {
 			this.decorationStyle_ = null;
 			this.styleClass_ = "";
 			this.toolTip_ = null;
+			this.toolTipTextFormat_ = TextFormat.PlainText;
 			this.loadToolTip_ = new JSignal(w, "Wt-loadToolTip");
 		}
 	}
